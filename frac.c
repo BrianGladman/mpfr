@@ -1,6 +1,6 @@
 /* mpfr_frac -- Fractional part of a floating-point number.
 
-Copyright 2002, 2003 Free Software Foundation, Inc.
+Copyright 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -24,6 +24,9 @@ MA 02111-1307, USA. */
 #include "longlong.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
+
+/* Optimization note: it is not a good idea to call mpfr_integer_p,
+   as some cases will take longer (the number may be parsed twice). */
 
 int
 mpfr_frac (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
@@ -62,32 +65,39 @@ mpfr_frac (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
   up = MPFR_MANT(u);
   sh = ue % BITS_PER_MP_LIMB;
   k = up[un] << sh;
+  /* the first bit of the fractional part is the MSB of k */
 
   if (k != 0)
     {
       int cnt;
 
       count_leading_zeros(cnt, k);
+      /* first bit 1 of the fractional part -> MSB of the number */
       re = -cnt;
       sh += cnt;
+      MPFR_ASSERTN (sh < BITS_PER_MP_LIMB);
       k <<= cnt;
     }
   else
     {
       re = sh - BITS_PER_MP_LIMB;
-      while ((k = up[--un]) == 0)
+      /* searching for the first bit 1 (exists since u isn't an integer) */
+      while (up[--un] == 0)
         re -= BITS_PER_MP_LIMB;
       MPFR_ASSERTN(un >= 0);
+      k = up[un];
       count_leading_zeros(sh, k);
       re -= sh;
       k <<= sh;
     }
   /* The exponent of r will be re */
+  /* un: index of the limb of u that contains the first bit 1 of the FP */
 
   ue -= re;  /* number of bits of u to discard */
   fq = uq - ue;  /* number of bits of the fractional part of u */
 
-  t = fq > MPFR_PREC(r) ?
+  /* Temporary fix */
+  t = /* fq > MPFR_PREC(r) */ (MPFR_PREC(r) - 1) / BITS_PER_MP_LIMB < un ?
     (mpfr_init2 (tmp, (un + 1) * BITS_PER_MP_LIMB), tmp) : r;
   /* t has enough precision to contain the fractional part of u */
   /* If we use a temporary variable, we take the non-significant bits
