@@ -10,6 +10,8 @@ AC_ARG_WITH(gmp, [ --with-gmp=DIR          GMP directory ], with_gmp_include=$wi
 
 AC_ARG_WITH(irix64, [ --with-irix64=on/off    Irix 32/64 bits support ], with_irix64=$withval, with_irix64=off)
 
+test_CFLAGS=${CFLAGS+set}
+
 dnl Checks for programs.
 AC_PROG_CC
 AC_PROG_RANLIB
@@ -18,7 +20,8 @@ AC_CHECK_OS
 AC_CHECK_MACHTYPE
 
 dnl If compiler is gcc, then use some specific flags.
-if test -n "$GCC"; then
+dnl But don't touch user specified flags.
+if test "$test_CFLAGS" != set && test -n "$GCC"; then
   CFLAGS="-Wall -Wmissing-prototypes $CFLAGS"
 fi
 
