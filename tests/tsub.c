@@ -63,6 +63,33 @@ check_reuse ()
   mpfr_clear (y);
 }
 
+void
+bug_ddefour()
+{
+    mpfr_t ex, ex1, ex2, ex3, tot, tot1;
+
+    mpfr_init2(ex, 53);
+    mpfr_init2(ex1, 53);
+    mpfr_init2(ex2, 53);
+    mpfr_init2(ex3, 53);
+    mpfr_init2(tot, 150);
+    mpfr_init2(tot1, 150);
+
+    mpfr_set_ui( ex, 1, GMP_RNDN);
+    mpfr_mul_2exp( ex, ex, 906, GMP_RNDN);
+    mpfr_log( tot, ex, GMP_RNDN);
+    mpfr_set( ex1, tot, GMP_RNDN);
+    mpfr_sub( ex2, tot, ex1, GMP_RNDN);
+    mpfr_sub( tot1, tot, ex1, GMP_RNDN);
+    mpfr_set( ex3, tot1, GMP_RNDN);
+
+    if (!mpfr_cmp(ex2, ex3)) 
+      {
+	fprintf(stderr, "Error in ddefour test.\n"); exit(-1); 
+      }
+}
+
+
 int
 main()
 {
