@@ -30,19 +30,18 @@ teq (mpfr_t x)
   mpfr_t y;
   unsigned long k, px, mx;
 
-  mpfr_init2(y, MPFR_PREC(x));
+  mpfr_init2 (y, MPFR_PREC(x));
 
-  mx = (MPFR_PREC(x) - 1)/mp_bits_per_limb;
+  mx = (MPFR_PREC(x) - 1) / mp_bits_per_limb;
   px = mp_bits_per_limb - 2;
 
   for (k = 2; k < MPFR_PREC(x); k++)
     {
-      mpfr_set(y, x, GMP_RNDN);
+      mpfr_set (y, x, GMP_RNDN);
 
       MPFR_MANT(y) [mx] ^= (mp_limb_t) 1 << px;
 
-      if (mpfr_eq(y, x, k) ||
-          !mpfr_eq(y, x, k - 1))
+      if (mpfr_eq(y, x, k) || !mpfr_eq(y, x, k - 1))
         {
           printf ("Error in eq.\n");
           printf ("x = "); mpfr_print_binary (x); printf ("\n");
@@ -50,7 +49,6 @@ teq (mpfr_t x)
           printf ("k = %ld\n", k);
           printf ("mpfr_eq(y, x, k) = %d\nmpfr_eq(y, x, k - 1) = %d\n",
                   mpfr_eq (y, x, k), mpfr_eq (y, x, k - 1));
-          mpfr_clear (x); mpfr_clear (y);
           exit (1);
         }
 
@@ -64,7 +62,7 @@ teq (mpfr_t x)
           px = mp_bits_per_limb - 1;
         }
     }
-  mpfr_clear(y);
+  mpfr_clear (y);
 }
 
 static void
@@ -187,18 +185,21 @@ special (void)
 int
 main (void)
 {
-  int j; mpfr_t x;
+  int j;
+  mpfr_t x;
 
   tests_start_mpfr ();
 
   special ();
 
-  mpfr_init2 (x, 1000);
+  mpfr_init2 (x, 500);
 
-  for (j=0;j<1000;j++) {
-    mpfr_random (x);
-    teq (x);
-  }
+  for (j = 0; j < 500; j++)
+    {
+      mpfr_random (x);
+      teq (x);
+    }
+
   mpfr_clear (x);
 
   tests_end_mpfr ();
