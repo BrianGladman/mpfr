@@ -19,11 +19,11 @@ mpfr_sqrt(X, a, rnd_mode)
   /* use Newton's iteration x[n+1] = 1/2*(x[n]+a/x[n]),
      the error e[n] = x[n]-sqrt(a) satisfies e[n+1] <= e[n]/2/sqrt(a) */
   if (FLAG_NAN(a) || SIGN(a)<0) { SET_NAN(X); return; }
-  if (X==a) {
-    x = (mpfr_ptr) (*_mp_allocate_func) (sizeof(__mpfr_struct));
-    mpfr_init2(x, PREC(X));
-  }
-  else x=X;
+
+  x = (mpfr_ptr) (*_mp_allocate_func) (sizeof(__mpfr_struct));
+  mpfr_init2(x, PREC(X));
+  mpfr_set(x, X, rnd_mode);
+
   e = EXP(a)/2; if (2*e<EXP(a)) e++;
   /* now 2^(2*e-2) <= a < 2^(2*e) i.e. 1/4 <= a/2^(2e) < 1 */
   q = p = PREC(x);
@@ -42,7 +42,9 @@ mpfr_sqrt(X, a, rnd_mode)
       fprintf(stderr, "no convergence in mpfr_sqrt for a=%1.20e, rnd=%d\n",
 	      mpfr_get_d(a), rnd_mode); exit(1);
     }
-    mpfr_set_prec(t, q); mpfr_set_prec(x, q); mpfr_set_prec(u, q);
+    mpfr_set_prec(t, q); 
+    mpfr_set_prec(x, q); 
+    mpfr_set_prec(u, q);
     mpfr_set_ui(x, 1, GMP_RNDU);
     EXP(x) += e;
     n = (int) ceil(log((double) q)/log(2.0));
@@ -55,10 +57,8 @@ mpfr_sqrt(X, a, rnd_mode)
   mpfr_round(x, rnd_mode, p);
  youpi:
   mpfr_clear(t); mpfr_clear(u);
-  if (X==a) {
-    mpfr_set(X, x, rnd_mode);
-    mpfr_clear(x);
-  }
+  mpfr_set(X, x, rnd_mode);
+  mpfr_clear(x); (*_mp_free_func)(x, sizeof(__mpfr_struct)); 
 }
 
 
