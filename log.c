@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "gmp.h"
+#include "gmp-impl.h"
 #include "mpfr.h"
 
 
@@ -17,23 +18,32 @@ void mpfr_log(mpfr_ptr r, mpfr_srcptr a, unsigned char rnd_mode) {
   if (SIGN(a)<=0)
     { SET_NAN(r); return; }
 
+  /* If a is 1, let's return 0 */
+  if (mpfr_cmp_ui_2exp(a,1,0)==0){
+    SET_ZERO(r);
+    return;
+  }
+
+
   q=PREC(r);
-  x=mpfr_get_d(a);
   
   p=q+5;
   bool=1;
 
   while (bool==1) {
+    /*    printf("p : %i\n",p); */
+    x=mpfr_get_d(a);
     ref=exp(((double) p) *log(2)/2);
-    m=q/2 - EXP(a) - 2;
+    /*m=q/2 - EXP(a) - 2;*/
+    m=0;
     while (x<=ref) {
       m++;
       x*=2;
     }
-
-  /*  printf("m : %i\n",m); */
-  mpfr_init2(cst,p);
-  mpfr_init2(rapport,p);
+    
+    /*    printf("m : %i\n",m); */
+    mpfr_init2(cst,p);
+    mpfr_init2(rapport,p);
   mpfr_init2(agm,p);
   mpfr_init2(tmp1,p);
   mpfr_init2(tmp2,p);
@@ -51,18 +61,18 @@ void mpfr_log(mpfr_ptr r, mpfr_srcptr a, unsigned char rnd_mode) {
      mpfr_out_str(stdout,10,0,tmp2,GMP_RNDN);printf("\n"); */
 
   mpfr_mul_2exp(s,a,m,rnd_mode);
-  /*printf("s : \t");
-    mpfr_out_str(stdout,10,0,s,GMP_RNDN);printf("\n");*/
+  /*  printf("s : \t");
+    mpfr_out_str(stdout,10,0,s,GMP_RNDN);printf("\n"); */
 
   /*printf("div entre ");mpfr_out_str(stdout,10,0,tmp2,GMP_RNDN);printf(" et ");
-  mpfr_out_str(stdout,10,0,s,GMP_RNDN);printf("\n"); 
-  printf("div entre \n");
+    mpfr_out_str(stdout,10,0,s,GMP_RNDN);printf("\n"); */
+  /* printf("div entre \n"); 
   mpfr_print_raw(tmp2);printf("    et \n");
   mpfr_print_raw(s);  printf(" en arrondi \n"); */
 
   mpfr_div(rapport,tmp2,s,rnd_mode);
-  /*  printf("4/s : \t");
-      mpfr_out_str(stdout,10,0,rapport,GMP_RNDN);printf("\n"); */
+  /*printf("4/s : \t");
+    mpfr_out_str(stdout,10,0,rapport,GMP_RNDN);printf("\n");*/
  
   mpfr_agm(agm,tmp1,rapport,rnd_mode);
   /*printf("AG : \t");
@@ -73,24 +83,26 @@ void mpfr_log(mpfr_ptr r, mpfr_srcptr a, unsigned char rnd_mode) {
     mpfr_out_str(stdout,10,0,tmp1,GMP_RNDN);printf("\n");*/
  
   mpfr_pi(cst, rnd_mode);
-  /*printf("pi : \t");
-    mpfr_out_str(stdout,10,0,cst,GMP_RNDN);printf("\n");*/
+  /* printf("pi : \t");
+     mpfr_out_str(stdout,10,0,cst,GMP_RNDN);printf("\n");*/
   
   mpfr_div(tmp2,cst,tmp1,rnd_mode);
   /*printf("pi/2AG : \t");
-    mpfr_out_str(stdout,10,0,tmp2,GMP_RNDN);printf("\n");*/
+    mpfr_out_str(stdout,10,0,tmp2,GMP_RNDN);printf("\n"); */
  
   mpfr_log2(cst,rnd_mode);
   /*printf("log2 : \t");
-    mpfr_out_str(stdout,10,0,cst,GMP_RNDN);printf("\n");*/
- 
-  mpfr_mul(tmp1,cst,mm,rnd_mode);
+  mpfr_out_str(stdout,10,0,cst,GMP_RNDN);printf("\n");
+  printf("-m : \t");
+  mpfr_out_str(stdout,10,0,mm,GMP_RNDN);printf("\n"); */
+
+  mpfr_mul(tmp1,cst,mm,GMP_RNDN);
   /*printf("-mlog2 : \t");
     mpfr_out_str(stdout,10,0,tmp1,GMP_RNDN);printf("\n");*/
  
   mpfr_add(cst,tmp1,tmp2,rnd_mode);
-  /*printf("res : \t");
-    mpfr_out_str(stdout,10,0,cst,GMP_RNDN);printf("\n");*/
+  /*  printf("res : \t");
+      mpfr_out_str(stdout,10,0,cst,GMP_RNDN);printf("\n");*/
  
  
   if(mpfr_can_round(cst,p-4,rnd_mode,rnd_mode,q)==1) {
@@ -98,7 +110,7 @@ void mpfr_log(mpfr_ptr r, mpfr_srcptr a, unsigned char rnd_mode) {
     bool=0;
   }
   else {
-    printf("Avec plus de precisions calculer tu dois !!\n");
+    /* printf("Avec plus de precisions calculer tu dois !!\n");*/
     p+=5;
   }
 
