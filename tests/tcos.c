@@ -46,17 +46,54 @@ void check53 (double x, double cos_x, mp_rnd_t rnd_mode)
   mpfr_clear (c);
 }
 
+#define TEST_FUNCTION mpfr_cos
+#include "tgeneric.c"
+
 int
 main (int argc, char *argv[])
 {
-  unsigned int prec, err, yprec, n, p0 = 1, p1 = 100, N = 100;
-  mp_rnd_t rnd;
-  mpfr_t x, y, z, t;
+  mpfr_t x, y;
 
   mpfr_init (x);
   mpfr_init (y);
-  mpfr_init (z);
-  mpfr_init (t);
+
+  mpfr_set_prec (x, 30);
+  mpfr_set_prec (y, 30);
+  mpfr_set_str_raw (x, "1.00001010001101110010100010101e-1");
+  mpfr_cos (y, x, GMP_RNDU);
+  mpfr_set_str_raw (x, "1.10111100010101011110101010100e-1");
+  if (mpfr_cmp (y, x))
+    {
+      fprintf (stderr, "Error for prec=30, rnd=GMP_RNDU\n");
+      printf ("expected "); mpfr_print_raw (x); putchar ('\n');
+      printf ("     got "); mpfr_print_raw (y); putchar ('\n');
+      exit (1);
+    }
+
+  mpfr_set_prec (x, 59);
+  mpfr_set_prec (y, 59);
+  mpfr_set_str_raw (x, "1.01101011101111010011111110111111111011011101100111100011e-3");
+  mpfr_cos (y, x, GMP_RNDU);
+  mpfr_set_str_raw (x, "1.1111011111110010001001001011100111101110100010000010010011e-1");
+  if (mpfr_cmp (y, x))
+    {
+      fprintf (stderr, "Error for prec=59, rnd=GMP_RNDU\n");
+      printf ("expected "); mpfr_print_raw (x); putchar ('\n');
+      printf ("     got "); mpfr_print_raw (y); putchar ('\n');
+      exit (1);
+    }
+
+  mpfr_set_prec (x, 5);
+  mpfr_set_prec (y, 5);
+  mpfr_set_str_raw (x, "1.1100e-2");
+  mpfr_cos (y, x, GMP_RNDD);
+  mpfr_set_str_raw (x, "1.1100e-1");
+  if (mpfr_cmp (y, x))
+    {
+      fprintf (stderr, "Error for x=1.1100e-2, rnd=GMP_RNDD\n");
+      printf ("expected 1.1100e-1, got "); mpfr_print_raw (y); putchar ('\n');
+      exit (1);
+    }
 
   check53(0.0/0.0, 0.0/0.0, GMP_RNDN); 
   check53(1.0/0.0, 0.0/0.0, GMP_RNDN); 
@@ -74,50 +111,10 @@ main (int argc, char *argv[])
 
   check53 (1.00591265847407274059, 0.53531755997839769456,  GMP_RNDN);
 
-  /* generic test */
-  for (prec = p0; prec <= p1; prec++)
-    {
-      mpfr_set_prec (x, prec);
-      mpfr_set_prec (z, prec);
-      mpfr_set_prec (t, prec);
-      yprec = prec + 10;
-
-      for (n=0; n<N; n++)
-	{
-	  mpfr_random (x);
-	  rnd = random () % 4;
-	  mpfr_set_prec (y, yprec);
-	  mpfr_cos (y, x, rnd);
-	  err = (rnd == GMP_RNDN) ? yprec + 1 : yprec;
-	  if (mpfr_can_round (y, err, rnd, rnd, prec))
-	    {
-	      mpfr_set (t, y, rnd);
-	      mpfr_cos (z, x, rnd);
-	      if (mpfr_cmp (t, z))
-		{
-		  printf ("results differ for x=");
-		  mpfr_out_str (stdout, 2, prec, x, GMP_RNDN);
-		  printf (" prec=%u rnd_mode=%s\n", prec,
-			  mpfr_print_rnd_mode (rnd));
-		  printf ("   got ");
-		  mpfr_out_str (stdout, 2, prec, z, GMP_RNDN);
-		  putchar ('\n');
-		  printf ("   expected ");
-		  mpfr_out_str (stdout, 2, prec, t, GMP_RNDN);
-		  putchar ('\n');
-		  printf ("   approximation was ");
-		  mpfr_print_raw (y);
-		  putchar ('\n');
-		  exit (1);
-		}
-	    }
-	}
-    }
+  test_generic (1, 100, 100);
 
   mpfr_clear (x);
   mpfr_clear (y);
-  mpfr_clear (z);
-  mpfr_clear (t);
 
   return 0;
 }
