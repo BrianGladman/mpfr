@@ -1,0 +1,34 @@
+#!/bin/sh
+
+SYST=`uname -a | awk '{print $1$3}'`
+
+special=
+
+case $SYST in
+    SunOS5*)
+        dirname=solaris;;
+    Linux*)
+        special="-DLIBC211"; # for __setfpucw
+        dirname=linux;;
+    OSF*)
+        special="-mfp-rounding-mode=d -mieee-with-inexact";
+        dirname=alpha;;
+    SunOS4*)
+	dirname=sunos;;
+	*)
+        echo gmp n\'est pas compile pour le systeme $SYST. 
+        exit 0;;
+esac
+
+GMPDIR=/users/polka/logiciels/gmp/$dirname
+ODIR=/users/polka/logiciels/mpfr/C/msb_norm/o.$dirname
+export GMPDIR ODIR dirname special
+if [ "$1" = "tests" ]
+then 
+    cd tests; make all
+elif [ "$1" = "" ]
+then
+    make libmpfr.a
+else
+    make $*
+fi

@@ -1,0 +1,22 @@
+CC=gcc
+INCFLAGS=-I../../../../hanrot/gmp-2.0.2 -I../../../../hanrot/gmp-2.0.2/mpn
+LDFLAGS=../../../../hanrot/gmp-2.0.2/libgmp.a 
+CFLAGS=-g -DExp
+
+essai: libmpfr.a essai.c
+	$(CC) $(INCFLAGS) $(CFLAGS) -o essai essai.c libmpfr.a $(LDFLAGS)
+
+libmpfr.a: init.o set_d.o round.o
+	$(AR) cr libmpfr.a init.o set_d.o round.o
+
+clean: 
+	rm essai *.o *~ *.a
+
+init.o: init.c mpfr.h
+	$(CC) $(CFLAGS) $(INCFLAGS) -c init.c
+
+set_d.o: set_d.c mpfr.h
+	$(CC) $(CFLAGS) $(INCFLAGS) -c set_d.c
+
+round.o: round.c mpfr.h
+	$(CC) $(CFLAGS) $(INCFLAGS) -c round.c

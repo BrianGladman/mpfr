@@ -1,0 +1,28 @@
+Return-Path: <tege@matematik.su.se>
+X-Address: Department of Mathematics, Stockholm University 
+	      S-106 91  Stockholm
+	      SWEDEN
+X-Phone: int+46 8 162000
+X-Fax:   int+46 8 6126717
+X-Url:   http://www.matematik.su.se
+To: Paul.Zimmermann@loria.fr (Paul Zimmermann)
+Subject: Re: Paul Zimmermann: changing rounding mode on Alpha with gcc 
+In-reply-to: Your message of "Wed, 17 Feb 1999 17:44:33 +0100."
+             <199902171644.RAA03746@leopold.loria.fr> 
+Date: Wed, 17 Feb 1999 19:21:05 +0100
+From: Torbjorn Granlund <tege@matematik.su.se>
+
+  I once thought I had found a bug, but it was only the peculiar rounding
+  to nearest rule when we are just in the middle of two machine number,
+  where we round to the even lsb instead of rounding to infinity as we do
+  in math.
+
+Been there...  ;-) Note that it is simple to get this right with a single
+logical expression.  Perhaps this code,
+
+    roundup = (((m >> (EXP_BITS - 1)) & 1)
+               & (((m & STICKY_MASK) != 0) | ((m >> EXP_BITS) & 1)));
+
+from my P754 library shows the idea.
+
+Tobjörn
