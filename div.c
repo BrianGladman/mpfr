@@ -12,6 +12,10 @@ mpfr_ptr q; mpfr_srcptr n, d; unsigned char rnd_mode;
   mpfr_t eps, tmp, one; int expd, i, prec, precq, sh, guard, err;
   mp_limb_t cc;
 
+  if (q==n || q==d) {
+    printf(stderr, "destination equals source in mpfr_div\n");
+    exit(1);
+  }
 #ifdef DEBUG
   printf("enter mpfr_div, prec(q)=%d n=%1.20e prec(n)=%d d=%1.20e prec(d)=%d rnd=%d\n",PREC(q),mpfr_get_d(n),PREC(n),mpfr_get_d(d),PREC(d),rnd_mode); 
   printf("n="); mpfr_print_raw(n); putchar('\n');

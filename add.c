@@ -320,6 +320,10 @@ mpfr_ptr a; mpfr_srcptr b, c; unsigned char rnd_mode;
 {
   int diff_exp;
 
+  if (a==b || a==c) {
+    printf(stderr, "destination equals source in mpfr_add\n");
+    exit(1);
+  }
   diff_exp = EXP(b)-EXP(c);
   if (SIGN(b) != SIGN(c)) { /* signs differ, it's a subtraction */
     if (diff_exp<0) {
