@@ -192,7 +192,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       MPFR_EXP(a) = __mpfr_emin;
     }
 
-  if (sign_product * MPFR_SIGN(a) < 0)
+  if (MPFR_SIGN(a) != sign_product)
     MPFR_CHANGE_SIGN(a);
 
   return inexact;
