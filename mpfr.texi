@@ -3,7 +3,7 @@
 @setfilename mpfr.info
 @documentencoding ISO-8859-1
 @set VERSION 2.1.0
-@set UPDATED-MONTH October 2003
+@set UPDATED-MONTH April 2004
 @settitle MPFR @value{VERSION}
 @synindex tp fn
 @iftex
@@ -923,7 +923,7 @@ rounded to an integer in the direction @var{rnd}.
 @deftypefunx int mpfr_add_si (mpfr_t @var{rop}, mpfr_t @var{op1}, long int @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_add_z (mpfr_t @var{rop}, mpfr_t @var{op1}, mpz_t @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_add_q (mpfr_t @var{rop}, mpfr_t @var{op1}, mpq_t @var{op2}, mp_rnd_t @var{rnd})
-Set @var{rop} to @math{@var{op1} + @var{op2}} rounded in the direction @var{rnd}.
+Set @var{rop} to @math{@var{op1} + @var{op2}} rounded in the direction @var{rnd}. For types having no signed zero, it is considered unsigned (i.e. (+0) + 0 = (+0) and (-0) + 0 = (-0)).
 @end deftypefun
 
 @deftypefun int mpfr_sub (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
@@ -933,7 +933,7 @@ Set @var{rop} to @math{@var{op1} + @var{op2}} rounded in the direction @var{rnd}
 @deftypefunx int mpfr_sub_si (mpfr_t @var{rop}, mpfr_t @var{op1}, long int @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_sub_z (mpfr_t @var{rop}, mpfr_t @var{op1}, mpz_t @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_sub_q (mpfr_t @var{rop}, mpfr_t @var{op1}, mpq_t @var{op2}, mp_rnd_t @var{rnd})
-Set @var{rop} to @math{@var{op1} - @var{op2}} rounded in the direction @var{rnd}.
+Set @var{rop} to @math{@var{op1} - @var{op2}} rounded in the direction @var{rnd}. For types having no signed zero, it is considered unsigned (i.e. (+0) - 0 = (+0), (-0) - 0 = (-0), 0 - (+0) = (-0) and 0 - (-0) = (+0)).
 @end deftypefun
 
 @deftypefun int mpfr_mul (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
@@ -943,6 +943,8 @@ Set @var{rop} to @math{@var{op1} - @var{op2}} rounded in the direction @var{rnd}
 @deftypefunx int mpfr_mul_q (mpfr_t @var{rop}, mpfr_t @var{op1}, mpq_t @var{op2}, mp_rnd_t @var{rnd})
 Set @var{rop} to @math{@var{op1} @GMPtimes{} @var{op2}} rounded in the
 direction @var{rnd}.
+When a result is zero, its sign is the product of the signs of the operands
+(for types having no signed zero, it is considered positive).
 @end deftypefun
 
 @deftypefun int mpfr_div (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
@@ -1700,6 +1702,9 @@ contributed the original version of @file{mul_ui.c}, the @file{gmp_op.c}
 file, and helped to the Windows porting.
 Jean-Luc R@'emy contributed the @code{mpfr_zeta} code.
 Ludovic Meunier helped in the design of the @code{mpfr_erf} code.
+Patrick P@'elissier has worked on low-precision optimizations
+(new internal format), on debugging (specially the file @file{gmp_op.c})
+and on some other functions (@code{MPFR_DECL_INIT}, @code{mpfr_set_sj}, ...).
 
 The development of the MPFR library would not have been possible without the
 continuous support of LORIA, INRIA and INRIA Lorraine.

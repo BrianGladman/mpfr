@@ -40,7 +40,7 @@ special (void)
 {
   mpfr_t x, y;
   mpq_t z;
-  int res;
+  int res = 0;
 
   mpfr_init (x);
   mpfr_init (y);
@@ -109,6 +109,78 @@ special (void)
   mpq_clear (z);
   mpfr_clear (x);
   mpfr_clear (y);
+}
+
+static void
+check_for_zero ()
+{
+  /* Check that 0 is unsigned! */
+  mpq_t q;
+  mpz_t z;
+  mpfr_t x;
+  mp_rnd_t r;
+  mpfr_sign_t i;
+
+  mpfr_init (x);
+  mpz_init (z);
+  mpq_init (q);
+
+  mpz_set_ui (z, 0);
+  mpq_set_ui (q, 0, 1);
+
+  MPFR_SET_ZERO (x);
+  for(r = 0 ; r < GMP_RND_MAX ; r++)
+    {
+      for (i = MPFR_SIGN_NEG ; i <= MPFR_SIGN_POS ; 
+	   i+=MPFR_SIGN_POS-MPFR_SIGN_NEG)
+	{
+	  MPFR_SET_SIGN(x, i);
+	  mpfr_add_z (x, x, z, r);
+	  if (!MPFR_IS_ZERO(x) || MPFR_SIGN(x)!=i)
+	    {
+	      printf("GMP Zero errors for add_z & rnd=%s & s=%d\n", 
+		     mpfr_print_rnd_mode(r), i);
+	      mpfr_dump (x);
+	      exit (1);
+	    }
+	  mpfr_sub_z (x, x, z, r);
+	  if (!MPFR_IS_ZERO(x) || MPFR_SIGN(x)!=i)
+	    {
+	      printf("GMP Zero errors for sub_z & rnd=%s & s=%d\n",
+		     mpfr_print_rnd_mode(r), i);
+	      mpfr_dump (x);
+	      exit (1);
+	    }
+	  mpfr_mul_z (x, x, z, r);
+          if (!MPFR_IS_ZERO(x) || MPFR_SIGN(x)!=i)
+            {
+              printf("GMP Zero errors for mul_z & rnd=%s & s=%d\n",
+                     mpfr_print_rnd_mode(r), i);
+              mpfr_dump (x);
+	      exit (1);
+            }
+          mpfr_add_q (x, x, q, r);
+          if (!MPFR_IS_ZERO(x) || MPFR_SIGN(x)!=i)
+            {
+              printf("GMP Zero errors for add_q & rnd=%s & s=%d\n",
+                     mpfr_print_rnd_mode(r), i);
+              mpfr_dump (x);
+              exit (1);
+            }
+          mpfr_sub_q (x, x, q, r);
+          if (!MPFR_IS_ZERO(x) || MPFR_SIGN(x)!=i)
+            {
+              printf("GMP Zero errors for sub_q & rnd=%s & s=%d\n",
+                     mpfr_print_rnd_mode(r), i);
+              mpfr_dump (x);
+              exit (1);
+             }
+	}
+    }
+
+  mpq_clear (q);
+  mpz_clear (z);
+  mpfr_clear (x);
 }
 
 static void
@@ -523,6 +595,8 @@ main (int argc, char *argv[])
   test_cmp_z (2, 100, 100);
   test_cmp_q (2, 100, 100);
   test_cmp_f (2, 100, 100);
+
+  check_for_zero ();
 
   tests_end_mpfr ();
   return 0;

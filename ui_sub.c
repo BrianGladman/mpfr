@@ -47,7 +47,7 @@ mpfr_ui_sub (mpfr_ptr y, unsigned long int u, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	/* u - 0 = u */
 	return mpfr_set_ui(y, u, rnd_mode);
     }
-  else if (u)
+  else if (MPFR_LIKELY(u))
     {
       MPFR_TMP_INIT1 (up, uu, BITS_PER_MP_LIMB);
       MPFR_ASSERTN(u == (mp_limb_t) u);
@@ -57,5 +57,6 @@ mpfr_ui_sub (mpfr_ptr y, unsigned long int u, mpfr_srcptr x, mp_rnd_t rnd_mode)
       return mpfr_sub (y, uu, x, rnd_mode);
     }
   else
+    /* u == 0 BUT x != 0 */
     return mpfr_neg (y, x, rnd_mode); /* if u=0, then set y to -x */
 }

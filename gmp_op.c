@@ -53,6 +53,10 @@ mpfr_add_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd_mode)
 {
   mpfr_t t;
   int res;
+  
+  if (MPFR_UNLIKELY(mpz_sgn(z) == 0))
+    return mpfr_set (y, x, rnd_mode);
+
   mpfr_init2 (t, mpz_sizeinbase(z, 2)  + MPFR_PREC_MIN );
   res = mpfr_set_z (t, z, rnd_mode);
   MPFR_ASSERTD (res == 0);
@@ -66,6 +70,9 @@ mpfr_sub_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z,mp_rnd_t rnd_mode)
 {
   mpfr_t t;
   int res;
+
+  if (MPFR_UNLIKELY(mpz_sgn(z) == 0))
+    return mpfr_set (y, x, rnd_mode);
   mpfr_init2 (t, mpz_sizeinbase(z, 2)  + MPFR_PREC_MIN );
   res = mpfr_set_z (t, z, rnd_mode);
   MPFR_ASSERTD (res == 0);
@@ -139,7 +146,11 @@ mpfr_add_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mp_rnd_t rnd_mode)
       else
 	{
 	  MPFR_ASSERTD( MPFR_IS_ZERO(x));
-	  return mpfr_set_q (y, z, rnd_mode);
+	  
+	  if (MPFR_UNLIKELY( mpq_sgn(z) == 0))
+	    return mpfr_set (y, x, rnd_mode); /* signed 0 - Unsigned 0 */
+	  else
+	    return mpfr_set_q (y, z, rnd_mode);
 	}
     }
 
@@ -203,13 +214,19 @@ mpfr_sub_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z,mp_rnd_t rnd_mode)
       else
         {
           MPFR_ASSERTD( MPFR_IS_ZERO(x));
-	  if (rnd_mode == GMP_RNDU) 
-	    rnd_mode = GMP_RNDD;
-	  else if (rnd_mode == GMP_RNDD)
-	    rnd_mode = GMP_RNDU;
-          res =  mpfr_set_q (y, z, rnd_mode);
-	  MPFR_CHANGE_SIGN (y);
-	  return -res;
+	  
+          if (MPFR_UNLIKELY( mpq_sgn(z) == 0))
+            return mpfr_set (y, x, rnd_mode); /* signed 0 - Unsigned 0 */
+          else
+	    {
+	      if (rnd_mode == GMP_RNDU) 
+		rnd_mode = GMP_RNDD;
+	      else if (rnd_mode == GMP_RNDD)
+		rnd_mode = GMP_RNDU;
+	      res =  mpfr_set_q (y, z, rnd_mode);
+	      MPFR_CHANGE_SIGN (y);
+	      return -res;
+	    }
         }
     }
 

@@ -26,7 +26,7 @@ MA 02111-1307, USA. */
 int
 mpfr_sub_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 {
-  if (u)  /* if u=0, do nothing */
+  if (MPFR_LIKELY(u!= 0))  /* if u=0, do nothing */
   {
     mpfr_t uu;
     mp_limb_t up[1];

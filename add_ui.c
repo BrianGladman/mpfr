@@ -25,7 +25,7 @@ MA 02111-1307, USA. */
 int
 mpfr_add_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 {
-  if (u)  /* if u=0, do nothing */
+  if (MPFR_LIKELY(u != 0) )  /* if u=0, do nothing */
     {
       mpfr_t uu;
       mp_limb_t up[1];
@@ -46,5 +46,6 @@ mpfr_add_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
       return mpfr_check_range(y, inex, rnd_mode);
     }
   else
+    /* (unsigned long) 0 is assumed to be a real 0 (unsigned) */
     return mpfr_set (y, x, rnd_mode);
 }
