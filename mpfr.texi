@@ -750,8 +750,10 @@ to a mpfr floating-point number.
 Set @var{x} to the value of the string @var{s} in base @var{base} (between
 2 and 36), rounded in direction @var{rnd} to the precision of @var{x}.
 The exponent is read in decimal.
-This function returns 0 if the base is valid and if the entire string up to
-the final '\0' is a valid number in base @var{base}, and @minus{}1 otherwise.
+This function returns @minus{}1 if an internal overflow occurred (for
+instance, because the exponent is too large). Otherwise it returns 0
+if the base is valid and if the entire string up to the final '\0' is
+a valid number in base @var{base}, and 1 if the input is incorrect.
 @end deftypefun
 
 @deftypefun void mpfr_set_str_raw (mpfr_t @var{x}, char *@var{s})
