@@ -27,11 +27,12 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-// #define DEBUG
+// #define MPFR_DEBUG_LEVEL 30
+#if MPFR_DEBUG_LEVEL > 20
+void affiche_mp(mp_srcptr, mp_size_t); 
 
-#ifdef DEBUG
 void 
-affiche_mp(mp_ptr z, mp_size_t length)
+affiche_mp(mp_srcptr z, mp_size_t length)
 {
   int k; 
 
@@ -43,26 +44,30 @@ affiche_mp(mp_ptr z, mp_size_t length)
 }
 #endif
 
-void
+int
 #if __STDC__
-mpfr_div (mpfr_ptr r, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
+mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
 #else
-mpfr_div (r, u, v, rnd_mode)
-     mpfr_ptr r;
+mpfr_div (q, u, v, rnd_mode)
+     mpfr_ptr q;
      mpfr_srcptr u;
      mpfr_srcptr v;
      mp_rnd_t rnd_mode;
 #endif
 {
-  mp_srcptr up, vp;
-  mp_ptr rp, tp, tp0, tmp, tmp2;
-  mp_size_t usize, vsize, drsize, dsize;
-  mp_size_t oldrsize, rsize, sign_quotient, err;
-  mp_limb_t q_limb;
-  mp_exp_t rexp;
-  long k, t; 
-  unsigned long cc = 0, rw, nw; 
-  int can_round = 0, sh; 
+  mp_srcptr up, vp, bp;
+  mp_size_t usize, vsize;  
+
+  mp_ptr ap, qp, rp; 
+  mp_size_t asize, bsize, qsize, rsize; 
+  mp_exp_t qexp;
+
+  mp_rnd_t rnd_mode1, rnd_mode2; 
+
+  mp_size_t err, k;
+  int inex, sh, can_round, can_round2, near, sign_quotient;
+  unsigned int cc = 0, rw; 
+
   TMP_DECL (marker);
 
 
@@ -72,49 +77,52 @@ mpfr_div (r, u, v, rnd_mode)
    *                                                                        *
    **************************************************************************/
 
-  if (MPFR_IS_NAN(u) || MPFR_IS_NAN(v)) { MPFR_SET_NAN(r); return; }
+  if (MPFR_IS_NAN(u) || MPFR_IS_NAN(v)) { MPFR_SET_NAN(q); return 1; }
 
-  MPFR_CLEAR_NAN(r);
+  MPFR_CLEAR_NAN(q);
 
   if (MPFR_IS_INF(u)) 
     { 
       if (MPFR_IS_INF(v)) 
-	MPFR_SET_NAN(r);
+	{ MPFR_SET_NAN(q); return 1; }
       else
 	{ 
-	  MPFR_SET_INF(r); 
-	  if (MPFR_SIGN(r) != MPFR_SIGN(u) * MPFR_SIGN(v)) 
-	    MPFR_CHANGE_SIGN(r);
+	  MPFR_SET_INF(q); 
+	  if (MPFR_SIGN(q) != MPFR_SIGN(u) * MPFR_SIGN(v)) 
+	    MPFR_CHANGE_SIGN(q);
+	  return 0; 
 	}
-      return;
     }
   else 
     if (MPFR_IS_INF(v)) 
       {
-	MPFR_CLEAR_INF(r);
-	MPFR_SET_ZERO(r); 
-	if (MPFR_SIGN(r) != MPFR_SIGN(u) * MPFR_SIGN(v)) 
-	  MPFR_CHANGE_SIGN(r);
-	return; 
+	MPFR_CLEAR_INF(q);
+	MPFR_SET_ZERO(q); 
+	if (MPFR_SIGN(q) != MPFR_SIGN(u) * MPFR_SIGN(v)) 
+	  MPFR_CHANGE_SIGN(q);
+	return 0; 
       }
 
-  MPFR_CLEAR_INF(r); /* clear Inf flag */
+  MPFR_CLEAR_INF(q); /* clear Inf flag */
 
   if (!MPFR_NOTZERO(v))
     {
       if (!MPFR_NOTZERO(u)) 
-	{ MPFR_SET_NAN(r); return; }
+	{ MPFR_SET_NAN(q); return 1; }
       else
 	{
-	  MPFR_SET_INF(r); 
-	  if (MPFR_SIGN(r) != MPFR_SIGN(v) * MPFR_SIGN(u)) 
-	    MPFR_CHANGE_SIGN(r); 
-	  return;
+	  MPFR_SET_INF(q); 
+	  if (MPFR_SIGN(q) != MPFR_SIGN(v) * MPFR_SIGN(u)) 
+	    MPFR_CHANGE_SIGN(q); 
+	  return 0;
 	}
     }
   
-  if (!MPFR_NOTZERO(u)) { MPFR_SET_ZERO(r); return; }
+  if (!MPFR_NOTZERO(u)) { MPFR_SET_ZERO(q); return 0; }
 
+  sign_quotient = ((MPFR_SIGN(u) * MPFR_SIGN(v) > 0) ? 1 : -1); 
+  if (sign_quotient * MPFR_SIGN(q) < 0) { MPFR_CHANGE_SIGN(q); } 
+  
   /**************************************************************************
    *                                                                        *
    *              End of the part concerning special values.                *
@@ -122,7 +130,7 @@ mpfr_div (r, u, v, rnd_mode)
    **************************************************************************/
 
 
-#ifdef DEBUG
+#if MPFR_DEBUG_LEVEL > 20
   printf("u = "); mpfr_out_str(stdout, 2, 0, u, GMP_RNDN); printf("\n"); 
   printf("v = "); mpfr_out_str(stdout, 2, 0, v, GMP_RNDN); printf("\n"); 
 #endif
@@ -131,11 +139,10 @@ mpfr_div (r, u, v, rnd_mode)
   vp = MPFR_MANT(v);
 
   TMP_MARK (marker);
+  usize = MPFR_ESIZE(u); 
+  vsize = MPFR_ESIZE(v); 
 
-  usize = (MPFR_PREC(u) - 1)/BITS_PER_MP_LIMB + 1; 
-  vsize = (MPFR_PREC(v) - 1)/BITS_PER_MP_LIMB + 1; 
-
-#ifdef DEBUG
+#if MPFR_DEBUG_LEVEL > 20
   printf("Entering division : "); 
   affiche_mp(up, usize); 
   affiche_mp(vp, vsize); 
@@ -149,79 +156,108 @@ mpfr_div (r, u, v, rnd_mode)
    *                                                                        *
    **************************************************************************/
 
-  dsize = (MPFR_PREC(r) + 3)/BITS_PER_MP_LIMB + 1; 
-  drsize = MPFR_PREC(r)/BITS_PER_MP_LIMB + 1 + dsize; 
+  /* The dividend is a, length asize. The divisor is b, length bsize. */
 
-  /* Compute effective dividend */
-  if (vsize < dsize) { dsize = vsize; }
-  tmp = (mp_ptr) vp + vsize - dsize; 
+  qsize = (MPFR_PREC(q) + 3)/BITS_PER_MP_LIMB + 1; 
+  if (vsize < qsize)
+    {
+      bsize = vsize; 
+      bp = vp; 
+    }
+  else 
+    {
+      bsize = qsize; 
+      bp = (mp_srcptr)vp + vsize - qsize; 
+    }
 
-  /* Compute effective divisor. One extra bit allowed for RNDN. */
-  
-  tp0 = (mp_ptr) TMP_ALLOC(drsize * BYTES_PER_MP_LIMB); 
-  if (usize >= drsize) 
-    MPN_COPY (tp0, up + usize - drsize, drsize); 
-  else {
-    MPN_COPY (tp0 + drsize - usize, up, usize); 
-    MPN_ZERO (tp0, drsize - usize); 
-  }
+  asize = bsize + qsize; 
+  ap = (mp_ptr) TMP_ALLOC(asize * BYTES_PER_MP_LIMB); 
+  if (asize > usize)
+    {
+      MPN_COPY(ap + asize - usize, up, usize); 
+      MPN_ZERO(ap, asize - usize); 
+    }
+  else
+    MPN_COPY(ap, up + usize - asize, asize); 
 
   /* Allocate limbs for quotient. */
-  rp = (mp_ptr) TMP_ALLOC ((drsize - dsize + 1) * BYTES_PER_MP_LIMB);
-      
-#ifdef DEBUG
-  printf("Dividing : "); 
-  affiche_mp(tp0, drsize); 
-  printf(" by "); 
-  affiche_mp(tmp, dsize); 
-  printf(".\n"); 
+  qp = (mp_ptr) TMP_ALLOC ((qsize + 1) * BYTES_PER_MP_LIMB);
+  
+#if MPFR_DEBUG_LEVEL > 20
+  printf("Dividing : "); affiche_mp(ap, asize); printf(" by "); 
+  affiche_mp(bp, bsize); printf(".\n"); 
 #endif
       
-#if (__GNU_MP_VERSION < 3)
-  q_limb = mpn_divrem (rp, 0, tp0, drsize, tmp, dsize);
-  tp = tp0;
-#else 
-  tmp2 = (mp_ptr) TMP_ALLOC (dsize * BYTES_PER_MP_LIMB);
-  mpn_tdiv_qr(rp, tmp2, 0, tp0, drsize, tmp, dsize);
-  q_limb = rp[drsize - dsize];
-  tp = tmp2;
-#endif
+  rp = (mp_ptr) TMP_ALLOC (bsize * BYTES_PER_MP_LIMB);
+  rsize = bsize; 
+
+  mpn_tdiv_qr(qp, rp, 0, ap, asize, bp, bsize);
   
   /* Estimate number of correct bits. */
-  err = (drsize - dsize) * BITS_PER_MP_LIMB; 
-  if (drsize < usize) err --; 
-  if (dsize < vsize) err -= 2; 
 
-#ifdef DEBUG
-  printf("The result is : \n"); 
-  printf("Quotient : "); 
+  err = qsize * BITS_PER_MP_LIMB; 
+  if (bsize < vsize) err -= 2; else if (asize < usize) err --; 
 
-  affiche_mp(rp, drsize - dsize + 1); 
- 
-  printf("Remainder : "); 
-  affiche_mp(tp, dsize); 
-
+#if MPFR_DEBUG_LEVEL > 20
+  printf("Quotient : "); affiche_mp(qp, qsize + 1); 
+  printf("Remainder : "); affiche_mp(rp, bsize); 
   printf("Number of correct bits = %lu\n", err); 
 #endif
       
-  /* Compute sign and exponent. Correction might occur just below. */
-  sign_quotient = ((MPFR_SIGN(u) * MPFR_SIGN(v) > 0) ? 1 : -1); 
-  rexp = MPFR_EXP(u) - MPFR_EXP(v);
-  rsize = drsize - dsize;
-  
-  /* We want to check if rounding is possible. Have to mimic normalization */
-  if (q_limb) { sh = -1; } 
-  else { count_leading_zeros(sh, rp[rsize - 1]); } 
-  
-  can_round = mpfr_can_round_raw(rp, rsize + 1, sign_quotient, err + sh + 
-				 BITS_PER_MP_LIMB, GMP_RNDN, rnd_mode, 
-				 MPFR_PREC(r) + sh + BITS_PER_MP_LIMB); 
+  /* We want to check if rounding is possible, but without normalizing
+     because we might have to divide again if rounding is impossible, or
+     if the result might be exact. We have however to mimic normalization */
 
-  if (!can_round && (drsize < usize || dsize < vsize)) 
+  if (qp[qsize]) { sh = -1; } 
+  else { count_leading_zeros(sh, qp[qsize - 1]); } 
+  
+  /* 
+     To detect asap if the result is inexact, so as to avoid doing the 
+     division completely, we perform the following check :
+
+     - if rnd_mode == GMP_RNDN, and the result is exact, we are unable
+     to round simultaneously to zero and to infinity ; 
+
+     - if rnd_mode == GMP_RNDN, and if we can round to zero with one extra
+     bit of precision, we can decide rounding. Hence in that case, check
+     as in the case of GMP_RNDN, with one extra bit. Note that in the case
+     of close to even rounding we shall do the division completely, but
+     this is necessary anyway : we need to know whether this is really
+     even rounding or not.
+  */
+
+  if (rnd_mode == GMP_RNDN)
+    { rnd_mode1 = GMP_RNDZ; near = 1; }
+  else 
+    { rnd_mode1 = rnd_mode; near = 0; }
+
+  sh += near; 
+  can_round = mpfr_can_round_raw(qp, qsize + 1, sign_quotient, err + sh + 
+				 BITS_PER_MP_LIMB, GMP_RNDN, rnd_mode1, 
+				 MPFR_PREC(q) + sh + BITS_PER_MP_LIMB); 
+
+  switch (rnd_mode1) {
+  case GMP_RNDU : rnd_mode2 = GMP_RNDD; break; 
+  case GMP_RNDD : rnd_mode2 = GMP_RNDU; break; 
+  case GMP_RNDZ : rnd_mode2 = sign_quotient == 1 ? GMP_RNDU : GMP_RNDD; break;
+  default : rnd_mode2 = GMP_RNDZ; 
+  }
+
+  can_round2 = mpfr_can_round_raw(qp, qsize + 1, sign_quotient, err + sh + 
+				  BITS_PER_MP_LIMB, GMP_RNDN, rnd_mode2, 
+				  MPFR_PREC(q) + sh + BITS_PER_MP_LIMB); 
+  
+  sh -= near; 
+  
+  /* If either can_round or can_round2 is 0, either we cannot round or
+     the result might be exact. If asize >= usize and bsize >= vsize, we
+     can just check this by looking at the remainder. Otherwise, we
+     have to correct our first approximation. */
+
+  if ((!can_round || !can_round2) && (asize < usize || bsize < vsize)) 
     {
-      mp_size_t ulrsize; 
       int b = 0; 
-      mp_ptr rp2, ulorem, ulorem2; 
+      mp_ptr rem, rem2; 
 
   /**************************************************************************
    *                                                                        *
@@ -231,166 +267,206 @@ mpfr_div (r, u, v, rnd_mode)
    *   thus u - v * rp = tp + ulo - rp*vlo, that we shall divide by v.      *
    *                                                                        *
    **************************************************************************/
-#ifdef DEBUG
+#if MPFR_DEBUG_LEVEL > 20
       printf("Using the full u and v.\n");
 #endif
       
-      if (usize > drsize)
-	  ulrsize = usize - drsize + dsize; 
-	  // store the low part of u and the remainder. 
-      else ulrsize = dsize; // just store the remainder. 
+      rsize = qsize + 1 + 
+	      (usize - asize > vsize - bsize  
+	       ? usize - asize  
+	       : vsize - bsize); 
 
-      if (vsize > dsize) ulrsize++; 
+      /*
+	TODO : One operand is probably enough, but then we have to 
+	perform one further comparison (compute first vlo * q, 
+	try to substract r, try to substract ulo. Which is best ? 
+	NB : ulo and r do not overlap. Draw advantage of this 
+	[eg. HI(vlo*q) = r => compare LO(vlo*q) with b.]
+      */
 
-      ulorem = TMP_ALLOC(ulrsize * BYTES_PER_MP_LIMB);
-      ulorem2 = TMP_ALLOC(ulrsize * BYTES_PER_MP_LIMB);
-      ulorem[ulrsize - 1] = ulorem2 [ulrsize - 1] = 0; 
+      rem = TMP_ALLOC(rsize * BYTES_PER_MP_LIMB);
+      rem2 = TMP_ALLOC(rsize * BYTES_PER_MP_LIMB);
 
-      if (dsize < vsize)
+      rem[rsize - 1] = rem2 [rsize - 1] = 0; 
+
+      if (bsize < vsize)
 	{
-	  mp_size_t lg = vsize + rsize - dsize + 1; 
-
-	  if (rsize > vsize - dsize)
-	    mpn_mul(ulorem + ulrsize - lg, rp, rsize, vp, vsize - dsize);
+	  /* Compute vlo * q */
+	  if (qsize + 1 > vsize - bsize)
+	    mpn_mul(rem + rsize - vsize - qsize - 1 + bsize, 
+		    qp, qsize + 1, vp, vsize - bsize);
 	  else
-	    mpn_mul(ulorem + ulrsize - lg, vp, vsize - dsize, rp, rsize);
+	    mpn_mul(rem + rsize - vsize - qsize - 1 + bsize, 
+		    vp, vsize - bsize, qp, qsize + 1);
 
-	  MPN_ZERO(ulorem, ulrsize - lg); 
+	  MPN_ZERO(rem, rsize - vsize - qsize - 1 + bsize); 
 	}
-      else MPN_ZERO(ulorem, ulrsize); 
+      else MPN_ZERO(rem, rsize); 
 
-#ifdef DEBUG
-      printf("vlo * q: "); 
-      affiche_mp(ulorem, ulrsize); 
+#if MPFR_DEBUG_LEVEL > 20
+      printf("vlo * q: "); affiche_mp(rem, rsize); 
 #endif 
      
-      MPN_COPY(ulorem2 + ulrsize - 1 - dsize, tp, dsize);      
-      if (drsize < usize) 
-	MPN_COPY(ulorem2, up, usize - drsize); 
+      /* Compute ulo + r. The two of them do not overlap. */
+      MPN_COPY(rem2 + rsize - 1 - qsize, rp, bsize);
+    
+      if (asize < usize) 
+	MPN_COPY(rem2 + rsize - 1 - qsize - usize + asize, 
+		 up, usize - asize); 
 
-#ifdef DEBUG
-      printf("(b = %d) ulo + r: ", b); 
-      affiche_mp(ulorem2, ulrsize); 
+      MPN_ZERO(rem2, rsize - 1 - qsize - usize + asize); 
+
+#if MPFR_DEBUG_LEVEL > 20
+      printf("ulo + r: "); affiche_mp(rem2, rsize); 
 #endif
       
-      if (mpn_cmp(ulorem2, ulorem, ulrsize) > 0)
-	mpn_sub_n(ulorem, ulorem2, ulorem, ulrsize); 
+      b = 0;       
+      if (mpn_cmp(rem2, rem, rsize) >= 0)
+	{
+	  /* Positive correction is at most 1. */
+
+	  mpn_sub_n(rem, rem2, rem, rsize); 
+	  if (rem[rsize - 1] || 
+	      mpn_cmp(rem + rsize - vsize - 1, vp, vsize) >= 0)
+	    {
+	      rem[rsize - 1] -= 
+		mpn_sub_n(rem + rsize - vsize - 1, 
+			  rem + rsize - vsize - 1, 
+			  vp, vsize); 
+	      qp[qsize] -= mpn_add_1(qp, qp, qsize, 1); 
+	    }
+	}
       else 
 	{ 
-	  ulorem2[ulrsize - 1] = 
-	    mpn_add_n(ulorem2 + ulrsize - vsize - 1, 
-		      ulorem2 + ulrsize - vsize - 1, vp, vsize); 
-
-	  if (mpn_cmp(ulorem2, ulorem, ulrsize) < 0)
+	  /* Negative correction is at most 3 */
+	  do 
 	    {
-	      b = 2; 
-	      ulorem2[ulrsize - 1] += 
-		mpn_add_n(ulorem2 + ulrsize - vsize - 1, 
-			  ulorem2 + ulrsize - vsize - 1, vp, vsize); 
+	      b++; 
+	      rem2[rsize - 1] += 
+		mpn_add_n(rem2 + rsize - vsize - 1, 
+			  rem2 + rsize - vsize - 1, vp, vsize); 
+#if MPFR_DEBUG_LEVEL > 20
+  printf("(b = %d) ulo + r + b*v: ", b); 
+  affiche_mp(rem2, rsize); 
+#endif      
 	    }
-	  else b = 1; 
-
-	  mpn_sub_n(ulorem, ulorem2, ulorem, ulrsize); 
+	  while (mpn_cmp(rem2, rem, rsize) < 0);
+ 
+	  qp[qsize] -= mpn_sub_1(qp, qp, qsize, b); 
+	  mpn_sub_n(rem, rem2, rem, rsize); 
 	}
 	  
-#ifdef DEBUG
-  printf("(b = %d) ulo + r - vlo * q: ", b); 
-  affiche_mp(ulorem, ulrsize); 
-#endif
-     
-      rp2 = (mp_ptr) TMP_ALLOC((ulrsize - vsize + 1) * BYTES_PER_MP_LIMB); 
-
-#if (__GNU_MP_VERSION < 3)
-      q_limb = mpn_divrem (rp2, 0, ulorem, ulrsize, vp, vsize);
-      tp = ulorem; 
-#else 
-      tmp2 = (mp_ptr) TMP_ALLOC (vsize * BYTES_PER_MP_LIMB);
-      mpn_tdiv_qr(rp2, tmp2, 0, ulorem, ulrsize, vp, vsize);
-      tp = tmp2; 
+#if MPFR_DEBUG_LEVEL > 20
+      printf("(b = %d) |ulo + r - vlo * q|: ", b); 
+      affiche_mp(rem, rsize); 
 #endif
 
-      if (!b)
-	mpn_add_1(rp, rp, rsize, rp2[ulrsize - vsize]);
-      else
-	mpn_sub_1(rp, rp, rsize, b); 
-
-      dsize = vsize; /* The length of the remainder, in the end of the code */
+      if (qp[qsize]) { sh = -1; } 
+      else { count_leading_zeros(sh, qp[qsize - 1]); } 
+      err = BITS_PER_MP_LIMB * qsize; 
+      rp = rem; 
     }
-
+  
   /**************************************************************************
    *                                                                        *
    *                       Final stuff (rounding and so.)                   *
-   *                                                                        *
+   *  From now on : qp is the quotient [size qsize], rp the remainder       *
+   *  [size rsize].                                                         *
    **************************************************************************/
 
-  if (q_limb)
+  qexp = MPFR_EXP(u) - MPFR_EXP(v);
+
+  if (qp[qsize]) 
+    /* Hack : qp[qsize] is 0, 1 or 2, hence if not 0, = 2^(qp[qsize] - 1). */
     {
-      mpn_rshift(rp, rp, rsize, 1);
-      rp[rsize - 1] |= (mp_limb_t)1 << (BITS_PER_MP_LIMB - 1); rexp ++; 
+      mpn_rshift(qp, qp, qsize, qp[qsize]);
+      qp[qsize - 1] |= MP_LIMB_T_HIGHBIT; qexp += qp[qsize]; 
     }
   else
-    if (sh) { mpn_lshift(rp, rp, rsize, sh); rexp -= sh; }
+    if (sh) { mpn_lshift(qp, qp, qsize, sh); qexp -= sh; }
   
-  oldrsize = rsize;
-  rsize = (MPFR_PREC(r) - 1)/BITS_PER_MP_LIMB + 1;
+  cc = mpfr_round_raw_generic(qp, qp, err, (sign_quotient == -1 ? 1 : 0),
+			      MPFR_PREC(q), rnd_mode, &inex, 1);      
 
-  if (can_round) /* Lazy case. */
+  qp += qsize - MPFR_ESIZE(q); /* 0 or 1 */
+  qsize = MPFR_ESIZE(q); 
+
+  /* 
+     At that point, either we were able to round from the beginning, 
+     and know thus that the result is inexact. 
+
+     Or we have performed a full division. In that case, we might still
+     be wrong if both
+     - the remainder is nonzero ; 
+     - we are rounding to infinity or to nearest (the nasty case of even 
+     rounding).
+     - inex = 0, meaning that the non-significant bits of the quotients are 0,
+     except when rounding to nearest (the nasty case of even rounding again).
+  */
+  
+  if (!can_round || !can_round2) /* Lazy case. */
     {
-      cc = mpfr_round_raw(rp, rp, err, (sign_quotient == -1 ? 1 : 0),
-			  MPFR_PREC(r), rnd_mode, NULL);
-    }
-  else {
-    rp += oldrsize-rsize;
-    if ((rnd_mode == GMP_RNDD && sign_quotient == -1) 
-	|| (rnd_mode == GMP_RNDU && sign_quotient == 1)
-	|| (rnd_mode == GMP_RNDN))
-      {
-	/* We cannot round, so that the last bits of the quotient
-	   have to be zero; just look if the remainder is nonzero */
+      if (inex == 0) 
+	{
+	  k = rsize - 1; 
+	  while (k >= 0) { if (rp[k]) break; k--; }
 
-	k = dsize - 1; 
-	while (k >= 0) { if (tp[k]) break; k--; }
-	if (k >= 0) 
+	  if (k >= 0) /* Remainder is nonzero. */ 
+	    {
+	      if ((rnd_mode == GMP_RNDD && sign_quotient == -1) 
+		  || (rnd_mode == GMP_RNDU && sign_quotient == 1))
+		/* Rounding to infinity. */
+		{
+		  inex = sign_quotient; 
+		  cc = 1; 
+		}
+	      /* rounding to zero. */
+	      else inex = -sign_quotient; 
+	    }
+	}
+      else /* We might have to correct an even rounding if remainder
+	      is nonzero and if even rounding was towards 0. */
+	if (rnd_mode == GMP_RNDN && (inex == 2 || inex == -2))
 	  {
-	    t = MPFR_PREC(r) & (BITS_PER_MP_LIMB - 1); 
-	    if (t)
-	      cc = mpn_add_1(rp, rp, rsize, 
-			     (mp_limb_t)1 << (BITS_PER_MP_LIMB - t)); 
-	    else
-	      cc = mpn_add_1(rp, rp, rsize, 1); 
-	  }
-	else
-	  {
-	    if (rnd_mode == GMP_RNDN) /* even rounding */
+	    k = rsize - 1; 
+	    while (k >= 0) { if (rp[k]) break; k--; }
+	    
+	    if (k >= 0) /* In fact the quotient is larger than expected */
 	      {
-		rw = (MPFR_PREC(r) + 1) & (BITS_PER_MP_LIMB - 1);
-		if (rw) { rw = BITS_PER_MP_LIMB - rw; nw = 0; } else nw = 1; 
-		if ((rw ? (rp[nw] >> (rw + 1)) & 1 : 
-		     (rp[nw] >> (BITS_PER_MP_LIMB - 1)) & 1))
+		if (inex == -2 * sign_quotient) 
 		  {
-		    cc = mpn_add_1(rp + nw, rp + nw, rsize, 
-				   ((mp_limb_t)1) << rw); 
+		    cc = 1; 
+		    inex = sign_quotient; /* To infinity, finally. */
 		  }
+		else inex = -sign_quotient; /* Not even, finally. */
 	      }
-	/* cas 0111111 */
 	  }
+    }
+	
+  /* Final modification due to rounding */
+  if (cc) 
+    {
+      sh = MPFR_PREC(q) & (BITS_PER_MP_LIMB - 1); 
+      if (sh)
+	cc = mpn_add_1(qp, qp, qsize, 
+		       (mp_limb_t)1 << (BITS_PER_MP_LIMB - sh)); 
+      else
+	cc = mpn_add_1(qp, qp, qsize, 1); 
+  
+      if (cc) {
+	mpn_rshift(qp, qp, qsize, 1);
+	qp[qsize-1] |= MP_LIMB_T_HIGHBIT;
+	qexp++; 
       }
-  }
-
-  if (sign_quotient * MPFR_SIGN(r) < 0) { MPFR_CHANGE_SIGN(r); } 
-  MPFR_EXP(r) = rexp;
-
-  if (cc) {
-    mpn_rshift(rp, rp, rsize, 1);
-    rp[rsize-1] |= (mp_limb_t) 1 << (BITS_PER_MP_LIMB-1);
-    MPFR_EXP(r)++; 
-  }
-    
-  rw = rsize * BITS_PER_MP_LIMB - MPFR_PREC(r);
-  MPN_COPY(MPFR_MANT(r), rp, rsize); 
-  MPFR_MANT(r)[0] &= ~(((mp_limb_t)1 << rw) - 1);
-#ifdef DEBUG
-  printf("r = "); mpfr_out_str(stdout, 2, 0, r, GMP_RNDN); printf("\n"); 
-#endif
+    }
+  
+  rw = qsize * BITS_PER_MP_LIMB - MPFR_PREC(q);
+  MPN_COPY(MPFR_MANT(q), qp, qsize); 
   TMP_FREE (marker);
+
+  MPFR_MANT(q)[0] &= ~(((mp_limb_t)1 << rw) - 1);
+  MPFR_EXP(q) = qexp;
+
+  return inex; 
 }
+
