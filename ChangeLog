@@ -1,3 +1,126 @@
+2002-12-13  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* mpfr.texi: IEEE 754 / IEEE P754 -> IEEE 754-1985.
+
+	* mpfr.texi: Correction.
+
+	* mpfr.texi: Added a note about the signed zero.
+
+	* set_d.c: Assertion re-added.
+
+	* missing: Update for new version of automake/autoconf.
+
+	* depcomp: depcomp script added for new version of automake.
+
+2002-12-12  Kevin Ryde  <user42@zip.com.au>
+
+	* configure.in:
+	Don't -D define PACKAGE_VERSION etc, to avoid conflict with gmp config.h.
+
+2002-12-12  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* mpfr.texi: added paragraph about accuracy
+
+	* mpfr.texi: rewritten unclear paragraph about precision
+
+	* TODO: added one item
+
+	* set_d.c: use MPN_NORMALIZE_NOT_ZERO instead of loop
+
+2002-12-11  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* tests/memory.c:
+	Added #include "mpfr.h" (needed by mpfr-test.h as it uses
+	mp_rnd_t in one of the prototypes).
+
+2002-12-10  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* set_d.c:
+	Patch by Torbjorn Granlund <tege@swox.com>: Don't use TMP_ allocation
+	mechanism for fixed size objects. Resulting streamlining. Misc
+	addressing changes to work around GNUPro bugs.
+	Patch by VL: Some other changes in mpfr_set_d.
+
+2002-12-07  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* const_euler.c: (mpfr_const_euler_S, mpfr_const_euler_R)
+	Make declaration match prototype (patch by Torbjorn Granlund).
+
+2002-12-04  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* config.guess, config.sub:
+	Update from ftp://ftp.gnu.org/pub/gnu/config/
+
+2002-12-03  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* mpfr.texi: Use @ifnottex/@end iffnotex instead of @ifinfo/@end ifinfo
+
+2002-12-02  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* mpfr-test.h, tests/rnd_mode.c: Fix rnd_mode.c (again).
+
+2002-12-02  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* mpfr-impl.h, mpfr.h:
+	put redefinitions of external symbols just before prototypes
+
+	* TODO: updated
+
+	* BUGS: added new known bugs
+
+2002-11-29  Kevin Ryde  <user42@zip.com.au>
+
+	* TODO: Add notes on mpf_t maintaining actual size for efficiency.
+
+	* TODO: Remove mpfr_set_machine_rnd_mode task.
+
+	* mpfr.texi: Tweak some math formatting for tex.
+
+	* mpfr-test.h, mpfr.h (mpfr_set_machine_rnd_mode):
+	Move prototype to mpfr-test.h.
+
+	* tests/Makefile.am (libfrtests_a_SOURCES): Add rnd_mode.c.
+
+	* Makefile.am (libmpfr_a_SOURCES): Remove rnd_mode.c.
+
+	* rnd_mode.c: Remove file, moved to tests directory.
+
+	* tests/rnd_mode.c: New file, moved from top-level directory.
+
+	* mpfr.texi (Rounding Modes): Remove mpfr_set_machine_rnd_mode.
+
+	* setmin.c, setmax.c: Use GNU style code layout.
+
+2002-11-29  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* mpfr-impl.h, mpfr.h:
+	redefined external symbols in the __gmpfr namespace
+
+2002-11-25  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* tests/tout_str.c: added one fprintf in case of error
+
+2002-11-25  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* mpfr.texi, rnd_mode.c, mpfr.h:
+	mpfr_set_machine_rnd_mode fixed to compile on some architectures
+	(e.g. ARM). Now returns an int.
+
+	* tests/tmul.c: Bug fixed.
+
+2002-11-25  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* tests/tadd.c, tests/tadd_ui.c, tests/tagm.c, tests/tdiv.c, tests/tdiv_ui.c, tests/texp.c, tests/tget_d.c, tests/tlog.c, tests/tmul.c, tests/tset_q.c, tests/tsqrt.c, tests/tsqrt_ui.c, tests/tsub_ui.c, tests/tui_div.c, tests/tui_sub.c:
+	removed all tests that compare to libm
+
+	* tests/tdiv.c: changed to distinguish mpfr failures from libm failures
+
+	* tests/tdiv.c: added 3 tests that make libm fail under HP-PA
+
+2002-11-23  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* ChangeLog: Update.
+
 2002-11-22  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
 
 	* ui_pow.c: forgot to remove debug statement
