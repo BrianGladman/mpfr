@@ -1,3 +1,204 @@
+2005-02-16  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* README.dev: Suppress some spaces.
+
+2005-02-16  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* tests/tpow.c: Reenable underflow tests.
+
+	* README.dev: Update
+
+2005-02-16  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* texinfo.tex:
+	Removed texinfo.tex, as it can be installed by autoreconf -i.
+
+2005-02-16  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* tests/Makefile.am:
+	Fix LOADLIBES so that it works (it doesn't due to libtool change). But it
+	still needs to have s static version of MPFR.
+
+2005-02-16  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* README.dev: autoreconf -> autoreconf -i
+
+2005-02-16  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* sin_cos.c, tan.c, asinh.c, exp3.c, mpfr-impl.h:
+	Fix wrong integer types.
+
+2005-02-16  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* ChangeLog: Update. (2.1 branch)
+
+	* set.c: Added a comment. (2.1 branch)
+
+	* mul.c, sub1.c, sub1sp.c, ChangeLog:
+	Spelling mistakes & reformatted code.
+
+	* sub1.c:
+	Ported another fix to the 2.1 branch (bug introduced in 1.31.2.1).
+
+2005-02-15  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* sub1.c: Reformatted code.
+
+2005-02-15  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* tanh.c: Improve initial prec.
+
+2005-02-15  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* tan.c: Ported tan fix to 2.1 branch.
+
+2005-02-15  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* tanh.c: Remove code.
+	Add special case if t=1.
+
+	* sub1.c: mpfr_set doesn't produce an EVEN inexact flag.
+	Fix this.
+
+	* cos.c: USe of mpfr_nexttozero.
+
+	* atanh.c: Fix bug: use x instead of xf in LOG.
+
+	* zeta.c, exp.c, gamma.c, log.c, pow.c, sinh.c, tanh.c, erf.c, cosh.c, atan.c, atanh.c, asinh.c, acos.c, acosh.c, agm.c, asin.c:
+	Log input and ouput of functions.
+
+	* tan.c: Fix bug of overflow in tan.
+
+	* sin.c, sin_cos.c, tan.c: Use of MPFR_LOG_FUNC.
+
+	* mpfr-impl.h: Do not print final log message if there was no call.
+
+	* sin.c: Add ZivLoop for sign
+
+2005-02-14  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* logging.c:
+	Fix bug: during the display of a logged var, logging is turn off.
+
+	* cos.c, mpfr-impl.h: Add MPFR_LOG_FUNC
+	Use mpfr_cos as testing example.
+
+	* const_euler.c, const_log2.c, const_pi.c, cache.c:
+	Add ZivLoop controller for constantes.
+	Augment exponent range in the cache.
+	Remove it in const_pi.
+
+	* get_str.c: Add generic ZivLoop controller.
+
+2005-02-14  Laurent Fousse  <fousse@dixsept.loria.fr>
+
+	* mpfr.texi: Document mpfr_sum returned int value.
+
+2005-02-14  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* pow_si.c, pow_ui.c, pow_z.c, strtofr.c, sum.c, ui_pow_ui.c, zeta.c, log10.c, log1p.c, log2.c, pow.c, gmp_op.c:
+	Clean up code.
+	Add generic ZivLoop controller.
+
+2005-02-14  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* sum.c: Ported latest bug fix to 2.1 branch.
+
+2005-02-14  Laurent Fousse  <fousse@dixsept.loria.fr>
+
+	* sum.c: Consider return value's precision for rounding in mpfr_sum.
+
+2005-02-14  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* const_pi.c: removed garbage
+
+2005-02-14  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* expm1.c, factorial.c, gamma.c, hypot.c, exp2.c: Clean up
+	Add ZivLoop
+
+	* const_log2.c: Remove malloc/free.
+	Use of MPFR_INT_CEIL_LOG2
+	Add ZivLoop controller.
+
+	* erf.c: Clean up code.
+	Fix bug with Exponent range.
+	Add ZivLoop controller.
+
+	* cbrt.c: Cleanup code.
+
+2005-02-14  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* const_log2.c:
+	further efficiency improvement (avoid mpz_init/mpz_clear)
+
+2005-02-14  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* acosh.c, asinh.c, atanh.c: Add ZivLoop controller.
+	Clean up code.
+	Optimize it by removing the # of used vars.
+
+	* acos.c, asin.c, atan.c: Add ZivLoop controler.
+
+2005-02-12  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* algorithms.tex, const_log2.c, mpfr-impl.h:
+	new faster algorithm for log(2)
+
+2005-02-11  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* configure.in: Remove detection of C++ and Fortran due to libtool.
+
+	* configure.in, tests/Makefile.am, Makefile.am:
+	Clean up configure (more simplier).
+	Still a bug with CXXCPP to solve.
+
+	* mpfr-impl.h, const_log2.c: Clean up const_log2 code.
+
+2005-02-10  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* sin_cos.c, sinh.c, tan.c, tanh.c, cosh.c, exp.c, exp3.c, exp_2.c, log.c:
+	Add log for other functions.
+	Add ZivLoop too.
+	Cleanup exp3.
+
+2005-02-09  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* configure.in: Update for ICC (disable shared since it doesn't work).
+
+	* configure.in:
+	The previous fixs don't work. New one which works but is VERY ugly.
+
+	* configure.in: Fix again to avoid fail on laurent5...
+
+	* configure.in:
+	Set CXXCPP to "g++ -E" to avoid detection (which may fail on some systems).
+
+	* configure.in:
+	Reduce the tested compiler for C++ and Fortran to the minimum.
+
+	* configure.in:
+	Update GMP detection to be much more libtool compatible.
+	As a consequence some tests using AC_RUN_IFELSE may fail due to ugly things
+	like LD_LIBRARY_PATH no set or wrong selection of libgmp.
+	So they just produce a warning, not a fatal error.
+	TODO: Check if we can avoid thoses problems...
+
+2005-02-08  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* install-sh, missing, mkinstalldirs, prepare, config.guess, config.sub, depcomp, ansi2knr.1, ansi2knr.c:
+	Remove automake and libtool files.
+	Use `automake --add-missing --copy -i` to generate them.
+
+	* ansi2knr.1, ansi2knr.c: Add support for ansi2knr
+
+	* mpfr-test.h, mpfr.h, prepare, tests/Makefile.am, tests/tests.c, update-version, Makefile.am, README.dev, acinclude.m4, configure.in, mpfr-gmp.h, mpfr-impl.h:
+	Add support for Shared Library in MPFR (both Unix and Windows) by using libtool.
+	Improve configure (remove unused macros, make dist produce .zip and .bz2)
+	Update update-version to modify configure.in too.
+
+	* NEWS: Update NEWS.
+
 2005-02-04  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
 
 	* tests/reuse.c: Add forgotten functions to reuse test.
