@@ -60,14 +60,12 @@ MA 02111-1307, USA. */
 #endif
 
  /* Definition of MPFR_LIMB_HIGHBIT and MPFR_LIMB_ONE */
-#ifdef GMP_LIMB_HIGHBIT
+#if defined(GMP_LIMB_HIGHBIT)
 # define MPFR_LIMB_HIGHBIT GMP_LIMB_HIGHBIT
+#elif defined(MP_LIMB_T_HIGHBIT)
+# define MPFR_LIMB_HIGHBIT MP_LIMB_T_HIGHBIT
 #else
-# ifdef MP_LIMB_T_HIGHBIT
-#  define MPFR_LIMB_HIGHBIT MP_LIMB_T_HIGHBIT
-# else
-#  error "Neither GMP_LIMB_HIGHBIT nor MP_LIMB_T_HIGHBIT defined in GMP"
-# endif
+# error "Neither GMP_LIMB_HIGHBIT nor MP_LIMB_T_HIGHBIT defined in GMP"
 #endif
 
 /* Use GMP macro for limb constant if it exists */
@@ -80,6 +78,9 @@ MA 02111-1307, USA. */
 #ifndef MP_LIMB_T_ONE
 # define MP_LIMB_T_ONE MPFR_LIMB_ONE
 #endif
+
+/* Mask for the low s bits of a limb */
+#define MPFR_LIMB_MASK(s) ((MPFR_LIMB_ONE<<(s))-MPFR_LIMB_ONE)
 
 /* Test if X (positive) is a power of 2 */
 #define IS_POW2(X) (((X) & ((X) - 1)) == 0)
@@ -100,11 +101,11 @@ typedef unsigned long int  mpfr_uexp_t;
 #endif
 
 #if   MPFR_PREC_FORMAT == 1
-#define MPFR_INTPREC_MAX (USHRT_MAX & ~(unsigned int) (BITS_PER_MP_LIMB - 1))
+# define MPFR_INTPREC_MAX (USHRT_MAX & ~(unsigned int) (BITS_PER_MP_LIMB - 1))
 #elif MPFR_PREC_FORMAT == 2
-#define MPFR_INTPREC_MAX (UINT_MAX & ~(unsigned int) (BITS_PER_MP_LIMB - 1))
+# define MPFR_INTPREC_MAX (UINT_MAX & ~(unsigned int) (BITS_PER_MP_LIMB - 1))
 #elif MPFR_PREC_FORMAT == 3
-#define MPFR_INTPREC_MAX (ULONG_MAX & ~(unsigned long) (BITS_PER_MP_LIMB - 1))
+# define MPFR_INTPREC_MAX (ULONG_MAX & ~(unsigned long) (BITS_PER_MP_LIMB - 1))
 #else
 # error "Invalid MPFR Prec format"
 #endif
@@ -286,6 +287,13 @@ long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CO
  * It transforms RNDU or RNDD to Away or Zero according to the sign */
 #define MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd, test) \
   (((rnd) + (test)) == GMP_RNDD)
+
+/* Transform RNDU and RNDD to RNDA or RNDZ */
+#define MPFR_UPDATE_RND_MODE(rnd, test) \
+  do {  \
+    if (MPFR_UNLIKELY(MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd, test))) \
+      rnd = GMP_RNDZ; \
+  } while (0) 
 
 /* Calcul s = (-a) % BITS_PER_MP_LIMB
  * a is unsigned! Check if it works, 
