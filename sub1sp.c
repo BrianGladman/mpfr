@@ -32,7 +32,7 @@ MA 02111-1307, USA. */
    a positive value otherwise.
 */
 
-/*#define DEBUG*/
+/* #define DEBUG */
 
 #ifdef DEBUG
 # undef DEBUG
@@ -96,8 +96,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   mp_limb_t *ap, *bp, *cp;
   mp_limb_t limb;
   int inexact;
-  int bcp,bcp1; /* Cp and C'p+1 */
-  int bbcp, bbcp1; /* Cp+1 and C'p+2 */
+  mp_limb_t bcp,bcp1; /* Cp and C'p+1 */
+  mp_limb_t bbcp, bbcp1; /* Cp+1 and C'p+2 */
   TMP_DECL(marker);
 
   TMP_MARK(marker);
@@ -299,7 +299,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       else
 	{
 	  /* Case: limb = 100000000000 */
-	  /* Check while b[k] == c'[k]/2 (C' is C shifted by 1) */
+	  /* Check while b[k] == c'[k] (C' is C shifted by 1) */
 	  /* If b[k]<c'[k] => We lose at least one bit*/
 	  /* If b[k]>c'[k] => We don't lose any bit */
 	  /* If k==-1 => We don't lose any bit 
@@ -367,7 +367,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	      else
 		bcp1 = 1;
 	    }
-	  DEBUG( printf("(D=P) Cp=-1 Cp+1=%d C'p+1=%d \n", bbcp, bcp1) );
+	  DEBUG( printf("(D=P) Cp=-1 Cp+1=%lu C'p+1=%lu \n", bbcp, bcp1) );
 	  bp = MPFR_MANT(b);
 	  switch (rnd_mode)
 	    {
@@ -390,7 +390,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	{
 	  /* Cp=0, Cp+1=-1 if d==p+1, C'p+1=-1 */
           bcp = 0; bbcp = (d==p+1); bcp1 = 1;
-          DEBUG( printf("(D>P) Cp=%d Cp+1=%d C'p+1=%d\n", bcp, bbcp, bcp1) );
+          DEBUG( printf("(D>P) Cp=%lu Cp+1=%lu C'p+1=%lu\n", bcp,bbcp,bcp1) );
 	  /* Need to compute C'p+2 if d==p+1 and if rnd_mode=NEAREST
 	     (Because of a very improbable case) */
 	  if (MPFR_UNLIKELY(d==p+1 && rnd_mode==GMP_RNDN))
@@ -406,7 +406,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 		}
 	      else
 		bbcp1 = 1;
-	      DEBUG( printf("(D>P) C'p+2=%d\n", bbcp1) );
+	      DEBUG( printf("(D>P) C'p+2=%lu\n", bbcp1) );
 	    }
 	  /* Copy mantissa B in A */
 	  MPN_COPY(ap, MPFR_MANT(b), n);
@@ -511,7 +511,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	      bcp1 = (kx>=0);
 	    }
 	}
-      DEBUG( printf("Cp=%d C'p+1=%d\n", bcp, bcp1) );
+      DEBUG( printf("Cp=%lu C'p+1=%lu\n", bcp, bcp1) );
 
       /* Check if we can lose a bit, and if so compute Cp+1 and C'p+2 */
       bp = MPFR_MANT(b);
@@ -534,10 +534,11 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	      mp_size_t   kx = n-1 - (x/BITS_PER_MP_LIMB);
 	      mpfr_prec_t sx = BITS_PER_MP_LIMB-1-(x%BITS_PER_MP_LIMB);
 	      MPFR_ASSERTD(p > d);
+	      DEBUG( printf("(pre) Kx=%ld Sx=%lu\n", kx, sx));
 	      bbcp = (tp[kx] & (MPFR_LIMB_ONE<<sx)) ;
 	      /* Looks at the last bits of limb kx (If sx=0, does nothing)*/
 	      /* If Cp+1=0, since C'p+1!=0, C'p+2=1 ! */
-	      if (!bbcp || tp[kx] &((MPFR_LIMB_ONE<<sx)-MPFR_LIMB_ONE))
+	      if (!bbcp || (tp[kx] &((MPFR_LIMB_ONE<<sx)-MPFR_LIMB_ONE)))
 		bbcp1 = 1;
 	      else
 		{
@@ -548,7 +549,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 		  bbcp1 = (kx>=0);
 		}
 	    } /*End of Bcp1 != 0*/
-	  DEBUG( printf("(Pre) Cp+1=%d C'p+2=%d\n", bbcp, bbcp1) );
+	  DEBUG( printf("(Pre) Cp+1=%lu C'p+2=%lu\n", bbcp, bbcp1) );
 	} /* End of "can lose a bit" */
 
       /* Clean shifted C' */
@@ -621,7 +622,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       /* Compute Cp+1 if it isn't already compute (ie d==1) */
       if (d == 1)
 	bbcp = 0;
-      DEBUG( printf("(SubOneUlp) Cp=%d, Cp+1=%d C'p+1=%d\n", bcp, bbcp, bcp1));
+      DEBUG( printf("(SubOneUlp)Cp=%lu, Cp+1=%lu C'p+1=%lu\n", bcp,bbcp,bcp1));
       /* Compute the last bit (Since we have shifted the mantissa)
 	 we need one more bit!*/
       if ((rnd_mode == GMP_RNDZ && bcp==0) 
@@ -669,7 +670,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	  /* Compute Cp+1 if it isn't already compute (ie d==1) */
 	  if (d == 1)
 	    bbcp=0;
-	  DEBUG( printf("(Truncate) Cp=%d, Cp+1=%d C'p+1=%d C'p+2=%d\n", \
+	  DEBUG( printf("(Truncate) Cp=%lu, Cp+1=%lu C'p+1=%lu C'p+2=%lu\n", \
 		 bcp, bbcp, bcp1, bbcp1) );
 	  if (( ((rnd_mode == GMP_RNDN) || (rnd_mode != GMP_RNDZ)) && bcp) 
 	      ||
@@ -694,13 +695,13 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   /* Update Expo */
   if (MPFR_UNLIKELY(bx < __gmpfr_emin))
     {
-      TMP_FREE(marker);
       DEBUG( printf("(Final Underflow)\n") );
       /* Update rnd_mode */
       if (rnd_mode == GMP_RNDN &&
 	  (bx < __gmpfr_emin - 1 ||
 	   (inexact >= 0 && mpfr_powerof2_raw (a))))
 	rnd_mode = GMP_RNDZ;
+      TMP_FREE(marker);
       return mpfr_set_underflow (a, rnd_mode, MPFR_SIGN(a));
     }
   MPFR_SET_EXP (a, bx);

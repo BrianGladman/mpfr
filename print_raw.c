@@ -87,7 +87,7 @@ mpfr_print_mant_binary(const char *str, const mp_limb_t *p, mp_prec_t r)
     {
       for(i = BITS_PER_MP_LIMB-1 ; i >=0 ; i--)
         {
-          c = (p[n] & (1<<i)) ? '1' : '0';
+          c = (p[n] & (1L<<i)) ? '1' : '0';
           putchar(c);
           count++;
           if (count == r)
