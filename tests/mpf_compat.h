@@ -24,8 +24,8 @@ MA 02111-1307, USA. */
 #include <string.h>
 
 #include "gmp.h"
-#ifdef MPFR
 #include "mpfr.h"
+#ifdef MPFR
 #include "mpf2mpfr.h"
 #endif
 
@@ -128,11 +128,7 @@ main ()
   u = mpf_get_ui (x);
   s = mpf_get_str (NULL, &exp, 10, 10, x);
   /* MPF doen't have mpf_free_str */
-#ifdef MPFR
   mpfr_free_str (s);
-#else
-  (*__gmp_free_func) (s, strlen (s) + 1);
-#endif
 
 
   /* Arithmetic Functions */
