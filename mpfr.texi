@@ -1379,6 +1379,27 @@ Put +0 in @var{rop} when size if zero.
 Return the MPFR version, as a null-terminated string.
 @end deftypefun
 
+@defmac MPFR_VERSION
+@defmacx MPFR_VERSION_MAJOR
+@defmacx MPFR_VERSION_MINOR
+@defmacx MPFR_VERSION_PATCHLEVEL
+@code{MPFR_VERSION} is the version of MPFR as a preprocessing constant.
+@code{MPFR_VERSION_MAJOR}, @code{MPFR_VERSION_MINOR} and 
+@code{MPFR_VERSION_PATCHLEVEL} are respectively the major, minor and patch
+level of MPFR version, as preprocessing constants.
+@end defmac
+
+@deftypefn Macro long MPFR_VERSION_NUM (@var{major}, @var{minor}, @var{patchlevel})
+Create an integer in the same format as used by @code{MPFR_VERSION} from the
+given @var{major}, @var{minor} and @var{patchlevel}.
+Here is an example of how to check the MPFR version at compiled time:
+@example
+#if (!defined(MPFR_VERSION) || (MPFR_VERSION<MPFR_VERSION_NUM(2,1,0)))
+# error "Wrong MPFR version."
+#endif
+@end example
+@end deftypefn
+
 @node Rounding Modes, Exceptions, Miscellaneous Functions, MPFR Interface
 @section Rounding Modes
 @cindex Rounding Modes
