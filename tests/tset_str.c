@@ -192,6 +192,15 @@ main (int argc, char *argv[])
       exit (1);
     }
 
+  /* check that mpfr_set_str works for uppercase letters too */
+  mpfr_set_prec (x, 10);
+  mpfr_set_str (x, "B", 16, GMP_RNDN);
+  if (mpfr_cmp_ui (x, 11) != 0)
+    {
+      fprintf (stderr, "mpfr_set_str does not work for uppercase letters\n");
+      exit (1);
+    }
+
   mpfr_clear (x);
   mpfr_clear (y);
 
