@@ -144,7 +144,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_sub (r, x, r, GMP_RNDU);
       /* possible cancellation here: the error on r is at most
 	 3*2^(EXP(old_r)-EXP(new_r)) */
-      if (MPFR_IS_NEG (r))
+      while (MPFR_IS_NEG (r))
 	{ /* initial approximation n was too large */
 	  n--;
 	  mpfr_add (r, r, s, GMP_RNDU);

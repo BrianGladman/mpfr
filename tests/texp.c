@@ -345,6 +345,21 @@ check_special ()
   mpfr_mul_2ui (x, x, 32, GMP_RNDN);
   test_exp (y, x, GMP_RNDN); /* Can't test return value: May overflow or not*/
 
+  /* Bug due to wrong approximation of (x)/log2 */
+  mpfr_set_prec (x, 163);
+
+  mpfr_set_str (x, "-4.28ac8fceeadcda06bb56359017b1c81b85b392e7", 16,
+		GMP_RNDN);
+  mpfr_exp (x, x, GMP_RNDN);
+  if (mpfr_cmp_str (x, "3.fffffffffffffffffffffffffffffffffffffffe8@-2",
+		    16, GMP_RNDN))
+    {
+      printf ("Error for x= -4.28ac8fceeadcda06bb56359017b1c81b85b392e7");
+      printf ("expected  3.fffffffffffffffffffffffffffffffffffffffe8@-2");
+      printf ("Got       ");
+      mpfr_out_str (stdout, 16, 0, x, GMP_RNDN); putchar ('\n');
+    }
+
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);
