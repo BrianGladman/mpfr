@@ -152,6 +152,9 @@ tget_str: tests/tget_str.c o.$(dirname)/get_str.o libmpfr.a
 tmul_2exp: tests/tmul_2exp.c mul_2exp.c $(ODIR)/libmpfr.a
 	$(CC) $(CFLAGS) $(INCFLAGS) -I. -o tests/tmul_2exp tests/tmul_2exp.c $(ODIR)/libmpfr.a $(LDFLAGS)
 
+tout_str: tests/tout_str.c o.$(dirname)/out_str.o libmpfr.a
+	$(CC) $(CFLAGS) $(INCFLAGS) -I. -o tests/tout_str tests/tout_str.c $(ODIR)/libmpfr.a $(LDFLAGS)
+
 tagm: tests/tagm.c agm.c libmpfr.a
 	$(CC) $(CFLAGS) $(INCFLAGS) -I. -o tests/tagm tests/tagm.c $(ODIR)/libmpfr.a $(LDFLAGS)
 
