@@ -14,51 +14,52 @@ AC_PROG_RANLIB
 AC_CHECK_OS
 AC_CHECK_MACHTYPE
 
-dnl If compiler is gcc, then use some warning flags
+dnl If compiler is gcc, then use some specific flags.
 if test -n "$GCC"; then
-  CFLAGS="$CFLAGS -Wall -Wmissing-prototypes"
+  CFLAGS="-g -O2 -Wall -Wmissing-prototypes $CFLAGS"
 fi
 
-MISCFLAGS='$<' 
-dnl Mettre les flags OS dependants
-case $OS_TYPE in 
+MISCFLAGS='$<'
+dnl Set the OS-dependent flags.
+case $OS_TYPE in
 	HP-UX*)
-		AC_CHECK_LIB(M, main);;
+		AC_CHECK_LIB(M, main)
+		AC_DEFINE(hpux)
+	        LDFLAGS="$LDFLAGS -L/lib/pa1.1"
+		;;
 	SunOS*)
-		MISCFLAGS="trunc.c" 
+		MISCFLAGS="trunc.c"
 		AC_CHECK_LIB(m, main)
 		;;
 	Linux*)
 		AC_CHECK_LIB(m, main)
 		fpucw=`grep __setfpucw /usr/include/fpu_control.h`
-	        if test -z "$fpucw"; 
-		then AC_DEFINE(LIBC211) fi; 
-		if [[ "$MACHTYPE" = "alpha" ]];
-		then
-		CFLAGS ="$CFLAGS -mfp-rounding-mode=d -mieee-with-inexact"
-		fi;;
+	        if test -z "$fpucw"; then
+		  AC_DEFINE(LIBC211)
+		fi
+		if [[ "$MACHTYPE" = "alpha" ]];	then
+		  CFLAGS="$CFLAGS -mfp-rounding-mode=d -mieee-with-inexact"
+		fi
+		;;
 	IRIX64)
 		AC_CHECK_LIB(m, main)
-		if [[ "$irix64" = "on" ]]
-		then
-		CFLAGS ="-mabi=64 $CFLAGS"
+		if [[ "$irix64" = "on" ]]; then
+		  CFLAGS ="-mabi=64 $CFLAGS"
 		else
-		CFLAGS ="-mabi=n32 $CFLAGS"
-		fi;;
+		  CFLAGS ="-mabi=n32 $CFLAGS"
+		fi
+		;;
 	OSF*)
 		AC_CHECK_LIB(m, main)
 		CFLAGS="$CFLAGS -mfp-rounding-mode=d -mieee-with-inexact -ffloat-store"
 		AC_DEFINE(__STDC__)
 		;;
-	HP-UX*)
-		AC_DEFINE(hpux)
-	        LDFLAGS="$LDFLAGS -L/lib/pa1.1"
+	*)
+		AC_CHECK_LIB(m, main)
 		;;
-	*)	
-		AC_CHECK_LIB(m, main);;
 esac
 
-dnl Tests pour le repertoire ou trouver les fichiers include
+dnl Tests concerning the include directories.
 AC_MSG_CHECKING(for gmp files)
 if test -d "$with_gmp_include"; then
   CPPFLAGS="$CPPFLAGS -I$with_gmp_include"
