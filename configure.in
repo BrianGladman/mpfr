@@ -12,6 +12,11 @@ AC_ARG_WITH(irix64, [ --with-irix64=on/off    Irix 32/64 bits support ], with_ir
 
 test_CFLAGS=${CFLAGS+set}
 
+dnl  Same as in gmp acinclude.m4, though currently we're using the normal
+dnl  config.sub, so the additional exact cpu types don't arise.
+define(X86_PATTERN,
+[[i?86*-*-* | k[5-8]*-*-* | pentium*-*-* | athlon-*-*]])
+
 dnl Checks for programs.
 AC_PROG_CC
 AC_PROG_RANLIB
