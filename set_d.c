@@ -254,7 +254,7 @@ mpfr_set_d (r, d, rnd_mode)
 {
   int signd, sizer, sizetmp;
   unsigned int cnt;
-  mpfr_ptr tmp; 
+  mpfr_ptr tmp;
   TMP_DECL(marker); 
 
   TMP_MARK(marker);
@@ -278,28 +278,23 @@ mpfr_set_d (r, d, rnd_mode)
       return;
     }
 
-  sizer = (MPFR_PREC(r)-1)/BITS_PER_MP_LIMB + 1;
+  sizer = (MPFR_PREC(r) - 1) / BITS_PER_MP_LIMB + 1;
 
-  if (sizer < MPFR_LIMBS_PER_DOUBLE) 
-    {
-      tmp = (mpfr_ptr) TMP_ALLOC(sizeof(mpfr_t)); 
-      MPFR_MANT(tmp) = TMP_ALLOC(MPFR_LIMBS_PER_DOUBLE * BYTES_PER_MP_LIMB); 
-      MPFR_PREC(tmp) = 53; 
-      MPFR_SIZE(tmp) = MPFR_LIMBS_PER_DOUBLE;
-      sizetmp = MPFR_LIMBS_PER_DOUBLE;
-    }
-  else
-    {
-      tmp = r;
-      sizetmp = sizer;
-    }
+  /* warning: don't use tmp=r here, even if sizer >= MPFR_LIMBS_PER_DOUBLE,
+     since PREC(r) may be different from PREC(tmp), and then both variables
+     would have same precision in the mpfr_set4 call below. */
+  tmp = (mpfr_ptr) TMP_ALLOC(sizeof(mpfr_t)); 
+  MPFR_MANT(tmp) = TMP_ALLOC(MPFR_LIMBS_PER_DOUBLE * BYTES_PER_MP_LIMB); 
+  MPFR_PREC(tmp) = 53; 
+  MPFR_SIZE(tmp) = MPFR_LIMBS_PER_DOUBLE;
+  sizetmp = MPFR_LIMBS_PER_DOUBLE;
 
   signd = (d < 0) ? -1 : 1;
   d = ABS (d);
 
   MPFR_EXP(tmp) = __mpfr_extract_double (MPFR_MANT(tmp) + sizetmp - 
 					 MPFR_LIMBS_PER_DOUBLE, d, 1);
-  
+
   if (sizetmp > MPFR_LIMBS_PER_DOUBLE)
     MPN_ZERO(MPFR_MANT(tmp), sizetmp - MPFR_LIMBS_PER_DOUBLE); 
 
