@@ -36,7 +36,9 @@ mpfr_set_z (f, z, rnd)
      mp_rnd_t rnd;
 #endif
 {
-  int fn, zn, k, dif, sign_z, sh; mp_limb_t *fp = MPFR_MANT(f), *zp, cc, c2;
+  mp_size_t fn, zn, dif, sh;
+  int k, sign_z;
+  mp_limb_t *fp = MPFR_MANT(f), *zp, cc, c2;
 
   MPFR_CLEAR_FLAGS (f); /* z cannot be NaN nor Inf */
 

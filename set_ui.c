@@ -36,7 +36,9 @@ mpfr_set_ui (x, i, rnd_mode)
      mp_rnd_t rnd_mode;
 #endif  
 {
-  unsigned int xn, cnt; mp_limb_t *xp;
+  mp_size_t xn;
+  unsigned int cnt;
+  mp_limb_t *xp;
 
   MPFR_CLEAR_FLAGS(x);
   if (i==0)

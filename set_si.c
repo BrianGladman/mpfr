@@ -36,7 +36,9 @@ mpfr_set_si (x, i, rnd_mode)
      mp_rnd_t rnd_mode;
 #endif
 {
-  unsigned long xn, cnt; mp_limb_t ai, *xp;
+  mp_size_t xn;
+  unsigned int cnt;
+  mp_limb_t ai, *xp;
 
   MPFR_CLEAR_FLAGS(x);
   if (i==0) { MPFR_SET_ZERO(x); return; }
