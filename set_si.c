@@ -35,7 +35,7 @@ mpfr_set_si (x, i, rnd_mode)
      mp_rnd_t rnd_mode;
 #endif
 {
-  int inex = 0;
+  int inex;
   mp_size_t xn;
   unsigned int cnt, nbits;
   mp_limb_t ai, *xp;
@@ -45,7 +45,7 @@ mpfr_set_si (x, i, rnd_mode)
   {
     MPFR_SET_ZERO(x);
     if (MPFR_SIGN(x) < 0) MPFR_CHANGE_SIGN(x);
-    return 0;
+    MPFR_RET(0);
   }
 
   xn = (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB;
@@ -58,6 +58,9 @@ mpfr_set_si (x, i, rnd_mode)
   MPN_ZERO(xp, xn);
 
   MPFR_EXP(x) = nbits = BITS_PER_MP_LIMB - cnt;
+  inex = mpfr_check_range(x, rnd_mode);
+  if (inex)
+    return inex; /* underflow or overflow */
 
   /* round if MPFR_PREC(x) smaller than length of i */
   if (MPFR_PREC(x) < nbits)
