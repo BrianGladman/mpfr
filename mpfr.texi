@@ -884,9 +884,9 @@ automatically from the precision of @var{op} and the value of @var{base}.
 Warning: this functionality may disappear or change in future versions.
 
 If @var{str} is a null pointer, space for the mantissa is allocated using
-the default allocation function, and a pointer to the string is returned.
-In that case, the user should her/himself free the corresponding memory
-with @code{(*_mp_free_func)(s, strlen(s) + 1)}.
+the current allocation function (@pxref{Custom Allocation,,, gmp, GNU
+MP}), and a pointer to the string is returned.  The block will be
+@code{strlen(s)+1} bytes.
 
 If @var{str} is not a null pointer, it should point to a block of storage
 large enough for the mantissa, i.e., @var{n_digits} + 2 or more. The extra
