@@ -1,7 +1,7 @@
 /* mpfr_get_ld -- convert a multiple precision floating-point number
                   to a machine long double
 
-Copyright 2002 Free Software Foundation, Inc.
+Copyright 2002, 2003 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
