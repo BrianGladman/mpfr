@@ -1,15 +1,14 @@
 \input texinfo    @c -*-texinfo-*-
 @c %**start of header
 @setfilename mpfr.info
-@settitle MPFR
+@set VERSION 2.0.2
+@set UPDATED-MONTH June 2002
+@settitle MPFR @value{VERSION}
 @synindex tp fn
 @iftex
 @afourpaper
 @end iftex
 @comment %**end of header
-
-@set VERSION 2.0.2
-@set UPDATED-MONTH June 2002
 
 @copying
 This manual documents how to install and use the Multiple Precision
