@@ -223,6 +223,23 @@ void check64 ()
   mpfr_init (t);
   mpfr_init (u);
 
+  mpfr_set_prec (x, 29);
+  mpfr_set_str_raw (x, "1.1101001000101111011010010110e-3");
+  mpfr_set_prec (t, 58);
+  mpfr_set_str_raw (t, "0.11100010011111001001100110010111110110011000000100101E-1");
+  mpfr_set_prec (u, 29);
+  mpfr_add (u, x, t, GMP_RNDD);
+  mpfr_set_str_raw (t, "1.0101011100001000011100111110e-1");
+  if (mpfr_cmp (u, t))
+    {
+      fprintf (stderr, "mpfr_add(u, x, t) failed for prec(x)=29, prec(t)=58\n");
+      printf ("expected "); mpfr_out_str (stdout, 2, 29, t, GMP_RNDN);
+      putchar ('\n');
+      printf ("got      "); mpfr_out_str (stdout, 2, 29, u, GMP_RNDN);
+      putchar ('\n');
+      exit(1);
+    }
+
   mpfr_set_prec (x, 4);
   mpfr_set_str_raw (x, "-1.0E-2");
   mpfr_set_prec (t, 2);
@@ -236,13 +253,14 @@ void check64 ()
       exit (1);
     }
   mpfr_set_str_raw (t, "-1.0e-1");
-  if (mpfr_cmp (u, t)) {
-    fprintf (stderr, "mpfr_add(u, x, t) failed for prec(x)=4, prec(t)=2\n");
-    printf ("expected -1.0e-1\n");
-    printf ("got      "); mpfr_out_str (stdout, 2, 4, u, GMP_RNDN);
-    putchar ('\n');
-    exit (1);
-  }
+  if (mpfr_cmp (u, t))
+    {
+      fprintf (stderr, "mpfr_add(u, x, t) failed for prec(x)=4, prec(t)=2\n");
+      printf ("expected -1.0e-1\n");
+      printf ("got      "); mpfr_out_str (stdout, 2, 4, u, GMP_RNDN);
+      putchar ('\n');
+      exit (1);
+    }
 
   mpfr_set_prec (x, 8);
   mpfr_set_str_raw (x, "-0.10011010"); /* -77/128 */
