@@ -53,5 +53,5 @@ mpfr_extract (mpz_ptr y, mpfr_srcptr p, unsigned int i)
     MPN_COPY (PTR(y), MPFR_MANT(p) + size_p - two_i, two_i_2);
 
   MPN_NORMALIZE (PTR(y), two_i_2);
-  SIZ(y) = (MPFR_ISNEG(p)) ? -two_i_2 : two_i_2;
+  SIZ(y) = (MPFR_IS_STRICTNEG(p)) ? -two_i_2 : two_i_2;
 }

@@ -49,16 +49,11 @@ typedef enum {
 
 /* Define precision, exponent, sign */
 #if __GMP_MP_SIZE_T_INT == 1
-#define MPFR_EXP_FORMAT_INT
-#define MPFR_SIZE_FORMAT_INT
+#define MPFR_PREC_FORMAT_INT
 typedef unsigned int mpfr_prec_t;
-typedef unsigned int mpfr_size_t;
-typedef int          mpfr_exp_t;
 typedef int          mpfr_sign_t;
 #else
 typedef unsigned long mpfr_prec_t;
-typedef unsigned long mpfr_size_t;
-typedef long          mpfr_exp_t;
 typedef int           mpfr_sign_t;
 #endif
 
@@ -67,7 +62,7 @@ typedef int           mpfr_sign_t;
 #define MPFR_PREC_MAX ((~(mpfr_prec_t)0) >> 1)
 
 /* Definition of the standard exponent limits */
-#define MPFR_EMAX_DEFAULT ((mpfr_exp_t) (((unsigned long) 1 << 30) - 1))
+#define MPFR_EMAX_DEFAULT ((mp_exp_t) (((unsigned long) 1 << 30) - 1))
 #define MPFR_EMIN_DEFAULT (-(MPFR_EMAX_DEFAULT))
 
 /* Definition of the intervals of the exponent limits */
@@ -80,12 +75,12 @@ typedef int           mpfr_sign_t;
 typedef struct {
   mpfr_prec_t  _mpfr_prec; 
   mpfr_sign_t  _mpfr_sign;
-  mpfr_exp_t   _mpfr_exp;
+  mp_exp_t     _mpfr_exp;
   mp_limb_t   *_mpfr_d;
 } __mpfr_struct;
 
 /* Compatibility with previous versions of MPFR */
-#define mp_rnd_t mpfr_rnd_t
+#define mp_rnd_t  mpfr_rnd_t
 #define mp_prec_t mpfr_prec_t
 
 /*

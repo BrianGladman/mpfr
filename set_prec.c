@@ -28,7 +28,7 @@ MA 02111-1307, USA. */
 void
 mpfr_set_prec (mpfr_ptr x, mpfr_prec_t p)
 {
-  mpfr_size_t xsize, xoldsize;
+  mp_size_t xsize, xoldsize;
   mp_ptr tmp;
 
   /* first, check if p is correct */

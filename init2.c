@@ -28,7 +28,7 @@ MA 02111-1307, USA. */
 void
 mpfr_init2 (mpfr_ptr x, mpfr_prec_t p)
 {
-  mpfr_size_t xsize;
+  mp_size_t xsize;
   mp_ptr tmp;
 
   /* p=1 is not allowed since the rounding to nearest even rule requires at

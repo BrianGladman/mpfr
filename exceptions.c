@@ -122,10 +122,10 @@ mpfr_clear_inexflag (void)
 int
 mpfr_check_range (mpfr_ptr x, int t, mp_rnd_t rnd_mode)
 {
-  if (MPFR_IS_FP(x) && MPFR_NOTZERO(x))
+  if (MPFR_LIKELY( MPFR_IS_PURE_FP(x)) )
     { /* x is a non-zero FP */
       mp_exp_t exp = MPFR_EXP (x);  /* Do not use MPFR_GET_EXP */
-      if (exp < __gmpfr_emin)
+      if (MPFR_UNLIKELY( exp < __gmpfr_emin) )
         {
           /* The following test is necessary because in the rounding to the
            * nearest mode, mpfr_set_underflow always rounds away from 0. In
@@ -141,7 +141,7 @@ mpfr_check_range (mpfr_ptr x, int t, mp_rnd_t rnd_mode)
             rnd_mode = GMP_RNDZ;
           return mpfr_set_underflow(x, rnd_mode, MPFR_SIGN(x));
         }
-      if (exp > __gmpfr_emax)
+      if (MPFR_UNLIKELY( exp > __gmpfr_emax) )
         return mpfr_set_overflow(x, rnd_mode, MPFR_SIGN(x));
     }
   return t;  /* propagate inexact ternary value, unlike most functions */

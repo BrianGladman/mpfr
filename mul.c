@@ -88,14 +88,20 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   cx = MPFR_GET_EXP (c);
   /* Note: the exponent of the exact result will be e = bx + cx + ec with
      ec in {-1,0,1} and the following assumes that e is representable. */
+  /* These ASSERT should be always true */
   MPFR_ASSERTN(MPFR_EMAX_MAX <= (MPFR_EXP_MAX >> 1));
   MPFR_ASSERTN(MPFR_EMIN_MIN >= -(MPFR_EXP_MAX >> 1));
+
+  /* FIXME: Usefull since we do an exponent check after ?
+   * It is usefull iff the precision is big, there is an overflow
+   * and we are doing further mults... Probable ? */
+  /*
   if (bx + cx > __gmpfr_emax + 1)
     return mpfr_set_overflow (a, rnd_mode, sign_product);
   if (bx + cx < __gmpfr_emin - 2)
-    return mpfr_set_underflow (a, rnd_mode == GMP_RNDN ? GMP_RNDZ : rnd_mode,
-                               sign_product);
-
+  return mpfr_set_underflow (a, rnd_mode == GMP_RNDN ? GMP_RNDZ : rnd_mode,
+    sign_product);
+  */
   ap = MPFR_MANT(a);
   bp = MPFR_MANT(b);
   cp = MPFR_MANT(c);
@@ -103,23 +109,24 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   aq = MPFR_PREC(a);
   bq = MPFR_PREC(b);
   cq = MPFR_PREC(c);
-
+  if (MPFR_UNLIKELY(bq+cq < bq))
+    MPFR_ASSERTN(0); /* no integer overflow */
+ 
   an = (aq-1)/BITS_PER_MP_LIMB + 1; /* number of significant limbs of a */
   bn = (bq-1)/BITS_PER_MP_LIMB + 1; /* number of significant limbs of b */
   cn = (cq-1)/BITS_PER_MP_LIMB + 1; /* number of significant limbs of c */
-
-  MPFR_ASSERTN((mp_size_unsigned_t) bn + cn <= MP_SIZE_T_MAX);
   k = bn + cn; /* effective nb of limbs used by b*c (= tn or tn+1) below */
 
-  MPFR_ASSERTN(bq + cq >= bq); /* no integer overflow */
   tn = (bq + cq - 1) / BITS_PER_MP_LIMB + 1; /* <= k, thus no int overflow */
+  MPFR_ASSERTD(tn <= k);
 
-  MPFR_ASSERTN(k <= ((size_t) -1) / BYTES_PER_MP_LIMB);
+  /* Check for no size_t overflow*/
+  MPFR_ASSERTD(k <= ((size_t) ~0) / BYTES_PER_MP_LIMB);
   TMP_MARK(marker); 
   tmp = (mp_limb_t *) TMP_ALLOC((size_t) k * BYTES_PER_MP_LIMB);
 
   /* multiplies two mantissa in temporary allocated space */
-  b1 = (bn >= cn) ? mpn_mul (tmp, bp, bn, cp, cn)
+  b1 = (MPFR_LIKELY(bn >= cn)) ? mpn_mul (tmp, bp, bn, cp, cn)
     : mpn_mul (tmp, cp, cn, bp, bn);
 
   /* now tmp[0]..tmp[k-1] contains the product of both mantissa,

@@ -641,7 +641,8 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
       nb = n * BITS_PER_MP_LIMB - prec;
       /* round xp to the precision prec, and put it into x1
 	 put the carry into x1[n] */
-      if ((x1[n] = mpfr_round_raw_generic (x1, xp, MPFR_PREC(x), MPFR_ISNEG(x),
+      if ((x1[n] = mpfr_round_raw_generic (x1, xp, MPFR_PREC(x), 
+					   MPFR_IS_STRICTNEG(x),
                                            prec, rnd, &inexp, 0)))
         {
 	  /* overflow when rounding x: x1 = 2^prec */

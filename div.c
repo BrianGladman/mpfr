@@ -78,7 +78,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
 	  MPFR_SET_ZERO(q);
 	  MPFR_RET(0);
 	}
-      if (MPFR_IS_ZERO(v))
+      else if (MPFR_IS_ZERO(v))
 	{
 	  if (MPFR_IS_ZERO(u))
 	    {
@@ -96,8 +96,9 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
 	  MPFR_SET_ZERO(q);
 	  MPFR_RET(0);
 	}
-      /* Never reach this !*/
-      MPFR_ASSERTN(0);
+      else
+	/* Never reach this !*/
+	MPFR_ASSERTN(0);
     }
   MPFR_CLEAR_FLAGS(q);
 
@@ -109,7 +110,6 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
    *              End of the part concerning special values.                *
    *                                                                        *
    **************************************************************************/
-
 
   up = MPFR_MANT(u);
   vp = MPFR_MANT(v);

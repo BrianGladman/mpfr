@@ -49,7 +49,6 @@ MA 02111-1307, USA. */
 #endif
 
 /* Definition of MPFR_LIMB_HIGHBIT */
-
 #ifdef GMP_LIMB_HIGHBIT
 #define MPFR_LIMB_HIGHBIT GMP_LIMB_HIGHBIT
 #else
@@ -64,34 +63,40 @@ MA 02111-1307, USA. */
 # error "BITS_PER_MP_LIMB must be a power of 2"
 #endif
 
+/* Check if we can represent the number of limbs 
+ * associated to the maximum of mpfr_prec_t*/
+/* Can't use MPFR_PREC_MAX, so use MPFR_PREC_FORMAT_INT */
+#ifdef MPFR_PREC_FORMAT_INT
+# if (MP_SIZE_T_MAX < (UINT_MAX/BYTES_PER_MP_LIMB))
+#  error "Incompatibilty between mp_size_t and mpfr_prec_t."
+# endif
+#else
+# if (MP_SIZE_T_MAX < (ULONG_MAX/BYTES_PER_MP_LIMB))
+#  error "Incompatibilty between mp_size_t and mpfr_prec_t."
+# endif
+#endif
+
 /* Test if X (positive) is a power of 2 */
 #define IS_POW2(X) (((X) & ((X) - 1)) == 0)
 #define NOT_POW2(X) (((X) & ((X) - 1)) != 0)
 
-/* Defined limits and unsigned types of exponent */
-#ifdef MPFR_EXP_FORMAT_INT
-  typedef unsigned int            mp_exp_unsigned_t;
+/* Defined limits and unsigned type of exponent */
+#if __GMP_MP_SIZE_T_INT == 1
+typedef unsigned int            mpfr_exp_unsigned_t;
 # define MPFR_EXP_MAX (INT_MAX)
 # define MPFR_EXP_MIN (INT_MIN)
 #else
-  typedef unsigned long int       mp_exp_unsigned_t;
+typedef unsigned long int       mpfr_exp_unsigned_t;
 # define MPFR_EXP_MAX (LONG_MAX)
 # define MPFR_EXP_MIN (LONG_MIN)
 #endif
-
-/* Defined limits and unsigned types of size */
-#ifdef MPFR_SIZE_FORMAT_INT
- typedef unsigned int            mp_size_unsigned_t;
-# define MPFR_SIZE_MAX (INT_MAX)
-#else
- typedef unsigned long int       mp_size_unsigned_t;
-# define MPFR_SIZE_MAX (LONG_MAX)
+#ifndef mp_exp_unsigned_t 
+# define mp_exp_unsigned_t mpfr_exp_unsigned_t
 #endif
 
-/*#define MP_EXP_T_MAX ((mp_exp_t) ((~ (mp_exp_unsigned_t) 0) >> 1))
-#define MP_EXP_T_MIN (-MP_EXP_T_MAX-1)*/
-
-#define MP_LIMB_T_ONE ((mp_limb_t) 1)
+#ifndef MP_LIMB_T_ONE
+# define MP_LIMB_T_ONE ((mp_limb_t) 1)
+#endif
 
 #define MPFR_INTPREC_MAX (ULONG_MAX & ~(unsigned long) (BITS_PER_MP_LIMB - 1))
 
@@ -115,8 +120,8 @@ MA 02111-1307, USA. */
 # define MPFR_ASSERTD(expr)  ((void) 0)
 #endif
 
-/* Theses macros help the compiler to determine if a test is likely*/
-/* or unlikely. */
+/* Theses macros help the compiler to determine if a test is 
+ * likely or unlikely. */
 #if __GNUC__ >= 3
 # define MPFR_LIKELY(x) (__builtin_expect(!!(x),1))
 # define MPFR_UNLIKELY(x) (__builtin_expect((x),0))
@@ -266,17 +271,10 @@ long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CO
 /* Old ESIZE */
 #define MPFR_LIMB_SIZE(x) ((MPFR_PREC((x)) - 1) / BITS_PER_MP_LIMB + 1)
 
-/* Enum special value of exponent. It is an enum for debug reason (gdb)
-  But ANSI C restricts enumerator values to range of `int'...
-typedef enum {
-  MPFR_EXP_ZERO = MPFR_EXP_MIN+0xB,
-  MPFR_EXP_NAN  = MPFR_EXP_MIN+0xD,
-  MPFR_EXP_INF  = MPFR_EXP_MIN+0xE
-  } mpfr_special_exp_t; */
-
-#define MPFR_EXP_ZERO (MPFR_EXP_MIN+1)
-#define MPFR_EXP_NAN  (MPFR_EXP_MIN+2)
-#define MPFR_EXP_INF  (MPFR_EXP_MIN+3)
+/* Enum special value of exponent.*/
+# define MPFR_EXP_ZERO (MPFR_EXP_MIN+1)
+# define MPFR_EXP_NAN  (MPFR_EXP_MIN+2)
+# define MPFR_EXP_INF  (MPFR_EXP_MIN+3)
 
 #define MPFR_CLEAR_FLAGS(x)
 /*#define MPFR_CLEAR_NAN(x)*/
@@ -302,11 +300,9 @@ typedef enum {
 #define MPFR_SIGN_POS (1)
 #define MPFR_SIGN_NEG (-1)
 
-/* Without zeros */
-#define MPFR_ISNONNEG(x)  (MPFR_NOTZERO((x)) && MPFR_SIGN(x) > 0)
-#define MPFR_ISNEG(x)     (MPFR_NOTZERO((x)) && MPFR_SIGN(x) < 0)
+#define MPFR_IS_STRICTPOS(x)  (MPFR_NOTZERO((x)) && MPFR_SIGN(x) > 0)
+#define MPFR_IS_STRICTNEG(x)  (MPFR_NOTZERO((x)) && MPFR_SIGN(x) < 0)
 
-/* With signed zeros */
 #define MPFR_IS_NEG(x) (MPFR_SIGN(x) < 0)
 #define MPFR_IS_POS(x) (MPFR_SIGN(x) > 0)
 
@@ -324,7 +320,7 @@ typedef enum {
 #define MPFR_IS_NEG_SIGN(s1) (s1 < 0)
 #define MPFR_MULT_SIGN(s1, s2) ((s1) * (s2))
 #define MPFR_SET_MULT_SIGN(x, s) \
-  (MPFR_CHECK_SIGN(s), MPFR_SIGN(x) *= s)
+  (MPFR_CHECK_SIGN(s), MPFR_SIGN(x) = MPFR_MULT_SIGN(s,MPFR_SIGN(x)))
 /* Transform a sign to 1 or -1 */
 #define MPFR_FROM_SIGN_TO_INT(s) (s)
 #define MPFR_INT_SIGN(x) MPFR_FROM_SIGN_TO_INT(MPFR_SIGN(x))
@@ -340,19 +336,19 @@ typedef enum {
 #define MPFR_RET_NAN return (__gmpfr_flags |= MPFR_FLAGS_NAN), 0
 
 /* Heap Memory gestion */ /* Old ABSSIZE */
-#define MPFR_GET_ALLOC_SIZE(x) ( ((mpfr_size_t*) MPFR_MANT(x))[-1] + 0)
-#define MPFR_SET_ALLOC_SIZE(x, n) ( ((mpfr_size_t*) MPFR_MANT(x))[-1] = n)
+#define MPFR_GET_ALLOC_SIZE(x) ( ((mp_size_t*) MPFR_MANT(x))[-1] + 0)
+#define MPFR_SET_ALLOC_SIZE(x, n) ( ((mp_size_t*) MPFR_MANT(x))[-1] = n)
 #define MPFR_ALLOC_SIZE(s) \
-  ((size_t) (sizeof(mpfr_size_t) + BYTES_PER_MP_LIMB*(s)))
+  ((size_t) (sizeof(mp_size_t) + BYTES_PER_MP_LIMB*(s)))
 #define MPFR_SET_MANT_PTR(x,p) \
-   (MPFR_MANT(x) = (mp_limb_t*) ((mpfr_size_t*) p + 1))
+   (MPFR_MANT(x) = (mp_limb_t*) ((mp_size_t*) p + 1))
 #define MPFR_GET_REAL_PTR(x) \
-   ((mp_limb_t*) ((mpfr_size_t*) MPFR_MANT(x) - 1))
+   ((mp_limb_t*) ((mp_size_t*) MPFR_MANT(x) - 1))
 
 /* Temporary memory gestion */
 /* temporary allocate 1 limb at xp, and initialize mpfr variable x */
 /* The temporary var doesn't have any size field, but it doesn't matter
- * since only functions dealing with malloc care about it */
+ * since only functions dealing with the Heap care about it */
 #define MPFR_TMP_INIT1(xp, x, p) \
  ( MPFR_PREC(x) = (p), \
    MPFR_MANT(x) = (xp), \
@@ -385,7 +381,7 @@ int strncasecmp _MPFR_PROTO ((const char *, const char *, size_t));
 int mpfr_strncasecmp _MPFR_PROTO ((const char *, const char *, size_t));
 #endif
 
-void mpfr_inits2 _MPFR_PROTO ((mpfr_prec_t, mpfr_ptr, ...));
+void mpfr_inits2 _MPFR_PROTO ((mp_prec_t, mpfr_ptr, ...));
 void mpfr_inits _MPFR_PROTO ((mpfr_ptr, ...));
 void mpfr_clears _MPFR_PROTO ((mpfr_ptr, ...));
 
@@ -395,12 +391,13 @@ void mpfr_save_emin_emax _MPFR_PROTO ((void));
 void mpfr_restore_emin_emax _MPFR_PROTO ((void));
 int mpfr_add1 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_sub1 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
-int mpfr_round_raw_generic _MPFR_PROTO ((mp_limb_t *, mp_limb_t *, mpfr_prec_t, int,
-				    mpfr_prec_t, mp_rnd_t, int *, int));
+int mpfr_round_raw_generic _MPFR_PROTO ((mp_limb_t *, mp_limb_t *, 
+					 mp_prec_t, int,
+					 mp_prec_t, mp_rnd_t, int *, int));
 int mpfr_can_round_raw _MPFR_PROTO ((mp_limb_t *, mp_size_t, int, mp_exp_t,
-				mp_rnd_t, mp_rnd_t, mpfr_prec_t));
+				     mp_rnd_t, mp_rnd_t, mp_prec_t));
 double mpfr_get_d3 _MPFR_PROTO ((mpfr_srcptr, mp_exp_t, mp_rnd_t));
-int mpfr_cmp2 _MPFR_PROTO ((mpfr_srcptr, mpfr_srcptr, mpfr_prec_t *));
+int mpfr_cmp2 _MPFR_PROTO ((mpfr_srcptr, mpfr_srcptr, mp_prec_t *));
 long __gmpfr_ceil_log2 _MPFR_PROTO ((double));
 long __gmpfr_floor_log2 _MPFR_PROTO ((double));
 double __gmpfr_ceil_exp2 _MPFR_PROTO ((double));
@@ -411,7 +408,8 @@ int mpfr_exp3 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_powerof2_raw _MPFR_PROTO ((mpfr_srcptr));
 void mpfr_setmax _MPFR_PROTO ((mpfr_ptr, mp_exp_t));
 void mpfr_setmin _MPFR_PROTO ((mpfr_ptr, mp_exp_t));
-long mpn_exp _MPFR_PROTO ((mp_limb_t *, mp_exp_t *, int, mp_exp_t, size_t));
+long mpn_exp _MPFR_PROTO ((mp_limb_t *, mp_exp_t *, int, 
+			   mp_exp_t, size_t));
 void mpfr_print_binary _MPFR_PROTO ((mpfr_srcptr));
 void mpfr_set_str_binary _MPFR_PROTO ((mpfr_ptr, __gmp_const char *));
 

@@ -232,14 +232,14 @@ mpfr_get_d3 (mpfr_srcptr src, mp_exp_t e, mp_rnd_t rnd_mode)
 double
 mpfr_get_d (mpfr_srcptr src, mp_rnd_t rnd_mode)
 {
-  return mpfr_get_d3 (src, MPFR_IS_FP(src) && MPFR_NOTZERO(src) ?
+  return mpfr_get_d3 (src, MPFR_IS_PURE_FP(src) ?
                       MPFR_GET_EXP (src) : 0, rnd_mode);
 }
 
 double
 mpfr_get_d1 (mpfr_srcptr src)
 {
-  return mpfr_get_d3 (src, MPFR_IS_FP(src) && MPFR_NOTZERO(src) ?
+  return mpfr_get_d3 (src, MPFR_IS_PURE_FP(src) ?
                       MPFR_GET_EXP (src) : 0, __gmpfr_default_rounding_mode);
 }
 
@@ -251,7 +251,7 @@ mpfr_get_d_2exp (long *expptr, mpfr_srcptr src, mp_rnd_t rnd_mode)
 
   ret = mpfr_get_d3 (src, 0, rnd_mode);
 
-  if (MPFR_IS_FP(src) && MPFR_NOTZERO(src))
+  if (MPFR_IS_PURE_FP(src))
     {
       exp = MPFR_GET_EXP (src);
 

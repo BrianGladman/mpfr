@@ -87,13 +87,17 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   /* reserve a space to store b aligned with the result, i.e. shifted by
      (-cancel) % BITS_PER_MP_LIMB to the right */
   bn      = MPFR_LIMB_SIZE(b); 
-  /* shift_b = cancel % BITS_PER_MP_LIMB;
-     if (shift_b)
-     shift_b = BITS_PER_MP_LIMB - shift_b;
-     I think (-cancel)%BITS_PER_MP_LIMB is ok. I add an assert anyway */
-  shift_b = (-cancel) % BITS_PER_MP_LIMB;
-  cancel1 = (cancel + shift_b) / BITS_PER_MP_LIMB; 
+  if ((UINT_MAX % BITS_PER_MP_LIMB) == (BITS_PER_MP_LIMB-1))
+    shift_b = (-cancel) % BITS_PER_MP_LIMB;
+  else
+    {
+      shift_b = cancel % BITS_PER_MP_LIMB;
+      if (shift_b)
+	shift_b = BITS_PER_MP_LIMB - shift_b;
+    }
   MPFR_ASSERTD( shift_b >= 0 && shift_b < BITS_PER_MP_LIMB);
+
+  cancel1 = (cancel + shift_b) / BITS_PER_MP_LIMB; 
  
   /* the high cancel1 limbs from b should not be taken into account */
   if (MPFR_UNLIKELY(shift_b == 0))
@@ -115,9 +119,13 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   /* reserve a space to store c aligned with the result, i.e. shifted by
      (diff_exp-cancel) % BITS_PER_MP_LIMB to the right */
   cn      = MPFR_LIMB_SIZE(c);
-  /*  shift_c = diff_exp - (cancel % BITS_PER_MP_LIMB);
-      shift_c = (shift_c + BITS_PER_MP_LIMB) % BITS_PER_MP_LIMB;*/
-  shift_c = (diff_exp - cancel) % BITS_PER_MP_LIMB;
+  if ((UINT_MAX % BITS_PER_MP_LIMB) == (BITS_PER_MP_LIMB-1))
+    shift_c = (diff_exp - cancel) % BITS_PER_MP_LIMB;
+  else
+    {
+      shift_c = diff_exp - (cancel % BITS_PER_MP_LIMB);
+      shift_c = (shift_c + BITS_PER_MP_LIMB) % BITS_PER_MP_LIMB;
+    }
   MPFR_ASSERTD( shift_c >= 0 && shift_c < BITS_PER_MP_LIMB);
 
   if (MPFR_UNLIKELY(shift_c == 0))
@@ -191,7 +199,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 #endif
 
   /* subtract high(c) */
-  if (an + cancel2 > 0) /* otherwise c does not overlap with a */
+  if (MPFR_LIKELY(an + cancel2 > 0)) /* otherwise c does not overlap with a */
     {
       mp_limb_t *ap2;
 
@@ -238,7 +246,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   carry = ap[0] & ((MP_LIMB_T_ONE << sh) - MP_LIMB_T_ONE);
   ap[0] -= carry;
 
-  if (rnd_mode == GMP_RNDN)
+  if (MPFR_LIKELY(rnd_mode == GMP_RNDN))
     {
       if (MPFR_LIKELY(sh))
 	{

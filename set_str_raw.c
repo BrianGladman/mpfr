@@ -63,8 +63,12 @@ mpfr_set_str_binary (mpfr_ptr x, const char *str)
   if (*str == 'I')
     {
       MPFR_SET_INF(x);
-      if (MPFR_ISNEG(x) != negative)
-	MPFR_CHANGE_SIGN(x);
+      if (negative)
+	MPFR_SET_NEG(x);
+      else
+	MPFR_SET_POS(x);
+      /*if (MPFR_IS_STRICTNEG(x) != negative)
+	MPFR_CHANGE_SIGN(x);*/
       return;
     }
 

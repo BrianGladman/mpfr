@@ -496,30 +496,30 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       if (rb == 0)
         {
         rndn_zero:
-          inex = MPFR_ISNEG(a) ? 1 : -1;
+          inex = MPFR_IS_STRICTNEG(a) ? 1 : -1;
           goto set_exponent;
         }
       else
         {
         rndn_away:
-          inex = MPFR_ISNONNEG(a) ? 1 : -1;
+          inex = MPFR_IS_STRICTPOS(a) ? 1 : -1;
           goto add_one_ulp;
         }
 
     case GMP_RNDZ:
-      inex = rb || fb ? (MPFR_ISNEG(a) ? 1 : -1) : 0;
+      inex = rb || fb ? (MPFR_IS_STRICTNEG(a) ? 1 : -1) : 0;
       goto set_exponent;
 
     case GMP_RNDU:
       inex = rb || fb;
-      if (inex && MPFR_ISNONNEG(a))
+      if (inex && MPFR_IS_STRICTPOS(a))
         goto add_one_ulp;
       else
         goto set_exponent;
 
     case GMP_RNDD:
       inex = - (rb || fb);
-      if (inex && MPFR_ISNEG(a))
+      if (inex && MPFR_IS_STRICTNEG(a))
         goto add_one_ulp;
       else
         goto set_exponent;
