@@ -33,7 +33,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
   mp_exp_t qexp;
 
   mp_size_t err, k;
-  mp_limb_t the_real_near;
+  mp_limb_t tonearest;
   int inex, sh, can_round = 0, sign_quotient;
   unsigned int cc = 0, rw;
 
@@ -363,14 +363,14 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
     /* Hack : qp[qsize] is 0 or 1, hence if not 0, = 2^(qp[qsize] - 1). */
     {
       MPFR_ASSERTD(qp[qsize] == 1);
-      the_real_near = mpn_rshift (qp, qp, qsize, 1);
+      tonearest = mpn_rshift (qp, qp, qsize, 1);
       qp[qsize - 1] |= MPFR_LIMB_HIGHBIT;
       qexp ++;
     }
   else
     {
       MPFR_ASSERTD(sh == 0);
-      the_real_near = 0;
+      tonearest = 0;
     }
 
   cc = mpfr_round_raw_3 (qp, qp, err,
@@ -404,7 +404,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
 
 	  /* If a bit has been shifted out during normalization, then
 	     the remainder is nonzero. */
-	  if (MPFR_LIKELY(the_real_near == 0))
+	  if (MPFR_LIKELY(tonearest == 0))
 	    while (MPFR_UNLIKELY((k >= 0) && !(rp[k])))
 	      k--;
 
@@ -432,7 +432,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
 
 	  /* If a bit has been shifted out during normalization, hence
 	     the remainder is nonzero. */
-	    if (MPFR_LIKELY(the_real_near == 0))
+	    if (MPFR_LIKELY(tonearest == 0))
 	      while (MPFR_UNLIKELY(((k >= 0) && !(rp[k]))))
 		k--;
 
