@@ -2,9 +2,9 @@
 #define mpf_add((x),(y),(z)) mpfr_add((x),(y),(z),__gmp_default_rounding_mode) 
 
 #define mpf_add_ui((x),(y),(z)) \
-             mpfr_add_ui((x),(y),(z),__gmp_default_rounding_mode) /* TODO */
+             mpfr_add_ui((x),(y),(z),__gmp_default_rounding_mode)
 
-#define mpf_ceil((x),(y)) mpfr_ceil((x),(y),__gmp_default_rounding_mode) /* TODO */
+#define mpf_ceil mpfr_ceil
 
 #define mpf_clear((x)) mpfr_clear(x)
 #define mpf_cmp((x),(y)) mpfr_cmp((x),(y)) 
@@ -20,8 +20,7 @@
                 mpfr_dump((x),(y),(z),__gmp_default_rounding_mode)
 #define mpf_eq((x),(y),(z)) mpfr_eq((x),(y),(z),__gmp_default_rounding_mode)
 
-#define mpf_floor((x),(y),(z)) \
-                 mpfr_floor((x),(y),(z),__gmp_default_rounding_mode) /* TODO */
+#define mpf_floor mpfr_floor
 
 #define mpf_get_d((x)) mpfr_get_d((x))
 #define mpf_get_prec((x)) mpfr_get_prec((x))
@@ -45,7 +44,7 @@
 #define mpf_pow_ui((x),(y),(z)) mpfr_pow_ui((x),(y),(z),__gmp_default_rounding_mode) 
 #define mpf_random2((x),(y),(z)) mpfr_random2((x),(y),(z),__gmp_default_rounding_mode)
 
-#define mpf_reldiff((x),(y),(z)) mpfr_reldiff((x),(y),(z),__gmp_default_rounding_mode) /* TODO */
+#define mpf_reldiff mpfr_reldiff
 
 #define mpf_set((x),(y)) mpfr_set((x),(y),__gmp_default_rounding_mode) 
 #define mpf_set_d((x),(y)) mpfr_set_d((x),(y),__gmp_default_rounding_mode) 
@@ -59,17 +58,18 @@
 #define mpf_size((x)) mpfr_size((x),__gmp_default_rounding_mode)
 #define mpf_sqrt((x),(y)) mpfr_sqrt((x),(y),__gmp_default_rounding_mode) 
 
-#define mpf_sqrt_ui((x),(y)) mpfr_sqrt_ui((x),(y),__gmp_default_rounding_mode) /* TODO */
+#define mpf_sqrt_ui((x),(y)) mpfr_sqrt_ui((x),(y),__gmp_default_rounding_mode)
 
-#define mpf_sub((x),(y),(z)) mpfr_sub_ui((x),(y),(z),__gmp_default_rounding_mode) 
+#define mpf_sub((x),(y),(z)) mpfr_sub((x),(y),(z),__gmp_default_rounding_mode) 
+#define mpf_sub_ui((x),(y),(z)) mpfr_sub_ui((x),(y),(z),__gmp_default_rounding_mode) 
 
-#define mpf_trunc((x),(y)) mpfr_trunc((x),(y),__gmp_default_rounding_mode) /* TODO */
+#define mpf_trunc mpfr_trunc
 
-#define mpf_ui_div((x),(y),(z)) mpfr_ui_div((x),(y),(z),__gmp_default_rounding_mode) /* TODO */
+#define mpf_ui_div((x),(y),(z)) mpfr_ui_div((x),(y),(z),__gmp_default_rounding_mode)
 
-#define mpf_ui_sub((x),(y),(z)) mpfr_ui_sub((x),(y),(z),__gmp_default_rounding_mode) /* TODO */
+#define mpf_ui_sub((x),(y),(z)) mpfr_ui_sub((x),(y),(z),__gmp_default_rounding_mode)
 
-#define mpf_urandomb((x),(y),(z)) mpfr_urandomb((x),(y),(z),__gmp_default_rounding_mode)
-#define mpf_sgn((x)) mpfr_sgn((x),__gmp_default_rounding_mode)
+#define mpf_urandomb mpfr_urandomb
+#define mpf_sgn mpfr_sgn
 
 
