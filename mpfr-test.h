@@ -83,6 +83,10 @@ int mpfr_cmp_str _MPFR_PROTO ((mpfr_srcptr x, const char *s, int base,
 #define mpfr_cmp_str1(x,s) mpfr_cmp_str(x,s,10,GMP_RNDN)
 #define mpfr_set_str1(x,s) mpfr_set_str(x,s,10,GMP_RNDN)
 
+#ifndef MPFR_TEST_USE_RANDS
+# define MPFR_TEST_USE_RANDS() ((void)0)
+#endif
+
 #if defined (__cplusplus)
 }
 #endif

@@ -237,6 +237,7 @@ main (int argc, char *argv[])
   mp_prec_t prec; 
   int verbose = 0; 
   
+  MPFR_TEST_USE_RANDS ();
   tests_start_mpfr ();
 
   if (argc > 1)

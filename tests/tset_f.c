@@ -33,6 +33,7 @@ main (void)
   unsigned long k, pr;
   int r, inexact;
 
+  MPFR_TEST_USE_RANDS ();
   tests_start_mpfr ();
 
   mpf_init (y);

@@ -30,12 +30,10 @@ MA 02111-1307, USA. */
 #if TIME_WITH_SYS_TIME
 # include <sys/time.h>  /* for struct timeval */
 # include <time.h>
-#else
-# if HAVE_SYS_TIME_H
+#elif HAVE_SYS_TIME_H
 #  include <sys/time.h>
-# else
+#else
 #  include <time.h>
-# endif
 #endif
 
 #include "mpfr-test.h"

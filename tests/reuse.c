@@ -561,6 +561,7 @@ reldiff_wrapper (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 int
 main (void)
 {
+  MPFR_TEST_USE_RANDS ();
   tests_start_mpfr ();
 
   test3 (mpfr_add, "mpfr_add", 53, GMP_RNDN);

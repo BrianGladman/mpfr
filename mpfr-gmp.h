@@ -239,16 +239,30 @@ typedef __gmp_randstate_struct *gmp_randstate_ptr;
 #define _gmp_rand mpfr_rand_raw
 void mpfr_rand_raw _MPFR_PROTO((mp_ptr, gmp_randstate_t, unsigned long int));
 
+/* To be called BEFORE tests_start_mpfr () if the tests used 
+   mpfr_random, mpfr_random2 or any functions which uses the macro RANDS */
+void mpfr_init_gmp_rand _MPFR_PROTO(());
+#define MPFR_TEST_USE_RANDS() mpfr_init_gmp_rand ();
+
 /* Allocate func are defined in gmp-impl.h */
+
+/* In newer GMP, there isn't anumore __gmp_allocate_func,
+   __gmp_reallocate_func & __gmp_free_func in gmp.h
+   Just getting the correct value by calling mp_get_memory_functions */
+#ifdef mp_get_memory_functions
+
 #undef __gmp_allocate_func      
 #undef __gmp_reallocate_func    
 #undef __gmp_free_func          
-#define __gmp_allocate_func      mpfr_allocate_func
-#define __gmp_reallocate_func    mpfr_reallocate_func
-#define __gmp_free_func          mpfr_free_func
-extern void * (*__gmp_allocate_func)   _MPFR_PROTO ((size_t));
-extern void * (*__gmp_reallocate_func) _MPFR_PROTO ((void *, size_t, size_t));
-extern void   (*__gmp_free_func)       _MPFR_PROTO ((void *, size_t));
+#define MPFR_GET_MEMFUN mp_get_memory_functions(mpfr_allocate_func, mpfr_reallocate_func, mpfr_free_func)
+#define __gmp_allocate_func   (MPFR_GET_MEMFUNC, mpfr_allocate_func)
+#define __gmp_reallocate_func (MPFR_GET_MEMFUNC, mpfr_reallocate_func)
+#define __gmp_free_func       (MPFR_GET_MEMFUNC, mpfr_free_func)
+extern void * (*mpfr_allocate_func)   _MPFR_PROTO ((size_t));
+extern void * (*mpfr_reallocate_func) _MPFR_PROTO ((void *, size_t, size_t));
+extern void   (*mpfr_free_func)       _MPFR_PROTO ((void *, size_t));
+
+#endif
 
 #undef __gmp_default_allocate
 #undef __gmp_default_reallocate
@@ -260,10 +274,12 @@ void *__gmp_default_allocate _MPFR_PROTO ((size_t));
 void *__gmp_default_reallocate _MPFR_PROTO ((void *, size_t, size_t));
 void __gmp_default_free _MPFR_PROTO ((void *, size_t));
 
+/*
 #undef mp_set_memory_functions
 #define mp_set_memory_functions mpfr_set_memory_functions
 void mp_set_memory_functions _MPFR_PROTO ((void *(*) (size_t),
                                            void *(*) (void *, size_t, size_t),
                                            void (*) (void *, size_t)));
+*/
 
 #endif /* Gmp internal emulator */
