@@ -42,7 +42,7 @@ check_inexact ()
   mpfr_init (y);
   mpfr_init (absx);
   
-  for (p=1; p<500; p++)
+  for (p=2; p<500; p++)
     {
       mpfr_set_prec (x, p);
       mpfr_set_prec (absx, p);
@@ -54,7 +54,7 @@ check_inexact ()
 	}
       else
 	mpfr_set (absx, x, GMP_RNDN);
-      for (q=1; q<2*p; q++)
+      for (q=2; q<2*p; q++)
 	{
 	  mpfr_set_prec (y, q);
 	  for (rnd=0; rnd<4; rnd++)
