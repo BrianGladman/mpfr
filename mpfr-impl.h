@@ -22,9 +22,13 @@ MA 02111-1307, USA. */
 /* This unsigned type must correspond to the signed one defined in gmp.h */
 #if defined (_CRAY) && ! defined (_CRAYMPP)
 typedef unsigned int            mp_exp_unsigned_t;
+typedef unsigned int            mp_size_unsigned_t;
 #else
 typedef unsigned long int       mp_exp_unsigned_t;
+typedef unsigned long int       mp_size_unsigned_t;
 #endif
+
+#define MP_LIMB_T_ONE ((mp_limb_t) 1)
 
 /* Assertions */
 
@@ -68,23 +72,26 @@ typedef union ieee_double_extract Ieee_double_extract;
    bit 30 of _mpfr_size is used for Nan flag,
    bit 29 of _mpfr_size is used for Inf flag,
    remaining bits are used to store the number of allocated limbs */
-#define MPFR_CLEAR_FLAGS(x) (((x) -> _mpfr_size &= ~(3 << 29)))
-#define MPFR_IS_NAN(x) (((x)->_mpfr_size >> 30)&1)
-#define MPFR_SET_NAN(x) ((x)->_mpfr_size |= (1<<30))
-#define MPFR_CLEAR_NAN(x) (((x) -> _mpfr_size &= ~(1 << 30)))
-#define MPFR_IS_INF(x) (((x)->_mpfr_size >> 29)&1)
-#define MPFR_SET_INF(x) ((x)->_mpfr_size |= (1<<29))
-#define MPFR_CLEAR_INF(x) ((x)->_mpfr_size &= ~(1 << 29))
+#define MPFR_CLEAR_FLAGS(x) \
+  (((x) -> _mpfr_size &= ~((mp_size_unsigned_t) 3 << 29)))
+#define MPFR_IS_NAN(x) (((x)->_mpfr_size >> 30) & 1)
+#define MPFR_SET_NAN(x) ((x)->_mpfr_size |= ((mp_size_unsigned_t) 1 << 30))
+#define MPFR_CLEAR_NAN(x) \
+  (((x) -> _mpfr_size &= ~((mp_size_unsigned_t) 1 << 30)))
+#define MPFR_IS_INF(x) (((x)->_mpfr_size >> 29) & 1)
+#define MPFR_SET_INF(x) ((x)->_mpfr_size |= ((mp_size_unsigned_t) 1 << 29))
+#define MPFR_CLEAR_INF(x) ((x)->_mpfr_size &= ~((mp_size_unsigned_t) 1 << 29))
 #define MPFR_IS_FP(x) ((((x) -> _mpfr_size >> 29) & 3) == 0)
-#define MPFR_ABSSIZE(x) ((x)->_mpfr_size & ((1<<29)-1))
+#define MPFR_ABSSIZE(x) \
+  ((x)->_mpfr_size & (((mp_size_unsigned_t) 1 << 29) - 1))
 #define MPFR_SIZE(x) ((x)->_mpfr_size)
 #define MPFR_EXP(x) ((x)->_mpfr_exp)
 #define MPFR_MANT(x) ((x)->_mpfr_d)
-#define MPFR_ISNONNEG(x) (MPFR_NOTZERO((x)) && MPFR_SIGN(x)>=0)
-#define MPFR_ISNEG(x) (MPFR_NOTZERO((x)) && MPFR_SIGN(x)==-1)
-#define MPFR_SET_POS(x) (MPFR_SIZE(x) &= ~(((mp_size_t)1)<<31))
-#define MPFR_SET_NEG(x) (MPFR_SIZE(x) |= (((mp_size_t)1)<<31))
-#define MPFR_CHANGE_SIGN(x) (MPFR_SIZE(x) ^= (((mp_size_t)1)<<31))
+#define MPFR_ISNONNEG(x) (MPFR_NOTZERO((x)) && MPFR_SIGN(x) >= 0)
+#define MPFR_ISNEG(x) (MPFR_NOTZERO((x)) && MPFR_SIGN(x) == -1)
+#define MPFR_SET_POS(x) (MPFR_SIZE(x) &= ~(((mp_size_unsigned_t) 1) << 31))
+#define MPFR_SET_NEG(x) (MPFR_SIZE(x) |= (((mp_size_unsigned_t) 1) << 31))
+#define MPFR_CHANGE_SIGN(x) (MPFR_SIZE(x) ^= (((mp_size_unsigned_t) 1) << 31))
 #define MPFR_SET_SAME_SIGN(x, y) \
   (MPFR_SIGN((x)) != MPFR_SIGN((y)) && (MPFR_CHANGE_SIGN((x)), 0))
 #define MPFR_PREC(x) ((x)->_mpfr_prec)
