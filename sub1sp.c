@@ -761,7 +761,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       printf("\nSub1sp: "); 
       mpfr_print_binary(a);
       printf("\nInexact sp = %d | Inexact = %d\n", inexact, inexact2);
-      abort();
+      MPFR_ASSERTN(0);
     }
   mpfr_clears(tmpa, tmpb, tmpc, NULL);
   return inexact;
