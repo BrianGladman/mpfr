@@ -702,6 +702,10 @@ extern unsigned char *mpfr_stack;
 # define MPFR_EXP_THRESHOLD 25000
 #endif
 
+/* Cross-over point from nai"ve Taylor series to binary splitting,
+   obtained experimentally on a Pentium II. Optimal value for
+   target machine should be determined by tuneup. */
+#define MPFR_CONST_LOG2_THRESHOLD 25000
 
 
 /******************************************************

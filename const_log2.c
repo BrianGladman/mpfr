@@ -58,25 +58,27 @@ static int mpfr_const_aux_log2 (mpfr_ptr, mp_rnd_t);
 static int
 mpfr_const_aux_log2 (mpfr_ptr mylog, mp_rnd_t rnd_mode)
 {
-  mp_prec_t prec;
+  mp_prec_t prec, prec_x;
   mpfr_t tmp1, tmp2, result,tmp3;
   mpz_t cst;
   int logn;
-  mp_prec_t prec_i_want;
-  mp_prec_t prec_x;
-  int inexact = 0;  /* here, 0 means not set */
+  int inexact;
+  MPFR_ZIV_DECL (loop);
 
   mpz_init (cst);
-  prec_i_want = MPFR_PREC(mylog);
-  logn = MPFR_INT_CEIL_LOG2 (prec_i_want);
-  prec_x = prec_i_want + logn;
-  while (!inexact)
+  prec_x = MPFR_PREC (mylog);
+  logn = MPFR_INT_CEIL_LOG2 (prec_x);
+  prec_x = prec_x + logn + 4;
+
+  mpfr_init2 (tmp1, prec_x);
+  mpfr_init2 (result, prec_x);
+  mpfr_init2 (tmp2, prec_x);
+  mpfr_init2 (tmp3, prec_x);
+  
+  MPFR_ZIV_INIT (loop, prec_x);
+  for (;;)
     {
       prec = MPFR_INT_CEIL_LOG2 (prec_x);
-      mpfr_init2 (tmp1, prec_x);
-      mpfr_init2 (result, prec_x);
-      mpfr_init2 (tmp2, prec_x);
-      mpfr_init2 (tmp3, prec_x);
       mpz_set_ui (cst, 1);
       mpfr_aux_log2 (tmp1, cst, 4, prec-2);
       mpfr_div_2ui (tmp1, tmp1, 4, GMP_RNDD);
@@ -94,30 +96,26 @@ mpfr_const_aux_log2 (mpfr_ptr mylog, mp_rnd_t rnd_mode)
       mpfr_mul_ui (tmp3, tmp3, 3*13, GMP_RNDD);
       mpfr_sub (result, result, tmp3, GMP_RNDD);
 
-      mpfr_clear (tmp1);
-      mpfr_clear (tmp2);
-      mpfr_clear (tmp3);
       if (mpfr_can_round (result, prec_x - 2, GMP_RNDD, GMP_RNDZ,
-                          prec_i_want + (rnd_mode == GMP_RNDN)))
-        {
-          inexact = mpfr_set (mylog, result, rnd_mode);
-          MPFR_ASSERTN (inexact != 0);
-        }
-      else
-        {
-          prec_x += logn;
-        }
-
-      mpfr_clear (result);
+                          MPFR_PREC (mylog) + (rnd_mode == GMP_RNDN)))
+        break;
+      MPFR_ZIV_NEXT (loop, prec_x);
+      mpfr_set_prec (tmp1, prec_x);
+      mpfr_set_prec (result, prec_x);
+      mpfr_set_prec (tmp2, prec_x);
+      mpfr_set_prec (tmp3, prec_x);
     }
+  inexact = mpfr_set (mylog, result, rnd_mode);
+  MPFR_ASSERTN (inexact != 0);
+
+  mpfr_clear (tmp1);
+  mpfr_clear (result);
+  mpfr_clear (tmp2);
+  mpfr_clear (tmp3);
+  
   mpz_clear (cst);
   return inexact;
 }
-
-/* Cross-over point from nai"ve Taylor series to binary splitting,
-   obtained experimentally on a Pentium II. Optimal value for
-   target machine should be determined by tuneup. */
-#define LOG2_THRESHOLD 25000
 
 /* set x to log(2) rounded to precision MPFR_PREC(x) with direction rnd_mode
 
@@ -144,7 +142,8 @@ mpfr_const_log2_internal (mpfr_ptr x, mp_rnd_t rnd_mode)
   precx = MPFR_PREC(x);
 
   /* need to recompute */
-  if (precx < LOG2_THRESHOLD) /* use nai"ve Taylor series evaluation */
+  if (precx < MPFR_CONST_LOG2_THRESHOLD) 
+    /* use nai"ve Taylor series evaluation */
     {
       /* the following was checked by exhaustive search to give a correct
          result for all 4 rounding modes up to precx = 13500 */
