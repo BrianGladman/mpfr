@@ -50,6 +50,18 @@ mpfr_set_emin (mp_exp_t exponent)
     }
 }
 
+mp_exp_t 
+mpfr_get_emin_min (void)
+{
+  return MPFR_EMIN_MIN;
+}
+
+mp_exp_t 
+mpfr_get_emin_max (void)
+{
+  return MPFR_EMIN_MAX;
+}
+
 #undef mpfr_get_emax
 
 mp_exp_t
@@ -73,6 +85,18 @@ mpfr_set_emax (mp_exp_t exponent)
       return 1;
     }
 }
+
+mp_exp_t
+mpfr_get_emax_min ()
+{
+  return MPFR_EMAX_MIN;
+}
+mp_exp_t
+mpfr_get_emax_max ()
+{
+  return MPFR_EMAX_MAX;
+}
+
 
 #undef mpfr_clear_flags
 

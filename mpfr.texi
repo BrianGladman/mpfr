@@ -1511,6 +1511,18 @@ otherwise the subsequent
 behavior will be undefined, in the sense of the ISO C standard.
 @end deftypefun
 
+@deftypefun mp_exp_t mpfr_get_emin_min (void)
+@deftypefunx mp_exp_t mpfr_get_emin_max (void)
+@deftypefunx mp_exp_t mpfr_get_emax_min (void)
+@deftypefunx mp_exp_t mpfr_get_emax_max (void)
+Return the minimum and maximum of the smallest and largest exponents
+allowed for @code{mpfr_set_emin} and @code{mpfr_set_emax}. Theses values
+are implementation dependent; it is possible to create a non
+portable program by writting @code{mpfr_set_emax(mpfr_get_emax_max())}
+and @code{mpfr_set_emin(mpfr_get_emin_min())} since the values
+of the smallest and largest exponents become implementation dependent.
+@end deftypefun
+
 @deftypefun int mpfr_check_range (mpfr_t @var{x}, int @var{t}, mp_rnd_t @var{rnd})
 This function forces @var{x} to be in the current range of acceptable
 values, @var{t} being the current ternary value: negative if @var{x}

@@ -90,12 +90,6 @@ typedef int          mpfr_sign_t;
 #define MPFR_EMAX_DEFAULT ((mp_exp_t) (((unsigned long) 1 << 30) - 1))
 #define MPFR_EMIN_DEFAULT (-(MPFR_EMAX_DEFAULT))
 
-/* Definition of the intervals of the exponent limits */
-#define MPFR_EMIN_MIN MPFR_EMIN_DEFAULT
-#define MPFR_EMIN_MAX MPFR_EMAX_DEFAULT
-#define MPFR_EMAX_MIN MPFR_EMIN_DEFAULT
-#define MPFR_EMAX_MAX MPFR_EMAX_DEFAULT
-
 /* Definition of the main structure */
 typedef struct {
   mpfr_prec_t  _mpfr_prec; 
@@ -167,10 +161,14 @@ extern mpfr_cache_t __gmpfr_cache_const_euler;
 
 __gmp_const char * mpfr_get_version _MPFR_PROTO ((void));
 
-mp_exp_t mpfr_get_emin _MPFR_PROTO ((void));
-int mpfr_set_emin _MPFR_PROTO ((mp_exp_t));
-mp_exp_t mpfr_get_emax _MPFR_PROTO ((void));
-int mpfr_set_emax _MPFR_PROTO ((mp_exp_t));
+mp_exp_t mpfr_get_emin     _MPFR_PROTO ((void));
+int      mpfr_set_emin     _MPFR_PROTO ((mp_exp_t));
+mp_exp_t mpfr_get_emin_min _MPFR_PROTO ((void));
+mp_exp_t mpfr_get_emin_max _MPFR_PROTO ((void));
+mp_exp_t mpfr_get_emax     _MPFR_PROTO ((void));
+int      mpfr_set_emax     _MPFR_PROTO ((mp_exp_t));
+mp_exp_t mpfr_get_emax_min _MPFR_PROTO ((void));
+mp_exp_t mpfr_get_emax_max _MPFR_PROTO ((void));
 
 void mpfr_set_default_rounding_mode _MPFR_PROTO((mpfr_rnd_t));
 mp_rnd_t mpfr_get_default_rounding_mode _MPFR_PROTO((void));
@@ -414,7 +412,7 @@ int mpfr_cmp_f _MPFR_PROTO ((mpfr_srcptr, mpf_srcptr));
 
 int mpfr_fma _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_srcptr,
                            mpfr_rnd_t));
-int mpfr_sum _MPFR_PROTO ((mpfr_ptr, mpfr_ptr const tab[], unsigned long,
+int mpfr_sum _MPFR_PROTO ((mpfr_ptr, mpfr_ptr __gmp_const tab[], unsigned long,
 			   mpfr_rnd_t));
 
 void mpfr_init_cache _MPFR_PROTO ((mpfr_cache_t,int(*)(mpfr_ptr,mpfr_rnd_t)));
@@ -422,14 +420,12 @@ void mpfr_clear_cache _MPFR_PROTO ((mpfr_cache_t));
 int  mpfr_cache _MPFR_PROTO ((mpfr_ptr, mpfr_cache_t, mpfr_rnd_t));
 void mpfr_free_cache _MPFR_PROTO ((void));
 
+int  mpfr_strtofr _MPFR_PROTO ((mpfr_ptr, __gmp_const char *, char **,
+				unsigned int, mpfr_rnd_t));
+
 #if defined (__cplusplus)
 }
 #endif
-
-/* Compatibility with 2.0.1
-   'mpfr_round_prec' is used to detect 2.0.1 and 2.0.2 */
-#define mpfr_cmp_abs mpfr_cmpabs
-#define mpfr_round_prec(x,r,p) mpfr_prec_round(x,p,r)
 
 /* DON'T USE THIS! */
 #if __GMP_MP_SIZE_T_INT
@@ -529,12 +525,17 @@ void mpfr_free_cache _MPFR_PROTO ((void));
    mpfr_set_si ((_f), (_s), (_r))) 
 #endif
 
-
-/* To remove when GMP MPFR C++ interface are fixed */
+/* Compatibility layer -- obsolete functions and macros */
+#define mpfr_cmp_abs mpfr_cmpabs
+#define mpfr_round_prec(x,r,p) mpfr_prec_round(x,p,r)
 #define __gmp_default_rounding_mode __gmpfr_default_rounding_mode
 #define __mpfr_emin __gmpfr_emin
 #define __mpfr_emax __gmpfr_emax
 #define __mpfr_flags __gmpfr_flags
 #define __mpfr_default_fp_bit_precision __gmpfr_default_fp_bit_precision
+#define MPFR_EMIN_MIN mpfr_get_emin_min()
+#define MPFR_EMIN_MAX mpfr_get_emin_max()
+#define MPFR_EMAX_MIN mpfr_get_emax_min()
+#define MPFR_EMAX_MAX mpfr_get_emax_max()
 
 #endif /* __MPFR_H*/

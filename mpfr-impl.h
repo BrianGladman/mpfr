@@ -202,7 +202,17 @@ typedef unsigned long int  mpfr_uexp_t;
 #endif
 
 /* Invalid exponent value (to track bugs...) */
-#define MPFR_EXP_INVALID ((mp_exp_t) 1 << 30)
+#define MPFR_EXP_INVALID ((mp_exp_t) 1 << (BITS_PER_MP_LIMB * sizeof (mp_exp_t) / sizeof(mp_limb_t) - 2))
+ 
+/* Definition of the intervals of the exponent limits */
+#undef MPFR_EMIN_MIN
+#undef MPFR_EMIN_MAX
+#undef MPFR_EMAX_MIN
+#undef MPFR_EMAX_MAX
+#define MPFR_EMIN_MIN (-MPFR_EXP_INVALID+1)
+#define MPFR_EMIN_MAX (MPFR_EXP_INVALID-1)
+#define MPFR_EMAX_MIN (-MPFR_EXP_INVALID+1)
+#define MPFR_EMAX_MAX (MPFR_EXP_INVALID-1)
 
 /* Use MPFR_GET_EXP and MPFR_SET_EXP instead of MPFR_EXP directly,
    unless when the exponent may be out-of-range, for instance when
