@@ -28,10 +28,10 @@ mpfr_set_f (mpfr_ptr y, mpf_srcptr x, mp_rnd_t rnd_mode)
 {
   mp_limb_t *my, *mx, *tmp;
   unsigned long cnt, sx, sy;
-  int inexact;
+  int inexact, carry = 0;
   TMP_DECL(marker);
 
-  if (SIZ(x) * MPFR_SIGN(y) < 0)
+  if (SIZ(x) * MPFR_FROM_SIGN_TO_INT(MPFR_SIGN(y)) < 0)
     MPFR_CHANGE_SIGN (y);
 
   MPFR_CLEAR_FLAGS (y);
@@ -46,7 +46,7 @@ mpfr_set_f (mpfr_ptr y, mpf_srcptr x, mp_rnd_t rnd_mode)
       MPFR_SET_ZERO(y);
       return 0; /* 0 is exact */
     }
-
+  
   count_leading_zeros(cnt, mx[sx - 1]);
 
   if (sy <= sx) /* we may have to round even when sy = sx */
@@ -54,27 +54,31 @@ mpfr_set_f (mpfr_ptr y, mpf_srcptr x, mp_rnd_t rnd_mode)
       unsigned long xprec = sx * BITS_PER_MP_LIMB;
 
       TMP_MARK(marker);
-      tmp = (mp_limb_t*) TMP_ALLOC(xprec);
+      tmp = (mp_limb_t*) TMP_ALLOC(sx * BYTES_PER_MP_LIMB);
       if (cnt)
-	mpn_lshift(tmp, mx, sx, cnt);
+	mpn_lshift (tmp, mx, sx, cnt);
       else
-	MPN_COPY(tmp, mx, sx);
-      mpfr_round_raw (my, tmp, xprec, (SIZ(x)<0), MPFR_PREC(y), rnd_mode,
-		      &inexact);
+        /* FIXME: we may avoid the copy here, and directly call mpfr_round_raw
+           on mx instead of tmp */
+	MPN_COPY (tmp, mx, sx);
+      carry = mpfr_round_raw (my, tmp, xprec, (SIZ(x) < 0), MPFR_PREC(y),
+                              rnd_mode, &inexact);
+      if (MPFR_UNLIKELY(carry)) /* result is a power of two */
+        my[sy - 1] = MPFR_LIMB_HIGHBIT;
       TMP_FREE(marker);
     }
   else
     {
       if (cnt)
-	mpn_lshift(my + sy - sx, mx, sx, cnt);
+	mpn_lshift (my + sy - sx, mx, sx, cnt);
       else
-	MPN_COPY(my + sy - sx, mx, sy);
+	MPN_COPY (my + sy - sx, mx, sx);
       MPN_ZERO(my, sy - sx);
       /* no rounding necessary, since y has a larger mantissa */
       inexact = 0;
     }
 
-  MPFR_SET_EXP(y, EXP(x) * BITS_PER_MP_LIMB - cnt);
+  MPFR_SET_EXP(y, EXP(x) * BITS_PER_MP_LIMB - cnt + carry);
 
   return inexact;
 }
