@@ -34,7 +34,7 @@ mpfr_get_ui (mpfr_srcptr f, mp_rnd_t rnd)
   mp_exp_t exp;
 
   if (!mpfr_fits_ulong_p (f, rnd) || MPFR_IS_ZERO(f))
-    return (long) 0;
+    return (unsigned long) 0;
 
   /* determine prec of unsigned long */
   for (s = ULONG_MAX, prec = 0; s != 0; s /= 2, prec ++);
