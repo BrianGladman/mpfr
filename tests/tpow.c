@@ -67,8 +67,8 @@ check_pow_ui (void)
 
   /* Check underflow */
   mpfr_set_str_binary (a, "1E-1");
-  res = mpfr_pow_ui (a, a, MPFR_EMAX_MAX, GMP_RNDN);
-  if (MPFR_GET_EXP (a) != MPFR_EMIN_MIN+1)
+  res = mpfr_pow_ui (a, a, -mpfr_get_emin (), GMP_RNDN);
+  if (MPFR_GET_EXP (a) != mpfr_get_emin () + 1)
     {
       printf ("Error for (1e-1)^MPFR_EMAX_MAX\n");
       mpfr_dump (a);
