@@ -4,7 +4,7 @@ LDFLAGS=$(GMPDIR)/lib/libgmp.a -lm
 CFLAGS=-g -Wall -DMsb $(special) -D$(dirname)
 ODIR=o.$(dirname)
 
-MPFR_OBJECTS = o.$(dirname)/add.o o.$(dirname)/clear.o o.$(dirname)/cmp.o o.$(dirname)/init.o o.$(dirname)/mul.o o.$(dirname)/print_raw.o o.$(dirname)/rnd_mode.o o.$(dirname)/round.o o.$(dirname)/set_d.o o.$(dirname)/set_prec.o o.$(dirname)/set_dfl_prec.o o.$(dirname)/set_dfl_rnd.o o.$(dirname)/neg.o o.$(dirname)/set_f.o o.$(dirname)/set_si.o o.$(dirname)/set_str_raw.o o.$(dirname)/mul_ui.o o.$(dirname)/mul_2exp.o o.$(dirname)/div_2exp.o o.$(dirname)/sub.o o.$(dirname)/set.o o.$(dirname)/div.o o.$(dirname)/sqrt.o o.$(dirname)/agm.o o.$(dirname)/get_str.o o.$(dirname)/cmp_ui.o
+MPFR_OBJECTS = o.$(dirname)/add.o o.$(dirname)/clear.o o.$(dirname)/cmp.o o.$(dirname)/init.o o.$(dirname)/mul.o o.$(dirname)/print_raw.o o.$(dirname)/rnd_mode.o o.$(dirname)/round.o o.$(dirname)/set_d.o o.$(dirname)/set_prec.o o.$(dirname)/set_dfl_prec.o o.$(dirname)/set_dfl_rnd.o o.$(dirname)/neg.o o.$(dirname)/set_f.o o.$(dirname)/set_si.o o.$(dirname)/set_str_raw.o o.$(dirname)/mul_ui.o o.$(dirname)/mul_2exp.o o.$(dirname)/div_2exp.o o.$(dirname)/sub.o o.$(dirname)/set.o o.$(dirname)/div.o o.$(dirname)/sqrt.o o.$(dirname)/agm.o o.$(dirname)/get_str.o o.$(dirname)/cmp_ui.o o.$(dirname)/out_str.o o.$(dirname)/pow.o
 
 dft target::
 	@echo "Utiliser soit make all, soit ./mmpfr"
@@ -50,6 +50,9 @@ o.$(dirname)/init.o: mpfr.h init.c
 o.$(dirname)/mul.o: mpfr.h mul.c
 	$(CC) $(CFLAGS) $(INCFLAGS) -c mul.c -o o.$(dirname)/mul.o
 
+o.$(dirname)/pow.o: mpfr.h pow.c
+	$(CC) $(CFLAGS) $(INCFLAGS) -c pow.c -o o.$(dirname)/pow.o
+
 o.$(dirname)/print_raw.o: mpfr.h print_raw.c
 	$(CC) $(CFLAGS) $(INCFLAGS) -c print_raw.c -o o.$(dirname)/print_raw.o
 
@@ -76,6 +79,9 @@ o.$(dirname)/set_str_raw.o: mpfr.h set_str_raw.c
 
 o.$(dirname)/get_str.o: mpfr.h get_str.c
 	$(CC) $(CFLAGS) $(INCFLAGS) -c get_str.c -o o.$(dirname)/get_str.o
+
+o.$(dirname)/out_str.o: mpfr.h out_str.c
+	$(CC) $(CFLAGS) $(INCFLAGS) -c out_str.c -o o.$(dirname)/out_str.o
 
 o.$(dirname)/mul_2exp.o: mpfr.h mul_2exp.c
 	$(CC) $(CFLAGS) $(INCFLAGS) -c mul_2exp.c -o o.$(dirname)/mul_2exp.o
