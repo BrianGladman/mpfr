@@ -11,29 +11,33 @@
 
 extern int isnan(), getpid();
 
-void check(a, rnd_mode) double a; unsigned char rnd_mode;
-{
-  mpfr_t q, n; double Q,Q2;
+#define check(a,r) check3(a,r,-1.0)
 
-#ifdef DEBUG
-  printf("a=%1.20e rnd_mode=%d\n",a,rnd_mode);
-#endif
+int maxulp=0;
+
+void check3(a, rnd_mode, Q) double a; unsigned char rnd_mode; double Q;
+{
+  mpfr_t q, n; double Q2; int ck,u;
+
+  ck = (Q!=-1.0); /* if ck=1, then Q is certified correct */
   mpfr_init2(q, 53); mpfr_init2(n, 53);
   mpfr_set_d(n, a, rnd_mode);
   mpfr_set_machine_rnd_mode(rnd_mode);
   mpfr_sqrt(q, n, rnd_mode);
-  Q = sqrt(a);
+  if (ck==0) Q = sqrt(a);
   Q2 = mpfr_get_d(q);
-#ifdef DEBUG
-    printf("expected sqrt is %1.20e, got %1.20e (%d ulp)\n",Q,Q2,
-	   ulp(Q2,Q));
-    mpfr_print_raw(q); putchar('\n');
-#endif
   if (Q!=Q2 && (!isnan(Q) || !isnan(Q2))) {
-    printf("mpfr_sqrt failed for a=%1.20e, rnd_mode=%d\n",a,rnd_mode);
-    printf("expected sqrt is %1.20e, got %1.20e (%d ulp)\n",Q,Q2,
-	   ulp(Q2,Q));
-    exit(1);
+    u = ulp(Q2,Q);
+    if (ck) {
+      printf("mpfr_sqrt failed for a=%1.20e, rnd_mode=%d\n",a,rnd_mode);
+      printf("expected sqrt is %1.20e, got %1.20e (%d ulp)\n",Q,Q2,u);
+      exit(1);
+    }
+    else if (u>maxulp || u<-maxulp) {
+      maxulp = (u>maxulp) ? u : -u;
+      printf("libm.a differs from mpfr_sqrt for a=%1.20e, rnd_mode=%d\n",a,rnd_mode);
+      printf("libm.a gives %1.20e, mpfr_sqrt gives %1.20e (%d ulp)\n",Q,Q2,u);
+    }
   }
   mpfr_clear(q); mpfr_clear(n);
 }
@@ -50,12 +54,14 @@ int main()
 #endif
 
   srand(getpid());
-  check(1.0, 0);
-  check(1.0, 1);
-  check(3.725290298461914062500000e-9, 0);
-  check(3.725290298461914062500000e-9, 1);
-  check(1.21902794387441766400e+18, 1);
-  check(9.89438396044940256501e-134, 2);
+  check(1.0, GMP_RNDN);
+  check(1.0, GMP_RNDZ);
+  check(3.725290298461914062500000e-9, GMP_RNDN);
+  check(3.725290298461914062500000e-9, GMP_RNDZ);
+  a=1190456976439861.0;
+  check3(a, GMP_RNDZ, dbl(4630914205854029.0,-27));
+  check3(1024.0*a, GMP_RNDZ, dbl(4630914205854029.0,-22));
+  check(9.89438396044940256501e-134, GMP_RNDU);
   for (i=0;i<100000;i++) {
     a = drand();
     check(a, rand() % 4);
