@@ -28,6 +28,8 @@ Documentation:
 - support for accented characters when converting the texi file to
   the dvi file
 
+- web page: add a html version of the documentation
+
 Installation:
 
 - from Kevin Ryde <user42@zip.com.au>:
@@ -88,6 +90,9 @@ New functions to implement:
 	Dmitry Antipov <dmitry.antipov@mail.ru> Thu, 13 Jun 2002
 - mpz_set_fr (to set a mpz from a mpfr, with a rounding mode)
 	-> cf code in leibniz:mpfr/mpz_set_fr.c
+	[Kevin: mpz_set_fr will be the name when integrated.  Any other name
+	 won't be wanted and will be quietly dropped.  Feel free to just leave
+	 it at mpz_set_fr right now, it won't cause any conflicts or anything.]
 - those from LIA: missing secant, cosecant, cotangent (trigo/hyperbolic)
 - atan2
 - implement accurate summation algorithms from Demmel
