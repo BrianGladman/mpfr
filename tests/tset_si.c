@@ -4,8 +4,14 @@
 #include "mpfr.h"
 #include "time.h"
 
-extern long int random();
-extern void srandom();
+extern int random();
+extern
+#ifdef alpha
+int
+#else
+void
+#endif
+srandom();
 
 int
 main(int argc, char **argv)
