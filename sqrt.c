@@ -40,6 +40,7 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
   int odd_exp;
   int sh; /* number of extra bits in rp[0] */
   int inexact; /* return ternary flag */
+  mp_exp_t expr;
   TMP_DECL(marker);
 
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(u)))
@@ -134,7 +135,7 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
 
   sticky = sticky || sticky1;
 
-  MPFR_SET_EXP(r, (MPFR_GET_EXP(u) + odd_exp) / 2  /* exact */);
+  expr = (MPFR_GET_EXP(u) + odd_exp) / 2;  /* exact */
 
   if (rnd_mode == GMP_RNDZ || rnd_mode == GMP_RNDD || sticky == MPFR_LIMB_ZERO)
     {
@@ -234,11 +235,13 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
   inexact = 1; /* always here */
   if (mpn_add_1 (rp, rp, rsize, MPFR_LIMB_ONE << sh))
     {
-      MPFR_EXP(r) += 1;
+      expr ++;
       rp[rsize - 1] = MPFR_LIMB_HIGHBIT;
     }
 
  truncate: /* inexact = 0 or -1 */
+
+  MPFR_SET_EXP(r, expr);
 
   TMP_FREE(marker);
 
