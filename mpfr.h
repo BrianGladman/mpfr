@@ -182,6 +182,9 @@ void mpfr_ui_div _PROTO((mpfr_ptr, unsigned long int, mpfr_srcptr, mp_rnd_t));
 mp_prec_t mpfr_get_prec _PROTO((mpfr_t));
 void mpfr_set_default_rounding_mode _PROTO((mp_rnd_t));
 int mpfr_eq(mpfr_srcptr, mpfr_srcptr, unsigned long); 
+void mpfr_floor _PROTO((mpfr_t, mpfr_srcptr));
+void mpfr_trunc _PROTO((mpfr_t, mpfr_srcptr));
+void mpfr_ceil _PROTO((mpfr_t, mpfr_srcptr));
 
 #define mpfr_cmp_ui(b,i) mpfr_cmp_ui_2exp(b,i,0)
 #define mpfr_cmp_si(b,i) mpfr_cmp_si_2exp(b,i,0)
