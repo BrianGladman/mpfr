@@ -6,7 +6,7 @@ INCLUDES=@INCLUDES@ -I$(top_srcdir)
 ../libmpfr.a:
 	cd $(top_srcdir); make libmpfr.a  
 
-tests: 	all
+check: 	all
 	for i in $(bin_PROGRAMS); do echo Testing $$i ; ./$$i; done
 
 
