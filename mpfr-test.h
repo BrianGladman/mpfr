@@ -20,9 +20,11 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
 #include <limits.h>
+#include <float.h>
 #include <math.h>
 #ifdef __mips
 #include <sys/fpu.h>
+#define HAVE_DENORMS
 #endif
 
 /* set precision control to double on x86 */
@@ -84,6 +86,8 @@ double Ulp _PROTO ((double));
 void
 mpfr_test_init ()
 {
+  double c, d;
+  int j;
 #ifdef __mips
   /* to get denormalized numbers on IRIX64 */
   union fpc_csr exp;
@@ -92,11 +96,29 @@ mpfr_test_init ()
   exp.fc_struct.flush = 0;
   set_fpc_csr(exp.fc_word);
 #endif
+#ifdef HAVE_DENORMS
+  d = DBL_MIN;
+  if (2.0 * (d / 2.0) != d)
+    {
+      fprintf (stderr, "Warning: no denormalized numbers\n");
+      exit (1);
+    }
+#endif
 
 #ifdef HAVE_SETFPUCW
   /* sets the precision to double */
   __setfpucw((_FPU_DEFAULT & (~_FPU_EXTENDED)) | _FPU_DOUBLE);
 #endif
+  c = 1.46484375e-3;
+  d = 1.0;
+  for (j=0; j<54; j++) d *= 0.5;
+  d = 0.75 + d;
+  d /= 1 << 9;
+  if (c != d)
+    {
+      fprintf (stderr, "Warning: extended precision not disabled\n");
+      exit (1);
+    }
 }
 
 /* generate a random double using the whole range of possible values,
