@@ -33,7 +33,8 @@ MA 02111-1307, USA. */
 int
 main(int argc, char **argv)
 {
-  mpfr_t x; unsigned long k, bd, nc; char *str, *str2; 
+  mpfr_t x, y; unsigned long k, bd, nc, i; char *str, *str2; mp_exp_t e;
+  int base, logbase, prec, baseprec;
 
   if (argc==2) { /* tset_str <string> */
     mpfr_init2(x, 53);
@@ -46,7 +47,7 @@ main(int argc, char **argv)
   srandom(time(NULL)); 
   
   if (argc > 1) { nc = atoi(argv[1]); } else { nc = 53; }
-  if (nc < 24) { nc = 24; }
+  if (nc < 100) { nc = 100; }
 
   bd = random()&8;
   
@@ -69,10 +70,8 @@ main(int argc, char **argv)
   *(str2++) = 'e'; 
   sprintf(str2, "%d", random() - (1 << 30)); 
 
-  /* printf("%s\n", str); */
   mpfr_init2(x, nc + 10); 
   mpfr_set_str_raw(x, str); 
-  /* mpfr_print_raw(x); printf("\n");  */
 
   mpfr_set_prec(x, 53);
   mpfr_set_str_raw(x, "+110101100.01010000101101000000100111001000101011101110E00");
@@ -82,6 +81,40 @@ main(int argc, char **argv)
     fprintf(stderr, "Error in mpfr_set_str_raw for s=1.0\n"); exit(1);
   }
 
-  mpfr_clear(x); free(str); 
+  mpfr_set_str(x, "+243495834958.53452345E1", 10, GMP_RNDN);
+  mpfr_set_str(x, "9007199254740993", 10, GMP_RNDN);
+  mpfr_set_str(x, "9007199254740992", 10, GMP_RNDU);
+  mpfr_set_str(x, "9007199254740992", 10, GMP_RNDD);
+  mpfr_set_str(x, "9007199254740992", 10, GMP_RNDZ);
+
+  /* check a random number printed and read is not modified */
+  prec = 53;
+  mpfr_set_prec(x, prec);
+  mpfr_init2(y, prec);
+  for (i=0;i<100000;i++) {
+    mpfr_random(x);
+    k = rand() % 4;
+    logbase = (rand() % 5) + 1;
+    base = 1 << logbase;
+    /* Warning: the number of bits needed to print exactly a number of 
+       'prec' bits in base 2^logbase may be greater than ceil(prec/logbase),
+       for example 0.11E-1 in base 2 cannot be written exactly with only
+       one digit in base 4 */
+    if (base==2) baseprec=prec;
+    else baseprec=1+(prec-2+logbase)/logbase;
+    str = mpfr_get_str(NULL, &e, base, baseprec, x, k);
+    mpfr_set_str(y, str, base, k);
+    EXP(y) += logbase*(e-strlen(str));
+    if (mpfr_cmp(x, y)) {
+      fprintf(stderr, "mpfr_set_str o mpfr_get_str <> id for rnd_mode=%s\n",
+	      mpfr_print_rnd_mode(k));
+      printf("x="); mpfr_print_raw(x); putchar('\n');
+      printf("s=%s, exp=%d, base=%d\n", str, (int) e, base);
+      printf("y="); mpfr_print_raw(y); putchar('\n');
+      exit(1);
+    }
+  }
+
+  mpfr_clear(x); mpfr_clear(y); free(str); 
   return 0; 
 }
