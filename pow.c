@@ -27,16 +27,16 @@ MA 02111-1307, USA. */
 /* sets x to y^n */
 void 
 #if __STDC__
-mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned int n, unsigned char rnd)
+mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
 #else
 mpfr_pow_ui (x, y, n, rnd)
      mpfr_ptr x;
-     mpfr_srcptr y; 
-     unsigned int n; 
-     unsigned char rnd; 
+     mpfr_srcptr y;
+     unsigned long int n;
+     mp_rnd_t rnd;
 #endif
 {
-  int i;
+  long int i;
   
   if (n==0) { mpfr_set_ui(x, 1, rnd); return; }
   mpfr_set(x, y, rnd);
@@ -50,10 +50,19 @@ mpfr_pow_ui (x, y, n, rnd)
 }
 
 /* sets x to y^n */
-void mpfr_ui_pow_ui (mpfr_ptr x, unsigned int y, unsigned int n, 
-		     unsigned char rnd)
+void
+#if __STDC__
+mpfr_ui_pow_ui (mpfr_ptr x, unsigned long int y, unsigned long int n,
+		     mp_rnd_t rnd)
+#else
+mpfr_ui_pow_ui (x, y, n, rnd)
+     mpfr_ptr x;
+     unsigned long int y;
+     unsigned long int n;
+     mp_rnd_t rnd;
+#endif
 {
-  int i;
+  long int i;
 
   if (n==0) { mpfr_set_ui(x, 1, rnd); return; }
   mpfr_set_ui(x, y, rnd);
