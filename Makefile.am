@@ -16,6 +16,3 @@ info_TEXINFOS = mpfr.texi
 mpfr_TEXINFOS = fdl.texi
 
 MAKEINFOFLAGS = --enable-encoding
-
-tests: 
-	cd tests ; make tests
