@@ -146,7 +146,7 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   /* FIXME: Could use MPFR_INT_CEIL_LOG2? */
   prec_x = __gmpfr_ceil_log2 ((double) MPFR_PREC(x) / BITS_PER_MP_LIMB);
-  logn   = MPFR_INT_CEIL_LOG2 ( prec_x);
+  logn   = __gmpfr_ceil_log2 (prec_x);
   if (logn < 2) 
     logn = 2;
   realprec = prec_arctan + MPFR_INT_CEIL_LOG2 (prec_arctan) + 4;
