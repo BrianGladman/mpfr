@@ -89,7 +89,7 @@ esac
 #
 #   sys/fpu.h - MIPS specific
 #
-AC_CHECK_HEADERS(fpu_control.h sys/fpu.h)
+AC_CHECK_HEADERS(sys/fpu.h)
 
 dnl Check for fesetround
 AC_CACHE_CHECK([for fesetround], mpfr_cv_have_fesetround, [
