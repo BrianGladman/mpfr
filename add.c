@@ -403,7 +403,7 @@ mpfr_add(a, b, c, rnd_mode)
 	  if (MPFR_SIGN(b) == MPFR_SIGN(c)) 
 	    { 
 	      MPFR_SET_INF(a); 
-	      if (MPFR_SIGN(a) != MPFR_SIGN(b)) { MPFR_CHANGE_SIGN(a); }
+	      if (MPFR_SIGN(a) != MPFR_SIGN(b)) MPFR_CHANGE_SIGN(a);
 	    }
 	  else
 	    MPFR_SET_NAN(a); 
@@ -411,14 +411,16 @@ mpfr_add(a, b, c, rnd_mode)
       else
 	{
 	  MPFR_SET_INF(a); 
-	  if (MPFR_SIGN(b) != MPFR_SIGN(a)) { MPFR_CHANGE_SIGN(a); }
+	  if (MPFR_SIGN(b) != MPFR_SIGN(a)) MPFR_CHANGE_SIGN(a);
 	}
+      return;
     }
   else 
     if (MPFR_IS_INF(c))
       {
 	MPFR_SET_INF(a); 
-	if (MPFR_SIGN(c) != MPFR_SIGN(a)) { MPFR_CHANGE_SIGN(a); }
+	if (MPFR_SIGN(c) != MPFR_SIGN(a)) MPFR_CHANGE_SIGN(a);
+	return;
       }
 
   if (!MPFR_NOTZERO(b)) { mpfr_set(a, c, rnd_mode); return; }
