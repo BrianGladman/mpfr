@@ -2,6 +2,13 @@
 		===================
 
 0. You first need to install GMP. See http://www.swox.com/gmp.
+   MPFR needs the gmp include file gmp-mparam.h that will be
+   created during the compilation of gmp in the mpn subdirectory.
+   So that all GMP include files are in the same directory, once
+   you are in the GMP source directory (where the files gmp.h,
+   gmp-impl.h, longlong.h and stack-alloc.h already are), type:
+
+	ln -s mpn/gmp-mparam.h .
 
 1. type "./Configure" and answer to the questions
 
