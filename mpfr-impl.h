@@ -19,15 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-/* redefinition of external symbols in the __gmpfr namespace */
-#define __mpfr_const_log2_prec __gmpfr_const_log2_prec
-#define __mpfr_const_pi_prec __gmpfr_const_pi_prec
-#define _mpfr_ceil_exp2 __gmpfr_ceil_exp2
-#define _mpfr_ceil_log2 __gmpfr_ceil_log2
-#define _mpfr_floor_log2 __gmpfr_floor_log2
-#define _mpfr_isqrt __gmpfr_isqrt
-#define _mpfr_cuberoot __gmpfr_cuberoot
-
 #ifndef HAVE_STRCASECMP
 #define strcasecmp mpfr_strcasecmp
 #endif
@@ -188,9 +179,11 @@ extern "C" {
 #endif  
 
 extern mpfr_t __mpfr_const_log2;
+#define __mpfr_const_log2_prec __gmpfr_const_log2_prec
 extern mp_prec_t __mpfr_const_log2_prec;
 
 extern mpfr_t __mpfr_const_pi;
+#define __mpfr_const_pi_prec __gmpfr_const_pi_prec
 extern mp_prec_t __mpfr_const_pi_prec;
 
 #ifndef HAVE_STRCASECMP
@@ -215,10 +208,15 @@ int mpfr_can_round_raw _PROTO ((mp_limb_t *, mp_size_t, int, mp_exp_t,
 				mp_rnd_t, mp_rnd_t, mp_prec_t));
 double mpfr_get_d3 _PROTO ((mpfr_srcptr, mp_exp_t, mp_rnd_t));
 int mpfr_cmp2 _PROTO ((mpfr_srcptr, mpfr_srcptr, mp_prec_t *));
+#define _mpfr_ceil_log2 __gmpfr_ceil_log2
 long _mpfr_ceil_log2 _PROTO ((double));
+#define _mpfr_floor_log2 __gmpfr_floor_log2
 long _mpfr_floor_log2 _PROTO ((double));
+#define _mpfr_ceil_exp2 __gmpfr_ceil_exp2
 double _mpfr_ceil_exp2 _PROTO ((double));
+#define _mpfr_isqrt __gmpfr_isqrt
 unsigned long _mpfr_isqrt _PROTO ((unsigned long));
+#define _mpfr_cuberoot __gmpfr_cuberoot
 unsigned long _mpfr_cuberoot _PROTO ((unsigned long));
 int mpfr_exp_2 _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_exp3 _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));

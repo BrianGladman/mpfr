@@ -29,13 +29,6 @@ MA 02111-1307, USA. */
 #define _MPFR_H_HAVE_FILE 1
 #endif
 
-/* redefinition of external symbols in the __gmpfr namespace */
-#define __gmp_default_rounding_mode __gmpfr_default_rounding_mode
-#define __mpfr_default_fp_bit_precision __gmpfr_default_fp_bit_precision
-#define __mpfr_flags __gmpfr_flags
-#define __mpfr_emin __gmpfr_emin
-#define __mpfr_emax __gmpfr_emax
-
 /* Definition of rounding modes */
 
 #define GMP_RNDN 0
@@ -125,8 +118,11 @@ typedef __gmp_const __mpfr_struct *mpfr_srcptr;
 extern "C" {
 #endif  
 
+#define __mpfr_flags __gmpfr_flags
 extern unsigned int __mpfr_flags;
+#define __mpfr_emin __gmpfr_emin
 extern mp_exp_t __mpfr_emin;
+#define __mpfr_emax __gmpfr_emax
 extern mp_exp_t __mpfr_emax;
 mp_exp_t mpfr_get_emin _PROTO ((void));
 int mpfr_set_emin _PROTO ((mp_exp_t));
@@ -217,7 +213,9 @@ void mpfr_set_prec _PROTO((mpfr_ptr, mp_prec_t));
 void mpfr_set_prec_raw _PROTO((mpfr_ptr, mp_prec_t));
 void mpfr_set_default_prec _PROTO((mp_prec_t));
 mp_prec_t mpfr_get_default_prec _PROTO((void));
+#define __mpfr_default_fp_bit_precision __gmpfr_default_fp_bit_precision
 extern mp_prec_t __mpfr_default_fp_bit_precision;
+#define __gmp_default_rounding_mode __gmpfr_default_rounding_mode
 extern mp_rnd_t __gmp_default_rounding_mode;
 char * mpfr_print_rnd_mode _PROTO((mp_rnd_t)); 
 int mpfr_neg _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t)); 
