@@ -166,7 +166,7 @@ mpfr_add1 (a, b, c, rnd_mode, diff_exp)
           /* c overlaps with the lowest limb of a */
           MPFR_ASSERTN(difs > 0);
           cc = cp[--cn];
-          bb += cc >> (BITS_PER_MP_LIMB - difs);
+          bb += cc >> difs;
         }
         if (bb >= ONE<<sh)
         {
@@ -189,7 +189,7 @@ mpfr_add1 (a, b, c, rnd_mode, diff_exp)
             else /* nulp == 1 */
             {
               if (difw > 0)
-                bb = cc << difs;
+                bb = cc << (BITS_PER_MP_LIMB - difs);
               while (bb == 0 && cn)
                 bb = cp[--cn];
             }
@@ -208,7 +208,7 @@ mpfr_add1 (a, b, c, rnd_mode, diff_exp)
             if (difw > 0)
             {
               b2 = bb;
-              bb = b2 + (cc << difs);
+              bb = b2 + (cc << (BITS_PER_MP_LIMB - difs));
               if (bb < b2)
                 nulp = 1;
             }
@@ -222,10 +222,11 @@ mpfr_add1 (a, b, c, rnd_mode, diff_exp)
               break;
             }
             cc = cp[--cn];
+            b2 = bb;
             if (difs)
             {
               difw = 1;
-              bb = b2 + (cc >> (BITS_PER_MP_LIMB - difs));
+              bb = b2 + (cc >> difs);
             }
             else
             {
@@ -260,6 +261,7 @@ mpfr_add1 (a, b, c, rnd_mode, diff_exp)
              1      1      1              2 [*]
            [*] or only 1 if adding the first ulp changes the exponent */
 
+        MPFR_ASSERTN(inv == 0);  /* r has been initialized */
         if (nulp == 0)
           bb = 1;
         nulp += r;
