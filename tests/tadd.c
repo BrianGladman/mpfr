@@ -584,6 +584,21 @@ check_nans (void)
   mpfr_clear (s);
 }
 
+static void
+check_alloc (void)
+{
+  mpfr_t a;
+
+  mpfr_init2 (a, 10000);
+  mpfr_set_prec (a, 53);
+  mpfr_set_ui (a, 15236, GMP_RNDN);
+  mpfr_add (a, a, a, GMP_RNDN);
+  mpfr_mul (a, a, a, GMP_RNDN);
+  mpfr_div (a, a, a, GMP_RNDN);
+  mpfr_sub (a, a, a, GMP_RNDN);
+  mpfr_clear (a);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -593,6 +608,7 @@ main (int argc, char *argv[])
   tests_start_mpfr ();
 
   mpfr_test_init ();
+  check_alloc ();
   check_nans ();
   check_inexact ();
   check_case_1b ();
