@@ -1112,13 +1112,6 @@ and adds one ulp otherwise.
 Always return 0 (result is exact).
 @end deftypefun
 
-@deftypefun int mpfr_cmp2 (mpfr_t @var{a}, mpfr_t @var{b})
-Assuming @var{a} is greater or equal to @var{b}, returns the number of 
-cancelled bits when one subtracts @var{b} from @var{a}. 
-Returns the precision of @var{a} when both operands are equal.
-Mainly used in @code{mpfr_sub}.
-@end deftypefun
-
 @deftypefun int mpfr_round_raw (mp_limb_t* @var{y}, mp_limb_t* @var{x}, mp_prec_t @var{xprec}, int @var{neg}, mp_prec_t @var{yprec}, mp_rnd_t @var{rnd})
 Puts in mantissa beginning at @var{y} the value of that 
 beginning at @var{x} (with precision @var{xprec} bits and negative iff 
