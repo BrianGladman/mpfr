@@ -194,7 +194,7 @@ check2 (double x, int px, double y, int py, int pz, mp_rnd_t rnd_mode)
   mpfr_add (zz, xx, yy, rnd_mode);
   mpfr_set_machine_rnd_mode (rnd_mode);
   z = x+y;
-  z2 = mpfr_get_d1 (zz);
+  z2 = mpfr_get_d (zz, rnd_mode);
   u = ulp (z, z2);
   /* one ulp difference is possible due to double rounding */
   if ((px >= 53) && (py >= 53) && (pz >= 53) && ((u < -1) || (1 < u)))
@@ -866,6 +866,8 @@ main (int argc, char *argv[])
   /* tests with random precisions */
   check2 (-1.57042997938991596516e+308, 93, -3.44223949093574481399e+307, 70,
           53, GMP_RNDN);
+  check2 (-1.67520091173293904017e+308, 85, -1.56726081485363041887e+308, 69,
+          82, GMP_RNDZ);
   for (i=0;i<N;i++)
     {
       int px, py, pz;
