@@ -397,7 +397,7 @@ int mpfr_sum _MPFR_PROTO ((mpfr_ptr ret, mpfr_ptr const tab[], unsigned long n,
 #endif
 
 #define MPFR_DECL_INIT(_x, _p) \
-  mp_limb_t __gmpfr_local_tab_##_x[(_p-1)/GMP_NUMB_BITS+1]; \
+  mp_limb_t __gmpfr_local_tab_##_x[((_p)-1)/GMP_NUMB_BITS+1]; \
   mpfr_t    _x = {{(_p),1,__MPFR_EXP_NAN,__gmpfr_local_tab_##_x}}
 
 /* Compatibility with 2.0.1 
