@@ -1,6 +1,6 @@
 /* Test file for mpfr_div_ui.
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 1999-2001 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -58,6 +58,7 @@ special (void)
 
   mpfr_init2 (x, 100);
   mpfr_init2 (y, 100);
+
   mpfr_random (x);
   mpfr_div_ui (y, x, 123456, GMP_RNDN);
   mpfr_set_ui (x, 0, GMP_RNDN);
@@ -67,6 +68,18 @@ special (void)
       fprintf (stderr, "mpfr_div_ui gives non-zero for 0/ui\n");
       exit (1);
     }
+
+  /* bug found by Norbert Mueller, 21 Aug 2001 */
+  mpfr_set_prec (x, 110);
+  mpfr_set_prec (y, 60);
+  mpfr_set_str_raw (x, "0.110101110011111110011111001110011001110111000000111110001000111011000011E-44");
+  mpfr_div_ui(y, x, 17, __gmp_default_rounding_mode);
+  if (mpfr_get_d (y) != 2.8114572543455207632e-15)
+    {
+      fprintf (stderr, "Error in x / 17 for x=1/16!\n");
+      exit (1);
+    }
+
   mpfr_clear (x);
   mpfr_clear (y);
 }
