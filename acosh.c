@@ -1,6 +1,6 @@
 /* mpfr_acosh -- inverse hyperbolic cosine
 
-Copyright 2001, 2002, 2003, 2004 Free Software Foundation.
+Copyright 2001, 2002, 2003, 2004, 2005 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -28,98 +28,92 @@ MA 02111-1307, USA. */
 int
 mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode) 
 {
-  MPFR_SAVE_EXPO_DECL (expo);    
-  int inexact = 0;
+  MPFR_SAVE_EXPO_DECL (expo);
+  int inexact;
   int comp;
 
   /* Deal with special cases */
-  if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(x) ))
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
       /* Nan, or zero or -Inf */
-      if (MPFR_IS_INF(x) && MPFR_IS_POS(x))
+      if (MPFR_IS_INF (x) && MPFR_IS_POS (x))
 	{ 
-	  MPFR_SET_INF(y);
-	  MPFR_SET_POS(y);
-	  MPFR_RET(0);
+	  MPFR_SET_INF (y);
+	  MPFR_SET_POS (y);
+	  MPFR_RET (0);
 	}
       else /* Nan, or zero or -Inf */
 	{
-	  MPFR_SET_NAN(y); 
+	  MPFR_SET_NAN (y); 
 	  MPFR_RET_NAN;
 	}    
     }
   comp = mpfr_cmp_ui (x, 1);
-  if (MPFR_UNLIKELY( comp < 0 ))
+  if (MPFR_UNLIKELY (comp < 0))
     {
-      MPFR_SET_NAN(y); 
+      MPFR_SET_NAN (y); 
       MPFR_RET_NAN;
     }    
-  else if (MPFR_UNLIKELY( comp == 0 ))
+  else if (MPFR_UNLIKELY (comp == 0))
     {
-      MPFR_SET_ZERO(y); /* acosh(1) = 0 */
-      MPFR_SET_POS(y);
-      MPFR_RET(0);
+      MPFR_SET_ZERO (y); /* acosh(1) = 0 */
+      MPFR_SET_POS (y);
+      MPFR_RET (0);
     }
-  MPFR_CLEAR_FLAGS(y);
+  MPFR_SAVE_EXPO_MARK (expo);
  
   /* General case */
   {
     /* Declaration of the intermediary variables */
-    mpfr_t t, te, ti;
+    mpfr_t t;
     /* Declaration of the size variables */
     mp_prec_t Nx = MPFR_PREC(x);   /* Precision of input variable */
     mp_prec_t Ny = MPFR_PREC(y);   /* Precision of output variable */
-    mp_prec_t Nt;        /* Precision of the intermediary variable */
-    int err;                       /* Precision of error */
+    mp_prec_t Nt;                  /* Precision of the intermediary variable */
+    mp_exp_t  err, exp_te, exp_ti; /* Precision of error */
+    MPFR_ZIV_DECL (loop);
     
     /* compute the precision of intermediary variable */
-    Nt = MAX(Nx, Ny);
+    Nt = MAX (Nx, Ny);
     /* the optimal number of bits : see algorithms.ps */
     Nt = Nt + 4 + MPFR_INT_CEIL_LOG2 (Nt);
 
     /* initialization of intermediary variables */
-    mpfr_init (t);
-    mpfr_init (te);
-    mpfr_init (ti);
-
-    MPFR_SAVE_EXPO_MARK (expo);
+    mpfr_init2 (t, Nt);
 
     /* First computation of acosh */
-    do
+    MPFR_ZIV_INIT (loop, Nt);
+    for (;;)
       {
-        /* reactualisation of the precision */
-        mpfr_set_prec (t, Nt);
-        mpfr_set_prec (te, Nt);
-        mpfr_set_prec (ti, Nt);
-
         /* compute acosh */
-        mpfr_mul (te, x, x, GMP_RNDD);     /* x^2 */
-        mpfr_sub_ui (ti, te, 1, GMP_RNDD); /* x^2-1 */
-        mpfr_sqrt (t, ti, GMP_RNDN);       /* sqrt(x^2-1) */
+        mpfr_mul (t, x, x, GMP_RNDD);      /* x^2 */
+	exp_te = MPFR_GET_EXP (t);
+        mpfr_sub_ui (t, t, 1, GMP_RNDD);   /* x^2-1 */
+	exp_ti = MPFR_GET_EXP (t);
+        mpfr_sqrt (t, t, GMP_RNDN);        /* sqrt(x^2-1) */
         mpfr_add (t, t, x, GMP_RNDN);      /* sqrt(x^2-1)+x */
         mpfr_log (t, t, GMP_RNDN);         /* ln(sqrt(x^2-1)+x)*/
 
         /* error estimate -- see algorithms.ps */
-        err = Nt - (-1 + 2 * MAX(2 + MAX(2 - MPFR_GET_EXP (t),
-                                         1 + MPFR_GET_EXP (te)
-                                         - MPFR_GET_EXP (ti)
-                                         - MPFR_GET_EXP (t)), 0));
+        err = Nt - (-1 + 2 * MAX (2 + MAX (2 - MPFR_GET_EXP (t),
+					   1 + exp_te - exp_ti
+					   - MPFR_GET_EXP (t)), 0));
+	if (MPFR_LIKELY (mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
+					 Ny + (rnd_mode == GMP_RNDN))))
+	  break;
 
-        /* actualisation of the precision */
-        Nt += 10;
+        /* reactualisation of the precision */
+	MPFR_ZIV_NEXT (loop, Nt);
+        mpfr_set_prec (t, Nt);
       }
-    while ((err < 0) || !mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
-                                         Ny + (rnd_mode == GMP_RNDN)));
+    MPFR_ZIV_FREE (loop);
  
     inexact = mpfr_set (y, t, rnd_mode);
 
     mpfr_clear (t);
-    mpfr_clear (ti);
-    mpfr_clear (te);
   }
 
   MPFR_SAVE_EXPO_FREE (expo);
-
   return mpfr_check_range (y, inexact, rnd_mode);
 }
 
