@@ -1,6 +1,6 @@
 /* Test file for mpfr_abs.
 
-Copyright 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -32,8 +32,6 @@ check_inexact (void)
   mpfr_t x, y, absx;
   mp_rnd_t rnd;
   int inexact, cmp;
-
-  tests_start_mpfr ();
 
   mpfr_init (x);
   mpfr_init (y);
@@ -78,20 +76,23 @@ check_inexact (void)
   mpfr_clear (absx);
 }
 
-int
-main (int argc, char *argv[])
+static void
+check_cmp(int argc, char *argv[])
 {
-  mpfr_t x;
+  mpfr_t x, y;
   int n, k, rnd;
-  double d, absd, dd;
 
-  mpfr_test_init ();
-
-  check_inexact ();
-
-  mpfr_init2(x, 53);
+  mpfr_inits2(53, x, y, NULL);
 
   mpfr_set_ui(x, 1, GMP_RNDN);
+  mpfr_abs(x, x, GMP_RNDN);
+  if (mpfr_cmp_ui (x, 1))
+    {
+      printf ("Error in mpfr_abs(1.0)\n");
+      exit (1);
+    }
+
+  mpfr_set_si(x, -1, GMP_RNDN);
   mpfr_abs(x, x, GMP_RNDN);
   if (mpfr_cmp_ui (x, 1))
     {
@@ -114,7 +115,6 @@ main (int argc, char *argv[])
       printf ("Error in mpfr_abs(Inf).\n");
       exit (1);
     }
-
   mpfr_set_inf (x, -1);
   mpfr_abs (x, x, GMP_RNDN);
   if (!mpfr_inf_p(x) || (mpfr_sgn(x) <= 0))
@@ -123,33 +123,45 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-  n = (argc==1) ? 250000 : atoi(argv[1]);
+  MPFR_SET_NAN(x);
+  mpfr_abs (x, x, GMP_RNDN);
+  if (!MPFR_IS_NAN(x))
+    {
+      printf ("Error in mpfr_abs(NAN).\n");
+      exit (1);
+    }
+
+  n = (argc==1) ? 25000 : atoi(argv[1]);
   for (k = 1; k <= n; k++)
     {
-      do
+      int sign = SIGN_RAND();
+      mpfr_random(x);
+      MPFR_SET_SIGN(x, sign);
+      rnd = RND_RAND();
+      mpfr_abs(y, x, rnd);
+      MPFR_SET_POS(x);
+      if (mpfr_cmp(x,y))
         {
-          d = DBL_RAND ();
-          absd = ABS(d);
-        }
-#ifdef HAVE_DENORMS
-      while (0);
-#else
-      while (absd < DBL_MIN);
-#endif
-      rnd = randlimb () % 4;
-      mpfr_set_d (x, d, GMP_RNDN);
-      mpfr_abs (x, x, rnd);
-      dd = mpfr_get_d1 (x);
-      if (!Isnan(d) && (dd != absd))
-        {
-          printf ("Mismatch on d = %.20e\n", d);
-          printf ("dd=%.20e\n", dd);
-          mpfr_print_binary(x); puts ("");
+          printf ("Mismatch for sign=%d and x=", sign); 
+	  mpfr_print_binary(x);
+          printf ("\nResults=");
+          mpfr_print_binary(y); 
+	  putchar ('\n');
           exit (1);
         }
     }
 
-  mpfr_clear(x);
+  mpfr_clears(x, y, NULL);
+}
+
+int
+main (int argc, char *argv[])
+{
+  mpfr_test_init ();
+  tests_start_mpfr ();
+
+  check_inexact ();
+  check_cmp (argc, argv);
 
   tests_end_mpfr ();
   return 0;
