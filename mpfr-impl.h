@@ -720,9 +720,11 @@ extern unsigned char *mpfr_stack;
  *   Computes ceil(log2(x)) only for x integer (unsigned long)
  *   Undefined if x is 0 */
 #if __MPFR_GNUC(2,95) || __MPFR_ICC(8,1,0)
-# define MPFR_INT_CEIL_LOG2(x) \
-    (__extension__ ({int b; mp_limb_t limb = (x); MPFR_ASSERTD (limb == x); \
-      count_leading_zeros(b,limb); (BITS_PER_MP_LIMB - b); }))
+# define MPFR_INT_CEIL_LOG2(x)                            \
+    (__extension__ ({int _b; mp_limb_t _limb = (x);       \
+      MPFR_ASSERTD (_limb == (x));                        \
+      count_leading_zeros (_b, _limb);                    \
+      (BITS_PER_MP_LIMB - _b); }))
 #else
 # define MPFR_INT_CEIL_LOG2(x) (__gmpfr_int_ceil_log2(x))
 #endif
