@@ -33,7 +33,9 @@ MA 02111-1307, USA. */
  * If flag = 0, puts in y the value of xp (with precision xprec and
  * sign 1 if negative=0, -1 otherwise) rounded to precision yprec and
  * direction rnd_mode. Supposes x is not zero nor NaN nor +/- Infinity
- * (i.e. *xp != 0).
+ * (i.e. *xp != 0). In that case, the return value is a possible carry
+ * (0 or 1) that may happen during the rounding, in which case the result
+ * is a power of two.
  *
  * If inexp != NULL, computes the inexact flag of the rounding.
  * (In case of even rounding when rnd = GMP_RNDN, puts 2 or -2 in *inexp.)
@@ -163,10 +165,10 @@ mpfr_round_raw_generic(mp_limb_t *yp, mp_limb_t *xp, mp_prec_t xprec,
 	    rnd_RNDN_sb_return:
 	      if (flag)
 		return 1; /*sb != 0 && rnd_mode != GMP_RNDZ;*/
-	      carry = mpn_add_1(yp, xp + xsize - nw, nw,
-				rw ? 
-				MP_LIMB_T_ONE << (BITS_PER_MP_LIMB - rw) 
-				: 1);
+	      carry = mpn_add_1 (yp, xp + xsize - nw, nw,
+                                 rw ? 
+                                 MP_LIMB_T_ONE << (BITS_PER_MP_LIMB - rw) 
+                                 : 1);
 	      yp[0] &= himask;
 	      return carry;
 	    }
