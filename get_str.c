@@ -34,7 +34,7 @@ static int mpfr_get_str_aux _MPFR_PROTO ((char *, mp_exp_t *, mp_limb_t *,
 		       mp_size_t, mp_exp_t, long, int, size_t, mp_rnd_t));
 static mp_exp_t mpfr_get_str_compute_g _MPFR_PROTO ((int, mp_exp_t));
 
-static char num_to_text[] = "0123456789abcdefghijklmnopqrstuvwxyz";
+static const char num_to_text[] = "0123456789abcdefghijklmnopqrstuvwxyz";
 
 /* for 2 <= b <= 36, log_b2[b-2] + log_b2_low[b-2] is a 76-bit upper
    approximation of log(2)/log(b), with log_b2[b-2] having 23 significative
