@@ -20,6 +20,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+#include <float.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "longlong.h"
@@ -84,14 +85,14 @@ __mpfr_extract_double (mp_ptr rp, double d, int e)
     x.d = d;
 
     exp = x.s.exp;
-    if (exp) 
+    if (exp)
       {
 #if BITS_PER_MP_LIMB == 64
 	manl = ((MP_LIMB_T_ONE << 63)
 		| ((mp_limb_t) x.s.manh << 43) | ((mp_limb_t) x.s.manl << 11));
 #else
 	manh = (MP_LIMB_T_ONE << 31) | (x.s.manh << 11) | (x.s.manl >> 21);
-	manl = x.s.manl << 11;      
+	manl = x.s.manl << 11;
 #endif
       }
     else
@@ -100,7 +101,7 @@ __mpfr_extract_double (mp_ptr rp, double d, int e)
 	manl = ((mp_limb_t) x.s.manh << 43) | ((mp_limb_t) x.s.manl << 11);
 #else
     manh = (x.s.manh << 11) | (x.s.manl >> 21);
-	manl = x.s.manl << 11;      
+	manl = x.s.manl << 11;
 #endif
       }
   }
@@ -150,7 +151,7 @@ __mpfr_extract_double (mp_ptr rp, double d, int e)
   }
 #endif
 
-  if (exp) exp = (unsigned) exp - 1022; else exp = -1021; 
+  if (exp) exp = (unsigned) exp - 1022; else exp = -1021;
 
 #if BITS_PER_MP_LIMB == 64
       rp[0] = manl;
@@ -233,7 +234,7 @@ mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
   int signd, sizer, sizetmp, inexact;
   unsigned int cnt;
   mpfr_ptr tmp;
-  TMP_DECL(marker); 
+  TMP_DECL(marker);
 
   TMP_MARK(marker);
   MPFR_CLEAR_FLAGS(r);
@@ -245,7 +246,7 @@ mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
       MPFR_SET_ZERO(r);
       /* set correct sign */
       x.d = d;
-      if (((x.s.sig == 1) && (MPFR_SIGN(r) > 0)) 
+      if (((x.s.sig == 1) && (MPFR_SIGN(r) > 0))
 	  || ((x.s.sig == 0) && (MPFR_SIGN(r) < 0)))
 	MPFR_CHANGE_SIGN(r);
       return 0; /* 0 is exact */
@@ -258,10 +259,10 @@ mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
     }
 
   else if (DOUBLE_ISINF(d))
-    { 
-      MPFR_SET_INF(r); 
+    {
+      MPFR_SET_INF(r);
       if ((d > 0 && (MPFR_SIGN(r) == -1)) || (d < 0 && (MPFR_SIGN(r) == 1)))
-	MPFR_CHANGE_SIGN(r); 
+	MPFR_CHANGE_SIGN(r);
       return 0; /* infinity is exact */
     }
 
@@ -285,82 +286,81 @@ mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
 
   if (cnt)
     mpn_lshift (MPFR_MANT(tmp), MPFR_MANT(tmp), sizetmp, cnt);
-  
-  MPFR_EXP(tmp) -= cnt; 
+
+  MPFR_EXP(tmp) -= cnt;
 
   /* tmp is exact since PREC(tmp)=53 */
-  inexact = mpfr_set4(r, tmp, rnd_mode, signd); 
+  inexact = mpfr_set4(r, tmp, rnd_mode, signd);
 
-  TMP_FREE(marker); 
+  TMP_FREE(marker);
   return inexact;
 }
 
 double
 mpfr_get_d2 (mpfr_srcptr src, mp_exp_t e)
 {
-  double res;
-  mp_size_t size, i, n_limbs_to_use;
-  mp_ptr qp;
-  int negative;
+  double d;
+  mpfr_t tmp;
+  int s, negative;
 
   if (MPFR_IS_NAN(src))
-    { 
-#ifdef DEBUG
-      printf("recognized NaN\n");
-#endif
-      return NaN;
-    }
+    return NaN;
 
   negative = MPFR_SIGN(src) < 0;
 
   if (MPFR_IS_INF(src))
-    { 
-#ifdef DEBUG
-      printf("Found Inf.\n");
-#endif
-      return (negative ? Infm : Infp);
-    }
+    return negative ? Infm : Infp;
 
   if (MPFR_IS_ZERO(src))
     return negative ? -0.0 : 0.0;
 
-  size = 1 + (MPFR_PREC(src) - 1) / BITS_PER_MP_LIMB;
-  qp = MPFR_MANT(src);
-
-  /* Warning: don't compute the abs(res) and set the sign afterwards,
-     otherwise the current machine rounding mode will not be taken
-     correctly into account. */
-  /* res = (negative) ? -(double)qp[size - 1] : qp[size - 1]; */
-  res = 0.0;
-  /* Warning: an arbitrary number of limbs may be required for an exact 
-     rounding. The following code is correct but not optimal since one
-     may be able to decide without considering all limbs. */
-  /* VL: This code is not correct in the rounding to the nearest mode
-     because of multiple roundings - it must be rewritten, probably
-     using mpfr_set */
-  /* n_limbs_to_use = MIN (MPFR_LIMBS_PER_DOUBLE, size); */
-  n_limbs_to_use = size;
-  /* Accumulate the limbs from less significant to most significant
-     otherwise due to rounding we may accumulate several ulps,
-     especially in rounding towards -/+infinity. */
-  for (i = n_limbs_to_use; i >= 1; i--)
-    {
-#if (BITS_PER_MP_LIMB == 32)
-      res = res / MP_BASE_AS_DOUBLE +
-        ((negative) ? -(double)qp[size - i] : qp[size - i]);
-#elif (BITS_PER_MP_LIMB == 64)
-      mp_limb_t q;
-      q = qp[size - i] & CNST_LIMB(0xFFFFFFFF);
-      res = res / MP_BASE_AS_DOUBLE + ((negative) ? -(double)q : q);
-      q = qp[size - i] - q;
-      res = res + ((negative) ? -(double)q : q);
-#else
-#error "BITS_PER_MP_LIMB must be 32 or 64"
-#endif
+  if (e < -1076)
+    { /* Simulate the underflow with the current IEEE rounding mode. */
+      d = DBL_MIN;
+      d *= negative ? -DBL_MIN : DBL_MIN;
+      /* -> double precision forced by the affectation */
     }
-  res = __mpfr_scale2 (res, e - BITS_PER_MP_LIMB);
+  else if (e > 1024)
+    { /* Simulate the overflow with the current IEEE rounding mode. */
+      d = DBL_MAX;
+      d *= negative ? -2 : 2;
+    }
+  else
+    {
+      mp_ptr tp;
+      mp_size_t np, i;
+      double r;
 
-  return res;
+      mpfr_save_emin_emax();
+
+      /* Truncate src to 54 bits
+       * --> rounding bit stored to the 54th bit
+       * --> sticky bit stored to variable s */
+      mpfr_init2(tmp, 54);
+      s = mpfr_set(tmp, src, GMP_RNDZ);
+      MPFR_ASSERTN(MPFR_IS_FP(tmp) && MPFR_NOTZERO(tmp));
+
+      /* Warning: the rounding may still be incorrect in the rounding
+         to the nearest mode when the result is a subnormal because of
+         a double rounding (-> 53 bits -> final precision). */
+      tp = MPFR_MANT(tmp);
+      d = (tp[0] & (MP_LIMB_T_MAX << 11)) / MP_BASE_AS_DOUBLE;
+      np = (MPFR_PREC(tmp) - 1) / BITS_PER_MP_LIMB;
+      for (i = 1; i <= np; i++)
+        d = (d + tp[i]) / MP_BASE_AS_DOUBLE;
+      /* d is the mantissa (between 1/2 and 1) of the argument truncated
+         to 53 bits */
+      r = (((tp[0] >> 9) & 2) + (s != 0)) * (DBL_EPSILON / 8.0);
+      d += r; /* double precision forced by the affectation */
+      d = __mpfr_scale2(d, e);
+      if (negative)
+        d = -d;
+
+      mpfr_clear(tmp);
+      mpfr_restore_emin_emax();
+    }
+
+  return d;
 }
 
 double
