@@ -25,7 +25,7 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-void 
+void
 #if __STDC__
 mpfr_set4 (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode, int signb)
 #else
@@ -60,7 +60,7 @@ mpfr_set4 (a, b, rnd_mode, signb)
     aq = MPFR_PREC(a);
 
     carry = mpfr_round_raw(ap, MPFR_MANT(b), MPFR_PREC(b), (signb < 0),
-                           aq, rnd_mode);
+                           aq, rnd_mode, NULL);
     MPFR_EXP(a) = MPFR_EXP(b);
 
     if (carry)

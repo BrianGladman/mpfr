@@ -129,7 +129,7 @@ mpfr_mul_ui (y, x, u, rnd_mode)
      of y may differ */
   sh = ysize - (MPFR_PREC(y) + cnt - 1) / BITS_PER_MP_LIMB;
   c = mpfr_round_raw (my + sh, my + dif, MPFR_PREC(x), (MPFR_SIGN(x) < 0), 
-		       MPFR_PREC(y) - BITS_PER_MP_LIMB + cnt, rnd_mode);
+                      MPFR_PREC(y) - BITS_PER_MP_LIMB + cnt, rnd_mode, NULL);
 
   /* now the high (BITS_PER_MP_LIMB-cnt) bits of the result are in carry,
      and the remaining (yprec-BITS_PER_MP_LIMB+cnt) ones in

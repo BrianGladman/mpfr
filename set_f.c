@@ -60,7 +60,7 @@ mpfr_set_f(y, x, rnd_mode)
       tmp = (mp_limb_t*) TMP_ALLOC(xprec);
       if (cnt) mpn_lshift(tmp, mx, sx, cnt); 
       else MPN_COPY(tmp, mx, sx); 
-      mpfr_round_raw(my, tmp, xprec, (SIZ(x)<0), MPFR_PREC(y), rnd_mode);  
+      mpfr_round_raw(my, tmp, xprec, (SIZ(x)<0), MPFR_PREC(y), rnd_mode, NULL);
     }
   else
     {

@@ -1220,11 +1220,13 @@ and adds one ulp otherwise.
 Always return 0 (result is exact).
 @end deftypefun
 
-@deftypefun int mpfr_round_raw (mp_limb_t* @var{y}, mp_limb_t* @var{x}, mp_prec_t @var{xprec}, int @var{neg}, mp_prec_t @var{yprec}, mp_rnd_t @var{rnd})
+@deftypefun int mpfr_round_raw (mp_limb_t* @var{y}, mp_limb_t* @var{x}, mp_prec_t @var{xprec}, int @var{neg}, mp_prec_t @var{yprec}, mp_rnd_t @var{rnd}, int* @var{inexp})
 Puts in mantissa beginning at @var{y} the value of that 
 beginning at @var{x} (with precision @var{xprec} bits and negative iff 
 @var{neg} is not zero)
-rounded with mode @var{rnd} to precision @var{yprec}.
+rounded with mode @var{rnd} to precision @var{yprec}; @var{inexp} is either
+a null pointer or a pointer to an integer that will contain the inexact
+ternary value.
 @end deftypefun
 
 @deftypefun int mpfr_round_raw2 (mp_limb_t* @var{x}, mp_prec_t @var{xn}, int @var{neg}, mp_rnd_t @var{rnd}, mp_prec_t @var{prec})

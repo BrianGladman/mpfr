@@ -56,8 +56,8 @@ mpfr_set_si (x, i, rnd_mode)
 
   /* round if MPFR_PREC(x) smaller than length of i */
   if (MPFR_PREC(x) < BITS_PER_MP_LIMB-cnt) {
-    cnt = mpfr_round_raw(xp+xn, xp+xn, BITS_PER_MP_LIMB-cnt, (ai<0), MPFR_PREC(x), 
-		   rnd_mode);
+    cnt = mpfr_round_raw(xp+xn, xp+xn, BITS_PER_MP_LIMB-cnt, (ai<0),
+                         MPFR_PREC(x), rnd_mode, NULL);
     if (cnt) { /* special case 1.000...000 */
       MPFR_EXP(x)++;
       xp[xn] = ((mp_limb_t) 1) << (BITS_PER_MP_LIMB-1);

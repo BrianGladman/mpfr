@@ -26,6 +26,10 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
+#if (BITS_PER_MP_LIMB & (BITS_PER_MP_LIMB - 1))
+#error "BITS_PER_MP_LIMB must be a power of 2"
+#endif
+
 /* returns 0 if round(sign*xp[0..xn-1], prec, rnd) = 
    round(sign*xp[0..xn-1], prec, GMP_RNDZ), 1 otherwise,
    where sign=1 if neg=0, sign=-1 otherwise.
@@ -113,55 +117,96 @@ mpfr_round_raw2 (xp, xn, neg, rnd, prec)
 */
 int
 #if __STDC__
-mpfr_round_raw (mp_limb_t *y, mp_limb_t *xp, mp_prec_t xprec, int negative,
-	       mp_prec_t yprec, mp_rnd_t rnd_mode)
+mpfr_round_raw (mp_limb_t *yp, mp_limb_t *xp, mp_prec_t xprec, int neg,
+                mp_prec_t yprec, mp_rnd_t rnd_mode, int *inexp)
 #else
-mpfr_round_raw (y, xp, xprec, negative, yprec, rnd_mode)
-     mp_limb_t *y; 
-     mp_limb_t *xp; 
-     mp_prec_t xprec; 
-     char negative;
-     mp_prec_t yprec; 
-     mp_rnd_t rnd_mode; 
+mpfr_round_raw (yp, xp, xprec, neg, yprec, rnd_mode, inexp)
+     mp_limb_t *yp;
+     mp_limb_t *xp;
+     mp_prec_t xprec;
+     int neg;
+     mp_prec_t yprec;
+     mp_rnd_t rnd_mode;
+     int *inexp;
 #endif
 {
-  mp_prec_t nw, xsize; mp_limb_t mask;
-  char rw, carry = 0;
+  mp_size_t xsize, nw;
+  mp_limb_t himask, lomask;
+  int rw, carry = 0;
 
   xsize = (xprec-1)/BITS_PER_MP_LIMB + 1;
 
-  nw = yprec / BITS_PER_MP_LIMB; rw = yprec & (BITS_PER_MP_LIMB - 1); 
-  if (rw) nw++; 
-  /* number of words needed to represent x */
-
-  if (rw) 
-    mask = ~((((mp_limb_t)1)<<(BITS_PER_MP_LIMB - rw)) - (mp_limb_t)1); 
+  nw = yprec / BITS_PER_MP_LIMB;
+  rw = yprec & (BITS_PER_MP_LIMB - 1);
+  if (rw)
+  {
+    nw++;
+    lomask = ((((mp_limb_t)1)<<(BITS_PER_MP_LIMB - rw)) - (mp_limb_t)1);
+    himask = ~lomask;
+  }
   else
-    mask = ~((mp_limb_t)0); 
+  {
+    lomask = -1;
+    himask = -1;
+  }
+  MPFR_ASSERTN(nw >= 1);
 
-  /* precision is larger than the size of x. No rounding is necessary. 
-     Just add zeroes at the end */
-  if (xsize < nw) { 
-    /* if y=xp, maybe an overlap: MPN_COPY_DECR is ok when src <= dst */
-    MPN_COPY_DECR(y + nw - xsize, xp, xsize);
-    MPN_ZERO(y, nw - xsize); /* PZ 27 May 99 */
-    y[0] &= mask;
-    return 0; 
+  if (xprec <= yprec)
+  { /* No rounding is necessary. */
+    /* if yp=xp, maybe an overlap: MPN_COPY_DECR is ok when src <= dst */
+    MPFR_ASSERTN(nw >= xsize);
+    MPN_COPY_DECR(yp + (nw - xsize), xp, xsize);
+    MPN_ZERO(yp, nw - xsize); /* PZ 27 May 99 */
+    if (inexp) *inexp = 0;
+  }
+  else
+  {
+    mp_limb_t rb, sb;
+
+    if ((rnd_mode == GMP_RNDU && neg) ||
+        (rnd_mode == GMP_RNDD && !neg))
+      rnd_mode = GMP_RNDZ;
+
+    if (inexp || rnd_mode != GMP_RNDZ)
+    {
+      mp_size_t k;
+      mp_limb_t rbmask;
+
+      k = xsize - nw;
+      if (!rw) k--;
+      MPFR_ASSERTN(k >= 0);
+      sb = xp[k] & lomask;  /* First non-significant bits */
+      if (rnd_mode == GMP_RNDN)
+      {
+        rbmask = ((mp_limb_t)1) << (BITS_PER_MP_LIMB - rw - 1);
+        rb = sb & rbmask;
+        sb &= ~rbmask;
+      }
+      while (sb == 0 && k > 0)
+        sb = xp[--k];
+      if (rnd_mode == GMP_RNDN && (rb != 0 || sb != 0))
+      {
+        sb = sb == 0 ? xp[xsize - nw] & (himask ^ (himask << 1)) : rb;
+        if (inexp)
+          *inexp = ((neg != 0) ^ (sb != 0)) ? 1 : -1;
+      }
+      else if (inexp)
+        *inexp = sb == 0 ? 0
+          : (((neg != 0) ^ (rnd_mode != GMP_RNDZ)) ? 1 : -1);
+    }
+    else
+      sb = 0;
+
+    if (sb != 0 && rnd_mode != GMP_RNDZ)
+      carry = mpn_add_1(yp, xp + xsize - nw, nw,
+                        rw ? ((mp_limb_t)1) << (BITS_PER_MP_LIMB - rw) : 1);
+    else
+      MPN_COPY_INCR(yp, xp + xsize - nw, nw);
+
+    yp[0] &= himask;
   }
 
-  if (mpfr_round_raw2(xp, xsize, negative, rnd_mode, yprec)) 
-    {
-      if (rw) 
-	carry = mpn_add_1(y, xp + xsize - nw, nw,
-			  ((mp_limb_t)1) << (BITS_PER_MP_LIMB - rw));
-      else
-	carry = mpn_add_1(y, xp + xsize - nw, nw, 1); 
-    }
-  else /* now xsize >= nw */
-    MPN_COPY_INCR(y, xp + xsize - nw, nw);
-
-  y[0] &= mask;
-  return carry; 
+  return carry;
 }
 
 void
@@ -193,7 +238,8 @@ mpfr_round (x, rnd_mode, prec)
 
   TMP_MARK(marker); 
   tmp = TMP_ALLOC (nw * BYTES_PER_MP_LIMB);
-  carry = mpfr_round_raw(tmp, MPFR_MANT(x), MPFR_PREC(x), neg, prec, rnd_mode);
+  carry = mpfr_round_raw(tmp, MPFR_MANT(x), MPFR_PREC(x), neg, prec, rnd_mode,
+                         NULL);
 
   if (carry)
     {      

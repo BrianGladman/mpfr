@@ -122,7 +122,7 @@ mpfr_mul (a, b, c, rnd_mode)
   if (b1 == 0)
       mpn_lshift (tmp, tmp, tn, 1);
   cc = mpfr_round_raw (ap, tmp, prec_b + prec_c, sign_product < 0, prec_a,
-		       rnd_mode);
+		       rnd_mode, NULL);
   if (cc) /* cc = 1 ==> result is a power of two */
     ap[an-1] = (mp_limb_t) 1 << (BITS_PER_MP_LIMB-1);
 

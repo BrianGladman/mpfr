@@ -244,7 +244,7 @@ mpfr_div (r, u, v, rnd_mode)
   if (can_round) 
     {
       cc = mpfr_round_raw(rp, rp, err, (sign_quotient == -1 ? 1 : 0),
-			  MPFR_PREC(r), rnd_mode);
+			  MPFR_PREC(r), rnd_mode, NULL);
     }
   else {
     /* Use the remainder to find out the correct rounding */

@@ -203,7 +203,7 @@ mpfr_sqrt (r, u, rnd_mode)
 
   if (can_round) 
     {
-      cc = mpfr_round_raw(rp, rp, err, 0, MPFR_PREC(r), rnd_mode);  
+      cc = mpfr_round_raw(rp, rp, err, 0, MPFR_PREC(r), rnd_mode, NULL);
       rrsize = (MPFR_PREC(r) - 1)/BITS_PER_MP_LIMB + 1; 
     }
   else
