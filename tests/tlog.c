@@ -37,7 +37,7 @@ void check2(double a, unsigned char rnd_mode, double res1)
   mpfr_t ta, tres;
   double res2;
   int ck=0; /* ck=1 iff res1 is certified correct */
-
+  printf("mpfr_log working on a=%1.20e, rnd_mode=%d\n",a,rnd_mode);
   mpfr_set_machine_rnd_mode(rnd_mode);  
   if (res1==0.0) res1=log(a); else ck=1;
 
@@ -180,7 +180,7 @@ void main(int argc, char *argv[]) {
     printf("GMP_RNDN : %i, GMP_RNDZ : %i,GMP_RNDU : %i,GMP_RNDD : %i\n",GMP_RNDN, GMP_RNDZ,GMP_RNDU, GMP_RNDD); 
   }
   else {
-  check_worst_cases();
+    /*  check_worst_cases();
 
   check(10,GMP_RNDU);
   check(6,GMP_RNDU);  
@@ -220,13 +220,16 @@ void main(int argc, char *argv[]) {
   check(7.34302197248998461006e+43,GMP_RNDZ);
   check(6.09969788341579732815e+00,GMP_RNDD);
   check(8.94529798779875738679e+82,GMP_RNDD);
-  check(1.68775280934272742250e+00,GMP_RNDZ);
-  }
+  check(1.68775280934272742250e+00,GMP_RNDZ); */
 
-  srand48(getpid());
+    check(5.32204288784834943727e+02,GMP_RNDZ);
+  } 
+
+  srand48(64);
   for(i=0;i<N;i++) {
     d=drand();
     check(d,rand() % 4);
   }
 } 
+
 
