@@ -33,6 +33,7 @@ VERSION     - version of MPFR (next release version if taken from CVS)
 ac*.m4      - automatic configuration files
 *.c         - source files
 configure*  - configuration files
+fdl.texi    - the GNU Free Documentation License
 install*    - installation files
 missing     - auxiliary installation file
 mkinst*     - auxiliary installation file
