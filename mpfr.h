@@ -123,6 +123,7 @@ int mpfr_cmp2 _PROTO ((mpfr_srcptr, mpfr_srcptr));
 void mpfr_mul_2exp _PROTO((mpfr_ptr, mpfr_srcptr, unsigned long int,unsigned char));
 void mpfr_div_2exp _PROTO((mpfr_ptr, mpfr_srcptr, unsigned long int,unsigned char));
 void mpfr_set_prec _PROTO((mpfr_ptr, unsigned long int));
+void mpfr_set_default_prec _PROTO((unsigned long int));
 extern mp_size_t __gmp_default_fp_bit_precision;
 extern char __gmp_default_rounding_mode;
 char *mpfr_print_rnd_mode(unsigned char); 
