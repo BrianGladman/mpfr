@@ -37,9 +37,9 @@ MA 02111-1307, USA. */
 
 void
 #if __STDC__
-mpfr_set_str_raw(mpfr_ptr x, char *str)
+mpfr_set_str_raw (mpfr_ptr x, char *str)
 #else
-mpfr_set_str_raw(x, str)
+mpfr_set_str_raw (x, str)
      mpfr_ptr x; 
      char *str; 
 #endif
@@ -52,6 +52,7 @@ mpfr_set_str_raw(x, str)
   xsize = 1 + (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB;
   alloc = (strlen(str)+1) * sizeof(char);
   str0 = str2 = (char *) (*_mp_allocate_func) (alloc);
+
   if (str0 == NULL) {
     fprintf (stderr, "Error in mpfr_set_str_raw: no more memory available\n");
     exit (1);
@@ -62,14 +63,18 @@ mpfr_set_str_raw(x, str)
   
   if (*str == 'I') 
     { 
-      MPFR_SET_INF(x); if (MPFR_ISNEG(x) != negative) { MPFR_CHANGE_SIGN(x); }
+      MPFR_SET_INF(x);
+      if (MPFR_ISNEG(x) != negative) MPFR_CHANGE_SIGN(x);
       return; 
     }
      
   if (*str == 'N')
     {
-      MPFR_SET_NAN(x); return; 
+      MPFR_SET_NAN(x);
+      return;
     }
+
+  MPFR_CLEAR_FLAGS(x);
  
   while (*str == '0') { str++; } 
 

@@ -37,11 +37,15 @@ mpfr_set_z (f, z, rnd)
 {
   int fn, zn, k, dif, sign_z, sh; mp_limb_t *fp = MPFR_MANT(f), *zp, cc, c2;
 
-  sign_z = mpz_cmp_ui(z,0);
+  MPFR_CLEAR_FLAGS (f); /* z cannot be NaN nor Inf */
+
+  sign_z = mpz_cmp_ui (z, 0);
+
   if (sign_z==0) {
     MPFR_SET_ZERO(f);
     return 0;
   }
+
   fn = 1 + (MPFR_PREC(f)-1)/BITS_PER_MP_LIMB;
   zn = ABS(SIZ(z));
   dif = zn-fn;
