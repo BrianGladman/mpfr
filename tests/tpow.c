@@ -151,6 +151,37 @@ special ()
       exit (1);
     }
 
+  mpfr_set_prec (x, 30);
+  mpfr_set_prec (y, 30);
+  mpfr_set_prec (z, 30);
+  mpfr_set_str (x, "1.00000000001010111110001111011e1", 2, GMP_RNDN);
+  mpfr_set_d (y, -0.5, GMP_RNDN);
+  mpfr_pow (z, x, y, GMP_RNDN);
+  mpfr_set_str (y, "1.01101001111010101110000101111e-1", 2, GMP_RNDN);
+  if (mpfr_cmp (z, y))
+    {
+      fprintf (stderr, "Error in mpfr_pow for prec=30, rnd=GMP_RNDN\n");
+      exit (1);
+    }
+
+  mpfr_set_prec (x, 21);
+  mpfr_set_prec (y, 21);
+  mpfr_set_prec (z, 21);
+  mpfr_set_str (x, "1.11111100100001100101", 2, GMP_RNDN);
+  mpfr_set_d (y, -0.5, GMP_RNDN);
+  mpfr_pow (z, x, y, GMP_RNDZ);
+  mpfr_set_str (y, "1.01101011010001100000e-1", 2, GMP_RNDN);
+  if (mpfr_cmp (z, y))
+    {
+      fprintf (stderr, "Error in mpfr_pow for prec=21, rnd=GMP_RNDZ\n");
+      fprintf (stderr, "Expected ");
+      mpfr_out_str (stderr, 2, 0, y, GMP_RNDN);
+      fprintf (stderr, "\nGot      ");
+      mpfr_out_str (stderr, 2, 0, z, GMP_RNDN);
+      fprintf (stderr, "\n");
+      exit (1);
+    }
+
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);
