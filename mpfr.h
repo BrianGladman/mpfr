@@ -360,6 +360,10 @@ int mpfr_round _MPFR_PROTO((mpfr_ptr, mpfr_srcptr));
 int mpfr_trunc _MPFR_PROTO((mpfr_ptr, mpfr_srcptr));
 int mpfr_ceil _MPFR_PROTO((mpfr_ptr, mpfr_srcptr));
 int mpfr_floor _MPFR_PROTO((mpfr_ptr, mpfr_srcptr));
+int mpfr_rint_round _MPFR_PROTO((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t));
+int mpfr_rint_trunc _MPFR_PROTO((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t));
+int mpfr_rint_ceil _MPFR_PROTO((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t));
+int mpfr_rint_floor _MPFR_PROTO((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t));
 int mpfr_frac _MPFR_PROTO((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t));
 
 int mpfr_fits_ulong_p _MPFR_PROTO((mpfr_srcptr, mpfr_rnd_t));

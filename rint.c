@@ -24,7 +24,7 @@ MA 02111-1307, USA. */
 /* Merge the following mpfr_rint code with mpfr_round_raw_generic? */
 
 int
-mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
+mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 {
   int sign;
   int rnd_away;
@@ -51,7 +51,7 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
 	}
     }
   MPFR_SET_SAME_SIGN(r, u);
- 
+
   sign = MPFR_INT_SIGN(u);
   exp = MPFR_GET_EXP (u);
 
@@ -326,4 +326,105 @@ int
 mpfr_floor (mpfr_ptr r, mpfr_srcptr u)
 {
   return mpfr_rint(r, u, GMP_RNDD);
+}
+
+#undef mpfr_rint_round
+
+int
+mpfr_rint_round (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
+{
+  if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(u) ) || mpfr_integer_p (u))
+    return mpfr_set (r, u, rnd_mode);
+  else
+    {
+      mpfr_t tmp;
+      int inex;
+
+      mpfr_save_emin_emax ();
+      mpfr_init2 (tmp, MPFR_PREC (u));
+      /* round(u) is representable in tmp unless an overflow occurs */
+      mpfr_clear_overflow ();
+      mpfr_round (tmp, u);
+      inex = (mpfr_overflow_p ()
+              ? mpfr_set_overflow (r, rnd_mode, MPFR_SIGN (u))
+              : mpfr_set (r, tmp, rnd_mode));
+      mpfr_clear (tmp);
+      mpfr_restore_emin_emax ();
+      return mpfr_check_range (r, inex, rnd_mode);
+    }
+}
+
+#undef mpfr_rint_trunc
+
+int
+mpfr_rint_trunc (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
+{
+  if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(u) ) || mpfr_integer_p (u))
+    return mpfr_set (r, u, rnd_mode);
+  else
+    {
+      mpfr_t tmp;
+      int inex;
+
+      mpfr_save_emin_emax ();
+      mpfr_init2 (tmp, MPFR_PREC (u));
+      /* trunc(u) is always representable in tmp */
+      mpfr_trunc (tmp, u);
+      inex = mpfr_set (r, tmp, rnd_mode);
+      mpfr_clear (tmp);
+      mpfr_restore_emin_emax ();
+      return mpfr_check_range (r, inex, rnd_mode);
+    }
+}
+
+#undef mpfr_rint_ceil
+
+int
+mpfr_rint_ceil (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
+{
+  if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(u) ) || mpfr_integer_p (u))
+    return mpfr_set (r, u, rnd_mode);
+  else
+    {
+      mpfr_t tmp;
+      int inex;
+
+      mpfr_save_emin_emax ();
+      mpfr_init2 (tmp, MPFR_PREC (u));
+      /* ceil(u) is representable in tmp unless an overflow occurs */
+      mpfr_clear_overflow ();
+      mpfr_ceil (tmp, u);
+      inex = (mpfr_overflow_p ()
+              ? mpfr_set_overflow (r, rnd_mode, MPFR_SIGN_POS)
+              : mpfr_set (r, tmp, rnd_mode));
+      mpfr_clear (tmp);
+      mpfr_restore_emin_emax ();
+      return mpfr_check_range (r, inex, rnd_mode);
+    }
+}
+
+#undef mpfr_rint_floor
+
+int
+mpfr_rint_floor (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
+{
+  if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(u) ) || mpfr_integer_p (u))
+    return mpfr_set (r, u, rnd_mode);
+  else
+    {
+      mpfr_t tmp;
+      int inex;
+
+      mpfr_save_emin_emax ();
+      mpfr_init2 (tmp, MPFR_PREC (u));
+      /* floor(u) is representable in tmp unless an overflow occurs */
+      mpfr_clear_overflow ();
+      mpfr_floor (tmp, u);
+      inex = (mpfr_overflow_p ()
+              ? mpfr_set_overflow (r, rnd_mode, MPFR_SIGN_NEG)
+              : mpfr_set (r, tmp, rnd_mode));
+      mpfr_clear (tmp);
+      mpfr_restore_emin_emax ();
+      return mpfr_check_range (r, inex, rnd_mode);
+    }
 }

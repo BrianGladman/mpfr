@@ -1387,6 +1387,21 @@ in binary) in 2-bit precision, though @code{round(4.5)} is equal to 5 and
 5 (101 in binary) is rounded to 6 (110 in binary) in 2-bit precision.
 @end deftypefun
 
+@deftypefun int mpfr_rint_ceil (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_rint_floor (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_rint_round (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_rint_trunc (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+Set @var{rop} to @var{op} rounded to an integer.
+@code{mpfr_rint_ceil} rounds to the next higher or equal integer,
+@code{mpfr_rint_floor} to the next lower or equal integer,
+@code{mpfr_rint_round} to the nearest integer, rounding halfway cases away
+from zero, and @code{mpfr_rint_trunc} to the next integer towards zero.
+If the result is not representable, it is rounded in the direction @var{rnd}.
+The returned value is the ternary value associated with the considered
+round-to-integer function (regarded in the same way as any other
+mathematical function).
+@end deftypefun
+
 @deftypefun int mpfr_frac (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Set @var{rop} to the fractional part of @var{op}, having the same sign as
 @var{op}, rounded in the direction @var{rnd} (unlike in @code{mpfr_rint},

@@ -243,25 +243,29 @@ main (int argc, char *argv[])
           mpfr_set_prec (y, p);
           mpfr_set_prec (v, p);
           for (r = 0; r < GMP_RND_MAX ; r++)
-            for (trint = 0; trint < 2; trint++)
+            for (trint = 0; trint < 3; trint++)
               {
-                if (trint)
+                if (trint == 2)
                   inexact = mpfr_rint (y, x, r);
                 else if (r == GMP_RNDN)
                   inexact = mpfr_round (y, x);
                 else if (r == GMP_RNDZ)
-                  inexact = mpfr_trunc (y, x);
+                  inexact = (trint ? mpfr_trunc (y, x) :
+                             mpfr_rint_trunc (y, x, GMP_RNDZ));
                 else if (r == GMP_RNDU)
-                  inexact = mpfr_ceil (y, x);
+                  inexact = (trint ? mpfr_ceil (y, x) :
+                             mpfr_rint_ceil (y, x, GMP_RNDU));
                 else /* r = GMP_RNDD */
-                  inexact = mpfr_floor (y, x);
+                  inexact = (trint ? mpfr_floor (y, x) :
+                             mpfr_rint_floor (y, x, GMP_RNDD));
                 if (mpfr_sub (t, y, x, GMP_RNDN))
                   err ("subtraction 1 should be exact",
                        s, x, y, p, r, trint, inexact);
                 sign_t = mpfr_cmp_ui (t, 0);
-                if (((inexact == 0) && (sign_t != 0)) ||
-                    ((inexact < 0) && (sign_t >= 0)) ||
-                    ((inexact > 0) && (sign_t <= 0)))
+                if (trint != 0 &&
+                    (((inexact == 0) && (sign_t != 0)) ||
+                     ((inexact < 0) && (sign_t >= 0)) ||
+                     ((inexact > 0) && (sign_t <= 0))))
                   err ("wrong inexact flag", s, x, y, p, r, trint, inexact);
                 if (inexact == 0)
                   continue; /* end of the test for exact results */
@@ -300,7 +304,7 @@ main (int argc, char *argv[])
                       continue;
                     /* |t| = |u|: x is the middle of two consecutive
                        representable integers. */
-                    if (trint)
+                    if (trint == 2)
                       {
                         /* halfway case for mpfr_rint in GMP_RNDN rounding
                            mode: round to an even integer or mantissa. */
