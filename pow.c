@@ -1,7 +1,6 @@
-/* mpfr_pow_ui, mpfr_ui_pow_ui -- compute the power of a floating-point
-                                  number or machine integer
+/* mpfr_pow -- power function x^y 
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 2001 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -21,157 +20,264 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
 #include <stdio.h>
+#include <math.h>
 #include "gmp.h"
+#include "gmp-impl.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-/* sets x to y^n, and return 0 if exact, non-zero otherwise */
+ /* The computation of y=pow(x,z) is done by
+
+    y=exp(z*log(x))=x^z
+ */
+
+
+int mpfr_pow _PROTO ((mpfr_ptr, mpfr_srcptr,mpfr_srcptr, mp_rnd_t));
+
 int
 #if __STDC__
-mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
+mpfr_pow (mpfr_ptr z, mpfr_srcptr x ,mpfr_srcptr y , mp_rnd_t rnd_mode) 
 #else
-mpfr_pow_ui (x, y, n, rnd)
-     mpfr_ptr x;
+mpfr_pow (z, x, y, rnd_mode)
+     mpfr_ptr z;
+     mpfr_srcptr x;
      mpfr_srcptr y;
-     unsigned long int n;
-     mp_rnd_t rnd;
+     mp_rnd_t rnd_mode;
 #endif
 {
-  long int i, err;
-  unsigned long m;
-  mpfr_t res;
-  mp_prec_t prec;
-  int inexact;
-  mp_rnd_t rnd1;
-
-  if (MPFR_IS_NAN(y))
+  int inexact = 0;
+ 
+  if (MPFR_IS_NAN(x) || MPFR_IS_NAN(y) ) 
     {
-      MPFR_SET_NAN(x);
-      MPFR_RET_NAN;
+      MPFR_SET_NAN(z); 
+      return 1; 
     }
 
-  MPFR_CLEAR_NAN(x);
-
-  if (n == 0) /* x^0 = 1 for any x */
+  if (MPFR_IS_INF(y))
     {
-      mpfr_set_ui (x, 1, rnd);
+      mpfr_t px;
+      mpfr_init2(px,MPFR_PREC(x));
+      mpfr_abs(px,x,GMP_RNDN);
+      if(MPFR_SIGN(y)>0)
+        {
+          if(MPFR_IS_INF(x))
+          {
+            if(MPFR_SIGN(x)>0)
+            {
+              MPFR_CLEAR_FLAGS(z);
+              MPFR_SET_INF(z);
+              if(MPFR_SIGN(z) <0)
+                MPFR_CHANGE_SIGN(z);
+              mpfr_clear(px);
+              return 0;
+            }
+            else
+            {
+              MPFR_CLEAR_FLAGS(z);  
+              MPFR_SET_ZERO(z);
+              if(MPFR_SIGN(z) <0)
+                MPFR_CHANGE_SIGN(z);
+              mpfr_clear(px);
+              return 0;
+            }
+          }
+          if(mpfr_cmp_ui(px,1) > 0)
+            {
+              MPFR_CLEAR_FLAGS(z);
+              MPFR_SET_INF(z);
+              if(MPFR_SIGN(z) <0)
+                MPFR_CHANGE_SIGN(z);
+              mpfr_clear(px);
+              return 0;
+            }
+          if(mpfr_cmp_ui(px,1) < 0)
+            {
+              MPFR_CLEAR_FLAGS(z);
+              MPFR_SET_ZERO(z);
+              if(MPFR_SIGN(z) <0)
+                MPFR_CHANGE_SIGN(z);
+              mpfr_clear(px);
+              return 0;
+            }
+          if(mpfr_cmp_ui(px,1)==0)
+            {
+              MPFR_CLEAR_FLAGS(z);
+              MPFR_SET_NAN(z);
+              mpfr_clear(px);
+              return 1;
+            }
+        }
+      else
+        {
+          if(MPFR_IS_INF(x))
+          {
+            if(MPFR_SIGN(x)>0)
+            {
+              MPFR_CLEAR_FLAGS(z);
+              MPFR_SET_ZERO(z);
+              if(MPFR_SIGN(z) <0)
+                MPFR_CHANGE_SIGN(z);
+              mpfr_clear(px);
+              return 0;
+            }
+            else
+            {
+              MPFR_CLEAR_FLAGS(z);
+              MPFR_SET_INF(z);
+              if(MPFR_SIGN(z) <0)
+                MPFR_CHANGE_SIGN(z);
+              mpfr_clear(px);
+              return 0;
+            }
+          }
+          if(mpfr_cmp_ui(px,1) > 0)
+            {
+              MPFR_CLEAR_FLAGS(z);
+              MPFR_SET_ZERO(z);
+              if(MPFR_SIGN(z) <0)
+                MPFR_CHANGE_SIGN(z);
+              mpfr_clear(px);
+              return 0;
+            }
+          if(mpfr_cmp_ui(px,1) < 0)
+            {
+              MPFR_CLEAR_FLAGS(z);
+              MPFR_SET_INF(z);
+              if(MPFR_SIGN(z) <0)
+                MPFR_CHANGE_SIGN(z);
+              mpfr_clear(px);
+              return 0;
+            }
+          if(mpfr_cmp_ui(px,1)==0)
+            {
+              MPFR_CLEAR_FLAGS(z);
+              MPFR_SET_NAN(z);
+              mpfr_clear(px);
+              return 1;
+            }
+        }
+    }
+
+  if(MPFR_IS_ZERO(y))
+    {
+      return mpfr_set_ui(z,1,GMP_RNDN);
+    }
+
+  if(mpfr_isinteger(y))
+    {
+      mpz_t zi;
+      long int zii;
+      int exptol;
+    
+      mpz_init(zi);  
+      exptol=mpz_set_fr(zi,y);     
+        
+      if (exptol>0)
+        mpz_mul_2exp(zi, zi, exptol);
+      else
+        mpz_tdiv_q_2exp(zi, zi, (unsigned long int) (-exptol));
+
+      zii=mpz_get_ui(zi);
+        
+      mpz_clear(zi);
+      return mpfr_pow_si(z,x,zii,rnd_mode); 
+    }
+  if (MPFR_IS_INF(x))
+    {
+      if (MPFR_SIGN(x) > 0)
+        {
+        if (MPFR_SIGN(y) >0)
+          {
+            MPFR_CLEAR_FLAGS(z);
+            MPFR_SET_INF(z);
+            if(MPFR_SIGN(z) <0)
+              MPFR_CHANGE_SIGN(z);
+            return 0;
+          }
+        else
+          {
+            MPFR_CLEAR_FLAGS(z);
+            MPFR_SET_ZERO(z);
+            if(MPFR_SIGN(z) <0)
+              MPFR_CHANGE_SIGN(z);
+            return 0;
+          }
+        }
+      else
+        {
+          MPFR_CLEAR_FLAGS(z);
+          MPFR_SET_NAN(z); 
+          return 1; 
+        }
+    }       
+    
+  MPFR_CLEAR_INF(z);
+  if(MPFR_SIGN(x) < 0)
+    {
+      MPFR_CLEAR_FLAGS(z);
+      MPFR_SET_NAN(z); 
+      return 1; 
+    }
+  MPFR_CLEAR_NAN(z);
+
+  if(mpfr_cmp_ui(x,0) == 0)
+    {
+      MPFR_CLEAR_FLAGS(z);
+      MPFR_SET_ZERO(z);
       return 0;
     }
+  /* General case */
+  {
+    /* Declaration of the intermediary variable */
+      mpfr_t t, te, ti;
 
-  if (MPFR_IS_INF(y)) 
-    {
-      /* Inf^n = Inf, (-Inf)^n = Inf for n even, -Inf for n odd */
-      if ((MPFR_SIGN(y) < 0) && (n % 2 == 1))
-	{
-	  if (MPFR_SIGN(x) > 0)
-	    MPFR_CHANGE_SIGN(x);
-	}
-      else if (MPFR_SIGN(x) < 0)
-	MPFR_CHANGE_SIGN(x);
-      MPFR_SET_INF(x);
-      return 0;
+      /* Declaration of the size variable */
+      mp_prec_t Nx = MPFR_PREC(x);   /* Precision of input variable */
+      mp_prec_t Ny = MPFR_PREC(y);   /* Precision of input variable */
+
+      mp_prec_t Nt;   /* Precision of the intermediary variable */
+      long int err;  /* Precision of error */
+                
+      /* compute the precision of intermediary variable */
+      Nt=MAX(Nx,Ny);
+      /* the optimal number of bits : see algorithms.ps */
+      Nt=Nt+5+_mpfr_ceil_log2(Nt);
+
+      /* initialise of intermediary	variable */
+      mpfr_init(t);
+      mpfr_init(ti);
+      mpfr_init(te);             
+
+      do {
+
+	/* reactualisation of the precision */
+	mpfr_set_prec(t,Nt);                    
+	mpfr_set_prec(ti,Nt);                    
+   	mpfr_set_prec(te,Nt);             
+
+	/* compute   exp(y*ln(x))*/
+        mpfr_log(ti,x,GMP_RNDU);         /* ln(n) */
+        mpfr_mul(te,y,ti,GMP_RNDU);       /* y*ln(n) */
+        mpfr_exp(t,te,GMP_RNDN);         /* exp(x*ln(n))*/
+
+	/* estimation of the error -- see pow function in algorithms.ps*/
+	err = Nt - _mpfr_ceil_log2(1+pow(2,MPFR_EXP(te)+2));
+
+	/* actualisation of the precision */
+	Nt += 10;
+
+      } while (err<0 || !mpfr_can_round(t,err,GMP_RNDN,rnd_mode,Ny));
+      inexact = mpfr_set(z,t,rnd_mode);
+      mpfr_clear(t);
+      mpfr_clear(ti);
+      mpfr_clear(te);
     }
-  
-  MPFR_CLEAR_INF(x);
-
-  mpfr_init (res);
-
-  prec = MPFR_PREC(x);
-
-  rnd1 = (MPFR_SIGN(y) > 0) ? GMP_RNDU : GMP_RNDD; /* away */
-
-  do
-    {
-      prec += 3;
-      for (m=n, i=0; m; i++, m>>=1, prec++);
-      mpfr_set_prec (res, prec);
-      inexact = mpfr_set (res, y, rnd1);
-      err = 1;
-      /* now 2^(i-1) <= n < 2^i */
-      for (i-=2; i>=0; i--)
-	{
-	  if (mpfr_mul (res, res, res, GMP_RNDU))
-	    inexact = 1;
-	  err++;
-	  if (n & (1 << i))
-	    if (mpfr_mul (res, res, y, rnd1))
-	      inexact = 1;
-	}
-      err = prec - err;
-      if (err < 0)
-	err = 0;
-    }
-  while (inexact && (mpfr_can_round (res, err,
-	  (MPFR_SIGN(res) > 0) ? GMP_RNDU : GMP_RNDD, rnd, MPFR_PREC(x)) == 0));
-
-  if (mpfr_set (x, res, rnd))
-    inexact = 1;
-
-  mpfr_clear (res);
-
-  return inexact;
+    return inexact;
 }
 
-/* sets x to y^n, and return 0 if exact, non-zero otherwise */
 
-int
-#if __STDC__
-mpfr_ui_pow_ui (mpfr_ptr x, unsigned long int y, unsigned long int n,
-		     mp_rnd_t rnd)
-#else
-mpfr_ui_pow_ui (x, y, n, rnd)
-     mpfr_ptr x;
-     unsigned long int y;
-     unsigned long int n;
-     mp_rnd_t rnd;
-#endif
-{
-  long int i, err;
-  unsigned long m;
-  mpfr_t res;
-  mp_prec_t prec;
-  int inexact;
 
-  MPFR_CLEAR_FLAGS(x);
 
-  if (n == 0) /* x^0 = 1 for any x */
-    {
-      mpfr_set_ui (x, 1, rnd);
-      return 0;
-    }
 
-  mpfr_init (res);
 
-  prec = MPFR_PREC(x);
 
-  do
-    {
-      prec += 3;
-      for (m=n, i=0; m; i++, m>>=1, prec++);
-      mpfr_set_prec (res, prec);
-      inexact = mpfr_set_ui (res, y, GMP_RNDU);
-      err = 1;
-      /* now 2^(i-1) <= n < 2^i */
-      for (i-=2; i>=0; i--)
-	{
-	  if (mpfr_mul (res, res, res, GMP_RNDU))
-	    inexact = 1;
-	  err++;
-	  if (n & (1 << i))
-	    if (mpfr_mul_ui (res, res, y, GMP_RNDU))
-	      inexact = 1;
-	}
-      err = prec - err;
-      if (err < 0)
-	err = 0;
-    }
-  while (inexact && (mpfr_can_round (res, err,
-	  (MPFR_SIGN(res) > 0) ? GMP_RNDU : GMP_RNDD, rnd, MPFR_PREC(x)) == 0));
-
-  if (mpfr_set (x, res, rnd))
-    inexact = 1;
-
-  mpfr_clear (res);
-
-  return inexact;
-}
