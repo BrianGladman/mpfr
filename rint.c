@@ -217,7 +217,7 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
               uflags : -uflags;
           else
             {
-              MPFR_SET_EXP(r, MPFR_GET_EXP (r) + 1);
+              MPFR_SET_EXP(r, exp + 1);
               rp[rn-1] = MPFR_LIMB_HIGHBIT;
             }
         }
