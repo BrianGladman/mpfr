@@ -1,5 +1,13 @@
 2002-04-07  Vincent Lefevre  <lefevre@greux.loria.fr>
 
+	* configure.in: Stricter test for HAVE_INFS.
+
+	* BUGS: Update.
+
+	* INSTALL: Added note about IRIX.
+
+	* ChangeLog: Update for the next pre-release.
+
 	* tests/tzeta.c, tests/tlog10.c, tests/tmul.c, tests/tmul_2exp.c, tests/tmul_ui.c, tests/trandom.c, tests/tround_prec.c, tests/tset_d.c, tests/tset_q.c, tests/tset_si.c, tests/tset_str.c, tests/tset_z.c, tests/tsin.c, tests/tsin_cos.c, tests/tsqrt.c, tests/tsqrt_ui.c, tests/tsub.c, tests/tsub_ui.c, tests/tswap.c, tests/ttan.c, tests/ttrunc.c, tests/tui_div.c, tests/tui_sub.c, tests/reuse.c, tests/tabs.c, tests/tadd.c, tests/tadd_ui.c, tests/tagm.c, tests/tasin.c, tests/tcmp_ui.c, tests/tconst_log2.c, tests/tconst_pi.c, tests/tcos.c, tests/tdiv.c, tests/tdiv_ui.c, tests/texp.c, tests/texp2.c, tests/tfma.c, tests/tget_d.c, tests/tlog.c, mpf2mpfr.h, mpfr.h, mpfr.texi, zeta.c, agm.c, exp.c, exp_2.c, get_d.c, log.c, log10.c:
 	mpfr_get_d -> mpfr_get_d1 and mpfr_get_d2 -> mpfr_get_d.
 
