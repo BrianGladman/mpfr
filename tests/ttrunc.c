@@ -1,0 +1,96 @@
+/* Test file for mpfr_cmp2.
+
+Copyright (C) 1999 PolKA project, Inria Lorraine and Loria
+
+This file is part of the MPFR Library.
+
+The MPFR Library is free software; you can redistribute it and/or modify
+it under the terms of the GNU Library General Public License as published by
+the Free Software Foundation; either version 2 of the License, or (at your
+option) any later version.
+
+The MPFR Library is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
+License for more details.
+
+You should have received a copy of the GNU Library General Public License
+along with the MPFR Library; see the file COPYING.LIB.  If not, write to
+the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
+MA 02111-1307, USA. */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include "gmp.h"
+#include "gmp-impl.h"
+#include "longlong.h"
+#include "mpfr.h"
+#include "mpfr-impl.h"
+
+#define SIZEX 100
+
+int main()
+{
+  int j, k; mpfr_t x, y, z, t, y2, z2, t2; 
+
+  mpfr_init2(x, SIZEX); 
+  mpfr_init2(y, SIZEX); 
+  mpfr_init2(z, SIZEX); 
+  mpfr_init2(t, SIZEX); 
+  mpfr_init2(y2, SIZEX); 
+  mpfr_init2(z2, SIZEX); 
+  mpfr_init2(t2, SIZEX); 
+  
+  for (j=0;j<1000;j++) {
+
+    mpfr_random(x); 
+    EXP(x) = 1; 
+        
+    for (k = 1; k <= SIZEX; k++) 
+      {
+	mpfr_set_prec(y, k); 
+	mpfr_set_prec(y2, k); 
+	mpfr_set_prec(z, k); 
+	mpfr_set_prec(z2, k); 
+	mpfr_set_prec(t, k); 
+	mpfr_set_prec(t2, k);  
+
+	mpfr_floor(y, x); 
+	mpfr_set(y2, x, GMP_RNDD); 
+	
+	mpfr_trunc(z, x); 
+	mpfr_set(z2, x, GMP_RNDZ); 
+
+	mpfr_ceil(t, x); 
+	mpfr_set(t2, x, GMP_RNDU); 
+
+	if (!mpfr_eq(y, y2, k))
+	  {
+	    printf("Error in floor, x = "); mpfr_print_raw(x); printf("\n"); 
+	    printf("floor(x) = "); mpfr_print_raw(y); printf("\n"); 
+	    printf("round(x, RNDD) = "); mpfr_print_raw(y2); printf("\n"); 
+	    exit(-1); 
+	  }
+
+	if (!mpfr_eq(z, z2, k))
+	  {
+	    printf("Error in trunc, x = "); mpfr_print_raw(x); printf("\n"); 
+	    printf("trunc(x) = "); mpfr_print_raw(z); printf("\n"); 
+	    printf("round(x, RNDZ) = "); mpfr_print_raw(z2); printf("\n"); 
+	    exit(-1); 
+	  }
+
+	if (!mpfr_eq(y, y2, k))
+	  {
+	    printf("Error in ceil, x = "); mpfr_print_raw(x); printf("\n"); 
+	    printf("ceil(x) = "); mpfr_print_raw(t); printf("\n"); 
+	    printf("round(x, RNDU) = "); mpfr_print_raw(t2); printf("\n"); 
+	    exit(-1); 
+	  }
+	EXP(x)++; 
+      }
+  }
+  return 0;
+}
+
