@@ -1,7 +1,7 @@
 /* Utilities for MPFR developers, not exported.
 
 Copyright 1999, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
-
+ 
 This file is part of the MPFR Library.
 
 The MPFR Library is free software; you can redistribute it and/or modify
@@ -48,7 +48,17 @@ MA 02111-1307, USA. */
 #define strncasecmp mpfr_strncasecmp
 #endif
 
-/* Definition of MPFR_LIMB_HIGHBIT */
+/* Check GMP */
+#if GMP_NAIL_BITS != 0
+# error "MPFR doesn't support nonzero values of GMP_NAIL_BITS"
+#endif
+
+#if (BITS_PER_MP_LIMB & (BITS_PER_MP_LIMB - 1))
+# error "BITS_PER_MP_LIMB must be a power of 2"
+#endif
+
+
+/* Definition of MPFR_LIMB_HIGHBIT and MPFR_LIMB_ONE */
 #ifdef GMP_LIMB_HIGHBIT
 # define MPFR_LIMB_HIGHBIT GMP_LIMB_HIGHBIT
 #else
@@ -59,12 +69,9 @@ MA 02111-1307, USA. */
 # endif
 #endif
 
-#if GMP_NAIL_BITS != 0
-# error "MPFR doesn't support nonzero values of GMP_NAIL_BITS"
-#endif
-
-#if (BITS_PER_MP_LIMB & (BITS_PER_MP_LIMB - 1))
-# error "BITS_PER_MP_LIMB must be a power of 2"
+#define MPFR_LIMB_ONE ((mp_limb_t) 1)
+#ifndef MP_LIMB_T_ONE
+# define MP_LIMB_T_ONE MPFR_LIMB_ONE
 #endif
 
 /* Check if we can represent the number of limbs 
@@ -75,8 +82,14 @@ MA 02111-1307, USA. */
 #  error "Incompatibilty between mp_size_t and mpfr_prec_t."
 # endif
 #else
-# if (MP_SIZE_T_MAX < (ULONG_MAX/BYTES_PER_MP_LIMB))
-#  error "Incompatibilty between mp_size_t and mpfr_prec_t."
+# ifdef MPFR_PREC_FORMAT_SHORT
+#  if (MP_SIZE_T_MAX < (USHORT_MAX/BYTES_PER_MP_LIMB))
+#   error "Incompatibilty between mp_size_t and mpfr_prec_t."
+#  endif
+# else
+#  if (MP_SIZE_T_MAX < (ULONG_MAX/BYTES_PER_MP_LIMB))
+#   error "Incompatibilty between mp_size_t and mpfr_prec_t."
+#  endif
 # endif
 #endif
 
@@ -86,45 +99,19 @@ MA 02111-1307, USA. */
 
 /* Defined limits and unsigned type of exponent */
 #if __GMP_MP_SIZE_T_INT == 1
-typedef unsigned int            mpfr_exp_unsigned_t;
+typedef unsigned int            mpfr_uexp_t;
 # define MPFR_EXP_MAX (INT_MAX)
 # define MPFR_EXP_MIN (INT_MIN)
 #else
-typedef unsigned long int       mpfr_exp_unsigned_t;
+typedef unsigned long int       mpfr_uexp_t;
 # define MPFR_EXP_MAX (LONG_MAX)
 # define MPFR_EXP_MIN (LONG_MIN)
 #endif
 #ifndef mp_exp_unsigned_t 
-# define mp_exp_unsigned_t mpfr_exp_unsigned_t
-#endif
-
-#define MPFR_LIMB_ONE ((mp_limb_t) 1)
-#ifndef MP_LIMB_T_ONE
-# define MP_LIMB_T_ONE MPFR_LIMB_ONE
+# define mp_exp_unsigned_t mpfr_uexp_t
 #endif
 
 #define MPFR_INTPREC_MAX (ULONG_MAX & ~(unsigned long) (BITS_PER_MP_LIMB - 1))
-
-/* Redefine MPN_COPY if compilation for small vars FIXME: Usefull ?*/
-#ifdef SMALL
-#undef MPN_COPY
-#define MPN_COPY(dest, src, n) \
- do {                          \
-  if ((n) != 0)                \
-    {                          \
-      mp_size_t __n = ((n)-1); \
-      mp_ptr __dst = (dest);   \
-      mp_srcptr __src = (src); \
-      mp_limb_t __x = *__src++;\
-      if (__n)                 \
-	do {                   \
-	  *__dst++ = __x;      \
-	  __x      = *__src++; \
-	} while (--__n);       \
-      *__dst = __x;            \
-    }                          \
- } while (0)                   
-#endif
 
 /* Assertions */
 
@@ -146,6 +133,7 @@ typedef unsigned long int       mpfr_exp_unsigned_t;
 # define MPFR_ASSERTD(expr)  ((void) 0)
 #endif
 
+/* Check if the args are correct */
 #define MPFR_CHECK1(x,r) \
  MPFR_ASSERTD(mpfr_check(x) && GMP_RNDN <= r && r <= GMP_RNDD)
 #define MPFR_CHECK2(x,y,r) \
@@ -153,6 +141,10 @@ typedef unsigned long int       mpfr_exp_unsigned_t;
 #define MPFR_CHECK3(x,y,z,r) \
  MPFR_ASSERTD(mpfr_check(x) && mpfr_check(y) && mpfr_check(z) && \
   GMP_RNDN <= r && r <= GMP_RNDD)
+
+/* Code to deal with impossible
+   WARNING: It doesn't use do { } while (0) for Insure++*/
+#define MPFR_RET_NEVER_GO_HERE()  {MPFR_ASSERTN(0); return 0;}
 
 /* Theses macros help the compiler to determine if a test is 
  * likely or unlikely. */

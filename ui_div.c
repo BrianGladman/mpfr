@@ -63,7 +63,7 @@ mpfr_ui_div (mpfr_ptr y, unsigned long int u, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	    }
 	}
       else
-	MPFR_ASSERTN(0);
+	MPFR_RET_NEVER_GO_HERE();
     }
   else if (u)
     {

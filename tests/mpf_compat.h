@@ -189,8 +189,6 @@ main ()
   mpf_random2 (x, 17, 17);
 
   /* clear all variables */
-
- done:
   mpf_clear (y);
   mpf_clear (x);
 

@@ -51,7 +51,7 @@ mpfr_ui_sub (mpfr_ptr y, unsigned long int u, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	return mpfr_set_ui(y, u, rnd_mode);
       /* Should never reach this code */
       else
-	MPFR_ASSERTN(0);
+	MPFR_RET_NEVER_GO_HERE();
     }
   else if (u)
     {

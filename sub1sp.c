@@ -40,7 +40,7 @@ MA 02111-1307, USA. */
 #else
 # define DEBUG(x) /**/
 #endif
-
+ 
 /* Rounding Sub */
       
 /* A0...Ap-1
@@ -606,7 +606,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	  goto truncate;
 	}      
  }
-  MPFR_ASSERTN(0);
+  MPFR_RET_NEVER_GO_HERE();
 
   /* Sub one ulp to the result */
  sub_one_ulp:
