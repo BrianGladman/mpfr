@@ -28,6 +28,7 @@ MA 02111-1307, USA. */
 #include "mpfr-test.h"
 
 void check _PROTO((double, unsigned long, mp_rnd_t, double)); 
+void special _PROTO((void));
 
 void check (double d, unsigned long u, mp_rnd_t rnd, double e)
 {
@@ -50,6 +51,26 @@ void check (double d, unsigned long u, mp_rnd_t rnd, double e)
   mpfr_clear(x); mpfr_clear(y); 
 }
 
+void
+special (void)
+{
+  mpfr_t x, y;
+
+  mpfr_init2 (x, 100);
+  mpfr_init2 (y, 100);
+  mpfr_random (x);
+  mpfr_div_ui (y, x, 123456, GMP_RNDN);
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_div_ui (y, x, 123456789, GMP_RNDN);
+  if (mpfr_cmp_ui (y, 0))
+    {
+      fprintf (stderr, "mpfr_div_ui gives non-zero for 0/ui\n");
+      exit (1);
+    }
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -64,6 +85,8 @@ main (int argc, char **argv)
     check(d, u, rand() % 4, 0.0);
   }
 #endif
+
+  special ();
 
   check(1.0, 3, GMP_RNDN, 3.3333333333333331483e-1);
   check(1.0, 3, GMP_RNDZ, 3.3333333333333331483e-1);

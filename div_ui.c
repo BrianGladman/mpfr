@@ -67,6 +67,12 @@ mpfr_div_ui(y, x, u, rnd_mode)
     }
 
   MPFR_CLEAR_INF(y);
+  
+  if (MPFR_IS_ZERO(x))
+    {
+      MPFR_SET_ZERO(y);
+      return 0;
+    }
 
   TMP_MARK(marker);
   xn = (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB + 1;
