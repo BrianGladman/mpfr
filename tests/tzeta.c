@@ -1,6 +1,6 @@
 /* Test file for mpfr_zeta.
 
-Copyright 1999, 2000, 2001, 2002 Free Software Foundation.
+Copyright 1999, 2000, 2001, 2002, 2003 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -36,6 +36,8 @@ main(void)
   size_t t;
 #endif
 
+  tests_start_mpfr ();
+
   mpfr_init2(result, 53);
   mpfr_init2(res_p, 53);
   mpfr_init2(p, 53); mpfr_set_d(p, 2.0, GMP_RNDN);
@@ -70,5 +72,7 @@ main(void)
   mpfr_clear(p);
   mpfr_clear(result);
   mpfr_clear(res_p);
+
+  tests_end_mpfr ();
   return 0;
 }
