@@ -5,19 +5,108 @@
 \author{The MPFR team}
 \date{\tt www.mpfr.org}
 \def\O{{\mathcal O}}
+\def\n{\textnormal}
+\def\pinf{\bigtriangleup}
+\def\minf{\bigtriangledown}
 \def\q{\hspace*{5mm}}
 \def\ulp{{\rm ulp}}
+\def\exp{{\rm EXP}}
+
+
+
+\newcommand{\U}[1]{
+    \n{ (--see \bf{R.{#1}}) }
+}        
+
 \begin{document}
 \maketitle
 
+
+
 \section{Useful formulas}
+
 
 With a working precision of $n$ bits, and $x = m \cdot 2^e$
 with $\frac{1}{2} \le m < 1$, $e := {\rm EXP}(x)$, we have:
-\[ x \cdot 2^{-1-n} \le \ulp(x) = 2^{{\rm EXP}(x) - n} < x \cdot 2^{-n}. \]
 
-We also have:
-\[ \frac{1}{2} a \ulp(b) \le \ulp(a b) \le a \ulp(b). \]
+
+
+
+\begin{enumerate}
+\item[\bf{R.1}]
+
+\begin{equation}\nonumber
+x \cdot 2^{-1-n} \le \ulp(x) = 2^{{\rm EXP}(x) - n} < x \cdot 2^{-n} \
+\end{equation}
+
+
+\item[\bf{R.2}]
+
+
+\begin{equation}\nonumber
+\textnormal{If}\;\;\;\; a \leq b \;\;\;\;\textnormal{Then} \;\;\;\;\ulp(a) \le \ulp(b)
+\end{equation}
+
+\item[\bf{R.3}]
+
+
+\begin{equation}\nonumber
+ 2^{n-1} \; \ulp(a) \leq a \leq 2^{n} \; \ulp(a)
+\end{equation}
+
+
+\item[\bf{R.4}]
+
+
+\begin{equation}\nonumber
+ \frac{1}{2} \, a \cdot \ulp(b) \leq \ulp(a \cdot b) \leq 2 a \cdot \ulp(b)
+\end{equation}
+
+\item[\bf{R.5}]
+
+
+\begin{equation}\nonumber
+ \ulp(2^k a) = 2^k \ulp(a)
+\end{equation}
+
+\item[\bf{R.6}]
+
+\begin{equation}\nonumber
+\textnormal{with}\;\;  u=o(x),\;\; \frac{1}{2} \, u \leq x \leq 2 \, u
+\end{equation}
+
+\item[\bf{R.7}]
+
+\begin{equation}\nonumber
+ \frac{1}{2} \, a \cdot \ulp(1) \leq \ulp(a) \leq a \cdot \ulp(1)
+\end{equation}
+
+
+\item[\bf{R.8}]
+
+
+\begin{eqnarray}\nonumber
+&& \textnormal{with}\;\; u=o(x),\;\; \ulp(x) \leq \ulp(u) \\\nonumber
+&& \textnormal{with}\;\; u=o(x) \; \textnormal{to zero or +INF for $x<0$ or -INF for $x>0$},\;\; \ulp(x) = \ulp(u) 
+\end{eqnarray}
+
+
+\item[\bf{R.9}]
+
+\begin{eqnarray}\nonumber
+&&\textnormal{with}\;\;  u=o(x),\;\; u.(1-2^{1-p}) \leq x \leq u.(1+2^{1-p})\\\nonumber
+&&\;\;\;\;\;\;\textnormal{or with}\;\;  u=o(x),\;\; u.c_u^- \leq x \leq u.c_u^+\\\nonumber
+&&\;\;\;\;\;\;\;\;\;\;\;\;\textnormal{if}\;\;  u=\pinf(x),\n{ then } c_u^+=1\\\nonumber
+&&\;\;\;\;\;\;\;\;\;\;\;\;\textnormal{if}\;\;  u=\minf(x),\n{ then } c_u^-=1\\\nonumber
+&&\;\;\;\;\;\;\;\;\;\;\;\;\textnormal{if}\;\;  \n{for $x<0$ and } u=Z(x),\n{ then } c_u^+=1 \\\nonumber
+&&\;\;\;\;\;\;\;\;\;\;\;\;\textnormal{if}\;\;  \n{for $x>0$ and } u=Z(x),\n{ then } c_u^-=1 \\\nonumber
+&&\;\;\;\;\;\;\;\;\;\;\;\;\textnormal{else}\;\;   c_u^{-}=1-2^{1-p} \n{ and } c_u^{+}=1+2^{1-p}
+\end{eqnarray}
+
+\end{enumerate}
+
+
+
 
 \section{Low level functions}
 
@@ -29,12 +118,12 @@ We also have:
 
    0. d = EXP(B) - EXP(C) /* d >= 0 par hypothe`se */
    1. Soient B1 les prec(A) premiers bits de B, et B0 le reste
-	     C1 les bits de C correspondant a` B1, C0 le reste
+             C1 les bits de C correspondant a` B1, C0 le reste
    /* B0, C1, C0 peuvent e^tre vides, mais pas B1 */
 
-	  <----------- A ---------->
-	  <----------- B1 ---------><------ B0 ----->
-	     <---------- C1 -------><------------ C0 ----------->
+          <----------- A ---------->
+          <----------- B1 ---------><------ B0 ----->
+             <---------- C1 -------><------------ C0 ----------->
 
    2. A <- B1 + (C1 >> d)
    3. q <- compute_carry (B0, C0, rnd)
@@ -97,7 +186,7 @@ Euler's constant is computed using the formula $\gamma = S(n) - R(n) - \log n$
 where:
 \[ S(n) = \sum_{k=1}^{\infty} \frac{n^k (-1)^{k-1}}{k! k}, \quad
    R(n) = \int_n^{\infty} \frac{\exp(-u)}{u} du \sim \frac{\exp(-n)}{n}
-	\sum_{k=0}^{\infty} \frac{k!}{(-n)^k}. \]
+        \sum_{k=0}^{\infty} \frac{k!}{(-n)^k}. \]
 This identity is attributed to Sweeney by Brent \cite{Brent78}.
 We have $S(n) = _2 F_2(1,1;2,2;-n)$ and $R(n) = {\rm Ei}(1, n)$.
 
@@ -157,7 +246,7 @@ Let us introduce $I_k = \int_n^{\infty} \frac{e^{-u}}{u^k} du$.
 We have $R(n) = I_1$ and the recurrence $I_k = \frac{e^{-n}}{n^k} - k I_{k+1}$,
 which gives
 \[ R(n) = \frac{e^{-n}}{n} \sum_{k=0}^{n-2} \frac{k!}{(-n)^k}
-	+ (-1)^{n-1} (n-1)! I_n. \]
+        + (-1)^{n-1} (n-1)! I_n. \]
 Bounding $n!$ by $(n/e)^n \sqrt{2 \pi (n+1)}$ which holds\footnote{
 Formula 6.1.38 from \cite{AbSt73} gives
 $x! = \sqrt{2\pi} x^{x+1/2} e^{-x+\frac{\theta}{12x}}$ for $x>0$ and
@@ -167,9 +256,9 @@ $e^t < 1+2t$ for $0 < t < 1$, thus
 $(x!)^2 \le 2\pi x^{2x} e^{-2x} (x+\frac{1}{3})$.}
 for $n \ge 1$, we have:
 \[ |R(n) - R'(n)| = (n-1)! I_n 
-	\le \frac{n!}{n} \int_n^{\infty} \frac{e^{-n}}{u^n} du
-	\le \frac{n^{n-1}}{e^n} \sqrt{2 \pi (n+1)} \frac{e^{-n}}{(n-1) 
-	n^{n-1}} \]
+        \le \frac{n!}{n} \int_n^{\infty} \frac{e^{-n}}{u^n} du
+        \le \frac{n^{n-1}}{e^n} \sqrt{2 \pi (n+1)} \frac{e^{-n}}{(n-1) 
+        n^{n-1}} \]
 and since $\sqrt{2 \pi (n+1)}/(n-1) \le 1$ for $n \ge 9$:
 \[ |R(n) - R'(n)| \le e^{-2n} \quad \mbox{for $n \ge 9$}. \]
 Thus we have:
@@ -235,7 +324,7 @@ where $S_0 = \sum_{k=1}^{\infty} \frac{n^{2k}}{(k!)^2} H_k$,
 $H_k = 1 + \frac{1}{2} + \cdots + \frac{1}{k}$ being the $k$-th harmonic
 number,
 $K_0 = \sqrt{\frac{\pi}{4n}} e^{-2n} \sum_{k=0}^{\infty}
-	(-1)^k \frac{[(2k)!]^2}{(k!)^3 (64n)^k}$,
+        (-1)^k \frac{[(2k)!]^2}{(k!)^3 (64n)^k}$,
 and $I_0 = \sum_{k=0}^{\infty} \frac{n^{2k}}{(k!)^2}$.
 
 We have $I_0 \ge \frac{e^{2n}}{\sqrt{4 \pi n}}$ (see \cite{BrMc80} page 306).
@@ -250,25 +339,25 @@ $\beta (\log \beta - 1) = 3$
 ($\beta \sim 4.971...$) then
 \[ |I_0 - I'_0| \le \frac{\beta}{2 \pi (\beta^2-1)} \frac{e^{-6n}}{n}. \]
 Let $K'_0 = \sqrt{\frac{\pi}{4n}} e^{-2n} \sum_{k=0}^{4n-1} (-1)^k
-	\frac{[(2k)!]^2}{(k!)^3 (64n)^k}$, then bounding by the next term:
+        \frac{[(2k)!]^2}{(k!)^3 (64n)^k}$, then bounding by the next term:
 \[ |K_0 - K'_0| \le \frac{(8n+1)}{16 \sqrt{2} n} \frac{e^{-6n}}{n}
-	\le \frac{1}{2} \frac{e^{-6n}}{n}. \]
+        \le \frac{1}{2} \frac{e^{-6n}}{n}. \]
 We get from this
 \[ \left| \frac{K_0}{I_0} - \frac{K'_0}{I'_0} \right| 
-	\le \frac{1}{2 I_0} \frac{e^{-6n}}{n} \le \sqrt{\frac{\pi}{n}}
-	e^{-8n}. \]
+        \le \frac{1}{2 I_0} \frac{e^{-6n}}{n} \le \sqrt{\frac{\pi}{n}}
+        e^{-8n}. \]
 Let $S'_0 = \sum_{k=1}^{K-1} \frac{n^{2k}}{(k!)^2} H_k$,
 then using $\frac{H_{k+1}}{H_k} \le \frac{k+1}{k}$ and the same bound $K$
 than for $I'_0$ ($4n \le K \le 5n$), we get:
 \[ |S_0 - S'_0| \le \frac{\beta}{2 \pi (\beta^2-1)} H_k \frac{e^{-6n}}{n}. \]
 We deduce:
 \[ \left| \frac{S_0}{I_0} - \frac{S'_0}{I'_0} \right|
-	\le e^{-8n} H_K \frac{\sqrt{4 \pi n}}{\pi (\beta^2-1)}
-	\frac{\beta}{n} \le e^{-8n}. \]
+        \le e^{-8n} H_K \frac{\sqrt{4 \pi n}}{\pi (\beta^2-1)}
+        \frac{\beta}{n} \le e^{-8n}. \]
 Hence we have
 \[ \left| \gamma - \left( \frac{S'_0 - K'_0}{I'_0} - \log n \right) \right|
-	\le (1 + \sqrt{\frac{\pi}{n}}) e^{-8n} 
-	\le 3 e^{-8n}. \]
+        \le (1 + \sqrt{\frac{\pi}{n}}) e^{-8n} 
+        \le 3 e^{-8n}. \]
 
 \section{High level functions}
 
@@ -333,7 +422,7 @@ $v \in [u, u']$.)
 % for v in [u,u']
 Let $u = m 2^{-2e}$ with $1 \le m < 4$ and $e \ge 1$, then 
 the error on $s$ is at most $2^{-m} (1/2 + \frac{7 \cdot 2^{e}}{4})
-	\le 2^{e + 1 - m}$.
+        \le 2^{e + 1 - m}$.
 
 \subsection{The tangent function}
 
@@ -353,15 +442,15 @@ $t$ is at most $\ulp(t) + 2 c \ulp(c) \le 5 \ulp(t)$,
 % err(t) <= ulp(t) + |c^2-c'^2| <= ulp(t) + |c-c'|*|c+c'|
 %        <= ulp(t) + 2*ulp(c)*c <= 5*ulp(t)
 that on $v$ is at most $\ulp(v) + 5 \ulp(t)/t^2
-	\le \ulp(v) + 10 \ulp(1/t) \le 11 \ulp(v)$,
+        \le \ulp(v) + 10 \ulp(1/t) \le 11 \ulp(v)$,
 % err(v) <= ulp(v) + |1/t-1/t'| <= ulp(v) + |t-t'|/t/t'
 %        <= ulp(v) + 5*ulp(t)/t^2 <= ulp(v) + 10*ulp(1/t) <= 11*ulp(v)
 that on $u$ is at most $\ulp(u) + 11 \ulp(v) \le (1 + 11 \cdot 2^e) \ulp(u)$
 where $e$ is the exponent difference between $v$ and $u$.
 % err(u) <= ulp(u) + err(v) <= ulp(v) + 11*ulp(v) <= (1+11*2^e)*ulp(u)
 The final error on $s$ is $\le \ulp(s) + (1+11 \cdot 2^e) \ulp(u)/2/\sqrt{u}
-	\le \ulp(s) + (1+11 \cdot 2^e) \ulp(u/\sqrt{u})
-	\le (2 + 11 \cdot 2^e) \ulp(s)$.
+        \le \ulp(s) + (1+11 \cdot 2^e) \ulp(u/\sqrt{u})
+        \le (2 + 11 \cdot 2^e) \ulp(s)$.
 % err(s) <= ulp(s) + |u-u'|/2/sqrt(u) <= ulp(s) + (1+11*2^e)*ulp(u)/2/sqrt(u)
 %        <= ulp(s) + (1+11*2^e)*ulp(u/sqrt(u))
 %        <= (2+11*2^e)*ulp(s) 
@@ -400,14 +489,14 @@ This is implemented in the function {\tt mpfr\_exp2\_aux2}.
 The error function admits the following expansion at zero:
 % \cite[formula 7.1.5]{AbSt73}:
 % \[ {\rm erf} \, z = \frac{2}{\sqrt{\pi}} \sum_{k=0}^{\infty} \frac{(-1)^k}
-%	{k! (2k+1)} z^{2k+1}, \]
+%       {k! (2k+1)} z^{2k+1}, \]
 \cite[formula 7.1.6]{AbSt73}:
 \[ {\rm erf} \, z = \frac{2}{\sqrt{\pi}} e^{-z^2}
-	\sum_{k=0}^{\infty} \frac{2^k}{1 \cdot 3 \cdots (2k+1)} z^{2k+1}, \]
+        \sum_{k=0}^{\infty} \frac{2^k}{1 \cdot 3 \cdots (2k+1)} z^{2k+1}, \]
 and the following asymptotic expansion for ${\rm erfc} z = 1 - {\rm erf} z$
 \cite[formula 7.1.23]{AbSt73}:
 \[ \sqrt{\pi} z e^{z^2} {\rm erfc} \, z \sim 1 +
-	\sum_{k=1}^{\infty} (-1)^k \frac{1 \cdot 3 \cdots (2k-1)}{(2z^2)^k}. \]
+        \sum_{k=1}^{\infty} (-1)^k \frac{1 \cdot 3 \cdots (2k-1)}{(2z^2)^k}. \]
 The former formula requires $m \sim n \frac{\log 2}{\log(m/(ez^2))}$ terms
 % same number of terms for 7.1.5 and 7.1.6
 to get $n$ correct bits, and the latter requires
@@ -459,6 +548,974 @@ Let $\varepsilon_k$ and $\tau_k$ the errors on $y$ and $t$
 at the beginning of loop $k$,
 then that for $t$ after $t \leftarrow \lceil y t/2^m \rceil$
 is at most $(\varepsilon_k t + \tau_k y)/2^m + 1$.
+
+\subsection{Generic error of addition/soustraction}\label{generic:sous}
+
+
+We want to compute the generic error of the soustraction, this following rules can be apply on addition too.
+
+\begin{eqnarray}\nonumber
+w&=&o(u+v) \\\nonumber
+&&\\\nonumber
+\textnormal{Note:}&& error(u) = k_u \, \ulp(u), \;\; error(v) = k_v \, \ulp(v)\\\nonumber
+&&\\\nonumber
+\textnormal{Note:}&& \ulp(w)=2^{e_w-p}, \;\; \ulp(u)=2^{e_u-p},\;\; \ulp(v)=2^{e_v-p}\;\;\textnormal{with} \; p \; \textnormal{the accuracy} \\\nonumber
+&& \ulp(u)=2^{d+e_w-p}, \;\; \ulp(u)=2^{d+e_w-p},\;\;\textnormal{with} \;\;d=e_u-e_w \;\; d^{'}=e_v-e_w \\\nonumber
+&&\\\nonumber
+error(w)& \leq &c_w \ulp(w) + k_u \ulp(u) + k_v \ulp(v) \\\nonumber
+&\leq&(c_w+k_u 2^d+ k_v 2^{d^{'}}) \ulp(w)\\\nonumber
+&&\\\nonumber
+&&\textnormal{If} \;\; ( u \geq 0  \;\;\textnormal{and}\;\;  v \geq 0) \;\;\textnormal{or}\;\; (u \leq 0 \;\;\textnormal{and}\;\; v \leq 0)\\\nonumber
+error(w)& \leq&(c_w + k_u + k_v) \, \ulp(w)\\\nonumber
+&&\\\nonumber
+\textnormal{Note:}&&\textnormal{If}\;\; w=N(u+v) \;\;\textnormal{Then}\;\; c_w =\frac{1}{2} \;\;\textnormal{else}\;\; c_w =1\\\nonumber
+\end{eqnarray}
+
+\subsection{Generic error of multiplication}\label{generic:mul}
+
+
+We want to compute the generic error of the multiplication.
+
+
+
+\begin{eqnarray}\nonumber
+u&=&o(x) \\\nonumber
+v&=&o(y) \\\nonumber
+w&=&o(u.v) \\\nonumber
+&&\\\nonumber
+\textnormal{Note:}&& error(u) = k_u \, \ulp(u), \;\; error(v) = k_v \, \ulp(v)\\\nonumber
+&&\\\nonumber
+error(w)& = &|w - x.y| \\\nonumber
+& \leq &|w - u.b| +|u.y - x.y| \\\nonumber
+& \leq & c_w \ulp(w) +  \frac{1}{2} [|u.v-u.y|+|u.y-x.y|+|u.v-x.v|+|x.v-x.y|]\\\nonumber
+& \leq & c_w \ulp(w) +  \frac{u+x}{2} k_v \ulp(v) + \frac{v+y}{2} k_u \ulp(u)\\\nonumber
+& \leq & c_w \ulp(w) +  \frac{u(1+c_u^+)}{2} k_v \ulp(v) + \frac{v(1+c_v^+)}{2} k_u \ulp(u) \U{9}\\\nonumber
+& \leq & c_w \ulp(w) +  (1+c_u^+) k_v \ulp(u.v) + (1+c_v^+) k_u \ulp(u.v) \U{4}\\\nonumber
+& \leq & [ c_w +  (1+c_u^+) k_v + (1+c_v^+) k_u ] \ulp(w)\U{8}\\\nonumber
+&&\\\nonumber
+\textnormal{Note:}&&\textnormal{If}\;\; w=N(u+v) \;\;\textnormal{Then}\;\; c_w =\frac{1}{2} \;\;\textnormal{else}\;\; c_w =1\\\nonumber
+\end{eqnarray}
+
+
+
+
+\subsection{Generic error of inverse}\label{generic:inv}
+
+
+
+
+We want to compute the generic error of the inverse.
+
+\begin{eqnarray}\nonumber
+u&=&o(x) \\\nonumber
+w&=&o(\frac{1}{v}) \\\nonumber
+&&\\\nonumber
+\textnormal{Note:}&& error(u) = k_u \, \ulp(u)\\\nonumber
+&&\\\nonumber
+error(w)& = &|w - \frac{1}{x}| \\\nonumber
+& \leq &|w - \frac{1}{u}| +|\frac{1}{u} - \frac{1}{x}| \\\nonumber
+& \leq & c_w \ulp(w) + \frac{1}{ux}|u-x| \\\nonumber
+& \leq & c_w \ulp(w) + \frac{k_u}{ux} \ulp(u)\\\nonumber
+&&\\\nonumber
+\textnormal{Note:}&& \frac{u}{c_u} \leq x\;\; \U{6}\\\nonumber
+&&\n{for } u=\minf(x),\;c_u=1 \n{ else } c_u=2\\\nonumber
+&& \n{then: } \frac{1}{x} \leq c_u \frac{1}{u} \\\nonumber
+&&\\\nonumber
+error(w)& \leq & c_w \ulp(w) + c_u\frac{k_u}{u^2} \ulp(u)\\\nonumber
+& \leq & c_w \ulp(w) + 2.c_u.k_u \ulp(\frac{u}{u^2}) \U{4}\\\nonumber
+& \leq & [c_w + 2.c_u.k_u].\ulp(w) \U{8}\\\nonumber
+&&\\\nonumber
+\textnormal{Note:}&&\textnormal{If}\;\; w=N(\frac{1}{u}) \;\;\textnormal{Then}\;\; c_w =\frac{1}{2} \;\;\textnormal{else}\;\; c_w =1\\\nonumber\end{eqnarray}
+
+\subsection{Generic error of division}\label{generic:div}
+
+
+We want to compute the generic error of the division.
+
+\begin{eqnarray}\nonumber
+u&=&o(x) \\\nonumber
+v&=&o(y) \\\nonumber
+w&=&o(\frac{u}{v}) \\\nonumber
+&&\\\nonumber
+\textnormal{Note:}&& error(u) = k_u \, \ulp(u), \;\; error(v) = k_v \, \ulp(v)\\\nonumber
+&&\\\nonumber
+error(w)& = &|w - \frac{x}{y}| \\\nonumber
+& \leq &|w - \frac{u}{v}| +|\frac{u}{v} - \frac{x}{y}| \\\nonumber
+& \leq & c_w \ulp(w) + \frac{1}{vy}|uy-vx| \\\nonumber
+& \leq & c_w \ulp(w) + \frac{1}{vy}[|uy-xy|+|xy-vx| ]\\\nonumber
+& \leq & c_w \ulp(w) + \frac{1}{vy}[y k_u \ulp(u)+ x k_v \ulp(v)]\\\nonumber
+& \leq & c_w \ulp(w) + \frac{k_u}{v}  \ulp(u)+ \frac{k_v x}{vy} \ulp(v)\\\nonumber
+\textnormal{Note:}&& \frac{\ulp(u)}{v} \leq  2 \ulp(\frac{u}{v}) \;\; \U{4}\\\nonumber
+&& 2 \ulp(\frac{u}{v}) \leq  2 \ulp(w) \;\; \U{8}\\\nonumber
+&&\\\nonumber
+\textnormal{Note:}&& x \leq c_u u \textnormal{ and } \frac{v}{c_v} \leq y\;\; \U{6}\\\nonumber
+&&\n{with } \n{for } u=\pinf(x),\;c_u=1 \n{ else } c_u=2\\\nonumber
+&&\n{ and }\n{for } v=\minf(y),\;c_v=1 \n{ else } c_v=2\\\nonumber
+&& \n{then: } \frac{x}{y} \leq c_u c_v  \frac{u}{v} \\\nonumber
+&&\\\nonumber
+error(w)& \leq & c_w \ulp(w) + 2.k_u  \ulp(w)+ c_u.c_v.\frac{k_v u}{vv} \ulp(v)\\\nonumber
+& \leq & c_w \ulp(w) + 2.k_u  \ulp(w)+ 2.c_u.c_v.k_v \ulp(\frac{u.v}{v.v}) \U{4}\\\nonumber
+& \leq & [c_w  + 2.k_u+ 2.c_u.c_v.k_v].\ulp(w) \U{8}\\\nonumber
+&&\\\nonumber
+\textnormal{Note:}&&\textnormal{If}\;\; w=N(\frac{u}{v}) \;\;\textnormal{Then}\;\; c_w =\frac{1}{2} \;\;\textnormal{else}\;\; c_w =1\\\nonumber\end{eqnarray}
+
+
+\subsection{The hyperbolic cosine function}
+
+The {\tt mpfr\_cosh} ($\cosh{x}$) function implements the hyperbolic
+cosine as :
+
+$$
+\cosh x = \frac{1}{2} \left( e^{x} + \frac{1}{e^x} \right) 
+$$
+
+The algorithm used for the calculation of the hyperbolic cosine is as follows\footnote{$o()$ represent the arrondi error and $error(u)$ the
+  error associate with the calcualtion of $u$}:
+
+\begin{eqnarray}\nonumber
+u&\leftarrow&o(e^x)\\\label{coshalgo1}
+v&\leftarrow&o({u}^{-1})\\\label{coshalgo2}
+w&\leftarrow&o(u+v)\\\label{coshalgo3}
+s&\leftarrow&\frac{1}{2} w\\\label{coshalgo4}
+\end{eqnarray}
+
+Now, we have to bound the rounding error for each step of this
+algorithm.  First, let consider the parity of hyperbolic cosine
+($\cosh(-x)=\cosh(x)$) : the problem is reduced to calculate $\cosh x$
+with $x \geq 0$. We can deduce $e^x \geq 1$ and $0 \leq e^{-x} \leq
+1$.
+
+
+
+\begin{center}
+\begin{tabular}{l|l |l}
+
+\begin{minipage}{2.5cm}
+
+
+${\textnormal{error}}(u)$
+
+
+$u \leftarrow o(e^x)$\\
+$-\infty \;\; (\bullet)$
+
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+\begin{eqnarray}\nonumber
+  |u-e^x| &\leq& \ulp(u)\\\nonumber
+\end{eqnarray}
+
+\end{minipage} &
+\begin{minipage}{6cm}
+{\hspace{7cm}}
+\end{minipage}\\\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(v)$
+
+
+$v \leftarrow o({u}^{-1}) $\\
+$+\infty \;\; (\bullet\bullet)$ 
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+
+
+\begin{eqnarray}\nonumber
+  &&|v-e^{-x}| \\\nonumber
+  &       \leq&  |v - u^{-1}| +  |u^{-1}  - e^{-x}|\\\nonumber
+  &       \leq& \ulp(v) + \frac{1}{u \cdot e^x} |u-e^{x}|\\\nonumber
+  &       \leq& \ulp(v) + \frac{1}{u^2} \ulp(u)\;\;(\star)\\\nonumber
+  &       \leq& \ulp(v) + 2 \ulp(\frac{1}{u})\;\;(\star\star)\\\nonumber
+  &       \leq& 3 \, \ulp(v)\;\;(\star\star\star)
+\end{eqnarray}
+
+
+\end{minipage} &
+\begin{minipage}{6cm}
+
+$(\star)$
+
+With $\frac{1}{e^x} \leq \frac{1}{u}$,\\ 
+for that we must have $u \leq e^x$,\\
+it is possible with a rounding of\\
+$u$ to $-\infty \;\; (\bullet)$
+
+$(\star\star)$
+
+From inequation \U{4}, 
+\[   a \cdot \ulp(b) \leq 2 \cdot \ulp(a \cdot b)\]
+if $a =\frac{1}{u^2},\;b = u$ then  
+\[ \frac{1}{u^2} \ulp(u)  \leq 2 \ulp(\frac{1}{u})\]
+
+$(\star\star\star)$
+
+If $\ulp(\frac{1}{u}) \leq ulp(v)$,\\
+it is possible with a rounding of \\
+$v$ to $+\infty \;\; (\bullet)$\\
+
+
+
+\end{minipage}\\\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(w)$
+
+
+$w \leftarrow o(u+v) $
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+
+
+\begin{eqnarray}\nonumber
+  &&|w-(e^{x}+e^{-x})| \\\nonumber
+  &       \leq&  |w - (u+v)|+|u - e^x|+|v - e^{-x}|\\\nonumber
+  &       \leq& \ulp(w) + \ulp(u) + 3\ulp(v)\\\nonumber
+  &       \leq& \ulp(w) + 4\ulp(u)\;\;(\star)\\\nonumber
+  &       \leq& 5\ulp(w)\;\;(\star\star)\\\nonumber
+\end{eqnarray}
+
+
+\end{minipage} &
+\begin{minipage}{6cm}
+
+$(\star)$
+
+With $v \leq 1\leq u$ 
+
+then $\ulp(v) \leq \ulp(u)$
+
+$(\star\star)$
+
+With $u \leq w$ 
+
+then $\ulp(u) \leq \ulp(w)$
+
+\end{minipage}\\\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(s)$
+
+$s \leftarrow o(\frac{w}{2}) $
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+\begin{center}
+
+
+\begin{eqnarray}\nonumber
+ {\textnormal{error}}(s) & = &  {\textnormal{error}}(w)\\\nonumber
+ & \leq &  5\ulp(s)
+\end{eqnarray}
+
+
+
+\end{center}
+
+\end{minipage} &
+\begin{minipage}{6cm}
+
+
+\end{minipage}
+
+
+\end{tabular}
+\end{center}
+
+That shows the rounding error on the calculation of $\cosh x$ can be
+bound by $5 \;\; \ulp$ on the result. So, to calculate the size of
+intermediary variables, we have to add, at least, $\lceil \log_2 5 \rceil=3$ bits the wanted
+precision.
+ 
+
+\subsection{The hyperbolic sine function}
+
+The {\tt mpfr\_sinh} ($\sinh{x}$) function implements the hyperbolic
+sine as :
+
+$$
+\sinh x = \frac{1}{2} \left( e^{x} - \frac{1}{e^x} \right) 
+$$
+
+The algorithm used for the calculation of the hyperbolic sine is as follows\footnote{$o()$ represent the arrondi error and $error(u)$ the
+  error associate with the calcualtion of $u$}:
+
+\begin{eqnarray}\nonumber
+u&\leftarrow&o(e^x)\\\label{sinhalgo1}
+v&\leftarrow&o({u}^{-1})\\\label{sinhalgo2}
+w&\leftarrow&o(u-v)\\\label{sinhalgo3}
+s&\leftarrow&\frac{1}{2} w\\\label{sinhalgo4}
+\end{eqnarray}
+
+Now, we have to bound the rounding error for each step of this
+algorithm.  First, let consider the parity of hyperbolic sine
+($\sinh(-x)=-\sinh(x)$) : the problem is reduced to calculate $\sinh x$
+with $x \geq 0$. We can deduce $e^x \geq 1$ and $0 \leq e^{-x} \leq
+1$.
+
+
+
+\begin{center}
+\begin{tabular}{l|l |l}
+
+\begin{minipage}{2.5cm}
+
+
+${\textnormal{error}}(u)$
+
+
+$u \leftarrow \minf(e^x)$\\
+$(\bullet)$
+
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+\begin{eqnarray}\nonumber
+  |u-e^x| &\leq& \ulp(u)\\\nonumber
+\end{eqnarray}
+
+\end{minipage} &
+\begin{minipage}{6cm}
+{\hspace{7cm}}
+\end{minipage}\\\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(v)$
+
+
+$v \leftarrow \pinf({u}^{-1}) $\\
+$(\bullet\bullet)$ 
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+
+
+\begin{eqnarray}\nonumber
+  &&|v-e^{-x}| \\\nonumber
+  &       \leq&  |v - u^{-1}| +  |u^{-1}  - e^{-x}|\\\nonumber
+  &       \leq& \ulp(v) + \frac{1}{u \cdot e^x} |u-e^{x}|\\\nonumber
+  &       \leq& \ulp(v) + \frac{1}{u^2} \ulp(u)\;\;(\star)\\\nonumber
+  &       \leq& \ulp(v) + 2 \ulp(\frac{1}{u})\;\;(\star\star)\\\nonumber
+  &       \leq& 3 \, \ulp(v)\;\;(\star\star\star)
+\end{eqnarray}
+
+
+\end{minipage} &
+\begin{minipage}{6cm}
+
+$(\star)$
+
+With $\frac{1}{u} \leq \frac{1}{e^x}$,\\ 
+for that we must have $e^x \leq u$,\\
+it is possible with $u=\minf(e^x)$ $(\bullet)$
+
+$(\star\star)$
+
+From inequation \U{4}, 
+\[   a \cdot \ulp(b) \leq 2 \cdot \ulp(a \cdot b)\]
+if $a =\frac{1}{u^2},\;b = u$ then  
+\[ \frac{1}{u^2} \ulp(u)  \leq 2 \ulp(\frac{1}{u})\]
+
+$(\star\star\star)$
+
+If $\ulp(\frac{1}{u}) \leq \ulp(v)$,\\
+it is possible with $v=\pinf(u^{-1})$ $(\bullet\bullet)$
+
+
+
+\end{minipage}\\\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(w)$
+
+
+$w \leftarrow o(u+v) $
+\end{minipage} &
+\begin{minipage}{7.8cm}
+
+
+
+\begin{eqnarray}\nonumber
+  &&|w-(e^{x}-e^{-x})| \\\nonumber
+  &       \leq&  |w - (u-v)|+|u - e^x|+|-v + e^{-x}|\\\nonumber
+  &       \leq& \ulp(w) + \ulp(u) + 3\ulp(v)\\\nonumber
+  &       \leq& \ulp(w) + 4\ulp(u)\;\;(\star)\\\nonumber
+  &       \leq& (1+ 4 \cdot 2^{\exp(u)-\exp(w)}) \ulp(w)\;\;(\star\star)\\\nonumber
+\end{eqnarray}
+
+
+\end{minipage} &
+\begin{minipage}{6cm}
+
+$(\star)$
+
+With $v \leq 1\leq u$ 
+
+then $\ulp(v) \leq \ulp(u)$
+
+$(\star\star)$
+
+see subsection \ref{generic:sous}
+
+\end{minipage}\\\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(s)$
+
+$s \leftarrow o(\frac{w}{2}) $
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+\begin{center}
+
+
+\begin{eqnarray}\nonumber
+ {\textnormal{error}}(s) & = &  {\textnormal{error}}(w)\\\nonumber
+ & \leq &  (1+ 4 \cdot 2^{\exp(u)-\exp(w)}) \ulp(w)
+\end{eqnarray}
+
+
+
+\end{center}
+
+\end{minipage} &
+\begin{minipage}{6cm}
+
+
+\end{minipage}
+
+
+\end{tabular}
+\end{center}
+
+
+That show the rounding error on the calculation of $\sinh x$ can be bound by $(1+ 4 \cdot 2^{\exp(u)-\exp(w)}) \ulp(w)$, then the number of bits need to add to the want accuracy to define intermediary variable is :
+
+\[
+N_t=\lceil \log_2(1+ 4 \cdot 2^{\exp(u)-\exp(w)}) \rceil
+\]
+
+
+
+\subsection{The euclidean distance function}
+
+The {\tt mpfr\_hypot} ($\textnormal{hypot}(x,y)$) function implements the euclidean distance function  as :
+
+\[
+\textnormal{hypot} (x,y) = \sqrt{x^2+y^2}
+\]
+
+The algorithm used for the calculation of the euclidean distance is as follows:
+
+\begin{eqnarray}\nonumber
+u&\leftarrow&o(x^2)\\\label{hypotalgo1}
+v&\leftarrow&o({y}^{2})\\\label{hypotalgo2}
+w&\leftarrow&o(u+v)\\\label{hypotalgo3}
+s&\leftarrow&\sqrt{w}\\\label{hypotalgo4}
+\end{eqnarray}
+
+Now, we have to bound the rounding error for each step of this
+algorithm.  
+
+
+
+\begin{center}
+\begin{tabular}{l|l |l}
+
+\begin{minipage}{2.5cm}
+
+
+${\textnormal{error}}(u)$
+
+
+$u \leftarrow o(x^2)$
+
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+\begin{eqnarray}\nonumber
+  |u-x^2| &\leq& ulp(u)\\\nonumber
+\end{eqnarray}
+
+\end{minipage} &
+\begin{minipage}{6cm}
+{\hspace{7cm}}
+\end{minipage}\\\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(v)$
+
+
+$v \leftarrow o({y}^{2}) $
+
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+\begin{eqnarray}\nonumber
+  |v-y^2| &\leq& ulp(v)\\\nonumber
+\end{eqnarray}
+
+
+\end{minipage} &
+\begin{minipage}{6cm}
+
+
+\end{minipage}\\\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(w)$
+
+
+$w \leftarrow o(u+v) $\\
+$-\infty \;\; (\bullet)$
+\end{minipage} &
+\begin{minipage}{7.8cm}
+
+
+
+\begin{eqnarray}\nonumber
+  &&|w-(x^2+y^2)| \\\nonumber
+  &       \leq&  |w - (u+v)|+|u - x^2|+|v - y^2|\\\nonumber
+  &       \leq& \ulp(w) + \ulp(u) + \ulp(v)\\\nonumber
+  &       \leq& 3\ulp(w)\;\;(\star)\\\nonumber
+\end{eqnarray}
+
+
+\end{minipage} &
+\begin{minipage}{6cm}
+
+$(\star)$
+
+With $v \leq w$ and $u \leq w$
+
+\end{minipage}\\\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(s)$
+
+$s \leftarrow o(\sqrt{w}) $\\
+$+\infty \;\; (\bullet\bullet)$
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+\begin{center}
+
+
+
+\begin{eqnarray}\nonumber
+  &&|s-(\sqrt{x^2+y^2})| \\\nonumber
+  &       \leq&  |s - \sqrt{w}|+|\sqrt{w} - \sqrt{x^2+y^2}|\\\nonumber
+  &       \leq& \ulp(s) + \frac{1}{2 \cdot \sqrt{w}} |w - (x^2+y^2)|\;\;(\star)\\\nonumber
+  &       \leq&  \ulp(s) +  \frac{3}{2 \cdot \sqrt{w}} \ulp(w)\;\;(\star\star)\\\nonumber
+  &       \leq&  \ulp(s) +  \ulp(3 \cdot \sqrt{w})\;\;(\star\star)\\\nonumber
+  &       \leq&  \ulp(s) +  3 \cdot \ulp(\cdot \sqrt{w})\;\;(\star\star)\\\nonumber
+  &       \leq&  4 \cdot \ulp(s) \;\;(\star\star\star)\\\nonumber
+\end{eqnarray}
+
+
+
+\end{center}
+
+\end{minipage} &
+\begin{minipage}{6cm}
+
+$(\star)$
+
+With Rolle's Theorem
+
+\begin{equation}
+|\sqrt{a} - \sqrt{b}| \leq \frac{1}{2 \cdot \sqrt{c}} |a - b|
+\end{equation}
+with $c \in [a,b]$.
+
+With $w$ rounding to $-\infty\;\; (\bullet)$\\
+For $a=w$ and $b=x^2+y^2$,\\
+we get $w \leq c \leq x^2+y^2$ \\
+and $\frac{1}{\sqrt{c}} \leq \frac{1}{\sqrt{w}}$
+
+$(\star\star)$
+with equation \U{4}.
+
+$(\star\star\star)$
+
+if $s$ is rounded to $+\infty\;\; (\bullet\bullet)$\\
+then $\sqrt{w} \leq s$, $\ulp(\sqrt{w}) \leq \ulp(s)$.
+
+\end{minipage}
+
+
+\end{tabular}
+\end{center}
+
+
+
+That shows the rounding error on the calculation of $\sqrt{x^2+y^2}$ can be
+bound by $4 \;\; \ulp$ on the result. So, to calculate the size of
+intermediary variables, we have to add, at least, $\lceil \log_2 4 \rceil=2$ bits the wanted precision.
+
+\subsection{The hyperbolic tangent function}
+
+The {\tt mpfr\_tanh} ($\tanh{x}$) function implements the hyperbolic
+tangent as :
+
+$$
+\tanh x = \frac{ e^{2 \cdot x} -1 }{ e^{2 \cdot x} +1} 
+$$
+
+The algorithm used for the calculation of the hyperbolic tangent is as follows\footnote{$o()$ represent the arrondi error and $error(u)$ the
+  error associate with the calcualtion of $u$}:
+
+\begin{eqnarray}\nonumber
+u&\leftarrow&o(2 \cdot x)\\\label{tanhalgo1}
+v&\leftarrow&o(e^u)\\\label{tanhalgo2}
+w&\leftarrow&o(v+1)\\\label{tanhalgo3}
+r&\leftarrow&o(v-1)\\\label{tanhalgo4}
+s&\leftarrow&o(\frac{r}{w})\\\label{tanhalgo5}
+\end{eqnarray}
+
+Now, we have to bound the rounding error for each step of this
+algorithm.  First, let consider the parity of hyperbolic tangent
+($\tanh(-x)=-\tanh(x)$) : the problem is reduced to calculate $\tanh x$ with $x \geq 0$. We can deduce $e^x \geq 1$.
+
+
+\begin{center}
+\begin{tabular}{l|l |l}
+
+\begin{minipage}{2.5cm}
+
+
+${\textnormal{error}}(u)$
+
+
+$u \leftarrow o(2 \cdot x)$
+
+
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+
+exact
+
+\end{minipage} &
+\begin{minipage}{6cm}
+{\hspace{7cm}}
+\end{minipage}\\\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(v)$
+
+
+$v \leftarrow o(e^{u}) $
+
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+
+
+\begin{eqnarray}\nonumber
+  &&|v-e^{2 \cdot x}| \\\nonumber
+  &       \leq&  |v - e^{u}| +  |e^{u}  - e^{2 \cdot x}|\\\nonumber
+  &       \leq& \ulp(v)
+\end{eqnarray}
+
+
+\end{minipage} &
+\begin{minipage}{6cm}
+
+
+\end{minipage}\\\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(w)$
+
+
+$w \leftarrow \minf(v+1) $
+
+$(\bullet)$
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+
+
+\begin{eqnarray}\nonumber
+  &&|w-(e^{2 \cdot x}+1)| \\\nonumber
+  &\leq&  |w - (v+1)|+|(v+1) - (e^{2 \cdot x}+1)|\\\nonumber
+  &\leq&  \ulp(w) + \ulp(v)\\\nonumber
+  &\leq&  2 \cdot \ulp(w)\;(\star)\\\nonumber
+\end{eqnarray}
+
+\end{minipage} &
+\begin{minipage}{6cm}
+$(\star)$
+
+With $v \leq w$ then $\ulp(v) \leq \ulp(w)$ 
+
+\end{minipage}\\\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(r)$
+
+
+$r \leftarrow \pinf(v-1) $
+
+$(\bullet\bullet)$
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+
+
+\begin{eqnarray}\nonumber
+  &&|r-(e^{2 \cdot x}-1)| \\\nonumber
+  &\leq&  |r - (v-1)|+|(v-1) - (e^{2 \cdot x}-1)|\\\nonumber
+  &\leq&  \ulp(r) + \ulp(v)\\\nonumber
+  &\leq&  (1+2^{\exp(v)-\exp(r)}) \ulp(r)\;(\star)\\\nonumber
+\end{eqnarray}
+
+\end{minipage} &
+\begin{minipage}{6cm}
+$(\star)$
+
+
+see subsection \ref{generic:sous}
+
+\end{minipage}\\\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(s)$
+
+
+$s \leftarrow o(\frac{r}{w}) $
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+
+
+\begin{eqnarray}\nonumber
+  &&|s-\frac{e^{2x}-1}{e^{2x}+1}| \\\nonumber
+  &\leq& (1+2 \times 2+ \hdots\\\nonumber
+  &\hdots& 2(1+2^{\exp(v)-\exp(r)})) \ulp(s) \;\;(\star)\\\nonumber
+\end{eqnarray}
+
+\end{minipage} &
+\begin{minipage}{6cm}
+$(\star)$
+
+
+see subsection \ref{generic:div}
+
+
+with $(\bullet)$ and $(\bullet\bullet)$
+
+\end{minipage}
+\end{tabular}
+\end{center}
+
+
+That show the rounding error on the calculation of $\tanh x$ can be
+bound by $(1+2 \times 2+2(1+2^{\exp(v)-\exp(r)})) \ulp(s)$, then the
+number of bits need to add to the want accuracy to define intermediary
+variable is :
+
+\[
+N_t=\lceil \log_2(1+2 \times 2+2(1+2^{\exp(v)-\exp(r)})) \rceil
+\]
+
+
+\subsection{The real cube root}
+
+The {\tt mpf\_cbrt} ($\sqrt[3]{x}$) function implements a Newton
+algorithm to calculate the real cube root of $x$. {\bf Note:} The case
+$x<0$ will not be considered, the function {\tt mpf\_cbrt} returns $-\sqrt[3](-x)$ if $x<0$.
+
+\subsubsection{Newton algorithm applied on cubic}
+
+In general case, to converge iterativelly to a
+root of the equation $f(x)=0$, we can use a Newton algoritm which is describe by the formulation :
+$x_{k+1}=x_k-\frac{f(x_k)}{f^{'}(x_k)}$.
+
+To applied this algorithm to calculate the real cubic root of
+$N,\;\;: \sqrt[3]{N}$, we want to solve the equation $f(x)=x^3-N=0$. The
+Newton algorithm become :
+
+\begin{equation}\label{NewtonCbrt}
+x_{k+1}=\frac{1}{3}[2x_k+\frac{N}{x^2_k}]
+\end{equation}
+
+{\bf Note :} The value of $x_0$ will be discuss after.
+
+\subsubsection{Number representation}
+
+The MPFR natural representatio of a number is: $N=m \times 2^e$, with
+$m$ the mantissa ($\frac{1}{2} \leq m < 1$) and $e$ the exponent.
+
+To simplify the implantation of this real cube root algorithm, we
+choose to represent the exponent of $N$ by $e=3 \times e^{'}-r$ where $r \in {0,1,2}$.
+In this condition the representation of $N$ become:
+$\frac{m}{2^r} \times 2^{3 e^{'}}$. Now, we put $m^{'}=\frac{m}{2^r}$
+with $\frac{1}{8} \leq m^{'} < 1$.
+
+
+Calculate $\sqrt[3]{m \times 2^e} = \sqrt[3]{\frac{m}{2^r} \times 2^{3 e^{'}}}$, that is egal to
+compute $\sqrt[3]{\frac{m}{2^r}} \times 2^{e^{'}}$.
+
+
+So, the calculation of $\sqrt[3]{N}$ is reduce to the calculation of
+$\sqrt[3]{m^{'}}$.
+
+\subsubsection{Newton iteration error}
+
+By considering the simplifications introduce on the section before, we
+want to produice the error $\epsilon_{k+1}$ between the calculation of the real cube
+root of $N, \;\; \frac{1}{8}\leq N < 1$ at the iteration $k+1$ of the
+nwton algorithm, noted $x_{k+1}$, and the real value of
+$\sqrt[3]{N}$. First, we want to express this error as a function of
+the error $\epsilon_{k}$ at tke iteration $k$.
+
+\begin{equation}\label{ErrorCbrt}
+\epsilon_{k+1}= |x_{k+1}-N^{\frac{1}{3}}|
+\end{equation}
+
+By using, equation \ref{NewtonCbrt} and \ref{ErrorCbrt} we obtain :
+
+\begin{eqnarray}\nonumber
+\epsilon_{k+1}&=&   \arrowvert\frac{1}{3}[2x_k+\frac{N}{x^2_k}]-N^{\frac{1}{3}} \arrowvert\\\nonumber
+  &=& \arrowvert (x_k-N^{\frac{1}{3}})-\frac{1}{3x^2_k}[x^3_k-N] \arrowvert \\\nonumber
+  &=& \arrowvert
+  \frac{x_k-N^{\frac{1}{3}}}{3x^2_k}[(x_k-N^{\frac{1}{3}})(x_k+N^{\frac{1}{3}})+x_k(x_k-N^{\frac{1}{3}})] \arrowvert\\\nonumber
+  &=&\arrowvert \frac{(x_k-N^{\frac{1}{3}})^2}{3x^2_k}
+  [2x_k+N^{\frac{1}{3}}]\arrowvert\\\nonumber
+  &=&  \epsilon^2_{k}\arrowvert \frac{2x_k+N^{\frac{1}{3}}}{3x^2_k}\arrowvert\\\nonumber
+\end{eqnarray}
+
+To bound this expression, we put $x_0=\frac{3}{4}$. If $x_k >0 $, with
+$\frac{1}{8}\leq N <1$, $\frac{2x_k+N^{\frac{1}{3}}}{3x^2_k} >0 $ and
+then $\epsilon_{k+1} >0$ in othe hand $ N^{\frac{1}{3}}\leq x_{k+1}$,
+we can obtain this inegality for $1 \leq k$:
+
+\begin{equation}
+N^{\frac{1}{3}}\leq x_{k}
+\end{equation}
+
+
+We can now bound $\epsilon_{k+1}$ :
+
+\begin{eqnarray}\nonumber
+\epsilon_{k+1} =  \epsilon^2_{k}
+\frac{2x_k+N^{\frac{1}{3}}}{3x^2_k} \leq
+\epsilon^2_{k}\frac{2x_k+x_k}{3x^2_k}\leq 2 \epsilon^2_{k}\\\nonumber
+\end{eqnarray}
+
+Because $\frac{1}{2}\leq<N^{\frac{1}{3}}$, $2\geq\frac{1}{x_k}$
+
+
+
+\subsubsection{Size of tempory variables}
+
+
+First, $z_k$ is the MPFR calculation approximation of $x_k$. The error
+produce by the calculation of $z_k$ at the iteration $k$ is bounded by
+:
+\[
+|z_k-x_k| \leq n_k \times ulp(z_k)
+\]
+
+with $n_k$ the number of ulp()...a completer
+
+The algorithm used to calculate one Newton iteration is:
+
+\begin{eqnarray}\nonumber
+t&\leftarrow&2z_k\\\nonumber
+u&\leftarrow&z_k^2\\\nonumber
+v&\leftarrow&\frac{N}{u}\\\nonumber
+w&\leftarrow&t+v\\\nonumber
+z_{k+1}&\leftarrow&\frac{w}{3}\\\nonumber
+\end{eqnarray}
+
+Let describe the additionnal error produce at each step of the
+algorithm :
+
+\[
+t \leftarrow 2 z_k
+\]
+
+The error associate with the calculation of $t$ can be bound as
+following:
+
+\begin{eqnarray}\nonumber
+  error(t) &\leq& 2 n_k ulp(z_k)\\\nonumber
+         &\leq& n_k ulp(t)\\\nonumber
+\end{eqnarray}
+
+
+\[
+u\leftarrow z_k^2
+\]
+
+
+
+\begin{eqnarray}\nonumber
+  error(u) = |o(z_k^2)-x_k^2| &\leq& |o(z_k^2)-z_k^2| +
+  |z_k^2-x_k^2|\\\nonumber
+         &\leq& 1 ulp(z_k^2) + n_k ulp(1) (z_k+x_k)\\\nonumber
+         &\leq& (2 n_k + 1) ulp(1)\\\nonumber
+\end{eqnarray}
+
+\[
+v \leftarrow \frac{N}{u}
+\]
+
+\begin{eqnarray}\nonumber
+  error(v) = |o(\frac{N}{u})-\frac{N}{x_k^2}| &\leq& ulp(v) +
+  |\frac{N}{u}-\frac{N}{x_k^2}|\\\nonumber
+         &\leq& 4 ulp(1) + \frac{N}{u
+           x_k^2}|x_k^2-u|\;\;\;{\textnormal{with}} \frac{1}{8}\leq v <4\\\nonumber
+         &\leq& 4 ulp(1) + 4 |x_k^2-u|\;\;\;{\textnormal{with}} \;\;N^{\frac{1}{3}} \leq x_k\;\;\frac{N}{u
+           x_k^2} \leq \frac{x_k^3}{u x_k^2}\leq 4
+         \\\nonumber
+         &\leq& 4 ulp(1) + 4(2 n_k + 1) ulp(1)\\\nonumber
+         &\leq& (8 n_k + 8) ulp(1)\\\nonumber
+\end{eqnarray}
+
+
+\[
+w \leftarrow t+v
+\]
+
+\begin{eqnarray}\nonumber
+  error(w) = |o(t+v)-(2x_k + \frac{N}{u})| &\leq& ulp(w) +
+  |v-\frac{N}{u}|+|t-2x_k|\\\nonumber
+  &\leq& 2ulp(1) +(2 n_k + 1) ulp(1)  + (8 n_k + 8)
+  ulp(1)\;\;\;{\textnormal{with ... demander Paul}}\\\nonumber
+  &\leq& (10 n_k + 11) ulp(1)\\\nonumber  
+\end{eqnarray}
+
+\[
+z_{k+1} \leftarrow \frac{w}{3}
+\]
+
+\begin{eqnarray}\label{errsize}
+  error(z_{k+1}) = |o(\frac{w}{3})-\frac{1}{3}[2x_k + \frac{N}{u}]| &\leq& ulp(z_{k+1}) +
+  \frac{1}{3}[(10 n_k + 11) ulp(1)]\\\nonumber  
+&\leq& ulp(2) + \frac{1}{3}[(10 n_k + 11) ulp(1)]\\\nonumber  
+  &\leq& \frac{10 n_k + 17}{3} ulp(1)\\\nonumber  
+\end{eqnarray}
+
+
+
+\subsubsection{Implentation}
+
+First, we have to calculate the number of iteration of Newton's
+algorithme need to garanty the wanted precision of the result with $n$ exact bits.
+
+The section "Newton iteration error" show how we can calculate the
+error between two Newton iterations : we obtain $\epsilon_{k+1} \leq 2
+\epsilon_k^2$.  If $x_0=\frac{3}{4}$ we get :
+
+\[
+\epsilon_{0}=|x_0-N^{\frac{1}{3}}|\leq\frac{1}{4}\;\;{\textnormal{With  }}N^{\frac{1}{3}} \geq\frac{1}{2}
+\]
+
+then, $\epsilon_1 \leq \frac{1}{8}$, $\epsilon_2 \leq \frac{1}{32}$, ....
+
+
+To certifiate result with $n$ bits of precision, we have to get $\epsilon_k\leq\frac{1}{2^{n}}$, so $n\geq\tau_k$, with $\tau_k=-\log_2 \epsilon_k$.
+
+To calculate $k$ the number of iteration need to certifiate result, we have the compute $\tau_0=2,\, \tau_1=3,\, \tau_{k}=2\tau_{k-1} -1$ such as $\tau_k \leq n$.
+
+For each Newton iteration the intermediate calculation give an error bound by inequality \ref{errsize}. With the knowledge of $k$, for an intitial error null $n_0=0$, we can compute the error for all Newton iterations : $n_{k} = \frac{10 n_{k-1}+14}{3}$. Then, the size in bits $m$ of the precision of the intermediary variables is give by :
+
+\[
+m > n + \log_2 n_k + \log_2 n
+\]
 
 
 \bibliographystyle{acm}
