@@ -24,6 +24,24 @@ MA 02111-1307, USA. */
 #include <sys/fpu.h>
 #endif
 
+/* set precision control to double on x86 */
+#if (defined (__i386__) || defined (__i486__))
+#ifdef __CYGWIN32__ /* no fpu_control.h under Cygnus */
+#define _FPU_EXTENDED 0x300
+#define _FPU_DOUBLE   0x200
+#define _FPU_DEFAULT  0x137f
+#define _FPU_RC_NEAREST 0x0
+#define _FPU_RC_DOWN    0x400
+#define _FPU_RC_UP      0x800
+#define _FPU_RC_ZERO    0xC00
+#else
+#include <fpu_control.h>
+#endif /* ifdef __CYGWIN32__ */
+#ifndef __setfpucw
+#define __setfpucw(cw) __asm__ ("fldcw %0" : : "m" (cw))
+#endif /* ifndef __setfpucw */
+#endif /* __i386__ */
+
 /* generates a random long int, a random double,
    and corresponding seed initializing */
 #ifdef HAVE_RAND48
@@ -41,6 +59,7 @@ MA 02111-1307, USA. */
 #define random() (mrand48() & 0x7fffffff)
 #endif
 
+void mpfr_test_init _PROTO ((void));
 double drand _PROTO ((void)); 
 int ulp _PROTO ((double, double)); 
 double dbl _PROTO ((double, int)); 
@@ -59,6 +78,25 @@ double Ulp _PROTO ((double));
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 #define ABS(x) (((x)>0) ? (x) : -(x))
+
+/* initialization function for tests using the hardware floats */
+void
+mpfr_test_init ()
+{
+#ifdef __mips
+  /* to get denormalized numbers on IRIX64 */
+  union fpc_csr exp;
+
+  exp.fc_word = get_fpc_csr();
+  exp.fc_struct.flush = 0;
+  set_fpc_csr(exp.fc_word);
+#endif
+
+#if defined(__i386__)
+  /* sets the precision to double */
+  __setfpucw((_FPU_DEFAULT & (~_FPU_EXTENDED)) | _FPU_DOUBLE);
+#endif
+}
 
 /* generate a random double using the whole range of possible values,
    including denormalized numbers, NaN, infinities, ... */
