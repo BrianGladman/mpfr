@@ -19,6 +19,7 @@ mkinst*     - auxiliary installation file
 mpf2mpfr.h  - header file for compatibility with MPF
 mpfr-impl.h - internal header file for MPFR
 mpfr.h      - external header file for MPFR
+mpfr-test.h - header file for test files
 mpfr.info   - info file for MPFR
 mpfr.texi   - texinfo documentation for MPFR
 tests/      - test directory
