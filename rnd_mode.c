@@ -19,12 +19,18 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#ifdef MPFR_HAVE_FESETROUND
 #include <stdio.h>
 #include <stdlib.h>
-#include <fenv.h>
 #include "gmp.h"
+#include "gmp-impl.h"
 #include "mpfr.h"
+
+/* Note: "gmp-impl.h" must be included because MPFR_HAVE_FESETROUND
+   may be defined from it (if MPFR is built with GMP). */
+
+#ifdef MPFR_HAVE_FESETROUND
+
+#include <fenv.h>
 
 /* sets the machine rounding mode to the value rnd_mode */
 void 
@@ -38,4 +44,5 @@ mpfr_set_machine_rnd_mode (mp_rnd_t rnd_mode)
   default: fprintf(stderr, "invalid rounding mode\n"); exit(1);
   }
 }
+
 #endif
