@@ -1,4 +1,4 @@
-/* Test file for mpfr_ui_pow.
+/* Test file for mpfr_pow.
 
 Copyright (C) 2001 Free Software Foundation.
 Adapted from tarctan.c.
