@@ -213,3 +213,38 @@ main (int argc, const char *argv[])
   
   return 0;
 }
+
+#if 0
+int mul () 
+{
+  /* multiplies two mantissa in temporary allocated space */
+  b1 = MPFR_LIKELY (bn >= cn)
+    ? mpn_mul (tmp, MPFR_MANT (b), bn, MPFR_MANT (c), cn)
+    : mpn_mul (tmp, MPFR_MANT (c), cn, MPFR_MANT (b), bn);
+
+  -->;
+  
+  if (MPFR_LIKELY (bn == cn)) {
+    mp_size_t log2bn;
+    if (MPFR_LIKELY (bn < MPFR_MUL_BASECASE_THREEHOLD))
+      goto mul_normal;
+    log2bn = MPFR_INT_CEIL_LOG2 (bn);
+    if (MPFR_PREC (a) > bn*BITS_PER_MP_LIMB-log2bn-4)
+      goto mul_normal;
+    else {
+      mpfr_mpn_mulhigh_n (tmp, MPFR_MANT (b), MPFR_MANT (c), bn);
+      if (MPFR_LIKELY (mpfr_can_round_raw (tmp, bn+tn, sign,
+					   bn*BITS_PER_MP_LIMB-log2bn, 
+					   GMP_RNDN, GMP_RNDZ,
+					   MPFR_PREC(a)+(rnd_mode==GMP_RNDN))))
+	b1 = tmp[2*bn-1];
+      else
+	goto mul_normal;
+    }
+  } else if (bn > cn) {
+  mul_normal:
+    b1 = mpn_mul (tmp, MPFR_MANT (b), bn, MPFR_MANT (c), cn);
+  } else
+    b1 = mpn_mul (tmp, MPFR_MANT (c), cn, MPFR_MANT (b), bn);
+}
+#endif
