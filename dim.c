@@ -1,4 +1,4 @@
-/* mpfr_dim -- dim of x, y  
+/* mpfr_dim -- positive difference
 
 Copyright 2001, 2002, 2004 Free Software Foundation.
 
@@ -21,11 +21,11 @@ MA 02111-1307, USA. */
 
 #include "mpfr-impl.h"
 
- /* The computation of z=dim(x,y)
+/* dim (x,y) is defined as:
 
     x-y if x >  y
     +0    if x <= y
- */
+*/
 
 int
 mpfr_dim (mpfr_ptr z, mpfr_srcptr x ,mpfr_srcptr y , mp_rnd_t rnd_mode)
@@ -39,8 +39,8 @@ mpfr_dim (mpfr_ptr z, mpfr_srcptr x ,mpfr_srcptr y , mp_rnd_t rnd_mode)
 	}
     }
 
-  if (mpfr_cmp(x,y) > 0)
-    return mpfr_sub(z, x, y, rnd_mode);
+  if (mpfr_cmp (x,y) > 0)
+    return mpfr_sub (z, x, y, rnd_mode);
   else
     {
       MPFR_SET_ZERO(z);
