@@ -1,6 +1,6 @@
 dnl  MPFR specific autoconf macros
 
-dnl  Copyright 2000, 2002, 2003, 2004 Free Software Foundation.
+dnl  Copyright 2000, 2002, 2003, 2004, 2005 Free Software Foundation.
 dnl  Contributed by the Spaces project, INRIA Lorraine.
 dnl  
 dnl  This file is part of the MPFR Library.
