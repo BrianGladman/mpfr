@@ -3,7 +3,7 @@ INCFLAGS=-I$(GMPDIR)/include -I..
 LDFLAGS=libmpfr.a $(GMPDIR)/lib/libgmp.a 
 CFLAGS=-g -DMsb
 
-all_files=tmul tround tset_f tcmp tcmp2 tdiv tmul_2exp tmul_ui tset_d tset_i tset_str tadd tsqrt tagm
+all_files=tmul tround tset_f tcmp tcmp2 tdiv tmul_2exp tmul_ui tset_d tset_si tset_str tadd tsqrt tagm
 
 all: $(all_files)
 	for f in $(all_files) ; do \
