@@ -25,7 +25,7 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-test.h"
 
-/* tpi [prec] [rnd] [0 = no print] */
+/* tconst_pi [prec] [rnd] [0 = no print] */
 
 int
 main (int argc, char *argv[])
@@ -46,7 +46,7 @@ main (int argc, char *argv[])
 
   mpfr_init2(x, p);
   mpfr_const_pi(x, rnd);
-  if (argc>=2) {
+  if (argc >= 2 && atoi(argv[2])) {
     printf("Pi="); mpfr_out_str(stdout, 10, 0, x, rnd); putchar('\n');
   }
   else if (mpfr_get_d1 (x) != 3.141592653589793116) {
