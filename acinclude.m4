@@ -151,6 +151,13 @@ esac
 #
 AC_CHECK_HEADERS(sys/fpu.h)
 
+AC_CHECK_TYPE( [union fpc_csr], AC_DEFINE(HAVE_FPC_CSR), , 
+[
+#if HAVE_SYS_FPU_H
+#  include <sys/fpu.h>
+#endif
+])
+
 dnl Check for fesetround
 AC_CACHE_CHECK([for fesetround], mpfr_cv_have_fesetround, [
 saved_LIBS="$LIBS"

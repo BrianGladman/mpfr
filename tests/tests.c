@@ -117,7 +117,7 @@ void
 mpfr_test_init ()
 {
   double c, d, eps;
-#ifdef __mips
+#if HAVE_FPC_CSR
   /* to get denormalized numbers on IRIX64 */
   union fpc_csr exp;
 
