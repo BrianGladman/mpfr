@@ -95,7 +95,6 @@ mpfr_prec_round (mpfr_ptr x, mp_prec_t prec, mp_rnd_t rnd_mode)
           MPFR_ASSERTD (exp < __gmpfr_emax);
           MPFR_SET_EXP (x, exp + 1);
           xp[nw - 1] = MPFR_LIMB_HIGHBIT;
-          /* FIXME: maybe that mpfr_round_raw already sets the low bits to 0 */
           if (nw - 1 > 0)
             MPN_ZERO(xp, nw - 1);
         }
