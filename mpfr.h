@@ -148,7 +148,8 @@ void mpfr_init2 _PROTO ((mpfr_ptr, mp_prec_t));
 void mpfr_init _PROTO ((mpfr_ptr));
 void mpfr_inits2 _PROTO ((mp_prec_t, mpfr_ptr, ...));
 void mpfr_inits _PROTO ((mpfr_ptr, ...));
-int mpfr_round_prec _PROTO ((mpfr_ptr, mp_rnd_t, mp_prec_t));
+int mpfr_prec_round _PROTO ((mpfr_ptr, mp_prec_t, mp_rnd_t));
+#define mpfr_round_prec(x,r,p) mpfr_prec_round(x,p,r) /* compatibility 2.0.1 */
 int mpfr_can_round _PROTO ((mpfr_ptr, mp_exp_t, mp_rnd_t, mp_rnd_t,
 			    mp_prec_t));
 mp_exp_t mpfr_get_exp _PROTO ((mpfr_srcptr));

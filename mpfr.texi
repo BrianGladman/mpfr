@@ -600,7 +600,7 @@ Sets the default rounding mode to @var{rnd}.
 The default rounding mode is to nearest initially.
 @end deftypefun
 
-@deftypefun int mpfr_round_prec (mpfr_t @var{x}, mp_rnd_t @var{rnd}, mp_prec_t @var{prec})
+@deftypefun int mpfr_prec_round (mpfr_t @var{x}, mp_prec_t @var{prec}, mp_rnd_t @var{rnd})
 Rounds @var{x} according to @var{rnd} with precision @var{prec}, which
 may be different from that of @var{x}. 
 If @var{prec} is greater or equal to the precision of @var{x}, then new
@@ -611,6 +611,10 @@ The returned value is zero when the result is exact, positive when it is
 greater than the original value of @var{x}, and negative when it is smaller.
 The precision @var{prec} can be any integer between @code{MPFR_PREC_MIN} and
 @code{MPFR_PREC_MAX}.
+@end deftypefun
+
+@deftypefun int mpfr_round_prec (mpfr_t @var{x}, mp_rnd_t @var{rnd}, mp_prec_t @var{prec})
+[This function is obsolete. Please use @code{mpfr_prec_round} instead.]
 @end deftypefun
 
 @deftypefun {char *} mpfr_print_rnd_mode (mp_rnd_t @var{rnd})
