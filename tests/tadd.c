@@ -27,6 +27,23 @@ MA 02111-1307, USA. */
 
 #include "mpfr-test.h"
 
+/* If the precisions are the same, we want to test both mpfr_add1sp
+   and mpfr_add1. */
+
+static int usesp;
+
+static int
+test_add (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
+{
+  if (usesp || MPFR_ARE_SINGULAR(b,c) || MPFR_SIGN(b) != MPFR_SIGN(c))
+    return mpfr_add (a, b, c, rnd_mode);
+  MPFR_CLEAR_FLAGS(a); /* clear flags */
+  if (MPFR_GET_EXP(b) < MPFR_GET_EXP(c))
+    return mpfr_add1(a, c, b, rnd_mode);
+  else
+    return mpfr_add1(a, b, c, rnd_mode);
+}
+
 /* Parameter "z1" of check() used to be last in the argument list, but that
    tickled a bug in 32-bit sparc gcc 2.95.2.  A "double" in that position is
    passed on the stack at an address which is 4mod8, but the generated code
@@ -50,7 +67,7 @@ pcheck (const char *xs, const char *ys, const char *zs, mp_rnd_t rnd_mode,
 
   mpfr_set_str1 (xx, xs);
   mpfr_set_str1 (yy, ys);
-  mpfr_add(zz, xx, yy, rnd_mode);
+  test_add (zz, xx, yy, rnd_mode);
   if (mpfr_cmp_str1 (zz, zs) )
     {
       printf ("expected sum is %s, got ", zs);
@@ -73,7 +90,7 @@ check2b (const char *xs, int px,
   mpfr_init2(xx,px); mpfr_init2(yy,py); mpfr_init2(zz,pz);
   mpfr_set_str_binary (xx, xs);
   mpfr_set_str_binary (yy, ys);
-  mpfr_add(zz, xx, yy, rnd_mode);
+  test_add (zz, xx, yy, rnd_mode);
   if (mpfr_cmp_str (zz, rs, 2, GMP_RNDN))
     {
       printf ("(2) x=%s,%d y=%s,%d pz=%d,rnd=%s\n",
@@ -100,7 +117,7 @@ check64 (void)
   mpfr_set_prec (t, 58);
   mpfr_set_str_binary (t, "0.11100010011111001001100110010111110110011000000100101E-1");
   mpfr_set_prec (u, 29);
-  mpfr_add (u, x, t, GMP_RNDD);
+  test_add (u, x, t, GMP_RNDD);
   mpfr_set_str_binary (t, "1.0101011100001000011100111110e-1");
   if (mpfr_cmp (u, t))
     {
@@ -117,7 +134,7 @@ check64 (void)
   mpfr_set_prec (t, 2);
   mpfr_set_str_binary (t, "-1.1e-2");
   mpfr_set_prec (u, 2);
-  mpfr_add (u, x, t, GMP_RNDN);
+  test_add (u, x, t, GMP_RNDN);
   if (MPFR_MANT(u)[0] << 2)
     {
       printf ("result not normalized for prec=2\n");
@@ -139,7 +156,7 @@ check64 (void)
   mpfr_set_prec (t, 4);
   mpfr_set_str_binary (t, "-1.110e-5"); /* -7/128 */
   mpfr_set_prec (u, 4);
-  mpfr_add (u, x, t, GMP_RNDN); /* should give -5/8 */
+  test_add (u, x, t, GMP_RNDN); /* should give -5/8 */
   mpfr_set_str_binary (t, "-1.010e-1");
   if (mpfr_cmp (u, t)) {
     printf ("mpfr_add(u, x, t) failed for prec(x)=8, prec(t)=4\n");
@@ -152,7 +169,7 @@ check64 (void)
   mpfr_set_prec (x, 112); mpfr_set_prec (t, 98); mpfr_set_prec (u, 54);
   mpfr_set_str_binary (x, "-0.11111100100000000011000011100000101101010001000111E-401");
   mpfr_set_str_binary (t, "0.10110000100100000101101100011111111011101000111000101E-464");
-  mpfr_add (u, x, t, GMP_RNDN);
+  test_add (u, x, t, GMP_RNDN);
   if (mpfr_cmp (u, x))
     {
       printf ("mpfr_add(u, x, t) failed for prec(x)=112, prec(t)=98\n");
@@ -162,7 +179,7 @@ check64 (void)
   mpfr_set_prec (x, 92); mpfr_set_prec (t, 86); mpfr_set_prec (u, 53);
   mpfr_set_str (x, "-5.03525136761487735093e-74", 10, GMP_RNDN);
   mpfr_set_str (t, "8.51539046314262304109e-91", 10, GMP_RNDN);
-  mpfr_add (u, x, t, GMP_RNDN);
+  test_add (u, x, t, GMP_RNDN);
   if (mpfr_cmp_str1 (u, "-5.0352513676148773509283672e-74") )
     {
       printf ("mpfr_add(u, x, t) failed for prec(x)=92, prec(t)=86\n");
@@ -194,7 +211,7 @@ check64 (void)
   mpfr_set_prec(x, 97); mpfr_set_prec(t, 97); mpfr_set_prec(u, 97);
   mpfr_set_str_binary(x, "0.1111101100001000000001011000110111101000001011111000100001000101010100011111110010000000000000000E-39");
   mpfr_set_ui(t, 1, GMP_RNDN);
-  mpfr_add(u, x, t, GMP_RNDN);
+  test_add (u, x, t, GMP_RNDN);
   mpfr_set_str_binary(x, "0.1000000000000000000000000000000000000000111110110000100000000101100011011110100000101111100010001E1");
   if (mpfr_cmp(u,x))
     {
@@ -238,7 +255,7 @@ check64 (void)
   mpfr_set_prec(x, 64); mpfr_set_prec(t, 64); mpfr_set_prec(u, 64);
   mpfr_set_str_binary(x, "0.1000011110101111011110111111000011101011101111101101101100000100E-220");
   mpfr_set_str_binary(t, "0.1000011110101111011110111111000011101011101111101101010011111101E-220");
-  mpfr_add(u, x, t, GMP_RNDU);
+  test_add (u, x, t, GMP_RNDU);
   if ((MPFR_MANT(u)[0] & 1) != 1)
     {
       printf ("error in mpfr_add with rnd_mode=GMP_RNDU\n");
@@ -258,7 +275,7 @@ check64 (void)
   mpfr_set_prec(x, 109); mpfr_set_prec(t, 153); mpfr_set_prec(u, 95);
   mpfr_set_str_binary(x,"0.1001010000101011101100111000110001111111111111111111111111111111111111111111111111111111111111100000000000000E33");
   mpfr_set_str_binary(t,"-0.100101000010101110110011100011000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011100101101000000100100001100110111E33");
-  mpfr_add(u, x, t, GMP_RNDN);
+  test_add (u, x, t, GMP_RNDN);
 
   /* array bound writes found by Norbert Mueller, 27 Sep 2000 */
   mpfr_set_prec(x, 106); mpfr_set_prec(t, 53); mpfr_set_prec(u, 23);
@@ -268,11 +285,11 @@ check64 (void)
   mpfr_set_prec(x, 177); mpfr_set_prec(t, 217); mpfr_set_prec(u, 160);
   mpfr_set_str_binary(x, "-0.111010001011010000111001001010010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000E35");
   mpfr_set_str_binary(t, "0.1110100010110100001110010010100100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000111011010011100001111001E35");
-  mpfr_add(u, x, t, GMP_RNDN);
+  test_add (u, x, t, GMP_RNDN);
   mpfr_set_prec(x, 214); mpfr_set_prec(t, 278); mpfr_set_prec(u, 207);
   mpfr_set_str_binary(x, "0.1000100110100110101101101101000000010000100111000001001110001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000E66");
   mpfr_set_str_binary(t, "-0.10001001101001101011011011010000000100001001110000010011100010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001111011111001001100011E66");
-  mpfr_add(u, x, t, GMP_RNDN);
+  test_add (u, x, t, GMP_RNDN);
   mpfr_set_prec(x, 32); mpfr_set_prec(t, 247); mpfr_set_prec(u, 223);
   mpfr_set_str_binary(x, "0.10000000000000000000000000000000E1");
   mpfr_set_str_binary(t, "0.1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111100000110001110100000100011110000101110110011101110100110110111111011010111100100000000000000000000000000E0");
@@ -316,7 +333,7 @@ check64 (void)
   mpfr_set_ui (t, 1, GMP_RNDN);
   mpfr_set_ui (u, 1, GMP_RNDN);
   mpfr_set_nan (x);
-  mpfr_add (x, t, u, GMP_RNDN);
+  test_add (x, t, u, GMP_RNDN);
   if (mpfr_cmp_ui (x, 2))
     {
       printf ("Error in mpfr_add: 1+1 gives ");
@@ -360,7 +377,7 @@ check_case_1b (void)
               mpfr_div_2exp (c, c, dif, GMP_RNDN);
               mpfr_add_ui (c, c, 1, GMP_RNDN);
               mpfr_div_2exp (c, c, prec_a, GMP_RNDN);
-              mpfr_add (a, b, c, GMP_RNDN);
+              test_add (a, b, c, GMP_RNDN);
               if (mpfr_cmp_ui (a, 1) != 0)
                 {
                   printf ("case (1b) failed for prec_a=%u, prec_b=%u,"
@@ -393,10 +410,10 @@ check_case_2 (void)
   mpfr_set_str_binary(a, "1E110");  /* a = 2^110 */
   mpfr_set_str_binary(b, "1E900");  /* b = 2^900 */
   mpfr_set_str_binary(c, "1E500");  /* c = 2^500 */
-  mpfr_add(c, c, a, GMP_RNDZ);   /* c = 2^500 + 2^110 */
-  mpfr_sub(d, b, c, GMP_RNDZ);   /* d = 2^900 - 2^500 - 2^110 */
-  mpfr_add(b, b, c, GMP_RNDZ);   /* b = 2^900 + 2^500 + 2^110 */
-  mpfr_add(a, b, d, GMP_RNDZ);   /* a = 2^901 */
+  test_add (c, c, a, GMP_RNDZ);   /* c = 2^500 + 2^110 */
+  mpfr_sub (d, b, c, GMP_RNDZ);   /* d = 2^900 - 2^500 - 2^110 */
+  test_add (b, b, c, GMP_RNDZ);   /* b = 2^900 + 2^500 + 2^110 */
+  test_add (a, b, d, GMP_RNDZ);   /* a = 2^901 */
   if (mpfr_cmp_ui_2exp (a, 1, 901))
     {
       printf ("b + d fails for b=2^900+2^500+2^110, d=2^900-2^500-2^110\n");
@@ -419,7 +436,7 @@ check_same (void)
   mpfr_t x;
 
   mpfr_init(x); mpfr_set_ui(x, 1, GMP_RNDZ);
-  mpfr_add(x, x, x, GMP_RNDZ);
+  test_add (x, x, x, GMP_RNDZ);
   if (mpfr_cmp_ui (x, 2)) 
     {
       printf ("Error when all 3 operands are equal\n");
@@ -450,7 +467,7 @@ check_inexact (void)
   mpfr_set_prec (u, 33);
   mpfr_set_str_binary (u, "0.101110100101101100000000111100000E-1");
   mpfr_set_prec (y, 31);
-  if ((inexact = mpfr_add (y, x, u, GMP_RNDN)))
+  if ((inexact = test_add (y, x, u, GMP_RNDN)))
     {
       printf ("Wrong inexact flag (2): expected 0, got %d\n", inexact);
       exit (1);
@@ -461,7 +478,7 @@ check_inexact (void)
   mpfr_set_prec (u, 33);
   mpfr_set_str_binary (u, "0.101110100101101100000000111100000E-1");
   mpfr_set_prec (y, 28);
-  if ((inexact = mpfr_add (y, x, u, GMP_RNDN)))
+  if ((inexact = test_add (y, x, u, GMP_RNDN)))
     {
       printf ("Wrong inexact flag (1): expected 0, got %d\n", inexact);
       exit (1);
@@ -493,7 +510,7 @@ check_inexact (void)
 	      pz = pz + MAX(MPFR_PREC(x), MPFR_PREC(u)) + 1;
 	      mpfr_set_prec (z, pz);
 	      rnd = RND_RAND();
-	      if (mpfr_add (z, x, u, rnd))
+	      if (test_add (z, x, u, rnd))
 		{
 		  printf ("z <- x + u should be exact\n");
 		  printf ("x="); mpfr_print_binary (x); puts ("");
@@ -503,7 +520,7 @@ check_inexact (void)
 		}
 		{
                   rnd = RND_RAND();
-		  inexact = mpfr_add (y, x, u, rnd);
+		  inexact = test_add (y, x, u, rnd);
 		  cmp = mpfr_cmp (y, z);
 		  if (((inexact == 0) && (cmp != 0)) ||
 		      ((inexact > 0) && (cmp <= 0)) ||
@@ -541,34 +558,34 @@ check_nans (void)
   /* +inf + -inf == nan */
   mpfr_set_inf (x, 1);
   mpfr_set_inf (y, -1);
-  mpfr_add (s, x, y, GMP_RNDN);
+  test_add (s, x, y, GMP_RNDN);
   MPFR_ASSERTN (mpfr_nan_p (s));
 
   /* +inf + 1 == +inf */
   mpfr_set_inf (x, 1);
   mpfr_set_ui (y, 1L, GMP_RNDN);
-  mpfr_add (s, x, y, GMP_RNDN);
+  test_add (s, x, y, GMP_RNDN);
   MPFR_ASSERTN (mpfr_inf_p (s));
   MPFR_ASSERTN (mpfr_sgn (s) > 0);
 
   /* -inf + 1 == -inf */
   mpfr_set_inf (x, -1);
   mpfr_set_ui (y, 1L, GMP_RNDN);
-  mpfr_add (s, x, y, GMP_RNDN);
+  test_add (s, x, y, GMP_RNDN);
   MPFR_ASSERTN (mpfr_inf_p (s));
   MPFR_ASSERTN (mpfr_sgn (s) < 0);
 
   /* 1 + +inf == +inf */
   mpfr_set_ui (x, 1L, GMP_RNDN);
   mpfr_set_inf (y, 1);
-  mpfr_add (s, x, y, GMP_RNDN);
+  test_add (s, x, y, GMP_RNDN);
   MPFR_ASSERTN (mpfr_inf_p (s));
   MPFR_ASSERTN (mpfr_sgn (s) > 0);
 
   /* 1 + -inf == -inf */
   mpfr_set_ui (x, 1L, GMP_RNDN);
   mpfr_set_inf (y, -1);
-  mpfr_add (s, x, y, GMP_RNDN);
+  test_add (s, x, y, GMP_RNDN);
   MPFR_ASSERTN (mpfr_inf_p (s));
   MPFR_ASSERTN (mpfr_sgn (s) < 0);
 
@@ -585,7 +602,7 @@ check_alloc (void)
   mpfr_init2 (a, 10000);
   mpfr_set_prec (a, 53);
   mpfr_set_ui (a, 15236, GMP_RNDN);
-  mpfr_add (a, a, a, GMP_RNDN);
+  test_add (a, a, a, GMP_RNDN);
   mpfr_mul (a, a, a, GMP_RNDN);
   mpfr_div (a, a, a, GMP_RNDN);
   mpfr_sub (a, a, a, GMP_RNDN);
@@ -606,7 +623,7 @@ check_overflow (void)
   mpfr_setmax (b, mpfr_get_emax ());
   mpfr_set_ui (c, 1, GMP_RNDN);
   mpfr_set_exp (c, mpfr_get_emax () - 192);
-  mpfr_add (a, b, c, GMP_RNDD);
+  test_add (a, b, c, GMP_RNDD);
   if (!mpfr_overflow_p ())
     {
       printf ("No overflow in check_overflow\n");
@@ -618,13 +635,9 @@ check_overflow (void)
   mpfr_clear (c);
 }
 
-int
-main (int argc, char *argv[])
+static void
+tests (void)
 {
-  tests_start_mpfr ();
-
-  mpfr_test_init ();
-
   check_alloc ();
   check_nans ();
   check_inexact ();
@@ -863,6 +876,19 @@ main (int argc, char *argv[])
   check53("9007199254740996.0", "-1.0", GMP_RNDN, "9007199254740996.0");
 
   check_overflow ();
+}
+
+int
+main (int argc, char *argv[])
+{
+  tests_start_mpfr ();
+  mpfr_test_init ();
+
+  usesp = 0;
+  tests ();
+
+  usesp = 1;
+  tests ();
 
   tests_end_mpfr ();
   return 0;
