@@ -51,8 +51,9 @@ void check(double x, unsigned long y, unsigned int rnd_mode)
   z1 = y-x;
   z2 = mpfr_get_d(zz);
   if (z1!=z2 && !(isnan(z1) && isnan(z2))) {
-    printf("expected sum is %1.20e, got %1.20e\n",z1,z2);
-    printf("mpfr_ui_sub failed for y=%lu x=%1.20e with rnd_mode=%u\n",y,x,rnd_mode);
+    printf("expected difference is %1.20e, got %1.20e\n",z1,z2);
+    printf("mpfr_ui_sub failed for y=%lu x=%1.20e with rnd_mode=%u\n",
+	   y, x, mpfr_print_rnd_mode(rnd_mode));
     exit(1);
   }
   mpfr_clear(xx); mpfr_clear(zz);
@@ -70,6 +71,7 @@ int main(argc,argv) int argc; char *argv[];
 #endif
 
   check(1.22191250737771397120e+20, 948002822, GMP_RNDN);
+  check(4.68311314939691330000e-215, 832100416, GMP_RNDD);
   srand(getpid());
   N = (argc<2) ? 1000000 : atoi(argv[1]);
   rnd_mode = (argc<3) ? -1 : atoi(argv[2]);
