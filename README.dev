@@ -64,7 +64,8 @@ To make a release (for the MPFR team):
      the --disable-alloca configure option (or compile gmp with
      --enable-alloca=debug), with and without -DXDEBUG in $CFLAGS,
      with and without gmp internal files, with and without gmp built
-     as a shared library.
+     as a shared library, with and without srcdir equals to objdir
+     (../mpfr/configure --srcdir=/users/spaces/pelissip/mpfr/).
   7) If there is no problem, add a tag to the CVS corresponding to the
      release, e.g. mpfr-2-0-1-rel for mpfr 2.0.1 (note that the periods
      are replaced by dashes): cvs tag mpfr-2-0-1-rel
