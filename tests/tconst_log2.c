@@ -89,6 +89,42 @@ check_large (void)
   mpfr_clears (x, y, NULL);
 }
 
+static void
+check_cache ()
+{
+  mpfr_t x;
+  int i;
+
+  mpfr_init2 (x, 195);
+  mpfr_free_cache ();
+  i = mpfr_const_log2 (x, GMP_RNDN);
+  if (i == 0)
+    {
+      printf("Error for log2. Invalid ternary value (1).\n");
+      exit (1);
+    }
+  mpfr_set_prec (x, 194);
+  i = mpfr_const_log2 (x, GMP_RNDN);
+  if (i == 0)
+    {
+      printf("Error for log2. Invalid ternary value (2).\n");
+      exit (1);
+    }
+
+  mpfr_free_cache ();
+  mpfr_set_prec (x, 9);
+  mpfr_const_log2 (x, GMP_RNDN);
+  mpfr_set_prec (x, 8);
+  mpfr_const_log2 (x, GMP_RNDN);
+  if (mpfr_cmp_str (x, "0.10110001E0", 2, GMP_RNDN))
+    {
+      printf("Error for log2. Wrong rounding.\n");
+      exit (1);
+    }
+
+  mpfr_clear (x);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -145,6 +181,7 @@ main (int argc, char *argv[])
   mpfr_clear(x);
 
   check_large();
+  check_cache ();
 
   tests_end_mpfr ();
   return 0;
