@@ -85,7 +85,7 @@ check_cmp(int argc, char *argv[])
   mpfr_inits2(53, x, y, NULL);
 
   mpfr_set_ui(x, 1, GMP_RNDN);
-  mpfr_abs(x, x, GMP_RNDN);
+  (mpfr_abs) (x, x, GMP_RNDN);
   if (mpfr_cmp_ui (x, 1))
     {
       printf ("Error in mpfr_abs(1.0)\n");

@@ -59,7 +59,7 @@ main (void)
   inexact = mpfr_init_set_d (u, 1.0, GMP_RNDN);
 
   mpfr_set_nan (x);
-  mpfr_set (y, x, GMP_RNDN);
+  (mpfr_set) (y, x, GMP_RNDN);
   MPFR_ASSERTN(mpfr_nan_p (y));
 
   mpfr_set_inf (x, 1);

@@ -21,7 +21,7 @@ MA 02111-1307, USA. */
 
 #include "mpfr-impl.h"
 
-/* returns floor(log(abs(d))/log(2)) */
+/* returns floor(log2(d)) */
 long
 __gmpfr_floor_log2 (double d)
 {
@@ -34,13 +34,8 @@ __gmpfr_floor_log2 (double d)
   long exp;
   double m;
 
-  /* Get Abs */
-  if (d < 0.0)
-    d = -d;
-
-  if (d == 0.0)
-    return -1023;
-  else if (d >= 1.0)
+  MPFR_ASSERTD (d >= 0);
+  if (d >= 1.0)
     {
       exp = -1;
       for( m= 1.0 ; m <= d ; m *=2.0 )

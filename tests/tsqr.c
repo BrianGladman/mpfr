@@ -89,5 +89,37 @@ void check_random(mpfr_prec_t p)
 
 void check_special(void)
 {
+  mpfr_t x, y;
+  mp_exp_t emin;
 
+  mpfr_init (x);
+  mpfr_init (y);
+
+  mpfr_set_nan (x);
+  mpfr_sqr (y, x, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_nan_p (y));
+  
+  mpfr_set_inf (x, 1);
+  mpfr_sqr (y, x, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_inf_p (y) && mpfr_sgn (y) > 0);
+
+  mpfr_set_inf (x, -1);
+  mpfr_sqr (y, x, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_inf_p (y) && mpfr_sgn (y) > 0);
+
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_sqr (y, x, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_zero_p (y));
+
+  emin = mpfr_get_emin ();
+  mpfr_set_emin (0);
+  mpfr_set_ui (x, 1, GMP_RNDN);
+  mpfr_div_2ui (x, x, 1, GMP_RNDN);
+  MPFR_ASSERTN (!mpfr_zero_p (x));
+  mpfr_sqr (y, x, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_zero_p (y));
+  mpfr_set_emin (emin);
+
+  mpfr_clear (y);
+  mpfr_clear (x);
 }

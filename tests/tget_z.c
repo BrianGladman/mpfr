@@ -25,6 +25,26 @@ MA 02111-1307, USA. */
 #include "mpfr-test.h"
 
 static void
+check_diff (void)
+{
+  mpfr_t x;
+  mpz_t  z;
+
+  mpz_init   (z);
+  mpfr_init2 (x, 2);
+
+  mpfr_set_ui (x, 2047, GMP_RNDU);
+  mpz_set_fr (z, x, GMP_RNDN);
+  if (mpz_cmp_ui (z, 2048) != 0)
+    {
+      printf ("get_z RU 2048 failed\n");
+      exit (1);
+    }
+  mpfr_clear (x);
+  mpz_clear  (z);
+}
+
+static void
 check_one (mpz_ptr z)
 {
   int    sh, neg;
@@ -97,6 +117,7 @@ main (void)
   tests_start_mpfr ();
 
   check ();
+  check_diff ();
 
   tests_end_mpfr ();
   return 0;

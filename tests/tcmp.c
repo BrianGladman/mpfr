@@ -41,7 +41,7 @@ main (void)
   mpfr_set_prec (yy, 2);
   mpfr_set_str_binary(xx, "-0.10E0");
   mpfr_set_str_binary(yy, "-0.10E0");
-  if (mpfr_cmp (xx, yy))
+  if ((mpfr_cmp) (xx, yy))
     {
       printf ("mpfr_cmp (xx, yy) returns non-zero for prec=2\n");
       exit (1);

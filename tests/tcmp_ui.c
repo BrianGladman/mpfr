@@ -38,7 +38,7 @@ main (void)
 
   /* tests for cmp_ui */
   mpfr_set_ui (x, 3, GMP_RNDZ);
-  if (mpfr_cmp_ui (x, i = 3) != 0)
+  if ((mpfr_cmp_ui) (x, i = 3) != 0)
     {
       printf ("Error in mpfr_cmp_ui(3.0, 3)\n");
       exit (1);
@@ -58,6 +58,12 @@ main (void)
   if (mpfr_cmp_ui (x, i = 0))
     {
       printf ("Error in mpfr_cmp_ui(0.0,0)\n");
+      exit (1);
+    }
+  mpfr_set_ui (x, 1, GMP_RNDZ);
+  if (mpfr_cmp_ui (x, i = 0) == 0)
+    {
+      printf ("Error in mpfr_cmp_ui(1.0,0)\n");
       exit (1);
     }
 

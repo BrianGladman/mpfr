@@ -33,21 +33,21 @@ check_special(void)
 
   mpfr_init(x);
   MPFR_SET_ZERO(x);
-  if (mpfr_sgn(x) != 0)
+  if ((mpfr_sgn) (x) != 0)
     {
       printf("Sgn error for 0.\n");
       ret = 1;
     }
   MPFR_SET_INF(x);
   MPFR_SET_POS(x);
-  if (mpfr_sgn(x) != 1)
+  if ((mpfr_sgn) (x) != 1)
     {
       printf("Sgn error for +Inf.\n");
       ret = 1;
     }
   MPFR_SET_INF(x);
   MPFR_SET_NEG(x);
-  if (mpfr_sgn(x) != -1)
+  if ((mpfr_sgn) (x) != -1)
     {
       printf("Sgn error for -Inf.\n");
       ret = 1;

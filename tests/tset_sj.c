@@ -96,6 +96,9 @@ check_set_uj (mp_prec_t pmin, mp_prec_t pmax, int N)
   if (inex1 != 0 || !mpfr_powerof2_raw (x)
       || MPFR_EXP (x) != (sizeof(uintmax_t)*CHAR_BIT+1) )
     ERROR ("power of 2");
+  mpfr_set_uj (x, 0, GMP_RNDN);
+  if (!MPFR_IS_ZERO (x))
+    ERROR ("Setting 0");
 
   mpfr_clears (x, y, NULL);
 }

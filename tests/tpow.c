@@ -75,6 +75,15 @@ check_pow_ui (void)
       exit (1);
     }
 
+  mpfr_set_str_binary (a, "1E-10");
+  res = mpfr_pow_ui (a, a, -mpfr_get_emin (), GMP_RNDZ);
+  if (!MPFR_IS_ZERO (a))
+    {
+      printf ("Error for (1e-10)^MPFR_EMAX_MAX\n");
+      mpfr_dump (a);
+      exit (1);
+    }
+
   /* Check overflow */
   mpfr_set_str_binary (a, "1E10");
   res = mpfr_pow_ui (a, a, ULONG_MAX, GMP_RNDN);
