@@ -5,6 +5,7 @@
 \author{The MPFR team}
 \date{\tt www.mpfr.org}
 \def\O{{\mathcal O}}
+\def\q{\hspace*{5mm}}
 \begin{document}
 \maketitle
 
@@ -65,25 +66,22 @@ exponent of $c$ is smaller than that of $b$.
 Euler's constant is computed using the formula $\gamma = S(n) - R(n) - \log n$
 where:
 \[ S(n) = \sum_{k=1}^{\infty} \frac{n^k (-1)^{k-1}}{k! k}, \quad
-   R(n) = \int_n^{\infty} \frac{\exp(-u)}{u} du = \frac{\exp(-n)}{n}
+   R(n) = \int_n^{\infty} \frac{\exp(-u)}{u} du \sim \frac{\exp(-n)}{n}
 	\sum_{k=0}^{\infty} \frac{k!}{(-n)^k}. \]
-This identity is attributed to Sweeney by Brent \cite{Brent78}.\footnote{
-Brent only states that both expression for $R(n)$ are equivalent, but
-they are in fact equal.}
+This identity is attributed to Sweeney by Brent \cite{Brent78}.
 We have $S(n) = _2 F_2(1,1;2,2;-n)$ and $R(n) = {\rm Ei}(1, n)$.
 
 \paragraph{Evaluation of $S(n)$.}
 As in \cite{Brent78}, let $\alpha \sim 4.319136566$ the positive root
-of $\alpha + 2 = \alpha \log \alpha$, and $N = \lfloor \alpha n \rfloor$.
+of $\alpha + 2 = \alpha \log \alpha$, and $N = \lceil \alpha n \rceil$.
 We approximate $S(n)$ by
-\[ S'(n) = \sum_{k=1}^{N} \frac{n^k (-1)^{k-1}}{k! k}
-         = \frac{1}{N!} \sum_{k=1}^N \frac{a_k}{k}, \]
-where $a_k = n^k (-1)^{k-1} N!/k!$ is an integer.
-Therefore $a_k$ is exactly computed, and when dividing it by $k$
-(integer division)
-the error is at most $1$, and thus the absolute error on $S'(n)$ is
-at most $N/N! = 1/(N-1)!$.
-
+\[ S'(n) = \sum_{k=1}^{N} \frac{n^k (-1)^{k-1}}{k! k}. \]
+%         = \frac{1}{N!} \sum_{k=1}^N \frac{a_k}{k}, 
+% where $a_k = n^k (-1)^{k-1} N!/k!$ is an integer.
+% Therefore $a_k$ is exactly computed, and when dividing it by $k$
+% (integer division)
+% the error is at most $1$, and thus the absolute error on $S'(n)$ is
+% at most $N/N! = 1/(N-1)!$.
 The remainder term $S(n) - S'(n)$ is bounded by:
 \[ |S(n) - S'(n)| \le \sum_{k=N+1}^{\infty} \frac{n^k}{k!}. \]
 Since $k! \ge (k/e)^k$, and $k \ge N+1 \ge \alpha n$, we have:
@@ -93,23 +91,108 @@ Since $k! \ge (k/e)^k$, and $k \ge N+1 \ge \alpha n$, we have:
                   \le 2 e^{-2n} \]
 since $(e/\alpha)^{\alpha} = e^{-2}$.
 
+To approximate $S'(n)$, we use the following algorithm, where $m$ is the
+working precision, and $a, s, t$ are integer variables:
+\begin{quote}
+$a \leftarrow 2^m$ \\
+$s \leftarrow 0$ \\
+{\bf for} $k$ {\bf from} $1$ {\bf to} $N$ {\bf do} \\
+\q $a \leftarrow \lfloor \frac{n a}{k} \rfloor$ \\
+\q $t \leftarrow \lfloor \frac{a}{k} \rfloor$ \\
+\q $s \leftarrow s + (-1)^{k-1} t$ \\
+return $x = s/2^m$
+\end{quote}
+The absolute error $\epsilon_k$ on $a$ at step $k$ satisfies
+$\epsilon_k \le 1 + n/k \epsilon_{k-1}$ with $\epsilon_0=0$.
+The maximum error is $\epsilon_n \le \frac{n^n}{n!} \le e^n$.
+Thus the error on $t$ at step $k$ is less than $1 + e^n/k$,
+and the total error on $s$ is bounded by $N (e^n + 1)$.
+Hence to get a precision of $n$ bits, we need to use
+$m ge n (1 + \frac{1}{\log 2})$.
+In such a case, the value $s/2^m$ converted to a floating-point number
+will have an error of at most ${\rm ulp}(x)$.
+
 \paragraph{Evaluation of $R(n)$.}
 We estimate $R(n)$ using the terms up to $k=n-2$, again 
 as in \cite{Brent78}:
-\[ R'(n) = \frac{\exp(-n)}{n} \sum_{k=0}^{n-2} \frac{k!}{(-n)^k}
-         = \frac{\exp(-n)}{n^{n-1}} \sum_{k=0}^{n-2} (-1)^k \frac{k!}
-	n^{n-2-k}. \]
-Here again, the integer sum is computed exactly, converting it to a 
-floating-point number introduces at most one ulp of error,
-$\exp(-n)$ is computed within one ulp,
-and $n^{n-1}$ within at most $n-2$ ulps.
-The division by $n^{n-1}$ and the multiplication introduce one more ulp of
-error, thus the total error on $R'(n)$ is at most $n+2$ ulps.
+\[ R'(n) = \frac{e^{-n}}{n} \sum_{k=0}^{n-2} \frac{k!}{(-n)^k}. \]
+% = \frac{\exp(-n)}{n^{n-1}} \sum_{k=0}^{n-2} (-1)^k \frac{k!} {n^{n-2-k}}.
+% Here again, the integer sum is computed exactly, converting it to a 
+% floating-point number introduces at most one ulp of error,
+% $\exp(-n)$ is computed within one ulp,
+% and $n^{n-1}$ within at most $n-2$ ulps.
+% The division by $n^{n-1}$ and the multiplication introduce one more ulp of
+% error, thus the total error on $R'(n)$ is at most $n+2$ ulps.
+Let us introduce $I_k = \int_n^{\infty} \frac{e^{-u}}{u^k} du$.
+We have $R(n) = I_1$ and the recurrence $I_k = \frac{e^{-n}}{n^k} - k I_{k+1}$,
+which gives
+\[ R(n) = \frac{e^{-n}}{n} \sum_{k=0}^{n-2} \frac{k!}{(-n)^k}
+	+ (-1)^{n-1} (n-1)! I_n. \]
+Bounding $n!$ by $(n/e)^n \sqrt{2 \pi (n+1)}$ which holds\footnote{
+Formula 6.1.38 from \cite{AbSt73} gives
+$x! = \sqrt{2\pi} x^{x+1/2} e^{-x+\frac{\theta}{12x}}$ for $x>0$ and
+$0 < \theta < 1$.
+Using it for $x \ge 1$, we have $0 < \frac{\theta}{6x} < 1$, and
+$e^t < 1+2t$ for $0 < t < 1$, thus 
+$(x!)^2 \le 2\pi x^{2x} e^{-2x} (x+\frac{1}{3})$.}
+for $n \ge 1$, we have:
+\[ |R(n) - R'(n)| = (n-1)! I_n 
+	\le \frac{n!}{n} \int_n^{\infty} \frac{e^{-n}}{u^n} du
+	\le \frac{n^{n-1}}{e^n} \sqrt{2 \pi (n+1)} \frac{e^{-n}}{(n-1) 
+	n^{n-1}} \]
+and since $\sqrt{2 \pi (n+1)}/(n-1) \le 1$ for $n \ge 9$:
+\[ |R(n) - R'(n)| \le e^{-2n} \quad \mbox{for $n \ge 9$}. \]
+Thus we have:
+\[ |\gamma - S'(n) - R'(n) - \log n| \le 3 e^{-2n} \quad \mbox{for $n\ge 9$}.\]
+% If the working precision is $p$, then choose $n \ge \frac{\log 2}{2} (p+2)$
+% such that $3 e^{-2n}$ represents at most one ulp.
 
-The remainder term is
-\[ |R(n) - R'(n)| = \frac{\exp(-n)}{n} 
-	\sum_{k=n-1}^{\infty} \frac{k!}{(-n)^k}. \]
-{\bf Problem: the series for $R(n)$ diverges!}
+To approximate $R'(n)$, we use the following:
+\begin{quote}
+$m \leftarrow {\rm prec}(x) - \lfloor \frac{n}{\log 2} \rfloor$ \\
+$a \leftarrow 2^m$ \\
+$s \leftarrow 1$ \\
+{\bf for} $k$ {\bf from} $1$ {\bf to} $n$ {\bf do} \\
+\q $a \leftarrow \lfloor \frac{k a}{n} \rfloor$ \\
+\q $s \leftarrow s + (-1)^{k} a$ \\
+$t \leftarrow \lfloor s/n \rfloor$ \\
+$x \leftarrow t/2^m$ \\
+return $r = e^{-n} x$
+\end{quote}
+The absolute error $\epsilon_k$ on $a$ at step $k$ satisfies
+$\epsilon_k \le 1 + k/n \epsilon_{k-1}$ with $\epsilon_0=0$.
+As $k/n \le 1$, we have $\epsilon_k \le k$, whence the error
+on $s$ is bounded by $n(n+1)/2$, and that on $t$ by 
+$1 + (n+1)/2 \le n+1$ since $n \ge 1$.
+The operation $x \leftarrow t/2^m$ is exact as soon as ${\rm prec}(x)$ is large
+enough, thus the error on $x$ is at most $(n+1) \frac{e^n}{2^{{\rm prec}(x)}}$.
+If $e^{-n}$ is computed with $m$ bits, then
+the error on it is at most $e^{-n} 2^{1-m}$.
+The error on $r$ is then $(n + 1 + 2/n) 2^{-{\rm prec}(x)} +
+{\rm ulp}(r)$.
+Since $x \ge \frac{2}{3} n$ for $n \ge 2$, and $x 2^{-{\rm prec}(x)}
+< {\rm ulp}(x)$, this gives an error bounded by 
+${\rm ulp}(r) + (n + 1 + 2/n) \frac{3}{2n} {\rm ulp}(r)
+\le 4 {\rm ulp}(r)$ for $n \ge 2$ --- if ${\rm prec}(x) = {\rm prec}(r)$.
+Now since $r \le \frac{e^{-n}}{n} \le \frac{1}{8}$, that error
+is less than ${\rm ulp}(1/2)$.
+
+\paragraph{Final computation.} We use the formula
+$\gamma = S(n) - R(n) - \log n$ with $n$ such that $e^{-2n} \le 
+{\rm ulp}(1/2) = 2^{-{\rm prec}}$, i.e.~$n \ge {\rm prec} \frac{\log 2}{2}$:
+\begin{quote}
+$s \leftarrow S'(n)$ \\
+$l \leftarrow \log(n)$ \\
+$r \leftarrow R'(n)$ \\
+return $(s - l) - r$
+\end{quote}
+Since the final result is in $[\frac{1}{2}, 1]$, and $R'(n) \le 
+\frac{e^{-n}}{n}$, then $S'(n)$ approximates $\log n$.
+If we use $m + \lceil \log_2({\rm prec}) \rceil$ bits to evaluate $s$ and $l$,
+then the error on $s-l$ will be at most $3 {\rm ulp}(1/2)$,
+so the error on $(s - l) - r$ is at most $5 {\rm ulp}(1/2)$,
+and adding the $3 e^{-2n}$ truncation error, we get a bound of
+$8 {\rm ulp}(1/2)$.
 
 \section{High level functions}
 
@@ -142,8 +225,73 @@ and the optimal $k$ is now about $n^{1/3}$,
 giving a total complexity of $\O(n^{1/3} M(n))$.
 This is implemented in the function {\tt mpfr\_exp2\_aux2}.
 
+\subsection{The error function}
+
+The error function admits the following expansion at zero:
+% \cite[formula 7.1.5]{AbSt73}:
+% \[ {\rm erf} \, z = \frac{2}{\sqrt{\pi}} \sum_{k=0}^{\infty} \frac{(-1)^k}
+%	{k! (2k+1)} z^{2k+1}, \]
+\cite[formula 7.1.6]{AbSt73}:
+\[ {\rm erf} \, z = \frac{2}{\sqrt{\pi}} e^{-z^2}
+	\sum_{k=0}^{\infty} \frac{2^k}{1 \cdot 3 \cdots (2k+1)} z^{2k+1}, \]
+and the following asymptotic expansion for ${\rm erfc} z = 1 - {\rm erf} z$
+\cite[formula 7.1.23]{AbSt73}:
+\[ \sqrt{\pi} z e^{z^2} {\rm erfc} \, z \sim 1 +
+	\sum_{k=1}^{\infty} (-1)^k \frac{1 \cdot 3 \cdots (2k-1)}{(2z^2)^k}. \]
+The former formula requires $m \sim n \frac{\log 2}{\log(m/(ez^2))}$ terms
+% same number of terms for 7.1.5 and 7.1.6
+to get $n$ correct bits, and the latter requires
+$m \sim n \frac{\log 2}{\log(ez^2/m)}$ terms.
+Thus, we use the expansion at $z=0$ for $n \ge e z^2$, and the asymptotic
+expansion for $n < e z^2$.
+
+\medskip
+
+If we use the series at $z=0$, the maximum term is obtained for
+$k \sim z^2$, and is of the order of $e^{z^2}$; this means
+we need $z^2/(\log 2)$ additional bits. As $z^2 \le n/e$ in that case,
+this is bounded by $n/(e \log 2) \sim 0.531 n$.
+
+
+The series at $z=0$ is implemented as follows, 
+$m$ representing the working precision,
+$x, y, s, t, u$ being integer variables, and $p, r$ floating-point
+variables:
+\newpage
+\begin{quote}
+\verb|erf_0|$(z, n)$, assumes $z^2 \le n/e$ \\
+$m \leftarrow n + z^2/(\log 2)$ \\
+$x \leftarrow \lceil {\rm msb}(z, m) \rceil$ \\
+$y \leftarrow \lceil {\rm msb}(x^2,m) \rceil$ such that $y \sim z^2 2^{e_y}$ \\
+$s \leftarrow 2^n, t \leftarrow 2^n$ \\
+{\bf for} $k$ {\bf from} $1$ {\bf do} \\
+\q $t \leftarrow \lceil y t/k \rceil$ \\
+\q $t \leftarrow \lceil t/2^{e_y} \rceil$ \\
+\q $u \leftarrow \lceil t/(2k+1) \rceil$ \\
+\q $s \leftarrow {\mathcal N}(s + (-1)^k u)$ \\
+\q {\bf if} $u \le 1$ {\bf then} break \\
+$r \leftarrow 2 \lceil z s/2^n \rceil$ \\
+$p \leftarrow \pi, p \leftarrow \sqrt{p}$ \\
+return $r/p$
+\end{quote}
+The variable $u$ contains the current term $\frac{z^{2k}}{k! (2k+1)}$,
+scaled by $2^m$. Suppose $u \le 1$ for index $k_0$:
+as $u \ge 2$ for index $k_0-1$, and the 
+ratio between two consecutive terms decreases, then $u \le 1/2$ for index 
+$k_0+1$ and the alternating series $\sum_{k_0+1}^{\infty} \frac{(-1)^k
+z^{2j}}{k! (2k+1)}$
+is bounded by its first term, i.e.~$2^{-m-1}$ after rescaling.
+
+Now the relative error on $x$ is at most $2^{1-n}$,
+that on $y$ is at most $2x/2^m + 1$,
+that on $s$ and $t$ is zero initially.
+Let $\varepsilon_k$ and $\tau_k$ the errors on $y$ and $t$
+at the beginning of loop $k$,
+then that for $t$ after $t \leftarrow \lceil y t/2^m \rceil$
+is at most $(\varepsilon_k t + \tau_k y)/2^m + 1$.
+
 
 \bibliographystyle{acm}
-\bibliography{algo}
+\bibliography{algorithms}
 
 \end{document}
