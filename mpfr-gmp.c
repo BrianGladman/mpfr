@@ -330,9 +330,11 @@ mpfr_init_gmp_rand ()
 }
 
 #ifdef mp_get_memory_functions
-void * (*mpfr_allocate_func)  (size_t) = mpfr_default_allocate;
-void * (*mpfr_reallocate_func)(void*,size_t,size_t) = mpfr_default_reallocate;
-void   (*mpfr_free_func)      (void*,size_t) = mpfr_default_free; 
+
+void * (*mpfr_allocate_func) (size_t);
+void * (*mpfr_reallocate_func) (void *,size_t, size_t);
+void   (*mpfr_free_func) (void *, size_t);
+
 #endif
 
 void *
@@ -368,23 +370,6 @@ void
 mpfr_default_free (void *blk_ptr, size_t blk_size)
 {
   free (blk_ptr);
-}
-
-void
-mpfr_set_memory_functions (void *(*alloc_func) (size_t),
-                           void *(*realloc_func) (void *, size_t, size_t),
-                           void (*free_func) (void *, size_t))
-{
-  if (alloc_func == ((void*(*)(size_t)) 0))
-    alloc_func = mpfr_default_allocate;
-  if (realloc_func == ((void*(*)(void*,size_t,size_t))0))
-    realloc_func = mpfr_default_reallocate;
-  if (free_func == ((void(*)(void*,size_t))0))
-    free_func = mpfr_default_free;
-
-  __gmp_allocate_func = alloc_func;
-  __gmp_reallocate_func = realloc_func;
-  __gmp_free_func = free_func;
 }
 
 #endif /* Have gmp-impl.h */
