@@ -30,6 +30,12 @@ typedef unsigned long int       mp_size_unsigned_t;
 
 #define MP_LIMB_T_ONE ((mp_limb_t) 1)
 
+#if (BITS_PER_MP_LIMB & (BITS_PER_MP_LIMB - 1))
+#error "BITS_PER_MP_LIMB must be a power of 2"
+#endif
+
+#define MPFR_INTPREC_MAX (ULONG_MAX & ~(unsigned long) (BITS_PER_MP_LIMB - 1))
+
 /* Assertions */
 
 /* Compile with -DWANT_ASSERT to check all assert statements */

@@ -58,8 +58,10 @@ MA 02111-1307, USA. */
 
 typedef unsigned long int mp_prec_t; /* easy to change if necessary */
 #define MPFR_PREC_MIN 2
-#define MPFR_PREC_MAX ULONG_MAX
-typedef int mp_rnd_t;                /* preferred to char */
+#define MPFR_PREC_MAX (ULONG_MAX >> 1)
+/* Limit mainly due to the multiplication code. */
+
+typedef int mp_rnd_t;
 
 typedef struct {  
   mp_prec_t _mpfr_prec; /* WARNING : for the mpfr type, the precision */

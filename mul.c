@@ -136,12 +136,13 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   bn = (bq-1)/BITS_PER_MP_LIMB + 1; /* number of significant limbs of b */
   cn = (cq-1)/BITS_PER_MP_LIMB + 1; /* number of significant limbs of c */
 
-  MPFR_ASSERTN(bq + cq >= bq); /* no integer overflow */
-  tn = (bq + cq - 1) / BITS_PER_MP_LIMB + 1;
-
   MPFR_ASSERTN((mp_size_unsigned_t) bn + cn <= MP_SIZE_T_MAX);
-  k = bn + cn; /* effective nb of limbs used by b*c (=tn or tn+1) */
+  k = bn + cn; /* effective nb of limbs used by b*c (= tn or tn+1) below */
 
+  MPFR_ASSERTN(bq + cq >= bq); /* no integer overflow */
+  tn = (bq + cq - 1) / BITS_PER_MP_LIMB + 1; /* <= k, thus no int overflow */
+
+  MPFR_ASSERTN(k <= ((size_t) -1) / BYTES_PER_MP_LIMB);
   TMP_MARK(marker); 
   tmp = (mp_limb_t *) TMP_ALLOC((size_t) k * BYTES_PER_MP_LIMB);
 

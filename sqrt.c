@@ -34,6 +34,7 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
   mp_size_t rsize;
   mp_size_t err;
   mp_limb_t q_limb;
+  int odd_exp_u;
   long rw, nw, k; 
   int inexact = 0, t;
   unsigned long cc = 0; 
@@ -81,29 +82,32 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
         MPFR_RET(0); /* zero is exact */
       }
 
-  up = MPFR_MANT(u);
-  usize = (MPFR_PREC(u) - 1)/BITS_PER_MP_LIMB + 1; 
+    up = MPFR_MANT(u);
+    usize = (MPFR_PREC(u) - 1)/BITS_PER_MP_LIMB + 1;
 
 #ifdef DEBUG
-      printf("Entering square root : "); 
-      for(k = usize - 1; k >= 0; k--) { printf("%lu ", up[k]); }
-      printf(".\n"); 
+    printf("Entering square root : ");
+    for(k = usize - 1; k >= 0; k--) { printf("%lu ", up[k]); }
+    printf(".\n");
 #endif
 
-  /* Compare the mantissas */
-  
-  rsize = ((MPFR_PREC(r) + 2 + (MPFR_EXP(u) & 1))/BITS_PER_MP_LIMB + 1) << 1; 
-  rrsize = (MPFR_PREC(r) + 2 + (MPFR_EXP(u) & 1))/BITS_PER_MP_LIMB + 1;
-  /* One extra bit is needed in order to get the square root with enough
-     precision ; take one extra bit for rrsize in order to solve more 
-     easily the problem of rounding to nearest.
-     Need to have 2*rrsize = rsize...
-     Take one extra bit if the exponent of u is odd since we shall have
-     to shift then.
-  */
+    /* Compare the mantissas */
+
+    odd_exp_u = (unsigned int) MPFR_EXP(u) & 1;
+    MPFR_ASSERTN(MPFR_PREC(r) <= MPFR_INTPREC_MAX - 3);
+    rrsize = (MPFR_PREC(r) + 2 + odd_exp_u) / BITS_PER_MP_LIMB + 1;
+    MPFR_ASSERTN(rrsize <= MP_SIZE_T_MAX/2);
+    rsize = rrsize << 1;
+    /* One extra bit is needed in order to get the square root with enough
+       precision ; take one extra bit for rrsize in order to solve more
+       easily the problem of rounding to nearest.
+       Need to have 2*rrsize = rsize...
+       Take one extra bit if the exponent of u is odd since we shall have
+       to shift then.
+    */
 
   TMP_MARK(marker0); 
-  if (MPFR_EXP(u) & 1) /* Shift u one bit to the right */
+  if (odd_exp_u) /* Shift u one bit to the right */
     {
       if (MPFR_PREC(u) & (BITS_PER_MP_LIMB - 1))
 	{
@@ -120,8 +124,10 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
 	}
     }
 
-  MPFR_EXP(r) = ((MPFR_EXP(u) + (MPFR_EXP(u) & 1)) / 2) ;  
-  
+  MPFR_EXP(r) = MPFR_EXP(u) != MPFR_EMAX_MAX
+    ? (MPFR_EXP(u) + odd_exp_u) / 2
+    : (MPFR_EMAX_MAX - 1) / 2 + 1;
+
   do
     {
       TMP_MARK (marker);
