@@ -319,6 +319,10 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
         mpfr_mul (te, y, ti, GMP_RNDU);       /* y*ln(n) */
         mpfr_exp (t, te, GMP_RNDN);         /* exp(x*ln(n))*/
 
+        MPFR_ASSERTN(MPFR_IS_FP(te));
+        MPFR_ASSERTN(MPFR_NOTZERO(te));
+        /* otherwise MPFR_EXP(te) below doesn't exist */
+
 	/* estimate of the error -- see pow function in algorithms.ps */
         err = Nt - (MPFR_EXP(te) + 3);
 
