@@ -23,7 +23,7 @@ MA 02111-1307, USA. */
 
 #include "mpfr-impl.h"
 
-static void
+void
 mpfr_nexttozero (mpfr_ptr x)
 {
   if (MPFR_UNLIKELY(MPFR_IS_INF(x)))
@@ -64,7 +64,7 @@ mpfr_nexttozero (mpfr_ptr x)
     }
 }
 
-static void
+void
 mpfr_nexttoinf (mpfr_ptr x)
 {
   if (MPFR_UNLIKELY(MPFR_IS_INF(x)))

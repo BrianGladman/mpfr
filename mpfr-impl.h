@@ -1207,6 +1207,9 @@ void mpfr_count_sort _MPFR_PROTO ((mpfr_ptr const tab[], unsigned long n,
 
 int mpfr_get_cputime _MPFR_PROTO ((void));
 
+void mpfr_nexttozero _MPFR_PROTO ((mpfr_ptr));
+void mpfr_nexttoinf _MPFR_PROTO ((mpfr_ptr));
+
 #if defined (__cplusplus)
 }
 #endif

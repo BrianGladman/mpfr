@@ -136,11 +136,8 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   for (loop = 1 ;; loop++)
     {
-      mpfr_cos (c, x, GMP_RNDZ);
-      if (MPFR_IS_POS (c))
-	mpfr_nextabove (c);
-      else
-	mpfr_nextbelow (c);
+      mpfr_cos (c, x, GMP_RNDZ); /* can't be exact */
+      mpfr_nexttoinf (c);
       /* now c = cos(x) rounded away */
       mpfr_mul (c, c, c, GMP_RNDU); /* away */
       mpfr_ui_sub (c, 1, c, GMP_RNDZ);
