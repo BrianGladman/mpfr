@@ -1,6 +1,6 @@
 /* mpfr_exp2 -- power of 2 function 2^y 
 
-Copyright 2001, 2002 Free Software Foundation.
+Copyright 2001, 2002, 2003 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -19,6 +19,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+#include <limits.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -64,6 +65,7 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
     /* since the smallest representable non-zero float is 1/2*2^__gmpfr_emin,
        if x < __gmpfr_emin - 1, the result is either 1/2*2^__gmpfr_emin or 0 */
+    MPFR_ASSERTN(MPFR_EMIN_MIN - 1 >= LONG_MIN);
     if (mpfr_cmp_si_2exp (x, __gmpfr_emin - 1, 0) < 0)
       return mpfr_set_underflow (y, rnd_mode, 1);
 
@@ -71,6 +73,7 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       {
         double xd;
 
+        MPFR_ASSERTN(MPFR_EMAX_MAX <= LONG_MAX);
         if (mpfr_cmp_si_2exp (x, __gmpfr_emax, 0) > 0)
           return mpfr_set_overflow (y, rnd_mode, 1);
 
