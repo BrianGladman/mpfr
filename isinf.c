@@ -22,7 +22,7 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
 int
-mpfr_inf_p (mpfr_srcptr x)
+(mpfr_inf_p) (mpfr_srcptr x)
 {
-  return !MPFR_IS_NAN(x) && MPFR_IS_INF(x);
+  return MPFR_IS_INF(x);
 }

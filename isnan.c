@@ -19,11 +19,10 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-
 #include "mpfr-impl.h"
 
 int
-mpfr_nan_p (mpfr_srcptr x)
+(mpfr_nan_p) (mpfr_srcptr x)
 {
   return MPFR_IS_NAN (x);
 }

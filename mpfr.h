@@ -213,10 +213,10 @@ int mpfr_copysign _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr,
 int mpfr_neg _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t));
 
 #ifdef _MPFR_H_HAVE_INTMAX_T
-#define mpfr_set_sj mpfr_set_sj_internal
-#define mpfr_set_sj_2exp mpfr_set_sj_2exp_internal
-#define mpfr_set_uj mpfr_set_uj_internal
-#define mpfr_set_uj_2exp mpfr_set_uj_2exp_internal
+#define mpfr_set_sj __gmpfr_set_sj
+#define mpfr_set_sj_2exp __gmpfr_set_sj_2exp
+#define mpfr_set_uj __gmpfr_set_uj
+#define mpfr_set_uj_2exp __gmpfr_set_uj_2exp
 int mpfr_set_sj _MPFR_PROTO ((mpfr_t, intmax_t, mpfr_rnd_t));
 int mpfr_set_sj_2exp _MPFR_PROTO ((mpfr_t, intmax_t, intmax_t, mpfr_rnd_t));
 int mpfr_set_uj _MPFR_PROTO ((mpfr_t, uintmax_t, mpfr_rnd_t));
@@ -232,7 +232,7 @@ long mpfr_get_si _MPFR_PROTO ((mpfr_srcptr, mpfr_rnd_t));
 unsigned long mpfr_get_ui _MPFR_PROTO ((mpfr_srcptr, mpfr_rnd_t));
 char* mpfr_get_str _MPFR_PROTO ((char *, mp_exp_t *, int, size_t, mpfr_srcptr,
 				   mpfr_rnd_t));
-void mpz_set_fr _MPFR_PROTO ((mpz_ptr z, mpfr_srcptr f, mp_rnd_t rnd));
+void mpz_set_fr _MPFR_PROTO ((mpz_ptr z, mpfr_srcptr f, mpfr_rnd_t rnd));
 
 void mpfr_free_str _MPFR_PROTO ((char *str));
 
@@ -248,8 +248,8 @@ int mpfr_add_one_ulp _MPFR_PROTO ((mpfr_ptr, mpfr_rnd_t));
 int mpfr_sub_one_ulp _MPFR_PROTO((mpfr_ptr, mpfr_rnd_t));
 
 #ifdef _MPFR_H_HAVE_FILE
-#define mpfr_inp_str mpfr_inp_str_internal
-#define mpfr_out_str mpfr_out_str_internal
+#define mpfr_inp_str __gmpfr_inp_str
+#define mpfr_out_str __gmpfr_out_str
 size_t mpfr_inp_str _MPFR_PROTO ((mpfr_ptr, FILE *, int, mpfr_rnd_t));
 size_t mpfr_out_str _MPFR_PROTO ((FILE *, int, size_t, mpfr_srcptr, mpfr_rnd_t));
 #endif
@@ -348,6 +348,8 @@ int mpfr_nan_p _MPFR_PROTO((mpfr_srcptr));
 int mpfr_inf_p _MPFR_PROTO((mpfr_srcptr));
 int mpfr_number_p _MPFR_PROTO((mpfr_srcptr));
 int mpfr_integer_p _MPFR_PROTO ((mpfr_srcptr));
+int mpfr_zero_p _MPFR_PROTO ((mpfr_srcptr));
+  /*  int mpfr_one_p _MPFR_PROTO ((mpfr_srcptr x));*/
 
 int mpfr_greater_p _MPFR_PROTO ((mpfr_srcptr, mpfr_srcptr));
 int mpfr_greaterequal_p _MPFR_PROTO ((mpfr_srcptr, mpfr_srcptr));
@@ -420,6 +422,11 @@ int mpfr_sum _MPFR_PROTO ((mpfr_ptr ret, mpfr_ptr const tab[], unsigned long n,
 #define MPFR_DECL_INIT(_x, _p) \
   mp_limb_t __gmpfr_local_tab_##_x[((_p)-1)/GMP_NUMB_BITS+1]; \
   mpfr_t    _x = {{(_p),1,__MPFR_EXP_NAN,__gmpfr_local_tab_##_x}}
+
+#define mpfr_nan_p(_x)    ((_x)->_mpfr_exp == __MPFR_EXP_NAN)
+#define mpfr_inf_p(_x)    ((_x)->_mpfr_exp == __MPFR_EXP_INF)
+#define mpfr_zero_p(_x)   ((_x)->_mpfr_exp == __MPFR_EXP_ZERO)
+#define mpfr_sgn(_x)      (mpfr_zero_p(_x) ? 0 : MPFR_SIGN(_x))
 
 /* Compatibility with 2.0.1 
    'mpfr_round_prec' is used to detect 2.0.1 and 2.0.2 */

@@ -38,12 +38,6 @@ check_special(void)
       printf("Sgn error for 0.\n");
       ret = 1;
     }
-  MPFR_SET_NAN(x);
-  if (mpfr_sgn(x) != 0)
-    {
-      printf("Sgn error for NAN.\n");
-      ret = 1;
-    }
   MPFR_SET_INF(x);
   MPFR_SET_POS(x);
   if (mpfr_sgn(x) != 1)

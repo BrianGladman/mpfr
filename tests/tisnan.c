@@ -1,6 +1,6 @@
 /* Test file for mpfr_nan_p, mpfr_inf_p and mpfr_number_p.
 
-Copyright 2001, 2002, 2003 Free Software Foundation.
+Copyright 2001, 2002, 2003, 2004 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -36,7 +36,7 @@ main (void)
   /* check +infinity gives non-zero for mpfr_inf_p only */
   mpfr_set_ui (x, 1L, GMP_RNDZ);
   mpfr_div_ui (x, x, 0L, GMP_RNDZ);
-  if (mpfr_nan_p (x))
+  if (mpfr_nan_p (x) || (mpfr_nan_p) (x) )
     {
       printf ("Error: mpfr_nan_p(+Inf) gives non-zero\n");
       exit (1);
@@ -46,15 +46,20 @@ main (void)
       printf ("Error: mpfr_inf_p(+Inf) gives zero\n");
       exit (1);
     }
-  if (mpfr_number_p (x))
+  if (mpfr_number_p (x) || (mpfr_number_p) (x) )
     {
       printf ("Error: mpfr_number_p(+Inf) gives non-zero\n");
+      exit (1);
+    }
+  if (mpfr_zero_p (x) || (mpfr_zero_p) (x) )
+    {
+      printf ("Error: mpfr_zero_p(+Inf) gives non-zero\n");
       exit (1);
     }
 
   /* same for -Inf */
   mpfr_neg (x, x, GMP_RNDN);
-  if (mpfr_nan_p (x))
+  if (mpfr_nan_p (x) || (mpfr_nan_p(x)))
     {
       printf ("Error: mpfr_nan_p(-Inf) gives non-zero\n");
       exit (1);
@@ -64,9 +69,14 @@ main (void)
       printf ("Error: mpfr_inf_p(-Inf) gives zero\n");
       exit (1);
     }
-  if (mpfr_number_p (x))
+  if (mpfr_number_p (x) || (mpfr_number_p)(x) )
     {
       printf ("Error: mpfr_number_p(-Inf) gives non-zero\n");
+      exit (1);
+    }
+  if (mpfr_zero_p (x) || (mpfr_zero_p)(x) )
+    {
+      printf ("Error: mpfr_zero_p(-Inf) gives non-zero\n");
       exit (1);
     }
 
@@ -77,12 +87,17 @@ main (void)
       printf ("Error: mpfr_nan_p(NaN) gives zero\n");
       exit (1);
     }
-  if (mpfr_inf_p (x))
+  if (mpfr_inf_p (x) || (mpfr_inf_p)(x) )
     {
       printf ("Error: mpfr_inf_p(NaN) gives non-zero\n");
       exit (1);
     }
-  if (mpfr_number_p (x))
+  if (mpfr_number_p (x) || (mpfr_number_p) (x) )
+    {
+      printf ("Error: mpfr_number_p(NaN) gives non-zero\n");
+      exit (1);
+    }
+  if (mpfr_zero_p (x) || (mpfr_zero_p)(x) )
     {
       printf ("Error: mpfr_number_p(NaN) gives non-zero\n");
       exit (1);
@@ -90,12 +105,12 @@ main (void)
 
   /* same for an ordinary number */
   mpfr_set_ui (x, 1, GMP_RNDN);
-  if (mpfr_nan_p (x))
+  if (mpfr_nan_p (x) || (mpfr_nan_p)(x))
     {
       printf ("Error: mpfr_nan_p(1) gives non-zero\n");
       exit (1);
     }
-  if (mpfr_inf_p (x))
+  if (mpfr_inf_p (x) || (mpfr_inf_p)(x) )
     {
       printf ("Error: mpfr_inf_p(1) gives non-zero\n");
       exit (1);
@@ -103,6 +118,34 @@ main (void)
   if (mpfr_number_p (x) == 0)
     {
       printf ("Error: mpfr_number_p(1) gives zero\n");
+      exit (1);
+    }
+  if (mpfr_zero_p (x) || (mpfr_zero_p) (x) )
+    {
+      printf ("Error: mpfr_zero_p(1) gives non-zero\n");
+      exit (1);
+    }
+
+  /* Same for 0 */
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  if (mpfr_nan_p (x) || (mpfr_nan_p)(x))
+    {
+      printf ("Error: mpfr_nan_p(0) gives non-zero\n");
+      exit (1);
+    }
+  if (mpfr_inf_p (x) || (mpfr_inf_p)(x) )
+    {
+      printf ("Error: mpfr_inf_p(0) gives non-zero\n");
+      exit (1);
+    }
+  if (mpfr_number_p (x) == 0)
+    {
+      printf ("Error: mpfr_number_p(0) gives zero\n");
+      exit (1);
+    }
+  if (mpfr_zero_p (x) == 0 )
+    {
+      printf ("Error: mpfr_zero_p(0) gives zero\n");
       exit (1);
     }
 

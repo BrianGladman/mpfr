@@ -23,11 +23,7 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
 int
-mpfr_sgn (mpfr_srcptr a)
+(mpfr_sgn) (mpfr_srcptr a)
 {
-  if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(a) ))
-    /* Only infinite is signed */
-    return MPFR_IS_INF (a) ? MPFR_INT_SIGN (a) : 0;
-  else
-    return MPFR_INT_SIGN (a);
+  return MPFR_UNLIKELY ( MPFR_IS_ZERO (a) ) ? 0 : MPFR_INT_SIGN (a);
 }
