@@ -27,9 +27,7 @@ MA 02111-1307, USA. */
 #include "gmp.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
-#ifdef TEST
 #include "mpfr-test.h"
-#endif
 
 extern int isnan();
 extern int getpid();
@@ -43,11 +41,9 @@ void check2a _PROTO((double, int, double, int, int, int, char *));
 void check64 _PROTO((void)); 
 void check_same _PROTO((void)); 
 
-#define ABS(x) (((x)>0) ? (x) : (-x))
-
 /* checks that x+y gives the same results in double
    and with mpfr with 53 bits of precision */
-void check(double x, double y, unsigned int rnd_mode, unsigned int px, 
+void check (double x, double y, mp_rnd_t rnd_mode, unsigned int px, 
 unsigned int py, unsigned int pz, double z1)
 {
   double z2; mpfr_t xx,yy,zz; int cert=0;
@@ -73,13 +69,17 @@ unsigned int py, unsigned int pz, double z1)
   mpfr_clear(xx); mpfr_clear(yy); mpfr_clear(zz);
 }
 
-void checknan(double x, double y, unsigned int rnd_mode, unsigned int px, 
+void checknan (double x, double y, mp_rnd_t rnd_mode, unsigned int px, 
 unsigned int py, unsigned int pz)
 {
+<<<<<<< tadd.c
+  double z2; mpfr_t xx, yy, zz;
+=======
   double z2; mpfr_t xx,yy,zz; 
 #ifdef TEST
   int cert=0;
 #endif
+>>>>>>> 1.40
 
   mpfr_init2(xx, px);
   mpfr_init2(yy, py);
@@ -89,7 +89,6 @@ unsigned int py, unsigned int pz)
   mpfr_add(zz, xx, yy, rnd_mode);
 #ifdef TEST
   mpfr_set_machine_rnd_mode(rnd_mode);
-  if (px==53 && py==53 && pz==53) cert=1;
 #endif
   if (MPFR_IS_NAN(zz) == 0) { printf("Error, not an MPFR_NAN for xx = %1.20e, y = %1.20e\n", x, y); exit(1); }
   z2 = mpfr_get_d(zz);
@@ -100,7 +99,7 @@ unsigned int py, unsigned int pz)
 
 #ifdef TEST
 /* idem than check for mpfr_add(x, x, y) */
-void check3(double x, double y, unsigned int rnd_mode)
+void check3 (double x, double y, mp_rnd_t rnd_mode)
 {
   double z1,z2; mpfr_t xx,yy; int neg;
 
@@ -124,7 +123,7 @@ void check3(double x, double y, unsigned int rnd_mode)
 }
 
 /* idem than check for mpfr_add(x, y, x) */
-void check4(double x, double y, unsigned int rnd_mode)
+void check4 (double x, double y, mp_rnd_t rnd_mode)
 {
   double z1,z2; mpfr_t xx,yy; int neg;
 
@@ -148,7 +147,7 @@ void check4(double x, double y, unsigned int rnd_mode)
 }
 
 /* idem than check for mpfr_add(x, x, x) */
-void check5(double x, unsigned int rnd_mode)
+void check5 (double x, mp_rnd_t rnd_mode)
 {
   double z1,z2; mpfr_t xx; int neg;
 
@@ -168,7 +167,11 @@ void check5(double x, unsigned int rnd_mode)
   mpfr_clear(xx);
 }
 
+<<<<<<< tadd.c
+void check2 (double x, int px, double y, int py, int pz, mp_rnd_t rnd_mode)
+=======
 void check2(x,px,y,py,pz,rnd_mode) double x,y; int px,py,pz,rnd_mode;
+>>>>>>> 1.40
 {
   mpfr_t xx, yy, zz; double z,z2; int u;
 
@@ -191,8 +194,8 @@ void check2(x,px,y,py,pz,rnd_mode) double x,y; int px,py,pz,rnd_mode;
 }
 #endif
 
-void check2a(x,px,y,py,pz,rnd_mode,res)
-double x,y; int px,py,pz,rnd_mode; char *res;
+void check2a (double x, int px, double y, int py, int pz, mp_rnd_t rnd_mode,
+	      char *res)
 {
   mpfr_t xx, yy, zz;
 
@@ -212,7 +215,7 @@ double x,y; int px,py,pz,rnd_mode; char *res;
   mpfr_clear(xx); mpfr_clear(yy); mpfr_clear(zz);
 }
 
-void check64()
+void check64 ()
 {
   mpfr_t x, t, u;
 
@@ -319,11 +322,21 @@ void check64()
     printf("Error in mpfr_sub: result is not msb-normalized\n"); exit(1);
   }
 
+  /* checks that NaN flag is correctly reset */
+  mpfr_set_d (t, 1.0, GMP_RNDN);
+  mpfr_set_d (u, 1.0, GMP_RNDN);
+  MPFR_SET_NAN(x);
+  mpfr_add (x, t, u, GMP_RNDN);
+  if (mpfr_cmp_ui (x, 2)) {
+    fprintf (stderr, "Error in mpfr_add: 1+1 gives %e\n", mpfr_get_d (x));
+    exit (1);
+  }
+
   mpfr_clear(x); mpfr_clear(t); mpfr_clear(u);
 }
 
 /* checks when source and destination are equal */
-void check_same()
+void check_same ()
 {
   mpfr_t x;
 
@@ -490,8 +503,8 @@ int main(argc,argv) int argc; char *argv[];
   check53(-5.84204911040921732219e+240, 7.26658169050749590763e+240, GMP_RNDD,
 	  1.4245325800982785854e240);
   /* the following check double overflow */
-  /* check53(6.27557402141211962228e+307, 1.32141396570101687757e+308,
-     GMP_RNDZ, 1.79769313486231570815e+308); */
+  check53(6.27557402141211962228e+307, 1.32141396570101687757e+308,
+     GMP_RNDZ, 1.0/0.0);
   check53(1.00944884131046636376e+221, 2.33809162651471520268e+215, GMP_RNDN,
 	  1.0094511794020929787e221);
   check53(4.29232078932667367325e-278, 1.07735250473897938332e-281, GMP_RNDU,
@@ -523,7 +536,6 @@ int main(argc,argv) int argc; char *argv[];
 
   check53nan(1/0., -1/0., GMP_RNDN); 
   
-
 #ifdef TEST
   /* Comparing to double precision using machine arithmetic */
   for (i=0;i<N;i++) {
