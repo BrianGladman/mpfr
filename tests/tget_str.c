@@ -1,6 +1,6 @@
 /* Test file for mpfr_get_str.
 
-Copyright 1999, 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright 1999, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -441,6 +441,35 @@ check_special (int b, mp_prec_t p)
   mpfr_clear (x);
 }
 
+static void
+check_bug_base2k(void)
+{
+  /*
+   * -2.63b22b55697e800000000000@130
+   * +-0.1001100011101100100010101101010101011010010111111010000000000000000000000000+00000000000000000000001E522
+  */
+  mpfr_t xx,yy,zz;
+  char *s;
+  mp_exp_t e;
+
+  mpfr_init2(xx,107);
+  mpfr_init2(yy,79);
+  mpfr_init2(zz,99);
+
+  mpfr_set_str(xx, "-1.90e8c3e525d7c0000000000000@-18", 16, GMP_RNDN);
+  mpfr_set_str(yy, "-2.63b22b55697e8000000@130", 16, GMP_RNDN);
+  mpfr_add(zz, xx, yy, GMP_RNDD);
+  s = mpfr_get_str(NULL, &e, 16, 0, zz, GMP_RNDN);
+  if (strcmp(s, "-263b22b55697e8000000000008"))
+    {
+      printf(
+"Error for get_str base 16\nGot %s expected -263b22b55697e8000000000008\n", s);
+      exit(1);
+    }
+  (*__gmp_free_func) (s, strlen (s) + 1);
+  mpfr_clears(xx,yy,zz,NULL);
+}
+
 #define ITER 1000
 
 int
@@ -499,6 +528,7 @@ main (int argc, char *argv[])
   check3 (6.7274500420134077e-87, GMP_RNDU, "67275");
   check3 (6.7274500420134077e-87, GMP_RNDD, "67274");
 
+  check_bug_base2k();
   tests_end_mpfr ();
   return 0;
 }
