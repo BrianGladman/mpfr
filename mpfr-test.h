@@ -27,6 +27,10 @@ MA 02111-1307, USA. */
 #define HAVE_DENORMS
 #endif
 
+#if HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 /* set precision control to double on x86 */
 #if (defined (__i386__) || defined (__i486__))
 #ifdef __CYGWIN32__ /* no fpu_control.h under Cygnus */
