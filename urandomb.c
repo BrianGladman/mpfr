@@ -40,7 +40,9 @@ mpfr_urandomb (rop, rstate)
   mp_ptr rp;
   mp_size_t nlimbs;
   mp_exp_t exp;
-  unsigned long cnt, nbits; 
+  unsigned long cnt, nbits;
+
+  MPFR_CLEAR_FLAGS(rop);
 
   rp = MPFR_MANT(rop);
   nbits = MPFR_PREC(rop);
@@ -63,13 +65,13 @@ mpfr_urandomb (rop, rstate)
       exp--;
     }
 
-  count_leading_zeros(cnt, rp[nlimbs - 1]); 
-  if (cnt) mpn_lshift(rp, rp, nlimbs, cnt); 
+  count_leading_zeros (cnt, rp[nlimbs - 1]); 
+  if (cnt) mpn_lshift (rp, rp, nlimbs, cnt); 
   exp -= cnt; 
 
   cnt = nlimbs*BITS_PER_MP_LIMB - nbits; 
   /* cnt is the number of non significant bits in the low limb */
-  rp[0] &= ~((((mp_limb_t)1)<<cnt) - 1);
+  rp[0] &= ~((((mp_limb_t) 1) << cnt) - 1);
 
   MPFR_EXP (rop) = exp;
 }
