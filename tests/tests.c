@@ -19,11 +19,23 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+#if HAVE_CONFIG_H
+#include "config.h"     /* for a build within gmp */
+#endif
+
 #include <stdio.h>
 #include <float.h>
 
-#include <sys/time.h>  /* for struct timeval */
-#include <time.h>
+#if TIME_WITH_SYS_TIME
+# include <sys/time.h>  /* for struct timeval */
+# include <time.h>
+#else
+# if HAVE_SYS_TIME_H
+#  include <sys/time.h>
+# else
+#  include <time.h>
+# endif
+#endif
 
 #include "gmp.h"
 #include "gmp-impl.h"
