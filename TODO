@@ -6,8 +6,6 @@ Miscellaneous:
 
 - implement a C++ wrapper [see with Torbjo"rn and/or Fabrice]
 
-- deal correctly with all special values (zero, infinities, NaN)
-
 - for all instructions that call malloc/realloc/etc, handle error cases
   (for example return an int indicating if an error occurred)
 
@@ -21,3 +19,10 @@ Miscellaneous:
 	   - Ya un bug (feature ?) au debut de mpfr_cmp3 : dans le 
 	   cas b == 0 on ne prend pas en compte l'argument s. Comme quoi
 	   ca sert de regarder le code droit dans les yeux des fois. 
+
+From: Nathalie Revol <nrevol@ens-lyon.fr>
+Date: Thu, 23 Nov 2000 18:01:33 +0100 (MET)
+   - quand on lit la valeur -1.1 avec une precision 72 et un arrondi
+     au plus proche et qu'on l'affiche (avec le nb de chiffres a 0 dans
+     mpfr_get_str pour que les chiffres affiches soient corrects),
+     on obtient -0.110...08882E1 (15 "0"). Est-il bien utile d'afficher 8882 ?
