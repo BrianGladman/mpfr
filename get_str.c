@@ -1,9 +1,10 @@
 #include <stdio.h>
-#include <math.h>
+#include <stdlib.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "longlong.h"
 #include "mpfr.h"
+#include <math.h>
 
 /*
   Convert op to a string in base 'base' with 'n' digits and writes the 
@@ -18,7 +19,7 @@
 char *mpfr_get_str(char *str, mp_exp_t *expptr, int base, size_t n,
 		  mpfr_srcptr op, unsigned char rnd_mode)
 {
-  double d; long e, q, i, neg, p, err, prec, sh; mpfr_t a, b; mpz_t bz;
+  double d; long e, q, neg, p, err, prec, sh; mpfr_t a, b; mpz_t bz;
   char *str0; unsigned char rnd1; int f, pow2;
 
   if (base<2 || 36<base) {
@@ -26,7 +27,8 @@ char *mpfr_get_str(char *str, mp_exp_t *expptr, int base, size_t n,
 	    base);
     exit(1);
   }
-  count_leading_zeros(pow2, base); pow2 = mp_bits_per_limb - pow2 - 1;
+  count_leading_zeros(pow2, (mp_limb_t)base); 
+  pow2 = mp_bits_per_limb - pow2 - 1;
   if (base != (1<<pow2)) pow2=0; 
   /* if pow2 <> 0, then base = 2^pow2 */
 
@@ -36,12 +38,12 @@ char *mpfr_get_str(char *str, mp_exp_t *expptr, int base, size_t n,
 #endif
   /* first determines the exponent */
   e = EXP(op); 
-  EXP(op)=0; d=fabs(mpfr_get_d(op)); EXP(op)=e;
+  d = fabs(mpfr_get_d2(op, 0));
   /* the absolute value of op is between 1/2*2^e and 2^e */
   /* the output exponent f is such that base^(f-1) <= |op| < base^f
      i.e. f = 1 + floor(log(|op|)/log(base))
      = 1 + floor((log(|m|)+e*log(2))/log(base)) */
-  f = 1 + (int) floor((log(d)+(double)e*log(2.0))/log((double)base));
+  f = 1 + (int) floor((log(d)+((double)e)*log(2.0))/log((double)base));
 #ifdef DEBUG
   printf("exponent = %d\n",f);
 #endif
@@ -123,3 +125,4 @@ printf("b="); mpfr_print_raw(b); putchar('\n');
   mpfr_clear(a); mpfr_clear(b); mpz_clear(bz);
   return str0;
 }
+
