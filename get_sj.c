@@ -20,7 +20,7 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
 #if HAVE_CONFIG_H
-# include "config.h"       /* for a build within gmp */
+# include "config.h"            /* for a build within gmp */
 #endif
 
 #ifdef HAVE_STDINT_H
@@ -43,7 +43,8 @@ mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
 
   /* determine the precision of intmax_t */
   for (r = INTMAX_MIN, prec = 0; r != 0; r /= 2, prec++)
-    { }
+    {
+    }
   /* Note: though INTMAX_MAX would have been sufficient for the conversion,
      we chose INTMAX_MIN so that INTMAX_MIN - 1 is always representable in
      precision prec; this is useful to detect overflows in GMP_RNDZ (will
@@ -58,13 +59,14 @@ mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
   if (MPFR_NOTZERO (x))
     {
       mp_limb_t *xp;
-      int sh, n; /* An int should be sufficient in this context. */
+      int sh, n;        /* An int should be sufficient in this context. */
 
       xp = MPFR_MANT (x);
       sh = MPFR_GET_EXP (x);
       MPFR_ASSERTN (sh <= prec);
       if (INTMAX_MIN + INTMAX_MAX != 0 && MPFR_UNLIKELY (sh == prec))
-        { /* 2's complement and x <= INTMAX_MIN: in the case mp_limb_t
+        {
+          /* 2's complement and x <= INTMAX_MIN: in the case mp_limb_t
              has the same size as intmax_t, we cannot use the code in
              the for loop since the operations would be performed in
              unsigned arithmetic. */
@@ -73,20 +75,22 @@ mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
         }
       else if (MPFR_IS_POS (x))
         {
-          for (n = MPFR_LIMB_SIZE(x) - 1; n >= 0; n--)
+          for (n = MPFR_LIMB_SIZE (x) - 1; n >= 0; n--)
             {
               sh -= BITS_PER_MP_LIMB;
-              r += sh >= 0 ? (intmax_t) xp[n] << sh
-		: (intmax_t) xp[n] >> (- sh);
+              r += (sh >= 0 
+                    ? (intmax_t) xp[n] << sh
+                    : (intmax_t) xp[n] >> (-sh));
             }
         }
       else
         {
-          for (n = MPFR_LIMB_SIZE(x) - 1; n >= 0; n--)
+          for (n = MPFR_LIMB_SIZE (x) - 1; n >= 0; n--)
             {
               sh -= BITS_PER_MP_LIMB;
-              r -= sh >= 0 ? (intmax_t) xp[n] << sh
-		: (intmax_t) xp[n] >> (- sh);
+              r -= (sh >= 0
+                    ? (intmax_t) xp[n] << sh 
+                    : (intmax_t) xp[n] >> (-sh));
             }
         }
     }

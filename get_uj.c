@@ -63,8 +63,9 @@ mpfr_get_uj (mpfr_srcptr f, mpfr_rnd_t rnd)
       for (n = MPFR_LIMB_SIZE(x) - 1; n >= 0; n--)
         {
           sh -= BITS_PER_MP_LIMB;
-	  r += sh >= 0 ? (uintmax_t) xp[n] << sh
-	    : (uintmax_t) xp[n] >> (- sh);
+          r += (sh >= 0 
+                ? (uintmax_t) xp[n] << sh
+                : (uintmax_t) xp[n] >> (- sh));
         }
     }
 
