@@ -2,7 +2,7 @@
 			===============
 
 0. You first need to install GMP. See <http://www.swox.com/gmp/>.
-   MPFR requires GMP version 4.0.1 or later.
+   MPFR requires GMP version 4.1 or later.
 
    After you have successfully built GMP and installed it using
    "make install", you'll need to manually install some GMP header

@@ -226,7 +226,7 @@ probably a good idea to glance through it.
 @cindex Installation
 
 To build MPFR, you first have to install GNU MP 
-(version 4.0.1 or higher) on your computer.
+(version 4.1 or higher) on your computer.
 You need a C compiler, preferably GCC, but any reasonable compiler should
 work.  And you need a standard Unix @samp{make} program, plus some other
 standard Unix utility programs.
