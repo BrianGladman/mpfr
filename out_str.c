@@ -69,6 +69,7 @@ mpfr_out_str (stream, base, n_digits, op, rnd_mode)
       fprintf(stream, "0");
       return l + 1;
     }
+  if (!MPFR_NOTZERO(op)) { fprintf(stream, "0"); return 1; }
 
   s = mpfr_get_str (NULL, &e, base, n_digits, op, rnd_mode);
   /*	  TODO: maintenir le code pour les infinis dans get_str ?  */

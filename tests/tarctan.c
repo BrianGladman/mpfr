@@ -58,12 +58,12 @@ main (int argc, char *argv[])
 	  mpfr_random (x);
 	  rnd = random () % 4;
 	  mpfr_set_prec (y, yprec);
-	  mpfr_arctan (y, x, rnd);
+	  mpfr_atan (y, x, rnd);
 	  err = (rnd == GMP_RNDN) ? yprec + 1 : yprec;
 	  if (mpfr_can_round (y, err, rnd, rnd, prec))
 	    {
 	      mpfr_set (t, y, rnd);
-	      mpfr_arctan (z, x, rnd);
+	      mpfr_atan (z, x, rnd);
 	      if (mpfr_cmp (t, z))
 		{
 		  printf ("results differ for x=");

@@ -169,8 +169,15 @@ int mpfr_asinh _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_cosh _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t)); 
 int mpfr_sinh _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t)); 
 int mpfr_tanh _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
-int mpfr_arctan _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
+int mpfr_atan _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_factorial _PROTO ((mpfr_ptr, unsigned long int, mp_rnd_t));
+  /*En cour ...*/
+int mpfr_pow _PROTO ((mpfr_ptr, mpfr_srcptr,mpfr_srcptr, mp_rnd_t)); 
+int mpfr_dim _PROTO ((mpfr_ptr, mpfr_srcptr,mpfr_srcptr, mp_rnd_t)); 
+int mpfr_max _PROTO ((mpfr_ptr, mpfr_srcptr,mpfr_srcptr, mp_rnd_t)); 
+int mpfr_min _PROTO ((mpfr_ptr, mpfr_srcptr,mpfr_srcptr, mp_rnd_t)); 
+int mpfr_log2 _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t)); 
+int mpfr_log10 _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t)); 
 
 #if defined (__cplusplus)
 }

@@ -105,7 +105,7 @@ mpfr_sin_cos (sinus, cosinus, x, rnd_mode)
   TMP_MARK (marker);
   /* allow sinus or cosinus to be NULL */
   if (sinus == NULL) { mp_size_t s;
-    if (cosinus == NULL) {
+         if (cosinus == NULL) {
       fprintf (stderr, "Error in mpfr_sin_cos: 1st and 2nd operands cannot be NULL simultaneously\n");
       exit (1);
     }

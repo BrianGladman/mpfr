@@ -41,6 +41,8 @@ mpfr_ui_sub (y, u, x, rnd_mode)
   mp_limb_t up[1];
   unsigned long cnt;
 
+
+  
   if (MPFR_IS_NAN(x)) 
     {
       MPFR_SET_NAN(y);
@@ -57,12 +59,15 @@ mpfr_ui_sub (y, u, x, rnd_mode)
     }
 
   if (u) {
+
+
     MPFR_INIT1(up, uu, BITS_PER_MP_LIMB, 1);
     count_leading_zeros(cnt, (mp_limb_t) u);
     *up = (mp_limb_t) u << cnt;
     MPFR_EXP(uu) = BITS_PER_MP_LIMB-cnt;
   
     mpfr_sub (y, uu, x, rnd_mode);
+
   }
   else mpfr_neg (y, x, rnd_mode); /* if u=0, then set y to -x */
 }

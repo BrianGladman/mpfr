@@ -1,4 +1,4 @@
-/* mpfr_arctan -- arc-tangent of a floating-point number
+/* mpfr_atan -- arc-tangent of a floating-point number
 
 Copyright (C) 2001 Free Software Foundation.
 
@@ -29,7 +29,7 @@ MA 02111-1307, USA. */
 #define CST   2.27  /* CST=1+ln(2.4)/ln(2) */
 #define CST2  1.45  /* CST2=1/ln(2) */
 
-int mpfr_arctan_aux _PROTO((mpfr_ptr, mpz_srcptr, int, int));
+int mpfr_atan_aux _PROTO((mpfr_ptr, mpz_srcptr, int, int));
 
 #undef B
 #define A
@@ -39,7 +39,7 @@ int mpfr_arctan_aux _PROTO((mpfr_ptr, mpz_srcptr, int, int));
 #define C1  3
 #define C2  2
 #define NO_FACTORIAL
-#define GENERIC mpfr_arctan_aux 
+#define GENERIC mpfr_atan_aux 
 #include "generic.c"
 #undef C
 #undef C1
@@ -52,9 +52,9 @@ int mpfr_arctan_aux _PROTO((mpfr_ptr, mpz_srcptr, int, int));
 
 int
 #if __STDC__
-mpfr_arctan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
+mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
 #else
-mpfr_arctan (arctangent, x, rnd_mode)
+mpfr_atan (arctangent, x, rnd_mode)
      mpfr_ptr arctangent;
      mpfr_srcptr x; 
      mp_rnd_t rnd_mode;
@@ -199,7 +199,7 @@ mpfr_arctan (arctangent, x, rnd_mode)
       /* Calculation of arctan(Ak) */
       mpz_mul(square, ukz, ukz);
       mpz_neg(square, square);
-      mpfr_arctan_aux(t_arctan, square, 2*twopoweri, N0 - i);
+      mpfr_atan_aux(t_arctan, square, 2*twopoweri, N0 - i);
       mpfr_set_z(Ak, ukz, GMP_RNDD);
       mpfr_div_2exp(Ak, Ak, twopoweri, GMP_RNDD);
       mpfr_mul(t_arctan, t_arctan, Ak, GMP_RNDD);
