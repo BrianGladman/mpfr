@@ -181,6 +181,13 @@ void special()
     exit (1);
   }
 
+  mpfr_set_prec (x, 192);
+  mpfr_set_prec (z, 160);
+  mpfr_set_str_raw (z, "0.1011010100000100100100100110011001011100100100000011000111011001011101101101110000110100001000100001100001011000E1");
+  mpfr_set_prec(x, 160);
+  mpfr_sqrt(x, z, GMP_RNDN);
+  mpfr_sqrt(z, x, GMP_RNDN);
+
   mpfr_clear (x);
   mpfr_clear (z);
 }
