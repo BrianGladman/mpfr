@@ -53,6 +53,16 @@ worst_cases (void)
       exit (1);
     }
 
+  mpfr_set_inf (x, -1);
+  mpfr_atan (y, x, GMP_RNDN);
+  if (mpfr_sgn (y) >= 0)
+    {
+      printf ("Error: mpfr_atan (-inf) should be negative, got ");
+      mpfr_print_binary (y);
+      printf ("\n");
+      exit (1);
+    }
+
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);
