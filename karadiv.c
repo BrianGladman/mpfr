@@ -1,6 +1,6 @@
-/*  RecursiveDivision -- Karatsuba division in 2*K(n) limb operations
+/*  mpn_divrem_n -- Karatsuba division in 2*K(n) limb operations
 
-Copyright (C) 1999 PolKA project, Inria Lorraine and Loria
+Copyright (C) 1999-2000 PolKA project, Inria Lorraine and Loria
 
 This file is part of the MPFR Library.
 
@@ -35,6 +35,15 @@ extern void mpn_divrem_3by2 (mp_limb_t *, mp_limb_t *, mp_limb_t *, mp_size_t, m
 /* mpn_divrem_n(n) calls 2*mul(n/2)+2*div(n/2), thus to be faster then
    div(n)=4*div(n/2), we need mul(n/2) to be faster than the classic way,
    i.e. n/2 >= KARATSUBA_MUL_THRESHOLD */
+
+/* gmp-2.0.2 had only one threshold for both multiplication and squaring */
+#ifndef KARATSUBA_MUL_THRESHOLD 
+#ifdef KARATSUBA_THRESHOLD
+#define KARATSUBA_MUL_THRESHOLD KARATSUBA_THRESHOLD
+#else
+#define KARATSUBA_MUL_THRESHOLD 16
+#endif
+#endif
 #define DIV_LIMIT (7*KARATSUBA_MUL_THRESHOLD)
 
 static void mpn_decr(mp_limb_t *Q)
@@ -49,7 +58,7 @@ static void mpn_decr(mp_limb_t *Q)
 mp_limb_t
 mpn_divrem_n(mp_limb_t *Q, mp_limb_t *A, mp_limb_t *B, mp_size_t n)
 {
-  if (n<DIV_LIMIT) return mpn_divrem_classic(Q, 0, A, 2*n, B, n);
+  if (n<DIV_LIMIT) return mpn_divrem(Q, 0, A, 2*n, B, n);
   else {
     mp_limb_t cc=0;
     if (mpn_cmp(A+n, B, n)>=0) {
@@ -121,7 +130,7 @@ mpn_divrem_3by2(mp_limb_t *Q, mp_limb_t *A, mp_limb_t *B,
 {
   int twon = n+n;
 
-  if (n<DIV_LIMIT) mpn_divrem_classic(Q, 0, A+n, twon, B+n, n);
+  if (n<DIV_LIMIT) mpn_divrem(Q, 0, A+n, twon, B+n, n);
   else mpn_divrem_n2(Q, A+n, B+n, n, tmp);
   /* q=(Q,n), c=(A+n,n) with the notations of [1] */
   mpn_mul_n(tmp, Q, B, n);
