@@ -119,6 +119,20 @@ main (int argc, char *argv[])
       printf ("Error for 6 * 120\n");
       exit (1);
     }
+  
+  mpfr_set_prec (x, 68);
+  mpfr_set_prec (y, 64);
+  mpfr_set_d (x, 2143861251406875.0, GMP_RNDN);
+  mpfr_mul_ui (y, x, 23, GMP_RNDN);
+  mpfr_set_str_raw (x, "10101111001011100001100110101111110001010010011001101101.0");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error for 23 * 2143861251406875.0\n");
+      printf ("expected "); mpfr_print_raw (x); putchar ('\n');
+      printf ("got      "); mpfr_print_raw (y); putchar ('\n');
+      exit (1);
+    }
+  
 
   for (xprec = 53; xprec <= 128; xprec++)
     {
