@@ -31,40 +31,32 @@ static mp_exp_t saved_emax;
 static unsigned int save_ctr = 0;
 
 void
-#if __STDC__
 mpfr_save_emin_emax (void)
-#else
-mpfr_save_emin_emax ()
-#endif
 {
   if (save_ctr++ == 0)
-  {
-    saved_flags = __mpfr_flags;
-    saved_emin = __mpfr_emin;
-    saved_emax = __mpfr_emax;
-    __mpfr_emin = MPFR_EMIN_MIN;
-    __mpfr_emax = MPFR_EMAX_MAX;
-  }
+    {
+      saved_flags = __mpfr_flags;
+      saved_emin = __mpfr_emin;
+      saved_emax = __mpfr_emax;
+      __mpfr_emin = MPFR_EMIN_MIN;
+      __mpfr_emax = MPFR_EMAX_MAX;
+    }
   else if (save_ctr == 0)
-  {
-    fprintf(stderr,
-            "Error: Too many consecutive calls to mpfr_save_emin_emax!\n"
-            "Probably a bug.\n");
-    exit(1);
-  }
+    {
+      fprintf(stderr,
+              "Error: Too many consecutive calls to mpfr_save_emin_emax!\n"
+              "Probably a bug.\n");
+      exit(1);
+    }
 }
 
 void
-#if __STDC__
 mpfr_restore_emin_emax (void)
-#else
-mpfr_restore_emin_emax ()
-#endif
 {
   if (--save_ctr == 0)
-  {
-    __mpfr_flags = saved_flags;
-    __mpfr_emin = saved_emin;
-    __mpfr_emax = saved_emax;
-  }
+    {
+      __mpfr_flags = saved_flags;
+      __mpfr_emin = saved_emin;
+      __mpfr_emax = saved_emax;
+    }
 }

@@ -25,14 +25,7 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
 int
-#if __STDC__
 mpfr_neg (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
-#else
-mpfr_neg (a, b, rnd_mode)
-     mpfr_ptr a;
-     mpfr_srcptr b;
-     mp_rnd_t rnd_mode;
-#endif
 {
   if (a != b)
     return mpfr_set4 (a, b, rnd_mode, -MPFR_SIGN(b));

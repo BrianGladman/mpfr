@@ -1,5 +1,5 @@
-/* mpfr_round_raw2, mpfr_round_raw, mpfr_round, mpfr_can_round, 
-   mpfr_can_round_raw -- various rounding functions
+/* mpfr_round_raw_generic, mpfr_round_raw2, mpfr_round_raw, mpfr_round,
+   mpfr_can_round, mpfr_can_round_raw -- various rounding functions
 
 Copyright (C) 1999 Free Software Foundation.
 
@@ -43,21 +43,9 @@ MA 02111-1307, USA. */
 */
 
 int
-#if __STDC__
-mpfr_round_raw_generic
-(mp_limb_t *yp, mp_limb_t *xp, mp_prec_t xprec, int neg,
- mp_prec_t yprec, mp_rnd_t rnd_mode, int *inexp, int flag)
-#else
-mpfr_round_raw_generic (yp, xp, xprec, neg, yprec, rnd_mode, inexp, flag)
-     mp_limb_t *yp;
-     mp_limb_t *xp;
-     mp_prec_t xprec;
-     int neg;
-     mp_prec_t yprec;
-     mp_rnd_t rnd_mode;
-     int *inexp;
-     int flag;
-#endif
+mpfr_round_raw_generic(mp_limb_t *yp, mp_limb_t *xp, mp_prec_t xprec,
+                       int neg, mp_prec_t yprec, mp_rnd_t rnd_mode,
+                       int *inexp, int flag)
 {
   mp_size_t xsize, nw;
   mp_limb_t himask, lomask;
@@ -74,80 +62,84 @@ mpfr_round_raw_generic (yp, xp, xprec, neg, yprec, rnd_mode, inexp, flag)
     return 0; 
 
   if (rw)
-  {
-    nw++;
-    lomask = ((((mp_limb_t)1)<<(BITS_PER_MP_LIMB - rw)) - (mp_limb_t)1);
-    himask = ~lomask;
-  }
+    {
+      nw++;
+      lomask = ((MP_LIMB_T_ONE << (BITS_PER_MP_LIMB - rw)) - MP_LIMB_T_ONE);
+      himask = ~lomask;
+    }
   else
-  {
-    lomask = -1;
-    himask = -1;
-  }
+    {
+      lomask = -1;
+      himask = -1;
+    }
   MPFR_ASSERTN(nw >= 1);
 
   if (xprec <= yprec)
-  { /* No rounding is necessary. */
-    /* if yp=xp, maybe an overlap: MPN_COPY_DECR is ok when src <= dst */
-    MPFR_ASSERTN(nw >= xsize);
-    if (inexp) *inexp = 0;
-    if (flag) return 0; 
-    MPN_COPY_DECR(yp + (nw - xsize), xp, xsize);
-    MPN_ZERO(yp, nw - xsize); /* PZ 27 May 99 */
-  }
-  else
-  {
-    mp_limb_t sb;
-
-    if ((rnd_mode == GMP_RNDU && neg) ||
-        (rnd_mode == GMP_RNDD && !neg))
-      rnd_mode = GMP_RNDZ;
-
-    if (inexp || rnd_mode != GMP_RNDZ)
-    {
-      mp_size_t k;
-
-      k = xsize - nw;
-      if (!rw) k--;
-      MPFR_ASSERTN(k >= 0);
-      sb = xp[k] & lomask;  /* First non-significant bits */
-      if (rnd_mode == GMP_RNDN)
-      {
-        mp_limb_t rbmask = ((mp_limb_t)1) << (BITS_PER_MP_LIMB - rw - 1);
-        if (sb & rbmask) /* rounding bit */
-          sb &= ~rbmask; /* it is 1, clear it */
-        else
-          rnd_mode = GMP_RNDZ; /* it is 0, behave like rounding to 0 */
-      }
-      while (sb == 0 && k > 0)
-        sb = xp[--k];
-      if (rnd_mode == GMP_RNDN)
-      { /* rounding to nearest, with rounding bit = 1 */
-	if (sb == 0) /* Even rounding. */
-        {
-          sb = xp[xsize - nw] & (himask ^ (himask << 1));
-          if (inexp)
-            *inexp = ((neg != 0) ^ (sb != 0))
-              ? MPFR_EVEN_INEX  : -MPFR_EVEN_INEX;
-        }
-	else /* sb != 0 */
-        {
-          if (inexp)
-            *inexp = (neg == 0) ? 1 : -1;
-        }
-      }
-      else if (inexp)
-        *inexp = sb == 0 ? 0
-          : (((neg != 0) ^ (rnd_mode != GMP_RNDZ)) ? 1 : -1);
+    { /* No rounding is necessary. */
+      /* if yp=xp, maybe an overlap: MPN_COPY_DECR is ok when src <= dst */
+      MPFR_ASSERTN(nw >= xsize);
+      if (inexp)
+        *inexp = 0;
+      if (flag)
+        return 0; 
+      MPN_COPY_DECR(yp + (nw - xsize), xp, xsize);
+      MPN_ZERO(yp, nw - xsize); /* PZ 27 May 99 */
     }
-    else
-      sb = 0;
+  else
+    {
+      mp_limb_t sb;
 
-    if (flag) return (sb != 0 && rnd_mode != GMP_RNDZ); 
+      if ((rnd_mode == GMP_RNDU && neg) ||
+          (rnd_mode == GMP_RNDD && !neg))
+        rnd_mode = GMP_RNDZ;
+
+      if (inexp || rnd_mode != GMP_RNDZ)
+        {
+          mp_size_t k;
+
+          k = xsize - nw;
+          if (!rw)
+            k--;
+          MPFR_ASSERTN(k >= 0);
+          sb = xp[k] & lomask;  /* First non-significant bits */
+          if (rnd_mode == GMP_RNDN)
+            {
+              mp_limb_t rbmask = ((mp_limb_t)1) << (BITS_PER_MP_LIMB - rw - 1);
+              if (sb & rbmask) /* rounding bit */
+                sb &= ~rbmask; /* it is 1, clear it */
+              else
+                rnd_mode = GMP_RNDZ; /* it is 0, behave like rounding to 0 */
+            }
+          while (sb == 0 && k > 0)
+            sb = xp[--k];
+          if (rnd_mode == GMP_RNDN)
+            { /* rounding to nearest, with rounding bit = 1 */
+              if (sb == 0) /* Even rounding. */
+                {
+                  sb = xp[xsize - nw] & (himask ^ (himask << 1));
+                  if (inexp)
+                    *inexp = ((neg != 0) ^ (sb != 0))
+                      ? MPFR_EVEN_INEX  : -MPFR_EVEN_INEX;
+                }
+              else /* sb != 0 */
+                {
+                  if (inexp)
+                    *inexp = (neg == 0) ? 1 : -1;
+                }
+            }
+          else if (inexp)
+            *inexp = sb == 0 ? 0
+              : (((neg != 0) ^ (rnd_mode != GMP_RNDZ)) ? 1 : -1);
+        }
+      else
+        sb = 0;
+
+    if (flag)
+      return sb != 0 && rnd_mode != GMP_RNDZ;
 
     if (sb != 0 && rnd_mode != GMP_RNDZ)
       carry = mpn_add_1(yp, xp + xsize - nw, nw,
-                        rw ? ((mp_limb_t)1) << (BITS_PER_MP_LIMB - rw) : 1);
+                        rw ? MP_LIMB_T_ONE << (BITS_PER_MP_LIMB - rw) : 1);
     else
       MPN_COPY_INCR(yp, xp + xsize - nw, nw);
 
@@ -158,14 +150,7 @@ mpfr_round_raw_generic (yp, xp, xprec, neg, yprec, rnd_mode, inexp, flag)
 }
 
 int
-#if __STDC__
 mpfr_round (mpfr_ptr x, mp_rnd_t rnd_mode, mp_prec_t prec)
-#else
-mpfr_round (x, rnd_mode, prec)
-     mpfr_ptr x; 
-     mp_rnd_t rnd_mode; 
-     mp_prec_t prec; 
-#endif
 {
   mp_limb_t *tmp;
   int carry, neg, inexact;
@@ -173,7 +158,7 @@ mpfr_round (x, rnd_mode, prec)
   TMP_DECL(marker);
 
   if (MPFR_IS_NAN(x))
-    return 1; /* a NaN is always inexact */
+    MPFR_RET_NAN;
 
   if (MPFR_IS_INF(x))
     return 0; /* infinity is exact */
@@ -196,14 +181,14 @@ mpfr_round (x, rnd_mode, prec)
                          &inexact);
 
   if (carry)
-    {      
-      mpn_rshift (tmp, tmp, nw, 1); 
-      tmp [nw-1] |= (((mp_limb_t)1) << (BITS_PER_MP_LIMB - 1)); 
-      MPFR_EXP(x)++; 
+    {
+      mpn_rshift (tmp, tmp, nw, 1);
+      tmp [nw-1] |= (((mp_limb_t)1) << (BITS_PER_MP_LIMB - 1));
+      MPFR_EXP(x)++;
     }
 
-  MPFR_PREC(x) = prec; 
-  MPN_COPY(MPFR_MANT(x), tmp, nw); 
+  MPFR_PREC(x) = prec;
+  MPN_COPY(MPFR_MANT(x), tmp, nw);
   TMP_FREE(marker);
 
   return inexact;
@@ -221,39 +206,19 @@ mpfr_round (x, rnd_mode, prec)
    Side effects: none.
 */
 
-int 
-#if __STDC__
-mpfr_can_round (mpfr_ptr b, mp_prec_t err, mp_rnd_t rnd1, 
+int
+mpfr_can_round (mpfr_ptr b, mp_prec_t err, mp_rnd_t rnd1,
 		mp_rnd_t rnd2, mp_prec_t prec)
-#else
-mpfr_can_round (b, err, rnd1, rnd2, prec) 
-     mpfr_ptr b; 
-     mp_prec_t err;
-     mp_rnd_t rnd1;
-     mp_rnd_t rnd2; 
-     mp_prec_t prec;
-#endif
 {
   return (MPFR_IS_ZERO(b)) ? 0 : /* we cannot round if b=0 */
     mpfr_can_round_raw (MPFR_MANT(b),
-			(MPFR_PREC(b) - 1)/BITS_PER_MP_LIMB + 1, 
+			(MPFR_PREC(b) - 1)/BITS_PER_MP_LIMB + 1,
 			MPFR_SIGN(b), err, rnd1, rnd2, prec);
 }
 
 int
-#if __STDC__
 mpfr_can_round_raw (mp_limb_t *bp, mp_prec_t bn, int neg, mp_prec_t err,
 		    mp_rnd_t rnd1, mp_rnd_t rnd2, mp_prec_t prec)
-#else
-mpfr_can_round_raw (bp, bn, neg, err, rnd1, rnd2, prec)
-     mp_limb_t *bp;
-     mp_prec_t bn;
-     int neg; 
-     mp_prec_t err;
-     mp_rnd_t rnd1;
-     mp_rnd_t rnd2; 
-     mp_prec_t prec; 
-#endif
 {
   int k, k1, l, l1, tn;
   mp_limb_t cc, cc2, *tmp;
@@ -291,9 +256,9 @@ mpfr_can_round_raw (bp, bn, neg, err, rnd1, rnd2, prec)
      change bp[bn-1] >> l1, then we can round */
 
   if (rnd1 == GMP_RNDU)
-      if (neg)
-	rnd1=GMP_RNDZ;
-  if (rnd1==GMP_RNDD)
+    if (neg)
+      rnd1 = GMP_RNDZ;
+  if (rnd1 == GMP_RNDD)
     rnd1 = (neg) ? GMP_RNDU : GMP_RNDZ;
 
   /* in the sequel, RNDU = towards infinity, RNDZ = towards zero */
@@ -302,65 +267,77 @@ mpfr_can_round_raw (bp, bn, neg, err, rnd1, rnd2, prec)
   tn = bn;
   k++; /* since we work with k+1 everywhere */
 
-  switch (rnd1) {
-    
-  case GMP_RNDZ: /* b <= x <= b+2^(MPFR_EXP(b)-err) */
-    tmp = TMP_ALLOC(tn * BYTES_PER_MP_LIMB); 
-    cc = (bp[bn-1]>>l1) & 1;
-    cc ^= mpfr_round_raw2(bp, bn, neg, rnd2, prec);
+  switch (rnd1)
+    {
+    case GMP_RNDZ: /* b <= x <= b+2^(MPFR_EXP(b)-err) */
+      tmp = TMP_ALLOC(tn * BYTES_PER_MP_LIMB); 
+      cc = (bp[bn-1] >> l1) & 1;
+      cc ^= mpfr_round_raw2(bp, bn, neg, rnd2, prec);
 
     /* now round b+2^(MPFR_EXP(b)-err) */
-    if (bn > k)
-      MPN_COPY (tmp, bp, bn - k);
-    cc2 = mpn_add_1 (tmp+bn-k, bp+bn-k, k, (mp_limb_t)1<<l);
-    /* if cc2=1, then all bits up to err were to 1, and we can round only
-       if cc==0 and mpfr_round_raw2 returns 0 below */
-    if (cc2 && cc) { TMP_FREE(marker); return 0; }
-    cc2 = (tmp[bn-1]>>l1) & 1; /* gives 0 when carry */
-    cc2 ^= mpfr_round_raw2(tmp, bn, neg, rnd2, prec);
-
-    TMP_FREE(marker); 
-    return (cc == cc2);
-
-  case GMP_RNDU: /* b-2^(MPFR_EXP(b)-err) <= x <= b */
-    tmp = TMP_ALLOC(tn * BYTES_PER_MP_LIMB); 
-    /* first round b */
-    cc = (bp[bn-1]>>l1) & 1;
-    cc ^= mpfr_round_raw2(bp, bn, neg, rnd2, prec);
-
-    /* now round b-2^(MPFR_EXP(b)-err) */
-    if (bn > k)
-      MPN_COPY (tmp, bp, bn - k);
-    cc2 = mpn_sub_1(tmp+bn-k, bp+bn-k, k, (mp_limb_t)1<<l);
-    /* if cc2=1, then all bits up to err were to 0, and we can round only
-       if cc==0 and mpfr_round_raw2 returns 1 below */
-    if (cc2 && cc) { TMP_FREE(marker); return 0; }
-    cc2 = (tmp[bn-1]>>l1) & 1; /* gives 1 when carry */
-    cc2 ^= mpfr_round_raw2(tmp, bn, neg, rnd2, prec);
+      if (bn > k)
+        MPN_COPY (tmp, bp, bn - k);
+      cc2 = mpn_add_1 (tmp+bn-k, bp+bn-k, k, (mp_limb_t)1<<l);
+      /* if cc2=1, then all bits up to err were to 1, and we can round only
+         if cc==0 and mpfr_round_raw2 returns 0 below */
+      if (cc2 && cc)
+        {
+          TMP_FREE(marker);
+          return 0;
+        }
+      cc2 = (tmp[bn-1]>>l1) & 1; /* gives 0 when carry */
+      cc2 ^= mpfr_round_raw2(tmp, bn, neg, rnd2, prec);
 
     TMP_FREE(marker);
     return (cc == cc2);
 
-  case GMP_RNDN: /* b-2^(MPFR_EXP(b)-err) <= x <= b+2^(MPFR_EXP(b)-err) */
-    tmp = TMP_ALLOC(tn * BYTES_PER_MP_LIMB);
+    case GMP_RNDU: /* b-2^(MPFR_EXP(b)-err) <= x <= b */
+      tmp = TMP_ALLOC(tn * BYTES_PER_MP_LIMB); 
+      /* first round b */
+      cc = (bp[bn-1]>>l1) & 1;
+      cc ^= mpfr_round_raw2(bp, bn, neg, rnd2, prec);
 
-    if (bn > k)
-      MPN_COPY (tmp, bp, bn - k);
-    /* first round b+2^(MPFR_EXP(b)-err) */
-    cc = mpn_add_1 (tmp + bn - k, bp + bn - k, k, (mp_limb_t) 1 << l);
-    cc = (tmp[bn - 1] >> l1) & 1; /* gives 0 when cc=1 */
-    cc ^= mpfr_round_raw2 (tmp, bn, neg, rnd2, prec);
+      /* now round b-2^(MPFR_EXP(b)-err) */
+      if (bn > k)
+        MPN_COPY (tmp, bp, bn - k);
+      cc2 = mpn_sub_1(tmp+bn-k, bp+bn-k, k, (mp_limb_t)1<<l);
+      /* if cc2=1, then all bits up to err were to 0, and we can round only
+         if cc==0 and mpfr_round_raw2 returns 1 below */
+      if (cc2 && cc)
+        {
+          TMP_FREE(marker);
+          return 0;
+        }
+      cc2 = (tmp[bn-1]>>l1) & 1; /* gives 1 when carry */
+      cc2 ^= mpfr_round_raw2(tmp, bn, neg, rnd2, prec);
 
-    /* now round b-2^(MPFR_EXP(b)-err) */
-    cc2 = mpn_sub_1 (tmp + bn - k, bp + bn - k, k, (mp_limb_t) 1 << l);
-    /* if cc2=1, then all bits up to err were to 0, and we can round only
-       if cc==0 and mpfr_round_raw2 returns 1 below */
-    if (cc2 && cc) { TMP_FREE(marker); return 0; }
-    cc2 = (tmp[bn - 1] >> l1) & 1; /* gives 1 when cc2=1 */
-    cc2 ^= mpfr_round_raw2 (tmp, bn, neg, rnd2, prec);
+      TMP_FREE(marker);
+      return (cc == cc2);
 
-    TMP_FREE(marker); 
-    return (cc == cc2);
-  }
+    case GMP_RNDN: /* b-2^(MPFR_EXP(b)-err) <= x <= b+2^(MPFR_EXP(b)-err) */
+      tmp = TMP_ALLOC(tn * BYTES_PER_MP_LIMB);
+
+      if (bn > k)
+        MPN_COPY (tmp, bp, bn - k);
+      /* first round b+2^(MPFR_EXP(b)-err) */
+      cc = mpn_add_1 (tmp + bn - k, bp + bn - k, k, (mp_limb_t) 1 << l);
+      cc = (tmp[bn - 1] >> l1) & 1; /* gives 0 when cc=1 */
+      cc ^= mpfr_round_raw2 (tmp, bn, neg, rnd2, prec);
+
+      /* now round b-2^(MPFR_EXP(b)-err) */
+      cc2 = mpn_sub_1 (tmp + bn - k, bp + bn - k, k, (mp_limb_t) 1 << l);
+      /* if cc2=1, then all bits up to err were to 0, and we can round only
+         if cc==0 and mpfr_round_raw2 returns 1 below */
+      if (cc2 && cc)
+        {
+          TMP_FREE(marker);
+          return 0;
+        }
+      cc2 = (tmp[bn - 1] >> l1) & 1; /* gives 1 when cc2=1 */
+      cc2 ^= mpfr_round_raw2 (tmp, bn, neg, rnd2, prec);
+
+      TMP_FREE(marker); 
+      return (cc == cc2);
+    }
   return 0;
 }

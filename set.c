@@ -26,57 +26,49 @@ MA 02111-1307, USA. */
 
 /* set a to abs(b) * signb: a=b when signb = SIGN(b), a=abs(b) when signb=1 */
 int
-#if __STDC__
 mpfr_set4 (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode, int signb)
-#else
-mpfr_set4 (a, b, rnd_mode, signb)
-     mpfr_ptr a; 
-     mpfr_srcptr b; 
-     mp_rnd_t rnd_mode;
-     int signb;
-#endif
 {
   int inex;
 
   if (MPFR_IS_NAN(b))
-  {
-    MPFR_CLEAR_FLAGS(a);
-    MPFR_SET_NAN(a);
-    MPFR_RET_NAN;
-  }
+    {
+      MPFR_CLEAR_FLAGS(a);
+      MPFR_SET_NAN(a);
+      MPFR_RET_NAN;
+    }
 
   if (MPFR_IS_INF(b))
-  { 
-    MPFR_CLEAR_FLAGS(a);
-    MPFR_SET_INF(a);
-    inex = 0;
-  }
-  else
-  {
-    mp_limb_t *ap;
-    mp_prec_t aq;
-    int carry;
-
-    MPFR_CLEAR_FLAGS(a);
-
-    ap = MPFR_MANT(a);
-    aq = MPFR_PREC(a);
-
-    carry = mpfr_round_raw(ap, MPFR_MANT(b), MPFR_PREC(b), (signb < 0),
-                           aq, rnd_mode, &inex);
-    MPFR_EXP(a) = MPFR_EXP(b);
-
-    if (carry)
     {
-      mp_exp_t exp = MPFR_EXP(a);
-
-      if (exp == __mpfr_emax)
-        return mpfr_set_overflow(a, rnd_mode, signb);
-
-      MPFR_EXP(a)++;
-      ap[(MPFR_PREC(a)-1)/BITS_PER_MP_LIMB] = MP_LIMB_T_HIGHBIT;
+      MPFR_CLEAR_FLAGS(a);
+      MPFR_SET_INF(a);
+      inex = 0;
     }
-  }
+  else
+    {
+      mp_limb_t *ap;
+      mp_prec_t aq;
+      int carry;
+
+      MPFR_CLEAR_FLAGS(a);
+
+      ap = MPFR_MANT(a);
+      aq = MPFR_PREC(a);
+
+      carry = mpfr_round_raw(ap, MPFR_MANT(b), MPFR_PREC(b), (signb < 0),
+                             aq, rnd_mode, &inex);
+      MPFR_EXP(a) = MPFR_EXP(b);
+
+      if (carry)
+        {
+          mp_exp_t exp = MPFR_EXP(a);
+
+          if (exp == __mpfr_emax)
+            return mpfr_set_overflow(a, rnd_mode, signb);
+
+          MPFR_EXP(a)++;
+          ap[(MPFR_PREC(a)-1)/BITS_PER_MP_LIMB] = MP_LIMB_T_HIGHBIT;
+        }
+    }
 
   if (MPFR_SIGN(a) * signb < 0)
     MPFR_CHANGE_SIGN(a);

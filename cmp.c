@@ -30,14 +30,7 @@ MA 02111-1307, USA. */
 */
 
 int
-#if __STDC__
 mpfr_cmp3 (mpfr_srcptr b, mpfr_srcptr c, int s)
-#else
-mpfr_cmp3 (b, c, s)
-     mpfr_srcptr b;
-     mpfr_srcptr c;
-     int s;
-#endif
 {
   mp_exp_t be, ce;
   mp_size_t bn, cn;
@@ -82,12 +75,12 @@ mpfr_cmp3 (b, c, s)
   cp = MPFR_MANT(c);
 
   for ( ; bn >= 0 && cn >= 0; bn--, cn--)
-  {
-    if (bp[bn] > cp[cn])
-      return s;
-    if (bp[bn] < cp[cn])
-      return -s;
-  }
+    {
+      if (bp[bn] > cp[cn])
+        return s;
+      if (bp[bn] < cp[cn])
+        return -s;
+    }
 
   for ( ; bn >= 0; bn--)
     if (bp[bn])

@@ -26,14 +26,7 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
 int
-#if __STDC__
 mpfr_set_ui (mpfr_ptr x, unsigned long i, mp_rnd_t rnd_mode)
-#else
-mpfr_set_ui (x, i, rnd_mode)
-     mpfr_ptr x;
-     unsigned long i;
-     mp_rnd_t rnd_mode;
-#endif  
 {
   int inex = 0;
 
@@ -41,45 +34,46 @@ mpfr_set_ui (x, i, rnd_mode)
   if (i == 0)
     MPFR_SET_ZERO(x);  /* the sign will be set later */
   else
-  {
-    mp_size_t xn;
-    unsigned int cnt, nbits;
-    mp_limb_t *xp;
-
-    xn = (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB;
-    count_leading_zeros(cnt, (mp_limb_t) i);
-
-    xp = MPFR_MANT(x);
-    xp[xn] = ((mp_limb_t) i) << cnt;
-    /* don't forget to put zero in lower limbs */
-    MPN_ZERO(xp, xn);
-
-    MPFR_EXP(x) = nbits = BITS_PER_MP_LIMB - cnt;
-    inex = mpfr_check_range(x, rnd_mode);
-    if (inex)
-      return inex; /* underflow or overflow */
-
-    /* round if MPFR_PREC(x) smaller than length of i */
-    if (MPFR_PREC(x) < nbits)
     {
-      int carry;
-      carry = mpfr_round_raw(xp+xn, xp+xn, nbits, 0, MPFR_PREC(x),
-                             rnd_mode, &inex);
-      if (carry)
-      {
-        mp_exp_t exp = MPFR_EXP(x);
+      mp_size_t xn;
+      unsigned int cnt, nbits;
+      mp_limb_t *xp;
 
-        if (exp == __mpfr_emax)
-          return mpfr_set_overflow(x, rnd_mode, 1);
+      xn = (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB;
+      count_leading_zeros(cnt, (mp_limb_t) i);
 
-        MPFR_EXP(x)++;
-        xp[xn] = MP_LIMB_T_HIGHBIT;
-      }
+      xp = MPFR_MANT(x);
+      xp[xn] = ((mp_limb_t) i) << cnt;
+      /* don't forget to put zero in lower limbs */
+      MPN_ZERO(xp, xn);
+
+      MPFR_EXP(x) = nbits = BITS_PER_MP_LIMB - cnt;
+      inex = mpfr_check_range(x, rnd_mode);
+      if (inex)
+        return inex; /* underflow or overflow */
+
+      /* round if MPFR_PREC(x) smaller than length of i */
+      if (MPFR_PREC(x) < nbits)
+        {
+          int carry;
+          carry = mpfr_round_raw(xp+xn, xp+xn, nbits, 0, MPFR_PREC(x),
+                                 rnd_mode, &inex);
+          if (carry)
+            {
+              mp_exp_t exp = MPFR_EXP(x);
+
+              if (exp == __mpfr_emax)
+                return mpfr_set_overflow(x, rnd_mode, 1);
+
+              MPFR_EXP(x)++;
+              xp[xn] = MP_LIMB_T_HIGHBIT;
+            }
+        }
     }
-  }
 
   /* warning: don't change the precision of x! */
-  if (MPFR_SIGN(x) < 0) MPFR_CHANGE_SIGN(x);
+  if (MPFR_SIGN(x) < 0)
+    MPFR_CHANGE_SIGN(x);
 
   MPFR_RET(inex);
 }

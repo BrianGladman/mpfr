@@ -26,14 +26,7 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
 int
-#if __STDC__
 mpfr_set_si (mpfr_ptr x, long i, mp_rnd_t rnd_mode)
-#else
-mpfr_set_si (x, i, rnd_mode)
-     mpfr_ptr x;
-     long i;
-     mp_rnd_t rnd_mode;
-#endif
 {
   int inex;
   mp_size_t xn;
@@ -42,11 +35,12 @@ mpfr_set_si (x, i, rnd_mode)
 
   MPFR_CLEAR_FLAGS(x);
   if (i == 0)
-  {
-    MPFR_SET_ZERO(x);
-    if (MPFR_SIGN(x) < 0) MPFR_CHANGE_SIGN(x);
-    MPFR_RET(0);
-  }
+    {
+      MPFR_SET_ZERO(x);
+      if (MPFR_SIGN(x) < 0)
+        MPFR_CHANGE_SIGN(x);
+      MPFR_RET(0);
+    }
 
   xn = (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB;
   ai = SAFE_ABS(long, i);
@@ -64,25 +58,26 @@ mpfr_set_si (x, i, rnd_mode)
 
   /* round if MPFR_PREC(x) smaller than length of i */
   if (MPFR_PREC(x) < nbits)
-  {
-    int carry;
-
-    carry = mpfr_round_raw(xp+xn, xp+xn, nbits, (i < 0), MPFR_PREC(x),
-                           rnd_mode, &inex);
-    if (carry)
     {
-      mp_exp_t exp = MPFR_EXP(x);
+      int carry;
 
-      if (exp == __mpfr_emax)
-        return mpfr_set_overflow(x, rnd_mode, (ai < 0 ? -1 : 1));
+      carry = mpfr_round_raw(xp+xn, xp+xn, nbits, (i < 0), MPFR_PREC(x),
+                             rnd_mode, &inex);
+      if (carry)
+        {
+          mp_exp_t exp = MPFR_EXP(x);
 
-      MPFR_EXP(x)++;
-      xp[xn] = MP_LIMB_T_HIGHBIT;
+          if (exp == __mpfr_emax)
+            return mpfr_set_overflow(x, rnd_mode, (ai < 0 ? -1 : 1));
+
+          MPFR_EXP(x)++;
+          xp[xn] = MP_LIMB_T_HIGHBIT;
+        }
     }
-  }
 
   /* warning: don't change the precision of x! */
-  if ((i < 0) ^ (MPFR_SIGN(x) < 0)) MPFR_CHANGE_SIGN(x);
+  if ((i < 0) ^ (MPFR_SIGN(x) < 0))
+    MPFR_CHANGE_SIGN(x);
 
   MPFR_RET(inex);
 }

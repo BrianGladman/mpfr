@@ -32,11 +32,7 @@ mp_exp_t __mpfr_emax = MPFR_EMAX_DEFAULT;
 #undef mpfr_get_emin
 
 mp_exp_t
-#if __STDC__
 mpfr_get_emin (void)
-#else
-mpfr_get_emin ()
-#endif
 {
   return __mpfr_emin;
 }
@@ -44,32 +40,23 @@ mpfr_get_emin ()
 #undef mpfr_set_emin
 
 int
-#if __STDC__
 mpfr_set_emin (mp_exp_t exponent)
-#else
-mpfr_set_emin (exponent)
-     mp_exp_t exponent;
-#endif
 {
   if (exponent >= MPFR_EMIN_MIN && exponent <= MPFR_EMIN_MAX)
-  {
-    __mpfr_emin = exponent;
-    return 0;
-  }
+    {
+      __mpfr_emin = exponent;
+      return 0;
+    }
   else
-  {
-    return 1;
-  }
+    {
+      return 1;
+    }
 }
 
 #undef mpfr_get_emax
 
 mp_exp_t
-#if __STDC__
 mpfr_get_emax (void)
-#else
-mpfr_get_emax ()
-#endif
 {
   return __mpfr_emax;
 }
@@ -77,32 +64,23 @@ mpfr_get_emax ()
 #undef mpfr_set_emax
 
 int
-#if __STDC__
 mpfr_set_emax (mp_exp_t exponent)
-#else
-mpfr_set_emax (exponent)
-     mp_exp_t exponent;
-#endif
 {
   if (exponent >= MPFR_EMAX_MIN && exponent <= MPFR_EMAX_MAX)
-  {
-    __mpfr_emax = exponent;
-    return 0;
-  }
+    {
+      __mpfr_emax = exponent;
+      return 0;
+    }
   else
-  {
-    return 1;
-  }
+    {
+      return 1;
+    }
 }
 
 #undef mpfr_clear_flags
 
 void
-#if __STDC__
 mpfr_clear_flags (void)
-#else
-mpfr_clear_flags ()
-#endif
 {
   __mpfr_flags = 0;
 }
@@ -110,11 +88,7 @@ mpfr_clear_flags ()
 #undef mpfr_clear_underflow
 
 void
-#if __STDC__
 mpfr_clear_underflow (void)
-#else
-mpfr_clear_underflow ()
-#endif
 {
   __mpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_UNDERFLOW;
 }
@@ -122,11 +96,7 @@ mpfr_clear_underflow ()
 #undef mpfr_clear_overflow
 
 void
-#if __STDC__
 mpfr_clear_overflow (void)
-#else
-mpfr_clear_overflow ()
-#endif
 {
   __mpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_OVERFLOW;
 }
@@ -134,11 +104,7 @@ mpfr_clear_overflow ()
 #undef mpfr_clear_nanflag
 
 void
-#if __STDC__
 mpfr_clear_nanflag (void)
-#else
-mpfr_clear_nanflag ()
-#endif
 {
   __mpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_NAN;
 }
@@ -146,11 +112,7 @@ mpfr_clear_nanflag ()
 #undef mpfr_clear_inexflag
 
 void
-#if __STDC__
 mpfr_clear_inexflag (void)
-#else
-mpfr_clear_inexflag ()
-#endif
 {
   __mpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_INEXACT;
 }
@@ -158,33 +120,23 @@ mpfr_clear_inexflag ()
 #undef mpfr_check_range
 
 int
-#if __STDC__
 mpfr_check_range (mpfr_ptr x, mp_rnd_t rnd_mode)
-#else
-mpfr_check_range (x, rnd_mode)
-     mpfr_ptr x;
-     mp_rnd_t rnd_mode;
-#endif
 {
   if (MPFR_IS_FP(x) && MPFR_NOTZERO(x))
-  { /* x is a non-zero FP */
-    mp_exp_t exp = MPFR_EXP(x);
-    if (exp < __mpfr_emin)
-      return mpfr_set_underflow(x, rnd_mode, MPFR_SIGN(x));
-    if (exp > __mpfr_emax)
-      return mpfr_set_overflow(x, rnd_mode, MPFR_SIGN(x));
-  }
+    { /* x is a non-zero FP */
+      mp_exp_t exp = MPFR_EXP(x);
+      if (exp < __mpfr_emin)
+        return mpfr_set_underflow(x, rnd_mode, MPFR_SIGN(x));
+      if (exp > __mpfr_emax)
+        return mpfr_set_overflow(x, rnd_mode, MPFR_SIGN(x));
+    }
   return 0;
 }
 
 #undef mpfr_underflow_p
 
 int
-#if __STDC__
 mpfr_underflow_p (void)
-#else
-mpfr_underflow_p ()
-#endif
 {
   return __mpfr_flags & MPFR_FLAGS_UNDERFLOW;
 }
@@ -192,11 +144,7 @@ mpfr_underflow_p ()
 #undef mpfr_overflow_p
 
 int
-#if __STDC__
 mpfr_overflow_p (void)
-#else
-mpfr_overflow_p ()
-#endif
 {
   return __mpfr_flags & MPFR_FLAGS_OVERFLOW;
 }
@@ -204,11 +152,7 @@ mpfr_overflow_p ()
 #undef mpfr_nanflag_p
 
 int
-#if __STDC__
 mpfr_nanflag_p (void)
-#else
-mpfr_nanflag_p ()
-#endif
 {
   return __mpfr_flags & MPFR_FLAGS_NAN;
 }
@@ -216,11 +160,7 @@ mpfr_nanflag_p ()
 #undef mpfr_inexflag_p
 
 int
-#if __STDC__
 mpfr_inexflag_p (void)
-#else
-mpfr_inexflag_p ()
-#endif
 {
   return __mpfr_flags & MPFR_FLAGS_INEXACT;
 }
@@ -228,36 +168,31 @@ mpfr_inexflag_p ()
 #undef mpfr_set_underflow
 
 int
-#if __STDC__
 mpfr_set_underflow (mpfr_ptr x, mp_rnd_t rnd_mode, int sign)
-#else
-mpfr_set_underflow (x, rnd_mode, sign)
-     mpfr_ptr x;
-     mp_rnd_t rnd_mode;
-     int sign;
-#endif
 {
   int inex;
 
   MPFR_CLEAR_FLAGS(x);
   if ((rnd_mode == GMP_RNDU && sign > 0)
    || (rnd_mode == GMP_RNDD && sign < 0))
-  {
-    mp_size_t xn;
-    mp_limb_t *xp;
-    MPFR_EXP(x) = __mpfr_emin;
-    xn = (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB;
-    xp = MPFR_MANT(x);
-    xp[xn] = MP_LIMB_T_HIGHBIT;
-    MPN_ZERO(xp, xn);
-    inex = 1;
-  }
+    {
+      mp_size_t xn;
+      mp_limb_t *xp;
+
+      MPFR_EXP(x) = __mpfr_emin;
+      xn = (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB;
+      xp = MPFR_MANT(x);
+      xp[xn] = MP_LIMB_T_HIGHBIT;
+      MPN_ZERO(xp, xn);
+      inex = 1;
+    }
   else
-  {
-    MPFR_SET_ZERO(x);
-    inex = -1;
-  }
-  if (MPFR_SIGN(x) != sign) { MPFR_CHANGE_SIGN(x); }
+    {
+      MPFR_SET_ZERO(x);
+      inex = -1;
+    }
+  if (MPFR_SIGN(x) != sign)
+    MPFR_CHANGE_SIGN(x);
   __mpfr_flags |= MPFR_FLAGS_INEXACT | MPFR_FLAGS_UNDERFLOW;
   return sign > 0 ? inex : -inex;
 }
@@ -265,36 +200,31 @@ mpfr_set_underflow (x, rnd_mode, sign)
 #undef mpfr_set_overflow
 
 int
-#if __STDC__
 mpfr_set_overflow (mpfr_ptr x, mp_rnd_t rnd_mode, int sign)
-#else
-mpfr_set_overflow (x, rnd_mode, sign)
-     mpfr_ptr x;
-     mp_rnd_t rnd_mode;
-     int sign;
-#endif
 {
   int inex;
 
   MPFR_CLEAR_FLAGS(x);
   if ((rnd_mode == GMP_RNDU && sign < 0)
    || (rnd_mode == GMP_RNDD && sign > 0))
-  {
-    mp_size_t xn, i;
-    mp_limb_t *xp;
-    MPFR_EXP(x) = __mpfr_emax;
-    xn = (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB;
-    xp = MPFR_MANT(x);
-    for (i = 0; i <= xn; i++)
-      xp[i] = MP_LIMB_T_MAX;
-    inex = -1;
-  }
+    {
+      mp_size_t xn, i;
+      mp_limb_t *xp;
+
+      MPFR_EXP(x) = __mpfr_emax;
+      xn = (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB;
+      xp = MPFR_MANT(x);
+      for (i = 0; i <= xn; i++)
+        xp[i] = MP_LIMB_T_MAX;
+      inex = -1;
+    }
   else
-  {
-    MPFR_SET_INF(x);
-    inex = 1;
-  }
-  if (MPFR_SIGN(x) != sign) { MPFR_CHANGE_SIGN(x); }
+    {
+      MPFR_SET_INF(x);
+      inex = 1;
+    }
+  if (MPFR_SIGN(x) != sign)
+    MPFR_CHANGE_SIGN(x);
   __mpfr_flags |= MPFR_FLAGS_INEXACT | MPFR_FLAGS_OVERFLOW;
   return sign > 0 ? inex : -inex;
 }

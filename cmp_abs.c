@@ -28,13 +28,7 @@ MA 02111-1307, USA. */
    b and c must be nonzero real numbers */
 
 int
-#if __STDC__
 mpfr_cmp_abs (mpfr_srcptr b, mpfr_srcptr c)
-#else
-mpfr_cmp_abs (b, c)
-     mpfr_srcptr b;
-     mpfr_srcptr c;
-#endif
 {
   mp_exp_t be, ce;
   mp_size_t bn, cn;
@@ -59,12 +53,12 @@ mpfr_cmp_abs (b, c)
   cp = MPFR_MANT(c);
 
   for ( ; bn >= 0 && cn >= 0; bn--, cn--)
-  {
-    if (bp[bn] > cp[cn])
-      return 1;
-    if (bp[bn] < cp[cn])
-      return -1;
-  }
+    {
+      if (bp[bn] > cp[cn])
+        return 1;
+      if (bp[bn] < cp[cn])
+        return -1;
+    }
 
   for ( ; bn >= 0; bn--)
     if (bp[bn])
