@@ -53,7 +53,7 @@ mpfr_set_ui(x, i, rnd_mode)
   MPN_ZERO(MANT(x), xn);
   x -> _mp_exp = BITS_PER_MP_LIMB - cnt;
   /* warning: don't change the precision of x! */
-  if (i*SIGN(x) < 0) CHANGE_SIGN(x);
+  if (SIGN(x) < 0) CHANGE_SIGN(x);
 
   return; 
 }
