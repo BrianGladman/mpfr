@@ -1,6 +1,6 @@
 /* mpz_set_fr -- set a multiple-precision integer from a floating-point number
 
-Copyright (C) 2000 PolKA project, Inria Lorraine and Loria
+Copyright (C) 2000 Free Software Foundation.
 
 This file is part of the MPFR Library.
 

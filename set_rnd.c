@@ -1,6 +1,6 @@
 /* mpfr_set_default_rounding_mode -- set the default rounding mode
 
-Copyright (C) 1999 PolKA project, Inria Lorraine and Loria
+Copyright (C) 1999 Free Software Foundation.
 
 This file is part of the MPFR Library.
 

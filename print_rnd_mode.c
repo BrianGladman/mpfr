@@ -1,6 +1,6 @@
 /* mpfr_print_rnd_mode -- convert a given rounding mode to a string
 
-Copyright (C) 1999 PolKA project, Inria Lorraine and Loria
+Copyright (C) 1999 Free Software Foundation.
 
 This file is part of the MPFR Library.
 

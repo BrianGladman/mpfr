@@ -1,6 +1,6 @@
 /* mpfr_mul_ui -- multiply a floating-point number by a machine integer
 
-Copyright (C) 1999 PolKA project, Inria Lorraine and Loria
+Copyright (C) 1999 Free Software Foundation.
 
 This file is part of the MPFR Library.
 

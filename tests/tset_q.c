@@ -1,6 +1,6 @@
 /* Test file for mpfr_set_q.
 
-Copyright (C) 2000 PolKA project, Inria Lorraine and Loria
+Copyright (C) 2000 Free Software Foundation.
 
 This file is part of the MPFR Library.
 

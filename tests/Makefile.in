@@ -1,4 +1,4 @@
-# Makefile.in generated automatically by automake 1.4 from Makefile.am
+# Makefile.in generated automatically by automake 1.4a from Makefile.am
 
 # Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
@@ -46,9 +46,10 @@ AUTOMAKE = @AUTOMAKE@
 AUTOHEADER = @AUTOHEADER@
 
 INSTALL = @INSTALL@
-INSTALL_PROGRAM = @INSTALL_PROGRAM@ $(AM_INSTALL_PROGRAM_FLAGS)
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
+INSTALL_STRIP_FLAG =
 transform = @program_transform_name@
 
 NORMAL_INSTALL = :
@@ -66,7 +67,7 @@ PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
 
-check_PROGRAMS = tabs tadd tagm tcan_round tcmp tcmp_ui tdiv tdiv_ui tdump texp tget_str tlog tlog2 tmul tmul_2exp tmul_ui tout_str tpi tround tset_d tset_f tset_q tset_si tset_str tset_z tsqrt tsqrt_ui tui_div tui_sub tzeta
+check_PROGRAMS = tabs tadd tagm tcan_round tcmp tcmp_ui tdiv tdiv_ui tdump texp tget_str tlog tlog2 tmul tmul_2exp tmul_ui tout_str tpi tround tset_d tset_f tset_q tset_si tset_str tset_z tsqrt tsqrt_ui tui_div tui_sub tzeta tsin_cos
 
 LDADD = $(top_builddir)/libmpfr.a  @LDADD@
 INCLUDES = @INCLUDES@ -I$(top_srcdir)
@@ -226,6 +227,11 @@ tzeta_OBJECTS =  tzeta.o
 tzeta_LDADD = $(LDADD)
 tzeta_DEPENDENCIES =  $(top_builddir)/libmpfr.a
 tzeta_LDFLAGS = 
+tsin_cos_SOURCES = tsin_cos.c
+tsin_cos_OBJECTS =  tsin_cos.o
+tsin_cos_LDADD = $(LDADD)
+tsin_cos_DEPENDENCIES =  $(top_builddir)/libmpfr.a
+tsin_cos_LDFLAGS = 
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
@@ -241,10 +247,11 @@ DEP_FILES =  .deps/tabs.P .deps/tadd.P .deps/tagm.P .deps/tcan_round.P \
 .deps/texp.P .deps/tget_str.P .deps/tlog.P .deps/tlog2.P .deps/tmul.P \
 .deps/tmul_2exp.P .deps/tmul_ui.P .deps/tout_str.P .deps/tpi.P \
 .deps/tround.P .deps/tset_d.P .deps/tset_f.P .deps/tset_q.P \
-.deps/tset_si.P .deps/tset_str.P .deps/tset_z.P .deps/tsqrt.P \
-.deps/tsqrt_ui.P .deps/tui_div.P .deps/tui_sub.P .deps/tzeta.P
-SOURCES = tabs.c tadd.c tagm.c tcan_round.c tcmp.c tcmp_ui.c tdiv.c tdiv_ui.c tdump.c texp.c tget_str.c tlog.c tlog2.c tmul.c tmul_2exp.c tmul_ui.c tout_str.c tpi.c tround.c tset_d.c tset_f.c tset_q.c tset_si.c tset_str.c tset_z.c tsqrt.c tsqrt_ui.c tui_div.c tui_sub.c tzeta.c
-OBJECTS = tabs.o tadd.o tagm.o tcan_round.o tcmp.o tcmp_ui.o tdiv.o tdiv_ui.o tdump.o texp.o tget_str.o tlog.o tlog2.o tmul.o tmul_2exp.o tmul_ui.o tout_str.o tpi.o tround.o tset_d.o tset_f.o tset_q.o tset_si.o tset_str.o tset_z.o tsqrt.o tsqrt_ui.o tui_div.o tui_sub.o tzeta.o
+.deps/tset_si.P .deps/tset_str.P .deps/tset_z.P .deps/tsin_cos.P \
+.deps/tsqrt.P .deps/tsqrt_ui.P .deps/tui_div.P .deps/tui_sub.P \
+.deps/tzeta.P
+SOURCES = tabs.c tadd.c tagm.c tcan_round.c tcmp.c tcmp_ui.c tdiv.c tdiv_ui.c tdump.c texp.c tget_str.c tlog.c tlog2.c tmul.c tmul_2exp.c tmul_ui.c tout_str.c tpi.c tround.c tset_d.c tset_f.c tset_q.c tset_si.c tset_str.c tset_z.c tsqrt.c tsqrt_ui.c tui_div.c tui_sub.c tzeta.c tsin_cos.c
+OBJECTS = tabs.o tadd.o tagm.o tcan_round.o tcmp.o tcmp_ui.o tdiv.o tdiv_ui.o tdump.o texp.o tget_str.o tlog.o tlog2.o tmul.o tmul_2exp.o tmul_ui.o tout_str.o tpi.o tround.o tset_d.o tset_f.o tset_q.o tset_si.o tset_str.o tset_z.o tsqrt.o tsqrt_ui.o tui_div.o tui_sub.o tzeta.o tsin_cos.o
 
 all: all-redirect
 .SUFFIXES:
@@ -402,6 +409,10 @@ tzeta: $(tzeta_OBJECTS) $(tzeta_DEPENDENCIES)
 	@rm -f tzeta
 	$(LINK) $(tzeta_LDFLAGS) $(tzeta_OBJECTS) $(tzeta_LDADD) $(LIBS)
 
+tsin_cos: $(tsin_cos_OBJECTS) $(tsin_cos_DEPENDENCIES)
+	@rm -f tsin_cos
+	$(LINK) $(tsin_cos_LDFLAGS) $(tsin_cos_OBJECTS) $(tsin_cos_LDADD) $(LIBS)
+
 tags: TAGS
 
 ID: $(HEADERS) $(SOURCES) $(LISP)
@@ -506,7 +517,7 @@ uninstall: uninstall-am
 all-am: Makefile
 all-redirect: all-am
 install-strip:
-	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
+	$(MAKE) $(AM_MAKEFLAGS) INSTALL_STRIP_FLAG=-s install
 installdirs:
 
 

@@ -1,6 +1,6 @@
 /* mpfr_set_f -- set a MPFR number from a GNU MPF number
 
-Copyright (C) 1999-2000 PolKA project, Inria Lorraine and Loria
+Copyright (C) 1999-2000 Free Software Foundation.
 
 This file is part of the MPFR Library.
 

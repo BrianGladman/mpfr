@@ -1,6 +1,6 @@
 /* mpfr_set_str -- set a floating-point number from a string
 
-Copyright (C) 2000 PolKA project, Inria Lorraine and Loria
+Copyright (C) 2000 Free Software Foundation.
 
 This file is part of the MPFR Library.
 

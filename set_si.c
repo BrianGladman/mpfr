@@ -1,6 +1,6 @@
 /* mpfr_set_si, mpfr_set_ui -- set a MPFR number from a machine integer
 
-Copyright (C) 1999 PolKA project, Inria Lorraine and Loria
+Copyright (C) 1999 Free Software Foundation.
 
 This file is part of the MPFR Library.
 

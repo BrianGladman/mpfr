@@ -1,6 +1,6 @@
 /* mpfr_set_q -- set a floating-point number from a multiple-precision rational
 
-Copyright (C) 2000 PolKA project, Inria Lorraine and Loria
+Copyright (C) 2000 Free Software Foundation.
 
 This file is part of the MPFR Library.
 

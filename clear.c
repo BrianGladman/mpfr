@@ -1,6 +1,6 @@
 /* mpfr_clear -- free the memory space allocated for a floating-point number
 
-Copyright (C) 1999 PolKA project, Inria Lorraine and Loria
+Copyright (C) 1999 Free Software Foundation.
 
 This file is part of the MPFR Library.
 

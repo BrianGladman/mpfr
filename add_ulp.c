@@ -1,6 +1,6 @@
 /* mpfr_add_one_ulp, mpfr_sub_one_ulp -- add/subtract one unit in last place
 
-Copyright (C) 1999 PolKA project, Inria Lorraine and Loria
+Copyright (C) 1999 Free Software Foundation.
 
 This file is part of the MPFR Library.
 

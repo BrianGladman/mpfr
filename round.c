@@ -1,7 +1,7 @@
 /* mpfr_round_raw2, mpfr_round_raw, mpfr_round, mpfr_can_round, 
    mpfr_can_round_raw -- various rounding functions
 
-Copyright (C) 1999 PolKA project, Inria Lorraine and Loria
+Copyright (C) 1999 Free Software Foundation.
 
 This file is part of the MPFR Library.
 

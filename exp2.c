@@ -1,7 +1,7 @@
 /* mpfr_exp2 -- exponential of a floating-point number 
                 using Brent's algorithms in O(n^(1/2)*M(n)) and O(n^(1/3)*M(n))
 
-Copyright (C) 1999-2000 PolKA project, Inria Lorraine and Loria
+Copyright (C) 1999-2000 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
