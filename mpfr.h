@@ -21,6 +21,14 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 
+/* Cygnus does not know about *rand48 functions */
+#ifdef __CYGWIN32__
+#define mrand48 rand
+#define drand48 rand
+#define lrand48 rand
+#define srand48 srand
+#endif
+
 /* Definition of rounding modes */
 
 #define GMP_RNDN 0
