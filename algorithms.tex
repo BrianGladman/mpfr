@@ -648,11 +648,10 @@ This is implemented in the function {\tt mpfr\_exp2\_aux2}.
 \subsection{The error function}
 
 The error function admits the following expansion at zero:
-% \cite[formula 7.1.5]{AbSt73}:
-% \[ {\rm erf} \, z = \frac{2}{\sqrt{\pi}} \sum_{k=0}^{\infty} \frac{(-1)^k}
-%       {k! (2k+1)} z^{2k+1}, \]
-\cite[formula 7.1.6]{AbSt73}:
-\[ {\rm erf} \, z = \frac{2}{\sqrt{\pi}} e^{-z^2}
+\cite[formulas 7.1.5, 7.1.6]{AbSt73}:
+\[ {\rm erf} \, z = \frac{2}{\sqrt{\pi}} \sum_{k=0}^{\infty} \frac{(-1)^k}
+	{k! (2k+1)} z^{2k+1} 
+= \frac{2}{\sqrt{\pi}} e^{-z^2}
         \sum_{k=0}^{\infty} \frac{2^k}{1 \cdot 3 \cdots (2k+1)} z^{2k+1}, \]
 and the following asymptotic expansion for ${\rm erfc} z = 1 - {\rm erf} z$
 \cite[formula 7.1.23]{AbSt73}:
