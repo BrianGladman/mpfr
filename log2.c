@@ -1,6 +1,6 @@
 /* mpfr_log2 -- log base 2
 
-Copyright (C) 2001 Free Software Foundation, Inc.
+Copyright (C) 2001-2002 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -31,9 +31,8 @@ MA 02111-1307, USA. */
  */
 
 int
-mpfr_log2 (mpfr_ptr r, mpfr_srcptr a , mp_rnd_t rnd_mode) 
+mpfr_log2 (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
 {
-
   int inexact = 0;
 
   /* If a is NaN, the result is NaN */
@@ -45,53 +44,45 @@ mpfr_log2 (mpfr_ptr r, mpfr_srcptr a , mp_rnd_t rnd_mode)
 
   MPFR_CLEAR_NAN(r);
 
-  /* If a is negative, the result is NaN */
-  if (MPFR_SIGN(a) < 0)
-    {
-      if (!MPFR_IS_INF(a) && MPFR_IS_ZERO(a)) 
-      {
-        MPFR_SET_INF(r); 
-        if (MPFR_SIGN(r) > 0)
-          MPFR_CHANGE_SIGN(r);
-        return 0; 
-      }
-      else
-      {
-        MPFR_SET_NAN(r);
-        MPFR_RET_NAN;
-      }
-    }
-
   /* check for infinity before zero */
   if (MPFR_IS_INF(a))
-    {      
-      MPFR_SET_INF(r);
-      if(MPFR_SIGN(r) < 0)
-        MPFR_CHANGE_SIGN(r);
-      return 0;
+    {
+      if (MPFR_SIGN(a) < 0) /* log(-Inf) = NaN */
+        {
+          MPFR_SET_NAN(r);
+          MPFR_RET_NAN;
+        }
+      else /* log(+Inf) = +Inf */
+        {
+          MPFR_SET_INF(r);
+          MPFR_SET_POS(r);
+          MPFR_RET(0);
+        }
     }
 
   /* Now we can clear the flags without damage even if r == a */
+  MPFR_CLEAR_INF(r);
 
-  MPFR_CLEAR_INF(r); 
-
-  if (MPFR_IS_ZERO(a)) 
+  if (MPFR_IS_ZERO(a))
     {
-      MPFR_CLEAR_FLAGS(r);
-      MPFR_SET_INF(r); 
-      if (MPFR_SIGN(r) > 0)
-	MPFR_CHANGE_SIGN(r);
-       /* Execption GMP*/
-      return 0; 
+      MPFR_SET_INF(r);
+      MPFR_SET_POS(r);
+      MPFR_RET(0); /* log(0) is an exact infinity */
+    }
+
+  /* If a is negative, the result is NaN */
+  if (MPFR_SIGN(a) < 0)
+    {
+      MPFR_SET_NAN(r);
+      MPFR_RET_NAN;
     }
 
   /* If a is 1, the result is 0 */
-  if (mpfr_cmp_ui(a,1) == 0)
+  if (mpfr_cmp_ui(a, 1) == 0)
     {
-      MPFR_CLEAR_FLAGS(r);
-      MPFR_SET_SAME_SIGN(r,a);
       MPFR_SET_ZERO(r);
-      return 0; 
+      MPFR_SET_POS(r);
+      MPFR_RET(0); /* only "normal" case where the result is exact */
     }
 
   /* If a is integer, log2(a) is exact*/

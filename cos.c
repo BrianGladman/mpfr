@@ -1,6 +1,6 @@
 /* mpfr_cos -- cosine of a floating-point number
 
-Copyright (C) 2001 Free Software Foundation.
+Copyright (C) 2001-2002 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -36,10 +36,10 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   if (MPFR_IS_NAN(x) || MPFR_IS_INF(x))
     {
       MPFR_SET_NAN(y);
-      return 1;
+      MPFR_RET_NAN;
     }
 
-  if (!MPFR_NOTZERO(x))
+  if (MPFR_IS_ZERO(x))
     {
       mpfr_set_ui (y, 1, GMP_RNDN);
       return 0;

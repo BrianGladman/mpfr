@@ -1,6 +1,6 @@
 /* mpfr_atanh -- Inverse Hyperbolic Tangente of Unsigned Integer Number
 
-Copyright (C) 2001 Free Software Foundation.
+Copyright (C) 2001-2002 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -50,7 +50,7 @@ mpfr_atanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
     {  
       MPFR_SET_NAN(y); 
       mpfr_clear(x);
-      return 1; 
+      MPFR_RET_NAN;
     }
   MPFR_CLEAR_NAN(y);
   
@@ -62,19 +62,19 @@ mpfr_atanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
       if(flag_neg)
 	MPFR_CHANGE_SIGN(y);
       mpfr_clear(x);
-      return 0;
+      MPFR_RET(0);
     }
 
   MPFR_CLEAR_INF(y);
 
-  if(!MPFR_NOTZERO(x))
+  if (MPFR_IS_ZERO(x))
     {
       MPFR_SET_ZERO(y);   /* atanh(0) = 0 */
       MPFR_SET_SAME_SIGN(y,x);
       if(flag_neg)
 	MPFR_CHANGE_SIGN(y);
       mpfr_clear(x); 
-     return 0;
+      MPFR_RET(0);
     }
 
   /* General case */

@@ -1,6 +1,6 @@
 /* mpfr_exp -- exponential of a floating-point number
 
-Copyright (C) 1999-2001 Free Software Foundation.
+Copyright (C) 1999-2002 Free Software Foundation.
 Contributed by the Spaces project.
 
 This file is part of the MPFR Library.
@@ -44,36 +44,30 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   if (MPFR_IS_NAN(x))
     {
       MPFR_SET_NAN(y);
-      return 1;
+      MPFR_RET_NAN;
     }
 
   MPFR_CLEAR_NAN(y);
 
-  if (MPFR_IS_INF(x)) 
-    { 
+  if (MPFR_IS_INF(x))
+    {
       if (MPFR_SIGN(x) > 0)
 	{
 	  MPFR_SET_INF(y);
-	  if (MPFR_SIGN(y) < 0)
-	    MPFR_CHANGE_SIGN(y);
 	}
       else
 	{
 	  MPFR_CLEAR_INF(y);
 	  MPFR_SET_ZERO(y);
-	  if (MPFR_SIGN(y) < 0)
-	    MPFR_CHANGE_SIGN(y);
 	}
-      return 0;
+      MPFR_SET_POS(y);
+      MPFR_RET(0);
     }
 
   MPFR_CLEAR_INF(y);
-      
-  if (!MPFR_NOTZERO(x))
-    {
-      mpfr_set_ui (y, 1, GMP_RNDN);
-      return 0;
-    }
+
+  if (MPFR_IS_ZERO(x))
+    return mpfr_set_ui (y, 1, GMP_RNDN);
 
   expx = MPFR_EXP(x);
   precy = MPFR_PREC(y);

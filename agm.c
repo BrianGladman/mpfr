@@ -1,6 +1,6 @@
 /* mpfr_agm -- arithmetic-geometric mean of two floating-point numbers
 
-Copyright (C) 1999, 2001 Free Software Foundation.
+Copyright (C) 1999-2002 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -86,6 +86,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
   if (MPFR_IS_NAN(op1) || MPFR_IS_NAN(op2))
     {
       MPFR_SET_NAN(r);
+      __mpfr_flags |= MPFR_FLAGS_NAN;
       return;
     }
 
@@ -93,6 +94,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
   if ((MPFR_SIGN(op1) < 0) || (MPFR_SIGN(op2) < 0))
     {
       MPFR_SET_NAN(r);
+      __mpfr_flags |= MPFR_FLAGS_NAN;
       return;
     }
 
