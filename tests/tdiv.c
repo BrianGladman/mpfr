@@ -463,6 +463,7 @@ static void
 check_nan (void)
 {
   mpfr_t  a, d, q;
+  mp_exp_t emax, emin;
 
   mpfr_init2 (a, 100L);
   mpfr_init2 (d, 100L);
@@ -513,6 +514,54 @@ check_nan (void)
   MPFR_SET_POS (d);
   MPFR_ASSERTN (mpfr_div (q, a, d, GMP_RNDZ) == 0); /* exact */
   MPFR_ASSERTN (mpfr_nan_p (q));
+
+  /* 1/+0 = +Inf */
+  mpfr_set_ui (a, 1, GMP_RNDZ);
+  mpfr_set_ui (d, 0, GMP_RNDZ);
+  MPFR_ASSERTN (mpfr_div (q, a, d, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (mpfr_inf_p (q) && mpfr_sgn (q) > 0);
+
+  /* 1/-0 = -Inf */
+  mpfr_set_ui (a, 1, GMP_RNDZ);
+  mpfr_set_ui (d, 0, GMP_RNDZ);
+  mpfr_neg (d, d, GMP_RNDZ);
+  MPFR_ASSERTN (mpfr_div (q, a, d, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (mpfr_inf_p (q) && mpfr_sgn (q) < 0);
+
+  /* -1/+0 = -Inf */
+  mpfr_set_si (a, -1, GMP_RNDZ);
+  mpfr_set_ui (d, 0, GMP_RNDZ);
+  MPFR_ASSERTN (mpfr_div (q, a, d, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (mpfr_inf_p (q) && mpfr_sgn (q) < 0);
+
+  /* -1/-0 = +Inf */
+  mpfr_set_si (a, -1, GMP_RNDZ);
+  mpfr_set_ui (d, 0, GMP_RNDZ);
+  mpfr_neg (d, d, GMP_RNDZ);
+  MPFR_ASSERTN (mpfr_div (q, a, d, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (mpfr_inf_p (q) && mpfr_sgn (q) > 0);
+
+  /* check overflow */
+  emax = mpfr_get_emax ();
+  mpfr_set_emax (1);
+  mpfr_set_ui (a, 1, GMP_RNDZ);
+  mpfr_set_ui (d, 1, GMP_RNDZ);
+  mpfr_div_2exp (d, d, 1, GMP_RNDZ);
+  mpfr_div (q, a, d, GMP_RNDU); /* 1 / 0.5 = 2 -> overflow */
+  MPFR_ASSERTN (mpfr_inf_p (q) && mpfr_sgn (q) > 0);
+  mpfr_set_emax (emax);
+
+  /* check underflow */
+  emin = mpfr_get_emin ();
+  mpfr_set_emin (-1);
+  mpfr_set_ui (a, 1, GMP_RNDZ);
+  mpfr_div_2exp (a, a, 2, GMP_RNDZ);
+  mpfr_set_ui (d, 2, GMP_RNDZ);
+  mpfr_div (q, a, d, GMP_RNDZ); /* 0.5*2^(-2) -> underflow */
+  MPFR_ASSERTN (mpfr_cmp_ui (q, 0) == 0 && MPFR_IS_POS (q));
+  mpfr_div (q, a, d, GMP_RNDN); /* 0.5*2^(-2) -> underflow */
+  MPFR_ASSERTN (mpfr_cmp_ui (q, 0) == 0 && MPFR_IS_POS (q));
+  mpfr_set_emin (emin);
 
   mpfr_clear (a);
   mpfr_clear (d);
