@@ -35,10 +35,14 @@ MA 02111-1307, USA. */
 #define MPFR_DBL_NAN ((double) NAN)
 #else
 #ifdef _MPFR_NAN_BYTES
-/* Note: do not use an initialized union, because, though it is standard,
-   the HP compiler doesn't like that. Structures are used to get correct
-   alignment. */
+/* A struct is used here rather than a union of a float and a char array
+   since union initializers aren't available in K&R, in particular not in
+   the HP bundled cc.  Alignment will hopefully be based on the structure
+   size, rather than it's contents, so we should be ok.  */
 #ifdef __alpha
+/* gcc 3.0.2 on an alphaev56-unknown-freebsd4.3 doesn't seem to correctly
+   convert from a float NAN to a double NAN, use an 8-byte form instead as a
+   workaround.  */
 static struct { unsigned char c[8]; } __mpfr_nan
 = { { 0, 0, 0, 0, 0, 0, 0xf8, 0x7f } };
 #define MPFR_DBL_NAN (*((double *) __mpfr_nan.c))
