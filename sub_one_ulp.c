@@ -38,8 +38,7 @@ mpfr_sub_one_ulp(mpfr_ptr x, mp_rnd_t rnd_mode)
   if (MPFR_IS_INF(x) || MPFR_IS_ZERO(x))
     return 0;
 
-  if (MPFR_PREC(x) == 1)
-    return mpfr_sub(x, x, x, rnd_mode);  /* to generate the correct zero */
+  MPFR_ASSERTN(MPFR_PREC_MIN > 1);
 
   xn = 1 + (MPFR_PREC(x) - 1) / BITS_PER_MP_LIMB;
   sh = xn * BITS_PER_MP_LIMB - MPFR_PREC(x);
