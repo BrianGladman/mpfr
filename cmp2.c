@@ -1,6 +1,6 @@
 /* mpfr_cmp2 -- exponent shift when subtracting two numbers.
 
-Copyright 1999, 2000, 2001, 2002, 2003 Free Software Foundation.
+Copyright 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -25,8 +25,8 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-/* Returns the number of canceled bits when one subtracts |c| from |b|
-   if |b| != |c|, and the sign.
+/* If |b| != |c|, puts the number of canceled bits when one subtracts |c|
+   from |b| in *cancel. Returns the sign of the difference.
 
    Assumes neither of b or c is NaN or +/- infinity.
 
