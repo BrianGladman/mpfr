@@ -104,11 +104,11 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
   q = MPFR_PREC (r);
 
   /* use initial precision about q+lg(q)+5 */
-  p = q + 5 + MPFR_INT_CEIL_LOG2 (q);
+  p = q + 5 + 2*MPFR_INT_CEIL_LOG2 (q);
   /* % ~(mp_prec_t)BITS_PER_MP_LIMB  ;
      m=q; while (m) { p++; m >>= 1; }  */
-  if (MPFR_LIKELY(p % BITS_PER_MP_LIMB != 0))
-    p += BITS_PER_MP_LIMB - (p%BITS_PER_MP_LIMB); 
+  /* if (MPFR_LIKELY(p % BITS_PER_MP_LIMB != 0))
+      p += BITS_PER_MP_LIMB - (p%BITS_PER_MP_LIMB); */
       
   TMP_MARK(marker);
 
