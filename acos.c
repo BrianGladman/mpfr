@@ -29,6 +29,7 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mp_prec_t prec;
   int sign, compared, inexact;
   MPFR_SAVE_EXPO_DECL (expo);
+  MPFR_ZIV_DECL (loop);
 
   /* Singular cases */
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
@@ -93,6 +94,7 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_init2 (tmp, prec);
   mpfr_init2 (arcc, prec);
 
+  MPFR_ZIV_INIT (loop, prec);
   for (;;)
     {
       /* acos(x) = Pi/2 - asin(x) = Pi/2 - atan(x/sqrt(1-x^2)) */
@@ -108,10 +110,11 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mp_rnd_t rnd_mode)
       if (mpfr_can_round (arcc, prec-supplement, GMP_RNDN, GMP_RNDZ,
                           MPFR_PREC (acos) + (rnd_mode == GMP_RNDN)))
         break;
-      prec += BITS_PER_MP_LIMB;
+      MPFR_ZIV_NEXT (loop, prec);
       mpfr_set_prec (tmp, prec);
       mpfr_set_prec (arcc, prec);
     }
+  MPFR_ZIV_FREE (loop);
 
   inexact = mpfr_set (acos, arcc, rnd_mode);
   mpfr_clear (tmp);

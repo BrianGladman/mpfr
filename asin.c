@@ -29,6 +29,7 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mp_prec_t prec;
   mp_exp_t xp_exp;
   MPFR_SAVE_EXPO_DECL (expo);
+  MPFR_ZIV_DECL (loop);
 
   /* Special cases */
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
@@ -93,7 +94,7 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
     prec = -2*MPFR_GET_EXP (x) + 10;
 
   /* use asin(x) = atan(x/sqrt(1-x^2)) */
-
+  MPFR_ZIV_INIT (loop, prec);
   for (;;)
     {
       mpfr_set_prec (xp, prec);
@@ -105,9 +106,9 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
       if (mpfr_can_round (xp, prec - xp_exp, GMP_RNDN, GMP_RNDZ,
                           MPFR_PREC (asin) + (rnd_mode == GMP_RNDN)))
 	break;
-      prec += BITS_PER_MP_LIMB;
+      MPFR_ZIV_NEXT (loop, prec);
     }
-
+  MPFR_ZIV_FREE (loop);
   inexact = mpfr_set (asin, xp, rnd_mode);
 
   mpfr_clear (xp);

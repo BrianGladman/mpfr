@@ -169,44 +169,6 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab,
   MPFR_SET_EXP (y, MPFR_EXP (y) + expo - r*(i-1) );
 }
 
-/* Extract 2^i bits from 2^i-1 */
-#if 0
-static void
-mpfr_atan_extract (mpz_ptr z, mpfr_srcptr p, unsigned int i)
-{
-  unsigned long two_i = 1UL << i, d;
-  mp_size_t n = MPFR_LIMB_SIZE (p), mz, dm, k;
-  mp_limb_t *ptr = MPFR_MANT (p), *cp;
-
-  MPFR_ASSERTD (!MPFR_IS_SINGULAR (p));
-  
-  if (2*two_i <= BITS_PER_MP_LIMB) {
-    mp_limb_t c = ptr[n-1];
-    c >>= BITS_PER_MP_LIMB - 2*two_i + 1;
-    c &= (MPFR_LIMB_ONE<<two_i) -1;
-    mpz_set_ui (z, c);
-  } else if (two_i > MPFR_PREC (p))
-    mpz_set_ui (z, 0);
-  else {
-    mz = (two_i - 1) / BITS_PER_MP_LIMB + 1;
-    MPZ_REALLOC (z, mz+1);
-    cp = PTR (z);
-    d = two_i -1;
-    dm = d / BITS_PER_MP_LIMB;
-    if (dm+mz < n)
-      mpn_rshift (cp, ptr+n-dm-mz-1, mz+1, 1);
-    else 
-      {
-	mpn_lshift (cp+mz-(n-dm)+1, ptr, mz-(n-dm)+1, BITS_PER_MP_LIMB-1);
-	MPN_ZERO (cp, mz-(n-dm));
-      }
-    cp [mz-1] &= MPFR_LIMB_HIGHBIT -1 ;
-    MPN_NORMALIZE (cp, mz);
-    SIZ (z) = mz;
-  }
-}
-#endif 
-
 int
 mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
@@ -222,6 +184,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpz_t *tabz;
   unsigned int *tabi;
   MPFR_SAVE_EXPO_DECL (expo);
+  MPFR_ZIV_DECL (loop);
 
   /* Singular cases */
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
@@ -296,6 +259,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
   tabz = NULL;
   tabi = NULL;
 
+  MPFR_ZIV_INIT (loop, prec);
   for (;;)
     {
       /* n0 = ceil(log2(realprec + 2 + 1+ln(2.4)/ln(2))) */
@@ -385,8 +349,9 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
       if (mpfr_can_round (arctgt, realprec, GMP_RNDN, GMP_RNDZ,
                           MPFR_PREC (atan) + (rnd_mode == GMP_RNDN)))
 	break;
-      realprec += BITS_PER_MP_LIMB;
+      MPFR_ZIV_NEXT (loop, realprec);
     }
+  MPFR_ZIV_FREE (loop);
 
   inexact = mpfr_set4 (atan, arctgt, rnd_mode, MPFR_SIGN (x));
 
