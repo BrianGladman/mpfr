@@ -1,6 +1,6 @@
 /* mpfr_sub_ui -- subtract a floating-point number and a machine integer
 
-Copyright 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+Copyright 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -26,27 +26,28 @@ MA 02111-1307, USA. */
 int
 mpfr_sub_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 {
-  if (MPFR_LIKELY(u!= 0))  /* if u=0, do nothing */
-  {
-    mpfr_t uu;
-    mp_limb_t up[1];
-    unsigned long cnt;
-    int inex;
-    MPFR_SAVE_EXPO_DECL (expo);
+  if (MPFR_LIKELY (u != 0))  /* if u=0, do nothing */
+    {
+      mpfr_t uu;
+      mp_limb_t up[1];
+      unsigned long cnt;
+      int inex;
 
-    MPFR_TMP_INIT1(up, uu, BITS_PER_MP_LIMB);
-    MPFR_ASSERTN(u == (mp_limb_t) u);
-    count_leading_zeros(cnt, (mp_limb_t) u);
-    *up = (mp_limb_t) u << cnt;
+      MPFR_SAVE_EXPO_DECL (expo);
 
-    /* Optimization note: Exponent save/restore operations may be
-       removed if mpfr_sub works even when uu is out-of-range. */
-    MPFR_SAVE_EXPO_MARK (expo);
-    MPFR_SET_EXP (uu, BITS_PER_MP_LIMB - cnt);
-    inex = mpfr_sub(y, x, uu, rnd_mode);
-    MPFR_SAVE_EXPO_FREE (expo);
-    return mpfr_check_range(y, inex, rnd_mode);
-  }
+      MPFR_TMP_INIT1 (up, uu, BITS_PER_MP_LIMB);
+      MPFR_ASSERTN (u == (mp_limb_t) u);
+      count_leading_zeros (cnt, (mp_limb_t) u);
+      *up = (mp_limb_t) u << cnt;
+
+      /* Optimization note: Exponent save/restore operations may be
+         removed if mpfr_sub works even when uu is out-of-range. */
+      MPFR_SAVE_EXPO_MARK (expo);
+      MPFR_SET_EXP (uu, BITS_PER_MP_LIMB - cnt);
+      inex = mpfr_sub (y, x, uu, rnd_mode);
+      MPFR_SAVE_EXPO_FREE (expo);
+      return mpfr_check_range (y, inex, rnd_mode);
+    }
   else
     return mpfr_set (y, x, rnd_mode);
 }
