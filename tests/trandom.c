@@ -28,7 +28,7 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-void test_random(unsigned long nbtests, unsigned long prec)
+void test_random(unsigned long nbtests, unsigned long prec, int verbose)
 {
   mpfr_t x; 
   int *tab, size_tab, k; 
@@ -46,10 +46,13 @@ void test_random(unsigned long nbtests, unsigned long prec)
     tab[(int)(size_tab * d)]++;     
   }
   
+  if (!verbose) { free(tab); return; }
+
   av /= nbtests; 
   var = (var /nbtests) - av*av; 
 
   th = (double)nbtests / size_tab; 
+  
   printf("Average = %.5f\nVariance = %.5f\n", av, var); 
   printf("Repartition for random. Each integer should be close to %d.\n", 
 	 (int)th); 
@@ -68,7 +71,7 @@ void test_random(unsigned long nbtests, unsigned long prec)
   return;
 }
 
-void test_random2(unsigned long nbtests, unsigned long prec)
+void test_random2(unsigned long nbtests, unsigned long prec, int verbose)
 {
   mpfr_t x; 
   int *tab, size_tab, k; 
@@ -85,6 +88,8 @@ void test_random2(unsigned long nbtests, unsigned long prec)
     d = mpfr_get_d(x); av += d; var += d*d; 
     tab[(int)(size_tab * d)]++;     
   }
+
+  if (!verbose) { free(tab); return; }
   
   av /= nbtests; 
   var = (var /nbtests) - av*av; 
@@ -102,11 +107,11 @@ void test_random2(unsigned long nbtests, unsigned long prec)
   printf("\nChi2 statistics value (with %d degrees of freedom) : %.5f\n\n", 
 	 size_tab - 1, chi2); 
 
-
+  free(tab); 
   return;
 }
 
-void test_urandomb(unsigned long nbtests, unsigned long prec)
+void test_urandomb(unsigned long nbtests, unsigned long prec, int verbose)
 {
   mpfr_t x; 
   int *tab, size_tab, k; 
@@ -127,6 +132,8 @@ void test_urandomb(unsigned long nbtests, unsigned long prec)
     tab[(int)(size_tab * d)]++;     
   }
   
+  if (!verbose) { free(tab); return; }
+
   av /= nbtests; 
   var = (var /nbtests) - av*av; 
 
@@ -144,19 +151,22 @@ void test_urandomb(unsigned long nbtests, unsigned long prec)
   printf("\nChi2 statistics value (with %d degrees of freedom) : %.5f\n\n", 
 	 size_tab - 1, chi2); 
 
+  free(tab); 
   return;
 }
 
 int main(int argc, char **argv)
 {
-  unsigned long nbtests, prec; 
-
+  unsigned long nbtests, prec; int verbose = 0; 
+  
+  if (argc > 1) verbose = 1;
+ 
   if (argc == 1) { nbtests = 10000; } else nbtests = atoi(argv[1]);
   if (argc <= 2) { prec = 1000; } else prec = atoi(argv[2]); 
 
-  test_random(nbtests, prec); 
-  test_random2(nbtests, prec); 
-  test_urandomb(nbtests, prec);
+  test_random(nbtests, prec, verbose); 
+  test_random2(nbtests, prec, verbose); 
+  test_urandomb(nbtests, prec, verbose);
   
   return 0;
 }
