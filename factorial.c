@@ -32,9 +32,9 @@ MA 02111-1307, USA. */
 
 int
 #if __STDC__
-mpfr_factorial (mpfr_ptr y, unsigned long int x , mp_rnd_t rnd_mode) 
+mpfr_fac_ui (mpfr_ptr y, unsigned long int x , mp_rnd_t rnd_mode) 
 #else
-mpfr_factorial (y, x, rnd_mode)
+mpfr_fac_ui (y, x, rnd_mode)
      mpfr_ptr y;
      unsigned long x;
      mp_rnd_t rnd_mode;
@@ -109,3 +109,7 @@ mpfr_factorial (y, x, rnd_mode)
  
     }
 }
+
+
+
+
