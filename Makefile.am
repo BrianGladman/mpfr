@@ -11,7 +11,7 @@ libmpfr_a_LIBADD = @LIBOBJS@
 
 info_TEXINFOS = mpfr.texi
 
-DISTCLEANFILES = mpfr.info
+mpfr_TEXINFOS = fdl.texi
 
 tests: 
 	cd tests ; make tests

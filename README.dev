@@ -29,3 +29,5 @@ do not use NULL with #include <stdlib.h> only, because this will
 not work with the native SunOS 4 C compiler, whose headers are
 not conform to the standard (even with C90); other problems may
 occur on this architecture.
+
+To generate mpfr.info, you need texinfo version 4.2 (or higher).
