@@ -43,6 +43,9 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mp_rnd_t rnd)
   mp_prec_t prec = MPFR_PREC (dest);
   mp_prec_t pold = MPFR_PREC (cache->x);
   int inexact, sign;
+  MPFR_SAVE_EXPO_DECL (expo);
+  
+  MPFR_SAVE_EXPO_MARK (expo);
 
   /* Check if the cache has been already filled */
   if (MPFR_UNLIKELY(pold == 0))
@@ -112,5 +115,7 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mp_rnd_t rnd)
 	  break;
 	}
     }
-  return inexact;
+
+  MPFR_SAVE_EXPO_FREE (expo);
+  return mpfr_check_range (dest, inexact, rnd);
 }

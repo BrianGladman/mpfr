@@ -31,29 +31,30 @@ mpfr_const_pi (mpfr_ptr x, mp_rnd_t rnd_mode) {
   return mpfr_cache (x, __gmpfr_cache_const_pi, rnd_mode);
 }
 
+/* Don't need to save/restore exponent range: the cache does it */
 int
 mpfr_const_pi_internal (mpfr_ptr x, mp_rnd_t rnd_mode)
 {
   mpfr_t a, A, B, D, S;
   mp_prec_t px, p, cancel, k, kmax;
-  int inex = 0, ok;
+  MPFR_ZIV_DECL (loop);
+  int inex;
 
   px = MPFR_PREC (x);
 
   /* we need 9*2^kmax - 4 >= px+2*kmax+8 */
   for (kmax = 2; ((px + 2 * kmax + 12) / 9) >> kmax; kmax ++);
 
-  p = px + 2 * kmax + 14; /* guarantees no recomputation for px <= 10000 */
-
-  do {
-    p += kmax;
-    
-    mpfr_init2 (a, p);
-    mpfr_init2 (A, p);
-    mpfr_init2 (B, p);
-    mpfr_init2 (D, p);
-    mpfr_init2 (S, p);
-    
+  p = px + 3 * kmax + 14; /* guarantees no recomputation for px <= 10000 */
+  
+  mpfr_init2 (a, p);
+  mpfr_init2 (A, p);
+  mpfr_init2 (B, p);
+  mpfr_init2 (D, p);
+  mpfr_init2 (S, p);
+  
+  MPFR_ZIV_INIT (loop, p);
+  for (;;) {    
     mpfr_set_ui (a, 1, GMP_RNDN);          /* a = 1 */
     mpfr_set_ui (A, 1, GMP_RNDN);          /* A = a^2 = 1 */
     mpfr_set_ui_2exp (B, 1, -1, GMP_RNDN); /* B = b^2 = 1/2 */
@@ -90,16 +91,26 @@ mpfr_const_pi_internal (mpfr_ptr x, mp_rnd_t rnd_mode)
       mpfr_div (A, B, D, GMP_RNDN);
 
       /* MPFR_ASSERTN(p >= 2 * k + 8); */
-      if ((ok = mpfr_can_round (A, p - 2 * k - 8, GMP_RNDN, GMP_RNDZ,
-                                px + (rnd_mode == GMP_RNDN))))
-        inex = mpfr_set (x, A, rnd_mode);
+      if (MPFR_LIKELY (mpfr_can_round (A, p - 2 * k - 8, GMP_RNDN, GMP_RNDZ,
+				       px + (rnd_mode == GMP_RNDN))))
+	break;
       
-      mpfr_clear (a);
-      mpfr_clear (A);
-      mpfr_clear (B);
-      mpfr_clear (D);
-      mpfr_clear (S);
-  } while (ok == 0);
+      p += kmax;
+      MPFR_ZIV_NEXT (loop, p);
+      mpfr_set_prec (a, p);
+      mpfr_set_prec (A, p);
+      mpfr_set_prec (B, p);
+      mpfr_set_prec (D, p);
+      mpfr_set_prec (S, p);
+  }  
+  MPFR_ZIV_FREE (loop);
+  inex = mpfr_set (x, A, rnd_mode);
+
+  mpfr_clear (a);
+  mpfr_clear (A);
+  mpfr_clear (B);
+  mpfr_clear (D);
+  mpfr_clear (S);
 
   return inex;
 }

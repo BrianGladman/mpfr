@@ -100,6 +100,7 @@ S (mpz_t *T, mpz_t *P, mpz_t *Q, unsigned long n1, unsigned long n2, int need_P)
     }
 }
 
+/* Don't need to save / restore exponent range: the cache does it */
 int
 mpfr_const_log2_internal (mpfr_ptr x, mp_rnd_t rnd_mode)
 {
@@ -112,9 +113,7 @@ mpfr_const_log2_internal (mpfr_ptr x, mp_rnd_t rnd_mode)
   int ok = 1; /* ensures that the 1st try will give correct rounding */
   unsigned long lgN, i;
   MPFR_ZIV_DECL (loop);
-  MPFR_SAVE_EXPO_DECL (expo);
 
-  MPFR_SAVE_EXPO_MARK (expo);
   mpfr_init2 (t, MPFR_PREC_MIN);
   mpfr_init2 (q, MPFR_PREC_MIN);
 
@@ -186,6 +185,5 @@ mpfr_const_log2_internal (mpfr_ptr x, mp_rnd_t rnd_mode)
   mpfr_clear (t);
   mpfr_clear (q);
 
-  MPFR_SAVE_EXPO_FREE (expo);
-  return mpfr_check_range (x, inexact, rnd_mode);
+  return inexact;
 }

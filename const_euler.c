@@ -19,8 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdlib.h>
-
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
@@ -45,31 +43,35 @@ mpfr_const_euler_internal (mpfr_t x, mp_rnd_t rnd)
   mpfr_t y, z;
   unsigned long n;
   int inexact;
+  MPFR_ZIV_DECL (loop);
 
   log2m = MPFR_INT_CEIL_LOG2 (prec);
-  m = prec + log2m;
+  m = prec + 2*log2m + 23;
 
-  mpfr_init (y);
-  mpfr_init (z);
+  mpfr_init2 (y, m);
+  mpfr_init2 (z, m);
 
-  do
+  MPFR_ZIV_INIT (loop, m);
+  for (;;)
     {
-      m += 23;
       /* since prec >= 1, we have m >= 24 here, which ensures n >= 9 below */
       n = 1 + (unsigned long) ((double) m * LOG2 / 2.0);
       MPFR_ASSERTD (n >= 9);
-      mpfr_set_prec (y, m + log2m);
-      mpfr_set_prec (z, m + log2m);
       mpfr_const_euler_S (y, n);
       mpfr_set_ui (z, n, GMP_RNDN);
       mpfr_log (z, z, GMP_RNDD);
       mpfr_sub (y, y, z, GMP_RNDN); /* S'(n) - log(n) */
-      mpfr_set_prec (z, m);
+      mpfr_set_prec (z, m - log2m);
       mpfr_const_euler_R (z, n);
       mpfr_sub (y, y, z, GMP_RNDN);
+      if (MPFR_LIKELY (mpfr_can_round (y, m - 3, GMP_RNDN, GMP_RNDZ,
+				       prec + (rnd == GMP_RNDN))))
+	break;
+      MPFR_ZIV_NEXT (loop, m);
+      mpfr_set_prec (y, m);
+      mpfr_set_prec (z, m); 
     }
-  while (!mpfr_can_round (y, m - 3, GMP_RNDN, GMP_RNDZ,
-                          prec + (rnd == GMP_RNDN)));
+  MPFR_ZIV_FREE (loop);
 
   inexact = mpfr_set (x, y, rnd);
 
