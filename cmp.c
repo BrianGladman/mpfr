@@ -102,9 +102,9 @@ mpfr_cmp3 (b, c, s)
 */
 int 
 #if __STDC__
-mpfr_cmp2 ( mpfr_srcptr b, mpfr_srcptr c )
+mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c)
 #else
-mpfr_cmp2(b, c)
+mpfr_cmp2 (b, c)
      mpfr_srcptr b; 
      mpfr_srcptr c; 
 #endif
@@ -116,8 +116,10 @@ mpfr_cmp2(b, c)
   printf("b="); mpfr_print_raw(b); putchar('\n');
   printf("c="); mpfr_print_raw(c); putchar('\n');
 #endif  
-  if (MPFR_NOTZERO(c)==0) return (MPFR_NOTZERO(b)) ? 0 : MPFR_PREC(b);
-  d = MPFR_EXP(b)-MPFR_EXP(c);
+  if (MPFR_NOTZERO(c) == 0)
+    return (MPFR_NOTZERO(b)) ? 0 : MPFR_PREC(b);
+
+  d = MPFR_EXP(b) - MPFR_EXP(c);
   k = 0; /* result can be d or d+1 if d>1, or >= d otherwise */
   /* k is the number of identical bits in the high part,
      then z is the number of possibly cancelled bits */
@@ -127,7 +129,8 @@ mpfr_cmp2(b, c)
 #endif
   bn = (MPFR_PREC(b)-1)/BITS_PER_MP_LIMB;
   cn = (MPFR_PREC(c)-1)/BITS_PER_MP_LIMB;
-  bp = MPFR_MANT(b); cp = MPFR_MANT(c);
+  bp = MPFR_MANT(b);
+  cp = MPFR_MANT(c);
   /* subtract c from b from most significant to less significant limbs,
      and first determines first non zero limb difference */
   if (d)
@@ -135,18 +138,23 @@ mpfr_cmp2(b, c)
       cc = bp[bn--];
       if (d < BITS_PER_MP_LIMB)
 	cc -= cp[cn] >> d;
+      else
+	d -= BITS_PER_MP_LIMB;
     }
-  else { /* d=0 */
-    while (bn>=0 && cn>=0 && (cc=(bp[bn--]-cp[cn--]))==0) {
-      k+=BITS_PER_MP_LIMB;
-    }
+  else /* d=0 */
+    {
+      while (bn>=0 && cn>=0 && (cc=(bp[bn--]-cp[cn--]))==0)
+	  k += BITS_PER_MP_LIMB;
 
-    if (cc==0) { /* either bn<0 or cn<0 */
-      while (bn>=0 && (cc=bp[bn--])==0) k+=BITS_PER_MP_LIMB;
-    }
+    if (cc==0) /* either bn<0 or cn<0 */
+      {
+	while (bn>=0 && (cc=bp[bn--])==0)
+	  k += BITS_PER_MP_LIMB;
+      }
     /* now bn<0 or cc<>0 */
-    if (cc==0 && bn<0) return(MPFR_PREC(b));
-  }
+    if (cc==0 && bn<0)
+      return(MPFR_PREC(b));
+    }
 
   /* the first non-zero limb difference is cc, and the number
      of cancelled bits in the upper limbs is k */
@@ -154,7 +162,8 @@ mpfr_cmp2(b, c)
   count_leading_zeros(u, cc);
   k += u;
 
-  if (cc != ((mp_limb_t) 1 << (BITS_PER_MP_LIMB - u - 1))) return k;
+  if (cc != ((mp_limb_t) 1 << (BITS_PER_MP_LIMB - u - 1)))
+    return k;
 
   /* now cc is an exact power of two */
   if (cc != 1) 
@@ -165,8 +174,9 @@ mpfr_cmp2(b, c)
 	 be 0 in order for the process to go on */
       while (bn >= 0)
 	{
-	  if (cn < 0) { return k; }
-	  t = bp[bn--]; 
+	  if (cn < 0)
+	    return k;
+	  t = bp[bn--];
 	  if (d < BITS_PER_MP_LIMB)
 	    {
 	      if (d) 
@@ -180,7 +190,10 @@ mpfr_cmp2(b, c)
 	      if (t < u) return k+1; 
 	    }
 	  else
-	    if (t) return k; else d -= BITS_PER_MP_LIMB; 
+	    if (t)
+	      return k;
+	    else
+	      d -= BITS_PER_MP_LIMB; 
 	}
 	  
       /* bn < 0; if some limb of c is nonzero, return k+1, otherwise return k*/
