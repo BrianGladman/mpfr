@@ -1,6 +1,6 @@
 /* mpfr_reldiff -- compute relative difference of two floating-point numbers.
 
-Copyright (C) 2000 Free Software Foundation.
+Copyright (C) 2000, 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -27,15 +27,7 @@ MA 02111-1307, USA. */
 
 /* reldiff(b, c) = abs(b-c)/b */
 void 
-#if __STDC__
-mpfr_reldiff(mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
-#else
-mpfr_reldiff(a, b, c, rnd_mode) 
-     mpfr_ptr a;
-     mpfr_srcptr b;
-     mpfr_srcptr c;
-     mp_rnd_t rnd_mode;
-#endif
+mpfr_reldiff (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 {
   mpfr_t b_copy;
 

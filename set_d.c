@@ -1,7 +1,7 @@
 /* mpfr_set_d, mpfr_get_d -- convert a multiple precision floating-point number
                              from/to a machine double precision float
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 1999, 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -230,14 +230,7 @@ __mpfr_scale2 (double d, int exp)
 /* End of part included from gmp */
 
 int
-#if __STDC__
 mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
-#else
-mpfr_set_d (r, d, rnd_mode)
-     mpfr_ptr r;
-     double d;
-     mp_rnd_t rnd_mode;
-#endif
 {
   int signd, sizer, sizetmp, inexact;
   unsigned int cnt;
@@ -305,13 +298,7 @@ mpfr_set_d (r, d, rnd_mode)
 }
 
 double
-#if __STDC__
 mpfr_get_d2 (mpfr_srcptr src, long e)
-#else
-mpfr_get_d2 (src, e)
-     mpfr_srcptr src;
-     long e;
-#endif
 {
   double res;
   mp_size_t size, i, n_limbs_to_use;
@@ -374,12 +361,7 @@ mpfr_get_d2 (src, e)
 }
 
 double 
-#if __STDC__
 mpfr_get_d (mpfr_srcptr src)
-#else
-mpfr_get_d (src)
-     mpfr_srcptr src;
-#endif
 {
   return mpfr_get_d2 (src, MPFR_EXP(src));
 }

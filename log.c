@@ -1,6 +1,6 @@
 /* mpfr_log -- natural logarithm of a floating-point number
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 1999, 2001 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -42,14 +42,7 @@ MA 02111-1307, USA. */
 /* #define DEBUG */
 
 int
-#if __STDC__
 mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode) 
-#else
-mpfr_log (r, a, rnd_mode)
-     mpfr_ptr r;
-     mpfr_srcptr a;
-     mp_rnd_t rnd_mode;
-#endif
 {
   int m, bool, size, cancel, inexact = 0;
   mp_prec_t p, q;

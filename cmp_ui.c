@@ -1,6 +1,6 @@
 /* mpfr_cmp_ui -- compare a floating-point number with a machine integer
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 1999, 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -32,14 +32,7 @@ MA 02111-1307, USA. */
 */
 
 int 
-#if __STDC__
 mpfr_cmp_ui_2exp (mpfr_srcptr b, unsigned long int i, int f )
-#else
-mpfr_cmp_ui_2exp (b, i, f)
-     mpfr_srcptr b; 
-     unsigned long int i; 
-     int f; 
-#endif
 {
   int e, k, bn; mp_limb_t c, *bp;
 
@@ -81,14 +74,7 @@ mpfr_cmp_ui_2exp (b, i, f)
 */
 
 int 
-#if __STDC__
 mpfr_cmp_si_2exp (mpfr_srcptr b, long int i, int f )
-#else
-mpfr_cmp_si_2exp (b, i, f)
-     mpfr_srcptr b; 
-     long int i; 
-     int f; 
-#endif
 {
   int e, k, bn, si; mp_limb_t c, *bp;
 

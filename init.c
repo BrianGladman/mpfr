@@ -1,6 +1,6 @@
 /* mpfr_init -- initialize a floating-point number
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 1999, 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -27,13 +27,7 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
 void
-#if __STDC__
 mpfr_init2 (mpfr_ptr x, mp_prec_t p)
-#else
-mpfr_init2 (x, p)
-     mpfr_ptr x;
-     mp_prec_t p;
-#endif
 {
   mp_prec_t xsize; 
 
@@ -52,12 +46,7 @@ mpfr_init2 (x, p)
 }
 
 void
-#if __STDC__
 mpfr_init (mpfr_ptr x)
-#else
-mpfr_init (x)
-     mpfr_ptr x;
-#endif
 {
   mpfr_init2(x, __mpfr_default_fp_bit_precision);
 }

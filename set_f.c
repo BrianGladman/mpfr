@@ -1,6 +1,6 @@
 /* mpfr_set_f -- set a MPFR number from a GNU MPF number
 
-Copyright (C) 1999-2000 Free Software Foundation.
+Copyright (C) 1999, 2000, 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -27,14 +27,7 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
 int
-#if __STDC__
-mpfr_set_f(mpfr_ptr y, mpf_srcptr x, mp_rnd_t rnd_mode)
-#else
-mpfr_set_f(y, x, rnd_mode)
-     mpfr_ptr y;
-     mpf_srcptr x;
-     mp_rnd_t rnd_mode;
-#endif
+mpfr_set_f (mpfr_ptr y, mpf_srcptr x, mp_rnd_t rnd_mode)
 {
   mp_limb_t *my, *mx, *tmp;
   unsigned long cnt, sx, sy;

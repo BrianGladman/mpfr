@@ -1,6 +1,6 @@
 /* mpfr_set_str -- set a floating-point number from a string
 
-Copyright (C) 2000 Free Software Foundation.
+Copyright (C) 2000, 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -30,15 +30,7 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
 int
-#if __STDC__
 mpfr_set_str (mpfr_ptr x, __gmp_const char *str, int base, mp_rnd_t rnd_mode)
-#else
-mpfr_set_str (x, str, base, rnd_mode)
-     mpfr_ptr x;
-     __gmp_const char *str;
-     int base;
-     mp_rnd_t rnd_mode;
-#endif
 {
   char negative = 0, *endptr;
   unsigned long k = 0, l, q;
@@ -135,17 +127,9 @@ mpfr_set_str (x, str, base, rnd_mode)
 }
 
 int
-#if __STDC__
-mpfr_init_set_str(mpfr_ptr x, char *str, int base, mp_rnd_t rnd_mode)
-#else
-mpfr_init_set_str(x, str, base, rnd_mode)
-     mpfr_ptr x;
-     char *str;
-     int base;
-     mp_rnd_t rnd_mode;
-#endif
+mpfr_init_set_str (mpfr_ptr x, char *str, int base, mp_rnd_t rnd_mode)
 { 
-  mpfr_init(x); 
-  return mpfr_set_str(x, str, base, rnd_mode);
+  mpfr_init (x);
+  return mpfr_set_str (x, str, base, rnd_mode);
 }
 

@@ -1,6 +1,6 @@
 /* mpfr_random -- generate a random floating-point number
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 1999, 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -29,12 +29,7 @@ MA 02111-1307, USA. */
 /* Computes a random mpfr in [0, 1[ with precision MPFR_PREC */
 
 void
-#if __STDC__
 mpfr_random (mpfr_ptr x)
-#else
-mpfr_random (x)
-     mpfr_ptr x; 
-#endif    
 {
   mp_limb_t *xp; unsigned long xn, cnt, prec = MPFR_PREC(x); 
 

@@ -1,7 +1,7 @@
 /* mpfr_pow_ui-- compute the power of a floating-point
                                   by a machine integer
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 1999, 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -27,15 +27,7 @@ MA 02111-1307, USA. */
 
 /* sets x to y^n, and return 0 if exact, non-zero otherwise */
 int
-#if __STDC__
 mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
-#else
-mpfr_pow_ui (x, y, n, rnd)
-     mpfr_ptr x;
-     mpfr_srcptr y;
-     unsigned long int n;
-     mp_rnd_t rnd;
-#endif
 {
   long int i, err;
   unsigned long m;

@@ -1,6 +1,6 @@
 /* mpfr_div -- divide two floating-point numbers
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 1999, 2001 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -44,15 +44,7 @@ affiche_mp(mp_srcptr z, mp_size_t length)
 #endif
 
 int
-#if __STDC__
 mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
-#else
-mpfr_div (q, u, v, rnd_mode)
-     mpfr_ptr q;
-     mpfr_srcptr u;
-     mpfr_srcptr v;
-     mp_rnd_t rnd_mode;
-#endif
 {
   mp_srcptr up, vp, bp;
   mp_size_t usize, vsize;  

@@ -1,6 +1,6 @@
 /* mpfr_exp -- exponential of a floating-point number
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 1999, 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -119,14 +119,7 @@ mpfr_exp_rational (mpfr_ptr y, mpz_srcptr p, int r, int m)
 #define shift (BITS_PER_MP_LIMB/2)
 
 int
-#if __STDC__
 mpfr_exp3 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
-#else
-mpfr_exp3 (y, x, rnd_mode)
-     mpfr_ptr y;
-     mpfr_srcptr x; 
-     mp_rnd_t rnd_mode;
-#endif
 {
   mpfr_t t;
   mpfr_t x_copy;

@@ -1,6 +1,6 @@
 /* mpfr_set_z -- set a floating-point number from a multiple-precision integer
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 1999, 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -27,14 +27,7 @@ MA 02111-1307, USA. */
 
 /* set f to the integer z */
 int 
-#if __STDC__
 mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd)
-#else
-mpfr_set_z (f, z, rnd) 
-     mpfr_ptr f;
-     mpz_srcptr z;
-     mp_rnd_t rnd;
-#endif
 {
   mp_size_t fn, zn, dif, sh;
   int k, sign_z;

@@ -1,6 +1,6 @@
 /* mpfr_set_prec_raw -- reset the precision of a floating-point number
 
-Copyright (C) 2000 Free Software Foundation.
+Copyright (C) 2000, 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -27,13 +27,7 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
 void
-#if __STDC__
 mpfr_set_prec_raw (mpfr_ptr x, mp_prec_t p)
-#else
-mpfr_set_prec_raw (x, p)
-     mpfr_ptr x;
-     mp_prec_t p;
-#endif
 {
   if (p==0) {
     fprintf(stderr, "*** cannot set precision to 0 bits\n"); exit(1);

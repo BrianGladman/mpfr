@@ -1,6 +1,6 @@
 /* mpfr_mul_2exp -- multiply a floating-point number by a power of two
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 1999, 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -26,15 +26,7 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
 int
-#if __STDC__
 mpfr_mul_2exp (mpfr_ptr y, mpfr_srcptr x, unsigned long int n, mp_rnd_t rnd_mode)
-#else
-mpfr_mul_2exp (y, x, n, rnd_mode)
-     mpfr_ptr y;
-     mpfr_srcptr x;
-     unsigned long int n;
-     mp_rnd_t rnd_mode;
-#endif
 {
   int inexact = 0;
 

@@ -1,6 +1,6 @@
 /* mpfr_get_str -- output a floating-point number to a string
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 1999, 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -19,8 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-/* #define DEBUG */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -38,18 +36,8 @@ MA 02111-1307, USA. */
   For op = 3.1416 we get str = "31416" and expptr=1.
  */
 char*
-#if __STDC__
 mpfr_get_str (char *str, mp_exp_t *expptr, int base, size_t n,
 		  mpfr_srcptr op, mp_rnd_t rnd_mode)
-#else
-mpfr_get_str (str, expptr, base, n, op, rnd_mode)
-     char *str;
-     mp_exp_t *expptr;
-     int base;
-     size_t n;
-     mpfr_srcptr op;
-     mp_rnd_t rnd_mode;
-#endif
 {
   double d;
   long e, q, div, p, err, prec, sh;
@@ -119,17 +107,11 @@ mpfr_get_str (str, expptr, base, n, op, rnd_mode)
     n = (int) (__mp_bases[base].chars_per_bit_exactly * MPFR_PREC(op));
     if (n==0) n=1;
   }
-#ifdef DEBUG  
-  printf("f=%d n=%d MPFR_EXP(op)=%d MPFR_PREC(op)=%d\n", f, n, e, MPFR_PREC(op));
-#endif
   /* now the first n digits of the mantissa are obtained from
      rnd(op*base^(n-f)) */
   if (pow2) prec = n*pow2;
   else
     prec = 1 + (long) ((double) n / __mp_bases[base].chars_per_bit_exactly);
-#ifdef DEBUG
-  printf("prec=%d\n", prec);
-#endif
   err = 5;
   q = prec + err;
   /* one has to use at least q bits */
@@ -168,17 +150,10 @@ mpfr_get_str (str, expptr, base, n, op, rnd_mode)
 	   mpfr_div(a, b, a, rnd_mode);
 	 }
 	 /* now a is an approximation by default of 1/base^(f-n) */
-#ifdef DEBUG
-	 printf("base^(n-f)=%1.20e\n", mpfr_get_d(a));
-#endif
 	 mpfr_mul(b, op, a, rnd_mode);
        }
     }
     if (neg) MPFR_CHANGE_SIGN(b); /* put b positive */
-#ifdef DEBUG
-    printf("p=%d b=%1.20e\n", p, mpfr_get_d(b));
-    printf("q=%d 2*prec+BITS_PER_MP_LIMB=%d\n", q, 2*prec+BITS_PER_MP_LIMB);
-#endif
     if (q>2*prec+BITS_PER_MP_LIMB) {
       /* if the intermediate precision exceeds twice that of the input,
 	 a worst-case for the division cannot occur */

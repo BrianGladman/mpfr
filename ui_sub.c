@@ -1,6 +1,6 @@
 /* mpfr_ui_sub -- divide a machine integer by a floating-point number
 
-Copyright (C) 2000 Free Software Foundation.
+Copyright (C) 2000, 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -27,15 +27,7 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
 int
-#if __STDC__
 mpfr_ui_sub (mpfr_ptr y, unsigned long int u, mpfr_srcptr x, mp_rnd_t rnd_mode)
-#else
-mpfr_ui_sub (y, u, x, rnd_mode)
-     mpfr_ptr y;
-     unsigned long int u;
-     mpfr_srcptr x;
-     mp_rnd_t rnd_mode;
-#endif
 {
   mpfr_t uu;
   mp_limb_t up[1];

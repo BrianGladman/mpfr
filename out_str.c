@@ -1,6 +1,6 @@
 /* mpfr_out_str -- output a floating-point number to a stream
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 1999, 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -27,17 +27,8 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
 size_t 
-#if __STDC__
 mpfr_out_str (FILE *stream, int base, size_t n_digits, mpfr_srcptr op,
 	      mp_rnd_t rnd_mode)
-#else
-mpfr_out_str (stream, base, n_digits, op, rnd_mode)
-     FILE *stream;
-     int base;
-     size_t n_digits;
-     mpfr_srcptr op;
-     mp_rnd_t rnd_mode;
-#endif
 {
   char *s, *s0;
   size_t l;

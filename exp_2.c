@@ -1,7 +1,7 @@
 /* mpfr_exp_2 -- exponential of a floating-point number 
                 using Brent's algorithms in O(n^(1/2)*M(n)) and O(n^(1/3)*M(n))
 
-Copyright (C) 1999-2000 Free Software Foundation.
+Copyright (C) 1999, 2000, 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -73,14 +73,7 @@ _mpfr_cuberoot (unsigned long n)
    Otherwise do nothing and return 0.
  */
 static mp_exp_t
-#if __STDC__
 mpz_normalize (mpz_t rop, mpz_t z, int q)
-#else
-mpz_normalize (rop, z, q)
-     mpz_t rop;
-     mpz_t z;
-     int q;
-#endif
 {
   int k;
 
@@ -100,15 +93,7 @@ mpz_normalize (rop, z, q)
    Returns target.
 */
 static int
-#if __STDC__
 mpz_normalize2 (mpz_t rop, mpz_t z, int expz, int target)
-#else
-mpz_normalize2 (rop, z, expz, target)
-     mpz_t rop;
-     mpz_t z;
-     int expz;
-     int target;
-#endif
 {
   if (target > expz) mpz_div_2exp(rop, z, target-expz);
   else mpz_mul_2exp(rop, z, expz-target);
@@ -121,14 +106,7 @@ mpz_normalize2 (rop, z, expz, target)
    power series. The resulting complexity is O(n^(1/3)*M(n)).
 */
 int 
-#if __STDC__
 mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode) 
-#else
-mpfr_exp_2 (y, x, rnd_mode)
-     mpfr_ptr y;
-     mpfr_srcptr x;
-     mp_rnd_t rnd_mode;
-#endif
 {
   int n, expx, K, precy, q, k, l, err, exps, inexact;
   mpfr_t r, s, t; mpz_t ss;

@@ -1,6 +1,6 @@
 /* mpfr_set_q -- set a floating-point number from a multiple-precision rational
 
-Copyright (C) 2000 Free Software Foundation.
+Copyright (C) 2000, 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -27,14 +27,7 @@ MA 02111-1307, USA. */
 
 /* set f to the rational q */
 int
-#if __STDC__
 mpfr_set_q (mpfr_ptr f, mpq_srcptr q, mp_rnd_t rnd)
-#else
-mpfr_set_q (f, q, rnd) 
-     mpfr_ptr f;
-     mpq_srcptr q;
-     mp_rnd_t rnd;
-#endif
 {
   mpz_srcptr num, den;
   mpfr_t n, d;
