@@ -24,6 +24,18 @@ MA 02111-1307, USA. */
 #include <sys/fpu.h>
 #endif
 
+/* generates a random long int, a random double,
+   and corresponding seed initializing */
+#ifdef HAVE_RAND48
+#define LONG_RAND lrand48
+#define DBL_RAND  drand48
+#define SEED_RAND srand48
+#else
+#define LONG_RAND random
+#define DBL_RAND() ((double) random() / (double) RAND_MAX)
+#define SEED_RAND srandom
+#endif
+
 #if defined (__hpux)
 #define srandom srand48
 #define random() (mrand48() & 0x7fffffff)
@@ -47,12 +59,6 @@ double Ulp _PROTO ((double));
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 #define ABS(x) (((x)>0) ? (x) : -(x))
-
-/* generates a random long int, a random double,
-   and corresponding seed initializing */
-#define LONG_RAND lrand48
-#define DBL_RAND  drand48
-#define SEED_RAND srand48
 
 /* generate a random double using the whole range of possible values,
    including denormalized numbers, NaN, infinities, ... */

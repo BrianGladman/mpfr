@@ -27,13 +27,13 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 #include "mpfr-test.h"
 
-#include "rnd_mode.c"
+// #include "rnd_mode.c"
 
 int
 main (void)
 {
 
-#ifdef TEST
+#ifdef HAVE_FENV
 
    mpfr_t half, x, y;
    mp_rnd_t rnd_mode;
@@ -50,7 +50,7 @@ main (void)
        int i, j, si, sj;
        double di, dj;
 
-       mpfr_set_machine_rnd_mode(rnd_mode);
+       mpfr_set_machine_rnd_mode (rnd_mode);
        for (i = 1, di = 0.25; i < 127; i++, di *= 0.5)
          for (si = 0; si <= 1; si++)
            {
@@ -95,11 +95,11 @@ main (void)
                      d /= 1 << -exp;
                    if (c != d)
                      {
-                       fprintf(stderr, "Error in tget_d (%s) for "
-                               "(i,si,j,sj,rnd,exp) = (%d,%d,%d,%d,%d,%d)\n"
-                               "got %.17g instead of %.17g\n",
-                               f, i, si, j, sj, rnd_mode, exp, c, d);
-                       exit(1);
+                       fprintf (stderr, "Error in tget_d (%s) for "
+                                "(i,si,j,sj,rnd,exp) = (%d,%d,%d,%d,%d,%d)\n"
+                                "got %.19e instead of %.19e\n",
+                                f, i, si, j, sj, rnd_mode, exp, c, d);
+                       exit (1);
                      }
                  }
            }
@@ -108,10 +108,6 @@ main (void)
    mpfr_clear(half);
    mpfr_clear(x);
    mpfr_clear(y);
-
-#else
-
-   fprintf(stderr, "Disabled\n");
 
 #endif
 

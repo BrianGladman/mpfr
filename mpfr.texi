@@ -563,13 +563,12 @@ The precision @var{prec} can be any integer between @code{MPFR_PREC_MIN} and
 @code{MPFR_PREC_MAX}.
 @end deftypefun
 
-@c @deftypefun void mpfr_set_machine_rnd_mode (mp_rnd_t @var{rnd})
-@c Set the machine rounding mode to @var{rnd}.
-@c This function is useful for debugging purpose, but
-@c also as a common interface to all different ways of setting the
-@c rounding mode, which unfortunately differ from one operating system to
-@c another one.
-@c @end deftypefun
+@deftypefun void mpfr_set_machine_rnd_mode (mp_rnd_t @var{rnd})
+Set the machine rounding mode to @var{rnd}.
+This function is provided only when the operating system supports the
+ISOC9X standard interface for setting rounding modes (i.e. through the
+header file <fenv.h>).
+@end deftypefun
 
 @deftypefun {char *} mpfr_print_rnd_mode (mp_rnd_t @var{rnd})
 Returns the input string (GMP_RNDD, GMP_RNDU, GMP_RNDN, GMP_RNDZ)
