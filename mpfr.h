@@ -79,6 +79,17 @@ typedef __mpfr_struct mpfr_t[1];
 typedef __mpfr_struct *mpfr_ptr; 
 typedef __gmp_const __mpfr_struct *mpfr_srcptr;
 
+/* macros for doubles, based on gmp union ieee_double_extract */
+
+typedef union ieee_double_extract Ieee_double_extract;
+
+#define DOUBLE_ISNANorINF(x) (((Ieee_double_extract *)&(x))->s.exp == 0x7ff)
+#define DOUBLE_ISINF(x) (DOUBLE_ISNANorINF(x) && \
+			 (((Ieee_double_extract *)&(x))->s.manl == 0) && \
+                         (((Ieee_double_extract *)&(x))->s.manl == 0))
+#define DOUBLE_ISNAN(x) (DOUBLE_ISNANorINF(x) && \
+			 ((((Ieee_double_extract *)&(x))->s.manl != 0) || \
+                         (((Ieee_double_extract *)&(x))->s.manl != 0)))
 
 /* Prototypes */
 
