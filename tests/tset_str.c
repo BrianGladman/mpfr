@@ -37,6 +37,8 @@ main (int argc, char *argv[])
   mp_exp_t e;
   int base, logbase, prec, baseprec;
 
+  tests_start_mpfr ();
+
   if (argc>=2) /* tset_str <string> <prec> */
     {
       prec = (argc>=3) ? atoi(argv[2]) : 53;
@@ -56,7 +58,7 @@ main (int argc, char *argv[])
 
   bd = LONG_RAND() & 8;
   
-  str2 = str = (char *) malloc (nc * sizeof(char));
+  str2 = str = (*__gmp_allocate_func) (nc * sizeof(char));
 
   if (bd)
     {
@@ -93,7 +95,7 @@ main (int argc, char *argv[])
       exit(1);
     }
 
-  free(str);
+  (*__gmp_free_func) (str, nc * sizeof(char));
 
   mpfr_set_prec (x, 53);
   mpfr_set_str_raw (x, "+110101100.01010000101101000000100111001000101011101110E00");
@@ -160,7 +162,7 @@ main (int argc, char *argv[])
 	  mpfr_clear (y);
 	  exit (1);
 	}
-      free (str);
+      (*__gmp_free_func) (str, strlen (str) + 1);
     }
 
   if (mpfr_set_str (x, "NaNgarbage", 10, GMP_RNDN) != 3 || !mpfr_nan_p(x))
@@ -193,5 +195,6 @@ main (int argc, char *argv[])
   mpfr_clear (x);
   mpfr_clear (y);
 
+  tests_end_mpfr ();
   return 0;
 }

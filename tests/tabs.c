@@ -37,6 +37,8 @@ check_inexact (void)
   mp_rnd_t rnd;
   int inexact, cmp;
 
+  tests_start_mpfr ();
+
   mpfr_init (x);
   mpfr_init (y);
   mpfr_init (absx);
@@ -149,5 +151,6 @@ main (int argc, char *argv[])
 
    mpfr_clear(x);
 
+   tests_end_mpfr ();
    return 0;
 }

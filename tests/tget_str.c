@@ -26,9 +26,7 @@ MA 02111-1307, USA. */
 #include <time.h>
 #include "gmp.h"
 #include "mpfr.h"
-#ifdef MPFR_HAVE_FESETROUND
 #include "mpfr-test.h"
-#endif
 
 void check _PROTO((double, mp_rnd_t)); 
 void check3 _PROTO((double, mp_rnd_t, char *)); 
@@ -43,7 +41,7 @@ check (double d, mp_rnd_t rnd)
   mpfr_set_d(x, d, rnd);
   str = mpfr_get_str(NULL, &e, 10, 5, x, rnd);
   mpfr_clear(x);
-  free(str);
+  (*__gmp_free_func) (str, strlen (str) + 1);
 }
 
 void
@@ -60,7 +58,7 @@ check3 (double d, mp_rnd_t rnd, char *res)
       fprintf (stderr, "got %s instead of %s\n", str, res);
     }
   mpfr_clear (x);
-  free (str);
+  (*__gmp_free_func) (str, strlen (str) + 1);
 }
 
 void
@@ -76,7 +74,7 @@ check_small (void)
   mpfr_set_prec(x, 63);
   mpfr_set_d(x, 5e14, GMP_RNDN);
   s = mpfr_get_str(NULL, &e, 10, 18, x, GMP_RNDU);
-  free(s);
+  (*__gmp_free_func) (s, strlen (s) + 1);
 
   /* bug found by Johan Vervloet */
   mpfr_set_prec(x, 6);
@@ -87,7 +85,7 @@ check_small (void)
     mpfr_out_str(stderr, 2, 4, x, GMP_RNDU); putchar('\n');
     exit(1);
   }
-  free(s);
+  (*__gmp_free_func) (s, strlen (s) + 1);
 
   mpfr_set_prec (x, 38);
   mpfr_set_str_raw (x, "1.0001110111110100011010100010010100110e-6");
@@ -97,7 +95,7 @@ check_small (void)
       fprintf (stderr, "Error in mpfr_get_str (3): s=%s e=%d\n", s, (int) e);
       exit (1);
     }
-  free (s);
+  (*__gmp_free_func) (s, strlen (s) + 1);
 
   mpfr_clear(x);
 }
@@ -105,7 +103,10 @@ check_small (void)
 int
 main (int argc, char *argv[])
 {
+  tests_start_mpfr ();
+
 #ifdef MPFR_HAVE_FESETROUND
+  {
   int i;
   double d;
 
@@ -113,6 +114,7 @@ main (int argc, char *argv[])
   for (i=0;i<100000;i++) {
     do { d = drand(); } while (isnan(d));
     check(d, GMP_RNDN);
+  }
   }
 #endif
   check_small();
@@ -125,5 +127,6 @@ main (int argc, char *argv[])
   check3(7.02293374921793516813e-84, GMP_RNDN, "70229");
   check3(-6.7274500420134077e-87, GMP_RNDN, "-67275"); 
 
+  tests_end_mpfr ();
   return 0;
 }

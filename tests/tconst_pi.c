@@ -23,6 +23,7 @@ MA 02111-1307, USA. */
 #include <stdlib.h>
 #include "gmp.h"
 #include "mpfr.h"
+#include "mpfr-test.h"
 
 /* tpi [prec] [rnd] [0 = no print] */
 
@@ -30,6 +31,8 @@ int
 main (int argc, char *argv[])
 {
   mpfr_t x; int p; unsigned char rnd;
+
+  tests_start_mpfr ();
 
   p = (argc>1) ? atoi(argv[1]) : 53;
   rnd = (argc>2) ? atoi(argv[2]) : GMP_RNDZ;
@@ -43,5 +46,6 @@ main (int argc, char *argv[])
   }
   mpfr_clear(x);
 
+  tests_end_mpfr ();
   return 0;
 }

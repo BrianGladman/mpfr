@@ -205,7 +205,11 @@ main (int argc, char *argv[])
 {
   mp_prec_t p;
   unsigned k;
+
+  tests_start_mpfr ();
+
 #ifdef MPFR_HAVE_FESETROUND
+  {
   double x;
   unsigned long y, N;
   int i, rnd_mode, rnd;
@@ -223,6 +227,7 @@ main (int argc, char *argv[])
       rnd = (rnd_mode==-1) ? LONG_RAND()%4 : rnd_mode;
       check(y, x, rnd, 0.0);
     }
+  }
   }
 #endif
   special ();
@@ -247,5 +252,6 @@ main (int argc, char *argv[])
   check(293607738, -1.9967571564050541e-5, GMP_RNDU, 2.9360773800002003e8);
   check(354270183, 2.9469161763489528e3, GMP_RNDN, 3.5426723608382362e8);
 
+  tests_end_mpfr ();
   return 0;
 }

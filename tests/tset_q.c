@@ -80,7 +80,10 @@ check (long int n, long int d, mp_rnd_t rnd, double y)
 int
 main (void)
 {
+  tests_start_mpfr ();
+
 #ifdef MPFR_HAVE_FESETROUND
+  {
   long int i, n;
   unsigned long int d;
   double y;
@@ -97,6 +100,7 @@ main (void)
     y = (double) n / d;
     check(n, d, rnd, y);
   }
+  }
 #endif
   check(-1647229822, 40619231, GMP_RNDZ, -4.055295438754120596e1);
   check(-148939696, 1673285490, GMP_RNDZ, -8.9010331404953485501e-2);
@@ -107,5 +111,6 @@ main (void)
   check(643562308, 23100894, GMP_RNDD, 2.7858762002890447462e1);
   check(632549085, 1831935802, GMP_RNDN, 3.4528998467600230393e-1);
 
+  tests_end_mpfr ();
   return 0;
 }

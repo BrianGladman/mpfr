@@ -222,6 +222,8 @@ main (int argc, char *argv[])
 #endif
   double d;
 
+  tests_start_mpfr ();
+
   test_generic (2, 100, 100);
 
   if (argc == 4)
@@ -289,5 +291,6 @@ main (int argc, char *argv[])
   if (N) printf("mean error=%1.2e max error=%d\n", (double)s/(double)N,maxe);
 #endif
 
+  tests_end_mpfr ();
   return 0;
 }

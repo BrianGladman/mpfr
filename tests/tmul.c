@@ -356,6 +356,8 @@ main (int argc, char *argv[])
   mpfr_test_init ();
 #endif
 
+  tests_start_mpfr ();
+
   check_exact ();
   check_float ();
 #ifdef HAVE_INFS
@@ -405,5 +407,6 @@ main (int argc, char *argv[])
   } 
 #endif
 
+  tests_end_mpfr ();
   return 0;
 }

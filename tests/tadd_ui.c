@@ -78,7 +78,10 @@ special (void)
 int
 main (int argc, char *argv[])
 {
+  tests_start_mpfr ();
+
 #ifdef MPFR_HAVE_FESETROUND
+  {
   double x; unsigned long y, N; int i,rnd_mode,rnd;
 
   mpfr_test_init ();
@@ -95,6 +98,7 @@ main (int argc, char *argv[])
       check(x, y, rnd);
     }
   } 
+  }
 #endif
   special ();
   check3 (-1.716113812768534e-140, 1271212614, GMP_RNDZ,
@@ -110,6 +114,7 @@ main (int argc, char *argv[])
   check3 (DBL_NAN, 2394875, GMP_RNDN, DBL_NAN);
 #endif
 
+  tests_end_mpfr ();
   return 0;
 }
 

@@ -34,6 +34,8 @@ main (void)
   mp_rnd_t rnd;
   mpfr_t x, y, z;
 
+  tests_start_mpfr ();
+
   mpfr_init (x);
   mpfr_init (y);
   mpfr_init (z);
@@ -92,5 +94,6 @@ main (void)
   mpfr_clear (y);
   mpfr_clear (z);
 
+  tests_end_mpfr ();
   return 0;
 }

@@ -58,6 +58,8 @@ main (int argc, char *argv[])
 {
   mpfr_t x;
 
+  tests_start_mpfr ();
+
 #ifdef HAVE_INFS
   check53 (DBL_NAN, DBL_NAN, GMP_RNDN);
   check53 (DBL_POS_INF, DBL_NAN, GMP_RNDN);
@@ -100,5 +102,6 @@ main (int argc, char *argv[])
 
   test_generic (2, 100, 80);
 
+  tests_end_mpfr ();
   return 0;
 }

@@ -661,6 +661,8 @@ main (int argc, char *argv[])
   double x;
   int i;
 
+  tests_start_mpfr ();
+
   mpfr_test_init ();
   check_inexact ();
   check_case_1b ();
@@ -916,5 +918,6 @@ main (int argc, char *argv[])
   }
 #endif
 
+  tests_end_mpfr ();
   return 0;
 }

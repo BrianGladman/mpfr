@@ -272,16 +272,18 @@ main (int argc, char *argv[])
   int N = 0;
   double d;
 
+  tests_start_mpfr ();
+
   SEED_RAND (time(NULL));
   if (argc==4) {   /* tlog x prec rnd */
     check3(atof(argv[1]), atoi(argv[2]), atoi(argv[3]));
-    return 0;
+    goto done;
   }
 
   if (argc==3) {   /* tlog N p : N calculus with precision p*/
   printf("Doing %d random tests in %d precision\n",atoi(argv[1]),atoi(argv[2]));
     slave(atoi(argv[1]),atoi(argv[2]));
-     return 0;
+    goto done;
   }
 
   if (argc==2) { /* tlog N: N tests with random double's */
@@ -359,5 +361,7 @@ main (int argc, char *argv[])
 
   test_generic (2, 100, 40);
 
+ done:
+  tests_end_mpfr ();
   return 0;
 }

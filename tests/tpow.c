@@ -137,11 +137,14 @@ main (void)
 {
   mp_prec_t p;
 
+  tests_start_mpfr ();
+
   check_pow_ui ();
 
   for (p=2; p<100; p++)
     check_inexact (p);
 
+  tests_end_mpfr ();
   return 0;
 }
 

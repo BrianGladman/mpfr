@@ -175,7 +175,11 @@ int
 main (int argc, char **argv)
 {
   mpfr_t x;
+
+  tests_start_mpfr ();
+
 #ifdef MPFR_HAVE_FESETROUND
+  {
   int i;
   unsigned long u;
   double d;
@@ -189,6 +193,7 @@ main (int argc, char **argv)
       do { d = drand(); } while (ABS(d/u)<DBL_MIN);
       check (d, u, LONG_RAND() % 4, 0.0);
     }
+  }
 #endif
 
   check_inexact ();
@@ -212,5 +217,6 @@ main (int argc, char **argv)
   }
   mpfr_clear(x);
 
+  tests_end_mpfr ();
   return 0;
 }

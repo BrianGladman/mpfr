@@ -26,6 +26,7 @@ MA 02111-1307, USA. */
 #include "gmp.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
+#include "mpfr-test.h"
 
 void test_random _PROTO ((unsigned long, unsigned long, int));
 void test_random2 _PROTO ((unsigned long, unsigned long, int));
@@ -173,6 +174,8 @@ main (int argc, char *argv[])
 {
   unsigned long nbtests, prec; int verbose = 0; 
   
+  tests_start_mpfr ();
+
   if (argc > 1) verbose = 1;
  
   if (argc == 1) { nbtests = 10000; } else nbtests = atoi(argv[1]);
@@ -182,5 +185,6 @@ main (int argc, char *argv[])
   test_random2(nbtests, prec, verbose); 
   test_urandomb(nbtests, prec, verbose);
   
+  tests_end_mpfr ();
   return 0;
 }

@@ -27,8 +27,8 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
 mpfr_t __mpfr_const_log2; /* stored value of log(2) */
-mp_prec_t __mpfr_const_log2_prec=0; /* precision of stored value */
-mp_rnd_t __mpfr_const_log2_rnd; /* rounding mode of stored value */
+mp_prec_t __mpfr_const_log2_prec = 0; /* precision of stored value */
+static mp_rnd_t __mpfr_const_log2_rnd; /* rounding mode of stored value */
 
 static int mpfr_aux_log2 _PROTO ((mpfr_ptr, mpz_srcptr, int, int));
 static int mpfr_const_aux_log2 _PROTO ((mpfr_ptr, mp_rnd_t));

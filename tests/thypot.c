@@ -39,6 +39,8 @@ main (int argc, char *argv[])
   mpfr_t x1, x2, y, z, t;
   int inexact, compare, compare2;
 
+  tests_start_mpfr ();
+
   mpfr_init (x1);
   mpfr_init (x2);
   mpfr_init (y);
@@ -124,6 +126,7 @@ main (int argc, char *argv[])
   mpfr_clear (z);
   mpfr_clear (t);
 
+  tests_end_mpfr ();
   return 0;
 }
 

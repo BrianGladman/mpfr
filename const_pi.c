@@ -149,8 +149,8 @@ so Pi*16^N-S'(N) <= N+1 (as 1/4/N^2 < 1)
 */
 
 mpfr_t __mpfr_const_pi; /* stored value of Pi */
-int __mpfr_const_pi_prec=0; /* precision of stored value */
-mp_rnd_t __mpfr_const_pi_rnd; /* rounding mode of stored value */
+mp_prec_t __mpfr_const_pi_prec = 0; /* precision of stored value */
+static mp_rnd_t __mpfr_const_pi_rnd; /* rounding mode of stored value */
 
 void 
 mpfr_const_pi (mpfr_ptr x, mp_rnd_t rnd_mode) 

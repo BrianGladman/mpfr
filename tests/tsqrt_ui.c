@@ -59,7 +59,10 @@ check (unsigned long a, mp_rnd_t rnd_mode, double Q)
 int
 main (void)
 {
+  tests_start_mpfr ();
+
 #ifdef MPFR_HAVE_FESETROUND
+  {
   int i;
   unsigned long a;
 
@@ -73,9 +76,11 @@ main (void)
       if (1.0*a < 9007199254872064.0)
         check(a, LONG_RAND() % 4, -1.0);
     }
+  }
 #endif
   check (0, GMP_RNDN, 0.0);
   check (2116118, GMP_RNDU, 1.45468828276026215e3);
 
+  tests_end_mpfr ();
   return 0;
 }

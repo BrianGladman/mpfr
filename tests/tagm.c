@@ -151,6 +151,8 @@ main (int argc, char* argv[])
 
    SEED_RAND (time(NULL));
 
+   tests_start_mpfr ();
+
    if (argc==3) {   /* tagm N p : N calculus with precision p*/
      printf("Doing %d random tests in %d precision\n",atoi(argv[1]),atoi(argv[2]));
      slave(atoi(argv[1]),atoi(argv[2]));
@@ -184,5 +186,6 @@ main (int argc, char* argv[])
 
    /* TODO : tests des infinis dans tagm.c */
 
+   tests_end_mpfr ();
    return 0;
 }

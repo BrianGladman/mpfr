@@ -403,6 +403,8 @@ main(void)
   mp_prec_t p;
   unsigned i;
 
+  tests_start_mpfr ();
+
   check_diverse ();
   check_inexact ();
   bug_ddefour ();
@@ -411,5 +413,6 @@ main(void)
     for (i=0; i<200; i++)
       check_two_sum (p);
 
+  tests_end_mpfr ();
   return 0;
 }

@@ -33,8 +33,11 @@ MA 02111-1307, USA. */
 int
 main (int argc, char *argv[])
 {
+  tests_start_mpfr ();
+
   test_generic (2, 100, 25);
 
+  tests_end_mpfr ();
   return 0;
 }
 

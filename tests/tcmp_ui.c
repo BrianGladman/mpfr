@@ -24,12 +24,15 @@ MA 02111-1307, USA. */
 #include <math.h>
 #include "gmp.h"
 #include "mpfr.h"
+#include "mpfr-test.h"
 
 int
 main (void)
 {
   mpfr_t x; unsigned long i; long s;
   
+  tests_start_mpfr ();
+
   mpfr_init(x);
 
   mpfr_set_ui(x, 3, GMP_RNDZ);
@@ -83,5 +86,6 @@ main (void)
 
   mpfr_clear(x); 
 
+  tests_end_mpfr ();
   return 0;
 }

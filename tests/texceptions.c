@@ -23,6 +23,7 @@ MA 02111-1307, USA. */
 #include <stdlib.h>
 #include "gmp.h"
 #include "mpfr.h"
+#include "mpfr-test.h"
 
 void mpfr_set_double_range _PROTO((void));
 
@@ -52,6 +53,8 @@ main (int argc, char *argv[])
 {
   mpfr_t x, y;
   mp_exp_t emin, emax;
+
+  tests_start_mpfr ();
 
   mpfr_init (x);
   mpfr_init (y);
@@ -119,5 +122,6 @@ main (int argc, char *argv[])
   mpfr_clear (x);
   mpfr_clear (y);
     
+  tests_end_mpfr ();
   return 0;
 }

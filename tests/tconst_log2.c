@@ -25,6 +25,7 @@ MA 02111-1307, USA. */
 #include "gmp-impl.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
+#include "mpfr-test.h"
 
 /* tlog2 [prec] [rnd] [0 = no print] */
 
@@ -77,6 +78,8 @@ main (int argc, char *argv[])
   int p;
   mp_rnd_t rnd;
 
+  tests_start_mpfr ();
+
   p = (argc>1) ? atoi(argv[1]) : 53;
   rnd = (argc>2) ? atoi(argv[2]) : GMP_RNDZ;
 
@@ -113,5 +116,6 @@ main (int argc, char *argv[])
 
   mpfr_clear(x);
 
+  tests_end_mpfr ();
   return 0;
 }

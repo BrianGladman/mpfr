@@ -115,7 +115,11 @@ main (int argc, char *argv[])
 {
   mp_prec_t p;
   int k;
+
+  tests_start_mpfr ();
+
 #ifdef MPFR_HAVE_FESETROUND
+  {
   double x; unsigned long y, N; int i,rnd_mode,rnd;
 
   mpfr_test_init ();
@@ -132,6 +136,7 @@ main (int argc, char *argv[])
       check(x, y, rnd);
     }
   } 
+  }
 #endif
   
   for (p=2; p<200; p++)
@@ -145,6 +150,7 @@ main (int argc, char *argv[])
   check3 (DBL_NEG_INF, 1, GMP_RNDN, DBL_NEG_INF);
 #endif
 
+  tests_end_mpfr ();
   return 0;
 }
 

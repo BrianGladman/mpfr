@@ -173,7 +173,12 @@ typedef union ieee_double_extract Ieee_double_extract;
 extern "C" {
 #endif  
 
+extern mpfr_t __mpfr_const_log2;
 extern mp_prec_t __mpfr_const_log2_prec;
+
+extern mpfr_t __mpfr_const_pi;
+extern mp_prec_t __mpfr_const_pi_prec;
+
 int mpfr_set_underflow _PROTO ((mpfr_ptr, mp_rnd_t, int));
 int mpfr_set_overflow _PROTO ((mpfr_ptr, mp_rnd_t, int));
 void mpfr_save_emin_emax _PROTO ((void));
