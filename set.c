@@ -36,30 +36,48 @@ mpfr_set4 (a, b, rnd_mode, signb)
      int signb;
 #endif
 {
-  int carry, an, preca = MPFR_PREC(a), sh; mp_limb_t *ap = MPFR_MANT(a);
-
   if (MPFR_IS_NAN(b))
-    { MPFR_CLEAR_FLAGS(a); MPFR_SET_NAN(a); return; }
-  if (MPFR_IS_INF(b)) 
-    { 
-      MPFR_CLEAR_FLAGS(a);
-      MPFR_SET_INF(a); 
-      if (MPFR_SIGN(a) * signb < 0) MPFR_CHANGE_SIGN(a); 
-      return; 
-    }
-  MPFR_CLEAR_FLAGS(a);
-
-  carry = mpfr_round_raw(ap, MPFR_MANT(b), MPFR_PREC(b), (signb<0), preca, rnd_mode);
-  MPFR_EXP(a) = MPFR_EXP(b);
-  if (carry) {
-    an = (preca-1)/BITS_PER_MP_LIMB + 1;
-    sh = an * BITS_PER_MP_LIMB - preca;
-    if ((*ap >> sh) & 1) {
-      fprintf(stderr, "unable to round in mpfr_set\n"); exit(1);
-    }
-    mpn_rshift(ap, ap, an, 1);
-    ap[an-1] |= (mp_limb_t) 1 << (BITS_PER_MP_LIMB-1);
-    MPFR_EXP(a)++;
+  {
+    MPFR_CLEAR_FLAGS(a);
+    MPFR_SET_NAN(a);
+    return;
   }
+
+  if (MPFR_IS_INF(b))
+  { 
+    MPFR_CLEAR_FLAGS(a);
+    MPFR_SET_INF(a);
+  }
+  else
+  {
+    mp_limb_t *ap;
+    mp_prec_t aq;
+    int carry;
+
+    MPFR_CLEAR_FLAGS(a);
+
+    ap = MPFR_MANT(a);
+    aq = MPFR_PREC(a);
+
+    carry = mpfr_round_raw(ap, MPFR_MANT(b), MPFR_PREC(b), (signb < 0),
+                           aq, rnd_mode);
+    MPFR_EXP(a) = MPFR_EXP(b);
+
+    if (carry)
+    {
+      mp_exp_t exp = MPFR_EXP(a);
+      if (exp == __mpfr_emax)
+      {
+        mpfr_set_overflow(a, rnd_mode, signb);
+        return;
+      }
+      else
+      {
+        MPFR_EXP(a)++;
+        ap[(MPFR_PREC(a)-1)/BITS_PER_MP_LIMB] = MP_LIMB_T_HIGHBIT;
+      }
+    }
+  }
+
   if (MPFR_SIGN(a) * signb < 0) MPFR_CHANGE_SIGN(a);
 }
