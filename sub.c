@@ -5,6 +5,9 @@
 
 /* #define DEBUG2 */
 
+extern void mpfr_add1 _PROTO((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, 
+			      unsigned char, int));
+
 /* put in ap[0]..ap[an-1] the value of bp[0]..bp[n-1] shifted by sh bits
    to the left minus ap[0]..ap[n-1], with 0 <= sh < mp_bits_per_limb, and
    returns the borrow.
