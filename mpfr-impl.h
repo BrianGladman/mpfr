@@ -19,6 +19,11 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+/* Test if X (positive) is a power of 2 */
+
+#define IS_POW2(X) (((X) & ((X) - 1)) == 0)
+#define NOT_POW2(X) (((X) & ((X) - 1)) != 0)
+
 /* This unsigned type must correspond to the signed one defined in gmp.h */
 #if defined (_CRAY) && ! defined (_CRAYMPP)
 typedef unsigned int            mp_exp_unsigned_t;
@@ -192,4 +197,3 @@ unsigned long _mpfr_cuberoot _PROTO ((unsigned long));
 #if defined (__cplusplus)
 }
 #endif  
-
