@@ -31,29 +31,22 @@ mpfr_sin_sign (mpfr_srcptr x)
 {
   mpfr_t c, k;
   mp_exp_t K;
-  int sign, loops = 0;
+  int sign;
   mp_prec_t m;
   mpfr_srcptr y;
+  MPFR_ZIV_DECL (loop);
 
   K = MPFR_GET_EXP(x);
-
-  if (K < 0)  /* Trivial case if x < 1 */
+  if (K < 0)  /* Trivial case if ABS(x) < 1 */
     return MPFR_SIGN (x);
-  m = K;
 
-  mpfr_init2 (c, 2);
-  mpfr_init2 (k, 2);
+  m = K + BITS_PER_MP_LIMB;
+  mpfr_init2 (c, m);
+  mpfr_init2 (k, m);
 
-  do
+  MPFR_ZIV_INIT (loop, m);
+  for (;;)
     {
-      loops ++;
-      m += BITS_PER_MP_LIMB;
-      if (loops > 2) /* maybe a massive cancellation, like for x near from Pi */
-        m += MPFR_PREC(x) / 2;
-
-      mpfr_set_prec (c, m);
-      mpfr_set_prec (k, m);
-
       /* first determine round(x/Pi): does not have to be exact since
          the result is an integer */
       mpfr_const_pi (c, GMP_RNDN); /* err <= 1/2*ulp(c) = 2^(1-m) */
@@ -64,12 +57,13 @@ mpfr_sin_sign (mpfr_srcptr x)
 
       sign = 1;
 
-      if (MPFR_NOTZERO(k)) /* subtract k*approx(Pi) */
+      if (!MPFR_IS_ZERO (k)) /* subtract k*approx(Pi) */
         {
           /* determine parity of k for sign */
-          if (MPFR_EXP(k)<=0 || (mpfr_uexp_t) MPFR_EXP(k) <= m)
+          if (MPFR_GET_EXP (k) <= 0 || (mpfr_uexp_t) MPFR_GET_EXP (k) <= m)
             {
-              mp_size_t j = BITS_PER_MP_LIMB * MPFR_LIMB_SIZE(k) - MPFR_EXP(k);
+              mp_size_t j = BITS_PER_MP_LIMB * MPFR_LIMB_SIZE(k) 
+		- MPFR_GET_EXP(k);
               mp_size_t l = j / BITS_PER_MP_LIMB;
               /* parity bit is j-th bit starting from least significant bits */
               if ((MPFR_MANT(k)[l] >> (j % BITS_PER_MP_LIMB)) & 1)
@@ -80,7 +74,7 @@ mpfr_sin_sign (mpfr_srcptr x)
                                                <= 2^(K+2-m) */
           mpfr_sub (k, x, k, GMP_RNDN);
           /* assuming |k| <= Pi, err <= 2^(1-m)+2^(K+2-m) < 2^(K+3-m) */
-	  MPFR_ASSERTN(MPFR_EXP(k) <= 2); 
+	  MPFR_ASSERTN (MPFR_GET_EXP (k) <= 2); 
           y = k;
         }
       else
@@ -90,10 +84,15 @@ mpfr_sin_sign (mpfr_srcptr x)
         }
       /* sign of sign(y) is uncertain if |y| <= err < 2^(K+3-m),
          thus EXP(y) < K+4-m */
+      if (MPFR_LIKELY (!MPFR_IS_ZERO (y) 
+		       && MPFR_GET_EXP (y) >= K + 4 - (mp_exp_t) m))
+	break;
+      MPFR_ZIV_NEXT (loop, m);
+      mpfr_set_prec (c, m);
+      mpfr_set_prec (k, m);
     }
-  while (MPFR_IS_ZERO (y) || (MPFR_GET_EXP (y) < K + 4 - (mp_exp_t) m));
 
-  if (MPFR_IS_NEG(y))
+  if (MPFR_IS_NEG (y))
     sign = -sign;
 
   mpfr_clear (k);
