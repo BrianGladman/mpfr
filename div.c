@@ -288,13 +288,21 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
   if (MPFR_LIKELY(vsize >= qsize))
     {
       k = vsize - qsize;
-      bp = vp + k; /* avoid copying the divisor */
+      if (qp != vp)
+	bp = vp + k; /* avoid copying the divisor */
+      else /* need to copy, since mpn_divrem doesn't allow overlap
+	      between quotient and divisor, necessarily k = 0
+	      since quotient and divisor are the same mpfr variable */
+	{
+	  bp = TMP_ALLOC (qsize * sizeof(mp_limb_t));
+	  MPN_COPY(bp, vp, vsize);
+	}
       sticky_v = sticky_v || mpn_cmpzero (vp, k);
     }
   else /* vsize < qsize */
     {
       k = qsize - vsize;
-      bp = TMP_ALLOC (qsize*sizeof(mp_limb_t));
+      bp = TMP_ALLOC (qsize * sizeof(mp_limb_t));
       MPN_COPY(bp + k, vp, vsize);
       MPN_ZERO(bp, k);
     }
