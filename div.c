@@ -162,7 +162,7 @@ mpfr_div (r, u, v, rnd_mode)
       if (q_limb)
 	{
 	  count_leading_zeros(k, q_limb); 
-	  mpn_rshift(rp, rp, rrsize, BITS_PER_MP_LIMB - k); 
+	  mpn_rshift(rp, rp, rrsize, BITS_PER_MP_LIMB - k);
 	  rp[rrsize - 1] |= (q_limb << k);  
 	  rexp += BITS_PER_MP_LIMB - k; 
 	}
@@ -177,7 +177,7 @@ mpfr_div (r, u, v, rnd_mode)
 				     GMP_RNDN, rnd_mode, PREC(r))
 	|| (usize == rsize && vsize == rsize && 
 	    mpfr_can_round_raw(rp, rrsize, sign_quotient, err, 
-			       GMP_RNDZ, rnd_mode, PREC(r)))); 
+			       GMP_RNDZ, rnd_mode, PREC(r))));
 
       /* If we used all the limbs of both the dividend and the divisor, 
 	 then we have the correct RNDZ rounding */
@@ -196,11 +196,12 @@ mpfr_div (r, u, v, rnd_mode)
   /* ON PEUT PROBABLEMENT SE DEBROUILLER DES QUE rsize >= vsize */
   /* MAIS IL FAUT AJOUTER LE BOUT QUI MANQUE DE usize A rsize */
     
+  rrsize = (PREC(r) - 1)/BITS_PER_MP_LIMB + 1;
+
   if (can_round) 
     {
       cc = mpfr_round_raw(rp, rp, err, (sign_quotient == -1 ? 1 : 0),
 			  PREC(r), rnd_mode);  
-      rrsize = (PREC(r) - 1)/BITS_PER_MP_LIMB + 1; 
     }
   else
     /* Use the remainder to find out the correct rounding */
@@ -235,18 +236,16 @@ mpfr_div (r, u, v, rnd_mode)
 
   if (sign_quotient * MPFR_SIGN(r) < 0) { CHANGE_SIGN(r); } 
   r->_mp_exp = rexp;
-  
+
   if (cc) {
     mpn_rshift(rp, rp, rrsize, 1);
     rp[rrsize-1] |= (mp_limb_t) 1 << (BITS_PER_MP_LIMB-1);
     r->_mp_exp++; 
   }
     
-  rsize = rrsize; 
-  rrsize = (PREC(r) - 1)/BITS_PER_MP_LIMB + 1;  
-  MPN_COPY(r->_mp_d, rp + rsize - rrsize, rrsize); 
-  MANT(r) [0] &= ~(((mp_limb_t)1 << (BITS_PER_MP_LIMB - 
-		    (PREC(r) & (BITS_PER_MP_LIMB - 1)))) - 1) ; 
+  MPN_COPY(MANT(r), rp, rrsize); 
+  rw = rrsize * BITS_PER_MP_LIMB - PREC(r); 
+  MANT(r)[0] &= ~(((mp_limb_t)1 << rw) - 1);
 
   TMP_FREE (marker);
 }
