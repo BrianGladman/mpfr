@@ -32,7 +32,7 @@ MA 02111-1307, USA. */
 int
 mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, unsigned char rnd_mode)
 {
-  mp_ptr up, rp, tmp;
+  mp_ptr up, rp, tmp, remp;
   mp_size_t usize, rrsize;
   mp_size_t rsize;
   mp_size_t prec, err;
@@ -106,6 +106,7 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, unsigned char rnd_mode)
       
       tmp = (mp_ptr) TMP_ALLOC (rsize * BYTES_PER_MP_LIMB);  
       rp = (mp_ptr) TMP_ALLOC (rrsize * BYTES_PER_MP_LIMB); 
+      remp = (mp_ptr) TMP_ALLOC (rsize * BYTES_PER_MP_LIMB); 
 
       if (usize >= rsize) { 
 	MPN_COPY (tmp, up + usize - rsize, rsize);
@@ -119,11 +120,12 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, unsigned char rnd_mode)
  
 #ifdef DEBUG
       printf("Taking the sqrt of : "); 
-      for(k = rsize - 1; k >= 0; k--) { printf("%lu ", tmp[k]); }
+      for(k = rsize - 1; k >= 0; k--) { 
+	printf("+%lu*2^%lu",tmp[k],k*mp_bits_per_limb); }
       printf(".\n"); 
 #endif
 
-      q_limb = mpn_sqrtrem (rp, NULL, tmp, rsize);
+      q_limb = kara_sqrtrem (rp, remp, tmp, rsize);
 
 #ifdef DEBUG
       printf("The result is : \n"); 
