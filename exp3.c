@@ -76,13 +76,13 @@ int m;
   mult = (int*) malloc((m+1) * sizeof(int)); 
   nb_terms = (int*) malloc((m+1) * sizeof(int)); 
   mult[0] = 0;
-  for (i=0;i<=m;i++) { mpz_init(P[i]); mpz_init(S[i]); mpz_init(ptoj[i]);
- }
+  for (i=0;i<=m;i++) { mpz_init(P[i]); mpz_init(S[i]); mpz_init(ptoj[i]); }
   mpz_set(ptoj[0], p);
   for (i=1;i<m;i++) mpz_mul(ptoj[i], ptoj[i-1], ptoj[i-1]);
   mpz_set_ui(P[0], 1);
   mpz_set_ui(S[0], 1);
   k = 0;
+  nb_terms[0] = 1;
    prec_i_have = 0; 
    for (i=1;(prec_i_have < precy) && (i < n) ;i++) {
     k++;
