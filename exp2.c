@@ -64,6 +64,8 @@ mpfr_exp2 (y, x, rnd_mode)
 #endif
 {    
 
+    int inexact =0;
+
     if (MPFR_IS_NAN(x))
       {
         MPFR_SET_NAN(y); 
@@ -138,10 +140,10 @@ mpfr_exp2 (y, x, rnd_mode)
 
       } while (!mpfr_can_round(t,err,GMP_RNDN,rnd_mode,Ny));
  
-      mpfr_set(y,t,rnd_mode);
+      inexact = mpfr_set(y,t,rnd_mode);
       mpfr_clear(t);
       mpfr_clear(te);
     }
-    return 1;
+    return inexact;
 
 }
