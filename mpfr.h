@@ -134,6 +134,7 @@ int mpfr_sub_one_ulp _PROTO((mpfr_ptr x));
 int mpfr_div_ui _PROTO((mpfr_ptr y, mpfr_srcptr x, unsigned long u, unsigned char rnd_mode)); 
 unsigned long int mpfr_get_prec _PROTO((mpfr_t x)); 
 void mpfr_div3 _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, unsigned char));
+void mpfr_sqrt3 _PROTO ((mpfr_ptr, mpfr_srcptr, unsigned char)); 
 
 #define mpfr_init(x) mpfr_init2(x, __gmp_default_fp_bit_precision)
 #define mpfr_cmp_ui(b,i) mpfr_cmp_ui_2exp(b,i,0)
