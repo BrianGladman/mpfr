@@ -61,7 +61,7 @@ unsigned int py, unsigned int pz, double z1)
   if (z1==0.0) z1=x+y; else cert=1;
   z2 = mpfr_get_d(zz);
   mpfr_set_d (yy, z2, GMP_RNDN);
-  if (!mpfr_cmp (xx, yy) && cert && z1!=z2 && !(isnan(z1) && isnan(z2))) {
+  if (!mpfr_cmp (zz, yy) && cert && z1!=z2 && !(isnan(z1) && isnan(z2))) {
     printf("expected sum is %1.20e, got %1.20e\n",z1,z2);
     printf("mpfr_add failed for x=%1.20e y=%1.20e with rnd_mode=%s\n",
 	   x, y, mpfr_print_rnd_mode(rnd_mode));
@@ -445,6 +445,7 @@ main (int argc, char *argv[])
 	1.2712126139999998e9);
   check(-1.2927455200185474e-50, 1675676122.0, GMP_RNDD, 53, 64, 53,
 	1.6756761219999998e9);
+  check53(9007199254740992.0, 1.0, GMP_RNDN, 9007199254740992.0);
   check53(1.22191250737771397120e+20, 948002822.0, GMP_RNDN, 
 	  122191250738719408128.0);
   check53(9966027674114492.0, 1780341389094537.0, GMP_RNDN,
