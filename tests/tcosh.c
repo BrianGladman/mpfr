@@ -95,12 +95,58 @@ special (void)
     {
       printf ("Error: mpfr_cosh for prec=32 (2)\n");
       exit (1);
-    }
-
-  
+    }  
 
   mpfr_clear (x);
   mpfr_clear (y);
+}
+
+static void
+special_overflow (void)
+{
+  /* Check for overflow in 3 cases:
+     1. cosh(x) is representable, but not exp(x)
+     2. cosh(x) is not representable in the selected range of exp.
+     3. cosh(x) exp overflow even with the largest range of exp */
+  mpfr_t x, y;
+
+  mpfr_set_emin (-125);
+  mpfr_set_emax (128);
+  
+  mpfr_init2 (x, 24);
+  mpfr_init2 (y, 24);
+
+  mpfr_set_str_binary (x, "0.101100100000000000110100E7");
+  mpfr_cosh (y, x, GMP_RNDN);
+  if (mpfr_cmp_str (y, "0.101010001111001010001110E128", 2, GMP_RNDN))
+    {
+      printf("Special overflow error 1.\n");
+      mpfr_dump (y);
+      exit (1); 
+    }
+
+  mpfr_set_str_binary (x, "0.101100100000000000110100E8");
+  mpfr_cosh (y, x, GMP_RNDN);
+  if (!mpfr_inf_p(y))
+    {
+      printf("Special overflow error 2.\n");
+      mpfr_dump (y);
+      exit (1);
+    }
+  
+  mpfr_set_str_binary (x, "0.101100100000000000110100E1000000");
+  mpfr_cosh (y, x, GMP_RNDN);
+  if (!mpfr_inf_p(y))
+    {
+      printf("Special overflow error 3.\n");
+      mpfr_dump (y);
+      exit (1);
+    }
+
+  mpfr_clear (y);
+  mpfr_clear (x);
+  mpfr_set_emin (MPFR_EMIN_MIN);
+  mpfr_set_emax (MPFR_EMAX_MAX);
 }
 
 int
@@ -108,6 +154,7 @@ main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
+  special_overflow ();
   special ();
 
   test_generic (2, 100, 100);

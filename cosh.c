@@ -19,7 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-
 #include "mpfr-impl.h"
 
  /* The computation of cosh is done by
@@ -30,8 +29,7 @@ mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
 {
   /****** Declaration ******/
   mpfr_t x;
-  mp_prec_t Nxt = MPFR_PREC(xt);
-  int inexact =0;
+  int inexact;
   
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(xt)))
     {
@@ -52,17 +50,17 @@ mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
 	  return mpfr_set_ui (y, 1, rnd_mode); /* cosh(0) = 1 */
 	}
     }
-  
-  mpfr_init2 (x, Nxt);
-  mpfr_abs (x, xt, GMP_RNDN);
 
+  mpfr_save_emin_emax (); 
+  MPFR_TMP_INIT_ABS(x, xt);
+  
   /* General case */
   {
     /* Declaration of the intermediary variable */
     mpfr_t t, te;
     
     /* Declaration of the size variable */
-    mp_prec_t Nx = Nxt;            /* Precision of input variable */
+    mp_prec_t Nx = MPFR_PREC(x);   /* Precision of input variable */
     mp_prec_t Ny = MPFR_PREC(y);   /* Precision of output variable */
     
     mp_prec_t Nt;                  /* Precision of the intermediary variable */
@@ -76,36 +74,37 @@ mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
     /* initialise of intermediary variables */
     mpfr_init2 (t, Nt);
     mpfr_init2 (te, Nt);
-    
+
     /* First computation of cosh */
-    do
+    for (;;)
       {
-	/* Reactualisation of the precision */	
-	mpfr_set_prec (t, Nt);
-	mpfr_set_prec (te, Nt);
-	
 	/* Compute cosh */
 	mpfr_exp (te, x, GMP_RNDD);         /* exp(x) */
 	mpfr_ui_div (t, 1, te, GMP_RNDU);   /* 1/exp(x) */
-	mpfr_add (t, te, t, GMP_RNDN);      /* exp(x) + 1/exp(x)*/
+	mpfr_add (t, te, t, GMP_RNDU);      /* exp(x) + 1/exp(x)*/
 	mpfr_div_2ui (t, t, 1, GMP_RNDN);   /* 1/2(exp(x) + 1/exp(x))*/
 	
 	/* Estimation of the error */
 	err = Nt - 3;
-	
+	 
+	/* Check if we can round */
+	if (MPFR_UNLIKELY(MPFR_IS_INF(t)) ||
+	    mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
+			    Ny + (rnd_mode == GMP_RNDN)))
+	  break;
+
 	/* Actualisation of the precision */
-	Nt += 10;
+ 	Nt += BITS_PER_MP_LIMB;
+        mpfr_set_prec (t, Nt);
+        mpfr_set_prec (te, Nt);
       }
-    while ((err < 0) || !mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
-                                           Ny + (rnd_mode == GMP_RNDN)));
 
     inexact = mpfr_set (y, t, rnd_mode);
 
     mpfr_clear (te);
     mpfr_clear (t);
   }
-  
-  mpfr_clear (x);
-  
-  return inexact;
+
+  mpfr_restore_emin_emax ();
+  return mpfr_check_range (y, inexact, rnd_mode);
 }
