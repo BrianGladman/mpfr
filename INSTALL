@@ -4,53 +4,17 @@
 0. You first need to install GMP. See <http://www.swox.com/gmp/>.
    MPFR requires GMP version 4.1 or later.
 
-   MPFR needs some internal GMP header files that are not installed.
-   So, keep the GMP build directory as is, at least until you have
-   built MPFR.
+1. In the MPFR build directory, to detect your system, type:
+     ./configure 
 
-   The old recommendation was to copy these header files (config.h,
-   gmp-impl.h, gmp-mparam.h and longlong.h) to GMPINSTALL/include,
-   GMPINSTALL being the directory where you have installed GMP (i.e.
-   the directory specified by the --prefix configure option), but
-   this method may lead to clashes with other packages. Therefore,
-   it should be avoided.
+2. To build the library, type:
+     make
 
-1. In the MPFR build directory, type
+3. To check the built library (runs the test files), type:
+     make check
 
-     ./configure --with-gmp-include=GMPBUILD --with-gmp-lib=GMPINSTALL/lib
-
-   where GMPBUILD is the GMP build directory and GMPINSTALL the
-   directory where you have installed GMP. Because of the internal
-   header files required by MPFR, the option --with-gmp=GMPINSTALL
-   is not sufficient and should not be used.
-
-   If this fails, please check that the C compiler and its options
-   are the same as those for the GMP build. You can see the latter
-   with the following:
-
-     grep "^CC\|^CFLAGS" GMPBUILD/Makefile
-
-   Then type (for example, under a sh-compatible shell):
-
-     CC=<C compiler> CFLAGS=<compiler options> ./configure \
-       --with-gmp-include=GMPBUILD --with-gmp-lib=GMPINSTALL/lib
-
-   Other options can be seen with "./configure --help". For example, if you
-   want to install MPFR in /local instead of /usr/local (default), type:
-
-     ./configure --prefix=/local
-
-2. Type "make" (produces libmpfr.a). On some architectures, you should
-   provide further options to match those used by GMP, for example, on
-   powerpc-aix:
-
-     make AR="ar -X64"
-
-3. Type "make check" (produces and runs the test files).
-
-4. Type "make install" (installs the library in /usr/local or in the
-   directory given in the --prefix option of configure). You'll probably
-   need to be "root" to install MPFR in directories like /usr/local.
+4. To install it (default `/usr/local` | see `--prefix` option), type:
+     make install
 
 
 Building the documentation
@@ -66,33 +30,60 @@ install recent versions of some utilities such as texinfo.
 * Type "make mpfr.ps" to produce the documentation in the Postscript format.
 
 
+Building MPFR with internal GMP header files
+============================================
+
+   MPFR built with internal GMP header files is a few faster,
+   so you may want to build it with them. Just do this in step 1:
+
+     ./configure --with-gmp-build=GMPBUILD
+
+   where GMPBUILD is the GMP build directory.
+   The needed header files are:
+     gmp-impl.h, longlong.h and all the necessary headers to use them.
+
 ./configure options
 ===================
 
 --prefix=DIR            installs MPFR headers and library in DIR/include
-                        and DIR/lib respectively
---with-gmp-include=DIR  assumes that DIR contains gmp-impl.h, longlong.h...
+                        and DIR/lib respectively (The default is `/usr/local`).
+
+--with-gmp-include=DIR  assumes that DIR contains gmp.h [, gmp-impl.h, ...]
 --with-gmp-lib=DIR      assumes that DIR contains libgmp.a
---with-gmp=DIR          same as --with-gmp-lib=DIR/lib and
-                        --with-gmp-include=DIR/include
+--with-gmp-build=DIR	assumes that DIR contains the source of GMP.    
+			same as --with-gmp-lib=DIR/.libs
+			and     --with-gmp-include=DIR
+--with-gmp=DIR        	assumes that DIR is where you have installed GMP.
+			same as --with-gmp-lib=DIR/lib
+                        and     --with-gmp-include=DIR/include
 
-Run "./configure --help" to see the other options.
+--enable-assert		Build MPFR with assertions.
+--with-irix64           Irix64 support.
 
-
-Known problems
-==============
-
-See file BUGS for known bugs in MPFR. Some patches may be available on the
-MPFR web page <http://www.mpfr.org/> or <http://www.loria.fr/projets/mpfr/>.
+Run "./configure --help" to see the other options (`autoconf` default options).
 
 
 In case of problem
 ==================
 
-Please contact us at mpfr@loria.fr, indicating the machine and operating
-system used (uname -a), the compiler and version used (gcc -v if you use
-gcc), the compile options used if any, the version of GMP and MPFR used
-and a description of the problem encountered.
+   If the `configure` fails, please check that the C compiler and
+   its options are the same as those for the GMP build (specially the ABI).
+   You can see the latter with the following:
+     grep "^CC\|^CFLAGS" GMPBUILD/Makefile
 
-If it is a problem concerning the MPFR compilation or test (i.e. during
-configure, make or make check), please send us a log of the installation.
+   Then type (for example, under a sh-compatible shell):
+     CC=<C compiler> CFLAGS=<compiler options> ./configure \
+       --with-gmp-include=GMPBUILD --with-gmp-lib=GMPINSTALL/lib
+   And continue the install.
+
+   On some architectures, you should provide further options to match
+   those used by GMP, for example, on powerpc-aix:
+     make AR="ar -X64"
+
+   On some architectures, try with `gmake` instead of `make`.
+
+   If you can't solve your problem, you could contact us at mpfr@loria.fr,
+   indicating the machine and operating system used (uname -a), the compiler
+   and version used (gcc -v if you use gcc), the compile options used if any,
+   the version of GMP and MPFR used and a description of the problem 
+   encountered. Please send us also a log of the installation.
