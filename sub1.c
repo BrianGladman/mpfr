@@ -346,7 +346,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
                      For k=1, the first low limbs matched: low(b)-low(c)<0. */
                   if (k)
                     {
-                      inexact = -1;
+                      inexact = 1;
                       goto truncate;
                     }
 		}
