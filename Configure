@@ -240,30 +240,8 @@ tests all: \$(TESTS)
 clean:
 	-rm \$(TESTS)
 
-tadd: ../libmpfr.a
-tcmp2: ../libmpfr.a
-tget_str: ../libmpfr.a
-tmul_ui: ../libmpfr.a
-tset_f: ../libmpfr.a
-tsqrt: ../libmpfr.a
-tagm: ../libmpfr.a
-tcmp_ui: ../libmpfr.a
-tmul: ../libmpfr.a
-tround: ../libmpfr.a
-tset_si: ../libmpfr.a
-tcmp: ../libmpfr.a
-tdiv: ../libmpfr.a
-tmul_2exp: ../libmpfr.a
-tset_d: ../libmpfr.a
-tset_str: ../libmpfr.a
-tpi: ../libmpfr.a
-tset_z: ../libmpfr.a
-tlog2: ../libmpfr.a
-tcan_round: ../libmpfr.a
-tlog: ../libmpfr.a
-texp: ../libmpfr.a
-tdiv_ui: ../libmpfr.a
-tzeta: ../libmpfr.a
+t%: t%.c ../libmpfr.a 
+	$(CC) $(CFLAGS) -o $@ $@.c $(LDLIBS)
 EOF
 
 
