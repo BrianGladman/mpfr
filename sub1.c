@@ -32,8 +32,7 @@ MA 02111-1307, USA. */
 */
 
 int
-mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode,
-           int sub)
+mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 {
   int sign;
   mp_exp_unsigned_t diff_exp;
@@ -54,25 +53,35 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode,
     {
       if (rnd_mode == GMP_RNDD)
         MPFR_SET_NEG(a);
+
       else
         MPFR_SET_POS(a);
       MPFR_SET_ZERO(a);
       MPFR_RET(0);
     }
 
-  /* If subtraction: sign(a) = sign * sign(b) */
-  if (sub && MPFR_SIGN(a) != sign * MPFR_SIGN(b))
-    MPFR_CHANGE_SIGN(a);
+  /* 
+   * If subtraction: sign(a) = sign * sign(b) 
+   * If addition: sign(a) = sign of the larger argument in absolute value.
+   *
+   * Both cases can be simplidied in:
+   * if (sign>0)
+   *    if addition: sign(a) = sign * sign(b) = sign(b)
+   *    if subtraction, b is greater, so sign(a) = sign(b)
+   * else
+   *    if subtraction, sign(a) = - sign(b)
+   *    if addition, sign(a) = sign(c) (since c is greater)
+   *      But if it is an addition, sign(b) and sign(c) are opposed!
+   *      So sign(a) = - sign(b)
+   */
 
+  MPFR_SET_SAME_SIGN(a,b);
   if (sign < 0) /* swap b and c so that |b| > |c| */
     {
       mpfr_srcptr t;
+      MPFR_CHANGE_SIGN(a);
       t = b; b = c; c = t;
     }
-
-  /* If addition: sign(a) = sign of the larger argument in absolute value */
-  if (!sub)
-    MPFR_SET_SAME_SIGN(a, b);
 
   diff_exp = (mp_exp_unsigned_t) MPFR_GET_EXP (b) - MPFR_GET_EXP (c);
 

@@ -30,8 +30,6 @@ mpfr_set4 (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode, int signb)
 {
   int inex;
   
-  MPFR_CLEAR_FLAGS(a);
-  
   if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(b) ))
     {
       if (MPFR_IS_NAN(b))
@@ -60,6 +58,8 @@ mpfr_set4 (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode, int signb)
       mp_prec_t aq;
       int carry;
       
+      MPFR_CLEAR_FLAGS(a);
+
       ap = MPFR_MANT(a);
       aq = MPFR_PREC(a);
       

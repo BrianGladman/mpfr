@@ -30,14 +30,14 @@ MA 02111-1307, USA. */
    which is >= 0 */
 
 int
-mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c,
-	   mp_rnd_t rnd_mode, mp_exp_unsigned_t diff_exp)
+mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 {
   mp_limb_t *ap, *bp, *cp;
   mp_prec_t aq, bq, cq, aq2;
   mp_size_t an, bn, cn;
   mp_exp_t difw, exp;
   int sh, rb, fb, inex;
+  mp_exp_unsigned_t diff_exp;
   TMP_DECL(marker);
 
   MPFR_ASSERTD(MPFR_IS_PURE_FP(b));
@@ -52,12 +52,15 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c,
   bq = MPFR_PREC(b);
   cq = MPFR_PREC(c);
 
+  diff_exp = (mp_exp_unsigned_t) bq - cq;
+
   an = (aq-1)/BITS_PER_MP_LIMB + 1; /* number of significant limbs of a */
   aq2 = (mp_prec_t) an * BITS_PER_MP_LIMB;
   sh = aq2 - aq;                    /* non-significant bits in low limb */
+
   bn = (bq-1)/BITS_PER_MP_LIMB + 1; /* number of significant limbs of b */
   cn = (cq-1)/BITS_PER_MP_LIMB + 1; /* number of significant limbs of c */
-
+  
   if (ap == bp)
     {
       bp = (mp_ptr) TMP_ALLOC (bn * BYTES_PER_MP_LIMB);
@@ -73,6 +76,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c,
 
   exp = MPFR_GET_EXP (b);
   MPFR_SET_SAME_SIGN(a, b);
+  diff_exp = (mp_exp_unsigned_t) exp - MPFR_GET_EXP(c);
 
   /*
    * 1. Compute the significant part A', the non-significant bits of A

@@ -42,7 +42,6 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
 
   TMP_DECL(marker);
 
-  MPFR_CLEAR_FLAGS(u);
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(u)))
     {
       if (MPFR_IS_NAN(u))
@@ -75,6 +74,7 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
       MPFR_SET_NAN(r);
       MPFR_RET_NAN;
     }
+  MPFR_CLEAR_FLAGS(r);
   MPFR_SET_POS(r);
 
   up = MPFR_MANT(u);

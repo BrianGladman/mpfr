@@ -28,16 +28,21 @@ MA 02111-1307, USA. */
 int
 mpfr_set_ui (mpfr_ptr x, unsigned long i, mp_rnd_t rnd_mode)
 {
-  int inex = 0;
+  int inex;
 
-  MPFR_CLEAR_FLAGS(x);
   if (i == 0)
-    MPFR_SET_ZERO(x);  /* the sign will be set later */
+    {
+      MPFR_SET_ZERO(x);
+      MPFR_SET_POS(x);
+      MPFR_RET(0);
+    }
   else
     {
       mp_size_t xn;
       unsigned int cnt, nbits;
       mp_limb_t *xp;
+
+      MPFR_CLEAR_FLAGS(x);
 
       xn = (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB;
       MPFR_ASSERTD(i == (mp_limb_t) i);

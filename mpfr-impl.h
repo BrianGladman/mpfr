@@ -19,6 +19,9 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+#ifndef __MPFR_IMPL_H__
+#define __MPFR_IMPL_H__
+
 /* Auto include local gmp.h if not included */
 #ifndef __GMP_H__
 #include "gmp.h"
@@ -75,7 +78,6 @@ MA 02111-1307, USA. */
 #endif
 
 /* This unsigned type must correspond to the signed one defined in gmp.h */
-/* FIXME: Useless since EXP < MAX/2? Remove?*/
 #ifdef MPFR_EXP_FORMAT_INT
 typedef unsigned int            mp_exp_unsigned_t;
 typedef unsigned int            mp_size_unsigned_t;
@@ -107,20 +109,20 @@ typedef unsigned long int       mp_size_unsigned_t;
 
 /* MPFR_ASSERTD(expr): assertions that should be checked when testing */
 #if WANT_ASSERT
-#define MPFR_EXP_CHECK 1
-#define MPFR_ASSERTD(expr)  MPFR_ASSERTN (expr)
+# define MPFR_EXP_CHECK 1
+# define MPFR_ASSERTD(expr)  MPFR_ASSERTN (expr)
 #else
-#define MPFR_ASSERTD(expr)  ((void) 0)
+# define MPFR_ASSERTD(expr)  ((void) 0)
 #endif
 
 /* Theses macros help the compiler to determine if a test is likely*/
 /* or unlikely. */
 #if __GNUC__ >= 3
-#define MPFR_LIKELY(x) (__builtin_expect(!!(x),1))
-#define MPFR_UNLIKELY(x) (__builtin_expect((x),0))
+# define MPFR_LIKELY(x) (__builtin_expect(!!(x),1))
+# define MPFR_UNLIKELY(x) (__builtin_expect((x),0))
 #else
-#define MPFR_LIKELY(x) (x)
-#define MPFR_UNLIKELY(x) (x)
+# define MPFR_LIKELY(x) (x)
+# define MPFR_UNLIKELY(x) (x)
 #endif
 
 /* Invalid exponent value (to track bugs...) */
@@ -134,13 +136,13 @@ typedef unsigned long int       mp_size_unsigned_t;
    MPFR_EXP_CHECK by setting -DMPFR_EXP_CHECK in $CFLAGS. */
 
 #if MPFR_EXP_CHECK
-#define MPFR_GET_EXP(x)          mpfr_get_exp (x)
-#define MPFR_SET_EXP(x, exp)     MPFR_ASSERTN (!mpfr_set_exp ((x), (exp)))
-#define MPFR_SET_INVALID_EXP(x)  ((void) (MPFR_EXP (x) = MPFR_EXP_INVALID))
+# define MPFR_GET_EXP(x)          mpfr_get_exp (x)
+# define MPFR_SET_EXP(x, exp)     MPFR_ASSERTN (!mpfr_set_exp ((x), (exp)))
+# define MPFR_SET_INVALID_EXP(x)  ((void) (MPFR_EXP (x) = MPFR_EXP_INVALID))
 #else
-#define MPFR_GET_EXP(x)          MPFR_EXP (x)
-#define MPFR_SET_EXP(x, exp)     ((void) (MPFR_EXP (x) = (exp)))
-#define MPFR_SET_INVALID_EXP(x)  ((void) 0)
+# define MPFR_GET_EXP(x)          MPFR_EXP (x)
+# define MPFR_SET_EXP(x, exp)     ((void) (MPFR_EXP (x) = (exp)))
+# define MPFR_SET_INVALID_EXP(x)  ((void) 0)
 #endif
 
 /* Definition of constants */
@@ -382,10 +384,8 @@ int mpfr_set_underflow _MPFR_PROTO ((mpfr_ptr, mp_rnd_t, int));
 int mpfr_set_overflow _MPFR_PROTO ((mpfr_ptr, mp_rnd_t, int));
 void mpfr_save_emin_emax _MPFR_PROTO ((void));
 void mpfr_restore_emin_emax _MPFR_PROTO ((void));
-int mpfr_add1 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr,
-                       mp_rnd_t, mp_exp_unsigned_t));
-int mpfr_sub1 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr,
-                       mp_rnd_t, int));
+int mpfr_add1 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
+int mpfr_sub1 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_round_raw_generic _MPFR_PROTO ((mp_limb_t *, mp_limb_t *, mpfr_prec_t, int,
 				    mpfr_prec_t, mp_rnd_t, int *, int));
 int mpfr_can_round_raw _MPFR_PROTO ((mp_limb_t *, mp_size_t, int, mp_exp_t,
@@ -415,4 +415,6 @@ void mpfr_set_str_binary _MPFR_PROTO ((mpfr_ptr, __gmp_const char *));
 
 #if defined (__cplusplus)
 }
+#endif
+
 #endif

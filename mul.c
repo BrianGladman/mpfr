@@ -131,15 +131,15 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
     mpn_lshift (tmp, tmp, tn, 1);
   cc = mpfr_round_raw (ap, tmp, bq + cq, MPFR_IS_NEG_SIGN(sign_product), aq,
 		       rnd_mode, &inexact);
-  if (cc) /* cc = 1 ==> result is a power of two */
+  if (MPFR_UNLIKELY(cc)) /* cc = 1 ==> result is a power of two */
     ap[an-1] = MPFR_LIMB_HIGHBIT;
 
   TMP_FREE(marker);
 
   ax = (bx + cx) + (mp_exp_t) (b1 - 1 + cc);
-  if (ax > __gmpfr_emax)
+  if (MPFR_UNLIKELY( ax > __gmpfr_emax))
     return mpfr_set_overflow (a, rnd_mode, sign_product);
-  if (ax < __gmpfr_emin)
+  if (MPFR_UNLIKELY( ax < __gmpfr_emin))
     {
       /* In the rounding to the nearest mode, if the exponent of the exact
          result (i.e. before rounding, i.e. without taking cc into account)
