@@ -70,7 +70,7 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	  else /* asin(-1) = -Pi/2 */
 	    {
 	      inexact = -mpfr_const_pi (asin, MPFR_INVERT_RND(rnd_mode));
-	      mpfr_neg (asin, asin, rnd_mode);
+	      MPFR_CHANGE_SIGN (asin);
 	    }
 	  mpfr_div_2ui (asin, asin, 1, rnd_mode); /* May underflow */
 	  return inexact;
