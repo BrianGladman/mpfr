@@ -155,11 +155,8 @@ int check_worst_cases()
   check3(1.76177628026265550074e-10, GMP_RNDN, 1.00000000017617773906);
   check_worst_case(7.54175277499595900852e-10, 1.00000000075417516676);
   check3(7.54175277499595900852e-10, GMP_RNDN, 1.00000000075417538881);
-  mpfr_set_str_raw(x, "1.1001111010011100101110111111110101100000100000001011e-31");
-#ifdef DEBUG
-  printf("x=%1.20e\n", mpfr_get_d(x));
-  printf(" ="); mpfr_print_raw(x); putchar('\n');
-#endif
+  /* bug found by Vincent Lefe`vre on December 8, 1999 */
+  check3(-5.42410311287441459172e+02, GMP_RNDN, 2.7176584868845723e-236);
   mpfr_clear(x);
   return 0;
 }
