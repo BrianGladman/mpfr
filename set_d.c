@@ -218,8 +218,14 @@ mpfr_set_d(mpfr_t r, double d, unsigned char rnd_mode)
   sizer = (PREC(r)-1)/BITS_PER_MP_LIMB + 1;
 
   /* warning: __mpfr_extract_double requires at least two limbs */
-  EXP(r) = __mpfr_extract_double (MANT(r)+sizer-2, d, (sizer>=2) );
+  if (sizer == 1)
+    EXP(r) = __mpfr_extract_double (MANT(r), d, 0);
+  else
+    EXP(r) = __mpfr_extract_double (MANT(r) + sizer - 2, d, 1);
   
+  if (sizer > MPFR_LIMBS_PER_DOUBLE)
+    MPN_ZERO(MANT(r), sizer - MPFR_LIMBS_PER_DOUBLE); 
+
   count_leading_zeros(cnt, MANT(r)[sizer-1]);
   if (cnt) mpn_lshift(MANT(r), MANT(r), sizer, cnt); 
   
