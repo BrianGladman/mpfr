@@ -718,7 +718,17 @@ do { \
 /* type is the target (unsigned) type */
 #define SAFE_ABS(type,x) ((x) >= 0 ? (type)(x) : -(type)(x))
 
+#define mpfr_get_d1(x) mpfr_get_d(x,__gmpfr_default_rounding_mode)
 
+#define MPFR_MPZ_SIZEINBASE2(r, z)              \
+  do {                                          \
+   int _cnt;                                    \
+   mp_size_t _size;                             \
+   MPFR_ASSERTD (mpz_sgn (z) != 0);             \
+   _size = ABSIZ(z);                            \
+   count_leading_zeros (_cnt, PTR(z)[_size-1]); \
+   (r) = _size * BITS_PER_MP_LIMB - _cnt;       \
+  } while (0)
 
 /******************************************************
  **************  Save exponent macros  ****************
@@ -1010,7 +1020,6 @@ int mpfr_sub1sp _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_can_round_raw _MPFR_PROTO ((mp_limb_t *, mp_size_t, int, 
 				     mp_exp_t, mp_rnd_t, mp_rnd_t, mp_prec_t));
 
-double mpfr_get_d3 _MPFR_PROTO ((mpfr_srcptr, mp_exp_t, mp_rnd_t));
 int mpfr_cmp2 _MPFR_PROTO ((mpfr_srcptr, mpfr_srcptr, mp_prec_t *));
 
 long          __gmpfr_ceil_log2     _MPFR_PROTO ((double));

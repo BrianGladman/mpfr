@@ -49,7 +49,7 @@ mpz_normalize (mpz_t rop, mpz_t z, mp_exp_t q)
 {
   size_t k;
 
-  k = mpz_sizeinbase(z, 2);
+  MPFR_MPZ_SIZEINBASE2 (k, z);
   MPFR_ASSERTD (k == (mpfr_uexp_t) k);
   if (q < 0 || (mpfr_uexp_t) k > (mpfr_uexp_t) q)
     {
@@ -101,7 +101,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   n = (long) (mpfr_get_d1 (x) / LOG2);
 
   /* error bounds the cancelled bits in x - n*log(2) */
-  if (MPFR_UNLIKELY(n == 0))
+  if (MPFR_UNLIKELY (n == 0))
     error_r = 0;
   else
     count_leading_zeros (error_r, (mp_limb_t) (n < 0) ? -n : n);
@@ -138,7 +138,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_mul_ui (r, s, (n < 0) ? -n : n, (n >= 0) ? GMP_RNDZ : GMP_RNDU);
       /* r is within 3 ulps of n*log(2) */
       if (n < 0)
-	mpfr_neg (r, r, GMP_RNDD); /* exact */
+	MPFR_CHANGE_SIGN (r);
       /* r = floor(n*log(2)), within 3 ulps */
       
       MPFR_TRACE ( MPFR_DUMP (x) );
@@ -178,18 +178,10 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       MPFR_SET_EXP(s, MPFR_GET_EXP (s) + exps);
       TMP_FREE(marker); /* don't need ss anymore */
       
-      if (n>0) 
-	mpfr_mul_2ui(s, s, n, GMP_RNDU);
-      else 
-	mpfr_div_2ui(s, s, -n, GMP_RNDU);
+      mpfr_mul_2si (s, s, n, GMP_RNDU);
       
-      /* error is at most 2^K*(3l*(l+1)) ulp for mpfr_exp2_aux */
-      l = (precy < SWITCH) ? 3*l*(l+1) : l*(l+4) ;
-      k = MPFR_INT_CEIL_LOG2 (l);
-      /* k = 0; while (l) { k++; l >>= 1; } */
-
-      /* now k = ceil(log(error in ulps)/log(2)) */
-      K += k;
+      /* error is at most 2^K*l */
+      K += MPFR_INT_CEIL_LOG2 (l);
 
       MPFR_TRACE ( printf("after mult. by 2^n:\n") );
       MPFR_TRACE ( MPFR_DUMP (s) );
@@ -228,10 +220,10 @@ static unsigned long
 mpfr_exp2_aux (mpz_t s, mpfr_srcptr r, mp_prec_t q, mp_exp_t *exps)
 {
   unsigned long l;
-  mp_exp_t dif;
+  mp_exp_t dif, expt, expr;
   mp_size_t qn;
   mpz_t t, rr;
-  mp_exp_t expt, expr;
+  mp_size_t sbit, tbit;
   TMP_DECL(marker);
 
   TMP_MARK(marker);
@@ -246,24 +238,29 @@ mpfr_exp2_aux (mpz_t s, mpfr_srcptr r, mp_prec_t q, mp_exp_t *exps)
   expr = mpfr_get_z_exp(rr, r);               /* no error here */
 
   l = 0;
-  do {
+  for (;;) {
     l++;
     mpz_mul(t, t, rr); 
     expt += expr;
-    dif = *exps + mpz_sizeinbase(s, 2) - expt - mpz_sizeinbase(t, 2);
+    MPFR_MPZ_SIZEINBASE2 (sbit, s);
+    MPFR_MPZ_SIZEINBASE2 (tbit, t);
+    dif = *exps + sbit - expt - tbit;
     /* truncates the bits of t which are < ulp(s) = 2^(1-q) */
     expt += mpz_normalize(t, t, (mp_exp_t) q-dif); /* error at most 2^(1-q) */
     mpz_div_ui(t, t, l);                   /* error at most 2^(1-q) */
     /* the error wrt t^l/l! is here at most 3*l*ulp(s) */
     MPFR_ASSERTD (expt == *exps);
+    if (mpz_sgn (t) == 0)
+      break;
     mpz_add(s, s, t);                      /* no error here: exact */
     /* ensures rr has the same size as t: after several shifts, the error
        on rr is still at most ulp(t)=ulp(s) */
-    expr += mpz_normalize(rr, rr, mpz_sizeinbase(t, 2));
-  } while (mpz_cmp_ui(t, 0));
+    MPFR_MPZ_SIZEINBASE2 (tbit, t);
+    expr += mpz_normalize(rr, rr, tbit);
+  }
 
   TMP_FREE(marker);
-  return l;
+  return 3*l*(l+1);
 }
 
 /* s <- 1 + r/1! + r^2/2! + ... + r^l/l! while MPFR_EXP(r^l/l!)+MPFR_EXPR(r)>-q
@@ -283,6 +280,7 @@ mpfr_exp2_aux2 (mpz_t s, mpfr_srcptr r, mp_prec_t q, mp_exp_t *exps)
   mp_prec_t ql;
   unsigned long l, m, i;
   mpz_t t, *R, rr, tmp;
+  mp_size_t sbit, rrbit;
   TMP_DECL(marker);
 
   /* estimate value of l */
@@ -324,47 +322,54 @@ mpfr_exp2_aux2 (mpz_t s, mpfr_srcptr r, mp_prec_t q, mp_exp_t *exps)
 
   l = 0;
   ql = q; /* precision used for current giant step */
-  do
-    {
-      /* all R[i] must have exponent 1-ql */
-      if (l != 0)
-        for (i = 0 ; i < m ; i++)
-	  expR[i] = mpz_normalize2 (R[i], R[i], expR[i], 1-ql);
-      /* the absolute error on R[i]*rr is still 2*i-1 ulps */
-      expt = mpz_normalize2 (t, R[m-1], expR[m-1], 1-ql);
-      /* err(t) <= 2*m-1 ulps */
-      /* computes t = 1 + r/(l+1) + ... + r^(m-1)*l!/(l+m-1)!
-         using Horner's scheme */
-      for (i = m-1 ; i-- != 0 ; )
-        {
-          mpz_div_ui(t, t, l+i+1); /* err(t) += 1 ulp */
-          mpz_add(t, t, R[i]);
-        }
-      /* now err(t) <= (3m-2) ulps */
-
-      /* now multiplies t by r^l/l! and adds to s */
-      mpz_mul(t, t, rr);
-      expt += expr;
-      expt = mpz_normalize2(t, t, expt, *exps);
-      /* err(t) <= (3m-1) + err_rr(l) <= (3m-2) + 2*l */
-      MPFR_ASSERTD (expt == *exps);
-      mpz_add(s, s, t); /* no error here */
-
-      /* updates rr, the multiplication of the factors l+i could be done
-         using binary splitting too, but it is not sure it would save much */
-      mpz_mul(t, rr, R[m]); /* err(t) <= err(rr) + 2m-1 */
-      expr += expR[m];
-      mpz_set_ui (tmp, 1);
-      for (i = 1 ; i <= m ; i++)
-	mpz_mul_ui (tmp, tmp, l + i);
-      mpz_fdiv_q(t, t, tmp); /* err(t) <= err(rr) + 2m */
-      expr += mpz_normalize(rr, t, ql); /* err_rr(l+1) <= err_rr(l) + 2m+1 */
-      ql = q - *exps - mpz_sizeinbase(s, 2) + expr + mpz_sizeinbase(rr, 2);
-      l += m;
-    }
-  while ((size_t) expr+mpz_sizeinbase(rr, 2) > (size_t)((int)-q));
-
+  do {
+    /* all R[i] must have exponent 1-ql */
+    if (l != 0)
+      for (i = 0 ; i < m ; i++)
+	expR[i] = mpz_normalize2 (R[i], R[i], expR[i], 1-ql);
+    /* the absolute error on R[i]*rr is still 2*i-1 ulps */
+    expt = mpz_normalize2 (t, R[m-1], expR[m-1], 1-ql);
+    /* err(t) <= 2*m-1 ulps */
+    /* computes t = 1 + r/(l+1) + ... + r^(m-1)*l!/(l+m-1)!
+       using Horner's scheme */
+    for (i = m-1 ; i-- != 0 ; )
+      {
+	mpz_div_ui(t, t, l+i+1); /* err(t) += 1 ulp */
+	mpz_add(t, t, R[i]);
+      }
+    /* now err(t) <= (3m-2) ulps */
+    
+    /* now multiplies t by r^l/l! and adds to s */
+    mpz_mul(t, t, rr);
+    expt += expr;
+    expt = mpz_normalize2(t, t, expt, *exps);
+    /* err(t) <= (3m-1) + err_rr(l) <= (3m-2) + 2*l */
+    MPFR_ASSERTD (expt == *exps);
+    mpz_add(s, s, t); /* no error here */
+    
+    /* updates rr, the multiplication of the factors l+i could be done
+       using binary splitting too, but it is not sure it would save much */
+    mpz_mul(t, rr, R[m]); /* err(t) <= err(rr) + 2m-1 */
+    expr += expR[m];
+    mpz_set_ui (tmp, 1);
+    for (i = 1 ; i <= m ; i++)
+      mpz_mul_ui (tmp, tmp, l + i);
+    mpz_fdiv_q(t, t, tmp); /* err(t) <= err(rr) + 2m */
+    l += m;
+    if (MPFR_UNLIKELY (mpz_sgn (t) == 0))
+      break;
+    expr += mpz_normalize(rr, t, ql); /* err_rr(l+1) <= err_rr(l) + 2m+1 */
+    if (MPFR_UNLIKELY (mpz_sgn (rr) == 0))
+      rrbit = 1;
+    else
+      MPFR_MPZ_SIZEINBASE2 (rrbit, rr);
+    MPFR_MPZ_SIZEINBASE2 (sbit, s);
+    ql = q - *exps - sbit + expr + rrbit;
+    /* TODO: Wrong cast. I don't want what is right, but this is 
+       certainly wrong */
+  }  while ((size_t) expr+rrbit > (size_t)((int)-q));
+  
   TMP_FREE(marker);
   mpz_clear(tmp);
-  return l;
+  return l*(l+4);
 }
