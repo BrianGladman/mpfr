@@ -49,6 +49,9 @@ mpfr_set_si (mpfr_ptr x, long i, mp_rnd_t rnd_mode)
   xp[xn] = ai << cnt;
   /* don't forget to put zero in lower limbs */
   MPN_ZERO(xp, xn);
+  /* set sign */
+  if ((i < 0) ^ (MPFR_SIGN(x) < 0))
+    MPFR_CHANGE_SIGN(x);
 
   MPFR_EXP(x) = nbits = BITS_PER_MP_LIMB - cnt;
   inex = mpfr_check_range(x, rnd_mode);
@@ -73,9 +76,6 @@ mpfr_set_si (mpfr_ptr x, long i, mp_rnd_t rnd_mode)
           xp[xn] = MP_LIMB_T_HIGHBIT;
         }
     }
-
-  if ((i < 0) ^ (MPFR_SIGN(x) < 0))
-    MPFR_CHANGE_SIGN(x);
 
   MPFR_RET(inex);
 }
