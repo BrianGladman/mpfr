@@ -348,6 +348,19 @@ check_inexact (void)
   mpfr_init (z);
   mpfr_init (u);
 
+  mpfr_set_prec (x, 2);
+  mpfr_set_ui (x, 6, GMP_RNDN);
+  mpfr_div_2exp (x, x, 4, GMP_RNDN); /* x = 6/16 */
+  mpfr_set_prec (y, 2);
+  mpfr_set_si (y, -1, GMP_RNDN);
+  mpfr_div_2exp (y, y, 4, GMP_RNDN); /* y = -1/16 */
+  inexact = mpfr_sub (y, y, x, GMP_RNDN); /* y = round(-7/16) = -1/2 */
+  if (inexact >= 0)
+    {
+      fprintf (stderr, "Error: wrong inexact flag for -1/16 - (6/16)\n");
+      exit (1);
+    }
+
   for (px=2; px<MAX_PREC; px++)
     {
       mpfr_set_prec (x, px);
