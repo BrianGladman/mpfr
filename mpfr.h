@@ -140,6 +140,14 @@ typedef struct __gmpfr_cache_s mpfr_cache_t[1];
     + __GMP_EXTERN_INLINE    Attribute for inline function.
     * __gmp_const            const (Supports for K&R compiler only for mpfr.h).
 */
+/* Extra MPFR defines */
+#define __MPFR_SENTINEL_ATTR
+#if defined (__GNUC__)
+# if __GNUC__ >= 4
+# undef __MPFR_SENTINEL_ATTR
+# define __MPFR_SENTINEL_ATTR __attribute__ ((sentinel))
+# endif 
+#endif
 
 /* Prototypes: Support of K&R compiler */
 #if defined (__GMP_PROTO)
@@ -198,9 +206,9 @@ void mpfr_init2 _MPFR_PROTO ((mpfr_ptr, mpfr_prec_t));
 void mpfr_init _MPFR_PROTO ((mpfr_ptr));
 void mpfr_clear _MPFR_PROTO ((mpfr_ptr));
 
-void mpfr_inits2 _MPFR_PROTO ((mp_prec_t, mpfr_ptr, ...));
-void mpfr_inits _MPFR_PROTO ((mpfr_ptr, ...));
-void mpfr_clears _MPFR_PROTO ((mpfr_ptr, ...));
+void mpfr_inits2 _MPFR_PROTO ((mp_prec_t, mpfr_ptr, ...)) __MPFR_SENTINEL_ATTR;
+void mpfr_inits _MPFR_PROTO ((mpfr_ptr, ...)) __MPFR_SENTINEL_ATTR;
+void mpfr_clears _MPFR_PROTO ((mpfr_ptr, ...)) __MPFR_SENTINEL_ATTR;
 
 int mpfr_prec_round _MPFR_PROTO ((mpfr_ptr, mpfr_prec_t, mpfr_rnd_t));
 int mpfr_can_round _MPFR_PROTO ((mpfr_ptr, mp_exp_t, mpfr_rnd_t, mpfr_rnd_t,
