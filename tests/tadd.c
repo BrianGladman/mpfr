@@ -31,8 +31,8 @@ MA 02111-1307, USA. */
 
 extern int isnan();
 extern int getpid();
-void check _PROTO((double, double, unsigned int, unsigned int, unsigned int, unsigned int, double)); 
-void checknan _PROTO((double, double, unsigned int, unsigned int, unsigned int, unsigned int)); 
+void check _PROTO((double, double, mp_rnd_t, unsigned int, unsigned int, unsigned int, double)); 
+void checknan _PROTO((double, double, mp_rnd_t, unsigned int, unsigned int, unsigned int)); 
 void check3 _PROTO((double, double, unsigned int)); 
 void check4 _PROTO((double, double, unsigned int)); 
 void check5 _PROTO((double, unsigned int)); 
@@ -72,14 +72,10 @@ unsigned int py, unsigned int pz, double z1)
 void checknan (double x, double y, mp_rnd_t rnd_mode, unsigned int px, 
 unsigned int py, unsigned int pz)
 {
-<<<<<<< tadd.c
   double z2; mpfr_t xx, yy, zz;
-=======
-  double z2; mpfr_t xx,yy,zz; 
 #ifdef TEST
   int cert=0;
 #endif
->>>>>>> 1.40
 
   mpfr_init2(xx, px);
   mpfr_init2(yy, py);
@@ -167,11 +163,7 @@ void check5 (double x, mp_rnd_t rnd_mode)
   mpfr_clear(xx);
 }
 
-<<<<<<< tadd.c
 void check2 (double x, int px, double y, int py, int pz, mp_rnd_t rnd_mode)
-=======
-void check2(x,px,y,py,pz,rnd_mode) double x,y; int px,py,pz,rnd_mode;
->>>>>>> 1.40
 {
   mpfr_t xx, yy, zz; double z,z2; int u;
 
