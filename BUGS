@@ -5,7 +5,3 @@ Knowns bugs:
 * The overflows/underflows are not yet implemented in all functions.
 
 * Possible integer overflows on some machines.
-
-* tatan and tasin: ASSERT failures in set_z.c.
-
-* Rounding errors in mpfr_atan().
