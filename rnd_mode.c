@@ -38,7 +38,7 @@ extern int swapRM();
 #define TOINFP swapRM(ROUND_TO_PLUS_INFINITY)
 #define TONEAREST swapRM(ROUND_TO_NEAREST)
 #define TOINFM swapRM(ROUND_TO_MINUS_INFINITY)
-#elif (defined (solaris) || defined (sun4) || defined(hpux) || defined(freebsd))
+#elif (defined (__sparc__) || defined(hpux) || defined(freebsd))
 #ifdef hpux
 #include <math.h>
 #else
