@@ -76,7 +76,9 @@ FUNC_NAME (r, u)
   mp_ptr rp, up;
   mp_size_t size, asize;
   mp_size_t prec;
+#ifdef _MPFR_FLOOR_OR_CEIL
   mp_size_t ignored_n;
+#endif
   mp_exp_t exp;
 
   size = u->_mp_size;
