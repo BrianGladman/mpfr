@@ -87,12 +87,17 @@ mpfr_pow_is_exact (mpfr_srcptr x, mpfr_srcptr y)
 }
 
 /* The computation of z = pow(x,y) is done by
-   z = exp(y * log(x)) = x^y */
+   z = exp(y * log(x)) = x^y
+   For the special cases, see Section F.9.4.4 of the C standard. */
 int
 mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 {
   int inexact = 0;
- 
+
+  /* pow(x, ±0) returns 1 for any x, even a NaN. */
+  if (MPFR_IS_FP(y) && MPFR_IS_ZERO(y))
+    return mpfr_set_ui (z, 1, GMP_RNDN);
+
   if (MPFR_IS_NAN(x) || MPFR_IS_NAN(y))
     {
       MPFR_SET_NAN(z);
@@ -101,82 +106,37 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 
   if (MPFR_IS_INF(y))
     {
-      mpfr_t one;
-      int cmp;
-
-      if (MPFR_SIGN(y) > 0)
+      if (MPFR_IS_INF(x))
         {
-          if (MPFR_IS_INF(x))
-            {
-              MPFR_CLEAR_FLAGS(z);
-              if (MPFR_SIGN(x) > 0)
-                MPFR_SET_INF(z);
-              else
-                MPFR_SET_ZERO(z);
-              MPFR_SET_POS(z);
-              MPFR_RET(0);
-            }
           MPFR_CLEAR_FLAGS(z);
-          if (MPFR_IS_ZERO(x))
-            {
-              MPFR_SET_ZERO(z);
-              MPFR_SET_POS(z);
-              MPFR_RET(0);
-            }
-          mpfr_init2(one, BITS_PER_MP_LIMB);
-          mpfr_set_ui(one, 1, GMP_RNDN);
-          cmp = mpfr_cmpabs(x, one);
-          mpfr_clear(one);
-          if (cmp > 0)
-            {
-              MPFR_SET_INF(z);
-              MPFR_SET_POS(z);
-              MPFR_RET(0);
-            }
-          else if (cmp < 0)
-            {
-              MPFR_SET_ZERO(z);
-              MPFR_SET_POS(z);
-              MPFR_RET(0);
-            }
+          if (MPFR_SIGN(y) > 0)
+            MPFR_SET_INF(z);
           else
-            {
-              MPFR_SET_NAN(z);
-              MPFR_RET_NAN;
-            }
+            MPFR_SET_ZERO(z);
+          MPFR_SET_POS(z);
+          MPFR_RET(0);
         }
       else
         {
-          if (MPFR_IS_INF(x))
-            {
-              MPFR_CLEAR_FLAGS(z);
-              if (MPFR_SIGN(x) > 0)
-                MPFR_SET_ZERO(z);
-              else
-                MPFR_SET_INF(z);
-              MPFR_SET_POS(z);
-              MPFR_RET(0);
-            }
-          if (MPFR_IS_ZERO(x))
-            {
-              MPFR_SET_INF(z);
-              MPFR_SET_POS(z);
-              MPFR_RET(0);
-            }
+          mpfr_t one;
+          int cmp;
+
           mpfr_init2(one, BITS_PER_MP_LIMB);
           mpfr_set_ui(one, 1, GMP_RNDN);
-          cmp = mpfr_cmpabs(x, one);
+          cmp = mpfr_cmpabs(x, one) * MPFR_SIGN(y);
           mpfr_clear(one);
-          MPFR_CLEAR_FLAGS(z);
+
           if (cmp > 0)
             {
-              MPFR_SET_ZERO(z);
+              MPFR_CLEAR_NAN(z);
+              MPFR_SET_INF(z);
               MPFR_SET_POS(z);
               MPFR_RET(0);
             }
           else if (cmp < 0)
             {
-              MPFR_SET_INF(z);
+              MPFR_CLEAR_FLAGS(z);
+              MPFR_SET_ZERO(z);
               MPFR_SET_POS(z);
               MPFR_RET(0);
             }
@@ -186,11 +146,6 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
               MPFR_RET_NAN;
             }
         }
-    }
-
-  if (MPFR_IS_ZERO(y))
-    {
-      return mpfr_set_ui (z, 1, GMP_RNDN);
     }
 
   if (mpfr_integer_p (y))
@@ -215,28 +170,23 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 
   if (MPFR_IS_INF(x))
     {
-      if (MPFR_SIGN(x) > 0)
-        {
-          MPFR_CLEAR_FLAGS(z);
-          if (MPFR_SIGN(y) > 0)
-            MPFR_SET_INF(z);
-          else
-            MPFR_SET_ZERO(z);
-          MPFR_SET_POS(z);
-          MPFR_RET(0);
-        }
+      MPFR_CLEAR_FLAGS(z);
+      if (MPFR_SIGN(y) > 0)
+        MPFR_SET_INF(z);
       else
-        {
-          MPFR_SET_NAN(z);
-          MPFR_RET_NAN;
-        }
+        MPFR_SET_ZERO(z);
+      MPFR_SET_POS(z);
+      MPFR_RET(0);
     }
 
   if (MPFR_IS_ZERO(x))
     {
       MPFR_CLEAR_FLAGS(z);
-      MPFR_SET_ZERO(z);
-      MPFR_SET_SAME_SIGN(z, x);
+      if (MPFR_SIGN(y) < 0)
+        MPFR_SET_INF(z);
+      else
+        MPFR_SET_ZERO(z);
+      MPFR_SET_POS(z);
       MPFR_RET(0);
     }
 
