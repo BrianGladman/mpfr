@@ -36,6 +36,11 @@ mpfr_ptr a; mpfr_srcptr b, c; unsigned char rnd_mode;
   printf("b="); mpfr_print_raw(b); putchar('\n');
   printf("c="); mpfr_print_raw(c); putchar('\n');
 #endif
+
+  /* deal with NaN and zero */
+  if (FLAG_NAN(b) || FLAG_NAN(c)) { SET_NAN(a); return; }
+  if (!NOTZERO(b) || !NOTZERO(c)) { SET_ZERO(a); return; }
+
   sign_product = SIGN(b) * SIGN(c);
   bn = (PREC(b)-1)/mp_bits_per_limb+1; /* number of significant limbs of b */
   cn = (PREC(c)-1)/mp_bits_per_limb+1; /* number of significant limbs of c */
