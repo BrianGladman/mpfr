@@ -30,3 +30,16 @@ info_TEXINFOS = mpfr.texi
 mpfr_TEXINFOS = fdl.texi
 
 MAKEINFOFLAGS = --enable-encoding
+
+# Tune program
+EXTRA_PROGRAMS = tuneup
+
+tuneup_SOURCES = tuneup.c
+tuneup_LDADD = -lspeed $(top_builddir)/libmpfr.la
+tuneup_LDFLAGS = -static
+
+tune:
+	$(MAKE) $(AM_MAKEFLAGS) tuneup$(EXEEXT)
+	./tuneup
+	$(MAKE) $(AM_MAKEFLAGS) clean
+	$(MAKE) $(AM_MAKEFLAGS) libmpfr.la

@@ -698,11 +698,7 @@ extern unsigned char *mpfr_stack;
  *******************  Threshold ***********************
  ******************************************************/
 
-#ifdef __ia64
-# define MPFR_EXP_THRESHOLD 12500
-#else
-# define MPFR_EXP_THRESHOLD 25000
-#endif
+#include "mparam.h"
 
 /******************************************************
  *****************  Useful macros *********************
