@@ -53,7 +53,9 @@ To make a release (for the MPFR team):
      with and without gmp internal files, with and without gmp built
      as a shared library, with and without srcdir equals to objdir
      (../mpfr/configure --srcdir=/users/spaces/pelissip/mpfr/),
-     with and without "--std=c99 -O3 -D_XOPEN_SOURCE=500".
+     with and without "--std=c99 -O3 -D_XOPEN_SOURCE=500", with and
+     without "-ansi" (which allows to turn off features that are
+     incompatible with ISO C90).
   7) If there is no problem, add a tag to the CVS corresponding to the
      release, e.g. mpfr-2-0-1-rel for mpfr 2.0.1 (note that the periods
      are replaced by dashes): cvs tag mpfr-2-0-1-rel
