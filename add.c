@@ -294,11 +294,11 @@ mpfr_add1 (a, b, c, rnd_mode, diff_exp)
         if (difs)
         {
           cc = cprev << (BITS_PER_MP_LIMB - difs);
-	  if (ck > 0)
-	    {
-	      cprev = cp[--ck];
-	      cc += cprev >> difs;
-	    }
+          if (--ck >= 0)
+          {
+            cprev = cp[ck];
+            cc += cprev >> difs;
+          }
         }
         else
           cc = cp[--ck];
@@ -341,9 +341,9 @@ mpfr_add1 (a, b, c, rnd_mode, diff_exp)
           if (ck < 0)
             goto c_read;
           cc = cprev << (BITS_PER_MP_LIMB - difs);
-          if (ck > 0)
+          if (--ck >= 0)
           {
-            cprev = cp[--ck];
+            cprev = cp[ck];
             cc += cprev >> difs;
           }
         }
@@ -385,14 +385,13 @@ mpfr_add1 (a, b, c, rnd_mode, diff_exp)
 
       /* b has entirely been read */
 
-      if (fb)
+      if (fb || ck < 0)
         goto rounding;
       if (difs && cprev << (BITS_PER_MP_LIMB - difs))
       {
         fb = 1;
         goto rounding;
       }
-      MPFR_ASSERTN(ck >= 0);
       while (ck)
       {
         if (cp[--ck])
