@@ -43,7 +43,8 @@ MA 02111-1307, USA. */
 
 /* Definition of rounding modes */
 typedef enum {
-  GMP_RNDN=0, GMP_RNDZ, GMP_RNDU, GMP_RNDD, GMP_RND_MAX
+  GMP_RNDN=0, GMP_RNDZ, GMP_RNDU, GMP_RNDD, GMP_RND_MAX,
+  NEAREST_AWAY=-1
 } mpfr_rnd_t;
 
 /* Flags of __gmpfr_flags */
@@ -405,7 +406,7 @@ int mpfr_sum _MPFR_PROTO ((mpfr_ptr ret, mpfr_ptr const tab[], unsigned long n,
 #define mpfr_inexflag_p() \
   ((int) (__gmpfr_flags & MPFR_FLAGS_INEXACT))
 
-#define mpfr_round(a,b) mpfr_rint((a), (b), -1)
+#define mpfr_round(a,b) mpfr_rint((a), (b), NEAREST_AWAY)
 #define mpfr_trunc(a,b) mpfr_rint((a), (b), GMP_RNDZ)
 #define mpfr_ceil(a,b)  mpfr_rint((a), (b), GMP_RNDU)
 #define mpfr_floor(a,b) mpfr_rint((a), (b), GMP_RNDD)

@@ -220,7 +220,7 @@ ulp (double a, double b)
   if (twoa == a) /* a is +/-0.0 or +/-Inf */
     return ((b < a) ? INT_MAX : -INT_MAX);
 
-  return (a - b) / Ulp (a);
+  return (int) ((a - b) / Ulp (a));
 }
 
 /* return double m*2^e */

@@ -113,7 +113,7 @@ mpfr_eq (mpfr_srcptr u, mpfr_srcptr v, unsigned long int n_bits)
      operands have already been check above. */
   if ((unsigned long) size > 1 + (n_bits - 1) / BITS_PER_MP_LIMB)
     size = 1 + (n_bits - 1) / BITS_PER_MP_LIMB;
-  else if (n_bits > size * BITS_PER_MP_LIMB)
+  else if (n_bits > (unsigned long) size * BITS_PER_MP_LIMB)
     n_bits = size * BITS_PER_MP_LIMB;
 
   up += usize - size;

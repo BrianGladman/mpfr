@@ -22,7 +22,7 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
 /* This may be a standard rounding mode in the future. */
-#define NEAREST_AWAY ((mp_rnd_t) -1)
+/*#define NEAREST_AWAY ((mp_rnd_t) -1)*/
 
 /* Merge the following mpfr_rint code with mpfr_round_raw_generic? */
 

@@ -128,8 +128,8 @@ __mpfr_extract_double (mp_ptr rp, double d)
 #if BITS_PER_MP_LIMB >= 64
     manl = d;
 #else
-    manh = d;
-    manl = (d - manh) * MP_BASE_AS_DOUBLE;
+    manh = (mp_limb_t) d;
+    manl = (mp_limb_t) ((d - manh) * MP_BASE_AS_DOUBLE);
 #endif
   }
 

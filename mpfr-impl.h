@@ -22,6 +22,12 @@ MA 02111-1307, USA. */
 #ifndef __MPFR_IMPL_H__
 #define __MPFR_IMPL_H__
 
+/* Include 'config.h' before using ANY configure macros if needed
+   NOTE: It isn't MPFR 'config.h', but GMP's one! */
+#if HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #ifdef  MPFR_HAVE_GMP_IMPL /* Build with gmp internals*/
 
 # ifndef __GMP_H__

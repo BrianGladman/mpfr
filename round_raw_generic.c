@@ -111,8 +111,8 @@ mpfr_round_raw_generic(mp_limb_t *yp, mp_limb_t *xp, mp_prec_t xprec,
 	}
       else
 	{
-	  lomask = -1;
-	  himask = -1;
+	  lomask = ~(mp_limb_t) 0;
+	  himask = ~(mp_limb_t) 0;
 	}
       MPFR_ASSERTD(k >= 0);
       sb = xp[k] & lomask;  /* First non-significant bits */
@@ -236,7 +236,7 @@ mpfr_round_raw_generic(mp_limb_t *yp, mp_limb_t *xp, mp_prec_t xprec,
 		       - MP_LIMB_T_ONE));
         }
       else
-	himask = -1;
+	himask = ~(mp_limb_t) 0;
       MPN_COPY_INCR(yp, xp + xsize - nw, nw);
       yp[0] &= himask;
       return 0;

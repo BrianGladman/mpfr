@@ -102,7 +102,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
     }
   else
     {
-      bp = TMP_ALLOC ((bn + 1) * BYTES_PER_MP_LIMB);
+      bp = (mp_ptr) TMP_ALLOC ((bn + 1) * BYTES_PER_MP_LIMB);
       bp[0] = mpn_rshift (bp + 1, MPFR_MANT(b), bn++, shift_b);
     }
 
@@ -131,7 +131,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
     }
  else
     {
-      cp = TMP_ALLOC ((cn + 1) * BYTES_PER_MP_LIMB);
+      cp = (mp_ptr) TMP_ALLOC ((cn + 1) * BYTES_PER_MP_LIMB);
       cp[0] = mpn_rshift (cp + 1, MPFR_MANT(c), cn++, shift_c);
     }
 

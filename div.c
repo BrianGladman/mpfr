@@ -1,5 +1,5 @@
 /* mpfr_div -- divide two floating-point numbers
-
+ 
 Copyright 1999, 2001, 2002, 2003, 2004 Free Software Foundation.
 
 This file is part of the MPFR Library.

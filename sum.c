@@ -48,7 +48,8 @@ void mpfr_count_sort (mpfr_ptr const tab[], unsigned long n,
     }
 
     exp_num = max - min + 1;
-    if (exp_num > 42 * __gmpfr_ceil_log2 (n)) /* FIXME : better test */
+    if (exp_num > (unsigned long) 42 * __gmpfr_ceil_log2 ((double)n))
+      /* FIXME : better test */
     {
         heap_sort_exp_clean (tab, n, perm);
         return;

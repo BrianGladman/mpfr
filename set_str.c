@@ -127,7 +127,7 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
      FIXME: we could use str directly here if mpn_set_str would deal
      with real characters. */
   size_str1 = strlen (str);
-  str1 = (*__gmp_allocate_func) (size_str1 * sizeof (char));
+  str1 = (char*) (*__gmp_allocate_func) (size_str1 * sizeof (char));
   /* the str1 pointer should not be modified */
 
   /* checks if the input string is valid, and converts characters into
@@ -207,7 +207,7 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
       n = (prec_x - 1) / BITS_PER_MP_LIMB + 1;
 
       /* initialize y to the value of 0.mant_s[0]...mant_s[pr-1] */
-      y = TMP_ALLOC ((2 * n + 1) * sizeof (mp_limb_t));
+      y = (mp_limb_t*) TMP_ALLOC ((2 * n + 1) * sizeof (mp_limb_t));
       y += n;
       /* remember that y - n is allocated for n limbs */
 
@@ -263,7 +263,7 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
       /* case exp_s > pr */
       else if (exp_s > (mp_exp_t) pr)
 	{
-	  result = TMP_ALLOC ((2 * n + 1) * sizeof (mp_limb_t));
+	  result = (mp_limb_t*) TMP_ALLOC ((2 * n + 1) * sizeof (mp_limb_t));
 
 	  /* (z, exp_z) = base^(exp_s-pr), then result = y*z */
 	  /* z is allocated at y - n */
@@ -271,7 +271,7 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
 	  err = mpfr_mpn_exp (z, &exp_z, base, exp_s - (mp_exp_t) pr, n);
 	  exact = (exact && (err == -1));
 
-	  /* multiply (y = 0.mant_s[0]...mant_s[pr-1])_base by base^(exp_s-g) */
+	  /* multiply(y = 0.mant_s[0]...mant_s[pr-1])_base by base^(exp_s-g) */
 	  mpn_mul_n (result, y, z, n);
 
 	  /* compute the error on the product */
@@ -295,14 +295,14 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
       /* cass exp_s < pr */
       else if (exp_s < (mp_exp_t) pr)
 	{
-	  result = TMP_ALLOC ((2 * n + 1) * sizeof (mp_limb_t));
+	  result = (mp_limb_t*) TMP_ALLOC ((2 * n + 1) * sizeof (mp_limb_t));
 
 	  /* set y to y * K^n */
 	  y = y - n;  /* we have allocated n limbs at y - n */
 	  MPN_ZERO (y, n);
 
 	  /* (z, exp_z) = base^(exp_s-pr) */
-	  z = TMP_ALLOC (n * sizeof (mp_limb_t));
+	  z = (mp_limb_t*) TMP_ALLOC (n * sizeof (mp_limb_t));
 	  err = mpfr_mpn_exp (z, &exp_z, base, pr - exp_s, n);
 	  exact = (exact && (err == -1));
 

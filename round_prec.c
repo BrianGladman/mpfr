@@ -76,7 +76,7 @@ mpfr_prec_round (mpfr_ptr x, mp_prec_t prec, mp_rnd_t rnd_mode)
   /* x is a non-zero real number */
 
   TMP_MARK(marker); 
-  tmp = TMP_ALLOC (nw * BYTES_PER_MP_LIMB);
+  tmp = (mp_limb_t*) TMP_ALLOC (nw * BYTES_PER_MP_LIMB);
   xp = MPFR_MANT(x);
   carry = mpfr_round_raw (tmp, xp, MPFR_PREC(x), MPFR_IS_NEG(x),
                           prec, rnd_mode, &inexact);
@@ -174,7 +174,7 @@ mpfr_can_round_raw (mp_limb_t *bp, mp_size_t bn, int neg, mp_exp_t err0,
   TMP_MARK(marker);
   tn = bn;
   k++; /* since we work with k+1 everywhere */
-  tmp = TMP_ALLOC(tn * BYTES_PER_MP_LIMB);
+  tmp = (mp_limb_t*) TMP_ALLOC(tn * BYTES_PER_MP_LIMB);
   if (bn > k)
     MPN_COPY (tmp, bp, bn - k);
 

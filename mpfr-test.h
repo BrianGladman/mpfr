@@ -24,10 +24,6 @@ MA 02111-1307, USA. */
 
 #include "mpfr-impl.h"
 
-#if HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 /* generates a random long int, a random double,
    and corresponding seed initializing */
 #define DBL_RAND() ((double) randlimb() / (double) MP_LIMB_T_MAX)
@@ -40,6 +36,9 @@ MA 02111-1307, USA. */
 
 /* Generates a random sign */
 #define SIGN_RAND() ( (randlimb()%2) ? MPFR_SIGN_POS : MPFR_SIGN_NEG)
+
+/* Loop for all rounding modes */
+#define RND_LOOP(_r) for((_r) = 0 ; (_r) < GMP_RND_MAX ; (_r)++)
  
 /* The MAX, MIN and ABS macros may already be defined if gmp-impl.h has
    been included. They have the same semantics as in gmp-impl.h, but the
@@ -51,6 +50,10 @@ MA 02111-1307, USA. */
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 #define ABS(x) (((x)>0) ? (x) : -(x))
+
+#if defined (__cplusplus)
+extern "C" {
+#endif
 
 void tests_memory_start _MPFR_PROTO ((void));
 void tests_memory_end _MPFR_PROTO ((void));
@@ -75,8 +78,13 @@ int Isnan _MPFR_PROTO ((double));
 void d_trace _MPFR_PROTO ((const char *, double));
 void ld_trace _MPFR_PROTO ((const char *, long double));
 
-int mpfr_cmp_str _MPFR_PROTO ((mpfr_srcptr x, const char *s, int base, mp_rnd_t rnd));
+int mpfr_cmp_str _MPFR_PROTO ((mpfr_srcptr x, const char *s, int base,
+			       mp_rnd_t rnd));
 #define mpfr_cmp_str1(x,s) mpfr_cmp_str(x,s,10,GMP_RNDN)
 #define mpfr_set_str1(x,s) mpfr_set_str(x,s,10,GMP_RNDN)
+
+#if defined (__cplusplus)
+}
+#endif
 
 #endif

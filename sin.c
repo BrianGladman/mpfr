@@ -55,7 +55,7 @@ mpfr_sin_sign (mpfr_srcptr x)
       if (MPFR_NOTZERO(k)) /* subtract k*approx(Pi) */
         {
           /* determine parity of k for sign */
-          if (MPFR_EXP(k) <= m)
+          if (MPFR_EXP(k)<=0 || (mpfr_uexp_t) MPFR_EXP(k) <= m)
             {
               mp_size_t j = BITS_PER_MP_LIMB * MPFR_LIMB_SIZE(k) - MPFR_EXP(k);
               mp_size_t l = j / BITS_PER_MP_LIMB;

@@ -104,12 +104,12 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
     {
       if (MPFR_PREC(u) & (BITS_PER_MP_LIMB - 1))
         {
-          up = TMP_ALLOC(usize * BYTES_PER_MP_LIMB);
+          up = (mp_limb_t*) TMP_ALLOC(usize * BYTES_PER_MP_LIMB);
           mpn_rshift (up, MPFR_MANT(u), usize, 1);
         }
       else
         {
-          up = TMP_ALLOC((usize + 1) * BYTES_PER_MP_LIMB);
+          up = (mp_limb_t*) TMP_ALLOC((usize + 1) * BYTES_PER_MP_LIMB);
           if (mpn_rshift (up + 1, MPFR_MANT(u), usize, 1))
             up[0] = MPFR_LIMB_HIGHBIT;
           else

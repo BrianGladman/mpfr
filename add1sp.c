@@ -218,7 +218,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
                   DEBUG( printf("(First) x=%lu Kx=%ld Sx=%lu\n", x, kx, sx));
                   /* Looks at the last bits of limb kx (if sx=0 does nothing)*/
                   if (tp[kx] & MPFR_LIMB_MASK(sx))
-                    bcp1 = -1;
+                    bcp1 = 1;
                   else
                     {
                       /*kx += (sx==0);*/
