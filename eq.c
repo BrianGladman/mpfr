@@ -73,6 +73,8 @@ mpfr_eq (u, v, n_bits)
     return (MPFR_IS_INF(v) && (usign == MPFR_SIGN(v))); 
   else if (MPFR_IS_INF(v)) return 0; 
 
+  if (MPFR_IS_NAN(u) || MPFR_IS_NAN(v)) return 0; 
+
   /* 2. Are the exponents different?  */
   if (uexp > vexp)
     return 0;			/* ??? handle (uexp = vexp + 1)   */

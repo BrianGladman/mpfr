@@ -48,6 +48,7 @@ mpfr_pow_ui (x, y, n, rnd)
       MPFR_SET_INF(x); return; 
     }
 
+  MPFR_CLEAR_FLAGS(x); 
   if (n==0) { mpfr_set_ui(x, 1, rnd); return 0; }
   mpfr_set(x, y, rnd); err = 1.0;
   for (i=0;(1<<i)<=n;i++);
@@ -78,6 +79,7 @@ mpfr_ui_pow_ui (x, y, n, rnd)
 {
   long int i; double err;
 
+  MPFR_CLEAR_FLAGS(x); 
   if (n==0) { mpfr_set_ui(x, 1, rnd); return 0; }
 
   mpfr_set_ui(x, y, rnd);

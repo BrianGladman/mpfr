@@ -76,6 +76,9 @@ mpfr_log(r, a, rnd_mode)
       MPFR_SET_INF(r); if (MPFR_SIGN(r) != 1) { MPFR_CHANGE_SIGN(r); }
     }
 
+  /* Now we can clear the flags without damage even if r == a */
+  MPFR_CLEAR_FLAGS(r); 
+
   /* If a is 1, the result is 0 */
   if (mpfr_cmp_ui_2exp(a,1,0)==0){
     MPFR_SET_ZERO(r);

@@ -53,6 +53,7 @@ mpfr_mul(a, b, c, rnd_mode)
       else 
 	{ 
 	  if (MPFR_SIGN(a) != MPFR_SIGN(b) * MPFR_SIGN(c)) MPFR_CHANGE_SIGN(a);
+	  MPFR_SET_INF(a); return; 
 	}
     }
   else if (MPFR_IS_INF(c)) 
@@ -61,11 +62,14 @@ mpfr_mul(a, b, c, rnd_mode)
       else 
 	{ 
 	  if (MPFR_SIGN(a) != MPFR_SIGN(b) * MPFR_SIGN(c)) MPFR_CHANGE_SIGN(a);
+	  MPFR_SET_INF(a); return; 
 	}
     }
   if (!MPFR_NOTZERO(b) || !MPFR_NOTZERO(c)) { MPFR_SET_ZERO(a); return; }
 
   sign_product = MPFR_SIGN(b) * MPFR_SIGN(c);
+
+  MPFR_CLEAR_FLAGS(a); 
   bn = (MPFR_PREC(b)-1)/BITS_PER_MP_LIMB+1; /* number of significant limbs of b */
   cn = (MPFR_PREC(c)-1)/BITS_PER_MP_LIMB+1; /* number of significant limbs of c */
   tn = (MPFR_PREC(c)+MPFR_PREC(b)-1)/BITS_PER_MP_LIMB+1; 

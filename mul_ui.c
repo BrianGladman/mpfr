@@ -45,11 +45,13 @@ mpfr_mul_ui(y, x, u, rnd_mode)
       if (u) 
 	{ 
 	  MPFR_SET_INF(y); 
-	  if (MPFR_SIGN(y) != MPFR_SIGN(x) * u) { MPFR_CHANGE_SIGN(y); }
+	  if (MPFR_SIGN(y) != MPFR_SIGN(x)) { MPFR_CHANGE_SIGN(y); }
 	  return; 
 	}
       else { MPFR_SET_NAN(y); return; }
     }
+
+  MPFR_CLEAR_FLAGS(y); 
 
   TMP_MARK(marker);
   my = MPFR_MANT(y); ex = MPFR_EXP(x);  

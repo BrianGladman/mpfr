@@ -86,10 +86,10 @@ typedef union ieee_double_extract Ieee_double_extract;
 #define DOUBLE_ISNANorINF(x) (((Ieee_double_extract *)&(x))->s.exp == 0x7ff)
 #define DOUBLE_ISINF(x) (DOUBLE_ISNANorINF(x) && \
 			 (((Ieee_double_extract *)&(x))->s.manl == 0) && \
-                         (((Ieee_double_extract *)&(x))->s.manl == 0))
+                         (((Ieee_double_extract *)&(x))->s.manh == 0))
 #define DOUBLE_ISNAN(x) (DOUBLE_ISNANorINF(x) && \
 			 ((((Ieee_double_extract *)&(x))->s.manl != 0) || \
-                         (((Ieee_double_extract *)&(x))->s.manl != 0)))
+                         (((Ieee_double_extract *)&(x))->s.manh != 0)))
 
 /* Prototypes */
 
@@ -105,6 +105,7 @@ typedef union ieee_double_extract Ieee_double_extract;
    bit 30 of _mp_size is used for Nan flag,
    bit 29 of _mp_size is used for Inf flag,
    remaining bits are used to store the number of allocated limbs */
+#define MPFR_CLEAR_FLAGS(x) (((x) -> _mp_size &= ~(0x70000000)))
 #define MPFR_IS_NAN(x) (((x)->_mp_size >> 30)&1)
 #define MPFR_SET_NAN(x) ((x)->_mp_size |= (1<<30))
 #define MPFR_IS_INF(x) (((x)->_mp_size >> 29)&1)

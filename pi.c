@@ -53,6 +53,8 @@ mpfr_pi_machin3(mylog, rnd_mode)
   int good = 0;
   mpfr_t tmp1, tmp2, result,tmp3,tmp4,tmp5,tmp6; 
   mpz_t cst;
+
+  MPFR_CLEAR_FLAGS(mylog); 
   logn =  (int) ceil(log
                       ((double) MPFR_PREC(mylog))
                       /LOG2); 

@@ -135,6 +135,7 @@ mpfr_const_log2(x, rnd_mode) mpfr_ptr x; mp_rnd_t rnd_mode;
   int N, oldN, k, precx; mpz_t s, t, u;
 
   precx = MPFR_PREC(x);
+  MPFR_CLEAR_FLAGS(x); 
 
   /* has stored value enough precision ? */
   if (precx <= __mpfr_const_log2_prec) {

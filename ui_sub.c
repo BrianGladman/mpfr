@@ -43,6 +43,13 @@ mpfr_ui_sub(y, u, x, rnd_mode)
   unsigned long cnt;
   TMP_DECL(marker);
 
+  if (MPFR_IS_NAN(x)) { MPFR_SET_NAN(y); return; }
+  if (MPFR_IS_INF(x)) 
+    { 
+      MPFR_SET_INF(y); 
+      if (MPFR_SIGN(x) == MPFR_SIGN(y)) { MPFR_CHANGE_SIGN(y); } return; 
+    }
+
   if (u) {
     TMP_MARK(marker);
     MON_INIT(up, uu, BITS_PER_MP_LIMB, 1);

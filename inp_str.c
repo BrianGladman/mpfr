@@ -43,6 +43,7 @@ mpfr_inp_str (rop, stream, base, rnd_mode)
   size_t retval;
   size_t nread;
 
+  MPFR_CLEAR_FLAGS(rop); 
   if (stream == 0)
     stream = stdin;
 

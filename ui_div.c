@@ -43,6 +43,14 @@ mpfr_ui_div(y, u, x, rnd_mode)
   unsigned long cnt;
   TMP_DECL(marker);
 
+  if (MPFR_IS_NAN(x)) { MPFR_SET_NAN(y); return; }
+  if (MPFR_IS_INF(y)) 
+    { 
+      MPFR_SET_ZERO(x); 
+      if (MPFR_SIGN(x) != MPFR_SIGN(y)) { MPFR_CHANGE_SIGN(y); }
+      return; 
+    }
+
   if (u) {
     TMP_MARK(marker);
     MON_INIT(up, uu, BITS_PER_MP_LIMB, 1);
@@ -54,5 +62,8 @@ mpfr_ui_div(y, u, x, rnd_mode)
 
     TMP_FREE(marker);
   }
-  else MPFR_SET_ZERO(y); /* if u=0, then set y to 0 */
+  else { 
+    if (MPFR_IS_ZERO(x)) { MPFR_SET_NAN(y); } 
+    else MPFR_SET_ZERO(y); /* if u=0, then set y to 0 */
+  }
 }

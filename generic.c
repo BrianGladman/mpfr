@@ -57,6 +57,7 @@ int m;
 #endif
   int diff,expo;
   int precy = MPFR_PREC(y);
+  MPFR_CLEAR_FLAGS(y); 
   n = 1 << m;
   P = (mpz_t*) (*_mp_allocate_func) ((m+1) * sizeof(mpz_t));
   S = (mpz_t*) (*_mp_allocate_func) ((m+1) * sizeof(mpz_t));
