@@ -26,7 +26,7 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-void
+int
 #if __STDC__
 mpfr_sub_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 #else
@@ -40,6 +40,7 @@ mpfr_sub_ui (y, x, u, rnd_mode)
   mpfr_t uu;
   mp_limb_t up[1];
   unsigned long cnt;
+  int inexact;
 
   if (u) { /* if u=0, do nothing */
     MPFR_INIT1(up, uu, BITS_PER_MP_LIMB, 1);
@@ -50,10 +51,12 @@ mpfr_sub_ui (y, x, u, rnd_mode)
     /* Optimization note: Exponent operations may be removed
      if mpfr_add works even when uu is out-of-range. */
     mpfr_save_emin_emax();
-    mpfr_sub (y, x, uu, rnd_mode);
+    inexact = mpfr_sub (y, x, uu, rnd_mode);
     mpfr_restore_emin_emax();
     mpfr_check_range(y, rnd_mode);
   }
   else
-    mpfr_set (y, x, rnd_mode);
+    inexact = mpfr_set (y, x, rnd_mode);
+
+  return inexact;
 }
