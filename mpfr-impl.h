@@ -33,6 +33,9 @@ typedef unsigned long int       mp_exp_unsigned_t;
 typedef unsigned long int       mp_size_unsigned_t;
 #endif
 
+#define MP_EXP_T_MAX ((mp_exp_t) ((~ (mp_exp_unsigned_t) 0) >> 1))
+#define MP_EXP_T_MIN (-MP_EXP_T_MAX-1)
+
 #define MP_LIMB_T_ONE ((mp_limb_t) 1)
 
 #if (BITS_PER_MP_LIMB & (BITS_PER_MP_LIMB - 1))

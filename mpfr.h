@@ -38,7 +38,7 @@ MA 02111-1307, USA. */
 
 /* Definition of exponent limits */
 
-#define MPFR_EMAX_DEFAULT ((mp_exp_t) (((unsigned long) 1 <<31)-1))
+#define MPFR_EMAX_DEFAULT ((mp_exp_t) (((unsigned long) 1 << 31) - 1))
 #define MPFR_EMIN_DEFAULT (-(MPFR_EMAX_DEFAULT))
 
 #define MPFR_EMIN_MIN MPFR_EMIN_DEFAULT
