@@ -28,8 +28,6 @@ MA 02111-1307, USA. */
 
 /* #define DEBUG */
 
-#define ONE ((mp_limb_t) 1)
-
 /* returns 0 if result exact, non-zero otherwise */
 int
 #ifdef __STDC__
@@ -162,7 +160,7 @@ mpfr_div_ui (y, x, u, rnd_mode)
   sh = yn * BITS_PER_MP_LIMB - MPFR_PREC(y);
   /* it remains sh bits in less significant limb of y */
 
-  d = *yp & ((ONE << sh) - 1);
+  d = *yp & ((MP_LIMB_T_ONE << sh) - MP_LIMB_T_ONE);
   *yp ^= d; /* set to zero lowest sh bits */
 
   TMP_FREE(marker);
@@ -185,20 +183,20 @@ mpfr_div_ui (y, x, u, rnd_mode)
       MPFR_RET(-1); /* result is inexact */
 
     case GMP_RNDN:
-      if (sh && d < (ONE << (sh - 1)))
+      if (sh && d < (MP_LIMB_T_ONE << (sh - 1)))
 	MPFR_RET(-MPFR_SIGN(x));
-      else if (sh && d > (ONE << (sh - 1)))
+      else if (sh && d > (MP_LIMB_T_ONE << (sh - 1)))
 	{
 	  mpfr_add_one_ulp (y);
 	  MPFR_RET(MPFR_SIGN(x));
 	}
-    else /* sh = 0 or d = ONE << (sh-1) */
+    else /* sh = 0 or d = 1 << (sh-1) */
       {
 	/* we are in the middle if:
 	   (a) sh > 0 and inexact == 0
 	   (b) sh=0 and middle=1
 	 */
-	if ((sh && inexact) || (!sh && (middle > 0)) || (*yp & (ONE << sh)))
+	if ((sh && inexact) || (!sh && (middle > 0)) || (*yp & (MP_LIMB_T_ONE << sh)))
 	  {
 	    mpfr_add_one_ulp (y);
 	    MPFR_RET(MPFR_SIGN(x));

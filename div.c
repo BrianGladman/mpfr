@@ -462,23 +462,24 @@ mpfr_div (q, u, v, rnd_mode)
     {
       sh = MPFR_PREC(q) & (BITS_PER_MP_LIMB - 1); 
       if (sh)
-	cc = mpn_add_1(qp, qp, qsize, 
-		       (mp_limb_t)1 << (BITS_PER_MP_LIMB - sh)); 
+	cc = mpn_add_1 (qp, qp, qsize, 
+                        MP_LIMB_T_ONE << (BITS_PER_MP_LIMB - sh));
       else
-	cc = mpn_add_1(qp, qp, qsize, 1); 
+	cc = mpn_add_1 (qp, qp, qsize, MP_LIMB_T_ONE);
   
-      if (cc) {
-	mpn_rshift(qp, qp, qsize, 1);
-	qp[qsize-1] |= MP_LIMB_T_HIGHBIT;
-	qexp++; 
-      }
+      if (cc)
+        {
+          mpn_rshift (qp, qp, qsize, 1);
+          qp[qsize-1] |= MP_LIMB_T_HIGHBIT;
+          qexp++;
+        }
     }
   
   rw = qsize * BITS_PER_MP_LIMB - MPFR_PREC(q);
   MPN_COPY(MPFR_MANT(q), qp, qsize); 
   TMP_FREE (marker);
 
-  MPFR_MANT(q)[0] &= ~(((mp_limb_t)1 << rw) - 1);
+  MPFR_MANT(q)[0] &= ~((MP_LIMB_T_ONE << rw) - MP_LIMB_T_ONE);
   MPFR_EXP(q) = qexp;
 
   return inex; 
