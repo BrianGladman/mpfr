@@ -63,7 +63,8 @@ mpfr_set_si (x, i, rnd_mode)
   if (MPFR_PREC(x) < nbits)
   {
     int carry;
-    carry = mpfr_round_raw(xp+xn, xp+xn, nbits, (ai < 0), MPFR_PREC(x),
+
+    carry = mpfr_round_raw(xp+xn, xp+xn, nbits, (i < 0), MPFR_PREC(x),
                            rnd_mode, &inex);
     if (carry)
     {
