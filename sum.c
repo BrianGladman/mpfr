@@ -19,6 +19,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
 /* Performs a counting sort of the entries */
@@ -48,7 +49,7 @@ void mpfr_count_sort (mpfr_ptr const tab[], unsigned long n,
     }
 
     exp_num = max - min + 1;
-    if (exp_num > (unsigned long) 42 * __gmpfr_ceil_log2 ((double)n))
+    if (exp_num > (unsigned long) 42 * MPFR_INT_CEIL_LOG2 (n))
       /* FIXME : better test */
     {
         heap_sort_exp_clean (tab, n, perm);
@@ -207,7 +208,7 @@ int mpfr_sum (mpfr_ptr ret, mpfr_ptr const tab[], unsigned long n,
   mpfr_count_sort (tab, n, perm);
 
   initial_f = MPFR_PREC(tab[0]);
-  k = __gmpfr_ceil_log2 ((double) n) + 1;
+  k = MPFR_INT_CEIL_LOG2 (n) + 1;
   mpfr_init2 (cur_sum, initial_f);
   initial_guard_digits = k + 2;
   guard_digits = initial_guard_digits;

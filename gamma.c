@@ -24,7 +24,7 @@ MA 02111-1307, USA. */
 #include <stdlib.h>
 #endif
 
-
+#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
 /* We use the reflection formula 
@@ -211,7 +211,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
                           MPFR_PREC(gamma) + (rnd_mode == GMP_RNDN)))
         break;
       
-      realprec += __gmpfr_ceil_log2 ((double) realprec);
+      realprec += MPFR_INT_CEIL_LOG2 (realprec);
     }
   inex = mpfr_set (gamma, GammaTrial, rnd_mode);
 

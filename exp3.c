@@ -23,6 +23,7 @@ MA 02111-1307, USA. */
 #include <stddef.h>
 #include <limits.h>
 
+#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
 static int
@@ -97,7 +98,7 @@ mpfr_exp_rational (mpfr_ptr y, mpz_srcptr p, int r, int m)
   accu = 0;
   while (k > 0)
     {
-      mpz_mul (S[k], S[k], ptoj[__gmpfr_ceil_log2((double) nb_terms[k])]);
+      mpz_mul (S[k], S[k], ptoj[MPFR_INT_CEIL_LOG2 (nb_terms[k])]);
       mpz_mul (S[k-1], S[k-1], P[k]);
       accu += nb_terms[k];
       mpz_mul_2exp (S[k-1], S[k-1], r * accu);
@@ -162,11 +163,12 @@ mpfr_exp_3 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   /* decompose x */
   /* we first write x = 1.xxxxxxxxxxxxx
      ----- k bits -- */
+  /* FIXME: Can I replace this with MPFR_INT_CEIL_LOG2? */
   prec_x = __gmpfr_ceil_log2 ((double) (MPFR_PREC(x)) / BITS_PER_MP_LIMB);
   if (prec_x < 0)
     prec_x = 0;
 
-  logn =  __gmpfr_ceil_log2 ((double) prec_x + MPFR_PREC(y));
+  logn =  MPFR_INT_CEIL_LOG2 (prec_x + MPFR_PREC (y));
   if (logn < 2)
     logn = 2;
 

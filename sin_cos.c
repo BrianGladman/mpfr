@@ -19,6 +19,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
 /* (y, z) <- (sin(x), cos(x)), return value is 0 iff both results are exact */
@@ -48,7 +49,7 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
   /* MPFR_CLEAR_FLAGS is useless since we use mpfr_set to set y and z */
 
   prec = MAX(MPFR_PREC(y), MPFR_PREC(z)); 
-  m = prec + __gmpfr_ceil_log2 ((double) prec) + ABS (MPFR_GET_EXP (x)) + 13;
+  m = prec + MPFR_INT_CEIL_LOG2 (prec) + ABS (MPFR_GET_EXP (x)) + 13;
 
   mpfr_init2 (c, m);
   mpfr_init2 (k, m);
@@ -85,7 +86,7 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
       if (ok == 0)
 	{
-	  m += __gmpfr_ceil_log2 ((double) m);
+	  m += MPFR_INT_CEIL_LOG2 (m);
 	  mpfr_set_prec (c, m);
 	}
     }

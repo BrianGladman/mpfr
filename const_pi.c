@@ -49,12 +49,12 @@ mpfr_pi_machin3 (mpfr_ptr mylog, mp_rnd_t rnd_mode)
 
   MPFR_CLEAR_FLAGS (mylog);
   prec_i_want = MPFR_PREC (mylog);
-  logn = __gmpfr_ceil_log2 ((double) prec_i_want);
+  logn = MPFR_INT_CEIL_LOG2 (prec_i_want);
   prec_x = prec_i_want + logn;
   mpz_init (cst);
   while (!inex)
     {
-      prec = __gmpfr_ceil_log2 ((double) prec_x);
+      prec = MPFR_INT_CEIL_LOG2 (prec_x);
 
       mpfr_init2(tmp1, prec_x);
       mpfr_init2(tmp2, prec_x);
@@ -166,7 +166,7 @@ int
       do
         {
           oldN = N;
-          N = (prec+3)/4 + __gmpfr_ceil_log2((double) N + 1.0);
+          N = (prec+3)/4 + MPFR_INT_CEIL_LOG2 (N + 1);
         }
       while (N != oldN);
       mpz_init(pi);

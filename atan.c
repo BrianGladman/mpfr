@@ -19,6 +19,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
 #define CST   2.27  /* CST=1+ln(2.4)/ln(2) */
@@ -143,11 +144,12 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   mpfr_save_emin_emax ();
 
+  /* FIXME: Could use MPFR_INT_CEIL_LOG2? */
   prec_x = __gmpfr_ceil_log2 ((double) MPFR_PREC(x) / BITS_PER_MP_LIMB);
-  logn   = __gmpfr_ceil_log2 ((double) prec_x);
+  logn   = MPFR_INT_CEIL_LOG2 ( prec_x);
   if (logn < 2) 
     logn = 2;
-  realprec = prec_arctan + __gmpfr_ceil_log2((double) prec_arctan) + 4;
+  realprec = prec_arctan + MPFR_INT_CEIL_LOG2 (prec_arctan) + 4;
 
   mpz_init (ukz);
   mpz_init (square);
@@ -165,8 +167,8 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   while (1)
     {
-      N0 = __gmpfr_ceil_log2((double) realprec + supplement + CST);
-      estimated_delta = 1 + supplement + __gmpfr_ceil_log2((double) (3*N0-2));
+      N0 = MPFR_INT_CEIL_LOG2 (realprec + supplement + CST);
+      estimated_delta = 1 + supplement + MPFR_INT_CEIL_LOG2 (3*N0-2);
       Prec = realprec + estimated_delta;
 
       /* Initialisation    */
@@ -234,7 +236,7 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
       if (!mpfr_can_round (arctgt, realprec, GMP_RNDN, GMP_RNDZ,
                           MPFR_PREC (arctangent) + (rnd_mode == GMP_RNDN)))
-	realprec += __gmpfr_ceil_log2 ((double) realprec);
+	realprec += MPFR_INT_CEIL_LOG2 (realprec);
       else
 	break;
     }

@@ -365,7 +365,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
     Nt = MAX(Nx, Ny);
     Nt = MAX(Nt, Nz); /* take account of the output precision too! */
     /* the optimal number of bits : see algorithms.ps */
-    Nt = Nt + 5 + __gmpfr_ceil_log2 (Nt);
+    Nt = Nt + 5 + MPFR_INT_CEIL_LOG2 (Nt);
 
     /* initialise of intermediary variable */
     mpfr_init (t);

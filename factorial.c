@@ -19,7 +19,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-
+#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
  /* The computation of n! is done by
@@ -56,7 +56,7 @@ mpfr_fac_ui (mpfr_ptr y, unsigned long int x, mp_rnd_t rnd_mode)
 	Ny = MPFR_PREC(y);
         
         /* compute the size of intermediary variable */
-	Nt = Ny + 2 * (int) __gmpfr_ceil_log2 ((double) x) + 7;
+	Nt = Ny + 2 * MPFR_INT_CEIL_LOG2 (x) + 7;
 	
         mpfr_init2 (t, Nt); /* initialise of intermediary variable */
         
@@ -74,7 +74,7 @@ mpfr_fac_ui (mpfr_ptr y, unsigned long int x, mp_rnd_t rnd_mode)
                   inexact = round;
               }
 	    
-            err = Nt - 1 - (int) __gmpfr_ceil_log2 ((double) Nt);
+            err = Nt - 1 - MPFR_INT_CEIL_LOG2 (Nt);
 
             round = !inexact || mpfr_can_round (t, err, rnd, GMP_RNDZ,
                                                 Ny + (rnd_mode == GMP_RNDN));

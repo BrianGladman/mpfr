@@ -35,7 +35,7 @@ int
   unsigned long n;
   int inexact;
 
-  log2m = __gmpfr_ceil_log2 ((double) prec);
+  log2m = MPFR_INT_CEIL_LOG2 (prec);
   m = prec + log2m;
 
   mpfr_init (y);
@@ -81,7 +81,7 @@ mpfr_const_euler_S (mpfr_t x, unsigned long n)
   N = (long) (ALPHA * (double) n + 1.0); /* ceil(alpha * n) */
 
   m = MPFR_PREC(x) + (unsigned long) ((double) n / LOG2)
-    + __gmpfr_ceil_log2 ((double) N) + 1;
+    + MPFR_INT_CEIL_LOG2 (N) + 1;
 
   mpz_init_set_ui (a, 1);
   mpz_mul_2exp (a, a, m); /* a=-2^m where m is the precision of x */

@@ -20,7 +20,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-
+#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
 /* #define DEBUG */
@@ -150,7 +150,7 @@ mpfr_erf_0 (mpfr_ptr res, mpfr_srcptr x, mp_rnd_t rnd_mode)
   do
     {
 
-      m += __gmpfr_ceil_log2 ((double) n);
+      m += MPFR_INT_CEIL_LOG2 (n);
 
       mpfr_set_prec (y, m);
       mpfr_set_prec (s, m);
@@ -242,7 +242,7 @@ mpfr_erfc_inf (mpfr_ptr res, mpfr_srcptr x, mp_rnd_t rnd)
 
   do
     {
-      m += __gmpfr_ceil_log2 ((double) n);
+      m += MPFR_INT_CEIL_LOG2 (n);
 
       /* check that 2 * (EXP(x) - 1) * x^2 > m, which ensures the smallest
          term is less than 2^(-m) */
@@ -330,7 +330,7 @@ mpfr_erf_inf (mpfr_ptr res, mpfr_srcptr x, mp_rnd_t rnd)
 
   do
     {
-      m += __gmpfr_ceil_log2 ((double) n);
+      m += MPFR_INT_CEIL_LOG2 (n);
       mpfr_set_prec (tmp, m);
       mpfr_erfc_inf (tmp, x, GMP_RNDN);   /* err <= 1/2 ulp */
       sh = MPFR_EXP(tmp);

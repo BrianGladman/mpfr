@@ -19,7 +19,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-
+#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
  /* The computation of hypot of x and y is done by
@@ -108,7 +108,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode)
 
   /* compute the working precision -- see algorithms.ps */
   Nt = MAX(MAX(MAX(Nx, Ny), Nz), 8);
-  Nt = Nt - 8 + __gmpfr_ceil_log2 (Nt);
+  Nt = Nt - 8 + MPFR_INT_CEIL_LOG2 (Nt);
 
   /* initialise the intermediary variables */
   mpfr_init (t);

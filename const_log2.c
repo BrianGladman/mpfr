@@ -59,11 +59,11 @@ mpfr_const_aux_log2 (mpfr_ptr mylog, mp_rnd_t rnd_mode)
 
   mpz_init (cst);
   prec_i_want = MPFR_PREC(mylog);
-  logn = __gmpfr_ceil_log2 ((double) prec_i_want);
+  logn = MPFR_INT_CEIL_LOG2 (prec_i_want);
   prec_x = prec_i_want + logn;
   while (!inexact)
     {
-      prec = __gmpfr_ceil_log2 ((double) prec_x);
+      prec = MPFR_INT_CEIL_LOG2 (prec_x);
       mpfr_init2 (tmp1, prec_x);
       mpfr_init2 (result, prec_x);
       mpfr_init2 (tmp2, prec_x);
@@ -138,7 +138,7 @@ int
     {
       /* the following was checked by exhaustive search to give a correct
          result for all 4 rounding modes up to precx = 13500 */
-      N = precx + 2 * __gmpfr_ceil_log2 ((double) precx) + 1;
+      N = precx + 2 * MPFR_INT_CEIL_LOG2 (precx) + 1;
 
       mpz_init (s); /* set to zero */
       mpz_init (u);
