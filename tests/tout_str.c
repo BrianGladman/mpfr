@@ -45,11 +45,30 @@ void check4(d, rnd, base, prec) double d; unsigned char rnd; int base, prec;
   mpfr_clear(x);
 }
 
+void check_large()
+{
+  mpfr_t x; mp_exp_t e;
+
+  mpfr_init(x);
+
+  mpfr_set_prec(x, 7);
+  mpfr_set_str_raw(x, "0.1010101E10");
+  mpfr_get_str(NULL, &e, 10, 2, x, GMP_RNDU);
+
+  /* bug found by Jean-Pierre Merlet, produced error in mpfr_get_str */
+  mpfr_set_prec(x, 128);
+  mpfr_set_str_raw(x, "0.10111001100110011001100110011001100110011001100110011001100110011001100110011001100110011001100110011001100110011001100110011010E3");
+  mpfr_get_str(NULL, &e, 10, 0, x, GMP_RNDU);
+
+  mpfr_clear(x);
+}
+
 int
 main(int argc, char **argv)
 {
   int i,N=100,r,p; double d;
 
+  check_large();
   /* with no argument: prints to /dev/null,
      tout_str N: prints N tests to stdout */
   if (argc==1) fout=fopen("/dev/null", "w");

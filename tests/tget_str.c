@@ -41,11 +41,28 @@ void check(d, rnd) double d; unsigned char rnd;
   free(str);
 }
 
+void check_small()
+{
+  mpfr_t x; char *s; mp_exp_t e;
+  
+  /* bug found by Johan Vervloet */
+  mpfr_init2(x, 6);
+  mpfr_set_d(x, 688.0, GMP_RNDN);
+  s = mpfr_get_str(NULL, &e, 2, 4, x, GMP_RNDU);
+  if (strcmp(s, "1011") || (e!=10)) {
+    fprintf(stderr, "Error in mpfr_get_str: 688 printed up to 4 bits should give 1.011e9\ninstead of ");
+    mpfr_out_str(stderr, 2, 4, x, GMP_RNDU); putchar('\n');
+    exit(1);
+  }
+  mpfr_clear(x);
+}
+
 int
 main(int argc, char **argv)
 {
   int i; double d;
 
+  check_small();
   srand(getpid());
   /* printf seems to round towards nearest in all cases, at least with gcc */
   check(4.059650008e-83, 0);
