@@ -41,7 +41,7 @@ int mpfr_round_raw2(mp_limb_t *xp, unsigned long xn, char neg, char rnd,
 	      do wd--; while (wd > 0 && !xp[wd]);
 
 	  if (wd)
-	      return (xp[xn - nw - 1] & (1 << (BITS_PER_MP_LIMB - 1)));
+	      return ((xp[xn - nw - 1]>>(BITS_PER_MP_LIMB - 1)) & 1);
 	  else
 	      return xp[xn - nw] & 1;
 	}
@@ -50,7 +50,7 @@ int mpfr_round_raw2(mp_limb_t *xp, unsigned long xn, char neg, char rnd,
 	{
 	  if ((xp[wd] & (~mask)) == (1UL << (BITS_PER_MP_LIMB - rw - 1)))
 	      do { wd--; } while (wd >= 0 && !xp[wd]);
-	  else return (xp[wd] & (1UL << (BITS_PER_MP_LIMB - rw - 1)));
+	  else return ((xp[wd]>>(BITS_PER_MP_LIMB - rw - 1)) & 1);
 	  
 	  /* first limb was in the middle, and others down to wd+1 were 0 */
 	  if (wd>=0) return 1;
@@ -66,7 +66,7 @@ int mpfr_round_raw2(mp_limb_t *xp, unsigned long xn, char neg, char rnd,
 	{
 	  if (xp[wd] & 1)
 	      do wd--; while (wd >= 0 && !xp[wd]);
-	  return xp[xn-nw] & ((wd<0) ? 2 : 1);
+	  return ((wd<0) ? xp[xn-nw]>>1 : xp[xn-nw]) & 1;
 	}
     default: return 0;
     }
