@@ -60,6 +60,7 @@ int
 main (int argc, char *argv[])
 {
   long double d, e;
+  double f;
   mpfr_t x;
   int i;
 
@@ -97,6 +98,12 @@ main (int argc, char *argv[])
   d = 1.0; while ((e = d / 2.0) != (long double) 0.0) d = e;
   check_set_get (d, x);
   check_set_get (-d, x);
+
+  /* checks 2^1024 */
+  f = 1.3407807929942597100e155; /* 2^512 */
+  d = (long double) f;
+  d = d * d; /* 2^1024 */
+  check_set_get (d, x);
 
   /* checks that 2^i, 2^i+1 and 2^i-1 are correctly converted */
   d = 1.0;
