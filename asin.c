@@ -27,9 +27,7 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
   mpfr_t xp;
   mpfr_t arcs;
-
   int sign, supplement;
-
   mpfr_t tmp;
   int Prec;
   int prec_asin;
@@ -37,6 +35,7 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
   int estimated_delta;
   int compared;
   int inexact;
+  MPFR_SAVE_EXPO_DECL (expo);
 
   /* Special cases */
   if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(x) ))
@@ -84,7 +83,7 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
       return inexact;
     }
 
-  mpfr_save_emin_emax ();
+  MPFR_SAVE_EXPO_MARK (expo);
 
   prec_asin = MPFR_PREC(asin);
   mpfr_ui_sub (xp, 1, xp, GMP_RNDD);
@@ -121,7 +120,7 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_clear (arcs);
   mpfr_clear (xp);
 
-  mpfr_restore_emin_emax ();
+  MPFR_SAVE_EXPO_FREE (expo);
 
   return mpfr_check_range (asin, inexact, rnd_mode);
 }

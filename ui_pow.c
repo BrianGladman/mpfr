@@ -28,13 +28,14 @@ mpfr_ui_pow (mpfr_ptr y, unsigned long int n, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
   mpfr_t t;
   int inexact;
+  MPFR_SAVE_EXPO_DECL (expo);
 
-  mpfr_save_emin_emax();
+  MPFR_SAVE_EXPO_MARK (expo);
   mpfr_init2 (t, sizeof(n) * CHAR_BIT);
   inexact = mpfr_set_ui (t, n, GMP_RNDN);
   MPFR_ASSERTN (!inexact);
   inexact = mpfr_pow (y, t, x, rnd_mode);
   mpfr_clear (t);
-  mpfr_restore_emin_emax ();
+  MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (y, inexact, rnd_mode);
 }

@@ -32,6 +32,7 @@ mpfr_sub_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
     mp_limb_t up[1];
     unsigned long cnt;
     int inex;
+    MPFR_SAVE_EXPO_DECL (expo);
 
     MPFR_TMP_INIT1(up, uu, BITS_PER_MP_LIMB);
     MPFR_ASSERTN(u == (mp_limb_t) u);
@@ -40,10 +41,10 @@ mpfr_sub_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 
     /* Optimization note: Exponent save/restore operations may be
        removed if mpfr_sub works even when uu is out-of-range. */
-    mpfr_save_emin_emax();
+    MPFR_SAVE_EXPO_MARK (expo);
     MPFR_SET_EXP (uu, BITS_PER_MP_LIMB - cnt);
     inex = mpfr_sub(y, x, uu, rnd_mode);
-    mpfr_restore_emin_emax();
+    MPFR_SAVE_EXPO_FREE (expo);
     return mpfr_check_range(y, inex, rnd_mode);
   }
   else

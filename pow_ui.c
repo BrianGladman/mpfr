@@ -31,6 +31,7 @@ mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
   mp_prec_t prec, err;
   int inexact;
   mp_rnd_t rnd1;
+  MPFR_SAVE_EXPO_DECL (expo);
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (y)))
     {
@@ -77,7 +78,7 @@ mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
     }
   /* MPFR_CLEAR_FLAGS useless due to mpfr_set */
 
-  mpfr_save_emin_emax ();
+  MPFR_SAVE_EXPO_MARK (expo);
 
   prec = MPFR_PREC (x);
   mpfr_init2 (res, prec + 9);
@@ -130,6 +131,6 @@ mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
 
   inexact = mpfr_set (x, res, rnd);
   mpfr_clear (res);
-  mpfr_restore_emin_emax ();
+  MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (x, inexact, rnd);
 }

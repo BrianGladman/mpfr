@@ -74,9 +74,9 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
   int estimated_delta;
   /* calculation of the floor */
   mp_exp_t exptol;
-
   int N0;
   int logn;
+  MPFR_SAVE_EXPO_DECL (expo);
 
   /* Trivial cases */
   if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(x) ))
@@ -88,18 +88,14 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	}
       else if (MPFR_IS_INF(x))
 	{
-	  MPFR_CLEAR_FLAGS(arctangent);
 	  if (MPFR_IS_POS(x))
 	    /* arctan(+inf) = Pi/2 */
 	    inexact = mpfr_const_pi (arctangent, rnd_mode);
 	  else 
 	    /* arctan(-inf) = -Pi/2 */
 	    {
-	      if (rnd_mode == GMP_RNDU)
-		rnd_mode = GMP_RNDD;
-	      else if (rnd_mode == GMP_RNDD)
-		rnd_mode = GMP_RNDU;
-	      inexact = -mpfr_const_pi (arctangent, rnd_mode);
+	      inexact = -mpfr_const_pi (arctangent, 
+					MPFR_INVERT_RND (rnd_mode));
 	      MPFR_CHANGE_SIGN (arctangent);
 	    }
 	  MPFR_SET_EXP (arctangent, MPFR_GET_EXP (arctangent) - 1);
@@ -107,7 +103,7 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	}
       else /* x is necessarily 0 */
 	{
-          MPFR_ASSERTD(MPFR_IS_ZERO(x));
+          MPFR_ASSERTD (MPFR_IS_ZERO (x));
 	  mpfr_set_ui (arctangent, 0, GMP_RNDN);
 	  return 0; /* exact result */
 	}
@@ -128,10 +124,10 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
       inexact = mpfr_const_pi (arctangent, MPFR_IS_POS_SIGN(sign) ? rnd_mode
                                : MPFR_INVERT_RND(rnd_mode));
       MPFR_SET_EXP (arctangent, MPFR_GET_EXP (arctangent) - 2);
-      if (MPFR_IS_NEG_SIGN( sign ))
+      if (MPFR_IS_NEG_SIGN (sign))
         {
           inexact = -inexact;
-          MPFR_CHANGE_SIGN(arctangent);
+          MPFR_CHANGE_SIGN (arctangent);
         }
       mpfr_clear (xp);
       return inexact;
@@ -142,7 +138,7 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
   else
     supplement = 2 - MPFR_GET_EXP (xp);
 
-  mpfr_save_emin_emax ();
+  MPFR_SAVE_EXPO_MARK (expo);
 
   /* FIXME: Could use MPFR_INT_CEIL_LOG2? */
   prec_x = __gmpfr_ceil_log2 ((double) MPFR_PREC(x) / BITS_PER_MP_LIMB);
@@ -259,6 +255,6 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpz_clear (ukz);
   mpz_clear (square);
 
-  mpfr_restore_emin_emax ();
+  MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (arctgt, inexact, rnd_mode);
 }

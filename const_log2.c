@@ -129,8 +129,9 @@ int
   mp_prec_t N, k, precx;
   mpz_t s, t, u;
   int inexact;
+  MPFR_SAVE_EXPO_DECL (expo);
 
-  mpfr_save_emin_emax ();
+  MPFR_SAVE_EXPO_MARK (expo);
   precx = MPFR_PREC(x);
 
   /* need to recompute */
@@ -163,7 +164,6 @@ int
   else /* use binary splitting method */
     inexact = mpfr_const_aux_log2 (x, rnd_mode);
 
-  mpfr_restore_emin_emax ();
-
+  MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (x, inexact, rnd_mode);
 }

@@ -50,6 +50,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
   unsigned long k;
   int sign;
   int inex;
+  MPFR_SAVE_EXPO_DECL (expo);
 
   /* Trivial cases */
   if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(x) ))
@@ -99,7 +100,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
         return mpfr_fac_ui (gamma, u - 1, rnd_mode);
     }
 
-  mpfr_save_emin_emax ();
+  MPFR_SAVE_EXPO_MARK (expo);
 
   realprec = prec_gamma + 10;
 
@@ -222,7 +223,8 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_clear(GammaTrial);
 
   mpfr_clear (xp);
-  mpfr_restore_emin_emax ();
+
+  MPFR_SAVE_EXPO_FREE (expo);
 
   return mpfr_check_range(gamma, inex, rnd_mode); 
 }

@@ -37,6 +37,7 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mp_rnd_t rnd_mode)
   int realprec;
   int compared;
   int inexact = 0;
+  MPFR_SAVE_EXPO_DECL (expo);
 
   /* Special cases */
   if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(x) ))
@@ -83,7 +84,7 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mp_rnd_t rnd_mode)
         }
     }
 
-  mpfr_save_emin_emax ();
+  MPFR_SAVE_EXPO_MARK (expo);
 
   prec_acos = MPFR_PREC(acos);
   mpfr_ui_sub (xp, 1, xp, GMP_RNDD);
@@ -127,6 +128,6 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mp_rnd_t rnd_mode)
     }
   
   mpfr_clear (xp);
-  mpfr_restore_emin_emax ();
+  MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (acos, inexact, rnd_mode);
 }

@@ -30,7 +30,8 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
     /****** Declaration ******/
     mpfr_t x;
     int inexact;
-    
+    MPFR_SAVE_EXPO_DECL (expo);
+
     /* Special value checking */
     if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(xt)))
       {
@@ -55,7 +56,7 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
 	  }
       }
 
-    mpfr_save_emin_emax ();
+    MPFR_SAVE_EXPO_MARK (expo);
     MPFR_TMP_INIT_ABS (x, xt);
 
     /* General case */
@@ -114,7 +115,7 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
       mpfr_clear (te);
       mpfr_clear (t);
     }
-    mpfr_restore_emin_emax ();
+    MPFR_SAVE_EXPO_FREE (expo);
     return mpfr_check_range (y, inexact, rnd_mode);
 }
 

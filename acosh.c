@@ -22,15 +22,13 @@ MA 02111-1307, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
- /* The computation of acosh is done by
-
-    acosh= ln(x + sqrt(x^2-1))
- */
+/* The computation of acosh is done by   *
+ *  acosh= ln(x + sqrt(x^2-1))           */
 
 int
 mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode) 
 {
-    
+  MPFR_SAVE_EXPO_DECL (expo);    
   int inexact = 0;
   int comp;
 
@@ -68,14 +66,12 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
   {
     /* Declaration of the intermediary variables */
     mpfr_t t, te, ti;
-    
     /* Declaration of the size variables */
     mp_prec_t Nx = MPFR_PREC(x);   /* Precision of input variable */
     mp_prec_t Ny = MPFR_PREC(y);   /* Precision of output variable */
+    mp_prec_t Nt;        /* Precision of the intermediary variable */
+    int err;                       /* Precision of error */
     
-    mp_prec_t Nt;   /* Precision of the intermediary variable */
-    int err;  /* Precision of error */
-                
     /* compute the precision of intermediary variable */
     Nt = MAX(Nx, Ny);
     /* the optimal number of bits : see algorithms.ps */
@@ -86,7 +82,7 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
     mpfr_init (te);
     mpfr_init (ti);
 
-    mpfr_save_emin_emax ();
+    MPFR_SAVE_EXPO_MARK (expo);
 
     /* First computation of acosh */
     do
@@ -122,15 +118,10 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
     mpfr_clear (te);
   }
 
-  mpfr_restore_emin_emax ();
+  MPFR_SAVE_EXPO_FREE (expo);
 
   return mpfr_check_range (y, inexact, rnd_mode);
 }
-
-
-
-
-
 
 
 

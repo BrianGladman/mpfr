@@ -31,21 +31,21 @@ mpfr_sqrt_ui (mpfr_ptr r, unsigned long u, mp_rnd_t rnd_mode)
       mp_limb_t up[1];
       unsigned long cnt;
       int inex;
+      MPFR_SAVE_EXPO_DECL (expo);
 
-      MPFR_TMP_INIT1(up, uu, BITS_PER_MP_LIMB);
-      MPFR_ASSERTN(u == (mp_limb_t) u);
+      MPFR_TMP_INIT1 (up, uu, BITS_PER_MP_LIMB);
+      MPFR_ASSERTN (u == (mp_limb_t) u);
       count_leading_zeros (cnt, (mp_limb_t) u);
       *up = (mp_limb_t) u << cnt;
 
-      mpfr_save_emin_emax();
+      MPFR_SAVE_EXPO_MARK (expo);
       MPFR_SET_EXP (uu, BITS_PER_MP_LIMB - cnt);
       inex = mpfr_sqrt(r, uu, rnd_mode);
-      mpfr_restore_emin_emax();
+      MPFR_SAVE_EXPO_FREE (expo);
       return mpfr_check_range(r, inex, rnd_mode);
     }
   else /* sqrt(0) = 0 */
     {
-      MPFR_CLEAR_FLAGS(r);
       MPFR_SET_ZERO(r);
       MPFR_SET_POS(r);
       MPFR_RET(0);

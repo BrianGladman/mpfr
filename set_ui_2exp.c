@@ -26,13 +26,15 @@ int
 mpfr_set_ui_2exp (mpfr_ptr x, unsigned long i, mp_exp_t e, mp_rnd_t rnd_mode)
 {
   int res;
+  MPFR_SAVE_EXPO_DECL (expo);
 
-  mpfr_save_emin_emax ();
+  MPFR_SAVE_EXPO_MARK (expo);
+  /* TODO: Fix overflow bug */
   res = mpfr_set_ui (x, i, rnd_mode);
   MPFR_ASSERTD ( res == 0);
   MPFR_ASSERTD (e == (mp_exp_t)(long) e);
   res = mpfr_mul_2si (x, x, e, rnd_mode);
-  mpfr_restore_emin_emax ();
+  MPFR_SAVE_EXPO_FREE (expo);
   if (res)
     return res;
   res = mpfr_check_range(x, 0, rnd_mode);

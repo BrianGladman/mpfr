@@ -47,6 +47,7 @@ mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
 {
   mpfr_t t, u;
   int inexact, shift_exp = 0, inexact2 = 0;
+  MPFR_SAVE_EXPO_DECL (expo);
 
   LONGDOUBLE_NAN_ACTION (d, goto nan);
 
@@ -68,7 +69,7 @@ mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
   mpfr_init2 (t, MPFR_LDBL_MANT_DIG);
   mpfr_init2 (u, IEEE_DBL_MANT_DIG);
   mpfr_set_ui (t, 0, GMP_RNDN);
-  mpfr_save_emin_emax ();
+  MPFR_SAVE_EXPO_MARK (expo);
   while (d != (long double) 0.0)
     {
       if ((d > (long double) DBL_MAX) || ((-d) > (long double) DBL_MAX))
@@ -162,8 +163,8 @@ mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
     inexact = inexact2;
   mpfr_clear (t);
   mpfr_clear (u);
-  mpfr_restore_emin_emax ();
 
+  MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (r, inexact, rnd_mode);
 
 

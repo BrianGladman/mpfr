@@ -22,10 +22,8 @@ MA 02111-1307, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
- /* The computation of hypot of x and y is done by
-
-    hypot(x,y)= sqrt(x^2+y^2) = z
- */
+/* The computation of hypot of x and y is done by  *
+ *    hypot(x,y)= sqrt(x^2+y^2) = z                */
 
 int
 mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode)
@@ -38,6 +36,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode)
   mp_prec_t Nt;   /* precision of the intermediary variable */
   mp_exp_t Ex, Ey, sh;
   mp_exp_unsigned_t diff_exp;
+  MPFR_SAVE_EXPO_DECL (expo);
 
   /* particular cases */
   if (MPFR_ARE_SINGULAR(x,y))
@@ -115,9 +114,9 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode)
   mpfr_init (te);
   mpfr_init (ti);
 
-  mpfr_save_emin_emax ();
+  MPFR_SAVE_EXPO_MARK (expo);
 
-  sh = MAX(0,MIN(Ex,Ey));
+  sh = MAX (0, MIN (Ex, Ey));
 
   do
     {
@@ -165,7 +164,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode)
         1       non zero    ternary flag given by inexact
    */
 
-  mpfr_restore_emin_emax ();
+  MPFR_SAVE_EXPO_FREE (expo);
 
   return mpfr_check_range (z, inexact, rnd_mode);
 }

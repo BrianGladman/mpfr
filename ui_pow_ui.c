@@ -30,6 +30,7 @@ mpfr_ui_pow_ui (mpfr_ptr x, unsigned long int y, unsigned long int n,
   mpfr_t res;
   mp_prec_t prec;
   int inexact;
+  MPFR_SAVE_EXPO_DECL (expo);
 
   MPFR_CLEAR_FLAGS(x);
 
@@ -39,7 +40,7 @@ mpfr_ui_pow_ui (mpfr_ptr x, unsigned long int y, unsigned long int n,
   if (y == 0) /* 0^n = 0 for any n > 0 */
     return mpfr_set_ui (x, 0, rnd);
 
-  mpfr_save_emin_emax ();
+  MPFR_SAVE_EXPO_MARK (expo);
   mpfr_init (res);
 
   prec = MPFR_PREC(x);
@@ -78,6 +79,6 @@ mpfr_ui_pow_ui (mpfr_ptr x, unsigned long int y, unsigned long int n,
 
   mpfr_clear (res);
 
-  mpfr_restore_emin_emax ();
+  MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (x, inexact, rnd);
 }

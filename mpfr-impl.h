@@ -701,6 +701,30 @@ do { \
 /* type is the target (unsigned) type */
 #define SAFE_ABS(type,x) ((x) >= 0 ? (type)(x) : -(type)(x))
 
+
+
+/******************************************************
+ **************  Save exponent macros  ****************
+ ******************************************************/
+
+typedef struct {
+  unsigned int saved_flags;
+  mp_exp_t saved_emin;
+  mp_exp_t saved_emax;
+} mpfr_save_expo_t;
+  
+#define MPFR_SAVE_EXPO_DECL(x) mpfr_save_expo_t (x)
+#define MPFR_SAVE_EXPO_MARK(x)     \
+ ((x).saved_flags = __gmpfr_flags, \
+  (x).saved_emin = __gmpfr_emin,   \
+  (x).saved_emax = __gmpfr_emax,   \
+  __gmpfr_emin = MPFR_EMIN_MIN,    \
+  __gmpfr_emax = MPFR_EMAX_MAX)
+#define MPFR_SAVE_EXPO_FREE(x)     \
+ (__gmpfr_flags = (x).saved_flags, \
+  __gmpfr_emin = (x).saved_emin,   \
+  __gmpfr_emax = (x).saved_emax)
+
 /* Speed up final checking */
 /*#define mpfr_check_range(x,t,r) \
  (MPFR_LIKELY (MPFR_EXP (x) >= __gmpfr_emin && MPFR_EXP (x) <= __gmpfr_emax) \

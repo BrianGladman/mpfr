@@ -154,8 +154,9 @@ int
   mpfr_prec_t prec;
   mpz_t pi, num, den, d3, d2, tmp;
   int inex;
+  MPFR_SAVE_EXPO_DECL (expo);
 
-  mpfr_save_emin_emax ();
+  MPFR_SAVE_EXPO_MARK (expo);
 
   prec = MPFR_PREC(x);
 
@@ -223,7 +224,6 @@ int
   else
     inex = mpfr_pi_machin3 (x, rnd_mode);
 
-  mpfr_restore_emin_emax ();
-
+  MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range(x, inex, rnd_mode);
 }

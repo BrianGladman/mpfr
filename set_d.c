@@ -26,16 +26,6 @@ MA 02111-1307, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-/*
-#if (BITS_PER_MP_LIMB==32)
-# define MPFR_LIMBS_PER_DOUBLE 2
-#elif (BITS_PER_MP_LIMB >= 64)
-# define MPFR_LIMBS_PER_DOUBLE 1
-#else
-# error "Unsupported value of BITS_PER_MP_LIMB"
-#endif
-*/
-
 /* extracts the bits of d in rp[0..n-1] where n=ceil(53/BITS_PER_MP_LIMB).
    Assumes d is neither 0 nor NaN nor Inf. */
 static int
@@ -157,9 +147,9 @@ mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
   mp_size_t i, k;
   mpfr_t tmp;
   mp_limb_t tmpmant[MPFR_LIMBS_PER_DOUBLE];
- 
-  MPFR_CLEAR_FLAGS(r);
+  MPFR_SAVE_EXPO_DECL (expo);
 
+  MPFR_CLEAR_FLAGS(r);
 
   if (MPFR_UNLIKELY(DOUBLE_ISNAN(d)))
     {
@@ -209,7 +199,7 @@ mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
 
   /* now d is neither 0, nor NaN nor Inf */
 
-  mpfr_save_emin_emax ();
+  MPFR_SAVE_EXPO_MARK (expo);
 
   /* warning: don't use tmp=r here, even if SIZE(r) >= MPFR_LIMBS_PER_DOUBLE,
      since PREC(r) may be different from PREC(tmp), and then both variables
@@ -257,8 +247,7 @@ mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
   /* tmp is exact since PREC(tmp)=53 */
   inexact = mpfr_set4 (r, tmp, rnd_mode, signd);
 
-  mpfr_restore_emin_emax ();
-
+  MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (r, inexact, rnd_mode);
 }
 

@@ -21,6 +21,8 @@ MA 02111-1307, USA. */
 
 #include "mpfr-impl.h"
 
+#include "rndraw.c"
+
 /* set a to abs(b) * signb: a=b when signb = SIGN(b), a=abs(b) when signb=1 */
 int
 mpfr_set4 (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode, int signb)
@@ -65,6 +67,7 @@ mpfr_set4 (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode, int signb)
       
       MPFR_CLEAR_FLAGS(a);
 
+#if 1
       ap = MPFR_MANT(a);
       aq = MPFR_PREC(a);
       
@@ -84,6 +87,11 @@ mpfr_set4 (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode, int signb)
 	}
       else
 	MPFR_SET_EXP (a, MPFR_GET_EXP (b));
+#else
+      MPFR_SET_EXP (a, MPFR_GET_EXP (b));
+      MPFR_SET_SIGN (a, signb);
+      return mpfr_rndraw (a, MPFR_MANT (b), MPFR_PREC (b), rnd_mode);
+#endif
     }
 
   MPFR_SET_SIGN(a, signb);

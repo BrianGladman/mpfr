@@ -34,6 +34,7 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mp_size_t sm;
   mp_exp_t exps, cancel = 0;
   TMP_DECL (marker);
+  MPFR_SAVE_EXPO_DECL (expo);
 
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(x)))
     {
@@ -49,7 +50,7 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
         }
     }
 
-  mpfr_save_emin_emax ();
+  MPFR_SAVE_EXPO_MARK (expo);
 
   precy = MPFR_PREC(y);
   K0 = __gmpfr_isqrt(precy / 2); /* Need K + log2(precy/K) extra bits */
@@ -101,8 +102,9 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       MPFR_TMP_INIT(sp, s, m, sm);
     }
 
-  mpfr_restore_emin_emax ();
-  inexact = mpfr_set (y, s, rnd_mode); /* FIXME: Dont' need check range? */
+  MPFR_SAVE_EXPO_FREE (expo);
+  inexact = mpfr_set (y, s, rnd_mode); 
+  /* FIXME: Dont' need check range? */
 
   TMP_FREE(marker);
   
