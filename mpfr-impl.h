@@ -24,7 +24,8 @@ MA 02111-1307, USA. */
 #define __MPFR_IMPL_H__
 
 /* Check if we are inside a build of MPFR or inside the test suite.
-   This is needed in mpfr.h to export or import the functions */
+   This is needed in mpfr.h to export or import the functions.
+   It matters only for Windows DLL */
 #ifndef __MPFR_TEST_H__
 # define __MPFR_WITHIN_MPFR 1
 #endif
@@ -95,24 +96,28 @@ MA 02111-1307, USA. */
 #else
 # define __MPFR_STDC(version) 0
 #endif
+
 #if defined(__GNUC__) && defined(__GNUC_MINOR__) && !defined(__ICC)
 # define __MPFR_GNUC(a, i) \
  (MPFR_VERSION_NUM(__GNUC__,__GNUC_MINOR__,0)>=MPFR_VERSION_NUM(a,i,0))
 #else
 # define __MPFR_GNUC(a, i) 0
 #endif
+
 #if defined(__GLIBC__) && defined(__GLIBC_MINOR__)
 # define __MPFR_GLIBC(a, i) \
  (MPFR_VERSION_NUM(__GLIBC__,__GLIBC_MINOR__,0)>=MPFR_VERSION_NUM(a,i,0))
 #else
 # define __MPFR_GLIBC(a, i) 0
 #endif
+
 #if defined(__GNU_MP_VERSION)&&defined(__GNU_MP_VERSION_MINOR)&&defined(__GNU_MP_VERSION_PATCHLEVEL)
 # define __MPFR_GMP(a, b, c) \
 (MPFR_VERSION_NUM(__GNU_MP_VERSION,__GNU_MP_VERSION_MINOR,__GNU_MP_VERSION_PATCHLEVEL) >= MPFR_VERSION_NUM(a,b,c))
 #else
 # define __MPFR_GMP(a, b, c) 0
 #endif
+
 #if defined(__ICC)
 # define __MPFR_ICC(a,b,c) (__ICC >= (a)*100+(b)*10+c)
 #else
@@ -152,7 +157,7 @@ MA 02111-1307, USA. */
 #endif
 
 /* mpn_sub_nc is internal but may be defined in the header
-   but not in the library! */
+   but not in the library! That's why we may need to overide it.*/
 #ifndef MPFR_HAVE_MPN_SUB_NC
 mp_limb_t mpfr_sub_nc _MPFR_PROTO ((mp_ptr, mp_srcptr, mp_srcptr, mp_size_t,
                                     mp_limb_t ));
@@ -577,7 +582,8 @@ typedef unsigned long int  mpfr_uexp_t;
 #define MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd, test) \
   (((rnd) + (test)) == GMP_RNDD)
 
-/* We want to test if rnd = Zero, or Away */
+/* We want to test if rnd = Zero, or Away.
+   'test' is true iff negative. */
 #define MPFR_IS_LIKE_RNDZ(rnd, test) \
   ((rnd==GMP_RNDZ) || MPFR_IS_RNDUTEST_OR_RNDDNOTTEST (rnd, test))
 
@@ -586,10 +592,10 @@ typedef unsigned long int  mpfr_uexp_t;
                              ((rnd == GMP_RNDD) ? GMP_RNDU : rnd))
 
 /* Transform RNDU and RNDD to RNDA or RNDZ */
-#define MPFR_UPDATE_RND_MODE(rnd, test) \
-  do {  \
+#define MPFR_UPDATE_RND_MODE(rnd, test)                            \
+  do {                                                             \
     if (MPFR_UNLIKELY(MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd, test))) \
-      rnd = GMP_RNDZ; \
+      rnd = GMP_RNDZ;                                              \
   } while (0)
 
 
@@ -617,10 +623,6 @@ typedef unsigned long int  mpfr_uexp_t;
 #else
 # define MPFR_LIMB_ONE  ((mp_limb_t) 1L)
 # define MPFR_LIMB_ZERO ((mp_limb_t) 0L)
-#endif
-
-#ifndef MP_LIMB_T_ONE
-# define MP_LIMB_T_ONE MPFR_LIMB_ONE
 #endif
 
 /* Mask for the low 's' bits of a limb */
@@ -857,7 +859,7 @@ typedef struct {
 /*
  * Round Mantissa (`srcp`, `sprec`) to mpfr_t `dest` using rounding mode `rnd`
  * assuming dest's sign is `sign`.
- * Execute OVERFLOW_HANDLE in case of overflow when rounding (Power 2 case)
+ * Execute OVERFLOW_HANDLER in case of overflow when rounding (Power 2 case)
  */
 #define MPFR_RNDRAW(inexact, dest, srcp, sprec, rnd, sign, OVERFLOW_HANDLER)\
   do {                                                                      \
@@ -1074,7 +1076,8 @@ typedef struct {
       }                                                                     \
   } while (0)
 
-
+/* Return TRUE if b is non singular and we can round it to precision 'prec'
+   with rounding mode 'rnd', and with error at most 'error' */
 #define MPFR_CAN_ROUND(b,err,prec,rnd)                                       \
  (!MPFR_IS_SINGULAR (b) && mpfr_round_p (MPFR_MANT (b), MPFR_LIMB_SIZE (b),  \
 					 (err), (prec) + ((rnd)==GMP_RNDN)))
@@ -1091,7 +1094,7 @@ typedef struct {
 #define MPFR_ZIV_FREE(x)
 
 #else
-
+/* Use LOGGING */
 #define MPFR_ZIV_DECL(_x)                                     \
   mp_prec_t _x;                                               \
   int _x ## _cpt = 1;                                         \
@@ -1146,6 +1149,10 @@ typedef struct {
 #  error "Logging not supported (GCC >= 3.0)"
 # endif
 
+#if defined (__cplusplus)
+extern "C" {
+#endif
+
 __MPFR_DECLSPEC extern FILE *mpfr_log_file;
 __MPFR_DECLSPEC extern int   mpfr_log_type;
 __MPFR_DECLSPEC extern int   mpfr_log_level;
@@ -1153,6 +1160,9 @@ __MPFR_DECLSPEC extern int   mpfr_log_current;
 __MPFR_DECLSPEC extern int   mpfr_log_base;
 __MPFR_DECLSPEC extern mp_prec_t mpfr_log_prec;
 
+#if defined (__cplusplus)
+ }
+#endif
 
 #define MPFR_LOG_VAR(x)                                                      \
   if((MPFR_LOG_INTERNAL_F&mpfr_log_type)&&(mpfr_log_current<=mpfr_log_level))\
@@ -1204,6 +1214,43 @@ __MPFR_DECLSPEC extern mp_prec_t mpfr_log_prec;
 #define MPFR_LOG_FUNC(x,y)
 
 #endif /* MPFR_USE_LOGGING */
+
+
+/**************************************************************
+ ***************  Group Functions Macros  *********************
+ **************************************************************/
+
+#define MPFR_GROUP_DECL() mp_limb_t *mpfr_group_mant; size_t mpfr_group_alloc
+#define I(x) ((mpfr_group_mode == 0) ? ++mpfr_group_count :              \
+ MPFR_TMP_INIT1 (mpfr_group_mant + mpfr_group_size*(mpfr_group_count++), \
+ x, mpfr_group_prec))
+#define MPFR_GROUP_INIT(prec, group) do {                                    \
+ mp_prec_t mpfr_group_prec = (prec);                                         \
+ mp_size_t mpfr_group_size;                                                  \
+ int mpfr_group_mode = 0, mpfr_group_count = 0;                              \
+ mpfr_group_size = (mpfr_group_prec +BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB;   \
+ group;                                                                      \
+ mpfr_group_alloc = mpfr_group_count*mpfr_group_size;                        \
+ mpfr_group_mant = (*__gmp_allocate_func) (mpfr_group_alloc);                \
+ mpfr_group_mode = 1; mpfr_group_count = 0;                                  \
+ group;                                                                      \
+ } while (0)
+#define MPFR_GROUP_REPREC(prec, group) do {                                  \
+ mp_prec_t mpfr_group_prec = (prec);                                         \
+ size_t    mpfr_group_oalloc = mpfr_group_alloc;                             \
+ mp_size_t mpfr_group_size;                                                  \
+ int mpfr_group_mode = 0, mpfr_group_count = 0;                              \
+ mpfr_group_size = (mpfr_group_prec +BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB;   \
+ group;                                                                      \
+ mpfr_group_alloc = mpfr_group_count*mpfr_group_size;                        \
+ mpfr_group_mant = (*__gmp_reallocate_func)(mpfr_group_mant,                 \
+					    mpfr_group_oalloc,               \
+					    mpfr_group_alloc);               \
+ mpfr_group_mode = 1; mpfr_group_count = 0;                                  \
+ group;                                                                      \
+} while (0)
+#define MPFR_GROUP_CLEAR()                                                   \
+ do { (*__gmp_free_func)(mpfr_group_mant, mpfr_group_alloc);} while (0)
 
 
 /******************************************************
