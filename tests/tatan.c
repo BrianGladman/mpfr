@@ -186,6 +186,12 @@ special (void)
 }
 
 #define TEST_FUNCTION mpfr_atan
+#define test_generic test_generic_atan
+#include "tgeneric.c"
+
+#define TEST_FUNCTION mpfr_atan2
+#define TWO_ARGS
+#define test_generic test_generic_atan2
 #include "tgeneric.c"
 
 static void
@@ -212,6 +218,29 @@ special_overflow (void)
   set_emax (MPFR_EMAX_MAX);
 }
 
+static void
+special_atan2 (void)
+{
+  mpfr_t x, y, z;
+
+  mpfr_inits (x, y, z, NULL);
+
+  mpfr_set_ui (y, 0, GMP_RNDN);
+  mpfr_set_nan (x);
+  mpfr_atan2 (z, y, x, GMP_RNDN);
+  MPFR_ASSERTN (MPFR_IS_NAN (z));
+
+  mpfr_swap (x, y);
+  mpfr_atan2 (z, y, x, GMP_RNDN);
+  MPFR_ASSERTN (MPFR_IS_NAN (z));
+
+  mpfr_set_ui (y, 0, GMP_RNDN);
+  mpfr_atan2 (z, y, x, GMP_RNDN);
+  MPFR_ASSERTN (MPFR_IS_NAN (z));
+
+  mpfr_clears (x, y, z, NULL);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -219,8 +248,10 @@ main (int argc, char *argv[])
 
   special_overflow ();
   special ();
+  special_atan2 ();
 
-  test_generic (2, 100, 7);
+  test_generic_atan  (2, 200, 17);
+  test_generic_atan2 (2, 200, 17);
 
   tests_end_mpfr ();
   return 0;

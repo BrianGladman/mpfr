@@ -23,7 +23,7 @@ MA 02111-1307, USA.
 Changes from version 2.1.0 to version 2.2.0:
 - Bug fixes.
 - new functions mpfr_set_overflow, mpfr_set_underflow, mpfr_set_inexflag,
-  mpfr_set_erangeflag, mpfr_set_nanflag, mpfr_erfc
+  mpfr_set_erangeflag, mpfr_set_nanflag, mpfr_erfc, mpfr_atan2
 - Remove the exported variables from mpfr.h to mpfr-impl.h.
 - Grep CC and CFLAGS from GMP Makefile if possible.
 - Math functions are faster (Both average and worst case).
