@@ -137,11 +137,12 @@ check_float (void)
 static void
 special (void)
 {
-  mpfr_t x, z;
+  mpfr_t x, y, z;
   int inexact;
   mp_prec_t p;
 
   mpfr_init (x);
+  mpfr_init (y);
   mpfr_init (z);
 
   mpfr_set_prec (x, 27);
@@ -247,6 +248,10 @@ special (void)
 
   /* corner case rw = 0 in rounding to nearest */
   mpfr_set_prec (z, mp_bits_per_limb - 1);
+  mpfr_set_prec (y, mp_bits_per_limb - 1);
+  mpfr_set_ui (y, 1, GMP_RNDN);
+  mpfr_mul_2exp (y, y, mp_bits_per_limb - 1, GMP_RNDN);
+  mpfr_nextabove (y);
   for (p = 2 * mp_bits_per_limb - 1; p <= 1000; p++)
     {
       mpfr_set_prec (x, p);
@@ -268,14 +273,23 @@ special (void)
       mpfr_nextabove (x);
       /* now x is just above [2^(mp_bits_per_limb - 1) + 1]^2 */
       inexact = mpfr_sqrt (z, x, GMP_RNDN);
-      if (inexact <= 0 || mpfr_cmp_ui_2exp (z, 1, mp_bits_per_limb - 1) == 0)
+      if (mpfr_cmp (z, y))
         {
-          printf ("Error in corner case for p = %lu\n", (unsigned long) p);
+          printf ("Error for sqrt(x) in rounding to nearest\n");
+          printf ("x="); mpfr_dump (x);
+          printf ("Expected "); mpfr_dump (y);
+          printf ("Got      "); mpfr_dump (z);
+          exit (1);
+        }
+      if (inexact <= 0)
+        {
+          printf ("Wrong inexact flag in corner case for p = %lu\n", (unsigned long) p);
           exit (1);
         }
     }
 
   mpfr_clear (x);
+  mpfr_clear (y);
   mpfr_clear (z);
 }
 
