@@ -135,7 +135,7 @@ check_inexact (void)
     {
       mpfr_set_prec (x, px);
       mpfr_random (x);
-      do { u = lrand48 (); } while (u == 0);
+      do { u = LONG_RAND (); } while (u == 0);
       for (py=2; py<300; py++)
 	{
 	  mpfr_set_prec (y, py);
@@ -177,11 +177,11 @@ main (int argc, char **argv)
 #ifdef TEST
   int i; unsigned long u; double d;
 
-  srand(getpid());
+  SEED_RAND (getpid ());
   for (i=0;i<1000000;i++) {
-    do { u = lrand48(); } while (u==0);
+    do { u = LONG_RAND(); } while (u==0);
     do { d = drand(); } while (ABS(d/u)<2.2e-307);
-    check(d, u, rand() % 4, 0.0);
+    check(d, u, LONG_RAND() % 4, 0.0);
   }
 #endif
 

@@ -25,9 +25,7 @@ MA 02111-1307, USA. */
 #include "gmp.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
-#ifdef __mips
-#include <sys/fpu.h>
-#endif
+#include "mpfr-test.h"
 
 void check_two_sum _PROTO ((mp_prec_t));
 void check3 _PROTO ((double, unsigned long, mp_rnd_t, double));
@@ -82,11 +80,11 @@ check_two_sum (mp_prec_t p)
   mpfr_init2 (w, p);
   do
     {
-      x = lrand48 ();
+      x = LONG_RAND ();
     }
   while (x < 1);
   mpfr_random (y);
-  rnd = rand() % 4;
+  rnd = LONG_RAND() % 4;
   rnd = GMP_RNDN;
   inexact = mpfr_sub_ui (u, y, x, GMP_RNDN);
   mpfr_add_ui (v, u, x, GMP_RNDN);
@@ -127,15 +125,15 @@ main (int argc, char *argv[])
 #ifdef TEST
   double x; unsigned long y, N; int i,rnd_mode,rnd;
 
-  srand(getpid());
+  SEED_RAND (getpid ());
   N = (argc<2) ? 1000000 : atoi(argv[1]);
   rnd_mode = (argc<3) ? -1 : atoi(argv[2]);
   for (i=0;i<1000000;i++) {
-    x = drand48();
-    y = lrand48();
+    x = drand();
+    y = LONG_RAND();
     if (ABS(x)>2.2e-307 && x+y<1.7e+308 && x+y>-1.7e308) {
       /* avoid denormalized numbers and overflows */
-      rnd = (rnd_mode==-1) ? lrand48()%4 : rnd_mode;
+      rnd = (rnd_mode==-1) ? LONG_RAND()%4 : rnd_mode;
       check(x, y, rnd);
     }
   } 

@@ -68,11 +68,11 @@ main (void)
     set_fpc_csr(exp.fc_word);
 #endif
 
-  srand(getpid());
+  SEED_RAND (getpid ());
   for (i=0;i<1000000;i++) {
-    a = lrand48();
+    a = LONG_RAND();
     /* machine arithmetic must agree if a <= 2.0^53 */
-    if (1.0*a < 9007199254872064.0) check(a, rand() % 4, -1.0);
+    if (1.0*a < 9007199254872064.0) check(a, LONG_RAND() % 4, -1.0);
   }
 #endif
   check(0, GMP_RNDN, 0.0);

@@ -101,7 +101,7 @@ check3 (double x, double y, mp_rnd_t rnd_mode)
 {
   double z1,z2; mpfr_t xx,yy; int neg;
 
-  neg = rand() % 2;
+  neg = LONG_RAND() % 2;
   mpfr_init2(xx, 53);
   mpfr_init2(yy, 53);
   mpfr_set_d(xx, x, rnd_mode);
@@ -129,7 +129,7 @@ check4 (double x, double y, mp_rnd_t rnd_mode)
   mpfr_t xx, yy;
   int neg;
 
-  neg = rand() % 2;
+  neg = LONG_RAND() % 2;
   mpfr_init2(xx, 53);
   mpfr_init2(yy, 53);
   mpfr_set_d(xx, x, rnd_mode);
@@ -158,7 +158,7 @@ check5 (double x, mp_rnd_t rnd_mode)
 
   mpfr_init2(xx, 53);
   mpfr_init2(yy, 53);
-  neg = rand() % 2;
+  neg = LONG_RAND() % 2;
   mpfr_set_d(xx, x, rnd_mode);
   if (neg) mpfr_sub(xx, xx, xx, rnd_mode);
   else mpfr_add(xx, xx, xx, rnd_mode);
@@ -600,7 +600,7 @@ check_inexact (void)
 		 abs(EXP(x)-EXP(u)) + max(prec(x), prec(u)) + 1 */
 	      pz = pz + MAX(MPFR_PREC(x), MPFR_PREC(u)) + 1;
 	      mpfr_set_prec (z, pz);
-	      rnd = rand () % 4;
+	      rnd = LONG_RAND () % 4;
 	      if (mpfr_add (z, x, u, rnd))
 		{
 		  fprintf (stderr, "z <- x + u should be exact\n");
@@ -704,7 +704,8 @@ main (int argc, char *argv[])
 	  9.0969267746123943065e196);
   check53(3.14553393112021279444e-67, 3.14553401015952024126e-67, GMP_RNDU,
 	  6.2910679412797336946e-67);
-  srand(getpid());
+
+  SEED_RAND (getpid ());
   check53(5.43885304644369509058e+185,-1.87427265794105342763e-57,GMP_RNDN,
 	  5.4388530464436950905e185);
   check53(5.43885304644369509058e+185,-1.87427265794105342763e-57, GMP_RNDZ,
@@ -842,20 +843,20 @@ main (int argc, char *argv[])
     y = drand();
     if (ABS(x)>2.2e-307 && ABS(y)>2.2e-307 && x+y<1.7e+308 && x+y>-1.7e308) {
       /* avoid denormalized numbers and overflows */
-      rnd = (rnd_mode==-1) ? lrand48()%4 : rnd_mode;
+      rnd = (rnd_mode==-1) ? LONG_RAND()%4 : rnd_mode;
       check(x, y, rnd, prec, prec, prec, 0.0);
     }
   } 
   /* tests with random precisions */
   for (i=0;i<N;i++) {
     int px, py, pz;
-    px = 53 + (rand() % 64); 
-    py = 53 + (rand() % 64); 
-    pz = 53 + (rand() % 64); 
-    rnd_mode = rand() % 4;
+    px = 53 + (LONG_RAND() % 64); 
+    py = 53 + (LONG_RAND() % 64); 
+    pz = 53 + (LONG_RAND() % 64); 
+    rnd_mode = LONG_RAND() % 4;
     do { x = drand(); } while (isnan(x));
     do { y = drand(); } while (isnan(y));
-    check2(x,px,y,py,pz,rnd_mode);
+    check2 (x, px, y, py, pz, rnd_mode);
   }
   /* Checking mpfr_add(x, x, y) with prec=53 */
   for (i=0;i<N;i++) {
@@ -863,7 +864,7 @@ main (int argc, char *argv[])
     y = drand();
     if (ABS(x)>2.2e-307 && ABS(y)>2.2e-307 && x+y<1.7e+308 && x+y>-1.7e308) {
       /* avoid denormalized numbers and overflows */
-      rnd = (rnd_mode==-1) ? lrand48()%4 : rnd_mode;
+      rnd = (rnd_mode==-1) ? LONG_RAND()%4 : rnd_mode;
       check3(x, y, rnd);
     }
   }
@@ -873,7 +874,7 @@ main (int argc, char *argv[])
     y = drand();
     if (ABS(x)>2.2e-307 && ABS(y)>2.2e-307 && x+y<1.7e+308 && x+y>-1.7e308) {
       /* avoid denormalized numbers and overflows */
-      rnd = (rnd_mode==-1) ? lrand48()%4 : rnd_mode;
+      rnd = (rnd_mode==-1) ? LONG_RAND()%4 : rnd_mode;
       check4(x, y, rnd);
     }
   }
@@ -881,7 +882,7 @@ main (int argc, char *argv[])
   for (i=0;i<N;i++) {
     do { x = drand(); } while ((ABS(x)<2.2e-307) || (ABS(x)>0.8e308));
     /* avoid denormalized numbers and overflows */
-    rnd = (rnd_mode==-1) ? lrand48()%4 : rnd_mode;
+    rnd = (rnd_mode==-1) ? LONG_RAND()%4 : rnd_mode;
     check5(x, rnd);
   }
 #endif

@@ -21,7 +21,6 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include "gmp.h"
 #include "mpfr.h"
 #include "mpfr-test.h"
@@ -78,7 +77,8 @@ main (int argc, char *argv[])
     printf("Error: get_d o set_d <> identity for d = %1.20e %1.20e\n",d,
 	   mpfr_get_d(x)); exit(1);
   }
-  srand48(time(NULL)); 
+
+  SEED_RAND (getpid ());
   mpfr_set_d(x, 8.06294740693074521573e-310, 0); 
   d = -6.72658901114033715233e-165;
   mpfr_set_d(x, d, 0);

@@ -24,6 +24,7 @@ MA 02111-1307, USA. */
 #include <unistd.h>
 #include "gmp.h"
 #include "mpfr.h"
+#include "mpfr-test.h"
 
 void check _PROTO((long, unsigned char)); 
 void check_large _PROTO((void)); 
@@ -66,10 +67,10 @@ main (int argc, char *argv[])
   long j; 
 
   check_large();
-  srand(getpid());
+  SEED_RAND (getpid ());
   check(0, 0);
   for (j=0; j<1000000; j++)
-    check(lrand48(), rand()%4);
+    check(LONG_RAND(), LONG_RAND()%4);
 
   return 0;
 }

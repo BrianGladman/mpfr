@@ -302,8 +302,8 @@ main (void)
     x /= 2.0;
   }
   for (j=0; j<100000; j++) {
-    x = drand48();
-    y = drand48();
+    x = DBL_RAND ();
+    y = DBL_RAND ();
     if (x<y) { z=x; x=y; y=z; }
     if (y != 0.0 && y != -0.0) tcmp2(x, y, -1);
   }

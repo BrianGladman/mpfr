@@ -44,7 +44,7 @@ check_inexact (void)
       mpfr_set_prec (x, p);
       mpfr_set_prec (absx, p);
       mpfr_random (x);
-      if (rand () % 2)
+      if (LONG_RAND () % 2)
 	{
 	  mpfr_set (absx, x, GMP_RNDN);
 	  mpfr_neg (x, x, GMP_RNDN);
@@ -125,7 +125,7 @@ main (int argc, char *argv[])
    for (k = 1; k <= n; k++)
      {      
        d = drand();
-       rnd = rand() % 4;
+       rnd = LONG_RAND() % 4;
        mpfr_set_d(x, d, 0);
        mpfr_abs(x, x, rnd);
        dd = mpfr_get_d(x);

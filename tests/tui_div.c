@@ -73,7 +73,7 @@ check_inexact (void)
     {
       mpfr_set_prec (x, px);
       mpfr_random (x);
-      u = lrand48 ();
+      u = LONG_RAND ();
       for (py=2; py<300; py++)
 	{
 	  mpfr_set_prec (y, py);
@@ -121,15 +121,15 @@ main (int argc, char *argv[])
     set_fpc_csr(exp.fc_word);
 #endif
 
-  srand48(getpid());
+  SEED_RAND(getpid());
   N = (argc<2) ? 1000000 : atoi(argv[1]);
   rnd_mode = (argc<3) ? -1 : atoi(argv[2]);
   for (i=0;i<1000000;i++) {
     x = drand(); 
-    y = lrand48();
+    y = LONG_RAND();
     if (ABS(x)>4e-286) {
       /* avoid denormalized numbers and overflows */
-      rnd = (rnd_mode==-1) ? lrand48()%4 : rnd_mode;
+      rnd = (rnd_mode==-1) ? LONG_RAND()%4 : rnd_mode;
       check(y, x, rnd, 0.0);
     }
   }

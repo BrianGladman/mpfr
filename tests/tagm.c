@@ -35,16 +35,14 @@ void check_large _PROTO((void));
 void slave _PROTO((int, int)); 
 
 double
-drand_agm(void)
+drand_agm (void)
 {
   double d; long int *i;
 
   i = (long int*) &d;
   do {
-    i[0] = lrand48();
-    i[1] = lrand48();
-  /*if (lrand48()%2) d=-d; */ /* generates negative numbers */
-                              /* useless here */
+    i[0] = LONG_RAND();
+    i[1] = LONG_RAND();
   } while ((d<1e-153)||(d>1e153));    /* to avoid underflow or overflow
 					 in double calculus in sqrt(u*v) */
 
@@ -132,16 +130,16 @@ slave (int N, int p)
   double a,b;
   mpfr_t ta, tb, tres;
 
-  srand48(getpid());
+  SEED_RAND (getpid ());
   mpfr_init2(ta, 53);
   mpfr_init2(tb, 53);
   mpfr_init2(tres, p);
   for(i=0;i<N;i++) {
-    a=drand_agm();
-    b=drand_agm();
+    a = drand_agm();
+    b = drand_agm();
     mpfr_set_d(ta, a, GMP_RNDN);
     mpfr_set_d(tb, b, GMP_RNDN);
-    mpfr_agm(tres, ta, tb, rand() % 4 );
+    mpfr_agm(tres, ta, tb, LONG_RAND() % 4 );
   }
     mpfr_clear(ta); mpfr_clear(ta); mpfr_clear(tres); 
     printf("fin\n");
@@ -163,12 +161,12 @@ main (int argc, char* argv[])
      int i;
      double a,b;
 
-     srand48(getpid()); 
+     SEED_RAND (getpid ());
      N = atoi(argv[1]);
      for (i=0;i<N;i++) {
        a = drand(); 
        b = drand();
-       check(a, b, rand() % 4);
+       check(a, b, LONG_RAND() % 4);
      } 
      return 0;
    }

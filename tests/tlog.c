@@ -49,8 +49,8 @@ drand_log (void)
 
   i = (INT32*) &d;
   do {
-    i[0] = lrand48();
-    i[1] = lrand48();
+    i[0] = LONG_RAND();
+    i[1] = LONG_RAND();
    } while ((d<1e-153) || (d>1e153));    /* to avoid underflow or overflow
 					 in double calculus in sqrt(u*v) */
   return d;
@@ -119,8 +119,8 @@ check4 (int N)
   mp_rnd_t rnd;
 
   for(i=0;i<N;i++) {
-    d=drand_log();
-    rnd = rand() % 4;
+    d = drand_log ();
+    rnd = LONG_RAND() % 4;
     cur=check1 (d, rnd, 0.0, 0, max);
     if (cur<0)
       cur = -cur;
@@ -142,9 +142,9 @@ slave (int N, int p)
   mpfr_init2(ta, 53);
   mpfr_init2(tres, p);
   for(i=0;i<N;i++) {
-    d=drand_log(); 
-    mpfr_set_d(ta, d, GMP_RNDN);
-    mpfr_log(tres, ta,rand() % 4 );
+    d = drand_log(); 
+    mpfr_set_d (ta, d, GMP_RNDN);
+    mpfr_log (tres, ta, LONG_RAND() % 4 );
   }
   mpfr_clear(ta); mpfr_clear(tres); 
   printf("fin\n");
@@ -271,7 +271,7 @@ main (int argc, char *argv[])
 {
   int N=0;
 
-  srand48(getpid());
+  SEED_RAND (getpid ());
   if (argc==4) {   /* tlog x prec rnd */
     check3(atof(argv[1]), atoi(argv[2]), atoi(argv[3]));
     return 0;

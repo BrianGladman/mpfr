@@ -28,9 +28,7 @@ MA 02111-1307, USA. */
 #include "gmp.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
-#ifdef __mips
-#include <sys/fpu.h>
-#endif
+#include "mpfr-test.h"
 
 void check3 _PROTO((double, unsigned long, unsigned int, double));
 void special _PROTO((void));
@@ -90,15 +88,15 @@ main (int argc, char *argv[])
     set_fpc_csr(exp.fc_word);
 #endif
 
-  srand(getpid());
+  SEED_RAND (getpid ());
   N = (argc<2) ? 1000000 : atoi(argv[1]);
   rnd_mode = (argc<3) ? -1 : atoi(argv[2]);
   for (i=0;i<1000000;i++) {
-    x = drand48();
-    y = lrand48();
+    x = drand();
+    y = LONG_RAND();
     if (ABS(x)>2.2e-307 && x+y<1.7e+308 && x+y>-1.7e308) {
       /* avoid denormalized numbers and overflows */
-      rnd = (rnd_mode==-1) ? lrand48()%4 : rnd_mode;
+      rnd = (rnd_mode==-1) ? LONG_RAND()%4 : rnd_mode;
       check(x, y, rnd);
     }
   } 

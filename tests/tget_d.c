@@ -64,7 +64,7 @@ main (void)
 
                    mpfr_div_2ui(y, half, j, GMP_RNDZ);
                    (sj ? mpfr_sub : mpfr_add)(y, x, y, GMP_RNDZ);
-                   exp = (rand() % 47) - 23;
+                   exp = (LONG_RAND() % 47) - 23;
                    mpfr_mul_2si(y, y, exp, GMP_RNDZ);
                    if (mpfr_inexflag_p())
                      {
@@ -75,14 +75,14 @@ main (void)
                      }
                    dd = si != sj ? di - dj : di + dj;
                    d = si ? 0.5 - dd : 0.5 + dd;
-                   if ((rand() / 1024) & 1)
+                   if ((LONG_RAND() / 1024) & 1)
                      {
                        c = mpfr_get_d2(y, rnd_mode);
                        f = "mpfr_get_d2";
                      }
                    else
                      {
-                       exp = (rand() % 47) - 23;
+                       exp = (LONG_RAND() % 47) - 23;
                        c = mpfr_get_d3(y, exp, rnd_mode);
                        f = "mpfr_get_d3";
                        if (si) /* then real d < 0.5 */

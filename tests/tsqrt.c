@@ -247,7 +247,7 @@ check_inexact (mp_prec_t p)
   mpfr_init2 (y, p);
   mpfr_init2 (z, 2*p);
   mpfr_random (x);
-  rnd = rand() % 4;
+  rnd = LONG_RAND() % 4;
   inexact = mpfr_sqrt (y, x, rnd);
   if (mpfr_mul (z, y, y, rnd)) /* exact since prec(z) = 2*prec(y) */
     {
@@ -289,11 +289,11 @@ main (void)
     set_fpc_csr(exp.fc_word);
 #endif
 
-  srand(getpid());
+  SEED_RAND (getpid ());
   for (i=0;i<100000;i++) {
     a = drand();
     if (a < 0.0) a = -a; /* ensures a is positive */
-    check(a, rand() % 4);
+    check(a, LONG_RAND() % 4);
   }
 #endif
   for (p=2; p<200; p++)

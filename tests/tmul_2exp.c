@@ -21,10 +21,10 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include "gmp.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
+#include "mpfr-test.h"
 
 /* checks that x*y gives the same results in double
    and with mpfr with 53 bits of precision */
@@ -44,11 +44,11 @@ main (int argc, char *argv[])
   mpfr_mul_2exp (w, w, 10, GMP_RNDZ); 
   if (!MPFR_IS_NAN(w)) { fprintf(stderr, "NaN != NaN"); exit(-1); }
 
+  SEED_RAND (getpid ());
   for (k = 0; k < 100000; k++) {
-    srand48(time(NULL)); 
-    x = drand48(); 
-    mpfr_set_d(w, x, 0);
-    mpfr_mul_2exp(w, w, 10, GMP_RNDZ); 
+    x = DBL_RAND ();
+    mpfr_set_d (w, x, 0);
+    mpfr_mul_2exp (w, w, 10, GMP_RNDZ);
     if (x != (z = mpfr_get_d(w)/1024))
       {
 	fprintf(stderr, "%f != %f\n", x, z); 

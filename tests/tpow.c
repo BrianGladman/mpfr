@@ -24,6 +24,7 @@ MA 02111-1307, USA. */
 #include "gmp.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
+#include "mpfr-test.h"
 
 void check_pow_ui _PROTO ((void));
 void check_inexact _PROTO ((mp_prec_t));
@@ -78,7 +79,7 @@ check_inexact (mp_prec_t p)
   mpfr_init (z);
   mpfr_init (t);
   mpfr_random (x);
-  u = lrand48() % 2;
+  u = LONG_RAND() % 2;
   for (q=2; q<=p; q++)
     for (rnd=0; rnd<4; rnd++)
       {

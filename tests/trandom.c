@@ -22,7 +22,6 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <time.h>
 #include "gmp.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
@@ -134,8 +133,8 @@ test_urandomb (unsigned long nbtests, unsigned long prec, int verbose)
   tab = (int *) malloc (size_tab * sizeof(int)); 
   for (k = 0; k < size_tab; ++k) tab[k] = 0; 
 
-  gmp_randinit(state, GMP_RAND_ALG_LC, 128); 
-  gmp_randseed_ui(state, (unsigned long int)time(NULL)); 
+  gmp_randinit (state, GMP_RAND_ALG_LC, 128); 
+  gmp_randseed_ui (state, getpid ());
 
   for (k = 0; k < nbtests; k++) {
     mpfr_urandomb(x, state); 

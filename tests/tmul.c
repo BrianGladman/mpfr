@@ -209,7 +209,7 @@ check_exact (void)
 	{
 	  mpfr_random (a);
 	  mpfr_random (b);
-	  rnd = rand() % 4;
+	  rnd = LONG_RAND() % 4;
 	  inexact = mpfr_mul (c, a, b, rnd);
 	  if (mpfr_mul (d, a, b, rnd)) /* should be always exact */
 	    {
@@ -377,7 +377,7 @@ main (int argc, char *argv[])
   check_max();
   check_min();
 #ifdef TEST
-  srand48(getpid());
+  SEED_RAND (getpid ());
   prec = (argc<2) ? 53 : atoi(argv[1]);
   rnd_mode = (argc<3) ? -1 : atoi(argv[2]);
   for (i=0;i<1000000;) {
@@ -386,7 +386,7 @@ main (int argc, char *argv[])
     z = x*y; if (z<0) z=-z;
     if (z<1e+308 && z>1e-308) /* don't test overflow/underflow for now */
       { i++;
-      check(x, y, (rnd_mode==-1) ? lrand48()%4 : rnd_mode, 
+      check(x, y, (rnd_mode==-1) ? LONG_RAND()%4 : rnd_mode, 
 	    prec, prec, prec, 0.0);
       }
   } 

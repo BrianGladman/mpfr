@@ -21,7 +21,6 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include "gmp.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
@@ -37,7 +36,7 @@ main (int argc, char *argv[])
   
   mpfr_init2(x, 100);
 
-  srandom(time(NULL)); 
+  SEED_RAND (getpid ());
 
   N = (argc==1) ? 1000000 : atoi(argv[1]);
 

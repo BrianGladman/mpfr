@@ -1,6 +1,6 @@
 /* Test file for mpfr_set_str.
 
-Copyright 1999, 2001 Free Software Foundation, Inc.
+Copyright 1999, 2001, 2002 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -22,7 +22,6 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 #include "gmp.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
@@ -48,20 +47,20 @@ main (int argc, char *argv[])
       return 0;
     }
 
-  srandom (time (NULL)); 
+  SEED_RAND (getpid ());
   
   nc = (argc > 1) ? atoi(argv[1]) : 53;
   if (nc < 100)
     nc = 100;
 
-  bd = random() & 8;
+  bd = LONG_RAND() & 8;
   
   str2 = str = (char *) malloc (nc * sizeof(char));
 
   if (bd)
     {
       for(k = 1; k <= bd; k++)
-	*(str2++) = (random() & 1) + '0';
+	*(str2++) = (LONG_RAND() & 1) + '0';
     }
   else
     *(str2++) = '0';
@@ -69,10 +68,10 @@ main (int argc, char *argv[])
   *(str2++) = '.'; 
 
   for (k = 1; k < nc - 17 - bd; k++)
-    *(str2++) = '0' + (random() & 1);
+    *(str2++) = '0' + (LONG_RAND() & 1);
 
   *(str2++) = 'e'; 
-  sprintf (str2, "%d", (int) random() - (1 << 30)); 
+  sprintf (str2, "%d", (int) LONG_RAND() - (1 << 30)); 
 
   mpfr_init2 (x, nc + 10); 
   mpfr_set_str_raw (x, str);
@@ -131,8 +130,8 @@ main (int argc, char *argv[])
   for (i=0;i<100000;i++)
     {
       mpfr_random (x);
-      k = rand() % 4;
-      logbase = (rand() % 5) + 1;
+      k = LONG_RAND() % 4;
+      logbase = (LONG_RAND() % 5) + 1;
       base = 1 << logbase;
       /* Warning: the number of bits needed to print exactly a number of 
 	 'prec' bits in base 2^logbase may be greater than ceil(prec/logbase),

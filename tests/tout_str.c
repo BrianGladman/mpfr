@@ -23,7 +23,6 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 #include <unistd.h>
 #include "gmp.h"
 #include "mpfr.h"
@@ -131,15 +130,15 @@ main (int argc, char *argv[])
   check(7.02293374921793516813e-84, GMP_RNDN, 10);
 
   /* random tests */
-  srand(getpid());
+  SEED_RAND (getpid ());
   for (i=0;i<N;i++)
     {
       do
         {
-          d = drand();
+          d = drand ();
         } while (isnan(d));
-      r = rand() % 4;
-      p = 2 + rand() % 35;
+      r = LONG_RAND() % 4;
+      p = 2 + LONG_RAND() % 35;
       check (d, r, p);
     }
 

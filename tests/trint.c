@@ -23,6 +23,7 @@ MA 02111-1307, USA. */
 #include <stdlib.h>
 #include "gmp.h"
 #include "mpfr.h"
+#include "mpfr-test.h"
 
 int
 main (void)
@@ -44,7 +45,7 @@ main (void)
       /* z has exactly s bits */
       
       mpz_mul_2exp (z, z, 1);
-      if (rand () % 2)
+      if (LONG_RAND () % 2)
         mpz_add_ui (z, z, 1);
       mpfr_set_prec (x, s);
       mpfr_set_prec (t, s);

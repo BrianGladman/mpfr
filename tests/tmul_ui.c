@@ -26,6 +26,7 @@ MA 02111-1307, USA. */
 #include "gmp-impl.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
+#include "mpfr-test.h"
 
 void check_inexact _PROTO((mp_prec_t));
 
@@ -42,7 +43,7 @@ check_inexact (mp_prec_t p)
   mpfr_init (y);
   mpfr_init2 (z, p + mp_bits_per_limb);
   mpfr_random (x);
-  u = lrand48();
+  u = LONG_RAND();
   if (mpfr_mul_ui (z, x, u, GMP_RNDN))
     {
       fprintf (stderr, "Error: result should be exact\n");

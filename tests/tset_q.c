@@ -85,12 +85,12 @@ main (void)
   double y;
   unsigned char rnd;
 
-  srand48(getpid());
+  SEED_RAND(getpid());
   for (i=0;i<1000000;i++) {
-    n = lrand48();
-    d = lrand48();
-    if (lrand48()%2) n = -n;
-    rnd = lrand48() % 4;
+    n = LONG_RAND();
+    d = LONG_RAND();
+    if (LONG_RAND()%2) n = -n;
+    rnd = LONG_RAND() % 4;
     y = (double) n / d;
     check(n, d, rnd, y);
   }

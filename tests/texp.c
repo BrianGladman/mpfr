@@ -187,7 +187,7 @@ compare_exp2_exp3 (int n)
       mpfr_set_prec (y, prec);
       mpfr_set_prec (z, prec);
       mpfr_random (x);
-      rnd = rand() % 4;
+      rnd = LONG_RAND() % 4;
       mpfr_exp_2 (y, x, rnd);
       mpfr_exp3 (z, x, rnd);
       if (mpfr_cmp (y,z))
@@ -228,7 +228,6 @@ main (int argc, char *argv[])
       exit(1);
     }
 
-  srand(getpid());
   compare_exp2_exp3(500);
   check_worst_cases();
   check3(0.0, GMP_RNDU, 1.0);
@@ -271,7 +270,7 @@ main (int argc, char *argv[])
   check3(5.16239362447650933063e+02, GMP_RNDZ, 1.5845518406744492105e224);
   check3(6.00812634798592370977e-01, GMP_RNDN, 1.823600119339019443);
 #ifdef TEST
-  srand48(getpid());
+  SEED_RAND (getpid());
   N = (argc==1) ? 0 : atoi(argv[1]);
   lo = (argc>=3) ? atof(argv[2]) : -7.083964185e2;
   hi = (argc>=4) ? atof(argv[3]) : 7.097827129e2;
@@ -279,8 +278,8 @@ main (int argc, char *argv[])
     /* select d such that exp(d) can be represented as a normalized
        machine double-precision number, 
        i.e. 2^(-1022) <= exp(d) <= 2^(1023)*(2-2^(-52)) */
-    d = lo + (hi-lo)*drand48();
-    e = check(d, rand() % 4);
+    d = lo + (hi-lo)*DBL_RAND();
+    e = check(d, LONG_RAND() % 4);
     s += e;
     if (e>maxe) maxe=e;
   }

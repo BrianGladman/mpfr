@@ -306,7 +306,7 @@ check_two_sum (mp_prec_t p)
   mpfr_random (y);
   if (mpfr_cmp_abs (x, y) < 0)
     mpfr_swap (x, y);
-  rnd = rand() % 4;
+  rnd = LONG_RAND() % 4;
   rnd = GMP_RNDN;
   inexact = mpfr_sub (u, x, y, GMP_RNDN);
   mpfr_sub (v, u, x, GMP_RNDN);
@@ -363,7 +363,7 @@ check_inexact (void)
 		: MPFR_EXP(u)-MPFR_EXP(x);
 	      pz = pz + MAX(MPFR_PREC(x), MPFR_PREC(u));
 	      mpfr_set_prec (z, pz);
-	      rnd = rand () % 4;
+	      rnd = LONG_RAND () % 4;
 	      if (mpfr_sub (z, x, u, rnd))
 		{
 		  fprintf (stderr, "z <- x - u should be exact\n");

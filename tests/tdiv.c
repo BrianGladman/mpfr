@@ -443,12 +443,12 @@ main (int argc, char *argv[])
 
 #ifdef TEST
   N = (argc>1) ? atoi(argv[1]) : 100000;
-  srand48(getpid());
+  SEED_RAND (getpid ());
   for (i=0;i<N;i++) {
     do { n = drand(); d = drand(); e = ABS(n)/ABS(d); }
     /* smallest normalized is 2^(-1022), largest is 2^(1023)*(2-2^(-52)) */
     while (e>=MAXNORM || e<MINNORM);
-    check4(n, d, rand() % 4, 53, 0.0);
+    check4(n, d, LONG_RAND() % 4, 53, 0.0);
   }
 #endif
 
