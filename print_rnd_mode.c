@@ -4,7 +4,7 @@
 #include "mpfr.h"
 
 char *
-print_rnd_mode(unsigned char rnd_mode)
+mpfr_print_rnd_mode(unsigned char rnd_mode)
 {
   switch (rnd_mode)
     {
