@@ -378,7 +378,7 @@ ck(ap, 1, 20);
 	  c2 = 1<<(sh-1);
 	}
 	else /* no bit to truncate */
-	  { cc = bp[--k]; c2 = 1<<(mp_bits_per_limb-1); }
+	  { if (k) cc = bp[--k]; else cc = 0; c2 = 1<<(mp_bits_per_limb-1); }
 #ifdef DEBUG2
 printf("cc=%lu c2=%lu k=%u\n",cc,c2,k);
 #endif
