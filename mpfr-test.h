@@ -48,6 +48,12 @@ double Ulp _PROTO ((double));
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 #define ABS(x) (((x)>0) ? (x) : -(x))
 
+/* generates a random long int, a random double,
+   and corresponding seed initializing */
+#define LONG_RAND lrand48
+#define DBL_RAND  drand48
+#define SEED_RAND srand48
+
 /* generate a random double using the whole range of possible values,
    including denormalized numbers, NaN, infinities, ... */
 double
@@ -57,12 +63,16 @@ drand (void)
 
   i = (int*) &d;
   d = 1.0;
-  if (i[0]==0) expo=1; /* little endian, exponent in i[1] */
-  else expo=0;
-  i[0] = lrand48();
-  i[1] = lrand48();
-  while (i[expo]>=2146435072) i[expo] = lrand48(); /* avoids NaNs */
-  if (lrand48()%2 && !isnan(d)) d=-d; /* generates negative numbers */
+  if (i[0] == 0)
+    expo = 1; /* little endian, exponent in i[1] */
+  else
+    expo = 0;
+  i[0] = LONG_RAND();
+  i[1] = LONG_RAND();
+  while (i[expo] >= 2146435072)
+    i[expo] = LONG_RAND(); /* avoids NaNs */
+  if ((LONG_RAND() % 2) && !isnan (d))
+    d = -d; /* generates negative numbers */
   return d;
 }
 
