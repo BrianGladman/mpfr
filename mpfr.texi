@@ -1370,7 +1370,7 @@ These types and
 functions were mainly designed for the implementation of @code{mpfr},
 but may be useful for users too.
 However no upward compatibility is guaranteed.
-You need to include @code{mpfr-impl.h} to use them.
+You may need to include @code{mpfr-impl.h} to use them.
 
 The @code{mpfr_t} type consists of four fields.
 The @code{_mpfr_prec} field is used to store the precision of
@@ -1430,6 +1430,17 @@ E(b)-@var{err} where E(b) is the exponent of
 @var{b}, returns 1 if one is able to round exactly @var{x} to precision 
 @var{prec} with direction @var{rnd2},
    and 0 otherwise. This function @strong{does not modify} its arguments.
+@end deftypefun
+
+@deftypefun mp_exp_t mpfr_get_exp (mpfr_srcptr @var{x})
+Get the exponent of @var{x}, assuming that @var{x} is a non-zero real
+number.
+@end deftypefun
+
+@deftypefun int mpfr_set_exp (mpfr_ptr @var{x}, mp_exp_t @var{e})
+Set the exponent of @var{x} if @var{e} is in the current exponent range,
+and return 0; otherwise, return 1. If @var{x} is not a real number or is
+equal to zero, nothing visible happens.
 @end deftypefun
 
 @node Contributors, References, Floating-point Functions, Top

@@ -141,6 +141,8 @@ int mpfr_init _PROTO ((mpfr_ptr));
 int mpfr_round_prec _PROTO ((mpfr_ptr, mp_rnd_t, mp_prec_t));
 int mpfr_can_round _PROTO ((mpfr_ptr, mp_exp_t, mp_rnd_t, mp_rnd_t,
 			    mp_prec_t));
+mp_exp_t mpfr_get_exp _PROTO ((mpfr_srcptr));
+int mpfr_set_exp _PROTO ((mpfr_ptr, mp_exp_t));
 int mpfr_set_d _PROTO ((mpfr_ptr, double, mp_rnd_t)); 
 int mpfr_set_z _PROTO ((mpfr_ptr, mpz_srcptr, mp_rnd_t)); 
 void mpfr_set_nan _PROTO ((mpfr_ptr));
