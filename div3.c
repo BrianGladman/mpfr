@@ -26,15 +26,15 @@ mpfr_div3 (mpfr_ptr r, mpfr_srcptr u, mpfr_srcptr v, unsigned char rnd_mode)
 
   if (FLAG_NAN(u) || FLAG_NAN(v)) { SET_NAN(r); return; }
   
-  usize = ABSSIZE(u); 
-  vsize = ABSSIZE(v); 
+  usize = (PREC(u) - 1)/BITS_PER_MP_LIMB + 1; 
+  vsize = (PREC(v) - 1)/BITS_PER_MP_LIMB + 1; 
   sign_quotient = (SIGN(u) == SIGN(v) ? 1 : -1); 
   prec = PREC(r);
 
   if (!NOTZERO(v))
     vsize = 1 / v->_mp_d[vsize - 1];    /* Gestion des infinis ? */
   
-  if (MANT(u)[(PREC(u)-1)/BITS_PER_MP_LIMB] == 0)
+  if (!NOTZERO(v))
     {
       r->_mp_exp = 0;
       MPN_ZERO(r->_mp_d, r->_mp_size); 
@@ -87,7 +87,7 @@ mpfr_div3 (mpfr_ptr r, mpfr_srcptr u, mpfr_srcptr v, unsigned char rnd_mode)
       rp = (mp_ptr) TMP_ALLOC (rrsize * BYTES_PER_MP_LIMB); 
 
       if (vsize >= rsize) { 
-	MPN_COPY (tmp, vp, rsize);
+	MPN_COPY (tmp, vp + vsize - rsize, rsize);
       }
       else { 
 	MPN_COPY (tmp + rsize - vsize, vp, vsize);
@@ -95,7 +95,7 @@ mpfr_div3 (mpfr_ptr r, mpfr_srcptr u, mpfr_srcptr v, unsigned char rnd_mode)
       }
 
       if (usize >= rsize) { 
-	MPN_COPY (tp, up, rsize);
+	MPN_COPY (tp, up + usize - rsize, rsize);
       }
       else {
 	MPN_COPY (tp + rsize - usize, up, usize); 
@@ -217,4 +217,3 @@ mpfr_div3 (mpfr_ptr r, mpfr_srcptr u, mpfr_srcptr v, unsigned char rnd_mode)
   
   TMP_FREE (marker);
 }
-
