@@ -50,7 +50,6 @@ MA 02111-1307, USA. */
 
 void tests_rand_start _PROTO ((void));
 void tests_rand_end   _PROTO ((void));
-void randseed         _PROTO ((unsigned int));
 
 void
 tests_start_mpfr (void)
@@ -206,17 +205,6 @@ randlimb (void)
   _gmp_rand (&limb, RANDS, GMP_NUMB_BITS);
   return limb;
 }
-
-void
-randseed (unsigned int s)
-{
-  mpz_t t;
-
-  mpz_init_set_ui (t, s);
-  gmp_randseed (RANDS, t);
-  mpz_clear (t);
-}
-
 
 /* returns ulp(x) for x a 'normal' double-precision number */
 double

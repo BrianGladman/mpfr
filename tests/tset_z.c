@@ -78,7 +78,6 @@ main (int argc, char *argv[])
   tests_start_mpfr ();
 
   check_large();
-  randseed (time(NULL));
   check(0, 0);
   for (j=0; j<1000000; j++)
     check(randlimb () & LONG_MAX, randlimb () % 4);

@@ -47,8 +47,6 @@ main (int argc, char *argv[])
 
   mpfr_init2(x, 100);
 
-  randseed (time(NULL));
-
   N = (argc==1) ? 1000000 : atoi(argv[1]);
 
   for (k = 1; k <= N; k++)
