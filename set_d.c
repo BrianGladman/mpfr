@@ -28,7 +28,7 @@ MA 02111-1307, USA. */
 
 /* extracts the bits of d in rp[0..n-1] where n=ceil(53/BITS_PER_MP_LIMB).
    Assumes d is neither 0 nor NaN nor Inf. */
-static int
+static long
 __gmpfr_extract_double (mp_ptr rp, double d)
      /* e=0 iff BITS_PER_MP_LIMB=32 and rp has only one limb */
 {

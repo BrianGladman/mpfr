@@ -132,7 +132,7 @@ main (int argc, char *argv[])
   d = mpfr_get_ld (x, GMP_RNDN);
   check_set_get (d, x);
 
-  /* checks the largest power of two */
+  /* checks the largest power of two */  
   d = 1.0; while (d < LDBL_MAX / 2.0) d += d;
   check_set_get (d, x);
   check_set_get (-d, x);
