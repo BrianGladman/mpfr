@@ -36,31 +36,12 @@ MA 02111-1307, USA. */
 # include <gmp.h>
 #endif
 
-/* Macros to detect STDC, GCC and GLIBC */
-#if defined(__STDC_VERSION__)
-# define __MPFR_STDC(version) (__STDC_VERSION__>=(version))
-#elif defined(__STDC__)
-# define __MPFR_STDC(version) (0 == (version))
-#else
-# define __MPFR_STDC(version) 0
-#endif
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-# define __MPFR_GNUC(a, i) ((__GNUC__<<16)+__GNUC_MINOR__>=((a)<<16)+(i))
-#else
-# define __MPFR_GNUC(a, i) 0
-#endif
-#if defined(__GLIBC__) && defined(__GLIBC_MINOR__)
-# define __MPFR_GLIBC(a, i) ((__GLIBC__<<16)+__GLIBC_MINOR__>=((a)<<16)+(i))
-#else
-# define __MPFR_GLIBC(a, i) 0
-#endif
-
 /* Check if stdio.h is included or if the user wants to use FILE */
 #if defined (_GMP_H_HAVE_FILE) || defined (MPFR_USE_FILE)
 # define _MPFR_H_HAVE_FILE 1
 #endif
 
-/* Check if stdint.h is included or if the user wants to use intmax_t */
+/* Check if stdint.h/inttypes.h is included or if the user wants to use intmax_t */
 #if (defined (INTMAX_C) && defined (UINTMAX_C)) || defined (MPFR_USE_INTMAX_T)
 # define _MPFR_H_HAVE_INTMAX_T 1
 #endif

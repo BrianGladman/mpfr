@@ -69,6 +69,31 @@ MA 02111-1307, USA. */
 # define strncasecmp mpfr_strncasecmp
 #endif
 
+/* Macros to detect STDC, GCC, GLIBC and GMP version */
+#if defined(__STDC_VERSION__)
+# define __MPFR_STDC(version) (__STDC_VERSION__>=(version))
+#elif defined(__STDC__)
+# define __MPFR_STDC(version) (0 == (version))
+#else
+# define __MPFR_STDC(version) 0
+#endif
+
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# define __MPFR_GNUC(a, i) (MPFR_VERSION_NUM(__GNUC__,__GNUC_MINOR__,0)>=MPFR_VERSION_NUM(a,i,0))
+#else
+# define __MPFR_GNUC(a, i) 0
+#endif
+#if defined(__GLIBC__) && defined(__GLIBC_MINOR__)
+# define __MPFR_GLIBC(a, i) (MPFR_VERSION_NUM(__GLIBC__,__GLIBC_MINOR__,0)>=MPFR_VERSION_NUM(a,i,0))
+#else
+# define __MPFR_GLIBC(a, i) 0
+#endif
+#if defined(__GNU_MP_VERSION)&&defined(__GNU_MP_VERSION_MINOR)&&defined(__GNU_MP_VERSION_PATCHLEVEL)
+# define __MPFR_GMP(a, b, c) (MPFR_VERSION_NUM(__GNU_MP_VERSION,__GNU_MP_VERSION_MINOR,__GNU_MP_VERSION_PATCHLEVEL) >= MPFR_VERSION_NUM(a,b,c))
+#else
+# define __MPFR_GMP(a, b, c) 0
+#endif
+
 /* Check GMP */
 #if GMP_NAIL_BITS != 0
 # error "MPFR doesn't support nonzero values of GMP_NAIL_BITS"
