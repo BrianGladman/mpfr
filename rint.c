@@ -146,9 +146,8 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
           MPN_COPY (rp, up + (un - rn), rn); /* r != u */
           if (rnd_away < 0)
             {
-              /* This is a rounding to nearest mode.
+              /* This is a rounding to nearest mode (GMP_RNDN or GMP_RNDNA).
                  Decide the rounding direction here. */
-	      /* FIXME: How rnd_mode could be != of RNDN if rnd_away<0 ? */
               if (rnd_mode == GMP_RNDN &&
                   (rp[0] & (MPFR_LIMB_ONE << sh)) == 0)
                 { /* halfway cases rounded towards zero */
