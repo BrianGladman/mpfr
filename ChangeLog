@@ -1,4 +1,17 @@
+2002-04-04  Vincent Lefevre  <lefevre@greux.loria.fr>
+
+	* configure.in:
+	Removed check for extended precision, as no longer used.
+
+2002-04-04  Paul Zimmermann  <zimmerma@greux.loria.fr>
+
+	* tests/tget_d.c: added check for denormalized numbers
+
+	* TODO: added new functions to implement
+
 2002-04-03  Vincent Lefevre  <lefevre@greux.loria.fr>
+
+	* ChangeLog: Update for the next pre-release.
 
 	* configure.in: -ffloat-store is a gcc option.
 
