@@ -24,12 +24,13 @@ MA 02111-1307, USA. */
 
 #include "gmp.h"
 #include "gmp-impl.h"
+#include "mpfr.h"
 
 #define SQRT_LIMIT KARATSUBA_MUL_THRESHOLD /* must be at least 3, should be
 					      near from optimal */
 
 /* n must be even */
-int kara_sqrtrem(mp_limb_t *s, mp_limb_t *r, mp_limb_t *op, mp_size_t n)
+mp_size_t kara_sqrtrem(mp_limb_t *s, mp_limb_t *r, mp_limb_t *op, mp_size_t n)
 {
   if (n<SQRT_LIMIT) return mpn_sqrtrem(s, r, op, n);
   else {
