@@ -1,6 +1,5 @@
 Documentation:
 
-- update AUTHORS
 - add a description of the algorithms used + proof of correctness
 
 Installation:
@@ -13,19 +12,15 @@ Installation:
 
 New functions to implement:
 
+- those from LIA: missing secant, cosecant, cotangent (trigo/hyperbolic)
+
 Rounding:
 
 Efficiency:
 
 Miscellaneous:
 
-- change Library GPL to Lesser GPL, and mention INRIA and/or SPACES
-
 - rename mpf2mpfr.h to gmp-mpf2mpfr.h?
-
-- detect overflow/underflow in exponent (from Ben Hinkle <bhinkle4@juno.com>)
-
-- specify exponent size (suggestion from Ben Hinkle <bhinkle4@juno.com>)
 
 - add mpfr_get_ld for 'long double' [asked by J-C Fauge`re] ?
   (exists since K&R, but has not necessarily a greater precision than double)
@@ -49,11 +44,6 @@ i.e.0.10101011100001010011001101100101110011101110010001011000000000000000000000
 - use another scheme that sqrt(-1.0) in tests/tdiv.c and tests/tsqrt.c
 	to generate a NaN (for example under freebsd by default,
 	invalid, zerodivide and overflow generate exceptions)
-
-- detect overflows/underflows in addition/multiplication of ordinary numbers
-	(PUTOT Sylvie <sputot@aigle.saclay.cea.fr>, Tue, 20 Mar 2001)
-
-- check correctness of +/-0 - +/-0 with different rounding modes.
 
 - rewrite mpfr_get_str and mpfr_set_str to use mpn_get_str and mpn_set_str.
 	(Torbjorn Granlund <tege@swox.com>, 30 Jan 2002)
