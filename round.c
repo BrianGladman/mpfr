@@ -306,4 +306,5 @@ mpfr_can_round_raw(bp, bn, neg, err, rnd1, rnd2, prec)
     printf("rnd1=%d not yet implemented in mpfr_round2\n",rnd1);
     exit(1);
   }
+  return 0;
 }
