@@ -124,8 +124,8 @@ mpfr_round_raw(y, xp, xprec, negative, yprec, RND_MODE)
      Just add zeroes at the end */
   if (xsize < nw) { 
     MPN_COPY(y + nw - xsize, xp, xsize);
-    y[0] &= mask;
     MPN_ZERO(y, nw - xsize); /* PZ 27 May 99 */
+    y[0] &= mask;
     return 0; 
   }
   /* Patch hideux xp[0] &= ~((1UL << (BITS_PER_MP_LIMB - xrw)) - 1); */
@@ -150,10 +150,12 @@ mpfr_round(x, RND_MODE, prec)
 #endif
 {
   mp_limb_t *tmp; int carry; unsigned long nw; 
+  TMP_DECL(marker); 
 
   nw = prec / BITS_PER_MP_LIMB; 
   if (prec & (BITS_PER_MP_LIMB - 1)) nw++;
-  tmp = (mp_ptr) (*_mp_allocate_func) (nw * BYTES_PER_MP_LIMB);
+  TMP_MARK(marker); 
+  tmp = TMP_ALLOC (nw * BYTES_PER_MP_LIMB);
   carry = mpfr_round_raw(tmp, MANT(x), PREC(x), (SIGN(x)<0), prec, RND_MODE);
 
   if (carry)
@@ -163,10 +165,10 @@ mpfr_round(x, RND_MODE, prec)
       EXP(x)++; 
     }
 
-  (*_mp_free_func) (MANT(x), ABSSIZE(x) * BYTES_PER_MP_LIMB);
   if (SIGN(x)<0) { SIZE(x)=nw; CHANGE_SIGN(x); } else SIZE(x)=nw;
   PREC(x) = prec; 
-  MANT(x) = tmp; 
+  MPN_COPY(MANT(x), tmp, nw); 
+  TMP_FREE(marker); 
 }
 
 /* hypotheses : BITS_PER_MP_LIMB est une puissance de 2 
