@@ -89,7 +89,7 @@ checknan (double x, double y, mp_rnd_t rnd_mode, unsigned int px,
 #endif
   if (MPFR_IS_NAN(zz) == 0) { printf("Error, not an MPFR_NAN for xx = %1.20e, y = %1.20e\n", x, y); exit(1); }
   z2 = mpfr_get_d(zz);
-  if (!isnan(z2)) { printf("Error, not a NaN after conversion, xx = %1.20e yy = %1.20e\n", x, y); exit(1); }
+  if (!isnan(z2)) { printf("Error, not a NaN after conversion, xx = %1.20e yy = %1.20e, got %1.20e\n", x, y, z2); exit(1); }
 
   mpfr_clear(xx); mpfr_clear(yy); mpfr_clear(zz);
 }
