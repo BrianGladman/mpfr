@@ -34,8 +34,8 @@ MA 02111-1307, USA. */
 #define MPFR_LIMBS_PER_DOUBLE 4
 #endif
 
-int __mpfr_extract_double _PROTO ((mp_ptr, double, int));
-double __mpfr_scale2 _PROTO ((double, int));
+static int __mpfr_extract_double _PROTO ((mp_ptr, double, int));
+static double __mpfr_scale2 _PROTO ((double, int));
 
 #define NaN (0./0.) /* ensures a machine-independent NaN */
 #define Infp (1/0.)
@@ -51,15 +51,8 @@ double __mpfr_scale2 _PROTO ((double, int));
 #define _GMP_IEEE_FLOATS 0
 #endif
 
-int
-#if __STDC__
+static int
 __mpfr_extract_double (mp_ptr rp, double d, int e)
-#else
-__mpfr_extract_double (rp, d, e)
-     mp_ptr rp;
-     double d;
-     int e;
-#endif
      /* e=0 iff BITS_PER_MP_LIMB=32 and rp has only one limb */
 {
   long exp;
@@ -94,10 +87,10 @@ __mpfr_extract_double (rp, d, e)
     if (exp) 
       {
 #if BITS_PER_MP_LIMB == 64
-	manl = (((mp_limb_t) 1 << 63)
+	manl = ((MP_LIMB_T_ONE << 63)
 		| ((mp_limb_t) x.s.manh << 43) | ((mp_limb_t) x.s.manl << 11));
 #else
-	manh = ((mp_limb_t) 1 << 31) | (x.s.manh << 11) | (x.s.manl >> 21);
+	manh = (MP_LIMB_T_ONE << 31) | (x.s.manh << 11) | (x.s.manl >> 21);
 	manl = x.s.manl << 11;      
 #endif
       }
@@ -176,14 +169,8 @@ __mpfr_extract_double (rp, d, e)
 
 /* End of part included from gmp-2.0.2 */
 /* Part included from gmp temporary releases */
-double
-#if __STDC__
+static double
 __mpfr_scale2 (double d, int exp)
-#else
-__mpfr_scale2 (d, exp)
-     double d;
-     int exp;
-#endif
 {
 #if _GMP_IEEE_FLOATS
   {
