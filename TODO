@@ -12,3 +12,7 @@ J'ai quand meme laisse deux macros SIZ et SIZE selon qu'on affecte ou non.
 
 - in all functions that do rounding, return an int indicating if the result
   is exact (i.e. no bit was lost) or not (like in mpfr_div_ui)
+
+- rename mpfr_log2 into mpfr_const_log2 (since log2 exists in C,
+	mpfr_log2 should give the logarithm in base 2 of a number)
+  and mpfr_pi into mpfr_const_pi
