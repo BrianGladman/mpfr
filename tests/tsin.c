@@ -76,6 +76,7 @@ main (int argc, char *argv[])
       fprintf (stderr, "mpfr_sin(0.5, GMP_RNDD) failed\n");
       exit (1);
     }
+  mpfr_clear (x);
 
   test_generic (1, 100, 80);
 
