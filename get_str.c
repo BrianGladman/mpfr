@@ -80,10 +80,10 @@ char *mpfr_get_str(char *str, mp_exp_t *expptr, int base, size_t n,
     } 
     else {
        /* compute base^p with q bits and rounding towards zero */
-       mpfr_set_prec(b, q, rnd_mode);
+       mpfr_set_prec(b, q);
        if (p==0) mpfr_set(b, op, rnd_mode);
        else {
-	 mpfr_set_prec(a, q, rnd1); 
+	 mpfr_set_prec(a, q); 
 	 mpfr_ui_pow_ui(a, base, p, rnd1);
 	 /* now a is an approximation by default of base^p */
 	 if (neg) mpfr_div(b, op, a, rnd_mode);

@@ -45,9 +45,7 @@ void mpfr_sqrt(mpfr_ptr X, mpfr_srcptr a, unsigned char rnd_mode)
 #ifdef DEBUG
     printf("prec=%d q=%d err=%d\n",p,q,err);
 #endif
-    mpfr_set_prec(t, q, GMP_RNDU); 
-    mpfr_set_prec(x, q, GMP_RNDU); 
-    mpfr_set_prec(u, q, GMP_RNDU);
+    mpfr_set_prec(t, q); mpfr_set_prec(x, q); mpfr_set_prec(u, q);
     mpfr_set_ui(x, 1, GMP_RNDU);
     EXP(x) += e;
     n = (int) ceil(log((double) q)/log(2.0));
