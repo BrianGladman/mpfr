@@ -1,6 +1,6 @@
 /* Test file for mpfr_cmp_ui.
 
-Copyright 1999, 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright 1999, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -33,28 +33,28 @@ main (void)
 
   mpfr_init2(x, 53);
 
-  mpfr_set_str (x, "2.34763465", 10, GMP_RNDN);
+  mpfr_set_d (x, 2.34763465, GMP_RNDN);
   if (mpfr_cmp_d(x, 2.34763465)!=0) {
-    printf("Error in mpfr_cmp_d(%1.20f,%1.20f)\n",mpfr_get_d1 (x), 2.34763465);
-    mpfr_clear(x);
+    printf("Error in mpfr_cmp_d 2.34763465 and ");
+    mpfr_out_str(stdout, 10, 0, x, GMP_RNDN); putchar('\n');
     exit(1);
   }
   if (mpfr_cmp_d(x, 2.345)<=0) {
-    printf("Error in mpfr_cmp_d(%1.20f,%1.20f)\n",mpfr_get_d1 (x), 2.345);
-    mpfr_clear(x);
+    printf("Error in mpfr_cmp_d 2.345 and ");
+    mpfr_out_str(stdout, 10, 0, x, GMP_RNDN); putchar('\n');
     exit(1);
   }
   if (mpfr_cmp_d(x, 2.4)>=0) {
-    printf("Error in mpfr_cmp_d(%1.20f,%1.20f)\n",mpfr_get_d1 (x), 2.4);
-    mpfr_clear(x);
+    printf("Error in mpfr_cmp_d 2.4 and ");
+    mpfr_out_str(stdout, 10, 0, x, GMP_RNDN); putchar('\n');
     exit(1);
   }
 
   mpfr_set_ui (x, 0, GMP_RNDZ);
   mpfr_neg (x, x, GMP_RNDZ);
   if (mpfr_cmp_d (x, 0.0)) {
-    printf("Error in mpfr_cmp_d(%1.20f,%1.20f)\n",mpfr_get_d1 (x), 0.0);
-    mpfr_clear(x);
+    printf("Error in mpfr_cmp_d 0.0 and ");
+    mpfr_out_str(stdout, 10, 0, x, GMP_RNDN); putchar('\n');
     exit(1);
   }
 
@@ -62,7 +62,7 @@ main (void)
   mpfr_ui_div (x, 1, x, GMP_RNDU);
   if (mpfr_cmp_d (x, 0.0) == 0)
     {
-      printf ("Error in mpfr_cmp_ui (Inf, 0)\n");
+      printf ("Error in mpfr_cmp_d (Inf, 0)\n");
       exit (1);
     }
 

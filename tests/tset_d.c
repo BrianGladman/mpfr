@@ -1,6 +1,6 @@
 /* Test file for mpfr_set_d and mpfr_get_d.
 
-Copyright 1999, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -61,20 +61,23 @@ main (int argc, char *argv[])
    mpfr_set_d (x, 5.0, GMP_RNDN);
    if (mpfr_cmp_ui (x, 4))
      {
-       printf ("Error in tset_d: got %g instead of 4.0\n", mpfr_get_d1 (x));
+       printf ("Error in tset_d: expected 4.0, got ");
+       mpfr_print_binary (x); putchar('\n');
        exit (1);
      }
    mpfr_set_d (x, -5.0, GMP_RNDN);
    if (mpfr_cmp_si (x, -4))
      {
-       printf ("Error in tset_d: got %g instead of -4.0\n", mpfr_get_d1 (x));
+       printf ("Error in tset_d: expected -4.0, got ");
+       mpfr_print_binary (x); putchar('\n');
        exit (1);
      }
 
    mpfr_set_d (x, 9.84891017624509146344e-01, GMP_RNDU);
    if (mpfr_cmp_ui (x, 1))
      {
-       printf ("Error in tset_d: got %g instead of 1.0\n", mpfr_get_d1 (x));
+       printf ("Error in tset_d: expected 1.0, got ");
+       mpfr_print_binary (x); putchar('\n');
        exit (1);
      }
 
