@@ -802,7 +802,7 @@ and negative when @var{rop}<@var{op}.
 @end deftypefn
 
 @deftypefun int mpfr_init_set_str (mpfr_t @var{x}, char *@var{s}, int @var{base}, mp_rnd_t @var{rnd})
-Initialize @var{x} and sets its value from
+Initialize @var{x} and set its value from
 the string @var{s} in base @var{base}, 
 rounded to direction @var{rnd}.
 See @code{mpfr_set_str}.
