@@ -316,15 +316,15 @@ check_inexact ()
       exit (1);
     }
 
-  for (px=1; px<MAX_PREC; px++)
+  for (px=1; px<=MAX_PREC; px++)
     {
       mpfr_set_prec (x, px);
       mpfr_random (x);
-      for (pu=1; pu<MAX_PREC; pu++)
+      for (pu=1; pu<=MAX_PREC; pu++)
 	{
 	  mpfr_set_prec (u, pu);
 	  do { mpfr_random (u); } while (mpfr_cmp_ui (u, 0) == 0);
-	  for (py=1; py<MAX_PREC; py++)
+	  for (py=1; py<=MAX_PREC; py++)
 	    {
 	      mpfr_set_prec (y, py);
 	      mpfr_set_prec (z, py + pu);
