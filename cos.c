@@ -77,6 +77,9 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_SAVE_EXPO_DECL (expo);
   TMP_DECL (marker);
 
+  MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode), 
+		 ("y[%#R]=%R inexact=%d", y, y, inexact));
+
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(x)))
     {
       if (MPFR_IS_NAN(x) || MPFR_IS_INF(x))
@@ -90,8 +93,6 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	  return mpfr_set_ui (y, 1, GMP_RNDN);
         }
     }
-
-  MPFR_LOG_BEGIN (("x[%#R]=%R rnd=%d", x, x, rnd_mode));
 
   MPFR_SAVE_EXPO_MARK (expo);
 
@@ -170,14 +171,11 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       MPFR_TMP_INIT(sp, s, m, sm);
     }
   MPFR_ZIV_FREE (loop);
-  MPFR_SAVE_EXPO_FREE (expo);
-  inexact = mpfr_set (y, s, rnd_mode); 
-  /* FIXME: Dont' need check range? */
+  inexact = mpfr_set (y, s, rnd_mode);
 
-  TMP_FREE(marker);
+  TMP_FREE (marker);
   
-  MPFR_LOG_END (("y[%#R]=%R inexact=%d", y, y, inexact));
-
-  return inexact;
+  MPFR_SAVE_EXPO_FREE (expo);
+  MPFR_RET (mpfr_check_range (y, inexact, rnd_mode));
 }
 

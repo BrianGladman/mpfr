@@ -1159,22 +1159,34 @@ __MPFR_DECLSPEC extern mp_prec_t mpfr_log_prec;
 #define MPFR_LOG_MSG(x) MPFR_LOG_MSG2 x
 
 #define MPFR_LOG_BEGIN2(format, ...)                                         \
-  int __gmpfr_log_time = 0;                                                  \
   mpfr_log_current ++;                                                       \
   if ((MPFR_LOG_INPUT_F&mpfr_log_type)&&(mpfr_log_current<=mpfr_log_level))  \
     fprintf (mpfr_log_file, "%s:IN  "format"\n",__func__,__VA_ARGS__);       \
   if ((MPFR_LOG_TIME_F&mpfr_log_type)&&(mpfr_log_current<=mpfr_log_level))   \
     __gmpfr_log_time = mpfr_get_cputime ();
-#define MPFR_LOG_BEGIN(x) MPFR_LOG_BEGIN2 x
+#define MPFR_LOG_BEGIN(x)                                                    \
+  int __gmpfr_log_time = 0;                                                  \
+  MPFR_LOG_BEGIN2 x
 
 #define MPFR_LOG_END2(format, ...)                                           \
   if ((MPFR_LOG_TIME_F&mpfr_log_type)&&(mpfr_log_current<=mpfr_log_level))   \
-    fprintf (mpfr_log_file, "%s:TIM %dms\n", __func__,                       \
+    fprintf (mpfr_log_file, "%s:TIM %dms\n", __mpfr_log_fname,               \
 	     mpfr_get_cputime () - __gmpfr_log_time);                        \
   if ((MPFR_LOG_OUTPUT_F&mpfr_log_type)&&(mpfr_log_current<=mpfr_log_level)) \
-    fprintf (mpfr_log_file, "%s:OUT "format"\n",__func__,__VA_ARGS__);       \
+    fprintf (mpfr_log_file, "%s:OUT "format"\n",__mpfr_log_fname,__VA_ARGS__);\
   mpfr_log_current --;
-#define MPFR_LOG_END(x) MPFR_LOG_END2 x
+#define MPFR_LOG_END(x)                                                     \
+  static const char *__mpfr_log_fname = __func__;                           \
+  MPFR_LOG_END2 x
+
+#define MPFR_LOG_FUNC(begin,end)                                            \
+  static const char *__mpfr_log_fname = __func__;                           \
+  static void __mpfr_log_cleanup (int *time) {                              \
+    int __gmpfr_log_time = *time;                                           \
+    MPFR_LOG_END2 end; }                                                    \
+  int __gmpfr_log_time __attribute__ ((cleanup (__mpfr_log_cleanup)));      \
+  __gmpfr_log_time = 0;                                                     \
+  MPFR_LOG_BEGIN2 begin
 
 #else /* MPFR_USE_LOGGING */
 
@@ -1184,6 +1196,7 @@ __MPFR_DECLSPEC extern mp_prec_t mpfr_log_prec;
 #define MPFR_LOG_BEGIN(x)
 #define MPFR_LOG_END(x)
 #define MPFR_LOG_MSG(x)
+#define MPFR_LOG_FUNC(x,y)
 
 #endif /* MPFR_USE_LOGGING */
 
