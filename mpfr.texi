@@ -1223,13 +1223,14 @@ a positive value if @var{rop} is larger than @var{opx} * @var{opy} + @var{opz},
 and a negative value otherwise.
 @end deftypefun
 
-@deftypefun void mpfr_agm (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
+@deftypefun int mpfr_agm (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
 Set @var{rop} to the arithmetic-geometric mean of @var{op1} and @var{op2},
 rounded to the direction @var{rnd} with the precision of @var{rop}.
 The arithmetic-geometric mean is the common limit of the sequences
 u[n] and v[n], where u[0]=@var{op1}, v[0]=@var{op2}, u[n+1] is the
 arithmetic mean of u[n] and v[n], and v[n+1] is the geometric mean of
 u[n] and v[n].
+Return 0 iff the result is exact.
 @end deftypefun
 
 @deftypefun void mpfr_const_log2 (mpfr_t @var{rop}, mp_rnd_t @var{rnd})
