@@ -109,7 +109,7 @@ void check4(int N) {
 
   for(i=0;i<N;i++) {
     d=drand_log();
-    cur=check1(d,rand() % 4,0.0,0);
+    cur=check1(d,rand() % 4,0.0,1);
     if (cur<0)
       cur = -cur;
     if (cur > max)
@@ -244,6 +244,7 @@ int main(int argc, char *argv[]) {
     N=atoi(argv[1]);
     printf("Doing %d random tests in double precision\n", N);
     /*printf("GMP_RNDN : %i, GMP_RNDZ : %i,GMP_RNDU : %i,GMP_RNDD : %i\n",GMP_RNDN, GMP_RNDZ,GMP_RNDU, GMP_RNDD); */
+    check4(N);
   }
   else {
     check_worst_cases();
