@@ -21,6 +21,7 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
 #include <string.h> /* For memcmp if _GMP_IEEE_FLOAT == 0 */
+#include <float.h>  /* For DOUBLE_ISINF and DOUBLE_ISNAN */
 
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"

@@ -262,16 +262,15 @@ typedef unsigned long int  mpfr_uexp_t;
 #endif
 #define MPFR_LIMBS_PER_DOUBLE ((IEEE_DBL_MANT_DIG-1)/BITS_PER_MP_LIMB+1)
 
-/* Visual C++ doesn't support +1.0/.00, -1.0/0.0 and 0.0/0.0 */
+/* Visual C++ doesn't support +1.0/.00, -1.0/0.0 and 0.0/0.0
 #if defined(_MSC_VER) && defined(_WIN32) && (_MSC_VER >= 1200)
 # define DBL_POS_INF ((double)0x7ff0000000000000ull)
 # define DBL_NEG_INF ((double)0xfff0000000000000ull)
 # define DBL_NAN     ((double)0x7ff8000000000000ull)
-#else
-# define DBL_POS_INF ((double) 1.0/0.0)
-# define DBL_NEG_INF ((double)-1.0/0.0)
-# define DBL_NAN     ((double) 0.0/0.0)
-#endif
+#else */
+#define DBL_POS_INF ((double) 1.0/0.0)
+#define DBL_NEG_INF ((double)-1.0/0.0)
+#define DBL_NAN     ((double) 0.0/0.0)
 
 /* for x of type ieee_double_extract */
 #if _GMP_IEEE_FLOATS
@@ -285,8 +284,8 @@ typedef union ieee_double_extract Ieee_double_extract;
 			 ((((Ieee_double_extract *)&(x))->s.manl != 0) || \
                          (((Ieee_double_extract *)&(x))->s.manh != 0)))
 #else
-# define DOUBLE_ISINF(x) (((x)==DBL_POS_INF)||((x)==DBL_NEG_INF))
-# define DOUBLE_ISNAN(x) ((x)!=(x))
+# define DOUBLE_ISINF(x) ((x) > DBL_MAX || (x) < -DBL_MAX)
+# define DOUBLE_ISNAN(x) ((x) != (x))
 #endif
 
 
