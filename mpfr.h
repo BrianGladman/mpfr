@@ -1,6 +1,6 @@
 /* mpfr.h -- Include file for mpfr.
 
-Copyright 1999, 2000, 2001, 2002 Free Software Foundation, Inc.
+Copyright 1999, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -23,9 +23,17 @@ MA 02111-1307, USA. */
 #define __MPFR_H
 
 /* check if stdio.h is included */
-#if defined (FILE) || defined (H_STDIO) || defined (_H_STDIO) \
- || defined (_STDIO_H) || defined (_STDIO_H_) || defined (__STDIO_H__) \
- || defined (_STDIO_INCLUDED) || defined (__dj_include_stdio_h_)
+#if defined (FILE)                                              \
+  || defined (H_STDIO)                                          \
+  || defined (_H_STDIO)               /* AIX */                 \
+  || defined (_STDIO_H)               /* glibc, Sun, SCO */     \
+  || defined (_STDIO_H_)              /* BSD, OSF */            \
+  || defined (__STDIO_H)              /* Borland */             \
+  || defined (__STDIO_H__)            /* IRIX */                \
+  || defined (_STDIO_INCLUDED)        /* HPUX */                \
+  || defined (__dj_include_stdio_h_)  /* DJGPP */               \
+  || defined (_FILE_DEFINED)          /* Microsoft */           \
+  || defined (__STDIO__)              /* Apple MPW MrC */
 #define _MPFR_H_HAVE_FILE 1
 #endif
 
