@@ -8,9 +8,10 @@
    "make install", you'll need to manually install some GMP header 
    files needed by MPFR. In the GMP source directory, type:
 
-   cp config.h gmp-impl.h gmp-mparam.h longlong.h DIR/include
+   cp config.h gmp-impl.h gmp-mparam.h longlong.h stack-alloc.h DIR/include
 
-   where DIR is the directory where you have installed GMP.
+   where DIR is the directory where you have installed GMP. (The file
+   stack-alloc.h is needed when gmp is configured with --disable-alloca.)
 
 1. type "./configure --help", to see the options you have to choose
    For most users, "./configure --with-gmp=DIR" will suffice, where
