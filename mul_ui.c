@@ -28,7 +28,7 @@ MA 02111-1307, USA. */
 
 #define ONE ((mp_limb_t) 1)
 
-void
+int
 #if __STDC__
 mpfr_mul_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 #else
@@ -39,16 +39,16 @@ mpfr_mul_ui (y, x, u, rnd_mode)
      mp_rnd_t rnd_mode;
 #endif
 {
-  mp_limb_t carry, *my, *old_my, *my2;
-  unsigned long xsize, ysize, cnt, dif, ex, c;
-  long int sh;
+  mp_limb_t *my, *old_my;
+  unsigned long xn, yn, cnt, c;
+  int inexact;
   TMP_DECL(marker);
 
   if (MPFR_IS_NAN(x))
     {
       MPFR_CLEAR_FLAGS(y);
       MPFR_SET_NAN(y);
-      return;
+      return 1; /* a NaN is always inexact */
     }
 
   if (MPFR_IS_INF(x)) 
@@ -57,104 +57,68 @@ mpfr_mul_ui (y, x, u, rnd_mode)
       if (u) 
 	{ 
 	  MPFR_SET_INF(y); 
-	  if (MPFR_SIGN(y) != MPFR_SIGN(x)) { MPFR_CHANGE_SIGN(y); }
-	  return; 
+	  if (MPFR_SIGN(y) != MPFR_SIGN(x))
+	    MPFR_CHANGE_SIGN(y);
+	  return 0; /* infinity is exact */
 	}
-      else { MPFR_SET_NAN(y); return; }
+      else /* 0 * infinity */
+	{
+	  MPFR_SET_NAN(y);
+	  return 1; /* NaN is inexact */
+	}
     }
 
   if (MPFR_IS_ZERO(x) || !u) 
     {
-      MPFR_CLEAR_FLAGS(y); MPFR_SET_ZERO(y); return; 
+      MPFR_CLEAR_FLAGS(y);
+      MPFR_SET_ZERO(y);
+      return 0; /* zero is exact */
     }
 
-  MPFR_CLEAR_FLAGS(y); 
+  MPFR_CLEAR_FLAGS(y);
+
+  if (u == 1)
+    return mpfr_set (y, x, rnd_mode);
 
   TMP_MARK(marker);
-  my = MPFR_MANT(y); ex = MPFR_EXP(x);  
-  ysize = (MPFR_PREC(y) - 1) / BITS_PER_MP_LIMB + 1;
-  xsize = (MPFR_PREC(x) - 1) / BITS_PER_MP_LIMB + 1;
+  my = MPFR_MANT(y);
+  yn = (MPFR_PREC(y) - 1) / BITS_PER_MP_LIMB + 1;
+  xn = (MPFR_PREC(x) - 1) / BITS_PER_MP_LIMB + 1;
 
   old_my = my;
 
-  if (ysize < xsize)
+  if (yn < xn + 1)
+    my = (mp_ptr) TMP_ALLOC ((xn + 1) * BYTES_PER_MP_LIMB);
+
+  my[xn] = mpn_mul_1 (my, MPFR_MANT(x), xn, u);
+  
+  /* x * u is stored in my[xn], ..., my[0] */
+
+  /* since the case u=1 was treated above, we have u >= 2, thus
+     my[xn] >= 1 since x was msb-normalized */
+  ASSERT_ALWAYS(my[xn] != 0);
+  count_leading_zeros(cnt, my[xn]);
+  mpn_lshift (my, my, xn + 1, cnt);
+
+  /* now my[xn], ..., my[0] is msb-normalized too, and has at most
+     PREC(x) + (BITS_PER_MP_LIMB - cnt) non-zero bits */
+
+  c = mpfr_round_raw (old_my, my, (xn + 1) * BITS_PER_MP_LIMB,
+		      (MPFR_SIGN(x) < 0), MPFR_PREC(y), rnd_mode, &inexact);
+
+  MPFR_EXP(y) = MPFR_EXP(x) + BITS_PER_MP_LIMB - cnt; 
+
+  if (c) /* rounded result is 1.0000000000000000... */
     {
-      my = (mp_ptr) TMP_ALLOC (xsize * BYTES_PER_MP_LIMB);
-      dif = 0;
-    }
-  else
-    {
-      dif = ysize - xsize;
-      MPN_ZERO (my, dif);
-    }
-
-  carry = mpn_mul_1 (my + dif, MPFR_MANT(x), xsize, u);
-
-  /* WARNING: count_leading_zeros is undefined for carry=0 */
-  if (carry)
-    count_leading_zeros(cnt, carry);
-  else
-    cnt = BITS_PER_MP_LIMB;
-  /* BITS_PER_MP_LIMB - cnt is the number of significant bits in the carry */
-
-  /* the first (BITS_PER_MP_LIMB-cnt) bits of the result are in carry,
-     the remaining bits are in my[dif+xsize-1] .. my[dif] */
-
-  /* Warning: if all significant bits are in the carry, one has to 
-     be careful */
-  if (cnt + MPFR_PREC(y) < BITS_PER_MP_LIMB)
-    {
-      /* Quick 'n dirty */
-
-      if (xsize > ysize) {
-	my2 = (mp_ptr) TMP_ALLOC ((xsize + 1) * BYTES_PER_MP_LIMB);
-	my2[xsize] = mpn_lshift(my2, my, xsize, cnt) 
-	  | (carry << (cnt ? BITS_PER_MP_LIMB - cnt : 0));
-      }
-      else { 
-	my2 = (mp_ptr) TMP_ALLOC ((ysize + 1) * BYTES_PER_MP_LIMB);
-	my2[ysize] = mpn_lshift(my2, my, ysize, cnt)
-	  | (carry << (cnt ? BITS_PER_MP_LIMB - cnt : 0)); 
-      }      
-
-      my = my2; ex += BITS_PER_MP_LIMB - cnt;
-      carry = 0; cnt = BITS_PER_MP_LIMB;
+      old_my[yn-1] |= ONE << (BITS_PER_MP_LIMB - 1);
+      MPFR_EXP(y) ++;
     }
 
-  /* as we already have (BITS_PER_MP_LIMB-cnt) bits in carry,
-     we need only prec(y) - (BITS_PER_MP_LIMB-cnt) more bits
-     from those in my[dif+xsize-1] .. my[dif],
-     and we want to store them in my[ysize-1] .. my[ysize].
-     Warning: the number of limbs used by x and the lower part
-     of y may differ */
-  sh = ysize - (MPFR_PREC(y) + cnt - 1) / BITS_PER_MP_LIMB;
-  c = mpfr_round_raw (my + sh, my + dif, MPFR_PREC(x), (MPFR_SIGN(x) < 0), 
-                      MPFR_PREC(y) - BITS_PER_MP_LIMB + cnt, rnd_mode, NULL);
-
-  /* now the high (BITS_PER_MP_LIMB-cnt) bits of the result are in carry,
-     and the remaining (yprec-BITS_PER_MP_LIMB+cnt) ones in
-     my[ysize-1] .. my[sh] */
-
-  /* If cnt = 1111111111111 and c = 1 we shall get depressed */
-  if (c && (carry == (ONE << (cnt ? BITS_PER_MP_LIMB - cnt : 0)) 
-	    - 1))
-    {
-      cnt--; 
-      mpn_rshift(my, my, ysize, BITS_PER_MP_LIMB - cnt); 
-      my[ysize - 1] |= ((mp_limb_t) 1) << (BITS_PER_MP_LIMB - 1);
-    }
-  else
-    {
-      /* Warning: mpn_rshift is undefined for shift=0 */
-      if (cnt != BITS_PER_MP_LIMB)
-	mpn_rshift(my, my, ysize, BITS_PER_MP_LIMB - cnt);
-      my[ysize - 1] |= carry << cnt;
-    }
-  MPFR_EXP(y) = ex + BITS_PER_MP_LIMB - cnt; 
-  if (ysize < xsize)
-    MPN_COPY(old_my, my, ysize);
   /* set sign */
   if (MPFR_SIGN(y) * MPFR_SIGN(x) < 0)
     MPFR_CHANGE_SIGN(y);
+
   TMP_FREE(marker);
+
+  return inexact;
 }
