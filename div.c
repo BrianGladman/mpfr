@@ -64,7 +64,8 @@ mpfr_div (q, u, v, rnd_mode)
   mp_rnd_t rnd_mode1, rnd_mode2; 
 
   mp_size_t err, k;
-  int inex, sh, can_round, can_round2, near, sign_quotient;
+  mp_limb_t near; 
+  int inex, sh, can_round, can_round2, sign_quotient;
   unsigned int cc = 0, rw; 
 
   TMP_DECL (marker);
@@ -381,11 +382,14 @@ mpfr_div (q, u, v, rnd_mode)
   if (qp[qsize]) 
     /* Hack : qp[qsize] is 0, 1 or 2, hence if not 0, = 2^(qp[qsize] - 1). */
     {
-      mpn_rshift(qp, qp, qsize, qp[qsize]);
+      near = mpn_rshift(qp, qp, qsize, qp[qsize]);
       qp[qsize - 1] |= MP_LIMB_T_HIGHBIT; qexp += qp[qsize]; 
     }
   else
-    if (sh) { mpn_lshift(qp, qp, qsize, sh); qexp -= sh; }
+    {
+      near = 0; 
+      if (sh) { mpn_lshift(qp, qp, qsize, sh); qexp -= sh; }
+    }
   
   cc = mpfr_round_raw_generic(qp, qp, err, (sign_quotient == -1 ? 1 : 0),
 			      MPFR_PREC(q), rnd_mode, &inex, 1);      
@@ -411,7 +415,11 @@ mpfr_div (q, u, v, rnd_mode)
       if (inex == 0) 
 	{
 	  k = rsize - 1; 
-	  while (k >= 0) { if (rp[k]) break; k--; }
+
+	  /* If a bit has been shifted out during normalization, hence 
+	     the remainder is nonzero. */
+	  if (!near) 
+	    while (k >= 0) { if (rp[k]) break; k--; }
 
 	  if (k >= 0) /* Remainder is nonzero. */ 
 	    {
@@ -432,7 +440,11 @@ mpfr_div (q, u, v, rnd_mode)
 				     || inex == -MPFR_EVEN_INEX))
 	  {
 	    k = rsize - 1; 
-	    while (k >= 0) { if (rp[k]) break; k--; }
+
+	  /* If a bit has been shifted out during normalization, hence 
+	     the remainder is nonzero. */
+	    if (!near)
+	      while (k >= 0) { if (rp[k]) break; k--; }
 	    
 	    if (k >= 0) /* In fact the quotient is larger than expected */
 	      {
