@@ -76,12 +76,7 @@ dnl ------------------------------------------------------------
 AC_DEFUN(MPFR_CONFIGS,
 [
 AC_REQUIRE([AC_OBJEXT])
-
-case $host in
-	*-*-solaris*)
-		LM9X="-lm9x"
-		;;
-esac
+AC_REQUIRE([MPFR_CHECK_LIBM])
 
 # CPU-dependent objects for the test programs
 case $host in
@@ -124,13 +119,12 @@ AC_CHECK_HEADERS(sys/fpu.h)
 dnl Check for fesetround
 AC_CACHE_CHECK([for fesetround], mpfr_cv_have_fesetround, [
 saved_LIBS="$LIBS"
-LIBS="$LIBS $LM9X"
+LIBS="$LIBS $MPFR_LIBM"
 AC_TRY_LINK([#include <fenv.h>], [fesetround(FE_TONEAREST);],
   mpfr_cv_have_fesetround=yes, mpfr_cv_have_fesetround=no)
 LIBS="$saved_LIBS"
 ])
 if test "$mpfr_cv_have_fesetround" = "yes"; then
-  LIBS="$LIBS $LM9X"
   AC_DEFINE(MPFR_HAVE_FESETROUND,1,[Define if you have the `fesetround' function via the <fenv.h> header file.])
 fi
 
@@ -160,6 +154,8 @@ dnl the double-rounding problem (x86 processors still have to be set to the
 dnl IEEE-754 compatible rounding mode).
 if test -n "$GCC"; then
   AC_CACHE_CHECK([for gcc float-conversion bug], mpfr_cv_gcc_floatconv_bug, [
+  saved_LIBS="$LIBS"
+  LIBS="$LIBS $MPFR_LIBM"
   AC_TRY_RUN([
 #include <float.h>
 #ifdef MPFR_HAVE_FESETROUND
@@ -186,6 +182,7 @@ int main()
   ], [mpfr_cv_gcc_floatconv_bug="no"],
      [mpfr_cv_gcc_floatconv_bug="yes, use -ffloat-store"],
      [mpfr_cv_gcc_floatconv_bug="cannot test, use -ffloat-store"])
+  LIBS="$saved_LIBS"
   ])
   if test "$mpfr_cv_gcc_floatconv_bug" != "no"; then
     CFLAGS="$CFLAGS -ffloat-store"
@@ -254,6 +251,7 @@ dnl  use DOUBLE macros when sizeof(double)==sizeof(long double).
 AC_DEFUN(MPFR_C_LONG_DOUBLE_FORMAT,
 [AC_REQUIRE([AC_PROG_CC])
 AC_REQUIRE([AC_PROG_AWK])
+AC_REQUIRE([AC_OBJEXT])
 AC_CACHE_CHECK([format of \`long double' floating point],
                 mpfr_cv_c_long_double_format,
 [mpfr_cv_c_long_double_format=unknown
@@ -424,6 +422,40 @@ case $mpfr_cv_c_long_double_format in
     ;;
   *) 
     AC_MSG_WARN([oops, unrecognised float format: $mpfr_cv_c_long_double_format])
+    ;;
+esac
+])
+
+
+dnl  MPFR_CHECK_LIBM
+dnl  ---------------
+dnl  Determine a math library -lm to use.
+
+AC_DEFUN(MPFR_CHECK_LIBM,
+[AC_REQUIRE([AC_CANONICAL_HOST])
+AC_SUBST(MPFR_LIBM,'')
+case $host in
+  *-*-beos* | *-*-cygwin* | *-*-pw32*)
+    # According to libtool AC_CHECK_LIBM, these systems don't have libm
+    ;;
+  *-*-hpux*)
+    # -lM means something subtly different to -lm, SVID style error handling
+    # or something.  FIXME: Why exactly do we want this?
+    AC_CHECK_LIB(M, main, MPFR_LIBM="-lM")
+    ;;
+  *-*-solaris*)
+    # On Solaris the math functions new in C99 are in -lm9x.
+    # FIXME: Do we need -lm9x as well as -lm, or just instead of?
+    AC_CHECK_LIB(m9x, main, MPFR_LIBM="-lm9x")
+    AC_CHECK_LIB(m,   main, MPFR_LIBM="$MPFR_LIBM -lm")
+    ;;
+  *-ncr-sysv4.3*)
+    # FIXME: What does -lmw mean?  Libtool AC_CHECK_LIBM does it this way.
+    AC_CHECK_LIB(mw, _mwvalidcheckl, MPFR_LIBM="-lmw")
+    AC_CHECK_LIB(m, main, MPFR_LIBM="$MPFR_LIBM -lm")
+    ;;
+  *)
+    AC_CHECK_LIB(m, main, MPFR_LIBM="-lm")
     ;;
 esac
 ])
