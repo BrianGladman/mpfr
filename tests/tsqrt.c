@@ -47,7 +47,6 @@ void check3(a, rnd_mode, Q) double a; unsigned char rnd_mode; double Q;
   mpfr_set_machine_rnd_mode(rnd_mode);
 #endif
   mpfr_sqrt(q, q, rnd_mode);
-mpfr_out_str(stdout, 16, 16, q, GMP_RNDN); putchar('\n');
   if (ck==0) Q = sqrt(a);
   else {
     if (Q != sqrt(a)) {
