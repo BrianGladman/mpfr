@@ -24,8 +24,8 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-int
+void
 mpfr_init (mpfr_ptr x)
 {
-  return mpfr_init2 (x, __mpfr_default_fp_bit_precision);
+  mpfr_init2 (x, __mpfr_default_fp_bit_precision);
 }

@@ -136,8 +136,8 @@ int mpfr_overflow_p _PROTO ((void));
 int mpfr_nanflag_p _PROTO ((void));
 int mpfr_inexflag_p _PROTO ((void));
 
-int mpfr_init2 _PROTO ((mpfr_ptr, mp_prec_t));
-int mpfr_init _PROTO ((mpfr_ptr));
+void mpfr_init2 _PROTO ((mpfr_ptr, mp_prec_t));
+void mpfr_init _PROTO ((mpfr_ptr));
 int mpfr_round_prec _PROTO ((mpfr_ptr, mp_rnd_t, mp_prec_t));
 int mpfr_can_round _PROTO ((mpfr_ptr, mp_exp_t, mp_rnd_t, mp_rnd_t,
 			    mp_prec_t));
@@ -205,7 +205,7 @@ int mpfr_mul_2ui _PROTO((mpfr_ptr, mpfr_srcptr, unsigned long int, mp_rnd_t));
 int mpfr_div_2ui _PROTO((mpfr_ptr, mpfr_srcptr, unsigned long int, mp_rnd_t));
 int mpfr_mul_2si _PROTO((mpfr_ptr, mpfr_srcptr, long int, mp_rnd_t));
 int mpfr_div_2si _PROTO((mpfr_ptr, mpfr_srcptr, long int, mp_rnd_t));
-int mpfr_set_prec _PROTO((mpfr_ptr, mp_prec_t));
+void mpfr_set_prec _PROTO((mpfr_ptr, mp_prec_t));
 void mpfr_set_prec_raw _PROTO((mpfr_ptr, mp_prec_t));
 void mpfr_set_default_prec _PROTO((mp_prec_t));
 mp_prec_t mpfr_get_default_prec _PROTO((void));

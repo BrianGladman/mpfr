@@ -25,7 +25,7 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-int
+void
 mpfr_init2 (mpfr_ptr x, mp_prec_t p)
 {
   mp_size_t xsize;
@@ -42,6 +42,4 @@ mpfr_init2 (mpfr_ptr x, mp_prec_t p)
     (*__gmp_allocate_func) ((size_t) xsize * BYTES_PER_MP_LIMB);
   MPFR_SIZE(x) = xsize;
   MPFR_SET_NAN(x); /* initializes to NaN */
-
-  return MPFR_MANT(x) == NULL;
 }

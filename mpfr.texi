@@ -672,9 +672,8 @@ An @code{mpfr_t} object must be initialized before storing the first value in
 it.  The functions @code{mpfr_init} and @code{mpfr_init2} are used for that
 purpose.
 
-@deftypefun int mpfr_init (mpfr_t @var{x})
-Initialize @var{x}, set its value to NaN,
-and return zero iff the memory allocation succeeded.
+@deftypefun void mpfr_init (mpfr_t @var{x})
+Initialize @var{x} and set its value to NaN.
 
 Normally, a variable should be initialized once only
 or at least be cleared, using @code{mpfr_clear}, between initializations.  The
@@ -682,10 +681,9 @@ precision of @var{x} is the default precision, which can be changed
 by a call to @code{mpfr_set_default_prec}.
 @end deftypefun
 
-@deftypefun int mpfr_init2 (mpfr_t @var{x}, mp_prec_t @var{prec})
+@deftypefun void mpfr_init2 (mpfr_t @var{x}, mp_prec_t @var{prec})
 Initialize @var{x}, set its precision to be @strong{exactly}
-@var{prec} bits, its value to NaN,
-and return zero iff the memory allocation succeeded.
+@var{prec} bits and its value to NaN.
 
 Normally, a variable should be initialized once only or at
 least be cleared, using @code{mpfr_clear}, between initializations.
@@ -702,6 +700,7 @@ Free the space occupied by @var{x}.  Make sure to call this function for all
 
 @need 2000
 Here is an example on how to initialize floating-point variables:
+
 @example
 @{
   mpfr_t x, y;
@@ -719,7 +718,7 @@ calculation.  A typical use would be for adjusting the precision gradually in
 iterative algorithms like Newton-Raphson, making the computation precision
 closely match the actual accurate part of the numbers.
 
-@deftypefun int mpfr_set_prec (mpfr_t @var{x}, mp_prec_t @var{prec})
+@deftypefun void mpfr_set_prec (mpfr_t @var{x}, mp_prec_t @var{prec})
 Reset the precision of @var{x} to be @strong{exactly} @var{prec} bits,
 and set its value to NaN.
 The previous value stored in @var{x} is lost. It is equivalent to
@@ -728,7 +727,6 @@ a call to @code{mpfr_clear(x)} followed by a call to
 case the current allocated space for the mantissa of @var{x} is enough.
 The precision @var{prec} can be any integer between @code{MPFR_PREC_MIN} and
 @code{MPFR_PREC_MAX}.
-It returns a non-zero value iff the memory allocation failed.
 
 In case you want to keep the previous value stored in @var{x},
 use @code{mpfr_round_prec} instead.
