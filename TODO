@@ -22,7 +22,42 @@ Changes in existing functions:
 	mpfr_set_prec)
 - merge mpfr_inp_str and mpfr_set_str (cf glibc sscanf/fscanf)
 	[mpfr_set_str -> with final '\0',
-	 mpfr_strtofr -> without final '\0' ]
+	 mpfr_strtofr -> without final '\0', returns the number of characters
+	 read (or name mpfr_strtod suggested by Kevin, see below)]
+ Suggestion from Kevin:
+ - Function: char * mpf_strto (mpz_t ROP, const char *STR)
+     Read a floating point number from a string.  If successful the
+     result is stored in ROP and the return value points to the
+     character after those parsed.  If STR doesn't start with a valid
+     number then the return value is `NULL' and the value in ROP is
+     undefined.
+
+     Parsing follows the standard C `strtod' function (*note Parsing of
+     Integers: (libc)Parsing of Integers.).  This means optional
+     leading whitespace, an optional `+' or `-', mantissa digits, and an
+     optional exponent consisting of an `e' or `E', an optional sign,
+     and digits.  A hex mantissa can be given with a leading `0x' or
+     `0X', in which case `p' or `P' introduces the exponent (still in
+     decimal).  In addition `inf' or `infinity' with an optional sign,
+     or `nan' or `nan(..chars..)', all non case significant, can be
+     given.
+
+     There must be at least one digit in the mantissa for the number to
+     be valid.  If an exponent has no digits it's ignored and parsing
+     stops after the mantissa.  If an `0x' or `0X' is not followed by
+     hexadecimal digits, parsing stops after the `0'.
+
+     Note that in the hex format the exponent represents a power of 2,
+     ie. the result is MANTISSA*2^EXPONENT.  This is as per the `%a'
+     format in `printf' (*note Formatted Output Strings::).
+
+     `mpf_t' does not currently support NaNs or infinities.  The value
+     stored to ROP for these is undefined.
+
+     The decimal point character, or string, expected is taken from the
+     current locale on systems providing `localeconv'. [end of suggestion]
+- remove mpfr_set_machine_rnd_mode from the documentation,
+	and move it to the test directory
 - in mpfr_set_str, make string comparisons case insensitive and use @Inf@
   and @NaN@ instead of the possibly ambiguous Inf and NaN in bases > 10.
   Modify the other functions to make them consistent with this choice.
@@ -32,19 +67,21 @@ Changes in existing functions:
 
 New functions to implement:
 
+- functions in mpf and not in mpfr (for compatibility)
 - modf (to extract integer and fractional parts), suggested by
 	Dmitry Antipov <dmitry.antipov@mail.ru> Thu, 13 Jun 2002
 - mpz_set_fr (to set a mpz from a mpfr, with a rounding mode)
+	-> cf code in leibniz:mpfr/mpz_set_fr.c
 - those from LIA: missing secant, cosecant, cotangent (trigo/hyperbolic)
 - atan2
 - mpfr_set_f (MPF -> float) or mpfr_strtof, mpfr_set_ld or mpfr_strtold
 	(idem for mpfr_get_*)
 - implement accurate summation algorithms from Demmel
 	(http://www.cs.berkeley.edu/~demmel/AccurateSummation.ps)
+- mpfr_cmp_d (for Gerardo)
 
 Rounding:
 
-- mpfr_pow -> loops when exact (for example 4^(1/2)).
 - mpfr_pow isn't completely specified (concerning signed zeros).
 
 Efficiency:
@@ -53,6 +90,7 @@ Efficiency:
 	(currently too slow for 2^1024)
 - mpfr_asin/acos are too slow for small values (2^(-1021) for example)
 - idem for mpfr_atanh (2^(-1021) for example)
+- improve generic.c to work for number of terms <> 2^k
 - rewrite mpfr_greater_p...
 
 - mpf_t uses a scheme where the number of limbs actually present can
