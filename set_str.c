@@ -213,7 +213,7 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
 	(((double) (n * BITS_PER_MP_LIMB) - 1.0) * log_b2[base-2]) + 1;
 
       /* check is there are enough digits in str */
-      if (pr >= prec_s)
+      if ((mpfr_prec_t) pr >= prec_s)
 	pr = prec_s;
 
       /* convert str into binary */

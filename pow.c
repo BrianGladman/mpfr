@@ -103,7 +103,7 @@ is_odd (mpfr_srcptr y)
     return 0;  /* |y| < 1 and not 0 */
 
   prec = MPFR_PREC(y);
-  if (expo > prec)
+  if ((mpfr_prec_t) expo > prec)
     return 0;  /* y is a multiple of 2^(expo-prec), thus not odd */
 
   /* 0 < expo <= prec */

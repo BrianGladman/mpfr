@@ -159,11 +159,11 @@ mpfr_zeta_part_a (mpfr_t sum, mpfr_srcptr s, int n)
 static int
 mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
 {
-  int p, n, l, dint, add, d, can_round;
+  int p, n, l, add, can_round;
   double beta, sd, dnep;
   mpfr_t a, b, c, z_pre, f, g, s1;
   mpfr_t *tc1;
-  mp_prec_t precz, precs;
+  mp_prec_t precz, precs, d, dint;
   int inex;
 
   precz = mpfr_get_prec (z);
@@ -195,7 +195,7 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
           inex = 0;
           goto clear_and_return;
         }
-      else if (MPFR_GET_EXP (s1) <= -(d-3)/2)
+      else if (MPFR_GET_EXP (s1) <= -(mp_exp_t) ((mpfr_prec_t) (d-3)/2))
 	/* Branch 1: when s-1 is very small, one
 	  uses the approximation Zeta(s)=1/(s-1)+gamma,
 	  where gamma is Euler's constant */

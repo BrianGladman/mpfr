@@ -172,14 +172,14 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
    */
 
   /* copy high(b) into a */
-  if (MPFR_LIKELY(an + cancel1 <= bn))
+  if (MPFR_LIKELY(an + (mp_size_t) cancel1 <= bn))
     /* a: <----------------+-----------|---->
        b: <-----------------------------------------> */
       MPN_COPY (ap, bp + bn - (an + cancel1), an);
   else  
     /* a: <----------------+-----------|---->
        b: <-------------------------> */
-    if (cancel1 < bn) /* otherwise b does not overlap with a */
+    if ((mp_size_t) cancel1 < bn) /* otherwise b does not overlap with a */
       {
 	MPN_ZERO (ap, an + cancel1 - bn);
 	MPN_COPY (ap + an + cancel1 - bn, bp, bn - cancel1);

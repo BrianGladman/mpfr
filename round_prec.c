@@ -144,7 +144,7 @@ mpfr_can_round_raw (mp_limb_t *bp, mp_size_t bn, int neg, mp_exp_t err0,
 
   if (prec > (mp_prec_t) bn * BITS_PER_MP_LIMB)
     { /* then ulp(b) < precision < error */
-      return rnd2 == GMP_RNDN && err0 - 2 >= prec;
+      return rnd2 == GMP_RNDN && (mp_exp_unsigned_t) err0 - 2 >= prec;
       /* can round only in rounding to the nearest and err0 >= prec + 2 */
     }
 
@@ -154,7 +154,7 @@ mpfr_can_round_raw (mp_limb_t *bp, mp_size_t bn, int neg, mp_exp_t err0,
   /* if the error is smaller than ulp(b), then anyway it will propagate
      up to ulp(b) */
   err = ((mp_exp_unsigned_t) err0 > (mp_prec_t) bn * BITS_PER_MP_LIMB) ?
-    (mp_prec_t) bn * BITS_PER_MP_LIMB : err0;
+    (mp_prec_t) bn * BITS_PER_MP_LIMB : (mp_prec_t) err0;
 
   /* warning: if k = m*BITS_PER_MP_LIMB, consider limb m-1 and not m */
   k = (err - 1) / BITS_PER_MP_LIMB;

@@ -67,7 +67,7 @@ mpfr_eq (mpfr_srcptr u, mpfr_srcptr v, unsigned long int n_bits)
 
   if (usize > vsize)
     {
-      if (vsize * BITS_PER_MP_LIMB < n_bits)
+      if ((unsigned long) vsize * BITS_PER_MP_LIMB < n_bits)
 	{
 	  k = usize - vsize - 1; 
 	  while (k >= 0 && !up[k]) --k; 
@@ -78,7 +78,7 @@ mpfr_eq (mpfr_srcptr u, mpfr_srcptr v, unsigned long int n_bits)
     }
   else if (vsize > usize)
     {
-      if (usize * BITS_PER_MP_LIMB < n_bits)
+      if ((unsigned long) usize * BITS_PER_MP_LIMB < n_bits)
 	{
 	  k = vsize - usize - 1; 
 	  while (k >= 0 && !vp[k]) --k; 
@@ -94,8 +94,8 @@ mpfr_eq (mpfr_srcptr u, mpfr_srcptr v, unsigned long int n_bits)
 
   /* now size = min (usize, vsize) */
 
-  if (size > (n_bits + BITS_PER_MP_LIMB - 1) / BITS_PER_MP_LIMB)
-    size = (n_bits + BITS_PER_MP_LIMB - 1) / BITS_PER_MP_LIMB;
+  if ((unsigned long)size > (n_bits + BITS_PER_MP_LIMB-1) / BITS_PER_MP_LIMB)
+    size = (n_bits + BITS_PER_MP_LIMB-1) / BITS_PER_MP_LIMB;
 
   up += usize - size;
   vp += vsize - size;

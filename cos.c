@@ -125,7 +125,7 @@ mpfr_cos2_aux (mpfr_ptr s, mpfr_srcptr r)
 	mpfr_sub (s, s, t, GMP_RNDD);
       MPFR_ASSERTN (MPFR_GET_EXP (s) == 0); /* check 1/2 <= s < 1 */
       /* err(s) <= l * 2^(-m) */
-      if (3 * l > (1 << b))
+      if (3 * l > (1U << b))
 	b++;
       /* now 3l <= 2^b, we want 3l*ulp(t) <= 2^(-m)
 	 i.e. b+EXP(t)-PREC(t) <= -m */

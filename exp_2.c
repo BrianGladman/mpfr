@@ -380,7 +380,7 @@ mpfr_exp2_aux2 (mpz_t s, mpfr_srcptr r, int q, int *exps)
       ql = q - *exps - mpz_sizeinbase(s, 2) + expr + mpz_sizeinbase(rr, 2);
       l+=m;
     }
-  while (expr+mpz_sizeinbase(rr, 2) > -q);
+  while ((size_t) expr+mpz_sizeinbase(rr, 2) > (size_t)((int)-q));
 
   TMP_FREE(marker);
   mpz_clear(tmp);

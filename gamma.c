@@ -55,7 +55,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mp_prec_t A, N, estimated_cancel;
   mp_prec_t realprec;
   int compared;
-  int k;
+  unsigned long k;
   int sign;
   int inex;
 

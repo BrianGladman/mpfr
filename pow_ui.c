@@ -93,7 +93,7 @@ mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
         ;
       mpfr_set_prec (res, prec);
       inexact = mpfr_set (res, y, rnd1);
-      err = prec <= i ? 0 : prec - i;
+      err = prec <= (mpfr_prec_t) i ? 0 : prec - (mpfr_prec_t) i;
       MPFR_ASSERTD (i >= 1);
       /* now 2^(i-1) <= n < 2^i */
       for (i -= 2; i >= 0; i--)

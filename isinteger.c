@@ -45,7 +45,7 @@ mpfr_integer_p (mpfr_srcptr x)
     return 0;
 
   prec = MPFR_PREC(x);
-  if (expo >= prec)
+  if ((mpfr_prec_t) expo >= prec)
     return 1;
 
   /* 0 < expo < prec */
