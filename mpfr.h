@@ -19,6 +19,8 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+#ifndef __MPFR_H
+#define __MPFR_H
 #include <stdio.h>
 
 /* Definition of rounding modes */
@@ -178,3 +180,5 @@ int mpfr_inf_d _PROTO((mpfr_srcptr));
  do { mpfr_init(x); mpfr_set((x), (y), (rnd)); } while (0)
 #define mpfr_init_set_f(x, y, rnd) \
  do { mpfr_init(x); mpfr_set_f((x), (y), (rnd)); } while (0)
+
+#endif
