@@ -53,6 +53,8 @@ dnl ------------------------------------------------------------
 
 AC_DEFUN(MPFR_CONFIGS,
 [
+AC_REQUIRE([AC_OBJEXT])
+
 case $host in
 	*-*-solaris*)
 		LM9X="-lm9x"
@@ -62,7 +64,7 @@ esac
 # CPU-dependent objects for the test programs
 case $host in
   X86_PATTERN)
-    AC_SUBST(TESTS_ASM_OBJECTS, x86.o)
+    AC_SUBST(TESTS_ASM_OBJECTS, x86.$OBJEXT)
     AC_DEFINE(MPFR_HAVE_TESTS_x86, 1,
               [Define to 1 if mpfr x86 test routines are available.])
     ;;
@@ -372,11 +374,11 @@ END {
 }
 ]
 EOF
-  mpfr_cv_c_long_double_format=`od -b conftest.o | $AWK -f conftest.awk`
+  mpfr_cv_c_long_double_format=`od -b conftest.$OBJEXT | $AWK -f conftest.awk`
   case $mpfr_cv_c_long_double_format in
   unknown*)
-    echo "cannot match anything, conftest.o contains" >&AC_FD_CC
-    od -b conftest.o >&AC_FD_CC
+    echo "cannot match anything, conftest.$OBJEXT contains" >&AC_FD_CC
+    od -b conftest.$OBJEXT >&AC_FD_CC
     ;;
   esac
 else
