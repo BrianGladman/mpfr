@@ -189,6 +189,87 @@ use:
 
 ===========================================================================
 
+If wou want to use the logging of MPFR, you need to enable it:
+ ./configure --enable-logging
+ make clean
+ make
+Then link your program with this new build of MPFR.
+
+You can control what is logged using the environment variables:
+
+MPFR_LOG_FILE:  Name of the LOG file (default: mpfr.log).
+MPFR_LOG_BASE:  Base of the outputs (default: 10).
+MPFR_LOG_PREC:  # of digits of the outputs (default: 0, ie. maximum).
+MPFR_LOG_LEVEL: Max recursive level (default: 7).
+
+MPFR_LOG_INPUT:    Log the inputs
+MPFR_LOG_OUTPUT:   Log the outputs
+MPFR_LOG_TIME:     Log the time spent inside the function.
+MPFR_LOG_INTERNAL: Log the intermediary variables.
+MPFR_LOG_MSG:      Log the messages sent by MPFR.
+MPFR_LOG_BADCASE:  Log what the Ziv Loops do.
+
+Define them. Run your program, and view `mpfr.log`.
+
+   ====================================================================
+
+This feature is available only for gcc >= 3.0 and glibc >= 2.0.
+To achieve this, theses macros have been added:
+
++++ MPFR_LOG_VAR(y)
+ Log a MPFR variable if requested (INTERNAL).
+ Example:
+   mpfr_t y;
+   MPFR_LOG_VAR (y);
+
++++ MPFR_LOG_MSG(x)
+ Log another message (a warning for example)
+Example:
+ MPFR_LOG_MSG (("WARNING: Unchecked code\n"));
+
++++ MPFR_LOG_BEGIN(x)
+ Add this macro at the beginning of a function.
+Example:
+ int dodo (mpfr_t x, mpfr_t op, int cnt, mp_rnd_t rnd) {
+  [decl]
+  MPFR_LOG_BEGIN (("op[%#R]=%R rnd=%s", op, op, RND2STR(rnd)));
+
++++ MPFR_LOG_END(x)
+ Add this macro at the end of a function.
+Example:
+ MPFR_LOG_END (("x[%#R]=%R i=%d", x, x, i));
+ return i;
+}
+
+The double brackets "((" and "))" are needed since MPFR must still
+compile with non GNU compiler, so Macros with variable # of args
+are not allowed.
+
+It registers a glibc printf extension %R to display a mpfr_t.
+%#R is used to display the precision of a mpfr_t.
+It uses some extended attributes of GCC (constructor, etc.) to achieve
+its goals too.
+
+===========================================================================
+ZivLoop Controler
+
+Ziv strategy is quite used in MPFR. In order to factorize the code, you 
+could use theses macros:
+
++++ MPFR_ZIV_DECL(_x)
+ Declare a ZivLoop controller
+
++++ MPFR_ZIV_INIT(_x, _prec)
+ Init a ZivLoop controller according to the initial value of _prec.
+
++++ MPFR_ZIV_NEXT(_x, _prec)
+ Increase the precision _prec according to the ZivLoop controller.
+
++++ MPFR_ZIV_FREE(_x)
+ Free the ZivLoop controller.
+
+===========================================================================
+
 If you plan to add a new function, you could follow this schema:
 
 int
@@ -197,7 +278,11 @@ mpfr_toto (mpfr_ptr rop, mpfr_srcptr op, mp_rnd_t rnd)
   [Declare all used variables]
   int inexact;
   mp_prec_t prec;
+  MPFR_ZIV_DECL (loop);
   MPFR_SAVE_EXPO_DECL (expo);
+
+  /* Log it if requested */
+  MPFR_LOG_BEGIN (("op[%#R]=%R rnd=%d", op, op, rnd));
 
   /* First deal with particular cases */
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (op)))
@@ -222,6 +307,7 @@ mpfr_toto (mpfr_ptr rop, mpfr_srcptr op, mp_rnd_t rnd)
   [Compute the first estimation of the used precision `prec`]
   [Initialize the intermediate variables using mpfr_init2]
   MPFR_SAVE_EXPO_MARK (expo);            /* Maximal range for exponent */
+  MPFR_ZIV_INIT (loop, prec);            /* Initialize the ZivLoop controler */
 
   for (;;)                               /* Infinite loop */
     {
@@ -229,13 +315,17 @@ mpfr_toto (mpfr_ptr rop, mpfr_srcptr op, mp_rnd_t rnd)
       [ an estimation of the error].
       if (mpfr_can_round (...))          /* If we can round, quit the loop */
         break;
-      prec += BITS_PER_MP_LIMB;          /* Increase used precision */
+      MPFR_ZIV_NEXT (loop, prec);        /* Increase used precision */
       [Using `mpfr_set_prec`, resize all needed intermediate variables]
     }
-
+  MPFR_ZIV_FREE (loop);                  /* Free the ZivLoop Controler */
   inexact = mpfr_set (rop, temp, rnd);   /* Set rop to the computed value */
   [Clear all intermediate variables]
 
   MPFR_SAVE_EXPO_FREE (expo);            /* Restore exponent range */
-  return mpfr_check_range (rop, inexact, rnd); /* Quit and check range */
+  inexact = mpfr_check_range (rop, inexact, rnd); /* check range */
+
+  MPFR_LOG_END (("rop[%#R]=%R inexact=%d", r, r, inexact));
+
+  return inexact;  /* Quit */
 }
