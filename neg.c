@@ -20,7 +20,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
 #include "gmp.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
@@ -40,6 +39,6 @@ mpfr_neg (a, b, rnd_mode)
   else
     {
       MPFR_CHANGE_SIGN(a);
-      return 0;
+      MPFR_RET(0);
     }
 }
