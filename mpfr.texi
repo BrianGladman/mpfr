@@ -653,6 +653,13 @@ Set @var{x} to the GNU MP floating-point number
 of @var{x}.
 @end deftypefun
 
+@deftypefun void mpfr_swap (mpfr_t @var{x}, mpf_t @var{y})
+Swap the values @var{x} and @var{y} efficiently. Warning: the
+precisions are exchanged too; in case the precisions are different,
+@code{mpfr_swap} is thus not equivalent to three @code{mpfr_set} calls
+using a third auxiliary variable.
+@end deftypefun
+
 @node Simultaneous Float Init & Assign, Converting Floats, Assigning Floats, Floating-point Functions
 @comment  node-name,  next,  previous,  up
 @subsection Combined Initialization and Assignment Functions
