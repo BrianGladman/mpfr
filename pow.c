@@ -41,12 +41,14 @@ mpfr_pow_ui (x, y, n, rnd)
 
   if (MPFR_IS_INF(y)) 
     {
+      MPFR_CLEAR_FLAGS(x); 
       if (n == 0) { MPFR_SET_NAN(x); return 0; }
       else if ((MPFR_SIGN(y) < 0 && (MPFR_SIGN(x) > 0 || n % 2 == 0)) ||
 	       (MPFR_SIGN(y) > 0 && (MPFR_SIGN(x) < 0 && n % 2 == 1)))
 	MPFR_CHANGE_SIGN(x); 
       MPFR_SET_INF(x); return 0; 
     }
+  if (MPFR_IS_NAN(y)) { MPFR_CLEAR_FLAGS(x); MPFR_SET_NAN(x); return 0; }
 
   MPFR_CLEAR_FLAGS(x); 
   if (n==0) { mpfr_set_ui(x, 1, rnd); return 0; }

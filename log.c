@@ -64,16 +64,22 @@ mpfr_log(r, a, rnd_mode)
 
   /* If a is NaN, the result is NaN */
   if (MPFR_IS_NAN(a))
-    { MPFR_SET_NAN(r); return 1; }
+    { MPFR_CLEAR_FLAGS(r); MPFR_SET_NAN(r); return 1; }
   
   if (MPFR_IS_ZERO(a)) 
     {
-      MPFR_SET_INF(r); if (MPFR_SIGN(r) != -1) { MPFR_CHANGE_SIGN(r); }
+      MPFR_CLEAR_FLAGS(r);
+      MPFR_SET_INF(r); 
+      if (MPFR_SIGN(r) != -1) { MPFR_CHANGE_SIGN(r); }
+      return 1; 
     }
 
   if (MPFR_IS_INF(a))
     {
-      MPFR_SET_INF(r); if (MPFR_SIGN(r) != 1) { MPFR_CHANGE_SIGN(r); }
+      MPFR_CLEAR_FLAGS(r);
+      MPFR_SET_INF(r); 
+      if (MPFR_SIGN(r) != 1) { MPFR_CHANGE_SIGN(r); }
+      return 1; 
     }
 
   /* Now we can clear the flags without damage even if r == a */

@@ -105,7 +105,7 @@ typedef union ieee_double_extract Ieee_double_extract;
    bit 30 of _mp_size is used for Nan flag,
    bit 29 of _mp_size is used for Inf flag,
    remaining bits are used to store the number of allocated limbs */
-#define MPFR_CLEAR_FLAGS(x) (((x) -> _mp_size &= ~(0x70000000)))
+#define MPFR_CLEAR_FLAGS(x) (((x) -> _mp_size &= ~(3 << 29)))
 #define MPFR_IS_NAN(x) (((x)->_mp_size >> 30)&1)
 #define MPFR_SET_NAN(x) ((x)->_mp_size |= (1<<30))
 #define MPFR_IS_INF(x) (((x)->_mp_size >> 29)&1)
