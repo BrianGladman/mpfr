@@ -122,6 +122,7 @@ int mpfr_can_round_raw _PROTO ((mp_limb_t *, mp_prec_t, int, mp_prec_t,
 				mp_rnd_t, mp_rnd_t, mp_prec_t));
 void mpfr_set_d _PROTO ((mpfr_ptr, double, mp_rnd_t)); 
 int mpfr_set_z _PROTO ((mpfr_ptr, mpz_srcptr, mp_rnd_t)); 
+mp_exp_t mpz_set_fr _PROTO ((mpz_ptr, mpfr_srcptr)); 
 void mpfr_set_q _PROTO ((mpfr_ptr, mpq_srcptr, mp_rnd_t)); 
 double mpfr_get_d _PROTO ((mpfr_srcptr)); 
 double mpfr_get_d2 _PROTO ((mpfr_srcptr, long)); 
