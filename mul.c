@@ -323,6 +323,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       c = tmp;
       cn = tn;
     }
+  MPFR_ASSERTD (bn >= cn);
   if (MPFR_UNLIKELY (bn > MPFR_MUL_THRESHOLD))
     {
       mp_limb_t *bp, *cp;
@@ -391,12 +392,14 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       tmp += k - tn;
       if (MPFR_UNLIKELY (b1 == 0))
 	mpn_lshift (tmp, tmp, tn, 1);
-
       MPFR_ASSERTD (MPFR_LIMB_MSB (tmp[tn-1]) != 0);
 
       if (MPFR_UNLIKELY (!mpfr_can_round_raw (tmp, tn, sign, p + b1 - 1,
 	    GMP_RNDN, GMP_RNDZ, MPFR_PREC(a)+(rnd_mode==GMP_RNDN))))
-	goto full_multiply;
+	{
+	  tmp -= k-tn; /* tmp may have changed, FIX IT!!!!! */
+	  goto full_multiply; 
+	}
       }
   else
     {
