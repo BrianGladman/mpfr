@@ -48,6 +48,10 @@ char *alloca ();
 # endif
 #endif
 
+#if defined (__cplusplus)
+extern "C" {
+#endif
+
 /* Define BITS_PER_MP_LIMB
    Can't use sizeof(mp_limb_t) since it should be a preprocessor constant */
 #if defined(GMP_NUMB_BITS) /* GMP 4.1.2 or above */
@@ -244,6 +248,13 @@ void mpfr_rand_raw _MPFR_PROTO((mp_ptr, gmp_randstate_t, unsigned long int));
 void mpfr_init_gmp_rand _MPFR_PROTO((void));
 #define MPFR_TEST_USE_RANDS() mpfr_init_gmp_rand ();
 
+/* Not defined in gmp.h but in gmp-impl.h */
+mp_limb_t mpfr_sub_nc _MPFR_PROTO ((mp_ptr, mp_srcptr, mp_srcptr, mp_size_t, 
+				    mp_limb_t ));
+#ifndef mpn_sub_nc
+# define mpn_sub_nc mpfr_sub_nc
+#endif
+
 /* Allocate func are defined in gmp-impl.h */
 
 /* In newer GMP, there aren't anymore __gmp_allocate_func,
@@ -273,5 +284,9 @@ extern void   (*mpfr_free_func)       _MPFR_PROTO ((void *, size_t));
 void *__gmp_default_allocate _MPFR_PROTO ((size_t));
 void *__gmp_default_reallocate _MPFR_PROTO ((void *, size_t, size_t));
 void __gmp_default_free _MPFR_PROTO ((void *, size_t));
+
+#if defined (__cplusplus)
+}
+#endif
 
 #endif /* Gmp internal emulator */

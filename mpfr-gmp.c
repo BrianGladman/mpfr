@@ -372,5 +372,16 @@ mpfr_default_free (void *blk_ptr, size_t blk_size)
   free (blk_ptr);
 }
 
+mp_limb_t 
+mpfr_sub_nc (mp_ptr dest, mp_srcptr op1, mp_srcptr op2, mp_size_t s, 
+	     mp_limb_t c)
+{
+  mp_limb_t c2;
+  c2 = mpn_sub_n (dest, op1, op2, s);
+  MPFR_ASSERTD (c+c2 < MPFR_LIMB_HIGHBIT);
+  c2 = mpn_sub_1 (dest, dest, s, c+c2);
+  return c2;
+}
+
 #endif /* Have gmp-impl.h */
 
