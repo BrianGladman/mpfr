@@ -350,7 +350,8 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
 		 cc -= mpn_sub_1(&c2, bp+k, 1, cp[0]<<(BITS_PER_MP_LIMB-dif));
 	    }
 	    else { /* no more limb from b */
-	      if (cp[kc+1]<<(BITS_PER_MP_LIMB-dif)) cc=-1;
+	      /* warning: if k was 0, kc can be negative here */
+	      if ((kc+1>=0) && (cp[kc+1]<<(BITS_PER_MP_LIMB-dif))) cc=-1;
 	      else while ((cc==0) && (kc>=0)) {
 		if (cp[kc]) cc=-1;
 		kc--;
