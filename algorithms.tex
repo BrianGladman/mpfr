@@ -7,7 +7,9 @@
 \begin{document}
 \maketitle
 
-\section{The exponential function}
+\section{High level functions}
+
+\subsection{The exponential function}
 
 The {\tt mpfr\_exp} function implements three different algorithms.
 For very large precision, it uses a $\O(M(n) \log^2 n)$ algorithm
@@ -35,6 +37,56 @@ thus the evaluation requires $(n/k)^{1/2} + k$ multiplications,
 and the optimal $k$ is now about $n^{1/3}$,
 giving a total complexity of $\O(n^{1/3} M(n))$.
 This is implemented in the function {\tt mpfr\_exp2\_aux2}.
+
+\section{Low level functions}
+
+\subsection{The {\tt mpfr\_cmp2} function}
+
+This function computes the exponent shift when subtracting $c > 0$ from
+$b \ge c$. In other terms, if ${\rm EXP}(x) := 
+\lfloor \frac{\log b}{\log 2} \rfloor$, it returns:
+it returns ${\rm EXP}(b) - {\rm EXP}(b-c)$.
+
+This function admits the following specification in terms of the binary
+representation of the mantissa of $b$ and $c$: if $b = u 1 0^n r$ and
+$c = u 0 1^n s$, where $u$ is the longest common prefix to $b$ and $c$,
+and $(r,s)$ do not start with $(0, 1)$, then ${\tt mpfr\_cmp2}(b,c)$ returns
+$|u| + n$ if $r \ge s$, and $|u| + n + 1$ otherwise, where $|u|$ is the number
+of bits of $u$.
+
+As it is not very efficient to compare $b$ and $c$ bit-per-bit, we propose
+the following algorithm, which compares $b$ and $c$ word-per-word.
+Here $b[n]$ represents the $n$th word from the mantissa of $b$, starting from
+the most significant word $b[0]$, which has its most significant bit set.
+The values $c[n]$ represent the words of $c$, after a possible shift if the
+exponent of $c$ is smaller than that of $b$.
+\begin{verbatim}
+   n = 0; res = 0;
+   while (b[n] == c[n])
+      n++;
+      res += BITS_PER_MP_LIMB;
+
+   /* now b[n] > c[n] and the first res bits coincide */
+
+   dif = b[n] - c[n];
+   while (dif == 1)
+      n++;
+      dif = (dif << BITS_PER_MP_LIMB) + b[n] - c[n];
+      res += BITS_PER_MP_LIMB;
+
+   /* now dif > 1 */
+
+   res += equal_leading_bits(b[n], c[n]);
+
+   if (!is_power_of_two(dif))
+      return res;
+
+   /* otherwise result is res + (low(b) < low(c)) */
+   do
+      n++;
+   while (b[n] == c[n]);
+   return res + (b[n] < c[n]);
+\end{verbatim}
 
 \bibliographystyle{acm}
 \bibliography{algo}
