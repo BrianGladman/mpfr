@@ -126,18 +126,23 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c)
   /* now result is res + (low(b) < low(c)) */
   while (bn>=0 && (cn>=0 || lastc))
     {
-      cc = lastc;
-      if (cn >= 0)
-	{
-	  cc += cp[cn] >> diff_exp;
-	  if (diff_exp) lastc = cp[cn] << (BITS_PER_MP_LIMB - diff_exp);
-	}
+      if (diff_exp >= BITS_PER_MP_LIMB)
+	diff_exp -= BITS_PER_MP_LIMB;
       else
-	lastc = 0;
+	{
+	  cc = lastc;
+	  if (cn >= 0)
+	    {
+	      cc += cp[cn] >> diff_exp;
+	      if (diff_exp) lastc = cp[cn] << (BITS_PER_MP_LIMB - diff_exp);
+	    }
+	  else
+	    lastc = 0;
+	  cn--;
+	}
       if (bp[bn] != cc)
 	return res + (bp[bn] < cc);
       bn--;
-      cn--;
     }
 
   if (bn < 0)
