@@ -26,6 +26,7 @@ precision       *    mpf_add mpfr_add(RNDZ/RNDN/RNDU)   maple   mupad
 
 extern int isnan();
 extern int getpid();
+extern long int lrand48();
 
 #define ABS(x) (((x)>0) ? (x) : (-x))
 
@@ -174,7 +175,15 @@ printf("x=%1.20e,%d y=%1.20e,%d pz=%d,rnd=%d\n",x,px,y,py,pz,rnd_mode);
 void check64()
 {
   mpfr_t x, t, u;
-  mpfr_init2(x, 128); mpfr_init2(t, 128); mpfr_init2(u, 128);
+  mpfr_init2(x, 97); mpfr_init2(t, 97); mpfr_init2(u, 97);
+  mpfr_set_str_raw(x, "0.1111101100001000000001011000110111101000001011111000100001000101010100011111110010000000000000000E-39");
+  mpfr_set_ui(t, 1, GMP_RNDN);
+  mpfr_add(u, x, t, GMP_RNDN);
+  mpfr_set_str_raw(x, "0.1000000000000000000000000000000000000000111110110000100000000101100011011110100000101111100010001E1");
+  if (mpfr_cmp(u,x)) {
+    fprintf(stderr, "mpfr_add failed for precision 97\n"); exit(1);
+  }
+  mpfr_set_prec(x, 128); mpfr_set_prec(t, 128); mpfr_set_prec(u, 128);
   mpfr_set_str_raw(x, "0.10101011111001001010111011001000101100111101000000111111111011010100001100011101010001010111111101111010100110111111100101100010E-4");
   mpfr_set(t, x, GMP_RNDN);
   mpfr_sub(u, x, t, GMP_RNDN);
