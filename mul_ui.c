@@ -69,28 +69,27 @@ mpfr_mul_ui(y, x, u, rnd_mode)
 
   TMP_MARK(marker);
   my = MPFR_MANT(y); ex = MPFR_EXP(x);  
-  ysize = (MPFR_PREC(y)-1)/BITS_PER_MP_LIMB + 1;
-  xsize = (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB + 1;
+  ysize = (MPFR_PREC(y) - 1) / BITS_PER_MP_LIMB + 1;
+  xsize = (MPFR_PREC(x) - 1) / BITS_PER_MP_LIMB + 1;
 
   old_my = my; 
 
-  if (ysize < xsize) {
+  if (ysize < xsize)
+    {
       my = (mp_ptr) TMP_ALLOC (xsize * BYTES_PER_MP_LIMB);
-      dif=0;
+      dif = 0;
     }
-  else dif=ysize-xsize;
+  else
+    dif = ysize - xsize;
 
-  carry = mpn_mul_1(my+dif, MPFR_MANT(x), xsize, u);
+  carry = mpn_mul_1 (my + dif, MPFR_MANT(x), xsize, u);
   MPN_ZERO(my, dif);
 
   /* WARNING: count_leading_zeros is undefined for carry=0 */
-  if (carry) count_leading_zeros(cnt, carry);
-  else cnt=BITS_PER_MP_LIMB;
-
-  /* Warning: the number of limbs used by x and the lower part
-     of y may differ */
-  sh = (MPFR_PREC(x)+BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB
-     - (MPFR_PREC(y)+cnt-1)/BITS_PER_MP_LIMB; 
+  if (carry)
+    count_leading_zeros(cnt, carry);
+  else
+    cnt = BITS_PER_MP_LIMB;
 
   /* Warning: if all significant bits are in the carry, one has to 
      be careful */
@@ -113,8 +112,13 @@ mpfr_mul_ui(y, x, u, rnd_mode)
       carry = 0; cnt = BITS_PER_MP_LIMB;
     }
 
-    c = mpfr_round_raw(my+sh, my, MPFR_PREC(x), (MPFR_SIGN(x)<0), 
-		       MPFR_PREC(y)-BITS_PER_MP_LIMB+cnt, rnd_mode);
+  /* Warning: the number of limbs used by x and the lower part
+     of y may differ */
+  sh = (MPFR_PREC(x) < MPFR_PREC(y) - BITS_PER_MP_LIMB + cnt) ? 0
+    : xsize - (MPFR_PREC(y) + cnt - 1) / BITS_PER_MP_LIMB;
+
+  c = mpfr_round_raw (my + sh, my, MPFR_PREC(x), (MPFR_SIGN(x) < 0), 
+		       MPFR_PREC(y) - BITS_PER_MP_LIMB + cnt, rnd_mode);
 
   /* If cnt = 1111111111111 and c = 1 we shall get depressed */
   if (c && (carry == (((mp_limb_t)1) << (cnt ? BITS_PER_MP_LIMB - cnt : 0)) 
