@@ -86,7 +86,8 @@ mpfr_set_str (mpfr_ptr x, __gmp_const char *str, int base, mp_rnd_t rnd_mode)
 
   /* be careful that 'inf' is a valid number in base >= 24,
      since i=18, n=23, f=15 */
-  if (((base < 24) ? strncasecmp : strncmp) (str, "Inf", 3) == 0)
+  if (((base < 24) ? strncasecmp (str, "Inf", 3) : strncmp (str, "Inf", 3))
+      == 0)
     {
       MPFR_CLEAR_NAN(x);
       MPFR_SET_INF(x);
