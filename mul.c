@@ -359,7 +359,8 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       n = MPFR_LIMB_SIZE (a) + 1;
       n = MIN (n, cn);
       MPFR_ASSERTD (n >= 1 && 2*n <= k && n <= cn && n <= bn);
-      p = n*BITS_PER_MP_LIMB - MPFR_INT_CEIL_LOG2 (n + 2) ;
+      p = n*BITS_PER_MP_LIMB 
+	- MPFR_INT_CEIL_LOG2 (MPFR_INT_CEIL_LOG2 (n + 2)) -1;
       bp = MPFR_MANT (b) + bn - n;
       cp = MPFR_MANT (c) + cn - n;
       /* Check if MulHigh can produce a roundable result.
@@ -393,7 +394,8 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	    }
 	  /* We will compute with one extra limb */
 	  n++;
-	  p = n*BITS_PER_MP_LIMB - MPFR_INT_CEIL_LOG2 (n + 2);
+	  p = n*BITS_PER_MP_LIMB 
+	    - MPFR_INT_CEIL_LOG2 (MPFR_INT_CEIL_LOG2 (n + 2)) - 1;
 	  MPFR_ASSERTD (MPFR_PREC (a) <= p - 5);
 	  if (MPFR_LIKELY (k < 2*n))
 	    {
