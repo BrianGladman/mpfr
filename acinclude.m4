@@ -233,7 +233,7 @@ dnl  use DOUBLE macros when sizeof(double)==sizeof(long double).
 AC_DEFUN(MPFR_C_LONG_DOUBLE_FORMAT,
 [AC_REQUIRE([AC_PROG_CC])
 AC_REQUIRE([AC_PROG_AWK])
-AC_CACHE_CHECK([format of `long double' floating point],
+AC_CACHE_CHECK([format of \`long double' floating point],
                 mpfr_cv_c_long_double_format,
 [mpfr_cv_c_long_double_format=unknown
 cat >conftest.c <<\EOF
