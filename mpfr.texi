@@ -919,7 +919,8 @@ See also @code{mpfr_fits_slong_p} and @code{mpfr_fits_ulong_p}
 
 @deftypefun mp_exp_t mpfr_get_z_exp (mpz_t @var{z}, mpfr_t @var{op})
 Puts the mantissa of @var{op} into @var{z}, and returns the exponent
-@var{exp} such that @var{op} equals
+@var{exp} (which may be outside the current exponent range) such that
+@var{op} equals
 @ifnottex
 @var{z} multiplied by two exponent @var{exp}.
 @end ifnottex
