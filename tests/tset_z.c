@@ -24,8 +24,6 @@ MA 02111-1307, USA. */
 #include "gmp.h"
 #include "mpfr.h"
 
-extern long int lrand48();
-
 /* tset_z z rnd prec */
 
 void check(long i, unsigned char rnd) {

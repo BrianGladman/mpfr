@@ -31,7 +31,6 @@ MA 02111-1307, USA. */
 #endif
 
 extern int isnan();
-extern double drand48(void);
 
 void tcmp2(x, y, i) double x, y; int i;
 {

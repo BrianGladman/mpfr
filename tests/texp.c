@@ -27,8 +27,6 @@ MA 02111-1307, USA. */
 
 /* #define DEBUG */
 
-extern void srand48();
-extern double drand48();
 extern int isnan();
 extern int getpid();
 

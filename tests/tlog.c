@@ -27,10 +27,6 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-extern long int lrand48();
-extern void srand48();
-extern int isnan();
-
 double drand_log()
 {
   double d; long int *i;

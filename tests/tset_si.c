@@ -25,20 +25,6 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "time.h"
 
-#if defined (hpux)
-#define srandom srand48
-#define random mrand48
-#else
-extern int random();
-extern
-#ifdef alpha
-int
-#else
-void
-#endif
-srandom();
-#endif
-
 int
 main(int argc, char **argv)
 {
