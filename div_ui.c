@@ -1,6 +1,6 @@
 /* mpfr_div_ui -- divide a floating-point number by a machine integer
 
-Copyright (C) 1999-2001 Free Software Foundation.
+Copyright (C) 1999, 2000, 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -26,19 +26,9 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-/* #define DEBUG */
-
 /* returns 0 if result exact, non-zero otherwise */
 int
-#ifdef __STDC__
 mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
-#else
-mpfr_div_ui (y, x, u, rnd_mode)
-     mpfr_ptr y;
-     mpfr_srcptr x;
-     unsigned long int u;
-     mp_rnd_t rnd_mode;
-#endif
 {
   long int xn, yn, dif, sh, i;
   mp_limb_t *xp, *yp, *tmp, c, d;
@@ -95,10 +85,6 @@ mpfr_div_ui (y, x, u, rnd_mode)
     MPFR_CHANGE_SIGN(y);
 
   dif = yn + 1 - xn;
-#ifdef DEBUG
-  printf("dif=%d u=%lu xn=%d\n",dif,u,xn);
-  printf("x="); mpfr_print_raw(x); putchar('\n');
-#endif
 
   /* we need to store yn+1 = xn + dif limbs of the quotient */
   /* don't use tmp=yp since the mpn_lshift call below requires yp >= tmp+1 */
@@ -145,9 +131,6 @@ mpfr_div_ui (y, x, u, rnd_mode)
     }
   else
     MPN_COPY(yp, tmp + 1, yn);
-#ifdef DEBUG
-  printf("y="); mpfr_print_raw(y); putchar('\n');
-#endif
 
   sh = yn * BITS_PER_MP_LIMB - MPFR_PREC(y);
   /* it remains sh bits in less significant limb of y */
