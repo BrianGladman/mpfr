@@ -327,7 +327,7 @@ mpfr_toto (mpfr_ptr rop, mpfr_srcptr op, mp_rnd_t rnd)
     {
       [Compute an estimation of the function and]
       [ an estimation of the error].
-      if (mpfr_can_round (...))          /* If we can round, quit the loop */
+      if (MPFR_CAN_ROUND (...))          /* If we can round, quit the loop */
         break;
       MPFR_ZIV_NEXT (loop, prec);        /* Increase used precision */
       [Use `mpfr_set_prec` to resize all needed intermediate variables]
@@ -352,9 +352,8 @@ Then you needs to modify the program `tuneup.c' to allow it to compute
 the new threshold. If it is a classical threshold (not complex), you could
 use this method (example of mpfr_exp):
 
-/* Define the threshold as a variable instead of a constant
-   Initialize it with the previous value of the threshold. */
-mp_prec_t mpfr_exp_threshold = MPFR_EXP_THRESHOLD;
+/* Define the threshold as a variable instead of a constant */
+mp_prec_t mpfr_exp_threshold;
 #undef  MPFR_EXP_THRESHOLD
 #define MPFR_EXP_THRESHOLD mpfr_exp_threshold
 /* Include the test function to threshold directly in the test
