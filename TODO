@@ -25,13 +25,14 @@ Documentation:
 
 - add a description of the algorithms used + proof of correctness
 
-- web page: add a html version of the documentation
-
 - mpfr_set_prec: add an explanation of how to speed up calculations
   which increase their precision at each step.
 
 - add macros/variables to check the version of mpfr
   (suggestion from Andreas Enge <enge@lix.polytechnique.fr>)
+
+- solve the problem with @pxref{Custom Allocation,,, gmp,GNU MP}
+	[gives broken link on the html version]
 
 Installation:
 
