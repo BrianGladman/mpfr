@@ -110,17 +110,17 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
     mp_prec_t Ny = MPFR_PREC(y);   /* Precision of input variable */
     mp_prec_t Nz = MPFR_PREC(z);   /* Precision of input variable */
     mp_prec_t Ns = MPFR_PREC(s);   /* Precision of output variable */
-    int Nt;   /* Precision of the intermediary variable */
+    mp_prec_t Nt;   /* Precision of the intermediary variable */
     long int err;  /* Precision of error */
-    unsigned int first_pass=0; /* temporary precision */
-    
+    unsigned int first_pass = 0; /* temporary precision */
+
     /* compute the precision of intermediary variable */
-    Nt=MAX(MAX(Nx,Ny),Nz);
+    Nt = MAX(MAX(Nx,Ny),Nz);
 
     /* the optimal number of bits is MPFR_EXP(u)-MPFR_EXP(v)+1 */
     /* but u and v are not yet compute, also we take in account */
     /* just one bit */
-    Nt=Nt+1+_mpfr_ceil_log2(Nt)+20;
+    Nt += 1 + _mpfr_ceil_log2(Nt) + 20;
     /* initialise the intermediary variables */
     mpfr_init(u);             
     mpfr_init(t);             
