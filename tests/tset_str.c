@@ -35,10 +35,13 @@ main(int argc, char **argv)
   *(str2++) = 'e'; 
   sprintf(str2, "%d", random() - (1 << 30)); 
 
-  printf("%s\n", str); 
+  /* printf("%s\n", str); */
   mpfr_init2(x, nc + 10); 
   mpfr_set_str_raw(x, str); 
-  mpfr_print_raw(x); printf("\n"); 
+  /* mpfr_print_raw(x); printf("\n");  */
+
+  mpfr_set_prec(x, 53, GMP_RNDN);
+  mpfr_set_str_raw(x, "+110101100.01010000101101000000100111001000101011101110E00");
 
   mpfr_clear(x); free(str); 
   return 0; 
