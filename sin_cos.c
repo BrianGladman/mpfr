@@ -273,15 +273,3 @@ mpfr_sin_cos (sinus, cosinus, x, rnd_mode)
 
   return 1; /* inexact result */
 } 
-
-int
-mpfr_sin (mpfr_ptr sinus, mpfr_srcptr x, mp_rnd_t rnd_mode)
-{
-  return mpfr_sin_cos (sinus, NULL, x, rnd_mode);
-}
-
-int
-mpfr_cos (mpfr_ptr cosinus, mpfr_srcptr x, mp_rnd_t rnd_mode)
-{
-  return mpfr_sin_cos (NULL, cosinus, x, rnd_mode);
-}
