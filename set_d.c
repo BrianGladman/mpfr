@@ -206,6 +206,8 @@ mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
 
   /* now d is neither 0, nor NaN nor Inf */
 
+  mpfr_save_emin_emax ();
+
   /* warning: don't use tmp=r here, even if SIZE(r) >= MPFR_LIMBS_PER_DOUBLE,
      since PREC(r) may be different from PREC(tmp), and then both variables
      would have same precision in the mpfr_set4 call below. */
@@ -252,6 +254,8 @@ mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
 
   /* tmp is exact since PREC(tmp)=53 */
   inexact = mpfr_set4 (r, tmp, rnd_mode, signd);
+
+  mpfr_restore_emin_emax ();
 
   return mpfr_check_range (r, inexact, rnd_mode);
 }
