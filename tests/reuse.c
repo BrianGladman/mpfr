@@ -370,7 +370,7 @@ main (void)
   testfunc = (void*) mpfr_exp; test2 ("mpfr_exp", 53, GMP_RNDN);
   testfunc = mpfr_floor; test2 ("mpfr_floor", 53, GMP_RNDN);
   testfunc = (void*) mpfr_log; test2 ("mpfr_log", 53, GMP_RNDN);
-  testfunc = mpfr_mul; test3 ("mpfr_mul", 53, GMP_RNDN);
+  testfunc = (void*) mpfr_mul; test3 ("mpfr_mul", 53, GMP_RNDN);
   testfunc = mpfr_mul_2exp; test2ui ("mpfr_mul_2exp", 53, GMP_RNDN);
   testfunc = mpfr_mul_ui; test2ui ("mpfr_mul_ui", 53, GMP_RNDN);
   testfunc = mpfr_neg; test2 ("mpfr_neg", 53, GMP_RNDN);
