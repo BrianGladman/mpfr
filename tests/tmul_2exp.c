@@ -7,7 +7,8 @@
 /* checks that x*y gives the same results in double
    and with mpfr with 53 bits of precision */
 
-void main(argc,argv) int argc; char *argv[];
+int
+main(argc,argv) int argc; char *argv[];
 {
   double x, z; mpfr_t w;
 
@@ -15,11 +16,13 @@ void main(argc,argv) int argc; char *argv[];
 
   srand48(time(NULL)); 
   x = drand48(); 
-  mpfr_set_d(w, x, 53, 1, 0);
+  mpfr_set_d(w, x, 0);
   mpfr_mul_2exp(w, w, 10, GMP_RNDZ); 
   if (x != (z = mpfr_get_d(w)/1024))
     {
-      fprintf(stderr, "%lf != %lf\n", x, z); 
+      fprintf(stderr, "%f != %f\n", x, z); 
+      return (-1); 
     };
+  return (0); 
 }
 
