@@ -25,11 +25,11 @@ int
 mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode) 
 {
   int sign_product, cc, inexact;
-  mp_exp_t ax, bx, cx;
+  mp_exp_t  ax;
   mp_limb_t *tmp;
   mp_limb_t b1;
-  mp_prec_t aq, bq, cq;
-  mp_size_t an, bn, cn, tn, k;
+  mp_prec_t bq, cq;
+  mp_size_t bn, cn, tn, k;
   TMP_DECL(marker);
 
   /* deal with special cases */
@@ -80,8 +80,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   MPFR_CLEAR_FLAGS(a);
   sign_product = MPFR_MULT_SIGN( MPFR_SIGN(b) , MPFR_SIGN(c) );
  
-  bx = MPFR_GET_EXP (b);
-  cx = MPFR_GET_EXP (c);
+  ax = MPFR_GET_EXP (b) + MPFR_GET_EXP (c);
   /* Note: the exponent of the exact result will be e = bx + cx + ec with
      ec in {-1,0,1} and the following assumes that e is representable. */
   /* These ASSERT should be always true */
@@ -92,14 +91,13 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
    * It is usefull iff the precision is big, there is an overflow
    * and we are doing further mults...*/
 #ifdef HUGE
-  if (MPFR_UNLIKELY(bx + cx > __gmpfr_emax + 1))
+  if (MPFR_UNLIKELY(ax > __gmpfr_emax + 1))
     return mpfr_set_overflow (a, rnd_mode, sign_product);
-  if (MPFR_UNLIKELY(bx + cx < __gmpfr_emin - 2))
+  if (MPFR_UNLIKELY(ax < __gmpfr_emin - 2))
   return mpfr_set_underflow (a, rnd_mode == GMP_RNDN ? GMP_RNDZ : rnd_mode,
 			     sign_product);
 #endif
 
-  aq = MPFR_PREC(a);
   bq = MPFR_PREC(b);
   cq = MPFR_PREC(c);
 
@@ -108,7 +106,6 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   
   MPFR_ASSERTD(bq+cq > bq); /* PREC_MAX is /2 so no integer overflow */
  
-  an = (aq+BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB; /* number of limbs of a */
   bn = (bq+BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB; /* number of limbs of b */
   cn = (cq+BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB; /* number of limbs of c */
   k = bn + cn; /* effective nb of limbs used by b*c (= tn or tn+1) below */
@@ -135,15 +132,18 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
      and in [1/2, 1] with probability 2-2*ln(2) ~ 0.614 */
   tmp += k - tn;
   if (MPFR_UNLIKELY(b1 == 0))
-    mpn_lshift (tmp, tmp, tn, 1);
-  cc = mpfr_round_raw (MPFR_MANT(a), tmp, bq + cq, 
-		       MPFR_IS_NEG_SIGN(sign_product), aq, rnd_mode, &inexact);
-  if (MPFR_UNLIKELY(cc)) /* cc = 1 ==> result is a power of two */
-    MPFR_MANT(a)[an-1] = MPFR_LIMB_HIGHBIT;
+    mpn_lshift (tmp, tmp, tn, 1); /* tn <= k */
+  cc = mpfr_round_raw (MPFR_MANT (a), tmp, bq + cq, 
+		       MPFR_IS_NEG_SIGN(sign_product), 
+		       MPFR_PREC (a), rnd_mode, &inexact);
+
+  /* cc = 1 ==> result is a power of two */
+  if (MPFR_UNLIKELY(cc))
+    MPFR_MANT(a)[MPFR_LIMB_SIZE(a)-1] = MPFR_LIMB_HIGHBIT;
 
   TMP_FREE(marker);
 
-  ax = (bx + cx) + (mp_exp_t) (b1 - 1 + cc);
+  ax += (mp_exp_t) (b1 - 1 + cc);
   if (MPFR_UNLIKELY( ax > __gmpfr_emax))
     return mpfr_set_overflow (a, rnd_mode, sign_product);
   if (MPFR_UNLIKELY( ax < __gmpfr_emin))
@@ -153,7 +153,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
          is < __gmpfr_emin - 1 or the exact result is a power of 2 (i.e. if
          both arguments are powers of 2), then round to zero. */
       if (rnd_mode == GMP_RNDN &&
-          ((bx + cx) + (mp_exp_t) b1 < __gmpfr_emin ||
+          (MPFR_GET_EXP(b)+MPFR_GET_EXP(c) + (mp_exp_t) b1 < __gmpfr_emin ||
            (mpfr_powerof2_raw (b) && mpfr_powerof2_raw (c))))
         rnd_mode = GMP_RNDZ;
       return mpfr_set_underflow (a, rnd_mode, sign_product);
