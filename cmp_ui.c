@@ -78,10 +78,13 @@ mpfr_cmp_si_2exp (mpfr_srcptr b, long int i, int f )
 {
   int e, k, bn, si; mp_limb_t c, *bp;
 
-  if (MPFR_IS_NAN(b)) return 1;
+  if (MPFR_IS_NAN(b))
+    return 1;
 
   si = (i<0) ? -1 : 1; /* sign of i */
-  if (MPFR_SIGN(b) * i < 0 || MPFR_IS_INF(b)) return MPFR_SIGN(b); 
+  if ((MPFR_SIGN(b) * si < 0) || MPFR_IS_INF(b))
+    return MPFR_SIGN(b);
+
   /* both signs differ */
   else if (!MPFR_NOTZERO(b) || (i==0)) { /* one is zero */
     if (i==0) return ((MPFR_NOTZERO(b)) ? MPFR_SIGN(b) : 0);
