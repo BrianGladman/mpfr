@@ -34,8 +34,31 @@ mpfr_get_ui (mpfr_srcptr f, mp_rnd_t rnd)
   if (!mpfr_fits_ulong_p (f, rnd) || MPFR_IS_ZERO(f))
     return (unsigned long) 0;
 
+  /* now 0 <= f and either f <= ULONG_MAX or
+     round(f, prec(ULONG_MAX), rnd) <= ULONG_MAX */
+
+  exp = MPFR_EXP(f);
+  if (exp <= 0) /* 0 < f < 1 */
+    {
+      /* return 0 for round to zero or -infinity,
+                1 for round to +infinity,
+                and for round to nearest:
+                   0 if f <= 1/2 (even rule)
+                   1 otherwise */
+      return (rnd == GMP_RNDZ || rnd == GMP_RNDD) ? 0
+        : ((rnd == GMP_RNDU) ? 1
+           : (mpfr_cmp_ui_2exp (f, 1, -1) <= 0 ? 0 : 1));
+    }
+
+  /* now exp > 0 */
+
   /* determine prec of unsigned long */
   for (s = ULONG_MAX, prec = 0; s != 0; s /= 2, prec ++);
+
+  /* since f < 2^EXP(f), we need at most min(prec,EXP(f)) bits */
+  prec = (exp < prec) ? exp : prec;
+  if (prec < MPFR_PREC_MIN)
+    prec = MPFR_PREC_MIN;
 
   /* first round to prec bits */
   mpfr_init2 (x, prec);

@@ -217,6 +217,25 @@ main (int argc, char *argv[])
   mpfr_nextabove (x);
   mpfr_get_ui (x, GMP_RNDU);
 
+  /* another test for get_ui */
+  mpfr_set_prec (x, 10);
+  mpfr_set_str_binary (x, "10.101");
+  dl = mpfr_get_ui (x, GMP_RNDN);
+  MPFR_ASSERTN (dl == 3);
+
+  mpfr_set_str_binary (x, "-1.0");
+  mpfr_get_ui (x, GMP_RNDN);
+
+  mpfr_set_str_binary (x, "0.1");
+  dl = mpfr_get_ui (x, GMP_RNDN);
+  MPFR_ASSERTN (dl == 0);
+  dl = mpfr_get_ui (x, GMP_RNDZ);
+  MPFR_ASSERTN (dl == 0);
+  dl = mpfr_get_ui (x, GMP_RNDD);
+  MPFR_ASSERTN (dl == 0);
+  dl = mpfr_get_ui (x, GMP_RNDU);
+  MPFR_ASSERTN (dl == 1);
+
   /* coverage tests */
   mpfr_set_prec (x, 2);
   mpfr_set_si (x, -7, GMP_RNDD);
