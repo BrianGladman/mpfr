@@ -19,42 +19,42 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
-#include <stddef.h>
 #include <limits.h>
 
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-static int
-mpfr_exp_rational (mpfr_ptr y, mpz_srcptr p, int r, int m)
+static void
+mpfr_exp_rational (mpfr_ptr y, mpz_srcptr p, long r, int m)
 {
-  int n, i, k, j, l;
-  mpz_t *P, *S;
-  mpz_t *ptoj;
-  int diff, expo;
-  int precy = MPFR_PREC(y);
-  int *mult;
-  int prec_i_have;
-  int *nb_terms;
-  int accu;
-  TMP_DECL (marker);
+  long n;
+  int i, j, k, l;
+  mpz_t *P, *S, *ptoj;
+  mp_exp_t diff, expo;
+  mp_prec_t precy = MPFR_PREC(y), prec_i_have, accu;
+  mp_prec_t *mult, *nb_terms;
 
-  TMP_MARK (marker);
-  MPFR_ASSERTN((size_t) m < sizeof(int) * CHAR_BIT - 1);
-  n = 1 << m;
-  P = (mpz_t*) TMP_ALLOC((m+1) * sizeof(mpz_t));
-  S = (mpz_t*) TMP_ALLOC((m+1) * sizeof(mpz_t));
-  ptoj = (mpz_t*) TMP_ALLOC((m+1) * sizeof(mpz_t)); /* ptoj[i] = mantissa^(2^i) */
-  mult = (int*) TMP_ALLOC((m+1) * sizeof(int)); 
-  nb_terms = (int*) TMP_ALLOC((m+1) * sizeof(int)); 
-  mult[0] = 0;
+  MPFR_ASSERTN ((size_t) m < sizeof (long) * CHAR_BIT - 1);
+  n = 1L << m;
+
+  /* Allocate TAB */
+  P    = (mpz_t*) (*__gmp_allocate_func) (3*(m+1)*sizeof(mpz_t));
+  S    = P + (m+1);
+  ptoj = P + 2*(m+1);                     /* ptoj[i] = mantissa^(2^i) */
+ 
+  mult     = (mp_prec_t*) (*__gmp_allocate_func) (2*(m+1)*sizeof(mp_prec_t));
+  nb_terms = mult + (m+1);
+ 
+  /* Init var */
   for (i = 0; i <= m; i++)
     {
       mpz_init (P[i]);
       mpz_init (S[i]);
       mpz_init (ptoj[i]);
     }
+
+  /* Set initial var */
+  mult[0] = 0;
   mpz_set (ptoj[0], p);
   for (i = 1; i < m; i++)
     mpz_mul (ptoj[i], ptoj[i-1], ptoj[i-1]);
@@ -64,6 +64,7 @@ mpfr_exp_rational (mpfr_ptr y, mpz_srcptr p, int r, int m)
   nb_terms[0] = 1;
   prec_i_have = 0; 
 
+  /* Main Loop */
   for (i = 1; (prec_i_have < precy) && (i < n); i++)
     {
       /* invariant: P[0]*P[1]*...*P[k] equals i! */
@@ -75,15 +76,14 @@ mpfr_exp_rational (mpfr_ptr y, mpz_srcptr p, int r, int m)
       l = 0;
       while ((j & 1) == 0)
         {
-          MPFR_ASSERTN((size_t) l < sizeof(int) * CHAR_BIT - 1);
           mpz_mul (S[k], S[k], ptoj[l]);
           mpz_mul (S[k-1], S[k-1], P[k]);
           mpz_mul_2exp (S[k-1], S[k-1], r * (1 << l));
           mpz_add (S[k-1], S[k-1], S[k]);
           mpz_mul (P[k-1], P[k-1], P[k]);
-          nb_terms[k-1] = nb_terms[k-1] + nb_terms[k];
-          mult[k] = mult[k-1] + (1 << l) * (r >> 2)
-            + mpz_sizeinbase (P[k], 2) - 1;
+          nb_terms[k-1] += nb_terms[k];
+	  MPFR_MPZ_SIZEINBASE2 (prec_i_have, P[k]);
+	  mult[k] = mult[k-1] + (1 << l) * (r >> 2) + prec_i_have - 1;
           prec_i_have = mult[k];
           /* since mult[k] >= mult[k-1] + nbits(P[k]),
              we have P[0]*...*P[k] <= 2^mult[k] = 2^prec_i_have */
@@ -109,15 +109,16 @@ mpfr_exp_rational (mpfr_ptr y, mpz_srcptr p, int r, int m)
     }
 
   /* P[0] now equals i! */
-   
-  diff = mpz_sizeinbase (S[0], 2) - 2 * precy;
+  MPFR_MPZ_SIZEINBASE2 (prec_i_have, S[0]);
+  diff = (mp_exp_t) prec_i_have - 2 * (mp_exp_t) precy;
   expo = diff;
   if (diff >= 0)
     mpz_div_2exp (S[0], S[0], diff);
   else 
     mpz_mul_2exp (S[0], S[0], -diff);
 
-  diff = mpz_sizeinbase(P[0], 2) - precy;
+  MPFR_MPZ_SIZEINBASE2 (prec_i_have, P[0]);
+  diff = (mp_exp_t) prec_i_have - (mp_prec_t) precy;
   expo -= diff;
   if (diff > 0)
     mpz_div_2exp (P[0], P[0], diff);
@@ -126,17 +127,16 @@ mpfr_exp_rational (mpfr_ptr y, mpz_srcptr p, int r, int m)
 
   mpz_tdiv_q (S[0], S[0], P[0]);
   mpfr_set_z (y, S[0], GMP_RNDD);
-  MPFR_SET_EXP (y, MPFR_GET_EXP (y) + expo);
+  MPFR_SET_EXP (y, MPFR_GET_EXP (y) + expo - r * (i - 1) );
 
-  mpfr_div_2ui (y, y, r * (i - 1), GMP_RNDN); 
   for (i = 0; i <= m; i++)
     {
       mpz_clear (P[i]);
       mpz_clear (S[i]);
       mpz_clear (ptoj[i]);
     }
-  TMP_FREE (marker);
-  return 0;
+  (*__gmp_free_func) (P, 3*(m+1)*sizeof(mpz_t));
+  (*__gmp_free_func) (mult, 2*(m+1)*sizeof(mp_prec_t));
 }
 
 #define shift (BITS_PER_MP_LIMB/2)
@@ -158,8 +158,7 @@ mpfr_exp_3 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   /* decompose x */
   /* we first write x = 1.xxxxxxxxxxxxx
      ----- k bits -- */
-  /* FIXME: Can I replace this with MPFR_INT_CEIL_LOG2? */
-  prec_x = __gmpfr_ceil_log2 ((double) (MPFR_PREC(x)) / BITS_PER_MP_LIMB);
+  prec_x = MPFR_INT_CEIL_LOG2 (MPFR_PREC (x)) - MPFR_LOG2_BITS_PER_MP_LIMB;
   if (prec_x < 0)
     prec_x = 0;
 
@@ -189,7 +188,7 @@ mpfr_exp_3 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_ZIV_INIT (ziv_loop, realprec);
   for (;;)
     {
-      k = __gmpfr_ceil_log2 ((double) Prec / BITS_PER_MP_LIMB);
+      k = MPFR_INT_CEIL_LOG2 (Prec) - MPFR_LOG2_BITS_PER_MP_LIMB;
 
       /* now we have to extract */
       twopoweri = BITS_PER_MP_LIMB;
@@ -208,7 +207,7 @@ mpfr_exp_3 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
           mpfr_extract (uk, x_copy, i);
 	  mpfr_exp_rational (t, uk, twopoweri - ttt, k  - i + 1);
 	  mpfr_mul (tmp, tmp, t, GMP_RNDD); 
-          MPFR_ASSERTN (twopoweri <= INT_MAX/2);
+          MPFR_ASSERTN (twopoweri <= LONG_MAX/2);
           twopoweri *=2;
         }
       for (loop = 0 ; loop < shift_x; loop++)
@@ -223,10 +222,12 @@ mpfr_exp_3 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_set_prec (tmp, Prec);
     }
   MPFR_ZIV_FREE (ziv_loop);
-  inexact = mpfr_set (y, tmp, rnd_mode);
+  
+  inexact = mpfr_set (y, tmp, rnd_mode); 
+  
+  mpz_clear (uk);
   mpfr_clear (tmp);
   mpfr_clear (t);
-  mpz_clear (uk);
   mpfr_clear (x_copy);
   return inexact;
 } 

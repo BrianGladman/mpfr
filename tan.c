@@ -26,7 +26,8 @@ MA 02111-1307, USA. */
 int 
 mpfr_tan (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
-  int precy, m, inexact;
+  mp_prec_t precy, m;
+  int inexact;
   mpfr_t s, c;
   MPFR_ZIV_DECL (loop);
   MPFR_SAVE_EXPO_DECL (expo);

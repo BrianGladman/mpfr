@@ -137,7 +137,9 @@ MA 02111-1307, USA. */
 # error "BITS_PER_MP_LIMB must be a power of 2, and >= 32"
 #endif
 
-#if BITS_PER_MP_LIMB == 32
+#if BITS_PER_MP_LIMB == 16
+# define MPFR_LOG2_BITS_PER_MP_LIMB 4
+#elif BITS_PER_MP_LIMB == 32
 # define MPFR_LOG2_BITS_PER_MP_LIMB 5
 #elif BITS_PER_MP_LIMB == 64
 # define MPFR_LOG2_BITS_PER_MP_LIMB 6

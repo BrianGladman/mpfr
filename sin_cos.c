@@ -27,7 +27,8 @@ MA 02111-1307, USA. */
 int 
 mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode) 
 {
-  int prec, m, neg;
+  mp_prec_t prec, m;
+  int neg;
   mpfr_t c, k;
   mp_exp_t e;
   MPFR_ZIV_DECL (loop);

@@ -32,7 +32,7 @@ mpfr_asinh (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   int signx, neg;
   mp_prec_t Nx, Ny, Nt;
   mpfr_t t; /* auxiliary variables */
-  long int err;
+  mp_exp_t err;
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_ZIV_DECL (loop);
 
