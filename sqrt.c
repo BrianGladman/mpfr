@@ -89,6 +89,7 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
   odd_exp = (unsigned int) MPFR_GET_EXP (u) & 1;
   inexact = -1; /* return ternary flag */
 
+  TMP_MARK (marker);
   sp = (mp_limb_t *) TMP_ALLOC (rrsize * sizeof (mp_limb_t));
 
   /* copy the most significant limbs of u to {sp, rrsize} */

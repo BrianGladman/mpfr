@@ -68,7 +68,7 @@ void mpfr_count_sort (mpfr_ptr const tab[], unsigned long n,
         perm[target_rank] = tab[i];
     }
     
-    TMP_FREE(account);
+    TMP_FREE(marker);
 }
 
 /* Performs a heap sort of the entries */

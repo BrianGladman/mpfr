@@ -409,7 +409,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mp_rnd_t rnd)
   size_t pstr_size;
   mp_size_t ysize, real_ysize;
   int res, err;
-  TMP_DECL (maker);
+  TMP_DECL (marker);
 
   /* determine the minimal precision for the computation */
   prec = MPFR_PREC (x) + MPFR_INT_CEIL_LOG2 (MPFR_PREC (x));
@@ -671,7 +671,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mp_rnd_t rnd)
   res = mpfr_set_overflow (x, rnd, (pstr->negative) ? -1 : 1);
 
  end:
-  TMP_FREE (maker);
+  TMP_FREE (marker);
   return res;
 }
 
