@@ -38,7 +38,8 @@ MA 02111-1307, USA. */
  * is a power of two.
  *
  * If inexp != NULL, put in *inexp the inexact flag of the rounding (0, 1, -1).
- * (In case of even rounding when rnd = GMP_RNDN, puts 2 or -2 in *inexp.)
+ * In case of even rounding when rnd = GMP_RNDN, put MPFR_EVEN_INEX (2) or
+ * -MPFR_EVEN_INEX (-2) in *inexp.
  *
  * If flag = 1, just returns whether one should add 1 or not for rounding.
  *
