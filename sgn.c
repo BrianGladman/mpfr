@@ -26,12 +26,8 @@ int
 mpfr_sgn (mpfr_srcptr a)
 {
   if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(a) ))
-    {
-      /* Only infinite is signed */
-      if (MPFR_IS_INF(a))
-	return MPFR_INT_SIGN(a);
-      else
-	return 0;
-    }
-  return MPFR_INT_SIGN(a);
+    /* Only infinite is signed */
+    return MPFR_IS_INF (a) ? MPFR_INT_SIGN (a) : 0;
+  else
+    return MPFR_INT_SIGN (a);
 }

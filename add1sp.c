@@ -22,7 +22,6 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
 #include <stdio.h>
-
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
@@ -172,8 +171,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	  {
 	    /* dm = 0 and m > 0: Just copy */
 	    MPFR_ASSERTD(m!=0);
-	    /* Must use INCR since src & dest may overlap and dest <= src */
-	    MPN_COPY_INCR(cp, MPFR_MANT(c)+m, n-m);
+	    MPN_COPY(cp, MPFR_MANT(c)+m, n-m);
 	    MPN_ZERO(cp+n-m, m);
 	  }
 	else if (MPFR_LIKELY(m == 0))
