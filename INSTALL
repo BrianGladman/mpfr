@@ -1,46 +1,36 @@
-		Installing mpfr-0.0
-		===================
+		Installing MPFR version 1.0
+		===========================
 
 0. You first need to install GMP. See <http://www.swox.com/gmp/>.
-   MPFR needs the gmp include file gmp-mparam.h that will be
-   created during the compilation of gmp in the mpn subdirectory.
-   So that all GMP include files are in the same directory, once
-   you are in the GMP source directory (where the files gmp.h,
-   gmp-impl.h, longlong.h and stack-alloc.h already are), type:
+   MPFR version 1.0 requires GMP version 3.0 or latter.
 
-	ln -s mpn/gmp-mparam.h .
+   After you have successfully built GMP, and installed it using
+   "make install", you'll need to manually install some GMP header 
+   files needed by MPFR. In the GMP source directory, type:
 
-We have now a new autoconf script, but you can still you the old ./Configure
+   cp config.h gmp-impl.h gmp-mparam.h longlong.h DIR/include
 
+   where DIR is the directory where you have installed GMP.
 
-old ./Configure                     new autoconf
----------------                     ---------------
-1. type "./Configure" and answer    1. type "./configure --help", 
-to the questions                    to see the options you have to choose          
-                                    For most users, "./configure --with-gmp=DIR" 
-				    will suffice.
-	
-2. type "make" (produces libmpfr.a) 2. type "make" (produces libmpfr.a and
-                                    tests files)
+1. type "./configure --help", to see the options you have to choose
+   For most users, "./configure --with-gmp=DIR" will suffice, where
+   DIR is the directory where you have installed GMP.
 
-3. type "make doc" to produce       3. type "make dvi" to produce the  
-the documentation                   documentation (DVI file mpfr.dvi)
- (DVI file mpfr.dvi)
+2. type "make" (produces libmpfr.a and tests files)
+
+3. type "make dvi" to produce the documentation (DVI file mpfr.dvi)
 
 4. type "cd tests; make"            4. type "cd tests; make tests"
 (produces and runs the test files)  (runs the test files)
 
 Notes:
 
-- we tested the installation with GMP 2.0.2 on the following architectures:
+- we tested the installation with GMP 3.1 on the following architectures:
 
 Pentium II and III/Linux 2.2.10
-Alpha 21264/OSF1 V4.0
-SGI R10000/IRIX 6.5 (both using 32- and 64-bit limbs)
+Alpha 21264 and 21164/OSF1 V4.0
+SGI R10000/IRIX 6.5
 Sun UltraSparc/Solaris 2.6
-HP 9000/HP-UX A.09.05
-Pentium/Windows with Cygnus compiler
-
 
 ./configure options
 ===================
@@ -52,29 +42,8 @@ Pentium/Windows with Cygnus compiler
 Known problems.
 ===============
 
-1) On some architectures (for example Alpha/OSF), the default 'make' command 
-crashes in step 3 with old Configure . GNU make is preferred. There is no
-problem with autconf script.
-
-2) Under HP-UX, Pentium/Linux and AIX, don't use the -pedantic option, 
-   otherwise gcc complains with the longlong.h file from GMP.
-
-3) On the Alpha, the test file for the square root (tsqrt) may produce
-errors as follows:
-
-libm.a differs from mpfr_sqrt for a=9.89438396044940260000e-134, rnd_mode=2
-libm.a gives 3.14553397063986620000e-67, mpfr_sqrt gives 3.14553397063986680000e-67 (1 ulp)
-libm.a differs from mpfr_sqrt for a=7.86528588050363750000e+31, rnd_mode=1
-libm.a gives 8.86864469944739500000e+15, mpfr_sqrt gives 8.86864469944739400000e+15 (-1 ulp)
-
-Also, Linux on Alpha is known to have problems with IEEE conformance. See
-http://www.linux.org.uk/VERSION/relnotes.2211.html.
-
-In most cases, as above, the error comes from the libm.a. On Alpha/Linux,
-which is known to have a bad libm.a, you may even find errors in the
-addition or multiplication.
-
-4) With version 2.0.2 of GMP, add -DGMP2 in the configure options.
+Linux on Alpha is known to have problems with IEEE conformance. See
+<http://www.linux.org.uk/VERSION/relnotes.2211.html>.
 
 In case of problem.
 ===================
