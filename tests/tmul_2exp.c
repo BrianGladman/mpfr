@@ -1,4 +1,4 @@
-/* Test file for mpfr_mul_2exp.
+/* Test file for mpfr_{mul,div}_2{ui,si}.
 
 Copyright 1999, 2001, 2002, 2003, 2004 Free Software Foundation.
 
@@ -44,7 +44,7 @@ main (int argc, char *argv[])
   mpfr_inits2(53, w, z, NULL);
 
   mpfr_set_inf (w, 1);
-  mpfr_mul_2exp (w, w, 10, GMP_RNDZ);
+  mpfr_mul_2ui (w, w, 10, GMP_RNDZ);
   if (!MPFR_IS_INF(w))
     {
       printf ("Inf != Inf");
@@ -52,7 +52,7 @@ main (int argc, char *argv[])
     }
 
   mpfr_set_nan (w);
-  mpfr_mul_2exp (w, w, 10, GMP_RNDZ);
+  mpfr_mul_2ui (w, w, 10, GMP_RNDZ);
   if (!MPFR_IS_NAN(w))
     {
       printf ("NaN != NaN");
@@ -62,7 +62,7 @@ main (int argc, char *argv[])
   for( k = 0 ; k < numberof(val) ; k+=3 )
     {
       mpfr_set_str (w, val[k], 16, GMP_RNDN);
-      mpfr_mul_2exp (z, w, 10, GMP_RNDZ);
+      mpfr_mul_2ui (z, w, 10, GMP_RNDZ);
       if (mpfr_cmp_str(z, val[k+1], 16, GMP_RNDN))
 	{
 	  printf("ERROR for mpfr_mul_2ui for %s\n", val[k]);
@@ -72,7 +72,7 @@ main (int argc, char *argv[])
 	  putchar('\n');
 	  exit(-1);
 	}
-      mpfr_div_2exp (z, w, 10, GMP_RNDZ);
+      mpfr_div_2ui (z, w, 10, GMP_RNDZ);
       if (mpfr_cmp_str(z, val[k+2], 16, GMP_RNDN))
         {
           printf("ERROR for mpfr_div_2ui for %s\n"
