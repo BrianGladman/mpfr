@@ -1,6 +1,6 @@
 /* Test compatibility mpf-mpfr.
 
-Copyright 2003 Free Software Foundation.
+Copyright 2003, 2004 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -160,8 +160,11 @@ main ()
   /* Input and Output Functions */
 
   f = fopen ("/dev/null", "w");
-  mpf_out_str (f, 10, 10, x);
-  fclose (f);
+  if (f != NULL) 
+    {
+      mpf_out_str (f, 10, 10, x);
+      fclose (f);
+    }
 
   mpf_set_prec (x, 15);
   mpf_set_prec (y, 15);

@@ -135,7 +135,12 @@ main (int argc, char *argv[])
   /* with no argument: prints to /dev/null,
      tout_str N: prints N tests to stdout */
   if (argc == 1)
-    fout = fopen ("/dev/null", "w");
+    {
+      fout = fopen ("/dev/null", "w");
+      /* If we failed to open this device, try with a dummy file */
+      if (fout == NULL)
+	fout = fopen ("mpfrtest.txt", "w");
+    }
   else
     {
       fout = stdout;
