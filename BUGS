@@ -11,8 +11,3 @@ Knowns bugs:
   ones) and a possible bug.
 
 * TMP_ALLOC problems in agm.c and sqrt.c. (Kevin Ryde, 05 March 2002)
-
-* mpfr_log10 seems to go into an infininite loop on certain inputs, for
-  instance log10(10). (Kevin Ryde, 12 Mar 2002)
-
-* tan(3*pi/4) gives ~ +1 instead of ~ -1. (Kevin Ryde, 12 Mar 2002)
