@@ -486,6 +486,13 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
 /* Use it only for debug reasons */
 #define MPFR_DUMP(x) do { printf(#x"="); mpfr_dump(x); } while (0)
 
+/* Cache Handling */
+#ifdef MPFR_NO_CACHE
+# undef mpfr_const_pi
+# undef mpfr_const_log2
+# undef mpfr_const_euler
+#endif
+
 #define MPFR_DECL_INIT_CACHE(_cache,_func) \
  mpfr_cache_t _cache = {{{{0,MPFR_SIGN_POS,0,(mp_limb_t*)0}},GMP_RNDN,0,_func}}
 
