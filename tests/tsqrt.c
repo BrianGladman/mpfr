@@ -51,11 +51,13 @@ void check(a, rnd_mode) double a; unsigned char rnd_mode;
   mpfr_clear(q); mpfr_clear(n);
 }
 
-void main()
+int main()
 {
   int i; double a;
 
   srand(getpid());
+  check(1.0, 0);
+  check(1.0, 1);
   check(3.725290298461914062500000e-9, 0);
   check(3.725290298461914062500000e-9, 1);
   check(1.21902794387441766400e+18, 1);
