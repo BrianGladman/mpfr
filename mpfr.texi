@@ -158,7 +158,8 @@ have is not what we distributed, so that any problems introduced by others
 will not reflect on our reputation.@refill
 
 The precise conditions of the license for the GNU MPFR library are found in the
-Library General Public License that accompany the source code.@refill
+Library General Public License that accompany the source code.
+See the file COPYING.LIB.@refill
 
 @node Introduction to MPFR, Installing MPFR, Copying, Top
 @comment  node-name,  next,  previous,  up
@@ -206,7 +207,8 @@ probably a good idea to glance through it.
 @chapter Installing MPFR
 @cindex Installation
 
-To build MPFR, you first have to install GNU MP on your computer.
+To build MPFR, you first have to install GNU MP 
+(version 2.0.2 or higher) on your computer.
 You need a C compiler, preferably GCC, but any reasonable compiler should
 work.  And you need a standard Unix @samp{make} program, plus some other
 standard Unix utility programs.
@@ -215,8 +217,8 @@ Here are the steps needed to install the library on Unix systems:
 
 @enumerate
 @item
-In most cases, @samp{./configure --target=cpu-vendor-os}, should work both for
-native and cross-compilation.  If you get error messages, your machine might
+In most cases, @samp{./Configure} should work.
+If you get error messages, your machine might
 not be supported.
 
 If you want to compile in a separate object directory, cd to that directory,
@@ -224,9 +226,8 @@ and prefix the configure command with the path to the MPFR source directory.
 Not all @samp{make} programs have the necessary features to support this.  In
 particular, SunOS and Slowaris @samp{make} have bugs that makes them unable to
 build from a separate object directory.  Use GNU @samp{make} instead.
-
-If you have @code{gcc} in your @code{PATH}, it will be used by default.  To
-override this, pass @samp{-with-gcc=no} to @file{configure}.
+Also, the generated makefiles use some pattern matching rules that are not
+supported by all @samp{make} programs. Again, use GNU @samp{make} instead.
 
 @item
 @samp{make}
@@ -498,6 +499,11 @@ rounding mode, which unfortunately differ from one operating system to
 another one.
 @end deftypefun
 
+@deftypefun {char *} mpfr_print_rnd_mode (unsigned char @var{rnd})
+Returns the input string (GMP_RNDD, GMP_RNDU, GMP_RNDN, GMP_RNDZ)
+corresponding to the rounding mode @var{rnd}.
+@end deftypefun
+
 @node Initializing Floats, Assigning Floats, , Floating-point Functions
 @comment  node-name,  next,  previous,  up
 @section Initialization and Assignment Functions
@@ -528,6 +534,8 @@ by a call to @code{mpfr_set_default_prec}.
 Initialize @var{x} and set its precision to be @strong{exactly}
 @var{prec} bits.  Normally, a variable should be initialized once only or at
 least be cleared, using @code{mpfr_clear}, between initializations.
+To change the precision of a variable which has already been initialized,
+use @code{mpfr_set_prec} instead.
 @end deftypefun
 
 @deftypefun void mpfr_clear (mpfr_t @var{x})
@@ -554,13 +562,15 @@ calculation.  A typical use would be for adjusting the precision gradually in
 iterative algorithms like Newton-Raphson, making the computation precision
 closely match the actual accurate part of the numbers.
 
-@deftypefun void mpfr_set_prec (mpfr_t @var{x}, unsigned long int @var{prec}, char @var{rnd})
+@deftypefun void mpfr_set_prec (mpfr_t @var{x}, unsigned long int @var{prec})
 Reset the precision of @var{x} to be @strong{exactly} @var{prec} bits.
-If @var{prec} is larger than the previous precision of @var{x}, the mantissa
-is filled with zeroes, otherwise @var{x} is rounded towards direction
-@var{rnd}.
-Since changing the precision involves calls to @code{realloc}, this routine
-should not be called in a tight loop.
+The previous value stored in @var{x} is lost. It is equivalent to
+a call to @code{mpfr_clear(x)} followed by a call to 
+@code{mpfr_init2(x, prec)}, but more efficient as no allocation is done in
+case the current allocated space for the mantissa of @var{x} is enough.
+
+In case you want to keep the previous value stored in @var{x},
+use @code{mpfr_round} instead.
 @end deftypefun
 
 @deftypefun {unsigned long int} mpfr_get_prec (mpf_t @var{x})
@@ -680,8 +690,10 @@ the divide functions will make these functions intentionally divide by zero.
 This gives the user the possibility to handle arithmetic exceptions in these
 functions in the same manner as other arithmetic exceptions.
 
-@deftypefun void mpfr_div (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, char @var{rnd})
+@deftypefun int mpfr_div (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, char @var{rnd})
+@deftypefunx int mpfr_div_ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, char @var{rnd})
 Set @var{rop} to @var{op1}/@var{op2} rounded in the direction @var{rnd}.
+Return 0 if the division is exact, a non-zero value otherwise.
 @end deftypefun
 
 @deftypefun void mpfr_sqrt (mpfr_t @var{rop}, mpfr_t @var{op}, char @var{rnd})
@@ -701,7 +713,8 @@ Returns NaN if @var{op} is negative.
 Set @var{rop} to @var{op1} raised to @var{op2}. The computation is done by
 binary exponentiation, each multiplication being rounded to direction 
 @var{rnd}. Hence the relative error with respect to the exact result may be
-larger than one ulp (unit in last place).
+larger than one unit in last place (ulp). In other words, this function does
+not provide an exact rounding.
 @end deftypefun
 
 @deftypefun void mpfr_neg (mpfr_t @var{rop}, mpfr_t @var{op}, char @var{rnd})
@@ -806,9 +819,36 @@ Returns zero when its argument is zero, and a non-zero value otherwise.
 @section Special Functions
 @cindex Special functions
 
+@deftypefun int mpfr_log (mpfr_t @var{rop}, mpfr_t @var{op}, char @var{rnd})
+Set @var{rop} to the natural logarithm of @var{op},
+rounded to the direction @var{rnd} with the precision of @var{rop}.
+Return 0 iff the result is exact (this occurs in fact only when @var{op} is 1
+i.e. the result is 0).
+@end deftypefun
+
+@deftypefun int mpfr_exp (mpfr_t @var{rop}, mpfr_t @var{op}, char @var{rnd})
+Set @var{rop} to the exponential of @var{op},
+rounded to the direction @var{rnd} with the precision of @var{rop}.
+Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
+i.e. the result is 1).
+@end deftypefun
+
 @deftypefun void mpfr_agm (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, char @var{rnd})
 Set @var{rop} to the arithmetic-geometric mean of @var{op1} and @var{op2},
 rounded to the direction @var{rnd} with the precision of @var{rop}.
+@end deftypefun
+
+@deftypefun void mpfr_log2 (mpfr_t @var{rop}, unsigned char @var{rnd})
+Set @var{rop} to the logarithm of 2 rounded to the direction @var{rnd}
+with the precision of @var{rop}. This function stores the computed
+value to avoid another calculation if a lower or equal precision is
+requested.
+@end deftypefun
+
+@deftypefun void mpfr_pi (mpfr_t @var{rop}, unsigned char @var{rnd})
+Set @var{rop} to the value of Pi rounded to the direction @var{rnd}
+with the precision of @var{rop}. This function uses the Borwein, Borwein,
+Plouffe formula which directly gives the expansion of Pi in base 16.
 @end deftypefun
 
 @node I/O of Floats, Miscellaneous Float Functions, Float Comparison, Floating-point Functions
@@ -882,14 +922,20 @@ they should always be zero.
 @section Miscellaneous Functions
 @cindex Miscellaneous float functions
 
-@c @deftypefun void mpfr_random2 (mpfr_t @var{rop}, mp_size_t @var{max_size}, mp_exp_t @var{max_exp})
-@c Generate a random float of at most @var{max_size} limbs, with long strings of
-@c zeros and ones in the binary representation.  The exponent of the number is in
-@c the interval @minus{}@var{exp} to @var{exp}.  This function is useful for
-@c testing functions and algorithms, since this kind of random numbers have
-@c proven to be more likely to trigger corner-case bugs.  Negative random numbers
-@c are generated when @var{max_size} is negative.
-@c @end deftypefun
+@deftypefun void mpfr_random (mpfr_t @var{rop})
+Put in @var{rop} a random float in the interval [0,1[.
+Random limbs are generated using the
+@code{random} system function.
+zeros and ones in the binary representation.  The exponent of the number is in
+the interval @minus{}@var{exp} to @var{exp}.  This function is useful for
+testing functions and algorithms, since this kind of random numbers have
+proven to be more likely to trigger corner-case bugs.  Negative random numbers
+are generated when @var{max_size} is negative.
+@end deftypefun
+
+@deftypefun void mpfr_srandom (unsigned long @var{seed})
+Set the random seed used by @code{mpfr_random} to @var{seed}.
+@end deftypefun
 
 @c @deftypefun size_t mpfr_size (mpfr_t @var{op})
 @c Return the size of @var{op} measured in number of limbs.  If @var{op} is
@@ -934,8 +980,15 @@ Changes the sign of @var{x}.
 @end deftypefun
 
 @deftypefun int mpfr_add_one_ulp (mpfr_t @var{x})
-Add one ulp to @var{x} if it is positive or zero, 
-and subtracts one ulp otherwise.
+Add one unit in last place (ulp) to the mantissa of @var{x} 
+if it is positive or zero, and subtracts one ulp otherwise.
+Always return 0 (result is exact).
+@end deftypefun
+
+@deftypefun int mpfr_sub_one_ulp (mpfr_t @var{x})
+Subtract one ulp to @var{x} if it is positive or zero, 
+and adds one ulp otherwise.
+Always return 0 (result is exact).
 @end deftypefun
 
 @deftypefun int mpfr_cmp2 (mpfr_t @var{a}, mpfr_t @var{b})
@@ -963,7 +1016,7 @@ to round to mode @var{rnd}. This function @strong{does not modify} the
 mantissa stored in @var{xp}.
 @end deftypefun
 
-@deftypefun int mpfr_can_round (mpfr_t @var{b}, int @var{err}, char @var{rnd1}, char @var{rnd2}, long @var{prec})
+@deftypefun int mpfr_can_round (mpfr_t @var{b}, unsigned long @var{err}, char @var{rnd1}, char @var{rnd2}, unsigned long @var{prec})
 Assuming @var{b} is an approximation of an unknown number
 @var{x} in direction @var{rnd1} with error at most two to the power 
 E(b)-@var{err} where E(b) is the exponent of 
