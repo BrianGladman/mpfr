@@ -243,7 +243,7 @@ mpfr_get_d1 (mpfr_srcptr src)
 }
 
 double
-mpfr_get_d_2exp (mp_exp_t *exp, mpfr_srcptr src, mp_rnd_t rnd_mode)
+mpfr_get_d_2exp (long *exp, mpfr_srcptr src, mp_rnd_t rnd_mode)
 {
   *exp = MPFR_GET_EXP (src);
   return mpfr_get_d3 (src, 0, rnd_mode);
