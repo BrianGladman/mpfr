@@ -662,7 +662,7 @@ check_1111 (void)
       sb = randlimb () % 3;
       if (sb != 0)
         {
-          tb = 1 + (randlimb () % (prec_b - 1));
+          tb = 1 + (randlimb () % (prec_b - (sb != 2)));
           mpfr_div_2ui (b, one, tb, GMP_RNDN);
           if (sb == 2)
             mpfr_neg (b, b, GMP_RNDN);
@@ -677,7 +677,7 @@ check_1111 (void)
         mpfr_neg (c, c, GMP_RNDN);
       mpfr_add (c, c, one, GMP_RNDN);
       diff = (randlimb () % (2*m)) - m;
-      mpfr_mul_2ui (c, c, diff, GMP_RNDN);
+      mpfr_mul_2si (c, c, diff, GMP_RNDN);
       rnd_mode = RND_RAND ();
       inex_a = test_add (a, b, c, rnd_mode);
       mpfr_init2 (s, MPFR_PREC_MIN + 2*m);
