@@ -131,6 +131,7 @@ Efficiency:
 - idem for mpfr_atanh (2^(-1021) for example)
 - improve generic.c to work for number of terms <> 2^k
 - rewrite mpfr_greater_p... as native code.
+- mpfr_mul(a,b,c): truncate b,c when their precision is larger than that of a
 
 - mpf_t uses a scheme where the number of limbs actually present can
   be less than the selected precision, thereby allowing low precision
