@@ -135,3 +135,4 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
 #undef RAND_FUNCTION
 #undef TWO_ARGS
 #undef TEST_FUNCTION
+#undef test_generic

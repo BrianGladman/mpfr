@@ -485,6 +485,7 @@ __MPFR_DECLSPEC int mpfr_tan _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_hypot _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
 					     mpfr_srcptr, mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_erf _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,mpfr_rnd_t));
+__MPFR_DECLSPEC int mpfr_erfc _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_cbrt _MPFR_PROTO ((mpfr_ptr,mpfr_srcptr,mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_gamma _MPFR_PROTO((mpfr_ptr,mpfr_srcptr,mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_zeta _MPFR_PROTO ((mpfr_ptr,mpfr_srcptr,mpfr_rnd_t));

@@ -46,21 +46,11 @@ Changes in existing functions:
 - mpfr_get_str should support base up to 62 too.
 
 - mpfr_can_round:
-1) remove the first rounding mode (rnd1) that was giving the direction of
-   the error. We'll consider now that the sign of the error is unknown.
-   This will simplify the code, should not loose too much since in most
-   cases we call mpfr_can_round with rnd1 = nearest, and should detect cases
-   with exact results that may loop.
-2) change the meaning of the 2nd argument (err). Currently the error is
+   change the meaning of the 2nd argument (err). Currently the error is
    at most 2^(MPFR_EXP(b)-err), i.e. err is the relative shift wrt the
    most significant bit of the approximation. I propose that the error
    is now at most 2^err ulps of the approximation, i.e.
    2^(MPFR_EXP(b)-MPFR_PREC(b)+err).
-3) the current code performs two computations to check if we can round:
-   it checks if both round(approx-error) and round(approx+error) give
-   the same result. One computation is enough: for example in directed
-   rounding, if the round bit is 0 (resp. 1), we just have to check
-   round(approx-error) (resp. round(approx+error)).
 
 - mpfr_set_q first tries to convert the numerator and the denominator
   to mpfr_t. But this convertion may fail even if the correctly rounded
@@ -122,8 +112,6 @@ Efficiency:
 - idem for mpfr_atanh (2^(-1021) for example)
 - improve generic.c to work for number of terms <> 2^k
 - rewrite mpfr_greater_p... as native code.
-- mpfr_mul(a,b,c): truncate b,c when their precision is larger than that of a
-- rewrite const_pi / const_log2 to be much faster for huge precision.
 
 - mpf_t uses a scheme where the number of limbs actually present can
   be less than the selected precision, thereby allowing low precision
@@ -164,7 +152,16 @@ Miscellaneous:
 
 - add tests of the ternary value for constants
 
-
+- When doing Extensive Check (--enable-assert=full), since all the
+  functions use a similar use of MACROS (ZivLoop, ROUND_P), it should 
+  be possible to do such a scheme:
+    For the first call to ROUND_P when we can round.
+    Mark it as such and save the approximated rounding value in 
+    a temporary variable.
+    Then after, if the mark is set, check if:
+      - we still can round.
+      - The rounded value is the same.
+  It should be a complement to tgeneric tests.
 
 Portability:
 
