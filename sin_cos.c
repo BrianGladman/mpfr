@@ -90,10 +90,11 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
       e = MPFR_GET_EXP (c) + m - e;
       if (mpfr_can_round (c, e, GMP_RNDN, rnd_mode, MPFR_PREC (y)))
 	break;
-    next_step:
       /* check for huge cancellation */
       if (e < MPFR_PREC (y))
         m += MPFR_PREC (y) - e;
+
+    next_step:
       m += BITS_PER_MP_LIMB;
       mpfr_set_prec (c, m);
     }
