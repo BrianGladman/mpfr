@@ -157,14 +157,19 @@ mpfr_get_d3 (mpfr_srcptr src, mp_exp_t e, mp_rnd_t rnd_mode)
   return d;
 }
 
+/* Note: do not read the exponent if it has no meaning (avoid possible
+   traps on some implementations). */
+
 double
 mpfr_get_d2 (mpfr_srcptr src, mp_rnd_t rnd_mode)
 {
-  return mpfr_get_d3 (src, MPFR_EXP(src), rnd_mode);
+  return mpfr_get_d3 (src, MPFR_IS_FP(src) && MPFR_NOTZERO(src) ?
+                      MPFR_EXP(src) : 0, rnd_mode);
 }
 
 double
 mpfr_get_d (mpfr_srcptr src)
 {
-  return mpfr_get_d3 (src, MPFR_EXP(src), __gmp_default_rounding_mode);
+  return mpfr_get_d3 (src, MPFR_IS_FP(src) && MPFR_NOTZERO(src) ?
+                      MPFR_EXP(src) : 0, __gmp_default_rounding_mode);
 }
