@@ -125,10 +125,10 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	       1.BBBBBBBBBBBBB0   if inexact == EVEN_INEX  (x == 0)
   	       1.BBBBBBBBBBBBB1+1 if inexact == -EVEN_INEX (x == 1) 
 	     which means we get a wrong rounded result if x==1, 
-	     i.e. inexact=-MPFR_EVEN_INEX */
-	  if (MPFR_UNLIKELY (inexact == -MPFR_EVEN_INEX*MPFR_INT_SIGN (a))) {
+	     i.e. inexact= MPFR_EVEN_INEX */
+	  if (MPFR_UNLIKELY (inexact == MPFR_EVEN_INEX*MPFR_INT_SIGN (a))) {
 	    mpfr_nexttoward (a, c);
-	    inexact = MPFR_INT_SIGN (a);
+	    inexact = -MPFR_INT_SIGN (a);
 	  }
 	  return inexact;
 	}
