@@ -112,13 +112,17 @@ $\ulp(o(x)) \leq \ulp(x)$.
 
 \begin{Rule} \label{R9}
 \begin{eqnarray}\nonumber
-&&\textnormal{with}\;\;  u=o(x),\;\; u.(1-2^{1-p}) \leq x \leq u.(1+2^{1-p})\\\nonumber
-&&\;\;\;\;\;\;\textnormal{or with}\;\;  u=o(x),\;\; u.c_u^- \leq x \leq u.c_u^+\\\nonumber
-&&\;\;\;\;\;\;\;\;\;\;\;\;\textnormal{if}\;\;  u=\pinf(x),\n{ then } c_u^+=1\\\nonumber
-&&\;\;\;\;\;\;\;\;\;\;\;\;\textnormal{if}\;\;  u=\minf(x),\n{ then } c_u^-=1\\\nonumber
-&&\;\;\;\;\;\;\;\;\;\;\;\;\textnormal{if}\;\;  \n{for $x<0$ and } u=Z(x),\n{ then } c_u^+=1 \\\nonumber
-&&\;\;\;\;\;\;\;\;\;\;\;\;\textnormal{if}\;\;  \n{for $x>0$ and } u=Z(x),\n{ then } c_u^-=1 \\\nonumber
-&&\;\;\;\;\;\;\;\;\;\;\;\;\textnormal{else}\;\;   c_u^{-}=1-2^{1-p} \n{ and } c_u^{+}=1+2^{1-p}
+&&\n{For}\;\;  error(u) \leq k_u \ulp(u),\;\; u.c_u^- \leq x \leq u.c_u^+)\\\nonumber
+&&\n{with}\;\;   c_u^{-}=1- k_u 2^{1-p} \n{ and } c_u^{+}=1+ k_u 2^{1-p}
+\end{eqnarray}
+
+\begin{eqnarray}\nonumber
+&&\n{For}\;\;  u=o(x),\;\; u.c_u^- \leq x \leq u.c_u^+\\\nonumber
+&&\n{if}\;\;  u=\pinf(x),\n{ then } c_u^+=1\\\nonumber
+&&\n{if}\;\;  u=\minf(x),\n{ then } c_u^-=1\\\nonumber
+&&\n{if}\;\;  \n{for $x<0$ and } u=Z(x),\n{ then } c_u^+=1 \\\nonumber
+&&\n{if}\;\;  \n{for $x>0$ and } u=Z(x),\n{ then } c_u^-=1 \\\nonumber
+&&\n{else}\;\;   c_u^{-}=1-2^{1-p} \n{ and } c_u^{+}=1+2^{1-p}
 \end{eqnarray}
 \end{Rule}
 
@@ -568,10 +572,7 @@ is at most $(\varepsilon_k t + \tau_k y)/2^m + 1$.
 We want to compute the generic error of the soustraction, this following rules can be apply on addition too.
 
 \begin{eqnarray}\nonumber
-u&=&o(x) \\\nonumber
-v&=&o(y) \\\nonumber
-w&=&o(u+v) \\\nonumber
-\textnormal{Note:}&& error(u) = k_u \, \ulp(u), \;\; error(v) = k_v \, \ulp(v)
+\textnormal{Note:}&& error(u) \leq k_u \, \ulp(u), \;\; error(v) \leq k_v \, \ulp(v)
 \end{eqnarray}
 
 \begin{eqnarray}\nonumber
@@ -598,10 +599,8 @@ error(w)& \leq&(c_w + k_u + k_v) \, \ulp(w)
 We want to compute the generic error of the multiplication.
 
 \begin{eqnarray}\nonumber
-u&=&o(x) \\\nonumber
-v&=&o(y) \\\nonumber
 w&=&o(u.v) \\\nonumber
-\textnormal{Note:}&& error(u) = k_u \, \ulp(u), \;\; error(v) = k_v \, \ulp(v)
+\textnormal{Note:}&& error(u) \leq k_u \, \ulp(u), \;\; error(v) \leq k_v \, \ulp(v)
 \end{eqnarray}
 \begin{eqnarray}\nonumber
 error(w)& = &|w - x.y| \\\nonumber
@@ -621,9 +620,8 @@ error(w)& = &|w - x.y| \\\nonumber
 We want to compute the generic error of the inverse.
 
 \begin{eqnarray}\nonumber
-u&=&o(x) \\\nonumber
 w&=&o(\frac{1}{v}) \\\nonumber
-\textnormal{Note:}&& error(u) = k_u \, \ulp(u)
+\textnormal{Note:}&& error(u) \leq k_u \, \ulp(u)
 \end{eqnarray}
 \begin{eqnarray}\nonumber
 error(w)& = &|w - \frac{1}{x}| \\\nonumber
@@ -650,10 +648,8 @@ error(w)& \leq & c_w \ulp(w) + c_u\frac{k_u}{u^2} \ulp(u)\\\nonumber
 We want to compute the generic error of the division.
 
 \begin{eqnarray}\nonumber
-u&=&o(x) \\\nonumber
-v&=&o(y) \\\nonumber
 w&=&o(\frac{u}{v}) \\\nonumber
-\textnormal{Note:}&& error(u) = k_u \, \ulp(u), \;\; error(v) = k_v \, \ulp(v)
+\textnormal{Note:}&& error(u) \leq k_u \, \ulp(u), \;\; error(v) \leq k_v \, \ulp(v)
 \end{eqnarray}
 \begin{eqnarray}\nonumber
 error(w)& = &|w - \frac{x}{y}| \\\nonumber
@@ -688,9 +684,8 @@ error(w)& \leq & c_w \ulp(w) + 2.k_u  \ulp(w)+ c_u.c_v.\frac{k_v u}{vv} \ulp(v)\
 We want to compute the generic error of the square root.
 
 \begin{eqnarray}\nonumber
-u&=&o(x) \\\nonumber
 v&=&o(\sqrt{u}) \\\nonumber
-\textnormal{Note:}&& error(u) = k_u \, \ulp(u)\\\nonumber
+\textnormal{Note:}&& error(u) \leq k_u \, \ulp(u)\\\nonumber
 \end{eqnarray}
 \begin{eqnarray}\nonumber
 error(v)& = &|v - \sqrt{x}| \\\nonumber
@@ -719,9 +714,8 @@ error(v)& \leq & c_v \ulp(v) +
 We want to compute the generic error of the logarithm.
 
 \begin{eqnarray}\nonumber
-u&=&o(x) \\\nonumber
 v&=&o(\log{u}) \\\nonumber
-\textnormal{Note:}&& error(u) = k_u \, \ulp(u)\\\nonumber
+\textnormal{Note:}&& error(u) \leq k_u \, \ulp(u)\\\nonumber
 \end{eqnarray}
 \begin{eqnarray}\nonumber
 error(v)& = &|v - \log{x}| \\\nonumber
