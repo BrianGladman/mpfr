@@ -88,7 +88,20 @@ New functions to implement:
 Efficiency:
 
 - implement range reduction in sin/cos/tan for large arguments
-	(currently too slow for 2^1024)
+	(currently too slow for 2^1024), and/or implement Mark Watkins's
+	algorithm:
+  My suggestion for a long-term fix to these sin/cos problems when one
+  of them is close to zero is the following:
+  Give input inp:
+  1) Reduce inp to the interval 0 to Pi/2
+  2) If inp is less than Pi/4, compute sin(inp) via a power series around 0.
+  3) If inp is more than Pi/4, compute s=Pi/2-inp to the working precision
+     (most of the possible cancellation will occur here --- or in step 1)
+     and calculate cos(inp) as a power series (in s) around Pi/2 --- thus
+     the output is near zero precisely when the s-input is near zero,
+     avoiding most cancellation problems.
+  4) Having sin or cos, compute the other via the sqrt. This will not cause
+     cancellation problems because the computed sin or cos is not near 1.
 - mpfr_asin/acos are too slow for small values (2^(-1021) for example)
 - idem for mpfr_atanh (2^(-1021) for example)
 - improve generic.c to work for number of terms <> 2^k
