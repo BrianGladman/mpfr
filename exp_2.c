@@ -133,6 +133,9 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   err = K + (int) __gmpfr_ceil_log2 (2.0 * (double) l + 18.0);
   /* add K extra bits, i.e. failure probability <= 1/2^K = O(1/precy) */
   q = precy + err + K + 5;
+  
+  /*q = ( (q-1)/BITS_PER_MP_LIMB + 1) * BITS_PER_MP_LIMB; */
+
   mpfr_init2 (r, q + error_r);
   mpfr_init2 (s, q + error_r);
   mpfr_init2 (t, q);
