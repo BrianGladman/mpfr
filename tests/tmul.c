@@ -46,7 +46,8 @@ static void
 _check (double x, double y, double res, mp_rnd_t rnd_mode, unsigned int px, 
         unsigned int py, unsigned int pz)
 {
-  double z1, z2; mpfr_t xx, yy, zz;
+  double z2;
+  mpfr_t xx, yy, zz;
 
   mpfr_init2 (xx, px);
   mpfr_init2 (yy, py);
@@ -55,10 +56,10 @@ _check (double x, double y, double res, mp_rnd_t rnd_mode, unsigned int px,
   mpfr_set_d(yy, y, rnd_mode);
   mpfr_mul(zz, xx, yy, rnd_mode);
   z2 = mpfr_get_d1 (zz);
-  if (z1!=z2 && (z1>=MINNORM || z1<=-MINNORM)) {
+  if (res != z2) {
     printf("mpfr_mul failed for x=%1.20e y=%1.20e with rnd_mode=%s\n", x, y,
 	     mpfr_print_rnd_mode(rnd_mode));
-    printf("correct is %1.20e, mpfr_mul gives %1.20e\n", z1, z2);
+    printf("correct is %1.20e, mpfr_mul gives %1.20e\n", res, z2);
     if (res!=0.0) exit(1);
   }
   mpfr_clear(xx); mpfr_clear(yy); mpfr_clear(zz);
