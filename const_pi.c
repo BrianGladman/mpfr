@@ -39,7 +39,7 @@ int
 {
   mpfr_t a, A, B, D, S;
   mp_prec_t px, p, cancel, k, kmax;
-  int inex, ok;
+  int inex = 0, ok;
 
   px = MPFR_PREC (x);
 
