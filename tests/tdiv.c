@@ -191,8 +191,16 @@ check_lowr (void)
 
   for (k = 1; k < KMAX; k++) 
     {
-      mpfr_random (z);
-      mpfr_random (tmp);
+      do
+        {
+          mpfr_random (z);
+        }
+      while (mpfr_cmp_ui (z, 0) == 0);
+      do
+        {
+          mpfr_random (tmp);
+        }
+      while (mpfr_cmp_ui (tmp, 0) == 0);
       mpfr_mul (x, z, tmp, GMP_RNDN);
       c = mpfr_div (z2, x, tmp, GMP_RNDN);
 
@@ -210,12 +218,16 @@ check_lowr (void)
   mpfr_set_prec(z2, 9); 
   for (k = 1; k < KMAX; k++) 
     {
-      mpfr_random(z); 
-      mpfr_random(tmp); 
-      mpfr_mul(x, z, tmp, GMP_RNDN); 
-      c = mpfr_div(z2, x, tmp, GMP_RNDN); 
+      mpfr_random (z);
+      do
+        {
+          mpfr_random (tmp);
+        }
+      while (mpfr_cmp_ui (tmp, 0) == 0);
+      mpfr_mul (x, z, tmp, GMP_RNDN); 
+      c = mpfr_div (z2, x, tmp, GMP_RNDN); 
 
-      if ((mpfr_cmp(z2, z) == 0 && c) || c == -1)
+      if ((mpfr_cmp (z2, z) == 0 && c) || c == -1)
 	{
 	  fprintf(stderr, "Error in mpfr_div rnd=GMP_RNDN\n");
 	  printf("Dividing "); 
@@ -262,8 +274,16 @@ check_lowr (void)
   /* almost exact divisions */
   for (k = 1; k < KMAX; k++) 
     {
-      mpfr_random(z); 
-      mpfr_random(tmp); 
+      do
+        {
+          mpfr_random(z);
+        }
+      while (mpfr_cmp_ui (z, 0) == 0);
+      do
+        {
+          mpfr_random (tmp);
+        }
+      while (mpfr_cmp_ui (tmp, 0) == 0);
       mpfr_mul(x, z, tmp, GMP_RNDN); 
       mpfr_set(y, tmp, GMP_RNDD); 
       mpfr_add_one_ulp(x, GMP_RNDN); 
