@@ -80,16 +80,25 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   else
     MPFR_SET_SAME_SIGN (a,b);
 
-  /* Check if c is too small 
-     More precise test is to replace 2 by   
-      (rnd == GMP_RNDN) + mpfr_power2_raw (b) */
+  /* Check if c is too small.
+     A more precise test is to replace 2 by   
+      (rnd == GMP_RNDN) + mpfr_power2_raw (b) 
+      but it is more expensive and not very usefull */
   if (MPFR_UNLIKELY (MPFR_GET_EXP (c) <= MPFR_GET_EXP (b) 
 		     - (mp_exp_t) MAX (MPFR_PREC (a), MPFR_PREC (b)) - 2))
     {
+      /* Remember, we can't have an exact result! */
+      /*   A.AAAAAAAAAAAAAAAAA
+	 = B.BBBBBBBBBBBBBBB
+	  -                     C.CCCCCCCCCCCCC */
       /* A = S*ABS(B) +/- ulp(a) */
       inexact = mpfr_set4 (a, b, rnd_mode, MPFR_SIGN (a)); 
       if (inexact == 0)
 	{
+	  /* a = b (Exact)
+	     But we know it isn't (Since we have to remove `c')
+	     So if we round to Zero, we have to remove one ulp.
+	     Otherwise the result is correctly rounded. */
 	  if (MPFR_IS_LIKE_RNDZ (rnd_mode, MPFR_IS_NEG (a))) {
 	    mpfr_nexttoward (a, c);
 	    return -MPFR_INT_SIGN (a);
@@ -98,8 +107,29 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	}
       else
 	{
-	  if (MPFR_UNLIKELY (inexact == -MPFR_EVEN_INEX*MPFR_INT_SIGN (a)))
+	  /*   A.AAAAAAAAAAAAAA
+             = B.BBBBBBBBBBBBBBB
+  	      -                   C.CCCCCCCCCCCCC */
+	  /* It isn't exact so Prec(b) > Prec(a) and the last
+	     Prec(b)-Prec(a) bits of `b' are not zeros.
+	     Which means that removing c from b can't generate a carry
+	     execpt in case of even rounding.
+	     In all other case the result and the inexact flag should be
+	     correct (We can't have an exact result).
+	     In case of EVEN rounding:
+	       1.BBBBBBBBBBBBBx10
+	     -                     1.CCCCCCCCCCCC 
+	     = 1.BBBBBBBBBBBBBx01  Rounded to Prec(b)
+	     = 1.BBBBBBBBBBBBBx    Nearest / Rounded to Prec(a)
+	     Set gives:
+	       1.BBBBBBBBBBBBB0   if inexact == EVEN_INEX  (x == 0)
+  	       1.BBBBBBBBBBBBB1+1 if inexact == -EVEN_INEX (x == 1) 
+	     which means we get a wrong rounded result if x==1, 
+	     i.e. inexact=-MPFR_EVEN_INEX */
+	  if (MPFR_UNLIKELY (inexact == -MPFR_EVEN_INEX*MPFR_INT_SIGN (a))) {
+	    mpfr_nexttoward (a, c);
 	    inexact = MPFR_INT_SIGN (a);
+	  }
 	  return inexact;
 	}
     }
