@@ -437,7 +437,7 @@ mpfr_add1 (a, b, c, rnd_mode, diff_exp)
         rb = 0;
       fb = 0;
     }
-    else if (diff_exp > aq2 + 1)
+    else if (diff_exp > aq2)
     { /* b is followed by at least a zero bit, then by c */
       if (rb < 0)
         rb = 0;
@@ -462,7 +462,8 @@ mpfr_add1 (a, b, c, rnd_mode, diff_exp)
       {
         mp_limb_t cc;
 
-        cc = difs ? cp[ck] << (BITS_PER_MP_LIMB - difs) : cp[--ck];
+        cc = difs ? (MPFR_ASSERTN(ck < cn),
+                     cp[ck] << (BITS_PER_MP_LIMB - difs)) : cp[--ck];
         if (rb < 0)
         {
           rb = cc >> (BITS_PER_MP_LIMB - 1);
