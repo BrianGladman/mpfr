@@ -1,4 +1,80 @@
-2002-06-26  Vincent Lefevre  <lefevre@greux.loria.fr>
+2002-07-22  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* dump.c: now dump in base 2
+
+	* tests/tget_str.c: forgot one free() call
+
+2002-07-22  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* BUGS: mpfr_pow bug removed.
+
+	* pow.c: Reindentation.
+
+	* pow.c, tests/tpow.c:
+	pow.c: bug fixed (in the call to mpfr_can_round).
+	tpow.c: mpfr_clear added.
+
+	* tests/tpow.c: Modified the two tests to make the bug appear.
+
+2002-07-22  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* tests/tpow.c: added two tests
+
+2002-07-19  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* README.dev: Updated note concerning rcs2log.
+
+	* TODO: Line mpfr_get_exp / mpfr_set_exp removed.
+
+2002-07-16  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* tests/tget_str.c: added function check_large
+
+2002-07-15  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* config.guess, config.sub:
+	Update from ftp://ftp.gnu.org/pub/gnu/config/
+
+2002-07-14  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* mpfr-math.h: Add __sparc__ (patch by Nix <nix@esperi.demon.co.uk>).
+
+	* TODO: Note about randomized tests.
+
+2002-07-04  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* BUGS: Bug concerning the rounding of pow().
+
+	* pow.c:
+	mpfr_pow() didn't work when the exponent was a negative integer.
+
+	* get_z_exp.c:
+	mpfr_get_z_exp() didn't work when the MPFR number was negative.
+
+	* Makefile.am, get_exp.c, mpfr.h, mpfr.texi, set_exp.c:
+	New functions mpfr_get_exp and mpfr_set_exp.
+
+2002-06-27  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* TODO: removed duplicated entry (thread-safe)
+
+	* TODO: added new items
+
+	* tests/tpow.c: added special cases
+
+	* algorithms.tex: added one reference (nocite)
+
+	* algorithms.bib: added one reference
+
+	* inp_str.c: fixed bug in return value
+
+	* TODO: new additions
+
+	* mpfr.texi: added pointer to mpfr_inp_str in mpfr_set_str
+
+2002-06-26  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* ChangeLog: Update.
 
 	* exceptions.c, mpfr-impl.h, mul.c, mul_ui.c, print_raw.c, rint.c, round_prec.c, set.c, set_si.c, set_ui.c, set_z.c, sqrt.c, sub1.c, add1.c, add_one_ulp.c, div.c:
 	MP_LIMB_T_HIGHBIT -> MPFR_LIMB_HIGHBIT.
