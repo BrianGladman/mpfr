@@ -294,24 +294,6 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   tmp = (mp_limb_t *) TMP_ALLOC ((size_t) k * BYTES_PER_MP_LIMB);
 
   /* multiplies two mantissa in temporary allocated space */
-#if 0
-  b1 = MPFR_LIKELY (bn >= cn)
-    ? mpn_mul (tmp, MPFR_MANT (b), bn, MPFR_MANT (c), cn)
-    : mpn_mul (tmp, MPFR_MANT (c), cn, MPFR_MANT (b), bn);
-
-  /* now tmp[0]..tmp[k-1] contains the product of both mantissa,
-     with tmp[k-1]>=2^(BITS_PER_MP_LIMB-2) */
-  b1 >>= BITS_PER_MP_LIMB - 1; /* msb from the product */
-
-  /* if the mantissas of b and c are uniformly distributed in ]1/2, 1],
-     then their product is in ]1/4, 1/2] with probability 2*ln(2)-1 ~ 0.386
-     and in [1/2, 1] with probability 2-2*ln(2) ~ 0.614 */
-  tmp += k - tn;
-  if (MPFR_UNLIKELY (b1 == 0))
-    mpn_lshift (tmp, tmp, tn, 1); /* tn <= k, so no stack corruption */
-
-#else
-
   if (MPFR_UNLIKELY (bn < cn)) 
     {
       mpfr_srcptr tmp = b;
@@ -322,6 +304,8 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       cn = tn;
     }
   MPFR_ASSERTD (bn >= cn);
+  /* longlong's umul_ppmm seems to be buggy on HP-UX. */
+#ifndef __hpux
   if (MPFR_LIKELY (bn <= 2))
     {
       if (bn == 1)
@@ -361,7 +345,9 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       if (MPFR_UNLIKELY (b1 == 0))
 	mpn_lshift (tmp, tmp, tn, 1); /* tn <= k, so no stack corruption */
     }
-  else if (MPFR_UNLIKELY (bn > MPFR_MUL_THRESHOLD))
+  else
+#endif
+    if (MPFR_UNLIKELY (bn > MPFR_MUL_THRESHOLD))
     {
       mp_limb_t *bp, *cp;
       mp_size_t n;
@@ -453,7 +439,6 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       if (MPFR_UNLIKELY (b1 == 0))
 	mpn_lshift (tmp, tmp, tn, 1); /* tn <= k, so no stack corruption */
     }
-#endif
 
   ax2 = ax + (mp_exp_t) (b1 - 1);
   MPFR_RNDRAW (inexact, a, tmp, bq+cq, rnd_mode, sign, ax2++);
