@@ -143,7 +143,7 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c)
 
       count_leading_zeros(z, dif); /* dif > 1 here */
       res += z;
-      if (dif != ((mp_limb_t) 1 << (BITS_PER_MP_LIMB - z - 1)))
+      if (dif != (MP_LIMB_T_ONE << (BITS_PER_MP_LIMB - z - 1)))
 	return res; /* dif is not a power of two */
     }
 
