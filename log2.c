@@ -54,8 +54,7 @@ int
 #if __STDC__
 mpfr_const_aux_log2(mpfr_ptr mylog, mp_rnd_t rnd_mode)
 #else
-mpfr_const_aux_log2(mylog, rnd_mode) mpfr_ptr 
-mylog; mp_rnd_t rnd_mode;
+mpfr_const_aux_log2(mylog, rnd_mode) mpfr_ptr mylog; mp_rnd_t rnd_mode;
 #endif
 {
   int prec;
@@ -97,15 +96,16 @@ mylog; mp_rnd_t rnd_mode;
 
     mpfr_clear(tmp1);
     mpfr_clear(tmp2);
+    mpfr_clear(tmp3);
     if (mpfr_can_round(result, prec_x, GMP_RNDD, rnd_mode, prec_i_want)){
       mpfr_set(mylog, result, rnd_mode);
       mpfr_clear(result);
       good = 1;
     } else
       {
-	mpfr_clear(result);
 	prec_x += logn;
       }
+    mpfr_clear(result);
   }
   mpz_clear(cst);
   return 0;
@@ -145,45 +145,47 @@ mpfr_const_log2(x, rnd_mode) mpfr_ptr x; mp_rnd_t rnd_mode;
       }
   }
 
-  if (precx < 30000){
   /* need to recompute */
-  N=2;
-  do {
-    oldN = N;
-    N = precx + (int)ceil(log((double)N)/log(2.0));
-  } while (N != oldN);
-  mpz_init_set_ui(s,0);
-  mpz_init(u);
-  mpz_init_set_ui(t,1); 
-#if 0
-  /* use log(2) = sum(1/k/2^k, k=1..infinity) */
-  mpz_mul_2exp(t, t, N);
-  for (k=1;k<N;k++) {
-    mpz_div_2exp(t, t, 1);
-    mpz_fdiv_q_ui(u, t, k);
-    mpz_add(s, s, u);
-  }
-#else
-  /* use log(2) = sum((6*k-1)/(2*k^2-k)/2^(2*k+1), k=1..infinity) */
-  mpz_mul_2exp(t, t, N-1);
-  for (k=1;k<N/2;k++) {
-    mpz_div_2exp(t, t, 2);
-    mpz_mul_ui(u, t, 6*k-1);
-    mpz_fdiv_q_ui(u, u, k*(2*k-1));
-    mpz_add(s, s, u);
-  }
-#endif
-  mpfr_set_z(x, s, rnd_mode);
-  EXP(x) -= N;
+  if (precx < 30000){ /* use nai"ve Taylor series evaluation */
+     N=2;
+     do {
+       oldN = N;
+       N = precx + (int)ceil(log((double)N)/log(2.0));
+     } while (N != oldN);
+     mpz_init_set_ui(s,0);
+     mpz_init(u);
+     mpz_init_set_ui(t,1); 
+   #if 0
+     /* use log(2) = sum(1/k/2^k, k=1..infinity) */
+     mpz_mul_2exp(t, t, N);
+     for (k=1;k<N;k++) {
+       mpz_div_2exp(t, t, 1);
+       mpz_fdiv_q_ui(u, t, k);
+       mpz_add(s, s, u);
+     }
+   #else
+     /* use log(2) = sum((6*k-1)/(2*k^2-k)/2^(2*k+1), k=1..infinity) */
+     mpz_mul_2exp(t, t, N-1);
+     for (k=1;k<N/2;k++) {
+       mpz_div_2exp(t, t, 2);
+       mpz_mul_ui(u, t, 6*k-1);
+       mpz_fdiv_q_ui(u, u, k*(2*k-1));
+       mpz_add(s, s, u);
+     }
+   #endif
+     mpfr_set_z(x, s, rnd_mode);
+     EXP(x) -= N;
+     mpz_clear(s); mpz_clear(t); mpz_clear(u);
   } else
     {
+      /* use binary splitting method */
       mpfr_const_aux_log2(x, rnd_mode);
     }
-  /* stored computed value */
+
+  /* store computed value */
   if (__mpfr_const_log2_prec==0) mpfr_init2(__mpfr_const_log2, precx);
   else mpfr_set_prec(__mpfr_const_log2, precx);
   mpfr_set(__mpfr_const_log2, x, GMP_RNDZ);
   __mpfr_const_log2_prec=precx;
 
-  mpz_clear(s); mpz_clear(t); mpz_clear(u);
 }
