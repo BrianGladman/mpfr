@@ -85,6 +85,14 @@ main (int argc, char *argv[])
     exit(1);
   }
 
+  mpfr_set_si (x, -1, GMP_RNDN);
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  if (MPFR_SIGN (x) < 0)
+    {
+      fprintf (stderr, "mpfr_set_ui (x, 0) gives -0\n");
+      exit (1);
+    }
+
   mpfr_clear(x); 
 
   return 0;
