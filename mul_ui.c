@@ -85,8 +85,15 @@ mpfr_mul_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
   /* since the case u=1 was treated above, we have u >= 2, thus
      yp[xn] >= 1 since x was msb-normalized */
   MPFR_ASSERTN(yp[xn] != 0);
-  count_leading_zeros(cnt, yp[xn]);
-  mpn_lshift (yp, yp, xn + 1, cnt);
+  if ((yp[xn] & MP_LIMB_T_HIGHBIT) == 0)
+    {
+      count_leading_zeros(cnt, yp[xn]);
+      mpn_lshift (yp, yp, xn + 1, cnt);
+    }
+  else
+    {
+      cnt = 0;
+    }
 
   /* now yp[xn], ..., yp[0] is msb-normalized too, and has at most
      PREC(x) + (BITS_PER_MP_LIMB - cnt) non-zero bits */
