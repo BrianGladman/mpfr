@@ -36,7 +36,6 @@ MA 02111-1307, USA. */
 
 extern int isnan();
 extern int getpid();
-extern long int lrand48();
 
 #define ABS(x) (((x)>0) ? (x) : (-x))
 
