@@ -100,8 +100,8 @@ mpfr_div (r, u, v, rnd_mode)
   
   if (!MPFR_NOTZERO(u)) { MPFR_SET_ZERO(r); return; }
 
-  up = u->_mp_d;
-  vp = v->_mp_d;
+  up = MPFR_MANT(u);
+  vp = MPFR_MANT(v);
 
 #ifdef DEBUG
       printf("Entering division : "); 

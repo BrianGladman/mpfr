@@ -84,8 +84,8 @@ mpfr_eq (u, v, n_bits)
   usize = ABS (usize);
   vsize = ABS (vsize);
 
-  up = u->_mp_d;
-  vp = v->_mp_d;
+  up = MPFR_MANT(u);
+  vp = MPFR_MANT(v);
 
   if (usize > vsize)
     {

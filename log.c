@@ -41,7 +41,8 @@ MA 02111-1307, USA. */
   */
 
 
-#define MON_INIT(xp, x, p, s) xp = (mp_ptr) TMP_ALLOC(s*BYTES_PER_MP_LIMB);    x -> _mp_prec = p; x -> _mp_d = xp; x -> _mp_size = s; x -> _mp_exp = 0; 
+#define MON_INIT(xp, x, p, s) xp = (mp_ptr) TMP_ALLOC(s*BYTES_PER_MP_LIMB); \
+   MPFR_PREC(x) = p; MPFR_MANT(x) = xp; x -> _mp_size = s; x -> _mp_exp = 0; 
 
 /* #define DEBUG */
 
