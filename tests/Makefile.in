@@ -66,7 +66,7 @@ PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
 
-check_PROGRAMS = reuse tabs tadd tagm tcan_round tcmp tcmp2 tcmp_ui tdiv tdiv_ui tdump teq texp tget_str tlog tlog2 tmul tmul_2exp tmul_ui tout_str tpi tpow trandom tround tset_d tset_f tset_q tset_si tset_str tset_z tsqrt tsqrt_ui tui_div tui_sub tswap ttrunc tisnan tget_d tatan tcosh tsinh ttanh tacosh tasinh tatanh thyperbolic texp2 tfactorial tsub tasin teuler tcos tsin ttan tsub_ui tset
+check_PROGRAMS = reuse tabs tadd tagm tcan_round tcmp tcmp2 tcmp_ui tdiv tdiv_ui tdump teq texp tget_str tlog tlog2 tmul tmul_2exp tmul_ui tout_str tpi tpow trandom tround tset_d tset_f tset_q tset_si tset_str tset_z tsqrt tsqrt_ui tui_div tui_sub tswap ttrunc tisnan tget_d tatan tcosh tsinh ttanh tacosh tasinh tatanh thyperbolic texp2 tfactorial tsub tasin teuler tcos tsin ttan tsub_ui tset tlog1p texpm1 tlog_base_2 tui_pow  tpow3
 
 LDADD = $(top_builddir)/libmpfr.a  @LDADD@
 INCLUDES = -I$(top_srcdir) @INCLUDES@
@@ -356,6 +356,31 @@ tset_OBJECTS =  tset.o
 tset_LDADD = $(LDADD)
 tset_DEPENDENCIES =  $(top_builddir)/libmpfr.a
 tset_LDFLAGS = 
+tlog1p_SOURCES = tlog1p.c
+tlog1p_OBJECTS =  tlog1p.o
+tlog1p_LDADD = $(LDADD)
+tlog1p_DEPENDENCIES =  $(top_builddir)/libmpfr.a
+tlog1p_LDFLAGS = 
+texpm1_SOURCES = texpm1.c
+texpm1_OBJECTS =  texpm1.o
+texpm1_LDADD = $(LDADD)
+texpm1_DEPENDENCIES =  $(top_builddir)/libmpfr.a
+texpm1_LDFLAGS = 
+tlog_base_2_SOURCES = tlog_base_2.c
+tlog_base_2_OBJECTS =  tlog_base_2.o
+tlog_base_2_LDADD = $(LDADD)
+tlog_base_2_DEPENDENCIES =  $(top_builddir)/libmpfr.a
+tlog_base_2_LDFLAGS = 
+tui_pow_SOURCES = tui_pow.c
+tui_pow_OBJECTS =  tui_pow.o
+tui_pow_LDADD = $(LDADD)
+tui_pow_DEPENDENCIES =  $(top_builddir)/libmpfr.a
+tui_pow_LDFLAGS = 
+tpow3_SOURCES = tpow3.c
+tpow3_OBJECTS =  tpow3.o
+tpow3_LDADD = $(LDADD)
+tpow3_DEPENDENCIES =  $(top_builddir)/libmpfr.a
+tpow3_LDFLAGS = 
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
@@ -370,18 +395,18 @@ DEP_FILES =  .deps/reuse.P .deps/tabs.P .deps/tacosh.P .deps/tadd.P \
 .deps/tagm.P .deps/tasin.P .deps/tasinh.P .deps/tatan.P .deps/tatanh.P \
 .deps/tcan_round.P .deps/tcmp.P .deps/tcmp2.P .deps/tcmp_ui.P \
 .deps/tcos.P .deps/tcosh.P .deps/tdiv.P .deps/tdiv_ui.P .deps/tdump.P \
-.deps/teq.P .deps/teuler.P .deps/texp.P .deps/texp2.P \
+.deps/teq.P .deps/teuler.P .deps/texp.P .deps/texp2.P .deps/texpm1.P \
 .deps/tfactorial.P .deps/tget_d.P .deps/tget_str.P .deps/thyperbolic.P \
-.deps/tisnan.P .deps/tlog.P .deps/tlog2.P .deps/tmul.P \
-.deps/tmul_2exp.P .deps/tmul_ui.P .deps/tout_str.P .deps/tpi.P \
-.deps/tpow.P .deps/trandom.P .deps/tround.P .deps/tset.P .deps/tset_d.P \
-.deps/tset_f.P .deps/tset_q.P .deps/tset_si.P .deps/tset_str.P \
-.deps/tset_z.P .deps/tsin.P .deps/tsinh.P .deps/tsqrt.P \
-.deps/tsqrt_ui.P .deps/tsub.P .deps/tsub_ui.P .deps/tswap.P \
-.deps/ttan.P .deps/ttanh.P .deps/ttrunc.P .deps/tui_div.P \
-.deps/tui_sub.P
-SOURCES = reuse.c tabs.c tadd.c tagm.c tcan_round.c tcmp.c tcmp2.c tcmp_ui.c tdiv.c tdiv_ui.c tdump.c teq.c texp.c tget_str.c tlog.c tlog2.c tmul.c tmul_2exp.c tmul_ui.c tout_str.c tpi.c tpow.c trandom.c tround.c tset_d.c tset_f.c tset_q.c tset_si.c tset_str.c tset_z.c tsqrt.c tsqrt_ui.c tui_div.c tui_sub.c tswap.c ttrunc.c tisnan.c tget_d.c tatan.c tcosh.c tsinh.c ttanh.c tacosh.c tasinh.c tatanh.c thyperbolic.c texp2.c tfactorial.c tsub.c tasin.c teuler.c tcos.c tsin.c ttan.c tsub_ui.c tset.c
-OBJECTS = reuse.o tabs.o tadd.o tagm.o tcan_round.o tcmp.o tcmp2.o tcmp_ui.o tdiv.o tdiv_ui.o tdump.o teq.o texp.o tget_str.o tlog.o tlog2.o tmul.o tmul_2exp.o tmul_ui.o tout_str.o tpi.o tpow.o trandom.o tround.o tset_d.o tset_f.o tset_q.o tset_si.o tset_str.o tset_z.o tsqrt.o tsqrt_ui.o tui_div.o tui_sub.o tswap.o ttrunc.o tisnan.o tget_d.o tatan.o tcosh.o tsinh.o ttanh.o tacosh.o tasinh.o tatanh.o thyperbolic.o texp2.o tfactorial.o tsub.o tasin.o teuler.o tcos.o tsin.o ttan.o tsub_ui.o tset.o
+.deps/tisnan.P .deps/tlog.P .deps/tlog1p.P .deps/tlog2.P \
+.deps/tlog_base_2.P .deps/tmul.P .deps/tmul_2exp.P .deps/tmul_ui.P \
+.deps/tout_str.P .deps/tpi.P .deps/tpow.P .deps/tpow3.P .deps/trandom.P \
+.deps/tround.P .deps/tset.P .deps/tset_d.P .deps/tset_f.P \
+.deps/tset_q.P .deps/tset_si.P .deps/tset_str.P .deps/tset_z.P \
+.deps/tsin.P .deps/tsinh.P .deps/tsqrt.P .deps/tsqrt_ui.P .deps/tsub.P \
+.deps/tsub_ui.P .deps/tswap.P .deps/ttan.P .deps/ttanh.P .deps/ttrunc.P \
+.deps/tui_div.P .deps/tui_pow.P .deps/tui_sub.P
+SOURCES = reuse.c tabs.c tadd.c tagm.c tcan_round.c tcmp.c tcmp2.c tcmp_ui.c tdiv.c tdiv_ui.c tdump.c teq.c texp.c tget_str.c tlog.c tlog2.c tmul.c tmul_2exp.c tmul_ui.c tout_str.c tpi.c tpow.c trandom.c tround.c tset_d.c tset_f.c tset_q.c tset_si.c tset_str.c tset_z.c tsqrt.c tsqrt_ui.c tui_div.c tui_sub.c tswap.c ttrunc.c tisnan.c tget_d.c tatan.c tcosh.c tsinh.c ttanh.c tacosh.c tasinh.c tatanh.c thyperbolic.c texp2.c tfactorial.c tsub.c tasin.c teuler.c tcos.c tsin.c ttan.c tsub_ui.c tset.c tlog1p.c texpm1.c tlog_base_2.c tui_pow.c tpow3.c
+OBJECTS = reuse.o tabs.o tadd.o tagm.o tcan_round.o tcmp.o tcmp2.o tcmp_ui.o tdiv.o tdiv_ui.o tdump.o teq.o texp.o tget_str.o tlog.o tlog2.o tmul.o tmul_2exp.o tmul_ui.o tout_str.o tpi.o tpow.o trandom.o tround.o tset_d.o tset_f.o tset_q.o tset_si.o tset_str.o tset_z.o tsqrt.o tsqrt_ui.o tui_div.o tui_sub.o tswap.o ttrunc.o tisnan.o tget_d.o tatan.o tcosh.o tsinh.o ttanh.o tacosh.o tasinh.o tatanh.o thyperbolic.o texp2.o tfactorial.o tsub.o tasin.o teuler.o tcos.o tsin.o ttan.o tsub_ui.o tset.o tlog1p.o texpm1.o tlog_base_2.o tui_pow.o tpow3.o
 
 all: all-redirect
 .SUFFIXES:
@@ -642,6 +667,26 @@ tsub_ui: $(tsub_ui_OBJECTS) $(tsub_ui_DEPENDENCIES)
 tset: $(tset_OBJECTS) $(tset_DEPENDENCIES)
 	@rm -f tset
 	$(LINK) $(tset_LDFLAGS) $(tset_OBJECTS) $(tset_LDADD) $(LIBS)
+
+tlog1p: $(tlog1p_OBJECTS) $(tlog1p_DEPENDENCIES)
+	@rm -f tlog1p
+	$(LINK) $(tlog1p_LDFLAGS) $(tlog1p_OBJECTS) $(tlog1p_LDADD) $(LIBS)
+
+texpm1: $(texpm1_OBJECTS) $(texpm1_DEPENDENCIES)
+	@rm -f texpm1
+	$(LINK) $(texpm1_LDFLAGS) $(texpm1_OBJECTS) $(texpm1_LDADD) $(LIBS)
+
+tlog_base_2: $(tlog_base_2_OBJECTS) $(tlog_base_2_DEPENDENCIES)
+	@rm -f tlog_base_2
+	$(LINK) $(tlog_base_2_LDFLAGS) $(tlog_base_2_OBJECTS) $(tlog_base_2_LDADD) $(LIBS)
+
+tui_pow: $(tui_pow_OBJECTS) $(tui_pow_DEPENDENCIES)
+	@rm -f tui_pow
+	$(LINK) $(tui_pow_LDFLAGS) $(tui_pow_OBJECTS) $(tui_pow_LDADD) $(LIBS)
+
+tpow3: $(tpow3_OBJECTS) $(tpow3_DEPENDENCIES)
+	@rm -f tpow3
+	$(LINK) $(tpow3_LDFLAGS) $(tpow3_OBJECTS) $(tpow3_LDADD) $(LIBS)
 
 tags: TAGS
 
