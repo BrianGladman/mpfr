@@ -253,6 +253,12 @@ void check64()
     exit(1);
   }
 
+  /* bug found by Norbert Mueller, 14 Sep 2000 */
+  mpfr_set_prec(x, 56); mpfr_set_prec(t, 83); mpfr_set_prec(u, 10);
+  mpfr_set_str_raw(x, "0.10001001011011001111101100110100000101111010010111010111E-7");
+  mpfr_set_str_raw(t, "0.10001001011011001111101100110100000101111010010111010111000000000111110110110000100E-7");
+  mpfr_sub(u, x, t, GMP_RNDU);
+
   mpfr_clear(x); mpfr_clear(t); mpfr_clear(u);
 }
 
