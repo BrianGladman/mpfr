@@ -547,8 +547,25 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
 
   if (m == 0)
     {
-      m = (size_t) _mpfr_ceil (__mp_bases[b].chars_per_bit_exactly 
-                    * (double) MPFR_PREC(x));
+
+      m = MPFR_PREC(x);
+      if (IS_POW2(b) && b >= 4)
+        /* when the base is a power of two, we can compute exactly the number
+           of digits sufficient to print the number exactly.
+           Warning: we may loose some bits in the first digit.
+           If EXP(x)=0, no bit is lost.
+           If EXP(x)=-1, one bit is lost... */
+        {
+          int k, lost;
+          
+          count_leading_zeros (k, (mp_limb_t) b);
+          k = BITS_PER_MP_LIMB - k - 1; /* b = 2^k */
+          lost = (-MPFR_EXP(x)) % k;
+          if (lost < 0)
+            lost += k;
+          m += lost;
+        }
+      m = (size_t) _mpfr_ceil (__mp_bases[b].chars_per_bit_exactly * (double) m);
       if (m < 2)
         m = 2;
     }
