@@ -62,7 +62,7 @@ int check1(double a, unsigned char rnd_mode, double res1, int ck)
   if (res1!=res2 && (!isnan(res1) || !isnan(res2))) {
       if (ck) { 
 	printf("mpfr_log failed for    a=%1.20e, rnd_mode=%d\n",a,rnd_mode);
-	printf("correct result is        %1.20e\n mpfr_log        gives %1.20e (%d ulp)\n",res1,res2,ulp(res1,res2));
+	printf("correct result is        %1.20e\n mpfr_log gives          %1.20e (%d ulp)\n",res1,res2,ulp(res1,res2));
 	exit(1);
       }
       else {
@@ -260,6 +260,10 @@ int main(int argc, char *argv[]) {
   check2(9.99985901426543311032e-01, GMP_RNDN, -1.40986728425098585229e-05);
   check2(9.99986053947420794330e-01, GMP_RNDN, -1.39461498263010849386e-05);
   check2(9.99971938247442126979e-01, GMP_RNDN, -2.80621462962173414790e-05);
+  /* other bugs found by Vincent Lefe`vre */
+  check2(1.18615436389927785905e+77, GMP_RNDN, 1.77469768607706015473e+02);
+  check2(9.48868723578399476187e+77, GMP_RNDZ, 1.79549152432275803903e+02);
+  check2(2.31822210096938820854e+89, GMP_RNDN, 2.05770873832573869322e+02);
 
   check2(7.3890560989306504,GMP_RNDU,2.0000000000000004); /* exp(2.0) */
   check2(7.3890560989306495,GMP_RNDU,2.0); /* exp(2.0) */
