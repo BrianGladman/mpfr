@@ -1,19 +1,7 @@
-/* 10^6 additions on a PII-400:
-precision       *    mpf_add mpfr_add(RNDZ/RNDN/RNDU)   maple   mupad
-53 bits       0.003       0.45       0.64/0.59/0.63
-100 bits                  0.52       0.76/0.75/0.77
-225                       0.54       1.14
-500 bits                  0.72       1.58/1.59/1.65
-1000 bits                 1.10       2.34
-2017                      1.87       3.31
-5025                      4.17       4.87
-10017                     7.69       7.52
-20017                     15.0       13.4
-50017                     57.8       37.8
-100017                    124.       105.
-*/  
-
 /* #define DEBUG */
+/* #define VERBOSE */
+
+#define N 100000
 
 #include <math.h>
 #include <stdio.h>
@@ -32,9 +20,9 @@ extern long int lrand48();
 
 double drand()
 {
-  double d; long int *i;
+  double d; int *i;
 
-  i = (long int*) &d;
+  i = (int*) &d;
   i[0] = lrand48();
   i[1] = lrand48();
   if (lrand48()%2) d=-d; /* generates negative numbers */
@@ -257,7 +245,9 @@ int main(argc,argv) int argc; char *argv[];
 	GMP_RNDU, 53, 53, 53, 0.0);
   check(3.14553393112021279444e-67, 3.14553401015952024126e-67,
 	GMP_RNDU, 53, 53, 53, 0.0);
-  /* printf("Checking random precisions\n"); */
+#ifdef VERBOSE
+  printf("Checking random precisions\n");
+#endif
   srand(getpid());
   check2(5.43885304644369509058e+185,53,-1.87427265794105342763e-57,53,53,0);
   check2(5.43885304644369509058e+185,53,-1.87427265794105342763e-57,53,53,1);
@@ -293,8 +283,7 @@ int main(argc,argv) int argc; char *argv[];
   check2(-2.66910493504493276454e-52,117,1.61188644159592323415e-52,61,68,1);
   check2(2.90983392714730768886e+50,101,2.31299792168440591870e+50,74,105,1);
   check2(2.72046257722708717791e+243,97,-1.62158447436486437113e+243,83,96,0);
-  /* checks random precisions */
-  for (i=0;i<100000;i++) {
+  for (i=0;i<N;i++) {
 #ifdef DEBUG
 printf("\nTest i=%d\n",i);
 #endif
@@ -306,7 +295,9 @@ printf("\nTest i=%d\n",i);
     do { y = drand(); } while (isnan(y));
     check2(x,px,y,py,pz,rnd_mode);
   }
-  /* printf("Checking double precision (53 bits)\n"); */
+#ifdef VERBOSE
+  printf("Checking double precision (53 bits)\n");
+#endif
   prec = (argc<2) ? 53 : atoi(argv[1]);
   rnd_mode = (argc<3) ? -1 : atoi(argv[2]);
   check(-8.22183238641455905806e-19, 7.42227178769761587878e-19,
@@ -354,8 +345,10 @@ printf("\nTest i=%d\n",i);
   /* test denormalized numbers too */
   check(8.06294740693074521573e-310, 6.95250701071929654575e-310,
 	GMP_RNDU, 53, 53, 53, 0.0);
-  /* compares to results with double precision using machine arithmetic */
-  for (i=0;i<100000;i++) {
+#ifdef VERBOSE
+  printf("Comparing to double precision using machine arithmetic\n");
+#endif
+  for (i=0;i<N;i++) {
     x = drand(); 
     y = drand();
     if (ABS(x)>2.2e-307 && ABS(y)>2.2e-307 && x+y<1.7e+308 && x+y>-1.7e308) 
@@ -363,8 +356,10 @@ printf("\nTest i=%d\n",i);
       rnd = (rnd_mode==-1) ? lrand48()%4 : rnd_mode;
       check(x, y, rnd, prec, prec, prec, 0.0);
   } 
-  /* printf("Checking mpfr_add(x, x, y) with prec=53\n"); */
-  for (i=0;i<100000;i++) {
+#ifdef VERBOSE
+  printf("Checking mpfr_add(x, x, y) with prec=53\n");
+#endif
+  for (i=0;i<N;i++) {
     x = drand(); 
     y = drand();
     if (ABS(x)>2.2e-307 && ABS(y)>2.2e-307 && x+y<1.7e+308 && x+y>-1.7e308) 
@@ -372,8 +367,10 @@ printf("\nTest i=%d\n",i);
       rnd = (rnd_mode==-1) ? lrand48()%4 : rnd_mode;
       check3(x, y, rnd);
   } 
-  /* printf("Checking mpfr_add(x, y, x) with prec=53\n"); */
-  for (i=0;i<100000;i++) {
+#ifdef VERBOSE
+  printf("Checking mpfr_add(x, y, x) with prec=53\n");
+#endif
+  for (i=0;i<N;i++) {
     x = drand(); 
     y = drand();
     if (ABS(x)>2.2e-307 && ABS(y)>2.2e-307 && x+y<1.7e+308 && x+y>-1.7e308) 
@@ -381,9 +378,11 @@ printf("\nTest i=%d\n",i);
       rnd = (rnd_mode==-1) ? lrand48()%4 : rnd_mode;
       check4(x, y, rnd);
   } 
-  /* printf("Checking mpfr_add(x, x, x) with prec=53\n"); */
-  for (i=0;i<100000;i++) {
-    do { x = drand(); } while (ABS(x)<2.2e-307 || ABS(x)>0.8e308);
+#ifdef VERBOSE
+  printf("Checking mpfr_add(x, x, x) with prec=53\n");
+#endif
+  for (i=0;i<N;i++) {
+    do { x = drand(); } while ((ABS(x)<2.2e-307) || (ABS(x)>0.8e308));
     /* avoid denormalized numbers and overflows */
     rnd = (rnd_mode==-1) ? lrand48()%4 : rnd_mode;
     check5(x, rnd);
