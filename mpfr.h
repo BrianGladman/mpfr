@@ -29,19 +29,20 @@ MA 02111-1307, USA. */
 
 /* Macros dealing with MPFR VERSION */
 #define MPFR_VERSION_NUM(a,b,c) (((a) << 16L) | ((b) << 8) | (c))
-#define MPFR_VERSION MPFR_VERSION_NUM(MPFR_VERSION_MAJOR,MPFR_VERSION_MINOR,MPFR_VERSION_PATCHLEVEL)
+#define MPFR_VERSION \
+MPFR_VERSION_NUM(MPFR_VERSION_MAJOR,MPFR_VERSION_MINOR,MPFR_VERSION_PATCHLEVEL)
 
 /* Check if GMP is included, and try to include it (Works with local GMP) */
 #ifndef __GMP_H__
 # include <gmp.h>
 #endif
 
-/* Check if stdio.h is included or if the user wants to use FILE */
+/* Check if stdio.h is included or if the user wants FILE */
 #if defined (_GMP_H_HAVE_FILE) || defined (MPFR_USE_FILE)
 # define _MPFR_H_HAVE_FILE 1
 #endif
 
-/* Check if stdint.h/inttypes.h is included or if the user wants to use intmax_t */
+/* Check if stdint.h/inttypes.h is included or if the user wants intmax_t */
 #if (defined (INTMAX_C) && defined (UINTMAX_C)) || defined (MPFR_USE_INTMAX_T)
 # define _MPFR_H_HAVE_INTMAX_T 1
 #endif
@@ -109,15 +110,13 @@ typedef struct {
 
 /*
    The represented number is
-
-    _mpfr_sign*(_mpfr_d[k-1]/B+_mpfr_d[k-2]/B^2+...+_mpfr_d[0]/B^k)*2^_mpfr_exp
-
+      _sign*(_d[k-1]/B+_d[k-2]/B^2+...+_d[0]/B^k)*2^_exp
    where k=ceil(_mp_prec/BITS_PER_MP_LIMB) and B=2^BITS_PER_MP_LIMB.
 
    For the msb (most significant bit) normalized representation, we must have
-   _mpfr_d[k-1]>=B/2, unless the number is singular.
+      _d[k-1]>=B/2, unless the number is singular.
 
-   We must also have the last k*BITS_PER_MP_LIMB-_mp_prec bits set to zero.
+   We must also have the last k*BITS_PER_MP_LIMB-_prec bits set to zero.
 */
 
 typedef __mpfr_struct mpfr_t[1];
@@ -128,13 +127,13 @@ typedef __gmp_const __mpfr_struct *mpfr_srcptr;
 #define MPFR_SIGN(x) (((x)->_mpfr_sign))
 
 /* Cache struct */
-struct mpfr_cache_s {
+struct __gmpfr_cache_s {
   mpfr_t x;
   mp_rnd_t rnd;
   int inexact;
   int (*func)(mpfr_ptr, mp_rnd_t);
 };
-typedef struct mpfr_cache_s mpfr_cache_t[1];
+typedef struct __gmpfr_cache_s mpfr_cache_t[1];
 
 /* GMP defines:
     + size_t:                Standard size_t
@@ -159,10 +158,10 @@ extern "C" {
 #endif
   
 extern unsigned int __gmpfr_flags;
-extern mp_exp_t __gmpfr_emin;
-extern mp_exp_t __gmpfr_emax;
-extern mp_prec_t __gmpfr_default_fp_bit_precision;
-extern mpfr_rnd_t __gmpfr_default_rounding_mode;
+extern mp_exp_t     __gmpfr_emin;
+extern mp_exp_t     __gmpfr_emax;
+extern mp_prec_t    __gmpfr_default_fp_bit_precision;
+extern mpfr_rnd_t   __gmpfr_default_rounding_mode;
 extern mpfr_cache_t __gmpfr_cache_const_pi;
 extern mpfr_cache_t __gmpfr_cache_const_log2;
 extern mpfr_cache_t __gmpfr_cache_const_euler;
@@ -220,6 +219,8 @@ int mpfr_set_str _MPFR_PROTO ((mpfr_ptr, __gmp_const char *, int, mpfr_rnd_t));
 int mpfr_init_set_str _MPFR_PROTO ((mpfr_ptr, __gmp_const char *, int,
 				      mpfr_rnd_t));
 int mpfr_set4 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t, int));
+int mpfr_abs _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t));
+int mpfr_set _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t));
 int mpfr_copysign _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr,
 				  mpfr_rnd_t));
 int mpfr_neg _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t));
@@ -361,7 +362,6 @@ int mpfr_inf_p _MPFR_PROTO((mpfr_srcptr));
 int mpfr_number_p _MPFR_PROTO((mpfr_srcptr));
 int mpfr_integer_p _MPFR_PROTO ((mpfr_srcptr));
 int mpfr_zero_p _MPFR_PROTO ((mpfr_srcptr));
-  /*  int mpfr_one_p _MPFR_PROTO ((mpfr_srcptr x));*/
 
 int mpfr_greater_p _MPFR_PROTO ((mpfr_srcptr, mpfr_srcptr));
 int mpfr_greaterequal_p _MPFR_PROTO ((mpfr_srcptr, mpfr_srcptr));
@@ -424,6 +424,11 @@ int  mpfr_cache _MPFR_PROTO ((mpfr_ptr, mpfr_cache_t, mp_rnd_t));
 }
 #endif
 
+/* Compatibility with 2.0.1
+   'mpfr_round_prec' is used to detect 2.0.1 and 2.0.2 */
+#define mpfr_cmp_abs mpfr_cmpabs
+#define mpfr_round_prec(x,r,p) mpfr_prec_round(x,p,r)
+
 /* DON'T USE THIS! */
 #if __GMP_MP_SIZE_T_INT
 #define __MPFR_EXP_NAN  ((mp_exp_t)((~((~(unsigned int)0)>>1))+2))
@@ -439,17 +444,14 @@ int  mpfr_cache _MPFR_PROTO ((mpfr_ptr, mpfr_cache_t, mp_rnd_t));
   mp_limb_t __gmpfr_local_tab_##_x[((_p)-1)/GMP_NUMB_BITS+1]; \
   mpfr_t    _x = {{(_p),1,__MPFR_EXP_NAN,__gmpfr_local_tab_##_x}}
 
+/* Fast MACROS for theses functions
+   WARNING: We must still define the functions! */
 #define mpfr_nan_p(_x)    ((_x)->_mpfr_exp == __MPFR_EXP_NAN)
 #define mpfr_inf_p(_x)    ((_x)->_mpfr_exp == __MPFR_EXP_INF)
 #define mpfr_zero_p(_x)   ((_x)->_mpfr_exp == __MPFR_EXP_ZERO)
 #define mpfr_sgn(_x)      (mpfr_zero_p(_x) ? 0 : MPFR_SIGN(_x))
 
-/* Compatibility with 2.0.1 
-   'mpfr_round_prec' is used to detect 2.0.1 and 2.0.2 */
-#define mpfr_cmp_abs mpfr_cmpabs
-#define mpfr_round_prec(x,r,p) mpfr_prec_round(x,p,r)
-
-/* Cached const */
+/* Theses consts are cached. */
 #define mpfr_const_pi(_d,_r) mpfr_cache(_d, __gmpfr_cache_const_pi, _r)
 #define mpfr_const_log2(_d,_r) mpfr_cache(_d, __gmpfr_cache_const_log2, _r)
 #define mpfr_const_euler(_d,_r) mpfr_cache(_d, __gmpfr_cache_const_euler, _r)

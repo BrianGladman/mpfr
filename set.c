@@ -89,3 +89,17 @@ mpfr_set4 (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode, int signb)
   MPFR_SET_SIGN(a, signb);
   MPFR_RET(inex);
 }
+
+/* Set a to b (Define function which calls the macro) */
+int
+(mpfr_set) (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
+{
+  return mpfr_set (a, b, rnd_mode);
+}
+
+/* Set a to |b| (Define function which calls the macro) */
+int
+(mpfr_abs) (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
+{
+  return mpfr_abs (a, b, rnd_mode);
+}
