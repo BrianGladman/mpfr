@@ -4,8 +4,15 @@ Notes for the MPFR developers and CVS users
 To compile source code obtained from CVS, you need some GNU development
 utilities: aclocal, autoheader, automake, autoconf. As some files like
 "configure" are not part of the CVS repository, you first need to run
-the "prepare" script; you can give the same options as you would give
-to "configure" (give "--help" if you don't know).
+the "prepare" script to generate these files and call "configure"; you
+must give the options that will be passed to "configure", for instance:
+
+  ./prepare --with-gmp=/path/to/gmp
+
+Give "--help" if you don't know (./prepare --help). Then, you can
+use the configure script as usual. Read the INSTALL file for more
+information. If you use GNU tools, you can give "-dev" as the first
+option to the "prepare" script to get better dependency tracking.
 
 To generate mpfr.info, you need texinfo version 4.2 (or higher).
 
@@ -22,7 +29,8 @@ Though the ISO C standard requires that <stdlib.h> defines NULL,
 do not use NULL with #include <stdlib.h> only, because this will
 not work with the native SunOS 4 C compiler, whose headers are
 not conform to the standard (even with C90); other problems may
-occur on this architecture.
+occur on this architecture. You can either include <stdio.h> or
+use 0 (possibly casted to the target pointer type).
 
 To make a release (for the MPFR team):
   1) Check the version and update the date in mpfr.texi.
