@@ -61,7 +61,7 @@ tests_end_mpfr (void)
   tests_memory_end ();
 }
 
-void
+static void
 tests_rand_start (void)
 {
   gmp_randstate_ptr  rands;
@@ -105,7 +105,7 @@ tests_rand_start (void)
     }
 }
 
-void
+static void
 tests_rand_end (void)
 {
   RANDS_CLEAR ();
