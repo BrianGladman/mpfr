@@ -144,74 +144,62 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
     mpfr_init(t);             
 
     /* First computation of fma */
-    do {
-      if(accu++ >2)
-        {
-          mpfr_clear(t);
-          mpfr_clear(u);
-          goto fma_paul;
-        }
+    do
+      {
+        if (accu++ > 2)
+          {
+            mpfr_clear(t);
+            mpfr_clear(u);
 
-      /* reactualisation of the precision */
-      mpfr_set_prec(u,Nt);             
-      mpfr_set_prec(t,Nt);             
+            /* General case */
+            /* Detail of the compute */
+            /* u <- x*y exact */
+            /* s <- z+u */
+
+            /* if we take prec(u) >= prec(x) + prec(y), the product
+               u <- x*y is always exact */
+            mpfr_init2 (u, MPFR_PREC(x) + MPFR_PREC(y));
+            mpfr_mul (u, x, y, GMP_RNDN); /* always exact */
+            inexact = mpfr_add (s, z, u, rnd_mode);
+            mpfr_clear(u);
+            return inexact;
+          }
+
+        /* reactualisation of the precision */
+        mpfr_set_prec(u, Nt);             
+        mpfr_set_prec(t, Nt);             
       
-      /* computations */
-      not_exact = mpfr_mul (u, x, y, GMP_RNDN);
+        /* computations */
+        not_exact = mpfr_mul (u, x, y, GMP_RNDN);
 
-      not_exact |= mpfr_add (t, z, u, GMP_RNDN);
+        not_exact |= mpfr_add (t, z, u, GMP_RNDN);
 
-      /*Nt=Nt+(d+1)+_mpfr_ceil_log2(Nt); */
-      d = MPFR_EXP(u) - MPFR_EXP(t);
+        /* Nt = Nt + (d+1) + _mpfr_ceil_log2(Nt); */
+        d = MPFR_EXP(u) - MPFR_EXP(t);
 
-      /* estimation of the error */
-      err = Nt - (d+1);
+        /* estimate of the error */
+        err = Nt - (d+1);
 
-      /* actualisation of the precision */
-      Nt +=(1-first_pass)*d + first_pass*10;
-      if(Nt<0)Nt=0;
+        /* actualisation of the precision */
+        Nt += (1-first_pass) * d + first_pass * 10;
+        if (Nt < 0)
+          Nt = 0;
 
-      first_pass=1;
-      
-    } while (not_exact && ((err < 0) ||
-                           !mpfr_can_round (t, err, GMP_RNDN, rnd_mode, Ns)));
+        first_pass = 1;
+      }
+    while (not_exact &&
+           ((err < 0) || !mpfr_can_round (t, err, GMP_RNDN, rnd_mode, Ns)));
 
     inexact = mpfr_set (s, t, rnd_mode);
     mpfr_clear(t);
     mpfr_clear(u);
-
-    goto fin;
   }
-        
 
-
- fma_paul:
-
-
-  /* General case */
-  /* Detail of the compute */
-  /* u <- x*y exact */
-  /* s <- z+u */
-  {
-    mpfr_t u;
-
-    /* if we take prec(u) >= prec(x) + prec(y), the product
-       u <- x*y is always exact */
-    mpfr_init2 (u, MPFR_PREC(x) + MPFR_PREC(y));
-	  
-    mpfr_mul (u, x, y, GMP_RNDN); /* always exact */
-    inexact = mpfr_add (s, z, u, rnd_mode);
-    mpfr_clear(u);
-  }
-  return inexact;
-
- fin:
   if (not_exact == 0 && inexact == 0)
     return 0;
-  
+
   if (not_exact != 0 && inexact == 0)
     return 1;
-  
+
   return inexact;
-        
 }
