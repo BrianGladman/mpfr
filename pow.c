@@ -252,6 +252,11 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
         MPFR_SET_POS(z);
       MPFR_RET(0);
     }
+  else if (mpfr_cmp_ui (x, 1) == 0) /* 1^y is always 1 */
+    {
+      mpfr_set_ui (z, 1, GMP_RNDN);
+      MPFR_RET(0);
+    }
 
   if (mpfr_integer_p (y))
     {
@@ -296,14 +301,14 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
     long int err;  /* Precision of error */
 
     /* compute the precision of intermediary variable */
-    Nt=MAX(Nx,Ny);
+    Nt = MAX(Nx, Ny);
     /* the optimal number of bits : see algorithms.ps */
-    Nt=Nt+5+__gmpfr_ceil_log2(Nt);
+    Nt = Nt + 5 + __gmpfr_ceil_log2 (Nt);
 
     /* initialise of intermediary variable */
-    mpfr_init(t);
-    mpfr_init(ti);
-    mpfr_init(te);
+    mpfr_init (t);
+    mpfr_init (ti);
+    mpfr_init (te);
 
     do
       {
@@ -315,9 +320,9 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
         mpfr_set_prec (te, Nt);
 
         /* compute exp(y*ln(x)) */
-        mpfr_log (ti, x, GMP_RNDU);         /* ln(n) */
-        mpfr_mul (te, y, ti, GMP_RNDU);       /* y*ln(n) */
-        mpfr_exp (t, te, GMP_RNDN);         /* exp(x*ln(n))*/
+        mpfr_log (ti, x, GMP_RNDU);         /* ln(x) */
+        mpfr_mul (te, y, ti, GMP_RNDU);       /* y*ln(x) */
+        mpfr_exp (t, te, GMP_RNDN);         /* exp(y*ln(x))*/
 
         MPFR_ASSERTN(MPFR_IS_FP(te));
         MPFR_ASSERTN(MPFR_NOTZERO(te));
