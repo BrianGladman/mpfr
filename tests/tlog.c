@@ -7,7 +7,6 @@
 #include "mpfr-impl.h"
 
 extern long int lrand48();
-extern int isnan();
 extern void srand48();
 
 double drand_log()
@@ -25,7 +24,7 @@ double drand_log()
 
 #define check(a,r) check2(a,r,0.0)
 
-/* return the number of ulps of error */
+
 int check1(double a, unsigned char rnd_mode, double res1, int bugs)
 {
   mpfr_t ta, tres;
@@ -33,7 +32,10 @@ int check1(double a, unsigned char rnd_mode, double res1, int bugs)
   int ck=1; /* ck=1 iff res1 is certified correct */
 
   mpfr_set_machine_rnd_mode(rnd_mode);  
-  if (res1==0.0) res1=log(a); else ck=1;
+  if (res1==0.0) 
+    res1=log(a); 
+  else 
+    ck=1;
   /* printf("mpfr_log working on a=%1.20e, rnd_mode=%d\n",a,rnd_mode);*/
   mpfr_init2(ta, 53);
   mpfr_init2(tres, 53);
@@ -44,7 +46,7 @@ int check1(double a, unsigned char rnd_mode, double res1, int bugs)
 
   if (bugs) {
     if (res1!=res2 && (!isnan(res1) || !isnan(res2))) {
-      if (ck) {
+      if (!ck) { 
 	printf("mpfr_log failed for    a=%1.20e, rnd_mode=%d\n",a,rnd_mode);
 	printf("correct result is        %1.20e\n mpfr_log        gives %1.20e (%d ulp)\n",res1,res2,ulp(res1,res2));
       }
@@ -54,6 +56,8 @@ int check1(double a, unsigned char rnd_mode, double res1, int bugs)
       }
     }
   }
+    /*else 
+      printf("GOAL : log a=%1.20e is %1.20e\n",a,res1);*/
   if (!isnan(res1) || !isnan(res2))
     return ulp(res1,res2);
   else
@@ -95,6 +99,24 @@ void check4(int N) {
   d=(double)sum / (double)N;
   printf("max error : %i \t mean error : %f   (in ulps)\n",max,d);
 }
+
+void slave(int N, int p) {
+  int i;
+  double d;
+  mpfr_t ta, tres;
+
+  srand48(getpid());
+  mpfr_init2(ta, 53);
+  mpfr_init2(tres, p);
+  for(i=0;i<N;i++) {
+    d=drand(); 
+    mpfr_set_d(ta, d, GMP_RNDN);
+    mpfr_log(tres, ta,rand() % 4 );
+  }
+    mpfr_clear(ta); mpfr_clear(tres); 
+    printf("fin\n");
+}
+
 
 
 /* examples from Jean-Michel Muller and Vincent Lefevre 
@@ -192,6 +214,13 @@ int main(int argc, char *argv[]) {
     check3(atof(argv[1]), atoi(argv[2]), atoi(argv[3]));
     return 0;
   }
+
+  if (argc==3) {   /* tlog N p : N calculus with precision p*/
+  printf("Doing %d random tests in %d precision\n",atoi(argv[1]),atoi(argv[2]));
+    slave(atoi(argv[1]),atoi(argv[2]));
+     return 0;
+  }
+
   if (argc==2) { /* tlog N: N tests with random double's */
     N=atoi(argv[1]);
     printf("Doing %d random tests in double precision\n", N);
@@ -200,49 +229,41 @@ int main(int argc, char *argv[]) {
   else {
     check_worst_cases();
 
-    check(10,GMP_RNDU);
-  check(6,GMP_RNDU);  
-  check(1,GMP_RNDZ);  
-  check(62,GMP_RNDU);
-  check(0.5,GMP_RNDZ);   
-  check(3,GMP_RNDZ); 
-  check(234375765,GMP_RNDU);
-  check(8,GMP_RNDZ);  
-  check(44,GMP_RNDU); 
+    check2(10,GMP_RNDU,2.30258509299404590110e+00);
+  check2(6,GMP_RNDU,1.79175946922805517936);  
+  check2(1,GMP_RNDZ,0.0);  
+  check2(62,GMP_RNDU,4.12713438504509166905);
+  check2(0.5,GMP_RNDZ,-6.93147180559945286226e-01);   
+  check2(3,GMP_RNDZ,1.09861228866810956006e+00); 
+  check2(234375765,GMP_RNDU,1.92724362186836231104e+01);
+  check2(8,GMP_RNDZ,2.07944154167983574765e+00);  
+  check2(44,GMP_RNDU,3.78418963391826146392e+00); 
 
-  check(exp(2),GMP_RNDU);
-  check(7.53428236571286402512e+34,GMP_RNDZ);
-  check(6.18784121531737948160e+19,GMP_RNDZ); 
-  check(1.02560267603047283735e+00,GMP_RNDD);
-  check(7.53428236571286402512e+34,GMP_RNDZ);
-  check(1.42470900831881198052e+49,GMP_RNDZ); 
+  check2(7.53428236571286402512e+34,GMP_RNDZ,8.03073567492226345621e+01);
+  check2(6.18784121531737948160e+19,GMP_RNDZ,4.55717030391710693493e+01); 
+  check2(1.02560267603047283735e+00,GMP_RNDD,2.52804164149448735987e-02);
+  check2(7.53428236571286402512e+34,GMP_RNDZ,8.03073567492226345621e+01);
+  check2(1.42470900831881198052e+49,GMP_RNDZ,1.13180637144887668910e+02); 
   
   check2(1.08013816255293777466e+11,GMP_RNDN,2.54055249841782604392e+01);
-  check(6.72783635300509015581e-37,GMP_RNDU);
-  check(2.25904918906057891180e-52,GMP_RNDU);
-  check(1.48901209246462951085e+00,GMP_RNDD);
-  check(1.70322470467612341327e-01,GMP_RNDN);
-  check(1.94572026316065240791e+01,GMP_RNDD);
-  check(4.01419512207026418764e+04,GMP_RNDD);
+  check2(6.72783635300509015581e-37,GMP_RNDU,-8.32893948416799503320e+01);
+  check2(2.25904918906057891180e-52,GMP_RNDU,-1.18919480823735682406e+02);
+  check2(1.48901209246462951085e+00,GMP_RNDD,3.98112874867437460668e-01);
+  check2(1.70322470467612341327e-01,GMP_RNDN,-1.77006175364294615626);
+  check2(1.94572026316065240791e+01,GMP_RNDD,2.96821731676437838842);
+  check2(4.01419512207026418764e+04,GMP_RNDD,1.06001772315501128218e+01);
   check2(9.47077365236487591672e-04,GMP_RNDZ,-6.96212977303956748187e+00);
   check2(3.95906157687589643802e-109,GMP_RNDD,-2.49605768114704119399e+02);
   check2(2.73874914516503004113e-02,GMP_RNDD,-3.59766888618655977794e+00);
   check2(9.18989072589566467669e-17,GMP_RNDZ,-3.69258425351464083519e+01);
   check2(dbl(2830750724514701.0,131),GMP_RNDZ,dbl(1111664301085491.0,-43));
   check2(1.74827399630587801934e-23,GMP_RNDZ,-5.24008281254547156891e+01);
-  check(4.35302958401482307665e+22,GMP_RNDD);
-  check(9.70791868689332915209e+00,GMP_RNDD);
-  check(2.22183639799464011100e-01,GMP_RNDN);
-  check(2.27313466156682375540e+00,GMP_RNDD);
-  check(6.58057413965851156767e-01,GMP_RNDZ);
-  check2(7.34302197248998461006e+43,GMP_RNDZ,dbl(7107588635148285.0,-46));
-  check(6.09969788341579732815e+00,GMP_RNDD);
-  check2(8.94529798779875738679e+82,GMP_RNDD,1.91003105655254444172e+02);
-  check(1.68775280934272742250e+00,GMP_RNDZ); 
-  check(5.32204288784834943727e+02,GMP_RNDZ);
-  } 
-  if (N!=0)
-    check4(N);
-  return 0;
-} 
-
+  check2(4.35302958401482307665e+22,GMP_RNDD,5.21277441046519527390e+01);
+  check2(9.70791868689332915209e+00,GMP_RNDD,2.27294191194272210410e+00);
+  check2(2.22183639799464011100e-01,GMP_RNDN,-1.50425103275253957413e+00);
+  check2(2.27313466156682375540e+00,GMP_RNDD,8.21159787095675608448e-01);
+  check2(6.58057413965851156767e-01,GMP_RNDZ,-4.18463096196088235600e-01);
+  check2(7.34302197248998461006e+43,GMP_RNDZ,1.01004909469513179942e+02);
+  check2(6.09969788341579732815e+00,GMP_RNDD,1.80823924264386204363e+00);
+  }
+}
