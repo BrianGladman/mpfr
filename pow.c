@@ -31,9 +31,6 @@ MA 02111-1307, USA. */
     y=exp(z*log(x))=x^z
  */
 
-
-int mpfr_pow _PROTO ((mpfr_ptr, mpfr_srcptr,mpfr_srcptr, mp_rnd_t));
-
 int
 #if __STDC__
 mpfr_pow (mpfr_ptr z, mpfr_srcptr x ,mpfr_srcptr y , mp_rnd_t rnd_mode) 

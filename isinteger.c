@@ -31,9 +31,6 @@ MA 02111-1307, USA. */
     y=exp(z*log(x))=x^z
  */
 
-
-int mpfr_isinteger _PROTO((mpfr_srcptr));
-
 int 
 #if __STDC__
 mpfr_isinteger(mpfr_srcptr x)
