@@ -28,8 +28,6 @@ MA 02111-1307, USA. */
 /*#define DEBUG    */
 /*#define TIMING   */
 
-int mpfr_extract(mpz_ptr , mpfr_srcptr , int );
-
 int
 #if __STDC__
 mylog2(int x)
@@ -207,6 +205,7 @@ mp_rnd_t rnd_mode;
       ttt = MPFR_EXP(x_copy);
     }
   realprec = MPFR_PREC(y)+logn;
+  mpz_init (uk);
   while (!good){      
     Prec = realprec+shift+2+shift_x;
     k = (int) ceil(log
@@ -219,7 +218,7 @@ mp_rnd_t rnd_mode;
     twopoweri = BITS_PER_MP_LIMB;
     if (k <= prec_x) iter = k; else iter= prec_x;
     for(i = 0; i <= iter; i++){
-      mpfr_extract(uk,x_copy,i);
+      mpfr_extract (uk, x_copy, i);
 #ifdef DEBUG
 	mpz_out_str(stderr,2, uk);  
 	fprintf(stderr, "---\n");
@@ -232,7 +231,7 @@ mp_rnd_t rnd_mode;
 #ifdef TIMING      
 	  for (dummy = 0; dummy < 30; dummy++)
 #endif
-	    mpfr_exp_rational(t,uk,twopoweri - ttt, k  - i + 1);
+	    mpfr_exp_rational (t, uk, twopoweri - ttt, k  - i + 1);
 	else
 	  {
 	    /* cas particulier : on est oblige de faire les calculs avec x/2^. 
@@ -240,7 +239,7 @@ mp_rnd_t rnd_mode;
 #ifdef TIMING
 	    for (dummy = 0; dummy < 30; dummy++)
 #endif
-	      mpfr_exp_rational(t,uk, shift + twopoweri - ttt, k+1);
+	      mpfr_exp_rational (t, uk, shift + twopoweri - ttt, k+1);
 	    for (loop= 0 ; loop < shift; loop++)
 	      mpfr_mul(t,t,t,GMP_RNDD);
 
@@ -255,8 +254,7 @@ mp_rnd_t rnd_mode;
 	fprintf(stderr, "\n ii --- ii \n");
 #endif
 	twopoweri <<= 1;
-	mpz_clear(uk);
-      }
+    }
       for (loop= 0 ; loop < shift_x; loop++)
 	mpfr_mul(tmp,tmp,tmp,GMP_RNDD);
       mpfr_clear(t);      	    
@@ -268,9 +266,10 @@ mp_rnd_t rnd_mode;
 	mpfr_clear(tmp);
 	realprec += 3*logn;
       }
-    }
+  }
+  mpz_clear (uk);
   mpfr_clear(x_copy);
-    return 0;
+  return 0;
 } 
 
 

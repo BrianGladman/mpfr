@@ -38,7 +38,6 @@ MA 02111-1307, USA. */
 #undef C2
 #undef GENERIC
 
-
 #undef A
 #undef B
 #define C
@@ -46,10 +45,6 @@ MA 02111-1307, USA. */
 #define C2  2
 #define GENERIC mpfr_cos_aux 
 #include "generic.c" 
-
-
-
-int mpfr_extract(mpz_ptr , mpfr_srcptr , int );
 
 #define shift (BITS_PER_MP_LIMB / 2)
 
@@ -118,6 +113,7 @@ mp_rnd_t rnd_mode;
   if (logn < 2) logn = 2;
   factor = logn;
   realprec = target_prec + logn;
+  mpz_init (uk);
   while (!good) {
     Prec = realprec + 2*shift + 2 + shift_x + factor;
     k = (int) ceil(log
@@ -135,7 +131,7 @@ mp_rnd_t rnd_mode;
     twopoweri = BITS_PER_MP_LIMB;   
     if (k <= prec_x) iter = k; else iter= prec_x;
     for(i = 0; i <= iter; i++){
-      mpfr_extract(uk,x_copy,i);
+      mpfr_extract (uk, x_copy, i);
 	if (i)
 	  {
 	    mpz_mul (square, uk, uk);
@@ -150,14 +146,14 @@ mp_rnd_t rnd_mode;
 	  {
 	    /* cas particulier : on est oblige de faire les calculs avec x/2^. 
 	       puis elever au carre (plus rapide) */    
-	    mpz_set(square,uk);
+	    mpz_set (square, uk);
 	    mpz_mul(square, square, square);
 	    mpz_neg(square, square);
 	    /* pour l'instant, shift = 0 ... */
 	    /* ATTENTION, IL FAUT AUSSI MULTIPLIER LE DENOMINATEUR */
 	    mpfr_sin_aux(t_sin,square, 2*(shift + twopoweri - ttt) + 2, k+1);
 	    mpfr_cos_aux(t_cos,square, 2*(shift + twopoweri - ttt) + 2, k+1);
-	    mpfr_set_z(tmp,uk,GMP_RNDD);
+	    mpfr_set_z (tmp, uk, GMP_RNDD);
 	    mpfr_mul(t_sin, t_sin, tmp,GMP_RNDD);
 	    /* LA AUSSI, IL FAUT PENSER A DECALER DE twopoweri - ttt) */
 	    mpfr_div_2exp(t_sin,t_sin, twopoweri - ttt + shift, GMP_RNDD);
@@ -174,7 +170,6 @@ mp_rnd_t rnd_mode;
       	      mpfr_sub_ui(t_cos, t_cos, 1,  GMP_RNDD);
 	    }
 	  }
-	mpz_clear(uk);
 	/* on utilise cos(a+b) = cos a cos b - sin a sin b 
 	   sin(a+b) = sin a cos b + cos a sin b */
 	/* Donnees : 
@@ -235,8 +230,9 @@ mp_rnd_t rnd_mode;
     mpfr_clear(tmp_cos);
     mpfr_clear(inter);
   }
-  mpz_clear(square);
-  mpfr_clear(x_copy);
+  mpz_clear (uk);
+  mpz_clear (square);
+  mpfr_clear (x_copy);
   return 1; /* inexact result */
 } 
 
