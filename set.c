@@ -42,7 +42,7 @@ mpfr_set4 (a, b, rnd_mode, signb)
   {
     MPFR_CLEAR_FLAGS(a);
     MPFR_SET_NAN(a);
-    MPFR_RET(0);
+    MPFR_RET_NAN;
   }
 
   if (MPFR_IS_INF(b))
