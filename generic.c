@@ -191,10 +191,23 @@ int m;
 #else
   mpfr_div_2exp(y, y, r*(i-1),GMP_RNDN); 
 #endif
-  for (i=0;i<=m;i++) { mpz_clear(P[i]); mpz_clear(S[i]); mpz_clear(ptoj[i]); }
+  for (i=0;i<=m;i++) { mpz_clear(P[i]); mpz_clear(S[i]); mpz_clear(ptoj[i]); 
+#ifdef R_IS_RATIONAL
+  mpz_clear(qtoj[i]);
+#endif
+#ifdef A
+  mpz_clear(T[i]);
+#endif
+  }
   free(P);
   free(S);
   free(ptoj);
+#ifdef R_IS_RATIONAL
+  free(qtoj);
+#endif
+#ifdef A
+  free(T);
+#endif
   return 0;
 }
 
