@@ -33,9 +33,9 @@ void check53 (double x, double sin_x, mp_rnd_t rnd_mode)
   mpfr_set_d (xx, x, rnd_mode); /* should be exact */
   mpfr_sin (s, xx, rnd_mode);
   if (mpfr_get_d (s) != sin_x && (!isnan(sin_x) || !isnan(mpfr_get_d(s)))) {
-    fprintf (stderr, "mpfr_sin_cos failed for x=%1.20e, rnd=%s\n", x,
+    fprintf (stderr, "mpfr_sin failed for x=%1.20e, rnd=%s\n", x,
 	     mpfr_print_rnd_mode (rnd_mode));
-    fprintf (stderr, "mpfr_sin_cos gives sin(x)=%1.20e, expected %1.20e\n",
+    fprintf (stderr, "mpfr_sin gives sin(x)=%1.20e, expected %1.20e\n",
 	     mpfr_get_d (s), sin_x);
     exit(1);
   }
@@ -75,7 +75,7 @@ main(int argc, char *argv[])
   mpfr_sin (x, x, GMP_RNDD);
   if (mpfr_get_d(x) != 0.25)
     {
-      fprintf (stderr, "mpfr_sin(0.5, GMP_RNDN) failed\n");
+      fprintf (stderr, "mpfr_sin(0.5, GMP_RNDD) failed\n");
       exit (1);
     }
 
