@@ -23,13 +23,12 @@ mpfr_sqrt3 (mpfr_ptr r, mpfr_srcptr u, unsigned char rnd_mode)
 
   if (FLAG_NAN(u) || SIGN(u) == -1) { SET_NAN(r); return; }
   
-  usize = ABSSIZE(u); 
   prec = PREC(r);
 
   if (!NOTZERO(u))
     {
       EXP(r) = 0; 
-      MPN_ZERO(MANT(r), SIZE(r)); 
+      MPN_ZERO(MANT(r), ABSSIZE(r)); 
       return; 
     }
 
@@ -45,6 +44,7 @@ mpfr_sqrt3 (mpfr_ptr r, mpfr_srcptr u, unsigned char rnd_mode)
   
   EXP(r) = ((EXP(u) + (EXP(u) & 1)) / 2) ;  
   
+  usize = (PREC(u) - 1)/BITS_PER_MP_LIMB + 1; 
   rsize = ((PREC(r) + 2 + (EXP(u) & 1))/BITS_PER_MP_LIMB + 1) << 1; 
   rrsize = (PREC(r) + 2 + (EXP(u) & 1))/BITS_PER_MP_LIMB + 1;
   /* One extra bit is needed in order to get the square root with enough
@@ -58,14 +58,19 @@ mpfr_sqrt3 (mpfr_ptr r, mpfr_srcptr u, unsigned char rnd_mode)
   TMP_MARK(marker0); 
   if (EXP(u) & 1) /* Shift u one bit to the right */
     {
-      up = TMP_ALLOC((SIZE(u) + (SIZE(u)*BITS_PER_MP_LIMB == PREC(u)))
-		     *BYTES_PER_MP_LIMB);   
-  
-      /* NE MARCHE QUE SI LA PARTIE NON SIGNIFICATIVE DE u EST A ZERO */
-      /* LE CONFIRMER ENCORE UNE FOIS ... FOOLPROOF ? */
-
-      if (mpn_rshift(up, u->_mp_d, SIZE(u), 1))
-	up [0] = ((mp_limb_t) 1) << (BITS_PER_MP_LIMB - 1); 
+      if (PREC(u) & (BITS_PER_MP_LIMB - 1))
+	{
+	  up = TMP_ALLOC(usize*BYTES_PER_MP_LIMB);
+	  mpn_rshift(up, u->_mp_d - usize + ABSSIZE(u), usize, 1); 
+	}
+      else
+	{
+	  up = TMP_ALLOC((usize + 1)*BYTES_PER_MP_LIMB);
+	  if (mpn_rshift(up + 1, u->_mp_d - usize + ABSSIZE(u), ABSSIZE(u), 1))
+	    up [0] = ((mp_limb_t) 1) << (BITS_PER_MP_LIMB - 1); 
+	  else up[0] = 0; 
+	  usize++; 
+	}
     }
 
   do
@@ -164,11 +169,13 @@ mpfr_sqrt3 (mpfr_ptr r, mpfr_srcptr u, unsigned char rnd_mode)
     r->_mp_exp++; 
   }
     
-  rp [0] &= ~(((mp_limb_t)1 << (BITS_PER_MP_LIMB - 
-		     (PREC(r) & (BITS_PER_MP_LIMB - 1)))) - 1) ; 
-  
-  rsize = rrsize; 
+
   rrsize = (PREC(r) - 1)/BITS_PER_MP_LIMB + 1;  
-  MPN_COPY(r->_mp_d + SIZE(r) - rrsize, rp + rsize - rrsize, rrsize); 
+  MPN_COPY(r->_mp_d + ABSSIZE(r) - rrsize, rp, rrsize); 
+
+  if (PREC(r) & (BITS_PER_MP_LIMB - 1))
+    MANT(r) [ABSSIZE(r) - rrsize] &= ~(((mp_limb_t)1 << (BITS_PER_MP_LIMB - 
+				   (PREC(r) & (BITS_PER_MP_LIMB - 1)))) - 1) ; 
+  
   TMP_FREE(marker0); TMP_FREE (marker);
 }
