@@ -91,7 +91,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 {
   mp_exp_t bx,cx;
   mp_exp_unsigned_t d;
-  mpfr_prec_t p, sh, cnt;
+  mp_prec_t p, sh, cnt;
   mp_size_t n;
   mp_limb_t *ap, *bp, *cp;
   mp_limb_t limb;
@@ -185,9 +185,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 		  mpn_lshift(ap, ap, n, cnt); /* Normalize number */
 		  bx -= cnt; /* Update final expo */
 		}
-	      sh = (-p % BITS_PER_MP_LIMB);
-	      if (MPFR_LIKELY(sh))
-		ap[0] &= ~((MPFR_LIMB_ONE << sh) - MPFR_LIMB_ONE);
+	      MPFR_UNSIGNED_MINUS_MODULO(sh, p);
+	      ap[0] &= ~((MPFR_LIMB_ONE << sh) - MPFR_LIMB_ONE);
 	    }
 	  else
 	    {
@@ -207,9 +206,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	      mpn_lshift(ap+len, ap, k, cnt); /* Normalize the High Limb*/
 	      MPN_ZERO(ap, len); /* Zeroing the last limbs */
 	      bx -= cnt + len*BITS_PER_MP_LIMB; /* Update Expo */
-	      sh = (-p % BITS_PER_MP_LIMB);
-	      if (MPFR_LIKELY(sh))
-		ap[len] &= ~((MPFR_LIMB_ONE << sh) - MPFR_LIMB_ONE);
+              MPFR_UNSIGNED_MINUS_MODULO(sh, p);
+	      ap[len] &= ~((MPFR_LIMB_ONE << sh) - MPFR_LIMB_ONE);
 	    }
 	  /* Check expo underflow */
 	  if (MPFR_UNLIKELY(bx < __gmpfr_emin))
@@ -235,7 +233,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	     |  <-- c --> */
 	  mp_limb_t c0, mask;
 	  mp_size_t k;
-	  sh = -p % BITS_PER_MP_LIMB;
+	  MPFR_UNSIGNED_MINUS_MODULO(sh, p);
 	  /* If we lose at least one bit, compute 2*b-c (Exact)
 	   * else compute b-c/2 */
 	  bp = MPFR_MANT(b);
@@ -344,7 +342,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   else if (d >= p)
     {
       ap = MPFR_MANT(a);
-      sh = (-p) % BITS_PER_MP_LIMB;
+      MPFR_UNSIGNED_MINUS_MODULO(sh, p);
       /* We can't set A before since we use cp for rounding... */
       /* Perform rounding: check if a=b or a=b-ulp(b) */
       if (MPFR_UNLIKELY(d == p))
@@ -422,12 +420,12 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
     }
   else
     {
-      mpfr_prec_t dm;
+      mp_exp_unsigned_t dm;
       mp_size_t m;
       mp_limb_t mask;
 
       /* General case: 2 <= d < p */
-      sh = (-p) % BITS_PER_MP_LIMB;
+      MPFR_UNSIGNED_MINUS_MODULO(sh, p);
       cp = (mp_limb_t*) TMP_ALLOC(n * BYTES_PER_MP_LIMB);
 
       /* Shift c in temporary allocated place */
