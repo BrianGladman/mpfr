@@ -252,9 +252,12 @@ mpfr_set_d (r, d, rnd_mode)
      mp_rnd_t rnd_mode;
 #endif
 {
-  int signd, sizer, sizetmp; unsigned int cnt; mpfr_ptr tmp; 
-  TMP_MARK(marker); 
+  int signd, sizer, sizetmp;
+  unsigned int cnt;
+  mpfr_ptr tmp; 
+  TMP_DECL(marker); 
 
+  TMP_MARK(marker);
   MPFR_CLEAR_FLAGS(r);
   if (d == 0) {
     union ieee_double_extract x;
@@ -279,13 +282,17 @@ mpfr_set_d (r, d, rnd_mode)
 
   if (sizer < MPFR_LIMBS_PER_DOUBLE) 
     {
-      tmp = TMP_ALLOC(sizeof(mpfr_ptr)); 
+      tmp = (mpfr_ptr) TMP_ALLOC(sizeof(mpfr_t)); 
       MPFR_MANT(tmp) = TMP_ALLOC(MPFR_LIMBS_PER_DOUBLE * BYTES_PER_MP_LIMB); 
       MPFR_PREC(tmp) = 53; 
-      MPFR_SIZE(tmp) = 2; 
-      sizetmp = 2; 
+      MPFR_SIZE(tmp) = MPFR_LIMBS_PER_DOUBLE;
+      sizetmp = MPFR_LIMBS_PER_DOUBLE;
     }
-  else { tmp = r; sizetmp = sizer; }
+  else
+    {
+      tmp = r;
+      sizetmp = sizer;
+    }
 
   signd = (d < 0) ? -1 : 1;
   d = ABS (d);
@@ -294,10 +301,12 @@ mpfr_set_d (r, d, rnd_mode)
 					 MPFR_LIMBS_PER_DOUBLE, d, 1);
   
   if (sizetmp > MPFR_LIMBS_PER_DOUBLE)
-    MPN_ZERO(MPFR_MANT(tmp), sizer - MPFR_LIMBS_PER_DOUBLE); 
+    MPN_ZERO(MPFR_MANT(tmp), sizetmp - MPFR_LIMBS_PER_DOUBLE); 
 
-  count_leading_zeros(cnt, MPFR_MANT(tmp)[sizetmp-1]);
-  if (cnt) mpn_lshift(MPFR_MANT(tmp), MPFR_MANT(tmp), sizetmp, cnt); 
+  count_leading_zeros(cnt, MPFR_MANT(tmp)[sizetmp-1]); 
+
+  if (cnt)
+    mpn_lshift (MPFR_MANT(tmp), MPFR_MANT(tmp), sizetmp, cnt); 
   
   MPFR_EXP(tmp) -= cnt; 
 
@@ -309,11 +318,11 @@ mpfr_set_d (r, d, rnd_mode)
 
 double
 #if __STDC__
-mpfr_get_d2(mpfr_srcptr src, long e)
+mpfr_get_d2 (mpfr_srcptr src, long e)
 #else
-mpfr_get_d2(src, e)
-     mpfr_srcptr(src); 
-     long e; 
+mpfr_get_d2 (src, e)
+     mpfr_srcptr src;
+     long e;
 #endif
 {
   double res;
@@ -321,18 +330,25 @@ mpfr_get_d2(src, e)
   mp_ptr qp;
   int negative;
 
-  if (MPFR_IS_NAN(src)) { 
+  if (MPFR_IS_NAN(src))
+    { 
 #ifdef DEBUG
-    printf("recognized NaN\n");
+      printf("recognized NaN\n");
 #endif
-    return NaN; }
-  if (MPFR_IS_INF(src)) { 
+      return NaN;
+    }
+
+  if (MPFR_IS_INF(src))
+    { 
 #ifdef DEBUG
-    printf("Found Inf.\n");
+      printf("Found Inf.\n");
 #endif
-    return (MPFR_SIGN(src) == 1 ? Infp : Infm); 
-  }
-  if (MPFR_NOTZERO(src)==0) return 0.0;
+      return (MPFR_SIGN(src) == 1 ? Infp : Infm); 
+    }
+
+  if (MPFR_NOTZERO(src) == 0)
+    return 0.0;
+
   size = 1+(MPFR_PREC(src)-1)/BITS_PER_MP_LIMB;
   qp = MPFR_MANT(src);
   negative = (MPFR_SIGN(src) < 0);
@@ -371,12 +387,12 @@ mpfr_get_d2(src, e)
 
 double 
 #if __STDC__
-mpfr_get_d(mpfr_srcptr src)
+mpfr_get_d (mpfr_srcptr src)
 #else
-mpfr_get_d(src)
-     mpfr_srcptr src; 
+mpfr_get_d (src)
+     mpfr_srcptr src;
 #endif
 {
-  return mpfr_get_d2(src, MPFR_EXP(src));
+  return mpfr_get_d2 (src, MPFR_EXP(src));
 }
 
