@@ -234,15 +234,15 @@ int mpfr_min _PROTO ((mpfr_ptr z, mpfr_srcptr x ,mpfr_srcptr y,mp_rnd_t rnd_mode
 int mpfr_max _PROTO ((mpfr_ptr z, mpfr_srcptr x ,mpfr_srcptr y,mp_rnd_t rnd_mode ));
 int mpfr_dim _PROTO ((mpfr_ptr z, mpfr_srcptr x ,mpfr_srcptr y,mp_rnd_t rnd_mode ));
 int mpfr_copysign _PROTO((mpfr_ptr, mpfr_srcptr,mpfr_srcptr, mp_rnd_t));
-int mpfr_mul_mpz _PROTO ((mpfr_ptr, mpfr_srcptr, mpz_srcptr, mp_rnd_t)); 
-int mpfr_div_mpz _PROTO ((mpfr_ptr, mpfr_srcptr, mpz_srcptr, mp_rnd_t)); 
-int mpfr_add_mpz _PROTO ((mpfr_ptr, mpfr_srcptr, mpz_srcptr, mp_rnd_t)); 
-int mpfr_sub_mpz _PROTO ((mpfr_ptr, mpfr_srcptr, mpz_srcptr, mp_rnd_t)); 
+int mpfr_mul_z _PROTO ((mpfr_ptr, mpfr_srcptr, mpz_srcptr, mp_rnd_t)); 
+int mpfr_div_z _PROTO ((mpfr_ptr, mpfr_srcptr, mpz_srcptr, mp_rnd_t)); 
+int mpfr_add_z _PROTO ((mpfr_ptr, mpfr_srcptr, mpz_srcptr, mp_rnd_t)); 
+int mpfr_sub_z _PROTO ((mpfr_ptr, mpfr_srcptr, mpz_srcptr, mp_rnd_t)); 
 
-int mpfr_mul_mpq _PROTO ((mpfr_ptr, mpfr_srcptr, mpq_srcptr, mp_rnd_t)); 
-int mpfr_div_mpq _PROTO ((mpfr_ptr, mpfr_srcptr, mpq_srcptr, mp_rnd_t)); 
-int mpfr_add_mpq _PROTO ((mpfr_ptr, mpfr_srcptr, mpq_srcptr, mp_rnd_t)); 
-int mpfr_sub_mpq _PROTO ((mpfr_ptr, mpfr_srcptr, mpq_srcptr, mp_rnd_t)); 
+int mpfr_mul_q _PROTO ((mpfr_ptr, mpfr_srcptr, mpq_srcptr, mp_rnd_t)); 
+int mpfr_div_q _PROTO ((mpfr_ptr, mpfr_srcptr, mpq_srcptr, mp_rnd_t)); 
+int mpfr_add_q _PROTO ((mpfr_ptr, mpfr_srcptr, mpq_srcptr, mp_rnd_t)); 
+int mpfr_sub_q _PROTO ((mpfr_ptr, mpfr_srcptr, mpq_srcptr, mp_rnd_t)); 
 
 #if defined (__cplusplus)
 }

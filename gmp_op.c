@@ -27,9 +27,9 @@ MA 02111-1307, USA. */
 
 int 
 #if __STDC__
-mpfr_mul_mpz (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z,mp_rnd_t rnd_mode) 
+mpfr_mul_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z,mp_rnd_t rnd_mode) 
 #else
-mpfr_mul_mpz (y, x, rnd_mode)
+mpfr_mul_z (y, x, rnd_mode)
      mpfr_ptr y;
      mpfr_srcptr x;
      mpz_srcptr z;
@@ -47,9 +47,9 @@ mpfr_mul_mpz (y, x, rnd_mode)
 
 int 
 #if __STDC__
-mpfr_div_mpz (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd_mode) 
+mpfr_div_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd_mode) 
 #else
-mpfr_div_mpz (y, x, rnd_mode)
+mpfr_div_z (y, x, rnd_mode)
      mpfr_ptr y;
      mpfr_srcptr x;
      mpz_srcptr z;
@@ -67,9 +67,9 @@ mpfr_div_mpz (y, x, rnd_mode)
 
 int 
 #if __STDC__
-mpfr_add_mpz (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd_mode) 
+mpfr_add_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd_mode) 
 #else
-mpfr_add_mpz (y, x, rnd_mode)
+mpfr_add_z (y, x, rnd_mode)
      mpfr_ptr y;
      mpfr_srcptr x;
      mpz_srcptr z;
@@ -87,9 +87,9 @@ mpfr_add_mpz (y, x, rnd_mode)
 
 int 
 #if __STDC__
-mpfr_sub_mpz (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z,mp_rnd_t rnd_mode) 
+mpfr_sub_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z,mp_rnd_t rnd_mode) 
 #else
-mpfr_sub_mpz (y, x, rnd_mode)
+mpfr_sub_z (y, x, rnd_mode)
      mpfr_ptr y;
      mpfr_srcptr x;
      mpz_srcptr z;
@@ -107,9 +107,9 @@ mpfr_sub_mpz (y, x, rnd_mode)
 
 int 
 #if __STDC__
-mpfr_mul_mpq (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z,mp_rnd_t rnd_mode) 
+mpfr_mul_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z,mp_rnd_t rnd_mode) 
 #else
-mpfr_mul_mpq (y, x, rnd_mode)
+mpfr_mul_q (y, x, rnd_mode)
      mpfr_ptr y;
      mpfr_srcptr x;
      mpq_srcptr z;
@@ -127,9 +127,9 @@ mpfr_mul_mpq (y, x, rnd_mode)
 
 int 
 #if __STDC__
-mpfr_div_mpq (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mp_rnd_t rnd_mode) 
+mpfr_div_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mp_rnd_t rnd_mode) 
 #else
-mpfr_div_mpq (y, x, rnd_mode)
+mpfr_div_q (y, x, rnd_mode)
      mpfr_ptr y;
      mpfr_srcptr x;
      mpq_srcptr z;
@@ -147,9 +147,9 @@ mpfr_div_mpq (y, x, rnd_mode)
 
 int 
 #if __STDC__
-mpfr_add_mpq (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mp_rnd_t rnd_mode) 
+mpfr_add_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mp_rnd_t rnd_mode) 
 #else
-mpfr_add_mpq (y, x, rnd_mode)
+mpfr_add_q (y, x, rnd_mode)
      mpfr_ptr y;
      mpfr_srcptr x;
      mpq_srcptr z;
@@ -167,9 +167,9 @@ mpfr_add_mpq (y, x, rnd_mode)
 
 int 
 #if __STDC__
-mpfr_sub_mpq (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z,mp_rnd_t rnd_mode) 
+mpfr_sub_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z,mp_rnd_t rnd_mode) 
 #else
-mpfr_sub_mpq (y, x, rnd_mode)
+mpfr_sub_q (y, x, rnd_mode)
      mpfr_ptr y;
      mpfr_srcptr x;
      mpq_srcptr z;

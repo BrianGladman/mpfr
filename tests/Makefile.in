@@ -66,7 +66,7 @@ PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
 
-check_PROGRAMS = reuse tabs tadd tagm tcan_round tcmp tcmp2 tcmp_ui tdiv tdiv_ui tdump teq texp tget_str tlog tlog2 tmul tmul_2exp tmul_ui tout_str tpi tpow trandom tround tset_d tset_f tset_q tset_si tset_str tset_z tsqrt tsqrt_ui tui_div tui_sub tswap ttrunc tisnan tget_d tatan tcosh tsinh ttanh tacosh tasinh tatanh thyperbolic texp2 tfactorial tsub tasin teuler tcos tsin ttan tsub_ui tset tlog1p texpm1 tlog_base_2 tui_pow tpow3 tlog_base_10 tadd_ui texceptions tfma
+check_PROGRAMS = reuse tabs tadd tagm tcan_round tcmp tcmp2 tcmp_ui tdiv tdiv_ui tdump teq texp tget_str tlog tlog2 tmul tmul_2exp tmul_ui tout_str tpi tpow trandom tround tset_d tset_f tset_q tset_si tset_str tset_z tsqrt tsqrt_ui tui_div tui_sub tswap ttrunc tisnan tget_d tatan tcosh tsinh ttanh tacosh tasinh tatanh thyperbolic texp2 tfactorial tsub tasin teuler tcos tsin ttan tsub_ui tset tlog1p texpm1 tlog_base_2 tui_pow tpow3 tlog_base_10 tadd_ui texceptions tfma thypot
 EXTRA_DIST = tgeneric.c
 
 LDADD = $(top_builddir)/libmpfr.a  @LDADD@
@@ -402,6 +402,11 @@ tfma_OBJECTS =  tfma.o
 tfma_LDADD = $(LDADD)
 tfma_DEPENDENCIES =  $(top_builddir)/libmpfr.a
 tfma_LDFLAGS = 
+thypot_SOURCES = thypot.c
+thypot_OBJECTS =  thypot.o
+thypot_LDADD = $(LDADD)
+thypot_DEPENDENCIES =  $(top_builddir)/libmpfr.a
+thypot_LDFLAGS = 
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
@@ -410,7 +415,7 @@ DIST_COMMON =  Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = gtar
+TAR = tar
 GZIP_ENV = --best
 DEP_FILES =  .deps/reuse.P .deps/tabs.P .deps/tacosh.P .deps/tadd.P \
 .deps/tadd_ui.P .deps/tagm.P .deps/tasin.P .deps/tasinh.P .deps/tatan.P \
@@ -419,7 +424,7 @@ DEP_FILES =  .deps/reuse.P .deps/tabs.P .deps/tacosh.P .deps/tadd.P \
 .deps/tdump.P .deps/teq.P .deps/teuler.P .deps/texceptions.P \
 .deps/texp.P .deps/texp2.P .deps/texpm1.P .deps/tfactorial.P \
 .deps/tfma.P .deps/tget_d.P .deps/tget_str.P .deps/thyperbolic.P \
-.deps/tisnan.P .deps/tlog.P .deps/tlog1p.P .deps/tlog2.P \
+.deps/thypot.P .deps/tisnan.P .deps/tlog.P .deps/tlog1p.P .deps/tlog2.P \
 .deps/tlog_base_10.P .deps/tlog_base_2.P .deps/tmul.P .deps/tmul_2exp.P \
 .deps/tmul_ui.P .deps/tout_str.P .deps/tpi.P .deps/tpow.P .deps/tpow3.P \
 .deps/trandom.P .deps/tround.P .deps/tset.P .deps/tset_d.P \
@@ -428,8 +433,8 @@ DEP_FILES =  .deps/reuse.P .deps/tabs.P .deps/tacosh.P .deps/tadd.P \
 .deps/tsqrt_ui.P .deps/tsub.P .deps/tsub_ui.P .deps/tswap.P \
 .deps/ttan.P .deps/ttanh.P .deps/ttrunc.P .deps/tui_div.P \
 .deps/tui_pow.P .deps/tui_sub.P
-SOURCES = reuse.c tabs.c tadd.c tagm.c tcan_round.c tcmp.c tcmp2.c tcmp_ui.c tdiv.c tdiv_ui.c tdump.c teq.c texp.c tget_str.c tlog.c tlog2.c tmul.c tmul_2exp.c tmul_ui.c tout_str.c tpi.c tpow.c trandom.c tround.c tset_d.c tset_f.c tset_q.c tset_si.c tset_str.c tset_z.c tsqrt.c tsqrt_ui.c tui_div.c tui_sub.c tswap.c ttrunc.c tisnan.c tget_d.c tatan.c tcosh.c tsinh.c ttanh.c tacosh.c tasinh.c tatanh.c thyperbolic.c texp2.c tfactorial.c tsub.c tasin.c teuler.c tcos.c tsin.c ttan.c tsub_ui.c tset.c tlog1p.c texpm1.c tlog_base_2.c tui_pow.c tpow3.c tlog_base_10.c tadd_ui.c texceptions.c tfma.c
-OBJECTS = reuse.o tabs.o tadd.o tagm.o tcan_round.o tcmp.o tcmp2.o tcmp_ui.o tdiv.o tdiv_ui.o tdump.o teq.o texp.o tget_str.o tlog.o tlog2.o tmul.o tmul_2exp.o tmul_ui.o tout_str.o tpi.o tpow.o trandom.o tround.o tset_d.o tset_f.o tset_q.o tset_si.o tset_str.o tset_z.o tsqrt.o tsqrt_ui.o tui_div.o tui_sub.o tswap.o ttrunc.o tisnan.o tget_d.o tatan.o tcosh.o tsinh.o ttanh.o tacosh.o tasinh.o tatanh.o thyperbolic.o texp2.o tfactorial.o tsub.o tasin.o teuler.o tcos.o tsin.o ttan.o tsub_ui.o tset.o tlog1p.o texpm1.o tlog_base_2.o tui_pow.o tpow3.o tlog_base_10.o tadd_ui.o texceptions.o tfma.o
+SOURCES = reuse.c tabs.c tadd.c tagm.c tcan_round.c tcmp.c tcmp2.c tcmp_ui.c tdiv.c tdiv_ui.c tdump.c teq.c texp.c tget_str.c tlog.c tlog2.c tmul.c tmul_2exp.c tmul_ui.c tout_str.c tpi.c tpow.c trandom.c tround.c tset_d.c tset_f.c tset_q.c tset_si.c tset_str.c tset_z.c tsqrt.c tsqrt_ui.c tui_div.c tui_sub.c tswap.c ttrunc.c tisnan.c tget_d.c tatan.c tcosh.c tsinh.c ttanh.c tacosh.c tasinh.c tatanh.c thyperbolic.c texp2.c tfactorial.c tsub.c tasin.c teuler.c tcos.c tsin.c ttan.c tsub_ui.c tset.c tlog1p.c texpm1.c tlog_base_2.c tui_pow.c tpow3.c tlog_base_10.c tadd_ui.c texceptions.c tfma.c thypot.c
+OBJECTS = reuse.o tabs.o tadd.o tagm.o tcan_round.o tcmp.o tcmp2.o tcmp_ui.o tdiv.o tdiv_ui.o tdump.o teq.o texp.o tget_str.o tlog.o tlog2.o tmul.o tmul_2exp.o tmul_ui.o tout_str.o tpi.o tpow.o trandom.o tround.o tset_d.o tset_f.o tset_q.o tset_si.o tset_str.o tset_z.o tsqrt.o tsqrt_ui.o tui_div.o tui_sub.o tswap.o ttrunc.o tisnan.o tget_d.o tatan.o tcosh.o tsinh.o ttanh.o tacosh.o tasinh.o tatanh.o thyperbolic.o texp2.o tfactorial.o tsub.o tasin.o teuler.o tcos.o tsin.o ttan.o tsub_ui.o tset.o tlog1p.o texpm1.o tlog_base_2.o tui_pow.o tpow3.o tlog_base_10.o tadd_ui.o texceptions.o tfma.o thypot.o
 
 all: all-redirect
 .SUFFIXES:
@@ -727,6 +732,10 @@ tfma: $(tfma_OBJECTS) $(tfma_DEPENDENCIES)
 	@rm -f tfma
 	$(LINK) $(tfma_LDFLAGS) $(tfma_OBJECTS) $(tfma_LDADD) $(LIBS)
 
+thypot: $(thypot_OBJECTS) $(thypot_DEPENDENCIES)
+	@rm -f thypot
+	$(LINK) $(thypot_LDFLAGS) $(thypot_OBJECTS) $(thypot_LDADD) $(LIBS)
+
 tags: TAGS
 
 ID: $(HEADERS) $(SOURCES) $(LISP)
@@ -769,7 +778,7 @@ distdir: $(DISTFILES)
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
-	    cp -pr $$d/$$file $(distdir)/$$file; \
+	    cp -pr $$/$$file $(distdir)/$$file; \
 	  else \
 	    test -f $(distdir)/$$file \
 	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
