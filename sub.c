@@ -304,7 +304,7 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
       overlap += 2;
       /* invert low limbs */
       imax = (int)an - (int)bn + cancel1;
-      if (imax > an) imax = an;
+      if (imax > (int)an) imax = an;
       for (i=0;i<imax;i++) ap[i] = ~ap[i];
       cc = (i) ? mpn_add_1(ap, ap, i, 1) : 1;
       if (cancel1 < bn) mpn_sub_lshift_n(ap+i, bp, bn-cancel1, cancel2, an);
