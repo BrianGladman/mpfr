@@ -34,11 +34,17 @@ typedef unsigned long int       mp_size_unsigned_t;
 
 /* Compile with -DWANT_ASSERT to check all assert statements */
 
-/* MPFR_ASSERTN(expr): assertion checked in the normal debug level */
-#define MPFR_ASSERTN(expr) ASSERT_ALWAYS(expr)
+/* MPFR_ASSERTN(expr): assertions that should always be checked */
+/* #define MPFR_ASSERTN(expr) ASSERT_ALWAYS(expr) */
+#define MPFR_ASSERTN(expr)  ((expr) ? (void) 0 : (void) ASSERT_FAIL (expr))
 
-/* MPFR_ASSERTD(expr): assertion checked in debug level 33 or higher */
-#define MPFR_ASSERTD(expr) ASSERT(expr)
+/* MPFR_ASSERTD(expr): assertions that should be checked when testing */
+/* #define MPFR_ASSERTD(expr) ASSERT(expr) */
+#if WANT_ASSERT
+#define MPFR_ASSERTD(expr)  ASSERT_ALWAYS (expr)
+#else
+#define MPFR_ASSERTD(expr)  ((void) 0)
+#endif
 
 /* Definition of constants */
 
