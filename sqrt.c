@@ -116,8 +116,9 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
         sticky0 = mpn_rshift (sp, up + k, rrsize, 1);
       else
         MPN_COPY (sp, up + k, rrsize);
-      while (sticky0 == MPFR_LIMB_ZERO && k != 0)
-        sticky0 = up[--k];
+      l = k;
+      while (sticky0 == MPFR_LIMB_ZERO && l != 0)
+        sticky0 = up[--l];
     }
 
   /* sticky0 is non-zero iff the truncated part of the input is non-zero */
