@@ -1075,6 +1075,10 @@ typedef struct {
   } while (0)
 
 
+#define MPFR_CAN_ROUND(b,err,prec,rnd)                                       \
+ (!MPFR_IS_SINGULAR (b) && mpfr_round_p (MPFR_MANT (b), MPFR_LIMB_SIZE (b),  \
+					 (err), (prec) + ((rnd)==GMP_RNDN)))
+
 /******************************************************
  ***************  Ziv Loop Macro  *********************
  ******************************************************/
@@ -1290,6 +1294,9 @@ __MPFR_DECLSPEC int mpfr_const_euler_internal _MPFR_PROTO((mpfr_ptr,
 							   mp_rnd_t));
 __MPFR_DECLSPEC void mpfr_mulhigh_n _MPFR_PROTO ((mp_ptr, mp_srcptr, 
 						  mp_srcptr, mp_size_t));
+
+__MPFR_DECLSPEC int mpfr_round_p _MPFR_PROTO ((mp_limb_t *, mp_size_t, 
+					       mp_exp_t, mp_prec_t));
 #if defined (__cplusplus)
 }
 #endif
