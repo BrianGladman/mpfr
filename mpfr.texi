@@ -360,12 +360,12 @@ You should include that file in any program using the MPFR library:
 @cindex Floating-point number
 @tindex @code{mpfr_t}
 @noindent
-@dfn{Floating point number} or @dfn{Float} for short, is an arbitrary precision
+@dfn{Floating-point number} or @dfn{Float} for short, is an arbitrary precision
 mantissa with a limited precision exponent.  The C data type for such objects
 is @code{mpfr_t}.
-A floating point number can have three special values: Not-a-Number (NaN)
+A floating-point number can have three special values: Not-a-Number (NaN)
 or plus or minus Infinity. NaN represents a value which cannot be represented
-in the floating point format, like 0 divided by 0, or Infinity minus Infinity.
+in the floating-point format, like 0 divided by 0, or Infinity minus Infinity.
 
 
 @cindex Precision
@@ -474,7 +474,7 @@ integer functions.  The function prefix for floating-point operations is
 
 There is one significant characteristic of floating-point numbers that has
 motivated a difference between this function class and other MPFR function
-classes: the inherent inexactness of floating point arithmetic.  The user has
+classes: the inherent inexactness of floating-point arithmetic.  The user has
 to specify the precision of each variable.  A computation that assigns a
 variable will take place with the precision of the assigned variable; the
 cost of that computation should not depend from the 
