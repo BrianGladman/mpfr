@@ -26,6 +26,18 @@ typedef unsigned int            mp_exp_unsigned_t;
 typedef unsigned long int       mp_exp_unsigned_t;
 #endif
 
+/* Assertions */
+
+#ifndef MPFR_DEBUG_LEVEL
+#define MPFR_DEBUG_LEVEL 20
+#endif
+
+#include <assert.h>
+#define MPFR_ASSERT(level, expr) \
+  ((level) < MPFR_DEBUG_LEVEL && (assert(expr), 0))
+#define MPFR_ASSERTN(expr) MPFR_ASSERT(16, expr)
+#define MPFR_ASSERTD(expr) MPFR_ASSERT(32, expr)
+
 /* Definition of constants */
 
 #define LOG2 0.69314718055994528622 /* log(2) rounded to zero on 53 bits */
