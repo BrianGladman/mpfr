@@ -36,6 +36,7 @@ main (int argc, char *argv[])
   long k, z, d, N;
   unsigned long zl, dl;
   int inex;
+  int r;
 
   tests_start_mpfr ();
 
@@ -129,22 +130,27 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-  mpfr_set_si (x, -1, GMP_RNDN);
-  mpfr_set_ui (x, 0, GMP_RNDN);
-  if (MPFR_SIGN (x) < 0)
+  for(r = 0 ; r < 4 ; r++)
     {
-      printf ("mpfr_set_ui (x, 0) gives -0\n");
-      exit (1);
-    }
+      mpfr_set_si (x, -1, r);
+      mpfr_set_ui (x, 0, r);
+      if (MPFR_IS_NEG (x) )
+	{
+	  printf ("mpfr_set_ui (x, 0) gives -0 for %s\n", 
+		  mpfr_print_rnd_mode(r));
+	  exit (1);
+	}
 
-  mpfr_set_si (x, -1, GMP_RNDN);
-  mpfr_set_si (x, 0, GMP_RNDN);
-  if (MPFR_SIGN (x) < 0)
-    {
-      printf ("mpfr_set_si (x, 0) gives -0\n");
-      exit (1);
+      mpfr_set_si (x, -1, r);
+      mpfr_set_si (x, 0, r);
+      if (MPFR_IS_NEG (x) )
+	{
+	  printf ("mpfr_set_si (x, 0) gives -0 for %s\n",
+		  mpfr_print_rnd_mode(r) );
+	  exit (1);
+	}
     }
-
+  
   /* check potential bug in case mp_limb_t is unsigned */
   mpfr_set_emax (0);
   mpfr_set_si (x, -1, GMP_RNDN);

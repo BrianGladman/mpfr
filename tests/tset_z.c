@@ -26,11 +26,32 @@ MA 02111-1307, USA. */
 
 #include "mpfr-test.h"
 
+static void check0(void)
+{
+  mpz_t y;
+  mpfr_t x;
+  int inexact, r;
+  /* Check for +0 */
+  mpfr_init(x);
+  mpz_init(y);
+  mpz_set_si(y, 0);
+  for(r = 0 ; r < 4 ; r++)
+    {
+      inexact = mpfr_set_z(x, y, r);
+      if (!MPFR_IS_ZERO(x) || !MPFR_IS_POS(x) || inexact)
+        {
+          printf("mpfr_set_z(x,0) failed for %s\n",
+                 mpfr_print_rnd_mode(r));
+          exit(1);
+        }
+    }
+  mpfr_clear(x);
+  mpz_clear(y);
+}  
 
 /* FIXME: It'd be better to examine the actual data in an mpfr_t to see that
    it's as expected.  Comparing mpfr_set_z with mpfr_cmp or against
    mpfr_get_si is a rather indirect test of a low level routine.  */
-
 
 static void
 check (long i, unsigned char rnd)
@@ -84,6 +105,7 @@ main (int argc, char *argv[])
   check (0, 0);
   for (j = 0; j < 200000; j++)
     check (randlimb () & LONG_MAX, randlimb () % 4);
+  check0();
 
   tests_end_mpfr ();
   return 0;

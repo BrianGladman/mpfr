@@ -31,6 +31,7 @@ main (void)
   mpfr_t x, u;
   mpf_t y, z;
   unsigned long k, pr;
+  int r, inexact;
 
   tests_start_mpfr ();
 
@@ -71,17 +72,32 @@ main (void)
     }
 
   mpfr_clear(u);
-  mpfr_clear(x);
 
   for (k = 1; k <= 100000; k++)
     {
       pr = 2 + (randlimb () & 255);
       mpf_set_prec (z, pr);
       mpf_random2 (z, z->_mp_prec, 0);
-      mpfr_init2 (x, pr);
+      mpfr_set_prec (x, pr);
       mpfr_set_f (x, z, 0);
-      mpfr_clear (x);
     }
+
+  /* Check for +0 */
+  mpfr_set_prec(x, 53);
+  mpf_set_prec(y, 53);
+  mpf_set_ui(y, 0);
+  for(r = 0 ; r < 4 ; r++)
+    {
+      inexact = mpfr_set_f(x, y, r);
+      if (!MPFR_IS_ZERO(x) || !MPFR_IS_POS(x) || inexact)
+	{
+	  printf("mpfr_set_f(x,0) failed for %s\n",
+		 mpfr_print_rnd_mode(r));
+	  exit(1);
+	}
+    }
+
+  mpfr_clear (x);
   mpf_clear (y);
   mpf_clear (z);
 

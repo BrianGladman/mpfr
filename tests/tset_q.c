@@ -71,6 +71,29 @@ check (long int n, long int d, mp_rnd_t rnd, double y)
   mpq_clear (q);
 }
 
+static void check0(void)
+{
+  mpq_t y;
+  mpfr_t x;
+  int inexact, r;
+  /* Check for +0 */
+  mpfr_init(x);
+  mpq_init(y);
+  mpq_set_si(y, 0, 1);
+  for(r = 0 ; r < 4 ; r++)
+    {
+      inexact = mpfr_set_q(x, y, r);
+      if (!MPFR_IS_ZERO(x) || !MPFR_IS_POS(x) || inexact)
+        {
+          printf("mpfr_set_q(x,0) failed for %s\n",
+                 mpfr_print_rnd_mode(r));
+          exit(1);
+        }
+    }
+  mpfr_clear(x);
+  mpq_clear(y);
+}
+
 int
 main (void)
 {
@@ -85,6 +108,8 @@ main (void)
   check(643562308, 23100894, GMP_RNDD, 2.7858762002890447462e1);
   check(632549085, 1831935802, GMP_RNDN, 3.4528998467600230393e-1);
   check (1, 1, GMP_RNDN, 1.0);
+
+  check0();
 
   tests_end_mpfr ();
   return 0;
