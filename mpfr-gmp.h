@@ -27,10 +27,10 @@ MA 02111-1307, USA. */
 #endif
 
 #include <limits.h> /* For INT_MAX, ... */
-#include <string.h> /* For memcpy, memset and memmove*/
+#include <string.h> /* For memcpy, memset and memmove */
 
 /* The following tries to get a good version of alloca.
-   See gmp-impl.h for implementation details */
+   See gmp-impl.h for implementation details and original version */
 #ifndef alloca
 # if defined ( __GNUC__ )
 #  define alloca __builtin_alloca
@@ -94,13 +94,13 @@ char *alloca ();
 
 /* MPN macros taken from gmp-impl.h */
 #define MPN_NORMALIZE(DST, NLIMBS) \
-  do {                                                                  \
-    while (NLIMBS > 0)                                                  \
-      {                                                                 \
-        if ((DST)[(NLIMBS) - 1] != 0)                                   \
-          break;                                                        \
-        NLIMBS--;                                                       \
-      }                                                                 \
+  do {                                        \
+    while (NLIMBS > 0)                        \
+      {                                       \
+        if ((DST)[(NLIMBS) - 1] != 0)         \
+          break;                              \
+        NLIMBS--;                             \
+      }                                       \
   } while (0)
 #define MPN_NORMALIZE_NOT_ZERO(DST, NLIMBS)     \
   do {                                          \
@@ -123,9 +123,9 @@ char *alloca ();
 #define MPN_SAME_OR_DECR_P(dst, src, size)      \
   MPN_SAME_OR_DECR2_P(dst, size, src, size)
 
-/* If sqr_n is not exported, used mpn_mul_n instead */
+/* If sqr_n is not exported, used mpn_mul instead */
 #ifndef mpn_sqr_n
-# define mpn_sqr_n(dst,src,n) mpn_mul_n((dst),(src),(src),(n))
+# define mpn_sqr_n(dst,src,n) mpn_mul((dst),(src),(n),(src),(n))
 #endif
 
 /* ASSERT */
@@ -144,7 +144,7 @@ void mpfr_assert_fail _MPFR_PROTO((const char *filename, int linenum, const char
 #define ALLOC(x) ((x)->_mp_alloc)
 #define MPZ_REALLOC(z,n) ((n) > ALLOC(z) ? _mpz_realloc(z,n) : PTR(z))
 
-/* Non IEEE float supports */
+/* Non IEEE float supports -- needs to detect them with proper configure */
 #undef  XDEBUG
 #define XDEBUG
 
@@ -246,7 +246,7 @@ void mpfr_init_gmp_rand _MPFR_PROTO((void));
 
 /* Allocate func are defined in gmp-impl.h */
 
-/* In newer GMP, there isn't anumore __gmp_allocate_func,
+/* In newer GMP, there aren't anymore __gmp_allocate_func,
    __gmp_reallocate_func & __gmp_free_func in gmp.h
    Just getting the correct value by calling mp_get_memory_functions */
 #ifdef mp_get_memory_functions
@@ -273,13 +273,5 @@ extern void   (*mpfr_free_func)       _MPFR_PROTO ((void *, size_t));
 void *__gmp_default_allocate _MPFR_PROTO ((size_t));
 void *__gmp_default_reallocate _MPFR_PROTO ((void *, size_t, size_t));
 void __gmp_default_free _MPFR_PROTO ((void *, size_t));
-
-/*
-#undef mp_set_memory_functions
-#define mp_set_memory_functions mpfr_set_memory_functions
-void mp_set_memory_functions _MPFR_PROTO ((void *(*) (size_t),
-                                           void *(*) (void *, size_t, size_t),
-                                           void (*) (void *, size_t)));
-*/
 
 #endif /* Gmp internal emulator */
