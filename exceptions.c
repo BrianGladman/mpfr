@@ -205,6 +205,7 @@ mpfr_set_underflow ()
     MPFR_SET_ZERO(x);
   }
   if (MPFR_SIGN(x) != sign) { MPFR_CHANGE_SIGN(x); }
+  __mpfr_flags |= MPFR_FLAGS_UNDERFLOW;
 }
 
 #undef mpfr_set_overflow
@@ -233,4 +234,5 @@ mpfr_set_overflow ()
     MPFR_SET_INF(x);
   }
   if (MPFR_SIGN(x) != sign) { MPFR_CHANGE_SIGN(x); }
+  __mpfr_flags |= MPFR_FLAGS_OVERFLOW;
 }
