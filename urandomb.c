@@ -28,7 +28,7 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-void
+int
 mpfr_urandomb (mpfr_ptr rop, gmp_randstate_t rstate)
 {
   mp_ptr rp;
@@ -59,9 +59,14 @@ mpfr_urandomb (mpfr_ptr rop, gmp_randstate_t rstate)
   if (nlimbs != 0) /* otherwise value is zero */
     {
       count_leading_zeros (cnt, rp[nlimbs - 1]); 
+      if (mpfr_set_exp (rop, exp - cnt))
+        {
+          MPFR_SET_NAN (rop);
+          __gmpfr_flags |= MPFR_FLAGS_NAN;
+          return 1;
+        }
       if (cnt != 0)
         mpn_lshift (rp, rp, nlimbs, cnt);
-      MPFR_SET_EXP (rop, exp - cnt);
 
       cnt = (mp_prec_t) nlimbs * BITS_PER_MP_LIMB - nbits;
       /* cnt is the number of non significant bits in the low limb */
@@ -69,4 +74,5 @@ mpfr_urandomb (mpfr_ptr rop, gmp_randstate_t rstate)
     }
 
   MPFR_SET_POS (rop);
+  return 0;
 }
