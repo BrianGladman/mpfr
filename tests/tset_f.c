@@ -32,7 +32,7 @@ MA 02111-1307, USA. */
 int
 main()
 {
-  mpfr_t x; mpf_t y, z; unsigned long k, pr; double f;
+  mpfr_t x, u; mpf_t y, z; unsigned long k, pr;
   
   mpfr_init2(x, 100);
   mpf_init(y); 
@@ -45,22 +45,25 @@ main()
   mpf_random2(y, 10, 0); 
   mpfr_set_f(x, y, rand() & 3);
 
-  /* bug found by Jean-Pierre Merlet on February 3, 2000 */
+  /* bug found by Jean-Pierre Merlet */
   mpfr_set_prec(x, 256); mpf_set_prec(y, 256);
-  mpfr_set_machine_rnd_mode(GMP_RNDD);
+  mpfr_init2(u, 256);
+  mpfr_set_str(u,
+     "7.f10872b020c49ba5e353f7ced916872b020c49ba5e353f7ced916872b020c498@2",
+     16, GMP_RNDN);
   mpf_set_str(y, "2033.033", 10);
   mpfr_set_f(x, y, GMP_RNDN);
-  f = mpfr_get_d(x);
-  if (f != 2033.0329999999999017745722085) {
+  if (mpfr_cmp(x, u)) {
     fprintf(stderr, "mpfr_set_f failed for y=2033.033\n"); exit(1);
   }
   mpf_set_str(y, "-2033.033", 10);
   mpfr_set_f(x, y, GMP_RNDN);
-  f = mpfr_get_d(x);
-  if (f != -2033.0330000000001291482476518) {
+  mpfr_neg(u, u, GMP_RNDN);
+  if (mpfr_cmp(x, u)) {
     fprintf(stderr, "mpfr_set_f failed for y=-2033.033\n"); exit(1);
   }
 
+  mpfr_clear(u);
   mpfr_clear(x);
 
   for (k = 1; k <= 100000; k++)
