@@ -98,7 +98,7 @@ typedef __gmp_const __mpfr_struct *mpfr_srcptr;
 #define MPFR_SIGN(x) (((x)->_mp_size >> 31) ? -1 : 1)
 #define ISNONNEG(x) (MPFR_SIGN(x)>=0)
 #define ISNEG(x) (MPFR_SIGN(x)==-1)
-#define CHANGE_SIGN(x) (SIZE(x) = SIZE(x) ^ (((unsigned int)1)<<31))
+#define CHANGE_SIGN(x) (SIZE(x) = SIZE(x) ^ (((mp_size_t)1)<<31))
 #define PREC(x) ((x)->_mp_prec)
 #define NOTZERO(x) (MANT(x)[(PREC(x)-1)/BITS_PER_MP_LIMB])
 #define SET_ZERO(x) (MANT(x)[(PREC(x)-1)/BITS_PER_MP_LIMB] = 0)
