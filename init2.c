@@ -19,12 +19,13 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+#include <stdio.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-void
+int
 mpfr_init2 (mpfr_ptr x, mp_prec_t p)
 {
   mp_size_t xsize;
@@ -41,4 +42,6 @@ mpfr_init2 (mpfr_ptr x, mp_prec_t p)
     (*__gmp_allocate_func) ((size_t) xsize * BYTES_PER_MP_LIMB);
   MPFR_SIZE(x) = xsize;
   MPFR_SET_NAN(x); /* initializes to NaN */
+
+  return MPFR_MANT(x) == NULL;
 }

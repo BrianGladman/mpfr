@@ -136,8 +136,8 @@ int mpfr_overflow_p _PROTO ((void));
 int mpfr_nanflag_p _PROTO ((void));
 int mpfr_inexflag_p _PROTO ((void));
 
-void mpfr_init2 _PROTO ((mpfr_ptr, mp_prec_t));
-void mpfr_init _PROTO ((mpfr_ptr));
+int mpfr_init2 _PROTO ((mpfr_ptr, mp_prec_t));
+int mpfr_init _PROTO ((mpfr_ptr));
 int mpfr_round_prec _PROTO ((mpfr_ptr, mp_rnd_t, mp_prec_t));
 int mpfr_can_round _PROTO ((mpfr_ptr, mp_exp_t, mp_rnd_t, mp_rnd_t,
 			    mp_prec_t));
