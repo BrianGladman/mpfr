@@ -210,9 +210,11 @@ int mpfr_ui_div _PROTO((mpfr_ptr, unsigned long int, mpfr_srcptr, mp_rnd_t));
 mp_prec_t mpfr_get_prec _PROTO((mpfr_srcptr));
 void mpfr_set_default_rounding_mode _PROTO((mp_rnd_t));
 int mpfr_eq _PROTO((mpfr_srcptr, mpfr_srcptr, unsigned long));
-void mpfr_floor _PROTO((mpfr_ptr, mpfr_srcptr));
-void mpfr_trunc _PROTO((mpfr_ptr, mpfr_srcptr));
-void mpfr_ceil _PROTO((mpfr_ptr, mpfr_srcptr));
+int mpfr_rint _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
+int mpfr_round _PROTO((mpfr_ptr, mpfr_srcptr));
+int mpfr_trunc _PROTO((mpfr_ptr, mpfr_srcptr));
+int mpfr_ceil _PROTO((mpfr_ptr, mpfr_srcptr));
+int mpfr_floor _PROTO((mpfr_ptr, mpfr_srcptr));
 void mpfr_extract _PROTO((mpz_ptr, mpfr_srcptr, unsigned int));
 void mpfr_swap _PROTO((mpfr_ptr, mpfr_ptr));
 void mpfr_dump _PROTO((mpfr_srcptr, mp_rnd_t));
@@ -292,6 +294,11 @@ int mpfr_sub_q _PROTO ((mpfr_ptr, mpfr_srcptr, mpq_srcptr, mp_rnd_t));
   ((int) (__mpfr_flags & MPFR_FLAGS_NAN))
 #define mpfr_inexflag_p() \
   ((int) (__mpfr_flags & MPFR_FLAGS_INEXACT))
+
+#define mpfr_round(a,b) mpfr_rint((a), (b), GMP_RNDN)
+#define mpfr_trunc(a,b) mpfr_rint((a), (b), GMP_RNDZ)
+#define mpfr_ceil(a,b)  mpfr_rint((a), (b), GMP_RNDU)
+#define mpfr_floor(a,b) mpfr_rint((a), (b), GMP_RNDD)
 
 #define mpfr_cmp_ui(b,i) mpfr_cmp_ui_2exp((b),(i),0)
 #define mpfr_cmp_si(b,i) mpfr_cmp_si_2exp((b),(i),0)
