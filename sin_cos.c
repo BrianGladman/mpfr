@@ -1,3 +1,23 @@
+/* mpfr_sin_cos -- sine and cosine of a floating-point number
+
+Copyright (C) 2000 Free Software Foundation.
+
+This file is part of the MPFR Library.
+
+The MPFR Library is free software; you can redistribute it and/or modify
+it under the terms of the GNU Library General Public License as published by
+the Free Software Foundation; either version 2 of the License, or (at your
+option) any later version.
+
+The MPFR Library is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
+License for more details.
+
+You should have received a copy of the GNU Library General Public License
+along with the MPFR Library; see the file COPYING.LIB.  If not, write to
+the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
+MA 02111-1307, USA. */
 
 #include <math.h>
 #include <stdio.h>
@@ -5,7 +25,6 @@
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
-
 
 #undef A
 #undef B
@@ -60,9 +79,9 @@ mp_rnd_t rnd_mode;
   int prec_x;
   int shift_x = 0;
   int good = 0;
-  int realprec = 0;
+  int realprec = 0, target_prec;
   int iter;
-  int factor = 2;
+  int factor;
   int logn;
   int tmp_factor;
   int tmpi;
@@ -76,10 +95,6 @@ mp_rnd_t rnd_mode;
   prec_x = (int) ceil(log
 		      ((double) (MPFR_PREC(x)) / (double) BITS_PER_MP_LIMB)
 		      /log(2.0));  
-  logn =  (int) ceil(log
-		      ((double) prec_x)
-		      /log(2.0));  
-  if (logn < 2) logn = 2;
   ttt = MPFR_EXP(x);
   mpfr_init2(x_copy,MPFR_PREC(x));
   mpfr_set(x_copy,x,GMP_RNDD);
@@ -91,8 +106,13 @@ mp_rnd_t rnd_mode;
       mpfr_mul_2exp(x_copy,x,-ttt, GMP_RNDN); 
       ttt = MPFR_EXP(x_copy);
     }
-  realprec = MPFR_PREC(sinus)+logn;
-  while (!good){
+  target_prec = MPFR_PREC(sinus);
+  if (MPFR_PREC(cosinus) > target_prec) target_prec = MPFR_PREC(cosinus);
+  logn =  (int) ceil(log((double)target_prec)/log(2.0));
+  if (logn < 2) logn = 2;
+  factor = logn;
+  realprec = target_prec + logn;
+  while (!good) {
     Prec = realprec + 2*shift + 2 + shift_x + factor;
     k = (int) ceil(log
 		   ((double) (Prec) / (double) BITS_PER_MP_LIMB)
@@ -112,15 +132,13 @@ mp_rnd_t rnd_mode;
       mpfr_extract(uk,x_copy,i);
 	if (i)
 	  {
-	    mpz_set(square,uk);
-	    mpz_mul(square, square, square);
-	    mpz_neg(square, square);
-	    mpfr_sin_aux(t_sin,square, 2*(twopoweri - ttt) + 2, k - i + 1);
-	    mpfr_cos_aux(t_cos,square, 2*(twopoweri - ttt) + 2, k - i + 1);
-
-	    mpfr_set_z(tmp,uk,GMP_RNDD);
-	    mpfr_mul(t_sin, t_sin, tmp,GMP_RNDD);
-	    mpfr_div_2exp(t_sin,t_sin, twopoweri - ttt, GMP_RNDD);
+	    mpz_mul (square, uk, uk);
+	    mpz_neg (square, square);
+	    mpfr_sin_aux (t_sin, square, 2*(twopoweri - ttt) + 2, k - i + 1);
+	    mpfr_cos_aux (t_cos, square, 2*(twopoweri - ttt) + 2, k - i + 1);
+	    mpfr_set_z (tmp, uk, GMP_RNDD);
+	    mpfr_mul (t_sin, t_sin, tmp, GMP_RNDD);
+	    mpfr_div_2exp (t_sin, t_sin, twopoweri - ttt, GMP_RNDD);
 	  }
 	else
 	  {
@@ -179,8 +197,8 @@ mp_rnd_t rnd_mode;
       mpfr_mul_2exp(tmp_sin, tmp_sin, 1, GMP_RNDD);
       mpfr_mul(tmp_cos, tmp_cos, tmp_cos, GMP_RNDD);
       mpfr_mul_2exp(tmp_cos, tmp_cos, 1, GMP_RNDD);
-      mpfr_set_ui(tmp, 1,GMP_RNDN);      
       tmpi = -MPFR_EXP(tmp_cos);
+      mpfr_set_ui(tmp, 1, GMP_RNDN);
       mpfr_sub(tmp_cos, tmp_cos, tmp,  GMP_RNDD);
       /* rep\'erer si le nombre de chiffres obtenu est suffisant pour 
 	 avoir la bonne pr\'ecision. Le probl\`eme : comment faire ? 
@@ -195,15 +213,14 @@ mp_rnd_t rnd_mode;
 	  goto try_again;
 	}      
     }
-    if (mpfr_can_round(tmp_sin, realprec, GMP_RNDD, rnd_mode, MPFR_PREC(sinus))){
-	mpfr_set(sinus,tmp_sin,rnd_mode);
-	mpfr_set(cosinus,tmp_cos,rnd_mode);
+    if (mpfr_can_round(tmp_sin, realprec, GMP_RNDD, rnd_mode, PREC(sinus))){
+	mpfr_set(sinus, tmp_sin, rnd_mode);
+	mpfr_set(cosinus, tmp_cos, rnd_mode);
 	good = 1;
     }
-    else
-      {
+    else {
       realprec += 3*logn;
-      }
+    }
   try_again:
     mpfr_clear(t_sin);
     mpfr_clear(t_cos);
