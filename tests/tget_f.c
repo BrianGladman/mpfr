@@ -31,7 +31,6 @@ main (void)
   mpf_t x;
   mpfr_t y;
   unsigned long i;
-  long j;
 
   MPFR_TEST_USE_RANDS ();
   tests_start_mpfr ();
@@ -84,19 +83,13 @@ main (void)
           printf ("Error: mpfr_get_f(%lu) fails\n", i);
           exit (1);
         }
-      i *= 2;
-    }
-
-  j = -1;
-  while (j)
-    {
-      mpfr_set_si (y, j, GMP_RNDN);
-      if (mpfr_get_f (x, y, GMP_RNDN) || mpf_cmp_si (x, j))
+      mpfr_set_si (y, (signed long) -i, GMP_RNDN);
+      if (mpfr_get_f (x, y, GMP_RNDN) || mpf_cmp_si (x, (signed long) -i))
         {
-          printf ("Error: mpfr_get_f(%ld) fails\n", j);
+          printf ("Error: mpfr_get_f(-%lu) fails\n", i);
           exit (1);
         }
-      j *= 2;
+      i *= 2;
     }
 
   /* same tests, but with a larger precision for y, which requires to
@@ -111,19 +104,13 @@ main (void)
           printf ("Error: mpfr_get_f(%lu) fails\n", i);
           exit (1);
         }
-      i *= 2;
-    }
-
-  j = -1;
-  while (j)
-    {
-      mpfr_set_si (y, j, GMP_RNDN);
-      if (mpfr_get_f (x, y, GMP_RNDN) || mpf_cmp_si (x, j))
+      mpfr_set_si (y, (signed long) -i, GMP_RNDN);
+      if (mpfr_get_f (x, y, GMP_RNDN) || mpf_cmp_si (x, (signed long) -i))
         {
-          printf ("Error: mpfr_get_f(%ld) fails\n", j);
+          printf ("Error: mpfr_get_f(-%lu) fails\n", i);
           exit (1);
         }
-      j *= 2;
+      i *= 2;
     }
 
   mpfr_clear (y);
