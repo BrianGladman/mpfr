@@ -659,13 +659,18 @@ check_1111 (void)
       mpfr_init2 (a, prec_a);
       mpfr_init2 (b, prec_b);
       mpfr_init2 (c, prec_c);
-      tb = 1 + (randlimb () % (prec_b - 1));
+      sb = randlimb () % 3;
+      if (sb != 0)
+        {
+          tb = 1 + (randlimb () % (prec_b - 1));
+          mpfr_div_2ui (b, one, tb, GMP_RNDN);
+          if (sb == 2)
+            mpfr_neg (b, b, GMP_RNDN);
+          mpfr_add (b, b, one, GMP_RNDN);
+        }
+      else
+        mpfr_set (b, one, GMP_RNDN);
       tc = 1 + (randlimb () % (prec_c - 1));
-      mpfr_div_2ui (b, one, tb, GMP_RNDN);
-      sb = randlimb () % 2;
-      if (sb)
-        mpfr_neg (b, b, GMP_RNDN);
-      mpfr_add (b, b, one, GMP_RNDN);
       mpfr_div_2ui (c, one, tc, GMP_RNDN);
       sc = randlimb () % 2;
       if (sc)
@@ -706,6 +711,72 @@ check_1111 (void)
       mpfr_clear (s);
     }
   mpfr_clear (one);
+}
+
+static void
+check_1minuseps (void)
+{
+  static mp_prec_t prec_a[] = {
+    MPFR_PREC_MIN, 30, 31, 32, 33, 62, 63, 64, 65, 126, 127, 128, 129
+  };
+  static int supp_b[] = {
+    0, 1, 2, 3, 4, 29, 30, 31, 32, 33, 34, 35, 61, 62, 63, 64, 65, 66, 67
+  };
+  mpfr_t a, b, c;
+  int ia, ib, ic;
+
+  mpfr_init2 (c, MPFR_PREC_MIN);
+
+  for (ia = 0; ia < numberof(prec_a); ia++)
+    for (ib = 0; ib < numberof(supp_b); ib++)
+      {
+        mp_prec_t prec_b;
+        mp_rnd_t rnd_mode;
+
+        prec_b = prec_a[ia] + supp_b[ib];
+
+        mpfr_init2 (a, prec_a[ia]);
+        mpfr_init2 (b, prec_b);
+
+        mpfr_set_ui (c, 1, GMP_RNDN);
+        mpfr_div_ui (b, c, prec_a[ia], GMP_RNDN);
+        mpfr_sub (b, c, b, GMP_RNDN);  /* b = 1 - 2^(-prec_a) */
+
+        for (ic = 0; ic < numberof(supp_b); ic++)
+          for (rnd_mode = 0; rnd_mode < GMP_RND_MAX; rnd_mode++)
+            {
+              mpfr_t s;
+              int inex_a, inex_s;
+
+              mpfr_set_ui (c, 1, GMP_RNDN);
+              mpfr_div_ui (c, c, prec_a[ia] + supp_b[ic], GMP_RNDN);
+              inex_a = test_add (a, b, c, rnd_mode);
+              mpfr_init2 (s, 256);
+              inex_s = mpfr_add (s, b, c, GMP_RNDN); /* exact */
+              if (inex_s)
+                {
+                  printf ("check_1minuseps: result should have been exact "
+                          "(ia = %d, ib = %d, ic = %d)\n", ia, ib, ic);
+                  exit (1);
+                }
+              inex_s = mpfr_prec_round (s, prec_a[ia], rnd_mode);
+              if ((inex_a < 0 && inex_s >= 0) ||
+                  (inex_a == 0 && inex_s != 0) ||
+                  (inex_a > 0 && inex_s <= 0) ||
+                  !mpfr_equal_p (a, s))
+                {
+                  printf ("check_1minuseps: results are different.\n");
+                  printf ("ia = %d, ib = %d, ic = %d\n", ia, ib, ic);
+                  exit (1);
+                }
+              mpfr_clear (s);
+            }
+
+        mpfr_clear (a);
+        mpfr_clear (b);
+      }
+
+  mpfr_clear (c);
 }
 
 static void
@@ -950,6 +1021,7 @@ tests (void)
 
   check_overflow ();
   check_1111 ();
+  check_1minuseps ();
 }
 
 int
