@@ -59,7 +59,7 @@ Known problems.
 See file BUGS for known bugs in MPFR. Some patches may be available on the
 MPFR web page <http://www.mpfr.org/> or <http://www.loria.fr/projets/mpfr/>.
 
-* Linux on Alpha is known to have problems with IEEE conformance. Also with
+Linux on Alpha is known to have problems with IEEE conformance. Also with
 OSF and gcc 2.8.1, we had problems with the square root functions:
 
    Testing tsqrt
@@ -74,12 +74,6 @@ OSF and gcc 2.8.1, we had problems with the square root functions:
    ### tsqrt_ui failed ###
 
 (in both cases the mpfr result is the correct one).
-
-* tget_d may fail under IRIX:
-
-   Testing tget_d
-   Wrong result for 2^(-1024), got inf instead of 0.00000000000000000000e+00
-   ### tget_d failed ###
 
 In case of problem.
 ===================
