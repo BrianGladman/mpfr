@@ -175,8 +175,16 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_set_prec (c, m);
     }
 
-
   inexact = mpfr_set (y, c, rnd_mode);
+
+  /* sin(x) is exact only for x = 0, which was treated apart above;
+     nevertheless, we can have inexact = 0 here if the approximation c
+     is exactly representable with PREC(y) bits. Since c is an approximation
+     towards zero, in that case the inexact flag should have the opposite sign
+     as y. */
+
+  if (inexact == 0)
+    inexact = (MPFR_IS_POS(y)) ? -1 : 1;
 
   mpfr_clear (c);
 
