@@ -4,30 +4,12 @@
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
+#include "mpfr-impl.h"
 #ifdef IRIX64
 #include <sys/fpu.h>
 #endif
 
 extern int isnan(), getpid();
-
-double drand()
-{
-  double d; long int *i;
-
-  i = (long int*) &d;
-  i[0] = lrand48();
-  i[1] = lrand48();
-  if (lrand48()%2) d=-d; /* generates negative numbers */
-  return d;
-}
-
-/* returns the number of ulp's between a and b */
-int ulp(a,b) double a,b;
-{
-  double eps=1.1102230246251565404e-16; /* 2^(-53) */
-  b = (a-b)/a; if (b<0) b = -b;
-  return (int) floor(b/eps);
-}
 
 void check(a, rnd_mode) double a; unsigned char rnd_mode;
 {
@@ -75,7 +57,7 @@ int main()
   check(1.21902794387441766400e+18, 1);
   check(9.89438396044940256501e-134, 2);
   for (i=0;i<100000;i++) {
-    do { a = drand(); } while (isnan(a));
+    a = drand();
     check(a, rand() % 4);
   }
   return 0;
