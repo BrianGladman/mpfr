@@ -114,6 +114,10 @@ List of the used macros for building MPFR:
 + MPFR_PREC_FORMAT:	Define the internal format of prec field
 			 (For experimented users).
 
++ IEEE_DBL_MANT_DIG:	Number of bits in the mantissa of a double.
+			(Default: 53).
++ LDBL_MANT_DIG:	Number of bits in the mantissa of a long double
+
 List of the used macros for checking MPFR:
 
 + MPFR_HAVE_FESETROUND:	Define if the fesetround function is defined 
