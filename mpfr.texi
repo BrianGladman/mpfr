@@ -620,6 +620,14 @@ Please note that even a @code{long int} may have to be rounded,
 if the destination precision is less than the machine word width.
 @end deftypefun
 
+@deftypefun int mpfr_set_str (mpfr_t @var{x}, char *@var{s}, int @var{base}, mp_rnd_t @var{rnd})
+Set @var{x} to the value of the string @var{s} in base @var{base}, 
+rounded to direction @var{rnd}.
+The exponent is read in decimal.
+This function returns 0 if the entire string up to the final '\0' is a valid
+number in base @var{base}, and @minus{}1 otherwise.
+@end deftypefun
+
 @deftypefun void mpfr_set_str_raw (mpfr_t @var{x}, char *@var{s})
 Set @var{x} to the value of the binary number in string @var{s}, which has to 
 be of the
@@ -648,8 +656,12 @@ The precision of @var{rop} will be taken from the active default precision,
 as set by @code{mpfr_set_default_prec}.
 @end deftypefn
 
-@c @deftypefn Macro void mpfr_init_set_str
-@c @end deftypefn
+@deftypefun int mpfr_init_set_str (mpfr_t @var{x}, char *@var{s}, int @var{base}, mp_rnd_t @var{rnd})
+Initialize @var{x} and sets its value from
+the string @var{s} in base @var{base}, 
+rounded to direction @var{rnd}.
+See @code{mpfr_set_str}.
+@end deftypefun
 
 @node Converting Floats, Float Arithmetic, Simultaneous Float Init & Assign, Floating-point Functions
 @comment  node-name,  next,  previous,  up
@@ -756,13 +768,15 @@ Set @var{rop} to NaN if @var{op} is negative.
 Return 0 if the operation is exact, a non-zero value otherwise.
 @end deftypefun
 
-@deftypefun void mpfr_pow_ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
-@deftypefunx void mpfr_ui_pow_ui (mpfr_t @var{rop}, unsigned long int @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
+@deftypefun int mpfr_pow_ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_ui_pow_ui (mpfr_t @var{rop}, unsigned long int @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
 Set @var{rop} to @var{op1} raised to @var{op2}. The computation is done by
 binary exponentiation, each multiplication being rounded to direction 
 @var{rnd}. Hence the relative error with respect to the exact result may be
 larger than one unit in last place (ulp). In other words, this function does
 not provide an exact rounding.
+The returned value @var{k} is such that the error in ulps on the result
+is less than 2 power @var{k}.
 @end deftypefun
 
 @deftypefun void mpfr_neg (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
@@ -951,27 +965,31 @@ exponent delimiter.
 Return the number of bytes written, or if an error occurred, return 0.
 @end deftypefun
 
-@c @deftypefun size_t mpfr_inp_str (mpfr_t @var{rop}, FILE *@var{stream}, int @var{base})
-@c Input a string in base @var{base} from stdio stream @var{stream}, and put the
-@c read float in @var{rop}.  The string is of the form @samp{M@@N} or, if the
-@c base is 10 or less, alternatively @samp{MeN}.  @samp{M} is the mantissa and
-@c @samp{N} is the exponent.  The mantissa is always in the specified base.  The
-@c exponent is either in the specified base or, if @var{base} is negative, in
-@c decimal.
+@deftypefun size_t mpfr_inp_str (mpfr_t @var{rop}, FILE *@var{stream}, int @var{base}, mp_rnd_t @var{rnd})
+Input a string in base @var{base} from stdio stream @var{stream},
+rounded in direction @var{rnd}, and put the
+read float in @var{rop}.  The string is of the form @samp{M@@N} or, if the
+base is 10 or less, alternatively @samp{MeN} or @samp{MEN}.
+@samp{M} is the mantissa and
+@samp{N} is the exponent.  The mantissa is always in the specified base.  The
+exponent is 
+@c either in the specified base or, if @var{base} is negative, 
+in decimal.
 
-@c The argument @var{base} may be in the ranges 2 to 36, or @minus{}36 to
+The argument @var{base} may be in the ranges 2 to 36.
+@c , or @minus{}36 to
 @c @minus{}2.  Negative values are used to specify that the exponent is in
 @c decimal.
 
-@c Unlike the corresponding @code{mpz} function, the base will not be determined
-@c from the leading characters of the string if @var{base} is 0.  This is so that
-@c numbers like @samp{0.23} are not interpreted as octal.
+Unlike the corresponding @code{mpz} function, the base will not be determined
+from the leading characters of the string if @var{base} is 0.  This is so that
+numbers like @samp{0.23} are not interpreted as octal.
 
-@c Return the number of bytes read, or if an error occurred, return 0.
-@c @end deftypefun
+Return the number of bytes read, or if an error occurred, return 0.
+@end deftypefun
 
 @deftypefun void mpfr_print_raw (mpfr_t @var{float})
-Output @var{float} on stdout (should be changed to allow any io stream), 
+Output @var{float} on stdout
 in raw binary format (the exponent is in decimal, yet).
 The last bits from the least significant limb which do not belong to
 the mantissa are printed between square brackets;
