@@ -46,7 +46,7 @@ mpfr_set_str_raw(x, str)
 {
   char *str2, *str0, negative = 0; 
   unsigned long j, l, k = 0, xsize, cnt; mp_limb_t *xp; 
-  long expn = 0; char *endstr2;
+  long expn = 0, e; char *endstr2;
 
   xp = x -> _mp_d; 
   xsize = 1 + (PREC(x)-1)/BITS_PER_MP_LIMB;
@@ -73,11 +73,10 @@ mpfr_set_str_raw(x, str)
 
   if (*str == 'e' || *str == 'E') 
     {
-      expn = k + atoi(++str); 
-      if (expn < k)
-	{
-	  fprintf(stderr, "Warning : possible overflow in exponent in Str -> mpfr\n"); 
-	}
+      e = atol(++str); /* signed exponent after 'e' or 'E' */
+      expn = k + e; 
+      if (expn < e)
+	  fprintf(stderr, "Warning: overflow in exponent in Str -> mpfr\n"); 
     }
   else expn=k;
 
