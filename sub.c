@@ -52,7 +52,7 @@ mpfr_sub1 (a, b, c, rnd_mode, diff_exp)
   unsigned long cancel, cancel1, sh, k;
   long int cancel2, an, bn, cn, cn0;
   mp_limb_t *ap, *bp, *cp, carry, bb, cc, borrow = 0;
-  int inexact = 0, shift_b, shift_c, maybe_exact = 0, down = 0, add_exp=0;
+  int inexact = 0, shift_b, shift_c, is_exact = 1, down = 0, add_exp=0;
   TMP_DECL(marker);
 
 #ifdef DEBUG
@@ -206,14 +206,15 @@ mpfr_sub1 (a, b, c, rnd_mode, diff_exp)
 
   if (rnd_mode == GMP_RNDN)
     {
-      maybe_exact = (sh == 0) || (carry == 0);
       if (sh)
 	{
+	  is_exact = (carry == 0);
 	  /* can decide except when carry = 2^(sh-1) [middle]
 	     or carry = 0 [truncate, but cannot decide inexact flag] */
+	  down = (carry < (ONE << (sh - 1)));
 	  if (carry > (ONE << (sh - 1)))
 	    goto add_one_ulp;
-	  else if ((0 < carry) && (carry < (ONE << (sh - 1))))
+	  else if ((0 < carry) && down)
 	    {
 	      inexact = -1; /* result if smaller than exact value */
 	      goto truncate;
@@ -256,24 +257,30 @@ mpfr_sub1 (a, b, c, rnd_mode, diff_exp)
 	cc = 0;
 
 #ifdef DEBUG
-      printf("k=%u bb=%lu cc=%lu\n", k, bb, cc);
+      printf("k=%u bb=%lu cc=%lu down=%d\n", k, bb, cc, down);
 #endif
-      if ((rnd_mode == GMP_RNDN) && !k && !sh && !(maybe_exact = (bb == cc)))
+      if (down == 0)
+	down = (bb < cc);
+
+      if ((rnd_mode == GMP_RNDN) && !k && !sh)
 	{
 	  mp_limb_t half = ONE << (BITS_PER_MP_LIMB - 1);
+
+	  is_exact = (bb == cc);
 
 	  /* add one ulp if bb > cc + half
 	     truncate if cc - half < bb < cc + half
 	     sub one ulp if bb < cc - half
 	  */
-	  if ((down = (bb < cc)))
+
+	  if (down)
 	    {
 	      if (cc >= half)
 		cc -= half;
 	      else
 		bb += half;
 	    }
-	  else /* bb > cc */
+	  else /* bb >= cc */
 	    {
 	      if (cc < half)
 		cc += half;
@@ -283,7 +290,7 @@ mpfr_sub1 (a, b, c, rnd_mode, diff_exp)
 	}
 
 #ifdef DEBUG
-      printf("    bb=%lu cc=%lu\n", bb, cc);
+      printf("    bb=%lu cc=%lu down=%d is_exact=%d\n", bb, cc, down, is_exact);
 #endif
       if (bb < cc)
 	{
@@ -296,16 +303,16 @@ mpfr_sub1 (a, b, c, rnd_mode, diff_exp)
 	    }
 	  else /* round to nearest */
 	    {
-	      if (maybe_exact)
+	      if (is_exact && !sh)
 		{
-		  inexact = 1;
+		  inexact = 0;
 		  goto truncate;
 		}
-	      else if (down)
+	      else if (down && !sh)
 		goto sub_one_ulp;
 	      else
 		{
-		  inexact = -1;
+		  inexact = (is_exact) ? 1 : -1;
 		  goto truncate;
 		}
 	    }
@@ -321,7 +328,7 @@ mpfr_sub1 (a, b, c, rnd_mode, diff_exp)
 	      goto add_one_ulp;
 	  else /* round to nearest */
 	    {
-	      if (maybe_exact)
+	      if (is_exact)
 		{
 		  inexact = -1;
 		  goto truncate;
@@ -337,13 +344,16 @@ mpfr_sub1 (a, b, c, rnd_mode, diff_exp)
 	}
     }
 
-  if ((rnd_mode == GMP_RNDN) && !maybe_exact)
+  if ((rnd_mode == GMP_RNDN) && !is_exact)
     {
       /* even rounding rule */
       if ((ap[0] >> sh) & 1)
-	goto add_one_ulp;
+	{
+	  if (down) goto sub_one_ulp;
+	  else goto add_one_ulp;
+	}
       else
-	inexact = -1;
+	inexact = (down) ? 1 : -1;
     }
   else
     inexact = 0;
