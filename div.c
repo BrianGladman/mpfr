@@ -27,22 +27,6 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-#if MPFR_DEBUG_LEVEL > 20
-void affiche_mp(mp_srcptr, mp_size_t); 
-
-void 
-affiche_mp(mp_srcptr z, mp_size_t length)
-{
-  int k; 
-
-  if (length == 1) { printf("[%lu]\n", *z); return; }
-
-  printf("[%lu, ", z[length - 1]); 
-  for(k = length - 2; k >= 1; k--) { printf("%lu, ", z[k]); }
-  printf("%lu]\n", z[0]); 
-}
-#endif
-
 int
 mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
 {
@@ -70,14 +54,18 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
    **************************************************************************/
 
   if (MPFR_IS_NAN(u) || MPFR_IS_NAN(v)) 
-    { MPFR_SET_NAN(q); MPFR_RET_NAN; }
+    { 
+      MPFR_SET_NAN(q); MPFR_RET_NAN; 
+    }
 
   MPFR_CLEAR_NAN(q);
 
   if (MPFR_IS_INF(u)) 
     { 
       if (MPFR_IS_INF(v)) 
-	{ MPFR_SET_NAN(q); MPFR_RET_NAN; }
+	{ 
+	  MPFR_SET_NAN(q); MPFR_RET_NAN; 
+	}
       else
 	{ 
 	  MPFR_SET_INF(q); 
@@ -101,7 +89,9 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
   if (!MPFR_NOTZERO(v))
     {
       if (!MPFR_NOTZERO(u)) 
-	{ MPFR_SET_NAN(q); return 1; }
+	{ 
+	  MPFR_SET_NAN(q); MPFR_RET(1); 
+	}
       else
 	{
 	  MPFR_SET_INF(q); 
@@ -111,7 +101,10 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
 	}
     }
   
-  if (!MPFR_NOTZERO(u)) { MPFR_SET_ZERO(q); MPFR_RET(0); }
+  if (!MPFR_NOTZERO(u)) 
+    { 
+      MPFR_SET_ZERO(q); MPFR_RET(0); 
+    }
 
   sign_quotient = ((MPFR_SIGN(u) * MPFR_SIGN(v) > 0) ? 1 : -1); 
   if (sign_quotient * MPFR_SIGN(q) < 0) { MPFR_CHANGE_SIGN(q); } 
@@ -123,11 +116,6 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
    **************************************************************************/
 
 
-#if MPFR_DEBUG_LEVEL > 20
-  printf("u = "); mpfr_out_str(stdout, 2, 0, u, GMP_RNDN); printf("\n"); 
-  printf("v = "); mpfr_out_str(stdout, 2, 0, v, GMP_RNDN); printf("\n"); 
-#endif
-
   up = MPFR_MANT(u);
   vp = MPFR_MANT(v);
 
@@ -135,12 +123,6 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
   usize = MPFR_ESIZE(u); 
   vsize = MPFR_ESIZE(v); 
 
-#if MPFR_DEBUG_LEVEL > 20
-  printf("Entering division : "); 
-  affiche_mp(up, usize); 
-  affiche_mp(vp, vsize); 
-#endif
-      
   /**************************************************************************
    *                                                                        *
    *   First try to use only part of u, v. If this is not sufficient,       *
@@ -162,7 +144,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
       bsize = qsize; 
       bp = (mp_srcptr)vp + vsize - qsize; 
     }
-
+  
   asize = bsize + qsize; 
   ap = (mp_ptr) TMP_ALLOC(asize * BYTES_PER_MP_LIMB); 
   if (asize > usize)
@@ -172,15 +154,9 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
     }
   else
     MPN_COPY(ap, up + usize - asize, asize); 
-
-  /* Allocate limbs for quotient. */
-  qp = (mp_ptr) TMP_ALLOC ((qsize + 1) * BYTES_PER_MP_LIMB);
   
-#if MPFR_DEBUG_LEVEL > 20
-  printf("Dividing : "); affiche_mp(ap, asize); printf(" by "); 
-  affiche_mp(bp, bsize); printf(".\n"); 
-#endif
-      
+  /* Allocate limbs for quotient and remainder. */
+  qp = (mp_ptr) TMP_ALLOC ((qsize + 1) * BYTES_PER_MP_LIMB);
   rp = (mp_ptr) TMP_ALLOC (bsize * BYTES_PER_MP_LIMB);
   rsize = bsize; 
 
@@ -191,12 +167,6 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
   err = qsize * BITS_PER_MP_LIMB; 
   if (bsize < vsize) err -= 2; else if (asize < usize) err --; 
 
-#if MPFR_DEBUG_LEVEL > 20
-  printf("Quotient : "); affiche_mp(qp, qsize + 1); 
-  printf("Remainder : "); affiche_mp(rp, bsize); 
-  printf("Number of correct bits = %lu\n", err); 
-#endif
-      
   /* We want to check if rounding is possible, but without normalizing
      because we might have to divide again if rounding is impossible, or
      if the result might be exact. We have however to mimic normalization */
@@ -220,21 +190,29 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
   */
 
   if (rnd_mode == GMP_RNDN)
-    { rnd_mode1 = GMP_RNDZ; near = 1; }
+    { 
+      rnd_mode1 = GMP_RNDZ; 
+      near = 1; 
+    }
   else 
-    { rnd_mode1 = rnd_mode; near = 0; }
+    { 
+      rnd_mode1 = rnd_mode; 
+      near = 0; 
+    }
 
   sh += near; 
   can_round = mpfr_can_round_raw(qp, qsize + 1, sign_quotient, err + sh + 
 				 BITS_PER_MP_LIMB, GMP_RNDN, rnd_mode1, 
 				 MPFR_PREC(q) + sh + BITS_PER_MP_LIMB); 
 
-  switch (rnd_mode1) {
-  case GMP_RNDU : rnd_mode2 = GMP_RNDD; break; 
-  case GMP_RNDD : rnd_mode2 = GMP_RNDU; break; 
-  case GMP_RNDZ : rnd_mode2 = sign_quotient == 1 ? GMP_RNDU : GMP_RNDD; break;
-  default : rnd_mode2 = GMP_RNDZ; 
-  }
+  switch (rnd_mode1) 
+    {
+    case GMP_RNDU : rnd_mode2 = GMP_RNDD; break; 
+    case GMP_RNDD : rnd_mode2 = GMP_RNDU; break; 
+    case GMP_RNDZ : rnd_mode2 = sign_quotient == 1 ? GMP_RNDU : GMP_RNDD; 
+      break;
+    default : rnd_mode2 = GMP_RNDZ; 
+    }
 
   can_round2 = mpfr_can_round_raw(qp, qsize + 1, sign_quotient, err + sh + 
 				  BITS_PER_MP_LIMB, GMP_RNDN, rnd_mode2, 
@@ -260,10 +238,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
    *   thus u - v * rp = tp + ulo - rp*vlo, that we shall divide by v.      *
    *                                                                        *
    **************************************************************************/
-#if MPFR_DEBUG_LEVEL > 20
-      printf("Using the full u and v.\n");
-#endif
-      
+
       rsize = qsize + 1 + 
 	      (usize - asize > vsize - bsize  
 	       ? usize - asize  
@@ -295,10 +270,6 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
 	  MPN_ZERO(rem, rsize - vsize - qsize - 1 + bsize); 
 	}
       else MPN_ZERO(rem, rsize); 
-
-#if MPFR_DEBUG_LEVEL > 20
-      printf("vlo * q: "); affiche_mp(rem, rsize); 
-#endif 
      
       /* Compute ulo + r. The two of them do not overlap. */
       MPN_COPY(rem2 + rsize - 1 - qsize, rp, bsize);
@@ -315,10 +286,6 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
       else 
 	MPN_ZERO(rem2, rsize - 1 - qsize); 
 
-#if MPFR_DEBUG_LEVEL > 20
-      printf("ulo + r: "); affiche_mp(rem2, rsize); 
-#endif
-      
       b = 0;       
       if (mpn_cmp(rem2, rem, rsize) >= 0)
 	{
@@ -344,10 +311,6 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
 	      rem2[rsize - 1] += 
 		mpn_add_n(rem2 + rsize - vsize - 1, 
 			  rem2 + rsize - vsize - 1, vp, vsize); 
-#if MPFR_DEBUG_LEVEL > 20
-  printf("(b = %d) ulo + r + b*v: ", b); 
-  affiche_mp(rem2, rsize); 
-#endif      
 	    }
 	  while (mpn_cmp(rem2, rem, rsize) < 0);
  
@@ -355,13 +318,11 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
 	  mpn_sub_n(rem, rem2, rem, rsize); 
 	}
 	  
-#if MPFR_DEBUG_LEVEL > 20
-      printf("(b = %d) |ulo + r - vlo * q|: ", b); 
-      affiche_mp(rem, rsize); 
-#endif
+      if (qp[qsize] != 0) 
+	sh = -1; 
+      else 
+	count_leading_zeros(sh, qp[qsize - 1]); 
 
-      if (qp[qsize] != 0) { sh = -1; } 
-      else { count_leading_zeros(sh, qp[qsize - 1]); } 
       err = BITS_PER_MP_LIMB * qsize; 
       rp = rem; 
     }
@@ -384,7 +345,11 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
   else
     {
       near = 0; 
-      if (sh != 0) { mpn_lshift(qp, qp, qsize, sh); qexp -= sh; }
+      if (sh != 0) 
+	{ 
+	  mpn_lshift(qp, qp, qsize, sh); 
+	  qexp -= sh; 
+	}
     }
   
   cc = mpfr_round_raw_generic(qp, qp, err, (sign_quotient == -1 ? 1 : 0),
@@ -440,7 +405,12 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
 	  /* If a bit has been shifted out during normalization, hence 
 	     the remainder is nonzero. */
 	    if (near == 0)
-	      while (k >= 0) { if (rp[k]) break; k--; }
+	      while (k >= 0) 
+		{ 
+		  if (rp[k]) 
+		    break; 
+		  k--; 
+		}
 	    
 	    if (k >= 0) /* In fact the quotient is larger than expected */
 	      {
