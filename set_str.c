@@ -32,11 +32,31 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
+/* from mpf/set_str.c */
+static int
+digit_value_in_base (int c, int base)
+{
+  int digit;
+
+  if (isdigit (c))
+    digit = c - '0';
+  else if (islower (c))
+    digit = c - 'a' + 10;
+  else if (isupper (c))
+    digit = c - 'A' + 10;
+  else
+    return -1;
+
+  if (digit < base)
+    return digit;
+  return -1;
+}
+
 int
 mpfr_set_str (mpfr_ptr x, __gmp_const char *str, int base, mp_rnd_t rnd_mode)
 {
   mpz_t mantissa;
-  int negative, inex;
+  int negative, inex, value;
   long k = 0;
   unsigned char c;
   long e;
@@ -83,12 +103,11 @@ mpfr_set_str (mpfr_ptr x, __gmp_const char *str, int base, mp_rnd_t rnd_mode)
   /* allowed characters are '0' to '0'+base-1 if base <= 10,
      and '0' to '9' plus 'a' to 'a'+base-11 if 10 < base <= 36 */
   while (c = *str,
-         (isdigit(c) && c < '0' + base) ||
-         (islower(c) && c < 'a'-10 + base))
+         (value = digit_value_in_base (c, base)) >= 0)
     {
       str++;
       mpz_mul_ui (mantissa, mantissa, base);
-      mpz_add_ui (mantissa, mantissa, isdigit(c) ? c - '0' : c - ('a' - 10));
+      mpz_add_ui (mantissa, mantissa, value);
     }
 
   /* k is the number of non-zero digits before the decimal point */
