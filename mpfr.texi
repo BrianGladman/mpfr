@@ -591,7 +591,7 @@ implementation (in that case the smallest or largest exponent is not changed),
 and zero otherwise.
 If the user changes the exponent range, it is her/his responsibility to check
 that all current floating-point variables are in the new allowed range
-(for example using @code{mpfr_check_range},
+(for example using @code{mpfr_check_range}),
 otherwise the subsequent
 behaviour will be undefined, in the sense of the ISO C standard.
 @end deftypefun
@@ -731,7 +731,7 @@ These functions assign new values to already initialized floats
 
 @deftypefun int mpfr_set (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_ui (mpfr_t @var{rop}, unsigned long int @var{op}, mp_rnd_t @var{rnd})
-@deftypefunx int mpfr_set_si (mpfr_t @var{rop}, long int @var{op}, mp_rnd_t @var{rnd}
+@deftypefunx int mpfr_set_si (mpfr_t @var{rop}, long int @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_d (mpfr_t @var{rop}, double @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_z (mpfr_t @var{rop}, mpz_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_q (mpfr_t @var{rop}, mpq_t @var{op}, mp_rnd_t @var{rnd})
@@ -746,7 +746,7 @@ For @code{mpfr_set_d}, be careful that the input number @var{op}
 may not be exactly representable as a double-precision number (this happens for
 0.1 for instance), in which case it is first
 rounded by the C compiler to a double-precision number, and then only
-to a mpfr floating-point number.
+to a @code{mpfr} floating-point number.
 @end deftypefun
 
 @deftypefun int mpfr_set_str (mpfr_t @var{x}, char *@var{s}, int @var{base}, mp_rnd_t @var{rnd})
@@ -838,8 +838,13 @@ Convert @var{op} to a double, using the default MPFR rounding mode
 
 @deftypefun mp_exp_t mpfr_get_z_exp (mpz_t @var{z}, mpfr_t @var{op})
 Puts the mantissa of @var{op} into @var{z}, and returns the exponent
-@var{exp} such that @var{op} equals @var{z} multiplied by two exponent 
-@var{exp}.
+@var{exp} such that @var{op} equals
+@ifinfo
+@var{z} multiplied by two exponent @var{exp}.
+@end ifinfo
+@tex
+$z \times 2^{\rm exp}$.
+@end tex
 @end deftypefun
 
 @deftypefun {char *} mpfr_get_str (char *@var{str}, mp_exp_t *@var{expptr}, int @var{base}, size_t @var{n_digits}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
@@ -1459,7 +1464,7 @@ file, and helped to the Windows porting.
 
 @item
 Torbjorn Granlund, "GNU MP: The GNU Multiple Precision Arithmetic Library", 
-  version 4.0.1, 2001.
+  version 4.0.1, 2002.
 
 @item
 IEEE standard for binary floating-point arithmetic, Technical Report 
