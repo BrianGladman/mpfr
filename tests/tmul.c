@@ -82,6 +82,8 @@ main(argc,argv) int argc; char *argv[];
 {
   double x,y,z; int i,prec,rnd_mode;
 
+  check(6.9314718055994530941514e-1, 0.0, GMP_RNDZ, 53, 53, 53, 0.0);
+  check(0.0, 6.9314718055994530941514e-1, GMP_RNDZ, 53, 53, 53, 0.0);
   prec = (argc<2) ? 53 : atoi(argv[1]);
   rnd_mode = (argc<3) ? -1 : atoi(argv[2]);
   check_sign();
