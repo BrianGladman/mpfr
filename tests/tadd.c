@@ -223,6 +223,42 @@ void check64 ()
   mpfr_init (t);
   mpfr_init (u);
 
+  mpfr_set_prec (x, 4);
+  mpfr_set_str_raw (x, "-1.0E-2");
+  mpfr_set_prec (t, 2);
+  mpfr_set_str_raw (t, "-1.1e-2");
+  mpfr_set_prec (u, 2);
+  mpfr_add (u, x, t, GMP_RNDN);
+  if (MPFR_MANT(u)[0] << 2)
+    {
+      fprintf (stderr, "result not normalized for prec=2\n");
+      mpfr_print_raw (u); putchar ('\n');
+      exit (1);
+    }
+  mpfr_set_str_raw (t, "-1.0e-1");
+  if (mpfr_cmp (u, t)) {
+    fprintf (stderr, "mpfr_add(u, x, t) failed for prec(x)=4, prec(t)=2\n");
+    printf ("expected -1.0e-1\n");
+    printf ("got      "); mpfr_out_str (stdout, 2, 4, u, GMP_RNDN);
+    putchar ('\n');
+    exit (1);
+  }
+
+  mpfr_set_prec (x, 8);
+  mpfr_set_str_raw (x, "-0.10011010"); /* -77/128 */
+  mpfr_set_prec (t, 4);
+  mpfr_set_str_raw (t, "-1.110e-5"); /* -7/128 */
+  mpfr_set_prec (u, 4);
+  mpfr_add (u, x, t, GMP_RNDN); /* should give -5/8 */
+  mpfr_set_str_raw (t, "-1.010e-1");
+  if (mpfr_cmp (u, t)) {
+    fprintf (stderr, "mpfr_add(u, x, t) failed for prec(x)=8, prec(t)=4\n");
+    printf ("expected -1.010e-1\n");
+    printf ("got      "); mpfr_out_str (stdout, 2, 4, u, GMP_RNDN);
+    putchar ('\n');
+    exit (1);
+  }
+
   mpfr_set_prec (x, 112); mpfr_set_prec (t, 98); mpfr_set_prec (u, 54);
   mpfr_set_str_raw (x, "-0.11111100100000000011000011100000101101010001000111E-401");
   mpfr_set_str_raw (t, "0.10110000100100000101101100011111111011101000111000101E-464");
