@@ -23,12 +23,13 @@ MA 02111-1307, USA.
 Changes from version 2.0.3 to version 2.1.0:
 - Bug fixes.
 - new functions mpfr_strtofr, mpfr_set_uj, mpfr_set_sj, mpfr_set_ui_2exp,
-  mpfr_set_si_2exp, mpfr_set_sj_2exp, mpfr_set_uj_2exp, mpfr_get_z,
-  mpfr_free_str, mpfr_si_sub, mpfr_sub_si, mpfr_mul_si, mpfr_si_div, 
-  mpfr_div_si, mpfr_sqr, mpfr_cmp_z, mpfr_cmp_q, mpfr_zero_p, 
-  mpfr_free_cache, mpfr_sum, mpfr_get_version, mpfr_get_default_rounding_mode,
-  mpfr_get_emin_min, mpfr_get_emin_max, mpfr_get_emax_min, mpfr_get_emax_max.
-- new macros MPFR_DECL_INIT, MPFR_VERSION, MPFR_VERSION_NUM, 
+  mpfr_set_si_2exp, mpfr_set_sj_2exp, mpfr_set_uj_2exp, mpfr_get_uj,
+  mpfr_get_sj, mpfr_get_z, mpfr_free_str, mpfr_si_sub, mpfr_sub_si,
+  mpfr_mul_si, mpfr_si_div, mpfr_div_si, mpfr_sqr, mpfr_cmp_z, mpfr_cmp_q,
+  mpfr_zero_p, mpfr_free_cache, mpfr_sum, mpfr_get_version,
+  mpfr_get_default_rounding_mode, mpfr_get_emin_min, mpfr_get_emin_max,
+  mpfr_get_emax_min, mpfr_get_emax_max.
+- new macros MPFR_DECL_INIT, MPFR_VERSION, MPFR_VERSION_NUM,
   MPFR_VERSION_MAJOR, MPFR_VERSION_MINOR, MPFR_VERSION_PATCHLEVEL.
 - improved documentation.
 - improved configure.
