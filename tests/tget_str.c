@@ -43,7 +43,7 @@ void check(d, rnd) double d; unsigned char rnd;
 
 void check_small()
 {
-  mpfr_t x; char *s; mp_exp_t e;
+  mpfr_t x; char *s, *t; mp_exp_t e;
   
   mpfr_init(x);
 
@@ -51,16 +51,18 @@ void check_small()
   mpfr_set_prec(x, 63);
   mpfr_set_d(x, 5e14, GMP_RNDN);
   s = mpfr_get_str(NULL, &e, 10, 18, x, GMP_RNDU);
+  free(s);
 
   /* bug found by Johan Vervloet */
   mpfr_set_prec(x, 6);
   mpfr_set_d(x, 688.0, GMP_RNDN);
-  s = mpfr_get_str(NULL, &e, 2, 4, x, GMP_RNDU);
-  if (strcmp(s, "1011") || (e!=10)) {
+  t = mpfr_get_str(NULL, &e, 2, 4, x, GMP_RNDU);
+  if (strcmp(t, "1011") || (e!=10)) {
     fprintf(stderr, "Error in mpfr_get_str: 688 printed up to 4 bits should give 1.011e9\ninstead of ");
     mpfr_out_str(stderr, 2, 4, x, GMP_RNDU); putchar('\n');
     exit(1);
   }
+  free(t);
 
   mpfr_clear(x);
 }
