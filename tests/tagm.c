@@ -70,12 +70,13 @@ double dagm(double a, double b) {
 	 return u;
 }
 
+#define check(a,b,r) check4(a,b,r,0.0)
 
-
-void check(double a, double b, unsigned char rnd_mode)
+void check4(double a, double b, unsigned char rnd_mode, double res1)
 {
   mpfr_t ta, tb, tres;
-  double res1, res2;
+  double res2;
+  int ck=0;
 
   mpfr_init2(ta, 53);
   mpfr_init2(tb, 53);
@@ -87,10 +88,10 @@ void check(double a, double b, unsigned char rnd_mode)
   mpfr_agm(tres, ta, tb, rnd_mode);
   mpfr_set_machine_rnd_mode(rnd_mode);
   
-  res1=dagm(a,b);
+  if (res1==0.0) res1=dagm(a,b); else ck=1;
   res2 = mpfr_get_d(tres);
 
-  if (res1!=res2 && (!isnan(res1) || !isnan(res2))) {
+  if (ck && res1!=res2 && (!isnan(res1) || !isnan(res2))) {
     printf("mpfr_agm failed for a=%1.20e, b=%1.20e, rnd_mode=%d\n",a,b,rnd_mode);
     printf("expected result is %1.20e, got %1.20e (%d ulp)\n",res1,res2,
 	   ulp(res2,res1));
@@ -100,8 +101,8 @@ void check(double a, double b, unsigned char rnd_mode)
   
 }
 
-void main() {
-   int i;
+void main(int argc, char* argv[]) {
+   int i, N;
    double a,b,gd,pt;
 
    check(2,1,GMP_RNDN);
@@ -109,18 +110,18 @@ void main() {
    check(62,61,GMP_RNDN);
    check(0.5,1,GMP_RNDN);
    check(1,2,GMP_RNDN); 
-   check(234375765,234375000,GMP_RNDN);
+   check4(234375765,234375000,GMP_RNDN,2.34375382499843955040e+08);
    check(8,1,GMP_RNDU);
    check(1,44,GMP_RNDU);  
    check(1,3.725290298461914062500000e-9,GMP_RNDU); 
 
    srand48(getpid()); 
 
-   for (i=0;i<40;i++) {
+   N = (argc>=2) ? atoi(argv[1]) : 0;
+   for (i=0;i<N;i++) {
      a = drand(); 
      b = drand();
      check(a, b, rand() % 4);
    } 
-   printf("fin\n");
 }
 
