@@ -21,11 +21,41 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <float.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
 #include "mpfr-test.h"
+
+void check_denorms _PROTO ((void));
+
+void
+check_denorms ()
+{
+  mpfr_t x;
+  double d, dd;
+  unsigned long int n;
+
+  mpfr_init2 (x, 2);
+  
+  d = DBL_MIN; /* 2^(-1022) */
+  mpfr_set_ui (x, 1, GMP_RNDN);
+  mpfr_div_2exp (x, x, 1022, GMP_RNDN); /* 2^(-1022) */
+  for (n=0; n<52; n++, d /= 2.0)
+    {
+      dd = mpfr_get_d (x);
+      if (d != dd) /* should be 0 or 2^(-1022-n) */
+        {
+          fprintf (stderr, "Wrong result for 2^(%ld), ", -1022-n);
+          fprintf (stderr, "got %.20e instead of %.20e\n", dd, d);
+          exit (1);
+        }
+      mpfr_div_2exp (x, x, 1, GMP_RNDN);
+    }
+
+  mpfr_clear (x);
+}
 
 int
 main (void)
@@ -114,6 +144,8 @@ main (void)
    mpfr_clear(y);
 
 #endif
+
+   check_denorms ();
 
    return 0;
 }
