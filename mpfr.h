@@ -57,7 +57,7 @@ MA 02111-1307, USA. */
 /* Definitions of types and their semantics */
 
 typedef unsigned long int mp_prec_t; /* easy to change if necessary */
-#define MPFR_PREC_MIN 1
+#define MPFR_PREC_MIN 2
 #define MPFR_PREC_MAX ULONG_MAX
 typedef int mp_rnd_t;                /* preferred to char */
 
