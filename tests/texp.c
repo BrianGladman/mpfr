@@ -60,15 +60,27 @@ check3(double d, unsigned char rnd, double e)
 /* computes n bits of exp(d) */
 check_large (double d, int n)
 {
-  mpfr_t x;
+  mpfr_t x; mpfr_t y;
   
-  mpfr_init2(x, n);
-  mpfr_set_d(x, d, GMP_RNDZ);
+  mpfr_init2(x, n); mpfr_init2(y, n);
+  if (d==0.0) { /* try exp(Pi*sqrt(163)/3)-640320 */
+    mpfr_set_d(x, 163.0, GMP_RNDZ);
+    mpfr_sqrt(x, x, GMP_RNDZ);
+    mpfr_pi(y, GMP_RNDZ);
+    mpfr_mul(x, x, y, GMP_RNDZ);
+    mpfr_div_ui(x, x, 3, GMP_RNDZ);
+  }
+  else mpfr_set_d(x, d, GMP_RNDZ);
   mpfr_exp(x, x, GMP_RNDZ);
-  printf("exp(%1.20e)=",d); mpfr_out_str(stdout, 10, 0, x, GMP_RNDZ);
-  printf("=%1.20e\n", mpfr_get_d(x));
+  if (d==0.0) {
+    mpfr_set_d(y, 640320.0, GMP_RNDZ);
+    mpfr_sub(x, x, y, GMP_RNDZ);
+    printf("exp(Pi*sqrt(163)/3)-640320=");
+  }
+  else printf("exp(%1.20e)=",d); 
+  mpfr_out_str(stdout, 10, 0, x, GMP_RNDZ);
   putchar('\n');
-  mpfr_clear(x);
+  mpfr_clear(x); mpfr_clear(y);
 }
 
 /* expx is the value of exp(X) rounded towards -infinity */
