@@ -1,4 +1,26 @@
+2002-04-12  Vincent Lefevre  <lefevre@greux.loria.fr>
+
+	* tests/tget_d.c: New tests.
+
+	* BUGS, get_d.c: mpfr_get_d* fixed.
+
+	* INSTALL, const_log2.c:
+	Types fixed in const_log2.c (this fixes the tconst_log2 crash).
+
+	* README.dev: Added a note about the native SunOS 4 C compiler.
+
 2002-04-11  Vincent Lefevre  <lefevre@greux.loria.fr>
+
+	* tests/tconst_log2.c: Type fixed.
+
+	* set_d.c, BUGS: mpfr_set_d bug fixed, but other bugs still remain...
+
+	* print_rnd_mode.c:
+	NULL was undeclared on some architectures (reported by Torbjorn Granlund).
+
+	* configure.in: LDFLAGS changed on HP-UX.
+
+	* ChangeLog: Update for the next pre-release.
 
 	* tests/tget_d.c: Subnormal test in different rounding modes + fix.
 
