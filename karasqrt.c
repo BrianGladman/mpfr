@@ -52,7 +52,7 @@ mp_size_t kara_sqrtrem(mp_limb_t *s, mp_limb_t *r, mp_limb_t *op, mp_size_t n)
     qn = sn; if (mpn_cmp(r+sn, s+nn, sn)>=0) { 
       q[qn++]=1; mpn_sub_n(r+sn, r+sn, s+nn, sn);
     }
-    mpn_divrem_n(q, r, s+nn, sn);
+    mpn_divrem(q, 0, r, 2*sn, s+nn, sn);
     while (qn>nn && q[qn-1]==0) qn--;
     MPN_COPY(s, q, nn);
     if (nn+rn > 2*sn) {
