@@ -86,3 +86,5 @@ Miscellaneous:
   An advantage of _gmp_rand of course is that it's the same on all
   systems, apart from limb size, so you're not at the mercy of random or
   lrand48, etc.
+
+- make MPFR thread-safe.
