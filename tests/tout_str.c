@@ -1,6 +1,6 @@
 /* Test file for mpfr_out_str.
 
-Copyright 1999, 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright 1999, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -100,6 +100,30 @@ check_large (void)
   mpfr_clear (x);
 }
 
+static void
+special (void)
+{
+  mpfr_t x;
+
+  mpfr_init (x);
+
+  mpfr_set_nan (x);
+  mpfr_out_str (fout, 10, 0, x, GMP_RNDN);
+
+  mpfr_set_inf (x, 1);
+  mpfr_out_str (fout, 10, 0, x, GMP_RNDN);
+
+  mpfr_set_inf (x, -1);
+  mpfr_out_str (fout, 10, 0, x, GMP_RNDN);
+
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_out_str (fout, 10, 0, x, GMP_RNDN);
+  mpfr_neg (x, x, GMP_RNDN);
+  mpfr_out_str (fout, 10, 0, x, GMP_RNDN);
+  
+  mpfr_clear (x);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -108,16 +132,20 @@ main (int argc, char *argv[])
 
   tests_start_mpfr ();
 
-  check_large ();
   /* with no argument: prints to /dev/null,
      tout_str N: prints N tests to stdout */
-  if (argc==1)
+  if (argc == 1)
     fout = fopen ("/dev/null", "w");
   else
     {
       fout = stdout;
       N = atoi (argv[1]);
     }
+
+  special ();
+
+  check_large ();
+
   check (-1.37247529013405550000e+15, GMP_RNDN, 7);
   check (-1.5674376729569697500e+15, GMP_RNDN, 19);
   check (-5.71262771772792640000e-79, GMP_RNDU, 16);

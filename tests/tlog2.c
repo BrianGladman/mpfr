@@ -1,6 +1,6 @@
 /* Test file for mpfr_log2.
 
-Copyright 2001, 2002 Free Software Foundation.
+Copyright 2001, 2002, 2004 Free Software Foundation.
 Adapted from tsinh.c.
 
 This file is part of the MPFR Library.
@@ -28,10 +28,50 @@ MA 02111-1307, USA. */
 #define TEST_FUNCTION mpfr_log2
 #include "tgeneric.c"
 
+static void
+special (void)
+{
+  mpfr_t x;
+
+  mpfr_init (x);
+  
+  mpfr_set_nan (x);
+  mpfr_log2 (x, x, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_nan_p (x));
+
+  mpfr_set_inf (x, -1);
+  mpfr_log2 (x, x, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_nan_p (x));
+
+  mpfr_set_inf (x, 1);
+  mpfr_log2 (x, x, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
+
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_log2 (x, x, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) < 0);
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_neg (x, x, GMP_RNDN);
+  mpfr_log2 (x, x, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) < 0);
+
+  mpfr_set_si (x, -1, GMP_RNDN);
+  mpfr_log2 (x, x, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_nan_p (x));
+
+  mpfr_set_si (x, 1, GMP_RNDN);
+  mpfr_log2 (x, x, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_POS(x));
+
+  mpfr_clear (x);
+}
+
 int
 main (int argc, char *argv[])
 {
   tests_start_mpfr ();
+
+  special ();
 
   test_generic (2, 100, 30);
 

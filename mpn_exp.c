@@ -41,8 +41,8 @@ mpfr_mpn_exp (mp_limb_t *a, mp_exp_t *exp_r, int b, mp_exp_t e, size_t n)
   unsigned long t; /* number of bits in e */
   unsigned long bits;
   size_t n1;
-  unsigned int erreur;           /* (number - 1) of loop a^2b inexact */
-                                 /* erreur == t meens no error */
+  unsigned int error;           /* (number - 1) of loop a^2b inexact */
+                                 /* error == t means no error */
   int err_s_a2 = 0;
   int err_s_ab = 0;              /* number of error when shift A^2, AB */
   TMP_DECL(marker);
@@ -75,7 +75,7 @@ mpfr_mpn_exp (mp_limb_t *a, mp_exp_t *exp_r, int b, mp_exp_t e, size_t n)
 
   t = BITS_PER_MP_LIMB - t; /* number of bits of exponent e */
 
-  erreur = t;
+  error = t; /* error <= BITS_PER_MP_LIMB */
 
   MPN_ZERO (c, 2 * n);
 
@@ -98,15 +98,15 @@ mpfr_mpn_exp (mp_limb_t *a, mp_exp_t *exp_r, int b, mp_exp_t e, size_t n)
           mpn_lshift (a, c + n, n, 1);
           a[0] |= mpn_lshift (c + n - 1, c + n - 1, 1, 1);
           f --;
-          if (erreur != t)
+          if (error != t)
             err_s_a2 ++;
         }
       else
         MPN_COPY (a, c + n, n);
 
-      if ((erreur == t) && (2 * n1 <= n) &&
+      if ((error == t) && (2 * n1 <= n) &&
           (mpn_scan1 (c + 2 * n1, 0) < (n - 2 * n1) * BITS_PER_MP_LIMB))
-        erreur = i;
+        error = i;
 
       if (e & (1 << i))
         {
@@ -122,11 +122,11 @@ mpfr_mpn_exp (mp_limb_t *a, mp_exp_t *exp_r, int b, mp_exp_t e, size_t n)
           else
             {
               MPN_COPY (a, c + n, n);
-              if (erreur != t)
+              if (error != t)
                 err_s_ab ++;
             }
-          if ((erreur == t) && (c[n - 1] != 0))
-            erreur = i;
+          if ((error == t) && (c[n - 1] != 0))
+            error = i;
         }
     }
 
@@ -134,23 +134,25 @@ mpfr_mpn_exp (mp_limb_t *a, mp_exp_t *exp_r, int b, mp_exp_t e, size_t n)
 
   *exp_r = f;
 
-  if (erreur == t)
-    return -1; /* exact */
-  else
+  if (error == t)
+    return -1; /* result is exact */
+  else /* error <= t-2 <= BITS_PER_MP_LIMB-2
+          err_s_ab, err_s_a2 <= t-1       */
     {
       /* if there are p loops after the first inexact result, with
          j shifts in a^2 and l shifts in a*b, then the final error is
          at most 2^(p+ceil((j+1)/2)+l+1)*ulp(res).
          This is bounded by 2^(5/2*t-1/2) where t is the number of bits of e.
       */
-      erreur = erreur + err_s_ab + err_s_a2 / 2 + 3;
-      if ((erreur - 1) >= ((n * BITS_PER_MP_LIMB - 1) / 2))
-        erreur = n * BITS_PER_MP_LIMB; /* completely wrong: this is very
-                                        unlikely to happen since erreur is
-                                       at most 5/2*log_2(e), and
-                                       n * BITS_PER_MP_LIMB is at least
-                                       3*log_2(e) */
+      error = error + err_s_ab + err_s_a2 / 2 + 3; /* <= 5t/2-1/2 */
+#if 0
+      if ((error - 1) >= ((n * BITS_PER_MP_LIMB - 1) / 2))
+        error = n * BITS_PER_MP_LIMB; /* result is completely wrong:
+                                         this is very unlikely since error is
+                                         at most 5/2*log_2(e), and
+                                         n * BITS_PER_MP_LIMB is at least
+                                         3*log_2(e) */
+#endif
+      return error;
     }
-
-  return erreur;
 }

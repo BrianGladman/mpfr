@@ -28,11 +28,48 @@ int
 main (void)
 {
    mpfr_t x;
+   mp_exp_t emax;
 
    tests_start_mpfr ();
 
-   mpfr_init2 (x, 3);
+   mpfr_init (x);
 
+   mpfr_set_nan (x);
+   mpfr_prec_round (x, 2, GMP_RNDN);
+   MPFR_ASSERTN(mpfr_nan_p (x));
+
+   mpfr_set_inf (x, 1);
+   mpfr_prec_round (x, 2, GMP_RNDN);
+   MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
+
+   mpfr_set_inf (x, -1);
+   mpfr_prec_round (x, 2, GMP_RNDN);
+   MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) < 0);
+
+   mpfr_set_ui (x, 0, GMP_RNDN);
+   mpfr_prec_round (x, 2, GMP_RNDN);
+   MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_POS(x));
+
+   mpfr_set_ui (x, 0, GMP_RNDN);
+   mpfr_neg (x, x, GMP_RNDN);
+   mpfr_prec_round (x, 2, GMP_RNDN);
+   MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_NEG(x));
+
+   emax = mpfr_get_emax ();
+   mpfr_set_emax (0);
+   mpfr_set_prec (x, 3);
+   mpfr_set_str_binary (x, "0.111");
+   mpfr_prec_round (x, 2, GMP_RNDN);
+   MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
+   mpfr_set_emax (emax);
+
+   mpfr_set_prec (x, mp_bits_per_limb + 2);
+   mpfr_set_ui (x, 1, GMP_RNDN);
+   mpfr_nextbelow (x);
+   mpfr_prec_round (x, mp_bits_per_limb + 1, GMP_RNDN);
+   MPFR_ASSERTN(mpfr_cmp_ui (x, 1) == 0);
+
+   mpfr_set_prec (x, 3);
    mpfr_set_ui (x, 5, GMP_RNDN);
    mpfr_prec_round (x, 2, GMP_RNDN);
    if (mpfr_cmp_ui(x, 4))

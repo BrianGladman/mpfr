@@ -71,12 +71,10 @@ mpfr_inp_str (mpfr_ptr rop, FILE *stream, int base, mp_rnd_t rnd_mode)
 
   /* number of characters read is nread + str_size - 1 */
 
-  if (str_size >= alloc_size)
-    {
-      size_t old_alloc_size = alloc_size;
-      alloc_size = alloc_size * 3 / 2;
-      str = (char *) (*__gmp_reallocate_func) (str, old_alloc_size, alloc_size);
-    }
+  /* we can exit the for loop only by the break instruction,
+     then necessarily str_size >= alloc_size was checked, so
+     now str_size < alloc_size */
+
   str[str_size] = '\0';
 
   retval = mpfr_set_str (rop, str, base, rnd_mode);

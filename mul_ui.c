@@ -52,14 +52,13 @@ mpfr_mul_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 	      MPFR_RET_NAN;
 	    }
 	}
-      else if (MPFR_IS_ZERO(x))
+      else /* x is zero */
 	{
+          MPFR_ASSERTD(MPFR_IS_ZERO(x));
 	  MPFR_SET_ZERO(y);
 	  MPFR_SET_SAME_SIGN(y, x);
 	  MPFR_RET(0); /* zero is exact */
 	}
-      else
-	MPFR_ASSERTN(0);
     }
   else if (MPFR_UNLIKELY(u <= 1))
     {

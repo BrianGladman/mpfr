@@ -172,6 +172,11 @@ special (void)
   mpfr_sqrt (x, x, GMP_RNDN);
   mpfr_log (y, x, GMP_RNDN);
 
+  /* negative argument */
+  mpfr_set_si (x, -1, GMP_RNDN);
+  mpfr_log (y, x, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_nan_p (y));
+
   mpfr_clear (x);
   mpfr_clear (y);
 }

@@ -71,7 +71,7 @@ mpfr_set4 (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode, int signb)
       carry = mpfr_round_raw(ap, MPFR_MANT(b), MPFR_PREC(b),
 			     MPFR_IS_NEG_SIGN(signb),
 			     aq, rnd_mode, &inex);
-      /* FIXME: Carry is likely or not ? */
+      /* carry is unlikely since it has probability < 2^(-aq) */
       if (MPFR_UNLIKELY(carry))
 	{
 	  mp_exp_t exp = MPFR_GET_EXP (b);

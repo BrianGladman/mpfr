@@ -51,8 +51,9 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd_mode)
 		MPFR_SET_NEG(y);
 	      MPFR_RET(0);
 	    }
-	  else if (MPFR_IS_ZERO(x))
+	  else /* x is zero */
 	    {
+              MPFR_ASSERTD(MPFR_IS_ZERO(x));
 	      MPFR_SET_INF(y);
 	      if (MPFR_IS_POS(x) || ((unsigned) n & 1) == 0)
 		MPFR_SET_POS(y);
@@ -60,8 +61,6 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd_mode)
 		MPFR_SET_NEG(y);
 	      MPFR_RET(0);
 	    }
-	  else
-	    MPFR_ASSERTN(0);
 	}
       MPFR_CLEAR_FLAGS(y);
 

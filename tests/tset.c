@@ -1,6 +1,6 @@
 /* Test file for mpfr_set.
 
-Copyright 2001, 2002, 2003 Free Software Foundation.
+Copyright 2001, 2002, 2003, 2004 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -31,6 +31,7 @@ main (void)
   mpfr_t x, y, z, u;
   mp_rnd_t rnd;
   int inexact, cmp;
+  mp_exp_t emax;
 
   tests_start_mpfr ();
 
@@ -39,6 +40,36 @@ main (void)
   inexact = mpfr_init_set (y, x, GMP_RNDN);
   inexact = mpfr_init_set_ui (z, 1, GMP_RNDN);
   inexact = mpfr_init_set_d (u, 1.0, GMP_RNDN);
+
+  mpfr_set_nan (x);
+  mpfr_set (y, x, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_nan_p (y));
+
+  mpfr_set_inf (x, 1);
+  mpfr_set (y, x, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_inf_p (y) && mpfr_sgn (y) > 0);
+
+  mpfr_set_inf (x, -1);
+  mpfr_set (y, x, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_inf_p (y) && mpfr_sgn (y) < 0);
+
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_set (y, x, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (y, 0) == 0 && MPFR_IS_POS(y));
+
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_neg (x, x, GMP_RNDN);
+  mpfr_set (y, x, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (y, 0) == 0 && MPFR_IS_NEG(y));
+
+  emax = mpfr_get_emax ();
+  mpfr_set_emax (0);
+  mpfr_set_prec (x, 3);
+  mpfr_set_str_binary (x, "0.111");
+  mpfr_set_prec (y, 2);
+  mpfr_set (y, x, GMP_RNDU);
+  MPFR_ASSERTN(mpfr_inf_p (y) && mpfr_sgn (y) > 0);
+  mpfr_set_emax (emax);
 
   mpfr_set_prec (y, 11);
   mpfr_set_str_binary (y, "0.11111111100E-8");

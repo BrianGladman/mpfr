@@ -51,25 +51,24 @@ mpfr_log1p (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	      MPFR_RET_NAN;
 	    }
 	}
-      else if (MPFR_IS_ZERO(x))
+      else /* x is zero */
 	{
+          MPFR_ASSERTD(MPFR_IS_ZERO(x));
 	  MPFR_SET_ZERO(y);   /* log1p(+/- 0) = +/- 0 */
 	  MPFR_SET_SAME_SIGN(y, x);
 	  MPFR_RET(0);
 	}
-      else
-	MPFR_ASSERTN(0);
     }
   
-  comp = mpfr_cmp_si(x,-1);
-  /* x<-1 undefined */
+  comp = mpfr_cmp_si (x, -1);
+  /* log1p(x) is undefined for x < -1 */
   if (MPFR_UNLIKELY(comp <= 0)) 
     {
       if (comp == 0)
 	/* x=0: log1p(-1)=-inf (division by zero) */
 	{
 	  MPFR_SET_INF(y);
-	  MPFR_SET_POS(y);
+	  MPFR_SET_NEG(y);
 	  MPFR_RET(0);
 	}
       MPFR_SET_NAN(y);

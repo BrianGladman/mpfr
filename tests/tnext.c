@@ -1,6 +1,6 @@
 /* Test file for mpfr_nextabove, mpfr_nextbelow, mpfr_nexttoward.
 
-Copyright 2003 Free Software Foundation.
+Copyright 2003, 2004 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -39,6 +39,26 @@ generic_abovebelow (void)
       prec = (randlimb () % 300) + MPFR_PREC_MIN;
       mpfr_inits2 (prec, x, y, z, (void *) 0);
       mpfr_init2 (t, 3);
+
+      /* special tests (executed once is enough) */
+      if (i == 0)
+        {
+          mpfr_set_nan (x);
+          mpfr_nextabove (x);
+          MPFR_ASSERTN(mpfr_nan_p (x));
+          mpfr_nextbelow (x);
+          MPFR_ASSERTN(mpfr_nan_p (x));
+          mpfr_nexttoward (x, y);
+          MPFR_ASSERTN(mpfr_nan_p (x));
+          mpfr_set_ui (y, 1, GMP_RNDN);
+          mpfr_nexttoward (y, x);
+          MPFR_ASSERTN(mpfr_nan_p (y));
+          mpfr_set_ui (x, 1, GMP_RNDN);
+          mpfr_set_ui (y, 1, GMP_RNDN);
+          mpfr_nexttoward (x, y);
+          MPFR_ASSERTN(mpfr_cmp_ui (x, 1) == 0);
+        }
+
       do
         mpfr_random (x);
       while (mpfr_cmp_ui (x, 0) == 0);

@@ -29,6 +29,29 @@ MA 02111-1307, USA. */
 #define TEST_FUNCTION mpfr_hypot
 
 static void
+special (void)
+{
+  mpfr_t x, y, z;
+
+  mpfr_init (x);
+  mpfr_init (y);
+  mpfr_init (z);
+
+  mpfr_set_nan (x);
+  mpfr_hypot (z, x, y, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_nan_p (z));
+
+  mpfr_set_inf (x, 1);
+  mpfr_set_inf (y, -1);
+  mpfr_hypot (z, x, y, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_inf_p (z) && mpfr_sgn (z) > 0);
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+}
+
+static void
 test_large (void)
 {
   mpfr_t x, y, z, t;
@@ -92,6 +115,8 @@ main (int argc, char *argv[])
   int inexact, compare, compare2;
 
   tests_start_mpfr ();
+
+  special ();
 
   mpfr_init (x1);
   mpfr_init (x2);

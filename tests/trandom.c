@@ -118,6 +118,10 @@ test_random2 (long nbtests, mp_prec_t prec, int verbose)
         tab[(int)(size_tab * d)]++;
     }
 
+  /* test size=0 */
+  mpfr_random2 (x, 0, 0);
+  MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_POS(x));
+
   mpfr_clear (x);
   if (!verbose)
     {

@@ -55,10 +55,8 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode)
 	}
       else if (MPFR_IS_ZERO(x))
 	return mpfr_abs (z, y, rnd_mode);
-      else if (MPFR_IS_ZERO(y))
+      else /* y is necessarily 0 */
 	return mpfr_abs (z, x, rnd_mode);
-      else
-	MPFR_ASSERTN(0);
     }
   MPFR_CLEAR_FLAGS(z);
 
@@ -151,15 +149,21 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode)
                                        Nz + (rnd_mode == GMP_RNDN)));
 
   inexact = mpfr_mul_2ui (z, t, sh, rnd_mode);
+  /* if not_exact=1, necessarily the last (Nt-Nz) bits of t are not all zero,
+     otherwise it would not have been possible to round correctly */
+  MPFR_ASSERTD(not_exact == 0 || inexact != 0);
 
   mpfr_clear (t);
   mpfr_clear (ti);
   mpfr_clear (te);
-
-  if (not_exact == 0 && inexact == 0)
-    inexact = 0;
-  else if (not_exact != 0 && inexact == 0)
-    inexact = -1;
+  
+  /*
+    not_exact  inexact
+        0         0         result is exact, ternary flag is 0
+        0       non zero    t is exact, ternary flag given by inexact
+        1         0         impossible (see above)
+        1       non zero    ternary flag given by inexact
+   */
 
   mpfr_restore_emin_emax ();
 

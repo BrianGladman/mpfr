@@ -1361,6 +1361,7 @@ This function is useful for
 testing functions and algorithms, since this kind of random numbers have
 proven to be more likely to trigger corner-case bugs.
 Negative random numbers are generated when @var{size} is negative.
+Put +0 in @var{rop} when size if zero.
 @end deftypefun
 
 @deftypefun {const char *} mpfr_version (void)

@@ -29,9 +29,96 @@ static void
 special (void)
 {
   mpfr_t x, y;
+  mp_exp_t emax;
 
-  mpfr_init2 (x, 6);
-  mpfr_init2 (y, 3);
+  mpfr_init (x);
+  mpfr_init (y);
+
+  mpfr_set_nan (x);
+  mpfr_rint (y, x, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_nan_p (y));
+
+  mpfr_set_inf (x, 1);
+  mpfr_rint (y, x, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_inf_p (y) && mpfr_sgn (y) > 0);
+
+  mpfr_set_inf (x, -1);
+  mpfr_rint (y, x, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_inf_p (y) && mpfr_sgn (y) < 0);
+
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_rint (y, x, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (y, 0) == 0 && MPFR_IS_POS(y));
+
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_neg (x, x, GMP_RNDN);
+  mpfr_rint (y, x, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (y, 0) == 0 && MPFR_IS_NEG(y));
+
+  /* coverage test */
+  mpfr_set_prec (x, 2);
+  mpfr_set_ui (x, 1, GMP_RNDN);
+  mpfr_mul_2exp (x, x, mp_bits_per_limb, GMP_RNDN);
+  mpfr_rint (y, x, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_cmp (y, x) == 0);
+
+  /* another coverage test */
+  emax = mpfr_get_emax ();
+  mpfr_set_emax (1);
+  mpfr_set_prec (x, 3);
+  mpfr_set_str_binary (x, "1.11E0");
+  mpfr_set_prec (y, 2);
+  mpfr_rint (y, x, GMP_RNDU); /* x rounds to 1.0E1=0.1E2 which overflows */
+  MPFR_ASSERTN(mpfr_inf_p (y) && mpfr_sgn (y) > 0);
+  mpfr_set_emax (emax);
+
+  /* yet another */
+  mpfr_set_prec (x, 97);
+  mpfr_set_prec (y, 96);
+  mpfr_set_str_binary (x, "-0.1011111001101111000111011100011100000110110110110000000111010001000101001111101010101011010111100E97");
+  mpfr_rint (y, x, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_cmp (y, x) == 0);
+
+  mpfr_set_prec (x, 53);
+  mpfr_set_prec (y, 53);
+  mpfr_set_str_binary (x, "0.10101100000000101001010101111111000000011111010000010E-1");
+  mpfr_rint (y, x, GMP_RNDU);
+  MPFR_ASSERTN(mpfr_cmp_ui (y, 1) == 0);
+  mpfr_rint (y, x, GMP_RNDD);
+  MPFR_ASSERTN(mpfr_cmp_ui (y, 0) == 0 && MPFR_IS_POS(y));
+
+  mpfr_set_prec (x, 36);
+  mpfr_set_prec (y, 2);
+  mpfr_set_str_binary (x, "-11000110101010111111110111001.0000100");
+  mpfr_rint (y, x, GMP_RNDN);
+  mpfr_set_str_binary (x, "-11E27");
+  MPFR_ASSERTN(mpfr_cmp (y, x) == 0);
+
+  mpfr_set_prec (x, 39);
+  mpfr_set_prec (y, 29);
+  mpfr_set_str_binary (x, "-0.100010110100011010001111001001001100111E39");
+  mpfr_rint (y, x, GMP_RNDN);
+  mpfr_set_str_binary (x, "-0.10001011010001101000111100101E39");
+  MPFR_ASSERTN(mpfr_cmp (y, x) == 0);
+
+  mpfr_set_prec (x, 46);
+  mpfr_set_prec (y, 32);
+  mpfr_set_str_binary (x, "-0.1011100110100101000001011111101011001001101001E32");
+  mpfr_rint (y, x, GMP_RNDN);
+  mpfr_set_str_binary (x, "-0.10111001101001010000010111111011E32");
+  MPFR_ASSERTN(mpfr_cmp (y, x) == 0);
+
+  /* coverage test for mpfr_round */
+  mpfr_set_prec (x, 3);
+  mpfr_set_str_binary (x, "1.01E1"); /* 2.5 */
+  mpfr_set_prec (y, 2);
+  mpfr_round (y, x);
+  /* since mpfr_round breaks ties away, should give 3 and not 2 as with
+     the "round to even" rule */
+  MPFR_ASSERTN(mpfr_cmp_ui (y, 3) == 0);
+
+  mpfr_set_prec (x, 6);
+  mpfr_set_prec (y, 3);
   mpfr_set_str_binary (x, "110.111");
   mpfr_round (y, x);
   if (mpfr_cmp_ui (y, 7))
@@ -39,6 +126,7 @@ special (void)
       printf ("Error in round(110.111)\n");
       exit (1);
     }
+
   mpfr_clear (x);
   mpfr_clear (y);
 }

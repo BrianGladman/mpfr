@@ -163,8 +163,15 @@ main ()
   mpf_out_str (f, 10, 10, x);
   fclose (f);
 
-  f = fopen ("/dev/null", "r");
-  mpf_inp_str (x, f, 10);
+  mpf_set_prec (x, 15);
+  mpf_set_prec (y, 15);
+  f = fopen ("inp_str.data", "r");
+  i = mpf_inp_str (x, f, 10);
+  if ((i == 0) || mpf_cmp_ui (x, 31415))
+    {
+      printf ("Error in reading 1st line from file inp_str.data\n");
+      exit (1);
+    }
   fclose (f);
 
   /* Miscellaneous Functions */

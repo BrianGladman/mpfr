@@ -38,12 +38,36 @@ main (int argc, char *argv[])
 
   test_generic (2, 100, 20);
 
-  /* check log10(10^n)=n */
   mpfr_init2 (x, 53);
   mpfr_init2 (y, 53);
-  mpfr_set_ui (x, 1, GMP_RNDN);
 
-  for (n=1; n<=15; n++)
+  /* check NaN */
+  mpfr_set_nan (x);
+  mpfr_log10 (y, x, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_nan_p (y));
+
+  /* check Inf */
+  mpfr_set_inf (x, -1);
+  mpfr_log10 (y, x, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_nan_p (y));
+
+  mpfr_set_inf (x, 1);
+  mpfr_log10 (y, x, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_inf_p (y) && mpfr_sgn (y) > 0);
+
+  /* check negative argument */
+  mpfr_set_si (x, -1, GMP_RNDN);
+  mpfr_log10 (y, x, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_nan_p (y));
+
+  /* check log10(1) = 0 */
+  mpfr_set_ui (x, 1, GMP_RNDN);
+  mpfr_log10 (y, x, GMP_RNDN);
+  MPFR_ASSERTN((mpfr_cmp_ui (y, 0) == 0) && (MPFR_IS_POS (y)));
+  
+  /* check log10(10^n)=n */
+  mpfr_set_ui (x, 1, GMP_RNDN);
+  for (n = 1; n <= 15; n++)
     {
       mpfr_mul_ui (x, x, 10, GMP_RNDN); /* x = 10^n */
       mpfr_log10 (y, x, GMP_RNDN);

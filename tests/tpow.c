@@ -1,6 +1,6 @@
-/* Test file for mpfr_pow and mpfr_pow_ui.
+/* Test file for mpfr_pow, mpfr_pow_ui and mpfr_pow_si.
 
-Copyright 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -66,6 +66,46 @@ check_pow_ui (void)
 
   mpfr_clear (a);
   mpfr_clear (b);
+}
+
+static void
+check_pow_si (void)
+{
+  mpfr_t x;
+  
+  mpfr_init (x);
+
+  mpfr_set_nan (x);
+  mpfr_pow_si (x, x, -1, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_nan_p (x));
+
+  mpfr_set_inf (x, 1);
+  mpfr_pow_si (x, x, -1, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_POS(x));
+
+  mpfr_set_inf (x, -1);
+  mpfr_pow_si (x, x, -1, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_NEG(x));
+
+  mpfr_set_inf (x, -1);
+  mpfr_pow_si (x, x, -2, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_POS(x));
+
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_pow_si (x, x, -1, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
+
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_neg (x, x, GMP_RNDN);
+  mpfr_pow_si (x, x, -1, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) < 0);
+
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_neg (x, x, GMP_RNDN);
+  mpfr_pow_si (x, x, -2, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
+
+  mpfr_clear (x);
 }
 
 static void
@@ -216,6 +256,43 @@ special ()
       exit (1);
     }
 
+  mpfr_set_inf (x, 1);
+  mpfr_set_prec (y, 2);
+  mpfr_set_str_binary (y, "1E10");
+  mpfr_pow (z, x, y, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_inf_p (z) && MPFR_IS_POS(z));
+  mpfr_set_inf (x, -1);
+  mpfr_pow (z, x, y, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_inf_p (z) && MPFR_IS_POS(z));
+  mpfr_set_prec (y, 10);
+  mpfr_set_str_binary (y, "1.000000001E9");
+  mpfr_pow (z, x, y, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_inf_p (z) && MPFR_IS_NEG(z));
+  mpfr_set_str_binary (y, "1.000000001E8");
+  mpfr_pow (z, x, y, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_nan_p (z));
+
+  mpfr_set_inf (x, -1);
+  mpfr_set_prec (y, 2 * mp_bits_per_limb);
+  mpfr_set_ui (y, 1, GMP_RNDN);
+  mpfr_mul_2exp (y, y, mp_bits_per_limb - 1, GMP_RNDN);
+  mpfr_pow (z, x, y, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_inf_p (z) && MPFR_IS_POS(z));
+  mpfr_nextabove (y);
+  mpfr_pow (z, x, y, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_nan_p (z));
+  mpfr_nextbelow (y);
+  mpfr_div_2exp (y, y, 1, GMP_RNDN);
+  mpfr_nextabove (y);
+  mpfr_pow (z, x, y, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_nan_p (z));
+
+  mpfr_set_si (x, -1, GMP_RNDN);
+  mpfr_set_prec (y, 2);
+  mpfr_set_str_binary (y, "1E10");
+  mpfr_pow (z, x, y, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (z, 1) == 0);
+
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);
@@ -254,7 +331,7 @@ particular_cases (void)
           /*          NaN +inf -inf  +0   -0   +1   -1   +2   -2  +0.5 -0.5 */
           /*  NaN */ { 0,   0,   0,  128, 128,  0,   0,   0,   0,   0,   0  },
           /* +inf */ { 0,   1,   2,  128, 128,  1,   2,   1,   2,   1,   2  },
-          /* -inf */ { 0,   1,   2,  128, 128, -1,  -2,   1,   2,   1,   2  },
+          /* -inf */ { 0,   1,   2,  128, 128, -1,  -2,   1,   2,   0,   0  },
           /*  +0  */ { 0,   2,   1,  128, 128,  2,   1,   2,   1,   2,   1  },
           /*  -0  */ { 0,   2,   1,  128, 128, -2,  -1,   2,   1,   2,   1  },
           /*  +1  */ {128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128 },
@@ -277,6 +354,7 @@ particular_cases (void)
           {
             printf ("Error in mpfr_pow for particular case (%s)^(%s) (%d,%d):\n"
                     "got %d instead of %d\n", name[i], name[j], i,j,p, q[i][j]);
+            mpfr_dump (r);
             error = 1;
           }
       }
@@ -363,6 +441,8 @@ main (void)
   particular_cases ();
 
   check_pow_ui ();
+  
+  check_pow_si ();
 
   for (p=2; p<100; p++)
     check_inexact (p);

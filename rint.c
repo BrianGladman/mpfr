@@ -46,12 +46,12 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
 	  MPFR_SET_INF(r);
 	  MPFR_RET(0);  /* infinity is exact */
 	}
-      if (MPFR_IS_ZERO(u))
+      else /* now u is zero */
 	{
+          MPFR_ASSERTD(MPFR_IS_ZERO(u));
 	  MPFR_SET_ZERO(r);
 	  MPFR_RET(0);  /* zero is exact */
 	}
-      MPFR_ASSERTN(0);
     }
   MPFR_SET_SAME_SIGN(r, u);
  

@@ -25,6 +25,7 @@ MA 02111-1307, USA. */
 /* return non zero iff x^y is exact.
    Assumes x and y are ordinary numbers (neither NaN nor Inf),
    and y is not zero.
+   Assumes the case x < 0 and y not an integer does not happen.
 */
 static int
 mpfr_pow_is_exact (mpfr_srcptr x, mpfr_srcptr y)
@@ -33,9 +34,11 @@ mpfr_pow_is_exact (mpfr_srcptr x, mpfr_srcptr y)
   unsigned long i, c;
   mp_limb_t *yp;
   mp_size_t ysize;
-  
+
+#if 0 /* useless since already checked in mpfr_pow */ 
   if ((mpfr_sgn (x) < 0) && (mpfr_integer_p (y) == 0))
     return 0;
+#endif
 
   if (mpfr_sgn (y) < 0)
     return mpfr_cmp_si_2exp (x, MPFR_SIGN(x), MPFR_GET_EXP (x) - 1) == 0;
@@ -81,7 +84,10 @@ mpfr_pow_is_exact (mpfr_srcptr x, mpfr_srcptr y)
     return 1;
 }
 
-/* Return 1 if y is an odd integer, 0 otherwise. */
+/* Return 1 if y is an odd integer, -1 if an even integer,
+   0 otherwise (not an integer).
+   Assumes y is not zero.
+*/
 static int
 is_odd (mpfr_srcptr y)
 {
@@ -89,11 +95,10 @@ is_odd (mpfr_srcptr y)
   mp_prec_t prec;
   mp_size_t yn;
   mp_limb_t *yp;
+  int res;
 
-  MPFR_ASSERTN(MPFR_IS_FP(y));
-
-  if (MPFR_IS_ZERO(y))
-    return 0;
+  MPFR_ASSERTD(MPFR_IS_FP(y));
+  MPFR_ASSERTD(MPFR_NOT_ZERO(y));
 
   expo = MPFR_GET_EXP (y);
   if (expo <= 0)
@@ -101,7 +106,7 @@ is_odd (mpfr_srcptr y)
 
   prec = MPFR_PREC(y);
   if ((mpfr_prec_t) expo > prec)
-    return 0;  /* y is a multiple of 2^(expo-prec), thus not odd */
+    return -1;  /* y is a multiple of 2^(expo-prec), thus an even integer */
 
   /* 0 < expo <= prec */
 
@@ -111,13 +116,26 @@ is_odd (mpfr_srcptr y)
   /* now the index of the last limb containing bits of the fractional part */
 
   yp = MPFR_MANT(y);
-  if (expo % BITS_PER_MP_LIMB == 0 ? (yp[yn+1] & 1) == 0 || yp[yn] != 0
-      : yp[yn] << ((expo % BITS_PER_MP_LIMB) - 1) != MPFR_LIMB_HIGHBIT)
-    return 0;
+  res = 1; /* default is odd */
+  /* test the bit of weight 0 */
+  if (expo % BITS_PER_MP_LIMB == 0)
+    {
+      if (yp[yn])
+        return 0; /* not an integer */
+      if ((yp[yn+1] & 1) == 0)
+        res = -1; /* maybe an even integer */
+    }
+  else
+    {
+      if (yp[yn] << (expo % BITS_PER_MP_LIMB))
+        return 0; /* not an integer */
+      if (yp[yn] << ((expo % BITS_PER_MP_LIMB) - 1) != MPFR_LIMB_HIGHBIT)
+        res = -1; /* maybe an even integer */
+    }
   while (--yn >= 0)
     if (yp[yn] != 0)
-      return 0;
-  return 1;
+      return 0; /* not an integer */
+  return res;
 }
 
 /* The computation of z = pow(x,y) is done by
@@ -151,11 +169,13 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
       /* pow(x, 0) returns 1 for any x, even a NaN. */
       if (MPFR_UNLIKELY( MPFR_IS_ZERO(y) ))
 	return mpfr_set_ui (z, 1, GMP_RNDN);
+      /* now x is NaN, Inf, or zero, or y is NaN or Inf */
       else if (MPFR_IS_NAN(x))
 	{
 	  MPFR_SET_NAN(z);
 	  MPFR_RET_NAN;
 	}
+      /* now x is Inf or zero, or y is NaN or Inf */
       else if (MPFR_IS_NAN(y))
 	{
 	  /* pow(+1, NaN) returns 1. */
@@ -164,6 +184,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 	  MPFR_SET_NAN(z);
 	  MPFR_RET_NAN;
 	}
+      /* now x is Inf or zero, or y is Inf */
       else if (MPFR_IS_INF(y))
 	{
 	  if (MPFR_IS_INF(x))
@@ -205,29 +226,60 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 		}
 	    }
 	}
+      /* x is Inf or zero, and y is now an ordinary number (even non-zero) */
       MPFR_ASSERTD(MPFR_IS_FP(y));
       if (MPFR_IS_INF(x))
 	{
+          /* +Inf^y gives +Inf if y > 0, +0 if y < 0
+             -Inf^y gives NaN for y non-integer
+                          s*Inf for y positive integer of sign s
+                          s*0   for y negative integer of sign s */
 	  int negative;
 	  /* Determine the sign now, in case y and z are the same object */
-	  negative = MPFR_IS_NEG(x) && is_odd(y);
+	  negative = MPFR_IS_NEG(x);
 	  MPFR_CLEAR_FLAGS(z);
-	  if (MPFR_IS_POS(y))
-	    MPFR_SET_INF(z);
-	  else
-	    MPFR_SET_ZERO(z);
-	  if (negative)
-	    MPFR_SET_NEG(z);
-	  else
-	    MPFR_SET_POS(z);
+          if (negative) /* x = -Inf */
+            {
+              int odd = is_odd (y);
+              if (odd == 0) /* non-integer */
+                {
+                  MPFR_SET_NAN(z);
+                  MPFR_RET_NAN;
+                }
+              else 
+                {
+                  if (MPFR_IS_POS(y))
+                    MPFR_SET_INF(z);
+                  else
+                    MPFR_SET_ZERO(z);
+                  if (odd == 1) /* odd integer */
+                    MPFR_SET_NEG(z);
+                  else
+                    MPFR_SET_POS(z);
+                }
+            }
+          else /* x = +Inf */
+            {
+              if (MPFR_IS_POS(y))
+                {
+                  MPFR_SET_INF(z);
+                  MPFR_SET_POS(z);
+                }
+              else
+                {
+                  MPFR_SET_ZERO(z);
+                  MPFR_SET_POS(z);
+                }
+            }
 	  MPFR_RET(0);
 	}
+      /* x is zero, y is an ordinary (non-zero) number */
       MPFR_ASSERTD(MPFR_IS_FP(x));
-      if (MPFR_IS_ZERO(x))
+      MPFR_ASSERTD(MPFR_IS_ZERO(x));
 	{
 	  int negative;
 	  /* Determine the sign now, in case y and z are the same object */
-	  negative = MPFR_IS_NEG(x) && is_odd (y);
+	  negative = MPFR_IS_NEG(x) && is_odd (y) == 1;
 	  MPFR_CLEAR_FLAGS(z);
 	  if (MPFR_IS_NEG(y))
 	    MPFR_SET_INF(z);
@@ -239,9 +291,6 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 	    MPFR_SET_POS(z);
 	  MPFR_RET(0);
 	}
-      /* Should never reach this code */
-      MPFR_ASSERTN(0);
-      return 0;
     }
 
   if (mpfr_cmp_ui (x, 1) == 0) /* 1^y is always 1 */
@@ -260,7 +309,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
     exy *= mpfr_get_d (y, GMP_RNDZ);
     if (exy >= (double) __gmpfr_emax)
       {
-        negative = MPFR_SIGN(x) < 0 && is_odd (y);
+        negative = MPFR_SIGN(x) < 0 && is_odd (y) == 1;
         return mpfr_set_overflow (z, rnd_mode, negative ? -1 : 1);
       }
   }  
@@ -285,6 +334,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
       return mpfr_pow_si (z, x, zii, rnd_mode);
     }
 
+  /* now y is not an integer */
   if (MPFR_IS_NEG(x))
     {
       MPFR_SET_NAN(z);

@@ -128,8 +128,14 @@ mpfr_nexttoward (mpfr_ptr x, mpfr_srcptr y)
 {
   int s;
 
-  if (MPFR_UNLIKELY(MPFR_IS_NAN(x) || MPFR_IS_NAN(y)))
+  if (MPFR_UNLIKELY(MPFR_IS_NAN(x)))
     {
+      __gmpfr_flags |= MPFR_FLAGS_NAN;
+      return;
+    }
+  else if (MPFR_UNLIKELY(MPFR_IS_NAN(x) || MPFR_IS_NAN(y)))
+    {
+      MPFR_SET_NAN(x);
       __gmpfr_flags |= MPFR_FLAGS_NAN;
       return;
     }

@@ -56,13 +56,13 @@ mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
 	  MPFR_SET_INF(x);
 	  MPFR_RET(0);
 	}
-      else if (MPFR_IS_ZERO(y)) /* 0^n = 0 for any n */
+      else /* y is zero */
 	{
+          MPFR_ASSERTD(MPFR_IS_ZERO(y));
+          /* 0^n = 0 for any n */
 	  MPFR_SET_ZERO(x);
 	  MPFR_RET(0);
 	}
-      else
-	MPFR_ASSERTN(0);
     }
   else if (MPFR_UNLIKELY( n <= 1))
     { 

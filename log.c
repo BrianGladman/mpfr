@@ -73,14 +73,13 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
 	      MPFR_RET(0);
 	    }
 	}
-      else if (MPFR_IS_ZERO(a))
+      else /* a is zero */
 	{
+          MPFR_ASSERTD(MPFR_IS_ZERO(a));
 	  MPFR_SET_INF(r);
 	  MPFR_SET_NEG(r);
 	  MPFR_RET(0); /* log(0) is an exact -infinity */
 	}
-      else
-	MPFR_ASSERTN(0);
     }
 
   /* If a is negative, the result is NaN */
