@@ -35,6 +35,9 @@ so Pi*16^N-S'(N) <= N+1 (as 1/4/N^2 < 1)
 #include "longlong.h"
 #include "mpfr.h"
 
+mpfr_t __mpfr_pi; /* stored value of Pi with rnd_mode=GMP_RNDZ */
+int __mpfr_pi_prec=0; /* precision of stored value */
+
 void 
 #if __STDC__
 mpfr_pi(mpfr_ptr x, unsigned char rnd_mode) 
@@ -46,7 +49,19 @@ mpfr_pi(x, rnd_mode)
 {
   int N, oldN, n, prec; mpz_t pi, num, den, d3, d2, tmp; mpfr_t y;
 
-  N=1; prec=PREC(x);
+  prec=PREC(x);
+
+  /* has stored value enough precision ? */
+  if (prec <= __mpfr_pi_prec) {
+    if (rnd_mode==GMP_RNDZ || rnd_mode==GMP_RNDD ||
+	mpfr_can_round(__mpfr_pi, __mpfr_pi_prec, GMP_RNDZ, rnd_mode, prec))
+      {
+	mpfr_set(x, __mpfr_pi, rnd_mode); return; 
+      }
+  }
+
+  /* need to recompute */
+  N=1; 
   do {
     oldN = N;
     N = (prec+3)/4 + (int)ceil(log((double)N+1.0)/log(2.0));
@@ -80,9 +95,15 @@ mpfr_pi(x, rnd_mode)
   mpz_add_ui(pi, pi, N);
   mpfr_set_z(y, pi, rnd_mode);
   if (mpfr_cmp(x, y) != 0) {
-    printf("does not converge\n"); exit(1);
+    fprintf(stderr, "does not converge\n"); exit(1);
   }
   EXP(x) -= 4*N;
   mpz_clear(pi); mpz_clear(num); mpz_clear(den); mpz_clear(d3); mpz_clear(d2);
   mpz_clear(tmp); mpfr_clear(y);
+
+  /* store computed value */
+  if (__mpfr_pi_prec==0) mpfr_init2(__mpfr_pi, prec);
+  else mpfr_set_prec(__mpfr_pi, prec);
+  mpfr_set(__mpfr_pi, x, GMP_RNDZ);
+  __mpfr_pi_prec=prec;
 }
