@@ -24,6 +24,29 @@ MA 02111-1307, USA. */
 
 #include "mpfr-test.h"
 
+#ifdef CHECK_EXTERNAL
+static int
+test_exp (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
+{
+  int res;
+  int ok = rnd_mode == GMP_RNDN && mpfr_number_p (b) && mpfr_get_prec (a)>=53;
+  if (ok)
+    {
+      mpfr_print_raw (b);
+    }
+  res = mpfr_exp (a, b, rnd_mode);
+  if (ok)
+    {
+      printf (" ");
+      mpfr_print_raw (a);
+      printf ("\n");
+    }
+  return res;
+}
+#else
+#define test_exp mpfr_exp
+#endif
+
 /* returns the number of ulp of error */
 static void
 check3 (const char *op, mp_rnd_t rnd, const char *res)
@@ -34,7 +57,7 @@ check3 (const char *op, mp_rnd_t rnd, const char *res)
   /* y negative. If we forget to set the sign in mpfr_exp, we'll see it. */
   mpfr_set_si (y, -1, GMP_RNDN);
   mpfr_set_str1 (x, op);
-  mpfr_exp (y, x, rnd);
+  test_exp (y, x, rnd);
   if (mpfr_cmp_str1 (y, res) )
     {
       printf ("mpfr_exp failed for x=%s, rnd=%s\n",
@@ -55,14 +78,14 @@ check_worst_case (const char *Xs, const char *expxs)
 
   mpfr_inits2(53, x, y, NULL);
   mpfr_set_str1(x, Xs);
-  mpfr_exp(y, x, GMP_RNDD);
+  test_exp(y, x, GMP_RNDD);
   if (mpfr_cmp_str1 (y, expxs))
     {
       printf ("exp(x) rounded towards -infinity is wrong\n");
       exit(1);
     }
   mpfr_set_str1(x, Xs);
-  mpfr_exp(x, x, GMP_RNDU);
+  test_exp(x, x, GMP_RNDU);
   mpfr_add_one_ulp(y, GMP_RNDN);
   if (mpfr_cmp(x,y))
     {
@@ -177,7 +200,7 @@ compare_exp2_exp3 (int n)
   mpfr_clear (z);
 }
 
-#define TEST_FUNCTION mpfr_exp
+#define TEST_FUNCTION test_exp
 #include "tgeneric.c"
 
 static void
@@ -192,7 +215,7 @@ check_special ()
 
   /* check exp(NaN) = NaN */
   mpfr_set_nan (x);
-  mpfr_exp (y, x, GMP_RNDN);
+  test_exp (y, x, GMP_RNDN);
   if (!mpfr_nan_p (y))
     {
       printf ("Error for exp(NaN)\n");
@@ -201,7 +224,7 @@ check_special ()
 
   /* check exp(+inf) = +inf */
   mpfr_set_inf (x, 1);
-  mpfr_exp (y, x, GMP_RNDN);
+  test_exp (y, x, GMP_RNDN);
   if (!mpfr_inf_p (y) || mpfr_sgn (y) < 0)
     {
       printf ("Error for exp(+inf)\n");
@@ -210,7 +233,7 @@ check_special ()
 
   /* check exp(-inf) = +0 */
   mpfr_set_inf (x, -1);
-  mpfr_exp (y, x, GMP_RNDN);
+  test_exp (y, x, GMP_RNDN);
   if (mpfr_cmp_ui (y, 0) || mpfr_sgn (y) < 0)
     {
       printf ("Error for exp(-inf)\n");
@@ -221,7 +244,7 @@ check_special ()
   emax = mpfr_get_emax ();
   set_emax (10);
   mpfr_set_ui (x, 7, GMP_RNDN);
-  mpfr_exp (y, x, GMP_RNDN);
+  test_exp (y, x, GMP_RNDN);
   if (!mpfr_inf_p (y) || mpfr_sgn (y) < 0)
     {
       printf ("Error for exp(7) for emax=10\n");
@@ -233,7 +256,7 @@ check_special ()
   emin = mpfr_get_emin ();
   set_emin (-10);
   mpfr_set_si (x, -9, GMP_RNDN);
-  mpfr_exp (y, x, GMP_RNDN);
+  test_exp (y, x, GMP_RNDN);
   if (mpfr_cmp_ui (y, 0) || mpfr_sgn (y) < 0)
     {
       printf ("Error for exp(-9) for emin=-10\n");
@@ -246,26 +269,26 @@ check_special ()
   /* check case EXP(x) < -precy */
   mpfr_set_prec (y, 2);
   mpfr_set_str_binary (x, "-0.1E-3");
-  mpfr_exp (y, x, GMP_RNDD);
+  test_exp (y, x, GMP_RNDD);
   if (mpfr_cmp_ui_2exp (y, 3, -2))
     {
       printf ("Error for exp(-1/16), prec=2, RNDD\n");
       exit (1);
     }
-  mpfr_exp (y, x, GMP_RNDZ);
+  test_exp (y, x, GMP_RNDZ);
   if (mpfr_cmp_ui (y, 1))
     {
       printf ("Error for exp(-1/16), prec=2, RNDZ\n");
       exit (1);
     }
   mpfr_set_str_binary (x, "0.1E-3");
-  mpfr_exp (y, x, GMP_RNDN);
+  test_exp (y, x, GMP_RNDN);
   if (mpfr_cmp_ui (y, 1))
     {
       printf ("Error for exp(1/16), prec=2, RNDN\n");
       exit (1);
     }
-  mpfr_exp (y, x, GMP_RNDU);
+  test_exp (y, x, GMP_RNDU);
   if (mpfr_cmp_ui_2exp (y, 3, -1))
     {
       printf ("Error for exp(1/16), prec=2, RNDU\n");
@@ -276,12 +299,12 @@ check_special ()
   mpfr_set_prec (x, 53);
   mpfr_set_prec (y, 53);
   mpfr_set_str_binary (x, "1.1101011000111101011110000111010010101001101001110111e28");
-  mpfr_exp (y, x, GMP_RNDN);
+  test_exp (y, x, GMP_RNDN);
 
   mpfr_set_prec (x, 153);
   mpfr_set_prec (z, 153);
   mpfr_set_str_binary (x, "1.1101011000111101011110000111010010101001101001110111e28");
-  mpfr_exp (z, x, GMP_RNDN);
+  test_exp (z, x, GMP_RNDN);
   mpfr_prec_round (z, 53, GMP_RNDN);
 
   if (mpfr_cmp (y, z))
@@ -304,7 +327,7 @@ check_special ()
   mpfr_set_str_binary (x, "0.11110000000000000000000000000000000000000000000"
 		       "0000000000000000000000000000000000000000000000000000"
 		       "00000000E4");
-  mpfr_exp (y, x, GMP_RNDN);
+  test_exp (y, x, GMP_RNDN);
   if (mpfr_cmp_str (y, "0.11000111100001100110010101111101011010010101010000"
 		    "1101110111100010111001011111111000110111001011001101010"
 		    "01E22", 2, GMP_RNDN))
@@ -320,7 +343,7 @@ check_special ()
   /* Check for overflow producing a segfault with HUGE exponent */
   mpfr_set_ui  (x, 3, GMP_RNDN);
   mpfr_mul_2ui (x, x, 32, GMP_RNDN);
-  mpfr_exp (y, x, GMP_RNDN); /* Can't test return value: May overflow or not*/
+  test_exp (y, x, GMP_RNDN); /* Can't test return value: May overflow or not*/
 
   mpfr_clear (x);
   mpfr_clear (y);
@@ -339,7 +362,7 @@ check_inexact (void)
 
   mpfr_set_str_binary (x,
 	"1.0000000000001001000110100100101000001101101011100101e2");
-  inexact = mpfr_exp (y, x, GMP_RNDN);
+  inexact = test_exp (y, x, GMP_RNDN);
   if (inexact <= 0)
     {
       printf ("Wrong inexact flag\n");

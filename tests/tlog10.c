@@ -25,7 +25,30 @@ MA 02111-1307, USA. */
 
 #include "mpfr-test.h"
 
-#define TEST_FUNCTION mpfr_log10
+#ifdef CHECK_EXTERNAL
+static int
+test_log10 (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
+{
+  int res;
+  int ok = rnd_mode == GMP_RNDN && mpfr_number_p (b) && mpfr_get_prec (a)>=53;
+  if (ok)
+    {
+      mpfr_print_raw (b);
+    }
+  res = mpfr_log10 (a, b, rnd_mode);
+  if (ok)
+    {
+      printf (" ");
+      mpfr_print_raw (a);
+      printf ("\n");
+    }
+  return res;
+}
+#else
+#define test_log10 mpfr_log10
+#endif
+
+#define TEST_FUNCTION test_log10
 #include "tgeneric.c"
 
 int
@@ -43,26 +66,26 @@ main (int argc, char *argv[])
 
   /* check NaN */
   mpfr_set_nan (x);
-  mpfr_log10 (y, x, GMP_RNDN);
+  test_log10 (y, x, GMP_RNDN);
   MPFR_ASSERTN(mpfr_nan_p (y));
 
   /* check Inf */
   mpfr_set_inf (x, -1);
-  mpfr_log10 (y, x, GMP_RNDN);
+  test_log10 (y, x, GMP_RNDN);
   MPFR_ASSERTN(mpfr_nan_p (y));
 
   mpfr_set_inf (x, 1);
-  mpfr_log10 (y, x, GMP_RNDN);
+  test_log10 (y, x, GMP_RNDN);
   MPFR_ASSERTN(mpfr_inf_p (y) && mpfr_sgn (y) > 0);
 
   /* check negative argument */
   mpfr_set_si (x, -1, GMP_RNDN);
-  mpfr_log10 (y, x, GMP_RNDN);
+  test_log10 (y, x, GMP_RNDN);
   MPFR_ASSERTN(mpfr_nan_p (y));
 
   /* check log10(1) = 0 */
   mpfr_set_ui (x, 1, GMP_RNDN);
-  mpfr_log10 (y, x, GMP_RNDN);
+  test_log10 (y, x, GMP_RNDN);
   MPFR_ASSERTN((mpfr_cmp_ui (y, 0) == 0) && (MPFR_IS_POS (y)));
   
   /* check log10(10^n)=n */
@@ -70,7 +93,7 @@ main (int argc, char *argv[])
   for (n = 1; n <= 15; n++)
     {
       mpfr_mul_ui (x, x, 10, GMP_RNDN); /* x = 10^n */
-      mpfr_log10 (y, x, GMP_RNDN);
+      test_log10 (y, x, GMP_RNDN);
       if (mpfr_cmp_ui (y, n) )
         {
           printf ("log10(10^n) <> n for n=%u\n", n);

@@ -24,6 +24,29 @@ MA 02111-1307, USA. */
 
 #include "mpfr-test.h"
 
+#ifdef CHECK_EXTERNAL
+static int
+test_sin (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
+{
+  int res;
+  int ok = rnd_mode == GMP_RNDN && mpfr_number_p (b) && mpfr_get_prec (a)>=53;
+  if (ok)
+    {
+      mpfr_print_raw (b);
+    }
+  res = mpfr_sin (a, b, rnd_mode);
+  if (ok)
+    {
+      printf (" ");
+      mpfr_print_raw (a);
+      printf ("\n");
+    }
+  return res;
+}
+#else
+#define test_sin mpfr_sin
+#endif
+
 static void
 check53 (const char *xs, const char *sin_xs, mp_rnd_t rnd_mode)
 {
@@ -32,7 +55,7 @@ check53 (const char *xs, const char *sin_xs, mp_rnd_t rnd_mode)
   mpfr_init2 (xx, 53);
   mpfr_init2 (s, 53);
   mpfr_set_str1 (xx, xs); /* should be exact */
-  mpfr_sin (s, xx, rnd_mode);
+  test_sin (s, xx, rnd_mode);
   if (mpfr_cmp_str1 (s, sin_xs))
     {
       printf ("mpfr_sin failed for x=%s, rnd=%s\n",
@@ -63,7 +86,7 @@ test_sign (void)
       {
         mpfr_set_prec (x, p);
         mpfr_mul_ui (x, pid, k, GMP_RNDD);
-        mpfr_sin (y, x, GMP_RNDN);
+        test_sin (y, x, GMP_RNDN);
         if (MPFR_SIGN(y) > 0)
           {
             printf ("Error in test_sign for sin(%dpi-epsilon), prec = %d"
@@ -72,7 +95,7 @@ test_sign (void)
             exit (1);
           }
         mpfr_mul_ui (x, piu, k, GMP_RNDU);
-        mpfr_sin (y, x, GMP_RNDN);
+        test_sin (y, x, GMP_RNDN);
         if (MPFR_SIGN(y) < 0)
           {
             printf ("Error in test_sign for sin(%dpi+epsilon), prec = %d"
@@ -86,13 +109,13 @@ test_sign (void)
   mpfr_set_prec (x, 53);
   mpfr_set_prec (y, 53);
   mpfr_set_str (x, "6134899525417045", 10, GMP_RNDN);
-  mpfr_sin (y, x, GMP_RNDN);
+  test_sin (y, x, GMP_RNDN);
   mpfr_set_str_binary (x, "11011010111101011110111100010101010101110000000001011E-106");
   MPFR_ASSERTN(mpfr_cmp (x, y) == 0);
   
   /* Bug on Special cases */
   mpfr_set_str_binary (x, "0.100011011010111101E-32");
-  mpfr_sin (y, x, GMP_RNDN);
+  test_sin (y, x, GMP_RNDN);
   if (mpfr_cmp_str (y, "0.10001101101011110100000000000000000000000000000000000E-32", 2, GMP_RNDN))
     {
       printf("sin special 97 error:\nx=");
@@ -105,7 +128,7 @@ test_sign (void)
   mpfr_set_prec (y, 53);
   mpfr_set_str_binary (x, "1.1001001000011111101101010100010001000010110100010011");
   mpfr_set_str_binary (y, "1.1111111111111111111111111111111111111111111111111111e-1");
-  mpfr_sin (x, x, GMP_RNDZ);
+  test_sin (x, x, GMP_RNDZ);
   MPFR_ASSERTN(mpfr_cmp (x, y) == 0);
 
   mpfr_clear (pid);
@@ -123,7 +146,7 @@ check_nans (void)
   mpfr_init2 (y, 123L);
 
   mpfr_set_nan (x);
-  mpfr_sin (y, x, GMP_RNDN);
+  test_sin (y, x, GMP_RNDN);
   if (! mpfr_nan_p (y))
     {
       printf ("Error: sin(NaN) != NaN\n");
@@ -131,7 +154,7 @@ check_nans (void)
     }
 
   mpfr_set_inf (x, 1);
-  mpfr_sin (y, x, GMP_RNDN);
+  test_sin (y, x, GMP_RNDN);
   if (! mpfr_nan_p (y))
     {
       printf ("Error: sin(Inf) != NaN\n");
@@ -139,7 +162,7 @@ check_nans (void)
     }
 
   mpfr_set_inf (x, -1);
-  mpfr_sin (y, x, GMP_RNDN);
+  test_sin (y, x, GMP_RNDN);
   if (! mpfr_nan_p (y))
     {
       printf ("Error: sin(-Inf) != NaN\n");
@@ -150,7 +173,7 @@ check_nans (void)
   mpfr_clear (y);
 }
 
-#define TEST_FUNCTION mpfr_sin
+#define TEST_FUNCTION test_sin
 #include "tgeneric.c"
 
 int
@@ -177,7 +200,7 @@ main (int argc, char *argv[])
   mpfr_init2 (x, 2);
 
   mpfr_set_str (x, "0.5", 10, GMP_RNDN);
-  mpfr_sin (x, x, GMP_RNDD);
+  test_sin (x, x, GMP_RNDD);
   if (mpfr_cmp_ui_2exp (x, 3, -3)) /* x != 0.375 = 3/8 */
     {
       printf ("mpfr_sin(0.5, GMP_RNDD) failed with precision=2\n");
@@ -188,7 +211,7 @@ main (int argc, char *argv[])
   mpfr_const_pi (x, GMP_RNDN);
   mpfr_mul_ui (x, x, 3L, GMP_RNDN);
   mpfr_div_ui (x, x, 2L, GMP_RNDN);
-  mpfr_sin (x, x, GMP_RNDN);
+  test_sin (x, x, GMP_RNDN);
   if (mpfr_cmp_ui (x, 0) >= 0)
     {
       printf ("Error: wrong sign for sin(3*Pi/2)\n");
@@ -201,7 +224,7 @@ main (int argc, char *argv[])
   mpfr_init2 (c, 4); mpfr_init2 (s, 42);
   mpfr_init2 (c2, 4); mpfr_init2 (s2, 42);
 
-  mpfr_sin (s, x, GMP_RNDN);
+  test_sin (s, x, GMP_RNDN);
   mpfr_cos (c, x, GMP_RNDN);
   mpfr_sin_cos (s2, c2, x, GMP_RNDN);
   if (mpfr_cmp (c2, c))
@@ -216,7 +239,7 @@ main (int argc, char *argv[])
     }
 
   mpfr_set_str_binary (x, "1.1001001000011111101101010100010001000010110100010011");
-  mpfr_sin (x, x, GMP_RNDZ);
+  test_sin (x, x, GMP_RNDZ);
   if (mpfr_cmp_str (x, "1.1111111111111111111111111111111111111111111111111111e-1", 2, 0))
     {
       printf ("Error for x= 1.1001001000011111101101010100010001000010110100010011\nGot ");

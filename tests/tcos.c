@@ -24,6 +24,29 @@ MA 02111-1307, USA. */
 
 #include "mpfr-test.h"
 
+#ifdef CHECK_EXTERNAL
+static int
+test_cos (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
+{
+  int res;
+  int ok = rnd_mode == GMP_RNDN && mpfr_number_p (b) && mpfr_get_prec (a)>=53;
+  if (ok)
+    {
+      mpfr_print_raw (b);
+    }
+  res = mpfr_cos (a, b, rnd_mode);
+  if (ok)
+    {
+      printf (" ");
+      mpfr_print_raw (a);
+      printf ("\n");
+    }
+  return res;
+}
+#else
+#define test_cos mpfr_cos
+#endif
+
 static void
 check53 (const char *xs, const char *cos_xs, mp_rnd_t rnd_mode)
 {
@@ -31,7 +54,7 @@ check53 (const char *xs, const char *cos_xs, mp_rnd_t rnd_mode)
 
   mpfr_inits2 (53, xx, c, NULL);
   mpfr_set_str1 (xx, xs); /* should be exact */
-  mpfr_cos (c, xx, rnd_mode);
+  test_cos (c, xx, rnd_mode);
   if (mpfr_cmp_str1 (c, cos_xs))
     {
       printf ("mpfr_cos failed for x=%s, rnd=%s\n", 
@@ -44,7 +67,7 @@ check53 (const char *xs, const char *cos_xs, mp_rnd_t rnd_mode)
   mpfr_clears (xx, c, NULL);
 }
 
-#define TEST_FUNCTION mpfr_cos
+#define TEST_FUNCTION test_cos
 #include "tgeneric.c"
 
 static void
@@ -56,7 +79,7 @@ check_nans (void)
   mpfr_init2 (y, 123L);
 
   mpfr_set_nan (x);
-  mpfr_cos (y, x, GMP_RNDN);
+  test_cos (y, x, GMP_RNDN);
   if (! mpfr_nan_p (y))
     {
       printf ("Error: cos(NaN) != NaN\n");
@@ -64,7 +87,7 @@ check_nans (void)
     }
 
   mpfr_set_inf (x, 1);
-  mpfr_cos (y, x, GMP_RNDN);
+  test_cos (y, x, GMP_RNDN);
   if (! mpfr_nan_p (y))
     {
       printf ("Error: cos(Inf) != NaN\n");
@@ -72,7 +95,7 @@ check_nans (void)
     }
 
   mpfr_set_inf (x, -1);
-  mpfr_cos (y, x, GMP_RNDN);
+  test_cos (y, x, GMP_RNDN);
   if (! mpfr_nan_p (y))
     {
       printf ("Error: cos(-Inf) != NaN\n");
@@ -81,14 +104,14 @@ check_nans (void)
 
   /* cos(+/-0) = 1 */
   mpfr_set_ui (x, 0, GMP_RNDN);
-  mpfr_cos (y, x, GMP_RNDN);
+  test_cos (y, x, GMP_RNDN);
   if (mpfr_cmp_ui (y, 1))
     {
       printf ("Error: cos(+0) != 1\n");
       exit (1);
     }
   mpfr_neg (x, x, GMP_RNDN);
-  mpfr_cos (y, x, GMP_RNDN);
+  test_cos (y, x, GMP_RNDN);
   if (mpfr_cmp_ui (y, 1))
     {
       printf ("Error: cos(-0) != 1\n");
@@ -100,7 +123,7 @@ check_nans (void)
   mpfr_set_prec (x, 20000);
   mpfr_const_pi (x, GMP_RNDD); mpfr_div_2ui (x, x, 1, GMP_RNDN);
   mpfr_set_prec (y, 24);
-  mpfr_cos (y, x, GMP_RNDN);
+  test_cos (y, x, GMP_RNDN);
   if (mpfr_cmp_str (y, "0.111001010110100011000001E-20000", 2, GMP_RNDN))
     {
       printf("Error computing cos(~Pi/2)\n"); 
@@ -124,7 +147,7 @@ special_overflow (void)
   set_emin (-125);
   set_emax (128);
   mpfr_set_str_binary (x, "0.111101010110110011101101E6");
-  mpfr_cos (y, x, GMP_RNDZ);
+  test_cos (y, x, GMP_RNDZ);
   set_emin (MPFR_EMIN_MIN);
   set_emax (MPFR_EMAX_MAX);
   
@@ -148,12 +171,12 @@ main (int argc, char *argv[])
   mpfr_set_prec (x, 53);
   mpfr_set_prec (y, 2);
   mpfr_set_str (x, "9.81333845856942e-1", 10, GMP_RNDN);
-  mpfr_cos (y, x, GMP_RNDN);
+  test_cos (y, x, GMP_RNDN);
 
   mpfr_set_prec (x, 30);
   mpfr_set_prec (y, 30);
   mpfr_set_str_binary (x, "1.00001010001101110010100010101e-1");
-  mpfr_cos (y, x, GMP_RNDU);
+  test_cos (y, x, GMP_RNDU);
   mpfr_set_str_binary (x, "1.10111100010101011110101010100e-1");
   if (mpfr_cmp (y, x))
     {
@@ -166,7 +189,7 @@ main (int argc, char *argv[])
   mpfr_set_prec (x, 59);
   mpfr_set_prec (y, 59);
   mpfr_set_str_binary (x, "1.01101011101111010011111110111111111011011101100111100011e-3");
-  mpfr_cos (y, x, GMP_RNDU);
+  test_cos (y, x, GMP_RNDU);
   mpfr_set_str_binary (x, "1.1111011111110010001001001011100111101110100010000010010011e-1");
   if (mpfr_cmp (y, x))
     {
@@ -179,7 +202,7 @@ main (int argc, char *argv[])
   mpfr_set_prec (x, 5);
   mpfr_set_prec (y, 5);
   mpfr_set_str_binary (x, "1.1100e-2");
-  mpfr_cos (y, x, GMP_RNDD);
+  test_cos (y, x, GMP_RNDD);
   mpfr_set_str_binary (x, "1.1100e-1");
   if (mpfr_cmp (y, x))
     {
@@ -193,7 +216,7 @@ main (int argc, char *argv[])
 
   mpfr_set_str_binary (x, "0.10001000001001011000100001E-6");
   mpfr_set_str_binary (y, "0.1111111111111101101111001100001");
-  mpfr_cos (x, x, GMP_RNDN);
+  test_cos (x, x, GMP_RNDN);
   if (mpfr_cmp (x, y))
     {
       printf ("Error for prec=32 (1)\n");
@@ -202,7 +225,7 @@ main (int argc, char *argv[])
 
   mpfr_set_str_binary (x, "-0.1101011110111100111010011001011E-1");
   mpfr_set_str_binary (y, "0.11101001100110111011011010100011");
-  mpfr_cos (x, x, GMP_RNDN);
+  test_cos (x, x, GMP_RNDN);
   if (mpfr_cmp (x, y))
     {
       printf ("Error for prec=32 (2)\n");
@@ -212,7 +235,7 @@ main (int argc, char *argv[])
   /* huge argument reduction */
   mpfr_set_str_binary (x, "0.10000010000001101011101111001011E40");
   mpfr_set_str_binary (y, "0.10011000001111010000101011001011E-1");
-  mpfr_cos (x, x, GMP_RNDN);
+  test_cos (x, x, GMP_RNDN);
   if (mpfr_cmp (x, y))
     {
       printf ("Error for prec=32 (3)\n");

@@ -25,7 +25,30 @@ MA 02111-1307, USA. */
 
 #include "mpfr-test.h"
 
-#define TEST_FUNCTION mpfr_log1p
+#ifdef CHECK_EXTERNAL
+static int
+test_log1p (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
+{
+  int res;
+  int ok = rnd_mode == GMP_RNDN && mpfr_number_p (b) && mpfr_get_prec (a)>=53;
+  if (ok)
+    {
+      mpfr_print_raw (b);
+    }
+  res = mpfr_log1p (a, b, rnd_mode);
+  if (ok)
+    {
+      printf (" ");
+      mpfr_print_raw (a);
+      printf ("\n");
+    }
+  return res;
+}
+#else
+#define test_log1p mpfr_log1p
+#endif
+
+#define TEST_FUNCTION test_log1p
 #include "tgeneric.c"
 
 static void
@@ -36,30 +59,30 @@ special (void)
   mpfr_init (x);
   
   mpfr_set_nan (x);
-  mpfr_log1p (x, x, GMP_RNDN);
+  test_log1p (x, x, GMP_RNDN);
   MPFR_ASSERTN(mpfr_nan_p (x));
 
   mpfr_set_inf (x, -1);
-  mpfr_log1p (x, x, GMP_RNDN);
+  test_log1p (x, x, GMP_RNDN);
   MPFR_ASSERTN(mpfr_nan_p (x));
 
   mpfr_set_inf (x, 1);
-  mpfr_log1p (x, x, GMP_RNDN);
+  test_log1p (x, x, GMP_RNDN);
   MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
 
   mpfr_set_ui (x, 0, GMP_RNDN);
-  mpfr_log1p (x, x, GMP_RNDN);
+  test_log1p (x, x, GMP_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_POS (x));
   mpfr_neg (x, x, GMP_RNDN);
-  mpfr_log1p (x, x, GMP_RNDN);
+  test_log1p (x, x, GMP_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_NEG (x));
 
   mpfr_set_si (x, -1, GMP_RNDN);
-  mpfr_log1p (x, x, GMP_RNDN);
+  test_log1p (x, x, GMP_RNDN);
   MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) < 0);
 
   mpfr_set_si (x, -2, GMP_RNDN);
-  mpfr_log1p (x, x, GMP_RNDN);
+  test_log1p (x, x, GMP_RNDN);
   MPFR_ASSERTN(mpfr_nan_p (x));
 
   mpfr_clear (x);

@@ -26,6 +26,36 @@ MA 02111-1307, USA. */
 
 #include "mpfr-test.h"
 
+#ifdef CHECK_EXTERNAL
+static int
+test_pow (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
+{
+  int res;
+  int ok = rnd_mode == GMP_RNDN && mpfr_number_p (b) && mpfr_number_p (c)
+    && mpfr_get_prec (a) >= 53;
+  if (ok)
+    {
+      mpfr_print_raw (b);
+      printf (" ");
+      mpfr_print_raw (c);
+    }
+  res = mpfr_pow (a, b, c, rnd_mode);
+  if (ok)
+    {
+      printf (" ");
+      mpfr_print_raw (a);
+      printf ("\n");
+    }
+  return res;
+}
+#else
+#define test_pow mpfr_pow
+#endif
+
+#define TEST_FUNCTION test_pow
+#define TWO_ARGS
+#include "tgeneric.c"
+
 static void
 check_pow_ui (void)
 {
@@ -176,7 +206,7 @@ check_special_pow_si ()
   mpfr_init (b);
   mpfr_set_str (a, "2E100000000", 10, GMP_RNDN);
   mpfr_set_si (b, -10, GMP_RNDN);
-  mpfr_pow (b, a, b, GMP_RNDN);
+  test_pow (b, a, b, GMP_RNDN);
   if (!MPFR_IS_ZERO(b))
     {
       printf("Pow(2E10000000, -10) failed\n");
@@ -257,7 +287,7 @@ check_inexact (mp_prec_t p)
   mpfr_set_prec (z, p);
   mpfr_set_ui (x, 4, GMP_RNDN);
   mpfr_set_str (y, "0.5", 10, GMP_RNDN);
-  mpfr_pow (z, x, y, GMP_RNDZ);
+  test_pow (z, x, y, GMP_RNDZ);
 
   mpfr_clear (x);
   mpfr_clear (y);
@@ -284,7 +314,7 @@ special ()
     }
   mpfr_set_ui (x, 2, GMP_RNDN);
   mpfr_set_si (y, -2, GMP_RNDN);
-  mpfr_pow (x, x, y, GMP_RNDN);
+  test_pow (x, x, y, GMP_RNDN);
   if (mpfr_cmp_ui_2exp (x, 1, -2))
     {
       printf ("Error in pow(x,x,y) for x=2, y=-2\n");
@@ -299,7 +329,7 @@ special ()
   mpfr_set_str_binary (y, "0.111110010100110000011101100011010111000010000100101");
   mpfr_set_str_binary (t, "0.1110110011110110001000110100100001001111010011111000010000011001");
   
-  mpfr_pow (z, x, y, GMP_RNDN);
+  test_pow (z, x, y, GMP_RNDN);
   if (mpfr_cmp (z, t))
     {
       printf ("Error in mpfr_pow for prec=64, rnd=GMP_RNDN\n");
@@ -311,7 +341,7 @@ special ()
   mpfr_set_prec (z, 53);
   mpfr_set_str (x, "5.68824667828621954868e-01", 10, GMP_RNDN);
   mpfr_set_str (y, "9.03327850535952658895e-01", 10, GMP_RNDN);
-  mpfr_pow (z, x, y, GMP_RNDZ);
+  test_pow (z, x, y, GMP_RNDZ);
   if (mpfr_cmp_d(z, 0.60071044650456473235))
     {
       printf ("Error in mpfr_pow for prec=53, rnd=GMP_RNDZ\n");
@@ -324,7 +354,7 @@ special ()
   mpfr_set_prec (z, 30);
   mpfr_set_str (x, "1.00000000001010111110001111011e1", 2, GMP_RNDN);
   mpfr_set_str (t, "-0.5", 10, GMP_RNDN);
-  mpfr_pow (z, x, t, GMP_RNDN);
+  test_pow (z, x, t, GMP_RNDN);
   mpfr_set_str (y, "1.01101001111010101110000101111e-1", 2, GMP_RNDN);
   if (mpfr_cmp (z, y))
     {
@@ -336,7 +366,7 @@ special ()
   mpfr_set_prec (y, 21);
   mpfr_set_prec (z, 21);
   mpfr_set_str (x, "1.11111100100001100101", 2, GMP_RNDN);
-  mpfr_pow (z, x, t, GMP_RNDZ);
+  test_pow (z, x, t, GMP_RNDZ);
   mpfr_set_str (y, "1.01101011010001100000e-1", 2, GMP_RNDN);
   if (mpfr_cmp (z, y))
     {
@@ -352,17 +382,17 @@ special ()
   mpfr_set_inf (x, 1);
   mpfr_set_prec (y, 2);
   mpfr_set_str_binary (y, "1E10");
-  mpfr_pow (z, x, y, GMP_RNDN);
+  test_pow (z, x, y, GMP_RNDN);
   MPFR_ASSERTN(mpfr_inf_p (z) && MPFR_IS_POS(z));
   mpfr_set_inf (x, -1);
-  mpfr_pow (z, x, y, GMP_RNDN);
+  test_pow (z, x, y, GMP_RNDN);
   MPFR_ASSERTN(mpfr_inf_p (z) && MPFR_IS_POS(z));
   mpfr_set_prec (y, 10);
   mpfr_set_str_binary (y, "1.000000001E9");
-  mpfr_pow (z, x, y, GMP_RNDN);
+  test_pow (z, x, y, GMP_RNDN);
   MPFR_ASSERTN(mpfr_inf_p (z) && MPFR_IS_NEG(z));
   mpfr_set_str_binary (y, "1.000000001E8");
-  mpfr_pow (z, x, y, GMP_RNDN);
+  test_pow (z, x, y, GMP_RNDN);
   MPFR_ASSERTN(mpfr_inf_p (z) && MPFR_IS_POS(z));
 
   mpfr_set_inf (x, -1);
@@ -370,23 +400,23 @@ special ()
   mpfr_set_ui (y, 1, GMP_RNDN);
   mpfr_mul_2exp (y, y, mp_bits_per_limb - 1, GMP_RNDN);
   /* y = 2^(mp_bits_per_limb - 1) */
-  mpfr_pow (z, x, y, GMP_RNDN);
+  test_pow (z, x, y, GMP_RNDN);
   MPFR_ASSERTN(mpfr_inf_p (z) && MPFR_IS_POS(z));
   mpfr_nextabove (y);
-  mpfr_pow (z, x, y, GMP_RNDN);
+  test_pow (z, x, y, GMP_RNDN);
   /* y = 2^(mp_bits_per_limb - 1) + epsilon */
   MPFR_ASSERTN(mpfr_inf_p (z) && MPFR_IS_POS(z));
   mpfr_nextbelow (y);
   mpfr_div_2exp (y, y, 1, GMP_RNDN);
   mpfr_nextabove (y);
-  mpfr_pow (z, x, y, GMP_RNDN);
+  test_pow (z, x, y, GMP_RNDN);
   /* y = 2^(mp_bits_per_limb - 2) + epsilon */
   MPFR_ASSERTN(mpfr_inf_p (z) && MPFR_IS_POS(z));
 
   mpfr_set_si (x, -1, GMP_RNDN);
   mpfr_set_prec (y, 2);
   mpfr_set_str_binary (y, "1E10");
-  mpfr_pow (z, x, y, GMP_RNDN);
+  test_pow (z, x, y, GMP_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui (z, 1) == 0);
 
   mpfr_clear (x);
@@ -440,7 +470,7 @@ particular_cases (void)
 	if (i == 5 && j == 1)
 	  f();
 
-        mpfr_pow (r, t[i], t[j], GMP_RNDN);
+        test_pow (r, t[i], t[j], GMP_RNDN);
         p = mpfr_nan_p (r) ? 0 : mpfr_inf_p (r) ? 1 :
           mpfr_cmp_ui (r, 0) == 0 ? 2 :
           (int) (fabs (mpfr_get_d (r, GMP_RNDN)) * 128.0);
@@ -483,7 +513,7 @@ underflows (void)
     {
       mpfr_set_ui (y, i, GMP_RNDN);
       mpfr_div_2ui (y, y, 1, GMP_RNDN);
-      mpfr_pow (y, x, y, GMP_RNDN);
+      test_pow (y, x, y, GMP_RNDN);
       if (!MPFR_IS_FP(y) || mpfr_cmp_ui (y, 0))
         {
           printf ("Error in mpfr_pow for ");
@@ -509,7 +539,7 @@ overflows (void)
   mpfr_init_set_str (a, "5.1e32", 10, GMP_RNDN);
   mpfr_init (b);
 
-  mpfr_pow (b, a, a, GMP_RNDN);
+  test_pow (b, a, a, GMP_RNDN);
   if (!(mpfr_inf_p (b) && mpfr_sgn (b) > 0))
     {
       printf ("Error for a^a for a=5.1e32\n");
@@ -540,12 +570,14 @@ main (void)
 
   check_special_pow_si ();
 
-  for (p=2; p<100; p++)
+  for (p = 2; p < 100; p++)
     check_inexact (p);
 
   underflows ();
 
   overflows ();
+
+  test_generic (2, 100, 100);
 
   tests_end_mpfr ();
   return 0;

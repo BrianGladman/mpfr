@@ -24,6 +24,29 @@ MA 02111-1307, USA. */
 
 #include "mpfr-test.h"
 
+#ifdef CHECK_EXTERNAL
+static int
+test_log (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
+{
+  int res;
+  int ok = rnd_mode == GMP_RNDN && mpfr_number_p (b) && mpfr_get_prec (a)>=53;
+  if (ok)
+    {
+      mpfr_print_raw (b);
+    }
+  res = mpfr_log (a, b, rnd_mode);
+  if (ok)
+    {
+      printf (" ");
+      mpfr_print_raw (a);
+      printf ("\n");
+    }
+  return res;
+}
+#else
+#define test_log mpfr_log
+#endif
+
 static void
 check2 (const char *as, mp_rnd_t rnd_mode, const char *res1s)
 {
@@ -31,7 +54,7 @@ check2 (const char *as, mp_rnd_t rnd_mode, const char *res1s)
 
   mpfr_inits2 (53, ta, tres, NULL);
   mpfr_set_str1 (ta, as);
-  mpfr_log (tres, ta, rnd_mode);
+  test_log (tres, ta, rnd_mode);
 
   if (mpfr_cmp_str1 (tres, res1s))
     {
@@ -53,7 +76,7 @@ check3 (double d, unsigned long prec, mp_rnd_t rnd)
   mpfr_init2 (x, prec);
   mpfr_init2 (y, prec);
   mpfr_set_d (x, d, rnd);
-  mpfr_log (y, x, rnd);
+  test_log (y, x, rnd);
   mpfr_out_str (stdout, 10, 0, y, rnd);
   puts ("");
   mpfr_print_binary (y);
@@ -164,14 +187,14 @@ special (void)
   mpfr_set_prec (y, 24*2);
   mpfr_set_prec (x, 24);
   mpfr_set_str_binary (x, "0.111110101010101011110101E0");
-  mpfr_log (y, x, GMP_RNDN);
+  test_log (y, x, GMP_RNDN);
   set_emin (MPFR_EMIN_MIN);
   set_emax (MPFR_EMAX_MAX);
 
   mpfr_set_prec (y, 53);
   mpfr_set_prec (x, 53);
   mpfr_set_ui (x, 3, GMP_RNDD);
-  mpfr_log (y, x, GMP_RNDD);
+  test_log (y, x, GMP_RNDD);
   if (mpfr_cmp_str1 (y, "1.09861228866810956"))
     {
       printf ("Error in mpfr_log(3) for GMP_RNDD\n");
@@ -183,18 +206,18 @@ special (void)
   mpfr_set_prec (y, 3322);
   mpfr_set_ui (x, 3, GMP_RNDN);
   mpfr_sqrt (x, x, GMP_RNDN);
-  mpfr_log (y, x, GMP_RNDN);
+  test_log (y, x, GMP_RNDN);
 
   /* negative argument */
   mpfr_set_si (x, -1, GMP_RNDN);
-  mpfr_log (y, x, GMP_RNDN);
+  test_log (y, x, GMP_RNDN);
   MPFR_ASSERTN(mpfr_nan_p (y));
 
   mpfr_clear (x);
   mpfr_clear (y);
 }
 
-#define TEST_FUNCTION mpfr_log
+#define TEST_FUNCTION test_log
 #include "tgeneric.c"
 
 int

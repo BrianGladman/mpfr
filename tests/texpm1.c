@@ -25,7 +25,30 @@ MA 02111-1307, USA. */
 
 #include "mpfr-test.h"
 
-#define TEST_FUNCTION mpfr_expm1
+#ifdef CHECK_EXTERNAL
+static int
+test_expm1 (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
+{
+  int res;
+  int ok = rnd_mode == GMP_RNDN && mpfr_number_p (b) && mpfr_get_prec (a)>=53;
+  if (ok)
+    {
+      mpfr_print_raw (b);
+    }
+  res = mpfr_expm1 (a, b, rnd_mode);
+  if (ok)
+    {
+      printf (" ");
+      mpfr_print_raw (a);
+      printf ("\n");
+    }
+  return res;
+}
+#else
+#define test_expm1 mpfr_expm1
+#endif
+
+#define TEST_FUNCTION test_expm1
 #include "tgeneric.c"
 
 static void
@@ -37,7 +60,7 @@ special (void)
   mpfr_init (y);
 
   mpfr_set_nan (x);
-  mpfr_expm1 (y, x, GMP_RNDN);
+  test_expm1 (y, x, GMP_RNDN);
   if (!mpfr_nan_p (y))
     {
       printf ("Error for expm1(NaN)\n");
@@ -45,7 +68,7 @@ special (void)
     }
 
   mpfr_set_inf (x, 1);
-  mpfr_expm1 (y, x, GMP_RNDN);
+  test_expm1 (y, x, GMP_RNDN);
   if (!mpfr_inf_p (y) || mpfr_sgn (y) < 0)
     {
       printf ("Error for expm1(+Inf)\n");
@@ -53,7 +76,7 @@ special (void)
     }
 
   mpfr_set_inf (x, -1);
-  mpfr_expm1 (y, x, GMP_RNDN);
+  test_expm1 (y, x, GMP_RNDN);
   if (mpfr_cmp_si (y, -1))
     {
       printf ("Error for expm1(-Inf)\n");
@@ -61,7 +84,7 @@ special (void)
     }
 
   mpfr_set_ui (x, 0, GMP_RNDN);
-  mpfr_expm1 (y, x, GMP_RNDN);
+  test_expm1 (y, x, GMP_RNDN);
   if (mpfr_cmp_ui (y, 0) || mpfr_sgn (y) < 0)
     {
       printf ("Error for expm1(+0)\n");
@@ -69,7 +92,7 @@ special (void)
     }
 
   mpfr_neg (x, x, GMP_RNDN);
-  mpfr_expm1 (y, x, GMP_RNDN);
+  test_expm1 (y, x, GMP_RNDN);
   if (mpfr_cmp_ui (y, 0) || mpfr_sgn (y) > 0)
     {
       printf ("Error for expm1(-0)\n");

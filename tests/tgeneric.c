@@ -19,11 +19,16 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+/* define TWO_ARGS for two-argument functions like mpfr_pow */
+
 static void
 test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
 {
   mp_prec_t prec, yprec;
   mpfr_t x, y, z, t;
+#ifdef TWO_ARGS
+  mpfr_t u;
+#endif
   mp_rnd_t rnd;
   int inexact, compare, compare2;
   unsigned int n;
@@ -32,6 +37,9 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
   mpfr_init (y);
   mpfr_init (z);
   mpfr_init (t);
+#ifdef TWO_ARGS
+  mpfr_init (u);
+#endif
 
   /* generic test */
   for (prec = p0; prec <= p1; prec++)
@@ -45,20 +53,38 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
         {
 #if defined(RAND_FUNCTION)
           RAND_FUNCTION (x);
+#ifdef TWO_ARGS
+	  RAND_FUNCTION (u);
+#endif
 #else
           mpfr_random (x);
+#ifdef TWO_ARGS
+	  mpfr_random (u);
+#endif
 #endif
           rnd = (mp_rnd_t) RND_RAND ();
           mpfr_set_prec (y, yprec);
+#ifdef TWO_ARGS
+	  compare = TEST_FUNCTION (y, x, u, rnd);
+#else
           compare = TEST_FUNCTION (y, x, rnd);
+#endif
           if (mpfr_can_round (y, yprec, rnd, rnd, prec))
             {
               mpfr_set (t, y, rnd);
+#ifdef TWO_ARGS
+	      inexact = TEST_FUNCTION (z, x, u, rnd);
+#else
               inexact = TEST_FUNCTION (z, x, rnd);
+#endif
               if (mpfr_cmp (t, z))
                 {
                   printf ("results differ for x=");
                   mpfr_out_str (stdout, 2, prec, x, GMP_RNDN);
+#ifdef TWO_ARGS
+		  printf ("\nu=");
+		  mpfr_out_str (stdout, 2, prec, u, GMP_RNDN);
+#endif
                   printf (" prec=%u rnd_mode=%s\n", (unsigned) prec,
                           mpfr_print_rnd_mode (rnd));
                   printf ("got      ");
@@ -86,6 +112,9 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
                   printf ("Wrong inexact flag for rnd=%s: expected %d, got %d"
                           "\n", mpfr_print_rnd_mode (rnd), compare, inexact);
                   printf ("x="); mpfr_print_binary (x); puts ("");
+#ifdef TWO_ARGS
+		  printf ("u="); mpfr_print_binary (u); puts ("");
+#endif
                   printf ("y="); mpfr_print_binary (y); puts ("");
                   printf ("t="); mpfr_print_binary (t); puts ("");
                   exit (1);
@@ -98,4 +127,7 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
   mpfr_clear (y);
   mpfr_clear (z);
   mpfr_clear (t);
+#ifdef TWO_ARGS
+  mpfr_clear (u);
+#endif  
 }

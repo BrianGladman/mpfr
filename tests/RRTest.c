@@ -2,7 +2,7 @@
    Usage:
    0) compile this file with NTL
    1) compile tadd.c with -DCHECK_EXTERNAL
-   2) ./tadd | egrep -v 'Seed|Inf|NaN' > /tmp/add.log
+   2) ./tadd | egrep -v 'Seed|Inf|NaN' > /tmp/log
       (Warning, this produces a large file.)
    3) ./RRTest < /tmp/add.log
 */
@@ -52,32 +52,71 @@ ReadRR (RR &a)
 }
 
 void
-Output (RR a)
+Output (RR a, long p)
 {
-  cout << a.mantissa() << "*2^(" << a.exponent() << ")" << endl;
+  cout << a.mantissa() << "*2^(" << a.exponent() << ") [" << p << "]" << endl;
 }
 
-int main()
+// ulp difference between a and b
+long
+ulp (RR a, RR b, long p)
+{
+  ZZ ma, mb;
+  long ea, eb;
+
+  ma = a.x;
+  ea = a.e;
+  while (NumBits (ma) < p)
+    {
+      ma *= 2;
+      ea --;
+    }
+  mb = b.x;
+  eb = b.e;
+  while (NumBits (mb) < p)
+    {
+      mb *= 2;
+      eb --;
+    }
+  if (ea != eb) abort ();
+  return to_long (ma - mb);
+}
+
+// #define TWO_ARGS /* for functions of two arguments like add, sub, pow */
+
+int
+main (void)
 {
   RR a, b, c, d;
-  long line = 0;
-  long p;
+  long line = 0, errors = 0;
+  long pa, pb, pc;
 
   while (!feof(stdin))
     {
-      if (++line % 1000 == 0)
+      if (++line % 10 == 0)
         cout << "line " << line << endl;
-      ReadRR (b);
-      //      ReadRR (c);
-      p = ReadRR (a);
-      SqrRootPrec (d, b, p);
+      pb = ReadRR (b);
+#ifdef TWO_ARGS
+      pc = ReadRR (c);
+#endif
+      pa = ReadRR (a);
+      RR::SetPrecision(pa);
+      cos (d, b
+#ifdef TWO_ARGS
+	   , c
+#endif
+	   );
       if (d != a)
         {
-          cerr << "error at line " << line << " for b="; Output(b);
-          //          cerr << " c="; Output(c);
-          cerr << "expected "; Output(a);
-          cerr << "got      "; Output(d);
-          cerr << "prec(d)=" << p << endl;
+          cerr << "error at line " << line << endl;
+	  cerr << "b="; Output(b, pb);
+#ifdef TWO_ARGS
+          cerr << " c="; Output(c, pc);
+#endif
+          cerr << "expected "; Output(a, pa);
+          cerr << "got      "; Output(d, pa);
+	  cerr << "difference is " << ulp (a, d, pa) << " ulps" << endl;
+	  cerr << ++errors << " errors" << endl;
         }
     }
 }
