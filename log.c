@@ -82,8 +82,8 @@ void mpfr_log(mpfr_ptr r, mpfr_srcptr a, unsigned char rnd_mode) {
     mpfr_mul(tmp1,cst,mm,GMP_RNDN);       /* I compute m*log(2) */
     mpfr_sub(cst,tmp2,tmp1,GMP_RNDN);     /* I compute log(a) */ 
  
-     printf("avant arrondi : ( %i bits faux)\n",7+err);
-     mpfr_print_raw(cst);printf("\n"); 
+    /*     printf("avant arrondi : ( %i bits faux)\n",7+err);
+	   mpfr_print_raw(cst);printf("\n"); */
     
 
     /* If we can round the result, we set it and go out of the loop */
