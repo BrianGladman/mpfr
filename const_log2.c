@@ -114,6 +114,8 @@ mpfr_const_log2_internal (mpfr_ptr x, mp_rnd_t rnd_mode)
   unsigned long lgN, i;
   MPFR_ZIV_DECL (loop);
 
+  MPFR_LOG_FUNC (("rnd_mode=%d", rnd_mode), ("x[%#R]=%R inex=%d",x,x,inexact));
+
   mpfr_init2 (t, MPFR_PREC_MIN);
   mpfr_init2 (q, MPFR_PREC_MIN);
 

@@ -40,6 +40,8 @@ mpfr_const_pi_internal (mpfr_ptr x, mp_rnd_t rnd_mode)
   MPFR_ZIV_DECL (loop);
   int inex;
 
+  MPFR_LOG_FUNC (("rnd_mode=%d", rnd_mode), ("x[%#R]=%R inex=%d", x, x, inex));
+
   px = MPFR_PREC (x);
 
   /* we need 9*2^kmax - 4 >= px+2*kmax+8 */
