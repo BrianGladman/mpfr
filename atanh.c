@@ -31,8 +31,6 @@ MA 02111-1307, USA. */
     atanh= 1/2*ln(x+1)-1/2*ln(1-x)
  */
 
-int mpfr_atanh _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
-
 int
 #if __STDC__
 mpfr_atanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode) 

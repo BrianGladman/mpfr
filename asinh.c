@@ -26,12 +26,10 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
- /* The computation of acosh is done by
+ /* The computation of asinh is done by
 
     asinh= ln(x+sqrt(x^2+1))
  */
-int mpfr_asinh _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
-
 int
 #if __STDC__
 mpfr_asinh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode) 

@@ -31,8 +31,6 @@ MA 02111-1307, USA. */
     acosh= ln(x+sqrt(x-1)*sqrt(x+1))
  */
 
-int mpfr_acosh _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
-
 int
 #if __STDC__
 mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode) 

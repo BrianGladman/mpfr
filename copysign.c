@@ -29,7 +29,6 @@ MA 02111-1307, USA. */
 
     z = sign(y) * abs(x)
  */
-int mpfr_copysign _PROTO((mpfr_ptr, mpfr_srcptr,mpfr_srcptr, mp_rnd_t));
 
 int
 #if __STDC__
