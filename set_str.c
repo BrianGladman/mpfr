@@ -351,8 +351,8 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
 
   /* round y */
 
-  if (mpfr_round_raw_generic (MPFR_MANT(x), result + n, n * BITS_PER_MP_LIMB,
-			      negative, MPFR_PREC(x), rnd, NULL, (int) 0))
+  if (mpfr_round_raw_4 (MPFR_MANT(x), result + n, n * BITS_PER_MP_LIMB,
+			negative, MPFR_PREC(x), rnd ))
     {
       /* overflaw when rounding y */
       MPFR_MANT(x)[MPFR_LIMB_SIZE(x) - 1] 

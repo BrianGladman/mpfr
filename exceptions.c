@@ -137,7 +137,7 @@ mpfr_check_range (mpfr_ptr x, int t, mp_rnd_t rnd_mode)
           if (rnd_mode == GMP_RNDN &&
               (exp + 1 < __gmpfr_emin ||
                (mpfr_powerof2_raw(x) &&
-                (MPFR_SIGN(x) < 0 ? t <= 0 : t >= 0))))
+                (MPFR_IS_NEG(x) ? t <= 0 : t >= 0))))
             rnd_mode = GMP_RNDZ;
           return mpfr_set_underflow(x, rnd_mode, MPFR_SIGN(x));
         }
@@ -191,10 +191,10 @@ mpfr_set_underflow (mpfr_ptr x, mp_rnd_t rnd_mode, int sign)
 {
   int inex;
 
+  MPFR_ASSERT_SIGN(sign);
   MPFR_CLEAR_FLAGS(x);
   if (rnd_mode == GMP_RNDN
-      || (rnd_mode == GMP_RNDU && sign > 0)
-      || (rnd_mode == GMP_RNDD && sign < 0))
+      || MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd_mode, sign > 0))
     {
       mpfr_setmin (x, __gmpfr_emin);
       inex = 1;
@@ -216,10 +216,10 @@ mpfr_set_overflow (mpfr_ptr x, mp_rnd_t rnd_mode, int sign)
 {
   int inex;
 
+  MPFR_ASSERT_SIGN(sign);
   MPFR_CLEAR_FLAGS(x);
   if (rnd_mode == GMP_RNDN
-      || (rnd_mode == GMP_RNDU && sign > 0)
-      || (rnd_mode == GMP_RNDD && sign < 0))
+      || MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd_mode, sign > 0))
     {
       MPFR_SET_INF(x);
       inex = 1;

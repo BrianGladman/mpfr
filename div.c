@@ -354,9 +354,9 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
 	}
     }
   
-  cc = mpfr_round_raw_generic(qp, qp, err, 
-			      (MPFR_IS_NEG_SIGN(sign_quotient) ? 1 : 0),
-			      MPFR_PREC(q), rnd_mode, &inex, 1);      
+  cc = mpfr_round_raw_3(qp, qp, err, 
+			(MPFR_IS_NEG_SIGN(sign_quotient) ? 1 : 0),
+			MPFR_PREC(q), rnd_mode, &inex);
 
   qp += qsize - MPFR_LIMB_SIZE(q); /* 0 or 1 */
   qsize = MPFR_LIMB_SIZE(q); 
@@ -387,8 +387,8 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
 
 	  if (k >= 0) /* Remainder is nonzero. */ 
 	    {
-	      if ((rnd_mode == GMP_RNDD && MPFR_IS_NEG_SIGN(sign_quotient)) 
-		  || (rnd_mode == GMP_RNDU && MPFR_IS_POS_SIGN(sign_quotient)))
+	      if (MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd_mode,
+						  MPFR_IS_POS_SIGN(sign_quotient)))
 		/* Rounding to infinity. */
 		{
 		  inex = MPFR_FROM_SIGN_TO_INT( sign_quotient ); 

@@ -96,12 +96,13 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
    * It is usefull iff the precision is big, there is an overflow
    * and we are doing further mults... Probable ? */
   /*
-  if (bx + cx > __gmpfr_emax + 1)
+  if (MPFR_UNLIKELY(bx + cx > __gmpfr_emax + 1))
     return mpfr_set_overflow (a, rnd_mode, sign_product);
-  if (bx + cx < __gmpfr_emin - 2)
+  if (MPFR_UNLIKELY(bx + cx < __gmpfr_emin - 2))
   return mpfr_set_underflow (a, rnd_mode == GMP_RNDN ? GMP_RNDZ : rnd_mode,
-    sign_product);
+			     sign_product);
   */
+
   ap = MPFR_MANT(a);
   bp = MPFR_MANT(b);
   cp = MPFR_MANT(c);
@@ -109,8 +110,8 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   aq = MPFR_PREC(a);
   bq = MPFR_PREC(b);
   cq = MPFR_PREC(c);
-  if (MPFR_UNLIKELY(bq+cq < bq))
-    MPFR_ASSERTN(0); /* no integer overflow */
+  
+  MPFR_ASSERTD(bq+cq > bq); /* PREC_MAX is /2 so no integer overflow */
  
   an = (aq-1)/BITS_PER_MP_LIMB + 1; /* number of significant limbs of a */
   bn = (bq-1)/BITS_PER_MP_LIMB + 1; /* number of significant limbs of b */

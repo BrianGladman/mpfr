@@ -50,9 +50,13 @@ MA 02111-1307, USA. */
 
 /* Definition of MPFR_LIMB_HIGHBIT */
 #ifdef GMP_LIMB_HIGHBIT
-#define MPFR_LIMB_HIGHBIT GMP_LIMB_HIGHBIT
+# define MPFR_LIMB_HIGHBIT GMP_LIMB_HIGHBIT
 #else
-#define MPFR_LIMB_HIGHBIT MP_LIMB_T_HIGHBIT
+# ifdef MP_LIMB_T_HIGHBIT
+#  define MPFR_LIMB_HIGHBIT MP_LIMB_T_HIGHBIT
+# else
+#  error "Neither GMP_LIMB_HIGHBIT nor MP_LIMB_T_HIGHBIT defined in GMP"
+# endif
 #endif
 
 #if GMP_NAIL_BITS != 0
@@ -251,6 +255,29 @@ long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CO
 # endif
 #endif
 
+/* We want to test this :
+ *  (rnd == GMP_RNDU && test) || (rnd == RNDD && !test)
+ * This macro does this test faster*/
+#define MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd, test) \
+  (((rnd) + (test)) == GMP_RNDD)
+
+/* Calcul s = (-a) % BITS_PER_MP_LIMB
+ * a is unsigned! Check if it works, 
+ * otherwise tries another way to calcul it */
+#define MPFR_UNSIGNED_MINUS_MODULO(s, a) \
+  do { \
+  if ((UINT_MAX % BITS_PER_MP_LIMB) == (BITS_PER_MP_LIMB-1) \
+      && ((-(unsigned) 1)%BITS_PER_MP_LIMB > 0)) \
+    (s) = (-(a)) % BITS_PER_MP_LIMB; \
+  else \
+    {(s) = (a) % BITS_PER_MP_LIMB;  \
+    if (s)  \
+      (s) = BITS_PER_MP_LIMB - (s); \
+    } \
+  MPFR_ASSERTD( (s) >= 0 && (s) < BITS_PER_MP_LIMB); \
+  } while (0) 
+
+
 /* Definition of the special values of the exponent */
 /* 
  * Clear flags macros are still defined and should be still used
@@ -311,11 +338,11 @@ long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CO
 
 #define MPFR_CHANGE_SIGN(x) (MPFR_SIGN(x) = -MPFR_SIGN(x))
 #define MPFR_SET_SAME_SIGN(x, y) (MPFR_SIGN(x) = MPFR_SIGN(y))
-#define MPFR_SET_OPPOSITE_SIGN(x, y) (MPFR_SIGN(x) = - MPFR_SIGN(y))
-#define MPFR_CHECK_SIGN(s) \
+#define MPFR_SET_OPPOSITE_SIGN(x, y) (MPFR_SIGN(x) = -MPFR_SIGN(y))
+#define MPFR_ASSERT_SIGN(s) \
  (MPFR_ASSERTD((s) == MPFR_SIGN_POS || (s) == MPFR_SIGN_NEG))
 #define MPFR_SET_SIGN(x, s) \
-  (MPFR_CHECK_SIGN(s), MPFR_SIGN(x) = s)
+  (MPFR_ASSERT_SIGN(s), MPFR_SIGN(x) = s)
 #define MPFR_IS_POS_SIGN(s1) (s1 > 0)
 #define MPFR_IS_NEG_SIGN(s1) (s1 < 0)
 #define MPFR_MULT_SIGN(s1, s2) ((s1) * (s2))
@@ -391,9 +418,6 @@ void mpfr_save_emin_emax _MPFR_PROTO ((void));
 void mpfr_restore_emin_emax _MPFR_PROTO ((void));
 int mpfr_add1 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_sub1 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
-int mpfr_round_raw_generic _MPFR_PROTO ((mp_limb_t *, mp_limb_t *, 
-					 mp_prec_t, int,
-					 mp_prec_t, mp_rnd_t, int *, int));
 int mpfr_can_round_raw _MPFR_PROTO ((mp_limb_t *, mp_size_t, int, mp_exp_t,
 				     mp_rnd_t, mp_rnd_t, mp_prec_t));
 double mpfr_get_d3 _MPFR_PROTO ((mpfr_srcptr, mp_exp_t, mp_rnd_t));
@@ -413,12 +437,17 @@ long mpn_exp _MPFR_PROTO ((mp_limb_t *, mp_exp_t *, int,
 void mpfr_print_binary _MPFR_PROTO ((mpfr_srcptr));
 void mpfr_set_str_binary _MPFR_PROTO ((mpfr_ptr, __gmp_const char *));
 
-#define mpfr_round_raw(yp, xp, xprec, neg, yprec, r, inexp) \
-  mpfr_round_raw_generic((yp), (xp), (xprec), (neg), (yprec), (r), (inexp), 0)
+int mpfr_round_raw _MPFR_PROTO ((mp_limb_t *, mp_limb_t *,
+				 mp_prec_t, int, mp_prec_t, mp_rnd_t, int *));
+int mpfr_round_raw_2 _MPFR_PROTO ((mp_limb_t *, mp_limb_t *,
+				   mp_prec_t, int, mp_prec_t, mp_rnd_t));
+int mpfr_round_raw_3 _MPFR_PROTO ((mp_limb_t *, mp_limb_t *,
+				  mp_prec_t, int, mp_prec_t, mp_rnd_t, int *));
+int mpfr_round_raw_4 _MPFR_PROTO ((mp_limb_t *, mp_limb_t *,
+				   mp_prec_t, int, mp_prec_t, mp_rnd_t));
 
 #define mpfr_round_raw2(xp, xn, neg, r, prec) \
-  mpfr_round_raw_generic(0, (xp), (xn) * BITS_PER_MP_LIMB, (neg), \
-			 (prec), (r), 0, 1);
+  mpfr_round_raw_2(0, (xp), (xn) * BITS_PER_MP_LIMB, (neg), (prec), (r) )
 
 #if defined (__cplusplus)
 }

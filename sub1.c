@@ -74,29 +74,21 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
    *      So sign(a) = - sign(b)
    */
 
-  MPFR_SET_SAME_SIGN(a,b);
   if (sign < 0) /* swap b and c so that |b| > |c| */
     {
       mpfr_srcptr t;
-      MPFR_CHANGE_SIGN(a);
+      MPFR_SET_OPPOSITE_SIGN(a,b);
       t = b; b = c; c = t;      
     }
+  else
+    MPFR_SET_SAME_SIGN(a,b);
 
   diff_exp = (mp_exp_unsigned_t) MPFR_GET_EXP (b) - MPFR_GET_EXP (c);
 
   /* reserve a space to store b aligned with the result, i.e. shifted by
      (-cancel) % BITS_PER_MP_LIMB to the right */
   bn      = MPFR_LIMB_SIZE(b); 
-  if ((UINT_MAX % BITS_PER_MP_LIMB) == (BITS_PER_MP_LIMB-1))
-    shift_b = (-cancel) % BITS_PER_MP_LIMB;
-  else
-    {
-      shift_b = cancel % BITS_PER_MP_LIMB;
-      if (shift_b)
-	shift_b = BITS_PER_MP_LIMB - shift_b;
-    }
-  MPFR_ASSERTD( shift_b >= 0 && shift_b < BITS_PER_MP_LIMB);
-
+  MPFR_UNSIGNED_MINUS_MODULO(shift_b, cancel);
   cancel1 = (cancel + shift_b) / BITS_PER_MP_LIMB; 
  
   /* the high cancel1 limbs from b should not be taken into account */
@@ -117,9 +109,10 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
     }
 
   /* reserve a space to store c aligned with the result, i.e. shifted by
-     (diff_exp-cancel) % BITS_PER_MP_LIMB to the right */
+      (diff_exp-cancel) % BITS_PER_MP_LIMB to the right */
   cn      = MPFR_LIMB_SIZE(c);
-  if ((UINT_MAX % BITS_PER_MP_LIMB) == (BITS_PER_MP_LIMB-1))
+  if ((UINT_MAX % BITS_PER_MP_LIMB) == (BITS_PER_MP_LIMB-1)
+      && ((-(unsigned) 1)%BITS_PER_MP_LIMB > 0))
     shift_c = (diff_exp - cancel) % BITS_PER_MP_LIMB;
   else
     {
@@ -265,8 +258,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
     }
   else /* directed rounding: set rnd_mode to RNDZ iff towards zero */
     {
-      if (((rnd_mode == GMP_RNDD) && (MPFR_IS_POS(a))) ||
-	  ((rnd_mode == GMP_RNDU) && (MPFR_IS_NEG(a))))
+      if (MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd_mode, MPFR_IS_NEG(a)))
 	rnd_mode = GMP_RNDZ;
 
       if (carry)

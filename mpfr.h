@@ -24,12 +24,12 @@ MA 02111-1307, USA. */
 
 /* Check if GMP is included, and try to include it (Works with local GMP) */
 #ifndef __GMP_H__
-#include <gmp.h>
+# include <gmp.h>
 #endif
 
 /* Check if stdio.h is included */
 #if defined (EOF)
-#define _MPFR_H_HAVE_FILE 1
+# define _MPFR_H_HAVE_FILE 1
 #endif
 
 /* Definition of rounding modes */
@@ -79,9 +79,14 @@ typedef struct {
   mp_limb_t   *_mpfr_d;
 } __mpfr_struct;
 
-/* Compatibility with previous versions of MPFR */
+/* Compatibility with previous types of MPFR */
 #define mp_rnd_t  mpfr_rnd_t
 #define mp_prec_t mpfr_prec_t
+#define __gmp_default_rounding_mode __gmpfr_default_rounding_mode
+#define __mpfr_emin __gmpfr_emin
+#define __mpfr_emax __gmpfr_emax
+#define __mpfr_flags __gmpfr_flags
+#define  __mpfr_default_fp_bit_precision __gmpfr_default_fp_bit_precision
 
 /*
    The represented number is
@@ -103,13 +108,13 @@ typedef __gmp_const __mpfr_struct *mpfr_srcptr;
 
 #define MPFR_SIGN(x) (((x)->_mpfr_sign))
 
+/* size_t is defined by GMP */
+
 /* Prototypes */
-#ifndef _MPFR_PROTO
-# if defined (__STDC__) || defined (__cplusplus)
-#  define _MPFR_PROTO(x) x
-# else
-#  define _MPFR_PROTO(x) ()
-# endif
+#if defined (__STDC__) || defined (__cplusplus)
+# define _MPFR_PROTO(x) x
+#else
+# define _MPFR_PROTO(x) ()
 #endif
 
 #if defined (__cplusplus)
@@ -119,6 +124,7 @@ extern "C" {
 extern unsigned int __gmpfr_flags;
 extern mp_exp_t __gmpfr_emin;
 extern mp_exp_t __gmpfr_emax;
+
 mp_exp_t mpfr_get_emin _MPFR_PROTO ((void));
 int mpfr_set_emin _MPFR_PROTO ((mp_exp_t));
 mp_exp_t mpfr_get_emax _MPFR_PROTO ((void));
@@ -137,7 +143,6 @@ int mpfr_inexflag_p _MPFR_PROTO ((void));
 void mpfr_init2 _MPFR_PROTO ((mpfr_ptr, mp_prec_t));
 void mpfr_init _MPFR_PROTO ((mpfr_ptr));
 int mpfr_prec_round _MPFR_PROTO ((mpfr_ptr, mp_prec_t, mpfr_rnd_t));
-#define mpfr_round_prec(x,r,p) mpfr_prec_round(x,p,r) /* compatibility 2.0.1 */
 int mpfr_can_round _MPFR_PROTO ((mpfr_ptr, mp_exp_t, mpfr_rnd_t, mpfr_rnd_t,
 			    mp_prec_t));
 mp_exp_t mpfr_get_exp _MPFR_PROTO ((mpfr_srcptr));
@@ -166,8 +171,10 @@ void mpfr_nextabove _MPFR_PROTO ((mpfr_ptr));
 void mpfr_nextbelow _MPFR_PROTO ((mpfr_ptr));
 void mpfr_nexttoward _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr));
 int mpfr_set_str _MPFR_PROTO ((mpfr_ptr, __gmp_const char *, int, mpfr_rnd_t));
-int mpfr_init_set_str _MPFR_PROTO ((mpfr_ptr, __gmp_const char *, int, mpfr_rnd_t));
-char* mpfr_get_str _MPFR_PROTO ((char *, mp_exp_t *, int, size_t, mpfr_srcptr, mpfr_rnd_t));
+int mpfr_init_set_str _MPFR_PROTO ((mpfr_ptr, __gmp_const char *, int, 
+				    mpfr_rnd_t));
+char* mpfr_get_str _MPFR_PROTO ((char *, mp_exp_t *, int, size_t, mpfr_srcptr,
+				 mpfr_rnd_t));
 #ifdef _MPFR_H_HAVE_FILE
 #define mpfr_inp_str mpfr_inp_str_internal
 #define mpfr_out_str mpfr_out_str_internal
@@ -176,8 +183,8 @@ size_t mpfr_out_str _MPFR_PROTO ((FILE *, int, size_t, mpfr_srcptr, mpfr_rnd_t))
 #endif
 int mpfr_mul _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t));
 int mpfr_pow_ui _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, unsigned long int, mpfr_rnd_t));
-  int mpfr_ui_pow_ui _MPFR_PROTO ((mpfr_ptr, unsigned long int, unsigned long int,
-				 mpfr_rnd_t));
+int mpfr_ui_pow_ui _MPFR_PROTO ((mpfr_ptr, unsigned long int, 
+				 unsigned long int, mpfr_rnd_t));
 int mpfr_div _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t));
 int mpfr_agm _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t));
 int mpfr_sqrt _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t));
@@ -241,7 +248,6 @@ int mpfr_set4 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t, int));
 int mpfr_cmp3 _MPFR_PROTO ((mpfr_srcptr, mpfr_srcptr, int));
 int mpfr_cmp_d _MPFR_PROTO ((mpfr_srcptr, double));
 int mpfr_cmpabs _MPFR_PROTO ((mpfr_srcptr, mpfr_srcptr));
-#define mpfr_cmp_abs mpfr_cmpabs /* keep for compatibility with mpfr-2.0.1 */
 int mpfr_nan_p _MPFR_PROTO((mpfr_srcptr));
 int mpfr_inf_p _MPFR_PROTO((mpfr_srcptr));
 int mpfr_number_p _MPFR_PROTO((mpfr_srcptr));
@@ -306,6 +312,10 @@ int mpfr_sgn _MPFR_PROTO ((mpfr_srcptr));
 #if defined (__cplusplus)
 }
 #endif
+
+/* Compatibility with 2.0.1 */
+#define mpfr_cmp_abs mpfr_cmpabs
+#define mpfr_round_prec(x,r,p) mpfr_prec_round(x,p,r)
 
 /* prevent from using mpfr_get_e{min,max} as lvalues */
 #define mpfr_get_emin() (__gmpfr_emin + 0)
