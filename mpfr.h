@@ -333,7 +333,7 @@ int mpfr_unordered_p _MPFR_PROTO ((mpfr_srcptr, mpfr_srcptr));
 
 int mpfr_sgn _MPFR_PROTO ((mpfr_srcptr));
 
-int mpfr_sum _MPFR_PROTO ((mpfr_ptr ret, mpfr_ptr const tab[], unsigned int n,
+int mpfr_sum _MPFR_PROTO ((mpfr_ptr ret, mpfr_ptr const tab[], unsigned long n,
 			   mp_rnd_t rnd));
 
 #if defined (__cplusplus)

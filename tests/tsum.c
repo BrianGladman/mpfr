@@ -24,9 +24,9 @@ MA 02111-1307, USA. */
 #include "mpfr-test.h"
 
 
-static int is_sorted(unsigned int n, mpfr_srcptr *perm)
+static int is_sorted(unsigned long n, mpfr_srcptr *perm)
 {
-  unsigned int i;
+  unsigned long i;
 
   for (i = 0; i < n - 1; i++)
     {
@@ -36,11 +36,11 @@ static int is_sorted(unsigned int n, mpfr_srcptr *perm)
   return 1;
 }
 
-static int mpfr_list_sum (mpfr_ptr ret, mpfr_t *tab, unsigned int n, 
+static int mpfr_list_sum (mpfr_ptr ret, mpfr_t *tab, unsigned long n, 
                           mp_rnd_t rnd)
 {
     mpfr_ptr *tabtmp;
-    unsigned int i;
+    unsigned long i;
     int inexact;
     TMP_DECL(marker);
     
@@ -55,11 +55,11 @@ static int mpfr_list_sum (mpfr_ptr ret, mpfr_t *tab, unsigned int n,
 }
 
 
-static mp_prec_t get_prec_max (mpfr_t *tab, unsigned int n, mp_prec_t f)
+static mp_prec_t get_prec_max (mpfr_t *tab, unsigned long n, mp_prec_t f)
 {
   mp_prec_t res;
-  mp_prec_t min, max;
-  unsigned int i;
+  mp_exp_t min, max;
+  unsigned long i;
   min = max = MPFR_GET_EXP(tab[0]);
 
   for (i = 1; i < n; i++)
@@ -71,14 +71,14 @@ static mp_prec_t get_prec_max (mpfr_t *tab, unsigned int n, mp_prec_t f)
   }
   res = max - min;
   res += f;
-  res += __gmpfr_ceil_log2 (n) / __gmpfr_ceil_log2 (2.) + 1;
+  res += __gmpfr_ceil_log2 (n) + 1;
   return res;
 }
 
 
-static void algo_exact(mpfr_t somme, mpfr_t *tab, int n, mp_prec_t f)
+static void algo_exact(mpfr_t somme, mpfr_t *tab, unsigned long n, mp_prec_t f)
 {
-  int i;
+  unsigned long i;
   mp_prec_t prec_max;
   prec_max = get_prec_max(tab, n, f);
   mpfr_init2 (somme, prec_max);
@@ -98,14 +98,14 @@ main (void)
 {
   mpfr_t *tab;
   mpfr_ptr *tabtmp;
-  unsigned int i, n;
+  unsigned long i, n;
   mp_prec_t f;
   mp_rnd_t rnd_mode;
   mpfr_srcptr *perm;
   mpfr_t sum, real_sum, real_non_rounded;
 
   tests_start_mpfr ();
-  n = 1000;
+  n = 1026;
   f = 1764;
   tab = (mpfr_t *) malloc (n * sizeof(mpfr_t));
   for (i = 0; i < n; i++)
@@ -130,6 +130,31 @@ main (void)
           return 1;
       }
   }
+
+  for (i = 0; i < n; i++)
+  {
+      mpfr_urandomb (tab[i], RANDS);
+  }
+
+  mpfr_set_exp (tab[0], 1000);
+  mpfr_clear (real_non_rounded);
+  algo_exact (real_non_rounded, tab, n, f);
+  
+  for (rnd_mode = 0; rnd_mode < GMP_RND_MAX; rnd_mode++)
+  {
+      mpfr_list_sum (sum, tab, n, rnd_mode);
+      mpfr_set (real_sum, real_non_rounded, rnd_mode);
+      if (mpfr_cmp (real_sum, sum) != 0)
+      {
+          printf ("mpfr_list_sum incorrect.\n");
+          mpfr_print_binary (real_sum);
+          putchar ('\n');
+          mpfr_print_binary (sum);
+          putchar ('\n');
+          return 1;
+      }
+  }
+
 
   /* list_sum tested, now test the sorting function */
 

@@ -23,17 +23,17 @@ MA 02111-1307, USA. */
 
 /* Performs a counting sort of the entries */
 
-static void heap_sort_exp_clean (mpfr_ptr const tab[], int n, 
+static void heap_sort_exp_clean (mpfr_ptr const tab[], unsigned long n, 
                                  mpfr_srcptr *perm);
 
-void mpfr_count_sort (mpfr_ptr const tab[], unsigned int n, 
+void mpfr_count_sort (mpfr_ptr const tab[], unsigned long n, 
                  mpfr_srcptr *perm)
 {
     mp_exp_t min, max;
-    unsigned int i;
-    unsigned int *account;
-    unsigned int exp_num;
-    unsigned int target_rank;
+    unsigned long i;
+    unsigned long *account;
+    unsigned long exp_num;
+    unsigned long target_rank;
     TMP_DECL(marker);
     
     TMP_MARK(marker);
@@ -53,7 +53,7 @@ void mpfr_count_sort (mpfr_ptr const tab[], unsigned int n,
         heap_sort_exp_clean (tab, n, perm);
         return;
     }
-    account = (unsigned int *) TMP_ALLOC(exp_num * sizeof(*account));
+    account = (unsigned long *) TMP_ALLOC(exp_num * sizeof(*account));
     for (i = 0; i < exp_num; i++)
         account[i] = 0;
     for (i = 0; i < n; i++)
@@ -71,13 +71,13 @@ void mpfr_count_sort (mpfr_ptr const tab[], unsigned int n,
 
 /* Performs a heap sort of the entries */
 
-static void heap_sort_exp_clean (mpfr_ptr const tab[], int n, 
+static void heap_sort_exp_clean (mpfr_ptr const tab[], unsigned long n, 
                                  mpfr_srcptr *perm)
 {
-  unsigned int dernier_traite;
-  unsigned int i, pere;
+  unsigned long dernier_traite;
+  unsigned long i, pere;
   mpfr_srcptr tmp;
-  unsigned int fils_gauche, fils_droit, fils_indigne;
+  unsigned long fils_gauche, fils_droit, fils_indigne;
   /* Reminder of a heap structure :
      node(i) has for left son node(2i +1) and right son node(2i)
      and father(node(i)) = node((i - 1) / 2)
@@ -164,9 +164,9 @@ static void heap_sort_exp_clean (mpfr_ptr const tab[], int n,
  */
 
 static int mpfr_list_sum_once (mpfr_ptr ret, mpfr_srcptr const tab[], 
-                               unsigned int n, mp_prec_t F)
+                               unsigned long n, mp_prec_t F)
 {
-  unsigned int i;
+  unsigned long i;
   mpfr_t sum;
   int error_trap = 0;
 
@@ -187,11 +187,11 @@ static int mpfr_list_sum_once (mpfr_ptr ret, mpfr_srcptr const tab[],
  * FIXME : add reference to Demmel-Hida's paper.
 */
 
-int mpfr_sum (mpfr_ptr ret, mpfr_ptr const tab[], unsigned int n, 
+int mpfr_sum (mpfr_ptr ret, mpfr_ptr const tab[], unsigned long n, 
               mp_rnd_t rnd)
 {
   mp_prec_t initial_f, current_f;
-  unsigned int k;
+  unsigned long k;
   mpfr_srcptr *perm;
   unsigned int guard_digits;
   unsigned int initial_guard_digits;
