@@ -1069,7 +1069,7 @@ echo "configure:1067: checking Mach type" >&5
 
 
 if test -n "$GCC"; then
-  CFLAGS="$CFLAGS -Wall -Wno-implicit -Wmissing-prototypes"
+  CFLAGS="$CFLAGS -Wall -Wmissing-prototypes"
 fi
 
 MISCFLAGS='$<' 

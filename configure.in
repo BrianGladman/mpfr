@@ -16,7 +16,7 @@ AC_CHECK_MACHTYPE
 
 dnl If compiler is gcc, then use some warning flags
 if test -n "$GCC"; then
-  CFLAGS="$CFLAGS -Wall -Wno-implicit -Wmissing-prototypes"
+  CFLAGS="$CFLAGS -Wall -Wmissing-prototypes"
 fi
 
 MISCFLAGS='$<' 
