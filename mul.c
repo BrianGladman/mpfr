@@ -71,7 +71,7 @@ mpfr_mul (a, b, c, rnd_mode)
 	    MPFR_CHANGE_SIGN(a);
 	  MPFR_CLEAR_FLAGS(a);
 	  MPFR_SET_INF(a);
-	  return 1;
+	  return 0;
 	}
     }
   else if (MPFR_IS_INF(c))
@@ -88,7 +88,7 @@ mpfr_mul (a, b, c, rnd_mode)
 	    MPFR_CHANGE_SIGN(a);
 	  MPFR_CLEAR_FLAGS(a);
 	  MPFR_SET_INF(a);
-	  return 1;
+	  return 0;
 	}
     }
 
@@ -122,26 +122,14 @@ mpfr_mul (a, b, c, rnd_mode)
   if (b1 == 0)
       mpn_lshift (tmp, tmp, tn, 1);
   cc = mpfr_round_raw (ap, tmp, prec_b + prec_c, sign_product < 0, prec_a,
-		       rnd_mode, NULL);
+		       rnd_mode, &inexact);
   if (cc) /* cc = 1 ==> result is a power of two */
     ap[an-1] = (mp_limb_t) 1 << (BITS_PER_MP_LIMB-1);
 
-  /* determines if the result is exact */
-  if (prec_b + prec_c > prec_a) /* implies tn >= an */
-    {
-      int left_a;
-      /* result is exact if bits[prec_a+1..tn*BITS_PER_MP_LIMB] of tmp are 0 */
-      left_a = an * BITS_PER_MP_LIMB - prec_a;
-      /* 0 <= left_a < BITS_PER_MP_LIMB */
-      tn -= an;
-      if (left_a)
-	inexact = (tmp[tn] & (((mp_limb_t) 1 << left_a) - 1)) != (mp_limb_t) 0;
-      while ((inexact == 0) && tn)
-	inexact = tmp[--tn] != (mp_limb_t) 0;
-    }
   TMP_FREE(marker);
 
   MPFR_EXP(a) = MPFR_EXP(b) + MPFR_EXP(c) + b1 - 1 + cc;
+
   if (sign_product * MPFR_SIGN(a) < 0)
     MPFR_CHANGE_SIGN(a);
 
