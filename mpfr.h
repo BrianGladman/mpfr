@@ -43,10 +43,7 @@ MA 02111-1307, USA. */
 
 /* Definition of rounding modes */
 typedef enum {
-  GMP_RNDN=0,
-  GMP_RNDZ=1,
-  GMP_RNDU=2,
-  GMP_RNDD=3
+  GMP_RNDN=0, GMP_RNDZ, GMP_RNDU, GMP_RNDD, GMP_RND_MAX
 } mpfr_rnd_t;
 
 /* Flags of __gmpfr_flags */
