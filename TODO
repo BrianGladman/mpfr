@@ -40,6 +40,8 @@ Installation:
   faster.  Hopefully this will go away with improvements to the exp
   code.
 
+- Build a dynamic library (.so / .dll).
+
 Changes in existing functions:
 
 - merge mpfr_inp_str and mpfr_set_str (cf glibc sscanf/fscanf)
