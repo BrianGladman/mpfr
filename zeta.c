@@ -28,12 +28,12 @@ MA 02111-1307, USA. */
 
 int
 #if __STDC__
-mpfr_zeta(mpfr_ptr result, mpfr_srcptr op, unsigned char rnd_mode) 
+mpfr_zeta(mpfr_ptr result, mpfr_srcptr op, mp_rnd_t rnd_mode)
 #else
 mpfr_zeta(result, op, rnd_mode)
-     mpfr_ptr result; 
-     mpfr_srcptr op; 
-     unsigned char rnd_mode; 
+     mpfr_ptr result;
+     mpfr_srcptr op;
+     mp_rnd_t rnd_mode;
 #endif
 {
 	mpfr_t s,s2,x,y,u,b,v,nn,z,z2; 
