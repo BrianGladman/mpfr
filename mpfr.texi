@@ -1593,13 +1593,11 @@ in raw binary format (the exponent is written in decimal, yet).
 @unnumbered Contributors
 
 The main developers consist of Guillaume Hanrot, Vincent Lef@`evre,
-Kevin Ryde and Paul Zimmermann.
+Patrick P@'elissier and Paul Zimmermann.
 
 We would like to thank Jean-Michel Muller and Joris van der Hoeven for very
 fruitful discussions at the beginning of that project, Torbj@"orn Granlund
-and Kevin Ryde
-for their help about design issues
-and their suggestions for an easy integration into GNU MP,
+and Kevin Ryde for their help about design issues,
 and Nathalie Revol for her careful reading of a previous version of
 this documentation.
 
@@ -1618,6 +1616,8 @@ contributed the original version of @file{mul_ui.c}, the @file{gmp_op.c}
 file, and helped to the Windows porting.
 Jean-Luc R@'emy contributed the @code{mpfr_zeta} code.
 Ludovic Meunier helped in the design of the @code{mpfr_erf} code.
+Kevin Ryde did many contributions concerning the interface with GNU MP,
+the testing tools, and the configure/automake mechanism.
 
 The development of the MPFR library would not have been possible without the
 continuous support of LORIA, INRIA and INRIA Lorraine.
