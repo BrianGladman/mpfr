@@ -25,7 +25,7 @@ MA 02111-1307, USA. */
 #include "longlong.h"
 #include "mpfr.h"
 
-#define MON_INIT(xp, x, p, s) xp = (mp_ptr) TMP_ALLOC(s*BYTES_PER_MP_LIMB);    x -> _mp_prec = p; x -> _mp_d = xp; x -> _mp_size = s;
+#define MON_INIT(xp, x, p, s) PREC(x)=p; MANT(x)=xp; SIZE(x)=s;
 
 void
 #if __STDC__
@@ -39,18 +39,15 @@ mpfr_add_ui(y, x, u, rnd_mode)
 #endif
 {
   mpfr_t uu;
-  mp_limb_t *up;
+  mp_limb_t up[1];
   unsigned long cnt;
-  TMP_DECL(marker);
 
   if (u) { /* if u=0, do nothing */
     MON_INIT(up, uu, BITS_PER_MP_LIMB, 1);
     count_leading_zeros(cnt, (mp_limb_t) u);
     *up = (mp_limb_t) u << cnt;
     EXP(uu) = BITS_PER_MP_LIMB-cnt;
-  
-    mpfr_add(y, x, uu, rnd_mode);
 
-    TMP_FREE(marker);
+    mpfr_add(y, x, uu, rnd_mode);
   }
 }
