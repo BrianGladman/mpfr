@@ -97,6 +97,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
   else if (compare == 0)
     {
       mpfr_set (r, op1, rnd_mode);
+      TMP_FREE(marker);
       return;
     }
   else
@@ -110,7 +111,6 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
 
   mpfr_set(u,a,GMP_RNDN);
   mpfr_set(v,b,GMP_RNDN);
- 
 
   /* Main loop */
 
@@ -166,6 +166,6 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
 
   /* Let's clean */
   TMP_FREE(marker); 
-  
+
   return ;
 }
