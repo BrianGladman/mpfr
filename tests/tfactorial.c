@@ -27,7 +27,7 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-#define TEST_FUNCTION mpfr_factorial
+#define TEST_FUNCTION mpfr_fac_ui
 
 int
 main (int argc, char *argv[])
@@ -42,11 +42,11 @@ main (int argc, char *argv[])
   mpfr_init (z);
   mpfr_init (t);
 
-  mpfr_factorial (y, 0, GMP_RNDN);
+  mpfr_fac_ui (y, 0, GMP_RNDN);
  
   if (mpfr_cmp_ui (y, 1))
     {
-      printf ("mpfr_factorial(0) does not give 1\n");
+      printf ("mpfr_fac_ui(0) does not give 1\n");
       exit (1);
     }
 
@@ -61,12 +61,12 @@ main (int argc, char *argv[])
       for (n=0; n<100; n++)
 	for (rnd=0; rnd<4; rnd++)
 	  { 
-	    inexact = mpfr_factorial (y, n, rnd);
+	    inexact = mpfr_fac_ui (y, n, rnd);
 	    err = (rnd == GMP_RNDN) ? yprec + 1 : yprec;
 	    if (mpfr_can_round (y, err, rnd, rnd, prec))
 	      {
 		mpfr_set (t, y, rnd);
-		inexact = mpfr_factorial (z, n, rnd);
+		inexact = mpfr_fac_ui (z, n, rnd);
 		/* fact(n) ends with floor(n/2)+floor(n/4)+... zeros */
 		for (k=n/2, zeros=0; k; k >>= 1)
 		  zeros += k;
