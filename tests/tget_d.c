@@ -22,7 +22,9 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <stdlib.h>
 #include "gmp.h"
+#include "gmp-impl.h"
 #include "mpfr.h"
+#include "mpfr-impl.h"
 
 #define TEST
 #include "rnd_mode.c"
@@ -55,6 +57,7 @@ main (void)
                  {
                    double c, d;
                    int exp;
+                   char *f;
 
                    mpfr_div_2ui(y, one, j, GMP_RNDZ);
                    (sj ? mpfr_sub : mpfr_add)(y, x, y, GMP_RNDZ);
@@ -67,7 +70,17 @@ main (void)
                                i, si, j, sj, rnd_mode, exp);
                        exit(1);
                      }
-                   c = mpfr_get_d(y);
+                   if ((rand() / 1024) & 1)
+                     {
+                       c = mpfr_get_d(y);
+                       f = "mpfr_get_d";
+                     }
+                   else
+                     {
+                       exp = (rand() % 47) - 23;
+                       c = mpfr_get_d2(y, exp);
+                       f = "mpfr_get_d2";
+                     }
                    d = si != sj ? di - dj : di + dj;
                    d = si ? 1 - d : 1 + d;
                    if (exp > 0)
@@ -76,10 +89,10 @@ main (void)
                      d /= 1 << -exp;
                    if (c != d)
                      {
-                       fprintf(stderr, "Error in tget_d for "
+                       fprintf(stderr, "Error in tget_d (%s) for "
                                "(i,si,j,sj,rnd,exp) = (%d,%d,%d,%d,%d,%d)\n"
                                "got %.17g instead of %.17g\n",
-                               i, si, j, sj, rnd_mode, exp, c, d);
+                               f, i, si, j, sj, rnd_mode, exp, c, d);
                        exit(1);
                      }
                  }
