@@ -19,19 +19,12 @@ mpfr_set_prec (x, p, rnd_mode)
     printf("*** cannot set precision to 0 bits\n"); exit(1);
   }
 
-  oldp = x -> _mp_prec;
-  oldsize = (oldp-1)/BITS_PER_MP_LIMB + 1;
-  if (SIGN(x)<0) oldsize = oldsize ^ (1<<31);
   xsize = (p - 1)/BITS_PER_MP_LIMB + 1; /* new limb size */
 
-  old = x -> _mp_d; 
-  x -> _mp_d = (mp_ptr) (*_mp_allocate_func) 
-    (xsize * BYTES_PER_MP_LIMB);
+  x -> _mp_d = (mp_ptr) (*_mp_reallocate_func) 
+    (x -> _mp_d, ABSSIZE(x)*BYTES_PER_MP_LIMB, xsize * BYTES_PER_MP_LIMB);
   x -> _mp_prec = p;
-  mpfr_round_raw(x -> _mp_d, old, rnd_mode, oldsize, p);
   SIZE(x) = (SIGN(x)>0) ? xsize : (xsize ^ (1<<31));
-
-  (*_mp_free_func) (old, 1 + ((oldp-1)>>3));
 }
 
 unsigned long int
