@@ -117,7 +117,7 @@ void mpfr_set_f _PROTO ((mpfr_ptr, mpf_srcptr, unsigned long, char));
 void mpfr_set_si _PROTO ((mpfr_ptr, long, unsigned char)); 
 void mpfr_set_ui _PROTO ((mpfr_ptr, unsigned long, unsigned char)); 
 void mpfr_print_raw _PROTO ((mpfr_srcptr)); 
-void mpfr_random _PROTO ((mpfr_srcptr)); 
+void mpfr_random _PROTO ((mpfr_ptr)); 
 void mpfr_clear _PROTO ((mpfr_ptr)); 
 void mpfr_set_str_raw _PROTO ((mpfr_ptr, char *)); 
 void mpfr_get_str_raw _PROTO ((char *, mpfr_srcptr));
