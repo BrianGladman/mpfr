@@ -37,7 +37,21 @@ main (void)
   mpfr_t xx, yy;
   int i, c;
 
-  mpfr_init2(xx, 65); mpfr_init2(yy, 65);
+  mpfr_init (xx);
+  mpfr_init (yy);
+
+  mpfr_set_prec (xx, 2);
+  mpfr_set_prec (yy, 2);
+  mpfr_set_str_raw(xx, "-0.10E0");
+  mpfr_set_str_raw(yy, "-0.10E0");
+  if (mpfr_cmp (xx, yy))
+    {
+      fprintf (stderr, "mpfr_cmp (xx, yy) returns non-zero for prec=2\n");
+      exit (1);
+    }
+
+  mpfr_set_prec (xx, 65);
+  mpfr_set_prec (yy, 65);
   mpfr_set_str_raw(xx, "0.10011010101000110101010000000011001001001110001011101011111011101E623");
   mpfr_set_str_raw(yy, "0.10011010101000110101010000000011001001001110001011101011111011100E623");
   if (mpfr_cmp2(xx,yy)!=64) { printf("Error (1) in mpfr_cmp\n"); exit(1); }
