@@ -68,6 +68,10 @@ typedef unsigned long int       mp_size_unsigned_t;
 
 /* Compile with -DWANT_ASSERT to check all assert statements */
 
+/* Note: do not use GMP macros ASSERT_ALWAYS and ASSERT as they are not
+   expressions, and as a consequence, they cannot be used in a for(),
+   with a comma operator and so on. */
+
 /* MPFR_ASSERTN(expr): assertions that should always be checked */
 /* #define MPFR_ASSERTN(expr) ASSERT_ALWAYS(expr) */
 #define MPFR_ASSERTN(expr)  ((expr) ? (void) 0 : (void) ASSERT_FAIL (expr))
@@ -75,9 +79,17 @@ typedef unsigned long int       mp_size_unsigned_t;
 /* MPFR_ASSERTD(expr): assertions that should be checked when testing */
 /* #define MPFR_ASSERTD(expr) ASSERT(expr) */
 #if WANT_ASSERT
-#define MPFR_ASSERTD(expr)  ASSERT_ALWAYS (expr)
+#define MPFR_ASSERTD(expr)  MPFR_ASSERTN (expr)
 #else
 #define MPFR_ASSERTD(expr)  ((void) 0)
+#endif
+
+#if WANT_ASSERT
+#define MPFR_GET_EXP(x)       mpfr_get_exp(x)
+#define MPFR_SET_EXP(x, exp)  MPFR_ASSERTD (!mpfr_set_exp ((x), (exp)))
+#else
+#define MPFR_GET_EXP(x)       MPFR_EXP(x)
+#define MPFR_SET_EXP(x, exp)  ((void) (MPFR_EXP(x) = (exp)))
 #endif
 
 /* Definition of constants */
@@ -217,7 +229,7 @@ long double __gmpfr_longdouble_volatile __GMP_PROTO ((long double)) ATTRIBUTE_CO
    MPFR_PREC(x) = (p), \
    MPFR_MANT(x) = (xp), \
    MPFR_SIZE(x) = (s), \
-   MPFR_EXP(x) = 0)
+   MPFR_SET_EXP((x), 0))
 /* same when xp is already allocated */
 #define MPFR_INIT1(xp, x, p, s) \
   (MPFR_PREC(x) = (p), MPFR_MANT(x) = (xp), MPFR_SIZE(x) = (s))
