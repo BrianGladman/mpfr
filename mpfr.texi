@@ -733,8 +733,7 @@ digit, which can happen especially if the precision of @var{op} is small.
 If @var{str} is NULL, space for the mantissa is allocated using the default
 allocation function, and a pointer to the string is returned.
 In that case, the user should her/himself free the corresponding memory
-with @code{(*_mp_free_func)(s, strlen(s) + k)} where @code{k} is 1 when
-the number is nonnegative, and 2 when there is a minus sign.
+with @code{(*_mp_free_func)(s, strlen(s) + 1)}.
 
 If @var{str} is not NULL, it should point to a block of storage enough large
 for the mantissa, i.e., @var{n_digits} + 2.  The two extra bytes are for a
@@ -904,12 +903,17 @@ equal, zero otherwise.  I.e., test of @var{op1} and @var{op2} are
 approximately equal.
 @end deftypefun
 
-@deftypefun int mpfr_nan_d (mpfr_t @var{op})
+@deftypefun int mpfr_nan_p (mpfr_t @var{op})
 Return non-zero if @var{op} is Not-a-Number (NaN), zero otherwise.
 @end deftypefun
 
-@deftypefun int mpfr_inf_d (mpfr_t @var{op})
+@deftypefun int mpfr_inf_p (mpfr_t @var{op})
 Return non-zero if @var{op} is plus or minus infinity, zero otherwise.
+@end deftypefun
+
+@deftypefun int mpfr_number_p (mpfr_t @var{op})
+Return non-zero if @var{op} is an ordinary number, i.e. neither Not-a-Number
+nor plus or minus infinity.
 @end deftypefun
 
 @deftypefun void mpfr_reldiff (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
@@ -976,6 +980,7 @@ i.e. the result is 1).
 Set @var{sop} to the sinus of @var{op}, @var{cop} to the cosinus of @var{op},
 rounded to the direction @var{rnd} with the precision of @var{rop}.
 @var{sop} and @var{cop} must be different variables.
+If one of @var{sop} or @var{cop} is NULL, only the other value is returned.
 Return 0 iff the results are exact (this occurs in fact only when @var{op} is 0
 i.e. the sine is 0 and the cosine is 1).
 @end deftypefun
