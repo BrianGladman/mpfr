@@ -49,6 +49,16 @@ mpfr_log2 (r, a, rnd_mode)
       MPFR_SET_NAN(r);
       return 1;
     }
+
+  if (MPFR_IS_ZERO(a)) 
+    {
+      MPFR_SET_INF(r); 
+      if (MPFR_SIGN(r) > 0)
+	MPFR_CHANGE_SIGN(r); 
+      DIVIDE_BY_ZERO; /* Execption GMP*/
+      return 0; 
+    }
+
  /* If a is negative, the result is NaN */
   if (MPFR_SIGN(a) < 0)
     {
@@ -69,24 +79,7 @@ mpfr_log2 (r, a, rnd_mode)
   /* Now we can clear the flags without damage even if r == a */
   MPFR_CLEAR_INF(r); 
 
-  if (MPFR_IS_ZERO(a)) 
-    {
-      MPFR_SET_INF(r); 
-      if (MPFR_SIGN(r) > 0)
-	MPFR_CHANGE_SIGN(r); 
-      DIVIDE_BY_ZERO; /* Execption GMP*/
-      return 0; 
-    }
 
-  MPFR_CLEAR_INF(r);
-
-  /* If a is 1, the result is 0 */
-  if (mpfr_cmp_ui_2exp(a,1,0) == 0)
-    {
-      MPFR_SET_SAME_SIGN(r,a);
-      MPFR_SET_ZERO(r);
-      return 0; 
-    }
   /* If a is 1, the result is 0 */
   if (mpfr_cmp_ui(a,1) == 0)
     {
