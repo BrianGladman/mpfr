@@ -39,5 +39,6 @@ main()
    mpfr_set_d(x, 9.84891017624509146344e-01, GMP_RNDU); 
    if (mpfr_get_d(x) != 1.0) { printf("Error in tround: got %f instead of 1.0\n",mpfr_get_d(x)); exit(1); }
 
-   mpfr_clear(x); 
+   mpfr_clear(x);
+   return 0;
 }

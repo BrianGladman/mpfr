@@ -53,4 +53,5 @@ main()
   if (mpfr_cmp_si(x, s=1)>=0) {
     printf("Error in mpfr_cmp_si(%1.20f,%d)\n",mpfr_get_d(x), s); exit(1);
   }
+  return 0;
 }
