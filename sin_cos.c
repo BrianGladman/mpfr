@@ -26,30 +26,33 @@ MA 02111-1307, USA. */
 int 
 mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode) 
 {
-  int prec, m, e, inexact, neg;
+  int prec, m, inexact, neg;
   mpfr_t c, k;
+  mp_exp_t e;
 
-  if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(x) ))
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
       if (MPFR_IS_NAN(x) || MPFR_IS_INF(x))
 	{
-	  MPFR_SET_NAN(y);
-	  MPFR_SET_NAN(z);
+	  MPFR_SET_NAN (y);
+	  MPFR_SET_NAN (z);
 	  MPFR_RET_NAN;
 	}
       else /* x is zero */
 	{
-          MPFR_ASSERTD(MPFR_IS_ZERO(x));
-	  MPFR_SET_ZERO(y);
-	  MPFR_SET_SAME_SIGN(y, x);
+          MPFR_ASSERTD (MPFR_IS_ZERO (x));
+	  MPFR_SET_ZERO (y);
+	  MPFR_SET_SAME_SIGN (y, x);
 	  mpfr_set_ui (z, 1, GMP_RNDN);
-	  MPFR_RET(0);
+	  MPFR_RET (0);
 	}
     }
   /* MPFR_CLEAR_FLAGS is useless since we use mpfr_set to set y and z */
 
   prec = MAX (MPFR_PREC(y), MPFR_PREC(z)); 
-  m = prec + MPFR_INT_CEIL_LOG2 (prec) + MAX (MPFR_GET_EXP (x), 0) + 13;
+  m = prec + MPFR_INT_CEIL_LOG2 (prec) + 13;
+  e = MPFR_GET_EXP (x);
+  m += (e < 0) ? -2*e : e;
 
   mpfr_init2 (c, m);
   mpfr_init2 (k, m);
@@ -64,7 +67,7 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_const_pi (c, GMP_RNDN);         /* PI is cached */
   neg = mpfr_cmp (k, c) > 0;
   mpfr_clear (k);
-
+  
   for (;;)
     {
       mpfr_cos (c, x, GMP_RNDZ);

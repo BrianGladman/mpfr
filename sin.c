@@ -97,8 +97,9 @@ mpfr_sin_sign (mpfr_srcptr x)
 int 
 mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode) 
 {
-  int precy, m, ok, e, inexact, sign;
+  int precy, m, ok, inexact, sign;
   mpfr_t c;
+  mp_exp_t e;
 
   if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(x) ))
     {
@@ -118,8 +119,9 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     }
 
   precy = MPFR_PREC(y);
-  m = precy + MPFR_INT_CEIL_LOG2 (precy)
-    + MAX (0, MPFR_GET_EXP (x)) + 13;
+  m = precy + MPFR_INT_CEIL_LOG2 (precy) + 13;
+  e = MPFR_GET_EXP (x);
+  m += (e < 0) ? -2*e : e;
   
   sign = mpfr_sin_sign (x);
 
