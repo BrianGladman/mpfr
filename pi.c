@@ -1,3 +1,31 @@
+/* mpfr_pi -- compute Pi
+
+Copyright (C) 1999 PolKA project, Inria Lorraine and Loria
+
+This file is part of the MPFR Library.
+
+The MPFR Library is free software; you can redistribute it and/or modify
+it under the terms of the GNU Library General Public License as published by
+the Free Software Foundation; either version 2 of the License, or (at your
+option) any later version.
+
+The MPFR Library is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
+License for more details.
+
+You should have received a copy of the GNU Library General Public License
+along with the MPFR Library; see the file COPYING.LIB.  If not, write to
+the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
+MA 02111-1307, USA. */
+
+#include <stdio.h>
+#include <math.h>
+#include "gmp.h"
+#include "gmp-impl.h"
+#include "longlong.h"
+#include "mpfr.h"
+
 /*
 Set x to the value of Pi to precision PREC(x) rounded to direction rnd_mode.
 Use the formula giving the binary representation of Pi found by Simon Plouffe
@@ -27,13 +55,6 @@ S(N)-S'(N) <= sum(1, n=0..N-1) = N
 
 so Pi*16^N-S'(N) <= N+1 (as 1/4/N^2 < 1)
 */
-
-#include <stdio.h>
-#include <math.h>
-#include "gmp.h"
-#include "gmp-impl.h"
-#include "longlong.h"
-#include "mpfr.h"
 
 mpfr_t __mpfr_pi; /* stored value of Pi */
 int __mpfr_pi_prec=0; /* precision of stored value */

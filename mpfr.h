@@ -1,3 +1,24 @@
+/* mpfr.h -- Include file for mpfr.
+
+Copyright (C) 1999 PolKA project, Inria Lorraine and Loria
+
+This file is part of the MPFR Library.
+
+The MPFR Library is free software; you can redistribute it and/or modify
+it under the terms of the GNU Library General Public License as published by
+the Free Software Foundation; either version 2 of the License, or (at your
+option) any later version.
+
+The MPFR Library is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
+License for more details.
+
+You should have received a copy of the GNU Library General Public License
+along with the MPFR Library; see the file COPYING.LIB.  If not, write to
+the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
+MA 02111-1307, USA. */
+
 #include <stdio.h>
 
 /* Definition of rounding modes */
@@ -96,6 +117,7 @@ void mpfr_set_f _PROTO ((mpfr_ptr, mpf_srcptr, unsigned long, char));
 void mpfr_set_si _PROTO ((mpfr_ptr, long, unsigned char)); 
 void mpfr_set_ui _PROTO ((mpfr_ptr, unsigned long, unsigned char)); 
 void mpfr_print_raw _PROTO ((mpfr_srcptr)); 
+void mpfr_random _PROTO ((mpfr_srcptr)); 
 void mpfr_clear _PROTO ((mpfr_ptr)); 
 void mpfr_set_str_raw _PROTO ((mpfr_ptr, char *)); 
 void mpfr_get_str_raw _PROTO ((char *, mpfr_srcptr));
