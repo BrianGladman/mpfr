@@ -5,7 +5,7 @@
 #include "mpfr.h"
 
 void
-mpfr_mul_ui(mpfr_ptr y, mpfr_ptr x, unsigned long u, char RND_MODE)
+mpfr_mul_ui(mpfr_ptr y, mpfr_srcptr x, unsigned long u, unsigned char RND_MODE)
      /* on suppose SIZ(y)=SIZ(x) */
 {
   mp_limb_t carry = 0, *my, *old_my; unsigned long c; 
