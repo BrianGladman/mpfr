@@ -24,6 +24,12 @@ if test -r ./config.in; then . ./config.in; fi
 syst=`uname -a | awk '{print $1$3}'`
 
 case $syst in 
+    CYGWIN*)
+      ostype="cygwin"
+      defC="gcc"
+      make="make"
+      ldlibs="-lm"
+      ;;
     SunOS5*)
         ostype=solaris	
 	defC=/usr/local/bin/gcc
@@ -223,7 +229,7 @@ dft: libmpfr.a
 all: libmpfr.a tests
 
 clean:
-	-rm libmpfr.a \$(OBJS)
+	-rm libmpfr.a \$(OBJS) mpfr.dvi *~ mpfr.aux mpfr.cp mpfr.cps mpfr.fn mpfr.fns mpfr.ky mpfr.log mpfr.pg mpfr.toc mpfr.tp mpfr.vr mpfr.vrs
 
 libmpfr.a: \$(OBJS)
 	ar cr libmpfr.a \$(OBJS)
@@ -295,7 +301,7 @@ tests all: \$(TESTS)
 	done
 
 clean:
-	-rm \$(TESTS)
+	-rm \$(TESTS) *~
 
 t%: t%.c ../libmpfr.a 
 	\$(CC) \$(CFLAGS) -o \$@ \$@.c \$(LDLIBS)
