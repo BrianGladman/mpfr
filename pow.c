@@ -249,62 +249,61 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
   /* General case */
   {
     /* Declaration of the intermediary variable */
-      mpfr_t t, te, ti;
-      int loop = 0, ok;
+    mpfr_t t, te, ti;
+    int loop = 0, ok;
 
-      /* Declaration of the size variable */
-      mp_prec_t Nx = MPFR_PREC(x);   /* Precision of input variable */
-      mp_prec_t Ny = MPFR_PREC(y);   /* Precision of input variable */
-      mp_prec_t Nz = MPFR_PREC(z);   /* Precision of output variable */
+    /* Declaration of the size variable */
+    mp_prec_t Nx = MPFR_PREC(x);   /* Precision of input variable */
+    mp_prec_t Ny = MPFR_PREC(y);   /* Precision of input variable */
+    mp_prec_t Nz = MPFR_PREC(z);   /* Precision of output variable */
 
-      mp_prec_t Nt;   /* Precision of the intermediary variable */
-      long int err;  /* Precision of error */
-                
-      /* compute the precision of intermediary variable */
-      Nt=MAX(Nx,Ny);
-      /* the optimal number of bits : see algorithms.ps */
-      Nt=Nt+5+_mpfr_ceil_log2(Nt);
+    mp_prec_t Nt;   /* Precision of the intermediary variable */
+    long int err;  /* Precision of error */
 
-      /* initialise of intermediary	variable */
-      mpfr_init(t);
-      mpfr_init(ti);
-      mpfr_init(te);             
+    /* compute the precision of intermediary variable */
+    Nt=MAX(Nx,Ny);
+    /* the optimal number of bits : see algorithms.ps */
+    Nt=Nt+5+_mpfr_ceil_log2(Nt);
 
-      do
-        {
+    /* initialise of intermediary variable */
+    mpfr_init(t);
+    mpfr_init(ti);
+    mpfr_init(te);
 
-          loop ++;
+    do
+      {
+        loop ++;
 
-          /* reactualisation of the precision */
-          mpfr_set_prec (t, Nt);
-          mpfr_set_prec (ti, Nt);
-          mpfr_set_prec (te, Nt);
+        /* reactualisation of the precision */
+        mpfr_set_prec (t, Nt);
+        mpfr_set_prec (ti, Nt);
+        mpfr_set_prec (te, Nt);
 
-          /* compute exp(y*ln(x)) */
-          mpfr_log (ti, x, GMP_RNDU);         /* ln(n) */
-          mpfr_mul (te, y, ti, GMP_RNDU);       /* y*ln(n) */
-          mpfr_exp (t, te, GMP_RNDN);         /* exp(x*ln(n))*/
+        /* compute exp(y*ln(x)) */
+        mpfr_log (ti, x, GMP_RNDU);         /* ln(n) */
+        mpfr_mul (te, y, ti, GMP_RNDU);       /* y*ln(n) */
+        mpfr_exp (t, te, GMP_RNDN);         /* exp(x*ln(n))*/
 
-	/* estimation of the error -- see pow function in algorithms.ps*/
-          err = Nt - (MPFR_EXP(te) + 3);
+	/* estimate of the error -- see pow function in algorithms.ps */
+        err = Nt - (MPFR_EXP(te) + 3);
 
 	/* actualisation of the precision */
-          Nt += 10;
+        Nt += 10;
 
-          ok = mpfr_can_round (t, err, GMP_RNDN, rnd_mode, Nz);
+        ok = mpfr_can_round (t, err, GMP_RNDN, rnd_mode, Nz);
 
-          /* check exact power */
-          if (ok == 0 && loop == 1)
-            ok = mpfr_pow_is_exact (x, y);
+        /* check exact power */
+        if (ok == 0 && loop == 1)
+          ok = mpfr_pow_is_exact (x, y);
+      }
+    while (err < 0 || ok == 0);
 
-        }
-      while (err < 0 || ok == 0);
-      
-      inexact = mpfr_set (z, t, rnd_mode);
+    inexact = mpfr_set (z, t, rnd_mode);
 
-      mpfr_clear (t);
-      mpfr_clear (ti);
-      mpfr_clear (te);
-    }
-    return inexact;
+    mpfr_clear (t);
+    mpfr_clear (ti);
+    mpfr_clear (te);
+  }
+
+  return inexact;
 }
