@@ -1,6 +1,6 @@
 /* mpfr_set_z -- set a floating-point number from a multiple-precision integer
 
-Copyright (C) 1999, 2001 Free Software Foundation, Inc.
+Copyright (C) 1999-2002 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -29,7 +29,7 @@ MA 02111-1307, USA. */
 int 
 mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
 {
-  mp_size_t fn, zn, dif, sh;
+  mp_size_t fn, zn, dif;
   int k, sign_z, inex;
   mp_limb_t *fp, *zp;
   mp_exp_t exp;
@@ -58,7 +58,6 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
     return mpfr_set_overflow(f, rnd_mode, sign_z);
   if (exp + 1 < __mpfr_emin)
     return mpfr_set_underflow(f, rnd_mode, sign_z);
-  MPFR_EXP(f) = exp;
 
   if (MPFR_SIGN(f) * sign_z < 0)
     MPFR_CHANGE_SIGN(f);
@@ -66,9 +65,10 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
   if (dif >= 0)
     {
       mp_limb_t cc;
+      int sh;
 
       /* number has to be truncated */
-      if (k)
+      if (k != 0)
         {
           mpn_lshift(fp, zp + dif, fn, k);
           if (dif != 0)
@@ -85,67 +85,73 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
           (rnd_mode == GMP_RNDD && sign_z > 0))
         rnd_mode = GMP_RNDZ;
 
+      /* remaining bits... */
       if (rnd_mode == GMP_RNDN)
         {
-          mp_limb_t c2;
+          /* 1) If rounding bit is 0, behave like rounding to 0.
+             2) Determine the sticky bit (cc != 0). */
+          if (sh != 0)
+            {
+              mp_limb_t rb;
 
-          if (sh)
-            c2 = MP_LIMB_T_ONE << (sh - 1);
-          else /* sh = 0 */
-            {
-              c2 = MP_LIMB_T_HIGHBIT;
-              cc = --dif >= 0 ? zp[dif] << k : 0;
-              if (dif > 0 && k)
-                cc += zp[dif-1] >> (BITS_PER_MP_LIMB - k);
-            }
-          /* now compares cc to c2 */
-          if (cc > c2)
-            {
-              mpfr_add_one_ulp(f, rnd_mode);
-              inex = sign_z;
-            }
-          else if (cc < c2)
-            {
-              inex = -sign_z;
-            }
-          else
-            {
-              cc = 0;
-              while (cc == 0 && dif > 0)
-                cc = zp[--dif];
-              if (cc != 0 || (fp[0] & (MP_LIMB_T_ONE << sh)))
-                {
-                  mpfr_add_one_ulp(f, rnd_mode);
-                  inex = sign_z;
-                }
+              rb = MP_LIMB_T_ONE << (sh - 1);
+              if ((cc & rb) == 0)
+                rnd_mode = GMP_RNDZ; /* rounding bit is 0 */
               else
-                inex = -sign_z;
+                cc &= ~rb;
+              if (cc == 0 && dif > 0)
+                cc = zp[--dif] << k;
             }
-        }
-      else
-        {
-          /* remaining bits... */
-          if (cc == 0)
+          else /* sh == 0 */
             {
+              MPFR_ASSERTN(cc == 0);
               if (dif > 0)
                 cc = zp[--dif] << k;
-              while (cc == 0 && dif > 0)
-                cc = zp[--dif];
+              if ((cc & MP_LIMB_T_HIGHBIT) == 0)
+                rnd_mode = GMP_RNDZ; /* rounding bit is 0 */
+              else
+                cc <<= 1;
             }
-          if (cc == 0)
-            inex = 0;
-          else if (rnd_mode == GMP_RNDZ)
-            inex = -sign_z;
-          else
+
+          while (cc == 0 && dif > 0)
+            cc = zp[--dif];
+
+          if (rnd_mode == GMP_RNDN && cc == 0) /* even rounding */
             {
-              mpfr_add_one_ulp(f, rnd_mode);
-              inex = sign_z;
+              cc = 1;
+              if ((fp[0] & (MP_LIMB_T_ONE << sh)) == 0)
+                rnd_mode = GMP_RNDZ;
             }
+        } /* rnd_mode == GMP_RNDN */
+      else if (cc == 0 && dif > 0)
+        {
+          cc = zp[--dif] << k;
+          while (cc == 0 && dif > 0)
+            cc = zp[--dif];
         }
-    }
-  else
+
+      if (cc == 0)
+        inex = 0;
+      else if (rnd_mode == GMP_RNDZ)
+        inex = -sign_z;
+      else
+        {
+          if (mpn_add_1(fp, fp, fn, MP_LIMB_T_ONE << sh))
+            {
+              if (exp == __mpfr_emax)
+                return mpfr_set_overflow(f, rnd_mode, sign_z);
+              else
+                {
+                  exp++;
+                  fp[fn-1] = MP_LIMB_T_HIGHBIT;
+                }
+            }
+          inex = sign_z;
+        }
+    } /* dif >= 0 */
+  else /* dif < 0 */
     {
-      if (k)
+      if (k != 0)
         mpn_lshift(fp - dif, zp, zn, k);
       else
         MPN_COPY(fp - dif, zp, zn);
@@ -154,9 +160,8 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
       inex = 0; /* result is exact */
     }
 
-  if (exp > __mpfr_emax)
-    return mpfr_set_overflow(f, rnd_mode, sign_z);
   if (exp < __mpfr_emin)
     return mpfr_set_underflow(f, rnd_mode, sign_z);
+  MPFR_EXP(f) = exp;
   MPFR_RET(inex);
 }
