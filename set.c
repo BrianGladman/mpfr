@@ -21,7 +21,7 @@ MA 02111-1307, USA. */
 
 #include "mpfr-impl.h"
 
-#include "rndraw.c"
+/* #include "rndraw.c" */
 
 /* set a to abs(b) * signb: a=b when signb = SIGN(b), a=abs(b) when signb=1 */
 int
