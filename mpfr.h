@@ -203,7 +203,7 @@ int mpfr_number_p _PROTO((mpfr_srcptr));
 int mpfr_asin _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_atan _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 
-int mpfr_exp2_si _PROTO((mpfr_ptr, long int n, mp_rnd_t));
+int mpfr_exp2_si _PROTO((mpfr_ptr, long int, mp_rnd_t));
 int mpfr_sinh _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t)); 
 int mpfr_tanh _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_factorial _PROTO ((mpfr_ptr, unsigned long int, mp_rnd_t));
