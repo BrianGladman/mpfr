@@ -30,9 +30,9 @@ MA 02111-1307, USA. */
 #endif
 
 
-double drand(); 
+double drand _PROTO((void)); 
 int ulp _PROTO((double, double)); 
-double dbl _PROTO((double, double)); 
+double dbl _PROTO((double, int)); 
 
 /* generate a random double using the whole range of possible values,
    including denormalized numbers, NaN, infinities, ... */
