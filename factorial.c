@@ -1,4 +1,4 @@
-/* mpfr_exp2 -- power of 2 function 2^y 
+/* mpfr_facrorial -- Factorial of Unsigned Integer Number
 
 Copyright (C) 1999 Free Software Foundation.
 
@@ -25,27 +25,26 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
- /* The computation of y=pow(2,z) is done by
+ /* The computation of n! is done by
 
-    y=exp(z*log(2))=2^z
+    n!=prod^{n}_{i=1}i
  */
-int mpfr_exp2 _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 
 int
 #if __STDC__
-mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode) 
+mpfr_factorial (mpfr_ptr y, unsigned long int x , mp_rnd_t rnd_mode) 
 #else
-mpfr_exp2 (y, x, rnd_mode)
+mpfr_factorial (y, x, rnd_mode)
      mpfr_ptr y;
-     mpfr_srcptr x;
+     unsigned long x;
      mp_rnd_t rnd_mode;
 #endif
-{    
+{
+
   /****** Declaration ******/
 
-    /* Variable of Intermediary Calculation*/
-    mpfr_t t;       
-
+    mpfr_t t;       /* Variable of Intermediary Calculation*/
+    int i;
     int round;
     int boucle;
 
@@ -54,80 +53,53 @@ mpfr_exp2 (y, x, rnd_mode)
     mp_prec_t Nt;   /* Precision of Intermediary Calculation variable */
     mp_prec_t err;  /* Precision of error */
 
-    if (MPFR_IS_NAN(x)) {  MPFR_SET_NAN(y); return 1; }
-    MPFR_CLEAR_NAN(y);
-
-    if(mpfr_cmp_ui(x,0)==0){
-
-      mpfr_set_ui(y,1,GMP_RNDN);return(0); 
+  /***** test x = 0  ******/
+  	  
+    if(x==0){
+      mpfr_set_ui(y,1,GMP_RNDN); /* 0! = 1 */
+      return(0);
     }
-    else
-      {
-
-	if (MPFR_IS_INF(x))
-	  {
-	    if (MPFR_SIGN(x) < 0)
-	      {
-		MPFR_CLEAR_INF(y);
-		MPFR_SET_ZERO(y);
-		return(0);
-	      }
-	      else
-		{
-		  MPFR_SET_INF(y);
-		  if(MPFR_SIGN(y) < 0) MPFR_CHANGE_SIGN(y);
-		  return(1);
-		}
-	  }
-      
-    }
-    MPFR_CLEAR_INF(y);
-
-    
+    else{
  
 
         /* Initialisation of the Precision */
-	Nx=MPFR_PREC(x);
+	Nx=sizeof(unsigned long int)*(BITS_PER_CHAR);
 	Ny=MPFR_PREC(y);
+	 
+	Nt=Ny+2*(int)_mpfr_ceil_log2((double)x)+10; /*compute the size of intermediary variable */
+
 	
-
-	/* compute the size of intermediary variable */
-	if(Ny>=Nx)
-	  Nt=Ny+2*(BITS_PER_CHAR); 
-	else
-	  Nt=Nx+2*(BITS_PER_CHAR); 
-
 	  boucle=1;
+	  mpfr_init2(t,Nt);/* initialise of intermediary variable */
 
 	  while(boucle==1){
+	   
+	    mpfr_set_ui(t, 1, GMP_RNDZ);
 
-	    /* initialise of intermediary	variable */
-	    mpfr_init2(t,Nt);             
+	    for(i=2;i<=x;i++)              /* compute factorial */
+	      mpfr_mul_ui(t,t,i,GMP_RNDZ);
+	    
+	    err=Nt-1-(int)_mpfr_ceil_log2((double)Nt);
 
-	    /* compute cosh */
-	    mpfr_const_log2(t,GMP_RNDN);    /* ln(2) */
-	    mpfr_mul(t,x,t,GMP_RNDN);       /* x*ln(2) */
-	    mpfr_exp(t,t,GMP_RNDN);         /* exp(x*ln(2))*/
 
-	    err=Nt-1;
-
-	    round=mpfr_can_round(t,err,GMP_RNDN,rnd_mode,Ny);
+	    round=mpfr_can_round(t,err,GMP_RNDZ,rnd_mode,Ny);
 
 	    if(round == 1){
 	      mpfr_set(y,t,rnd_mode);
 	      boucle=0;
 	    }
 	    else{
-	      Nt=Nt+10;
+	      Nt=Nt+10; 
+	      /*initialise of intermediary variable */
+	      mpfr_set_prec(t,Nt);
 	      boucle=1;
 	    }
-
+	    
 	  }
-
+   
 	  mpfr_clear(t);
           return(1);
-
-    
+      
  
-    
+    }
 }
