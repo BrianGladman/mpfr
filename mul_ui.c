@@ -42,11 +42,11 @@ mpfr_mul_ui()
 		     PREC(y)-BITS_PER_MP_LIMB+cnt, RND_MODE);
   
   /* If cnt = 1111111111111 and c = 1 we shall get depressed */
-  if (c && (carry == (1UL << (BITS_PER_MP_LIMB - cnt)) - 1))
+  if (c && (carry == (((mp_limb_t)1) << (BITS_PER_MP_LIMB - cnt)) - 1))
     {
       cnt--; 
       mpn_rshift(my, my, ysize, BITS_PER_MP_LIMB - cnt); 
-      my[ysize - 1] |= 1 << (BITS_PER_MP_LIMB - 1);
+      my[ysize - 1] |= ((mp_limb_t) 1) << (BITS_PER_MP_LIMB - 1);
     }
   else
     {
