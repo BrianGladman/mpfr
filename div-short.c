@@ -193,6 +193,15 @@ check (int argc, const char *argv[])
       if (mpn_cmp (qp, q2p, n) > 0)
 	{
 	  printf ("QP > QP_high\n");
+	  if (n <= 10)
+	    {
+	      printf ("dp=");
+	      for (i = n-1 ; i >= 0 ; i--)
+		printf (" %016Lx", (unsigned long) dp[i]);
+	      printf ("\nn0p=");
+	      for (i = 2*n-1 ; i >= 0 ; i--)
+                printf (" %016Lx", (unsigned long) n0p[i]);
+	    }
 	  return;
 	}
       mpn_sub_n (q2p, q2p, qp, n);
