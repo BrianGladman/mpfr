@@ -74,7 +74,7 @@ typedef unsigned long int       mp_size_unsigned_t;
 
 /* MPFR_ASSERTN(expr): assertions that should always be checked */
 /* #define MPFR_ASSERTN(expr) ASSERT_ALWAYS(expr) */
-#define MPFR_ASSERTN(expr)  ((expr) ? (void) 0 : (void) ASSERT_FAIL (expr))
+#define MPFR_ASSERTN(expr)  ((void) ((expr) || (ASSERT_FAIL (expr), 0)))
 
 /* MPFR_ASSERTD(expr): assertions that should be checked when testing */
 /* #define MPFR_ASSERTD(expr) ASSERT(expr) */
