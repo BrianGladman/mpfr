@@ -164,11 +164,14 @@ unsigned char rnd1, rnd2; unsigned long prec;
 
   /* the last significant bit is bit l1 in limb k1 */
 
-  if (rnd1==GMP_RNDZ) { if (neg) rnd1=GMP_RNDU; else rnd1=GMP_RNDD; }
+  if (rnd1==GMP_RNDU) { if (neg) rnd1=GMP_RNDZ; }
+  if (rnd1==GMP_RNDD) { if (neg) rnd1=GMP_RNDU; } else { rnd1=GMP_RNDZ; }
+
+  /* in the sequel, RNDU = towards infinity, RNDZ = towards zero */
 
   switch (rnd1) {
 
-  case GMP_RNDD: /* b <= x <= b+2^(EXP(b)-err) */
+  case GMP_RNDZ: /* b <= x <= b+2^(EXP(b)-err) */
 
     /* first round b */
 
