@@ -53,6 +53,7 @@ Building MPFR with internal GMP header files
 --with-gmp-build=DIR	assumes that DIR contains the source of GMP.
 			same as --with-gmp-lib=DIR/.libs
 			and     --with-gmp-include=DIR
+                        Try to set CFLAGS to GMP's one.
 --with-gmp=DIR        	assumes that DIR is where you have installed GMP.
 			same as --with-gmp-lib=DIR/lib
                         and     --with-gmp-include=DIR/include

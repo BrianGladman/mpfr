@@ -73,7 +73,7 @@ AC_CHECK_HEADER([limits.h],, AC_MSG_ERROR([limits.h not found]))
 AC_CHECK_HEADER([float.h],,  AC_MSG_ERROR([float.h not found]))
 
 dnl Check for stdargs
-AC_CHECK_HEADER([stdarg.h],[AC_DEFINE([HAVE_STDARG])],
+AC_CHECK_HEADER([stdarg.h],[AC_DEFINE([HAVE_STDARG],1,[Define if stdarg])],
 	[AC_CHECK_HEADER([varargs.h],, 
 	AC_MSG_ERROR([stdarg.h or varargs.h not found]))])
 
@@ -110,7 +110,8 @@ esac
 #
 AC_CHECK_HEADERS(sys/fpu.h)
 
-AC_CHECK_TYPE( [union fpc_csr], AC_DEFINE(HAVE_FPC_CSR), , 
+AC_CHECK_TYPE( [union fpc_csr], 
+   AC_DEFINE(HAVE_FPC_CSR,1,[Define if union fpc_csr is available]), , 
 [
 #if HAVE_SYS_FPU_H
 #  include <sys/fpu.h>

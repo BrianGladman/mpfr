@@ -27,6 +27,8 @@ AC_INIT
 mpfr_version=`cat $srcdir/VERSION`
 AM_INIT_AUTOMAKE(mpfr, $mpfr_version, [no-define])
 
+dnl AC_CONFIG_HEADERS([mpfrconf.h:mpfrconf.in])
+
 dnl Extra arguments to configure
 AC_ARG_WITH(gmp_include, 
    [  --with-gmp-include=DIR  GMP include directory ], 
@@ -35,8 +37,13 @@ AC_ARG_WITH(gmp_lib,
    [  --with-gmp-lib=DIR      GMP lib directory ], 
    with_gmp_lib=$withval)
 AC_ARG_WITH(gmp_build, 
-   [  --with-gmp-build=DIR    GMP source directory], 
-   with_gmp_include=$withval/ with_gmp_lib=$withval/.libs)
+   [  --with-gmp-build=DIR    GMP build directory], 
+   [with_gmp_include=$withval/ with_gmp_lib=$withval/.libs
+    if test -r $withval/Makefile ; then
+     GMP_CFLAGS=`grep -w "CFLAGS =" $withval/Makefile | sed 's/CFLAGS = //'`
+     GMP_CC=`grep -w "CC =" $withval/Makefile | sed 's/CC = //'`
+    fi
+   ])
 AC_ARG_WITH(gmp, 
    [  --with-gmp=DIR          GMP install directory ], 
    with_gmp_include=$withval/include with_gmp_lib=$withval/lib)
@@ -49,21 +56,22 @@ AC_ARG_ENABLE(cache,
    [  --disable-cache         Disable the cache of the global const ], 
    [ case $enableval in
       yes) ;;
-      no)  AC_DEFINE([MPFR_NO_CACHE],1) ;;
+      no)  AC_DEFINE([MPFR_NO_CACHE],1,[Don't use the cache]) ;;
       *)   AC_MSG_ERROR([bad value for --enable-cache: yes or no]) ;;
      esac])
 AC_ARG_ENABLE(assert,
    [  --enable-assert         enable ASSERT checking [[default=no]]],
    [ case $enableval in
-      yes) AC_DEFINE([WANT_ASSERT],1) ;;
+      yes) AC_DEFINE([WANT_ASSERT],1,[Want assertion]) ;;
       no)  ;;
-      full) AC_DEFINE([WANT_ASSERT],1) AC_DEFINE([CHECK_AGAINST_SUB1],1) ;;
+      full) AC_DEFINE([WANT_ASSERT],2,[Want assertion]) 
+            AC_DEFINE([CHECK_AGAINST_SUB1],1,[Check against sub1]) ;;
       *) AC_MSG_ERROR([bad value for --enable-assert: yes, no or full]) ;;
      esac])
 AC_ARG_ENABLE(logging,
    [  --enable-logging        enable MPFR Logging [[default=no]]],
    [ case $enableval in
-      yes) AC_DEFINE([MPFR_USE_LOGGING],1) ;;
+      yes) AC_DEFINE([MPFR_USE_LOGGING],1,[Log what MPFR does]) ;;
       no)  ;;
       *)   AC_MSG_ERROR([bad value for --enable-logging: yes or no]) ;;
      esac])
@@ -72,20 +80,53 @@ test_CFLAGS=${CFLAGS+set}
 
 dnl  Same as in gmp acinclude.m4, though currently we're using the normal
 dnl  config.sub, so the additional exact cpu types don't arise.
-dnl define(X86_PATTERN, [[i?86*-*-* | k[5-8]*-*-* | pentium*-*-* | athlon-*-*]])
+dnl define(X86_PATTERN,[[i?86*-*-* | k[5-8]*-*-* | pentium*-*-* | athlon-*-*]])
 
-dnl Checks for programs.
+
+dnl Check for CC and CFLAGS
+dnl 
+if test -n "$CFLAGS" || test -n "$CC" ; then
+ user_redefine_cc=yes
+fi
 AC_PROG_CC
-AC_PROG_RANLIB
-AC_CANONICAL_HOST
-AC_CHECK_OS
-AC_CHECK_MACHTYPE
+
+dnl Check for GMP CFLAGS and CC (More optimized for the target)
+dnl But they may be invalid, so we must check them first
+dnl Don't redefine it if the user force them!
+if test -n "$GMP_CFLAGS" && test -z "$user_redefine_cc" ; then
+ old_cflags=$CFLAGS
+ old_cc=$CC
+ CFLAGS=$GMP_CFLAGS
+ CC=$GMP_CC
+ AC_MSG_CHECKING(for CC=$GMP_CC and CFLAGS=$GMP_CFLAGS)
+ AC_RUN_IFELSE([AC_LANG_SOURCE([[
+  int main() { return 0; }
+ ]])], [
+    AC_MSG_RESULT(yes)
+ ], [
+    AC_MSG_RESULT(no)
+    CFLAGS=$old_cflags
+    CC=$old_cc
+  ], [
+    AC_MSG_RESULT([can't test])
+    CFLAGS=$old_cflags
+    CC=$old_cc
+  ])
+  dnl CC may have change. Recheck for GCC.
+  GCC=
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#ifndef __GNUC__
+# error "GCC Not Found"
+#endif
+  ]])], [
+  GCC=yes
+  ])
+fi
 
 dnl Check if compiler is ICC, and if such a case, disable GCC
 dnl And add some specific flags.
 dnl Don't add Warnings Flags (Otherwise you'll get more than 20000 warnings).
-dnl Add -long_double flags ?
-dnl Don't use -pc64 !
+dnl Add -long_double flags? Don't use -pc64 !
 AC_MSG_CHECKING(for ICC)
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #if !defined(__ICC)
@@ -97,10 +138,16 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 ],[AC_MSG_RESULT(no)])
 
 dnl If compiler is gcc, then use some specific flags.
-dnl But don't touch user specified flags.
+dnl But don't touch user other flags.
 if test "$test_CFLAGS" != set && test -n "$GCC"; then
   CFLAGS="-Wall -Wmissing-prototypes $CFLAGS"
 fi
+
+AC_PROG_RANLIB
+AC_CANONICAL_HOST
+AC_CHECK_OS
+AC_CHECK_MACHTYPE
+
 
 dnl Set the OS-dependent flags.
 case $OS_TYPE in
@@ -154,7 +201,7 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include "gmp-impl.h"
 #include "longlong.h"
 ]], [[]])],[AC_MSG_RESULT(yes)
-     AC_DEFINE([MPFR_HAVE_GMP_IMPL],1)
+     AC_DEFINE([MPFR_HAVE_GMP_IMPL],1,[Use GMP Internal Files])
      dnl Check for valid BITS_PER_MP_LIMB and BYTES_PER_MP_LIMB
      AC_MSG_CHECKING(for valid BITS_PER_MP_LIMB and BYTES_PER_MP_LIMB)
      AC_TRY_RUN([
@@ -250,7 +297,7 @@ mp_limb_t f() {mp_limb_t x=2; return mpn_sub_nc(&x, &x, &x, 1, 0); }
 int main () { f (); return 0; }
 ]], [[]])],[
     AC_MSG_RESULT(yes) 
-    AC_DEFINE([MPFR_HAVE_MPN_SUB_NC],1)
+    AC_DEFINE([MPFR_HAVE_MPN_SUB_NC],1,[Function mpn_sub_nc is available])
   ], [
     AC_MSG_RESULT(no)
   ], [
