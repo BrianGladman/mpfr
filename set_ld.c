@@ -154,8 +154,8 @@ mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
 	{
 	  /* since DBL_MIN < ABS(d) < DBL_MAX, the cast to double should not
 	     overflow here */
-	  MPFR_ASSERTD ((long double) DBL_MIN < ABS (d));
-	  MPFR_ASSERTD ((long double) DBL_MAX > ABS (d));
+	  MPFR_ASSERTD ((long double) DBL_MIN <= ABS (d));
+	  MPFR_ASSERTD ((long double) DBL_MAX >= ABS (d));
 	  inexact = mpfr_set_d (u, (double) d, GMP_RNDN);
 	  MPFR_ASSERTD (inexact == 0);
 	  MPFR_ASSERTD (!MPFR_IS_ZERO (u));
