@@ -122,6 +122,10 @@ test_random2 (long nbtests, mp_prec_t prec, int verbose)
   mpfr_random2 (x, 0, 0);
   MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_POS(x));
 
+  /* test size < 0 */
+  mpfr_random2 (x, -1, 0);
+  MPFR_ASSERTN (MPFR_IS_NEG (x) && MPFR_EXP (x) == 0);
+
   mpfr_clear (x);
   if (!verbose)
     {
