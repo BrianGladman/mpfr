@@ -76,7 +76,7 @@ include_HEADERS = mpfr.h mpf2mpfr.h mpfr-test.h
 
 lib_LIBRARIES = libmpfr.a
 
-libmpfr_a_SOURCES = cputime.h mpfr.h mpfr-impl.h sin_cos.c extract.c add.c add_ui.c add_ulp.c agm.c clear.c cmp.c cmp_ui.c div_2exp.c div.c div_ui.c dump.c eq.c exp2.c exp3.c exp.c get_str.c init.c inp_str.c isnan.c log2.c log.c mul_2exp.c mul.c mul_ui.c neg.c out_str.c pi.c pow.c print_raw.c print_rnd_mode.c random2.c random.c reldiff.c rnd_mode.c round.c set.c set_d.c set_dfl_prec.c set_rnd.c set_f.c set_prc_raw.c set_prec.c set_q.c set_si.c set_str.c set_str_raw.c set_ui.c set_z.c sqrt.c sqrt_ui.c sub.c sub_ui.c trunc.c ui_div.c ui_sub.c urandomb.c sqrtrem.c mpz_set_fr.c swap.c arctan.c
+libmpfr_a_SOURCES = cputime.h mpfr.h mpfr-impl.h sin_cos.c extract.c add.c add_ui.c add_ulp.c agm.c clear.c cmp.c cmp_ui.c div_2exp.c div.c div_ui.c dump.c eq.c exp2.c exp3.c exp.c get_str.c init.c inp_str.c isnan.c log2.c log.c mul_2exp.c mul.c mul_ui.c neg.c out_str.c pi.c pow.c print_raw.c print_rnd_mode.c random2.c random.c reldiff.c rnd_mode.c round.c set.c set_d.c set_dfl_prec.c set_rnd.c set_f.c set_prc_raw.c set_prec.c set_q.c set_si.c set_str.c set_str_raw.c set_ui.c set_z.c sqrt.c sqrt_ui.c sub.c sub_ui.c trunc.c ui_div.c ui_sub.c urandomb.c sqrtrem.c mpz_set_fr.c swap.c arctan.c cmp2.c
 libmpfr_a_LIBADD = ceil.o floor.o
 
 info_TEXINFOS = mpfr.texi
@@ -98,7 +98,7 @@ random2.o random.o reldiff.o rnd_mode.o round.o set.o set_d.o \
 set_dfl_prec.o set_rnd.o set_f.o set_prc_raw.o set_prec.o set_q.o \
 set_si.o set_str.o set_str_raw.o set_ui.o set_z.o sqrt.o sqrt_ui.o \
 sub.o sub_ui.o trunc.o ui_div.o ui_sub.o urandomb.o sqrtrem.o \
-mpz_set_fr.o swap.o arctan.o
+mpz_set_fr.o swap.o arctan.o cmp2.o
 AR = ar
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
@@ -119,10 +119,10 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 TAR = gtar
 GZIP_ENV = --best
 DEP_FILES =  .deps/add.P .deps/add_ui.P .deps/add_ulp.P .deps/agm.P \
-.deps/arctan.P .deps/clear.P .deps/cmp.P .deps/cmp_ui.P .deps/div.P \
-.deps/div_2exp.P .deps/div_ui.P .deps/dump.P .deps/eq.P .deps/exp.P \
-.deps/exp2.P .deps/exp3.P .deps/extract.P .deps/get_str.P .deps/init.P \
-.deps/inp_str.P .deps/isnan.P .deps/log.P .deps/log2.P \
+.deps/arctan.P .deps/clear.P .deps/cmp.P .deps/cmp2.P .deps/cmp_ui.P \
+.deps/div.P .deps/div_2exp.P .deps/div_ui.P .deps/dump.P .deps/eq.P \
+.deps/exp.P .deps/exp2.P .deps/exp3.P .deps/extract.P .deps/get_str.P \
+.deps/init.P .deps/inp_str.P .deps/isnan.P .deps/log.P .deps/log2.P \
 .deps/mpz_set_fr.P .deps/mul.P .deps/mul_2exp.P .deps/mul_ui.P \
 .deps/neg.P .deps/out_str.P .deps/pi.P .deps/pow.P .deps/print_raw.P \
 .deps/print_rnd_mode.P .deps/random.P .deps/random2.P .deps/reldiff.P \
