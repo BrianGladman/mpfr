@@ -47,9 +47,7 @@ void mpfr_agm(mpfr_ptr r, mpfr_srcptr a, mpfr_srcptr b, unsigned char rnd_mode)
   uo=mpfr_get_d(a);
 
   rap=ceil(log((vo-uo)/uo)/log(2));
-  printf("rap : %f\n",rap);
 
-  printf("avant main loop\n");
   /* Main loop */
 
   while (go_on==1) {
@@ -69,7 +67,6 @@ void mpfr_agm(mpfr_ptr r, mpfr_srcptr a, mpfr_srcptr b, unsigned char rnd_mode)
     n = ceil(log(p)/log(2));
     err=ceil(log((3*n+2)*exp(-p*log(2))+3*exp(p*uo*log(2)/(vo-uo))/log(2)));
     
-    printf("avant internal loop\n");
     for(i=0;i<n;i++) {
       mpfr_mul(tmp,u,v,GMP_RNDZ);
       mpfr_sqrt(tmpu,tmp,GMP_RNDZ);
@@ -79,14 +76,14 @@ void mpfr_agm(mpfr_ptr r, mpfr_srcptr a, mpfr_srcptr b, unsigned char rnd_mode)
       mpfr_set(u,tmpu,GMP_RNDZ);
       mpfr_set(v,tmpv,GMP_RNDU);
     }
-    printf("avant can_round(");
-    /*mpfr_out_str(stdout,10,0,v,GMP_RNDU);*/
-    mpfr_print_raw(v);
-    printf(", %i, GMP_RNDU, %i, %i)\n",p-err,rnd_mode,q);
+    /*printf("avant can_round(");
+      mpfr_out_str(stdout,10,0,v,GMP_RNDU);
+      mpfr_print_raw(v);
+      printf(", %i, GMP_RNDU, %i, %i)\n",p-err,rnd_mode,q);*/
 
     can_round=mpfr_can_round(v,p-err,GMP_RNDU,rnd_mode,q);
 
-    printf("apres can_round : %i \n",can_round);
+    /*printf("apres can_round : %i \n",can_round);*/
     if (can_round==1) {
       go_on=0;
     }
