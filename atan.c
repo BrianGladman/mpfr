@@ -19,10 +19,10 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+#include <stdio.h>
+
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
-
-#define CST   2.27  /* CST=1+ln(2.4)/ln(2) */
 
 /*
 #define A
@@ -43,24 +43,17 @@ MA 02111-1307, USA. */
 #undef NO_FACTORIAL
 #undef GENERIC
 */
+/* This is the code of 'generic.c' optimized for mpfr_atan */   
 static void
-mpfr_atan_aux (mpfr_ptr y, mpz_srcptr p, long r, int m)
+mpfr_atan_aux (mpfr_ptr y, mpz_srcptr p, long r, int m, mpz_t *tab)
 {
   unsigned long n,i,k,j,l;
   mpz_t *S, *T, *ptoj;
   mp_exp_t diff, expo;
-  TMP_DECL (maker);
-
-  TMP_MARK (maker);
-  S    = (mpz_t*) TMP_ALLOC (3*(m+1)*sizeof (mpz_t));
+  
+  S    = tab;
   ptoj = S + 1*(m+1);
   T    = S + 2*(m+1);
-
-  for (i = 0 ; i <= m ; i++) {
-    mpz_init (S[i]);
-    mpz_init (ptoj[i]);
-    mpz_init (T[i]);
-  }
 
   mpz_mul_2exp (ptoj[0], p, 1);
   for (i=1;i<m;i++) 
@@ -77,8 +70,12 @@ mpfr_atan_aux (mpfr_ptr y, mpz_srcptr p, long r, int m)
     mpz_set_ui (S[k], 1);
 
     for (j = i+1, l = 0 ; (j & 1) == 0 ; l++, j>>=1, k--) {
-      mpz_mul (S[k], S[k], ptoj[l]);
-      mpz_mul (S[k], S[k], T[k-1]);
+      if (l == 0)
+	mpz_mul (S[k], ptoj[l], T[k-1]);
+      else {
+	mpz_mul (S[k], S[k], ptoj[l]);
+	mpz_mul (S[k], S[k], T[k-1]);
+      }
       mpz_mul (S[k-1], S[k-1], T[k]);
       mpz_mul_2exp (S[k-1], S[k-1], (r+1)*(1<<l));
       mpz_add (S[k-1], S[k-1], S[k]);
@@ -86,17 +83,18 @@ mpfr_atan_aux (mpfr_ptr y, mpz_srcptr p, long r, int m)
     }
   }
 
-  diff = mpz_sizeinbase (S[0], 2) - 2*MPFR_PREC (y);
+  MPFR_MPZ_SIZEINBASE2 (diff, S[0]);
+  diff -= 2*MPFR_PREC (y);
   expo = diff;
   if (diff >=0)
     mpz_fdiv_q_2exp (S[0],S[0],diff);
   else
     mpz_mul_2exp (S[0],S[0],-diff);
 
-  mpz_mul_2exp (T[0], T[0], (1<<m) -1);
-  diff = mpz_sizeinbase (T[0], 2) - MPFR_PREC (y);
-  expo -= diff;
-  if (diff >=0)
+  MPFR_MPZ_SIZEINBASE2 (diff, T[0]);
+  diff -= MPFR_PREC (y);
+  expo -= (diff + n -1);
+  if (diff >= 0)
     mpz_fdiv_q_2exp (T[0], T[0],diff);
   else
     mpz_mul_2exp (T[0], T[0],-diff);
@@ -104,14 +102,45 @@ mpfr_atan_aux (mpfr_ptr y, mpz_srcptr p, long r, int m)
   mpz_tdiv_q (S[0], S[0], T[0]);
   mpfr_set_z (y, S[0], GMP_RNDD);
   MPFR_SET_EXP (y, MPFR_EXP (y) + expo - r*(i-1) );
-
-  for (i = 0 ; i <= m ; i++) {
-    mpz_clear (S[i]);
-    mpz_clear (ptoj[i]);
-    mpz_clear (T[i]);
-  }
-  TMP_FREE (maker);
 }
+
+/* Extract 2^i bits from 2^i-1 */
+#if 0
+static void
+mpfr_atan_extract (mpz_ptr z, mpfr_srcptr p, unsigned int i)
+{
+  unsigned long two_i = 1UL << i, d;
+  mp_size_t n = MPFR_LIMB_SIZE (p), mz, dm, k;
+  mp_limb_t *ptr = MPFR_MANT (p), *cp;
+
+  MPFR_ASSERTD (!MPFR_IS_SINGULAR (p));
+  
+  if (2*two_i <= BITS_PER_MP_LIMB) {
+    mp_limb_t c = ptr[n-1];
+    c >>= BITS_PER_MP_LIMB - 2*two_i + 1;
+    c &= (MPFR_LIMB_ONE<<two_i) -1;
+    mpz_set_ui (z, c);
+  } else if (two_i > MPFR_PREC (p))
+    mpz_set_ui (z, 0);
+  else {
+    mz = (two_i - 1) / BITS_PER_MP_LIMB + 1;
+    MPZ_REALLOC (z, mz+1);
+    cp = PTR (z);
+    d = two_i -1;
+    dm = d / BITS_PER_MP_LIMB;
+    if (dm+mz < n)
+      mpn_rshift (cp, ptr+n-dm-mz-1, mz+1, 1);
+    else 
+      {
+	mpn_lshift (cp+mz-(n-dm)+1, ptr, mz-(n-dm)+1, BITS_PER_MP_LIMB-1);
+	MPN_ZERO (cp, mz-(n-dm));
+      }
+    cp [mz-1] &= MPFR_LIMB_HIGHBIT -1 ;
+    MPN_NORMALIZE (cp, mz);
+    SIZ (z) = mz;
+  }
+}
+#endif 
 
 int
 mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
@@ -120,11 +149,12 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_t arctgt, sk, tmp, tmp2;
   mpz_t  ukz;
   int comparaison, sign, inexact, inexact2;
-  mp_exp_t supplement, estimated_delta;
+  mp_exp_t estimated_delta;
   mp_prec_t prec, realprec;
   mp_exp_t exptol;
-  int i, n0;
+  int i, n0, oldn0;
   unsigned long twopoweri;
+  mpz_t *tabz;
   MPFR_SAVE_EXPO_DECL (expo);
 
   /* Singular cases */
@@ -155,7 +185,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
           MPFR_ASSERTD (MPFR_IS_ZERO (x));
 	  MPFR_SET_ZERO (atan);
 	  MPFR_RET (0);
-	}
+ 	}
     }
 
   /* Set x_p=|x| */
@@ -180,25 +210,32 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
       return inexact;
     }
 
-  supplement = 2 - ((comparaison > 0) ? 0 : MPFR_GET_EXP (xp));
   realprec = MPFR_PREC (atan) + MPFR_INT_CEIL_LOG2 (MPFR_PREC (atan)) + 4;
-  prec = realprec + supplement + BITS_PER_MP_LIMB;
+  if (MPFR_PREC (atan) + 5 > MPFR_PREC (x) && MPFR_GET_EXP (x) < 0)
+    {
+      mpfr_uexp_t ue = (mpfr_uexp_t) (-MPFR_GET_EXP (x));
+      if (realprec < 2*ue + 5)
+	realprec = 2*ue + 5;
+    }
+  prec = realprec + BITS_PER_MP_LIMB;
 
   MPFR_SAVE_EXPO_MARK (expo);
 
-  mpz_init (ukz);
-
   /* Initialisation    */
+  mpz_init (ukz);
   mpfr_init2 (sk, prec);
   mpfr_init2 (tmp2, prec);
   mpfr_init2 (tmp, prec);
   mpfr_init2 (arctgt, prec);
+  oldn0 = 0;
+  tabz = NULL;
 
   for (;;)
     {
-      n0 = __gmpfr_ceil_log2 ((double) realprec + supplement + CST);
+      /* n0 = ceil(log2(realprec + 2 + 1+ln(2.4)/ln(2))) */
+      n0 = MPFR_INT_CEIL_LOG2 (realprec + 2 + 3);
       MPFR_ASSERTD (3*n0 > 2);
-      estimated_delta = 1 + supplement + MPFR_INT_CEIL_LOG2 (3*n0-2);
+      estimated_delta = 1 + 2 + MPFR_INT_CEIL_LOG2 (3*n0-2);
       prec = realprec + estimated_delta;
 
       /* Initialisation */
@@ -206,7 +243,17 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_set_prec (tmp2, prec);
       mpfr_set_prec (tmp, prec);
       mpfr_set_prec (arctgt, prec);
-
+      if (oldn0 < 3*n0+1) {
+	if (oldn0 == 0)
+	  tabz = (mpz_t *) (*__gmp_allocate_func) (3*(n0+1)*sizeof (mpz_t));
+	else
+	  tabz = (mpz_t *) (*__gmp_reallocate_func) 
+	    (tabz, oldn0*sizeof (mpz_t), 3*(n0+1)*sizeof (mpz_t));
+	for (i = oldn0 ; i < 3*(n0+1) ; i++)
+	  mpz_init (tabz[i]);
+	oldn0 = 3*(n0+1);
+      }
+      
       if (comparaison > 0)
 	mpfr_ui_div (sk, 1, xp, GMP_RNDN);
       else
@@ -216,39 +263,45 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
       /* Assignation  */
       MPFR_SET_ZERO (arctgt);
-      twopoweri = 1;
-      for (i = 0; i <= n0; i++)
+      twopoweri = 1<<0;
+      MPFR_ASSERTD (n0 >= 4);
+      for (i = 0 ; i <= n0; i++)
         {
           /* Calculation of  trunc(tmp) --> mpz */
           mpfr_mul_2ui (tmp, sk, twopoweri, GMP_RNDN);
           mpfr_trunc (tmp, tmp);
-          exptol = mpfr_get_z_exp (ukz, tmp);
-          /* since the s_k are decreasing (see algorithms.tex),
-             and s_0 = min(|x|, 1/|x|) < 1, we have sk < 1,
-             thus exptol < 0 */
-          MPFR_ASSERTD (exptol < 0);
-          mpz_tdiv_q_2exp (ukz, ukz, (unsigned long int) (-exptol));
-
-          /* Calculation of arctan(Ak) */
-	  mpfr_set_z (tmp, ukz, GMP_RNDN);
-	  mpfr_div_2ui (tmp, tmp, twopoweri, GMP_RNDN);
-          mpz_mul (ukz, ukz, ukz);
-	  mpz_neg (ukz, ukz);
-          mpfr_atan_aux (tmp2, ukz, 2*twopoweri, n0 - i);
-          mpfr_mul (tmp2, tmp2, tmp, GMP_RNDN);
-
-          /* Addition and iteration */
-          mpfr_add (arctgt, arctgt, tmp2, GMP_RNDN);
-          if (MPFR_LIKELY (i < n0))
-            {
-              mpfr_sub (tmp2, sk, tmp, GMP_RNDN);
-              mpfr_mul (sk, sk, tmp, GMP_RNDN);
-              mpfr_add_ui (sk, sk, 1, GMP_RNDN);
-              mpfr_div (sk, tmp2, sk, GMP_RNDN);
-              twopoweri <<= 1;
-            }
+	  if (!MPFR_IS_ZERO (tmp))
+	    {
+	      exptol = mpfr_get_z_exp (ukz, tmp);
+	      /* since the s_k are decreasing (see algorithms.tex),
+		 and s_0 = min(|x|, 1/|x|) < 1, we have sk < 1,
+		 thus exptol < 0 */
+	      MPFR_ASSERTD (exptol < 0);
+	      mpz_tdiv_q_2exp (ukz, ukz, (unsigned long int) (-exptol));
+	      
+	      /* Calculation of arctan(Ak) */
+	      mpfr_set_z (tmp, ukz, GMP_RNDN);
+	      mpfr_div_2ui (tmp, tmp, twopoweri, GMP_RNDN);
+	      mpz_mul (ukz, ukz, ukz);
+	      mpz_neg (ukz, ukz);
+	      mpfr_atan_aux (tmp2, ukz, 2*twopoweri, n0 - i, tabz);
+	      mpfr_mul (tmp2, tmp2, tmp, GMP_RNDN);
+	      
+	      /* Addition and iteration */
+	      mpfr_add (arctgt, arctgt, tmp2, GMP_RNDN);
+	      
+	      if (MPFR_LIKELY (i < n0))
+		{
+		  mpfr_sub (tmp2, sk, tmp, GMP_RNDN);
+		  mpfr_mul (sk, sk, tmp, GMP_RNDN);
+		  mpfr_add_ui (sk, sk, 1, GMP_RNDN);
+		  mpfr_div (sk, tmp2, sk, GMP_RNDN);
+		  twopoweri <<= 1;
+		}
+	    }
+	  else
+	    twopoweri <<= 1;
         }
-
       if (comparaison > 0)
 	{
 	  mpfr_const_pi (tmp, GMP_RNDN);
@@ -262,8 +315,12 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	break;
       realprec += BITS_PER_MP_LIMB;
     }
-
+  
   inexact = mpfr_set4 (atan, arctgt, rnd_mode, sign);
+
+  for (i = 0 ; i < oldn0 ; i++)
+    mpz_clear (tabz[i]);
+  (*__gmp_free_func) (tabz, oldn0*sizeof (mpz_t));
 
   mpfr_clear (arctgt);
   mpfr_clear (tmp);

@@ -1,6 +1,6 @@
 /* mpfr_acos -- arc-cosinus of a floating-point number
 
-Copyright 2001, 2002, 2003, 2004 Free Software Foundation.
+Copyright 2001, 2002, 2003, 2004, 2005 Free Software Foundation.
 
 This file is part of the MPFR Library, and was contributed by Mathieu Dutour.
 
@@ -87,12 +87,13 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mp_rnd_t rnd_mode)
   /* If x ~ 2^-N, acos(x) ~ PI/2 - x - x^3/6
      If Prec < 2*N, we can't round since x^3/6 won't be counted. */
   if (MPFR_PREC (acos) >= MPFR_PREC (x)
-      && prec <= -2*MPFR_GET_EXP (x) + 10)
-    prec = -2*MPFR_GET_EXP (x) + 10;
+      && prec <= -2*MPFR_GET_EXP (x) + 5)
+    prec = -2*MPFR_GET_EXP (x) + 5;
 
   mpfr_init2 (tmp, prec);
   mpfr_init2 (arcc, prec);
 
+  int count = 1;
   for (;;)
     {
       /* acos(x) = Pi/2 - asin(x) = Pi/2 - atan(x/sqrt(1-x^2)) */
@@ -111,8 +112,14 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mp_rnd_t rnd_mode)
       prec += BITS_PER_MP_LIMB;
       mpfr_set_prec (tmp, prec);
       mpfr_set_prec (arcc, prec);
+      count ++;
     }
-  
+  /*  static double xx = 0;
+  double d = mpfr_get_d1 (x);
+  if (d != xx)
+    printf ("C%d(%lu) ", count, prec), mpfr_dump (x);
+    xx = d; */
+
   inexact = mpfr_set (acos, arcc, rnd_mode);
   mpfr_clear (tmp);
   mpfr_clear (arcc);
