@@ -43,8 +43,11 @@ mpfr_cmp_ui_2exp (b, i, f)
   int e, k, bn; mp_limb_t c, *bp;
 
   if (MPFR_SIGN(b) < 0) return -1;
+  /* now b>=0 */
   else if (!NOTZERO(b)) return((i) ? -1 : 0);
-  else { /* b>0 */
+  /* now b>0 */
+  else if (i==0) return 1;
+  else { /* b>0, i>0 */
     e = EXP(b); /* 2^(e-1) <= b < 2^e */
     if (e>f+mp_bits_per_limb) return 1;
 
