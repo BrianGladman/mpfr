@@ -31,6 +31,7 @@ check (mp_prec_t p0, mp_prec_t p1)
 {
   mpfr_t x, y, z;
   mp_rnd_t rnd;
+  int dif;
 
   mpfr_init (x);
   mpfr_init (y);
@@ -46,16 +47,14 @@ check (mp_prec_t p0, mp_prec_t p1)
           rnd = RND_RAND ();
           mpfr_const_log2 (x, rnd);
           mpfr_set (y, z, rnd);
-          if (mpfr_cmp (x, y) && mpfr_can_round (z, mpfr_get_prec(z), GMP_RNDN,
+          if ((dif = mpfr_cmp (x, y)) 
+	      && mpfr_can_round (z, mpfr_get_prec(z), GMP_RNDN,
                                                  rnd, p0))
             {
-              printf ("mpfr_const_log2 fails for prec=%u, rnd=%s\n",
-                      (unsigned int) p0, mpfr_print_rnd_mode (rnd));
-              printf ("expected ");
-              mpfr_out_str (stdout, 2, 0, y, GMP_RNDN);
-              printf ("\ngot      ");
-              mpfr_out_str (stdout, 2, 0, x, GMP_RNDN);
-              printf ("\n");
+              printf ("mpfr_const_log2 fails for prec=%u, rnd=%s Diff=%d\n",
+                      (unsigned int) p0, mpfr_print_rnd_mode (rnd), dif);
+              printf ("expected "), mpfr_dump (y);
+              printf ("got      "), mpfr_dump (x);
               exit (1);
             }
         }

@@ -314,12 +314,20 @@ test_specialz (int (*mpfr_func)(mpfr_ptr, mpfr_srcptr, mpz_srcptr, mp_rnd_t),
   mpz_add_ui (z1, z1, 1);
   mpz_fac_ui (z2, 20); /* 20!+1 fits perfectly in a 128 bits mantissa */
   mpz_add_ui (z2, z2, 1);
+
   res = mpfr_set_z(x1, z1, GMP_RNDN);
   if (res)
     {
       printf("Specialz %s: set_z1 error\n", op);
       exit(1);
     }
+  mpfr_set_z (x2, z2, GMP_RNDN);
+  if (res)
+    {
+      printf("Specialz %s: set_z2 error\n", op);
+      exit(1);
+    }
+
   /* (19!+1) * (20!+1) fits in a 128 bits number */
   res = mpfr_func(x1, x1, z2, GMP_RNDN);
   if (res)
@@ -340,6 +348,8 @@ test_specialz (int (*mpfr_func)(mpfr_ptr, mpfr_srcptr, mpz_srcptr, mp_rnd_t),
       mpfr_print_binary(x1);
       printf("\nx2=");
       mpfr_print_binary(x2);
+      printf ("\nZ2=");
+      mpz_out_str (stdout, 2, z1);
       putchar('\n');
       exit(1);
     }
@@ -575,13 +585,13 @@ main (int argc, char *argv[])
 
   special ();
 
+  test_specialz (mpfr_add_z, mpz_add, "add");
+  test_specialz (mpfr_sub_z, mpz_sub, "sub");
+  test_specialz (mpfr_mul_z, mpz_mul, "mul");
   test_genericz (2, 100, 100, mpfr_add_z, "add");
   test_genericz (2, 100, 100, mpfr_sub_z, "sub");
   test_genericz (2, 100, 100, mpfr_mul_z, "mul");
   test_genericz (2, 100, 100, mpfr_div_z, "div");
-  test_specialz (mpfr_add_z, mpz_add, "add");
-  test_specialz (mpfr_sub_z, mpz_sub, "sub");
-  test_specialz (mpfr_mul_z, mpz_mul, "mul");
 
   test_genericq (2, 100, 100, mpfr_add_q, "add");
   test_genericq (2, 100, 100, mpfr_sub_q, "sub");
