@@ -245,11 +245,12 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 	  MPFR_CLEAR_FLAGS(z);
           if (negative) /* x = -Inf */
             {
+              int odd = is_odd (y) == 1;
               if (MPFR_IS_POS(y))
                 MPFR_SET_INF(z);
               else
                 MPFR_SET_ZERO(z);
-              if (is_odd (y) == 1) /* y is an odd integer */
+              if (odd) /* y is an odd integer */
                 MPFR_SET_NEG(z);
               else
                 MPFR_SET_POS(z);
