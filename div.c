@@ -27,7 +27,6 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-// #define MPFR_DEBUG_LEVEL 30
 #if MPFR_DEBUG_LEVEL > 20
 void affiche_mp(mp_srcptr, mp_size_t); 
 
@@ -311,10 +310,13 @@ mpfr_div (q, u, v, rnd_mode)
       MPN_COPY(rem2 + rsize - 1 - qsize, rp, bsize);
     
       if (asize < usize) 
-	MPN_COPY(rem2 + rsize - 1 - qsize - usize + asize, 
-		 up, usize - asize); 
-
-      MPN_ZERO(rem2, rsize - 1 - qsize - usize + asize); 
+	{
+	  MPN_COPY(rem2 + rsize - 1 - qsize - usize + asize, 
+		   up, usize - asize); 
+	  MPN_ZERO(rem2, rsize - 1 - qsize - usize + asize); 
+	}
+      else 
+	MPN_ZERO(rem2, rsize - 1 - qsize); 
 
 #if MPFR_DEBUG_LEVEL > 20
       printf("ulo + r: "); affiche_mp(rem2, rsize); 
@@ -426,7 +428,8 @@ mpfr_div (q, u, v, rnd_mode)
 	}
       else /* We might have to correct an even rounding if remainder
 	      is nonzero and if even rounding was towards 0. */
-	if (rnd_mode == GMP_RNDN && (inex == 2 || inex == -2))
+	if (rnd_mode == GMP_RNDN && (inex == MPFR_EVEN_INEX 
+				     || inex == -MPFR_EVEN_INEX))
 	  {
 	    k = rsize - 1; 
 	    while (k >= 0) { if (rp[k]) break; k--; }
