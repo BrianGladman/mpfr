@@ -51,6 +51,7 @@ void check3(a, rnd_mode, Q) double a; unsigned char rnd_mode; double Q;
   else {
     if (Q != sqrt(a)) {
       fprintf(stderr, "you've found a bug in your machine's sqrt for x=%1.20e\n", a);
+      mpfr_clear(q); 
       exit(1);
 
     }
@@ -62,6 +63,7 @@ void check3(a, rnd_mode, Q) double a; unsigned char rnd_mode; double Q;
       printf("mpfr_sqrt failed for a=%1.20e, rnd_mode=%s\n",
 	     a, mpfr_print_rnd_mode(rnd_mode));
       printf("expected sqrt is %1.20e, got %1.20e (%d ulp)\n",Q,Q2,u);
+      mpfr_clear(q); 
       exit(1);
     }
     else if (u>maxulp || u<-maxulp) {
@@ -87,8 +89,10 @@ void check4(a, rnd_mode, Q) double a; unsigned char rnd_mode; char *Q;
 	     a, mpfr_print_rnd_mode(rnd_mode));
       printf("expected "); mpfr_print_raw(res); putchar('\n');
       printf("got      "); mpfr_print_raw(q); putchar('\n');
+      mpfr_clear(q); mpfr_clear(res); 
       exit(1);
   }
+  mpfr_clear(res); 
   mpfr_clear(q);
 }
 
