@@ -1,6 +1,6 @@
 /* mpfr_div_ui -- divide a floating-point number by a machine integer
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 1999-2001 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -28,22 +28,30 @@ MA 02111-1307, USA. */
 
 /* #define DEBUG */
 
+#define ONE ((mp_limb_t) 1)
+
 /* returns 0 if result exact, non-zero otherwise */
 int
 #ifdef __STDC__
-mpfr_div_ui(mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
+mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 #else
-mpfr_div_ui(y, x, u, rnd_mode)
+mpfr_div_ui (y, x, u, rnd_mode)
      mpfr_ptr y;
      mpfr_srcptr x;
      unsigned long int u;
      mp_rnd_t rnd_mode;
 #endif
 {
-  int xn, yn, dif, sh, i; mp_limb_t *xp, *yp, *tmp, c, d;
+  long int xn, yn, dif, sh, i;
+  mp_limb_t *xp, *yp, *tmp, c, d;
+  int inexact, middle = 1;
   TMP_DECL(marker);
 
-  if (MPFR_IS_NAN(x)) { MPFR_SET_NAN(y); return 1; }
+  if (MPFR_IS_NAN(x))
+    {
+      MPFR_SET_NAN(y);
+      return 1;
+    }
 
   MPFR_CLEAR_NAN(y); /* clear NaN flag */
 
@@ -53,16 +61,20 @@ mpfr_div_ui(y, x, u, rnd_mode)
       if (MPFR_SIGN(y) * MPFR_SIGN(x) < 0) /* consider u=0 as +0 */
 	MPFR_CHANGE_SIGN(y); 
       return 0; 
-      /*    TODO: semantique de la division par un zero entier ? signe ? */
     }
 
-  if (u==0) 
+  if (u == 0) 
     {
-      if (MPFR_IS_ZERO(x)) { MPFR_SET_NAN(y) ; return 1; }
-      else
+      if (MPFR_IS_ZERO(x)) /* 0/0 is NaN */
+	{
+	  MPFR_SET_NAN(y);
+	  return 1;
+	}
+      else /* x/0 is Inf */
 	{ 
-	  MPFR_SET_INF(y); MPFR_SET_SAME_SIGN(y, x); return 0; 
-	  /* TODO: semantique de la division dans ce cas-la aussi ? */
+	  MPFR_SET_INF(y);
+	  MPFR_SET_SAME_SIGN(y, x);
+	  return 0;
 	}
     }
 
@@ -75,15 +87,16 @@ mpfr_div_ui(y, x, u, rnd_mode)
     }
 
   TMP_MARK(marker);
-  xn = (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB + 1;
-  yn = (MPFR_PREC(y)-1)/BITS_PER_MP_LIMB + 1;
+  xn = (MPFR_PREC(x) - 1)/BITS_PER_MP_LIMB + 1;
+  yn = (MPFR_PREC(y) - 1)/BITS_PER_MP_LIMB + 1;
 
   xp = MPFR_MANT(x);
   yp = MPFR_MANT(y);
   MPFR_EXP(y) = MPFR_EXP(x);
-  if (MPFR_SIGN(x) * MPFR_SIGN(y) < 0) MPFR_CHANGE_SIGN(y);
+  if (MPFR_SIGN(x) * MPFR_SIGN(y) < 0)
+    MPFR_CHANGE_SIGN(y);
 
-  dif = yn+1-xn;
+  dif = yn + 1 - xn;
 #ifdef DEBUG
   printf("dif=%d u=%lu xn=%d\n",dif,u,xn);
   printf("x="); mpfr_print_raw(x); putchar('\n');
@@ -91,73 +104,110 @@ mpfr_div_ui(y, x, u, rnd_mode)
 
   /* we need to store yn+1 = xn + dif limbs of the quotient */
   /* don't use tmp=yp since the mpn_lshift call below requires yp >= tmp+1 */
-  tmp=TMP_ALLOC((yn+1)*BYTES_PER_MP_LIMB);
+  tmp = TMP_ALLOC((yn + 1) * BYTES_PER_MP_LIMB);
 
   c = (mp_limb_t) u;
-  if (dif>=0) {
+  if (dif >= 0)
+    {
 #if (__GNU_MP_VERSION < 3) && (UDIV_NEEDS_NORMALIZATION==1)
-    /* patch for bug in mpn_divrem_1 for GMP 2.xxx */
-    count_leading_zeros(sh, c);
-    c <<= sh;
-    MPFR_EXP(y) += sh;
+      /* patch for bug in mpn_divrem_1 for GMP 2.xxx */
+      count_leading_zeros(sh, c);
+      c <<= sh;
+      MPFR_EXP(y) += sh;
 #endif
-    c = mpn_divrem_1 (tmp, dif, xp, xn, c);
-  }
-  else /* dif < 0 i.e. xn > yn */
+      c = mpn_divrem_1 (tmp, dif, xp, xn, c); /* used all the dividend */
+    }
+  else /* dif < 0 i.e. xn > yn, don't use the (-dif) low limbs from x */
     c = mpn_divrem_1 (tmp, 0, xp - dif, yn + 1, c);
 
-  if (tmp[yn]==0) { tmp--; sh=0; MPFR_EXP(y) -= BITS_PER_MP_LIMB; }
+  inexact = (c != 0);
+  if (rnd_mode == GMP_RNDN)
+    {
+      if (2 * c < (mp_limb_t) u)
+	middle = -1;
+      else if (2 * c > (mp_limb_t) u)
+	middle = 1;
+      else
+	middle = 0; /* exactly in the middle */
+    }
+  for (i=0; ((inexact == 0) || (middle == 0)) && (i < -dif); i++)
+    if (xp[i])
+      inexact = middle = 1; /* larger than middle */
+
+  if (tmp[yn] == 0) /* high limb is zero */
+    {
+      tmp--;
+      sh = 0;
+      MPFR_EXP(y) -= BITS_PER_MP_LIMB;
+    }
+
+  /* now we have yn limbs starting from tmp[1], with tmp[yn]<>0 */
+
   /* shift left to normalize */
   count_leading_zeros(sh, tmp[yn]);
-  if (sh) {
-    mpn_lshift(yp, tmp+1, yn, sh);
-    yp[0] += tmp[0] >> (BITS_PER_MP_LIMB-sh);
-    MPFR_EXP(y) -= sh; 
-  }
-  else MPN_COPY(yp, tmp + 1, yn);
+  if (sh)
+    {
+      mpn_lshift (yp, tmp + 1, yn, sh);
+      yp[0] += tmp[0] >> (BITS_PER_MP_LIMB - sh);
+      middle = middle || ((tmp[0] << sh) != 0);
+      inexact = inexact || ((tmp[0] << sh) != 0);
+      MPFR_EXP(y) -= sh; 
+    }
+  else
+    MPN_COPY(yp, tmp + 1, yn);
 #ifdef DEBUG
   printf("y="); mpfr_print_raw(y); putchar('\n');
 #endif
 
-  sh = yn*BITS_PER_MP_LIMB - MPFR_PREC(y);
+  sh = yn * BITS_PER_MP_LIMB - MPFR_PREC(y);
   /* it remains sh bits in less significant limb of y */
 
-  d = *yp & (((mp_limb_t)1 << sh) - 1);
+  d = *yp & ((ONE << sh) - 1);
   *yp ^= d; /* set to zero lowest sh bits */
 
   TMP_FREE(marker);
-  if ((c | d)==0) {
-    for (i=0; i<-dif && xp[i]==0; i++);
-    if (i>=-dif) return 0; /* result is exact */
-  }
+  if ((d == 0) && (inexact == 0))
+    return 0; /* result is exact */
 
-  switch (rnd_mode) {
-  case GMP_RNDZ:
-    return 1; /* result is inexact */
-  case GMP_RNDU:
-    if (MPFR_SIGN(y)>0) mpfr_add_one_ulp(y);
-    return 1; /* result is inexact */
-  case GMP_RNDD:
-    if (MPFR_SIGN(y)<0) mpfr_add_one_ulp(y);
-    return 1; /* result is inexact */
-  case GMP_RNDN:
-    if (d < ((mp_limb_t)1 << (sh-1))) return 1;
-    else if (d > ((mp_limb_t)1 << (sh-1))) {
-      mpfr_add_one_ulp(y);
-    }
-    else { /* d = (mp_limb_t)1 << (sh-1) */
-      if (c) mpfr_add_one_ulp(y);
-      else {
-	for (i=0; i<-dif && xp[i]==0; i++);
-	if (i<-dif) mpfr_add_one_ulp(y);
-	else { /* exactly in the middle */
-	  if (*yp & ((mp_limb_t)1 << sh)) mpfr_add_one_ulp(y);
+  switch (rnd_mode)
+    {
+    case GMP_RNDZ:
+      return -MPFR_SIGN(x); /* result is inexact */
+
+    case GMP_RNDU:
+      if (MPFR_SIGN(y) > 0)
+	mpfr_add_one_ulp (y);
+      return 1; /* result is inexact */
+
+    case GMP_RNDD:
+      if (MPFR_SIGN(y) < 0)
+	mpfr_add_one_ulp (y);
+      return -1; /* result is inexact */
+
+    case GMP_RNDN:
+      if (sh && d < (ONE << (sh - 1)))
+	return -MPFR_SIGN(x);
+      else if (sh && d > (ONE << (sh - 1)))
+	{
+	  mpfr_add_one_ulp (y);
+	  return MPFR_SIGN(x);
 	}
+    else /* sh = 0 or d = ONE << (sh-1) */
+      {
+	/* we are in the middle if:
+	   (a) sh > 0 and inexact == 0
+	   (b) sh=0 and middle=1
+	 */
+	if ((sh && inexact) || (!sh && (middle > 0)) || (*yp & (ONE << sh)))
+	  {
+	    mpfr_add_one_ulp (y);
+	    return MPFR_SIGN(x);
+	  }
+	    else
+	      return -MPFR_SIGN(x);
       }
     }
-    return 1;
-  }
-  return 0; /* to prevent warning from gcc */
+  return inexact; /* should never go here */
 }
 
 
