@@ -53,6 +53,8 @@ In most cases, as above, the error comes from the libm.a. On Alpha/Linux,
 which is known to have a bad libm.a, you may even find errors in the
 addition or multiplication.
 
+4) With version 2.0.2 of GMP, add -DGMP2 in the configure options.
+
 In case of problem.
 ===================
 
