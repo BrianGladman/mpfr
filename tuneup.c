@@ -30,9 +30,6 @@ MA 02111-1307, USA. */
 #define _PROTO __GMP_PROTO
 #include "speed.h"
 
-#define THRESHOLD_WINDOW 16
-#define THRESHOLD_FINAL_WINDOW 128
-
 int verbose;
 
 /* s->size: precision of both input and output
@@ -73,6 +70,43 @@ int verbose;
   return t;                                          \
 } while (0)
 
+#define SPEED_MPFR_OP(mean_fun) do {                 \
+  unsigned  i;                                       \
+  mp_ptr    wp;                                      \
+  double    t;                                       \
+  mpfr_t    w, x, y;                                 \
+  mp_size_t size;                                    \
+  TMP_DECL (marker);                                 \
+                                                     \
+  SPEED_RESTRICT_COND (s->size >= MPFR_PREC_MIN);    \
+  SPEED_RESTRICT_COND (s->size <= MPFR_PREC_MAX);    \
+  TMP_MARK (marker);                                 \
+                                                     \
+  size = (s->size-1)/BITS_PER_MP_LIMB+1;             \
+  s->xp[size-1] |= MPFR_LIMB_HIGHBIT;                \
+  MPFR_TMP_INIT1 (s->xp, x, s->size);                \
+  MPFR_SET_EXP (x, 0);                               \
+  s->yp[size-1] |= MPFR_LIMB_HIGHBIT;                \
+  MPFR_TMP_INIT1 (s->yp, y, s->size);                \
+  MPFR_SET_EXP (y, 0);                               \
+                                                     \
+  MPFR_TMP_INIT (wp, w, s->size, size);              \
+                                                     \
+  speed_operand_src (s, s->xp, size);                \
+  speed_operand_src (s, s->yp, size);                \
+  speed_operand_dst (s, wp, size);                   \
+  speed_cache_fill (s);                              \
+                                                     \
+  speed_starttime ();                                \
+  i = s->reps;                                       \
+  do                                                 \
+    mean_fun (w, x, y, GMP_RNDN);                    \
+  while (--i != 0);                                  \
+  t = speed_endtime ();                              \
+                                                     \
+  TMP_FREE (marker);                                 \
+  return t;                                          \
+} while (0)
 
 
 /* First we include all the functions we want to tune inside this program.
@@ -96,10 +130,22 @@ static double speed_mpfr_exp (struct speed_params *s) {
   SPEED_MPFR_FUNC (mpfr_exp);
 }
 
+/* Setup mpfr_mul */
+mp_prec_t mpfr_mul_threshold;
+#undef  MPFR_MUL_THRESHOLD
+#define MPFR_MUL_THRESHOLD mpfr_mul_threshold
+#include "mul.c"
+static double speed_mpfr_mul (struct speed_params *s) {
+  SPEED_MPFR_OP (mpfr_mul);
+}
 
 
-/* Common functions (inspired by GMP function) */
-static int analyze_data (double *dat, int ndat) {
+
+/************************************************
+ * Common functions (inspired by GMP function)  *
+ ************************************************/
+static int 
+analyze_data (double *dat, int ndat) {
   double  x, min_x;
   int     j, min_j;
 
@@ -122,6 +168,8 @@ static int analyze_data (double *dat, int ndat) {
   return min_j;
 }
 
+#define THRESHOLD_WINDOW 16
+#define THRESHOLD_FINAL_WINDOW 128
 static double domeasure (mp_prec_t *threshold, 
 			 double (*func) (struct speed_params *),
 			 mp_prec_t p)
@@ -133,19 +181,29 @@ static double domeasure (mp_prec_t *threshold,
   s.align_xp = s.align_yp = s.align_wp = 64;
   s.size = p;
   size = (p - 1)/BITS_PER_MP_LIMB+1;
-  s.xp = malloc (size*sizeof (mp_limb_t));
+  s.xp = malloc (2*size*sizeof (mp_limb_t));
   if (s.xp == NULL)
     {
       fprintf (stderr, "Can't allocate memory.\n");
       abort ();
     }
   mpn_random (s.xp, size);
+  s.yp = s.xp + size;
+  mpn_random (s.yp, size);
   *threshold = MPFR_PREC_MAX;
   t1 = speed_measure (func, &s);
-  if (t1 == -1.0) abort ();
-  *threshold = MPFR_PREC_MIN;
+  if (t1 == -1.0) 
+    {
+      fprintf (stderr, "Failed to measure function 1!\n");
+      abort ();
+    }
+  *threshold = /*MPFR_PREC_MIN*/0;
   t2 = speed_measure (func, &s);
-  if (t2 == -1.0) abort ();
+  if (t2 == -1.0) 
+    {
+      fprintf (stderr, "Failed to measure function 2!\n");
+      abort ();
+    }
   free (s.xp);
   /* t1 is the time of the first alog (used for low prec) */
   if (t2 >= t1)
@@ -178,6 +236,9 @@ tune_simple_func (mp_prec_t *threshold,
   pmin = p = pstart;
   d = domeasure (threshold, func, pmin);
   if (d < 0.0) {
+    if (verbose)
+      printf ("Oups: even for %lu, algo 2 seems to be faster!\n", 
+	      (unsigned long) pmin);
     *threshold = MPFR_PREC_MIN;
     return;
   }
@@ -231,19 +292,21 @@ tune_simple_func (mp_prec_t *threshold,
 	/* numpos == numneg ... */
 	if (++ try > 2) {
 	  *threshold = p;
+	  if (verbose)
+	    printf ("Quick find: %lu\n", *threshold);
 	  return ;
 	}      
     }
   
   /* Final tune... */
   if (verbose)
-    printf ("Finalizing in [%lu, %lu]...\n", pmin, pmax);
+    printf ("Finalizing in [%lu, %lu]... ", pmin, pmax);
   for (i = 0 ; i < THRESHOLD_FINAL_WINDOW+1 ; i++)
     measure[i] = domeasure (threshold, func, pmin+i);
   i = analyze_data (measure, THRESHOLD_FINAL_WINDOW+1);
   *threshold = pmin + i;
   if (verbose)
-    printf ("Threshold = %lu\n", *threshold);
+    printf ("%lu\n", *threshold);
   return;
 }
 
@@ -252,9 +315,9 @@ tune_simple_func (mp_prec_t *threshold,
 /************************************
  * Tune Mulder's mulhigh function   *
  ************************************/
-#define TOLERANCE 1.015
+#define TOLERANCE 1.02
 #ifndef MPFR_MULHIGH_SIZE
-# define MPFR_MULHIGH_SIZE 512
+# define MPFR_MULHIGH_SIZE 1024
 #endif
 #define MPFR_MULHIGH_TAB_SIZE MPFR_MULHIGH_SIZE
 #include "mulders.c"
@@ -263,7 +326,7 @@ static double speed_mpfr_mulhigh (struct speed_params *s) {
   SPEED_ROUTINE_MPN_MUL_N (mpfr_mulhigh_n);
 }
 
-/* Tune size N: to speed up! */
+/* Tune size N */
 static mp_size_t
 tune_mulder_upto (mp_size_t n)
 {
@@ -333,10 +396,12 @@ tune_mulder (FILE *f)
 
 
 
-/**************************************************
- *            Tune all the threshold of MPFR      *
- **************************************************/
-static void all (const char *filename) 
+/*******************************************************
+ *            Tune all the threshold of MPFR           *
+ * Warning: tune the function in their dependent order!*
+ *******************************************************/
+static void 
+all (const char *filename) 
 {
   FILE *f;
   time_t  start_time, end_time;
@@ -364,7 +429,7 @@ static void all (const char *filename)
 
   time (&start_time);
   tp = localtime (&start_time);
-  fprintf (f, "/* Generated by tuneup.c, %d-%02d-%02d, ",
+  fprintf (f, "/* Generated by MPFR's tuneup.c, %d-%02d-%02d, ",
 	  tp->tm_year+1900, tp->tm_mon+1, tp->tm_mday);
 
 #ifdef __ICC
@@ -387,6 +452,14 @@ static void all (const char *filename)
 
   /* Tune mulhigh */
   tune_mulder (f);
+
+  /* Tune mpfr_mul (Threshold is limb size, but it doesn't matter too much */
+  if (verbose)
+    printf ("Tuning mpfr_mul...\n");
+  tune_simple_func (&mpfr_mul_threshold, speed_mpfr_mul, 
+		    MPFR_PREC_MIN);  
+  fprintf (f, "#define MPFR_MUL_THRESHOLD %lu\n", 
+	   (unsigned long) (mpfr_mul_threshold-1)/BITS_PER_MP_LIMB+1);
 
   /* Tune mpfr_exp_2 */
   if (verbose)
@@ -426,7 +499,7 @@ int main (int argc, char *argv[])
   verbose = argc > 1;
 
   if (verbose)
-    printf ("Tuning MPFR.\n");
+    printf ("Tuning MPFR. It may take some times.\n");
 
   all ("mparam.h");
 

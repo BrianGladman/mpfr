@@ -20,6 +20,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
 int
@@ -113,6 +114,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   tmp = (mp_limb_t *) TMP_ALLOC ((size_t) k * BYTES_PER_MP_LIMB);
 
   /* multiplies two mantissa in temporary allocated space */
+#if 0
   b1 = MPFR_LIKELY (bn >= cn)
     ? mpn_mul (tmp, MPFR_MANT (b), bn, MPFR_MANT (c), cn)
     : mpn_mul (tmp, MPFR_MANT (c), cn, MPFR_MANT (b), bn);
@@ -128,10 +130,71 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   if (MPFR_UNLIKELY (b1 == 0))
     mpn_lshift (tmp, tmp, tn, 1); /* tn <= k, so no stack corruption */
 
+#else
+
+  if (MPFR_UNLIKELY (bn < cn)) 
+    {
+      mpfr_srcptr tmp = b;
+      mp_size_t tn  = bn;
+      b = c;
+      bn = cn;
+      c = tmp;
+      cn = tn;
+    }
+  if (MPFR_UNLIKELY (bn > MPFR_MUL_THRESHOLD))
+    {
+      mp_size_t n;
+      mp_prec_t p;
+
+      /* Compute estimated precision of mulhigh */
+      n = MPFR_LIMB_SIZE (a) + 1;
+      n = MIN (n, cn);
+      MPFR_ASSERTD (n >= 1 && 2*n <= k && n <= cn && n <= bn);
+      p = n*BITS_PER_MP_LIMB - MPFR_INT_CEIL_LOG2 (n + (n < cn) + (n < bn) );
+      if (MPFR_UNLIKELY (MPFR_PREC (a) > p - 4))
+	/* MulHigh can't produce a roundable result. */
+	goto full_multiply;
+      /* Compute an approximation of the product of b and c */
+      mpfr_mulhigh_n (tmp+k-2*n, MPFR_MANT (b) + bn - n, 
+		      MPFR_MANT (c) + cn - n, n);
+
+      /* now tmp[0]..tmp[k-1] contains the product of both mantissa,
+	 with tmp[k-1]>=2^(BITS_PER_MP_LIMB-2) */
+      b1 = tmp[k-1] >> (BITS_PER_MP_LIMB - 1); /* msb from the product */
+      
+      /* if the mantissas of b and c are uniformly distributed in ]1/2, 1],
+	 then their product is in ]1/4, 1/2] with probability 2*ln(2)-1 ~ 0.386
+	 and in [1/2, 1] with probability 2-2*ln(2) ~ 0.614 */
+      tmp += k - tn;
+      if (MPFR_UNLIKELY (b1 == 0))
+	mpn_lshift (tmp, tmp, tn, 1);
+
+      if (MPFR_UNLIKELY (!mpfr_can_round_raw (tmp, tn, sign, p + b1 - 1,
+	    GMP_RNDN, GMP_RNDZ, MPFR_PREC(a)+(rnd_mode==GMP_RNDN))))
+	goto full_multiply;
+      }
+  else
+    {
+    full_multiply:
+      b1 = mpn_mul (tmp, MPFR_MANT (b), bn, MPFR_MANT (c), cn);      
+
+      /* now tmp[0]..tmp[k-1] contains the product of both mantissa,
+	 with tmp[k-1]>=2^(BITS_PER_MP_LIMB-2) */
+      b1 >>= BITS_PER_MP_LIMB - 1; /* msb from the product */
+      
+      /* if the mantissas of b and c are uniformly distributed in ]1/2, 1],
+	 then their product is in ]1/4, 1/2] with probability 2*ln(2)-1 ~ 0.386
+	 and in [1/2, 1] with probability 2-2*ln(2) ~ 0.614 */
+      tmp += k - tn;
+      if (MPFR_UNLIKELY (b1 == 0))
+	mpn_lshift (tmp, tmp, tn, 1); /* tn <= k, so no stack corruption */
+    }
+#endif
+
   ax2 = ax + (mp_exp_t) (b1 - 1);
   MPFR_RNDRAW (inexact, a, tmp, bq+cq, rnd_mode, sign, ax2++);
   TMP_FREE (marker);
-  MPFR_EXP  (a) = ax2; /* Can't use MPFR_SET_EXP: Exponent may be out of range */
+  MPFR_EXP  (a) = ax2; /* Can't use MPFR_SET_EXP: Expo may be out of range */
   MPFR_SET_SIGN (a, sign);
   if (MPFR_UNLIKELY (ax2 > __gmpfr_emax))
     return mpfr_overflow (a, rnd_mode, sign);

@@ -541,6 +541,28 @@ where $b[i]$ and $c[i]$ is meant as $0$ for negative $i$,
 and $c[i]$ is meant as $0$ for $i \ge {\tt cn}$
 (${\tt cancel_b} \ge 0$, but ${\tt cancel_c}$ may be negative).
 
+\subsection{The {\tt mpfr\_mul} function}
+
+{\tt mpfr\_mul} uses two algorithms: if the precision of the operands
+is small enough, a plain multiplication using {\tt mpn\_mul} is used
+(there is no error, except in the final rounding);
+otherwise it uses {\tt mpfr\_mulhigh\_n}. 
+
+In this case, it trunks the two operands to $m$ limbs: 
+$1/2 \leq b < 1$ and $1/2 \leq c < 1$, $b = bh+bl$ and $c = ch+c$
+($B=2^{32} or 2^{64}$).
+The error comes from:
+\begin {itemize}
+\item Truncation: $ \leq bl.ch + bh.cl + bl.cl \leq bl + cl \leq 2 B^{-m}$
+\item Mulder: Assuming $error(Mulder(n)) \leq error(mulhigh_basecase(n))$
+  $error(mulhigh(n) \leq (n-1) (B-1)^2 B^{-n-2} + ... + 1 (B-1)^2 B^{-2 n}$
+  $ = \sum_{i=1}^{n-1}{(n-i) (B-1)^2 B^{-n-1-i}}$
+  $ = (B-1)^2 B^{-n-1} \sum_{i=1}^{n-1}{B^{-i}}$
+  $ = (b-1)^2 B^{-n-1} \frac{B^{1-n}-n+n B-B}{(1-B)^2}$
+  $ \leq n B^{-n}$
+\end {itemize}
+Total error: $\leq (m+2) B^{-m}$
+
 \subsection{The {\tt mpfr\_div} function}
 
 The goals of the code of the {\tt mpfr\_div} function include the fact
