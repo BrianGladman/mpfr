@@ -135,6 +135,7 @@ void check5(double x, unsigned int rnd_mode)
 }
 #endif
 
+#ifdef TEST
 void check2(x,px,y,py,pz,rnd_mode) double x,y; int px,py,pz,rnd_mode;
 {
   mpfr_t xx, yy, zz; double z,z2; int u;
@@ -143,9 +144,7 @@ void check2(x,px,y,py,pz,rnd_mode) double x,y; int px,py,pz,rnd_mode;
   mpfr_set_d(xx, x, rnd_mode);
   mpfr_set_d(yy, y, rnd_mode);
   mpfr_add(zz, xx, yy, rnd_mode);
-#ifdef TEST
   mpfr_set_machine_rnd_mode(rnd_mode);
-#endif
   z = x+y; z2=mpfr_get_d(zz); u=ulp(z,z2);
   /* one ulp difference is possible due to composed rounding */
   if (px>=53 && py>=53 && pz>=53 && ABS(u)>1) { 
@@ -158,6 +157,7 @@ void check2(x,px,y,py,pz,rnd_mode) double x,y; int px,py,pz,rnd_mode;
     exit(1); }
   mpfr_clear(xx); mpfr_clear(yy); mpfr_clear(zz);
 }
+#endif
 
 void check2a(x,px,y,py,pz,rnd_mode,res)
 double x,y; int px,py,pz,rnd_mode; char *res;
