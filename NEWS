@@ -1,4 +1,4 @@
-Copyright 2000, 2001, 2002, 2003, 2004 Free Software Foundation.
+Copyright 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation.
 Contributed by the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.
@@ -39,7 +39,7 @@ Changes from version 2.0.3 to version 2.1.0:
 - improved portability (library and test suite).
 - It handles correctly non IEEE-754 double.
 - GMP internal files are not needed to install MPFR.
-- It is faster with low-precision floatting point.
+- It is faster with low-precision floating point.
 - New global flag: ERANGE_FLAG.
 - Binary incompatible with previous versions, but API compatible.
 - mpfr_set_str doesn't allow anymore "@NAN@garbagechar" and "@INF@garbagechar",
@@ -70,12 +70,12 @@ Changes from version 2001 to version 2.0.1:
   pow, pow_si, pow_ui, sinh, tan, tanh, ui_pow, ui_pow_ui
 - other new functions: mpfr_const_euler, mpfr_dim, mpfr_fma, mpfr_hypot,
   mpfr_min, mpfr_max, mpfr_rint, mpfr_set_inf, mpfr_set_nan
-- new operations with mpz or mpz: mpfr_{add,sub,mul,div}_[zq]
+- new operations with MPZ or MPQ: mpfr_{add,sub,mul,div}_[zq]
 - new predicates: mpfr_inf_p, mpfr_nan_p, mpfr_number_p, mpfr_isinteger,
 - add mechanism to set/check exponent range (overflow, underflow), partially
   implemented in the mpfr functions.
 - efficiency: mpfr_div is now faster when the divisor has a few limbs
-- rounding: now mpfr_pow implements exact rouding, and most functions return a
+- rounding: now mpfr_pow implements exact rounding, and most functions return a
   ternary value indicating the position of the returned value wrt the exact one
   (thus the return value is now 'int' instead of 'void')
 - complete rewrite of the configuration files
