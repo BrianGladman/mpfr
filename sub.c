@@ -523,7 +523,7 @@ mpfr_sub1 (a, b, c, rnd_mode, diff_exp)
   to_nearest: /* 0 <= sh < BITS_PER_MP_LIMB : number of bits of a to truncate
                  bp[k] : last significant limb from b */
 #ifdef DEBUG
-mpfr_print_raw(a); putchar('\n');
+  mpfr_print_raw(a); putchar('\n');
 #endif
         if (sh) {
 	  cc = *ap & ((ONE<<sh)-1);
@@ -558,12 +558,20 @@ mpfr_print_raw(a); putchar('\n');
     cc = mpn_sub_1(ap, ap, an, ONE<<sh);
   goto end_of_sub;
 
-  add_one_ulp: /* add one unit in last place to a */
-    cc = mpn_add_1(ap, ap, an, ONE<<sh);
+ add_one_ulp: /* add one unit in last place to a */
+  if (mpn_add_1(ap, ap, an, ONE<<sh)) /* result is a power of two */
+    {
+      ap[an-1] = ONE << (BITS_PER_MP_LIMB - 1);
+      MPFR_EXP(a)++;
+    }
 
  end_of_sub:
 #ifdef DEBUG
-printf("b-c="); if (MPFR_SIGN(a)>0) putchar(' '); mpfr_print_raw(a); putchar('\n');
+  printf ("b-c=");
+  if (MPFR_SIGN(a)>0)
+    putchar (' ');
+  mpfr_print_raw (a);
+  putchar ('\n');
 #endif
   TMP_FREE(marker);
   return;
