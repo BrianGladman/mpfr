@@ -429,7 +429,6 @@ mpfr_pow (z, x, y, rnd_mode)
 	Nt += 10;
 
       } while (err<0 || !mpfr_can_round(t,err,GMP_RNDN,rnd_mode,Ny));
- 
       inexact = mpfr_set(z,t,rnd_mode);
       mpfr_clear(t);
       mpfr_clear(ti);

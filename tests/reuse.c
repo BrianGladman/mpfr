@@ -407,7 +407,6 @@ main (void)
   testfunc = (void*) mpfr_log10; test2 ("mpfr_log10", 53, GMP_RNDN);
   testfunc = (void*) mpfr_log2; test2 ("mpfr_log10", 53, GMP_RNDN);
   testfunc = (void*) mpfr_pow; test3 ("mpfr_pow", 53, GMP_RNDN);
-
   return 0;
 }
 
