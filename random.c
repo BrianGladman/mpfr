@@ -57,5 +57,5 @@ mpfr_random (x)
 
   cnt = xn * BITS_PER_MP_LIMB - prec; 
   /* cnt is the number of non significant bits in the low limb */
-  xp[0] &= ~((((mp_limb_t) 1) << cnt) - 1);
+  xp[0] &= ~((MP_LIMB_T_ONE << cnt) - MP_LIMB_T_ONE);
 }

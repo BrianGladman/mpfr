@@ -123,7 +123,7 @@ mpfr_sqrt (r, u, rnd_mode)
 	{
 	  up = TMP_ALLOC((usize + 1)*BYTES_PER_MP_LIMB);
 	  if (mpn_rshift(up + 1, MPFR_MANT(u), usize, 1))
-	    up [0] = ((mp_limb_t) 1) << (BITS_PER_MP_LIMB - 1); 
+	    up [0] = MP_LIMB_T_ONE << (BITS_PER_MP_LIMB - 1); 
 	  else up[0] = 0; 
 	  usize++; 
 	}
@@ -238,7 +238,7 @@ mpfr_sqrt (r, u, rnd_mode)
 	    (rw ? (rp[nw] >> (rw + 1)) & 1 : 
 	     (rp[nw] >> (BITS_PER_MP_LIMB - 1)) & 1))) /* or even rounding */ 
 	  {
-	    cc = mpn_add_1 (rp + nw, rp + nw, rrsize, ((mp_limb_t)1) << rw);
+	    cc = mpn_add_1 (rp + nw, rp + nw, rrsize, MP_LIMB_T_ONE << rw);
 	    inexact = 1;
 	  }
 	else
@@ -255,15 +255,15 @@ mpfr_sqrt (r, u, rnd_mode)
 	rsize = (MPFR_PREC(r) - 1)/BITS_PER_MP_LIMB + 1;
 	if (t) 
 	    cc = mpn_add_1 (rp + rrsize - rsize, rp + rrsize - rsize, rsize,
-			    (mp_limb_t) 1 << (BITS_PER_MP_LIMB - t));
+			    MP_LIMB_T_ONE << (BITS_PER_MP_LIMB - t));
 	else
 	    cc = mpn_add_1 (rp + rrsize - rsize, rp + rrsize - rsize, rsize,
-			    (mp_limb_t) 1);
+			    MP_LIMB_T_ONE);
       }
 
   if (cc) {
     mpn_rshift(rp, rp, rrsize, 1);
-    rp[rrsize-1] |= (mp_limb_t) 1 << (BITS_PER_MP_LIMB-1);
+    rp[rrsize-1] |= MP_LIMB_T_ONE << (BITS_PER_MP_LIMB - 1);
     MPFR_EXP(r)++; 
   }
 
@@ -273,7 +273,7 @@ mpfr_sqrt (r, u, rnd_mode)
   MPN_COPY(MPFR_MANT(r), rp + rsize - rrsize, rrsize); 
 
   if (MPFR_PREC(r) & (BITS_PER_MP_LIMB - 1))
-    MPFR_MANT(r) [0] &= ~(((mp_limb_t)1 << (BITS_PER_MP_LIMB - 
+    MPFR_MANT(r) [0] &= ~((MP_LIMB_T_ONE << (BITS_PER_MP_LIMB - 
 				   (MPFR_PREC(r) & (BITS_PER_MP_LIMB - 1)))) - 1) ; 
   
   TMP_FREE (marker);

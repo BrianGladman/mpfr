@@ -188,7 +188,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c,
 
   /* now perform rounding */
   sh = an * BITS_PER_MP_LIMB - MPFR_PREC(a); /* last unused bits from a */
-  carry = ap[0] & ((MP_LIMB_T_ONE << sh) - 1);
+  carry = ap[0] & ((MP_LIMB_T_ONE << sh) - MP_LIMB_T_ONE);
   ap[0] -= carry;
 
   if (rnd_mode == GMP_RNDN)

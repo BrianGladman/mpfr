@@ -63,12 +63,12 @@ mpfr_set_z (f, z, rnd)
     }
     else MPN_COPY(fp, zp + dif, fn);
     sh = fn*BITS_PER_MP_LIMB-MPFR_PREC(f);
-    cc = *fp & (((mp_limb_t)1 << sh) - 1);
+    cc = *fp & ((MP_LIMB_T_ONE << sh) - 1);
     *fp = *fp & ~cc;
     if (rnd==GMP_RNDN) {
-      if (sh) c2 = (mp_limb_t)1 << (sh-1);
+      if (sh) c2 = MP_LIMB_T_ONE << (sh - 1);
       else { /* sh=0 */
-	c2 = ((mp_limb_t)1) << (BITS_PER_MP_LIMB-1);
+	c2 = MP_LIMB_T_ONE << (BITS_PER_MP_LIMB - 1);
 	dif--;
 	cc = (dif>=0) ? ((zp[dif])<<k) : 0;
 	if (dif>0 && k) cc += zp[dif-1] >> (BITS_PER_MP_LIMB-k);
@@ -81,7 +81,7 @@ mpfr_set_z (f, z, rnd)
 	while (dif>0 && (cc=zp[dif-1])==0) dif--;
 	if (cc) { mpfr_add_one_ulp(f); return cc; }
 	else /* exactly in middle: inexact in both cases */
-	  if (*fp & ((mp_limb_t)1<<sh)) { mpfr_add_one_ulp(f); return 1; }
+	  if (*fp & (MP_LIMB_T_ONE << sh)) { mpfr_add_one_ulp(f); return 1; }
 	  else return 1;
       }
     }
