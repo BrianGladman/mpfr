@@ -824,10 +824,10 @@ Convert @var{op} to a string of digits in base @var{base}, with rounding in
 direction @var{rnd}. The base may vary
 from 2 to 36.  Generate exactly @var{n_digits} significant digits. 
 
-If @var{n_digits} is 0, it prints the maximum possible number of digits 
+If @var{n_digits} is 0, it writes the maximum possible number of digits
 giving an exact rounding in the given base @var{base} with the direction
 @var{rnd}. In other words, if @var{op} was the exact rounding 
-of a real number in direction @var{rnd}, then the printed value is also
+of a real number in direction @var{rnd}, then the written value is also
 an exact rounding in base @var{base} of that real number with the same
 precision. An error occurs when one is unable to determine the leading
 digit, which can happen especially if the precision of @var{op} is small.
@@ -841,7 +841,8 @@ If @var{str} is not NULL, it should point to a block of storage large enough
 for the mantissa, i.e., @var{n_digits} + 2.  The two extra bytes are for a
 possible minus sign, and for the terminating null character.
 
-The exponent is written through the pointer @var{expptr}.
+If the input number is a real number, the exponent is written through
+the pointer @var{expptr} (the current minimal exponent for 0).
 
 If @var{n_digits} is 0, note that the space
 requirements for @var{str} in this case will be impossible for the user to
@@ -851,6 +852,9 @@ whenever @var{n_digits} is 0.
 The generated string is a fraction, with an implicit radix point immediately
 to the left of the first digit.  For example, the number 3.1416 would be
 returned as "31416" in the string and 1 written at @var{expptr}.
+
+A pointer to the string is returned, unless there is an error, in which
+case a null pointer is returned.
 @end deftypefun
 
 

@@ -1,6 +1,6 @@
 /* mpfr_get_str -- output a floating-point number to a string
 
-Copyright (C) 1999, 2001 Free Software Foundation, Inc.
+Copyright (C) 1999-2002 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -37,7 +37,7 @@ MA 02111-1307, USA. */
  */
 char*
 mpfr_get_str (char *str, mp_exp_t *expptr, int base, size_t n,
-		  mpfr_srcptr op, mp_rnd_t rnd_mode)
+              mpfr_srcptr op, mp_rnd_t rnd_mode)
 {
   double d;
   long e, q, div, p, err, prec, sh;
@@ -47,27 +47,36 @@ mpfr_get_str (char *str, mp_exp_t *expptr, int base, size_t n,
   mp_rnd_t rnd1;
   int f, pow2, ok=0, neg, str_is_null=(str==NULL);
 
+  if (base < 2 || base > 36)
+    return NULL;
+
   if (n == 0) /* determine n from precision of op */
     {
-      n = (int) (__mp_bases[base].chars_per_bit_exactly * MPFR_PREC(op));
-      if (n < MPFR_PREC_MIN)
-        n = MPFR_PREC_MIN;
+      n = __mp_bases[base].chars_per_bit_exactly * MPFR_PREC(op);
+      if (n < 2)
+        n = 2;
     }
 
-  MPFR_ASSERTN(n >= MPFR_PREC_MIN);
+  /* Do not use MPFR_PREC_MIN as this applies to base 2 only. Perhaps we
+     should allow n == 1 for directed rounding modes and odd bases. */
+  if (n < 2)
+    return NULL;
 
-  if (base < 2 || 36 < base)
+  if (MPFR_IS_NAN(op))
     {
-      fprintf (stderr,
-               "Error: too small or too large base in mpfr_get_str: %d\n",
-               base);
-      exit (1);
+      if (str == NULL)
+        str = (*__gmp_allocate_func)(4);
+      str[0] = 'N';
+      str[1] = 'a';
+      str[2] = 'N';
+      str[3] = '\0';
+      return str;
     }
-  
+
   neg = MPFR_SIGN(op) < 0;
 
   if (MPFR_IS_INF(op))
-    { 
+    {
       if (str == NULL)
         str = (*__gmp_allocate_func)(neg + 4);
       str0 = str;
@@ -90,7 +99,7 @@ mpfr_get_str (char *str, mp_exp_t *expptr, int base, size_t n,
       for (f=0;f<n;f++)
         *str++ = '0';
       *str++ = '\0';
-      *expptr = 1;
+      *expptr = __mpfr_emin;
       return str0; /* strlen(str0) = neg + n */
     }
 
