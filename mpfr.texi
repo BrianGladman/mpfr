@@ -578,7 +578,8 @@ The precision @var{prec} can be any integer between @code{MPFR_PREC_MIN} and
 @deftypefun void mpfr_set_machine_rnd_mode (mp_rnd_t @var{rnd})
 Set the machine rounding mode to @var{rnd}.
 This function is provided only when the operating system supports the
-ISOC9X standard interface for setting rounding modes (i.e. through the
+ISO/IEC 9899:1999 (ISO C99)
+standard interface for setting rounding modes (i.e. through the
 header file <fenv.h>).
 @end deftypefun
 
@@ -772,7 +773,8 @@ may not be exactly representable as a double-precision number (this happens for
 rounded by the C compiler to a double-precision number, and then only
 to a @code{mpfr} floating-point number.
 
-Please note that the C9X standard does not specify exactly the mantissa
+Please note that the ISO/IEC 9899:1999 (ISO C99)
+standard does not specify exactly the mantissa
 width of the long double type; the @code{mpfr_set_ld} function assumes
 it has at most 113 bits, and an exponent of at most 15 bits.
 @end deftypefun
@@ -860,7 +862,8 @@ See @code{mpfr_set_str}.
 @deftypefunx {long double} mpfr_get_ld (mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Convert @var{op} to a double (respectively long double),
 using the rounding mode @var{rnd}.
-Please note that the C9X standard does not specify exactly the mantissa
+Please note that the ISO/IEC 9899:1999 (ISO C99)
+standard does not specify exactly the mantissa
 width of the long double type; the @code{mpfr_get_ld} function assumes
 it has at most 113 bits, and an exponent of at most 15 bits.
 @end deftypefun
