@@ -42,7 +42,6 @@ static char num_to_text[] = "0123456789abcdefghijklmnopqrstuvwxyz";
 
 #include <stdio.h>
 
-
 double log_b2[35], log_b2_low[35];
 
 main()
@@ -185,6 +184,8 @@ mpfr_ceil_double (double x)
   return ((y < x) ? y + 1.0 : y);
 }
 
+#define MPFR_ROUND_FAILED 3
+
 /* Input: an approximation r*2^f of an real Y, with |r*2^f-Y| <= 2^(e+f).
    Returns if possible in the string s the mantissa corresponding to
    the integer nearest to Y, within the direction rnd, and returns the
@@ -250,13 +251,10 @@ mpfr_get_str_aux (char *const str, mp_exp_t *const exp, mp_limb_t *const r,
 
       ret = mpfr_round_raw (r + i0, r, n * BITS_PER_MP_LIMB, 0,
 			    n * BITS_PER_MP_LIMB + f, rnd, &dir);
+      MPFR_ASSERTD(dir != MPFR_ROUND_FAIL);
 
-      /* warning: mpfr_round_raw_generic returns 2 or -2 in case of even
-         rounding */
-      if (dir > 0)      /* when dir = MPFR_EVEN_INEX */
-	dir = 1;
-      else if (dir < 0) /* when dir = -MPFR_EVEN_INEX */
-	dir = -1;
+      /* warning: mpfr_round_raw_generic returns MPFR_EVEN_INEX (2) or 
+         -MPFR_EVEN_INEX (-2) in case of even rounding */
 
       if (ret) /* Y is a power of 2 */
 	{
@@ -300,7 +298,7 @@ mpfr_get_str_aux (char *const str, mp_exp_t *const exp, mp_limb_t *const r,
             {
               if (2 * str1[size_s1 - 1] == b)
                 {
-                  if (dir == -1)
+                  if (dir < 0)
                     rnd1 = GMP_RNDU;
                   else if (dir == 0) /* exact: even rounding */
 		    {
@@ -355,7 +353,8 @@ mpfr_get_str_aux (char *const str, mp_exp_t *const exp, mp_limb_t *const r,
   else
     {
     cannot_round:
-      dir = 2;
+      dir = MPFR_ROUND_FAILED; /* should be different from MPFR_EVEN_INEX */
+      MPFR_ASSERTD(dir != MPFR_EVEN_INEX);
     }
 
   TMP_FREE(marker);
@@ -667,7 +666,8 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
       /* check if rounding is possible */
       if (exact)
         err = -1;
-      if (mpfr_get_str_aux (s, e, a, n, exp_a, err, b, m, rnd) != 2)
+      if (mpfr_get_str_aux (s, e, a, n, exp_a, err, b, m, rnd) != 
+          MPFR_ROUND_FAILED)
 	break;
 
       /* increment the working precision */
