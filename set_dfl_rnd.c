@@ -21,15 +21,16 @@ MA 02111-1307, USA. */
 
 #include "gmp.h"
 #include "gmp-impl.h"
+#include "mpfr.h"
 
-char __gmp_default_rounding_mode = 0;
+mp_rnd_t __gmp_default_rounding_mode = 0;
 
 void
 #if __STDC__
-mpfr_set_default_rounding_mode (char rnd_mode)
+mpfr_set_default_rounding_mode (mp_rnd_t rnd_mode)
 #else
 mpfr_set_default_rounding_mode (rnd_mode)
-     char rnd_mode;
+     mp_rnd_t rnd_mode;
 #endif
 {
   __gmp_default_rounding_mode = rnd_mode;
