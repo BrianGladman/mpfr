@@ -1,4 +1,287 @@
+2002-11-22  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* ui_pow.c: forgot to remove debug statement
+
+	* pow.c, tests/tui_pow.c, ui_pow.c:
+	fixed bug (infinite loop) for exact powers
+
+2002-11-21  Kevin Ryde  <user42@zip.com.au>
+
+	* TODO:
+	More on tuned thresholds, more on config.h etc, new section on mpf/mpfr
+	integration.
+
+2002-11-20  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* get_str.c: Code clean-up.
+
+2002-11-20  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* gamma.c, log.c, set_ld.c: fixed some problems found by insure
+
+	* tests/tout_str.c: forgotten fclose() call
+
+	* tests/tget_str.c: fixed array bound write
+
+2002-11-19  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* get_str.c: fixed non-ansi features
+
+	* div.c, div_ui.c: added explicit cast
+
+2002-10-24  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* mpfr.texi: added mpfr_cbrt
+
+2002-10-20  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* BUGS: Update.
+
+2002-10-20  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* sin.c: fixed bug with wrong sign detection
+
+2002-10-19  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* hypot.c: Some fixes to avoid overflows.
+
+2002-10-19  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* hypot.c: fixed bug for large arguments
+
+	* cbrt.c: improved code for rounding to nearest
+
+	* asinh.c: fixed bug for EXP(x) > EMAX/2
+
+	* algorithms.tex: modified description of hypot and cbrt
+
+	* acosh.c: fixed bug for EXP(x) > EMAX/2
+
+2002-10-18  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* BUGS: Update.
+
+	* tests/tsin.c: Added test showing bug in sign detection.
+
+	* tests/thypot.c: Added newline.
+
+	* BUGS: Bug in mpfr_hypot.
+
+	* tests/thypot.c: Added test that makes mpfr_hypot fail.
+
+	* hypot.c: Precision Nt: int -> mp_prec_t.
+
+	* tests/tcbrt.c: Added some tests.
+
+	* tests/tcbrt.c: main () -> main (void).
+
+2002-10-18  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* tests/Makefile.am, tests/tcbrt.c:
+	added tcbrt.c, test file for mpfr_cbrt
+
+	* hypot.c: fixed overflow problem
+
+	* cbrt.c: completely rewritten using mpz_root
+
+	* Makefile.am: added cbrt
+
+2002-10-17  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* mpfr.texi: C9X -> ISO/IEC 9899:1999 (ISO C99).
+
+	* set_ld.c: Cases NaN and -0.0 taken into account.
+
+2002-10-17  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* tests/tset_ld.c: added check for +0 and -0
+
+	* tests/tset_ld.c: added one test (2^1024)
+
+	* set_ld.c: fixed bug when overflow for double type
+
+	* mpfr.texi: added mpfr_set_ld and mpfr_get_ld
+
+2002-10-16  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* get_ld.c: Fix for -0.0.
+
+2002-10-16  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* log_b2.h: constants for mpfr_get_str and mpfr_set_str
+
+2002-10-16  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* tests/tset_ld.c: Obsolete comment removed.
+
+	* Makefile.am: Removed log_b2.h as it doesn't seem to be necessary.
+
+2002-10-16  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* mpfr.h: added prototype for mpfr_get_ld
+
+	* Makefile.am, get_ld.c, tests/tset_ld.c:
+	added mpfr_get_ld and tests for set_ld/get_ld
+
+	* set_ld.c: added cast to long double
+
+2002-10-16  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* TODO: Update (tset_ld).
+
+	* tests/tset_ld.c:
+	Test removed as the minimal precision for a long double is something
+	like 10 decimal digits. Anyway, there are implementations for which
+	long double = double = IEEE double precision.
+
+	* set_ld.c:
+	DBL_MANT_DIG and LDBL_MANT_DIG are normally defined by <float.h>.
+
+2002-10-15  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* Makefile.am, mpfr.h, set_ld.c, tests/Makefile.am, tests/tset_ld.c:
+	added mpfr_set_ld and test file
+
+2002-10-13  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* BUGS: Bug in mpfr_sin (and perhaps other functions): error analysis.
+
+	* atan.c:
+	Bug fixed (found by Dmitrii Baksheyev): atan(1) cannot be exact.
+
+2002-10-08  Kevin Ryde  <user42@zip.com.au>
+
+	* TODO: Remove mpfr_get_str using mpn_get_str (done).
+	Remove no grepping for __setfpucw, done (near enough).
+	New thread-safety section, add const_pi and const_log2 caching.
+	New portability section, add mingw random and _mpfr_ceil_log2 IEEE-ism.
+
+	* acinclude.m4 (AC_MY_LIBS): Show the filename in the error message.
+
+2002-10-04  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* mpf2mpfr.h: mpfr_get_default_prec was missing (thanks to F. Morain)
+
+2002-09-30  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* BUGS: Removed get_str.c bug, as the mpfr_get_str function has
+	completely been rewritten.
+
+2002-09-26  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* sub.c:
+	fixed wrong inexact flag for a - b where a and b are of different signs
+	and EXP(a) < EXP(b)
+
+	* tests/tsub.c: added test for inexact flag (bug found by Andreas Enge)
+
+2002-09-23  Kevin Ryde  <user42@zip.com.au>
+
+	* mpfr.texi, set_prec.c, init2.c, init.c, mpfr.h (mpfr_init, mpfr_init2, mpfr_set_prec):
+	Make void return, these always
+	succeed.
+
+2002-09-23  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* urandomb.c: fixed various tiny problems
+
+	* tests/trandom.c:
+	added more tests for mpfr_urandomb, and for small precision
+
+	* random2.c, tests/trandom.c:
+	fixed bugs in mpfr_random2 (wrong exponent, invalid numbers)
+
+	* tests/trandom.c: added checks for mpfr_random2
+
+	* tests/tadd.c, tests/tsub.c, cmp_abs.c, mpfr.h, mpfr.texi, pow.c:
+	cmp_abs -> cmpabs (for compatibility with mpz)
+
+2002-09-21  Kevin Ryde  <user42@zip.com.au>
+
+	* mpfr.texi (Converting Floats):
+	Don't refer to the internal _mp_free_func with
+	mpfr_get_str.
+
+	* mpfr.texi (Special Functions, Internals): Make these into nodes.
+
+2002-09-20  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* set_str.c: now accept uppercase letters too
+
+	* tests/tset_str.c: added test for uppercase letters
+
+2002-09-18  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* agm.c, mpfr.h, mpfr.texi: now mpfr_agm returns an int (inexact flag)
+
+2002-09-13  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* prepare, README.dev: Some more information.
+
+2002-09-12  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* configure.in:
+	On HP-UX, use the +allowunsats switch for ld, otherwise ld complains
+	that some GMP symbols are unsatisfied.
+
+2002-09-12  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* tests/tgamma.c, gamma.c: fixed bug in reflection formula for x<1
+
+2002-08-23  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* INSTALL, mpfr.texi: MPFR now needs GMP 4.1 or higher.
+
+2002-08-22  Kevin Ryde  <user42@zip.com.au>
+
+	* mpfr-math.h (__mpfr_nan): Clarify comments about HP C and alpha.
+
+	* mpfr-math.h: (_MPFR_NAN_BYTES, _MPFR_INFP_BYTES, _MPFR_INFM_BYTES):
+	Use HAVE_DOUBLE_IEEE_LITTLE_ENDIAN etc to select endianness, not a big
+	block of #ifdefs.
+
+2002-08-12  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* acinclude.m4, strcasecmp.c, strncasecmp.c:
+	strcasecmp.c -> strcasecmp.c & strncasecmp.c
+
+2002-08-07  Kevin Ryde  <user42@zip.com.au>
+
+	* tests/Makefile.am:
+	Use $(top_builddir) consistently with libmpfr.a, for the benefit of
+	srcdir!=builddir.
+
+2002-08-02  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* configure.in:
+	Don't touch user specified flags (CFLAGS). [patch by Kevin Ryde]
+
+2002-07-30  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* acinclude.m4, mpfr-impl.h, set_str.c:
+	Better check for strcasecmp and strncasecmp. Bug fixed.
+
+2002-07-28  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* Makefile.am, TODO, comparisons.c, mpfr.h:
+	Functions mpfr_greater_p, mpfr_greaterequal_p, mpfr_less_p,
+	mpfr_lessequal_p, mpfr_lessgreater_p, mpfr_equal_p, mpfr_unordered_p.
+
+	* prepare, tests/Makefile.am, Makefile.am:
+	Use AUTOMAKE_OPTIONS = gnu [suggested by Kevin Ryde]
+
+	* tests/Makefile.am:
+	check target -> TESTS = $(check_PROGRAMS) [suggested by Kevin Ryde]
+
+	* mpfr-impl.h, strcasecmp.c:
+	strcasecmp and strncasecmp -> mpfr_strcasecmp and mpfr_strncasecmp
+	if they are provided by MPFR.
+
+	* get_str.c: TMP_MARK missing (patch by Kevin Ryde).
+
 2002-07-26  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* ChangeLog: Update.
 
 	* README, README.dev: Update (mainly concerning CVS use).
 
