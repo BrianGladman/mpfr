@@ -36,9 +36,33 @@ MA 02111-1307, USA. */
 # include <gmp.h>
 #endif
 
-/* Check if stdio.h is included or if the user wants to use FILE functions */
+/* Macros to detect STDC, GCC and GLIBC */
+#if defined(__STDC_VERSION__)
+# define __MPFR_STDC(version) (__STDC_VERSION__>=(version))
+#elif defined(__STDC__)
+# define __MPFR_STDC(version) (0 == (version))
+#else
+# define __MPFR_STDC(version) 0
+#endif
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# define __MPFR_GNUC(a, i) ((__GNUC__<<16)+__GNUC_MINOR__>=((a)<<16)+(i))
+#else
+# define __MPFR_GNUC(a, i) 0
+#endif
+#if defined(__GLIBC__) && defined(__GLIBC_MINOR__)
+# define __MPFR_GLIBC(a, i) ((__GLIBC__<<16)+__GLIBC_MINOR__>=((a)<<16)+(i))
+#else
+# define __MPFR_GLIBC(a, i) 0
+#endif
+
+/* Check if stdio.h is included or if the user wants to use FILE */
 #if defined (_GMP_H_HAVE_FILE) || defined (MPFR_USE_FILE)
 # define _MPFR_H_HAVE_FILE 1
+#endif
+
+/* Check if stdint.h is included or if the user wants to use intmax_t */
+#if (defined (INTMAX_C) && defined (UINTMAX_C)) || defined (MPFR_USE_INTMAX_T)
+# define _MPFR_H_HAVE_INTMAX_T 1
 #endif
 
 /* Definition of rounding modes (DON'T USE GMP_RNDNA!)*/
@@ -75,7 +99,7 @@ typedef unsigned long  mpfr_prec_t;
 
 /* Definition of precision limits */
 #define MPFR_PREC_MIN 2
-#define MPFR_PREC_MAX ((~(mpfr_prec_t)0) >> 1 )
+#define MPFR_PREC_MAX ((~(mpfr_prec_t)0)>>1)
 
 /* Definition of sign */
 typedef int          mpfr_sign_t;
@@ -206,6 +230,17 @@ int mpfr_set4 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t, int));
 int mpfr_copysign _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr,
 				  mpfr_rnd_t));
 int mpfr_neg _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t));
+
+#ifdef _MPFR_H_HAVE_INTMAX_T
+#define mpfr_set_sj mpfr_set_sj_internal
+#define mpfr_set_sj_2exp mpfr_set_sj_2exp_internal
+#define mpfr_set_uj mpfr_set_uj_internal
+#define mpfr_set_uj_2exp mpfr_set_uj_2exp_internal
+int mpfr_set_sj _MPFR_PROTO ((mpfr_t, intmax_t, mpfr_rnd_t));
+int mpfr_set_sj_2exp _MPFR_PROTO ((mpfr_t, intmax_t, intmax_t, mpfr_rnd_t));
+int mpfr_set_uj _MPFR_PROTO ((mpfr_t, uintmax_t, mpfr_rnd_t));
+int mpfr_set_uj_2exp _MPFR_PROTO ((mpfr_t, uintmax_t, intmax_t, mpfr_rnd_t));
+#endif
 
 mp_exp_t mpfr_get_z_exp _MPFR_PROTO ((mpz_ptr, mpfr_srcptr));
 double mpfr_get_d _MPFR_PROTO ((mpfr_srcptr, mpfr_rnd_t));
