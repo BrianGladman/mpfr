@@ -129,36 +129,43 @@ void test2ui (char *foo, mp_prec_t prec, mp_rnd_t rnd)
   mpfr_init2 (ref2, prec);
   mpfr_init2 (res1, prec);
 
+
+
   /* ref2 can be NaN, +Inf, -Inf, +0, -0 or any number
      ref3 can be 0 or any number */
-  for (i=0; i<12; i++) {
-    if (i%6==0) MPFR_SET_NAN(ref2);
-    if (i%6==1) mpfr_set_d (ref2, 1.0/0.0, GMP_RNDN);
-    if (i%6==2) mpfr_set_d (ref2, -1.0/0.0, GMP_RNDN);
-    if (i%6==3) mpfr_set_d (ref2, 0.0, GMP_RNDN);
-    if (i%6==4) mpfr_set_d (ref2, -0.0, GMP_RNDN);
-    if (i%6==5) mpfr_random (ref2);
+  for (i=0; i<12; i++)
+    {
+      if (i%6==0) MPFR_SET_NAN(ref2);
+      if (i%6==1) mpfr_set_d (ref2, 1.0/0.0, GMP_RNDN);
+      if (i%6==2) mpfr_set_d (ref2, -1.0/0.0, GMP_RNDN);
+      if (i%6==3) mpfr_set_d (ref2, 0.0, GMP_RNDN);
+      if (i%6==4) mpfr_set_d (ref2, -0.0, GMP_RNDN);
+      if (i%6==5) mpfr_random (ref2);
 
-    if (i/6==0) ref3=0;
-    else {
-      mpn_random (c, 1);
-      ref3 = (unsigned int) c[0];
-    }
+      if (i/6==0) 
+	ref3=0;
+      else 
+	{
+	  mpn_random (c, 1);
+	  ref3 = (unsigned int) c[0];
+	}
 
-    /* reference call: foo(a, b, c) */
-    testfunc (ref1, ref2, ref3, rnd);
+      /* reference call: foo(a, b, c) */
+      testfunc (ref1, ref2, ref3, rnd);
 
-    /* foo(a, a, c) */
-    mpfr_set (res1, ref2, rnd); /* exact operation */
-    testfunc (res1, res1, ref3, rnd);
-    if (mpfr_compare (res1, ref1)) {
-      fprintf (stderr, "Error for %s(a, a, c) for a=%e c=%u\n", foo,
+      /* foo(a, a, c) */
+      mpfr_set (res1, ref2, rnd); /* exact operation */
+      testfunc (res1, res1, ref3, rnd);
+
+      if (mpfr_compare (res1, ref1))
+	{
+	  fprintf (stderr, "Error for %s(a, a, c) for a=%e c=%u\n", foo,
 	       mpfr_get_d (ref2), ref3);
-      fprintf (stderr, "expected %e, got %e\n", mpfr_get_d (ref1),
+	  fprintf (stderr, "expected %e, got %e\n", mpfr_get_d (ref1),
 	       mpfr_get_d (res1));
-      exit (1);
+	  exit (1);
+	}
     }
-  }
 
   mpfr_clear (ref1);
   mpfr_clear (ref2);
@@ -360,6 +367,7 @@ void test3a (char *foo, mp_prec_t prec, mp_rnd_t rnd)
 int
 main (void)
 {
+
   testfunc = mpfr_add; test3 ("mpfr_add", 53, GMP_RNDN);
   testfunc = mpfr_add_ui; test2ui ("mpfr_add_ui", 53, GMP_RNDN);
   testfunc = mpfr_agm; test3 ("mpfr_agm", 53, GMP_RNDN);
@@ -384,6 +392,15 @@ main (void)
   testfunc = mpfr_ui_sub; testui2 ("mpfr_ui_sub", 53, GMP_RNDN);
   testfunc = mpfr_trunc; test2 ("mpfr_trunc", 53, GMP_RNDN);
   testfunc = (void*) mpfr_arctan; test2 ("mpfr_arctan", 53, GMP_RNDN);
+  testfunc = (void*) mpfr_sinh; test2 ("mpfr_sinh", 53, GMP_RNDN);
+  testfunc = (void*) mpfr_cosh; test2 ("mpfr_cosh", 53, GMP_RNDN);
+  testfunc = (void*) mpfr_tanh; test2 ("mpfr_tanh", 53, GMP_RNDN);
+  testfunc = (void*) mpfr_asinh; test2 ("mpfr_asinh", 53, GMP_RNDN);
+  testfunc = (void*) mpfr_acosh; test2 ("mpfr_acosh", 53, GMP_RNDN);
+  testfunc = (void*) mpfr_atanh; test2 ("mpfr_atanh", 53, GMP_RNDN);
+  testfunc = (void*) mpfr_exp2; test2 ("mpfr_exp2", 53, GMP_RNDN);
+
+
 
   return 0;
 }
