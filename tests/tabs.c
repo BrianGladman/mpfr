@@ -1,6 +1,6 @@
 /* Test file for mpfr_abs.
 
-Copyright (C) 2000, 2001 Free Software Foundation, Inc.
+Copyright (C) 2000-2002 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -21,7 +21,6 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 #include "gmp.h"
 #include "mpfr.h"
 #include "mpfr-test.h"
@@ -129,7 +128,7 @@ main (int argc, char *argv[])
        mpfr_set_d(x, d, 0);
        mpfr_abs(x, x, rnd);
        dd = mpfr_get_d(x);
-       if (dd != fabs(d) && !isnan(d))
+       if (!isnan(d) && dd != ABS(d))
 	 { 
 	   fprintf(stderr, 
 		   "Mismatch on d = %1.18g\n", d); 

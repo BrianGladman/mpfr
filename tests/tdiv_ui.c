@@ -19,7 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -181,7 +180,7 @@ main (int argc, char **argv)
   srand(getpid());
   for (i=0;i<1000000;i++) {
     do { u = lrand48(); } while (u==0);
-    do { d = drand(); } while (fabs(d/u)<2.2e-307);
+    do { d = drand(); } while (ABS(d/u)<2.2e-307);
     check(d, u, rand() % 4, 0.0);
   }
 #endif

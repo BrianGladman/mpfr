@@ -19,13 +19,14 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include "gmp.h"
 #include "mpfr.h"
 #include "mpfr-test.h"
+
+#define NaN (0./0.)
 
 #define check53(n, d, rnd, res) check4(n, d, rnd, 53, res)
 
@@ -425,12 +426,12 @@ main (int argc, char *argv[])
 	 65, 0.0);
   check53(9.89438396044940256501e-134, 5.93472984109987421717e-67, GMP_RNDU,
 	  1.6672003992376663654e-67);
-  check53(1.0, sqrt(-1.0), GMP_RNDD, sqrt(-1.0)); 
-  check53(sqrt(-1.0), 1.0, GMP_RNDD, sqrt(-1.0)); 
+  check53(1.0, NaN, GMP_RNDD, NaN);
+  check53(NaN, 1.0, GMP_RNDD, NaN);
   check53(2.0/0.0, 1.0, GMP_RNDD, 1.0/0.0); 
   check53(1.0, 2.0/0.0, GMP_RNDD, 0.0); 
-  check53(0.0, 0.0, GMP_RNDD, sqrt(-1.0)); 
-  check53(1.0/0.0, 1.0/0.0, GMP_RNDD, sqrt(-1.0)); 
+  check53(0.0, 0.0, GMP_RNDD, NaN);
+  check53(1.0/0.0, 1.0/0.0, GMP_RNDD, NaN);
   check53(9.89438396044940256501e-134, -5.93472984109987421717e-67, GMP_RNDU,
 	  -1.6672003992376663654e-67);
   check53(-4.53063926135729747564e-308, 7.02293374921793516813e-84, GMP_RNDD,
@@ -445,7 +446,7 @@ main (int argc, char *argv[])
 #ifdef TEST
   srand48(getpid());
   for (i=0;i<N;i++) {
-    do { n = drand(); d = drand(); e = fabs(n)/fabs(d); }
+    do { n = drand(); d = drand(); e = ABS(n)/ABS(d); }
     /* smallest normalized is 2^(-1022), largest is 2^(1023)*(2-2^(-52)) */
     while (e>=MAXNORM || e<MINNORM);
     check4(n, d, rand() % 4, 53, 0.0);

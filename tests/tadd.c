@@ -21,7 +21,6 @@ MA 02111-1307, USA. */
 
 #define N 100000
 
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "gmp.h"
