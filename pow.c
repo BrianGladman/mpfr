@@ -201,6 +201,9 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
   int inexact = 1;
   MPFR_SAVE_EXPO_DECL (expo);
 
+  MPFR_LOG_FUNC (("x[%#R]=%R y[%#R]=%R rnd=%d", x, x, y, y, rnd_mode),
+		 ("z[%#R]=%R inexact=%d", z, z, inexact));
+
   if (MPFR_ARE_SINGULAR (x, y))
     {
       /* pow(x, 0) returns 1 for any x, even a NaN. */

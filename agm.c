@@ -21,6 +21,7 @@ MA 02111-1307, USA. */
 
 #include "mpfr-impl.h"
 
+/* agm(x,y) is between x and y, so we don't need to save exponent range */
 int
 mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
 {
@@ -29,7 +30,11 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
   mp_prec_t p, q;
   mp_limb_t *up, *vp, *tmpp;
   mpfr_t u, v, tmp;
+  MPFR_ZIV_DECL (loop);
   TMP_DECL(marker);
+
+  MPFR_LOG_FUNC (("op2[%#R]=%R op1[%#R]=%R rnd=%d", op2,op2,op1,op1,rnd_mode),
+		 ("r[%#R]=%R inexact=%d", r, r, inexact));
 
   /* Deal with special values */
   if (MPFR_ARE_SINGULAR (op1, op2))
@@ -97,6 +102,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
   TMP_MARK(marker);
 
   /* Main loop */
+  MPFR_ZIV_INIT (loop, p);
   for (;;)
     {
       mp_prec_t eq;
@@ -140,15 +146,15 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
 	  mpfr_swap (v, tmp);
 	}
       /* Roundability of the result */
-      if (mpfr_can_round (v, p - 4 - 3, GMP_RNDN, GMP_RNDZ,
-			  q + (rnd_mode == GMP_RNDN)))
+      if (MPFR_LIKELY (mpfr_can_round (v, p - 4 - 3, GMP_RNDN, GMP_RNDZ,
+				       q + (rnd_mode == GMP_RNDN))))
 	break; /* Stop the loop */
   
       /* Next iteration */
-      p += 5;
+      MPFR_ZIV_NEXT (loop, p);
       s = (p - 1) / BITS_PER_MP_LIMB + 1;
     }
-  /* End of loop */
+  MPFR_ZIV_FREE (loop);
 
   /* Setting of the result */
   inexact = mpfr_set (r, v, rnd_mode);

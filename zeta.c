@@ -297,6 +297,9 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
   int inex;
   MPFR_SAVE_EXPO_DECL (expo);
 
+  MPFR_LOG_FUNC (("s[%#R]=%R rnd=%d", s, s, rnd_mode),
+		 ("z[%#R]=%R inexact=%d", z, z, inex));
+
   /* Zero, Nan or Inf ? */
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (s)))
     {

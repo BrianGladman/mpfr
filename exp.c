@@ -37,6 +37,9 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   double d;
   MPFR_SAVE_EXPO_DECL (expo);
 
+  MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
+		 ("y[%#R]=%R inexact=%d", y, y, inexact));
+
   if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(x) ))
     {
       if (MPFR_IS_NAN(x))
@@ -60,7 +63,6 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
         }
     }
   MPFR_CLEAR_FLAGS(y);
-  MPFR_LOG_BEGIN (("x[%#R]=%R rnd=%d", x, x, rnd_mode));
 
   expx  = MPFR_GET_EXP (x);
   precy = MPFR_PREC (y);
@@ -123,6 +125,5 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       inexact = mpfr_check_range (y, inexact, rnd_mode);
     }
 
-  MPFR_LOG_END (("y[%#R]=%R inexact=%d", y, y, inexact));
   return inexact;
 }

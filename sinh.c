@@ -31,6 +31,9 @@ mpfr_sinh (mpfr_ptr y, mpfr_srcptr xt, mp_rnd_t rnd_mode)
   mpfr_t x;
   int inexact;
 
+  MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", xt, xt, rnd_mode),
+		 ("y[%#R]=%R inexact=%d", y, y, inexact));
+
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(xt)))
     {
       if (MPFR_IS_NAN(xt))
@@ -52,7 +55,6 @@ mpfr_sinh (mpfr_ptr y, mpfr_srcptr xt, mp_rnd_t rnd_mode)
 	  MPFR_RET(0);
 	}
     }
-  MPFR_LOG_BEGIN (("x[%#R]=%R rnd=%d", x, x, rnd_mode));
 
   MPFR_TMP_INIT_ABS (x, xt);
 
@@ -121,7 +123,6 @@ mpfr_sinh (mpfr_ptr y, mpfr_srcptr xt, mp_rnd_t rnd_mode)
     mpfr_clear (t);
     mpfr_clear (ti);
   }
-  MPFR_LOG_END (("y[%#R]=%R inexact=%d", y, y, inexact));
 
   return inexact;
 }

@@ -1,6 +1,6 @@
 /* mpfr_asin -- arc-sinus of a floating-point number
 
-Copyright 2001, 2002, 2003, 2004 Free Software Foundation.
+Copyright 2001, 2002, 2003, 2004, 2005 Free Software Foundation.
 
 This file is part of the MPFR Library, and was contributed by Mathieu Dutour.
 
@@ -30,6 +30,9 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mp_exp_t xp_exp;
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_ZIV_DECL (loop);
+
+  MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
+		 ("asin[%#R]=%R inexact=%d", asin, asin, inexact));
 
   /* Special cases */
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))

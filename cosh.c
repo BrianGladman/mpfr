@@ -1,6 +1,6 @@
 /* mpfr_cosh -- hyperbolic cosine
 
-Copyright 2001, 2002, 2004 Free Software Foundation.
+Copyright 2001, 2002, 2004, 2005 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -28,10 +28,12 @@ MA 02111-1307, USA. */
 int
 mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
 {
-  /****** Declaration ******/
   mpfr_t x;
   int inexact;
   MPFR_SAVE_EXPO_DECL (expo);
+
+  MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", xt, xt, rnd_mode),
+		 ("y[%#R]=%R inexact=%d", y, y, inexact));
 
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(xt)))
     {
@@ -52,8 +54,6 @@ mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
 	  return mpfr_set_ui (y, 1, rnd_mode); /* cosh(0) = 1 */
 	}
     }
-
-  MPFR_LOG_BEGIN (("x[%#R]=%R rnd=%d", x, x, rnd_mode));
 
   MPFR_SAVE_EXPO_MARK (expo);
   MPFR_TMP_INIT_ABS(x, xt);
@@ -113,6 +113,5 @@ mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
 
   MPFR_SAVE_EXPO_FREE (expo);
   inexact = mpfr_check_range (y, inexact, rnd_mode);
-  MPFR_LOG_END (("y[%#R]=%R inexact=%d", y, y, rnd_mode));
   return inexact;
 }

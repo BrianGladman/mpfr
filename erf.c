@@ -36,6 +36,9 @@ mpfr_erf (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   int inex;
   MPFR_SAVE_EXPO_DECL (expo);
 
+  MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
+		 ("y[%#R]=%R inexact=%d", y, y, inex));
+
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
       if (MPFR_IS_NAN (x))

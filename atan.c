@@ -186,6 +186,9 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_ZIV_DECL (loop);
 
+  MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
+		 ("atan[%#R]=%R inexact=%d", atan, atan, inexact));
+
   /* Singular cases */
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {

@@ -32,6 +32,9 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
   int inexact;
   int comp;
 
+  MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
+		 ("y[%#R]=%R inexact=%d", y, y, inexact));
+
   /* Deal with special cases */
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {

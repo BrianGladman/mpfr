@@ -52,6 +52,9 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
   MPFR_ZIV_DECL (loop);
   TMP_DECL(marker);
   
+  MPFR_LOG_FUNC (("a[%#R]=%R rnd=%d", a, a, rnd_mode),
+		 ("r[%#R]=%R inexact=%d", r, r, inexact));
+
   /* Special cases */
   if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(a) ))
     {
@@ -101,7 +104,6 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
       MPFR_RET (0); /* only "normal" case where the result is exact */
     }
   MPFR_CLEAR_FLAGS (r);
-  MPFR_LOG_BEGIN (("a[%#R]=%R rnd=%d", a, a, rnd_mode));
 
   q = MPFR_PREC (r);
 
@@ -163,6 +165,5 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
   /* We clean */
   TMP_FREE(marker);
 
-  MPFR_LOG_END (("r[%#R]=%R inexact=%d", r, r, inexact));
   return inexact; /* result is inexact */
 }
