@@ -388,10 +388,10 @@ int
 main (int argc, char *argv[])
 {
   mpfr_t x, y, z; 
-  int N;
 
 #ifdef TEST
-  int i; double n, d, e;
+  int N, i;
+  double n, d, e;
 #ifdef __mips
     /* to get denormalized numbers on IRIX64 */
     union fpc_csr exp;
@@ -401,7 +401,6 @@ main (int argc, char *argv[])
 #endif
 #endif
 
-  N = (argc>1) ? atoi(argv[1]) : 100000;
   check_inexact(); 
 
   mpfr_init2 (x, 64);
@@ -444,6 +443,7 @@ main (int argc, char *argv[])
 	  2.810583051186143125e102);
 
 #ifdef TEST
+  N = (argc>1) ? atoi(argv[1]) : 100000;
   srand48(getpid());
   for (i=0;i<N;i++) {
     do { n = drand(); d = drand(); e = ABS(n)/ABS(d); }
