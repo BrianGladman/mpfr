@@ -259,3 +259,26 @@ Isnan (double d)
 {
   return (d) != (d);
 }
+
+void
+d_trace (const char *name, double d)
+{
+  union {
+    double         d;
+    unsigned char  b[sizeof(double)];
+  } u;
+  int  i;
+
+  if (name != NULL && name[0] != '\0')
+    printf ("%s=", name);
+
+  u.d = d;
+  printf ("[");
+  for (i = 0; i < sizeof (u.b); i++)
+    {
+      if (i != 0)
+        printf (" ");
+      printf ("%02X", (int) u.b[i]);
+    }
+  printf ("] %.20g\n", d);
+}

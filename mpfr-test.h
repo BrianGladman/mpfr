@@ -66,3 +66,4 @@ int ulp _PROTO ((double, double));
 double dbl _PROTO ((double, int));
 double Ulp _PROTO ((double));
 int Isnan _PROTO ((double));
+void d_trace _PROTO ((const char *, double));
