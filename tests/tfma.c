@@ -1,6 +1,6 @@
 /* Test file for mpfr_fma.
 
-Copyright 2001, 2002, 2003 Free Software Foundation.
+Copyright 2001, 2002, 2003, 2004 Free Software Foundation.
 Adapted from tarctan.c.
 
 This file is part of the MPFR Library.
@@ -21,7 +21,6 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
 #include <stdio.h>
-#include <limits.h>
 #include <stdlib.h>
 
 #include "mpfr-test.h"
@@ -47,6 +46,11 @@ main (int argc, char *argv[])
   mpfr_set_str (y, "0.5", 10, GMP_RNDN);
   mpfr_set_str (z, "0.375", 10, GMP_RNDN);
   mpfr_fma (s, x, y, z, GMP_RNDU); /* result is 0 */
+  if (mpfr_cmp_ui(s, 0))
+    {
+      printf("Error: -0.75 * 0.5 + 0.375 should be equal to 0 for prec=2\n");
+      exit(1);
+    }
 
   mpfr_set_prec (x, 27);
   mpfr_set_prec (y, 27);
@@ -310,8 +314,6 @@ main (int argc, char *argv[])
               printf (" z="); mpfr_out_str (stdout, 2, 0, z, GMP_RNDN);
               printf (" s="); mpfr_out_str (stdout, 2, 0, s, GMP_RNDN);
               printf ("\n");
-              printf ("z=%1.20e s=%1.20e\n", mpfr_get_d1 (z),
-                      mpfr_get_d1 (s));
               exit (1);
             }
         }

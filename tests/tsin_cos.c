@@ -1,6 +1,6 @@
 /* Test file for mpfr_sin_cos.
 
-Copyright 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -35,7 +35,8 @@ large_test (int prec, int N)
   mpfr_init2 (c, prec);
   mpfr_set_ui (x, 3, GMP_RNDN);
   mpfr_sqrt (x, x, GMP_RNDN);
-  for (i=0; i<N; i++) mpfr_sin_cos (s, c, x, GMP_RNDN);
+  for (i=0; i<N; i++) 
+    mpfr_sin_cos (s, c, x, GMP_RNDN);
   mpfr_out_str (stdout, 10, 0, s, GMP_RNDN); puts ("");
   mpfr_clear (x);
   mpfr_clear (s);
@@ -43,80 +44,73 @@ large_test (int prec, int N)
 }
 
 static void
-check53 (double x, double sin_x, double cos_x, mp_rnd_t rnd_mode)
+check53 (const char *xs, const char *sin_xs, const char *cos_xs, 
+	 mp_rnd_t rnd_mode)
 {
   mpfr_t xx, s, c;
 
-  mpfr_init2 (xx, 53);
-  mpfr_init2 (s, 53);
-  mpfr_init2 (c, 53);
-  mpfr_set_d (xx, x, rnd_mode); /* should be exact */
+  mpfr_inits2 (53, xx, s, c, NULL);
+  mpfr_set_str1 (xx, xs); /* should be exact */
   mpfr_sin_cos (s, c, xx, rnd_mode);
-  if (mpfr_get_d1 (s) != sin_x && !(Isnan(sin_x) && mpfr_nan_p(s)))
+  if (mpfr_cmp_str1 (s, sin_xs))
     {
-      printf ("mpfr_sin_cos failed for x=%1.20e, rnd=%s\n",
-              x, mpfr_print_rnd_mode (rnd_mode));
-      printf ("mpfr_sin_cos gives sin(x)=%1.20e, expected %1.20e\n",
-              mpfr_get_d1 (s), sin_x);
+      printf ("mpfr_sin_cos failed for x=%s, rnd=%s\n",
+              xs, mpfr_print_rnd_mode (rnd_mode));
+      printf ("mpfr_sin_cos gives sin(x)=");
+      mpfr_out_str(stdout, 10, 0, s, GMP_RNDN);
+      printf(", expected %s\n", sin_xs);
       exit (1);
     }
-  if (mpfr_get_d1 (c) != cos_x && !(Isnan(cos_x) && mpfr_nan_p(c)))
+  if (mpfr_cmp_str1 (c, cos_xs))
     {
-      printf ("mpfr_sin_cos failed for x=%1.20e, rnd=%s\n",
-              x, mpfr_print_rnd_mode (rnd_mode));
-      printf ("mpfr_sin_cos gives cos(x)=%1.20e, expected %1.20e\n",
-              mpfr_get_d1 (c), cos_x);
+      printf ("mpfr_sin_cos failed for x=%s, rnd=%s\n",
+              xs, mpfr_print_rnd_mode (rnd_mode));
+      printf ("mpfr_sin_cos gives cos(x)=");
+      mpfr_out_str(stdout, 10, 0, c, GMP_RNDN);
+      printf(", expected %s\n", cos_xs);
       exit (1);
     }
-  mpfr_clear (xx);
-  mpfr_clear (s);
-  mpfr_clear (c);
+  mpfr_clears (xx, s, c, NULL);
 }
 
 static void
-check53sin (double x, double sin_x, mp_rnd_t rnd_mode)
+check53sin (const char *xs, const char *sin_xs, mp_rnd_t rnd_mode)
 {
   mpfr_t xx, s, c;
 
-  mpfr_init2 (xx, 53);
-  mpfr_init2 (s, 53);
-  mpfr_init2 (c, 53);
-  mpfr_set_d (xx, x, rnd_mode); /* should be exact */
+  mpfr_inits2 (53, xx, s, c, NULL);
+  mpfr_set_str1 (xx, xs); /* should be exact */
   mpfr_sin_cos (s, c, xx, rnd_mode);
-  if (mpfr_get_d1 (s) != sin_x && !(Isnan(sin_x) && mpfr_nan_p(s)))
+  if (mpfr_cmp_str1 (s, sin_xs))
     {
-      printf ("mpfr_sin_cos failed for x=%1.20e, rnd=%s\n",
-              x, mpfr_print_rnd_mode (rnd_mode));
-      printf ("mpfr_sin_cos gives sin(x)=%1.20e, expected %1.20e\n",
-              mpfr_get_d1 (s), sin_x);
+      printf ("mpfr_sin_cos failed for x=%s, rnd=%s\n",
+              xs, mpfr_print_rnd_mode (rnd_mode));
+      printf ("mpfr_sin_cos gives sin(x)=");
+      mpfr_out_str(stdout, 10, 0, s, GMP_RNDN);
+      printf(", expected %s\n", sin_xs);
       exit (1);
     }
-  mpfr_clear (xx);
-  mpfr_clear (s);
-  mpfr_clear (c);
+  mpfr_clears (xx, s, c, NULL);
 }
 
 static void
-check53cos (double x, double cos_x, mp_rnd_t rnd_mode)
+check53cos (const char *xs, const char *cos_xs, mp_rnd_t rnd_mode)
 {
   mpfr_t xx, c, s;
 
-  mpfr_init2 (xx, 53);
-  mpfr_init2 (c, 53);
-  mpfr_init2 (s, 53);
-  mpfr_set_d (xx, x, rnd_mode); /* should be exact */
+  mpfr_inits2 (53, xx, s, c, NULL);
+  mpfr_set_str1 (xx, xs); /* should be exact */
   mpfr_sin_cos (s, c, xx, rnd_mode);
-  if (mpfr_get_d1 (c) != cos_x && !(Isnan(cos_x) && mpfr_nan_p(c)))
+  if (mpfr_cmp_str1 (c, cos_xs))
     {
-      printf ("mpfr_sin_cos failed for x=%1.20e, rnd=%s\n",
-              x, mpfr_print_rnd_mode (rnd_mode));
-      printf ("mpfr_sin_cos gives cos(x)=%1.20e, expected %1.20e\n",
-              mpfr_get_d1 (c), cos_x);
+      printf ("mpfr_sin_cos failed for x=%s, rnd=%s\n",
+              xs, mpfr_print_rnd_mode (rnd_mode));
+      printf ("mpfr_sin_cos gives cos(x)=");
+      mpfr_out_str(stdout, 10, 0, c, GMP_RNDN);
+      printf(", expected %s\n", cos_xs);
       exit (1);
     }
-  mpfr_clear (xx);
-  mpfr_clear (c);
-  mpfr_clear (s);
+  mpfr_clears (xx, s, c, NULL);
 }
 
 static void
@@ -165,26 +159,26 @@ main(int argc, char *argv[])
     }
 
   /* worst case from PhD thesis of Vincent Lefe`vre: x=8980155785351021/2^54 */
-  check53 (4.984987858808754279e-1, 4.781075595393330379e-1, 
-	   8.783012931285841817e-1, GMP_RNDN);
-  check53 (4.984987858808754279e-1, 4.781075595393329824e-1,
-	   8.783012931285840707e-1, GMP_RNDD);
-  check53 (4.984987858808754279e-1, 4.781075595393329824e-1,
-	   8.783012931285840707e-1, GMP_RNDZ);
-  check53 (4.984987858808754279e-1, 4.781075595393330379e-1,
-	   8.783012931285841817e-1, GMP_RNDU);
-  check53 (1.00031274099908640274,  8.416399183372403892e-1,
-	   0.540039116973283217504, GMP_RNDN);
-  check53 (1.00229256850978698523,  8.427074524447979442e-1,
-	   0.538371757797526551137, GMP_RNDZ);
-  check53 (1.00288304857059840103,  8.430252033025980029e-1,
-	   0.537874062022526966409, GMP_RNDZ);
-  check53 (1.00591265847407274059,  8.446508805292128885e-1,
-	   0.53531755997839769456,  GMP_RNDN);
+  check53 ("4.984987858808754279e-1", "4.781075595393330379e-1", 
+	   "8.783012931285841817e-1", GMP_RNDN);
+  check53 ("4.984987858808754279e-1", "4.781075595393329824e-1",
+	   "8.783012931285840707e-1", GMP_RNDD);
+  check53 ("4.984987858808754279e-1", "4.781075595393329824e-1",
+	   "8.783012931285840707e-1", GMP_RNDZ);
+  check53 ("4.984987858808754279e-1", "4.781075595393330379e-1",
+	   "8.783012931285841817e-1", GMP_RNDU);
+  check53 ("1.00031274099908640274",  "8.416399183372403892e-1",
+	   "0.540039116973283217504", GMP_RNDN);
+  check53 ("1.00229256850978698523",  "8.427074524447979442e-1",
+	   "0.538371757797526551137", GMP_RNDZ);
+  check53 ("1.00288304857059840103",  "8.430252033025980029e-1",
+	   "0.537874062022526966409", GMP_RNDZ);
+  check53 ("1.00591265847407274059",  "8.446508805292128885e-1",
+	   "0.53531755997839769456",  GMP_RNDN);
 
   /* check one argument only */
-  check53sin (1.00591265847407274059,  8.446508805292128885e-1, GMP_RNDN);
-  check53cos (1.00591265847407274059, 0.53531755997839769456,  GMP_RNDN);
+  check53sin ("1.00591265847407274059", "8.446508805292128885e-1", GMP_RNDN);
+  check53cos ("1.00591265847407274059", "0.53531755997839769456",  GMP_RNDN);
 
   tests_end_mpfr ();
   return 0;

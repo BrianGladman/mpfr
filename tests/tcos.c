@@ -1,6 +1,6 @@
 /* Test file for mpfr_cos.
 
-Copyright 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -25,24 +25,23 @@ MA 02111-1307, USA. */
 #include "mpfr-test.h"
 
 static void
-check53 (double x, double cos_x, mp_rnd_t rnd_mode)
+check53 (const char *xs, const char *cos_xs, mp_rnd_t rnd_mode)
 {
   mpfr_t xx, c;
 
-  mpfr_init2 (xx, 53);
-  mpfr_init2 (c, 53);
-  mpfr_set_d (xx, x, rnd_mode); /* should be exact */
+  mpfr_inits2 (53, xx, c, NULL);
+  mpfr_set_str1 (xx, xs); /* should be exact */
   mpfr_cos (c, xx, rnd_mode);
-  if (mpfr_get_d1 (c) != cos_x && !(Isnan(cos_x) && mpfr_nan_p(c)))
+  if (mpfr_cmp_str1 (c, cos_xs))
     {
-      printf ("mpfr_cos failed for x=%1.20e, rnd=%s\n", x,
-              mpfr_print_rnd_mode (rnd_mode));
-      printf ("mpfr_cos gives cos(x)=%1.20e, expected %1.20e\n",
-              mpfr_get_d1 (c), cos_x);
+      printf ("mpfr_cos failed for x=%s, rnd=%s\n", 
+	      xs, mpfr_print_rnd_mode (rnd_mode));
+      printf ("mpfr_cos gives cos(x)=");
+      mpfr_out_str(stdout, 10, 0, c, GMP_RNDN);
+      printf(", expected %s\n", cos_xs);
       exit (1);
     }
-  mpfr_clear (xx);
-  mpfr_clear (c);
+  mpfr_clears (xx, c, NULL);
 }
 
 #define TEST_FUNCTION mpfr_cos
@@ -140,16 +139,16 @@ main (int argc, char *argv[])
     }
 
   /* worst case from PhD thesis of Vincent Lefe`vre: x=8980155785351021/2^54 */
-  check53 (4.984987858808754279e-1, 8.783012931285841817e-1, GMP_RNDN);
-  check53 (4.984987858808754279e-1, 8.783012931285840707e-1, GMP_RNDD);
-  check53 (4.984987858808754279e-1, 8.783012931285840707e-1, GMP_RNDZ);
-  check53 (4.984987858808754279e-1, 8.783012931285841817e-1, GMP_RNDU);
-  check53 (1.00031274099908640274,  0.540039116973283217504, GMP_RNDN);
-  check53 (1.00229256850978698523,  0.538371757797526551137, GMP_RNDZ);
-  check53 (1.00288304857059840103,  0.537874062022526966409, GMP_RNDZ);
-  check53 (1.00591265847407274059,  0.53531755997839769456,  GMP_RNDN);
+  check53 ("4.984987858808754279e-1", "8.783012931285841817e-1", GMP_RNDN);
+  check53 ("4.984987858808754279e-1", "8.783012931285840707e-1", GMP_RNDD);
+  check53 ("4.984987858808754279e-1", "8.783012931285840707e-1", GMP_RNDZ);
+  check53 ("4.984987858808754279e-1", "8.783012931285841817e-1", GMP_RNDU);
+  check53 ("1.00031274099908640274",  "0.540039116973283217504", GMP_RNDN);
+  check53 ("1.00229256850978698523",  "0.538371757797526551137", GMP_RNDZ);
+  check53 ("1.00288304857059840103",  "0.537874062022526966409", GMP_RNDZ);
+  check53 ("1.00591265847407274059",  "0.53531755997839769456",  GMP_RNDN);
 
-  check53 (1.00591265847407274059, 0.53531755997839769456,  GMP_RNDN);
+  check53 ("1.00591265847407274059", "0.53531755997839769456",  GMP_RNDN);
 
   test_generic (2, 100, 100);
 

@@ -1,6 +1,6 @@
 /* Test file for mpfr_exp2.
 
-Copyright 2001, 2002, 2003 Free Software Foundation.
+Copyright 2001, 2002, 2003, 2004 Free Software Foundation.
 Adapted from tarctan.c.
 
 This file is part of the MPFR Library.
@@ -63,7 +63,7 @@ main (int argc, char *argv[])
   mpfr_set_str (x, /*-1683977482443233.0 / 2199023255552.0*/
 		"-7.6578429909351734750089235603809357e2", 10,GMP_RNDN);
   mpfr_exp2 (y, x, GMP_RNDN);
-  if (mpfr_get_d1 (y) != 2.991959870867646566478e-231)
+  if (mpfr_cmp_str1 (y, "2.991959870867646566478e-231"))
     {
       printf ("Error for x=-1683977482443233/2^41\n");
       exit (1);

@@ -1,6 +1,6 @@
 /* Test file for mpfr_prec_round.
 
-Copyright 1999, 2000, 2001, 2002, 2003 Free Software Foundation.
+Copyright 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -37,7 +37,9 @@ main (void)
    mpfr_prec_round (x, 2, GMP_RNDN);
    if (mpfr_cmp_ui(x, 4))
      {
-       printf ("Error in tround: got %1.1f instead of 4\n", mpfr_get_d1 (x));
+       printf ("Error in tround: got ");
+       mpfr_out_str (stdout, 10, 0, x, GMP_RNDN);
+       printf (" instead of 4\n");
        exit (1);
      }
 
@@ -47,7 +49,9 @@ main (void)
    mpfr_prec_round (x, mp_bits_per_limb + 1, GMP_RNDN);
    if (mpfr_cmp_ui(x, 5))
      {
-       printf ("Error in tround: got %1.1f instead of 5\n", mpfr_get_d1 (x));
+       printf ("Error in tround: got ");
+       mpfr_out_str (stdout, 10, 0, x, GMP_RNDN);
+       printf (" instead of 5\n");
        exit (1);
      }
 
@@ -57,7 +61,9 @@ main (void)
    mpfr_prec_round (x, mp_bits_per_limb + 1, GMP_RNDN);
    if (mpfr_cmp_si(x, -5))
      {
-       printf ("Error in tround: got %1.1f instead of -5\n", mpfr_get_d1 (x));
+       printf ("Error in tround: got ");
+       mpfr_out_str (stdout, 10, 0, x, GMP_RNDN);
+       printf (" instead of -5\n");
        exit (1);
      }
 
@@ -67,7 +73,9 @@ main (void)
    mpfr_prec_round (x, 3, GMP_RNDN); /* exact */
    if (mpfr_cmp_ui(x, 5))
      {
-       printf ("Error in tround: got %1.1f instead of 5\n", mpfr_get_d1 (x));
+       printf ("Error in tround: got ");
+       mpfr_out_str (stdout, 10, 0, x, GMP_RNDN);
+       printf (" instead of 5\n");
        exit (1);
      }
 

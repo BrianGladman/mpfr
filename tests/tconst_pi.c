@@ -1,6 +1,6 @@
 /* Test file for mpfr_const_pi.
 
-Copyright 1999, 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright 1999, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -56,7 +56,7 @@ main (int argc, char *argv[])
           puts ("");
         }
     }
-  else if (mpfr_get_d1 (x) != 3.141592653589793116)
+  else if (mpfr_cmp_str1 (x, "3.141592653589793116") )
     {
       printf ("mpfr_const_pi failed for prec=53\n");
       exit (1);

@@ -1,6 +1,6 @@
 /* Test file for mpfr_add_ui
 
-Copyright 2000, 2001, 2002, 2003 Free Software Foundation.
+Copyright 2000, 2001, 2002, 2003, 2004 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -22,34 +22,27 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <stdlib.h>
 #include <float.h>
-#include <time.h>
 
 #include "mpfr-test.h"
 
-#define check(x,y,r) check3(x,y,r,0.0)
-
-/* checks that x+y gives the same results in double
-   and with mpfr with 53 bits of precision */
+/* checks that x+y gives the right results with 53 bits of precision */
 static void
-check3 (double x, unsigned long y, unsigned int rnd_mode, double z1)
+check3 (const char *xs, unsigned long y, unsigned int rnd_mode, const char *zs)
 {
-  double z2;
   mpfr_t xx, zz;
 
-  mpfr_init2 (xx, 53);
-  mpfr_init2 (zz, 53);
-  mpfr_set_d (xx, x, rnd_mode);
+  mpfr_inits2 (53, xx, zz, NULL);
+  mpfr_set_str1 (xx, xs);
   mpfr_add_ui (zz, xx, y, rnd_mode);
-  z2 = mpfr_get_d1 (zz);
-  if (z1 != z2 && !(Isnan(z1) && Isnan(z2)))
+  if (mpfr_cmp_str1(zz, zs) )
     {
-      printf ("expected sum is %1.20e, got %1.20e\n",z1,z2);
-      printf ("mpfr_add_ui failed for x=%1.20e y=%lu with rnd_mode=%s\n",
-              x, y, mpfr_print_rnd_mode(rnd_mode));
+      printf ("expected sum is %s, got ",zs);
+      mpfr_out_str(stdout, 10, 0, zz, GMP_RNDN);
+      printf ("\nmpfr_add_ui failed for x=%s y=%lu with rnd_mode=%s\n",
+              xs, y, mpfr_print_rnd_mode(rnd_mode));
       exit (1);
   }
-  mpfr_clear (xx);
-  mpfr_clear (zz);
+  mpfr_clears (xx, zz, NULL);
 }
 
 static void
@@ -102,13 +95,14 @@ main (int argc, char *argv[])
   check_nans ();
 
   special ();
-  check3 (-1.716113812768534e-140, 1271212614, GMP_RNDZ,
-	  1.27121261399999976e9);
-  check3 (1.22191250737771397120e+20, 948002822, GMP_RNDN, 
-	  122191250738719408128.0);
-  check3 (-6.72658901114033715233e-165, 2000878121, GMP_RNDZ,
-	  2.0008781209999997615e9);
-  check3 (-2.0769715792901673e-5, 880524, GMP_RNDN, 8.8052399997923023e5);
+  check3 ("-1.716113812768534e-140", 1271212614, GMP_RNDZ,
+	  "1.27121261399999976e9");
+  check3 ("1.22191250737771397120e+20", 948002822, GMP_RNDN, 
+	  "122191250738719408128.0");
+  check3 ("-6.72658901114033715233e-165", 2000878121, GMP_RNDZ,
+	  "2.0008781209999997615e9");
+  check3 ("-2.0769715792901673e-5", 880524, GMP_RNDN, 
+	  "8.8052399997923023e5");
 
   tests_end_mpfr ();
   return 0;

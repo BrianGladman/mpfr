@@ -1,6 +1,6 @@
 /* Test file for mpfr_asin.
 
-Copyright 2001, 2002, 2003 Free Software Foundation.
+Copyright 2001, 2002, 2003, 2004 Free Software Foundation.
 Original version by Mathieu Dutour.
 
 This file is part of the MPFR Library.
@@ -47,8 +47,9 @@ main (void)
   mpfr_neg (z, z, GMP_RNDN);
   if (mpfr_cmp (y, z))
     {
-      printf ("sin(-1) is wrong, expected %.20e, got %.20e\n",
-              mpfr_get_d1 (z), mpfr_get_d1 (y));
+      printf ("sin(-1) is wrong, expected -Pi/2, got ");
+      mpfr_out_str(stdout, 10, 0, y, GMP_RNDN);
+      putchar('\n');
       exit (1);
     }
 

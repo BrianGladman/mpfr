@@ -26,11 +26,10 @@ MA 02111-1307, USA. */
 #include "mpfr-test.h"
 
 static void
-check (long int n, long int d, mp_rnd_t rnd, double y)
+check (long int n, long int d, mp_rnd_t rnd, const char *ys)
 {
   mpq_t q;
   mpfr_t x, t;
-  double z;
   int inexact, compare;
 
   mpfr_init2 (x, 53);
@@ -38,15 +37,15 @@ check (long int n, long int d, mp_rnd_t rnd, double y)
   mpq_init (q);
   mpq_set_si (q, n, d);
   inexact = mpfr_set_q (x, q, rnd);
-  z = mpfr_get_d1 (x);
 
   /* check values */
-  if (y != z)
+  if (mpfr_cmp_str1(x, ys))
     {
       printf ("Error for q=%ld/%lu and rnd=%s\n", n, d,
               mpfr_print_rnd_mode (rnd));
-      printf ("correct result is %1.20e, mpfr_set_q gives %1.20e\n",
-              y, z);
+      printf ("correct result is %s, mpfr_set_q gives ", ys);
+      mpfr_out_str(stdout, 10, 0, x, GMP_RNDN);
+      putchar('\n');
       exit (1);
     }
 
@@ -99,15 +98,15 @@ main (void)
 {
   tests_start_mpfr ();
 
-  check(-1647229822, 40619231, GMP_RNDZ, -4.055295438754120596e1);
-  check(-148939696, 1673285490, GMP_RNDZ, -8.9010331404953485501e-2);
-  check(-441322590, 273662545, GMP_RNDZ, -1.6126525096812205362);
-  check(-1631156895, 1677687197, GMP_RNDU, -9.722652100563177191e-1);
-  check(2141332571, 3117601, GMP_RNDZ, 6.8685267004982347316e2);
-  check(75504803, 400207282, GMP_RNDU, 1.8866424074712365155e-1);
-  check(643562308, 23100894, GMP_RNDD, 2.7858762002890447462e1);
-  check(632549085, 1831935802, GMP_RNDN, 3.4528998467600230393e-1);
-  check (1, 1, GMP_RNDN, 1.0);
+  check(-1647229822, 40619231, GMP_RNDZ, "-4.055295438754120596e1");
+  check(-148939696, 1673285490, GMP_RNDZ, "-8.9010331404953485501e-2");
+  check(-441322590, 273662545, GMP_RNDZ, "-1.6126525096812205362");
+  check(-1631156895, 1677687197, GMP_RNDU, "-9.722652100563177191e-1");
+  check(2141332571, 3117601, GMP_RNDZ, "6.8685267004982347316e2");
+  check(75504803, 400207282, GMP_RNDU, "1.8866424074712365155e-1");
+  check(643562308, 23100894, GMP_RNDD, "2.7858762002890447462e1");
+  check(632549085, 1831935802, GMP_RNDN, "3.4528998467600230393e-1");
+  check (1, 1, GMP_RNDN, "1.0");
 
   check0();
 

@@ -1,6 +1,6 @@
 /* Test file for mpfr_div_ui.
 
-Copyright 1999, 2000, 2001, 2002, 2003 Free Software Foundation.
+Copyright 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -22,27 +22,24 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <stdlib.h>
 #include <float.h>
-#include <time.h>
 
 #include "mpfr-test.h"
 
 static void
-check (double d, unsigned long u, mp_rnd_t rnd, double e)
+check (const char *ds, unsigned long u, mp_rnd_t rnd, const char *es)
 {
   mpfr_t x, y;
-  double f;
 
   mpfr_init2 (x, 53);
   mpfr_init2 (y, 53);
-  mpfr_set_d (x, d, rnd);
+  mpfr_set_str1 (x, ds);
   mpfr_div_ui (y, x, u, rnd);
-  f = mpfr_get_d1 (y);
-  if (f != e && !(Isnan(f) && Isnan(e)))
+  if (mpfr_cmp_str1 (y, es))
     {
-      printf ("mpfr_div_ui failed for x=%1.20e, u=%lu, rnd=%s\n", d, u,
+      printf ("mpfr_div_ui failed for x=%s, u=%lu, rnd=%s\n", ds, u,
               mpfr_print_rnd_mode (rnd));
-      printf ("expected result is %1.20e, got %1.20e, dif=%d ulp\n",
-              e, f, ulp (e,f));
+      printf ("expected result is %s, got", es);
+      mpfr_out_str(stdout, 10, 0, y, GMP_RNDN);
       exit (1);
     }
   mpfr_clear (x);
@@ -181,19 +178,19 @@ main (int argc, char **argv)
 
   special ();
 
-  check(1.0, 3, GMP_RNDN, 3.3333333333333331483e-1);
-  check(1.0, 3, GMP_RNDZ, 3.3333333333333331483e-1);
-  check(1.0, 3, GMP_RNDU, 3.3333333333333337034e-1);
-  check(1.0, 3, GMP_RNDD, 3.3333333333333331483e-1);
-  check(1.0, 2116118, GMP_RNDN, 4.7256343927890600483e-7);
-  check(1.098612288668109782, 5, GMP_RNDN, 0.21972245773362195087);
+  check("1.0", 3, GMP_RNDN, "3.3333333333333331483e-1");
+  check("1.0", 3, GMP_RNDZ, "3.3333333333333331483e-1");
+  check("1.0", 3, GMP_RNDU, "3.3333333333333337034e-1");
+  check("1.0", 3, GMP_RNDD, "3.3333333333333331483e-1");
+  check("1.0", 2116118, GMP_RNDN, "4.7256343927890600483e-7");
+  check("1.098612288668109782", 5, GMP_RNDN, "0.21972245773362195087");
 
   mpfr_init2(x, 100);
   mpfr_set_prec(x, 53);
   mpfr_set_ui(x, 3, GMP_RNDD);
   mpfr_log(x, x, GMP_RNDD);
   mpfr_div_ui(x, x, 5, GMP_RNDD);
-  if (mpfr_get_d1 (x) != 0.21972245773362189536)
+  if (mpfr_cmp_str1 (x, "0.21972245773362189536"))
     {
       printf ("Error in mpfr_div_ui for x=ln(3), u=5\n");
       exit (1);

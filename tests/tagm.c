@@ -1,6 +1,6 @@
 /* Test file for mpfr_agm.
 
-Copyright 1999, 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright 1999, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -21,39 +21,32 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 
 #include "mpfr-test.h"
 
 #define check(a,b,r) check4(a,b,r,0.0)
 
 static void
-check4 (double a, double b, mp_rnd_t rnd_mode, double res1)
+check4 (const char *as, const char *bs, mp_rnd_t rnd_mode, const char *res)
 {
   mpfr_t ta, tb, tres;
-  double res2;
 
-  mpfr_init2(ta, 53);
-  mpfr_init2(tb, 53);
-  mpfr_init2(tres, 53);
+  mpfr_inits2(53, ta, tb, tres, NULL);
 
-  mpfr_set_d(ta, a, rnd_mode);
-  mpfr_set_d(tb, b, rnd_mode);
+  mpfr_set_str1 (ta, as);
+  mpfr_set_str1 (tb, bs);
 
   mpfr_agm(tres, ta, tb, rnd_mode);
 
-  res2 = mpfr_get_d1 (tres);
-
-  if (res1!=res2 && !(Isnan(res1) && Isnan(res2)))
+  if (mpfr_cmp_str1 (tres, res))
     {
-      printf ("mpfr_agm failed for a=%1.20e, b=%1.20e, rnd_mode=%d\n",a,b,rnd_mode);
-      printf ("expected result is %1.20e, got %1.20e (%d ulp)\n",res1,res2,
-              ulp(res2,res1));
+      printf ("mpfr_agm failed for a=%s, b=%s, rnd_mode=%d\n",as,bs,rnd_mode);
+      printf ("expected result is %s, got ",res);
+      mpfr_out_str(stdout, 10, 0, tres, GMP_RNDN);
+      putchar('\n');
       exit (1);
   }
-  mpfr_clear (ta);
-  mpfr_clear (tb);
-  mpfr_clear (tres);
+  mpfr_clears (ta, tb, tres, NULL);
 }
 
 static void
@@ -136,35 +129,19 @@ main (int argc, char* argv[])
 
    check_nans ();
 
-   if (argc == 2) /* tagm N: N tests with random double's */
-     {
-       int N, i;
-       double a, b;
-
-       N = atoi (argv[1]);
-       for (i = 0; i < N; i++)
-         {
-           a = DBL_RAND ();
-           b = DBL_RAND ();
-           check(a, b, randlimb () % 4);
-         }
-       return 0;
-     }
-   else
-     {
-       check_large ();
-       check4 (2.0, 1.0, GMP_RNDN, 1.45679103104690677029);
-       check4 (6.0, 4.0, GMP_RNDN, 4.94936087247260925182);
-       check4 (62.0, 61.0, GMP_RNDN, 6.14989837188450749750e+01);
-       check4 (0.5, 1.0, GMP_RNDN, 7.28395515523453385143e-01);
-       check4 (1.0, 2.0, GMP_RNDN, 1.45679103104690677029);
-       check4 (234375765.0, 234375000.0, GMP_RNDN, 2.3437538249984395504e8);
-       check4 (8.0, 1.0, GMP_RNDU, 3.615756177597362786);
-       check4 (1.0, 44.0, GMP_RNDU, 1.33658354512981247808e1);
-       check4 (1.0, 3.7252902984619140625e-9, GMP_RNDU, 7.55393356971199025907e-02);
-     }
-
+   check_large ();
+   check4 ("2.0", "1.0", GMP_RNDN, "1.45679103104690677029");
+   check4 ("6.0", "4.0", GMP_RNDN, "4.94936087247260925182");
+   check4 ("62.0", "61.0", GMP_RNDN, "6.14989837188450749750e+01");
+   check4 ("0.5", "1.0", GMP_RNDN, "7.28395515523453385143e-01");
+   check4 ("1.0", "2.0", GMP_RNDN, "1.45679103104690677029");
+   check4 ("234375765.0", "234375000.0", GMP_RNDN, "2.3437538249984395504e8");
+   check4 ("8.0", "1.0", GMP_RNDU, "3.615756177597362786");
+   check4 ("1.0", "44.0", GMP_RNDU, "1.33658354512981247808e1");
+   check4 ("1.0", "3.7252902984619140625e-9", GMP_RNDU,
+	   "7.55393356971199025907e-02");
+   
    tests_end_mpfr ();
-
+   
    return 0;
 }

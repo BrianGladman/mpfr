@@ -1,6 +1,6 @@
 /* Test file for mpfr_const_log2.
 
-Copyright 1999, 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright 1999, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -88,7 +88,9 @@ main (int argc, char *argv[])
   if (mpfr_cmp_ui_2exp(x, 3, -2)) /* 3*2^-2 */
     {
       printf ("mpfr_const_log2 failed for prec=2, rnd=GMP_RNDN\n"
-              "expected 0.75, got %f\n", mpfr_get_d1 (x));
+              "expected 0.75, got ");
+      mpfr_out_str(stdout, 10, 0, x, GMP_RNDN);
+      putchar('\n');
       exit (1);
     }
 
@@ -103,7 +105,7 @@ main (int argc, char *argv[])
 
   mpfr_set_prec (x, 53);
   mpfr_const_log2 (x, rnd);
-  if (mpfr_get_d1 (x) != 6.9314718055994530941e-1)
+  if (mpfr_cmp_str1 (x, "6.9314718055994530941e-1") )
     {
       printf ("mpfr_const_log2 failed for prec=53\n");
       exit (1);
