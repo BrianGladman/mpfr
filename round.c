@@ -123,7 +123,7 @@ mpfr_round(mpfr_t x, char RND_MODE, unsigned long prec)
   xn = (PREC(x)-1) / BITS_PER_MP_LIMB + 1;
   if (SIGN(x)<0) xn ^= 1<<31;
   tmp = (mp_ptr) (*_mp_allocate_func) (nw * BYTES_PER_MP_LIMB);
-  carry = mpfr_round_raw(tmp, x->_mp_d, RND_MODE, xn, prec); 
+  carry = mpfr_round_raw(tmp, MANT(x), RND_MODE, xn, prec); 
 
   if (carry)
     {      
@@ -132,8 +132,8 @@ mpfr_round(mpfr_t x, char RND_MODE, unsigned long prec)
       EXP(x)++; 
     }
 
-  (*_mp_free_func) (x->_mp_d, ABSSIZE(x) * BYTES_PER_MP_LIMB);
-  if (nw*SIGN(x)<0) CHANGE_SIGN(x);
+  (*_mp_free_func) (MANT(x), ABSSIZE(x) * BYTES_PER_MP_LIMB);
+  if (SIGN(x)<0) { SIZE(x)=nw; CHANGE_SIGN(x); } else SIZE(x)=nw;
   PREC(x) = prec; 
   MANT(x) = tmp; 
 }
