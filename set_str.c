@@ -68,7 +68,7 @@ digit_value_in_base (int c, int base)
                      mpf_set_str)
  */
 int
-mpfr_set_str (mpfr_t x, __gmp_const char *str, int base, mp_rnd_t rnd)
+mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
 {
   mp_limb_t *y;                /* current value of x */
   mp_exp_t exp_y;              /* such as x = y*base^exp_y */
@@ -377,7 +377,7 @@ mpfr_set_str (mpfr_t x, __gmp_const char *str, int base, mp_rnd_t rnd)
 }
 
 int
-mpfr_init_set_str (mpfr_ptr x, __gmp_const char *str, int base, mp_rnd_t rnd)
+mpfr_init_set_str (mpfr_ptr x, const char *str, int base, mp_rnd_t rnd)
 {
   mpfr_init (x);
   return mpfr_set_str (x, str, base, rnd);
