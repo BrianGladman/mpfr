@@ -57,12 +57,13 @@ mpfr_const_aux_log2 (mpfr_ptr mylog, mp_rnd_t rnd_mode)
   mpfr_t tmp1, tmp2, result,tmp3;
   mpz_t cst;
   int logn;
-  mp_prec_t prec_i_want = MPFR_PREC(mylog);
+  mp_prec_t prec_i_want;
   mp_prec_t prec_x;
   int inexact = 0;  /* here, 0 means not set */
 
   mpz_init (cst);
-  logn = __gmpfr_ceil_log2 ((double) MPFR_PREC(mylog));
+  prec_i_want = MPFR_PREC(mylog);
+  logn = __gmpfr_ceil_log2 ((double) prec_i_want);
   prec_x = prec_i_want + logn;
   while (!inexact)
     {
@@ -91,7 +92,7 @@ mpfr_const_aux_log2 (mpfr_ptr mylog, mp_rnd_t rnd_mode)
       mpfr_clear (tmp1);
       mpfr_clear (tmp2);
       mpfr_clear (tmp3);
-      if (mpfr_can_round (result, prec_x, GMP_RNDD, GMP_RNDZ,
+      if (mpfr_can_round (result, prec_x - 2, GMP_RNDD, GMP_RNDZ,
                           prec_i_want + (rnd_mode == GMP_RNDN)))
         {
           inexact = mpfr_set (mylog, result, rnd_mode);
@@ -101,6 +102,7 @@ mpfr_const_aux_log2 (mpfr_ptr mylog, mp_rnd_t rnd_mode)
         {
           prec_x += logn;
         }
+
       mpfr_clear (result);
     }
   mpz_clear (cst);

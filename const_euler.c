@@ -43,10 +43,9 @@ mpfr_const_euler (mpfr_t x, mp_rnd_t rnd)
 
   do
     {
-      m += BITS_PER_MP_LIMB;
-      n = 1 + (unsigned long)((double) m * LOG2 / 2.0);
-      if (n < 9)
-	n = 9;
+      m += 23;
+      /* since prec >= 1, we have m >= 24 here, which ensures n >= 9 below */
+      n = 1 + (unsigned long) ((double) m * LOG2 / 2.0);
       MPFR_ASSERTD (n >= 9);
       mpfr_set_prec (y, m + log2m);
       mpfr_set_prec (z, m + log2m);

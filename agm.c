@@ -40,28 +40,30 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
 	  MPFR_SET_NAN(r);
 	  MPFR_RET_NAN;
 	}
-      /* If a or b is negative (including -Infinity), the result is NaN */
-      else if (MPFR_IS_NEG(op1) || MPFR_IS_NEG(op2))
-	{
-	  MPFR_SET_NAN(r);
-	  MPFR_RET_NAN;
-	}
-      /* If a or b is +Infinity, the result is +Infinity */
+      /* now one of a or b is Inf or 0 */
+      /* If a or b is -Inf or +Inf, the result is +Inf if both operands are
+         stricly positive, and NaN otherwise */
       else if (MPFR_IS_INF(op1) || MPFR_IS_INF(op2))
 	{
-	  MPFR_SET_INF(r);
-	  MPFR_SET_SAME_SIGN(r, op1);
-	  MPFR_RET(0); /* exact */
+          if (!(MPFR_IS_STRICTPOS(op1) && MPFR_IS_STRICTPOS(op2)))
+            {
+              MPFR_SET_NAN(r);
+              MPFR_RET_NAN;
+            }
+          else /* one of a, b is +Inf, the other is a "normal" number */
+            {
+              MPFR_SET_INF(r);
+              MPFR_SET_SAME_SIGN(r, op1);
+              MPFR_RET(0); /* exact */
+            }
 	}
-      /* If a or b is 0, the result is 0 */
-      else if (MPFR_IS_ZERO(op1) || MPFR_IS_ZERO(op2))
-	{
+      else /* a and b are neither NaN nor Inf, and one is zero */
+	{  /* If a or b is 0, the result is +0 since a sqrt is positive */
+          MPFR_ASSERTD(MPFR_IS_ZERO(op1) || MPFR_IS_ZERO(op2));
 	  MPFR_SET_POS(r);
 	  MPFR_SET_ZERO(r);
 	  MPFR_RET(0); /* exact */
 	}
-      else
-	MPFR_ASSERTN(0);
     }
   MPFR_CLEAR_FLAGS(r);
 
@@ -70,10 +72,10 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
   p = q + 15;
 
   /* Initialisations */
-  go_on=1;
+  go_on = 1;
  
   TMP_MARK(marker);
-  s=(p-1)/BITS_PER_MP_LIMB+1;
+  s = (p - 1) / BITS_PER_MP_LIMB + 1;
   MPFR_TMP_INIT(ap, a, p, s);  
   MPFR_TMP_INIT(bp, b, p, s);
   MPFR_TMP_INIT(up, u, p, s);
@@ -83,7 +85,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
   MPFR_TMP_INIT(tmpp, tmp, p, s);
 
   /* b and a are the 2 operands but we want b >= a */
-  if ((compare = mpfr_cmp (op1,op2)) > 0)
+  if ((compare = mpfr_cmp (op1, op2)) > 0)
     {
       mpfr_set (b,op1,GMP_RNDN);
       mpfr_set (a,op2,GMP_RNDN);  
@@ -96,15 +98,17 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
     }
   else
     {
-      mpfr_set (b,op2,GMP_RNDN);
-      mpfr_set (a,op1,GMP_RNDN);  
+      mpfr_set (b, op2, GMP_RNDN);
+      mpfr_set (a, op1, GMP_RNDN);  
     }
-    
+
+#if 0    
   vo = mpfr_get_d1 (b);
   uo = mpfr_get_d1 (a);
+#endif
 
-  mpfr_set(u,a,GMP_RNDN);
-  mpfr_set(v,b,GMP_RNDN);
+  mpfr_set (u, a, GMP_RNDN);
+  mpfr_set (v, b, GMP_RNDN);
 
   /* Main loop */
 
@@ -112,19 +116,32 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
     int err, can_round;
     mp_prec_t eq;
     double erraux;
-    
-    erraux = (vo == uo) ? 0.0 : __gmpfr_ceil_exp2 (-2.0 * (double) p * uo 
-                                                   / (vo - uo));
+
+#if 0    
+    erraux = (vo == uo) ? 0.0 
+      : __gmpfr_ceil_exp2 (-2.0 * (double) p * uo / (vo - uo));
     err = 1 + (int) ((3.0 / 2.0 * (double) __gmpfr_ceil_log2 ((double) p) 
                       + 1.0) * __gmpfr_ceil_exp2 (- (double) p)
                      + 3.0 * erraux);
+#else
+    /* since the argument of __gmpfr_ceil_exp2() is negative,
+       erraux is always bounded by 1.
+       We also have floor((3/2*ceil(log2(p))+1) * 2^(-p)) = 0,
+       since it the value f(p) inside floor() is 5/8 for p=2, 1/2 for p=3,
+       and f(2p) <= f(p)/2 + 1/2^p. So err=4.
+    */
+    erraux = 1.0;
+    err = 4;
+#endif
 
-    if(p-err-3<=q) {
-      p=q+err+4;
-      err= 1 + 
-	(int) ((3.0/2.0*__gmpfr_ceil_log2((double)p)+1.0)*__gmpfr_ceil_exp2(-(double)p)
-	       +3.0 * erraux);
-    }
+#if 0 /* this can not happen since p = q+15, and err=4 */
+    if (p - err - 3 <= q)
+      {
+        p = q + err + 4;
+        err = 1 + (int) ((3.0 / 2.0 * __gmpfr_ceil_log2 ((double) p) + 1.0)
+                         * __gmpfr_ceil_exp2 (- (double) p) + 3.0 * erraux);
+      }
+#endif
 
     /* Calculus of un and vn */
     do
@@ -136,7 +153,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
         mpfr_set(u, tmpu, GMP_RNDN);
         mpfr_set(v, tmpv, GMP_RNDN);
       }
-    while (mpfr_cmp2(u, v, &eq) != 0 && eq <= p - 2);
+    while (mpfr_cmp2 (u, v, &eq) != 0 && eq <= p - 2);
 
     /* Roundability of the result */
       can_round = mpfr_can_round (v, p - err - 3, GMP_RNDN, GMP_RNDZ, 
@@ -147,15 +164,15 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
 
       else {
 	  go_on = 1;
-	  p+=5;
-	  s=(p-1)/BITS_PER_MP_LIMB+1;
+	  p += 5;
+	  s = (p - 1) / BITS_PER_MP_LIMB + 1;
 	  MPFR_TMP_INIT(up, u, p, s);
 	  MPFR_TMP_INIT(vp, v, p, s);   
 	  MPFR_TMP_INIT(tmpup, tmpu, p, s);  
 	  MPFR_TMP_INIT(tmpvp, tmpv, p, s);  
 	  MPFR_TMP_INIT(tmpp, tmp, p, s);
-	  mpfr_set(u,a,GMP_RNDN);
-	  mpfr_set(v,b,GMP_RNDN);
+	  mpfr_set (u, a, GMP_RNDN);
+	  mpfr_set (v, b, GMP_RNDN);
       }
   }
   /* End of while */

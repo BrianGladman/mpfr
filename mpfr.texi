@@ -1186,6 +1186,7 @@ The arithmetic-geometric mean is the common limit of the sequences
 u[n] and v[n], where u[0]=@var{op1}, v[0]=@var{op2}, u[n+1] is the
 arithmetic mean of u[n] and v[n], and v[n+1] is the geometric mean of
 u[n] and v[n].
+If any operand is negative, the return value is NaN.
 @end deftypefun
 
 @deftypefun int mpfr_const_log2 (mpfr_t @var{rop}, mp_rnd_t @var{rnd})

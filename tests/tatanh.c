@@ -110,6 +110,22 @@ special (void)
       exit (1);
     }
 
+  mpfr_set_ui (x, 1, GMP_RNDN);
+  mpfr_atanh (y, x, GMP_RNDN);
+  if (!mpfr_inf_p (y) || mpfr_sgn (y) < 0)
+    {
+      printf ("Error: mpfr_atanh(1) <> +Inf\n");
+      exit (1);
+    }
+
+  mpfr_set_si (x, -1, GMP_RNDN);
+  mpfr_atanh (y, x, GMP_RNDN);
+  if (!mpfr_inf_p (y) || mpfr_sgn (y) > 0)
+    {
+      printf ("Error: mpfr_atanh(-1) <> -Inf\n");
+      exit (1);
+    }
+
   mpfr_set_prec (x, 32);
   mpfr_set_prec (y, 32);
 

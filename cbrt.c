@@ -67,14 +67,13 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	  return 0;
 	}
       /* case 0: cbrt(+/- 0) = +/- 0 */
-      else if (MPFR_IS_ZERO(x))
+      else /* x is necessaryly 0 */
 	{
+          MPFR_ASSERTD(MPFR_IS_ZERO(x));
 	  MPFR_SET_ZERO(y);
 	  MPFR_SET_SAME_SIGN (y, x);
 	  return 0;
 	}
-      else
-	MPFR_ASSERTN(0);
     }
   /* Useless due to mpz_init
      MPFR_CLEAR_FLAGS(y);*/

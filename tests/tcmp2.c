@@ -273,14 +273,25 @@ special (void)
       exit (1);
     }
 
-  mpfr_clear(x); mpfr_clear(y);
+  mpfr_set_prec (x, 65);
+  mpfr_set_prec (y, 32);
+  mpfr_set_str_binary (x, "1.1110111011110001110111011111111111101000011001011100101100101101");
+  mpfr_set_str_binary (y, "0.11101110111100011101110111111111");
+  if (mpfr_cmp2 (x, y, &j) <= 0 || j != 0)
+    {
+      printf ("Error in mpfr_cmp2 (1)\n");
+      exit (1);
+    }
+
+  mpfr_clear (x);
+  mpfr_clear (y);
 }
 
 int
 main (void)
 {
   int i, j;
-  double x = 1.0, y, z;
+  double x, y, z;
 
   tests_start_mpfr ();
   mpfr_test_init ();
@@ -290,7 +301,8 @@ main (void)
   tcmp2 (5.43885304644369510000e+185, -1.87427265794105340000e-57, 1);
   tcmp2 (1.06022698059744327881e+71, 1.05824655795525779205e+71, -1);
   tcmp2 (1.0, 1.0, 53);
-  for (i = 0; i < 54; i++)
+  /* warning: cmp2 does not allow 0 as input */
+  for (x = 0.5, i = 1; i < 54; i++)
     {
       tcmp2 (1.0, 1.0-x, i);
       x /= 2.0;

@@ -46,8 +46,9 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	  MPFR_SET_NAN(asin);
 	  MPFR_RET_NAN;
 	}
-      else if (MPFR_IS_ZERO(x)) /* x = 0 */
+      else /* x = 0 */
 	{
+          MPFR_ASSERTD(MPFR_IS_ZERO(x));
 	  mpfr_set_ui (asin, 0, GMP_RNDN);
 	  MPFR_RET(0); /* exact result */
 	}

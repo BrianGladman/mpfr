@@ -21,7 +21,9 @@ MA 02111-1307, USA. */
 
 #include "mpfr-impl.h"
 
-/* returns y >= 2^d, assuming that d <= 1024 */
+/* returns y >= 2^d, assuming that d <= 1024
+   for d integer, returns exactly 2^d
+*/
 double
 __gmpfr_ceil_exp2 (double d)
 {

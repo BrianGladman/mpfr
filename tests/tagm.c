@@ -96,6 +96,14 @@ check_large (void)
       exit (1);
     }
 
+  /* test worst case: 9 consecutive ones after the last bit */
+  mpfr_set_prec (a, 2);
+  mpfr_set_prec (b, 2);
+  mpfr_set_ui (a, 1, GMP_RNDN);
+  mpfr_set_ui (b, 2, GMP_RNDN);
+  mpfr_set_prec (agm, 904);
+  mpfr_agm (agm, a, b, GMP_RNDZ);
+
   mpfr_clear (a);
   mpfr_clear (b);
   mpfr_clear (agm);
@@ -135,6 +143,38 @@ check_nans (void)
   mpfr_set_inf (y, 1);
   mpfr_agm (m, x, y, GMP_RNDN);
   MPFR_ASSERTN (mpfr_nan_p (m));
+
+  /* agm(+0,+inf) == nan */
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_set_inf (y, 1);
+  mpfr_agm (m, x, y, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_nan_p (m));
+
+  /* agm(+0,1) == +0 */
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_set_ui (y, 1, GMP_RNDN);
+  mpfr_agm (m, x, y, GMP_RNDN);
+  MPFR_ASSERTN (MPFR_IS_ZERO (m) && MPFR_IS_POS(m));
+
+  /* agm(-0,1) == +0 */
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_neg (x, x, GMP_RNDN);
+  mpfr_set_ui (y, 1, GMP_RNDN);
+  mpfr_agm (m, x, y, GMP_RNDN);
+  MPFR_ASSERTN (MPFR_IS_ZERO (m) && MPFR_IS_POS(m));
+
+  /* agm(-0,+0) == +0 */
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_neg (x, x, GMP_RNDN);
+  mpfr_set_ui (y, 0, GMP_RNDN);
+  mpfr_agm (m, x, y, GMP_RNDN);
+  MPFR_ASSERTN (MPFR_IS_ZERO (m) && MPFR_IS_POS(m));
+
+  /* agm(1,1) == 1 */
+  mpfr_set_ui (x, 1, GMP_RNDN);
+  mpfr_set_ui (y, 1, GMP_RNDN);
+  mpfr_agm (m, x, y, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_ui (m ,1) == 0);
 
   mpfr_clear (x);
   mpfr_clear (y);

@@ -26,7 +26,7 @@ MA 02111-1307, USA. */
 /* If |b| != |c|, puts the number of canceled bits when one subtracts |c|
    from |b| in *cancel. Returns the sign of the difference.
 
-   Assumes neither of b or c is NaN or +/- infinity.
+   Assumes neither of b or c is NaN, +/- infinity, or +/- 0.
 
    In other terms, if |b| != |c|, mpfr_cmp2 (b, c) returns
    EXP(max(|b|,|c|)) - EXP(|b| - |c|).
@@ -44,10 +44,19 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mp_prec_t *cancel)
   MPFR_ASSERTD(MPFR_IS_FP(b));
   MPFR_ASSERTD(MPFR_IS_FP(c));
 
+  /* b=c should not happen, since cmp2 is called only from agm
+     (with different variables), and from sub1 (if same b=c, then
+     sub1sp would be called instead */
+#if 0 
   /* Optimized case x - x */
   if (MPFR_UNLIKELY(b == c))
     return 0;
+#endif
 
+  /* the cases b=0 or c=0 are also treated apart in agm and sub (which calls 
+     sub1)
+   */
+#if 0
   /*FIXME: Useless for sub1 ? */
   if (MPFR_IS_ZERO(b))
     {
@@ -63,6 +72,7 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mp_prec_t *cancel)
       *cancel = 0;
       return 1;
     }
+#endif
 
   if (MPFR_GET_EXP (b) >= MPFR_GET_EXP (c))
     {
@@ -219,7 +229,7 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mp_prec_t *cancel)
                 lastc = cp[cn] << (BITS_PER_MP_LIMB - diff_exp);
 	    }
 	  else
-	    lastc = 0;
+            lastc = 0;
 	  cn--;
 	}
       if (bp[bn] != cc)

@@ -36,10 +36,8 @@ mpfr_cmp_ui_2exp (mpfr_srcptr b, unsigned long int i, mp_exp_t f)
     {
       if (MPFR_IS_INF(b))
 	return MPFR_SIGN(b);
-      else if (MPFR_IS_ZERO(b))
+      else /* since b cannot be NaN, b=0 here */
 	return i != 0 ? -1 : 0;
-      else
-	MPFR_ASSERTN(0);
     }
 
   if (MPFR_IS_NEG(b))

@@ -105,13 +105,12 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	  MPFR_SET_EXP (arctangent, MPFR_GET_EXP (arctangent) - 1);
 	  return inexact;
 	}
-      else if (MPFR_IS_ZERO(x))
+      else /* x is necessarily 0 */
 	{
+          MPFR_ASSERTD(MPFR_IS_ZERO(x));
 	  mpfr_set_ui (arctangent, 0, GMP_RNDN);
 	  return 0; /* exact result */
 	}
-      else
-	MPFR_ASSERTN(0);
     }
   MPFR_CLEAR_FLAGS(arctangent);
 
@@ -153,21 +152,21 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpz_init (square);
 
   /* Initialisation    */
-  mpfr_init(sk);
-  mpfr_init(ukf);
-  mpfr_init(t_arctan);
-  mpfr_init(tmp_arctan);
-  mpfr_init(tmp);
-  mpfr_init(tmp2);
-  mpfr_init(Ak);
-  mpfr_init(arctgt);
-  mpfr_init(Pisur2);
+  mpfr_init (sk);
+  mpfr_init (ukf);
+  mpfr_init (t_arctan);
+  mpfr_init (tmp_arctan);
+  mpfr_init (tmp);
+  mpfr_init (tmp2);
+  mpfr_init (Ak);
+  mpfr_init (arctgt);
+  mpfr_init (Pisur2);
 
   while (1)
     {
       N0 = __gmpfr_ceil_log2((double) realprec + supplement + CST);
       estimated_delta = 1 + supplement + __gmpfr_ceil_log2((double) (3*N0-2));
-      Prec = realprec+estimated_delta;
+      Prec = realprec + estimated_delta;
 
       /* Initialisation    */
       mpfr_set_prec (sk,Prec);
@@ -182,43 +181,46 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
       if (comparaison > 0)
         {
           mpfr_set_prec (Pisur2, Prec);
-          mpfr_const_pi(Pisur2, GMP_RNDN);
-          mpfr_div_2ui(Pisur2, Pisur2, 1, GMP_RNDN);
-          mpfr_ui_div(sk, 1, xp, GMP_RNDN);
+          mpfr_const_pi (Pisur2, GMP_RNDN);
+          mpfr_div_2ui (Pisur2, Pisur2, 1, GMP_RNDN);
+          mpfr_ui_div (sk, 1, xp, GMP_RNDN);
         }
       else
-	mpfr_set(sk, xp, GMP_RNDN);
+	mpfr_set (sk, xp, GMP_RNDN);
+
+      /* sk is 1/|x| if |x| > 1, and |x| otherwise, i.e. min(|x|, 1/|x|) */
 
       /* Assignation  */
       mpfr_set_ui (tmp_arctan, 0, GMP_RNDN);
       twopoweri = 1;
-      for(i = 0; i <= N0; i++)
+      for (i = 0; i <= N0; i++)
         {
-          mpfr_mul_2ui(tmp, sk, twopoweri, GMP_RNDN);
+          mpfr_mul_2ui (tmp, sk, twopoweri, GMP_RNDN);
           /* Calculation of  trunc(tmp) --> mpz */
           mpfr_trunc (ukf, tmp);
           exptol = mpfr_get_z_exp (ukz, ukf);
-          if (exptol>0)
-            mpz_mul_2exp (ukz, ukz, exptol);
-          else
-            mpz_tdiv_q_2exp (ukz, ukz, (unsigned long int) (-exptol));
+          /* since the s_k are decreasing (see algorithms.tex),
+             and s_0 = min(|x|, 1/|x|) < 1, we have sk < 1,
+             thus exptol < 0 */
+          MPFR_ASSERTD(exptol < 0);
+          mpz_tdiv_q_2exp (ukz, ukz, (unsigned long int) (-exptol));
 
           /* Calculation of arctan(Ak) */
-          mpz_mul(square, ukz, ukz);
-	  mpz_neg(square, square);
-          mpfr_atan_aux(t_arctan, square, 2*twopoweri, N0 - i);
-          mpfr_set_z(Ak, ukz, GMP_RNDN);
-          mpfr_div_2ui(Ak, Ak, twopoweri, GMP_RNDN);
-          mpfr_mul(t_arctan, t_arctan, Ak, GMP_RNDN);
+          mpz_mul (square, ukz, ukz);
+	  mpz_neg (square, square);
+          mpfr_atan_aux (t_arctan, square, 2*twopoweri, N0 - i);
+          mpfr_set_z (Ak, ukz, GMP_RNDN);
+          mpfr_div_2ui (Ak, Ak, twopoweri, GMP_RNDN);
+          mpfr_mul (t_arctan, t_arctan, Ak, GMP_RNDN);
 
           /* Addition and iteration */
-          mpfr_add(tmp_arctan, tmp_arctan, t_arctan, GMP_RNDN);
-          if (i<N0)
+          mpfr_add (tmp_arctan, tmp_arctan, t_arctan, GMP_RNDN);
+          if (i < N0)
             {
-              mpfr_sub(tmp, sk, Ak, GMP_RNDN);
-              mpfr_mul(tmp2, sk, Ak, GMP_RNDN);
-              mpfr_add_ui(tmp2, tmp2, 1, GMP_RNDN);
-              mpfr_div(sk, tmp, tmp2, GMP_RNDN);
+              mpfr_sub (tmp, sk, Ak, GMP_RNDN);
+              mpfr_mul (tmp2, sk, Ak, GMP_RNDN);
+              mpfr_add_ui (tmp2, tmp2, 1, GMP_RNDN);
+              mpfr_div (sk, tmp, tmp2, GMP_RNDN);
               twopoweri <<= 1;
             }
         }

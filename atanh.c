@@ -44,14 +44,13 @@ mpfr_atanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
 	  MPFR_SET_NAN(y);
 	  MPFR_RET_NAN;
 	}
-      else if (MPFR_IS_ZERO(xt))
+      else /* necessarily xt is 0 */
 	{
+          MPFR_ASSERTD(MPFR_IS_ZERO(xt));
 	  MPFR_SET_ZERO(y);   /* atanh(0) = 0 */
 	  MPFR_SET_SAME_SIGN(y,xt);
 	  MPFR_RET(0);
 	}
-      else
-	MPFR_ASSERTN(0);
     }
   /* Useless due to final mpfr_set
      MPFR_CLEAR_FLAGS(y);*/

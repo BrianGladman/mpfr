@@ -24,6 +24,7 @@ MA 02111-1307, USA. */
 /* returns 0 iff b = sign(s) * c
            a positive value iff b > sign(s) * c
            a negative value iff b < sign(s) * c
+   This function ***does not*** handle NaN as input (undefined behaviour).
 */
 
 int
@@ -48,11 +49,8 @@ mpfr_cmp3 (mpfr_srcptr b, mpfr_srcptr c, int s)
 	return -s;
       else if (MPFR_IS_ZERO(b))
 	return MPFR_IS_ZERO(c) ? 0 : -s;
-      else if (MPFR_IS_ZERO(c))
+      else /* necessarily c=0 */
 	return MPFR_SIGN(b);
-      else
-	/* Should never reach here */
-	MPFR_ASSERTN(0);
     }
   /* b and c are real numbers */
   if (s != MPFR_SIGN(b))
