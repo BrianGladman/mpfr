@@ -32,16 +32,100 @@ MA 02111-1307, USA. */
 
 static int usesp;
 
+/* define CHECK_EXTERNAL if you want to check mpfr against another library
+   with correct rounding. You'll probably have to modify mpfr_print_raw()
+   and/or test_add() below:
+   * mpfr_print_raw() prints each number as "p m e" where p is the precision,
+     m the mantissa (as a binary integer with sign), and e the exponent.
+     The corresponding number is m*2^e. Example: "2 10 -6" represents
+     2*2^(-6) with a precision of 2 bits.
+   * test_add() outputs "b c a" on one line, for each addition a <- b + c.
+     Currently it only prints such a line for rounding to nearest, when
+     the inputs b and c are not NaN and/or Inf.
+*/
+#ifdef CHECK_EXTERNAL
+static void
+mpfr_print_raw (mpfr_srcptr x)
+{
+  printf ("%lu ", MPFR_PREC (x));
+  if (MPFR_IS_NAN (x))
+    {
+      printf ("@NaN@");
+      return;
+    }
+
+  if (MPFR_SIGN (x) < 0)
+    printf ("-");
+
+  if (MPFR_IS_INF (x))
+    printf ("@Inf@");
+  else if (MPFR_IS_ZERO (x))
+    printf ("0 0");
+  else
+    {
+      mp_limb_t *mx;
+      mp_prec_t px;
+      mp_size_t n;
+
+      mx = MPFR_MANT (x);
+      px = MPFR_PREC (x);
+
+      for (n = (px - 1) / BITS_PER_MP_LIMB; ; n--)
+        {
+          mp_limb_t wd, t;
+
+          MPFR_ASSERTN (n >= 0);
+          wd = mx[n];
+          for (t = MPFR_LIMB_HIGHBIT; t != 0; t >>= 1)
+            {
+              printf ((wd & t) == 0 ? "0" : "1");
+              if (--px == 0)
+                {
+                  mp_exp_t ex;
+
+                  ex = MPFR_GET_EXP (x);
+                  MPFR_ASSERTN (ex >= LONG_MIN && ex <= LONG_MAX);
+                  printf (" %ld", (long) ex - (long) MPFR_PREC (x));
+                  return;
+                }
+            }
+        }
+    }
+}
+#endif
+
 static int
 test_add (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 {
+  int res;
+#ifdef CHECK_EXTERNAL
+  int ok = rnd_mode == GMP_RNDN && mpfr_number_p (b) && mpfr_number_p (c);
+  if (ok)
+    {
+      mpfr_print_raw (b);
+      printf (" ");
+      mpfr_print_raw (c);
+    }
+#endif
   if (usesp || MPFR_ARE_SINGULAR(b,c) || MPFR_SIGN(b) != MPFR_SIGN(c))
-    return mpfr_add (a, b, c, rnd_mode);
-  MPFR_CLEAR_FLAGS(a); /* clear flags */
-  if (MPFR_GET_EXP(b) < MPFR_GET_EXP(c))
-    return mpfr_add1(a, c, b, rnd_mode);
+    res = mpfr_add (a, b, c, rnd_mode);
   else
-    return mpfr_add1(a, b, c, rnd_mode);
+    {
+      MPFR_CLEAR_FLAGS(a); /* clear flags */
+      if (MPFR_GET_EXP(b) < MPFR_GET_EXP(c))
+        res = mpfr_add1(a, c, b, rnd_mode);
+      else
+        res = mpfr_add1(a, b, c, rnd_mode);
+    }
+#ifdef CHECK_EXTERNAL
+  if (ok)
+    {
+      printf (" ");
+      mpfr_print_raw (a);
+      printf ("\n");
+    }
+#endif
+  return res;
 }
 
 /* Parameter "z1" of check() used to be last in the argument list, but that
@@ -683,7 +767,7 @@ check_1111 (void)
           mpfr_div_2ui (b, one, tb, GMP_RNDN);
           if (sb == 2)
             mpfr_neg (b, b, GMP_RNDN);
-          mpfr_add (b, b, one, GMP_RNDN);
+          test_add (b, b, one, GMP_RNDN);
         }
       else
         mpfr_set (b, one, GMP_RNDN);
@@ -692,13 +776,13 @@ check_1111 (void)
       sc = randlimb () % 2;
       if (sc)
         mpfr_neg (c, c, GMP_RNDN);
-      mpfr_add (c, c, one, GMP_RNDN);
+      test_add (c, c, one, GMP_RNDN);
       diff = (randlimb () % (2*m)) - m;
       mpfr_mul_2si (c, c, diff, GMP_RNDN);
       rnd_mode = (mp_rnd_t) RND_RAND ();
       inex_a = test_add (a, b, c, rnd_mode);
       mpfr_init2 (s, MPFR_PREC_MIN + 2*m);
-      inex_s = mpfr_add (s, b, c, GMP_RNDN); /* exact */
+      inex_s = test_add (s, b, c, GMP_RNDN); /* exact */
       if (inex_s)
         {
           printf ("check_1111: result should have been exact.\n");
@@ -769,7 +853,7 @@ check_1minuseps (void)
               mpfr_div_ui (c, c, prec_a[ia] + supp_b[ic], GMP_RNDN);
               inex_a = test_add (a, b, c, (mp_rnd_t) rnd_mode);
               mpfr_init2 (s, 256);
-              inex_s = mpfr_add (s, b, c, GMP_RNDN); /* exact */
+              inex_s = test_add (s, b, c, GMP_RNDN); /* exact */
               if (inex_s)
                 {
                   printf ("check_1minuseps: result should have been exact "
@@ -1054,8 +1138,10 @@ main (int argc, char *argv[])
   usesp = 0;
   tests ();
 
+#ifndef CHECK_EXTERNAL /* no need to check twice */
   usesp = 1;
   tests ();
+#endif
 
   tests_end_mpfr ();
   return 0;
