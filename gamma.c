@@ -48,13 +48,13 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_t GammaTrial;
   mpfr_t tmp, tmp2;
 
-  int Prec;
-  int prec_gamma;
-  int prec_nec;
+  mp_prec_t Prec;
+  mp_prec_t prec_gamma;
+  mp_prec_t prec_nec;
   int good = 0;
   double C;
-  long A, N, estimated_cancel;
-  int realprec;
+  mp_prec_t A, N, estimated_cancel;
+  mp_prec_t realprec;
   int compared;
   int k;
   int sign;
@@ -107,7 +107,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
         2 + realprec  /* We will use the reflexion formula! */
         : realprec;
       C = (double)(((double) prec_nec)*CST-0.5);
-      A = (int) C;
+      A = (mp_prec_t) C;
       N = A - 1;
 #ifdef DEBUG
       printf("C=%u", (int)C);
@@ -117,7 +117,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
 #endif
 
       /* estimated_cancel is the amount of bit that will be flushed */
-      estimated_cancel= (long) (ecCST * (double) A + 1.0);
+      estimated_cancel= (mp_prec_t) (ecCST * (double) A + 1.0);
       Prec = prec_nec + estimated_cancel + 20;
 
       mpfr_set_prec (xp, Prec);
