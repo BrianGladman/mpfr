@@ -276,6 +276,7 @@ mpfr_set_d (r, d, rnd_mode)
     }
 
   sizer = (MPFR_PREC(r)-1)/BITS_PER_MP_LIMB + 1;
+
   if (sizer < MPFR_LIMBS_PER_DOUBLE) 
     {
       tmp = TMP_ALLOC(sizeof(mpfr_ptr)); 
@@ -290,7 +291,7 @@ mpfr_set_d (r, d, rnd_mode)
 
   /* warning: __mpfr_extract_double requires at least two limbs */
   if (sizer < MPFR_LIMBS_PER_DOUBLE)
-    MPFR_EXP(tmp) = __mpfr_extract_double (MPFR_MANT(tmp), d, 0);
+    MPFR_EXP(tmp) = __mpfr_extract_double (MPFR_MANT(tmp), d, 1);
   else
     MPFR_EXP(tmp) = __mpfr_extract_double (MPFR_MANT(tmp) + sizer - MPFR_LIMBS_PER_DOUBLE, d, 1);
   
