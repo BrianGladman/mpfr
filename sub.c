@@ -183,8 +183,8 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
 	  *ap &= ~cc; /* truncate last bits */
 	}
 	else cc=0;
-	cn--;
-        c2 = (dif>-sh) ? cp[cn]>>(mp_bits_per_limb-dif-sh) : 0;
+        if (dif>-sh) c2 = cp[--cn]>>(mp_bits_per_limb-dif-sh);
+        else c2 = 0;
 	while (cc==c2 && (k || cn)) {
 	  if (k) cc = bp[--k];
 	  if (cn) {
