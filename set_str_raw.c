@@ -48,7 +48,7 @@ mpfr_set_str_raw(x, str)
   unsigned long j, l, k = 0, xsize, cnt, alloc; mp_limb_t *xp; 
   long expn = 0, e; char *endstr2;
 
-  xp = x -> _mp_d; 
+  xp = MPFR_MANT (x); 
   xsize = 1 + (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB;
   alloc = (strlen(str)+1) * sizeof(char);
   str0 = str2 = (char *) (*_mp_allocate_func) (alloc);
@@ -94,7 +94,11 @@ mpfr_set_str_raw(x, str)
 
   endstr2 = str2;
   *str2 = (char) 0; /* end of string */
-  l = (strlen(str0) - 1) / BITS_PER_MP_LIMB + 1; str2 = str0; 
+  l = (strlen(str0) - 1) / BITS_PER_MP_LIMB + 1; str2 = str0;
+  if (l > xsize) {
+    fprintf (stderr, "Error: mantissa larger than precision of destination variable in mpfr_set_str_raw\n");
+    exit (1);
+  }
 
   /* str2[0]..endstr2[-1] contains the mantissa */
   for (k = 1; k <= l; k++)

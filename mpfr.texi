@@ -646,6 +646,8 @@ Set @var{x} to the value of the binary number in string @var{s}, which has to
 be of the
 form +/-xxxx.xxxxxxEyy. The exponent is read in decimal, but is interpreted
 as the power of two to be multiplied by the mantissa.
+The mantissa length of @var{s} has to be less or equal to the precision of
+@var{x}, otherwise an error occurs.
 @end deftypefun
 
 @deftypefun void mpfr_set_f (mpfr_t @var{x}, mpf_t @var{y}, mp_rnd_t @var{rnd})
