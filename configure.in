@@ -1,0 +1,65 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT()
+AM_INIT_AUTOMAKE(mpfr,1.0)
+
+AC_ARG_WITH(gmp_include, [ --with-gmp-include=DIR  GMP include directory ], with_gmp_include=$withval)
+AC_ARG_WITH(gmp_lib, [ --with-gmp-lib=DIR      GMP lib directory ], with_gmp_lib=$withval)
+AC_ARG_WITH(gmp, [ --with-gmp=DIR          GMP directory ], with_gmp_include=$withval/include with_gmp_lib=$withval/lib)
+
+AC_ARG_WITH(irix64, [ --with-irix64=on/off    Irix 32/64 bits support ], with_irix64=$withval, with_irix64=off)
+
+dnl Checks for programs.
+AC_PROG_CC
+AC_PROG_RANLIB
+AC_CHECK_OS
+AC_CHECK_MACHTYPE
+
+dnl Mettre les flags OS dependants
+case $OS_TYPE in 
+	HP-UX*)
+		AC_CHECK_LIB(M, main);;
+	Linux*)
+		AC_CHECK_LIB(m, main)
+		fpucw=`grep __setfpucw /usr/include/fpu_control.h`
+	        if test -z "$fpucw"; 
+		then AC_DEFINE(LIBC211) fi; 
+		if [[ "$MACHTYPE" = "alpha" ]];
+		then
+		CFLAGS ="$CFLAGS -mfp-rounding-mode=d -mieee-with-inexact"
+		fi;;
+	IRIX64)
+		AC_CHECK_LIB(m, main)
+		if [[ "$irix64" = "on" ]]
+		then
+		CFLAGS ="-mabi=64 $CFLAGS"
+		else
+		CFLAGS ="-mabi=n32 $CFLAGS"
+		fi;;
+	OSF*)
+		AC_CHECK_LIB(m, main)
+		CFLAGS="$CFLAGS -mfp-rounding-mode=d -mieee-with-inexact -ffloat-store"
+		AC_DEFINE(__STDC__)
+		;;
+	HP-UX*)
+		AC_DEFINE(hpux)
+	        LDFLAGS="$LDFLAGS -L/lib/pa1.1"
+		;;
+	*)	
+		AC_CHECK_LIB(m, main);;
+esac
+
+	
+dnl Tests pour le repertoire ou trouver les fichiers include
+
+AC_MY_HEADERS($with_gmp_include, gmp-impl.h)
+
+
+
+AC_MY_LIBS($with_gmp_lib, gmp)
+AC_SUBST(INCLUDES)
+AC_SUBST(LDADD)
+AC_SUBST(LDFLAGS)
+AC_SUBST(CFLAGS)
+AC_OUTPUT(Makefile tests/Makefile)
+
+dnl NEWS README AUTHORS Changelog
