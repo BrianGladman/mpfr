@@ -96,12 +96,12 @@ mpfr_sqrt (r, u, rnd_mode)
       if (MPFR_PREC(u) & (BITS_PER_MP_LIMB - 1))
 	{
 	  up = TMP_ALLOC(usize*BYTES_PER_MP_LIMB);
-	  mpn_rshift(up, u->_mp_d, usize, 1); 
+	  mpn_rshift(up, MPFR_MANT(u), usize, 1); 
 	}
       else
 	{
 	  up = TMP_ALLOC((usize + 1)*BYTES_PER_MP_LIMB);
-	  if (mpn_rshift(up + 1, u->_mp_d, usize, 1))
+	  if (mpn_rshift(up + 1, MPFR_MANT(u), usize, 1))
 	    up [0] = ((mp_limb_t) 1) << (BITS_PER_MP_LIMB - 1); 
 	  else up[0] = 0; 
 	  usize++; 
@@ -230,7 +230,7 @@ mpfr_sqrt (r, u, rnd_mode)
  fin:
   rsize = rrsize; 
   rrsize = (MPFR_PREC(r) - 1)/BITS_PER_MP_LIMB + 1;  
-  MPN_COPY(r->_mp_d, rp + rsize - rrsize, rrsize); 
+  MPN_COPY(MPFR_MANT(r), rp + rsize - rrsize, rrsize); 
 
   if (MPFR_PREC(r) & (BITS_PER_MP_LIMB - 1))
     MPFR_MANT(r) [0] &= ~(((mp_limb_t)1 << (BITS_PER_MP_LIMB - 
