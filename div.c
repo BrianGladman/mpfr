@@ -135,17 +135,26 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
       bp = (mp_srcptr) vp + (vsize - qsize);
     }
 
+  /* we have {bp, bsize} * (1 + errb) = (true divisor)
+     with 0 <= errb < 2^(-qsize*BITS_PER_MP_LIMB+1) */
+
   asize = bsize + qsize;
   ap = (mp_ptr) TMP_ALLOC (asize * BYTES_PER_MP_LIMB);
   /* if all arguments have same precision, then asize will be about 2*usize */
   if (MPFR_LIKELY(asize > usize))
     {
       /* copy u into the high limbs of {ap, asize}, and pad with zeroes */
+      /* FIXME: could we copy only the qsize high limbs of the dividend? */
       MPN_COPY (ap + asize - usize, up, usize);
       MPN_ZERO (ap, asize - usize);
     }
   else /* truncate the high asize limbs of u into {ap, asize} */
     MPN_COPY (ap, up + usize - asize, asize);
+
+  /* we have {ap, asize} = (true dividend) * (1 - erra)
+     with 0 <= erra < 2^(-asize*BITS_PER_MP_LIMB).
+     This {ap, asize} / {bp, bsize} =
+     (true dividend) / (true divisor) * (1 - erra) (1 + errb) */
 
   /* Allocate limbs for quotient and remainder. */
   qp = (mp_ptr) TMP_ALLOC ((qsize + 1) * BYTES_PER_MP_LIMB);
@@ -153,6 +162,18 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
   rsize = bsize;
 
   mpn_tdiv_qr (qp, rp, 0, ap, asize, bp, bsize);
+  sh = - (int) qp[qsize];
+  /* since u and v are normalized, sh is 0 or -1 */
+
+  /* we have {qp, qsize + 1} = {ap, asize} / {bp, bsize} (1 - errq)
+     with 0 <= errq < 2^(-qsize*BITS_PER_MP_LIMB+1+sh)
+     thus {qp, qsize + 1} =
+     (true dividend) / (true divisor) * (1 - erra) (1 + errb) (1 - errq).
+     
+     In fact, since the truncated dividend and {rp, bsize} do not overlap,
+     we have: {qp, qsize + 1} =
+     (true dividend) / (true divisor) * (1 - erra') (1 + errb)
+     where 0 <= erra' < 2^(-qsize*BITS_PER_MP_LIMB+sh) */
 
   /* Estimate number of correct bits. */
 
@@ -161,9 +182,6 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
   /* We want to check if rounding is possible, but without normalizing
      because we might have to divide again if rounding is impossible, or
      if the result might be exact. We have however to mimic normalization */
-
-  sh = - (int) qp[qsize];
-  /* since u and v are normalized, sh is 0 or -1 */
 
   /*
      To detect asap if the result is inexact, so as to avoid doing the
@@ -189,8 +207,12 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
 
         if (bsize < vsize)
           err -= 2; /* divisor is truncated */
+#if 0 /* commented this out since the truncation of the dividend is already
+         taken into account in {rp, bsize}, which does not overlap with the
+         neglected part of the dividend */
         else if (asize < usize)
           err --;   /* dividend is truncated */
+#endif
 
 	if (MPFR_LIKELY(rnd_mode == GMP_RNDN))
 	  {
@@ -333,6 +355,10 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
 
   qexp = MPFR_GET_EXP (u) - MPFR_GET_EXP (v);
 
+  /* FIXME: instead of first shifting {qp, qsize} when qp[qsize]=1,
+     then rounding it, first round it (with appropriate err and prec),
+     and shift it afterwards, directly in MPFR_MANT(q) */
+
   if (qp[qsize] != 0)
     /* Hack : qp[qsize] is 0 or 1, hence if not 0, = 2^(qp[qsize] - 1). */
     {
@@ -351,6 +377,9 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
                          (MPFR_IS_NEG_SIGN(sign_quotient) ? 1 : 0),
                          MPFR_PREC(q), rnd_mode, &inex);
 
+  /* cc = 0 if one must truncate {qp, qsize},
+          1 if one must add one ulp */
+
   qp += qsize - MPFR_LIMB_SIZE(q); /* 0 or 1 */
   qsize = MPFR_LIMB_SIZE(q);
 
@@ -367,7 +396,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
      except when rounding to nearest (the nasty case of even rounding again).
   */
 
-  if (MPFR_LIKELY(!can_round)) /* Lazy case. */
+  if (MPFR_LIKELY(can_round == 0)) /* Lazy case. */
     {
       if (MPFR_UNLIKELY(inex == 0))
 	{
@@ -421,20 +450,28 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
   if (cc)
     {
       MPFR_UNSIGNED_MINUS_MODULO(sh, MPFR_PREC(q));
-      cc = mpn_add_1 (qp, qp, qsize, MPFR_LIMB_ONE << sh);
+      cc = mpn_add_1 (MPFR_MANT(q), qp, qsize, MPFR_LIMB_ONE << sh);
+      qp = MPFR_MANT(q);
       if (MPFR_UNLIKELY(cc))
         {
+#if 0
+          /* no need to shift since {qp, qsize} = 000...000 in that case */
           mpn_rshift (qp, qp, qsize, 1);
-          qp[qsize-1] |= MPFR_LIMB_HIGHBIT;
+#endif
+          qp[qsize - 1] = MPFR_LIMB_HIGHBIT;
           qexp++;
         }
     }
+  else /* truncate */
+    {
+      MPN_COPY(MPFR_MANT(q), qp, qsize);
+      qp = MPFR_MANT(q);
+    }
 
-  rw = qsize * BITS_PER_MP_LIMB - MPFR_PREC(q);
-  MPN_COPY(MPFR_MANT(q), qp, qsize);
   TMP_FREE (marker);
 
-  MPFR_MANT(q)[0] &= ~((MPFR_LIMB_ONE << rw) - MPFR_LIMB_ONE);
+  rw = qsize * BITS_PER_MP_LIMB - MPFR_PREC(q);
+  qp[0] &= ~((MPFR_LIMB_ONE << rw) - MPFR_LIMB_ONE);
   MPFR_EXP(q) = qexp;
 
   /* check for underflow/overflow */
