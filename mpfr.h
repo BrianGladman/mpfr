@@ -160,6 +160,7 @@ int mpfr_cmp3 _PROTO ((mpfr_srcptr, mpfr_srcptr, long int));
 int mpfr_nan_p _PROTO((mpfr_srcptr));
 int mpfr_inf_p _PROTO((mpfr_srcptr));
 int mpfr_number_p _PROTO((mpfr_srcptr));
+int mpfr_arctan _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 
 #if defined (__cplusplus)
 }
