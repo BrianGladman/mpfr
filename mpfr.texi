@@ -96,7 +96,7 @@ How to install and use MPFR, a library for reliable multiple precision floating-
 @end ifnothtml
 
 @menu
-* Copying::                     GMP Copying Conditions (LGPL).
+* Copying::                     MPFR Copying Conditions (LGPL).
 * Introduction to MPFR::        Brief introduction to MPFR.
 * Installing MPFR::             How to configure and compile the MPFR library.
 * Reporting Bugs::              How to usefully report bugs.
