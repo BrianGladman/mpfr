@@ -59,7 +59,7 @@ mpfr_agm(r, a, b, rnd_mode)
   no=0;
 
   TMP_MARK(marker1);
-  s=(p-1)/BYTES_PER_MP_LIMB+1;
+  s=(p-1)/BITS_PER_MP_LIMB+1;
   MON_INIT(ap, a, p, s);  
   MON_INIT(bp, b, p, s);
   TMP_MARK(marker2);
@@ -84,7 +84,6 @@ mpfr_agm(r, a, b, rnd_mode)
   mpfr_set(u,a,GMP_RNDN);
   mpfr_set(v,b,GMP_RNDN);
  
-
   /* Main loop */
 
   while (go_on==1) {
@@ -95,14 +94,16 @@ mpfr_agm(r, a, b, rnd_mode)
     /* Calculus of un and vn */
     for(i=no;i<ntotal;i++) {    
       mpfr_mul(tmp,u,v,GMP_RNDN);
+      /*  printf("dont la racine est\n");   */
       mpfr_sqrt(tmpu,tmp,GMP_RNDN); 
+      /*mpfr_print_raw(tmpu);  printf("\n");*/
       mpfr_add(tmp,u,v,GMP_RNDN);
       mpfr_div_2exp(tmpv,tmp,1,GMP_RNDN);
       mpfr_set(u,tmpu,GMP_RNDN);
-      mpfr_set(v,tmpv,GMP_RNDN);       
+      mpfr_set(v,tmpv,GMP_RNDN); 
     }
 
-    /* printf("avant can_round\n v : "); */ 
+    /*    printf("avant can_round\n v : ");  */
     /* mpfr_out_str(stdout,10,0,v,GMP_RNDN); printf("\n u :");
       mpfr_out_str(stdout,10,0,u,GMP_RNDN);printf("\n"); */
     
@@ -134,7 +135,7 @@ mpfr_agm(r, a, b, rnd_mode)
       mp_limb_t *res1p, *res2p;
 
       TMP_MARK(marker3);
-      s=(q-1)/BYTES_PER_MP_LIMB+1;
+      s=(q-1)/BITS_PER_MP_LIMB+1;
       MON_INIT(res1p, res1, q, s);  
       MON_INIT(res2p, res2, q, s);  
       round1=mpfr_can_round(v,p-err-1,GMP_RNDU,rnd_mode,q);
@@ -155,12 +156,14 @@ mpfr_agm(r, a, b, rnd_mode)
 	  ntotal+=3;
 	  TMP_FREE(marker2); 
 	  TMP_MARK(marker2);
-	  s=(p-1)/BYTES_PER_MP_LIMB+1;
-	  MON_INIT(up, v, p, s);
+	  s=(p-1)/BITS_PER_MP_LIMB+1;
+	  MON_INIT(up, u, p, s);
 	  MON_INIT(vp, v, p, s);   
 	  MON_INIT(tmpup, tmpu, p, s);  
 	  MON_INIT(tmpvp, tmpv, p, s);  
-	  MON_INIT(tmpp, tmp, p, s);  
+	  MON_INIT(tmpp, tmp, p, s);
+	  mpfr_set(u,a,GMP_RNDN);
+	  mpfr_set(v,b,GMP_RNDN);
       }
       TMP_FREE(marker3); 
     }
