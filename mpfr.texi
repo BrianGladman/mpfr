@@ -875,9 +875,9 @@ Convert @var{op} to a double, using the default MPFR rounding mode
 @deftypefun mp_exp_t mpfr_get_z_exp (mpz_t @var{z}, mpfr_t @var{op})
 Puts the mantissa of @var{op} into @var{z}, and returns the exponent
 @var{exp} such that @var{op} equals
-@ifinfo
+@ifnottex
 @var{z} multiplied by two exponent @var{exp}.
-@end ifinfo
+@end ifnottex
 @tex
 $z \times 2^{\rm exp}$.
 @end tex
