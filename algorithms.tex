@@ -647,66 +647,77 @@ This is implemented in the function {\tt mpfr\_exp2\_aux2}.
 
 \subsection{The error function}
 
-The error function admits the following expansion at zero:
-\cite[formulas 7.1.5, 7.1.6]{AbSt73}:
+Let $n$ be the target precision, and $x$ be the input value.
+For $|x| \geq \sqrt{n \log 2}$, we have $|{\rm erf} \, x| = 1$
+or $1^{-}$ according to the rounding mode.
+Otherwise we use the Taylor expansion.
+
+\subsubsection{Taylor expansion}
+
 \[ {\rm erf} \, z = \frac{2}{\sqrt{\pi}} \sum_{k=0}^{\infty} \frac{(-1)^k}
-	{k! (2k+1)} z^{2k+1} 
-= \frac{2}{\sqrt{\pi}} e^{-z^2}
-        \sum_{k=0}^{\infty} \frac{2^k}{1 \cdot 3 \cdots (2k+1)} z^{2k+1}, \]
-and the following asymptotic expansion for ${\rm erfc} z = 1 - {\rm erf} z$
-\cite[formula 7.1.23]{AbSt73}:
-\[ \sqrt{\pi} z e^{z^2} {\rm erfc} \, z \sim 1 +
-        \sum_{k=1}^{\infty} (-1)^k \frac{1 \cdot 3 \cdots (2k-1)}{(2z^2)^k}. \]
-The former formula requires $m \sim n \frac{\log 2}{\log(m/(ez^2))}$ terms
-% same number of terms for 7.1.5 and 7.1.6
-to get $n$ correct bits, and the latter requires
-$m \sim n \frac{\log 2}{\log(ez^2/m)}$ terms.
-Thus, we use the expansion at $z=0$ for $n \ge e z^2$, and the asymptotic
-expansion for $n < e z^2$.
+	{k! (2k+1)} z^{2k+1} \]
 
-\medskip
-
-If we use the series at $z=0$, the maximum term is obtained for
-$k \sim z^2$, and is of the order of $e^{z^2}$; this means
-we need $z^2/(\log 2)$ additional bits. As $z^2 \le n/e$ in that case,
-this is bounded by $n/(e \log 2) \sim 0.531 n$.
-
-
-The series at $z=0$ is implemented as follows, 
-$m$ representing the working precision,
-$x, y, s, t, u$ being integer variables, and $p, r$ floating-point
-variables:
 \begin{quote}
 \verb|erf_0|$(z, n)$, assumes $z^2 \le n/e$ \\
-$m \leftarrow n + z^2/(\log 2)$ \\
-$x \leftarrow \lceil {\rm msb}(z, m) \rceil$ \\
-$y \leftarrow \lceil {\rm msb}(x^2,m) \rceil$ such that $y \sim z^2 2^{e_y}$ \\
-$s \leftarrow 2^n, t \leftarrow 2^n$ \\
+working precision is $m$ \\
+$y \leftarrow \circ (z^2)$ [rounded up] \\
+$s \leftarrow 1$ \\
+$t \leftarrow 1$ \\
 {\bf for} $k$ {\bf from} $1$ {\bf do} \\
-\q $t \leftarrow \lceil y t/k \rceil$ \\
-\q $t \leftarrow \lceil t/2^{e_y} \rceil$ \\
-\q $u \leftarrow \lceil t/(2k+1) \rceil$ \\
-\q $s \leftarrow {\mathcal N}(s + (-1)^k u)$ \\
-\q {\bf if} $u \le 1$ {\bf then} break \\
-$r \leftarrow 2 \lceil z s/2^n \rceil$ \\
-$p \leftarrow \pi, p \leftarrow \sqrt{p}$ \\
-return $r/p$
+\q $t \leftarrow \circ (y t)$ [rounded up] \\
+\q $t \leftarrow \circ (t/k)$ [rounded up] \\
+\q $u \leftarrow \circ (\frac{t}{2k+1})$ [rounded up] \\
+\q $s \leftarrow \circ (s + (-1)^k u)$ [nearest] \\
+\q {\bf if} ${\rm EXP}(u) < {\rm EXP}(s) - m$ and $k \geq z^2$ 
+	{\bf then} break \\
+$r \leftarrow 2 \circ (z s)$ [rounded up] \\
+$p \leftarrow \circ (\pi)$ [rounded down] \\
+$p \leftarrow \circ (\sqrt{p})$ [rounded down] \\
+$r \leftarrow \circ (r/p)$ [nearest]
 \end{quote}
-The variable $u$ contains the current term $\frac{z^{2k}}{k! (2k+1)}$,
-scaled by $2^m$. Suppose $u \le 1$ for index $k_0$:
-as $u \ge 2$ for index $k_0-1$, and the 
-ratio between two consecutive terms decreases, then $u \le 1/2$ for index 
-$k_0+1$ and the alternating series $\sum_{k_0+1}^{\infty} \frac{(-1)^k
-z^{2j}}{k! (2k+1)}$
-is bounded by its first term, i.e.~$2^{-m-1}$ after rescaling.
 
-Now the relative error on $x$ is at most $2^{1-n}$,
-that on $y$ is at most $2x/2^m + 1$,
-that on $s$ and $t$ is zero initially.
-Let $\varepsilon_k$ and $\tau_k$ the errors on $y$ and $t$
-at the beginning of loop $k$,
-then that for $t$ after $t \leftarrow \lceil y t/2^m \rceil$
-is at most $(\varepsilon_k t + \tau_k y)/2^m + 1$.
+Let $\varepsilon_k$ be the ulp-error on $t$ after the loop with index $k$.
+We have initially $\varepsilon_0=0$.
+After $t \leftarrow \circ (y t)$, the error on $t$
+is bounded by $2 \varepsilon_{k-1} + 3$.
+After $t \leftarrow \circ (t/k)$, we have thus
+$\varepsilon_k \leq 1 + 2 (2 \varepsilon_{k-1} + 3) = 4 \varepsilon_{k-1} + 7$.
+This gives $\varepsilon_k \leq \frac{7}{3} (4^k-1)$.
+
+The error on $u$ at loop $k$ is thus at most
+$1+2\varepsilon_k \leq \frac{14}{3} 4^k - \frac{11}{3} \leq 2^{2k+3}$.
+
+Let $\sigma_k$ and $\nu_k$ be the exponent shifts between the new value of
+$s$ at step $k$ and respectively the old value of $s$, and $u$.
+Writing $s_k$ and $u_k$ for the values of $s$ and $u$ at the end of step $k$,
+we have $\sigma_k := {\rm EXP}(s_{k-1}) - {\rm EXP}(s_k)$
+and $\nu_k := {\rm EXP}(u_k) - {\rm EXP}(s_k)$.
+The ulp-error $\tau_k$ on $s_k$ satisfies
+$\tau_k \leq \frac{1}{2} + \tau_{k-1} 2^{\sigma_k} + 2^{2k+3+\nu_k}$.
+
+The halting condition $k \geq z^2$ ensures that $u_j \leq u_{j-1}$ for
+$j \geq k$, thus the series $\sum_{j=k}^{\infty} u_j$ is an alternating series,
+and the truncated part is bounded by its first term $|u_k| < {\rm ulp}(s_k)$.
+So the ulp-error between $s_k$ and $\sum_{k=0}^{\infty} \frac{(-1)^k z^2}{k! 
+(2k+1)}$ is bounded by $1+\tau_k$.
+
+Now the error after $r \leftarrow 2 \circ (z s)$ is bounded by
+$1 + 2 (1+\tau_k) = 2 \tau_k + 3$.
+That on $p$ after $p \leftarrow \circ (\pi)$ is $1$ ulp,
+and after $p \leftarrow \circ (\sqrt{p})$ we get $2$ ulps
+(since $p \leftarrow \circ (\pi)$ was rounded down).
+
+The final error on $r$ is thus at most
+$1 + 2 (2 \tau_k + 3) + 4 = 4 \tau_k + 11$
+(since $r$ is rounded up and $p$ is rounded down).
+
+\subsubsection{Very large arguments}
+
+Since ${\rm erfc} \, x \leq \frac{1}{\sqrt{\pi} x e^{x^2}}$,
+we have for $x^2 \geq n \log 2$ (which implies $x \geq 1$)
+that ${\rm erfc} \, x \leq 2^{-n}$, thus
+${\rm erf} \, x = 1$ or ${\rm erf} \, x = 1 - 2^{-n}$ according to the
+rounding mode.
 
 \subsection{The hyperbolic cosine function}
 
