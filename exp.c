@@ -71,27 +71,33 @@ mpfr_exp(y, x, rnd_mode)
 
   n = (int) floor(mpfr_get_d(x)/LOG2);
 
-  /* K = (int) log( (double) precy + 2 ); */
   K = (int) sqrt( (double) precy );
   l = (precy-1)/K + 1;
   err = K + (int) ceil(log(2.0*(double)l+18.0)/LOG2);
   /* add K extra bits, i.e. failure probability <= 1/2^K = O(1/precy) */
   q = precy + err + K + 3;
   mpfr_init2(r, q); mpfr_init2(s, q); mpfr_init2(t, q);
+  /* the algorithm consists in computing an upper bound of exp(x) using
+     a precision of q bits, and see if we can round to PREC(y) taking
+     into account the maximal error. Otherwise we increase q. */
   do {
 #ifdef DEBUG
   printf("n=%d K=%d l=%d q=%d\n",n,K,l,q);
 #endif
 
-  mpfr_log2(s, GMP_RNDZ);
+  /* if n<0, we have to get an upper bound of log(2)
+     in order to get an upper bound of r = x-n*log(2) */
+  mpfr_log2(s, (n>=0) ? GMP_RNDZ : GMP_RNDU);
 #ifdef DEBUG
   printf("n=%d log(2)=",n); mpfr_print_raw(s); putchar('\n');
 #endif
-  mpfr_mul_ui(r, s, (n<0) ? -n : n, GMP_RNDZ); /* r = n*log(2) */
+  mpfr_mul_ui(r, s, (n<0) ? -n : n, (n>=0) ? GMP_RNDZ : GMP_RNDU); 
   if (n<0) mpfr_neg(r, r, GMP_RNDD);
+  /* r = floor(n*log(2)) */
 
 #ifdef DEBUG
   printf("x=%1.20e\n",mpfr_get_d(x));
+  printf(" ="); mpfr_print_raw(x); putchar('\n');
   printf("r=%1.20e\n",mpfr_get_d(r));
   printf(" ="); mpfr_print_raw(r); putchar('\n');
 #endif
@@ -104,6 +110,7 @@ mpfr_exp(y, x, rnd_mode)
   }
 #ifdef DEBUG
   printf("x-r=%1.20e\n",mpfr_get_d(r));
+  printf(" ="); mpfr_print_raw(r); putchar('\n');
   if (SIGN(r)<0) { fprintf(stderr,"Error in mpfr_exp: r<0\n"); exit(1); }
 #endif
   mpfr_div_2exp(r, r, K, GMP_RNDU); /* r = (x-n*log(2))/2^K */
