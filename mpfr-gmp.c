@@ -343,7 +343,7 @@ mpfr_default_reallocate (void *oldptr, size_t old_size, size_t new_size)
   if (ret == NULL)
     {
       fprintf (stderr, 
-	       "MPFR: Can't reallocate memory (old_size=%lu new_size=\%lu)\n",
+	       "MPFR: Can't reallocate memory (old_size=%lu new_size=%lu)\n",
 	       (unsigned long) old_size, (unsigned long) new_size);
       abort ();
     }
