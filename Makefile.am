@@ -17,5 +17,7 @@ trunc.o: trunc.c  mpfr.h
 
 info_TEXINFOS = mpfr.texi
 
+DISTCLEANFILES = mpfr.info
+
 tests: 
 	cd tests ; make tests
