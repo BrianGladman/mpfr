@@ -101,21 +101,31 @@ check_flags (void)
   mpfr_mul_2exp (x, x, 1024, GMP_RNDN);
   if (!(mpfr_overflow_p)())
     ERROR("ERROR: No overflow detected!\n");
+
   (mpfr_clear_underflow)();
   mpfr_set_ui (x, 1, GMP_RNDN);
   mpfr_div_2exp (x, x, 1025, GMP_RNDN);
   if (!(mpfr_underflow_p)())
     ERROR("ERROR: No underflow detected!\n");
+
   (mpfr_clear_nanflag)();
   MPFR_SET_NAN(x);
   mpfr_add (x, x, x, GMP_RNDN);
   if (!(mpfr_nanflag_p)())
     ERROR("ERROR: No NaN flag!\n");
+
   (mpfr_clear_inexflag)();
   mpfr_set_ui(x, 2, GMP_RNDN);
   mpfr_cos(x, x, GMP_RNDN);
   if (!(mpfr_inexflag_p)())
     ERROR("ERROR: No inexact flag!\n");
+
+  (mpfr_clear_erangeflag) ();
+  mpfr_set_ui (x, 1, GMP_RNDN);
+  mpfr_mul_2exp (x, x, 1024, GMP_RNDN); 
+  mpfr_get_ui (x, GMP_RNDN);
+  if (!(mpfr_erangeflag_p)())
+    ERROR ("ERROR: No erange flag!\n");
 
   mpfr_clear(x);
 }

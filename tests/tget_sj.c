@@ -26,6 +26,13 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <stdlib.h>
 
+/* The ISO C99 standard specifies that in C++ implementations the
+   INTMAX_MAX, ... macros should only be defined if explicitly requested.  */
+#if defined __cplusplus
+# define __STDC_LIMIT_MACROS
+# define __STDC_CONSTANT_MACROS
+#endif
+
 #ifdef HAVE_STDINT_H
 # include <stdint.h>
 #endif
@@ -127,6 +134,73 @@ check_uj (uintmax_t u, mpfr_ptr x)
   mpfr_clear (y);
 }
 
+static void
+check_erange (void)
+{
+  mpfr_t x;
+  uintmax_t dl;
+  intmax_t d;
+
+  /* Test for ERANGE flag + correct behaviour if overflow */
+  
+  mpfr_init2 (x, 256); 
+  mpfr_set_uj (x, UINTMAX_MAX, GMP_RNDN);
+  mpfr_clear_erangeflag ();
+  dl = mpfr_get_uj (x, GMP_RNDN);
+  if (dl != UINTMAX_MAX || mpfr_erangeflag_p ())
+    {
+      printf ("ERROR for get_uj + ERANGE + UINTMAX_MAX (1)\n");
+      exit (1);
+    }
+  mpfr_add_ui (x, x, 1, GMP_RNDN);
+  dl = mpfr_get_uj (x, GMP_RNDN);
+  if (dl != UINTMAX_MAX || !mpfr_erangeflag_p ())
+    {
+      printf ("ERROR for get_uj + ERANGE + UINTMAX_MAX (2)\n");
+      exit (1);
+    }
+  mpfr_set_sj (x, -1, GMP_RNDN);
+  mpfr_clear_erangeflag ();
+  dl = mpfr_get_uj (x, GMP_RNDN);
+  if (dl != 0 || !mpfr_erangeflag_p ())
+    {
+      printf ("ERROR for get_uj + ERANGE + -1 \n");
+      exit (1);
+    }
+  mpfr_set_sj (x, INTMAX_MAX, GMP_RNDN);
+  mpfr_clear_erangeflag ();
+  d = mpfr_get_sj (x, GMP_RNDN);
+  if (d != INTMAX_MAX || mpfr_erangeflag_p ())
+    {
+      printf ("ERROR for get_sj + ERANGE + INTMAX_MAX (1)\n");
+      exit (1);
+    }
+  mpfr_add_ui (x, x, 1, GMP_RNDN);
+  d = mpfr_get_sj (x, GMP_RNDN);
+  if (d != INTMAX_MAX || !mpfr_erangeflag_p ())
+    {
+      printf ("ERROR for get_sj + ERANGE + INTMAX_MAX (2)\n");
+      exit (1);
+    }
+  mpfr_set_sj (x, INTMAX_MIN, GMP_RNDN);
+  mpfr_clear_erangeflag ();
+  d = mpfr_get_sj (x, GMP_RNDN);
+  if (d != INTMAX_MIN || mpfr_erangeflag_p ())
+    {
+      printf ("ERROR for get_sj + ERANGE + INTMAX_MIN (1)\n");
+      exit (1);
+    }
+  mpfr_sub_ui (x, x, 1, GMP_RNDN);
+  d = mpfr_get_sj (x, GMP_RNDN);
+  if (d != INTMAX_MIN || !mpfr_erangeflag_p ())
+    {
+      printf ("ERROR for get_sj + ERANGE + INTMAX_MIN (2)\n");
+      exit (1);
+    }
+  
+  mpfr_clear (x);
+}
+
 int
 main (void)
 {
@@ -180,6 +254,8 @@ main (void)
 
   mpfr_clear (x);
   mpfr_clear (y);
+
+  check_erange ();
 
   tests_end_mpfr ();
   return 0;

@@ -23,6 +23,13 @@ MA 02111-1307, USA. */
 # include "config.h"       /* for a build within gmp */
 #endif
 
+/* The ISO C99 standard specifies that in C++ implementations the
+   INTMAX_MAX, ... macros should only be defined if explicitly requested.  */
+#if defined __cplusplus
+# define __STDC_LIMIT_MACROS
+# define __STDC_CONSTANT_MACROS
+#endif
+
 #ifdef HAVE_STDINT_H
 # include <stdint.h>
 #endif

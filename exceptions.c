@@ -138,6 +138,14 @@ mpfr_clear_inexflag (void)
   __gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_INEXACT;
 }
 
+#undef mpfr_clear_erangeflag
+
+void
+mpfr_clear_erangeflag (void)
+{
+  __gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_ERANGE;
+}
+
 #undef mpfr_check_range
 
 int
@@ -198,6 +206,14 @@ int
 mpfr_inexflag_p (void)
 {
   return __gmpfr_flags & MPFR_FLAGS_INEXACT;
+}
+
+#undef mpfr_erangeflag_p
+
+int
+mpfr_erangeflag_p (void)
+{
+  return __gmpfr_flags & MPFR_FLAGS_ERANGE;
 }
 
 /* #undef mpfr_set_underflow */

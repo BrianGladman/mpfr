@@ -154,11 +154,11 @@ typedef unsigned long int  mpfr_uexp_t;
 # define mp_exp_unsigned_t mpfr_uexp_t
 #endif
 
-#if   MPFR_PREC_FORMAT == 1
+#if   _MPFR_PREC_FORMAT == 1
 # define MPFR_INTPREC_MAX (USHRT_MAX & ~(unsigned int) (BITS_PER_MP_LIMB - 1))
-#elif MPFR_PREC_FORMAT == 2
+#elif _MPFR_PREC_FORMAT == 2
 # define MPFR_INTPREC_MAX (UINT_MAX & ~(unsigned int) (BITS_PER_MP_LIMB - 1))
-#elif MPFR_PREC_FORMAT == 3
+#elif _MPFR_PREC_FORMAT == 3
 # define MPFR_INTPREC_MAX (ULONG_MAX & ~(unsigned long) (BITS_PER_MP_LIMB - 1))
 #else
 # error "Invalid MPFR Prec format"
@@ -472,6 +472,8 @@ long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CO
 #define MPFR_RET(I) return \
   (I) ? ((__gmpfr_flags |= MPFR_FLAGS_INEXACT), (I)) : 0
 #define MPFR_RET_NAN return (__gmpfr_flags |= MPFR_FLAGS_NAN), 0
+
+#define MPFR_SET_ERANGE() (__gmpfr_flags |= MPFR_FLAGS_ERANGE)
 
 /* Heap Memory gestion */
 typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;

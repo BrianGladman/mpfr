@@ -23,6 +23,13 @@ MA 02111-1307, USA. */
 # include "config.h"            /* for a build within gmp */
 #endif
 
+/* The ISO C99 standard specifies that in C++ implementations the
+   INTMAX_MAX, ... macros should only be defined if explicitly requested.  */
+#if defined __cplusplus
+# define __STDC_LIMIT_MACROS
+# define __STDC_CONSTANT_MACROS
+#endif
+
 #ifdef HAVE_STDINT_H
 # include <stdint.h>
 #endif
@@ -40,6 +47,14 @@ mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
   intmax_t r;
   mp_prec_t prec;
   mpfr_t x;
+
+  if (!mpfr_fits_intmax_p (f, rnd))
+    {
+      MPFR_SET_ERANGE ();
+      return MPFR_IS_NEG (f) ? INTMAX_MIN : INTMAX_MAX;
+    }
+  if (MPFR_IS_ZERO (f))
+     return (intmax_t) 0;
 
   /* determine the precision of intmax_t */
   for (r = INTMAX_MIN, prec = 0; r != 0; r /= 2, prec++)
@@ -63,8 +78,9 @@ mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
 
       xp = MPFR_MANT (x);
       sh = MPFR_GET_EXP (x);
-      MPFR_ASSERTN (sh <= prec);
-      if (INTMAX_MIN + INTMAX_MAX != 0 && MPFR_UNLIKELY (sh == prec))
+      MPFR_ASSERTN ((mp_prec_t) sh <= prec);
+      if (INTMAX_MIN + INTMAX_MAX != 0 
+          && MPFR_UNLIKELY ((mp_prec_t) sh == prec))
         {
           /* 2's complement and x <= INTMAX_MIN: in the case mp_limb_t
              has the same size as intmax_t, we cannot use the code in

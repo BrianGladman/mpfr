@@ -79,7 +79,7 @@ main (int argc, char *argv[])
 
   mpfr_init2 (x, 100);
 
-  N = (argc==1) ? 200000 : atol (argv[1]);
+  N = (argc==1) ? 100000 : atol (argv[1]);
 
   for (k = 1; k <= N; k++)
     {
@@ -252,6 +252,62 @@ main (int argc, char *argv[])
   MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
   mpfr_set_emax (emax);
 
+  /* Test for ERANGE flag + correct behaviour if overflow */
+  mpfr_set_prec (x, 256); 
+  mpfr_set_ui (x, ULONG_MAX, GMP_RNDN);
+  mpfr_clear_erangeflag ();
+  dl = mpfr_get_ui (x, GMP_RNDN);
+  if (dl != ULONG_MAX || mpfr_erangeflag_p ())
+    {
+      printf ("ERROR for get_ui + ERANGE + ULONG_MAX (1)\n");
+      exit (1);
+    }
+  mpfr_add_ui (x, x, 1, GMP_RNDN);
+  dl = mpfr_get_ui (x, GMP_RNDN);
+  if (dl != ULONG_MAX || !mpfr_erangeflag_p ())
+    {
+      printf ("ERROR for get_ui + ERANGE + ULONG_MAX (2)\n");
+      exit (1);
+    }
+  mpfr_set_si (x, -1, GMP_RNDN);
+  mpfr_clear_erangeflag ();
+  dl = mpfr_get_ui (x, GMP_RNDN);
+  if (dl != 0 || !mpfr_erangeflag_p ())
+    {
+      printf ("ERROR for get_ui + ERANGE + -1 \n");
+      exit (1);
+    }
+  mpfr_set_si (x, LONG_MAX, GMP_RNDN);
+  mpfr_clear_erangeflag ();
+  d = mpfr_get_si (x, GMP_RNDN);
+  if (d != LONG_MAX || mpfr_erangeflag_p ())
+    {
+      printf ("ERROR for get_si + ERANGE + LONG_MAX (1): %ld\n", d);
+      exit (1);
+    }
+  mpfr_add_ui (x, x, 1, GMP_RNDN);
+  d = mpfr_get_si (x, GMP_RNDN);
+  if (d != LONG_MAX || !mpfr_erangeflag_p ())
+    {
+      printf ("ERROR for get_si + ERANGE + LONG_MAX (2)\n");
+      exit (1);
+    }
+  mpfr_set_si (x, LONG_MIN, GMP_RNDN);
+  mpfr_clear_erangeflag ();
+  d = mpfr_get_si (x, GMP_RNDN);
+  if (d != LONG_MIN || mpfr_erangeflag_p ())
+    {
+      printf ("ERROR for get_si + ERANGE + LONG_MIN (1)\n");
+      exit (1);
+    }
+  mpfr_sub_ui (x, x, 1, GMP_RNDN);
+  d = mpfr_get_si (x, GMP_RNDN);
+  if (d != LONG_MIN || !mpfr_erangeflag_p ())
+    {
+      printf ("ERROR for get_si + ERANGE + LONG_MIN (2)\n");
+      exit (1);
+    }
+ 
   mpfr_clear (x);
 
   test_2exp ();

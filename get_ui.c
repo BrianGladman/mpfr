@@ -19,7 +19,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-
+#include <limits.h>
 #include "mpfr-impl.h"
 
 unsigned long
@@ -31,7 +31,13 @@ mpfr_get_ui (mpfr_srcptr f, mp_rnd_t rnd)
   mp_size_t n;
   mp_exp_t exp;
 
-  if (!mpfr_fits_ulong_p (f, rnd) || MPFR_IS_ZERO(f))
+  if (!mpfr_fits_ulong_p (f, rnd))
+    {
+      MPFR_SET_ERANGE ();
+      return MPFR_IS_NEG (f) ? 0 : ULONG_MAX;
+    }
+
+  if (MPFR_IS_ZERO (f))
     return (unsigned long) 0;
 
   for (s = ULONG_MAX, prec = 0; s != 0; s >>= 1, prec ++);
