@@ -12,6 +12,7 @@ void mpfr_sqrt(mpfr_ptr X, mpfr_srcptr a, unsigned char rnd_mode)
 
 #ifdef DEBUG
   printf("enter mpfr_sqrt, a=%1.20e, rnd=%d\n",mpfr_get_d(a), rnd_mode);
+  printf("a="); mpfr_print_raw(a); putchar('\n');
 #endif
   /* use Newton's iteration x[n+1] = 1/2*(x[n]+a/x[n]),
      the error e[n] = x[n]-sqrt(a) satisfies e[n+1] <= e[n]/2/sqrt(a) */
@@ -34,8 +35,12 @@ void mpfr_sqrt(mpfr_ptr X, mpfr_srcptr a, unsigned char rnd_mode)
   mpfr_init(t); mpfr_init(u);
   do {
     q += mp_bits_per_limb;
-    if (q>2*p+mp_bits_per_limb) {
-      fprintf(stderr, "no convergence in mpfr_sqrt\n"); exit(1);
+    if (q>3*p+mp_bits_per_limb) {
+      /* try to detect exact roots */
+      mpfr_mul(t, x, x, GMP_RNDU);
+      if (mpfr_cmp(t, a)==0) break; /* exact root since x>=sqrt(a) */
+      fprintf(stderr, "no convergence in mpfr_sqrt for a=%1.20e, rnd=%d\n",
+	      mpfr_get_d(a), rnd_mode); exit(1);
     }
 #ifdef DEBUG
     printf("prec=%d q=%d err=%d\n",p,q,err);
