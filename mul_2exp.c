@@ -26,13 +26,13 @@ MA 02111-1307, USA. */
 
 void
 #if __STDC__
-mpfr_mul_2exp(mpfr_ptr y, mpfr_srcptr x, unsigned long int n, unsigned char rnd_mode)
+mpfr_mul_2exp(mpfr_ptr y, mpfr_srcptr x, unsigned long int n, mp_rnd_t rnd_mode)
 #else
 mpfr_mul_2exp(y, x, n, rnd_mode)
      mpfr_ptr y;
      mpfr_srcptr x;
-     unsigned long int n; 
-     unsigned char rnd_mode; 
+     unsigned long int n;
+     mp_rnd_t rnd_mode;
 #endif
 {
   /* Important particular case */ 

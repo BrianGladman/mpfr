@@ -101,10 +101,10 @@ char *out;
 /* sets the machine rounding mode to the value rnd_mode */
 void 
 #if __STDC__
-mpfr_set_machine_rnd_mode(unsigned char rnd_mode)
+mpfr_set_machine_rnd_mode(mp_rnd_t rnd_mode)
 #else
 mpfr_set_machine_rnd_mode(rnd_mode)
-     unsigned char rnd_mode; 
+     mp_rnd_t rnd_mode;
 #endif
 {
   switch (rnd_mode) {
@@ -112,7 +112,7 @@ mpfr_set_machine_rnd_mode(rnd_mode)
   case GMP_RNDZ: TOZERO; break;
   case GMP_RNDU: TOINFP; break;
   case GMP_RNDD: TOINFM; break;
-  default: fprintf(stderr,"invalid rounding mode\n"); exit(1);
+  default: fprintf(stderr, "invalid rounding mode\n"); exit(1);
   }
 }
 

@@ -28,14 +28,14 @@ MA 02111-1307, USA. */
 size_t 
 #if __STDC__
 mpfr_out_str (FILE *stream, int base, size_t n_digits, mpfr_srcptr op,
-	      unsigned char rnd_mode)
+	      mp_rnd_t rnd_mode)
 #else
 mpfr_out_str (stream, base, n_digits, op, rnd_mode)
-     FILE *stream; 
+     FILE *stream;
      int base;
-     size_t n_digits; 
-     mpfr_srcptr op; 
-     unsigned char rnd_mode; 
+     size_t n_digits;
+     mpfr_srcptr op;
+     mp_rnd_t rnd_mode;
 #endif
 {
   char *s,*s0; size_t l; mp_exp_t e;
