@@ -92,7 +92,7 @@ mpfr_pi(x, rnd_mode)
   }
   mpfr_set_z(x, pi, rnd_mode);
   mpfr_init2(y, mpfr_get_prec(x));
-  mpz_add_ui(pi, pi, N);
+  mpz_add_ui(pi, pi, N+1);
   mpfr_set_z(y, pi, rnd_mode);
   if (mpfr_cmp(x, y) != 0) {
     fprintf(stderr, "does not converge\n"); exit(1);
