@@ -66,40 +66,45 @@ void
 FUNC_NAME (mpfr_ptr r, mpfr_srcptr u)
 {
   mp_ptr rp, up;
-  mp_size_t usize;
-  mp_size_t rsize, rw;
+  mp_size_t rsize, usize;
 #ifdef _MPFR_FLOOR_OR_CEIL
   mp_size_t ignored_n;
 #endif
   mp_exp_t exp;
-  int signu; long diff;
+  int rw;
+  int signu;
+  mp_exp_t diff;
 
-  if (MPFR_IS_NAN(u)) {
-    MPFR_SET_NAN(r);
-    return;
-  }
+  if (MPFR_IS_NAN(u))
+    {
+      MPFR_SET_NAN(r);
+      __mpfr_flags |= MPFR_FLAGS_NAN;
+      return;
+    }
 
   MPFR_CLEAR_NAN(r);
+  MPFR_SET_SAME_SIGN(r, u);
 
-  if (MPFR_IS_INF(u)) {
-    MPFR_SET_INF(r);
-    if (MPFR_SIGN(r) != MPFR_SIGN(u)) MPFR_CHANGE_SIGN(r);
-    return;
-  }
+  if (MPFR_IS_INF(u))
+    {
+      MPFR_SET_INF(r);
+      return;
+    }
 
   MPFR_CLEAR_INF(r);
 
-  if (!MPFR_NOTZERO(u)) {
-    MPFR_SET_ZERO(r);
-    return;
-  }
+  if (MPFR_IS_ZERO(u))
+    {
+      MPFR_SET_ZERO(r);
+      return;
+    }
 
-  signu = MPFR_SIZE(u);
+  signu = MPFR_SIGN(u);
   rp = MPFR_MANT(r);
   exp = MPFR_EXP(u);
-  rsize = (MPFR_PREC(r) - 1)/BITS_PER_MP_LIMB + 1;
+  rsize = MPFR_ESIZE(r);
 
-  /* Single out the case where |u| < 1.  */
+  /* Single out the case where |u| < 1. */
   if (exp <= 0)
     {
 #ifdef _MPFR_FLOOR_OR_CEIL
@@ -108,7 +113,6 @@ FUNC_NAME (mpfr_ptr r, mpfr_srcptr u)
 	  rp[rsize-1] = MP_LIMB_T_HIGHBIT;
 	  MPN_ZERO(rp, rsize-1);
 	  /* sign of result is that of u */
-	  if (MPFR_SIGN(r) * signu < 0) MPFR_CHANGE_SIGN(r);
 	  MPFR_EXP(r) = 1;
 	  return;
 	}
@@ -117,7 +121,7 @@ FUNC_NAME (mpfr_ptr r, mpfr_srcptr u)
       return;
     }
 
-  usize = (MPFR_PREC(u) - 1)/BITS_PER_MP_LIMB + 1;
+  usize = MPFR_ESIZE(u);
 
 #ifdef _MPFR_FLOOR_OR_CEIL
   ignored_n = 0;
@@ -133,10 +137,10 @@ FUNC_NAME (mpfr_ptr r, mpfr_srcptr u)
       usize = rsize;
     }
 
-  diff = BITS_PER_MP_LIMB * usize - exp;
+  diff = (mp_prec_t) usize * BITS_PER_MP_LIMB - exp;
   if (diff > 0)
     {
-      diff = diff/BITS_PER_MP_LIMB;
+      diff /= BITS_PER_MP_LIMB;
 #ifdef _MPFR_FLOOR_OR_CEIL
       ignored_n += diff;
 #endif
@@ -145,19 +149,29 @@ FUNC_NAME (mpfr_ptr r, mpfr_srcptr u)
     }
 
   /* number of non significant bits in low limb of r */
-  rw = usize * BITS_PER_MP_LIMB - exp;
-  MPN_ZERO(rp, rsize-usize);
-  rp += rsize-usize;
+  MPFR_ASSERTN ((mp_prec_t) usize * BITS_PER_MP_LIMB >= exp &&
+                (mp_prec_t) usize * BITS_PER_MP_LIMB - exp < BITS_PER_MP_LIMB);
+  rw = (mp_prec_t) usize * BITS_PER_MP_LIMB - exp;
+  MPN_ZERO(rp, rsize - usize);
+  rp += rsize - usize;
 
 #ifdef _MPFR_FLOOR_OR_CEIL
   if (((MPFR_FLOOR && signu < 0) || (MPFR_CEIL && signu >= 0))
       && (!mpn_zero_p (up - ignored_n, ignored_n)
-	  || (rw && (up[0] << (BITS_PER_MP_LIMB-rw)))))
+	  || (rw && (up[0] << (BITS_PER_MP_LIMB - rw)))))
     {
       mp_limb_t cy;
+
       cy = mpn_add_1 (rp, up, usize, MP_LIMB_T_ONE << rw);
       if (cy != 0)
 	{
+          if (exp == __mpfr_emax)
+            {
+              mpfr_set_overflow(r, MPFR_FLOOR ? GMP_RNDD : GMP_RNDU,
+                                MPFR_SIGN(r));
+              return;
+            }
+
 	  /* all the bits from "1<<rw" upwards are zero */
 	  rp[usize-1] = MP_LIMB_T_HIGHBIT;
 	  exp++;
@@ -171,9 +185,8 @@ FUNC_NAME (mpfr_ptr r, mpfr_srcptr u)
     }
 
   /* Put to 0 the remaining bits */
-  if (rw) rp[0] &=
-	    ~((MP_LIMB_T_ONE << rw) - MP_LIMB_T_ONE);
+  if (rw != 0)
+    rp[0] &= ~((MP_LIMB_T_ONE << rw) - MP_LIMB_T_ONE);
 
   MPFR_EXP(r) = exp;
-  if (MPFR_SIGN(r) * signu < 0) MPFR_CHANGE_SIGN(r);
 }
