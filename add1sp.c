@@ -70,7 +70,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   
   DEBUG( printf("New add1sp with diff=%lu\n", d) );
 
-  if (d == 0)
+  if (MPFR_UNLIKELY(d == 0))
     {
       /* d==0 */
       DEBUG( mpfr_print_mant_binary("C= ", MPFR_MANT(c), p) );
@@ -84,14 +84,14 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       mpn_rshift(ap, ap, n, 1);            /* Shift mantissa A */
       ap[n-1] |= MPFR_LIMB_HIGHBIT;        /* Set MSB */
       ap[0]   &= ~MPFR_LIMB_MASK(sh);      /* Clear LSB bit */
-      if ((limb&(MPFR_LIMB_ONE<<sh)) == 0) /* Check exact case */
+      if (MPFR_LIKELY((limb&(MPFR_LIMB_ONE<<sh)) == 0)) /* Check exact case */
 	{ inexact = 0; goto set_exponent; }
       /* Zero: Truncate
 	 Nearest: Even Rule => truncate or add 1
 	 Away: Add 1 */
       if (MPFR_LIKELY(rnd_mode==GMP_RNDN))
 	{
-	  if ((ap[0]&(MPFR_LIMB_ONE<<sh))==0)
+	  if (MPFR_LIKELY((ap[0]&(MPFR_LIMB_ONE<<sh))==0))
 	    { inexact = -1; goto set_exponent; }
 	  else
 	    goto add_one_ulp;
@@ -102,9 +102,9 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       else
 	goto add_one_ulp;
     }
-  else if (d >= p)
+  else if (MPFR_UNLIKELY(d >= p))
     {
-      if (d > p)
+      if (MPFR_LIKELY(d > p))
 	{
 	  /* d > p : Copy B in A */
 	  ap = MPFR_MANT(a);
@@ -204,15 +204,15 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
           else
             {
               /* We can't compute C'p+1 from C'. Compute it from C */
-              mp_limb_t *tp = MPFR_MANT(c);
               /* Start from bit x=p-d+sh in mantissa C
                  (+sh since we have already looked sh bits in C'!) */
               mpfr_prec_t x = p-d+sh-1;
-              if (MPFR_UNLIKELY(x>p))
+              if (MPFR_LIKELY(x>p))
                 /* We are already looked at all the bits of c, so C'p+1 = 0*/
                 bcp1 = 0;
               else
                 {
+		  mp_limb_t *tp = MPFR_MANT(c);
                   mp_size_t kx = n-1 - (x / BITS_PER_MP_LIMB);
                   mpfr_prec_t sx = BITS_PER_MP_LIMB-1-(x%BITS_PER_MP_LIMB);
                   DEBUG( printf("(First) x=%lu Kx=%ld Sx=%lu\n", x, kx, sx));
@@ -264,7 +264,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       DEBUG( mpfr_print_mant_binary("Add=  ", ap, p) );
       
       /* Check for overflow */
-      if (limb)
+      if (MPFR_UNLIKELY(limb))
 	{
 	  limb = ap[0] & (MPFR_LIMB_ONE<<sh); /* Get LSB */
 	  mpn_rshift(ap, ap, n, 1);           /* Shift mantissa*/
@@ -285,7 +285,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 		   Even rule else */
       if (MPFR_LIKELY(rnd_mode == GMP_RNDN))
 	{
-          if (bcp == 0)
+          if (MPFR_LIKELY(bcp == 0))
             { inexact = MPFR_LIKELY(bcp1) ? -1 : 0; goto set_exponent; }
           else if (MPFR_UNLIKELY(bcp1==0) && (ap[0]&(MPFR_LIMB_ONE<<sh))==0)
             { inexact = -1; goto set_exponent; }

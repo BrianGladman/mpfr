@@ -121,7 +121,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
   /* The dividend is a, length asize. The divisor is b, length bsize. */
 
   qsize = (MPFR_PREC(q) + 3)/BITS_PER_MP_LIMB + 1; 
-  if (vsize < qsize)
+  if (MPFR_UNLIKELY(vsize < qsize))
     {
       bsize = vsize; 
       bp = vp; 
@@ -133,11 +133,11 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
     }
   
   asize = bsize + qsize; 
-  ap = (mp_ptr) TMP_ALLOC(asize * BYTES_PER_MP_LIMB); 
+  ap = (mp_ptr) TMP_ALLOC (asize * BYTES_PER_MP_LIMB); 
   if (MPFR_LIKELY(asize > usize))
     {
-      MPN_COPY(ap + asize - usize, up, usize); 
-      MPN_ZERO(ap, asize - usize); 
+      MPN_COPY (ap + asize - usize, up, usize); 
+      MPN_ZERO (ap, asize - usize); 
     }
   else
     MPN_COPY(ap, up + usize - asize, asize); 
@@ -147,14 +147,14 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
   rp = (mp_ptr) TMP_ALLOC (bsize * BYTES_PER_MP_LIMB);
   rsize = bsize; 
 
-  mpn_tdiv_qr(qp, rp, 0, ap, asize, bp, bsize);
+  mpn_tdiv_qr (qp, rp, 0, ap, asize, bp, bsize);
   
   /* Estimate number of correct bits. */
 
   err = qsize * BITS_PER_MP_LIMB; 
-  if (bsize < vsize) 
+  if (MPFR_UNLIKELY (bsize < vsize))
     err -= 2; 
-  else if (asize < usize) 
+  else if (MPFR_UNLIKELY(asize < usize))
     err --; 
 
   /* We want to check if rounding is possible, but without normalizing
@@ -181,7 +181,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
      even rounding or not.
   */
 
-  if (asize < usize || bsize < vsize) 
+  if (MPFR_UNLIKELY(asize < usize || bsize < vsize))
     {
       {
 	mp_rnd_t  rnd_mode1, rnd_mode2;
@@ -342,16 +342,16 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
   if (qp[qsize] != 0) 
     /* Hack : qp[qsize] is 0, 1 or 2, hence if not 0, = 2^(qp[qsize] - 1). */
     {
-      near = mpn_rshift(qp, qp, qsize, qp[qsize]);
+      near = mpn_rshift (qp, qp, qsize, qp[qsize]);
       qp[qsize - 1] |= MPFR_LIMB_HIGHBIT; 
       qexp += qp[qsize]; 
     }
   else
     {
       near = 0; 
-      if (sh != 0) 
+      if (MPFR_UNLIKELY(sh != 0))
 	{ 
-	  mpn_lshift(qp, qp, qsize, sh); 
+	  mpn_lshift (qp, qp, qsize, sh); 
 	  qexp -= sh; 
 	}
     }
@@ -376,45 +376,48 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
      except when rounding to nearest (the nasty case of even rounding again).
   */
   
-  if (MPFR_UNLIKELY(!can_round)) /* Lazy case. */
+  if (MPFR_LIKELY(!can_round)) /* Lazy case. */
     {
-      if (inex == 0) 
+      if (MPFR_UNLIKELY(inex == 0))
 	{
 	  k = rsize - 1; 
 
 	  /* If a bit has been shifted out during normalization, then
 	     the remainder is nonzero. */
-	  if (near == 0) 
-	    while ((k >= 0) && !(rp[k]))
+	  if (MPFR_LIKELY(near == 0)) 
+	    while (MPFR_UNLIKELY((k >= 0) && !(rp[k])))
 	      k--;
 
-	  if (k >= 0) /* Remainder is nonzero. */ 
+	  if (MPFR_LIKELY(k >= 0)) /* Remainder is nonzero. */ 
 	    {
-	      if (MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd_mode,
-						  MPFR_IS_POS_SIGN(sign_quotient)))
+	      if (MPFR_UNLIKELY(
+		  MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd_mode,
+				  MPFR_IS_POS_SIGN(sign_quotient))))
 		/* Rounding to infinity. */
 		{
 		  inex = MPFR_FROM_SIGN_TO_INT( sign_quotient ); 
 		  cc = 1; 
 		}
 	      /* rounding to zero. */
-	      else inex = -MPFR_FROM_SIGN_TO_INT( sign_quotient ); 
+	      else
+		inex = -MPFR_FROM_SIGN_TO_INT( sign_quotient ); 
 	    }
 	}
       else /* We might have to correct an even rounding if remainder
 	      is nonzero and if even rounding was towards 0. */
-	if (rnd_mode == GMP_RNDN && (inex == MPFR_EVEN_INEX 
-				     || inex == -MPFR_EVEN_INEX))
+	if (MPFR_LIKELY(rnd_mode == GMP_RNDN) &&
+	    MPFR_UNLIKELY(inex == MPFR_EVEN_INEX || inex == -MPFR_EVEN_INEX))
 	  {
 	    k = rsize - 1; 
 
 	  /* If a bit has been shifted out during normalization, hence 
 	     the remainder is nonzero. */
-	    if (near == 0)
-	      while ((k >= 0) && !(rp[k]))
+	    if (MPFR_LIKELY(near == 0))
+	      while (MPFR_UNLIKELY(((k >= 0) && !(rp[k]))))
 		k--;
 	    
-	    if (k >= 0) /* In fact the quotient is larger than expected */
+	    if (MPFR_LIKELY(k >= 0))
+		     /* In fact the quotient is larger than expected */
 	      {
 		inex = MPFR_FROM_SIGN_TO_INT( sign_quotient );
 		/* To infinity, finally. */

@@ -102,6 +102,7 @@ void check_special(void)
   mp_rnd_t r;
   mpfr_prec_t p;
   int i = -1, inexact1, inexact2;
+  mp_exp_t es;
 
   mpfr_inits(x,y,z,x2,NULL);
 
@@ -441,6 +442,67 @@ void check_special(void)
        STD_ERROR;
      if (inexact1 != inexact2)
        STD_ERROR2;
+
+     p = 64;
+     mpfr_set_prec(x, p); mpfr_set_prec(x2, p);
+     mpfr_set_prec(y, p); mpfr_set_prec(z, p);
+
+     mpfr_set_str_binary (y,
+			  "0.11000000000000000000000000000000"
+			  "00000000000000000000000000000000E1");
+     mpfr_set_str_binary (z,
+			  "0.10000000000000000000000000000000"
+                          "00000000000000000000000000000001E0");
+     inexact1 = mpfr_sub1(x2, y, z, r);
+     inexact2 = mpfr_sub1sp(x, y, z, r);
+     if (mpfr_cmp(x, x2))
+       STD_ERROR;
+     if (inexact1 != inexact2)
+       STD_ERROR2;
+
+     mpfr_set_str_binary (y,
+			  "0.11000000000000000000000000000000"
+                          "000000000000000000000000000001E1");
+     mpfr_set_str_binary (z,
+			  "0.10000000000000000000000000000000"
+                          "00000000000000000000000000000001E0");
+     inexact1 = mpfr_sub1(x2, y, z, r);
+     inexact2 = mpfr_sub1sp(x, y, z, r);
+     if (mpfr_cmp(x, x2))
+       STD_ERROR;
+     if (inexact1 != inexact2)
+       STD_ERROR2;
+
+     es = mpfr_get_emin ();
+     mpfr_set_emin (-1024);
+
+     mpfr_set_str_binary (y,
+			  "0.10000000000000000000000000000000"
+                          "000000000000000000000000000000E-1023");
+     mpfr_set_str_binary (z,
+			  "0.10000000000000000000000000000000"
+                          "00000000000000000000000000000001E-1023");
+     inexact1 = mpfr_sub1(x2, y, z, r);
+     inexact2 = mpfr_sub1sp(x, y, z, r);
+     if (mpfr_cmp(x, x2))
+       STD_ERROR;
+     if (inexact1 != inexact2)
+       STD_ERROR2;
+
+     mpfr_set_str_binary (y,
+                         "0.10000000000000000000000000000000"
+                          "000000000000000000000000000000E-1023");
+     mpfr_set_str_binary (z,
+			  "0.1000000000000000000000000000000"
+                          "000000000000000000000000000000E-1023");
+     inexact1 = mpfr_sub1(x2, y, z, r);
+     inexact2 = mpfr_sub1sp(x, y, z, r);
+     if (mpfr_cmp(x, x2))
+       STD_ERROR;
+     if (inexact1 != inexact2)
+       STD_ERROR2;
+
+     mpfr_set_emin(es);
 
     }
 
