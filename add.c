@@ -52,9 +52,8 @@ mpfr_ptr a; mpfr_srcptr b, c; unsigned char rnd_mode; int diff_exp;
   cp = MANT(c); 
   if (ap == bp) {
     bp = (mp_ptr) TMP_ALLOC(ABSSIZE(b) * BYTES_PER_MP_LIMB); 
-    /* ICI CELA VAUT PEUT-ETRE LE COUP DE TRAITER SEPAREMENT LE CAS OU
-       LES DEUX MANTISSES COINCIDENT ? */
     MPN_COPY (bp, ap, ABSSIZE(b));
+    if (ap == cp) { cp = bp; }
   }
   else if (ap == cp)
     {
