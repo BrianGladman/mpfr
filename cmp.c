@@ -218,7 +218,7 @@ mpfr_cmp2(b, c)
     count_leading_zeros(cc, ~(cp[cn--] << (BITS_PER_MP_LIMB - d))); 
   else { cc = 0; }
 
-  k += cc;
+  k += cc + d; /* here d=0 or d=1: if d=1, we have one more cancelled bit */
   if (cc < d) return k;
   
   while (cn >= 0 && !~cp[cn]) { z += BITS_PER_MP_LIMB; cn--; } 
