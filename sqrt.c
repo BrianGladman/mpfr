@@ -22,7 +22,7 @@ mpfr_sqrt(X, a, rnd_mode)
 
   x = (mpfr_ptr) (*_mp_allocate_func) (sizeof(__mpfr_struct));
   mpfr_init2(x, PREC(X));
-  mpfr_set(x, X, rnd_mode);
+  MPN_COPY(x->_mp_d, X->_mp_d, (PREC(X)-1)/BITS_PER_MP_LIMB + 1); 
 
   e = EXP(a)/2; if (2*e<EXP(a)) e++;
   /* now 2^(2*e-2) <= a < 2^(2*e) i.e. 1/4 <= a/2^(2e) < 1 */
