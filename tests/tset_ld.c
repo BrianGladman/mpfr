@@ -23,6 +23,7 @@ MA 02111-1307, USA. */
 #include <stdlib.h>
 #include <float.h>
 #include <time.h>
+#include <limits.h>
 
 #include "mpfr-test.h"
 
@@ -100,7 +101,7 @@ main (int argc, char *argv[])
   tests_start_mpfr ();
   mpfr_test_init ();
 
-  mpfr_init2 (x, 113);
+  mpfr_init2 (x, sizeof(long double)*CHAR_BIT);
 
   /* check +0.0 and -0.0 */
   d = 0.0;
