@@ -16,6 +16,10 @@ New functions to implement:
 
 - fused multiply-add (suggestion from Dan Zuras)
 
+Efficiency:
+
+- mpfr_div is currently O(n^2) when the divisor has two limbs
+
 Miscellaneous:
 
 - change Library GPL to Lesser GPL, and mention INRIA and/or SPACES
