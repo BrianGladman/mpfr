@@ -47,22 +47,22 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
   if(comp < 0)
     {
       MPFR_SET_NAN(y); 
-      return(1);
+      MPFR_RET_NAN;
     }
   MPFR_CLEAR_NAN(y);
 
   if(comp == 0)
     {
       MPFR_SET_ZERO(y); /* acosh(1) = 0 */
-      return(0);
+      MPFR_SET_POS(y);
+      MPFR_RET(0);
     }
   
   if (MPFR_IS_INF(x))
     { 
       MPFR_SET_INF(y);
-      if (MPFR_SIGN(y) < 0) 
-        MPFR_CHANGE_SIGN(y);
-      return 1;
+      MPFR_SET_POS(y);
+      MPFR_RET(0);
     }
 
   MPFR_CLEAR_INF(y);
