@@ -99,7 +99,7 @@ test_random2 (unsigned long nbtests, unsigned long prec, int verbose)
     /* check that lower bits are zero */
     sh = xn * mp_bits_per_limb - prec;
     /* check that exponent is in correct range */
-    if (MPFR_MANT(x)[xn - 1] & ((ONE << sh) - ONE))
+    if (MPFR_MANT(x)[0] & ((ONE << sh) - ONE))
       {
         fprintf (stderr, "Error: mpfr_random2() returns invalid numbers:\n");
         mpfr_print_binary (x); putchar ('\n');
