@@ -3,7 +3,7 @@
 @setfilename mpfr.info
 @documentencoding ISO-8859-1
 @set VERSION 2.2.0
-@set UPDATED-MONTH October 2004
+@set UPDATED-MONTH Febrary 2005
 @settitle MPFR @value{VERSION}
 @synindex tp fn
 @iftex
@@ -16,7 +16,7 @@ This manual documents how to install and use the Multiple Precision
 Floating-Point Reliable Library, version @value{VERSION}.
 
 Copyright 1991, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002,
-2003, 2004 Free Software Foundation, Inc.
+2003, 2004, 2005 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document under
 the terms of the GNU Free Documentation License, Version 1.1 or any later
@@ -1623,6 +1623,14 @@ i.e.@: the ternary value is propagated.
 @deftypefunx void mpfr_clear_inexflag (void)
 @deftypefunx void mpfr_clear_erangeflag (void)
 Clear the underflow, overflow, invalid, inexact and erange flags.
+@end deftypefun
+
+@deftypefun void mpfr_set_underflow (void)
+@deftypefunx void mpfr_set_overflow (void)
+@deftypefunx void mpfr_set_nanflag (void)
+@deftypefunx void mpfr_set_inexflag (void)
+@deftypefunx void mpfr_set_erangeflag (void)
+Set the underflow, overflow, invalid, inexact and erange flags.
 @end deftypefun
 
 @deftypefun void mpfr_clear_flags (void)
