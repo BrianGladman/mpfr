@@ -5,6 +5,9 @@
 #include "longlong.h"
 #include "mpfr.h"
 
+mpfr_t _mpfr_log2; /* stored value of log(2) with rnd_mode=GMP_RNDZ */
+int _mpfr_log2_prec=0; /* precision of stored value */
+
 /* set x to log(2) rounded to precision PREC(x) with direction rnd_mode 
 
    use formula log(2) = sum(1/k/2^k, k=1..infinity)
@@ -20,12 +23,22 @@
 */
 void mpfr_log2(x, rnd_mode) mpfr_ptr x; unsigned char rnd_mode;
 {
-  int N, oldN, k; mpz_t s, t, u;
+  int N, oldN, k, precx; mpz_t s, t, u;
 
+  precx = PREC(x);
+
+  /* has stored value enough precision ? */
+  if (precx <= _mpfr_log2_prec) {
+    if (rnd_mode==GMP_RNDZ || rnd_mode==GMP_RNDD ||
+	mpfr_can_round(_mpfr_log2, _mpfr_log2_prec, GMP_RNDZ, rnd_mode, precx))
+      return mpfr_set(x, _mpfr_log2, rnd_mode);
+  }
+
+  /* need to recompute */
   N=2;
   do {
     oldN = N;
-    N = PREC(x) + (int)ceil(log((double)N)/log(2.0));
+    N = precx + (int)ceil(log((double)N)/log(2.0));
   } while (N != oldN);
   mpz_init_set_ui(s,0);
   mpz_init(u);
@@ -50,5 +63,12 @@ void mpfr_log2(x, rnd_mode) mpfr_ptr x; unsigned char rnd_mode;
 #endif
   mpfr_set_z(x, s, rnd_mode);
   EXP(x) -= N;
+
+  /* stored computed value */
+  if (_mpfr_log2_prec==0) mpfr_init2(_mpfr_log2, precx);
+  else mpfr_set_prec(_mpfr_log2, precx, GMP_RNDZ);
+  mpfr_set(_mpfr_log2, x, GMP_RNDZ);
+  _mpfr_log2_prec=precx;
+
   mpz_clear(s); mpz_clear(t); mpz_clear(u);
 }
