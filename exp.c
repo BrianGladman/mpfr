@@ -1,6 +1,6 @@
 /* mpfr_exp -- exponential of a floating-point number
 
-Copyright 1999, 2000, 2001, 2002, 2003 Free Software Foundation.
+Copyright 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation.
 Contributed by the Spaces project.
 
 This file is part of the MPFR Library.
@@ -20,7 +20,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -32,8 +31,8 @@ MA 02111-1307, USA. */
    where x = n*log(2)+(2^K)*r
    number of operations = O(K+prec(r)/K)
 */
-int 
-mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode) 
+int
+mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
   int expx, precy;
   double d;

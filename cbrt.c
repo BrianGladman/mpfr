@@ -1,6 +1,6 @@
 /* mpfr_cbrt -- cube root function.
 
-Copyright 2002, 2003 Free Software Foundation.
+Copyright 2002, 2003, 2004 Free Software Foundation.
 Contributed by the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.
@@ -20,7 +20,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include "gmp.h"
 #include "gmp-impl.h"
@@ -46,7 +45,7 @@ MA 02111-1307, USA. */
  */
 
 int
-mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode) 
+mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
 
   mpz_t m;
@@ -78,7 +77,7 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       else
 	MPFR_ASSERTN(0);
     }
-  /* Useless due to mpz_init 
+  /* Useless due to mpz_init
      MPFR_CLEAR_FLAGS(y);*/
 
   mpz_init (m);
@@ -95,7 +94,7 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   n = MPFR_PREC(y);
   if (rnd_mode == GMP_RNDN)
     n ++;
-  
+
   /* we want 3*n-2 <= size_m + 3*sh + r <= 3*n
      i.e. 3*sh + size_m + r <= 3*n */
   sh = (3 * n - size_m - r) / 3;

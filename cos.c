@@ -1,6 +1,6 @@
 /* mpfr_cos -- cosine of a floating-point number
 
-Copyright 2001, 2002, 2003 Free Software Foundation.
+Copyright 2001, 2002, 2003, 2004 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -19,7 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -27,8 +26,8 @@ MA 02111-1307, USA. */
 
 static int mpfr_cos2_aux       _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr));
 
-int 
-mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode) 
+int
+mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
   int K0, K, precy, m, k, l, inexact;
   mpfr_t r, s;
@@ -138,4 +137,3 @@ mpfr_cos2_aux (mpfr_ptr s, mpfr_srcptr r)
 
   return l;
 }
-

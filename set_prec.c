@@ -1,6 +1,6 @@
 /* mpfr_set_prec -- reset the precision of a floating-point number
 
-Copyright 1999, 2001, 2002 Free Software Foundation, Inc.
+Copyright 1999, 2001, 2002, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -19,7 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -34,7 +33,7 @@ mpfr_set_prec (mpfr_ptr x, mpfr_prec_t p)
   /* first, check if p is correct */
   MPFR_ASSERTN(p >= MPFR_PREC_MIN && p <= MPFR_PREC_MAX);
 
-  /* Calculate the new number of limbs */ 
+  /* Calculate the new number of limbs */
   xsize = (p - 1) / BITS_PER_MP_LIMB + 1;
 
   /* Realloc only if the new size is greater than the old */

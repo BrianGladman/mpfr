@@ -1,6 +1,6 @@
 /* mpfr_zeta -- compute the Riemann Zeta function
 
-Copyright 2003 Free Software Foundation.
+Copyright 2003, 2004 Free Software Foundation.
 Contributed by Jean-Luc Re'my and the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.
@@ -22,7 +22,6 @@ MA 02111-1307, USA. */
 
 /* #define DEBUG */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include "gmp.h"
 #include "gmp-impl.h"

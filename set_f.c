@@ -1,6 +1,6 @@
 /* mpfr_set_f -- set a MPFR number from a GNU MPF number
 
-Copyright 1999, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -19,7 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "longlong.h"
@@ -50,7 +49,7 @@ mpfr_set_f (mpfr_ptr y, mpf_srcptr x, mp_rnd_t rnd_mode)
       return 0; /* 0 is exact */
     }
 
-  count_leading_zeros(cnt, mx[sx - 1]);  
+  count_leading_zeros(cnt, mx[sx - 1]);
 
   if (sy <= sx) /* we may have to round even when sy = sx */
     {
@@ -69,14 +68,14 @@ mpfr_set_f (mpfr_ptr y, mpf_srcptr x, mp_rnd_t rnd_mode)
   else
     {
       if (cnt)
-	mpn_lshift(my + sy - sx, mx, sx, cnt); 
+	mpn_lshift(my + sy - sx, mx, sx, cnt);
       else
-	MPN_COPY(my + sy - sx, mx, sy); 
+	MPN_COPY(my + sy - sx, mx, sy);
       MPN_ZERO(my, sy - sx);
       /* no rounding necessary, since y has a larger mantissa */
       inexact = 0;
     }
-  
+
   MPFR_SET_EXP(y, EXP(x) * BITS_PER_MP_LIMB - cnt);
 
   return inexact;

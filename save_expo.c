@@ -1,6 +1,6 @@
 /* Save/restore the minimum and maximum exponents.
 
-Copyright 2001, 2002 Free Software Foundation, Inc.
+Copyright 2001, 2002, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -19,8 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "gmp.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
@@ -41,12 +39,9 @@ mpfr_save_emin_emax (void)
       __gmpfr_emin = MPFR_EMIN_MIN;
       __gmpfr_emax = MPFR_EMAX_MAX;
     }
-  else if (save_ctr == 0)
+  else
     {
-      fprintf(stderr,
-              "Error: Too many consecutive calls to mpfr_save_emin_emax!\n"
-              "Probably a bug.\n");
-      exit(1);
+      MPFR_ASSERTN (save_ctr != 0);
     }
 }
 

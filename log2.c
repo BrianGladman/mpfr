@@ -1,6 +1,6 @@
 /* mpfr_log2 -- log base 2
 
-Copyright 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -19,7 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -39,7 +38,7 @@ mpfr_log2 (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
     {
       /* If a is NaN, the result is NaN */
       if (MPFR_IS_NAN(a))
-	{  
+	{
 	  MPFR_SET_NAN(r);
 	  MPFR_RET_NAN;
 	}
@@ -68,7 +67,7 @@ mpfr_log2 (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
       else
 	MPFR_ASSERTN(0);
     }
-  
+
   /* If a is negative, the result is NaN */
   if (MPFR_UNLIKELY(MPFR_IS_NEG(a)))
     {
@@ -96,10 +95,10 @@ mpfr_log2 (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
     /* Declaration of the size variable */
     mp_prec_t Nx = MPFR_PREC(a);   /* Precision of input variable */
     mp_prec_t Ny = MPFR_PREC(r);   /* Precision of input variable */
-    
+
     mp_prec_t Nt;   /* Precision of the intermediary variable */
     long int err;  /* Precision of error */
-                
+
 
     /* compute the precision of intermediary variable */
     Nt=MAX(Nx,Ny);
@@ -107,22 +106,22 @@ mpfr_log2 (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
     Nt=Nt+3+__gmpfr_ceil_log2(Nt);
 
     /* initialise of intermediary	variable */
-    mpfr_init(t);             
-    mpfr_init(tt);             
+    mpfr_init(t);
+    mpfr_init(tt);
 
-    
+
     /* First computation of log2 */
     do
       {
         /* reactualisation of the precision */
-        mpfr_set_prec(t,Nt);             
-        mpfr_set_prec(tt,Nt);             
-      
+        mpfr_set_prec(t,Nt);
+        mpfr_set_prec(tt,Nt);
+
         /* compute log2 */
         mpfr_const_log2(t,GMP_RNDD); /* log(2) */
         mpfr_log(tt,a,GMP_RNDN);     /* log(a) */
         mpfr_div(t,tt,t,GMP_RNDN); /* log(a)/log(2) */
-        
+
         /* estimation of the error */
         err=Nt-3;
 
@@ -131,7 +130,7 @@ mpfr_log2 (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
       }
     while ((err < 0) || !mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
                                          Ny + (rnd_mode == GMP_RNDN)));
- 
+
     inexact = mpfr_set (r, t, rnd_mode);
 
     mpfr_clear (t);

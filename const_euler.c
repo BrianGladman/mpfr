@@ -1,6 +1,6 @@
 /* mpfr_const_euler -- Euler's constant
 
-Copyright 2001, 2002 Free Software Foundation.
+Copyright 2001, 2002, 2004 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -19,7 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include "gmp.h"
 #include "gmp-impl.h"
@@ -115,7 +114,7 @@ mpfr_const_euler_S (mpfr_t x, unsigned long n)
   mpz_clear (t);
 }
 
-/* computes R(n) = exp(-n)/n * sum(k!/(-n)^k, k=0..n-2) 
+/* computes R(n) = exp(-n)/n * sum(k!/(-n)^k, k=0..n-2)
    with error at most 4*ulp(x). Assumes n>=2.
    Since x <= exp(-n)/n <= 1/8, then 4*ulp(x) <= ulp(1).
 */
@@ -137,7 +136,7 @@ mpfr_const_euler_R (mpfr_t x, unsigned long n)
 
   for (k = 1; k <= n; k++)
     {
-      mpz_mul_ui (a, a, k); 
+      mpz_mul_ui (a, a, k);
       mpz_div_ui (a, a, n);
       /* the error e(k) on a is e(k) <= 1 + k/n*e(k-1) with e(0)=0,
 	 i.e. e(k) <= k */
@@ -148,11 +147,7 @@ mpfr_const_euler_R (mpfr_t x, unsigned long n)
     }
   /* the error on s is at most 1+2+...+n = n*(n+1)/2 */
   mpz_div_ui (s, s, n); /* err <= 1 + (n+1)/2 */
-  if (MPFR_PREC(x) < mpz_sizeinbase(s, 2))
-    {
-      fprintf (stderr, "prec(x) is too small in mpfr_const_euler_R\n");
-      exit (1);
-    }
+  MPFR_ASSERTN (MPFR_PREC(x) >= mpz_sizeinbase(s, 2));
   mpfr_set_z (x, s, GMP_RNDD); /* exact */
   mpfr_div_2ui (x, x, m, GMP_RNDD);
   /* now x = 1/n * sum(k!/(-n)^k, k=0..n-2) <= 1/n */

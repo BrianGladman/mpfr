@@ -1,6 +1,6 @@
 /* mpfr_hypot -- Euclidean distance
 
-Copyright 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -19,8 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -32,7 +30,7 @@ MA 02111-1307, USA. */
  */
 
 int
-mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode) 
+mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode)
 {
   int inexact;
   /* Flag exact computation */
@@ -58,7 +56,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode)
 	  MPFR_RET(0);
 	}
       else if (MPFR_IS_ZERO(x))
-	return mpfr_abs (z, y, rnd_mode);      
+	return mpfr_abs (z, y, rnd_mode);
       else if (MPFR_IS_ZERO(y))
 	return mpfr_abs (z, x, rnd_mode);
       else
@@ -84,7 +82,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode)
 
   /* we have x < 2^Ex thus x^2 < 2^(2*Ex),
      and ulp(x) = 2^(Ex-Nx) thus ulp(x^2) >= 2^(2*Ex-2*Nx).
-     y does not overlap with the result when 
+     y does not overlap with the result when
      x^2+y^2 < (|x| + 1/2*ulp(x,Nz))^2 = x^2 + |x|*ulp(x,Nz) + 1/4*ulp(x,Nz)^2,
      i.e. a sufficient condition is y^2 < |x|*ulp(x,Nz),
      or 2^(2*Ey) <= 2^(2*Ex-1-Nz), i.e. 2*diff_exp > Nz
@@ -109,7 +107,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode)
 
   Nx = MPFR_PREC(x);   /* Precision of input variable */
   Ny = MPFR_PREC(y);   /* Precision of input variable */
-      
+
   /* compute the working precision -- see algorithms.ps */
   Nt = MAX(MAX(MAX(Nx, Ny), Nz), 8);
   Nt = Nt - 8 + __gmpfr_ceil_log2 (Nt);
@@ -125,13 +123,13 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode)
 
   do
     {
-      Nt += 10; 
+      Nt += 10;
 
       not_exact = 0;
       /* reactualization of the precision */
-      mpfr_set_prec (t, Nt);             
-      mpfr_set_prec (te, Nt);             
-      mpfr_set_prec (ti, Nt);   
+      mpfr_set_prec (t, Nt);
+      mpfr_set_prec (te, Nt);
+      mpfr_set_prec (ti, Nt);
 
       /* computations of hypot */
       mpfr_div_2ui (te, x, sh, GMP_RNDZ); /* exact since Nt >= Nx */
@@ -140,14 +138,14 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode)
 
       mpfr_div_2ui (ti, y, sh, GMP_RNDZ); /* exact since Nt >= Ny */
       if (mpfr_mul (ti, ti, ti, GMP_RNDZ))   /* y^2 */
-        not_exact = 1;          
-      
+        not_exact = 1;
+
       if (mpfr_add (t, te, ti, GMP_RNDZ))  /* x^2+y^2 */
         not_exact = 1;
 
       if (mpfr_sqrt (t, t, GMP_RNDZ))     /* sqrt(x^2+y^2)*/
         not_exact = 1;
- 
+
     }
   while (not_exact && !mpfr_can_round (t, Nt - 2, GMP_RNDN, GMP_RNDZ,
                                        Nz + (rnd_mode == GMP_RNDN)));

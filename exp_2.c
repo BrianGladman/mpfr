@@ -1,7 +1,7 @@
-/* mpfr_exp_2 -- exponential of a floating-point number 
+/* mpfr_exp_2 -- exponential of a floating-point number
                 using Brent's algorithms in O(n^(1/2)*M(n)) and O(n^(1/3)*M(n))
 
-Copyright 1999, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -20,7 +20,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "longlong.h" /* for count_leading_zeros */
@@ -105,8 +104,8 @@ mpz_normalize2 (mpz_t rop, mpz_t z, int expz, int target)
    together with Brent-Kung O(t^(1/2)) algorithm for the evaluation of
    power series. The resulting complexity is O(n^(1/3)*M(n)).
 */
-int 
-mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode) 
+int
+mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
   int n, K, precy, q, k, l, err, exps, inexact, error_r;
   mpfr_t r, s, t; mpz_t ss;
@@ -162,7 +161,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   printf ("r="); mpfr_print_binary (r); putchar ('\n');
 #endif
   mpfr_sub (r, x, r, GMP_RNDU);
-  /* possible cancellation here: the error on r is at most 
+  /* possible cancellation here: the error on r is at most
      3*2^(EXP(old_r)-EXP(new_r)) */
   if (MPFR_SIGN(r) < 0)
     { /* initial approximation n was too large */
@@ -237,7 +236,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
    using naive method with O(l) multiplications.
    Return the number of iterations l.
    The absolute error on s is less than 3*l*(l+1)*2^(-q).
-   Version using fixed-point arithmetic with mpz instead 
+   Version using fixed-point arithmetic with mpz instead
    of mpfr for internal computations.
    s must have at least qn+1 limbs (qn should be enough, but currently fails
    since mpz_mul_2exp(s, s, q-1) reallocates qn+1 limbs)
@@ -251,7 +250,7 @@ mpfr_exp2_aux (mpz_t s, mpfr_srcptr r, int q, int *exps)
 
   TMP_MARK(marker);
   qn = 1 + (q-1)/BITS_PER_MP_LIMB;
-  MY_INIT_MPZ(t, 2*qn+1); /* 2*qn+1 is needed since mpz_div_2exp may 
+  MY_INIT_MPZ(t, 2*qn+1); /* 2*qn+1 is needed since mpz_div_2exp may
 			      need an extra limb */
   MY_INIT_MPZ(rr, qn+1);
   mpz_set_ui(t, 1); expt=0;
@@ -285,7 +284,7 @@ mpfr_exp2_aux (mpz_t s, mpfr_srcptr r, int q, int *exps)
 /* s <- 1 + r/1! + r^2/2! + ... + r^l/l! while MPFR_EXP(r^l/l!)+MPFR_EXPR(r)>-q
    using Brent/Kung method with O(sqrt(l)) multiplications.
    Return l.
-   Uses m multiplications of full size and 2l/m of decreasing size, 
+   Uses m multiplications of full size and 2l/m of decreasing size,
    i.e. a total equivalent to about m+l/m full multiplications,
    i.e. 2*sqrt(l) for m=sqrt(l).
    Version using mpz. ss must have at least (sizer+1) limbs.
@@ -343,9 +342,9 @@ mpfr_exp2_aux2 (mpz_t s, mpfr_srcptr r, int q, int *exps)
             expR[i] = mpz_normalize2(R[i], R[i], expR[i], 1-ql);
           }
       /* the absolute error on R[i]*rr is still 2*i-1 ulps */
-      expt = mpz_normalize2(t, R[m-1], expR[m-1], 1-ql); 
+      expt = mpz_normalize2(t, R[m-1], expR[m-1], 1-ql);
       /* err(t) <= 2*m-1 ulps */
-      /* computes t = 1 + r/(l+1) + ... + r^(m-1)*l!/(l+m-1)! 
+      /* computes t = 1 + r/(l+1) + ... + r^(m-1)*l!/(l+m-1)!
          using Horner's scheme */
       for (i=m-2;i>=0;i--)
         {
@@ -368,7 +367,7 @@ mpfr_exp2_aux2 (mpz_t s, mpfr_srcptr r, int q, int *exps)
 #endif
       mpz_add(s, s, t); /* no error here */
 
-      /* updates rr, the multiplication of the factors l+i could be done 
+      /* updates rr, the multiplication of the factors l+i could be done
          using binary splitting too, but it is not sure it would save much */
       mpz_mul(t, rr, R[m]); /* err(t) <= err(rr) + 2m-1 */
       expr += expR[m];

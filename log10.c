@@ -1,6 +1,6 @@
 /* mpfr_log10 -- logarithm in base 10.
 
-Copyright 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -19,7 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -69,7 +68,7 @@ mpfr_log10 (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
       else
 	MPFR_ASSERTN(0);
     }
-  
+
   /* If a is negative, the result is NaN */
   if (MPFR_UNLIKELY( MPFR_IS_NEG(a) ))
     {
@@ -97,10 +96,10 @@ mpfr_log10 (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
     /* Declaration of the size variable */
     mp_prec_t Nx = MPFR_PREC(a);   /* Precision of input variable */
     mp_prec_t Ny = MPFR_PREC(r);   /* Precision of output variable */
-    
+
     mp_prec_t Nt;   /* Precision of the intermediary variable */
     long int err;  /* Precision of error */
-                
+
     /* compute the precision of intermediary variable */
     Nt = MAX(Nx, Ny);
     /* the optimal number of bits : see algorithms.ps */
@@ -110,14 +109,14 @@ mpfr_log10 (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
     mpfr_init (t);
     mpfr_init (tt);
 
-    
+
     /* First computation of log10 */
     do {
 
       /* reactualisation of the precision */
       mpfr_set_prec (t, Nt);
-      mpfr_set_prec (tt, Nt);             
-      
+      mpfr_set_prec (tt, Nt);
+
       /* compute log10 */
       mpfr_set_ui (t, 10, GMP_RNDN);   /* 10 */
       mpfr_log (t, t, GMP_RNDD);       /* log(10) */
@@ -140,7 +139,7 @@ mpfr_log10 (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
       /* actualisation of the precision */
       Nt += 10;
     } while ((err < 0) || !ok);
- 
+
     inexact = mpfr_set (r, t, rnd_mode);
 
     mpfr_clear (t);

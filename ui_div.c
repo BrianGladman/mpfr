@@ -1,6 +1,6 @@
 /* mpfr_ui_div -- divide a machine integer by a floating-point number
 
-Copyright 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -19,7 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "longlong.h"
@@ -59,7 +58,7 @@ mpfr_ui_div (mpfr_ptr y, unsigned long int u, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	    {
 	      /* 0 / 0 */
 	      MPFR_SET_NAN(y);
-	      MPFR_RET_NAN; 
+	      MPFR_RET_NAN;
 	    }
 	}
       else

@@ -1,6 +1,6 @@
 /* mpfr_eq -- Compare two floats up to a specified bit #.
 
-Copyright 1999, 2001, 2003 Free Software Foundation, Inc.
+Copyright 1999, 2001, 2003, 2004 Free Software Foundation, Inc.
 (Copied from GNU MP, file mpf_eq.)
 
 This file is part of the MPFR Library.
@@ -20,7 +20,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -69,9 +68,9 @@ mpfr_eq (mpfr_srcptr u, mpfr_srcptr v, unsigned long int n_bits)
     {
       if ((unsigned long) vsize * BITS_PER_MP_LIMB < n_bits)
 	{
-	  k = usize - vsize - 1; 
-	  while (k >= 0 && !up[k]) --k; 
-	  if (k >= 0) 
+	  k = usize - vsize - 1;
+	  while (k >= 0 && !up[k]) --k;
+	  if (k >= 0)
 	    return 0;		/* surely too different */
 	}
       size = vsize;
@@ -80,9 +79,9 @@ mpfr_eq (mpfr_srcptr u, mpfr_srcptr v, unsigned long int n_bits)
     {
       if ((unsigned long) usize * BITS_PER_MP_LIMB < n_bits)
 	{
-	  k = vsize - usize - 1; 
-	  while (k >= 0 && !vp[k]) --k; 
-	  if (k >= 0) 
+	  k = vsize - usize - 1;
+	  while (k >= 0 && !vp[k]) --k;
+	  if (k >= 0)
 	    return 0;		/* surely too different */
 	}
       size = usize;
@@ -113,8 +112,8 @@ mpfr_eq (mpfr_srcptr u, mpfr_srcptr v, unsigned long int n_bits)
     return mpfr_cmp (u, v) == 0;
 
   if (n_bits & (BITS_PER_MP_LIMB - 1))
-    return (up[i] >> (BITS_PER_MP_LIMB - (n_bits & (BITS_PER_MP_LIMB - 1))) == 
-	    vp[i] >> (BITS_PER_MP_LIMB - (n_bits & (BITS_PER_MP_LIMB - 1)))); 
+    return (up[i] >> (BITS_PER_MP_LIMB - (n_bits & (BITS_PER_MP_LIMB - 1))) ==
+	    vp[i] >> (BITS_PER_MP_LIMB - (n_bits & (BITS_PER_MP_LIMB - 1))));
   else
-    return (up[i] == vp[i]); 
+    return (up[i] == vp[i]);
 }

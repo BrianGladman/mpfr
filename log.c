@@ -1,6 +1,6 @@
 /* mpfr_log -- natural logarithm of a floating-point number
 
-Copyright 1999, 2000, 2001, 2002, 2003 Free Software Foundation.
+Copyright 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -19,7 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -42,7 +41,7 @@ MA 02111-1307, USA. */
 /* #define DEBUG */
 
 int
-mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode) 
+mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
 {
   int m, go_on, size, cancel, inexact = 0;
   mp_prec_t p, q;
@@ -63,7 +62,7 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
       /* check for infinity before zero */
       else if (MPFR_IS_INF(a))
 	{
-	  if (MPFR_IS_NEG(a)) 
+	  if (MPFR_IS_NEG(a))
 	    /* log(-Inf) = NaN */
 	    {
 	      MPFR_SET_NAN(r);
@@ -75,7 +74,7 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
 	      MPFR_SET_POS(r);
 	      MPFR_RET(0);
 	    }
-	}      
+	}
       else if (MPFR_IS_ZERO(a))
 	{
 	  MPFR_SET_INF(r);
@@ -85,7 +84,7 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
       else
 	MPFR_ASSERTN(0);
     }
-  
+
   /* If a is negative, the result is NaN */
   if (MPFR_UNLIKELY( MPFR_IS_NEG(a) ))
     {
@@ -103,7 +102,7 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
   MPFR_CLEAR_FLAGS(r);
 
   q=MPFR_PREC(r);
-  
+
   ref = mpfr_get_d1 (a) - 1.0;
   if (ref<0)
     ref=-ref;
@@ -127,11 +126,11 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
     /* All the mpfr_t needed have a precision of p */
     TMP_MARK(marker);
     size=(p-1)/BITS_PER_MP_LIMB+1;
-    MPFR_TMP_INIT(cstp, cst, p, size);  
+    MPFR_TMP_INIT(cstp, cst, p, size);
     MPFR_TMP_INIT(rapportp, rapport, p, size);
     MPFR_TMP_INIT(agmp, agm, p, size);
-    MPFR_TMP_INIT(tmp1p, tmp1, p, size);  
-    MPFR_TMP_INIT(tmp2p, tmp2, p, size);  
+    MPFR_TMP_INIT(tmp1p, tmp1, p, size);
+    MPFR_TMP_INIT(tmp2p, tmp2, p, size);
     MPFR_TMP_INIT(sp, s, p, size);
     MPFR_TMP_INIT(mmp, mm, p, size);
 
@@ -146,8 +145,8 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
     mpfr_div (tmp2, cst, tmp1, GMP_RNDN); /* pi/2*AG(1,4/s), err<=5ulps */
     mpfr_const_log2 (cst, GMP_RNDN);      /* compute log(2), err<=1ulp */
     mpfr_mul(tmp1,cst,mm,GMP_RNDN);       /* I compute m*log(2), err<=2ulps */
-    cancel = MPFR_GET_EXP (tmp2); 
-    mpfr_sub(cst,tmp2,tmp1,GMP_RNDN);     /* log(a), err<=7ulps+cancel */ 
+    cancel = MPFR_GET_EXP (tmp2);
+    mpfr_sub(cst,tmp2,tmp1,GMP_RNDN);     /* log(a), err<=7ulps+cancel */
     cancel -= MPFR_GET_EXP (cst);
 #ifdef DEBUG
     printf("canceled bits=%d\n", cancel);
@@ -173,9 +172,7 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
 
     /* We clean */
     TMP_FREE(marker);
-    
+
   }
   return inexact; /* result is inexact */
 }
-
-

@@ -1,6 +1,6 @@
 /* mpfr_set_prec_raw -- reset the precision of a floating-point number
 
-Copyright 2000, 2001 Free Software Foundation, Inc.
+Copyright 2000, 2001, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -19,8 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -29,13 +27,7 @@ MA 02111-1307, USA. */
 void
 mpfr_set_prec_raw (mpfr_ptr x, mpfr_prec_t p)
 {
-  MPFR_ASSERTN(p >= MPFR_PREC_MIN && p <= MPFR_PREC_MAX);
-
-  if (p > (mpfr_prec_t) MPFR_GET_ALLOC_SIZE(x) * BITS_PER_MP_LIMB)
-    {
-      fprintf (stderr, "*** precision too large for allocated space\n");
-      exit (1);
-    }
-
+  MPFR_ASSERTN (p >= MPFR_PREC_MIN && p <= MPFR_PREC_MAX);
+  MPFR_ASSERTN (p <= (mpfr_prec_t) MPFR_GET_ALLOC_SIZE(x) * BITS_PER_MP_LIMB);
   MPFR_PREC(x) = p;
 }

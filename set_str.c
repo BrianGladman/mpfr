@@ -1,6 +1,6 @@
 /* mpfr_set_str -- set a floating-point number from a string
 
-Copyright 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -19,7 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -144,7 +143,7 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
           if (**endptr != '\0')
             {
               res = -1; /* invalid input: garbage after exponent */
-              goto end; 
+              goto end;
             }
 	  break;
 	}
@@ -160,18 +159,18 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
 	  break;
         }
       else if (*str == '.')
-	{	
+	{
 	  point = 1;
 	  continue;    /* go to next character */
 	}
       else if ((c = digit_value_in_base (*str, base)) != -1)
         *mant_s = c; /* valid character */
-      else 
+      else
 	{
           res = -1; /* invalid input */
           goto end;
 	}
-      if (!point) 
+      if (!point)
 	exp_s ++;
       mant_s ++;
     }
@@ -209,7 +208,7 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
       /* remember that y - n is allocated for n limbs */
 
       /* required precision for str */
-      pr = (mp_exp_t) __gmpfr_ceil 
+      pr = (mp_exp_t) __gmpfr_ceil
 	(((double) (n * BITS_PER_MP_LIMB) - 1.0) * log_b2[base-2]) + 1;
 
       /* check is there are enough digits in str */
@@ -278,7 +277,7 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
 
 	  /* compute the exponent of y */
 	  exp_y += exp_z + n * BITS_PER_MP_LIMB;
-	  
+
 	  /* normalize result */
 	  if ((result[2 * n - 1] & MPFR_LIMB_HIGHBIT) == 0)
 	    {
@@ -355,7 +354,7 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
 			negative, MPFR_PREC(x), rnd ))
     {
       /* overflaw when rounding y */
-      MPFR_MANT(x)[MPFR_LIMB_SIZE(x) - 1] 
+      MPFR_MANT(x)[MPFR_LIMB_SIZE(x) - 1]
 	= MPFR_LIMB_HIGHBIT;
       exp_y ++;
     }

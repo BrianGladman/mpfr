@@ -1,6 +1,6 @@
 /* mpfr_cosh -- hyperbolic cosine
 
-Copyright 2001, 2002 Free Software Foundation.
+Copyright 2001, 2002, 2004 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -19,7 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -31,9 +30,9 @@ MA 02111-1307, USA. */
  */
 
 int
-mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode) 
+mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
 {
-    
+
   /****** Declaration ******/
     mpfr_t x;
     mp_prec_t Nxt = MPFR_PREC(xt);
@@ -41,13 +40,13 @@ mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
 
     if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(xt)))
       {
-	if (MPFR_IS_NAN(xt)) 
+	if (MPFR_IS_NAN(xt))
 	  {
-	    MPFR_SET_NAN(y); 
+	    MPFR_SET_NAN(y);
 	    MPFR_RET_NAN;
 	  }
 	else if (MPFR_IS_INF(xt))
-	  { 
+	  {
 	    MPFR_SET_INF(y);
 	    MPFR_SET_POS(y);
 	    MPFR_RET(0);
@@ -65,7 +64,7 @@ mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
     /* General case */
     {
     /* Declaration of the intermediary variable */
-      mpfr_t t, te,ti;       
+      mpfr_t t, te,ti;
 
       /* Declaration of the size variable */
       mp_prec_t Nx = Nxt;   /* Precision of input variable */
@@ -73,7 +72,7 @@ mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
 
       mp_prec_t Nt;   /* Precision of the intermediary variable */
       long int err;  /* Precision of error */
-                
+
       /* compute the precision of intermediary variable */
       Nt = MAX(Nx, Ny);
       /* the optimal number of bits : see algorithms.ps */
@@ -110,7 +109,7 @@ mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
         }
       while ((err < 0) || !mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
                                            Ny + (rnd_mode == GMP_RNDN)));
- 
+
       inexact = mpfr_set (y, t, rnd_mode);
 
       mpfr_clear (t);
