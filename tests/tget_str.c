@@ -45,7 +45,7 @@ void check (double d, unsigned char rnd)
   free(str);
 }
 
-void check3(d, rnd, res) double d; unsigned char rnd; char *res;
+void check3 (double d, mp_rnd_t rnd, char *res)
 {
   mpfr_t x; char *str; mp_exp_t e;
 
@@ -60,7 +60,7 @@ void check3(d, rnd, res) double d; unsigned char rnd; char *res;
   free(str);
 }
 
-void check_small()
+void check_small ()
 {
   mpfr_t x; char *s, *t; mp_exp_t e;
   

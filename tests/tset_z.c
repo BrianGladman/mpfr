@@ -24,8 +24,6 @@ MA 02111-1307, USA. */
 #include "gmp.h"
 #include "mpfr.h"
 
-/* tset_z z rnd prec */
-
 void check _PROTO((long, unsigned char)); 
 void check_large _PROTO((void)); 
 
@@ -42,7 +40,7 @@ void check(long i, unsigned char rnd) {
   mpfr_clear(f); mpz_clear(z);
 }
 
-void check_large()
+void check_large ()
 {
   mpz_t z; mpfr_t x,y;
 
@@ -56,7 +54,9 @@ void check_large()
   mpz_clear(z); mpfr_clear(x); mpfr_clear(y);
 }
 
-int main(argc,argv) int argc; char *argv[];
+/* tset_z z rnd prec */
+
+int main(int argc, char *argv[])
 {
   long j; 
 
