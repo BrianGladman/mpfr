@@ -103,8 +103,11 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c,
       cp = (mp_ptr) TMP_ALLOC (cn * BYTES_PER_MP_LIMB);
       MPN_COPY(cp, ap, cn);
     }
+  
+  /* here we have shift_c = (diff_exp - cancel) % BITS_PER_MP_LIMB,
+     thus we want cancel2 = ceil((cancel - diff_exp) / BITS_PER_MP_LIMB) */
 
-  cancel2 = (long int) (cancel + shift_c - diff_exp) / BITS_PER_MP_LIMB;
+  cancel2 = (long int) (cancel - (diff_exp - shift_c)) / BITS_PER_MP_LIMB;
   /* the high cancel2 limbs from b should not be taken into account */
 #ifdef DEBUG
   printf("cancel=%u cancel1=%u cancel2=%d\n", cancel, cancel1, cancel2);
