@@ -211,7 +211,7 @@ parse_string (mpfr_t x, struct parsed_string *pstr,
   pstr->mantissa = NULL;
 
   /* Optional leading whitespace */
-  while (isspace(*str)) str++;
+  while (isspace((int) *str)) str++;
 
   /* Can be case-insensitive NAN */
   if (strncasecmp (str, "@nan@", 5) == 0)
@@ -345,7 +345,7 @@ parse_string (mpfr_t x, struct parsed_string *pstr,
 
   /* an optional exponent (e or E, p or P, @) */
   if ( (*str == '@' || (base <= 10 && (*str == 'e' || *str == 'E'))) 
-       && (!isspace(str[1])) ) 
+       && (!isspace((int) str[1])) ) 
     {
       char *endptr[1];
       /* the exponent digits are kept in ASCII */
@@ -361,7 +361,7 @@ parse_string (mpfr_t x, struct parsed_string *pstr,
       pstr->exp_base = sum;
     }
   else if ((base == 2 || base == 16)
-	   && (*str == 'p' || *str == 'P') && (!isspace(str[1])))
+	   && (*str == 'p' || *str == 'P') && (!isspace((int) str[1])))
     {
       char *endptr[1];
       pstr->exp_bin = (mp_exp_t) strtol (str + 1, endptr, 10);
