@@ -186,6 +186,7 @@ main (void)
   mpfr_clear (real_sum);
   mpfr_clear (real_non_rounded);
   free (tab);
+  free (tabtmp);
   free (perm);
   tests_end_mpfr ();
   return 0;
