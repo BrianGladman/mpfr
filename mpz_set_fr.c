@@ -44,12 +44,8 @@ mpz_set_fr (z, f)
 
   /* check whether allocated space for z is enough */
   if (ALLOC(z) < fn) {
-    PTR(z) = (mp_ptr) (*_mp_reallocate_func) (PTR(z), 
+    PTR(z) = (mp_ptr) (*__gmp_reallocate_func) (PTR(z), 
 	   ABS(SIZ(z))*BYTES_PER_MP_LIMB, fn*BYTES_PER_MP_LIMB);
-    if (PTR(z) == NULL) {
-      fprintf (stderr, "Error in mpz_set_fr: no more memory available\n");
-      exit (1);
-    }
     ALLOC(z) = fn;
   }
 
