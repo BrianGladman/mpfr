@@ -48,10 +48,21 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
   fp = MPFR_MANT(f);
   fn = 1 + (MPFR_PREC(f) - 1) / BITS_PER_MP_LIMB;
   zn = ABS(SIZ(z));
+  MPFR_ASSERTN(zn >= 1);
   dif = zn - fn;
   zp = PTR(z);
   count_leading_zeros(k, zp[zn-1]);
 
+  if (zn > MPFR_EMAX_MAX / BITS_PER_MP_LIMB + 1)
+    return mpfr_set_overflow(f, rnd_mode, sign_z);
+  /* because zn >= __mpfr_emax / BITS_PER_MP_LIMB + 2
+     and zn * BITS_PER_MP_LIMB >= __mpfr_emax + BITS_PER_MP_LIMB + 1
+     and exp = zn * BITS_PER_MP_LIMB - k > __mpfr_emax */
+
+  /* now zn <= MPFR_EMAX_MAX / BITS_PER_MP_LIMB + 1
+     thus zn * BITS_PER_MP_LIMB <= MPFR_EMAX_MAX + BITS_PER_MP_LIMB
+     and exp = zn * BITS_PER_MP_LIMB - k
+             <= MPFR_EMAX_MAX + BITS_PER_MP_LIMB */
   exp = (mp_prec_t) zn * BITS_PER_MP_LIMB - k;
   /* The exponent will be exp or exp + 1 (due to rounding) */
   if (exp > __mpfr_emax)
