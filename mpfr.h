@@ -130,6 +130,8 @@ void mpfr_set_si _PROTO ((mpfr_ptr, long, mp_rnd_t));
 void mpfr_set_ui _PROTO ((mpfr_ptr, unsigned long, mp_rnd_t)); 
 void mpfr_print_raw _PROTO ((mpfr_srcptr)); 
 void mpfr_random _PROTO ((mpfr_ptr)); 
+void mpfr_random2 _PROTO ((mpfr_ptr, mp_size_t, mp_exp_t)); 
+void mpfr_urandomb _PROTO ((mpfr_ptr, gmp_randstate_t)); 
 void mpfr_clear _PROTO ((mpfr_ptr)); 
 void mpfr_set_str_raw _PROTO ((mpfr_ptr, char *));
 int mpfr_set_str _PROTO ((mpfr_ptr, char *, int, mp_rnd_t));
@@ -179,6 +181,7 @@ int mpfr_div_ui _PROTO((mpfr_ptr, mpfr_srcptr, unsigned long int, mp_rnd_t));
 void mpfr_ui_div _PROTO((mpfr_ptr, unsigned long int, mpfr_srcptr, mp_rnd_t)); 
 mp_prec_t mpfr_get_prec _PROTO((mpfr_t));
 void mpfr_set_default_rounding_mode _PROTO((mp_rnd_t));
+int mpfr_eq(mpfr_srcptr, mpfr_srcptr, unsigned long); 
 
 #define mpfr_cmp_ui(b,i) mpfr_cmp_ui_2exp(b,i,0)
 #define mpfr_cmp_si(b,i) mpfr_cmp_si_2exp(b,i,0)
