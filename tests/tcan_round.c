@@ -24,12 +24,45 @@ MA 02111-1307, USA. */
 
 #include "mpfr-test.h"
 
+#define MAX_LIMB_SIZE 100
+
+static void
+check_round_p (void)
+{
+  mp_limb_t buf[MAX_LIMB_SIZE];
+  mp_size_t n;
+  mp_prec_t p;
+  mp_exp_t err;
+  int r1, r2;
+
+  for (n = 2 ; n <= MAX_LIMB_SIZE ; n++)
+    {
+      mpn_random (buf, n);
+      p = (mp_prec_t) randlimb() % ((n-1) * BITS_PER_MP_LIMB) + MPFR_PREC_MIN;
+      err = p + randlimb () % BITS_PER_MP_LIMB;
+      r1 = mpfr_round_p (buf, n, err, p);
+      r2 = mpfr_can_round_raw (buf, n, MPFR_SIGN_POS, err,
+			       GMP_RNDN, GMP_RNDZ, p);
+      if (r1 != r2)
+	{
+	  printf ("mpfr_round_p(%d) != mpfr_can_round(%d)!\n"
+		  "bn=%ld err0=%ld prec=%ld\nbp=",
+		  r1, r2, n, err, p);
+	  while (n--)
+	    printf ("%08lX ", buf[n]);
+	  putchar ('\n');
+	  exit (1);
+	}
+    }
+}
+
 int
 main (void)
 {
   mpfr_t x;
   mp_prec_t i, j;
 
+  MPFR_TEST_USE_RANDS ();
   tests_start_mpfr ();
 
   /* checks that rounds to nearest sets the last
@@ -69,6 +102,8 @@ main (void)
       }
 
   mpfr_clear (x);
+
+  check_round_p ();
 
   tests_end_mpfr ();
   return 0;
