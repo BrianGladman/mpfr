@@ -217,7 +217,8 @@ ck(ap, k, 11);
 	cc = mpn_lshift(ap, cp+(cn-k), k, -dif);
 	if (k<an) { ck(ap+k, 1, 12); ap[k]=cc; }
 	/* put the non-significant bits in low limb for further rounding */
-	ap[0] += cp[cn-k-1]>>(mp_bits_per_limb+dif);
+	if (cn >= k+1)
+	  ap[0] += cp[cn-k-1]>>(mp_bits_per_limb+dif);
       }
       else { ck(ap, k, 13); MPN_COPY(ap, cp+(cn-k), k); }
       overlap=1;
