@@ -109,8 +109,8 @@ mpfr_cmp2 (b, c)
      mpfr_srcptr c; 
 #endif
 {
-  long int d, bn, cn, k, z;
-  mp_limb_t *bp, *cp, t, u=0, cc=0;
+  long int d, bn, cn, cn0, k, z;
+  mp_limb_t *bp, *cp, t, u, cc=0, lastc=0;
 
 #ifdef DEBUG
   printf("b="); mpfr_print_raw(b); putchar('\n');
@@ -128,16 +128,22 @@ mpfr_cmp2 (b, c)
   if (d<0) { printf("assumption MPFR_EXP(b)<MPFR_EXP(c) violated\n"); exit(1); }
 #endif
   bn = (MPFR_PREC(b)-1)/BITS_PER_MP_LIMB;
-  cn = (MPFR_PREC(c)-1)/BITS_PER_MP_LIMB;
+  cn = cn0 = (MPFR_PREC(c)-1)/BITS_PER_MP_LIMB;
   bp = MPFR_MANT(b);
   cp = MPFR_MANT(c);
   /* subtract c from b from most significant to less significant limbs,
-     and first determines first non zero limb difference */
+     and first determines first non zero limb difference.
+     Invariant: lastc contains the d least significant bits of cp[cn+1],
+                shifted to the left (for d<>0).
+  */
   if (d)
     {
       cc = bp[bn--];
       if (d < BITS_PER_MP_LIMB)
-	cc -= cp[cn] >> d;
+	{
+	  lastc = cp[cn] << (BITS_PER_MP_LIMB - d);
+	  cc -= cp[cn--] >> d;
+	}
       else
 	d -= BITS_PER_MP_LIMB;
     }
@@ -180,9 +186,12 @@ mpfr_cmp2 (b, c)
 	  if (d < BITS_PER_MP_LIMB)
 	    {
 	      if (d) 
-		{ 
-		  u = cp[cn--] << (BITS_PER_MP_LIMB - d); 
-		  if (cn >= 0) u+=(cp[cn]>>d); 
+		{
+		  u = lastc + (cp[cn] >> d);
+		  if (cn >= 0)
+		    lastc = cp[cn--] << (BITS_PER_MP_LIMB - d);
+		  else
+		    lastc = 0;
 		}
 	      else u = cp[cn--]; 
 	      
@@ -200,8 +209,8 @@ mpfr_cmp2 (b, c)
 
       /* if d < BITS_PER_MP_LIMB, only the last d bits of cp[cn] have to be
 	 considered, otherwise all bits */
-      if (d < BITS_PER_MP_LIMB)
-	if (cn>=0 && (cp[cn--] << (BITS_PER_MP_LIMB - d))) { return k+1; }
+      if (lastc)
+	return k+1;
 
       while (cn >= 0) 
 	if (cp[cn--]) return k+1; 
@@ -216,14 +225,19 @@ mpfr_cmp2 (b, c)
 
   while (bn >= 0) /* the next limb of b to be considered is b[bn] */
     { 
-      /* for c we have to consider the low d bits of c[cn]
-	 and the high (BITS_PER_MP_LIMB-d) bits of c[cn-1] */
-      if (cn < 0) return k;
+      /* for c we have to consider the low d bits of c[cn+1] (in lastc)
+	 and the high (BITS_PER_MP_LIMB-d) bits of c[cn] */
+      if (cn < 0 && lastc == 0) return k;
 
       if (d) 
 	 { 
-	   u = cp[cn--] << (BITS_PER_MP_LIMB - d);
-	   if (cn >= 0) u += cp[cn] >> d;
+	   u = lastc;
+	   if (cn >= 0) {
+	     u += cp[cn] >> d;
+	     lastc = cp[cn--] << (BITS_PER_MP_LIMB - d);
+	   }
+	   else
+	     lastc = 0;
 	 }
        else u = cp[cn--]; 
 
@@ -243,10 +257,9 @@ mpfr_cmp2 (b, c)
     }
 
   /* warning: count_leading_zeros doesn't work with zero */
-  if ((cn >= 0) && d && (u = ~(cp[cn--] << (BITS_PER_MP_LIMB - d))))
-    count_leading_zeros(cc, u);
-  else
-    cc = 0;
+  count_leading_zeros(cc, ~lastc); /* ~lastc cannot be 0 since lastc cannot
+					be 111...111 for d <> 0 */
+  /* cc is the number of leading ones in lastc */
 
   /* here d=0 or d=1: if d=1, we have one more cancelled bit if we don't
    shift cp[cn] */
