@@ -1,2 +1,11 @@
-Probablement sans doute surement plein.
-Que vaut un arrondi a 0 bits de precision ?...
+Probably many bugs.
+
+Knowns bugs:
+
+add.c is being rewritten and tadd currently fails for
+b=2^900+2^500+2^110, d=2^900-2^500-2^110
+
+sub.c probably contains similar bugs.
+
+Most functions do not behave correctly with special cases, such as
+overflows, underflows and signed zeroes.

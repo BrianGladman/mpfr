@@ -46,6 +46,8 @@ Sun UltraSparc/Solaris 2.6
 Known problems.
 ===============
 
+See file BUGS for known bugs in MPFR.
+
 Linux on Alpha is known to have problems with IEEE conformance. See
 <http://www.linux.org.uk/VERSION/relnotes.2211.html>. Also with OSF and
 gcc 2.8.1, we had problems with the square root functions with -DTEST:
