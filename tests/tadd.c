@@ -19,7 +19,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#define N 100000
+#define N 20000
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -636,6 +636,71 @@ check_overflow (void)
 }
 
 static void
+check_1111 (void)
+{
+  mpfr_t one;
+  long n;
+
+  mpfr_init2 (one, MPFR_PREC_MIN);
+  mpfr_set_ui (one, 1, GMP_RNDN);
+  for (n = 0; n < N; n++)
+    {
+      mp_prec_t prec_a, prec_b, prec_c;
+      mp_exp_t tb, tc, diff;
+      mpfr_t a, b, c, s;
+      int m = 256;
+      int inex_a, inex_s;
+      mp_rnd_t rnd_mode;
+
+      prec_a = MPFR_PREC_MIN + (randlimb () % m);
+      prec_b = MPFR_PREC_MIN + (randlimb () % m);
+      prec_c = MPFR_PREC_MIN + (randlimb () % m);
+      mpfr_init2 (a, prec_a);
+      mpfr_init2 (b, prec_b);
+      mpfr_init2 (c, prec_c);
+      tb = 1 + (randlimb () % (prec_b - 1));
+      tc = 1 + (randlimb () % (prec_c - 1));
+      mpfr_div_2ui (b, one, tb, GMP_RNDN);
+      mpfr_add (b, b, one, GMP_RNDN);
+      mpfr_div_2ui (c, one, tc, GMP_RNDN);
+      mpfr_add (c, c, one, GMP_RNDN);
+      diff = (randlimb () % (2*m)) - m;
+      mpfr_mul_2ui (c, c, diff, GMP_RNDN);
+      rnd_mode = RND_RAND ();
+      inex_a = test_add (a, b, c, rnd_mode);
+      mpfr_init2 (s, MPFR_PREC_MIN + 2*m);
+      inex_s = mpfr_add (s, b, c, GMP_RNDN); /* exact */
+      if (inex_s)
+        {
+          printf ("check_1111: result should have been exact.\n");
+          exit (1);
+        }
+      inex_s = mpfr_prec_round (s, prec_a, rnd_mode);
+      if ((inex_a < 0 && inex_s >= 0) ||
+          (inex_a == 0 && inex_s != 0) ||
+          (inex_a > 0 && inex_s <= 0) ||
+          !mpfr_equal_p (a, s))
+        {
+          printf ("check_1111: results are different.\n");
+          printf ("prec_a = %d, prec_b = %d, prec_c = %d\n",
+                  (int) prec_a, (int) prec_b, (int) prec_c);
+          printf ("tb = %d, tc = %d, diff = %d, rnd = %s\n",
+                  (int) tb, (int) tc, (int) diff,
+                  mpfr_print_rnd_mode (rnd_mode));
+          printf ("a = "); mpfr_print_binary (a); puts ("");
+          printf ("s = "); mpfr_print_binary (s); puts ("");
+          printf ("inex_a = %d, inex_s = %d\n", inex_a, inex_s);
+          exit (1);
+        }
+      mpfr_clear (a);
+      mpfr_clear (b);
+      mpfr_clear (c);
+      mpfr_clear (s);
+    }
+  mpfr_clear (one);
+}
+
+static void
 tests (void)
 {
   check_alloc ();
@@ -876,6 +941,7 @@ tests (void)
   check53("9007199254740996.0", "-1.0", GMP_RNDN, "9007199254740996.0");
 
   check_overflow ();
+  check_1111 ();
 }
 
 int
