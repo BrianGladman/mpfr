@@ -72,21 +72,26 @@ mpfr_gamma (gamma, x, rnd_mode)
   int k;
   
   /* Trivial cases */
-  if (MPFR_IS_NAN(x))
+  if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(x) ))
     {
-      MPFR_SET_NAN(gamma);
-      return 1;
+      if (MPFR_IS_NAN(x))
+	{
+	  MPFR_SET_NAN(gamma);
+	  return 1;
+	}
+      if (MPFR_ISZERO(x))
+	{
+	  MPFR_SET_INF(gamma);
+	  return 1;
+	}
+      if (MPFR_IS_INF(x))
+	{
+	  MPFR_SET_INF(gamma);
+	  return 1;
+	}
+      MPFR_ASSERTN(1);
     }
-  if (!MPFR_NOTZERO(x))
-    {
-      MPFR_SET_INF(gamma);
-      return 1;
-    }
-  if (MPFR_IS_INF(x))
-    {
-      MPFR_SET_INF(gamma);
-      return 1;
-    }
+
   /* Set x_p=x if x> 1 else set x_p=2-x */
   prec_gamma = MPFR_PREC(gamma);
   compared = mpfr_cmp_ui(x, 1);

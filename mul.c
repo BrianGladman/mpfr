@@ -35,59 +35,57 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   mp_size_t an, bn, cn, tn, k;
   TMP_DECL(marker);
 
-  /* deal with NaN and zero */
-  if (MPFR_IS_NAN(b) || MPFR_IS_NAN(c))
+  /* deal with special cases */
+  if (MPFR_ARE_SINGULAR(b,c))
     {
-      MPFR_SET_NAN(a);
-      MPFR_RET_NAN;
-    }
-
-  MPFR_CLEAR_NAN(a);
-
-  sign_product = MPFR_SIGN(b) * MPFR_SIGN(c);
-
-  if (MPFR_IS_INF(b))
-    {
-      if (MPFR_IS_INF(c) || MPFR_NOTZERO(c))
-        {
-          if (MPFR_SIGN(a) != sign_product)
-            MPFR_CHANGE_SIGN(a);
-          MPFR_SET_INF(a);
-          MPFR_RET(0); /* exact */
-        }
-      else
+      if (MPFR_IS_NAN(b) || MPFR_IS_NAN(c))
 	{
 	  MPFR_SET_NAN(a);
-          MPFR_RET_NAN;
+	  MPFR_RET_NAN;
 	}
-    }
-  else if (MPFR_IS_INF(c))
-    {
-      if (MPFR_NOTZERO(b))
-        {
-          if (MPFR_SIGN(a) != sign_product)
-            MPFR_CHANGE_SIGN(a);
-          MPFR_SET_INF(a);
-          MPFR_RET(0); /* exact */
-        }
-      else
+      MPFR_CLEAR_NAN(a);
+      sign_product = MPFR_MULT_SIGN( MPFR_SIGN(b) , MPFR_SIGN(c) );
+      if (MPFR_IS_INF(b))
 	{
-	  MPFR_SET_NAN(a);
-          MPFR_RET_NAN;
+	  if (MPFR_IS_INF(c) || MPFR_NOTZERO(c))
+	    {
+	      MPFR_SET_SIGN(a,sign_product);
+	      MPFR_SET_INF(a);
+	      MPFR_RET(0); /* exact */
+	    }
+	  else
+	    {
+	      MPFR_SET_NAN(a);
+	      MPFR_RET_NAN;
+	    }
 	}
+      else if (MPFR_IS_INF(c))
+	{
+	  if (MPFR_NOTZERO(b))
+	    {
+	      MPFR_SET_SIGN(a, sign_product);
+	      MPFR_SET_INF(a);
+	      MPFR_RET(0); /* exact */
+	    }
+	  else
+	    {
+	      MPFR_SET_NAN(a);
+	      MPFR_RET_NAN;
+	    }
+	}
+      MPFR_CLEAR_INF(a); /* clear Inf flag */
+      if (MPFR_IS_ZERO(b) || MPFR_IS_ZERO(c))
+	{
+	  MPFR_SET_SIGN(a, sign_product);
+	  MPFR_SET_ZERO(a);
+	  MPFR_RET(0); /* 0 * 0 is exact */
+	}
+      /* Should never reach here */
+      MPFR_ASSERTN(1);
     }
-
-  MPFR_ASSERTN(MPFR_IS_FP(b) && MPFR_IS_FP(c));
-  MPFR_CLEAR_INF(a); /* clear Inf flag */
-
-  if (MPFR_IS_ZERO(b) || MPFR_IS_ZERO(c))
-    {
-      if (MPFR_SIGN(a) != sign_product)
-        MPFR_CHANGE_SIGN(a);
-      MPFR_SET_ZERO(a);
-      MPFR_RET(0); /* 0 * 0 is exact */
-    }
-
+  MPFR_CLEAR_FLAGS(a);
+  sign_product = MPFR_MULT_SIGN( MPFR_SIGN(b) , MPFR_SIGN(c) );
+ 
   bx = MPFR_GET_EXP (b);
   cx = MPFR_GET_EXP (c);
   /* Note: the exponent of the exact result will be e = bx + cx + ec with
@@ -133,7 +131,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   tmp += k - tn;
   if (b1 == 0)
     mpn_lshift (tmp, tmp, tn, 1);
-  cc = mpfr_round_raw (ap, tmp, bq + cq, sign_product < 0, aq,
+  cc = mpfr_round_raw (ap, tmp, bq + cq, MPFR_IS_NEG_SIGN(sign_product), aq,
 		       rnd_mode, &inexact);
   if (cc) /* cc = 1 ==> result is a power of two */
     ap[an-1] = MPFR_LIMB_HIGHBIT;
@@ -157,8 +155,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
     }
   MPFR_SET_EXP (a, ax);
 
-  if (MPFR_SIGN(a) != sign_product)
-    MPFR_CHANGE_SIGN(a);
+  MPFR_SET_SIGN(a, sign_product);
 
   return inexact;
 }

@@ -169,17 +169,20 @@ mpfr_prec_round (mpfr_ptr x, mp_prec_t prec, mp_rnd_t rnd_mode)
   ow = MPFR_GET_ALLOC_SIZE(x);
   if (nw > ow)
     {
+      /* Realloc mantissa */
       mp_ptr tmp = (mp_ptr) (*__gmp_reallocate_func)
         (MPFR_GET_REAL_PTR(x),  MPFR_ALLOC_SIZE(ow), MPFR_ALLOC_SIZE(nw));
       MPFR_SET_MANT_PTR(x, tmp);
       MPFR_SET_ALLOC_SIZE(x, nw); /* new number of allocated limbs */
     }
 
-  if (MPFR_IS_NAN(x))
-    MPFR_RET_NAN;
-
-  if (MPFR_IS_INF(x) || MPFR_IS_ZERO(x))
-    return 0; /* infinity and zero are exact */
+  if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(x)))
+    {
+      if (MPFR_IS_NAN(x))
+	MPFR_RET_NAN;
+      MPFR_ASSERTD(MPFR_IS_INF(x) || MPFR_IS_ZERO(x));
+      return 0; /* infinity and zero are exact */
+    }
 
   /* x is a non-zero real number */
 
@@ -190,11 +193,11 @@ mpfr_prec_round (mpfr_ptr x, mp_prec_t prec, mp_rnd_t rnd_mode)
                           prec, rnd_mode, &inexact);
   MPFR_PREC(x) = prec;
 
-  if (carry)
+  if (MPFR_UNLIKELY(carry))
     {
       mp_exp_t exp = MPFR_EXP (x);
 
-      if (exp == __gmpfr_emax)
+      if (MPFR_UNLIKELY(exp == __gmpfr_emax))
         (void) mpfr_set_overflow(x, rnd_mode, MPFR_SIGN(x));
       else
         {
@@ -225,12 +228,11 @@ int
 mpfr_can_round (mpfr_ptr b, mp_exp_t err, mp_rnd_t rnd1,
 		mp_rnd_t rnd2, mp_prec_t prec)
 {
-  return MPFR_IS_FP(b) ?
-    (MPFR_IS_ZERO(b) ? 0 : /* we cannot round if b=0 */
-     mpfr_can_round_raw (MPFR_MANT(b),
-			 (MPFR_PREC(b) - 1)/BITS_PER_MP_LIMB + 1,
-			 MPFR_SIGN(b), err, rnd1, rnd2, prec))
-    : 0; /* cannnot round NaN or Inf */
+  if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(b)))
+    return 0; /* We cannot round if Zero, Nan or Inf */ 
+  else
+    return mpfr_can_round_raw(MPFR_MANT(b), MPFR_LIMB_SIZE(b),
+			      MPFR_SIGN(b), err, rnd1, rnd2, prec);
 }
 
 int
@@ -244,6 +246,7 @@ mpfr_can_round_raw (mp_limb_t *bp, mp_size_t bn, int neg, mp_exp_t err0,
   mp_limb_t *tmp;
   TMP_DECL(marker);
 
+  /* FIXME: likely or not ? To check... How?*/
   if (err0 < 0 || (mp_exp_unsigned_t) err0 <= prec)
     return 0;  /* can't round */
 
@@ -253,7 +256,7 @@ mpfr_can_round_raw (mp_limb_t *bp, mp_size_t bn, int neg, mp_exp_t err0,
       /* can round only in rounding to the nearest and err0 >= prec + 2 */
     }
 
-  neg = neg <= 0;
+  neg = MPFR_IS_NEG_SIGN(neg);
 
   /* if the error is smaller than ulp(b), then anyway it will propagate
      up to ulp(b) */
@@ -281,15 +284,6 @@ mpfr_can_round_raw (mp_limb_t *bp, mp_size_t bn, int neg, mp_exp_t err0,
   /* if when adding or subtracting (1 << s) in bp[bn-1-k], it does not
      change bp[bn-1] >> s1, then we can round */
 
-  if (rnd1 == GMP_RNDU)
-    if (neg)
-      rnd1 = GMP_RNDZ;
-
-  if (rnd1 == GMP_RNDD)
-    rnd1 = neg ? GMP_RNDU : GMP_RNDZ;
-
-  /* in the sequel, RNDU = towards infinity, RNDZ = towards zero */
-
   TMP_MARK(marker);
   tn = bn;
   k++; /* since we work with k+1 everywhere */
@@ -297,27 +291,40 @@ mpfr_can_round_raw (mp_limb_t *bp, mp_size_t bn, int neg, mp_exp_t err0,
   if (bn > k)
     MPN_COPY (tmp, bp, bn - k);
 
-  if (rnd1 != GMP_RNDN)
-    { /* GMP_RNDZ or GMP_RNDU */
+  MPFR_ASSERTD (k > 0);
+
+  switch (rnd1)
+    {
+    case GMP_RNDD:
+      if (neg)
+	goto round_rndu;
+      else
+	goto round_rndz;
+      break;
+    case GMP_RNDU:
+      if (neg)
+	goto round_rndz;
+    round_rndu:
       cc = (bp[bn - 1] >> s1) & 1;
       cc ^= mpfr_round_raw2(bp, bn, neg, rnd2, prec);
-
       /* now round b +/- 2^(MPFR_EXP(b)-err) */
-      MPFR_ASSERTN (k > 0);
-      cc2 = rnd1 == GMP_RNDZ ?
-        mpn_add_1 (tmp + bn - k, bp + bn - k, k, MP_LIMB_T_ONE << s) :
-        mpn_sub_1 (tmp + bn - k, bp + bn - k, k, MP_LIMB_T_ONE << s);
-    }
-  else
-    { /* GMP_RNDN */
-      /* first round b+2^(MPFR_EXP(b)-err) */
-      MPFR_ASSERTN (k > 0);
+      cc2 = mpn_sub_1 (tmp + bn - k, bp + bn - k, k, MP_LIMB_T_ONE << s);
+      break;
+    case GMP_RNDZ:
+    round_rndz:
+      cc = (bp[bn - 1] >> s1) & 1;
+      cc ^= mpfr_round_raw2(bp, bn, neg, rnd2, prec);
+      /* now round b +/- 2^(MPFR_EXP(b)-err) */
+      cc2 = mpn_add_1 (tmp + bn - k, bp + bn - k, k, MP_LIMB_T_ONE << s);
+      break;
+    case GMP_RNDN:
+       /* first round b+2^(MPFR_EXP(b)-err) */
       cc = mpn_add_1 (tmp + bn - k, bp + bn - k, k, MP_LIMB_T_ONE << s);
       cc = (tmp[bn - 1] >> s1) & 1; /* gives 0 when cc=1 */
       cc ^= mpfr_round_raw2 (tmp, bn, neg, rnd2, prec);
-
       /* now round b-2^(MPFR_EXP(b)-err) */
       cc2 = mpn_sub_1 (tmp + bn - k, bp + bn - k, k, MP_LIMB_T_ONE << s);
+      break;
     }
 
   if (cc2 && cc)

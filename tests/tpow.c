@@ -206,10 +206,14 @@ special ()
   mpfr_clear (t);
 }
 
+void f(void);
+
 static void
 particular_cases (void)
 {
   mpfr_t t[11], r;
+  static const char *name[11] = {
+    "NaN", "+inf", "-inf", "+0", "-0", "+1", "-1", "+2", "-2", "+0.5", "-0.5"};
   int i, j;
   int error = 0;
 
@@ -244,6 +248,8 @@ particular_cases (void)
           /* +0.5 */ { 0,   2,   1,  128, 128,  64, 256,  32, 512,  90, 180 },
           /* -0.5 */ { 0,   2,   1,  128, 128, -64,-256,  32, 512,  0,   0  }
         };
+	if (i == 5 && j == 1)
+	  f();
 
         mpfr_pow (r, t[i], t[j], GMP_RNDN);
         p = mpfr_nan_p (r) ? 0 : mpfr_inf_p (r) ? 1 :
@@ -253,8 +259,8 @@ particular_cases (void)
           p = -p;
         if (p != q[i][j])
           {
-            printf ("Error in mpfr_pow for particular case (%d,%d):\n"
-                    "got %d instead of %d\n", i, j, p, q[i][j]);
+            printf ("Error in mpfr_pow for particular case (%s)^(%s) (%d,%d):\n"
+                    "got %d instead of %d\n", name[i], name[j], i,j,p, q[i][j]);
             error = 1;
           }
       }
@@ -265,6 +271,10 @@ particular_cases (void)
 
   if (error)
     exit (1);
+}
+
+void f(void)
+{
 }
 
 static void

@@ -36,29 +36,35 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
   int inexact = 0;
   int comp;
 
-  if (MPFR_IS_NAN(x) || (comp = mpfr_cmp_ui (x, 1)) < 0)
+  /* Deal with special cases */
+  if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(x) ))
+    {
+      /* Nan, or zero or -Inf */
+      if (MPFR_IS_NAN(x) || MPFR_IS_ZERO(x) || MPFR_IS_NEG(x) )
+	{
+	  MPFR_SET_NAN(y); 
+	  MPFR_RET_NAN;
+	}    
+      else if (MPFR_IS_INF(x))
+	{ 
+	  MPFR_SET_INF(y);
+	  MPFR_SET_POS(y);
+	  MPFR_RET(0);
+	}
+      MPFR_ASSERTN(1);
+    }
+  else if (MPFR_UNLIKELY( (comp = mpfr_cmp_ui (x, 1)) < 0))
     {
       MPFR_SET_NAN(y); 
       MPFR_RET_NAN;
-    }
-    
-  MPFR_CLEAR_NAN(y);
-
-  if (comp == 0)
+    }    
+  MPFR_CLEAR_FLAGS(y);
+  if (MPFR_UNLIKELY( comp == 0 ))
     {
       MPFR_SET_ZERO(y); /* acosh(1) = 0 */
       MPFR_SET_POS(y);
       MPFR_RET(0);
     }
-  
-  if (MPFR_IS_INF(x))
-    { 
-      MPFR_SET_INF(y);
-      MPFR_SET_POS(y);
-      MPFR_RET(0);
-    }
-
-  MPFR_CLEAR_INF(y);
 
   /* General case */
   {

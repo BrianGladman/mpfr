@@ -332,32 +332,35 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
   mp_prec_t precz, prec1, precs, precs1;
   int inex;
 
-  if (mpfr_nan_p (s))
+  /* Zero, Nan or Inf ? */
+  if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(s) ))
     {
-      MPFR_SET_NAN (z);
-      MPFR_RET_NAN;
+      if (MPFR_IS_NAN(s))
+	{
+	  MPFR_SET_NAN (z);
+	  MPFR_RET_NAN;
+	}
+      if (MPFR_IS_INF(s))
+	{
+	  if (MPFR_SIGN(s) > 0)
+	    return mpfr_set_ui (z, 1, GMP_RNDN); /* Zeta(+Inf) = 1 */
+	  MPFR_SET_NAN (z); /* Zeta(-Inf) = NaN */
+	  MPFR_RET_NAN;
+	}
+      if (MPFR_IS_ZERO(s))
+	{
+	  mpfr_set_ui (z, 1, rnd_mode);
+	  mpfr_div_2ui (z, z, 1, rnd_mode);
+	  MPFR_CHANGE_SIGN(z);
+	  MPFR_RET(0);
+	}
+      MPFR_ASSERTN(1);
     }
 
-  if (mpfr_inf_p (s))
-    {
-      if (MPFR_SIGN(s) > 0)
-        return mpfr_set_ui (z, 1, GMP_RNDN); /* Zeta(+Inf) = 1 */
-      MPFR_SET_NAN (z); /* Zeta(-Inf) = NaN */
-      MPFR_RET_NAN;
-    }
-
-  /* now s is neither NaN nor Infinite */
-
-  if (mpfr_cmp_ui(s,0) == 0) /* Case s = 0 */
-    {
-      mpfr_set_ui (z, 1, rnd_mode);
-      mpfr_div_2ui (z, z, 1, rnd_mode);
-      return mpfr_neg (z, z, rnd_mode);
-    }
-
+  /* s is neither Nan, nor Inf, nor Zero */
   mpfr_init2(s2, mpfr_get_prec(s));
   mpfr_div_2ui(s2, s, 1, rnd_mode);
-  if ((MPFR_SIGN(s) == -1) && (mpfr_floor(s2, s2) == 0)) /* Case s = -2n */
+  if (MPFR_IS_NEG(s) && mpfr_floor(s2, s2) == 0) /* Case s = -2n */
     {
       mpfr_clear (s2);
       return mpfr_set_ui (z, 0, rnd_mode);

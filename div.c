@@ -51,61 +51,62 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
    *                                                                        *
    **************************************************************************/
 
-  if (MPFR_IS_NAN(u) || MPFR_IS_NAN(v))
+  if (MPFR_ARE_SINGULAR(u,v))
     {
-      MPFR_SET_NAN(q);
-      MPFR_RET_NAN;
-    }
-
-  MPFR_CLEAR_NAN(q);
-
-  sign_quotient = MPFR_SIGN(u) * MPFR_SIGN(v);
-  if (MPFR_SIGN(q) != sign_quotient)
-    MPFR_CHANGE_SIGN(q);
-
-  if (MPFR_IS_INF(u))
-    {
-      if (MPFR_IS_INF(v))
+      if (MPFR_IS_NAN(u) || MPFR_IS_NAN(v))
 	{
 	  MPFR_SET_NAN(q);
-          MPFR_RET_NAN;
+	  MPFR_RET_NAN;
 	}
-      else
+      MPFR_CLEAR_NAN(q);
+      sign_quotient = MPFR_MULT_SIGN( MPFR_SIGN(u) , MPFR_SIGN(v) );
+      MPFR_SET_SIGN(q, sign_quotient);
+      if (MPFR_IS_INF(u))
 	{
-          MPFR_SET_INF(q);
-          MPFR_RET(0);
+	  if (MPFR_IS_INF(v))
+	    {
+	      MPFR_SET_NAN(q);
+	      MPFR_RET_NAN;
+	    }
+	  else
+	    {
+	      MPFR_SET_INF(q);
+	      MPFR_RET(0);
+	    }
 	}
-    }
-  else 
-    if (MPFR_IS_INF(v)) 
-      {
-        MPFR_CLEAR_INF(q);
-        MPFR_SET_ZERO(q);
-        MPFR_RET(0);
-      }
-
-  MPFR_CLEAR_INF(q); /* clear Inf flag */
-
-  if (MPFR_IS_ZERO(v))
-    {
+      else 
+	if (MPFR_IS_INF(v)) 
+	  {
+	    MPFR_CLEAR_INF(q);
+	    MPFR_SET_ZERO(q);
+	    MPFR_RET(0);
+	  }
+      MPFR_CLEAR_INF(q); /* clear Inf flag */
+      if (MPFR_IS_ZERO(v))
+	{
+	  if (MPFR_IS_ZERO(u))
+	    {
+	      MPFR_SET_NAN(q);
+	      MPFR_RET_NAN;
+	    }
+	  else
+	    {
+	      MPFR_SET_INF(q);
+	      MPFR_RET(0);
+	    }
+	}
       if (MPFR_IS_ZERO(u))
 	{
-          MPFR_SET_NAN(q);
-          MPFR_RET_NAN;
+	  MPFR_SET_ZERO(q);
+	  MPFR_RET(0);
 	}
-      else
-	{
-          MPFR_SET_INF(q);
-          MPFR_RET(0);
-	}
+      /* Never reach this !*/
+      MPFR_ASSERTN(1);
     }
-
-  if (MPFR_IS_ZERO(u))
-    {
-      MPFR_SET_ZERO(q);
-      MPFR_RET(0);
-    }
-
+  
+  sign_quotient = MPFR_MULT_SIGN( MPFR_SIGN(u) , MPFR_SIGN(v) );
+  MPFR_SET_SIGN(q, sign_quotient);
+ 
   /**************************************************************************
    *                                                                        *
    *              End of the part concerning special values.                *
@@ -208,9 +209,12 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
 	{
 	case GMP_RNDU : rnd_mode2 = GMP_RNDD; break; 
 	case GMP_RNDD : rnd_mode2 = GMP_RNDU; break; 
-	case GMP_RNDZ : rnd_mode2 = sign_quotient == 1 ? GMP_RNDU : GMP_RNDD; 
+	case GMP_RNDZ : 
+	  rnd_mode2 = MPFR_IS_POS_SIGN(sign_quotient) ? GMP_RNDU : GMP_RNDD; 
 	  break;
-	default : rnd_mode2 = GMP_RNDZ; 
+	default:
+	  rnd_mode2 = GMP_RNDZ; 
+	  break;
 	}
       
       can_round2 = mpfr_can_round_raw(qp, qsize + 1, sign_quotient, err + sh + 
@@ -340,7 +344,8 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
     /* Hack : qp[qsize] is 0, 1 or 2, hence if not 0, = 2^(qp[qsize] - 1). */
     {
       near = mpn_rshift(qp, qp, qsize, qp[qsize]);
-      qp[qsize - 1] |= MPFR_LIMB_HIGHBIT; qexp += qp[qsize]; 
+      qp[qsize - 1] |= MPFR_LIMB_HIGHBIT; 
+      qexp += qp[qsize]; 
     }
   else
     {
@@ -352,7 +357,8 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
 	}
     }
   
-  cc = mpfr_round_raw_generic(qp, qp, err, (sign_quotient == -1 ? 1 : 0),
+  cc = mpfr_round_raw_generic(qp, qp, err, 
+			      (MPFR_IS_NEG_SIGN(sign_quotient) ? 1 : 0),
 			      MPFR_PREC(q), rnd_mode, &inex, 1);      
 
   qp += qsize - MPFR_LIMB_SIZE(q); /* 0 or 1 */
@@ -384,15 +390,15 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
 
 	  if (k >= 0) /* Remainder is nonzero. */ 
 	    {
-	      if ((rnd_mode == GMP_RNDD && sign_quotient == -1) 
-		  || (rnd_mode == GMP_RNDU && sign_quotient == 1))
+	      if ((rnd_mode == GMP_RNDD && MPFR_IS_NEG_SIGN(sign_quotient)) 
+		  || (rnd_mode == GMP_RNDU && MPFR_IS_POS_SIGN(sign_quotient)))
 		/* Rounding to infinity. */
 		{
-		  inex = sign_quotient; 
+		  inex = MPFR_FROM_SIGN_TO_INT( sign_quotient ); 
 		  cc = 1; 
 		}
 	      /* rounding to zero. */
-	      else inex = -sign_quotient; 
+	      else inex = -MPFR_FROM_SIGN_TO_INT( sign_quotient ); 
 	    }
 	}
       else /* We might have to correct an even rounding if remainder
@@ -414,7 +420,8 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
 	    
 	    if (k >= 0) /* In fact the quotient is larger than expected */
 	      {
-		inex = sign_quotient; /* To infinity, finally. */
+		inex = MPFR_FROM_SIGN_TO_INT( sign_quotient );
+		/* To infinity, finally. */
 		cc = 1; 
 	      }
 	  }

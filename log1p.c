@@ -34,53 +34,54 @@ mpfr_log1p (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
   int comp, inexact = 0;
 
-  if (MPFR_IS_NAN(x)) 
+  if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(x)))
     {
-      MPFR_SET_NAN(y); 
-      MPFR_RET_NAN;
+      if (MPFR_IS_NAN(x)) 
+	{
+	  MPFR_SET_NAN(y); 
+	  MPFR_RET_NAN;
+	}
+      MPFR_CLEAR_NAN(y);      
+      /* check for inf or -inf (result is not defined) */
+      if (MPFR_IS_INF(x))
+	{
+	  if (MPFR_IS_POS(x))
+	    {
+	      MPFR_SET_INF(y);
+	      MPFR_SET_POS(y);
+	      MPFR_RET(0);
+	    }
+	  else
+	    {
+	      MPFR_SET_NAN(y);
+	      MPFR_RET_NAN;
+	    }
+	}
+      if (MPFR_IS_ZERO(x))
+	{
+	  MPFR_SET_ZERO(y);   /* log1p(+/- 0) = +/- 0 */
+	  MPFR_SET_SAME_SIGN(y, x);
+	  MPFR_RET(0);
+	}
+      MPFR_ASSERTN(1);
     }
-
-  MPFR_CLEAR_NAN(y);
-
-  /* check for inf or -inf (result is not defined) */
-  if (MPFR_IS_INF(x))
-    {
-      if (MPFR_SIGN(x) > 0)
-        {
-          MPFR_SET_INF(y);
-          MPFR_SET_POS(y);
-          MPFR_RET(0);
-        }
-      else
-        {
-          MPFR_SET_NAN(y);
-          MPFR_RET_NAN;
-        }
-    }
-
+  
   comp = mpfr_cmp_si(x,-1);
   /* x<-1 undefined */
-  if (comp < 0) 
+  if (MPFR_UNLIKELY(comp <= 0)) 
     {
+      if (comp == 0)
+	/* x=0: log1p(-1)=-inf (division by zero) */
+	{
+	  MPFR_SET_INF(y);
+	  MPFR_SET_POS(y);
+	  MPFR_RET_NAN;
+	}
       MPFR_SET_NAN(y);
       MPFR_RET_NAN;
     }
-  /* x=0: log1p(-1)=-inf (division by zero) */
-  if (comp == 0)
-    {
-      MPFR_SET_INF(y);
-      MPFR_SET_POS(y);
-      MPFR_RET_NAN;
-    }
 
-  MPFR_CLEAR_INF(y);
-
-  if (MPFR_IS_ZERO(x))
-    {
-      MPFR_SET_ZERO(y);   /* log1p(+/- 0) = +/- 0 */
-      MPFR_SET_SAME_SIGN(y, x);
-      MPFR_RET(0);
-    }
+  MPFR_CLEAR_FLAGS(y);
 
   /* General case */
   {

@@ -36,46 +36,53 @@ mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
   int inexact;
   mp_rnd_t rnd1;
 
-  if (MPFR_IS_NAN(y))
+  if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(y) ))
     {
-      MPFR_SET_NAN(x);
-      MPFR_RET_NAN;
-    }
-
-  MPFR_CLEAR_NAN(x);
-
-  if (n == 0) /* y^0 = 1 for any y */
-    {
-      /* The return mpfr_set_ui is important as 1 isn't necessarily
-         in the exponent range. */
-      return mpfr_set_ui (x, 1, rnd);
-    }
-
-  if (MPFR_IS_INF(y))
-    {
-      /* Inf^n = Inf, (-Inf)^n = Inf for n even, -Inf for n odd */
-      if ((MPFR_SIGN(y) < 0) && (n % 2 == 1))
-        MPFR_SET_NEG(x);
+      if (MPFR_IS_NAN(y))
+	{
+	  MPFR_SET_NAN(x);
+	  MPFR_RET_NAN;
+	}
+      else if (n == 0) /* y^0 = 1 for any y */
+	{
+	  /* The return mpfr_set_ui is important as 1 isn't necessarily
+	     in the exponent range. */
+	  return mpfr_set_ui (x, 1, rnd);
+	}
+      else if (MPFR_IS_INF(y))
+	{
+	  /* Inf^n = Inf, (-Inf)^n = Inf for n even, -Inf for n odd */
+	  if ((MPFR_IS_NEG(y)) && ((n & 1) == 1))
+	    MPFR_SET_NEG(x);
+	  else
+	    MPFR_SET_POS(x);
+	  MPFR_SET_INF(x);
+	  MPFR_RET(0);
+	}
+      else if (MPFR_IS_ZERO(y)) /* 0^n = 0 for any n */
+	{
+	  MPFR_SET_ZERO(x);
+	  MPFR_RET(0);
+	}
       else
-        MPFR_SET_POS(x);
-      MPFR_SET_INF(x);
-      MPFR_RET(0);
+	MPFR_ASSERTN(1);
     }
-
-  MPFR_CLEAR_INF(x);
-
-  if (MPFR_IS_ZERO(y)) /* 0^n = 0 for any n */
-    {
-      MPFR_SET_ZERO(x);
-      MPFR_RET(0);
+  else if (MPFR_UNLIKELY( n <= 1))
+    { 
+      if (n == 0)
+	/* y^0 = 1 for any y */
+	return mpfr_set_ui (x, 1, rnd);
+      MPFR_ASSERTD(n==1);
+      /* y^1 = y */
+      return mpfr_set(x, y, rnd);	
     }
-
+  
   mpfr_save_emin_emax ();
   mpfr_init (res);
 
   prec = MPFR_PREC(x);
 
-  rnd1 = (MPFR_SIGN(y) > 0) ? GMP_RNDU : GMP_RNDD; /* away */
+  rnd1 = (MPFR_IS_POS(y)) ? GMP_RNDU : GMP_RNDD; /* away */
 
   do
     {
@@ -96,7 +103,7 @@ mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
 	}
 
       /* check underflow */
-      if (MPFR_EXP(res) <= (double) __gmpfr_emin)
+      if (MPFR_UNLIKELY(MPFR_EXP(res) <= (double) __gmpfr_emin))
         {
           mpfr_clear (res);
           mpfr_restore_emin_emax ();

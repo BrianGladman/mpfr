@@ -60,34 +60,36 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
   int inex;
 
   /* Trivial cases */
-  if (MPFR_IS_NAN(x))
+  if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(x) ))
     {
-      MPFR_SET_NAN(gamma);
-      MPFR_RET_NAN;
-    }
-
-  if (MPFR_IS_INF(x))
-    {
-      if (MPFR_SIGN(x) < 0)
-        {
-          MPFR_SET_NAN(gamma);
-          MPFR_RET_NAN;
-        }
-      else
-        {
-          MPFR_CLEAR_NAN(gamma);
-          MPFR_SET_INF(gamma);
-          MPFR_SET_POS(gamma);
-          return 0;  /* exact */
-        }
-    }
-
-  if (MPFR_IS_ZERO(x))
-    {
-      MPFR_CLEAR_NAN(gamma);
-      MPFR_SET_INF(gamma);
-      MPFR_SET_SAME_SIGN(gamma, x);
-      return 0;  /* exact */
+      if (MPFR_IS_NAN(x))
+	{
+	  MPFR_SET_NAN(gamma);
+	  MPFR_RET_NAN;
+	}
+      if (MPFR_IS_INF(x))
+	{
+	  if (MPFR_IS_NEG(x))
+	    {
+	      MPFR_SET_NAN(gamma);
+	      MPFR_RET_NAN;
+	    }
+	  else
+	    {
+	      MPFR_CLEAR_NAN(gamma);
+	      MPFR_SET_INF(gamma);
+	      MPFR_SET_POS(gamma);
+	      return 0;  /* exact */
+	    }
+	}
+      if (MPFR_IS_ZERO(x))
+	{
+	  MPFR_CLEAR_NAN(gamma);
+	  MPFR_SET_INF(gamma);
+	  MPFR_SET_SAME_SIGN(gamma, x);
+	  return 0;  /* exact */
+	}
+      MPFR_ASSERTN(1);
     }
 
   /* Set x_p=x if x> 1 else set x_p=2-x */

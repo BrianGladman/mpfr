@@ -93,7 +93,8 @@ typedef unsigned long int       mp_size_unsigned_t;
 
 /* MPFR_ASSERTN(expr): assertions that should always be checked */
 /* #define MPFR_ASSERTN(expr) ASSERT_ALWAYS(expr) */
-#define MPFR_ASSERTN(expr)  ((void) ((expr) || (ASSERT_FAIL (expr), 0)))
+#define MPFR_ASSERTN(expr)  \
+   ((void) ((MPFR_UNLIKELY(expr)) || (ASSERT_FAIL (expr), 0)))
 
 /* MPFR_ASSERTD(expr): assertions that should be checked when testing */
 /* #define MPFR_ASSERTD(expr) ASSERT(expr) */
@@ -240,6 +241,7 @@ long double __gmpfr_longdouble_volatile __GMP_PROTO ((long double)) ATTRIBUTE_CO
 /* Definition of the special values of the exponent */
 /* Clear flags macros are still defined and should be still used */
 /* since functions shouldn't rely on a specific format */
+/* NOTE: Well, until a real spec of how to use them isn't created, it is unusable */
 
 #define MPFR_PREC(x) ((x)->_mpfr_prec)
 #define MPFR_EXP(x) ((x)->_mpfr_exp)
@@ -269,23 +271,37 @@ long double __gmpfr_longdouble_volatile __GMP_PROTO ((long double)) ATTRIBUTE_CO
 
 #define MPFR_IS_FP(x)       (!MPFR_IS_NAN(x) && !MPFR_IS_INF(x))
 #define MPFR_IS_SINGULAR(x) (MPFR_EXP(x) <= MPFR_EXP_INF)
-#define MPFR_IS_REAL_FP(x)  (!MPFR_IS_SINGULAR(x))
+#define MPFR_IS_PURE_FP(x)  (!MPFR_IS_SINGULAR(x))
 
-/* FIXME: NOTZERO real usefull ? */
+#define MPFR_ARE_SINGULAR(x,y) \
+  (MPFR_UNLIKELY(MPFR_IS_SINGULAR(x)) || MPFR_UNLIKELY(MPFR_IS_SINGULAR(y)))
+
+/* Without zeros */
 #define MPFR_ISNONNEG(x)  (MPFR_NOTZERO((x)) && MPFR_SIGN(x) > 0)
 #define MPFR_ISNEG(x)     (MPFR_NOTZERO((x)) && MPFR_SIGN(x) < 0)
+
+/* With signed zeros */
+#define MPFR_IS_NEG(x) (MPFR_SIGN(x) < 0)
+#define MPFR_IS_POS(x) (MPFR_SIGN(x) > 0)
 
 #define MPFR_SET_POS(x) (MPFR_SIGN(x) = MPFR_SIGN_POS)
 #define MPFR_SET_NEG(x) (MPFR_SIGN(x) = MPFR_SIGN_NEG)
 
 #define MPFR_CHANGE_SIGN(x) (MPFR_SIGN(x) = -MPFR_SIGN(x))
 #define MPFR_SET_SAME_SIGN(x, y) (MPFR_SIGN(x) = MPFR_SIGN(y))
+#define MPFR_SET_OPPOSITE_SIGN(x, y) (MPFR_SIGN(x) = - MPFR_SIGN(y))
 #define MPFR_CHECK_SIGN(s) \
  (MPFR_ASSERTD((s) == MPFR_SIGN_POS || (s) == MPFR_SIGN_NEG))
 #define MPFR_SET_SIGN(x, s) \
   (MPFR_CHECK_SIGN(s), MPFR_SIGN(x) = s)
-#define MPFR_MULT_SIGN(x, s) \
+#define MPFR_IS_POS_SIGN(s1) (s1 > 0)
+#define MPFR_IS_NEG_SIGN(s1) (s1 < 0)
+#define MPFR_MULT_SIGN(s1, s2) \
+  ((s1) * (s2))
+#define MPFR_SET_MULT_SIGN(x, s) \
   (MPFR_CHECK_SIGN(s), MPFR_SIGN(x) *= s)
+/* Transform a sign to 1 or -1 */
+#define MPFR_FROM_SIGN_TO_INT(s) (s)
 
 /* Special inexact value */
 #define MPFR_EVEN_INEX 2

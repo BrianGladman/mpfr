@@ -36,32 +36,32 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
     int inexact;
 
-    if (MPFR_IS_NAN(x))
+    if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(x) ))
       {
-        MPFR_SET_NAN(y);
-        MPFR_RET_NAN;
+	if (MPFR_IS_NAN(x))
+	  {
+	    MPFR_SET_NAN(y);
+	    MPFR_RET_NAN;
+	  }
+	MPFR_CLEAR_NAN(y);
+	if (MPFR_IS_INF(x))
+	  {
+	    if (MPFR_IS_POS(x))
+	      {
+		MPFR_SET_INF(y);
+	      }
+	    else
+	      {
+		MPFR_CLEAR_INF(y);
+		MPFR_SET_ZERO(y);
+	      }
+	    MPFR_SET_POS(y);
+	    MPFR_RET(0);
+	  }
+	/* 2^0 = 1 */
+	if (MPFR_IS_ZERO(x))
+	  return mpfr_set_ui (y, 1, rnd_mode);
       }
-
-    MPFR_CLEAR_NAN(y);
-
-    if (MPFR_IS_INF(x))
-      {
-        if (MPFR_SIGN(x) > 0)
-          {
-            MPFR_SET_INF(y);
-          }
-        else
-          {
-            MPFR_CLEAR_INF(y);
-            MPFR_SET_ZERO(y);
-          }
-        MPFR_SET_POS(y);
-        MPFR_RET(0);
-      }
-
-    /* 2^0 = 1 */
-    if (MPFR_IS_ZERO(x))
-      return mpfr_set_ui (y, 1, rnd_mode);
 
     /* since the smallest representable non-zero float is 1/2*2^__gmpfr_emin,
        if x < __gmpfr_emin - 1, the result is either 1/2*2^__gmpfr_emin or 0 */

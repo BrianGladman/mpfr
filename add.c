@@ -28,59 +28,60 @@ MA 02111-1307, USA. */
 int
 mpfr_add (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 {
-  if (MPFR_IS_NAN(b) || MPFR_IS_NAN(c))
+  if (MPFR_ARE_SINGULAR(b,c))
     {
-      MPFR_SET_NAN(a);
-      MPFR_RET_NAN;
-    }
-
-  MPFR_CLEAR_NAN(a);
-
-  if (MPFR_IS_INF(b))
-    {
-      if (!MPFR_IS_INF(c) || MPFR_SIGN(b) == MPFR_SIGN(c))
-        {
-          MPFR_SET_INF(a);
-          MPFR_SET_SAME_SIGN(a, b);
-          MPFR_RET(0); /* exact */
-        }
+      if (MPFR_IS_NAN(b) || MPFR_IS_NAN(c))
+	{
+	  MPFR_SET_NAN(a);
+	  MPFR_RET_NAN;
+	}
+      MPFR_CLEAR_NAN(a);
+      if (MPFR_IS_INF(b))
+	{
+	  if (!MPFR_IS_INF(c) || MPFR_SIGN(b) == MPFR_SIGN(c))
+	    {
+	      MPFR_SET_INF(a);
+	      MPFR_SET_SAME_SIGN(a, b);
+	      MPFR_RET(0); /* exact */
+	    }
+	  else
+	    {
+	      MPFR_SET_NAN(a);
+	      MPFR_RET_NAN;
+	    }
+	}
       else
-        {
-          MPFR_SET_NAN(a);
-          MPFR_RET_NAN;
-        }
-    }
-  else
-    if (MPFR_IS_INF(c))
-      {
-        MPFR_SET_INF(a);
-        MPFR_SET_SAME_SIGN(a, c);
-        MPFR_RET(0); /* exact */
-      }
-
-  MPFR_ASSERTN(MPFR_IS_FP(b) && MPFR_IS_FP(c));
-
-  if (MPFR_IS_ZERO(b))
-    {
+	if (MPFR_IS_INF(c))
+	  {
+	    MPFR_SET_INF(a);
+	    MPFR_SET_SAME_SIGN(a, c);
+	    MPFR_RET(0); /* exact */
+	  }
+      if (MPFR_IS_ZERO(b))
+	{
+	  if (MPFR_IS_ZERO(c))
+	    {
+	      MPFR_SET_SIGN(a,
+			    (rnd_mode != GMP_RNDD ?
+			     ((MPFR_SIGN(b) < 0 && MPFR_SIGN(c) < 0) ? -1 : 1) :
+			     ((MPFR_SIGN(b) > 0 && MPFR_SIGN(c) > 0) ? 1 : -1)));
+	      MPFR_CLEAR_INF(a);
+	      MPFR_SET_ZERO(a);
+	      MPFR_RET(0); /* 0 + 0 is exact */
+	    }
+	  return mpfr_set(a, c, rnd_mode);
+	}
       if (MPFR_IS_ZERO(c))
-        {
-	  MPFR_SET_SIGN(a,
-			(rnd_mode != GMP_RNDD ?
-			 ((MPFR_SIGN(b) < 0 && MPFR_SIGN(c) < 0) ? -1 : 1) :
-			 ((MPFR_SIGN(b) > 0 && MPFR_SIGN(c) > 0) ? 1 : -1)));
-          MPFR_CLEAR_INF(a);
-          MPFR_SET_ZERO(a);
-          MPFR_RET(0); /* 0 + 0 is exact */
-        }
-      return mpfr_set(a, c, rnd_mode);
+	{
+	  return mpfr_set(a, b, rnd_mode);
+	}
+      /* Should never reach here */
+      MPFR_ASSERTN(1);
     }
 
-  if (MPFR_IS_ZERO(c))
-    {
-      return mpfr_set(a, b, rnd_mode);
-    }
+  MPFR_ASSERTD(MPFR_IS_PURE_FP(b) && MPFR_IS_PURE_FP(c));
 
-  MPFR_CLEAR_INF(a); /* clear Inf flag */
+  MPFR_CLEAR_FLAGS(a); /* clear flags */
 
   if (MPFR_SIGN(b) != MPFR_SIGN(c))
     { /* signs differ, it's a subtraction */

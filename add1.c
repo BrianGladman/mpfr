@@ -40,8 +40,8 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c,
   int sh, rb, fb, inex;
   TMP_DECL(marker);
 
-  MPFR_ASSERTN(MPFR_IS_FP(b) && MPFR_NOTZERO(b));
-  MPFR_ASSERTN(MPFR_IS_FP(c) && MPFR_NOTZERO(c));
+  MPFR_ASSERTD(MPFR_IS_PURE_FP(b));
+  MPFR_ASSERTD(MPFR_IS_PURE_FP(c));
 
   TMP_MARK(marker);
   ap = MPFR_MANT(a);

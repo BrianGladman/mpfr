@@ -38,33 +38,32 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   int expx, precy;
   double d;
 
-  if (MPFR_IS_NAN(x))
+  if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(x) ))
     {
-      MPFR_SET_NAN(y);
-      MPFR_RET_NAN;
-    }
-
-  MPFR_CLEAR_NAN(y);
-
-  if (MPFR_IS_INF(x))
-    {
-      if (MPFR_SIGN(x) > 0)
+      if (MPFR_IS_NAN(x))
 	{
-	  MPFR_SET_INF(y);
+	  MPFR_SET_NAN(y);
+	  MPFR_RET_NAN;
 	}
-      else
+      MPFR_CLEAR_NAN(y);
+      if (MPFR_IS_INF(x))
 	{
-	  MPFR_CLEAR_INF(y);
-	  MPFR_SET_ZERO(y);
+	  if (MPFR_IS_POS(x))
+	    {
+	      MPFR_SET_INF(y);
+	    }
+	  else
+	    {
+	      MPFR_CLEAR_INF(y);
+	      MPFR_SET_ZERO(y);
+	    }
+	  MPFR_SET_POS(y);
+	  MPFR_RET(0);
 	}
-      MPFR_SET_POS(y);
-      MPFR_RET(0);
+      MPFR_CLEAR_INF(y);
+      if (MPFR_IS_ZERO(x))
+	return mpfr_set_ui (y, 1, GMP_RNDN);
     }
-
-  MPFR_CLEAR_INF(y);
-
-  if (MPFR_IS_ZERO(x))
-    return mpfr_set_ui (y, 1, GMP_RNDN);
 
   expx = MPFR_GET_EXP (x);
   precy = MPFR_PREC(y);

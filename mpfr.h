@@ -34,10 +34,10 @@ MA 02111-1307, USA. */
 
 /* Definition of rounding modes */
 typedef enum {
-  MPFR_RNDN=0,
-  MPFR_RNDZ=1,
-  MPFR_RNDU=2,
-  MPFR_RNDD=3
+  GMP_RNDN=0,
+  GMP_RNDZ=1,
+  GMP_RNDU=2,
+  GMP_RNDD=3
 } mpfr_rnd_t;
 
 /* Flags of __gmpfr_flags */
@@ -84,10 +84,6 @@ typedef struct {
 } __mpfr_struct;
 
 /* Compatibility with previous versions of MPFR */
-#define GMP_RNDN MPFR_RNDN
-#define GMP_RNDZ MPFR_RNDZ
-#define GMP_RNDU MPFR_RNDU
-#define GMP_RNDD MPFR_RNDD
 #define mp_rnd_t mpfr_rnd_t
 #define mp_prec_t mpfr_prec_t
 
