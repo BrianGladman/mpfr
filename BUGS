@@ -1,4 +1,4 @@
-Copyright 1999, 2001, 2002, 2003 Free Software Foundation.
+Copyright 1999, 2001, 2002, 2003, 2004 Free Software Foundation.
 Contributed by the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.
@@ -30,6 +30,9 @@ Known bugs:
 
 * The mpfr_set_ld function assumes that the long double type has an
   exponent of at most 15 bits.
+
+* When MPFR is compiled with Visual C++ under MS Windows, some tests may
+  fail, because of the way special IEEE-754 double values are tested.
 
 Potential bugs:
 
