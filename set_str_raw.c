@@ -27,9 +27,10 @@ MA 02111-1307, USA. */
 #include <strings.h>
 #endif
 #include "gmp.h"
-#include "mpfr.h"
 #include "gmp-impl.h"
 #include "longlong.h"
+#include "mpfr.h"
+#include "mpfr-impl.h"
 
 /* Currently the number should be of the form +/- xxxx.xxxxxxEyy, with 
    decimal exponent. The mantissa of x is supposed to be large enough 
@@ -127,8 +128,8 @@ mpfr_set_str_raw (x, str)
   count_leading_zeros(cnt, xp[xsize - 1]); 
   if (cnt) mpn_lshift(xp, xp, xsize, cnt); 
 
-  x -> _mp_exp = expn - cnt; 
-  x -> _mp_size = xsize; if (negative) MPFR_CHANGE_SIGN(x);
+  MPFR_EXP(x) = expn - cnt; 
+  MPFR_SIZE(x) = xsize; if (negative) MPFR_CHANGE_SIGN(x);
 
   (*_mp_free_func) (str0, alloc);
   

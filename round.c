@@ -22,12 +22,9 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include "gmp.h"
-#include "mpfr.h"
 #include "gmp-impl.h"
-
-#ifdef Exp
-#include "longlong.h"
-#endif
+#include "mpfr.h"
+#include "mpfr-impl.h"
 
 /* returns 0 if round(sign*xp[0..xn-1], prec, rnd) = 
    round(sign*xp[0..xn-1], prec, GMP_RNDZ), 1 otherwise,
@@ -132,11 +129,6 @@ mpfr_round_raw(y, xp, xprec, negative, yprec, rnd_mode)
   char rw, carry = 0;
 
   xsize = (xprec-1)/BITS_PER_MP_LIMB + 1;
-
-#ifdef Exp
-  count_leading_zeros(flag, xp[xsize-1]); 
-  yprec += flag; 
-#endif
 
   nw = yprec / BITS_PER_MP_LIMB; rw = yprec & (BITS_PER_MP_LIMB - 1); 
   if (rw) nw++; 

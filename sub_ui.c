@@ -21,12 +21,10 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include "gmp.h"
-#include "mpfr.h"
 #include "gmp-impl.h"
 #include "longlong.h"
-
-#define MON_INIT(xp, x, p, s) xp = (mp_ptr) TMP_ALLOC(s*BYTES_PER_MP_LIMB); \
-   MPFR_PREC(x) = p; MPFR_MANT(x) = xp; x -> _mp_size = s;
+#include "mpfr.h"
+#include "mpfr-impl.h"
 
 void
 #if __STDC__
@@ -40,9 +38,8 @@ mpfr_sub_ui (y, x, u, rnd_mode)
 #endif
 {
   mpfr_t uu;
-  mp_limb_t *up;
+  mp_limb_t up[1];
   unsigned long cnt;
-  TMP_DECL(marker);
 
   if (MPFR_IS_NAN(x)) {
     MPFR_SET_NAN(y);
@@ -56,14 +53,11 @@ mpfr_sub_ui (y, x, u, rnd_mode)
     }
 
   if (u) { /* if u=0, do nothing */
-    TMP_MARK(marker);
-    MON_INIT(up, uu, BITS_PER_MP_LIMB, 1);
+    MPFR_INIT1(up, uu, BITS_PER_MP_LIMB, 1);
     count_leading_zeros(cnt, (mp_limb_t) u);
     *up = (mp_limb_t) u << cnt;
     MPFR_EXP(uu) = BITS_PER_MP_LIMB-cnt;
   
     mpfr_sub (y, x, uu, rnd_mode);
-
-    TMP_FREE(marker);
   }
 }

@@ -22,14 +22,17 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <math.h>
 #include "gmp.h"
-#include "mpfr.h"
 #include "gmp-impl.h"
 #include "longlong.h"
+#include "mpfr.h"
+#include "mpfr-impl.h"
 
 mpfr_t __mpfr_const_log2; /* stored value of log(2) */
 int __mpfr_const_log2_prec=0; /* precision of stored value */
 mp_rnd_t __mpfr_const_log2_rnd; /* rounding mode of stored value */
 
+int mpfr_aux_log2 (mpfr_ptr, mpz_srcptr, int, int);
+int mpfr_const_aux_log2 (mpfr_ptr, mp_rnd_t);
 
 #define A
 #define A1 1
@@ -53,9 +56,11 @@ mp_rnd_t __mpfr_const_log2_rnd; /* rounding mode of stored value */
 
 int
 #if __STDC__
-mpfr_const_aux_log2(mpfr_ptr mylog, mp_rnd_t rnd_mode)
+mpfr_const_aux_log2 (mpfr_ptr mylog, mp_rnd_t rnd_mode)
 #else
-mpfr_const_aux_log2(mylog, rnd_mode) mpfr_ptr mylog; mp_rnd_t rnd_mode;
+mpfr_const_aux_log2 (mylog, rnd_mode)
+     mpfr_ptr mylog;
+     mp_rnd_t rnd_mode;
 #endif
 {
   int prec;

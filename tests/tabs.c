@@ -23,11 +23,9 @@ MA 02111-1307, USA. */
 #include <stdlib.h>
 #include "gmp.h"
 #include "mpfr.h"
-#include "mpfr-impl.h"
-#ifdef __mips
-#include <sys/fpu.h>
-#endif
-#define Infp 1/0.
+#include "mpfr-test.h"
+
+#define Infp (1/0.)
 
 extern int isnan();
 

@@ -22,21 +22,18 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <math.h>
 #include "gmp.h"
-#include "mpfr.h"
 #include "gmp-impl.h"
-
-/*Memory gestion */
-#define MON_INIT(xp, x, p, s) xp = (mp_ptr) TMP_ALLOC(s*BYTES_PER_MP_LIMB); \
-   MPFR_PREC(x) = p; MPFR_MANT(x) = xp; x -> _mp_size = s; x -> _mp_exp = 0; 
+#include "mpfr.h"
+#include "mpfr-impl.h"
 
 void 
 #ifdef __STDC__
 mpfr_agm(mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
 #else
-mpfr_agm(r, a, b, rnd_mode)
+mpfr_agm(r, op2, op1, rnd_mode)
      mpfr_ptr r;
-     mpfr_srcptr a;
-     mpfr_srcptr b;
+     mpfr_srcptr op2;
+     mpfr_srcptr op1;
      mp_rnd_t rnd_mode;
 #endif
 {
@@ -75,14 +72,14 @@ mpfr_agm(r, a, b, rnd_mode)
  
   TMP_MARK(marker1);
   s=(p-1)/BITS_PER_MP_LIMB+1;
-  MON_INIT(ap, a, p, s);  
-  MON_INIT(bp, b, p, s);
+  MPFR_INIT(ap, a, p, s);  
+  MPFR_INIT(bp, b, p, s);
   TMP_MARK(marker2);
-  MON_INIT(up, u, p, s);
-  MON_INIT(vp, v, p, s);   
-  MON_INIT(tmpup, tmpu, p, s);  
-  MON_INIT(tmpvp, tmpv, p, s);  
-  MON_INIT(tmpp, tmp, p, s);  
+  MPFR_INIT(up, u, p, s);
+  MPFR_INIT(vp, v, p, s);   
+  MPFR_INIT(tmpup, tmpu, p, s);  
+  MPFR_INIT(tmpvp, tmpv, p, s);  
+  MPFR_INIT(tmpp, tmp, p, s);  
 
 
 
@@ -145,11 +142,11 @@ mpfr_agm(r, a, b, rnd_mode)
 	  TMP_FREE(marker2); 
 	  TMP_MARK(marker2);
 	  s=(p-1)/BITS_PER_MP_LIMB+1;
-	  MON_INIT(up, u, p, s);
-	  MON_INIT(vp, v, p, s);   
-	  MON_INIT(tmpup, tmpu, p, s);  
-	  MON_INIT(tmpvp, tmpv, p, s);  
-	  MON_INIT(tmpp, tmp, p, s);
+	  MPFR_INIT(up, u, p, s);
+	  MPFR_INIT(vp, v, p, s);   
+	  MPFR_INIT(tmpup, tmpu, p, s);  
+	  MPFR_INIT(tmpvp, tmpv, p, s);  
+	  MPFR_INIT(tmpp, tmp, p, s);
 	  mpfr_set(u,a,GMP_RNDN);
 	  mpfr_set(v,b,GMP_RNDN);
       }

@@ -23,11 +23,15 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <math.h>
 #include "gmp.h"
-#include "mpfr.h"
 #include "gmp-impl.h"
+#include "mpfr.h"
+#include "mpfr-impl.h"
 
-int mpfr_exp2_aux  (mpz_t, mpfr_srcptr, int, int*);
-int mpfr_exp2_aux2 (mpz_t, mpfr_srcptr, int, int*);
+int mpfr_exp2_aux      (mpz_t, mpfr_srcptr, int, int*);
+int mpfr_exp2_aux2     (mpz_t, mpfr_srcptr, int, int*);
+mp_exp_t mpz_normalize (mpz_t, mpz_t, int);
+int mpz_normalize2     (mpz_t, mpz_t, int, int);
+int mpfr_exp2          (mpfr_ptr, mpfr_srcptr, mp_rnd_t);
 
 #define SWITCH 100 /* number of bits to switch from O(n^(1/2)*M(n)) method
 		      to O(n^(1/3)*M(n)) method */
@@ -42,10 +46,11 @@ int mpfr_exp2_aux2 (mpz_t, mpfr_srcptr, int, int*);
 /* if k = the number of bits of z > q, divides z by 2^(k-q) and returns k-q.
    Otherwise do nothing and return 0.
  */
+mp_exp_t
 #if __STDC__
-mp_exp_t mpz_normalize(mpz_t rop, mpz_t z, int q)
+mpz_normalize (mpz_t rop, mpz_t z, int q)
 #else
-mp_exp_t mpz_normalize(rop, z, q)
+mpz_normalize (rop, z, q)
      mpz_t rop;
      mpz_t z;
      int q;
@@ -70,9 +75,9 @@ mp_exp_t mpz_normalize(rop, z, q)
 */
 int
 #if __STDC__
-mpz_normalize2(mpz_t rop, mpz_t z, int expz, int target)
+mpz_normalize2 (mpz_t rop, mpz_t z, int expz, int target)
 #else
-mpz_normalize2(rop, z, expz, target)
+mpz_normalize2 (rop, z, expz, target)
      mpz_t rop;
      mpz_t z;
      int expz;
@@ -91,9 +96,9 @@ mpz_normalize2(rop, z, expz, target)
 */
 int 
 #if __STDC__
-mpfr_exp2(mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode) 
+mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode) 
 #else
-mpfr_exp2(y, x, rnd_mode)
+mpfr_exp2 (y, x, rnd_mode)
      mpfr_ptr y;
      mpfr_srcptr x;
      mp_rnd_t rnd_mode;

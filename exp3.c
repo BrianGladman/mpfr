@@ -22,17 +22,22 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <math.h>
 #include "gmp.h"
-#include "mpfr.h"
 #include "gmp-impl.h"
+#include "mpfr.h"
+#include "mpfr-impl.h"
 
 /* #define DEBUG */
 
+int mylog2 (int);
+int mpfr_exp_rational (mpfr_ptr, mpz_srcptr, int, int);
+int mpfr_exp3 (mpfr_ptr, mpfr_srcptr, mp_rnd_t);
+
 int
 #if __STDC__
-mylog2(int x)
+mylog2 (int x)
 #else
-mylog2(x)
-int x;
+mylog2 (x)
+     int x;
 #endif
 {
   int i = 0;
@@ -42,13 +47,13 @@ int x;
 
 int
 #if __STDC__
-mpfr_exp_rational(mpfr_ptr y,mpz_srcptr p,int r,int m)
+mpfr_exp_rational (mpfr_ptr y, mpz_srcptr p, int r, int m)
 #else
-mpfr_exp_rational(y,p,r,m)
-mpfr_ptr y;
-mpz_srcptr p;
-int r;
-int m;
+mpfr_exp_rational (y, p, r, m)
+     mpfr_ptr y;
+     mpz_srcptr p;
+     int r;
+     int m;
 #endif
 {
   int n,i,k,j,l;
@@ -140,12 +145,12 @@ int m;
 
 int
 #if __STDC__
-mpfr_exp3(mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
+mpfr_exp3 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 #else
-mpfr_exp3(y,x,rnd_mode)
-mpfr_ptr y;
-mpfr_srcptr x; 
-mp_rnd_t rnd_mode;
+mpfr_exp3 (y, x, rnd_mode)
+     mpfr_ptr y;
+     mpfr_srcptr x; 
+     mp_rnd_t rnd_mode;
 #endif
 {
   mpfr_t t;

@@ -24,14 +24,16 @@ MA 02111-1307, USA. */
 #include <unistd.h>
 #include "gmp.h"
 #include "mpfr.h"
-#include "mpfr-impl.h"
+#ifdef TEST
+#include "mpfr-test.h"
+#endif
 
 #define MINNORM 2.2250738585072013831e-308 /* 2^(-1022), smallest normalized */
 
 /* checks that x*y gives the same results in double
    and with mpfr with 53 bits of precision */
 void check(double x, double y, unsigned int rnd_mode, unsigned int px, 
-unsigned int py, unsigned int pz, double res)
+	   unsigned int py, unsigned int pz, double res)
 {
   double z1, z2; mpfr_t xx, yy, zz;
 

@@ -23,22 +23,10 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include "gmp.h"
-#include "mpfr.h"
 #include "gmp-impl.h"
 #include "longlong.h"
-
-
-#if defined (__hpux) || defined (__alpha)  || defined (__svr4__) || defined (__SVR4)
-/* HPUX lacks random().  DEC OSF/1 1.2 random() returns a double.  */
-long mrand48 ();
-static long
-random ()
-{
-  return mrand48 ();
-}
-#else
-long random ();
-#endif
+#include "mpfr.h"
+#include "mpfr-impl.h"
 
 void
 #if __STDC__
@@ -50,7 +38,9 @@ mpfr_random2 (x, size, exp)
      mp_exp_t exp;
 #endif
 {
-  mp_size_t xn; unsigned long cnt; mp_ptr xp = MPFR_MANT(x); 
+  mp_size_t xn;
+  unsigned long cnt;
+  mp_ptr xp = MPFR_MANT(x), yp[1];
   mp_size_t prec = (MPFR_PREC(x) - 1)/BITS_PER_MP_LIMB; 
 
   MPFR_CLEAR_FLAGS(x);
@@ -63,8 +53,12 @@ mpfr_random2 (x, size, exp)
       mpn_random2 (xp, xn);
     }
 
-  if (exp != 0)
-    exp = random () % (2 * exp) - exp;
+  if (exp != 0) {
+    /* use mpn_random instead of random since that function is not
+       available on all platforms (for example HPUX, DEC OSF, ...) */
+    mpn_random ((mp_limb_t*) yp, 1);
+    exp = (mp_exp_t) yp[0] % (2 * exp) - exp;
+  }
 
   count_leading_zeros(cnt, xp[xn - 1]); 
   if (cnt) mpn_lshift(xp, xp, xn, cnt); 

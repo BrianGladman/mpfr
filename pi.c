@@ -22,10 +22,13 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <math.h>
 #include "gmp.h"
-#include "mpfr.h"
 #include "gmp-impl.h"
 #include "longlong.h"
+#include "mpfr.h"
+#include "mpfr-impl.h"
 
+int mpfr_aux_pi (mpfr_ptr, mpz_srcptr, int, int);
+int mpfr_pi_machin3 (mpfr_ptr, mp_rnd_t);
 
 #define A
 #define A1 1
@@ -42,9 +45,9 @@ MA 02111-1307, USA. */
 
 int
 #if __STDC__
-mpfr_pi_machin3(mpfr_ptr mylog, mp_rnd_t rnd_mode) 
+mpfr_pi_machin3 (mpfr_ptr mylog, mp_rnd_t rnd_mode) 
 #else
-mpfr_pi_machin3(mylog, rnd_mode) 
+mpfr_pi_machin3 (mylog, rnd_mode) 
      mpfr_ptr mylog;
      mp_rnd_t rnd_mode;
 #endif

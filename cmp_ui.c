@@ -21,9 +21,10 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include "gmp.h"
-#include "mpfr.h"
 #include "gmp-impl.h"
 #include "longlong.h"
+#include "mpfr.h"
+#include "mpfr-impl.h"
 
 /* returns a positive value if b>i*2^f,
            a negative value if b<i*2^f,

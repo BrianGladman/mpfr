@@ -25,8 +25,7 @@ MA 02111-1307, USA. */
 #include <unistd.h>
 #include "gmp.h"
 #include "mpfr.h"
-#include "mpfr-impl.h"
-#include "time.h"
+#include "mpfr-test.h"
 
 extern int isnan();
 
@@ -54,6 +53,7 @@ void check(double d, unsigned long u, unsigned char rnd, double e)
 int
 main(int argc, char **argv)
 {
+  mpfr_t x;
 #ifdef TEST
   int i; unsigned long u; double d;
 
@@ -64,7 +64,6 @@ main(int argc, char **argv)
     check(d, u, rand() % 4, 0.0);
   }
 #endif
-  mpfr_t x;
 
   check(1.0, 3, GMP_RNDN, 3.3333333333333331483e-1);
   check(1.0, 3, GMP_RNDZ, 3.3333333333333331483e-1);

@@ -24,6 +24,7 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include "gmp.h"
 #include "mpfr.h"
+#include "mpfr-impl.h"
 
 /* sets x to y^n, and returns ceil(log2(max ulp error)) */
 int

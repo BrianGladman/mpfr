@@ -21,7 +21,7 @@ MA 02111-1307, USA. */
 
 #include "gmp.h"
 #include "mpfr.h"
-#include "gmp-impl.h"
+#include "mpfr-impl.h"
 
 void
 #if __STDC__

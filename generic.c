@@ -35,13 +35,13 @@ MA 02111-1307, USA. */
    avec x = p / 2^r */
 int
 #if __STDC__
-GENERIC(mpfr_ptr y,mpz_srcptr p,int r,int m)
+GENERIC (mpfr_ptr y, mpz_srcptr p, int r, int m)
 #else
-GENERIC(y,p,r,m)
-mpfr_ptr y;
-mpz_srcptr p;
-int r;
-int m;
+GENERIC (y, p, r, m)
+     mpfr_ptr y;
+     mpz_srcptr p;
+     int r;
+     int m;
 #endif
 {
   int n,i,k,j,l;
@@ -93,7 +93,7 @@ int m;
   mpz_mul_ui(ptoj[0], ptoj[0], C2);
 #  endif
 #endif
-  is_p_one = !mpz_cmp_si(ptoj[0],1);
+  is_p_one = !mpz_cmp_si(ptoj[0], 1);
 #ifdef A
 #  ifdef B
   mpz_set_ui(T[0], A1 * B1);

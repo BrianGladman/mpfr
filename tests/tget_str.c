@@ -26,10 +26,11 @@ MA 02111-1307, USA. */
 #include <unistd.h>
 #include "gmp.h"
 #include "mpfr.h"
-#include "mpfr-impl.h"
-#include <time.h>
+#ifdef TEST
+#include "mpfr-test.h"
+#endif
 
-void check(d, rnd) double d; unsigned char rnd;
+void check (double d, unsigned char rnd)
 {
   mpfr_t x; char *str; mp_exp_t e;
 

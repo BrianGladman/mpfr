@@ -23,11 +23,13 @@ MA 02111-1307, USA. */
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
+#include "mpfr-impl.h"
 
 /* #define DEBUG */
 
 extern void mpfr_sub1 _PROTO((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, 
 			      mp_rnd_t, int));
+void mpfr_add1 (mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t, int);
 
 #define ONE ((mp_limb_t) 1)
 
@@ -37,10 +39,10 @@ extern void mpfr_sub1 _PROTO((mpfr_ptr, mpfr_srcptr, mpfr_srcptr,
 
 void 
 #if __STDC__
-mpfr_add1(mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, 
-	  mp_rnd_t rnd_mode, int diff_exp) 
+mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, 
+	   mp_rnd_t rnd_mode, int diff_exp) 
 #else
-mpfr_add1(a, b, c, rnd_mode, diff_exp) 
+mpfr_add1 (a, b, c, rnd_mode, diff_exp) 
      mpfr_ptr a;
      mpfr_srcptr b;
      mpfr_srcptr c;

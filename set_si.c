@@ -21,15 +21,16 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include "gmp.h"
-#include "mpfr.h"
 #include "gmp-impl.h"
 #include "longlong.h"
+#include "mpfr.h"
+#include "mpfr-impl.h"
 
 void
 #if __STDC__
-mpfr_set_si(mpfr_ptr x, long int i, mp_rnd_t rnd_mode)
+mpfr_set_si (mpfr_ptr x, long int i, mp_rnd_t rnd_mode)
 #else
-mpfr_set_si(x, i, rnd_mode)
+mpfr_set_si (x, i, rnd_mode)
      mpfr_ptr x;
      long int i;
      mp_rnd_t rnd_mode;
@@ -69,11 +70,11 @@ mpfr_set_si(x, i, rnd_mode)
 
 void
 #if __STDC__
-mpfr_set_ui(mpfr_ptr x, unsigned long int i, mp_rnd_t rnd_mode)
+mpfr_set_ui (mpfr_ptr x, unsigned long int i, mp_rnd_t rnd_mode)
 #else
-mpfr_set_ui(x, i, rnd_mode)
+mpfr_set_ui (x, i, rnd_mode)
      mpfr_ptr x;
-     long int i;
+     unsigned long int i;
      mp_rnd_t rnd_mode;
 #endif  
 {

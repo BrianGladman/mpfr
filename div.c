@@ -23,9 +23,10 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <stdlib.h>
 #include "gmp.h"
-#include "mpfr.h"
 #include "gmp-impl.h"
 #include "longlong.h"
+#include "mpfr.h"
+#include "mpfr-impl.h"
 
 /* #define DEBUG */
 
@@ -127,13 +128,11 @@ mpfr_div (r, u, v, rnd_mode)
      precision ; take one extra bit for rrsize in order to solve more 
      easily the problem of rounding to nearest. */
 
-  /* ATTENTION, UMPFR_SIZE DOIT RESTER > A VMPFR_SIZE !!!!!!!! */
-
   do
     {
       TMP_MARK (marker);
 
-      rexp = u->_mp_exp - v->_mp_exp;
+      rexp = MPFR_EXP(u) - MPFR_EXP(v);
       
       err = rsize*BITS_PER_MP_LIMB; 
       if (rsize < vsize) { err-=2; } 
@@ -294,12 +293,12 @@ mpfr_div (r, u, v, rnd_mode)
 
 
   if (sign_quotient * MPFR_SIGN(r) < 0) { MPFR_CHANGE_SIGN(r); } 
-  r->_mp_exp = rexp;
+  MPFR_EXP(r) = rexp;
 
   if (cc) {
     mpn_rshift(rp, rp, rrsize, 1);
     rp[rrsize-1] |= (mp_limb_t) 1 << (BITS_PER_MP_LIMB-1);
-    r->_mp_exp++; 
+    MPFR_EXP(r)++; 
   }
     
   rw = rrsize * BITS_PER_MP_LIMB - MPFR_PREC(r);

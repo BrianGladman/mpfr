@@ -21,11 +21,10 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include "gmp.h"
-#include "mpfr.h"
 #include "gmp-impl.h"
 #include "longlong.h"
-
-#define MON_INIT(xp, x, p, s) MPFR_PREC(x)=p; MPFR_MANT(x)=xp; MPFR_SIZE(x)=s;
+#include "mpfr.h"
+#include "mpfr-impl.h"
 
 void
 #if __STDC__
@@ -43,7 +42,7 @@ mpfr_add_ui(y, x, u, rnd_mode)
   unsigned long cnt;
 
   if (u) { /* if u=0, do nothing */
-    MON_INIT(up, uu, BITS_PER_MP_LIMB, 1);
+    MPFR_INIT1(up, uu, BITS_PER_MP_LIMB, 1);
     count_leading_zeros(cnt, (mp_limb_t) u);
     *up = (mp_limb_t) u << cnt;
     MPFR_EXP(uu) = BITS_PER_MP_LIMB-cnt;

@@ -22,14 +22,17 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include "gmp.h"
-#include "mpfr.h"
 #include "gmp-impl.h"
+#include "mpfr.h"
+#include "mpfr-impl.h"
+
+void mpfr_get_str_raw (char *, mpfr_srcptr);
 
 void
 #if __STDC__
-mpfr_get_str_raw(char *digit_ptr, mpfr_srcptr x)
+mpfr_get_str_raw (char *digit_ptr, mpfr_srcptr x)
 #else
-mpfr_get_str_raw(digit_ptr, x)
+mpfr_get_str_raw (digit_ptr, x)
      char *digit_ptr; 
      mpfr_srcptr x; 
 #endif

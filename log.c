@@ -22,9 +22,9 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <math.h>
 #include "gmp.h"
-#include "mpfr.h"
 #include "gmp-impl.h"
-
+#include "mpfr.h"
+#include "mpfr-impl.h"
 
   /* The computation of log(a) is done using the formula :
      if we want p bits of the result,
@@ -39,10 +39,6 @@ MA 02111-1307, USA. */
      from which we deduce pi/2/AG(1,4/s)*(1-4/s^2) < log(s) < pi/2/AG(1,4/s)
      so the relative error 4/s^2 is < 4/2^p i.e. 4 ulps.
   */
-
-
-#define MON_INIT(xp, x, p, s) xp = (mp_ptr) TMP_ALLOC(s*BYTES_PER_MP_LIMB); \
-   MPFR_PREC(x) = p; MPFR_MANT(x) = xp; x -> _mp_size = s; x -> _mp_exp = 0; 
 
 /* #define DEBUG */
 
@@ -117,13 +113,13 @@ mpfr_log(r, a, rnd_mode)
     /* All the mpfr_t needed have a precision of p */
     TMP_MARK(marker);
     size=(p-1)/BITS_PER_MP_LIMB+1;
-    MON_INIT(cstp, cst, p, size);  
-    MON_INIT(rapportp, rapport, p, size);
-    MON_INIT(agmp, agm, p, size);
-    MON_INIT(tmp1p, tmp1, p, size);  
-    MON_INIT(tmp2p, tmp2, p, size);  
-    MON_INIT(sp, s, p, size);
-    MON_INIT(mmp, mm, p, size);
+    MPFR_INIT(cstp, cst, p, size);  
+    MPFR_INIT(rapportp, rapport, p, size);
+    MPFR_INIT(agmp, agm, p, size);
+    MPFR_INIT(tmp1p, tmp1, p, size);  
+    MPFR_INIT(tmp2p, tmp2, p, size);  
+    MPFR_INIT(sp, s, p, size);
+    MPFR_INIT(mmp, mm, p, size);
 
     mpfr_set_si(mm,m,GMP_RNDN);           /* I have m, supposed exact */
     mpfr_set_si(tmp1,1,GMP_RNDN);         /* I have 1, exact */

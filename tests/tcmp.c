@@ -25,7 +25,7 @@ MA 02111-1307, USA. */
 #include "gmp.h"
 #include "longlong.h"
 #include "mpfr.h"
-#include "mpfr-impl.h"
+#include "mpfr-test.h"
 
 #define Infp 1/0.
 #define Infm -1/0.

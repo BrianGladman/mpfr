@@ -23,8 +23,9 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <stdlib.h>
 #include "gmp.h"
-#include "mpfr.h"
 #include "gmp-impl.h"
+#include "mpfr.h"
+#include "mpfr-impl.h"
 
 /* #define DEBUG */
 
@@ -229,7 +230,7 @@ mpfr_sqrt (r, u, rnd_mode)
   if (cc) {
     mpn_rshift(rp, rp, rrsize, 1);
     rp[rrsize-1] |= (mp_limb_t) 1 << (BITS_PER_MP_LIMB-1);
-    r->_mp_exp++; 
+    MPFR_EXP(r)++; 
   }
 
  fin:

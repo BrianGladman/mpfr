@@ -22,12 +22,11 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <math.h>
 #include "gmp.h"
-#include "mpfr.h"
 #include "gmp-impl.h"
+#include "mpfr.h"
+#include "mpfr-impl.h"
 
 /* #define DEBUG */
-
-#define LOG2 0.69314718055994528622 /* log(2) rounded to zero on 53 bits */
 
 extern int mpfr_exp2 _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t)); 
 extern int mpfr_exp3 _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t)); 

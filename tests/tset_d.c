@@ -22,17 +22,14 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#ifdef __mips
-#include <sys/fpu.h>
-#endif
 #include "gmp.h"
 #include "mpfr.h"
-#include "mpfr-impl.h"
+#include "mpfr-test.h"
 
 extern int isnan();
 
 int
-main(int argc, char **argv)
+main (int argc, char **argv)
 {
   mpfr_t x,y,z; unsigned long k,n; double d, dd;
 #ifdef __mips

@@ -24,6 +24,7 @@ MA 02111-1307, USA. */
 #include <time.h>
 #include "gmp.h"
 #include "mpfr.h"
+#include "mpfr-impl.h"
 
 /* checks that x*y gives the same results in double
    and with mpfr with 53 bits of precision */

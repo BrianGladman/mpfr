@@ -23,12 +23,8 @@ MA 02111-1307, USA. */
 #include <stdlib.h>
 #include "gmp.h"
 #include "mpfr.h"
+#include "mpfr-impl.h"
 #include <time.h>
-
-#if defined (hpux)
-#define srandom srand48
-#define random mrand48
-#endif
 
 int
 main(int argc, char **argv)

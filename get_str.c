@@ -26,9 +26,10 @@ MA 02111-1307, USA. */
 #include <stdlib.h>
 #include <string.h>
 #include "gmp.h"
-#include "mpfr.h"
 #include "gmp-impl.h"
 #include "longlong.h"
+#include "mpfr.h"
+#include "mpfr-impl.h"
 
 /*
   Convert op to a string in base 'base' with 'n' digits and writes the 

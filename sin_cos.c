@@ -23,8 +23,9 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <stdlib.h>
 #include "gmp.h"
-#include "mpfr.h"
 #include "gmp-impl.h"
+#include "mpfr.h"
+#include "mpfr-impl.h"
 
 int mpfr_sin_aux (mpfr_ptr, mpz_srcptr, int, int);
 int mpfr_cos_aux (mpfr_ptr, mpz_srcptr, int, int);
@@ -100,7 +101,7 @@ mp_rnd_t rnd_mode;
 		      ((double) (MPFR_PREC(x)) / (double) BITS_PER_MP_LIMB)
 		      /LOG2);  
   ttt = MPFR_EXP(x);
-  mpfr_init2(x_copy,MPFR_PREC(x));
+  mpfr_init2(x_copy, MPFR_PREC(x));
   mpfr_set(x_copy,x,GMP_RNDD);
   mpz_init(square);
   /* on fait le shift pour que le nombre soit inferieur a 1 */
@@ -217,8 +218,8 @@ mp_rnd_t rnd_mode;
 	  goto try_again;
 	}      
     }
-    if (mpfr_can_round(tmp_sin, realprec, GMP_RNDD, rnd_mode, PREC(sinus)) &&
-	mpfr_can_round(tmp_cos, realprec, GMP_RNDD, rnd_mode, PREC(cosinus))) {
+    if (mpfr_can_round(tmp_sin, realprec, GMP_RNDD, rnd_mode, MPFR_PREC(sinus)) &&
+	mpfr_can_round(tmp_cos, realprec, GMP_RNDD, rnd_mode, MPFR_PREC(cosinus))) {
 	mpfr_set(sinus, tmp_sin, rnd_mode);
 	mpfr_set(cosinus, tmp_cos, rnd_mode);
 	good = 1;

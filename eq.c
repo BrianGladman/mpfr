@@ -23,8 +23,9 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include "gmp.h"
-#include "mpfr.h"
 #include "gmp-impl.h"
+#include "mpfr.h"
+#include "mpfr-impl.h"
 
 int
 #if __STDC__
@@ -41,8 +42,8 @@ mpfr_eq (u, v, n_bits)
   mp_exp_t uexp, vexp;
   int usign, k;
 
-  uexp = u->_mp_exp;
-  vexp = v->_mp_exp;
+  uexp = MPFR_EXP(u);
+  vexp = MPFR_EXP(v);
 
   usize = (MPFR_PREC(u)-1)/BITS_PER_MP_LIMB + 1;
   vsize = (MPFR_PREC(v)-1)/BITS_PER_MP_LIMB + 1;

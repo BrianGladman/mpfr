@@ -25,10 +25,7 @@ MA 02111-1307, USA. */
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
-#include "mpfr-impl.h"
-#ifdef __mips
-#include <sys/fpu.h>
-#endif
+#include "mpfr-test.h"
 
 extern int isnan(), getpid();
 
@@ -36,7 +33,7 @@ extern int isnan(), getpid();
 
 int maxulp=0;
 
-void check3(a, rnd_mode, Q) double a; unsigned char rnd_mode; double Q;
+void check3(double a, unsigned char rnd_mode, double Q)
 {
   mpfr_t q; double Q2; int ck,u;
 

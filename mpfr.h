@@ -21,14 +21,6 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 
-/* Cygnus does not know about *rand48 functions */
-#ifdef __CYGWIN32__
-#define mrand48 rand
-#define drand48 rand
-#define lrand48 rand
-#define srand48 srand
-#endif
-
 /* Definition of rounding modes */
 
 #define GMP_RNDN 0
@@ -36,41 +28,37 @@ MA 02111-1307, USA. */
 #define GMP_RNDU 2
 #define GMP_RNDD 3
 
-/* Definition of constants */
-
-#define LOG2 0.69314718055994528622 /* log(2) rounded to zero on 53 bits */
-
 /* Definitions of types and their semantics */
 
 typedef unsigned long int mp_prec_t; /* easy to change if necessary */
 typedef int mp_rnd_t;                /* preferred to char */
 
 typedef struct {  
-  mp_prec_t _mp_prec; /* WARNING : for the mpfr type, the precision */
+  mp_prec_t _mpfr_prec; /* WARNING : for the mpfr type, the precision */
                               /* should be understood as the number of BITS,*/
 			      /* not the number of mp_limb_t's. This means  */
 			      /* that the corresponding number of allocated
 				 limbs is >= ceil(_mp_prec/BITS_PER_MP_LIMB) */
-  mp_size_t _mp_size;         /* MPFR_ABSSIZE(.) is the number of allocated 
+  mp_size_t _mpfr_size;         /* MPFR_ABSSIZE(.) is the number of allocated 
 				 limbs the field _mp_d points to.
-				 The sign is that of _mp_size.
+				 The sign is that of _mpfr_size.
 				 The number 0 is such that _mp_d[k-1]=0
 				 where k = ceil(_mp_prec/BITS_PER_MP_LIMB) */
-  mp_exp_t _mp_exp; 
-  mp_limb_t *_mp_d;
+  mp_exp_t _mpfr_exp; 
+  mp_limb_t *_mpfr_d;
 }
 __mpfr_struct; 
 
 /*
    The number represented is
 
-    sign(_mp_size)*(_mp_d[k-1]/B+_mp_d[k-2]/B^2+...+_mp_d[0]/B^k)*2^_mp_exp
+    sign(_mpfr_size)*(_mpfr_d[k-1]/B+_mpfr_d[k-2]/B^2+...+_mpfr_d[0]/B^k)*2^_mpfr_exp
 
    where k=ceil(_mp_prec/BITS_PER_MP_LIMB) and B=2^BITS_PER_MP_LIMB.
 
    For the msb (most significant bit) normalized representation, we must have
-   _mp_d[k-1]>=B/2, unless the number is zero (in that case its sign is still
-   given by sign(_mp_size)).
+   _mpfr_d[k-1]>=B/2, unless the number is zero (in that case its sign is still
+   given by sign(_mpfr_size)).
 
    We must also have the last k*BITS_PER_MP_LIMB-_mp_prec bits set to zero.
 */
@@ -78,18 +66,6 @@ __mpfr_struct;
 typedef __mpfr_struct mpfr_t[1]; 
 typedef __mpfr_struct *mpfr_ptr; 
 typedef __gmp_const __mpfr_struct *mpfr_srcptr;
-
-/* macros for doubles, based on gmp union ieee_double_extract */
-
-typedef union ieee_double_extract Ieee_double_extract;
-
-#define DOUBLE_ISNANorINF(x) (((Ieee_double_extract *)&(x))->s.exp == 0x7ff)
-#define DOUBLE_ISINF(x) (DOUBLE_ISNANorINF(x) && \
-			 (((Ieee_double_extract *)&(x))->s.manl == 0) && \
-                         (((Ieee_double_extract *)&(x))->s.manh == 0))
-#define DOUBLE_ISNAN(x) (DOUBLE_ISNANorINF(x) && \
-			 ((((Ieee_double_extract *)&(x))->s.manl != 0) || \
-                         (((Ieee_double_extract *)&(x))->s.manh != 0)))
 
 /* Prototypes */
 
@@ -101,58 +77,20 @@ typedef union ieee_double_extract Ieee_double_extract;
 #endif
 #endif
 
-/* bit 31 of _mp_size is used for sign,
-   bit 30 of _mp_size is used for Nan flag,
-   bit 29 of _mp_size is used for Inf flag,
-   remaining bits are used to store the number of allocated limbs */
-#define MPFR_CLEAR_FLAGS(x) (((x) -> _mp_size &= ~(3 << 29)))
-#define MPFR_IS_NAN(x) (((x)->_mp_size >> 30)&1)
-#define MPFR_SET_NAN(x) ((x)->_mp_size |= (1<<30))
-#define MPFR_IS_INF(x) (((x)->_mp_size >> 29)&1)
-#define MPFR_SET_INF(x) ((x)->_mp_size |= (1<<29))
-#define MPFR_RESET_INF(x) ((x)->_mp_size &= (~0 - (1<<29)))
-#define MPFR_IS_FP(x) ((((x) -> _mp_size >> 29) & 3) == 0)
-#define MPFR_ABSSIZE(x) ((x)->_mp_size & ((1<<29)-1))
-#define MPFR_SIZE(x) ((x)->_mp_size)
-#define MPFR_EXP(x) ((x)->_mp_exp)
-#define MPFR_MANT(x) ((x)->_mp_d)
-#define MPFR_SIGN(x) (((x)->_mp_size >> 31) ? -1 : 1)
-#define MPFR_ISNONNEG(x) (MPFR_NOTZERO((x)) && MPFR_SIGN(x)>=0)
-#define MPFR_ISNEG(x) (MPFR_NOTZERO((x)) && MPFR_SIGN(x)==-1)
-#define MPFR_CHANGE_SIGN(x) (MPFR_SIZE(x) ^= (((mp_size_t)1)<<31))
-#define MPFR_SET_SAME_SIGN(x, y) if (MPFR_SIGN((x)) != MPFR_SIGN((y))) { MPFR_CHANGE_SIGN((x)); }
-#define MPFR_PREC(x) ((x)->_mp_prec)
-#define MPFR_NOTZERO(x) (MPFR_MANT(x)[(MPFR_PREC(x)-1)/BITS_PER_MP_LIMB])
-#define MPFR_IS_ZERO(x) ((MPFR_NOTZERO(x))==0)
-#define MPFR_SET_ZERO(x) (MPFR_MANT(x)[(MPFR_PREC(x)-1)/BITS_PER_MP_LIMB] = 0)
-#define mpfr_sgn(x) ((MPFR_NOTZERO(x)) ? MPFR_SIGN(x) : 0)
-
-/* reallocates the mantissa of x to q bits and sets the precision to q */
-#define _mpfr_realloc(x, q) { \
-    (x)->_mp_d = (mp_ptr) (*_mp_reallocate_func) \
-       ((x)->_mp_d, (MPFR_PREC(x)-1)>>3, (q+7)>>3); \
-    MPFR_PREC(x) = q; }
-
 #if defined (__cplusplus)
 extern "C" {
 #endif  
 
 void mpfr_init2 _PROTO ((mpfr_ptr, mp_prec_t));
 void mpfr_init _PROTO ((mpfr_ptr));
-int mpfr_round_raw _PROTO ((mp_limb_t *, mp_limb_t *, mp_prec_t, int,
-			     mp_prec_t, mp_rnd_t));
-int mpfr_round_raw2 _PROTO((mp_limb_t *, mp_prec_t, int, mp_rnd_t, mp_prec_t));
 void mpfr_round _PROTO ((mpfr_ptr, mp_rnd_t, mp_prec_t)); 
 int mpfr_can_round _PROTO ((mpfr_ptr, mp_prec_t, mp_rnd_t, mp_rnd_t,
 			    mp_prec_t));
-int mpfr_can_round_raw _PROTO ((mp_limb_t *, mp_prec_t, int, mp_prec_t, 
-				mp_rnd_t, mp_rnd_t, mp_prec_t));
 void mpfr_set_d _PROTO ((mpfr_ptr, double, mp_rnd_t)); 
 int mpfr_set_z _PROTO ((mpfr_ptr, mpz_srcptr, mp_rnd_t)); 
 mp_exp_t mpz_set_fr _PROTO ((mpz_ptr, mpfr_srcptr)); 
 void mpfr_set_q _PROTO ((mpfr_ptr, mpq_srcptr, mp_rnd_t)); 
 double mpfr_get_d _PROTO ((mpfr_srcptr)); 
-double mpfr_get_d2 _PROTO ((mpfr_srcptr, long)); 
 void mpfr_set_f _PROTO ((mpfr_ptr, mpf_srcptr, mp_rnd_t));
 void mpfr_set_si _PROTO ((mpfr_ptr, long, mp_rnd_t)); 
 void mpfr_set_ui _PROTO ((mpfr_ptr, unsigned long, mp_rnd_t)); 
@@ -166,15 +104,12 @@ void mpfr_set_str_raw _PROTO ((mpfr_ptr, char *));
 int mpfr_set_str _PROTO ((mpfr_ptr, char *, int, mp_rnd_t));
 int mpfr_init_set_str _PROTO ((mpfr_ptr, char *, int, mp_rnd_t));
 size_t mpfr_inp_str _PROTO ((mpfr_ptr, FILE *, int, mp_rnd_t));
-void mpfr_get_str_raw _PROTO ((char *, mpfr_srcptr));
 char* mpfr_get_str _PROTO ((char *, mp_exp_t *, int, size_t, mpfr_srcptr, mp_rnd_t));
 size_t mpfr_out_str _PROTO ((FILE *, int, size_t, mpfr_srcptr, mp_rnd_t));
 void mpfr_mul _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_pow_ui _PROTO ((mpfr_ptr, mpfr_srcptr, unsigned long int, mp_rnd_t));
 int mpfr_ui_pow_ui _PROTO ((mpfr_ptr, unsigned long int, unsigned long int,
 			     mp_rnd_t));
-mp_limb_t mpn_divrem_n _PROTO ((mp_limb_t *, mp_limb_t *, mp_limb_t *, mp_size_t));
-mp_size_t mpn_sqrtrem_new _PROTO ((mp_limb_t *, mp_limb_t *, mp_limb_t *, mp_size_t));
 void mpfr_div _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
 void mpfr_agm _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_sqrt _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
@@ -186,19 +121,15 @@ void mpfr_add_one_ulp _PROTO ((mpfr_ptr));
 void mpfr_sub _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
 void mpfr_ui_sub _PROTO ((mpfr_ptr, unsigned long, mpfr_srcptr, mp_rnd_t));
 void mpfr_reldiff _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
-void mpfr_set4 _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t, int));
 void mpfr_const_pi _PROTO ((mpfr_ptr, mp_rnd_t));
 void mpfr_const_log2 _PROTO ((mpfr_ptr, mp_rnd_t));
 int mpfr_log _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_exp _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
-int mpfr_zeta _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_sin_cos _PROTO ((mpfr_ptr, mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 void mpfr_mul_ui _PROTO((mpfr_ptr, mpfr_srcptr, unsigned long int, mp_rnd_t));
 void mpfr_set_machine_rnd_mode _PROTO ((mp_rnd_t));
-int mpfr_cmp3 _PROTO ((mpfr_srcptr, mpfr_srcptr, long int));
 int mpfr_cmp_ui_2exp _PROTO ((mpfr_srcptr, unsigned long int, int));
 int mpfr_cmp_si_2exp _PROTO ((mpfr_srcptr, long int, int));
-int mpfr_cmp2 _PROTO ((mpfr_srcptr, mpfr_srcptr));
 void mpfr_mul_2exp _PROTO((mpfr_ptr, mpfr_srcptr, unsigned long int,mp_rnd_t));
 void mpfr_div_2exp _PROTO((mpfr_ptr, mpfr_srcptr, unsigned long int,mp_rnd_t));
 void mpfr_set_prec _PROTO((mpfr_ptr, mp_prec_t));
@@ -213,12 +144,13 @@ int mpfr_div_ui _PROTO((mpfr_ptr, mpfr_srcptr, unsigned long int, mp_rnd_t));
 void mpfr_ui_div _PROTO((mpfr_ptr, unsigned long int, mpfr_srcptr, mp_rnd_t)); 
 mp_prec_t mpfr_get_prec _PROTO((mpfr_srcptr));
 void mpfr_set_default_rounding_mode _PROTO((mp_rnd_t));
-int mpfr_eq(mpfr_srcptr, mpfr_srcptr, unsigned long); 
+int mpfr_eq _PROTO((mpfr_srcptr, mpfr_srcptr, unsigned long));
 void mpfr_floor _PROTO((mpfr_ptr, mpfr_srcptr));
 void mpfr_trunc _PROTO((mpfr_ptr, mpfr_srcptr));
 void mpfr_ceil _PROTO((mpfr_ptr, mpfr_srcptr));
 void mpfr_extract _PROTO((mpz_ptr, mpfr_srcptr, unsigned int));
 void mpfr_swap _PROTO((mpfr_ptr, mpfr_ptr));
+void mpfr_dump _PROTO((mpfr_srcptr, mp_rnd_t));
 
 #if defined (__cplusplus)
 }
@@ -230,12 +162,6 @@ void mpfr_swap _PROTO((mpfr_ptr, mpfr_ptr));
 #define mpfr_abs(a,b,r) mpfr_set4(a,b,r,1)
 #define mpfr_cmp(b,c) mpfr_cmp3(b,c,1)
 
-#if (BITS_PER_MP_LIMB==32)
-#define MPFR_LIMBS_PER_DOUBLE 2
-#elif (BITS_PER_MP_LIMB==64)
-#define MPFR_LIMBS_PER_DOUBLE 1
-#endif
-
 #define mpfr_init_set_si(x, i, rnd) \
  do { mpfr_init(x); mpfr_set_si((x), (i), (rnd)); } while (0)
 #define mpfr_init_set_ui(x, i, rnd) \
@@ -246,4 +172,3 @@ void mpfr_swap _PROTO((mpfr_ptr, mpfr_ptr));
  do { mpfr_init(x); mpfr_set((x), (y), (rnd)); } while (0)
 #define mpfr_init_set_f(x, y, rnd) \
  do { mpfr_init(x); mpfr_set_f((x), (y), (rnd)); } while (0)
-
