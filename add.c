@@ -1,6 +1,6 @@
 /* mpfr_add -- add two floating-point numbers
 
-Copyright 1999, 2000, 2001, 2002, 2003 Free Software Foundation.
+Copyright 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation.
 Contributed by the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.
