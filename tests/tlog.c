@@ -28,11 +28,10 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 #include "mpfr-test.h"
 
-#define check2(a,rnd,res) check1(a,rnd,res,1,0)
 #define check(a,r) check2(a,r,0.0)
 
 static int
-check1 (double a, mp_rnd_t rnd_mode, double res1, int ck, int max_ulp)
+check2 (double a, mp_rnd_t rnd_mode, double res1)
 {
   mpfr_t ta, tres;
   double res2;
