@@ -754,6 +754,65 @@ precisions are exchanged too; in case the precisions are different,
 using a third auxiliary variable.
 @end deftypefun
 
+@deftypefun int mpfr_strtofr (mpfr_t @var{rop}, const char *@var{nptr}, char **@var{endptr}, unsigned int @var{base}, mp_rnd_t @var{rnd})
+
+ Read a floating point number from a string @var{nptr} in base @var{base}
+ (from 2 to 62), rounded in direction @var{rnd}. If successful the
+ result is stored in @var{rop} and @code{*@var{endptr}} points to the
+ character just after those parsed. If @var{str} doesn't start with a
+ valid number then @var{rop} is set to zero and the value of @var{nptr}
+ is stored in the location referenced by @var{endptr}.
+
+ Parsing follows the standard C @code{strtod} function.  This means optional
+ leading whitespace, an optional @code{+} or @code{-}, mantissa digits, and an
+ optional exponent consisting of an @code{e} or @code{E} (if 
+ @code{@var{base} <= 10}) or @code{@@}, an optional sign, and digits.  
+ A hex mantissa can be
+ given with a leading @code{0x} or @code{0}', in which case @code{p} or
+ @code{P} may introduce an optional binary exponent. A binary
+ mantissa can be given with a leading @code{0b} or @code{0B}, in which case
+ @code{e}, @code{E}, @code{p}, @code{P} or @code{@@} may introduce the 
+ binary exponent.
+
+ In addition @code{infinity}, @code{inf} (if @code{@var{base} <= 10} )
+ or @code{@@inf@@} with an optional sign, or @code{nan},
+ @code{nan(n-char-sequence)} (if @code{@var{base} <= 10} ), @code{@@nan@@}
+ or @code{@@nan@@(n-char-sequence)} all non case significant, can be given.
+ A @code{n-char-sequence} is a string containing only digits (0, 1, 2, ..., 9)
+ and non-digits (_, a, b, ..., z, A, B, ..., Z).
+
+ There must be at least one digit in the mantissa for the number to
+ be valid.  If an exponent has no digits it's ignored and parsing
+ stops after the mantissa.  If an @code{0x}, @code{0X}, @code{0b} or
+ @code{0B} is not followed by hexadecimal/binary digits, parsing stops
+ after the first @code{0}: 
+ the subject sequence  is  defined  as  the  longest  initial
+ subsequence  of  the  input  string, starting with the first
+ non-white-space character, that is  of  the  expected  form.
+ The  subject  sequence  contains  no characters if the input
+ string is not of the expected form.
+
+ Note that in the hex format the exponent @code{P} represents a power of 2,
+ whereas @code{@@} represents a power of the base (i.e. 16).
+
+ If the argument @var{base} is different from 0, it must be in the range 2
+ to 62. For bases up to 36, 
+ case is ignored; upper-case and lower-case letters have the same
+ value; for bases 37 to 62, upper-case letter represent the usual 
+ 10..35, while lower-case letter represent 36..61.
+
+ If @code{base} is 0, then it tries to indentify the used base: if the
+ mantissa begins with the '0x' prefix, it assumes that @var{base} is 16.
+ If it begins with '0b', it assumes that @var{base} is 2. Otherwise, it  
+ assumes it is 10.
+
+ It returns an usual ternary value.
+ If @var{endptr} is not @code{NULL}, a pointer to the character after the last 
+ character used in the conversion is stored in the location
+ referenced by @var{endptr}.
+
+@end deftypefun
+
 @node Combined Initialization and Assignment Functions, Conversion Functions, Assignment Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
 @cindex Combined initialization and assignment functions
