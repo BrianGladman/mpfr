@@ -85,12 +85,18 @@ mp_rnd_t rnd_mode;
   int logn;
   int tmp_factor;
   int tmpi;
-  if (MPFR_IS_NAN(x) || MPFR_IS_INF(x)) { MPFR_SET_NAN(sinus);  MPFR_SET_NAN(cosinus); return 1; }
+
+  if (MPFR_IS_NAN(x) || MPFR_IS_INF(x)) {
+    MPFR_SET_NAN(sinus);
+    MPFR_SET_NAN(cosinus);
+    return 1; /* inexact */
+  }
+
   if (!MPFR_NOTZERO(x)) { 
     mpfr_set_ui(sinus, 0, GMP_RNDN); 
     mpfr_set_ui(cosinus, 1, GMP_RNDN); 
-    return 0;
- }
+    return 0; /* exact results */
+  }
 
   prec_x = (int) ceil(log
 		      ((double) (MPFR_PREC(x)) / (double) BITS_PER_MP_LIMB)
@@ -231,7 +237,7 @@ mp_rnd_t rnd_mode;
   }
   mpz_clear(square);
   mpfr_clear(x_copy);
-  return 0;
+  return 1; /* inexact result */
 } 
 
 
