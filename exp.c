@@ -27,7 +27,7 @@ MA 02111-1307, USA. */
 
 /* #define DEBUG */
 
-extern int mpfr_exp2 _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t)); 
+extern int mpfr_exp_2 _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t)); 
 extern int mpfr_exp3 _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t)); 
 
 
@@ -88,7 +88,7 @@ mpfr_exp (y, x, rnd_mode)
     return 1; }
 
   if (precy > 13000) mpfr_exp3(y, x, rnd_mode); /* O(M(n) log(n)^2) */
-  else mpfr_exp_2 (y, x, rnd_mode); /* O(n^(1/3) M(n)) */
+  else mpfr_exp_2(y, x, rnd_mode); /* O(n^(1/3) M(n)) */
+
   return 1;
 }
-
