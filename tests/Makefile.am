@@ -6,6 +6,7 @@ EXTRA_DIST = tgeneric.c mpf_compat.h inp_str.data
 
 LDADD = libfrtests.a $(MPFR_LIBM) $(top_builddir)/libmpfr.a
 INCLUDES = -I$(top_srcdir) @INCLUDES@
+LOADLIBES=$(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) $(LDADD) $(LIBS)
 
 check_LIBRARIES = libfrtests.a
 libfrtests_a_SOURCES = memory.c rnd_mode.c tests.c cmp_str.c
