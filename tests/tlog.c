@@ -4,12 +4,13 @@
 #include <math.h>
 #include "gmp.h"
 #include "mpfr.h"
+#include "mpfr-impl.h"
 
 extern long int lrand48();
 extern int isnan();
 extern void srand48();
 
-double drand()
+double drand_log()
 {
   double d; long int *i;
 
@@ -20,19 +21,6 @@ double drand()
    } while ((d<1e-153)||(d>1e153));    /* to avoid underflow or overflow
 					 in double calculus in sqrt(u*v) */
   return d;
-}
-
-
-
-/* returns the number of ulp's between a and b */
-int ulp(a,b) double a,b;
-{
-  double eps=1.1102230246251565404e-16; /* 2^(-53) */
-  b = (a-b)/a;
-  if (b>0)
-    return (int) floor(b/eps);
-  else
-    return (int) ceil(b/eps);
 }
 
 #define check(a,r) check2(a,r,0.0)
@@ -56,11 +44,14 @@ int check1(double a, unsigned char rnd_mode, double res1, int bugs)
 
   if (bugs) {
     if (res1!=res2 && (!isnan(res1) || !isnan(res2))) {
-      if (ck) 
+      if (ck) {
 	printf("mpfr_log failed for    a=%1.20e, rnd_mode=%d\n",a,rnd_mode);
-      else
+	printf("correct result is        %1.20e\n mpfr_log        gives %1.20e (%d ulp)\n",res1,res2,ulp(res1,res2));
+      }
+      else {
 	printf("mpfr_log differs from libm.a for a=%1.20e, rnd_mode=%d\n",a,rnd_mode);
-      printf(" double calculus gives %1.20e\n mpfr_log        gives %1.20e (%d ulp)\n pari            gives \n \n",res1,res2,ulp(res1,res2));
+	printf(" double calculus gives %1.20e\n mpfr_log        gives %1.20e (%d ulp)\n",res1,res2,ulp(res1,res2));
+      }
     }
   }
   if (!isnan(res1) || !isnan(res2))
@@ -93,7 +84,7 @@ void check4(int N) {
   srand48(getpid());
 
   for(i=0;i<N;i++) {
-    d=drand();
+    d=drand_log();
     cur=check1(d,rand() % 4,0.0,0);
     if (cur<0)
       cur = -cur;
@@ -237,14 +228,14 @@ int main(int argc, char *argv[]) {
   check2(3.95906157687589643802e-109,GMP_RNDD,-2.49605768114704119399e+02);
   check2(2.73874914516503004113e-02,GMP_RNDD,-3.59766888618655977794e+00);
   check2(9.18989072589566467669e-17,GMP_RNDZ,-3.69258425351464083519e+01);
-  check2(7.70603645360819104595e+54,GMP_RNDZ,1.26381598998419917734e+02);
+  check2(dbl(2830750724514701.0,131),GMP_RNDZ,dbl(1111664301085491.0,-43));
   check2(1.74827399630587801934e-23,GMP_RNDZ,-5.24008281254547156891e+01);
   check(4.35302958401482307665e+22,GMP_RNDD);
   check(9.70791868689332915209e+00,GMP_RNDD);
   check(2.22183639799464011100e-01,GMP_RNDN);
   check(2.27313466156682375540e+00,GMP_RNDD);
   check(6.58057413965851156767e-01,GMP_RNDZ);
-  check2(7.34302197248998461006e+43,GMP_RNDZ,1.01004909469513179942e+02);
+  check2(7.34302197248998461006e+43,GMP_RNDZ,dbl(7107588635148285.0,-46));
   check(6.09969788341579732815e+00,GMP_RNDD);
   check2(8.94529798779875738679e+82,GMP_RNDD,1.91003105655254444172e+02);
   check(1.68775280934272742250e+00,GMP_RNDZ); 
