@@ -28,10 +28,7 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-test.h"
 
-extern int isnan();
 double drand_agm _PROTO((void)); 
-double max _PROTO((double,double)); 
-double min _PROTO((double,double));
 double dagm _PROTO((double, double)); 
 void check4 _PROTO((double, double, unsigned char, double)); 
 void check_large _PROTO((void)); 
@@ -53,27 +50,14 @@ double drand_agm()
   return d;
 }
 
-
-double max(double a,double b) {
-  if (a>=b)
-    return a;
-  return b;
-}
-
-double min(double a,double b) {
-   if (b>=a)
-    return a;
-  return b;
-}
-
-double dagm(double a, double b) { 
-  double u,v,tmpu,tmpv;
+double dagm (double a, double b) { 
+  double u, v, tmpu, tmpv;
   
   if ((isnan(a))||(isnan(b)))
     return a+b;
 
-  tmpv=max(a,b);
-  tmpu=min(a,b);
+  tmpv=MAX(a,b);
+  tmpu=MIN(a,b);
 
   do
     {
@@ -90,7 +74,7 @@ double dagm(double a, double b) {
 
 #define check(a,b,r) check4(a,b,r,0.0)
 
-void check4(double a, double b, unsigned char rnd_mode, double res1)
+void check4 (double a, double b, mp_rnd_t rnd_mode, double res1)
 {
   mpfr_t ta, tb, tres;
   double res2;
@@ -121,7 +105,7 @@ if (ck==0) printf("%1.20e\n", res1);
   mpfr_clear(ta); mpfr_clear(tb); mpfr_clear(tres); 
 }
 
-void check_large()
+void check_large ()
 {
   mpfr_t a, b, agm;
 
@@ -136,7 +120,8 @@ void check_large()
   mpfr_clear(a); mpfr_clear(b); mpfr_clear(agm);
 }
 
-void slave(int N, int p) {
+void slave (int N, int p)
+{
   int i;
   double a,b;
   mpfr_t ta, tb, tres;
