@@ -66,7 +66,7 @@ PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
 
-check_PROGRAMS = reuse tabs tadd tagm tcan_round tcmp tcmp2 tcmp_ui tdiv tdiv_ui tdump teq texp tget_str tlog tlog2 tmul tmul_2exp tmul_ui tout_str tpi tpow trandom tround tset_d tset_f tset_q tset_si tset_str tset_z tsqrt tsqrt_ui tui_div tui_sub tsin_cos tswap ttrunc tisnan tget_d tatan tcosh tsinh ttanh tacosh tasinh tatanh thyperbolic texp2 tfactorial tsub tasin
+check_PROGRAMS = reuse tabs tadd tagm tcan_round tcmp tcmp2 tcmp_ui tdiv tdiv_ui tdump teq texp tget_str tlog tlog2 tmul tmul_2exp tmul_ui tout_str tpi tpow trandom tround tset_d tset_f tset_q tset_si tset_str tset_z tsqrt tsqrt_ui tui_div tui_sub tsin_cos tswap ttrunc tisnan tget_d tatan tcosh tsinh ttanh tacosh tasinh tatanh thyperbolic texp2 tfactorial tsub tasin teuler
 
 LDADD = $(top_builddir)/libmpfr.a  @LDADD@
 INCLUDES = @INCLUDES@ -I$(top_srcdir)
@@ -331,6 +331,11 @@ tasin_OBJECTS =  tasin.o
 tasin_LDADD = $(LDADD)
 tasin_DEPENDENCIES =  $(top_builddir)/libmpfr.a
 tasin_LDFLAGS = 
+teuler_SOURCES = teuler.c
+teuler_OBJECTS =  teuler.o
+teuler_LDADD = $(LDADD)
+teuler_DEPENDENCIES =  $(top_builddir)/libmpfr.a
+teuler_LDFLAGS = 
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
@@ -345,16 +350,17 @@ DEP_FILES =  .deps/reuse.P .deps/tabs.P .deps/tacosh.P .deps/tadd.P \
 .deps/tagm.P .deps/tasin.P .deps/tasinh.P .deps/tatan.P .deps/tatanh.P \
 .deps/tcan_round.P .deps/tcmp.P .deps/tcmp2.P .deps/tcmp_ui.P \
 .deps/tcosh.P .deps/tdiv.P .deps/tdiv_ui.P .deps/tdump.P .deps/teq.P \
-.deps/texp.P .deps/texp2.P .deps/tfactorial.P .deps/tget_d.P \
-.deps/tget_str.P .deps/thyperbolic.P .deps/tisnan.P .deps/tlog.P \
-.deps/tlog2.P .deps/tmul.P .deps/tmul_2exp.P .deps/tmul_ui.P \
-.deps/tout_str.P .deps/tpi.P .deps/tpow.P .deps/trandom.P \
-.deps/tround.P .deps/tset_d.P .deps/tset_f.P .deps/tset_q.P \
-.deps/tset_si.P .deps/tset_str.P .deps/tset_z.P .deps/tsin_cos.P \
-.deps/tsinh.P .deps/tsqrt.P .deps/tsqrt_ui.P .deps/tsub.P .deps/tswap.P \
-.deps/ttanh.P .deps/ttrunc.P .deps/tui_div.P .deps/tui_sub.P
-SOURCES = reuse.c tabs.c tadd.c tagm.c tcan_round.c tcmp.c tcmp2.c tcmp_ui.c tdiv.c tdiv_ui.c tdump.c teq.c texp.c tget_str.c tlog.c tlog2.c tmul.c tmul_2exp.c tmul_ui.c tout_str.c tpi.c tpow.c trandom.c tround.c tset_d.c tset_f.c tset_q.c tset_si.c tset_str.c tset_z.c tsqrt.c tsqrt_ui.c tui_div.c tui_sub.c tsin_cos.c tswap.c ttrunc.c tisnan.c tget_d.c tatan.c tcosh.c tsinh.c ttanh.c tacosh.c tasinh.c tatanh.c thyperbolic.c texp2.c tfactorial.c tsub.c tasin.c
-OBJECTS = reuse.o tabs.o tadd.o tagm.o tcan_round.o tcmp.o tcmp2.o tcmp_ui.o tdiv.o tdiv_ui.o tdump.o teq.o texp.o tget_str.o tlog.o tlog2.o tmul.o tmul_2exp.o tmul_ui.o tout_str.o tpi.o tpow.o trandom.o tround.o tset_d.o tset_f.o tset_q.o tset_si.o tset_str.o tset_z.o tsqrt.o tsqrt_ui.o tui_div.o tui_sub.o tsin_cos.o tswap.o ttrunc.o tisnan.o tget_d.o tatan.o tcosh.o tsinh.o ttanh.o tacosh.o tasinh.o tatanh.o thyperbolic.o texp2.o tfactorial.o tsub.o tasin.o
+.deps/teuler.P .deps/texp.P .deps/texp2.P .deps/tfactorial.P \
+.deps/tget_d.P .deps/tget_str.P .deps/thyperbolic.P .deps/tisnan.P \
+.deps/tlog.P .deps/tlog2.P .deps/tmul.P .deps/tmul_2exp.P \
+.deps/tmul_ui.P .deps/tout_str.P .deps/tpi.P .deps/tpow.P \
+.deps/trandom.P .deps/tround.P .deps/tset_d.P .deps/tset_f.P \
+.deps/tset_q.P .deps/tset_si.P .deps/tset_str.P .deps/tset_z.P \
+.deps/tsin_cos.P .deps/tsinh.P .deps/tsqrt.P .deps/tsqrt_ui.P \
+.deps/tsub.P .deps/tswap.P .deps/ttanh.P .deps/ttrunc.P .deps/tui_div.P \
+.deps/tui_sub.P
+SOURCES = reuse.c tabs.c tadd.c tagm.c tcan_round.c tcmp.c tcmp2.c tcmp_ui.c tdiv.c tdiv_ui.c tdump.c teq.c texp.c tget_str.c tlog.c tlog2.c tmul.c tmul_2exp.c tmul_ui.c tout_str.c tpi.c tpow.c trandom.c tround.c tset_d.c tset_f.c tset_q.c tset_si.c tset_str.c tset_z.c tsqrt.c tsqrt_ui.c tui_div.c tui_sub.c tsin_cos.c tswap.c ttrunc.c tisnan.c tget_d.c tatan.c tcosh.c tsinh.c ttanh.c tacosh.c tasinh.c tatanh.c thyperbolic.c texp2.c tfactorial.c tsub.c tasin.c teuler.c
+OBJECTS = reuse.o tabs.o tadd.o tagm.o tcan_round.o tcmp.o tcmp2.o tcmp_ui.o tdiv.o tdiv_ui.o tdump.o teq.o texp.o tget_str.o tlog.o tlog2.o tmul.o tmul_2exp.o tmul_ui.o tout_str.o tpi.o tpow.o trandom.o tround.o tset_d.o tset_f.o tset_q.o tset_si.o tset_str.o tset_z.o tsqrt.o tsqrt_ui.o tui_div.o tui_sub.o tsin_cos.o tswap.o ttrunc.o tisnan.o tget_d.o tatan.o tcosh.o tsinh.o ttanh.o tacosh.o tasinh.o tatanh.o thyperbolic.o texp2.o tfactorial.o tsub.o tasin.o teuler.o
 
 all: all-redirect
 .SUFFIXES:
@@ -595,6 +601,10 @@ tsub: $(tsub_OBJECTS) $(tsub_DEPENDENCIES)
 tasin: $(tasin_OBJECTS) $(tasin_DEPENDENCIES)
 	@rm -f tasin
 	$(LINK) $(tasin_LDFLAGS) $(tasin_OBJECTS) $(tasin_LDADD) $(LIBS)
+
+teuler: $(teuler_OBJECTS) $(teuler_DEPENDENCIES)
+	@rm -f teuler
+	$(LINK) $(teuler_LDFLAGS) $(teuler_OBJECTS) $(teuler_LDADD) $(LIBS)
 
 tags: TAGS
 
