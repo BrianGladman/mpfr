@@ -93,7 +93,6 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_init2 (tmp, prec);
   mpfr_init2 (arcc, prec);
 
-  int count = 1;
   for (;;)
     {
       /* acos(x) = Pi/2 - asin(x) = Pi/2 - atan(x/sqrt(1-x^2)) */
@@ -112,13 +111,7 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mp_rnd_t rnd_mode)
       prec += BITS_PER_MP_LIMB;
       mpfr_set_prec (tmp, prec);
       mpfr_set_prec (arcc, prec);
-      count ++;
     }
-  /*  static double xx = 0;
-  double d = mpfr_get_d1 (x);
-  if (d != xx)
-    printf ("C%d(%lu) ", count, prec), mpfr_dump (x);
-    xx = d; */
 
   inexact = mpfr_set (acos, arcc, rnd_mode);
   mpfr_clear (tmp);
