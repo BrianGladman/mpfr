@@ -73,10 +73,30 @@ AC_TRY_COMPILE([
      AC_MSG_ERROR(gmp.h or gmp-impl.h or config.h or gmp-mparam.h or longlong.h may be missing ${with_gmp_include:+in $with_gmp_include})]
 )
 
+dnl Check BITS_PER_MP_LIMB and BYTES_PER_MP_LIMB
+AC_MSG_CHECKING(for valid BITS_PER_MP_LIMB and BYTES_PER_MP_LIMB)
+AC_TRY_RUN([
+#include <limits.h>
+#include "gmp.h"
+#include "gmp-impl.h"
+int main()
+{
+  return BITS_PER_MP_LIMB == BYTES_PER_MP_LIMB * CHAR_BIT
+         && sizeof(mp_limb_t) == BYTES_PER_MP_LIMB ? 0 : 1;
+}
+], AC_MSG_RESULT(yes),
+  [AC_MSG_RESULT(no)
+dnl do not use the AC_MSG_ERROR macro because of message truncation...
+{ echo "configure: error: BITS_PER_MP_LIMB and/or BYTES_PER_MP_LIMB are incorrect.
+You probably need to change some of the GMP or MPFR compile options:
+MPFR doesn't currently do as many architecture checks as GMP, so the
+default target architecture may be different, hence the error." 1>&2
+  exit 1; }])
+
 dnl Check random functions
 AC_MSG_CHECKING(for rand48 functions)
 AC_TRY_RUN([#include <stdlib.h>
-main() { long int l = lrand48 (); return 0; }],
+int main() { long int l = lrand48 (); return 0; }],
   [AC_MSG_RESULT(yes)
    AC_DEFINE(HAVE_RAND48)],
   AC_MSG_RESULT(no),
@@ -94,7 +114,7 @@ AC_TRY_CPP([#include <fenv.h>],
 dnl Check whether 0/0, 1/0, -1/0 are valid expressions
 AC_MSG_CHECKING(for 0/0 as a valid expression)
 AC_TRY_RUN([#include <math.h>
-main() { double x = 0.0/0.0; exit (0); }],
+int main() { double x = 0.0/0.0; exit (0); }],
   [AC_MSG_RESULT(yes)
    AC_DEFINE(HAVE_INFS)],
   AC_MSG_RESULT(no),
@@ -106,9 +126,9 @@ AC_MSG_CHECKING(for denormalized numbers)
 AC_TRY_RUN([
 #include <math.h>
 #include <stdio.h>
-main() { double x = 2.22507385850720138309e-308;
-         fprintf (stderr, "%e\n", x / 2.0);
-         exit (2.0 * (x / 2.0) != x);}],
+int main() { double x = 2.22507385850720138309e-308;
+             fprintf (stderr, "%e\n", x / 2.0);
+             exit (2.0 * (x / 2.0) != x);}],
   [AC_MSG_RESULT(yes)
    AC_DEFINE(HAVE_DENORMS)],
   AC_MSG_RESULT(no),
@@ -118,7 +138,7 @@ main() { double x = 2.22507385850720138309e-308;
 dnl Check for extended precision
 AC_MSG_CHECKING(for extended precision)
 AC_TRY_RUN([
-main()
+int main()
 {
   double c, d, dj;
   int j;
