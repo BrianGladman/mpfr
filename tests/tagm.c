@@ -25,11 +25,9 @@ MA 02111-1307, USA. */
 #include <sys/types.h>
 #include <unistd.h>
 #include "gmp.h"
-#include "mpfr-impl.h"
 #include "mpfr.h"
+#include "mpfr-impl.h"
 
-extern long int lrand48();
-extern void srand48();
 extern int isnan();
 
 double drand_agm()
