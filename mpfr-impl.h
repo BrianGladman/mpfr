@@ -19,6 +19,11 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+#ifndef HAVE_STRCASECMP
+#define strcasecmp mpfr_strcasecmp
+#define strncasecmp mpfr_strncasecmp
+#endif
+
 /* Definition of MPFR_LIMB_HIGHBIT */
 
 #ifdef GMP_LIMB_HIGHBIT

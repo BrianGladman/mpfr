@@ -1,6 +1,7 @@
 /* Copyright (C) 1991, 1992, 1995, 2002 Free Software Foundation, Inc.
 This file was part of the GNU C Library. Modified by kb@mail.tug.org to
-avoid glibc-isms. Modified by Vincent Lefevre (-> ISO C prototypes).
+avoid glibc-isms. Modified by Vincent Lefevre (-> ISO C prototypes and
+mpfr_ prefix).
 
 This file is free software; you can redistribute it and/or
 modify it under the terms of the GNU Library General Public License as
@@ -31,14 +32,14 @@ Boston, MA 02111-1307, USA.  */
 
 #include <ctype.h>
 
-int strcasecmp (const char *, const char *);
-int strncasecmp (const char *, const char *, size_t);
+int mpfr_strcasecmp (const char *, const char *);
+int mpfr_strncasecmp (const char *, const char *, size_t);
 
 /* Compare S1 and S2, ignoring case, returning less than, equal to or
    greater than zero if S1 is lexiographically less than,
    equal to or greater than S2.  */
 int
-strcasecmp (const char *s1, const char *s2)
+mpfr_strcasecmp (const char *s1, const char *s2)
 {
   register const unsigned char *p1 = (const unsigned char *) s1;
   register const unsigned char *p2 = (const unsigned char *) s2;
@@ -60,7 +61,7 @@ strcasecmp (const char *s1, const char *s2)
 }
 
 int
-strncasecmp (const char *s1, const char *s2, size_t n)
+mpfr_strncasecmp (const char *s1, const char *s2, size_t n)
 {
   register const unsigned char *p1 = (const unsigned char *) s1;
   register const unsigned char *p2 = (const unsigned char *) s2;
