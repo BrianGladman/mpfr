@@ -19,6 +19,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+#include <math.h> /* for sqrt in dagm() */
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -55,20 +56,19 @@ dagm (double a, double b)
   if ((Isnan(a)) || (Isnan(b)))
     return a + b;
 
-  tmpv=MAX(a,b);
-  tmpu=MIN(a,b);
+  tmpv = MAX(a,b);
+  tmpu = MIN(a,b);
 
   do
     {
-      u=tmpu;
-      v=tmpv;
-      tmpu=sqrt(u*v);
-      tmpv=(u+v)/2.0;
+      u = tmpu;
+      v = tmpv;
+      tmpu = sqrt (u * v);
+      tmpv = (u + v) / 2.0;
     }
-  while (!(((tmpu==u)&&(tmpv==v))||(ulp(u,v)==0))); 
+  while (!(((tmpu==u) && (tmpv==v)) || (ulp(u,v) == 0))); 
 
-  /*  printf("difference : %i ulp\n",ulp(u,v)); */
-	 return u;
+  return u;
 }
 
 #define check(a,b,r) check4(a,b,r,0.0)
