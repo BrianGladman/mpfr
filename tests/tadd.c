@@ -283,7 +283,7 @@ void check64 ()
   }
   if ((MPFR_MANT(u)[(MPFR_PREC(u)-1)/mp_bits_per_limb] & 
       ((mp_limb_t)1<<(mp_bits_per_limb-1)))==0) {
-    printf("Error in mpfr_sub: result is not msb-normalized\n"); exit(1);
+    printf("Error in mpfr_sub: result is not msb-normalized (1)\n"); exit(1);
   }
   mpfr_set_prec(x, 65); mpfr_set_prec(t, 65); mpfr_set_prec(u, 65);
   mpfr_set_str_raw(x, "0.10011010101000110101010000000011001001001110001011101011111011101E623");
@@ -336,9 +336,35 @@ void check64 ()
   mpfr_sub(u, x, t, GMP_RNDN);
   if ((MPFR_MANT(u)[(MPFR_PREC(u)-1)/mp_bits_per_limb] & 
       ((mp_limb_t)1<<(mp_bits_per_limb-1)))==0) {
-    printf("Error in mpfr_sub: result is not msb-normalized\n"); exit(1);
+    printf("Error in mpfr_sub: result is not msb-normalized (2)\n"); exit(1);
   }
 
+  /* bug found by Nathalie Revol, 21 March 2001 */
+  mpfr_set_prec (x, 65);
+  mpfr_set_prec (t, 65);
+  mpfr_set_prec (u, 65);
+  mpfr_set_str_raw (x, "0.11100100101101001100111011111111110001101001000011101001001010010E-35");
+  mpfr_set_str_raw (t, "0.10000000000000000000000000000000000001110010010110100110011110000E1");
+  mpfr_sub (u, t, x, GMP_RNDU);
+  if ((MPFR_MANT(u)[(MPFR_PREC(u)-1)/mp_bits_per_limb] & 
+      ((mp_limb_t)1<<(mp_bits_per_limb-1)))==0) {
+    fprintf(stderr, "Error in mpfr_sub: result is not msb-normalized (3)\n");
+    exit (1);
+  }
+
+  /* bug found by Fabrice Rouillier, 27 Mar 2001 */
+  mpfr_set_prec (x, 107);
+  mpfr_set_prec (t, 107);
+  mpfr_set_prec (u, 107);
+  mpfr_set_str_raw (x, "0.10111001001111010010001000000010111111011011011101000001001000101000000000000000000000000000000000000000000E315");
+  mpfr_set_str_raw (t, "0.10000000000000000000000000000000000101110100100101110110000001100101011111001000011101111100100100111011000E350");
+  mpfr_sub (u, x, t, GMP_RNDU);
+  if ((MPFR_MANT(u)[(MPFR_PREC(u)-1)/mp_bits_per_limb] & 
+      ((mp_limb_t)1<<(mp_bits_per_limb-1)))==0) {
+    fprintf(stderr, "Error in mpfr_sub: result is not msb-normalized (4)\n");
+    exit (1);
+  }
+  
   /* checks that NaN flag is correctly reset */
   mpfr_set_d (t, 1.0, GMP_RNDN);
   mpfr_set_d (u, 1.0, GMP_RNDN);
