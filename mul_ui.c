@@ -28,9 +28,9 @@ MA 02111-1307, USA. */
 
 void
 #if __STDC__
-mpfr_mul_ui(mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
+mpfr_mul_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 #else
-mpfr_mul_ui(y, x, u, rnd_mode)
+mpfr_mul_ui (y, x, u, rnd_mode)
      mpfr_ptr y;
      mpfr_srcptr x;
      unsigned long int u;
@@ -82,8 +82,7 @@ mpfr_mul_ui(y, x, u, rnd_mode)
   else
     dif = ysize - xsize;
 
-  carry = mpn_mul_1 (my + dif, MPFR_MANT(x), xsize, u);
-  MPN_ZERO(my, dif);
+  carry = mpn_mul_1 (my, MPFR_MANT(x), xsize, u);
 
   /* WARNING: count_leading_zeros is undefined for carry=0 */
   if (carry)
@@ -136,7 +135,7 @@ mpfr_mul_ui(y, x, u, rnd_mode)
       my[ysize - 1] |= (carry << cnt); 
     }
   MPFR_EXP(y) = ex + BITS_PER_MP_LIMB - cnt; 
-  if (ysize < xsize) MPN_COPY(old_my, my, ysize);
+  if (ysize < xsize) MPN_COPY(old_my, my + xsize - ysize, ysize);
   /* set sign */
   if (MPFR_SIGN(y) * MPFR_SIGN(x) < 0) MPFR_CHANGE_SIGN(y);
   TMP_FREE(marker);
