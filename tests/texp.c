@@ -311,9 +311,15 @@ check_special ()
       mpfr_dump (y);
       exit (1);
     }
+  
   mpfr_set_emin (MPFR_EMIN_MIN);
   mpfr_set_emax (MPFR_EMAX_MAX);
 
+  /* Check for overflow producing a segfault with HUGE exponent */
+  mpfr_set_ui  (x, 3, GMP_RNDN);
+  mpfr_mul_2ui (x, x, 32, GMP_RNDN);
+  mpfr_exp (y, x, GMP_RNDN); /* Can't test return value: May overflow or not*/
+  
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);
