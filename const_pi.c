@@ -27,7 +27,7 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-static int mpfr_aux_pi _PROTO ((mpfr_ptr, mpz_srcptr, int, int));
+static int mpfr_aux_pi _PROTO ((mpfr_ptr, mpz_srcptr, long, int));
 static int mpfr_pi_machin3 _PROTO ((mpfr_ptr, mp_rnd_t));
 
 #define A
@@ -69,27 +69,27 @@ mpfr_pi_machin3 (mpfr_ptr mylog, mp_rnd_t rnd_mode)
       mpfr_init2(result, prec_x);
       mpz_set_si(cst, -1);
 
-      mpfr_aux_pi(tmp1, cst, 268*268, prec - 4);
+      mpfr_aux_pi(tmp1, cst, 268L*268L, prec - 4);
       mpfr_div_ui(tmp1, tmp1, 268, GMP_RNDD);
       mpfr_mul_ui(tmp1, tmp1, 61, GMP_RNDD);
 
-      mpfr_aux_pi(tmp2, cst, 343*343, prec - 4);
+      mpfr_aux_pi(tmp2, cst, 343L*343L, prec - 4);
       mpfr_div_ui(tmp2, tmp2, 343, GMP_RNDD);
       mpfr_mul_ui(tmp2, tmp2, 122, GMP_RNDD);
 
-      mpfr_aux_pi(tmp3, cst, 557*557, prec - 4);
+      mpfr_aux_pi(tmp3, cst, 557L*557L, prec - 4);
       mpfr_div_ui(tmp3, tmp3, 557, GMP_RNDD);
       mpfr_mul_ui(tmp3, tmp3, 115, GMP_RNDD);
 
-      mpfr_aux_pi(tmp4, cst, 1068*1068, prec - 4);
+      mpfr_aux_pi(tmp4, cst, 1068L*1068L, prec - 4);
       mpfr_div_ui(tmp4, tmp4, 1068, GMP_RNDD);
       mpfr_mul_ui(tmp4, tmp4, 32, GMP_RNDD);
 
-      mpfr_aux_pi(tmp5, cst, 3458*3458, prec - 4);
+      mpfr_aux_pi(tmp5, cst, 3458L*3458L, prec - 4);
       mpfr_div_ui(tmp5, tmp5, 3458, GMP_RNDD);
       mpfr_mul_ui(tmp5, tmp5, 83, GMP_RNDD);
 
-      mpfr_aux_pi(tmp6, cst, 27493*27493, prec - 4);
+      mpfr_aux_pi(tmp6, cst, 27493L*27493L, prec - 4);
       mpfr_div_ui(tmp6, tmp6, 27493, GMP_RNDD);
       mpfr_mul_ui(tmp6, tmp6, 44, GMP_RNDD);
 
