@@ -1,6 +1,6 @@
 /* Test file for mpfr_sqrt.
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 1999, 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -37,7 +37,8 @@ void check_float _PROTO((void));
 void special _PROTO((void));
 void check_inexact _PROTO((mp_prec_t));
 
-void check3(double a, mp_rnd_t rnd_mode, double Q)
+void
+check3 (double a, mp_rnd_t rnd_mode, double Q)
 {
   mpfr_t q; double Q2; int ck,u;
 

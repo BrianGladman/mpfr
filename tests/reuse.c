@@ -1,6 +1,6 @@
 /* Test file for in-place operations.
 
-Copyright (C) 2000 Free Software Foundation.
+Copyright (C) 2000, 2001 Free Software Foundation.
 
 This file is part of the MPFR Library.
 

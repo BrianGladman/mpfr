@@ -1,6 +1,6 @@
 /* Test file for mpfr_abs.
 
-Copyright (C) 2000 Free Software Foundation.
+Copyright (C) 2000, 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 

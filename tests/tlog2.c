@@ -1,6 +1,6 @@
 /* Test file for mpfr_const_log2.
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 1999, 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -27,9 +27,11 @@ MA 02111-1307, USA. */
 /* tlog2 [prec] [rnd] [0 = no print] */
 
 int
-main(int argc, char *argv[])
+main (int argc, char *argv[])
 {
-  mpfr_t x; int p; unsigned char rnd;
+  mpfr_t x;
+  int p;
+  unsigned char rnd;
 
   p = (argc>1) ? atoi(argv[1]) : 53;
   rnd = (argc>2) ? atoi(argv[2]) : GMP_RNDZ;

@@ -1,6 +1,6 @@
 /* Test file for the various mpfr_random fonctions.
 
-Copyright (C) 1999-2000 Free Software Foundation.
+Copyright (C) 1999, 2000, 2001 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
