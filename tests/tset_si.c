@@ -4,6 +4,9 @@
 #include "mpfr.h"
 #include "time.h"
 
+extern long int random();
+extern void srandom();
+
 int
 main(int argc, char **argv)
 {
@@ -21,7 +24,7 @@ main(int argc, char **argv)
       mpfr_set_si(x, z, GMP_RNDZ); 
       d = (int)mpfr_get_d(x);
       if (d != z)
-	printf("Expected %ld got %ld\n", z, d); 
+	fprintf(stderr, "Expected %ld got %ld\n", z, d); exit(1);
       
     }
 
@@ -31,7 +34,7 @@ main(int argc, char **argv)
       mpfr_set_ui(x, zl, GMP_RNDZ); 
       dl = (unsigned int) mpfr_get_d(x);
       if (dl != zl)
-	printf("Expected %lu got %lu\n", zl, dl); 
+	fprintf(stderr, "Expected %lu got %lu\n", zl, dl); exit(1);
     }
 
   mpfr_clear(x); 
