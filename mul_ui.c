@@ -83,10 +83,12 @@ mpfr_mul_ui (y, x, u, rnd_mode)
       dif = 0;
     }
   else
-    dif = ysize - xsize;
+    {
+      dif = ysize - xsize;
+      MPN_ZERO (my, dif);
+    }
 
   carry = mpn_mul_1 (my + dif, MPFR_MANT(x), xsize, u);
-  MPN_ZERO (my, dif);
 
   /* WARNING: count_leading_zeros is undefined for carry=0 */
   if (carry)
@@ -94,6 +96,9 @@ mpfr_mul_ui (y, x, u, rnd_mode)
   else
     cnt = BITS_PER_MP_LIMB;
   /* BITS_PER_MP_LIMB - cnt is the number of significant bits in the carry */
+
+  /* the first (BITS_PER_MP_LIMB-cnt) bits of the result are in carry,
+     the remaining bits are in my[dif+xsize-1] .. my[dif] */
 
   /* Warning: if all significant bits are in the carry, one has to 
      be careful */
@@ -116,11 +121,19 @@ mpfr_mul_ui (y, x, u, rnd_mode)
       carry = 0; cnt = BITS_PER_MP_LIMB;
     }
 
-  /* Warning: the number of limbs used by x and the lower part
+  /* as we already have (BITS_PER_MP_LIMB-cnt) bits in carry,
+     we need only prec(y) - (BITS_PER_MP_LIMB-cnt) more bits
+     from those in my[dif+xsize-1] .. my[dif],
+     and we want to store them in my[ysize-1] .. my[ysize].
+     Warning: the number of limbs used by x and the lower part
      of y may differ */
-  sh = dif + xsize - (MPFR_PREC(y) + cnt - 1) / BITS_PER_MP_LIMB;
+  sh = ysize - (MPFR_PREC(y) + cnt - 1) / BITS_PER_MP_LIMB;
   c = mpfr_round_raw (my + sh, my + dif, MPFR_PREC(x), (MPFR_SIGN(x) < 0), 
 		       MPFR_PREC(y) - BITS_PER_MP_LIMB + cnt, rnd_mode);
+
+  /* now the high (BITS_PER_MP_LIMB-cnt) bits of the result are in carry,
+     and the remaining (yprec-BITS_PER_MP_LIMB+cnt) ones in
+     my[ysize-1] .. my[sh] */
 
   /* If cnt = 1111111111111 and c = 1 we shall get depressed */
   if (c && (carry == (ONE << (cnt ? BITS_PER_MP_LIMB - cnt : 0)) 
@@ -133,13 +146,15 @@ mpfr_mul_ui (y, x, u, rnd_mode)
   else
     {
       /* Warning: mpn_rshift is undefined for shift=0 */
-      if (cnt!=BITS_PER_MP_LIMB)
-	mpn_rshift(my, my, ysize, BITS_PER_MP_LIMB - cnt); 
-      my[ysize - 1] |= (carry << cnt); 
+      if (cnt != BITS_PER_MP_LIMB)
+	mpn_rshift(my, my, ysize, BITS_PER_MP_LIMB - cnt);
+      my[ysize - 1] |= carry << cnt;
     }
   MPFR_EXP(y) = ex + BITS_PER_MP_LIMB - cnt; 
-  if (ysize < xsize) MPN_COPY(old_my, my + xsize - ysize, ysize);
+  if (ysize < xsize)
+    MPN_COPY(old_my, my, ysize);
   /* set sign */
-  if (MPFR_SIGN(y) * MPFR_SIGN(x) < 0) MPFR_CHANGE_SIGN(y);
+  if (MPFR_SIGN(y) * MPFR_SIGN(x) < 0)
+    MPFR_CHANGE_SIGN(y);
   TMP_FREE(marker);
 }
