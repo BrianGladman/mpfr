@@ -28,8 +28,6 @@ mpfr_get_si (mpfr_srcptr f, mp_rnd_t rnd)
   mp_prec_t prec;
   long s;
   mpfr_t x;
-  mp_size_t n;
-  mp_exp_t exp;
 
   if (!mpfr_fits_slong_p (f, rnd) || MPFR_IS_ZERO(f))
     return (long) 0;
@@ -46,11 +44,15 @@ mpfr_get_si (mpfr_srcptr f, mp_rnd_t rnd)
     s = 0;
   else
     {
+      mp_limb_t a;
+      mp_size_t n;
+      mp_exp_t exp;
+
       /* now the result is in the most significant limb of x */
       exp = MPFR_GET_EXP (x); /* since |x| >= 1, exp >= 1 */
       n = MPFR_LIMB_SIZE(x);
-      s = MPFR_MANT(x)[n - 1] >> (BITS_PER_MP_LIMB - exp);
-      s *= MPFR_SIGN(f);
+      a = MPFR_MANT(x)[n - 1] >> (BITS_PER_MP_LIMB - exp);
+      s = MPFR_SIGN(f) > 0 ? a : a <= LONG_MAX ? - (long) a : LONG_MIN;
     }
 
   mpfr_clear (x);
