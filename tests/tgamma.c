@@ -21,8 +21,9 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <gmp.h>
-#include <mpfr.h>
+#include "gmp.h"
+#include "mpfr.h"
+#include "mpfr-test.h"
 
 int mpfr_gamma (mpfr_ptr, mpfr_srcptr, mp_rnd_t);
 

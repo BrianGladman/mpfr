@@ -24,9 +24,7 @@ MA 02111-1307, USA. */
 #include <stdlib.h>
 #include "gmp.h"
 #include "mpfr.h"
-#ifdef TEST
 #include "mpfr-test.h"
-#endif
 
 void check _PROTO((unsigned long, double, mp_rnd_t, double)); 
 void check_inexact _PROTO((void));
