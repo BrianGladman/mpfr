@@ -91,9 +91,9 @@ mpfr_cmp3(b, c, s)
 /* returns the number of cancelled bits when one subtracts abs(c) from abs(b). 
    Assumes b>=c, which implies MPFR_EXP(b)>=MPFR_EXP(c).
    if b=c, returns prec(b).
-*/
-/* TODO: semantique ? */
 
+   In other terms mpfr_cmp2 (b, c) returns EXP(b) - EXP(b-c).
+*/
 int 
 #if __STDC__
 mpfr_cmp2 ( mpfr_srcptr b, mpfr_srcptr c )
@@ -116,6 +116,7 @@ mpfr_cmp2(b, c)
   /* k is the number of identical bits in the high part,
      then z is the number of possibly cancelled bits */
 #ifdef DEBUG
+  printf("d=%u\n", d);
   if (d<0) { printf("assumption MPFR_EXP(b)<MPFR_EXP(c) violated\n"); exit(1); }
 #endif
   bn = (MPFR_PREC(b)-1)/BITS_PER_MP_LIMB;
@@ -127,7 +128,7 @@ mpfr_cmp2(b, c)
     {
       cc = bp[bn--];
       if (d<BITS_PER_MP_LIMB)
-	cc -= cp[cn]>>d; 
+	cc -= cp[cn]>>d;
     }
   else { /* d=0 */
     while (bn>=0 && cn>=0 && (cc=(bp[bn--]-cp[cn--]))==0) {
@@ -145,7 +146,7 @@ mpfr_cmp2(b, c)
      of cancelled bits in the upper limbs is k */
 
   count_leading_zeros(u, cc);
-  k += u; 
+  k += u;
 
   if (cc != ((mp_limb_t)1<<(BITS_PER_MP_LIMB-u-1))) return k;
 
@@ -193,7 +194,7 @@ mpfr_cmp2(b, c)
 
   while (bn >= 0)
     { 
-      if (cn < 0) { return k; }
+      if (cn < 0) return k;
 
       if (d) 
 	 { 
@@ -217,11 +218,12 @@ mpfr_cmp2(b, c)
     count_leading_zeros(cc, ~(cp[cn--] << (BITS_PER_MP_LIMB - d))); 
   else { cc = 0; }
 
-  k += cc; 
+  k += cc;
   if (cc < d) return k;
   
-  while (cn >= 0 && !~cp[cn--]) { z += BITS_PER_MP_LIMB; } 
-  if (cn >= 0) { count_leading_zeros(cc, ~cp[cn--]); return (k + z + cc); }
+  while (cn >= 0 && !~cp[cn]) { z += BITS_PER_MP_LIMB; cn--; } 
+  /* now either cn<0 or cp[cn] is not 111...111 */
+  if (cn >= 0) { count_leading_zeros(cc, ~cp[cn]); return (k + z + cc); }
 
   return k; /* We **need** that the nonsignificant limbs of c are set
 	       to zero there */	       
