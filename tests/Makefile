@@ -1,0 +1,534 @@
+# Generated automatically from Makefile.in by configure.
+# Makefile.in generated automatically by automake 1.4a from Makefile.am
+
+# Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
+# This Makefile.in is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
+
+
+SHELL = /bin/sh
+
+srcdir = .
+top_srcdir = ..
+prefix = /usr/local
+exec_prefix = ${prefix}
+
+bindir = ${exec_prefix}/bin
+sbindir = ${exec_prefix}/sbin
+libexecdir = ${exec_prefix}/libexec
+datadir = ${prefix}/share
+sysconfdir = ${prefix}/etc
+sharedstatedir = ${prefix}/com
+localstatedir = ${prefix}/var
+libdir = ${exec_prefix}/lib
+infodir = ${prefix}/info
+mandir = ${prefix}/man
+includedir = ${prefix}/include
+oldincludedir = /usr/include
+
+DESTDIR =
+
+pkgdatadir = $(datadir)/mpfr
+pkglibdir = $(libdir)/mpfr
+pkgincludedir = $(includedir)/mpfr
+
+top_builddir = ..
+
+ACLOCAL = aclocal
+AUTOCONF = autoconf
+AUTOMAKE = automake
+AUTOHEADER = autoheader
+
+INSTALL = /usr/local/gnu/bin/install -c
+INSTALL_PROGRAM = ${INSTALL}
+INSTALL_DATA = ${INSTALL} -m 644
+INSTALL_SCRIPT = ${INSTALL_PROGRAM}
+INSTALL_STRIP_FLAG =
+transform = s,x,x,
+
+NORMAL_INSTALL = :
+PRE_INSTALL = :
+POST_INSTALL = :
+NORMAL_UNINSTALL = :
+PRE_UNINSTALL = :
+POST_UNINSTALL = :
+CC = gcc
+CFLAGS = -g -O2 -DTEST
+LDFLAGS = 
+MAKEINFO = makeinfo
+MISCFLAGS = $<
+PACKAGE = mpfr
+RANLIB = ranlib
+VERSION = 1.0
+
+bin_PROGRAMS = tabs tadd tagm tcan_round tcmp tcmp_ui tdiv tdiv_ui texp  tget_str tlog tlog2 tmul tmul_2exp tmul_ui tout_str tpi tround tset_d tset_f tset_q tset_si tset_str tset_z  tsqrt tsqrt_ui tui_div tui_sub tzeta
+
+LDADD = $(top_srcdir)/libmpfr.a   /users/polka/logiciels/gmp/irix/lib/libgmp.a
+INCLUDES =  -I/users/polka/logiciels/gmp/irix/include -I$(top_srcdir)
+mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
+CONFIG_CLEAN_FILES = 
+PROGRAMS =  $(bin_PROGRAMS)
+
+
+DEFS =  -DPACKAGE=\"mpfr\" -DVERSION=\"1.0\" -DHAVE_LIBM=1  -I. -I$(srcdir) 
+CPPFLAGS = 
+LIBS = -lm 
+tabs_SOURCES = tabs.c
+tabs_OBJECTS =  tabs.o
+tabs_LDADD = $(LDADD)
+tabs_DEPENDENCIES =  $(top_srcdir)/libmpfr.a
+tabs_LDFLAGS = 
+tadd_SOURCES = tadd.c
+tadd_OBJECTS =  tadd.o
+tadd_LDADD = $(LDADD)
+tadd_DEPENDENCIES =  $(top_srcdir)/libmpfr.a
+tadd_LDFLAGS = 
+tagm_SOURCES = tagm.c
+tagm_OBJECTS =  tagm.o
+tagm_LDADD = $(LDADD)
+tagm_DEPENDENCIES =  $(top_srcdir)/libmpfr.a
+tagm_LDFLAGS = 
+tcan_round_SOURCES = tcan_round.c
+tcan_round_OBJECTS =  tcan_round.o
+tcan_round_LDADD = $(LDADD)
+tcan_round_DEPENDENCIES =  $(top_srcdir)/libmpfr.a
+tcan_round_LDFLAGS = 
+tcmp_SOURCES = tcmp.c
+tcmp_OBJECTS =  tcmp.o
+tcmp_LDADD = $(LDADD)
+tcmp_DEPENDENCIES =  $(top_srcdir)/libmpfr.a
+tcmp_LDFLAGS = 
+tcmp_ui_SOURCES = tcmp_ui.c
+tcmp_ui_OBJECTS =  tcmp_ui.o
+tcmp_ui_LDADD = $(LDADD)
+tcmp_ui_DEPENDENCIES =  $(top_srcdir)/libmpfr.a
+tcmp_ui_LDFLAGS = 
+tdiv_SOURCES = tdiv.c
+tdiv_OBJECTS =  tdiv.o
+tdiv_LDADD = $(LDADD)
+tdiv_DEPENDENCIES =  $(top_srcdir)/libmpfr.a
+tdiv_LDFLAGS = 
+tdiv_ui_SOURCES = tdiv_ui.c
+tdiv_ui_OBJECTS =  tdiv_ui.o
+tdiv_ui_LDADD = $(LDADD)
+tdiv_ui_DEPENDENCIES =  $(top_srcdir)/libmpfr.a
+tdiv_ui_LDFLAGS = 
+texp_SOURCES = texp.c
+texp_OBJECTS =  texp.o
+texp_LDADD = $(LDADD)
+texp_DEPENDENCIES =  $(top_srcdir)/libmpfr.a
+texp_LDFLAGS = 
+tget_str_SOURCES = tget_str.c
+tget_str_OBJECTS =  tget_str.o
+tget_str_LDADD = $(LDADD)
+tget_str_DEPENDENCIES =  $(top_srcdir)/libmpfr.a
+tget_str_LDFLAGS = 
+tlog_SOURCES = tlog.c
+tlog_OBJECTS =  tlog.o
+tlog_LDADD = $(LDADD)
+tlog_DEPENDENCIES =  $(top_srcdir)/libmpfr.a
+tlog_LDFLAGS = 
+tlog2_SOURCES = tlog2.c
+tlog2_OBJECTS =  tlog2.o
+tlog2_LDADD = $(LDADD)
+tlog2_DEPENDENCIES =  $(top_srcdir)/libmpfr.a
+tlog2_LDFLAGS = 
+tmul_SOURCES = tmul.c
+tmul_OBJECTS =  tmul.o
+tmul_LDADD = $(LDADD)
+tmul_DEPENDENCIES =  $(top_srcdir)/libmpfr.a
+tmul_LDFLAGS = 
+tmul_2exp_SOURCES = tmul_2exp.c
+tmul_2exp_OBJECTS =  tmul_2exp.o
+tmul_2exp_LDADD = $(LDADD)
+tmul_2exp_DEPENDENCIES =  $(top_srcdir)/libmpfr.a
+tmul_2exp_LDFLAGS = 
+tmul_ui_SOURCES = tmul_ui.c
+tmul_ui_OBJECTS =  tmul_ui.o
+tmul_ui_LDADD = $(LDADD)
+tmul_ui_DEPENDENCIES =  $(top_srcdir)/libmpfr.a
+tmul_ui_LDFLAGS = 
+tout_str_SOURCES = tout_str.c
+tout_str_OBJECTS =  tout_str.o
+tout_str_LDADD = $(LDADD)
+tout_str_DEPENDENCIES =  $(top_srcdir)/libmpfr.a
+tout_str_LDFLAGS = 
+tpi_SOURCES = tpi.c
+tpi_OBJECTS =  tpi.o
+tpi_LDADD = $(LDADD)
+tpi_DEPENDENCIES =  $(top_srcdir)/libmpfr.a
+tpi_LDFLAGS = 
+tround_SOURCES = tround.c
+tround_OBJECTS =  tround.o
+tround_LDADD = $(LDADD)
+tround_DEPENDENCIES =  $(top_srcdir)/libmpfr.a
+tround_LDFLAGS = 
+tset_d_SOURCES = tset_d.c
+tset_d_OBJECTS =  tset_d.o
+tset_d_LDADD = $(LDADD)
+tset_d_DEPENDENCIES =  $(top_srcdir)/libmpfr.a
+tset_d_LDFLAGS = 
+tset_f_SOURCES = tset_f.c
+tset_f_OBJECTS =  tset_f.o
+tset_f_LDADD = $(LDADD)
+tset_f_DEPENDENCIES =  $(top_srcdir)/libmpfr.a
+tset_f_LDFLAGS = 
+tset_q_SOURCES = tset_q.c
+tset_q_OBJECTS =  tset_q.o
+tset_q_LDADD = $(LDADD)
+tset_q_DEPENDENCIES =  $(top_srcdir)/libmpfr.a
+tset_q_LDFLAGS = 
+tset_si_SOURCES = tset_si.c
+tset_si_OBJECTS =  tset_si.o
+tset_si_LDADD = $(LDADD)
+tset_si_DEPENDENCIES =  $(top_srcdir)/libmpfr.a
+tset_si_LDFLAGS = 
+tset_str_SOURCES = tset_str.c
+tset_str_OBJECTS =  tset_str.o
+tset_str_LDADD = $(LDADD)
+tset_str_DEPENDENCIES =  $(top_srcdir)/libmpfr.a
+tset_str_LDFLAGS = 
+tset_z_SOURCES = tset_z.c
+tset_z_OBJECTS =  tset_z.o
+tset_z_LDADD = $(LDADD)
+tset_z_DEPENDENCIES =  $(top_srcdir)/libmpfr.a
+tset_z_LDFLAGS = 
+tsqrt_SOURCES = tsqrt.c
+tsqrt_OBJECTS =  tsqrt.o
+tsqrt_LDADD = $(LDADD)
+tsqrt_DEPENDENCIES =  $(top_srcdir)/libmpfr.a
+tsqrt_LDFLAGS = 
+tsqrt_ui_SOURCES = tsqrt_ui.c
+tsqrt_ui_OBJECTS =  tsqrt_ui.o
+tsqrt_ui_LDADD = $(LDADD)
+tsqrt_ui_DEPENDENCIES =  $(top_srcdir)/libmpfr.a
+tsqrt_ui_LDFLAGS = 
+tui_div_SOURCES = tui_div.c
+tui_div_OBJECTS =  tui_div.o
+tui_div_LDADD = $(LDADD)
+tui_div_DEPENDENCIES =  $(top_srcdir)/libmpfr.a
+tui_div_LDFLAGS = 
+tui_sub_SOURCES = tui_sub.c
+tui_sub_OBJECTS =  tui_sub.o
+tui_sub_LDADD = $(LDADD)
+tui_sub_DEPENDENCIES =  $(top_srcdir)/libmpfr.a
+tui_sub_LDFLAGS = 
+tzeta_SOURCES = tzeta.c
+tzeta_OBJECTS =  tzeta.o
+tzeta_LDADD = $(LDADD)
+tzeta_DEPENDENCIES =  $(top_srcdir)/libmpfr.a
+tzeta_LDFLAGS = 
+COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
+DIST_COMMON =  Makefile.am Makefile.in
+
+
+DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
+
+TAR = gtar
+GZIP_ENV = --best
+SOURCES = tabs.c tadd.c tagm.c tcan_round.c tcmp.c tcmp_ui.c tdiv.c tdiv_ui.c texp.c tget_str.c tlog.c tlog2.c tmul.c tmul_2exp.c tmul_ui.c tout_str.c tpi.c tround.c tset_d.c tset_f.c tset_q.c tset_si.c tset_str.c tset_z.c tsqrt.c tsqrt_ui.c tui_div.c tui_sub.c tzeta.c
+OBJECTS = tabs.o tadd.o tagm.o tcan_round.o tcmp.o tcmp_ui.o tdiv.o tdiv_ui.o texp.o tget_str.o tlog.o tlog2.o tmul.o tmul_2exp.o tmul_ui.o tout_str.o tpi.o tround.o tset_d.o tset_f.o tset_q.o tset_si.o tset_str.o tset_z.o tsqrt.o tsqrt_ui.o tui_div.o tui_sub.o tzeta.o
+
+all: all-redirect
+.SUFFIXES:
+.SUFFIXES: .S .c .o .s
+$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu --include-deps tests/Makefile
+
+Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status
+	cd $(top_builddir) \
+	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+
+mostlyclean-binPROGRAMS:
+
+clean-binPROGRAMS:
+	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+
+distclean-binPROGRAMS:
+
+maintainer-clean-binPROGRAMS:
+
+install-binPROGRAMS: $(bin_PROGRAMS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(bindir)
+	@list='$(bin_PROGRAMS)'; for p in $$list; do \
+	  if test -f $$p; then \
+	    echo "  $(INSTALL_PROGRAM) $(INSTALL_STRIP_FLAG) $$p $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`"; \
+	     $(INSTALL_PROGRAM) $(INSTALL_STRIP_FLAG) $$p $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
+	  else :; fi; \
+	done
+
+uninstall-binPROGRAMS:
+	@$(NORMAL_UNINSTALL)
+	list='$(bin_PROGRAMS)'; for p in $$list; do \
+	  rm -f $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
+	done
+
+.c.o:
+	$(COMPILE) -c $<
+
+.s.o:
+	$(COMPILE) -c $<
+
+.S.o:
+	$(COMPILE) -c $<
+
+mostlyclean-compile:
+	-rm -f *.o core *.core
+
+clean-compile:
+
+distclean-compile:
+	-rm -f *.tab.c
+
+maintainer-clean-compile:
+
+tabs: $(tabs_OBJECTS) $(tabs_DEPENDENCIES)
+	@rm -f tabs
+	$(LINK) $(tabs_LDFLAGS) $(tabs_OBJECTS) $(tabs_LDADD) $(LIBS)
+
+tadd: $(tadd_OBJECTS) $(tadd_DEPENDENCIES)
+	@rm -f tadd
+	$(LINK) $(tadd_LDFLAGS) $(tadd_OBJECTS) $(tadd_LDADD) $(LIBS)
+
+tagm: $(tagm_OBJECTS) $(tagm_DEPENDENCIES)
+	@rm -f tagm
+	$(LINK) $(tagm_LDFLAGS) $(tagm_OBJECTS) $(tagm_LDADD) $(LIBS)
+
+tcan_round: $(tcan_round_OBJECTS) $(tcan_round_DEPENDENCIES)
+	@rm -f tcan_round
+	$(LINK) $(tcan_round_LDFLAGS) $(tcan_round_OBJECTS) $(tcan_round_LDADD) $(LIBS)
+
+tcmp: $(tcmp_OBJECTS) $(tcmp_DEPENDENCIES)
+	@rm -f tcmp
+	$(LINK) $(tcmp_LDFLAGS) $(tcmp_OBJECTS) $(tcmp_LDADD) $(LIBS)
+
+tcmp_ui: $(tcmp_ui_OBJECTS) $(tcmp_ui_DEPENDENCIES)
+	@rm -f tcmp_ui
+	$(LINK) $(tcmp_ui_LDFLAGS) $(tcmp_ui_OBJECTS) $(tcmp_ui_LDADD) $(LIBS)
+
+tdiv: $(tdiv_OBJECTS) $(tdiv_DEPENDENCIES)
+	@rm -f tdiv
+	$(LINK) $(tdiv_LDFLAGS) $(tdiv_OBJECTS) $(tdiv_LDADD) $(LIBS)
+
+tdiv_ui: $(tdiv_ui_OBJECTS) $(tdiv_ui_DEPENDENCIES)
+	@rm -f tdiv_ui
+	$(LINK) $(tdiv_ui_LDFLAGS) $(tdiv_ui_OBJECTS) $(tdiv_ui_LDADD) $(LIBS)
+
+texp: $(texp_OBJECTS) $(texp_DEPENDENCIES)
+	@rm -f texp
+	$(LINK) $(texp_LDFLAGS) $(texp_OBJECTS) $(texp_LDADD) $(LIBS)
+
+tget_str: $(tget_str_OBJECTS) $(tget_str_DEPENDENCIES)
+	@rm -f tget_str
+	$(LINK) $(tget_str_LDFLAGS) $(tget_str_OBJECTS) $(tget_str_LDADD) $(LIBS)
+
+tlog: $(tlog_OBJECTS) $(tlog_DEPENDENCIES)
+	@rm -f tlog
+	$(LINK) $(tlog_LDFLAGS) $(tlog_OBJECTS) $(tlog_LDADD) $(LIBS)
+
+tlog2: $(tlog2_OBJECTS) $(tlog2_DEPENDENCIES)
+	@rm -f tlog2
+	$(LINK) $(tlog2_LDFLAGS) $(tlog2_OBJECTS) $(tlog2_LDADD) $(LIBS)
+
+tmul: $(tmul_OBJECTS) $(tmul_DEPENDENCIES)
+	@rm -f tmul
+	$(LINK) $(tmul_LDFLAGS) $(tmul_OBJECTS) $(tmul_LDADD) $(LIBS)
+
+tmul_2exp: $(tmul_2exp_OBJECTS) $(tmul_2exp_DEPENDENCIES)
+	@rm -f tmul_2exp
+	$(LINK) $(tmul_2exp_LDFLAGS) $(tmul_2exp_OBJECTS) $(tmul_2exp_LDADD) $(LIBS)
+
+tmul_ui: $(tmul_ui_OBJECTS) $(tmul_ui_DEPENDENCIES)
+	@rm -f tmul_ui
+	$(LINK) $(tmul_ui_LDFLAGS) $(tmul_ui_OBJECTS) $(tmul_ui_LDADD) $(LIBS)
+
+tout_str: $(tout_str_OBJECTS) $(tout_str_DEPENDENCIES)
+	@rm -f tout_str
+	$(LINK) $(tout_str_LDFLAGS) $(tout_str_OBJECTS) $(tout_str_LDADD) $(LIBS)
+
+tpi: $(tpi_OBJECTS) $(tpi_DEPENDENCIES)
+	@rm -f tpi
+	$(LINK) $(tpi_LDFLAGS) $(tpi_OBJECTS) $(tpi_LDADD) $(LIBS)
+
+tround: $(tround_OBJECTS) $(tround_DEPENDENCIES)
+	@rm -f tround
+	$(LINK) $(tround_LDFLAGS) $(tround_OBJECTS) $(tround_LDADD) $(LIBS)
+
+tset_d: $(tset_d_OBJECTS) $(tset_d_DEPENDENCIES)
+	@rm -f tset_d
+	$(LINK) $(tset_d_LDFLAGS) $(tset_d_OBJECTS) $(tset_d_LDADD) $(LIBS)
+
+tset_f: $(tset_f_OBJECTS) $(tset_f_DEPENDENCIES)
+	@rm -f tset_f
+	$(LINK) $(tset_f_LDFLAGS) $(tset_f_OBJECTS) $(tset_f_LDADD) $(LIBS)
+
+tset_q: $(tset_q_OBJECTS) $(tset_q_DEPENDENCIES)
+	@rm -f tset_q
+	$(LINK) $(tset_q_LDFLAGS) $(tset_q_OBJECTS) $(tset_q_LDADD) $(LIBS)
+
+tset_si: $(tset_si_OBJECTS) $(tset_si_DEPENDENCIES)
+	@rm -f tset_si
+	$(LINK) $(tset_si_LDFLAGS) $(tset_si_OBJECTS) $(tset_si_LDADD) $(LIBS)
+
+tset_str: $(tset_str_OBJECTS) $(tset_str_DEPENDENCIES)
+	@rm -f tset_str
+	$(LINK) $(tset_str_LDFLAGS) $(tset_str_OBJECTS) $(tset_str_LDADD) $(LIBS)
+
+tset_z: $(tset_z_OBJECTS) $(tset_z_DEPENDENCIES)
+	@rm -f tset_z
+	$(LINK) $(tset_z_LDFLAGS) $(tset_z_OBJECTS) $(tset_z_LDADD) $(LIBS)
+
+tsqrt: $(tsqrt_OBJECTS) $(tsqrt_DEPENDENCIES)
+	@rm -f tsqrt
+	$(LINK) $(tsqrt_LDFLAGS) $(tsqrt_OBJECTS) $(tsqrt_LDADD) $(LIBS)
+
+tsqrt_ui: $(tsqrt_ui_OBJECTS) $(tsqrt_ui_DEPENDENCIES)
+	@rm -f tsqrt_ui
+	$(LINK) $(tsqrt_ui_LDFLAGS) $(tsqrt_ui_OBJECTS) $(tsqrt_ui_LDADD) $(LIBS)
+
+tui_div: $(tui_div_OBJECTS) $(tui_div_DEPENDENCIES)
+	@rm -f tui_div
+	$(LINK) $(tui_div_LDFLAGS) $(tui_div_OBJECTS) $(tui_div_LDADD) $(LIBS)
+
+tui_sub: $(tui_sub_OBJECTS) $(tui_sub_DEPENDENCIES)
+	@rm -f tui_sub
+	$(LINK) $(tui_sub_LDFLAGS) $(tui_sub_OBJECTS) $(tui_sub_LDADD) $(LIBS)
+
+tzeta: $(tzeta_OBJECTS) $(tzeta_DEPENDENCIES)
+	@rm -f tzeta
+	$(LINK) $(tzeta_LDFLAGS) $(tzeta_OBJECTS) $(tzeta_LDADD) $(LIBS)
+
+tags: TAGS
+
+ID: $(HEADERS) $(SOURCES) $(LISP)
+	list='$(SOURCES) $(HEADERS)'; \
+	unique=`for i in $$list; do echo $$i; done | \
+	  awk '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	here=`pwd` && cd $(srcdir) \
+	  && mkid -f$$here/ID $$unique $(LISP)
+
+TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) $(LISP)
+	tags=; \
+	here=`pwd`; \
+	list='$(SOURCES) $(HEADERS)'; \
+	unique=`for i in $$list; do echo $$i; done | \
+	  awk '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	test -z "$(ETAGS_ARGS)$$unique$(LISP)$$tags" \
+	  || (cd $(srcdir) && etags $(ETAGS_ARGS) $$tags  $$unique $(LISP) -o $$here/TAGS)
+
+mostlyclean-tags:
+
+clean-tags:
+
+distclean-tags:
+	-rm -f TAGS ID
+
+maintainer-clean-tags:
+
+distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
+
+subdir = tests
+
+distdir: $(DISTFILES)
+	@for file in $(DISTFILES); do \
+	  d=$(srcdir); \
+	  if test -d $$d/$$file; then \
+	    cp -pr $$d/$$file $(distdir)/$$file; \
+	  else \
+	    test -f $(distdir)/$$file \
+	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
+	    || cp -p $$d/$$file $(distdir)/$$file || :; \
+	  fi; \
+	done
+info-am:
+info: info-am
+dvi-am:
+dvi: dvi-am
+check-am: all-am
+check: check-am
+installcheck-am:
+installcheck: installcheck-am
+install-exec-am: install-binPROGRAMS
+install-exec: install-exec-am
+
+install-data-am:
+install-data: install-data-am
+
+install-am: all-am
+	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
+install: install-am
+uninstall-am: uninstall-binPROGRAMS
+uninstall: uninstall-am
+all-am: Makefile $(PROGRAMS)
+all-redirect: all-am
+install-strip:
+	$(MAKE) $(AM_MAKEFLAGS) INSTALL_STRIP_FLAG=-s install
+installdirs:
+	$(mkinstalldirs)  $(DESTDIR)$(bindir)
+
+
+mostlyclean-generic:
+
+clean-generic:
+
+distclean-generic:
+	-rm -f Makefile $(CONFIG_CLEAN_FILES)
+	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
+
+maintainer-clean-generic:
+mostlyclean-am:  mostlyclean-binPROGRAMS mostlyclean-compile \
+		mostlyclean-tags mostlyclean-generic
+
+mostlyclean: mostlyclean-am
+
+clean-am:  clean-binPROGRAMS clean-compile clean-tags clean-generic \
+		mostlyclean-am
+
+clean: clean-am
+
+distclean-am:  distclean-binPROGRAMS distclean-compile distclean-tags \
+		distclean-generic clean-am
+
+distclean: distclean-am
+
+maintainer-clean-am:  maintainer-clean-binPROGRAMS \
+		maintainer-clean-compile maintainer-clean-tags \
+		maintainer-clean-generic distclean-am
+	@echo "This command is intended for maintainers to use;"
+	@echo "it deletes files that may require special tools to rebuild."
+
+maintainer-clean: maintainer-clean-am
+
+.PHONY: mostlyclean-binPROGRAMS distclean-binPROGRAMS clean-binPROGRAMS \
+maintainer-clean-binPROGRAMS uninstall-binPROGRAMS install-binPROGRAMS \
+mostlyclean-compile distclean-compile clean-compile \
+maintainer-clean-compile tags mostlyclean-tags distclean-tags \
+clean-tags maintainer-clean-tags distdir info-am info dvi-am dvi check \
+check-am installcheck-am installcheck install-exec-am install-exec \
+install-data-am install-data install-am install uninstall-am uninstall \
+all-redirect all-am all installdirs mostlyclean-generic \
+distclean-generic clean-generic maintainer-clean-generic clean \
+mostlyclean distclean maintainer-clean
+
+
+../libmpfr.a:
+	cd $(top_srcdir); make  libmpfr.a  
+
+check: 	all
+	for i in $(bin_PROGRAMS); do echo Testing $$i ; ./$$i; done
+
+# Tell versions [3.59,3.63) of GNU make to not export all variables.
+# Otherwise a system limit (for SysV at least) may be exceeded.
+.NOEXPORT:

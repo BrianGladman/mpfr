@@ -26,7 +26,7 @@ MA 02111-1307, USA. */
 #include "longlong.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
-#ifdef IRIX64
+#ifdef __mips
 #include <sys/fpu.h>
 #endif
 
@@ -64,7 +64,7 @@ void tcmp2(x, y, i) double x, y; int i;
 int main()
 {
   int i,j; double x=1.0, y, z;
-#ifdef IRIX64
+#ifdef __mips
     /* to get denormalized numbers on IRIX64 */
     union fpc_csr exp;
     exp.fc_word = get_fpc_csr();

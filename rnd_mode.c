@@ -31,7 +31,7 @@ MA 02111-1307, USA. */
 #define TOZERO    fesetround(FE_TOWARDZERO)
 #define TOINFP    fesetround(FE_UPWARD)
 #define TOINFM    fesetround(FE_DOWNWARD)
-#elif IRIX64
+#elif __mips
 #include <sys/fpu.h>
 extern int swapRM();
 #define TOZERO swapRM(ROUND_TO_ZERO)

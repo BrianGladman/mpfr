@@ -22,7 +22,7 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#ifdef IRIX64
+#ifdef __mips
 #include <sys/fpu.h>
 #endif
 #include "gmp.h"
@@ -35,7 +35,7 @@ int
 main(int argc, char **argv)
 {
   mpfr_t x,y,z; unsigned long k,n; double d, dd;
-#ifdef IRIX64
+#ifdef __mips
     /* to get denormalized numbers on IRIX64 */
     union fpc_csr exp;
     exp.fc_word = get_fpc_csr();
@@ -78,6 +78,7 @@ main(int argc, char **argv)
 	  fprintf(stderr, 
 		  "Mismatch on : %1.18g != %1.18g\n", d, mpfr_get_d(x)); 
 	  mpfr_print_raw(x); putchar('\n');
+	  exit(1);
 	} 
     }
 

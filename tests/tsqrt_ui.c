@@ -26,7 +26,7 @@ MA 02111-1307, USA. */
 #include "gmp-impl.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
-#ifdef IRIX64
+#ifdef __mips
 #include <sys/fpu.h>
 #endif
 
@@ -63,7 +63,7 @@ int main()
 {
 #ifdef TEST
   int i; unsigned long a;
-#ifdef IRIX64
+#ifdef __mips
     /* to get denormalized numbers on IRIX64 */
     union fpc_csr exp;
     exp.fc_word = get_fpc_csr();
