@@ -66,7 +66,7 @@ PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
 
-bin_PROGRAMS = tabs tadd tagm tcan_round tcmp tcmp_ui tdiv tdiv_ui texp  tget_str tlog tlog2 tmul tmul_2exp tmul_ui tout_str tpi tround tset_d tset_f tset_q tset_si tset_str tset_z tsin_cos tsqrt tsqrt_ui tui_div tui_sub tzeta
+bin_PROGRAMS = tabs tadd tagm tcan_round tcmp tcmp_ui tdiv tdiv_ui texp  tget_str tlog tlog2 tmul tmul_2exp tmul_ui tout_str tpi tround tset_d tset_f tset_q tset_si tset_str tset_z  tsqrt tsqrt_ui tui_div tui_sub tzeta
 
 LDADD = ../libmpfr.a  @LDADD@
 INCLUDES = @INCLUDES@ -I$(top_srcdir)
@@ -198,11 +198,6 @@ tset_z_OBJECTS =  tset_z.o
 tset_z_LDADD = $(LDADD)
 tset_z_DEPENDENCIES =  ../libmpfr.a
 tset_z_LDFLAGS = 
-tsin_cos_SOURCES = tsin_cos.c
-tsin_cos_OBJECTS =  tsin_cos.o
-tsin_cos_LDADD = $(LDADD)
-tsin_cos_DEPENDENCIES =  ../libmpfr.a
-tsin_cos_LDFLAGS = 
 tsqrt_SOURCES = tsqrt.c
 tsqrt_OBJECTS =  tsqrt.o
 tsqrt_LDADD = $(LDADD)
@@ -243,11 +238,10 @@ DEP_FILES =  .deps/tabs.P .deps/tadd.P .deps/tagm.P .deps/tcan_round.P \
 .deps/tget_str.P .deps/tlog.P .deps/tlog2.P .deps/tmul.P \
 .deps/tmul_2exp.P .deps/tmul_ui.P .deps/tout_str.P .deps/tpi.P \
 .deps/tround.P .deps/tset_d.P .deps/tset_f.P .deps/tset_q.P \
-.deps/tset_si.P .deps/tset_str.P .deps/tset_z.P .deps/tsin_cos.P \
-.deps/tsqrt.P .deps/tsqrt_ui.P .deps/tui_div.P .deps/tui_sub.P \
-.deps/tzeta.P
-SOURCES = tabs.c tadd.c tagm.c tcan_round.c tcmp.c tcmp_ui.c tdiv.c tdiv_ui.c texp.c tget_str.c tlog.c tlog2.c tmul.c tmul_2exp.c tmul_ui.c tout_str.c tpi.c tround.c tset_d.c tset_f.c tset_q.c tset_si.c tset_str.c tset_z.c tsin_cos.c tsqrt.c tsqrt_ui.c tui_div.c tui_sub.c tzeta.c
-OBJECTS = tabs.o tadd.o tagm.o tcan_round.o tcmp.o tcmp_ui.o tdiv.o tdiv_ui.o texp.o tget_str.o tlog.o tlog2.o tmul.o tmul_2exp.o tmul_ui.o tout_str.o tpi.o tround.o tset_d.o tset_f.o tset_q.o tset_si.o tset_str.o tset_z.o tsin_cos.o tsqrt.o tsqrt_ui.o tui_div.o tui_sub.o tzeta.o
+.deps/tset_si.P .deps/tset_str.P .deps/tset_z.P .deps/tsqrt.P \
+.deps/tsqrt_ui.P .deps/tui_div.P .deps/tui_sub.P .deps/tzeta.P
+SOURCES = tabs.c tadd.c tagm.c tcan_round.c tcmp.c tcmp_ui.c tdiv.c tdiv_ui.c texp.c tget_str.c tlog.c tlog2.c tmul.c tmul_2exp.c tmul_ui.c tout_str.c tpi.c tround.c tset_d.c tset_f.c tset_q.c tset_si.c tset_str.c tset_z.c tsqrt.c tsqrt_ui.c tui_div.c tui_sub.c tzeta.c
+OBJECTS = tabs.o tadd.o tagm.o tcan_round.o tcmp.o tcmp_ui.o tdiv.o tdiv_ui.o texp.o tget_str.o tlog.o tlog2.o tmul.o tmul_2exp.o tmul_ui.o tout_str.o tpi.o tround.o tset_d.o tset_f.o tset_q.o tset_si.o tset_str.o tset_z.o tsqrt.o tsqrt_ui.o tui_div.o tui_sub.o tzeta.o
 
 all: all-redirect
 .SUFFIXES:
@@ -396,10 +390,6 @@ tset_str: $(tset_str_OBJECTS) $(tset_str_DEPENDENCIES)
 tset_z: $(tset_z_OBJECTS) $(tset_z_DEPENDENCIES)
 	@rm -f tset_z
 	$(LINK) $(tset_z_LDFLAGS) $(tset_z_OBJECTS) $(tset_z_LDADD) $(LIBS)
-
-tsin_cos: $(tsin_cos_OBJECTS) $(tsin_cos_DEPENDENCIES)
-	@rm -f tsin_cos
-	$(LINK) $(tsin_cos_LDFLAGS) $(tsin_cos_OBJECTS) $(tsin_cos_LDADD) $(LIBS)
 
 tsqrt: $(tsqrt_OBJECTS) $(tsqrt_DEPENDENCIES)
 	@rm -f tsqrt
