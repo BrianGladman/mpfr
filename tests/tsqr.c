@@ -41,6 +41,12 @@ int main(void)
   return 0;
 }
 
+static int 
+inexact_sign (int x)
+{
+  return (x < 0) ? -1 : (x > 0);
+}
+
 static void 
 error1 (mp_rnd_t rnd, mpfr_prec_t prec, 
 	mpfr_t in, mpfr_t outmul, mpfr_t outsqr)
@@ -80,7 +86,7 @@ void check_random(mpfr_prec_t p)
             inexact2 = mpfr_sqr (z, x, r);
             if (mpfr_cmp(y, z))
               error1 (r,p,x,y,z);
-            if (inexact1 != inexact2)
+            if (inexact_sign (inexact1) != inexact_sign (inexact2))
               error2 (r,p,x,y,inexact1,inexact2);
           }
     }
