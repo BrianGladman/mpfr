@@ -285,7 +285,6 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
 	  else if ((long)cc<-1) 
 	    { TMP_FREE(marker); return; /* the carry can be at most 1 */ }
 	  else if (kc==0) {
-	    /* it still remains cp[0]<<(mp_bits_per_limb-dif) */
 	    while (k && cc==0) cc=bp[--k];
 	    if (cc || (*ap & (ONE<<sh))) goto add_one_ulp;
 	    else goto end_of_add;
