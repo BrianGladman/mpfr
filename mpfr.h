@@ -123,7 +123,7 @@ typedef __mpfr_struct *mpfr_ptr;
 typedef __gmp_const __mpfr_struct *mpfr_srcptr;
 
 /* For those who needs a direct access and fast access to the sign field */
-#define MPFR_SIGN(x) (((x)->_mpfr_sign))
+#define MPFR_SIGN(x) ((x)->_mpfr_sign)
 
 /* Cache struct */
 struct __gmpfr_cache_s {
