@@ -40,6 +40,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode)
   mpfr_t t, te, ti; /* auxiliary variables */
   mp_prec_t Nx, Ny, Nz; /* size variables */
   mp_prec_t Nt;   /* precision of the intermediary variable */
+  mp_exp_t Ex, Ey, diff_exp, sh;
 
   /* particular cases */
 
@@ -66,11 +67,49 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode)
   if (MPFR_IS_ZERO(y))
     return mpfr_abs (z, x, rnd_mode);
 
+  if (mpfr_cmpabs (x, y) < 0)
+    {
+      mpfr_srcptr t;
+      t = x;
+      x = y;
+      y = t;
+    }
+
+  /* now |x| >= |y| */
+
+  Ex = MPFR_EXP(x);
+  Ey = MPFR_EXP(y);
+  diff_exp = Ex - Ey;
+
+  Nz = MPFR_PREC(z);   /* Precision of output variable */
+
+  /* we have x < 2^Ex thus x^2 < 2^(2*Ex),
+     and ulp(x) = 2^(Ex-Nx) thus ulp(x^2) >= 2^(2*Ex-2*Nx).
+     y does not overlap with the result when 
+     x^2+y^2 < (|x| + 1/2*ulp(x,Nz))^2 = x^2 + |x|*ulp(x,Nz) + 1/4*ulp(x,Nz)^2,
+     i.e. a sufficient condition is y^2 < |x|*ulp(x,Nz),
+     or 2^(2*Ey) <= 2^(2*Ex-1-Nz), i.e. 2*diff_exp > Nz
+  */
+  if (2 * diff_exp > Nz) /* result is |x| or |x|+ulp(|x|,Nz) */
+    {
+      if (rnd_mode == GMP_RNDU)
+        {
+          /* if z > abs(x), then it was already rounded up */
+          if (mpfr_abs (z, x, rnd_mode) <= 0)
+            mpfr_add_one_ulp (z, rnd_mode);
+          return 1;
+        }
+      else /* GMP_RNDZ, GMP_RNDD, GMP_RNDN */
+        {
+          inexact = mpfr_abs (z, x, rnd_mode);
+          return (inexact) ? inexact : -1;
+        }
+    }
+
   /* General case */
 
   Nx = MPFR_PREC(x);   /* Precision of input variable */
   Ny = MPFR_PREC(y);   /* Precision of input variable */
-  Nz = MPFR_PREC(z);   /* Precision of output variable */
       
   /* compute the working precision -- see algorithms.ps */
   Nt = MAX(MAX(MAX(Nx, Ny), Nz), 8);
@@ -83,6 +122,8 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode)
 
   mpfr_save_emin_emax ();
 
+  sh = MAX(0,MIN(Ex,Ey));
+
   do
     {
       Nt += 10; 
@@ -94,10 +135,12 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode)
       mpfr_set_prec (ti, Nt);   
 
       /* computations of hypot */
-      if (mpfr_mul (te, x, x, GMP_RNDZ))   /* x^2 */
+      mpfr_div_2ui (te, x, sh, GMP_RNDZ); /* exact since Nt >= Nx */
+      if (mpfr_mul (te, te, te, GMP_RNDZ))   /* x^2 */
         not_exact = 1;
 
-      if (mpfr_mul (ti, y, y, GMP_RNDZ))   /* y^2 */
+      mpfr_div_2ui (ti, y, sh, GMP_RNDZ); /* exact since Nt >= Ny */
+      if (mpfr_mul (ti, ti, ti, GMP_RNDZ))   /* y^2 */
         not_exact = 1;          
       
       if (mpfr_add (t, te, ti, GMP_RNDZ))  /* x^2+y^2 */
@@ -109,7 +152,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode)
     }
   while (not_exact && mpfr_can_round (t, Nt - 2, GMP_RNDZ, rnd_mode, Nz) == 0);
 
-  inexact = mpfr_set (z, t, rnd_mode);
+  inexact = mpfr_mul_2ui (z, t, sh, rnd_mode);
 
   mpfr_clear (t);
   mpfr_clear (ti);
