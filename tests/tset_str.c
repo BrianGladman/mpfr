@@ -57,7 +57,7 @@ check_underflow (void)
   emin = mpfr_get_emin ();
   mpfr_set_emin (-20);
   res = mpfr_set_str (a, "0.00000000001", 10, GMP_RNDZ);
-  if (!MPFR_IS_ZERO (a) /*|| res == 0*/)
+  if (!MPFR_IS_ZERO (a))
     {
       printf("ERROR for mpfr_set_str (a, \"0.00000000001\", 10, GMP_RNDN)\n"
 	     " with emin=-20\n"
@@ -114,7 +114,6 @@ main (int argc, char *argv[])
   str2 = str = (*__gmp_allocate_func) (nc * sizeof(char));
 
   if (bd)
-
     {
       for(k = 1; k <= bd; k++)
 	*(str2++) = (randlimb () & 1) + '0';
@@ -235,13 +234,14 @@ main (int argc, char *argv[])
 
   for (i = 2; i <= 36; i++)
     {
-      if (mpfr_set_str (x, "@NaN@garbage", i, GMP_RNDN) != 0 ||
+      if (mpfr_set_str (x, "@NaN@(garbage)", i, GMP_RNDN) != 0 ||
           !mpfr_nan_p(x))
         {
-          printf ("mpfr_set_str failed on @NaN@garbage\n");
+          printf ("mpfr_set_str failed on @NaN@(garbage)\n");
           exit (1);
         }
 
+      /*
       if (mpfr_set_str (x, "@Inf@garbage", i, GMP_RNDN) != 0 ||
           !mpfr_inf_p(x) || MPFR_SIGN(x) < 0)
         {
@@ -262,6 +262,7 @@ main (int argc, char *argv[])
           printf ("mpfr_set_str failed on +@Inf@garbage\n");
           exit (1);
         }
+      */
 
       if (i > 16)
         continue;
@@ -806,26 +807,26 @@ main (int argc, char *argv[])
   /* check invalid input */
   mpfr_set_ui (x, 1, GMP_RNDN);
   ret = mpfr_set_str (x, "1", 37, GMP_RNDN);
-  MPFR_ASSERTN(mpfr_cmp_ui (x, 1) == 0 && ret == -1);
+  MPFR_ASSERTN (ret == -1);
   ret = mpfr_set_str (x, "1E10toto", 10, GMP_RNDN);
-  MPFR_ASSERTN(mpfr_cmp_ui (x, 1) == 0 && ret == -1);
+  MPFR_ASSERTN (ret == -1);
   ret = mpfr_set_str (x, "1p10toto", 16, GMP_RNDN);
-  MPFR_ASSERTN(mpfr_cmp_ui (x, 1) == 0 && ret == -1);
+  MPFR_ASSERTN (ret == -1);
   ret = mpfr_set_str (x, "", 16, GMP_RNDN);
-  MPFR_ASSERTN(mpfr_cmp_ui (x, 1) == 0 && ret == -1);
+  MPFR_ASSERTN (ret == -1);
   ret = mpfr_set_str (x, "+", 16, GMP_RNDN);
-  MPFR_ASSERTN(mpfr_cmp_ui (x, 1) == 0 && ret == -1);
+  MPFR_ASSERTN (ret == -1);
   ret = mpfr_set_str (x, "-", 16, GMP_RNDN);
-  MPFR_ASSERTN(mpfr_cmp_ui (x, 1) == 0 && ret == -1);
+  MPFR_ASSERTN (ret == -1);
   ret = mpfr_set_str (x, "this_is_an_invalid_number_in_base_36", 36, GMP_RNDN);
-  MPFR_ASSERTN(mpfr_cmp_ui (x, 1) == 0 && ret == -1);
+  MPFR_ASSERTN (ret == -1);
   ret = mpfr_set_str (x, "1.2.3", 10, GMP_RNDN);
-  MPFR_ASSERTN(mpfr_cmp_ui (x, 1) == 0 && ret == -1);
+  MPFR_ASSERTN (ret == -1);
   mpfr_set_prec (x, 135);
   ret = mpfr_set_str (x, "thisisavalidnumberinbase36", 36, GMP_RNDN);
   mpfr_set_prec (y, 135);
   mpfr_set_str (y, "23833565676460972739462619524519814462546", 10, GMP_RNDN);
-  MPFR_ASSERTN(mpfr_cmp (x, y) == 0 && ret == 0);
+  MPFR_ASSERTN (mpfr_cmp (x, y) == 0 && ret == 0);
   
   /* coverage test for set_str_binary */
   mpfr_set_str_binary (x, "NaN");

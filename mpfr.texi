@@ -733,15 +733,17 @@ Note that the input 0 is converted to +0.
 @end deftypefun
 
 @deftypefun int mpfr_set_str (mpfr_t @var{rop}, const char *@var{s}, int @var{base}, mp_rnd_t @var{rnd})
-Set @var{rop} to the value of the whole string @var{s} in base @var{base}
-(between 2 and 36), rounded in the direction @var{rnd}.
+Set @var{rop} to the value of the whole string @var{s} in base @var{base}, 
+rounded in the direction @var{rnd}.
 See the documentation of @code{mpfr_strtofr} for a detailed description
-of the valid string formats. Additionally, special values
-@code{@@NaN@@}, @code{@@Inf@@}, @code{+@@Inf@@} and @code{-@@Inf@@},
-all case insensitive, without leading whitespace and possibly followed by
-other characters, are accepted too (it may change).
+of the valid string formats. 
+@c Additionally, special values
+@c @code{@@NaN@@}, @code{@@Inf@@}, @code{+@@Inf@@} and @code{-@@Inf@@},
+@c all case insensitive, without leading whitespace and possibly followed by
+@c other characters, are accepted too (it may change).
 This function returns 0 if the entire string up to the final null character
-is a valid number in base @var{base}; otherwise it returns @minus{}1.
+is a valid number in base @var{base}; otherwise it returns @minus{}1, and 
+@var{rop} may have changed.
 @end deftypefun
 
 @deftypefun int mpfr_strtofr (mpfr_t @var{rop}, const char *@var{nptr}, char **@var{endptr}, int @var{base}, mp_rnd_t @var{rnd})
@@ -1329,16 +1331,19 @@ Return the number of bytes written, or if an error occurred, return 0.
 @deftypefun size_t mpfr_inp_str (mpfr_t @var{rop}, FILE *@var{stream}, int @var{base}, mp_rnd_t @var{rnd})
 Input a string in base @var{base} from stream @var{stream},
 rounded in the direction @var{rnd}, and put the
-read float in @var{rop}. The argument @var{base} must be in the range 2 to 36.
+read float in @var{rop}. 
+@c The argument @var{base} must be in the range 2 to 36.
 
-The string is of the form @samp{M@@N} or, if the
-base is 10 or less, alternatively @samp{MeN} or @samp{MEN}, or, if the base
-is 16, alternatively @samp{MpB} or @samp{MPB}.
-@samp{M} is the mantissa in the specified base, @samp{N} is the exponent
-written in decimal for the specified base, and in base 16, @samp{B} is the
-binary exponent written in decimal (i.e.@: it indicates the power of 2 by
-which the mantissa is to be scaled).
-See the documentation of @code{mpfr_set_str} for a more detailed description
+@c The string is of the form @samp{M@@N} or, if the
+@c base is 10 or less, alternatively @samp{MeN} or @samp{MEN}, or, if the base
+@c is 16, alternatively @samp{MpB} or @samp{MPB}.
+@c @samp{M} is the mantissa in the specified base, @samp{N} is the exponent
+@c written in decimal for the specified base, and in base 16, @samp{B} is the
+@c binary exponent written in decimal (i.e.@: it indicates the power of 2 by
+@c which the mantissa is to be scaled).
+This function reads a word (defined as a sequence of characters between
+whitespace) and parse it using @code{mpfr_set_str} (it may change).
+See the documentation of @code{mpfr_strtofr} for a more detailed description
 of the valid string formats.
 @c Special values can be read as follows (the case does not matter):
 @c @code{@@NaN@@}, @code{@@Inf@@}, @code{+@@Inf@@} and @code{-@@Inf@@},
