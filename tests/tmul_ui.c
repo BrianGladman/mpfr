@@ -36,7 +36,7 @@ main(int argc, char **argv)
   /* checks that result is normalized */
   mpfr_set_d(y, 6.93147180559945286227e-01, GMP_RNDZ);
   mpfr_mul_ui(x, y, 1, GMP_RNDZ);
-  if (MANT(x)[PREC(x)/BITS_PER_MP_LIMB] >> (BITS_PER_MP_LIMB-1) == 0) {
+  if (MPFR_MANT(x)[MPFR_PREC(x)/BITS_PER_MP_LIMB] >> (BITS_PER_MP_LIMB-1) == 0) {
     fprintf(stderr, "Error in mpfr_mul_ui: result not normalized\n");
     exit(1);
   }

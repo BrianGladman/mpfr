@@ -120,7 +120,7 @@ main(int argc, char **argv)
     else baseprec=1+(prec-2+logbase)/logbase;
     str = mpfr_get_str(NULL, &e, base, baseprec, x, k);
     mpfr_set_str(y, str, base, k);
-    EXP(y) += logbase*(e-strlen(str));
+    MPFR_EXP(y) += logbase*(e-strlen(str));
     if (mpfr_cmp(x, y)) {
       fprintf(stderr, "mpfr_set_str o mpfr_get_str <> id for rnd_mode=%s\n",
 	      mpfr_print_rnd_mode(k));

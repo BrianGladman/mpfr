@@ -229,7 +229,7 @@ void check64()
     printf("Error in mpfr_sub: u=x-t and x=x-t give different results\n");
     exit(1);
   }
-  if ((MANT(u)[(PREC(u)-1)/mp_bits_per_limb] & 
+  if ((MPFR_MANT(u)[(MPFR_PREC(u)-1)/mp_bits_per_limb] & 
       ((mp_limb_t)1<<(mp_bits_per_limb-1)))==0) {
     printf("Error in mpfr_sub: result is not msb-normalized\n"); exit(1);
   }
@@ -245,7 +245,7 @@ void check64()
   mpfr_set_str_raw(x, "0.1000011110101111011110111111000011101011101111101101101100000100E-220");
   mpfr_set_str_raw(t, "0.1000011110101111011110111111000011101011101111101101010011111101E-220");
   mpfr_add(u, x, t, GMP_RNDU);
-  if ((MANT(u)[0] & 1) != 1) { 
+  if ((MPFR_MANT(u)[0] & 1) != 1) { 
     printf("error in mpfr_add with rnd_mode=GMP_RNDU\n");
     printf("b=  "); mpfr_print_raw(x); putchar('\n');
     printf("c=  "); mpfr_print_raw(t); putchar('\n');

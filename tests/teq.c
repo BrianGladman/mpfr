@@ -32,16 +32,16 @@ void teq(mpfr_srcptr x)
 {
   mpfr_t y; long k, px, mx; 
 
-  mpfr_init2(y, PREC(x)); 
+  mpfr_init2(y, MPFR_PREC(x)); 
 
-  mx = (PREC(x) - 1)/BITS_PER_MP_LIMB; 
+  mx = (MPFR_PREC(x) - 1)/BITS_PER_MP_LIMB; 
   px = BITS_PER_MP_LIMB - 2; 
 
-  for (k = 2; k < PREC(x); k++)
+  for (k = 2; k < MPFR_PREC(x); k++)
     {
       mpfr_set(y, x, GMP_RNDN); 
 
-      MANT(y) [mx] ^= (mp_limb_t) 1 << px; 
+      MPFR_MANT(y) [mx] ^= (mp_limb_t) 1 << px; 
 
       if (mpfr_eq(y, x, k) ||  
 	  !mpfr_eq(y, x, k - 1))

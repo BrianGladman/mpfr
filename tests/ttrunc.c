@@ -66,7 +66,7 @@ int main()
   for (j=0;j<1000;j++) {
 
     mpfr_random(x); 
-    EXP(x) = 1; 
+    MPFR_EXP(x) = 1; 
         
     for (k = 1; k <= SIZEX; k++) 
       {
@@ -130,7 +130,7 @@ int main()
 	    mpfr_clear(t2); 
 	    exit(-1); 
 	  }
-	EXP(x)++; 
+	MPFR_EXP(x)++; 
       }
   }
 
