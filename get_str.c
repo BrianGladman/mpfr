@@ -112,10 +112,6 @@ mpfr_get_str (char *str, mp_exp_t *expptr, int base, size_t n,
       char *str0;
       size_t len;
 
-      long div, p, sh;
-      mp_rnd_t rnd1;
-      int ok = 0;
-
       str_is_null = str == NULL;
 
       if (IS_POW2(base)) /* Is base a power of 2? */
@@ -165,6 +161,8 @@ mpfr_get_str (char *str, mp_exp_t *expptr, int base, size_t n,
       do
         {
           mp_prec_t prec, q;
+          int sh;
+          int ok;
 
           /* now the first n digits of the mantissa are obtained from
              rnd(op*base^(n-f)) */
@@ -184,26 +182,47 @@ mpfr_get_str (char *str, mp_exp_t *expptr, int base, size_t n,
 
           q = prec + ERR;
           /* one has to use at least q bits */
-  q = (((q-1)/BITS_PER_MP_LIMB)+1) * BITS_PER_MP_LIMB;
-  mpfr_set_prec (a, q);
-  mpfr_set_prec (b, q);
+          q = (((q-1)/BITS_PER_MP_LIMB)+1) * BITS_PER_MP_LIMB;
+          mpfr_set_prec (a, q);
+          mpfr_set_prec (b, q);
 
-  do {
-    p = n - f;
-    if ((div = (p<0)))
-      p = -p;
-    rnd1 = rnd_mode;
-    if (div)
-      {
-        /* if div we divide by base^p so we have to invert the rounding mode */
-        switch (rnd1)
-          {
-          case GMP_RNDN: rnd1=GMP_RNDN; break;
-          case GMP_RNDZ: rnd1=GMP_RNDU; break;
-          case GMP_RNDU: rnd1=GMP_RNDZ; break;
-          case GMP_RNDD: rnd1=GMP_RNDZ; break;
-          }
-      }
+          do
+            {
+              mp_exp_unsigned_t p;
+              mp_rnd_t rnd1;
+              int div;
+
+              if (f < 0)
+                {
+                  p = (mp_exp_unsigned_t) n - f;
+                  MPFR_ASSERTN(p > n);
+                  div = 0;
+                }
+              else if (n >= f)
+                {
+                  p = n - f;
+                  div = 0;
+                }
+              else
+                {
+                  p = f - n;
+                  div = 1;
+                }
+
+              if (div)
+                {
+                  /* if div, we divide by base^p, so we have to invert
+                     the rounding mode */
+                  switch (rnd_mode)
+                    {
+                    case GMP_RNDN: rnd1 = GMP_RNDN; break;
+                    case GMP_RNDZ: rnd1 = GMP_RNDU; break;
+                    case GMP_RNDU: rnd1 = GMP_RNDZ; break;
+                    case GMP_RNDD: rnd1 = GMP_RNDZ; break;
+                    }
+                }
+              else
+                rnd1 = rnd_mode;
 
     if (pow2)
       {
