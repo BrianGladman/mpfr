@@ -4,39 +4,9 @@
 \title{The MPFR Library: Algorithms and Proofs}
 \author{The MPFR team}
 \date{\tt www.mpfr.org}
+\def\O{{\mathcal O}}
 \begin{document}
 \maketitle
-
-\section{High level functions}
-
-\subsection{The exponential function}
-
-The {\tt mpfr\_exp} function implements three different algorithms.
-For very large precision, it uses a $\O(M(n) \log^2 n)$ algorithm
-based on binary splitting, based on the generic implementation for
-hypergeometric functions in the file {\tt generic.c} (see \cite{Jeandel00}).
-Currently this third algorithm is used only for precision greater
-than $13000$ bits.
-
-For smaller precisions, it uses Brent's method~;
-if $r = (x - n \log 2)/2^k$ where $0 \le r < \log 2$, then 
-\[ \exp(x) = 2^n \cdot \exp(r)^{2^k} \]
-and $\exp(r)$ is computed using the Taylor expansion:
-\[ \exp(r) =  1 + r + \frac{r^2}{2!} + \frac{r^3}{3!} + \cdots \]
-As $r < 2^{-k}$, if the target precision is $n$ bits, then only
-about $l = n/k$ terms of the Taylor expansion are needed.
-This method thus requires the evaluation of the Taylor series to
-order $n/k$, and $k$ squares to compute $\exp(r)^{2^k}$.
-If the Taylor series is evaluated using a na\"{\i}ve way, the optimal
-value of $k$ is about $n^{1/2}$, giving a complexity of $\O(n^{1/2} M(n))$.
-This is what is implemented in {\tt mpfr\_exp2\_aux}.
-
-If we use a baby step/giant step approach, the Taylor series
-can be evaluated in $\O(l^{1/2})$ operations, 
-thus the evaluation requires $(n/k)^{1/2} + k$ multiplications,
-and the optimal $k$ is now about $n^{1/3}$,
-giving a total complexity of $\O(n^{1/3} M(n))$.
-This is implemented in the function {\tt mpfr\_exp2\_aux2}.
 
 \section{Low level functions}
 
@@ -87,6 +57,91 @@ exponent of $c$ is smaller than that of $b$.
    while (b[n] == c[n]);
    return res + (b[n] < c[n]);
 \end{verbatim}
+
+\section{Mathematical constants}
+
+\subsection{Euler's constant}
+
+Euler's constant is computed using the formula $\gamma = S(n) - R(n) - \log n$
+where:
+\[ S(n) = \sum_{k=1}^{\infty} \frac{n^k (-1)^{k-1}}{k! k}, \quad
+   R(n) = \int_n^{\infty} \frac{\exp(-u)}{u} du = \frac{\exp(-n)}{n}
+	\sum_{k=0}^{\infty} \frac{k!}{(-n)^k}. \]
+This identity is attributed to Sweeney by Brent \cite{Brent78}.\footnote{
+Brent only states that both expression for $R(n)$ are equivalent, but
+they are in fact equal.}
+We have $S(n) = _2 F_2(1,1;2,2;-n)$ and $R(n) = {\rm Ei}(1, n)$.
+
+\paragraph{Evaluation of $S(n)$.}
+As in \cite{Brent78}, let $\alpha \sim 4.319136566$ the positive root
+of $\alpha + 2 = \alpha \log \alpha$, and $N = \lfloor \alpha n \rfloor$.
+We approximate $S(n)$ by
+\[ S'(n) = \sum_{k=1}^{N} \frac{n^k (-1)^{k-1}}{k! k}
+         = \frac{1}{N!} \sum_{k=1}^N \frac{a_k}{k}, \]
+where $a_k = n^k (-1)^{k-1} N!/k!$ is an integer.
+Therefore $a_k$ is exactly computed, and when dividing it by $k$
+(integer division)
+the error is at most $1$, and thus the absolute error on $S'(n)$ is
+at most $N/N! = 1/(N-1)!$.
+
+The remainder term $S(n) - S'(n)$ is bounded by:
+\[ |S(n) - S'(n)| \le \sum_{k=N+1}^{\infty} \frac{n^k}{k!}. \]
+Since $k! \ge (k/e)^k$, and $k \ge N+1 \ge \alpha n$, we have:
+\[ |S(n) - S'(n)| \le \sum_{k=N+1}^{\infty} \left( \frac{n e}{k} \right)^k
+                  \le \sum_{k=N+1}^{\infty} \left( \frac{e}{\alpha} \right)^k
+                  \le 2 \left( \frac{e}{\alpha} \right)^N
+                  \le 2 e^{-2n} \]
+since $(e/\alpha)^{\alpha} = e^{-2}$.
+
+\paragraph{Evaluation of $R(n)$.}
+We estimate $R(n)$ using the terms up to $k=n-2$, again 
+as in \cite{Brent78}:
+\[ R'(n) = \frac{\exp(-n)}{n} \sum_{k=0}^{n-2} \frac{k!}{(-n)^k}
+         = \frac{\exp(-n)}{n^{n-1}} \sum_{k=0}^{n-2} (-1)^k \frac{k!}
+	n^{n-2-k}. \]
+Here again, the integer sum is computed exactly, converting it to a 
+floating-point number introduces at most one ulp of error,
+$\exp(-n)$ is computed within one ulp,
+and $n^{n-1}$ within at most $n-2$ ulps.
+The division by $n^{n-1}$ and the multiplication introduce one more ulp of
+error, thus the total error on $R'(n)$ is at most $n+2$ ulps.
+
+The remainder term is
+\[ |R(n) - R'(n)| = \frac{\exp(-n)}{n} 
+	\sum_{k=n-1}^{\infty} \frac{k!}{(-n)^k}. \]
+{\bf Problem: the series for $R(n)$ diverges!}
+
+\section{High level functions}
+
+\subsection{The exponential function}
+
+The {\tt mpfr\_exp} function implements three different algorithms.
+For very large precision, it uses a $\O(M(n) \log^2 n)$ algorithm
+based on binary splitting, based on the generic implementation for
+hypergeometric functions in the file {\tt generic.c} (see \cite{Jeandel00}).
+Currently this third algorithm is used only for precision greater
+than $13000$ bits.
+
+For smaller precisions, it uses Brent's method~;
+if $r = (x - n \log 2)/2^k$ where $0 \le r < \log 2$, then 
+\[ \exp(x) = 2^n \cdot \exp(r)^{2^k} \]
+and $\exp(r)$ is computed using the Taylor expansion:
+\[ \exp(r) =  1 + r + \frac{r^2}{2!} + \frac{r^3}{3!} + \cdots \]
+As $r < 2^{-k}$, if the target precision is $n$ bits, then only
+about $l = n/k$ terms of the Taylor expansion are needed.
+This method thus requires the evaluation of the Taylor series to
+order $n/k$, and $k$ squares to compute $\exp(r)^{2^k}$.
+If the Taylor series is evaluated using a na\"{\i}ve way, the optimal
+value of $k$ is about $n^{1/2}$, giving a complexity of $\O(n^{1/2} M(n))$.
+This is what is implemented in {\tt mpfr\_exp2\_aux}.
+
+If we use a baby step/giant step approach, the Taylor series
+can be evaluated in $\O(l^{1/2})$ operations, 
+thus the evaluation requires $(n/k)^{1/2} + k$ multiplications,
+and the optimal $k$ is now about $n^{1/3}$,
+giving a total complexity of $\O(n^{1/3} M(n))$.
+This is implemented in the function {\tt mpfr\_exp2\_aux2}.
+
 
 \bibliographystyle{acm}
 \bibliography{algo}
