@@ -26,14 +26,14 @@ mpfr_round_raw2(xp, xn, neg, rnd, prec)
      unsigned long prec; 
 #endif
 {
-  unsigned long mask, nw; long wd; char rw; short l;
+  unsigned long nw; long wd; char rw; short l; mp_limb_t mask;
 
   nw = prec / BITS_PER_MP_LIMB; rw = prec & (BITS_PER_MP_LIMB - 1); 
   if (rw) nw++; 
   if (rnd==GMP_RNDZ || xn<nw || (rnd==GMP_RNDU && neg)
       || (rnd==GMP_RNDD && neg==0)) return 0;
 
-  mask = ~((1UL<<(BITS_PER_MP_LIMB - rw)) - 1);
+  mask = ~((((mp_limb_t)1)<<(BITS_PER_MP_LIMB - rw)) - 1);
   switch (rnd)
     {
     case GMP_RNDU:
@@ -61,7 +61,7 @@ mpfr_round_raw2(xp, xn, neg, rnd, prec)
       else
       if (rw + 1 < BITS_PER_MP_LIMB)
 	{
-	  if ((xp[wd] & (~mask)) == (1UL << (BITS_PER_MP_LIMB - rw - 1)))
+	  if ((xp[wd] & (~mask)) == (((mp_limb_t)1) << (BITS_PER_MP_LIMB - rw - 1)))
 	      do { wd--; } while (wd >= 0 && !xp[wd]);
 	  else return ((xp[wd]>>(BITS_PER_MP_LIMB - rw - 1)) & 1);
 	  
