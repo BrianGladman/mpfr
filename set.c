@@ -25,7 +25,7 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-void
+int
 #if __STDC__
 mpfr_set4 (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode, int signb)
 #else
@@ -36,17 +36,20 @@ mpfr_set4 (a, b, rnd_mode, signb)
      int signb;
 #endif
 {
+  int inex;
+
   if (MPFR_IS_NAN(b))
   {
     MPFR_CLEAR_FLAGS(a);
     MPFR_SET_NAN(a);
-    return;
+    MPFR_RET(0);
   }
 
   if (MPFR_IS_INF(b))
   { 
     MPFR_CLEAR_FLAGS(a);
     MPFR_SET_INF(a);
+    inex = 0;
   }
   else
   {
@@ -60,7 +63,7 @@ mpfr_set4 (a, b, rnd_mode, signb)
     aq = MPFR_PREC(a);
 
     carry = mpfr_round_raw(ap, MPFR_MANT(b), MPFR_PREC(b), (signb < 0),
-                           aq, rnd_mode, NULL);
+                           aq, rnd_mode, &inex);
     MPFR_EXP(a) = MPFR_EXP(b);
 
     if (carry)
@@ -69,7 +72,7 @@ mpfr_set4 (a, b, rnd_mode, signb)
       if (exp == __mpfr_emax)
       {
         mpfr_set_overflow(a, rnd_mode, signb);
-        return;
+        MPFR_RET(inex);
       }
       else
       {
@@ -80,4 +83,5 @@ mpfr_set4 (a, b, rnd_mode, signb)
   }
 
   if (MPFR_SIGN(a) * signb < 0) MPFR_CHANGE_SIGN(a);
+  MPFR_RET(inex);
 }

@@ -86,6 +86,9 @@ typedef union ieee_double_extract Ieee_double_extract;
 #define MPFR_SET_ZERO(x) \
   (MPFR_MANT(x)[(MPFR_PREC(x)-1)/BITS_PER_MP_LIMB] = (mp_limb_t) 0)
 
+#define MPFR_RET(I) return \
+  ((I) ? (__mpfr_flags |= MPFR_FLAGS_INEXACT) : 0), (I)
+
 /* Memory gestion */
 
 /* temporary allocate s limbs at xp, and initialize mpfr variable x */
