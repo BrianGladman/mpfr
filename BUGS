@@ -2,10 +2,5 @@ Probably many bugs.
 
 Knowns bugs:
 
-add.c is being rewritten and tadd currently fails for
-b=2^900+2^500+2^110, d=2^900-2^500-2^110
+The overflows/underflows are not yet implemented in all functions.
 
-sub.c probably contains similar bugs.
-
-Most functions do not behave correctly with special cases, such as
-overflows, underflows and signed zeroes.
