@@ -30,10 +30,6 @@ MA 02111-1307, USA. */
 #define _FPU_EXTENDED 0x300
 #define _FPU_DOUBLE   0x200
 #define _FPU_DEFAULT  0x137f
-#define _FPU_RC_NEAREST 0x0
-#define _FPU_RC_DOWN    0x400
-#define _FPU_RC_UP      0x800
-#define _FPU_RC_ZERO    0xC00
 #define HAVE_SETFPUCW
 #else
 #ifdef HAVE_FPU_CONTROL_H
