@@ -271,7 +271,7 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
 	  err = mpfr_mpn_exp (z, &exp_z, base, exp_s - (mp_exp_t) pr, n);
           if (err == -2) /* overflow in exp_z, return Inf */
             {
-              exp_y = __mpfr_emax;
+              exp_y = __gmpfr_emax;
               goto free;
             }
 	  exact = (exact && (err == -1));
@@ -363,8 +363,7 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
 			negative, MPFR_PREC(x), rnd ))
     {
       /* overflaw when rounding y */
-      MPFR_MANT(x)[MPFR_LIMB_SIZE(x) - 1]
-	= MPFR_LIMB_HIGHBIT;
+      MPFR_MANT(x)[MPFR_LIMB_SIZE(x) - 1] = MPFR_LIMB_HIGHBIT;
       exp_y ++;
     }
 
