@@ -6,8 +6,18 @@
 \date{\tt www.mpfr.org}
 \def\O{{\mathcal O}}
 \def\q{\hspace*{5mm}}
+\def\ulp{{\rm ulp}}
 \begin{document}
 \maketitle
+
+\section{Useful formulas}
+
+With a working precision of $n$ bits, and $x = m \cdot 2^e$
+with $\frac{1}{2} \le m < 1$, $e := {\rm EXP}(x)$, we have:
+\[ x \cdot 2^{-1-n} \le \ulp(x) = 2^{{\rm EXP}(x) - n} < x \cdot 2^{-n}. \]
+
+We also have:
+\[ \frac{1}{2} a \ulp(b) \le \ulp(a b) \le a \ulp(b). \]
 
 \section{Low level functions}
 
@@ -130,7 +140,7 @@ and the total error on $s$ is bounded by $N (e^n + 1)$.
 Hence to get a precision of $n$ bits, we need to use
 $m ge n (1 + \frac{1}{\log 2})$.
 In such a case, the value $s/2^m$ converted to a floating-point number
-will have an error of at most ${\rm ulp}(x)$.
+will have an error of at most $\ulp(x)$.
 
 \paragraph{Evaluation of $R(n)$.}
 We estimate $R(n)$ using the terms up to $k=n-2$, again 
@@ -189,17 +199,17 @@ enough, thus the error on $x$ is at most $(n+1) \frac{e^n}{2^{{\rm prec}(x)}}$.
 If $e^{-n}$ is computed with $m$ bits, then
 the error on it is at most $e^{-n} 2^{1-m}$.
 The error on $r$ is then $(n + 1 + 2/n) 2^{-{\rm prec}(x)} +
-{\rm ulp}(r)$.
+\ulp(r)$.
 Since $x \ge \frac{2}{3} n$ for $n \ge 2$, and $x 2^{-{\rm prec}(x)}
-< {\rm ulp}(x)$, this gives an error bounded by 
-${\rm ulp}(r) + (n + 1 + 2/n) \frac{3}{2n} {\rm ulp}(r)
-\le 4 {\rm ulp}(r)$ for $n \ge 2$ --- if ${\rm prec}(x) = {\rm prec}(r)$.
+< \ulp(x)$, this gives an error bounded by 
+$\ulp(r) + (n + 1 + 2/n) \frac{3}{2n} \ulp(r)
+\le 4 \ulp(r)$ for $n \ge 2$ --- if ${\rm prec}(x) = {\rm prec}(r)$.
 Now since $r \le \frac{e^{-n}}{n} \le \frac{1}{8}$, that error
-is less than ${\rm ulp}(1/2)$.
+is less than $\ulp(1/2)$.
 
 \paragraph{Final computation.} We use the formula
 $\gamma = S(n) - R(n) - \log n$ with $n$ such that $e^{-2n} \le 
-{\rm ulp}(1/2) = 2^{-{\rm prec}}$, i.e.~$n \ge {\rm prec} \frac{\log 2}{2}$:
+\ulp(1/2) = 2^{-{\rm prec}}$, i.e.~$n \ge {\rm prec} \frac{\log 2}{2}$:
 \begin{quote}
 $s \leftarrow S'(n)$ \\
 $l \leftarrow \log(n)$ \\
@@ -209,10 +219,10 @@ return $(s - l) - r$
 Since the final result is in $[\frac{1}{2}, 1]$, and $R'(n) \le 
 \frac{e^{-n}}{n}$, then $S'(n)$ approximates $\log n$.
 If we use $m + \lceil \log_2({\rm prec}) \rceil$ bits to evaluate $s$ and $l$,
-then the error on $s-l$ will be at most $3 {\rm ulp}(1/2)$,
-so the error on $(s - l) - r$ is at most $5 {\rm ulp}(1/2)$,
+then the error on $s-l$ will be at most $3 \ulp(1/2)$,
+so the error on $(s - l) - r$ is at most $5 \ulp(1/2)$,
 and adding the $3 e^{-2n}$ truncation error, we get a bound of
-$8 {\rm ulp}(1/2)$.
+$8 \ulp(1/2)$.
 
 \subsubsection{A faster formula}
 
@@ -281,16 +291,16 @@ $s \leftarrow 1, t \leftarrow 1$ \\ % err = 0
 return $s$ \\
 \end{quote}
 The error on $r$ after $r \leftarrow x^2$
-is at most $1 {\rm ulp}(r)$ and remains $1 {\rm ulp}(r)$ after
+is at most $1 \ulp(r)$ and remains $1 \ulp(r)$ after
 $r \leftarrow r/2^{2k}$ since that division is just an exponent shift.
 By induction, the error on $t$ after step $l$ of the for-loop is at most
-$3 l {\rm ulp}(t)$.
-Hence as long as $3 l {\rm ulp}(t)$ remains less than $\le 2^{-m}$
+$3 l \ulp(t)$.
+Hence as long as $3 l \ulp(t)$ remains less than $\le 2^{-m}$
 during that loop
 (this is possible as soon as $r < 1/\sqrt{2}$)
 and the loop goes to $l_0$, the error on $s$ after the for-loop is at most
 $2 l_0 2^{-m}$ (for $|r| < 1$, it is easy to check that $s$ will remain
-in the interval $[\frac{1}{2}, 1[$, thus ${\rm ulp}(s) = 2^{-m}$).
+in the interval $[\frac{1}{2}, 1[$, thus $\ulp(s) = 2^{-m}$).
 (An additional $2^{-m}$ term represents the truncation error,
 but for $l=1$ the value of $t$ is exact, giving $(2 l_0 - 1) + 1 = 2 l_0$.)
 
@@ -309,21 +319,52 @@ $t \leftarrow c^2$ rounded up \\
 $u \leftarrow 1 - t$ rounded to nearest \\
 $s \leftarrow {\rm sign}(x) \sqrt{u}$ rounded to nearest \\
 \end{quote}
-The absolute error on $c$ is at most ${\rm ulp}(c)
+The absolute error on $c$ is at most $\ulp(c)
 \le 2^{-m}$ since $|c| < 1$,
 then that on
-$t$ is at most $2^{1-m}$, that on $u$ is at most $2^{1-m} + 
-\frac{1}{2}{\rm ulp}(u) \le \frac{5}{2} \cdot 2^{-m}$
-since $|t|, |u| < 1$, so that on $s$ is at most $\frac{5}{2} \cdot 2^{-m}
- + \frac{1}{2} {\rm ulp}(s) \le 2^{-m} (1/2 + \frac{5}{4 \sqrt{u}})$.
+$t$ is at most $3 \cdot 2^{-m}$, that on $u$ is at most $3 \cdot 2^{-m} + 
+\frac{1}{2}\ulp(u) \le \frac{7}{2} \cdot 2^{-m}$
+since $|t|, |u| < 1$, so that on $s$ is at most ${\rm error}(\sqrt{u})
+ + \frac{1}{2} \ulp(s) \le 2^{-m} (1/2 + \frac{7}{4 \sqrt{u}})$.
 (By Rolle's theorem,
 $|\sqrt{u} - \sqrt{u'} \le \frac{1}{2 \sqrt{v}} |u-u'|$ for
 $v \in [u, u']$.)
 % |s'-s| <= ulp(s) + |sqrt(u)-sqrt(u')| <= ulp(s) + (u-u')/(2*sqrt(v))
 % for v in [u,u']
 Let $u = m 2^{-2e}$ with $1 \le m < 4$ and $e \ge 1$, then 
-the error on $s$ is at most $2^{-m} (1/2 + \frac{5 \cdot 2^{e}}{4})
+the error on $s$ is at most $2^{-m} (1/2 + \frac{7 \cdot 2^{e}}{4})
 	\le 2^{e + 1 - m}$.
+
+\subsection{The tangent function}
+
+The tangent function is computed from the cosine, 
+using $\tan x = {\rm sign}(x) \sqrt{\frac{1}{\cos^2 x} - 1}$,
+with a working precision of $m$ bits:
+\begin{quote}
+$c \leftarrow \cos x$ rounded down \\ % c <= cos(x) <= 1
+$t \leftarrow c^2$ rounded down \\    % t <= cos(x)^2 <= 1
+$v \leftarrow 1/t$ rounded up \\      % v >= 1/cos(x)^2 >= 1
+$u \leftarrow v - 1$ rounded up \\    % u >= 1/cos(x)^2 - 1
+$s \leftarrow {\rm sign}(x) \sqrt{u}$ rounded away from $0$ \\
+\end{quote}
+The absolute error on $c$ is at most $\ulp(c)$.
+Hence the error on
+$t$ is at most $\ulp(t) + 2 c \ulp(c) \le 5 \ulp(t)$,
+% err(t) <= ulp(t) + |c^2-c'^2| <= ulp(t) + |c-c'|*|c+c'|
+%        <= ulp(t) + 2*ulp(c)*c <= 5*ulp(t)
+that on $v$ is at most $\ulp(v) + 5 \ulp(t)/t^2
+	\le \ulp(v) + 10 \ulp(1/t) \le 11 \ulp(v)$,
+% err(v) <= ulp(v) + |1/t-1/t'| <= ulp(v) + |t-t'|/t/t'
+%        <= ulp(v) + 5*ulp(t)/t^2 <= ulp(v) + 10*ulp(1/t) <= 11*ulp(v)
+that on $u$ is at most $\ulp(u) + 11 \ulp(v) \le (1 + 11 \cdot 2^e) \ulp(u)$
+where $e$ is the exponent difference between $v$ and $u$.
+% err(u) <= ulp(u) + err(v) <= ulp(v) + 11*ulp(v) <= (1+11*2^e)*ulp(u)
+The final error on $s$ is $\le \ulp(s) + (1+11 \cdot 2^e) \ulp(u)/2/\sqrt{u}
+	\le \ulp(s) + (1+11 \cdot 2^e) \ulp(u/\sqrt{u})
+	\le (2 + 11 \cdot 2^e) \ulp(s)$.
+% err(s) <= ulp(s) + |u-u'|/2/sqrt(u) <= ulp(s) + (1+11*2^e)*ulp(u)/2/sqrt(u)
+%        <= ulp(s) + (1+11*2^e)*ulp(u/sqrt(u))
+%        <= (2+11*2^e)*ulp(s) 
 
 \subsection{The exponential function}
 
