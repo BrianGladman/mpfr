@@ -121,7 +121,7 @@ int check_worst_case (double X, double expx)
   mpfr_exp(x, x, GMP_RNDN);
   mpfr_set_d(x, X, GMP_RNDN);
   mpfr_exp(x, x, GMP_RNDU);
-  mpfr_add_one_ulp(y);
+  mpfr_add_one_ulp(y, GMP_RNDN);
   if (mpfr_cmp(x,y)) {
     fprintf(stderr, "exp(x) rounded towards +infinity is wrong\n"); exit(1);
   }

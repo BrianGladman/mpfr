@@ -20,14 +20,14 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
 #include "gmp.h"
-#include "mpfr.h"
-#include "mpfr-impl.h"
 #include "gmp-impl.h"
 #include "longlong.h"
+#include "mpfr.h"
+#include "mpfr-impl.h"
 
 /* set f to the integer z */
 int 
-mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd)
+mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
 {
   mp_size_t fn, zn, dif, sh;
   int k, sign_z;
@@ -58,7 +58,7 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd)
     sh = fn*BITS_PER_MP_LIMB-MPFR_PREC(f);
     cc = *fp & ((MP_LIMB_T_ONE << sh) - 1);
     *fp = *fp & ~cc;
-    if (rnd==GMP_RNDN) {
+    if (rnd_mode == GMP_RNDN) {
       if (sh) c2 = MP_LIMB_T_ONE << (sh - 1);
       else { /* sh=0 */
 	c2 = MP_LIMB_T_HIGHBIT;
@@ -67,25 +67,50 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd)
 	if (dif>0 && k) cc += zp[dif-1] >> (BITS_PER_MP_LIMB-k);
       }
       /* now compares cc to c2 */
-      if (cc>c2) { mpfr_add_one_ulp(f); return cc; }
-      else if (cc<c2) goto towards_zero;
-      else {
-	cc=0;
-	while (dif>0 && (cc=zp[dif-1])==0) dif--;
-	if (cc) { mpfr_add_one_ulp(f); return cc; }
-	else /* exactly in middle: inexact in both cases */
-	  if (*fp & (MP_LIMB_T_ONE << sh)) { mpfr_add_one_ulp(f); return 1; }
-	  else return 1;
+      if (cc > c2)
+        {
+          mpfr_add_one_ulp(f, rnd_mode);
+          return cc;
+        }
+      else if (cc < c2)
+        goto towards_zero;
+      else
+        {
+          cc = 0;
+          while (dif > 0 && (cc = zp[dif-1]) == 0)
+            dif--;
+          if (cc)
+            {
+              mpfr_add_one_ulp(f, rnd_mode);
+              return cc;
+            }
+          else /* exactly in middle: inexact in both cases */
+            if (*fp & (MP_LIMB_T_ONE << sh))
+              {
+                mpfr_add_one_ulp(f, rnd_mode);
+                return 1;
+              }
+            else
+              return 1;
+        }
+    }
+    else if ((sign_z > 0 && rnd_mode == GMP_RNDU) ||
+             (sign_z < 0 && rnd_mode == GMP_RNDD))
+      {
+        /* round towards infinity */
+        /* result is exact iff all remaining bits are zero */
+        if (dif > 0 && cc == 0)
+          cc = zp[--dif] << k;
+        while (cc == 0 && dif > 0)
+          cc = zp[--dif];
+        if (cc)
+          {
+            mpfr_add_one_ulp(f, rnd_mode);
+            return 1;
+          }
+        else
+          return 0;
       }
-    }
-    else if ((sign_z>0 && rnd==GMP_RNDU) || (sign_z<0 && rnd==GMP_RNDD)) {
-      /* round towards infinity */
-      /* result is exact iff all remaining bits are zero */
-      if (dif>0 && cc==0) cc=zp[--dif]<<k;
-      while (cc==0 && dif>0) cc=zp[--dif];
-      if (cc) { mpfr_add_one_ulp(f); return 1; }
-      else return 0;
-    }
     else { /* round towards zero */
       /* result is exact iff all remaining bits are zero */
     towards_zero:

@@ -149,12 +149,12 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 
     case GMP_RNDU:
       if (MPFR_SIGN(y) > 0)
-	mpfr_add_one_ulp (y);
+	mpfr_add_one_ulp (y, rnd_mode);
       MPFR_RET(1); /* result is inexact */
 
     case GMP_RNDD:
       if (MPFR_SIGN(y) < 0)
-	mpfr_add_one_ulp (y);
+	mpfr_add_one_ulp (y, rnd_mode);
       MPFR_RET(-1); /* result is inexact */
 
     case GMP_RNDN:
@@ -162,7 +162,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 	MPFR_RET(-MPFR_SIGN(x));
       else if (sh && d > (MP_LIMB_T_ONE << (sh - 1)))
 	{
-	  mpfr_add_one_ulp (y);
+	  mpfr_add_one_ulp (y, rnd_mode);
 	  MPFR_RET(MPFR_SIGN(x));
 	}
     else /* sh = 0 or d = 1 << (sh-1) */
@@ -173,7 +173,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 	 */
 	if ((sh && inexact) || (!sh && (middle > 0)) || (*yp & (MP_LIMB_T_ONE << sh)))
 	  {
-	    mpfr_add_one_ulp (y);
+	    mpfr_add_one_ulp (y, rnd_mode);
 	    MPFR_RET(MPFR_SIGN(x));
 	  }
 	    else

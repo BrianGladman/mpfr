@@ -107,12 +107,12 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_set_ui (y, 1, rnd_mode);
       if (signx > 0 && rnd_mode == GMP_RNDU)
 	{
-	  mpfr_add_one_ulp (y);
+	  mpfr_add_one_ulp (y, rnd_mode);
 	  return 1;
 	}
       else if (signx < 0 && (rnd_mode == GMP_RNDD || rnd_mode == GMP_RNDZ))
 	{
-	  mpfr_sub_one_ulp (y);
+	  mpfr_sub_one_ulp (y, rnd_mode);
 	  return -1;
 	}
       return -signx;

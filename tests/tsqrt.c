@@ -188,7 +188,7 @@ void special ()
     {
       mpfr_set_prec (z, p);
       mpfr_set_ui (z, 1, GMP_RNDN);
-      mpfr_add_one_ulp (z);
+      mpfr_add_one_ulp (z, GMP_RNDN);
       mpfr_sqrt (x, z, GMP_RNDU);
       if (mpfr_cmp_ui (x, 2))
 	{

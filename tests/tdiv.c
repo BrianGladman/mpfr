@@ -216,7 +216,7 @@ void check_lowr ()
 	}
       else if (c == 2) 
 	{
-	  mpfr_add_one_ulp(z); 
+	  mpfr_add_one_ulp(z, GMP_RNDN); 
 	  if (mpfr_cmp(z2, z))
 	    {
 	      fprintf(stderr, "Error in mpfr_div [even rnd?] rnd=GMP_RNDN\n");
@@ -229,7 +229,7 @@ void check_lowr ()
 	}
       else if (c == -2)
 	{ 
-	  mpfr_sub_one_ulp(z); 
+	  mpfr_sub_one_ulp(z, GMP_RNDN); 
 	  if (mpfr_cmp(z2, z))
 	    {
 	      fprintf(stderr, "Error in mpfr_div [even rnd?] rnd=GMP_RNDN\n");
@@ -256,7 +256,7 @@ void check_lowr ()
       mpfr_random(tmp); 
       mpfr_mul(x, z, tmp, GMP_RNDN); 
       mpfr_set(y, tmp, GMP_RNDD); 
-      mpfr_add_one_ulp(x); 
+      mpfr_add_one_ulp(x, GMP_RNDN); 
 
       c = mpfr_div(z2, x, y, GMP_RNDD); 
       mpfr_div(z3, x, y, GMP_RNDD); 
