@@ -36,7 +36,7 @@ mpfr_init2 (x, p)
   mp_prec_t xsize; 
 
   if (p==0) {
-    printf("*** cannot initialize mpfr with precision 0\n"); exit(1);
+    fprintf(stderr, "*** cannot initialize mpfr with precision 0\n"); exit(1);
   }
 
   xsize = (p - 1)/BITS_PER_MP_LIMB + 1; 
@@ -46,4 +46,15 @@ mpfr_init2 (x, p)
     (xsize * BYTES_PER_MP_LIMB);
   x -> _mp_size = xsize;
   x -> _mp_exp = 0; /* avoids uninitialized memory reads for zero */
+}
+
+void
+#if __STDC__
+mpfr_init (mpfr_t x)
+#else
+mpfr_init (x)
+     mpfr_t x;
+#endif
+{
+  mpfr_init2(x, __gmp_default_fp_bit_precision);
 }
