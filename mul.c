@@ -27,8 +27,8 @@ MA 02111-1307, USA. */
 int
 mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode) 
 {
-  int sign_product, cc, inexact, ec, em = 0;
-  mp_exp_t bx, cx;
+  int sign_product, cc, inexact;
+  mp_exp_t ax, bx, cx;
   mp_limb_t *ap, *bp, *cp, *tmp;
   mp_limb_t b1;
   mp_prec_t aq, bq, cq;
@@ -90,39 +90,14 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
   bx = MPFR_EXP(b);
   cx = MPFR_EXP(c);
-  /* Note: exponent of the result will be bx + cx + ec with ec in {-1,0,1} */
-  if (bx >= 0 && cx > 0)
-    { /* bx + cx > 0 */
-      if (__mpfr_emax < 0 ||
-          (mp_exp_unsigned_t) bx + cx > (mp_exp_unsigned_t) __mpfr_emax + 1)
-        return mpfr_set_overflow(a, rnd_mode, sign_product);
-
-      if ((mp_exp_unsigned_t) bx + cx == (mp_exp_unsigned_t) __mpfr_emax + 1)
-        em = 1;
-    }
-  else if (bx <= 0 && cx < 0)
-    { /* bx + cx < 0 */
-      if (__mpfr_emin > 0 ||
-          (mp_exp_unsigned_t) bx + cx < (mp_exp_unsigned_t) __mpfr_emin - 1)
-        return mpfr_set_underflow(a, rnd_mode, sign_product);
-
-      if ((mp_exp_unsigned_t) bx + cx == (mp_exp_unsigned_t) __mpfr_emin - 1)
-        em = -1;
-    }
-  else
-    { /* bx != 0 and cx doesn't have the same sign */
-      if ((bx + cx) - 1 > __mpfr_emax)
-        return mpfr_set_overflow(a, rnd_mode, sign_product);
-
-      if ((bx + cx) - 1 == __mpfr_emax)
-        em = 1;
-
-      if ((bx + cx) + 1 < __mpfr_emin)
-        return mpfr_set_underflow(a, rnd_mode, sign_product);
-
-      if ((bx + cx) + 1 == __mpfr_emin)
-        em = -1;
-    }
+  /* Note: the exponent of the exact result will be e = bx + cx + ec with
+     ec in {-1,0,1} and the following assumes that e is representable. */
+  MPFR_ASSERTN(MPFR_EMAX_MAX <= (MP_EXP_T_MAX >> 1));
+  MPFR_ASSERTN(MPFR_EMIN_MIN >= -(MP_EXP_T_MAX >> 1));
+  if ((bx + cx) - 1 > __mpfr_emax)
+    return mpfr_set_overflow(a, rnd_mode, sign_product);
+  if ((bx + cx) + 1 < __mpfr_emin)
+    return mpfr_set_underflow(a, rnd_mode, sign_product);
 
   ap = MPFR_MANT(a);
   bp = MPFR_MANT(b);
@@ -164,34 +139,12 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
   TMP_FREE(marker);
 
-  ec = b1 - 1 + cc;
-
-  if (em == 0)
-    {
-      mp_exp_t ax = bx + cx;
-
-      if (ax == __mpfr_emax && ec > 0)
-        return mpfr_set_overflow(a, rnd_mode, sign_product);
-
-      if (ax == __mpfr_emin && ec < 0)
-        return mpfr_set_underflow(a, rnd_mode, sign_product);
-
-      MPFR_EXP(a) = ax + ec;
-    }
-  else if (em > 0)
-    {
-      if (ec >= 0)
-        return mpfr_set_overflow(a, rnd_mode, sign_product);
-
-      MPFR_EXP(a) = __mpfr_emax;
-    }
-  else
-    {
-      if (ec <= 0)
-        return mpfr_set_underflow(a, rnd_mode, sign_product);
-
-      MPFR_EXP(a) = __mpfr_emin;
-    }
+  ax = (bx + cx) + (mp_exp_t) (b1 - 1 + cc);
+  if (ax > __mpfr_emax)
+    return mpfr_set_overflow(a, rnd_mode, sign_product);
+  if (ax < __mpfr_emin)
+    return mpfr_set_underflow(a, rnd_mode, sign_product);
+  MPFR_EXP(a) = ax;
 
   if (MPFR_SIGN(a) != sign_product)
     MPFR_CHANGE_SIGN(a);
