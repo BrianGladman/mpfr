@@ -42,4 +42,6 @@ mpfr_print_rnd_mode (mp_rnd_t rnd_mode)
       fprintf (stderr, "unknown rounding mode\n");
       exit (1);
     }
+
+  return NULL;
 }
