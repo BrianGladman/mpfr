@@ -185,6 +185,10 @@ int mpfr_cmp_ui_2exp _PROTO ((mpfr_srcptr, unsigned long int, int));
 int mpfr_cmp_si_2exp _PROTO ((mpfr_srcptr, long int, int));
 int mpfr_mul_2exp _PROTO((mpfr_ptr, mpfr_srcptr, unsigned long int, mp_rnd_t));
 int mpfr_div_2exp _PROTO((mpfr_ptr, mpfr_srcptr, unsigned long int, mp_rnd_t));
+int mpfr_mul_2ui _PROTO((mpfr_ptr, mpfr_srcptr, unsigned long int, mp_rnd_t));
+int mpfr_div_2ui _PROTO((mpfr_ptr, mpfr_srcptr, unsigned long int, mp_rnd_t));
+int mpfr_mul_2si _PROTO((mpfr_ptr, mpfr_srcptr, long int, mp_rnd_t));
+int mpfr_div_2si _PROTO((mpfr_ptr, mpfr_srcptr, long int, mp_rnd_t));
 int mpfr_set_prec _PROTO((mpfr_ptr, mp_prec_t));
 void mpfr_set_prec_raw _PROTO((mpfr_ptr, mp_prec_t));
 void mpfr_set_default_prec _PROTO((mp_prec_t));
@@ -287,6 +291,8 @@ int mpfr_sub_q _PROTO ((mpfr_ptr, mpfr_srcptr, mpq_srcptr, mp_rnd_t));
 #define mpfr_abs(a,b,r) mpfr_set4(a,b,r,1)
 #define mpfr_cmp(b, c) mpfr_cmp3(b, c, 1)
 #define mpfr_sgn(x) mpfr_cmp_ui(x,0)
+#define mpfr_mul_2exp(y,x,n,r) mpfr_mul_2ui((y),(x),(n),(r))
+#define mpfr_div_2exp(y,x,n,r) mpfr_div_2ui((y),(x),(n),(r))
 
 #define mpfr_init_set_si(x, i, rnd) \
  ( mpfr_init(x), mpfr_set_si((x), (i), (rnd)) )

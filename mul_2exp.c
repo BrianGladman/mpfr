@@ -24,33 +24,12 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
+/* Obsolete function, use mpfr_mul_2ui or mpfr_mul_2si instead. */
+
+#undef mpfr_mul_2exp
+
 int
 mpfr_mul_2exp (mpfr_ptr y, mpfr_srcptr x, unsigned long int n, mp_rnd_t rnd_mode)
 {
-  int inexact;
-
-  inexact = y != x ? mpfr_set (y, x, rnd_mode) : 0;
-
-  if (MPFR_IS_FP(y) && MPFR_NOTZERO(y))
-    {
-      /* n will have to be casted to long to make sure that the addition
-         and subtraction below (for overflow detection) are signed */
-      while (n > LONG_MAX)
-        {
-          int inex2;
-
-          n -= LONG_MAX;
-          inex2 = mpfr_mul_2exp(y, y, LONG_MAX, rnd_mode);
-          if (inex2)
-            return inex2; /* overflow */
-        }
-
-      if (__mpfr_emax < MPFR_EMIN_MIN + (long) n ||
-          MPFR_EXP(y) > __mpfr_emax - (long) n)
-        return mpfr_set_overflow (y, rnd_mode, MPFR_SIGN(y));
-
-      MPFR_EXP(y) += (long) n;
-    }
-
-  return inexact;
+  return mpfr_mul_2ui (y, x, n, rnd_mode);
 }

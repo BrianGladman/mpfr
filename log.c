@@ -138,10 +138,10 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
     mpfr_set_si (mm, m, GMP_RNDN);        /* I have m, supposed exact */
     mpfr_set_si (tmp1, 1, GMP_RNDN);      /* I have 1, exact */
     mpfr_set_si (tmp2, 4, GMP_RNDN);      /* I have 4, exact */
-    mpfr_mul_2exp (s, a, m, GMP_RNDN);    /* I compute s=a*2^m, err <= 1 ulp */
+    mpfr_mul_2si (s, a, m, GMP_RNDN);    /* I compute s=a*2^m, err <= 1 ulp */
     mpfr_div (rapport, tmp2, s, GMP_RNDN);/* I compute 4/s, err <= 2 ulps */
     mpfr_agm (agm, tmp1, rapport, GMP_RNDN); /* AG(1,4/s), err<=3 ulps */
-    mpfr_mul_2exp (tmp1, agm, 1, GMP_RNDN);  /* 2*AG(1,4/s), still err<=3 ulps */
+    mpfr_mul_2ui (tmp1, agm, 1, GMP_RNDN); /* 2*AG(1,4/s), still err<=3 ulps */
     mpfr_const_pi (cst, GMP_RNDN);        /* compute pi, err<=1ulp */
     mpfr_div (tmp2, cst, tmp1, GMP_RNDN); /* pi/2*AG(1,4/s), err<=5ulps */
     mpfr_const_log2 (cst, GMP_RNDN);      /* compute log(2), err<=1ulp */

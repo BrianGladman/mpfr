@@ -1,4 +1,4 @@
-/* mpfr_div_2exp -- divide a floating-point number by a power of two
+/* mpfr_mul_2si -- multiply a floating-point number by a power of two
 
 Copyright (C) 1999, 2001 Free Software Foundation, Inc.
 
@@ -24,12 +24,25 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-/* Obsolete function, use mpfr_div_2ui or mpfr_div_2si instead. */
-
-#undef mpfr_div_2exp
-
 int
-mpfr_div_2exp (mpfr_ptr y, mpfr_srcptr x, unsigned long int n, mp_rnd_t rnd_mode)
+mpfr_mul_2si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd_mode)
 {
-  return mpfr_div_2ui (y, x, n, rnd_mode);
+  int inexact;
+
+  inexact = y != x ? mpfr_set (y, x, rnd_mode) : 0;
+
+  if (MPFR_IS_FP(y) && MPFR_NOTZERO(y))
+    {
+      if (n > 0 && (__mpfr_emax < MPFR_EMIN_MIN + n ||
+                    MPFR_EXP(y) > __mpfr_emax - n))
+        return mpfr_set_overflow (y, rnd_mode, MPFR_SIGN(y));
+
+      if (n < 0 && (__mpfr_emin > MPFR_EMAX_MAX + n ||
+                    MPFR_EXP(y) < __mpfr_emin - n))
+        return mpfr_set_underflow (y, rnd_mode, MPFR_SIGN(y));
+
+      MPFR_EXP(y) += n;
+    }
+
+  return inexact;
 }
