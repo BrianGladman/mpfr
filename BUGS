@@ -1,15 +1,15 @@
 Probably many bugs.
 
-Knowns bugs:
+Known bugs:
 
 * The overflows/underflows are not yet implemented in all functions.
 
 * Possible integer overflows on some machines.
 
+* mpfr_set_d may give wrong results on some architectures.
+
+Potential bugs:
+
 * get_str.c: condition len != n + 1 is always satisfied at the end.
   This means that there are too many reallocations (possibly useless
   ones) and a possible bug.
-
-* TMP_ALLOC problems in agm.c and sqrt.c. (Kevin Ryde, 05 March 2002)
-
-* mpfr_set_d may give wrong results on some architectures.
