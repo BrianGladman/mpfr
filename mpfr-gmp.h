@@ -237,31 +237,33 @@ typedef __gmp_randstate_struct *gmp_randstate_ptr;
 
 #undef _gmp_rand
 #define _gmp_rand mpfr_rand_raw
-void _gmp_rand _MPFR_PROTO((mp_ptr, gmp_randstate_t, unsigned long int));
+void mpfr_rand_raw _MPFR_PROTO((mp_ptr, gmp_randstate_t, unsigned long int));
 
-/* Allocate func (define as internal in gmp) */
+/* Allocate func are defined in gmp-impl.h */
 #undef __gmp_allocate_func      
 #undef __gmp_reallocate_func    
 #undef __gmp_free_func          
-#undef __gmp_default_allocate   
-#undef __gmp_default_reallocate 
-#undef __gmp_default_free       
-#undef mp_set_memory_functions
 #define __gmp_allocate_func      mpfr_allocate_func
 #define __gmp_reallocate_func    mpfr_reallocate_func
 #define __gmp_free_func          mpfr_free_func
-#define __gmp_default_allocate   mpfr_default_allocate
-#define __gmp_default_reallocate mpfr_default_reallocate
-#define __gmp_default_free       mpfr_default_free
-#define mp_set_memory_functions  mpfr_set_memory_functions
 extern void * (*__gmp_allocate_func)   _MPFR_PROTO ((size_t));
 extern void * (*__gmp_reallocate_func) _MPFR_PROTO ((void *, size_t, size_t));
 extern void   (*__gmp_free_func)       _MPFR_PROTO ((void *, size_t));
+
+#undef __gmp_default_allocate
+#undef __gmp_default_reallocate
+#undef __gmp_default_free
+#define __gmp_default_allocate   mpfr_default_allocate
+#define __gmp_default_reallocate mpfr_default_reallocate
+#define __gmp_default_free       mpfr_default_free
 void *__gmp_default_allocate _MPFR_PROTO ((size_t));
 void *__gmp_default_reallocate _MPFR_PROTO ((void *, size_t, size_t));
 void __gmp_default_free _MPFR_PROTO ((void *, size_t));
+
+#undef mp_set_memory_functions
+#define mp_set_memory_functions mpfr_set_memory_functions
 void mp_set_memory_functions _MPFR_PROTO ((void *(*) (size_t),
-					   void *(*) (void *, size_t, size_t),
-					   void (*) (void *, size_t)));
+                                           void *(*) (void *, size_t, size_t),
+                                           void (*) (void *, size_t)));
 
 #endif /* Gmp internal emulator */

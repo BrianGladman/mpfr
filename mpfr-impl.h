@@ -61,14 +61,6 @@ MA 02111-1307, USA. */
 #endif
 #undef MPFR_NEED_LONGLONG_H
 
-#ifndef HAVE_STRCASECMP
-# define strcasecmp mpfr_strcasecmp
-#endif
-
-#ifndef HAVE_STRNCASECMP
-# define strncasecmp mpfr_strncasecmp
-#endif
-
 /* Macros to detect STDC, GCC, GLIBC and GMP version */
 #if defined(__STDC_VERSION__)
 # define __MPFR_STDC(version) (__STDC_VERSION__>=(version))
@@ -77,7 +69,6 @@ MA 02111-1307, USA. */
 #else
 # define __MPFR_STDC(version) 0
 #endif
-
 #if defined(__GNUC__) && defined(__GNUC_MINOR__)
 # define __MPFR_GNUC(a, i) (MPFR_VERSION_NUM(__GNUC__,__GNUC_MINOR__,0)>=MPFR_VERSION_NUM(a,i,0))
 #else
@@ -92,6 +83,16 @@ MA 02111-1307, USA. */
 # define __MPFR_GMP(a, b, c) (MPFR_VERSION_NUM(__GNU_MP_VERSION,__GNU_MP_VERSION_MINOR,__GNU_MP_VERSION_PATCHLEVEL) >= MPFR_VERSION_NUM(a,b,c))
 #else
 # define __MPFR_GMP(a, b, c) 0
+#endif
+
+
+/* Define strcasecmp and strncasecmp if needed */
+#ifndef HAVE_STRCASECMP
+# define strcasecmp mpfr_strcasecmp
+#endif
+
+#ifndef HAVE_STRNCASECMP
+# define strncasecmp mpfr_strncasecmp
 #endif
 
 /* Check GMP */
@@ -192,7 +193,7 @@ typedef unsigned long int  mpfr_uexp_t;
 
 /* Theses macros help the compiler to determine if a test is 
  * likely or unlikely. */
-#if __GNUC__ >= 3
+#if __MPFR_GNUC(3,0)
 # define MPFR_LIKELY(x) (__builtin_expect(!!(x),1))
 # define MPFR_UNLIKELY(x) (__builtin_expect((x),0))
 #else
@@ -481,6 +482,9 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
 #define MPFR_TMP_INIT(xp, x, p, s) \
   (xp = (mp_ptr) TMP_ALLOC(BYTES_PER_MP_LIMB * ((size_t) s)), \
    MPFR_TMP_INIT1(xp, x, p))
+
+/* Use it only for debug reasons */
+#define MPFR_DUMP(x) do { printf(#x"="); mpfr_dump(x); } while (0)
 
 #if defined (__cplusplus)
 extern "C" {

@@ -358,8 +358,8 @@ mpfr_default_free (void *blk_ptr, size_t blk_size)
 
 void
 mpfr_set_memory_functions (void *(*alloc_func) (size_t),
-			   void *(*realloc_func) (void *, size_t, size_t),
-			   void (*free_func) (void *, size_t))
+                           void *(*realloc_func) (void *, size_t, size_t),
+                           void (*free_func) (void *, size_t))
 {
   if (alloc_func == ((void*(*)(size_t)) 0))
     alloc_func = mpfr_default_allocate;
@@ -373,5 +373,5 @@ mpfr_set_memory_functions (void *(*alloc_func) (size_t),
   __gmp_free_func = free_func;
 }
 
-#endif
+#endif /* Have gmp-impl.h */
 
