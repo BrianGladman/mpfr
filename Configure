@@ -140,7 +140,7 @@ case "$ans" in
 esac
 special=$ans
 
-if test -z "$cflags"; then cflags="-ansi -Wall -pedantic"; fi; 
+if test -z "$cflags"; then cflags="-ansi -Wall -pedantic -g"; fi; 
 
 echo
 echo $n "What supplementary (optimization/debugging) flags are you willing to use [$cflags] ? $c"
