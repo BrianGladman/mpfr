@@ -59,6 +59,7 @@ int main(argc,argv) int argc; char *argv[];
 
   check_large();
   srand(getpid());
+  check(0, 0);
   for (j=0; j<1000000; j++)
     check(lrand48(), rand()%4);
   return 0;
