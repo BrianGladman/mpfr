@@ -48,7 +48,6 @@ mpfr_set_str_raw (x, str)
   xp = MPFR_MANT(x);
   xsize = 1 + (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB;
   alloc = (strlen(str)+1) * sizeof(char);
-  str0 = str2 = (char *) (*__gmp_allocate_func) (alloc);
 
   if (*str == '-') { negative = 1; str++; }
   else if (*str == '+') str++;
@@ -56,7 +55,8 @@ mpfr_set_str_raw (x, str)
   if (*str == 'I') 
     { 
       MPFR_SET_INF(x);
-      if (MPFR_ISNEG(x) != negative) MPFR_CHANGE_SIGN(x);
+      if (MPFR_ISNEG(x) != negative)
+	MPFR_CHANGE_SIGN(x);
       return; 
     }
      
@@ -68,6 +68,8 @@ mpfr_set_str_raw (x, str)
 
   MPFR_CLEAR_FLAGS(x);
  
+  str0 = str2 = (char *) (*__gmp_allocate_func) (alloc);
+
   while (*str == '0') { str++; } 
 
   while (*str == '0' || *str == '1')
