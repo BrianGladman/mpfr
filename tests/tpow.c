@@ -467,9 +467,7 @@ void f (void)
 {
 }
 
-void underflows (void);
-
-void
+static void
 underflows (void)
 {
   mpfr_t x, y;
@@ -545,7 +543,7 @@ main (void)
   for (p=2; p<100; p++)
     check_inexact (p);
 
-  /*underflows ();*/
+  underflows ();
 
   overflows ();
 
