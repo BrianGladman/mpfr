@@ -115,8 +115,9 @@ New functions to implement:
 - atan2
 - implement accurate summation algorithms from Demmel
 	(http://www.cs.berkeley.edu/~demmel/AccurateSummation.ps)
-- mpfr_root to compute x^(1/n) for n integer [suggested by Damien Fisher,
-	damien@maths.usyd.edu.au, 20 Jul 2003]
+- mpfr_root to compute x^(1/n) for n integer, similar to mpz_root
+	[suggested by Damien Fisher, damien@maths.usyd.edu.au, 20 Jul 2003,
+	and Mark Watkins <watkins@maths.usyd.edu.au>, 23 Jul 2003]
 - a function to free the cache used by constants (and possibly other
   functions).
 - mpfr_fmod (mpfr_t, mpfr_srcptr, mpfr_srcptr, mp_rnd_t)
