@@ -93,7 +93,7 @@ mpfr_set_str (x, str, base, rnd_mode)
 	  fprintf(stderr, "Warning: exponent underflow in mpfr_set_str\n"); 
     }
   else if (l) {
-    fprintf(stderr, "Unexpected end of string in mpfr_set_str: %s\n", str);
+    /* unexpected end of string */
     return -1;
   }
   else {
