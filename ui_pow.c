@@ -32,7 +32,6 @@ MA 02111-1307, USA. */
 
     y=exp(z*log(n))=n^z
  */
-int mpfr_ui_pow _PROTO((mpfr_ptr, unsigned long int,mpfr_srcptr, mp_rnd_t));
 
 int
 #if __STDC__
