@@ -8,6 +8,7 @@ Known bugs:
 
 * mpfr_set_d may give wrong results on some architectures.
 
-* Error analysis in mpfr_sin is incorrect. Check the other functions too...
+* Error analysis in mpfr_sin is incorrect. A test has been added to
+  show the bug. Check the other functions too...
 
 * mpfr_hypot fails for very large or very small exponents.
