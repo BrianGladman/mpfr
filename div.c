@@ -218,11 +218,18 @@ mpfr_div (r, u, v, rnd_mode)
 	 then we have the correct RNDZ rounding */
 
       if (!can_round && (rsize < usize || rsize < vsize)) 
-	{ 
+	{
 #ifdef DEBUG
-	  printf("Increasing the precision.\n"); 
+	  printf("Increasing the precision.\n");
 #endif
-	  TMP_FREE(marker); 
+	  TMP_FREE(marker);
+	  /* in case we can't round at the first iteration,
+	     jump right away to the maximum precision of both
+	     operands, to avoid multiple iterations when for 
+	     example the divisor is 1.0.
+	  */
+	  if (rsize < usize) rsize = usize - 1;
+	  if (rsize < vsize) rsize = vsize - 1;
 	}
     }
   while (!can_round && (rsize < usize || rsize < vsize) 
