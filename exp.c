@@ -121,8 +121,7 @@ int mpfr_exp(mpfr_ptr y, mpfr_srcptr x, unsigned char rnd_mode)
      printf("q=%d q-K=%d precy=%d\n",q,q-K,precy);
 #endif
      q += BITS_PER_MP_LIMB;
-     mpfr_set_prec(r, q, GMP_RNDZ); mpfr_set_prec(s, q, GMP_RNDZ); 
-     mpfr_set_prec(t, q, GMP_RNDZ);
+     mpfr_set_prec(r, q); mpfr_set_prec(s, q); mpfr_set_prec(t, q);
   }
   } while (l==0);
 

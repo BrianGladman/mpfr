@@ -66,7 +66,7 @@ void mpfr_log2(x, rnd_mode) mpfr_ptr x; unsigned char rnd_mode;
 
   /* stored computed value */
   if (_mpfr_log2_prec==0) mpfr_init2(_mpfr_log2, precx);
-  else mpfr_set_prec(_mpfr_log2, precx, GMP_RNDZ);
+  else mpfr_set_prec(_mpfr_log2, precx);
   mpfr_set(_mpfr_log2, x, GMP_RNDZ);
   _mpfr_log2_prec=precx;
 
