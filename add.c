@@ -183,7 +183,7 @@ mpfr_add1 (a, b, c, rnd_mode, diff_exp)
 
         mask = (ONE << sh) - 1;
         bb = ap[0] & mask;
-        ap[0] &= ~mask;
+        ap[0] &= (~mask) << 1;
         if (bb == 0)
           fb = 0;
         else if (bb == mask)
