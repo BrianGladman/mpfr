@@ -32,29 +32,28 @@ Boston, MA 02111-1307, USA.  */
 
 #include <ctype.h>
 
-int mpfr_strcasecmp (const char *, const char *);
+int mpfr_strncasecmp (const char *, const char *, size_t);
 
-/* Compare strings S1 and S2, ignoring case, returning less than,
-   equal to or greater than zero if S1 is lexiographically less
-   than, equal to or greater than S2. */
+/* Compare no more than N characters of strings S1 and S2, ignoring
+   case, returning less than, equal to or greater than zero if S1 is
+   lexiographically less than, equal to or greater than S2. */
 int
-mpfr_strcasecmp (const char *s1, const char *s2)
+mpfr_strncasecmp (const char *s1, const char *s2, size_t n)
 {
   register const unsigned char *p1 = (const unsigned char *) s1;
   register const unsigned char *p2 = (const unsigned char *) s2;
   unsigned char c1, c2;
 
-  if (p1 == p2)
+  if (p1 == p2 || n == 0)
     return 0;
 
   do
     {
       c1 = tolower (*p1++);
       c2 = tolower (*p2++);
-      if (c1 == '\0')
-	break;
-    }
-  while (c1 == c2);
+      if (c1 == '\0' || c1 != c2)
+	return c1 - c2;
+    } while (--n > 0);
 
   return c1 - c2;
 }

@@ -53,12 +53,7 @@ case $host in
 		;;
 esac
 
-AC_CHECK_FUNCS(strcasecmp strncasecmp)
-if test $ac_cv_func_strcasecmp = no || test $ac_cv_func_strncasecmp = no
-then
-  LIBOBJS="$LIBOBJS strcasecmp.o"
-  AC_SUBST(LIBOBJS)
-fi
+AC_REPLACE_FUNCS(strcasecmp strncasecmp)
 
 dnl Check for IEEE-754 switches on Alpha
 case $host in
