@@ -493,6 +493,65 @@ check_nan (void)
   mpfr_clear (got);
 }
 
+/* check that -1 <= x/sqrt(x^2+y^2) <= 1 for rounding to nearest or up */
+static void
+test_property1 (mp_prec_t p, mp_rnd_t r)
+{
+  mpfr_t x, y, z, t;
+
+  mpfr_init2 (x, p);
+  mpfr_init2 (y, p);
+  mpfr_init2 (z, p);
+  mpfr_init2 (t, p);
+
+  mpfr_random (x);
+  mpfr_random (y);
+  mpfr_mul (z, x, x, r);
+  mpfr_mul (t, x, x, r);
+  mpfr_add (z, z, t, r);
+  mpfr_sqrt (z, z, r);
+  mpfr_div (z, x, z, r);
+  if (mpfr_cmp_si (z, -1) < 0 || mpfr_cmp_ui (z, 1) > 0)
+    {
+      printf ("Error, -1 <= x/sqrt(x^2+y^2) <= 1 does not hold for r=%s\n",
+              mpfr_print_rnd_mode (r));
+      printf ("x="); mpfr_dump (x);
+      printf ("y="); mpfr_dump (y);
+      printf ("got "); mpfr_dump (z);
+      exit (1);
+    }
+  
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+  mpfr_clear (t);
+}
+
+/* check sqrt(x^2) = x */
+static void
+test_property2 (mp_prec_t p, mp_rnd_t r)
+{
+  mpfr_t x, y;
+
+  mpfr_init2 (x, p);
+  mpfr_init2 (y, p);
+
+  mpfr_random (x);
+  mpfr_mul (y, x, x, r);
+  mpfr_sqrt (y, y, r);
+  if (mpfr_cmp (y, x))
+    {
+      printf ("Error, sqrt(x^2) = x does not hold for r=%s\n",
+              mpfr_print_rnd_mode (r));
+      printf ("x="); mpfr_dump (x);
+      printf ("got "); mpfr_dump (y);
+      exit (1);
+    }
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
 int
 main (void)
 {
@@ -500,6 +559,13 @@ main (void)
   int k;
 
   tests_start_mpfr ();
+
+  for (p = MPFR_PREC_MIN; p <= 128; p++)
+    {
+      test_property1 (p, GMP_RNDN);
+      test_property1 (p, GMP_RNDU);
+      test_property2 (p, GMP_RNDN);
+    }
 
   check_diverse ("635030154261163106768013773815762607450069292760790610550915652722277604820131530404842415587328", 160, "796887792767063979679855997149887366668464780637");
   special ();
