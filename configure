@@ -1543,7 +1543,7 @@ echo "configure:1542: checking gmp library" >&5
 	then
 	  LDADD="$LDADD $with_gmp_lib/libgmp.a"
 	else
-	  { echo "configure: error: gmp not found" 1>&2; exit 1; }
+	   { echo "configure: error: gmp not found" 1>&2; exit 1; }
 	fi
   echo "$ac_t""yes" 1>&6
 else
