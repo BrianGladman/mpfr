@@ -30,10 +30,10 @@ Notes:
 - we tested the installation with GMP 3.1 on the following architectures:
 
 Pentium II and III/Linux 2.2.10 or Windows
-Athlon/Linux
-PowerPC/Linux
+Athlon/Linux 2.4.0-test5
+PowerPC/Linux 2.2.14
 Alpha 21264 and 21164/OSF1 V4.0
-SGI R10000/IRIX 6.5
+SGI R12000/IRIX 6.5
 Sun UltraSparc/Solaris 2.6
 
 ./configure options
@@ -47,7 +47,21 @@ Known problems.
 ===============
 
 Linux on Alpha is known to have problems with IEEE conformance. See
-<http://www.linux.org.uk/VERSION/relnotes.2211.html>.
+<http://www.linux.org.uk/VERSION/relnotes.2211.html>. Also with OSF and
+gcc 2.8.1, we had problems with the square root functions with -DTEST:
+
+   Testing tsqrt
+   libm.a differs from mpfr_sqrt for a=1.72800271916104480000e+210, rnd_mode=GMP_RNDZ
+   libm.a gives 1.31453517227993750000e+105, mpfr_sqrt gives 1.31453517227993730000e+105 (-1 ulp)
+   maybe you've found a bug in libm.a...
+   ### tsqrt failed ###
+   Testing tsqrt_ui
+   mpfr_sqrt_ui differs from sqrt for a=851401618, rnd_mode=GMP_RNDU
+   sqrt gives 2.91787871235251990000e+04, mpfr_sqrt_ui gives 2.91787871235252020000e+04 (1 ulp)
+   maybe you've found a bug in libm.a
+   ### tsqrt_ui failed ###
+
+(in both cases the mpfr result is the correct one).
 
 In case of problem.
 ===================
