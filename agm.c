@@ -81,7 +81,7 @@ mpfr_agm (r, op2, op1, rnd_mode)
      mp_rnd_t rnd_mode;
 #endif
 {
-  int s, go_on;
+  int s, go_on, compare;
   mp_prec_t p, q;
   double uo, vo;
   mp_limb_t *up, *vp, *tmpp, *tmpup, *tmpvp, *ap, *bp;
@@ -91,25 +91,36 @@ mpfr_agm (r, op2, op1, rnd_mode)
   TMP_DECL(marker2);
 
   /* If a or b is NaN, the result is NaN */
-  if (MPFR_IS_NAN(op1) || MPFR_IS_NAN(op2)) 
-    { MPFR_SET_NAN(r); return; }
+  if (MPFR_IS_NAN(op1) || MPFR_IS_NAN(op2))
+    {
+      MPFR_SET_NAN(r);
+      return;
+    }
 
   /* If a or b is negative (including -Infinity), the result is NaN */
   if ((MPFR_SIGN(op1) < 0) || (MPFR_SIGN(op2) < 0))
-    { MPFR_SET_NAN(r); return; }
+    {
+      MPFR_SET_NAN(r);
+      return;
+    }
 
   MPFR_CLEAR_NAN(r);
 
   /* If a or b is +Infinity, the result is +Infinity */
   if (MPFR_IS_INF(op1) || MPFR_IS_INF(op2))
-    { MPFR_SET_INF(r); MPFR_SET_SAME_SIGN(r, op1); return; }
+    {
+      MPFR_SET_INF(r);
+      MPFR_SET_SAME_SIGN(r, op1);
+      return;
+    }
 
   MPFR_CLEAR_INF(r);
   
   /* If a or b is 0, the result is 0 */
   if ((MPFR_NOTZERO(op1) && MPFR_NOTZERO(op2)) == 0)
-    { MPFR_SET_ZERO(r);
-    return;
+    {
+      MPFR_SET_ZERO(r);
+      return;
     }
 
  /* precision of the following calculus */
@@ -133,12 +144,21 @@ mpfr_agm (r, op2, op1, rnd_mode)
 
 
   /* b and a will be the 2 operands but I want b>= a */
-  if (mpfr_cmp(op1,op2) > 0) {
-    mpfr_set(b,op1,GMP_RNDN); mpfr_set(a,op2,GMP_RNDN);  
-  }
-  else {
-    mpfr_set(b,op2,GMP_RNDN); mpfr_set(a,op1,GMP_RNDN);  
-  }
+  if ((compare = mpfr_cmp (op1,op2)) > 0)
+    {
+      mpfr_set (b,op1,GMP_RNDN);
+      mpfr_set (a,op2,GMP_RNDN);  
+    }
+  else if (compare == 0)
+    {
+      mpfr_set (r, op1, rnd_mode);
+      return;
+    }
+  else
+    {
+      mpfr_set (b,op2,GMP_RNDN);
+      mpfr_set (a,op1,GMP_RNDN);  
+    }
     
   vo=mpfr_get_d(b);
   uo=mpfr_get_d(a);
@@ -171,10 +191,10 @@ mpfr_agm (r, op2, op1, rnd_mode)
       mpfr_div_2exp(tmpv,tmp,1,GMP_RNDN);
       mpfr_set(u,tmpu,GMP_RNDN);
       mpfr_set(v,tmpv,GMP_RNDN);
-      if (mpfr_cmp(v,u)>=0)
-	eq=mpfr_cmp2(v,u);
+      if (mpfr_cmp(v,u) >= 0)
+	eq = mpfr_cmp2(v,u);
       else
-	eq=mpfr_cmp2(u,v);
+	eq = mpfr_cmp2(u,v);
     }
 
     /*  printf("avant can_round %i bits faux\n v : ",err+3);  
