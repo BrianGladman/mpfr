@@ -121,11 +121,11 @@ mpfr_log1p (y, x, rnd_mode)
     do {
 
       /* reactualisation of the precision */
-      mpfr_set_prec(t,Nt);             
+      mpfr_set_prec(t, Nt);
       
       /* compute log1p */
-      mpfr_add_ui(t,x,1,GMP_RNDN);   /* 1+x */
-      mpfr_log(t,t,GMP_RNDN);        /* log(1+x)*/
+      mpfr_add_ui (t, x, 1, GMP_RNDN);   /* 1+x */
+      mpfr_log (t, t, GMP_RNDN);        /* log(1+x)*/
 
       /* estimation of the error */
       err=Nt-(_mpfr_ceil_log2(1+pow(2,1-MPFR_EXP(t))));
@@ -133,11 +133,11 @@ mpfr_log1p (y, x, rnd_mode)
       /* actualisation of the precision */
       Nt += 10;
 
-    } while ((err<0) || !mpfr_can_round(t,err,GMP_RNDN,rnd_mode,Ny));
- 
-      inexact = mpfr_set(y,t,rnd_mode);
+    } while ((err<0) || !mpfr_can_round(t, err, GMP_RNDN, rnd_mode, Ny));
 
-      mpfr_clear(t);
+    inexact = mpfr_set (y, t, rnd_mode);
+
+    mpfr_clear(t);
   }
   return inexact;
 }
