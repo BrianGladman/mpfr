@@ -91,9 +91,8 @@ void check(double a, double b, unsigned char rnd_mode)
     printf("mpfr_agm failed for a=%1.20e, b=%1.20e, rnd_mode=%d\n",a,b,rnd_mode);
     printf("expected result is %1.20e, got %1.20e (%d ulp)\n",res1,res2,
 	   ulp(res2,res1));
+    exit(1);
   }
-  else
-    printf("GOAL !!!\n");
   mpfr_clear(ta); mpfr_clear(tb); mpfr_clear(tres); 
   
 }
