@@ -152,6 +152,17 @@ check_pow_ui (void)
       exit (1);
     }
 
+  mpfr_set_prec (a, 122);
+  mpfr_set_prec (b, 122);
+  mpfr_set_str_binary (a, "0.10000010010000111101001110100101101010011110011100001111000001001101000110011001001001001011001011010110110110101000111011E1");
+  mpfr_set_str_binary (b, "0.11111111100101001001000001000001100011100000001110111111100011111000111011100111111111110100011000111011000100100011001011E51290375");
+  mpfr_pow_ui (a, a, 2026876995UL, GMP_RNDU);
+  if (mpfr_cmp (a, b) != 0)
+    {
+      printf ("Error for x^2026876995\n");
+      exit (1);
+    }
+
   mpfr_clear (a);
   mpfr_clear (b);
 }
@@ -160,7 +171,7 @@ static void
 check_pow_si (void)
 {
   mpfr_t x;
-  
+
   mpfr_init (x);
 
   mpfr_set_nan (x);
@@ -328,7 +339,7 @@ special ()
   mpfr_set_str_binary (x, "0.111011000111100000111010000101010100110011010000011");
   mpfr_set_str_binary (y, "0.111110010100110000011101100011010111000010000100101");
   mpfr_set_str_binary (t, "0.1110110011110110001000110100100001001111010011111000010000011001");
-  
+
   test_pow (z, x, y, GMP_RNDN);
   if (mpfr_cmp (z, t))
     {
@@ -467,8 +478,8 @@ particular_cases (void)
           /* +0.5 */ { 0,   2,   1,  128, 128,  64, 256,  32, 512,  90, 180 },
           /* -0.5 */ { 0,   2,   1,  128, 128, -64,-256,  32, 512,  0,   0  }
         };
-	if (i == 5 && j == 1)
-	  f();
+        if (i == 5 && j == 1)
+          f();
 
         test_pow (r, t[i], t[j], GMP_RNDN);
         p = mpfr_nan_p (r) ? 0 : mpfr_inf_p (r) ? 1 :
@@ -535,7 +546,7 @@ overflows (void)
   mpfr_t a, b;
 
   /* bug found by Ming J. Tsai <mingjt@delvron.us>, 4 Oct 2003 */
-  
+
   mpfr_init_set_str (a, "5.1e32", 10, GMP_RNDN);
   mpfr_init (b);
 
@@ -565,7 +576,7 @@ main (void)
   particular_cases ();
 
   check_pow_ui ();
-  
+
   check_pow_si ();
 
   check_special_pow_si ();
