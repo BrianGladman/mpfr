@@ -30,22 +30,22 @@ MA 02111-1307, USA. */
 #include "mpfr-test.h"
 
 static void
-check1 (mpfr_ptr x, mpfr_ptr y, mp_prec_t prec,
-        unsigned long nt, mp_rnd_t rnd)
+check1 (mpfr_ptr x, mp_prec_t prec, unsigned long nt, mp_rnd_t rnd)
 {
-  mpfr_t z, t;
+  mpfr_t y, z, t;
   int inexact, compare, compare2;
   mp_prec_t yprec;
   mp_exp_t err;
 
   yprec = prec + 10;
 
+  mpfr_init (y);
   mpfr_init (z);
   mpfr_init (t);
+  mpfr_set_prec (y, yprec);
   mpfr_set_prec (z, prec);
   mpfr_set_prec (t, prec);
 
-  mpfr_set_prec (y, yprec);
   compare = mpfr_ui_pow (y, nt, x, rnd);
   err = (rnd == GMP_RNDN) ? yprec + 1 : yprec;
   if (mpfr_can_round (y, err, rnd, rnd, prec))
@@ -56,7 +56,7 @@ check1 (mpfr_ptr x, mpfr_ptr y, mp_prec_t prec,
         {
           printf ("results differ for x=");
           mpfr_out_str (stdout, 2, prec, x, GMP_RNDN);
-          printf (" n= %lu", nt);
+          printf (" n=%lu", nt);
           printf (" prec=%u rnd_mode=%s\n", (unsigned) prec,
                   mpfr_print_rnd_mode (rnd));
           printf ("got      ");
@@ -91,6 +91,7 @@ check1 (mpfr_ptr x, mpfr_ptr y, mp_prec_t prec,
         }
     }
 
+  mpfr_clear (y);
   mpfr_clear (z);
   mpfr_clear (t);
 }
@@ -150,9 +151,12 @@ main (int argc, char *argv[])
   mpfr_set_str_raw (t, "0.110000E5");
   mpfr_ui_pow (z, 3, t, GMP_RNDN);
 
+  mpfr_clear (z);
+  mpfr_clear (t);
+
   mpfr_set_prec (x, 2);
   mpfr_set_d (x, 0.5, GMP_RNDN);
-  check1 (x, y, 2, 398441521, GMP_RNDN);
+  check1 (x, 2, 398441521, GMP_RNDN);  /* 398441521 = 19961^2 */
 
   /* generic test */
   for (prec = p0; prec <= p1; prec++)
@@ -164,12 +168,9 @@ main (int argc, char *argv[])
           nt = randlimb () & INT_MAX;
 	  mpfr_random (x);
 	  rnd = randlimb () % 4;
-          check1 (x, y, prec, nt, rnd);
+          check1 (x, prec, nt, rnd);
 	}
     }
-
-  mpfr_clear (z);
-  mpfr_clear (t);
   }
 
   mpfr_clear (x);
