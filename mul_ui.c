@@ -78,5 +78,7 @@ mpfr_mul_ui()
     }
   EXP(y) = EXP(x) + BITS_PER_MP_LIMB - cnt; 
   if (ysize < xsize) MPN_COPY(old_my, my, ysize);
+  /* set sign */
+  if (SIGN(y) != SIGN(x)) CHANGE_SIGN(y);
   TMP_FREE(marker);
 }
