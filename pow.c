@@ -3,7 +3,16 @@
 #include "mpfr.h"
 
 /* sets x to y^n */
-void mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned int n, unsigned char rnd)
+void 
+#if __STDC__
+mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned int n, unsigned char rnd)
+#else
+mpfr_pow_ui (x, y, n, rnd)
+     mpfr_ptr x;
+     mpfr_srcptr y; 
+     unsigned int n; 
+     unsigned char rnd; 
+#endif
 {
   int i;
   

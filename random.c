@@ -6,8 +6,16 @@
 
 /* Computes a random mpfr in [0, 1[ with precision PREC */
 
+extern long random _PROTO((void)); 
+extern int srandom _PROTO((unsigned int)); 
+
 void
+#if __STDC__
 mpfr_random(mpfr_ptr x)
+#else
+mpfr_random(x)
+     mpfr_ptr x; 
+#endif    
 {
   mp_limb_t *xp; unsigned long xs, i, cnt; 
 

@@ -4,8 +4,15 @@
 #include "mpfr.h"
 
 /* set f to the integer z */
-int mpfr_set_z (f, z, rnd) mpfr_ptr f; mpz_srcptr z; 
-unsigned char rnd;
+int 
+#if __STDC__
+mpfr_set_z (mpfr_ptr f, mpz_srcptr z, unsigned char rnd)
+#else
+mpfr_set_z (f, z, rnd) 
+     mpfr_ptr f; 
+     mpz_srcptr z; 
+     unsigned char rnd;
+#endif
 {
   int fn, zn, k, dif, sign_z, sh; mp_limb_t *fp = MANT(f), cc, c2;
 

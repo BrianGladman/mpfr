@@ -4,7 +4,16 @@
 #include "longlong.h"
 #include "mpfr.h"
 
-void mpfr_set_f(mpfr_ptr y, mpf_srcptr x, unsigned long prec, char rnd_mode)
+void 
+#if __STDC__
+mpfr_set_f(mpfr_ptr y, mpf_srcptr x, unsigned long prec, char rnd_mode)
+#else
+mpfr_set_f(y, x, prec, rnd_mode)
+     mpfr_ptr y;
+     mpf_srcptr x;
+     unsigned long prec;
+     char rnd_mode; 
+#endif
 {
   mp_limb_t *my, *mx; unsigned long cnt, sx, sy; 
 

@@ -3,7 +3,15 @@
 #include "gmp-impl.h"
 #include "mpfr.h"
 
-void mpfr_neg(mpfr_t a, mpfr_t b, unsigned char rnd_mode)
+void 
+#if __STDC__
+mpfr_neg(mpfr_t a, mpfr_t b, unsigned char rnd_mode)
+#else
+mpfr_neg(a, b, rnd_mode)
+     mpfr_t a; 
+     mpfr_t b; 
+     unsigned char rnd_mode; 
+#endif
 {
   CHANGE_SIGN(b);
   if (a != b) {

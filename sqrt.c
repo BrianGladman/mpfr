@@ -4,7 +4,15 @@
 #include "gmp-impl.h"
 #include "mpfr.h"
 
-void mpfr_sqrt(mpfr_ptr X, mpfr_srcptr a, unsigned char rnd_mode)
+void 
+#if __STDC__
+mpfr_sqrt(mpfr_ptr X, mpfr_srcptr a, unsigned char rnd_mode)
+#else
+mpfr_sqrt(X, a, rnd_mode)
+     mpfr_ptr X;
+     mpfr_srcptr a;
+     unsigned char rnd_mode;
+#endif
 {
   int p, q, err, i, e, n; mpfr_t t, u; mpfr_ptr x;
 

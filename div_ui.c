@@ -8,7 +8,15 @@
 
 /* returns 0 if result exact, non-zero otherwise */
 int
+#ifdef __STDC__
 mpfr_div_ui(mpfr_ptr y, mpfr_srcptr x, unsigned long u, unsigned char rnd_mode)
+#else
+mpfr_div_ui(y, x, u, rnd_mode)
+     mpfr_ptr y;  
+     mpfr_srcptr x;
+     unsigned long u;
+     unsigned char rnd_mode; 
+#endif
 {
   int xn, yn, dif, sh, i; mp_limb_t *xp, *yp, c, d;
 
@@ -84,4 +92,5 @@ printf("y="); mpfr_print_raw(y); putchar('\n');
     }
     return 1;
   }
+  return 0; /* to prevent warning from gcc */
 }

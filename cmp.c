@@ -21,7 +21,14 @@ of b and c, i.e. one plus the number of bits shifts to align b and c
 
 /* #define DEBUG */
 
-int mpfr_cmp ( mpfr_srcptr b, mpfr_srcptr c )
+int 
+#if __STDC__
+mpfr_cmp ( mpfr_srcptr b, mpfr_srcptr c )
+#else
+mpfr_cmp(b, c)
+     mpfr_srcptr b;
+     mpfr_srcptr c; 
+#endif
 {
    long int s, diff_exp;
    unsigned long bn, cn;
@@ -58,7 +65,14 @@ int mpfr_cmp ( mpfr_srcptr b, mpfr_srcptr c )
    Assumes b>=c, which implies EXP(b)>=EXP(c).
    if b=c, returns prec(b).
 */
-int mpfr_cmp2 ( mpfr_srcptr b, mpfr_srcptr c )
+int 
+#if __STDC__
+mpfr_cmp2 ( mpfr_srcptr b, mpfr_srcptr c )
+#else
+mpfr_cmp2(b, c)
+     mpfr_srcptr b; 
+     mpfr_srcptr c; 
+#endif
 {
   long int d, bn, cn, k;
   mp_limb_t *bp, *cp, t, u=0, cc=0;

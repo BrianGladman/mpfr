@@ -1,9 +1,6 @@
 /* (c) PolKA project, Inria Lorraine */
-
 /* written by Paul Zimmermann, February 1999 */
-
-/* to do: - destination may be identical to operands
-*/
+/* to do: - destination may be identical to operands */
 
 
 #include <stdio.h>
@@ -11,7 +8,8 @@
 #include "gmp-impl.h"
 #include "mpfr.h"
 
-extern mpfr_sub1(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, unsigned char, int);
+extern void mpfr_sub1 _PROTO((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, 
+			      unsigned char, int));
 
 /* #define DEBUG2 */
 
@@ -33,8 +31,18 @@ mp_limb_t *ap0, *ap1;
    diff_exp is the difference between the exponents of b and c,
    which is supposed >= 0 */
 
-void mpfr_add1(a, b, c, rnd_mode, diff_exp) 
-mpfr_ptr a; mpfr_srcptr b, c; unsigned char rnd_mode; int diff_exp;
+void 
+#if __STDC__
+mpfr_add1(mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, 
+	  unsigned char rnd_mode, int diff_exp) 
+#else
+mpfr_add1(a, b, c, rnd_mode, diff_exp) 
+     mpfr_ptr a; 
+     mpfr_srcptr b; 
+     mpfr_srcptr c; 
+     unsigned char rnd_mode; 
+     int diff_exp;
+#endif
 {
   mp_limb_t *ap, *bp, *cp, cc, c2, c3=0; unsigned int an,bn,cn; int sh,dif,k;
   TMP_DECL(marker); 
@@ -409,8 +417,17 @@ printf("b+c="); mpfr_print_raw(a); putchar('\n');
   return;
 }
 
-void mpfr_add(a, b, c, rnd_mode) 
-mpfr_ptr a; mpfr_srcptr b, c; unsigned char rnd_mode;
+void
+#if __STDC__
+mpfr_add(mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, 
+	      unsigned char rnd_mode) 
+#else
+mpfr_add(a, b, c, rnd_mode)
+     mpfr_ptr a; 
+     mpfr_srcptr b; 
+     mpfr_srcptr c; 
+     unsigned char rnd_mode; 
+#endif
 {
   int diff_exp;
 
@@ -418,8 +435,8 @@ mpfr_ptr a; mpfr_srcptr b, c; unsigned char rnd_mode;
     SET_NAN(a); return;
   }
 
-  if (!NOTZERO(b)) return mpfr_set(a, c, rnd_mode);
-  if (!NOTZERO(c)) return mpfr_set(a, b, rnd_mode);
+  if (!NOTZERO(b)) { mpfr_set(a, c, rnd_mode); return; }
+  if (!NOTZERO(c)) { mpfr_set(a, b, rnd_mode); return; }
 
   diff_exp = EXP(b)-EXP(c);
   if (SIGN(b) != SIGN(c)) { /* signs differ, it's a subtraction */

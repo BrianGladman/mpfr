@@ -13,9 +13,18 @@
 
   For op = 3.1416 we get str = "31416" and expptr=1.
  */
-
+#if __STDC__
 char *mpfr_get_str(char *str, mp_exp_t *expptr, int base, size_t n,
 		  mpfr_srcptr op, unsigned char rnd_mode)
+#else
+char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
+     char *str;  
+     mp_exp_t *expptr;
+     int base;
+     size_t n;
+     mpfr_srcptr op; 
+     unsigned char rnd_mode; 
+#endif
 {
   double d; long e, q, neg, p, err, prec, sh; mpfr_t a, b; mpz_t bz;
   char *str0; unsigned char rnd1; int f, pow2;

@@ -10,8 +10,16 @@
   [current complexity is O(PREC(b)*PREC(c))]
 */
 
-void mpfr_mul(a, b, c, rnd_mode) 
-mpfr_ptr a; mpfr_srcptr b, c; unsigned char rnd_mode;
+void 
+#if __STDC__
+mpfr_mul(mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, unsigned char rnd_mode) 
+#else
+mpfr_mul(a, b, c, rnd_mode) 
+     mpfr_ptr a; 
+     mpfr_srcptr b; 
+     mpfr_srcptr c; 
+     unsigned char rnd_mode;
+#endif
 {
   unsigned int bn, cn, an, k; int cc;
   mp_limb_t *ap=MANT(a), *bp=MANT(b), *cp=MANT(c), *tmp, b1;

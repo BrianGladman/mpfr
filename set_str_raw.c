@@ -15,7 +15,13 @@
    to hold all the bits of str. */
 
 void
+#if __STDC__
 mpfr_set_str_raw(mpfr_ptr x, char *str)
+#else
+mpfr_set_str_raw(x, str)
+     mpfr_ptr x; 
+     char *str; 
+#endif
 {
   char *str2, *str0, negative = 0; 
   unsigned long j, l, k = 0, xsize, cnt; mp_limb_t *xp; 

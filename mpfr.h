@@ -125,8 +125,11 @@ void mpfr_div_2exp _PROTO((mpfr_ptr, mpfr_srcptr, unsigned long int,unsigned cha
 void mpfr_set_prec _PROTO((mpfr_ptr, unsigned long int));
 extern mp_size_t __gmp_default_fp_bit_precision;
 extern char __gmp_default_rounding_mode;
-char *mpfr_print_rnd_mode(unsigned char rnd_mode); 
-
+char *mpfr_print_rnd_mode(unsigned char); 
+void mpfr_neg _PROTO((mpfr_t, mpfr_t, unsigned char)); 
+int mpfr_sub_one_ulp _PROTO((mpfr_ptr x)); 
+int mpfr_div_ui _PROTO((mpfr_ptr y, mpfr_srcptr x, unsigned long u, unsigned char rnd_mode)); 
+unsigned long int mpfr_get_prec _PROTO((mpfr_t x)); 
 
 #define mpfr_init(x) mpfr_init2(x, __gmp_default_fp_bit_precision)
 #define mpfr_cmp_ui(b,i) mpfr_cmp_ui_2exp(b,i,0)

@@ -10,7 +10,16 @@
            a negative value if b<i*2^f,
            zero if b=i*2^f
 */
-int mpfr_cmp_ui_2exp ( mpfr_srcptr b, unsigned long int i, int f )
+
+int 
+#if __STDC__
+mpfr_cmp_ui_2exp ( mpfr_srcptr b, unsigned long int i, int f )
+#else
+mpfr_cmp_ui_2exp (b, i, f)
+     mpfr_srcptr b; 
+     unsigned long int i; 
+     int f; 
+#endif
 {
   int e, k, bn; mp_limb_t c, *bp;
 
@@ -43,7 +52,16 @@ int mpfr_cmp_ui_2exp ( mpfr_srcptr b, unsigned long int i, int f )
            a negative value if b<i*2^f,
            zero if b=i*2^f 
 */
-int mpfr_cmp_si_2exp ( mpfr_srcptr b, long int i, int f )
+
+int 
+#if __STDC__
+mpfr_cmp_si_2exp ( mpfr_srcptr b, long int i, int f )
+#else
+mpfr_cmp_si_2exp(b, i, f)
+     mpfr_srcptr b; 
+     long int i; 
+     int f; 
+#endif
 {
   int e, k, bn, si; mp_limb_t c, *bp;
 

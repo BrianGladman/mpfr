@@ -3,7 +3,13 @@
 #include "mpfr.h"
 
 /* sets x to x+sign(x)*2^(EXP(x)-PREC(x)) */
-int mpfr_add_one_ulp(mpfr_ptr x)
+int 
+#if __STDC__
+mpfr_add_one_ulp(mpfr_ptr x)
+#else
+mpfr_add_one_ulp(x)
+     mpfr_ptr x; 
+#endif
 {
   int xn, sh; mp_limb_t *xp;
 

@@ -4,7 +4,12 @@
 #include "mpfr.h"
 
 char *
+#if __STDC__
 mpfr_print_rnd_mode(unsigned char rnd_mode)
+#else
+mpfr_print_rnd_mode(rnd_mode)
+     unsigned char rnd_mode; 
+#endif
 {
   switch (rnd_mode)
     {

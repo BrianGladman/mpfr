@@ -4,7 +4,13 @@
 #include "mpfr.h"
 
 void
+#if __STDC__
 mpfr_get_str_raw(char *digit_ptr, mpfr_srcptr x)
+#else
+mpfr_get_str_raw(digit_ptr, x)
+     char *digit_ptr; 
+     mpfr_srcptr x; 
+#endif
 {
   mp_limb_t *mx, wd, t; long ex, sx, k, l, p;
 
@@ -34,7 +40,12 @@ mpfr_get_str_raw(char *digit_ptr, mpfr_srcptr x)
 }
  
 void
+#if __STDC__
 mpfr_print_raw(mpfr_srcptr x)
+#else
+mpfr_print_raw(x)
+     mpfr_srcptr x; 
+#endif
 {
   char *str; 
 

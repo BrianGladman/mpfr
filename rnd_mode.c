@@ -64,7 +64,13 @@ char *out;
 #endif
 
 /* sets the machine rounding mode to the value rnd_mode */
-void mpfr_set_machine_rnd_mode(unsigned char rnd_mode)
+void 
+#if __STDC__
+mpfr_set_machine_rnd_mode(unsigned char rnd_mode)
+#else
+mpfr_set_machine_rnd_mode(rnd_mode)
+     unsigned char rnd_mode; 
+#endif
 {
   switch (rnd_mode) {
   case GMP_RNDN: TONEAREST; break;

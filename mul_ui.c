@@ -5,7 +5,15 @@
 #include "mpfr.h"
 
 void
+#if __STDC__
 mpfr_mul_ui(mpfr_ptr y, mpfr_srcptr x, unsigned long u, unsigned char RND_MODE)
+#else
+mpfr_mul_ui()
+     mpfr_ptr y; 
+     mpfr_srcptr x; 
+     unsigned long u; 
+     unsigned char RND_MODE; 
+#endif
 {
   mp_limb_t carry, *my, *old_my; unsigned long c; 
   unsigned long xsize, ysize, cnt, dif; 

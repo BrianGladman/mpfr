@@ -12,9 +12,17 @@
    where x = n*log(2)+(2^K)*r
    number of operations = O(K+prec(r)/K)
 */
-int mpfr_exp(mpfr_ptr y, mpfr_srcptr x, unsigned char rnd_mode) 
+int 
+#if __STDC__
+mpfr_exp(mpfr_ptr y, mpfr_srcptr x, unsigned char rnd_mode) 
+#else
+mpfr_exp(y, x, rnd_mode)
+     mpfr_ptr y; 
+     mpfr_srcptr x; 
+     unsigned char rnd_mode; 
+#endif
 {
-  int n, expx, K, precy, q, k, l, expr, err; mp_limb_t xp;
+  int n, expx, K, precy, q, k, l, expr, err; 
   mpfr_t r, s, t;
 
   if (FLAG_NAN(x)) { SET_NAN(y); return 1; }

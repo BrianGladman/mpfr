@@ -5,7 +5,16 @@
 #include "mpfr.h"
 
 
-void mpfr_agm(mpfr_ptr r, mpfr_srcptr a, mpfr_srcptr b, unsigned char rnd_mode)
+void 
+#ifdef __STDC__
+mpfr_agm(mpfr_ptr r, mpfr_srcptr a, mpfr_srcptr b, unsigned char rnd_mode)
+#else
+mpfr_agm(r, a, b, rnd_mode)
+     mpfr_ptr r; 
+     mpfr_srcptr a; 
+     mpfr_srcptr b; 
+     unsigned char rnd_mode; 
+#endif
 {
   int i, ntotal, p, q, go_on, no, ulps;
   double uo, vo;
@@ -13,7 +22,7 @@ void mpfr_agm(mpfr_ptr r, mpfr_srcptr a, mpfr_srcptr b, unsigned char rnd_mode)
 
   /* I want b>= a */
   if (mpfr_cmp(a,b) > 0) 
-    return mpfr_agm(r, b, a, rnd_mode);
+    { mpfr_agm(r, b, a, rnd_mode); return; }
 
 
   /* If a or b is NaN, the result is NaN */
@@ -57,7 +66,7 @@ void mpfr_agm(mpfr_ptr r, mpfr_srcptr a, mpfr_srcptr b, unsigned char rnd_mode)
   /* Main loop */
 
   while (go_on==1) {
-    int can_go_on, err;
+    int err;
 
     err=ceil((3*ntotal+2)*exp(-p*log(2))+3*exp(-p*uo*log(2)/(vo-uo))/log(2));
     
@@ -95,7 +104,7 @@ void mpfr_agm(mpfr_ptr r, mpfr_srcptr a, mpfr_srcptr b, unsigned char rnd_mode)
    
     /* Else, we could have to work with more precision */
     else { 
-      int round1, round2, equals;
+      int round1, round2; 
       mpfr_t res1, res2;
       mpfr_init2(res1,q);
       mpfr_init2(res2,q);

@@ -3,8 +3,15 @@
 #include "gmp-impl.h"
 #include "mpfr.h"
 
-void mpfr_set(a, b, rnd_mode) 
-mpfr_ptr a; mpfr_srcptr b; unsigned char rnd_mode;
+void 
+#if __STDC__
+mpfr_set(mpfr_ptr a, mpfr_srcptr b, unsigned char rnd_mode)
+#else
+mpfr_set(a, b, rnd_mode) 
+     mpfr_ptr a; 
+     mpfr_srcptr b; 
+     unsigned char rnd_mode;
+#endif
 {
   int carry, an, preca = PREC(a), sh; mp_limb_t *ap = MANT(a);
 

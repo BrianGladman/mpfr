@@ -21,7 +21,12 @@ int _mpfr_log2_prec=0; /* precision of stored value */
 
    Then 2^N*log(2)-S'(N) <= N-1+2/N <= N for N>=2.
 */
-void mpfr_log2(x, rnd_mode) mpfr_ptr x; unsigned char rnd_mode;
+void 
+#if __STDC__
+mpfr_log2(mpfr_ptr x, unsigned char rnd_mode)
+#else
+mpfr_log2(x, rnd_mode) mpfr_ptr x; unsigned char rnd_mode;
+#endif
 {
   int N, oldN, k, precx; mpz_t s, t, u;
 
@@ -31,7 +36,9 @@ void mpfr_log2(x, rnd_mode) mpfr_ptr x; unsigned char rnd_mode;
   if (precx <= _mpfr_log2_prec) {
     if (rnd_mode==GMP_RNDZ || rnd_mode==GMP_RNDD ||
 	mpfr_can_round(_mpfr_log2, _mpfr_log2_prec, GMP_RNDZ, rnd_mode, precx))
-      return mpfr_set(x, _mpfr_log2, rnd_mode);
+      {
+	mpfr_set(x, _mpfr_log2, rnd_mode); return; 
+      }
   }
 
   /* need to recompute */

@@ -1,4 +1,8 @@
-#include <math.h> /* for isnan */
+#if __GNUC__ /* gcc "patched" headers seem to omit isnan... */
+extern int isnan(double);
+#endif
+#include <math.h> /* for isnan and NaN */
+
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "longlong.h"
@@ -206,7 +210,14 @@ __mpfr_scale2 (d, exp)
 /* End of part included from gmp */
 
 void
+#if __STDC__
 mpfr_set_d(mpfr_t r, double d, unsigned char rnd_mode)
+#else
+mpfr_set_d(r, d, rnd_mode)
+     mpfr_t r;
+     double d;
+     unsigned char rnd_mode;
+#endif
 {
   int signd, sizer; unsigned int cnt;
 
@@ -237,7 +248,13 @@ mpfr_set_d(mpfr_t r, double d, unsigned char rnd_mode)
 }
 
 double
+#if __STDC__
 mpfr_get_d2(mpfr_srcptr src, long e)
+#else
+mpfr_get_d2(src, e)
+     mpfr_srcptr(src); 
+     long e; 
+#endif
 {
   double res;
   mp_size_t size, i, n_limbs_to_use;
@@ -276,8 +293,13 @@ mpfr_get_d2(mpfr_srcptr src, long e)
 }
 
 double 
+#if __STDC__
 mpfr_get_d(mpfr_srcptr src)
+#else
+mpfr_get_d(src)
+     mpfr_srcptr src; 
+#endif
 {
-  mpfr_get_d2(src, EXP(src));
+  return mpfr_get_d2(src, EXP(src));
 }
 

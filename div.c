@@ -8,11 +8,19 @@
 /* q <- n/d using Goldschmidt's iteration
    returns 0 iff result is exact
  */
-int mpfr_div(Q, n, d, rnd_mode) 
-mpfr_ptr Q; mpfr_srcptr n, d; unsigned char rnd_mode;
+int 
+#if __STDC__
+mpfr_div(mpfr_ptr Q, mpfr_srcptr n, mpfr_srcptr d, unsigned char rnd_mode) 
+#else
+mpfr_div(Q, n, d, rnd_mode) 
+     mpfr_ptr Q; 
+     mpfr_srcptr n; 
+     mpfr_srcptr d; 
+     unsigned char rnd_mode;
+#endif
 {
   mpfr_t eps, tmp, one; mp_limb_t cc; mpfr_ptr q;
-  int expd, i, prec, precq, sh, guard, err, maxprec, exact=0;
+  int expd, i, prec, precq, err, maxprec, exact=0;
   TMP_DECL(marker);
 
   if (FLAG_NAN(n) || FLAG_NAN(d)) { SET_NAN(Q); return 1; }

@@ -4,8 +4,18 @@
 #include "gmp-impl.h"
 #include "mpfr.h"
 
-size_t mpfr_out_str (FILE *stream, int base, size_t n_digits, mpfr_srcptr op,
-		     unsigned char rnd_mode)
+size_t 
+#if __STDC__
+mpfr_out_str (FILE *stream, int base, size_t n_digits, mpfr_srcptr op,
+	      unsigned char rnd_mode)
+#else
+mpfr_out_str (stream, base, n_digits, op, rnd_mode)
+     FILE *stream; 
+     int base;
+     size_t n_digits; 
+     mpfr_srcptr op; 
+     unsigned char rnd_mode; 
+#endif
 {
   char *s,*s0; size_t l; mp_exp_t e;
 
@@ -24,7 +34,7 @@ size_t mpfr_out_str (FILE *stream, int base, size_t n_digits, mpfr_srcptr op,
   fputs(s, stream);         /* rest of mantissa */
   if (e) {
     fputc((base>10) ? '@' : 'e', stream); l++;
-    sprintf(s, "%d", e);
+    sprintf(s, "%ld", e);
     l += strlen(s);
     fprintf(stream, "%s", s);
   }

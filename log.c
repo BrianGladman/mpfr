@@ -16,10 +16,19 @@
   */
 
 
-void mpfr_log(mpfr_ptr r, mpfr_srcptr a, unsigned char rnd_mode) {
+void 
+#if __STDC__
+mpfr_log(mpfr_ptr r, mpfr_srcptr a, unsigned char rnd_mode) 
+#else
+mpfr_log()
+     mpfr_ptr r;
+     mpfr_srcptr a;
+     unsigned char rnd_mode; 
+#endif
+{
   int p, m, q, bool, err;
   mpfr_t cst, rapport, agm, tmp1, tmp2, s, mm;
-  double x, ref;
+  double ref;
 
   /* If a is NaN, the result is NaN */
   if (FLAG_NAN(a)) 

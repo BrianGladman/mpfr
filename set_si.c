@@ -5,7 +5,14 @@
 #include "mpfr.h"
 
 void
+#if __STDC__
 mpfr_set_si(mpfr_ptr x, long i, unsigned char rnd_mode)
+#else
+mpfr_set_si(x, i, rnd_mode)
+     mpfr_ptr x;
+     long i;
+     unsigned char rnd_mode;
+#endif
 {
   unsigned long xn, ai, cnt; 
 

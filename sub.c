@@ -5,8 +5,16 @@
 
 /* #define DEBUG2 */
 
-void mpfr_sub(a, b, c, rnd_mode) 
-mpfr_ptr a; mpfr_srcptr b, c; unsigned char rnd_mode;
+void 
+#if __STDC__
+mpfr_sub(mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, unsigned char rnd_mode)
+#else
+mpfr_sub(a, b, c, rnd_mode) 
+     mpfr_ptr a; 
+     mpfr_srcptr b;
+     mpfr_srcptr c; 
+     unsigned char rnd_mode;
+#endif
 {
   if (FLAG_NAN(b) || FLAG_NAN(c)) { SET_NAN(a); return; }
   if (b==c) { SET_ZERO(a); return; }
@@ -19,7 +27,12 @@ mpfr_ptr a; mpfr_srcptr b, c; unsigned char rnd_mode;
    to the left minus ap[0]..ap[n-1], with 0 <= sh < mp_bits_per_limb, and
    returns the borrow.
 */
-mp_limb_t mpn_sub_lshift_n (ap, bp, n, sh, an) mp_limb_t *ap, *bp; int n,sh,an;
+mp_limb_t
+#if __STDC__ 
+mpn_sub_lshift_n (mp_limb_t *ap, mp_limb_t *bp, int n, int sh, int an)
+#else
+mpn_sub_lshift_n (ap, bp, n, sh, an) mp_limb_t *ap, *bp; int n,sh,an;
+#endif
 {
   mp_limb_t c, bh;
 
@@ -35,8 +48,17 @@ mp_limb_t mpn_sub_lshift_n (ap, bp, n, sh, an) mp_limb_t *ap, *bp; int n,sh,an;
 }
 
 /* signs of b and c differ, abs(b)>=abs(c), diff_exp>=0 */
-void mpfr_sub1(a, b, c, rnd_mode, diff_exp) 
-mpfr_t a, b, c; unsigned char rnd_mode; int diff_exp;
+void 
+#if __STDC__
+mpfr_sub1(mpfr_t a, mpfr_t b, mpfr_t c, unsigned char rnd_mode, int diff_exp) 
+#else
+mpfr_sub1(a, b, c, rnd_mode, diff_exp) 
+     mpfr_t a;
+     mpfr_t b;
+     mpfr_t c; 
+     unsigned char rnd_mode; 
+     int diff_exp;
+#endif
 {
   mp_limb_t *ap, *bp, *cp, cc, c2; unsigned int an,bn,cn; 
   int sh,dif,k,cancel,cancel1,cancel2;

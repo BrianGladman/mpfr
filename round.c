@@ -13,8 +13,18 @@
 
    Does *not* modify anything.
 */
-int mpfr_round_raw2(mp_limb_t *xp, unsigned long xn, char neg, char rnd, 
-		    unsigned long prec)
+int 
+#if __STDC__
+mpfr_round_raw2(mp_limb_t *xp, unsigned long xn, char neg, char rnd, 
+		unsigned long prec)
+#else
+mpfr_round_raw2(xp, xn, neg, rnd, prec)
+     mp_limb_t *xp; 
+     unsigned long xn; 
+     char neg; 
+     char rnd; 
+     unsigned long prec; 
+#endif
 {
   unsigned long mask, nw; long wd; char rw; short l;
 
@@ -76,8 +86,17 @@ int mpfr_round_raw2(mp_limb_t *xp, unsigned long xn, char neg, char rnd,
 /* puts in y the value of xp (which has xsize limbs) rounded to precision
    xprec and direction RND_MODE */
 int
+#if __STDC__
 mpfr_round_raw(mp_limb_t *y, mp_limb_t *xp, char RND_MODE, 
 	       long xsize, unsigned long xprec)
+#else
+mpfr_round_raw(y, xp, RND_MODE, xsize, xprec)
+     mp_limb_t *y; 
+     mp_limb_t *xp; 
+     char RND_MODE; 
+     long xsize; 
+     unsigned long xprec; 
+#endif
 {
   unsigned long nw, mask;
   char negative = 0, rw, carry = 0;
@@ -114,7 +133,14 @@ mpfr_round_raw(mp_limb_t *y, mp_limb_t *xp, char RND_MODE,
 }
 
 void
+#if __STDC__
 mpfr_round(mpfr_t x, char RND_MODE, unsigned long prec)
+#else
+mpfr_round(x, RND_MODE, prec)
+     mpfr_t x; 
+     char RND_MODE; 
+     unsigned long prec; 
+#endif
 {
   mp_limb_t *tmp; int carry; unsigned long nw, xn; 
 
@@ -149,17 +175,39 @@ mpfr_round(mpfr_t x, char RND_MODE, unsigned long prec)
 
    Side effects: none.
 */
-int mpfr_can_round(b, err, rnd1, rnd2, prec) mpfr_t b; unsigned long err;
-unsigned char rnd1, rnd2; unsigned long prec;
+
+int 
+#if __STDC__
+mpfr_can_round(mpfr_t b, unsigned long err, unsigned char rnd1, 
+	       unsigned char rnd2, unsigned long prec)
+#else
+mpfr_can_round(b, err, rnd1, rnd2, prec) 
+     mpfr_t b; 
+     unsigned long err;
+     unsigned char rnd1;
+     unsigned char rnd2; 
+     unsigned long prec;
+#endif
 {
   return mpfr_can_round_raw(MANT(b), (PREC(b) - 1)/BITS_PER_MP_LIMB + 1, 
 			    SIGN(b), err, rnd1, rnd2, prec); 
 }
 
 int
+#if __STDC__
 mpfr_can_round_raw(mp_limb_t *bp, unsigned long bn, char neg, 
 		   unsigned long err, unsigned char rnd1, unsigned char rnd2, 
 		   unsigned long prec)
+#else
+mpfr_can_round_raw(bp, bn, neg, err, rnd1, rnd2, prec)
+     mp_limb_t *bp;
+     unsigned long bn;
+     char neg; 
+     unsigned long err; 
+     unsigned char rnd1;
+     unsigned char rnd2; 
+     unsigned long prec; 
+#endif
 {
   int k, k1, l, l1, tn; mp_limb_t cc, cc2, *tmp;
   TMP_DECL(marker); 
