@@ -72,7 +72,7 @@ mpfr_out_str (stream, base, n_digits, op, rnd_mode)
   if (!MPFR_NOTZERO(op)) { fprintf(stream, "0"); return 1; }
 
   s = mpfr_get_str (NULL, &e, base, n_digits, op, rnd_mode);
-  /*	  TODO: maintenir le code pour les infinis dans get_str ?  */
+
   s0 = s;
   /* for op=3.1416 we have s = "31416" and e = 1 */
   
