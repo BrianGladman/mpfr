@@ -38,23 +38,13 @@ mpfr_set_f(y, x, rnd_mode)
   mp_limb_t *my, *mx, *tmp; unsigned long cnt, sx, sy;
   TMP_DECL(marker);
 
-  if (MPFR_IS_NAN(x))
-    { MPFR_CLEAR_FLAGS(y); MPFR_SET_NAN(y); return; }
-
-  MPFR_SET_SAME_SIGN(y, x);
-
-  if (MPFR_IS_INF(x))
-    {
-      MPFR_CLEAR_FLAGS(y);
-      MPFR_SET_INF(y);
-      return;
-    }
+  if (SIZ(x) * MPFR_SIGN(y) < 0) MPFR_CHANGE_SIGN(y);
 
   MPFR_CLEAR_FLAGS(y);
 
   TMP_MARK(marker);
   sx = ABS(SIZ(x)); sy = MPFR_ABSSIZE(y);
-  my = MPFR_MANT(y); mx = MPFR_MANT(x);
+  my = MPFR_MANT(y); mx = PTR(x);
 
   if (sx==0) { /* x is zero */
     MPFR_SET_ZERO(y); return;
@@ -79,7 +69,7 @@ mpfr_set_f(y, x, rnd_mode)
       /* no rounding necessary, since y has a larger mantissa */
     }
   
-  MPFR_EXP(y) = MPFR_EXP(x) * BITS_PER_MP_LIMB - cnt;
+  MPFR_EXP(y) = EXP(x) * BITS_PER_MP_LIMB - cnt;
 
   TMP_FREE(marker);
 }
