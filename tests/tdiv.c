@@ -289,7 +289,7 @@ void check_lowr ()
   mpfr_clear(z3); 
 }
 
-#define MAX_PREC 35
+#define MAX_PREC 200
 
 void
 check_inexact ()
@@ -303,6 +303,18 @@ check_inexact ()
   mpfr_init (y);
   mpfr_init (z);
   mpfr_init (u);
+
+  mpfr_set_prec (x, 33);
+  mpfr_set_str_raw (x, "0.101111100011011101010011101100001E0");
+  mpfr_set_prec (u, 1);
+  mpfr_set_str_raw (u, "0.1E0");
+  mpfr_set_prec (y, 28);
+  if ((inexact = mpfr_div (y, x, u, GMP_RNDN) >= 0))
+    {
+      fprintf (stderr, "Wrong inexact flag (1): expected -1, got %d\n",
+	       inexact);
+      exit (1);
+    }
 
   for (px=1; px<MAX_PREC; px++)
     {
