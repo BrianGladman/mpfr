@@ -1005,6 +1005,7 @@ when @var{rop} and @var{op1} are identical.
 @deftypefunx int mpfr_cmp_d (mpfr_t @var{op1}, double @var{op2})
 @deftypefunx int mpfr_cmp_z (mpfr_t @var{op1}, mpz_t @var{op2})
 @deftypefunx int mpfr_cmp_q (mpfr_t @var{op1}, mpq_t @var{op2})
+@deftypefunx int mpfr_cmp_f (mpfr_t @var{op1}, mpf_t @var{op2})
 Compare @var{op1} and @var{op2}.  Return a positive value if @math{@var{op1} >
 @var{op2}}, zero if @math{@var{op1} = @var{op2}}, and a negative value if
 @math{@var{op1} < @var{op2}}.
