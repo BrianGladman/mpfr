@@ -260,9 +260,16 @@ int mpfr_div _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t));
 int mpfr_add_ui _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,unsigned long,mpfr_rnd_t));
 int mpfr_sub_ui _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,unsigned long,mpfr_rnd_t));
 int mpfr_ui_sub _MPFR_PROTO ((mpfr_ptr, unsigned long,mpfr_srcptr,mpfr_rnd_t));
-int mpfr_mul_ui _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, unsigned long int, mpfr_rnd_t));
-int mpfr_div_ui _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, unsigned long int, mpfr_rnd_t));
-int mpfr_ui_div _MPFR_PROTO ((mpfr_ptr, unsigned long int, mpfr_srcptr, mpfr_rnd_t));
+int mpfr_mul_ui _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,unsigned long,mpfr_rnd_t));
+int mpfr_div_ui _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,unsigned long,mpfr_rnd_t));
+int mpfr_ui_div _MPFR_PROTO ((mpfr_ptr, unsigned long,mpfr_srcptr,mpfr_rnd_t));
+
+int mpfr_add_si _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,long,mpfr_rnd_t));
+int mpfr_sub_si _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,long,mpfr_rnd_t));
+int mpfr_si_sub _MPFR_PROTO ((mpfr_ptr, long,mpfr_srcptr,mpfr_rnd_t));
+int mpfr_mul_si _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, long int, mpfr_rnd_t));
+int mpfr_div_si _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, long int, mpfr_rnd_t));
+int mpfr_si_div _MPFR_PROTO ((mpfr_ptr, long int, mpfr_srcptr, mpfr_rnd_t));
 
 int mpfr_const_pi _MPFR_PROTO ((mpfr_ptr, mpfr_rnd_t));
 int mpfr_const_log2 _MPFR_PROTO ((mpfr_ptr, mpfr_rnd_t));
