@@ -159,7 +159,7 @@ will not reflect on our reputation.@refill
 
 The precise conditions of the license for the MPFR library are found in the
 Library General Public License that accompany the source code.
-See the file COPYING.LIB.@refill
+See the file COPYING.@refill
 
 @node Introduction to MPFR, Installing MPFR, Copying, Top
 @comment  node-name,  next,  previous,  up
