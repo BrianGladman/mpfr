@@ -26,10 +26,10 @@ MA 02111-1307, USA. */
 
 void
 #if __STDC__
-mpfr_set_prec_raw (mpfr_t x, mp_prec_t p)
+mpfr_set_prec_raw (mpfr_ptr x, mp_prec_t p)
 #else
 mpfr_set_prec_raw (x, p)
-     mpfr_t x;
+     mpfr_ptr x;
      mp_prec_t p;
 #endif
 {

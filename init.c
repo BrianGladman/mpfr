@@ -26,10 +26,10 @@ MA 02111-1307, USA. */
 
 void
 #if __STDC__
-mpfr_init2 (mpfr_t x, mp_prec_t p)
+mpfr_init2 (mpfr_ptr x, mp_prec_t p)
 #else
 mpfr_init2 (x, p)
-     mpfr_t x;
+     mpfr_ptr x;
      mp_prec_t p;
 #endif
 {
@@ -49,10 +49,10 @@ mpfr_init2 (x, p)
 
 void
 #if __STDC__
-mpfr_init (mpfr_t x)
+mpfr_init (mpfr_ptr x)
 #else
 mpfr_init (x)
-     mpfr_t x;
+     mpfr_ptr x;
 #endif
 {
   mpfr_init2(x, __gmp_default_fp_bit_precision);

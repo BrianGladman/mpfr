@@ -235,10 +235,10 @@ __mpfr_scale2 (d, exp)
 
 void
 #if __STDC__
-mpfr_set_d(mpfr_t r, double d, mp_rnd_t rnd_mode)
+mpfr_set_d(mpfr_ptr r, double d, mp_rnd_t rnd_mode)
 #else
 mpfr_set_d(r, d, rnd_mode)
-     mpfr_t r;
+     mpfr_ptr r;
      double d;
      mp_rnd_t rnd_mode;
 #endif

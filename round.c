@@ -173,10 +173,10 @@ mpfr_round_raw(y, xp, xprec, negative, yprec, rnd_mode)
 
 void
 #if __STDC__
-mpfr_round(mpfr_t x, mp_rnd_t rnd_mode, mp_prec_t prec)
+mpfr_round(mpfr_ptr x, mp_rnd_t rnd_mode, mp_prec_t prec)
 #else
 mpfr_round(x, rnd_mode, prec)
-     mpfr_t x; 
+     mpfr_ptr x; 
      mp_rnd_t rnd_mode; 
      mp_prec_t prec; 
 #endif
@@ -228,11 +228,11 @@ mpfr_round(x, rnd_mode, prec)
 
 int 
 #if __STDC__
-mpfr_can_round(mpfr_t b, mp_prec_t err, mp_rnd_t rnd1, 
+mpfr_can_round(mpfr_ptr b, mp_prec_t err, mp_rnd_t rnd1, 
 	       mp_rnd_t rnd2, mp_prec_t prec)
 #else
 mpfr_can_round(b, err, rnd1, rnd2, prec) 
-     mpfr_t b; 
+     mpfr_ptr b; 
      mp_prec_t err;
      mp_rnd_t rnd1;
      mp_rnd_t rnd2; 

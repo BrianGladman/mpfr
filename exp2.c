@@ -26,8 +26,8 @@ MA 02111-1307, USA. */
 #include "gmp-impl.h"
 #include "mpfr.h"
 
-int mpfr_exp2_aux  (mpz_t, mpfr_t, int, int*);
-int mpfr_exp2_aux2 (mpz_t, mpfr_t, int, int*);
+int mpfr_exp2_aux  (mpz_t, mpfr_srcptr, int, int*);
+int mpfr_exp2_aux2 (mpz_t, mpfr_srcptr, int, int*);
 
 #define SWITCH 100 /* number of bits to switch from O(n^(1/2)*M(n)) method
 		      to O(n^(1/3)*M(n)) method */
@@ -44,7 +44,14 @@ int mpfr_exp2_aux2 (mpz_t, mpfr_t, int, int*);
 /* if k = the number of bits of z > q, divides z by 2^(k-q) and returns k-q.
    Otherwise do nothing and return 0.
  */
+#if __STDC__
 mp_exp_t mpz_normalize(mpz_t rop, mpz_t z, int q)
+#else
+mp_exp_t mpz_normalize(rop, z, q)
+     mpz_t rop;
+     mpz_t z;
+     int q;
+#endif
 {
   int k;
 
@@ -63,7 +70,16 @@ mp_exp_t mpz_normalize(mpz_t rop, mpz_t z, int q)
    if expz < target, shift z by (target-expz) bits to the right.
    Returns target.
 */
-int mpz_normalize2(mpz_t rop, mpz_t z, int expz, int target)
+int
+#if __STDC__
+mpz_normalize2(mpz_t rop, mpz_t z, int expz, int target)
+#else
+mpz_normalize2(rop, z, expz, target)
+     mpz_t rop;
+     mpz_t z;
+     int expz;
+     int target;
+#endif
 {
   if (target > expz) mpz_div_2exp(rop, z, target-expz);
   else mpz_mul_2exp(rop, z, expz-target);
@@ -222,7 +238,16 @@ mpfr_exp2(y, x, rnd_mode)
    s must have at least qn+1 limbs (qn should be enough, but currently fails
    since mpz_mul_2exp(s, s, q-1) reallocates qn+1 limbs)
 */
-int mpfr_exp2_aux(mpz_t s, mpfr_t r, int q, int *exps)
+int
+#if __STDC__
+mpfr_exp2_aux(mpz_t s, mpfr_srcptr r, int q, int *exps)
+#else
+mpfr_exp2_aux(s, r, q, exps)
+     mpz_t s;
+     mpfr_srcptr r;
+     int q;
+     int *exps;
+#endif
 {
   int l, dif, qn;
   mpz_t t, rr; mp_exp_t expt, expr;
@@ -270,7 +295,16 @@ int mpfr_exp2_aux(mpz_t s, mpfr_t r, int q, int *exps)
    Version using mpz. ss must have at least (sizer+1) limbs.
    The error is bounded by (l^2+4*l) ulps where l is the return value.
 */
-int mpfr_exp2_aux2(mpz_t s, mpfr_t r, int q, int *exps)
+int
+#if __STDC__
+mpfr_exp2_aux2(mpz_t s, mpfr_srcptr r, int q, int *exps)
+#else
+mpfr_exp2_aux2(s, r, q, exps)
+     mpz_t s;
+     mpfr_srcptr r;
+     int q;
+     int *exps;
+#endif
 {
   int expr, l, m, i, sizer, *expR, expt, dif, ql; mp_limb_t c;
   mpz_t t, *R, rr, tmp;

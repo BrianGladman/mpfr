@@ -30,10 +30,10 @@ MA 02111-1307, USA. */
 
 void
 #if __STDC__
-mpfr_urandomb (mpfr_t rop, gmp_randstate_t rstate)
+mpfr_urandomb (mpfr_ptr rop, gmp_randstate_t rstate)
 #else
 mpfr_urandomb (rop, rstate)
-     mpfr_t rop;
+     mpfr_ptr rop;
      gmp_randstate_t rstate;
 #endif
 {
