@@ -1,4 +1,4 @@
-Copyright 1999, 2000, 2001, 2002, 2003 Free Software Foundation.
+Copyright 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation.
 Contributed by the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.
@@ -27,9 +27,6 @@ Documentation:
 
 - mpfr_set_prec: add an explanation of how to speed up calculations
   which increase their precision at each step.
-
-- add macros/variables to check the version of mpfr
-  (suggestion from Andreas Enge <enge@lix.polytechnique.fr>)
 
 - solve the problem with @pxref{Custom Allocation,,, gmp,GNU MP}
 	[gives broken link on the html version]
@@ -116,13 +113,9 @@ New functions to implement:
 	 it at mpz_set_fr right now, it won't cause any conflicts or anything.]
 - those from LIA: missing secant, cosecant, cotangent (trigo/hyperbolic)
 - atan2
-- implement accurate summation algorithms from Demmel
-	(http://www.cs.berkeley.edu/~demmel/AccurateSummation.ps)
 - mpfr_root to compute x^(1/n) for n integer, similar to mpz_root
 	[suggested by Damien Fisher, damien@maths.usyd.edu.au, 20 Jul 2003,
 	and Mark Watkins <watkins@maths.usyd.edu.au>, 23 Jul 2003]
-- a function to free the cache used by constants (and possibly other
-  functions).
 - mpfr_fmod (mpfr_t, mpfr_srcptr, mpfr_srcptr, mp_rnd_t)
   [suggested by Tomas Zahradnicky <tomas@24uSoftware.com>, 29 Nov 2003]
   Kevin: Might want to be called mpfr_mod, to match mpz_mod.
@@ -138,21 +131,6 @@ Efficiency:
 - idem for mpfr_atanh (2^(-1021) for example)
 - improve generic.c to work for number of terms <> 2^k
 - rewrite mpfr_greater_p... as native code.
-- combine tests for singular values [from Torbjorn Granlund]:
-    For example, mpfr_add could have this structure:
-    if (MPFR_SINGULAR (a))
-      ...
-    else if (MPFR_SINGULAR (b)
-      ...
-    else
-      plain operands
-
-- MPFR_CLEAR_NAN is inefficient, MPFR_SET_INF and friends should do a
-  single mask and set of their desired flags.
-
-- Nan, inf and the sign might be better off in the _mpfr_exp field,
-  since that would mean only one field set by normal operations, and
-  set by a simple store since the whole field would be updated.
 
 - mpf_t uses a scheme where the number of limbs actually present can
   be less than the selected precision, thereby allowing low precision
@@ -190,8 +168,6 @@ Miscellaneous:
 
 - add tests of the ternary value for constants
 
-- replace all mpfr_set_d calls in tests (except when testing it)
-
 Reentrancy / Thread-Safety:
 
 - Temporary changes to emin/emax are not safe (all uses of
@@ -203,19 +179,11 @@ Reentrancy / Thread-Safety:
 
 Portability:
 
-- _mpfr_ceil_log2 is IEEE specific.  Many callers only seem to want
-  this operation on an integer, which could be done with
-  count_leading_zeros from longlong.h.
-
-- mpfr_get_d3 assumes a double is IEEE format.
-
 - [Kevin about texp.c long strings]
   For strings longer than c99 guarantees, it might be cleaner to
   introduce a "tests_strdupcat" or something to concatenate literal
   strings into newly allocated memory.  I thought I'd done that in a
   couple of places already.  Arrays of chars are not much fun.
-
-- replace "if (mpfr_get_d1 (x) != ...)" in tests
 
 Possible future MPF / MPFR integration:
 
