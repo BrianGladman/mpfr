@@ -62,7 +62,9 @@ void check3 (double d, mp_rnd_t rnd, char *res)
 
 void check_small ()
 {
-  mpfr_t x; char *s; mp_exp_t e;
+  mpfr_t x;
+  char *s;
+  mp_exp_t e;
   
   mpfr_init(x);
 
@@ -88,7 +90,7 @@ void check_small ()
   s = mpfr_get_str (NULL, &e, 8, 10, x, GMP_RNDU);
   if (strcmp (s, "1073721522") || (e != -1))
     {
-      fprintf (stderr, "Error in mpfr_get_str (3): s=%s e=%d\n", s, e);
+      fprintf (stderr, "Error in mpfr_get_str (3): s=%s e=%d\n", s, (int) e);
       exit (1);
     }
   free (s);
