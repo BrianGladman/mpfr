@@ -49,6 +49,7 @@ mpfr_ptr Q; mpfr_srcptr n, d; unsigned char rnd_mode;
     if (--expd>=0) mpfr_div_2exp(q, n, expd, rnd_mode);
     else mpfr_mul_2exp(q, n, -expd, rnd_mode);
     if (SIGN(d)<0) mpfr_neg(q, q, rnd_mode);
+    mpfr_clear(eps); mpfr_clear(tmp); mpfr_clear(one);
     return exact;
   }
   mpfr_set_ui(one, 1, GMP_RNDZ); 
@@ -62,6 +63,7 @@ mpfr_ptr Q; mpfr_srcptr n, d; unsigned char rnd_mode;
     mpfr_set(q, n, rnd_mode);
     EXP(q) -= expd-1;
     if (SIGN(d)<0) CHANGE_SIGN(q);
+    mpfr_clear(eps); mpfr_clear(tmp); mpfr_clear(one);
     return exact;
   }
   mpfr_mul_2exp(eps, tmp, -expd, GMP_RNDZ);
