@@ -60,7 +60,7 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   sm = (m + BITS_PER_MP_LIMB - 1) / BITS_PER_MP_LIMB;
   MPFR_TMP_INIT(rp, r, m, sm);
   MPFR_TMP_INIT(sp, s, m, sm);
-
+  
   for (;;)
     {
       mpfr_mul (r, x, x, GMP_RNDU); /* err <= 1 ulp */
@@ -101,7 +101,7 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       MPFR_TMP_INIT(rp, r, m, sm);
       MPFR_TMP_INIT(sp, s, m, sm);
     }
-
+  
   MPFR_SAVE_EXPO_FREE (expo);
   inexact = mpfr_set (y, s, rnd_mode); 
   /* FIXME: Dont' need check range? */
