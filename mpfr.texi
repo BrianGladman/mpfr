@@ -1370,7 +1370,8 @@ value of 536870911.
 A NaN is indicated by the NaN flag set, and no other fields are
 relevant.
 An Infinity is indicated by the NaN flag clear and the Inf flag set;
-the sign bit of an Infinity indicates the sign, the limb data is not relevant.
+the sign bit of an Infinity indicates the sign, the limb data 
+and the exponent are not relevant.
 
 The @code{_mpfr_exp} field stores the exponent.
 An exponent of 0 means a radix point just above the most significant
@@ -1385,7 +1386,10 @@ n=ceil(@code{_mpfr_prec}/@code{BITS_PER_MP_LIMB}).
 The number of limbs in use is controlled by @code{_mpfr_prec}, namely
 ceil(@code{_mpfr_prec}/@code{BITS_PER_MP_LIMB}).
 Zero is represented by the most significant limb being zero, other
-limb data is not relevant in this case.
+limb data and the exponent are not relevant 
+("not relevant" implies that the corresponding objects may contain
+invalid values, thus should not be evaluated even if
+they are not taken into account).
 Non-zero values always have the most significant bit of the most
 significant limb set to 1.  When the precision is not a whole number
 of limbs, the excess bits at the low end of the data are zero.
