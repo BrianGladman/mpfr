@@ -25,12 +25,10 @@ Documentation:
 
 - add a description of the algorithms used + proof of correctness
 
-- support for accented characters when converting the texi file to
-  the dvi file
-
 - web page: add a html version of the documentation
 
-- mpfr_set_prec: add an explanation of how to speed up calculations which increase their precision at each step.
+- mpfr_set_prec: add an explanation of how to speed up calculations
+  which increase their precision at each step.
 
 Installation:
 
@@ -98,10 +96,8 @@ New functions to implement:
 	(http://www.cs.berkeley.edu/~demmel/AccurateSummation.ps)
 - mpfr_root to compute x^(1/n) for n integer [suggested by Damien Fisher,
 	damien@maths.usyd.edu.au, 20 Jul 2003]
-
-Rounding:
-
-- mpfr_pow isn't completely specified (concerning signed zeros).
+- a function to free the cache used by constants (and possibly other
+  functions).
 
 Efficiency:
 
