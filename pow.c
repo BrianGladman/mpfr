@@ -31,7 +31,7 @@ static int mpfr_pow_is_exact _PROTO((mpfr_srcptr, mpfr_srcptr));
    Assumes x and y are ordinary numbers (neither NaN nor Inf),
    and y is not zero.
 */
-int
+static int
 mpfr_pow_is_exact (mpfr_srcptr x, mpfr_srcptr y)
 {
   mp_exp_t d;
