@@ -491,10 +491,10 @@ void check_case_2 (void)
 {
   mpfr_t a, b, c, d;
 
-  mpfr_init2(a, 300);
-  mpfr_init2(b, 800);
-  mpfr_init2(c, 500);
-  mpfr_init2(d, 800);
+  mpfr_init2 (a, 300);
+  mpfr_init2 (b, 800);
+  mpfr_init2 (c, 500);
+  mpfr_init2 (d, 800);
 
   mpfr_set_str_raw(a, "1E110");  /* a = 2^110 */
   mpfr_set_str_raw(b, "1E900");  /* b = 2^900 */
@@ -512,9 +512,10 @@ void check_case_2 (void)
       exit (1);
     }
 
-  mpfr_clear(a);
-  mpfr_clear(b);
-  mpfr_clear(c);
+  mpfr_clear (a);
+  mpfr_clear (b);
+  mpfr_clear (c);
+  mpfr_clear (d);
 }
 
 /* checks when source and destination are equal */
