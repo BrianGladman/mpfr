@@ -32,8 +32,8 @@ MA 02111-1307, USA. */
  || defined (__ns32000__)						\
  || defined (__WINNT) || defined (_WIN32)
 #define _MPFR_NAN_BYTES  { 0, 0, 0xc0, 0x7f }
-#define _MPFR_INFP_BYTES { 0, 0, 0xf0, 0x7f }
-#define _MPFR_INFM_BYTES { 0, 0, 0xf0, 0xff }
+#define _MPFR_INFP_BYTES { 0, 0, 0x80, 0x7f }
+#define _MPFR_INFM_BYTES { 0, 0, 0x80, 0xff }
 #else
 #if defined (_BIG_ENDIAN) || defined (__BIG_ENDIAN__)			\
  || defined (__mc68000__) || defined (__mc68020__) || defined (__m68k__)\
@@ -53,8 +53,8 @@ MA 02111-1307, USA. */
  || defined (__sparc) || defined (sparc)				\
  || defined (__we32k__)
 #define _MPFR_NAN_BYTES  { 0x7f, 0xc0, 0, 0 }
-#define _MPFR_INFP_BYTES { 0x7f, 0xf0, 0, 0 }
-#define _MPFR_INFM_BYTES { 0xff, 0xf0, 0, 0 }
+#define _MPFR_INFP_BYTES { 0x7f, 0x80, 0, 0 }
+#define _MPFR_INFM_BYTES { 0xff, 0x80, 0, 0 }
 #endif
 #endif
 
@@ -64,8 +64,13 @@ MA 02111-1307, USA. */
 #ifdef _MPFR_NAN_BYTES
 /* Note: do not use an initialized union, because, though it is standard,
    the HP compiler doesn't like that. */
+#ifdef __alpha
+static unsigned char __mpfr_nan[8] = { 0, 0, 0, 0, 0, 0, 0xf8, 0x7f };
+#define MPFR_DBL_NAN (*((double *) __mpfr_nan))
+#else
 static unsigned char __mpfr_nan[4] = _MPFR_NAN_BYTES;
 #define MPFR_DBL_NAN ((double) *((float *) __mpfr_nan))
+#endif
 #else
 #define MPFR_DBL_NAN (0./0.)
 #endif
