@@ -343,8 +343,7 @@ mpfr_get_str_aux (char *str, mp_exp_t *exp, mp_limb_t *r, mp_size_t n,
   unsigned char *str1;      /* string of m+2 characters */
   size_t size_s1;           /* length of str1 */
   mp_rnd_t rnd1;
-  unsigned int i;
-  char c;
+  size_t i;
   int exact = (e < 0);
   TMP_DECL(marker);
 
@@ -412,6 +411,7 @@ mpfr_get_str_aux (char *str, mp_exp_t *exp, mp_limb_t *r, mp_size_t n,
       size_s1 = mpn_get_str (str1, b, r + i0, n - i0);
 
       /* round str1 */
+      MPFR_ASSERTN(size_s1 >= m);
       *exp = size_s1 - m; /* number of superfluous characters */
 
       /* if size_s1 = m + 2, necessarily we have b^(m+1) as result,
@@ -460,13 +460,15 @@ mpfr_get_str_aux (char *str, mp_exp_t *exp, mp_limb_t *r, mp_size_t n,
                   /* the carry cannot propagate to the whole string, since
                      Y = x*b^(m-g) < 2*b^m <= b^(m+1)-b
                      where x is the input float */
-		  for (c = 1, i = size_s1 - 2; c == 1; i--)
-		    {
-		      str1[i] ++;
-		      if ((c = (str1[i] == b)))
-			str1[i] = 0;
-		    }
-		}
+                  MPFR_ASSERTN(size_s1 >= 2);
+                  i = size_s1 - 2;
+                  while (str1[i] == b - 1)
+                    {
+                      MPFR_ASSERTD(i > 0);
+                      str1[i--] = 0;
+                    }
+                  str1[i]++;
+                }
 	      dir = 1;    
 	    }
           /* round toward zero (truncate) */
