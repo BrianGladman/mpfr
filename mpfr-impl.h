@@ -122,11 +122,13 @@ MA 02111-1307, USA. */
 /* Mask to get the MSB of a limb (excluding nails) */
 #define MPFR_LIMB_MSB(l) ((l)&MPFR_LIMB_HIGHBIT)
 
-/* Definition of MPFR_LIMB_ONE */
+/* Definition of MPFR_LIMB_ONE & MPFR_LIMB_ZERO*/
 #ifdef CNST_LIMB
-# define MPFR_LIMB_ONE CNST_LIMB(1)
+# define MPFR_LIMB_ONE  CNST_LIMB(1)
+# define MPFR_LIMB_ZERO CNST_LIMB(0)
 #else
-# define MPFR_LIMB_ONE ((mp_limb_t) 1L)
+# define MPFR_LIMB_ONE  ((mp_limb_t) 1L)
+# define MPFR_LIMB_ZERO ((mp_limb_t) 0L)
 #endif
 
 #ifndef MP_LIMB_T_ONE
