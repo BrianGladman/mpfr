@@ -214,7 +214,8 @@ AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #ifdef MPFR_HAVE_GMP_IMPL
 # include "gmp-impl.h"
 #endif 
-int main () { return !mpn_sub_nc; }
+mp_limb_t f() {mp_limb_t x=2; return mpn_sub_nc(&x, &x, &x, 1, 0); }
+int main () { f (); return 0; }
 ]], [[]])],[
     AC_MSG_RESULT(yes) 
     AC_DEFINE([MPFR_HAVE_MPN_SUB_NC],1)
