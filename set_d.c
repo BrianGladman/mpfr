@@ -20,11 +20,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#if __GNUC__ /* gcc "patched" headers seem to omit isnan... */
-extern int isnan(double);
-#endif
-#include <math.h> /* for isnan and NaN */
-
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "longlong.h"
@@ -248,8 +243,8 @@ mpfr_set_d(r, d, rnd_mode)
   int signd, sizer; unsigned int cnt;
 
   if (d == 0) { MPFR_SET_ZERO(r); return; }
-  else if (isnan(d)) { MPFR_SET_NAN(r); return; }
-  else if (isinf(d)) 
+  else if (DOUBLE_ISNAN(d)) { MPFR_SET_NAN(r); return; }
+  else if (DOUBLE_ISINF(d))
     { 
       MPFR_SET_INF(r); 
       if ((d > 0 && (MPFR_SIGN(r) == -1)) || (d < 0 && (MPFR_SIGN(r) == 1)))
