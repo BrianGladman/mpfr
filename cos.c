@@ -30,7 +30,7 @@ static int mpfr_cos2_aux       _PROTO ((mpfr_ptr, mpfr_srcptr));
 int 
 mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode) 
 {
-  int K, precy, m, k, l, inexact;
+  int K0, K, precy, m, k, l, inexact;
   mpfr_t r, s;
 
   if (MPFR_IS_NAN(x) || MPFR_IS_INF(x))
@@ -47,11 +47,9 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   precy = MPFR_PREC(y);
 
-  K = _mpfr_isqrt(precy / 2);
-  if (MPFR_EXP(x) > 0)
-    K += MPFR_EXP(x);
+  K0 = _mpfr_isqrt(precy / 2);
   /* we need at least K + log2(precy/K) extra bits */
-  m = precy + 3 * K + 3;
+  m = precy + 3 * K0 + 3;
 
   mpfr_init2 (r, m);
   mpfr_init2 (s, m);
@@ -59,6 +57,10 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   do
     {
       mpfr_mul (r, x, x, GMP_RNDU); /* err <= 1 ulp */
+
+      /* we need that |r| < 1 for mpfr_cos2_aux, i.e. up(x^2)/2^(2K) < 1 */
+      K = K0 + MAX(MPFR_EXP(r), 0);
+
       mpfr_div_2exp (r, r, 2 * K, GMP_RNDN); /* r = (x/2^K)^2, err <= 1 ulp */
 
       /* s <- 1 - r/2! + ... + (-1)^l r^l/(2l)! */
