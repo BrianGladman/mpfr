@@ -34,6 +34,19 @@ check_diverse (void)
   mpfr_init (y);
   mpfr_init (z);
 
+  /* check corner case cancel=0, but add_exp=1 */
+  mpfr_set_prec (x, 2);
+  mpfr_set_prec (y, 4);
+  mpfr_set_prec (z, 2);
+  mpfr_setmax (y, __gmpfr_emax);
+  mpfr_set_str_binary (z, "0.1E-10"); /* tiny */
+  mpfr_sub (x, y, z, GMP_RNDN); /* should round to 2^emax, i.e. overflow */
+  if (!mpfr_inf_p (x) || mpfr_sgn (x) < 0)
+    {
+      printf ("Error in mpfr_sub(a,b,c,RNDN) for b=maxfloat, prec(a)<prec(b), c tiny\n");
+      exit (1);
+    }
+
   mpfr_set_prec (x, 288);
   mpfr_set_prec (y, 288);
   mpfr_set_prec (z, 288);
