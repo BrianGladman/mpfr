@@ -37,20 +37,23 @@ int maxulp=0;
 void check(a, rnd_mode, Q)
 unsigned long a; unsigned char rnd_mode; double Q;
 {
-  mpfr_t q; double Q2; int u;
+  mpfr_t q; double Q2; int u, ck;
 
   mpfr_init2(q, 53);
 #ifdef TEST
   mpfr_set_machine_rnd_mode(rnd_mode);
 #endif
   mpfr_sqrt_ui(q, a, rnd_mode);
-  if (Q<0.0) Q = sqrt(1.0 * a);
+  ck = (Q >= 0.0);
+  if (!ck) Q = sqrt(1.0 * a);
   Q2 = mpfr_get_d(q);
   if (Q!=Q2 && (!isnan(Q) || !isnan(Q2))) {
     u = ulp(Q2,Q);
-    printf("mpfr_sqrt_ui failed for a=%lu, rnd_mode=%s\n",
+    if (ck) printf("mpfr_sqrt_ui failed");
+    else printf("mpfr_sqrt_ui differs from sqrt");
+    printf(" for a=%lu, rnd_mode=%s\n",
 	   a, mpfr_print_rnd_mode(rnd_mode));
-    printf("expected sqrt is %1.20e, got %1.20e (%d ulp)\n",Q,Q2,u);
+    printf("sqrt gives %1.20e, mpfr_sqrt_ui gives %1.20e (%d ulp)\n",Q,Q2,u);
     exit(1);
   }
   mpfr_clear(q);
