@@ -229,8 +229,8 @@ void check64()
     printf("Error in mpfr_sub: u=x-t and x=x-t give different results\n");
     exit(1);
   }
-  if ((MANT(u)[(PREC(u)-1)/BITS_PER_MP_LIMB] & 
-      ((mp_limb_t)1<<(BITS_PER_MP_LIMB-1)))==0) {
+  if ((MANT(u)[(PREC(u)-1)/mp_bits_per_limb] & 
+      ((mp_limb_t)1<<(mp_bits_per_limb-1)))==0) {
     printf("Error in mpfr_sub: result is not msb-normalized\n"); exit(1);
   }
   mpfr_set_prec(x, 65); mpfr_set_prec(t, 65); mpfr_set_prec(u, 65);
