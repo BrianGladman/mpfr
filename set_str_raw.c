@@ -52,6 +52,8 @@ mpfr_set_str_raw(mpfr_ptr x, char *str)
 	  fprintf(stderr, "Warning : possible overflow in exponent in Str -> mpfr\n"); 
 	}
     }
+  else expn=k;
+
   endstr2 = str2;
   l = (strlen(str0) - 1) / BITS_PER_MP_LIMB + 1; str2 = str0; 
 
