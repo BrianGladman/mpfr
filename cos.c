@@ -32,6 +32,7 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_t r, s;
   mp_limb_t *rp, *sp;
   mp_size_t sm;
+  mp_exp_t exps, cancel = 0;
   TMP_DECL (marker);
 
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(x)))
@@ -84,12 +85,18 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	k++;
       /* now the error is bounded by 2^(k-m) = 2^(EXP(s)-err) */
 
-      if (MPFR_LIKELY(mpfr_can_round (s, MPFR_GET_EXP(s)+m-k,GMP_RNDN,GMP_RNDZ,
+      exps = MPFR_GET_EXP(s);
+      if (MPFR_LIKELY(mpfr_can_round (s, exps + m - k, GMP_RNDN, GMP_RNDZ,
 				      precy + (rnd_mode == GMP_RNDN))))
 	break;
 
       m += BITS_PER_MP_LIMB;
-      sm++;
+      if (exps < cancel)
+        {
+          m += cancel - exps;
+          cancel = exps;
+        }
+      sm = (m + BITS_PER_MP_LIMB - 1) / BITS_PER_MP_LIMB;
       MPFR_TMP_INIT(rp, r, m, sm);
       MPFR_TMP_INIT(sp, s, m, sm);
     }
