@@ -30,7 +30,6 @@ MA 02111-1307, USA. */
 
     cosh= 1/2[e^(x)-e^(-x)]
  */
-int mpfr_sinh _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 
 int
 #if __STDC__

@@ -30,7 +30,6 @@ MA 02111-1307, USA. */
 
     tanh= [e^(x)^2-1]/+[e^(x)^2+1]
  */
-int mpfr_tanh _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 
 int
 #if __STDC__

@@ -33,8 +33,6 @@ MA 02111-1307, USA. */
     y=1/pow_ui(x,z) if z<0
  */
 
-int mpfr_pow_si _PROTO ((mpfr_ptr, mpfr_srcptr, long int, mp_rnd_t)); 
-
 int
 #if __STDC__
 mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd_mode)
