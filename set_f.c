@@ -38,6 +38,7 @@ mpfr_set_f(y, x, rnd_mode)
   mp_limb_t *my, *mx, *tmp; unsigned long cnt, sx, sy;
   TMP_DECL(marker);
 
+  TMP_MARK(marker);
   sx = ABS(SIZ(x)); sy = MPFR_ABSSIZE(y);
   my = MPFR_MANT(y); mx = MPFR_MANT(x);
 

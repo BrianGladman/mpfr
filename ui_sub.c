@@ -44,6 +44,7 @@ mpfr_ui_sub(y, u, x, rnd_mode)
   TMP_DECL(marker);
 
   if (u) {
+    TMP_MARK(marker);
     MON_INIT(up, uu, BITS_PER_MP_LIMB, 1);
     count_leading_zeros(cnt, (mp_limb_t) u);
     *up = (mp_limb_t) u << cnt;
