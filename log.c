@@ -34,7 +34,7 @@ mpfr_log()
   int p, m, q, bool, err, size;
   mpfr_t cst, rapport, agm, tmp1, tmp2, s, mm;
   mp_limb_t *cstp, *rapportp, *agmp, *tmp1p, *tmp2p, *sp, *mmp;
-  double x, ref;
+  double ref;
   TMP_DECL(marker);
 
 
