@@ -112,7 +112,7 @@ mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
 			 || MPFR_EXP (res) >= __gmpfr_emax))
 	{
           mpfr_clear (res);
-          mpfr_restore_emin_emax ();
+          MPFR_SAVE_EXPO_FREE (expo);
           return mpfr_set_overflow (x, rnd, 
 				    (n % 2) ? MPFR_SIGN (y) : MPFR_SIGN_POS);
 	}
@@ -121,7 +121,7 @@ mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
 			 || MPFR_EXP (res) <= __gmpfr_emin))
         {
           mpfr_clear (res);
-          mpfr_restore_emin_emax ();
+	  MPFR_SAVE_EXPO_FREE (expo);
           return mpfr_set_underflow (x, rnd, 
 				     (n % 2) ? MPFR_SIGN(y) : MPFR_SIGN_POS);
         }

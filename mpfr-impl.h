@@ -754,8 +754,9 @@ int mpfr_strncasecmp _MPFR_PROTO ((const char *, const char *, size_t));
 
 int mpfr_set_underflow _MPFR_PROTO ((mpfr_ptr, mp_rnd_t, int));
 int mpfr_set_overflow _MPFR_PROTO ((mpfr_ptr, mp_rnd_t, int));
-void mpfr_save_emin_emax _MPFR_PROTO ((void));
-void mpfr_restore_emin_emax _MPFR_PROTO ((void));
+
+  /*   void mpfr_save_emin_emax _MPFR_PROTO ((void));
+       void mpfr_restore_emin_emax _MPFR_PROTO ((void)); */
 
 int mpfr_add1 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_sub1 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
