@@ -1,3 +1,36 @@
+2004-10-27  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* mpfr-impl.h, set_d.c:
+	Removed the definitions of DBL_POS_INF/DBL_NEG_INF/DBL_NAN for
+	Visual C++ as they were incorrect. Modified DOUBLE_ISINF(x) so
+	that infinities are no longer used (this should fix a part of
+	the problem for Visual C++). If IEEE 754 is not supported, one
+	should probably use the standard INFINITY macro instead of
+	(1.0/0.0), since (1.0/0.0) is specific to IEEE 754.
+
+	* acinclude.m4, tests/tests.c:
+	Applied patch by Steve M. Robbins for non-IRIX MIPS systems
+	(originally for MPFR 2.0.3).
+
+2004-10-26  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* tests/tadd1sp.c, tests/tsub1sp.c: Reformatted the code.
+
+	* tests/tsub1sp.c, tests/ttanh.c, tests/tset_ld.c, tests/tset_si.c, tests/tset_str.c, tests/tset_z.c, tests/tround_prec.c, tests/tset.c, tests/tset_exp.c, tests/trint.c, tests/trandom.c, tests/tlog.c, tests/tmul.c, tests/tmul_ui.c, tests/texp2.c, tests/tgamma.c, tests/tcosh.c, tests/tdiv.c, tests/tests.c, tests/texceptions.c, tests/texp.c, tests/tcos.c, tests/tacos.c, tests/tadd1sp.c, tests/tasin.c, tests/tatan.c, mpfr-test.h:
+	Replaced mpfr_set_emin/emax by set_emin/emax in tests to check
+	the return value; defined set_emin/emax in "tests/tests.c".
+	Fix: added missing #include <string.h> in "tests/tests.c".
+	Removed variable names in prototypes in "mpfr-test.h".
+
+2004-10-22  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* tests/mpf_compat.h: Reformatted the code -> GNU style.
+
+	* tests/tinp_str.c, tests/tout_str.c, tests/tset_str.c, tests/tstrtofr.c, mul.c, set_str.c, strtofr.c, tests/mpf_compat.h, tests/tests.c, mpfr-impl.h, mpfr-test.h, mpfr.h, mpfr.texi, INSTALL, NEWS, README, README.dev, configure.in, AUTHORS, BUGS, ChangeLog:
+	Ported the latest modifications to the 2.1 branch.
+
+	* ChangeLog: Update.
+
 2004-10-22  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
 
 	* tests/tests.c:
