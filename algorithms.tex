@@ -36,10 +36,10 @@
 
 \section{Basic rules}
 
-In the following, $n$ is the precision (number of bits of the mantissa),
-each floating-point number is written $x = m \cdot 2^e$
+Let $n$ be a positive integer (considered fixed in the following).
+We write any nonzero real number $x$ in the form $x = m \cdot 2^e$
 with $\frac{1}{2} \le |m| < 1$ and $e := {\rm EXP}(x)$, and
-$\ulp(x) := 2^{{\rm EXP}(x) - n}$.
+we define $\ulp(x) := 2^{{\rm EXP}(x) - n}$.
 
 \begin{Rule} \label{R1}
 $2^{-n} |x| < \ulp(x) \le 2^{-n+1} |x|$.
@@ -58,13 +58,13 @@ Then $|a| \le |b|$ implies $e_a \le e_b$, thus
 $\ulp(a) = 2^{e_a-n} \le 2^{e_b-n} = \ulp(b)$.
 \end{proof}
 
-\begin{Rule} \label{R3}
-Let $\ulp(x) := 2^{{\rm EXP}(x) - n}$, then
-$2^{n-1} \ulp(x) \le |x| < 2^{n} \ulp(x)$.
-\end{Rule}
-\begin{proof}
-Obvious from $x = m \cdot 2^e$ with $\frac{1}{2} \le |m| < 1$.
-\end{proof}
+% \begin{Rule} \label{R3}
+% Let $\ulp(x) := 2^{{\rm EXP}(x) - n}$, then
+% $2^{n-1} \ulp(x) \le |x| < 2^{n} \ulp(x)$.
+% \end{Rule}
+% \begin{proof}
+% Same as rule~\ref{R1}.
+% \end{proof}
 
 \begin{Rule} \label{R4}
 $\frac{1}{2} |a| \cdot \ulp(b) < \ulp(a b) < 2 |a| \cdot \ulp(b)$.
@@ -99,10 +99,10 @@ $\frac{1}{2} u < x$.
 \end{proof}
 
 \begin{Rule} \label{R7}
-$\frac{1}{2} |a| \cdot \ulp(1) \leq \ulp(a) \leq |a| \cdot \ulp(1)$.
+$\frac{1}{2} |a| \cdot \ulp(1) < \ulp(a) \leq |a| \cdot \ulp(1)$.
 \end{Rule}
 \begin{proof}
-The left inegality comes from Rule~\ref{R4} with $b=1$,
+The left inequality comes from Rule~\ref{R4} with $b=1$,
 and the right one from $|a| \ulp(1) \geq \frac{1}{2} 2^{e_a} 2^{1-n} =\ulp(a)$.
 \end{proof}
 
@@ -163,7 +163,7 @@ $\ulp(o(x)) \leq \ulp(x)$.
 
 This function computes the exponent shift when subtracting $c > 0$ from
 $b \ge c$. In other terms, if ${\rm EXP}(x) := 
-\lfloor \frac{\log b}{\log 2} \rfloor$, it returns:
+\lfloor \frac{\log x}{\log 2} \rfloor$,
 it returns ${\rm EXP}(b) - {\rm EXP}(b-c)$.
 
 This function admits the following specification in terms of the binary
@@ -688,10 +688,10 @@ at the beginning of loop $k$,
 then that for $t$ after $t \leftarrow \lceil y t/2^m \rceil$
 is at most $(\varepsilon_k t + \tau_k y)/2^m + 1$.
 
-\subsection{Generic error of addition/soustraction}\label{generic:sous}
+\subsection{Generic error of addition/subtraction}\label{generic:sous}
 
 
-We want to compute the generic error of the soustraction, this following rules can be apply on addition too.
+We want to compute the generic error of the subtraction, this following rules can be apply on addition too.
 
 \begin{eqnarray}\nonumber
 \textnormal{Note:}&& error(u) \leq k_u \, \ulp(u), \;\; error(v) \leq k_v \, \ulp(v)
@@ -699,7 +699,7 @@ We want to compute the generic error of the soustraction, this following rules c
 
 \begin{eqnarray}\nonumber
 \textnormal{Note:}&& \ulp(w)=2^{e_w-p}, \;\; \ulp(u)=2^{e_u-p},\;\; \ulp(v)=2^{e_v-p}\;\;\textnormal{with} \; p \; \textnormal{the accuracy} \\\nonumber
-&& \ulp(u)=2^{d+e_w-p}, \;\; \ulp(u)=2^{d+e_w-p},\;\;\textnormal{with} \;\;d=e_u-e_w \;\; d^{'}=e_v-e_w 
+&& \ulp(u)=2^{d+e_w-p}, \;\; \ulp(v)=2^{d^{'}+e_w-p},\;\;\textnormal{with} \;\;d=e_u-e_w \;\; d^{'}=e_v-e_w 
 \end{eqnarray}
 \begin{eqnarray}\nonumber
 error(w)& \leq &c_w \ulp(w) + k_u \ulp(u) + k_v \ulp(v) \\\nonumber
@@ -719,6 +719,7 @@ error(w)& \leq&(c_w + k_u + k_v) \, \ulp(w)
 
 
 We want to compute the generic error of the multiplication.
+We assume here $u, v > 0$.
 
 \begin{eqnarray}\nonumber
 w&=&o(u.v) \\\nonumber
@@ -726,8 +727,8 @@ w&=&o(u.v) \\\nonumber
 \end{eqnarray}
 \begin{eqnarray}\nonumber
 error(w)& = &|w - x.y| \\\nonumber
-& \leq &|w - u.b| +|u.y - x.y| \\\nonumber
-& \leq & c_w \ulp(w) +  \frac{1}{2} [|u.v-u.y|+|u.y-x.y|+|u.v-x.v|+|x.v-x.y|]\\\nonumber
+& \leq &|w - u v| +|u v - x y| \\\nonumber
+& \leq & c_w \ulp(w) +  \frac{1}{2} [|u v-u y|+|u y-x y|+|u v-x v|+|x v-x y|]\\\nonumber
 & \leq & c_w \ulp(w) +  \frac{u+x}{2} k_v \ulp(v) + \frac{v+y}{2} k_u \ulp(u)\\\nonumber
 & \leq & c_w \ulp(w) +  \frac{u(1+c_u^+)}{2} k_v \ulp(v) + \frac{v(1+c_v^+)}{2} k_u \ulp(u) \U{R9}\\\nonumber
 & \leq & c_w \ulp(w) +  (1+c_u^+) k_v \ulp(u.v) + (1+c_v^+) k_u \ulp(u.v) \U{R4}\\\nonumber
@@ -740,9 +741,10 @@ error(w)& = &|w - x.y| \\\nonumber
 \subsection{Generic error of inverse}\label{generic:inv}
 
 We want to compute the generic error of the inverse.
+We assume $u > 0$.
 
 \begin{eqnarray}\nonumber
-w&=&o(\frac{1}{v}) \\\nonumber
+w&=&o(\frac{1}{u}) \\\nonumber
 \textnormal{Note:}&& error(u) \leq k_u \, \ulp(u)
 \end{eqnarray}
 \begin{eqnarray}\nonumber
