@@ -91,8 +91,12 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
       if (mpfr_can_round (c, e, GMP_RNDN, rnd_mode, MPFR_PREC (y)))
 	break;
       /* check for huge cancellation */
-      if (e < MPFR_PREC (y))
+      if (e < (mp_exp_t) MPFR_PREC (y))
         m += MPFR_PREC (y) - e;
+      /* Check if near 1 */
+      if (MPFR_GET_EXP (c) == 1
+	  && MPFR_MANT (c)[MPFR_LIMB_SIZE (c)-1] == MPFR_LIMB_HIGHBIT)
+	m = 2*m;
 
     next_step:
       m += BITS_PER_MP_LIMB;

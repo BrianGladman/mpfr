@@ -19,6 +19,8 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+#include <stdio.h>
+
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
@@ -148,6 +150,13 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       if (ok == 0)
 	{
 	  m += BITS_PER_MP_LIMB;
+	  /* check for huge cancellation */
+	  if (e < (mp_exp_t) MPFR_PREC (y))
+	    m += MPFR_PREC (y) - e;
+	  /* Check if near 1 */
+	  if (MPFR_GET_EXP (c) == 1
+	      && MPFR_MANT (c)[MPFR_LIMB_SIZE (c)-1] == MPFR_LIMB_HIGHBIT)
+	    m = 2*m;
 	  mpfr_set_prec (c, m);
 	}
     }
