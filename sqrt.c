@@ -124,10 +124,11 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
 
   do
     {
-
       err = rsize * BITS_PER_MP_LIMB;
+
       if (rsize < usize)
         err--;
+
       if (err > rrsize * BITS_PER_MP_LIMB)
         err = rrsize * BITS_PER_MP_LIMB;
 
@@ -170,20 +171,20 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
       /* If we used all the limbs of both the dividend and the divisor,
          then we have the correct RNDZ rounding */
 
-      if (!can_round && (rsize < 2*usize))
+      if (!can_round && (rsize < usize))
         {
 #ifdef DEBUG
           printf("Increasing the precision.\n");
 #endif
         }
     }
-  while (!can_round && (rsize < 2*usize) && (rsize += 2) && (rrsize++));
+  while (!can_round && (rsize < usize) && (rsize += 2) && (rrsize++));
 #ifdef DEBUG
   printf ("can_round = %d\n", can_round);
 #endif
 
   /* This part may be deplaced upper to avoid a few mpfr_can_round_raw */
-  /* when the square root is exact. It is however very unprobable that */
+  /* when the square root is exact. It is however very unlikely that */
   /* it would improve the behaviour of the present code on average.    */
 
   if (!q_limb) /* the sqrtrem call was exact, possible exact square root */
@@ -226,21 +227,23 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
           break;
 
         case GMP_RNDN :
-          /* Not in the situation ...0 111111 */
+          /* round bit is bit rw of word nw */
           rw = (MPFR_PREC(r) + 1) & (BITS_PER_MP_LIMB - 1);
+	  nw = (MPFR_PREC(r) + 1) / BITS_PER_MP_LIMB + 1; 
+
           if (rw != 0)
-            {
-              rw = BITS_PER_MP_LIMB - rw;
-              nw = 0;
-            }
+            rw = BITS_PER_MP_LIMB - rw;
           else
-            nw = 1;
-          if ((rp[nw] >> rw) & 1 &&          /* Not 0111111111 */
-              (q_limb ||                     /* Nonzero remainder */
-               (rw ? (rp[nw] >> (rw + 1)) & 1 :
-                (rp[nw] >> (BITS_PER_MP_LIMB - 1)) & 1))) /* or even r. */
+            nw--;
+
+          if (((rp[rrsize - nw] >> rw) & 1) &&        /* Not 0111111111 */
+              (q_limb ||                              /* Nonzero remainder */
+              (rw ? (rp[rrsize - nw] >> (rw + 1)) & 1 :
+                (rp[rrsize - nw] >> (BITS_PER_MP_LIMB - 1)) & 1))) 
+            /* or even r. */
             {
-              cc = mpn_add_1 (rp + nw, rp + nw, rrsize, MP_LIMB_T_ONE << rw);
+              cc = mpn_add_1 (rp + rrsize - nw, rp + rrsize - nw, rrsize,
+                              MP_LIMB_T_ONE << rw);
               inexact = 1;
             }
           else
