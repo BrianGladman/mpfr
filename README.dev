@@ -70,7 +70,7 @@ to allow new features to be committed to the trunk.
 
 ===========================================
 
-To check the consistency of the test suite (for the MPFR team), 
+To check the coverage of the test suite (for the MPFR team), 
 you can use gcov (with GCC):
 1. Clean MPFR:
   make clean
@@ -78,7 +78,7 @@ you can use gcov (with GCC):
   make CFLAGS="-fprofile-arcs -ftest-coverage"
 3. Launch the tests:
   make check CFLAGS="-fprofile-arcs -ftest-coverage"
-4. Get the summary of the consistency:
+4. Get the results:
   find . -name '*.c' -exec gcov '{}' ';' | grep "lines executed" | sort
 
  For each source file, there is a .c.gcov file which contains much more
