@@ -1,16 +1,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#if 0
+
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-#include "timming.h"
+#define MPFR_MUL_BASECASE_THREEHOLD 5
+#define MPFR_MULHIGH_TAB_SIZE (sizeof(mulhigh_ktab) / sizeof(mulhigh_ktab[0]))
+static short mulhigh_ktab[] = {MPFR_MULHIGH_TAB};
 
-#define MAX_BASECASE_THREEHOLD 500
-#define TOLERANCE 102/100
+#else
+
+#include "gmp.h"
+#include "gmp-impl.h"
+#include "longlong.h"
 
 #define MPFR_MUL_BASECASE_THREEHOLD 5
 #define MPFR_MULHIGH_TAB_SIZE 1024
+static short mulhigh_ktab[MPFR_MULHIGH_TAB_SIZE];
+
+#endif
+
 
 /* Put in  rp[n-1..2n-1] an approximation of the n+1 high limbs
    of {mp, n} * {np, n}. 
@@ -26,33 +37,38 @@ mpfr_mulhigh_n_basecase (mp_ptr rp, mp_srcptr up, mp_srcptr vp, mp_size_t n)
     rp[i+1] = mpn_addmul_1 (rp, up + (n - i - 1), i+1, vp[i]);
 }
 
-static mp_size_t mulhigh_ktab[MPFR_MULHIGH_TAB_SIZE];
-
 void
 mpfr_mulhigh_n (mp_ptr rp, mp_srcptr np, mp_srcptr mp, mp_size_t n)
 {
   mp_size_t k;
 
-  k = MPFR_LIKELY (n < MPFR_MULHIGH_TAB_SIZE) ?  mulhigh_ktab[n] : 2*n/3;
+  k = __builtin_expect (n < MPFR_MULHIGH_TAB_SIZE, 1) 
+    ?  mulhigh_ktab[n] : 2*n/3;
   if (k < 0)
     mpn_mul_basecase (rp, np, n, mp, n);
   else if (k == 0)
-    mpn_mulhigh_n_basecase (rp, np, mp, n);
+    mpfr_mulhigh_n_basecase (rp, np, mp, n);
   else
     {
       mp_size_t l = n - k;
       mp_limb_t cy;
 
       mpn_mul_n (rp + 2 * l, np + l, mp + l, k); /* fills rp[2l..2n-1] */
-      mpn_mulhigh_n (rp, np + k, mp, l);          /* fills rp[l-1..2l-1] */
+      mpfr_mulhigh_n (rp, np + k, mp, l);          /* fills rp[l-1..2l-1] */
       cy = mpn_add_n (rp + n - 1, rp + n - 1, rp + l - 1, l + 1);
-      mpn_mulhigh_n (rp, np, mp + k, l);          /* fills rp[l-1..2l-1] */
+      mpfr_mulhigh_n (rp, np, mp + k, l);          /* fills rp[l-1..2l-1] */
       cy += mpn_add_n (rp + n - 1, rp + n - 1, rp + l - 1, l + 1);
       mpn_add_1 (rp + n + l, rp + n + l, k, cy); /* propagate carry */
     }
 }
 
 
+#if 1 /* Tune program */
+
+#include "timming.h"
+
+#define MAX_BASECASE_THREEHOLD 500
+#define TOLERANCE 102/100
 
 /* Tune: to improve */
 mp_size_t
@@ -65,25 +81,32 @@ find_best_k (mp_size_t n)
   if (n == 0)
     return -1;
 
+  /* Amelioration:
+      Si n > 32
+      Recherche min, max dans [n-33,n-1]
+      max = MAX(BITS_PER_MP_LIMB+max,n)
+      Recherche entre min et max 
+      Marche pas pour P4 (Trop chaotique!) */
+
   CALCUL_OVERHEAD;
   mpn_random (a, n);
   mpn_random (b, n);
 
   /* Check k == -1, mpn_mul_base_basecase */
-  mpn_mulhigh_ktab[n] = -1;
+  mulhigh_ktab[n] = -1;
   kbest = -1;
-  tbest = MEASURE (mpn_mulhigh_n (c, a, b, n) );
+  tbest = MEASURE (mpfr_mulhigh_n (c, a, b, n) );
 
   /* Check k == 0, mpn_mulhigh_basecase */
-  mpn_mulhigh_ktab[n] = 0;
-  t = MEASURE (mpn_mulhigh_n (c, a, b, n) );
+  mulhigh_ktab[n] = 0;
+  t = MEASURE (mpfr_mulhigh_n (c, a, b, n) );
   if (t * TOLERANCE < tbest)
     kbest = 0, tbest = t;
 
   /* Check Mulder */
   for (k = (n+1)/2 ; k < n ; k++) {
-    mpn_mulhigh_ktab[n] = k;
-    t = MEASURE (mpn_mulhigh_n (c, a, b, n));
+    mulhigh_ktab[n] = k;
+    t = MEASURE (mpfr_mulhigh_n (c, a, b, n));
     if (t *TOLERANCE < tbest)
       kbest = k, tbest = t;
   }
@@ -96,16 +119,12 @@ tune (mp_size_t n)
   /* Find ThreeHold */
   mp_size_t k;
   for (k = 0 ; k <= n ; k++) {
-    mpn_mulhigh_ktab[k] = find_best_k (k);
-    printf ("%d, ", mpn_mulhigh_ktab[k]);
+    mulhigh_ktab[k] = find_best_k (k);
+    printf ("%d, ", mulhigh_ktab[k]);
     fflush (stdout);
   }
   putchar ('\n');
 }
-
-#ifndef SIZE  
-#define SIZE 15
-#endif
 
 
 int 
@@ -118,7 +137,7 @@ main (int argc, const char *argv[])
 
   printf ("%s [SIZE_START [SIZE_END [SIZE_STEP]]]\n", argv[0]);
 
-  size = SIZE;
+  size = 15;
   if (argc >= 2)
     size = atol (argv[1]);
   size_end = size;
@@ -143,11 +162,11 @@ main (int argc, const char *argv[])
     mpn_random (a, size);
     mpn_random (b, size);
     
-    t1 = MEASURE (mpn_mulhigh_n (c, a, b, size));
+    t1 = MEASURE (mpfr_mulhigh_n (c, a, b, size));
     printf ("mulhigh_n:  %7Lu ", t1);
     t2 = MEASURE (mpn_mul_n (r, a, b, size));
     printf ("mpn_mul_n:  %7Lu ", t2);
-    t3 = MEASURE (mpn_mulhigh_n_basecase (c, a, b, size));
+    t3 = MEASURE (mpfr_mulhigh_n_basecase (c, a, b, size));
     printf ("mulhigh_bc: %7Lu ", t3);
 
     printf ("Ratio: %f %c %c\n", (double) t2 / t1,
@@ -172,6 +191,7 @@ main (int argc, const char *argv[])
   
   return 0;
 }
+#endif
 
 #if 0
 int mpfr_mul () 
@@ -193,12 +213,7 @@ int mpfr_mul ()
       bn = cn;
       cn = tn;
     }
-  if (MPFR_LIKELY (bn < MPFR_MUL_BASECASE_THREEHOLD))
-    {
-    full_multiply:
-      b1 = mpn_mul (tmp, MPFR_MANT (b), bn, MPFR_MANT (c), cn);      
-    }
-  else
+  if (MPFR_UNLIKELY (bn > MPFR_MUL_BASECASE_THREEHOLD))
     {
       mp_size_t cancel;
       mp_prec_t prec_cn;
@@ -229,6 +244,11 @@ int mpfr_mul ()
       else
 	goto full_multiply;
       }
+    }
+  else
+    {
+    full_multiply:
+      b1 = mpn_mul (tmp, MPFR_MANT (b), bn, MPFR_MANT (c), cn);      
     }
 
 #endif
