@@ -164,6 +164,26 @@ void check_float()
   check24(b*10873622.0, GMP_RNDD, 9.550631e6);
 }
 
+void special()
+{
+  mpfr_t x, z;
+
+  mpfr_init2 (x, 1);
+  mpfr_init2 (z, 1);
+
+  /* checks the sign is correctly set */
+  mpfr_set_d (x, 1.0, GMP_RNDN);
+  mpfr_set_d (z, -1.0, GMP_RNDN);
+  mpfr_sqrt (z, x, GMP_RNDN);
+  if (mpfr_cmp_ui (z, 0) < 0) {
+    fprintf (stderr, "Error: square root of %e gives %e\n", 
+	     mpfr_get_d (x), mpfr_get_d (z));
+    exit (1);
+  }
+
+  mpfr_clear (x);
+  mpfr_clear (z);
+}
 
 int main()
 {
@@ -185,6 +205,7 @@ int main()
     check(a, rand() % 4);
   }
 #endif
+  special ();
   check_float();
   check4(6.37983013646045901440e+32, GMP_RNDN, "5.9bc5036d09e0c@13");
   check4(1.0, GMP_RNDN, "1");
