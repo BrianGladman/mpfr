@@ -1,6 +1,6 @@
 /* Test file for the various mpfr_random fonctions.
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 1999-2000 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -23,12 +23,14 @@ MA 02111-1307, USA. */
 #include <stdlib.h>
 #include <math.h>
 #include "gmp.h"
-#include "gmp-impl.h"
-#include "longlong.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-void test_random(unsigned long nbtests, unsigned long prec, int verbose)
+void test_random (unsigned long, unsigned long, int);
+void test_random2 (unsigned long, unsigned long, int);
+void test_urandomb (unsigned long, unsigned long, int);
+
+void test_random (unsigned long nbtests, unsigned long prec, int verbose)
 {
   mpfr_t x; 
   int *tab, size_tab, k; 
@@ -73,7 +75,7 @@ void test_random(unsigned long nbtests, unsigned long prec, int verbose)
   return;
 }
 
-void test_random2(unsigned long nbtests, unsigned long prec, int verbose)
+void test_random2 (unsigned long nbtests, unsigned long prec, int verbose)
 {
   mpfr_t x; 
   int *tab, size_tab, k; 
@@ -86,7 +88,7 @@ void test_random2(unsigned long nbtests, unsigned long prec, int verbose)
   for (k = 0; k < size_tab; ++k) tab[k] = 0; 
 
   for (k = 0; k < nbtests; k++) {
-    mpfr_random2(x, ABSSIZE(x), 0); 
+    mpfr_random2 (x, MPFR_ABSSIZE(x), 0); 
     d = mpfr_get_d(x); av += d; var += d*d; 
     if (d < 1)
       tab[(int)(size_tab * d)]++;     
@@ -115,7 +117,7 @@ void test_random2(unsigned long nbtests, unsigned long prec, int verbose)
   return;
 }
 
-void test_urandomb(unsigned long nbtests, unsigned long prec, int verbose)
+void test_urandomb (unsigned long nbtests, unsigned long prec, int verbose)
 {
   mpfr_t x; 
   int *tab, size_tab, k; 
@@ -162,7 +164,7 @@ void test_urandomb(unsigned long nbtests, unsigned long prec, int verbose)
   return;
 }
 
-int main(int argc, char **argv)
+int main (int argc, char **argv)
 {
   unsigned long nbtests, prec; int verbose = 0; 
   

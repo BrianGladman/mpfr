@@ -22,7 +22,6 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <stdlib.h>
 #include "gmp.h"
-#include "gmp-impl.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
@@ -36,7 +35,7 @@ main(int argc, char **argv)
   /* checks that result is normalized */
   mpfr_set_d(y, 6.93147180559945286227e-01, GMP_RNDZ);
   mpfr_mul_ui(x, y, 1, GMP_RNDZ);
-  if (MPFR_MANT(x)[MPFR_PREC(x)/BITS_PER_MP_LIMB] >> (BITS_PER_MP_LIMB-1) == 0) {
+  if (MPFR_MANT(x)[MPFR_PREC(x)/mp_bits_per_limb] >> (mp_bits_per_limb-1) == 0) {
     fprintf(stderr, "Error in mpfr_mul_ui: result not normalized\n");
     exit(1);
   }

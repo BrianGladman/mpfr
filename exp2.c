@@ -21,7 +21,6 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
 #include <stdio.h>
-#include <math.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -32,6 +31,31 @@ int mpfr_exp2_aux2     (mpz_t, mpfr_srcptr, int, int*);
 mp_exp_t mpz_normalize (mpz_t, mpz_t, int);
 int mpz_normalize2     (mpz_t, mpz_t, int, int);
 int mpfr_exp2          (mpfr_ptr, mpfr_srcptr, mp_rnd_t);
+
+/* returns floor(sqrt(n)) */
+unsigned long _mpfr_isqrt (unsigned long n)
+{
+  unsigned long s;
+
+  s = 1;
+  do {
+    s = (s + n / s) / 2;
+  } while (!(s*s <= n && n <= s*(s+2)));
+  return s;
+}
+
+/* returns floor(n^(1/3)) */
+unsigned long _mpfr_cuberoot (unsigned long n)
+{
+  double s, is;
+
+  s = 1.0;
+  do {
+    s = (2*s*s*s + (double) n) / (3*s*s);
+    is = (double) ((int) s);
+  } while (!(is*is*is <= (double) n && (double) n < (is+1)*(is+1)*(is+1)));
+  return (unsigned long) is;
+}
 
 #define SWITCH 100 /* number of bits to switch from O(n^(1/2)*M(n)) method
 		      to O(n^(1/3)*M(n)) method */
@@ -139,15 +163,14 @@ mpfr_exp2 (y, x, rnd_mode)
       mpfr_sub_one_ulp(y);
     return 1; }
 
-  n = (int) floor(mpfr_get_d(x)/LOG2);
+  n = (int) (mpfr_get_d(x) / LOG2);
 
   /* for the O(n^(1/2)*M(n)) method, the Taylor series computation of
      n/K terms costs about n/(2K) multiplications when computed in fixed
      point */
-  K = (int) (precy<SWITCH) ? sqrt( (double) (precy + 1)/ 2.0 )
-    : pow( 4.0 * (double) precy, 1.0/3.0);
+  K = (precy<SWITCH) ? _mpfr_isqrt((precy + 1) / 2) : _mpfr_cuberoot (4*precy);
   l = (precy-1)/K + 1;
-  err = K + (int) ceil(log(2.0*(double)l+18.0)/LOG2);
+  err = K + (int) _mpfr_ceil_log2 (2.0 * (double) l + 18.0);
   /* add K extra bits, i.e. failure probability <= 1/2^K = O(1/precy) */
   q = precy + err + K + 3;
   mpfr_init2(r, q); mpfr_init2(s, q); mpfr_init2(t, q);
@@ -161,7 +184,7 @@ mpfr_exp2 (y, x, rnd_mode)
 
   /* if n<0, we have to get an upper bound of log(2)
      in order to get an upper bound of r = x-n*log(2) */
-  mpfr_const_log2(s, (n>=0) ? GMP_RNDZ : GMP_RNDU);
+  mpfr_const_log2 (s, (n>=0) ? GMP_RNDZ : GMP_RNDU);
 #ifdef DEBUG
   printf("n=%d log(2)=",n); mpfr_print_raw(s); putchar('\n');
 #endif
@@ -323,7 +346,7 @@ mpfr_exp2_aux2(s, r, q, exps)
 
   /* estimate value of l */
   l = q / (-MPFR_EXP(r));
-  m = (int) sqrt((double) l);
+  m = (int) _mpfr_isqrt (l);
   /* we access R[2], thus we need m >= 2 */
   if (m < 2) m = 2;
   TMP_MARK(marker);

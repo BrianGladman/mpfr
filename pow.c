@@ -20,7 +20,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <math.h>
 #include <stdio.h>
 #include "gmp.h"
 #include "mpfr.h"
@@ -38,29 +37,48 @@ mpfr_pow_ui (x, y, n, rnd)
      mp_rnd_t rnd;
 #endif
 {
-  long int i; double err;
+  long int i;
+  unsigned long m;
+  double err;
+  mpfr_t ycopy;
+
+  if (MPFR_IS_NAN(y)) { MPFR_SET_NAN(x); return 0; }
+
+  MPFR_CLEAR_NAN(x);
 
   if (MPFR_IS_INF(y)) 
     {
-      MPFR_CLEAR_FLAGS(x); 
       if (n == 0) { MPFR_SET_NAN(x); return 0; }
-      else if ((MPFR_SIGN(y) < 0 && (MPFR_SIGN(x) > 0 || n % 2 == 0)) ||
-	       (MPFR_SIGN(y) > 0 && (MPFR_SIGN(x) < 0 && n % 2 == 1)))
+      /* Inf^n = Inf, (-Inf)^n = Inf for n even, -Inf for n odd */
+      else if ((MPFR_SIGN(y) < 0 && (MPFR_SIGN(x) > 0 || n % 2 == 1)) ||
+	       (MPFR_SIGN(y) > 0 && (MPFR_SIGN(x) < 0)))
 	MPFR_CHANGE_SIGN(x); 
       MPFR_SET_INF(x); return 0; 
     }
-  if (MPFR_IS_NAN(y)) { MPFR_CLEAR_FLAGS(x); MPFR_SET_NAN(x); return 0; }
+  
+  MPFR_CLEAR_INF(x);
 
-  MPFR_CLEAR_FLAGS(x); 
   if (n==0) { mpfr_set_ui(x, 1, rnd); return 0; }
-  mpfr_set(x, y, rnd); err = 1.0;
-  for (i=0;(1<<i)<=n;i++);
+
+  if (x == y) {
+    mpfr_init2 (ycopy, MPFR_PREC(y));
+    mpfr_set (ycopy, y, GMP_RNDN); /* exact */
+  }
+
+  mpfr_set(x, y, rnd);
+  err = 1.0;
+  for (m=n, i=0; m; i++, m>>=1);
   /* now 2^(i-1) <= n < 2^i */
   for (i-=2; i>=0; i--) {
     mpfr_mul(x, x, x, rnd); err = 2.0*err+1.0;
-    if (n & (1<<i)) { mpfr_mul(x, x, y, rnd); err += 1.0; }
+    if (n & (1<<i)) {
+      mpfr_mul(x, x, (x == y) ? ycopy : y, rnd);
+      err += 1.0;
+    }
   }
-  return (int) ceil(log(err)/LOG2);
+  
+  if (x == y) mpfr_clear (ycopy);
+  return _mpfr_ceil_log2 (err);
 }
 
 /* sets x to y^n, and returns ceil(log2(max ulp error)) */
@@ -97,5 +115,5 @@ mpfr_ui_pow_ui (x, y, n, rnd)
       err = err + 1.0;
     }
   }
-  return (int) ceil(log(err)/LOG2);
+  return _mpfr_ceil_log2 (err);
 }

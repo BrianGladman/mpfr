@@ -20,7 +20,6 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
 #include <stdio.h>
-#include <math.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "longlong.h"
@@ -72,14 +71,10 @@ mpfr_const_aux_log2 (mylog, rnd_mode)
   int prec_x;
 
   mpz_init(cst);
-  logn =  (int) ceil(log
-                      ((double) MPFR_PREC(mylog))
-                      /LOG2); 
+  logn =  _mpfr_ceil_log2 ((double) MPFR_PREC(mylog));
   prec_x = prec_i_want + logn;
   while (!good){
-    prec = (int) ceil(log
-		      ((double) (prec_x))
-		      /LOG2);  
+    prec = _mpfr_ceil_log2 ((double) prec_x);
     mpfr_init2(tmp1, prec_x);
     mpfr_init2(result, prec_x);
     mpfr_init2(tmp2, prec_x);
@@ -132,9 +127,9 @@ mpfr_const_aux_log2 (mylog, rnd_mode)
 */
 void 
 #if __STDC__
-mpfr_const_log2(mpfr_ptr x, mp_rnd_t rnd_mode)
+mpfr_const_log2 (mpfr_ptr x, mp_rnd_t rnd_mode)
 #else
-mpfr_const_log2(x, rnd_mode) mpfr_ptr x; mp_rnd_t rnd_mode;
+mpfr_const_log2 (x, rnd_mode) mpfr_ptr x; mp_rnd_t rnd_mode;
 #endif
 {
   int N, oldN, k, precx; mpz_t s, t, u;
@@ -156,7 +151,7 @@ mpfr_const_log2(x, rnd_mode) mpfr_ptr x; mp_rnd_t rnd_mode;
      N=2;
      do {
        oldN = N;
-       N = precx + (int)ceil(log((double)N)/LOG2);
+       N = precx + _mpfr_ceil_log2 ((double) N);
      } while (N != oldN);
      mpz_init_set_ui(s,0);
      mpz_init(u);

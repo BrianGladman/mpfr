@@ -383,9 +383,9 @@ mpfr_add1 (a, b, c, rnd_mode, diff_exp)
 
 void
 #if __STDC__
-mpfr_add(mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode) 
+mpfr_add (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode) 
 #else
-mpfr_add(a, b, c, rnd_mode)
+mpfr_add (a, b, c, rnd_mode)
      mpfr_ptr a;
      mpfr_srcptr b;
      mpfr_srcptr c;
@@ -397,6 +397,8 @@ mpfr_add(a, b, c, rnd_mode)
   if (MPFR_IS_NAN(b) || MPFR_IS_NAN(c)) {
     MPFR_SET_NAN(a); return;
   }
+  
+  MPFR_CLEAR_NAN(a);
 
   if (MPFR_IS_INF(b)) 
     { 
@@ -424,6 +426,8 @@ mpfr_add(a, b, c, rnd_mode)
 	if (MPFR_SIGN(c) != MPFR_SIGN(a)) MPFR_CHANGE_SIGN(a);
 	return;
       }
+
+  MPFR_CLEAR_INF(a); /* clear Inf flag */
 
   if (!MPFR_NOTZERO(b)) { mpfr_set(a, c, rnd_mode); return; }
   if (!MPFR_NOTZERO(c)) { mpfr_set(a, b, rnd_mode); return; }

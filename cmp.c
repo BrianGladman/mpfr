@@ -42,9 +42,9 @@ of b and c, i.e. one plus the number of bits shifts to align b and c
 /* compares b and sign(s)*c */
 int 
 #if __STDC__
-mpfr_cmp3 ( mpfr_srcptr b, mpfr_srcptr c, long int s)
+mpfr_cmp3 (mpfr_srcptr b, mpfr_srcptr c, long int s)
 #else
-mpfr_cmp3(b, c, s)
+mpfr_cmp3 (b, c, s)
      mpfr_srcptr b;
      mpfr_srcptr c; 
      long int s;
@@ -54,9 +54,17 @@ mpfr_cmp3(b, c, s)
    unsigned long bn, cn;
    mp_limb_t *bp, *cp;
 
+   if (MPFR_IS_NAN(b) || MPFR_IS_NAN(c)) return 1;
+
+   if (MPFR_IS_INF(b)) {
+     if (MPFR_IS_INF(c) && (MPFR_SIGN(b) * s * MPFR_SIGN(c) > 0))
+       return 0;
+     else 
+       return MPFR_SIGN(b);
+   }
+
    if (!MPFR_NOTZERO(b)) {
      if (!MPFR_NOTZERO(c)) return 0; else return -(s*MPFR_SIGN(c));
-     /*TODO: bug ou feature ? s pas pris en compte... */
    }
    else if (!MPFR_NOTZERO(c)) return MPFR_SIGN(b);
 
@@ -64,9 +72,6 @@ mpfr_cmp3(b, c, s)
    if (s<0) return(MPFR_SIGN(b));
 
    /* now signs are equal */
-   if (MPFR_IS_INF(b)) 
-     return MPFR_SIGN(b) * !MPFR_IS_INF(c); 
-
    diff_exp = MPFR_EXP(b)-MPFR_EXP(c);
    s = (MPFR_SIGN(b) > 0) ? 1 : -1;
 
@@ -191,7 +196,7 @@ mpfr_cmp2(b, c)
   z = 0; /* number of possibly cancelled bits - 1 */
   /* thus result is either k if low(b) >= low(c)
                         or k+z+1 if low(b) < low(c) */
-  if (d > BITS_PER_MP_LIMB) { return k; }
+  if (d > BITS_PER_MP_LIMB) return k;
 
   while (bn >= 0) /* the next limb of b to be considered is b[bn] */
     { 
@@ -221,16 +226,20 @@ mpfr_cmp2(b, c)
        else z += BITS_PER_MP_LIMB; 
     }
 
-  if (cn >= 0)
-    count_leading_zeros(cc, ~(cp[cn--] << (BITS_PER_MP_LIMB - d))); 
-  else { cc = 0; }
+  /* warning: count_leading_zeros doesn't work with zero */
+  if ((cn >= 0) && (u = ~(cp[cn--] << (BITS_PER_MP_LIMB - d))))
+    count_leading_zeros(cc, u);
+  else
+    cc = 0;
 
-  k += cc + d; /* here d=0 or d=1: if d=1, we have one more cancelled bit */
+  /* here d=0 or d=1: if d=1, we have one more cancelled bit if we don't
+   shift cp[cn] */
+  k += cc;
   if (cc < d) return k;
   
   while (cn >= 0 && !~cp[cn]) { z += BITS_PER_MP_LIMB; cn--; } 
   /* now either cn<0 or cp[cn] is not 111...111 */
-  if (cn >= 0) { count_leading_zeros(cc, ~cp[cn]); return (k + z + cc); }
+  if (cn >= 0) { count_leading_zeros(cc, ~cp[cn]); return (k + d+ z + cc); }
 
   return k; /* We **need** that the nonsignificant limbs of c are set
 	       to zero there */	       

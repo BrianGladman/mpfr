@@ -28,9 +28,9 @@ MA 02111-1307, USA. */
 
 void
 #if __STDC__
-mpfr_add_ui(mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
+mpfr_add_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 #else
-mpfr_add_ui(y, x, u, rnd_mode)
+mpfr_add_ui (y, x, u, rnd_mode)
      mpfr_ptr y;
      mpfr_srcptr x;
      unsigned long int u;
@@ -49,4 +49,6 @@ mpfr_add_ui(y, x, u, rnd_mode)
 
     mpfr_add(y, x, uu, rnd_mode);
   }
+  else
+    mpfr_set (y, x, rnd_mode);
 }

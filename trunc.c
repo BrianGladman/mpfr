@@ -88,12 +88,15 @@ FUNC_NAME (r, u)
     return;
   }
 
+  MPFR_CLEAR_NAN(r);
+
   if (MPFR_IS_INF(u)) {
     MPFR_SET_INF(r);
+    if (MPFR_SIGN(r) != MPFR_SIGN(u)) MPFR_CHANGE_SIGN(r);
     return;
   }
 
-  MPFR_CLEAR_FLAGS(r);
+  MPFR_CLEAR_INF(r);
 
   if (!MPFR_NOTZERO(u)) {
     MPFR_SET_ZERO(r);

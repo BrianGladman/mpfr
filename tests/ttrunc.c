@@ -1,6 +1,6 @@
-/* Test file for mpfr_cmp2.
+/* Test file for mpfr_trunc, mpfr_ceil, mpfr_floor.
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 1999-2000 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -21,10 +21,7 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 #include "gmp.h"
-#include "gmp-impl.h"
-#include "longlong.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
 

@@ -33,7 +33,7 @@ MA 02111-1307, USA. */
 
 int 
 #if __STDC__
-mpfr_cmp_ui_2exp ( mpfr_srcptr b, unsigned long int i, int f )
+mpfr_cmp_ui_2exp (mpfr_srcptr b, unsigned long int i, int f )
 #else
 mpfr_cmp_ui_2exp (b, i, f)
      mpfr_srcptr b; 
@@ -42,6 +42,8 @@ mpfr_cmp_ui_2exp (b, i, f)
 #endif
 {
   int e, k, bn; mp_limb_t c, *bp;
+
+  if (MPFR_IS_NAN(b)) return 1;
 
   if (MPFR_SIGN(b) < 0) return -1;
   /* now b>=0 */
@@ -79,15 +81,17 @@ mpfr_cmp_ui_2exp (b, i, f)
 
 int 
 #if __STDC__
-mpfr_cmp_si_2exp ( mpfr_srcptr b, long int i, int f )
+mpfr_cmp_si_2exp (mpfr_srcptr b, long int i, int f )
 #else
-mpfr_cmp_si_2exp(b, i, f)
+mpfr_cmp_si_2exp (b, i, f)
      mpfr_srcptr b; 
      long int i; 
      int f; 
 #endif
 {
   int e, k, bn, si; mp_limb_t c, *bp;
+
+  if (MPFR_IS_NAN(b)) return 1;
 
   si = (i<0) ? -1 : 1; /* sign of i */
   if (MPFR_SIGN(b) * i < 0 || MPFR_IS_INF(b)) return MPFR_SIGN(b); 

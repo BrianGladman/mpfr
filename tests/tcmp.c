@@ -23,7 +23,6 @@ MA 02111-1307, USA. */
 #include <stdlib.h>
 #include <math.h>
 #include "gmp.h"
-#include "longlong.h"
 #include "mpfr.h"
 #include "mpfr-test.h"
 
@@ -98,6 +97,22 @@ int main()
   if (mpfr_cmp(xx, yy) >= 0) { 
     fprintf(stderr,
 	    "Error in mpfr_cmp(Infm, Infp), gives %d\n", mpfr_cmp(xx, yy));
+    exit(1);
+  }
+
+  mpfr_set_d(xx, Infp, GMP_RNDN); 
+  mpfr_set_d(yy, Infp, GMP_RNDN); 
+  if (mpfr_cmp(xx, yy) != 0) { 
+    fprintf(stderr,
+	    "Error in mpfr_cmp(Infp, Infp), gives %d\n", mpfr_cmp(xx, yy));
+    exit(1);
+  }
+
+  mpfr_set_d(xx, Infm, GMP_RNDN); 
+  mpfr_set_d(yy, Infm, GMP_RNDN); 
+  if (mpfr_cmp(xx, yy) != 0) { 
+    fprintf(stderr,
+	    "Error in mpfr_cmp(Infm, Infm), gives %d\n", mpfr_cmp(xx, yy));
     exit(1);
   }
 

@@ -20,7 +20,6 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
 #include <stdio.h>
-#include <math.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -38,9 +37,9 @@ extern int mpfr_exp3 _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 */
 int 
 #if __STDC__
-mpfr_exp(mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode) 
+mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode) 
 #else
-mpfr_exp(y, x, rnd_mode)
+mpfr_exp (y, x, rnd_mode)
      mpfr_ptr y;
      mpfr_srcptr x;
      mp_rnd_t rnd_mode;
@@ -49,14 +48,25 @@ mpfr_exp(y, x, rnd_mode)
   int expx, precy; 
 
   if (MPFR_IS_NAN(x)) { MPFR_SET_NAN(y); return 1; }
+
+  MPFR_CLEAR_NAN(y);
+
   if (MPFR_IS_INF(x)) 
     { 
-      if (MPFR_SIGN(x) > 0) 
-	{ MPFR_SET_INF(y); if (MPFR_SIGN(y) == -1) { MPFR_CHANGE_SIGN(y); } }
-      else 
-	{ MPFR_SET_ZERO(y);  if (MPFR_SIGN(y) == -1) { MPFR_CHANGE_SIGN(y); } }
+      if (MPFR_SIGN(x) > 0) {
+	MPFR_SET_INF(y);
+	if (MPFR_SIGN(y) < 0) MPFR_CHANGE_SIGN(y);
+      }
+      else {
+	MPFR_CLEAR_INF(y);
+	MPFR_SET_ZERO(y);
+	if (MPFR_SIGN(y) < 0) MPFR_CHANGE_SIGN(y);
+      }
       /*    TODO: conflits entre infinis et zeros ? */
+      return 1;
     }
+
+  MPFR_CLEAR_INF(y);
       
   if (!MPFR_NOTZERO(x)) { mpfr_set_ui(y, 1, GMP_RNDN); return 0; }
 

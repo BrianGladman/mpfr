@@ -21,7 +21,6 @@ MA 02111-1307, USA. */
 
 /* #define DEBUG */
 
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -99,17 +98,22 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
 
   /* first determines the exponent */
   e = MPFR_EXP(op); 
-  d = fabs(mpfr_get_d2(op, 0));
+  d = ABS(mpfr_get_d2(op, 0));
   /* the absolute value of op is between 1/2*2^e and 2^e */
   /* the output exponent f is such that base^(f-1) <= |op| < base^f
      i.e. f = 1 + floor(log(|op|)/log(base))
      = 1 + floor((log(|m|)+e*log(2))/log(base)) */
-  f = 1 + (int) floor((log(d)+(double)e*LOG2)/log((double)base));
+  /* f = 1 + (int) floor((log(d)/LOG2+(double)e)*LOG2/log((double)base)); */
+  d = ((double) e + _mpfr_floor_log2((double) d))
+                      * __mp_bases[base].chars_per_bit_exactly;
+  /* warning: (int) d rounds towards 0 */
+  f = (int) d; /* f equals floor(d) if d >= 0 and ceil(d) if d < 0 */
+  if (f <= d) f++;
   if (n==0) {
     /* performs exact rounding, i.e. returns y such that for GMP_RNDU
        for example, we have:       x*2^(e-p) <= y*base^(f-n)
      */
-    n = (int) ((double)MPFR_PREC(op)*LOG2/log((double)base));
+    n = (int) (__mp_bases[base].chars_per_bit_exactly * MPFR_PREC(op));
     if (n==0) n=1;
   }
 #ifdef DEBUG  
@@ -118,7 +122,8 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
   /* now the first n digits of the mantissa are obtained from
      rnd(op*base^(n-f)) */
   if (pow2) prec = n*pow2;
-  else prec = (long) ceil((double)n*log((double)base)/LOG2);
+  else
+    prec = 1 + (long) ((double) n / __mp_bases[base].chars_per_bit_exactly);
 #ifdef DEBUG
   printf("prec=%d\n", prec);
 #endif

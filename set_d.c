@@ -242,9 +242,9 @@ __mpfr_scale2 (d, exp)
 
 void
 #if __STDC__
-mpfr_set_d(mpfr_ptr r, double d, mp_rnd_t rnd_mode)
+mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
 #else
-mpfr_set_d(r, d, rnd_mode)
+mpfr_set_d (r, d, rnd_mode)
      mpfr_ptr r;
      double d;
      mp_rnd_t rnd_mode;
@@ -253,7 +253,16 @@ mpfr_set_d(r, d, rnd_mode)
   int signd, sizer; unsigned int cnt;
 
   MPFR_CLEAR_FLAGS(r);
-  if (d == 0) { MPFR_SET_ZERO(r); return; }
+  if (d == 0) {
+    union ieee_double_extract x;
+    MPFR_SET_ZERO(r);
+    /* set correct sign */
+    x.d = d;
+    if (((x.s.sig==1) && (MPFR_SIGN(r)>0)) 
+	|| ((x.s.sig==0) && (MPFR_SIGN(r)<0)))
+      MPFR_CHANGE_SIGN(r);
+    return;
+  }
   else if (DOUBLE_ISNAN(d)) { MPFR_SET_NAN(r); return; }
   else if (DOUBLE_ISINF(d))
     { 

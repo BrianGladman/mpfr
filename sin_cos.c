@@ -19,7 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "gmp.h"
@@ -57,10 +56,10 @@ int
 mpfr_sin_cos (mpfr_ptr sinus, mpfr_ptr cosinus, mpfr_srcptr x, mp_rnd_t rnd_mode)
 #else
 mpfr_sin_cos (sinus, cosinus, x, rnd_mode)
-mpfr_ptr sinus;
-mpfr_ptr cosinus;
-mpfr_srcptr x; 
-mp_rnd_t rnd_mode;
+     mpfr_ptr sinus;
+     mpfr_ptr cosinus;
+     mpfr_srcptr x; 
+     mp_rnd_t rnd_mode;
 #endif
 {
   mpfr_t t_sin, t_cos;
@@ -85,6 +84,11 @@ mp_rnd_t rnd_mode;
   int tmp_factor;
   int tmpi;
 
+  if (sinus == cosinus) {
+    fprintf (stderr, "Error in mpfr_sin_cos: 1st and 2nd operands must be different\n");
+    exit (1);
+  }
+
   if (MPFR_IS_NAN(x) || MPFR_IS_INF(x)) {
     MPFR_SET_NAN(sinus);
     MPFR_SET_NAN(cosinus);
@@ -97,9 +101,7 @@ mp_rnd_t rnd_mode;
     return 0; /* exact results */
   }
 
-  prec_x = (int) ceil(log
-		      ((double) (MPFR_PREC(x)) / (double) BITS_PER_MP_LIMB)
-		      /LOG2);  
+  prec_x = _mpfr_ceil_log2 ((double) MPFR_PREC(x) / BITS_PER_MP_LIMB);
   ttt = MPFR_EXP(x);
   mpfr_init2(x_copy, MPFR_PREC(x));
   mpfr_set(x_copy,x,GMP_RNDD);
@@ -113,17 +115,16 @@ mp_rnd_t rnd_mode;
     }
   target_prec = MPFR_PREC(sinus);
   if (MPFR_PREC(cosinus) > target_prec) target_prec = MPFR_PREC(cosinus);
-  logn =  (int) ceil(log((double)target_prec)/LOG2);
+  logn =  _mpfr_ceil_log2 ((double) target_prec);
   if (logn < 2) logn = 2;
   factor = logn;
   realprec = target_prec + logn;
   mpz_init (uk);
   while (!good) {
     Prec = realprec + 2*shift + 2 + shift_x + factor;
-    k = (int) ceil(log
-		   ((double) (Prec) / (double) BITS_PER_MP_LIMB)
-		   /LOG2);
-    /* Maintenant, il faut extraire : */
+    k = _mpfr_ceil_log2 ((double) Prec / BITS_PER_MP_LIMB);
+
+    /* now we extract */
     mpfr_init2(t_sin, Prec);
     mpfr_init2(t_cos, Prec);
     mpfr_init2(tmp, Prec);

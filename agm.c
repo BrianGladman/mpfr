@@ -20,17 +20,55 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
 #include <stdio.h>
-#include <math.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
+/* returns ceil(log(d)/log(2)) */
+long _mpfr_ceil_log2 (double d)
+{
+  long exp;
+  union ieee_double_extract x;
+
+  x.d = d;
+  exp = x.s.exp - 1023;
+  x.s.exp = 1023; /* value for 1 <= d < 2 */
+  if (x.d != 1.0) exp++;
+  return exp;
+}
+
+/* returns floor(log(d)/log(2)) */
+long _mpfr_floor_log2 (double d)
+{
+  long exp;
+  union ieee_double_extract x;
+
+  x.d = d;
+  exp = x.s.exp - 1023;
+  x.s.exp = 1023; /* value for 1 <= d < 2 */
+  return exp;
+}
+
+/* returns y >= 2^d */
+double _mpfr_ceil_exp2 (double d)
+{
+  long exp;
+  union ieee_double_extract x;
+  
+  exp = (long) d;
+  if (d != (double) exp) exp++;
+  /* now exp = ceil(d) */
+  x.d = 1.0;
+  x.s.exp = 1023 + exp;
+  return x.d;
+}
+
 void 
 #ifdef __STDC__
-mpfr_agm(mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
+mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
 #else
-mpfr_agm(r, op2, op1, rnd_mode)
+mpfr_agm (r, op2, op1, rnd_mode)
      mpfr_ptr r;
      mpfr_srcptr op2;
      mpfr_srcptr op1;
@@ -45,16 +83,21 @@ mpfr_agm(r, op2, op1, rnd_mode)
   TMP_DECL(marker1);
   TMP_DECL(marker2);
 
-  /* TODO : CHECK FOR INFINITY. */
-
   /* If a or b is NaN, the result is NaN */
   if (MPFR_IS_NAN(op1) || MPFR_IS_NAN(op2)) 
     { MPFR_SET_NAN(r); return; }
 
-
-  /* If a or b is negative, the result is NaN */
+  /* If a or b is negative (including -Infinity), the result is NaN */
   if ((MPFR_SIGN(op1) < 0) || (MPFR_SIGN(op2) < 0))
     { MPFR_SET_NAN(r); return; }
+
+  MPFR_CLEAR_NAN(r);
+
+  /* If a or b is +Infinity, the result is +Infinity */
+  if (MPFR_IS_INF(op1) || MPFR_IS_INF(op2))
+    { MPFR_SET_INF(r); MPFR_SET_SAME_SIGN(r, op1); return; }
+
+  MPFR_CLEAR_INF(r);
   
   /* If a or b is 0, the result is 0 */
   if ((MPFR_NOTZERO(op1) && MPFR_NOTZERO(op2)) == 0)
@@ -65,7 +108,6 @@ mpfr_agm(r, op2, op1, rnd_mode)
  /* precision of the following calculus */
   q = MPFR_PREC(r);
   p = q + 15;
-
 
   /* Initialisations */
   go_on=1;
@@ -105,16 +147,19 @@ mpfr_agm(r, op2, op1, rnd_mode)
     
     eq=0;
     
-    err=ceil((3.0/2.0*log((double)p)/LOG2+1.0)*exp(-(double)p*LOG2)+3.0*exp(-2.0*(double)p*uo*LOG2/(vo-uo)));
+    err=1 + (int) ((3.0/2.0*_mpfr_ceil_log2(p)+1.0)*_mpfr_ceil_exp2(-(double)p)
+	     +3.0*_mpfr_ceil_exp2(-2.0*(double)p*uo/(vo-uo)));
     if(p-err-3<=q) {
       p=q+err+4;
-      err=ceil((3.0/2.0*log((double)p)/LOG2+1.0)*exp(-(double)p*LOG2)+3.0*exp(-2.0*(double)p*uo*LOG2/(vo-uo)));
+      err= 1 + 
+	(int) ((3.0/2.0*_mpfr_ceil_log2(p)+1.0)*_mpfr_ceil_exp2(-(double)p)
+	       +3.0*_mpfr_ceil_exp2(-2.0*(double)p*uo/(vo-uo)));
     }
 
     /* Calculus of un and vn */
     while (eq<=p-2) {
       mpfr_mul(tmp,u,v,GMP_RNDN);
-      mpfr_sqrt(tmpu,tmp,GMP_RNDN); 
+      mpfr_sqrt (tmpu, tmp, GMP_RNDN); 
       mpfr_add(tmp,u,v,GMP_RNDN);
       mpfr_div_2exp(tmpv,tmp,1,GMP_RNDN);
       mpfr_set(u,tmpu,GMP_RNDN);

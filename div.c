@@ -19,7 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "gmp.h"
@@ -55,30 +54,32 @@ mpfr_div (r, u, v, rnd_mode)
   TMP_DECL (marker);
 
   if (MPFR_IS_NAN(u) || MPFR_IS_NAN(v)) { MPFR_SET_NAN(r); return; }
+
+  MPFR_CLEAR_NAN(r);
+
   if (MPFR_IS_INF(u)) 
     { 
       if (MPFR_IS_INF(v)) 
-	{
-	  MPFR_SET_NAN(r); return; 
-	}
+	MPFR_SET_NAN(r);
       else
 	{ 
 	  MPFR_SET_INF(r); 
 	  if (MPFR_SIGN(r) != MPFR_SIGN(u) * MPFR_SIGN(v)) 
-	    { MPFR_CHANGE_SIGN(r); }
-	  return; 
+	    MPFR_CHANGE_SIGN(r);
 	}
+      return;
     }
-  else
-    { 
-      if (MPFR_IS_INF(v)) 
-	{
-	  MPFR_SET_ZERO(r); 
-	  if (MPFR_SIGN(r) != MPFR_SIGN(u) * MPFR_SIGN(v)) 
-	    { MPFR_CHANGE_SIGN(r); }
-	  return; 
-	}
-    }
+  else 
+    if (MPFR_IS_INF(v)) 
+      {
+	MPFR_CLEAR_INF(r);
+	MPFR_SET_ZERO(r); 
+	if (MPFR_SIGN(r) != MPFR_SIGN(u) * MPFR_SIGN(v)) 
+	  MPFR_CHANGE_SIGN(r);
+	return; 
+      }
+
+  MPFR_CLEAR_INF(r); /* clear Inf flag */
 
   usize = (MPFR_PREC(u) - 1)/BITS_PER_MP_LIMB + 1; 
   vsize = (MPFR_PREC(v) - 1)/BITS_PER_MP_LIMB + 1; 

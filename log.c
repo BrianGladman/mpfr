@@ -20,7 +20,6 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
 #include <stdio.h>
-#include <math.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -44,9 +43,9 @@ MA 02111-1307, USA. */
 
 int
 #if __STDC__
-mpfr_log(mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode) 
+mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode) 
 #else
-mpfr_log(r, a, rnd_mode)
+mpfr_log (r, a, rnd_mode)
      mpfr_ptr r;
      mpfr_srcptr a;
      mp_rnd_t rnd_mode;
@@ -60,27 +59,30 @@ mpfr_log(r, a, rnd_mode)
   TMP_DECL(marker);
 
   /* If a is NaN, the result is NaN */
-  if (MPFR_IS_NAN(a))
-    { MPFR_CLEAR_FLAGS(r); MPFR_SET_NAN(r); return 1; }
-  
-  if (MPFR_IS_ZERO(a)) 
+  if (MPFR_IS_NAN(a)) {
+    MPFR_SET_NAN(r);
+    return 1;
+  }
+
+  MPFR_CLEAR_NAN(r);
+
+  /* check for infinity before zero */
+  if (MPFR_IS_INF(a))
     {
-      MPFR_CLEAR_FLAGS(r);
       MPFR_SET_INF(r); 
-      if (MPFR_SIGN(r) != -1) { MPFR_CHANGE_SIGN(r); }
+      if (MPFR_SIGN(r) > 0) MPFR_CHANGE_SIGN(r);
       return 1; 
     }
 
-  if (MPFR_IS_INF(a))
+  if (MPFR_IS_ZERO(a)) 
     {
-      MPFR_CLEAR_FLAGS(r);
       MPFR_SET_INF(r); 
-      if (MPFR_SIGN(r) != 1) { MPFR_CHANGE_SIGN(r); }
+      if (MPFR_SIGN(r) < 0) MPFR_CHANGE_SIGN(r);
       return 1; 
     }
 
   /* Now we can clear the flags without damage even if r == a */
-  MPFR_CLEAR_FLAGS(r); 
+  MPFR_CLEAR_INF(r); 
 
   /* If a is 1, the result is 0 */
   if (mpfr_cmp_ui_2exp(a,1,0)==0){
@@ -108,7 +110,7 @@ mpfr_log(r, a, rnd_mode)
     printf("p=%d\n", p);
 #endif
     /* Calculus of m (depends on p) */
-    m=(int) ceil(((double) p)/2.0) -MPFR_EXP(a)+1;
+    m = (p + 1) / 2 - MPFR_EXP(a) + 1;
 
     /* All the mpfr_t needed have a precision of p */
     TMP_MARK(marker);

@@ -19,7 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "gmp.h"
@@ -50,19 +49,33 @@ mpfr_sqrt (r, u, rnd_mode)
   char can_round = 0; 
   TMP_DECL (marker); TMP_DECL(marker0); 
 
-  if (MPFR_IS_NAN(u) || MPFR_SIGN(u) == -1) {
+  if (MPFR_IS_NAN(u)) {
     MPFR_SET_NAN(r);
     return 1;
   }
 
-  if (MPFR_SIGN(r) != 1) { MPFR_CHANGE_SIGN(r); }
+  if (MPFR_SIGN(u) < 0) {
+    if (MPFR_IS_INF(u) || MPFR_NOTZERO(u)) {
+      MPFR_SET_NAN(r);
+      return 1;
+    }
+    else { /* sqrt(-0) = -0 */
+      MPFR_SET_ZERO(r);
+      if (MPFR_SIGN(r) > 0) MPFR_CHANGE_SIGN(r);
+      return 0;
+    }
+  }
+
+  MPFR_CLEAR_NAN(r);
+
+  if (MPFR_SIGN(r) < 0) MPFR_CHANGE_SIGN(r);
   if (MPFR_IS_INF(u)) 
     { 
       MPFR_SET_INF(r);
       return 1;
     }
 
-  MPFR_CLEAR_FLAGS (r);
+  MPFR_CLEAR_INF(r);
 
   prec = MPFR_PREC(r);
 

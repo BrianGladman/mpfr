@@ -81,7 +81,10 @@ mpfr_print_raw(x)
   else if (MPFR_IS_INF(x)) {
     if (MPFR_SIGN(x) == 1) { printf("Inf"); } else printf("-Inf"); 
   }
-  else if (!MPFR_NOTZERO(x)) printf("0");
+  else if (!MPFR_NOTZERO(x)) {
+    if (MPFR_SIGN(x) < 0) printf("-");
+    printf("0");
+  }
   else {
      /* 3 char for sign + 0 + binary point
 	+ MPFR_ABSSIZE(x) * BITS_PER_MP_LIMB for mantissa

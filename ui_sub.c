@@ -47,6 +47,8 @@ mpfr_ui_sub (y, u, x, rnd_mode)
       return;
     }
 
+  MPFR_CLEAR_NAN(y);
+
   if (MPFR_IS_INF(x))
     {
       MPFR_SET_INF(y);

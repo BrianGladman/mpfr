@@ -1,6 +1,6 @@
 /* Test file for mpfr_cmp2.
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 1999-2000 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -23,18 +23,15 @@ MA 02111-1307, USA. */
 #include <stdlib.h>
 #include <math.h>
 #include "gmp.h"
-#include "longlong.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
-#ifdef __mips
-#include <sys/fpu.h>
-#endif
 
-extern int isnan();
+void tcmp2 (double, double, int);
 
-void tcmp2(x, y, i) double x, y; int i;
+void tcmp2 (double x, double y, int i)
 {
-  mpfr_t xx,yy; int j;
+  mpfr_t xx, yy;
+  int j;
 
   if (i==-1) {
     if (x==y) i=53;
@@ -79,7 +76,7 @@ int main()
     tcmp2(1.0, 1.0-x, i);
     x /= 2.0;
   }
-  for (j=0;j<1000000;j++) {
+  for (j=0; j<100000; j++) {
     x = drand48();
     y = drand48();
     if (x<y) { z=x; x=y; y=z; }

@@ -1,6 +1,6 @@
-/* Test file for mpfr_cmp2.
+/* Test file for mpfr_eq.
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 1999-2000 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -23,19 +23,19 @@ MA 02111-1307, USA. */
 #include <stdlib.h>
 #include <math.h>
 #include "gmp.h"
-#include "gmp-impl.h"
-#include "longlong.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-void teq(mpfr_srcptr x)
+void teq (mpfr_t);
+
+void teq (mpfr_t x)
 {
   mpfr_t y; long k, px, mx; 
 
   mpfr_init2(y, MPFR_PREC(x)); 
 
-  mx = (MPFR_PREC(x) - 1)/BITS_PER_MP_LIMB; 
-  px = BITS_PER_MP_LIMB - 2; 
+  mx = (MPFR_PREC(x) - 1)/mp_bits_per_limb; 
+  px = mp_bits_per_limb - 2; 
 
   for (k = 2; k < MPFR_PREC(x); k++)
     {
@@ -55,7 +55,7 @@ void teq(mpfr_srcptr x)
 	  exit(-1); 
 	}
 
-      if (px) { --px; } else { --mx; px = BITS_PER_MP_LIMB - 1; }
+      if (px) { --px; } else { --mx; px = mp_bits_per_limb - 1; }
     }
   mpfr_clear(y); 
 }
@@ -64,11 +64,11 @@ int main()
 {
   int j; mpfr_t x; 
 
-  mpfr_init2(x, 1000); 
+  mpfr_init2 (x, 1000); 
 
   for (j=0;j<1000;j++) {
-    mpfr_random(x); 
-    teq(x); 
+    mpfr_random (x);
+    teq (x);
   }
   mpfr_clear (x); 
   return 0;

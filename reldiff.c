@@ -21,8 +21,9 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include "gmp.h"
-#include "mpfr.h"
 #include "gmp-impl.h"
+#include "mpfr.h"
+#include "mpfr-impl.h"
 
 /* reldiff(b, c) = abs(b-c)/b */
 void 
@@ -36,6 +37,8 @@ mpfr_reldiff(a, b, c, rnd_mode)
      mp_rnd_t rnd_mode;
 #endif
 {
+  mpfr_t b_copy;
+
   if (MPFR_IS_NAN(b) || MPFR_IS_NAN(c))
     { MPFR_CLEAR_FLAGS(a); MPFR_SET_NAN(a); return; }
   if (MPFR_IS_INF(b)) 
@@ -58,9 +61,16 @@ mpfr_reldiff(a, b, c, rnd_mode)
     /*    TODO: faire preciser la SEMANTIQUE DE CE FOUTOIR. */
     mpfr_set_ui(a, MPFR_SIGN(c), rnd_mode);
   else {
+    if (a == b) {
+      mpfr_init2 (b_copy, MPFR_PREC(b));
+      mpfr_set (b_copy, b, GMP_RNDN);
+    }
+
     mpfr_sub(a, b, c, rnd_mode);
     mpfr_abs(a, a, rnd_mode); /* for compatibility with MPF */
-    mpfr_div(a, a, b, rnd_mode);
+    mpfr_div(a, a, (a == b) ? b_copy : b, rnd_mode);
+
+    if (a == b) mpfr_clear (b_copy);
   }
 }
 

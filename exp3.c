@@ -20,7 +20,6 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
 #include <stdio.h>
-#include <math.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -28,22 +27,8 @@ MA 02111-1307, USA. */
 
 /* #define DEBUG */
 
-int mylog2 (int);
 int mpfr_exp_rational (mpfr_ptr, mpz_srcptr, int, int);
 int mpfr_exp3 (mpfr_ptr, mpfr_srcptr, mp_rnd_t);
-
-int
-#if __STDC__
-mylog2 (int x)
-#else
-mylog2 (x)
-     int x;
-#endif
-{
-  int i = 0;
-  for ( ; x != 1; x >>= 1, i++) ;
-  return i;
-}
 
 int
 #if __STDC__
@@ -103,7 +88,7 @@ mpfr_exp_rational (y, p, r, m)
    l = 0;
    accu = 0;
    while (k > 0){
-     mpz_mul(S[k], S[k], ptoj[mylog2(nb_terms[k])]);
+     mpz_mul(S[k], S[k], ptoj[_mpfr_ceil_log2((double) nb_terms[k])]);
      mpz_mul(S[k-1], S[k-1], P[k]);
      accu += nb_terms[k];
      mpz_mul_2exp(S[k-1], S[k-1], r* accu);
@@ -189,13 +174,9 @@ mpfr_exp3 (y, x, rnd_mode)
   /* Decomposer x */
   /* on commence par ecrire x = 1.xxxxxxxxxxxxx
      ----- k bits -- */
-  prec_x = (int) ceil(log
-		      ((double) (MPFR_PREC(x)) / (double) BITS_PER_MP_LIMB)
-		      /LOG2);
+  prec_x = _mpfr_ceil_log2 ((double) (MPFR_PREC(x)) / BITS_PER_MP_LIMB);
   if (prec_x < 0) prec_x = 0;
-  logn =  (int) ceil(log
-		      ((double) prec_x+MPFR_PREC(y))
-		      /LOG2);  
+  logn =  _mpfr_ceil_log2 ((double) prec_x + MPFR_PREC(y));
   if (logn < 2) logn = 2;
   ttt = MPFR_EXP(x);
   mpfr_init2(x_copy,MPFR_PREC(x));
@@ -211,10 +192,9 @@ mpfr_exp3 (y, x, rnd_mode)
   mpz_init (uk);
   while (!good){      
     Prec = realprec+shift+2+shift_x;
-    k = (int) ceil(log
-		   ((double) (Prec) / (double) BITS_PER_MP_LIMB)
-		   /LOG2);
-    /* Maintenant, il faut extraire : */
+    k = _mpfr_ceil_log2 ((double) Prec / BITS_PER_MP_LIMB);
+
+    /* now we have to extract */
     mpfr_init2(t, Prec);
     mpfr_init2(tmp, Prec);
     mpfr_set_ui(tmp,1,GMP_RNDN);

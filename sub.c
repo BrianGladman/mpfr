@@ -525,6 +525,8 @@ mpfr_sub (a, b, c, rnd_mode)
     MPFR_SET_NAN(a);
     return;
   }
+  
+  MPFR_CLEAR_NAN(a);
 
   if (MPFR_IS_INF(b)) 
     { 
@@ -543,18 +545,20 @@ mpfr_sub (a, b, c, rnd_mode)
 	  MPFR_SET_INF(a); 
 	  if (MPFR_SIGN(b) != MPFR_SIGN(a)) { MPFR_CHANGE_SIGN(a); }
 	}
+      return;
     }
   else 
     if (MPFR_IS_INF(c))
       {
 	MPFR_SET_INF(a); 
 	if (MPFR_SIGN(c) == MPFR_SIGN(a)) { MPFR_CHANGE_SIGN(a); }
+	return;
       }
 
   if (!MPFR_NOTZERO(b)) { mpfr_neg(a, c, rnd_mode); return; }
   if (!MPFR_NOTZERO(c)) { mpfr_set(a, b, rnd_mode); return; }
 
-  MPFR_CLEAR_FLAGS (a);
+  MPFR_CLEAR_INF(a);
 
   diff_exp = MPFR_EXP(b)-MPFR_EXP(c);
   if (MPFR_SIGN(b) == MPFR_SIGN(c)) {

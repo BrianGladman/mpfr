@@ -23,7 +23,6 @@ MA 02111-1307, USA. */
 #include <stdlib.h>
 #include <math.h>
 #include "gmp.h"
-#include "longlong.h"
 #include "mpfr.h"
 
 int main()

@@ -47,14 +47,17 @@ mpfr_ui_div (y, u, x, rnd_mode)
       return;
     }
   
-  MPFR_CLEAR_FLAGS(y);
+  MPFR_CLEAR_NAN(y);
 
   if (MPFR_IS_INF(x))
     {
+      MPFR_CLEAR_INF(y);
       MPFR_SET_ZERO(y);
       if (MPFR_SIGN(x) != MPFR_SIGN(y)) MPFR_CHANGE_SIGN(y);
       return;
     }
+
+  MPFR_CLEAR_INF(y);
 
   if (u) {
     MPFR_INIT1(up, uu, BITS_PER_MP_LIMB, 1);

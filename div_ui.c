@@ -45,10 +45,12 @@ mpfr_div_ui(y, x, u, rnd_mode)
 
   if (MPFR_IS_NAN(x)) { MPFR_SET_NAN(y); return 1; }
 
+  MPFR_CLEAR_NAN(y); /* clear NaN flag */
+
   if (MPFR_IS_INF(x)) 
     { 
       MPFR_SET_INF(y); 
-      if (MPFR_SIGN(y) * MPFR_SIGN(x) * u < 0)
+      if (MPFR_SIGN(y) * MPFR_SIGN(x) < 0) /* consider u=0 as +0 */
 	MPFR_CHANGE_SIGN(y); 
       return 0; 
       /*    TODO: semantique de la division par un zero entier ? signe ? */
@@ -63,6 +65,8 @@ mpfr_div_ui(y, x, u, rnd_mode)
 	  /* TODO: semantique de la division dans ce cas-la aussi ? */
 	}
     }
+
+  MPFR_CLEAR_INF(y);
 
   TMP_MARK(marker);
   xn = (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB + 1;
