@@ -159,7 +159,7 @@ mpfr_can_round_raw(mp_limb_t *bp, unsigned long bn, char neg,
 		   unsigned long err, unsigned char rnd1, unsigned char rnd2, 
 		   unsigned long prec)
 {
-  int k, k1, l, l1; mp_limb_t cc, cc2, *tmp;
+  int k, k1, l, l1, tn; mp_limb_t cc, cc2, *tmp;
   TMP_DECL(marker); 
 
   if (err<=prec) return 0;
@@ -179,12 +179,21 @@ mpfr_can_round_raw(mp_limb_t *bp, unsigned long bn, char neg,
 
   /* in the sequel, RNDU = towards infinity, RNDZ = towards zero */
 
-  TMP_MARK(marker); 
-  tmp = TMP_ALLOC(bn*BYTES_PER_MP_LIMB); 
-  MPN_COPY(tmp, bp, bn); 
+  TMP_MARK(marker);
+  if (rnd1==GMP_RNDN && l==0) {
+    tn = bn+1;
+    tmp = TMP_ALLOC(tn*BYTES_PER_MP_LIMB);
+    MPN_COPY(tmp+1, bp, bn);
+    *tmp = 0; /* extra limb to add or subtract 1 */
+  }
+  else {
+    tn = bn;
+    tmp = TMP_ALLOC(tn*BYTES_PER_MP_LIMB); 
+    MPN_COPY(tmp, bp, bn); 
+  }
 
   switch (rnd1) {
-
+    
   case GMP_RNDZ: /* b <= x <= b+2^(EXP(b)-err) */
     cc = (tmp[bn-k1-1]>>l1) & 1;
     cc ^= mpfr_round_raw2(tmp, bn, neg, rnd2, prec);
@@ -218,18 +227,21 @@ mpfr_can_round_raw(mp_limb_t *bp, unsigned long bn, char neg,
     if (l) { l--; } else { k++; l=BITS_PER_MP_LIMB-1; }
 
     /* first round b+2^(EXP(b)-err-1)*/    
-    cc = mpn_add_1(tmp+bn-k-1, tmp+bn-k-1, k+1, (mp_limb_t)1<<l);
+    cc = mpn_add_1(tmp+tn-k-1, tmp+tn-k-1, k+1, (mp_limb_t)1<<l);
     if (cc) { TMP_FREE(marker); return 0; }
-    cc = (tmp[bn-k1-1]>>l1) & 1;
-    cc ^= mpfr_round_raw2(tmp, bn, neg, rnd2, prec);
+    cc = (tmp[tn-k1-1]>>l1) & 1;
+    cc ^= mpfr_round_raw2(tmp, tn, neg, rnd2, prec);
 
-    MPN_COPY(tmp, bp, bn); 
+    if (bn==tn) MPN_COPY(tmp, bp, bn);
+    else {
+      MPN_COPY(tmp+1, bp, bn); *tmp=0;
+    }
 
     /* now round b-2^(EXP(b)-err-1) */
-    cc2 = mpn_sub_1(tmp+bn-k-1, tmp+bn-k-1, k+1, (mp_limb_t)1<<l);
+    cc2 = mpn_sub_1(tmp+tn-k-1, tmp+tn-k-1, k+1, (mp_limb_t)1<<l);
     if (cc2) { TMP_FREE(marker); return 0; }
-    cc2 = (tmp[bn-k1-1]>>l1) & 1;
-    cc2 ^= mpfr_round_raw2(tmp, bn, neg, rnd2, prec);
+    cc2 = (tmp[tn-k1-1]>>l1) & 1;
+    cc2 ^= mpfr_round_raw2(tmp, tn, neg, rnd2, prec);
 
     TMP_FREE(marker); 
     return (cc == cc2);
