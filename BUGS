@@ -7,3 +7,5 @@ Known bugs:
 * Possible integer overflows on some machines.
 
 * mpfr_set_d may give wrong results on some architectures.
+
+* Error analysis in mpfr_sin is incorrect. Check the other functions too...
