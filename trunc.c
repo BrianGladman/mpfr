@@ -74,40 +74,46 @@ FUNC_NAME (r, u)
 #endif
 {
   mp_ptr rp, up;
-  mp_size_t size, asize;
+  mp_size_t asize;
   mp_size_t prec, rw;
 #ifdef _MPFR_FLOOR_OR_CEIL
   mp_size_t ignored_n;
 #endif
   mp_exp_t exp;
+  int signu; long diff;
 
-  size = u->_mp_size;
-  rp = r->_mp_d;
-  exp = u->_mp_exp;
+  if (FLAG_NAN(u)) { SET_NAN(r); return; }
+  if (!NOTZERO(u)) { SET_ZERO(r); return; }
+
+  signu = SIZE(u);
+  rp = MANT(r);
+  exp = EXP(u);
+  prec = (PREC(r) - 1)/BITS_PER_MP_LIMB + 1;
 
   /* Single out the case where |u| < 1.  */
   if (exp <= 0)
     {
 #ifdef _MPFR_FLOOR_OR_CEIL
-      if ((MPFR_FLOOR && size < 0) || (MPFR_CEIL && size >= 0))
+      if ((MPFR_FLOOR && signu < 0) || (MPFR_CEIL && signu >= 0))
 	{
-	  rp[0] = 1;
-	  r->_mp_size = MPFR_FLOOR ? -1 : 1;
-	  r->_mp_exp = 1;
+	  rp[prec-1] = (mp_limb_t) 1 << (BITS_PER_MP_LIMB-1);
+	  MPN_ZERO(rp, prec-1);
+	  /* sign of result is that of u */
+	  if (MPFR_SIGN(r) * signu < 0) CHANGE_SIGN(r);
+	  EXP(r) = 1;
 	  return;
 	}
 #endif
-      r->_mp_size = 0;
+      SET_ZERO(r);
       return;
     }
 
-  prec = (r->_mp_prec - 1)/BITS_PER_MP_LIMB + 1 /* + 1 */;
-  asize = ABS (size);
+  asize = (PREC(u) - 1)/BITS_PER_MP_LIMB + 1;
 
 #ifdef _MPFR_FLOOR_OR_CEIL
   ignored_n = 0;
 #endif
-  up = u->_mp_d;
+  up = MANT(u);
 
   if (asize > prec)
     {
@@ -118,36 +124,44 @@ FUNC_NAME (r, u)
       asize = prec;
     }
 
-  if (asize > exp)
+  diff = BITS_PER_MP_LIMB * asize - exp;
+  if (diff > 0)
     {
-      long diff = asize - exp;
+      diff = diff/BITS_PER_MP_LIMB;
 #ifdef _MPFR_FLOOR_OR_CEIL
       ignored_n += diff;
 #endif
       up += diff;
-      asize = exp;
+      asize -= diff;
     }
 
+  /* number of non significant bits in low limb of r */
+  rw = asize * BITS_PER_MP_LIMB - exp;
+  MPN_ZERO(rp, prec-asize);
+  rp += prec-asize;
+
 #ifdef _MPFR_FLOOR_OR_CEIL
-  if (((MPFR_FLOOR && size < 0) || (MPFR_CEIL && size >= 0))
-      && ! mpn_zero_p (up - ignored_n, ignored_n))
+  if (((MPFR_FLOOR && signu < 0) || (MPFR_CEIL && signu >= 0))
+      && (!mpn_zero_p (up - ignored_n, ignored_n)
+	  || (rw && (up[0] << (BITS_PER_MP_LIMB-rw)))))
     {
       mp_limb_t cy;
-      cy = mpn_add_1 (rp, up, asize, (mp_limb_t) 1);
+      cy = mpn_add_1 (rp, up, asize, (mp_limb_t) 1 << rw);
       if (cy != 0)
 	{
-	  rp[asize++] = cy;
+	  mpn_rshift(rp, rp, asize, 1);
+	  rp[asize-1] = (mp_limb_t) 1 << (BITS_PER_MP_LIMB - 1);
 	  exp++;
 	}
     }
   else
 #endif
-  MPN_COPY_INCR (rp, up, asize);
+    MPN_COPY (rp, up, asize);
 
   /* Put to 0 the remaining bits */
-  rw = r->_mp_prec & (BITS_PER_MP_LIMB - 1);
-  rp[asize] &= ~((((mp_limb_t)1)<<(BITS_PER_MP_LIMB - rw)) - (mp_limb_t)1);
+  if (rw) rp[0] &=
+	    ~((((mp_limb_t)1)<<rw) - (mp_limb_t)1);
 
-  r->_mp_exp = exp;
-  r->_mp_size = size >= 0 ? asize : -asize;
+  EXP(r) = exp;
+  if (MPFR_SIGN(r) * signu < 0) CHANGE_SIGN(r);
 }
