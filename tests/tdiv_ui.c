@@ -3,28 +3,10 @@
 #include <stdlib.h>
 #include "gmp.h"
 #include "mpfr.h"
+#include "mpfr-impl.h"
 #include "time.h"
 
 extern int isnan(), getpid();
-
-double drand()
-{
-  double d; long int *i;
-
-  i = (long int*) &d;
-  i[0] = lrand48();
-  i[1] = lrand48();
-  if (lrand48()%2) d=-d; /* generates negative numbers */
-  return d;
-}
-
-/* returns the number of ulp's between a and b */
-int ulp(a,b) double a,b;
-{
-  double eps=1.1102230246251565404e-16; /* 2^(-53) */
-  b = (a-b)/a; if (b<0) b = -b;
-  return (int) floor(b/eps);
-}
 
 void check(double d, unsigned long u, unsigned char rnd)
 {
