@@ -1,0 +1,49 @@
+		Installing mpfr-0.0
+		===================
+
+0. You first need to install GMP. See http://www.swox.com/gmp.
+
+1. run ./Configure and answer to the questions
+
+   (Under Linux use the -DLIBC211 flag if you use the C library 2.1.1 or
+    higher.)
+
+2. make (produces libmpfr.a)
+
+3. cd tests; make (produces and runs the test files)
+
+Notes:
+
+- we tested the installation with GMP 2.0.2 on the following architectures:
+
+Pentium II and III/Linux 2.2.10
+Alpha 21264/OSF1 V4.0
+SGI R10000/IRIX 6.5 (both using 32- and 64-bit limbs)
+Sun UltraSparc/Solaris 2.6
+HP 9000/HP-UX A.09.05
+
+Known problems.
+===============
+
+1) On some architectures (for example Alpha/OSF), the default 'make' command 
+crashes in step 3. GNU make is preferred.
+
+2) Under HP-UX, don't use the -pedantic option, otherwise
+gcc complains with the longlong.h file from GMP.
+
+3) On the Alpha, the test file for the square root (tsqrt) may produce
+errors as follows:
+
+libm.a differs from mpfr_sqrt for a=9.89438396044940260000e-134, rnd_mode=2
+libm.a gives 3.14553397063986620000e-67, mpfr_sqrt gives 3.14553397063986680000e-67 (1 ulp)
+
+In most cases, as above, the error comes from the libm.a. On Alpha/Linux,
+which is known to have a bad libm.a, you may even find errors in the
+addition or multiplication.
+
+In case of problem.
+===================
+
+Please contact us at mpfr@loria.fr, indicating the machine and operating
+system used (uname -a), the compiler used (gcc -v) and a description of
+the problem encountered.
