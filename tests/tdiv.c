@@ -113,9 +113,9 @@ void check_convergence()
   mpfr_clear(x); mpfr_clear(y);
 }
 
-int main()
+int main(int argc, char *argv[])
 {
-  int i; double n, d, e; 
+  int i, N; double n, d, e; 
 #ifdef IRIX64
     /* to get denormalized numbers on IRIX64 */
     union fpc_csr exp;
@@ -124,6 +124,7 @@ int main()
     set_fpc_csr(exp.fc_word);
 #endif
 
+  N = (argc>1) ? atoi(argv[1]) : 100000;
   check_float(); /* checks single precision */
   check_convergence();
   check(0.0, 1.0, 1);
@@ -140,7 +141,8 @@ int main()
   check(6.25089225176473806123e-01, -2.35527154824420243364e-230, 3);
   check(6.52308934689126000000e+15, -1.62063546601505417497e+273, 0);
   check(1.04636807108079349236e-189, 3.72295730823253012954e-292, 1);
-  for (i=0;i<100000;i++) {
+  srand48(getpid());
+  for (i=0;i<N;i++) {
     do { n = drand(); d = drand(); e = fabs(n)/fabs(d); }
     /* smallest normalized is 2^(-1022), largest is 2^(1023)*(2-2^(-52)) */
     while (e>=1.7976931348623157081e308 || e<2.225073858507201383e-308);
