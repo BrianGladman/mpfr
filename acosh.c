@@ -88,7 +88,7 @@ mpfr_acosh (y, x, rnd_mode)
     mp_prec_t Ny = MPFR_PREC(y);   /* Precision of input variable */
     
     mp_prec_t Nt;   /* Precision of the intermediary variable */
-    mp_prec_t err;  /* Precision of error */
+    int err;  /* Precision of error */
                 
     /* compute the precision of intermediary variable */
     Nt=MAX(Nx,Ny);
