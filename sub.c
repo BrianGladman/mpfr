@@ -327,20 +327,17 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
 	  cc = *ap & ((ONE<<sh)-1);
 	  *ap &= ~cc; /* truncate last bits */
 	  cc -= ONE<<(sh-1);
-	  while ((cc==0 || cc==-1) && k!=0 && kc!=0) {
+	  while ((cc==0 || cc==-1) && k!=0 && kc>=0) {
 	    kc--;
-	    cc -= mpn_sub_1(&c2, bp+(--k), 1, (cp[kc]>>dif) +
-			    (cp[kc+1]<<(mp_bits_per_limb-dif)));
+	    if (kc>=0) cc -= mpn_sub_1(&c2, bp+(--k), 1, (cp[kc]>>dif) +
+				      (cp[kc+1]<<(mp_bits_per_limb-dif)));
+	    else /* don't forget last right chunck from c */
+	      cc -= mpn_sub_1(&c2, bp+(--k), 1,
+				 cp[0]<<(mp_bits_per_limb-dif));
 	    if (cc==0 || (~cc==0 && ~c2==0)) cc=c2;
 	  }
-	  if ((cc==0 || (~cc==0)) && kc==0) { 
-	    /* it still remains cp[0]<<(mp_bits_per_limb-dif) */
-	    if (k!=0) cc -= mpn_sub_1(&c2, bp+(--k), 1, 
-				      cp[0]<<(mp_bits_per_limb-dif));
-	    else if (cp[0]<<(mp_bits_per_limb-dif)) cc--;
-	  }
 	  if ((long)cc>0) goto add_one_ulp;
-	  else if ((long)cc<-1) goto end_of_sub; /* carry can be at most 1 */
+	  else if ((long)cc<0) goto end_of_sub; /* carry can be at most 1 */
 	  else if (kc==0) {
 	    while (k && cc==0) cc=bp[--k];
 	    if (cc || (*ap & (ONE<<sh))) goto add_one_ulp;
