@@ -31,6 +31,9 @@ case $OS_TYPE in
 	HP-UX*)
 		AC_CHECK_LIB(M, main)
 		AC_DEFINE(hpux)
+		if test -n "$GCC"; then
+		  LDFLAGS="-Xlinker +allowunsats $LDFLAGS"
+		fi
 		;;
 	SunOS*)
 		MISCFLAGS="trunc.c"
