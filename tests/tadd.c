@@ -613,22 +613,29 @@ static void
 check_overflow (void)
 {
   mpfr_t a, b, c;
+  mp_prec_t prec_a;
+  mp_rnd_t r;
 
   mpfr_init2 (a, 256);
   mpfr_init2 (b, 256);
   mpfr_init2 (c, 256);
 
-  mpfr_clear_overflow ();
   mpfr_set_ui (b, 1, GMP_RNDN);
   mpfr_setmax (b, mpfr_get_emax ());
   mpfr_set_ui (c, 1, GMP_RNDN);
   mpfr_set_exp (c, mpfr_get_emax () - 192);
-  test_add (a, b, c, GMP_RNDD);
-  if (!mpfr_overflow_p ())
-    {
-      printf ("No overflow in check_overflow\n");
-      exit (1);
-    }
+  RND_LOOP(r)
+    for (prec_a = 128; prec_a < 512; prec_a += 64)
+      {
+        mpfr_set_prec (a, prec_a);
+        mpfr_clear_overflow ();
+        test_add (a, b, c, r);
+        if (!mpfr_overflow_p ())
+          {
+            printf ("No overflow in check_overflow\n");
+            exit (1);
+          }
+      }
 
   mpfr_clear (a);
   mpfr_clear (b);
