@@ -21,7 +21,13 @@ MA 02111-1307, USA. */
 
 #ifndef __MPFR_H
 #define __MPFR_H
-#include <stdio.h>
+
+/* check if stdio.h is included */
+#if defined (FILE) || defined (H_STDIO) || defined (_H_STDIO) \
+ || defined (_STDIO_H) || defined (_STDIO_H_) || defined (__STDIO_H__) \
+ || defined (_STDIO_INCLUDED) || defined (__dj_include_stdio_h_)
+#define _MPFR_H_HAVE_FILE 1
+#endif
 
 /* Definition of rounding modes */
 
@@ -142,9 +148,11 @@ void mpfr_clear _PROTO ((mpfr_ptr));
 void mpfr_set_str_raw _PROTO ((mpfr_ptr, char *));
 int mpfr_set_str _PROTO ((mpfr_ptr, __gmp_const char *, int, mp_rnd_t));
 int mpfr_init_set_str _PROTO ((mpfr_ptr, char *, int, mp_rnd_t));
-size_t mpfr_inp_str _PROTO ((mpfr_ptr, FILE *, int, mp_rnd_t));
 char* mpfr_get_str _PROTO ((char *, mp_exp_t *, int, size_t, mpfr_srcptr, mp_rnd_t));
+#ifdef _MPFR_H_HAVE_FILE
+size_t mpfr_inp_str _PROTO ((mpfr_ptr, FILE *, int, mp_rnd_t));
 size_t mpfr_out_str _PROTO ((FILE *, int, size_t, mpfr_srcptr, mp_rnd_t));
+#endif
 int mpfr_mul _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_pow_ui _PROTO ((mpfr_ptr, mpfr_srcptr, unsigned long int, mp_rnd_t));
 int mpfr_ui_pow_ui _PROTO ((mpfr_ptr, unsigned long int, unsigned long int,
@@ -173,8 +181,8 @@ int mpfr_mul_ui _PROTO((mpfr_ptr, mpfr_srcptr, unsigned long int, mp_rnd_t));
 void mpfr_set_machine_rnd_mode _PROTO ((mp_rnd_t));
 int mpfr_cmp_ui_2exp _PROTO ((mpfr_srcptr, unsigned long int, int));
 int mpfr_cmp_si_2exp _PROTO ((mpfr_srcptr, long int, int));
-int mpfr_mul_2exp _PROTO((mpfr_ptr, mpfr_srcptr, unsigned long int,mp_rnd_t));
-int mpfr_div_2exp _PROTO((mpfr_ptr, mpfr_srcptr, unsigned long int,mp_rnd_t));
+int mpfr_mul_2exp _PROTO((mpfr_ptr, mpfr_srcptr, unsigned long int, mp_rnd_t));
+int mpfr_div_2exp _PROTO((mpfr_ptr, mpfr_srcptr, unsigned long int, mp_rnd_t));
 int mpfr_set_prec _PROTO((mpfr_ptr, mp_prec_t));
 void mpfr_set_prec_raw _PROTO((mpfr_ptr, mp_prec_t));
 void mpfr_set_default_prec _PROTO((mp_prec_t));
@@ -203,7 +211,6 @@ int mpfr_number_p _PROTO((mpfr_srcptr));
 int mpfr_asin _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_atan _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 
-int mpfr_exp2_si _PROTO((mpfr_ptr, long int, mp_rnd_t));
 int mpfr_sinh _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t)); 
 int mpfr_tanh _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_factorial _PROTO ((mpfr_ptr, unsigned long int, mp_rnd_t));
@@ -295,8 +302,3 @@ int mpfr_sub_q _PROTO ((mpfr_ptr, mpfr_srcptr, mpq_srcptr, mp_rnd_t));
  ( mpfr_init(x), mpfr_set_f((x), (y), (rnd)) )
 
 #endif
-
-
-
-
-
