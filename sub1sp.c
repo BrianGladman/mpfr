@@ -33,9 +33,6 @@ MA 02111-1307, USA. */
    a positive value otherwise.
 */
 
-/*#define DEBUG*/
-/*#define CHECK_AGAINST_SUB1*/
-
 #ifdef DEBUG
 # undef DEBUG
 # define DEBUG(x) (x)
@@ -43,10 +40,46 @@ MA 02111-1307, USA. */
 # define DEBUG(x) /**/
 #endif
 
-#ifdef CHECK_AGAINST_SUB1
-# define mpfr_sub1sp mpfr_sub1sp2
-int
-mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode);
+/* Check if we have to check the result of mpfr_sub1sp with mpfr_sub1 */
+#ifdef WANT_ASSERT
+# if WANT_ASSERT >= 2
+
+int mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode);
+int mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
+{
+  mpfr_t tmpa, tmpb, tmpc;
+  int inexact, inexact2;
+
+  mpfr_init2(tmpa, mpfr_get_prec(a));
+  mpfr_init2(tmpb, mpfr_get_prec(b));
+  mpfr_init2(tmpc, mpfr_get_prec(c));
+  MPFR_ASSERTN (mpfr_set(tmpb, b, GMP_RNDN) == 0);
+  MPFR_ASSERTN (mpfr_set(tmpc, c, GMP_RNDN) == 0);
+
+  inexact2 = mpfr_sub1 (tmpa, tmpb, tmpc, rnd_mode);
+  inexact  = mpfr_sub1sp2(a, b, c, rnd_mode);
+
+  if (mpfr_cmp(tmpa, a) || inexact!=inexact2)
+    {
+      printf("sub1 & sub1sp return different values for %s\n"
+             "Prec_a= %lu Prec_b= %lu Prec_c= %lu\nB=",
+             mpfr_print_rnd_mode(rnd_mode),
+             mpfr_get_prec(a), mpfr_get_prec(b), mpfr_get_prec(c));
+      mpfr_print_binary(tmpb);
+      printf("\nC=");
+      mpfr_print_binary(tmpc);
+      printf("\nSub1  : ");
+      mpfr_print_binary(tmpa);
+      printf("\nSub1sp: ");
+      mpfr_print_binary(a);
+      printf("\nInexact sp = %d | Inexact = %d\n", inexact, inexact2);
+      MPFR_ASSERTN(0);
+    }
+  mpfr_clears(tmpa, tmpb, tmpc, NULL);
+  return inexact;
+}
+#  define mpfr_sub1sp mpfr_sub1sp2
+# endif
 #endif
 
 /* Rounding Sub */
@@ -758,40 +791,3 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   return inexact*MPFR_INT_SIGN(a);
 }
 
-#ifdef CHECK_AGAINST_SUB1
-#undef mpfr_sub1sp
-int
-mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
-{
-  mpfr_t tmpa, tmpb, tmpc;
-  int inexact, inexact2;
-
-  mpfr_init2(tmpa, mpfr_get_prec(a));
-  mpfr_init2(tmpb, mpfr_get_prec(b));
-  mpfr_init2(tmpc, mpfr_get_prec(c));
-  mpfr_set(tmpb, b, GMP_RNDN);
-  mpfr_set(tmpc, c, GMP_RNDN);
-
-  inexact2 = mpfr_sub1 (tmpa, tmpb, tmpc, rnd_mode);
-  inexact  = mpfr_sub1sp2(a, b, c, rnd_mode);
-
-  if (mpfr_cmp(tmpa, a) || inexact!=inexact2)
-    {
-      printf("sub1 & sub1sp return different values for %s\n"
-             "Prec_a= %lu Prec_b= %lu Prec_c= %lu\nB=",
-             mpfr_print_rnd_mode(rnd_mode),
-             mpfr_get_prec(a), mpfr_get_prec(b), mpfr_get_prec(c));
-      mpfr_print_binary(tmpb);
-      printf("\nC=");
-      mpfr_print_binary(tmpc);
-      printf("\nSub1  : ");
-      mpfr_print_binary(tmpa);
-      printf("\nSub1sp: ");
-      mpfr_print_binary(a);
-      printf("\nInexact sp = %d | Inexact = %d\n", inexact, inexact2);
-      MPFR_ASSERTN(0);
-    }
-  mpfr_clears(tmpa, tmpb, tmpc, NULL);
-  return inexact;
-}
-#endif
