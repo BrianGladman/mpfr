@@ -49,7 +49,7 @@ mpfr_set_ui (mpfr_ptr x, unsigned long i, mp_rnd_t rnd_mode)
       MPN_ZERO(xp, xn);
 
       nbits = BITS_PER_MP_LIMB - cnt;
-      MPFR_SET_EXP (x, nbits);
+      MPFR_EXP (x) = nbits;  /* may be out-of-range, check range below */
       inex = mpfr_check_range(x, 0, rnd_mode);
       if (inex)
         return inex; /* underflow or overflow */
@@ -62,12 +62,11 @@ mpfr_set_ui (mpfr_ptr x, unsigned long i, mp_rnd_t rnd_mode)
                                  rnd_mode, &inex);
           if (carry)
             {
-              mp_exp_t exp = MPFR_GET_EXP (x);
-
-              if (exp == __gmpfr_emax)
+              /* nbits is the current exponent */
+              if (nbits == __gmpfr_emax)
                 return mpfr_set_overflow(x, rnd_mode, 1);
 
-              MPFR_SET_EXP (x, exp + 1);
+              MPFR_SET_EXP (x, nbits + 1);
               xp[xn] = MPFR_LIMB_HIGHBIT;
             }
         }

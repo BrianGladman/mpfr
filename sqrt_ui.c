@@ -39,9 +39,9 @@ mpfr_sqrt_ui (mpfr_ptr r, unsigned long u, mp_rnd_t rnd_mode)
       MPFR_ASSERTN(u == (mp_limb_t) u);
       count_leading_zeros (cnt, (mp_limb_t) u);
       *up = (mp_limb_t) u << cnt;
-      MPFR_SET_EXP (uu, BITS_PER_MP_LIMB - cnt);
 
       mpfr_save_emin_emax();
+      MPFR_SET_EXP (uu, BITS_PER_MP_LIMB - cnt);
       inex = mpfr_sqrt(r, uu, rnd_mode);
       mpfr_restore_emin_emax();
       return mpfr_check_range(r, inex, rnd_mode);

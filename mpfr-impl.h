@@ -87,6 +87,10 @@ typedef unsigned long int       mp_size_unsigned_t;
 /* Invalid exponent value (to track bugs...) */
 #define MPFR_EXP_INVALID ((mp_exp_t) 1 << 30)
 
+/* Use MPFR_GET_EXP and MPFR_SET_EXP instead of MPFR_EXP directly,
+   unless when the exponent may be out-of-range, for instance when
+   setting the exponent before calling mpfr_check_range. */
+
 #if MPFR_EXP_CHECK
 #define MPFR_GET_EXP(x)          mpfr_get_exp (x)
 #define MPFR_SET_EXP(x, exp)     MPFR_ASSERTN (!mpfr_set_exp ((x), (exp)))
