@@ -45,6 +45,20 @@ check_reuse ()
       fprintf (stderr, "Error in mpfr_sub (x, y, x, GMP_RNDD) for x=2^(-12), y=1\n");
       exit (1);
     }
+
+  mpfr_set_prec (x, 24);
+  mpfr_set_prec (y, 24);
+  mpfr_set_str_raw (x, "-0.100010000000000000000000E19");
+  mpfr_set_str_raw (y, "0.100000000000000000000100E15");
+  mpfr_add (x, x, y, GMP_RNDD);
+  mpfr_set_str_raw (y, "-0.1E19");
+  if (mpfr_cmp (x, y))
+    {
+      fprintf (stderr, "Error in mpfr_add (2)\n");
+      exit (1);
+    }
+
+
   mpfr_clear (x);
   mpfr_clear (y);
 }
