@@ -57,7 +57,15 @@ case $OS_TYPE in
 		;;
 esac
 
-AC_CHECK_HEADERS(fenv.h fpu_control.h)
+AC_CHECK_HEADERS(fpu_control.h)
+
+dnl Check for fesetround
+AC_MSG_CHECKING(for fesetround)
+AC_TRY_LINK([#include <fenv.h>], [fesetround(FE_TONEAREST);],
+  [AC_MSG_RESULT(yes)
+   AC_DEFINE(HAVE_FESETROUND)],
+  AC_MSG_RESULT(no)
+)
 
 dnl Tests concerning the include directories.
 AC_MSG_CHECKING(for gmp files)
