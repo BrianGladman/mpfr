@@ -74,11 +74,77 @@ generic_abovebelow (void)
     }
 }
 
+static void
+inverse_test (void)
+{
+  static const char *tests[] = { "0", "1", "2", "3.1", "Inf" };
+  int i, neg, below;
+  mp_prec_t prec;
+
+  for (i = 0; i < sizeof(tests) / sizeof(tests[0]); i++)
+    for (neg = 0; neg <= 1; neg++)
+      for (below = 0; below <= 1; below++)
+        for (prec = MPFR_PREC_MIN; prec < 200; prec += 3)
+          {
+            mpfr_t x, y;
+            int sign;
+
+            mpfr_inits2 (prec, x, y, (void *) 0);
+            mpfr_set_str (x, tests[i], 10, GMP_RNDN);
+            if (neg)
+              mpfr_neg (x, x, GMP_RNDN);
+            mpfr_set (y, x, GMP_RNDN);
+            if (below)
+              mpfr_nextbelow (y);
+            else
+              mpfr_nextabove (y);
+            sign = MPFR_SIGN (y);
+            if (!(neg == below && mpfr_inf_p (x)))  /* then x = y */
+              {
+                if (mpfr_cmp (x, y) == 0)
+                  {
+                    printf ("Error in inverse_test for %s, neg = %d,"
+                            " below = %d, prec = %d: x = y", tests[i],
+                            neg, below, (int) prec);
+                    printf ("\nx = ");
+                    mpfr_out_str (stdout, 2, 0, x, GMP_RNDN);
+                    printf ("\ny = ");
+                    mpfr_out_str (stdout, 2, 0, y, GMP_RNDN);
+                    printf ("\n");
+                    exit (1);
+                 }
+                mpfr_nexttoward (y, x);
+                if (mpfr_cmp_ui (y, 0) == 0 && MPFR_SIGN (y) != sign)
+                  {
+                    printf ("Sign error in inverse_test for %s, neg = %d,"
+                            " below = %d, prec = %d\n", tests[i], neg,
+                            below, (int) prec);
+                    mpfr_out_str (stdout, 2, 0, y, GMP_RNDN);
+                    printf ("\n");
+                    exit (1);
+                  }
+              }
+            if (mpfr_cmp (x, y) != 0)
+              {
+                printf ("Error in inverse_test for %s, neg = %d, below = %d,"
+                        " prec = %d", tests[i], neg, below, (int) prec);
+                printf ("\nx = ");
+                mpfr_out_str (stdout, 2, 0, x, GMP_RNDN);
+                printf ("\ny = ");
+                mpfr_out_str (stdout, 2, 0, y, GMP_RNDN);
+                printf ("\n");
+                exit (1);
+              }
+            mpfr_clears (x, y, (void *) 0);
+          }
+}
+
 int
 main (void)
 {
   tests_start_mpfr ();
   generic_abovebelow ();
+  inverse_test ();
   tests_end_mpfr ();
   return 0;
 }

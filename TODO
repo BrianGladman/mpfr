@@ -150,8 +150,6 @@ Miscellaneous:
 - problem when reading a float followed by a character, for example 1.5*x
 	[from Fabrice.Rouillier@loria.fr, Mon, 04 Dec 2000]
 
-- add tests for nextabove/nextbelow/nexttoward.
-
 - documentation and tests for:
                          =     <     >     unordered
 mpfr_greater_p           0     0     1     0
