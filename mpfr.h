@@ -301,6 +301,7 @@ int mpfr_ui_pow_ui _MPFR_PROTO ((mpfr_ptr, unsigned long int,
 				 unsigned long int, mpfr_rnd_t));
 int mpfr_ui_pow _MPFR_PROTO ((mpfr_ptr, unsigned long int, mpfr_srcptr, 
 			      mpfr_rnd_t));
+int mpfr_pow_z _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpz_srcptr, mpfr_rnd_t));
 
 int mpfr_sqrt _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t));
 int mpfr_sqrt_ui _MPFR_PROTO ((mpfr_ptr, unsigned long, mpfr_rnd_t));
