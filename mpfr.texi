@@ -895,8 +895,7 @@ it with respect to @var{rnd}.
 If @var{op} is NaN or Inf, or too big for the return type,
 the result is undefined.
 
-See also @code{mpfr_fits_slong_p} and @code{mpfr_fits_ulong_p}
-(@pxref{Miscellaneous Functions}).
+See also @code{mpfr_fits_slong_p} and @code{mpfr_fits_ulong_p}.
 @end deftypefun
 
 @deftypefun mp_exp_t mpfr_get_z_exp (mpz_t @var{z}, mpfr_t @var{op})
@@ -952,6 +951,15 @@ A pointer to the string is returned, unless there is an error, in which
 case a null pointer is returned.
 @end deftypefun
 
+@deftypefun int mpfr_fits_ulong_p (mpfr_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_fits_slong_p (mpfr_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_fits_uint_p (mpfr_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_fits_sint_p (mpfr_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_fits_ushort_p (mpfr_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_fits_sshort_p (mpfr_t @var{op}, mp_rnd_t @var{rnd})
+Return non-zero if @var{op} would fit in the respective C data type, when
+rounded to an integer in the direction @var{rnd}.
+@end deftypefun
 
 @node Basic Arithmetic Functions, Comparison Functions, Conversion Functions, Floating-point Functions
 @comment  node-name,  next,  previous,  up
@@ -1021,16 +1029,13 @@ for the @code{pow} function:
 @item @code{pow(-1, ±inf)} returns 1.
 @item @code{pow(+1, @var{y})} returns 1 for any @var{x}, even a NaN.
 @item @code{pow(@var{x}, @var{y})} returns NaN for finite negative @var{x} and finite non-integer @var{y}.
-@item @code{pow(@var{x}, -inf)} returns plus infinity for @math{0 < @GMPabs{x} < 1}.
-@item @code{pow(@var{x}, -inf)} returns plus zero for @math{@GMPabs{x} > 1}.
-@item @code{pow(@var{x}, +inf)} returns plus zero for @math{0 < @GMPabs{x} < 1}.
-@item @code{pow(@var{x}, +inf)} returns plus infinity for @math{@GMPabs{x} > 1}.
+@item @code{pow(@var{x}, -inf)} returns plus infinity for @math{0 < @GMPabs{x} < 1}, and plus zero for @math{@GMPabs{x} > 1}.
+@item @code{pow(@var{x}, +inf)} returns plus zero for @math{0 < @GMPabs{x} < 1}, and plus infinity for @math{@GMPabs{x} > 1}.
 @item @code{pow(-inf, @var{y})} returns minus zero for @var{y} a negative odd integer.
 @item @code{pow(-inf, @var{y})} returns plus zero for @var{y} negative and not an odd integer.
 @item @code{pow(-inf, @var{y})} returns minus infinity for @var{y} a positive odd integer.
 @item @code{pow(-inf, @var{y})} returns plus infinity for @var{y} positive and not an odd integer.
-@item @code{pow(+inf, @var{y})} returns plus zero for @var{y} negative.
-@item @code{pow(+inf, @var{y})} returns plus infinity for @var{y} positive.
+@item @code{pow(+inf, @var{y})} returns plus zero for @var{y} negative, and plus infinity for @var{y} positive.
 @end itemize
 @end deftypefun
 
@@ -1369,21 +1374,13 @@ not an integer.
 
 @deftypefun int mpfr_frac (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Set @var{rop} to the fractional part of @var{op}, having the same sign as
-@var{op}, rounded in the direction @var{rnd}.
+@var{op}, rounded in the direction @var{rnd} (unlike in @code{mpfr_rint},
+@var{rnd} affects only how the exact fractional part is rounded, not how
+the fractional part is generated).
 @end deftypefun
 
 @deftypefun int mpfr_integer_p (mpfr_t @var{op})
 Return non-zero iff @var{op} is an integer.
-@end deftypefun
-
-@deftypefun int mpfr_fits_ulong_p (mpfr_t @var{op}, mp_rnd_t @var{rnd})
-@deftypefunx int mpfr_fits_slong_p (mpfr_t @var{op}, mp_rnd_t @var{rnd})
-@deftypefunx int mpfr_fits_uint_p (mpfr_t @var{op}, mp_rnd_t @var{rnd})
-@deftypefunx int mpfr_fits_sint_p (mpfr_t @var{op}, mp_rnd_t @var{rnd})
-@deftypefunx int mpfr_fits_ushort_p (mpfr_t @var{op}, mp_rnd_t @var{rnd})
-@deftypefunx int mpfr_fits_sshort_p (mpfr_t @var{op}, mp_rnd_t @var{rnd})
-Return non-zero if @var{op} would fit in the respective C data type, when
-rounded to an integer in the direction @var{rnd}.
 @end deftypefun
 
 @deftypefun void mpfr_nexttoward (mpfr_t @var{x}, mpfr_t @var{y})
