@@ -17,13 +17,13 @@ int maxulp=0;
 
 void check3(a, rnd_mode, Q) double a; unsigned char rnd_mode; double Q;
 {
-  mpfr_t q, n; double Q2; int ck,u;
+  mpfr_t q; double Q2; int ck,u;
 
   ck = (Q!=-1.0); /* if ck=1, then Q is certified correct */
-  mpfr_init2(q, 53); mpfr_init2(n, 53);
-  mpfr_set_d(n, a, rnd_mode);
+  mpfr_init2(q, 53);
+  mpfr_set_d(q, a, rnd_mode);
   mpfr_set_machine_rnd_mode(rnd_mode);
-  mpfr_sqrt(q, n, rnd_mode);
+  mpfr_sqrt(q, q, rnd_mode);
   if (ck==0) Q = sqrt(a);
   Q2 = mpfr_get_d(q);
   if (Q!=Q2 && (!isnan(Q) || !isnan(Q2))) {
@@ -39,7 +39,7 @@ void check3(a, rnd_mode, Q) double a; unsigned char rnd_mode; double Q;
       printf("libm.a gives %1.20e, mpfr_sqrt gives %1.20e (%d ulp)\n",Q,Q2,u);
     }
   }
-  mpfr_clear(q); mpfr_clear(n);
+  mpfr_clear(q);
 }
 
 int main()
