@@ -210,7 +210,8 @@ main (int argc, char *argv[])
   mpfr_clear (t);
 
   mpfr_set_prec (x, 2);
-  mpfr_set_d (x, 0.5, GMP_RNDN);
+  mpfr_set_ui (x, 1, GMP_RNDN);
+  mpfr_div_2exp (x, x, 1, GMP_RNDN); /* x = 1/2 */
   check1 (x, 2, 398441521, GMP_RNDN);  /* 398441521 = 19961^2 */
 
   /* generic test */
