@@ -53,19 +53,20 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
 	}
       MPFR_ASSERTN(1);
     }
-  else if (MPFR_UNLIKELY( (comp = mpfr_cmp_ui (x, 1)) < 0))
+  comp = mpfr_cmp_ui (x, 1);
+  if (MPFR_UNLIKELY( comp < 0 ))
     {
       MPFR_SET_NAN(y); 
       MPFR_RET_NAN;
     }    
-  MPFR_CLEAR_FLAGS(y);
-  if (MPFR_UNLIKELY( comp == 0 ))
+  else if (MPFR_UNLIKELY( comp == 0 ))
     {
       MPFR_SET_ZERO(y); /* acosh(1) = 0 */
       MPFR_SET_POS(y);
       MPFR_RET(0);
     }
-
+  MPFR_CLEAR_FLAGS(y);
+ 
   /* General case */
   {
     /* Declaration of the intermediary variables */

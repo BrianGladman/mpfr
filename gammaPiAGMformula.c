@@ -27,7 +27,7 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-int mpfr_gamma _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
+int mpfr_gamma _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 
 /* We use the reflection formula 
   Gamma(1+x)Gamma(1-x)=\pi x/(sin(\pi x))

@@ -25,10 +25,6 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-#if (BITS_PER_MP_LIMB & (BITS_PER_MP_LIMB - 1))
-#error "BITS_PER_MP_LIMB must be a power of 2"
-#endif
-
 /*
  * If flag = 0, puts in y the value of xp (with precision xprec and
  * sign 1 if negative=0, -1 otherwise) rounded to precision yprec and
@@ -172,7 +168,7 @@ mpfr_prec_round (mpfr_ptr x, mp_prec_t prec, mp_rnd_t rnd_mode)
       /* Realloc mantissa */
       mp_ptr tmp = (mp_ptr) (*__gmp_reallocate_func)
         (MPFR_GET_REAL_PTR(x),  MPFR_ALLOC_SIZE(ow), MPFR_ALLOC_SIZE(nw));
-      MPFR_SET_MANT_PTR(x, tmp);
+      MPFR_SET_MANT_PTR(x, tmp); /* mant pre must be set before alloc size */
       MPFR_SET_ALLOC_SIZE(x, nw); /* new number of allocated limbs */
     }
 

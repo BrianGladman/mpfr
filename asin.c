@@ -56,6 +56,7 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	}
       MPFR_ASSERTN(1);
     }
+  MPFR_CLEAR_FLAGS(asin);
 
   /* Set x_p=|x| */
   signe = MPFR_SIGN(x);

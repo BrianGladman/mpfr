@@ -44,15 +44,13 @@ mpfr_asinh (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	  MPFR_SET_NAN(y); 
 	  MPFR_RET_NAN;
 	}
-      MPFR_CLEAR_NAN(y);
-      if (MPFR_IS_INF(x))
+      else if (MPFR_IS_INF(x))
 	{ 
 	  MPFR_SET_INF(y);
 	  MPFR_SET_SAME_SIGN(y, x);
 	  MPFR_RET(0);
 	}
-      MPFR_CLEAR_INF(y);
-      if (MPFR_IS_ZERO(x))
+      else if (MPFR_IS_ZERO(x))
 	{
 	  MPFR_SET_ZERO(y);   /* asinh(0) = 0 */
 	  MPFR_SET_SAME_SIGN(y, x);
@@ -60,6 +58,7 @@ mpfr_asinh (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	}
       MPFR_ASSERTN(1);
     }
+  MPFR_CLEAR_FLAGS(y);
 
   Nx = MPFR_PREC(x);   /* Precision of input variable */
   Ny = MPFR_PREC(y);   /* Precision of output variable */

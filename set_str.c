@@ -30,8 +30,8 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 #include "log_b2.h"
 
-static double __gmpfr_ceil _PROTO((double));
-static int digit_value_in_base _PROTO ((int, int));
+static double __gmpfr_ceil _MPFR_PROTO((double));
+static int digit_value_in_base _MPFR_PROTO ((int, int));
 
 static double
 __gmpfr_ceil (double x)
@@ -115,7 +115,6 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
   if (strncasecmp (str, "@Inf@", 5) == 0 ||
       (base <= 16 && strcasecmp (str, "Inf") == 0))
     {
-      MPFR_CLEAR_NAN (x);
       MPFR_SET_INF (x);
       (negative) ? MPFR_SET_NEG (x) : MPFR_SET_POS (x);
       return 0;

@@ -19,6 +19,16 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+/* Auto include local gmp.h if not included */
+#ifndef __GMP_H__
+#include "gmp.h"
+#endif
+
+/* Auto include local gmp-impl.h if not included */
+#ifndef __GMP_IMPL_H__
+#include "gmp-impl.h"
+#endif
+
 /* Auto include local mpfr.h if not included */
 #ifndef __MPFR_H
 #include "mpfr.h"
@@ -55,7 +65,7 @@ MA 02111-1307, USA. */
 #define IS_POW2(X) (((X) & ((X) - 1)) == 0)
 #define NOT_POW2(X) (((X) & ((X) - 1)) != 0)
 
-/* Update Exp limits */
+/* Set Exponent absolute limits (ie they are invalid exponent values */
 #ifdef  MPFR_EXP_FORMAT_INT
 # define MPFR_EXP_MAX (INT_MAX)
 # define MPFR_EXP_MIN (INT_MIN)
@@ -92,12 +102,10 @@ typedef unsigned long int       mp_size_unsigned_t;
    with a comma operator and so on. */
 
 /* MPFR_ASSERTN(expr): assertions that should always be checked */
-/* #define MPFR_ASSERTN(expr) ASSERT_ALWAYS(expr) */
 #define MPFR_ASSERTN(expr)  \
    ((void) ((MPFR_UNLIKELY(expr)) || (ASSERT_FAIL (expr), 0)))
 
 /* MPFR_ASSERTD(expr): assertions that should be checked when testing */
-/* #define MPFR_ASSERTD(expr) ASSERT(expr) */
 #if WANT_ASSERT
 #define MPFR_EXP_CHECK 1
 #define MPFR_ASSERTD(expr)  MPFR_ASSERTN (expr)
@@ -177,7 +185,6 @@ typedef union ieee_double_extract Ieee_double_extract;
 /* Various i386 systems have been seen with incorrect LDBL constants in
    float.h (notes in set_ld.c), so force the value we know is right for IEEE
    extended.  */
-
 #if HAVE_LDOUBLE_IEEE_EXT_LITTLE
 #define MPFR_LDBL_MANT_DIG   64
 #else
@@ -229,7 +236,7 @@ typedef union ieee_double_extract Ieee_double_extract;
    optimizing anything. */
 #if WANT_LONGDOUBLE_VOLATILE
 #ifdef volatile
-long double __gmpfr_longdouble_volatile __GMP_PROTO ((long double)) ATTRIBUTE_CONST;
+long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CONST;
 #define LONGDOUBLE_VOLATILE(x)  (__gmpfr_longdouble_volatile (x))
 #define WANT_GMPFR_LONGDOUBLE_VOLATILE 1
 #else
@@ -237,11 +244,18 @@ long double __gmpfr_longdouble_volatile __GMP_PROTO ((long double)) ATTRIBUTE_CO
 #endif
 #endif
 
-/* Warning: Pb if non 2 comp representaiton as C standard allows */
 /* Definition of the special values of the exponent */
-/* Clear flags macros are still defined and should be still used */
-/* since functions shouldn't rely on a specific format */
-/* NOTE: Well, until a real spec of how to use them isn't created, it is unusable */
+/* 
+ * Clear flags macros are still defined and should be still used
+ * since the functions must not assume the internal format.
+ * How to deal with special values ?
+ *  1. Check if is a special value (Zero, Nan, Inf) wiht MPFR_IS_SINGULAR
+ *  2. Deal with the special value with MPFR_IS_NAN, MPFR_IS_INF, etc
+ *  3. Else clear the flags of the dest (it must be done after since src 
+ *     may be also the dest!)
+ * MPFR_SET_INF, MPFR_SET_NAN, MPFR_SET_ZERO must clear by 
+ * themselves the other flags.
+ */
 
 #define MPFR_PREC(x) ((x)->_mpfr_prec)
 #define MPFR_EXP(x) ((x)->_mpfr_exp)
@@ -258,8 +272,8 @@ long double __gmpfr_longdouble_volatile __GMP_PROTO ((long double)) ATTRIBUTE_CO
 #define MPFR_SIGN_NEG (-1)
 
 #define MPFR_CLEAR_FLAGS(x)
-#define MPFR_CLEAR_NAN(x)
-#define MPFR_CLEAR_INF(x)
+/*#define MPFR_CLEAR_NAN(x)*/
+/*#define MPFR_CLEAR_INF(x)*/
 
 #define MPFR_IS_NAN(x)   (MPFR_EXP(x) == MPFR_EXP_NAN)
 #define MPFR_SET_NAN(x)  (MPFR_EXP(x) =  MPFR_EXP_NAN)
@@ -302,6 +316,7 @@ long double __gmpfr_longdouble_volatile __GMP_PROTO ((long double)) ATTRIBUTE_CO
   (MPFR_CHECK_SIGN(s), MPFR_SIGN(x) *= s)
 /* Transform a sign to 1 or -1 */
 #define MPFR_FROM_SIGN_TO_INT(s) (s)
+#define MPFR_INT_SIGN(x) MPFR_FROM_SIGN_TO_INT(MPFR_SIGN(x))
 
 /* Special inexact value */
 #define MPFR_EVEN_INEX 2
@@ -337,14 +352,6 @@ long double __gmpfr_longdouble_volatile __GMP_PROTO ((long double)) ATTRIBUTE_CO
   (xp = (mp_ptr) TMP_ALLOC(BYTES_PER_MP_LIMB*(s)), \
    MPFR_TMP_INIT1(xp, x, p))
 
-#ifndef _PROTO
-#if defined (__STDC__) || defined (__cplusplus)
-#define _PROTO(x) x
-#else
-#define _PROTO(x) ()
-#endif
-#endif
-
 #if defined (__cplusplus)
 extern "C" {
 #endif
@@ -356,48 +363,48 @@ extern mpfr_t __mpfr_const_pi;
 extern mpfr_prec_t __gmpfr_const_pi_prec;
 
 #ifdef HAVE_STRCASECMP
-int strcasecmp _PROTO ((const char *, const char *));
+int strcasecmp _MPFR_PROTO ((const char *, const char *));
 #else
-int mpfr_strcasecmp _PROTO ((const char *, const char *));
+int mpfr_strcasecmp _MPFR_PROTO ((const char *, const char *));
 #endif
 
 #ifdef HAVE_STRNCASECMP
-int strncasecmp _PROTO ((const char *, const char *, size_t));
+int strncasecmp _MPFR_PROTO ((const char *, const char *, size_t));
 #else
-int mpfr_strncasecmp _PROTO ((const char *, const char *, size_t));
+int mpfr_strncasecmp _MPFR_PROTO ((const char *, const char *, size_t));
 #endif
 
-void mpfr_inits2 _PROTO ((mpfr_prec_t, mpfr_ptr, ...));
-void mpfr_inits _PROTO ((mpfr_ptr, ...));
-void mpfr_clears _PROTO ((mpfr_ptr, ...));
+void mpfr_inits2 _MPFR_PROTO ((mpfr_prec_t, mpfr_ptr, ...));
+void mpfr_inits _MPFR_PROTO ((mpfr_ptr, ...));
+void mpfr_clears _MPFR_PROTO ((mpfr_ptr, ...));
 
-int mpfr_set_underflow _PROTO ((mpfr_ptr, mp_rnd_t, int));
-int mpfr_set_overflow _PROTO ((mpfr_ptr, mp_rnd_t, int));
-void mpfr_save_emin_emax _PROTO ((void));
-void mpfr_restore_emin_emax _PROTO ((void));
-int mpfr_add1 _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr,
+int mpfr_set_underflow _MPFR_PROTO ((mpfr_ptr, mp_rnd_t, int));
+int mpfr_set_overflow _MPFR_PROTO ((mpfr_ptr, mp_rnd_t, int));
+void mpfr_save_emin_emax _MPFR_PROTO ((void));
+void mpfr_restore_emin_emax _MPFR_PROTO ((void));
+int mpfr_add1 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr,
                        mp_rnd_t, mp_exp_unsigned_t));
-int mpfr_sub1 _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr,
+int mpfr_sub1 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr,
                        mp_rnd_t, int));
-int mpfr_round_raw_generic _PROTO ((mp_limb_t *, mp_limb_t *, mpfr_prec_t, int,
+int mpfr_round_raw_generic _MPFR_PROTO ((mp_limb_t *, mp_limb_t *, mpfr_prec_t, int,
 				    mpfr_prec_t, mp_rnd_t, int *, int));
-int mpfr_can_round_raw _PROTO ((mp_limb_t *, mp_size_t, int, mp_exp_t,
+int mpfr_can_round_raw _MPFR_PROTO ((mp_limb_t *, mp_size_t, int, mp_exp_t,
 				mp_rnd_t, mp_rnd_t, mpfr_prec_t));
-double mpfr_get_d3 _PROTO ((mpfr_srcptr, mp_exp_t, mp_rnd_t));
-int mpfr_cmp2 _PROTO ((mpfr_srcptr, mpfr_srcptr, mpfr_prec_t *));
-long __gmpfr_ceil_log2 _PROTO ((double));
-long __gmpfr_floor_log2 _PROTO ((double));
-double __gmpfr_ceil_exp2 _PROTO ((double));
-unsigned long __gmpfr_isqrt _PROTO ((unsigned long));
-unsigned long __gmpfr_cuberoot _PROTO ((unsigned long));
-int mpfr_exp_2 _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
-int mpfr_exp3 _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
-int mpfr_powerof2_raw _PROTO ((mpfr_srcptr));
-void mpfr_setmax _PROTO ((mpfr_ptr, mp_exp_t));
-void mpfr_setmin _PROTO ((mpfr_ptr, mp_exp_t));
-long mpn_exp _PROTO ((mp_limb_t *, mp_exp_t *, int, mp_exp_t, size_t));
-void mpfr_print_binary _PROTO ((mpfr_srcptr));
-void mpfr_set_str_binary _PROTO ((mpfr_ptr, __gmp_const char *));
+double mpfr_get_d3 _MPFR_PROTO ((mpfr_srcptr, mp_exp_t, mp_rnd_t));
+int mpfr_cmp2 _MPFR_PROTO ((mpfr_srcptr, mpfr_srcptr, mpfr_prec_t *));
+long __gmpfr_ceil_log2 _MPFR_PROTO ((double));
+long __gmpfr_floor_log2 _MPFR_PROTO ((double));
+double __gmpfr_ceil_exp2 _MPFR_PROTO ((double));
+unsigned long __gmpfr_isqrt _MPFR_PROTO ((unsigned long));
+unsigned long __gmpfr_cuberoot _MPFR_PROTO ((unsigned long));
+int mpfr_exp_2 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
+int mpfr_exp3 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
+int mpfr_powerof2_raw _MPFR_PROTO ((mpfr_srcptr));
+void mpfr_setmax _MPFR_PROTO ((mpfr_ptr, mp_exp_t));
+void mpfr_setmin _MPFR_PROTO ((mpfr_ptr, mp_exp_t));
+long mpn_exp _MPFR_PROTO ((mp_limb_t *, mp_exp_t *, int, mp_exp_t, size_t));
+void mpfr_print_binary _MPFR_PROTO ((mpfr_srcptr));
+void mpfr_set_str_binary _MPFR_PROTO ((mpfr_ptr, __gmp_const char *));
 
 #define mpfr_round_raw(yp, xp, xprec, neg, yprec, r, inexp) \
   mpfr_round_raw_generic((yp), (xp), (xprec), (neg), (yprec), (r), (inexp), 0)

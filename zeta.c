@@ -29,9 +29,9 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-void mpfr_zeta_part_b _PROTO ((mpfr_t, mpfr_srcptr, int, int, mpfr_t *));
-void mpfr_zeta_c      _PROTO ((int, mpfr_t *));
-void mpfr_zeta_part_a _PROTO ((mpfr_t, mpfr_srcptr, int));
+void mpfr_zeta_part_b _MPFR_PROTO ((mpfr_t, mpfr_srcptr, int, int, mpfr_t *));
+void mpfr_zeta_c      _MPFR_PROTO ((int, mpfr_t *));
+void mpfr_zeta_part_a _MPFR_PROTO ((mpfr_t, mpfr_srcptr, int));
 
 /*
    Parameters:
@@ -356,6 +356,7 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
 	}
       MPFR_ASSERTN(1);
     }
+  MPFR_CLEAR_FLAGS(z);
 
   /* s is neither Nan, nor Inf, nor Zero */
   mpfr_init2(s2, mpfr_get_prec(s));

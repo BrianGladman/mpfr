@@ -40,12 +40,11 @@ mpfr_min (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 	  MPFR_SET_NAN(z); 
 	  MPFR_RET_NAN;
 	}
-      MPFR_CLEAR_NAN(z);
-      if (MPFR_IS_NAN(x))
+      else if (MPFR_IS_NAN(x))
 	return mpfr_set(z, y, rnd_mode);
-      if (MPFR_IS_NAN(y))
+      else if (MPFR_IS_NAN(y))
 	return mpfr_set(z, x, rnd_mode);
-      if (MPFR_IS_ZERO(x) && MPFR_IS_ZERO(y))
+      else if (MPFR_IS_ZERO(x) && MPFR_IS_ZERO(y))
 	{
 	  if (MPFR_IS_NEG(x))
 	    return mpfr_set(z, x, rnd_mode);
@@ -75,12 +74,11 @@ mpfr_max (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 	  MPFR_SET_NAN(z);
 	  MPFR_RET_NAN;
 	}
-      MPFR_CLEAR_NAN(z);
-      if (MPFR_IS_NAN(x))
+      else if (MPFR_IS_NAN(x))
 	return mpfr_set(z, y, rnd_mode);
-      if (MPFR_IS_NAN(y))
+      else if (MPFR_IS_NAN(y))
 	return mpfr_set(z, x, rnd_mode);
-      if (MPFR_IS_ZERO(x) && MPFR_IS_ZERO(y))
+      else if (MPFR_IS_ZERO(x) && MPFR_IS_ZERO(y))
 	{
 	  if (MPFR_IS_NEG(x))
 	    return mpfr_set(z, y, rnd_mode);
@@ -88,7 +86,6 @@ mpfr_max (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 	    return mpfr_set(z, x, rnd_mode);
 	}
     }
-
   if (mpfr_cmp(x,y) <= 0)
     return mpfr_set(z, y, rnd_mode);
   else

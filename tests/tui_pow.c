@@ -121,7 +121,6 @@ main (int argc, char *argv[])
 
   n = randlimb ();
 
-  MPFR_CLEAR_NAN(x);
   MPFR_SET_INF(x);
   mpfr_ui_pow (y, n, x, GMP_RNDN);
   if(!MPFR_IS_INF(y))

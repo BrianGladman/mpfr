@@ -218,7 +218,6 @@ check_INF (void)
   mpfr_init2(ash,200);
   mpfr_init2(ath,200);
 
-  MPFR_CLEAR_NAN(t);
   MPFR_SET_INF(t);
 
   if(MPFR_SIGN(t)<0)

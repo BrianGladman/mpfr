@@ -48,8 +48,8 @@ MA 02111-1307, USA. */
 #endif
 
 
-void tests_rand_start _PROTO ((void));
-void tests_rand_end   _PROTO ((void));
+void tests_rand_start _MPFR_PROTO ((void));
+void tests_rand_end   _MPFR_PROTO ((void));
 
 void
 tests_start_mpfr (void)

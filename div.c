@@ -58,7 +58,6 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
 	  MPFR_SET_NAN(q);
 	  MPFR_RET_NAN;
 	}
-      MPFR_CLEAR_NAN(q);
       sign_quotient = MPFR_MULT_SIGN( MPFR_SIGN(u) , MPFR_SIGN(v) );
       MPFR_SET_SIGN(q, sign_quotient);
       if (MPFR_IS_INF(u))
@@ -74,14 +73,11 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
 	      MPFR_RET(0);
 	    }
 	}
-      else 
-	if (MPFR_IS_INF(v)) 
-	  {
-	    MPFR_CLEAR_INF(q);
-	    MPFR_SET_ZERO(q);
-	    MPFR_RET(0);
-	  }
-      MPFR_CLEAR_INF(q); /* clear Inf flag */
+      else if (MPFR_IS_INF(v)) 
+	{
+	  MPFR_SET_ZERO(q);
+	  MPFR_RET(0);
+	}
       if (MPFR_IS_ZERO(v))
 	{
 	  if (MPFR_IS_ZERO(u))
@@ -95,7 +91,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
 	      MPFR_RET(0);
 	    }
 	}
-      if (MPFR_IS_ZERO(u))
+      else if (MPFR_IS_ZERO(u))
 	{
 	  MPFR_SET_ZERO(q);
 	  MPFR_RET(0);
@@ -103,7 +99,8 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
       /* Never reach this !*/
       MPFR_ASSERTN(1);
     }
-  
+  MPFR_CLEAR_FLAGS(q);
+
   sign_quotient = MPFR_MULT_SIGN( MPFR_SIGN(u) , MPFR_SIGN(v) );
   MPFR_SET_SIGN(q, sign_quotient);
  

@@ -67,7 +67,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	  MPFR_SET_NAN(gamma);
 	  MPFR_RET_NAN;
 	}
-      if (MPFR_IS_INF(x))
+      else if (MPFR_IS_INF(x))
 	{
 	  if (MPFR_IS_NEG(x))
 	    {
@@ -76,21 +76,21 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	    }
 	  else
 	    {
-	      MPFR_CLEAR_NAN(gamma);
 	      MPFR_SET_INF(gamma);
 	      MPFR_SET_POS(gamma);
 	      return 0;  /* exact */
 	    }
 	}
-      if (MPFR_IS_ZERO(x))
+      else if (MPFR_IS_ZERO(x))
 	{
-	  MPFR_CLEAR_NAN(gamma);
 	  MPFR_SET_INF(gamma);
 	  MPFR_SET_SAME_SIGN(gamma, x);
 	  return 0;  /* exact */
 	}
-      MPFR_ASSERTN(1);
+      else
+	MPFR_ASSERTN(1);
     }
+  MPFR_CLEAR_FLAGS(gamma);
 
   /* Set x_p=x if x> 1 else set x_p=2-x */
   prec_gamma = MPFR_PREC (gamma);

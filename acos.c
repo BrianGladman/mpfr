@@ -57,6 +57,7 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	}
       MPFR_ASSERTN(1);
     }
+  MPFR_CLEAR_FLAGS(x);
 
   /* Set x_p=|x| */
   signe = MPFR_SIGN(x);

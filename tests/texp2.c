@@ -71,7 +71,6 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-  MPFR_CLEAR_NAN(x);
   MPFR_SET_INF(x);
   MPFR_SET_POS(x);
   mpfr_exp2 (y, x, GMP_RNDN);

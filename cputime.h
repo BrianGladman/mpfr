@@ -1,6 +1,6 @@
 /* Return user CPU time measured in milliseconds. Thanks to Torbjorn. */
 
-int cputime _PROTO((void)); 
+int cputime _MPFR_PROTO((void)); 
 
 #if defined (ANSIONLY) || defined (USG) || defined (__SVR4) || defined (_UNICOS) || defined(__hpux)
 #include <time.h>

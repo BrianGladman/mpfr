@@ -43,7 +43,6 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	  MPFR_SET_NAN(a);
 	  MPFR_RET_NAN;
 	}
-      MPFR_CLEAR_NAN(a);
       sign_product = MPFR_MULT_SIGN( MPFR_SIGN(b) , MPFR_SIGN(c) );
       if (MPFR_IS_INF(b))
 	{
@@ -73,8 +72,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	      MPFR_RET_NAN;
 	    }
 	}
-      MPFR_CLEAR_INF(a); /* clear Inf flag */
-      if (MPFR_IS_ZERO(b) || MPFR_IS_ZERO(c))
+      else if (MPFR_IS_ZERO(b) || MPFR_IS_ZERO(c))
 	{
 	  MPFR_SET_SIGN(a, sign_product);
 	  MPFR_SET_ZERO(a);

@@ -41,9 +41,8 @@ mpfr_expm1 (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
 	  MPFR_SET_NAN(y);
 	  MPFR_RET_NAN;
 	}
-      MPFR_CLEAR_NAN(y);
       /* check for inf or -inf (expm1(-inf)=-1) */
-      if (MPFR_IS_INF(x))
+      else if (MPFR_IS_INF(x))
 	{ 
 	  if (MPFR_IS_POS(x))
 	    {
@@ -54,14 +53,17 @@ mpfr_expm1 (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
 	  else
 	    return mpfr_set_si(y, -1, rnd_mode);
 	}
-      MPFR_CLEAR_INF(y);
-      if(MPFR_IS_ZERO(x))
+      else if(MPFR_IS_ZERO(x))
 	{
 	  MPFR_SET_ZERO(y);   /* expm1(+/- 0) = +/- 0 */
 	  MPFR_SET_SAME_SIGN(y,x);
 	  MPFR_RET(0);
 	}
+      else
+	MPFR_ASSERTN(1);
     }
+  /* Useless due to mpfr_set
+     MPFR_CLEAR_FLAGS(y);*/
 
   /* General case */
   {

@@ -29,10 +29,10 @@ MA 02111-1307, USA. */
 
 #define EXP1 2.71828182845904523536 /* exp(1) */
 
-int mpfr_erf_0 _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
+int mpfr_erf_0 _MPFR_PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 #if 0
-int mpfr_erf_inf _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
-int mpfr_erfc_inf _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
+int mpfr_erf_inf _MPFR_PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
+int mpfr_erfc_inf _MPFR_PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 #endif
 
 int

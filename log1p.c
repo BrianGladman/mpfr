@@ -41,9 +41,8 @@ mpfr_log1p (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	  MPFR_SET_NAN(y); 
 	  MPFR_RET_NAN;
 	}
-      MPFR_CLEAR_NAN(y);      
       /* check for inf or -inf (result is not defined) */
-      if (MPFR_IS_INF(x))
+      else if (MPFR_IS_INF(x))
 	{
 	  if (MPFR_IS_POS(x))
 	    {
@@ -57,13 +56,14 @@ mpfr_log1p (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	      MPFR_RET_NAN;
 	    }
 	}
-      if (MPFR_IS_ZERO(x))
+      else if (MPFR_IS_ZERO(x))
 	{
 	  MPFR_SET_ZERO(y);   /* log1p(+/- 0) = +/- 0 */
 	  MPFR_SET_SAME_SIGN(y, x);
 	  MPFR_RET(0);
 	}
-      MPFR_ASSERTN(1);
+      else
+	MPFR_ASSERTN(1);
     }
   
   comp = mpfr_cmp_si(x,-1);

@@ -25,7 +25,7 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-static int mpfr_cos2_aux       _PROTO ((mpfr_ptr, mpfr_srcptr));
+static int mpfr_cos2_aux       _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr));
 
 int 
 mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode) 

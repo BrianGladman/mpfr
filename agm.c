@@ -41,27 +41,23 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
       if (MPFR_IS_NAN(op1) || MPFR_IS_NAN(op2))
 	{
 	  MPFR_SET_NAN(r);
-	  __gmpfr_flags |= MPFR_FLAGS_NAN;
 	  MPFR_RET_NAN;
 	}
       /* If a or b is negative (including -Infinity), the result is NaN */
-      if ((MPFR_SIGN(op1) < 0) || (MPFR_SIGN(op2) < 0))
+      else if (MPFR_IS_NEG(op1) || MPFR_IS_NEG(op2))
 	{
 	  MPFR_SET_NAN(r);
-	  __gmpfr_flags |= MPFR_FLAGS_NAN;
 	  MPFR_RET_NAN;
 	}
-      MPFR_CLEAR_NAN(r);
       /* If a or b is +Infinity, the result is +Infinity */
-      if (MPFR_IS_INF(op1) || MPFR_IS_INF(op2))
+      else if (MPFR_IS_INF(op1) || MPFR_IS_INF(op2))
 	{
 	  MPFR_SET_INF(r);
 	  MPFR_SET_SAME_SIGN(r, op1);
 	  MPFR_RET(0); /* exact */
 	}
-      MPFR_CLEAR_INF(r);
       /* If a or b is 0, the result is 0 */
-      if (MPFR_IS_ZERO(op1) || MPFR_IS_ZERO(op2))
+      else if (MPFR_IS_ZERO(op1) || MPFR_IS_ZERO(op2))
 	{
 	  MPFR_SET_POS(r);
 	  MPFR_SET_ZERO(r);
@@ -69,6 +65,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
 	}
       MPFR_ASSERTN(1);
     }
+  MPFR_CLEAR_FLAGS(r);
 
  /* precision of the following calculus */
   q = MPFR_PREC(r);

@@ -29,14 +29,14 @@ MA 02111-1307, USA. */
 typedef void (*fct_t)();
 fct_t testfunc;
 
-void test3 _PROTO ((char *, mp_prec_t, mp_rnd_t));
-void test4 _PROTO ((char *, mp_prec_t, mp_rnd_t));
-void test3a _PROTO ((char *, mp_prec_t, mp_rnd_t));
-void test2ui _PROTO ((char *, mp_prec_t, mp_rnd_t));
-void testui2 _PROTO ((char *, mp_prec_t, mp_rnd_t));
-void test2 _PROTO ((char *, mp_prec_t, mp_rnd_t));
-void test2a _PROTO ((char *, mp_prec_t));
-int mpfr_compare _PROTO ((mpfr_t, mpfr_t));
+void test3 _MPFR_PROTO ((char *, mp_prec_t, mp_rnd_t));
+void test4 _MPFR_PROTO ((char *, mp_prec_t, mp_rnd_t));
+void test3a _MPFR_PROTO ((char *, mp_prec_t, mp_rnd_t));
+void test2ui _MPFR_PROTO ((char *, mp_prec_t, mp_rnd_t));
+void testui2 _MPFR_PROTO ((char *, mp_prec_t, mp_rnd_t));
+void test2 _MPFR_PROTO ((char *, mp_prec_t, mp_rnd_t));
+void test2a _MPFR_PROTO ((char *, mp_prec_t));
+int mpfr_compare _MPFR_PROTO ((mpfr_t, mpfr_t));
 
 /* same than mpfr_cmp, but returns 0 for both NaN's */
 int

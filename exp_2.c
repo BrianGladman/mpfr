@@ -27,10 +27,10 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-static int mpfr_exp2_aux      _PROTO ((mpz_t, mpfr_srcptr, int, int*));
-static int mpfr_exp2_aux2     _PROTO ((mpz_t, mpfr_srcptr, int, int*));
-static mp_exp_t mpz_normalize _PROTO ((mpz_t, mpz_t, int));
-static int mpz_normalize2     _PROTO ((mpz_t, mpz_t, int, int));
+static int mpfr_exp2_aux      _MPFR_PROTO ((mpz_t, mpfr_srcptr, int, int*));
+static int mpfr_exp2_aux2     _MPFR_PROTO ((mpz_t, mpfr_srcptr, int, int*));
+static mp_exp_t mpz_normalize _MPFR_PROTO ((mpz_t, mpz_t, int));
+static int mpz_normalize2     _MPFR_PROTO ((mpz_t, mpz_t, int, int));
 
 /* returns floor(sqrt(n)) */
 unsigned long

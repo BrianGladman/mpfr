@@ -43,9 +43,8 @@ mpfr_log10 (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
 	  MPFR_SET_NAN(r);
 	  MPFR_RET_NAN;
 	}
-      MPFR_CLEAR_NAN(r);
       /* check for infinity before zero */
-      if (MPFR_IS_INF(a))
+      else if (MPFR_IS_INF(a))
 	{
 	  if (MPFR_IS_NEG(a))
 	    /* log10(-Inf) = NaN */
@@ -61,15 +60,16 @@ mpfr_log10 (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
 	    }
 	}
       /* Now we can clear the flags without damage even if r == a */
-      MPFR_CLEAR_INF(r);
-      if (MPFR_IS_ZERO(a))
+      else if (MPFR_IS_ZERO(a))
 	{
 	  MPFR_SET_INF(r);
 	  MPFR_SET_NEG(r);
 	  MPFR_RET(0); /* log10(0) is an exact -infinity */
 	}
+      else
+	MPFR_ASSERTN(1);
     }
-
+  
   /* If a is negative, the result is NaN */
   if (MPFR_UNLIKELY( MPFR_IS_NEG(a) ))
     {
@@ -84,6 +84,9 @@ mpfr_log10 (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
       MPFR_SET_POS(r);
       MPFR_RET(0); /* result is exact */
     }
+
+  /* Useless due to mpfr_set
+     MPFR_CLEAR_FLAGS(r);*/
 
   /* General case */
   {
