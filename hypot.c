@@ -85,7 +85,7 @@ mpfr_hypot (z, x,y, rnd_mode)
       mp_prec_t Nz = MPFR_PREC(z);   /* Precision of input variable */
       
       mp_prec_t Nt;   /* Precision of the intermediary variable */
-      mp_prec_t err;  /* Precision of error */
+      long int err;  /* Precision of error */
       
       /* compute the precision of intermediary variable */
       Nt=MAX(MAX(Nx,Ny),Nz);
@@ -100,6 +100,7 @@ mpfr_hypot (z, x,y, rnd_mode)
 
       /* Hypot */
       do {
+        not_exact=0;
         /* reactualisation of the precision */
         mpfr_set_prec(t,Nt);             
         mpfr_set_prec(te,Nt);             
@@ -108,10 +109,13 @@ mpfr_hypot (z, x,y, rnd_mode)
         /* computations of hypot */
         if(mpfr_mul(te,x,x,GMP_RNDN))         /* x^2 */
           not_exact=1;
+
         if(mpfr_mul(ti,y,y,GMP_RNDN))         /* y^2 */
+          not_exact=1;          
+
+        if(mpfr_add(t,te,ti,GMP_RNDD))        /*x^2+y^2*/
           not_exact=1;
-        if(mpfr_add(t,te,ti,GMP_RNDD))        /* x^2+y^2*/
-          not_exact=1;
+
         if(mpfr_sqrt(t,t,GMP_RNDN))           /* sqrt(x^2+y^2)*/
           not_exact=1;
  
@@ -120,7 +124,7 @@ mpfr_hypot (z, x,y, rnd_mode)
     
         Nt += 10; 
 
-      } while ((!mpfr_can_round(t,err,GMP_RNDN,rnd_mode,Nz)) && not_exact);
+      } while ((err <0) || ((!mpfr_can_round(t,err,GMP_RNDN,rnd_mode,Nz)) && not_exact));
 
       inexact = mpfr_set (z, t, rnd_mode);
       mpfr_clear(t);
