@@ -22,6 +22,15 @@ MA 02111-1307, USA. */
 #ifndef __MPFR_H
 #define __MPFR_H
 
+/* Define MPFR version number */
+#define MPFR_VERSION_MAJOR 2
+#define MPFR_VERSION_MINOR 1
+#define MPFR_VERSION_PATCHLEVEL 0
+
+/* Macros dealing with MPFR VERSION */
+#define MPFR_VERSION_NUM(a,b,c) (((a) << 16L) | ((b) << 8) | (c))
+#define MPFR_VERSION MPFR_VERSION_NUM(MPFR_VERSION_MAJOR,MPFR_VERSION_MINOR,MPFR_VERSION_PATCHLEVEL)
+
 /* Check if GMP is included, and try to include it (Works with local GMP) */
 #ifndef __GMP_H__
 # include <gmp.h>
@@ -318,7 +327,7 @@ int mpfr_sgn _MPFR_PROTO ((mpfr_srcptr));
 #define mpfr_cmp_abs mpfr_cmpabs
 #define mpfr_round_prec(x,r,p) mpfr_prec_round(x,p,r)
 
-/* prevent from using mpfr_get_e{min,max} as lvalues */
+/* Prevent from using mpfr_get_e{min,max} as lvalues */
 #define mpfr_get_emin() (__gmpfr_emin + 0)
 #define mpfr_get_emax() (__gmpfr_emax + 0)
 
