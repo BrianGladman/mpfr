@@ -138,31 +138,6 @@ int main() { double x = 2.22507385850720138309e-308;
   AC_MSG_RESULT(no)
 )
 
-dnl Check for extended precision
-AC_MSG_CHECKING(for extended precision)
-AC_TRY_RUN([
-int main()
-{
-  double c, d, dj;
-  int j;
-
-  c = 1.46484375e-3;
-
-  dj = 1.0;
-  for (j=0; j<54; j++) dj *= 0.5;
-  d = 0.75 + dj;
-  d /= 1 << 9;
-  exit (c == d);
-}],
-  [AC_MSG_RESULT(yes)
-   if test -n "$GCC"; then
-     CFLAGS="$CFLAGS -ffloat-store"
-   fi
-   AC_DEFINE(USE_EXTENDED)],
-  AC_MSG_RESULT(no),
-  AC_MSG_RESULT(no)
-)
-
 AC_MY_LIBS($with_gmp_lib, gmp)
 AC_SUBST(INCLUDES)
 AC_SUBST(LDADD)
