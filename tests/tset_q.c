@@ -45,7 +45,7 @@ check (long int n, long int d, mp_rnd_t rnd, double y)
   y = (double) n / d;
 #endif
   inexact = mpfr_set_q (x, q, rnd);
-  z = mpfr_get_d (x);
+  z = mpfr_get_d1 (x);
 
   /* check values */
   if (y != z)

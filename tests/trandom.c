@@ -46,7 +46,7 @@ test_random (unsigned long nbtests, unsigned long prec, int verbose)
 
   for (k = 0; k < nbtests; k++) {
     mpfr_random(x); 
-    d = mpfr_get_d(x); av += d; var += d*d; 
+    d = mpfr_get_d1 (x); av += d; var += d*d; 
     tab[(int)(size_tab * d)]++;     
   }
 
@@ -92,7 +92,7 @@ test_random2 (unsigned long nbtests, unsigned long prec, int verbose)
 
   for (k = 0; k < nbtests; k++) {
     mpfr_random2 (x, MPFR_ABSSIZE(x), 0); 
-    d = mpfr_get_d(x); av += d; var += d*d; 
+    d = mpfr_get_d1 (x); av += d; var += d*d; 
     if (d < 1)
       tab[(int)(size_tab * d)]++;     
   }
@@ -139,7 +139,7 @@ test_urandomb (unsigned long nbtests, unsigned long prec, int verbose)
 
   for (k = 0; k < nbtests; k++) {
     mpfr_urandomb(x, state); 
-    d = mpfr_get_d(x); av += d; var += d*d; 
+    d = mpfr_get_d1 (x); av += d; var += d*d; 
     tab[(int)(size_tab * d)]++;     
   }
 

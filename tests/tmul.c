@@ -56,7 +56,7 @@ check (double x, double y, mp_rnd_t rnd_mode, unsigned int px,
   mpfr_set_machine_rnd_mode(rnd_mode);
 #endif
   z1 = (res==0.0) ? x*y : res;
-  z2 = mpfr_get_d(zz);
+  z2 = mpfr_get_d1 (zz);
   if (z1!=z2 && (z1>=MINNORM || z1<=-MINNORM)) {
     printf("mpfr_mul ");
     if (res==0.0) printf("differs from libm.a"); else printf("failed");
@@ -79,7 +79,7 @@ check53 (double x, double y, mp_rnd_t rnd_mode, double z1)
   mpfr_set_d (xx, x, rnd_mode);
   mpfr_set_d (yy, y, rnd_mode);
   mpfr_mul (zz, xx, yy, rnd_mode);
-  z2 = mpfr_get_d (zz);
+  z2 = mpfr_get_d1 (zz);
   if (z1!=z2 && (!isnan(z1) || !isnan(z2))) {
     printf("mpfr_mul failed for x=%1.20e y=%1.20e with rnd_mode=%s\n",
 	   x, y, mpfr_print_rnd_mode(rnd_mode));
@@ -103,7 +103,7 @@ check24 (float x, float y, mp_rnd_t rnd_mode, float z1)
   mpfr_set_d (xx, x, rnd_mode);
   mpfr_set_d (yy, y, rnd_mode);
   mpfr_mul (zz, xx, yy, rnd_mode);
-  z2 = (float) mpfr_get_d (zz);
+  z2 = (float) mpfr_get_d1 (zz);
   if (z1 != z2)
     {
       fprintf (stderr, "mpfr_mul failed for x=%1.0f y=%1.0f with prec=24 and"
@@ -176,8 +176,8 @@ check_sign (void)
   mpfr_set_d(a, -1.0, GMP_RNDN);
   mpfr_set_d(b, 2.0, GMP_RNDN);
   mpfr_mul(a, b, b, GMP_RNDN);
-  if (mpfr_get_d(a) != 4.0) {
-    fprintf(stderr,"2.0*2.0 gives %1.20e\n", mpfr_get_d(a)); exit(1);
+  if (mpfr_get_d1 (a) != 4.0) {
+    fprintf(stderr,"2.0*2.0 gives %1.20e\n", mpfr_get_d1 (a)); exit(1);
   }
   mpfr_clear(a); mpfr_clear(b);
 }

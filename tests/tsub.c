@@ -169,7 +169,7 @@ check_diverse (void)
   /* check in-place operations */
   mpfr_set_d (x, 1.0, GMP_RNDN);
   mpfr_sub (x, x, x, GMP_RNDN);
-  if (mpfr_get_d (x) != 0.0)
+  if (mpfr_get_d1 (x) != 0.0)
     {
       fprintf (stderr, "Error for mpfr_add (x, x, x, GMP_RNDN) with x=1.0\n");
       exit (1);
@@ -182,7 +182,7 @@ check_diverse (void)
   mpfr_set_d (y, 2.32221184180698677665e+05, GMP_RNDN);
   mpfr_sub (z, x, y, GMP_RNDN);
   res = 1229085880.815819263458251953125;
-  got = mpfr_get_d (z);
+  got = mpfr_get_d1 (z);
   if (got != res)
     {
       fprintf (stderr, "Error in mpfr_sub (1.22e9 - 2.32e5)\n");

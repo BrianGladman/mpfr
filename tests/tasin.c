@@ -46,7 +46,7 @@ main (void)
   if (mpfr_cmp (y, z))
     {
       fprintf (stderr, "sin(-1) is wrong, expected %.20e, got %.20e\n",
-               mpfr_get_d (z), mpfr_get_d (y));
+               mpfr_get_d1 (z), mpfr_get_d1 (y));
       exit (1);
     }
 

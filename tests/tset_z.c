@@ -37,7 +37,7 @@ check(long i, unsigned char rnd)
   mpfr_init2(f, 53); mpz_init(z);
   mpz_set_ui(z, i);
   mpfr_set_z(f, z, rnd);
-  if ((long)mpfr_get_d(f) != i) {
+  if ((long)mpfr_get_d1 (f) != i) {
     printf("Error in mpfr_set_z for i=%ld rnd_mode=%d\n",i,rnd);
     exit(1);
   }

@@ -45,7 +45,7 @@ main (int argc, char *argv[])
     {
       z = random() - (1 << 30);      
       inex = mpfr_set_si(x, z, GMP_RNDZ);
-      d = (long) mpfr_get_d(x);
+      d = (long) mpfr_get_d1 (x);
       if (d != z) {
 	fprintf(stderr, "Error in mpfr_set_si: expected %ld got %ld\n", z, d); exit(1);
       }
@@ -62,7 +62,7 @@ main (int argc, char *argv[])
     {
       zl = random();
       inex = mpfr_set_ui (x, zl, GMP_RNDZ);
-      dl = (unsigned long) mpfr_get_d (x);
+      dl = (unsigned long) mpfr_get_d1 (x);
       if (dl != zl) {
 	fprintf(stderr, "Error in mpfr_set_ui: expected %lu got %lu\n", zl, dl); exit(1);
       }
@@ -109,17 +109,17 @@ main (int argc, char *argv[])
 
   mpfr_set_prec(x, 2);
   inex = mpfr_set_si(x, 33096, GMP_RNDU);
-  if (mpfr_get_d(x) != 49152.0 || inex <= 0)
+  if (mpfr_get_d1 (x) != 49152.0 || inex <= 0)
   {
     fprintf(stderr, "Error in mpfr_set_si, expected 49152, got %lu, inex %d\n",
-	    (unsigned long) mpfr_get_d(x), inex);
+	    (unsigned long) mpfr_get_d1 (x), inex);
     exit(1);
   }
   inex = mpfr_set_ui(x, 33096, GMP_RNDU);
-  if (mpfr_get_d(x) != 49152.0)
+  if (mpfr_get_d1 (x) != 49152.0)
   {
     fprintf(stderr, "Error in mpfr_set_ui, expected 49152, got %lu, inex %d\n",
-	    (unsigned long) mpfr_get_d(x), inex);
+	    (unsigned long) mpfr_get_d1 (x), inex);
     exit(1);
   }
 

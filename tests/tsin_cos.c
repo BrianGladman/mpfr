@@ -56,18 +56,18 @@ void check53 (double x, double sin_x, double cos_x, mp_rnd_t rnd_mode)
   mpfr_init2 (c, 53);
   mpfr_set_d (xx, x, rnd_mode); /* should be exact */
   mpfr_sin_cos (s, c, xx, rnd_mode);
-  if (mpfr_get_d (s) != sin_x && (!isnan(sin_x) || !mpfr_nan_p(s))) {
+  if (mpfr_get_d1 (s) != sin_x && (!isnan(sin_x) || !mpfr_nan_p(s))) {
     fprintf (stderr, "mpfr_sin_cos failed for x=%1.20e, rnd=%s\n", x,
 	     mpfr_print_rnd_mode (rnd_mode));
     fprintf (stderr, "mpfr_sin_cos gives sin(x)=%1.20e, expected %1.20e\n",
-	     mpfr_get_d (s), sin_x);
+	     mpfr_get_d1 (s), sin_x);
     exit(1);
   }
-  if (mpfr_get_d (c) != cos_x && (!isnan(cos_x) || !mpfr_nan_p(c))) {
+  if (mpfr_get_d1 (c) != cos_x && (!isnan(cos_x) || !mpfr_nan_p(c))) {
     fprintf (stderr, "mpfr_sin_cos failed for x=%1.20e, rnd=%s\n", x,
 	     mpfr_print_rnd_mode (rnd_mode));
     fprintf (stderr, "mpfr_sin_cos gives cos(x)=%1.20e, expected %1.20e\n",
-	     mpfr_get_d (c), cos_x);
+	     mpfr_get_d1 (c), cos_x);
     exit(1);
   }
   mpfr_clear (xx);
@@ -83,11 +83,11 @@ void check53sin (double x, double sin_x, mp_rnd_t rnd_mode)
   mpfr_init2 (s, 53);
   mpfr_set_d (xx, x, rnd_mode); /* should be exact */
   mpfr_sin_cos (s, NULL, xx, rnd_mode);
-  if (mpfr_get_d (s) != sin_x && (!isnan(sin_x) || !mpfr_nan_p(s))) {
+  if (mpfr_get_d1 (s) != sin_x && (!isnan(sin_x) || !mpfr_nan_p(s))) {
     fprintf (stderr, "mpfr_sin_cos failed for x=%1.20e, rnd=%s\n", x,
 	     mpfr_print_rnd_mode (rnd_mode));
     fprintf (stderr, "mpfr_sin_cos gives sin(x)=%1.20e, expected %1.20e\n",
-	     mpfr_get_d (s), sin_x);
+	     mpfr_get_d1 (s), sin_x);
     exit(1);
   }
   mpfr_clear (xx);
@@ -102,11 +102,11 @@ void check53cos (double x, double cos_x, mp_rnd_t rnd_mode)
   mpfr_init2 (c, 53);
   mpfr_set_d (xx, x, rnd_mode); /* should be exact */
   mpfr_sin_cos (NULL, c, xx, rnd_mode);
-  if (mpfr_get_d (c) != cos_x && (!isnan(cos_x) || !mpfr_nan_p(c))) {
+  if (mpfr_get_d1 (c) != cos_x && (!isnan(cos_x) || !mpfr_nan_p(c))) {
     fprintf (stderr, "mpfr_sin_cos failed for x=%1.20e, rnd=%s\n", x,
 	     mpfr_print_rnd_mode (rnd_mode));
     fprintf (stderr, "mpfr_sin_cos gives cos(x)=%1.20e, expected %1.20e\n",
-	     mpfr_get_d (c), cos_x);
+	     mpfr_get_d1 (c), cos_x);
     exit(1);
   }
   mpfr_clear (xx);

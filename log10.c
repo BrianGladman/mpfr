@@ -128,7 +128,7 @@ mpfr_log10 (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
 
       /* log10(10^n) is exact */
       if ((MPFR_SIGN(t) > 0) && mpfr_isinteger(t))
-        if (mpfr_ui_pow_ui (tt, 10, (unsigned long int) mpfr_get_d (t) + 0.5,
+        if (mpfr_ui_pow_ui (tt, 10, (unsigned long int) mpfr_get_d1 (t) + 0.5,
                             GMP_RNDN) == 0)
           if (mpfr_cmp (a, tt) == 0)
             ok = 1;

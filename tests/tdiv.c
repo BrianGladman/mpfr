@@ -51,7 +51,7 @@ check4 (double N, double D, mp_rnd_t rnd_mode, int p, double Q)
   mpfr_set_machine_rnd_mode(rnd_mode);
 #endif
   if (Q==0.0) Q = N/D;
-  Q2 = mpfr_get_d(q);
+  Q2 = mpfr_get_d1 (q);
   if (p==53 && Q!=Q2 && (!isnan(Q) || !isnan(Q2))) {
     printf("mpfr_div failed for n=%1.20e, d=%1.20e, rnd_mode=%s\n",
 	   N, D, mpfr_print_rnd_mode(rnd_mode));
@@ -71,7 +71,7 @@ check24 (float N, float D, mp_rnd_t rnd_mode, float Q)
   mpfr_set_d(n, N, rnd_mode);
   mpfr_set_d(d, D, rnd_mode);
   mpfr_div(q, n, d, rnd_mode);
-  Q2 = mpfr_get_d(q);
+  Q2 = mpfr_get_d1 (q);
   if (Q!=Q2) {
     printf("mpfr_div failed for n=%1.10e, d=%1.10e, prec=24, rnd_mode=%s\n",
 	   N, D, mpfr_print_rnd_mode(rnd_mode));

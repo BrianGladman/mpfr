@@ -86,9 +86,9 @@ test3 (char *foo, mp_prec_t prec, mp_rnd_t rnd)
  
     if (mpfr_compare (res1, ref1)) {
       fprintf (stderr, "Error for %s(a, a, c) for a=%e, c=%e\n", foo,
-	       mpfr_get_d (ref2), mpfr_get_d (ref3));
-      fprintf (stderr, "expected %e, got %e\n", mpfr_get_d (ref1),
-	       mpfr_get_d (res1));
+	       mpfr_get_d1 (ref2), mpfr_get_d1 (ref3));
+      fprintf (stderr, "expected %e, got %e\n", mpfr_get_d1 (ref1),
+	       mpfr_get_d1 (res1));
       exit (1);
     }
 
@@ -97,9 +97,9 @@ test3 (char *foo, mp_prec_t prec, mp_rnd_t rnd)
     testfunc (res1, ref2, res1, rnd);
     if (mpfr_compare (res1, ref1)) {
       fprintf (stderr, "Error for %s(a, b, a) for b=%e, a=%e\n", foo,
-	       mpfr_get_d (ref2), mpfr_get_d (ref3));
-      fprintf (stderr, "expected %e, got %e\n", mpfr_get_d (ref1),
-	       mpfr_get_d (res1));
+	       mpfr_get_d1 (ref2), mpfr_get_d1 (ref3));
+      fprintf (stderr, "expected %e, got %e\n", mpfr_get_d1 (ref1),
+	       mpfr_get_d1 (res1));
       exit (1);
     }
 
@@ -111,9 +111,9 @@ test3 (char *foo, mp_prec_t prec, mp_rnd_t rnd)
 
    if (mpfr_compare (res1, ref1)) {
       fprintf (stderr, "Error for %s(a, a, a) for a=%e\n", foo,
-	       mpfr_get_d (ref2));
-      fprintf (stderr, "expected %e, got %e\n", mpfr_get_d (ref1),
-	       mpfr_get_d (res1));
+	       mpfr_get_d1 (ref2));
+      fprintf (stderr, "expected %e, got %e\n", mpfr_get_d1 (ref1),
+	       mpfr_get_d1 (res1));
       exit (1);
     }
   }
@@ -188,9 +188,9 @@ test4 (char *foo, mp_prec_t prec, mp_rnd_t rnd)
                 fprintf (stderr, 
                          "Error for %s(a, a, b, c) for a=%e, b=%e, c=%e\n", 
                          foo,
-                         mpfr_get_d (op1), mpfr_get_d (op2), mpfr_get_d (op3));
-                fprintf (stderr, "expected %e, got %e\n", mpfr_get_d (ref),
-                         mpfr_get_d (res));
+                         mpfr_get_d1 (op1), mpfr_get_d1 (op2), mpfr_get_d1 (op3));
+                fprintf (stderr, "expected %e, got %e\n", mpfr_get_d1 (ref),
+                         mpfr_get_d1 (res));
                 exit (1);
               }
 
@@ -203,9 +203,9 @@ test4 (char *foo, mp_prec_t prec, mp_rnd_t rnd)
                 fprintf (stderr, 
                          "Error for %s(b, a, b, c) for a=%e, b=%e, c=%e\n", 
                          foo,
-                         mpfr_get_d (op1), mpfr_get_d (op2), mpfr_get_d (op3));
-                fprintf (stderr, "expected %e, got %e\n", mpfr_get_d (ref),
-                         mpfr_get_d (res));
+                         mpfr_get_d1 (op1), mpfr_get_d1 (op2), mpfr_get_d1 (op3));
+                fprintf (stderr, "expected %e, got %e\n", mpfr_get_d1 (ref),
+                         mpfr_get_d1 (res));
                 exit (1);
               }
 
@@ -218,9 +218,9 @@ test4 (char *foo, mp_prec_t prec, mp_rnd_t rnd)
                 fprintf (stderr, 
                          "Error for %s(c, a, b, c) for a=%e, b=%e, c=%e\n",
                          foo,
-                         mpfr_get_d (op1), mpfr_get_d (op2), mpfr_get_d (op3));
-                fprintf (stderr, "expected %e, got %e\n", mpfr_get_d (ref),
-                         mpfr_get_d (res));
+                         mpfr_get_d1 (op1), mpfr_get_d1 (op2), mpfr_get_d1 (op3));
+                fprintf (stderr, "expected %e, got %e\n", mpfr_get_d1 (ref),
+                         mpfr_get_d1 (res));
                 exit (1);
               }
 
@@ -233,9 +233,9 @@ test4 (char *foo, mp_prec_t prec, mp_rnd_t rnd)
                 fprintf (stderr, 
                          "Error for %s(a, a, a, c) for a=%e, a=%e, c=%e\n",
                          foo,
-                         mpfr_get_d (op1), mpfr_get_d (op2), mpfr_get_d (op3));
-                fprintf (stderr, "expected %e, got %e\n", mpfr_get_d (ref),
-                         mpfr_get_d (res));
+                         mpfr_get_d1 (op1), mpfr_get_d1 (op2), mpfr_get_d1 (op3));
+                fprintf (stderr, "expected %e, got %e\n", mpfr_get_d1 (ref),
+                         mpfr_get_d1 (res));
                 exit (1);
               }
 
@@ -248,9 +248,9 @@ test4 (char *foo, mp_prec_t prec, mp_rnd_t rnd)
                  fprintf (stderr, 
                           "Error for %s(a, a, b, a) for a=%e, a=%e, c=%e\n",
                           foo,
-                       mpfr_get_d (op1), mpfr_get_d (op2), mpfr_get_d (op3));
-                 fprintf (stderr, "expected %e, got %e\n", mpfr_get_d (ref),
-                          mpfr_get_d (res));
+                       mpfr_get_d1 (op1), mpfr_get_d1 (op2), mpfr_get_d1 (op3));
+                 fprintf (stderr, "expected %e, got %e\n", mpfr_get_d1 (ref),
+                          mpfr_get_d1 (res));
                  exit (1);
                }
 
@@ -263,9 +263,9 @@ test4 (char *foo, mp_prec_t prec, mp_rnd_t rnd)
                  fprintf (stderr, 
                           "Error for %s(b, a, b, b) for a=%e, a=%e, c=%e\n", 
                           foo,
-                        mpfr_get_d (op1), mpfr_get_d (op2), mpfr_get_d (op3));
-                 fprintf (stderr, "expected %e, got %e\n", mpfr_get_d (ref),
-                          mpfr_get_d (res));
+                        mpfr_get_d1 (op1), mpfr_get_d1 (op2), mpfr_get_d1 (op3));
+                 fprintf (stderr, "expected %e, got %e\n", mpfr_get_d1 (ref),
+                          mpfr_get_d1 (res));
                  exit (1);
                }
 
@@ -277,9 +277,9 @@ test4 (char *foo, mp_prec_t prec, mp_rnd_t rnd)
                {
                  fprintf (stderr,
                           "Error for %s(a, a, a, a) for a=%e\n", foo,
-                          mpfr_get_d (op1));
-                 fprintf (stderr, "expected %e, got %e\n", mpfr_get_d (ref),
-                          mpfr_get_d (res));
+                          mpfr_get_d1 (op1));
+                 fprintf (stderr, "expected %e, got %e\n", mpfr_get_d1 (ref),
+                          mpfr_get_d1 (res));
                  exit (1);
                }
             }
@@ -341,9 +341,9 @@ test2ui (char *foo, mp_prec_t prec, mp_rnd_t rnd)
       if (mpfr_compare (res1, ref1))
 	{
 	  fprintf (stderr, "Error for %s(a, a, c) for a=%e c=%u\n", foo,
-	       mpfr_get_d (ref2), ref3);
-	  fprintf (stderr, "expected %e, got %e\n", mpfr_get_d (ref1),
-	       mpfr_get_d (res1));
+	       mpfr_get_d1 (ref2), ref3);
+	  fprintf (stderr, "expected %e, got %e\n", mpfr_get_d1 (ref1),
+	       mpfr_get_d1 (res1));
 	  exit (1);
 	}
     }
@@ -394,9 +394,9 @@ testui2 (char *foo, mp_prec_t prec, mp_rnd_t rnd)
     testfunc (res1, ref2, res1, rnd);
     if (mpfr_compare (res1, ref1)) {
       fprintf (stderr, "Error for %s(a, b, a) for b=%u a=%e\n", foo,
-	       ref2, mpfr_get_d (ref3));
-      fprintf (stderr, "expected %e, got %e\n", mpfr_get_d (ref1),
-	       mpfr_get_d (res1));
+	       ref2, mpfr_get_d1 (ref3));
+      fprintf (stderr, "expected %e, got %e\n", mpfr_get_d1 (ref1),
+	       mpfr_get_d1 (res1));
       exit (1);
     }
   }
@@ -437,9 +437,9 @@ test2 (char *foo, mp_prec_t prec, mp_rnd_t rnd)
     mpfr_set (res1, ref2, rnd); /* exact operation */
     testfunc (res1, res1, rnd);
     if (mpfr_compare (res1, ref1)) {
-      fprintf (stderr, "Error for %s(a, a) for a=%e\n", foo, mpfr_get_d (ref2));
-      fprintf (stderr, "expected %e, got %e\n", mpfr_get_d (ref1),
-	       mpfr_get_d (res1));
+      fprintf (stderr, "Error for %s(a, a) for a=%e\n", foo, mpfr_get_d1 (ref2));
+      fprintf (stderr, "expected %e, got %e\n", mpfr_get_d1 (ref1),
+	       mpfr_get_d1 (res1));
       exit (1);
     }
   }
@@ -480,9 +480,9 @@ test2a (char *foo, mp_prec_t prec)
     mpfr_set (res1, ref2, GMP_RNDN); /* exact operation */
     testfunc (res1, res1);
     if (mpfr_compare (res1, ref1)) {
-      fprintf (stderr, "Error for %s(a, a) for a=%e\n", foo, mpfr_get_d (ref2));
-      fprintf (stderr, "expected %e, got %e\n", mpfr_get_d (ref1),
-	       mpfr_get_d (res1));
+      fprintf (stderr, "Error for %s(a, a) for a=%e\n", foo, mpfr_get_d1 (ref2));
+      fprintf (stderr, "expected %e, got %e\n", mpfr_get_d1 (ref1),
+	       mpfr_get_d1 (res1));
       exit (1);
     }
   }
@@ -525,9 +525,9 @@ test3a (char *foo, mp_prec_t prec, mp_rnd_t rnd)
      mpfr_set (res1, ref3, rnd); /* exact operation */
      testfunc (res1, res2, res1, rnd);
      if (mpfr_compare (res1, ref1) || mpfr_compare (res2, ref2)) {
-       fprintf (stderr, "Error for %s(a, b, a) for a=%e\n", foo, mpfr_get_d (ref3));
-       fprintf (stderr, "expected (%e,%e), got (%e,%e)\n", mpfr_get_d (ref1),
-		mpfr_get_d (ref2), mpfr_get_d (res1), mpfr_get_d (res2));
+       fprintf (stderr, "Error for %s(a, b, a) for a=%e\n", foo, mpfr_get_d1 (ref3));
+       fprintf (stderr, "expected (%e,%e), got (%e,%e)\n", mpfr_get_d1 (ref1),
+		mpfr_get_d1 (ref2), mpfr_get_d1 (res1), mpfr_get_d1 (res2));
        exit (1);
      }
 
@@ -535,9 +535,9 @@ test3a (char *foo, mp_prec_t prec, mp_rnd_t rnd)
      mpfr_set (res2, ref3, rnd); /* exact operation */
      testfunc (res1, res2, res2, rnd);
      if (mpfr_compare (res1, ref1) || mpfr_compare (res2, ref2)) {
-       fprintf (stderr, "Error for %s(a, b, b) for b=%e\n", foo, mpfr_get_d (ref3));
-       fprintf (stderr, "expected (%e,%e), got (%e,%e)\n", mpfr_get_d (ref1),
-		mpfr_get_d (ref2), mpfr_get_d (res1), mpfr_get_d (res2));
+       fprintf (stderr, "Error for %s(a, b, b) for b=%e\n", foo, mpfr_get_d1 (ref3));
+       fprintf (stderr, "expected (%e,%e), got (%e,%e)\n", mpfr_get_d1 (ref1),
+		mpfr_get_d1 (ref2), mpfr_get_d1 (res1), mpfr_get_d1 (res2));
        exit (1);
      }
   }

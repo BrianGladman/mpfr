@@ -51,7 +51,7 @@ check3 (double x, unsigned long y, unsigned int rnd_mode, double z1)
   mpfr_set_machine_rnd_mode(rnd_mode);
 #endif
   if (z1==0.0) z1 = x+y;
-  z2 = mpfr_get_d(zz);
+  z2 = mpfr_get_d1 (zz);
   if (z1!=z2 && !(isnan(z1) && isnan(z2))) {
     printf("expected sum is %1.20e, got %1.20e\n",z1,z2);
     printf("mpfr_add_ui failed for x=%1.20e y=%lu with rnd_mode=%s\n",

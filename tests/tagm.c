@@ -95,7 +95,7 @@ check4 (double a, double b, mp_rnd_t rnd_mode, double res1)
   
   if (res1==0.0) res1=dagm(a,b); else ck=1;
 if (ck==0) printf("%1.20e\n", res1);
-  res2 = mpfr_get_d(tres);
+  res2 = mpfr_get_d1 (tres);
 
   if (ck && res1!=res2 && (!isnan(res1) || !isnan(res2))) {
     printf("mpfr_agm failed for a=%1.20e, b=%1.20e, rnd_mode=%d\n",a,b,rnd_mode);

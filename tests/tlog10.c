@@ -46,7 +46,7 @@ main (int argc, char *argv[])
     {
       mpfr_mul_ui (x, x, 10, GMP_RNDN); /* x = 10^n */
       mpfr_log10 (y, x, GMP_RNDN);
-      if (mpfr_get_d (y) != (double) n)
+      if (mpfr_get_d1 (y) != (double) n)
         {
           fprintf (stderr, "log10(10^n) <> n for n=%u\n", n);
           exit (1);

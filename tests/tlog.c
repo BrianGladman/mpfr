@@ -75,7 +75,7 @@ check1 (double a, mp_rnd_t rnd_mode, double res1, int ck, int max_ulp)
   mpfr_init2(tres, 53);
   mpfr_set_d(ta, a, GMP_RNDN);
   mpfr_log(tres, ta, rnd_mode);
-  res2=mpfr_get_d(tres);
+  res2=mpfr_get_d1 (tres);
   mpfr_clear(ta); mpfr_clear(tres); 
 
   if (res1!=res2 && (!isnan(res1) || !isnan(res2))) {
@@ -247,7 +247,7 @@ special (void)
   mpfr_init2 (y, 53);
   mpfr_set_ui (x, 3, GMP_RNDD);
   mpfr_log (y, x, GMP_RNDD);
-  if (mpfr_get_d (y) != 1.09861228866810956) {
+  if (mpfr_get_d1 (y) != 1.09861228866810956) {
     fprintf (stderr, "Error in mpfr_log(3) for GMP_RNDD\n");
     exit (1);
   }

@@ -61,7 +61,7 @@ check (double x, double y, mp_rnd_t rnd_mode, unsigned int px,
   if (px==53 && py==53 && pz==53) cert=1;
 #endif
   if (z1==0.0) z1=x+y; else cert=1;
-  z2 = mpfr_get_d(zz);
+  z2 = mpfr_get_d1 (zz);
   mpfr_set_d (yy, z2, GMP_RNDN);
   if (!mpfr_cmp (zz, yy) && cert && z1!=z2 && !(isnan(z1) && isnan(z2))) {
     printf("expected sum is %1.20e, got %1.20e\n",z1,z2);
@@ -88,7 +88,7 @@ checknan (double x, double y, mp_rnd_t rnd_mode, unsigned int px,
   mpfr_set_machine_rnd_mode(rnd_mode);
 #endif
   if (MPFR_IS_NAN(zz) == 0) { printf("Error, not an MPFR_NAN for xx = %1.20e, y = %1.20e\n", x, y); exit(1); }
-  z2 = mpfr_get_d(zz);
+  z2 = mpfr_get_d1 (zz);
   if (!isnan(z2)) { printf("Error, not a NaN after conversion, xx = %1.20e yy = %1.20e, got %1.20e\n", x, y, z2); exit(1); }
 
   mpfr_clear(xx); mpfr_clear(yy); mpfr_clear(zz);
@@ -110,7 +110,7 @@ check3 (double x, double y, mp_rnd_t rnd_mode)
   else mpfr_add(xx, xx, yy, rnd_mode);
   mpfr_set_machine_rnd_mode(rnd_mode);
   z1 = (neg) ? x-y : x+y;
-  z2 = mpfr_get_d(xx);
+  z2 = mpfr_get_d1 (xx);
   mpfr_set_d (yy, z2, GMP_RNDN);
   if (!mpfr_cmp (xx, yy) && z1!=z2 && !(isnan(z1) && isnan(z2))) {
     printf("expected result is %1.20e, got %1.20e\n",z1,z2);
@@ -138,7 +138,7 @@ check4 (double x, double y, mp_rnd_t rnd_mode)
   else mpfr_add(xx, yy, xx, rnd_mode);
   mpfr_set_machine_rnd_mode(rnd_mode);
   z1 = (neg) ? y-x : x+y;
-  z2 = mpfr_get_d(xx);
+  z2 = mpfr_get_d1 (xx);
   mpfr_set_d (yy, z2, GMP_RNDN);
   /* check that xx is representable as a double and no overflow occurred */
   if ((mpfr_cmp (xx, yy) == 0) && (z1 != z2)) {
@@ -164,7 +164,7 @@ check5 (double x, mp_rnd_t rnd_mode)
   else mpfr_add(xx, xx, xx, rnd_mode);
   mpfr_set_machine_rnd_mode(rnd_mode);
   z1 = (neg) ? x-x : x+x;
-  z2 = mpfr_get_d(xx);
+  z2 = mpfr_get_d1 (xx);
   mpfr_set_d (yy, z2, GMP_RNDN);
   /* check NaNs first since mpfr_cmp does not like them */
   if (!(isnan(z1) && isnan(z2)) && !mpfr_cmp (xx, yy) && z1!=z2)
@@ -188,7 +188,7 @@ check2 (double x, int px, double y, int py, int pz, mp_rnd_t rnd_mode)
   mpfr_set_d(yy, y, rnd_mode);
   mpfr_add(zz, xx, yy, rnd_mode);
   mpfr_set_machine_rnd_mode(rnd_mode);
-  z = x+y; z2=mpfr_get_d(zz); u=ulp(z,z2);
+  z = x+y; z2=mpfr_get_d1 (zz); u=ulp(z,z2);
   /* one ulp difference is possible due to composed rounding */
   if (px>=53 && py>=53 && pz>=53 && ABS(u)>1) { 
     printf("x=%1.20e,%d y=%1.20e,%d pz=%d,rnd=%s\n",
@@ -300,7 +300,7 @@ check64 (void)
   mpfr_set_d (x, -5.03525136761487735093e-74, GMP_RNDN);
   mpfr_set_d (t, 8.51539046314262304109e-91, GMP_RNDN);
   mpfr_add (u, x, t, GMP_RNDN);
-  if (mpfr_get_d (u) != -5.0352513676148773509283672e-74) {
+  if (mpfr_get_d1 (u) != -5.0352513676148773509283672e-74) {
     fprintf (stderr, "mpfr_add(u, x, t) failed for prec(x)=92, prec(t)=86\n");
     exit (1);
   }
@@ -356,7 +356,7 @@ check64 (void)
   mpfr_set_str_raw(x, "0.10011010101000110101010000000011001001001110001011101011111011101E623");
   mpfr_set_str_raw(t, "0.10011010101000110101010000000011001001001110001011101011111011100E623");
   mpfr_sub(u, x, t, GMP_RNDU);
-  if (mpfr_get_d(u) != 9.4349060620538533806e167) { /* 2^558 */
+  if (mpfr_get_d1 (u) != 9.4349060620538533806e167) { /* 2^558 */
     printf("Error (1) in mpfr_sub\n"); exit(1);
   }
 
@@ -438,7 +438,7 @@ check64 (void)
   mpfr_set_nan (x);
   mpfr_add (x, t, u, GMP_RNDN);
   if (mpfr_cmp_ui (x, 2)) {
-    fprintf (stderr, "Error in mpfr_add: 1+1 gives %e\n", mpfr_get_d (x));
+    fprintf (stderr, "Error in mpfr_add: 1+1 gives %e\n", mpfr_get_d1 (x));
     exit (1);
   }
 
@@ -537,7 +537,7 @@ check_same (void)
 
   mpfr_init(x); mpfr_set_d(x, 1.0, GMP_RNDZ);
   mpfr_add(x, x, x, GMP_RNDZ);
-  if (mpfr_get_d(x) != 2.0) {
+  if (mpfr_get_d1 (x) != 2.0) {
     printf("Error when all 3 operands are equal\n"); exit(1);
   }
   mpfr_clear(x);

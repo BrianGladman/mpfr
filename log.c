@@ -103,7 +103,7 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
 
   q=MPFR_PREC(r);
   
-  ref=mpfr_get_d(a)-1.0;
+  ref = mpfr_get_d1 (a) - 1.0;
   if (ref<0)
     ref=-ref;
 

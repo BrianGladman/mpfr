@@ -38,11 +38,11 @@ check53 (double x, double tan_x, mp_rnd_t rnd_mode)
   mpfr_init2 (s, 53);
   mpfr_set_d (xx, x, rnd_mode); /* should be exact */
   mpfr_tan (s, xx, rnd_mode);
-  if (mpfr_get_d (s) != tan_x && (!isnan(tan_x) || !mpfr_nan_p(s))) {
+  if (mpfr_get_d1 (s) != tan_x && (!isnan(tan_x) || !mpfr_nan_p(s))) {
     fprintf (stderr, "mpfr_tan failed for x=%1.20e, rnd=%s\n", x,
 	     mpfr_print_rnd_mode (rnd_mode));
     fprintf (stderr, "mpfr_tan gives tan(x)=%1.20e, expected %1.20e\n",
-	     mpfr_get_d (s), tan_x);
+	     mpfr_get_d1 (s), tan_x);
     exit(1);
   }
   mpfr_clear (xx);
@@ -71,10 +71,10 @@ main(int argc, char *argv[])
   mpfr_set_prec (x, 2);
   mpfr_set_d (x, 0.5, GMP_RNDN);
   mpfr_tan (x, x, GMP_RNDD);
-  if (mpfr_get_d (x) != 0.5)
+  if (mpfr_get_d1 (x) != 0.5)
     {
       fprintf (stderr, "mpfr_tan(0.5, GMP_RNDD) failed\n");
-      fprintf (stderr, "expected 0.5, got %f\n", mpfr_get_d (x));
+      fprintf (stderr, "expected 0.5, got %f\n", mpfr_get_d1 (x));
       exit (1);
     }
 

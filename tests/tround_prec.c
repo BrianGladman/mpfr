@@ -36,7 +36,7 @@ main (void)
    if (mpfr_cmp_ui(x, 4))
      {
        fprintf (stderr, "Error in tround: got %1.1f instead of 4\n",
-		mpfr_get_d (x));
+		mpfr_get_d1 (x));
        exit (1);
      }
 
@@ -47,7 +47,7 @@ main (void)
    if (mpfr_cmp_ui(x, 5))
      {
        fprintf (stderr, "Error in tround: got %1.1f instead of 5\n",
-		mpfr_get_d (x));
+		mpfr_get_d1 (x));
        exit (1);
      }
 
@@ -58,7 +58,7 @@ main (void)
    if (mpfr_cmp_si(x, -5))
      {
        fprintf (stderr, "Error in tround: got %1.1f instead of -5\n",
-		mpfr_get_d (x));
+		mpfr_get_d1 (x));
        exit (1);
      }
 
@@ -69,7 +69,7 @@ main (void)
    if (mpfr_cmp_ui(x, 5))
      {
        fprintf (stderr, "Error in tround: got %1.1f instead of 5\n",
-		mpfr_get_d (x));
+		mpfr_get_d1 (x));
        exit (1);
      }
 

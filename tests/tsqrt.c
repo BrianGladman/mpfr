@@ -62,7 +62,7 @@ check3 (double a, mp_rnd_t rnd_mode, double Q)
 
     }
   }
-  Q2 = mpfr_get_d(q);
+  Q2 = mpfr_get_d1 (q);
   if (Q!=Q2 && (!isnan(Q) || !isnan(Q2))) {
     u = ulp(Q2,Q);
     if (ck) {
@@ -111,7 +111,7 @@ check24 (float a, mp_rnd_t rnd_mode, float Q)
   mpfr_init2(q, 24);
   mpfr_set_d(q, a, rnd_mode);
   mpfr_sqrt(q, q, rnd_mode);
-  Q2 = mpfr_get_d(q);
+  Q2 = mpfr_get_d1 (q);
   if (Q!=Q2) {
     printf("mpfr_sqrt failed for a=%1.10e, prec=24, rnd_mode=%s\n",
 	   a, mpfr_print_rnd_mode(rnd_mode));
@@ -198,7 +198,7 @@ special (void)
       mpfr_set_ui (z, 1, GMP_RNDN);
       mpfr_add_one_ulp (z, GMP_RNDN);
       mpfr_sqrt (x, z, GMP_RNDU);
-      if (mpfr_get_d (x) != 1.5)
+      if (mpfr_get_d1 (x) != 1.5)
 	{
 	  fprintf (stderr, "Error: sqrt(1+ulp(1), up) should give 1.5 (prec=%u)\n", (unsigned) p);
 	  printf ("got "); mpfr_print_binary (x); putchar ('\n');
@@ -224,7 +224,7 @@ special (void)
   mpfr_sqrt (z, x, GMP_RNDN);
   if (mpfr_cmp_ui (z, 0) < 0) {
     fprintf (stderr, "Error: square root of %e gives %e\n", 
-	     mpfr_get_d (x), mpfr_get_d (z));
+	     mpfr_get_d1 (x), mpfr_get_d1 (z));
     exit (1);
   }
 

@@ -43,7 +43,7 @@ check (unsigned long a, mp_rnd_t rnd_mode, double Q)
   mpfr_sqrt_ui(q, a, rnd_mode);
   ck = (Q >= 0.0);
   if (!ck) Q = sqrt(1.0 * a);
-  Q2 = mpfr_get_d(q);
+  Q2 = mpfr_get_d1 (q);
   if (Q!=Q2 && (!isnan(Q) || !isnan(Q2))) {
     u = ulp(Q2,Q);
     if (ck) printf("mpfr_sqrt_ui failed");

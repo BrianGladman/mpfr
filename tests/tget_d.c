@@ -44,7 +44,7 @@ check_denorms ()
   mpfr_div_2exp (x, x, 1022, GMP_RNDN); /* 2^(-1022) */
   for (n=0; n<52; n++, d /= 2.0)
     {
-      dd = mpfr_get_d (x);
+      dd = mpfr_get_d1 (x);
       if (d != dd) /* should be 0 or 2^(-1022-n) */
         {
           fprintf (stderr, "Wrong result for 2^(%ld), ", -1022-n);
@@ -110,8 +110,8 @@ main (void)
                    d = si ? 0.5 - dd : 0.5 + dd;
                    if ((LONG_RAND() / 1024) & 1)
                      {
-                       c = mpfr_get_d2 (y, rnd_mode);
-                       f = "mpfr_get_d2";
+                       c = mpfr_get_d (y, rnd_mode);
+                       f = "mpfr_get_d";
                      }
                    else
                      {

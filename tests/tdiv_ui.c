@@ -43,7 +43,7 @@ check (double d, unsigned long u, mp_rnd_t rnd, double e)
   if (e==0.0) e = d / u;
   mpfr_set_d(x, d, rnd); 
   mpfr_div_ui(y, x, u, rnd); 
-  f = mpfr_get_d(y);
+  f = mpfr_get_d1 (y);
   if (f != e && (!isnan(f) || !isnan(e))) {
     printf("mpfr_div_ui failed for x=%1.20e, u=%lu, rnd=%s\n", d, u,
 	   mpfr_print_rnd_mode(rnd));
@@ -104,7 +104,7 @@ special (void)
 	{
 	  mpfr_set_prec (y, yprec);
 	  mpfr_div_ui (y, x, 1, GMP_RNDN);
-	  if (mpfr_get_d (x) != mpfr_get_d (y))
+	  if (mpfr_get_d1 (x) != mpfr_get_d1 (y))
 	    {
 	      fprintf (stderr, "division by 1.0 fails for xprec=%u, yprec=%u\n", xprec, yprec);
 	      printf ("expected "); mpfr_print_binary (x); putchar ('\n');
@@ -206,7 +206,7 @@ main (int argc, char **argv)
   mpfr_set_ui(x, 3, GMP_RNDD);
   mpfr_log(x, x, GMP_RNDD);
   mpfr_div_ui(x, x, 5, GMP_RNDD);
-  if (mpfr_get_d(x) != 0.21972245773362189536) {
+  if (mpfr_get_d1 (x) != 0.21972245773362189536) {
     fprintf(stderr, "Error in mpfr_div_ui for x=ln(3), u=5\n"); exit(1);
   }
   mpfr_clear(x);

@@ -35,7 +35,7 @@ main (void)
   mpfr_set_d (v, 9007199254740991.0, GMP_RNDN); /* 2^53 - 1 */
   mpfr_swap (u, v);
   mpfr_swap (u, v);
-  if (mpfr_cmp_ui (u, 16777215) || (mpfr_get_d (v) != 9007199254740991.0)) {
+  if (mpfr_cmp_ui (u, 16777215) || (mpfr_get_d1 (v) != 9007199254740991.0)) {
     fprintf (stderr, "Error in mpfr_swap\n");
     exit (1);
   }

@@ -38,7 +38,7 @@ MA 02111-1307, USA. */
 #undef mpf_floor
 #define mpf_floor mpfr_floor
 #undef mpf_get_d
-#define mpf_get_d mpfr_get_d
+#define mpf_get_d mpfr_get_d1
 #undef mpf_get_prec
 #define mpf_get_prec mpfr_get_prec
 #undef mpf_init

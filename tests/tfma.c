@@ -312,8 +312,8 @@ main (int argc, char *argv[])
             fprintf (stderr, " z="); mpfr_out_str (stderr, 2, 0, z, GMP_RNDN);
             fprintf (stderr, " s="); mpfr_out_str (stderr, 2, 0, s, GMP_RNDN);
             fprintf (stderr, "\n");
-            fprintf (stderr, "z=%1.20e s=%1.20e\n", mpfr_get_d (z),
-                     mpfr_get_d (s));
+            fprintf (stderr, "z=%1.20e s=%1.20e\n", mpfr_get_d1 (z),
+                     mpfr_get_d1 (s));
             exit (1);
 	    }
 	}

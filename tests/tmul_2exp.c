@@ -50,7 +50,7 @@ main (int argc, char *argv[])
     x = DBL_RAND ();
     mpfr_set_d (w, x, 0);
     mpfr_mul_2exp (w, w, 10, GMP_RNDZ);
-    if (x != (z = mpfr_get_d(w)/1024))
+    if (x != (z = mpfr_get_d1 (w)/1024))
       {
 	fprintf(stderr, "%f != %f\n", x, z); 
 	return -1;
@@ -58,7 +58,7 @@ main (int argc, char *argv[])
 
     mpfr_set_d(w, x, 0);
     mpfr_div_2exp(w, w, 10, GMP_RNDZ);
-    if (x != (z = mpfr_get_d(w)*1024))
+    if (x != (z = mpfr_get_d1 (w)*1024))
       {
 	fprintf(stderr, "%f != %f\n", x, z);
 	mpfr_clear(w);

@@ -42,23 +42,23 @@ main (void)
 
   mpfr_set_d(x, 0.5, GMP_RNDN);
   mpfr_ceil(y, x);
-  if (mpfr_get_d(y) != 1.0) {
+  if (mpfr_get_d1 (y) != 1.0) {
     fprintf(stderr, "Error in mpfr_ceil for x=0.5: expected 1.0, got %f\n",
-	    mpfr_get_d(y)); exit(1); 
+	    mpfr_get_d1 (y)); exit(1); 
   }
 
   mpfr_set_d(x, 0.0, GMP_RNDN);
   mpfr_ceil(y, x);
-  if (mpfr_get_d(y) != 0.0) {
+  if (mpfr_get_d1 (y) != 0.0) {
     fprintf(stderr, "Error in mpfr_ceil for x=0.0: expected 0.0, got %f\n",
-	    mpfr_get_d(y)); exit(1); 
+	    mpfr_get_d1 (y)); exit(1); 
   }
 
   mpfr_set_d(x, 1.0, GMP_RNDN);
   mpfr_ceil(y, x);
-  if (mpfr_get_d(y) != 1.0) {
+  if (mpfr_get_d1 (y) != 1.0) {
     fprintf(stderr, "Error in mpfr_ceil for x=1.0: expected 1.0, got %f\n",
-	    mpfr_get_d(y)); exit(1); 
+	    mpfr_get_d1 (y)); exit(1); 
   }
 
   for (j=0;j<1000;j++) {

@@ -52,7 +52,7 @@ check3 (double d, mp_rnd_t rnd, double e)
   if (e==0.0) e = exp(d); else ck=1; /* really check */
   mpfr_set_d(x, d, rnd); 
   mpfr_exp(y, x, rnd); 
-  f = mpfr_get_d(y);
+  f = mpfr_get_d1 (y);
   if (f != e && (!isnan(f) || !isnan(e))) {
     u = ulp(e, f);
     if (u<0) {
@@ -103,7 +103,7 @@ check_large (double d, int n, mp_rnd_t rnd)
   mpfr_out_str(stdout, 10, 0, y, rnd);
   putchar('\n');
   printf(" ="); mpfr_print_binary(y); putchar('\n');
-  if (n==53) printf(" =%1.20e\n", mpfr_get_d(y));
+  if (n==53) printf(" =%1.20e\n", mpfr_get_d1 (y));
 
   mpfr_clear(x); mpfr_clear(y);
   return 0;
@@ -118,7 +118,7 @@ check_worst_case (double X, double expx)
   mpfr_init2(x, 53); mpfr_init2(y, 53);
   mpfr_set_d(x, X, GMP_RNDN);
   mpfr_exp(y, x, GMP_RNDD);
-  if (mpfr_get_d(y) != expx) {
+  if (mpfr_get_d1 (y) != expx) {
     fprintf(stderr, "exp(x) rounded towards -infinity is wrong\n"); exit(1);
   }
   mpfr_exp(x, x, GMP_RNDN);

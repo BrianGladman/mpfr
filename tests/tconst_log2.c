@@ -86,10 +86,10 @@ main (int argc, char *argv[])
   /* check precision of 2 bits */
   mpfr_set_prec (x, 2);
   mpfr_const_log2 (x, GMP_RNDN);
-  if (mpfr_get_d (x) != 0.75)
+  if (mpfr_get_d1 (x) != 0.75)
     {
       fprintf (stderr, "mpfr_const_log2 failed for prec=2, rnd=GMP_RNDN\n");
-      fprintf (stderr, "expected 0.75, got %f\n", mpfr_get_d (x));
+      fprintf (stderr, "expected 0.75, got %f\n", mpfr_get_d1 (x));
       exit (1);
     }
 
@@ -104,7 +104,7 @@ main (int argc, char *argv[])
   
   mpfr_set_prec (x, 53);
   mpfr_const_log2 (x, rnd);
-  if (mpfr_get_d(x) != 6.9314718055994530941e-1)
+  if (mpfr_get_d1 (x) != 6.9314718055994530941e-1)
     {
       fprintf (stderr, "mpfr_const_log2 failed for prec=53\n");
       exit (1);

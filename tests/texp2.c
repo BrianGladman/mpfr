@@ -43,7 +43,7 @@ main (int argc, char *argv[])
   mpfr_set_prec (y, 53);
   mpfr_set_d (x, -1683977482443233.0 / 2199023255552.0, GMP_RNDN);
   mpfr_exp2 (y, x, GMP_RNDN);
-  if (mpfr_get_d (y) != 2.991959870867646566478e-231)
+  if (mpfr_get_d1 (y) != 2.991959870867646566478e-231)
     {
       fprintf (stderr, "Error for x=-1683977482443233/2^41\n");
       exit (1);

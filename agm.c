@@ -106,8 +106,8 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
       mpfr_set (a,op1,GMP_RNDN);  
     }
     
-  vo=mpfr_get_d(b);
-  uo=mpfr_get_d(a);
+  vo = mpfr_get_d1 (b);
+  uo = mpfr_get_d1 (a);
 
   mpfr_set(u,a,GMP_RNDN);
   mpfr_set(v,b,GMP_RNDN);

@@ -114,7 +114,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   precy = MPFR_PREC(y);
 
-  n = (int) (mpfr_get_d(x) / LOG2);
+  n = (int) (mpfr_get_d1 (x) / LOG2);
 
   /* for the O(n^(1/2)*M(n)) method, the Taylor series computation of
      n/K terms costs about n/(2K) multiplications when computed in fixed
@@ -146,9 +146,9 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   /* r = floor(n*log(2)) */
 
 #ifdef DEBUG
-  printf("x=%1.20e\n",mpfr_get_d(x));
+  printf("x=%1.20e\n", mpfr_get_d1 (x));
   printf(" ="); mpfr_print_binary(x); putchar('\n');
-  printf("r=%1.20e\n",mpfr_get_d(r));
+  printf("r=%1.20e\n", mpfr_get_d1 (r));
   printf(" ="); mpfr_print_binary(r); putchar('\n');
 #endif
   mpfr_sub(r, x, r, GMP_RNDU);
@@ -159,7 +159,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     mpfr_sub(r, x, r, GMP_RNDU);
   }
 #ifdef DEBUG
-  printf("x-r=%1.20e\n",mpfr_get_d(r));
+  printf("x-r=%1.20e\n", mpfr_get_d1 (r));
   printf(" ="); mpfr_print_binary(r); putchar('\n');
   if (MPFR_SIGN(r)<0) { fprintf(stderr,"Error in mpfr_exp: r<0\n"); exit(1); }
 #endif
@@ -194,7 +194,8 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   K += k;
 #ifdef DEBUG
     printf("after mult. by 2^n:\n");
-    if (MPFR_EXP(s)>-1024) printf("s=%1.20e\n",mpfr_get_d(s)); 
+    if (MPFR_EXP(s) > -1024)
+      printf("s=%1.20e\n", mpfr_get_d1 (s));
     printf(" ="); mpfr_print_binary(s); putchar('\n');
     printf("err=%d bits\n", K);
 #endif

@@ -93,13 +93,13 @@ main (int argc, char *argv[])
 
    mpfr_set_d(x, 1.0, GMP_RNDN);
    mpfr_abs(x, x, GMP_RNDN);
-   if (mpfr_get_d(x) != 1.0) {
+   if (mpfr_get_d1 (x) != 1.0) {
      fprintf(stderr, "Error in mpfr_abs(1.0)\n"); exit(1);
    }
 
    mpfr_set_d(x, -1.0, GMP_RNDN);
    mpfr_abs(x, x, GMP_RNDN);
-   if (mpfr_get_d(x) != 1.0) {
+   if (mpfr_get_d1 (x) != 1.0) {
      fprintf(stderr, "Error in mpfr_abs(-1.0)\n"); exit(1);
    }
 
@@ -135,7 +135,7 @@ main (int argc, char *argv[])
        rnd = LONG_RAND() % 4;
        mpfr_set_d (x, d, 0);
        mpfr_abs (x, x, rnd);
-       dd = mpfr_get_d (x);
+       dd = mpfr_get_d1 (x);
        if (!isnan(d) && (dd != absd))
 	 { 
 	   fprintf(stderr, 

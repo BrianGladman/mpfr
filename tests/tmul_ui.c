@@ -136,7 +136,7 @@ main (int argc, char *argv[])
 
   mpfr_set_d (x, 1.0/3.0, GMP_RNDZ);
   mpfr_mul_ui (x, x, 3, GMP_RNDU);
-  if (mpfr_get_d (x) != 1.0)
+  if (mpfr_get_d1 (x) != 1.0)
     {
       fprintf (stderr, "Error in mpfr_mul_ui: U(Z(1/3)*3) does not give 1\n");
       exit (1);
@@ -215,7 +215,7 @@ main (int argc, char *argv[])
 	{
 	  mpfr_set_prec (y, yprec);
 	  mpfr_mul_ui (y, x, 1, GMP_RNDN);
-	  if (mpfr_get_d (x) != mpfr_get_d (y))
+	  if (mpfr_get_d1 (x) != mpfr_get_d1 (y))
 	    {
 	      fprintf (stderr, "multiplication by 1.0 fails for xprec=%u, yprec=%u\n", xprec, yprec);
 	      printf ("expected "); mpfr_print_binary (x); putchar ('\n');

@@ -74,7 +74,7 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   /* result is +Inf when exp(x) >= 2^(__mpfr_emax), i.e.
      x >= __mpfr_emax * log(2) */
-  d = mpfr_get_d (x);
+  d = mpfr_get_d1 (x);
   if (d >= (double) __mpfr_emax * LOG2)
     return mpfr_set_overflow(y, rnd_mode, 1);
 

@@ -99,7 +99,7 @@ main (int argc, char *argv[])
   mpfr_set_str_raw (x, "+110101100.01010000101101000000100111001000101011101110E00");
 
   mpfr_set_str_raw (x, "1.0");
-  if (mpfr_get_d (x) != 1.0)
+  if (mpfr_get_d1 (x) != 1.0)
     {
       fprintf (stderr, "Error in mpfr_set_str_raw for s=1.0\n"); 
       mpfr_clear(x);
@@ -110,7 +110,7 @@ main (int argc, char *argv[])
   mpfr_set_str_raw (x, "+0000");
   mpfr_set_str_raw (x, "+0000E0");
   mpfr_set_str_raw (x, "0000E0");
-  if (mpfr_get_d (x) != 0.0)
+  if (mpfr_get_d1 (x) != 0.0)
     {
       fprintf (stderr, "Error in mpfr_set_str_raw for s=0.0\n"); 
       mpfr_clear (x);

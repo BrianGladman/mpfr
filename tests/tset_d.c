@@ -58,50 +58,50 @@ main (int argc, char *argv[])
    /* checks that rounds to nearest sets the last
      bit to zero in case of equal distance */
    mpfr_set_d (x, 5.0, GMP_RNDN);
-   if (mpfr_get_d (x) != 4.0)
+   if (mpfr_get_d1 (x) != 4.0)
      {
        fprintf (stderr, "Error in tset_d: got %g instead of 4.0\n",
-	       mpfr_get_d (x));
+	       mpfr_get_d1 (x));
        exit (1);
      }
    mpfr_set_d (x, -5.0, GMP_RNDN);
-   if (mpfr_get_d (x) != -4.0)
+   if (mpfr_get_d1 (x) != -4.0)
      {
        fprintf (stderr, "Error in tset_d: got %g instead of -4.0\n",
-	       mpfr_get_d (x));
+	       mpfr_get_d1 (x));
        exit (1);
      }
 
    mpfr_set_d (x, 9.84891017624509146344e-01, GMP_RNDU); 
-   if (mpfr_get_d (x) != 1.0)
+   if (mpfr_get_d1 (x) != 1.0)
      {
        fprintf (stderr, "Error in tset_d: got %g instead of 1.0\n",
-		mpfr_get_d (x));
+		mpfr_get_d1 (x));
        exit (1);
      }
 
   mpfr_init2(z, 32);
   mpfr_set_d(z, 1.0, 0);
-  if (mpfr_get_d(z) != 1.0) {
+  if (mpfr_get_d1 (z) != 1.0) {
     mpfr_print_binary(z); putchar('\n');
     printf("Error: 1.0 != 1.0\n"); exit(1);
   }
   mpfr_set_prec(x, 53); mpfr_init2(y, 53);
   mpfr_set_d(x, d=-1.08007920352320089721e+150, 0);
-  if (mpfr_get_d(x) != d) {
+  if (mpfr_get_d1 (x) != d) {
     mpfr_print_binary(x); putchar('\n');
     printf("Error: get_d o set_d <> identity for d = %1.20e %1.20e\n",d,
-	   mpfr_get_d(x)); exit(1);
+	   mpfr_get_d1 (x)); exit(1);
   }
 
   SEED_RAND (time(NULL));
   mpfr_set_d(x, 8.06294740693074521573e-310, 0); 
   d = -6.72658901114033715233e-165;
   mpfr_set_d(x, d, 0);
-  if (d != mpfr_get_d(x)) {
+  if (d != mpfr_get_d1 (x)) {
     mpfr_print_binary(x); putchar('\n');
     printf("Error: get_d o set_d <> identity for d = %1.20e %1.20e\n",d,
-	   mpfr_get_d(x)); exit(1);
+	   mpfr_get_d1 (x)); exit(1);
   }
   n = (argc==1) ? 1000000 : atoi(argv[1]);
   for (k = 1; k <= n; k++)
@@ -116,11 +116,11 @@ main (int argc, char *argv[])
       while (ABS(d) <= 2.2e-307);
 #endif
       mpfr_set_d (x, d, 0);
-      dd = mpfr_get_d (x);
+      dd = mpfr_get_d1 (x);
       if (d != dd && (!isnan(d) || !isnan(dd)))
 	{ 
 	  fprintf(stderr, 
-		  "Mismatch on : %1.18g != %1.18g\n", d, mpfr_get_d(x)); 
+		  "Mismatch on : %1.18g != %1.18g\n", d, mpfr_get_d1 (x)); 
 	  mpfr_print_binary(x); putchar('\n');
 	  exit(1);
 	}

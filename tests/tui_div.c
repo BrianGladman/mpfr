@@ -48,7 +48,7 @@ check (unsigned long y, double x, mp_rnd_t rnd_mode, double z1)
   mpfr_set_machine_rnd_mode(rnd_mode);
 #endif
   if (z1==0.0) z1 = y/x;
-  z2 = mpfr_get_d(zz);
+  z2 = mpfr_get_d1 (zz);
   if (z1!=z2 && !(isnan(z1) && isnan(z2))) {
     printf("expected quotient is %1.20e, got %1.20e\n",z1,z2);
     printf("mpfr_ui_div failed for y=%lu x=%1.20e with rnd_mode=%s\n",

@@ -46,7 +46,7 @@ main(void)
   mpfr_print_binary(result);printf("\n");
   t=mpfr_out_str(stdout,10,0,result,GMP_RNDN);printf("\n");
 #endif
-  if (mpfr_get_d(result) != 1.64493406684822640607e+00) {
+  if (mpfr_get_d1 (result) != 1.64493406684822640607e+00) {
     fprintf(stderr, "mpfr_zeta fails for s=2 and rnd_mode=GMP_RNDN\n");
     exit(1);
   }

@@ -43,7 +43,7 @@ mpfr_zeta (result, op, rnd_mode)
      and clear NaN/Inf flags of result */
 
   /* first version */
-  if (mpfr_get_d(op) != 2.0 || rnd_mode != GMP_RNDN 
+  if (mpfr_get_d1 (op) != 2.0 || rnd_mode != GMP_RNDN
       || MPFR_PREC(result) != 53) {
     fprintf(stderr, "not yet implemented\n"); exit(1);
   }
