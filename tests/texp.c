@@ -380,7 +380,7 @@ check_inexact (void)
   inexact = test_exp (y, x, GMP_RNDN);
   if (inexact <= 0)
     {
-      printf ("Wrong inexact flag\n");
+      printf ("Wrong inexact flag (Got %d instead of 1)\n", inexact);
       exit (1);
     }
 
