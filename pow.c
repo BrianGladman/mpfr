@@ -98,7 +98,7 @@ is_odd (mpfr_srcptr y)
   int res;
 
   MPFR_ASSERTD(MPFR_IS_FP(y));
-  MPFR_ASSERTD(MPFR_NOT_ZERO(y));
+  MPFR_ASSERTD(MPFR_NOTZERO(y));
 
   expo = MPFR_GET_EXP (y);
   if (expo <= 0)
