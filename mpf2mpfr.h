@@ -49,6 +49,8 @@ MA 02111-1307, USA. */
 #define mpf_random2 mpfr_random2
 #undef mpf_set_default_prec
 #define mpf_set_default_prec mpfr_set_default_prec
+#undef mpf_get_default_prec
+#define mpf_get_default_prec mpfr_get_default_prec
 #undef mpf_set_prec
 #define mpf_set_prec(x,p) mpfr_round_prec(x, __gmp_default_rounding_mode, p)
 #undef mpf_set_prec_raw
