@@ -32,7 +32,7 @@ void check(a, rnd_mode) double a; unsigned char rnd_mode;
   printf("a=%1.20e rnd_mode=%d\n",a,rnd_mode);
 #endif
   mpfr_init2(q, 53); mpfr_init2(n, 53);
-  mpfr_set_d(n, a, 53, 0, rnd_mode);
+  mpfr_set_d(n, a, rnd_mode);
   mpfr_set_machine_rnd_mode(rnd_mode);
   mpfr_sqrt(q, n, rnd_mode);
   Q = sqrt(a);
