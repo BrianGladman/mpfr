@@ -14,9 +14,10 @@ AC_ARG_ENABLE(assert,
 AC_HELP_STRING(--enable-assert,enable ASSERT checking [[default=no]]),
 [case $enableval in
 yes|no|full) ;;
-*) AC_MSG_ERROR([bad value $enableval for --enable-assert, need yes, no or full]) ;;
+*) AC_MSG_ERROR([bad value $enableval for --enable-assert: yes, no or full]) ;;
 esac],
 [enable_assert=no])
+
 if test "$enable_assert" = "yes"; then
   AC_DEFINE([WANT_ASSERT],1)
 fi
@@ -73,6 +74,7 @@ AC_C_CONST
 AC_C_VOLATILE
 MPFR_CONFIGS
 
+dnl Check for GMP
 AC_MSG_CHECKING(for gmp.h)
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include "gmp.h"
@@ -80,6 +82,17 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
      AC_MSG_ERROR([gmp.h may be missing ${with_gmp_include:+in $with_gmp_include}])
 ])
 
+AC_MSG_CHECKING(for recent GMP)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include "gmp.h"
+#if (__GNU_MP_VERSION < 4)
+# error "min: GMP 4.0.0"
+#endif
+]], [[]])],[AC_MSG_RESULT(yes)],[AC_MSG_RESULT(no)
+     AC_MSG_ERROR([GMP 4.0.0 min required])
+])
+
+dnl Check if we can use internal header files of GMP.
 AC_MSG_CHECKING(for gmp internal files)
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include "gmp.h"
@@ -108,17 +121,6 @@ default target architecture may be different, hence the error.])],
    )
    ],[AC_MSG_RESULT(no) AC_FUNC_ALLOCA
 ])
-
-AC_MSG_CHECKING(for valid GMP)
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#include "gmp.h"
-#if (__GNU_MP_VERSION < 4)
-# error "min: GMP 4.0.0"
-#endif
-]], [[]])],[AC_MSG_RESULT(yes)],[AC_MSG_RESULT(no)
-     AC_MSG_ERROR([GMP 4.0.0 min required])
-])
-
 
 # Recent autoconf creates AC_DEFINEs of PACKAGE_VERSION etc, unfortunately
 # those -D defines in $DEFS conflict with the same defines in config.h from
