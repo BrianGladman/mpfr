@@ -20,7 +20,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -47,30 +46,16 @@ mpfr_erf (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   if (MPFR_IS_NAN(x))
     {
       MPFR_SET_NAN(y);
-      return 1;
+      MPFR_RET_NAN;
     }
-
-  MPFR_CLEAR_NAN(y);
 
   sign_x = MPFR_SIGN (x);
 
   if (MPFR_IS_INF(x)) /* erf(+inf) = +1, erf(-inf) = -1 */
-    { 
-      MPFR_CLEAR_INF(y);
-      if (sign_x > 0)
-	mpfr_set_ui (y, 1, GMP_RNDN);
-      else
-	mpfr_set_si (y, -1, GMP_RNDN);
-      return 0; /* result is considered exact here */
-    }
+    return mpfr_set_si (y, sign_x, GMP_RNDN);
 
-  MPFR_CLEAR_INF(y);
-      
-  if (!MPFR_NOTZERO(x)) /* erf(+0) = +0, erf(-0) = -0 */
-    {
-      mpfr_set (y, x, GMP_RNDN); /* should keep the sign of x */
-      return 0;
-    }
+  if (MPFR_IS_ZERO(x)) /* erf(+0) = +0, erf(-0) = -0 */
+    return mpfr_set (y, x, GMP_RNDN); /* should keep the sign of x */
 
   /* now x is neither NaN, Inf nor 0 */
 
