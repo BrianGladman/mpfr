@@ -1131,6 +1131,14 @@ in fact only when @var{op} is 0 i.e. the sine is 0, the cosine is 1, and the
 tangent is 0).
 @end deftypefun
 
+@deftypefun int mpfr_acos (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_asin (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_atan (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+Set @var{rop} to the arc-cosine, arc-sine or arc-tangent of @var{op},
+rounded to the direction @var{rnd} with the precision of @var{rop}.
+Return 0 iff the result is exact.
+@end deftypefun
+
 @deftypefun int mpfr_cosh (mpfr_t @var{cop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_sinh (mpfr_t @var{sop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_tanh (mpfr_t @var{top}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
@@ -1185,14 +1193,6 @@ and a negative value otherwise.
 @deftypefun void mpfr_agm (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
 Set @var{rop} to the arithmetic-geometric mean of @var{op1} and @var{op2},
 rounded to the direction @var{rnd} with the precision of @var{rop}.
-@end deftypefun
-
-@deftypefun int mpfr_acos (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
-@deftypefunx int mpfr_asin (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
-@deftypefunx int mpfr_atan (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
-Set @var{rop} to the arc-cosine, arc-sine or arc-tangent of @var{op},
-rounded to the direction @var{rnd} with the precision of @var{rop}.
-Return 0 iff the result is exact.
 @end deftypefun
 
 @deftypefun void mpfr_const_log2 (mpfr_t @var{rop}, mp_rnd_t @var{rnd})
