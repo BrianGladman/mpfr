@@ -22,6 +22,10 @@ MA 02111-1307, USA. */
 #ifndef __MPFR_IMPL_H__
 #define __MPFR_IMPL_H__
 
+/******************************************************
+ ****************** Include files *********************
+ ******************************************************/
+
 /* Include 'config.h' before using ANY configure macros if needed
    NOTE: It isn't MPFR 'config.h', but GMP's one! */
 #if defined(HAVE_CONFIG_H)
@@ -63,6 +67,19 @@ MA 02111-1307, USA. */
 #endif
 #undef MPFR_NEED_LONGLONG_H
 
+/* Define strcasecmp and strncasecmp if needed */
+#ifndef HAVE_STRCASECMP
+# define strcasecmp mpfr_strcasecmp
+#endif
+#ifndef HAVE_STRNCASECMP
+# define strncasecmp mpfr_strncasecmp
+#endif
+
+
+/******************************************************
+ ***************** Detection macros *******************
+ ******************************************************/
+
 /* Macros to detect STDC, GCC, GLIBC, GMP and ICC version */
 #if defined(__STDC_VERSION__)
 # define __MPFR_STDC(version) (__STDC_VERSION__>=(version))
@@ -72,17 +89,20 @@ MA 02111-1307, USA. */
 # define __MPFR_STDC(version) 0
 #endif
 #if defined(__GNUC__) && defined(__GNUC_MINOR__) && !defined(__ICC)
-# define __MPFR_GNUC(a, i) (MPFR_VERSION_NUM(__GNUC__,__GNUC_MINOR__,0)>=MPFR_VERSION_NUM(a,i,0))
+# define __MPFR_GNUC(a, i) \
+ (MPFR_VERSION_NUM(__GNUC__,__GNUC_MINOR__,0)>=MPFR_VERSION_NUM(a,i,0))
 #else
 # define __MPFR_GNUC(a, i) 0
 #endif
 #if defined(__GLIBC__) && defined(__GLIBC_MINOR__)
-# define __MPFR_GLIBC(a, i) (MPFR_VERSION_NUM(__GLIBC__,__GLIBC_MINOR__,0)>=MPFR_VERSION_NUM(a,i,0))
+# define __MPFR_GLIBC(a, i) \
+ (MPFR_VERSION_NUM(__GLIBC__,__GLIBC_MINOR__,0)>=MPFR_VERSION_NUM(a,i,0))
 #else
 # define __MPFR_GLIBC(a, i) 0
 #endif
 #if defined(__GNU_MP_VERSION)&&defined(__GNU_MP_VERSION_MINOR)&&defined(__GNU_MP_VERSION_PATCHLEVEL)
-# define __MPFR_GMP(a, b, c) (MPFR_VERSION_NUM(__GNU_MP_VERSION,__GNU_MP_VERSION_MINOR,__GNU_MP_VERSION_PATCHLEVEL) >= MPFR_VERSION_NUM(a,b,c))
+# define __MPFR_GMP(a, b, c) \
+(MPFR_VERSION_NUM(__GNU_MP_VERSION,__GNU_MP_VERSION_MINOR,__GNU_MP_VERSION_PATCHLEVEL) >= MPFR_VERSION_NUM(a,b,c))
 #else
 # define __MPFR_GMP(a, b, c) 0
 #endif
@@ -92,16 +112,16 @@ MA 02111-1307, USA. */
 # define __MPFR_ICC(a,b,c) 0
 #endif
 
-/* Define strcasecmp and strncasecmp if needed */
-#ifndef HAVE_STRCASECMP
-# define strcasecmp mpfr_strcasecmp
+
+
+/******************************************************
+ ******************** Check GMP ***********************
+ ******************************************************/
+
+#if !__MPFR_GMP(4,1,0)
+# error "GMP 4.1.0 or newer needed"
 #endif
 
-#ifndef HAVE_STRNCASECMP
-# define strncasecmp mpfr_strncasecmp
-#endif
-
-/* Check GMP */
 #if GMP_NAIL_BITS != 0
 # error "MPFR doesn't support nonzero values of GMP_NAIL_BITS"
 #endif
@@ -110,63 +130,11 @@ MA 02111-1307, USA. */
 # error "BITS_PER_MP_LIMB must be a power of 2, and >= 32"
 #endif
 
- /* Definition of MPFR_LIMB_HIGHBIT */
-#if defined(GMP_LIMB_HIGHBIT)
-# define MPFR_LIMB_HIGHBIT GMP_LIMB_HIGHBIT
-#elif defined(MP_LIMB_T_HIGHBIT)
-# define MPFR_LIMB_HIGHBIT MP_LIMB_T_HIGHBIT
-#else
-# error "Neither GMP_LIMB_HIGHBIT nor MP_LIMB_T_HIGHBIT defined in GMP"
-#endif
 
-/* Mask to get the MSB of a limb (excluding nails) */
-#define MPFR_LIMB_MSB(l) ((l)&MPFR_LIMB_HIGHBIT)
 
-/* Definition of MPFR_LIMB_ONE & MPFR_LIMB_ZERO*/
-#ifdef CNST_LIMB
-# define MPFR_LIMB_ONE  CNST_LIMB(1)
-# define MPFR_LIMB_ZERO CNST_LIMB(0)
-#else
-# define MPFR_LIMB_ONE  ((mp_limb_t) 1L)
-# define MPFR_LIMB_ZERO ((mp_limb_t) 0L)
-#endif
-
-#ifndef MP_LIMB_T_ONE
-# define MP_LIMB_T_ONE MPFR_LIMB_ONE
-#endif
-
-/* Mask for the low s bits of a limb */
-#define MPFR_LIMB_MASK(s) ((MPFR_LIMB_ONE<<(s))-MPFR_LIMB_ONE)
-
-/* Test if X (positive) is a power of 2 */
-#define IS_POW2(X) (((X) & ((X) - 1)) == 0)
-#define NOT_POW2(X) (((X) & ((X) - 1)) != 0)
-
-/* Defined limits and unsigned type of exponent */
-#if __GMP_MP_SIZE_T_INT == 1
-typedef unsigned int            mpfr_uexp_t;
-# define MPFR_EXP_MAX (INT_MAX)
-# define MPFR_EXP_MIN (INT_MIN)
-#else
-typedef unsigned long int  mpfr_uexp_t;
-# define MPFR_EXP_MAX (LONG_MAX)
-# define MPFR_EXP_MIN (LONG_MIN)
-#endif
-#ifndef mp_exp_unsigned_t 
-# define mp_exp_unsigned_t mpfr_uexp_t
-#endif
-
-#if   _MPFR_PREC_FORMAT == 1
-# define MPFR_INTPREC_MAX (USHRT_MAX & ~(unsigned int) (BITS_PER_MP_LIMB - 1))
-#elif _MPFR_PREC_FORMAT == 2
-# define MPFR_INTPREC_MAX (UINT_MAX & ~(unsigned int) (BITS_PER_MP_LIMB - 1))
-#elif _MPFR_PREC_FORMAT == 3
-# define MPFR_INTPREC_MAX (ULONG_MAX & ~(unsigned long) (BITS_PER_MP_LIMB - 1))
-#else
-# error "Invalid MPFR Prec format"
-#endif
-
-/* Assertions */
+/******************************************************
+ ******************** Assertions **********************
+ ******************************************************/
 
 /* Compile with -DWANT_ASSERT to check all assert statements */
 
@@ -186,7 +154,8 @@ typedef unsigned long int  mpfr_uexp_t;
 # define MPFR_ASSERTD(expr)  ((void) 0)
 #endif
 
-/* Check if the args are correct (Buggy) */
+/* Check if the args are correct  */
+/* Can't be used since TMP variables are not correct */
 #define MPFR_CHECK1(x,r) \
  MPFR_ASSERTD(mpfr_check(x) && GMP_RNDN <= r && r <= GMP_RNDD)
 #define MPFR_CHECK2(x,y,r) \
@@ -199,57 +168,15 @@ typedef unsigned long int  mpfr_uexp_t;
    WARNING: It doesn't use do { } while (0) for Insure++*/
 #define MPFR_RET_NEVER_GO_HERE()  {MPFR_ASSERTN(0); return 0;}
 
-/* Theses macros help the compiler to determine if a test is 
- * likely or unlikely. */
-#if __MPFR_GNUC(3,0) || __MPFR_ICC(8,1,0)
-# define MPFR_LIKELY(x) (__builtin_expect(!!(x),1))
-# define MPFR_UNLIKELY(x) (__builtin_expect((x),0))
-#else
-# define MPFR_LIKELY(x) (x)
-# define MPFR_UNLIKELY(x) (x)
-#endif
 
-/* Invalid exponent value (to track bugs...) */
-#define MPFR_EXP_INVALID ((mp_exp_t) 1 << (BITS_PER_MP_LIMB * sizeof (mp_exp_t) / sizeof(mp_limb_t) - 2))
- 
-/* Definition of the intervals of the exponent limits */
-#undef MPFR_EMIN_MIN
-#undef MPFR_EMIN_MAX
-#undef MPFR_EMAX_MIN
-#undef MPFR_EMAX_MAX
-#define MPFR_EMIN_MIN (1-MPFR_EXP_INVALID)
-#define MPFR_EMIN_MAX (MPFR_EXP_INVALID-1)
-#define MPFR_EMAX_MIN (1-MPFR_EXP_INVALID)
-#define MPFR_EMAX_MAX (MPFR_EXP_INVALID-1)
 
-/* Use MPFR_GET_EXP and MPFR_SET_EXP instead of MPFR_EXP directly,
-   unless when the exponent may be out-of-range, for instance when
-   setting the exponent before calling mpfr_check_range.
-   MPFR_EXP_CHECK is defined when WANT_ASSERT is defined, but if you
-   don't use WANT_ASSERT (for speed reasons), you can still define
-   MPFR_EXP_CHECK by setting -DMPFR_EXP_CHECK in $CFLAGS. */
-
-#ifdef MPFR_EXP_CHECK
-# define MPFR_GET_EXP(x)          mpfr_get_exp (x)
-# define MPFR_SET_EXP(x, exp)     MPFR_ASSERTN (!mpfr_set_exp ((x), (exp)))
-# define MPFR_SET_INVALID_EXP(x)  ((void) (MPFR_EXP (x) = MPFR_EXP_INVALID))
-#else
-# define MPFR_GET_EXP(x)          MPFR_EXP (x)
-# define MPFR_SET_EXP(x, exp)     ((void) (MPFR_EXP (x) = (exp)))
-# define MPFR_SET_INVALID_EXP(x)  ((void) 0)
-#endif
+/******************************************************
+ ****************** double macros *********************
+ ******************************************************/
 
 /* Definition of constants */
-
 #define LOG2 0.69314718055994528622 /* log(2) rounded to zero on 53 bits */
 #define ALPHA 4.3191365662914471407 /* a+2 = a*log(a), rounded to +infinity */
-
-/* Safe absolute value (to avoid possible integer overflow) */
-/* type is the target (unsigned) type */
-
-#define SAFE_ABS(type,x) ((x) >= 0 ? (type)(x) : -(type)(x))
-
-/* macros for doubles, based on gmp union ieee_double_extract */
 
 /* Debug non IEEE floats */
 #ifdef XDEBUG
@@ -264,7 +191,8 @@ typedef unsigned long int  mpfr_uexp_t;
 #endif
 #define MPFR_LIMBS_PER_DOUBLE ((IEEE_DBL_MANT_DIG-1)/BITS_PER_MP_LIMB+1)
 
-/* Visual C++ doesn't support +1.0/.00, -1.0/0.0 and 0.0/0.0 */
+/* Visual C++ doesn't support +1.0/.00, -1.0/0.0 and 0.0/0.0 
+   at compile time. */
 #if defined(_MSC_VER) && defined(_WIN32) && (_MSC_VER >= 1200)
 static double double_zero = 0.0;
 # define DBL_NAN (double_zero/double_zero)
@@ -293,7 +221,10 @@ typedef union ieee_double_extract Ieee_double_extract;
 #endif
 
 
-/* macros for long doubles */
+
+/******************************************************
+ *************** Long double macros *******************
+ ******************************************************/
 
 /* we only require that LDBL_MANT_DIG is a bound on the mantissa length
    of the "long double" type */
@@ -363,51 +294,84 @@ long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CO
 # endif
 #endif
 
-/* We want to test this :
- *  (rnd == GMP_RNDU && test) || (rnd == RNDD && !test)
- * ie it transforms RNDU or RNDD to Away or Zero according to the sign */
-#define MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd, test) \
-  (((rnd) + (test)) == GMP_RNDD)
 
-/* We want to test if rnd = Zero, or Away */
-#define MPFR_IS_LIKE_RNDZ(rnd, test) \
-  ((rnd==GMP_RNDZ) || MPFR_IS_RNDUTEST_OR_RNDDNOTTEST (rnd, test))
 
-/* Invert a rounding mode */
-#define MPFR_INVERT_RND(rnd) ((rnd == GMP_RNDU) ? GMP_RNDD : \
-                             ((rnd == GMP_RNDD) ? GMP_RNDU : rnd))
+/******************************************************
+ **************** mpfr_t properties *******************
+ ******************************************************/
 
-/* Transform RNDU and RNDD to RNDA or RNDZ */
-#define MPFR_UPDATE_RND_MODE(rnd, test) \
-  do {  \
-    if (MPFR_UNLIKELY(MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd, test))) \
-      rnd = GMP_RNDZ; \
-  } while (0) 
+#define MPFR_PREC(x)      ((x)->_mpfr_prec)
+#define MPFR_EXP(x)       ((x)->_mpfr_exp)
+#define MPFR_MANT(x)      ((x)->_mpfr_d)
+#define MPFR_LIMB_SIZE(x) ((MPFR_PREC((x))-1)/BITS_PER_MP_LIMB+1)
 
-/* Compute s = (-a) % BITS_PER_MP_LIMB
- * a is unsigned! Check if it works, 
- * otherwise tries another way to compute it */
-#define MPFR_UNSIGNED_MINUS_MODULO(s, a) \
-  do { \
-  if ((UINT_MAX % BITS_PER_MP_LIMB) == (BITS_PER_MP_LIMB-1) \
-      && ((-(unsigned) 1)%BITS_PER_MP_LIMB > 0)) \
-    (s) = (-(a)) % BITS_PER_MP_LIMB; \
-  else \
-    {(s) = (a) % BITS_PER_MP_LIMB;  \
-    if (s)  \
-      (s) = BITS_PER_MP_LIMB - (s); \
-    } \
-  MPFR_ASSERTD( (s) >= 0 && (s) < BITS_PER_MP_LIMB); \
-  } while (0) 
-
-/*  Set various THRESHOLD */
-#ifdef __ia64
-# define MPFR_EXP_THRESHOLD 12500
+#if   _MPFR_PREC_FORMAT == 1
+# define MPFR_INTPREC_MAX (USHRT_MAX & ~(unsigned int) (BITS_PER_MP_LIMB - 1))
+#elif _MPFR_PREC_FORMAT == 2
+# define MPFR_INTPREC_MAX (UINT_MAX & ~(unsigned int) (BITS_PER_MP_LIMB - 1))
+#elif _MPFR_PREC_FORMAT == 3
+# define MPFR_INTPREC_MAX (ULONG_MAX & ~(unsigned long) (BITS_PER_MP_LIMB - 1))
 #else
-# define MPFR_EXP_THRESHOLD 25000
+# error "Invalid MPFR Prec format"
 #endif
 
-/* Definition of the special values of the exponent */
+
+
+/******************************************************
+ ***************** exponent limits ********************
+ ******************************************************/
+
+/* Defined limits and unsigned type of exponent */
+#if __GMP_MP_SIZE_T_INT == 1
+typedef unsigned int            mpfr_uexp_t;
+# define MPFR_EXP_MAX (INT_MAX)
+# define MPFR_EXP_MIN (INT_MIN)
+#else
+typedef unsigned long int  mpfr_uexp_t;
+# define MPFR_EXP_MAX (LONG_MAX)
+# define MPFR_EXP_MIN (LONG_MIN)
+#endif
+#ifndef mp_exp_unsigned_t 
+# define mp_exp_unsigned_t mpfr_uexp_t
+#endif
+
+/* Invalid exponent value (to track bugs...) */
+#define MPFR_EXP_INVALID \
+ ((mp_exp_t) 1 << (BITS_PER_MP_LIMB*sizeof(mp_exp_t)/sizeof(mp_limb_t)-2))
+ 
+/* Definition of the intervals of the exponent limits */
+#undef MPFR_EMIN_MIN
+#undef MPFR_EMIN_MAX
+#undef MPFR_EMAX_MIN
+#undef MPFR_EMAX_MAX
+#define MPFR_EMIN_MIN (1-MPFR_EXP_INVALID)
+#define MPFR_EMIN_MAX (MPFR_EXP_INVALID-1)
+#define MPFR_EMAX_MIN (1-MPFR_EXP_INVALID)
+#define MPFR_EMAX_MAX (MPFR_EXP_INVALID-1)
+
+/* Use MPFR_GET_EXP and MPFR_SET_EXP instead of MPFR_EXP directly,
+   unless when the exponent may be out-of-range, for instance when
+   setting the exponent before calling mpfr_check_range.
+   MPFR_EXP_CHECK is defined when WANT_ASSERT is defined, but if you
+   don't use WANT_ASSERT (for speed reasons), you can still define
+   MPFR_EXP_CHECK by setting -DMPFR_EXP_CHECK in $CFLAGS. */
+
+#ifdef MPFR_EXP_CHECK
+# define MPFR_GET_EXP(x)          mpfr_get_exp (x)
+# define MPFR_SET_EXP(x, exp)     MPFR_ASSERTN (!mpfr_set_exp ((x), (exp)))
+# define MPFR_SET_INVALID_EXP(x)  ((void) (MPFR_EXP (x) = MPFR_EXP_INVALID))
+#else
+# define MPFR_GET_EXP(x)          MPFR_EXP (x)
+# define MPFR_SET_EXP(x, exp)     ((void) (MPFR_EXP (x) = (exp)))
+# define MPFR_SET_INVALID_EXP(x)  ((void) 0)
+#endif
+
+
+
+/******************************************************
+ ********** Singular Values (NAN, INF, ZERO) **********
+ ******************************************************/
+
 /* 
  * Clear flags macros are still defined and should be still used
  * since the functions must not assume the internal format.
@@ -419,12 +383,6 @@ long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CO
  * MPFR_SET_INF, MPFR_SET_NAN, MPFR_SET_ZERO must clear by 
  * themselves the other flags.
  */
-
-#define MPFR_PREC(x) ((x)->_mpfr_prec)
-#define MPFR_EXP(x)  ((x)->_mpfr_exp)
-#define MPFR_MANT(x) ((x)->_mpfr_d)
-
-#define MPFR_LIMB_SIZE(x) ((MPFR_PREC((x))-1)/BITS_PER_MP_LIMB+1)
 
 /* Enum special value of exponent.*/
 # define MPFR_EXP_ZERO (MPFR_EXP_MIN+1)
@@ -447,6 +405,12 @@ long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CO
 
 #define MPFR_ARE_SINGULAR(x,y) \
   (MPFR_UNLIKELY(MPFR_IS_SINGULAR(x)) || MPFR_UNLIKELY(MPFR_IS_SINGULAR(y)))
+
+
+
+/******************************************************
+ ********************* Sign Macros ********************
+ ******************************************************/
 
 #define MPFR_SIGN_POS (1)
 #define MPFR_SIGN_NEG (-1)
@@ -474,6 +438,12 @@ long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CO
 #define MPFR_FROM_SIGN_TO_INT(s) (s)
 #define MPFR_INT_SIGN(x) MPFR_FROM_SIGN_TO_INT(MPFR_SIGN(x))
 
+
+
+/******************************************************
+ ***************** Ternary Value Macros ***************
+ ******************************************************/
+
 /* Special inexact value */
 #define MPFR_EVEN_INEX 2
 
@@ -485,6 +455,73 @@ long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CO
 #define MPFR_RET_NAN return (__gmpfr_flags |= MPFR_FLAGS_NAN), 0
 
 #define MPFR_SET_ERANGE() (__gmpfr_flags |= MPFR_FLAGS_ERANGE)
+
+
+
+/******************************************************
+ ************** Rounding mode macros  *****************
+ ******************************************************/
+
+/* We want to test this :
+ *  (rnd == GMP_RNDU && test) || (rnd == RNDD && !test)
+ * ie it transforms RNDU or RNDD to Away or Zero according to the sign */
+#define MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd, test) \
+  (((rnd) + (test)) == GMP_RNDD)
+
+/* We want to test if rnd = Zero, or Away */
+#define MPFR_IS_LIKE_RNDZ(rnd, test) \
+  ((rnd==GMP_RNDZ) || MPFR_IS_RNDUTEST_OR_RNDDNOTTEST (rnd, test))
+
+/* Invert a rounding mode */
+#define MPFR_INVERT_RND(rnd) ((rnd == GMP_RNDU) ? GMP_RNDD : \
+                             ((rnd == GMP_RNDD) ? GMP_RNDU : rnd))
+
+/* Transform RNDU and RNDD to RNDA or RNDZ */
+#define MPFR_UPDATE_RND_MODE(rnd, test) \
+  do {  \
+    if (MPFR_UNLIKELY(MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd, test))) \
+      rnd = GMP_RNDZ; \
+  } while (0) 
+
+
+
+/******************************************************
+ ******************* Limb Macros **********************
+ ******************************************************/
+
+ /* Definition of MPFR_LIMB_HIGHBIT */
+#if defined(GMP_LIMB_HIGHBIT)
+# define MPFR_LIMB_HIGHBIT GMP_LIMB_HIGHBIT
+#elif defined(MP_LIMB_T_HIGHBIT)
+# define MPFR_LIMB_HIGHBIT MP_LIMB_T_HIGHBIT
+#else
+# error "Neither GMP_LIMB_HIGHBIT nor MP_LIMB_T_HIGHBIT defined in GMP"
+#endif
+
+/* Mask to get the Most Significent Bit of a limb */
+#define MPFR_LIMB_MSB(l) ((l)&MPFR_LIMB_HIGHBIT)
+
+/* Definition of MPFR_LIMB_ONE & MPFR_LIMB_ZERO*/
+#ifdef CNST_LIMB
+# define MPFR_LIMB_ONE  CNST_LIMB(1)
+# define MPFR_LIMB_ZERO CNST_LIMB(0)
+#else
+# define MPFR_LIMB_ONE  ((mp_limb_t) 1L)
+# define MPFR_LIMB_ZERO ((mp_limb_t) 0L)
+#endif
+
+#ifndef MP_LIMB_T_ONE
+# define MP_LIMB_T_ONE MPFR_LIMB_ONE
+#endif
+
+/* Mask for the low 's' bits of a limb */
+#define MPFR_LIMB_MASK(s) ((MPFR_LIMB_ONE<<(s))-MPFR_LIMB_ONE)
+
+
+
+/******************************************************
+ ********************** Memory ************************
+ ******************************************************/
 
 /* Heap Memory gestion */
 typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
@@ -500,7 +537,8 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
    ((mp_limb_t*) ((mpfr_size_limb_t*) MPFR_MANT(x) - 1))
 
 /* Temporary memory gestion */
-#if 0
+/* This code is experimental: don't use it */
+#ifdef MPFR_USE_OWN_TMP_ALLOC
 extern unsigned char *mpfr_stack;
 #undef TMP_DECL
 #undef TMP_MARK
@@ -510,12 +548,6 @@ extern unsigned char *mpfr_stack;
 #define TMP_MARK(_x) ((_x) = mpfr_stack)
 #define TMP_ALLOC(_s) (mpfr_stack += (_s), mpfr_stack - (_s))
 #define TMP_FREE(_x) (mpfr_stack = (_x))
-/*
-#define TMP_DECL(_x) 
-#define TMP_MARK(_x) 
-#define TMP_ALLOC(_s) mpfr_stack
-#define TMP_FREE(_x) 
-*/
 #endif
 
 /* temporary allocate 1 limb at xp, and initialize mpfr variable x */
@@ -537,26 +569,11 @@ extern unsigned char *mpfr_stack;
    MPFR_SET_POS(d), \
    MPFR_EXP(d)  = MPFR_EXP(s))
 
-#define MPFR_SET_ONE(x) \
-do { \
-  mp_size_t s = MPFR_LIMB_SIZE(x) - 1;\
-  MPFR_SET_POS(x);\
-  MPFR_EXP(x) = 1;\
-  MPN_ZERO ( MPFR_MANT(x), s);\
-  MPFR_MANT(x)[s] = MPFR_LIMB_HIGHBIT;\
-} while (0)
 
-/* Speed up internal functions */
-/*#define mpfr_check_range(x,t,r) (MPFR_LIKELY(MPFR_EXP(x) >= __gmpfr_emin && MPFR_EXP(x) <= __gmpfr_emax) ? (t) : (mpfr_check_range)(x,t,r))*/
 
-/* Use it only for debug reasons */
-#ifdef DEBUG
-# include <stdio.h>
-# define MPFR_TRACE(x) x
-#else
-# define MPFR_TRACE(x) (void) 0
-#endif
-#define MPFR_DUMP(x) ( printf(#x"="), mpfr_dump(x) )
+/******************************************************
+ *****************  Cache macros **********************
+ ******************************************************/
 
 /* Cache Handling */
 #ifdef MPFR_NO_CACHE
@@ -568,9 +585,39 @@ do { \
 #define MPFR_DECL_INIT_CACHE(_cache,_func) \
  mpfr_cache_t _cache = {{{{0,MPFR_SIGN_POS,0,(mp_limb_t*)0}},0,_func}}
 
-/* Ceil log 2: If GCC, uses a GCC extension
-   Warning: Needs to define MPFR_NEED_LONGLONG.
-   Computes ceil(log2(x)) only for x integer (unsigned long) */
+
+
+/******************************************************
+ *******************  Threshold ***********************
+ ******************************************************/
+
+#ifdef __ia64
+# define MPFR_EXP_THRESHOLD 12500
+#else
+# define MPFR_EXP_THRESHOLD 25000
+#endif
+
+
+
+/******************************************************
+ *****************  Useful macros *********************
+ ******************************************************/
+
+/* Theses macros help the compiler to determine if a test is 
+ * likely or unlikely. */
+#if __MPFR_GNUC(3,0) || __MPFR_ICC(8,1,0)
+# define MPFR_LIKELY(x) (__builtin_expect(!!(x),1))
+# define MPFR_UNLIKELY(x) (__builtin_expect((x),0))
+#else
+# define MPFR_LIKELY(x) (x)
+# define MPFR_UNLIKELY(x) (x)
+#endif
+
+/* Ceil log 2: If GCC, uses a GCC extension, otherwise calls a function */
+/* Warning: 
+ *   Needs to define MPFR_NEED_LONGLONG.
+ *   Computes ceil(log2(x)) only for x integer (unsigned long)
+ *   Undefined if x is 0 */
 #if __MPFR_GNUC(2,95) || __MPFR_ICC(8,1,0)
 # define MPFR_INT_CEIL_LOG2(x) \
     (__extension__ ({int b; mp_limb_t limb = (x); MPFR_ASSERTD (limb == x); \
@@ -579,17 +626,16 @@ do { \
 # define MPFR_INT_CEIL_LOG2(x) (__gmpfr_int_ceil_log2(x))
 #endif
 
-/* Add with overflow handling 
-   Example: MPFR_SADD_OVERFLOW (c, a, b, long, unsigned long,
-                                LONG_MIN, LONG_MAX,
-		                goto overflow, goto underflow); */
+/* Add two integers with overflow handling */
+/* Example: MPFR_SADD_OVERFLOW (c, a, b, long, unsigned long,
+ *                              LONG_MIN, LONG_MAX,
+ * 	                        goto overflow, goto underflow); */
 #define MPFR_UADD_OVERFLOW(c,a,b,ACTION_IF_OVERFLOW) \
  do { \
   (c) = (a) + (b); \
   if ((c) < (a)) ACTION_IF_OVERFLOW; \
  } while (0)
 
- 
 #define MPFR_SADD_OVERFLOW(c,a,b,STYPE,UTYPE,MIN,MAX,ACTION_IF_POS_OVERFLOW,ACTION_IF_NEG_OVERFLOW) \
   do { \
   if ((a) >= 0 && (b) >= 0) { \
@@ -608,6 +654,63 @@ do { \
          else (c) = -(STYPE) uc; \
   } else (c) = (a) + (b); \
  } while (0)
+
+
+/* Set a number to 1 (Fast) */
+#define MPFR_SET_ONE(x) \
+do { \
+  mp_size_t s = MPFR_LIMB_SIZE(x) - 1;\
+  MPFR_SET_POS(x);\
+  MPFR_EXP(x) = 1;\
+  MPN_ZERO ( MPFR_MANT(x), s);\
+  MPFR_MANT(x)[s] = MPFR_LIMB_HIGHBIT;\
+} while (0)
+
+/* Compute s = (-a) % BITS_PER_MP_LIMB
+ * a is unsigned! Check if it works, 
+ * otherwise tries another way to compute it */
+#define MPFR_UNSIGNED_MINUS_MODULO(s, a) \
+  do { \
+  if ((UINT_MAX % BITS_PER_MP_LIMB) == (BITS_PER_MP_LIMB-1) \
+      && ((-(unsigned) 1)%BITS_PER_MP_LIMB > 0)) \
+    (s) = (-(a)) % BITS_PER_MP_LIMB; \
+  else \
+    {(s) = (a) % BITS_PER_MP_LIMB;  \
+    if (s)  \
+      (s) = BITS_PER_MP_LIMB - (s); \
+    } \
+  MPFR_ASSERTD( (s) >= 0 && (s) < BITS_PER_MP_LIMB); \
+  } while (0) 
+
+/* Use it only for debug reasons */
+/*   MPFR_TRACE (operation) : execute operation iff DEBUG flag is set */
+/*   MPFR_DUMP (x) : print x (a mpfr_t) on stdout */
+#ifdef DEBUG
+# include <stdio.h>
+# define MPFR_TRACE(x) x
+#else
+# define MPFR_TRACE(x) (void) 0
+#endif
+#define MPFR_DUMP(x) ( printf(#x"="), mpfr_dump(x) )
+
+/* Test if X (positive) is a power of 2 */
+#define IS_POW2(X) (((X) & ((X) - 1)) == 0)
+#define NOT_POW2(X) (((X) & ((X) - 1)) != 0)
+
+/* Safe absolute value (to avoid possible integer overflow) */
+/* type is the target (unsigned) type */
+#define SAFE_ABS(type,x) ((x) >= 0 ? (type)(x) : -(type)(x))
+
+/* Speed up final checking */
+/*#define mpfr_check_range(x,t,r) \
+ (MPFR_LIKELY (MPFR_EXP (x) >= __gmpfr_emin && MPFR_EXP (x) <= __gmpfr_emax) \
+ ? (t) : mpfr_check_range(x,t,r))*/
+
+
+
+/******************************************************
+ ***************  Internal Functions  *****************
+ ******************************************************/
 
 #if defined (__cplusplus)
 extern "C" {
