@@ -81,15 +81,13 @@ mpfr_cmp3 (mpfr_srcptr b, mpfr_srcptr c, int s)
   for ( ; bn >= 0 && cn >= 0; bn--, cn--)
     {
       if (bp[bn] > cp[cn])
-        return s;
+	return s;
       if (bp[bn] < cp[cn])
-        return -s;
+	return -s;
     }
-
   for ( ; bn >= 0; bn--)
     if (bp[bn])
-      return s;
-
+      return s;      
   for ( ; cn >= 0; cn--)
     if (cp[cn])
       return -s;

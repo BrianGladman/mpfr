@@ -392,13 +392,14 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
     inexact = 0;
   goto truncate;
   
- sub_one_ulp: /* add one unit in last place to a */
+ sub_one_ulp: /* sub one unit in last place to a */
   mpn_sub_1 (ap, ap, an, MP_LIMB_T_ONE << sh);
   inexact = -1;
   goto end_of_sub;
 
  add_one_ulp: /* add one unit in last place to a */
-  if (mpn_add_1 (ap, ap, an, MP_LIMB_T_ONE << sh)) /* result is a power of 2 */
+  if (MPFR_UNLIKELY(mpn_add_1 (ap, ap, an, MP_LIMB_T_ONE << sh)))
+    /* result is a power of 2: 11111111111111 + 1 = 1000000000000000 */
     {
       ap[an-1] = MPFR_LIMB_HIGHBIT;
       add_exp = 1;
@@ -406,7 +407,8 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   inexact = 1; /* result larger than exact value */
 
  truncate:
-  if ((ap[an-1] >> (BITS_PER_MP_LIMB - 1)) == 0) /* case 1 - epsilon */
+  if (MPFR_UNLIKELY((ap[an-1] >> (BITS_PER_MP_LIMB - 1)) == 0))
+    /* case 1 - epsilon */
     {
       ap[an-1] = MPFR_LIMB_HIGHBIT;
       add_exp = 1;

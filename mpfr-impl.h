@@ -101,6 +101,7 @@ typedef unsigned long int       mpfr_exp_unsigned_t;
 #ifndef MP_LIMB_T_ONE
 # define MP_LIMB_T_ONE ((mp_limb_t) 1)
 #endif
+#define MPFR_LIMB_ONE ((mp_limb_t) 1)
 
 #define MPFR_INTPREC_MAX (ULONG_MAX & ~(unsigned long) (BITS_PER_MP_LIMB - 1))
 
@@ -114,7 +115,7 @@ typedef unsigned long int       mpfr_exp_unsigned_t;
 
 /* MPFR_ASSERTN(expr): assertions that should always be checked */
 #define MPFR_ASSERTN(expr)  \
-   ((void) ((MPFR_UNLIKELY(expr)) || (ASSERT_FAIL (expr), 0)))
+   ((void) ((MPFR_UNLIKELY(expr)) || MPFR_UNLIKELY((ASSERT_FAIL (expr), 0))))
 
 /* MPFR_ASSERTD(expr): assertions that should be checked when testing */
 #if WANT_ASSERT
@@ -123,6 +124,14 @@ typedef unsigned long int       mpfr_exp_unsigned_t;
 #else
 # define MPFR_ASSERTD(expr)  ((void) 0)
 #endif
+
+#define MPFR_CHECK1(x,r) \
+ MPFR_ASSERTD(mpfr_check(x) && GMP_RNDN <= r && r <= GMP_RNDD)
+#define MPFR_CHECK2(x,y,r) \
+ MPFR_ASSERTD(mpfr_check(x) && mpfr_check(y) && GMP_RNDN <= r && r <= GMP_RNDD)
+#define MPFR_CHECK3(x,y,z,r) \
+ MPFR_ASSERTD(mpfr_check(x) && mpfr_check(y) && mpfr_check(z) && \
+  GMP_RNDN <= r && r <= GMP_RNDD)
 
 /* Theses macros help the compiler to determine if a test is 
  * likely or unlikely. */
