@@ -214,7 +214,7 @@ main (int argc, char *argv[])
 
   {
     mp_prec_t prec;
-    mpfr_t x, y, z, t,s, slong;
+    mpfr_t t, slong;
     mp_rnd_t rnd;
     int inexact, compare;
     unsigned int n;
@@ -223,13 +223,8 @@ main (int argc, char *argv[])
     int p1=200;
     int N=200;
     
-    mpfr_init (x);
-    mpfr_init (y);
-    mpfr_init (z);
     mpfr_init (t);
-    mpfr_init (s);
     mpfr_init (slong);
-
 
     /* generic test */
     for (prec = p0; prec <= p1; prec++)
@@ -295,14 +290,13 @@ main (int argc, char *argv[])
 	}
     }
   mpfr_clear (t);
-  mpfr_clear (s);
   mpfr_clear (slong);
-
 
   }
   mpfr_clear (x);
   mpfr_clear (y);
-  mpfr_clear (x);
+  mpfr_clear (z);
+  mpfr_clear (s);
 
   return 0;
 }
