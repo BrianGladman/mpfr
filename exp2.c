@@ -155,7 +155,6 @@ mpfr_exp2(y, x, rnd_mode)
 
   l = mpfr_can_round(s, q-K, GMP_RNDU, rnd_mode, precy);
   if (l==0) {
-printf("not enough precision\n");
 #ifdef DEBUG
      printf("not enough precision, use %d\n", q+BITS_PER_MP_LIMB);
      printf("q=%d q-K=%d precy=%d\n",q,q-K,precy);
