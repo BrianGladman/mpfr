@@ -46,12 +46,17 @@ mpfr_min (z, x, y, rnd_mode)
      mp_rnd_t rnd_mode;
 #endif
 {
-    if (MPFR_IS_NAN(x) || MPFR_IS_NAN(y) ) 
+    if (MPFR_IS_NAN(x) && MPFR_IS_NAN(y) ) 
     {  
       MPFR_SET_NAN(z); 
       return 1; 
     }
     MPFR_CLEAR_NAN(z);
+    if (MPFR_IS_NAN(x) ) 
+      return mpfr_set(z,y,rnd_mode);
+      
+    if (MPFR_IS_NAN(y) ) 
+      return mpfr_set(z,x,rnd_mode);
 
     if(mpfr_cmp(x,y) <= 0)
       return mpfr_set(z,x,rnd_mode);
@@ -74,12 +79,18 @@ mpfr_max (z, x, y, rnd_mode)
      mp_rnd_t rnd_mode;
 #endif
 {
-    if (MPFR_IS_NAN(x) || MPFR_IS_NAN(y) ) 
+    if (MPFR_IS_NAN(x) && MPFR_IS_NAN(y) ) 
     {  
       MPFR_SET_NAN(z); 
       return 1; 
     }
     MPFR_CLEAR_NAN(z);
+
+    if (MPFR_IS_NAN(x) ) 
+      return mpfr_set(z,y,rnd_mode);
+      
+    if (MPFR_IS_NAN(y) ) 
+      return mpfr_set(z,x,rnd_mode);
 
     if(mpfr_cmp(x,y) <= 0)
       return mpfr_set(z,y,rnd_mode);
