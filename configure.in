@@ -45,9 +45,6 @@ case $OS_TYPE in
 		  CFLAGS ="-mabi=n32 $CFLAGS"
 		fi
 		;;
-	OSF*)
-		AC_DEFINE(__STDC__)
-		;;
 esac
 
 dnl Tests concerning the include directories.
