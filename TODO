@@ -16,3 +16,7 @@ Miscellaneous:
 
 - protect macros:
   #define SET_ZERO(x)  ---> #define MPFR_SET_ZERO(x)
+
+- detect overflow/underflow in exponent (from Ben Hinkle <bhinkle4@juno.com>)
+
+- specify exponent size (suggestion from Ben Hinkle <bhinkle4@juno.com>)
