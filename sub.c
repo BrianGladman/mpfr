@@ -74,6 +74,7 @@ mpfr_t a, b, c; unsigned char rnd_mode; int diff_exp;
   if (ap == bp) {
     bp = (mp_ptr) TMP_ALLOC(ABSSIZE(b) * BYTES_PER_MP_LIMB); 
     MPN_COPY (bp, ap, ABSSIZE(b));
+    if (ap == cp) { cp = bp; }
   }
   else if (ap == cp)
     {
