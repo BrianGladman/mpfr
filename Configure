@@ -229,7 +229,7 @@ cat > Makefile <<EOF
 #
 CC=$defC
 CFLAGS=$special $incflags $cflags $contrspecial -D$ostype
-OBJS=add.o div_2exp.o neg.o set_dfl_prec.o set_str_raw.o agm.o get_str.o print_raw.o set_dfl_rnd.o sqrt.o clear.o init.o rnd_mode.o set_f.o sub.o cmp.o mul.o  round.o set_prec.o cmp_ui.o mul_2exp.o set.o set_si.o div.o mul_ui.o set_d.o pow.o out_str.o pi.o set_z.o add_ulp.o log2.o random.o log.o exp.o div_ui.o zeta.o karasqrt.o print_rnd_mode.o set_q.o random2.o eq.o dump.o set_prc_raw.o urandomb.o
+OBJS=add.o div_2exp.o neg.o set_dfl_prec.o set_str_raw.o agm.o get_str.o print_raw.o set_dfl_rnd.o sqrt.o clear.o init.o rnd_mode.o set_f.o sub.o cmp.o mul.o  round.o set_prec.o cmp_ui.o mul_2exp.o set.o set_si.o div.o mul_ui.o set_d.o pow.o out_str.o pi.o set_z.o add_ulp.o log2.o random.o log.o exp.o div_ui.o zeta.o karasqrt.o print_rnd_mode.o set_q.o random2.o eq.o dump.o set_prc_raw.o urandomb.o ceil.o floor.o trunc.o
 VERSION=0.0
 
 dft: libmpfr.a
@@ -299,6 +299,12 @@ eq.o: mpfr.h
 dump.o: mpfr.h
 set_prc_raw.o: mpfr.h
 urandomb.o: mpfr.h
+ceil.o: mpfr.h
+	\$(CC) \$(CFLAGS) -DMPFR_CEIL -c ceil.c
+floor.o: mpfr.h
+	\$(CC) \$(CFLAGS) -DMPFR_FLOOR -c floor.c
+trunc.o: mpfr.h
+	\$(CC) \$(CFLAGS) -DMPFR_TRUNC -c trunc.c
 EOF
 cat > tests/Makefile <<EOF
 CC=$defC
