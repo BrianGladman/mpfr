@@ -24,6 +24,23 @@ MA 02111-1307, USA. */
 
 #include "mpfr-test.h"
 
+/* Maybe better create its own test file ? */
+static void
+check_neg_special ()
+{
+  mpfr_t x;
+  mpfr_init (x);
+  MPFR_SET_NAN (x);
+  mpfr_clear_nanflag ();
+  mpfr_neg (x, x, GMP_RNDN);
+  if (!mpfr_nanflag_p () )
+    {
+      printf("ERROR: neg (NaN) doesn't set Nan flag.\n");
+      exit (1);
+    }
+  mpfr_clear (x);
+}
+
 int
 main (void)
 {
@@ -111,6 +128,8 @@ main (void)
   mpfr_clear (y);
   mpfr_clear (z);
   mpfr_clear (u);
+
+  check_neg_special ();
 
   tests_end_mpfr ();
   return 0;

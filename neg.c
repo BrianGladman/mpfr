@@ -27,6 +27,10 @@ mpfr_neg (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
 {
   if (MPFR_UNLIKELY(a != b))
     return mpfr_set4 (a, b, rnd_mode, -MPFR_SIGN(b));
+  else if (MPFR_UNLIKELY(MPFR_IS_NAN (b)))
+    {
+      MPFR_RET_NAN;
+    }
   else
     {
       MPFR_CHANGE_SIGN(a);
