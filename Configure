@@ -170,7 +170,7 @@ cat > Makefile <<EOF
 #
 CC=$defC
 CFLAGS=$special $incflags $cflags -D$ostype
-OBJS=add.o div_2exp.o neg.o set_dfl_prec.o set_str_raw.o agm.o get_str.o print_raw.o set_dfl_rnd.o sqrt.o clear.o init.o rnd_mode.o set_f.o sub.o cmp.o mul.o  round.o set_prec.o cmp_ui.o mul_2exp.o set.o set_si.o div.o mul_ui.o set_d.o pow.o out_str.o pi.o set_z.o add_ulp.o log2.o random.o log.o exp.o div_ui.o zeta.o
+OBJS=add.o div_2exp.o neg.o set_dfl_prec.o set_str_raw.o agm.o get_str.o print_raw.o set_dfl_rnd.o sqrt.o clear.o init.o rnd_mode.o set_f.o sub.o cmp.o mul.o  round.o set_prec.o cmp_ui.o mul_2exp.o set.o set_si.o div.o mul_ui.o set_d.o pow.o out_str.o pi.o set_z.o add_ulp.o log2.o random.o log.o exp.o div_ui.o zeta.o div3.o
 
 dft: libmpfr.a
 
@@ -223,6 +223,7 @@ log.o: mpfr.h
 exp.o: mpfr.h
 div_ui.o: mpfr.h
 zeta.o: mpfr.h
+div3.o: mpfr.h
 
 EOF
 cat > tests/Makefile <<EOF
