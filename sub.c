@@ -313,7 +313,7 @@ mpfr_sub1 (a, b, c, rnd_mode, diff_exp)
 #ifdef DEBUG
     printf("cancel=%d dif=%d k=%d cn=%d sh=%d\n",cancel,dif,k,cn,sh);
 #endif
-    if (dif<=MPFR_PREC(c)) { /* c has to be truncated */
+    if (dif <= MPFR_PREC(c)) { /* c has to be truncated */
       dif = dif % BITS_PER_MP_LIMB;
       dif = (dif) ? BITS_PER_MP_LIMB-dif-sh : -sh;
       /* we have to shift by dif bits to the right */
@@ -333,7 +333,7 @@ mpfr_sub1 (a, b, c, rnd_mode, diff_exp)
     }
     else { /* c is not truncated, but we have to fill low limbs with 0 */
       MPN_ZERO(ap, (k-cn<an) ? k-cn : an);
-      overlap = cancel-diff_exp;
+      overlap = cancel - diff_exp;
 #ifdef DEBUG
       printf("0:a="); mpfr_print_raw(a); putchar('\n');
       printf("overlap=%d\n",overlap);
@@ -375,23 +375,26 @@ mpfr_sub1 (a, b, c, rnd_mode, diff_exp)
     /* here overlap=1 iff ulp(c)<ulp(a) */
     /* then put high limbs to zero */
     /* now add 'an' upper limbs of b in place */
-    if (MPFR_PREC(b)<=MPFR_PREC(a)+cancel) { int i, imax;
-      overlap += 2;
-      /* invert low limbs */
-      imax = (int)an - (int)bn + cancel1;
-      if (imax > (int)an) imax = an;
-      for (i=0;i<imax;i++) ap[i] = ~ap[i];
-      cc = (i) ? mpn_add_1(ap, ap, i, 1) : 1;
-      if (cancel1 < bn) mpn_sub_lshift_n(ap+i, bp, bn-cancel1, cancel2, an);
-      /* warning: mpn_sub_1 doesn't accept a zero length */
-      if (i < an) mpn_sub_1(ap+i, ap+i, an-i, ONE-cc);
-    }
+    if (MPFR_PREC(b) <= MPFR_PREC(a) + cancel)
+      {
+	int i, imax;
+
+	overlap += 2;
+	/* invert low limbs */
+	imax = (int)an - (int)bn + cancel1;
+	if (imax > (int)an) imax = an;
+	for (i=0;i<imax;i++) ap[i] = ~ap[i];
+	cc = (i) ? mpn_add_1(ap, ap, i, 1) : 1;
+	if (cancel1 < bn) mpn_sub_lshift_n(ap+i, bp, bn-cancel1, cancel2, an);
+	/* warning: mpn_sub_1 doesn't accept a zero length */
+	if (i < an) mpn_sub_1(ap+i, ap+i, an-i, ONE-cc);
+      }
     else /* MPFR_PREC(b) > MPFR_PREC(a): we have to truncate b */ 
       {
-	mpn_sub_lshift_n(ap, bp+(bn-an-cancel1), an, cancel2, an);
-	if (cancel2) 
+	mpn_sub_lshift_n(ap, bp + (bn - an - cancel1), an, cancel2, an);
+	if (cancel2 && bn >= an + cancel1 + 1)
 	  mpn_add_1(ap, ap, an, 
-		    bp[bn-an-cancel1-1] >> (BITS_PER_MP_LIMB - cancel2)); 
+		    bp[bn-an-cancel1-1] >> (BITS_PER_MP_LIMB - cancel2));
       }
     /* remains to do the rounding */
 #ifdef DEBUG
