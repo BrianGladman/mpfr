@@ -381,6 +381,8 @@ int mpfr_add_q _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpq_srcptr, mpfr_rnd_t));
 int mpfr_sub_q _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpq_srcptr, mpfr_rnd_t));
 int mpfr_cmp_q _MPFR_PROTO ((mpfr_srcptr, mpq_srcptr));
 
+int mpfr_cmp_f _MPFR_PROTO ((mpfr_srcptr, mpf_srcptr));
+
 int mpfr_fma _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_srcptr,
                            mpfr_rnd_t));
 int mpfr_sum _MPFR_PROTO ((mpfr_ptr ret, mpfr_ptr const tab[], unsigned long n,

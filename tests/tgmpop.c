@@ -161,6 +161,45 @@ test_cmp_q (mp_prec_t pmin, mp_prec_t pmax, int nmax)
   mpfr_clear (z);
 }
 
+static void
+test_cmp_f (mp_prec_t pmin, mp_prec_t pmax, int nmax)
+{
+  mpfr_t x, z;
+  mpf_t  y;
+  mp_prec_t p;
+  int res1, res2;
+  int n;
+
+  mpfr_init (x);
+  mpfr_init2 (z, pmax+BITS_PER_MP_LIMB);
+  mpf_init2 (y, MPFR_PREC_MIN);
+  for(p=pmin ; p < pmax ; p+=3)
+    {
+      mpfr_set_prec (x, p);
+      mpf_set_prec (y, p);
+      for ( n = 0; n < nmax ; n++)
+        {
+          mpfr_urandomb (x, RANDS);
+          mpf_urandomb  (y, RANDS, p);
+          if (!MPFR_IS_SINGULAR (x))
+            {
+	      mpfr_set_f (z, y, GMP_RNDN);
+	      mpfr_sub   (z, x, z, GMP_RNDN);
+              res1 = mpfr_sgn (z);
+              res2 = mpfr_cmp_f (x, y);
+              if (res1 != res2)
+                {
+                  printf("Error for mpfr_cmp_f: res=%d sub gives %d\n",
+                         res2, res1);
+                  exit (1);
+                }
+            }
+        }
+    }
+  mpf_clear (y);
+  mpfr_clear (x);
+  mpfr_clear (z);
+}
 
 static void
 test_specialz (int (*mpfr_func)(mpfr_ptr, mpfr_srcptr, mpz_srcptr, mp_rnd_t),
@@ -438,6 +477,7 @@ main (int argc, char *argv[])
 
   test_cmp_z (2, 100, 100);
   test_cmp_q (2, 100, 100);
+  test_cmp_f (2, 100, 100);
 
   tests_end_mpfr ();
   return 0;

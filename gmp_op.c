@@ -252,3 +252,17 @@ mpfr_cmp_q (mpfr_srcptr x, mpq_srcptr z)
   mpfr_clear (t);
   return res;
 }
+
+int
+mpfr_cmp_f (mpfr_srcptr x, mpf_srcptr z)
+{
+  mpfr_t t;
+  int res;
+
+  mpfr_init2 (t, MPFR_PREC_MIN + ABS(SIZ(z)) * BITS_PER_MP_LIMB );
+  res = mpfr_set_f (t, z, GMP_RNDN);
+  MPFR_ASSERTD( res == 0 );
+  res = mpfr_cmp (x, t);
+  mpfr_clear (t);
+  return res;
+}
