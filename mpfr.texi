@@ -610,11 +610,17 @@ Convert @var{op} to a double, using the current @emph{machine} rounding mode.
 @end deftypefun
 
 @deftypefun {char *} mpfr_get_str (char *@var{str}, mp_exp_t *@var{expptr}, int @var{base}, size_t @var{n_digits}, mpfr_t @var{op}, char @var{rnd})
-Convert @var{op} to a string of digits in base @var{base}.  The base may vary
-from 2 to 36.  Generate exactly @var{n_digits} significant digits, or if
-@var{n_digits} is 0, the minimum number of digits required such that reading
-back the string with @code{mpfr_set_str} would give the same value (of course
-with the same precision).
+Convert @var{op} to a string of digits in base @var{base}, with rounding in
+direction @var{rnd}. The base may vary
+from 2 to 36.  Generate exactly @var{n_digits} significant digits. 
+
+If @var{n_digits} is 0, it prints the maximum possible number of digits 
+giving an exact rounding in the given base @var{base} with the direction
+@var{rnd}. In other words, if @var{op} was the exact rounding 
+of a real number in direction @var{rnd}, then the printed value is also
+an exact rounding in base @var{base} of that real number with the same
+precision. An error occurs when one is unable to determine the leading
+digit, which can happen especially if the precision of @var{op} is small.
 
 If @var{str} is NULL, space for the mantissa is allocated using the default
 allocation function, and a pointer to the string is returned.
