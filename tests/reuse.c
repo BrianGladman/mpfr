@@ -383,6 +383,7 @@ main (void)
   testfunc = mpfr_ui_div; testui2 ("mpfr_ui_div", 53, GMP_RNDN);
   testfunc = mpfr_ui_sub; testui2 ("mpfr_ui_sub", 53, GMP_RNDN);
   testfunc = mpfr_trunc; test2 ("mpfr_trunc", 53, GMP_RNDN);
+  testfunc = (void*) mpfr_arctan; test2 ("mpfr_arctan", 53, GMP_RNDN);
 
   return 0;
 }
