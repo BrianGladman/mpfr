@@ -701,6 +701,7 @@ a call to @code{mpfr_clear(x)} followed by a call to
 case the current allocated space for the mantissa of @var{x} is enough.
 The precision @var{prec} can be any integer between @code{MPFR_PREC_MIN} and
 @code{MPFR_PREC_MAX}.
+It returns a non-zero value iff the memory allocation failed.
 
 In case you want to keep the previous value stored in @var{x},
 use @code{mpfr_round_prec} instead.
@@ -799,7 +800,7 @@ using a third auxiliary variable.
 @deftypefnx Macro int mpfr_init_set_ui (mpfr_t @var{rop}, unsigned long int @var{op}, mp_rnd_t @var{rnd})
 @deftypefnx Macro int mpfr_init_set_si (mpfr_t @var{rop}, signed long int @var{op}, mp_rnd_t @var{rnd})
 @deftypefnx Macro int mpfr_init_set_d (mpfr_t @var{rop}, double @var{op}, mp_rnd_t @var{rnd})
-@deftypefnx Macro int mpfr_init_set_f (mpfr_t @var{rop}, double @var{op}, mp_rnd_t @var{rnd})
+@deftypefnx Macro int mpfr_init_set_f (mpfr_t @var{rop}, mpf_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefnx Macro int mpfr_init_set_z (mpfr_t @var{rop}, mpz_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefnx Macro int mpfr_init_set_q (mpfr_t @var{rop}, mpq_t @var{op}, mp_rnd_t @var{rnd})
 Initialize @var{rop} and set its value from @var{op}, rounded to direction
