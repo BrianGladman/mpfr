@@ -70,7 +70,16 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd_mode)
           mp_exp_t expx = MPFR_EXP (x); /* warning: x and y may be the same
                                             variable */
           mpfr_set_si (y, (n % 2) ? MPFR_INT_SIGN(x) : 1, rnd_mode);
-          MPFR_EXP(y) += n * (expx - 1);
+	  expx --;
+	  MPFR_ASSERTD (n < 0);
+	  /* Warning n*expx may overflow! 
+	     Many systems abort with LONG_MIN / 1 or LONG_MIN/-1*/
+	  if (n != -1 && expx > 0 && -expx < MPFR_EXP_MIN / (-n))
+	    MPFR_EXP (y) = MPFR_EMIN_MIN - 1; /* Underflow */
+	  else if (n != -1 && expx < 0 && -expx > MPFR_EXP_MAX / (-n))
+	    MPFR_EXP (y) = MPFR_EMAX_MAX + 1; /* Overflow */
+          else
+	    MPFR_EXP(y) += n * expx;
           return mpfr_check_range (y, 0, rnd_mode);
         }
 
@@ -79,7 +88,7 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd_mode)
       /* General case */
       {
         /* Declaration of the intermediary variable */
-        mpfr_t t, ti;
+        mpfr_t t;
 
         /* Declaration of the size variable */
         mp_prec_t Nx = MPFR_PREC(x);   /* Precision of input variable */
@@ -99,32 +108,27 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd_mode)
 
         /* initialise of intermediary	variable */
         mpfr_init2 (t, Nt);
-        mpfr_init2 (ti, Nt);
 
-        do
-          {
-            /* reactualisation of the precision */
-            mpfr_set_prec (t, Nt);
-            mpfr_set_prec (ti, Nt);
-
-            /* compute 1/(x^n) n>0*/
-            mpfr_pow_ui (ti, x, (unsigned long int) n, GMP_RNDN);
-            mpfr_ui_div (t, 1, ti, GMP_RNDN);
-
-            /* error estimate -- see pow function in algorithms.ps */
-            err = Nt - 3;
-
-            /* actualisation of the precision */
-            Nt += 10;
-          }
-        while (err < 0 || (!mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
-					    Ny + (rnd_mode == GMP_RNDN))
-			   /* An overflow can occurs, producing an underflow */
-			   && !MPFR_IS_ZERO(t) ));
+        do {
+	  /* reactualisation of the precision */
+	  mpfr_set_prec (t, Nt);
+	  
+	  /* compute 1/(x^n) n>0*/
+	  mpfr_pow_ui (t, x, (unsigned long int) n, GMP_RNDN);
+	  inexact = MPFR_IS_ZERO (t) || MPFR_IS_INF (t);
+	  mpfr_ui_div (t, 1, t, GMP_RNDN);
+	  inexact = inexact || MPFR_IS_ZERO (t) || MPFR_IS_INF (t);
+	  /* error estimate -- see pow function in algorithms.ps */
+	  err = Nt - 3;
+	  
+	  /* actualisation of the precision */
+	  Nt += BITS_PER_MP_LIMB;
+	} while (inexact == 0 &&
+		 !mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
+				  Ny + (rnd_mode == GMP_RNDN)));
 
         inexact = mpfr_set (y, t, rnd_mode);
         mpfr_clear (t);
-        mpfr_clear (ti);
 	MPFR_SAVE_EXPO_FREE (expo);
         return mpfr_check_range (y, inexact, rnd_mode);
       }

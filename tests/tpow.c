@@ -93,6 +93,35 @@ check_pow_ui (void)
       exit (1);
     }
 
+  /* Check 0 */
+  MPFR_SET_ZERO (a);
+  MPFR_SET_POS (a);
+  mpfr_set_si (b, -1, GMP_RNDN);
+  res = mpfr_pow_ui (b, a, 1, GMP_RNDN);
+  if (res != 0 || MPFR_IS_NEG (b))
+    {
+      printf ("Error for (0+)^1\n");
+      exit (1);
+    }
+  MPFR_SET_ZERO (a);
+  MPFR_SET_NEG (a);
+  mpfr_set_ui (b, 1, GMP_RNDN);
+  res = mpfr_pow_ui (b, a, 5, GMP_RNDN);
+  if (res != 0 || MPFR_IS_POS (b))
+    {
+      printf ("Error for (0-)^5\n");
+      exit (1);
+    }
+  MPFR_SET_ZERO (a);
+  MPFR_SET_NEG (a);
+  mpfr_set_si (b, -1, GMP_RNDN);
+  res = mpfr_pow_ui (b, a, 6, GMP_RNDN);
+  if (res != 0 || MPFR_IS_NEG (b))
+    {
+      printf ("Error for (0-)^6\n");
+      exit (1);
+    }
+
   mpfr_clear (a);
   mpfr_clear (b);
 }

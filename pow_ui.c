@@ -61,6 +61,10 @@ mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
           MPFR_ASSERTD (MPFR_IS_ZERO (y));
           /* 0^n = 0 for any n */
 	  MPFR_SET_ZERO (x);
+	  if (MPFR_IS_POS (y) || ((n & 1) == 0))
+            MPFR_SET_POS (x);
+          else
+            MPFR_SET_NEG (x);
 	  MPFR_RET (0);
 	}
     }
@@ -79,58 +83,56 @@ mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
   /* MPFR_CLEAR_FLAGS useless due to mpfr_set */
 
   MPFR_SAVE_EXPO_MARK (expo);
+  __gmpfr_emin -= 3;  /* So that we can check for underflow properly */
 
   prec = MPFR_PREC (x);
   mpfr_init2 (res, prec + 9);
 
   rnd1 = MPFR_IS_POS (y) ? GMP_RNDU : GMP_RNDD; /* away */
 
-  do
-    {
-      int i;
-
-      prec += 3;
-      for (m = n, i = 0; m; i++, m >>= 1)
-        prec++;
-      /* now 2^(i-1) <= n < 2^i */
-      mpfr_set_prec (res, prec);
-      err = prec <= (mpfr_prec_t) i ? 0 : prec - (mpfr_prec_t) i;
-      MPFR_ASSERTD (i >= 1);
-      /* First step: compute square from y */
-      inexact = mpfr_sqr (res, y, GMP_RNDU);
-      if (n & (1UL << (i-2)))
-	inexact |= mpfr_mul (res, res, y, rnd1);
-      for (i -= 3; i >= 0; i--)
-        {
-          inexact |= mpfr_sqr (res, res, GMP_RNDU);
-          if (n & (1UL << i))
-            inexact |= mpfr_mul (res, res, y, rnd1);
-        }
-
-      /* Check Overflow (can't use MPFR_GET_EXP since there can be an INF )*/
-      if (MPFR_UNLIKELY (MPFR_IS_INF (res) 
-			 || MPFR_EXP (res) >= __gmpfr_emax))
-	{
-          mpfr_clear (res);
-          MPFR_SAVE_EXPO_FREE (expo);
-          return mpfr_set_overflow (x, rnd, 
-				    (n % 2) ? MPFR_SIGN (y) : MPFR_SIGN_POS);
-	}
-      /* Check Underflow (can't use MPFR_GET_EXP since there can be a ZERO )*/
-      if (MPFR_UNLIKELY (MPFR_IS_ZERO (res)
-			 || MPFR_EXP (res) <= __gmpfr_emin))
-        {
-          mpfr_clear (res);
-	  MPFR_SAVE_EXPO_FREE (expo);
-          return mpfr_set_underflow (x, rnd, 
-				     (n % 2) ? MPFR_SIGN(y) : MPFR_SIGN_POS);
-        }
-    }
-  while (inexact && !mpfr_can_round (res, err, GMP_RNDN, GMP_RNDZ,
-                                     MPFR_PREC(x) + (rnd == GMP_RNDN)));
-
+  do {
+    int i;
+    prec += 3;
+    for (m = n, i = 0; m; i++, m >>= 1)
+      prec++;
+    /* now 2^(i-1) <= n < 2^i */
+    mpfr_set_prec (res, prec);
+    err = prec <= (mpfr_prec_t) i ? 0 : prec - (mpfr_prec_t) i;
+    MPFR_ASSERTD (i >= 1);
+    mpfr_clear_overflow ();
+    mpfr_clear_underflow ();
+    /* First step: compute square from y */
+    inexact = mpfr_sqr (res, y, GMP_RNDU);
+    if (n & (1UL << (i-2)))
+      inexact |= mpfr_mul (res, res, y, rnd1);
+    for (i -= 3; i >= 0 && !mpfr_overflow_p () && !mpfr_underflow_p (); i--) 
+      {
+	inexact |= mpfr_sqr (res, res, GMP_RNDU);
+	if (n & (1UL << i))
+	  inexact |= mpfr_mul (res, res, y, rnd1);
+      }
+  }
+  while (inexact && !mpfr_overflow_p () && !mpfr_underflow_p ()
+	 && !mpfr_can_round (res, err, GMP_RNDN, GMP_RNDZ,
+			     MPFR_PREC(x) + (rnd == GMP_RNDN)));
   inexact = mpfr_set (x, res, rnd);
   mpfr_clear (res);
+
+  /* Check Overflow */
+  if (MPFR_UNLIKELY (mpfr_overflow_p ())) {
+    MPFR_SAVE_EXPO_FREE (expo);
+    return mpfr_set_overflow (x, rnd,
+			      (n % 2) ? MPFR_SIGN (y) : MPFR_SIGN_POS);
+  }
+  /* Check Underflow  */
+  else if (MPFR_UNLIKELY (mpfr_underflow_p ()))
+    {
+      if (rnd == GMP_RNDN)
+	rnd = GMP_RNDZ;
+      MPFR_SAVE_EXPO_FREE (expo);
+      return mpfr_set_underflow (x, rnd,
+				 (n % 2) ? MPFR_SIGN(y) : MPFR_SIGN_POS);
+    }
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (x, inexact, rnd);
 }
