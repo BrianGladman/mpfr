@@ -1,6 +1,6 @@
 /* Test file for mpfr_eq.
 
-Copyright 1999, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -96,6 +96,89 @@ special (void)
       exit (1);
     }
 
+  mpfr_set_nan (x);
+  mpfr_set_nan (y);
+  MPFR_ASSERTN(mpfr_eq (x, y, 1) == 0);
+
+  mpfr_set_inf (y, 1);
+  MPFR_ASSERTN(mpfr_eq (x, y, 1) == 0);
+
+  mpfr_set_ui (y, 0, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_eq (x, y, 1) == 0);
+
+  mpfr_set_inf (x, 1);
+  mpfr_set_inf (y, 1);
+  MPFR_ASSERTN(mpfr_eq (x, y, 1));
+
+  mpfr_set_inf (x, 1);
+  mpfr_set_inf (y, -1);
+  MPFR_ASSERTN(mpfr_eq (x, y, 1) == 0);
+
+  mpfr_set_inf (x, -1);
+  mpfr_set_inf (y, -1);
+  MPFR_ASSERTN(mpfr_eq (x, y, 1));
+
+  mpfr_set_inf (x, 1);
+  mpfr_set_ui (y, 0, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_eq (x, y, 1) == 0);
+
+  mpfr_set_ui (x, 1, GMP_RNDN);
+  mpfr_set_ui (y, 0, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_eq (x, y, 1) == 0);
+  MPFR_ASSERTN(mpfr_eq (y, x, 1) == 0);
+
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_set_ui (y, 0, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_eq (x, y, 1));
+
+  mpfr_neg (y, y, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_eq (x, y, 1));
+
+  mpfr_neg (x, x, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_eq (x, y, 1));
+
+  mpfr_set_ui (x, 1, GMP_RNDN);
+  mpfr_neg (y, x, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_eq (x, y, 1) == 0);
+
+  mpfr_set_prec (x, 2 * mp_bits_per_limb);
+  mpfr_set_prec (y, mp_bits_per_limb);
+  mpfr_set_ui (x, 1, GMP_RNDN);
+  mpfr_set_ui (y, 1, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_eq (x, y, mp_bits_per_limb - 1));
+  MPFR_ASSERTN(mpfr_eq (x, y, mp_bits_per_limb));
+  MPFR_ASSERTN(mpfr_eq (x, y, mp_bits_per_limb + 1));
+  MPFR_ASSERTN(mpfr_eq (x, y, 2 * mp_bits_per_limb - 1));
+  MPFR_ASSERTN(mpfr_eq (x, y, 2 * mp_bits_per_limb));
+  MPFR_ASSERTN(mpfr_eq (x, y, 2 * mp_bits_per_limb + 1));
+
+  mpfr_nextabove (x);
+  MPFR_ASSERTN(mpfr_eq (x, y, mp_bits_per_limb - 1));
+  MPFR_ASSERTN(mpfr_eq (x, y, mp_bits_per_limb));
+  MPFR_ASSERTN(mpfr_eq (x, y, mp_bits_per_limb + 1));
+  MPFR_ASSERTN(mpfr_eq (x, y, 2 * mp_bits_per_limb - 1));
+  MPFR_ASSERTN(mpfr_eq (x, y, 2 * mp_bits_per_limb) == 0);
+  MPFR_ASSERTN(mpfr_eq (x, y, 2 * mp_bits_per_limb + 1) == 0);
+  MPFR_ASSERTN(mpfr_eq (y, x, mp_bits_per_limb - 1));
+  MPFR_ASSERTN(mpfr_eq (y, x, mp_bits_per_limb));
+  MPFR_ASSERTN(mpfr_eq (y, x, mp_bits_per_limb + 1));
+  MPFR_ASSERTN(mpfr_eq (y, x, 2 * mp_bits_per_limb - 1));
+  MPFR_ASSERTN(mpfr_eq (y, x, 2 * mp_bits_per_limb) == 0);
+  MPFR_ASSERTN(mpfr_eq (y, x, 2 * mp_bits_per_limb + 1) == 0);
+
+  mpfr_set_ui (x, 1, GMP_RNDN);
+  mpfr_set_ui (y, 2, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_eq (x, y, 1) == 0);
+
+  mpfr_set_prec (x, 2 * mp_bits_per_limb);
+  mpfr_set_prec (y, 2 * mp_bits_per_limb);
+  mpfr_set_ui (x, 2, GMP_RNDN);
+  mpfr_set_ui (y, 3, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_eq (x, y, 1));
+  MPFR_ASSERTN(mpfr_eq (x, y, 2) == 0);
+  MPFR_ASSERTN(mpfr_eq (x, y, mp_bits_per_limb) == 0);
+  MPFR_ASSERTN(mpfr_eq (x, y, mp_bits_per_limb + 1) == 0);
+  
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);
