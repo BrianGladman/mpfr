@@ -135,9 +135,10 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 				      precy + (rnd_mode == GMP_RNDN))))
 	break;
 
-      if (exps == 1) /* s = 1 or -1, and except x=0 which was
-                                   already checked above, cos(x) cannot
-                                   be 1 or -1, so we can round */
+      if (MPFR_UNLIKELY (exps == 1))
+	/* s = 1 or -1, and except x=0 which was
+	   already checked above, cos(x) cannot
+	   be 1 or -1, so we can round */
         {
           if (exps + m - k > precy + (rnd_mode == GMP_RNDN))
             /* if round to nearest or away, result is s,
@@ -161,18 +162,10 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
         }
 
       m += BITS_PER_MP_LIMB;
-#if 1
-      /* If cos(x) ~1 or cos(x)~ -1, then we have an huge cancelation.
-	 Needs to increase the precision very much */
-      if (MPFR_GET_EXP (s) == 1
-	  && MPFR_MANT (s)[MPFR_LIMB_SIZE (s)-1] == MPFR_LIMB_HIGHBIT)
-	m = 2*m;
-#else
       /* if we already had two failures, possibly a huge cancellation,
          for example cos(Pi) */
       if (loops >= 2)
         m += m / 2;
-#endif
       sm = (m + BITS_PER_MP_LIMB - 1) / BITS_PER_MP_LIMB;
       MPFR_TMP_INIT(rp, r, m, sm);
       MPFR_TMP_INIT(sp, s, m, sm);
