@@ -37,10 +37,12 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
 
   sign_z = mpz_cmp_ui (z, 0);
 
-  if (sign_z==0) {
-    MPFR_SET_ZERO(f);
-    return 0;
-  }
+  if (sign_z == 0)
+    {
+      MPFR_SET_ZERO(f);
+      MPFR_SET_POS(f);
+      MPFR_RET(0);
+    }
 
   fn = 1 + (MPFR_PREC(f)-1)/BITS_PER_MP_LIMB;
   zn = ABS(SIZ(z));
