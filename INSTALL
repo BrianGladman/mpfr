@@ -43,6 +43,8 @@ errors as follows:
 
 libm.a differs from mpfr_sqrt for a=9.89438396044940260000e-134, rnd_mode=2
 libm.a gives 3.14553397063986620000e-67, mpfr_sqrt gives 3.14553397063986680000e-67 (1 ulp)
+libm.a differs from mpfr_sqrt for a=7.86528588050363750000e+31, rnd_mode=1
+libm.a gives 8.86864469944739500000e+15, mpfr_sqrt gives 8.86864469944739400000e+15 (-1 ulp)
 
 Also, Linux on Alpha is known to have problems with IEEE conformance. See
 http://www.linux.org.uk/VERSION/relnotes.2211.html.
