@@ -61,13 +61,24 @@ int m;
   n = 1 << m;
   P = (mpz_t*) (*_mp_allocate_func) ((m+1) * sizeof(mpz_t));
   S = (mpz_t*) (*_mp_allocate_func) ((m+1) * sizeof(mpz_t));
+  ptoj = (mpz_t*) (*_mp_allocate_func) ((m+1) * sizeof(mpz_t)); /* ptoj[i] = mantissa^(2^i) */
 #ifdef A
   T = (mpz_t*) (*_mp_allocate_func) ((m+1) * sizeof(mpz_t));
 #endif
-  ptoj = (mpz_t*) (*_mp_allocate_func) ((m+1) * sizeof(mpz_t)); /* ptoj[i] = mantissa^(2^i) */
 #ifdef R_IS_RATIONAL
     qtoj = (mpz_t*) (*_mp_allocate_func) ((m+1) * sizeof(mpz_t)); 
 #endif
+  if ((P == NULL) || (S == NULL) || (ptoj == NULL)
+#ifdef A
+      || (T == NULL)
+#endif
+#ifdef R_IS_RATIONAL
+      || (qtoj == NULL)
+#endif
+      ) {
+    fprintf (stderr, "Error in %s: no more memory available\n", GENERIC);
+    exit (1);
+  }
   for (i=0;i<=m;i++) { mpz_init(P[i]); mpz_init(S[i]); mpz_init(ptoj[i]);
 #ifdef R_IS_RATIONAL
   mpz_init(qtoj[i]);
