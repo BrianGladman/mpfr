@@ -1,6 +1,6 @@
 /* Test file for mpfr_set_ld and mpfr_get_ld.
 
-Copyright 2002 Free Software Foundation, Inc.
+Copyright 2002, 2003 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
