@@ -374,7 +374,7 @@ main (void)
   testfunc = (void*) mpfr_add_ui; test2ui ("mpfr_add_ui", 53, GMP_RNDN);
   testfunc = mpfr_agm; test3 ("mpfr_agm", 53, GMP_RNDN);
   testfunc = mpfr_ceil; test2 ("mpfr_ceil", 53, GMP_RNDN);
-  testfunc = mpfr_div; test3 ("mpfr_div", 53, GMP_RNDN);
+  testfunc = (void*) mpfr_div; test3 ("mpfr_div", 53, GMP_RNDN);
   testfunc = (void*) mpfr_div_2exp; test2ui ("mpfr_div_2exp", 53, GMP_RNDN);
   testfunc = (void*) mpfr_div_ui; test2ui ("mpfr_div_ui", 53, GMP_RNDN);
   testfunc = (void*) mpfr_exp; test2 ("mpfr_exp", 53, GMP_RNDN);
