@@ -99,6 +99,11 @@ typedef __gmp_const __mpfr_struct *mpfr_srcptr;
 
 /* Prototypes */
 
+/* _PROTO will be renamed __GMP_PROTO in gmp 4.1 */
+#ifndef __GMP_PROTO
+#define __GMP_PROTO(x)  _PROTO(x)
+#endif
+
 #ifndef _PROTO
 #if defined (__STDC__) || defined (__cplusplus)
 #define _PROTO(x) x
