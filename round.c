@@ -15,8 +15,8 @@
 */
 int 
 #if __STDC__
-mpfr_round_raw2(mp_limb_t *xp, unsigned long xn, char neg, char rnd, 
-		unsigned long prec)
+mpfr_round_raw2(mp_limb_t *xp, unsigned long xn, 
+		char neg, char rnd, unsigned long prec)
 #else
 mpfr_round_raw2(xp, xn, neg, rnd, prec)
      mp_limb_t *xp; 
@@ -32,15 +32,17 @@ mpfr_round_raw2(xp, xn, neg, rnd, prec)
   if (rw) nw++; 
   if (rnd==GMP_RNDZ || xn<nw || (rnd==GMP_RNDU && neg)
       || (rnd==GMP_RNDD && neg==0)) return 0;
+
   mask = ~((1UL<<(BITS_PER_MP_LIMB - rw)) - 1);
   switch (rnd)
     {
     case GMP_RNDU:
     case GMP_RNDD:
-      if (xp[xn-nw] & ~mask) return 1;
-      for (l=nw+1;l<=xn;l++)
-	if (xp[xn-l]) break;
-      return (l<=xn);
+      if (xp[xn - nw] & ~mask) return 1;
+      for (l = nw + 1;l <= xn; l++)
+	if (xp[xn - l]) break;
+      return (l <= xn);
+
     case GMP_RNDN:
     /* First check if we are just halfway between two representable numbers */
       wd = xn - nw;
@@ -48,13 +50,13 @@ mpfr_round_raw2(xp, xn, neg, rnd, prec)
 	{
 	  if (!wd) /* all bits are significative */ return 0; 
 	  wd--;
-	  if ((xp[wd] & (~mask)) == (1UL << (BITS_PER_MP_LIMB - rw - 1)))
+	  if (xp[wd] == (1UL << (BITS_PER_MP_LIMB - 1)))
+	    {
 	      do wd--; while (wd > 0 && !xp[wd]);
+	      if (!wd) { return 1; } else return xp[xn - nw] & 1;
+	    }
 
-	  if (wd)
-	      return ((xp[xn - nw - 1]>>(BITS_PER_MP_LIMB - 1)) & 1);
-	  else
-	      return xp[xn - nw] & 1;
+	  return xp[wd]>>(BITS_PER_MP_LIMB - 1);
 	}
       else
       if (rw + 1 < BITS_PER_MP_LIMB)
@@ -102,9 +104,10 @@ mpfr_round_raw(y, xp, xprec, negative, yprec, RND_MODE)
 #endif
 {
   unsigned long nw, mask, xsize;
-  char rw, carry = 0;
+  char rw, xrw, carry = 0;
 
   xsize = (xprec-1)/BITS_PER_MP_LIMB + 1;
+  xrw = xprec % BITS_PER_MP_LIMB; if (xrw == 0) { xrw = BITS_PER_MP_LIMB; }
 
 #ifdef Exp
   count_leading_zeros(flag, xp[xsize-1]); 
@@ -125,8 +128,9 @@ mpfr_round_raw(y, xp, xprec, negative, yprec, RND_MODE)
     MPN_ZERO(y, nw - xsize); /* PZ 27 May 99 */
     return 0; 
   }
+  /* Patch hideux xp[0] &= ~((1UL << (BITS_PER_MP_LIMB - xrw)) - 1); */
 
-  if (mpfr_round_raw2(xp, xsize, negative, RND_MODE, yprec))
+  if (mpfr_round_raw2(xp, xsize, negative, RND_MODE, yprec)) 
     carry = mpn_add_1(y, xp + xsize - nw, nw,
                           1UL << (BITS_PER_MP_LIMB - rw));
   else MPN_COPY(y, xp + xsize - nw, nw);
