@@ -734,20 +734,20 @@ Note that the input 0 is converted to +0.
 
 @deftypefun int mpfr_set_str (mpfr_t @var{rop}, const char *@var{s}, int @var{base}, mp_rnd_t @var{rnd})
 Set @var{rop} to the value of the whole string @var{s} in base @var{base}
-(between 2 and 36), rounded in direction @var{rnd}.
+(between 2 and 36), rounded in the direction @var{rnd}.
 See the documentation of @code{mpfr_strtofr} for a detailed description
-of the valid string formats. Additionnaly, special values 
+of the valid string formats. Additionally, special values
 @code{@@NaN@@}, @code{@@Inf@@}, @code{+@@Inf@@} and @code{-@@Inf@@},
-all case insensitive, without leading whitespaces and possibly followed by 
-other characters, are accepted too (It may change).
-This function returns 0 if the entire string up to the final @code{\0} is a
-valid number in base @var{base}; otherwise it returns @minus{}1.
+all case insensitive, without leading whitespace and possibly followed by
+other characters, are accepted too (it may change).
+This function returns 0 if the entire string up to the final null character
+is a valid number in base @var{base}; otherwise it returns @minus{}1.
 @end deftypefun
 
 @deftypefun int mpfr_strtofr (mpfr_t @var{rop}, const char *@var{nptr}, char **@var{endptr}, int @var{base}, mp_rnd_t @var{rnd})
 
  Read a floating point number from a string @var{nptr} in base @var{base},
- rounded in direction @var{rnd}. If successful the
+ rounded in the direction @var{rnd}. If successful, the
  result is stored in @var{rop} and @code{*@var{endptr}} points to the
  character just after those parsed. If @var{str} doesn't start with a
  valid number then @var{rop} is set to zero and the value of @var{nptr}
@@ -786,21 +786,21 @@ valid number in base @var{base}; otherwise it returns @minus{}1.
  whereas @code{@@} represents a power of the base (i.e. 16).
 
  If the argument @var{base} is different from 0, it must be in the range 2
- to 36. 
-@c For bases up to 36, 
+ to 36.
+@c For bases up to 36,
  Case is ignored; upper-case and lower-case letters have the same
  value
-@c ; for bases 37 to 62, upper-case letter represent the usual 
+@c ; for bases 37 to 62, upper-case letter represent the usual
 @c  10..35, while lower-case letter represent 36..61.
 
- If @code{base} is 0, then it tries to indentify the used base: if the
+ If @code{base} is 0, then it tries to identify the used base: if the
  mantissa begins with the @code{0x} prefix, it assumes that @var{base} is 16.
- If it begins with @code{0b}, it assumes that @var{base} is 2. Otherwise, it  
+ If it begins with @code{0b}, it assumes that @var{base} is 2. Otherwise, it
  assumes it is 10.
 
- It returns an usual ternary value.
- If @var{endptr} is not @code{NULL}, a pointer to the character after the last
- character used in the conversion is stored in the location
+ It returns a usual ternary value.
+ If @var{endptr} is not a null pointer, a pointer to the character after
+ the last character used in the conversion is stored in the location
  referenced by @var{endptr}.
 
 @end deftypefun
@@ -901,7 +901,7 @@ Convert @var{op} to a @code{mpz_t}, after rounding it with respect to
 
 @deftypefun {char *} mpfr_get_str (char *@var{str}, mp_exp_t *@var{expptr}, int @var{base}, size_t @var{n}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Convert @var{op} to a string of digits in base @var{base}, with rounding in
-direction @var{rnd}. The base may vary from 2 to 36.
+the direction @var{rnd}. The base may vary from 2 to 36.
 
 The generated string is a fraction, with an implicit radix point immediately
 to the left of the first digit.  For example, the number -3.1416 would be
@@ -1313,7 +1313,7 @@ prototypes for these functions.
 
 @deftypefun size_t mpfr_out_str (FILE *@var{stream}, int @var{base}, size_t @var{n}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Output @var{op} on stream @var{stream}, as a string of digits in
-base @var{base}, rounded in direction @var{rnd}.
+base @var{base}, rounded in the direction @var{rnd}.
 The base may vary from 2 to 36.  Print @var{n} significant digits exactly,
 or if @var{n} is 0, the maximum number of digits accurately representable
 by @var{op} (this feature may disappear).
@@ -1328,8 +1328,8 @@ Return the number of bytes written, or if an error occurred, return 0.
 
 @deftypefun size_t mpfr_inp_str (mpfr_t @var{rop}, FILE *@var{stream}, int @var{base}, mp_rnd_t @var{rnd})
 Input a string in base @var{base} from stream @var{stream},
-rounded in direction @var{rnd}, and put the
-read float in @var{rop}. The argument @var{base} may be in the range 2 to 36.
+rounded in the direction @var{rnd}, and put the
+read float in @var{rop}. The argument @var{base} must be in the range 2 to 36.
 
 The string is of the form @samp{M@@N} or, if the
 base is 10 or less, alternatively @samp{MeN} or @samp{MEN}, or, if the base
@@ -1585,7 +1585,7 @@ behavior will be undefined, in the sense of the ISO C standard.
 Return the minimum and maximum of the smallest and largest exponents
 allowed for @code{mpfr_set_emin} and @code{mpfr_set_emax}. These values
 are implementation dependent; it is possible to create a non
-portable program by writting @code{mpfr_set_emax(mpfr_get_emax_max())}
+portable program by writing @code{mpfr_set_emax(mpfr_get_emax_max())}
 and @code{mpfr_set_emin(mpfr_get_emin_min())} since the values
 of the smallest and largest exponents become implementation dependent.
 @end deftypefun
@@ -1669,7 +1669,7 @@ Initialize all the @code{mpfr_t} variables of the given @code{va_list},
 set their precision to be the default precision and their value to NaN.
 See @code{mpfr_init} for more details.
 The @code{va_list} is assumed to be composed only of type @code{mpfr_t}.
-It begins from @var{x}. It ends when it encounters a @code{NULL} pointer.
+It begins from @var{x}. It ends when it encounters a null pointer.
 @end deftypefun
 
 
@@ -1679,14 +1679,14 @@ set their precision to be @strong{exactly}
 @var{prec} bits and their value to NaN.
 See @code{mpfr_init2} for more details.
 The @code{va_list} is assumed to be composed only of type @code{mpfr_t}.
-It begins from @var{x}. It ends when it encounters a @code{NULL} pointer.
+It begins from @var{x}. It ends when it encounters a null pointer.
 @end deftypefun
 
 @deftypefun void mpfr_clears (mpfr_t @var{x}, ...)
 Free the space occupied by all the @code{mpfr_t} variables of the given
 @code{va_list}. See @code{mpfr_clear} for more details.
 The @code{va_list} is assumed to be composed only of type @code{mpfr_t}.
-It begins from @var{x}. It ends when it encounters a @code{NULL} pointer.
+It begins from @var{x}. It ends when it encounters a null pointer.
 @end deftypefun
 
 Here is an example of how to use multiple initialization functions:
@@ -1694,9 +1694,9 @@ Here is an example of how to use multiple initialization functions:
 @example
 @{
   mpfr_t x, y, z, t;
-  mpfr_inits2 (256, x, y, z, t, NULL);
+  mpfr_inits2 (256, x, y, z, t, (void *) 0);
   @dots{}
-  mpfr_clears (x, y, z, t, NULL);
+  mpfr_clears (x, y, z, t, (void *) 0);
 @}
 @end example
 
@@ -1806,10 +1806,10 @@ whole number of limbs, the excess bits at the low end of the data are zero.
 
 @deftypefun int mpfr_can_round (mpfr_t @var{b}, mp_exp_t @var{err}, mp_rnd_t @var{rnd1}, mp_rnd_t @var{rnd2}, mp_prec_t @var{prec})
 Assuming @var{b} is an approximation of an unknown number
-@var{x} in direction @var{rnd1} with error at most two to the power
+@var{x} in the direction @var{rnd1} with error at most two to the power
 E(b)-@var{err} where E(b) is the exponent of @var{b}, return a non-zero
 value if one is able to round exactly @var{x} to precision
-@var{prec} with direction @var{rnd2},
+@var{prec} with the direction @var{rnd2},
 and 0 otherwise (including for NaN and Inf).
 This function @strong{does not modify} its arguments.
 @end deftypefun
