@@ -126,11 +126,6 @@ void
 tests_rand_end (void)
 {
   RANDS_CLEAR ();
-  if (__gmp_rands_initialized)
-    {
-      gmp_randclear (__gmp_rands);
-      __gmp_rands_initialized = 0;
-    }
 }
 
 /* initialization function for tests using the hardware floats */
