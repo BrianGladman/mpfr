@@ -68,6 +68,7 @@ check_large (void)
   if (strcmp (s, "-12"))
     {
       fprintf (stderr, "Error in mpfr_get_str for x=-11.5 and rnd=GMP_RNDD\n");
+      fprintf (stderr, "got %s instead of -12\n", s);
       free (s);
       mpfr_clear (x);
       exit (1);
