@@ -180,7 +180,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
       return inexact;
     }
 
-  supplement = 2 - (comparaison > 0) ? 0 : MPFR_GET_EXP (xp);
+  supplement = 2 - ((comparaison > 0) ? 0 : MPFR_GET_EXP (xp));
   realprec = MPFR_PREC (atan) + MPFR_INT_CEIL_LOG2 (MPFR_PREC (atan)) + 4;
   prec = realprec + supplement + BITS_PER_MP_LIMB;
 

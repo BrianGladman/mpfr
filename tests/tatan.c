@@ -30,6 +30,7 @@ special (void)
 {
   mpfr_t x, y, z;
   mp_rnd_t r;
+  int i;
 
   mpfr_init2 (x, 53);
   mpfr_init2 (y, 53);
@@ -141,6 +142,21 @@ special (void)
       printf ("Error in mpfr_atan (3)\n");
       printf ("Expected "); mpfr_print_binary (y); printf ("\n");
       printf ("Got      "); mpfr_print_binary (z); printf ("\n");
+      exit (1);
+    }
+
+  /* Test regression */
+  mpfr_set_prec (x, 51);
+  mpfr_set_prec (y, 51);
+  mpfr_set_str_binary (x, 
+	   "0.101100100000101111111010001111111000001000000000000E-11");
+  i = mpfr_atan (y, x, GMP_RNDN);
+  if (mpfr_cmp_str (y, 
+   "1.01100100000101111111001110011001010110100100000000e-12", 2, GMP_RNDN)
+      || i >= 0)
+    {
+      printf ("Wrong Regression test (%d)\n", i);
+      mpfr_dump (y);
       exit (1);
     }
 
