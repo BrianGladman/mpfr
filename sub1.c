@@ -100,7 +100,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	     So if we round to Zero, we have to remove one ulp.
 	     Otherwise the result is correctly rounded. */
 	  if (MPFR_IS_LIKE_RNDZ (rnd_mode, MPFR_IS_NEG (a))) {
-	    mpfr_nexttoward (a, c);
+	    (MPFR_IS_POS (a) ? mpfr_nextbelow : mpfr_nextabove) (a);
 	    return -MPFR_INT_SIGN (a);
 	  }
 	  return MPFR_INT_SIGN (a);

@@ -215,6 +215,15 @@ main (int argc, char *argv[])
       exit (1);
     }
 
+  mpfr_set_str_binary (x, "1.1001001000011111101101010100010001000010110100010011");
+  mpfr_sin (x, x, GMP_RNDZ);
+  if (mpfr_cmp_str (x, "1.1111111111111111111111111111111111111111111111111111e-1", 2, 0))
+    {
+      printf ("Error for x= 1.1001001000011111101101010100010001000010110100010011\nGot ");
+      mpfr_dump (x);
+      exit (1);
+    }
+
   mpfr_clear (s2);
   mpfr_clear (c2);
   mpfr_clear (s);
