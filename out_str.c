@@ -65,8 +65,9 @@ mpfr_out_str (stream, base, n_digits, op, rnd_mode)
 
   if (!MPFR_NOTZERO(op))
     {
+      l = (MPFR_SIGN(op) < 0) ? fprintf (stream, "-") : 0;
       fprintf(stream, "0");
-      return 1;
+      return l + 1;
     }
 
   s = mpfr_get_str (NULL, &e, base, n_digits, op, rnd_mode);
