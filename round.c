@@ -61,7 +61,7 @@ int mpfr_round_raw2(mp_limb_t *xp, unsigned long xn, char neg, char rnd,
 	/* Modified PZ, 27 May 1999:
 	   rw, i.e. the number of bits stored in xp[xn-nw], is 
 	   BITS_PER_MP_LIMB-1, i.e. there is exactly one non significant bit. 
-	   We are just halway iff xp[wd] has its low significant bit 
+	   We are just halfway iff xp[wd] has its low significant bit 
 	   set and all limbs xp[0]...xp[wd-1] are zero */
 	{
 	  if (xp[wd] & 1)
@@ -147,20 +147,28 @@ mpfr_round(mpfr_t x, char RND_MODE, unsigned long prec)
 
    Side effects: none.
 */
-int mpfr_can_round(b, err, rnd1, rnd2, prec) mpfr_t b; unsigned int err;
+int mpfr_can_round(b, err, rnd1, rnd2, prec) mpfr_t b; unsigned long err;
 unsigned char rnd1, rnd2; unsigned long prec;
 {
-  int k, k1, l, l1, bn; mp_limb_t cc, cc2; char neg;
+  return mpfr_can_round_raw(MANT(b), (PREC(b) - 1)/BITS_PER_MP_LIMB + 1, 
+			    SIGN(b), err, rnd1, rnd2, prec); 
+}
+
+int
+mpfr_can_round_raw(mp_limb_t *bp, unsigned long bn, char neg, 
+		   unsigned long err, unsigned char rnd1, unsigned char rnd2, 
+		   unsigned long prec)
+{
+  int k, k1, l, l1; mp_limb_t cc, cc2;
 
   if (err<=prec) return 0;
+  neg = (neg > 0 ? 0 : 1); 
 
-  bn = 1+(PREC(b)-1)/mp_bits_per_limb; /* number of sign. limbs of b */
-  neg = (SIGN(b)<0);
-  k = err/mp_bits_per_limb;
-  l = err % mp_bits_per_limb; if (l) l = mp_bits_per_limb-l;
+  k = err/BITS_PER_MP_LIMB;
+  l = err % BITS_PER_MP_LIMB; if (l) l = BITS_PER_MP_LIMB-l;
   /* the error corresponds to bit l in limb k */
-  k1 = prec/mp_bits_per_limb;
-  l1 = prec%mp_bits_per_limb; if (l1) l1 = mp_bits_per_limb-l1;
+  k1 = prec/BITS_PER_MP_LIMB;
+  l1 = prec%BITS_PER_MP_LIMB; if (l1) l1 = BITS_PER_MP_LIMB-l1;
 
   /* the last significant bit is bit l1 in limb k1 */
 
@@ -177,58 +185,58 @@ unsigned char rnd1, rnd2; unsigned long prec;
 
     /* PAS BIEN SI ON VEUT DECLARER b EN CONST */
 
-    cc = (MANT(b)[bn-k1-1]>>l1) & 1;
-    cc ^= mpfr_round_raw2(MANT(b), bn, neg, rnd2, prec);
+    cc = (bp[bn-k1-1]>>l1) & 1;
+    cc ^= mpfr_round_raw2(bp, bn, neg, rnd2, prec);
 
     /* now round b+2^(EXP(b)-err) */
-    mpn_add_1(MANT(b)+bn-k-1, MANT(b)+bn-k-1, k+1, (mp_limb_t)1<<l);
-    cc2 = (MANT(b)[bn-k1-1]>>l1) & 1;
-    cc2 ^= mpfr_round_raw2(MANT(b), bn, neg, rnd2, prec);
+    mpn_add_1(bp+bn-k-1, bp+bn-k-1, k+1, (mp_limb_t)1<<l);
+    cc2 = (bp[bn-k1-1]>>l1) & 1;
+    cc2 ^= mpfr_round_raw2(bp, bn, neg, rnd2, prec);
 
     /* reset b to original value */
-    mpn_sub_1(MANT(b)+bn-k-1, MANT(b)+bn-k-1, k+1, (mp_limb_t)1<<l);
+    mpn_sub_1(bp+bn-k-1, bp+bn-k-1, k+1, (mp_limb_t)1<<l);
 
     /* if parity of cc and cc2 equals, then one is able to round */
     return (cc == cc2);
 
   case GMP_RNDU: /* b-2^(EXP(b)-err) <= x <= b */
     /* first round b */
-    cc = (MANT(b)[bn-k1-1]>>l1) & 1;
-    cc ^= mpfr_round_raw2(MANT(b), bn, neg, rnd2, prec);
+    cc = (bp[bn-k1-1]>>l1) & 1;
+    cc ^= mpfr_round_raw2(bp, bn, neg, rnd2, prec);
 
     /* now round b-2^(EXP(b)-err) */
-    cc2 = mpn_sub_1(MANT(b)+bn-k-1, MANT(b)+bn-k-1, k+1, (mp_limb_t)1<<l);
+    cc2 = mpn_sub_1(bp+bn-k-1, bp+bn-k-1, k+1, (mp_limb_t)1<<l);
     if (cc2) return 0;
-    cc2 = (MANT(b)[bn-k1-1]>>l1) & 1;
-    cc2 ^= mpfr_round_raw2(MANT(b), bn, neg, rnd2, prec);
+    cc2 = (bp[bn-k1-1]>>l1) & 1;
+    cc2 ^= mpfr_round_raw2(bp, bn, neg, rnd2, prec);
 
     /* reset b to original value */
-    mpn_add_1(MANT(b)+bn-k-1, MANT(b)+bn-k-1, k+1, (mp_limb_t)1<<l);
+    mpn_add_1(bp+bn-k-1, bp+bn-k-1, k+1, (mp_limb_t)1<<l);
 
     /* if parity of cc and cc2 equals, then one is able to round */
     return (cc == cc2);
 
   case GMP_RNDN: /* b-2^(EXP(b)-err-1) <= x <= b+2^(EXP(b)-err-1) */
     
-    if (l) { l--; } else { k++; l=mp_bits_per_limb-1; }
+    if (l) { l--; } else { k++; l=BITS_PER_MP_LIMB-1; }
 
     /* first round b+2^(EXP(b)-err-1)*/    
-    cc = mpn_add_1(MANT(b)+bn-k-1, MANT(b)+bn-k-1, k+1, (mp_limb_t)1<<l);
+    cc = mpn_add_1(bp+bn-k-1, bp+bn-k-1, k+1, (mp_limb_t)1<<l);
     if (cc) return 0; 
-    cc = (MANT(b)[bn-k1-1]>>l1) & 1;
-    cc ^= mpfr_round_raw2(MANT(b), bn, neg, rnd2, prec);
+    cc = (bp[bn-k1-1]>>l1) & 1;
+    cc ^= mpfr_round_raw2(bp, bn, neg, rnd2, prec);
 
-    mpn_add_1(MANT(b)+bn-k-1, MANT(b)+bn-k-1, k+1, (mp_limb_t)1<<l);
+    mpn_add_1(bp+bn-k-1, bp+bn-k-1, k+1, (mp_limb_t)1<<l);
 
     /* now round b-2^(EXP(b)-err-1) */
-    cc2 = mpn_sub_1(MANT(b)+bn-k-1, MANT(b)+bn-k-1, k+1, (mp_limb_t)1<<l);
+    cc2 = mpn_sub_1(bp+bn-k-1, bp+bn-k-1, k+1, (mp_limb_t)1<<l);
     if (cc2) return 0;
-    cc2 = (MANT(b)[bn-k1-1]>>l1) & 1;
-    cc2 ^= mpfr_round_raw2(MANT(b), bn, neg, rnd2, prec);
+    cc2 = (bp[bn-k1-1]>>l1) & 1;
+    cc2 ^= mpfr_round_raw2(bp, bn, neg, rnd2, prec);
 
     /* if parity of cc and cc2 equals, then one is able to round */
     /* reset b to original value */
-    mpn_add_1(MANT(b)+bn-k-1, MANT(b)+bn-k-1, k+1, (mp_limb_t)1<<l);
+    mpn_add_1(bp+bn-k-1, bp+bn-k-1, k+1, (mp_limb_t)1<<l);
     return (cc == cc2);
 
   default:
