@@ -26,12 +26,13 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-test.h"
 
-void check _PROTO((double, double, mp_rnd_t, unsigned int, 
-		   unsigned int, unsigned int, double)); 
-void check53 _PROTO((double, double, mp_rnd_t, double)); 
-void check24 _PROTO((float, float, mp_rnd_t, float)); 
-void check_float _PROTO((void)); 
-void check_sign _PROTO((void)); 
+void check _PROTO((double, double, mp_rnd_t, unsigned int,
+		   unsigned int, unsigned int, double));
+void check53 _PROTO((double, double, mp_rnd_t, double));
+void check24 _PROTO((float, float, mp_rnd_t, float));
+void check_float _PROTO((void));
+void check_sign _PROTO((void));
+void check_exact _PROTO((void));
 
 /* checks that x*y gives the same results in double
    and with mpfr with 53 bits of precision */
@@ -163,6 +164,77 @@ void check_sign ()
   mpfr_clear(a); mpfr_clear(b);
 }
 
+/* checks that the inexact return value is correct */
+void
+check_exact ()
+{
+  mpfr_t a, b, c, d;
+  mp_prec_t prec;
+  int i, inexact;
+  mp_rnd_t rnd;
+
+  mpfr_init (a);
+  mpfr_init (b);
+  mpfr_init (c);
+  mpfr_init (d);
+
+  mpfr_set_prec (a, 17);
+  mpfr_set_prec (b, 17);
+  mpfr_set_prec (c, 32);
+  mpfr_set_str_raw (a, "1.1000111011000100e-1");
+  mpfr_set_str_raw (b, "1.0010001111100111e-1");
+  if (mpfr_mul (c, a, b, GMP_RNDZ))
+    {
+      fprintf (stderr, "wrong return value (1)\n");
+      exit (1);
+    }
+
+  for (prec = 2; prec < 100; prec++)
+    {
+      mpfr_set_prec (a, prec);
+      mpfr_set_prec (b, prec);
+      mpfr_set_prec (c, 2 * prec - 2);
+      mpfr_set_prec (d, 2 * prec);
+      for (i = 0; i < 1000; i++)
+	{
+	  mpfr_random (a);
+	  mpfr_random (b);
+	  rnd = rand() % 4;
+	  inexact = mpfr_mul (c, a, b, rnd);
+	  if (mpfr_mul (d, a, b, rnd)) /* should be always exact */
+	    {
+	      fprintf (stderr, "unexpected inexact return value\n");
+	      exit (1);
+	    }
+	  if ((inexact == 0) && mpfr_cmp (c, d))
+	    {
+	      fprintf (stderr, "inexact=0 but results differ\n");
+	      exit (1);
+	    }
+	  else if (inexact && (mpfr_cmp (c, d) == 0))
+	    {
+	      fprintf (stderr, "inexact!=0 but results agree\n");
+	      fprintf (stderr, "prec=%u rnd=%s a=", (unsigned int) prec,
+		       mpfr_print_rnd_mode (rnd));
+	      mpfr_out_str (stderr, 2, 0, a, rnd);
+	      fprintf (stderr, "\nb=");
+	      mpfr_out_str (stderr, 2, 0, b, rnd);
+	      fprintf (stderr, "\nc=");
+	      mpfr_out_str (stderr, 2, 0, c, rnd);
+	      fprintf (stderr, "\nd=");
+	      mpfr_out_str (stderr, 2, 0, d, rnd);
+	      fprintf (stderr, "\n");
+	      exit (1);
+	    }
+	}
+    }
+
+  mpfr_clear (a);
+  mpfr_clear (b);
+  mpfr_clear (c);
+  mpfr_clear (d);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -170,7 +242,8 @@ main (int argc, char *argv[])
   double x, y, z; int i, prec, rnd_mode;
 #endif
 
-  check_float();
+  check_exact ();
+  check_float ();
   check53(0.0, 1.0/0.0, GMP_RNDN, 0.0/0.0); 
   check53(1.0, 1.0/0.0, GMP_RNDN, 1.0/0.0); 
   check53(-1.0, 1.0/0.0, GMP_RNDN, -1.0/0.0); 
