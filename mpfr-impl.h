@@ -144,6 +144,26 @@ extern mpfr_cache_t __gmpfr_cache_const_euler;
 # error "BITS_PER_MP_LIMB must be a power of 2, and >= 32"
 #endif
 
+#if BITS_PER_MP_LIMB == 32
+# define MPFR_LOG2_BITS_PER_MP_LIMB 5
+#elif BITS_PER_MP_LIMB == 64
+# define MPFR_LOG2_BITS_PER_MP_LIMB 6
+#elif BITS_PER_MP_LIMB == 128
+# define MPFR_LOG2_BITS_PER_MP_LIMB 7
+#elif BITS_PER_MP_LIMB == 256
+# define MPFR_LOG2_BITS_PER_MP_LIMB 8
+#else
+# error "Can't compute log2(BITS_PER_MP_LIMB)"
+#endif
+
+/* mpn_sub_nc is internal but may be defined in the header 
+   but not in the library! */
+#ifndef MPFR_HAVE_MPN_SUB_NC
+mp_limb_t mpfr_sub_nc _MPFR_PROTO ((mp_ptr, mp_srcptr, mp_srcptr, mp_size_t,
+                                    mp_limb_t ));
+#undef mpn_sub_nc
+#define mpn_sub_nc mpfr_sub_nc
+#endif
 
 
 /******************************************************

@@ -185,7 +185,7 @@ int main() { return !gmp_version; }
 
 dnl Check for corresponding 'gmp.h' and libgmp.a
 AC_MSG_CHECKING(if gmp.h version and libgmp version are the same)
-AC_TRY_RUN([
+AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <stdio.h>
 #include <string.h>
 #include "gmp.h"
@@ -200,11 +200,30 @@ int main()
   printf ("(%s/%s) ", buffer, gmp_version);
   return (strcmp (buffer, gmp_version) != 0) ? 1 : 0;
 }
-], AC_MSG_RESULT(yes),
+]])], AC_MSG_RESULT(yes),
    [AC_MSG_RESULT(no)
     AC_MSG_ERROR(['gmp.h' and 'libgmp' have different versions! you have to properly reinstall GMP.])],
     AC_MSG_RESULT([can't test])
 )
+
+dnl Check if Function mpn_sub_nc is in the header AND in the library!
+dnl Since this function may or may not be really defined
+AC_MSG_CHECKING(for GMP's mpn_sub_nc)
+AC_RUN_IFELSE([AC_LANG_SOURCE([[
+#include "gmp.h"
+#ifdef MPFR_HAVE_GMP_IMPL
+# include "gmp-impl.h"
+#endif 
+int main () { return !mpn_sub_nc; }
+]], [[]])],[
+    AC_MSG_RESULT(yes) 
+    AC_DEFINE([MPFR_HAVE_MPN_SUB_NC],1)
+  ], [
+    AC_MSG_RESULT(no)
+  ], [
+    AC_MSG_RESULT([can't test])
+  ])
+
 
 AC_SUBST(INCLUDES)
 AC_SUBST(LDADD)

@@ -372,6 +372,9 @@ mpfr_default_free (void *blk_ptr, size_t blk_size)
   free (blk_ptr);
 }
 
+#endif /* Have gmp-impl.h */
+
+#ifndef MPFR_HAVE_MPN_SUB_NC
 mp_limb_t 
 mpfr_sub_nc (mp_ptr dest, mp_srcptr op1, mp_srcptr op2, mp_size_t s, 
 	     mp_limb_t c)
@@ -383,5 +386,5 @@ mpfr_sub_nc (mp_ptr dest, mp_srcptr op1, mp_srcptr op2, mp_size_t s,
   return c2;
 }
 
-#endif /* Have gmp-impl.h */
+#endif /* !Have MPFR_HAVE_MPN_SUB_NC */
 

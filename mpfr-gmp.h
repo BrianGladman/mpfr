@@ -248,12 +248,6 @@ void mpfr_rand_raw _MPFR_PROTO((mp_ptr, gmp_randstate_t, unsigned long int));
 void mpfr_init_gmp_rand _MPFR_PROTO((void));
 #define MPFR_TEST_USE_RANDS() mpfr_init_gmp_rand ();
 
-/* Not defined in gmp.h but in gmp-impl.h */
-mp_limb_t mpfr_sub_nc _MPFR_PROTO ((mp_ptr, mp_srcptr, mp_srcptr, mp_size_t, 
-				    mp_limb_t ));
-#ifndef mpn_sub_nc
-# define mpn_sub_nc mpfr_sub_nc
-#endif
 
 /* Allocate func are defined in gmp-impl.h */
 
