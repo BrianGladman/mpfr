@@ -24,12 +24,22 @@ MA 02111-1307, USA. */
 #include "gmp.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
+#ifdef IRIX64
+#include <sys/fpu.h>
+#endif
 
 extern int isnan();
 
 int main(int argc, char *argv[])
 {
    mpfr_t x; int n, k, rnd; double d, dd;
+#ifdef IRIX64
+    /* to get denormalized numbers on IRIX64 */
+    union fpc_csr exp;
+    exp.fc_word = get_fpc_csr();
+    exp.fc_struct.flush = 0;
+    set_fpc_csr(exp.fc_word);
+#endif
 
    mpfr_init2(x, 53);
 
