@@ -35,7 +35,7 @@ so Pi*16^N-S'(N) <= N+1
 #include "longlong.h"
 #include "mpfr.h"
 
-mpfr_pi(x, rnd_mode) mpfr_ptr x; unsigned char rnd_mode;
+void mpfr_pi(x, rnd_mode) mpfr_ptr x; unsigned char rnd_mode;
 {
   int N, oldN, n, prec; mpz_t pi, num, den, d3, d2, tmp;
 

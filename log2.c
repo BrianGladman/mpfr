@@ -18,7 +18,7 @@
 
    Then 2^N*log(2)-S'(N) <= N-1+2/N <= N for N>=2.
 */
-mpfr_log2(x, rnd_mode) mpfr_ptr x; unsigned char rnd_mode;
+void mpfr_log2(x, rnd_mode) mpfr_ptr x; unsigned char rnd_mode;
 {
   int N, oldN, k; mpz_t s, t, u;
 
