@@ -47,15 +47,23 @@ static int
 mpfr_printf_mpfr_print (FILE *stream, const struct printf_info *info, 
 			const void * const *arg)
 {
+  int length;
+  int org_type_logging;
+
   /* TODO: Use much more flag from info  */
   mpfr_srcptr w = *((mpfr_srcptr *) (arg[0]));
   mp_prec_t prec = mpfr_log_prec != 0 ? mpfr_log_prec
     : info->width == -1 ? 0 : (mp_prec_t) info->width;
 
+  org_type_logging = mpfr_log_type;
+  mpfr_log_type = 0; /* We disable the logging during this print! */
   if (info->alt)
-    return fprintf (stream, "%lu", MPFR_PREC (w));
+    length = fprintf (stream, "%lu", MPFR_PREC (w));
   else
-    return mpfr_out_str (stream, mpfr_log_base, prec, w, GMP_RNDN);
+    length = mpfr_out_str (stream, mpfr_log_base, prec, w, GMP_RNDN);
+  mpfr_log_type = org_type_logging;
+
+  return length;
 }
 
 static int
