@@ -1,6 +1,7 @@
-#include <math.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <stdlib.h> 
+#include <unistd.h>
+#include <math.h>
 #include "gmp.h"
 #include "mpfr.h"
 
@@ -32,11 +33,12 @@ int ulp(a,b) double a,b;
 
 #define check(a,r) check2(a,r,0.0)
 
-void check2(double a, unsigned char rnd_mode, double res1)
+/* return the number of ulps of error */
+int check1(double a, unsigned char rnd_mode, double res1, int bugs)
 {
   mpfr_t ta, tres;
   double res2;
-  int ck=0; /* ck=1 iff res1 is certified correct */
+  int ck=1; /* ck=1 iff res1 is certified correct */
 
   mpfr_set_machine_rnd_mode(rnd_mode);  
   if (res1==0.0) res1=log(a); else ck=1;
@@ -46,23 +48,30 @@ void check2(double a, unsigned char rnd_mode, double res1)
   mpfr_set_d(ta, a, GMP_RNDN);
   mpfr_log(tres, ta, rnd_mode);
   res2=mpfr_get_d(tres);
-
-  if (res1!=res2 && (!isnan(res1) || !isnan(res2))) {
-    if (ck) 
-      printf("mpfr_log failed for    a=%1.20e, rnd_mode=%d\n",a,rnd_mode);
-    else
-      printf("mpfr_log differs from libm.a for a=%1.20e, rnd_mode=%d\n",a,rnd_mode);
-    printf(" double calculus gives %1.20e\n mpfr_log        gives %1.20e (%d ulp)\n pari            gives \n \n",res1,res2,ulp(res1,res2));
-  }
-  /*else {
-    printf("GOAL !!! for           a=%1.20e, rnd_mode=%d\n",a,rnd_mode);
-    printf(" double calculus gives %1.20e\n pari            gives \n \n",res1);
-    }*/
   mpfr_clear(ta); mpfr_clear(tres); 
+
+  if (bugs) {
+    if (res1!=res2 && (!isnan(res1) || !isnan(res2))) {
+      if (ck) 
+	printf("mpfr_log failed for    a=%1.20e, rnd_mode=%d\n",a,rnd_mode);
+      else
+	printf("mpfr_log differs from libm.a for a=%1.20e, rnd_mode=%d\n",a,rnd_mode);
+      printf(" double calculus gives %1.20e\n mpfr_log        gives %1.20e (%d ulp)\n pari            gives \n \n",res1,res2,ulp(res1,res2));
+    }
+  }
+  if (!isnan(res1) || !isnan(res2))
+    return ulp(res1,res2);
+  else
+    return 0;
 }
 
 
-check3(double d, unsigned long prec, unsigned char rnd)
+void check2(double a, unsigned char rnd_mode, double res1) {
+  check1(a,rnd_mode, res1,1);
+  return;
+}
+
+void check3(double d, unsigned long prec, unsigned char rnd)
 {
   mpfr_t x, y;
   
@@ -73,27 +82,36 @@ check3(double d, unsigned long prec, unsigned char rnd)
   mpfr_clear(x); mpfr_clear(y);
 }
 
+void check4(int N) {
+  int i, max=-1, sum=0, cur;
+  double d;
+
+  srand48(getpid());
+
+  for(i=0;i<N;i++) {
+    d=drand();
+    cur=check1(d,rand() % 4,0.0,0);
+    if (cur<0)
+      cur = -cur;
+    if (cur > max)
+      max=cur;
+    sum+=cur;
+  }
+  d=(double)sum / (double)N;
+  printf("max error : %i \t mean error : %f   (in ulps)\n",max,d);
+}
+
+
 /* examples from Jean-Michel Muller and Vincent Lefevre 
    Cf http://www.ens-lyon.fr/~jmmuller/Intro-to-TMD.htm
 */
 
-check_worst_cases()
-{ /*-2*/
-  double d, pow=1.0;
-  int i;
-  d=(double)4507651597124051;
-  for(i=0;i<52;i++)
-    pow*=2.0;
-  d/=pow;
+void check_worst_cases()
+{ 
   check2(1.00089971802309629645, GMP_RNDD, 8.99313519443722736088e-04); 
   check2(1.00089971802309629645, GMP_RNDN, 8.99313519443722844508e-04);
   check2(1.00089971802309629645, GMP_RNDU, 8.99313519443722844508e-04); 
 
-  check2(d, GMP_RNDD, 8.99313519443722736088e-04); 
-  check2(d, GMP_RNDN, 8.99313519443722844508e-04);
-  check2(d, GMP_RNDU, 8.99313519443722844508e-04); 
-
-  /*+1*/
   check2(1.01979300812244555452, GMP_RNDD, 1.95996734891603630047e-02); 
   check2(1.01979300812244555452, GMP_RNDN, 1.95996734891603664741e-02);
   check2(1.01979300812244555452, GMP_RNDU, 1.95996734891603664741e-02);
@@ -174,8 +192,7 @@ check_worst_cases()
 
 
 void main(int argc, char *argv[]) {
-  int i, N=0;
-  double d;
+  int N=0;
 
   if (argc==4) {   /* tlog x prec rnd */
     check3(atof(argv[1]), atoi(argv[2]), atoi(argv[3]));
@@ -184,7 +201,7 @@ void main(int argc, char *argv[]) {
   if (argc==2) { /* tlog N: N tests with random double's */
     N=atoi(argv[1]);
     printf("Doing %d random tests in double precision\n", N);
-    printf("GMP_RNDN : %i, GMP_RNDZ : %i,GMP_RNDU : %i,GMP_RNDD : %i\n",GMP_RNDN, GMP_RNDZ,GMP_RNDU, GMP_RNDD); 
+    /*printf("GMP_RNDN : %i, GMP_RNDZ : %i,GMP_RNDU : %i,GMP_RNDD : %i\n",GMP_RNDN, GMP_RNDZ,GMP_RNDU, GMP_RNDD); */
   }
   else {
     check_worst_cases();
@@ -230,11 +247,7 @@ void main(int argc, char *argv[]) {
   check(1.68775280934272742250e+00,GMP_RNDZ); 
   check(5.32204288784834943727e+02,GMP_RNDZ);
   } 
-
-  srand48(getpid());
-  for(i=0;i<N;i++) {
-    d=drand();
-    check(d,rand() % 4);
-  }
+  if (N!=0)
+    check4(N);
 } 
 
