@@ -90,11 +90,11 @@ mpfr_log()
     mpfr_set_si(tmp1,1,GMP_RNDN);         /* I have 1 */
     mpfr_set_si(tmp2,4,GMP_RNDN);         /* I have 4 */
     mpfr_mul_2exp(s,a,m,GMP_RNDN);        /* I compute s=a*2^m */ 
-    mpfr_div(rapport,tmp2,s,GMP_RNDN);    /* I compute 4/s */
+    mpfr_div3(rapport,tmp2,s,GMP_RNDN);    /* I compute 4/s */
     mpfr_agm(agm,tmp1,rapport,GMP_RNDN);  /* I compute AG(1,4/s) */
     mpfr_mul_2exp(tmp1,agm,1,GMP_RNDN);   /* I compute 2*AG(1,4/s) */
     mpfr_pi(cst, GMP_RNDN);               /* I compute pi */
-    mpfr_div(tmp2,cst,tmp1,GMP_RNDN);     /* I compute pi/2*AG(1,4/s) */
+    mpfr_div3(tmp2,cst,tmp1,GMP_RNDN);     /* I compute pi/2*AG(1,4/s) */
     mpfr_log2(cst,GMP_RNDN);              /* I compute log(2) */
     mpfr_mul(tmp1,cst,mm,GMP_RNDN);       /* I compute m*log(2) */
     mpfr_sub(cst,tmp2,tmp1,GMP_RNDN);     /* I compute log(a) */ 
