@@ -234,9 +234,8 @@ mpfr_set_d(mpfr_t r, double d, unsigned char rnd_mode)
   return; 
 }
 
-
 double
-mpfr_get_d(mpfr_t src)
+mpfr_get_d2(mpfr_srcptr src, long e)
 {
   double res;
   mp_size_t size, i, n_limbs_to_use;
@@ -269,8 +268,14 @@ mpfr_get_d(mpfr_t src)
   for (i = n_limbs_to_use; i>=1; i--)
     res = res / MP_BASE_AS_DOUBLE +
       ((negative) ? -(double)qp[size - i] : qp[size - i]);
-  res = __mpfr_scale2 (res, EXP(src) - BITS_PER_MP_LIMB); 
+  res = __mpfr_scale2 (res, e - BITS_PER_MP_LIMB); 
 
   return res;
+}
+
+double 
+mpfr_get_d(mpfr_srcptr src)
+{
+  mpfr_get_d2(src, EXP(src));
 }
 
