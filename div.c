@@ -1,21 +1,28 @@
 #include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "gmp.h"
+#include "gmp-impl.h"
 #include "mpfr.h"
 
-/* #define DEBUG
-#define DEBUG2 */
+/* #define DEBUG */
+/* #define DEBUG2 */
 
 /* q <- n/d using Goldschmidt's iteration */
-void mpfr_div(q, n, d, rnd_mode) 
-mpfr_ptr q; mpfr_srcptr n, d; unsigned char rnd_mode;
+void mpfr_div(Q, n, d, rnd_mode) 
+mpfr_ptr Q; mpfr_srcptr n, d; unsigned char rnd_mode;
 {
   mpfr_t eps, tmp, one; int expd, i, prec, precq, sh, guard, err;
-  mp_limb_t cc;
+  mp_limb_t cc; mpfr_ptr q;
 
-  if (q==n || q==d) {
-    fprintf(stderr, "destination equals source in mpfr_div\n");
-    exit(1);
+  if (FLAG_NAN(n) || FLAG_NAN(d)) {
+    SET_NAN(q); return;
   }
+  if (Q==n || Q==d) {
+    q = (mpfr_ptr) (*_mp_allocate_func) (sizeof(__mpfr_struct));
+    mpfr_init2(q, PREC(Q));
+  }
+  else q=Q;
 #ifdef DEBUG
   printf("enter mpfr_div, prec(q)=%d n=%1.20e prec(n)=%d d=%1.20e prec(d)=%d rnd=%d\n",PREC(q),mpfr_get_d(n),PREC(n),mpfr_get_d(d),PREC(d),rnd_mode); 
   printf("n="); mpfr_print_raw(n); putchar('\n');
@@ -25,19 +32,14 @@ mpfr_ptr q; mpfr_srcptr n, d; unsigned char rnd_mode;
       ((mp_limb_t)1<<(mp_bits_per_limb-1)))==0) {
     printf("Error in mpfr_div: n is not msb-normalized\n"); exit(1);
   }
-  if (FLAG_NAN(n) || FLAG_NAN(d)) {
-#ifdef DEBUG
-    printf("dividend or divisor is NaN\n");
-#endif
-    SET_NAN(q); return;
-  }
   prec = precq = PREC(q);
   for (i=0;i<2;i++)
     prec = precq + (int) ceil(log(2.0*ceil(log((double)prec)/log(2.0))+7.0)/
 			   log(2.0));
   err = prec-precq; /* the error is at most 2^err ulp */
-  prec++; /* add one bit otherwise mfpr_can_round will always fail */
-  prec = prec-mp_bits_per_limb;
+  /* adjust to use complete limbs: the following formula guarantees we get
+     at least one guard bit */
+  prec = (prec/mp_bits_per_limb)*mp_bits_per_limb;
   do {
     prec += mp_bits_per_limb;
 #ifdef DEBUG2
@@ -92,6 +94,7 @@ mpfr_ptr q; mpfr_srcptr n, d; unsigned char rnd_mode;
 #ifdef DEBUG
        printf("not enough precision\n");
        printf("q="); mpfr_print_raw(q); putchar('\n');
+       printf("prec-err=%d precq=%d\n",prec-err,precq);
 #endif
        if (prec>2*precq) { printf("does not converge\n"); exit(1); }
      }
@@ -104,4 +107,8 @@ mpfr_ptr q; mpfr_srcptr n, d; unsigned char rnd_mode;
   printf("q = %1.20e\n", mpfr_get_d(q));
   printf("n/d=%1.20e\n", mpfr_get_d(n)/mpfr_get_d(d));
 #endif
+  if (Q==n || Q==d) {
+    mpfr_set(Q, q, rnd_mode);
+    mpfr_clear(q);
+  }
 }

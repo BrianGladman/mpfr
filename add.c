@@ -318,31 +318,37 @@ printf("b+c="); mpfr_print_raw(a); putchar('\n');
 void mpfr_add(a, b, c, rnd_mode) 
 mpfr_ptr a; mpfr_srcptr b, c; unsigned char rnd_mode;
 {
-  int diff_exp;
+  int diff_exp; mpfr_ptr res;
 
-  if (a==b || a==c) {
-    fprintf(stderr, "destination equals source in mpfr_add\n");
-    exit(1);
+  if (FLAG_NAN(b) || FLAG_NAN(c)) {
+    SET_NAN(a); return;
   }
+  if (a==b || a==c) {
+    res = (mpfr_ptr) (*_mp_allocate_func) (sizeof(__mpfr_struct));
+    mpfr_init2(res, PREC(a));
+  }
+  else res=a;
   diff_exp = EXP(b)-EXP(c);
   if (SIGN(b) != SIGN(c)) { /* signs differ, it's a subtraction */
     if (diff_exp<0) {
-      mpfr_sub1(a, c, b, rnd_mode, -diff_exp);
+      mpfr_sub1(res, c, b, rnd_mode, -diff_exp);
     }
-    else if (diff_exp>0) mpfr_sub1(a, b, c, rnd_mode, diff_exp);
+    else if (diff_exp>0) mpfr_sub1(res, b, c, rnd_mode, diff_exp);
     else { /* diff_exp=0 */
       CHANGE_SIGN(c);
       diff_exp = mpfr_cmp(b,c);
       CHANGE_SIGN(c);
       /* if b>0 and diff_exp>0 or b<0 and diff_exp<0: abs(b) > abs(c) */
-      if (diff_exp*SIGN(b)>=0) mpfr_sub1(a, b, c, rnd_mode, 0);
-      else {
-	mpfr_sub1(a, c, b, rnd_mode, 0);
-      }
+      if (diff_exp*SIGN(b)>=0) mpfr_sub1(res, b, c, rnd_mode, 0);
+      else mpfr_sub1(res, c, b, rnd_mode, 0);
     }
   }
   else /* signs are equal, it's an addition */
-    if (diff_exp<0) mpfr_add1(a, c, b, rnd_mode, -diff_exp);
-    else mpfr_add1(a, b, c, rnd_mode, diff_exp);
+    if (diff_exp<0) mpfr_add1(res, c, b, rnd_mode, -diff_exp);
+    else mpfr_add1(res, b, c, rnd_mode, diff_exp);
+  if (a==b || a==c) {
+    mpfr_set(a, res, rnd_mode);
+    mpfr_clear(res);
+  }
 }
 
