@@ -115,7 +115,6 @@ mpfr_cos2_aux (mpfr_ptr s, mpfr_srcptr r)
   mpfr_t t;
 
   MPFR_ASSERTD (MPFR_GET_EXP (r) <= 0);
-  MPFR_ASSERTD (MPFR_PREC(s) == MPFR_PREC(t));
 
   mpfr_init2 (t, m);
   MPFR_SET_ONE (t);
