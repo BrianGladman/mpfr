@@ -75,7 +75,7 @@ include_HEADERS = mpfr.h mpf2mpfr.h mpfr-test.h
 
 lib_LIBRARIES = libmpfr.a
 
-libmpfr_a_SOURCES = cputime.h mpfr.h mpfr-impl.h exceptions.c save_expo.c extract.c add.c add_ui.c add_ulp.c agm.c clear.c cmp.c cmp_abs.c cmp_ui.c div_2exp.c div.c div_ui.c dump.c eq.c exp2.c exp3.c exp.c get_str.c init.c inp_str.c isinteger.c isnan.c log2.c log.c mul_2exp.c mul.c mul_ui.c neg.c out_str.c pi.c pow.c pow_si.c pow_ui.c print_raw.c print_rnd_mode.c random2.c random.c reldiff.c rnd_mode.c round.c set.c set_d.c set_dfl_prec.c set_rnd.c set_f.c set_prc_raw.c set_prec.c set_q.c set_si.c set_str.c set_str_raw.c set_ui.c set_z.c sqrt.c sqrt_ui.c sub.c sub_ui.c trunc.c ui_div.c ui_sub.c urandomb.c sqrtrem.c mpz_set_fr.c swap.c  factorial.c cosh.c sinh.c tanh.c acosh.c asinh.c atanh.c atan.c cmp2.c exp_2.c asin.c euler.c cos.c sin.c tan.c fma.c hypot.c log1p.c expm1.c log_base_2.c ui_pow.c ui_pow_ui.c log_base_10.c minmax.c dim.c copysign.c gmp_op.c
+libmpfr_a_SOURCES = cputime.h mpfr.h mpfr-impl.h exceptions.c save_expo.c extract.c add.c add1.c add_ui.c add_ulp.c agm.c clear.c cmp.c cmp_abs.c cmp_ui.c div_2exp.c div.c div_ui.c dump.c eq.c exp2.c exp3.c exp.c get_str.c init.c inp_str.c isinteger.c isnan.c log2.c log.c mul_2exp.c mul.c mul_ui.c neg.c out_str.c pi.c pow.c pow_si.c pow_ui.c print_raw.c print_rnd_mode.c random2.c random.c reldiff.c rnd_mode.c round.c set.c set_d.c set_dfl_prec.c set_rnd.c set_f.c set_prc_raw.c set_prec.c set_q.c set_si.c set_str.c set_str_raw.c set_ui.c set_z.c sqrt.c sqrt_ui.c sub.c sub1.c sub_ui.c trunc.c ui_div.c ui_sub.c urandomb.c sqrtrem.c mpz_set_fr.c swap.c  factorial.c cosh.c sinh.c tanh.c acosh.c asinh.c atanh.c atan.c cmp2.c exp_2.c asin.c euler.c cos.c sin.c tan.c fma.c hypot.c log1p.c expm1.c log_base_2.c ui_pow.c ui_pow_ui.c log_base_10.c minmax.c dim.c copysign.c gmp_op.c
 
 libmpfr_a_LIBADD = ceil.o floor.o
 
@@ -92,19 +92,19 @@ DEFS = @DEFS@ -I. -I$(srcdir)
 CPPFLAGS = @CPPFLAGS@
 LIBS = @LIBS@
 libmpfr_a_DEPENDENCIES =  ceil.o floor.o
-libmpfr_a_OBJECTS =  exceptions.o save_expo.o extract.o add.o add_ui.o \
-add_ulp.o agm.o clear.o cmp.o cmp_abs.o cmp_ui.o div_2exp.o div.o \
-div_ui.o dump.o eq.o exp2.o exp3.o exp.o get_str.o init.o inp_str.o \
-isinteger.o isnan.o log2.o log.o mul_2exp.o mul.o mul_ui.o neg.o \
-out_str.o pi.o pow.o pow_si.o pow_ui.o print_raw.o print_rnd_mode.o \
-random2.o random.o reldiff.o rnd_mode.o round.o set.o set_d.o \
-set_dfl_prec.o set_rnd.o set_f.o set_prc_raw.o set_prec.o set_q.o \
-set_si.o set_str.o set_str_raw.o set_ui.o set_z.o sqrt.o sqrt_ui.o \
-sub.o sub_ui.o trunc.o ui_div.o ui_sub.o urandomb.o sqrtrem.o \
-mpz_set_fr.o swap.o factorial.o cosh.o sinh.o tanh.o acosh.o asinh.o \
-atanh.o atan.o cmp2.o exp_2.o asin.o euler.o cos.o sin.o tan.o fma.o \
-hypot.o log1p.o expm1.o log_base_2.o ui_pow.o ui_pow_ui.o log_base_10.o \
-minmax.o dim.o copysign.o gmp_op.o
+libmpfr_a_OBJECTS =  exceptions.o save_expo.o extract.o add.o add1.o \
+add_ui.o add_ulp.o agm.o clear.o cmp.o cmp_abs.o cmp_ui.o div_2exp.o \
+div.o div_ui.o dump.o eq.o exp2.o exp3.o exp.o get_str.o init.o \
+inp_str.o isinteger.o isnan.o log2.o log.o mul_2exp.o mul.o mul_ui.o \
+neg.o out_str.o pi.o pow.o pow_si.o pow_ui.o print_raw.o \
+print_rnd_mode.o random2.o random.o reldiff.o rnd_mode.o round.o set.o \
+set_d.o set_dfl_prec.o set_rnd.o set_f.o set_prc_raw.o set_prec.o \
+set_q.o set_si.o set_str.o set_str_raw.o set_ui.o set_z.o sqrt.o \
+sqrt_ui.o sub.o sub1.o sub_ui.o trunc.o ui_div.o ui_sub.o urandomb.o \
+sqrtrem.o mpz_set_fr.o swap.o factorial.o cosh.o sinh.o tanh.o acosh.o \
+asinh.o atanh.o atan.o cmp2.o exp_2.o asin.o euler.o cos.o sin.o tan.o \
+fma.o hypot.o log1p.o expm1.o log_base_2.o ui_pow.o ui_pow_ui.o \
+log_base_10.o minmax.o dim.o copysign.o gmp_op.o
 AR = ar
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
@@ -124,14 +124,14 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = gtar
 GZIP_ENV = --best
-DEP_FILES =  .deps/acosh.P .deps/add.P .deps/add_ui.P .deps/add_ulp.P \
-.deps/agm.P .deps/asin.P .deps/asinh.P .deps/atan.P .deps/atanh.P \
-.deps/clear.P .deps/cmp.P .deps/cmp2.P .deps/cmp_abs.P .deps/cmp_ui.P \
-.deps/copysign.P .deps/cos.P .deps/cosh.P .deps/dim.P .deps/div.P \
-.deps/div_2exp.P .deps/div_ui.P .deps/dump.P .deps/eq.P .deps/euler.P \
-.deps/exceptions.P .deps/exp.P .deps/exp2.P .deps/exp3.P .deps/exp_2.P \
-.deps/expm1.P .deps/extract.P .deps/factorial.P .deps/fma.P \
-.deps/get_str.P .deps/gmp_op.P .deps/hypot.P .deps/init.P \
+DEP_FILES =  .deps/acosh.P .deps/add.P .deps/add1.P .deps/add_ui.P \
+.deps/add_ulp.P .deps/agm.P .deps/asin.P .deps/asinh.P .deps/atan.P \
+.deps/atanh.P .deps/clear.P .deps/cmp.P .deps/cmp2.P .deps/cmp_abs.P \
+.deps/cmp_ui.P .deps/copysign.P .deps/cos.P .deps/cosh.P .deps/dim.P \
+.deps/div.P .deps/div_2exp.P .deps/div_ui.P .deps/dump.P .deps/eq.P \
+.deps/euler.P .deps/exceptions.P .deps/exp.P .deps/exp2.P .deps/exp3.P \
+.deps/exp_2.P .deps/expm1.P .deps/extract.P .deps/factorial.P \
+.deps/fma.P .deps/get_str.P .deps/gmp_op.P .deps/hypot.P .deps/init.P \
 .deps/inp_str.P .deps/isinteger.P .deps/isnan.P .deps/log.P \
 .deps/log1p.P .deps/log2.P .deps/log_base_10.P .deps/log_base_2.P \
 .deps/minmax.P .deps/mpz_set_fr.P .deps/mul.P .deps/mul_2exp.P \
@@ -143,9 +143,9 @@ DEP_FILES =  .deps/acosh.P .deps/add.P .deps/add_ui.P .deps/add_ulp.P \
 .deps/set_q.P .deps/set_rnd.P .deps/set_si.P .deps/set_str.P \
 .deps/set_str_raw.P .deps/set_ui.P .deps/set_z.P .deps/sin.P \
 .deps/sinh.P .deps/sqrt.P .deps/sqrt_ui.P .deps/sqrtrem.P .deps/sub.P \
-.deps/sub_ui.P .deps/swap.P .deps/tan.P .deps/tanh.P .deps/trunc.P \
-.deps/ui_div.P .deps/ui_pow.P .deps/ui_pow_ui.P .deps/ui_sub.P \
-.deps/urandomb.P
+.deps/sub1.P .deps/sub_ui.P .deps/swap.P .deps/tan.P .deps/tanh.P \
+.deps/trunc.P .deps/ui_div.P .deps/ui_pow.P .deps/ui_pow_ui.P \
+.deps/ui_sub.P .deps/urandomb.P
 SOURCES = $(libmpfr_a_SOURCES)
 OBJECTS = $(libmpfr_a_OBJECTS)
 
