@@ -7,9 +7,14 @@ Installation:
 - from Kevin Ryde <user42@zip.com.au>:
    Determine the exp2/exp3 thresholds using tune/tuneup.c.
 
+- problems when mpfr uses a different compiler (gcc) than gmp (for example
+	cc under Solaris 2.7).
+
 New functions to implement:
 
 - mpfr_mul_mpz, mpfr_div_mpz
+
+- fused multiply-add (suggestion from Dan Zuras)
 
 Miscellaneous:
 
