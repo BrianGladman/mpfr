@@ -108,21 +108,21 @@ mpfr_round_raw2(xp, xn, neg, rnd, prec)
 }
 
 /* puts in y the value of xp (with precision xprec and sign 1 if negative=0,
-   -1 otherwise) rounded to precision yprec and direction RND_MODE 
+   -1 otherwise) rounded to precision yprec and direction rnd_mode 
    Supposes x is not zero nor NaN nor +/- Infinity (i.e. *xp != 0).
 */
 int
 #if __STDC__
 mpfr_round_raw(mp_limb_t *y, mp_limb_t *xp, mp_prec_t xprec, int negative,
-	       mp_prec_t yprec, mp_rnd_t RND_MODE)
+	       mp_prec_t yprec, mp_rnd_t rnd_mode)
 #else
-mpfr_round_raw(y, xp, xprec, negative, yprec, RND_MODE)
+mpfr_round_raw(y, xp, xprec, negative, yprec, rnd_mode)
      mp_limb_t *y; 
      mp_limb_t *xp; 
      mp_prec_t xprec; 
      cher negative;
      mp_prec_t yprec; 
-     mp_rnd_t RND_MODE; 
+     mp_rnd_t rnd_mode; 
 #endif
 {
   mp_prec_t nw, xsize; mp_limb_t mask;
@@ -150,7 +150,7 @@ mpfr_round_raw(y, xp, xprec, negative, yprec, RND_MODE)
     return 0; 
   }
 
-  if (mpfr_round_raw2(xp, xsize, negative, RND_MODE, yprec))
+  if (mpfr_round_raw2(xp, xsize, negative, rnd_mode, yprec))
     carry = mpn_add_1(y, xp + xsize - nw, nw,
                           ((mp_limb_t)1) << (BITS_PER_MP_LIMB - rw));
   else MPN_COPY(y, xp + xsize - nw, nw);
@@ -161,23 +161,23 @@ mpfr_round_raw(y, xp, xprec, negative, yprec, RND_MODE)
 
 void
 #if __STDC__
-mpfr_round(mpfr_t x, mp_rnd_t RND_MODE, mp_prec_t prec)
+mpfr_round(mpfr_t x, mp_rnd_t rnd_mode, mp_prec_t prec)
 #else
-mpfr_round(x, RND_MODE, prec)
+mpfr_round(x, rnd_mode, prec)
      mpfr_t x; 
-     mp_rnd_t RND_MODE; 
+     mp_rnd_t rnd_mode; 
      mp_prec_t prec; 
 #endif
 {
   mp_limb_t *tmp; int carry; mp_prec_t nw; 
-  TMP_DECL(marker); 
+  TMP_DECL(marker);
 
   nw = prec / BITS_PER_MP_LIMB; 
   if (prec & (BITS_PER_MP_LIMB - 1)) nw++;
   TMP_MARK(marker); 
   tmp = TMP_ALLOC (nw * BYTES_PER_MP_LIMB);
   carry = mpfr_round_raw(tmp, MANT(x), PREC(x), (MPFR_SIGN(x)<0), prec, 
-			 RND_MODE);
+			 rnd_mode);
 
   if (carry)
     {      
