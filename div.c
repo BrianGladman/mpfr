@@ -40,7 +40,7 @@ mpfr_ptr Q; mpfr_srcptr n, d; unsigned char rnd_mode;
   do {
     prec += mp_bits_per_limb;
 
-  mpfr_set_prec(q, prec, GMP_RNDZ);
+  mpfr_set_prec(q, prec);
   mpfr_set(q, n, GMP_RNDZ);
   mpfr_init2(eps, prec); mpfr_init2(tmp, prec); mpfr_init2(one, prec);
   expd = EXP(d);
@@ -88,8 +88,8 @@ mpfr_ptr Q; mpfr_srcptr n, d; unsigned char rnd_mode;
      }
   } while (cc==0);
   mpfr_round(q, rnd_mode, precq);
-  mpfr_mul_2exp(q, q, -expd, GMP_RNDZ);
-  mpfr_set_prec(q, precq, rnd_mode);
+  mpfr_mul_2exp(q, q, -expd, rnd_mode);
+  mpfr_set_prec(q, precq);
   mpfr_clear(eps); mpfr_clear(tmp); mpfr_clear(one);
   if (Q==n || Q==d) {
     mpfr_set(Q, q, rnd_mode);
