@@ -1,4 +1,5 @@
 /* Test file for mpfr_add_[q,z], mpfr_sub_[q,z], mpfr_div_[q,z], mpfr_mul_[q,z]
+   and mpfr_cmp_[q,z]
 
 Copyright 2004 Free Software Foundation.
 
@@ -79,11 +80,87 @@ special (void)
   res = mpfr_sub_q (y, x, z, GMP_RNDU);
   MPFR_ASSERTN(mpfr_cmp_si(y, -1)==0 && res==0);
 
-
   mpq_clear (z);
   mpfr_clear (x);
   mpfr_clear (y);
 }
+
+static void
+test_cmp_z (mp_prec_t pmin, mp_prec_t pmax, int nmax)
+{
+  mpfr_t x, z;
+  mpz_t  y;
+  mp_prec_t p;
+  int res1, res2;
+  int n;
+
+  mpfr_init (x);
+  mpfr_init2 (z, MPFR_PREC_MIN);
+  mpz_init (y);
+  for(p=pmin ; p < pmax ; p++)
+    {
+      mpfr_set_prec (x, p);
+      for ( n = 0; n < nmax ; n++)
+	{
+	  mpfr_urandomb (x, RANDS);
+	  mpz_urandomb  (y, RANDS, 1024);
+	  if (!MPFR_IS_SINGULAR (x))
+	    {
+	      mpfr_sub_z (z, x, y, GMP_RNDN);
+	      res1 = mpfr_sgn (z);
+	      res2 = mpfr_cmp_z (x, y);
+	      if (res1 != res2)
+		{
+		  printf("Error for mpfr_cmp_z: res=%d sub_z gives %d\n",
+			 res2, res1);
+		  exit (1);
+		}
+	    }      
+	}
+    }
+  mpz_clear (y);
+  mpfr_clear (x);
+  mpfr_clear (z);
+}
+
+static void
+test_cmp_q (mp_prec_t pmin, mp_prec_t pmax, int nmax)
+{
+  mpfr_t x, z;
+  mpq_t  y;
+  mp_prec_t p;
+  int res1, res2;
+  int n;
+
+  mpfr_init (x);
+  mpfr_init2 (z, MPFR_PREC_MIN);
+  mpq_init (y);
+  for(p=pmin ; p < pmax ; p++)
+    {
+      mpfr_set_prec (x, p);
+      for (n = 0 ; n < nmax ; n++)
+	{
+	  mpfr_urandomb (x, RANDS);
+          mpq_set_ui (y, randlimb (), randlimb() );
+	  if (!MPFR_IS_SINGULAR (x))
+	    {
+	      mpfr_sub_q (z, x, y, GMP_RNDN);
+	      res1 = mpfr_sgn (z);
+	      res2 = mpfr_cmp_q (x, y);
+	      if (res1 != res2)
+		{
+		  printf("Error for mpfr_cmp_q: res=%d sub_z gives %d\n",
+			 res2, res1);
+		  exit (1);
+		}
+	    }
+	}
+    }
+  mpq_clear (y);
+  mpfr_clear (x);
+  mpfr_clear (z);
+}
+
 
 static void
 test_specialz (int (*mpfr_func)(mpfr_ptr, mpfr_srcptr, mpz_srcptr, mp_rnd_t),
@@ -342,22 +419,25 @@ main (int argc, char *argv[])
 
   special ();
 
-  test_genericz (2, 150, 100, mpfr_add_z, "add");
-  test_genericz (2, 150, 100, mpfr_sub_z, "sub");
-  test_genericz (2, 150, 100, mpfr_mul_z, "mul");
-  test_genericz (2, 150, 100, mpfr_div_z, "div");
+  test_genericz (2, 100, 100, mpfr_add_z, "add");
+  test_genericz (2, 100, 100, mpfr_sub_z, "sub");
+  test_genericz (2, 100, 100, mpfr_mul_z, "mul");
+  test_genericz (2, 100, 100, mpfr_div_z, "div");
   test_specialz (mpfr_add_z, mpz_add, "add");
   test_specialz (mpfr_sub_z, mpz_sub, "sub");
   test_specialz (mpfr_mul_z, mpz_mul, "mul");
 
-  test_genericq (2, 150, 100, mpfr_add_q, "add");
-  test_genericq (2, 150, 100, mpfr_sub_q, "sub");
-  test_genericq (2, 150, 100, mpfr_mul_q, "mul");
-  test_genericq (2, 150, 100, mpfr_div_q, "div");
-  test_specialq (2, 150, 100, mpfr_mul_q, mpq_mul, "mul");
-  test_specialq (2, 150, 100, mpfr_div_q, mpq_div, "div");
-  test_specialq (2, 150, 100, mpfr_add_q, mpq_add, "add");
-  test_specialq (2, 150, 100, mpfr_sub_q, mpq_sub, "sub");
+  test_genericq (2, 100, 100, mpfr_add_q, "add");
+  test_genericq (2, 100, 100, mpfr_sub_q, "sub");
+  test_genericq (2, 100, 100, mpfr_mul_q, "mul");
+  test_genericq (2, 100, 100, mpfr_div_q, "div");
+  test_specialq (2, 100, 100, mpfr_mul_q, mpq_mul, "mul");
+  test_specialq (2, 100, 100, mpfr_div_q, mpq_div, "div");
+  test_specialq (2, 100, 100, mpfr_add_q, mpq_add, "add");
+  test_specialq (2, 100, 100, mpfr_sub_q, mpq_sub, "sub");
+
+  test_cmp_z (2, 100, 100);
+  test_cmp_q (2, 100, 100);
 
   tests_end_mpfr ();
   return 0;

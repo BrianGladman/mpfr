@@ -45,7 +45,7 @@ mpfr_div_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd_mode)
   MPFR_ASSERTD(res == 0);
   res = mpfr_div(y, x, t, rnd_mode);
   mpfr_clear(t);
-  return(res);
+  return res;
 }
 
 int
@@ -53,12 +53,12 @@ mpfr_add_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd_mode)
 {
   mpfr_t t;
   int res;
-  mpfr_init2(t, mpz_sizeinbase(z, 2) );
-  res = mpfr_set_z(t, z, rnd_mode);
-  MPFR_ASSERTD(res == 0);
-  res = mpfr_add(y, x, t, rnd_mode);
-  mpfr_clear(t);
-  return(res);
+  mpfr_init2 (t, mpz_sizeinbase(z, 2) );
+  res = mpfr_set_z (t, z, rnd_mode);
+  MPFR_ASSERTD (res == 0);
+  res = mpfr_add (y, x, t, rnd_mode);
+  mpfr_clear (t);
+  return res;
 }
 
 int
@@ -66,12 +66,25 @@ mpfr_sub_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z,mp_rnd_t rnd_mode)
 {
   mpfr_t t;
   int res;
-  mpfr_init2(t, mpz_sizeinbase(z, 2) );
-  res = mpfr_set_z(t, z, rnd_mode);
+  mpfr_init2 (t, mpz_sizeinbase(z, 2) );
+  res = mpfr_set_z (t, z, rnd_mode);
+  MPFR_ASSERTD (res == 0);
+  res=mpfr_sub (y, x, t, rnd_mode);
+  mpfr_clear (t);
+  return res;
+}
+
+int
+mpfr_cmp_z (mpfr_srcptr x, mpz_srcptr z)
+{
+  mpfr_t t;
+  int res;
+  mpfr_init2 (t, mpz_sizeinbase(z, 2) );
+  res = mpfr_set_z (t, z, GMP_RNDN);
   MPFR_ASSERTD(res == 0);
-  res=mpfr_sub(y, x, t, rnd_mode);
-  mpfr_clear(t);
-  return(res);
+  res = mpfr_cmp (x, t);
+  mpfr_clear (t);
+  return res;  
 }
 
 int
@@ -223,5 +236,19 @@ mpfr_sub_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z,mp_rnd_t rnd_mode)
         }
     }
   mpfr_clears(t, q, NULL);
+  return res;
+}
+
+int
+mpfr_cmp_q (mpfr_srcptr x, mpq_srcptr z)
+{
+  mpfr_t t;
+  int res;
+  /* x < a/b ? <=> x*b < a */
+  mpfr_init2 (t, MPFR_PREC(x) + mpz_sizeinbase (mpq_denref(z), 2) );
+  res = mpfr_mul_z (t, x, mpq_denref (z), GMP_RNDN );
+  MPFR_ASSERTD( res == 0 );
+  res = mpfr_cmp_z (t, mpq_numref (z) );
+  mpfr_clear (t);
   return res;
 }

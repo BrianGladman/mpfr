@@ -363,11 +363,13 @@ int mpfr_mul_z _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpz_srcptr, mpfr_rnd_t));
 int mpfr_div_z _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpz_srcptr, mpfr_rnd_t));
 int mpfr_add_z _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpz_srcptr, mpfr_rnd_t));
 int mpfr_sub_z _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpz_srcptr, mpfr_rnd_t));
+int mpfr_cmp_z _MPFR_PROTO ((mpfr_srcptr, mpz_srcptr));
 
 int mpfr_mul_q _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpq_srcptr, mpfr_rnd_t));
 int mpfr_div_q _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpq_srcptr, mpfr_rnd_t));
 int mpfr_add_q _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpq_srcptr, mpfr_rnd_t));
 int mpfr_sub_q _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpq_srcptr, mpfr_rnd_t));
+int mpfr_cmp_q _MPFR_PROTO ((mpfr_srcptr, mpq_srcptr));
 
 int mpfr_fma _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_srcptr,
                            mpfr_rnd_t));
