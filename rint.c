@@ -98,7 +98,7 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
 
       un = MPFR_ESIZE(u);
       rn = MPFR_ESIZE(r);
-      sh = rn * BITS_PER_MP_LIMB - MPFR_PREC(r);
+      sh = (mp_prec_t) rn * BITS_PER_MP_LIMB - MPFR_PREC(r);
 
       MPFR_EXP(r) = exp;
 
