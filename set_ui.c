@@ -1,4 +1,4 @@
-/* mpfr_set_si -- set a MPFR number from a machine signed integer
+/* mpfr_set_ui -- set a MPFR number from a machine unsigned integer
 
 Copyright (C) 1999-2001 Free Software Foundation.
 
@@ -28,25 +28,23 @@ MA 02111-1307, USA. */
 
 void
 #if __STDC__
-mpfr_set_si (mpfr_ptr x, long int i, mp_rnd_t rnd_mode)
+mpfr_set_ui (mpfr_ptr x, unsigned long int i, mp_rnd_t rnd_mode)
 #else
-mpfr_set_si (x, i, rnd_mode)
+mpfr_set_ui (x, i, rnd_mode)
      mpfr_ptr x;
-     long int i;
+     unsigned long int i;
      mp_rnd_t rnd_mode;
-#endif
+#endif  
 {
-  unsigned long xn, cnt; mp_limb_t ai, *xp;
+  unsigned int xn, cnt; mp_limb_t *xp;
 
   MPFR_CLEAR_FLAGS(x);
   if (i==0) { MPFR_SET_ZERO(x); return; }
   xn = (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB;
-  ai = (unsigned long) ABS(i); 
-
-  count_leading_zeros(cnt, ai); 
+  count_leading_zeros(cnt, (mp_limb_t) i); 
 
   xp = MPFR_MANT(x);
-  xp[xn] = ai << cnt;
+  xp[xn] = ((mp_limb_t) i) << cnt; 
   /* don't forget to put zero in lower limbs */
   MPN_ZERO(xp, xn);
 
@@ -54,8 +52,8 @@ mpfr_set_si (x, i, rnd_mode)
 
   /* round if MPFR_PREC(x) smaller than length of i */
   if (MPFR_PREC(x) < BITS_PER_MP_LIMB-cnt) {
-    cnt = mpfr_round_raw(xp+xn, xp+xn, BITS_PER_MP_LIMB-cnt, (ai<0), MPFR_PREC(x), 
-		   rnd_mode);
+    cnt = mpfr_round_raw(xp+xn, xp+xn, BITS_PER_MP_LIMB-cnt, 0, MPFR_PREC(x), 
+			 rnd_mode);
     if (cnt) { /* special case 1.000...000 */
       MPFR_EXP(x)++;
       xp[xn] = ((mp_limb_t) 1) << (BITS_PER_MP_LIMB-1);
@@ -63,7 +61,8 @@ mpfr_set_si (x, i, rnd_mode)
   }
 
   /* warning: don't change the precision of x! */
-  if (i*MPFR_SIGN(x) < 0) MPFR_CHANGE_SIGN(x);
+  if (MPFR_SIGN(x) < 0) MPFR_CHANGE_SIGN(x);
 
   return; 
 }
+
