@@ -617,7 +617,7 @@ check_inexact (void)
 	  for (py=2; py<MAX_PREC; py++)
 	    {
 	      mpfr_set_prec (y, py);
-	      pz =  (mpfr_cmp_abs (x, u) >= 0) ? MPFR_EXP(x)-MPFR_EXP(u)
+	      pz =  (mpfr_cmpabs (x, u) >= 0) ? MPFR_EXP(x)-MPFR_EXP(u)
 		: MPFR_EXP(u)-MPFR_EXP(x);
 	      /* x + u is exactly representable with precision
 		 abs(EXP(x)-EXP(u)) + max(prec(x), prec(u)) + 1 */

@@ -1067,7 +1067,7 @@ It is not allowed that one of the operands is NaN (Not-a-Number).
 Compare @var{op1} and @var{op2} multiplied by two to the power @var{e}.
 @end deftypefun
 
-@deftypefun int mpfr_cmp_abs (mpfr_t @var{op1}, mpfr_t @var{op2})
+@deftypefun int mpfr_cmpabs (mpfr_t @var{op1}, mpfr_t @var{op2})
 @ifinfo
 Compare |@var{op1}| and |@var{op2}|.  Return a positive value if
 |@var{op1}| > |@var{op2}|, zero if |@var{op1}| = |@var{op2}|, and

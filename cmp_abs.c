@@ -1,4 +1,4 @@
-/* mpfr_cmp_abs -- compare the absolute values of two FP numbers
+/* mpfr_cmpabs -- compare the absolute values of two FP numbers
 
 Copyright 1999, 2001, 2002 Free Software Foundation, Inc.
 
@@ -28,7 +28,7 @@ MA 02111-1307, USA. */
    b and c must be real numbers */
 
 int
-mpfr_cmp_abs (mpfr_srcptr b, mpfr_srcptr c)
+mpfr_cmpabs (mpfr_srcptr b, mpfr_srcptr c)
 {
   mp_exp_t be, ce;
   mp_size_t bn, cn;

@@ -123,7 +123,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
             }
           mpfr_init2(one, BITS_PER_MP_LIMB);
           mpfr_set_ui(one, 1, GMP_RNDN);
-          cmp = mpfr_cmp_abs(x, one);
+          cmp = mpfr_cmpabs(x, one);
           mpfr_clear(one);
           if (cmp > 0)
             {
@@ -163,7 +163,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
             }
           mpfr_init2(one, BITS_PER_MP_LIMB);
           mpfr_set_ui(one, 1, GMP_RNDN);
-          cmp = mpfr_cmp_abs(x, one);
+          cmp = mpfr_cmpabs(x, one);
           mpfr_clear(one);
           MPFR_CLEAR_FLAGS(z);
           if (cmp > 0)
