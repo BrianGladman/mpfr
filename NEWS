@@ -30,7 +30,8 @@ Changes from version 2.0.3 to version 2.1.0:
   mpfr_get_default_rounding_mode, mpfr_get_emin_min, mpfr_get_emin_max,
   mpfr_get_emax_min, mpfr_get_emax_max, mpfr_inits, mpfr_inits2, mpfr_clears,
   mpfr_fits_intmax_p, mpfr_fits_uintmax_p, mpfr_clear_erangeflag,
-  mpfr_erangeflag_p.
+  mpfr_erangeflag_p, mpfr_rint_round, mpfr_rint_trunc, mpfr_rint_ceil,
+  mpfr_rint_floor.
 - new macros MPFR_DECL_INIT, MPFR_VERSION, MPFR_VERSION_NUM,
   MPFR_VERSION_MAJOR, MPFR_VERSION_MINOR, MPFR_VERSION_PATCHLEVEL.
 - improved documentation.
@@ -39,7 +40,7 @@ Changes from version 2.0.3 to version 2.1.0:
 - It handles correctly non IEEE-754 double.
 - GMP internal files are not needed to install MPFR.
 - It is faster with low-precision floatting point.
-- New global flag: ERANGE_FLAG
+- New global flag: ERANGE_FLAG.
 
 Changes from version 2.0.2 to version 2.0.3:
 - Bug fixes.
