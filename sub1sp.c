@@ -711,10 +711,22 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
  end_of_sub:
   /* Update Expo */
-  if (MPFR_UNLIKELY(bx < __gmpfr_emin))
+  /* FIXME: Is this test really usefull?
+      If d==0      : Exact case. This is never called.
+      if 1 < d < p : bx=MPFR_EXP(b) or MPFR_EXP(b)-1 > MPFR_EXP(c) > emin 
+      if d == 1    : bx=MPFR_EXP(b). If we could lose any bits, the exact
+                     normalisation is called.
+      if d >=  p   : bx=MPFR_EXP(b) >= MPFR_EXP(c) + p > emin
+     After SubOneUlp, we could have one bit less.
+      if 1 < d < p : bx >= MPFR_EXP(b)-2 >= MPFR_EXP(c) > emin
+      if d == 1    : bx >= MPFR_EXP(b)-1 = MPFR_EXP(c) > emin.
+      if d >=  p   : bx >= MPFR_EXP(b)-1 > emin since p>=2.
+  */
+  MPFR_ASSERTD( bx >= __gmpfr_emin);
+  /*
+    if (MPFR_UNLIKELY(bx < __gmpfr_emin))
     {
       DEBUG( printf("(Final Underflow)\n") );
-      /* Update rnd_mode */
       if (rnd_mode == GMP_RNDN &&
 	  (bx < __gmpfr_emin - 1 ||
 	   (inexact >= 0 && mpfr_powerof2_raw (a))))
@@ -722,6 +734,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       TMP_FREE(marker);
       return mpfr_set_underflow (a, rnd_mode, MPFR_SIGN(a));
     }
+  */
   MPFR_SET_EXP (a, bx);
 
   TMP_FREE(marker);
