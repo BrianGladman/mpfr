@@ -242,7 +242,7 @@ __mpfr_scale2 (d, exp)
 
 /* End of part included from gmp */
 
-void
+int
 #if __STDC__
 mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
 #else
@@ -252,30 +252,39 @@ mpfr_set_d (r, d, rnd_mode)
      mp_rnd_t rnd_mode;
 #endif
 {
-  int signd, sizer, sizetmp;
+  int signd, sizer, sizetmp, inexact;
   unsigned int cnt;
   mpfr_ptr tmp;
   TMP_DECL(marker); 
 
   TMP_MARK(marker);
   MPFR_CLEAR_FLAGS(r);
-  if (d == 0) {
-    union ieee_double_extract x;
-    MPFR_SET_ZERO(r);
-    /* set correct sign */
-    x.d = d;
-    if (((x.s.sig==1) && (MPFR_SIGN(r)>0)) 
-	|| ((x.s.sig==0) && (MPFR_SIGN(r)<0)))
-      MPFR_CHANGE_SIGN(r);
-    return;
+
+  if (d == 0)
+    {
+      union ieee_double_extract x;
+
+      MPFR_SET_ZERO(r);
+      /* set correct sign */
+      x.d = d;
+      if (((x.s.sig == 1) && (MPFR_SIGN(r) > 0)) 
+	  || ((x.s.sig == 0) && (MPFR_SIGN(r) < 0)))
+	MPFR_CHANGE_SIGN(r);
+      return 0; /* 0 is exact */
   }
-  else if (DOUBLE_ISNAN(d)) { MPFR_SET_NAN(r); return; }
+
+  else if (DOUBLE_ISNAN(d))
+    {
+      MPFR_SET_NAN(r);
+      return 1; /* a NaN is always inexact */
+    }
+
   else if (DOUBLE_ISINF(d))
     { 
       MPFR_SET_INF(r); 
       if ((d > 0 && (MPFR_SIGN(r) == -1)) || (d < 0 && (MPFR_SIGN(r) == 1)))
 	MPFR_CHANGE_SIGN(r); 
-      return;
+      return 0; /* infinity is exact */
     }
 
   sizer = (MPFR_PREC(r) - 1) / BITS_PER_MP_LIMB + 1;
@@ -283,32 +292,29 @@ mpfr_set_d (r, d, rnd_mode)
   /* warning: don't use tmp=r here, even if sizer >= MPFR_LIMBS_PER_DOUBLE,
      since PREC(r) may be different from PREC(tmp), and then both variables
      would have same precision in the mpfr_set4 call below. */
-  tmp = (mpfr_ptr) TMP_ALLOC(sizeof(mpfr_t)); 
-  MPFR_MANT(tmp) = TMP_ALLOC(MPFR_LIMBS_PER_DOUBLE * BYTES_PER_MP_LIMB); 
-  MPFR_PREC(tmp) = 53; 
+  tmp = (mpfr_ptr) TMP_ALLOC(sizeof(mpfr_t));
+  MPFR_MANT(tmp) = TMP_ALLOC(MPFR_LIMBS_PER_DOUBLE * BYTES_PER_MP_LIMB);
+  MPFR_PREC(tmp) = 53;
   MPFR_SIZE(tmp) = MPFR_LIMBS_PER_DOUBLE;
   sizetmp = MPFR_LIMBS_PER_DOUBLE;
 
   signd = (d < 0) ? -1 : 1;
   d = ABS (d);
 
-  MPFR_EXP(tmp) = __mpfr_extract_double (MPFR_MANT(tmp) + sizetmp - 
-					 MPFR_LIMBS_PER_DOUBLE, d, 1);
+  MPFR_EXP(tmp) = __mpfr_extract_double (MPFR_MANT(tmp), d, 1);
 
-  if (sizetmp > MPFR_LIMBS_PER_DOUBLE)
-    MPN_ZERO(MPFR_MANT(tmp), sizetmp - MPFR_LIMBS_PER_DOUBLE); 
-
-  count_leading_zeros(cnt, MPFR_MANT(tmp)[sizetmp-1]); 
+  count_leading_zeros(cnt, MPFR_MANT(tmp)[sizetmp - 1]);
 
   if (cnt)
-    mpn_lshift (MPFR_MANT(tmp), MPFR_MANT(tmp), sizetmp, cnt); 
+    mpn_lshift (MPFR_MANT(tmp), MPFR_MANT(tmp), sizetmp, cnt);
   
   MPFR_EXP(tmp) -= cnt; 
 
-  mpfr_set4(r, tmp, rnd_mode, signd); 
+  /* tmp is exact since PREC(tmp)=53 */
+  inexact = mpfr_set4(r, tmp, rnd_mode, signd); 
 
   TMP_FREE(marker); 
-  return; 
+  return inexact;
 }
 
 double
