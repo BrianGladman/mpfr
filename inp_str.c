@@ -78,9 +78,10 @@ mpfr_inp_str (mpfr_ptr rop, FILE *stream, int base, mp_rnd_t rnd_mode)
   str[str_size] = 0;
 
   retval = mpfr_set_str (rop, str, base, rnd_mode);
+  (*__gmp_free_func) (str, alloc_size);
+
   if (retval == -1)
     return 0;			/* error */
 
-  (*__gmp_free_func) (str, alloc_size);
   return str_size + nread;
 }
