@@ -75,8 +75,8 @@ FUNC_NAME (r, u)
 #endif
 {
   mp_ptr rp, up;
-  mp_size_t asize;
-  mp_size_t prec, rw;
+  mp_size_t usize;
+  mp_size_t rsize, rw;
 #ifdef _MPFR_FLOOR_OR_CEIL
   mp_size_t ignored_n;
 #endif
@@ -106,7 +106,7 @@ FUNC_NAME (r, u)
   signu = MPFR_SIZE(u);
   rp = MPFR_MANT(r);
   exp = MPFR_EXP(u);
-  prec = (MPFR_PREC(r) - 1)/BITS_PER_MP_LIMB + 1;
+  rsize = (MPFR_PREC(r) - 1)/BITS_PER_MP_LIMB + 1;
 
   /* Single out the case where |u| < 1.  */
   if (exp <= 0)
@@ -114,8 +114,8 @@ FUNC_NAME (r, u)
 #ifdef _MPFR_FLOOR_OR_CEIL
       if ((MPFR_FLOOR && signu < 0) || (MPFR_CEIL && signu >= 0))
 	{
-	  rp[prec-1] = (mp_limb_t) 1 << (BITS_PER_MP_LIMB-1);
-	  MPN_ZERO(rp, prec-1);
+	  rp[rsize-1] = (mp_limb_t) 1 << (BITS_PER_MP_LIMB-1);
+	  MPN_ZERO(rp, rsize-1);
 	  /* sign of result is that of u */
 	  if (MPFR_SIGN(r) * signu < 0) MPFR_CHANGE_SIGN(r);
 	  MPFR_EXP(r) = 1;
@@ -126,23 +126,23 @@ FUNC_NAME (r, u)
       return;
     }
 
-  asize = (MPFR_PREC(u) - 1)/BITS_PER_MP_LIMB + 1;
+  usize = (MPFR_PREC(u) - 1)/BITS_PER_MP_LIMB + 1;
 
 #ifdef _MPFR_FLOOR_OR_CEIL
   ignored_n = 0;
 #endif
   up = MPFR_MANT(u);
 
-  if (asize > prec)
+  if (usize > rsize)
     {
 #ifdef _MPFR_FLOOR_OR_CEIL
-      ignored_n = asize - prec;
+      ignored_n = usize - rsize;
 #endif
-      up += asize - prec;
-      asize = prec;
+      up += usize - rsize;
+      usize = rsize;
     }
 
-  diff = BITS_PER_MP_LIMB * asize - exp;
+  diff = BITS_PER_MP_LIMB * usize - exp;
   if (diff > 0)
     {
       diff = diff/BITS_PER_MP_LIMB;
@@ -150,13 +150,13 @@ FUNC_NAME (r, u)
       ignored_n += diff;
 #endif
       up += diff;
-      asize -= diff;
+      usize -= diff;
     }
 
   /* number of non significant bits in low limb of r */
-  rw = asize * BITS_PER_MP_LIMB - exp;
-  MPN_ZERO(rp, prec-asize);
-  rp += prec-asize;
+  rw = usize * BITS_PER_MP_LIMB - exp;
+  MPN_ZERO(rp, rsize-usize);
+  rp += rsize-usize;
 
 #ifdef _MPFR_FLOOR_OR_CEIL
   if (((MPFR_FLOOR && signu < 0) || (MPFR_CEIL && signu >= 0))
@@ -164,17 +164,20 @@ FUNC_NAME (r, u)
 	  || (rw && (up[0] << (BITS_PER_MP_LIMB-rw)))))
     {
       mp_limb_t cy;
-      cy = mpn_add_1 (rp, up, asize, (mp_limb_t) 1 << rw);
+      cy = mpn_add_1 (rp, up, usize, (mp_limb_t) 1 << rw);
       if (cy != 0)
 	{
-	  mpn_rshift(rp, rp, asize, 1);
-	  rp[asize-1] = (mp_limb_t) 1 << (BITS_PER_MP_LIMB - 1);
+	  /* all the bits from "1<<rw" upwards are zero */
+	  rp[usize-1] = (mp_limb_t) 1 << (BITS_PER_MP_LIMB - 1);
 	  exp++;
 	}
     }
   else
 #endif
-    MPN_COPY (rp, up, asize);
+    {
+      if (rp != up)
+	MPN_COPY (rp, up, usize);
+    }
 
   /* Put to 0 the remaining bits */
   if (rw) rp[0] &=
