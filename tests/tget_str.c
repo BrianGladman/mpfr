@@ -456,7 +456,7 @@ check_special (int b, mp_prec_t p)
             /* s should be 1 followed by (m-1) zeros, and e should be i+1 */
             if ((e != i+1) || strncmp (s, s2, m) != 0)
               {
-                printf ("Error in mpfr_get_str for %u^%u\n", b, i);
+                printf ("Error in mpfr_get_str for %d^%d\n", b, i);
                 exit (1);
               }
           }
@@ -472,7 +472,7 @@ check_special (int b, mp_prec_t p)
             for (j=0; (j < i) && (s[j] == c); j++);
             if ((j < i) || (e != i))
               {
-                printf ("Error in mpfr_get_str for %u^%u-1\n", b, i);
+                printf ("Error in mpfr_get_str for %d^%d-1\n", b, i);
                 printf ("got 0.%s*2^%d\n", s, (int) e);
                 exit (1);
               }
@@ -483,7 +483,7 @@ check_special (int b, mp_prec_t p)
           /* should be b^i */
           if ((e != i+1) || strncmp (s, s2, i - 1) != 0)
             {
-              printf ("Error in mpfr_get_str for %u^%u-1\n", b, i);
+              printf ("Error in mpfr_get_str for %d^%d-1\n", b, i);
               printf ("got 0.%s*2^%d\n", s, (int) e);
               exit (1);
             }

@@ -313,7 +313,7 @@ parse_string (mpfr_t x, struct parsed_string *pstr,
       c = digit_value_in_base (c, base);
       if (c == -1)
 	break;
-      *mant++ = c; 
+      *mant++ = (char) c; 
       if (!point)
         pstr->exp_base ++;
     }

@@ -511,8 +511,10 @@ int  mpfr_strtofr _MPFR_PROTO ((mpfr_ptr, __gmp_const char *, char **,
 # define mpz_set_fr mpfr_get_z
 #endif 
 
-/* When using GCC, optimize certain common comparisons.  */
-#if defined (__GNUC__)
+/* When using GCC, optimize certain common comparisons.  
+   Remove ICC since it defines __GNUC__, but produces a
+   huge number of warnings if you use this code  */
+#if defined (__GNUC__) && !defined(__ICC)
 #undef mpfr_cmp_ui
 #define mpfr_cmp_ui(_f,_u)                 \
  (__builtin_constant_p (_u) && (_u) == 0 ? \

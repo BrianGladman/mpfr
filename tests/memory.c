@@ -6,6 +6,7 @@ This file is part of the GNU MP Library.
 
 ChangeLog:
  tests_memory_valid has been commented out since it is not used 
+ tests_memory_list is declared as static
 
 The GNU MP Library is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -44,7 +45,7 @@ struct header {
   struct header  *next;
 };
 
-struct header  *tests_memory_list = NULL;
+static struct header  *tests_memory_list = NULL;
 
 /* Return a pointer to a pointer to the found block (so it can be updated
    when unlinking). */

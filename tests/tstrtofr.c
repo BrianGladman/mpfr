@@ -27,10 +27,6 @@ MA 02111-1307, USA. */
 
 #include "mpfr-test.h"
 
-int
-mpfr_strtofr (mpfr_t x, const char *string, char **end, unsigned int base,
-              mp_rnd_t rnd);
-
 static void check_reftable (void);
 static void check_special  (void);
 static void check_retval   (void);
@@ -225,7 +221,7 @@ int main()
 }
 #endif
 
-struct dymmy_test { 
+static struct dymmy_test { 
  mp_prec_t prec; 
  int base; 
  const char *str; 

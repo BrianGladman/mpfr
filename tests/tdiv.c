@@ -214,7 +214,7 @@ check_convergence (void)
           mpfr_div (y, x, y, j);
           if (mpfr_cmp_ui (y, 1))
             {
-              printf ("mpfr_div failed for x=1.0, y=1.0, prec=%u rnd=%s\n",
+              printf ("mpfr_div failed for x=1.0, y=1.0, prec=%d rnd=%s\n",
                       i, mpfr_print_rnd_mode(j));
               printf ("got "); mpfr_print_binary(y); puts ("");
               exit (1);

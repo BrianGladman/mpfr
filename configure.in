@@ -49,6 +49,20 @@ AC_CANONICAL_HOST
 AC_CHECK_OS
 AC_CHECK_MACHTYPE
 
+dnl Check if compiler is ICC, and if such a case, disable GCC
+dnl And add some specific flags.
+dnl Don't add Warnings Flags (Otherwise you'll get more than 20000 warnings).
+dnl Add -long_double flags ?
+AC_MSG_CHECKING(for ICC)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#if !defined(__ICC)
+# error "ICC Not Found"
+#endif
+]], [[]])],[AC_MSG_RESULT(yes)
+ GCC=
+ CFLAGS="-pc64 -fp_port -mp $CFLAGS"
+],[AC_MSG_RESULT(no)])
+
 dnl If compiler is gcc, then use some specific flags.
 dnl But don't touch user specified flags.
 if test "$test_CFLAGS" != set && test -n "$GCC"; then

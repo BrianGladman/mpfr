@@ -159,7 +159,13 @@ mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
  
   MPFR_CLEAR_FLAGS(r);
 
-  if (MPFR_UNLIKELY(d == 0))
+
+  if (MPFR_UNLIKELY(DOUBLE_ISNAN(d)))
+    {
+      MPFR_SET_NAN(r);
+      MPFR_RET_NAN;
+    }
+  else if (MPFR_UNLIKELY(d == 0))
     {
 #if _GMP_IEEE_FLOATS
       union ieee_double_extract x;
@@ -172,7 +178,7 @@ mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
       else
 	MPFR_SET_POS(r);
 #else /* _GMP_IEEE_FLOATS */
-      MPFR_SET_ZERO(r);
+      MPFR_SET_ZERO(r); 
       {
 	/* This is to get the sign of zero on non-IEEE hardware
 	   Some systems support +0.0, -0.0 and unsigned zero.
@@ -190,13 +196,8 @@ mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
 #endif
       return 0; /* 0 is exact */
     }
-  else if (MPFR_UNLIKELY(DOUBLE_ISNAN(d)))
-    {
-      MPFR_SET_NAN(r);
-      MPFR_RET_NAN;
-    }
   else if (MPFR_UNLIKELY(DOUBLE_ISINF(d)))
-    {
+    { 
       MPFR_SET_INF(r);
       if (d > 0)
 	MPFR_SET_POS(r);
@@ -259,3 +260,6 @@ mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
 
   return mpfr_check_range (r, inexact, rnd_mode);
 }
+
+
+

@@ -24,8 +24,10 @@ MA 02111-1307, USA. */
 
 /* Include 'config.h' before using ANY configure macros if needed
    NOTE: It isn't MPFR 'config.h', but GMP's one! */
+#if defined(HAVE_CONFIG_H)
 #if HAVE_CONFIG_H
 #include "config.h"
+#endif
 #endif
 
 #ifdef  MPFR_HAVE_GMP_IMPL /* Build with gmp internals*/
@@ -61,7 +63,7 @@ MA 02111-1307, USA. */
 #endif
 #undef MPFR_NEED_LONGLONG_H
 
-/* Macros to detect STDC, GCC, GLIBC and GMP version */
+/* Macros to detect STDC, GCC, GLIBC, GMP and ICC version */
 #if defined(__STDC_VERSION__)
 # define __MPFR_STDC(version) (__STDC_VERSION__>=(version))
 #elif defined(__STDC__)
@@ -69,7 +71,7 @@ MA 02111-1307, USA. */
 #else
 # define __MPFR_STDC(version) 0
 #endif
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+#if defined(__GNUC__) && defined(__GNUC_MINOR__) && !defined(__ICC)
 # define __MPFR_GNUC(a, i) (MPFR_VERSION_NUM(__GNUC__,__GNUC_MINOR__,0)>=MPFR_VERSION_NUM(a,i,0))
 #else
 # define __MPFR_GNUC(a, i) 0
@@ -84,7 +86,11 @@ MA 02111-1307, USA. */
 #else
 # define __MPFR_GMP(a, b, c) 0
 #endif
-
+#if defined(__ICC)
+# define __MPFR_ICC(a,b,c) (__ICC >= (a)*100+(b)*10+c)
+#else
+# define __MPFR_ICC(a,b,c) 0
+#endif
 
 /* Define strcasecmp and strncasecmp if needed */
 #ifndef HAVE_STRCASECMP
@@ -193,7 +199,7 @@ typedef unsigned long int  mpfr_uexp_t;
 
 /* Theses macros help the compiler to determine if a test is 
  * likely or unlikely. */
-#if __MPFR_GNUC(3,0)
+#if __MPFR_GNUC(3,0) || __MPFR_ICC(8,1,0)
 # define MPFR_LIKELY(x) (__builtin_expect(!!(x),1))
 # define MPFR_UNLIKELY(x) (__builtin_expect((x),0))
 #else

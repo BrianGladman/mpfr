@@ -41,7 +41,7 @@ check (long int n, long int d, mp_rnd_t rnd, const char *ys)
   /* check values */
   if (mpfr_cmp_str1(x, ys))
     {
-      printf ("Error for q=%ld/%lu and rnd=%s\n", n, d,
+      printf ("Error for q=%ld/%ld and rnd=%s\n", n, d,
               mpfr_print_rnd_mode (rnd));
       printf ("correct result is %s, mpfr_set_q gives ", ys);
       mpfr_out_str(stdout, 10, 0, x, GMP_RNDN);

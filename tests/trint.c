@@ -134,7 +134,7 @@ special (void)
   mpfr_clear (y);
 }
 
-#if __STDC_VERSION__ >= 199901L
+#if __MPFR_STDC (199901L)
 
 static void
 test_fct (double (*f)(double), int (*g)(), char *s, mp_rnd_t r)
@@ -342,7 +342,7 @@ main (int argc, char *argv[])
 
   special ();
 
-#if __STDC_VERSION__ >= 199901L
+#if __MPFR_STDC (199901L)
   if (argc > 1 && strcmp (argv[1], "-s") == 0)
     test_against_libc ();
 #endif

@@ -110,7 +110,7 @@ main (int argc, char *argv[])
   *(str2++) = '.';
 
   for (k = 1; k < nc - 17 - bd; k++)
-    *(str2++) = '0' + (randlimb () & 1);
+    *(str2++) = '0' + (char) (randlimb () & 1);
 
   *(str2++) = 'e';
   sprintf (str2, "%d", (int) (randlimb () & INT_MAX) + INT_MIN/2);
@@ -450,7 +450,7 @@ main (int argc, char *argv[])
 
               if (mpfr_cmp (x, y) != 0)
                 {
-                  printf ("Error in mpfr_set_str for nb_digit=%u, base=%u, "
+                  printf ("Error in mpfr_set_str for nb_digit=%u, base=%d, "
                           "rnd=%s:\n", (unsigned int) nb_digit, base[cbase],
                           mpfr_print_rnd_mode (rnd[crnd]));
                   printf ("instead of: ");

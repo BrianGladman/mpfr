@@ -81,7 +81,7 @@ static const struct dbl_bytes dbl_nan  =
 
 #endif /* _GMP_IEEE_FLOATS */
 
-
+ 
 /* multiplies 1/2 <= d <= 1 by 2^exp */
 static double
 mpfr_scale2 (double d, int exp)

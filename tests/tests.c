@@ -19,8 +19,10 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#if HAVE_CONFIG_H
-#include "config.h"     /* for a build within gmp */
+#ifdef HAVE_CONFIG_H
+# if HAVE_CONFIG_H
+#  include "config.h"     /* for a build within gmp */
+# endif
 #endif
 
 #include <stdio.h>
@@ -38,8 +40,8 @@ MA 02111-1307, USA. */
 
 #include "mpfr-test.h"
 
-void tests_rand_start _MPFR_PROTO ((void));
-void tests_rand_end   _MPFR_PROTO ((void));
+static void tests_rand_start (void);
+static void tests_rand_end   (void);
 
 void
 tests_start_mpfr (void)

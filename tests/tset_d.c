@@ -46,6 +46,7 @@ main (int argc, char *argv[])
 
   mpfr_set_nan (x);
   d = mpfr_get_d (x, GMP_RNDN);
+  MPFR_ASSERTN (DOUBLE_ISNAN (d));
   mpfr_set_ui (x, 0, GMP_RNDN);
   mpfr_set_d (x, d, GMP_RNDN);
   MPFR_ASSERTN(mpfr_nan_p (x));
@@ -166,3 +167,7 @@ main (int argc, char *argv[])
   tests_end_mpfr ();
   return 0;
 }
+
+
+
+
