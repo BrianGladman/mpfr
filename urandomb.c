@@ -25,24 +25,25 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include "gmp.h"
 #include "gmp-impl.h"
+#include "longlong.h"
 #include "mpfr.h"
 
 void
 #if __STDC__
-mpfr_urandomb (mpfr_t rop, gmp_randstate_t rstate, unsigned long int nbits)
+mpfr_urandomb (mpfr_t rop, gmp_randstate_t rstate)
 #else
-mpfr_urandomb (rop, rstate, nbits)
+mpfr_urandomb (rop, rstate)
      mpfr_t rop;
      gmp_randstate_t rstate;
-     unsigned long int nbits;
 #endif
 {
   mp_ptr rp;
   mp_size_t nlimbs;
   mp_exp_t exp;
-  unsigned long cnt; 
+  unsigned long cnt, nbits; 
 
-  rp = PTR (rop);
+  rp = MANT(rop);
+  nbits = PREC(rop);
   nlimbs = (nbits + BITS_PER_MP_LIMB - 1) / BITS_PER_MP_LIMB;
 
   _gmp_rand (rp, rstate, nbits);
@@ -71,5 +72,4 @@ mpfr_urandomb (rop, rstate, nbits)
   rp[0] &= ~((((mp_limb_t)1)<<cnt) - 1);
 
   EXP (rop) = exp;
-  SIZ (rop) = nlimbs;
 }
