@@ -49,7 +49,7 @@ mpfr_set_sj_2exp (mpfr_t x, intmax_t j, intmax_t e, mp_rnd_t rnd)
   else
     {
       int inex;
-      inex = mpfr_set_uj_2exp (x, -j, e, MPFR_INVERT_RND (rnd) );
+      inex = mpfr_set_uj_2exp (x, - (uintmax_t) j, e, MPFR_INVERT_RND (rnd));
       MPFR_CHANGE_SIGN (x);
       return -inex;
     }
