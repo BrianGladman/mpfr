@@ -111,6 +111,7 @@ typedef __gmp_const __mpfr_struct *mpfr_srcptr;
     PREC(x) = q; }
 
 void mpfr_init2 _PROTO ((mpfr_ptr, mp_prec_t));
+void mpfr_init _PROTO ((mpfr_ptr));
 int mpfr_round_raw _PROTO ((mp_limb_t *, mp_limb_t *, mp_prec_t, int,
 			     mp_prec_t, mp_rnd_t));
 int mpfr_round_raw2 _PROTO((mp_limb_t *, mp_prec_t, int, mp_rnd_t, mp_prec_t));
@@ -179,7 +180,6 @@ void mpfr_ui_div _PROTO((mpfr_ptr, unsigned long int, mpfr_srcptr, mp_rnd_t));
 mp_prec_t mpfr_get_prec _PROTO((mpfr_t));
 void mpfr_set_default_rounding_mode _PROTO((mp_rnd_t));
 
-#define mpfr_init(x) mpfr_init2(x, __gmp_default_fp_bit_precision)
 #define mpfr_cmp_ui(b,i) mpfr_cmp_ui_2exp(b,i,0)
 #define mpfr_cmp_si(b,i) mpfr_cmp_si_2exp(b,i,0)
 #define mpfr_set(a,b,r) mpfr_set4(a,b,r,MPFR_SIGN(b))
