@@ -104,7 +104,7 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
      i.e. f = 1 + floor(log(|op|)/log(base))
      = 1 + floor((log(|m|)+e*log(2))/log(base)) */
   /* f = 1 + (int) floor((log(d)/LOG2+(double)e)*LOG2/log((double)base)); */
-  d = ((double) e + _mpfr_floor_log2((double) d))
+  d = ((double) e + (double) _mpfr_floor_log2(d))
                       * __mp_bases[base].chars_per_bit_exactly;
   /* warning: (int) d rounds towards 0 */
   f = (int) d; /* f equals floor(d) if d >= 0 and ceil(d) if d < 0 */
