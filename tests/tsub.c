@@ -33,7 +33,7 @@ void check_two_sum _PROTO((mp_prec_t));
 void check_inexact _PROTO((void));
 
 void
-check_diverse ()
+check_diverse (void)
 {
   mpfr_t x, y, z;
   double res, got;
@@ -254,7 +254,7 @@ check_diverse ()
 }
 
 void
-bug_ddefour()
+bug_ddefour(void)
 {
     mpfr_t ex, ex1, ex2, ex3, tot, tot1;
 
@@ -336,7 +336,7 @@ check_two_sum (mp_prec_t p)
 #define MAX_PREC 100
 
 void
-check_inexact ()
+check_inexact (void)
 {
   mpfr_t x, y, z, u;
   mp_prec_t px, py, pu, pz;
@@ -398,7 +398,7 @@ check_inexact ()
 }
 
 int
-main()
+main(void)
 {
   mp_prec_t p;
   unsigned i;

@@ -33,7 +33,7 @@ void check _PROTO ((unsigned long, double, mp_rnd_t, double));
 void check_two_sum _PROTO ((mp_prec_t));
 
 void
-special ()
+special (void)
 {
   mpfr_t x, y, res;
   int inexact;

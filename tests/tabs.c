@@ -31,7 +31,7 @@ MA 02111-1307, USA. */
 void check_inexact _PROTO((void));
 
 void
-check_inexact ()
+check_inexact (void)
 {
   mp_prec_t p, q;
   mpfr_t x, y, absx;

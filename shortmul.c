@@ -8,8 +8,9 @@ const double BETA = 0.7;
 const mp_size_t SHORT_MUL_THRESHOLD = 1; // 2*KARATSUBA_MUL_THRESHOLD;
 
 #include <sys/resource.h>
+
 int
-cputime ()
+cputime (void)
 {
   struct rusage rus;
 

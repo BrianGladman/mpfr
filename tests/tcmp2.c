@@ -1,6 +1,6 @@
 /* Test file for mpfr_cmp2.
 
-Copyright (C) 1999-2001 Free Software Foundation.
+Copyright (C) 1999, 2000, 2001, 2002 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -27,10 +27,10 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 #include "mpfr-test.h"
 
-void tcmp2 (double, double, int);
-void special (void);
-void worst_cases (void);
-void set_bit (mpfr_t, unsigned int, int);
+void tcmp2 _PROTO ((double, double, int));
+void special _PROTO ((void));
+void worst_cases _PROTO ((void));
+void set_bit _PROTO ((mpfr_t, unsigned int, int));
 
 /* set bit n of x to b, where bit 0 is the most significant one */
 void
@@ -54,7 +54,7 @@ set_bit (mpfr_t x, unsigned int n, int b)
    mpfr_cmp2 (x, y) returns 1 + |u| + |v| + k for low(x) >= low(y),
                         and 1 + |u| + |v| + k + 1 otherwise */
 void
-worst_cases ()
+worst_cases (void)
 {
   mpfr_t x, y;
   unsigned int i, j, k, b, expected;
@@ -184,7 +184,8 @@ tcmp2 (double x, double y, int i)
   mpfr_clear(xx); mpfr_clear(yy);
 }
 
-void special ()
+void
+special (void)
 {
   mpfr_t x, y;
   mp_prec_t j;

@@ -28,7 +28,8 @@ MA 02111-1307, USA. */
 
 /* #define DEBUG */
 
-int main()
+int
+main(void)
 {
   mpfr_t p,result,res_p;
 #ifdef DEBUG

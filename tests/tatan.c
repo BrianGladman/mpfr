@@ -1,6 +1,6 @@
 /* Test file for mpfr_arctan.
 
-Copyright (C) 2001 Free Software Foundation.
+Copyright (C) 2001, 2002 Free Software Foundation.
 Written by Paul Zimmermann, INRIA Lorraine.
 
 This file is part of the MPFR Library.
@@ -29,7 +29,7 @@ void worst_cases _PROTO((void));
 int mpfr_arctan_aux2 _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 
 void
-worst_cases ()
+worst_cases (void)
 {
   mpfr_t x, y, z;
  
