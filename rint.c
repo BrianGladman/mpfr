@@ -50,9 +50,9 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 	  MPFR_RET(0);  /* zero is exact */
 	}
     }
-  MPFR_SET_SAME_SIGN(r, u);
+  MPFR_SET_SAME_SIGN (r, u); /* Does nothing if r==u */
 
-  sign = MPFR_INT_SIGN(u);
+  sign = MPFR_INT_SIGN (u);
   exp = MPFR_GET_EXP (u);
 
   rnd_away =
@@ -66,7 +66,7 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
      -1 if not decided yet.
    */
 
-  if (exp <= 0)  /* 0 < |u| < 1 ==> round |u| to 0 or 1 */
+  if (MPFR_UNLIKELY (exp <= 0))  /* 0 < |u| < 1 ==> round |u| to 0 or 1 */
     {
       /* Note: in the GMP_RNDN mode, 0.5 must be rounded to 0. */
       if (rnd_away != 0 &&
@@ -109,9 +109,9 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 
       un = MPFR_LIMB_SIZE(u);
       rn = MPFR_LIMB_SIZE(r);
-      sh = (mp_prec_t) rn * BITS_PER_MP_LIMB - MPFR_PREC(r);
+      MPFR_UNSIGNED_MINUS_MODULO (sh, MPFR_PREC (r));
 
-      MPFR_SET_EXP (r, exp);
+      MPFR_SET_EXP (r, exp); /* Does nothing if r==u */
 
       if ((exp - 1) / BITS_PER_MP_LIMB >= un)
         {
@@ -124,7 +124,7 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
           mp_size_t uj;
 
           ui = (exp - 1) / BITS_PER_MP_LIMB + 1;  /* #limbs of the int part */
-          MPFR_ASSERTN (un >= ui);
+          MPFR_ASSERTD (un >= ui);
           uj = un - ui;  /* lowest limb of the integer part */
           idiff = exp % BITS_PER_MP_LIMB;  /* #int-part bits in up[uj] or 0 */
 
@@ -142,12 +142,13 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
         {
           /* More limbs in the integer part of u than in r.
              Just round u with the precision of r. */
-          MPFR_ASSERTN(rp != up && un > rn);
-          MPN_COPY(rp, up + (un - rn), rn);
+          MPFR_ASSERTD (rp != up && un > rn);
+          MPN_COPY (rp, up + (un - rn), rn); /* r != u */
           if (rnd_away < 0)
             {
               /* This is a rounding to nearest mode.
                  Decide the rounding direction here. */
+	      /* FIXME: How rnd_mode could be != of RNDN if rnd_away<0 ? */
               if (rnd_mode == GMP_RNDN &&
                   (rp[0] & (MPFR_LIMB_ONE << sh)) == 0)
                 { /* halfway cases rounded towards zero */
@@ -205,9 +206,7 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
           uj = un - ui;  /* lowest limb of the integer part in u */
           rj = rn - ui;  /* lowest limb of the integer part in r */
 
-          MPN_ZERO(rp, rj);
-
-          if (rp != up)
+          if (MPFR_LIKELY (rp != up))
             MPN_COPY(rp + rj, up + uj, ui);
 
           /* Ignore the lowest rj limbs, all equal to zero. */
@@ -248,7 +247,7 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
                     }
                   else
                     {
-                      MPFR_ASSERTN (uj >= 1);  /* see above */
+                      MPFR_ASSERTD (uj >= 1);  /* see above */
                       a = up[uj - 1];
                       b = MPFR_LIMB_HIGHBIT;
                     }
@@ -267,9 +266,11 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
               else  /* halfway cases rounded away from zero */
                 rnd_away =  /* rounding bit */
                   ((sh != 0 && (rp[0] & (MPFR_LIMB_ONE << (sh - 1))) != 0) ||
-                   (sh == 0 && (MPFR_ASSERTN (uj >= 1),
+                   (sh == 0 && (MPFR_ASSERTD (uj >= 1),
                                 up[uj - 1] & MPFR_LIMB_HIGHBIT) != 0));
             }
+	  /* Now we can make the low rj limbs to 0 */
+	  MPN_ZERO (rp-rj, rj);
         }
 
       if (sh != 0)
@@ -279,7 +280,7 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
       if (uflags == 0)
         MPFR_RET(0);
 
-      MPFR_ASSERTN (rnd_away >= 0);  /* rounding direction is defined */
+      MPFR_ASSERTD (rnd_away >= 0);  /* rounding direction is defined */
       if (rnd_away && mpn_add_1(rp, rp, rn, MPFR_LIMB_ONE << sh))
         {
           if (exp == __gmpfr_emax)

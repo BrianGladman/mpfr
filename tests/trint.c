@@ -134,6 +134,19 @@ special (void)
       exit (1);
     }
 
+  /* Bug found by  Mark J Watkins */
+  mpfr_set_prec (x, 84);
+  mpfr_set_str_binary (x, 
+   "0.110011010010001000000111101101001111111100101110010000000000000" \
+		       "000000000000000000000E32");
+  mpfr_round (x, x);
+  if (mpfr_cmp_str (x, "0.1100110100100010000001111011010100000000000000" \
+		    "00000000000000000000000000000000000000E32", 2, GMP_RNDN))
+    {
+      printf ("Rounding error when dest=src\n");
+      exit (1);
+    }
+
   mpfr_clear (x);
   mpfr_clear (y);
 }
