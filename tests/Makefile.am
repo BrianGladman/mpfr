@@ -7,7 +7,7 @@ INCLUDES=@INCLUDES@ -I$(top_srcdir)
 	cd $(top_srcdir); make libmpfr.a  
 
 check: 	all
-	for i in $(check_PROGRAMS); do echo Testing $$i ; ./$$i; done
+	for i in $(check_PROGRAMS); do echo Testing $$i ; ./$$i || echo "### $$i failed ###"; done
 
 
 
