@@ -30,6 +30,10 @@ MA 02111-1307, USA. */
 int
 main (int argc, char *argv[])
 {
+  /* Test removed as the minimal precision for a long double is something
+     like 10 decimal digits. Anyway, there are implementations for which
+     long double = double = IEEE double precision. */
+#if 0
   long double d, e;
   mpfr_t x;
 
@@ -64,5 +68,7 @@ main (int argc, char *argv[])
   mpfr_clear (x);
 
   tests_end_mpfr ();
+#endif
+
   return 0; 
 }
