@@ -672,8 +672,8 @@ Here is an example on how to initialize floating-point variables:
 
 @defmac MPFR_DECL_INIT (@var{name}, @var{prec})
 This macro declares @var{name} as an automatic variable of type @code{mpfr_t},
-inits it and sets its precision to be @strong{exactly} @var{prec} bits and
-its value to NaN. @var{name} must be a valid c identifier.
+initializes it and sets its precision to be @strong{exactly} @var{prec} bits
+and its value to NaN. @var{name} must be a valid identifier.
 You must use this macro in the declaration section. This macro is much faster than using @code{mpfr_init2} but has some
 drawbacks:
 
@@ -687,7 +687,7 @@ and deallocated when the brace-level is exited.).
 in C++ and ISO C99) and @samp{Tokken Pasting}
 (standard in ISO C89). If @var{prec} is not a compiler constant, your compiler
 must support @samp{Variable-length automatic arrays} (standard in ISO C99).
-@samp{GCC} supports all theses features.
+@samp{GCC 2.95.3} supports all theses features.
 @end itemize
 @end defmac
 
