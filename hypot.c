@@ -40,7 +40,8 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode)
   mpfr_t t, te, ti; /* auxiliary variables */
   mp_prec_t Nx, Ny, Nz; /* size variables */
   mp_prec_t Nt;   /* precision of the intermediary variable */
-  mp_exp_t Ex, Ey, diff_exp, sh;
+  mp_exp_t Ex, Ey, sh;
+  mp_exp_unsigned_t diff_exp;
 
   /* particular cases */
 
@@ -79,7 +80,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode)
 
   Ex = MPFR_EXP(x);
   Ey = MPFR_EXP(y);
-  diff_exp = Ex - Ey;
+  diff_exp = (mp_exp_unsigned_t) Ex - Ey;
 
   Nz = MPFR_PREC(z);   /* Precision of output variable */
 
@@ -90,7 +91,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode)
      i.e. a sufficient condition is y^2 < |x|*ulp(x,Nz),
      or 2^(2*Ey) <= 2^(2*Ex-1-Nz), i.e. 2*diff_exp > Nz
   */
-  if (2 * diff_exp > Nz) /* result is |x| or |x|+ulp(|x|,Nz) */
+  if (diff_exp > Nz / 2) /* result is |x| or |x|+ulp(|x|,Nz) */
     {
       if (rnd_mode == GMP_RNDU)
         {
