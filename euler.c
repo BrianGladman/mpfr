@@ -21,7 +21,6 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "longlong.h"
@@ -50,7 +49,7 @@ mpfr_const_euler (mpfr_t x, mp_rnd_t rnd)
       n = 1 + (unsigned long)((double) m * LOG2 / 2.0);
       if (n < 9)
 	n = 9;
-      assert (n >= 9);
+      MPFR_ASSERTD (n >= 9);
       mpfr_set_prec (y, m + log2m);
       mpfr_set_prec (z, m + log2m);
       mpfr_const_euler_S (y, n);
@@ -125,7 +124,7 @@ mpfr_const_euler_R (mpfr_t x, unsigned long n)
   mpz_t a, s;
   mpfr_t y;
 
-  assert (n >= 2); /* ensures sum(k!/(-n)^k, k=0..n-2) >= 2/3 */
+  MPFR_ASSERTN (n >= 2); /* ensures sum(k!/(-n)^k, k=0..n-2) >= 2/3 */
 
   /* as we multiply the sum by exp(-n), we need only PREC(x) - n/LOG2 bits */
   m = MPFR_PREC(x) - (unsigned long) ((double) n / LOG2);

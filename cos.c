@@ -119,7 +119,7 @@ mpfr_cos2_aux (s, r)
   int prec_t, m = MPFR_PREC(s);
   mpfr_t t;
 
-  assert (MPFR_EXP(r) <= 0);
+  MPFR_ASSERTN (MPFR_EXP(r) <= 0);
   mpfr_init2 (t, m);
   mpfr_set_ui (t, 1, GMP_RNDN);
   mpfr_set_ui(s, 1, GMP_RNDN);
@@ -132,7 +132,7 @@ mpfr_cos2_aux (s, r)
 	mpfr_add (s, s, t, GMP_RNDD);
       else
 	mpfr_sub (s, s, t, GMP_RNDD);
-      assert (MPFR_EXP(s) == 0); /* check 1/2 <= s < 1 */
+      MPFR_ASSERTN (MPFR_EXP(s) == 0); /* check 1/2 <= s < 1 */
       /* err(s) <= l * 2^(-m) */
       if (3 * l > (1 << b))
 	b++;
