@@ -6,7 +6,9 @@
 #include "gmp.h"
 #include "mpfr.h"
 
-
+extern long int lrand48();
+extern int isnan();
+extern void srand48();
 
 double drand()
 {
@@ -23,7 +25,6 @@ double drand()
 
   return d;
 }
-
 
 /* returns the number of ulp's between a and b */
 int ulp(a,b) double a,b;
@@ -45,8 +46,6 @@ double min(double a,double b) {
     return a;
   return b;
 }
-
-
 
 double dagm(double a, double b) { 
   double u,v,tmpu,tmpv;
@@ -100,12 +99,26 @@ void check4(double a, double b, unsigned char rnd_mode, double res1)
   mpfr_clear(ta); mpfr_clear(tb); mpfr_clear(tres); 
 }
 
+void check_large()
+{
+  mpfr_t a, b, agm;
 
+  mpfr_init2(a, 82); mpfr_init2(b, 82); mpfr_init2(agm, 82);
+  mpfr_set_ui(a, 1, GMP_RNDN);
+  mpfr_set_str_raw(b, "0.1111101100001000000001011000110111101000001011111000100001000101010100011111110010E-39");
+  mpfr_agm(agm, a, b, GMP_RNDN);
+  mpfr_set_str_raw(a, "0.1110001000111101101010101010101101001010001001001011100101111011110101111001111100E-4");
+  if (mpfr_cmp(agm, a)) {
+    fprintf(stderr, "mpfr_agm failed for precision 82\n"); exit(1);
+  }
+  mpfr_clear(a); mpfr_clear(b); mpfr_clear(agm);
+}
 
-void main(int argc, char* argv[]) {
+int main(int argc, char* argv[]) {
    int i, N;
    double a,b;
 
+   check_large();
    check(2,1,GMP_RNDN);
    check(6,4,GMP_RNDN); 
    check(62,61,GMP_RNDN);
@@ -124,4 +137,5 @@ void main(int argc, char* argv[]) {
      b = drand();
      check(a, b, rand() % 4);
    } 
+   return 0;
 }
