@@ -101,6 +101,8 @@ New functions to implement:
 
 Efficiency:
 
+- speed up mpfr_atan for large arguments (to speed up mpc_log)
+	[from Mark Watkins on Fri, 18 Mar 2005]
 - implement range reduction in sin/cos/tan for large arguments
 	(currently too slow for 2^1024), and/or implement Mark Watkins's
 	algorithm:
@@ -133,8 +135,6 @@ Efficiency:
   perhaps those mpfr routines like mpfr_mul where optimizations are
   possible through stripping low zero bits or limbs could check for
   that (this would be less efficient but easier).
-  
-
 
 Miscellaneous:
 
