@@ -52,7 +52,7 @@ void check(double x, unsigned long y, unsigned int rnd_mode)
   z2 = mpfr_get_d(zz);
   if (z1!=z2 && !(isnan(z1) && isnan(z2))) {
     printf("expected difference is %1.20e, got %1.20e\n",z1,z2);
-    printf("mpfr_ui_sub failed for y=%lu x=%1.20e with rnd_mode=%u\n",
+    printf("mpfr_ui_sub failed for y=%lu x=%1.20e with rnd_mode=%s\n",
 	   y, x, mpfr_print_rnd_mode(rnd_mode));
     exit(1);
   }
