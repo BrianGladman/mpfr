@@ -24,10 +24,11 @@ MA 02111-1307, USA. */
 int
 mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
 {
-  int s, compare, inexact;
+  int compare, inexact;
+  mp_size_t s;
   mp_prec_t p, q;
-  mp_limb_t *up, *vp, *tmpup, *tmpvp;
-  mpfr_t u, v, tmpu, tmpv;
+  mp_limb_t *up, *vp, *tmpp;
+  mpfr_t u, v, tmp;
   TMP_DECL(marker);
 
   /* Deal with special values */
@@ -41,7 +42,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
 	}
       /* now one of a or b is Inf or 0 */
       /* If a and b is +Inf, the result is +Inf.
-	 Otherwise if a or b is -Inf, the result is NaN */
+	 Otherwise if a or b is -Inf or 0, the result is NaN */
       else if (MPFR_IS_INF(op1) || MPFR_IS_INF(op2))
 	{
           if (MPFR_IS_STRICTPOS(op1) && MPFR_IS_STRICTPOS(op2))
@@ -73,7 +74,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
       MPFR_RET_NAN;
     }
 
-  /* precision of the following calculus */
+  /* Precision of the following calculus */
   q = MPFR_PREC(r);
   p = q + 15;
   s = (p - 1) / BITS_PER_MP_LIMB + 1;
@@ -103,25 +104,28 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
       /* Init temporary vars */
       MPFR_TMP_INIT (up, u, p, s);
       MPFR_TMP_INIT (vp, v, p, s);
-      MPFR_TMP_INIT (tmpup, tmpu, p, s);
-      MPFR_TMP_INIT (tmpvp, tmpv, p, s);
-
-      /* Set initial values */
-      mpfr_set (u, op1, GMP_RNDN);
-      mpfr_set (v, op2, GMP_RNDN);
+      MPFR_TMP_INIT (tmpp, tmp, p, s);
 
       /* Calculus of un and vn */
-      do
+      mpfr_mul (u, op1, op2, GMP_RNDN); /* Faster since PREC(op) < PREC(u) */
+      mpfr_sqrt (u, u, GMP_RNDN);
+      mpfr_add (v, op1, op2, GMP_RNDN); /* add with !=prec is still good*/
+      mpfr_div_2ui (v, v, 1, GMP_RNDN);
+      while (mpfr_cmp2 (u, v, &eq) != 0 && eq <= p - 2)
 	{
-	  mpfr_mul (tmpu, u, v, GMP_RNDN);
-	  mpfr_sqrt (tmpu, tmpu, GMP_RNDN);
-	  mpfr_add (tmpv, u, v, GMP_RNDN);
-	  mpfr_div_2ui (tmpv, tmpv, 1, GMP_RNDN);
-	  mpfr_set (u, tmpu, GMP_RNDN);
-	  mpfr_set (v, tmpv, GMP_RNDN);
+	  mpfr_add (tmp, u, v, GMP_RNDN);
+	  /* It seems to work well. Any proof are welcome. */
+	  /*if (2*eq > p)
+	    {
+	      mpfr_div_2ui (tmp, tmp, 1, GMP_RNDN);
+	      mpfr_swap (v, tmp);
+	      break;                      
+	      }*/
+	  mpfr_mul (u, u, v, GMP_RNDN);
+	  mpfr_sqrt (u, u, GMP_RNDN);
+          mpfr_div_2ui (tmp, tmp, 1, GMP_RNDN);
+	  mpfr_swap (v, tmp);
 	}
-      while (mpfr_cmp2 (u, v, &eq) != 0 && eq <= p - 2);
-      
       /* Roundability of the result */
       if (mpfr_can_round (v, p - 4 - 3, GMP_RNDN, GMP_RNDZ,
 			  q + (rnd_mode == GMP_RNDN)))
@@ -131,11 +135,11 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
       p += 5;
       s = (p - 1) / BITS_PER_MP_LIMB + 1;
     }
-  /* End of while */
+  /* End of loop */
 
   /* Setting of the result */
   inexact = mpfr_set (r, v, rnd_mode);
-
+  
   /* Let's clean */
   TMP_FREE(marker);
 
