@@ -101,8 +101,8 @@ main (int argc, char *argv[])
   if (mpfr_cmp (x, y))
     {
       fprintf (stderr, "Error in mpfr_mul_ui: 1*y != y\n");
-      printf ("y=  "); mpfr_print_raw (y); putchar ('\n');
-      printf ("1*y="); mpfr_print_raw (x); putchar ('\n');
+      printf ("y=  "); mpfr_print_binary (y); putchar ('\n');
+      printf ("1*y="); mpfr_print_binary (x); putchar ('\n');
       exit (1);
   }
 
@@ -145,7 +145,7 @@ main (int argc, char *argv[])
   mpfr_mul_ui(x, y, 4, GMP_RNDZ);
   if (mpfr_cmp_ui(x, 0) <= 0) {
     fprintf(stderr, "Error in mpfr_mul_ui: 4*3.0 does not give a positive result:\n"); 
-    mpfr_print_raw(x); putchar('\n');
+    mpfr_print_binary(x); putchar('\n');
     printf("mpfr_cmp_ui(x, 0) = %d\n", mpfr_cmp_ui(x, 0));
     exit(1);
   }
@@ -158,7 +158,7 @@ main (int argc, char *argv[])
   if (mpfr_cmp (x, y))
     {
       fprintf (stderr, "Error in mul_ui for 1335*(0.100001111E9)\n");
-      printf ("got "); mpfr_print_raw (x); putchar ('\n');
+      printf ("got "); mpfr_print_binary (x); putchar ('\n');
       exit(1);
     }
 
@@ -171,7 +171,7 @@ main (int argc, char *argv[])
   mpfr_set_str_raw(y, "0.1111101111010101111111100011010010111010111110110011001E67");
   if (mpfr_cmp(x, y)) {
     printf("Error for 121*y: expected result is:\n");
-    mpfr_print_raw(y); putchar('\n');
+    mpfr_print_binary(y); putchar('\n');
   }
 
   mpfr_set_prec (x, 32);
@@ -198,8 +198,8 @@ main (int argc, char *argv[])
   if (mpfr_cmp (x, y))
     {
       printf ("Error for 23 * 2143861251406875.0\n");
-      printf ("expected "); mpfr_print_raw (x); putchar ('\n');
-      printf ("got      "); mpfr_print_raw (y); putchar ('\n');
+      printf ("expected "); mpfr_print_binary (x); putchar ('\n');
+      printf ("got      "); mpfr_print_binary (y); putchar ('\n');
       exit (1);
     }
   
@@ -215,8 +215,8 @@ main (int argc, char *argv[])
 	  if (mpfr_get_d (x) != mpfr_get_d (y))
 	    {
 	      fprintf (stderr, "multiplication by 1.0 fails for xprec=%u, yprec=%u\n", xprec, yprec);
-	      printf ("expected "); mpfr_print_raw (x); putchar ('\n');
-	      printf ("got      "); mpfr_print_raw (y); putchar ('\n');
+	      printf ("expected "); mpfr_print_binary (x); putchar ('\n');
+	      printf ("got      "); mpfr_print_binary (y); putchar ('\n');
 	      exit (1);
 	    }
 	}

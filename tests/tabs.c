@@ -66,9 +66,9 @@ check_inexact ()
 		  ((inexact < 0) && (cmp >= 0)))
 		{
 		  fprintf (stderr, "Wrong inexact flag: expected %d, got %d\n", cmp, inexact);
-		  printf ("x="); mpfr_print_raw (x); putchar ('\n');
-		  printf ("absx="); mpfr_print_raw (absx); putchar ('\n');
-		  printf ("y="); mpfr_print_raw (y); putchar ('\n');
+		  printf ("x="); mpfr_print_binary (x); putchar ('\n');
+		  printf ("absx="); mpfr_print_binary (absx); putchar ('\n');
+		  printf ("y="); mpfr_print_binary (y); putchar ('\n');
 		  exit (1);
 		}
 	    }
@@ -133,7 +133,7 @@ main (int argc, char *argv[])
 	 { 
 	   fprintf(stderr, 
 		   "Mismatch on d = %1.18g\n", d); 
-	   mpfr_print_raw(x); putchar('\n');
+	   mpfr_print_binary(x); putchar('\n');
 	   exit(1);
 	 } 
      }

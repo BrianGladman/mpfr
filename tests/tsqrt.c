@@ -89,8 +89,8 @@ void check4 (double a, mp_rnd_t rnd_mode, char *Q)
   if (mpfr_cmp(q, res)) {
       printf("mpfr_sqrt failed for a=%1.20e, rnd_mode=%s\n",
 	     a, mpfr_print_rnd_mode(rnd_mode));
-      printf("expected "); mpfr_print_raw(res); putchar('\n');
-      printf("got      "); mpfr_print_raw(q); putchar('\n');
+      printf("expected "); mpfr_print_binary(res); putchar('\n');
+      printf("got      "); mpfr_print_binary(q); putchar('\n');
       mpfr_clear(q); mpfr_clear(res); 
       exit(1);
   }
@@ -193,7 +193,7 @@ void special ()
       if (mpfr_cmp_ui (x, 2))
 	{
 	  fprintf (stderr, "Error: sqrt(1+ulp(1), up) should give 2 (prec=%u)\n", (unsigned) p);
-	  printf ("got "); mpfr_print_raw (x); putchar ('\n');
+	  printf ("got "); mpfr_print_binary (x); putchar ('\n');
 	  exit (1);
 	}
     }
@@ -258,9 +258,9 @@ check_inexact (mp_prec_t p)
       fprintf (stderr, "Error: wrong inexact flag, expected %d, got %d\n",
 	       sign, inexact);
       printf ("x=");
-      mpfr_print_raw (x);
+      mpfr_print_binary (x);
       printf (" rnd=%s\n", mpfr_print_rnd_mode (rnd));
-      printf ("y="); mpfr_print_raw (y); putchar ('\n');
+      printf ("y="); mpfr_print_binary (y); putchar ('\n');
       exit (1);
     }
   mpfr_clear (x);

@@ -77,7 +77,7 @@ main (int argc, char *argv[])
 		  mpfr_out_str (stdout, 2, prec, t, GMP_RNDN);
 		  putchar ('\n');
 		  printf ("   approximation was ");
-		  mpfr_print_raw (y);
+		  mpfr_print_binary (y);
 		  putchar ('\n');
 		  exit (1);
 		}

@@ -44,8 +44,8 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c,
 
 #ifdef DEBUG
   printf("\nenter mpfr_sub, rnd_mode=%s:\n", mpfr_print_rnd_mode(rnd_mode));
-  printf("b="); if (MPFR_SIGN(b)>0) putchar(' '); mpfr_print_raw(b); putchar('\n');
-  printf("c="); if (MPFR_SIGN(c)>0) putchar(' '); for (k=0; k<diff_exp; k++) putchar(' '); mpfr_print_raw(c); putchar('\n');
+  printf("b="); if (MPFR_SIGN(b)>0) putchar(' '); mpfr_print_binary(b); putchar('\n');
+  printf("c="); if (MPFR_SIGN(c)>0) putchar(' '); for (k=0; k<diff_exp; k++) putchar(' '); mpfr_print_binary(c); putchar('\n');
   printf("PREC(a)=%u PREC(b)=%u PREC(c)=%u\n", MPFR_PREC(a), MPFR_PREC(b),
 	 MPFR_PREC(c));
 #endif
@@ -145,7 +145,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c,
       MPN_ZERO (ap, an);
 
 #ifdef DEBUG
-  printf("after copying high(b), a="); mpfr_print_raw(a); putchar('\n');
+  printf("after copying high(b), a="); mpfr_print_binary(a); putchar('\n');
 #endif
 
   /* subtract high(c) */
@@ -183,7 +183,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c,
     }
 
 #ifdef DEBUG
-  printf("after subtracting high(c), a="); mpfr_print_raw(a); putchar('\n');
+  printf("after subtracting high(c), a="); mpfr_print_binary(a); putchar('\n');
 #endif
 
   /* now perform rounding */
@@ -398,7 +398,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c,
     }
   TMP_FREE(marker);
 #ifdef DEBUG
-  printf ("result is a="); mpfr_print_raw(a); putchar('\n');
+  printf ("result is a="); mpfr_print_binary(a); putchar('\n');
 #endif
   /* check that result is msb-normalized */
   MPFR_ASSERTN(ap[an-1] > ~ap[an-1]);

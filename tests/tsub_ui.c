@@ -98,10 +98,10 @@ check_two_sum (mp_prec_t p)
       fprintf (stderr, "Wrong inexact flag for prec=%u, rnd=%s\n", (unsigned)p,
 	       mpfr_print_rnd_mode (rnd));
       printf ("x=%u\n", x);
-      printf ("y="); mpfr_print_raw(y); putchar('\n');
-      printf ("u="); mpfr_print_raw(u); putchar('\n');
-      printf ("v="); mpfr_print_raw(v); putchar('\n');
-      printf ("w="); mpfr_print_raw(w); putchar('\n');
+      printf ("y="); mpfr_print_binary(y); putchar('\n');
+      printf ("u="); mpfr_print_binary(u); putchar('\n');
+      printf ("v="); mpfr_print_binary(v); putchar('\n');
+      printf ("w="); mpfr_print_binary(w); putchar('\n');
       printf ("inexact = %d\n", inexact);
       exit (1);
     }

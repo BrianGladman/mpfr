@@ -275,7 +275,7 @@ main (int argc, char *argv[])
 	      mpfr_out_str (stdout, 2, prec, t, GMP_RNDN);
 	      putchar ('\n');
 	      printf ("approx  ");
-	      mpfr_print_raw (slong);
+	      mpfr_print_binary (slong);
 	      putchar ('\n');
 	      exit (1);
 	    }

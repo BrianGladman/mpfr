@@ -118,7 +118,7 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
 
   while (bool==1) {
 #ifdef DEBUG
-    printf("a="); mpfr_print_raw(a); putchar('\n');
+    printf("a="); mpfr_print_binary(a); putchar('\n');
     printf("p=%d\n", p);
 #endif
     /* Calculus of m (depends on p) */
@@ -151,7 +151,7 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
     cancel -= MPFR_EXP(cst);
 #ifdef DEBUG
     printf("cancelled bits=%d\n", cancel);
-    printf("approx="); mpfr_print_raw(cst); putchar('\n');
+    printf("approx="); mpfr_print_binary(cst); putchar('\n');
 #endif
     if (cancel<0) cancel=0;
 
@@ -163,7 +163,7 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
     if (mpfr_can_round (cst, p - cancel - 4, GMP_RNDN, rnd_mode, q) == 1) {
       inexact = mpfr_set (r, cst, rnd_mode);
 #ifdef DEBUG
-      printf("result="); mpfr_print_raw(r); putchar('\n');
+      printf("result="); mpfr_print_binary(r); putchar('\n');
 #endif
       bool=0;
     }

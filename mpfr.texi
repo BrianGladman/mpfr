@@ -1245,7 +1245,7 @@ numbers like @samp{0.23} are not interpreted as octal.
 Return the number of bytes read, or if an error occurred, return 0.
 @end deftypefun
 
-@deftypefun void mpfr_print_raw (mpfr_t @var{float})
+@deftypefun void mpfr_print_binary (mpfr_t @var{float})
 Output @var{float} on stdout
 in raw binary format (the exponent is in decimal, yet).
 The last bits from the least significant limb which do not belong to

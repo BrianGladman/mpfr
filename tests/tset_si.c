@@ -94,7 +94,7 @@ main (int argc, char *argv[])
       || inex >= 0)
   {
     fprintf(stderr, "Error in mpfr_set_si(x:3, 77617, GMP_RNDD)\n");
-    mpfr_print_raw(x); putchar('\n');
+    mpfr_print_binary(x); putchar('\n');
     exit(1);
   }
   inex = mpfr_set_ui(x, 77617, GMP_RNDD); /* should be 65536 */
@@ -102,7 +102,7 @@ main (int argc, char *argv[])
       || inex >= 0)
   {
     fprintf(stderr, "Error in mpfr_set_ui(x:3, 77617, GMP_RNDD)\n");
-    mpfr_print_raw(x); putchar('\n');
+    mpfr_print_binary(x); putchar('\n');
     exit(1);
   }
 

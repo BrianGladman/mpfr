@@ -184,10 +184,10 @@ void special ()
   if ((j = mpfr_cmp2 (x, y)) != 1) {
     printf ("Error in mpfr_cmp2:\n");
     printf ("x=");
-    mpfr_print_raw (x);
+    mpfr_print_binary (x);
     putchar ('\n');
     printf ("y=");
-    mpfr_print_raw (y);
+    mpfr_print_binary (y);
     putchar ('\n');
     printf ("got %d, expected 1\n", j);
     exit (1);
@@ -198,8 +198,8 @@ void special ()
   mpfr_set_str_raw(y, "0.1011010000110111111000000101011011111100011101000011001111000010100010100110110100110010011001100110010000110010010110000010110E6");
   if ((j=mpfr_cmp2(x, y)) != 32) {
     printf("Error in mpfr_cmp2:\n");
-    printf("x="); mpfr_print_raw(x); putchar('\n');
-    printf("y="); mpfr_print_raw(y); putchar('\n');
+    printf("x="); mpfr_print_binary(x); putchar('\n');
+    printf("y="); mpfr_print_binary(y); putchar('\n');
     printf("got %d, expected 32\n", j);
     exit(1);
   }
@@ -209,8 +209,8 @@ void special ()
   mpfr_set_str_raw (y, "0.10001000110110000111011000101011111100110010010011001101000011111010010110001000000010100110100111111011011010101100011111111111111111111111111111111111111111111111011111100101011100011001101000100111000010000000000101100110000111111000101E167");
   if ((j=mpfr_cmp2(x, y)) != 164) {
     printf("Error in mpfr_cmp2:\n");
-    printf("x="); mpfr_print_raw(x); putchar('\n');
-    printf("y="); mpfr_print_raw(y); putchar('\n');
+    printf("x="); mpfr_print_binary(x); putchar('\n');
+    printf("y="); mpfr_print_binary(y); putchar('\n');
     printf("got %d, expected 164\n", j);
     exit(1);
   }
@@ -221,8 +221,8 @@ void special ()
   mpfr_set_str_raw (y, "0.1011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111100E2");
   if ((j=mpfr_cmp2(x, y)) != 127) {
     printf("Error in mpfr_cmp2:\n");
-    printf("x="); mpfr_print_raw(x); putchar('\n');
-    printf("y="); mpfr_print_raw(y); putchar('\n');
+    printf("x="); mpfr_print_binary(x); putchar('\n');
+    printf("y="); mpfr_print_binary(y); putchar('\n');
     printf("got %d, expected 127\n", j);
     exit(1);
   }
@@ -233,8 +233,8 @@ void special ()
   mpfr_set_str_raw (y, "0.10011111111111111111111111111111111111111111111111111111111111101E3");
   if ((j=mpfr_cmp2(x, y)) != 63) {
     printf("Error in mpfr_cmp2:\n");
-    printf("x="); mpfr_print_raw(x); putchar('\n');
-    printf("y="); mpfr_print_raw(y); putchar('\n');
+    printf("x="); mpfr_print_binary(x); putchar('\n');
+    printf("y="); mpfr_print_binary(y); putchar('\n');
     printf("got %d, expected 63\n", j);
     exit(1);
   }
@@ -245,8 +245,8 @@ void special ()
   mpfr_set_str_raw (y, "0.10011011111000101001101111111111111111111111111111111111111111101E-69");
   if ((j=mpfr_cmp2(x, y)) != 63) {
     printf("Error in mpfr_cmp2:\n");
-    printf("x="); mpfr_print_raw(x); putchar('\n');
-    printf("y="); mpfr_print_raw(y); putchar('\n');
+    printf("x="); mpfr_print_binary(x); putchar('\n');
+    printf("y="); mpfr_print_binary(y); putchar('\n');
     printf("got %d, expected 63\n", j);
     exit(1);
   }

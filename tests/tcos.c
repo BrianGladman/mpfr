@@ -66,8 +66,8 @@ main (int argc, char *argv[])
   if (mpfr_cmp (y, x))
     {
       fprintf (stderr, "Error for prec=30, rnd=GMP_RNDU\n");
-      printf ("expected "); mpfr_print_raw (x); putchar ('\n');
-      printf ("     got "); mpfr_print_raw (y); putchar ('\n');
+      printf ("expected "); mpfr_print_binary (x); putchar ('\n');
+      printf ("     got "); mpfr_print_binary (y); putchar ('\n');
       exit (1);
     }
 
@@ -79,8 +79,8 @@ main (int argc, char *argv[])
   if (mpfr_cmp (y, x))
     {
       fprintf (stderr, "Error for prec=59, rnd=GMP_RNDU\n");
-      printf ("expected "); mpfr_print_raw (x); putchar ('\n');
-      printf ("     got "); mpfr_print_raw (y); putchar ('\n');
+      printf ("expected "); mpfr_print_binary (x); putchar ('\n');
+      printf ("     got "); mpfr_print_binary (y); putchar ('\n');
       exit (1);
     }
 
@@ -92,7 +92,7 @@ main (int argc, char *argv[])
   if (mpfr_cmp (y, x))
     {
       fprintf (stderr, "Error for x=1.1100e-2, rnd=GMP_RNDD\n");
-      printf ("expected 1.1100e-1, got "); mpfr_print_raw (y); putchar ('\n');
+      printf ("expected 1.1100e-1, got "); mpfr_print_binary (y); putchar ('\n');
       exit (1);
     }
 

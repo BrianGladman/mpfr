@@ -101,8 +101,8 @@ special (void)
 	  if (mpfr_get_d (x) != mpfr_get_d (y))
 	    {
 	      fprintf (stderr, "division by 1.0 fails for xprec=%u, yprec=%u\n", xprec, yprec);
-	      printf ("expected "); mpfr_print_raw (x); putchar ('\n');
-	      printf ("got      "); mpfr_print_raw (y); putchar ('\n');
+	      printf ("expected "); mpfr_print_binary (x); putchar ('\n');
+	      printf ("got      "); mpfr_print_binary (y); putchar ('\n');
 	      exit (1);
 	    }
 	}
@@ -140,8 +140,8 @@ check_inexact ()
 	      if (mpfr_mul_ui (z, y, u, rnd))
 		{
 		  fprintf (stderr, "z <- y * u should be exact for u=%lu\n", u);
-		  printf ("y="); mpfr_print_raw (y); putchar ('\n');
-		  printf ("z="); mpfr_print_raw (z); putchar ('\n');
+		  printf ("y="); mpfr_print_binary (y); putchar ('\n');
+		  printf ("z="); mpfr_print_binary (z); putchar ('\n');
 		  exit (1);
 		}
 	      cmp = mpfr_cmp (z, x);
@@ -151,8 +151,8 @@ check_inexact ()
 		{
 		  fprintf (stderr, "Wrong inexact flag for u=%lu, rnd=%s\n", u,
 			   mpfr_print_rnd_mode(rnd));
-		  printf ("x="); mpfr_print_raw (x); putchar ('\n');
-		  printf ("y="); mpfr_print_raw (y); putchar ('\n');
+		  printf ("x="); mpfr_print_binary (x); putchar ('\n');
+		  printf ("y="); mpfr_print_binary (y); putchar ('\n');
 		  exit (1);
 		}
 	    }

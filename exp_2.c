@@ -143,7 +143,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
      in order to get an upper bound of r = x-n*log(2) */
   mpfr_const_log2 (s, (n>=0) ? GMP_RNDZ : GMP_RNDU);
 #ifdef DEBUG
-  printf("n=%d log(2)=",n); mpfr_print_raw(s); putchar('\n');
+  printf("n=%d log(2)=",n); mpfr_print_binary(s); putchar('\n');
 #endif
   mpfr_mul_ui (r, s, (n<0) ? -n : n, (n>=0) ? GMP_RNDZ : GMP_RNDU); 
   if (n<0) mpfr_neg(r, r, GMP_RNDD);
@@ -151,9 +151,9 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
 #ifdef DEBUG
   printf("x=%1.20e\n",mpfr_get_d(x));
-  printf(" ="); mpfr_print_raw(x); putchar('\n');
+  printf(" ="); mpfr_print_binary(x); putchar('\n');
   printf("r=%1.20e\n",mpfr_get_d(r));
-  printf(" ="); mpfr_print_raw(r); putchar('\n');
+  printf(" ="); mpfr_print_binary(r); putchar('\n');
 #endif
   mpfr_sub(r, x, r, GMP_RNDU);
   if (MPFR_SIGN(r)<0) { /* initial approximation n was too large */
@@ -164,7 +164,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   }
 #ifdef DEBUG
   printf("x-r=%1.20e\n",mpfr_get_d(r));
-  printf(" ="); mpfr_print_raw(r); putchar('\n');
+  printf(" ="); mpfr_print_binary(r); putchar('\n');
   if (MPFR_SIGN(r)<0) { fprintf(stderr,"Error in mpfr_exp: r<0\n"); exit(1); }
 #endif
   mpfr_div_2exp(r, r, K, GMP_RNDU); /* r = (x-n*log(2))/2^K */
@@ -199,7 +199,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 #ifdef DEBUG
     printf("after mult. by 2^n:\n");
     if (MPFR_EXP(s)>-1024) printf("s=%1.20e\n",mpfr_get_d(s)); 
-    printf(" ="); mpfr_print_raw(s); putchar('\n');
+    printf(" ="); mpfr_print_binary(s); putchar('\n');
     printf("err=%d bits\n", K);
 #endif
 

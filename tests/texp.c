@@ -100,7 +100,7 @@ int check_large (double d, int n, mp_rnd_t rnd)
   else printf("exp(%1.20e)=",d); 
   mpfr_out_str(stdout, 10, 0, y, rnd);
   putchar('\n');
-  printf(" ="); mpfr_print_raw(y); putchar('\n');
+  printf(" ="); mpfr_print_binary(y); putchar('\n');
   if (n==53) printf(" =%1.20e\n", mpfr_get_d(y));
 
   mpfr_clear(x); mpfr_clear(y);
@@ -183,9 +183,9 @@ void compare_exp2_exp3 (int n)
     if (mpfr_cmp(y,z)) {
       printf("mpfr_exp_2 and mpfr_exp3 disagree for rnd=%s and\nx=",
 	     mpfr_print_rnd_mode(rnd));
-      mpfr_print_raw(x); putchar('\n');
-      printf("mpfr_exp_2 gives  "); mpfr_print_raw(y); putchar('\n');
-      printf("mpfr_exp3 gives "); mpfr_print_raw(z); putchar('\n');
+      mpfr_print_binary(x); putchar('\n');
+      printf("mpfr_exp_2 gives  "); mpfr_print_binary(y); putchar('\n');
+      printf("mpfr_exp3 gives "); mpfr_print_binary(z); putchar('\n');
       exit(1);
     }
   }
