@@ -566,12 +566,14 @@ precision, then MPFR will still compute the result with full precision.
 @section Rounding Modes
 
 The following four rounding modes are supported:
+
 @itemize @bullet
 @item @code{GMP_RNDN}: round to nearest
 @item @code{GMP_RNDZ}: round towards zero
 @item @code{GMP_RNDU}: round towards plus infinity
 @item @code{GMP_RNDD}: round towards minus infinity
 @end itemize
+
 The @samp{round to nearest} mode works as in the IEEE 754-1985 standard: in
 case the number to be rounded lies exactly in the middle of two representable
 numbers, it is rounded to the one with the least significant bit set to zero.
