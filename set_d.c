@@ -256,6 +256,9 @@ mpfr_set_d(r, d, rnd_mode)
 	MPFR_CHANGE_SIGN(r); 
     }
 
+  /* reset infinity flag if set */
+  if (MPFR_IS_INF(r)) MPFR_RESET_INF(r);
+
   signd = (d < 0) ? -1 : 1;
   d = ABS (d);
   sizer = (MPFR_PREC(r)-1)/BITS_PER_MP_LIMB + 1;
