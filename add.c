@@ -417,6 +417,9 @@ mpfr_ptr a; mpfr_srcptr b, c; unsigned char rnd_mode;
     SET_NAN(a); return;
   }
 
+  if (!NOTZERO(b)) return mpfr_set(a, c, rnd_mode);
+  if (!NOTZERO(c)) return mpfr_set(a, b, rnd_mode);
+
   diff_exp = EXP(b)-EXP(c);
   if (SIGN(b) != SIGN(c)) { /* signs differ, it's a subtraction */
     if (diff_exp<0) {
