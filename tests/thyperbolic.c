@@ -163,6 +163,9 @@ int check_INF(void){
 
  MPFR_SET_INF(t);
 
+ if(MPFR_SIGN(t)<0)
+   MPFR_CHANGE_SIGN(t);
+
   /******cosh********/
 
   tester = mpfr_cosh(ch,t,GMP_RNDD);
@@ -191,7 +194,7 @@ int check_INF(void){
   /******atanh********/
 
   tester=mpfr_atanh(ath,t,GMP_RNDD);  
-  if (!MPFR_IS_NAN(ath) || tester !=-1){  printf("atanh(INF) \n");return(1);} 
+  if (!MPFR_IS_INF(ath) || tester != 0){  printf("atanh(INF) \n");return(1);} 
 
  MPFR_CHANGE_SIGN(t);
 
@@ -223,7 +226,7 @@ int check_INF(void){
   /******atanh********/
 
   tester=mpfr_atanh(ath,t,GMP_RNDD);
-  if (!MPFR_IS_NAN(ath) || MPFR_SIGN(ath) < 0 || tester != -1 ){printf("atanh(-INF) \n");return(1);} 
+  if (!MPFR_IS_INF(ath) || MPFR_SIGN(ath) > 0 || tester != 0 ){printf("atanh(-INF) \n");return(1);} 
 
   mpfr_clear(t);
   mpfr_clear(ch);
