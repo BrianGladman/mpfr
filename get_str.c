@@ -59,29 +59,42 @@ char *mpfr_get_str(char *str, mp_exp_t *expptr, int base, size_t n,
   q = ((q-1)/mp_bits_per_limb)*mp_bits_per_limb;
   mpfr_init(a); mpfr_init(b);
   p = n-f; if ((neg=(p<0))) p=-p;
-  rnd1 = (neg) ? GMP_RNDU : GMP_RNDZ; /* if neg we divide by base^p */
+#ifdef DEBUG
+  printf("n=%d prec=%d p=%d\n",n,prec,p);
+#endif
+  rnd1 = rnd_mode;
+  if (neg) {
+    /* if neg we divide by base^p so we have to invert the rounding mode */
+    switch (rnd1) {
+    case GMP_RNDN: rnd1=GMP_RNDN; break;
+    case GMP_RNDZ: rnd1=GMP_RNDU; break;
+    case GMP_RNDU: rnd1=GMP_RNDZ; break;
+    case GMP_RNDD: rnd1=GMP_RNDZ; break;
+    }
+  }
   do {
     q += mp_bits_per_limb;
     if (pow2) {
-      if (neg) mpfr_div_2exp(b, op, pow2*p, GMP_RNDZ);
-      else mpfr_mul_2exp(b, op, pow2*p, GMP_RNDZ);
+      if (neg) mpfr_div_2exp(b, op, pow2*p, rnd_mode);
+      else mpfr_mul_2exp(b, op, pow2*p, rnd_mode);
     } 
     else {
        /* compute base^p with q bits and rounding towards zero */
-       mpfr_set_prec(b, q, GMP_RNDZ);
-       if (p==0) {
-	 mpfr_set(b, op, GMP_RNDZ);
-       } 
+       mpfr_set_prec(b, q, rnd_mode);
+       if (p==0) mpfr_set(b, op, rnd_mode);
        else {
 	 mpfr_set_prec(a, q, rnd1); 
 	 mpfr_ui_pow_ui(a, base, p, rnd1);
 	 /* now a is an approximation by default of base^p */
-	 if (neg) mpfr_div(b, op, a, GMP_RNDZ);
-	 else mpfr_mul(b, op, a, GMP_RNDZ);
+	 if (neg) mpfr_div(b, op, a, rnd_mode);
+	 else mpfr_mul(b, op, a, rnd_mode);
        }
     }
     if (SIGN(op)<0) CHANGE_SIGN(b);
-  } while (pow2==0 && mpfr_can_round(b, q-err, GMP_RNDZ, rnd_mode, prec)==0);
+    if (q>2*prec+mp_bits_per_limb) {
+      printf("no convergence in mpfr_get_str\n"); exit(1);
+    }
+  } while (pow2==0 && mpfr_can_round(b, q-err, rnd_mode, rnd_mode, prec)==0);
   if (SIGN(op)<0)
     switch (rnd_mode) {
     case GMP_RNDU: rnd_mode=GMP_RNDZ; break;
