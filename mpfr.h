@@ -98,7 +98,6 @@ void mpfr_set_si _PROTO ((mpfr_ptr, long, mp_rnd_t));
 void mpfr_set_ui _PROTO ((mpfr_ptr, unsigned long, mp_rnd_t)); 
 void mpfr_print_raw _PROTO ((mpfr_srcptr)); 
 void mpfr_random _PROTO ((mpfr_ptr));
-void mpfr_srandom _PROTO ((unsigned long int));
 void mpfr_random2 _PROTO ((mpfr_ptr, mp_size_t, mp_exp_t)); 
 void mpfr_urandomb _PROTO ((mpfr_ptr, gmp_randstate_t)); 
 void mpfr_clear _PROTO ((mpfr_ptr)); 
@@ -137,7 +136,8 @@ void mpfr_div_2exp _PROTO((mpfr_ptr, mpfr_srcptr, unsigned long int,mp_rnd_t));
 void mpfr_set_prec _PROTO((mpfr_ptr, mp_prec_t));
 void mpfr_set_prec_raw _PROTO((mpfr_ptr, mp_prec_t));
 void mpfr_set_default_prec _PROTO((mp_prec_t));
-extern mp_prec_t __gmp_default_fp_bit_precision;
+mp_prec_t mpfr_get_default_prec _PROTO((void));
+extern mp_prec_t __mpfr_default_fp_bit_precision;
 extern mp_rnd_t __gmp_default_rounding_mode;
 char * mpfr_print_rnd_mode _PROTO((mp_rnd_t)); 
 void mpfr_neg _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t)); 
@@ -155,6 +155,8 @@ void mpfr_swap _PROTO((mpfr_ptr, mpfr_ptr));
 void mpfr_dump _PROTO((mpfr_srcptr, mp_rnd_t));
 void mpfr_set4 _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t, int));
 int mpfr_cmp3 _PROTO ((mpfr_srcptr, mpfr_srcptr, long int));
+int mpfr_nan_d _PROTO((mpfr_srcptr));
+int mpfr_inf_d _PROTO((mpfr_srcptr));
 
 #if defined (__cplusplus)
 }
