@@ -24,7 +24,7 @@ MA 02111-1307, USA. */
 
 /* Define MPFR version number */
 #define MPFR_VERSION_MAJOR 2
-#define MPFR_VERSION_MINOR 1
+#define MPFR_VERSION_MINOR 2
 #define MPFR_VERSION_PATCHLEVEL 0
 
 /* Macros dealing with MPFR VERSION */

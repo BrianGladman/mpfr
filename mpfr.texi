@@ -2,7 +2,7 @@
 @c %**start of header
 @setfilename mpfr.info
 @documentencoding ISO-8859-1
-@set VERSION 2.1.0
+@set VERSION 2.2.0
 @set UPDATED-MONTH October 2004
 @settitle MPFR @value{VERSION}
 @synindex tp fn
