@@ -37,7 +37,7 @@ MA 02111-1307, USA. */
  * (0 or 1) that may happen during the rounding, in which case the result
  * is a power of two.
  *
- * If inexp != NULL, computes the inexact flag of the rounding.
+ * If inexp != NULL, put in *inexp the inexact flag of the rounding (0, 1, -1).
  * (In case of even rounding when rnd = GMP_RNDN, puts 2 or -2 in *inexp.)
  *
  * If flag = 1, just returns whether one should add 1 or not for rounding.
