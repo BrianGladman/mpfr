@@ -251,6 +251,7 @@ long mpfr_get_si _MPFR_PROTO ((mpfr_srcptr, mpfr_rnd_t));
 unsigned long mpfr_get_ui _MPFR_PROTO ((mpfr_srcptr, mpfr_rnd_t));
 char* mpfr_get_str _MPFR_PROTO ((char *, mp_exp_t *, int, size_t, mpfr_srcptr,
 				   mpfr_rnd_t));
+void mpz_set_fr _MPFR_PROTO ((mpz_ptr z, mpfr_srcptr f, mp_rnd_t rnd));
 
 void mpfr_free_str _MPFR_PROTO ((char *str));
 
