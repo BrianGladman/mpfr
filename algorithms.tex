@@ -568,19 +568,27 @@ is at most $(\varepsilon_k t + \tau_k y)/2^m + 1$.
 We want to compute the generic error of the soustraction, this following rules can be apply on addition too.
 
 \begin{eqnarray}\nonumber
+u&=&o(x) \\\nonumber
+v&=&o(y) \\\nonumber
 w&=&o(u+v) \\\nonumber
-&&\\\nonumber
-\textnormal{Note:}&& error(u) = k_u \, \ulp(u), \;\; error(v) = k_v \, \ulp(v)\\\nonumber
-&&\\\nonumber
+\textnormal{Note:}&& error(u) = k_u \, \ulp(u), \;\; error(v) = k_v \, \ulp(v)
+\end{eqnarray}
+
+\begin{eqnarray}\nonumber
 \textnormal{Note:}&& \ulp(w)=2^{e_w-p}, \;\; \ulp(u)=2^{e_u-p},\;\; \ulp(v)=2^{e_v-p}\;\;\textnormal{with} \; p \; \textnormal{the accuracy} \\\nonumber
-&& \ulp(u)=2^{d+e_w-p}, \;\; \ulp(u)=2^{d+e_w-p},\;\;\textnormal{with} \;\;d=e_u-e_w \;\; d^{'}=e_v-e_w \\\nonumber
-&&\\\nonumber
+&& \ulp(u)=2^{d+e_w-p}, \;\; \ulp(u)=2^{d+e_w-p},\;\;\textnormal{with} \;\;d=e_u-e_w \;\; d^{'}=e_v-e_w 
+\end{eqnarray}
+\begin{eqnarray}\nonumber
 error(w)& \leq &c_w \ulp(w) + k_u \ulp(u) + k_v \ulp(v) \\\nonumber
-&\leq&(c_w+k_u 2^d+ k_v 2^{d^{'}}) \ulp(w)\\\nonumber
-&&\\\nonumber
-&&\textnormal{If} \;\; ( u \geq 0  \;\;\textnormal{and}\;\;  v \geq 0) \;\;\textnormal{or}\;\; (u \leq 0 \;\;\textnormal{and}\;\; v \leq 0)\\\nonumber
-error(w)& \leq&(c_w + k_u + k_v) \, \ulp(w)\\\nonumber
-&&\\\nonumber
+&\leq&(c_w+k_u 2^d+ k_v 2^{d^{'}}) \ulp(w)
+\end{eqnarray}
+\begin{eqnarray}\nonumber
+&&\textnormal{If} \;\; ( u \geq 0  \;\;\textnormal{and}\;\;  v \geq 0) \;\;\textnormal{or}\;\; (u \leq 0 \;\;\textnormal{and}\;\; v \leq 0)
+\end{eqnarray}
+\begin{eqnarray}\nonumber
+error(w)& \leq&(c_w + k_u + k_v) \, \ulp(w)
+\end{eqnarray}
+\begin{eqnarray}\nonumber
 \textnormal{Note:}&&\textnormal{If}\;\; w=N(u+v) \;\;\textnormal{Then}\;\; c_w =\frac{1}{2} \;\;\textnormal{else}\;\; c_w =1\\\nonumber
 \end{eqnarray}
 
@@ -589,15 +597,13 @@ error(w)& \leq&(c_w + k_u + k_v) \, \ulp(w)\\\nonumber
 
 We want to compute the generic error of the multiplication.
 
-
-
 \begin{eqnarray}\nonumber
 u&=&o(x) \\\nonumber
 v&=&o(y) \\\nonumber
 w&=&o(u.v) \\\nonumber
-&&\\\nonumber
-\textnormal{Note:}&& error(u) = k_u \, \ulp(u), \;\; error(v) = k_v \, \ulp(v)\\\nonumber
-&&\\\nonumber
+\textnormal{Note:}&& error(u) = k_u \, \ulp(u), \;\; error(v) = k_v \, \ulp(v)
+\end{eqnarray}
+\begin{eqnarray}\nonumber
 error(w)& = &|w - x.y| \\\nonumber
 & \leq &|w - u.b| +|u.y - x.y| \\\nonumber
 & \leq & c_w \ulp(w) +  \frac{1}{2} [|u.v-u.y|+|u.y-x.y|+|u.v-x.v|+|x.v-x.y|]\\\nonumber
@@ -605,39 +611,37 @@ error(w)& = &|w - x.y| \\\nonumber
 & \leq & c_w \ulp(w) +  \frac{u(1+c_u^+)}{2} k_v \ulp(v) + \frac{v(1+c_v^+)}{2} k_u \ulp(u) \U{R9}\\\nonumber
 & \leq & c_w \ulp(w) +  (1+c_u^+) k_v \ulp(u.v) + (1+c_v^+) k_u \ulp(u.v) \U{R4}\\\nonumber
 & \leq & [ c_w +  (1+c_u^+) k_v + (1+c_v^+) k_u ] \ulp(w)\U{R8}\\\nonumber
-&&\\\nonumber
-\textnormal{Note:}&&\textnormal{If}\;\; w=N(u+v) \;\;\textnormal{Then}\;\; c_w =\frac{1}{2} \;\;\textnormal{else}\;\; c_w =1\\\nonumber
+\end{eqnarray}
+\begin{eqnarray}\nonumber
+\textnormal{Note:}&&\textnormal{If}\;\; w=N(u+v) \;\;\textnormal{Then}\;\; c_w =\frac{1}{2} \;\;\textnormal{else}\;\; c_w =1
 \end{eqnarray}
 
-
-
-
 \subsection{Generic error of inverse}\label{generic:inv}
-
-
-
 
 We want to compute the generic error of the inverse.
 
 \begin{eqnarray}\nonumber
 u&=&o(x) \\\nonumber
 w&=&o(\frac{1}{v}) \\\nonumber
-&&\\\nonumber
-\textnormal{Note:}&& error(u) = k_u \, \ulp(u)\\\nonumber
-&&\\\nonumber
+\textnormal{Note:}&& error(u) = k_u \, \ulp(u)
+\end{eqnarray}
+\begin{eqnarray}\nonumber
 error(w)& = &|w - \frac{1}{x}| \\\nonumber
 & \leq &|w - \frac{1}{u}| +|\frac{1}{u} - \frac{1}{x}| \\\nonumber
 & \leq & c_w \ulp(w) + \frac{1}{ux}|u-x| \\\nonumber
-& \leq & c_w \ulp(w) + \frac{k_u}{ux} \ulp(u)\\\nonumber
-&&\\\nonumber
+& \leq & c_w \ulp(w) + \frac{k_u}{ux} \ulp(u)
+\end{eqnarray}
+\begin{eqnarray}\nonumber
 \textnormal{Note:}&& \frac{u}{c_u} \leq x\;\; \U{R6}\\\nonumber
 &&\n{for } u=\minf(x),\;c_u=1 \n{ else } c_u=2\\\nonumber
-&& \n{then: } \frac{1}{x} \leq c_u \frac{1}{u} \\\nonumber
-&&\\\nonumber
+&& \n{then: } \frac{1}{x} \leq c_u \frac{1}{u} 
+\end{eqnarray}
+\begin{eqnarray}\nonumber
 error(w)& \leq & c_w \ulp(w) + c_u\frac{k_u}{u^2} \ulp(u)\\\nonumber
 & \leq & c_w \ulp(w) + 2.c_u.k_u \ulp(\frac{u}{u^2}) \U{R4}\\\nonumber
-& \leq & [c_w + 2.c_u.k_u].\ulp(w) \U{R8}\\\nonumber
-&&\\\nonumber
+& \leq & [c_w + 2.c_u.k_u].\ulp(w) \U{R8}
+\end{eqnarray}
+\begin{eqnarray}\nonumber
 \textnormal{Note:}&&\textnormal{If}\;\; w=N(\frac{1}{u}) \;\;\textnormal{Then}\;\; c_w =\frac{1}{2} \;\;\textnormal{else}\;\; c_w =1\\\nonumber\end{eqnarray}
 
 \subsection{Generic error of division}\label{generic:div}
@@ -649,28 +653,34 @@ We want to compute the generic error of the division.
 u&=&o(x) \\\nonumber
 v&=&o(y) \\\nonumber
 w&=&o(\frac{u}{v}) \\\nonumber
-&&\\\nonumber
-\textnormal{Note:}&& error(u) = k_u \, \ulp(u), \;\; error(v) = k_v \, \ulp(v)\\\nonumber
-&&\\\nonumber
+\textnormal{Note:}&& error(u) = k_u \, \ulp(u), \;\; error(v) = k_v \, \ulp(v)
+\end{eqnarray}
+\begin{eqnarray}\nonumber
 error(w)& = &|w - \frac{x}{y}| \\\nonumber
 & \leq &|w - \frac{u}{v}| +|\frac{u}{v} - \frac{x}{y}| \\\nonumber
 & \leq & c_w \ulp(w) + \frac{1}{vy}|uy-vx| \\\nonumber
 & \leq & c_w \ulp(w) + \frac{1}{vy}[|uy-xy|+|xy-vx| ]\\\nonumber
 & \leq & c_w \ulp(w) + \frac{1}{vy}[y k_u \ulp(u)+ x k_v \ulp(v)]\\\nonumber
-& \leq & c_w \ulp(w) + \frac{k_u}{v}  \ulp(u)+ \frac{k_v x}{vy} \ulp(v)\\\nonumber
+& \leq & c_w \ulp(w) + \frac{k_u}{v}  \ulp(u)+ \frac{k_v x}{vy} \ulp(v)
+\end{eqnarray}
+\begin{eqnarray}\nonumber
 \textnormal{Note:}&& \frac{\ulp(u)}{v} \leq  2 \ulp(\frac{u}{v}) \;\; \U{R4}\\\nonumber
-&& 2 \ulp(\frac{u}{v}) \leq  2 \ulp(w) \;\; \U{R8}\\\nonumber
-&&\\\nonumber
+&& 2 \ulp(\frac{u}{v}) \leq  2 \ulp(w) \;\; \U{R8}
+\end{eqnarray}
+\begin{eqnarray}\nonumber
 \textnormal{Note:}&& x \leq c_u u \textnormal{ and } \frac{v}{c_v} \leq y\;\; \U{R6}\\\nonumber
 &&\n{with } \n{for } u=\pinf(x),\;c_u=1 \n{ else } c_u=2\\\nonumber
 &&\n{ and }\n{for } v=\minf(y),\;c_v=1 \n{ else } c_v=2\\\nonumber
-&& \n{then: } \frac{x}{y} \leq c_u c_v  \frac{u}{v} \\\nonumber
-&&\\\nonumber
+&& \n{then: } \frac{x}{y} \leq c_u c_v  \frac{u}{v} 
+\end{eqnarray}
+\begin{eqnarray}\nonumber
 error(w)& \leq & c_w \ulp(w) + 2.k_u  \ulp(w)+ c_u.c_v.\frac{k_v u}{vv} \ulp(v)\\\nonumber
 & \leq & c_w \ulp(w) + 2.k_u  \ulp(w)+ 2.c_u.c_v.k_v \ulp(\frac{u.v}{v.v}) \U{R4}\\\nonumber
-& \leq & [c_w  + 2.k_u+ 2.c_u.c_v.k_v].\ulp(w) \U{R8}\\\nonumber
-&&\\\nonumber
-\textnormal{Note:}&&\textnormal{If}\;\; w=N(\frac{u}{v}) \;\;\textnormal{Then}\;\; c_w =\frac{1}{2} \;\;\textnormal{else}\;\; c_w =1\\\nonumber\end{eqnarray}
+& \leq & [c_w  + 2.k_u+ 2.c_u.c_v.k_v].\ulp(w) \U{R8}
+\end{eqnarray}
+\begin{eqnarray}\nonumber
+\textnormal{Note:}&&\textnormal{If}\;\; w=N(\frac{u}{v}) \;\;\textnormal{Then}\;\; c_w =\frac{1}{2} \;\;\textnormal{else}\;\; c_w =1
+\end{eqnarray}
 
 \subsection{Generic error of square root}\label{generic:sqrt}
 
@@ -680,20 +690,14 @@ We want to compute the generic error of the square root.
 \begin{eqnarray}\nonumber
 u&=&o(x) \\\nonumber
 v&=&o(\sqrt{u}) \\\nonumber
-&&\\\nonumber
 \textnormal{Note:}&& error(u) = k_u \, \ulp(u)\\\nonumber
 \end{eqnarray}
-
-
 \begin{eqnarray}\nonumber
 error(v)& = &|v - \sqrt{x}| \\\nonumber
 & \leq &|v - \sqrt{u}| +|\sqrt{u} - \sqrt{x}| \\\nonumber
 & \leq & c_v \ulp(v) + \frac{1}{\sqrt{u} + \sqrt{x}}|u-x| \\\nonumber
 & \leq & c_v \ulp(v) + \frac{1}{\sqrt{u} + \sqrt{x}} k_u \ulp(u) \\\nonumber
 \end{eqnarray}
-
-
-
 \begin{eqnarray}\nonumber
 \textnormal{Note:}&& u.c_u^- \leq x \;\; \U{R9}\\\nonumber
  && \sqrt{u.c_u^-} \leq \sqrt{x} \\\nonumber 
@@ -701,7 +705,6 @@ error(v)& = &|v - \sqrt{x}| \\\nonumber
  && \frac{1}{\sqrt{x}+\sqrt{u}} \leq
     \frac{1}{\sqrt{u}.(1+\sqrt{c_u^-})} 
 \end{eqnarray}
-
 \begin{eqnarray}\nonumber
 error(v)& \leq & c_v \ulp(v) + 
                  \frac{1}{\sqrt{u}.(1+\sqrt{c_u^-})}  k_u \ulp(u) \\\nonumber 
@@ -718,10 +721,8 @@ We want to compute the generic error of the logarithm.
 \begin{eqnarray}\nonumber
 u&=&o(x) \\\nonumber
 v&=&o(\log{u}) \\\nonumber
-&&\\\nonumber
 \textnormal{Note:}&& error(u) = k_u \, \ulp(u)\\\nonumber
 \end{eqnarray}
-
 \begin{eqnarray}\nonumber
 error(v)& = &|v - \log{x}| \\\nonumber
 & \leq &|v - \log{u}| +|\log{u} - \log{x}| \\\nonumber
@@ -730,22 +731,14 @@ error(v)& = &|v - \log{x}| \\\nonumber
 & \leq & c_v \ulp(v) + \frac{k_u \, \ulp(u)}{u}\\\nonumber
 & \leq & c_v \ulp(v) + k_u \, \ulp(1)\;\; \U{R7}\\\nonumber
 \end{eqnarray}
-
-
 \begin{eqnarray}\nonumber
 \textnormal{Note:}&& \ulp(1)=2^{1-p}, \n{ and } \ulp(v)=2^{e_v-p} \n{ with } p \n{ the accuracy} \\\nonumber
 && \ulp(1)= 2^{1-e_v+e_v-p}=2^{1-e_v} \ulp(v)
 \end{eqnarray}
-
-
 \begin{eqnarray}\nonumber
 error(v)& \leq & c_v \ulp(v) + k_u 2^{1-e_v} \ulp(v)\\\nonumber
 & \leq & (c_v + k_u 2^{1-e_v} )\ulp(v)\\\nonumber
 \end{eqnarray}
-
-
-
-
 
 \subsection{The hyperbolic cosine function}
 
@@ -1289,6 +1282,169 @@ see subsection \ref{generic:sous}
 That shows the rounding error on the calculation of $\n{fma}(x,y,z)$ can be
 bound by $(1+2^{e_u-e_v}) \ulp$ on the result. So, to calculate the size of
 intermediary variables, we have to add, at least, $\lceil \log_2 (1+2^{e_u-e_v})\rceil$ bits the wanted precision.
+
+\subsection{The expm1 function}
+
+The {\tt mpfr\_expm1} ($\n{expm1}(x)$) function implements the expm1 function  as :
+
+\[
+\textnormal{expm1} (x) = e^x -1
+\]
+
+The algorithm used for this calculation is as follows:
+
+\begin{eqnarray}\nonumber
+u&\leftarrow&o(e^x)\\\nonumber
+v&\leftarrow&o(u-1)\\\nonumber
+\end{eqnarray}
+
+Now, we have to bound the rounding error for each step of this
+algorithm.  
+
+
+\begin{center}
+\begin{tabular}{l|l |l}
+
+\begin{minipage}{2.5cm}
+
+
+${\textnormal{error}}(u)$
+
+
+$u \leftarrow o(e^x)$
+
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+\begin{eqnarray}\nonumber
+  |u-e^x| &\leq& ulp(u)\\\nonumber
+\end{eqnarray}
+
+\end{minipage} &
+\begin{minipage}{6cm}
+{\hspace{7cm}}
+\end{minipage}\\\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(v)$
+
+
+$v \leftarrow o(u-1) $
+
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+\begin{eqnarray}\nonumber
+  |v-(e^x-1)| &\leq& (1+2^{e_u-e_v})\ulp(v)\;\;(\star)
+\end{eqnarray}
+
+
+\end{minipage} &
+\begin{minipage}{6cm}
+($\star$)
+
+see subsection \ref{generic:sous}
+
+
+\end{minipage}
+\end{tabular}
+\end{center}
+
+
+
+That shows the rounding error on the calculation of $\n{expm1}(x)$ can be
+bound by $(1+2^{e_u-e_v}) \ulp$ on the result. So, to calculate the size of
+intermediary variables, we have to add, at least, $\lceil \log_2 (1+2^{e_u-e_v})\rceil$ bits the wanted precision.
+
+\subsection{The log1p function}
+
+The {\tt mpfr\_log1p} ($\n{log1p}(x)$) function implements the log1p function  as :
+
+\[
+\textnormal{log1p} (x) = \log(1+x)
+\]
+
+The algorithm used for this calculation is as follows:
+
+\begin{eqnarray}\nonumber
+u&\leftarrow&o(x)\\\nonumber
+v&\leftarrow&o(1+u)\\\nonumber
+w&\leftarrow&o(\log(v))\\\nonumber
+\end{eqnarray}
+
+Now, we have to bound the rounding error for each step of this
+algorithm.  
+
+\begin{center}
+\begin{tabular}{l|l |l}
+
+\begin{minipage}{2.5cm}
+
+
+${\textnormal{error}}(u)$
+
+
+$u \leftarrow o(x)$
+
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+\begin{eqnarray}\nonumber
+  |u-x| &\leq& ulp(u)\\\nonumber
+\end{eqnarray}
+
+\end{minipage} &
+\begin{minipage}{6cm}
+{\hspace{7cm}}
+\end{minipage}\\\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(v)$
+
+
+$v \leftarrow o(1+u) $
+
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+\begin{eqnarray}\nonumber
+  |v-(1+x)| &\leq& (1+2^{e_u-e_v})\ulp(v)
+\end{eqnarray}
+
+
+\end{minipage} &
+\begin{minipage}{6cm}
+($\star$)
+see subsection \ref{generic:sous}
+\end{minipage}\\\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(w)$
+
+
+$w \leftarrow o(\log(v)) $
+
+\end{minipage} &
+\begin{minipage}{7.5cm}
+\begin{eqnarray}\nonumber
+  |v-\log{v}| &\leq& (1+(1+2^{e_u-e_v})2^{1-e_w})\\\nonumber
+ &\hdots& \ulp(w)
+\end{eqnarray}
+\end{minipage} &
+\begin{minipage}{6cm}
+($\star$)
+see subsection \ref{generic:log}
+\end{minipage}
+\end{tabular}
+\end{center}
+
+
+That shows the rounding error on the calculation of $\log\n{1p}(x)$
+can be bound by $(1+(1+2^{e_u-e_v})2^{1-e_w}) \ulp$ on the result. So,
+to calculate the size of intermediary variables, we have to add, at
+least, $\lceil \log_2 (1+(1+2^{e_u-e_v})2^{1-e_w}) \rceil$ bits the wanted
+precision.
+
+
+
+
 
 \subsection{The hyperbolic tangent function}
 
