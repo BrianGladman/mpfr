@@ -70,16 +70,13 @@ void check_random(mpfr_prec_t p)
   mpfr_t x,y,z,x2;
   mp_rnd_t r;
   int i, inexact1, inexact2;
-  gmp_randstate_t state;
 
   mpfr_inits2(p, x,y,z,x2,NULL);
-  gmp_randinit_lc_2exp_size (state, 128);
-  gmp_randseed_ui (state, 17422471);
 
   for(i = 0 ; i < 500 ; i++)
     {
-      mpfr_urandomb(y, state);
-      mpfr_urandomb(z, state);
+      mpfr_random (y);
+      mpfr_random (z);
       if (MPFR_IS_PURE_FP(y) && MPFR_IS_PURE_FP(z))
 	for(r = 0 ; r < GMP_RND_MAX ; r++)
 	  {
@@ -93,7 +90,6 @@ void check_random(mpfr_prec_t p)
     }
 
   mpfr_clears(x,y,z,x2,NULL);
-  gmp_randclear(state);
 }
 
 void check_special(void)
