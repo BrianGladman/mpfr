@@ -34,7 +34,8 @@ mpfr_init2 (mpfr_ptr x, mp_prec_t p)
   xsize = (mp_size_t) ((p - 1) / BITS_PER_MP_LIMB) + 1;
 
   MPFR_PREC(x) = p;
-  MPFR_MANT(x) = (mp_ptr) (*__gmp_allocate_func) (xsize * BYTES_PER_MP_LIMB);
+  MPFR_MANT(x) = (mp_ptr)
+    (*__gmp_allocate_func) ((size_t) xsize * BYTES_PER_MP_LIMB);
   MPFR_SIZE(x) = xsize;
   MPFR_CLEAR_FLAGS(x); /* though not necessary in our current implementation */
   MPFR_SET_ZERO(x); /* initializes to zero */

@@ -164,8 +164,8 @@ mpfr_round (mpfr_ptr x, mp_rnd_t rnd_mode, mp_prec_t prec)
   if (nw > MPFR_ABSSIZE(x))
     {
       MPFR_MANT(x) = (mp_ptr) (*__gmp_reallocate_func)
-        (MPFR_MANT(x), MPFR_ABSSIZE(x) * BYTES_PER_MP_LIMB,
-         nw * BYTES_PER_MP_LIMB);
+        (MPFR_MANT(x), (size_t) MPFR_ABSSIZE(x) * BYTES_PER_MP_LIMB,
+         (size_t) nw * BYTES_PER_MP_LIMB);
       MPFR_SET_ABSSIZE(x, nw); /* new number of allocated limbs */
     }
 

@@ -50,14 +50,14 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c,
 
   if (ap == bp)
     {
-      bp = (mp_ptr) TMP_ALLOC(MPFR_ABSSIZE(b) * BYTES_PER_MP_LIMB);
+      bp = (mp_ptr) TMP_ALLOC((size_t) MPFR_ABSSIZE(b) * BYTES_PER_MP_LIMB);
       MPN_COPY (bp, ap, MPFR_ABSSIZE(b));
       if (ap == cp)
         { cp = bp; }
     }
   else if (ap == cp)
     {
-      cp = (mp_ptr) TMP_ALLOC (MPFR_ABSSIZE(c) * BYTES_PER_MP_LIMB);
+      cp = (mp_ptr) TMP_ALLOC ((size_t) MPFR_ABSSIZE(c) * BYTES_PER_MP_LIMB);
       MPN_COPY(cp, ap, MPFR_ABSSIZE(c));
     }
 
