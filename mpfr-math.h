@@ -78,7 +78,7 @@ static struct { unsigned char c[4]; } __mpfr_nan = { _MPFR_NAN_BYTES };
 #endif
 #endif
 
-#ifdef HUGE_VAL
+#ifdef HAVE_HUGE_VAL
 #define MPFR_DBL_INFP HUGE_VAL
 #define MPFR_DBL_INFM (-HUGE_VAL)
 #else

@@ -151,4 +151,13 @@ if test "$mpfr_cv_have_denorms" = "yes"; then
   AC_DEFINE(HAVE_DENORMS,1,[Define if denormalized floats work.])
 fi
 
+dnl Check if HUGE_VAL is supported without the need of a specific library
+AC_CACHE_CHECK([for HUGE_VAL], mpfr_cv_have_huge_val, [
+AC_TRY_LINK([#include <math.h>], [HUGE_VAL;],
+  mpfr_cv_have_huge_val=yes, mpfr_cv_have_huge_val=no)
+])
+if test "$mpfr_cv_have_huge_val" = "yes"; then
+  AC_DEFINE(HAVE_HUGE_VAL,1,[Define if HUGE_VAL can be used without the need of a specific library.])
+fi
+
 ])
