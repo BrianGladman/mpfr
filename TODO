@@ -1,17 +1,4 @@
-Configuration:
-
-- use autoconf [GH]
-
-Compatibility with MPF:
-
-Changes in existing functions:
-
-- improve mpfr_exp, currently in O(sqrt(n)*M(n)), to use algorithms in
-  O(n^(1/3)*M(n)) or even O(M(n)*log(n)) [PZ]
-
 New functions to implement:
-
-- mpfr_sin, mpfr_cos
 
 - mpfr_mul_mpz, mpfr_div_mpz
 
