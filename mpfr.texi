@@ -1001,13 +1001,13 @@ a positive value when the result is greater than the exponential of @var{op},
 and a negative value when it is smaller.
 @end deftypefun
 
+
 @deftypefun int mpfr_cos (mpfr_t @var{cop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_sin (mpfr_t @var{sop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_tan (mpfr_t @var{top}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Set @var{cop} to the cosine of @var{op}, @var{sop} to the sine of @var{op},
-@var{top} to the tangent of @var{op},
-rounded to the direction @var{rnd} with the precision of @var{rop}.
-Return zero when the result is exact, a non-zero value otherwise.
+@var{top} to the tangent of @var{op}, rounded to the direction @var{rnd} with the precision of @var{rop}. Return 0 iff the results are exact (this occurs in fact only when @var{op} is 0
+i.e. the sine is 0 and the cosine is 1).
 @end deftypefun
 
 @deftypefun int mpfr_cosh (mpfr_t @var{cop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
@@ -1017,7 +1017,25 @@ Set @var{cop} to the hyperbolic cosine of @var{op},
     @var{sop} to the hyperbolic sine of @var{op},
     @var{top} to the hyperbolic tangent of @var{op},
 rounded to the direction @var{rnd} with the precision of @var{rop}.
+Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
+i.e. the result is 1).
+@end deftypefun
+
+@deftypefun int mpfr_sinh (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+Set @var{rop} to the hyperbolic sine of @var{op},
+rounded to the direction @var{rnd} with the precision of @var{rop}.
+Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
+i.e. the result is 0).
+@end deftypefun
+
+@deftypefun int mpfr_tanh (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+Set @var{rop} to the hyperbolic tangent of @var{op},
+rounded to the direction @var{rnd} with the precision of @var{rop}.
+Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
+i.e. the result is 0).
+=======
 Return zero when the result is exact, a non-zero value otherwise.
+>>>>>>> 1.56
 @end deftypefun
 
 @deftypefun int mpfr_acosh (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
@@ -1030,6 +1048,20 @@ Return 0 iff the result is exact.
 
 @deftypefun int mpfr_factorial (mpfr_t @var{rop}, unsigned long int  @var{op}, mp_rnd_t @var{rnd})
 Set @var{rop} to the factorial of the unsigned long int @var{op},
+rounded to the direction @var{rnd} with the precision of @var{rop}.
+Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
+i.e. the result is 1).
+@end deftypefun
+
+@deftypefun int mpfr_log1p (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+Set @var{rop} to the log1p ($\log(1+x)$) of @var{op},
+rounded to the direction @var{rnd} with the precision of @var{rop}.
+Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
+i.e. the result is 1).
+@end deftypefun
+
+@deftypefun int mpfr_expm1 (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+Set @var{rop} to the expm1 ($e^x - 1$) of @var{op},
 rounded to the direction @var{rnd} with the precision of @var{rop}.
 Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
 i.e. the result is 1).
