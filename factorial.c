@@ -45,7 +45,7 @@ mpfr_fac_ui (y, x, rnd_mode)
 
     mpfr_t t;       /* Variable of Intermediary Calculation*/
     int i;
-    int round, inexact;
+    int round, inexact = 0;
     int boucle = 1;
 
     mp_prec_t Nx;   /* Precision of input variable */
@@ -106,7 +106,6 @@ mpfr_fac_ui (y, x, rnd_mode)
 	  mpfr_clear(t);
           return inexact;
       
- 
     }
 }
 
