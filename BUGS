@@ -8,6 +8,16 @@ Known bugs:
 
 * mpfr_set_d may give wrong results on some architectures.
 
+* Rounding of pow() is not always correct. Examples of the form x^(-0.5):
+
+  _ x = 1.00000000001010111110001111011e1, GMP_RNDN
+    Got 1.01101001111010101110000101110e-1 instead of
+        1.01101001111010101110000101111e-1
+
+  _ x = 1.11111100100001100101, GMP_RNDZ
+    Got 1.01101011010001100000e-1 instead of
+        1.01101011010001100001e-1
+
 Potential bugs:
 
 * get_str.c: condition len != n + 1 is always satisfied at the end.
