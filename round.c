@@ -205,9 +205,7 @@ mpfr_round (mpfr_ptr x, mp_rnd_t rnd_mode, mp_prec_t prec)
   return inexact;
 }
 
-/* assumptions:
-   (i) BITS_PER_MP_LIMB is a power of 2
-   (ii) in a test, the left part of the && is evaluated first */
+/* assumption: BITS_PER_MP_LIMB is a power of 2 */
 
 /* assuming b is an approximation of x in direction rnd1 
    with error at most 2^(MPFR_EXP(b)-err), returns 1 if one is 
@@ -218,17 +216,17 @@ mpfr_round (mpfr_ptr x, mp_rnd_t rnd_mode, mp_prec_t prec)
 */
 
 int
-mpfr_can_round (mpfr_ptr b, mp_prec_t err, mp_rnd_t rnd1,
+mpfr_can_round (mpfr_ptr b, mp_exp_t err, mp_rnd_t rnd1,
 		mp_rnd_t rnd2, mp_prec_t prec)
 {
-  return (MPFR_IS_ZERO(b)) ? 0 : /* we cannot round if b=0 */
+  return MPFR_IS_ZERO(b) ? 0 : /* we cannot round if b=0 */
     mpfr_can_round_raw (MPFR_MANT(b),
 			(MPFR_PREC(b) - 1)/BITS_PER_MP_LIMB + 1,
 			MPFR_SIGN(b), err, rnd1, rnd2, prec);
 }
 
 int
-mpfr_can_round_raw (mp_limb_t *bp, mp_prec_t bn, int neg, mp_prec_t err,
+mpfr_can_round_raw (mp_limb_t *bp, mp_size_t bn, int neg, mp_exp_t err,
 		    mp_rnd_t rnd1, mp_rnd_t rnd2, mp_prec_t prec)
 {
   int k, k1, l, l1, tn;
@@ -237,7 +235,8 @@ mpfr_can_round_raw (mp_limb_t *bp, mp_prec_t bn, int neg, mp_prec_t err,
 
   if (err <= prec)
     return 0;
-  neg = (neg > 0 ? 0 : 1);
+
+  neg = neg <= 0;
 
   /* if the error is smaller than ulp(b), then anyway it will propagate
      up to ulp(b) */

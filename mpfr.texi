@@ -1323,7 +1323,7 @@ The return value is zero unless an underflow occurs, in which case the
 @code{mpfr_sub_one_ulp} function behaves like a conventional subtraction.
 @end deftypefun
 
-@deftypefun int mpfr_can_round (mpfr_t @var{b}, mp_prec_t @var{err}, mp_rnd_t @var{rnd1}, mp_rnd_t @var{rnd2}, mp_prec_t @var{prec})
+@deftypefun int mpfr_can_round (mpfr_t @var{b}, mp_exp_t @var{err}, mp_rnd_t @var{rnd1}, mp_rnd_t @var{rnd2}, mp_prec_t @var{prec})
 Assuming @var{b} is an approximation of an unknown number
 @var{x} in direction @var{rnd1} with error at most two to the power 
 E(b)-@var{err} where E(b) is the exponent of 
