@@ -252,7 +252,7 @@ mpfr_set_d (r, d, rnd_mode)
      mp_rnd_t rnd_mode;
 #endif
 {
-  int signd, sizer, carry; unsigned int cnt; mpfr_ptr tmp; 
+  int signd, sizer, sizetmp; unsigned int cnt; mpfr_ptr tmp; 
   TMP_MARK(marker); 
 
   MPFR_CLEAR_FLAGS(r);
@@ -283,23 +283,21 @@ mpfr_set_d (r, d, rnd_mode)
       MPFR_MANT(tmp) = TMP_ALLOC(MPFR_LIMBS_PER_DOUBLE * BYTES_PER_MP_LIMB); 
       MPFR_PREC(tmp) = 53; 
       MPFR_SIZE(tmp) = 2; 
+      sizetmp = 2; 
     }
-  else tmp = r; 
+  else { tmp = r; sizetmp = sizer; }
 
   signd = (d < 0) ? -1 : 1;
   d = ABS (d);
 
-  /* warning: __mpfr_extract_double requires at least two limbs */
-  if (sizer < MPFR_LIMBS_PER_DOUBLE)
-    MPFR_EXP(tmp) = __mpfr_extract_double (MPFR_MANT(tmp), d, 1);
-  else
-    MPFR_EXP(tmp) = __mpfr_extract_double (MPFR_MANT(tmp) + sizer - MPFR_LIMBS_PER_DOUBLE, d, 1);
+  MPFR_EXP(tmp) = __mpfr_extract_double (MPFR_MANT(tmp) + sizetmp - 
+					 MPFR_LIMBS_PER_DOUBLE, d, 1);
   
-  if (sizer > MPFR_LIMBS_PER_DOUBLE)
+  if (sizetmp > MPFR_LIMBS_PER_DOUBLE)
     MPN_ZERO(MPFR_MANT(tmp), sizer - MPFR_LIMBS_PER_DOUBLE); 
 
-  count_leading_zeros(cnt, MPFR_MANT(tmp)[sizer-1]);
-  if (cnt) mpn_lshift(MPFR_MANT(tmp), MPFR_MANT(tmp), sizer, cnt); 
+  count_leading_zeros(cnt, MPFR_MANT(tmp)[sizetmp-1]);
+  if (cnt) mpn_lshift(MPFR_MANT(tmp), MPFR_MANT(tmp), sizetmp, cnt); 
   
   MPFR_EXP(tmp) -= cnt; 
 
