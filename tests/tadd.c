@@ -165,7 +165,18 @@ printf("x=%1.20e,%d y=%1.20e,%d pz=%d,rnd=%d\n",x,px,y,py,pz,rnd_mode);
 void check64()
 {
   mpfr_t x, t, u;
-  mpfr_init2(x, 97); mpfr_init2(t, 97); mpfr_init2(u, 97);
+
+  mpfr_init(x); mpfr_init(t); mpfr_init(u);
+  mpfr_set_prec(x, 53); mpfr_set_prec(t, 108); mpfr_set_prec(u, 108);
+  mpfr_set_str_raw(x, "-0.10010010001001011011110000000000001010011011011110001E-32");
+  mpfr_set_str_raw(t, "-0.101100010111001000010111111101111101000111001111011110011010101111001001111000111011001110011000000000111111");
+  mpfr_sub(u, x, t, GMP_RNDU);
+  mpfr_set_str_raw(t, "0.101100010111001000010111111101110011111110101001101111011010101110100000001011000010101110011000000000111111");
+  if (mpfr_cmp(u,t)) {
+    printf("expect "); mpfr_print_raw(t); putchar('\n');
+    fprintf(stderr, "mpfr_add failed for precisions 53-108\n"); exit(1);
+  }
+  mpfr_set_prec(x, 97); mpfr_set_prec(t, 97); mpfr_set_prec(u, 97);
   mpfr_set_str_raw(x, "0.1111101100001000000001011000110111101000001011111000100001000101010100011111110010000000000000000E-39");
   mpfr_set_ui(t, 1, GMP_RNDN);
   mpfr_add(u, x, t, GMP_RNDN);
