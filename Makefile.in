@@ -115,7 +115,7 @@ install-sh missing mkinstalldirs texinfo.tex
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = gtar
+TAR = tar
 GZIP_ENV = --best
 DEP_FILES =  .deps/add.P .deps/add_ui.P .deps/add_ulp.P .deps/agm.P \
 .deps/clear.P .deps/cmp.P .deps/cmp_ui.P .deps/div.P .deps/div_2exp.P \

@@ -14,6 +14,11 @@ AC_PROG_RANLIB
 AC_CHECK_OS
 AC_CHECK_MACHTYPE
 
+dnl If compiler is gcc, then use some warning flags
+if test -n "$GCC"; then
+  CFLAGS="$CFLAGS -Wall -Wno-implicit -Wmissing-prototypes"
+fi
+
 MISCFLAGS='$<' 
 dnl Mettre les flags OS dependants
 case $OS_TYPE in 
@@ -53,7 +58,6 @@ case $OS_TYPE in
 		AC_CHECK_LIB(m, main);;
 esac
 
-	
 dnl Tests pour le repertoire ou trouver les fichiers include
 
 AC_MY_HEADERS($with_gmp_include, gmp-impl.h)
