@@ -1,6 +1,6 @@
 /* Test compatibility mpf-mpfr.
 
-Copyright 2003, 2004 Free Software Foundation.
+Copyright 2003, 2004, 2005 Free Software Foundation.
 
 This file is part of the MPFR Library.
 

@@ -1,6 +1,6 @@
 /* mpfr_mpn_exp -- auxiliary function for mpfr_get_str and mpfr_set_str
 
-Copyright 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 This function was contributed by Alain Delplanque and Paul Zimmermann.
 
 This file is part of the MPFR Library.
