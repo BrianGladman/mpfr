@@ -161,8 +161,6 @@ mpfr_get_str (char *str, mp_exp_t *expptr, int base, size_t n,
       do
         {
           mp_prec_t prec, q;
-          int sh;
-          int ok;
 
           /* now the first n digits of the mantissa are obtained from
              rnd(op*base^(n-f)) */
@@ -180,13 +178,13 @@ mpfr_get_str (char *str, mp_exp_t *expptr, int base, size_t n,
               prec = (mp_prec_t) d + 1;
             }
 
-          q = prec + ERR;
+          MPFR_ASSERTN(prec <= MPFR_INTPREC_MAX - ERR);
           /* one has to use at least q bits */
-          q = (((q-1)/BITS_PER_MP_LIMB)+1) * BITS_PER_MP_LIMB;
+          q = ((prec + (ERR-1)) / BITS_PER_MP_LIMB + 1) * BITS_PER_MP_LIMB;
           mpfr_set_prec (a, q);
           mpfr_set_prec (b, q);
 
-          do
+          while (1)
             {
               mp_exp_unsigned_t p;
               mp_rnd_t rnd1;
@@ -209,91 +207,105 @@ mpfr_get_str (char *str, mp_exp_t *expptr, int base, size_t n,
                   div = 1;
                 }
 
-              if (div)
+              if (pow2)
                 {
-                  /* if div, we divide by base^p, so we have to invert
-                     the rounding mode */
-                  switch (rnd_mode)
-                    {
-                    case GMP_RNDN: rnd1 = GMP_RNDN; break;
-                    case GMP_RNDZ: rnd1 = GMP_RNDU; break;
-                    case GMP_RNDU: rnd1 = GMP_RNDZ; break;
-                    case GMP_RNDD: rnd1 = GMP_RNDZ; break;
-                    }
+                  MPFR_ASSERTN(p <= ULONG_MAX / pow2);
+                  MPFR_ASSERTN(p <= __mpfr_emax / pow2);
+                  if (div)
+                    mpfr_div_2ui (b, op, pow2*p, rnd_mode);
+                  else
+                    mpfr_mul_2ui (b, op, pow2*p, rnd_mode);
                 }
               else
-                rnd1 = rnd_mode;
+                {
+                  /* compute base^p with q bits */
+                  mpfr_set_prec (b, q);
+                  if (p == 0)
+                    {
+                      mpfr_set (b, op, rnd_mode);
+                      mpfr_set_ui (a, 1, rnd_mode);
+                    }
+                  else
+                    {
+                      mpfr_set_prec (a, q);
+                      if (div)
+                        {
+                          /* if div, we divide by base^p, so we have to invert
+                             the rounding mode to compute base^p */
+                          switch (rnd_mode)
+                            {
+                            case GMP_RNDN: rnd1 = GMP_RNDN; break;
+                            case GMP_RNDZ: rnd1 = GMP_RNDU; break;
+                            case GMP_RNDU: rnd1 = GMP_RNDZ; break;
+                            case GMP_RNDD: rnd1 = GMP_RNDU; break;
+                            }
+                        }
+                      else
+                        {
+                          rnd1 = rnd_mode;
+                        }
+                      mpfr_ui_pow_ui (a, base, p, rnd1);
+                      if (div)
+                        {
+                          mpfr_set_ui (b, 1, rnd_mode);
+                          mpfr_div (a, b, a, rnd_mode);
+                        }
+                      /* now a is an approximation to 1/base^(f-n) */
+                      mpfr_mul (b, op, a, rnd_mode);
+                    }
+                }
 
-    if (pow2)
-      {
-	if (div)
-	  mpfr_div_2ui (b, op, pow2*p, rnd_mode);
-	else
-	  mpfr_mul_2ui (b, op, pow2*p, rnd_mode);
-      }
-    else
-      {
-        /* compute base^p with q bits and rounding towards zero */
-        mpfr_set_prec (b, q);
-        if (p == 0)
+              if (neg)
+                MPFR_CHANGE_SIGN(b); /* put b positive */
+
+              if (prec <= (MPFR_INTPREC_MAX - BITS_PER_MP_LIMB) / 2 &&
+                  q > 2 * prec + BITS_PER_MP_LIMB)
+                {
+                  /* if the intermediate precision exceeds twice that of the
+                     input, a worst-case for the division cannot occur */
+                  rnd_mode = GMP_RNDN;
+                  break;
+                }
+              else if (pow2 ||
+                       mpfr_can_round (b, q-ERR, rnd_mode, rnd_mode, prec))
+                break;
+
+              MPFR_ASSERTN(q <= MPFR_INTPREC_MAX - BITS_PER_MP_LIMB);
+              q += BITS_PER_MP_LIMB;
+            }
+
           {
-            mpfr_set (b, op, rnd_mode);
-            mpfr_set_ui (a, 1, rnd_mode);
+            mp_rnd_t rnd = rnd_mode;
+
+            if (neg)
+              switch (rnd_mode)
+                {
+                case GMP_RNDU: rnd = GMP_RNDZ; break;
+                case GMP_RNDD: rnd = GMP_RNDU; break;
+                }
+
+            mpfr_round_prec (b, rnd, MPFR_EXP(b));
           }
-        else
+
+          prec = MPFR_EXP(b); /* may have changed due to rounding */
+
           {
-            mpfr_set_prec (a, q);
-            mpfr_ui_pow_ui (a, base, p, rnd1);
-            if (div)
-              {
-                mpfr_set_ui (b, 1, rnd_mode);
-                mpfr_div (a, b, a, rnd_mode);
-              }
-            /* now a is an approximation by default of 1/base^(f-n) */
-            mpfr_mul (b, op, a, rnd_mode);
+            mp_size_t n, e;
+            int sh;
+
+            /* now the mantissa is the integer part of b */
+            n = 1 + (prec - 1) / BITS_PER_MP_LIMB;
+            _mpz_realloc (bz, n);
+            sh = prec % BITS_PER_MP_LIMB;
+            e = 1 + (MPFR_PREC(b) - 1) / BITS_PER_MP_LIMB;
+            MPFR_ASSERTN(e >= n);
+            e -= n;
+            if (sh != 0)
+              mpn_rshift (PTR(bz), MPFR_MANT(b) + e, n, BITS_PER_MP_LIMB - sh);
+            else
+              MPN_COPY(PTR(bz), MPFR_MANT(b) + e, n);
+            bz->_mp_size = n;
           }
-      }
-
-    if (neg)
-      MPFR_CHANGE_SIGN(b); /* put b positive */
-
-    if (q > 2 * prec + BITS_PER_MP_LIMB)
-      {
-        /* if the intermediate precision exceeds twice that of the input,
-           a worst-case for the division cannot occur */
-        ok = 1;
-        rnd_mode = GMP_RNDN;
-      }
-    else ok = pow2 || mpfr_can_round (b, q-ERR, rnd_mode, rnd_mode, prec);
-
-  } while (ok==0 && (q+=BITS_PER_MP_LIMB) );
-
-  if (ok)
-    {
-      mp_rnd_t rnd = rnd_mode;
-
-      if (neg)
-        switch (rnd_mode)
-          {
-          case GMP_RNDU: rnd = GMP_RNDZ; break;
-          case GMP_RNDD: rnd = GMP_RNDU; break;
-          }
-
-      mpfr_round_prec (b, rnd, MPFR_EXP(b));
-    }
-
-  prec = MPFR_EXP(b); /* may have changed due to rounding */
-
-  /* now the mantissa is the integer part of b */
-  q = 1 + (prec - 1) / BITS_PER_MP_LIMB;
-  _mpz_realloc (bz, q);
-  sh = prec % BITS_PER_MP_LIMB;
-  e = 1 + (MPFR_PREC(b) - 1) / BITS_PER_MP_LIMB - q;
-  if (sh)
-    mpn_rshift (PTR(bz), MPFR_MANT(b) + e, q, BITS_PER_MP_LIMB - sh);
-  else
-    MPN_COPY(PTR(bz), MPFR_MANT(b) + e, q);
-  bz->_mp_size = q;
 
           /* computes the number of characters needed */
           /* n+1 may not be enough for 100000... */
