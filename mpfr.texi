@@ -790,8 +790,8 @@ returned as "31416" in the string and 1 written at @var{expptr}.
 @cindex Float arithmetic functions
 @cindex Arithmetic functions
 
-@deftypefun void mpfr_add (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
-@deftypefunx void mpfr_add_ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
+@deftypefun int mpfr_add (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_add_ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
 @ifinfo
 Set @var{rop} to @var{op1} + @var{op2} rounded in the direction @var{rnd}.
 @end ifinfo
@@ -800,6 +800,9 @@ Set @var{rop} to @var{op1} + @var{op2} rounded in the direction @var{rnd}.
 Set @var{rop} to $@var{op1} + @var{op2}$ rounded in the direction @var{rnd}.
 @end tex
 @end iftex
+The return value if zero if @var{rop} is exactly @var{op1} + @var{op2},
+positive if @var{rop} is larger than @var{op1} + @var{op2},
+and negative if @var{rop} is smaller than @var{op1} + @var{op2}.
 @end deftypefun
 
 @deftypefun int mpfr_sub (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
