@@ -1,6 +1,7 @@
 /*  mpfr_ui_pow_ui -- compute the power beetween two machine integer
 
-Copyright 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2005 
+  Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -25,14 +26,14 @@ int
 mpfr_ui_pow_ui (mpfr_ptr x, unsigned long int y, unsigned long int n,
                 mp_rnd_t rnd)
 {
-  long int err;
+  mp_exp_t err;
   unsigned long m;
   mpfr_t res;
   mp_prec_t prec;
+  int size_n;
   int inexact;
+  MPFR_ZIV_DECL (loop);
   MPFR_SAVE_EXPO_DECL (expo);
-
-  MPFR_CLEAR_FLAGS(x);
 
   if (MPFR_UNLIKELY (n == 0))
     /* y^0 = 1 for any y */
@@ -42,18 +43,17 @@ mpfr_ui_pow_ui (mpfr_ptr x, unsigned long int y, unsigned long int n,
     /* 0^n = 0 for any n > 0 */
     return mpfr_set_ui (x, 0, rnd);
 
+  for (size_n = 0, m = n; m; size_n++, m >>= 1);
+
   MPFR_SAVE_EXPO_MARK (expo);
-  prec = MPFR_PREC (x);
-  mpfr_init2 (res, 2*prec);
+  prec = MPFR_PREC (x) + 3 + size_n;
+  mpfr_init2 (res, prec);
 
-  do
+  MPFR_ZIV_INIT (loop, prec);
+  for (;;)
     {
-      int i;
+      int i = size_n;
 
-      prec += 3;
-      for (i = 0, m = n; m; i++, m >>= 1)
-        prec++;
-      mpfr_set_prec (res, prec);
       inexact = mpfr_set_ui (res, y, GMP_RNDU);
       err = 1;
       /* now 2^(i-1) <= n < 2^i: i=1+floor(log2(n)) */
@@ -68,9 +68,17 @@ mpfr_ui_pow_ui (mpfr_ptr x, unsigned long int y, unsigned long int n,
          we have err = 1+floor(log2(n)).
          Since prec >= MPFR_PREC(x) + 4 + floor(log2(n)), prec > err */
       err = prec - err;
+      
+      if (MPFR_LIKELY (inexact == 0
+		       || mpfr_can_round (res, err, GMP_RNDN, GMP_RNDZ,
+					  MPFR_PREC(x) + (rnd == GMP_RNDN))))
+	break;
+      
+      /* Actualisation of the precision */
+      MPFR_ZIV_NEXT (loop, prec);
+      mpfr_set_prec (res, prec);
     }
-  while (inexact && !mpfr_can_round (res, err, GMP_RNDN, GMP_RNDZ,
-                                     MPFR_PREC(x) + (rnd == GMP_RNDN)));
+  MPFR_ZIV_FREE (loop);
 
   inexact = mpfr_set (x, res, rnd);
 

@@ -409,6 +409,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mp_rnd_t rnd)
   size_t pstr_size;
   mp_size_t ysize, real_ysize;
   int res, err;
+  MPFR_ZIV_DECL (loop);
   TMP_DECL (marker);
 
   /* determine the minimal precision for the computation */
@@ -416,6 +417,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mp_rnd_t rnd)
 
   /* compute y as long as rounding is not possible */
   TMP_MARK(marker);
+  MPFR_ZIV_INIT (loop, prec);
   for (;;)
     {
       /* initialize y to the value of 0.mant_s[0]...mant_s[pr-1] */
@@ -633,8 +635,9 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mp_rnd_t rnd)
         break;
 
       /* update the prec for next loop */
-      prec += BITS_PER_MP_LIMB;
+      MPFR_ZIV_NEXT (loop, prec);
     } /* loop */
+  MPFR_ZIV_FREE (loop);
 
   /* round y */
   if (mpfr_round_raw (MPFR_MANT (x), result,

@@ -30,31 +30,32 @@ mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
   int inexact;
   mp_rnd_t rnd1;
   mpz_t absz;
+  mp_size_t size_z;
+  MPFR_ZIV_DECL (loop);
 
   MPFR_ASSERTD (mpz_sgn (z) != 0);
 
   if (MPFR_UNLIKELY (mpz_cmpabs_ui (z, 1) == 0))
     return mpfr_set (y, x, rnd);
 
-  prec = MPFR_PREC (x);
-  mpfr_init2 (res, prec + 9);
-
   rnd1 = MPFR_IS_POS (x) ? GMP_RNDU : GMP_RNDD; /* away */
   absz[0] = z[0];
   SIZ (absz) = ABS(SIZ(absz)); /* Hack to get abs(z) */
+  MPFR_MPZ_SIZEINBASE2 (size_z, z);
 
-  do {
-    mp_size_t i;
-    
-    MPFR_MPZ_SIZEINBASE2 (i, z);
+  prec = MPFR_PREC (x) + 3 + size_z;
+  mpfr_init2 (res, prec);
+
+  MPFR_ZIV_INIT (loop, prec);
+  for (;;) {
+    mp_size_t i = size_z;
     /* now 2^(i-1) <= z < 2^i */
-    prec += 3 + i;
-    mpfr_set_prec (res, prec);
     err = prec <= (mpfr_prec_t) i ? 0 : prec - (mpfr_prec_t) i;
     MPFR_ASSERTD (i >= 2);
     mpfr_clear_overflow ();
     mpfr_clear_underflow ();
-    /* First step: compute square from y */
+ 
+   /* First step: compute square from y */
     inexact = mpfr_mul (res, x, x, GMP_RNDU);
     if (mpz_tstbit (absz, i-2))
       inexact |= mpfr_mul (res, res, x, rnd1);
@@ -63,11 +64,20 @@ mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
 	inexact |= mpfr_sqr (res, res, GMP_RNDU);
 	if (mpz_tstbit (absz, i))
 	  inexact |= mpfr_mul (res, res, x, rnd1);      
-      } /* for */
-  } while (inexact && !mpfr_overflow_p() && !mpfr_underflow_p ()
-	   && !mpfr_can_round (res, err, GMP_RNDN, GMP_RNDZ,
-			       MPFR_PREC (y) + (rnd == GMP_RNDN)));
-  
+      }
+
+    if (MPFR_LIKELY (inexact == 0 
+		     || mpfr_overflow_p () || mpfr_underflow_p ()
+		     || mpfr_can_round (res, err, GMP_RNDN, GMP_RNDZ,
+					MPFR_PREC (y) + (rnd == GMP_RNDN))))
+      break;
+
+    /* Actualisation of the precision */
+    MPFR_ZIV_NEXT (loop, prec);
+    mpfr_set_prec (res, prec);
+  }
+  MPFR_ZIV_FREE (loop);
+
   inexact = mpfr_set (y, res, rnd);
   mpfr_clear (res);
 
@@ -189,7 +199,8 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
       /* Declaration of the intermediary variable */
       mpfr_t t;
       mp_prec_t Nt;   /* Precision of the intermediary variable */
-      
+      MPFR_ZIV_DECL (loop);
+
       /* compute the precision of intermediary variable */
       Nt = MAX (MPFR_PREC (x), MPFR_PREC (y));
       
@@ -198,7 +209,8 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
     
       /* initialise of intermediary	variable */
       mpfr_init2 (t, Nt);
-      
+
+      MPFR_ZIV_INIT (loop, Nt);
       for (;;) {
 	/* compute 1/(x^n) n>0 */
 	mpfr_pow_pos_z (t, x, z, GMP_RNDN);
@@ -206,15 +218,16 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
 	mpfr_ui_div (t, 1, t, GMP_RNDN);
 	inexact = inexact || MPFR_IS_ZERO (t) || MPFR_IS_INF (t);
 
-	if (inexact != 0
-	    || mpfr_can_round (t, Nt - 3, GMP_RNDN, GMP_RNDZ,
-			       MPFR_PREC (y) + (rnd == GMP_RNDN)))
+	if (MPFR_LIKELY (inexact != 0
+			 || mpfr_can_round (t, Nt - 3, GMP_RNDN, GMP_RNDZ,
+					 MPFR_PREC (y) + (rnd == GMP_RNDN))))
 	  break;
 	/* actualisation of the precision */
-	Nt += BITS_PER_MP_LIMB;
+	MPFR_ZIV_NEXT (loop, Nt);
 	mpfr_set_prec (t, Nt);
       }
-      
+      MPFR_ZIV_FREE (loop);
+
       inexact = mpfr_set (y, t, rnd);
       mpfr_clear (t);
     }

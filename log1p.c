@@ -1,6 +1,6 @@
 /* mpfr_log1p -- Compute log(1+x)
 
-Copyright 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+Copyright 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -28,36 +28,37 @@ MA 02111-1307, USA. */
 int
 mpfr_log1p (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
-  int comp, inexact = 0;
+  int comp, inexact;
+  MPFR_SAVE_EXPO_DECL (expo);
 
-  if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(x)))
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
-      if (MPFR_IS_NAN(x)) 
+      if (MPFR_IS_NAN (x)) 
 	{
-	  MPFR_SET_NAN(y); 
+	  MPFR_SET_NAN (y); 
 	  MPFR_RET_NAN;
 	}
       /* check for inf or -inf (result is not defined) */
-      else if (MPFR_IS_INF(x))
+      else if (MPFR_IS_INF (x))
 	{
-	  if (MPFR_IS_POS(x))
+	  if (MPFR_IS_POS (x))
 	    {
-	      MPFR_SET_INF(y);
-	      MPFR_SET_POS(y);
-	      MPFR_RET(0);
+	      MPFR_SET_INF (y);
+	      MPFR_SET_POS (y);
+	      MPFR_RET (0);
 	    }
 	  else
 	    {
-	      MPFR_SET_NAN(y);
+	      MPFR_SET_NAN (y);
 	      MPFR_RET_NAN;
 	    }
 	}
       else /* x is zero */
 	{
-          MPFR_ASSERTD(MPFR_IS_ZERO(x));
-	  MPFR_SET_ZERO(y);   /* log1p(+/- 0) = +/- 0 */
-	  MPFR_SET_SAME_SIGN(y, x);
-	  MPFR_RET(0);
+          MPFR_ASSERTD (MPFR_IS_ZERO (x));
+	  MPFR_SET_ZERO (y);   /* log1p(+/- 0) = +/- 0 */
+	  MPFR_SET_SAME_SIGN (y, x);
+	  MPFR_RET (0);
 	}
     }
   
@@ -68,60 +69,61 @@ mpfr_log1p (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       if (comp == 0)
 	/* x=0: log1p(-1)=-inf (division by zero) */
 	{
-	  MPFR_SET_INF(y);
-	  MPFR_SET_NEG(y);
-	  MPFR_RET(0);
+	  MPFR_SET_INF (y);
+	  MPFR_SET_NEG (y);
+	  MPFR_RET (0);
 	}
-      MPFR_SET_NAN(y);
+      MPFR_SET_NAN (y);
       MPFR_RET_NAN;
     }
 
-  MPFR_CLEAR_FLAGS(y);
+  MPFR_SAVE_EXPO_MARK (expo);
 
   /* General case */
   {
     /* Declaration of the intermediary variable */
     mpfr_t t;
-
     /* Declaration of the size variable */
     mp_prec_t Nx = MPFR_PREC(x);   /* Precision of input variable */
-    mp_prec_t Ny = MPFR_PREC(y);   /* Precision of input variable */
-    
-    mp_prec_t Nt;   /* Precision of the intermediary variable */
-    long int err;  /* Precision of error */
-                
+    mp_prec_t Ny = MPFR_PREC(y);   /* Precision of input variable */    
+    mp_prec_t Nt;       /* Precision of the intermediary variable */
+    mp_exp_t err;                           /* Precision of error */
+    MPFR_ZIV_DECL (loop);
+
     /* compute the precision of intermediary variable */
-    Nt = MAX(Nx,Ny);
+    Nt = MAX (Nx, Ny);
     /* the optimal number of bits : see algorithms.ps */
     Nt = Nt + 5 + MPFR_INT_CEIL_LOG2 (Nt);
 
     /* initialise of intermediary variable */
-    mpfr_init (t);
+    mpfr_init2 (t, Nt);
 
     /* First computation of cosh */
-    do
+    MPFR_ZIV_INIT (loop, Nt);
+    for (;;)
       {
-        /* reactualisation of the precision */
-        mpfr_set_prec (t, Nt);
-      
         /* compute log1p */
-        mpfr_add_ui (t, x, 1, GMP_RNDN);   /* 1+x */
+        mpfr_add_ui (t, x, 1, GMP_RNDN);      /* 1+x */
         mpfr_log (t, t, GMP_RNDN);        /* log(1+x)*/
 
         /* estimation of the error */
         /*err=Nt-(__gmpfr_ceil_log2(1+pow(2,1-MPFR_GET_EXP(t))));*/
         err = Nt - (MAX (1 - MPFR_GET_EXP (t), 0) + 1);
 
+	if (MPFR_LIKELY (mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
+                                         Ny + (rnd_mode == GMP_RNDN))))
+	  break;
+	
         /* actualisation of the precision */
-        Nt += 10;
+	MPFR_ZIV_NEXT (loop, Nt);
+	mpfr_set_prec (t, Nt);
       }
-    while ((err < 0) || !mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
-                                         Ny + (rnd_mode == GMP_RNDN)));
-
+    MPFR_ZIV_FREE (loop);
     inexact = mpfr_set (y, t, rnd_mode);
 
     mpfr_clear (t);
   }
 
-  return inexact;
+  MPFR_SAVE_EXPO_FREE (expo);
+  return mpfr_check_range (y, inexact, rnd_mode);
 }

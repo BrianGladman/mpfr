@@ -199,8 +199,9 @@ int
 mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 {
   int inexact = 1;
+  MPFR_SAVE_EXPO_DECL (expo);
 
-  if (MPFR_ARE_SINGULAR(x,y))
+  if (MPFR_ARE_SINGULAR (x, y))
     {
       /* pow(x, 0) returns 1 for any x, even a NaN. */
       if (MPFR_UNLIKELY( MPFR_IS_ZERO(y) ))
@@ -336,69 +337,63 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
       MPFR_RET_NAN;
     }
 
-  MPFR_CLEAR_FLAGS(z);
+  MPFR_SAVE_EXPO_MARK (expo);
 
   /* General case */
   {
     /* Declaration of the intermediary variable */
-    mpfr_t t, te, ti;
-    int loop = 0, ok;
-
+    mpfr_t t;
+    int loop = 0;
     /* Declaration of the size variable */
     mp_prec_t Nx = MPFR_PREC(x);   /* Precision of input variable */
     mp_prec_t Ny = MPFR_PREC(y);   /* Precision of input variable */
     mp_prec_t Nz = MPFR_PREC(z);   /* Precision of output variable */
-
-    mp_prec_t Nt;   /* Precision of the intermediary variable */
-    long int err;  /* Precision of error */
+    mp_prec_t Nt;        /* Precision of the intermediary variable */
+    mp_exp_t err, exp_te;                    /* Precision of error */
+    MPFR_ZIV_DECL (ziv_loop);
 
     /* compute the precision of intermediary variable */
-    Nt = MAX(Nx, Ny);
-    Nt = MAX(Nt, Nz); /* take account of the output precision too! */
+    Nt = MAX (Nx, Ny);
+    Nt = MAX (Nt, Nz); /* take account of the output precision too! */
     /* the optimal number of bits : see algorithms.ps */
     Nt = Nt + 5 + MPFR_INT_CEIL_LOG2 (Nt);
 
     /* initialise of intermediary variable */
-    mpfr_init (t);
-    mpfr_init (ti);
-    mpfr_init (te);
+    mpfr_init2 (t, Nt);
 
-    do
+    MPFR_ZIV_INIT (ziv_loop, Nt);
+    for (;;)
       {
         loop ++;
 
-        /* reactualisation of the precision */
-        mpfr_set_prec (t, Nt);
-        mpfr_set_prec (ti, Nt);
-        mpfr_set_prec (te, Nt);
-
         /* compute exp(y*ln(x)) */
-        mpfr_log (ti, x, GMP_RNDU);         /* ln(x) */
-        mpfr_mul (te, y, ti, GMP_RNDU);       /* y*ln(x) */
-        mpfr_exp (t, te, GMP_RNDN);         /* exp(y*ln(x))*/
-
-        MPFR_ASSERTN(MPFR_IS_FP(te));
-        MPFR_ASSERTN(MPFR_NOTZERO(te));
-        /* otherwise MPFR_EXP(te) below doesn't exist */
+        mpfr_log (t, x, GMP_RNDU);               /* ln(x) */
+        mpfr_mul (t, y, t, GMP_RNDU);            /* y*ln(x) */
+	exp_te = MPFR_GET_EXP (t);               /* FIXME: May overflow */
+        mpfr_exp (t, t, GMP_RNDN);               /* exp(y*ln(x))*/
+                                                 /* FIXME: May overflow */
 
 	/* estimate of the error -- see pow function in algorithms.ps */
-        err = Nt - (MPFR_GET_EXP (te) + 3);
-
-	/* actualisation of the precision */
-        Nt += 10;
-
-        ok = mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
-                             Nz + (rnd_mode == GMP_RNDN));
+        err = Nt - (exp_te + 3);
+        if (MPFR_LIKELY (mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
+					 Nz + (rnd_mode == GMP_RNDN))))
+	  break;
 
         /* check exact power */
-        if (ok == 0 && loop == 1)
+        if (loop == 1)
           {
-            ok = mpfr_pow_is_exact (x, y);
-            if (ok)
-              inexact = 0;
-          }
+            if (mpfr_pow_is_exact (x, y))
+	      {
+		inexact = 0;
+		break;
+	      }
+	  }
+
+        /* reactualisation of the precision */
+	MPFR_ZIV_NEXT (ziv_loop, Nt);
+        mpfr_set_prec (t, Nt);
       }
-    while (err < 0 || ok == 0);
+    MPFR_ZIV_FREE (ziv_loop);
 
     if (inexact)
       inexact = mpfr_set (z, t, rnd_mode);
@@ -406,9 +401,8 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
       mpfr_set (z, t, GMP_RNDN);
 
     mpfr_clear (t);
-    mpfr_clear (ti);
-    mpfr_clear (te);
   }
 
-  return inexact;
+  MPFR_SAVE_EXPO_FREE (expo);
+  return mpfr_check_range (z, inexact, rnd_mode);
 }

@@ -143,9 +143,10 @@ int
 mpfr_add_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mp_rnd_t rnd_mode)
 {
   mpfr_t    t,q;
-  mp_prec_t p = MPFR_PREC(y)+10;
+  mp_prec_t p;
   mp_exp_t  err;
   int res;
+  MPFR_ZIV_DECL (loop);
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
@@ -171,8 +172,11 @@ mpfr_add_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mp_rnd_t rnd_mode)
 	}
     }
 
+  p = MPFR_PREC (y) + 10;
   mpfr_init2 (t, p);
   mpfr_init2 (q, p);
+  
+  MPFR_ZIV_INIT (loop, p);
   for (;;)
     {
       res = mpfr_set_q (q, z, GMP_RNDN);  /* Error <= 1/2 ulp(q) */
@@ -192,18 +196,18 @@ mpfr_add_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mp_rnd_t rnd_mode)
       if (MPFR_LIKELY (!MPFR_IS_ZERO (t)))
 	{
 	  err = (mp_exp_t) p - 1 - MAX (MPFR_GET_EXP(q)-MPFR_GET_EXP(t), 0);
-	  res = mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ, 
-				MPFR_PREC(y) + (rnd_mode == GMP_RNDN) );
-	  if (MPFR_LIKELY (res != 0))  /* We can round! */
+	  if (MPFR_LIKELY (mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ, 
+				MPFR_PREC(y) + (rnd_mode == GMP_RNDN)))) 
 	    {
-	      res = mpfr_set(y, t, rnd_mode);
+	      res = mpfr_set (y, t, rnd_mode);	      
 	      break;
 	    }
 	}
-      p += BITS_PER_MP_LIMB;     /* Next precision if we continue */
+      MPFR_ZIV_NEXT (loop, p);
       mpfr_set_prec (t, p);
       mpfr_set_prec (q, p);
     } 
+  MPFR_ZIV_FREE (loop);
   mpfr_clear (t);
   mpfr_clear (q);
   return res;
@@ -213,9 +217,10 @@ int
 mpfr_sub_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z,mp_rnd_t rnd_mode)
 {
   mpfr_t t,q;
-  mp_prec_t p = MPFR_PREC (y)+10;
+  mp_prec_t p;
   int res;
   mp_exp_t err;
+  MPFR_ZIV_DECL (loop);
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
@@ -246,8 +251,11 @@ mpfr_sub_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z,mp_rnd_t rnd_mode)
         }
     }
 
+  p = MPFR_PREC (y) + 10;
   mpfr_init2 (t, p);
   mpfr_init2 (q, p);
+  
+  MPFR_ZIV_INIT (loop, p);
   for(;;)
     {
       res = mpfr_set_q(q, z, GMP_RNDN);  /* Error <= 1/2 ulp(q) */
@@ -275,10 +283,11 @@ mpfr_sub_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z,mp_rnd_t rnd_mode)
 	      break;
 	    }
 	}
-      p += BITS_PER_MP_LIMB;             /* Next precision if we continue */
+      MPFR_ZIV_NEXT (loop, p);
       mpfr_set_prec (t, p);
       mpfr_set_prec (q, p);
     }
+  MPFR_ZIV_FREE (loop);
   mpfr_clear (t);
   mpfr_clear (q);
   return res;

@@ -1,6 +1,6 @@
 /* mpfr_log2 -- log base 2
 
-Copyright 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+Copyright 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -23,110 +23,109 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
  /* The computation of r=log2(a)
-
-    r=log2(a)=log(a)/log(2)
- */
+      r=log2(a)=log(a)/log(2)      */
 
 int
 mpfr_log2 (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
 {
-  int inexact = 0;
+  int inexact;
+  MPFR_SAVE_EXPO_DECL (expo);
 
-  if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(a) ))
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (a)))
     {
       /* If a is NaN, the result is NaN */
-      if (MPFR_IS_NAN(a))
+      if (MPFR_IS_NAN (a))
 	{
-	  MPFR_SET_NAN(r);
+	  MPFR_SET_NAN (r);
 	  MPFR_RET_NAN;
 	}
       /* check for infinity before zero */
-      else if (MPFR_IS_INF(a))
+      else if (MPFR_IS_INF (a))
 	{
-	  if (MPFR_IS_NEG(a))
+	  if (MPFR_IS_NEG (a))
 	    /* log(-Inf) = NaN */
 	    {
-	      MPFR_SET_NAN(r);
+	      MPFR_SET_NAN (r);
 	      MPFR_RET_NAN;
 	    }
 	  else /* log(+Inf) = +Inf */
 	    {
-	      MPFR_SET_INF(r);
-	      MPFR_SET_POS(r);
-	      MPFR_RET(0);
+	      MPFR_SET_INF (r);
+	      MPFR_SET_POS (r);
+	      MPFR_RET (0);
 	    }
 	}
       else /* a is zero */
 	{
-          MPFR_ASSERTD(MPFR_IS_ZERO(a));
-	  MPFR_SET_INF(r);
-	  MPFR_SET_NEG(r);
-	  MPFR_RET(0); /* log2(0) is an exact -infinity */
+          MPFR_ASSERTD (MPFR_IS_ZERO (a));
+	  MPFR_SET_INF (r);
+	  MPFR_SET_NEG (r);
+	  MPFR_RET (0); /* log2(0) is an exact -infinity */
 	}
     }
 
   /* If a is negative, the result is NaN */
-  if (MPFR_UNLIKELY(MPFR_IS_NEG(a)))
+  if (MPFR_UNLIKELY (MPFR_IS_NEG (a)))
     {
-      MPFR_SET_NAN(r);
+      MPFR_SET_NAN (r);
       MPFR_RET_NAN;
     }
 
   /* If a is 1, the result is 0 */
-  if (mpfr_cmp_ui(a, 1) == 0)
+  if (MPFR_UNLIKELY (mpfr_cmp_ui (a, 1) == 0))
     {
-      MPFR_SET_ZERO(r);
-      MPFR_SET_POS(r);
-      MPFR_RET(0); /* only "normal" case where the result is exact */
+      MPFR_SET_ZERO (r);
+      MPFR_SET_POS (r);
+      MPFR_RET (0); /* only "normal" case where the result is exact */
     }
 
-  /* If a is integer, log2(a) is exact*/
-  if (mpfr_cmp_ui_2exp (a, 1, MPFR_GET_EXP (a) - 1) == 0)
+  /* If a is 2^N, log2(a) is exact*/
+  if (MPFR_UNLIKELY (mpfr_cmp_ui_2exp (a, 1, MPFR_GET_EXP (a) - 1) == 0))
     return mpfr_set_si(r, MPFR_GET_EXP (a) - 1, rnd_mode);
+
+  MPFR_SAVE_EXPO_MARK (expo);
 
   /* General case */
   {
     /* Declaration of the intermediary variable */
     mpfr_t t, tt;
-
     /* Declaration of the size variable */
     mp_prec_t Nx = MPFR_PREC(a);   /* Precision of input variable */
     mp_prec_t Ny = MPFR_PREC(r);   /* Precision of input variable */
-
-    mp_prec_t Nt;   /* Precision of the intermediary variable */
-    long int err;  /* Precision of error */
-
+    mp_prec_t Nt;       /* Precision of the intermediary variable */
+    mp_exp_t err;                           /* Precision of error */
+    MPFR_ZIV_DECL (loop);
 
     /* compute the precision of intermediary variable */
-    Nt=MAX(Nx,Ny);
+    Nt = MAX (Nx, Ny);
     /* the optimal number of bits : see algorithms.ps */
-    Nt=Nt + 3 + MPFR_INT_CEIL_LOG2 (Nt);
+    Nt = Nt + 3 + MPFR_INT_CEIL_LOG2 (Nt);
 
     /* initialise of intermediary	variable */
-    mpfr_init(t);
-    mpfr_init(tt);
-
+    mpfr_init2 (t, Nt);
+    mpfr_init2 (tt, Nt);
 
     /* First computation of log2 */
-    do
+    MPFR_ZIV_INIT (loop, Nt);
+    for (;;)
       {
-        /* reactualisation of the precision */
-        mpfr_set_prec(t,Nt);
-        mpfr_set_prec(tt,Nt);
-
         /* compute log2 */
         mpfr_const_log2(t,GMP_RNDD); /* log(2) */
         mpfr_log(tt,a,GMP_RNDN);     /* log(a) */
         mpfr_div(t,tt,t,GMP_RNDN); /* log(a)/log(2) */
-
+	
         /* estimation of the error */
-        err=Nt-3;
-
+        err = Nt-3;
+	if (MPFR_LIKELY (mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
+                                         Ny + (rnd_mode == GMP_RNDN))))
+	  break;
+	
         /* actualisation of the precision */
-        Nt += 10;
+	MPFR_ZIV_NEXT (loop, Nt);
+        mpfr_set_prec (t, Nt);
+        mpfr_set_prec (tt, Nt);
       }
-    while ((err < 0) || !mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
-                                         Ny + (rnd_mode == GMP_RNDN)));
+    MPFR_ZIV_FREE (loop);
 
     inexact = mpfr_set (r, t, rnd_mode);
 
@@ -134,5 +133,6 @@ mpfr_log2 (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
     mpfr_clear (tt);
   }
 
-  return inexact;
+  MPFR_SAVE_EXPO_FREE (expo);
+  return mpfr_check_range (r, inexact, rnd_mode);
 }

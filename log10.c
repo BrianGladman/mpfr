@@ -1,6 +1,6 @@
 /* mpfr_log10 -- logarithm in base 10.
 
-Copyright 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+Copyright 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -30,89 +30,81 @@ MA 02111-1307, USA. */
 int
 mpfr_log10 (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
 {
-  int inexact = 0;
+  int inexact;
+  MPFR_SAVE_EXPO_DECL (expo);
 
   /* If a is NaN, the result is NaN */
-  if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(a) ))
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (a)))
     {
-      if (MPFR_IS_NAN(a))
+      if (MPFR_IS_NAN (a))
 	{
-	  MPFR_SET_NAN(r);
+	  MPFR_SET_NAN (r);
 	  MPFR_RET_NAN;
 	}
       /* check for infinity before zero */
-      else if (MPFR_IS_INF(a))
+      else if (MPFR_IS_INF (a))
 	{
-	  if (MPFR_IS_NEG(a))
+	  if (MPFR_IS_NEG (a))
 	    /* log10(-Inf) = NaN */
 	    {
-	      MPFR_SET_NAN(r);
+	      MPFR_SET_NAN (r);
 	      MPFR_RET_NAN;
 	    }
 	  else /* log10(+Inf) = +Inf */
 	    {
-	      MPFR_SET_INF(r);
-	      MPFR_SET_POS(r);
-	      MPFR_RET(0); /* exact */
+	      MPFR_SET_INF (r);
+	      MPFR_SET_POS (r);
+	      MPFR_RET (0); /* exact */
 	    }
 	}
       else /* a = 0 */
 	{
-          MPFR_ASSERTD(MPFR_IS_ZERO(a));
-	  MPFR_SET_INF(r);
-	  MPFR_SET_NEG(r);
-	  MPFR_RET(0); /* log10(0) is an exact -infinity */
+          MPFR_ASSERTD (MPFR_IS_ZERO (a));
+	  MPFR_SET_INF (r);
+	  MPFR_SET_NEG (r);
+	  MPFR_RET (0); /* log10(0) is an exact -infinity */
 	}
     }
 
   /* If a is negative, the result is NaN */
-  if (MPFR_UNLIKELY( MPFR_IS_NEG(a) ))
+  if (MPFR_UNLIKELY (MPFR_IS_NEG (a)))
     {
-      MPFR_SET_NAN(r);
+      MPFR_SET_NAN (r);
       MPFR_RET_NAN;
     }
 
   /* If a is 1, the result is 0 */
   if (mpfr_cmp_ui (a, 1) == 0)
     {
-      MPFR_SET_ZERO(r);
-      MPFR_SET_POS(r);
-      MPFR_RET(0); /* result is exact */
+      MPFR_SET_ZERO (r);
+      MPFR_SET_POS (r);
+      MPFR_RET (0); /* result is exact */
     }
-
-  /* Useless due to mpfr_set
-     MPFR_CLEAR_FLAGS(r);*/
+  MPFR_SAVE_EXPO_MARK (expo);
 
   /* General case */
   {
     /* Declaration of the intermediary variable */
     mpfr_t t, tt;
-    int ok;
-
+    MPFR_ZIV_DECL (loop);
     /* Declaration of the size variable */
-    mp_prec_t Nx = MPFR_PREC(a);   /* Precision of input variable */
+    mp_prec_t Nx = MPFR_PREC(a);    /* Precision of input variable */
     mp_prec_t Ny = MPFR_PREC(r);   /* Precision of output variable */
-
-    mp_prec_t Nt;   /* Precision of the intermediary variable */
-    long int err;  /* Precision of error */
+    mp_prec_t Nt;        /* Precision of the intermediary variable */
+    mp_exp_t  err;                           /* Precision of error */
 
     /* compute the precision of intermediary variable */
-    Nt = MAX(Nx, Ny);
+    Nt = MAX (Nx, Ny);
     /* the optimal number of bits : see algorithms.ps */
     Nt = Nt + 4+ MPFR_INT_CEIL_LOG2 (Nt);
 
     /* initialise of intermediary variables */
-    mpfr_init (t);
-    mpfr_init (tt);
-
+    mpfr_init2 (t, Nt);
+    mpfr_init2 (tt, Nt);
 
     /* First computation of log10 */
-    do {
-
-      /* reactualisation of the precision */
-      mpfr_set_prec (t, Nt);
-      mpfr_set_prec (tt, Nt);
-
+    MPFR_ZIV_INIT (loop, Nt);
+    for(;;) {
       /* compute log10 */
       mpfr_set_ui (t, 10, GMP_RNDN);   /* 10 */
       mpfr_log (t, t, GMP_RNDD);       /* log(10) */
@@ -121,20 +113,25 @@ mpfr_log10 (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
 
       /* estimation of the error */
       err = Nt - 4;
+      if (MPFR_LIKELY (mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
+				       Ny + (rnd_mode == GMP_RNDN))))
+	break;
 
-      ok = mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
-                           Ny + (rnd_mode == GMP_RNDN));
-
-      /* log10(10^n) is exact */
-      if ((MPFR_SIGN(t) > 0) && mpfr_integer_p (t))
-        if (mpfr_ui_pow_ui (tt, 10, (unsigned long) (mpfr_get_d1 (t) + 0.5),
-                            GMP_RNDN) == 0)
-          if (mpfr_cmp (a, tt) == 0)
-            ok = 1;
+      /* log10(10^n) is exact:
+	 FIXME: Can we have 10^n exactly representable as a mpfr_t
+	 but n can't fit an unsigned long? */
+      if (MPFR_IS_POS (t) 
+	  && mpfr_integer_p (t) && mpfr_fits_ulong_p (t, GMP_RNDN)
+	  && !mpfr_ui_pow_ui (tt, 10, mpfr_get_ui (t, GMP_RNDN), GMP_RNDN)
+          && mpfr_cmp (a, tt) == 0)
+	break;
 
       /* actualisation of the precision */
-      Nt += 10;
-    } while ((err < 0) || !ok);
+      MPFR_ZIV_NEXT (loop, Nt);
+      mpfr_set_prec (t, Nt);
+      mpfr_set_prec (tt, Nt);
+    }
+    MPFR_ZIV_FREE (loop);
 
     inexact = mpfr_set (r, t, rnd_mode);
 
@@ -142,5 +139,6 @@ mpfr_log10 (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
     mpfr_clear (tt);
   }
 
-  return inexact;
+  MPFR_SAVE_EXPO_FREE (expo);
+  return mpfr_check_range (r, inexact, rnd_mode);
 }

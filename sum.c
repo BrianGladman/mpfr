@@ -193,13 +193,13 @@ static int mpfr_list_sum_once (mpfr_ptr ret, mpfr_srcptr const tab[],
 int mpfr_sum (mpfr_ptr ret, mpfr_ptr const tab[], unsigned long n, 
               mp_rnd_t rnd)
 {
-  mp_prec_t initial_f, current_f;
+  mp_prec_t prec;
   unsigned long k;
   mpfr_srcptr *perm;
-  unsigned int guard_digits;
-  unsigned int initial_guard_digits;
   int error_trap;
   mpfr_t cur_sum;
+  MPFR_ZIV_DECL (loop);
+  MPFR_SAVE_EXPO_DECL (expo);
   TMP_DECL(marker);
     
   TMP_MARK(marker);
@@ -209,30 +209,39 @@ int mpfr_sum (mpfr_ptr ret, mpfr_ptr const tab[], unsigned long n,
     return 0;
   }
 
+  /* Sort */
   perm = (mpfr_srcptr *) TMP_ALLOC(n * sizeof(mpfr_srcptr)); 
-
   mpfr_count_sort (tab, n, perm);
 
-  initial_f = MAX (MPFR_PREC(tab[0]), MPFR_PREC(ret));
+  /* Initial precision */
+  prec = MAX (MPFR_PREC (tab[0]), MPFR_PREC (ret));
   k = MPFR_INT_CEIL_LOG2 (n) + 1;
-  mpfr_init2 (cur_sum, initial_f);
-  initial_guard_digits = k + 2;
-  guard_digits = initial_guard_digits;
-  do
-  {
-      current_f = initial_f + guard_digits;
-      mpfr_set_prec (cur_sum, current_f);
-      error_trap = mpfr_list_sum_once (cur_sum, perm, n, 
-                                       current_f + k);
-      guard_digits *= 2;
+  prec += k + 2;
+  mpfr_init2 (cur_sum, prec);
+
+  MPFR_SAVE_EXPO_MARK (expo);
+
+  /* Ziv Loop */
+  MPFR_ZIV_INIT (loop, prec);
+  for (;;) {
+    error_trap = mpfr_list_sum_once (cur_sum, perm, n, prec + k);
+    if (MPFR_LIKELY (error_trap == 0
+		     || mpfr_can_round (cur_sum, 
+					MPFR_GET_EXP (cur_sum) - prec + 2,
+					GMP_RNDN, rnd, MPFR_PREC (ret))))
+      break;
+    MPFR_ZIV_NEXT (loop, prec);
+    mpfr_set_prec (cur_sum, prec);
   }
-  while ((error_trap != 0) &&
-          !(mpfr_can_round (cur_sum, MPFR_GET_EXP(cur_sum) - current_f + 2,
-                            GMP_RNDN, rnd, MPFR_PREC(ret))));
+  MPFR_ZIV_FREE (loop);
+
   error_trap |= mpfr_set (ret, cur_sum, rnd);
   mpfr_clear (cur_sum);
   TMP_FREE(marker);
-  return error_trap;
+
+  MPFR_SAVE_EXPO_FREE (expo);
+  error_trap |= mpfr_check_range (ret, 0, rnd);
+  return error_trap; /* It doesn't return the ternary value */
 }
 
 
