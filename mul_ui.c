@@ -26,8 +26,6 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-#define ONE ((mp_limb_t) 1)
-
 int
 #if __STDC__
 mpfr_mul_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
@@ -110,7 +108,7 @@ mpfr_mul_ui (y, x, u, rnd_mode)
 
   if (c) /* rounded result is 1.0000000000000000... */
     {
-      old_my[yn-1] |= ONE << (BITS_PER_MP_LIMB - 1);
+      old_my[yn-1] = MP_LIMB_T_HIGHBIT;
       MPFR_EXP(y) ++;
     }
 

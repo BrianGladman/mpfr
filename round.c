@@ -177,13 +177,14 @@ mpfr_round (mpfr_ptr x, mp_rnd_t rnd_mode, mp_prec_t prec)
 
   TMP_MARK(marker); 
   tmp = TMP_ALLOC (nw * BYTES_PER_MP_LIMB);
-  carry = mpfr_round_raw(tmp, MPFR_MANT(x), MPFR_PREC(x), neg, prec, rnd_mode,
-                         &inexact);
+  carry = mpfr_round_raw (tmp, MPFR_MANT(x), MPFR_PREC(x), neg, prec, rnd_mode,
+                          &inexact);
 
   if (carry)
     {
+      /* Is a shift necessary here? Isn't the result 1.0000...? */
       mpn_rshift (tmp, tmp, nw, 1);
-      tmp [nw-1] |= MP_LIMB_T_ONE << (BITS_PER_MP_LIMB - 1);
+      tmp [nw-1] |= MP_LIMB_T_HIGHBIT;
       MPFR_EXP(x)++;
     }
 

@@ -123,7 +123,7 @@ mpfr_sqrt (r, u, rnd_mode)
 	{
 	  up = TMP_ALLOC((usize + 1)*BYTES_PER_MP_LIMB);
 	  if (mpn_rshift(up + 1, MPFR_MANT(u), usize, 1))
-	    up [0] = MP_LIMB_T_ONE << (BITS_PER_MP_LIMB - 1); 
+	    up [0] = MP_LIMB_T_HIGHBIT;
 	  else up[0] = 0; 
 	  usize++; 
 	}
@@ -261,11 +261,13 @@ mpfr_sqrt (r, u, rnd_mode)
 			    MP_LIMB_T_ONE);
       }
 
-  if (cc) {
-    mpn_rshift(rp, rp, rrsize, 1);
-    rp[rrsize-1] |= MP_LIMB_T_ONE << (BITS_PER_MP_LIMB - 1);
-    MPFR_EXP(r)++; 
-  }
+  if (cc)
+    {
+      /* Is a shift necessary here? Isn't the result 1.0000...? */
+      mpn_rshift (rp, rp, rrsize, 1);
+      rp[rrsize-1] |= MP_LIMB_T_HIGHBIT;
+      MPFR_EXP(r)++; 
+    }
 
  fin:
   rsize = rrsize; 

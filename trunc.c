@@ -114,7 +114,7 @@ FUNC_NAME (r, u)
 #ifdef _MPFR_FLOOR_OR_CEIL
       if ((MPFR_FLOOR && signu < 0) || (MPFR_CEIL && signu >= 0))
 	{
-	  rp[rsize-1] = MP_LIMB_T_ONE << (BITS_PER_MP_LIMB-1);
+	  rp[rsize-1] = MP_LIMB_T_HIGHBIT;
 	  MPN_ZERO(rp, rsize-1);
 	  /* sign of result is that of u */
 	  if (MPFR_SIGN(r) * signu < 0) MPFR_CHANGE_SIGN(r);
@@ -168,7 +168,7 @@ FUNC_NAME (r, u)
       if (cy != 0)
 	{
 	  /* all the bits from "1<<rw" upwards are zero */
-	  rp[usize-1] = MP_LIMB_T_ONE << (BITS_PER_MP_LIMB - 1);
+	  rp[usize-1] = MP_LIMB_T_HIGHBIT;
 	  exp++;
 	}
     }

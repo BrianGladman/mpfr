@@ -124,7 +124,7 @@ mpfr_mul (a, b, c, rnd_mode)
   cc = mpfr_round_raw (ap, tmp, prec_b + prec_c, sign_product < 0, prec_a,
 		       rnd_mode, &inexact);
   if (cc) /* cc = 1 ==> result is a power of two */
-    ap[an-1] = (mp_limb_t) 1 << (BITS_PER_MP_LIMB-1);
+    ap[an-1] = MP_LIMB_T_HIGHBIT;
 
   TMP_FREE(marker);
 

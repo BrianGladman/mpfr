@@ -68,7 +68,7 @@ mpfr_set_z (f, z, rnd)
     if (rnd==GMP_RNDN) {
       if (sh) c2 = MP_LIMB_T_ONE << (sh - 1);
       else { /* sh=0 */
-	c2 = MP_LIMB_T_ONE << (BITS_PER_MP_LIMB - 1);
+	c2 = MP_LIMB_T_HIGHBIT;
 	dif--;
 	cc = (dif>=0) ? ((zp[dif])<<k) : 0;
 	if (dif>0 && k) cc += zp[dif-1] >> (BITS_PER_MP_LIMB-k);
