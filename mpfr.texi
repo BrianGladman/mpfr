@@ -777,6 +777,13 @@ The returned value is zero when @var{x}=@var{y}, positive when @var{x}>@var{y},
 and negative when @var{x}<@var{y}.
 @end deftypefun
 
+@deftypefun void mpfr_set_inf (mpfr_t @var{x}, int @var{sign})
+@deftypefunx void mpfr_set_nan (mpfr_t @var{x})
+Set the variable @var{x} to infinity or NaN (Not-a-Number) respectively.
+In @code{mpfr_set_inf}, @var{x} is set to plus infinity iff @var{sign} is
+positive.
+@end deftypefun
+
 @deftypefun void mpfr_swap (mpfr_t @var{x}, mpfr_t @var{y})
 Swap the values @var{x} and @var{y} efficiently. Warning: the
 precisions are exchanged too; in case the precisions are different,
