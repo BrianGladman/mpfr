@@ -50,7 +50,7 @@ mpfr_pi_machin3 (mpfr_ptr mylog, mp_rnd_t rnd_mode)
   MPFR_CLEAR_FLAGS (mylog);
   prec_i_want = MPFR_PREC (mylog);
   logn = __gmpfr_ceil_log2 ((double) prec_i_want);
-  prec_x = prec_i_want + logn + 5;
+  prec_x = prec_i_want + logn;
   mpz_init (cst);
   while (!inex)
     {

@@ -27,20 +27,27 @@ MA 02111-1307, USA. */
 /* tconst_pi [prec] [rnd] [0 = no print] */
 
 static void
-check_large(void)
+check_large (void)
 {
   mpfr_t x, y;
-  mpfr_init2(x, 20000);
-  mpfr_init2(y, 21000);
-  mpfr_const_pi(x, GMP_RNDN); /* First one ! */
-  mpfr_const_pi(y, GMP_RNDN); /* Then the other - cache - */
-  mpfr_prec_round(y, 20000, GMP_RNDN);
-  if (mpfr_cmp(x,y))
+
+  mpfr_init2 (x, 20000);
+  mpfr_init2 (y, 21000);
+
+  mpfr_const_pi (x, GMP_RNDN); /* First one ! */
+  mpfr_const_pi (y, GMP_RNDN); /* Then the other - cache - */
+  mpfr_prec_round (y, 20000, GMP_RNDN);
+  if (mpfr_cmp (x,y))
     {
-      printf("const_pi: error for large prec\n");
-      exit(1);
+      printf ("const_pi: error for large prec\n");
+      exit (1);
     }
-  mpfr_clears(x,y,NULL);
+
+  /* a worst-case to exercise recomputation */
+  mpfr_set_prec (x, 33440);
+  mpfr_const_pi (x, GMP_RNDZ);
+
+  mpfr_clears (x, y, NULL);
 }
 
 int
