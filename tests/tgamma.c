@@ -1,6 +1,6 @@
 /* mpfr_tgamma -- test file for gamma function
 
-Copyright 2001, 2002, 2003 Free Software Foundation.
+Copyright 2001, 2002, 2003, 2004 Free Software Foundation.
 
 This file is part of the MPFR Library, and was contributed by Mathieu Dutour.
 
@@ -29,16 +29,14 @@ int mpfr_gamma (mpfr_ptr, mpfr_srcptr, mp_rnd_t);
 #define TEST_FUNCTION mpfr_gamma
 #include "tgeneric.c"
 
-int
-main (void)
+static void
+special (void)
 {
   mpfr_t x, y;
 
-  tests_start_mpfr ();
-
   mpfr_init (x);
   mpfr_init (y);
-
+  
   mpfr_set_prec (x, 53);
   mpfr_set_prec (y, 53);
 
@@ -65,10 +63,30 @@ main (void)
       exit (1);
     }
 
-  test_generic (2, 100, 2);
+  mpfr_set_prec (x, 8);
+  mpfr_set_prec (y, 175);
+  mpfr_set_ui (x, 33, GMP_RNDN);
+  mpfr_gamma (y, x, GMP_RNDU);
+  mpfr_set_prec (x, 175);
+  mpfr_set_str_binary (x, "0.110010101011010101101000010101010111000110011101001000101011000001100010111001101001011E118");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error in mpfr_gamma (1)\n");
+      exit (1);
+    }
 
   mpfr_clear (x);
   mpfr_clear (y);
+}
+
+int
+main (void)
+{
+  tests_start_mpfr ();
+
+  special ();
+
+  test_generic (2, 100, 2);
 
   tests_end_mpfr ();
   return 0;

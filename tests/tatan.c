@@ -130,6 +130,20 @@ special (void)
       exit (1);
     }
 
+  mpfr_set_prec (x, 3);
+  mpfr_set_prec (y, 192);
+  mpfr_set_prec (z, 192);
+  mpfr_set_str_binary (x, "-0.100e1");
+  mpfr_atan (z, x, GMP_RNDD);
+  mpfr_set_str_binary (y, "-0.110010010000111111011010101000100010000101101000110000100011010011000100110001100110001010001011100000001101110000011100110100010010100100000010010011100000100010001010011001111100110001110101");
+  if (mpfr_cmp (z, y))
+    {
+      printf ("Error in mpfr_atan (3)\n");
+      printf ("Expected "); mpfr_print_binary (y); printf ("\n");
+      printf ("Got      "); mpfr_print_binary (z); printf ("\n");
+      exit (1);
+    }
+
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);

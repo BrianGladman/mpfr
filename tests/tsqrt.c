@@ -210,6 +210,23 @@ special (void)
       exit (1);
     }
 
+  mpfr_set_prec (x, 33);
+  mpfr_set_str_binary (x, "0.111011011011110001100111111001000e-10");
+  mpfr_set_prec (z, 157);
+  inexact = mpfr_sqrt (z, x, GMP_RNDN);
+  mpfr_set_prec (x, 157);
+  mpfr_set_str_binary (x, "0.11110110101100101111001011100011100011100001101010111011010000100111011000111110100001001011110011111100101110010110010110011001011011010110010000011001101E-5");
+  if (mpfr_cmp (x, z))
+    {
+      printf ("Error: square root (1)\n");
+      exit (1);
+    }
+  if (inexact <= 0)
+    {
+      printf ("Error: wrong inexact flag (1)\n");
+      exit (1);
+    }
+
   mpfr_clear (x);
   mpfr_clear (z);
 }

@@ -128,7 +128,8 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
   comparaison = mpfr_cmp_ui (xp, 1);
   if (comparaison == 0)
     {
-      inexact = mpfr_const_pi (arctangent, rnd_mode);
+      inexact = mpfr_const_pi (arctangent, MPFR_IS_POS_SIGN(sign) ? rnd_mode
+                               : MPFR_INVERT_RND(rnd_mode));
       MPFR_SET_EXP (arctangent, MPFR_GET_EXP (arctangent) - 2);
       if (MPFR_IS_NEG_SIGN( sign ))
         {

@@ -74,23 +74,27 @@ mpfr_erf (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     {
       if (rnd2 == GMP_RNDN || rnd2 == GMP_RNDU)
         {
-          mpfr_set_ui (y, 1, rnd2);
-          inex = 1;
+          if (MPFR_IS_POS_SIGN(sign_x))
+            {
+              mpfr_set_ui (y, 1, rnd2);
+              inex = 1;
+            }
+          else
+            {
+              mpfr_set_si (y, -1, rnd2);
+              inex = -1;
+            }
         }
-      else
+      else /* round to zero */
         {
-          mpfr_setmax (y, 0);
-          inex = -1;
-        }
-      if (MPFR_IS_NEG_SIGN(sign_x))
-        {
-          MPFR_CHANGE_SIGN (y);
-          inex = -inex;
+          mpfr_setmax (y, 0); /* warning: setmax keeps the old sign of y */
+          MPFR_SET_SAME_SIGN(y, x);
+          inex = MPFR_IS_POS_SIGN(sign_x) ? -1 : 1;
         }
     }
   else  /* use Taylor */
     {
-      inex = mpfr_erf_0 (y, x, rnd2);
+      inex = mpfr_erf_0 (y, x, rnd_mode);
     }
 
   return inex;

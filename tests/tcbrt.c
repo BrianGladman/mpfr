@@ -98,11 +98,33 @@ special (void)
   mpfr_set_prec (x, 32);
   mpfr_set_prec (y, 32);
   mpfr_set_str_binary (x, "-0.1100001110110000010101011001011");
-  mpfr_cbrt (x, x, GMP_RNDN);
+  mpfr_cbrt (x, x, GMP_RNDD);
   mpfr_set_str_binary (y, "-0.11101010000100100101000101011001");
   if (mpfr_cmp (x, y))
     {
       printf ("Error in cbrt (3)\n");
+      exit (1);
+    }
+
+  mpfr_set_prec (x, 82);
+  mpfr_set_prec (y, 27);
+  mpfr_set_str_binary (x, "0.1010001111011101011011000111001011001101100011110110010011011011011010011001100101e-7");
+  mpfr_cbrt (y, x, GMP_RNDD);
+  mpfr_set_str_binary (x, "0.101011110001110001000100011E-2");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error in cbrt (4)\n");
+      exit (1);
+    }
+
+  mpfr_set_prec (x, 204);
+  mpfr_set_prec (y, 38);
+  mpfr_set_str_binary (x, "0.101000000001101000000001100111111011111001110110100001111000100110100111001101100111110001110001011011010110010011100101111001111100001010010100111011101100000011011000101100010000000011000101001010001001E-5");
+  mpfr_cbrt (y, x, GMP_RNDD);
+  mpfr_set_str_binary (x, "0.10001001111010011011101000010110110010E-1");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error in cbrt (5)\n");
       exit (1);
     }
 

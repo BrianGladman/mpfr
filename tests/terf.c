@@ -297,6 +297,19 @@ special (void)
       exit (1);
     }
 
+  mpfr_set_prec (x, 43);
+  mpfr_set_prec (y, 64);
+  mpfr_set_str_binary (x, "-0.1101110110101111100101011101110101101001001e3");
+  mpfr_erf (y, x, GMP_RNDU);
+  mpfr_set_prec (x, 64);
+  mpfr_set_str_binary (x, "-0.1111111111111111111111111111111111111111111111111111111111111111");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error: erf for prec=43,64 (13)\n");
+      exit (1);
+    }
+  
+
   mpfr_clear (x);
   mpfr_clear (y);
 }

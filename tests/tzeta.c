@@ -54,6 +54,30 @@ test1 (void)
       exit (1);
     }
 
+  mpfr_set_prec (x, 2);
+  mpfr_set_prec (y, 55);
+  mpfr_set_str_binary (x, "0.11e3");
+  mpfr_zeta (y, x, GMP_RNDN);
+  mpfr_set_prec (x, 55);
+  mpfr_set_str_binary (x, "0.1000001000111000010011000010011000000100100100100010010E1");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error in mpfr_zeta (1)\n");
+      exit (1);
+    }
+
+  mpfr_set_prec (x, 3);
+  mpfr_set_prec (y, 47);
+  mpfr_set_str_binary (x, "0.111e4");
+  mpfr_zeta (y, x, GMP_RNDN);
+  mpfr_set_prec (x, 47);
+  mpfr_set_str_binary (x, "1.0000000000000100000000111001001010111100101011");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error in mpfr_zeta (2)\n");
+      exit (1);
+    }
+
   mpfr_clear (x);
   mpfr_clear (y);
 }

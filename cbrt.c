@@ -20,6 +20,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+#include <stdio.h>
 #include <stdlib.h>
 #include "gmp.h"
 #include "gmp-impl.h"
@@ -51,7 +52,7 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpz_t m;
   mp_exp_t e, r, sh;
   mp_prec_t n, size_m;
-  int inexact, x_neg;
+  int inexact, negative;
 
   /* special values */
   if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(x) ))
@@ -83,7 +84,7 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpz_init (m);
 
   e = mpfr_get_z_exp (m, x); /* x = m * 2^e */
-  if ((x_neg = MPFR_IS_NEG(x)))
+  if ((negative = MPFR_IS_NEG(x)))
     mpz_neg (m, m);
   r = e % 3;
   if (r < 0)
@@ -97,15 +98,20 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   /* we want 3*n-2 <= size_m + 3*sh + r <= 3*n
      i.e. 3*sh + size_m + r <= 3*n */
-  sh = (3 * n - size_m - r) / 3;
+  sh = (3 * (mp_exp_t) n - (mp_exp_t) size_m - r) / 3;
   sh = 3 * sh + r;
   if (sh >= 0)
     {
       mpz_mul_2exp (m, m, sh);
       e = e - sh;
     }
+  else if (r > 0)
+    {
+      mpz_mul_2exp (m, m, r);
+      e = e - r;
+    }
 
-  /* invariant: x = m*2^e */
+  /* invariant: x = m*2^e, with e divisible by 3 */
 
   /* we reuse the variable m to store the cube root, since it is not needed
      any more: we just need to know if the root is exact */
@@ -121,6 +127,8 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   if (inexact)
     {
+      if (negative)
+        rnd_mode = MPFR_INVERT_RND(rnd_mode);
       if ((rnd_mode == GMP_RNDU) ||
           ((rnd_mode == GMP_RNDN) && mpz_tstbit (m, 0)))
         mpz_add_ui (m, m, inexact = 1);
@@ -134,7 +142,7 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   inexact += mpfr_set_z (y, m, GMP_RNDN);
   MPFR_SET_EXP (y, MPFR_GET_EXP (y) + e / 3);
 
-  if (x_neg)
+  if (negative)
     {
       MPFR_CHANGE_SIGN(y);
       inexact = -inexact;
