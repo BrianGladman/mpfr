@@ -1279,6 +1279,11 @@ rounded to the direction @var{rnd} with the precision of @var{rop}.
 Return 0 iff the result is exact.
 @end deftypefun
 
+@deftypefun void mpfr_zeta (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+Set @var{rop} to the value of the Riemann Zeta function on @var{op},
+rounded to the direction @var{rnd} with the precision of @var{rop}.
+@end deftypefun
+
 @deftypefun int mpfr_fma (mpfr_t @var{rop}, mpfr_t @var{opx},mpfr_t @var{opy},mpfr_t @var{opz}, mp_rnd_t @var{rnd}) 
 Set @var{rop} to @math{@var{opx} @GMPtimes{} @var{opy} + @var{opz}}, rounded to the direction 
 @var{rnd} with the precision of @var{rop}. Return 0 iff the result is exact,
@@ -1579,6 +1584,7 @@ David Daney contributed the hyperbolic and inverse hyperbolic functions,
 the base-2 exponential, and the factorial function. Fabrice Rouillier
 contributed the original version of @file{mul_ui.c}, the @file{gmp_op.c}
 file, and helped to the Windows porting.
+Jean-Luc Rémy contributed the @code{mpfr_zeta} code.
 
 @node References, GNU Free Documentation License, Contributors, Top
 @comment  node-name,  next,  previous,  up
