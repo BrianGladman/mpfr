@@ -124,9 +124,7 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
 
   sticky = sticky || sticky1;
 
-  MPFR_SET_EXP(r, MPFR_LIKELY(MPFR_GET_EXP(u) != MPFR_EMAX_MAX)
-	       ? (MPFR_GET_EXP(u) + odd_exp) / 2  /* exact */
-	       : (MPFR_EMAX_MAX - 1) / 2 + 1);
+  MPFR_SET_EXP(r, (MPFR_GET_EXP(u) + odd_exp) / 2  /* exact */);
 
   if (rnd_mode == GMP_RNDZ || rnd_mode == GMP_RNDD || sticky == MPFR_LIMB_ZERO)
     {
