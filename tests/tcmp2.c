@@ -36,7 +36,10 @@ void tcmp2(x, y, i) double x, y; int i;
 {
   mpfr_t xx,yy; int j;
 
-  if (i==-1) i = (int) floor(log(x)/log(2.0)) - (int) floor(log(x-y)/log(2.0));
+  if (i==-1) {
+    if (x==y) i=53;
+    else i = (int) floor(log(x)/log(2.0)) - (int) floor(log(x-y)/log(2.0));
+  }
   mpfr_init2(xx, 53); mpfr_init2(yy, 53);
   mpfr_set_d(xx, x, 0);
   mpfr_set_d(yy, y, 0);
