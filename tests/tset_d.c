@@ -4,6 +4,11 @@
 #include "mpfr.h"
 #include <time.h>
 #include <math.h>
+#ifdef IRIX64
+#include <sys/fpu.h>
+#endif
+
+extern int isnan();
 
 double drand()
 {
@@ -18,7 +23,14 @@ double drand()
 int
 main(int argc, char **argv)
 {
-  mpfr_t x,y,z; unsigned long k,n; double d; 
+  mpfr_t x,y,z; unsigned long k,n; double d, dd;
+#ifdef IRIX64
+    /* to get denormalized numbers on IRIX64 */
+    union fpc_csr exp;
+    exp.fc_word = get_fpc_csr();
+    exp.fc_struct.flush = 0;
+    set_fpc_csr(exp.fc_word);
+#endif
 
   mpfr_init2(z, 32);
   mpfr_set_d(z, 1.0, 0);
@@ -45,9 +57,10 @@ main(int argc, char **argv)
   n = (argc==1) ? 1000000 : atoi(argv[1]);
   for (k = 1; k <= n; k++)
     {      
-      do { d = drand(); } while (isnan(d)); /* does not yet work for NaN */
+      d = drand();
       mpfr_set_d(x, d, 0); 
-      if (d != mpfr_get_d(x)) 
+      dd = mpfr_get_d(x);
+      if (d != dd && (!isnan(d) || !isnan(dd)))
 	{ 
 	  fprintf(stderr, 
 		  "Mismatch on : %1.18g != %1.18g\n", d, mpfr_get_d(x)); 
