@@ -1,4 +1,4 @@
-/* mpfr_cmp_ui_2exp -- compare a floating-point number with an unsigned
+/* mpfr_cmp_si_2exp -- compare a floating-point number with a signed
 machine integer multiplied by a power of 2
 
 Copyright 1999, 2001, 2002 Free Software Foundation, Inc.
@@ -29,63 +29,65 @@ MA 02111-1307, USA. */
 /* returns a positive value if b > i*2^f,
            a negative value if b < i*2^f,
            zero if b = i*2^f.
-   b must not be NaN
+   b must not be NaN.
 */
 
 int 
-mpfr_cmp_ui_2exp (mpfr_srcptr b, unsigned long int i, mp_exp_t f)
+mpfr_cmp_si_2exp (mpfr_srcptr b, long int i, mp_exp_t f)
 {
+  int si;
+
   MPFR_ASSERTN(!MPFR_IS_NAN(b));
 
-  if (MPFR_IS_INF(b))
+  si = i < 0 ? -1 : 1; /* sign of i */
+  if (MPFR_IS_INF(b) || (MPFR_NOTZERO(b) && MPFR_SIGN(b) != si))
     return MPFR_SIGN(b);
-
-  /* now b is neither NaN nor +/-Infinity */
-  if (MPFR_IS_ZERO(b))
-    return i != 0 ? -1 : 0;
-  else if (MPFR_SIGN(b) < 0)
-    return -1;
-  /* now b > 0 */
+  /* both signs differ or b = 0 */
+  else if (MPFR_IS_ZERO(b))
+    return i != 0 ? -si : 0;
   else if (i == 0)
-    return 1;
-  else /* b > 0, i > 0 */
+    return MPFR_SIGN(b);
+  else /* b and i are of same sign si */
     {
       mp_exp_t e;
+      unsigned long ai;
       int k;
       mp_size_t bn;
       mp_limb_t c, *bp;
 
-      /* i must be representable in a mp_limb_t */
-      MPFR_ASSERTN(i == (mp_limb_t) i);
+      ai = SAFE_ABS(long, i);
+
+      /* ai must be representable in a mp_limb_t */
+      MPFR_ASSERTN(ai == (mp_limb_t) ai);
 
       e = MPFR_EXP(b); /* 2^(e-1) <= b < 2^e */
       if (e <= f)
-        return -1;
+        return -si;
       if (f < MPFR_EMAX_MAX - BITS_PER_MP_LIMB &&
           e > f + BITS_PER_MP_LIMB)
-        return 1;
+        return si;
 
       /* now f < e <= f + BITS_PER_MP_LIMB */
-      c = (mp_limb_t) i;
+      c = (mp_limb_t) ai;
       count_leading_zeros(k, c);
       if ((int) (e - f) > BITS_PER_MP_LIMB - k)
-        return 1;
+        return si;
       if ((int) (e - f) < BITS_PER_MP_LIMB - k)
-        return -1;
+        return -si;
 
       /* now b and i*2^f have the same exponent */
       c <<= k;
       bn = (MPFR_PREC(b) - 1) / BITS_PER_MP_LIMB;
       bp = MPFR_MANT(b);
       if (bp[bn] > c)
-        return 1;
+        return si;
       if (bp[bn] < c)
-        return -1;
+        return -si;
 
       /* most significant limbs agree, check remaining limbs from b */
       while (bn > 0)
-        if (bp[--bn] != 0)
-          return 1;
+        if (bp[--bn])
+          return si;
       return 0;
     }
 }

@@ -1045,8 +1045,8 @@ one plus the absolute difference of their exponents.
 It is not allowed that one of the operands is NaN (Not-a-Number).
 @end deftypefun
 
-@deftypefun int mpfr_cmp_ui_2exp (mpfr_t @var{op1}, unsigned long int @var{op2}, int @var{e})
-@deftypefunx int mpfr_cmp_si_2exp (mpfr_t @var{op1}, long int @var{op2}, int @var{e})
+@deftypefun int mpfr_cmp_ui_2exp (mpfr_t @var{op1}, unsigned long int @var{op2}, mp_exp_t @var{e})
+@deftypefunx int mpfr_cmp_si_2exp (mpfr_t @var{op1}, long int @var{op2}, mp_exp_t @var{e})
 Compare @var{op1} and @var{op2} multiplied by two to the power @var{e}.
 @end deftypefun
 
