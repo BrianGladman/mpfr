@@ -495,11 +495,6 @@ int  mpfr_strtofr _MPFR_PROTO ((mpfr_ptr, __gmp_const char *, char **,
 #define mpfr_zero_p(_x)   ((_x)->_mpfr_exp == __MPFR_EXP_ZERO)
 #define mpfr_sgn(_x)      (mpfr_zero_p(_x) ? 0 : MPFR_SIGN(_x))
 
-/* Theses consts are cached. */
-#define mpfr_const_pi(_d,_r) mpfr_cache(_d, __gmpfr_cache_const_pi, _r)
-#define mpfr_const_log2(_d,_r) mpfr_cache(_d, __gmpfr_cache_const_log2, _r)
-#define mpfr_const_euler(_d,_r) mpfr_cache(_d, __gmpfr_cache_const_euler, _r)
-
 /* Prevent from using mpfr_get_e{min,max} as lvalues */
 #define mpfr_get_prec(_x) ((_x)->_mpfr_prec + 0)
 #define mpfr_get_exp(_x)  ((_x)->_mpfr_exp + 0)

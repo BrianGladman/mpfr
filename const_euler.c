@@ -24,11 +24,22 @@ MA 02111-1307, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+/* Declare the cache */
+MPFR_DECL_INIT_CACHE(__gmpfr_cache_const_euler, mpfr_const_euler_internal);
+
+/* Set User Interface */
+#undef mpfr_const_euler
+int
+mpfr_const_euler (mpfr_ptr x, mp_rnd_t rnd_mode) {
+  return mpfr_cache (x, __gmpfr_cache_const_euler, rnd_mode);
+}
+
+
 static void mpfr_const_euler_S (mpfr_ptr, unsigned long);
 static void mpfr_const_euler_R (mpfr_ptr, unsigned long);
 
 int
-(mpfr_const_euler) (mpfr_t x, mp_rnd_t rnd)
+mpfr_const_euler_internal (mpfr_t x, mp_rnd_t rnd)
 {
   mp_prec_t prec = MPFR_PREC(x), m, log2m;
   mpfr_t y, z;

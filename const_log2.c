@@ -22,6 +22,16 @@ MA 02111-1307, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+/* Declare the cache */
+MPFR_DECL_INIT_CACHE(__gmpfr_cache_const_log2, mpfr_const_log2_internal);
+
+/* Set User interface */
+#undef mpfr_const_log2
+int
+mpfr_const_log2 (mpfr_ptr x, mp_rnd_t rnd_mode) {
+  return mpfr_cache (x, __gmpfr_cache_const_log2, rnd_mode);
+}
+
 static int mpfr_aux_log2 (mpfr_ptr, mpz_srcptr, long, int);
 static int mpfr_const_aux_log2 (mpfr_ptr, mp_rnd_t);
 
@@ -123,7 +133,7 @@ mpfr_const_aux_log2 (mpfr_ptr mylog, mp_rnd_t rnd_mode)
    Then 2^N*log(2)-S'(N) <= N-1+2/N <= N for N>=2.
 */
 int
-(mpfr_const_log2) (mpfr_ptr x, mp_rnd_t rnd_mode)
+mpfr_const_log2_internal (mpfr_ptr x, mp_rnd_t rnd_mode)
 {
   mp_prec_t N, k, precx;
   mpz_t s, t, u;

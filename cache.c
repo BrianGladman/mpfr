@@ -21,11 +21,6 @@ MA 02111-1307, USA. */
 
 #include "mpfr-impl.h"
 
-/* Global MPFR cache */
-MPFR_DECL_INIT_CACHE(__gmpfr_cache_const_pi, mpfr_const_pi);
-MPFR_DECL_INIT_CACHE(__gmpfr_cache_const_log2, mpfr_const_log2);
-MPFR_DECL_INIT_CACHE(__gmpfr_cache_const_euler, mpfr_const_euler);
-
 void
 mpfr_init_cache (mpfr_cache_t cache, int (*func)(mpfr_ptr, mp_rnd_t))
 {

@@ -621,15 +621,9 @@ extern unsigned char *mpfr_stack;
  *****************  Cache macros **********************
  ******************************************************/
 
-/* Cache Handling: Check if we can use it */
-#undef mpfr_const_pi
-#undef mpfr_const_log2
-#undef mpfr_const_euler
-#ifndef MPFR_NO_CACHE
-# define mpfr_const_pi(_d,_r)    mpfr_cache(_d, __gmpfr_cache_const_pi, _r)
-# define mpfr_const_log2(_d,_r)  mpfr_cache(_d, __gmpfr_cache_const_log2, _r)
-# define mpfr_const_euler(_d,_r) mpfr_cache(_d, __gmpfr_cache_const_euler, _r)
-#endif
+#define mpfr_const_pi(_d,_r)    mpfr_cache(_d, __gmpfr_cache_const_pi,_r)
+#define mpfr_const_log2(_d,_r)  mpfr_cache(_d, __gmpfr_cache_const_log2, _r)
+#define mpfr_const_euler(_d,_r) mpfr_cache(_d, __gmpfr_cache_const_euler, _r)
 
 #define MPFR_DECL_INIT_CACHE(_cache,_func) \
  mpfr_cache_t _cache = {{{{0,MPFR_SIGN_POS,0,(mp_limb_t*)0}},0,_func}}
@@ -1213,6 +1207,10 @@ int mpfr_get_cputime _MPFR_PROTO ((void));
 
 void mpfr_nexttozero _MPFR_PROTO ((mpfr_ptr));
 void mpfr_nexttoinf _MPFR_PROTO ((mpfr_ptr));
+
+int  mpfr_const_pi_internal    _MPFR_PROTO ((mpfr_ptr, mp_rnd_t));
+int  mpfr_const_log2_internal  _MPFR_PROTO ((mpfr_ptr, mp_rnd_t));
+int  mpfr_const_euler_internal _MPFR_PROTO ((mpfr_ptr, mp_rnd_t));
 
 #if defined (__cplusplus)
 }
