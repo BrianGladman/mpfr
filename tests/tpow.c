@@ -185,6 +185,7 @@ special ()
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);
+  mpfr_clear (t);
 }
 
 int

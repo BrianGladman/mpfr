@@ -255,6 +255,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
       /* Declaration of the size variable */
       mp_prec_t Nx = MPFR_PREC(x);   /* Precision of input variable */
       mp_prec_t Ny = MPFR_PREC(y);   /* Precision of input variable */
+      mp_prec_t Nz = MPFR_PREC(z);   /* Precision of output variable */
 
       mp_prec_t Nt;   /* Precision of the intermediary variable */
       long int err;  /* Precision of error */
@@ -290,7 +291,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 	/* actualisation of the precision */
           Nt += 10;
 
-          ok = mpfr_can_round (t, err, GMP_RNDN, rnd_mode, Ny);
+          ok = mpfr_can_round (t, err, GMP_RNDN, rnd_mode, Nz);
 
           /* check exact power */
           if (ok == 0 && loop == 1)
@@ -307,10 +308,3 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
     }
     return inexact;
 }
-
-
-
-
-
-
-
