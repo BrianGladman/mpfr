@@ -3,8 +3,8 @@ Notes for the MPFR developers and CVS users
 
 To compile source code obtained from CVS, you need some GNU development
 utilities: aclocal, autoheader, automake, autoconf 2.50 (at least). As
-some files like "configure" are not part of the CVS repository, you
-first need to run "autoreconf"; if you have both autoconf 2.13 and 2.50
+some files like "configure" are not part of the CVS repository, you first
+need to run "autoreconf -i"; if you have both autoconf 2.13 and 2.50
 installed and use a wrapper, you may need to run "autoreconf" a second
 time (as with old Debian packages, due to a bug in the wrapper). Then
 you can run "configure" in the usual way (see the INSTALL file).
