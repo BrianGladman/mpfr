@@ -1,4 +1,4 @@
-check_PROGRAMS=  tabs tadd tagm tcan_round tcmp tcmp_ui tdiv tdiv_ui tdump texp tget_str tlog tlog2 tmul tmul_2exp tmul_ui tout_str tpi tround tset_d tset_f tset_q tset_si tset_str tset_z tsqrt tsqrt_ui tui_div tui_sub tzeta
+check_PROGRAMS=  tabs tadd tagm tcan_round tcmp tcmp_ui tdiv tdiv_ui tdump texp tget_str tlog tlog2 tmul tmul_2exp tmul_ui tout_str tpi tround tset_d tset_f tset_q tset_si tset_str tset_z tsqrt tsqrt_ui tui_div tui_sub tzeta tsin_cos
  
 LDADD= $(top_builddir)/libmpfr.a  @LDADD@
 INCLUDES=@INCLUDES@ -I$(top_srcdir)
