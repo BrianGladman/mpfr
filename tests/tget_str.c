@@ -34,7 +34,7 @@ check(d, rnd) double d; unsigned char rnd;
   mpfr_t x; char *str, str2[30]; int l, l2;
 
   mpfr_init2(x, 53);
-  mpfr_set_d(x, d, 53, 0, rnd);
+  mpfr_set_d(x, d, rnd);
   str = mpfr_get_str(NULL, NULL, 10, 5, x, rnd);
   mpfr_set_machine_rnd_mode(rnd);
   sprintf(str2, "%1.4e", d);
