@@ -189,7 +189,7 @@ mp_rnd_t rnd_mode;
 		      ((double) (PREC(x)) / (double) BITS_PER_MP_LIMB)
 		      /log(2.0));  
   logn =  (int) ceil(log
-		      ((double) prec_x)
+		      ((double) prec_x+PREC(y))
 		      /log(2.0));  
   if (logn < 2) logn = 2;
   ttt = EXP(x);
