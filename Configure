@@ -50,7 +50,7 @@ case $syst in
 	ldlibs="-lm"
 	;;
     OSF*)
-        special="-D__STDC__ $special -mfp-rounding-mode=d -mieee-with-inexact";
+        special="-D__STDC__ $special -mfp-rounding-mode=d -mieee-with-inexact -ffloat-store";
         ostype=alpha
 	defC=/usr/local/bin/gcc
 	make=/usr/local/gnu/bin/make # pour $LDLIBS des tests
