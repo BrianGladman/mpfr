@@ -122,15 +122,19 @@ mpfr_round_raw_generic (yp, xp, xprec, neg, yprec, rnd_mode, inexp, flag)
       while (sb == 0 && k > 0)
         sb = xp[--k];
       if (rnd_mode == GMP_RNDN)
-      {
+      { /* rounding to nearest, with rounding bit = 1 */
 	if (sb == 0) /* Even rounding. */
-	  {
-	    sb = xp[xsize - nw] & (himask ^ (himask << 1)); 
-	    if (inexp) *inexp = ((neg != 0) ^ (sb != 0)) 
-			 ? MPFR_EVEN_INEX  : -MPFR_EVEN_INEX;
-	  }
-	else 
-	  { sb = 1; if (inexp) *inexp = ((neg != 0) ^ (sb != 0)) ? 1 : -1; }
+        {
+          sb = xp[xsize - nw] & (himask ^ (himask << 1));
+          if (inexp)
+            *inexp = ((neg != 0) ^ (sb != 0))
+              ? MPFR_EVEN_INEX  : -MPFR_EVEN_INEX;
+        }
+	else /* sb != 0 */
+        {
+          if (inexp)
+            *inexp = (neg == 0) ? 1 : -1;
+        }
       }
       else if (inexp)
         *inexp = sb == 0 ? 0
