@@ -147,7 +147,7 @@ mpfr_div (r, u, v, rnd_mode)
       rp = (mp_ptr) TMP_ALLOC ((rrsize+1) * BYTES_PER_MP_LIMB); 
 
       if (vsize >= rsize) { 
-	tmp = vp + vsize - rsize;
+	tmp = (mp_ptr) vp + vsize - rsize;
       }
       else { 
 	tmp = (mp_ptr) TMP_ALLOC (rsize * BYTES_PER_MP_LIMB);
