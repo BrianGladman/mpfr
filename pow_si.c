@@ -133,7 +133,7 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd_mode)
           mpfr_set_prec(ti,Nt);             
 
           /* compute 1/(x^n) n>0*/
-          mpfr_pow_ui(ti,y,(unsigned long int)(n),GMP_RNDN);
+          mpfr_pow_ui(ti,x,(unsigned long int)(n),GMP_RNDN);
           mpfr_ui_div(t,1,ti,GMP_RNDN);
 
           /* estimation of the error -- see pow function in algorithms.ps*/
