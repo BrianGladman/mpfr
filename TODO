@@ -179,6 +179,8 @@ Miscellaneous:
 
 - add tests of the ternary value for constants
 
+- replace all mpfr_set_d calls in tests (except when testing it)
+
 Reentrancy / Thread-Safety:
 
 - Temporary changes to emin/emax are not safe (all uses of

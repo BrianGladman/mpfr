@@ -32,6 +32,11 @@ not conform to the standard (even with C90); other problems may
 occur on this architecture. You can either include <stdio.h> or
 use 0 (possibly casted to the target pointer type).
 
+In the tests, do not use mpfr_set_d (except when testing it), as the
+result will depend on the floating-point arithmetic of the system;
+this has shown many problems in the past and problems may still occur
+with new systems.
+
 To make a release (for the MPFR team):
   1) Check the version and update the date in mpfr.texi.
   2) Update the ChangeLog file (using a recent version of rcs2log,
