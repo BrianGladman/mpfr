@@ -11,8 +11,7 @@
      cp config.h gmp-impl.h gmp-mparam.h longlong.h DIR/include
 
    where DIR is the directory where you have installed GMP, i.e. you
-   configured GMP with ./configure --prefix=DIR. (The file
-   stack-alloc.h is needed when GMP is configured with --disable-alloca.)
+   configured GMP with ./configure --prefix=DIR.
 
 1. In the MPFR build directory, type "./configure --with-gmp=DIR" where
    DIR is the directory where you have installed GMP. If this fails,
