@@ -23,6 +23,10 @@ mpfr_set_prec (x, p, rnd_mode)
 
   x -> _mp_d = (mp_ptr) (*_mp_reallocate_func) 
     (x -> _mp_d, ABSSIZE(x)*BYTES_PER_MP_LIMB, xsize * BYTES_PER_MP_LIMB);
+
+  if (xsize > ABSSIZE(x))
+    MPN_ZERO(x -> _mp_d, xsize - ABSSIZE(x)); 
+
   x -> _mp_prec = p;
   SIZE(x) = (SIGN(x)>0) ? xsize : (xsize ^ (1<<31));
 }
