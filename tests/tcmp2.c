@@ -155,9 +155,9 @@ tcmp2 (double x, double y, int i)
     else i = (int) floor(log(x)/log(2.0)) - (int) floor(log(x-y)/log(2.0));
   }
   mpfr_init2(xx, 53); mpfr_init2(yy, 53);
-  mpfr_set_d(xx, x, 0);
-  mpfr_set_d(yy, y, 0);
-  j = mpfr_cmp2(xx, yy);
+  mpfr_set_d (xx, x, GMP_RNDN);
+  mpfr_set_d (yy, y, GMP_RNDN);
+  j = mpfr_cmp2 (xx, yy);
   if (j != i) {
     fprintf (stderr, "Error in mpfr_cmp2 for\nx=");
     mpfr_out_str (stderr, 2, 0, xx, GMP_RNDN);
