@@ -34,6 +34,7 @@ mpfr_cmp(b, c)
    unsigned long bn, cn;
    mp_limb_t *bp, *cp;
 
+   if (!NOTZERO(b) && !NOTZERO(c)) { return 0; }
    s = SIGN(b) * SIGN(c);
    if (s<0) return(SIGN(b));
 
