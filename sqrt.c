@@ -44,7 +44,7 @@ mpfr_sqrt (r, u, rnd_mode)
   mp_size_t prec, err;
   mp_limb_t q_limb;
   long rw, nw, k; 
-  int exact = 0; 
+  int exact = 0, t;
   unsigned long cc = 0; 
   char can_round = 0; 
   TMP_DECL (marker); TMP_DECL(marker0); 
@@ -201,9 +201,15 @@ mpfr_sqrt (r, u, rnd_mode)
  
       case GMP_RNDU : 
 	if (q_limb)
-	  cc = mpn_add_1(rp, rp, rrsize, 1 << (BITS_PER_MP_LIMB - 
-					       (PREC(r) & 
-						(BITS_PER_MP_LIMB - 1))));
+	  {
+	    t = PREC(r) & (BITS_PER_MP_LIMB - 1); 
+	    if (t) 
+	      {
+		cc = mpn_add_1(rp, rp, rrsize, 1 << (BITS_PER_MP_LIMB - t)); 
+	      }
+	    else
+	      cc = mpn_add_1 (rp, rp, rrsize, 1); 
+	  }	      
       }
 
   if (cc) {

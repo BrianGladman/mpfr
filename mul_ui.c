@@ -74,12 +74,12 @@ mpfr_mul_ui(y, x, u, rnd_mode)
       if (xsize > ysize) {
 	my2 = (mp_ptr) TMP_ALLOC ((xsize + 1) * BYTES_PER_MP_LIMB);
 	my2[xsize] = mpn_lshift(my2, my, xsize, cnt) 
-	  | (carry << (BITS_PER_MP_LIMB - cnt));
+	  | (carry << (cnt ? BITS_PER_MP_LIMB - cnt : 0));
       }
       else { 
 	my2 = (mp_ptr) TMP_ALLOC ((ysize + 1) * BYTES_PER_MP_LIMB);
 	my2[ysize] = mpn_lshift(my2, my, ysize, cnt)
-	  | (carry << (BITS_PER_MP_LIMB - cnt)); 
+	  | (carry << (cnt ? BITS_PER_MP_LIMB - cnt : 0)); 
       }      
 
       my = my2; ex += BITS_PER_MP_LIMB - cnt;
@@ -90,7 +90,8 @@ mpfr_mul_ui(y, x, u, rnd_mode)
 		       PREC(y)-BITS_PER_MP_LIMB+cnt, rnd_mode);
 
   /* If cnt = 1111111111111 and c = 1 we shall get depressed */
-  if (c && (carry == (((mp_limb_t)1) << (BITS_PER_MP_LIMB - cnt)) - 1))
+  if (c && (carry == (((mp_limb_t)1) << (cnt ? BITS_PER_MP_LIMB - cnt : 0)) 
+	    - 1))
     {
       cnt--; 
       mpn_rshift(my, my, ysize, BITS_PER_MP_LIMB - cnt); 

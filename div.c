@@ -48,7 +48,7 @@ mpfr_div (r, u, v, rnd_mode)
   mp_size_t prec, err;
   mp_limb_t q_limb;
   mp_exp_t rexp;
-  long k, mult, vn; 
+  long k, mult, vn, t; 
   unsigned long cc = 0, rw, nw; 
   char can_round = 0; 
   TMP_DECL (marker);
@@ -216,9 +216,18 @@ mpfr_div (r, u, v, rnd_mode)
 	k = rsize - 1; 
 	while (k >= 0) { if (tp[k]) break; k--; }
 	if (k >= 0) 
-	  cc = mpn_add_1(rp, rp, rrsize, (mp_limb_t)1 << (BITS_PER_MP_LIMB - 
-					       (PREC(r) & 
-						(BITS_PER_MP_LIMB - 1))));
+	  {
+	    t = PREC(r) & (BITS_PER_MP_LIMB - 1); 
+	    if (t)
+	      {
+		cc = mpn_add_1(rp, rp, rrsize, 
+			       (mp_limb_t)1 << (BITS_PER_MP_LIMB - t)); 
+	      }
+	    else
+	      {
+		cc = mpn_add_1(rp, rp, rrsize, 1); 
+	      }
+	  }
 	else
 	  if (rnd_mode == GMP_RNDN) /* even rounding */
 	    {
