@@ -122,7 +122,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
 	      mpfr_swap (v, tmp);
 	      break;                      
 	      }
-#elif 0
+#elif 1
 	  if (4*eq > p)
 	    {
 	      mpfr_div_2ui (tmp, tmp, 1, GMP_RNDN); /* U(k) */
