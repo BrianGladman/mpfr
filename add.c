@@ -530,8 +530,11 @@ mpfr_add (a, b, c, rnd_mode)
   if (MPFR_IS_ZERO(b))
   {
     if (MPFR_IS_ZERO(c))
-    { /* +0 + +0 = +0 + -0 = -0 + +0 = +0, -0 + -0 = -0 */
-      if (MPFR_SIGN(a) != ((MPFR_SIGN(b) < 0 && MPFR_SIGN(c) < 0) ? -1 : 1))
+    {
+      if (MPFR_SIGN(a) !=
+          (rnd_mode != GMP_RNDD ?
+           ((MPFR_SIGN(b) < 0 && MPFR_SIGN(c) < 0) ? -1 : 1) :
+           ((MPFR_SIGN(b) > 0 && MPFR_SIGN(c) > 0) ? 1 : -1)))
         MPFR_CHANGE_SIGN(a);
       MPFR_CLEAR_INF(a);
       MPFR_SET_ZERO(a);
