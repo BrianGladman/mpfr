@@ -37,7 +37,5 @@ mpfr_init2 (mpfr_ptr x, mp_prec_t p)
   MPFR_MANT(x) = (mp_ptr)
     (*__gmp_allocate_func) ((size_t) xsize * BYTES_PER_MP_LIMB);
   MPFR_SIZE(x) = xsize;
-  MPFR_CLEAR_FLAGS(x); /* though not necessary in our current implementation */
-  MPFR_SET_ZERO(x); /* initializes to zero */
-  MPFR_EXP(x) = 0; /* avoids uninitialized memory reads for zero */
+  MPFR_SET_NAN(x); /* initializes to NaN */
 }
