@@ -241,7 +241,7 @@ void mpfr_rand_raw _MPFR_PROTO((mp_ptr, gmp_randstate_t, unsigned long int));
 
 /* To be called BEFORE tests_start_mpfr () if the tests used 
    mpfr_random, mpfr_random2 or any functions which uses the macro RANDS */
-void mpfr_init_gmp_rand _MPFR_PROTO(());
+void mpfr_init_gmp_rand _MPFR_PROTO((void));
 #define MPFR_TEST_USE_RANDS() mpfr_init_gmp_rand ();
 
 /* Allocate func are defined in gmp-impl.h */
