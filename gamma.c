@@ -33,9 +33,6 @@ MA 02111-1307, USA. */
   i.e. if x = 1-t, then Gamma(x) = -Pi*(1-x)/sin(Pi*(2-x))/GAMMA(2-x)
 */
 
-#define CST100     38  /* CST=(ln(2)/(ln(2*pi))) * 100  */
-#define ecCST100  184  /* ({1+sup_{x\in [0,1]} x*ln((1-x)/x)}/ln(2)) *100  */
-
 int
 mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
@@ -113,30 +110,36 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_init (GammaTrial);
 
   for (;;)
-    {
+    { 
       /* Precision stuff */
       prec_nec = compared < 0 ?
         2 + realprec  /* We will use the reflexion formula! */
         : realprec;
-      A = (prec_nec * CST100 - 50) / 100;
+      /* A   = (prec_nec-0.5)*CST
+	 CST = ln(2)/(ln(2*pi))) = 0.38
+	 This strange formula is just to avoid any overflow */
+      A = (prec_nec/100)*38 + ((prec_nec%100)*38+100-50)/100 - 1;
       N = A - 1;
 #ifdef DEBUG
       printf("A=%d N=%d\n", (int)A, (int)N);
 #endif
 
-      /* estimated_cancel is the amount of bit that will be flushed */
-      estimated_cancel= (ecCST100 * A + 100) / 100;
+      /* Estimated_cancel is the amount of bit that will be flushed */
+      /* estimated_cancel = A + ecCST * A;
+	 ecCST = {1+sup_{x\in [0,1]} x*ln((1-x)/x)}/ln(2) = 1.84 
+	 This strange formula is just to avoid any overflow */
+      estimated_cancel = A + (A + (A/100)*84 + ((A%100)*84)/100);
       Prec = prec_nec + estimated_cancel + 16;
+
+      MPFR_ASSERTD (Prec > prec_nec);
+      MPFR_ASSERTD (Prec > estimated_cancel);
+      MPFR_ASSERTD (estimated_cancel > A);
 
       mpfr_set_prec (xp, Prec);
       if (compared < 0)
-        {
-          mpfr_ui_sub (xp, 1, x, GMP_RNDN);
-        }
+	mpfr_ui_sub (xp, 1, x, GMP_RNDN);
       else
-        {
-          mpfr_sub_ui (xp, x, 1, GMP_RNDN);
-        }
+	mpfr_sub_ui (xp, x, 1, GMP_RNDN);
 
       /* Set prec  */
       mpfr_set_prec (tmp, Prec);

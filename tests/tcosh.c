@@ -134,6 +134,9 @@ special_overflow (void)
       exit (1);
     }
   
+  mpfr_set_emin (MPFR_EMIN_MIN);
+  mpfr_set_emax (MPFR_EMAX_MAX);
+
   mpfr_set_str_binary (x, "0.101100100000000000110100E1000000");
   mpfr_cosh (y, x, GMP_RNDN);
   if (!mpfr_inf_p(y))
@@ -145,8 +148,6 @@ special_overflow (void)
 
   mpfr_clear (y);
   mpfr_clear (x);
-  mpfr_set_emin (MPFR_EMIN_MIN);
-  mpfr_set_emax (MPFR_EMAX_MAX);
 }
 
 int
