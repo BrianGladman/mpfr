@@ -119,19 +119,18 @@ mpfr_set_str (mpfr_ptr x, __gmp_const char *str, int base, mp_rnd_t rnd_mode)
     {
       str++;
       while (c = *str,
-             (isdigit(c) && c < '0' + base) ||
-             (islower(c) && c < 'a'-10 + base))
-	{
+             (value = digit_value_in_base (c, base)) >= 0)
+        {
           if (k == LONG_MAX)
             {
               mpz_clear (mantissa);
               return -1;
             }
-	  k++;
-	  str++;
+          k++;
+          str++;
           mpz_mul_ui (mantissa, mantissa, base);
-          mpz_add_ui (mantissa, mantissa, isdigit(c) ? c - '0' : c - ('a' - 10));
-	}
+          mpz_add_ui (mantissa, mantissa, value);
+        }
     }
 
   if ((base <= 10 && (*str == 'e' || *str == 'E')) || *str == '@')
