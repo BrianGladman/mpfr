@@ -50,11 +50,11 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   if (MPFR_UNLIKELY(sign == 0))
     {
       if (rnd_mode == GMP_RNDD)
-        MPFR_SET_NEG(a);
+        MPFR_SET_NEG (a);
       else
-        MPFR_SET_POS(a);
-      MPFR_SET_ZERO(a);
-      MPFR_RET(0);
+        MPFR_SET_POS (a);
+      MPFR_SET_ZERO (a);
+      MPFR_RET (0);
     }
 
   /* 
@@ -75,26 +75,26 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   if (sign < 0) /* swap b and c so that |b| > |c| */
     {
       mpfr_srcptr t;
-      MPFR_SET_OPPOSITE_SIGN(a,b);
+      MPFR_SET_OPPOSITE_SIGN (a,b);
       t = b; b = c; c = t;      
     }
   else
-    MPFR_SET_SAME_SIGN(a,b);
+    MPFR_SET_SAME_SIGN (a,b);
 
   diff_exp = (mp_exp_unsigned_t) MPFR_GET_EXP (b) - MPFR_GET_EXP (c);
 
   /* reserve a space to store b aligned with the result, i.e. shifted by
      (-cancel) % BITS_PER_MP_LIMB to the right */
-  bn      = MPFR_LIMB_SIZE(b); 
-  MPFR_UNSIGNED_MINUS_MODULO(shift_b, cancel);
+  bn      = MPFR_LIMB_SIZE (b); 
+  MPFR_UNSIGNED_MINUS_MODULO (shift_b, cancel);
   cancel1 = (cancel + shift_b) / BITS_PER_MP_LIMB;
  
   /* the high cancel1 limbs from b should not be taken into account */
-  if (MPFR_UNLIKELY(shift_b == 0))
+  if (MPFR_UNLIKELY (shift_b == 0))
     {
       bp = MPFR_MANT(b); /* no need of an extra space */
       /* Ensure ap != bp */
-      if (ap == bp)
+      if (MPFR_UNLIKELY (ap == bp))
 	{
 	  bp = (mp_ptr) TMP_ALLOC(bn * BYTES_PER_MP_LIMB);
 	  MPN_COPY (bp, ap, bn);
