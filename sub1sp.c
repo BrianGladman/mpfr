@@ -1,7 +1,7 @@
 /* mpfr_sub1sp -- internal function to perform a "real" substraction
    All the op must have the same precision
 
-Copyright 2003 Free Software Foundation.
+Copyright 2003-2004 Free Software Foundation.
 Contributed by the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.
@@ -32,13 +32,20 @@ MA 02111-1307, USA. */
    a positive value otherwise.
 */
 
-/* #define DEBUG */
+/*#define DEBUG*/
+/*#define CHECK_AGAINST_SUB1*/
 
 #ifdef DEBUG
 # undef DEBUG
 # define DEBUG(x) (x)
 #else
 # define DEBUG(x) /**/
+#endif
+
+#ifdef CHECK_AGAINST_SUB1
+# define mpfr_sub1sp mpfr_sub1sp2
+int
+mpfr_sub1sp2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode);
 #endif
  
 /* Rounding Sub */
@@ -203,7 +210,11 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	      k++;
 	      len = n - k; /* Number of last limb */
 	      MPFR_ASSERTD(k >= 0);
-	      mpn_lshift(ap+len, ap, k, cnt); /* Normalize the High Limb*/
+	      if (MPFR_LIKELY(cnt))
+		mpn_lshift(ap+len, ap, k, cnt); /* Normalize the High Limb*/
+	      else
+		/* Must use DECR since src and dest may overlap & dest>=src*/
+		MPN_COPY_DECR(ap+len, ap, k);
 	      MPN_ZERO(ap, len); /* Zeroing the last limbs */
 	      bx -= cnt + len*BITS_PER_MP_LIMB; /* Update Expo */
               MPFR_UNSIGNED_MINUS_MODULO(sh, p);
@@ -379,10 +390,12 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 		if ((bp[0] & (MPFR_LIMB_ONE<<sh)) == 0)
 		  goto copy_truncate;
 	    case GMP_RNDZ:
+	      /* Even if src and dest overlap, it is ok */
 	      MPN_COPY(ap, bp, n);
 	      goto sub_one_ulp;
 	    default:
 	    copy_truncate:
+	      /* Even if src and dest overlap, it is ok */
 	      MPN_COPY(ap, bp, n);
 	      goto truncate;
 	    }
@@ -435,7 +448,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	{
 	  /* dm = 0 and m > 0: Just copy */
 	  MPFR_ASSERTD(m!=0);
-	  MPN_COPY(cp, MPFR_MANT(c)+m, n-m);
+	  /* Must use INCR since src & dest may overlap and dest <= src */
+	  MPN_COPY_INCR(cp, MPFR_MANT(c)+m, n-m);
 	  MPN_ZERO(cp+n-m, m);
 	}
       else if (MPFR_LIKELY(m == 0))
@@ -468,20 +482,22 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	      mp_limb_t *tp = MPFR_MANT(c);
 	      /* Start from bit x=p-d+sh in mantissa C
 		 (+sh since we have already looked sh bits in C'!) */
-	      mpfr_prec_t x = p-d+sh;
+	      mpfr_prec_t x = p-d+sh-1;
 	      if (MPFR_UNLIKELY(x>p))
 		/* We are already looked at all the bits of c, so C'p+1 = 0*/
 		bcp1 = 0;
 	      else
 		{
 		  mp_size_t kx = n-1 - (x / BITS_PER_MP_LIMB);
-		  mpfr_prec_t sx = (-x)%BITS_PER_MP_LIMB;
+		  mpfr_prec_t sx = BITS_PER_MP_LIMB-1-(x%BITS_PER_MP_LIMB);
+		  DEBUG( printf("(First) x=%lu Kx=%ld Sx=%lu\n", x, kx, sx));
 		  /* Looks at the last bits of limb kx (if sx=0 does nothing)*/
 		  if (tp[kx] & ((MPFR_LIMB_ONE<<sx)-MPFR_LIMB_ONE))
 		    bcp1 = -1;
 		  else
 		    {
-		      kx += (sx==0); /*If sx==0, tp[kx] hasn't been checked*/
+		      /*kx += (sx==0);*/
+		      /*If sx==0, tp[kx] hasn't been checked*/
 		      do { 
 			kx--;
 		      } while (kx>=0 && tp[kx]==0);
@@ -505,14 +521,14 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	    bcp1 = 1;
 	  else
 	    {
-	      kx += (sx==0); /*If sx==0, tp[kx] hasn't been checked*/
+	      /*kx += (sx==0);*/ /*If sx==0, tp[kx] hasn't been checked*/
 	      do {
 		kx--;
 	      } while (kx>=0 && tp[kx]==0);
 	      bcp1 = (kx>=0);
 	    }
 	}
-      DEBUG( printf("Cp=%lu C'p+1=%lu\n", bcp, bcp1) );
+      DEBUG( printf("sh=%lu Cp=%lu C'p+1=%lu\n", sh, bcp, bcp1) );
 
       /* Check if we can lose a bit, and if so compute Cp+1 and C'p+2 */
       bp = MPFR_MANT(b);
@@ -531,23 +547,24 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 		 compute Cp+1 and C'p+2 from mantissa C */
 	      mp_limb_t *tp = MPFR_MANT(c);
 	      /* Start from bit x=(p+1)-d in mantissa C */
-	      mpfr_prec_t  x = p+1-d;
+	      mp_prec_t  x = p+1-d;
 	      mp_size_t   kx = n-1 - (x/BITS_PER_MP_LIMB);
-	      mpfr_prec_t sx = BITS_PER_MP_LIMB-1-(x%BITS_PER_MP_LIMB);
+	      mp_prec_t sx = BITS_PER_MP_LIMB-1-(x%BITS_PER_MP_LIMB);
 	      MPFR_ASSERTD(p > d);
-	      DEBUG( printf("(pre) Kx=%ld Sx=%lu\n", kx, sx));
+	      DEBUG( printf("(pre) x=%lu Kx=%ld Sx=%lu\n", x, kx, sx));
 	      bbcp = (tp[kx] & (MPFR_LIMB_ONE<<sx)) ;
 	      /* Looks at the last bits of limb kx (If sx=0, does nothing)*/
 	      /* If Cp+1=0, since C'p+1!=0, C'p+2=1 ! */
-	      if (!bbcp || (tp[kx] &((MPFR_LIMB_ONE<<sx)-MPFR_LIMB_ONE)))
+	      if (bbcp==0 || (tp[kx]&((MPFR_LIMB_ONE<<sx)-MPFR_LIMB_ONE)))
 		bbcp1 = 1;
 	      else
 		{
-		  kx += (sx==0); /*If sx==0, tp[kx] hasn't been checked*/
+		  /*kx += (sx==0);*/ /*If sx==0, tp[kx] hasn't been checked*/
 		  do {
 		    kx--;
 		  } while (kx>=0 && tp[kx]==0);
 		  bbcp1 = (kx>=0);
+		  DEBUG( printf("(Pre) Scan done for %ld\n", kx));
 		}
 	    } /*End of Bcp1 != 0*/
 	  DEBUG( printf("(Pre) Cp+1=%lu C'p+2=%lu\n", bbcp, bbcp1) );
@@ -627,7 +644,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       /* Compute the last bit (Since we have shifted the mantissa)
 	 we need one more bit!*/
       if ((rnd_mode == GMP_RNDZ && bcp==0) 
-	  || (rnd_mode==GMP_RNDN && bbcp ==0))
+	  || (rnd_mode==GMP_RNDN && bbcp ==0)
+	  || (bcp && bcp1==0 )) /*Exact result*/
 	{
 	  ap[0] |= MPFR_LIMB_ONE<<sh;
 	  if (rnd_mode == GMP_RNDN)
@@ -708,6 +726,44 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   MPFR_SET_EXP (a, bx);
 
   TMP_FREE(marker);
+
   return inexact*MPFR_INT_SIGN(a);
 }
 
+#ifdef CHECK_AGAINST_SUB1
+#undef mpfr_sub1sp
+int
+mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
+{
+  mpfr_t tmpa, tmpb, tmpc;
+  int inexact, inexact2;
+
+  mpfr_init2(tmpa, mpfr_get_prec(a));
+  mpfr_init2(tmpb, mpfr_get_prec(b));
+  mpfr_init2(tmpc, mpfr_get_prec(c));
+  mpfr_set(tmpb, b, GMP_RNDN);
+  mpfr_set(tmpc, c, GMP_RNDN);
+
+  inexact2 = mpfr_sub1 (tmpa, tmpb, tmpc, rnd_mode); 
+  inexact  = mpfr_sub1sp2(a, b, c, rnd_mode);
+
+  if (mpfr_cmp(tmpa, a) /*|| inexact!=inexact2*/)
+    {
+      printf("sub1 & sub1sp return different values for %s\n"
+	     "Prec_a= %lu Prec_b= %lu Prec_c= %lu\nB=",
+	     mpfr_print_rnd_mode(rnd_mode),
+	     mpfr_get_prec(a), mpfr_get_prec(b), mpfr_get_prec(c));
+      mpfr_print_binary(tmpb);
+      printf("\nC="); 
+      mpfr_print_binary(tmpc);
+      printf("\nSub1  : "); 
+      mpfr_print_binary(tmpa);
+      printf("\nSub1sp: "); 
+      mpfr_print_binary(a);
+      printf("\nInexact sp = %d | Inexact = %d\n", inexact, inexact2);
+      abort();
+    }
+  mpfr_clears(tmpa, tmpb, tmpc, NULL);
+  return inexact;
+}
+#endif

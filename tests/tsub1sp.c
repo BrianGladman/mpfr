@@ -1,6 +1,6 @@
 /* Test file for mpfr_sub1sp.
 
-Copyright 2003 Free Software Foundation.
+Copyright 2003, 2004 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -60,7 +60,7 @@ int main(void)
                mpfr_print_binary(y);\
                printf("\nZ="); mpfr_print_binary(z);\
                printf("\nR="); mpfr_print_binary(x);\
-               printf("\nWrong inexact flag. Real: %d. Got: %d", \
+               printf("\nWrong inexact flag. Real: %d. Got: %d\n", \
 		      inexact1, inexact2); \
                abort();\
             }
@@ -76,7 +76,7 @@ void check_random(mpfr_prec_t p)
   gmp_randinit_lc_2exp_size (state, 128);
   gmp_randseed_ui (state, 17422471);
 
-  for(i = 0 ; i < 1000 ; i++)
+  for(i = 0 ; i < 500 ; i++)
     {
       mpfr_urandomb(y, state);
       mpfr_urandomb(z, state);
@@ -354,6 +354,88 @@ void check_special(void)
      mpfr_set_str_binary (z,
       "0.1100000000000000000000000000000000000000000000000000000000000000"
 			  "E-1073741823");
+     inexact1 = mpfr_sub1(x2, y, z, r);
+     inexact2 = mpfr_sub1sp(x, y, z, r);
+     if (mpfr_cmp(x, x2))
+       STD_ERROR;
+     if (inexact1 != inexact2)
+       STD_ERROR2;
+
+     p = 9;
+     mpfr_set_prec(x, p);
+     mpfr_set_prec(x2, p);
+     mpfr_set_prec(y, p);
+     mpfr_set_prec(z, p);
+
+     mpfr_set_str_binary (y, "0.100000000E1");
+     mpfr_set_str_binary (z, "0.100000000E-8");
+     inexact1 = mpfr_sub1(x2, y, z, r);
+     inexact2 = mpfr_sub1sp(x, y, z, r);
+     if (mpfr_cmp(x, x2))
+       STD_ERROR;
+     if (inexact1 != inexact2)
+       STD_ERROR2;
+
+     p = 34;
+     mpfr_set_prec(x, p);
+     mpfr_set_prec(x2, p);
+     mpfr_set_prec(y, p);
+     mpfr_set_prec(z, p);
+
+     mpfr_set_str_binary (y, "-0.1011110000111100010111011100110100E-18");
+     mpfr_set_str_binary (z, "0.1000101010110011010101011110000000E-14");
+     inexact1 = mpfr_sub1(x2, y, z, r);
+     inexact2 = mpfr_sub1sp(x, y, z, r);
+     if (mpfr_cmp(x, x2))
+       STD_ERROR;
+     if (inexact1 != inexact2)
+       STD_ERROR2;
+
+     p = 124;
+     mpfr_set_prec(x, p);
+     mpfr_set_prec(x2, p);
+     mpfr_set_prec(y, p);
+     mpfr_set_prec(z, p);
+
+     mpfr_set_str_binary (y, 
+"0.1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000E1");
+     mpfr_set_str_binary (z, 
+"0.1011111000100111000011001000011101010101101100101010101001000001110100001101110110001110111010000011101001100010111110001100E-31");
+     inexact1 = mpfr_sub1(x2, y, z, r);
+     inexact2 = mpfr_sub1sp(x, y, z, r);
+     if (mpfr_cmp(x, x2))
+       STD_ERROR;
+     if (inexact1 != inexact2)
+       STD_ERROR2;
+
+     p = 288;
+     mpfr_set_prec(x, p);
+     mpfr_set_prec(x2, p);
+     mpfr_set_prec(y, p);
+     mpfr_set_prec(z, p);
+
+     mpfr_set_str_binary (y,
+     "0.111000110011000001000111101010111011110011101001101111111110000011100101000001001010110010101010011001010100000001110011110001010101101010001011101110100100001011110100110000101101100011010001001011011010101010000010001101001000110010010111111011110001111101001000101101001100101100101000E80");
+     mpfr_set_str_binary (z,
+     "-0.100001111111101001011010001100110010100111001110000110011101001011010100001000000100111011010110110010000000000010101101011000010000110001110010100001100101011100100100001011000100011110000001010101000100011101001000010111100000111000111011001000100100011000100000010010111000000100100111E-258");
+     inexact1 = mpfr_sub1(x2, y, z, r);
+     inexact2 = mpfr_sub1sp(x, y, z, r);
+     /*     if (mpfr_cmp(x, x2))
+       STD_ERROR;
+     if (inexact1 != inexact2)
+       STD_ERROR2;
+     */
+
+     p = 85;
+     mpfr_set_prec(x, p);
+     mpfr_set_prec(x2, p);
+     mpfr_set_prec(y, p);
+     mpfr_set_prec(z, p);
+
+     mpfr_set_str_binary (y,
+"0.1111101110100110110110100010101011101001100010100011110110110010010011101100101111100E-4");
+     mpfr_set_str_binary (z,
+"0.1111101110100110110110100010101001001000011000111000011101100101110100001110101010110E-4");
      inexact1 = mpfr_sub1(x2, y, z, r);
      inexact2 = mpfr_sub1sp(x, y, z, r);
      if (mpfr_cmp(x, x2))
