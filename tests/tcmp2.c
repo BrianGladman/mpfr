@@ -24,7 +24,7 @@ void tcmp2(x, y, i) double x, y; int i;
   mpfr_set_d(xx, x, 0);
   mpfr_set_d(yy, y, 0);
   if ((j=mpfr_cmp2(xx, yy)) != i) {
-    printf("Error in mpfr_cmp2: x=%1.16e y=%1.16e mpfr_cmp(x,y)=%d instead of %d\n",x,y,j,i); 
+    printf("Error in mpfr_cmp2: x=%1.16e y=%1.16e mpfr_cmp2(x,y)=%d instead of %d\n",x,y,j,i); 
     exit(1);
   }
   mpfr_clear(xx); mpfr_clear(yy);
