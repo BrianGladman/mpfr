@@ -76,7 +76,14 @@ AC_ARG_ENABLE(logging,
       no)  ;;
       *)   AC_MSG_ERROR([bad value for --enable-logging: yes or no]) ;;
      esac])
- 
+AC_ARG_ENABLE(thread-safe,
+   [  --enable-thread-safe    Build MPFR as thread safe [[default=no]]],
+   [ case $enableval in
+      yes) AC_DEFINE([MPFR_USE_THREAD_SAFE],1,[Build MPFR as thread safe]) ;;
+      no)  ;;
+      *)   AC_MSG_ERROR([bad value for --enable-thread-safe: yes or no]) ;;
+     esac])
+
 test_CFLAGS=${CFLAGS+set}
 
 dnl  Same as in gmp acinclude.m4, though currently we're using the normal

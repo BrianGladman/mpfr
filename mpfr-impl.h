@@ -78,65 +78,6 @@ MA 02111-1307, USA. */
 
 
 /******************************************************
- ***************** Global Variables *******************
- ******************************************************/
-
-#if defined (__cplusplus)
-extern "C" {
-#endif
-
-extern unsigned int __gmpfr_flags;
-extern mp_exp_t     __gmpfr_emin;
-extern mp_exp_t     __gmpfr_emax;
-extern mp_prec_t    __gmpfr_default_fp_bit_precision;
-extern mpfr_rnd_t   __gmpfr_default_rounding_mode;
-extern mpfr_cache_t __gmpfr_cache_const_pi;
-extern mpfr_cache_t __gmpfr_cache_const_log2;
-extern mpfr_cache_t __gmpfr_cache_const_euler;
-
-#if defined (__cplusplus)
- }
-#endif
-
-/* Flags of __gmpfr_flags */
-#define MPFR_FLAGS_UNDERFLOW 1
-#define MPFR_FLAGS_OVERFLOW 2
-#define MPFR_FLAGS_NAN 4
-#define MPFR_FLAGS_INEXACT 8
-#define MPFR_FLAGS_ERANGE 16
-#define MPFR_FLAGS_ALL 31
-
-/* Replace some commun functions for direct access to the global vars */
-#define mpfr_get_emin() (__gmpfr_emin + 0)
-#define mpfr_get_emax() (__gmpfr_emax + 0)
-#define mpfr_get_default_rounding_mode() (__gmpfr_default_rounding_mode + 0)
-#define mpfr_get_default_prec() (__gmpfr_default_fp_bit_precision + 0)
-
-#define mpfr_clear_flags() \
-  ((void) (__gmpfr_flags = 0))
-#define mpfr_clear_underflow() \
-  ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_UNDERFLOW))
-#define mpfr_clear_overflow() \
-  ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_OVERFLOW))
-#define mpfr_clear_nanflag() \
-  ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_NAN))
-#define mpfr_clear_inexflag() \
-  ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_INEXACT))
-#define mpfr_clear_erangeflag() \
-  ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_ERANGE))
-#define mpfr_underflow_p() \
-  ((int) (__gmpfr_flags & MPFR_FLAGS_UNDERFLOW))
-#define mpfr_overflow_p() \
-  ((int) (__gmpfr_flags & MPFR_FLAGS_OVERFLOW))
-#define mpfr_nanflag_p() \
-  ((int) (__gmpfr_flags & MPFR_FLAGS_NAN))
-#define mpfr_inexflag_p() \
-  ((int) (__gmpfr_flags & MPFR_FLAGS_INEXACT))
-#define mpfr_erangeflag_p() \
-  ((int) (__gmpfr_flags & MPFR_FLAGS_ERANGE))
- 
-
-/******************************************************
  ***************** Detection macros *******************
  ******************************************************/
 
@@ -211,6 +152,75 @@ mp_limb_t mpfr_sub_nc _MPFR_PROTO ((mp_ptr, mp_srcptr, mp_srcptr, mp_size_t,
 #define mpn_sub_nc mpfr_sub_nc
 #endif
 
+
+/******************************************************
+ ************* Global Internal Variables **************
+ ******************************************************/
+
+#ifdef MPFR_USE_THREAD_SAFE
+# if __MPFR_GNUC(3,3) || __MPFR_ICC(8,1,0)
+#  define MPFR_THREAD_ATTR __thread
+# else
+#  error "Can't build MPFR as thread safe"
+# endif
+#else
+# define MPFR_THREAD_ATTR
+#endif
+
+#if defined (__cplusplus)
+extern "C" {
+#endif
+
+extern MPFR_THREAD_ATTR unsigned int __gmpfr_flags;
+extern MPFR_THREAD_ATTR mp_exp_t     __gmpfr_emin;
+extern MPFR_THREAD_ATTR mp_exp_t     __gmpfr_emax;
+extern MPFR_THREAD_ATTR mp_prec_t    __gmpfr_default_fp_bit_precision;
+extern MPFR_THREAD_ATTR mpfr_rnd_t   __gmpfr_default_rounding_mode;
+extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_cache_const_pi;
+extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_cache_const_log2;
+extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_cache_const_euler;
+
+#if defined (__cplusplus)
+ }
+#endif
+
+/* Flags of __gmpfr_flags */
+#define MPFR_FLAGS_UNDERFLOW 1
+#define MPFR_FLAGS_OVERFLOW 2
+#define MPFR_FLAGS_NAN 4
+#define MPFR_FLAGS_INEXACT 8
+#define MPFR_FLAGS_ERANGE 16
+#define MPFR_FLAGS_ALL 31
+
+/* Replace some commun functions for direct access to the global vars */
+#define mpfr_get_emin() (__gmpfr_emin + 0)
+#define mpfr_get_emax() (__gmpfr_emax + 0)
+#define mpfr_get_default_rounding_mode() (__gmpfr_default_rounding_mode + 0)
+#define mpfr_get_default_prec() (__gmpfr_default_fp_bit_precision + 0)
+
+#define mpfr_clear_flags() \
+  ((void) (__gmpfr_flags = 0))
+#define mpfr_clear_underflow() \
+  ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_UNDERFLOW))
+#define mpfr_clear_overflow() \
+  ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_OVERFLOW))
+#define mpfr_clear_nanflag() \
+  ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_NAN))
+#define mpfr_clear_inexflag() \
+  ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_INEXACT))
+#define mpfr_clear_erangeflag() \
+  ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_ERANGE))
+#define mpfr_underflow_p() \
+  ((int) (__gmpfr_flags & MPFR_FLAGS_UNDERFLOW))
+#define mpfr_overflow_p() \
+  ((int) (__gmpfr_flags & MPFR_FLAGS_OVERFLOW))
+#define mpfr_nanflag_p() \
+  ((int) (__gmpfr_flags & MPFR_FLAGS_NAN))
+#define mpfr_inexflag_p() \
+  ((int) (__gmpfr_flags & MPFR_FLAGS_INEXACT))
+#define mpfr_erangeflag_p() \
+  ((int) (__gmpfr_flags & MPFR_FLAGS_ERANGE))
+ 
 
 /******************************************************
  ******************** Assertions **********************
@@ -671,7 +681,8 @@ extern unsigned char *mpfr_stack;
 #define mpfr_const_euler(_d,_r) mpfr_cache(_d, __gmpfr_cache_const_euler, _r)
 
 #define MPFR_DECL_INIT_CACHE(_cache,_func) \
- mpfr_cache_t _cache = {{{{0,MPFR_SIGN_POS,0,(mp_limb_t*)0}},0,_func}}
+ mpfr_cache_t MPFR_THREAD_ATTR _cache = \
+    {{{{0,MPFR_SIGN_POS,0,(mp_limb_t*)0}},0,_func}}
 
 
 

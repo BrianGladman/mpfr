@@ -21,10 +21,10 @@ MA 02111-1307, USA. */
 
 #include "mpfr-impl.h"
 
-unsigned int __gmpfr_flags = 0;
+unsigned int MPFR_THREAD_ATTR __gmpfr_flags = 0;
 
-mp_exp_t __gmpfr_emin = MPFR_EMIN_DEFAULT;
-mp_exp_t __gmpfr_emax = MPFR_EMAX_DEFAULT;
+mp_exp_t MPFR_THREAD_ATTR __gmpfr_emin = MPFR_EMIN_DEFAULT;
+mp_exp_t MPFR_THREAD_ATTR __gmpfr_emax = MPFR_EMAX_DEFAULT;
 
 #undef mpfr_get_emin
 
