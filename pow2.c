@@ -126,7 +126,7 @@ mpfr_pow_si (y, x, n, rnd)
         mp_prec_t Ny = MPFR_PREC(y);   /* Precision of input variable */
 
         mp_prec_t Nt;   /* Precision of the intermediary variable */
-        mp_prec_t err;  /* Precision of error */
+        long int err;  /* Precision of error */
                 
         /* compute the precision of intermediary variable */
         Nt=MAX(Nx,Ny);

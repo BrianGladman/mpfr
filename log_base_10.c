@@ -112,7 +112,7 @@ mpfr_log10 (r, a, rnd_mode)
     mp_prec_t Ny = MPFR_PREC(r);   /* Precision of input variable */
     
     mp_prec_t Nt;   /* Precision of the intermediary variable */
-    mp_prec_t err;  /* Precision of error */
+    long int err;  /* Precision of error */
                 
     /* compute the precision of intermediary variable */
     Nt=MAX(Nx,Ny);
@@ -143,7 +143,7 @@ mpfr_log10 (r, a, rnd_mode)
 
       /* actualisation of the precision */
       Nt += 10;
-    } while (!mpfr_can_round(t,err,GMP_RNDN,rnd_mode,Ny));
+    } while ((err<0) || !mpfr_can_round(t,err,GMP_RNDN,rnd_mode,Ny));
  
       inexact = mpfr_set(r,t,rnd_mode);
 
