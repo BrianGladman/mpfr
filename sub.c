@@ -52,7 +52,7 @@ mpfr_sub1 (a, b, c, rnd_mode, diff_exp)
   unsigned long cancel, cancel1, sh, k;
   long int cancel2, an, bn, cn, cn0;
   mp_limb_t *ap, *bp, *cp, carry, bb, cc, borrow = 0;
-  int inexact = 0, shift_b, shift_c, maybe_exact = 0, down = 0;
+  int inexact = 0, shift_b, shift_c, maybe_exact = 0, down = 0, add_exp=0;
   TMP_DECL(marker);
 
 #ifdef DEBUG
@@ -121,8 +121,7 @@ mpfr_sub1 (a, b, c, rnd_mode, diff_exp)
   printf("cancel=%u cancel1=%u cancel2=%d\n", cancel, cancel1, cancel2);
 #endif
 
-  /* adjust exponent and sign of result */
-  MPFR_EXP(a) = MPFR_EXP(b) - cancel;
+  /* adjust sign of result */
   if (MPFR_SIGN(a)*MPFR_SIGN(b) < 0)
     MPFR_CHANGE_SIGN(a);
 
@@ -359,7 +358,7 @@ mpfr_sub1 (a, b, c, rnd_mode, diff_exp)
   if (mpn_add_1 (ap, ap, an, ONE << sh)) /* result is a power of two */
     {
       ap[an-1] |= ONE << (BITS_PER_MP_LIMB - 1);
-      MPFR_EXP(a)++;
+      add_exp = 1;
     }
   inexact = 1; /* result larger than exact value */
 
@@ -367,10 +366,39 @@ mpfr_sub1 (a, b, c, rnd_mode, diff_exp)
   if ((ap[an-1] >> (BITS_PER_MP_LIMB - 1)) == 0) /* case 1 - epsilon */
     {
       ap[an-1] = ONE << (BITS_PER_MP_LIMB - 1);
-      MPFR_EXP(a) ++;
+      add_exp = 1;
     }
 
  end_of_sub:
+  /* we have to set MPFR_EXP(a) to MPFR_EXP(b) - cancel + add_exp, taking
+     care of underflows/overflows in that computation, and of the allowed
+     exponent range */
+  if (cancel)
+    {
+      mp_exp_t exp_b;
+
+      cancel -= add_exp; /* still valid as unsigned long */
+      exp_b = MPFR_EXP(b); /* save it in case a equals b */
+      MPFR_EXP(a) = MPFR_EXP(b) - cancel;
+      if ((MPFR_EXP(a) > exp_b) /* underflow in type mp_exp_t */
+	  || (MPFR_EXP(a) < __mpfr_emin))
+	{
+	  TMP_FREE(marker); 
+	  return mpfr_set_underflow (a, rnd_mode, MPFR_SIGN(a));
+	}
+    }
+  else /* cancel = 0: MPFR_EXP(a) <- MPFR_EXP(b) + add_exp */
+    {
+      /* in case cancel = 0, add_exp can still be 1, in case b is just
+	 below a power of two, c is very small, prec(a) < prec(b),
+	 and rnd=away or nearest */
+      if (add_exp && MPFR_EXP(b) == __mpfr_emax)
+	{
+	  TMP_FREE(marker);
+	  return mpfr_set_overflow (a, rnd_mode, MPFR_SIGN(a));
+	}
+      MPFR_EXP(a) = MPFR_EXP(b) + add_exp;
+    }
   TMP_FREE(marker);
 #ifdef DEBUG
   printf ("result is a="); mpfr_print_raw(a); putchar('\n');
