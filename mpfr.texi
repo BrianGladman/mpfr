@@ -924,7 +924,7 @@ it just computes @var{abs(op1-op2)/op1}, using the rounding mode @var{rnd} for
 all operations.
 @end deftypefun
 
-@deftypefn Macro int mpfr_sgn (mpfr_t @var{op})
+@deftypefun int mpfr_sgn (mpfr_t @var{op})
 @ifinfo
 Return +1 if @var{op} > 0, 0 if @var{op} = 0, and @minus{}1 if @var{op} < 0.
 @end ifinfo
@@ -934,10 +934,9 @@ Return $+1$ if $@var{op} > 0$, $0$ if $@var{op} = 0$,
 and $-1$ if $@var{op} < 0$.
 @end tex
 @end iftex
-This function is actually implemented as a macro.  It evaluates its
-arguments multiple times.
-It is provided for compatibility with @var{mpf}.
-@end deftypefn
+This function is provided for compatibility with @var{mpf}.
+Its result is not specified when @var{op} is NaN (Not-a-Number).
+@end deftypefun
 
 @deftypefn Macro int SIGN (mpfr_t @var{op})
 @ifinfo
