@@ -24,20 +24,21 @@ MA 02111-1307, USA. */
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <limits.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "longlong.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-static double _mpfr_ceil _MPFR_PROTO ((double));
+static double mpfr_ceil_double _MPFR_PROTO ((double));
 static int mpfr_get_str_aux _MPFR_PROTO ((char *, mp_exp_t *, mp_limb_t *,
 		       mp_size_t, mp_exp_t, long, int, size_t, mp_rnd_t));
 static mp_exp_t mpfr_get_str_compute_g _MPFR_PROTO ((int, mp_exp_t));
 
 static char num_to_text[] = "0123456789abcdefghijklmnopqrstuvwxyz";
 
-/* for 2 <= b <= 36, log_b2[b-2] + log_b2_low[b-2] is a 76-bit upper 
+/* for 2 <= b <= 36, log_b2[b-2] + log_b2_low[b-2] is a 76-bit upper
    approximation of log(2)/log(b), with log_b2[b-2] having 23 significative
    bits only. These approximations were computed with the following program.
 
@@ -177,14 +178,18 @@ static const double log_b2_low[35] = {
     }
 
 static double
-_mpfr_ceil (double x)
+mpfr_ceil_double (double x)
 {
-  double y = (double) (long int) x;
+  double y;
+  /* Note: this function should be rewritten to avoid the possible
+     overflow. */
+  MPFR_ASSERTN(x >= (double) LONG_MIN && x <= (double) LONG_MAX);
+  y = (double) (long int) x;
   return ((y < x) ? y + 1.0 : y);
 }
 
 /* Input: an approximation r*2^f of an real Y, with |r*2^f-Y| <= 2^(e+f).
-   Returns if possible in the string s the mantissa corresponding to 
+   Returns if possible in the string s the mantissa corresponding to
    the integer nearest to Y, within the direction rnd, and returns the
    the exponent in exp.
    n is the number of limbs of r.
@@ -193,7 +198,7 @@ _mpfr_ceil (double x)
    b is the wanted base (2 <= b <= 36).
    m is the number of wanted digits in the mantissa.
    rnd is the rounding mode.
-   It is assumed that b^(m-1) <= Y < b^(m+1), thus the returned value 
+   It is assumed that b^(m-1) <= Y < b^(m+1), thus the returned value
    satisfies b^(m-1) <= rnd(Y) < b^(m+1).
 
    Return value:
@@ -284,18 +289,18 @@ mpfr_get_str_aux (char *str, mp_exp_t *exp, mp_limb_t *r, mp_size_t n,
       /* if size_s1 = m + 2, necessarily we have b^(m+1) as result,
 	 and the result will not change */
 
-      /* so we have to double-round only when size_s1 = m + 1 and 
-	 (i) the result is inexact 
+      /* so we have to double-round only when size_s1 = m + 1 and
+	 (i) the result is inexact
 	 (ii) or the last digit is non-zero */
       if ((size_s1 == m + 1) && ((dir != 0) || (str1[size_s1 - 1] != 0)))
         {
           /* rounding mode */
-          rnd1 = rnd;    
+          rnd1 = rnd;
 
           /* round to nearest case */
-          if (rnd == GMP_RNDN)    
+          if (rnd == GMP_RNDN)
             {
-              if (2 * str1[size_s1 - 1] == b)	   
+              if (2 * str1[size_s1 - 1] == b)
                 {
                   if (dir == -1)
                     rnd1 = GMP_RNDU;
@@ -336,7 +341,7 @@ mpfr_get_str_aux (char *str, mp_exp_t *exp, mp_limb_t *r, mp_size_t n,
                     }
                   str1[i]++;
                 }
-	      dir = 1;    
+	      dir = 1;
 	    }
           /* round toward zero (truncate) */
           else
@@ -354,7 +359,7 @@ mpfr_get_str_aux (char *str, mp_exp_t *exp, mp_limb_t *r, mp_size_t n,
     cannot_round:
       dir = 2;
     }
-  
+
   TMP_FREE(marker);
 
   return (dir);
@@ -366,12 +371,12 @@ mpfr_get_str_compute_g (int beta, mp_exp_t e)
 {
   double g0, g1;
   mp_exp_t g;
-  
+
   g0 = (double) e * log_b2[beta - 2];
   g1 = (double) e * log_b2_low[beta - 2];
-  g = (mp_exp_t) _mpfr_ceil (g0);
+  g = (mp_exp_t) mpfr_ceil_double (g0);
   g0 -= (double) g;
-  return g + (mp_exp_t) _mpfr_ceil (g0 + g1);
+  return g + (mp_exp_t) mpfr_ceil_double (g0 + g1);
 }
 
 /* prints the mantissa of x in the string s, and writes the corresponding
@@ -393,7 +398,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
   int exact;                      /* exact result */
   mp_exp_t exp, g;
   mp_exp_t prec, log_2prec; /* precision of the computation */
-  long err; 
+  long err;
   mp_limb_t *a;
   mp_exp_t exp_a;
   mp_limb_t *result;
@@ -425,7 +430,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
            If EXP(x)=-1, one bit is lost... */
         {
           int k, lost;
-          
+
           count_leading_zeros (k, (mp_limb_t) b);
           k = BITS_PER_MP_LIMB - k - 1; /* b = 2^k */
           lost = (-MPFR_EXP(x)) % k;
@@ -433,7 +438,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
             lost += k;
           m += lost;
         }
-      m = (size_t) _mpfr_ceil (__mp_bases[b].chars_per_bit_exactly * (double) m);
+      m = (size_t) mpfr_ceil_double (__mp_bases[b].chars_per_bit_exactly * (double) m);
       if (m < 2)
         m = 2;
     }
@@ -507,7 +512,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
 
       count_leading_zeros (pow2, (mp_limb_t) b);
       pow2 = BITS_PER_MP_LIMB - pow2 - 1; /* base = 2^pow2 */
- 
+
       /* set MPFR_EXP(x) = f*pow2 + r, 1 <= r <= pow2 */
       f = (MPFR_GET_EXP (x) - 1) / pow2;
       r = MPFR_GET_EXP (x) - f * pow2;
@@ -526,7 +531,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
       nb = n * BITS_PER_MP_LIMB - prec;
       /* round xp to the precision prec, and put it into x1
 	 put the carry into x1[n] */
-      if ((x1[n] = mpfr_round_raw (x1, xp, MPFR_PREC(x), 
+      if ((x1[n] = mpfr_round_raw (x1, xp, MPFR_PREC(x),
 				  MPFR_IS_STRICTNEG(x),
 				   prec, rnd, &inexp)))
         {
@@ -541,7 +546,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
 	  else /* 2^prec needs still m digits, but x1 may need n+1 limbs */
             n ++;
         }
-      
+
       /* it remains to shift x1 by nb limbs to the right, since mpn_get_str
          expects a right-normalized number */
       if (nb != 0)
@@ -551,7 +556,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
           if (x1[n - 1] == 0)
             n --;
         }
-      
+
       mpn_get_str ((unsigned char*) s, b, x1, n);
       for (i=0; i<m; i++)
         s[i] = num_to_text[(int) s[i]];
@@ -567,7 +572,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
 
   g = mpfr_get_str_compute_g (b, MPFR_GET_EXP (x) - 1);
   exact = 1;
-  prec = (mp_exp_t) _mpfr_ceil ((double) m / log_b2[b-2]) + 1;
+  prec = (mp_exp_t) mpfr_ceil_double ((double) m / log_b2[b-2]) + 1;
   exp = ((mp_exp_t) m < g) ? g - (mp_exp_t) m : (mp_exp_t) m - g;
   log_2prec = (mp_exp_t) __gmpfr_ceil_log2 ((double) prec);
   prec += log_2prec; /* number of guard bits */
@@ -610,13 +615,13 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
 
 	  /* test si exact */
 	  if (nx > n)
-            exact = (exact && 
+            exact = (exact &&
                      ((mpn_scan1 (xp, 0) >= (nx - n) * BITS_PER_MP_LIMB)));
 
 	  /* we loose one more bit in the multiplication,
 	     except when err=0 where we loose two bits */
 	  err = (err <= 0) ? 2 : err + 1;
-	  
+
           /* result = a * x */
 	  result = (mp_limb_t*) TMP_ALLOC ((n + nx1) * sizeof (mp_limb_t));
 	  mpn_mul (result, a, n, x1, nx1);
