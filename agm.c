@@ -24,13 +24,10 @@ MA 02111-1307, USA. */
 int
 mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
 {
-  int s, go_on, compare, inexact;
+  int s, compare, inexact;
   mp_prec_t p, q;
-#if 0
-  double uo, vo;
-#endif
-  mp_limb_t *up, *vp, *tmpp, *tmpup, *tmpvp, *ap, *bp;
-  mpfr_t u, v, tmp, tmpu, tmpv, a, b;
+  mp_limb_t *up, *vp, *tmpup, *tmpvp;
+  mpfr_t u, v, tmpu, tmpv;
   TMP_DECL(marker);
 
   /* Deal with special values */
@@ -70,7 +67,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
   MPFR_CLEAR_FLAGS(r);
 
   /* If a or b is negative (excluding -Infinity), the result is NaN */
-  if (MPFR_UNLIKELY(MPFR_IS_NEG(op1)  || MPFR_IS_NEG(op2)))
+  if (MPFR_UNLIKELY(MPFR_IS_NEG(op1) || MPFR_IS_NEG(op2)))
     {
       MPFR_SET_NAN(r);
       MPFR_RET_NAN;
@@ -79,117 +76,64 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
   /* precision of the following calculus */
   q = MPFR_PREC(r);
   p = q + 15;
-
-  /* Initialisations */
-  go_on = 1;
-
-  TMP_MARK(marker);
   s = (p - 1) / BITS_PER_MP_LIMB + 1;
-  MPFR_TMP_INIT(ap, a, p, s);
-  MPFR_TMP_INIT(bp, b, p, s);
-  MPFR_TMP_INIT(up, u, p, s);
-  MPFR_TMP_INIT(vp, v, p, s);
-  MPFR_TMP_INIT(tmpup, tmpu, p, s);
-  MPFR_TMP_INIT(tmpvp, tmpv, p, s);
-  MPFR_TMP_INIT(tmpp, tmp, p, s);
 
-  /* b and a are the 2 operands but we want b >= a */
-  if ((compare = mpfr_cmp (op1, op2)) > 0)
-    {
-      mpfr_set (b,op1,GMP_RNDN);
-      mpfr_set (a,op2,GMP_RNDN);
-    }
-  else if (compare == 0)
+  /* b (op2) and a (op1) are the 2 operands but we want b >= a */
+  compare = mpfr_cmp (op1, op2);
+  if (MPFR_UNLIKELY( compare == 0 ))
     {
       mpfr_set (r, op1, rnd_mode);
-      TMP_FREE(marker);
-      MPFR_RET(0); /* exact */
+      MPFR_RET (0); /* exact */
     }
-  else
+  else if (compare > 0)
     {
-      mpfr_set (b, op2, GMP_RNDN);
-      mpfr_set (a, op1, GMP_RNDN);
+      mpfr_srcptr t = op1;
+      op1 = op2;
+      op2 = t;
     }
+  /* Now b(=op2) >= a (=op1) */
 
-#if 0
-  vo = mpfr_get_d1 (b);
-  uo = mpfr_get_d1 (a);
-#endif
-
-  mpfr_set (u, a, GMP_RNDN);
-  mpfr_set (v, b, GMP_RNDN);
+  TMP_MARK(marker);
 
   /* Main loop */
-
-  while (go_on) 
+  for (;;)
     {
-      int err, can_round;
       mp_prec_t eq;
-      double erraux;
-      
-#if 0
-      erraux = (vo == uo) ? 0.0
-	: __gmpfr_ceil_exp2 (-2.0 * (double) p * uo / (vo - uo));
-      err = 1 + (int) ((3.0 / 2.0 * (double) __gmpfr_ceil_log2 ((double) p)
-			+ 1.0) * __gmpfr_ceil_exp2 (- (double) p)
-		       + 3.0 * erraux);
-#else
-      /* since the argument of __gmpfr_ceil_exp2() is negative,
-	 erraux is always bounded by 1.
-	 We also have floor((3/2*ceil(log2(p))+1) * 2^(-p)) = 0,
-	 since it the value f(p) inside floor() is 5/8 for p=2, 1/2 for p=3,
-	 and f(2p) <= f(p)/2 + 1/2^p. So err=4.
-      */
-      erraux = 1.0;
-      err = 4;
-#endif
 
-#if 0 /* this can not happen since p = q+15, and err=4 */
-      if (p - err - 3 <= q)
-	{
-	  p = q + err + 4;
-	  err = 1 + (int) ((3.0 / 2.0 * __gmpfr_ceil_log2 ((double) p) + 1.0)
-			   * __gmpfr_ceil_exp2 (- (double) p) + 3.0 * erraux);
-	}
-#endif
-      
+      /* Init temporary vars */
+      MPFR_TMP_INIT (up, u, p, s);
+      MPFR_TMP_INIT (vp, v, p, s);
+      MPFR_TMP_INIT (tmpup, tmpu, p, s);
+      MPFR_TMP_INIT (tmpvp, tmpv, p, s);
+
+      /* Set initial values */
+      mpfr_set (u, op1, GMP_RNDN);
+      mpfr_set (v, op2, GMP_RNDN);
+
       /* Calculus of un and vn */
       do
 	{
-	  mpfr_mul (tmp, u, v, GMP_RNDN);
-	  mpfr_sqrt (tmpu, tmp, GMP_RNDN);
-	  mpfr_add (tmp, u, v, GMP_RNDN);
-	  mpfr_div_2ui (tmpv, tmp, 1, GMP_RNDN);
+	  mpfr_mul (tmpu, u, v, GMP_RNDN);
+	  mpfr_sqrt (tmpu, tmpu, GMP_RNDN);
+	  mpfr_add (tmpv, u, v, GMP_RNDN);
+	  mpfr_div_2ui (tmpv, tmpv, 1, GMP_RNDN);
 	  mpfr_set (u, tmpu, GMP_RNDN);
 	  mpfr_set (v, tmpv, GMP_RNDN);
 	}
       while (mpfr_cmp2 (u, v, &eq) != 0 && eq <= p - 2);
       
       /* Roundability of the result */
-      can_round = mpfr_can_round (v, p - err - 3, GMP_RNDN, GMP_RNDZ,
-				  q + (rnd_mode == GMP_RNDN));
-      
-      if (can_round)
-	go_on = 0;
-      
-      else 
-	{
-	  go_on = 1;
-	  p += 5;
-	  s = (p - 1) / BITS_PER_MP_LIMB + 1;
-	  MPFR_TMP_INIT(up, u, p, s);
-	  MPFR_TMP_INIT(vp, v, p, s);
-	  MPFR_TMP_INIT(tmpup, tmpu, p, s);
-	  MPFR_TMP_INIT(tmpvp, tmpv, p, s);
-	  MPFR_TMP_INIT(tmpp, tmp, p, s);
-	  mpfr_set (u, a, GMP_RNDN);
-	  mpfr_set (v, b, GMP_RNDN);
-	}
+      if (mpfr_can_round (v, p - 4 - 3, GMP_RNDN, GMP_RNDZ,
+			  q + (rnd_mode == GMP_RNDN)))
+	break; /* Stop the loop */
+  
+      /* Next iteration */
+      p += 5;
+      s = (p - 1) / BITS_PER_MP_LIMB + 1;
     }
   /* End of while */
 
   /* Setting of the result */
-
   inexact = mpfr_set (r, v, rnd_mode);
 
   /* Let's clean */
