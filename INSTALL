@@ -1,5 +1,5 @@
-		Installing MPFR version 1.0
-		===========================
+		Installing MPFR version 1.0.1
+		=============================
 
 0. You first need to install GMP. See <http://www.swox.com/gmp/>.
    MPFR version 1.0 requires GMP version 3.0 or latter.
@@ -20,8 +20,9 @@
 
 3. type "make dvi" to produce the documentation (DVI file mpfr.dvi)
 
-4. type "cd tests; make"            4. type "cd tests; make tests"
-(produces and runs the test files)  (runs the test files)
+4. type "make check" (produces and runs the test files)
+
+5. type "make install" (installs the library)
 
 Notes:
 
