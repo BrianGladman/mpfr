@@ -137,8 +137,8 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
      their value */
   for (mant_s = str1; *str != 0; str++)
     {
-      if (((base < 10) && (*str == 'e')) || (*str == 'E') ||
-	  (*str == '@'))
+      if (*str == '@'
+          || (base <= 10 && (*str == 'e' || *str == 'E')))
 	{
           char *endptr[1];
 	  /* the exponent digits are kept in ASCII */
