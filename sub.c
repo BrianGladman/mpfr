@@ -40,7 +40,7 @@ mpn_sub_lshift_n (mp_limb_t *ap, mp_limb_t *bp, int n, int sh, int an)
 mpn_sub_lshift_n (ap, bp, n, sh, an) mp_limb_t *ap, *bp; int n,sh,an;
 #endif
 {
-  mp_limb_t c, bh;
+  mp_limb_t c, bh=0;
 
   /* shift b to the left */
   if (sh) bh = mpn_lshift(bp, bp, n, sh);
