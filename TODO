@@ -6,12 +6,17 @@ Installation:
 
 - from Kevin Ryde <user42@zip.com.au>:
    Determine the exp2/exp3 thresholds using tune/tuneup.c.
+- install config.h gmp-impl.h gmp-mparam.h longlong.h only in the mpfr
+	build directory ["Nelson H. F. Beebe" <beebe@math.utah.edu>]
 
 Changes in existing functions:
 
+- allow the ISO C "P" exponent separator for base 16 in input functions
 - invert 2nd and 3rd arguments of mpfr_round_prec (to be coherent with
 	mpfr_set_prec)
 - merge mpfr_inp_str and mpfr_set_str (cf glibc sscanf/fscanf)
+	[mpfr_set_str -> with final '\0',
+	 mpfr_strtofr -> without final '\0' ]
 - remove mpfr_set_machine_rnd_mode from the documentation,
 	and move it to the test directory
 - in mpfr_set_str, make string comparisons case insensitive and use @Inf@
@@ -31,6 +36,7 @@ New functions to implement:
 	Dmitry Antipov <dmitry.antipov@mail.ru> Thu, 13 Jun 2002
 - mpz_set_fr (to set a mpz from a mpfr, with a rounding mode)
 - those from LIA: missing secant, cosecant, cotangent (trigo/hyperbolic)
+- atan2
 - nextafter/nextforward : X + epsilon if X < Y, X - epsilon if X > Y
 - nextabove/nextbelow ?
 - mpfr_get_exp / mpfr_set_exp
@@ -82,6 +88,9 @@ Miscellaneous:
 - rewrite mpfr_get_str and mpfr_set_str to use mpn_get_str and mpn_set_str.
 	(Torbjorn Granlund <tege@swox.com>, 30 Jan 2002)
 
+- mpfr_pow isn't completely specified (concerning signed zeros).
+
+- use AC_CHECK_FUNCS for __setfpucw rather than grepping a header file.
 - rename (and rewrite) mpfr_isinteger to mpfr_integer_p.
 	(Kevin Ryde, 05 Mar 2002)
 
