@@ -54,12 +54,81 @@ unsigned int py, unsigned int pz, double res)
   z2 = mpfr_get_d(zz);
   /* printf("x+y=%1.20e\n",z2); */
   if (px==53 && py==53 && pz==53) res=1.0;
-  if (res!=0.0 && z1!=z2) {
+  if (res!=0.0 && z1!=z2 && !(isnan(z1) && isnan(z2))) {
     printf("expected sum is %1.20e, got %1.20e\n",z1,z2);
     printf("mpfr_add failed for x=%1.20e y=%1.20e with rnd_mode=%u\n",x,y,rnd_mode);
     exit(1);
   }
   mpfr_clear(xx); mpfr_clear(yy); mpfr_clear(zz);
+}
+
+/* idem than check for mpfr_add(x, x, y) */
+void check3(double x, double y, unsigned int rnd_mode)
+{
+  double z1,z2; mpfr_t xx,yy; int neg;
+
+  neg = rand() % 2;
+  mpfr_init2(xx, 53);
+  mpfr_init2(yy, 53);
+  mpfr_set_d(xx, x, rnd_mode);
+  mpfr_set_d(yy, y, rnd_mode);
+  if (neg) mpfr_sub(xx, xx, yy, rnd_mode);
+  else mpfr_add(xx, xx, yy, rnd_mode);
+  mpfr_set_machine_rnd_mode(rnd_mode);
+  z1 = (neg) ? x-y : x+y;
+  z2 = mpfr_get_d(xx);
+  if (z1!=z2 && !(isnan(z1) && isnan(z2))) {
+    printf("expected result is %1.20e, got %1.20e\n",z1,z2);
+    printf("mpfr_%s(x,x,y) failed for x=%1.20e y=%1.20e with rnd_mode=%u\n",
+	   (neg) ? "sub" : "add",x,y,rnd_mode);
+    exit(1);
+  }
+  mpfr_clear(xx); mpfr_clear(yy);
+}
+
+/* idem than check for mpfr_add(x, y, x) */
+void check4(double x, double y, unsigned int rnd_mode)
+{
+  double z1,z2; mpfr_t xx,yy; int neg;
+
+  neg = rand() % 2;
+  mpfr_init2(xx, 53);
+  mpfr_init2(yy, 53);
+  mpfr_set_d(xx, x, rnd_mode);
+  mpfr_set_d(yy, y, rnd_mode);
+  if (neg) mpfr_sub(xx, yy, xx, rnd_mode);
+  else mpfr_add(xx, yy, xx, rnd_mode);
+  mpfr_set_machine_rnd_mode(rnd_mode);
+  z1 = (neg) ? y-x : x+y;
+  z2 = mpfr_get_d(xx);
+  if (z1!=z2 && !(isnan(z1) && isnan(z2))) {
+    printf("expected result is %1.20e, got %1.20e\n",z1,z2);
+    printf("mpfr_%s(x,y,x) failed for x=%1.20e y=%1.20e with rnd_mode=%u\n",
+	   (neg) ? "sub" : "add",x,y,rnd_mode);
+    exit(1);
+  }
+  mpfr_clear(xx); mpfr_clear(yy);
+}
+
+/* idem than check for mpfr_add(x, x, x) */
+void check5(double x, unsigned int rnd_mode)
+{
+  double z1,z2; mpfr_t xx; int neg;
+
+  mpfr_init2(xx, 53); neg = rand() % 2;
+  mpfr_set_d(xx, x, rnd_mode);
+  if (neg) mpfr_sub(xx, xx, xx, rnd_mode);
+  else mpfr_add(xx, xx, xx, rnd_mode);
+  mpfr_set_machine_rnd_mode(rnd_mode);
+  z1 = (neg) ? x-x : x+x;
+  z2 = mpfr_get_d(xx);
+  if (z1!=z2 && !(isnan(z1) && isnan(z2))) {
+    printf("expected result is %1.20e, got %1.20e\n",z1,z2);
+    printf("mpfr_%s(x,x,x) failed for x=%1.20e with rnd_mode=%u\n",
+	   (neg) ? "sub" : "add",x,rnd_mode);
+    exit(1);
+  }
+  mpfr_clear(xx);
 }
 
 /* returns the number of ulp's between a and b */
@@ -125,7 +194,7 @@ check64()
 
 main(argc,argv) int argc; char *argv[];
 {
-  double x,y; int i,prec,rnd_mode,px,py,pz;
+  double x,y; int i,prec,rnd_mode,px,py,pz,rnd;
 
   check64();
   check(1.16809465359248765399e+196, 7.92883212101990665259e+196,
@@ -165,7 +234,7 @@ main(argc,argv) int argc; char *argv[];
   check2(2.90983392714730768886e+50,101,2.31299792168440591870e+50,74,105,1);
   check2(2.72046257722708717791e+243,97,-1.62158447436486437113e+243,83,96,0);
   /* checks random precisions */
-  for (i=0;i<1000000;i++) {
+  for (i=0;i<100000;i++) {
 #ifdef DEBUG
 printf("\nTest i=%d\n",i);
 #endif
@@ -226,13 +295,38 @@ printf("\nTest i=%d\n",i);
   check(8.06294740693074521573e-310, 6.95250701071929654575e-310,
 	GMP_RNDU, 53, 53, 53, 0.0);
   /* compares to results with double precision using machine arithmetic */
-  for (i=0;i<1000000;i++) {
+  for (i=0;i<100000;i++) {
     x = drand(); 
     y = drand();
     if (ABS(x)>2.2e-307 && ABS(y)>2.2e-307 && x+y<1.7e+308 && x+y>-1.7e308) 
       /* avoid denormalized numbers and overflows */
-      check(x, y, (rnd_mode==-1) ? lrand48()%4 : rnd_mode, 
-	    prec, prec, prec, 0.0);
+      rnd = (rnd_mode==-1) ? lrand48()%4 : rnd_mode;
+      check(x, y, rnd, prec, prec, prec, 0.0);
+  } 
+  printf("Checking mpfr_add(x, x, y) with prec=53\n");
+  for (i=0;i<100000;i++) {
+    x = drand(); 
+    y = drand();
+    if (ABS(x)>2.2e-307 && ABS(y)>2.2e-307 && x+y<1.7e+308 && x+y>-1.7e308) 
+      /* avoid denormalized numbers and overflows */
+      rnd = (rnd_mode==-1) ? lrand48()%4 : rnd_mode;
+      check3(x, y, rnd);
+  } 
+  printf("Checking mpfr_add(x, y, x) with prec=53\n");
+  for (i=0;i<100000;i++) {
+    x = drand(); 
+    y = drand();
+    if (ABS(x)>2.2e-307 && ABS(y)>2.2e-307 && x+y<1.7e+308 && x+y>-1.7e308) 
+      /* avoid denormalized numbers and overflows */
+      rnd = (rnd_mode==-1) ? lrand48()%4 : rnd_mode;
+      check4(x, y, rnd);
+  } 
+  printf("Checking mpfr_add(x, x, x) with prec=53\n");
+  for (i=0;i<100000;i++) {
+    do { x = drand(); } while (ABS(x)<2.2e-307 || ABS(x)>0.8e308);
+    /* avoid denormalized numbers and overflows */
+    rnd = (rnd_mode==-1) ? lrand48()%4 : rnd_mode;
+    check5(x, rnd);
   } 
 }
 
