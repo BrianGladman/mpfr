@@ -24,6 +24,7 @@ MA 02111-1307, USA. */
 #include <float.h>
 #include <time.h>
 #include "gmp.h"
+#include "gmp-impl.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
 #include "mpfr-test.h"
@@ -106,6 +107,35 @@ check_two_sum (mp_prec_t p)
   mpfr_clear (w);
 }
 
+void
+check_nans (void)
+{
+  mpfr_t  x, y;
+
+  mpfr_init2 (x, 123L);
+  mpfr_init2 (y, 123L);
+
+  /* nan - 1 == nan */
+  mpfr_set_nan (x);
+  mpfr_sub_ui (y, x, 1L, GMP_RNDN);
+  ASSERT_ALWAYS (mpfr_nan_p (y));
+
+  /* +inf - 1 == +inf */
+  mpfr_set_inf (x, 1);
+  mpfr_sub_ui (y, x, 1L, GMP_RNDN);
+  ASSERT_ALWAYS (mpfr_inf_p (y));
+  ASSERT_ALWAYS (mpfr_sgn (y) > 0);
+
+  /* -inf - 1 == -inf */
+  mpfr_set_inf (x, -1);
+  mpfr_sub_ui (y, x, 1L, GMP_RNDN);
+  ASSERT_ALWAYS (mpfr_inf_p (y));
+  ASSERT_ALWAYS (mpfr_sgn (y) < 0);
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -114,16 +144,13 @@ main (int argc, char *argv[])
 
   tests_start_mpfr ();
 
+  check_nans ();
+
   for (p=2; p<200; p++)
     for (k=0; k<200; k++)
       check_two_sum (p);
 
   check3 (0.9999999999, 1, GMP_RNDN, -56295.0 / 562949953421312.0);
-#ifdef HAVE_INFS
-  check3 (DBL_NAN, 1, GMP_RNDN, DBL_NAN);
-  check3 (DBL_POS_INF, 1, GMP_RNDN, DBL_POS_INF);
-  check3 (DBL_NEG_INF, 1, GMP_RNDN, DBL_NEG_INF);
-#endif
 
   tests_end_mpfr ();
   return 0;
