@@ -34,10 +34,10 @@ MA 02111-1307, USA. */
 */
 int 
 #if __STDC__
-mpfr_round_raw2(mp_limb_t *xp, mp_prec_t xn, 
+mpfr_round_raw2 (mp_limb_t *xp, mp_prec_t xn, 
 		int neg, mp_rnd_t rnd, mp_prec_t prec)
 #else
-mpfr_round_raw2(xp, xn, neg, rnd, prec)
+mpfr_round_raw2 (xp, xn, neg, rnd, prec)
      mp_limb_t *xp; 
      mp_prec_t xn; 
      int neg; 
@@ -174,35 +174,34 @@ mpfr_round (x, rnd_mode, prec)
      mp_prec_t prec; 
 #endif
 {
-  mp_limb_t *tmp; int carry, signx; mp_prec_t nw;
+  mp_limb_t *tmp;
+  int carry, neg;
+  mp_prec_t nw;
   TMP_DECL(marker);
 
-  if (MPFR_IS_INF(x) || MPFR_IS_NAN(x)) return; 
-  nw = prec / BITS_PER_MP_LIMB; 
-  if (prec & (BITS_PER_MP_LIMB - 1)) nw++;
-  signx = MPFR_SIGN(x);
+  if (MPFR_IS_NAN(x) || MPFR_IS_INF(x)) return; 
+  nw = 1 + (prec - 1) / BITS_PER_MP_LIMB; /* needed allocated limbs */
+  neg = MPFR_SIGN(x) < 0;
 
   /* check if x has enough allocated space for the mantissa */
   if (nw > MPFR_ABSSIZE(x)) {
     MPFR_MANT(x) = (mp_ptr) (*__gmp_reallocate_func) 
       (MPFR_MANT(x), MPFR_ABSSIZE(x)*BYTES_PER_MP_LIMB, nw * BYTES_PER_MP_LIMB);
     MPFR_SIZE(x) = nw; /* new number of allocated limbs */
+    if (neg) MPFR_CHANGE_SIGN(x);
   }
 
   TMP_MARK(marker); 
   tmp = TMP_ALLOC (nw * BYTES_PER_MP_LIMB);
-  carry = mpfr_round_raw(tmp, MPFR_MANT(x), MPFR_PREC(x), (MPFR_SIGN(x)<0), prec, 
-			 rnd_mode);
+  carry = mpfr_round_raw(tmp, MPFR_MANT(x), MPFR_PREC(x), neg, prec, rnd_mode);
 
   if (carry)
     {      
-      mpn_rshift(tmp, tmp, nw, 1); 
+      mpn_rshift (tmp, tmp, nw, 1); 
       tmp [nw-1] |= (((mp_limb_t)1) << (BITS_PER_MP_LIMB - 1)); 
       MPFR_EXP(x)++; 
     }
 
-  MPFR_SIZE(x)=nw;
-  if (signx * MPFR_SIGN(x)<0) MPFR_CHANGE_SIGN(x);
   MPFR_PREC(x) = prec; 
   MPN_COPY(MPFR_MANT(x), tmp, nw); 
   TMP_FREE(marker);
