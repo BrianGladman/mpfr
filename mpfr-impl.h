@@ -17,6 +17,11 @@ double drand()
 int ulp(a,b) double a,b;
 {
   double eps=1.1102230246251565404e-16; /* 2^(-53) */
+  if (a==0.0) {
+    if (b==0.0) return 0;
+    else if (b<0.0) return 2147483647;
+    else return -2147483647;
+  }
   b = (a-b)/a;
   if (b>0)
     return (int) floor(b/eps);
