@@ -905,7 +905,7 @@ therefore the @var{SIGN} macro does not distinguish zero from non-zero
 numbers.
 @end deftypefn
 
-@deftypefn Macro int NOTZERO (mpfr_t @var{op})
+@deftypefn Macro int MPFR_NOTZERO (mpfr_t @var{op})
 Returns zero when its argument is zero, and a non-zero value otherwise.
 @end deftypefn
 
@@ -1072,31 +1072,31 @@ Negative random numbers are generated when @var{max_size} is negative.
 These functions were mainly designed for the implementation of @code{mpfr},
 but may be useful for users too.
 
-@deftypefun Macro int FLAG_NAN (mpfr_t x)
+@deftypefun Macro int MPFR_IS_NAN (mpfr_t x)
 Returns a non-zero value iff its argument is @samp{Not a Number}.
 @end deftypefun
 
-@deftypefun Macro int SET_NAN (mpfr_t x)
+@deftypefun Macro int MPFR_SET_NAN (mpfr_t x)
 Sets its argument to @samp{Not a Number}.
 @end deftypefun
 
-@deftypefun Macro int ABSSIZE (mpfr_t x)
+@deftypefun Macro int MPFR_ABSSIZE (mpfr_t x)
 Returns the number of limb the mantissa of @var{x} points to.
 @end deftypefun
 
-@deftypefun Macro int EXP (mpfr_t x)
+@deftypefun Macro int MPFR_EXP (mpfr_t x)
 Returns the exponent of @var{x}.
 @end deftypefun
 
-@deftypefun Macro mp_limb_t* MANT (mpfr_t x)
+@deftypefun Macro mp_limb_t* MPFR_MANT (mpfr_t x)
 Returns a pointer to the mantissa of @var{x}.
 @end deftypefun
 
-@deftypefun Macro mp_prec_t PREC (mpfr_t x)
+@deftypefun Macro mp_prec_t MPFR_PREC (mpfr_t x)
 Returns the precision of @var{x}.
 @end deftypefun
 
-@deftypefun Macro int CHANGE_SIGN (mpfr_t x)
+@deftypefun Macro int MPFR_CHANGE_SIGN (mpfr_t x)
 Changes the sign of @var{x}.
 @end deftypefun
 

@@ -42,8 +42,8 @@ mpfr_urandomb (rop, rstate)
   mp_exp_t exp;
   unsigned long cnt, nbits; 
 
-  rp = MANT(rop);
-  nbits = PREC(rop);
+  rp = MPFR_MANT(rop);
+  nbits = MPFR_PREC(rop);
   nlimbs = (nbits + BITS_PER_MP_LIMB - 1) / BITS_PER_MP_LIMB;
 
   _gmp_rand (rp, rstate, nbits);
@@ -71,5 +71,5 @@ mpfr_urandomb (rop, rstate)
   /* cnt is the number of non significant bits in the low limb */
   rp[0] &= ~((((mp_limb_t)1)<<cnt) - 1);
 
-  EXP (rop) = exp;
+  MPFR_EXP (rop) = exp;
 }

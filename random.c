@@ -25,7 +25,7 @@ MA 02111-1307, USA. */
 #include "longlong.h"
 #include "mpfr.h"
 
-/* Computes a random mpfr in [0, 1[ with precision PREC */
+/* Computes a random mpfr in [0, 1[ with precision MPFR_PREC */
 
 extern long random _PROTO((void)); 
 extern int srandom _PROTO((unsigned int)); 
@@ -45,9 +45,9 @@ mpfr_random(x)
      mpfr_ptr x; 
 #endif    
 {
-  mp_limb_t *xp; unsigned long xn, i, cnt, prec=PREC(x); 
+  mp_limb_t *xp; unsigned long xn, i, cnt, prec=MPFR_PREC(x); 
 
-  xp = MANT(x);
+  xp = MPFR_MANT(x);
   xn = (prec-1)/BITS_PER_MP_LIMB + 1;
 
   for (i = 0; i < xn; i++)
@@ -60,7 +60,7 @@ mpfr_random(x)
   
   count_leading_zeros(cnt, xp[xn - 1]); 
   if (cnt) mpn_lshift(xp, xp, xn, cnt); 
-  EXP(x) = -cnt; 
+  MPFR_EXP(x) = -cnt; 
 
   cnt = xn*BITS_PER_MP_LIMB - prec; 
   /* cnt is the number of non significant bits in the low limb */

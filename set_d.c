@@ -245,29 +245,29 @@ mpfr_set_d(r, d, rnd_mode)
 {
   int signd, sizer; unsigned int cnt;
 
-  if (d == 0) { SET_ZERO(r); return; }
-  else if (isnan(d)) { SET_NAN(r); return; }
+  if (d == 0) { MPFR_SET_ZERO(r); return; }
+  else if (isnan(d)) { MPFR_SET_NAN(r); return; }
 
   signd = (d < 0) ? -1 : 1;
   d = ABS (d);
-  sizer = (PREC(r)-1)/BITS_PER_MP_LIMB + 1;
+  sizer = (MPFR_PREC(r)-1)/BITS_PER_MP_LIMB + 1;
 
   /* warning: __mpfr_extract_double requires at least two limbs */
   if (sizer < MPFR_LIMBS_PER_DOUBLE)
-    EXP(r) = __mpfr_extract_double (MANT(r), d, 0);
+    MPFR_EXP(r) = __mpfr_extract_double (MPFR_MANT(r), d, 0);
   else
-    EXP(r) = __mpfr_extract_double (MANT(r) + sizer - MPFR_LIMBS_PER_DOUBLE, d, 1);
+    MPFR_EXP(r) = __mpfr_extract_double (MPFR_MANT(r) + sizer - MPFR_LIMBS_PER_DOUBLE, d, 1);
   
   if (sizer > MPFR_LIMBS_PER_DOUBLE)
-    MPN_ZERO(MANT(r), sizer - MPFR_LIMBS_PER_DOUBLE); 
+    MPN_ZERO(MPFR_MANT(r), sizer - MPFR_LIMBS_PER_DOUBLE); 
 
-  count_leading_zeros(cnt, MANT(r)[sizer-1]);
-  if (cnt) mpn_lshift(MANT(r), MANT(r), sizer, cnt); 
+  count_leading_zeros(cnt, MPFR_MANT(r)[sizer-1]);
+  if (cnt) mpn_lshift(MPFR_MANT(r), MPFR_MANT(r), sizer, cnt); 
   
-  EXP(r) -= cnt; 
-  if (MPFR_SIGN(r)*signd<0) CHANGE_SIGN(r);
+  MPFR_EXP(r) -= cnt; 
+  if (MPFR_SIGN(r)*signd<0) MPFR_CHANGE_SIGN(r);
 
-  mpfr_round(r, rnd_mode, PREC(r)); 
+  mpfr_round(r, rnd_mode, MPFR_PREC(r)); 
   return; 
 }
 
@@ -285,14 +285,14 @@ mpfr_get_d2(src, e)
   mp_ptr qp;
   int negative;
 
-  if (FLAG_NAN(src)) { 
+  if (MPFR_IS_NAN(src)) { 
 #ifdef DEBUG
     printf("recognized NaN\n");
 #endif
     return NaN; }
-  if (NOTZERO(src)==0) return 0.0;
-  size = 1+(PREC(src)-1)/BITS_PER_MP_LIMB;
-  qp = MANT(src);
+  if (MPFR_NOTZERO(src)==0) return 0.0;
+  size = 1+(MPFR_PREC(src)-1)/BITS_PER_MP_LIMB;
+  qp = MPFR_MANT(src);
   negative = (MPFR_SIGN(src) < 0);
 
   /* Warning: don't compute the abs(res) and set the sign afterwards,
@@ -324,6 +324,6 @@ mpfr_get_d(src)
      mpfr_srcptr src; 
 #endif
 {
-  return mpfr_get_d2(src, EXP(src));
+  return mpfr_get_d2(src, MPFR_EXP(src));
 }
 

@@ -23,7 +23,7 @@ MA 02111-1307, USA. */
 #include "gmp-impl.h"
 #include "mpfr.h"
 
-/* sets x to x+sign(x)*2^(EXP(x)-PREC(x)) */
+/* sets x to x+sign(x)*2^(MPFR_EXP(x)-MPFR_PREC(x)) */
 int 
 #if __STDC__
 mpfr_add_one_ulp(mpfr_ptr x)
@@ -34,11 +34,11 @@ mpfr_add_one_ulp(x)
 {
   int xn, sh; mp_limb_t *xp;
 
-  xn = 1 + (PREC(x)-1)/BITS_PER_MP_LIMB;
-  sh = xn*BITS_PER_MP_LIMB - PREC(x);
-  xp = MANT(x);
+  xn = 1 + (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB;
+  sh = xn*BITS_PER_MP_LIMB - MPFR_PREC(x);
+  xp = MPFR_MANT(x);
   if (mpn_add_1(xp, xp, xn, (mp_limb_t)1<<sh)) {
-    EXP(x)++;
+    MPFR_EXP(x)++;
     mpn_rshift(xp, xp, xn, 1);
     xp[xn-1] += (mp_limb_t)1<<(BITS_PER_MP_LIMB-1);
   }
@@ -50,13 +50,13 @@ int mpfr_sub_one_ulp(mpfr_ptr x)
 {
   int xn, sh; mp_limb_t *xp;
 
-  xn = 1 + (PREC(x)-1)/BITS_PER_MP_LIMB;
-  sh = xn*BITS_PER_MP_LIMB-PREC(x);
-  xp = MANT(x);
+  xn = 1 + (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB;
+  sh = xn*BITS_PER_MP_LIMB-MPFR_PREC(x);
+  xp = MPFR_MANT(x);
   mpn_sub_1(xp, xp, xn, (mp_limb_t)1<<sh);
   if (xp[xn-1] >> (BITS_PER_MP_LIMB-1) == 0) {
     /* was an exact power of two: not normalized any more */
-    EXP(x)--;
+    MPFR_EXP(x)--;
     mpn_lshift(xp, xp, xn, 1);
     *xp |= ((mp_limb_t)1 << sh);
   }

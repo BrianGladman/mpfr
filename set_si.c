@@ -37,31 +37,31 @@ mpfr_set_si(x, i, rnd_mode)
 {
   unsigned long xn, cnt; mp_limb_t ai, *xp;
 
-  if (i==0) { SET_ZERO(x); return; }
-  xn = (PREC(x)-1)/BITS_PER_MP_LIMB;
+  if (i==0) { MPFR_SET_ZERO(x); return; }
+  xn = (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB;
   ai = ABS(i); 
 
   count_leading_zeros(cnt, ai); 
 
-  xp = MANT(x);
+  xp = MPFR_MANT(x);
   xp[xn] = ai << cnt;
   /* don't forget to put zero in lower limbs */
   MPN_ZERO(xp, xn);
 
-  EXP(x) = BITS_PER_MP_LIMB - cnt;
+  MPFR_EXP(x) = BITS_PER_MP_LIMB - cnt;
 
-  /* round if PREC(x) smaller than length of i */
-  if (PREC(x) < BITS_PER_MP_LIMB-cnt) {
-    cnt = mpfr_round_raw(xp+xn, xp+xn, BITS_PER_MP_LIMB-cnt, (ai<0), PREC(x), 
+  /* round if MPFR_PREC(x) smaller than length of i */
+  if (MPFR_PREC(x) < BITS_PER_MP_LIMB-cnt) {
+    cnt = mpfr_round_raw(xp+xn, xp+xn, BITS_PER_MP_LIMB-cnt, (ai<0), MPFR_PREC(x), 
 		   rnd_mode);
     if (cnt) { /* special case 1.000...000 */
-      EXP(x)++;
+      MPFR_EXP(x)++;
       xp[xn] = ((mp_limb_t) 1) << (BITS_PER_MP_LIMB-1);
     }
   }
 
   /* warning: don't change the precision of x! */
-  if (i*MPFR_SIGN(x) < 0) CHANGE_SIGN(x);
+  if (i*MPFR_SIGN(x) < 0) MPFR_CHANGE_SIGN(x);
 
   return; 
 }
@@ -78,29 +78,29 @@ mpfr_set_ui(x, i, rnd_mode)
 {
   unsigned int xn, cnt; mp_limb_t *xp;
 
-  if (i==0) { SET_ZERO(x); return; }
-  xn = (PREC(x)-1)/BITS_PER_MP_LIMB;
+  if (i==0) { MPFR_SET_ZERO(x); return; }
+  xn = (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB;
   count_leading_zeros(cnt, (mp_limb_t) i); 
 
-  xp = MANT(x);
+  xp = MPFR_MANT(x);
   xp[xn] = ((mp_limb_t) i) << cnt; 
   /* don't forget to put zero in lower limbs */
   MPN_ZERO(xp, xn);
 
-  EXP(x) = BITS_PER_MP_LIMB - cnt;
+  MPFR_EXP(x) = BITS_PER_MP_LIMB - cnt;
 
-  /* round if PREC(x) smaller than length of i */
-  if (PREC(x) < BITS_PER_MP_LIMB-cnt) {
-    cnt = mpfr_round_raw(xp+xn, xp+xn, BITS_PER_MP_LIMB-cnt, 0, PREC(x), 
+  /* round if MPFR_PREC(x) smaller than length of i */
+  if (MPFR_PREC(x) < BITS_PER_MP_LIMB-cnt) {
+    cnt = mpfr_round_raw(xp+xn, xp+xn, BITS_PER_MP_LIMB-cnt, 0, MPFR_PREC(x), 
 			 rnd_mode);
     if (cnt) { /* special case 1.000...000 */
-      EXP(x)++;
+      MPFR_EXP(x)++;
       xp[xn] = ((mp_limb_t) 1) << (BITS_PER_MP_LIMB-1);
     }
   }
 
   /* warning: don't change the precision of x! */
-  if (MPFR_SIGN(x) < 0) CHANGE_SIGN(x);
+  if (MPFR_SIGN(x) < 0) MPFR_CHANGE_SIGN(x);
 
   return; 
 }

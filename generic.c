@@ -54,7 +54,7 @@ int m;
   mpfr_t tmp;
 #endif
   int diff,expo;
-  int precy = PREC(y);
+  int precy = MPFR_PREC(y);
   n = 1 << m;
   P = (mpz_t*) (*_mp_allocate_func) ((m+1) * sizeof(mpz_t));
   S = (mpz_t*) (*_mp_allocate_func) ((m+1) * sizeof(mpz_t));
@@ -178,12 +178,12 @@ int m;
 
   mpz_tdiv_q(S[0], S[0], P[0]);
   mpfr_set_z(y,S[0], GMP_RNDD);
-  EXP(y) += expo; 
+  MPFR_EXP(y) += expo; 
 
 #ifdef R_IS_RATIONAL
   /* division exacte */
   mpz_div_ui(qtoj[m], qtoj[m], r);
-  i = (PREC(y));
+  i = (MPFR_PREC(y));
   mpfr_init2(tmp,i);
   mpfr_set_z(tmp, qtoj[m] , GMP_RNDD);
   mpfr_div(y, y, tmp,GMP_RNDD);  

@@ -52,46 +52,46 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
   TMP_DECL(marker); 
 
   TMP_MARK(marker); 
-  ap = MANT(a);
-  bp = MANT(b);
-  cp = MANT(c);
+  ap = MPFR_MANT(a);
+  bp = MPFR_MANT(b);
+  cp = MPFR_MANT(c);
   if (ap == bp) {
-    bp = (mp_ptr) TMP_ALLOC(ABSSIZE(b) * BYTES_PER_MP_LIMB); 
-    MPN_COPY (bp, ap, ABSSIZE(b));
+    bp = (mp_ptr) TMP_ALLOC(MPFR_ABSSIZE(b) * BYTES_PER_MP_LIMB); 
+    MPN_COPY (bp, ap, MPFR_ABSSIZE(b));
     if (ap == cp) { cp = bp; }
   }
   else if (ap == cp)
     {
-      cp = (mp_ptr) TMP_ALLOC (ABSSIZE(c) * BYTES_PER_MP_LIMB);
-      MPN_COPY(cp, ap, ABSSIZE(c)); 
+      cp = (mp_ptr) TMP_ALLOC (MPFR_ABSSIZE(c) * BYTES_PER_MP_LIMB);
+      MPN_COPY(cp, ap, MPFR_ABSSIZE(c)); 
     }
 
-  an = (PREC(a)-1)/BITS_PER_MP_LIMB+1; /* number of significant limbs of a */
+  an = (MPFR_PREC(a)-1)/BITS_PER_MP_LIMB+1; /* number of significant limbs of a */
 
-  sh = an*BITS_PER_MP_LIMB-PREC(a); /* non-significant bits in low limb */
-  bn = (PREC(b)-1)/BITS_PER_MP_LIMB + 1; /* number of significant limbs of b */
-  cn = (PREC(c)-1)/BITS_PER_MP_LIMB + 1;
-  EXP(a) = EXP(b);
+  sh = an*BITS_PER_MP_LIMB-MPFR_PREC(a); /* non-significant bits in low limb */
+  bn = (MPFR_PREC(b)-1)/BITS_PER_MP_LIMB + 1; /* number of significant limbs of b */
+  cn = (MPFR_PREC(c)-1)/BITS_PER_MP_LIMB + 1;
+  MPFR_EXP(a) = MPFR_EXP(b);
 
-  if (MPFR_SIGN(a) * MPFR_SIGN(b) < 0) CHANGE_SIGN(a);
+  if (MPFR_SIGN(a) * MPFR_SIGN(b) < 0) MPFR_CHANGE_SIGN(a);
 
   /* case 1: diff_exp>=prec(a), i.e. c only affects the last bit
      through rounding */
-  dif = PREC(a)-diff_exp;
+  dif = MPFR_PREC(a)-diff_exp;
 
 #ifdef DEBUG
-  printf("diff_exp=%u dif=PREC(a)-diff_exp=%d\n", diff_exp, dif);
+  printf("diff_exp=%u dif=MPFR_PREC(a)-diff_exp=%d\n", diff_exp, dif);
   printf("b= "); mpfr_print_raw(b); putchar('\n');
   printf("c="); for (k=0;k<diff_exp;k++) putchar(' ');
   if (MPFR_SIGN(c)>0) putchar(' '); mpfr_print_raw(c); putchar('\n');
 #endif
   if (dif<=0) { 
     
-    /* diff_exp>=PREC(a): c does not overlap with a */
-    /* either PREC(b)<=PREC(a), and we can copy the mantissa of b directly 
-       into that of a, or PREC(b)>PREC(a) and we have to round b+c */
+    /* diff_exp>=MPFR_PREC(a): c does not overlap with a */
+    /* either MPFR_PREC(b)<=MPFR_PREC(a), and we can copy the mantissa of b directly 
+       into that of a, or MPFR_PREC(b)>MPFR_PREC(a) and we have to round b+c */
 
-    if (PREC(b)<=PREC(a)) {
+    if (MPFR_PREC(b)<=MPFR_PREC(a)) {
 
       MPN_COPY(ap+(an-bn), bp, bn);
       /* fill low significant limbs with zero */
@@ -102,22 +102,22 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
       if (rnd_mode==GMP_RNDN) { 
 	
 	/* to nearest */
-	/* if diff_exp > PREC(a), no change */
+	/* if diff_exp > MPFR_PREC(a), no change */
 
-	if (diff_exp==PREC(a)) {
+	if (diff_exp==MPFR_PREC(a)) {
 
 	  /* if c is not zero, then as it is normalized, we have to add
 	     one to the lsb of a if c>1/2, or c=1/2 and lsb(a)=1 (round to
 	     even) */
 	  
-	  if (NOTZERO(c)) { 
+	  if (MPFR_NOTZERO(c)) { 
 
 	    /* c is not zero */
 	    /* check whether mant(c)=1/2 or not */
 
 	    cc = *cp - (ONE<<(BITS_PER_MP_LIMB-1));
 	    if (cc==0) {
-	      bp = cp+(PREC(c)-1)/BITS_PER_MP_LIMB;
+	      bp = cp+(MPFR_PREC(c)-1)/BITS_PER_MP_LIMB;
 	      while (cp<bp && cc==0) cc = *++cp;
 	    }
 
@@ -126,18 +126,18 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
 	  }
 	}
       }
-      else if ((ISNONNEG(b) && rnd_mode==GMP_RNDU) || 
-	       (ISNEG(b) && rnd_mode==GMP_RNDD)) {
+      else if ((MPFR_ISNONNEG(b) && rnd_mode==GMP_RNDU) || 
+	       (MPFR_ISNEG(b) && rnd_mode==GMP_RNDD)) {
 	
 	/* round up */
-	if (NOTZERO(c)) goto add_one_ulp;
+	if (MPFR_NOTZERO(c)) goto add_one_ulp;
       }
       /* in the other cases (round to zero, or up/down with sign -/+),
          nothing to do */
     }
     else { 
 
-      /* PREC(b)>PREC(a) : we have to round b+c */      
+      /* MPFR_PREC(b)>MPFR_PREC(a) : we have to round b+c */      
       k=bn-an;
 
       /* first copy the 'an' most significant limbs of b to a */
@@ -181,8 +181,8 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
 	   }
 	}
 	if (cout==0) cout=(cc!=0);
-        sign = (ISNONNEG(b) && rnd_mode==GMP_RNDU)
-	  || (ISNEG(b) && rnd_mode==GMP_RNDD) || (rnd_mode==GMP_RNDN);
+        sign = (MPFR_ISNONNEG(b) && rnd_mode==GMP_RNDU)
+	  || (MPFR_ISNEG(b) && rnd_mode==GMP_RNDD) || (rnd_mode==GMP_RNDN);
 	/* round towards infinity if dif=1, towards zero otherwise */
 	if ((sign==1) && (cout>0)) goto add_one_ulp;
 	else if (rnd_mode==GMP_RNDN && cout==0 && (*ap & (ONE<<sh)))
@@ -191,20 +191,20 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
     }
   }
   else { 
-    /* diff_exp < PREC(a) : c overlaps with a by dif bits */
+    /* diff_exp < MPFR_PREC(a) : c overlaps with a by dif bits */
     /* first copy upper part of c into a (after shift) */
     unsigned char overlap;
     
     k = (dif-1)/BITS_PER_MP_LIMB + 1; /* only the highest k limbs from c
 					 have to be considered */
-    cn = (PREC(c)-1)/BITS_PER_MP_LIMB + 1;
+    cn = (MPFR_PREC(c)-1)/BITS_PER_MP_LIMB + 1;
     MPN_ZERO(ap+k, an-k); /* do it now otherwise ap[k] may be destroyed
 			     in case dif<0 */
 
 #ifdef DEBUG
-    printf("PREC(c)=%d\n", PREC(c));
+    printf("MPFR_PREC(c)=%d\n", MPFR_PREC(c));
 #endif
-    if (dif<=PREC(c)) { 
+    if (dif<=MPFR_PREC(c)) { 
       /* c has to be truncated */
       dif = dif % BITS_PER_MP_LIMB;
       dif = (dif) ? BITS_PER_MP_LIMB-dif-sh : -sh;
@@ -244,22 +244,22 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
     /* then put high limbs to zero */
     /* now add 'an' upper limbs of b in place */
 
-    if (PREC(b)<=PREC(a)) {
+    if (MPFR_PREC(b)<=MPFR_PREC(a)) {
       overlap += 2;
       cc = mpn_add_n(ap+(an-bn), ap+(an-bn), bp, bn);
     }
     else
-      /* PREC(b) > PREC(a): we have to truncate b */
+      /* MPFR_PREC(b) > MPFR_PREC(a): we have to truncate b */
       cc = mpn_add_n(ap, ap, bp+(bn-an), an); 
 
     if (cc) { 
 
       /* shift one bit to the right */
 
-      c3 = (ap[0]&1) && (PREC(a)%BITS_PER_MP_LIMB==0);
+      c3 = (ap[0]&1) && (MPFR_PREC(a)%BITS_PER_MP_LIMB==0);
       mpn_rshift(ap, ap, an, 1);
       ap[an-1] += ONE<<(BITS_PER_MP_LIMB-1);
-      EXP(a)++;
+      MPFR_EXP(a)++;
     }
     
     /* remains to do the rounding */
@@ -267,16 +267,16 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
 #ifdef DEBUG
     printf("overlap=%d\n", overlap);
 #endif
-    if (rnd_mode==GMP_RNDN || (ISNONNEG(b) && rnd_mode==GMP_RNDU)
-	|| (ISNEG(b) && rnd_mode==GMP_RNDD)) {
+    if (rnd_mode==GMP_RNDN || (MPFR_ISNONNEG(b) && rnd_mode==GMP_RNDU)
+	|| (MPFR_ISNEG(b) && rnd_mode==GMP_RNDD)) {
 
       int kc;
       
       /* four cases: overlap =
-         (0) PREC(b) > PREC(a) and diff_exp+PREC(c) <= PREC(a)
-         (1) PREC(b) > PREC(a) and diff_exp+PREC(c) > PREC(a)
-         (2) PREC(b) <= PREC(a) and diff_exp+PREC(c) <= PREC(a)
-         (3)  PREC(b) <= PREC(a) and diff_exp+PREC(c) > PREC(a) */
+         (0) MPFR_PREC(b) > MPFR_PREC(a) and diff_exp+MPFR_PREC(c) <= MPFR_PREC(a)
+         (1) MPFR_PREC(b) > MPFR_PREC(a) and diff_exp+MPFR_PREC(c) > MPFR_PREC(a)
+         (2) MPFR_PREC(b) <= MPFR_PREC(a) and diff_exp+MPFR_PREC(c) <= MPFR_PREC(a)
+         (3)  MPFR_PREC(b) <= MPFR_PREC(a) and diff_exp+MPFR_PREC(c) > MPFR_PREC(a) */
 
       switch (overlap)
 	{ mp_limb_t cout;
@@ -341,7 +341,7 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
 	      */
         /* c3=1 whenever b+c gave a carry out in most significant limb 
 	   and the least significant bit (shifted right) was 1.
-	   This can occur only when BITS_PER_MP_LIMB divides PREC(a),
+	   This can occur only when BITS_PER_MP_LIMB divides MPFR_PREC(a),
 	   i.e. sh=0.
 	 */
         if (sh) {
@@ -371,7 +371,7 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
     cc = mpn_add_1(ap, ap, an, ONE<<sh);
     if (cc) {
       ap[an-1] = (mp_limb_t)1 << (BITS_PER_MP_LIMB-1);
-      EXP(a)++;
+      MPFR_EXP(a)++;
     }
 
  end_of_add:
@@ -392,14 +392,14 @@ mpfr_add(a, b, c, rnd_mode)
 {
   int diff_exp;
 
-  if (FLAG_NAN(b) || FLAG_NAN(c)) {
-    SET_NAN(a); return;
+  if (MPFR_IS_NAN(b) || MPFR_IS_NAN(c)) {
+    MPFR_SET_NAN(a); return;
   }
 
-  if (!NOTZERO(b)) { mpfr_set(a, c, rnd_mode); return; }
-  if (!NOTZERO(c)) { mpfr_set(a, b, rnd_mode); return; }
+  if (!MPFR_NOTZERO(b)) { mpfr_set(a, c, rnd_mode); return; }
+  if (!MPFR_NOTZERO(c)) { mpfr_set(a, b, rnd_mode); return; }
 
-  diff_exp = EXP(b)-EXP(c);
+  diff_exp = MPFR_EXP(b)-MPFR_EXP(c);
   if (MPFR_SIGN(b) * MPFR_SIGN(c) < 0) { /* signs differ, it's a subtraction */
     if (diff_exp<0) {
       mpfr_sub1(a, c, b, rnd_mode, -diff_exp);
@@ -408,7 +408,7 @@ mpfr_add(a, b, c, rnd_mode)
     else { /* diff_exp=0 */
       diff_exp = mpfr_cmp3(b,c,-1);
       /* if b>0 and diff_exp>0 or b<0 and diff_exp<0: abs(b) > abs(c) */
-      if (diff_exp==0) SET_ZERO(a);
+      if (diff_exp==0) MPFR_SET_ZERO(a);
       else if (diff_exp * MPFR_SIGN(b)>0) mpfr_sub1(a, b, c, rnd_mode, 0);
       else mpfr_sub1(a, c, b, rnd_mode, 0);
     }

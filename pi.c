@@ -49,12 +49,12 @@ mpfr_pi_machin3(mylog, rnd_mode)
 #endif
 {
   int prec, logn, prec_x;
-  int prec_i_want=PREC(mylog);
+  int prec_i_want=MPFR_PREC(mylog);
   int good = 0;
   mpfr_t tmp1, tmp2, result,tmp3,tmp4,tmp5,tmp6; 
   mpz_t cst;
   logn =  (int) ceil(log
-                      ((double) PREC(mylog))
+                      ((double) MPFR_PREC(mylog))
                       /log(2.0)); 
   prec_x = prec_i_want + logn + 5;
   mpz_init(cst);  
@@ -123,7 +123,7 @@ mpfr_pi_machin3(mylog, rnd_mode)
 }
 
 /*
-Set x to the value of Pi to precision PREC(x) rounded to direction rnd_mode.
+Set x to the value of Pi to precision MPFR_PREC(x) rounded to direction rnd_mode.
 Use the formula giving the binary representation of Pi found by Simon Plouffe
 and the Borwein's brothers:
 
@@ -167,7 +167,7 @@ mpfr_const_pi(x, rnd_mode)
 {
   int N, oldN, n, prec; mpz_t pi, num, den, d3, d2, tmp; mpfr_t y;
 
-  prec=PREC(x);
+  prec=MPFR_PREC(x);
 
   /* has stored value enough precision ? */
   if ((prec==__mpfr_const_pi_prec && rnd_mode==__mpfr_const_pi_rnd) ||
@@ -197,7 +197,7 @@ mpfr_const_pi(x, rnd_mode)
    */
     for (n=0; n<N; n++) {
       /* num(n)-num(n-1) = 240*n+31 */
-      mpz_add_ui(num, num, 240*n+31); /* no overflow up to PREC=71M */
+      mpz_add_ui(num, num, 240*n+31); /* no overflow up to MPFR_PREC=71M */
       /* d2(n) - d2(n-1) = 12288*(n-1) */
       if (n>0) mpz_add_ui(d2, d2, 12288*(n-1));
       else mpz_sub_ui(d2, d2, 12288);
@@ -216,7 +216,7 @@ mpfr_const_pi(x, rnd_mode)
     if (mpfr_cmp(x, y) != 0) {
       fprintf(stderr, "does not converge\n"); exit(1);
     }
-    EXP(x) -= 4*N;
+    MPFR_EXP(x) -= 4*N;
     mpz_clear(pi); mpz_clear(num); mpz_clear(den); mpz_clear(d3); mpz_clear(d2);
     mpz_clear(tmp); mpfr_clear(y);
   } else

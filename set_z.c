@@ -35,27 +35,27 @@ mpfr_set_z (f, z, rnd)
      mp_rnd_t rnd;
 #endif
 {
-  int fn, zn, k, dif, sign_z, sh; mp_limb_t *fp = MANT(f), *zp, cc, c2;
+  int fn, zn, k, dif, sign_z, sh; mp_limb_t *fp = MPFR_MANT(f), *zp, cc, c2;
 
   sign_z = mpz_cmp_ui(z,0);
   if (sign_z==0) {
-    SET_ZERO(f);
+    MPFR_SET_ZERO(f);
     return 0;
   }
-  fn = 1 + (PREC(f)-1)/BITS_PER_MP_LIMB;
+  fn = 1 + (MPFR_PREC(f)-1)/BITS_PER_MP_LIMB;
   zn = ABS(SIZ(z));
   dif = zn-fn;
   zp = PTR(z);
   count_leading_zeros(k, zp[zn-1]);
-  EXP(f) = zn*BITS_PER_MP_LIMB-k;
-  if (MPFR_SIGN(f)*sign_z<0) CHANGE_SIGN(f);
+  MPFR_EXP(f) = zn*BITS_PER_MP_LIMB-k;
+  if (MPFR_SIGN(f)*sign_z<0) MPFR_CHANGE_SIGN(f);
   if (dif>=0) { /* number has to be truncated */
     if (k) {
       mpn_lshift(fp, zp + dif, fn, k);
       if (dif) *fp += zp[dif-1] >> (BITS_PER_MP_LIMB-k);
     }
     else MPN_COPY(fp, zp + dif, fn);
-    sh = fn*BITS_PER_MP_LIMB-PREC(f);
+    sh = fn*BITS_PER_MP_LIMB-MPFR_PREC(f);
     cc = *fp & (((mp_limb_t)1 << sh) - 1);
     *fp = *fp & ~cc;
     if (rnd==GMP_RNDN) {

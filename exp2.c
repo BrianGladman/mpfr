@@ -105,19 +105,19 @@ mpfr_exp2(y, x, rnd_mode)
   mpfr_t r, s, t; mpz_t ss;
   TMP_DECL(marker);
 
-  if (FLAG_NAN(x)) { SET_NAN(y); return 1; }
-  if (!NOTZERO(x)) { mpfr_set_ui(y, 1, GMP_RNDN); return 0; }
+  if (MPFR_IS_NAN(x)) { MPFR_SET_NAN(y); return 1; }
+  if (!MPFR_NOTZERO(x)) { mpfr_set_ui(y, 1, GMP_RNDN); return 0; }
 
-  expx = EXP(x);
-  precy = PREC(y);
+  expx = MPFR_EXP(x);
+  precy = MPFR_PREC(y);
 #ifdef DEBUG
-  printf("EXP(x)=%d\n",expx);
+  printf("MPFR_EXP(x)=%d\n",expx);
 #endif
 
   /* if x > (2^31-1)*ln(2), then exp(x) > 2^(2^31-1) i.e. gives +infinity */
   if (expx > 30) {
     if (MPFR_SIGN(x)>0) { printf("+infinity"); return 1; }
-    else { SET_ZERO(y); return 1; }
+    else { MPFR_SET_ZERO(y); return 1; }
   }
 
   /* if x < 2^(-precy), then exp(x) i.e. gives 1 +/- 1 ulp(1) */
@@ -141,7 +141,7 @@ mpfr_exp2(y, x, rnd_mode)
   q = precy + err + K + 3;
   mpfr_init2(r, q); mpfr_init2(s, q); mpfr_init2(t, q);
   /* the algorithm consists in computing an upper bound of exp(x) using
-     a precision of q bits, and see if we can round to PREC(y) taking
+     a precision of q bits, and see if we can round to MPFR_PREC(y) taking
      into account the maximal error. Otherwise we increase q. */
   do {
 #ifdef DEBUG
@@ -193,7 +193,7 @@ mpfr_exp2(y, x, rnd_mode)
     mpz_mul(ss, ss, ss); exps <<= 1;
     exps += mpz_normalize(ss, ss, q);
   }
-  mpfr_set_z(s, ss, GMP_RNDN); EXP(s) += exps;
+  mpfr_set_z(s, ss, GMP_RNDN); MPFR_EXP(s) += exps;
 
   if (n>0) mpfr_mul_2exp(s, s, n, GMP_RNDU);
   else mpfr_div_2exp(s, s, -n, GMP_RNDU);
@@ -206,7 +206,7 @@ mpfr_exp2(y, x, rnd_mode)
   K += k;
 #ifdef DEBUG
     printf("after mult. by 2^n:\n");
-    if (EXP(s)>-1024) printf("s=%1.20e\n",mpfr_get_d(s)); 
+    if (MPFR_EXP(s)>-1024) printf("s=%1.20e\n",mpfr_get_d(s)); 
     printf(" ="); mpfr_print_raw(s); putchar('\n');
     printf("err=%d bits\n", K);
 #endif
@@ -229,7 +229,7 @@ mpfr_exp2(y, x, rnd_mode)
   return 1;
 }
 
-/* s <- 1 + r/1! + r^2/2! + ... + r^l/l! while EXP(r^l/l!)+EXPR(r)>-q
+/* s <- 1 + r/1! + r^2/2! + ... + r^l/l! while MPFR_EXP(r^l/l!)+MPFR_EXPR(r)>-q
    using naive method with O(l) multiplications.
    Return the number of iterations l.
    The absolute error on s is less than 3*l*(l+1)*2^(-q).
@@ -286,7 +286,7 @@ mpfr_exp2_aux(s, r, q, exps)
   return l;
 }
 
-/* s <- 1 + r/1! + r^2/2! + ... + r^l/l! while EXP(r^l/l!)+EXPR(r)>-q
+/* s <- 1 + r/1! + r^2/2! + ... + r^l/l! while MPFR_EXP(r^l/l!)+MPFR_EXPR(r)>-q
    using Brent/Kung method with O(sqrt(l)) multiplications.
    Return l.
    Uses m multiplications of full size and 2l/m of decreasing size, 
@@ -311,12 +311,12 @@ mpfr_exp2_aux2(s, r, q, exps)
   TMP_DECL(marker);
 
   /* estimate value of l */
-  l = q / (-EXP(r));
+  l = q / (-MPFR_EXP(r));
   m = (int) sqrt((double) l);
   TMP_MARK(marker);
   R = (mpz_t*) TMP_ALLOC((m+1)*sizeof(mpz_t)); /* R[i] stands for r^i */
   expR = (int*) TMP_ALLOC((m+1)*sizeof(int)); /* exponent for R[i] */
-  sizer = 1 + (PREC(r)-1)/BITS_PER_MP_LIMB;
+  sizer = 1 + (MPFR_PREC(r)-1)/BITS_PER_MP_LIMB;
   mpz_init(tmp);
   MY_INIT_MPZ(rr, sizer+2);
   MY_INIT_MPZ(t, 2*sizer); /* double size for products */

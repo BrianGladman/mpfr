@@ -102,7 +102,7 @@ mpfr_set_str(x, str, base, rnd_mode)
 
   /* the number is mantissa*base^expn */
 
-  q = (PREC(x)/BITS_PER_MP_LIMB)*BITS_PER_MP_LIMB;
+  q = (MPFR_PREC(x)/BITS_PER_MP_LIMB)*BITS_PER_MP_LIMB;
   mpfr_init(y);
   mpfr_init(z);
 
@@ -126,8 +126,8 @@ mpfr_set_str(x, str, base, rnd_mode)
     /* now y is an approximation of mantissa*base^expn with error at most
        2^e*ulp(y) */
 
-  } while (mpfr_can_round(y, q-e, GMP_RNDN, rnd_mode, PREC(x))==0
-	   && q<=2*PREC(x));
+  } while (mpfr_can_round(y, q-e, GMP_RNDN, rnd_mode, MPFR_PREC(x))==0
+	   && q<=2*MPFR_PREC(x));
 
   mpfr_set(x, y, rnd_mode);
 

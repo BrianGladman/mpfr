@@ -63,12 +63,12 @@ mpfr_const_aux_log2(mylog, rnd_mode) mpfr_ptr mylog; mp_rnd_t rnd_mode;
   mpz_t cst;
   int good = 0;
   int logn;
-  int prec_i_want = PREC(mylog);
+  int prec_i_want = MPFR_PREC(mylog);
   int prec_x;
 
   mpz_init(cst);
   logn =  (int) ceil(log
-                      ((double) PREC(mylog))
+                      ((double) MPFR_PREC(mylog))
                       /log(2.0)); 
   prec_x = prec_i_want + logn;
   while (!good){
@@ -112,7 +112,7 @@ mpfr_const_aux_log2(mylog, rnd_mode) mpfr_ptr mylog; mp_rnd_t rnd_mode;
   return 0;
 }
 
-/* set x to log(2) rounded to precision PREC(x) with direction rnd_mode 
+/* set x to log(2) rounded to precision MPFR_PREC(x) with direction rnd_mode 
 
    use formula log(2) = sum(1/k/2^k, k=1..infinity)
 
@@ -134,7 +134,7 @@ mpfr_const_log2(x, rnd_mode) mpfr_ptr x; mp_rnd_t rnd_mode;
 {
   int N, oldN, k, precx; mpz_t s, t, u;
 
-  precx = PREC(x);
+  precx = MPFR_PREC(x);
 
   /* has stored value enough precision ? */
   if (precx <= __mpfr_const_log2_prec) {
@@ -174,7 +174,7 @@ mpfr_const_log2(x, rnd_mode) mpfr_ptr x; mp_rnd_t rnd_mode;
      }
    #endif
      mpfr_set_z(x, s, rnd_mode);
-     EXP(x) -= N;
+     MPFR_EXP(x) -= N;
      mpz_clear(s); mpz_clear(t); mpz_clear(u);
   } else
     {

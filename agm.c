@@ -53,24 +53,24 @@ mpfr_agm(r, a, b, rnd_mode)
 
 
   /* If a or b is NaN, the result is NaN */
-  if (FLAG_NAN(op1) || FLAG_NAN(op2)) 
-    { SET_NAN(r); return; }
+  if (MPFR_IS_NAN(op1) || MPFR_IS_NAN(op2)) 
+    { MPFR_SET_NAN(r); return; }
 
 
   /* If a or b is negative, the result is NaN */
   if ((MPFR_SIGN(op1) < 0) || (MPFR_SIGN(op2) < 0))
-    { SET_NAN(r); return; }
+    { MPFR_SET_NAN(r); return; }
 
 
   
   /* If a or b is 0, the result is 0 */
-  if ((NOTZERO(op1) && NOTZERO(op2)) == 0)
-    { SET_ZERO(r);
+  if ((MPFR_NOTZERO(op1) && MPFR_NOTZERO(op2)) == 0)
+    { MPFR_SET_ZERO(r);
     return;
     }
 
  /* precision of the following calculus */
-  q = PREC(r);
+  q = MPFR_PREC(r);
   p = q + 15;
 
 

@@ -49,18 +49,18 @@ mpfr_sqrt (r, u, rnd_mode)
   char can_round = 0; 
   TMP_DECL (marker); TMP_DECL(marker0); 
 
-  if (FLAG_NAN(u) || MPFR_SIGN(u) == -1) { SET_NAN(r); return 0; }
+  if (MPFR_IS_NAN(u) || MPFR_SIGN(u) == -1) { MPFR_SET_NAN(r); return 0; }
   
-  prec = PREC(r);
+  prec = MPFR_PREC(r);
 
-  if (!NOTZERO(u))
+  if (!MPFR_NOTZERO(u))
     {
-      EXP(r) = 0; 
-      MPN_ZERO(MANT(r), ABSSIZE(r)); 
+      MPFR_EXP(r) = 0; 
+      MPN_ZERO(MPFR_MANT(r), MPFR_ABSSIZE(r)); 
       return 1; 
     }
 
-  up = MANT(u);
+  up = MPFR_MANT(u);
 
 #ifdef DEBUG
       printf("Entering square root : "); 
@@ -70,9 +70,9 @@ mpfr_sqrt (r, u, rnd_mode)
 
   /* Compare the mantissas */
   
-  usize = (PREC(u) - 1)/BITS_PER_MP_LIMB + 1; 
-  rsize = ((PREC(r) + 2 + (EXP(u) & 1))/BITS_PER_MP_LIMB + 1) << 1; 
-  rrsize = (PREC(r) + 2 + (EXP(u) & 1))/BITS_PER_MP_LIMB + 1;
+  usize = (MPFR_PREC(u) - 1)/BITS_PER_MP_LIMB + 1; 
+  rsize = ((MPFR_PREC(r) + 2 + (MPFR_EXP(u) & 1))/BITS_PER_MP_LIMB + 1) << 1; 
+  rrsize = (MPFR_PREC(r) + 2 + (MPFR_EXP(u) & 1))/BITS_PER_MP_LIMB + 1;
   /* One extra bit is needed in order to get the square root with enough
      precision ; take one extra bit for rrsize in order to solve more 
      easily the problem of rounding to nearest.
@@ -82,9 +82,9 @@ mpfr_sqrt (r, u, rnd_mode)
   */
 
   TMP_MARK(marker0); 
-  if (EXP(u) & 1) /* Shift u one bit to the right */
+  if (MPFR_EXP(u) & 1) /* Shift u one bit to the right */
     {
-      if (PREC(u) & (BITS_PER_MP_LIMB - 1))
+      if (MPFR_PREC(u) & (BITS_PER_MP_LIMB - 1))
 	{
 	  up = TMP_ALLOC(usize*BYTES_PER_MP_LIMB);
 	  mpn_rshift(up, u->_mp_d, usize, 1); 
@@ -92,14 +92,14 @@ mpfr_sqrt (r, u, rnd_mode)
       else
 	{
 	  up = TMP_ALLOC((usize + 1)*BYTES_PER_MP_LIMB);
-	  if (mpn_rshift(up + 1, u->_mp_d, ABSSIZE(u), 1))
+	  if (mpn_rshift(up + 1, u->_mp_d, MPFR_ABSSIZE(u), 1))
 	    up [0] = ((mp_limb_t) 1) << (BITS_PER_MP_LIMB - 1); 
 	  else up[0] = 0; 
 	  usize++; 
 	}
     }
 
-  EXP(r) = ((EXP(u) + (EXP(u) & 1)) / 2) ;  
+  MPFR_EXP(r) = ((MPFR_EXP(u) + (MPFR_EXP(u) & 1)) / 2) ;  
   
   do
     {
@@ -141,7 +141,7 @@ mpfr_sqrt (r, u, rnd_mode)
 #endif
       
       can_round = (mpfr_can_round_raw(rp, rrsize, 1, err, 
-				      GMP_RNDZ, rnd_mode, PREC(r))); 
+				      GMP_RNDZ, rnd_mode, MPFR_PREC(r))); 
 
       /* If we used all the limbs of both the dividend and the divisor, 
 	 then we have the correct RNDZ rounding */
@@ -173,8 +173,8 @@ mpfr_sqrt (r, u, rnd_mode)
 
   if (can_round) 
     {
-      cc = mpfr_round_raw(rp, rp, err, 0, PREC(r), rnd_mode);  
-      rrsize = (PREC(r) - 1)/BITS_PER_MP_LIMB + 1; 
+      cc = mpfr_round_raw(rp, rp, err, 0, MPFR_PREC(r), rnd_mode);  
+      rrsize = (MPFR_PREC(r) - 1)/BITS_PER_MP_LIMB + 1; 
     }
   else
     /* Use the return value of sqrtrem to decide of the rounding         */
@@ -190,7 +190,7 @@ mpfr_sqrt (r, u, rnd_mode)
 
       case GMP_RNDN : 
 	/* Not in the situation ...0 111111 */
-	rw = (PREC(r) + 1) & (BITS_PER_MP_LIMB - 1);
+	rw = (MPFR_PREC(r) + 1) & (BITS_PER_MP_LIMB - 1);
 	if (rw) { rw = BITS_PER_MP_LIMB - rw; nw = 0; } else nw = 1; 
 	if ((rp[nw] >> rw) & 1 &&                     /* Not 0111111111 */
 	    (q_limb ||                                /* Nonzero remainder */
@@ -202,7 +202,7 @@ mpfr_sqrt (r, u, rnd_mode)
       case GMP_RNDU : 
 	if (q_limb)
 	  {
-	    t = PREC(r) & (BITS_PER_MP_LIMB - 1); 
+	    t = MPFR_PREC(r) & (BITS_PER_MP_LIMB - 1); 
 	    if (t) 
 	      {
 		cc = mpn_add_1(rp, rp, rrsize, 1 << (BITS_PER_MP_LIMB - t)); 
@@ -220,12 +220,12 @@ mpfr_sqrt (r, u, rnd_mode)
 
  fin:
   rsize = rrsize; 
-  rrsize = (PREC(r) - 1)/BITS_PER_MP_LIMB + 1;  
+  rrsize = (MPFR_PREC(r) - 1)/BITS_PER_MP_LIMB + 1;  
   MPN_COPY(r->_mp_d, rp + rsize - rrsize, rrsize); 
 
-  if (PREC(r) & (BITS_PER_MP_LIMB - 1))
-    MANT(r) [0] &= ~(((mp_limb_t)1 << (BITS_PER_MP_LIMB - 
-				   (PREC(r) & (BITS_PER_MP_LIMB - 1)))) - 1) ; 
+  if (MPFR_PREC(r) & (BITS_PER_MP_LIMB - 1))
+    MPFR_MANT(r) [0] &= ~(((mp_limb_t)1 << (BITS_PER_MP_LIMB - 
+				   (MPFR_PREC(r) & (BITS_PER_MP_LIMB - 1)))) - 1) ; 
   
   TMP_FREE(marker0); TMP_FREE (marker);
   return exact; 

@@ -44,17 +44,17 @@ mpfr_eq (u, v, n_bits)
   uexp = u->_mp_exp;
   vexp = v->_mp_exp;
 
-  usize = (PREC(u)-1)/BITS_PER_MP_LIMB + 1;
-  vsize = (PREC(v)-1)/BITS_PER_MP_LIMB + 1;
+  usize = (MPFR_PREC(u)-1)/BITS_PER_MP_LIMB + 1;
+  vsize = (MPFR_PREC(v)-1)/BITS_PER_MP_LIMB + 1;
 
   /* 1. Are the signs different?  */
   if (MPFR_SIGN(u) ==  MPFR_SIGN(v))
     {
       /* U and V are both non-negative or both negative.  */
-      if (!NOTZERO(u))
-	return !NOTZERO(v); 
-      if (!NOTZERO(v))
-	return !NOTZERO(u);
+      if (!MPFR_NOTZERO(u))
+	return !MPFR_NOTZERO(v); 
+      if (!MPFR_NOTZERO(v))
+	return !MPFR_NOTZERO(u);
 
       /* Fall out.  */
     }

@@ -28,7 +28,7 @@ MA 02111-1307, USA. */
 #define MPFR_SIGN_PART(x) mpfr_cmp_ui_2exp(x,0,0)
 
 #define MPFI_ISPOS(x) ((MPFR_SIGN_PART((&(x->left)))>=0) && (MPFR_SIGN_PART((&(x->right)))>0))
-#define MPFI_ISNEG(x) ((MPFR_SIGN_PART((&(x->left)))<0) && (MPFR_SIGN_PART((&(x->right)))<=0))
+#define MPFI_MPFR_ISNEG(x) ((MPFR_SIGN_PART((&(x->left)))<0) && (MPFR_SIGN_PART((&(x->right)))<=0))
 #define MPFI_ISNULL(x) ((MPFR_SIGN_PART((&(x->left)))==0) && (MPFR_SIGN_PART((&(x->right)))==0))
 #define MPFI_HASZERO(x) ((MPFR_SIGN_PART((&(x->left)))<0) && (MPFR_SIGN_PART((&(x->right)))>0))
 
@@ -200,11 +200,11 @@ void mpfi_mul (mpfi_ptr a, mpfi_srcptr b, mpfi_srcptr c)
       mpfr_mul(&(a->right), &(b->right), &(c->right), MPFI_RNDU);
     }
     else {
-      if (MPFI_ISNEG(c)) {
+      if (MPFI_MPFR_ISNEG(c)) {
 	in_place = (b->right)._mp_d == (a->right)._mp_d;
 	if (!in_place) u[0] = b->right;
 	else {
-	  mpfr_init2 (u, PREC(&(b->right)));
+	  mpfr_init2 (u, MPFR_PREC(&(b->right)));
 	  mpfr_set (u, &(b->right), GMP_RNDD);
 	}
 	mpfr_mul (&(a->right), &(b->left), &(c->right), MPFI_RNDU);
@@ -240,7 +240,7 @@ void mpfi_div (mpfi_ptr a, mpfi_srcptr u, mpfi_srcptr c)
       mpfr_div(&(a->right),&(b->right),&(c->left),MPFI_RNDU);
     }
     else {
-      if (MPFI_ISNEG(c)) {
+      if (MPFI_MPFR_ISNEG(c)) {
 	mpfr_div(&(a->right),&(b->left),&(c->left),MPFI_RNDU);
 	mpfr_div(&(a->left),&(b->right),&(c->right),MPFI_RNDD);    
       }
@@ -289,11 +289,11 @@ void mpfi_sub_ui (mpfi_ptr a, mpfi_srcptr b, unsigned int c)
 
 void mpfi_ui_div (mpfi_ptr a, unsigned int b, mpfi_srcptr c)
 {
-  if (MPFI_ISPOS(c) || MPFI_ISNEG(c)) {
+  if (MPFI_ISPOS(c) || MPFI_MPFR_ISNEG(c)) {
     mpfr_t tmp;
     int in_place = (a->left)._mp_d == (c->left)._mp_d;
     if (in_place) {
-      mpfr_init2 (tmp, PREC(&(a->left)));
+      mpfr_init2 (tmp, MPFR_PREC(&(a->left)));
       mpfr_set (tmp, &(a->left), GMP_RNDN);
     }
     else tmp[0] = a->left;
@@ -350,7 +350,7 @@ void mpfi_neg(mpfi_ptr a, mpfi_srcptr b)
 {
   mpfr_t tmp;
 
-  mpfr_init2 (tmp, PREC(&(b->left)));
+  mpfr_init2 (tmp, MPFR_PREC(&(b->left)));
   mpfr_set (tmp, &(b->left), MPFI_RNDD);
   mpfr_neg (&(a->left), &(b->right), MPFI_RNDD);
   mpfr_neg (&(a->right), tmp, MPFI_RNDU);

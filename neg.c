@@ -35,6 +35,6 @@ mpfr_neg(a, b, rnd_mode)
 #endif
 {
   if (a != b) mpfr_set4(a, b, rnd_mode, -MPFR_SIGN(b));
-  else CHANGE_SIGN(a);
+  else MPFR_CHANGE_SIGN(a);
   return; 
 }

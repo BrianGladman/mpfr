@@ -189,28 +189,28 @@ mpfr_round(x, rnd_mode, prec)
   signx = MPFR_SIGN(x);
 
   /* check if x has enough allocated space for the mantissa */
-  if (nw > ABSSIZE(x)) {
-    MANT(x) = (mp_ptr) (*_mp_reallocate_func) 
-      (MANT(x), ABSSIZE(x)*BYTES_PER_MP_LIMB, nw * BYTES_PER_MP_LIMB);
-    SIZE(x) = nw; /* new number of allocated limbs */
+  if (nw > MPFR_ABSSIZE(x)) {
+    MPFR_MANT(x) = (mp_ptr) (*_mp_reallocate_func) 
+      (MPFR_MANT(x), MPFR_ABSSIZE(x)*BYTES_PER_MP_LIMB, nw * BYTES_PER_MP_LIMB);
+    MPFR_SIZE(x) = nw; /* new number of allocated limbs */
   }
 
   TMP_MARK(marker); 
   tmp = TMP_ALLOC (nw * BYTES_PER_MP_LIMB);
-  carry = mpfr_round_raw(tmp, MANT(x), PREC(x), (MPFR_SIGN(x)<0), prec, 
+  carry = mpfr_round_raw(tmp, MPFR_MANT(x), MPFR_PREC(x), (MPFR_SIGN(x)<0), prec, 
 			 rnd_mode);
 
   if (carry)
     {      
       mpn_rshift(tmp, tmp, nw, 1); 
       tmp [nw-1] |= (((mp_limb_t)1) << (BITS_PER_MP_LIMB - 1)); 
-      EXP(x)++; 
+      MPFR_EXP(x)++; 
     }
 
-  SIZE(x)=nw;
-  if (signx * MPFR_SIGN(x)<0) CHANGE_SIGN(x);
-  PREC(x) = prec; 
-  MPN_COPY(MANT(x), tmp, nw); 
+  MPFR_SIZE(x)=nw;
+  if (signx * MPFR_SIGN(x)<0) MPFR_CHANGE_SIGN(x);
+  MPFR_PREC(x) = prec; 
+  MPN_COPY(MPFR_MANT(x), tmp, nw); 
   TMP_FREE(marker);
 }
 
@@ -219,7 +219,7 @@ mpfr_round(x, rnd_mode, prec)
 
 
 /* assuming b is an approximation of x in direction rnd1 
-   with error at most 2^(EXP(b)-err), returns 1 if one is 
+   with error at most 2^(MPFR_EXP(b)-err), returns 1 if one is 
    able to round exactly x to precision prec with direction rnd2,
    and 0 otherwise.
 
@@ -239,7 +239,7 @@ mpfr_can_round(b, err, rnd1, rnd2, prec)
      mp_prec_t prec;
 #endif
 {
-  return mpfr_can_round_raw(MANT(b), (PREC(b) - 1)/BITS_PER_MP_LIMB + 1, 
+  return mpfr_can_round_raw(MPFR_MANT(b), (MPFR_PREC(b) - 1)/BITS_PER_MP_LIMB + 1, 
 			    MPFR_SIGN(b), err, rnd1, rnd2, prec); 
 }
 
@@ -287,12 +287,12 @@ mpfr_can_round_raw(bp, bn, neg, err, rnd1, rnd2, prec)
 
   switch (rnd1) {
     
-  case GMP_RNDZ: /* b <= x <= b+2^(EXP(b)-err) */
+  case GMP_RNDZ: /* b <= x <= b+2^(MPFR_EXP(b)-err) */
     tmp = TMP_ALLOC(tn*BYTES_PER_MP_LIMB); 
     cc = (bp[bn-1]>>l1) & 1;
     cc ^= mpfr_round_raw2(bp, bn, neg, rnd2, prec);
 
-    /* now round b+2^(EXP(b)-err) */
+    /* now round b+2^(MPFR_EXP(b)-err) */
     cc2 = mpn_add_1(tmp+bn-k, bp+bn-k, k, (mp_limb_t)1<<l);
     /* if carry, then all bits up to err were to 1, and we can round only
        if cc==0 and mpfr_round_raw2 returns 0 below */
@@ -303,13 +303,13 @@ mpfr_can_round_raw(bp, bn, neg, err, rnd1, rnd2, prec)
     TMP_FREE(marker); 
     return (cc == cc2);
 
-  case GMP_RNDU: /* b-2^(EXP(b)-err) <= x <= b */
+  case GMP_RNDU: /* b-2^(MPFR_EXP(b)-err) <= x <= b */
     tmp = TMP_ALLOC(tn*BYTES_PER_MP_LIMB); 
     /* first round b */
     cc = (bp[bn-1]>>l1) & 1;
     cc ^= mpfr_round_raw2(bp, bn, neg, rnd2, prec);
 
-    /* now round b-2^(EXP(b)-err) */
+    /* now round b-2^(MPFR_EXP(b)-err) */
     cc2 = mpn_sub_1(tmp+bn-k, bp+bn-k, k, (mp_limb_t)1<<l);
     /* if borrow, then all bits up to err were to 0, and we can round only
        if cc==0 and mpfr_round_raw2 returns 1 below */
@@ -320,12 +320,12 @@ mpfr_can_round_raw(bp, bn, neg, err, rnd1, rnd2, prec)
     TMP_FREE(marker); 
     return (cc == cc2);
 
-  case GMP_RNDN: /* b-2^(EXP(b)-err-1) <= x <= b+2^(EXP(b)-err-1) */
+  case GMP_RNDN: /* b-2^(MPFR_EXP(b)-err-1) <= x <= b+2^(MPFR_EXP(b)-err-1) */
     if (l==0) tn++; 
     tmp = TMP_ALLOC(tn*BYTES_PER_MP_LIMB); 
 
     /* this case is the same than GMP_RNDZ, except we first have to
-       subtract 2^(EXP(b)-err-1) from b */
+       subtract 2^(MPFR_EXP(b)-err-1) from b */
 
     if (l) { 
       l--; /* tn=bn */
@@ -337,14 +337,14 @@ mpfr_can_round_raw(bp, bn, neg, err, rnd1, rnd2, prec)
       mpn_sub_1(tmp+tn-k, tmp+tn-k, k, (mp_limb_t)1<<l);
     }
 
-    /* round b-2^(EXP(b)-err-1) */
+    /* round b-2^(MPFR_EXP(b)-err-1) */
     /* we can disregard borrow, since we start from tmp in 2nd case too */
     cc = (tmp[tn-1]>>l1) & 1;
     cc ^= mpfr_round_raw2(tmp, tn, neg, rnd2, prec);
 
     if (l==BITS_PER_MP_LIMB-1) { l=0; k--; } else l++;
 
-    /* round b+2^(EXP(b)-err-1) = b-2^(EXP(b)-err-1) + 2^(EXP(b)-err) */    
+    /* round b+2^(MPFR_EXP(b)-err-1) = b-2^(MPFR_EXP(b)-err-1) + 2^(MPFR_EXP(b)-err) */    
     cc2 = mpn_add_1(tmp+tn-k, tmp+tn-k, k, (mp_limb_t)1<<l);
     /* if carry, then all bits up to err were to 1, and we can round only
        if cc==0 and mpfr_round_raw2 returns 0 below */

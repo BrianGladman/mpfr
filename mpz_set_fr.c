@@ -37,7 +37,7 @@ mpz_set_fr (z, f)
 {
   int fn, sh;
 
-  fn = 1 + (PREC(f)-1)/BITS_PER_MP_LIMB;
+  fn = 1 + (MPFR_PREC(f)-1)/BITS_PER_MP_LIMB;
 
   /* check whether allocated space for z is enough */
   if (ALLOC(z) < fn) {
@@ -46,11 +46,11 @@ mpz_set_fr (z, f)
     ALLOC(z) = fn;
   }
 
-  sh = fn*BITS_PER_MP_LIMB - PREC(f);
-  if (sh) mpn_rshift(PTR(z), MANT(f), fn, sh);
-  else MPN_COPY(PTR(z), MANT(f), fn);
+  sh = fn*BITS_PER_MP_LIMB - MPFR_PREC(f);
+  if (sh) mpn_rshift(PTR(z), MPFR_MANT(f), fn, sh);
+  else MPN_COPY(PTR(z), MPFR_MANT(f), fn);
 
   SIZ(z) = fn;
 
-  return EXP(f)-PREC(f);
+  return MPFR_EXP(f)-MPFR_PREC(f);
 }

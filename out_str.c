@@ -40,8 +40,8 @@ mpfr_out_str (stream, base, n_digits, op, rnd_mode)
 {
   char *s,*s0; size_t l; mp_exp_t e;
 
-  if (FLAG_NAN(op)) { fprintf(stream, "NaN"); return 3; }
-  if (!NOTZERO(op)) { fprintf(stream, "0"); return 1; }
+  if (MPFR_IS_NAN(op)) { fprintf(stream, "NaN"); return 3; }
+  if (!MPFR_NOTZERO(op)) { fprintf(stream, "0"); return 1; }
 
   s = mpfr_get_str(NULL, &e, base, n_digits, op, rnd_mode);
   s0 = s;

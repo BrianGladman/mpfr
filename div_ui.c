@@ -49,17 +49,17 @@ mpfr_div_ui(y, x, u, rnd_mode)
   int xn, yn, dif, sh, i; mp_limb_t *xp, *yp, *tmp, c, d;
   TMP_DECL(marker);
 
-  if (FLAG_NAN(x)) { SET_NAN(y); return 1; }
+  if (MPFR_IS_NAN(x)) { MPFR_SET_NAN(y); return 1; }
   if (u==0) { fprintf(stderr, "division by zero\n"); exit(1); }
 
   TMP_MARK(marker);
-  xn = (PREC(x)-1)/BITS_PER_MP_LIMB + 1;
-  yn = (PREC(y)-1)/BITS_PER_MP_LIMB + 1;
+  xn = (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB + 1;
+  yn = (MPFR_PREC(y)-1)/BITS_PER_MP_LIMB + 1;
 
-  xp = MANT(x);
-  yp = MANT(y);
-  EXP(y) = EXP(x);
-  if (MPFR_SIGN(x) * MPFR_SIGN(y) < 0) CHANGE_SIGN(y);
+  xp = MPFR_MANT(x);
+  yp = MPFR_MANT(y);
+  MPFR_EXP(y) = MPFR_EXP(x);
+  if (MPFR_SIGN(x) * MPFR_SIGN(y) < 0) MPFR_CHANGE_SIGN(y);
 
   dif = yn+1-xn;
 #ifdef DEBUG
@@ -77,27 +77,27 @@ mpfr_div_ui(y, x, u, rnd_mode)
     /* patch for bug in mpn_divrem_1 for GMP 2.xxx */
     count_leading_zeros(sh, c);
     c <<= sh;
-    EXP(y) += sh;
+    MPFR_EXP(y) += sh;
 #endif
     c = mpn_divrem_1(tmp, dif, xp, xn, c);
   }
   else /* dif < 0 i.e. xn > yn */
     c = mpn_divrem_1(tmp, 0, xp-dif, yn, c);
 
-  if (tmp[yn]==0) { tmp--; sh=0; EXP(y) -= BITS_PER_MP_LIMB; }
+  if (tmp[yn]==0) { tmp--; sh=0; MPFR_EXP(y) -= BITS_PER_MP_LIMB; }
   /* shift left to normalize */
   count_leading_zeros(sh, tmp[yn]);
   if (sh) {
     mpn_lshift(yp, tmp+1, yn, sh);
     yp[0] += tmp[0] >> (BITS_PER_MP_LIMB-sh);
-    EXP(y) -= sh; 
+    MPFR_EXP(y) -= sh; 
   }
   else MPN_COPY(yp, tmp+1, yn);
 #ifdef DEBUG
   printf("y="); mpfr_print_raw(y); putchar('\n');
 #endif
 
-  sh = yn*BITS_PER_MP_LIMB - PREC(y);
+  sh = yn*BITS_PER_MP_LIMB - MPFR_PREC(y);
   /* it remains sh bits in less significant limb of y */
 
   d = *yp & (((mp_limb_t)1 << sh) - 1);

@@ -37,7 +37,7 @@ mpfr_mul_2exp(y, x, n, rnd_mode)
 {
   /* Important particular case */ 
   if (y != x) mpfr_set(y, x, rnd_mode);
-  EXP(y) += n;
+  MPFR_EXP(y) += n;
   return;
 }
 

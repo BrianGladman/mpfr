@@ -41,7 +41,7 @@ mpfr_zeta(result, op, rnd_mode)
 
 	/* first version */
 	if (mpfr_get_d(op) != 2.0 || rnd_mode != GMP_RNDN 
-	|| PREC(result) != 53) {
+	|| MPFR_PREC(result) != 53) {
 	   fprintf(stderr, "not yet implemented\n"); exit(1);
 	}
 

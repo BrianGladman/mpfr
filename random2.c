@@ -49,8 +49,8 @@ mpfr_random2 (x, size, exp)
      mp_exp_t exp;
 #endif
 {
-  mp_size_t xn; unsigned long cnt; mp_ptr xp = MANT(x); 
-  mp_size_t prec = (PREC(x) - 1)/BITS_PER_MP_LIMB; 
+  mp_size_t xn; unsigned long cnt; mp_ptr xp = MPFR_MANT(x); 
+  mp_size_t prec = (MPFR_PREC(x) - 1)/BITS_PER_MP_LIMB; 
 
   xn = ABS (size);
   if (xn != 0)
@@ -66,7 +66,7 @@ mpfr_random2 (x, size, exp)
 
   count_leading_zeros(cnt, xp[xn - 1]); 
   if (cnt) mpn_lshift(xp, xp, xn, cnt); 
-  EXP(x) = exp-cnt; 
+  MPFR_EXP(x) = exp-cnt; 
   cnt = xn*BITS_PER_MP_LIMB - prec; 
   /* cnt is the number of non significant bits in the low limb */
   xp[0] &= ~((((mp_limb_t)1)<<cnt) - 1);

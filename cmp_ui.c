@@ -44,11 +44,11 @@ mpfr_cmp_ui_2exp (b, i, f)
 
   if (MPFR_SIGN(b) < 0) return -1;
   /* now b>=0 */
-  else if (!NOTZERO(b)) return((i) ? -1 : 0);
+  else if (!MPFR_NOTZERO(b)) return((i) ? -1 : 0);
   /* now b>0 */
   else if (i==0) return 1;
   else { /* b>0, i>0 */
-    e = EXP(b); /* 2^(e-1) <= b < 2^e */
+    e = MPFR_EXP(b); /* 2^(e-1) <= b < 2^e */
     if (e>f+BITS_PER_MP_LIMB) return 1;
 
     c = (mp_limb_t) i;
@@ -58,8 +58,8 @@ mpfr_cmp_ui_2exp (b, i, f)
 
     /* now k=e */
     c <<= (f+BITS_PER_MP_LIMB-k);
-    bn = (PREC(b)-1)/BITS_PER_MP_LIMB;
-    bp = MANT(b) + bn;
+    bn = (MPFR_PREC(b)-1)/BITS_PER_MP_LIMB;
+    bp = MPFR_MANT(b) + bn;
     if (*bp>c) return 1;
     else if (*bp<c) return -1;
 
@@ -89,13 +89,13 @@ mpfr_cmp_si_2exp(b, i, f)
 
   si = (i<0) ? -1 : 1; /* sign of i */
   if (MPFR_SIGN(b) * i < 0) return MPFR_SIGN(b); /* both signs differ */
-  else if (!NOTZERO(b) || (i==0)) { /* one is zero */
-    if (i==0) return ((NOTZERO(b)) ? MPFR_SIGN(b) : 0);
+  else if (!MPFR_NOTZERO(b) || (i==0)) { /* one is zero */
+    if (i==0) return ((MPFR_NOTZERO(b)) ? MPFR_SIGN(b) : 0);
     else return si; /* b is zero */
       
   }
   else { /* b and i are of same sign */
-    e = EXP(b); /* 2^(e-1) <= b < 2^e */
+    e = MPFR_EXP(b); /* 2^(e-1) <= b < 2^e */
     if (e>f+BITS_PER_MP_LIMB) return si;
 
     c = (mp_limb_t) ((i<0) ? -i : i);
@@ -105,8 +105,8 @@ mpfr_cmp_si_2exp(b, i, f)
 
     /* now k=e */
     c <<= (f+BITS_PER_MP_LIMB-k);
-    bn = (PREC(b)-1)/BITS_PER_MP_LIMB;
-    bp = MANT(b) + bn;
+    bn = (MPFR_PREC(b)-1)/BITS_PER_MP_LIMB;
+    bp = MPFR_MANT(b) + bn;
     if (*bp>c) return si;
     else if (*bp<c) return -si;
 

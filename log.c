@@ -63,16 +63,16 @@ mpfr_log(r, a, rnd_mode)
   TMP_DECL(marker);
 
   /* If a is NaN or a is negative or null, the result is NaN */
-  if (FLAG_NAN(a) || (NOTZERO(a)==0) || (MPFR_SIGN(a)<0))
-    { SET_NAN(r); return 1; }
+  if (MPFR_IS_NAN(a) || (MPFR_NOTZERO(a)==0) || (MPFR_SIGN(a)<0))
+    { MPFR_SET_NAN(r); return 1; }
 
   /* If a is 1, the result is 0 */
   if (mpfr_cmp_ui_2exp(a,1,0)==0){
-    SET_ZERO(r);
+    MPFR_SET_ZERO(r);
     return 0; /* only case where the result is exact */
   }
 
-  q=PREC(r);
+  q=MPFR_PREC(r);
   
   ref=mpfr_get_d(a)-1.0;
   if (ref<0)
@@ -92,7 +92,7 @@ mpfr_log(r, a, rnd_mode)
     printf("p=%d\n", p);
 #endif
     /* Calculus of m (depends on p) */
-    m=(int) ceil(((double) p)/2.0) -EXP(a)+1;
+    m=(int) ceil(((double) p)/2.0) -MPFR_EXP(a)+1;
 
     /* All the mpfr_t needed have a precision of p */
     TMP_MARK(marker);
@@ -116,9 +116,9 @@ mpfr_log(r, a, rnd_mode)
     mpfr_div(tmp2,cst,tmp1,GMP_RNDN);     /* pi/2*AG(1,4/s), err<=5ulps */
     mpfr_const_log2(cst,GMP_RNDN);        /* compute log(2), err<=1ulp */
     mpfr_mul(tmp1,cst,mm,GMP_RNDN);       /* I compute m*log(2), err<=2ulps */
-    cancel = EXP(tmp2); 
+    cancel = MPFR_EXP(tmp2); 
     mpfr_sub(cst,tmp2,tmp1,GMP_RNDN);     /* log(a), err<=7ulps+cancel */ 
-    cancel -= EXP(cst);
+    cancel -= MPFR_EXP(cst);
 #ifdef DEBUG
     printf("cancelled bits=%d\n", cancel);
     printf("approx="); mpfr_print_raw(cst); putchar('\n');

@@ -43,17 +43,17 @@ mpfr_set_q (f, q, rnd)
   num = mpq_numref(q);
   sign = mpz_cmp_ui(num, 0);
   if (sign==0) {
-    SET_ZERO(f);
+    MPFR_SET_ZERO(f);
     return;
   }
 
   den = mpq_denref(q);
-  prec = PREC(f);
+  prec = MPFR_PREC(f);
   mpfr_init2(n, mpz_sizeinbase(num, 2));
   mpfr_set_z(n, num, GMP_RNDZ); /* result is exact */
   mpfr_init2(d, mpz_sizeinbase(den, 2));
   mpfr_set_z(d, den, GMP_RNDZ); /* result is exact */
-  PREC(f) = prec; 
+  MPFR_PREC(f) = prec; 
   mpfr_div(f, n, d, rnd);
   mpfr_clear(n); mpfr_clear(d);
 }

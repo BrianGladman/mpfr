@@ -49,7 +49,7 @@ mpfr_set_str_raw(x, str)
   long expn = 0, e; char *endstr2;
 
   xp = x -> _mp_d; 
-  xsize = 1 + (PREC(x)-1)/BITS_PER_MP_LIMB;
+  xsize = 1 + (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB;
   alloc = (strlen(str)+1) * sizeof(char);
   str0 = str2 = (char *) (*_mp_allocate_func) (alloc);
 
@@ -104,7 +104,7 @@ mpfr_set_str_raw(x, str)
   if (cnt) mpn_lshift(xp, xp, xsize, cnt); 
 
   x -> _mp_exp = expn - cnt; 
-  x -> _mp_size = xsize; if (negative) CHANGE_SIGN(x);
+  x -> _mp_size = xsize; if (negative) MPFR_CHANGE_SIGN(x);
 
   (*_mp_free_func) (str0, alloc);
   

@@ -58,7 +58,7 @@ int m;
   mpz_t* P,*S;
   mpz_t* ptoj;
   int diff,expo;
-  int precy = PREC(y);
+  int precy = MPFR_PREC(y);
   int * mult;
   int prec_i_have;
   int *nb_terms;
@@ -131,7 +131,7 @@ int m;
 
   mpz_tdiv_q(S[0], S[0], P[0]);
   mpfr_set_z(y,S[0], GMP_RNDD);
-  EXP(y) += expo;
+  MPFR_EXP(y) += expo;
 
   mpfr_div_2exp(y, y, r*(i-1),GMP_RNDN); 
   for (i=0;i<=m;i++) { mpz_clear(P[i]); mpz_clear(S[i]); mpz_clear(ptoj[i]); }
@@ -173,8 +173,8 @@ mp_rnd_t rnd_mode;
   int iter;
   int logn;
   /* commencons par 0 */
-  if (FLAG_NAN(x)) { SET_NAN(y); return 1; }
-  if (!NOTZERO(x)) { 
+  if (MPFR_IS_NAN(x)) { MPFR_SET_NAN(y); return 1; }
+  if (!MPFR_NOTZERO(x)) { 
     mpfr_set_ui(y, 1, GMP_RNDN); 
     return 0;
  }
@@ -182,23 +182,23 @@ mp_rnd_t rnd_mode;
   /* on commence par ecrire x = 1.xxxxxxxxxxxxx
      ----- k bits -- */
   prec_x = (int) ceil(log
-		      ((double) (PREC(x)) / (double) BITS_PER_MP_LIMB)
+		      ((double) (MPFR_PREC(x)) / (double) BITS_PER_MP_LIMB)
 		      /log(2.0));  
   logn =  (int) ceil(log
-		      ((double) prec_x+PREC(y))
+		      ((double) prec_x+MPFR_PREC(y))
 		      /log(2.0));  
   if (logn < 2) logn = 2;
-  ttt = EXP(x);
-  mpfr_init2(x_copy,PREC(x));
+  ttt = MPFR_EXP(x);
+  mpfr_init2(x_copy,MPFR_PREC(x));
   mpfr_set(x_copy,x,GMP_RNDD);
   /* on fait le shift pour que le nombre soit inferieur a 1 */
   if (ttt > 0) 
     {
       shift_x = ttt;
       mpfr_mul_2exp(x_copy,x,-ttt, GMP_RNDN); 
-      ttt = EXP(x_copy);
+      ttt = MPFR_EXP(x_copy);
     }
-  realprec = PREC(y)+logn;
+  realprec = MPFR_PREC(y)+logn;
   while (!good){      
     Prec = realprec+shift+2+shift_x;
     k = (int) ceil(log
@@ -243,7 +243,7 @@ mp_rnd_t rnd_mode;
 #endif
 #ifdef DEBUG
 	fprintf(stderr, "fin\n");
-	mpfr_out_str(stderr, 2, PREC(y), t, GMP_RNDD);
+	mpfr_out_str(stderr, 2, MPFR_PREC(y), t, GMP_RNDD);
 	fprintf(stderr, "\n ii --- ii \n");
 #endif
 	twopoweri <<= 1;
@@ -252,7 +252,7 @@ mp_rnd_t rnd_mode;
       for (loop= 0 ; loop < shift_x; loop++)
 	mpfr_mul(tmp,tmp,tmp,GMP_RNDD);
       mpfr_clear(t);      	    
-      if (mpfr_can_round(tmp, realprec, GMP_RNDD, rnd_mode, PREC(y))){
+      if (mpfr_can_round(tmp, realprec, GMP_RNDD, rnd_mode, MPFR_PREC(y))){
 	    mpfr_set(y,tmp,rnd_mode);
 	    mpfr_clear(tmp);
 	    good = 1;

@@ -53,19 +53,19 @@ mpfr_div (r, u, v, rnd_mode)
   char can_round = 0; 
   TMP_DECL (marker);
 
-  if (FLAG_NAN(u) || FLAG_NAN(v)) { SET_NAN(r); return; }
+  if (MPFR_IS_NAN(u) || MPFR_IS_NAN(v)) { MPFR_SET_NAN(r); return; }
   
-  usize = (PREC(u) - 1)/BITS_PER_MP_LIMB + 1; 
-  vsize = (PREC(v) - 1)/BITS_PER_MP_LIMB + 1; 
+  usize = (MPFR_PREC(u) - 1)/BITS_PER_MP_LIMB + 1; 
+  vsize = (MPFR_PREC(v) - 1)/BITS_PER_MP_LIMB + 1; 
   sign_quotient = ((MPFR_SIGN(u) * MPFR_SIGN(v) > 0) ? 1 : -1); 
-  prec = PREC(r);
+  prec = MPFR_PREC(r);
 
-  if (!NOTZERO(u)) { SET_ZERO(r); return; }
+  if (!MPFR_NOTZERO(u)) { MPFR_SET_ZERO(r); return; }
 
-  if (!NOTZERO(v))
+  if (!MPFR_NOTZERO(v))
     vsize = 1 / v->_mp_d[vsize - 1];    /* Gestion des infinis ? */
   
-  if (!NOTZERO(v))
+  if (!MPFR_NOTZERO(v))
     {
       r->_mp_exp = 0;
       MPN_ZERO(r->_mp_d, r->_mp_size); 
@@ -93,13 +93,13 @@ mpfr_div (r, u, v, rnd_mode)
     }
   else { mult = (mult < 0 ? 1 : 0); }
 
-  rsize = (PREC(r) + 3)/BITS_PER_MP_LIMB + 1; 
-  rrsize = PREC(r)/BITS_PER_MP_LIMB + 1;
+  rsize = (MPFR_PREC(r) + 3)/BITS_PER_MP_LIMB + 1; 
+  rrsize = MPFR_PREC(r)/BITS_PER_MP_LIMB + 1;
   /* Three extra bits are needed in order to get the quotient with enough
      precision ; take one extra bit for rrsize in order to solve more 
      easily the problem of rounding to nearest. */
 
-  /* ATTENTION, USIZE DOIT RESTER > A VSIZE !!!!!!!! */
+  /* ATTENTION, UMPFR_SIZE DOIT RESTER > A VMPFR_SIZE !!!!!!!! */
 
   do
     {
@@ -181,10 +181,10 @@ mpfr_div (r, u, v, rnd_mode)
 	}
 
       can_round = (mpfr_can_round_raw(rp, rrsize, sign_quotient, err, 
-				     GMP_RNDN, rnd_mode, PREC(r))
+				     GMP_RNDN, rnd_mode, MPFR_PREC(r))
 	|| (usize == rsize && vsize == rsize && 
 	    mpfr_can_round_raw(rp, rrsize, sign_quotient, err, 
-			       GMP_RNDZ, rnd_mode, PREC(r))));
+			       GMP_RNDZ, rnd_mode, MPFR_PREC(r))));
 
       /* If we used all the limbs of both the dividend and the divisor, 
 	 then we have the correct RNDZ rounding */
@@ -204,12 +204,12 @@ mpfr_div (r, u, v, rnd_mode)
   /* MAIS IL FAUT AJOUTER LE BOUT QUI MANQUE DE usize A rsize */
     
   oldrrsize = rrsize;
-  rrsize = (PREC(r) - 1)/BITS_PER_MP_LIMB + 1;
+  rrsize = (MPFR_PREC(r) - 1)/BITS_PER_MP_LIMB + 1;
 
   if (can_round) 
     {
       cc = mpfr_round_raw(rp, rp, err, (sign_quotient == -1 ? 1 : 0),
-			  PREC(r), rnd_mode);
+			  MPFR_PREC(r), rnd_mode);
     }
   else {
     /* Use the remainder to find out the correct rounding */
@@ -225,7 +225,7 @@ mpfr_div (r, u, v, rnd_mode)
 	while (k >= 0) { if (tp[k]) break; k--; }
 	if (k >= 0) 
 	  {
-	    t = PREC(r) & (BITS_PER_MP_LIMB - 1); 
+	    t = MPFR_PREC(r) & (BITS_PER_MP_LIMB - 1); 
 	    if (t)
 	      {
 		cc = mpn_add_1(rp, rp, rrsize, 
@@ -239,7 +239,7 @@ mpfr_div (r, u, v, rnd_mode)
 	else
 	  if (rnd_mode == GMP_RNDN) /* even rounding */
 	    {
-	      rw = (PREC(r) + 1) & (BITS_PER_MP_LIMB - 1);
+	      rw = (MPFR_PREC(r) + 1) & (BITS_PER_MP_LIMB - 1);
 	      if (rw) { rw = BITS_PER_MP_LIMB - rw; nw = 0; } else nw = 1; 
 	      if ((rw ? (rp[nw] >> (rw + 1)) & 1 : 
 		   (rp[nw] >> (BITS_PER_MP_LIMB - 1)) & 1))
@@ -258,7 +258,7 @@ mpfr_div (r, u, v, rnd_mode)
   }
 
 
-  if (sign_quotient * MPFR_SIGN(r) < 0) { CHANGE_SIGN(r); } 
+  if (sign_quotient * MPFR_SIGN(r) < 0) { MPFR_CHANGE_SIGN(r); } 
   r->_mp_exp = rexp;
 
   if (cc) {
@@ -267,9 +267,9 @@ mpfr_div (r, u, v, rnd_mode)
     r->_mp_exp++; 
   }
     
-  rw = rrsize * BITS_PER_MP_LIMB - PREC(r);
-  MPN_COPY(MANT(r), rp, rrsize); 
-  MANT(r)[0] &= ~(((mp_limb_t)1 << rw) - 1);
+  rw = rrsize * BITS_PER_MP_LIMB - MPFR_PREC(r);
+  MPN_COPY(MPFR_MANT(r), rp, rrsize); 
+  MPFR_MANT(r)[0] &= ~(((mp_limb_t)1 << rw) - 1);
 
   TMP_FREE (marker);
 }

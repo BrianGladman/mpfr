@@ -36,9 +36,9 @@ mpfr_get_str_raw(digit_ptr, x)
 {
   mp_limb_t *mx, wd, t; long ex, sx, k, l, p;
 
-  mx = MANT(x); 
-  ex = EXP(x); 
-  p = PREC(x); 
+  mx = MPFR_MANT(x); 
+  ex = MPFR_EXP(x); 
+  p = MPFR_PREC(x); 
 
   if (MPFR_SIGN(x) < 0) { *digit_ptr = '-'; digit_ptr++; }
   sprintf(digit_ptr, "0."); digit_ptr += 2; 
@@ -71,21 +71,21 @@ mpfr_print_raw(x)
 {
   char *str; 
 
-  if (FLAG_NAN(x)) printf("NaN");
-  else if (!NOTZERO(x)) printf("0");
+  if (MPFR_IS_NAN(x)) printf("NaN");
+  else if (!MPFR_NOTZERO(x)) printf("0");
   else {
      /* 3 char for sign + 0 + binary point
-	+ ABSSIZE(x) * BITS_PER_MP_LIMB for mantissa
+	+ MPFR_ABSSIZE(x) * BITS_PER_MP_LIMB for mantissa
 	+ 2 for brackets in mantissa
 	+ 1 for 'E'
 	+ 11 for exponent (including sign)
-	= 17 + ABSSIZE(x) * BITS_PER_MP_LIMB
+	= 17 + MPFR_ABSSIZE(x) * BITS_PER_MP_LIMB
       */
-     str = (char *) (*_mp_allocate_func) ((17 + ABSSIZE(x) * BITS_PER_MP_LIMB)*sizeof(char));
+     str = (char *) (*_mp_allocate_func) ((17 + MPFR_ABSSIZE(x) * BITS_PER_MP_LIMB)*sizeof(char));
      mpfr_get_str_raw(str, x);
 
      printf("%s", str); 
-     (*_mp_free_func) (str, (17 + ABSSIZE(x) * BITS_PER_MP_LIMB)*sizeof(char));
+     (*_mp_free_func) (str, (17 + MPFR_ABSSIZE(x) * BITS_PER_MP_LIMB)*sizeof(char));
   }
 }
 

@@ -61,7 +61,7 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
 
   neg = (MPFR_SIGN(op)<0) ? 1 : 0;
 
-  if (!NOTZERO(op)) {
+  if (!MPFR_NOTZERO(op)) {
     if (str==NULL) str = (*_mp_allocate_func)(neg + n + 1);
     str0 = str;
     if (MPFR_SIGN(op)<0) *str++ = '-';
@@ -77,7 +77,7 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
   /* if pow2 <> 0, then base = 2^pow2 */
 
   /* first determines the exponent */
-  e = EXP(op); 
+  e = MPFR_EXP(op); 
   d = fabs(mpfr_get_d2(op, 0));
   /* the absolute value of op is between 1/2*2^e and 2^e */
   /* the output exponent f is such that base^(f-1) <= |op| < base^f
@@ -88,11 +88,11 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
     /* performs exact rounding, i.e. returns y such that for GMP_RNDU
        for example, we have:       x*2^(e-p) <= y*base^(f-n)
      */
-    n = (int) ((double)PREC(op)*log(2.0)/log((double)base));
+    n = (int) ((double)MPFR_PREC(op)*log(2.0)/log((double)base));
     if (n==0) n=1;
   }
 #ifdef DEBUG  
-  printf("f=%d n=%d EXP(op)=%d PREC(op)=%d\n", f, n, e, PREC(op));
+  printf("f=%d n=%d MPFR_EXP(op)=%d MPFR_PREC(op)=%d\n", f, n, e, MPFR_PREC(op));
 #endif
   /* now the first n digits of the mantissa are obtained from
      rnd(op*base^(n-f)) */
@@ -142,7 +142,7 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
 	 mpfr_mul(b, op, a, rnd_mode);
        }
     }
-    if (neg) CHANGE_SIGN(b); /* put b positive */
+    if (neg) MPFR_CHANGE_SIGN(b); /* put b positive */
 #ifdef DEBUG
     printf("p=%d b=%1.20e\n", p, mpfr_get_d(b));
     printf("q=%d 2*prec+BITS_PER_MP_LIMB=%d\n", q, 2*prec+BITS_PER_MP_LIMB);
@@ -163,17 +163,17 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
     case GMP_RNDD: rnd_mode=GMP_RNDU; break;
   }
 
-  if (ok) mpfr_round(b, rnd_mode, EXP(b));
+  if (ok) mpfr_round(b, rnd_mode, MPFR_EXP(b));
 
-  prec=EXP(b); /* may have changed due to rounding */
+  prec=MPFR_EXP(b); /* may have changed due to rounding */
 
   /* now the mantissa is the integer part of b */
   mpz_init(bz); q=1+(prec-1)/BITS_PER_MP_LIMB;
   _mpz_realloc(bz, q);
   sh = prec%BITS_PER_MP_LIMB;
-  e = 1 + (PREC(b)-1)/BITS_PER_MP_LIMB-q;
-  if (sh) mpn_rshift(PTR(bz), MANT(b)+e, q, BITS_PER_MP_LIMB-sh);
-  else MPN_COPY(PTR(bz), MANT(b)+e, q);
+  e = 1 + (MPFR_PREC(b)-1)/BITS_PER_MP_LIMB-q;
+  if (sh) mpn_rshift(PTR(bz), MPFR_MANT(b)+e, q, BITS_PER_MP_LIMB-sh);
+  else MPN_COPY(PTR(bz), MPFR_MANT(b)+e, q);
   bz->_mp_size=q;
 
   /* computes the number of characters needed */

@@ -36,9 +36,9 @@ mpfr_reldiff(a, b, c, rnd_mode)
      mp_rnd_t rnd_mode;
 #endif
 {
-  if (FLAG_NAN(b) || FLAG_NAN(c)) { SET_NAN(a); return; }
+  if (MPFR_IS_NAN(b) || MPFR_IS_NAN(c)) { MPFR_SET_NAN(a); return; }
 
-  if (!NOTZERO(b)) /* reldiff = abs(c)/c = sign(c) */
+  if (!MPFR_NOTZERO(b)) /* reldiff = abs(c)/c = sign(c) */
     mpfr_set_ui(a, MPFR_SIGN(c), rnd_mode);
 
   else {

@@ -41,10 +41,10 @@ mpfr_init2 (x, p)
 
   xsize = (p - 1)/BITS_PER_MP_LIMB + 1; 
 
-  PREC(x) = p;
-  MANT(x) = (mp_ptr) (*_mp_allocate_func) (xsize * BYTES_PER_MP_LIMB);
-  SIZE(x) = xsize;
-  EXP(x) = 0; /* avoids uninitialized memory reads for zero */
+  MPFR_PREC(x) = p;
+  MPFR_MANT(x) = (mp_ptr) (*_mp_allocate_func) (xsize * BYTES_PER_MP_LIMB);
+  MPFR_SIZE(x) = xsize;
+  MPFR_EXP(x) = 0; /* avoids uninitialized memory reads for zero */
 }
 
 void

@@ -53,26 +53,26 @@ mpfr_cmp3(b, c, s)
    unsigned long bn, cn;
    mp_limb_t *bp, *cp;
 
-   if (!NOTZERO(b)) {
-     if (!NOTZERO(c)) return 0; else return -(MPFR_SIGN(c));
+   if (!MPFR_NOTZERO(b)) {
+     if (!MPFR_NOTZERO(c)) return 0; else return -(MPFR_SIGN(c));
    }
-   else if (!NOTZERO(c)) return MPFR_SIGN(b);
+   else if (!MPFR_NOTZERO(c)) return MPFR_SIGN(b);
 
    s = s * MPFR_SIGN(b) * MPFR_SIGN(c);
    if (s<0) return(MPFR_SIGN(b));
 
    /* now signs are equal */
 
-   diff_exp = EXP(b)-EXP(c);
+   diff_exp = MPFR_EXP(b)-MPFR_EXP(c);
    s = (MPFR_SIGN(b) > 0) ? 1 : -1;
 
    if (diff_exp>0) return(s*(1+diff_exp));
    else if (diff_exp<0) return(s*(-1+diff_exp));
    /* both signs and exponents are equal */
 
-   bn = (PREC(b)-1)/BITS_PER_MP_LIMB+1;
-   cn = (PREC(c)-1)/BITS_PER_MP_LIMB+1;
-   bp = MANT(b); cp = MANT(c);
+   bn = (MPFR_PREC(b)-1)/BITS_PER_MP_LIMB+1;
+   cn = (MPFR_PREC(c)-1)/BITS_PER_MP_LIMB+1;
+   bp = MPFR_MANT(b); cp = MPFR_MANT(c);
 
    while (bn && cn) {
      if (bp[--bn] != cp[--cn])
@@ -86,7 +86,7 @@ mpfr_cmp3(b, c, s)
 }
 
 /* returns the number of cancelled bits when one subtracts abs(c) from abs(b). 
-   Assumes b>=c, which implies EXP(b)>=EXP(c).
+   Assumes b>=c, which implies MPFR_EXP(b)>=MPFR_EXP(c).
    if b=c, returns prec(b).
 */
 int 
@@ -105,17 +105,17 @@ mpfr_cmp2(b, c)
   printf("b="); mpfr_print_raw(b); putchar('\n');
   printf("c="); mpfr_print_raw(c); putchar('\n');
 #endif  
-  if (NOTZERO(c)==0) return (NOTZERO(b)) ? 0 : PREC(b);
-  d = EXP(b)-EXP(c);
+  if (MPFR_NOTZERO(c)==0) return (MPFR_NOTZERO(b)) ? 0 : MPFR_PREC(b);
+  d = MPFR_EXP(b)-MPFR_EXP(c);
   k = 0; /* result can be d or d+1 if d>1, or >= d otherwise */
   /* k is the number of identical bits in the high part,
      then z is the number of possibly cancelled bits */
 #ifdef DEBUG
-  if (d<0) { printf("assumption EXP(b)<EXP(c) violated\n"); exit(1); }
+  if (d<0) { printf("assumption MPFR_EXP(b)<MPFR_EXP(c) violated\n"); exit(1); }
 #endif
-  bn = (PREC(b)-1)/BITS_PER_MP_LIMB;
-  cn = (PREC(c)-1)/BITS_PER_MP_LIMB;
-  bp = MANT(b); cp = MANT(c);
+  bn = (MPFR_PREC(b)-1)/BITS_PER_MP_LIMB;
+  cn = (MPFR_PREC(c)-1)/BITS_PER_MP_LIMB;
+  bp = MPFR_MANT(b); cp = MPFR_MANT(c);
   /* subtract c from b from most significant to less significant limbs,
      and first determines first non zero limb difference */
   if (d)
@@ -133,7 +133,7 @@ mpfr_cmp2(b, c)
       while (bn>=0 && (cc=bp[bn--])==0) k+=BITS_PER_MP_LIMB;
     }
     /* now bn<0 or cc<>0 */
-    if (cc==0 && bn<0) return(PREC(b));
+    if (cc==0 && bn<0) return(MPFR_PREC(b));
   }
 
   /* the first non-zero limb difference is cc, and the number

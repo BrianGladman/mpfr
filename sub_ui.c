@@ -47,7 +47,7 @@ mpfr_sub_ui(y, x, u, rnd_mode)
     MON_INIT(up, uu, BITS_PER_MP_LIMB, 1);
     count_leading_zeros(cnt, (mp_limb_t) u);
     *up = (mp_limb_t) u << cnt;
-    EXP(uu) = BITS_PER_MP_LIMB-cnt;
+    MPFR_EXP(uu) = BITS_PER_MP_LIMB-cnt;
   
     mpfr_sub(y, x, uu, rnd_mode);
 

@@ -41,9 +41,9 @@ mpfr_mul_ui(y, x, u, rnd_mode)
   TMP_DECL(marker);
 
   TMP_MARK(marker);
-  my = MANT(y); ex = EXP(x);  
-  ysize = (PREC(y)-1)/BITS_PER_MP_LIMB + 1;
-  xsize = (PREC(x)-1)/BITS_PER_MP_LIMB + 1;
+  my = MPFR_MANT(y); ex = MPFR_EXP(x);  
+  ysize = (MPFR_PREC(y)-1)/BITS_PER_MP_LIMB + 1;
+  xsize = (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB + 1;
 
   old_my = my; 
 
@@ -53,7 +53,7 @@ mpfr_mul_ui(y, x, u, rnd_mode)
     }
   else dif=ysize-xsize;
 
-  carry = mpn_mul_1(my+dif, MANT(x), xsize, u);
+  carry = mpn_mul_1(my+dif, MPFR_MANT(x), xsize, u);
   MPN_ZERO(my, dif);
 
   /* WARNING: count_leading_zeros is undefined for carry=0 */
@@ -62,12 +62,12 @@ mpfr_mul_ui(y, x, u, rnd_mode)
 
   /* Warning: the number of limbs used by x and the lower part
      of y may differ */
-  sh = (PREC(x)+BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB
-     - (PREC(y)+cnt-1)/BITS_PER_MP_LIMB; 
+  sh = (MPFR_PREC(x)+BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB
+     - (MPFR_PREC(y)+cnt-1)/BITS_PER_MP_LIMB; 
 
   /* Warning: if all significant bits are in the carry, one has to 
      be careful */
-  if (cnt + PREC(y) < BITS_PER_MP_LIMB)
+  if (cnt + MPFR_PREC(y) < BITS_PER_MP_LIMB)
     {
       /* Quick 'n dirty */
 
@@ -86,8 +86,8 @@ mpfr_mul_ui(y, x, u, rnd_mode)
       carry = 0; cnt = BITS_PER_MP_LIMB;
     }
 
-    c = mpfr_round_raw(my+sh, my, PREC(x), (MPFR_SIGN(x)<0), 
-		       PREC(y)-BITS_PER_MP_LIMB+cnt, rnd_mode);
+    c = mpfr_round_raw(my+sh, my, MPFR_PREC(x), (MPFR_SIGN(x)<0), 
+		       MPFR_PREC(y)-BITS_PER_MP_LIMB+cnt, rnd_mode);
 
   /* If cnt = 1111111111111 and c = 1 we shall get depressed */
   if (c && (carry == (((mp_limb_t)1) << (cnt ? BITS_PER_MP_LIMB - cnt : 0)) 
@@ -104,9 +104,9 @@ mpfr_mul_ui(y, x, u, rnd_mode)
 	mpn_rshift(my, my, ysize, BITS_PER_MP_LIMB - cnt); 
       my[ysize - 1] |= (carry << cnt); 
     }
-  EXP(y) = ex + BITS_PER_MP_LIMB - cnt; 
+  MPFR_EXP(y) = ex + BITS_PER_MP_LIMB - cnt; 
   if (ysize < xsize) MPN_COPY(old_my, my, ysize);
   /* set sign */
-  if (MPFR_SIGN(y) * MPFR_SIGN(x) < 0) CHANGE_SIGN(y);
+  if (MPFR_SIGN(y) * MPFR_SIGN(x) < 0) MPFR_CHANGE_SIGN(y);
   TMP_FREE(marker);
 }

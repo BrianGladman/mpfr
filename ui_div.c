@@ -47,11 +47,11 @@ mpfr_ui_div(y, u, x, rnd_mode)
     MON_INIT(up, uu, BITS_PER_MP_LIMB, 1);
     count_leading_zeros(cnt, (mp_limb_t) u);
     *up = (mp_limb_t) u << cnt;
-    EXP(uu) = BITS_PER_MP_LIMB-cnt;
+    MPFR_EXP(uu) = BITS_PER_MP_LIMB-cnt;
   
     mpfr_div(y, uu, x, rnd_mode);
 
     TMP_FREE(marker);
   }
-  else SET_ZERO(y); /* if u=0, then set y to 0 */
+  else MPFR_SET_ZERO(y); /* if u=0, then set y to 0 */
 }

@@ -46,16 +46,16 @@ mpfr_exp(y, x, rnd_mode)
   int n, expx, K, precy, q, k, l, expr, err; 
   mpfr_t r, s, t;
 
-  if (FLAG_NAN(x)) { SET_NAN(y); return 1; }
-  if (!NOTZERO(x)) { mpfr_set_ui(y, 1, GMP_RNDN); return 0; }
+  if (MPFR_IS_NAN(x)) { MPFR_SET_NAN(y); return 1; }
+  if (!MPFR_NOTZERO(x)) { mpfr_set_ui(y, 1, GMP_RNDN); return 0; }
 
-  expx = EXP(x);
-  precy = PREC(y);
+  expx = MPFR_EXP(x);
+  precy = MPFR_PREC(y);
 
   /* if x > (2^31-1)*ln(2), then exp(x) > 2^(2^31-1) i.e. gives +infinity */
   if (expx > 30) {
     if (MPFR_SIGN(x)>0) { printf("+infinity"); return 1; }
-    else { SET_ZERO(y); return 1; }
+    else { MPFR_SET_ZERO(y); return 1; }
   }
 
   /* if x < 2^(-precy), then exp(x) i.e. gives 1 +/- 1 ulp(1) */

@@ -66,22 +66,22 @@ mp_rnd_t rnd_mode;
   int logn;
   int tmp_factor;
   int tmpi;
-  if (FLAG_NAN(x)) { SET_NAN(sinus);  SET_NAN(cosinus); return 1; }
-  if (!NOTZERO(x)) { 
+  if (MPFR_IS_NAN(x)) { MPFR_SET_NAN(sinus);  MPFR_SET_NAN(cosinus); return 1; }
+  if (!MPFR_NOTZERO(x)) { 
     mpfr_set_ui(sinus, 0, GMP_RNDN); 
     mpfr_set_ui(cosinus, 1, GMP_RNDN); 
     return 0;
  }
 
   prec_x = (int) ceil(log
-		      ((double) (PREC(x)) / (double) BITS_PER_MP_LIMB)
+		      ((double) (MPFR_PREC(x)) / (double) BITS_PER_MP_LIMB)
 		      /log(2.0));  
   logn =  (int) ceil(log
 		      ((double) prec_x)
 		      /log(2.0));  
   if (logn < 2) logn = 2;
-  ttt = EXP(x);
-  mpfr_init2(x_copy,PREC(x));
+  ttt = MPFR_EXP(x);
+  mpfr_init2(x_copy,MPFR_PREC(x));
   mpfr_set(x_copy,x,GMP_RNDD);
   mpz_init(square);
   /* on fait le shift pour que le nombre soit inferieur a 1 */
@@ -89,9 +89,9 @@ mp_rnd_t rnd_mode;
     {
       shift_x = ttt;
       mpfr_mul_2exp(x_copy,x,-ttt, GMP_RNDN); 
-      ttt = EXP(x_copy);
+      ttt = MPFR_EXP(x_copy);
     }
-  realprec = PREC(sinus)+logn;
+  realprec = MPFR_PREC(sinus)+logn;
   while (!good){
     Prec = realprec + 2*shift + 2 + shift_x + factor;
     k = (int) ceil(log
@@ -180,22 +180,22 @@ mp_rnd_t rnd_mode;
       mpfr_mul(tmp_cos, tmp_cos, tmp_cos, GMP_RNDD);
       mpfr_mul_2exp(tmp_cos, tmp_cos, 1, GMP_RNDD);
       mpfr_set_ui(tmp, 1,GMP_RNDN);      
-      tmpi = -EXP(tmp_cos);
+      tmpi = -MPFR_EXP(tmp_cos);
       mpfr_sub(tmp_cos, tmp_cos, tmp,  GMP_RNDD);
       /* rep\'erer si le nombre de chiffres obtenu est suffisant pour 
 	 avoir la bonne pr\'ecision. Le probl\`eme : comment faire ? 
          la pr\'ecision s'obtient en comparant 
 	 (Prec-factor) a la pr\'ecision obtenue r\'eellement, celle-ci
-	 \'etant donn\'ee par Prec + EXP(tmp_cos). 
-	 il faut donc comparer EXP(tmp_cos) a factor */
-      tmp_factor -= -EXP(tmp_cos) + tmpi;    
+	 \'etant donn\'ee par Prec + MPFR_EXP(tmp_cos). 
+	 il faut donc comparer MPFR_EXP(tmp_cos) a factor */
+      tmp_factor -= -MPFR_EXP(tmp_cos) + tmpi;    
       if (tmp_factor <= 0)
 	{
 	  factor += -tmp_factor  + 5;
 	  goto try_again;
 	}      
     }
-    if (mpfr_can_round(tmp_sin, realprec, GMP_RNDD, rnd_mode, PREC(sinus))){
+    if (mpfr_can_round(tmp_sin, realprec, GMP_RNDD, rnd_mode, MPFR_PREC(sinus))){
 	mpfr_set(sinus,tmp_sin,rnd_mode);
 	mpfr_set(cosinus,tmp_cos,rnd_mode);
 	good = 1;

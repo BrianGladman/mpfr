@@ -38,16 +38,16 @@ mpfr_set_f(y, x, rnd_mode)
   mp_limb_t *my, *mx, *tmp; unsigned long cnt, sx, sy;
   TMP_DECL(marker);
 
-  sx = ABS(SIZ(x)); sy = ABSSIZE(y);
-  my = MANT(y); mx = MANT(x);
+  sx = ABS(SIZ(x)); sy = MPFR_ABSSIZE(y);
+  my = MPFR_MANT(y); mx = MPFR_MANT(x);
 
   if (sx==0) { /* x is zero */
-    SET_ZERO(y); return;
+    MPFR_SET_ZERO(y); return;
   }
 
   count_leading_zeros(cnt, mx[sx - 1]);  
 
-  if (SIZ(x)*MPFR_SIGN(y)<0) CHANGE_SIGN(y);
+  if (SIZ(x)*MPFR_SIGN(y)<0) MPFR_CHANGE_SIGN(y);
 
   if (sy < sx)
     {
@@ -56,7 +56,7 @@ mpfr_set_f(y, x, rnd_mode)
       tmp = (mp_limb_t*) TMP_ALLOC(xprec);
       if (cnt) mpn_lshift(tmp, mx, sx, cnt); 
       else MPN_COPY(tmp, mx, sx); 
-      mpfr_round_raw(my, tmp, xprec, (SIZ(x)<0), PREC(y), rnd_mode);  
+      mpfr_round_raw(my, tmp, xprec, (SIZ(x)<0), MPFR_PREC(y), rnd_mode);  
     }
   else
     {
@@ -66,7 +66,7 @@ mpfr_set_f(y, x, rnd_mode)
       /* no rounding necessary, since y has a larger mantissa */
     }
   
-  EXP(y) = EXP(x) * BITS_PER_MP_LIMB - cnt;
+  MPFR_EXP(y) = MPFR_EXP(x) * BITS_PER_MP_LIMB - cnt;
 
   TMP_FREE(marker);
 }

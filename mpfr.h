@@ -47,7 +47,7 @@ typedef struct {
 			      /* not the number of mp_limb_t's. This means  */
 			      /* that the corresponding number of allocated
 				 limbs is >= ceil(_mp_prec/BITS_PER_MP_LIMB) */
-  mp_size_t _mp_size;         /* ABSSIZE(.) is the number of allocated 
+  mp_size_t _mp_size;         /* MPFR_ABSSIZE(.) is the number of allocated 
 				 limbs the field _mp_d points to.
 				 The sign is that of _mp_size.
 				 The number 0 is such that _mp_d[k-1]=0
@@ -89,26 +89,26 @@ typedef __gmp_const __mpfr_struct *mpfr_srcptr;
 /* bit 31 of _mp_size is used for sign,
    bit 30 of _mp_size is used for Nan flag,
    remaining bits are used to store the number of allocated limbs */
-#define FLAG_NAN(x) (((x)->_mp_size >> 30)&1)
-#define SET_NAN(x) ((x)->_mp_size |= (1<<30))
-#define ABSSIZE(x) ((x)->_mp_size & ((1<<30)-1))
-#define SIZE(x) ((x)->_mp_size)
-#define EXP(x) ((x)->_mp_exp)
-#define MANT(x) ((x)->_mp_d)
+#define MPFR_IS_NAN(x) (((x)->_mp_size >> 30)&1)
+#define MPFR_SET_NAN(x) ((x)->_mp_size |= (1<<30))
+#define MPFR_ABSSIZE(x) ((x)->_mp_size & ((1<<30)-1))
+#define MPFR_SIZE(x) ((x)->_mp_size)
+#define MPFR_EXP(x) ((x)->_mp_exp)
+#define MPFR_MANT(x) ((x)->_mp_d)
 #define MPFR_SIGN(x) (((x)->_mp_size >> 31) ? -1 : 1)
-#define ISNONNEG(x) (MPFR_SIGN(x)>=0)
-#define ISNEG(x) (MPFR_SIGN(x)==-1)
-#define CHANGE_SIGN(x) (SIZE(x) = SIZE(x) ^ (((mp_size_t)1)<<31))
-#define PREC(x) ((x)->_mp_prec)
-#define NOTZERO(x) (MANT(x)[(PREC(x)-1)/BITS_PER_MP_LIMB])
-#define SET_ZERO(x) (MANT(x)[(PREC(x)-1)/BITS_PER_MP_LIMB] = 0)
-#define mpfr_sgn(x) ((NOTZERO(x)) ? MPFR_SIGN(x) : 0)
+#define MPFR_ISNONNEG(x) (MPFR_SIGN(x)>=0)
+#define MPFR_ISNEG(x) (MPFR_SIGN(x)==-1)
+#define MPFR_CHANGE_SIGN(x) (MPFR_SIZE(x) = MPFR_SIZE(x) ^ (((mp_size_t)1)<<31))
+#define MPFR_PREC(x) ((x)->_mp_prec)
+#define MPFR_NOTZERO(x) (MPFR_MANT(x)[(MPFR_PREC(x)-1)/BITS_PER_MP_LIMB])
+#define MPFR_SET_ZERO(x) (MPFR_MANT(x)[(MPFR_PREC(x)-1)/BITS_PER_MP_LIMB] = 0)
+#define mpfr_sgn(x) ((MPFR_NOTZERO(x)) ? MPFR_SIGN(x) : 0)
 
 /* reallocates the mantissa of x to q bits and sets the precision to q */
 #define _mpfr_realloc(x, q) { \
     (x)->_mp_d = (mp_ptr) (*_mp_reallocate_func) \
-       ((x)->_mp_d, (PREC(x)-1)>>3, (q+7)>>3); \
-    PREC(x) = q; }
+       ((x)->_mp_d, (MPFR_PREC(x)-1)>>3, (q+7)>>3); \
+    MPFR_PREC(x) = q; }
 
 void mpfr_init2 _PROTO ((mpfr_ptr, mp_prec_t));
 void mpfr_init _PROTO ((mpfr_ptr));
