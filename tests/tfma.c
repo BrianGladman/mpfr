@@ -263,8 +263,8 @@ main (int argc, char *argv[])
 	  if (mpfr_can_round (s, err, rnd, rnd, prec))
 	    {
 	      mpfr_set (t, slong, rnd);
-	      inexact = mpfr_fma (s,x, y,z, rnd);	
-	      if (mpfr_cmp (slong, s))
+	      inexact = mpfr_fma (s, x, y, z, rnd);	
+	      if (mpfr_cmp (t, s))
 		{
 		  printf ("results differ for x=");
 		  mpfr_out_str (stdout, 2, prec, x, GMP_RNDN);
