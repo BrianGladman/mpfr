@@ -119,6 +119,7 @@ mpfr_log()
     printf("cancelled bits=%d\n", cancel);
     printf("approx="); mpfr_print_raw(cst); putchar('\n');
 #endif
+    if (cancel<0) cancel=0;
 
     /* If we can round the result, we set it and go out of the loop */
 
