@@ -99,8 +99,8 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x ,mpfr_srcptr y ,mpfr_srcptr z , mp_rnd_t rnd
         {
           /* Declaration of the intermediary variable */
           mpfr_t t, u;       
-          int d,fl1,fl2;
-          int accu=0;
+          int d;
+          int accu = 0;
 
           /* Declaration of the size variable */
           mp_prec_t Nx = MPFR_PREC(x);   /* Precision of input variable */
