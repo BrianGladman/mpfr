@@ -1212,9 +1212,7 @@ contributed the generic hypergeometric code in
 @code{generic.c}, as well as the @code{mpfr_exp3},
 the @code{mpfr_sin_cos} functions, and improved versions of
 @code{mpfr_const_log2} and @code{mpfr_const_pi}.
-
-Thom Mulders (ETH Z\"urich) contributed the routines for short
-multiplication.
+Mathieu Dutour contributed the function @code{mpfr_arctan}.
 
 @node References, , Contributors, Top
 @comment  node-name,  next,  previous,  up
