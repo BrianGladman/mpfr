@@ -69,7 +69,7 @@ main (int argc, char *argv[])
 	      if (mpfr_cmp (t, z))
 		{
 		  printf ("results differ for x=");
-		  mpfr_out_str (stdout, 10, prec, x, GMP_RNDN);
+		  mpfr_out_str (stdout, 2, prec, x, GMP_RNDN);
 		  printf (" prec=%u rnd_mode=%s\n", prec,
 			  mpfr_print_rnd_mode (rnd));
 		  printf ("   got ");

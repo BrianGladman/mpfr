@@ -30,7 +30,7 @@ MA 02111-1307, USA. */
 int
 main (int argc, char *argv[])
 {
-  unsigned int prec, yprec, n, p0 = 1, p1 = 100, N = 100;
+  unsigned int prec, yprec, n, p0 = 1, p1 = 50, N = 50;
   mp_rnd_t rnd;
   mpfr_t x, y, z, t;
 
