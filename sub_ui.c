@@ -30,9 +30,9 @@ MA 02111-1307, USA. */
 
 void
 #if __STDC__
-mpfr_sub_ui(mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
+mpfr_sub_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 #else
-mpfr_sub_ui(y, x, u, rnd_mode)
+mpfr_sub_ui (y, x, u, rnd_mode)
      mpfr_ptr y;
      mpfr_srcptr x;
      unsigned long int u;
@@ -44,7 +44,11 @@ mpfr_sub_ui(y, x, u, rnd_mode)
   unsigned long cnt;
   TMP_DECL(marker);
 
-  if (MPFR_IS_NAN(x)) { MPFR_SET_NAN(y); return; }
+  if (MPFR_IS_NAN(x)) {
+    MPFR_SET_NAN(y);
+    return;
+  }
+
   if (MPFR_IS_INF(x)) 
     { 
       MPFR_SET_INF(y); 
@@ -58,7 +62,7 @@ mpfr_sub_ui(y, x, u, rnd_mode)
     *up = (mp_limb_t) u << cnt;
     MPFR_EXP(uu) = BITS_PER_MP_LIMB-cnt;
   
-    mpfr_sub(y, x, uu, rnd_mode);
+    mpfr_sub (y, x, uu, rnd_mode);
 
     TMP_FREE(marker);
   }
