@@ -22,11 +22,12 @@ MA 02111-1307, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-/* (y, z) <- (sin(x), cos(x)), return value is 0 iff both results are exact */
+/* (y, z) <- (sin(x), cos(x)), return value is 0 iff both results are exact 
+   ie, iff x = 0 */
 int 
 mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode) 
 {
-  int prec, m, inexact, neg;
+  int prec, m, neg;
   mpfr_t c, k;
   mp_exp_t e;
 
@@ -78,7 +79,7 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_cos (c, x, GMP_RNDZ);
       if (!mpfr_can_round (c, m, GMP_RNDZ, rnd_mode, MPFR_PREC (z)))
         goto next_step;
-      inexact = mpfr_set (z, c, rnd_mode);
+      mpfr_set (z, c, rnd_mode);
       mpfr_sqr (c, c, GMP_RNDU);
       mpfr_ui_sub (c, 1, c, GMP_RNDN);
       e = 2 + (- MPFR_GET_EXP (c)) / 2;
@@ -103,9 +104,9 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_set_prec (c, m);
     }
 
-  inexact = mpfr_set (y, c, rnd_mode) || inexact;
+  mpfr_set (y, c, rnd_mode);
 
   mpfr_clear (c);
 
-  return inexact; /* inexact */
+  MPFR_RET (1); /* Always inexact */
 }
