@@ -58,66 +58,108 @@ int mpfr_cmp ( mpfr_srcptr b, mpfr_srcptr c )
 */
 int mpfr_cmp2 ( mpfr_srcptr b, mpfr_srcptr c )
 {
-   long int d, bn, cn, k;
-   mp_limb_t *bp, *cp, t, u=0, cc=0;
-
-   if (NOTZERO(c)==0) return 0;
-   d = EXP(b)-EXP(c);
-   k = 0; /* result can be d or d+1 if d>1, or >= d otherwise */
+  long int d, bn, cn, k;
+  mp_limb_t *bp, *cp, t, u=0, cc=0;
+  
+  if (NOTZERO(c)==0) return 0;
+  d = EXP(b)-EXP(c);
+  k = 0; /* result can be d or d+1 if d>1, or >= d otherwise */
 #ifdef DEBUG
-   if (d<0) { printf("assumption EXP(b)<EXP(c) violated\n"); exit(1); }
+  if (d<0) { printf("assumption EXP(b)<EXP(c) violated\n"); exit(1); }
 #endif
-   bn = (PREC(b)-1)/mp_bits_per_limb;
-   cn = (PREC(c)-1)/mp_bits_per_limb;
-   bp = MANT(b); cp = MANT(c);
-   /* subtracts c from b from most significant to less significant limbs,
-      and first determines first non zero limb difference */
-   if (d) {
-     cc = bp[bn--];
-     if (d<mp_bits_per_limb)
-       cc -= cp[cn]>>d; /* cannot be zero since b is normalized */
-   }
-   else { /* d=0 */
-     while (bn>=0 && cn>=0 && (cc=(bp[bn--]-cp[cn--]))==0) {
-       k+=mp_bits_per_limb;
-     }
-     if (cc==0) { /* either bn<0 or cn<0 */
-       while (bn>=0 && (cc=bp[bn--])==0) k+=mp_bits_per_limb;
-     }
-     /* now bn<0 or cc<>0 */
-     if (cc==0 && bn<0) return(PREC(b));
-   }
-   /* the first non-zero limb difference is cc, and the number
-      of cancelled bits in the upper limbs is k */
-   count_leading_zeros(u, cc);
-   k += u;
-   if (cc != (1<<(mp_bits_per_limb-u-1))) return k;
-   /* now cc is an exact power of two */
-   cc = mp_bits_per_limb-u;
-   while (bn>=0) {
-     /* computes limb bn of difference.
-	cc is previous borrow: either 0 or 1.
-     */
-     t = bp[bn--];
-     if (d<mp_bits_per_limb) {
-       if (d) {
-	 u = cp[cn--]<<(mp_bits_per_limb-d);
-	 if (cn>=0) u+=(cp[cn]>>d); else return(k);
-       }
-       else u = cp[cn--];
-       if (t>u) return(k); /* no borrow possible */
-       t -= u;
-       if (t>1) { /* t=0 when diff=0, t=1 when b=0 and c=~0 */
-	 count_leading_zeros(u, t);
-	 if (u!=~(mp_limb_t)0) return(k+cc+u); /* borrow = 1 */
-	 else cc+=mp_bits_per_limb;
-       }
-     }
-     else {
-       d -= mp_bits_per_limb;
-     }
-   }
-   return k;
+  bn = (PREC(b)-1)/mp_bits_per_limb;
+  cn = (PREC(c)-1)/mp_bits_per_limb;
+  bp = MANT(b); cp = MANT(c);
+  /* subtracts c from b from most significant to less significant limbs,
+     and first determines first non zero limb difference */
+  if (d)
+    {
+      cc = bp[bn--];
+      if (d<mp_bits_per_limb)
+	cc -= cp[cn]>>d; 
+    }
+  else { /* d=0 */
+    while (bn>=0 && cn>=0 && (cc=(bp[bn--]-cp[cn--]))==0) {
+      k+=mp_bits_per_limb;
+    }
+    
+    if (cc==0) { /* either bn<0 or cn<0 */
+      while (bn>=0 && (cc=bp[bn--])==0) k+=mp_bits_per_limb;
+    }
+    /* now bn<0 or cc<>0 */
+    if (cc==0 && bn<0) return(PREC(b));
+  }
+
+  /* the first non-zero limb difference is cc, and the number
+     of cancelled bits in the upper limbs is k */
+
+  count_leading_zeros(u, cc);
+  k += u;
+
+  if (cc != (1<<(mp_bits_per_limb-u-1))) return k;
+  /* now cc is an exact power of two */
+  
+  if (cc != 1) 
+    /* We just need to compare the following limbs */
+    /* until two of them differ. The result is either k or k+1. */
+    {
+
+      /* First flush all the unmatched limbs of b ; they all have to
+	 be 0 in order for the process to go on */
+      while (bn >= 0)
+	{
+	  if (cn < 0) { return k; }
+	  t = bp[bn--]; 
+	  if (d < mp_bits_per_limb)
+	    {
+	      if (d) 
+		{ 
+		  u = cp[cn--] << (mp_bits_per_limb - d); 
+		  if (cn >= 0) u+=(cp[cn]>>d); 
+		}
+	      else u = cp[cn--]; 
+	      
+	      if (t > u || (t == u && cn < 0)) return k; 
+	      if (t < u) return k+1; 
+	    }
+	  else
+	    if (t) return k; else d -= mp_bits_per_limb; 
+	}
+	  
+      /* bn < 0; if some limb of c is nonzero, return k+1, otherwise return k*/
+      if (cp[cn--] << (mp_bits_per_limb - d)) { return k+1; }
+      while (cn >= 0) 
+	if (cp[cn--]) return k+1; 
+      return k; 
+    }
+
+  /* cc = 1. Too bad. */
+
+  if (d > mp_bits_per_limb) { return k; }
+
+  while (bn >= 0)
+    { 
+      if (cn < 0) { return k; }
+
+      if (d) 
+	 { 
+	   u = cp[cn--] << (mp_bits_per_limb - d); 
+	   if (cn >= 0) u+=(cp[cn]>>d);
+	 }
+       else u = cp[cn--]; 
+       
+       if ((cc = bp[bn--] | ~u) != 0) 
+	 { count_leading_zeros(u, cc); return k + u; }
+       else k += mp_bits_per_limb; 
+    }
+
+  count_leading_zeros(cc, ~(cp[cn--] << (mp_bits_per_limb - d))); 
+  k += cc; 
+  if (cc < d) return k;
+  
+  while (cn >= 0 && !~cp[cn--]) { k += mp_bits_per_limb; } 
+  if (cn >= 0) { count_leading_zeros(cc, ~cp[cn--]); return (k + cc); }
+
+  return k; /* We **need** that the nonsignificant limbs of c are set
+	       to zero there */	       
 }
-
-
