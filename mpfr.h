@@ -175,7 +175,7 @@ int mpfr_cmp_ui_2exp _PROTO ((mpfr_srcptr, unsigned long int, int));
 int mpfr_cmp_si_2exp _PROTO ((mpfr_srcptr, long int, int));
 void mpfr_mul_2exp _PROTO((mpfr_ptr, mpfr_srcptr, unsigned long int,mp_rnd_t));
 void mpfr_div_2exp _PROTO((mpfr_ptr, mpfr_srcptr, unsigned long int,mp_rnd_t));
-void mpfr_set_prec _PROTO((mpfr_ptr, mp_prec_t));
+int mpfr_set_prec _PROTO((mpfr_ptr, mp_prec_t));
 void mpfr_set_prec_raw _PROTO((mpfr_ptr, mp_prec_t));
 void mpfr_set_default_prec _PROTO((mp_prec_t));
 mp_prec_t mpfr_get_default_prec _PROTO((void));

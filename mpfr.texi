@@ -612,12 +612,14 @@ calculation.  A typical use would be for adjusting the precision gradually in
 iterative algorithms like Newton-Raphson, making the computation precision
 closely match the actual accurate part of the numbers.
 
-@deftypefun void mpfr_set_prec (mpfr_t @var{x}, mp_prec_t @var{prec})
+@deftypefun int mpfr_set_prec (mpfr_t @var{x}, mp_prec_t @var{prec})
 Reset the precision of @var{x} to be @strong{exactly} @var{prec} bits.
 The previous value stored in @var{x} is lost. It is equivalent to
 a call to @code{mpfr_clear(x)} followed by a call to 
 @code{mpfr_init2(x, prec)}, but more efficient as no allocation is done in
 case the current allocated space for the mantissa of @var{x} is enough.
+It is not allowed to set @var{prec} to zero: in that case, a non-zero value
+is returned.
 
 In case you want to keep the previous value stored in @var{x},
 use @code{mpfr_round} instead.

@@ -26,7 +26,7 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-void
+int
 #if __STDC__
 mpfr_set_prec (mpfr_ptr x, mp_prec_t p)
 #else
@@ -37,9 +37,8 @@ mpfr_set_prec (x, p)
 {
   mp_prec_t xsize;
 
-  if (p==0) {
-    printf("*** cannot set precision to 0 bits\n"); exit(1);
-  }
+  if (p == 0)
+    return 1;
 
   xsize = (p - 1)/BITS_PER_MP_LIMB + 1; /* new limb size */
 
@@ -50,6 +49,8 @@ mpfr_set_prec (x, p)
   }
 
   MPFR_PREC(x) = p;
+
+  return 0;
 }
 
 mp_prec_t
