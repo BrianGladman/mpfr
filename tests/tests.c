@@ -22,6 +22,9 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <float.h>
 
+#include <sys/time.h>  /* for struct timeval */
+#include <time.h>
+
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -33,15 +36,21 @@ MA 02111-1307, USA. */
 #endif
 
 
+void tests_rand_start _PROTO ((void));
+void tests_rand_end   _PROTO ((void));
+void randseed         _PROTO ((unsigned int));
+
 void
 tests_start_mpfr (void)
 {
   tests_memory_start ();
+  tests_rand_start ();
 }
 
 void
 tests_end_mpfr (void)
 {
+  tests_rand_end ();
   if (__gmpfr_const_pi_prec != 0)
     {
       mpfr_clear (__mpfr_const_pi);
@@ -61,6 +70,53 @@ tests_end_mpfr (void)
     }
 
   tests_memory_end ();
+}
+
+void
+tests_rand_start (void)
+{
+  gmp_randstate_ptr  rands;
+  char           *perform_seed;
+  unsigned long  seed;
+
+  if (__gmp_rands_initialized)
+    {
+      printf ("Please let tests_start() initialize the global __gmp_rands.\n");
+      printf ("ie. ensure that function is called before the first use of RANDS.\n");
+      abort ();
+    }
+  rands = RANDS;
+
+  perform_seed = getenv ("GMP_CHECK_RANDOMIZE");
+  if (perform_seed != NULL)
+    {
+      seed = atoi (perform_seed);
+      if (! (seed == 0 || seed == 1))
+        {
+          printf ("Re-seeding with GMP_CHECK_RANDOMIZE=%lu\n", seed);
+          gmp_randseed_ui (rands, seed);
+        }
+      else
+        {
+#if HAVE_GETTIMEOFDAY
+          struct timeval  tv;
+          gettimeofday (&tv, NULL);
+          seed = tv.tv_sec + tv.tv_usec;
+#else
+          time_t  tv;
+          time (&tv);
+          seed = tv;
+#endif
+          gmp_randseed_ui (rands, seed);
+          printf ("Seed GMP_CHECK_RANDOMIZE=%lu (include this in bug reports)\n", seed);
+        }
+    }
+}
+
+void
+tests_rand_end (void)
+{
+  RANDS_CLEAR ();
 }
 
 /* initialization function for tests using the hardware floats */
