@@ -28,5 +28,6 @@ size_t mpfr_out_str (FILE *stream, int base, size_t n_digits, mpfr_srcptr op,
     fprintf(stream, "%s", s);
   }
 
+  free(s); 
   return l;
 }
