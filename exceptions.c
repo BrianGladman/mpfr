@@ -119,6 +119,11 @@ mpfr_clear_inexflag (void)
 
 #undef mpfr_check_range
 
+/* Warning! If there is an underflow in the rounding to the nearest mode,
+   the result may not be the one expected. Either this should be fixed
+   (a 3rd argument giving the current ternary value is necessary) or the
+   caller should do some checks for particular cases before the call. */
+
 int
 mpfr_check_range (mpfr_ptr x, mp_rnd_t rnd_mode)
 {
@@ -186,7 +191,7 @@ mpfr_set_underflow (mpfr_ptr x, mp_rnd_t rnd_mode, int sign)
       mp_limb_t *xp;
 
       MPFR_EXP(x) = __mpfr_emin;
-      xn = (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB;
+      xn = (MPFR_PREC(x) - 1) / BITS_PER_MP_LIMB;
       xp = MPFR_MANT(x);
       xp[xn] = MP_LIMB_T_HIGHBIT;
       MPN_ZERO(xp, xn);
@@ -220,7 +225,7 @@ mpfr_set_overflow (mpfr_ptr x, mp_rnd_t rnd_mode, int sign)
 
       MPFR_EXP(x) = __mpfr_emax;
       xn = 1 + (MPFR_PREC(x) - 1) / BITS_PER_MP_LIMB;
-      sh = xn * BITS_PER_MP_LIMB - MPFR_PREC(x);
+      sh = (mp_prec_t) xn * BITS_PER_MP_LIMB - MPFR_PREC(x);
       xp = MPFR_MANT(x);
       xp[0] = MP_LIMB_T_MAX << sh;
       for (i = 1; i < xn; i++)
