@@ -107,6 +107,10 @@ typedef __gmp_const __mpfr_struct *mpfr_srcptr;
 #endif
 #endif
 
+#ifndef __GMP_PROTO
+#define __GMP_PROTO(x) _PROTO(x)
+#endif
+
 #if defined (__cplusplus)
 extern "C" {
 #endif  
