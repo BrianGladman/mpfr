@@ -219,7 +219,9 @@ void check64 ()
 {
   mpfr_t x, t, u;
 
-  mpfr_init(x); mpfr_init(t); mpfr_init(u);
+  mpfr_init (x);
+  mpfr_init (t);
+  mpfr_init (u);
 
   mpfr_set_prec (x, 112); mpfr_set_prec (t, 98); mpfr_set_prec (u, 54);
   mpfr_set_str_raw (x, "-0.11111100100000000011000011100000101101010001000111E-401");
