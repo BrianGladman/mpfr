@@ -168,3 +168,11 @@ dbl (double m, int e)
       m /= 2.0;
   return m;
 }
+
+#ifndef HAVE_ISNAN
+int
+Isnan (double d)
+{
+  return (d) != (d);
+}
+#endif
