@@ -19,6 +19,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+#include <float.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -35,7 +36,24 @@ main (int argc, char *argv[])
   
   mpfr_test_init ();
 
-   mpfr_init2 (x, 2);
+  mpfr_init2 (x, 2);
+
+  /* checks that denormalized are not flushed to zero */
+  d = DBL_MIN; /* 2^(-1022) */
+  for (n=0; n<52; n++, d /= 2.0)
+    if (d != 0.0) /* should be 2^(-1022-n) */
+      {
+        mpfr_set_d (x, d, GMP_RNDN);
+        if (mpfr_cmp_ui_2exp (x, 1, -1022-n))
+          {
+            fprintf (stderr, "Wrong result for d=2^(%ld), ", -1022-n);
+            fprintf (stderr, "got ");
+            mpfr_out_str (stderr, 10, 10, x, GMP_RNDN);
+            fprintf (stderr, "\n");
+            mpfr_print_binary (x); putchar ('\n');
+            exit (1);
+          }
+      }
 
    /* checks that rounds to nearest sets the last
      bit to zero in case of equal distance */
