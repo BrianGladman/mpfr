@@ -160,7 +160,7 @@ printf("*ap=%u\n",*ap);
        else mpn_lshift(cp, ap, an, 1); 
      }
    }
-  if (sign_product<0) CHANGE_SIGN(a);
+  if (sign_product * SIGN(a)<0) CHANGE_SIGN(a);
   TMP_FREE(marker); 
 #ifdef DEBUG2
 printf("b*c="); mpfr_print_raw(a); putchar('\n');
