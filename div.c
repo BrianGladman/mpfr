@@ -201,7 +201,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
      because we might have to divide again if rounding is impossible, or
      if the result might be exact. We have however to mimic normalization */
 
-  if (qp[qsize]) { sh = -1; } 
+  if (qp[qsize] != 0) { sh = -1; } 
   else { count_leading_zeros(sh, qp[qsize - 1]); } 
   
   /* 
@@ -325,7 +325,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
 	  /* Positive correction is at most 1. */
 
 	  mpn_sub_n(rem, rem2, rem, rsize); 
-	  if (rem[rsize - 1] || 
+	  if (rem[rsize - 1] != 0 || 
 	      mpn_cmp(rem + rsize - vsize - 1, vp, vsize) >= 0)
 	    {
 	      rem[rsize - 1] -= 
@@ -360,7 +360,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
       affiche_mp(rem, rsize); 
 #endif
 
-      if (qp[qsize]) { sh = -1; } 
+      if (qp[qsize] != 0) { sh = -1; } 
       else { count_leading_zeros(sh, qp[qsize - 1]); } 
       err = BITS_PER_MP_LIMB * qsize; 
       rp = rem; 
@@ -375,7 +375,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
 
   qexp = MPFR_EXP(u) - MPFR_EXP(v);
 
-  if (qp[qsize]) 
+  if (qp[qsize] != 0) 
     /* Hack : qp[qsize] is 0, 1 or 2, hence if not 0, = 2^(qp[qsize] - 1). */
     {
       near = mpn_rshift(qp, qp, qsize, qp[qsize]);
@@ -384,7 +384,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
   else
     {
       near = 0; 
-      if (sh) { mpn_lshift(qp, qp, qsize, sh); qexp -= sh; }
+      if (sh != 0) { mpn_lshift(qp, qp, qsize, sh); qexp -= sh; }
     }
   
   cc = mpfr_round_raw_generic(qp, qp, err, (sign_quotient == -1 ? 1 : 0),
@@ -414,7 +414,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
 
 	  /* If a bit has been shifted out during normalization, hence 
 	     the remainder is nonzero. */
-	  if (!near) 
+	  if (near == 0) 
 	    while (k >= 0) { if (rp[k]) break; k--; }
 
 	  if (k >= 0) /* Remainder is nonzero. */ 
@@ -439,7 +439,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
 
 	  /* If a bit has been shifted out during normalization, hence 
 	     the remainder is nonzero. */
-	    if (!near)
+	    if (near == 0)
 	      while (k >= 0) { if (rp[k]) break; k--; }
 	    
 	    if (k >= 0) /* In fact the quotient is larger than expected */
