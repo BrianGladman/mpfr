@@ -45,10 +45,10 @@ mpfr_cmp_ui_2exp (b, i, f)
 
   if (MPFR_IS_NAN(b)) return 1;
 
-  if (MPFR_SIGN(b) < 0) return -1;
+  if (!MPFR_NOTZERO(b)) return((i) ? -1 : 0);
+  else if (MPFR_SIGN(b) < 0) return -1;
   /* now b>=0 */
   else if (MPFR_IS_INF(b)) return 1; 
-  else if (!MPFR_NOTZERO(b)) return((i) ? -1 : 0);
   /* now b>0 */
   else if (i==0) return 1;
   else { /* b>0, i>0 */
