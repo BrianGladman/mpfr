@@ -133,7 +133,7 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
       MPFR_CHANGE_SIGN(arctangent);
     mpfr_clear(Pisur2);
     mpfr_clear(xp);
-    return 0; /* Result correct */
+    return 1; /* inexact result */
   }
   if (comparaison > 0)
       suplement = 2;
