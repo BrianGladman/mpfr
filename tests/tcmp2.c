@@ -4,6 +4,11 @@
 #include "gmp.h"
 #include "longlong.h"
 #include "mpfr.h"
+#ifdef IRIX64
+#include <sys/fpu.h>
+#endif
+
+extern int isnan();
 
 double drand()
 {
@@ -30,9 +35,16 @@ void tcmp2(x, y, i) double x, y; int i;
   mpfr_clear(xx); mpfr_clear(yy);
 }
 
-void main()
+int main()
 {
   int i,j; double x=1.0, y, z;
+#ifdef IRIX64
+    /* to get denormalized numbers on IRIX64 */
+    union fpc_csr exp;
+    exp.fc_word = get_fpc_csr();
+    exp.fc_struct.flush = 0;
+    set_fpc_csr(exp.fc_word);
+#endif
 
   tcmp2(1.06022698059744327881e+71, 1.05824655795525779205e+71, -1);
   tcmp2(1.0, 1.0, 53);
@@ -48,5 +60,6 @@ void main()
       tcmp2(x, y, -1);
     }
   }
+  return 0;
 }
 
