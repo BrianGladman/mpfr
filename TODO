@@ -40,6 +40,8 @@ mpfr_unordered_p         0     0     0     1
 
 - mpfr_set_f (MPF -> float) or mpfr_strtof, mpfr_set_ld or mpfr_strtold
 	(idem for mpfr_get_*)
+- mpfr_modf (to extract integer and fractional parts), suggested by
+	Dmitry Antipov <dmitry.antipov@mail.ru> Thu, 13 Jun 2002
 
 Rounding:
 
