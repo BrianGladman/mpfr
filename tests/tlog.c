@@ -67,10 +67,6 @@ check1 (double a, mp_rnd_t rnd_mode, double res1, int ck, int max_ulp)
   int diff=0;
   /* ck=1 iff res1 is certified correct */
 
-#ifdef MPFR_HAVE_FESETROUND
-  mpfr_set_machine_rnd_mode(rnd_mode);
-#endif
-  if (ck==0 && res1==0.0) res1=log(a); 
   mpfr_init2(ta, 53);
   mpfr_init2(tres, 53);
   mpfr_set_d(ta, a, GMP_RNDN);
@@ -80,17 +76,10 @@ check1 (double a, mp_rnd_t rnd_mode, double res1, int ck, int max_ulp)
 
   if (res1!=res2 && (!isnan(res1) || !isnan(res2))) {
       diff = ulp(res1,res2);
-      if (ck) { 
-	printf("mpfr_log failed for    a=%1.20e, rnd_mode=%s\n", a,
-	       mpfr_print_rnd_mode(rnd_mode));
-	printf("correct result is        %1.20e\n mpfr_log gives          %1.20e (%d ulp)\n",res1,res2,ulp(res1,res2));
-	exit(1);
-      }
-      else if (diff>max_ulp) {
-	printf("mpfr_log differs from libm.a for a=%1.20e, rnd_mode=%s\n", a,
-	       mpfr_print_rnd_mode(rnd_mode));
-	printf(" double calculus gives %1.20e\n mpfr_log        gives %1.20e (%d ulp)\n",res1,res2,ulp(res1,res2));
-      }
+      printf("mpfr_log failed for    a=%1.20e, rnd_mode=%s\n", a,
+             mpfr_print_rnd_mode(rnd_mode));
+      printf("correct result is        %1.20e\n mpfr_log gives          %1.20e (%d ulp)\n",res1,res2,ulp(res1,res2));
+      exit(1);
   }
   if (!isnan(res1) || !isnan(res2))
     return diff;

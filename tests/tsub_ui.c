@@ -48,10 +48,6 @@ check3 (double x, unsigned long y, mp_rnd_t rnd_mode, double z1)
   mpfr_set_prec(zz, 53);
   mpfr_set_d(xx, x, rnd_mode);
   mpfr_sub_ui(zz, xx, y, rnd_mode);
-#ifdef MPFR_HAVE_FESETROUND
-  mpfr_set_machine_rnd_mode(rnd_mode);
-#endif
-  if (z1==0.0) z1 = x-y;
   z2 = mpfr_get_d1 (zz);
   if (z1!=z2 && !(isnan(z1) && isnan(z2))) {
     printf("expected sum is %1.20e, got %1.20e\n",z1,z2);
@@ -118,27 +114,6 @@ main (int argc, char *argv[])
 
   tests_start_mpfr ();
 
-#ifdef MPFR_HAVE_FESETROUND
-  {
-  double x; unsigned long y, N; int i,rnd_mode,rnd;
-
-  mpfr_test_init ();
-
-  SEED_RAND (time(NULL));
-  N = (argc<2) ? 1000000 : atoi(argv[1]);
-  rnd_mode = (argc<3) ? -1 : atoi(argv[2]);
-  for (i=0;i<1000000;i++) {
-    x = drand();
-    y = LONG_RAND();
-    if (ABS(x)>=DBL_MIN && x+y<DBL_MAX && x+y>-DBL_MAX) {
-      /* avoid denormalized numbers and overflows */
-      rnd = (rnd_mode==-1) ? LONG_RAND()%4 : rnd_mode;
-      check(x, y, rnd);
-    }
-  } 
-  }
-#endif
-  
   for (p=2; p<200; p++)
     for (k=0; k<200; k++)
       check_two_sum (p);

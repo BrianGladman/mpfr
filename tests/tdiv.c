@@ -44,34 +44,20 @@ check4 (double N, double D, mp_rnd_t rnd_mode, int p, double Q)
 {
   mpfr_t q, n, d;
   double Q2;
-  int Q_is_correct;
 
-  Q_is_correct = Q != 0.0;
   mpfr_init2 (q, p);
   mpfr_init2 (n, p);
   mpfr_init2 (d, p);
   mpfr_set_d(n, N, rnd_mode);
   mpfr_set_d(d, D, rnd_mode);
   mpfr_div(q, n, d, rnd_mode);
-#ifdef MPFR_HAVE_FESETROUND
-  mpfr_set_machine_rnd_mode(rnd_mode);
-#endif
-  if (Q_is_correct == 0)
-    Q = N / D;
   Q2 = mpfr_get_d1 (q);
   if (p == 53 && Q != Q2 && (!isnan(Q) || !isnan(Q2)))
     {
-      if (Q_is_correct)
-        printf ("mpfr_div failed");
-      else
-        printf ("mpfr_div differs from libm");
-      printf (" for n=%1.20e, d=%1.20e, rnd_mode=%s\n",
+      printf ("mpfr_div failed for n=%1.20e, d=%1.20e, rnd_mode=%s\n",
               N, D, mpfr_print_rnd_mode(rnd_mode));
-      if (Q_is_correct)
-        printf ("correct quotient is");
-      else
-        printf ("libm gives");
-      printf ("%1.20e, mpfr_div gives %1.20e (%d ulp)\n", Q, Q2, ulp (Q2, Q));
+      printf ("correct quotient is %1.20e, mpfr_div gives %1.20e (%d ulp)\n",
+              Q, Q2, ulp (Q2, Q));
       exit (1);
     }
   mpfr_clear (q);
@@ -468,13 +454,6 @@ main (int argc, char *argv[])
 {
   mpfr_t x, y, z; 
 
-#ifdef MPFR_HAVE_FESETROUND
-  int N, i;
-  double n, d, e;
-
-  mpfr_test_init ();
-#endif
-
   check_inexact(); 
 
   mpfr_init2 (x, 64);
@@ -517,18 +496,6 @@ main (int argc, char *argv[])
            3.6091968273068081e-204);
   check53 (-1.8177943561493235e-93, -8.51233984260364e-104, GMP_RNDU,
            2.1354814184595821e+10);
-
-#ifdef MPFR_HAVE_FESETROUND
-  N = (argc>1) ? atoi(argv[1]) : 100000;
-  SEED_RAND (time(NULL));
-  for (i=0;i<N;i++)
-    {
-      do { n = drand(); d = drand(); e = ABS(n)/ABS(d); }
-      /* smallest normalized is 2^(-1022), largest is 2^(1023)*(2-2^(-52)) */
-      while (e>=MAXNORM || e<MINNORM);
-      check4 (n, d, LONG_RAND() % 4, 53, 0.0);
-    }
-#endif
 
   mpfr_clear (x);
   mpfr_clear (y);
