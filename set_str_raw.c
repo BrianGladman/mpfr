@@ -76,7 +76,7 @@ mpfr_set_str_raw(mpfr_ptr x, char *str)
   if (cnt) mpn_lshift(xp, xp, xsize, cnt); 
 
   x -> _mp_exp = expn - cnt; 
-  x -> _mp_size = (negative ? -xsize : xsize); 
+  x -> _mp_size = xsize; if (negative) CHANGE_SIGN(x);
 
   free(str0); 
   
