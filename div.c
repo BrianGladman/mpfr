@@ -231,8 +231,8 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
    *                                                                        *
    *   The attempt to use only part of u and v failed. We first compute a   *
    *   correcting term, then perform the full division.                     *
-   *   Put u = uhi + ulo, v = vhi + vlo. We have uhi = vhi * rp + tp,       *
-   *   thus u - v * rp = tp + ulo - rp*vlo, that we shall divide by v.      *
+   *   Put u = uhi + ulo, v = vhi + vlo. We have uhi = vhi * qp + rp,       *
+   *   thus u - qp * v = rp + ulo - qp * vlo, that we shall divide by v.    *
    *                                                                        *
    **************************************************************************/
 
