@@ -648,6 +648,9 @@ form +/-xxxx.xxxxxxEyy. The exponent is read in decimal, but is interpreted
 as the power of two to be multiplied by the mantissa.
 The mantissa length of @var{s} has to be less or equal to the precision of
 @var{x}, otherwise an error occurs.
+If @var{s} starts with @code{N}, it is interpreted as NaN (Not-a-Number);
+if it starts with @code{I} after the sign, it is interpreted as infinity,
+with the corresponding sign.
 @end deftypefun
 
 @deftypefun void mpfr_set_f (mpfr_t @var{x}, mpf_t @var{y}, mp_rnd_t @var{rnd})
