@@ -170,17 +170,18 @@ static int mpfr_list_sum_once (mpfr_ptr ret, mpfr_srcptr const tab[],
 {
   unsigned long i;
   mpfr_t sum;
-  int error_trap = 0;
+  int error_trap;
+
+  if (MPFR_UNLIKELY (n == 1))
+    return mpfr_set (ret, tab[0], GMP_RNDN);
 
   mpfr_init2 (sum, F);
-  mpfr_set (sum, tab[0], GMP_RNDN);
 
+  error_trap = mpfr_set (sum, tab[0], GMP_RNDN);
   for (i = 1; i < n - 1; i++)
-    {
-      error_trap |= mpfr_add (sum, sum, tab[i], GMP_RNDN);
-    }
-
+    error_trap |= mpfr_add (sum, sum, tab[i], GMP_RNDN);
   error_trap |= mpfr_add (ret, sum, tab[n - 1], GMP_RNDN);
+
   mpfr_clear (sum);
   return error_trap;
 }
@@ -202,6 +203,11 @@ int mpfr_sum (mpfr_ptr ret, mpfr_ptr const tab[], unsigned long n,
   TMP_DECL(marker);
     
   TMP_MARK(marker);
+  if (MPFR_UNLIKELY (n == 0)) {
+    MPFR_SET_ZERO (ret);
+    MPFR_SET_POS (ret);
+    return 0;
+  }
 
   perm = (mpfr_srcptr *) TMP_ALLOC(n * sizeof(mpfr_srcptr)); 
 
