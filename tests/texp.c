@@ -93,17 +93,17 @@ int check_large (double d, int n, char rnd)
     mpfr_div_ui(x, x, 3, rnd);
   }
   else mpfr_set_d(x, d, rnd);
-  mpfr_exp(x, x, rnd);
+  mpfr_exp(y, x, rnd);
   if (d==0.0) {
-    mpfr_set_d(y, 640320.0, rnd);
-    mpfr_sub(x, x, y, rnd);
+    mpfr_set_d(x, 640320.0, rnd);
+    mpfr_sub(y, y, x, rnd);
     printf("exp(Pi*sqrt(163)/3)-640320=");
   }
   else printf("exp(%1.20e)=",d); 
-  mpfr_out_str(stdout, 10, 0, x, rnd);
+  mpfr_out_str(stdout, 10, 0, y, rnd);
   putchar('\n');
-  printf(" ="); mpfr_print_raw(x); putchar('\n');
-  if (n==53) printf(" =%1.20e\n", mpfr_get_d(x));
+  printf(" ="); mpfr_print_raw(y); putchar('\n');
+  if (n==53) printf(" =%1.20e\n", mpfr_get_d(y));
   mpfr_clear(x); mpfr_clear(y);
   return 0;
 }
@@ -157,6 +157,13 @@ int check_worst_cases()
   check3(7.54175277499595900852e-10, GMP_RNDN, 1.00000000075417538881);
   /* bug found by Vincent Lefe`vre on December 8, 1999 */
   check3(-5.42410311287441459172e+02, GMP_RNDN, 2.7176584868845723e-236);
+  /* further cases communicated by Vincent Lefe`vre on January 27, 2000 */
+  check3(-1.32920285897904911589e-10, GMP_RNDN, 0.999999999867079769622);
+  check3(-1.44037948245738330735e-10, GMP_RNDN, 0.9999999998559621072757);
+  check3(-1.66795910430705305937e-10, GMP_RNDZ, 0.9999999998332040895832);
+  check3(-1.64310953745426656203e-10, GMP_RNDN, 0.9999999998356891017792);
+  check3(-1.38323574826034659172e-10, GMP_RNDZ, 0.9999999998616764251835);
+  check3(-1.23621668465115401498e-10, GMP_RNDZ, 0.9999999998763783315425);
   mpfr_clear(x);
   return 0;
 }
