@@ -160,10 +160,11 @@ main ()
   /* Input and Output Functions */
 
   f = fopen ("/dev/null", "w");
-  if (f != NULL) {
-    mpf_out_str (f, 10, 10, x);
-    fclose (f);
-  }
+  if (f != NULL)
+    {
+      mpf_out_str (f, 10, 10, x);
+      fclose (f);
+    }
 
   mpf_set_prec (x, 15);
   mpf_set_prec (y, 15);
@@ -171,15 +172,16 @@ main ()
      in mpfr-test, and not in mpfr.h and gmp.h, and we want
      to test theses includes files. */
   f = fopen ("inp_str.data", "r");
-  if (f != NULL) { 
-    i = mpf_inp_str (x, f, 10);
-    if ((i == 0) || mpf_cmp_ui (x, 31415))
-      {
-	printf ("Error in reading 1st line from file inp_str.data\n");
-	exit (1);
-      }
-    fclose (f);
-  }
+  if (f != NULL)
+    {
+      i = mpf_inp_str (x, f, 10);
+      if ((i == 0) || mpf_cmp_ui (x, 31415))
+        {
+          printf ("Error in reading 1st line from file inp_str.data\n");
+          exit (1);
+        }
+      fclose (f);
+    }
 
   /* Miscellaneous Functions */
 
