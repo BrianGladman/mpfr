@@ -24,6 +24,29 @@ MA 02111-1307, USA. */
 
 #include "mpfr-test.h"
 
+#ifdef CHECK_EXTERNAL
+static int
+test_sqrt (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
+{
+  int res;
+  int ok = rnd_mode == GMP_RNDN && mpfr_number_p (b);
+  if (ok)
+    {
+      mpfr_print_raw (b);
+    }
+  res = mpfr_sqrt (a, b, rnd_mode);
+  if (ok)
+    {
+      printf (" ");
+      mpfr_print_raw (a);
+      printf ("\n");
+    }
+  return res;
+}
+#else
+#define test_sqrt mpfr_sqrt
+#endif
+
 static void
 check3 (const char *as, mp_rnd_t rnd_mode, const char *qs)
 {
@@ -31,7 +54,7 @@ check3 (const char *as, mp_rnd_t rnd_mode, const char *qs)
 
   mpfr_init2 (q, 53);
   mpfr_set_str1 (q, as);
-  mpfr_sqrt (q, q, rnd_mode);
+  test_sqrt (q, q, rnd_mode);
   if (mpfr_cmp_str1 (q, qs) )
     {
       printf ("mpfr_sqrt failed for a=%s, rnd_mode=%s\n",
@@ -51,7 +74,7 @@ check4 (const char *as, mp_rnd_t rnd_mode, const char *Qs)
 
   mpfr_init2(q, 53);
   mpfr_set_str1 (q, as);
-  mpfr_sqrt(q, q, rnd_mode);
+  test_sqrt(q, q, rnd_mode);
   if (mpfr_cmp_str (q, Qs, 16, GMP_RNDN))
     {
       printf("mpfr_sqrt failed for a=%s, rnd_mode=%s\n",
@@ -72,7 +95,7 @@ check24 (const char *as, mp_rnd_t rnd_mode, const char *qs)
 
   mpfr_init2(q, 24);
   mpfr_set_str1(q, as);
-  mpfr_sqrt(q, q, rnd_mode);
+  test_sqrt(q, q, rnd_mode);
   if (mpfr_cmp_str1 (q, qs))
     {
       printf("mpfr_sqrt failed for a=%s, prec=24, rnd_mode=%s\n",
@@ -148,7 +171,7 @@ special (void)
   mpfr_set_prec (x, 64);
   mpfr_set_str_binary (x, "1010000010100011011001010101010010001100001101011101110001011001E-1");
   mpfr_set_prec (y, 32);
-  mpfr_sqrt (y, x, GMP_RNDN);
+  test_sqrt (y, x, GMP_RNDN);
   if (mpfr_cmp_ui (y, 2405743844UL))
     {
       printf ("Error for n^2+n+1/2 with n=2405743843\n");
@@ -158,7 +181,7 @@ special (void)
   mpfr_set_prec (x, 65);
   mpfr_set_str_binary (x, "10100000101000110110010101010100100011000011010111011100010110001E-2");
   mpfr_set_prec (y, 32);
-  mpfr_sqrt (y, x, GMP_RNDN);
+  test_sqrt (y, x, GMP_RNDN);
   if (mpfr_cmp_ui (y, 2405743844UL))
     {
       printf ("Error for n^2+n+1/4 with n=2405743843\n");
@@ -169,7 +192,7 @@ special (void)
   mpfr_set_prec (x, 66);
   mpfr_set_str_binary (x, "101000001010001101100101010101001000110000110101110111000101100011E-3");
   mpfr_set_prec (y, 32);
-  mpfr_sqrt (y, x, GMP_RNDN);
+  test_sqrt (y, x, GMP_RNDN);
   if (mpfr_cmp_ui (y, 2405743844UL))
     {
       printf ("Error for n^2+n+1/4+1/8 with n=2405743843\n");
@@ -180,7 +203,7 @@ special (void)
   mpfr_set_prec (x, 66);
   mpfr_set_str_binary (x, "101000001010001101100101010101001000110000110101110111000101100001E-3");
   mpfr_set_prec (y, 32);
-  mpfr_sqrt (y, x, GMP_RNDN);
+  test_sqrt (y, x, GMP_RNDN);
   if (mpfr_cmp_ui (y, 2405743843UL))
     {
       printf ("Error for n^2+n+1/8 with n=2405743843\n");
@@ -190,7 +213,7 @@ special (void)
 
   mpfr_set_prec (x, 27);
   mpfr_set_str_binary (x, "0.110100111010101000010001011");
-  if ((inexact = mpfr_sqrt (x, x, GMP_RNDZ)) >= 0)
+  if ((inexact = test_sqrt (x, x, GMP_RNDZ)) >= 0)
     {
       printf ("Wrong inexact flag: expected -1, got %d\n", inexact);
       exit (1);
@@ -202,7 +225,7 @@ special (void)
       mpfr_set_prec (z, p);
       mpfr_set_ui (z, 1, GMP_RNDN);
       mpfr_add_one_ulp (z, GMP_RNDN);
-      mpfr_sqrt (x, z, GMP_RNDU);
+      test_sqrt (x, z, GMP_RNDU);
       if (mpfr_cmp_ui_2exp(x, 3, -1))
 	{
 	  printf ("Error: sqrt(1+ulp(1), up) should give 1.5 (prec=%u)\n",
@@ -215,7 +238,7 @@ special (void)
   /* check inexact flag */
   mpfr_set_prec (x, 5);
   mpfr_set_str_binary (x, "1.1001E-2");
-  if ((inexact = mpfr_sqrt (x, x, GMP_RNDN)))
+  if ((inexact = test_sqrt (x, x, GMP_RNDN)))
     {
       printf ("Wrong inexact flag: expected 0, got %d\n", inexact);
       exit (1);
@@ -227,7 +250,7 @@ special (void)
   /* checks the sign is correctly set */
   mpfr_set_si (x, 1,  GMP_RNDN);
   mpfr_set_si (z, -1, GMP_RNDN);
-  mpfr_sqrt (z, x, GMP_RNDN);
+  test_sqrt (z, x, GMP_RNDN);
   if (mpfr_cmp_ui (z, 0) < 0)
     {
       printf ("Error: square root of 1 gives ");
@@ -240,13 +263,13 @@ special (void)
   mpfr_set_prec (z, 160);
   mpfr_set_str_binary (z, "0.1011010100000100100100100110011001011100100100000011000111011001011101101101110000110100001000100001100001011000E1");
   mpfr_set_prec (x, 160);
-  mpfr_sqrt(x, z, GMP_RNDN);
-  mpfr_sqrt(z, x, GMP_RNDN);
+  test_sqrt(x, z, GMP_RNDN);
+  test_sqrt(z, x, GMP_RNDN);
 
   mpfr_set_prec (x, 53);
   mpfr_set_str (x, "8093416094703476.0", 10, GMP_RNDN);
   mpfr_div_2exp (x, x, 1075, GMP_RNDN);
-  mpfr_sqrt (x, x, GMP_RNDN);
+  test_sqrt (x, x, GMP_RNDN);
   mpfr_set_str (z, "1e55596835b5ef@-141", 16, GMP_RNDN);
   if (mpfr_cmp (x, z))
     {
@@ -259,7 +282,7 @@ special (void)
   mpfr_set_prec (x, 33);
   mpfr_set_str_binary (x, "0.111011011011110001100111111001000e-10");
   mpfr_set_prec (z, 157);
-  inexact = mpfr_sqrt (z, x, GMP_RNDN);
+  inexact = test_sqrt (z, x, GMP_RNDN);
   mpfr_set_prec (x, 157);
   mpfr_set_str_binary (x, "0.11110110101100101111001011100011100011100001101010111011010000100111011000111110100001001011110011111100101110010110010110011001011011010110010000011001101E-5");
   if (mpfr_cmp (x, z))
@@ -281,13 +304,13 @@ special (void)
       mpfr_set_ui (x, 1, GMP_RNDN);
       mpfr_nextabove (x);
       /* 1.0 < x <= 1.5 thus 1 < sqrt(x) <= 1.23 */
-      inexact = mpfr_sqrt (z, x, GMP_RNDN);
+      inexact = test_sqrt (z, x, GMP_RNDN);
       MPFR_ASSERTN(inexact < 0 && mpfr_cmp_ui (z, 1) == 0);
-      inexact = mpfr_sqrt (z, x, GMP_RNDZ);
+      inexact = test_sqrt (z, x, GMP_RNDZ);
       MPFR_ASSERTN(inexact < 0 && mpfr_cmp_ui (z, 1) == 0);
-      inexact = mpfr_sqrt (z, x, GMP_RNDU);
+      inexact = test_sqrt (z, x, GMP_RNDU);
       MPFR_ASSERTN(inexact > 0 && mpfr_cmp_ui_2exp (z, 3, -1) == 0);
-      inexact = mpfr_sqrt (z, x, GMP_RNDD);
+      inexact = test_sqrt (z, x, GMP_RNDD);
       MPFR_ASSERTN(inexact < 0 && mpfr_cmp_ui (z, 1) == 0);
     }
 
@@ -305,19 +328,19 @@ special (void)
       mpfr_add_ui (x, x, 1, GMP_RNDN);
       /* now x = 2^(mp_bits_per_limb - 1) + 1 (mp_bits_per_limb bits) */
       MPFR_ASSERTN(mpfr_mul (x, x, x, GMP_RNDN) == 0); /* exact */
-      inexact = mpfr_sqrt (z, x, GMP_RNDN);
+      inexact = test_sqrt (z, x, GMP_RNDN);
       /* even rule: z should be 2^(mp_bits_per_limb - 1) */
       MPFR_ASSERTN(inexact < 0 &&
                    mpfr_cmp_ui_2exp (z, 1, mp_bits_per_limb - 1) == 0);
       mpfr_nextbelow (x);
       /* now x is just below [2^(mp_bits_per_limb - 1) + 1]^2 */
-      inexact = mpfr_sqrt (z, x, GMP_RNDN);
+      inexact = test_sqrt (z, x, GMP_RNDN);
       MPFR_ASSERTN(inexact < 0 &&
                    mpfr_cmp_ui_2exp (z, 1, mp_bits_per_limb - 1) == 0);
       mpfr_nextabove (x);
       mpfr_nextabove (x);
       /* now x is just above [2^(mp_bits_per_limb - 1) + 1]^2 */
-      inexact = mpfr_sqrt (z, x, GMP_RNDN);
+      inexact = test_sqrt (z, x, GMP_RNDN);
       if (mpfr_cmp (z, y))
         {
           printf ("Error for sqrt(x) in rounding to nearest\n");
@@ -336,7 +359,7 @@ special (void)
   mpfr_set_prec (x, 1000);
   mpfr_set_ui (x, 9, GMP_RNDN);
   mpfr_set_prec (y, 10);
-  inexact = mpfr_sqrt (y, x, GMP_RNDN);
+  inexact = test_sqrt (y, x, GMP_RNDN);
   if (mpfr_cmp_ui (y, 3) || inexact != 0)
     {
       printf ("Error in sqrt(9:1000) for prec=10\n");
@@ -344,7 +367,7 @@ special (void)
     }
   mpfr_set_prec (y, mp_bits_per_limb);
   mpfr_nextabove (x);
-  inexact = mpfr_sqrt (y, x, GMP_RNDN);
+  inexact = test_sqrt (y, x, GMP_RNDN);
   if (mpfr_cmp_ui (y, 3) || inexact >= 0)
     {
       printf ("Error in sqrt(9:1000) for prec=%u\n", mp_bits_per_limb);
@@ -355,7 +378,7 @@ special (void)
   mpfr_set_ui (y, 1, GMP_RNDN);
   mpfr_nextabove (y);
   mpfr_set (x, y, GMP_RNDN);
-  inexact = mpfr_sqrt (y, x, GMP_RNDN);
+  inexact = test_sqrt (y, x, GMP_RNDN);
   if (mpfr_cmp_ui (y, 1) || inexact >= 0)
     {
       printf ("Error in sqrt(1) for prec=%u\n", mp_bits_per_limb);
@@ -380,7 +403,7 @@ check_inexact (mp_prec_t p)
   mpfr_init2 (z, 2*p);
   mpfr_random (x);
   rnd = (mp_rnd_t) RND_RAND();
-  inexact = mpfr_sqrt (y, x, rnd);
+  inexact = test_sqrt (y, x, rnd);
   if (mpfr_mul (z, y, y, rnd)) /* exact since prec(z) = 2*prec(y) */
     {
       printf ("Error: multiplication should be exact\n");
@@ -416,32 +439,32 @@ check_nan (void)
   /* sqrt(NaN) == NaN */
   MPFR_CLEAR_FLAGS (x);
   MPFR_SET_NAN (x);
-  MPFR_ASSERTN (mpfr_sqrt (got, x, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (test_sqrt (got, x, GMP_RNDZ) == 0); /* exact */
   MPFR_ASSERTN (mpfr_nan_p (got));
 
   /* sqrt(-1) == NaN */
   mpfr_set_si (x, -1L, GMP_RNDZ);
-  MPFR_ASSERTN (mpfr_sqrt (got, x, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (test_sqrt (got, x, GMP_RNDZ) == 0); /* exact */
   MPFR_ASSERTN (mpfr_nan_p (got));
 
   /* sqrt(+inf) == +inf */
   MPFR_CLEAR_FLAGS (x);
   MPFR_SET_INF (x);
   MPFR_SET_POS (x);
-  MPFR_ASSERTN (mpfr_sqrt (got, x, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (test_sqrt (got, x, GMP_RNDZ) == 0); /* exact */
   MPFR_ASSERTN (mpfr_inf_p (got));
 
   /* sqrt(-inf) == NaN */
   MPFR_CLEAR_FLAGS (x);
   MPFR_SET_INF (x);
   MPFR_SET_NEG (x);
-  MPFR_ASSERTN (mpfr_sqrt (got, x, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (test_sqrt (got, x, GMP_RNDZ) == 0); /* exact */
   MPFR_ASSERTN (mpfr_nan_p (got));
 
   /* sqrt(-0) == 0 */
   mpfr_set_si (x, 0L, GMP_RNDZ);
   MPFR_SET_NEG (x);
-  MPFR_ASSERTN (mpfr_sqrt (got, x, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (test_sqrt (got, x, GMP_RNDZ) == 0); /* exact */
   MPFR_ASSERTN (mpfr_number_p (got));
   MPFR_ASSERTN (mpfr_cmp_ui (got, 0L) == 0);
 

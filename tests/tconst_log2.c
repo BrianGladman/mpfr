@@ -76,7 +76,7 @@ check_large (void)
   mpfr_prec_round (y, 25000, GMP_RNDN);
   if (mpfr_cmp (x, y))
     {
-      printf ("const_pi: error for large prec\n");
+      printf ("const_log2: error for large prec\n");
       exit (1);
     }
 

@@ -25,6 +25,31 @@ MA 02111-1307, USA. */
 
 #include "mpfr-test.h"
 
+#ifdef CHECK_EXTERNAL
+static int
+test_div (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
+{
+  int res;
+  int ok = rnd_mode == GMP_RNDN && mpfr_number_p (b) && mpfr_number_p (c);
+  if (ok)
+    {
+      mpfr_print_raw (b);
+      printf (" ");
+      mpfr_print_raw (c);
+    }
+  res = mpfr_div (a, b, c, rnd_mode);
+  if (ok)
+    {
+      printf (" ");
+      mpfr_print_raw (a);
+      printf ("\n");
+    }
+  return res;
+}
+#else
+#define test_div mpfr_div
+#endif
+
 #define check53(n, d, rnd, res) check4(n, d, rnd, 53, res)
 
 /* return 0 iff a and b are of the same sign */
@@ -48,7 +73,7 @@ check4 (const char *Ns, const char *Ds, mp_rnd_t rnd_mode, int p,
   mpfr_inits2 (p, q, n, d, NULL);
   mpfr_set_str1 (n, Ns);
   mpfr_set_str1 (d, Ds);
-  mpfr_div(q, n, d, rnd_mode);
+  test_div(q, n, d, rnd_mode);
   if (mpfr_cmp_str (q, Qs, ((p==53) ? 10 : 2), GMP_RNDN) )
     {
       printf ("mpfr_div failed for n=%s, d=%s, p=%d, rnd_mode=%s\n",
@@ -71,7 +96,7 @@ check24 (const char *Ns, const char *Ds, mp_rnd_t rnd_mode, const char *Qs)
 
   mpfr_set_str1 (n, Ns);
   mpfr_set_str1 (d, Ds);
-  mpfr_div(q, n, d, rnd_mode);
+  test_div(q, n, d, rnd_mode);
   if (mpfr_cmp_str1 (q, Qs) )
     {
       printf ("mpfr_div failed for n=%s, d=%s, prec=24, rnd_mode=%s\n",
@@ -174,7 +199,7 @@ check_64(void)
 
   mpfr_set_str_binary(x, "1.00100100110110101001010010101111000001011100100101010000000000E54");
   mpfr_set_str_binary(y, "1.00000000000000000000000000000000000000000000000000000000000000E584");
-  mpfr_div(z, x, y, GMP_RNDU);
+  test_div(z, x, y, GMP_RNDU);
   if (mpfr_cmp_str (z, "0.1001001001101101010010100101011110000010111001001010100000000000E-529", 2, GMP_RNDN))
     {
       printf("Error for tdiv for GMP_RNDU and p=64\nx=");
@@ -199,13 +224,13 @@ check_convergence (void)
   mpfr_set_str_binary(x, "0.1011111101011010101000001010011111101000011100011101010011111011000011001010000000111100100111110011001010110100100001001000111001E6944");
   mpfr_init2(y, 130);
   mpfr_set_ui(y, 5, GMP_RNDN);
-  mpfr_div(x, x, y, GMP_RNDD); /* exact division */
+  test_div(x, x, y, GMP_RNDD); /* exact division */
 
   mpfr_set_prec(x, 64);
   mpfr_set_prec(y, 64);
   mpfr_set_str_binary(x, "0.10010010011011010100101001010111100000101110010010101E55");
   mpfr_set_str_binary(y, "0.1E585");
-  mpfr_div(x, x, y, GMP_RNDN);
+  test_div(x, x, y, GMP_RNDN);
   mpfr_set_str_binary(y, "0.10010010011011010100101001010111100000101110010010101E-529");
   if (mpfr_cmp (x, y))
     {
@@ -223,7 +248,7 @@ check_convergence (void)
       for (j = 0;j < GMP_RND_MAX; j++)
         {
           mpfr_set_ui (y, 1, GMP_RNDN);
-          mpfr_div (y, x, y, (mp_rnd_t) j);
+          test_div (y, x, y, (mp_rnd_t) j);
           if (mpfr_cmp_ui (y, 1))
             {
               printf ("mpfr_div failed for x=1.0, y=1.0, prec=%d rnd=%s\n",
@@ -300,7 +325,7 @@ check_hard (void)
 		{
 		  for (rnd = 0; rnd < GMP_RND_MAX; rnd++)
 		    {
-		      inex = mpfr_div (q, u, v, (mp_rnd_t) rnd);
+		      inex = test_div (q, u, v, (mp_rnd_t) rnd);
 		      inex2 = get_inexact (q, u, v);
 		      if (inex_cmp (inex, inex2))
 			{
@@ -355,7 +380,7 @@ check_lowr (void)
         }
       while (mpfr_cmp_ui (tmp, 0) == 0);
       mpfr_mul (x, z, tmp, GMP_RNDN); /* exact */
-      c = mpfr_div (z2, x, tmp, GMP_RNDN);
+      c = test_div (z2, x, tmp, GMP_RNDN);
 
       if (c || mpfr_cmp (z2, z))
         {
@@ -378,7 +403,7 @@ check_lowr (void)
         }
       while (mpfr_cmp_ui (tmp, 0) == 0);
       mpfr_mul (x, z, tmp, GMP_RNDN); /* exact */
-      c = mpfr_div (z2, x, tmp, GMP_RNDN);
+      c = test_div (z2, x, tmp, GMP_RNDN);
       /* since z2 has one less bit that z, either the division is exact
 	 if z is representable on 9 bits, or we have an even round case */
 
@@ -442,8 +467,8 @@ check_lowr (void)
       mpfr_set(y, tmp, GMP_RNDD);
       mpfr_add_one_ulp(x, GMP_RNDN);
 
-      c = mpfr_div(z2, x, y, GMP_RNDD);
-      mpfr_div(z3, x, y, GMP_RNDD);
+      c = test_div(z2, x, y, GMP_RNDD);
+      test_div(z3, x, y, GMP_RNDD);
       mpfr_set(z, z3, GMP_RNDD);
 
       if (c != -1 || mpfr_cmp(z2, z))
@@ -456,9 +481,9 @@ check_lowr (void)
         }
 
       mpfr_set (y, tmp, GMP_RNDU);
-      mpfr_div (z3, x, y, GMP_RNDU);
+      test_div (z3, x, y, GMP_RNDU);
       mpfr_set (z, z3, GMP_RNDU);
-      c = mpfr_div (z2, x, y, GMP_RNDU);
+      c = test_div (z2, x, y, GMP_RNDU);
       if (c != 1 || mpfr_cmp (z2, z))
         {
           printf ("Error in mpfr_div rnd=GMP_RNDU\n");
@@ -499,7 +524,7 @@ check_inexact (void)
   mpfr_set_prec (u, 127);
   mpfr_set_str_binary (u, "0.1000001100110110110101110110101101111000110000001111111110000000011111001010110100110010111111111101000001011011101011101101000E-2");
   mpfr_set_prec (y, 95);
-  inexact = mpfr_div (y, x, u, GMP_RNDN);
+  inexact = test_div (y, x, u, GMP_RNDN);
   if (inexact != (cmp = get_inexact (y, x, u)))
     {
       printf ("Wrong inexact flag (0): expected %d, got %d\n", cmp, inexact);
@@ -514,7 +539,7 @@ check_inexact (void)
   mpfr_set_prec (u, 2);
   mpfr_set_str_binary (u, "0.1E0");
   mpfr_set_prec (y, 28);
-  if ((inexact = mpfr_div (y, x, u, GMP_RNDN) >= 0))
+  if ((inexact = test_div (y, x, u, GMP_RNDN) >= 0))
     {
       printf ("Wrong inexact flag (1): expected -1, got %d\n",
               inexact);
@@ -526,7 +551,7 @@ check_inexact (void)
   mpfr_set_prec (u, 15);
   mpfr_set_str_binary (u, "0.101101000001100E-1");
   mpfr_set_prec (y, 92);
-  if ((inexact = mpfr_div (y, x, u, GMP_RNDN)) <= 0)
+  if ((inexact = test_div (y, x, u, GMP_RNDN)) <= 0)
     {
       printf ("Wrong inexact flag for rnd=GMP_RNDN(1): expected 1, got %d\n",
               inexact);
@@ -550,7 +575,7 @@ check_inexact (void)
 	      mpfr_set_prec (z, py + pu);
 		{
                   rnd = (mp_rnd_t) RND_RAND ();
-		  inexact = mpfr_div (y, x, u, rnd);
+		  inexact = test_div (y, x, u, rnd);
 		  if (mpfr_mul (z, y, u, rnd))
 		    {
 		      printf ("z <- y * u should be exact\n");
@@ -594,13 +619,13 @@ check_nan (void)
   /* 1/nan == nan */
   mpfr_set_ui (a, 1L, GMP_RNDN);
   MPFR_SET_NAN (d);
-  MPFR_ASSERTN (mpfr_div (q, a, d, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (test_div (q, a, d, GMP_RNDZ) == 0); /* exact */
   MPFR_ASSERTN (mpfr_nan_p (q));
 
   /* nan/1 == nan */
   MPFR_SET_NAN (a);
   mpfr_set_ui (d, 1L, GMP_RNDN);
-  MPFR_ASSERTN (mpfr_div (q, a, d, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (test_div (q, a, d, GMP_RNDZ) == 0); /* exact */
   MPFR_ASSERTN (mpfr_nan_p (q));
 
   /* +inf/1 == +inf */
@@ -608,7 +633,7 @@ check_nan (void)
   MPFR_SET_INF (a);
   MPFR_SET_POS (a);
   mpfr_set_ui (d, 1L, GMP_RNDN);
-  MPFR_ASSERTN (mpfr_div (q, a, d, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (test_div (q, a, d, GMP_RNDZ) == 0); /* exact */
   MPFR_ASSERTN (mpfr_inf_p (q));
   MPFR_ASSERTN (mpfr_sgn (q) > 0);
 
@@ -617,14 +642,14 @@ check_nan (void)
   MPFR_CLEAR_FLAGS (d);
   MPFR_SET_INF (d);
   MPFR_SET_POS (d);
-  MPFR_ASSERTN (mpfr_div (q, a, d, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (test_div (q, a, d, GMP_RNDZ) == 0); /* exact */
   MPFR_ASSERTN (mpfr_number_p (q));
   MPFR_ASSERTN (mpfr_sgn (q) == 0);
 
   /* 0/0 == nan */
   mpfr_set_ui (a, 0L, GMP_RNDN);
   mpfr_set_ui (d, 0L, GMP_RNDN);
-  MPFR_ASSERTN (mpfr_div (q, a, d, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (test_div (q, a, d, GMP_RNDZ) == 0); /* exact */
   MPFR_ASSERTN (mpfr_nan_p (q));
 
   /* +inf/+inf == nan */
@@ -634,33 +659,33 @@ check_nan (void)
   MPFR_CLEAR_FLAGS (d);
   MPFR_SET_INF (d);
   MPFR_SET_POS (d);
-  MPFR_ASSERTN (mpfr_div (q, a, d, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (test_div (q, a, d, GMP_RNDZ) == 0); /* exact */
   MPFR_ASSERTN (mpfr_nan_p (q));
 
   /* 1/+0 = +Inf */
   mpfr_set_ui (a, 1, GMP_RNDZ);
   mpfr_set_ui (d, 0, GMP_RNDZ);
-  MPFR_ASSERTN (mpfr_div (q, a, d, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (test_div (q, a, d, GMP_RNDZ) == 0); /* exact */
   MPFR_ASSERTN (mpfr_inf_p (q) && mpfr_sgn (q) > 0);
 
   /* 1/-0 = -Inf */
   mpfr_set_ui (a, 1, GMP_RNDZ);
   mpfr_set_ui (d, 0, GMP_RNDZ);
   mpfr_neg (d, d, GMP_RNDZ);
-  MPFR_ASSERTN (mpfr_div (q, a, d, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (test_div (q, a, d, GMP_RNDZ) == 0); /* exact */
   MPFR_ASSERTN (mpfr_inf_p (q) && mpfr_sgn (q) < 0);
 
   /* -1/+0 = -Inf */
   mpfr_set_si (a, -1, GMP_RNDZ);
   mpfr_set_ui (d, 0, GMP_RNDZ);
-  MPFR_ASSERTN (mpfr_div (q, a, d, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (test_div (q, a, d, GMP_RNDZ) == 0); /* exact */
   MPFR_ASSERTN (mpfr_inf_p (q) && mpfr_sgn (q) < 0);
 
   /* -1/-0 = +Inf */
   mpfr_set_si (a, -1, GMP_RNDZ);
   mpfr_set_ui (d, 0, GMP_RNDZ);
   mpfr_neg (d, d, GMP_RNDZ);
-  MPFR_ASSERTN (mpfr_div (q, a, d, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (test_div (q, a, d, GMP_RNDZ) == 0); /* exact */
   MPFR_ASSERTN (mpfr_inf_p (q) && mpfr_sgn (q) > 0);
 
   /* check overflow */
@@ -669,7 +694,7 @@ check_nan (void)
   mpfr_set_ui (a, 1, GMP_RNDZ);
   mpfr_set_ui (d, 1, GMP_RNDZ);
   mpfr_div_2exp (d, d, 1, GMP_RNDZ);
-  mpfr_div (q, a, d, GMP_RNDU); /* 1 / 0.5 = 2 -> overflow */
+  test_div (q, a, d, GMP_RNDU); /* 1 / 0.5 = 2 -> overflow */
   MPFR_ASSERTN (mpfr_inf_p (q) && mpfr_sgn (q) > 0);
   set_emax (emax);
 
@@ -679,9 +704,9 @@ check_nan (void)
   mpfr_set_ui (a, 1, GMP_RNDZ);
   mpfr_div_2exp (a, a, 2, GMP_RNDZ);
   mpfr_set_ui (d, 2, GMP_RNDZ);
-  mpfr_div (q, a, d, GMP_RNDZ); /* 0.5*2^(-2) -> underflow */
+  test_div (q, a, d, GMP_RNDZ); /* 0.5*2^(-2) -> underflow */
   MPFR_ASSERTN (mpfr_cmp_ui (q, 0) == 0 && MPFR_IS_POS (q));
-  mpfr_div (q, a, d, GMP_RNDN); /* 0.5*2^(-2) -> underflow */
+  test_div (q, a, d, GMP_RNDN); /* 0.5*2^(-2) -> underflow */
   MPFR_ASSERTN (mpfr_cmp_ui (q, 0) == 0 && MPFR_IS_POS (q));
   set_emin (emin);
 

@@ -24,6 +24,31 @@ MA 02111-1307, USA. */
 
 #include "mpfr-test.h"
 
+#ifdef CHECK_EXTERNAL
+static int
+test_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
+{
+  int res;
+  int ok = rnd_mode == GMP_RNDN && mpfr_number_p (b) && mpfr_number_p (c);
+  if (ok)
+    {
+      mpfr_print_raw (b);
+      printf (" ");
+      mpfr_print_raw (c);
+    }
+  res = mpfr_mul (a, b, c, rnd_mode);
+  if (ok)
+    {
+      printf (" ");
+      mpfr_print_raw (a);
+      printf ("\n");
+    }
+  return res;
+}
+#else
+#define test_mul mpfr_mul
+#endif
+
 /* Workaround for sparc gcc 2.95.x bug, see notes in tadd.c. */
 #define check(x,y,rnd_mode,px,py,pz,res)  pcheck(x,y,res,rnd_mode,px,py,pz)
 
@@ -39,7 +64,7 @@ pcheck (const char *xs, const char *ys, const char *res, mp_rnd_t rnd_mode,
   mpfr_init2 (zz, pz);
   mpfr_set_str1 (xx, xs);
   mpfr_set_str1 (yy, ys);
-  mpfr_mul(zz, xx, yy, rnd_mode);
+  test_mul(zz, xx, yy, rnd_mode);
   if (mpfr_cmp_str1 (zz, res) )
     {
       printf ("(1)mpfr_mul failed for x=%s y=%s with rnd=%s\n",
@@ -70,7 +95,7 @@ check53 (const char *xs, const char *ys, mp_rnd_t rnd_mode, const char *zs)
   mpfr_inits2 (53, xx, yy, zz, NULL);
   mpfr_set_str1 (xx, xs);
   mpfr_set_str1 (yy, ys);
-  mpfr_mul (zz, xx, yy, rnd_mode);
+  test_mul (zz, xx, yy, rnd_mode);
   if (mpfr_cmp_str1 (zz, zs) )
     {
       printf ("(2) mpfr_mul failed for x=%s y=%s with rnd=%s\n",
@@ -102,7 +127,7 @@ check24 (const char *xs, const char *ys, mp_rnd_t rnd_mode, const char *zs)
   mpfr_inits2 (24, xx, yy, zz, NULL);
   mpfr_set_str1 (xx, xs);
   mpfr_set_str1 (yy, ys);
-  mpfr_mul (zz, xx, yy, rnd_mode);
+  test_mul (zz, xx, yy, rnd_mode);
   if (mpfr_cmp_str1 (zz, zs) )
     {
       printf ("(3) mpfr_mul failed for x=%s y=%s with "
@@ -171,7 +196,7 @@ check_sign (void)
   mpfr_init2 (b, 53);
   mpfr_set_si (a, -1, GMP_RNDN);
   mpfr_set_ui (b, 2, GMP_RNDN);
-  mpfr_mul(a, b, b, GMP_RNDN);
+  test_mul(a, b, b, GMP_RNDN);
   if (mpfr_cmp_ui (a, 4) )
     {
       printf ("2.0*2.0 gives \n");
@@ -201,7 +226,7 @@ check_exact (void)
   mpfr_set_prec (c, 32);
   mpfr_set_str_binary (a, "1.1000111011000100e-1");
   mpfr_set_str_binary (b, "1.0010001111100111e-1");
-  if (mpfr_mul (c, a, b, GMP_RNDZ))
+  if (test_mul (c, a, b, GMP_RNDZ))
     {
       printf ("wrong return value (1)\n");
       exit (1);
@@ -218,8 +243,8 @@ check_exact (void)
           mpfr_random (a);
           mpfr_random (b);
           rnd = (mp_rnd_t) RND_RAND ();
-          inexact = mpfr_mul (c, a, b, rnd);
-          if (mpfr_mul (d, a, b, rnd)) /* should be always exact */
+          inexact = test_mul (c, a, b, rnd);
+          if (test_mul (d, a, b, rnd)) /* should be always exact */
             {
               printf ("unexpected inexact return value\n");
               exit (1);
@@ -267,7 +292,7 @@ check_max(void)
   mpfr_set_str1 (yy, "0.68750");
   mpfr_mul_2si(yy, yy, MPFR_EMAX_DEFAULT - MPFR_EMAX_DEFAULT/2 + 1, GMP_RNDN);
   mpfr_clear_flags();
-  mpfr_mul(zz, xx, yy, GMP_RNDU);
+  test_mul(zz, xx, yy, GMP_RNDU);
   if (!(mpfr_overflow_p() && MPFR_IS_INF(zz)))
     {
       printf("check_max failed (should be an overflow)\n");
@@ -275,7 +300,7 @@ check_max(void)
     }
 
   mpfr_clear_flags();
-  mpfr_mul(zz, xx, yy, GMP_RNDD);
+  test_mul(zz, xx, yy, GMP_RNDD);
   if (mpfr_overflow_p() || MPFR_IS_INF(zz))
     {
       printf("check_max failed (should NOT be an overflow)\n");
@@ -303,7 +328,7 @@ check_max(void)
   set_emin (0);
   mpfr_set_str_binary (xx, "0.1E0");
   mpfr_set_str_binary (yy, "0.1E0");
-  mpfr_mul (zz, xx, yy, GMP_RNDN);
+  test_mul (zz, xx, yy, GMP_RNDN);
   /* exact result is 0.1E-1, which should round to 0 */
   MPFR_ASSERTN(mpfr_cmp_ui (zz, 0) == 0 && MPFR_IS_POS(zz));
   set_emin (emin);
@@ -315,7 +340,7 @@ check_max(void)
   mpfr_set_str_binary (xx, "0.1E0");
   mpfr_nextabove (xx);
   mpfr_set_str_binary (yy, "0.1E0");
-  mpfr_mul (zz, xx, yy, GMP_RNDN);
+  test_mul (zz, xx, yy, GMP_RNDN);
   /* exact result is just above 0.1E-1, which should round to minfloat */
   MPFR_ASSERTN(mpfr_cmp (zz, yy) == 0);
   set_emin (emin);
@@ -337,7 +362,7 @@ check_min(void)
   mpfr_mul_2si(xx, xx, MPFR_EMIN_DEFAULT/2, GMP_RNDN);
   mpfr_set_str1(yy, "0.9375");
   mpfr_mul_2si(yy, yy, MPFR_EMIN_DEFAULT - MPFR_EMIN_DEFAULT/2 - 1, GMP_RNDN);
-  mpfr_mul(zz, xx, yy, GMP_RNDD);
+  test_mul(zz, xx, yy, GMP_RNDD);
   if (mpfr_sgn(zz) != 0)
     {
       printf("check_min failed: got ");
@@ -346,7 +371,7 @@ check_min(void)
       exit(1);
     }
 
-  mpfr_mul(zz, xx, yy, GMP_RNDU);
+  test_mul(zz, xx, yy, GMP_RNDU);
   mpfr_set_str1 (xx, "0.5");
   mpfr_mul_2si(xx, xx, MPFR_EMIN_DEFAULT, GMP_RNDN);
   if (mpfr_sgn(xx) <= 0)
@@ -381,32 +406,32 @@ check_nans (void)
   /* nan * 0 == nan */
   mpfr_set_nan (x);
   mpfr_set_ui (y, 0L, GMP_RNDN);
-  mpfr_mul (p, x, y, GMP_RNDN);
+  test_mul (p, x, y, GMP_RNDN);
   MPFR_ASSERTN (mpfr_nan_p (p));
 
   /* 1 * nan == nan */
   mpfr_set_ui (x, 1L, GMP_RNDN);
   mpfr_set_nan (y);
-  mpfr_mul (p, x, y, GMP_RNDN);
+  test_mul (p, x, y, GMP_RNDN);
   MPFR_ASSERTN (mpfr_nan_p (p));
 
   /* 0 * +inf == nan */
   mpfr_set_ui (x, 0L, GMP_RNDN);
   mpfr_set_nan (y);
-  mpfr_mul (p, x, y, GMP_RNDN);
+  test_mul (p, x, y, GMP_RNDN);
   MPFR_ASSERTN (mpfr_nan_p (p));
 
   /* +1 * +inf == +inf */
   mpfr_set_ui (x, 1L, GMP_RNDN);
   mpfr_set_inf (y, 1);
-  mpfr_mul (p, x, y, GMP_RNDN);
+  test_mul (p, x, y, GMP_RNDN);
   MPFR_ASSERTN (mpfr_inf_p (p));
   MPFR_ASSERTN (mpfr_sgn (p) > 0);
 
   /* -1 * +inf == -inf */
   mpfr_set_si (x, -1L, GMP_RNDN);
   mpfr_set_inf (y, 1);
-  mpfr_mul (p, x, y, GMP_RNDN);
+  test_mul (p, x, y, GMP_RNDN);
   MPFR_ASSERTN (mpfr_inf_p (p));
   MPFR_ASSERTN (mpfr_sgn (p) < 0);
 

@@ -68,17 +68,16 @@ int main()
       if (++line % 1000 == 0)
         cout << "line " << line << endl;
       ReadRR (b);
-      ReadRR (c);
+      //      ReadRR (c);
       p = ReadRR (a);
-      AddPrec (d, b, c, p);
+      SqrRootPrec (d, b, p);
       if (d != a)
         {
           cerr << "error at line " << line << " for b="; Output(b);
-          cerr << " c="; Output(c);
+          //          cerr << " c="; Output(c);
           cerr << "expected "; Output(a);
           cerr << "got      "; Output(d);
-          cerr << "prec(d)=" << d.precision() << endl;
-          exit (1);
+          cerr << "prec(d)=" << p << endl;
         }
     }
 }

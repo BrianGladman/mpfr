@@ -24,6 +24,31 @@ MA 02111-1307, USA. */
 
 #include "mpfr-test.h"
 
+#ifdef CHECK_EXTERNAL
+static int
+test_sub (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
+{
+  int res;
+  int ok = rnd_mode == GMP_RNDN && mpfr_number_p (b) && mpfr_number_p (c);
+  if (ok)
+    {
+      mpfr_print_raw (b);
+      printf (" ");
+      mpfr_print_raw (c);
+    }
+  res = mpfr_sub (a, b, c, rnd_mode);
+  if (ok)
+    {
+      printf (" ");
+      mpfr_print_raw (a);
+      printf ("\n");
+    }
+  return res;
+}
+#else
+#define test_sub mpfr_sub
+#endif
+
 static void
 check_diverse (void)
 {
@@ -40,7 +65,7 @@ check_diverse (void)
   mpfr_set_prec (z, 2);
   mpfr_setmax (y, __gmpfr_emax);
   mpfr_set_str_binary (z, "0.1E-10"); /* tiny */
-  mpfr_sub (x, y, z, GMP_RNDN); /* should round to 2^emax, i.e. overflow */
+  test_sub (x, y, z, GMP_RNDN); /* should round to 2^emax, i.e. overflow */
   if (!mpfr_inf_p (x) || mpfr_sgn (x) < 0)
     {
       printf ("Error in mpfr_sub(a,b,c,RNDN) for b=maxfloat, prec(a)<prec(b), c tiny\n");
@@ -53,7 +78,7 @@ check_diverse (void)
   mpfr_set_prec (z, 2);
   mpfr_set_ui (y, 1, GMP_RNDN);
   mpfr_set_si (z, -2, GMP_RNDN);
-  mpfr_sub (x, y, z, GMP_RNDD);
+  test_sub (x, y, z, GMP_RNDD);
   if (mpfr_cmp_ui (x, 3))
     {
       printf ("Error in mpfr_sub(1,-1,RNDD)\n");
@@ -65,7 +90,7 @@ check_diverse (void)
   mpfr_set_prec (z, 288);
   mpfr_set_str_binary (y, "0.111000110011000001000111101010111011110011101001101111111110000011100101000001001010110010101010011001010100000001110011110001010101101010001011101110100100001011110100110000101101100011010001001011011010101010000010001101001000110010010111111011110001111101001000101101001100101100101000E80");
   mpfr_set_str_binary (z, "0.100001111111101001011010001100110010100111001110000110011101001011010100001000000100111011010110110010000000000010101101011000010000110001110010100001100101011100100100001011000100011110000001010101000100011101001000010111100000111000111011001000100100011000100000010010111000000100100111E-258");
-  inexact = mpfr_sub (x, y, z, GMP_RNDN);
+  inexact = test_sub (x, y, z, GMP_RNDN);
   if (inexact <= 0)
     {
       printf ("Wrong inexact flag for prec=288\n");
@@ -77,7 +102,7 @@ check_diverse (void)
   mpfr_set_prec (z, 63);
   mpfr_set_str_binary (x, "0.101101111011011100100100100111E31");
   mpfr_set_str_binary (y, "0.111110010010100100110101101010001001100101110001000101110111111E-1");
-  mpfr_sub (z, x, y, GMP_RNDN);
+  test_sub (z, x, y, GMP_RNDN);
   mpfr_set_str_binary (y, "0.1011011110110111001001001001101100000110110101101100101001011E31");
   if (mpfr_cmp (z, y))
     {
@@ -117,7 +142,7 @@ check_diverse (void)
   mpfr_set_prec (y, 32);
   mpfr_set_str_binary (x, "0.10110111101001110100100101111000E0");
   mpfr_set_str_binary (y, "0.10001100100101000100110111000100E0");
-  if ((inexact = mpfr_sub (x, x, y, GMP_RNDN)))
+  if ((inexact = test_sub (x, x, y, GMP_RNDN)))
     {
       printf ("Wrong inexact flag (2): got %d instead of 0\n", inexact);
       exit (1);
@@ -127,7 +152,7 @@ check_diverse (void)
   mpfr_set_prec (y, 32);
   mpfr_set_str_binary (x, "0.11111000110111011000100111011010E0");
   mpfr_set_str_binary (y, "0.10011111101111000100001000000000E-3");
-  if ((inexact = mpfr_sub (x, x, y, GMP_RNDN)))
+  if ((inexact = test_sub (x, x, y, GMP_RNDN)))
     {
       printf ("Wrong inexact flag (1): got %d instead of 0\n", inexact);
       exit (1);
@@ -164,13 +189,13 @@ check_diverse (void)
   mpfr_set_prec (z, 64);
   mpfr_set_str_binary (x, "1.1110111011110001110111011111111111101000011001011100101100101101");
   mpfr_set_str_binary (y, "0.1110111011110001110111011111111111101000011001011100101100101100");
-  mpfr_sub (z, x, y, GMP_RNDZ);
+  test_sub (z, x, y, GMP_RNDZ);
   if (mpfr_cmp_ui (z, 1))
     {
       printf ("Error in mpfr_sub (1)\n");
       exit (1);
     }
-  mpfr_sub (z, x, y, GMP_RNDU);
+  test_sub (z, x, y, GMP_RNDU);
   mpfr_set_str_binary (x, "1.000000000000000000000000000000000000000000000000000000000000001");
   if (mpfr_cmp (z, x))
     {
@@ -178,7 +203,7 @@ check_diverse (void)
       exit (1);
     }
   mpfr_set_str_binary (x, "1.1110111011110001110111011111111111101000011001011100101100101101");
-  mpfr_sub (z, x, y, GMP_RNDN);
+  test_sub (z, x, y, GMP_RNDN);
   if (mpfr_cmp_ui (z, 1))
     {
       printf ("Error in mpfr_sub (3)\n");
@@ -186,7 +211,7 @@ check_diverse (void)
     }
   mpfr_set_prec (x, 66);
   mpfr_set_str_binary (x, "1.11101110111100011101110111111111111010000110010111001011001010111");
-  mpfr_sub (z, x, y, GMP_RNDN);
+  test_sub (z, x, y, GMP_RNDN);
   if (mpfr_cmp_ui (z, 1))
     {
       printf ("Error in mpfr_sub (4)\n");
@@ -195,7 +220,7 @@ check_diverse (void)
 
   /* check in-place operations */
   mpfr_set_ui (x, 1, GMP_RNDN);
-  mpfr_sub (x, x, x, GMP_RNDN);
+  test_sub (x, x, x, GMP_RNDN);
   if (mpfr_cmp_ui(x, 0))
     {
       printf ("Error for mpfr_sub (x, x, x, GMP_RNDN) with x=1.0\n");
@@ -207,7 +232,7 @@ check_diverse (void)
   mpfr_set_prec (z, 53);
   mpfr_set_str1 (x, "1.229318102e+09");
   mpfr_set_str1 (y, "2.32221184180698677665e+05");
-  mpfr_sub (z, x, y, GMP_RNDN);
+  test_sub (z, x, y, GMP_RNDN);
   if (mpfr_cmp_str1 (z, "1229085880.815819263458251953125"))
     {
       printf ("Error in mpfr_sub (1.22e9 - 2.32e5)\n");
@@ -222,7 +247,7 @@ check_diverse (void)
   mpfr_set_prec (z, 54);
   mpfr_set_str_binary (x, "0.11111100100000000011000011100000101101010001000111E-401");
   mpfr_set_str_binary (y, "0.10110000100100000101101100011111111011101000111000101E-464");
-  mpfr_sub (z, x, y, GMP_RNDN);
+  test_sub (z, x, y, GMP_RNDN);
   if (mpfr_cmp (z, x)) {
     printf ("mpfr_sub(z, x, y) failed for prec(x)=112, prec(y)=98\n");
     printf ("expected "); mpfr_print_binary (x); puts ("");
@@ -239,7 +264,7 @@ check_diverse (void)
   mpfr_set_prec (y, 5);
   mpfr_set_str_binary (x, "1e-12");
   mpfr_set_ui (y, 1, GMP_RNDN);
-  mpfr_sub (x, y, x, GMP_RNDD);
+  test_sub (x, y, x, GMP_RNDD);
   mpfr_set_str_binary (y, "0.11111");
   if (mpfr_cmp (x, y))
     {
@@ -264,12 +289,12 @@ check_diverse (void)
   mpfr_set_prec (z, 10);
   mpfr_set_ui (y, 0, GMP_RNDN);
   mpfr_set_str_binary (z, "0.100000000000000000000100E15");
-  if (mpfr_sub (x, y, z, GMP_RNDN) <= 0)
+  if (test_sub (x, y, z, GMP_RNDN) <= 0)
     {
       printf ("Wrong inexact flag in x=mpfr_sub(0,z) for prec(z)>prec(x)\n");
       exit (1);
     }
-  if (mpfr_sub (x, z, y, GMP_RNDN) >= 0)
+  if (test_sub (x, z, y, GMP_RNDN) >= 0)
     {
       printf ("Wrong inexact flag in x=mpfr_sub(z,0) for prec(z)>prec(x)\n");
       exit (1);
@@ -296,8 +321,8 @@ bug_ddefour(void)
     mpfr_mul_2exp( ex, ex, 906, GMP_RNDN);
     mpfr_log( tot, ex, GMP_RNDN);
     mpfr_set( ex1, tot, GMP_RNDN); /* ex1 = high(tot) */
-    mpfr_sub( ex2, tot, ex1, GMP_RNDN); /* ex2 = high(tot - ex1) */
-    mpfr_sub( tot1, tot, ex1, GMP_RNDN); /* tot1 = tot - ex1 */
+    test_sub( ex2, tot, ex1, GMP_RNDN); /* ex2 = high(tot - ex1) */
+    test_sub( tot1, tot, ex1, GMP_RNDN); /* tot1 = tot - ex1 */
     mpfr_set( ex3, tot1, GMP_RNDN); /* ex3 = high(tot - ex1) */
 
     if (mpfr_cmp(ex2, ex3))
@@ -334,8 +359,8 @@ check_two_sum (mp_prec_t p)
   if (mpfr_cmpabs (x, y) < 0)
     mpfr_swap (x, y);
   rnd = GMP_RNDN;
-  inexact = mpfr_sub (u, x, y, rnd);
-  mpfr_sub (v, u, x, rnd);
+  inexact = test_sub (u, x, y, rnd);
+  test_sub (v, u, x, rnd);
   mpfr_add (w, v, y, rnd);
   /* as u = (x-y) - w, we should have inexact and w of opposite signs */
   if (((inexact == 0) && mpfr_cmp_ui (w, 0)) ||
@@ -380,7 +405,7 @@ check_inexact (void)
   mpfr_set_prec (y, 2);
   mpfr_set_si (y, -1, GMP_RNDN);
   mpfr_div_2exp (y, y, 4, GMP_RNDN); /* y = -1/16 */
-  inexact = mpfr_sub (y, y, x, GMP_RNDN); /* y = round(-7/16) = -1/2 */
+  inexact = test_sub (y, y, x, GMP_RNDN); /* y = round(-7/16) = -1/2 */
   if (inexact >= 0)
     {
       printf ("Error: wrong inexact flag for -1/16 - (6/16)\n");
@@ -412,14 +437,14 @@ check_inexact (void)
               pz = pz + MAX(MPFR_PREC(x), MPFR_PREC(u));
               mpfr_set_prec (z, pz);
               rnd = (mp_rnd_t) RND_RAND();
-              if (mpfr_sub (z, x, u, rnd))
+              if (test_sub (z, x, u, rnd))
                 {
                   printf ("z <- x - u should be exact\n");
                   exit (1);
                 }
                 {
                   rnd = (mp_rnd_t) RND_RAND ();
-                  inexact = mpfr_sub (y, x, u, rnd);
+                  inexact = test_sub (y, x, u, rnd);
                   cmp = mpfr_cmp (y, z);
                   if (((inexact == 0) && (cmp != 0)) ||
                       ((inexact > 0) && (cmp <= 0)) ||
