@@ -155,7 +155,9 @@ int main()
   exit (c == d);
 }],
   [AC_MSG_RESULT(yes)
-   CFLAGS="$CFLAGS -ffloat-store"
+   if test -n "$GCC"; then
+     CFLAGS="$CFLAGS -ffloat-store"
+   fi
    AC_DEFINE(USE_EXTENDED)],
   AC_MSG_RESULT(no),
   AC_MSG_RESULT(no)
