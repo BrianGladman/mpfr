@@ -8,6 +8,7 @@
 
 extern long int lrand48();
 extern void srand48();
+extern int isnan();
 
 double drand_log()
 {
@@ -107,7 +108,7 @@ void slave(int N, int p) {
   mpfr_init2(ta, 53);
   mpfr_init2(tres, p);
   for(i=0;i<N;i++) {
-    d=drand(); 
+    d=drand_log(); 
     mpfr_set_d(ta, d, GMP_RNDN);
     mpfr_log(tres, ta,rand() % 4 );
   }
@@ -207,7 +208,6 @@ void check_worst_cases()
 int main(int argc, char *argv[]) {
   int N=0;
 
-  check2(1.01979300812244555452, GMP_RNDN, 1.95996734891603664741e-02);
   if (argc==4) {   /* tlog x prec rnd */
     check3(atof(argv[1]), atoi(argv[2]), atoi(argv[3]));
     return 0;
@@ -236,6 +236,7 @@ int main(int argc, char *argv[]) {
   check2(234375765.0,GMP_RNDU,1.92724362186836231104e+01);
   check2(8.0,GMP_RNDZ,2.07944154167983574765e+00);  
   check2(44.0,GMP_RNDU,3.78418963391826146392e+00); 
+  check2(1.01979300812244555452, GMP_RNDN, 1.95996734891603664741e-02);
 
   check2(7.3890560989306504,GMP_RNDU,2.0000000000000004); /* exp(2.0) */
   check2(7.3890560989306495,GMP_RNDU,2.0); /* exp(2.0) */

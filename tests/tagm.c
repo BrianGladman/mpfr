@@ -4,13 +4,14 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include "gmp.h"
+#include "mpfr-impl.h"
 #include "mpfr.h"
 
 extern long int lrand48();
-extern int isnan();
 extern void srand48();
+extern int isnan();
 
-double drand()
+double drand_agm()
 {
   double d; long int *i;
 
@@ -24,14 +25,6 @@ double drand()
 					 in double calculus in sqrt(u*v) */
 
   return d;
-}
-
-/* returns the number of ulp's between a and b */
-int ulp(a,b) double a,b;
-{
-  double eps=1.1102230246251565404e-16; /* 2^(-53) */
-  b = (a-b)/a; if (b<0) b = -b;
-  return (int) floor(b/eps);
 }
 
 
@@ -114,28 +107,60 @@ void check_large()
   mpfr_clear(a); mpfr_clear(b); mpfr_clear(agm);
 }
 
+void slave(int N, int p) {
+  int i;
+  double a,b;
+  mpfr_t ta, tb, tres;
+
+  srand48(getpid());
+  mpfr_init2(ta, 53);
+  mpfr_init2(tb, 53);
+  mpfr_init2(tres, p);
+  for(i=0;i<N;i++) {
+    a=drand_agm();
+    b=drand_agm();
+    mpfr_set_d(ta, a, GMP_RNDN);
+    mpfr_set_d(tb, b, GMP_RNDN);
+    mpfr_agm(tres, ta, tb, rand() % 4 );
+  }
+    mpfr_clear(ta); mpfr_clear(ta); mpfr_clear(tres); 
+    printf("fin\n");
+}
+
+
 int main(int argc, char* argv[]) {
-   int i, N;
-   double a,b;
+   int N;
 
-   check_large();
-   check(2,1,GMP_RNDN);
-   check(6,4,GMP_RNDN); 
-   check(62,61,GMP_RNDN);
-   check(0.5,1,GMP_RNDN);
-   check(1,2,GMP_RNDN); 
-   check4(234375765,234375000,GMP_RNDN,2.34375382499843955040e+08);
-   check(8,1,GMP_RNDU);
-   check(1,44,GMP_RNDU);  
-   check(1,3.725290298461914062500000e-9,GMP_RNDU); 
+   if (argc==3) {   /* tagm N p : N calculus with precision p*/
+     printf("Doing %d random tests in %d precision\n",atoi(argv[1]),atoi(argv[2]));
+     slave(atoi(argv[1]),atoi(argv[2]));
+     return 0;
+   }
 
-   srand48(getpid()); 
+   if (argc==2) { /* tagm N: N tests with random double's */
+     int i;
+     double a,b;
 
-   N = (argc>=2) ? atoi(argv[1]) : 0;
-   for (i=0;i<N;i++) {
-     a = drand(); 
-     b = drand();
-     check(a, b, rand() % 4);
+     srand48(getpid()); 
+     N = atoi(argv[1]);
+     for (i=0;i<N;i++) {
+       a = drand(); 
+       b = drand();
+       check(a, b, rand() % 4);
+     } 
+     return 0;
+   }
+   else {
+     check_large();
+     check(2,1,GMP_RNDN);
+     check(6,4,GMP_RNDN); 
+     check(62,61,GMP_RNDN);
+     check(0.5,1,GMP_RNDN);
+     check(1,2,GMP_RNDN); 
+     check4(234375765,234375000,GMP_RNDN,2.34375382499843955040e+08);
+     check(8,1,GMP_RNDU);
+     check(1,44,GMP_RNDU);  
+     check(1,3.725290298461914062500000e-9,GMP_RNDU); 
    } 
    return 0;
 }
