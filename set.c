@@ -1,6 +1,6 @@
 /* mpfr_set -- copy of a floating-point number
 
-Copyright 1999, 2001 Free Software Foundation.
+Copyright 1999, 2001, 2002 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -66,7 +66,7 @@ mpfr_set4 (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode, int signb)
             return mpfr_set_overflow(a, rnd_mode, signb);
 
           MPFR_EXP(a)++;
-          ap[(MPFR_PREC(a)-1)/BITS_PER_MP_LIMB] = MP_LIMB_T_HIGHBIT;
+          ap[(MPFR_PREC(a)-1)/BITS_PER_MP_LIMB] = MPFR_LIMB_HIGHBIT;
         }
     }
 

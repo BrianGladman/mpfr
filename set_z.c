@@ -119,7 +119,7 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
               MPFR_ASSERTN(cc == 0);
               if (dif > 0)
                 cc = zp[--dif] << k;
-              if ((cc & MP_LIMB_T_HIGHBIT) == 0)
+              if ((cc & MPFR_LIMB_HIGHBIT) == 0)
                 to0 = 1; /* rounding bit is 0 */
               else
                 cc <<= 1;
@@ -155,7 +155,7 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
               else
                 {
                   exp++;
-                  fp[fn-1] = MP_LIMB_T_HIGHBIT;
+                  fp[fn-1] = MPFR_LIMB_HIGHBIT;
                 }
             }
           inex = sign_z;

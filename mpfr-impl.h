@@ -19,6 +19,18 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+/* Definition of MPFR_LIMB_HIGHBIT */
+
+#ifdef GMP_LIMB_HIGHBIT
+#define MPFR_LIMB_HIGHBIT GMP_LIMB_HIGHBIT
+#else
+#define MPFR_LIMB_HIGHBIT MP_LIMB_T_HIGHBIT
+#endif
+
+#if GMP_NAIL_BITS != 0
+#error "MPFR doesn't support nonzero values of GMP_NAIL_BITS"
+#endif
+
 /* Test if X (positive) is a power of 2 */
 
 #define IS_POW2(X) (((X) & ((X) - 1)) == 0)

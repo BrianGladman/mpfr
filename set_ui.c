@@ -67,7 +67,7 @@ mpfr_set_ui (mpfr_ptr x, unsigned long i, mp_rnd_t rnd_mode)
                 return mpfr_set_overflow(x, rnd_mode, 1);
 
               MPFR_EXP(x)++;
-              xp[xn] = MP_LIMB_T_HIGHBIT;
+              xp[xn] = MPFR_LIMB_HIGHBIT;
             }
         }
     }
