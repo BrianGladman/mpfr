@@ -174,6 +174,14 @@ mpfr_round(x, rnd_mode, prec)
 
   nw = prec / BITS_PER_MP_LIMB; 
   if (prec & (BITS_PER_MP_LIMB - 1)) nw++;
+
+  /* check if x has enough allocated space for the mantissa */
+  if (nw > ABSSIZE(x)) {
+    MANT(x) = (mp_ptr) (*_mp_reallocate_func) 
+      (MANT(x), ABSSIZE(x)*BYTES_PER_MP_LIMB, nw * BYTES_PER_MP_LIMB);
+    SIZE(x) = nw; /* new number of allocated limbs */
+  }
+
   TMP_MARK(marker); 
   tmp = TMP_ALLOC (nw * BYTES_PER_MP_LIMB);
   carry = mpfr_round_raw(tmp, MANT(x), PREC(x), (MPFR_SIGN(x)<0), prec, 
