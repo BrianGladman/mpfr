@@ -500,6 +500,24 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
    ((mp_limb_t*) ((mpfr_size_limb_t*) MPFR_MANT(x) - 1))
 
 /* Temporary memory gestion */
+#if 0
+extern unsigned char *mpfr_stack;
+#undef TMP_DECL
+#undef TMP_MARK
+#undef TMP_ALLOC
+#undef TMP_FREE
+#define TMP_DECL(_x) unsigned char *(_x)
+#define TMP_MARK(_x) ((_x) = mpfr_stack)
+#define TMP_ALLOC(_s) (mpfr_stack += (_s), mpfr_stack - (_s))
+#define TMP_FREE(_x) (mpfr_stack = (_x))
+/*
+#define TMP_DECL(_x) 
+#define TMP_MARK(_x) 
+#define TMP_ALLOC(_s) mpfr_stack
+#define TMP_FREE(_x) 
+*/
+#endif
+
 /* temporary allocate 1 limb at xp, and initialize mpfr variable x */
 /* The temporary var doesn't have any size field, but it doesn't matter
  * since only functions dealing with the Heap care about it */
