@@ -614,17 +614,18 @@ behaviour will be undefined, in the sense of the ISO C standard.
 @end deftypefun
 
 @deftypefun int mpfr_check_range (mpfr_t @var{x}, int @var{t}, mp_rnd_t @var{rnd})
-Return zero if the exponent of @var{x} is in the current allowed range
-(see @code{mpfr_get_emin} and @code{mpfr_get_emax}),
-otherwise reset @var{x} according to the current floating-point system
-and the rounding mode @var{rnd}, and return a positive value if the
-rounded result is larger than the original one, a negative value otherwise
-(the result cannot be exact in that case). If it is used (i.e., in the
-rounding to the nearest mode, if @var{x} is equal to two to the smallest
-exponent minus two), the argument @var{t} should be negative if @var{x}
-is smaller than the exact value, positive if @var{x} is larger than the
-exact value and zero if @var{x} is exact (before the call); this is
-necessary to avoid the effect of double rounding.
+This function forces @var{x} to be in the current range of acceptable
+values, @var{t} being the current ternary value: negative if @var{x}
+is smaller than the exact value, positive if @var{x} is larger than
+the exact value and zero if @var{x} is exact (before the call). It
+generates an underflow or an overflow if the exponent of @var{x} is
+outside the current allowed range; the value of @var{t} may be used
+to avoid a double rounding. This function returns zero if the rounded
+result is equal to the exact one, a positive value if the rounded
+result is larger than the exact one, a negative value if the rounded
+result is smaller than the exact one. Note that unlike most functions,
+the results is compared to the exact one, not the original value of
+@var{x}, i.e. the ternary value is propagated.
 @end deftypefun
 
 @deftypefun void mpfr_clear_underflow (void)

@@ -144,7 +144,7 @@ mpfr_check_range (mpfr_ptr x, int t, mp_rnd_t rnd_mode)
       if (exp > __mpfr_emax)
         return mpfr_set_overflow(x, rnd_mode, MPFR_SIGN(x));
     }
-  return 0;
+  return t;  /* propagate inexact ternary value, unlike most functions */
 }
 
 #undef mpfr_underflow_p

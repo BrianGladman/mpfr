@@ -45,7 +45,8 @@ mpfr_sub_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
        if mpfr_sub works even when uu is out-of-range. */
     mpfr_save_emin_emax();
     inex = mpfr_sub(y, x, uu, rnd_mode);
-    MPFR_RESTORE_RET(inex, y, rnd_mode);
+    mpfr_restore_emin_emax();
+    return mpfr_check_range(y, inex, rnd_mode);
   }
   else
     return mpfr_set (y, x, rnd_mode);

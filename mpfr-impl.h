@@ -145,21 +145,6 @@ typedef union ieee_double_extract Ieee_double_extract;
   (I) ? ((__mpfr_flags |= MPFR_FLAGS_INEXACT), (I)) : 0
 #define MPFR_RET_NAN return (__mpfr_flags |= MPFR_FLAGS_NAN), 0
 
-/* The following macro restores the exponent range and the flags,
-   checks that the result is in the exponent range and returns the
-   ternary inexact value. */
-#define MPFR_RESTORE_RET(inex, x, rnd_mode) \
-  do \
-    { \
-      int inex_cr; \
-      mpfr_restore_emin_emax(); \
-      inex_cr = mpfr_check_range(x, inex, rnd_mode); \
-      if (inex_cr) \
-        return inex_cr; /* underflow or overflow */ \
-      MPFR_RET(inex); \
-    } \
-  while(0)
-
 /* Memory gestion */
 
 /* temporary allocate s limbs at xp, and initialize mpfr variable x */
