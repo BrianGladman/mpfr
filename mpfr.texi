@@ -865,7 +865,7 @@ and @m{@var{d}\times 2^{exp}, @var{d} times 2 raised to @var{exp}} equals
 @end deftypefun
 
 @deftypefun long mpfr_get_si (mpfr_t @var{op}, mp_rnd_t @var{rnd})
-@deftypefunx {unsigned long} mpfr_get_ui (mpfr_t @var{op}, mp_rnd_t @var{op})
+@deftypefunx {unsigned long} mpfr_get_ui (mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Convert @var{op} to a @code{long} or @code{unsigned long}, after rounding
 it with respect to @var{rnd}.
 If @var{op} is NaN or Inf, or too big for the return type,
@@ -875,29 +875,29 @@ See also @code{mpfr_fits_slong_p} and @code{mpfr_fits_ulong_p}.
 @end deftypefun
 
 @deftypefun intmax_t mpfr_get_sj (mpfr_t @var{op}, mp_rnd_t @var{rnd})
-@deftypefunx uintmax_t mpfr_get_uj (mpfr_t @var{op}, mp_rnd_t @var{op})
+@deftypefunx uintmax_t mpfr_get_uj (mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Convert @var{op} to an @code{intmax_t} or @code{uintmax_t}, after rounding
 it with respect to @var{rnd}.
 If @var{op} is NaN or Inf, or too big for the return type,
 the result is undefined.
 @end deftypefun
 
-@deftypefun mp_exp_t mpfr_get_z_exp (mpz_t @var{z}, mpfr_t @var{op})
+@deftypefun mp_exp_t mpfr_get_z_exp (mpz_t @var{rop}, mpfr_t @var{op})
 Put the scaled mantissa of @var{op} (regarded as an integer, with the
-precision of @var{op}) into @var{z}, and return the exponent @var{exp}
+precision of @var{op}) into @var{rop}, and return the exponent @var{exp}
 (which may be outside the current exponent range) such that @var{op}
 exactly equals
 @ifnottex
-@var{z} multiplied by two exponent @var{exp}.
+@var{rop} multiplied by two exponent @var{exp}.
 @end ifnottex
 @tex
-$z \times 2^{\rm exp}$.
+$rop \times 2^{\rm exp}$.
 @end tex
 If the exponent is not representable in the @code{mp_exp_t} type, the
 behavior is undefined.
 @end deftypefun
 
-@deftypefun void mpfr_get_z (mpz_ptr @var{z}, mpfr_srcptr @var{op}, mp_rnd_t @var{rnd})
+@deftypefun void mpfr_get_z (mpz_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Convert @var{op} to a @code{mpz_t}, after rounding it with respect to 
 @var{rnd}. If @var{op} is NaN or Inf, the result is undefined.
 @end deftypefun
