@@ -509,16 +509,18 @@ computer should not differ from the results obtained on a computer with a
 different word size.
 
 @menu
-* Rounding Modes::
-* Exceptions::
-* Initializing Floats::
-* Assigning Floats::
-* Simultaneous Float Init & Assign::
-* Converting Floats::
-* Float Arithmetic::
-* Float Comparison::
-* I/O of Floats::
-* Miscellaneous Float Functions::
+* Rounding Modes::              
+* Exceptions::                  
+* Initializing Floats::         
+* Assigning Floats::            
+* Simultaneous Float Init & Assign::  
+* Converting Floats::           
+* Float Arithmetic::            
+* Float Comparison::            
+* Special Functions::           
+* I/O of Floats::               
+* Miscellaneous Float Functions::  
+* Internals::                   
 @end menu
 
 @node Rounding Modes, Exceptions, Floating-point Functions, Floating-point Functions
@@ -1034,7 +1036,7 @@ Note: The @code{mpfr_div_2exp} function is defined for compatibility reasons;
 you should use @code{mpfr_div_2ui} (or @code{mpfr_div_2si}) instead.
 @end deftypefun
 
-@node Float Comparison, I/O of Floats, Float Arithmetic, Floating-point Functions
+@node Float Comparison, Special Functions, Float Arithmetic, Floating-point Functions
 @comment  node-name,  next,  previous,  up
 @section Comparison Functions
 @cindex Float comparisons functions
@@ -1113,6 +1115,7 @@ and a negative value if @var{op} < 0.
 Its result is not specified when @var{op} is NaN (Not-a-Number).
 @end deftypefun
 
+@node Special Functions, I/O of Floats, Float Comparison, Floating-point Functions
 @section Special Functions
 @cindex Special functions
 
@@ -1251,7 +1254,7 @@ Set @var{rop} to the value of Euler's constant 0.577...
 rounded to the direction @var{rnd} with the precision of @var{rop}.
 @end deftypefun
 
-@node I/O of Floats, Miscellaneous Float Functions, Float Comparison, Floating-point Functions
+@node I/O of Floats, Miscellaneous Float Functions, Special Functions, Floating-point Functions
 @comment  node-name,  next,  previous,  up
 @section Input and Output Functions
 @cindex Float input and output functions
@@ -1317,7 +1320,7 @@ they should always be zero.
 @c @end deftypefun
 
 
-@node Miscellaneous Float Functions,  , I/O of Floats, Floating-point Functions
+@node Miscellaneous Float Functions, Internals, I/O of Floats, Floating-point Functions
 @comment  node-name,  next,  previous,  up
 @section Miscellaneous Functions
 @cindex Miscellaneous float functions
@@ -1393,7 +1396,9 @@ Negative random numbers are generated when @var{max_size} is negative.
 @c releases.}
 @c @end deftypefun
 
+@node Internals,  , Miscellaneous Float Functions, Floating-point Functions
 @section Internals
+@cindex Internals
 
 These types and 
 functions were mainly designed for the implementation of @code{mpfr},
