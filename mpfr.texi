@@ -985,14 +985,10 @@ Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
 i.e. the result is 1).
 @end deftypefun
 
-@deftypefun int mpfr_sin_cos (mpfr_t @var{sop}, mpfr_t @var{cop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
-@deftypefunx int mpfr_sin (mpfr_t @var{sop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefun int mpfr_sin (mpfr_t @var{sop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_cos (mpfr_t @var{cop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Set @var{sop} to the sine of @var{op}, @var{cop} to the cosine of @var{op},
 rounded to the direction @var{rnd} with the precision of @var{rop}.
-It is cheaper to call @code{mpfr_sin_cos} if both the sine and the cosine
-are required; then @var{sop} and @var{cop} must be different variables,
-and if one of @var{sop} or @var{cop} is NULL, only the other value is returned.
 Return 0 iff the results are exact (this occurs in fact only when @var{op} is 0
 i.e. the sine is 0 and the cosine is 1).
 @end deftypefun
@@ -1265,7 +1261,8 @@ contributed the functions @code{mpfr_agm} and @code{mpfr_log}.
 Emmanuel Jeandel, from ENS-Lyon too,
 contributed the generic hypergeometric code in
 @code{generic.c}, as well as the @code{mpfr_exp3},
-the @code{mpfr_sin_cos} functions, and improved versions of
+a first implementation of the sine and cosine,
+and improved versions of
 @code{mpfr_const_log2} and @code{mpfr_const_pi}.
 Mathieu Dutour contributed the functions @code{mpfr_atan} and @code{mpfr_asin},
 David Daney contributed the hyperbolic and inverse hyperbolic functions,
