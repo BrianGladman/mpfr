@@ -31,6 +31,8 @@ AM_MAINTAINER_MODE
 dnl AC_CONFIG_HEADERS([mpfrconf.h:mpfrconf.in])
 
 dnl Extra arguments to configure
+with_gmp_include=
+with_gmp_library=
 AC_ARG_WITH(gmp_include, 
    [  --with-gmp-include=DIR  GMP include directory ], 
    with_gmp_include=$withval)
@@ -39,7 +41,9 @@ AC_ARG_WITH(gmp_lib,
    with_gmp_lib=$withval)
 AC_ARG_WITH(gmp_build, 
    [  --with-gmp-build=DIR    GMP build directory], 
-   [with_gmp_include=$withval/ with_gmp_lib=$withval/.libs
+   [with_gmp_build=yes
+    with_gmp_include=$withval/ 
+    with_gmp_lib=$withval/.libs
     if test -r $withval/Makefile ; then
      GMP_CFLAGS=`grep -w "CFLAGS =" $withval/Makefile | sed 's/CFLAGS = //'`
      GMP_CC=`grep -w "CC =" $withval/Makefile | sed 's/CC = //'`
@@ -85,11 +89,15 @@ dnl  config.sub, so the additional exact cpu types don't arise.
 dnl define(X86_PATTERN,[[i?86*-*-* | k[5-8]*-*-* | pentium*-*-* | athlon-*-*]])
 
 
-dnl Check for CC and CFLAGS
-dnl 
+dnl
+dnl Setup CC and CFLAGS 
+dnl
+
+dnl Check if user request its CC and CFLAGS
 if test -n "$CFLAGS" || test -n "$CC" ; then
  user_redefine_cc=yes
 fi
+dnl Autoconf detection
 AC_PROG_CC
 AC_LANG(C)
 
@@ -170,134 +178,14 @@ case $OS_TYPE in
 		;;
 esac
 
-dnl Update CPPFLAGS.
-if test -d "$with_gmp_include"; then
-  CPPFLAGS="$CPPFLAGS -I$with_gmp_include"
-else
-  with_gmp_include=
-fi
-
 AC_C_CONST
 AC_C_VOLATILE
 MPFR_CONFIGS
 
-dnl Check for GMP
-AC_MSG_CHECKING(for gmp.h)
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#include "gmp.h"
-]], [[]])],[AC_MSG_RESULT(yes)],[AC_MSG_RESULT(no)
-     AC_MSG_ERROR([gmp.h may be missing ${with_gmp_include:+in $with_gmp_include}])
-])
 
-AC_MSG_CHECKING(for recent GMP)
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#include "gmp.h"
-#if (__GNU_MP_VERSION*100+__GNU_MP_VERSION_MINOR*10 < 410)
-# error "min GMP version is 4.1.0"
-#endif
-]], [[]])],[AC_MSG_RESULT(yes)],[AC_MSG_RESULT(no)
-     AC_MSG_ERROR([GMP 4.1.0 min required])
-])
-
-dnl Check if we can use internal header files of GMP.
-AC_MSG_CHECKING(for gmp internal files)
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#include "gmp.h"
-#include "gmp-impl.h"
-#include "longlong.h"
-]], [[]])],[AC_MSG_RESULT(yes)
-     AC_DEFINE([MPFR_HAVE_GMP_IMPL],1,[Use GMP Internal Files])
-     dnl Check for valid BITS_PER_MP_LIMB and BYTES_PER_MP_LIMB
-     AC_MSG_CHECKING(for valid BITS_PER_MP_LIMB and BYTES_PER_MP_LIMB)
-     AC_TRY_RUN([
-#include <limits.h>
-#include "gmp.h"
-#include "gmp-impl.h"
-int main()
-{
-  return BITS_PER_MP_LIMB == BYTES_PER_MP_LIMB * CHAR_BIT
-         && sizeof(mp_limb_t) == BYTES_PER_MP_LIMB ? 0 : 1;
-}
-	], AC_MSG_RESULT(yes),
-	  [AC_MSG_RESULT(no)
-	   AC_MSG_ERROR([BITS_PER_MP_LIMB or BYTES_PER_MP_LIMB are incorrect.
-You probably need to change some of the GMP or MPFR compile options:
-MPFR doesn't currently do as many architecture checks as GMP, so the
-default target architecture may be different, hence the error.])],
-	AC_MSG_RESULT([can't test])
-   )
-   ],[AC_MSG_RESULT(no) AC_FUNC_ALLOCA
-])
-
-dnl AC_CHECK_LIB doesn't do what we want
-AC_MSG_CHECKING(for GMP library)
-if test -r "$with_gmp_lib/libgmp.a"; then
-  LIBS="$with_gmp_lib/libgmp.a $LIBS"
-elif test -r "$with_gmp_lib/libgmp.so"; then
-  LIBS="$with_gmp_lib/libgmp.so $LIBS"
-elif test -r "$with_gmp_lib/libgmp.lib"; then
-  LIBS="$with_gmp_lib/libgmp.lib $LIBS"
-else
-  if test -d "$with_gmp_lib"; then
-    LDFLAGS="-L$with_gmp_lib $LDFLAGS"
-  fi  
-  LIBS="-lgmp $LIBS"
-fi
-
-dnl FIXME: If AC_RUN_IFELSE failed try with AC_LINK_IFELSE?
-AC_RUN_IFELSE([AC_LANG_SOURCE([[
-#include "gmp.h"
-int main() { return !gmp_version; }
-  ]])], [
-    AC_MSG_RESULT(yes)
-  ], [
-    AC_MSG_RESULT(no)
-    AC_MSG_ERROR(libgmp not found)
-  ], [
-    AC_MSG_RESULT([can't test])
-  ])
-
-dnl Check for corresponding 'gmp.h' and libgmp.a
-AC_MSG_CHECKING(if gmp.h version and libgmp version are the same)
-AC_RUN_IFELSE([AC_LANG_SOURCE([[
-#include <stdio.h>
-#include <string.h>
-#include "gmp.h"
-int main()
-{
-  char buffer[100];
-  if (__GNU_MP_VERSION_PATCHLEVEL != 0)
-    sprintf (buffer, "%d.%d.%d", __GNU_MP_VERSION, __GNU_MP_VERSION_MINOR,
-	    __GNU_MP_VERSION_PATCHLEVEL);
-  else
-    sprintf (buffer, "%d.%d", __GNU_MP_VERSION, __GNU_MP_VERSION_MINOR);
-  printf ("(%s/%s) ", buffer, gmp_version);
-  return (strcmp (buffer, gmp_version) != 0) ? 1 : 0;
-}
-]])], AC_MSG_RESULT(yes),
-   [AC_MSG_RESULT(no)
-    AC_MSG_ERROR(['gmp.h' and 'libgmp' have different versions! you have to properly reinstall GMP.])],
-    AC_MSG_RESULT([can't test])
-)
-
-dnl Check if Function mpn_sub_nc is in the header AND in the library!
-dnl Since this function may or may not be really defined
-AC_MSG_CHECKING(for GMP's mpn_sub_nc)
-AC_RUN_IFELSE([AC_LANG_SOURCE([[
-#include "gmp.h"
-#ifdef MPFR_HAVE_GMP_IMPL
-# include "gmp-impl.h"
-#endif 
-mp_limb_t f() {mp_limb_t x=2; return mpn_sub_nc(&x, &x, &x, 1, 0); }
-int main () { f (); return 0; }
-]], [[]])],[
-    AC_MSG_RESULT(yes) 
-    AC_DEFINE([MPFR_HAVE_MPN_SUB_NC],1,[Function mpn_sub_nc is available])
-  ], [
-    AC_MSG_RESULT(no)
-  ], [
-    AC_MSG_RESULT([can't test])
-  ])
+dnl
+dnl Setup LIBTOOL
+dnl
 
 dnl Configs for Windows DLLs.
 dnl libtool requires "-no-undefined" for win32 dll
@@ -328,16 +216,120 @@ case $host in
   fi
   ;;
 esac
+# Never enable CXX and GCJ in libtool
+if test "${with_tags+set}" != set; then
+  with_tags=
+fi
 dnl Finally set up LibTool
 AC_PROG_LIBTOOL
 
-dnl Recent autoconf creates AC_DEFINEs of PACKAGE_VERSION etc, unfortunately
-dnl those -D defines in $DEFS conflict with the same defines in config.h from
-dnl GMP.  Unless or until autoconf gives us a better way for two closely
-dnl related packages to cooperate, use this hack to get rid of them from $DEFS
-dnl here.
-dnl
-dnl We remove also many MACROS which are unused by MPFR.
+
+
+dnl 
+dnl Setup GMP detection
+dnl 
+
+dnl Detect GMP Header
+if test -d "$with_gmp_include"; then
+  CPPFLAGS="$CPPFLAGS -I$with_gmp_include"
+fi
+AC_MSG_CHECKING(for gmp.h)
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+#include "gmp.h"
+]])],[AC_MSG_RESULT(yes)],[
+ AC_MSG_RESULT(no)
+ AC_MSG_ERROR([gmp.h may be missing ${with_gmp_include:+in $with_gmp_include}])
+])
+
+AC_MSG_CHECKING(for recent GMP)
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+#include "gmp.h"
+#if (__GNU_MP_VERSION*100+__GNU_MP_VERSION_MINOR*10 < 410)
+# error "min GMP version is 4.1.0"
+#endif
+]])],[AC_MSG_RESULT(yes)],[
+ AC_MSG_RESULT(no)
+ AC_MSG_ERROR([GMP 4.1.0 min required])
+])
+
+dnl Check if we can link with GMP
+dnl If with_gmp_lib exists, add it to the LDFLAGS using -L
+dnl Remember that in case libgmp is not installed, libtool will modify
+dnl the -L directory by adding ".libs". But the Autoconf tests must
+dnl use the real directory. So we have to check for this.
+if test -d "$with_gmp_lib"; then
+  ORG_LDFLAGS="$LDFLAGS"
+  LDFLAGS="-L$with_gmp_lib $LDFLAGS"
+  if test -e "$with_gmp_lib/libgmp.la" && test -z "$with_gmp_build" && grep "installed=no" $with_gmp_lib/libgmp.la > /dev/null ; then
+   AC_MSG_WARN([GMP isn't properly installed in $with_gmp_lib.
+Reinstall properly GMP (with --prefix); 
+or edit $with_gmp_lib/libgmp.la and set installed=yes])
+  fi
+fi  
+AC_CHECK_LIB(gmp, __gmp_version, [LIBS="-lgmp $LIBS"], 
+ [AC_MSG_ERROR(libgmp not found)])
+
+dnl Check if we can use internal header files of GMP.
+AC_MSG_CHECKING(for gmp internal files)
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+#include "gmp.h"
+#include "gmp-impl.h"
+#include "longlong.h"
+]])],[
+  AC_MSG_RESULT(yes)
+  AC_DEFINE([MPFR_HAVE_GMP_IMPL],1,[Use GMP Internal Files])
+  dnl Check for valid BITS_PER_MP_LIMB and BYTES_PER_MP_LIMB
+  AC_MSG_CHECKING(for valid BITS_PER_MP_LIMB and BYTES_PER_MP_LIMB)
+  AC_TRY_RUN([
+#include <limits.h>
+#include "gmp.h"
+#include "gmp-impl.h"
+int main() {
+  return BITS_PER_MP_LIMB == BYTES_PER_MP_LIMB * CHAR_BIT
+         && sizeof(mp_limb_t) == BYTES_PER_MP_LIMB ? 0 : 1; }
+    ], AC_MSG_RESULT(yes), [
+       AC_MSG_RESULT(no)
+       AC_MSG_WARN([BITS_PER_MP_LIMB or BYTES_PER_MP_LIMB are incorrect.
+You probably need to change some of the GMP or MPFR compile options.])],
+       AC_MSG_RESULT([can't test]))
+   AC_CHECK_FUNC([__gmpn_sub_nc], 
+    [AC_DEFINE([MPFR_HAVE_MPN_SUB_NC],1,[Function mpn_sub_nc is available])])
+   ],[AC_MSG_RESULT(no) AC_FUNC_ALLOCA
+])
+
+dnl Check for corresponding 'gmp.h' and libgmp.a
+AC_MSG_CHECKING(if gmp.h version and libgmp version are the same)
+AC_RUN_IFELSE([AC_LANG_SOURCE([[
+#include <stdio.h>
+#include <string.h>
+#include "gmp.h"
+int main()
+{
+  char buffer[100];
+  if (__GNU_MP_VERSION_PATCHLEVEL != 0)
+    sprintf (buffer, "%d.%d.%d", __GNU_MP_VERSION, __GNU_MP_VERSION_MINOR,
+	    __GNU_MP_VERSION_PATCHLEVEL);
+  else
+    sprintf (buffer, "%d.%d", __GNU_MP_VERSION, __GNU_MP_VERSION_MINOR);
+  printf ("(%s/%s) ", buffer, gmp_version);
+  return (strcmp (buffer, gmp_version) != 0) ? 1 : 0;
+}
+]])], AC_MSG_RESULT(yes),
+   [AC_MSG_RESULT(no)
+    AC_MSG_WARN(['gmp.h' and 'libgmp' seems to have different versions.])],
+    AC_MSG_RESULT([can't test])
+)
+
+dnl Rechange the Library directory if we use GMP build directory
+dnl ie. libgmp is not installed, so libtool with -Ltoto 
+dnl looks inside toto/.libs
+dnl But the standards ways of compiling must look inside the right
+dnl directory. Doliprane SVP.
+if test -n "$with_gmp_build" ; then
+ LDFLAGS="-L$with_gmp_include $ORG_LDFLAGS"
+fi
+
+dnl Remove also many MACROS (AC_DEFINE) which are unused by MPFR.
 if test -f confdefs.h; then
   sed '/#define PACKAGE_/d' <confdefs.h >confdefs.tmp
   sed '/#define HAVE_STRING/d' <confdefs.tmp >confdefs.h
@@ -357,6 +349,7 @@ if test -f confdefs.h; then
 
   mv confdefs.tmp confdefs.h
 fi
+
 
 AC_SUBST(INCLUDES)
 AC_SUBST(LDADD)
