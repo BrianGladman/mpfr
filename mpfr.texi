@@ -509,6 +509,13 @@ The MPFR floating-point functions are intended to be a smooth extension
 of the IEEE P754 arithmetic. The results obtained on one computer should not
 differ from the results obtained on a computer with a different word size.
 
+@cindex Accuracy
+MPFR does not keep track of the accuracy of a computation. This is left
+to the user or to a higher layer.
+As a consequence, if two variables are used to store
+only a few significant bits, and their product is stored in a variable with large
+precision, then MPFR will still compute the result with full precision.
+
 @menu
 * Rounding Modes::              
 * Exceptions::                  
