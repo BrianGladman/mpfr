@@ -1,6 +1,6 @@
 /* mpfr_zeta -- Riemann Zeta function at a floating-point number
 
-Copyright 1999 Free Software Foundation.
+Copyright 1999, 2000, 2001, 2002 Free Software Foundation.
 
 This file is part of the MPFR Library.
 

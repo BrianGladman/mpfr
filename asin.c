@@ -1,6 +1,6 @@
 /* mpfr_asin -- arc-sinus of a floating-point number
 
-Copyright 2001 Free Software Foundation.
+Copyright 2001, 2002 Free Software Foundation.
 
 This file is part of the MPFR Library, and was contributed by Mathieu Dutour.
 

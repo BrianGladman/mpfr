@@ -1,6 +1,6 @@
 /* Test file for mpfr_tanh.
 
-Copyright 2001 Free Software Foundation.
+Copyright 2001, 2002 Free Software Foundation.
 Adapted from tarctan.c.
 
 This file is part of the MPFR Library.

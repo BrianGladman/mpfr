@@ -1,6 +1,7 @@
 /* mpfi.h -- Include file for mpfi.
  
-Copyright 1999 PolKA project, Inria Lorraine and Loria
+Copyright 1999 Free Software Foundation.
+Contributed by the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.
  

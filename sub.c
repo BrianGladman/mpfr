@@ -1,6 +1,6 @@
 /* mpfr_sub -- subtract two floating-point numbers
 
-Copyright 2001 Free Software Foundation.
+Copyright 2001, 2002 Free Software Foundation.
 Contributed by the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.
