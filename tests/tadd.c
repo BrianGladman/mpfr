@@ -171,6 +171,14 @@ printf("x=%1.20e,%d y=%1.20e,%d pz=%d,rnd=%d\n",x,px,y,py,pz,rnd_mode);
 check64()
 {
   mpfr_t x, t, u;
+  mpfr_init2(x, 85); mpfr_init2(t, 85); mpfr_init2(u, 85);
+  mpfr_set_str_raw(x, "0.1111101110100110110110100010101011101001100010100011110110110010010011101100101111100E-4");
+  mpfr_set_str_raw(t, "0.1111101110100110110110100010101001001000011000111000011101100101110100001110101010110E-4");
+  mpfr_sub(u, x, t, GMP_RNDU);
+  if ((MANT(u)[(PREC(u)-1)/mp_bits_per_limb] & 
+      ((mp_limb_t)1<<(mp_bits_per_limb-1)))==0) {
+    printf("Error in mpfr_sub: result is not msb-normalized\n"); exit(1);
+  }
   mpfr_init2(x, 65); mpfr_init2(t, 65); mpfr_init2(u, 65);
   mpfr_set_str_raw(x, "0.10011010101000110101010000000011001001001110001011101011111011101E623");
   mpfr_set_str_raw(t, "0.10011010101000110101010000000011001001001110001011101011111011100E623");
@@ -192,11 +200,27 @@ check64()
   mpfr_clear(x); mpfr_clear(t); mpfr_clear(u);
 }
 
+/* checks when source and destination are equal */
+check_same()
+{
+  mpfr_t x;
+
+  mpfr_init(x); mpfr_set_d(x, 1.0, GMP_RNDZ);
+  mpfr_add(x, x, x, GMP_RNDZ);
+  if (mpfr_get_d(x) != 2.0) {
+    printf("Error when all 3 operands are equal\n"); exit(1);
+  }
+  mpfr_clear(x);
+}
+
 main(argc,argv) int argc; char *argv[];
 {
   double x,y; int i,prec,rnd_mode,px,py,pz,rnd;
 
   check64();
+  check_same();
+  check(6.14384195492641560499e-02, -6.14384195401037683237e-02,
+	GMP_RNDU, 53, 53, 53, 0.0);
   check(1.16809465359248765399e+196, 7.92883212101990665259e+196,
 	GMP_RNDU, 53, 53, 53, 0.0);
   check(3.14553393112021279444e-67, 3.14553401015952024126e-67,
