@@ -20,16 +20,18 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <printf.h>
-#include <stdarg.h>
-#include <time.h>
-
 #include "mpfr-impl.h"
 
 /* Logging MPFR needs GCC >= 3.0 and GLIBC >= 2.0. */
 
 #ifdef MPFR_USE_LOGGING
+
+/* Can't include them before (in particular, printf.h) */
+#include <stdlib.h>
+#include <printf.h>
+#include <stdarg.h>
+#include <time.h>
+
 
 /* Define LOGGING variables */
 
