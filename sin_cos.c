@@ -93,7 +93,6 @@ mp_rnd_t rnd_mode;
     }
   realprec = PREC(sinus)+logn;
   while (!good){
-  try_again:
     Prec = realprec + 2*shift + 2 + shift_x + factor;
     k = (int) ceil(log
 		   ((double) (Prec) / (double) BITS_PER_MP_LIMB)
@@ -193,11 +192,6 @@ mp_rnd_t rnd_mode;
       if (tmp_factor <= 0)
 	{
 	  factor += -tmp_factor  + 5;
-	  mpfr_clear(t_sin);
-	  mpfr_clear(t_cos);
-	  mpfr_clear(tmp);
-	  mpfr_clear(tmp_sin);
-	  mpfr_clear(inter);
 	  goto try_again;
 	}      
     }
@@ -205,16 +199,21 @@ mp_rnd_t rnd_mode;
 	mpfr_set(sinus,tmp_sin,rnd_mode);
 	mpfr_set(cosinus,tmp_cos,rnd_mode);
 	good = 1;
-    } else {
-      mpfr_clear(t_sin);
-      mpfr_clear(t_cos);
-      mpfr_clear(tmp);
-      mpfr_clear(tmp_sin);
-      mpfr_clear(inter);
+    }
+    else
+      {
       realprec += 3*logn;
-    }
-    }
+      }
+  try_again:
+    mpfr_clear(t_sin);
+    mpfr_clear(t_cos);
+    mpfr_clear(tmp);
+    mpfr_clear(tmp_sin);
+    mpfr_clear(tmp_cos);
+    mpfr_clear(inter);
+  }
   mpz_clear(square);
+  mpfr_clear(x_copy);
   return 0;
 } 
 
