@@ -25,8 +25,7 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-/* signs of b and c differ, abs(b) > abs(c), 
-   diff_exp = EXP(b) - EXP(c).
+/* compute sign(b) * (|b| - |c|), with |b| > |c|, diff_exp = EXP(b) - EXP(c)
    Returns 0 iff result is exact,
    a negative value when the result is less than the exact value,
    a positive value otherwise.

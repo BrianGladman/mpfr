@@ -25,9 +25,9 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-/* signs of b and c are supposed equal,
+/* compute sign(b) * (|b| + |c|)
    diff_exp is the difference between the exponents of b and c,
-   which is supposed >= 0 */
+   which is >= 0 */
 
 int
 mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c,
