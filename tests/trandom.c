@@ -128,8 +128,6 @@ void test_urandomb(unsigned long nbtests, unsigned long prec, int verbose)
   tab = (int *) malloc (size_tab * sizeof(int)); 
   for (k = 0; k < size_tab; ++k) tab[k] = 0; 
 
-  printf("%ld\n", (unsigned long int)time(NULL));
-
   gmp_randinit(state, GMP_RAND_ALG_LC, 128); 
   gmp_randseed_ui(state, (unsigned long int)time(NULL)); 
 
