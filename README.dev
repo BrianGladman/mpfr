@@ -117,7 +117,7 @@ List of the used macros for checking MPFR:
 + MPFR_HAVE_FESETROUND:	Define if the fesetround function is defined
 			 (and in header fenv.h).
 + HAVE_DENORMS:		Define if denormalized floats work.
-+ HAVE_SYS_TIME_H:	Define if the header sys/time.h is usuable.
++ HAVE_SYS_TIME_H:	Define if the header sys/time.h is usable.
 + HAVE_GETTIMEOFDAY:	Define if the function gettimeofday is present.
 + MPFR_HAVE_TESTS_x86:	Define if we are on x86.
 
@@ -179,7 +179,7 @@ section of your function, please declare MPFR_SAVE_EXPO_DECL before
 TMP_DECL, since TMP_DECL may be replace by nothing:
 
 Instead of:                                 Usually preprocessed as:
-  unsigned long t                             unsigned long t; 
+  unsigned long t                             unsigned long t;
   TMP_DECL (maker);                           ;
   MPFR_SAVE_EXPO_DECL (expo);                 mpfr_save_expo_t expo;
 use:
@@ -194,7 +194,7 @@ If you plan to add a new function, you could follow this schema:
 int
 mpfr_toto (mpfr_ptr rop, mpfr_srcptr op, mp_rnd_t rnd)
 {
-  [Declarate all used variables]
+  [Declare all used variables]
   int inexact;
   mp_prec_t prec;
   MPFR_SAVE_EXPO_DECL (expo);
@@ -208,7 +208,7 @@ mpfr_toto (mpfr_ptr rop, mpfr_srcptr op, mp_rnd_t rnd)
          MPFR_RET_NAN;
         }
       else if (MPFR_IS_INF (op))
-        { 
+        {
          [Code to deal with Infinity]
         }
       else
@@ -220,7 +220,7 @@ mpfr_toto (mpfr_ptr rop, mpfr_srcptr op, mp_rnd_t rnd)
   [Other particular case: For example, op<0 or op == 1]
 
   [Compute the first estimation of the used precision `prec`]
-  [Initalize the intermediate variables using mpfr_init2]
+  [Initialize the intermediate variables using mpfr_init2]
   MPFR_SAVE_EXPO_MARK (expo);            /* Maximal range for exponent */
 
   for (;;)                               /* Infinite loop */
@@ -232,7 +232,7 @@ mpfr_toto (mpfr_ptr rop, mpfr_srcptr op, mp_rnd_t rnd)
       prec += BITS_PER_MP_LIMB;          /* Increase used precision */
       [Using `mpfr_set_prec`, resize all needed intermediate variables]
     }
-  
+
   inexact = mpfr_set (rop, temp, rnd);   /* Set rop to the computed value */
   [Clear all intermediate variables]
 
