@@ -311,11 +311,15 @@ long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CO
 
 /* We want to test this :
  *  (rnd == GMP_RNDU && test) || (rnd == RNDD && !test)
- * It transforms RNDU or RNDD to Away or Zero according to the sign */
+ * ie it transforms RNDU or RNDD to Away or Zero according to the sign */
 #define MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd, test) \
   (((rnd) + (test)) == GMP_RNDD)
 
-/* invert a rounding mode */
+/* We want to test if rnd = Zero, or Away */
+#define MPFR_IS_LIKE_RNDZ(rnd, test) \
+  ((rnd==GMP_RNDZ) || MPFR_IS_RNDUTEST_OR_RNDDNOTTEST (rnd, test))
+
+/* Invert a rounding mode */
 #define MPFR_INVERT_RND(rnd) ((rnd == GMP_RNDU) ? GMP_RNDD : \
                              ((rnd == GMP_RNDD) ? GMP_RNDU : rnd))
 

@@ -69,8 +69,7 @@ mpfr_round_raw_generic(mp_limb_t *yp, mp_limb_t *xp, mp_prec_t xprec,
   MPFR_ASSERTD(neg == 0 || neg == 1);
 
   if (flag && !use_inexp && 
-      (rnd_mode==GMP_RNDZ || xprec <= yprec
-       ||MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd_mode, neg)))
+      (xprec <= yprec || MPFR_IS_LIKE_RNDZ (rnd_mode, neg)))
     return 0;
 
   xsize = (xprec-1)/BITS_PER_MP_LIMB + 1;
@@ -94,19 +93,14 @@ mpfr_round_raw_generic(mp_limb_t *yp, mp_limb_t *xp, mp_prec_t xprec,
       return 0;
     }
 
-  /* Transform RNDD & RNDU to RND Away */
-  if (MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd_mode, neg))
-    rnd_mode = GMP_RNDZ;
-
-  if (use_inexp || rnd_mode != GMP_RNDZ)
+  if (use_inexp || !MPFR_IS_LIKE_RNDZ(rnd_mode, neg))
     {      
       mp_size_t k = xsize - nw - 1;
 
       if (MPFR_LIKELY(rw))
 	{
 	  nw++;
-	  lomask = ((MP_LIMB_T_ONE << (BITS_PER_MP_LIMB - rw))
-		    - MP_LIMB_T_ONE);
+	  lomask = MPFR_LIMB_MASK (BITS_PER_MP_LIMB - rw);
 	  himask = ~lomask;
 	}
       else
@@ -117,19 +111,18 @@ mpfr_round_raw_generic(mp_limb_t *yp, mp_limb_t *xp, mp_prec_t xprec,
       MPFR_ASSERTD(k >= 0);
       sb = xp[k] & lomask;  /* First non-significant bits */
       /* Rounding to nearest ? */
-      if (rnd_mode == GMP_RNDN)
+      if (MPFR_LIKELY( rnd_mode == GMP_RNDN) )
 	{
 	  /* Rounding to nearest */
-	  mp_limb_t rbmask = MP_LIMB_T_ONE << (BITS_PER_MP_LIMB - rw - 1);
+	  mp_limb_t rbmask = MPFR_LIMB_ONE << (BITS_PER_MP_LIMB - 1 - rw);
 	  if (sb & rbmask) /* rounding bit */
 	    sb &= ~rbmask; /* it is 1, clear it */
 	  else
 	    {
-	      /*rnd_mode = GMP_RNDZ;*/ 
-	      /* it is 0, behave like rounding to 0 */
+	      /* Rounding bit is 0, behave like rounding to 0 */
 	      goto rnd_RNDZ;
 	    }
-	  while (sb == 0 && k > 0)
+	  while (MPFR_UNLIKELY(sb == 0) && k > 0)
 	    sb = xp[--k];
 	  /* rounding to nearest, with rounding bit = 1 */
 	  if (MPFR_UNLIKELY(sb == 0)) /* Even rounding. */
@@ -155,7 +148,7 @@ mpfr_round_raw_generic(mp_limb_t *yp, mp_limb_t *xp, mp_prec_t xprec,
                     *inexp = MPFR_EVEN_INEX-2*MPFR_EVEN_INEX*neg;
 		  /*((neg!=0)^(sb!=0))? MPFR_EVEN_INEX  : -MPFR_EVEN_INEX; */
 		  /*Since neg= 0 or 1 and sb != 0 */
-		  goto rnd_RNDN_sb_return;
+		  goto rnd_RNDN_add_one_ulp;
 		}
 	    }
 	  else /* sb != 0  && rnd_mode == GMP_RNDN*/
@@ -163,23 +156,23 @@ mpfr_round_raw_generic(mp_limb_t *yp, mp_limb_t *xp, mp_prec_t xprec,
 	      if (use_inexp)
 		/* *inexp = (neg == 0) ? 1 : -1; but since neg = 0 or 1 */
 		*inexp = 1-2*neg;
-	    rnd_RNDN_sb_return:
+	    rnd_RNDN_add_one_ulp:
 	      if (flag)
 		return 1; /*sb != 0 && rnd_mode != GMP_RNDZ;*/
 	      carry = mpn_add_1 (yp, xp + xsize - nw, nw,
                                  rw ? 
-                                 MP_LIMB_T_ONE << (BITS_PER_MP_LIMB - rw) 
-                                 : 1);
+                                 MPFR_LIMB_ONE << (BITS_PER_MP_LIMB - rw) 
+                                 : MPFR_LIMB_ONE);
 	      yp[0] &= himask;
 	      return carry;
 	    }
 	}
       /* Rounding to Zero ? */
-      else if (rnd_mode == GMP_RNDZ)
+      else if (MPFR_IS_LIKE_RNDZ(rnd_mode, neg))
 	{
 	  /* rnd_mode == GMP_RNDZ */
 	rnd_RNDZ:
-	  while ((sb == 0) && k > 0)
+	  while (MPFR_UNLIKELY(sb == 0) && k > 0)
 	    sb = xp[--k];
 	  if (use_inexp)
 	    /* rnd_mode == GMP_RNDZ and neg = 0 or 1 */
@@ -188,7 +181,7 @@ mpfr_round_raw_generic(mp_limb_t *yp, mp_limb_t *xp, mp_prec_t xprec,
 	  if (flag)
 	    return 0; /*sb != 0 && rnd_mode != GMP_RNDZ;*/
 	  MPN_COPY_INCR(yp, xp + xsize - nw, nw);
-	  yp[0] &= himask;	      
+	  yp[0] &= himask;      
 	  return 0;
 	}
       else 
@@ -217,7 +210,7 @@ mpfr_round_raw_generic(mp_limb_t *yp, mp_limb_t *xp, mp_prec_t xprec,
               if (flag)
                 return 1;
 	      carry = mpn_add_1(yp, xp + xsize - nw, nw,
-				rw ? MP_LIMB_T_ONE << (BITS_PER_MP_LIMB - rw)
+				rw ? MPFR_LIMB_ONE << (BITS_PER_MP_LIMB - rw)
 				: 1);
               yp[0] &= himask;
               return carry;
@@ -226,14 +219,13 @@ mpfr_round_raw_generic(mp_limb_t *yp, mp_limb_t *xp, mp_prec_t xprec,
     }
   else
     {
-      /* sb = 0 */
+      /* Roundind mode = Zero / No inexact flag */
       if (flag)
 	return 0 /*sb != 0 && rnd_mode != GMP_RNDZ*/;
       if (MPFR_LIKELY(rw))
         {
           nw++;
-          himask = ~( ((MP_LIMB_T_ONE << (BITS_PER_MP_LIMB - rw))
-		       - MP_LIMB_T_ONE));
+          himask = ~MPFR_LIMB_MASK (BITS_PER_MP_LIMB - rw);
         }
       else
 	himask = ~(mp_limb_t) 0;
