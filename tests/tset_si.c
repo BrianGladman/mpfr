@@ -139,6 +139,25 @@ main (int argc, char *argv[])
       exit (1);
     }
 
+  /* check potential bug in case mp_limb_t is unsigned */
+  mpfr_set_emax (0);
+  mpfr_set_si (x, -1, GMP_RNDN);
+  if (mpfr_sgn (x) >= 0)
+    {
+      fprintf (stderr, "mpfr_set_si (x, -1) fails\n");
+      exit (1);
+    }
+
+  mpfr_set_emax (5);
+  mpfr_set_prec (x, 2);
+  mpfr_set_si (x, -31, GMP_RNDN);
+  if (mpfr_sgn (x) >= 0)
+    {
+      fprintf (stderr, "mpfr_set_si (x, -31) fails\n");
+      exit (1);
+    }
+  if (
+
   mpfr_clear(x); 
 
   return 0;
