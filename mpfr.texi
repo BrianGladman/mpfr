@@ -873,15 +873,12 @@ $z \times 2^{\rm exp}$.
 @deftypefun {char *} mpfr_get_str (char *@var{str}, mp_exp_t *@var{expptr}, int @var{base}, size_t @var{n_digits}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Convert @var{op} to a string of digits in base @var{base}, with rounding in
 direction @var{rnd}. The base may vary
-from 2 to 36.  Generate exactly @var{n_digits} significant digits. 
+from 2 to 36.  Generate exactly @var{n_digits} significant digits
+which must be at least 2.
 
-If @var{n_digits} is 0, it writes the maximum possible number of digits
-giving an exact rounding in the given base @var{base} with the direction
-@var{rnd}. In other words, if @var{op} was the exact rounding 
-of a real number in direction @var{rnd}, then the written value is also
-an exact rounding in base @var{base} of that real number with the same
-precision. An error occurs when one is unable to determine the leading
-digit, which can happen especially if the precision of @var{op} is small.
+If @var{n_digits} is zero, the number of digits of the mantissa is determined
+automatically from the precision of @var{op} and the value of @var{base}.
+Warning: this functionality may disappear or change in future versions.
 
 If @var{str} is a null pointer, space for the mantissa is allocated using
 the default allocation function, and a pointer to the string is returned.
