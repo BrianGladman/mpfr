@@ -62,8 +62,8 @@ mpfr_div3 (mpfr_ptr r, mpfr_srcptr u, mpfr_srcptr v, unsigned char rnd_mode)
     }
   else { mult = (mult < 0 ? 1 : 0); }
 
-  rsize = (PREC(r) + 3)/BITS_PER_MP_LIMB + 1; 
-  rrsize = PREC(r)/BITS_PER_MP_LIMB + 1;
+  rsize = (prec + 3)/BITS_PER_MP_LIMB + 1; 
+  rrsize = prec/BITS_PER_MP_LIMB + 1;
   /* Three extra bits are needed in order to get the quotient with enough
      precision ; take one extra bit for rrsize in order to solve more 
      easily the problem of rounding to nearest. */
@@ -140,10 +140,10 @@ mpfr_div3 (mpfr_ptr r, mpfr_srcptr u, mpfr_srcptr v, unsigned char rnd_mode)
 	}
       
       can_round = (mpfr_can_round_raw(rp, rrsize, sign_quotient, err, 
-				     GMP_RNDN, rnd_mode, PREC(r))
+				     GMP_RNDN, rnd_mode, prec)
 	|| (usize == rsize && vsize == rsize && 
 	    mpfr_can_round_raw(rp, rrsize, sign_quotient, err, 
-			       GMP_RNDZ, rnd_mode, PREC(r)))); 
+			       GMP_RNDZ, rnd_mode, prec))); 
 
       /* If we used all the limbs of both the dividend and the divisor, 
 	 then we have the correct RNDZ rounding */
@@ -166,8 +166,8 @@ mpfr_div3 (mpfr_ptr r, mpfr_srcptr u, mpfr_srcptr v, unsigned char rnd_mode)
   if (can_round) 
     {
       cc = mpfr_round_raw(rp, rp, err, (sign_quotient == -1 ? 1 : 0),
-			  PREC(r), rnd_mode);  
-      rrsize = (PREC(r) - 1)/BITS_PER_MP_LIMB + 1; 
+			  prec, rnd_mode);  
+      rrsize = (prec - 1)/BITS_PER_MP_LIMB + 1; 
     }
   else
     /* Use the remainder to find out the correct rounding */
@@ -183,7 +183,7 @@ mpfr_div3 (mpfr_ptr r, mpfr_srcptr u, mpfr_srcptr v, unsigned char rnd_mode)
 	while (k >= 0) { if (tp[k--]) break; }
 	if (k >= 0) /* non-zero remainder */
 	  cc = mpn_add_1(rp, rp, rrsize, 1 << (BITS_PER_MP_LIMB - 
-					       (PREC(r) & 
+					       (prec & 
 						(BITS_PER_MP_LIMB - 1))));
       }
 
@@ -197,10 +197,10 @@ mpfr_div3 (mpfr_ptr r, mpfr_srcptr u, mpfr_srcptr v, unsigned char rnd_mode)
   }
     
   rp [0] &= ~((1 << (BITS_PER_MP_LIMB - 
-		     (PREC(r) & (BITS_PER_MP_LIMB - 1)))) - 1) ; 
+		     (prec & (BITS_PER_MP_LIMB - 1)))) - 1) ; 
   
   rsize = rrsize; 
-  rrsize = (PREC(r) - 1)/BITS_PER_MP_LIMB + 1;  
+  rrsize = (prec - 1)/BITS_PER_MP_LIMB + 1;  
   MPN_COPY(r->_mp_d, rp + rsize - rrsize, rrsize); 
   TMP_FREE (marker);
 }
