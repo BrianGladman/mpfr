@@ -43,13 +43,15 @@ main(int argc, char **argv)
     set_fpc_csr(exp.fc_word);
 #endif
 
+  mpfr_init(x);
+
   mpfr_init2(z, 32);
   mpfr_set_d(z, 1.0, 0);
   if (mpfr_get_d(z) != 1.0) {
     mpfr_print_raw(z); putchar('\n');
     printf("Error: 1.0 != 1.0\n"); exit(1);
   }
-  mpfr_init2(x, 53); mpfr_init2(y, 53);
+  mpfr_set_prec(x, 53); mpfr_init2(y, 53);
   mpfr_set_d(x, d=-1.08007920352320089721e+150, 0);
   if (mpfr_get_d(x) != d) {
     mpfr_print_raw(x); putchar('\n');
