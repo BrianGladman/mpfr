@@ -43,20 +43,20 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
 	  MPFR_RET_NAN;
 	}
       /* now one of a or b is Inf or 0 */
-      /* If a or b is -Inf or +Inf, the result is +Inf if both operands are
-         stricly positive, and NaN otherwise */
+      /* If a and b is +Inf, the result is +Inf.
+	 Otherwise if a or b is -Inf, the result is NaN */
       else if (MPFR_IS_INF(op1) || MPFR_IS_INF(op2))
 	{
-          if (!(MPFR_IS_STRICTPOS(op1) && MPFR_IS_STRICTPOS(op2)))
-            {
-              MPFR_SET_NAN(r);
-              MPFR_RET_NAN;
-            }
-          else /* one of a, b is +Inf, the other is a "normal" number */
+          if (MPFR_IS_STRICTPOS(op1) && MPFR_IS_STRICTPOS(op2))
             {
               MPFR_SET_INF(r);
               MPFR_SET_SAME_SIGN(r, op1);
               MPFR_RET(0); /* exact */
+            }
+	  else
+            {
+              MPFR_SET_NAN(r);
+              MPFR_RET_NAN;
             }
 	}
       else /* a and b are neither NaN nor Inf, and one is zero */
@@ -69,7 +69,14 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
     }
   MPFR_CLEAR_FLAGS(r);
 
- /* precision of the following calculus */
+  /* If a or b is negative (excluding -Infinity), the result is NaN */
+  if (MPFR_UNLIKELY(MPFR_IS_NEG(op1)  || MPFR_IS_NEG(op2)))
+    {
+      MPFR_SET_NAN(r);
+      MPFR_RET_NAN;
+    }
+
+  /* precision of the following calculus */
   q = MPFR_PREC(r);
   p = q + 15;
 
@@ -114,57 +121,59 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
 
   /* Main loop */
 
-  while (go_on) {
-    int err, can_round;
-    mp_prec_t eq;
-    double erraux;
-
+  while (go_on) 
+    {
+      int err, can_round;
+      mp_prec_t eq;
+      double erraux;
+      
 #if 0
-    erraux = (vo == uo) ? 0.0
-      : __gmpfr_ceil_exp2 (-2.0 * (double) p * uo / (vo - uo));
-    err = 1 + (int) ((3.0 / 2.0 * (double) __gmpfr_ceil_log2 ((double) p)
-                      + 1.0) * __gmpfr_ceil_exp2 (- (double) p)
-                     + 3.0 * erraux);
+      erraux = (vo == uo) ? 0.0
+	: __gmpfr_ceil_exp2 (-2.0 * (double) p * uo / (vo - uo));
+      err = 1 + (int) ((3.0 / 2.0 * (double) __gmpfr_ceil_log2 ((double) p)
+			+ 1.0) * __gmpfr_ceil_exp2 (- (double) p)
+		       + 3.0 * erraux);
 #else
-    /* since the argument of __gmpfr_ceil_exp2() is negative,
-       erraux is always bounded by 1.
-       We also have floor((3/2*ceil(log2(p))+1) * 2^(-p)) = 0,
-       since it the value f(p) inside floor() is 5/8 for p=2, 1/2 for p=3,
-       and f(2p) <= f(p)/2 + 1/2^p. So err=4.
-    */
-    erraux = 1.0;
-    err = 4;
+      /* since the argument of __gmpfr_ceil_exp2() is negative,
+	 erraux is always bounded by 1.
+	 We also have floor((3/2*ceil(log2(p))+1) * 2^(-p)) = 0,
+	 since it the value f(p) inside floor() is 5/8 for p=2, 1/2 for p=3,
+	 and f(2p) <= f(p)/2 + 1/2^p. So err=4.
+      */
+      erraux = 1.0;
+      err = 4;
 #endif
 
 #if 0 /* this can not happen since p = q+15, and err=4 */
-    if (p - err - 3 <= q)
-      {
-        p = q + err + 4;
-        err = 1 + (int) ((3.0 / 2.0 * __gmpfr_ceil_log2 ((double) p) + 1.0)
-                         * __gmpfr_ceil_exp2 (- (double) p) + 3.0 * erraux);
-      }
+      if (p - err - 3 <= q)
+	{
+	  p = q + err + 4;
+	  err = 1 + (int) ((3.0 / 2.0 * __gmpfr_ceil_log2 ((double) p) + 1.0)
+			   * __gmpfr_ceil_exp2 (- (double) p) + 3.0 * erraux);
+	}
 #endif
-
-    /* Calculus of un and vn */
-    do
-      {
-        mpfr_mul (tmp, u, v, GMP_RNDN);
-        mpfr_sqrt (tmpu, tmp, GMP_RNDN);
-        mpfr_add (tmp, u, v, GMP_RNDN);
-        mpfr_div_2ui (tmpv, tmp, 1, GMP_RNDN);
-        mpfr_set (u, tmpu, GMP_RNDN);
-        mpfr_set (v, tmpv, GMP_RNDN);
-      }
-    while (mpfr_cmp2 (u, v, &eq) != 0 && eq <= p - 2);
-
-    /* Roundability of the result */
+      
+      /* Calculus of un and vn */
+      do
+	{
+	  mpfr_mul (tmp, u, v, GMP_RNDN);
+	  mpfr_sqrt (tmpu, tmp, GMP_RNDN);
+	  mpfr_add (tmp, u, v, GMP_RNDN);
+	  mpfr_div_2ui (tmpv, tmp, 1, GMP_RNDN);
+	  mpfr_set (u, tmpu, GMP_RNDN);
+	  mpfr_set (v, tmpv, GMP_RNDN);
+	}
+      while (mpfr_cmp2 (u, v, &eq) != 0 && eq <= p - 2);
+      
+      /* Roundability of the result */
       can_round = mpfr_can_round (v, p - err - 3, GMP_RNDN, GMP_RNDZ,
-                                  q + (rnd_mode == GMP_RNDN));
-
+				  q + (rnd_mode == GMP_RNDN));
+      
       if (can_round)
 	go_on = 0;
-
-      else {
+      
+      else 
+	{
 	  go_on = 1;
 	  p += 5;
 	  s = (p - 1) / BITS_PER_MP_LIMB + 1;
@@ -175,8 +184,8 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
 	  MPFR_TMP_INIT(tmpp, tmp, p, s);
 	  mpfr_set (u, a, GMP_RNDN);
 	  mpfr_set (v, b, GMP_RNDN);
-      }
-  }
+	}
+    }
   /* End of while */
 
   /* Setting of the result */
@@ -187,10 +196,10 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
   TMP_FREE(marker);
 
   return inexact; /* agm(u,v) can be exact for u, v rational only for u=v.
-               Proof (due to Nicolas Brisebarre): it suffices to consider
-               u=1 and v<1. Then 1/AGM(1,v) = 2F1(1/2,1/2,1;1-v^2),
-               and a theorem due to G.V. Chudnovsky states that for x a
-               non-zero algebraic number with |x|<1, then
-               2F1(1/2,1/2,1;x) and 2F1(-1/2,1/2,1;x) are algebraically
-               independent over Q. */
+		     Proof (due to Nicolas Brisebarre): it suffices to consider
+		     u=1 and v<1. Then 1/AGM(1,v) = 2F1(1/2,1/2,1;1-v^2),
+		     and a theorem due to G.V. Chudnovsky states that for x a
+		     non-zero algebraic number with |x|<1, then
+		     2F1(1/2,1/2,1;x) and 2F1(-1/2,1/2,1;x) are algebraically
+		     independent over Q. */
 }

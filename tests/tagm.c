@@ -176,6 +176,12 @@ check_nans (void)
   mpfr_agm (m, x, y, GMP_RNDN);
   MPFR_ASSERTN (mpfr_cmp_ui (m ,1) == 0);
 
+  /* agm(-1,-2) == NaN */
+  mpfr_set_si (x, -1, GMP_RNDN);
+  mpfr_set_si (y, -2, GMP_RNDN);
+  mpfr_agm (m, x, y, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_nan_p (m));
+
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (m);
