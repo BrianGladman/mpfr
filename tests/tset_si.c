@@ -26,12 +26,13 @@ MA 02111-1307, USA. */
 
 #include "mpfr-test.h"
 
-#define ERROR(str) {printf("Error for "str); exit(1);}
+#define ERROR(str) {printf("Error for "str"\n"); exit(1);}
 
 static void
 test_2exp (void)
 {
   mpfr_t x;
+  int res;
 
   mpfr_init2 (x, 32);
   
@@ -58,6 +59,15 @@ test_2exp (void)
   mpfr_set_si_2exp (x, -0x1ABCDEF0, -256, GMP_RNDN);
   if (mpfr_cmp_str (x, "-1ABCDEF0@-64", 16, GMP_RNDN))
     ERROR("(-x1ABCDEF0,-256)");
+
+  mpfr_set_prec (x, 2);
+  res = mpfr_set_si_2exp (x, 7, 10, GMP_RNDU);
+  if (mpfr_cmp_ui (x, 1<<13) || res <= 0)
+    ERROR ("Prec 2 + si_2exp");
+
+  res = mpfr_set_ui_2exp (x, 7, 10, GMP_RNDU);
+  if (mpfr_cmp_ui (x, 1<<13) || res <= 0)
+    ERROR ("Prec 2 + ui_2exp");
 
   mpfr_clear (x);
 }

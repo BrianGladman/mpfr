@@ -27,15 +27,11 @@ mpfr_set_si_2exp (mpfr_ptr x, long i, mp_exp_t e, mp_rnd_t rnd_mode)
 {
   int res;
   MPFR_SAVE_EXPO_DECL (expo);
-  /* TODO: Fix Overflow bug */
+
   MPFR_SAVE_EXPO_MARK (expo);
   res = mpfr_set_si (x, i, rnd_mode);
-  MPFR_ASSERTD ( res == 0);
-  MPFR_ASSERTD (e == (mp_exp_t)(long) e);
-  res = mpfr_mul_2si (x, x, e, rnd_mode);
+  mpfr_mul_2si (x, x, e, rnd_mode); /* Should be exact */
   MPFR_SAVE_EXPO_FREE (expo);
-  if (res)
-    return res;
-  res = mpfr_check_range(x, 0, rnd_mode);
+  res = mpfr_check_range(x, res, rnd_mode);
   return res;
 }
