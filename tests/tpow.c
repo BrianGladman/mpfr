@@ -244,6 +244,7 @@ particular_cases (void)
           /* -0.5 */ { 0,   2,   1,  128, 128, -64,-256,  32, 512,  0,   0  }
         };
 
+#if 0
         if (i == 5 && (j == 9 || j == 10))
           {
             fprintf (stderr, "In mpfr_pow, particular case (%d,%d) "
@@ -251,9 +252,12 @@ particular_cases (void)
             error = 1;
             continue;
           }
+#endif
+
         mpfr_pow (r, t[i], t[j], GMP_RNDN);
         p = mpfr_nan_p (r) ? 0 : mpfr_inf_p (r) ? 1 :
-          mpfr_cmp_ui (r, 0) == 0 ? 2 : mpfr_get_d (r, GMP_RNDN) * 128;
+          mpfr_cmp_ui (r, 0) == 0 ? 2 :
+          (int) (fabs (mpfr_get_d (r, GMP_RNDN)) * 128.0);
         if (p != 0 && MPFR_SIGN(r) < 0)
           p = -p;
         if (p != q[i][j])
