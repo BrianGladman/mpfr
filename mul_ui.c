@@ -38,7 +38,8 @@ mpfr_mul_ui()
   if (carry) count_leading_zeros(cnt, carry);
   else cnt=BITS_PER_MP_LIMB;
       
-  c = mpfr_round_raw(my, my, RND_MODE, xsize, PREC(y)-BITS_PER_MP_LIMB+cnt);
+  c = mpfr_round_raw(my, my, PREC(x), (SIGN(x)<0), 
+		     PREC(y)-BITS_PER_MP_LIMB+cnt, RND_MODE);
   
   /* If cnt = 1111111111111 and c = 1 we shall get depressed */
   if (c && (carry == (1UL << (BITS_PER_MP_LIMB - cnt)) - 1))

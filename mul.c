@@ -46,7 +46,7 @@ mpfr_mul(a, b, c, rnd_mode)
   b1 >>= mp_bits_per_limb-1; /* msb from the product */
 
   if (b1==0) mpn_lshift(tmp, tmp, k, 1);
-  cc = mpfr_round_raw(ap, tmp, rnd_mode, (sign_product<0) ? k ^ (1<<31) : k, PREC(a));
+  cc = mpfr_round_raw(ap, tmp, PREC(b)+PREC(c), (sign_product<0), PREC(a), rnd_mode);
   if (cc) { /* cc = 1 ==> result is a power of two */
     ap[an-1] = (mp_limb_t) 1 << (BITS_PER_MP_LIMB-1);
   }

@@ -78,8 +78,8 @@ typedef __gmp_const __mpfr_struct *mpfr_srcptr;
     (x)->_mp_prec = q; }
 
 void mpfr_init2 _PROTO ((mpfr_ptr, unsigned long int));
-int mpfr_round_raw _PROTO ((mp_limb_t *, mp_limb_t *, char, long,
-			     unsigned long));
+int mpfr_round_raw _PROTO ((mp_limb_t *, mp_limb_t *, unsigned long, char,
+			     unsigned long, char));
 int mpfr_round_raw2 _PROTO ((mp_limb_t *, unsigned long, char, char,
 			     unsigned long));
 void mpfr_round _PROTO ((mpfr_ptr, char, unsigned long)); 

@@ -945,10 +945,11 @@ Returns the precision of @var{a} when both operands are equal.
 Mainly used in @code{mpfr_sub}.
 @end deftypefun
 
-@deftypefun int mpfr_round_raw (mp_limb_t* @var{y}, mp_limb_t* @var{x}, char @var{rnd}, long @var{xs}, long @var{p})
+@deftypefun int mpfr_round_raw (mp_limb_t* @var{y}, mp_limb_t* @var{x}, long @var{xprec}, char @var{neg}, long @var{yprec}, char @var{rnd})
 Puts in mantissa beginning at @var{y} the value of that 
-beginning at @var{x} (with sign and number of limbs given by @var{xs})
-rounded with mode @var{rnd} to precision @var{p}.
+beginning at @var{x} (with precision @var{xprec} bits and negative iff 
+@var{neg} is not zero)
+rounded with mode @var{rnd} to precision @var{yprec}.
 @end deftypefun
 
 @deftypefun int mpfr_round_raw2 (mp_limb_t* @var{x}, long @var{xn}, char @var{neg}, char @var{rnd}, unsigned long @var{prec})

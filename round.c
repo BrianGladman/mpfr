@@ -83,47 +83,50 @@ mpfr_round_raw2(xp, xn, neg, rnd, prec)
     }
 }
 
-/* puts in y the value of xp (which has xsize limbs) rounded to precision
-   xprec and direction RND_MODE */
+/* puts in y the value of xp (with precision xprec and sign 1 if negative=0,
+   -1 otherwise) rounded to precision yprec and direction RND_MODE 
+   Supposes x is not zero nor NaN nor +/- Infinity (i.e. *xp != 0).
+*/
 int
 #if __STDC__
-mpfr_round_raw(mp_limb_t *y, mp_limb_t *xp, char RND_MODE, 
-	       long xsize, unsigned long xprec)
+mpfr_round_raw(mp_limb_t *y, mp_limb_t *xp, unsigned long xprec, char negative,
+	       unsigned long yprec, char RND_MODE)
 #else
-mpfr_round_raw(y, xp, RND_MODE, xsize, xprec)
+mpfr_round_raw(y, xp, xprec, negative, yprec, RND_MODE)
      mp_limb_t *y; 
      mp_limb_t *xp; 
-     char RND_MODE; 
-     long xsize; 
      unsigned long xprec; 
+     cher negative;
+     unsigned long yprec; 
+     char RND_MODE; 
 #endif
 {
-  unsigned long nw, mask;
-  char negative = 0, rw, carry = 0;
+  unsigned long nw, mask, xsize;
+  char rw, carry = 0;
 
-  if (xsize == 0) { return 0; }
-  /* warning: -xsize is not correct since some bits are used for Nan, exact */
-  if (xsize < 0) { negative = 1; xsize = xsize ^ (1<<31); }
+  xsize = (xprec-1)/BITS_PER_MP_LIMB + 1;
 
 #ifdef Exp
   count_leading_zeros(flag, xp[xsize-1]); 
-  xprec += flag; 
+  yprec += flag; 
 #endif
 
-  nw = xprec / BITS_PER_MP_LIMB; rw = xprec & (BITS_PER_MP_LIMB - 1); 
+  nw = yprec / BITS_PER_MP_LIMB; rw = yprec & (BITS_PER_MP_LIMB - 1); 
   if (rw) nw++; 
   /* number of words needed to represent x */
+
+  mask = ~((1UL<<(BITS_PER_MP_LIMB - rw)) - 1); 
+
   /* precision is larger than the size of x. No rounding is necessary. 
      Just add zeroes at the end */
   if (xsize < nw) { 
-    MPN_COPY(y + nw - xsize, xp, xsize); 
+    MPN_COPY(y + nw - xsize, xp, xsize);
+    y[0] &= mask;
     MPN_ZERO(y, nw - xsize); /* PZ 27 May 99 */
     return 0; 
   }
-  
-  mask = ~((1UL<<(BITS_PER_MP_LIMB - rw)) - 1); 
 
-  if (mpfr_round_raw2(xp, xsize, negative, RND_MODE, xprec))
+  if (mpfr_round_raw2(xp, xsize, negative, RND_MODE, yprec))
     carry = mpn_add_1(y, xp + xsize - nw, nw,
                           1UL << (BITS_PER_MP_LIMB - rw));
   else MPN_COPY(y, xp + xsize - nw, nw);

@@ -33,7 +33,7 @@ mpfr_random(x)
   count_leading_zeros(cnt, xp[xs - 1]); 
   if (cnt) mpn_lshift(xp, xp, xs, cnt); 
   EXP(x) = -cnt; 
-  mpfr_round_raw(xp, xp, random()&3, SIZE(x), PREC(x)); 
+  mpfr_round_raw(xp, xp, PREC(x), (SIGN(x)<0), PREC(x), random()&3);
   /* ignore any possible carry (this is sheer laziness). */
 }
 

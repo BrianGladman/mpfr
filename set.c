@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include "gmp.h"
 #include "gmp-impl.h"
@@ -15,7 +16,7 @@ mpfr_set(a, b, rnd_mode)
 {
   int carry, an, preca = PREC(a), sh; mp_limb_t *ap = MANT(a);
 
-  carry = mpfr_round_raw(ap, b->_mp_d, rnd_mode, b->_mp_size, preca);
+  carry = mpfr_round_raw(ap, MANT(b), PREC(b), (SIGN(b)<0), preca, rnd_mode);
   EXP(a) = EXP(b);
   if (carry) {
     an = (preca-1)/BITS_PER_MP_LIMB + 1;
