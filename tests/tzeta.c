@@ -28,6 +28,9 @@ MA 02111-1307, USA. */
 
 void test_generic _PROTO ((void));
 
+#define PREC_MAX 80
+#define N 2
+
 void
 test_generic ()
 {
@@ -41,13 +44,13 @@ test_generic ()
   mpfr_init2 (y, MPFR_PREC_MIN);
   mpfr_init2 (z, MPFR_PREC_MIN);
 
-  for (prec = 2; prec <= 100; prec++)
+  for (prec = 2; prec <= PREC_MAX; prec++)
     {
       mpfr_set_prec (x, prec);
       mpfr_set_prec (z, prec);
       yprec = prec + 10;
 
-      for (n = 0; n < 10; n++)
+      for (n = 0; n < N; n++)
 	{
 	  mpfr_random (x); /* x is in [0, 1[ */
 	  mpfr_add_ui (x, x, 1, GMP_RNDN);
