@@ -48,6 +48,7 @@ mpfr_init2 (x, p)
     exit (1);
   }
   MPFR_SIZE(x) = xsize;
+  MPFR_SET_ZERO(x); /* initializes to zero */
   MPFR_EXP(x) = 0; /* avoids uninitialized memory reads for zero */
 }
 

@@ -550,7 +550,7 @@ it.  The functions @code{mpfr_init} and @code{mpfr_init2} are used for that
 purpose.
 
 @deftypefun void mpfr_init (mpfr_t @var{x})
-Initialize @var{x}. No special value is set.
+Initialize @var{x}, and set its value to zero.
 Normally, a variable should be initialized once only
 or at least be cleared, using @code{mpfr_clear}, between initializations.  The
 precision of @var{x} is the default precision, which can be changed
@@ -558,8 +558,9 @@ by a call to @code{mpfr_set_default_prec}.
 @end deftypefun
 
 @deftypefun void mpfr_init2 (mpfr_t @var{x}, mp_prec_t @var{prec})
-Initialize @var{x} and set its precision to be @strong{exactly}
-@var{prec} bits.  Normally, a variable should be initialized once only or at
+Initialize @var{x}, set its precision to be @strong{exactly}
+@var{prec} bits, and set its value to zero.
+Normally, a variable should be initialized once only or at
 least be cleared, using @code{mpfr_clear}, between initializations.
 To change the precision of a variable which has already been initialized,
 use @code{mpfr_set_prec} instead.
