@@ -517,6 +517,9 @@ int mpfr_round_raw_4 _MPFR_PROTO ((mp_limb_t *, mp_limb_t *,
 int mpfr_check _MPFR_PROTO ((mpfr_srcptr));
 int mpfr_sub1sp _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
 
+void mpfr_count_sort _MPFR_PROTO ((mpfr_ptr const tab[], unsigned int n,
+				   mpfr_srcptr *perm));
+
 #if defined (__cplusplus)
 }
 #endif
