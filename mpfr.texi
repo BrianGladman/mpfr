@@ -593,6 +593,13 @@ Return the precision actually used for assignments of @var{x}, i.e.
 the number of bits used to store its mantissa.
 @end deftypefun
 
+@deftypefun void mpfr_set_prec_raw (mpf_t @var{x}, unsigned long int @var{p})
+Reset the precision of @var{x} to be @strong{exactly} @var{prec} bits.
+The only difference with @code{mpfr_set_prec} is that @var{p} is assumed to
+be small enough so that the mantissa fits into the current allocated memory
+space for @var{x}. Otherwise an error will occur.
+@end deftypefun
+
 @node Assigning Floats, Simultaneous Float Init & Assign, Initializing Floats, Floating-point Functions
 @comment  node-name,  next,  previous,  up
 @subsection Assignment Functions
@@ -625,6 +632,24 @@ Set @var{x} to the GNU MP floating-point number
 @var{y}, rounded with the @var{rnd} mode and the precision
 of @var{x}.
 @end deftypefun
+
+@node Simultaneous Float Init & Assign, Converting Floats, Assigning Floats, Initializing Floats
+@comment  node-name,  next,  previous,  up
+@subsection Combined Initialization and Assignment Functions
+@cindex Initialization and assignment functions
+
+@deftypefn Macro void mpfr_init_set (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefnx Macro void mpfr_init_set_ui (mpfr_t @var{rop}, unsigned long int @var{op}, mp_rnd_t @var{rnd})
+@deftypefnx Macro void mpfr_init_set_si (mpfr_t @var{rop}, signed long int @var{op}, mp_rnd_t @var{rnd})
+@deftypefnx Macro void mpfr_init_set_d (mpfr_t @var{rop}, double @var{op}, mp_rnd_t @var{rnd})
+Initialize @var{rop} and set its value from @var{op}, rounded to direction
+@var{rnd}.
+The precision of @var{rop} will be taken from the active default precision,
+as set by @code{mpfr_set_default_prec}.
+@end deftypefn
+
+@c @deftypefn Macro void mpfr_init_set_str
+@c @end deftypefn
 
 @node Converting Floats, Float Arithmetic, Simultaneous Float Init & Assign, Floating-point Functions
 @comment  node-name,  next,  previous,  up
@@ -688,6 +713,7 @@ Set @var{rop} to $@var{op1} + @var{op2}$ rounded in the direction @var{rnd}.
 
 @deftypefun void mpfr_sub (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx void mpfr_ui_sub (mpfr_t @var{rop}, unsigned long int @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
+@deftypefunx void mpfr_sub_ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
 Set @var{rop} to @var{op1} @minus{} @var{op2} rounded in the direction @var{rnd}.
 @end deftypefun
 
@@ -808,11 +834,11 @@ one plus the absolute difference of their exponents.
 Compare @var{op1} and @var{op2} multiplied by two to the power @var{e}.
 @end deftypefun
 
-@c @deftypefun int mpfr_eq (mpfr_t @var{op1}, mpfr_t @var{op2}, unsigned long int op3)
-@c Return non-zero if the first @var{op3} bits of @var{op1} and @var{op2} are
-@c equal, zero otherwise.  I.e., test of @var{op1} and @var{op2} are
-@c approximately equal.
-@c @end deftypefun
+@deftypefun int mpfr_eq (mpfr_t @var{op1}, mpfr_t @var{op2}, unsigned long int op3)
+Return non-zero if the first @var{op3} bits of @var{op1} and @var{op2} are
+equal, zero otherwise.  I.e., test of @var{op1} and @var{op2} are
+approximately equal.
+@end deftypefun
 
 @deftypefun void mpfr_reldiff (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
 Compute the relative difference between @var{op1} and @var{op2} 
@@ -821,6 +847,21 @@ This function does not guarantee the exact rounding on the relative difference;
 it just computes @var{abs(op1-op2)/op1}, using the rounding mode @var{rnd} for
 all operations.
 @end deftypefun
+
+@deftypefn Macro int mpfr_sgn (mpfr_t @var{op})
+@ifinfo
+Return +1 if @var{op} > 0, 0 if @var{op} = 0, and @minus{}1 if @var{op} < 0.
+@end ifinfo
+@iftex
+@tex
+Return $+1$ if $@var{op} > 0$, $0$ if $@var{op} = 0$, 
+and $-1$ if $@var{op} < 0$.
+@end tex
+@end iftex
+This function is actually implemented as a macro.  It evaluates its
+arguments multiple times.
+It is provided for compatibility with @var{mpf}.
+@end deftypefn
 
 @deftypefn Macro int SIGN (mpfr_t @var{op})
 @ifinfo
@@ -948,6 +989,18 @@ they should always be zero.
 @section Miscellaneous Functions
 @cindex Miscellaneous float functions
 
+@deftypefun void mpfr_ceil (mpfr_t @var{rop}, mpfr_t @var{op})
+@deftypefunx void mpfr_floor (mpfr_t @var{rop}, mpfr_t @var{op})
+@deftypefunx void mpfr_trunc (mpfr_t @var{rop}, mpfr_t @var{op})
+Set @var{rop} to @var{op} rounded to an integer. @code{mpfr_ceil} rounds
+to the next higher integer, @code{mpfr_floor} to the next lower,
+and @code{mpfr_trunc} to the integer towards zero.
+@end deftypefun
+
+@deftypefun void mpfr_urandomb (mpfr_t @var{rop}, gmp_randstate_t @var{state})
+Generate a universally distributed random float in the interval 0 <= X < 1.
+@end deftypefun
+
 @deftypefun void mpfr_random (mpfr_t @var{rop})
 Put in @var{rop} a random float in the interval [0,1[.
 Random limbs are generated using the
@@ -961,6 +1014,13 @@ are generated when @var{max_size} is negative.
 
 @deftypefun void mpfr_srandom (unsigned long int @var{seed})
 Set the random seed used by @code{mpfr_random} to @var{seed}.
+@end deftypefun
+
+@deftypefun void mpfr_random2 (mpfr_t @var{rop}, mp_size_t @var{max_size}, mp_exp_t @var{max_exp})
+Generate a random float of at most @var{max_size} limbs, with long strings of
+zeros and ones in the binary representation. The exponent of the number is in
+the interval @minus{}@var{exp} to @var{exp}.
+Negative random numbers are generated when @var{max_size} is negative.
 @end deftypefun
 
 @c @deftypefun size_t mpfr_size (mpfr_t @var{op})
