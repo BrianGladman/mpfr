@@ -66,8 +66,8 @@ mpfr_log2 (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
   if (MPFR_IS_ZERO(a))
     {
       MPFR_SET_INF(r);
-      MPFR_SET_POS(r);
-      MPFR_RET(0); /* log(0) is an exact infinity */
+      MPFR_SET_NEG(r);
+      MPFR_RET(0); /* log2(0) is an exact -infinity */
     }
 
   /* If a is negative, the result is NaN */
