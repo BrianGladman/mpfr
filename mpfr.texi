@@ -208,7 +208,7 @@ probably a good idea to glance through it.
 @cindex Installation
 
 To build MPFR, you first have to install GNU MP 
-(version 2.0.2 or higher) on your computer.
+(version 3.0 or higher) on your computer.
 You need a C compiler, preferably GCC, but any reasonable compiler should
 work.  And you need a standard Unix @samp{make} program, plus some other
 standard Unix utility programs.
@@ -217,9 +217,15 @@ Here are the steps needed to install the library on Unix systems:
 
 @enumerate
 @item
-In most cases, @samp{./Configure} should work.
-If you get error messages, your machine might
-not be supported.
+In most cases, @samp{./configure --with-gmp=/usr/local/gmp} should work,
+where @samp{/usr/local/gmp} is the directory where you have installed
+GNU MP.
+When you install GNU MP, you have to copy the files
+@samp{gmp-impl.h}, @samp{gmp-mparam.h}, @samp{longlong.h} and
+@samp{stack-alloc.h} from the GNU MP source directory 
+to @samp{/usr/local/gmp/include};
+these additional files are needed by MPFR.
+If you get error messages, your machine might not be supported.
 
 If you want to compile in a separate object directory, cd to that directory,
 and prefix the configure command with the path to the MPFR source directory.
@@ -247,8 +253,8 @@ information on what to include in useful bug reports.)
 @samp{make install}
 
 This will copy the files @file{mpfr.h} and @file{libmpfr.a}, 
-as well as the info
-files, to @file{/usr/local} (or if you passed the @samp{--prefix} option to
+to @file{/usr/local/include} and @file{/usr/local/lib}
+respectively (or if you passed the @samp{--prefix} option to
 @file{configure}, to the directory given as argument to @samp{--prefix}).
 @end enumerate
 
@@ -256,20 +262,19 @@ There are some other useful make targets:
 
 @itemize @bullet
 @item
-@samp{doc}
+@samp{mpfr.dvi}
 
-Create a DVI version of the manual, in @file{mpfr.dvi} and a set of info files,
-in @file{mpfr.info}, @file{mpfr.info-1}, @file{mpfr.info-2}, etc.
+Create a DVI version of the manual, in @file{mpfr.dvi}.
+@c and a set of info files, in @file{mpfr.info}, @file{mpfr.info-1}, @file{mpfr.info-2}, etc.
 
 @item
 @samp{ps}
 
 Create a Postscript version of the manual, in @file{mpfr.ps}.
 
-@item
-@samp{html}
-
-Create a HTML version of the manual, in @file{mpfr.html}.
+@c @item
+@c @samp{html}
+@c Create a HTML version of the manual, in @file{mpfr.html}.
 
 @item
 @samp{clean}
@@ -283,7 +288,6 @@ Delete all files not included in the distribution.
 
 @item
 @samp{uninstall}
-
 Delete all files copied by @samp{make install}.
 @end itemize
 
@@ -387,7 +391,7 @@ The latest version of the MPFR library is available from the web page
 of the PolKA team at
 @samp{http://www.loria.fr/equipes/polka}. 
 
-@node Reporting Bugs, MPFR Basics, Top
+@node Reporting Bugs, Floating-point Functions, MPFR Basics, Top
 @comment  node-name,  next,  previous,  up
 @chapter Reporting Bugs
 @cindex Reporting bugs
@@ -419,7 +423,7 @@ Send your bug report to: @samp{mpfr@@loria.fr}.
 If you think something in this manual is unclear, or downright incorrect, or if
 the language needs to be improved, please send a note to the same address.
 
-@node Floating-point Functions, Low-level Functions, Reporting bugs, Top
+@node Floating-point Functions, Initializing Floats, Reporting Bugs, Top
 @comment  node-name,  next,  previous,  up
 @chapter Floating-point Functions
 @cindex Floating-point functions
@@ -459,6 +463,7 @@ different word size.
 * Rounding Modes
 * Initializing Floats::
 * Assigning Floats::
+* Simultaneous Float Init & Assign::
 * Converting Floats::
 * Float Arithmetic::
 * Float Comparison::
@@ -519,7 +524,7 @@ Returns the input string (GMP_RNDD, GMP_RNDU, GMP_RNDN, GMP_RNDZ)
 corresponding to the rounding mode @var{rnd}.
 @end deftypefun
 
-@node Initializing Floats, Assigning Floats, , Floating-point Functions
+@node Initializing Floats, Assigning Floats, Floating-point Functions, Floating-point Functions
 @comment  node-name,  next,  previous,  up
 @section Initialization and Assignment Functions
 
@@ -641,7 +646,7 @@ Set @var{x} to the GNU MP floating-point number
 of @var{x}.
 @end deftypefun
 
-@node Simultaneous Float Init & Assign, Converting Floats, Assigning Floats, Initializing Floats
+@node Simultaneous Float Init & Assign, Converting Floats, Assigning Floats, Floating-point Functions
 @comment  node-name,  next,  previous,  up
 @subsection Combined Initialization and Assignment Functions
 @cindex Initialization and assignment functions
@@ -1007,7 +1012,7 @@ they should always be zero.
 @c @end deftypefun
 
 
-@node Miscellaneous Float Functions, , I/O of Floats, Floating-point Functions
+@node Miscellaneous Float Functions, Contributors, I/O of Floats, Floating-point Functions
 @comment  node-name,  next,  previous,  up
 @section Miscellaneous Functions
 @cindex Miscellaneous float functions
@@ -1134,7 +1139,7 @@ E(b)-@var{err} where E(b) is the exponent of
    and 0 otherwise. This function @strong{does not modify} its arguments.
 @end deftypefun
 
-@node Contributors, References, Custom Allocation, Top
+@node Contributors, References, Miscellaneous Float Functions, Top
 @comment  node-name,  next,  previous,  up
 @unnumbered Contributors
 
