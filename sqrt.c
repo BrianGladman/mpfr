@@ -251,12 +251,14 @@ mpfr_sqrt (r, u, rnd_mode)
 	   or up[0..usize-rsize-1] is non zero, thus we have to add one
 	   ulp, and inexact = 1 */
 	inexact = 1;
-	t = MPFR_PREC(r) & (BITS_PER_MP_LIMB - 1); 
+	t = MPFR_PREC(r) & (BITS_PER_MP_LIMB - 1);
 	rsize = (MPFR_PREC(r) - 1)/BITS_PER_MP_LIMB + 1;
 	if (t) 
-	    cc = mpn_add_1 (rp + rrsize - rsize, rp + rrsize - rsize, rsize, 1 << (BITS_PER_MP_LIMB - t));
+	    cc = mpn_add_1 (rp + rrsize - rsize, rp + rrsize - rsize, rsize,
+			    (mp_limb_t) 1 << (BITS_PER_MP_LIMB - t));
 	else
-	    cc = mpn_add_1 (rp + rrsize - rsize, rp + rrsize - rsize, rsize, 1);
+	    cc = mpn_add_1 (rp + rrsize - rsize, rp + rrsize - rsize, rsize,
+			    (mp_limb_t) 1);
       }
 
   if (cc) {
