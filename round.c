@@ -128,11 +128,10 @@ mpfr_round_raw(y, xp, xprec, negative, yprec, RND_MODE)
     y[0] &= mask;
     return 0; 
   }
-  /* Patch hideux xp[0] &= ~((1UL << (BITS_PER_MP_LIMB - xrw)) - 1); */
 
   if (mpfr_round_raw2(xp, xsize, negative, RND_MODE, yprec))
     carry = mpn_add_1(y, xp + xsize - nw, nw,
-                          1UL << (BITS_PER_MP_LIMB - rw));
+                          ((mp_limb_t)1) << (BITS_PER_MP_LIMB - rw));
   else MPN_COPY(y, xp + xsize - nw, nw);
 
   y[0] &= mask;
@@ -161,7 +160,7 @@ mpfr_round(x, RND_MODE, prec)
   if (carry)
     {      
       mpn_rshift(tmp, tmp, nw, 1); 
-      tmp [nw-1] |= (1UL << (BITS_PER_MP_LIMB - 1)); 
+      tmp [nw-1] |= (((mp_limb_t)1) << (BITS_PER_MP_LIMB - 1)); 
       EXP(x)++; 
     }
 

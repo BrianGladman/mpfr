@@ -25,7 +25,7 @@ mpfr_get_str_raw(digit_ptr, x)
   for (k = sx - 1; k >= 0 ; k--)
     { 
       wd = mx[k]; 
-      t = 1UL << (BITS_PER_MP_LIMB - 1); 
+      t = ((mp_limb_t)1) << (BITS_PER_MP_LIMB - 1); 
       for (l = BITS_PER_MP_LIMB - 1; l>=0; l--)
 	{
 	  if (wd & t) 
