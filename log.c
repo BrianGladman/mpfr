@@ -5,20 +5,31 @@
 #include "mpfr.h"
 
 
+  /* The computation of log(a) is done using the formula :
+     if we want p bits of the result,
+                       pi
+	  log(a) = ------------  -   m log 2
+		    2 AG(1,4/s)
+
+
+     where s = x 2^m > 2^(p/2)
+  */
+
+
 void mpfr_log(mpfr_ptr r, mpfr_srcptr a, unsigned char rnd_mode) {
-  int p, m, q, bool;
+  int p, m, q, bool, err;
   mpfr_t cst, rapport, agm, tmp1, tmp2, s, mm;
   double x, ref;
 
-  /* If a is NaN, let's return NaN */
+  /* If a is NaN, the result is NaN */
   if (FLAG_NAN(a)) 
     { SET_NAN(r); return; }
 
-  /* If a is negative or null, let's return NaN */
+  /* If a is negative or null, the result is NaN */
   if (SIGN(a)<=0)
     { SET_NAN(r); return; }
 
-  /* If a is 1, let's return 0 */
+  /* If a is 1, the result is 0 */
   if (mpfr_cmp_ui_2exp(a,1,0)==0){
     SET_ZERO(r);
     return;
@@ -27,100 +38,79 @@ void mpfr_log(mpfr_ptr r, mpfr_srcptr a, unsigned char rnd_mode) {
 
   q=PREC(r);
   
-  p=q+5;
+  /* The error due to the lost of bits during the substraction is
+     err=lg(p*log(2)/(2*|x-1|)) : greater when x is next to 1 : the
+     result is next to 0 but the 2 terms that we substract could be 
+     about 10. */
+
+  ref=mpfr_get_d(a)-1.0;
+  if (ref<0)
+    ref=-ref;
+  err=(int) ceil(log((double) q*log(2.0)/(2.0*ref)))+1;
+  if (err <0)
+    err=0;
+
+  /* The exactness depends on err */
+  p=q+11+err;
+
   bool=1;
 
   while (bool==1) {
-    /*    printf("p : %i\n",p); */
+
+    /* Calculus of m (depends on p) */
     x=mpfr_get_d(a);
     ref=exp(((double) p) *log(2)/2);
-    /*m=q/2 - EXP(a) - 2;*/
     m=0;
     while (x<=ref) {
       m++;
       x*=2;
     }
     
-    /*    printf("m : %i\n",m); */
+    /* All the mpfr_t needed have a precision of p */
     mpfr_init2(cst,p);
     mpfr_init2(rapport,p);
-  mpfr_init2(agm,p);
-  mpfr_init2(tmp1,p);
-  mpfr_init2(tmp2,p);
-  mpfr_init2(s,p);
-  mpfr_init2(mm,p);
+    mpfr_init2(agm,p);
+    mpfr_init2(tmp1,p);
+    mpfr_init2(tmp2,p);
+    mpfr_init2(s,p);
+    mpfr_init2(mm,p);
   
-  mpfr_set_si(mm,-m,rnd_mode);
-
-  mpfr_set_si(tmp1,1,rnd_mode);
-  /*printf("1 : \t");
-    mpfr_out_str(stdout,10,0,tmp1,GMP_RNDN);printf("\n"); */
-
-  mpfr_set_si(tmp2,4,rnd_mode);
-  /* printf("4 : \t");
-     mpfr_out_str(stdout,10,0,tmp2,GMP_RNDN);printf("\n"); */
-
-  mpfr_mul_2exp(s,a,m,rnd_mode);
-  /*  printf("s : \t");
-    mpfr_out_str(stdout,10,0,s,GMP_RNDN);printf("\n"); */
-
-  /*printf("div entre ");mpfr_out_str(stdout,10,0,tmp2,GMP_RNDN);printf(" et ");
-    mpfr_out_str(stdout,10,0,s,GMP_RNDN);printf("\n"); */
-  /* printf("div entre \n"); 
-  mpfr_print_raw(tmp2);printf("    et \n");
-  mpfr_print_raw(s);  printf(" en arrondi \n"); */
-
-  mpfr_div(rapport,tmp2,s,rnd_mode);
-  /*printf("4/s : \t");
-    mpfr_out_str(stdout,10,0,rapport,GMP_RNDN);printf("\n");*/
+    mpfr_set_si(mm,m,GMP_RNDN);           /* I have m */
+    mpfr_set_si(tmp1,1,GMP_RNDN);         /* I have 1 */
+    mpfr_set_si(tmp2,4,GMP_RNDN);         /* I have 4 */
+    mpfr_mul_2exp(s,a,m,GMP_RNDN);        /* I compute s=a*2^m */ 
+    mpfr_div(rapport,tmp2,s,GMP_RNDN);    /* I compute 4/s */
+    mpfr_agm(agm,tmp1,rapport,GMP_RNDN);  /* I compute AG(1,4/s) */
+    mpfr_mul_2exp(tmp1,agm,1,GMP_RNDN);   /* I compute 2*AG(1,4/s) */
+    mpfr_pi(cst, GMP_RNDN);               /* I compute pi */
+    mpfr_div(tmp2,cst,tmp1,GMP_RNDN);     /* I compute pi/2*AG(1,4/s) */
+    mpfr_log2(cst,GMP_RNDN);              /* I compute log(2) */
+    mpfr_mul(tmp1,cst,mm,GMP_RNDN);       /* I compute m*log(2) */
+    mpfr_sub(cst,tmp2,tmp1,GMP_RNDN);     /* I compute log(a) */ 
  
-  mpfr_agm(agm,tmp1,rapport,rnd_mode);
-  /*printf("AG : \t");
-    mpfr_out_str(stdout,10,0,agm,GMP_RNDN);printf("\n");*/
- 
-  mpfr_mul_2exp(tmp1,agm,1,rnd_mode);
-  /*printf("2AG : \t");
-    mpfr_out_str(stdout,10,0,tmp1,GMP_RNDN);printf("\n");*/
- 
-  mpfr_pi(cst, rnd_mode);
-  /* printf("pi : \t");
-     mpfr_out_str(stdout,10,0,cst,GMP_RNDN);printf("\n");*/
-  
-  mpfr_div(tmp2,cst,tmp1,rnd_mode);
-  /*printf("pi/2AG : \t");
-    mpfr_out_str(stdout,10,0,tmp2,GMP_RNDN);printf("\n"); */
- 
-  mpfr_log2(cst,rnd_mode);
-  /*printf("log2 : \t");
-  mpfr_out_str(stdout,10,0,cst,GMP_RNDN);printf("\n");
-  printf("-m : \t");
-  mpfr_out_str(stdout,10,0,mm,GMP_RNDN);printf("\n"); */
+    /* printf("avant arrondi :\n");
+       mpfr_out_str(stdout,10,0,cst,GMP_RNDN);printf("\n");*/
+    
 
-  mpfr_mul(tmp1,cst,mm,GMP_RNDN);
-  /*printf("-mlog2 : \t");
-    mpfr_out_str(stdout,10,0,tmp1,GMP_RNDN);printf("\n");*/
- 
-  mpfr_add(cst,tmp1,tmp2,rnd_mode);
-  /*  printf("res : \t");
-      mpfr_out_str(stdout,10,0,cst,GMP_RNDN);printf("\n");*/
- 
- 
-  if(mpfr_can_round(cst,p-4,rnd_mode,rnd_mode,q)==1) {
-    mpfr_set(r,cst,rnd_mode);
-    bool=0;
-  }
-  else {
-    /* printf("Avec plus de precisions calculer tu dois !!\n");*/
-    p+=5;
-  }
+    /* If we can round the result, we set it and go out of the loop */
 
-  mpfr_clear(rapport);
-  mpfr_clear(agm);
-  mpfr_clear(tmp1);
-  mpfr_clear(tmp2);
-  mpfr_clear(s);
-  mpfr_clear(mm);
-  mpfr_clear(cst);
+    if(mpfr_can_round(cst,p-3-err,GMP_RNDN,rnd_mode,q)==1) {
+      mpfr_set(r,cst,rnd_mode);
+      bool=0;
+    }
+    /* else we increase the precision */
+    else    
+      p+=5;
+
+    /* We clear all the mpfr_t : either they will not be used any more,
+       or their precision will be increased */
+    mpfr_clear(rapport);
+    mpfr_clear(agm);
+    mpfr_clear(tmp1);
+    mpfr_clear(tmp2);
+    mpfr_clear(s);
+    mpfr_clear(mm);
+    mpfr_clear(cst);
   }
  
 }
