@@ -87,7 +87,7 @@ void check_small ()
 }
 
 int
-main(int argc, char **argv)
+main (int argc, char *argv[])
 {
 #ifdef TEST
   int i; double d;
@@ -107,5 +107,6 @@ main(int argc, char **argv)
   check3(2.14478198760196000000e+16, GMP_RNDN, "21448");
   check3(7.02293374921793516813e-84, GMP_RNDN, "70229");
   check3(-6.7274500420134077e-87, GMP_RNDN, "-67275"); 
+
   return 0;
 }

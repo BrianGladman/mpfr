@@ -48,7 +48,8 @@ void check(long int n, long int d, mp_rnd_t rnd, double y)
   mpfr_clear(x); mpq_clear(q);
 }
 
-int main()
+int
+main (void)
 {
 #ifdef TEST
   long int i, n;
@@ -74,5 +75,6 @@ int main()
   check(75504803, 400207282, GMP_RNDU, 1.8866424074712365155e-1);
   check(643562308, 23100894, GMP_RNDD, 2.7858762002890447462e1);
   check(632549085, 1831935802, GMP_RNDN, 3.4528998467600230393e-1);
+
   return 0;
 }

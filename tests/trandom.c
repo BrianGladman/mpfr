@@ -164,7 +164,8 @@ void test_urandomb (unsigned long nbtests, unsigned long prec, int verbose)
   return;
 }
 
-int main (int argc, char **argv)
+int
+main (int argc, char *argv[])
 {
   unsigned long nbtests, prec; int verbose = 0; 
   
@@ -179,4 +180,3 @@ int main (int argc, char **argv)
   
   return 0;
 }
-

@@ -30,7 +30,7 @@ MA 02111-1307, USA. */
 #endif
 
 int
-main()
+main (void)
 {
   mpfr_t x, u; mpf_t y, z; unsigned long k, pr;
   
@@ -77,5 +77,6 @@ main()
     }
   mpf_clear(y);
   mpf_clear(z);
-  return(0);
+
+  return 0;
 }

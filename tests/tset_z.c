@@ -56,7 +56,8 @@ void check_large ()
 
 /* tset_z z rnd prec */
 
-int main(int argc, char *argv[])
+int
+main (int argc, char *argv[])
 {
   long j; 
 
@@ -65,6 +66,6 @@ int main(int argc, char *argv[])
   check(0, 0);
   for (j=0; j<1000000; j++)
     check(lrand48(), rand()%4);
+
   return 0;
 }
-

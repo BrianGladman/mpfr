@@ -163,7 +163,8 @@ void check_sign ()
   mpfr_clear(a); mpfr_clear(b);
 }
 
-int main (int argc, char *argv[])
+int
+main (int argc, char *argv[])
 {
 #ifdef TEST
   double x, y, z; int i, prec, rnd_mode;
@@ -212,6 +213,6 @@ int main (int argc, char *argv[])
       }
   } 
 #endif
+
   return 0;
 }
-

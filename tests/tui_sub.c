@@ -54,7 +54,8 @@ void check (unsigned long y, double x, mp_rnd_t rnd_mode, double z1)
   mpfr_clear(xx); mpfr_clear(zz);
 }
 
-int main(argc,argv) int argc; char *argv[];
+int
+main (int argc, char *argv[])
 {
 #ifdef TEST
   double x; unsigned long y, N; int i,rnd_mode,rnd;
@@ -94,6 +95,6 @@ int main(argc,argv) int argc; char *argv[];
 	1.0849682612928422704e187);
   check(293607738, -1.9967571564050541e-5, GMP_RNDU, 2.9360773800002003e8);
   check(354270183, 2.9469161763489528e3, GMP_RNDN, 3.5426723608382362e8);
+
   return 0;
 }
-

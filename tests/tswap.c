@@ -22,7 +22,8 @@ MA 02111-1307, USA. */
 #include "gmp.h"
 #include "mpfr.h"
 
-int main()
+int
+main (void)
 {
   mpfr_t u, v;
 
@@ -38,5 +39,6 @@ int main()
   }
   mpfr_clear (u);
   mpfr_clear (v);
+
   return 0;
 }

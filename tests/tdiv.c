@@ -164,7 +164,8 @@ void check_convergence ()
   mpfr_clear(x); mpfr_clear(y);
 }
 
-int main(int argc, char *argv[])
+int
+main (int argc, char *argv[])
 {
   int N;
 
@@ -218,5 +219,6 @@ int main(int argc, char *argv[])
     check4(n, d, rand() % 4, 53, 0.0);
   }
 #endif
+
   return 0;
 }

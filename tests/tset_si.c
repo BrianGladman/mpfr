@@ -27,7 +27,7 @@ MA 02111-1307, USA. */
 #include "time.h"
 
 int
-main(int argc, char **argv)
+main (int argc, char *argv[])
 {
   mpfr_t x; long k, z, d; unsigned long zl, dl, N; 
   
@@ -86,5 +86,6 @@ main(int argc, char **argv)
   }
 
   mpfr_clear(x); 
-  return(0);
+
+  return 0;
 }

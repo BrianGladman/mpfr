@@ -357,7 +357,8 @@ void test3a (char *foo, mp_prec_t prec, mp_rnd_t rnd)
   mpfr_clear (res2);
 }
 
-int main ()
+int
+main (void)
 {
   testfunc = mpfr_add; test3 ("mpfr_add", 53, GMP_RNDN);
   testfunc = mpfr_add_ui; test2ui ("mpfr_add_ui", 53, GMP_RNDN);
@@ -382,5 +383,6 @@ int main ()
   testfunc = mpfr_ui_div; testui2 ("mpfr_ui_div", 53, GMP_RNDN);
   testfunc = mpfr_ui_sub; testui2 ("mpfr_ui_sub", 53, GMP_RNDN);
   testfunc = mpfr_trunc; test2 ("mpfr_trunc", 53, GMP_RNDN);
+
   return 0;
 }

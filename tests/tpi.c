@@ -25,7 +25,8 @@ MA 02111-1307, USA. */
 
 /* tpi [prec] [rnd] [0 = no print] */
 
-int main(argc, argv) int argc; char *argv[];
+int
+main (int argc, char *argv[])
 {
   mpfr_t x; int p; unsigned char rnd;
 
@@ -40,5 +41,6 @@ int main(argc, argv) int argc; char *argv[];
     fprintf(stderr, "mpfr_const_pi failed for prec=53\n"); exit(1);
   }
   mpfr_clear(x);
+
   return 0;
 }

@@ -59,8 +59,10 @@ void check_pow_ui ()
   mpfr_clear (b);
 }
 
-int main ()
+int
+main (void)
 {
   check_pow_ui ();
+
   return 0;
 }

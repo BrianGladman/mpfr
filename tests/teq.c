@@ -60,7 +60,8 @@ void teq (mpfr_t x)
   mpfr_clear(y); 
 }
 
-int main()
+int
+main (void)
 {
   int j; mpfr_t x; 
 
@@ -71,6 +72,6 @@ int main()
     teq (x);
   }
   mpfr_clear (x); 
+
   return 0;
 }
-

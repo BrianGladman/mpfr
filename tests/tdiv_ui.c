@@ -51,7 +51,7 @@ void check (double d, unsigned long u, mp_rnd_t rnd, double e)
 }
 
 int
-main(int argc, char **argv)
+main (int argc, char **argv)
 {
   mpfr_t x;
 #ifdef TEST

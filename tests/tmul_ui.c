@@ -26,7 +26,7 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
 int
-main(int argc, char **argv)
+main (int argc, char *argv[])
 {
   mpfr_t x, y;
   
@@ -104,5 +104,6 @@ main(int argc, char **argv)
   }
 
   mpfr_clear(x); mpfr_clear(y);
-  return(0);
+
+  return 0;
 }

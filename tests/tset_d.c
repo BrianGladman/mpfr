@@ -29,7 +29,7 @@ MA 02111-1307, USA. */
 extern int isnan();
 
 int
-main (int argc, char **argv)
+main (int argc, char *argv[])
 {
   mpfr_t x,y,z; unsigned long k,n; double d, dd;
 #ifdef __mips
@@ -76,10 +76,10 @@ main (int argc, char **argv)
 		  "Mismatch on : %1.18g != %1.18g\n", d, mpfr_get_d(x)); 
 	  mpfr_print_raw(x); putchar('\n');
 	  exit(1);
-	} 
+	}
     }
 
   mpfr_clear(x); mpfr_clear(y); mpfr_clear(z);
+
   return 0; 
 }
-

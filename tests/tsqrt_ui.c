@@ -54,7 +54,8 @@ void check (unsigned long a, mp_rnd_t rnd_mode, double Q)
   mpfr_clear(q);
 }
 
-int main()
+int
+main (void)
 {
 #ifdef TEST
   int i; unsigned long a;
@@ -75,5 +76,6 @@ int main()
 #endif
   check(0, GMP_RNDN, 0.0);
   check(2116118, GMP_RNDU, 1.45468828276026215e3);
+
   return 0;
 }

@@ -31,7 +31,8 @@ MA 02111-1307, USA. */
 
 extern int isnan();
 
-int main()
+int
+main (void)
 {
   double x, y;
   mpfr_t xx, yy;
@@ -149,5 +150,6 @@ int main()
   }
 
   mpfr_clear(xx); mpfr_clear(yy);
+
   return 0;
 }

@@ -111,7 +111,8 @@ void check53cos (double x, double cos_x, mp_rnd_t rnd_mode)
 }
 
 /* tsin_cos prec [N] performs N tests with prec bits */
-int main(int argc, char *argv[])
+int
+main(int argc, char *argv[])
 {
   if (argc > 1) {
     large_test (atoi (argv[1]), (argc > 2) ? atoi (argv[2]) : 1);

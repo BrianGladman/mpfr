@@ -27,7 +27,8 @@ MA 02111-1307, USA. */
 
 #define SIZEX 100
 
-int main()
+int
+main (void)
 {
   int j, k; mpfr_t x, y, z, t, y2, z2, t2; 
 
@@ -141,4 +142,3 @@ int main()
 
   return 0;
 }
-

@@ -192,7 +192,8 @@ void special ()
   mpfr_clear (z);
 }
 
-int main()
+int
+main (void)
 {
   double a;
 #ifdef TEST
@@ -280,5 +281,6 @@ int main()
   check4(a*6703494707970582.0, GMP_RNDD, "1.3853ee10c9c98@13");
   check4(a*8010323124937260.0, GMP_RNDD, "1.556abe212b56e@13");
   check4(a*2.0*8010776873384260.0, GMP_RNDD, "1.e2d9a51977e6d@13");
+
   return 0;
 }

@@ -368,7 +368,8 @@ void check_same ()
 #define check53(x, y, r, z) check(x, y, r, 53, 53, 53, z)
 #define check53nan(x, y, r) checknan(x, y, r, 53, 53, 53); 
 
-int main(argc,argv) int argc; char *argv[];
+int
+main (int argc, char *argv[])
 {
   int prec, rnd_mode;
 #ifdef TEST
@@ -605,6 +606,6 @@ int main(argc,argv) int argc; char *argv[];
     check5(x, rnd);
   }
 #endif
+
   return 0;
 }
-

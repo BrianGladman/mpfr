@@ -142,7 +142,9 @@ void slave (int N, int p)
 }
 
 
-int main(int argc, char* argv[]) {
+int
+main (int argc, char* argv[])
+{
    int N;
 
    if (argc==3) {   /* tagm N p : N calculus with precision p*/
@@ -178,5 +180,6 @@ int main(int argc, char* argv[]) {
    } 
 
    /* TODO : tests des infinis dans tagm.c */
+
    return 0;
 }

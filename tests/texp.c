@@ -190,7 +190,7 @@ void compare_exp2_exp3 (int n)
 }
 
 int
-main(int argc, char **argv)
+main (int argc, char *argv[])
 {
 #ifdef TEST
   int i, N, s=0, e, maxe=0; double d, lo, hi;
@@ -256,5 +256,6 @@ main(int argc, char **argv)
   }
   if (N) printf("mean error=%1.2e max error=%d\n", (double)s/(double)N,maxe);
 #endif
+
   return 0;
 }

@@ -30,7 +30,7 @@ MA 02111-1307, USA. */
    and with mpfr with 53 bits of precision */
 
 int
-main(argc,argv) int argc; char *argv[];
+main (int argc, char *argv[])
 {
   double x, z; mpfr_t w; unsigned long k; 
 
@@ -52,22 +52,20 @@ main(argc,argv) int argc; char *argv[];
     if (x != (z = mpfr_get_d(w)/1024))
       {
 	fprintf(stderr, "%f != %f\n", x, z); 
-	return (-1); 
+	return -1;
       }
-    
+
     mpfr_set_d(w, x, 0);
-    mpfr_div_2exp(w, w, 10, GMP_RNDZ); 
+    mpfr_div_2exp(w, w, 10, GMP_RNDZ);
     if (x != (z = mpfr_get_d(w)*1024))
       {
-	fprintf(stderr, "%f != %f\n", x, z); 
-	mpfr_clear(w); 
-	return (-1); 
+	fprintf(stderr, "%f != %f\n", x, z);
+	mpfr_clear(w);
+	return -1;
       }
   }
 
-  
+  mpfr_clear(w);
 
-  mpfr_clear(w); 
-  return (0); 
+  return 0;
 }
-

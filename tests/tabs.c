@@ -29,7 +29,8 @@ MA 02111-1307, USA. */
 
 extern int isnan();
 
-int main(int argc, char *argv[])
+int
+main (int argc, char *argv[])
 {
    mpfr_t x; int n, k, rnd; double d, dd;
 #ifdef __mips
@@ -85,5 +86,6 @@ int main(int argc, char *argv[])
      }
 
    mpfr_clear(x);
+
    return 0;
 }

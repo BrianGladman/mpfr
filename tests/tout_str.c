@@ -98,7 +98,7 @@ void check_large ()
 }
 
 int
-main(int argc, char **argv)
+main (int argc, char *argv[])
 {
   int i,N=10000,r,p; double d;
 
@@ -132,5 +132,6 @@ main(int argc, char **argv)
     p = 2 + rand()%35;
     check(d, r, p);
   }
+
   return 0;
 }

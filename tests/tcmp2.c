@@ -82,7 +82,8 @@ void special ()
   mpfr_clear(x); mpfr_clear(y);
 }
 
-int main()
+int
+main (void)
 {
   int i,j; double x=1.0, y, z;
 #ifdef __mips
@@ -107,6 +108,6 @@ int main()
     if (x<y) { z=x; x=y; y=z; }
     if (y != 0.0 && y != -0.0) tcmp2(x, y, -1);
   }
+
   return 0;
 }
-
