@@ -34,7 +34,7 @@ int mpfr_exp2_aux2 (mpz_t, mpfr_srcptr, int, int*);
 
 #define MY_INIT_MPZ(x, s) { \
    (x)->_mp_alloc = (s); \
-   (x)->_mp_d = (mp_ptr) TMP_ALLOC((s)*BYTES_PER_MP_LIMB); \
+   PTR(x) = (mp_ptr) TMP_ALLOC((s)*BYTES_PER_MP_LIMB); \
    (x)->_mp_size = 0; }
 
 /* #define DEBUG */
