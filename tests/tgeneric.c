@@ -28,7 +28,7 @@ test_generic (int p0, int p1, int N)
   mpfr_t x, y, z, t;
   mp_rnd_t rnd;
   int inexact, compare, compare2;
-  unsigned int n, err;
+  unsigned int n;
 
   mpfr_init (x);
   mpfr_init (y);
@@ -45,12 +45,15 @@ test_generic (int p0, int p1, int N)
 
       for (n=0; n<N; n++)
 	{
+#if defined(RAND_FUNCTION)
+	  RAND_FUNCTION (x);
+#else
 	  mpfr_random (x);
+#endif
 	  rnd = random () % 4;
 	  mpfr_set_prec (y, yprec);
 	  compare = TEST_FUNCTION (y, x, rnd);
-	  err = (rnd == GMP_RNDN) ? yprec + 1 : yprec;
-	  if (mpfr_can_round (y, err, rnd, rnd, prec))
+	  if (mpfr_can_round (y, yprec, rnd, rnd, prec))
 	    {
 	      mpfr_set (t, y, rnd);
 	      inexact = TEST_FUNCTION (z, x, rnd);
