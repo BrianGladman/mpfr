@@ -520,6 +520,11 @@ int  mpfr_cache _MPFR_PROTO ((mpfr_ptr, mpfr_cache_t, mpfr_rnd_t));
  (__builtin_constant_p (_s) && (_s) >= 0 ? \
    mpfr_cmp_ui ((_f), (_s)) :              \
    mpfr_cmp_si_2exp ((_f), (_s), 0))
+#undef mpfr_set_si
+#define mpfr_set_si(_f,_s,_r)              \
+ (__builtin_constant_p (_s) && (_s) >= 0 ? \
+   mpfr_set_ui ((_f), (_s), (_r)) :        \
+   mpfr_set_si ((_f), (_s), (_r))) 
 #endif
 
 

@@ -23,7 +23,7 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
 int
-mpfr_set_si (mpfr_ptr x, long i, mp_rnd_t rnd_mode)
+(mpfr_set_si) (mpfr_ptr x, long i, mp_rnd_t rnd_mode)
 {
   int inex;
   mp_size_t xn;
