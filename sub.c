@@ -126,12 +126,12 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
 	     even) */
 	  if (NOTZERO(c)) { /* c is not zero */
 	    /* check whether mant(c)=1/2 or not */
-	    cc = *cp - (1<<(mp_bits_per_limb-1));
+	    cc = *cp - ((mp_limb_t)1<<(mp_bits_per_limb-1));
 	    if (cc==0) {
 	      bp = cp+(PREC(c)-1)/mp_bits_per_limb;
 	      while (cp<bp && cc==0) cc = *++cp;
 	    }
-	    if (cc || (ap[an-1] & 1<<sh)) goto sub_one_ulp;
+	    if (cc || (ap[an-1] & (mp_limb_t)1<<sh)) goto sub_one_ulp;
 	      /* mant(c) > 1/2 or mant(c) = 1/2: subtract 1 iff lsb(a)=1 */
 	  }
 	}
@@ -165,21 +165,21 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
 	  cc -= (mp_limb_t)1<<(sh-1);
 	}
 	else /* no bit to truncate */
-	  cc = bp[--k] - (1<<(mp_bits_per_limb-1));
+	  cc = bp[--k] - ((mp_limb_t)1<<(mp_bits_per_limb-1));
 	if ((long)cc>0) { /* suppose sizeof(long)=sizeof(mp_limb_t) */
 	  goto add_one_ulp; /* trunc(b)>1/2*lsb(a) -> round up */
 	}
 	else if (cc==0) {
 	  while (k>1 && cc==0) cc=bp[--k];
 	  /* now if the truncated part of b = 1/2*lsb(a), check whether c=0 */
-	  if (NOTZERO(c) || (*ap & (1<<sh))) goto sub_one_ulp;
+	  if (NOTZERO(c) || (*ap & ((mp_limb_t)1<<sh))) goto sub_one_ulp;
 	  /* if trunc(b)-c is exactly 1/2*lsb(a) : round to even lsb */
 	}
 	/* if cc<0 : trunc(b) < 1/2*lsb(a) -> round down, i.e. do nothing */
       }
       else { /* round towards infinity or zero */
 	if (sh) {
-	  cc = *ap & ((1<<sh)-1);
+	  cc = *ap & (((mp_limb_t)1<<sh)-1);
 	  *ap &= ~cc; /* truncate last bits */
 	}
 	else cc=0;
@@ -299,9 +299,9 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
 	  kc = cn-k; /* remains kc limbs from c */
 	  k = bn-an; /* remains k limbs from b */
 	  /* truncate last bits and store the difference with 1/2*ulp in cc */
-	  cc = *ap & ((1<<sh)-1);
+	  cc = *ap & (((mp_limb_t)1<<sh)-1);
 	  *ap &= ~cc; /* truncate last bits */
-	  cc -= 1<<(sh-1);
+	  cc -= (mp_limb_t)1<<(sh-1);
 	  while ((cc==0 || cc==-1) && k!=0 && kc!=0) {
 	    kc--;
 	    cc -= mpn_sub_1(&c2, bp+(--k), 1, (cp[kc]>>dif) +
@@ -322,7 +322,7 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
     }
     else if ((ISNONNEG(b) && rnd_mode==GMP_RNDU) || 
 	     (ISNEG(b) && rnd_mode==GMP_RNDD)) {
-      cc = *ap & ((1<<sh)-1);
+      cc = *ap & (((mp_limb_t)1<<sh)-1);
       *ap &= ~cc; /* truncate last bits */
       if (cc) goto add_one_ulp; /* will happen most of the time */
       else { /* same four cases too */
@@ -355,7 +355,7 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
     }
     /* else round to zero: remove 1 ulp if neglected bits from b-c are < 0 */
     else {
-      cc = *ap & ((1<<sh)-1); 
+      cc = *ap & (((mp_limb_t)1<<sh)-1); 
       *ap &= ~cc;
       if (cc==0) { /* otherwise neglected difference cannot be < 0 */
 	/* take into account bp[0]..bp[bn-cancel1-1] shifted by cancel2 to left
@@ -385,12 +385,12 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
 mpfr_print_raw(a); putchar('\n');
 #endif
         if (sh) {
-	  cc = *ap & ((1<<sh)-1);
+	  cc = *ap & (((mp_limb_t)1<<sh)-1);
 	  *ap &= ~cc; /* truncate last bits */
-	  c2 = 1<<(sh-1);
+	  c2 = (mp_limb_t)1<<(sh-1);
 	}
 	else /* no bit to truncate */
-	  { if (k) cc = bp[--k]; else cc = 0; c2 = 1<<(mp_bits_per_limb-1); }
+	  { if (k) cc = bp[--k]; else cc = 0; c2 = (mp_limb_t)1<<(mp_bits_per_limb-1); }
 #ifdef DEBUG
 	printf("cc=%lu c2=%lu k=%u\n",cc,c2,k);
 #endif
@@ -404,11 +404,11 @@ mpfr_print_raw(a); putchar('\n');
 	  if (cc==0 && dif>0) cc=bp[0]<<(mp_bits_per_limb-dif);
 	  /* now if the truncated part of b = 1/2*lsb(a), check whether c=0 */
           if (bp!=cp) { 
-	    if (cc || (*ap & (1<<sh))) goto add_one_ulp;
+	    if (cc || (*ap & ((mp_limb_t)1<<sh))) goto add_one_ulp;
 	  }
 	  else {
 	    /* subtract: if cc>0, do nothing */
-	    if (cc==0 && (*ap & (1<<sh))) goto add_one_ulp;
+	    if (cc==0 && (*ap & ((mp_limb_t)1<<sh))) goto add_one_ulp;
 	  }
 	}
         goto end_of_sub;
