@@ -21,7 +21,7 @@ mpfr_mul(a, b, c, rnd_mode)
      unsigned char rnd_mode;
 #endif
 {
-  unsigned int bn, cn, an, k; int cc;
+  unsigned int bn, cn, an, tn, k; int cc;
   mp_limb_t *ap=MANT(a), *bp=MANT(b), *cp=MANT(c), *tmp, b1;
   long int sign_product;
   TMP_DECL(marker); 
@@ -33,6 +33,7 @@ mpfr_mul(a, b, c, rnd_mode)
   sign_product = SIGN(b) * SIGN(c);
   bn = (PREC(b)-1)/mp_bits_per_limb+1; /* number of significant limbs of b */
   cn = (PREC(c)-1)/mp_bits_per_limb+1; /* number of significant limbs of c */
+  tn = (PREC(c)+PREC(b)-1)/mp_bits_per_limb+1; 
   k = bn+cn; /* effective nb of limbs used by b*c */
   TMP_MARK(marker); 
   tmp = (mp_limb_t*) TMP_ALLOC(k*BYTES_PER_MP_LIMB);
@@ -46,7 +47,8 @@ mpfr_mul(a, b, c, rnd_mode)
   b1 >>= mp_bits_per_limb-1; /* msb from the product */
 
   if (b1==0) mpn_lshift(tmp, tmp, k, 1);
-  cc = mpfr_round_raw(ap, tmp, PREC(b)+PREC(c), (sign_product<0), PREC(a), rnd_mode);
+  cc = mpfr_round_raw(ap, tmp+bn+cn-tn, 
+		      PREC(b)+PREC(c), (sign_product<0), PREC(a), rnd_mode);
   if (cc) { /* cc = 1 ==> result is a power of two */
     ap[an-1] = (mp_limb_t) 1 << (BITS_PER_MP_LIMB-1);
   }
