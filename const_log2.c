@@ -130,6 +130,7 @@ int
   mpz_t s, t, u;
   int inexact;
 
+  mpfr_save_emin_emax ();
   precx = MPFR_PREC(x);
 
   /* need to recompute */
@@ -153,7 +154,7 @@ int
           mpz_add (s, s, u);
         }
 
-      inexact = mpfr_set_z (x, s, rnd_mode);
+      inexact = mpfr_set_z (x, s, rnd_mode); /* Can overflow => save_emin */
       MPFR_SET_EXP (x, MPFR_GET_EXP (x) - N);
       mpz_clear (s);
       mpz_clear (t);
@@ -162,5 +163,7 @@ int
   else /* use binary splitting method */
     inexact = mpfr_const_aux_log2 (x, rnd_mode);
 
-  return inexact;
+  mpfr_restore_emin_emax ();
+
+  return mpfr_check_range (x, inexact, rnd_mode);
 }
