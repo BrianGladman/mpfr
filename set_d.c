@@ -42,7 +42,6 @@ extern int isnan(double);
 #define _GMP_IEEE_FLOATS 0
 #endif
 
-#define MP_BASE_AS_DOUBLE (2.0 * ((mp_limb_t) 1 << (BITS_PER_MP_LIMB - 1)))
 int
 #if __STDC__
 __mpfr_extract_double (mp_ptr rp, double d, int e)
