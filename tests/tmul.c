@@ -2,36 +2,13 @@
 #include <stdlib.h>
 #include "gmp.h"
 #include "mpfr.h"
+#include "mpfr-impl.h"
 
 #define MINNORM 2.2250738585072013831e-308 /* 2^(-1022), smallest normalized */
 
-/* 10^6 multiplications on a PII-400:
-precision       *    mpf_mul mpfr_mul(RNDZ/RNDN/RNDU)   maple   mupad
-53 bits       0.018    0.89       1.44/1.58/1.50       15.2[16]   17.1
-100 bits               1.66       2.01/2.38/2.27       20.0[30]   18.7
-200 bits               3.45       Seg. fault           27.6[60]   20.2
-225                    4.12       4.33
-500 bits              12.53       12.39                81.5[151]  29.3
-1000 bits             40.26       38.35               190.5[301]  58.6
-2000 bits                                                        169.3
-2017                  123.        119.
-5025 bits             552         544                   1860      918
-*/
-
-double drand()
-{
-  double d; long int *i;
-
-  i = (long int*) &d;
-  i[0] = lrand48();
-  i[1] = lrand48();
-  if (lrand48()%2) d=-d; /* generates negative numbers */
-  return d;
-}
-
 /* checks that x*y gives the same results in double
    and with mpfr with 53 bits of precision */
-int check(double x, double y, unsigned int rnd_mode, unsigned int px, 
+void check(double x, double y, unsigned int rnd_mode, unsigned int px, 
 unsigned int py, unsigned int pz, double res)
 {
   double z1,z2,z3; mpfr_t xx,yy,zz; int i;
@@ -64,7 +41,7 @@ mpfr_print_raw(zz); putchar('\n');
 }
 
 /* check sign of result */
-check_sign()
+void check_sign()
 {
   mpfr_t a, b;
 
@@ -78,7 +55,7 @@ check_sign()
   mpfr_clear(a); mpfr_clear(b);
 }
 
-main(argc,argv) int argc; char *argv[];
+int main(argc,argv) int argc; char *argv[];
 {
   double x,y,z; int i,prec,rnd_mode;
 
@@ -123,5 +100,6 @@ main(argc,argv) int argc; char *argv[];
 	    prec, prec, prec, 0.0);
       }
   } 
+  return 0;
 }
 
