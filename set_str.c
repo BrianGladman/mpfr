@@ -367,3 +367,10 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
 
   return res;
 }
+
+int
+mpfr_init_set_str (mpfr_ptr x, const char *str, int base, mp_rnd_t rnd)
+{
+  mpfr_init (x);
+  return mpfr_set_str (x, str, base, rnd);
+}
