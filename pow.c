@@ -86,7 +86,7 @@ mpfr_pow_is_exact (mpfr_srcptr x, mpfr_srcptr y)
 
 /* Return 1 if y is an odd integer, 0 otherwise. */
 static int
-is_odd(mpfr_srcptr y)
+is_odd (mpfr_srcptr y)
 {
   mp_exp_t expo;
   mp_prec_t prec;
@@ -259,17 +259,17 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
       long int zii;
       int exptol;
     
-      mpz_init(zi);  
+      mpz_init (zi);
       exptol = mpfr_get_z_exp (zi, y);
         
-      if (exptol>0)
-        mpz_mul_2exp(zi, zi, exptol);
+      if (exptol > 0)
+        mpz_mul_2exp (zi, zi, exptol);
       else
-        mpz_tdiv_q_2exp(zi, zi, (unsigned long int) (-exptol));
+        mpz_tdiv_q_2exp (zi, zi, (unsigned long int) (-exptol));
 
-      zii=mpz_get_si(zi);
+      zii = mpz_get_si (zi);
 
-      mpz_clear(zi);
+      mpz_clear (zi);
       return mpfr_pow_si (z, x, zii, rnd_mode);
     }
 
