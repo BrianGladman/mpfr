@@ -86,6 +86,7 @@ mpfr_agm (r, op2, op1, rnd_mode)
   mp_limb_t *up, *vp, *tmpp, *tmpup, *tmpvp, *ap, *bp;
   mpfr_t u, v, tmp, tmpu, tmpv, a, b;
   TMP_DECL(marker1);
+  {
   TMP_DECL(marker2);
 
   /* If a or b is NaN, the result is NaN */
@@ -206,7 +207,7 @@ mpfr_agm (r, op2, op1, rnd_mode)
   /* Setting of the result */
 
     mpfr_set(r,v,rnd_mode);
-
+  }
 
   /* Let's clean */
     TMP_FREE(marker1); 

@@ -47,7 +47,9 @@ mpfr_sqrt (r, u, rnd_mode)
   int exact = 0, t;
   unsigned long cc = 0; 
   char can_round = 0; 
-  TMP_DECL (marker); TMP_DECL(marker0); 
+  TMP_DECL(marker0);
+  {
+  TMP_DECL (marker);
 
   if (MPFR_IS_NAN(u)) {
     MPFR_SET_NAN(r);
@@ -256,6 +258,7 @@ mpfr_sqrt (r, u, rnd_mode)
 				   (MPFR_PREC(r) & (BITS_PER_MP_LIMB - 1)))) - 1) ; 
   
   TMP_FREE (marker);
+  }
   TMP_FREE(marker0);
   return exact;
 }
