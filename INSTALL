@@ -1,56 +1,72 @@
-			Installing MPFR 2001
-			====================
+			Installing mpfr-2.0.1
+			=====================
 
 0. You first need to install GMP. See <http://www.swox.com/gmp/>.
-   MPFR version 2001 requires GMP version 3.1.1 or latter.
+   mpfr-2.0.1 requires GMP version 4.0.1 or later.
 
    After you have successfully built GMP, and installed it using
    "make install", you'll need to manually install some GMP header 
-   files needed by MPFR. In the GMP source directory, type:
+   files needed by MPFR. In the GMP build directory, type:
 
    cp config.h gmp-impl.h gmp-mparam.h longlong.h DIR/include
 
-   where DIR is the directory where you have installed GMP. (The file
+   where DIR is the directory where you have installed GMP, i.e. you
+   configured GMP with ./configure --prefix=DIR. (The file
    stack-alloc.h is needed when gmp is configured with --disable-alloca.)
 
-1. type "./configure --help", to see the options you have to choose
-   For most users, "./configure --with-gmp=DIR" will suffice, where
-   DIR is the directory where you have installed GMP.
+1. Type "./configure --with-gmp=DIR" where DIR is the directory where you 
+   have installed GMP. If this fails, please check that the C compiler and
+   its options are the same than those for the gmp build. You can see the
+   later with the following:
 
-2. type "make" (produces libmpfr.a and tests files)
+   grep CC DIR/Makefile ; grep CFLAGS DIR/Makefile
+
+   and then type (for example under sh):
+
+   $ CC=<C compiler> CFLAGS=<compiler options> ./configure --with-gmp=DIR
+
+   Other options can be seen with "./configure --help". For example if you
+   want to install mpfr in /local instead of /usr/local, type:
+
+   ./configure --prefix=/local
+
+2. Type "make" (produces libmpfr.a and tests files). On same architectures
+   you should provide further options to match those used by gmp, for example
+   on powerpc-aix:
+
+   $ make AR="ar -X64"
 
 3. type "make dvi" to produce the documentation (DVI file mpfr.dvi)
 
 4. type "make check" (produces and runs the test files)
 
-5. type "make install" (installs the library)
+5. type "make install" (installs the library in /usr/local or in the
+	directory given in the --prefix option of configure)
 
 Notes:
 
-- we tested the installation with GMP 3.1 on the following architectures:
+- we tested the installation with GMP 4.0.1 on the following configurations:
 
-Pentium II and III/Linux 2.2.10 or Windows
-Athlon/Linux 2.4.0-test5
-PowerPC/Linux 2.2.14
-Alpha 21264 and 21164/OSF1 V4.0
-SGI R12000/IRIX 6.5
-Sun UltraSparc/Solaris 2.6
+<a` comple'ter>
 
 ./configure options
 ===================
 
---with-gmp-include=DIR  assumes that DIR contains mpfr-impl.h, longlong.h...
+--prefix=DIR            installs mpfr headers and library in DIR/include and
+				DIR/lib respectively
+--with-gmp-include=DIR  assumes that DIR contains gmp-impl.h, longlong.h...
 --with-gmp-lib=DIR      assumes that DIR contains libgmp.a
 --with-gmp=DIR          same as --with-gmp-lib=DIR/lib --with-gmp-include=DIR/include
 
 Known problems.
 ===============
 
-See file BUGS for known bugs in MPFR.
+See file BUGS for known bugs in MPFR. Some patches may be available on the
+mpfr web page <http://www.mpfr.org/>.
 
 Linux on Alpha is known to have problems with IEEE conformance. See
 <http://www.linux.org.uk/VERSION/relnotes.2211.html>. Also with OSF and
-gcc 2.8.1, we had problems with the square root functions with -DTEST:
+gcc 2.8.1, we had problems with the square root functions:
 
    Testing tsqrt
    libm.a differs from mpfr_sqrt for a=1.72800271916104480000e+210, rnd_mode=GMP_RNDZ
@@ -69,5 +85,5 @@ In case of problem.
 ===================
 
 Please contact us at mpfr@loria.fr, indicating the machine and operating
-system used (uname -a), the compiler used (gcc -v) and a description of
-the problem encountered.
+system used (uname -a), the compiler and version used (gcc -v), the version
+of gmp and mpfr used, and a description of the problem encountered.
