@@ -25,8 +25,7 @@ MA 02111-1307, USA. */
 #include "gmp-impl.h"
 #include "mpfr.h"
 
-/*#define DEBUG    */
-/*#define TIMING   */
+/* #define DEBUG */
 
 int
 #if __STDC__
@@ -157,12 +156,6 @@ mp_rnd_t rnd_mode;
   int ttt;
   int twopoweri;
   int Prec;
-#ifdef TIMING
-  int st;
-#endif
-#ifdef TIMING
-  int dummy;
-#endif
   int loop;
   int prec_x;
   int shift_x = 0;
@@ -170,8 +163,10 @@ mp_rnd_t rnd_mode;
   int realprec = 0;
   int iter;
   int logn;
+
   /* commencons par 0 */
   if (MPFR_IS_NAN(x)) { MPFR_SET_NAN(y); return 1; }
+
   if (MPFR_IS_INF(x)) 
     { 
       if (MPFR_SIGN(x) > 0) 
@@ -180,16 +175,19 @@ mp_rnd_t rnd_mode;
 	{ MPFR_SET_ZERO(y);  if (MPFR_SIGN(y) == -1) { MPFR_CHANGE_SIGN(y); } }
       /* TODO: conflits entre infinis et zeros ? */
     }
-  if (!MPFR_NOTZERO(x)) { 
+
+  if (!MPFR_NOTZERO(x)) {
     mpfr_set_ui(y, 1, GMP_RNDN); 
     return 0;
- }
+  }
+
   /* Decomposer x */
   /* on commence par ecrire x = 1.xxxxxxxxxxxxx
      ----- k bits -- */
   prec_x = (int) ceil(log
 		      ((double) (MPFR_PREC(x)) / (double) BITS_PER_MP_LIMB)
-		      /LOG2);  
+		      /LOG2);
+  if (prec_x < 0) prec_x = 0;
   logn =  (int) ceil(log
 		      ((double) prec_x+MPFR_PREC(y))
 		      /LOG2);  
@@ -224,30 +222,18 @@ mp_rnd_t rnd_mode;
 	fprintf(stderr, "---\n");
 	fprintf(stderr, "---%d\n", twopoweri - ttt);
 #endif 
-#ifdef TIMING
-	st = cputime();
-#endif
 	if (i)
-#ifdef TIMING      
-	  for (dummy = 0; dummy < 30; dummy++)
-#endif
 	    mpfr_exp_rational (t, uk, twopoweri - ttt, k  - i + 1);
 	else
 	  {
 	    /* cas particulier : on est oblige de faire les calculs avec x/2^. 
 	       puis elever au carre (plus rapide) */    
-#ifdef TIMING
-	    for (dummy = 0; dummy < 30; dummy++)
-#endif
 	      mpfr_exp_rational (t, uk, shift + twopoweri - ttt, k+1);
 	    for (loop= 0 ; loop < shift; loop++)
 	      mpfr_mul(t,t,t,GMP_RNDD);
 
 	  }
 	mpfr_mul(tmp,tmp,t,GMP_RNDD); 
-#ifdef TIMING
-	fprintf(stderr, "temps : %d ms \n", cputime() - st);
-#endif
 #ifdef DEBUG
 	fprintf(stderr, "fin\n");
 	mpfr_out_str(stderr, 2, MPFR_PREC(y), t, GMP_RNDD);
