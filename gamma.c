@@ -19,14 +19,15 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+#ifdef DEBUG
 #include <stdio.h>
 #include <stdlib.h>
+#endif
+
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
-
-int mpfr_gamma _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 
 /* We use the reflection formula 
   Gamma(1+t) Gamma(1-t) = - Pi t / sin(Pi (1 + t))
@@ -62,29 +63,39 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
   if (MPFR_IS_NAN(x))
     {
       MPFR_SET_NAN(gamma);
-      return 1;
-    }
-
-  if (!MPFR_NOTZERO(x))
-    {
-      MPFR_SET_INF(gamma);
-      return 1;
+      MPFR_RET_NAN;
     }
 
   if (MPFR_IS_INF(x))
     {
+      if (MPFR_SIGN(x) < 0)
+        {
+          MPFR_SET_NAN(gamma);
+          MPFR_RET_NAN;
+        }
+      else
+        {
+          MPFR_CLEAR_NAN(gamma);
+          MPFR_SET_INF(gamma);
+          MPFR_SET_POS(gamma);
+          return 0;  /* exact */
+        }
+    }
+
+  if (MPFR_IS_ZERO(x))
+    {
+      MPFR_CLEAR_NAN(gamma);
       MPFR_SET_INF(gamma);
-      return 1;
+      MPFR_SET_SAME_SIGN(gamma, x);
+      return 0;  /* exact */
     }
 
   /* Set x_p=x if x> 1 else set x_p=2-x */
   prec_gamma = MPFR_PREC (gamma);
   compared = mpfr_cmp_ui (x, 1);
   if (compared == 0)
-    {
-      mpfr_set_ui (gamma, 1, rnd_mode);
-      return 1;
-    }
+    return mpfr_set_ui (gamma, 1, rnd_mode);
+
   realprec = prec_gamma + 10;
 
   mpfr_init2 (xp, 2);
@@ -213,4 +224,3 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   return 1; /* inexact result */
 }
-
