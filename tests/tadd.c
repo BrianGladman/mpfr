@@ -542,35 +542,35 @@ check_nans (void)
   mpfr_set_inf (x, 1);
   mpfr_set_inf (y, -1);
   mpfr_add (s, x, y, GMP_RNDN);
-  ASSERT_ALWAYS (mpfr_nan_p (s));
+  MPFR_ASSERTN (mpfr_nan_p (s));
 
   /* +inf + 1 == +inf */
   mpfr_set_inf (x, 1);
   mpfr_set_ui (y, 1L, GMP_RNDN);
   mpfr_add (s, x, y, GMP_RNDN);
-  ASSERT_ALWAYS (mpfr_inf_p (s));
-  ASSERT_ALWAYS (mpfr_sgn (s) > 0);
+  MPFR_ASSERTN (mpfr_inf_p (s));
+  MPFR_ASSERTN (mpfr_sgn (s) > 0);
 
   /* -inf + 1 == -inf */
   mpfr_set_inf (x, -1);
   mpfr_set_ui (y, 1L, GMP_RNDN);
   mpfr_add (s, x, y, GMP_RNDN);
-  ASSERT_ALWAYS (mpfr_inf_p (s));
-  ASSERT_ALWAYS (mpfr_sgn (s) < 0);
+  MPFR_ASSERTN (mpfr_inf_p (s));
+  MPFR_ASSERTN (mpfr_sgn (s) < 0);
 
   /* 1 + +inf == +inf */
   mpfr_set_ui (x, 1L, GMP_RNDN);
   mpfr_set_inf (y, 1);
   mpfr_add (s, x, y, GMP_RNDN);
-  ASSERT_ALWAYS (mpfr_inf_p (s));
-  ASSERT_ALWAYS (mpfr_sgn (s) > 0);
+  MPFR_ASSERTN (mpfr_inf_p (s));
+  MPFR_ASSERTN (mpfr_sgn (s) > 0);
 
   /* 1 + -inf == -inf */
   mpfr_set_ui (x, 1L, GMP_RNDN);
   mpfr_set_inf (y, -1);
   mpfr_add (s, x, y, GMP_RNDN);
-  ASSERT_ALWAYS (mpfr_inf_p (s));
-  ASSERT_ALWAYS (mpfr_sgn (s) < 0);
+  MPFR_ASSERTN (mpfr_inf_p (s));
+  MPFR_ASSERTN (mpfr_sgn (s) < 0);
 
   mpfr_clear (x);
   mpfr_clear (y);

@@ -112,27 +112,27 @@ check_nan (void)
   MPFR_CLEAR_FLAGS (d);
   MPFR_SET_INF (d);
   MPFR_SET_POS (d);
-  ASSERT_ALWAYS (mpfr_ui_div (q, 1L, d, GMP_RNDZ) == 0); /* exact */
-  ASSERT_ALWAYS (mpfr_number_p (q));
-  ASSERT_ALWAYS (mpfr_sgn (q) == 0);
+  MPFR_ASSERTN (mpfr_ui_div (q, 1L, d, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (mpfr_number_p (q));
+  MPFR_ASSERTN (mpfr_sgn (q) == 0);
 
   /* 1/-inf == -0 */
   MPFR_CLEAR_FLAGS (d);
   MPFR_SET_INF (d);
   MPFR_SET_NEG (d);
-  ASSERT_ALWAYS (mpfr_ui_div (q, 1L, d, GMP_RNDZ) == 0); /* exact */
-  ASSERT_ALWAYS (mpfr_number_p (q));
-  ASSERT_ALWAYS (mpfr_sgn (q) == 0);
+  MPFR_ASSERTN (mpfr_ui_div (q, 1L, d, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (mpfr_number_p (q));
+  MPFR_ASSERTN (mpfr_sgn (q) == 0);
 
   /* 1/nan == nan */
   MPFR_SET_NAN (d);
-  ASSERT_ALWAYS (mpfr_ui_div (q, 1L, d, GMP_RNDZ) == 0); /* exact */
-  ASSERT_ALWAYS (mpfr_nan_p (q));
+  MPFR_ASSERTN (mpfr_ui_div (q, 1L, d, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (mpfr_nan_p (q));
 
   /* 0/0 == nan */
   mpfr_set_ui (d, 0L, GMP_RNDN);
-  ASSERT_ALWAYS (mpfr_ui_div (q, 0L, d, GMP_RNDZ) == 0); /* exact */
-  ASSERT_ALWAYS (mpfr_nan_p (q));
+  MPFR_ASSERTN (mpfr_ui_div (q, 0L, d, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (mpfr_nan_p (q));
 
   mpfr_clear (d);
   mpfr_clear (q);

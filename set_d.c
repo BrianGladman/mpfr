@@ -1,7 +1,7 @@
 /* mpfr_set_d -- convert a machine double precision float to
                  a multiple precision floating-point number
 
-Copyright 1999, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright 1999, 2000, 2001, 2002, 2003, 2004  Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -155,19 +155,38 @@ mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
   mp_size_t i, k;
   mpfr_t tmp;
   mp_limb_t tmpmant[MPFR_LIMBS_PER_DOUBLE];
-
+ 
   MPFR_CLEAR_FLAGS(r);
 
   if (d == 0)
     {
+#if _GMP_IEEE_FLOATS
       union ieee_double_extract x;
 
       MPFR_SET_ZERO(r);
       /* set correct sign */
       x.d = d;
-      if (((x.s.sig == 1) && (MPFR_SIGN(r) > 0))
-	  || ((x.s.sig == 0) && (MPFR_SIGN(r) < 0)))
-	MPFR_CHANGE_SIGN(r);
+      if (x.s.sig == 1)
+	MPFR_SET_NEG(r);
+      else
+	MPFR_SET_POS(r);
+#else /* _GMP_IEEE_FLOATS */
+      MPFR_SET_ZERO(r);
+      {
+	/* This is to get the sign of zero on non-IEEE hardware
+	   Some systems support +0.0, -0.0 and unsigned zero.
+	   We can't use d==+0.0 since it should be always true,
+	   so we check that the memory representation of d is the 
+	   same than +0.0. etc */
+	double poszero = +0.0, negzero = -0.0;
+	if (memcmp(&d, &poszero, sizeof(double)) == 0)
+	  MPFR_SET_POS(r);
+	else if (memcmp(&d, &negzero, sizeof(double)) == 0)
+	  MPFR_SET_NEG(r);
+	else
+	  MPFR_SET_POS(r);
+      }
+#endif
       return 0; /* 0 is exact */
     }
   else if (DOUBLE_ISNAN(d))

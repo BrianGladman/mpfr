@@ -1,7 +1,7 @@
 /* mpfr_set_ld -- convert a machine long double to
                   a multiple precision floating-point number
 
-Copyright 2002, 2003 Free Software Foundation, Inc.
+Copyright 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -21,10 +21,6 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
 #include <float.h>
-
-#include "gmp.h"
-#include "gmp-impl.h"
-#include "mpfr.h"
 #include "mpfr-impl.h"
 
 /* Various i386 systems have been seen with float.h LDBL constants equal to
@@ -72,7 +68,7 @@ mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
   mpfr_init2 (t, MPFR_LDBL_MANT_DIG);
   mpfr_init2 (u, IEEE_DBL_MANT_DIG);
   mpfr_set_ui (t, 0, GMP_RNDN);
-  while (d != 0.0)
+  while (d != (long double) 0.0)
     {
       if ((d > (long double) DBL_MAX) || ((-d) > (long double) DBL_MAX))
         {
@@ -119,9 +115,9 @@ mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
         {
           /* since -DBL_MAX <= d <= DBL_MAX, the cast to double should not
              overflow here */
-          mpfr_set_d (u, (double) d, GMP_RNDN);
-	  /* warning: using MPFR_IS_ZERO will cause a READ_UNINIT_MEM if u=Inf */
-	  if (mpfr_cmp_ui (u, 0) == 0 && (d != (long double) 0.0)) /* underflow */
+	  inexact = mpfr_set_d (u, (double) d, GMP_RNDN);
+	  MPFR_ASSERTD(inexact == 0);
+	  if (MPFR_IS_ZERO (u) && (d != (long double) 0.0)) /* underflow */
 	    {
 	      long double div10, div11, div12, div13;
 	      div10 = (long double) (double) 5.5626846462680034577255e-309; /* 2^(-2^10) */

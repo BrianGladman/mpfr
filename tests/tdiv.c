@@ -471,38 +471,38 @@ check_nan (void)
   /* 1/nan == nan */
   mpfr_set_ui (a, 1L, GMP_RNDN);
   MPFR_SET_NAN (d);
-  ASSERT_ALWAYS (mpfr_div (q, a, d, GMP_RNDZ) == 0); /* exact */
-  ASSERT_ALWAYS (mpfr_nan_p (q));
+  MPFR_ASSERTN (mpfr_div (q, a, d, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (mpfr_nan_p (q));
 
   /* nan/1 == nan */
   MPFR_SET_NAN (a);
   mpfr_set_ui (d, 1L, GMP_RNDN);
-  ASSERT_ALWAYS (mpfr_div (q, a, d, GMP_RNDZ) == 0); /* exact */
-  ASSERT_ALWAYS (mpfr_nan_p (q));
+  MPFR_ASSERTN (mpfr_div (q, a, d, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (mpfr_nan_p (q));
 
   /* +inf/1 == +inf */
   MPFR_CLEAR_FLAGS (a);
   MPFR_SET_INF (a);
   MPFR_SET_POS (a);
   mpfr_set_ui (d, 1L, GMP_RNDN);
-  ASSERT_ALWAYS (mpfr_div (q, a, d, GMP_RNDZ) == 0); /* exact */
-  ASSERT_ALWAYS (mpfr_inf_p (q));
-  ASSERT_ALWAYS (mpfr_sgn (q) > 0);
+  MPFR_ASSERTN (mpfr_div (q, a, d, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (mpfr_inf_p (q));
+  MPFR_ASSERTN (mpfr_sgn (q) > 0);
 
   /* 1/+inf == 0 */
   mpfr_set_ui (a, 1L, GMP_RNDN);
   MPFR_CLEAR_FLAGS (d);
   MPFR_SET_INF (d);
   MPFR_SET_POS (d);
-  ASSERT_ALWAYS (mpfr_div (q, a, d, GMP_RNDZ) == 0); /* exact */
-  ASSERT_ALWAYS (mpfr_number_p (q));
-  ASSERT_ALWAYS (mpfr_sgn (q) == 0);
+  MPFR_ASSERTN (mpfr_div (q, a, d, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (mpfr_number_p (q));
+  MPFR_ASSERTN (mpfr_sgn (q) == 0);
 
   /* 0/0 == nan */
   mpfr_set_ui (a, 0L, GMP_RNDN);
   mpfr_set_ui (d, 0L, GMP_RNDN);
-  ASSERT_ALWAYS (mpfr_div (q, a, d, GMP_RNDZ) == 0); /* exact */
-  ASSERT_ALWAYS (mpfr_nan_p (q));
+  MPFR_ASSERTN (mpfr_div (q, a, d, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (mpfr_nan_p (q));
 
   /* +inf/+inf == nan */
   MPFR_CLEAR_FLAGS (a);
@@ -511,8 +511,8 @@ check_nan (void)
   MPFR_CLEAR_FLAGS (d);
   MPFR_SET_INF (d);
   MPFR_SET_POS (d);
-  ASSERT_ALWAYS (mpfr_div (q, a, d, GMP_RNDZ) == 0); /* exact */
-  ASSERT_ALWAYS (mpfr_nan_p (q));
+  MPFR_ASSERTN (mpfr_div (q, a, d, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (mpfr_nan_p (q));
 
   mpfr_clear (a);
   mpfr_clear (d);

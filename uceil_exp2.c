@@ -19,9 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include "gmp.h"
-#include "gmp-impl.h"
-#include "mpfr.h"
 #include "mpfr-impl.h"
 
 /* returns y >= 2^d, assuming that d <= 1024 */
@@ -29,7 +26,11 @@ double
 __gmpfr_ceil_exp2 (double d)
 {
   long exp;
+#if _GMP_IEEE_FLOATS
   union ieee_double_extract x;
+#else
+  struct {double d;} x;
+#endif
 
   MPFR_ASSERTN(d <= 1024.0);
   exp = (long) d;

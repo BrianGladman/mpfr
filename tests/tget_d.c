@@ -96,6 +96,48 @@ check_inf_nan ()
 #endif
 }
 
+static void
+check_max(void)
+{
+  double d, e;
+  mpfr_t u;
+
+  d = 1.0; while (d < (DBL_MAX / 2.0)) d += d;
+  mpfr_init(u);
+  if (mpfr_set_d(u, d, GMP_RNDN) == 0)
+    {
+      /* If setting is exact */
+      e = mpfr_get_d1(u);
+      if (e != d)
+	{
+	  printf("get_d(set_d)(1): %1.20e != %1.20e\n", d, e);
+	  exit(1);
+	}
+    }
+  mpfr_clear(u);
+}
+
+static void
+check_min(void)
+{
+  double d, e;
+  mpfr_t u;
+
+  d = 1.0; while (d > (DBL_MIN * 2.0)) d /= 2.0;
+  mpfr_init(u);
+  if (mpfr_set_d(u, d, GMP_RNDN) == 0)
+    {
+      /* If setting is exact */
+      e = mpfr_get_d1(u);
+      if (e != d)
+        {
+          printf("get_d(set_d)(2): %1.20e != %1.20e\n", d, e);
+          exit(1);
+        }
+    }
+  mpfr_clear(u);
+}
+
 int
 main (void)
 {
@@ -106,6 +148,8 @@ main (void)
     exit (1);
 
   check_inf_nan ();
+  check_min();
+  check_max();
 
   tests_end_mpfr ();
   return 0;

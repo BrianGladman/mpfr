@@ -185,20 +185,34 @@ typedef unsigned long int  mpfr_uexp_t;
 
 /* macros for doubles, based on gmp union ieee_double_extract */
 
+/* Debug non IEEE floats */
+#ifdef XDEBUG
+# undef _GMP_IEEE_FLOATS
+#endif
+#ifndef _GMP_IEEE_FLOATS
+# define _GMP_IEEE_FLOATS 0
+#endif
+
 #ifndef IEEE_DBL_MANT_DIG
 #define IEEE_DBL_MANT_DIG 53
 #endif
 
+/* for x of type ieee_double_extract */
+#if _GMP_IEEE_FLOATS
 typedef union ieee_double_extract Ieee_double_extract;
 
-/* for x of type ieee_double_extract */
-#define DOUBLE_ISNANorINF(x) (((Ieee_double_extract *)&(x))->s.exp == 0x7ff)
-#define DOUBLE_ISINF(x) (DOUBLE_ISNANorINF(x) && \
+# define DOUBLE_ISNANorINF(x) (((Ieee_double_extract *)&(x))->s.exp == 0x7ff)
+# define DOUBLE_ISINF(x) (DOUBLE_ISNANorINF(x) && \
 			 (((Ieee_double_extract *)&(x))->s.manl == 0) && \
                          (((Ieee_double_extract *)&(x))->s.manh == 0))
-#define DOUBLE_ISNAN(x) (DOUBLE_ISNANorINF(x) && \
+# define DOUBLE_ISNAN(x) (DOUBLE_ISNANorINF(x) && \
 			 ((((Ieee_double_extract *)&(x))->s.manl != 0) || \
                          (((Ieee_double_extract *)&(x))->s.manh != 0)))
+#else
+# include <math.h>   /* For isnan and isinf */
+# define DOUBLE_ISINF(x) (isinf(x))
+# define DOUBLE_ISNAN(x) (isnan(x))
+#endif
 
 #define DBL_POS_INF (1.0/0.0)
 #define DBL_NEG_INF (-1.0/0.0)
@@ -272,14 +286,6 @@ long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CO
 # else
 #  define LONGDOUBLE_VOLATILE(x)  (x)
 # endif
-#endif
-
-/* Debug non IEEE floats */
-#ifdef XDEBUG
-# undef _GMP_IEEE_FLOATS
-#endif
-#ifndef _GMP_IEEE_FLOATS
-# define _GMP_IEEE_FLOATS 0
 #endif
 
 /* We want to test this :

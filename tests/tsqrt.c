@@ -279,34 +279,34 @@ check_nan (void)
   /* sqrt(NaN) == NaN */
   MPFR_CLEAR_FLAGS (x);
   MPFR_SET_NAN (x);
-  ASSERT_ALWAYS (mpfr_sqrt (got, x, GMP_RNDZ) == 0); /* exact */
-  ASSERT_ALWAYS (mpfr_nan_p (got));
+  MPFR_ASSERTN (mpfr_sqrt (got, x, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (mpfr_nan_p (got));
 
   /* sqrt(-1) == NaN */
   mpfr_set_si (x, -1L, GMP_RNDZ);
-  ASSERT_ALWAYS (mpfr_sqrt (got, x, GMP_RNDZ) == 0); /* exact */
-  ASSERT_ALWAYS (mpfr_nan_p (got));
+  MPFR_ASSERTN (mpfr_sqrt (got, x, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (mpfr_nan_p (got));
 
   /* sqrt(+inf) == +inf */
   MPFR_CLEAR_FLAGS (x);
   MPFR_SET_INF (x);
   MPFR_SET_POS (x);
-  ASSERT_ALWAYS (mpfr_sqrt (got, x, GMP_RNDZ) == 0); /* exact */
-  ASSERT_ALWAYS (mpfr_inf_p (got));
+  MPFR_ASSERTN (mpfr_sqrt (got, x, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (mpfr_inf_p (got));
 
   /* sqrt(-inf) == NaN */
   MPFR_CLEAR_FLAGS (x);
   MPFR_SET_INF (x);
   MPFR_SET_NEG (x);
-  ASSERT_ALWAYS (mpfr_sqrt (got, x, GMP_RNDZ) == 0); /* exact */
-  ASSERT_ALWAYS (mpfr_nan_p (got));
+  MPFR_ASSERTN (mpfr_sqrt (got, x, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (mpfr_nan_p (got));
 
   /* sqrt(-0) == 0 */
   mpfr_set_si (x, 0L, GMP_RNDZ);
   MPFR_SET_NEG (x);
-  ASSERT_ALWAYS (mpfr_sqrt (got, x, GMP_RNDZ) == 0); /* exact */
-  ASSERT_ALWAYS (mpfr_number_p (got));
-  ASSERT_ALWAYS (mpfr_cmp_ui (got, 0L) == 0);
+  MPFR_ASSERTN (mpfr_sqrt (got, x, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (mpfr_number_p (got));
+  MPFR_ASSERTN (mpfr_cmp_ui (got, 0L) == 0);
 
   mpfr_clear (x);
   mpfr_clear (got);

@@ -125,20 +125,20 @@ check_nans (void)
   /* sin(NaN)==NaN, cos(NaN)==NaN */
   mpfr_set_nan (x);
   mpfr_sin_cos (s, c, x, GMP_RNDN);
-  ASSERT_ALWAYS (mpfr_nan_p (s));
-  ASSERT_ALWAYS (mpfr_nan_p (c));
+  MPFR_ASSERTN (mpfr_nan_p (s));
+  MPFR_ASSERTN (mpfr_nan_p (c));
 
   /* sin(+Inf)==NaN, cos(+Inf)==NaN */
   mpfr_set_inf (x, 1);
   mpfr_sin_cos (s, c, x, GMP_RNDN);
-  ASSERT_ALWAYS (mpfr_nan_p (s));
-  ASSERT_ALWAYS (mpfr_nan_p (c));
+  MPFR_ASSERTN (mpfr_nan_p (s));
+  MPFR_ASSERTN (mpfr_nan_p (c));
 
   /* sin(-Inf)==NaN, cos(-Inf)==NaN */
   mpfr_set_inf (x, -1);
   mpfr_sin_cos (s, c, x, GMP_RNDN);
-  ASSERT_ALWAYS (mpfr_nan_p (s));
-  ASSERT_ALWAYS (mpfr_nan_p (c));
+  MPFR_ASSERTN (mpfr_nan_p (s));
+  MPFR_ASSERTN (mpfr_nan_p (c));
 
   mpfr_clear (x);
   mpfr_clear (s);

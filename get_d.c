@@ -1,7 +1,7 @@
 /* mpfr_get_d -- convert a multiple precision floating-point number
                  to a machine double precision float
 
-Copyright 1999, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -119,6 +119,14 @@ mpfr_scale2 (double d, int exp)
   {
     double factor;
 
+    /* An overflow may occurs (example: 0.5*2^1024) */
+    if (d < 1.0)
+      {
+	d += d;
+	exp--;
+      }
+    /* Now 1.0 <= d < 2.0 */
+
     if (exp < 0)
       {
         factor = 0.5;
@@ -153,7 +161,7 @@ mpfr_get_d3 (mpfr_srcptr src, mp_exp_t e, mp_rnd_t rnd_mode)
   if (MPFR_IS_NAN(src))
     return MPFR_DBL_NAN;
 
-  negative = MPFR_SIGN(src) < 0;
+  negative = MPFR_IS_NEG (src);
 
   if (MPFR_IS_INF(src))
     return negative ? MPFR_DBL_INFM : MPFR_DBL_INFP;

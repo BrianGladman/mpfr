@@ -359,33 +359,33 @@ check_nans (void)
   mpfr_set_nan (x);
   mpfr_set_ui (y, 0L, GMP_RNDN);
   mpfr_mul (p, x, y, GMP_RNDN);
-  ASSERT_ALWAYS (mpfr_nan_p (p));
+  MPFR_ASSERTN (mpfr_nan_p (p));
 
   /* 1 * nan == nan */
   mpfr_set_ui (x, 1L, GMP_RNDN);
   mpfr_set_nan (y);
   mpfr_mul (p, x, y, GMP_RNDN);
-  ASSERT_ALWAYS (mpfr_nan_p (p));
+  MPFR_ASSERTN (mpfr_nan_p (p));
 
   /* 0 * +inf == nan */
   mpfr_set_ui (x, 0L, GMP_RNDN);
   mpfr_set_nan (y);
   mpfr_mul (p, x, y, GMP_RNDN);
-  ASSERT_ALWAYS (mpfr_nan_p (p));
+  MPFR_ASSERTN (mpfr_nan_p (p));
 
   /* +1 * +inf == +inf */
   mpfr_set_ui (x, 1L, GMP_RNDN);
   mpfr_set_inf (y, 1);
   mpfr_mul (p, x, y, GMP_RNDN);
-  ASSERT_ALWAYS (mpfr_inf_p (p));
-  ASSERT_ALWAYS (mpfr_sgn (p) > 0);
+  MPFR_ASSERTN (mpfr_inf_p (p));
+  MPFR_ASSERTN (mpfr_sgn (p) > 0);
 
   /* -1 * +inf == -inf */
   mpfr_set_si (x, -1L, GMP_RNDN);
   mpfr_set_inf (y, 1);
   mpfr_mul (p, x, y, GMP_RNDN);
-  ASSERT_ALWAYS (mpfr_inf_p (p));
-  ASSERT_ALWAYS (mpfr_sgn (p) < 0);
+  MPFR_ASSERTN (mpfr_inf_p (p));
+  MPFR_ASSERTN (mpfr_sgn (p) < 0);
 
   mpfr_clear (x);
   mpfr_clear (y);

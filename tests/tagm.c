@@ -95,27 +95,27 @@ check_nans (void)
   mpfr_set_ui (x, 1L, GMP_RNDN);
   mpfr_set_nan (y);
   mpfr_agm (m, x, y, GMP_RNDN);
-  ASSERT_ALWAYS (mpfr_nan_p (m));
+  MPFR_ASSERTN (mpfr_nan_p (m));
 
   /* agm(1,+inf) == +inf */
   mpfr_set_ui (x, 1L, GMP_RNDN);
   mpfr_set_inf (y, 1);
   mpfr_agm (m, x, y, GMP_RNDN);
-  ASSERT_ALWAYS (mpfr_inf_p (m));
-  ASSERT_ALWAYS (mpfr_sgn (m) > 0);
+  MPFR_ASSERTN (mpfr_inf_p (m));
+  MPFR_ASSERTN (mpfr_sgn (m) > 0);
 
   /* agm(+inf,+inf) == +inf */
   mpfr_set_inf (x, 1);
   mpfr_set_inf (y, 1);
   mpfr_agm (m, x, y, GMP_RNDN);
-  ASSERT_ALWAYS (mpfr_inf_p (m));
-  ASSERT_ALWAYS (mpfr_sgn (m) > 0);
+  MPFR_ASSERTN (mpfr_inf_p (m));
+  MPFR_ASSERTN (mpfr_sgn (m) > 0);
 
   /* agm(-inf,+inf) == nan */
   mpfr_set_inf (x, -1);
   mpfr_set_inf (y, 1);
   mpfr_agm (m, x, y, GMP_RNDN);
-  ASSERT_ALWAYS (mpfr_nan_p (m));
+  MPFR_ASSERTN (mpfr_nan_p (m));
 
   mpfr_clear (x);
   mpfr_clear (y);

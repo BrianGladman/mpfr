@@ -1,7 +1,7 @@
 /* mpfr_sub1sp -- internal function to perform a "real" substraction
    All the op must have the same precision
 
-Copyright 2003-2004 Free Software Foundation.
+Copyright 2003, 2004 Free Software Foundation.
 Contributed by the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.
@@ -183,6 +183,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	    {
 	      /* First limb is not zero. */
 	      count_leading_zeros(cnt, limb);
+	      /* cnt could be == 0 <= SubD1Lose */
 	      if (MPFR_LIKELY(cnt))
 		{
 		  mpn_lshift(ap, ap, n, cnt); /* Normalize number */
@@ -255,7 +256,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	      c0 = cp[0] & (MPFR_LIMB_ONE<<sh);
 	      cp = (mp_limb_t*) TMP_ALLOC(n * BYTES_PER_MP_LIMB);
 	      mpn_rshift(cp, MPFR_MANT(c), n, 1);
-	      if (c0 == 0)
+	      if (MPFR_LIKELY(c0 == 0))
 		{
 		  /* Result is exact: no need of rounding! */
 		  ap = MPFR_MANT(a);
