@@ -28,14 +28,14 @@ int ulp(a,b) double a,b;
 
 #define check(a,r) check2(a,r,0.0)
 
-
 void check2(double a, unsigned char rnd_mode, double res1)
 {
   mpfr_t ta, tres;
-  double res2 ;
+  double res2;
+  int ck=0; /* ck=1 iff res1 is certified correct */
 
   mpfr_set_machine_rnd_mode(rnd_mode);  
-  if (res1==0.0) res1=log(a);
+  if (res1==0.0) res1=log(a); else ck=1;
 
   mpfr_init2(ta, 53);
   mpfr_init2(tres, 53);
@@ -45,7 +45,10 @@ void check2(double a, unsigned char rnd_mode, double res1)
   res2=mpfr_get_d(tres);
 
   if (res1!=res2 && (!isnan(res1) || !isnan(res2))) {
-    printf("mpfr_log failed for    a=%1.20e, rnd_mode=%d\n",a,rnd_mode);
+    if (ck) 
+      printf("mpfr_log failed for    a=%1.20e, rnd_mode=%d\n",a,rnd_mode);
+    else
+      printf("mpfr_log differs from libm.a for a=%1.20e, rnd_mode=%d\n",a,rnd_mode);
     printf(" double calculus gives %1.20e\n mpfr_log        gives %1.20e (%d ulp)\n pari            gives \n \n",res1,res2,ulp(res1,res2));
   }
   /*else {
@@ -111,13 +114,9 @@ check_worst_cases()
   check2(1.72634853551388700588, GMP_RNDN, 5.46008504786553716670e-01);
   check2(1.72634853551388700588, GMP_RNDU, 5.46008504786553716670e-01);
 
-#ifdef DEBUG
   check2(2.00028876593004323325, GMP_RNDD, 6.93291553102749702475e-01);/*segv*/
-#endif
   check2(2.00028876593004323325, GMP_RNDN, 6.93291553102749813497e-01);
-#ifdef DEBUG
   check2(2.00028876593004323325, GMP_RNDU, 6.93291553102749813497e-01);/*segv*/
-#endif
 
   check2(6.27593230200363105808, GMP_RNDD, 1.83672204800630312072);
   check2(6.27593230200363105808, GMP_RNDN, 1.83672204800630334276);
@@ -131,26 +130,16 @@ check_worst_cases()
   check2(9.34589857718275318632, GMP_RNDN, 2.23493759221664989312);
   check2(9.34589857718275318632, GMP_RNDU, 2.23493759221664989312);
 
-#ifdef DEBUG
   check2(10.6856587560831854944, GMP_RNDD, 2.36890253928838445674); /* segv */
-#endif
   check2(10.6856587560831854944, GMP_RNDN, 2.36890253928838445674);
-#ifdef DEBUG
   check2(10.6856587560831854944, GMP_RNDU, 2.36890253928838490083); /* segv */
-#endif
 
-#ifdef DEBUG
   check2(12.4646345033981766903, GMP_RNDD, 2.52289539471636015122); /* segv */
-#endif
   check2(12.4646345033981766903, GMP_RNDN, 2.52289539471636015122);
-#ifdef DEBUG
   check2(12.4646345033981766903, GMP_RNDU, 2.52289539471636059531);
-#endif
 
   check2(17.0953275851761752335, GMP_RNDD, 2.83880518553861849185);
-#ifdef DEBUG
   check2(17.0953275851761752335, GMP_RNDN, 2.83880518553861893594); /* segv */
-#endif
   check2(17.0953275851761752335, GMP_RNDU, 2.83880518553861893594);
 
   check2(19.8509496207496916043, GMP_RNDD, 2.98825184582516722998);
@@ -167,17 +156,20 @@ check_worst_cases()
 }
 
 void main(int argc, char *argv[]) {
-  int i;
+  int i, N=0;
   double d;
 
   if (argc==4) { /* tlog x prec rnd */
     check3(atof(argv[1]), atoi(argv[2]), atoi(argv[3]));
     return;
   }
+  if (argc==2) { /* tlog N: N tests with random double's */
+    N=atoi(argv[1]);
+    printf("Doing %d random tests in double precision\n", N);
+    printf("GMP_RNDN : %i, GMP_RNDZ : %i,GMP_RNDU : %i,GMP_RNDD : %i\n",GMP_RNDN, GMP_RNDZ,GMP_RNDU, GMP_RNDD); 
+  }
+  else {
   check_worst_cases();
-  printf("SUN Solaris: craffe\n 20000 essais\n");
-  printf("GMP_RNDN : %i, GMP_RNDZ : %i,GMP_RNDU : %i,GMP_RNDD : %i\n",GMP_RNDN, GMP_RNDZ,GMP_RNDU, GMP_RNDD); 
-   
   check(10,GMP_RNDU);
   check(6,GMP_RNDU);  
   check(1,GMP_RNDZ);  
@@ -216,13 +208,9 @@ void main(int argc, char *argv[]) {
   check(6.09969788341579732815e+00,GMP_RNDD);
   check(8.94529798779875738679e+82,GMP_RNDD);
   check(1.68775280934272742250e+00,GMP_RNDZ);
-
-
-
-
-
+  }
   srand48(getpid());
-  for(i=0;i<20000;i++) {
+  for(i=0;i<N;i++) {
     d=drand();
     check(d,rand() % 4);
   }
