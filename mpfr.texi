@@ -313,7 +313,9 @@ Please report other problems to @samp{mpfr@@loria.fr}.
 @cindex @file{mpfr.h}
 All declarations needed to use MPFR are collected in the include file
 @file{mpfr.h}.  It is designed to work with both C and C++ compilers.
+You should include that file in any program using the MPFR library:
 
+@code{#include "mpfr.h"}
 
 @section Nomenclature and Types
 
