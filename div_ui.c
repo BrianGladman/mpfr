@@ -33,23 +33,23 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
   int inexact, middle = 1;
   TMP_DECL(marker);
 
-  if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(x) ))
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
-      if (MPFR_IS_NAN(x))
+      if (MPFR_IS_NAN (x))
 	{
-	  MPFR_SET_NAN(y);
+	  MPFR_SET_NAN (y);
 	  MPFR_RET_NAN;
 	}
-      else if (MPFR_IS_INF(x))
+      else if (MPFR_IS_INF (x))
 	{
-	  MPFR_SET_INF(y);
-	  MPFR_SET_SAME_SIGN(y, x);
-	  MPFR_RET(0);
+	  MPFR_SET_INF (y);
+	  MPFR_SET_SAME_SIGN (y, x);
+	  MPFR_RET (0);
 	}
       else
 	{
-          MPFR_ASSERTD(MPFR_IS_ZERO(x));
-	  if (u == 0)/* 0/0 is NaN */
+          MPFR_ASSERTD (MPFR_IS_ZERO(x));
+	  if (u == 0) /* 0/0 is NaN */
 	    {
 	      MPFR_SET_NAN(y);
 	      MPFR_RET_NAN;
@@ -61,42 +61,41 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 	    }
 	}
     }
-
-  if (MPFR_UNLIKELY(u == 0))
+  else if (MPFR_UNLIKELY (u == 0))
     {
-      /* x/0 is Inf */
-      MPFR_SET_INF(y);
-      MPFR_SET_SAME_SIGN(y, x);
-      MPFR_RET(0);
+      /* x/0 is Inf since x != 0*/
+      MPFR_SET_INF (y);
+      MPFR_SET_SAME_SIGN (y, x);
+      MPFR_RET (0);
     }
 
-  MPFR_CLEAR_FLAGS(y);
+  MPFR_CLEAR_FLAGS (y);
 
-  MPFR_SET_SAME_SIGN(y, x);
+  MPFR_SET_SAME_SIGN (y, x);
 
-  TMP_MARK(marker);
-  xn = MPFR_LIMB_SIZE(x);
-  yn = MPFR_LIMB_SIZE(y);
+  TMP_MARK (marker);
+  xn = MPFR_LIMB_SIZE (x);
+  yn = MPFR_LIMB_SIZE (y);
 
-  xp = MPFR_MANT(x);
-  yp = MPFR_MANT(y);
+  xp = MPFR_MANT (x);
+  yp = MPFR_MANT (y);
   exp = MPFR_GET_EXP (x);
 
   dif = yn + 1 - xn;
 
   /* we need to store yn+1 = xn + dif limbs of the quotient */
   /* don't use tmp=yp since the mpn_lshift call below requires yp >= tmp+1 */
-  tmp = (mp_limb_t*) TMP_ALLOC((yn + 1) * BYTES_PER_MP_LIMB);
+  tmp = (mp_limb_t*) TMP_ALLOC ((yn + 1) * BYTES_PER_MP_LIMB);
 
   c = (mp_limb_t) u;
-  MPFR_ASSERTN(u == c);
+  MPFR_ASSERTN (u == c);
   if (dif >= 0)
     c = mpn_divrem_1 (tmp, dif, xp, xn, c); /* used all the dividend */
   else /* dif < 0 i.e. xn > yn, don't use the (-dif) low limbs from x */
     c = mpn_divrem_1 (tmp, 0, xp - dif, yn + 1, c);
 
   inexact = (c != 0);
-  if (rnd_mode == GMP_RNDN)
+  if (MPFR_LIKELY (rnd_mode == GMP_RNDN))
     {
       if (2 * c < (mp_limb_t) u)
 	middle = -1;
@@ -119,8 +118,8 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
   /* now we have yn limbs starting from tmp[1], with tmp[yn]<>0 */
 
   /* shift left to normalize */
-  count_leading_zeros(sh, tmp[yn]);
-  if (sh)
+  count_leading_zeros (sh, tmp[yn]);
+  if (MPFR_LIKELY (sh))
     {
       mpn_lshift (yp, tmp + 1, yn, sh);
       yp[0] += tmp[0] >> (BITS_PER_MP_LIMB - sh);
@@ -129,9 +128,9 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
       exp -= sh;
     }
   else
-    MPN_COPY(yp, tmp + 1, yn);
+    MPN_COPY (yp, tmp + 1, yn);
 
-  sh = yn * BITS_PER_MP_LIMB - MPFR_PREC(y);
+  MPFR_UNSIGNED_MINUS_MODULO (sh, MPFR_PREC (y));
   /* it remains sh bits in less significant limb of y */
 
   d = *yp & MPFR_LIMB_MASK (sh);
