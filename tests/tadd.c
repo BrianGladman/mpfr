@@ -174,14 +174,14 @@ void check64()
       ((mp_limb_t)1<<(mp_bits_per_limb-1)))==0) {
     printf("Error in mpfr_sub: result is not msb-normalized\n"); exit(1);
   }
-  mpfr_init2(x, 65); mpfr_init2(t, 65); mpfr_init2(u, 65);
+  mpfr_set_prec(x, 65); mpfr_set_prec(t, 65); mpfr_set_prec(u, 65);
   mpfr_set_str_raw(x, "0.10011010101000110101010000000011001001001110001011101011111011101E623");
   mpfr_set_str_raw(t, "0.10011010101000110101010000000011001001001110001011101011111011100E623");
   mpfr_sub(u, x, t, GMP_RNDU);
   if (mpfr_get_d(u) != 9.4349060620538533806e167) { /* 2^558 */
     printf("Error (1) in mpfr_sub\n"); exit(1);
   }
-  mpfr_init2(x, 64); mpfr_init2(t, 64); mpfr_init2(u, 64);
+  mpfr_set_prec(x, 64); mpfr_set_prec(t, 64); mpfr_set_prec(u, 64);
   mpfr_set_str_raw(x, "0.1000011110101111011110111111000011101011101111101101101100000100E-220");
   mpfr_set_str_raw(t, "0.1000011110101111011110111111000011101011101111101101010011111101E-220");
   mpfr_add(u, x, t, GMP_RNDU);
