@@ -384,7 +384,6 @@ main (void)
   testfunc = mpfr_neg; test2 ("mpfr_neg", 53, GMP_RNDN);
   testfunc = (void*) mpfr_pow_ui; test2ui ("mpfr_pow_ui", 53, GMP_RNDN);
   testfunc = mpfr_reldiff; test3 ("mpfr_reldiff", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_sin_cos; test3a ("mpfr_sin_cos", 53, GMP_RNDN);
   testfunc = mpfr_sub; test3 ("mpfr_sub", 53, GMP_RNDN);
   testfunc = mpfr_sub_ui; test2ui ("mpfr_sub_ui", 53, GMP_RNDN);
   testfunc = (void*) mpfr_sqrt; test2 ("mpfr_sqrt", 53, GMP_RNDN);
@@ -400,6 +399,8 @@ main (void)
   testfunc = (void*) mpfr_acosh; test2 ("mpfr_acosh", 53, GMP_RNDN);
   testfunc = (void*) mpfr_atanh; test2 ("mpfr_atanh", 53, GMP_RNDN);
   testfunc = (void*) mpfr_exp2; test2 ("mpfr_exp2", 53, GMP_RNDN);
+  testfunc = (void*) mpfr_cos; test2 ("mpfr_cos", 53, GMP_RNDN);
+  testfunc = (void*) mpfr_sin; test2 ("mpfr_sin", 53, GMP_RNDN);
 
   return 0;
 }
