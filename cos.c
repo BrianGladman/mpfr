@@ -44,10 +44,12 @@ mpfr_cos2_aux (mpfr_ptr s, mpfr_srcptr r)
     {
       mpfr_mul (t, t, r, GMP_RNDU);                /* err <= (3l-1) ulp */
       mpfr_div_ui (t, t, (2*l-1)*(2*l), GMP_RNDU); /* err <= 3l ulp */
+      MPFR_ASSERTD (MPFR_IS_POS (t));
+      MPFR_ASSERTD (MPFR_IS_POS (s));
       if (l % 2 == 0)
-	mpfr_add1 (s, s, t, GMP_RNDD);
+	mpfr_add (s, s, t, GMP_RNDD);
       else
-	mpfr_sub1 (s, s, t, GMP_RNDD);
+	mpfr_sub (s, s, t, GMP_RNDD);
       MPFR_ASSERTD (MPFR_GET_EXP (s) == 0);        /* check 1/2 <= s < 1 */
       /* err(s) <= l * 2^(-m) */
       if (MPFR_UNLIKELY(3 * l > (1U << b)))
