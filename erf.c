@@ -27,11 +27,7 @@ MA 02111-1307, USA. */
 
 #define EXP1 2.71828182845904523536 /* exp(1) */
 
-int mpfr_erf_0 _MPFR_PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
-#if 0
-int mpfr_erf_inf _MPFR_PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
-int mpfr_erfc_inf _MPFR_PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
-#endif
+static int mpfr_erf_0 (mpfr_ptr, mpfr_srcptr, mp_rnd_t);
 
 int
 mpfr_erf (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
@@ -100,8 +96,8 @@ mpfr_erf (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 }
 
 /* return x*2^e */
-static
-double mul_2exp (double x, mp_exp_t e)
+static double 
+mul_2exp (double x, mp_exp_t e)
 {
   if (e > 0)
     {
@@ -124,7 +120,7 @@ double mul_2exp (double x, mp_exp_t e)
    Assumes x is neither NaN nor infinite nor zero.
    Assumes also that e*x^2 <= n (target precision).
  */
-int
+static int
 mpfr_erf_0 (mpfr_ptr res, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
   mp_prec_t n, m;
@@ -206,146 +202,3 @@ mpfr_erf_0 (mpfr_ptr res, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   return inex;
 }
-
-#if 0
-/* evaluates erfc(x) using the expansion at x=infinity:
-
-   sqrt(Pi)*x*exp(x^2)*erfc(x) = 1 + sum((-1)^k*(1*3*...*(2k-1))/(2x^2)^k,k>=1)
-
-   Assumes x is neither NaN nor infinite nor zero.
-   Assumes also that e*x^2 > n (target precision).
-   Since n >= 2, we have x >= sqrt(2/e), and since
-   f(x) := sqrt(Pi)*x*exp(x^2)*erfc(x) is increasing, we have
-   f(x) >= f(sqrt(2/e)) ~ 0.7142767512, thus the final partial sum
-   should be > 0.5, and MPFR_EXP(s) should always be >= 0.
- */
-int
-mpfr_erfc_inf (mpfr_ptr res, mpfr_srcptr x, mp_rnd_t rnd)
-{
-  mp_prec_t n, m;
-  mpfr_t y, s, t;
-  unsigned long k;
-  double tauk;
-  long log2tauk;
-  mp_exp_t sigmak, nuk;
-  double xf = mpfr_get_d1 (x);
-
-  n = MPFR_PREC(res); /* target precision */
-
-  mpfr_init2 (y, 2);
-  mpfr_init2 (s, 2);
-  mpfr_init2 (t, 2);
-
-  m = n; /* working precision */
-
-  xf = xf * xf; /* approximation of x^2 */
-
-  do
-    {
-      m += MPFR_INT_CEIL_LOG2 (n);
-
-      /* check that 2 * (EXP(x) - 1) * x^2 > m, which ensures the smallest
-         term is less than 2^(-m) */
-      if (2.0 * (double) (MPFR_EXP(x) - 1) * xf <= (double) m)
-        {
-          mpfr_clear (y);
-          mpfr_clear (s);
-          mpfr_clear (t);
-
-          return mpfr_erf_0 (res, x, rnd);
-        }
-
-      mpfr_set_prec (y, m);
-      mpfr_set_prec (s, m);
-      mpfr_set_prec (t, m);
-
-      mpfr_mul (y, x, x, GMP_RNDD); /* err <= 1 ulp */
-      MPFR_EXP(y) ++;               /* exact */
-      mpfr_set_ui (s, 1, GMP_RNDN); /* exact */
-      mpfr_set_ui (t, 1, GMP_RNDN); /* exact */
-
-      tauk = 0.0;
-      for (k = 1; k <= (unsigned long) xf; k++)
-        {
-          mpfr_mul_ui (t, t, 2 * k - 1, GMP_RNDU);
-          mpfr_div (t, t, y, GMP_RNDU);
-          sigmak = MPFR_EXP(s);
-          if (k % 2)
-            mpfr_sub (s, s, t, GMP_RNDN);
-          else
-            mpfr_add (s, s, t, GMP_RNDN);
-          sigmak -= MPFR_EXP(s);
-          nuk = MPFR_EXP(t) - MPFR_EXP(s);
-
-          if (nuk < - (mp_exp_t) m)
-            break;
-
-          /* tauk <- 1/2 + tauk * 2^sigmak + 2^(2k+2+nuk) */
-          tauk = 0.5 + mul_2exp (tauk, sigmak)
-            + mul_2exp (1.0, 2 * k + 2 + nuk);
-        }
-
-      if (nuk >= - (mp_exp_t) m)
-        abort();
-
-      mpfr_add_one_ulp (y, GMP_RNDU); /* x^2 rounded up */
-      nuk = MPFR_EXP(y);
-      mpfr_exp (t, y, GMP_RNDU);
-      mpfr_mul (t, t, x, GMP_RNDU);
-      mpfr_const_pi (y, GMP_RNDD);
-      mpfr_sqrt (y, y, GMP_RNDD);
-      mpfr_mul (t, t, y, GMP_RNDN);
-      mpfr_div (s, s, t, GMP_RNDN);
-
-      /* final error bound on s */
-      tauk = mul_2exp (3.0, nuk + 5) + 2.0 * tauk + 115.0;
-      log2tauk = __gmpfr_ceil_log2 (tauk);
-    }
-  while (mpfr_can_round (s, m - log2tauk, GMP_RNDN, rnd, n) == 0);
-
-  mpfr_set (res, s, rnd);
-
-  mpfr_clear (y);
-  mpfr_clear (s);
-  mpfr_clear (t);
-
-  return 1;
-}
-
-/* evaluates erf(x) using the expansion at x=infinity for erfc(x) = 1 - erf(x).
-   Assumes x is neither NaN nor infinite nor zero.
-   Assumes also that e*x^2 > n (target precision).
- */
-int
-mpfr_erf_inf (mpfr_ptr res, mpfr_srcptr x, mp_rnd_t rnd)
-{
-  mp_prec_t n, m;
-  mpfr_t tmp;
-  mp_exp_t sh;
-
-  n = MPFR_PREC(res); /* target precision */
-  m = n;
-
-  mpfr_init2 (tmp, 2);
-
-  do
-    {
-      m += MPFR_INT_CEIL_LOG2 (n);
-      mpfr_set_prec (tmp, m);
-      mpfr_erfc_inf (tmp, x, GMP_RNDN);   /* err <= 1/2 ulp */
-      sh = MPFR_EXP(tmp);
-      mpfr_ui_sub (tmp, 1, tmp, GMP_RNDN); /* err <= 1/2 + 1/2*2^sh */
-      sh -= MPFR_EXP(tmp);
-      /* the final error is bounded by 2^max(sh, 0) */
-      if (sh < 0)
-        sh = 0;
-    }
-  while (mpfr_can_round (tmp, m - sh, GMP_RNDN, rnd, n) == 0);
-
-  mpfr_set (res, tmp, rnd);
-
-  mpfr_clear (tmp);
-
-  return 1;
-}
-#endif
