@@ -227,6 +227,7 @@ test_genericq (mp_prec_t p0, mp_prec_t p1, unsigned int N,
                   mpfr_print_binary (tmp);
                   printf ("\napprox  ");
                   mpfr_print_binary (dst_big);
+		  putchar('\n');
                   exit (1);
                 }
               compare2 = mpfr_cmp (tmp, dst_big);
