@@ -1,6 +1,6 @@
 /* Test file for mpfr_set_d and mpfr_get_d.
 
-Copyright (C) 1999, 2001 Free Software Foundation, Inc.
+Copyright (C) 1999-2002 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -38,7 +38,32 @@ main (int argc, char *argv[])
     set_fpc_csr(exp.fc_word);
 #endif
 
-  mpfr_init(x);
+   mpfr_init2 (x, 2);
+
+   /* checks that rounds to nearest sets the last
+     bit to zero in case of equal distance */
+   mpfr_set_d (x, 5.0, GMP_RNDN);
+   if (mpfr_get_d (x) != 4.0)
+     {
+       fprintf (stderr, "Error in tset_d: got %g instead of 4.0\n",
+	       mpfr_get_d (x));
+       exit (1);
+     }
+   mpfr_set_d (x, -5.0, GMP_RNDN);
+   if (mpfr_get_d (x) != -4.0)
+     {
+       fprintf (stderr, "Error in tset_d: got %g instead of -4.0\n",
+	       mpfr_get_d (x));
+       exit (1);
+     }
+
+   mpfr_set_d (x, 9.84891017624509146344e-01, GMP_RNDU); 
+   if (mpfr_get_d (x) != 1.0)
+     {
+       fprintf (stderr, "Error in tset_d: got %g instead of 1.0\n",
+		mpfr_get_d (x));
+       exit (1);
+     }
 
   mpfr_init2(z, 32);
   mpfr_set_d(z, 1.0, 0);
