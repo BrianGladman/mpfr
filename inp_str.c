@@ -32,7 +32,7 @@ mpfr_inp_str (mpfr_ptr rop, FILE *stream, int base, mp_rnd_t rnd_mode)
   char *str;
   size_t alloc_size, str_size;
   int c;
-  size_t retval;
+  int retval;
   size_t nread;
 
   MPFR_CLEAR_FLAGS(rop); 
@@ -80,7 +80,7 @@ mpfr_inp_str (mpfr_ptr rop, FILE *stream, int base, mp_rnd_t rnd_mode)
   retval = mpfr_set_str (rop, str, base, rnd_mode);
   (*__gmp_free_func) (str, alloc_size);
 
-  if (retval == (size_t) -1)
+  if (retval == -1)
     return 0;			/* error */
 
  return str_size + nread - 1;
