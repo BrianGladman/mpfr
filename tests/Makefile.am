@@ -9,7 +9,7 @@ INCLUDES = -I$(top_srcdir) @INCLUDES@
 check_LIBRARIES = libfrtests.a
 libfrtests_a_SOURCES = memory.c tests.c
 
-../libmpfr.a:
-	cd $(top_srcdir); make libmpfr.a
+$(top_builddir)/libmpfr.a:
+	cd $(top_builddir); make libmpfr.a
 
 TESTS = $(check_PROGRAMS)
