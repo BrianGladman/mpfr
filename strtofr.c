@@ -490,9 +490,11 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mp_rnd_t rnd)
 			      mp_exp_t, mp_exp_unsigned_t,
 			      MPFR_EXP_MIN, MPFR_EXP_MAX,
 			      goto overflow, goto underflow);
-	  if (tmp > 0 && MPFR_EXP_MAX/pow2 <= tmp)
+	  /* On some FreeBsd/Alpha, LONG_MIN/1 produces an exception
+	     so we check for this before doing the division */
+	  if (tmp > 0 && pow2 != 1 && MPFR_EXP_MAX/pow2 <= tmp)
 	    goto overflow;
-	  else if (tmp < 0 && MPFR_EXP_MIN/pow2 >= tmp)
+	  else if (tmp < 0 && pow2 != 1 && MPFR_EXP_MIN/pow2 >= tmp)
 	    goto underflow;
 	  tmp *= pow2;
 	  MPFR_SADD_OVERFLOW (tmp, tmp, pstr->exp_bin,
