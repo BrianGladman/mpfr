@@ -28,39 +28,53 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 #include "mpfr-test.h"
 
-void check_denorms _PROTO ((void));
+int check_denorms _PROTO ((void));
 
-void
+int
 check_denorms ()
 {
+  mp_rnd_t rnd_mode;
   mpfr_t x;
   double d, d2, dd, f;
-  int k, n;
+  int fail = 0, k, n;
 
   mpfr_init2 (x, BITS_PER_MP_LIMB);
 
-  for (k = 1; k <= 7; k += 2)
+  for (rnd_mode = 0; rnd_mode <= 3; rnd_mode++)
     {
-      d = k * DBL_MIN; /* k * 2^(-1022) */
-      f = 1.0;
-      mpfr_set_ui (x, k, GMP_RNDN);
-      mpfr_div_2exp (x, x, 1022, GMP_RNDN); /* k * 2^(-1022) */
-      for (n=0; n<=53; n++)
+#ifdef MPFR_HAVE_FESETROUND
+      mpfr_set_machine_rnd_mode (rnd_mode);
+#else
+      if (rnd_mode)
+        break; /* second iteration */
+      rnd_mode = GMP_RNDN;
+#endif
+      for (k = 1; k <= 7; k += 2)
         {
-          d2 = d * f;
-          dd = mpfr_get_d (x, GMP_RNDN);
-          if (d2 != dd) /* should be k * 2^(-1022-n) for n < 53 */
+          d = k * DBL_MIN; /* k * 2^(-1022) */
+          f = 1.0;
+          mpfr_set_ui (x, k, GMP_RNDN);
+          mpfr_div_2exp (x, x, 1022, GMP_RNDN); /* k * 2^(-1022) */
+          for (n=0; n<=55; n++)
             {
-              fprintf (stderr, "Wrong result for %d * 2^(%d), ", k, -1022-n);
-              fprintf (stderr, "got %.20e instead of %.20e\n", dd, d2);
-              exit (1);
+              d2 = d * f;
+              dd = mpfr_get_d (x, rnd_mode);
+              if (d2 != dd) /* should be k * 2^(-1022-n) for n < 53 */
+                {
+                  fprintf (stderr,
+                           "Wrong result for %d * 2^(%d), rnd_mode %d\n",
+                           k, -1022-n, rnd_mode);
+                  fprintf (stderr, "got %.20e instead of %.20e\n", dd, d2);
+                  fail = 1;
+                }
+              f *= 0.5;
+              mpfr_div_2exp (x, x, 1, GMP_RNDN);
             }
-          f *= 0.5;
-          mpfr_div_2exp (x, x, 1, GMP_RNDN);
         }
     }
 
   mpfr_clear (x);
+  return fail;
 }
 
 int
@@ -84,8 +98,6 @@ main (void)
 
   mpfr_init2(x, 128);
   mpfr_init2(y, 128);
-
-  mpfr_test_init ();
 
   for (rnd_mode = 0; rnd_mode <= 3; rnd_mode++)
     {
@@ -157,7 +169,8 @@ main (void)
 
 #endif
 
-  check_denorms ();
+  if (check_denorms ())
+    exit (1);
 
   return 0;
 }
