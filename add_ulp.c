@@ -24,7 +24,7 @@ MA 02111-1307, USA. */
 #include "gmp-impl.h"
 
 /* sets x to x+sign(x)*2^(MPFR_EXP(x)-MPFR_PREC(x)) */
-int 
+void
 #if __STDC__
 mpfr_add_one_ulp(mpfr_ptr x)
 #else
@@ -43,11 +43,12 @@ mpfr_add_one_ulp(x)
     mpn_rshift(xp, xp, xn, 1);
     xp[xn-1] += (mp_limb_t)1<<(BITS_PER_MP_LIMB-1);
   }
-  return 0;
+  return;
 }
 
 /* sets x to x-sign(x)*ulp(x) */
-int mpfr_sub_one_ulp(mpfr_ptr x)
+void
+mpfr_sub_one_ulp(mpfr_ptr x)
 {
   int xn, sh; mp_limb_t *xp;
 
@@ -62,5 +63,5 @@ int mpfr_sub_one_ulp(mpfr_ptr x)
     mpn_lshift(xp, xp, xn, 1);
     *xp |= ((mp_limb_t)1 << sh);
   }
-  return 0;
+  return;
 }

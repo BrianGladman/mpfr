@@ -312,7 +312,7 @@ mpfr_exp2_aux2(s, r, q, exps)
      int *exps;
 #endif
 {
-  int expr, l, m, i, sizer, *expR, expt, dif, ql; mp_limb_t c;
+  int expr, l, m, i, sizer, *expR, expt, ql; mp_limb_t c;
   mpz_t t, *R, rr, tmp;
   TMP_DECL(marker);
 

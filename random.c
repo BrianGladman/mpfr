@@ -25,7 +25,7 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "gmp-impl.h"
 #include "longlong.h"
-
+#include "srandom.h"
 
 /* Computes a random mpfr in [0, 1[ with precision MPFR_PREC */
 
