@@ -25,10 +25,7 @@ MA 02111-1307, USA. */
 #include <stdlib.h>
 #include <float.h>
 #include <time.h>
-#include "gmp.h"
-#include "gmp-impl.h"
-#include "mpfr.h"
-#include "mpfr-impl.h"
+
 #include "mpfr-test.h"
 
 /* Parameter "z1" of check() used to be last in the argument list, but that
@@ -61,10 +58,19 @@ _check (double x, double y, double z1, mp_rnd_t rnd_mode, unsigned int px,
   mpfr_set_d (yy, z2, GMP_RNDN);
   if (!mpfr_cmp (zz, yy) && cert && z1!=z2 && !(Isnan(z1) && Isnan(z2)))
     {
+      /* If the format is not IEEE, we can't really check if it fails
+	 (The mantissa could be != 53 bits and the base could be 10)*/
+#if _GMP_IEEE_FLOATS
       printf ("expected sum is %1.20e, got %1.20e\n", z1, z2);
       printf ("mpfr_add failed for x=%1.20e y=%1.20e with rnd_mode=%s\n",
               x, y, mpfr_print_rnd_mode (rnd_mode));
       exit (1);
+#else
+      printf ("Warning: expected sum is %1.20e, got %1.20e\n", z1, z2);
+      printf ("mpfr_add could have failed for x=%1.20e y=%1.20e"
+	      "with rnd_mode=%s\n",
+              x, y, mpfr_print_rnd_mode (rnd_mode));
+#endif
     }
   mpfr_clear (xx);
   mpfr_clear (yy);

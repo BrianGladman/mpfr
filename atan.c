@@ -72,7 +72,6 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
   int Prec;
   int prec_x;
   int prec_arctan;
-  int good = 0;
   int realprec;
   int estimated_delta;
   /* calculation of the floor */
@@ -150,28 +149,40 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
   if (logn < 2) 
     logn = 2;
   realprec = prec_arctan + __gmpfr_ceil_log2((double) prec_arctan) + 4;
+
   mpz_init (ukz);
   mpz_init (square);
 
-  while (!good)
+  /* Initialisation    */
+  mpfr_init(sk);
+  mpfr_init(ukf);
+  mpfr_init(t_arctan);
+  mpfr_init(tmp_arctan);
+  mpfr_init(tmp);
+  mpfr_init(tmp2);
+  mpfr_init(Ak);
+  mpfr_init(arctgt);
+  mpfr_init(Pisur2);
+
+  while (1)
     {
       N0 = __gmpfr_ceil_log2((double) realprec + supplement + CST);
       estimated_delta = 1 + supplement + __gmpfr_ceil_log2((double) (3*N0-2));
       Prec = realprec+estimated_delta;
 
       /* Initialisation    */
-      mpfr_init2(sk,Prec);
-      mpfr_init2(ukf, Prec);
-      mpfr_init2(t_arctan, Prec);
-      mpfr_init2(tmp_arctan, Prec);
-      mpfr_init2(tmp, Prec);
-      mpfr_init2(tmp2, Prec);
-      mpfr_init2(Ak, Prec);
-      mpfr_init2(arctgt, Prec);
+      mpfr_set_prec (sk,Prec);
+      mpfr_set_prec (ukf, Prec);
+      mpfr_set_prec (t_arctan, Prec);
+      mpfr_set_prec (tmp_arctan, Prec);
+      mpfr_set_prec (tmp, Prec);
+      mpfr_set_prec (tmp2, Prec);
+      mpfr_set_prec (Ak, Prec);
+      mpfr_set_prec (arctgt, Prec);
 
       if (comparaison > 0)
         {
-          mpfr_init2(Pisur2, Prec);
+          mpfr_set_prec (Pisur2, Prec);
           mpfr_const_pi(Pisur2, GMP_RNDN);
           mpfr_div_2ui(Pisur2, Pisur2, 1, GMP_RNDN);
           mpfr_ui_div(sk, 1, xp, GMP_RNDN);
@@ -219,30 +230,25 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	mpfr_set(arctgt, tmp_arctan, GMP_RNDN);
       MPFR_SET_POS(arctgt);
 
-      if (mpfr_can_round (arctgt, realprec, GMP_RNDN, GMP_RNDZ,
+      if (!mpfr_can_round (arctgt, realprec, GMP_RNDN, GMP_RNDZ,
                           MPFR_PREC (arctangent) + (rnd_mode == GMP_RNDN)))
-        {
-          inexact = mpfr_set (arctangent, arctgt, rnd_mode);
-          good = 1;
-          realprec += 1;
-        }
+	realprec += __gmpfr_ceil_log2 ((double) realprec);
       else
-        {
-          realprec += __gmpfr_ceil_log2 ((double) realprec);
-        }
-
-      mpfr_clear(sk);
-      mpfr_clear(ukf);
-      mpfr_clear(t_arctan);
-      mpfr_clear(tmp_arctan);
-      mpfr_clear(tmp);
-      mpfr_clear(tmp2);
-      mpfr_clear(Ak);
-      mpfr_clear(arctgt);
-
-      if (comparaison > 0)
-        mpfr_clear(Pisur2);
+	break;
     }
+
+  inexact = mpfr_set (arctangent, arctgt, rnd_mode);
+
+  mpfr_clear(sk);
+  mpfr_clear(ukf);
+  mpfr_clear(t_arctan);
+  mpfr_clear(tmp_arctan);
+  mpfr_clear(tmp);
+  mpfr_clear(tmp2);
+  mpfr_clear(Ak);
+  mpfr_clear(arctgt);
+
+  mpfr_clear(Pisur2);
 
   mpfr_clear(xp);
   mpz_clear(ukz);

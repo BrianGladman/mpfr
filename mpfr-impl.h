@@ -22,6 +22,9 @@ MA 02111-1307, USA. */
 #ifndef __MPFR_IMPL_H__
 #define __MPFR_IMPL_H__
 
+/* Auto-include limits.h (Before gmp-impl.h) */
+#include <limits.h>
+
 /* Auto include local gmp.h if not included */
 #ifndef __GMP_H__
 #include "gmp.h"
@@ -36,9 +39,6 @@ MA 02111-1307, USA. */
 #ifndef __MPFR_H
 #include "mpfr.h"
 #endif
-
-/* Auto-include limits.h */
-#include <limits.h>
 
 #ifndef HAVE_STRCASECMP
 #define strcasecmp mpfr_strcasecmp
@@ -98,15 +98,14 @@ typedef unsigned long int       mpfr_exp_unsigned_t;
 # define mp_exp_unsigned_t mpfr_exp_unsigned_t
 #endif
 
-#ifndef MP_LIMB_T_ONE
-# define MP_LIMB_T_ONE ((mp_limb_t) 1)
-#endif
 #define MPFR_LIMB_ONE ((mp_limb_t) 1)
+#ifndef MP_LIMB_T_ONE
+# define MP_LIMB_T_ONE MPFR_LIMB_ONE
+#endif
 
 #define MPFR_INTPREC_MAX (ULONG_MAX & ~(unsigned long) (BITS_PER_MP_LIMB - 1))
 
-/* Redefine MPN_COPY if compilation for small vars
-   FIXME: Usefull ?*/
+/* Redefine MPN_COPY if compilation for small vars FIXME: Usefull ?*/
 #ifdef SMALL
 #undef MPN_COPY
 #define MPN_COPY(dest, src, n) \
@@ -296,7 +295,7 @@ long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CO
 
 /* We want to test this :
  *  (rnd == GMP_RNDU && test) || (rnd == RNDD && !test)
- * This macro does this test faster*/
+ * It transforms RNDU or RNDD to Away or Zero according to the sign */
 #define MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd, test) \
   (((rnd) + (test)) == GMP_RNDD)
 
@@ -463,8 +462,8 @@ void mpfr_restore_emin_emax _MPFR_PROTO ((void));
 int mpfr_add1 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_sub1 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_sub1sp _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
-int mpfr_can_round_raw _MPFR_PROTO ((mp_limb_t *, mp_size_t, int, mp_exp_t,
-				     mp_rnd_t, mp_rnd_t, mp_prec_t));
+int mpfr_can_round_raw _MPFR_PROTO ((mp_limb_t *, mp_size_t, int, 
+				     mp_exp_t, mp_rnd_t, mp_rnd_t, mp_prec_t));
 
 double mpfr_get_d3 _MPFR_PROTO ((mpfr_srcptr, mp_exp_t, mp_rnd_t));
 int mpfr_cmp2 _MPFR_PROTO ((mpfr_srcptr, mpfr_srcptr, mp_prec_t *));
@@ -486,8 +485,8 @@ long mpn_exp _MPFR_PROTO ((mp_limb_t *, mp_exp_t *, int,
 			   mp_exp_t, size_t));
 
 void mpfr_print_binary _MPFR_PROTO ((mpfr_srcptr));
-void mpfr_print_mant_binary _MPFR_PROTO ((const char *, const mp_limb_t *,
-					  mp_prec_t));
+void mpfr_print_mant_binary _MPFR_PROTO ((__gmp_const char *, 
+					  __gmp_const mp_limb_t *, mp_prec_t));
 void mpfr_set_str_binary _MPFR_PROTO ((mpfr_ptr, __gmp_const char *));
 
 int mpfr_round_raw _MPFR_PROTO ((mp_limb_t *, mp_limb_t *,
@@ -500,7 +499,7 @@ int mpfr_round_raw_4 _MPFR_PROTO ((mp_limb_t *, mp_limb_t *,
 				   mp_prec_t, int, mp_prec_t, mp_rnd_t));
 
 #define mpfr_round_raw2(xp, xn, neg, r, prec) \
-  mpfr_round_raw_2(0, (xp), (xn) * BITS_PER_MP_LIMB, (neg), (prec), (r) )
+  mpfr_round_raw_2((mp_limb_t*)0,(xp),(xn)*BITS_PER_MP_LIMB,(neg),(prec),(r))
 
 int mpfr_check _MPFR_PROTO ((mpfr_srcptr));
 int mpfr_sub1sp _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));

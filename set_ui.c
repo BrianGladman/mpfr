@@ -68,7 +68,7 @@ mpfr_set_ui (mpfr_ptr x, unsigned long i, mp_rnd_t rnd_mode)
           if (MPFR_UNLIKELY(carry))
             {
               /* nbits is the current exponent */
-              if (MPFR_UNLIKELY(nbits == __gmpfr_emax))
+              if (MPFR_UNLIKELY((mp_exp_t) nbits == __gmpfr_emax))
                 return mpfr_set_overflow(x, rnd_mode, 1);
 
               MPFR_SET_EXP (x, nbits + 1);

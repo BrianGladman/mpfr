@@ -24,6 +24,7 @@ MA 02111-1307, USA. */
 #endif
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <float.h>
 
 #if TIME_WITH_SYS_TIME
@@ -37,16 +38,7 @@ MA 02111-1307, USA. */
 # endif
 #endif
 
-#include "gmp.h"
-#include "gmp-impl.h"
-#include "mpfr.h"
-#include "mpfr-impl.h"
 #include "mpfr-test.h"
-
-#if HAVE_SYS_FPU_H
-#include <sys/fpu.h>  /* for mips fpc_csr */
-#endif
-
 
 void tests_rand_start _MPFR_PROTO ((void));
 void tests_rand_end   _MPFR_PROTO ((void));
@@ -272,7 +264,7 @@ d_trace (const char *name, double d)
 
   u.d = d;
   printf ("[");
-  for (i = 0; i < sizeof (u.b); i++)
+  for (i = 0; i < (int) sizeof (u.b); i++)
     {
       if (i != 0)
         printf (" ");
@@ -295,7 +287,7 @@ ld_trace (const char *name, long double ld)
 
   u.ld = ld;
   printf ("[");
-  for (i = 0; i < sizeof (u.b); i++)
+  for (i = 0; i < (int) sizeof (u.b); i++)
     {
       if (i != 0)
         printf (" ");

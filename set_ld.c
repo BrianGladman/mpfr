@@ -39,7 +39,7 @@ static const struct {
 } ldbl_max_struct = {
   { '\377','\377','\377','\377',
     '\377','\377','\377','\377',
-    '\376','\177' }
+    '\376','\177' }, 0.0
 };
 #define MPFR_LDBL_MAX   (* (const long double *) ldbl_max_struct.bytes)
 #else

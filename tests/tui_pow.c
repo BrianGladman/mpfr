@@ -23,10 +23,7 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
-#include "gmp.h"
-#include "gmp-impl.h"
-#include "mpfr.h"
-#include "mpfr-impl.h"
+
 #include "mpfr-test.h"
 
 static void
@@ -167,9 +164,8 @@ main (int argc, char *argv[])
   mp_rnd_t rnd;
   unsigned int n;
 
-  int p0=2;
-  int p1=100;
-  int N=20;
+  mp_prec_t p0=2, p1=100;
+  unsigned int N=20;
 
   mpfr_init2 (z, 38);
   mpfr_init2 (t, 6);

@@ -165,176 +165,179 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   if (MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd_mode, MPFR_IS_NEG(a)))
     rnd_mode = GMP_RNDZ;
 
-  if (d == 0)
+  if (d <=1)
     {
-      /* <-- b -->	
-	 <-- c --> : exact sub */
-      ap = MPFR_MANT(a);
-      mpn_sub_n (ap, MPFR_MANT(b), MPFR_MANT(c), n);
-      /* Normalize */
-    ExactNormalize:
-      limb = ap[n-1];
-      if (limb)
+      if (d == 0)
 	{
-	  /* First limb is not zero. */
-	  count_leading_zeros(cnt, limb);
-	  if (MPFR_LIKELY(cnt))
+	  /* <-- b -->	
+	     <-- c --> : exact sub */
+	  ap = MPFR_MANT(a);
+	  mpn_sub_n (ap, MPFR_MANT(b), MPFR_MANT(c), n);
+	  /* Normalize */
+	ExactNormalize:
+	  limb = ap[n-1];
+	  if (limb)
 	    {
-	      mpn_lshift(ap, ap, n, cnt); /* Normalize number */
-	      bx -= cnt; /* Update final expo */
+	      /* First limb is not zero. */
+	      count_leading_zeros(cnt, limb);
+	      if (MPFR_LIKELY(cnt))
+		{
+		  mpn_lshift(ap, ap, n, cnt); /* Normalize number */
+		  bx -= cnt; /* Update final expo */
+		}
+	      sh = (-p % BITS_PER_MP_LIMB);
+	      if (MPFR_LIKELY(sh))
+		ap[0] &= ~((MPFR_LIMB_ONE << sh) - MPFR_LIMB_ONE);
 	    }
-	  sh = (-p % BITS_PER_MP_LIMB);
-	  if (MPFR_LIKELY(sh))
-	    ap[0] &= ~((MPFR_LIMB_ONE << sh) - MPFR_LIMB_ONE);
-	}
-      else
-	{
-	  /* First limb is zero */
-	  mp_size_t k = n-1, len;
-	  /* Find the first limb not equal to zero.
-	     FIXME: It is assume it exists (since |b| > |c| and same prec)*/
-	  do {
-	    MPFR_ASSERTD( k > 0 );
-	    limb = ap[--k];
-	  } while (limb == 0);
-	  MPFR_ASSERTD(limb != 0);
-          count_leading_zeros(cnt, limb);
-	  k++;
-	  len = n - k; /* Number of last limb */
-	  MPFR_ASSERTD(k >= 0);
-          mpn_lshift(ap+len, ap, k, cnt); /* Normalize the High Limb*/
-	  MPN_ZERO(ap, len); /* Zeroing the last limbs */
-	  bx -= cnt + len*BITS_PER_MP_LIMB; /* Update Expo */
-	  sh = (-p % BITS_PER_MP_LIMB);
-	  if (MPFR_LIKELY(sh))
-	    ap[len] &= ~((MPFR_LIMB_ONE << sh) - MPFR_LIMB_ONE);
-	}
-      /* Check expo underflow */
-      if (MPFR_UNLIKELY(bx < __gmpfr_emin))
-	{
+	  else
+	    {
+	      /* First limb is zero */
+	      mp_size_t k = n-1, len;
+	      /* Find the first limb not equal to zero.
+		 FIXME:It is assume it exists (since |b| > |c| and same prec)*/
+	      do {
+		MPFR_ASSERTD( k > 0 );
+		limb = ap[--k];
+	      } while (limb == 0);
+	      MPFR_ASSERTD(limb != 0);
+	      count_leading_zeros(cnt, limb);
+	      k++;
+	      len = n - k; /* Number of last limb */
+	      MPFR_ASSERTD(k >= 0);
+	      mpn_lshift(ap+len, ap, k, cnt); /* Normalize the High Limb*/
+	      MPN_ZERO(ap, len); /* Zeroing the last limbs */
+	      bx -= cnt + len*BITS_PER_MP_LIMB; /* Update Expo */
+	      sh = (-p % BITS_PER_MP_LIMB);
+	      if (MPFR_LIKELY(sh))
+		ap[len] &= ~((MPFR_LIMB_ONE << sh) - MPFR_LIMB_ONE);
+	    }
+	  /* Check expo underflow */
+	  if (MPFR_UNLIKELY(bx < __gmpfr_emin))
+	    {
+	      TMP_FREE(marker);
+	      /* inexact=0 */
+	      DEBUG( printf("(D==0 Underflow)\n") );
+	      if (rnd_mode == GMP_RNDN &&
+		  (bx < __gmpfr_emin - 1 ||
+		   (/*inexact >= 0 &&*/ mpfr_powerof2_raw (a))))
+		rnd_mode = GMP_RNDZ;
+	      return mpfr_set_underflow (a, rnd_mode, MPFR_SIGN(a));
+	    }
+	  MPFR_SET_EXP (a, bx);
+	  /* No rounding is necessary since the result is exact */
+	  MPFR_ASSERTD(ap[n-1] > ~ap[n-1]);
 	  TMP_FREE(marker);
-	  /* inexact=0 */
-	  DEBUG( printf("(D==0 Underflow)\n") );
-	  if (rnd_mode == GMP_RNDN &&
-	      (bx < __gmpfr_emin - 1 ||
-	       (/*inexact >= 0 &&*/ mpfr_powerof2_raw (a))))
-	    rnd_mode = GMP_RNDZ;
-          return mpfr_set_underflow (a, rnd_mode, MPFR_SIGN(a));
+	  return 0;
 	}
-      MPFR_SET_EXP (a, bx);
-      /* No rounding is necessary since the result is exact */
-      MPFR_ASSERTD(ap[n-1] > ~ap[n-1]);
-      TMP_FREE(marker);
-      return 0;
-    }
-  else if (d == 1)
-    {
-      /* | <-- b -->
-	 |  <-- c --> */
-      mp_limb_t c0, mask;
-      mp_size_t k;
-      sh = -p % BITS_PER_MP_LIMB;
-      /* If we lose at least one bit, compute 2*b-c (Exact)
-       * else compute b-c/2 */
-      bp = MPFR_MANT(b);
-      cp = MPFR_MANT(c);
-      k = n-1;
-      limb = bp[k] - cp[k]/2;
-      if (limb > MPFR_LIMB_HIGHBIT)
+      else /* if (d == 1) */
 	{
-	  /* We can't lose precision: compute b-c/2 */
-	  /* Shift c in the allocated temporary block */
-	SubD1NoLose:
-          c0 = cp[0] & (MPFR_LIMB_ONE<<sh);
-	  cp = (mp_limb_t*) TMP_ALLOC(n * BYTES_PER_MP_LIMB);
-	  mpn_rshift(cp, MPFR_MANT(c), n, 1);
-          if (c0 == 0)
-            {
-	      /* Result is exact: no need of rounding! */
+	  /* | <-- b -->
+	     |  <-- c --> */
+	  mp_limb_t c0, mask;
+	  mp_size_t k;
+	  sh = -p % BITS_PER_MP_LIMB;
+	  /* If we lose at least one bit, compute 2*b-c (Exact)
+	   * else compute b-c/2 */
+	  bp = MPFR_MANT(b);
+	  cp = MPFR_MANT(c);
+	  k = n-1;
+	  limb = bp[k] - cp[k]/2;
+	  if (limb > MPFR_LIMB_HIGHBIT)
+	    {
+	      /* We can't lose precision: compute b-c/2 */
+	      /* Shift c in the allocated temporary block */
+	    SubD1NoLose:
+	      c0 = cp[0] & (MPFR_LIMB_ONE<<sh);
+	      cp = (mp_limb_t*) TMP_ALLOC(n * BYTES_PER_MP_LIMB);
+	      mpn_rshift(cp, MPFR_MANT(c), n, 1);
+	      if (c0 == 0)
+		{
+		  /* Result is exact: no need of rounding! */
+		  ap = MPFR_MANT(a);
+		  mpn_sub_n (ap, bp, cp, n);
+		  MPFR_SET_EXP(a, bx); /* No expo overflow! */
+		  /* No truncate or normalize is needed */
+		  MPFR_ASSERTD(ap[n-1] > ~ap[n-1]);
+		  /* No rounding is necessary since the result is exact */
+		  TMP_FREE(marker);
+		  return 0;
+		}
+	      ap = MPFR_MANT(a);
+	      mask = ~((MPFR_LIMB_ONE << sh) - MPFR_LIMB_ONE);
+	      cp[0] &= mask; /* Delete last bit of c */
+	      mpn_sub_n (ap, bp, cp, n);
+	      MPFR_SET_EXP(a, bx);                 /* No expo overflow! */
+	      MPFR_ASSERTD( !(ap[0] & ~mask) );    /* Check last bits */
+	      /* No normalize is needed */
+	      MPFR_ASSERTD(ap[n-1] > ~ap[n-1]);
+	      /* Rounding is necessary since c0 = 1*/	  
+	      /* Cp =-1 and C'p+1=0 */
+	      bcp = 1; bcp1 = 0;
+	      switch (rnd_mode)
+		{
+		case GMP_RNDN:
+		  /* Even Rule apply: Check Ap-1 */
+		  if ((ap[0] & (MPFR_LIMB_ONE<<sh)) == 0)
+		    goto truncate;
+		case GMP_RNDZ:
+		  goto sub_one_ulp;
+		default:
+		  goto truncate;
+		}
+	    }
+	  else if (limb < MPFR_LIMB_HIGHBIT)
+	    {
+	      /* We lose at least one bit of prec */
+	      /* Calcul of 2*b-c (Exact) */
+	      /* Shift b in the allocated temporary block */
+	    SubD1Lose:
+	      bp = (mp_limb_t*) TMP_ALLOC(n * BYTES_PER_MP_LIMB);
+	      mpn_lshift(bp, MPFR_MANT(b), n, 1);
 	      ap = MPFR_MANT(a);
 	      mpn_sub_n (ap, bp, cp, n);
-	      MPFR_SET_EXP(a, bx); /* No expo overflow! */
-	      /* No truncate or normalize is needed */
-	      MPFR_ASSERTD(ap[n-1] > ~ap[n-1]);
-	      /* No rounding is necessary since the result is exact */
-	      TMP_FREE(marker);
-	      return 0;
+	      bx--;
+	      goto ExactNormalize;
 	    }
-	  ap = MPFR_MANT(a);
-	  mask = ~((MPFR_LIMB_ONE << sh) - MPFR_LIMB_ONE);
-	  cp[0] &= mask; /* Delete last bit of c */
-	  mpn_sub_n (ap, bp, cp, n);
-	  MPFR_SET_EXP(a, bx);                 /* No expo overflow! */
-	  MPFR_ASSERTD( !(ap[0] & ~mask) );    /* Check last bits */
-	  /* No normalize is needed */
-	  MPFR_ASSERTD(ap[n-1] > ~ap[n-1]);
-	  /* Rounding is necessary since c0 = 1*/	  
-	  /* Cp =-1 and C'p+1=0 */
-	  bcp = 1; bcp1 = 0;
-	  switch (rnd_mode)
+	  else
 	    {
-	    case GMP_RNDN:
-	      /* Even Rule apply: Check Ap-1 */
-	      if ((ap[0] & (MPFR_LIMB_ONE<<sh)) == 0)
-		goto truncate;
-	    case GMP_RNDZ:
-	      goto sub_one_ulp;
-	    default:
-	      goto truncate;
-	    }
-	}
-      else if (limb < MPFR_LIMB_HIGHBIT)
-	{
-	  /* We lose at least one bit of prec */
-	  /* Calcul of 2*b-c (Exact) */
-          /* Shift b in the allocated temporary block */
-	SubD1Lose:
-          bp = (mp_limb_t*) TMP_ALLOC(n * BYTES_PER_MP_LIMB);
-          mpn_lshift(bp, MPFR_MANT(b), n, 1);
-          ap = MPFR_MANT(a);
-          mpn_sub_n (ap, bp, cp, n);
-	  bx--;
-	  goto ExactNormalize;
-	}
-      else
-	{
-	  /* Case: limb = 100000000000 */
-	  /* Check while b[k] == c'[k] (C' is C shifted by 1) */
-	  /* If b[k]<c'[k] => We lose at least one bit*/
-	  /* If b[k]>c'[k] => We don't lose any bit */
-	  /* If k==-1 => We don't lose any bit 
-	     AND the result is 100000000000 0000000000 00000000000 */
-	  mp_limb_t carry;
-	  do {
-	    carry = cp[k]&MPFR_LIMB_ONE;
-	    k--;
-	  } while (k>=0 && 
-		   bp[k]==(carry=cp[k]/2+(carry<<(BITS_PER_MP_LIMB-1))));
-	  if (MPFR_UNLIKELY(k<0))
-	    {
-	      /* If carry then (sh==0 and Virtual c'[-1] > Virtual b[-1]) */
-	      if (MPFR_UNLIKELY(carry)) /* carry = cp[0]&MPFR_LIMB_ONE */
+	      /* Case: limb = 100000000000 */
+	      /* Check while b[k] == c'[k] (C' is C shifted by 1) */
+	      /* If b[k]<c'[k] => We lose at least one bit*/
+	      /* If b[k]>c'[k] => We don't lose any bit */
+	      /* If k==-1 => We don't lose any bit 
+		 AND the result is 100000000000 0000000000 00000000000 */
+	      mp_limb_t carry;
+	      do {
+		carry = cp[k]&MPFR_LIMB_ONE;
+		k--;
+	      } while (k>=0 && 
+		       bp[k]==(carry=cp[k]/2+(carry<<(BITS_PER_MP_LIMB-1))));
+	      if (MPFR_UNLIKELY(k<0))
 		{
-		  MPFR_ASSERTD(sh == 0);
+		  /*If carry then (sh==0 and Virtual c'[-1] > Virtual b[-1]) */
+		  if (MPFR_UNLIKELY(carry)) /* carry = cp[0]&MPFR_LIMB_ONE */
+		    {
+		      MPFR_ASSERTD(sh == 0);
+		      goto SubD1Lose;
+		    }
+		  /* Result is a power of 2 */
+		  ap = MPFR_MANT(a);
+		  MPN_ZERO(ap, n);
+		  ap[n-1] = MPFR_LIMB_HIGHBIT;
+		  MPFR_SET_EXP(a, bx); /* No expo overflow! */
+		  /* No Normalize is needed*/
+		  /* No Rounding is needed */
+		  TMP_FREE(marker);
+		  return 0;
+		}
+	      /* carry = cp[k]/2+(cp[k-1]&1)<<(BITS_PER_MP_LIMB-1) = c'[k]*/
+	      else if (bp[k]>carry)
+		goto SubD1NoLose;
+	      else 
+		{
+		  MPFR_ASSERTD(bp[k]<carry);
 		  goto SubD1Lose;
 		}
-	      /* Result is a power of 2 */
-	      ap = MPFR_MANT(a);
-	      MPN_ZERO(ap, n);
-              ap[n-1] = MPFR_LIMB_HIGHBIT;
-	      MPFR_SET_EXP(a, bx); /* No expo overflow! */
-	      /* No Normalize is needed*/
-	      /* No Rounding is needed */
-	      TMP_FREE(marker);
-	      return 0;
-	    }
-	  /* carry = cp[k]/2+(cp[k-1]&1)<<(BITS_PER_MP_LIMB-1) = c'[k]*/
-	  else if (bp[k]>carry)
-	    goto SubD1NoLose;
-	  else 
-	    {
-	      MPFR_ASSERTD(bp[k]<carry);
-	      goto SubD1Lose;
 	    }
 	}
     }

@@ -21,9 +21,9 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "gmp.h"
-#include "mpfr.h"
-#include "mpfr-impl.h"
+#include <float.h>
+#include <math.h>
+
 #include "mpfr-test.h"
 
 static void
@@ -289,11 +289,13 @@ particular_cases (void)
     exit (1);
 }
 
-void f(void)
+void f (void)
 {
 }
 
-static void
+void underflows (void);
+
+void
 underflows (void)
 {
   mpfr_t x, y;

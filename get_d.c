@@ -51,19 +51,28 @@ struct dbl_bytes {
 #define MPFR_DBL_NAN   (* (const double *) dbl_nan.b)
 
 #if HAVE_DOUBLE_IEEE_LITTLE_ENDIAN
-static const struct dbl_bytes dbl_infp = { { 0, 0, 0, 0, 0, 0, 0xF0, 0x7F } };
-static const struct dbl_bytes dbl_infm = { { 0, 0, 0, 0, 0, 0, 0xF0, 0xFF } };
-static const struct dbl_bytes dbl_nan  = { { 0, 0, 0, 0, 0, 0, 0xF8, 0x7F } };
+static const struct dbl_bytes dbl_infp = 
+  { { 0, 0, 0, 0, 0, 0, 0xF0, 0x7F }, 0.0 };
+static const struct dbl_bytes dbl_infm = 
+  { { 0, 0, 0, 0, 0, 0, 0xF0, 0xFF }, 0.0 };
+static const struct dbl_bytes dbl_nan  = 
+  { { 0, 0, 0, 0, 0, 0, 0xF8, 0x7F }, 0.0 };
 #endif
 #if HAVE_DOUBLE_IEEE_LITTLE_SWAPPED
-static const struct dbl_bytes dbl_infp = { { 0, 0, 0xF0, 0x7F, 0, 0, 0, 0 } };
-static const struct dbl_bytes dbl_infm = { { 0, 0, 0xF0, 0xFF, 0, 0, 0, 0 } };
-static const struct dbl_bytes dbl_nan  = { { 0, 0, 0xF8, 0x7F, 0, 0, 0, 0 } };
+static const struct dbl_bytes dbl_infp = 
+  { { 0, 0, 0xF0, 0x7F, 0, 0, 0, 0 }, 0.0 };
+static const struct dbl_bytes dbl_infm = 
+  { { 0, 0, 0xF0, 0xFF, 0, 0, 0, 0 }, 0.0 };
+static const struct dbl_bytes dbl_nan  = 
+  { { 0, 0, 0xF8, 0x7F, 0, 0, 0, 0 }, 0.0 };
 #endif
 #if HAVE_DOUBLE_IEEE_BIG_ENDIAN
-static const struct dbl_bytes dbl_infp = { { 0x7F, 0xF0, 0, 0, 0, 0, 0, 0 } };
-static const struct dbl_bytes dbl_infm = { { 0xFF, 0xF0, 0, 0, 0, 0, 0, 0 } };
-static const struct dbl_bytes dbl_nan  = { { 0x7F, 0xF8, 0, 0, 0, 0, 0, 0 } };
+static const struct dbl_bytes dbl_infp = 
+  { { 0x7F, 0xF0, 0, 0, 0, 0, 0, 0 }, 0.0 };
+static const struct dbl_bytes dbl_infm = 
+  { { 0xFF, 0xF0, 0, 0, 0, 0, 0, 0 }, 0.0 };
+static const struct dbl_bytes dbl_nan  = 
+  { { 0x7F, 0xF8, 0, 0, 0, 0, 0, 0 }, 0.0 };
 #endif
 
 #else /* _GMP_IEEE_FLOATS */

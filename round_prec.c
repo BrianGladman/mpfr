@@ -138,8 +138,7 @@ mpfr_can_round_raw (mp_limb_t *bp, mp_size_t bn, int neg, mp_exp_t err0,
   mp_limb_t *tmp;
   TMP_DECL(marker);
 
-  /* FIXME: likely or not ? To check... How?*/
-  if (err0 < 0 || (mp_exp_unsigned_t) err0 <= prec)
+  if (MPFR_UNLIKELY(err0 < 0 || (mp_exp_unsigned_t) err0 <= prec))
     return 0;  /* can't round */
 
   if (prec > (mp_prec_t) bn * BITS_PER_MP_LIMB)
@@ -183,36 +182,34 @@ mpfr_can_round_raw (mp_limb_t *bp, mp_size_t bn, int neg, mp_exp_t err0,
 
   MPFR_ASSERTD (k > 0);
 
+  /* Transform RNDD and RNDU to Zero / Away */
+  MPFR_ASSERTD((neg == 0) || (neg ==1));
+  if (MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd1, neg))
+    rnd1 = GMP_RNDZ;
+
   switch (rnd1)
     {
-    case GMP_RNDD:
-      if (neg)
-	goto round_rndu;
-      else
-	goto round_rndz;
-      break;
-    case GMP_RNDU:
-      if (neg)
-	goto round_rndz;
-    round_rndu:
-      cc = (bp[bn - 1] >> s1) & 1;
-      cc ^= mpfr_round_raw2(bp, bn, neg, rnd2, prec);
-      /* now round b +/- 2^(MPFR_EXP(b)-err) */
-      cc2 = mpn_sub_1 (tmp + bn - k, bp + bn - k, k, MP_LIMB_T_ONE << s);
-      break;
     case GMP_RNDZ:
-    round_rndz:
+      /* Round to Zero */
       cc = (bp[bn - 1] >> s1) & 1;
       cc ^= mpfr_round_raw2(bp, bn, neg, rnd2, prec);
       /* now round b +/- 2^(MPFR_EXP(b)-err) */
       cc2 = mpn_add_1 (tmp + bn - k, bp + bn - k, k, MP_LIMB_T_ONE << s);
       break;
     case GMP_RNDN:
+      /* Round to nearest */
        /* first round b+2^(MPFR_EXP(b)-err) */
       cc = mpn_add_1 (tmp + bn - k, bp + bn - k, k, MP_LIMB_T_ONE << s);
       cc = (tmp[bn - 1] >> s1) & 1; /* gives 0 when cc=1 */
       cc ^= mpfr_round_raw2 (tmp, bn, neg, rnd2, prec);
       /* now round b-2^(MPFR_EXP(b)-err) */
+      cc2 = mpn_sub_1 (tmp + bn - k, bp + bn - k, k, MP_LIMB_T_ONE << s);
+      break;
+    default:
+      /* Round away */
+      cc = (bp[bn - 1] >> s1) & 1;
+      cc ^= mpfr_round_raw2(bp, bn, neg, rnd2, prec);
+      /* now round b +/- 2^(MPFR_EXP(b)-err) */
       cc2 = mpn_sub_1 (tmp + bn - k, bp + bn - k, k, MP_LIMB_T_ONE << s);
       break;
     }

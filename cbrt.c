@@ -115,7 +115,7 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   sh = mpz_sizeinbase (m, 2) - n;
   if (sh > 0) /* we have to flush to 0 the last sh bits from m */
     {
-      inexact = inexact || (mpz_scan1 (m, 0) < sh);
+      inexact = inexact || ((mp_exp_t) mpz_scan1 (m, 0) < sh);
       mpz_div_2exp (m, m, sh);
       e += 3 * sh;
     }

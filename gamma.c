@@ -50,7 +50,6 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mp_prec_t Prec;
   mp_prec_t prec_gamma;
   mp_prec_t prec_nec;
-  int good = 0;
   double C;
   mp_prec_t A, N, estimated_cancel;
   mp_prec_t realprec;
@@ -101,8 +100,14 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
   realprec = prec_gamma + 10;
 
   mpfr_init2 (xp, 2);
+  /* Initialisation    */
+  mpfr_init (tmp);
+  mpfr_init (tmp2);
+  mpfr_init (the_pi);
+  mpfr_init (product);
+  mpfr_init (GammaTrial);
 
-  while (!good)
+  while (1)
     {
       /* Precision stuff */
       prec_nec = compared < 0 ?
@@ -132,12 +137,12 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
           mpfr_sub_ui (xp, x, 1, GMP_RNDN);
         }
 
-      /* Initialisation    */
-      mpfr_init2(tmp, Prec);
-      mpfr_init2(tmp2, Prec);
-      mpfr_init2(the_pi, Prec);
-      mpfr_init2(product, Prec);
-      mpfr_init2(GammaTrial, Prec);
+      /* Set prec  */
+      mpfr_set_prec (tmp, Prec);
+      mpfr_set_prec (tmp2, Prec);
+      mpfr_set_prec (the_pi, Prec);
+      mpfr_set_prec (product, Prec);
+      mpfr_set_prec (GammaTrial, Prec);
 
       mpfr_set_ui(GammaTrial, 0, GMP_RNDN);
       sign = 1;
@@ -196,25 +201,24 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_out_str (stdout, 10, 0, GammaTrial, GMP_RNDD);
       printf ("\n");
 #endif
-      if (mpfr_can_round (GammaTrial, realprec, GMP_RNDD, GMP_RNDZ,
+      if (!mpfr_can_round (GammaTrial, realprec, GMP_RNDD, GMP_RNDZ,
                           MPFR_PREC(gamma) + (rnd_mode == GMP_RNDN)))
-        {
-          inex = mpfr_set (gamma, GammaTrial, rnd_mode);
-          good = 1;
-        }
-      else
         {
           realprec += __gmpfr_ceil_log2 ((double) realprec);
 #ifdef DEBUG
           printf("RETRY\n");
 #endif
         }
-      mpfr_clear(tmp);
-      mpfr_clear(tmp2);
-      mpfr_clear(the_pi);
-      mpfr_clear(product);
-      mpfr_clear(GammaTrial);
+      else
+	break;
     }
+  inex = mpfr_set (gamma, GammaTrial, rnd_mode);
+
+  mpfr_clear(tmp);
+  mpfr_clear(tmp2);
+  mpfr_clear(the_pi);
+  mpfr_clear(product);
+  mpfr_clear(GammaTrial);
 
   mpfr_clear (xp);
 

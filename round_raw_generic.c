@@ -91,7 +91,7 @@ mpfr_round_raw_generic(mp_limb_t *yp, mp_limb_t *xp, mp_prec_t xprec,
       return 0;
     }
 
-  /* Rounding is necessary */
+  /* Transform RNDD & RNDU to RND Away */
   if (MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd_mode, neg))
     rnd_mode = GMP_RNDZ;
 
@@ -190,7 +190,7 @@ mpfr_round_raw_generic(mp_limb_t *yp, mp_limb_t *xp, mp_prec_t xprec,
 	}
       else 
 	{
-	  /* rnd_mode != GMP_RNDZ && rnd_mode != GMP_RNDN */
+	  /* rnd_mode = Away */
           while (MPFR_UNLIKELY(sb == 0) && k > 0)
             sb = xp[--k];
 	  if (sb == 0)

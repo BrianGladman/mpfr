@@ -35,7 +35,6 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_t tmp;
   int Prec;
   int prec_asin;
-  int good = 0;
   int realprec;
   int estimated_delta;
   int compared;
@@ -96,32 +95,33 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
   supplement = 2 - MPFR_GET_EXP (xp);
   realprec = prec_asin + 10;
 
-  while (!good)
+  mpfr_init (tmp);
+  mpfr_init (arcs);
+
+  while (1)
     {
       estimated_delta = 1 + supplement;
       Prec = realprec+estimated_delta;
 
-      /* Initialisation    */
-      mpfr_init2 (tmp, Prec);
-      mpfr_init2 (arcs, Prec);
+      /* Fix prec   */
+      mpfr_set_prec (tmp, Prec);
+      mpfr_set_prec (arcs, Prec);
       mpfr_mul (tmp, x, x, GMP_RNDN);
       mpfr_ui_sub (tmp, 1, tmp, GMP_RNDN);
       mpfr_sqrt (tmp, tmp, GMP_RNDN);
       mpfr_div (tmp, x, tmp, GMP_RNDN);
       mpfr_atan (arcs, tmp, GMP_RNDN);
-      if (mpfr_can_round (arcs, realprec, GMP_RNDN, GMP_RNDZ,
+      if (!mpfr_can_round (arcs, realprec, GMP_RNDN, GMP_RNDZ,
                           MPFR_PREC(asin) + (rnd_mode == GMP_RNDN)))
-	{
-	  inexact = mpfr_set (asin, arcs, rnd_mode);
-	  good = 1;
-	}
+	realprec += __gmpfr_ceil_log2 ((double) realprec);
       else
-	{
-	  realprec += __gmpfr_ceil_log2 ((double) realprec);
-	}
-      mpfr_clear (tmp);
-      mpfr_clear (arcs);
+	break;
     }
+
+  inexact = mpfr_set (asin, arcs, rnd_mode);
+
+  mpfr_clear (tmp);
+  mpfr_clear (arcs);
 
   mpfr_clear (xp);
 
