@@ -32,6 +32,9 @@ MA 02111-1307, USA. */
 #include <stdarg.h>
 #include <time.h>
 
+# if !__MPFR_GLIBC(2,0)
+#  error "Logging not supported. (Glibc >= 2.0)"
+# endif
 
 /* Define LOGGING variables */
 

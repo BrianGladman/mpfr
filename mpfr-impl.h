@@ -1138,8 +1138,8 @@ typedef struct {
 # ifdef MPFR_USE_THREAD_SAFE
 #  error "Enable either `Logging' or `thread-safe', not both"
 # endif 
-# if !__MPFR_GNUC(3,0) || !__MPFR_GLIBC(2,0)
-#  error "Logging not supported"
+# if !__MPFR_GNUC(3,0)
+#  error "Logging not supported (GCC >= 3.0)"
 # endif
 
 __MPFR_DECLSPEC extern FILE *mpfr_log_file;
