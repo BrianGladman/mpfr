@@ -986,10 +986,13 @@ i.e. the result is 1).
 @end deftypefun
 
 @deftypefun int mpfr_sin_cos (mpfr_t @var{sop}, mpfr_t @var{cop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
-Set @var{sop} to the sinus of @var{op}, @var{cop} to the cosinus of @var{op},
+@deftypefunx int mpfr_sin (mpfr_t @var{sop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_cos (mpfr_t @var{cop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+Set @var{sop} to the sine of @var{op}, @var{cop} to the cosine of @var{op},
 rounded to the direction @var{rnd} with the precision of @var{rop}.
-@var{sop} and @var{cop} must be different variables.
-If one of @var{sop} or @var{cop} is NULL, only the other value is returned.
+It is cheaper to call @code{mpfr_sin_cos} if both the sine and the cosine
+are required; then @var{sop} and @var{cop} must be different variables,
+and if one of @var{sop} or @var{cop} is NULL, only the other value is returned.
 Return 0 iff the results are exact (this occurs in fact only when @var{op} is 0
 i.e. the sine is 0 and the cosine is 1).
 @end deftypefun
@@ -1005,35 +1008,35 @@ i.e. the result is 1).
 Set @var{rop} to the hyperbolic sine of @var{op},
 rounded to the direction @var{rnd} with the precision of @var{rop}.
 Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
-i.e. the result is 1).
+i.e. the result is 0).
 @end deftypefun
 
 @deftypefun int mpfr_tanh (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Set @var{rop} to the hyperbolic tangent of @var{op},
 rounded to the direction @var{rnd} with the precision of @var{rop}.
 Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
-i.e. the result is 1).
+i.e. the result is 0).
 @end deftypefun
 
 @deftypefun int mpfr_acosh (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Set @var{rop} to the inverse hyperbolic cosine of @var{op},
 rounded to the direction @var{rnd} with the precision of @var{rop}.
-Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
-i.e. the result is 1).
+Return 0 iff the result is exact (this occurs in fact only when @var{op} is 1
+i.e. the result is 0).
 @end deftypefun
 
 @deftypefun int mpfr_asinh (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Set @var{rop} to the inverse hyperbolic sine of @var{op},
 rounded to the direction @var{rnd} with the precision of @var{rop}.
 Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
-i.e. the result is 1).
+i.e. the result is 0).
 @end deftypefun
 
 @deftypefun int mpfr_atanh (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Set @var{rop} to the inverse hyperbolic tangent of @var{op},
 rounded to the direction @var{rnd} with the precision of @var{rop}.
 Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
-i.e. the result is 1).
+i.e. the result is 0).
 @end deftypefun
 
 @deftypefun int mpfr_factorial (mpfr_t @var{rop}, unsigned long int  @var{op}, mp_rnd_t @var{rnd})
