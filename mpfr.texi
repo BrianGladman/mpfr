@@ -315,6 +315,21 @@ All declarations needed to use MPFR are collected in the include file
 mantissa with a limited precision exponent.  The C data type for such objects
 is @code{mpfr_t}.
 
+@cindex Precision
+@tindex @code{mp_prec_t}
+@noindent
+The @dfn{Precision} is the number of bits used to represent the mantissa
+of a floating-point number;
+the corresponding C data type is @code{mp_prec_t}.
+
+@cindex Rounding Mode
+@tindex @code{mp_rnd_t}
+@noindent
+The @dfn{rounding mode} specifies the way to round the result of a 
+floating-point operation, in case the exact result can not be represented
+exactly in the destination mantissa;
+the corresponding C data type is @code{mp_rnd_t}.
+
 @cindex Limb
 @c @tindex @code{mp_limb_t}
 @noindent
@@ -454,11 +469,11 @@ different word size.
 @cindex Rouding modes
 @section Global Variables and Rounding Modes
 
-@deftypevr {Global Variable} {mp_size_t} __gmp_default_fp_bit_precision
+@deftypevr {Global Variable} {mp_prec_t} __gmp_default_fp_bit_precision
 The default precision in bits (53 initially).
 @end deftypevr
 
-@deftypevr {Global Variable} {char} __gmp_default_rounding_mode
+@deftypevr {Global Variable} {mp_rnd_t} __gmp_default_rounding_mode
 The default rounding mode (to nearest initially).
 @end deftypevr
 
@@ -477,12 +492,12 @@ to (100)=4 with a precision of two bits, and not to (110)=6.
 This rule avoids the @dfn{drift} phenomena mentioned by Knuth in volume 2
 of The Art of Computer Programming (section 4.2.2, pages 221-222).
 
-@deftypefun void mpfr_set_default_rounding_mode (char @var{rnd})
+@deftypefun void mpfr_set_default_rounding_mode (mp_rnd_t @var{rnd})
 Sets the default rounding mode to @var{rnd}.
 The default rounding mode is to nearest initially.
 @end deftypefun
 
-@deftypefun void mpfr_round (mpfr_t @var{x}, char @var{rnd}, unsigned long @var{prec})
+@deftypefun void mpfr_round (mpfr_t @var{x}, mp_rnd_t @var{rnd}, mp_prec_t @var{prec})
 Round @var{x} according to @var{rnd} with precision @var{prec}, which
 may be different from that of @var{x}. 
 If @var{prec} is greater or equal to the precision of @var{x}, then new
@@ -491,7 +506,7 @@ Otherwise, the mantissa is rounded to precision @var{prec} with the given
 direction. In both cases, the precision of @var{x} is changed to @var{prec}.
 @end deftypefun
 
-@deftypefun void mpfr_set_machine_rnd_mode (char @var{rnd})
+@deftypefun void mpfr_set_machine_rnd_mode (mp_rnd_t @var{rnd})
 Set the machine rounding mode to @var{rnd}.
 This function is useful for debugging purpose, but
 also as a common interface to all different ways of setting the
@@ -499,7 +514,7 @@ rounding mode, which unfortunately differ from one operating system to
 another one.
 @end deftypefun
 
-@deftypefun {char *} mpfr_print_rnd_mode (unsigned char @var{rnd})
+@deftypefun {char *} mpfr_print_rnd_mode (mp_rnd_t @var{rnd})
 Returns the input string (GMP_RNDD, GMP_RNDU, GMP_RNDN, GMP_RNDZ)
 corresponding to the rounding mode @var{rnd}.
 @end deftypefun
@@ -508,7 +523,7 @@ corresponding to the rounding mode @var{rnd}.
 @comment  node-name,  next,  previous,  up
 @section Initialization and Assignment Functions
 
-@deftypefun void mpfr_set_default_prec (unsigned long int @var{prec})
+@deftypefun void mpfr_set_default_prec (mp_prec_t @var{prec})
 Set the default precision to be @strong{exactly} @var{prec} bits.  The
 precision of a variable means the number of bits used to store its mantissa.
 All
@@ -530,7 +545,7 @@ precision of @var{x} is the default precision, which can be changed
 by a call to @code{mpfr_set_default_prec}.
 @end deftypefun
 
-@deftypefun void mpfr_init2 (mpfr_t @var{x}, unsigned long int @var{prec})
+@deftypefun void mpfr_init2 (mpfr_t @var{x}, mp_prec_t @var{prec})
 Initialize @var{x} and set its precision to be @strong{exactly}
 @var{prec} bits.  Normally, a variable should be initialized once only or at
 least be cleared, using @code{mpfr_clear}, between initializations.
@@ -562,7 +577,7 @@ calculation.  A typical use would be for adjusting the precision gradually in
 iterative algorithms like Newton-Raphson, making the computation precision
 closely match the actual accurate part of the numbers.
 
-@deftypefun void mpfr_set_prec (mpfr_t @var{x}, unsigned long int @var{prec})
+@deftypefun void mpfr_set_prec (mpfr_t @var{x}, mp_prec_t @var{prec})
 Reset the precision of @var{x} to be @strong{exactly} @var{prec} bits.
 The previous value stored in @var{x} is lost. It is equivalent to
 a call to @code{mpfr_clear(x)} followed by a call to 
@@ -573,7 +588,7 @@ In case you want to keep the previous value stored in @var{x},
 use @code{mpfr_round} instead.
 @end deftypefun
 
-@deftypefun {unsigned long int} mpfr_get_prec (mpf_t @var{x})
+@deftypefun mp_prec_t mpfr_get_prec (mpf_t @var{x})
 Return the precision actually used for assignments of @var{x}, i.e.
 the number of bits used to store its mantissa.
 @end deftypefun
@@ -586,11 +601,12 @@ the number of bits used to store its mantissa.
 These functions assign new values to already initialized floats
 (@pxref{Initializing Floats}).
 
-@deftypefun void mpfr_set (mpfr_t @var{rop}, mpfr_t @var{op}, char @var{rnd})
-@deftypefunx void mpfr_set_ui (mpfr_t @var{rop}, unsigned long int @var{op}, char @var{rnd})
-@deftypefunx void mpfr_set_si (mpfr_t @var{rop}, long int @var{op}, char @var{rnd}
-@deftypefunx void mpfr_set_d (mpfr_t @var{rop}, double @var{op}, char @var{rnd})
-@deftypefunx void mpfr_set_z (mpfr_t @var{rop}, mpz_t @var{op}, char @var{rnd})
+@deftypefun void mpfr_set (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefunx void mpfr_set_ui (mpfr_t @var{rop}, unsigned long int @var{op}, mp_rnd_t @var{rnd})
+@deftypefunx void mpfr_set_si (mpfr_t @var{rop}, long int @var{op}, mp_rnd_t @var{rnd}
+@deftypefunx void mpfr_set_d (mpfr_t @var{rop}, double @var{op}, mp_rnd_t @var{rnd})
+@deftypefunx void mpfr_set_z (mpfr_t @var{rop}, mpz_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefunx void mpfr_set_q (mpfr_t @var{rop}, mpq_t @var{op}, mp_rnd_t @var{rnd})
 Set the value of @var{rop} from @var{op}, rounded to the precision of @var{rop}
 towards the given direction @var{rnd}.
 Please note that even a @code{long int} may have to be rounded,
@@ -604,7 +620,7 @@ form +/-xxxx.xxxxxxEyy. The exponent is read in decimal, but is interpreted
 as the power of two to be multiplied by the mantissa.
 @end deftypefun
 
-@deftypefun void mpfr_set_f (mpfr_t @var{x}, mpf_t @var{y}, char @var{rnd})
+@deftypefun void mpfr_set_f (mpfr_t @var{x}, mpf_t @var{y}, mp_rnd_t @var{rnd})
 Set @var{x} to the GNU MP floating-point number
 @var{y}, rounded with the @var{rnd} mode and the precision
 of @var{x}.
@@ -619,7 +635,7 @@ of @var{x}.
 Convert @var{op} to a double, using the current @emph{machine} rounding mode.
 @end deftypefun
 
-@deftypefun {char *} mpfr_get_str (char *@var{str}, mp_exp_t *@var{expptr}, int @var{base}, size_t @var{n_digits}, mpfr_t @var{op}, char @var{rnd})
+@deftypefun {char *} mpfr_get_str (char *@var{str}, mp_exp_t *@var{expptr}, int @var{base}, size_t @var{n_digits}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Convert @var{op} to a string of digits in base @var{base}, with rounding in
 direction @var{rnd}. The base may vary
 from 2 to 36.  Generate exactly @var{n_digits} significant digits. 
@@ -658,7 +674,7 @@ returned as "31416" in the string and 1 written at @var{expptr}.
 @cindex Float arithmetic functions
 @cindex Arithmetic functions
 
-@deftypefun void mpfr_add (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, char @var{rnd})
+@deftypefun void mpfr_add (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
 @ifinfo
 Set @var{rop} to @var{op1} + @var{op2} rounded in the direction @var{rnd}.
 @end ifinfo
@@ -669,12 +685,12 @@ Set @var{rop} to $@var{op1} + @var{op2}$ rounded in the direction @var{rnd}.
 @end iftex
 @end deftypefun
 
-@deftypefun void mpfr_sub (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, char @var{rnd})
+@deftypefun void mpfr_sub (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
 Set @var{rop} to @var{op1} @minus{} @var{op2} rounded in the direction @var{rnd}.
 @end deftypefun
 
-@deftypefun void mpfr_mul (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, char @var{rnd})
-@deftypefunx void mpfr_mul_ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, char @var{rnd})
+@deftypefun void mpfr_mul (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
+@deftypefunx void mpfr_mul_ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
 @ifinfo
 Set @var{rop} to @var{op1} times @var{op2} rounded in the direction @var{rnd}.
 @end ifinfo
@@ -690,13 +706,13 @@ the divide functions will make these functions intentionally divide by zero.
 This gives the user the possibility to handle arithmetic exceptions in these
 functions in the same manner as other arithmetic exceptions.
 
-@deftypefun void mpfr_div (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, char @var{rnd})
-@deftypefunx int mpfr_div_ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, char @var{rnd})
+@deftypefun void mpfr_div (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_div_ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
 Set @var{rop} to @var{op1}/@var{op2} rounded in the direction @var{rnd}.
 @c Return 0 if the division is exact, a non-zero value otherwise.
 @end deftypefun
 
-@deftypefun int mpfr_sqrt (mpfr_t @var{rop}, mpfr_t @var{op}, char @var{rnd})
+@deftypefun int mpfr_sqrt (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @ifinfo
 Set @var{rop} to the square root of @var{op} rounded in the direction @var{rnd}.
 @end ifinfo
@@ -709,8 +725,8 @@ Set @var{rop} to NaN if @var{op} is negative.
 Return 0 if the operation is exact, a non-zero value otherwise.
 @end deftypefun
 
-@deftypefun void mpfr_pow_ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, char @var{rnd})
-@deftypefunx void mpfr_ui_pow_ui (mpfr_t @var{rop}, unsigned long int @var{op1}, unsigned long int @var{op2}, char @var{rnd})
+@deftypefun void mpfr_pow_ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
+@deftypefunx void mpfr_ui_pow_ui (mpfr_t @var{rop}, unsigned long int @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
 Set @var{rop} to @var{op1} raised to @var{op2}. The computation is done by
 binary exponentiation, each multiplication being rounded to direction 
 @var{rnd}. Hence the relative error with respect to the exact result may be
@@ -718,7 +734,7 @@ larger than one unit in last place (ulp). In other words, this function does
 not provide an exact rounding.
 @end deftypefun
 
-@deftypefun void mpfr_neg (mpfr_t @var{rop}, mpfr_t @var{op}, char @var{rnd})
+@deftypefun void mpfr_neg (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Set @var{rop} to @minus{}@var{op} rounded in the direction @var{rnd}.
 Just changes the sign
 if @var{rop} and @var{op} are the same variable.
@@ -728,7 +744,7 @@ if @var{rop} and @var{op} are the same variable.
 @c Set @var{rop} to the absolute value of @var{op}.
 @c @end deftypefun
 
-@deftypefun void mpfr_mul_2exp (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, char @var{rnd})
+@deftypefun void mpfr_mul_2exp (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
 @ifinfo
 Set @var{rop} to @var{op1} times 2 raised to @var{op2}
 @end ifinfo
@@ -741,7 +757,7 @@ rounded to the direction @var{rnd}. Just increases the exponent by @var{op2}
 when @var{rop} and @var{op1} are identical.
 @end deftypefun
 
-@deftypefun void mpfr_div_2exp (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2})
+@deftypefun void mpfr_div_2exp (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
 @ifinfo
 Set @var{rop} to @var{op1} divided by 2 raised to @var{op2}.
 @end ifinfo
@@ -782,7 +798,7 @@ one plus the absolute difference of their exponents.
 @end deftypefun
 
 @deftypefun int mpfr_cmp_ui_2exp (mpfr_t @var{op1}, unsigned long int @var{op2}, int @var{e})
-@deftypefunx int mpfr_cmp_si_2exp (mpfr_t @var{op1}, unsigned long int @var{op2}, int @var{e})
+@deftypefunx int mpfr_cmp_si_2exp (mpfr_t @var{op1}, long int @var{op2}, int @var{e})
 Compare @var{op1} and @var{op2} multiplied by two to the power @var{e}.
 @end deftypefun
 
@@ -820,33 +836,33 @@ Returns zero when its argument is zero, and a non-zero value otherwise.
 @section Special Functions
 @cindex Special functions
 
-@deftypefun int mpfr_log (mpfr_t @var{rop}, mpfr_t @var{op}, char @var{rnd})
+@deftypefun int mpfr_log (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Set @var{rop} to the natural logarithm of @var{op},
 rounded to the direction @var{rnd} with the precision of @var{rop}.
 Return 0 iff the result is exact (this occurs in fact only when @var{op} is 1
 i.e. the result is 0).
 @end deftypefun
 
-@deftypefun int mpfr_exp (mpfr_t @var{rop}, mpfr_t @var{op}, char @var{rnd})
+@deftypefun int mpfr_exp (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Set @var{rop} to the exponential of @var{op},
 rounded to the direction @var{rnd} with the precision of @var{rop}.
 Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
 i.e. the result is 1).
 @end deftypefun
 
-@deftypefun void mpfr_agm (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, char @var{rnd})
+@deftypefun void mpfr_agm (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
 Set @var{rop} to the arithmetic-geometric mean of @var{op1} and @var{op2},
 rounded to the direction @var{rnd} with the precision of @var{rop}.
 @end deftypefun
 
-@deftypefun void mpfr_log2 (mpfr_t @var{rop}, unsigned char @var{rnd})
+@deftypefun void mpfr_const_log2 (mpfr_t @var{rop}, mp_rnd_t @var{rnd})
 Set @var{rop} to the logarithm of 2 rounded to the direction @var{rnd}
 with the precision of @var{rop}. This function stores the computed
 value to avoid another calculation if a lower or equal precision is
 requested.
 @end deftypefun
 
-@deftypefun void mpfr_pi (mpfr_t @var{rop}, unsigned char @var{rnd})
+@deftypefun void mpfr_const_pi (mpfr_t @var{rop}, mp_rnd_t @var{rnd})
 Set @var{rop} to the value of Pi rounded to the direction @var{rnd}
 with the precision of @var{rop}. This function uses the Borwein, Borwein,
 Plouffe formula which directly gives the expansion of Pi in base 16.
@@ -869,7 +885,7 @@ When using any of these functions, it is a good idea to include @file{stdio.h}
 before @file{mpfr.h}, since that will allow @file{mpfr.h} to define prototypes
 for these functions.
 
-@deftypefun size_t mpfr_out_str (FILE *@var{stream}, int @var{base}, size_t @var{n_digits}, mpfr_t @var{op}, char @var{rnd})
+@deftypefun size_t mpfr_out_str (FILE *@var{stream}, int @var{base}, size_t @var{n_digits}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Output @var{op} on stdio stream @var{stream}, as a string of digits in
 base @var{base}, rounded to direction @var{rnd}.
 The base may vary from 2 to 36.  Print at most
@@ -934,7 +950,7 @@ proven to be more likely to trigger corner-case bugs.  Negative random numbers
 are generated when @var{max_size} is negative.
 @end deftypefun
 
-@deftypefun void mpfr_srandom (unsigned long @var{seed})
+@deftypefun void mpfr_srandom (unsigned long int @var{seed})
 Set the random seed used by @code{mpfr_random} to @var{seed}.
 @end deftypefun
 
@@ -972,7 +988,7 @@ Returns the exponent of @var{x}.
 Returns a pointer to the mantissa of @var{x}.
 @end deftypefun
 
-@deftypefun Macro unsigned int PREC (mpfr_t x)
+@deftypefun Macro mp_prec_t PREC (mpfr_t x)
 Returns the precision of @var{x}.
 @end deftypefun
 
@@ -999,14 +1015,14 @@ Returns the precision of @var{a} when both operands are equal.
 Mainly used in @code{mpfr_sub}.
 @end deftypefun
 
-@deftypefun int mpfr_round_raw (mp_limb_t* @var{y}, mp_limb_t* @var{x}, long @var{xprec}, char @var{neg}, long @var{yprec}, char @var{rnd})
+@deftypefun int mpfr_round_raw (mp_limb_t* @var{y}, mp_limb_t* @var{x}, mp_prec_t @var{xprec}, int @var{neg}, mp_prec_t @var{yprec}, mp_rnd_t @var{rnd})
 Puts in mantissa beginning at @var{y} the value of that 
 beginning at @var{x} (with precision @var{xprec} bits and negative iff 
 @var{neg} is not zero)
 rounded with mode @var{rnd} to precision @var{yprec}.
 @end deftypefun
 
-@deftypefun int mpfr_round_raw2 (mp_limb_t* @var{x}, long @var{xn}, char @var{neg}, char @var{rnd}, unsigned long @var{prec})
+@deftypefun int mpfr_round_raw2 (mp_limb_t* @var{x}, mp_prec_t @var{xn}, int @var{neg}, mp_rnd_t @var{rnd}, mp_prec_t @var{prec})
 Returns 0 if the multiple precision number stored in the @var{xn} limbs
 starting at @var{xp} (least significant limbs first) with sign @var{neg}
 (positive iff @var{neg} equals zero)
@@ -1017,7 +1033,7 @@ to round to mode @var{rnd}. This function @strong{does not modify} the
 mantissa stored in @var{xp}.
 @end deftypefun
 
-@deftypefun int mpfr_can_round (mpfr_t @var{b}, unsigned long @var{err}, char @var{rnd1}, char @var{rnd2}, unsigned long @var{prec})
+@deftypefun int mpfr_can_round (mpfr_t @var{b}, mp_prec_t @var{err}, mp_rnd_t @var{rnd1}, mp_rnd_t @var{rnd2}, mp_prec_t @var{prec})
 Assuming @var{b} is an approximation of an unknown number
 @var{x} in direction @var{rnd1} with error at most two to the power 
 E(b)-@var{err} where E(b) is the exponent of 
