@@ -94,7 +94,7 @@ mpfr_cmp2(b, c)
      mpfr_srcptr c; 
 #endif
 {
-  long int d, bn, cn, k;
+  long int d, bn, cn, k, z;
   mp_limb_t *bp, *cp, t, u=0, cc=0;
 
 #ifdef DEBUG
@@ -104,13 +104,15 @@ mpfr_cmp2(b, c)
   if (NOTZERO(c)==0) return (NOTZERO(b)) ? 0 : PREC(b);
   d = EXP(b)-EXP(c);
   k = 0; /* result can be d or d+1 if d>1, or >= d otherwise */
+  /* k is the number of identical bits in the high part,
+     then z is the number of possibly cancelled bits */
 #ifdef DEBUG
   if (d<0) { printf("assumption EXP(b)<EXP(c) violated\n"); exit(1); }
 #endif
   bn = (PREC(b)-1)/mp_bits_per_limb;
   cn = (PREC(c)-1)/mp_bits_per_limb;
   bp = MANT(b); cp = MANT(c);
-  /* subtracts c from b from most significant to less significant limbs,
+  /* subtract c from b from most significant to less significant limbs,
      and first determines first non zero limb difference */
   if (d)
     {
@@ -134,11 +136,11 @@ mpfr_cmp2(b, c)
      of cancelled bits in the upper limbs is k */
 
   count_leading_zeros(u, cc);
-  k += u;
+  k += u; 
 
   if (cc != (1<<(mp_bits_per_limb-u-1))) return k;
+
   /* now cc is an exact power of two */
-  
   if (cc != 1) 
     /* We just need to compare the following limbs */
     /* until two of them differ. The result is either k or k+1. */
@@ -175,7 +177,9 @@ mpfr_cmp2(b, c)
     }
 
   /* cc = 1. Too bad. */
-
+  z = 0; /* number of possibly cancelled bits - 1 */
+  /* thus result is either k if low(b) >= low(c)
+                        or k+z+1 if low(b) < low(c) */
   if (d > mp_bits_per_limb) { return k; }
 
   while (bn >= 0)
@@ -188,10 +192,16 @@ mpfr_cmp2(b, c)
 	   if (cn >= 0) u+=(cp[cn]>>d);
 	 }
        else u = cp[cn--]; 
-       
-       if ((cc = (bp[bn--] | ~u)) != 0)
-	 { count_leading_zeros(u, cc); return k + u; }
-       else k += mp_bits_per_limb; 
+
+      /* bp[bn--] > cp[cn--] : no borrow possible, k unchanged
+	 bp[bn--] = cp[cn--] : need to consider next limbs
+         bp[bn--] < cp[cn--] : borrow
+      */
+       if ((cc = bp[bn--]) != u) {
+	 if (cc>u) return k;
+	 else { count_leading_zeros(u, cc-u); return k + 1 + z + u; }
+       }
+       else z += mp_bits_per_limb; 
     }
 
   if (cn >= 0)
@@ -201,8 +211,8 @@ mpfr_cmp2(b, c)
   k += cc; 
   if (cc < d) return k;
   
-  while (cn >= 0 && !~cp[cn--]) { k += mp_bits_per_limb; } 
-  if (cn >= 0) { count_leading_zeros(cc, ~cp[cn--]); return (k + cc); }
+  while (cn >= 0 && !~cp[cn--]) { z += mp_bits_per_limb; } 
+  if (cn >= 0) { count_leading_zeros(cc, ~cp[cn--]); return (k + z + cc); }
 
   return k; /* We **need** that the nonsignificant limbs of c are set
 	       to zero there */	       
