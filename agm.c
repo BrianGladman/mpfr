@@ -162,9 +162,8 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
   /* Main loop */
 
   while (go_on) {
-    int err,  eq, can_round;
-    
-    eq=0;
+    int err, can_round;
+    mp_prec_t eq;
     
     err=1 + (int) ((3.0/2.0*(double)_mpfr_ceil_log2((double)p)+1.0)*_mpfr_ceil_exp2(-(double)p)
 	     +3.0*_mpfr_ceil_exp2(-2.0*(double)p*uo/(vo-uo)));
@@ -176,18 +175,16 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
     }
 
     /* Calculus of un and vn */
-    while (eq<=p-2) {
-      mpfr_mul(tmp,u,v,GMP_RNDN);
-      mpfr_sqrt (tmpu, tmp, GMP_RNDN); 
-      mpfr_add(tmp,u,v,GMP_RNDN);
-      mpfr_div_2exp(tmpv,tmp,1,GMP_RNDN);
-      mpfr_set(u,tmpu,GMP_RNDN);
-      mpfr_set(v,tmpv,GMP_RNDN);
-      if (mpfr_cmp(v,u) >= 0)
-	eq = mpfr_cmp2(v,u);
-      else
-	eq = mpfr_cmp2(u,v);
-    }
+    do
+      {
+        mpfr_mul(tmp, u, v, GMP_RNDN);
+        mpfr_sqrt (tmpu, tmp, GMP_RNDN); 
+        mpfr_add(tmp, u, v, GMP_RNDN);
+        mpfr_div_2exp(tmpv, tmp, 1, GMP_RNDN);
+        mpfr_set(u, tmpu, GMP_RNDN);
+        mpfr_set(v, tmpv, GMP_RNDN);
+      }
+    while (mpfr_cmp2(u, v, &eq) != 0 && eq <= p - 2);
 
     /* Roundability of the result */
       can_round=mpfr_can_round(v,p-err-3,GMP_RNDN,rnd_mode,q);

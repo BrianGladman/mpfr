@@ -146,7 +146,7 @@ void mpfr_restore_emin_emax _PROTO ((void));
 int mpfr_add1 _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr,
                        mp_rnd_t, mp_exp_unsigned_t));
 int mpfr_sub1 _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr,
-                       mp_rnd_t, mp_exp_unsigned_t));
+                       mp_rnd_t, int));
 int mpfr_round_raw_generic _PROTO ((mp_limb_t *, mp_limb_t *, mp_prec_t, int,
 				    mp_prec_t, mp_rnd_t, int *, int));
 int mpfr_can_round_raw _PROTO ((mp_limb_t *, mp_size_t, int, mp_exp_t,
@@ -154,7 +154,7 @@ int mpfr_can_round_raw _PROTO ((mp_limb_t *, mp_size_t, int, mp_exp_t,
 double mpfr_get_d2 _PROTO ((mpfr_srcptr, long)); 
 mp_size_t mpn_sqrtrem_new _PROTO ((mp_limb_t *, mp_limb_t *, mp_limb_t *, mp_size_t));
 int mpfr_cmp_abs _PROTO ((mpfr_srcptr, mpfr_srcptr));
-mp_prec_t mpfr_cmp2 _PROTO ((mpfr_srcptr, mpfr_srcptr));
+int mpfr_cmp2 _PROTO ((mpfr_srcptr, mpfr_srcptr, mp_prec_t *));
 long _mpfr_ceil_log2 _PROTO ((double));
 long _mpfr_floor_log2 _PROTO ((double));
 double _mpfr_ceil_exp2 _PROTO ((double));

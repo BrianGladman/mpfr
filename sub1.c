@@ -32,10 +32,12 @@ MA 02111-1307, USA. */
 */
 
 int
-mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c,
-	   mp_rnd_t rnd_mode, mp_exp_unsigned_t diff_exp)
+mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode,
+           int sub)
 {
-  unsigned long cancel, cancel1;
+  int sign;
+  mp_exp_unsigned_t diff_exp;
+  mp_prec_t cancel, cancel1;
   mp_size_t cancel2, an, bn, cn, cn0;
   mp_limb_t *ap, *bp, *cp;
   mp_limb_t carry, bb, cc, borrow = 0;
@@ -43,18 +45,36 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c,
   int sh, k;
   TMP_DECL(marker);
 
-#ifdef DEBUG
-  printf("\nenter mpfr_sub, rnd_mode=%s:\n", mpfr_print_rnd_mode(rnd_mode));
-  printf("b="); if (MPFR_SIGN(b)>0) putchar(' '); mpfr_print_binary(b); putchar('\n');
-  printf("c="); if (MPFR_SIGN(c)>0) putchar(' '); for (k=0; k<diff_exp; k++) putchar(' '); mpfr_print_binary(c); putchar('\n');
-  printf("PREC(a)=%u PREC(b)=%u PREC(c)=%u\n", MPFR_PREC(a), MPFR_PREC(b),
-	 MPFR_PREC(c));
-#endif
   TMP_MARK(marker);
   ap = MPFR_MANT(a);
   an = 1 + (MPFR_PREC(a) - 1) / BITS_PER_MP_LIMB;
 
-  cancel = mpfr_cmp2 (b, c);
+  sign = mpfr_cmp2 (b, c, &cancel);
+  if (sign == 0)
+    {
+      if (rnd_mode == GMP_RNDD)
+        MPFR_SET_NEG(a);
+      else
+        MPFR_SET_POS(a);
+      MPFR_SET_ZERO(a);
+      MPFR_RET(0);
+    }
+
+  /* If subtraction: sign(a) = sign * sign(b) */
+  if (sub && MPFR_SIGN(a) != sign * MPFR_SIGN(b))
+    MPFR_CHANGE_SIGN(a);
+
+  if (sign < 0) /* swap b and c so that |b| > |c| */
+    {
+      mpfr_srcptr t;
+      t = b; b = c; c = t;
+    }
+
+  /* If addition: sign(a) = sign of the larger argument in absolute value */
+  if (!sub)
+    MPFR_SET_SAME_SIGN(a, b);
+
+  diff_exp = (mp_exp_unsigned_t) MPFR_EXP(b) - MPFR_EXP(c);
 
   /* reserve a space to store b aligned with the result, i.e. shifted by
      (-cancel) % BITS_PER_MP_LIMB to the right */
@@ -111,10 +131,6 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c,
 #ifdef DEBUG
   printf("cancel=%u cancel1=%u cancel2=%d\n", cancel, cancel1, cancel2);
 #endif
-
-  /* adjust sign of result */
-  if (MPFR_SIGN(a)*MPFR_SIGN(b) < 0)
-    MPFR_CHANGE_SIGN(a);
 
   /*               ap[an-1]        ap[0]
              <----------------+-----------|---->
@@ -214,8 +230,8 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c,
     }
   else /* directed rounding: set rnd_mode to RNDZ iff towards zero */
     {
-      if (((rnd_mode == GMP_RNDD) && (MPFR_SIGN(b) > 0)) ||
-	  ((rnd_mode == GMP_RNDU) && (MPFR_SIGN(b) < 0)))
+      if (((rnd_mode == GMP_RNDD) && (MPFR_SIGN(a) > 0)) ||
+	  ((rnd_mode == GMP_RNDU) && (MPFR_SIGN(a) < 0)))
 	rnd_mode = GMP_RNDZ;
 
       if (carry)
@@ -403,5 +419,5 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c,
 #endif
   /* check that result is msb-normalized */
   MPFR_ASSERTN(ap[an-1] > ~ap[an-1]);
-  return inexact * MPFR_SIGN(b);
+  return inexact * MPFR_SIGN(a);
 }
