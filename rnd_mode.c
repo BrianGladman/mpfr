@@ -61,6 +61,11 @@ extern int swapRM();
 #define TONEAREST write_rnd(FP_RND_RN)
 #define TOINFM write_rnd(FP_RND_RM)
 #elif AIX
+/* those values should be defined in float.h but strangely are not */
+#define FP_RND_RZ       0
+#define FP_RND_RN       1
+#define FP_RND_RP       2
+#define FP_RND_RM       3
 #include <float.h>
 #define TOZERO fp_swap_rnd(FP_RND_RZ)
 #define TOINFP fp_swap_rnd(FP_RND_RP)

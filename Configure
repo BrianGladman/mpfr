@@ -80,6 +80,13 @@ case $syst in
 	ldpath="-L/lib/pa1.1"
 	ldlibs="-lM"	
 	;;	
+    AIX*)
+	ostype=AIX
+	machtype=IBM
+	defC=/usr/local/bin/gcc
+	make=/usr/local/bin/make
+	ldlibs="-lm"
+	;;
     *)
 	ostype=unknown
 	make=/usr/local/gnu/bin/make
