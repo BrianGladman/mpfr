@@ -213,7 +213,7 @@ int mpfr_sum (mpfr_ptr ret, mpfr_ptr const tab[], unsigned long n,
 
   mpfr_count_sort (tab, n, perm);
 
-  initial_f = MPFR_PREC(tab[0]);
+  initial_f = MAX (MPFR_PREC(tab[0]), MPFR_PREC(ret));
   k = MPFR_INT_CEIL_LOG2 (n) + 1;
   mpfr_init2 (cur_sum, initial_f);
   initial_guard_digits = k + 2;
@@ -228,7 +228,7 @@ int mpfr_sum (mpfr_ptr ret, mpfr_ptr const tab[], unsigned long n,
   }
   while ((error_trap != 0) &&
           !(mpfr_can_round (cur_sum, MPFR_GET_EXP(cur_sum) - current_f + 2,
-                            GMP_RNDN, rnd, initial_f)));
+                            GMP_RNDN, rnd, MPFR_PREC(ret))));
   error_trap |= mpfr_set (ret, cur_sum, rnd);
   mpfr_clear (cur_sum);
   TMP_FREE(marker);
