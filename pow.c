@@ -241,33 +241,16 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
           */
 	  int negative;
 	  /* Determine the sign now, in case y and z are the same object */
-	  negative = MPFR_IS_NEG(x);
+	  negative = MPFR_IS_NEG(x) && is_odd (y) == 1;
 	  MPFR_CLEAR_FLAGS(z);
-          if (negative) /* x = -Inf */
-            {
-              int odd = is_odd (y) == 1;
-              if (MPFR_IS_POS(y))
-                MPFR_SET_INF(z);
-              else
-                MPFR_SET_ZERO(z);
-              if (odd) /* y is an odd integer */
-                MPFR_SET_NEG(z);
-              else
-                MPFR_SET_POS(z);
-            }
-          else /* x = +Inf */
-            {
-              if (MPFR_IS_POS(y))
-                {
-                  MPFR_SET_INF(z);
-                  MPFR_SET_POS(z);
-                }
-              else
-                {
-                  MPFR_SET_ZERO(z);
-                  MPFR_SET_POS(z);
-                }
-            }
+          if (MPFR_IS_POS(y))
+            MPFR_SET_INF(z);
+          else
+            MPFR_SET_ZERO(z);
+          if (negative) /* x = -Inf and y is an odd integer */
+            MPFR_SET_NEG(z);
+          else
+            MPFR_SET_POS(z);
 	  MPFR_RET(0);
 	}
       /* x is zero, y is an ordinary (non-zero) number */
