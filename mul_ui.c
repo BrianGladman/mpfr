@@ -36,17 +36,18 @@ mpfr_mul_ui(y, x, u, rnd_mode)
      mp_rnd_t rnd_mode;
 #endif
 {
-  mp_limb_t carry, *my, *old_my; unsigned long c; 
-  unsigned long xsize, ysize, cnt, dif; 
+  mp_limb_t carry, *my, *old_my, *my2; unsigned long c; 
+  unsigned long xsize, ysize, cnt, dif, ex; 
   TMP_DECL(marker);
 
   TMP_MARK(marker);
-  my = MANT(y); 
+  my = MANT(y); ex = EXP(x);  
   ysize = (PREC(y)-1)/BITS_PER_MP_LIMB + 1;
   xsize = (PREC(x)-1)/BITS_PER_MP_LIMB + 1;
 
+  old_my = my; 
+
   if (ysize < xsize) {
-      old_my = my; 
       my = (mp_ptr) TMP_ALLOC (xsize * BYTES_PER_MP_LIMB);
       dif=0;
     }
@@ -58,10 +59,32 @@ mpfr_mul_ui(y, x, u, rnd_mode)
   /* WARNING: count_leading_zeros is undefined for carry=0 */
   if (carry) count_leading_zeros(cnt, carry);
   else cnt=BITS_PER_MP_LIMB;
-      
-  c = mpfr_round_raw(my, my, PREC(x), (MPFR_SIGN(x)<0), 
-		     PREC(y)-BITS_PER_MP_LIMB+cnt, rnd_mode);
-  
+
+  /* Warning: if all significant bits are in the carry, one has to 
+     be careful */
+
+  if (cnt + PREC(y) < BITS_PER_MP_LIMB)
+    {
+      /* Quick 'n dirty */
+
+      if (xsize > ysize) {
+	my2 = (mp_ptr) TMP_ALLOC ((xsize + 1) * BYTES_PER_MP_LIMB);
+	my2[xsize] = mpn_lshift(my2, my, xsize, cnt) 
+	  | (carry << (BITS_PER_MP_LIMB - cnt));
+      }
+      else { 
+	my2 = (mp_ptr) TMP_ALLOC ((ysize + 1) * BYTES_PER_MP_LIMB);
+	my2[ysize] = mpn_lshift(my2, my, ysize, cnt)
+	  | (carry << (BITS_PER_MP_LIMB - cnt)); 
+      }      
+
+      my = my2; ex += BITS_PER_MP_LIMB - cnt;
+      carry = 0; cnt = BITS_PER_MP_LIMB;
+    }
+
+    c = mpfr_round_raw(my, my, PREC(x), (MPFR_SIGN(x)<0), 
+		       PREC(y)-BITS_PER_MP_LIMB+cnt, rnd_mode);
+
   /* If cnt = 1111111111111 and c = 1 we shall get depressed */
   if (c && (carry == (((mp_limb_t)1) << (BITS_PER_MP_LIMB - cnt)) - 1))
     {
@@ -76,7 +99,7 @@ mpfr_mul_ui(y, x, u, rnd_mode)
 	mpn_rshift(my, my, ysize, BITS_PER_MP_LIMB - cnt); 
       my[ysize - 1] |= (carry << cnt); 
     }
-  EXP(y) = EXP(x) + BITS_PER_MP_LIMB - cnt; 
+  EXP(y) = ex + BITS_PER_MP_LIMB - cnt; 
   if (ysize < xsize) MPN_COPY(old_my, my, ysize);
   /* set sign */
   if (MPFR_SIGN(y) * MPFR_SIGN(x) < 0) CHANGE_SIGN(y);
