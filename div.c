@@ -137,7 +137,9 @@ mpfr_div (mpfr_ptr r, mpfr_srcptr u, mpfr_srcptr v, unsigned char rnd_mode)
       printf(".\n"); 
 #endif
 
-      q_limb = mpn_divrem (rp, 0, tp0, rsize+rrsize, tmp, rsize);
+      q_limb = (rsize==rrsize) /* use Burnikel-Ziegler algorithm */
+	? mpn_divrem_n (rp, tp0, tmp, rsize)
+	: mpn_divrem (rp, 0, tp0, rsize+rrsize, tmp, rsize);
       tp = tp0; /* location of remainder */
 
 #ifdef DEBUG
@@ -164,7 +166,7 @@ mpfr_div (mpfr_ptr r, mpfr_srcptr u, mpfr_srcptr v, unsigned char rnd_mode)
 	  if (k) { mpn_lshift(rp, rp, rrsize, k); }
 	  rexp -= k; 
 	}
-      
+
       can_round = (mpfr_can_round_raw(rp, rrsize, sign_quotient, err, 
 				     GMP_RNDN, rnd_mode, PREC(r))
 	|| (usize == rsize && vsize == rsize && 
