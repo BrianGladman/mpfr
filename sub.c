@@ -22,9 +22,11 @@ mp_limb_t *ap0, *ap1;
 void mpfr_sub(a, b, c, rnd_mode) 
 mpfr_ptr a; mpfr_srcptr b, c; unsigned char rnd_mode;
 {
+  if (FLAG_NAN(b) || FLAG_NAN(c)) { SET_NAN(a); return; }
+  if (b==c) { SET_ZERO(a); return; }
   CHANGE_SIGN(c);
   mpfr_add(a, b, c, rnd_mode);
-  CHANGE_SIGN(c);
+  if (c!=a) CHANGE_SIGN(c);
 }
 
 /* put in ap[0]..ap[an-1] the value of bp[0]..bp[n-1] shifted by sh bits
