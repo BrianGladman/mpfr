@@ -1,6 +1,6 @@
 /* mpfr_sub1 -- internal function to perform a "real" subtraction
 
-Copyright 2001, 2002, 2003 Free Software Foundation.
+Copyright 2001, 2002, 2003, 2004 Free Software Foundation.
 Contributed by the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.
@@ -89,7 +89,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
      (-cancel) % BITS_PER_MP_LIMB to the right */
   bn      = MPFR_LIMB_SIZE(b); 
   MPFR_UNSIGNED_MINUS_MODULO(shift_b, cancel);
-  cancel1 = (cancel + shift_b) / BITS_PER_MP_LIMB; 
+  cancel1 = (cancel + shift_b) / BITS_PER_MP_LIMB;
  
   /* the high cancel1 limbs from b should not be taken into account */
   if (MPFR_UNLIKELY(shift_b == 0))
@@ -284,42 +284,46 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
   for (k = 0; (bn > 0) || (cn > 0); k = 1)
     {
+      /* get next limbs */
       bb = (bn > 0) ? bp[--bn] : 0;
       if ((cn > 0) && (cn-- <= cn0))
 	cc = cp[cn];
       else
 	cc = 0;
 
+      /* down is set when low(b) < low(c) */
       if (down == 0)
 	down = (bb < cc);
 
-      if ((rnd_mode == GMP_RNDN) && !k && sh == 0)
+      /* the case rounding to nearest with sh=0 is special since one couldn't
+         subtract above 1/2 ulp in the trailing limb of the result */
+      if ((rnd_mode == GMP_RNDN) && sh == 0 && k == 0)
 	{
-	  mp_limb_t half = MPFR_LIMB_HIGHBIT;
+          mp_limb_t half = MPFR_LIMB_HIGHBIT;
 
-	  is_exact = (bb == cc);
+          is_exact = (bb == cc);
 
-	  /* add one ulp if bb > cc + half
-	     truncate if cc - half < bb < cc + half
-	     sub one ulp if bb < cc - half
-	  */
+          /* add one ulp if bb > cc + half
+             truncate if cc - half < bb < cc + half
+             sub one ulp if bb < cc - half
+          */
 
-	  if (down)
-	    {
-	      if (cc >= half)
-		cc -= half;
-	      else
-		bb += half;
-	    }
-	  else /* bb >= cc */
-	    {
-	      if (cc < half)
-		cc += half;
-	      else
-		bb -= half;
-	    }
+          if (down)
+            {
+              if (cc >= half)
+                cc -= half;
+              else
+                bb += half;
+            }
+          else /* bb >= cc */
+            {
+              if (cc < half)
+                cc += half;
+              else
+                bb -= half;
+            }
 	}
-
+      
 #ifdef DEBUG
       printf("    bb=%lu cc=%lu down=%d is_exact=%d\n", bb, cc, down, is_exact);
 #endif
@@ -332,12 +336,19 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	      inexact = 1;
 	      goto truncate;
 	    }
-	  else /* round to nearest */
+	  else /* round to nearest: special case here since for sh=k=0
+                  bb = bb0 - MPFR_LIMB_HIGHBIT */
 	    {
 	      if (is_exact && sh == 0)
 		{
-		  inexact = 0;
-		  goto truncate;
+                  /* For k=0 we can't decide exactness since it may depend
+                     from low order bits.
+                     For k=1, the first low limbs matched: low(b)-low(c)<0. */
+                  if (k)
+                    {
+                      inexact = -1;
+                      goto truncate;
+                    }
 		}
 	      else if (down && sh == 0)
 		goto sub_one_ulp;
