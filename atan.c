@@ -190,7 +190,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
       if (mpfr_can_round (arctgt, realprec, GMP_RNDN, GMP_RNDZ,
                           MPFR_PREC (atan) + (rnd_mode == GMP_RNDN)))
 	break;
-      realprec += MPFR_INT_CEIL_LOG2 (realprec);
+      realprec += BITS_PER_MP_LIMB;
     }
 
   inexact = mpfr_set4 (atan, arctgt, rnd_mode, sign);
