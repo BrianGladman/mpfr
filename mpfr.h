@@ -47,7 +47,7 @@ typedef struct {
 			      /* not the number of mp_limb_t's. This means  */
 			      /* that the corresponding number of allocated
 				 limbs is >= ceil(_mp_prec/BITS_PER_MP_LIMB) */
-  mp_size_t _mp_size;         /* abs(_mp_size) is the number of allocated 
+  mp_size_t _mp_size;         /* ABSSIZE(.) is the number of allocated 
 				 limbs the field _mp_d points to.
 				 The sign is that of _mp_size.
 				 The number 0 is such that _mp_d[k-1]=0
