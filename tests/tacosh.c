@@ -26,74 +26,13 @@ MA 02111-1307, USA. */
 #include <mpfr.h>
 
 #define TEST_FUNCTION mpfr_acosh
+#define RAND_FUNCTION(x) (mpfr_random (x), mpfr_ui_div (x, 1, x, GMP_RNDN))
+#include "tgeneric.c"
 
 int
 main (int argc, char *argv[])
 {
-  unsigned int prec, err, yprec, n, p0 = 1, p1 = 100, N = 100;
-  mp_rnd_t rnd;
-  mpfr_t xt, x, y, z, t;
-
-  mpfr_init (x);
-  mpfr_init (xt);
-  mpfr_init (y);
-  mpfr_init (z);
-  mpfr_init (t);
-
-  /* tacosh prec - perform one random computation with precision prec */
-  if (argc >= 2)
-    {
-      p0 = p1 = atoi (argv[1]);
-      N = 1;
-    }
-
-  for (prec = p0; prec <= p1; prec++)
-    {
-      mpfr_set_prec (x, prec);
-      mpfr_set_prec (xt, prec);
-      mpfr_set_prec (z, prec);
-      mpfr_set_prec (t, prec);
-      yprec = prec + 10;
-
-      for (n=0; n<N; n++)
-	{
-	  
-	  mpfr_random (xt);
-	  mpfr_ui_div(x,1, xt, GMP_RNDU);
-	  rnd = random () % 4;
-	  mpfr_set_prec (y, yprec);
-	  TEST_FUNCTION (y, x, rnd);
-	  err = (rnd == GMP_RNDN) ? yprec + 1 : yprec;
-	  if (mpfr_can_round (y, err, rnd, rnd, prec))
-	    {
-	      mpfr_set (t, y, rnd);
-	      TEST_FUNCTION (z, x, rnd);
-	      if (mpfr_cmp (t, z))
-		{
-		  printf ("results differ for x=");
-		  mpfr_out_str (stdout, 2, prec, x, GMP_RNDN);
-		  printf (" prec=%u rnd_mode=%s\n", prec,
-			  mpfr_print_rnd_mode (rnd));
-		  printf ("   got ");
-		  mpfr_out_str (stdout, 2, prec, z, GMP_RNDN);
-		  putchar ('\n');
-		  printf ("   expected ");
-		  mpfr_out_str (stdout, 2, prec, t, GMP_RNDN);
-		  putchar ('\n');
-		  printf ("   approximation was ");
-		  mpfr_print_raw (y);
-		  putchar ('\n');
-		  exit (1);
-		}
-	    }
-	}
-    }
-
-  mpfr_clear (x);
-  mpfr_clear (xt);
-  mpfr_clear (y);
-  mpfr_clear (z);
-  mpfr_clear (t);
+  test_generic (1, 100, 25);
 
   return 0;
 }

@@ -26,71 +26,12 @@ MA 02111-1307, USA. */
 #include <mpfr.h>
 
 #define TEST_FUNCTION mpfr_atanh
+#include "tgeneric.c"
 
 int
 main (int argc, char *argv[])
 {
-  unsigned int prec, yprec, n, p0 = 1, p1 = 50, N = 50;
-  mp_rnd_t rnd;
-  mpfr_t x, y, z, t;
-
-  mpfr_init (x);
-  mpfr_init (y);
-  mpfr_init (z);
-  mpfr_init (t);
-
-  /* tatanh prec - perform one random computation with precision prec */
-  if (argc >= 2)
-    {
-      p0 = p1 = atoi (argv[1]);
-      N = 1;
-      
-    }
-
-  for (prec = p0; prec <= p1; prec++)
-    {
-      mpfr_set_prec (x, prec);
-      mpfr_set_prec (z, prec);
-      mpfr_set_prec (t, prec);
-      yprec = prec + 10;
-
-      for (n=0; n<N; n++)
-	{
-	  mpfr_random (x);
-          if (random() % 2)
-	    mpfr_neg (x, x, GMP_RNDZ);
-	  rnd = random () % 4;
-	  mpfr_set_prec (y, yprec);
-	  TEST_FUNCTION (y, x, rnd);
-	  if (mpfr_can_round (y, yprec, rnd, rnd, prec))
-	    {
-	      mpfr_set (t, y, rnd);
-	      TEST_FUNCTION (z, x, rnd);
-	      if (mpfr_cmp (t, z))
-		{
-		  printf ("results differ for x=");
-		  mpfr_out_str (stdout, 2,prec, x, GMP_RNDN);
-		  printf (" prec=%u rnd_mode=%s\n", prec,
-			  mpfr_print_rnd_mode (rnd));
-		  printf ("   got      ");
-		  mpfr_out_str (stdout, 2, prec, z, GMP_RNDN);
-		  putchar ('\n');
-		  printf ("   expected ");
-		  mpfr_out_str (stdout, 2, prec, t, GMP_RNDN);
-		  putchar ('\n');
-		  printf ("   approximation was ");
-		  mpfr_print_raw (y);
-		  putchar ('\n');
-		  exit (1);
-		}
-	    }
-	}
-    }
-
-  mpfr_clear (x);
-  mpfr_clear (y);
-  mpfr_clear (z);
-  mpfr_clear (t);
+  test_generic (1, 100, 25);
 
   return 0;
 }
