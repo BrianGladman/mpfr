@@ -94,8 +94,8 @@ In case of problem
    the test suite: C and C++ are not the same language!
    You should use a C compiler instead.
 
-Notes on Windows
-================
+Notes on Windows 32
+===================
 
 1 - we advise to use mingw (http://www.mingw.org/), which is simpler and
     less demanding than cygwin. Contrary to Cygwin, it also provides native
@@ -121,3 +121,7 @@ Notes on Windows
     compiled by GCC (Division of 64 bits integer, bcopy, alloca, ...).
     Of course, include it iff your compiler is not GCC.
 
+Notes on Windows 64
+===================
+ 
+ MPFR has not been tested on Windows 64.
