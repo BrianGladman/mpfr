@@ -3,7 +3,7 @@ AUTOMAKE_OPTIONS = gnu
 SUBDIRS = tests
 EXTRA_DIST = BUGS VERSION generic.c
 
-include_HEADERS = mpfr.h mpf2mpfr.h
+include_HEADERS = mpfr.h mpf2mpfr.h log_b2.h
 
 lib_LIBRARIES = libmpfr.a
 
