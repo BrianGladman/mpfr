@@ -99,7 +99,6 @@ mpfr_const_aux_log2(mylog, rnd_mode) mpfr_ptr mylog; mp_rnd_t rnd_mode;
     mpfr_clear(tmp3);
     if (mpfr_can_round(result, prec_x, GMP_RNDD, rnd_mode, prec_i_want)){
       mpfr_set(mylog, result, rnd_mode);
-      mpfr_clear(result);
       good = 1;
     } else
       {
