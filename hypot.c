@@ -1,6 +1,6 @@
 /* mpfr_hypot -- Euclidean distance
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 2001 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -30,7 +30,6 @@ MA 02111-1307, USA. */
 
     hypot(x,y)= sqrt(x^2+y^2) = z
  */
-int mpfr_hypot _PROTO((mpfr_ptr, mpfr_srcptr,mpfr_srcptr, mp_rnd_t));
 
 int
 #if __STDC__
@@ -43,31 +42,33 @@ mpfr_hypot (z, x,y, rnd_mode)
      mp_rnd_t rnd_mode;
 #endif
 {
-    
+  int inexact;
+
     /* particular cases */
 
-    if (MPFR_IS_NAN(x) || MPFR_IS_NAN(y)) {  MPFR_SET_NAN(z); return 1; }
+    if (MPFR_IS_NAN(x) || MPFR_IS_NAN(y))
+      {
+	MPFR_SET_NAN(z);
+	return 1;
+      }
+
     MPFR_CLEAR_NAN(z);
 
-    if (MPFR_IS_INF(x) || MPFR_IS_INF(y)){ 
-      MPFR_SET_INF(z);
-      if (MPFR_SIGN(z) < 0) MPFR_CHANGE_SIGN(z);
-      return 1;
-    }
+    if (MPFR_IS_INF(x) || MPFR_IS_INF(y))
+      {
+	MPFR_SET_INF(z);
+	if (MPFR_SIGN(z) < 0)
+	  MPFR_CHANGE_SIGN(z);
+	return 0;
+      }
 
     MPFR_CLEAR_INF(z);
   
-    if(!MPFR_NOTZERO(x)){
-      mpfr_set(z,y,rnd_mode);
-      if (MPFR_SIGN(z) < 0) MPFR_CHANGE_SIGN(z);
-      return 1;
-    }
-    if(!MPFR_NOTZERO(y)){
-      mpfr_set(z,x,rnd_mode);
-      if (MPFR_SIGN(z) < 0) MPFR_CHANGE_SIGN(z);
-      return 1;
-    }
+    if(!MPFR_NOTZERO(x))
+      return mpfr_abs (z, y, rnd_mode);
 
+    if(!MPFR_NOTZERO(y))
+      return mpfr_abs (z, x, rnd_mode);
 
     /* General case */
 
@@ -76,7 +77,7 @@ mpfr_hypot (z, x,y, rnd_mode)
       mpfr_t t, te,ti;       
 
       /* Flag calcul exacte */
-      int exact=0;
+      int not_exact=0;
 
       /* Declaration of the size variable */
       mp_prec_t Nx = MPFR_PREC(x);   /* Precision of input variable */
@@ -105,27 +106,27 @@ mpfr_hypot (z, x,y, rnd_mode)
         mpfr_set_prec(ti,Nt);   
 
         /* computations of hypot */
-        if(abs(mpfr_mul(te,x,x,GMP_RNDN)))         /* x^2 */
-          exact=1;
-        if(abs(mpfr_mul(ti,y,y,GMP_RNDN)))         /* y^2 */
-          exact=1;
-        if(abs(mpfr_add(t,te,ti,GMP_RNDD)))        /* x^2+y^2*/
-          exact=1;
-        if(abs(mpfr_sqrt(t,t,GMP_RNDN)))           /* sqrt(x^2+y^2)*/
-          exact=1;
+        if(mpfr_mul(te,x,x,GMP_RNDN))         /* x^2 */
+          not_exact=1;
+        if(mpfr_mul(ti,y,y,GMP_RNDN))         /* y^2 */
+          not_exact=1;
+        if(mpfr_add(t,te,ti,GMP_RNDD))        /* x^2+y^2*/
+          not_exact=1;
+        if(mpfr_sqrt(t,t,GMP_RNDN))           /* sqrt(x^2+y^2)*/
+          not_exact=1;
  
         /* estimation of the error */
         err=Nt-(2);
     
         Nt += 10; 
 
-      } while ((mpfr_can_round(t,err,GMP_RNDN,rnd_mode,Nz)!=1) && exact);
+      } while ((!mpfr_can_round(t,err,GMP_RNDN,rnd_mode,Nz)) && not_exact);
 
-      mpfr_set(z,t,rnd_mode);
+      inexact = mpfr_set (z, t, rnd_mode);
       mpfr_clear(t);
       mpfr_clear(ti);
       mpfr_clear(te);
 
     }
-    return 1;   
+    return inexact;
 }
