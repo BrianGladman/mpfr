@@ -10,7 +10,7 @@
 \def\minf{\bigtriangledown}
 \def\q{\hspace*{5mm}}
 \def\ulp{{\rm ulp}}
-\def\exp{{\rm EXP}}
+\def\Exp{{\rm EXP}}
 
 
 
@@ -708,6 +708,38 @@ error(v)& \leq & c_v \ulp(v) +
 & \leq & (c_v + \frac{2.k_u}{1+\sqrt{c_u^-}})  \ulp(v) \;\; \U{R8}\\\nonumber 
 \end{eqnarray}
 
+\subsection{Generic error of the exponential }\label{generic:exp}
+
+
+We want to compute the generic error of the exponential.
+
+\begin{eqnarray}\nonumber
+v&=&o(e^{u}) \\\nonumber
+\textnormal{Note:}&& error(u) \leq k_u \, \ulp(u)\\\nonumber
+\end{eqnarray}
+\begin{eqnarray}\nonumber
+error(v)& = &|v - e^{x}| \\\nonumber
+& \leq &|v - e^{u}| +|e^{u} - e^{x}| \\\nonumber
+& \leq & c_v \ulp(v) +  e^t |u-x| \n{ with Rolle's theorem, for } t\in[x,u]\n{ or }t\in[u,x]
+\end{eqnarray}
+\begin{eqnarray}\nonumber
+error(v)& \leq & c_v \ulp(v) +  c_u^* e^u k_u \ulp(u) \\\nonumber
+& \leq & c_v \ulp(v) +  2 c_u^* u k_u \ulp(e^u) \;\U{R4}\\\nonumber
+& \leq & (c_v +  2 c_u^* u k_u )\ulp(v) \;\U{R8}\\\nonumber
+& \leq & (c_v +  c_u^* 2^{\Exp(u)+1} k_u )\ulp(v)
+\end{eqnarray}
+\begin{eqnarray}\nonumber
+\textnormal{Note:}&& u= m_u 2^{e_u} \n{ and }\ulp(u)=2^{e_u-p} \n{ with } p \n{ the accuracy} \\\nonumber
+\n{ Case }&x \leq u&  c_u^* =1 \\\nonumber
+\n{ Case }&u \leq x& \\\nonumber
+&&  x \leq u + k_u \ulp(u)\\\nonumber
+&& e^x \leq e^u e^{k_u \ulp(u)}\\\nonumber
+&&e^x \leq e^u e^{k_u 2^{e_u-p}}\\\nonumber
+&\n{then}& c_u^* = e^{k_u 2^{\Exp(u)-p}}\\\nonumber
+\end{eqnarray}
+
+
+
 \subsection{Generic error of the logarithm }\label{generic:log}
 
 
@@ -762,7 +794,7 @@ with $x \geq 0$. We can deduce $e^x \geq 1$ and $0 \leq e^{-x} \leq
 
 
 \begin{center}
-\begin{tabular}{l|l |l}
+\begin{tabular}{l l l}
 
 \begin{minipage}{2.5cm}
 
@@ -783,7 +815,7 @@ $-\infty \;\; (\bullet)$
 \end{minipage} &
 \begin{minipage}{6cm}
 {\hspace{7cm}}
-\end{minipage}\\\hline
+\end{minipage}\\%\hline
 \begin{minipage}{2.5cm}
 ${\textnormal{error}}(v)$
 
@@ -830,7 +862,7 @@ $v$ to $+\infty \;\; (\bullet)$\\
 
 
 
-\end{minipage}\\\hline
+\end{minipage}\\%\hline
 \begin{minipage}{2.5cm}
 ${\textnormal{error}}(w)$
 
@@ -865,7 +897,7 @@ With $u \leq w$
 
 then $\ulp(u) \leq \ulp(w)$
 
-\end{minipage}\\\hline
+\end{minipage}\\%\hline
 \begin{minipage}{2.5cm}
 ${\textnormal{error}}(s)$
 
@@ -900,6 +932,253 @@ bound by $5 \;\; \ulp$ on the result. So, to calculate the size of
 intermediary variables, we have to add, at least, $\lceil \log_2 5 \rceil=3$ bits the wanted
 precision.
  
+\subsection{The inverse hyperbolic cosine function}
+
+The {\tt mpfr\_acosh} ($\n{acosh}{x}$) function implements the inverse hyperbolic
+cosine as :
+
+$$
+\n{acosh} = \log \left( \sqrt{x+1} \sqrt{x-1} + x \right) 
+$$
+
+The algorithm used for the calculation of the inverse hyperbolic cosine is as follows
+
+\begin{eqnarray}\nonumber
+q&\leftarrow&o(x+1)\\\nonumber
+r&\leftarrow&o(x-1)\\\nonumber
+s&\leftarrow&o(\sqrt{q})\\\nonumber
+t&\leftarrow&o(\sqrt{r})\\\nonumber
+u&\leftarrow&o(s \times t)\\\nonumber
+v&\leftarrow&o(u+x)\\\nonumber
+w&\leftarrow&o(\log  v)
+\end{eqnarray}
+
+Now, we have to bound the rounding error for each step of this
+algorithm. First, let consider the function field : {\tt mpfr\_acosh} is define for $x \geq 1$.
+
+\begin{center}
+\begin{tabular}{l l l}
+
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(q)$
+
+
+$q \leftarrow \minf(x+1) $
+$(\bullet)$
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+
+
+\begin{eqnarray}\nonumber
+  &&|q-(x+1)| \\\nonumber
+  &       \leq&  2 \ulp(q)\;\;(\star)\\\nonumber
+\end{eqnarray}
+
+
+\end{minipage} &
+\begin{minipage}{6cm}
+
+($\star$)
+
+see subsection \ref{generic:sous}
+
+
+\end{minipage}\\%\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(r)$
+
+
+$r \leftarrow \minf(x-1) $
+$(\bullet\bullet)$
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+
+
+\begin{eqnarray}\nonumber
+  &&|r-(x-1)| \\\nonumber
+  &       \leq&  (1+2^{\Exp(x)-\Exp(r)}) \ulp(r)\;\;(\star)\\\nonumber
+\end{eqnarray}
+
+
+\end{minipage} &
+\begin{minipage}{6cm}
+
+($\star$)
+
+see subsection \ref{generic:sous}
+
+
+\end{minipage}\\%\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(s)$
+
+
+$s \leftarrow \pinf(\sqrt{q}) $
+($\bullet\bullet\bullet$)
+
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+\begin{eqnarray}\nonumber
+  &&|s-\sqrt{x+1}| \\\nonumber
+  &       \leq& \ulp(s) + |\sqrt{q}-\sqrt{x+1}|\\\nonumber
+  &       \leq& \ulp(s) + \frac{1}{\sqrt{q} + \sqrt{x+1}}|q-(x+1)|\\\nonumber
+  &       \leq& \ulp(s) + \frac{1}{\sqrt{q} + \sqrt{x+1}}.2.\ulp(q)  \\\nonumber
+  &       \leq& \ulp(s) + \frac{1}{2\sqrt{q}}.2.\ulp(q) \;\;(\star) \\\nonumber
+  &       \leq& \ulp(s) + 2.\ulp(\sqrt{q}) \;\;(\star\star)\\\nonumber
+  &       \leq& (1 + 2) \ulp(s) \;\;(\star\star\star)
+\end{eqnarray}
+
+
+\end{minipage} &
+\begin{minipage}{6cm}
+
+($\star$)
+
+If $q \leftarrow \minf(x+1) \;(\bullet)$
+
+Then $q \leq x+1$
+
+or
+
+$\frac{1}{\sqrt{x+1}+\sqrt{v}} \leq \frac{1}{2.\sqrt{q}}$
+
+($\star\star$)
+
+$\U{R4}$
+
+($\star\star\star$)
+
+$\U{R8}$
+
+\end{minipage}\\%\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(t)$
+
+
+$t \leftarrow \pinf(\sqrt{r}) $
+($\bullet\bullet\bullet\bullet$)
+
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+\begin{eqnarray}\nonumber
+  &&|t-\sqrt{x-1}| \\\nonumber
+  &       \leq& \ulp(t) + |\sqrt{r}-\sqrt{x-1}|\\\nonumber
+  &       \leq& \ulp(t) + \frac{1}{\sqrt{r} + \sqrt{x-1}}|r-(x-1)|\\\nonumber
+  &       \leq& \ulp(t) + \frac{1}{\sqrt{r} + \sqrt{x+1}} \\\nonumber
+  &      \cdots & (1+2^{\Exp(x)-\Exp(r)}) \ulp(r)  \\\nonumber
+  &       \leq& \ulp(t) + \frac{1}{2\sqrt{r}} \cdots \;\;(\star) \\\nonumber
+  &\cdots& (1+2^{\Exp(x)-\Exp(r)}) \ulp(r) \;\;(\star) \\\nonumber
+  &       \leq& \ulp(t) + (1+2^{\Exp(x)-\Exp(r)})\ulp(\sqrt{r}) \;\;(\star\star)\\\nonumber
+  &       \leq& (2+2^{\Exp(x)-\Exp(r)}) \ulp(t) \;\;(\star\star\star)
+\end{eqnarray}
+
+
+\end{minipage} &
+\begin{minipage}{6cm}
+
+($\star$)
+
+If $r \leftarrow \minf(x-1) \;(\bullet\bullet)$ 
+
+Then $q \leq x+1$
+
+or
+
+$\frac{1}{\sqrt{x-1}+\sqrt{r}} \leq \frac{1}{2.\sqrt{r}}$
+
+($\star\star$)
+
+$\U{R4}$
+
+($\star\star\star$)
+
+$\U{R8}$
+
+\end{minipage}\\%\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(u)$
+
+
+$u \leftarrow o(t \times s) $
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+\begin{eqnarray}\nonumber
+  &&|u-(\sqrt{x+1} \sqrt{x-1})| \\\nonumber
+  &       \leq& (1+2 \times 3 +2 \times (2+2^{\Exp{x}-\Exp{r}}))\\\nonumber
+  &       \cdots&  \ulp(w) \;(\star)\\\nonumber
+  &       \leq& (13+2^{\Exp{x}-\Exp{r}+1}) \ulp(u)
+\end{eqnarray}
+
+
+\end{minipage} &
+\begin{minipage}{6cm}
+
+($\star$)
+
+see subsection \ref{generic:mul}
+
+with $(\bullet\bullet\bullet)$ and $(\bullet\bullet\bullet\bullet)$
+\end{minipage}\\%\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(v)$
+
+
+$v \leftarrow o(u+x) $
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+\begin{eqnarray}\nonumber
+  &&|v-(\sqrt{x+1} \sqrt{x-1} +x)| \\\nonumber
+  &       \leq& (15+2^{\Exp(x)-\Exp(r)+1}) \ulp(v)
+\end{eqnarray}
+
+
+\end{minipage} &
+\begin{minipage}{6cm}
+
+($\star$)
+
+see subsection \ref{generic:sous}
+
+\end{minipage}\\%\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(w)$
+
+
+$w \leftarrow o(\log{v}) $
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+\begin{eqnarray}\nonumber
+  &&|w-\log(\sqrt{x+1} \sqrt{x-1} +x)| \\\nonumber
+  &       \leq& (1+(15+2^{\Exp(x)-\Exp(r)+1}).2^{1-\Exp(w)} \ulp(w) \\\nonumber
+  &       \leq& (1+15.2^{1-\Exp(w)}+2^{\Exp(x)-\Exp(r)-\Exp(w)+2}) \ulp(w)
+\end{eqnarray}
+
+
+\end{minipage} &
+\begin{minipage}{6cm}
+
+($\star$)
+
+see subsection \ref{generic:log}
+
+\end{minipage}
+\end{tabular}
+\end{center}
+
+That shows the rounding error on the calculation of $\n{acosh} x$ can
+be bound by $ (1+15.2^{1-\Exp(w)}+2^{\Exp(x)-\Exp(r)-\Exp(w)+2})\;\;
+\ulp$ on the result. So, to calculate the size of intermediary
+variables, we have to add, at least, $\lceil \log_2
+(1+15.2^{1-\Exp(w)}+2^{\Exp(x)-\Exp(r)-\Exp(w)+2}) \rceil$ bits the
+wanted precision.
+ 
 
 \subsection{The hyperbolic sine function}
 
@@ -914,10 +1193,10 @@ The algorithm used for the calculation of the hyperbolic sine is as follows\foot
   error associate with the calcualtion of $u$}:
 
 \begin{eqnarray}\nonumber
-u&\leftarrow&o(e^x)\\\label{sinhalgo1}
-v&\leftarrow&o({u}^{-1})\\\label{sinhalgo2}
-w&\leftarrow&o(u-v)\\\label{sinhalgo3}
-s&\leftarrow&\frac{1}{2} w\\\label{sinhalgo4}
+u&\leftarrow&o(e^x)\\\nonumber
+v&\leftarrow&o({u}^{-1})\\\nonumber
+w&\leftarrow&o(u-v)\\\nonumber
+s&\leftarrow&\frac{1}{2} w
 \end{eqnarray}
 
 Now, we have to bound the rounding error for each step of this
@@ -929,7 +1208,7 @@ with $x \geq 0$. We can deduce $e^x \geq 1$ and $0 \leq e^{-x} \leq
 
 
 \begin{center}
-\begin{tabular}{l|l |l}
+\begin{tabular}{l l l}
 
 \begin{minipage}{2.5cm}
 
@@ -950,7 +1229,7 @@ $(\bullet)$
 \end{minipage} &
 \begin{minipage}{6cm}
 {\hspace{7cm}}
-\end{minipage}\\\hline
+\end{minipage}\\%\hline
 \begin{minipage}{2.5cm}
 ${\textnormal{error}}(v)$
 
@@ -995,7 +1274,7 @@ it is possible with $v=\pinf(u^{-1})$ $(\bullet\bullet)$
 
 
 
-\end{minipage}\\\hline
+\end{minipage}\\%\hline
 \begin{minipage}{2.5cm}
 ${\textnormal{error}}(w)$
 
@@ -1011,7 +1290,7 @@ $w \leftarrow o(u+v) $
   &       \leq&  |w - (u-v)|+|u - e^x|+|-v + e^{-x}|\\\nonumber
   &       \leq& \ulp(w) + \ulp(u) + 3\ulp(v)\\\nonumber
   &       \leq& \ulp(w) + 4\ulp(u)\;\;(\star)\\\nonumber
-  &       \leq& (1+ 4 \cdot 2^{\exp(u)-\exp(w)}) \ulp(w)\;\;(\star\star)\\\nonumber
+  &       \leq& (1+ 4 \cdot 2^{\Exp(u)-\Exp(w)}) \ulp(w)\;\;(\star\star)\\\nonumber
 \end{eqnarray}
 
 
@@ -1028,7 +1307,7 @@ $(\star\star)$
 
 see subsection \ref{generic:sous}
 
-\end{minipage}\\\hline
+\end{minipage}\\%\hline
 \begin{minipage}{2.5cm}
 ${\textnormal{error}}(s)$
 
@@ -1041,7 +1320,7 @@ $s \leftarrow o(\frac{w}{2}) $
 
 \begin{eqnarray}\nonumber
  {\textnormal{error}}(s) & = &  {\textnormal{error}}(w)\\\nonumber
- & \leq &  (1+ 4 \cdot 2^{\exp(u)-\exp(w)}) \ulp(w)
+ & \leq &  (1+ 4 \cdot 2^{\Exp(u)-\Exp(w)}) \ulp(w)
 \end{eqnarray}
 
 
@@ -1059,12 +1338,494 @@ $s \leftarrow o(\frac{w}{2}) $
 \end{center}
 
 
-That show the rounding error on the calculation of $\sinh x$ can be bound by $(1+ 4 \cdot 2^{\exp(u)-\exp(w)}) \ulp(w)$, then the number of bits need to add to the want accuracy to define intermediary variable is :
+That show the rounding error on the calculation of $\sinh x$ can be bound by $(1+ 4 \cdot 2^{\Exp(u)-\Exp(w)}) \ulp(w)$, then the number of bits need to add to the want accuracy to define intermediary variable is :
 
 \[
-N_t=\lceil \log_2(1+ 4 \cdot 2^{\exp(u)-\exp(w)}) \rceil
+N_t=\lceil \log_2(1+ 4 \cdot 2^{\Exp(u)-\Exp(w)}) \rceil
 \]
 
+
+\subsection{The inverse hyperbolic sine function}
+
+The {\tt mpfr\_asinh} ($\n{acosh}{x}$) function implements the inverse hyperbolic sine as :
+
+$$
+\n{asinh} = \log \left( \sqrt{x^2+1} + x \right) 
+$$
+
+The algorithm used for the calculation of the inverse hyperbolic sine is as follows
+
+\begin{eqnarray}\nonumber
+s&\leftarrow&o(x^2)\\\nonumber
+t&\leftarrow&o(s+1)\\\nonumber
+u&\leftarrow&o(\sqrt{t})\\\nonumber
+v&\leftarrow&o(u+x)\\\nonumber
+w&\leftarrow&o(\log  v)
+\end{eqnarray}
+
+
+Now, we have to bound the rounding error for each step of this
+algorithm.  First, let consider the parity of hyperbolic arcsine
+($\n{asinh}(-x)=-\n{asinh}(x)$) : the problem is reduced to calculate $\n{asinh} x$
+with $x \geq 0$.
+
+\begin{center}
+\begin{tabular}{l l l}
+
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(s)$
+
+
+$s \leftarrow o(x^2) $
+
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+\begin{eqnarray}\nonumber
+  &&|s-x^2| \\\nonumber
+  &       \leq&  \ulp(s)\;\;(\star)\\\nonumber
+\end{eqnarray}
+
+
+\end{minipage} &
+\begin{minipage}{6cm}
+
+\end{minipage}\\%\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(t)$
+
+
+$t \leftarrow \minf(s+1) $
+$(\bullet)$
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+
+
+\begin{eqnarray}\nonumber
+  &&|t-(x^2+1)| \\\nonumber
+  &       \leq&  2 \ulp(t) \;\;(\star)\\\nonumber
+\end{eqnarray}
+
+
+\end{minipage} &
+\begin{minipage}{6cm}
+
+($\star$)
+
+see subsection \ref{generic:sous}
+
+
+\end{minipage}\\%\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(u)$
+
+
+$u \leftarrow o(\sqrt{t}) $
+
+
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+\begin{eqnarray}\nonumber
+  &&|u-\sqrt{x^2+1}| \\\nonumber
+  &       \leq& 3 \ulp(u) \;(\star)
+\end{eqnarray}
+
+
+\end{minipage} &
+\begin{minipage}{6cm}
+
+($\star$)
+
+see subsection \ref{generic:sqrt}
+
+with ($\bullet$)
+
+\end{minipage}\\%\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(v)$
+
+
+$v \leftarrow o(u+x) $
+
+
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+\begin{eqnarray}\nonumber
+  &&|v-(\sqrt{x^2+1}+x)| \\\nonumber
+  &       \leq& 5 \ulp(v) \;(\star)
+\end{eqnarray}
+
+
+\end{minipage} &
+\begin{minipage}{6cm}
+
+($\star$)
+
+see subsection \ref{generic:sous}
+
+\end{minipage}\\%\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(w)$
+
+
+$w \leftarrow o(\log v) $
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+\begin{eqnarray}\nonumber
+  &&|w-\log(\sqrt{x^2+1}+x)| \\\nonumber
+  &       \leq& (1+5.2^{1-\Exp(w)}) \ulp(w) \;\star
+\end{eqnarray}
+
+
+\end{minipage} &
+\begin{minipage}{6cm}
+
+($\star$)
+
+see subsection \ref{generic:log}
+
+\end{minipage}
+\end{tabular}
+\end{center}
+
+That shows the rounding error on the calculation of $\n{asinh} x$ can
+be bound by $ (1+5.2^{1-\Exp(w)})\;\; \ulp$ on the result. So, to
+calculate the size of intermediary variables, we have to add, at
+least, $\lceil \log_2 (1+5.2^{1-\Exp(w)}) \rceil$ bits the wanted
+precision.
+ 
+\subsection{The hyperbolic tangent function}
+
+The {\tt mpfr\_tanh} ($\tanh{x}$) function implements the hyperbolic
+tangent as :
+
+$$
+\tanh x = \frac{ e^{2 \cdot x} -1 }{ e^{2 \cdot x} +1} 
+$$
+
+The algorithm used for the calculation of the hyperbolic tangent is as follows\footnote{$o()$ represent the arrondi error and $error(u)$ the
+  error associate with the calcualtion of $u$}:
+
+\begin{eqnarray}\nonumber
+u&\leftarrow&o(2 \cdot x)\\\nonumber
+v&\leftarrow&o(e^u)\\\nonumber
+w&\leftarrow&o(v+1)\\\nonumber
+r&\leftarrow&o(v-1)\\\nonumber
+s&\leftarrow&o(\frac{r}{w})
+\end{eqnarray}
+
+Now, we have to bound the rounding error for each step of this
+algorithm.  First, let consider the parity of hyperbolic tangent
+($\tanh(-x)=-\tanh(x)$) : the problem is reduced to calculate $\tanh x$ with $x \geq 0$. We can deduce $e^x \geq 1$.
+
+
+\begin{center}
+\begin{tabular}{l l l}
+
+\begin{minipage}{2.5cm}
+
+
+${\textnormal{error}}(u)$
+
+
+$u \leftarrow o(2 \cdot x)$
+
+
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+
+exact
+
+\end{minipage} &
+\begin{minipage}{6cm}
+{\hspace{7cm}}
+\end{minipage}\\%\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(v)$
+
+
+$v \leftarrow o(e^{u}) $
+
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+
+
+\begin{eqnarray}\nonumber
+  &&|v-e^{2 \cdot x}| \\\nonumber
+  &       \leq&  |v - e^{u}| +  |e^{u}  - e^{2 \cdot x}|\\\nonumber
+  &       \leq& \ulp(v)
+\end{eqnarray}
+
+
+\end{minipage} &
+\begin{minipage}{6cm}
+
+
+\end{minipage}\\%\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(w)$
+
+
+$w \leftarrow \minf(v+1) $
+
+$(\bullet)$
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+
+
+\begin{eqnarray}\nonumber
+  &&|w-(e^{2 \cdot x}+1)| \\\nonumber
+  &\leq&  |w - (v+1)|+|(v+1) - (e^{2 \cdot x}+1)|\\\nonumber
+  &\leq&  \ulp(w) + \ulp(v)\\\nonumber
+  &\leq&  2 \cdot \ulp(w)\;(\star)\\\nonumber
+\end{eqnarray}
+
+\end{minipage} &
+\begin{minipage}{6cm}
+$(\star)$
+
+With $v \leq w$ then $\ulp(v) \leq \ulp(w)$ 
+
+\end{minipage}\\%\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(r)$
+
+
+$r \leftarrow \pinf(v-1) $
+
+$(\bullet\bullet)$
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+
+
+\begin{eqnarray}\nonumber
+  &&|r-(e^{2 \cdot x}-1)| \\\nonumber
+  &\leq&  |r - (v-1)|+|(v-1) - (e^{2 \cdot x}-1)|\\\nonumber
+  &\leq&  \ulp(r) + \ulp(v)\\\nonumber
+  &\leq&  (1+2^{\Exp(v)-\Exp(r)}) \ulp(r)\;(\star)\\\nonumber
+\end{eqnarray}
+
+\end{minipage} &
+\begin{minipage}{6cm}
+$(\star)$
+
+
+see subsection \ref{generic:sous}
+
+\end{minipage}\\%\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(s)$
+
+
+$s \leftarrow o(\frac{r}{w}) $
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+
+
+\begin{eqnarray}\nonumber
+  &&|s-\frac{e^{2x}-1}{e^{2x}+1}| \\\nonumber
+  &\leq& (1+2 \times 2+ \hdots\\\nonumber
+  &\hdots& 2(1+2^{\Exp(v)-\Exp(r)})) \ulp(s) \;\;(\star)\\\nonumber
+\end{eqnarray}
+
+\end{minipage} &
+\begin{minipage}{6cm}
+$(\star)$
+
+
+see subsection \ref{generic:div}
+
+
+with $(\bullet)$ and $(\bullet\bullet)$
+
+\end{minipage}
+\end{tabular}
+\end{center}
+
+
+That show the rounding error on the calculation of $\tanh x$ can be
+bound by $(1+2 \times 2+2(1+2^{\Exp(v)-\Exp(r)})) \ulp(s)$, then the
+number of bits need to add to the want accuracy to define intermediary
+variable is :
+
+\[
+N_t=\lceil \log_2(7+2^{\Exp(v)-\Exp(r)+1}) \rceil
+\]
+
+
+
+
+
+\subsection{The inverse hyperbolic tangent function}
+
+The {\tt mpfr\_atanh} ($\n{acosh}{x}$) function implements the inverse hyperbolic tangent as :
+
+$$
+\n{atanh} = \frac{1}{2} \log \frac{1+x}{1-x} 
+$$
+
+The algorithm used for the calculation of the inverse hyperbolic tangent is as follows
+
+\begin{eqnarray}\nonumber
+s&\leftarrow&o(1+x)\\\nonumber
+t&\leftarrow&o(1-x)\\\nonumber
+u&\leftarrow&o(\frac{s}{t})\\\nonumber
+v&\leftarrow&o(\log u)\\\nonumber
+w&\leftarrow&o(\frac{1}{2} v)
+\end{eqnarray}
+
+
+Now, we have to bound the rounding error for each step of this
+algorithm. First, let consider the parity of hyperbolic arctan
+($\n{atanh}(-x)=-\n{atanh}(x)$) : the problem is reduced to calculate
+$\n{atanh} x$ with $x \geq 0$.
+
+\begin{center}
+\begin{tabular}{l l l}
+
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(s)$
+
+
+$s \leftarrow \pinf(1+x) $
+$(\bullet)$
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+\begin{eqnarray}\nonumber
+  &&|s-(1+x)| \\\nonumber
+  &       \leq&  2 \ulp(s)\;\;(\star)\\\nonumber
+\end{eqnarray}
+
+
+\end{minipage} &
+\begin{minipage}{6cm}
+
+see subsection \ref{generic:sous}
+
+
+\end{minipage}\\%\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(t)$
+
+$t \leftarrow \minf(1-x) $
+$(\bullet\bullet)$
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+
+
+\begin{eqnarray}\nonumber
+  &&|t-(1-x)| \\\nonumber
+  &       \leq&  (1+2^{\Exp(x)-\Exp(t)}) \ulp(t) \;\;(\star)\\\nonumber
+\end{eqnarray}
+
+
+\end{minipage} &
+\begin{minipage}{6cm}
+
+($\star$)
+
+see subsection \ref{generic:sous}
+
+
+\end{minipage}\\%\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(u)$
+
+
+$u \leftarrow o(\frac{s}{t}) $
+
+
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+\begin{eqnarray}\nonumber
+  &&|u-\frac{1+x}{1-x}| \\\nonumber
+  &       \leq& (1+ 2 \times 2 + \\\nonumber
+  &       \cdots& 2 \times (1+2^{\Exp(x)-\Exp(t)}))\ulp{u} \;(\star)\\\nonumber
+  &       \leq& (7+2^{\Exp(x)-\Exp(t)+1})\ulp(u)
+\end{eqnarray}
+
+
+\end{minipage} &
+\begin{minipage}{6cm}
+
+($\star$)
+
+see subsection \ref{generic:inv}
+
+with ($\bullet$) and ($\bullet\bullet$)
+
+\end{minipage}\\%\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(v)$
+
+
+$v \leftarrow o(\log(u)) $
+
+
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+\begin{eqnarray}\nonumber
+  &&|v-(\log{\frac{1+x}{1-x}})| \\\nonumber
+  &       \leq& (1+(7+2^{\Exp(x)-\Exp(t)+1}) \\\nonumber
+  &       \cdots&  \times 2^{1-\Exp(v)}) \ulp(v)\;(\star)\\\nonumber
+  &       \leq& (1+7 \times 2^{1-\Exp(v)} +\\\nonumber
+  &       \cdots&  2^{\Exp(x)-\Exp(t)-\Exp(v)+2}) \ulp(v) 
+\end{eqnarray}
+
+
+\end{minipage} &
+\begin{minipage}{6cm}
+
+($\star$)
+
+see subsection \ref{generic:log}
+
+\end{minipage}\\%\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(w)$
+
+
+$w \leftarrow o(\frac{1}{2} v) $
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+\begin{eqnarray}\nonumber
+  &&|w-\frac{1}{2}\log{\frac{1+x}{1-x}}| \\\nonumber
+  &       \leq& (1+7 \times 2^{1-\Exp(v)} + \\\nonumber
+  &       \cdots&  2^{\Exp(x)-\Exp(t)-\Exp(v)+2}) \ulp(w) \;\star
+\end{eqnarray}
+
+
+\end{minipage} &
+\begin{minipage}{6cm}
+
+($\star$) exact
+
+
+\end{minipage}
+\end{tabular}
+\end{center}
+
+That shows the rounding error on the calculation of $\n{atanh} x$ can
+be bound by $ (1+7 \times 2^{1-\Exp(v)} +
+2^{\Exp(x)-\Exp(t)-\Exp(v)+2})\;\; \ulp$ on the result. So, to
+calculate the size of intermediary variables, we have to add, at
+least, $\lceil \log_2 (1+7 \times 2^{1-\Exp(v)} +
+2^{\Exp(x)-\Exp(t)-\Exp(v)+2}) \rceil$ bits the wanted precision.
+ 
 
 
 \subsection{The euclidean distance function}
@@ -1090,7 +1851,7 @@ algorithm.
 
 
 \begin{center}
-\begin{tabular}{l|l |l}
+\begin{tabular}{l l l}
 
 \begin{minipage}{2.5cm}
 
@@ -1110,7 +1871,7 @@ $u \leftarrow o(x^2)$
 \end{minipage} &
 \begin{minipage}{6cm}
 {\hspace{7cm}}
-\end{minipage}\\\hline
+\end{minipage}\\%\hline
 \begin{minipage}{2.5cm}
 ${\textnormal{error}}(v)$
 
@@ -1129,7 +1890,7 @@ $v \leftarrow o({y}^{2}) $
 \begin{minipage}{6cm}
 
 
-\end{minipage}\\\hline
+\end{minipage}\\%\hline
 \begin{minipage}{2.5cm}
 ${\textnormal{error}}(w)$
 
@@ -1156,7 +1917,7 @@ $(\star)$
 
 With $v \leq w$ and $u \leq w$
 
-\end{minipage}\\\hline
+\end{minipage}\\%\hline
 \begin{minipage}{2.5cm}
 ${\textnormal{error}}(s)$
 
@@ -1224,7 +1985,7 @@ algorithm.
 
 
 \begin{center}
-\begin{tabular}{l|l |l}
+\begin{tabular}{l l l}
 
 \begin{minipage}{2.5cm}
 
@@ -1244,7 +2005,7 @@ $u \leftarrow o(x \times y)$
 \end{minipage} &
 \begin{minipage}{6cm}
 {\hspace{7cm}}
-\end{minipage}\\\hline
+\end{minipage}\\%\hline
 \begin{minipage}{2.5cm}
 ${\textnormal{error}}(v)$
 
@@ -1255,7 +2016,7 @@ $v \leftarrow o(z+u) $
 \begin{minipage}{7.5cm}
 
 \begin{eqnarray}\nonumber
-  |v-(z+xy)| &\leq& \ulp(v) + |u - xy)|\\\nonumber
+  |v-(z+xy)| &\leq& \ulp(v) + |(z+u) - (z+xy)|\\\nonumber
 &\leq& (1+2^{e_u-e_v})\ulp(v)\;\;(\star)\\\nonumber
 \end{eqnarray}
 
@@ -1297,7 +2058,7 @@ algorithm.
 
 
 \begin{center}
-\begin{tabular}{l|l |l}
+\begin{tabular}{l l l}
 
 \begin{minipage}{2.5cm}
 
@@ -1317,7 +2078,7 @@ $u \leftarrow o(e^x)$
 \end{minipage} &
 \begin{minipage}{6cm}
 {\hspace{7cm}}
-\end{minipage}\\\hline
+\end{minipage}\\%\hline
 \begin{minipage}{2.5cm}
 ${\textnormal{error}}(v)$
 
@@ -1369,7 +2130,7 @@ Now, we have to bound the rounding error for each step of this
 algorithm.  
 
 \begin{center}
-\begin{tabular}{l|l |l}
+\begin{tabular}{l l l}
 
 \begin{minipage}{2.5cm}
 
@@ -1389,7 +2150,7 @@ $u \leftarrow o(x)$
 \end{minipage} &
 \begin{minipage}{6cm}
 {\hspace{7cm}}
-\end{minipage}\\\hline
+\end{minipage}\\%\hline
 \begin{minipage}{2.5cm}
 ${\textnormal{error}}(v)$
 
@@ -1408,7 +2169,7 @@ $v \leftarrow o(1+u) $
 \begin{minipage}{6cm}
 ($\star$)
 see subsection \ref{generic:sous}
-\end{minipage}\\\hline
+\end{minipage}\\%\hline
 \begin{minipage}{2.5cm}
 ${\textnormal{error}}(w)$
 
@@ -1437,36 +2198,35 @@ least, $\lceil \log_2 (1+(1+2^{e_u-e_v})2^{1-e_w}) \rceil$ bits the wanted
 precision.
 
 
+\subsection{The log2 or log10 function}
+
+The {\tt mpfr\_log2} or {\tt mpfr\_log10} function implements the log in base 2 or 10 function  as :
+
+\[
+\textnormal{log2} (x) = \frac{log{x}}{log{2}}
+\]
+
+or
+
+\[
+\textnormal{log10} (x) = \frac{log{x}}{log{10}}
+\]
 
 
-
-\subsection{The hyperbolic tangent function}
-
-The {\tt mpfr\_tanh} ($\tanh{x}$) function implements the hyperbolic
-tangent as :
-
-$$
-\tanh x = \frac{ e^{2 \cdot x} -1 }{ e^{2 \cdot x} +1} 
-$$
-
-The algorithm used for the calculation of the hyperbolic tangent is as follows\footnote{$o()$ represent the arrondi error and $error(u)$ the
-  error associate with the calcualtion of $u$}:
+The algorithm used for this calculation is the same for $\n{log2}$ or
+$\n{log10}$ and is descibed as follows for $t=2 \n{ or } 10$:
 
 \begin{eqnarray}\nonumber
-u&\leftarrow&o(2 \cdot x)\\\label{tanhalgo1}
-v&\leftarrow&o(e^u)\\\label{tanhalgo2}
-w&\leftarrow&o(v+1)\\\label{tanhalgo3}
-r&\leftarrow&o(v-1)\\\label{tanhalgo4}
-s&\leftarrow&o(\frac{r}{w})\\\label{tanhalgo5}
+u&\leftarrow&o(\log(x))\\\nonumber
+v&\leftarrow&o(\log(t))\\\nonumber
+w&\leftarrow&o(\frac{u}{v})\\\nonumber
 \end{eqnarray}
 
 Now, we have to bound the rounding error for each step of this
-algorithm.  First, let consider the parity of hyperbolic tangent
-($\tanh(-x)=-\tanh(x)$) : the problem is reduced to calculate $\tanh x$ with $x \geq 0$. We can deduce $e^x \geq 1$.
-
+algorithm with $x \geq 0$ and $y$ is a floating number.
 
 \begin{center}
-\begin{tabular}{l|l |l}
+\begin{tabular}{l l l}
 
 \begin{minipage}{2.5cm}
 
@@ -1474,134 +2234,167 @@ algorithm.  First, let consider the parity of hyperbolic tangent
 ${\textnormal{error}}(u)$
 
 
-$u \leftarrow o(2 \cdot x)$
-
-
-\end{minipage} &
-\begin{minipage}{7.5cm}
-
-
-exact
-
-\end{minipage} &
-\begin{minipage}{6cm}
-{\hspace{7cm}}
-\end{minipage}\\\hline
-\begin{minipage}{2.5cm}
-${\textnormal{error}}(v)$
-
-
-$v \leftarrow o(e^{u}) $
-
-\end{minipage} &
-\begin{minipage}{7.5cm}
-
-
-
-\begin{eqnarray}\nonumber
-  &&|v-e^{2 \cdot x}| \\\nonumber
-  &       \leq&  |v - e^{u}| +  |e^{u}  - e^{2 \cdot x}|\\\nonumber
-  &       \leq& \ulp(v)
-\end{eqnarray}
-
-
-\end{minipage} &
-\begin{minipage}{6cm}
-
-
-\end{minipage}\\\hline
-\begin{minipage}{2.5cm}
-${\textnormal{error}}(w)$
-
-
-$w \leftarrow \minf(v+1) $
-
+$u \leftarrow \pinf(\log(x))$
 $(\bullet)$
 \end{minipage} &
 \begin{minipage}{7.5cm}
 
-
-
 \begin{eqnarray}\nonumber
-  &&|w-(e^{2 \cdot x}+1)| \\\nonumber
-  &\leq&  |w - (v+1)|+|(v+1) - (e^{2 \cdot x}+1)|\\\nonumber
-  &\leq&  \ulp(w) + \ulp(v)\\\nonumber
-  &\leq&  2 \cdot \ulp(w)\;(\star)\\\nonumber
+  |u-\log(x)| &\leq& \ulp(u)
 \end{eqnarray}
 
 \end{minipage} &
 \begin{minipage}{6cm}
-$(\star)$
 
-With $v \leq w$ then $\ulp(v) \leq \ulp(w)$ 
-
-\end{minipage}\\\hline
+\end{minipage}\\%\hline
 \begin{minipage}{2.5cm}
-${\textnormal{error}}(r)$
+${\textnormal{error}}(v)$
 
 
-$r \leftarrow \pinf(v-1) $
-
+$v \leftarrow \minf(\log{t}) $
 $(\bullet\bullet)$
 \end{minipage} &
 \begin{minipage}{7.5cm}
 
-
-
 \begin{eqnarray}\nonumber
-  &&|r-(e^{2 \cdot x}-1)| \\\nonumber
-  &\leq&  |r - (v-1)|+|(v-1) - (e^{2 \cdot x}-1)|\\\nonumber
-  &\leq&  \ulp(r) + \ulp(v)\\\nonumber
-  &\leq&  (1+2^{\exp(v)-\exp(r)}) \ulp(r)\;(\star)\\\nonumber
+  |v-{\log t}| &\leq& \ulp(v)
 \end{eqnarray}
 
 \end{minipage} &
 \begin{minipage}{6cm}
-$(\star)$
-
-
-see subsection \ref{generic:sous}
-
-\end{minipage}\\\hline
+\end{minipage}\\%\hline
 \begin{minipage}{2.5cm}
-${\textnormal{error}}(s)$
+${\textnormal{error}}(w)$
 
 
-$s \leftarrow o(\frac{r}{w}) $
+$w \leftarrow \o(\frac{u}{v}) $
+
 \end{minipage} &
 \begin{minipage}{7.5cm}
 
+\begin{eqnarray}\nonumber
+  |v-(\frac{\log x}{\log t})| &\leq& 5 \ulp(w) \;\;(\star)
+\end{eqnarray}
 
+
+\end{minipage} &
+\begin{minipage}{6cm}
+($\star$)
+
+see subsection \ref{generic:div}
+
+\end{minipage}
+
+\end{tabular}
+\end{center}
+
+
+That shows the rounding error on the calculation of $log2 \n{ or }
+log10$ can be bound by $ 5 \ulp$ on the result. So, to calculate the
+size of intermediary variables, we have to add, at least, 3 bits the
+wanted precision.
+
+
+\subsection{The power function}
+
+The {\tt mpfr\_pow} ($\n{pow}(x,y)$) function implements the power function  as :
+
+\[
+\textnormal{pow} (x,y) = e^{y \log(x)}
+\]
+
+The algorithm used for this calculation is as follows:
 
 \begin{eqnarray}\nonumber
-  &&|s-\frac{e^{2x}-1}{e^{2x}+1}| \\\nonumber
-  &\leq& (1+2 \times 2+ \hdots\\\nonumber
-  &\hdots& 2(1+2^{\exp(v)-\exp(r)})) \ulp(s) \;\;(\star)\\\nonumber
+u&\leftarrow&o(\log(x))\\\nonumber
+v&\leftarrow&o(y \times u)\\\nonumber
+w&\leftarrow&o(e^v)\\\nonumber
+\end{eqnarray}
+
+Now, we have to bound the rounding error for each step of this
+algorithm with $x \geq 0$ and $y$ is a floating number.
+
+\begin{center}
+\begin{tabular}{l l l}
+
+\begin{minipage}{2.5cm}
+
+
+${\textnormal{error}}(u)$
+
+
+$u \leftarrow o(\log(x))$
+
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+\begin{eqnarray}\nonumber
+  |u-\log(x)| &\leq& \ulp(u)\;\;\star
 \end{eqnarray}
 
 \end{minipage} &
 \begin{minipage}{6cm}
-$(\star)$
+
+\end{minipage}\\%\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(v)$
 
 
-see subsection \ref{generic:div}
+$v \leftarrow \pinf(y \times u) $
+($\bullet$)
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+\begin{eqnarray}\nonumber
+  |v-(y\log(x))| &\leq& \ulp(v) + |y.u-y.\log(x)|\\\nonumber
+   &\leq& \ulp(v) + y|u-\log(x)|\\\nonumber
+   &\leq& \ulp(v) + y \ulp(u)\\\nonumber
+   &\leq& \ulp(v) + 2 \ulp(yu) \;(\star)\\\nonumber
+   &\leq& 3 \ulp(v)  \;(\star\star)
+\end{eqnarray}
 
 
-with $(\bullet)$ and $(\bullet\bullet)$
+\end{minipage} &
+\begin{minipage}{6cm}
+($\star$)
 
+with \U{R4}
+
+($\star$)
+
+with \U{R8}
+
+\end{minipage}\\%\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(w)$
+
+
+$w \leftarrow o(e^v) $
+
+\end{minipage} &
+\begin{minipage}{7.5cm}
+\begin{eqnarray}\nonumber
+  |w-e^v| &\leq& (1+3.2^{\Exp(v)+1}) \ulp(w)
+\end{eqnarray}
+\end{minipage} &
+\begin{minipage}{6cm}
+($\star$)
+see subsection \ref{generic:exp}
+
+with $c_u^* = 1$ for $(\bullet)$
 \end{minipage}
 \end{tabular}
 \end{center}
 
 
-That show the rounding error on the calculation of $\tanh x$ can be
-bound by $(1+2 \times 2+2(1+2^{\exp(v)-\exp(r)})) \ulp(s)$, then the
-number of bits need to add to the want accuracy to define intermediary
-variable is :
+That shows the rounding error on the calculation of $x^y$
+can be bound by $ (1+3.2^{\Exp(v)+1})\;\; \ulp$ on the result. So,
+to calculate the size of intermediary variables, we have to add, at
+least, $\lceil \log_2 (1+3.2^{\Exp(v)+1}) \rceil$ bits the wanted
+precision.
 
-\[
-N_t=\lceil \log_2(7+2^{\exp(v)-\exp(r)+1}) \rceil
-\]
+
+
 
 
 \subsection{The real cube root}
