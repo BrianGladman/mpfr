@@ -154,7 +154,8 @@ mpfr_zeta_part_a (mpfr_t sum, mpfr_srcptr s, int n)
 }
 
 /* Input: s - a floating-point number >= 1/2.
-          rnd_mode - a rounding mode
+          rnd_mode - a rounding mode.
+          Assumes s is neither NaN nor Infinite.
    Output: z - Zeta(s) rounded to the precision of z with direction rnd_mode
 */
 void
@@ -165,26 +166,6 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
   mpfr_t a,b,c,z_pre,f,g,s1;
   mpfr_t *tc1;
   mp_prec_t precz, precs;
-
-  if (mpfr_nan_p (s))
-    {
-      mpfr_set_nan (z); /* Zeta(NaN) = NaN */
-      return;
-    }
-  
-  if (mpfr_inf_p (s))
-    {
-      if (MPFR_SIGN(s) > 0)
-	{
-	  mpfr_set_ui (z, 1, GMP_RNDN); /* Zeta(+Inf) = 1 */
-	  return;
-	}
-      else
-	{
-	  mpfr_set_nan (z); /* Zeta(-Inf) = NaN */
-	  return;
-	}
-    }
 
   precz = mpfr_get_prec (z);
   precs = mpfr_get_prec (s);
@@ -331,6 +312,28 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
   long add;
   mpfr_t z_pre, s1, s2, y, sfrac, sint, p;
   mp_prec_t precz, prec1, precs, precs1;
+
+  if (mpfr_nan_p (s))
+    {
+      mpfr_set_nan (z); /* Zeta(NaN) = NaN */
+      return;
+    }
+  
+  if (mpfr_inf_p (s))
+    {
+      if (MPFR_SIGN(s) > 0)
+	{
+	  mpfr_set_ui (z, 1, GMP_RNDN); /* Zeta(+Inf) = 1 */
+	  return;
+	}
+      else
+	{
+	  mpfr_set_nan (z); /* Zeta(-Inf) = NaN */
+	  return;
+	}
+    }
+
+  /* now s is neither NaN nor Infinite */
 
   if (mpfr_cmp_ui(s,0) == 0) /* Case s = 0 */
     {
