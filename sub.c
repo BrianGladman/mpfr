@@ -272,7 +272,10 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
 	    mpn_lshift(ap, cp+(cn-an), an, overlap);
 	    ap[0] += cp[cn-an-1]>>(BITS_PER_MP_LIMB-overlap);
 	  }
-	  else mpn_lshift(ap+(an-cn), cp, cn, overlap);
+	  else {
+	    /* warning: mpn_lshift doesn't seem to like cn=0 */
+	    if (cn) mpn_lshift(ap+(an-cn), cp, cn, overlap); 
+	  }
 	}
 	else MPN_COPY(ap+(an-cn), cp, cn);
       }
