@@ -204,6 +204,8 @@ Portability:
   strings into newly allocated memory.  I thought I'd done that in a
   couple of places already.  Arrays of chars are not much fun.
 
+- replace "if (mpfr_get_d1 (x) != ...)" in tests
+
 Possible future MPF / MPFR integration:
 
 - mpf routines can become "extern inline"s calling mpfr equivalents,
