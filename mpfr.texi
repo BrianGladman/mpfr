@@ -776,7 +776,7 @@ Set @var{rop} to $@var{op1} + @var{op2}$ rounded in the direction @var{rnd}.
 Set @var{rop} to @var{op1} @minus{} @var{op2} rounded in the direction @var{rnd}.
 @end deftypefun
 
-@deftypefun void mpfr_mul (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
+@deftypefun int mpfr_mul (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx void mpfr_mul_ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
 @ifinfo
 Set @var{rop} to @var{op1} times @var{op2} rounded in the direction @var{rnd}.
@@ -786,6 +786,7 @@ Set @var{rop} to @var{op1} times @var{op2} rounded in the direction @var{rnd}.
 Set @var{rop} to $@var{op1} \times @var{op2}$ rounded in the direction @var{rnd}.
 @end tex
 @end iftex
+Return 0 if the result is exact, a non-zero value otherwise.
 @end deftypefun
 
 Division is undefined if the divisor is zero, and passing a zero divisor to

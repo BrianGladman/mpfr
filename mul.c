@@ -1,6 +1,7 @@
 /* mpfr_mul -- multiply two floating-point numbers
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 1999-2001 Free Software Foundation.
+Contributed by Paul Zimmermann, INRIA Lorraine.
 
 This file is part of the MPFR Library.
 
@@ -30,74 +31,119 @@ MA 02111-1307, USA. */
   [current complexity is O(MPFR_PREC(b)*MPFR_PREC(c))]
 */
 
-void 
+int
 #if __STDC__
-mpfr_mul(mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode) 
+mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode) 
 #else
-mpfr_mul(a, b, c, rnd_mode) 
+mpfr_mul (a, b, c, rnd_mode) 
      mpfr_ptr a;
      mpfr_srcptr b;
      mpfr_srcptr c;
      mp_rnd_t rnd_mode;
 #endif
 {
-  unsigned int bn, cn, an, tn, k; int cc;
+  unsigned int bn, cn, an, tn, k, inexact = 0;
+  int cc;
   mp_limb_t *ap=MPFR_MANT(a), *bp=MPFR_MANT(b), *cp=MPFR_MANT(c), *tmp, b1;
   long int sign_product;
+  mp_prec_t prec_a=MPFR_PREC(a), prec_b=MPFR_PREC(b), prec_c=MPFR_PREC(c);
   TMP_DECL(marker); 
 
   /* deal with NaN and zero */
-  if (MPFR_IS_NAN(b) || MPFR_IS_NAN(c)) 
-    { MPFR_CLEAR_FLAGS(a); MPFR_SET_NAN(a); return; }
-  if (MPFR_IS_INF(b)) 
+  if (MPFR_IS_NAN(b) || MPFR_IS_NAN(c))
     {
-      if (!MPFR_NOTZERO(c)) { MPFR_CLEAR_FLAGS(a); MPFR_SET_NAN(a); return; }
-      else 
-	{ 
-	  if (MPFR_SIGN(a) != MPFR_SIGN(b) * MPFR_SIGN(c)) MPFR_CHANGE_SIGN(a);
-	  MPFR_CLEAR_FLAGS(a); 
-	  MPFR_SET_INF(a); return; 
+      MPFR_CLEAR_FLAGS(a);
+      MPFR_SET_NAN(a);
+      return 1;
+    }
+
+  if (MPFR_IS_INF(b))
+    {
+      if (!MPFR_NOTZERO(c))
+	{
+	  MPFR_CLEAR_FLAGS(a);
+	  MPFR_SET_NAN(a);
+	  return 1;
+	}
+      else
+	{
+	  if (MPFR_SIGN(a) != MPFR_SIGN(b) * MPFR_SIGN(c))
+	    MPFR_CHANGE_SIGN(a);
+	  MPFR_CLEAR_FLAGS(a);
+	  MPFR_SET_INF(a);
+	  return 1;
 	}
     }
-  else if (MPFR_IS_INF(c)) 
+  else if (MPFR_IS_INF(c))
     {
-      if (!MPFR_NOTZERO(b)) { MPFR_CLEAR_FLAGS(a); MPFR_SET_NAN(a); return; }
-      else 
-	{ 
-	  if (MPFR_SIGN(a) != MPFR_SIGN(b) * MPFR_SIGN(c)) MPFR_CHANGE_SIGN(a);
-	  MPFR_CLEAR_FLAGS(a); MPFR_SET_INF(a); return; 
+      if (!MPFR_NOTZERO(b))
+	{
+	  MPFR_CLEAR_FLAGS(a);
+	  MPFR_SET_NAN(a);
+	  return 1;
+	}
+      else
+	{
+	  if (MPFR_SIGN(a) != MPFR_SIGN(b) * MPFR_SIGN(c))
+	    MPFR_CHANGE_SIGN(a);
+	  MPFR_CLEAR_FLAGS(a);
+	  MPFR_SET_INF(a);
+	  return 1;
 	}
     }
 
-  if (!MPFR_NOTZERO(b) || !MPFR_NOTZERO(c)) 
-    { MPFR_CLEAR_FLAGS(a); MPFR_SET_ZERO(a); return; }
+  if (!MPFR_NOTZERO(b) || !MPFR_NOTZERO(c))
+    {
+      MPFR_CLEAR_FLAGS(a);
+      MPFR_SET_ZERO(a);
+      return 0;
+    }
 
   sign_product = MPFR_SIGN(b) * MPFR_SIGN(c);
 
-  MPFR_CLEAR_FLAGS(a); 
-  bn = (MPFR_PREC(b)-1)/BITS_PER_MP_LIMB+1; /* number of significant limbs of b */
-  cn = (MPFR_PREC(c)-1)/BITS_PER_MP_LIMB+1; /* number of significant limbs of c */
-  tn = (MPFR_PREC(c)+MPFR_PREC(b)-1)/BITS_PER_MP_LIMB+1; 
-  k = bn+cn; /* effective nb of limbs used by b*c */
+  MPFR_CLEAR_FLAGS(a);
+  an = (prec_a - 1)/BITS_PER_MP_LIMB + 1; /* nb of significant limbs of a */
+  bn = (prec_b - 1)/BITS_PER_MP_LIMB + 1; /* nb of significant limbs of b */
+  cn = (prec_c - 1)/BITS_PER_MP_LIMB + 1; /* nb of significant limbs of c */
+  tn = (prec_c + prec_b - 1)/BITS_PER_MP_LIMB + 1;
+  k = bn + cn; /* effective nb of limbs used by b*c (=tn or tn+1) */
   TMP_MARK(marker); 
-  tmp = (mp_limb_t*) TMP_ALLOC(k*BYTES_PER_MP_LIMB);
+  tmp = (mp_limb_t*) TMP_ALLOC(k * BYTES_PER_MP_LIMB);
 
   /* multiplies two mantissa in temporary allocated space */
-  b1 = (bn>=cn) ? mpn_mul(tmp, bp, bn, cp, cn) : mpn_mul(tmp, cp, cn, bp, bn);
+  b1 = (bn >= cn) ? mpn_mul (tmp, bp, bn, cp, cn)
+    : mpn_mul (tmp, cp, cn, bp, bn);
 
   /* now tmp[0]..tmp[k-1] contains the product of both mantissa,
      with tmp[k-1]>=2^(BITS_PER_MP_LIMB-2) */
-  an = (MPFR_PREC(a)-1)/BITS_PER_MP_LIMB+1; /* number of significant limbs of a */
-  b1 >>= BITS_PER_MP_LIMB-1; /* msb from the product */
+  b1 >>= BITS_PER_MP_LIMB - 1; /* msb from the product */
 
-  if (b1==0) mpn_lshift(tmp, tmp, k, 1);
-  cc = mpfr_round_raw(ap, tmp+bn+cn-tn, 
-		      MPFR_PREC(b)+MPFR_PREC(c), (sign_product<0), MPFR_PREC(a), rnd_mode);
-  if (cc) { /* cc = 1 ==> result is a power of two */
+  tmp += k - tn;
+  if (b1 == 0)
+      mpn_lshift (tmp, tmp, tn, 1);
+  cc = mpfr_round_raw (ap, tmp, prec_b + prec_c, sign_product < 0, prec_a,
+		       rnd_mode);
+  if (cc) /* cc = 1 ==> result is a power of two */
     ap[an-1] = (mp_limb_t) 1 << (BITS_PER_MP_LIMB-1);
-  }
+
+  /* determines if the result is exact */
+  if (prec_b + prec_c > prec_a) /* implies tn >= an */
+    {
+      int left_a;
+      /* result is exact if bits[prec_a+1..tn*BITS_PER_MP_LIMB] of tmp are 0 */
+      left_a = an * BITS_PER_MP_LIMB - prec_a;
+      /* 0 <= left_a < BITS_PER_MP_LIMB */
+      tn -= an;
+      if (left_a)
+	inexact = tmp[tn] & (((mp_limb_t) 1 << left_a) - 1);
+      while ((inexact == 0) && tn)
+	inexact = tmp[tn--];
+    }
+  TMP_FREE(marker);
+
   MPFR_EXP(a) = MPFR_EXP(b) + MPFR_EXP(c) + b1 - 1 + cc;
-  if (sign_product * MPFR_SIGN(a)<0) MPFR_CHANGE_SIGN(a);
-  TMP_FREE(marker); 
-  return;
+  if (sign_product * MPFR_SIGN(a) < 0)
+    MPFR_CHANGE_SIGN(a);
+
+  return inexact;
 }
