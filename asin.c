@@ -61,7 +61,7 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
   if (compared > 0) /* asin(x) = NaN for |x| > 1 */
     {
       MPFR_SET_NAN(asin);
-      mpfr_clear(xp);
+      mpfr_clear (xp);
       MPFR_RET_NAN;
     }
 
@@ -76,9 +76,10 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
           else if (rnd_mode == GMP_RNDD)
             rnd_mode = GMP_RNDU;
           mpfr_const_pi (asin, rnd_mode);
+          mpfr_neg (asin, asin, rnd_mode);
         }
       MPFR_EXP(asin)--;
-      mpfr_clear(xp);
+      mpfr_clear (xp);
       return 1; /* inexact */
     }
 
