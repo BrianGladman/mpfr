@@ -24,6 +24,7 @@ MA 02111-1307, USA. */
 #include <stdlib.h>
 #include <unistd.h>
 #include "gmp.h"
+#include "gmp-impl.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
 #include "mpfr-test.h"
@@ -38,6 +39,7 @@ void check24 _PROTO((float, mp_rnd_t, float));
 void check_float _PROTO((void)); 
 void special _PROTO((void));
 void check_inexact _PROTO((mp_prec_t));
+void check_nan _PROTO((void));
 
 void
 check3 (double a, mp_rnd_t rnd_mode, double Q)
@@ -274,6 +276,50 @@ check_inexact (mp_prec_t p)
   mpfr_clear (z);
 }
 
+void
+check_nan (void)
+{
+  mpfr_t  x, got;
+
+  mpfr_init2 (x, 100L);
+  mpfr_init2 (got, 100L);
+
+  /* sqrt(NaN) == NaN */
+  MPFR_CLEAR_FLAGS (x);
+  MPFR_SET_NAN (x);
+  ASSERT_ALWAYS (mpfr_sqrt (got, x, GMP_RNDZ) == 0); /* exact */
+  ASSERT_ALWAYS (mpfr_nan_p (got));
+
+  /* sqrt(-1) == NaN */
+  mpfr_set_si (x, -1L, GMP_RNDZ);
+  ASSERT_ALWAYS (mpfr_sqrt (got, x, GMP_RNDZ) == 0); /* exact */
+  ASSERT_ALWAYS (mpfr_nan_p (got));
+
+  /* sqrt(+inf) == +inf */
+  MPFR_CLEAR_FLAGS (x);
+  MPFR_SET_INF (x);
+  MPFR_SET_POS (x);
+  ASSERT_ALWAYS (mpfr_sqrt (got, x, GMP_RNDZ) == 0); /* exact */
+  ASSERT_ALWAYS (mpfr_inf_p (got));
+
+  /* sqrt(-inf) == NaN */
+  MPFR_CLEAR_FLAGS (x);
+  MPFR_SET_INF (x);
+  MPFR_SET_NEG (x);
+  ASSERT_ALWAYS (mpfr_sqrt (got, x, GMP_RNDZ) == 0); /* exact */
+  ASSERT_ALWAYS (mpfr_nan_p (got));
+
+  /* sqrt(-0) == 0 */
+  mpfr_set_si (x, 0L, GMP_RNDZ);
+  MPFR_SET_NEG (x);
+  ASSERT_ALWAYS (mpfr_sqrt (got, x, GMP_RNDZ) == 0); /* exact */
+  ASSERT_ALWAYS (mpfr_number_p (got));
+  ASSERT_ALWAYS (mpfr_cmp_ui (got, 0L) == 0);
+
+  mpfr_clear (x);
+  mpfr_clear (got);
+}
+
 int
 main (void)
 {
@@ -297,15 +343,19 @@ main (void)
     check(a, LONG_RAND() % 4);
   }
 #endif
+  check_nan ();
+
   for (p=2; p<200; p++)
     for (k=0; k<200; k++)
       check_inexact (p);
   special ();
   check_float();
+#ifdef HAVE_INFS
   check3 (DBL_NAN, GMP_RNDN, DBL_NAN); 
   check3 (-1.0, GMP_RNDN, DBL_NAN); 
   check3 (DBL_POS_INF, GMP_RNDN, DBL_POS_INF); 
-  check3 (DBL_NEG_INF, GMP_RNDN, DBL_NAN); 
+  check3 (DBL_NEG_INF, GMP_RNDN, DBL_NAN);
+#endif
   check3(-0.0, GMP_RNDN, 0.0); 
   check4(6.37983013646045901440e+32, GMP_RNDN, "5.9bc5036d09e0c@13");
   check4(1.0, GMP_RNDN, "1");
