@@ -1,7 +1,7 @@
 \input texinfo    @c -*-texinfo-*-
 @c %**start of header
 @setfilename gmp.info
-@settitle GNU MPFR 1.0
+@settitle MPFR 1.0
 @synindex tp fn
 @iftex
 @afourpaper
@@ -11,7 +11,7 @@
 @ifinfo
 @format
 START-INFO-DIR-ENTRY
-* mpfr: (mpfr.info).               GNU Multiple Precision Floating-Point Reliable Library.
+* mpfr: (mpfr.info).               Multiple Precision Floating-Point Reliable Library.
 END-INFO-DIR-ENTRY
 @end format
 @end ifinfo
@@ -30,7 +30,7 @@ END-INFO-DIR-ENTRY
 
 
 @ifinfo
-This file documents GNU MPFR, a library for reliable multiple precision floating-point arithmetic
+This file documents MPFR, a library for reliable multiple precision floating-point arithmetic
 
 Copyright (C) 1999, PolKA team, INRIA Lorraine and LORIA, France
 
@@ -60,8 +60,8 @@ by the Foundation.
 @titlepage
 @c  use the new format for titles
 
-@title GNU MPFR
-@subtitle The GNU Multiple Precision Floating-Point Reliable Library
+@title MPFR
+@subtitle The Multiple Precision Floating-Point Reliable Library
 @subtitle Edition 1.0
 @subtitle June 1999
 
@@ -105,16 +105,16 @@ by the Foundation.
 @ifinfo
 @node Top, Copying, (dir), (dir)
 
-@top GNU MPFR
+@top MPFR
 
-This manual documents how to install and use the GNU Multiple Precision
+This manual documents how to install and use the Multiple Precision
 Floating-Point Reliable Library, version 1.0
 
 @end ifinfo
 
 @menu
 * Copying::                   GMP Copying Conditions (LGPL).
-* Introduction to MPFR::      Brief introduction to GNU MPFR.
+* Introduction to MPFR::      Brief introduction to MPFR.
 * Installing MPFR::           How to configure and compile the MPFR library.
 * MPFR Basics::               What every MPFR user should now.
 * Reporting Bugs::            How to usefully report bugs.
@@ -128,9 +128,9 @@ Floating-Point Reliable Library, version 1.0
 
 @node Copying, Introduction to MPFR, Top, Top
 @comment  node-name, next, previous,  up
-@unnumbered GNU MPFR Copying Conditions
+@unnumbered MPFR Copying Conditions
 @cindex Copying conditions
-@cindex Conditions for copying GNU MPFR
+@cindex Conditions for copying MPFR
 
 This library is @dfn{free}; this means that everyone is free to use it and
 free to redistribute it on a free basis.  The library is not in the public
@@ -146,27 +146,27 @@ it, that you can change this library or use pieces of it in new free programs,
 and that you know you can do these things.@refill
 
 To make sure that everyone has such rights, we have to forbid you to deprive
-anyone else of these rights.  For example, if you distribute copies of the GNU
+anyone else of these rights.  For example, if you distribute copies of the
 MPFR library, you must give the recipients all the rights that you have.  You
 must make sure that they, too, receive or can get the source code.  And you
 must tell them their rights.@refill
 
 Also, for our own protection, we must make certain that everyone finds out
-that there is no warranty for the GNU MPFR library.  If it is modified by
+that there is no warranty for the MPFR library.  If it is modified by
 someone else and passed on, we want their recipients to know that what they
 have is not what we distributed, so that any problems introduced by others
 will not reflect on our reputation.@refill
 
-The precise conditions of the license for the GNU MPFR library are found in the
+The precise conditions of the license for the MPFR library are found in the
 Library General Public License that accompany the source code.
 See the file COPYING.LIB.@refill
 
 @node Introduction to MPFR, Installing MPFR, Copying, Top
 @comment  node-name,  next,  previous,  up
-@chapter Introduction to GNU MPFR
+@chapter Introduction to MPFR
 
 
-GNU MPFR is a portable library written in C for arbitrary precision arithmetic
+MPFR is a portable library written in C for arbitrary precision arithmetic
 on reliable floating-point numbers. It is based on the GNU MP library.
 It aims to extend the class of floating-point numbers provided by the
 GNU MP library by @dfn{reliable} floating-point numbers. It may replace
