@@ -33,11 +33,13 @@ main (int argc, char *argv[])
   mpfr_t x, y; unsigned long k, bd, nc, i; char *str, *str2; mp_exp_t e;
   int base, logbase, prec, baseprec;
 
-  if (argc==2) { /* tset_str <string> */
-    mpfr_init2(x, 53);
-    mpfr_set_str_raw(x, argv[1]);
-    printf("%1.20e\n", mpfr_get_d(x));
-    mpfr_clear(x);
+  if (argc>=2) { /* tset_str <string> <prec> */
+    prec = (argc>=3) ? atoi(argv[2]) : 53;
+    mpfr_init2 (x, prec);
+    mpfr_set_str_raw (x, argv[1]);
+    mpfr_out_str (stdout, 10, 0, x, GMP_RNDN);
+    putchar ('\n');
+    mpfr_clear (x);
     return 0;
   }
 
