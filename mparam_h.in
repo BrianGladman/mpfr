@@ -23,10 +23,15 @@ MA 02111-1307, USA. */
 # error "MPFR Internal not included"
 #endif
 
-#ifdef __ia64
+#if defined (__ia64)
 # define MPFR_EXP_THRESHOLD 12500
-#elif defined(__athlon__)
+#elif defined(__athlon)
 # define MPFR_EXP_THRESHOLD 40000
+#elif defined(__amd64)
+# define MPFR_EXP_THRESHOLD 42000
+#elif defined(__pentium4)
+# define MPFR_EXP_THRESHOLD 24000
 #else
 # define MPFR_EXP_THRESHOLD 25000
 #endif
+
