@@ -21,10 +21,10 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
 #include "gmp.h"
-#include "gmp-impl.h"
-#include "longlong.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
+#include "gmp-impl.h"
+#include "longlong.h"
 
 #if (BITS_PER_MP_LIMB==32)
 #define MPFR_LIMBS_PER_DOUBLE 2
