@@ -76,7 +76,10 @@ mpfr_add(s,s,u,GMP_RNDN);
 t=mpfr_out_str(stdout,10,0,s,GMP_RNDN);printf("\n");*/
 /*Peut-on arrondir ? La reponse est oui*/
 succes=mpfr_can_round(s,57,GMP_RNDN,GMP_RNDN,53);
-mpfr_set(result,s,GMP_RNDN);
+if (succes) mpfr_set(result,s,GMP_RNDN);
+else {
+  fprintf(stderr, "can't round in mpfr_zeta\n"); exit(1);
+}
 
 mpfr_clear(x);
 mpfr_clear(y);
