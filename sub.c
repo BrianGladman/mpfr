@@ -5,20 +5,6 @@
 
 /* #define DEBUG2 */
 
-#ifdef DEBUG2
-mp_limb_t *ap0, *ap1;
-#define ck(x, dx, i) /* mp_limb_t *x; int dx; */ \
-{ \
-  if ((x)<ap0 || (x)+(dx)-1>ap1) { \
-    printf("error %d\n",(i)); \
-    printf("%1.20e,%d,%1.20e,%d,%d,%d\n",mpfr_get_d(b),PREC(b),mpfr_get_d(c), \
-	   PREC(c),PREC(a),rnd_mode); \
-    exit(1); } \
-}
-#else
-#define ck(x, dx, i) {}
-#endif
-
 void mpfr_sub(a, b, c, rnd_mode) 
 mpfr_ptr a; mpfr_srcptr b, c; unsigned char rnd_mode;
 {
@@ -82,9 +68,6 @@ mpfr_t a, b, c; unsigned char rnd_mode; int diff_exp;
       MPN_COPY(cp, ap, ABSSIZE(c)); 
     }
   an = (PREC(a)-1)/mp_bits_per_limb+1; /* number of significant limbs of a */
-#ifdef DEBUG2
-ap0=ap; ap1=ap+an-1;
-#endif
   sh = an*mp_bits_per_limb-PREC(a); /* non-significant bits in low limb */
   bn = (PREC(b)-1)/mp_bits_per_limb+1; /* number of significant limbs of b */
   cn = (PREC(c)-1)/mp_bits_per_limb + 1;
@@ -95,19 +78,16 @@ ap0=ap; ap1=ap+an-1;
      through rounding */
   dif = PREC(a)-diff_exp;
 #ifdef DEBUG2
-  printf("PREC(a)=%d an=%u PREC(b)=%d bn=%u PREC(c)=%d diff_exp=%u dif=%d\n",
-	 PREC(a),an,PREC(b),bn,PREC(c),diff_exp,dif);
+  printf("PREC(a)=%d an=%u PREC(b)=%d bn=%u PREC(c)=%d diff_exp=%u dif=%d cancel=%d\n",
+	 PREC(a),an,PREC(b),bn,PREC(c),diff_exp,dif,cancel);
 #endif
   if (dif<=0) { /* diff_exp>=PREC(a): c does not overlap with a */
     /* either PREC(b)<=PREC(a), and we can copy the mantissa of b directly 
        into that of a, or PREC(b)>PREC(a) and we have to round b-c */
     if (PREC(b)<=PREC(a)+cancel) {
-      if (cancel2) { ck(ap+(an-bn+cancel1), bn-cancel1, 1);
-	mpn_lshift(ap+(an-bn+cancel1), bp, bn-cancel1, cancel2); }
-      else { ck(ap+(an-bn+cancel1), bn-cancel1, 2);
-	MPN_COPY(ap+(an-bn+cancel1), bp, bn-cancel1); }
+      if (cancel2) mpn_lshift(ap+(an-bn+cancel1), bp, bn-cancel1, cancel2);
+      else MPN_COPY(ap+(an-bn+cancel1), bp, bn-cancel1);
       /* fill low significant limbs with zero */
-ck(ap, an-bn+cancel1, 3);
       MPN_ZERO(ap, an-bn+cancel1);
       /* now take c into account */
       if (rnd_mode==GMP_RNDN) { /* to nearest */
@@ -123,15 +103,22 @@ ck(ap, an-bn+cancel1, 3);
 	      bp = cp+(PREC(c)-1)/mp_bits_per_limb;
 	      while (cp<bp && cc==0) cc = *++cp;
 	    }
-ck(ap+an-1, 1, 4);
 	    if (cc || (ap[an-1] & 1<<sh)) goto sub_one_ulp;
 	      /* mant(c) > 1/2 or mant(c) = 1/2: subtract 1 iff lsb(a)=1 */
 	  }
+	}
+	else if (ap[an-1]==0) { /* case b=2^n */
+	  ap[an-1] = (mp_limb_t) 1 << (BITS_PER_MP_LIMB-1);
+	  EXP(a)++;
 	}
       }
       else if ((ISNONNEG(b) && rnd_mode==GMP_RNDU) || 
 	       (ISNEG(b) && rnd_mode==GMP_RNDD)) {
 	/* round up: nothing to do */
+	if (ap[an-1]==0) { /* case b=2^n */
+	  ap[an-1] = (mp_limb_t) 1 << (BITS_PER_MP_LIMB-1);
+	  EXP(a)++;
+	}
       }
       else {
 	/* round down: subtract 1 ulp iff c<>0 */
@@ -141,12 +128,10 @@ ck(ap+an-1, 1, 4);
     else { /* PREC(b)>PREC(a) : we have to round b-c */
       k=bn-an;
       /* first copy the 'an' most significant limbs of b to a */
-ck(ap, an, 5);
       MPN_COPY(ap, bp+k, an);
       if (rnd_mode==GMP_RNDN) { /* to nearest */
 	/* first check whether the truncated bits from b are 1/2*lsb(a) */
 	if (sh) {
-ck(ap, 1, 6);
 	  cc = *ap & (((mp_limb_t)1<<sh)-1);
 	  *ap &= ~cc; /* truncate last bits */
 	  cc -= (mp_limb_t)1<<(sh-1);
@@ -159,7 +144,6 @@ ck(ap, 1, 6);
 	else if (cc==0) {
 	  while (k>1 && cc==0) cc=bp[--k];
 	  /* now if the truncated part of b = 1/2*lsb(a), check whether c=0 */
-ck(ap, 1, 7);
 	  if (NOTZERO(c) || (*ap & (1<<sh))) goto sub_one_ulp;
 	  /* if trunc(b)-c is exactly 1/2*lsb(a) : round to even lsb */
 	}
@@ -167,7 +151,6 @@ ck(ap, 1, 7);
       }
       else { /* round towards infinity or zero */
 	if (sh) {
-ck(ap, 1, 8);
 	  cc = *ap & ((1<<sh)-1);
 	  *ap &= ~cc; /* truncate last bits */
 	}
@@ -196,7 +179,6 @@ ck(ap, 1, 8);
     k = (dif-1)/mp_bits_per_limb + 1; /* only the highest k limbs from c
 					 have to be considered */
     if (k<an) {
-ck(ap+k, an-k, 9);
       MPN_ZERO(ap+k, an-k); /* do it now otherwise ap[k] may be 
 				       destroyed in case dif<0 */
     }
@@ -208,23 +190,20 @@ ck(ap+k, an-k, 9);
       dif = (dif) ? mp_bits_per_limb-dif-sh : -sh;
       /* we have to shift by dif bits to the right */
       if (dif>0) {
-ck(ap, (k<=an) ? k : an, 10);
 	mpn_rshift(ap, cp+(cn-k), (k<=an) ? k : an, dif);
         if (k>an) ap[an-1] += cp[cn-k+an]<<(mp_bits_per_limb-dif);
       }
       else if (dif<0) {
-ck(ap, k, 11);
 	cc = mpn_lshift(ap, cp+(cn-k), k, -dif);
-	if (k<an) { ck(ap+k, 1, 12); ap[k]=cc; }
+	if (k<an) ap[k]=cc;
 	/* put the non-significant bits in low limb for further rounding */
 	if (cn >= k+1)
 	  ap[0] += cp[cn-k-1]>>(mp_bits_per_limb+dif);
       }
-      else { ck(ap, k, 13); MPN_COPY(ap, cp+(cn-k), k); }
+      else MPN_COPY(ap, cp+(cn-k), k);
       overlap=1;
     }
     else { /* c is not truncated, but we have to fill low limbs with 0 */
-ck(ap, k-cn, 14);
       MPN_ZERO(ap, k-cn);
       overlap = cancel-diff_exp;
 #ifdef DEBUG2
@@ -237,16 +216,12 @@ ck(ap, k-cn, 14);
 	/* warning: a shift of zero with mpn_lshift is not allowed */
 	if (overlap) {
 	  if (an<cn) {
-ck(ap, an, 15);
 	    mpn_lshift(ap, cp+(cn-an), an, overlap);
 	    ap[0] += cp[cn-an-1]>>(mp_bits_per_limb-overlap);
 	  }
-	  else {
-ck(ap+(an-cn), cn, 15);
-	    mpn_lshift(ap+(an-cn), cp, cn, overlap);
-	  }
+	  else mpn_lshift(ap+(an-cn), cp, cn, overlap);
 	}
-	else { ck(ap+(an-cn), cn, 15); MPN_COPY(ap+(an-cn), cp, cn); }
+	else MPN_COPY(ap+(an-cn), cp, cn);
       }
       else { /* shift to the right by -overlap bits */
 	overlap = -overlap;
@@ -266,18 +241,13 @@ ck(ap+(an-cn), cn, 15);
       overlap += 2;
       /* invert low limbs */
       imax = (int)an-(int)bn+cancel1;
-      for (i=0;i<imax;i++) { ck(ap+i, 1, 17); ap[i] = ~ap[i]; }
-if (i) ck(ap, i, 18);
+      for (i=0;i<imax;i++) ap[i] = ~ap[i];
       cc = (i) ? mpn_add_1(ap, ap, i, 1) : 1;
-ck(ap+i, ((bn-cancel1)<an) ? (bn-cancel1) : an, 19);
       mpn_sub_lshift_n(ap+i, bp, bn-cancel1, cancel2, an);
-ck(ap+i, an-i, 20);
       mpn_sub_1(ap+i, ap+i, an-i, 1-cc);
     }
-    else { /* PREC(b) > PREC(a): we have to truncate b */
-ck(ap, an, 21);
+    else /* PREC(b) > PREC(a): we have to truncate b */
       mpn_sub_lshift_n(ap, bp+(bn-an-cancel1), an, cancel2, an);
-    }
     /* remains to do the rounding */
 #ifdef DEBUG2
       printf("2:a="); mpfr_print_raw(a); putchar('\n');
@@ -411,13 +381,11 @@ mpfr_print_raw(a); putchar('\n');
         goto end_of_sub;
 
  sub_one_ulp:
-    cc = mpn_sub_1(ap, ap, an, 1<<sh);
-    if (cc) { printf("carry(2) in mpfr_sub1\n"); exit(1); }
+    cc = mpn_sub_1(ap, ap, an, (mp_limb_t)1<<sh);
   goto end_of_sub;
 
   add_one_ulp: /* add one unit in last place to a */
-    cc = mpn_add_1(ap, ap, an, 1<<sh);
-    if (cc) { printf("carry(3) in mpfr_sub1\n"); exit(1); }
+    cc = mpn_add_1(ap, ap, an, (mp_limb_t)1<<sh);
 
  end_of_sub:
 #ifdef DEBUG2
