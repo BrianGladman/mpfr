@@ -208,7 +208,7 @@ void
 check_large (void)
 {
   mpfr_t x;
-  char *s, s1[4];
+  char *s, s1[5];
   mp_exp_t e;
 
   mpfr_init2 (x, 3322);
