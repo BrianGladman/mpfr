@@ -87,3 +87,10 @@ mpfr_cmp_ui_2exp (mpfr_srcptr b, unsigned long int i, mp_exp_t f)
       return 0;
     }
 }
+
+#undef mpfr_cmp_ui
+int
+mpfr_cmp_ui (mpfr_srcptr b, unsigned long int i)
+{
+  return mpfr_cmp_ui_2exp (b, i, 0);
+}

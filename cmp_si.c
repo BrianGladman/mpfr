@@ -88,3 +88,10 @@ mpfr_cmp_si_2exp (mpfr_srcptr b, long int i, mp_exp_t f)
       return 0;
     }
 }
+
+#undef mpfr_cmp_si
+int
+mpfr_cmp_si (mpfr_srcptr b, long int i)
+{
+  return mpfr_cmp_si_2exp (b, i, 0);
+}
