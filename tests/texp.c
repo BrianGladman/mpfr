@@ -29,15 +29,20 @@ MA 02111-1307, USA. */
 
 extern int isnan();
 extern int getpid();
+extern double drand48();
 
 int maxu=0;
 
 /* returns the number of ulp's between a and b */
 int ulp(a,b) double a,b;
 {
-  double eps=1.1102230246251565404e-16; /* 2^(-53) */
-  b = (a-b)/a; if (b<0) b = -b;
-  return (int) floor(b/eps);
+  int expa; double ulpa;
+
+  expa = ilogb(a);
+  if (expa==-1022) return 0; /* denormalized */
+  ulpa = pow(2.0, (double)expa-52.0);
+  b = a-b; if (b<0) b=-b;
+  return (int) (b/ulpa+0.5);
 }
 
 #define check(d, r) check3(d, r, 0.0)
@@ -71,7 +76,8 @@ int check3(double d, unsigned char rnd, double e)
       }
       else if (u>maxu) {
 	maxu=u;
-	printf("mpfr_exp differs from libm.a for x=%1.20e, rnd=%d\n",d,rnd);
+	printf("mpfr_exp differs from libm.a for x=%1.20e, rnd=%s\n",d,
+	       mpfr_print_rnd_mode(rnd));
 	printf("libm.a gave %1.20e, mpfr_exp got %1.20e, dif=%d ulp\n",e,f,u);
       }
     }
