@@ -49,7 +49,7 @@ int
 #if __STDC__
 mpfr_log(mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode) 
 #else
-mpfr_log()
+mpfr_log(r, a, rnd_mode)
      mpfr_ptr r;
      mpfr_srcptr a;
      mp_rnd_t rnd_mode;

@@ -34,7 +34,7 @@ void
 #if __STDC__
 mpfr_dump (mpfr_srcptr u, mp_rnd_t rnd_mode)
 #else
-mpfr_dump (u)
+mpfr_dump (u, rnd_mode)
      mpfr_srcptr u;
      mp_rnd_t rnd_mode; 
 #endif
