@@ -101,7 +101,7 @@ mpfr_cmp2(b, c)
   printf("b="); mpfr_print_raw(b); putchar('\n');
   printf("c="); mpfr_print_raw(c); putchar('\n');
 #endif  
-  if (NOTZERO(c)==0) return 0;
+  if (NOTZERO(c)==0) return (NOTZERO(b)) ? 0 : PREC(b);
   d = EXP(b)-EXP(c);
   k = 0; /* result can be d or d+1 if d>1, or >= d otherwise */
 #ifdef DEBUG
