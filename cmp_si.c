@@ -34,7 +34,7 @@ mpfr_cmp_si_2exp (mpfr_srcptr b, long int i, mp_exp_t f)
 {
   int si;
 
-  MPFR_ASSERTN(!MPFR_IS_NAN(b));
+  MPFR_ASSERTD(!MPFR_IS_NAN(b));
 
   si = i < 0 ? -1 : 1; /* sign of i */
   if (MPFR_IS_INF(b) || (MPFR_NOTZERO(b) && MPFR_SIGN(b) != si))

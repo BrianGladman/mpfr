@@ -34,6 +34,7 @@ mpfr_cmp_ui_2exp (mpfr_srcptr b, unsigned long int i, mp_exp_t f)
 {
   if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(b) ))
     {
+      MPFR_ASSERTD (!MPFR_IS_NAN (b) );
       if (MPFR_IS_INF(b))
 	return MPFR_SIGN(b);
       else /* since b cannot be NaN, b=0 here */
