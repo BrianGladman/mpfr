@@ -121,7 +121,7 @@ mpfr_pi_machin3 (mpfr_ptr mylog, mp_rnd_t rnd_mode)
 /*
 Set x to the value of Pi to precision MPFR_PREC(x) rounded to direction rnd_mode.
 Use the formula giving the binary representation of Pi found by Simon Plouffe
-and the Borwein's brothers:
+David Bailey and Peter Borwein. */
 
                    infinity    4         2         1         1
                     -----   ------- - ------- - ------- - -------
