@@ -74,8 +74,18 @@ char *out;
 #define TONEAREST ieee_flags("set","direction","nearest",&out)
 #define TOINFM ieee_flags("set","direction","negative",&out)
 #elif (defined (__i386__) || defined (__i486__) || defined (linux))
+#ifdef __CYGWIN32__ /* no fpu_control.h under Cygnus */
+#define _FPU_EXTENDED 0x300
+#define _FPU_DOUBLE   0x200
+#define _FPU_DEFAULT  0x137f
+#define _FPU_RC_NEAREST 0x0
+#define _FPU_RC_DOWN    0x400
+#define _FPU_RC_UP      0x800
+#define _FPU_RC_ZERO    0xC00
+#else
 #include <fpu_control.h>
-#ifdef LIBC211
+#endif
+#if defined(LIBC211) || defined(__CYGWIN32__)
 #define __setfpucw(cw) __asm__ ("fldcw %0" : : "m" (cw))
 #endif
 /* be careful to put Precision control bits
