@@ -1071,6 +1071,5 @@ Donald E. Knuth, "The Art of Computer Programming", vol 2,
 @unnumbered Function and Type Index
 @printindex fn
 
-
 @contents
 @bye

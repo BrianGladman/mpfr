@@ -76,5 +76,3 @@ mpfr_mul(a, b, c, rnd_mode)
   TMP_FREE(marker); 
   return;
 }
-
-     
