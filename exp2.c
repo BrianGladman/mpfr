@@ -62,6 +62,11 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     if (MPFR_IS_ZERO(x))
       return mpfr_set_ui (y, 1, rnd_mode);
 
+    /* since the smallest representable non-zero float is 1/2*2^__mpfr_emin,
+       if x < __mpfr_emin - 1, the result is either 1/2*2^__mpfr_emin or 0 */
+    if (mpfr_cmp_ui_2exp (x, 1, __mpfr_emin - 1) < 0)
+      return mpfr_set_underflow (y, rnd_mode, 1);
+
     /* General case */
     {
     /* Declaration of the intermediary variable */
@@ -75,38 +80,39 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       long int err;  /* Precision of error */
                 
       /* compute the precision of intermediary variable */
-      Nt=MAX(Nx,Ny);
+      Nt = MAX(Nx, Ny);
       /* the optimal number of bits : see algorithms.ps */
-      Nt=Nt+5+_mpfr_ceil_log2(Nt);
+      Nt = Nt + 5 + _mpfr_ceil_log2 (Nt);
 
 
       /* initialise of intermediary	variable */
-      mpfr_init(t);             
-      mpfr_init(te);             
+      mpfr_init (t);
+      mpfr_init (te);
 
-      /* First computation of cosh */
+      /* First computation */
       do {
 
 	/* reactualisation of the precision */
-	mpfr_set_prec(t,Nt);             
-	mpfr_set_prec(te,Nt);             
+	mpfr_set_prec (t, Nt);             
+	mpfr_set_prec (te, Nt);             
 
 	/* compute   exp(x*ln(2))*/
-        mpfr_const_log2(t,GMP_RNDU);    /* ln(2) */
-        mpfr_mul(te,x,t,GMP_RNDU);       /* x*ln(2) */
-        mpfr_exp(t,te,GMP_RNDN);         /* exp(x*ln(2))*/
+        mpfr_const_log2 (t, GMP_RNDU);    /* ln(2) */
+        mpfr_mul (te, x, t, GMP_RNDU);    /* x*ln(2) */
+        mpfr_exp (t, te, GMP_RNDN);       /* exp(x*ln(2))*/
 
 	/* estimate of the error -- see pow function in algorithms.ps*/
-	err=Nt-(MPFR_EXP(te)+2);
+	err = Nt - (MPFR_EXP(te) + 2);
 
 	/* actualisation of the precision */
-	Nt += 10;
+	Nt += _mpfr_isqrt (Nt) + 10;
 
-      } while ((err<0) || !mpfr_can_round(t,err,GMP_RNDN,rnd_mode,Ny));
+      } while ((err < 0) || !mpfr_can_round (t, err, GMP_RNDN, rnd_mode, Ny));
  
-      inexact = mpfr_set(y,t,rnd_mode);
-      mpfr_clear(t);
-      mpfr_clear(te);
+      inexact = mpfr_set (y, t, rnd_mode);
+
+      mpfr_clear (t);
+      mpfr_clear (te);
     }
     return inexact;
 
