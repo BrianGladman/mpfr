@@ -82,10 +82,10 @@ mpfr_sub (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
   if (MPFR_LIKELY(MPFR_SIGN(b) == MPFR_SIGN(c)))
     { /* signs are equal, it's a real subtraction */
-      if (MPFR_LIKELY(MPFR_PREC(a) == MPFR_PREC(b)
+      /*      if (MPFR_LIKELY(MPFR_PREC(a) == MPFR_PREC(b)
                       && MPFR_PREC(b) == MPFR_PREC(c)))
         return mpfr_sub1sp(a,b,c,rnd_mode);
-      else
+	else*/
 	return mpfr_sub1(a, b, c, rnd_mode);
     }
   else
