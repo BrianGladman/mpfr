@@ -17,8 +17,7 @@ void main()
   mpfr_set_str_raw(xx, "0.10100010001110110111000010001000010011111101000100011101000011100");
   mpfr_set_str_raw(yy, "0.10100010001110110111000010001000010011111101000100011101000011011");
   if (mpfr_cmp2(xx,yy)!=64) { printf("Error (1) in mpfr_cmp\n"); exit(1); }
-  mpfr_init2(xx,53);
-  mpfr_init2(yy,200);
+  mpfr_set_prec(xx,53); mpfr_set_prec(yy,200);
   mpfr_set_d(xx, 1.0, 0);
   mpfr_set_d(yy, 1.0, 0);
   if (mpfr_cmp(xx,yy)!=0) {
