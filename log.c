@@ -47,7 +47,7 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
 {
   int inexact;
   mp_prec_t p, q;
-  mpfr_t tmp1, tmp2;
+  mpfr_t tmp1, tmp2; 
   mp_limb_t *tmp1p, *tmp2p;
   MPFR_ZIV_DECL (loop);
   TMP_DECL(marker);
@@ -56,54 +56,51 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
 		 ("r[%#R]=%R inexact=%d", r, r, inexact));
 
   /* Special cases */
-  if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(a) ))
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (a)))
     {
       /* If a is NaN, the result is NaN */
-      if (MPFR_IS_NAN(a))
+      if (MPFR_IS_NAN (a))
 	{
-	  MPFR_SET_NAN(r);
+	  MPFR_SET_NAN (r);
 	  MPFR_RET_NAN;
 	}
       /* check for infinity before zero */
-      else if (MPFR_IS_INF(a))
+      else if (MPFR_IS_INF (a))
 	{
-	  if (MPFR_IS_NEG(a))
+	  if (MPFR_IS_NEG (a))
 	    /* log(-Inf) = NaN */
 	    {
-	      MPFR_SET_NAN(r);
+	      MPFR_SET_NAN (r);
 	      MPFR_RET_NAN;
 	    }
 	  else /* log(+Inf) = +Inf */
 	    {
-	      MPFR_SET_INF(r);
-	      MPFR_SET_POS(r);
-	      MPFR_RET(0);
+	      MPFR_SET_INF (r);
+	      MPFR_SET_POS (r);
+	      MPFR_RET (0);
 	    }
 	}
       else /* a is zero */
 	{
-          MPFR_ASSERTD(MPFR_IS_ZERO(a));
-	  MPFR_SET_INF(r);
-	  MPFR_SET_NEG(r);
-	  MPFR_RET(0); /* log(0) is an exact -infinity */
+          MPFR_ASSERTD (MPFR_IS_ZERO (a));
+	  MPFR_SET_INF (r);
+	  MPFR_SET_NEG (r);
+	  MPFR_RET (0); /* log(0) is an exact -infinity */
 	}
     }
-
   /* If a is negative, the result is NaN */
-  if (MPFR_UNLIKELY( MPFR_IS_NEG(a) ))
+  else if (MPFR_UNLIKELY (MPFR_IS_NEG (a)))
     {
       MPFR_SET_NAN (r);
       MPFR_RET_NAN;
     }
-
   /* If a is 1, the result is 0 */
-  if (MPFR_UNLIKELY( mpfr_cmp_ui (a, 1) == 0) )
+  else if (MPFR_UNLIKELY (MPFR_GET_EXP (a) == 1 && mpfr_cmp_ui (a, 1) == 0))
     {
       MPFR_SET_ZERO (r);
       MPFR_SET_POS (r);
       MPFR_RET (0); /* only "normal" case where the result is exact */
     }
-  MPFR_CLEAR_FLAGS (r);
 
   q = MPFR_PREC (r);
 
@@ -123,17 +120,14 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
       long m;
       mp_exp_t cancel;
 
-      MPFR_TRACE ( MPFR_DUMP(a) );
-      MPFR_TRACE ( printf("p=%lu\n", p) );
-
       /* Calculus of m (depends on p) */
       m = (p + 1) / 2 - MPFR_GET_EXP (a) + 1;
       
       /* All the mpfr_t needed have a precision of p */
-      size = (p-1)/BITS_PER_MP_LIMB+1;
+      size = (p-1)/BITS_PER_MP_LIMB+1; 
       MPFR_TMP_INIT (tmp1p, tmp1, p, size);
       MPFR_TMP_INIT (tmp2p, tmp2, p, size);
-      
+
       mpfr_mul_2si (tmp2, a, m, GMP_RNDN);    /* s=a*2^m,        err<=1 ulp  */
       mpfr_div (tmp1, __gmpfr_four, tmp2, GMP_RNDN);/* 4/s,      err<=2 ulps */
       mpfr_agm (tmp2, __gmpfr_one, tmp1, GMP_RNDN); /* AG(1,4/s),err<=3 ulps */
@@ -145,17 +139,17 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
       mpfr_sub (tmp1, tmp2, tmp1, GMP_RNDN); /* log(a),    err<=7ulps+cancel */
       cancel = MPFR_GET_EXP (tmp2) - MPFR_GET_EXP (tmp1);
 
-      MPFR_TRACE ( printf("canceled bits=%ld\n", cancel) );
-      MPFR_TRACE ( MPFR_DUMP(tmp1) );
+      MPFR_LOG_MSG (("canceled bits=%ld\n", cancel));
+      MPFR_LOG_VAR (tmp1);
 
-      if (MPFR_UNLIKELY(cancel < 0))
+      if (MPFR_UNLIKELY (cancel < 0))
 	cancel = 0;
       
       /* we have 7 ulps of error from the above roundings,
 	 4 ulps from the 4/s^2 second order term,
 	 plus the canceled bits */
-      if (mpfr_can_round (tmp1, p - cancel - 4, GMP_RNDN, GMP_RNDZ,
-			  q + (rnd_mode == GMP_RNDN)))
+      if (MPFR_LIKELY (mpfr_can_round (tmp1, p - cancel - 4, GMP_RNDN, 
+				       GMP_RNDZ, q + (rnd_mode == GMP_RNDN))))
 	break;
       p += cancel;
       MPFR_ZIV_NEXT (loop, p);
