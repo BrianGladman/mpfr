@@ -200,11 +200,9 @@ int mpfr_mul ()
     }
   else
     {
-      mp_size_t new_cn, cancel;
+      mp_size_t cancel;
       mp_prec_t prec_cn;
 
-      cancel  = 0;
-      new_cn  = cn;
       prec_cn = cn*BITS_PER_MP_LIMB-MPFR_INT_CEIL_LOG2 (cn);
       /* prec_cn is the expected precision of mulhigh */
 
@@ -214,16 +212,17 @@ int mpfr_mul ()
 	/* MulHigh can't produce a roundable result.
 	   Do the full multiply instead. */
 	goto full_multiply;
-      else if (MPFR_UNLIKELY (MPFR_PREC (a) < prec_cn - 4 -  BITS_PER_MP_LIMB))
+      cancel = 0;
+      if (MPFR_UNLIKELY (MPFR_PREC (a) < prec_cn - 4 -  BITS_PER_MP_LIMB))
 	{
 	  /* MulHigh will computes too much bits */
 	  cancel = (prec_cn - 4 - MPFR_PREC (a)) / BITS_PER_MP_LIMB;
 	  MPFR_ASSERTD (cancel >= 1);
-	  new_cn = cn - cancel;
 	}
-      mpfr_mulhigh_n (tmp, MPFR_MANT (b) + cancel, 
-		      MPFR_MANT (c) + cancel, new_cn);
-      if (MPFR_LIKELY (mpfr_can_round_raw (tmp, bn+tn, sign, prec_bn,
+      mpfr_mulhigh_n (tmp+2*cancel, MPFR_MANT (b) + cancel, 
+		      MPFR_MANT (c) + cancel, cn-cancel);
+      /* FIXME: tn or k? */
+      if (MPFR_LIKELY (mpfr_can_round_raw (tmp, k, sign, prec_cn,
 					   GMP_RNDN, GMP_RNDZ,
 					   MPFR_PREC(a)+(rnd_mode==GMP_RNDN))))
 	b1 = tmp[2*bn-1];
