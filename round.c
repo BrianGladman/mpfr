@@ -1,7 +1,7 @@
+#include <stdio.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
-#include <stdio.h>
 
 #ifdef Exp
 #include "longlong.h"

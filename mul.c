@@ -1,5 +1,6 @@
 /* written by Paul Zimmermann, November 1998-January 1999 */
 
+#include <stdio.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
