@@ -612,7 +612,8 @@ purpose.
 
 @deftypefun void mpfr_init2 (mpfr_t @var{x}, mp_prec_t @var{prec})
 Initialize @var{x}, set its precision to be @strong{exactly}
-@var{prec} bits and its value to NaN.
+@var{prec} bits and its value to NaN. (Warning: the corresponding
+@code{mpf} functions initialize to zero instead.)
 
 Normally, a variable should be initialized once only or at
 least be cleared, using @code{mpfr_clear}, between initializations.
@@ -1587,6 +1588,11 @@ any program written for
 MPF can be compiled directly with MPFR without any changes.
 All operations are then performed with the default MPFR rounding mode,
 which can be reset with @code{mpfr_set_default_rounding_mode}.
+
+Warning: the @code{mpf_init} and @code{mpf_init2} functions initialize
+to zero, whereas the corresponding @code{mpfr} functions initialize to NaN:
+this is useful to detect uninitialized values, but is slightly incompatible
+with @code{mpf}.
 
 @deftypefun void mpfr_set_prec_raw (mpfr_t @var{x}, mp_prec_t @var{prec})
 Reset the precision of @var{x} to be @strong{exactly} @var{prec} bits.
