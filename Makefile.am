@@ -1,5 +1,5 @@
 SUBDIRS=tests
-EXTRA_DIST=generic.c
+EXTRA_DIST=generic.c COPYING.LIB
 
 include_HEADERS = mpfr.h mpf2mpfr.h mpfr-test.h
 
