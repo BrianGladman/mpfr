@@ -39,12 +39,10 @@ main (int argc, char *argv[])
   mpfr_init (z);
   mpfr_init (t);
 
-  /* tasinh prec - perform one random computation with precision prec */
-  if (argc >= 2)
-    {
-      p0 = p1 = atoi (argv[1]);
-      N = 1;
-    }
+  mpfr_set_prec (x, 33);
+  mpfr_set_prec (y, 43);
+  mpfr_set_str_raw (x, "0.111001101100000110011001010000101");
+  mpfr_asinh (y, x, GMP_RNDZ);
 
   for (prec = p0; prec <= p1; prec++)
     {
