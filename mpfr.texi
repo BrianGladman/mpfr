@@ -1178,7 +1178,7 @@ compared), zero otherwise.
 @section Special Functions
 @cindex Special functions
 
-All those functions, except explicitely stated, return zero for an
+All those functions, except explicitly stated, return zero for an
 exact return value, a positive value for a return value larger than the 
 exact result, and a negative value otherwise.
 
