@@ -22,6 +22,7 @@ MA 02111-1307, USA. */
 #ifndef __MPFR_TEST_H__
 #define __MPFR_TEST_H__
 
+#include <stdio.h>
 #include "mpfr-impl.h"
 
 /* generates a random long int, a random double,
@@ -77,6 +78,8 @@ double Ulp _MPFR_PROTO ((double));
 int Isnan _MPFR_PROTO ((double));
 void d_trace _MPFR_PROTO ((const char *, double));
 void ld_trace _MPFR_PROTO ((const char *, long double));
+
+FILE *src_fopen _MPFR_PROTO ((const char *filename, const char *mode));
 
 int mpfr_cmp_str _MPFR_PROTO ((mpfr_srcptr x, const char *s, int base,
 			       mp_rnd_t rnd));

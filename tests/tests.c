@@ -287,3 +287,24 @@ ld_trace (const char *name, long double ld)
     }
   printf ("] %.20Lg\n", ld);
 }
+
+/* Open a file in the src directory - can't use fopen directly */
+FILE *src_fopen (const char *filename, const char *mode)
+{
+  const char *srcdir = getenv ("srcdir");
+  char *buffer;
+  FILE *f;
+
+  if (srcdir == NULL) 
+    return fopen (filename, mode);
+  buffer = malloc (strlen (filename) + strlen (srcdir) + 1);
+  if (buffer == NULL)
+    {
+      printf ("src_fopen: failed to alloc memory)\n");
+      exit (1);
+    }
+  sprintf (buffer, "%s/%s", srcdir, filename);
+  f = fopen (buffer, mode);
+  free (buffer);
+  return f;
+}

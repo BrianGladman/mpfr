@@ -30,13 +30,12 @@ main (int argc, char *argv[])
   mpfr_t x;
   FILE *f;
   int i;
-
   tests_start_mpfr ();
 
   mpfr_init (x);
 
   mpfr_set_prec (x, 15);
-  f = fopen ("inp_str.data", "r");
+  f = src_fopen ("inp_str.data", "r");
   if (f == NULL)
     {
       printf ("Error, can't open inp_str.data\n");
