@@ -5,6 +5,8 @@
 #include "mpfr.h"
 #include "time.h"
 
+extern int isnan(), getpid();
+
 double drand()
 {
   double d; long int *i;
@@ -24,7 +26,7 @@ int ulp(a,b) double a,b;
   return (int) floor(b/eps);
 }
 
-check(double d, unsigned int u, unsigned char rnd)
+void check(double d, unsigned long u, unsigned char rnd)
 {
   mpfr_t x, y; double e, f;
 
@@ -46,7 +48,7 @@ check(double d, unsigned int u, unsigned char rnd)
 int
 main(int argc, char **argv)
 {
-  int i; unsigned int u; double d;
+  int i; unsigned long u; double d;
 
   srand(getpid());
   check(1.0, 3, 0);
@@ -59,4 +61,5 @@ main(int argc, char **argv)
     do { d = drand(); } while (fabs(d/u)<2.2e-307);
     check(d, u, rand() % 4);
   }
+  return 0;
 }
