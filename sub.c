@@ -254,7 +254,12 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
       else { /* shift to the right by -overlap bits */
 	overlap = -overlap;
 	k = overlap/mp_bits_per_limb;
-	cc=mpn_rshift(ap+(an-k-cn),cp,cn,overlap%mp_bits_per_limb);
+	overlap = overlap % mp_bits_per_limb;
+	if (overlap) cc = mpn_rshift(ap+(an-k-cn), cp, cn, overlap);
+	else {
+	  MPN_COPY(ap+(an-k-cn), cp, cn);
+	  cc = 0;
+	}
 	if (an>k+cn) ap[an-k-cn-1]=cc;
       }
       overlap=0;
@@ -272,7 +277,7 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
       for (i=0;i<imax;i++) ap[i] = ~ap[i];
       cc = (i) ? mpn_add_1(ap, ap, i, 1) : 1;
       mpn_sub_lshift_n(ap+i, bp, bn-cancel1, cancel2, an);
-      mpn_sub_1(ap+i, ap+i, an-i, 1-cc);
+      mpn_sub_1(ap+i, ap+i, an-i, (mp_limb_t)1-cc);
     }
     else /* PREC(b) > PREC(a): we have to truncate b */
       mpn_sub_lshift_n(ap, bp+(bn-an-cancel1), an, cancel2, an);
