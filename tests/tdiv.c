@@ -21,8 +21,8 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include "gmp.h"
+#include "gmp-impl.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
 #include "mpfr-test.h"
@@ -35,6 +35,7 @@ void check_float _PROTO((void));
 void check_convergence _PROTO((void)); 
 void check_lowr _PROTO((void));
 void check_inexact _PROTO((void));
+void check_nan _PROTO((void));
 
 void
 check4 (double N, double D, mp_rnd_t rnd_mode, int p, double Q)
@@ -383,6 +384,67 @@ check_inexact (void)
   mpfr_clear (u);
 }
 
+void
+check_nan (void)
+{
+  mpfr_t  a, d, q;
+
+  mpfr_init2 (a, 100L);
+  mpfr_init2 (d, 100L);
+  mpfr_init2 (q, 100L);
+
+  /* 1/nan == nan */
+  mpfr_set_ui (a, 1L, GMP_RNDN);
+  MPFR_SET_NAN (d);
+  ASSERT_ALWAYS (mpfr_div (q, a, d, GMP_RNDZ) == 0); /* exact */
+  ASSERT_ALWAYS (mpfr_nan_p (q));
+
+  /* nan/1 == nan */
+  MPFR_SET_NAN (a);
+  mpfr_set_ui (d, 1L, GMP_RNDN);
+  ASSERT_ALWAYS (mpfr_div (q, a, d, GMP_RNDZ) == 0); /* exact */
+  ASSERT_ALWAYS (mpfr_nan_p (q));
+
+  /* +inf/1 == +inf */
+  MPFR_CLEAR_FLAGS (a);
+  MPFR_SET_INF (a);
+  MPFR_SET_POS (a);
+  mpfr_set_ui (d, 1L, GMP_RNDN);
+  ASSERT_ALWAYS (mpfr_div (q, a, d, GMP_RNDZ) == 0); /* exact */
+  ASSERT_ALWAYS (mpfr_inf_p (q));
+  ASSERT_ALWAYS (mpfr_sgn (q) > 0);
+
+  /* 1/+inf == 0 */
+  mpfr_set_ui (a, 1L, GMP_RNDN);
+  MPFR_CLEAR_FLAGS (d);
+  MPFR_SET_INF (d);
+  MPFR_SET_POS (d);
+  ASSERT_ALWAYS (mpfr_div (q, a, d, GMP_RNDZ) == 0); /* exact */
+  ASSERT_ALWAYS (mpfr_number_p (q));
+  ASSERT_ALWAYS (mpfr_sgn (q) == 0);
+
+  /* 0/0 == nan */
+  mpfr_set_ui (a, 0L, GMP_RNDN);
+  mpfr_set_ui (d, 0L, GMP_RNDN);
+  ASSERT_ALWAYS (mpfr_div (q, a, d, GMP_RNDZ) == 0); /* exact */
+  ASSERT_ALWAYS (mpfr_nan_p (q));
+
+  /* +inf/+inf == nan */
+  MPFR_CLEAR_FLAGS (a);
+  MPFR_SET_INF (a);
+  MPFR_SET_POS (a);
+  MPFR_CLEAR_FLAGS (d);
+  MPFR_SET_INF (d);
+  MPFR_SET_POS (d);
+  ASSERT_ALWAYS (mpfr_div (q, a, d, GMP_RNDZ) == 0); /* exact */
+  ASSERT_ALWAYS (mpfr_nan_p (q));
+
+  mpfr_clear (a);
+  mpfr_clear (d);
+  mpfr_clear (q);
+}
+
+
 int
 main (int argc, char *argv[])
 {
@@ -410,6 +472,7 @@ main (int argc, char *argv[])
   mpfr_set_str_raw(y, "1.00000000000000000000000000000000000000000000000000000000000000E584"); 
   mpfr_div(z, x, y, GMP_RNDU); 
 
+  check_nan ();
   check_lowr(); 
   check_float(); /* checks single precision */
   check_convergence();
@@ -424,12 +487,6 @@ main (int argc, char *argv[])
 	 65, 0.0);
   check53(9.89438396044940256501e-134, 5.93472984109987421717e-67, GMP_RNDU,
 	  1.6672003992376663654e-67);
-  check53 (1.0, DBL_NAN, GMP_RNDD, DBL_NAN);
-  check53 (DBL_NAN, 1.0, GMP_RNDD, DBL_NAN);
-  check53 (DBL_POS_INF, 1.0, GMP_RNDD, DBL_POS_INF); 
-  check53 (1.0, DBL_POS_INF, GMP_RNDD, 0.0); 
-  check53 (0.0, 0.0, GMP_RNDD, DBL_NAN);
-  check53 (DBL_POS_INF, DBL_POS_INF, GMP_RNDD, DBL_NAN);
   check53(9.89438396044940256501e-134, -5.93472984109987421717e-67, GMP_RNDU,
 	  -1.6672003992376663654e-67);
   check53(-4.53063926135729747564e-308, 7.02293374921793516813e-84, GMP_RNDD,

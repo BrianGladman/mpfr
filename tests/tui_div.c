@@ -22,14 +22,15 @@ MA 02111-1307, USA. */
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include "gmp.h"
+#include "gmp-impl.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
 #include "mpfr-test.h"
 
 void check _PROTO((unsigned long, double, mp_rnd_t, double)); 
 void check_inexact _PROTO((void));
+void check_nan _PROTO((void));
 
 /* checks that y/x gives the same results in double
    and with mpfr with 53 bits of precision */
@@ -109,10 +110,49 @@ check_inexact (void)
   mpfr_clear (z);
 }
 
+void
+check_nan (void)
+{
+  mpfr_t  d, q;
+
+  mpfr_init2 (d, 100L);
+  mpfr_init2 (q, 100L);
+
+  /* 1/+inf == 0 */
+  MPFR_CLEAR_FLAGS (d);
+  MPFR_SET_INF (d);
+  MPFR_SET_POS (d);
+  ASSERT_ALWAYS (mpfr_ui_div (q, 1L, d, GMP_RNDZ) == 0); /* exact */
+  ASSERT_ALWAYS (mpfr_number_p (q));
+  ASSERT_ALWAYS (mpfr_sgn (q) == 0);
+
+  /* 1/-inf == -0 */
+  MPFR_CLEAR_FLAGS (d);
+  MPFR_SET_INF (d);
+  MPFR_SET_NEG (d);
+  ASSERT_ALWAYS (mpfr_ui_div (q, 1L, d, GMP_RNDZ) == 0); /* exact */
+  ASSERT_ALWAYS (mpfr_number_p (q));
+  ASSERT_ALWAYS (mpfr_sgn (q) == 0);
+
+  /* 1/nan == nan */
+  MPFR_SET_NAN (d);
+  ASSERT_ALWAYS (mpfr_ui_div (q, 1L, d, GMP_RNDZ) == 0); /* exact */
+  ASSERT_ALWAYS (mpfr_nan_p (q));
+
+  /* 0/0 == nan */
+  mpfr_set_ui (d, 0L, GMP_RNDN);
+  ASSERT_ALWAYS (mpfr_ui_div (q, 0L, d, GMP_RNDZ) == 0); /* exact */
+  ASSERT_ALWAYS (mpfr_nan_p (q));
+
+  mpfr_clear (d);
+  mpfr_clear (q);
+}
+
 int
 main (int argc, char *argv[])
 {
 #ifdef TEST
+  {
   double x; unsigned long y, N; int i,rnd_mode,rnd;
 #ifdef __mips
     /* to get denormalized numbers on IRIX64 */
@@ -136,10 +176,6 @@ main (int argc, char *argv[])
   }
 #endif
   check_inexact ();
-  check (1, DBL_POS_INF, GMP_RNDN, 0.0); 
-  check(1, DBL_NEG_INF, GMP_RNDN, -0.0); 
-  check(1, DBL_NAN, GMP_RNDN, DBL_NAN); 
-  check(0, 0.0, GMP_RNDN, DBL_NAN); 
   check(948002822, 1.22191250737771397120e+20, GMP_RNDN,
 	7.758352715731357946e-12);
   check(1976245324, 1.25296395864546893357e+232, GMP_RNDZ,
