@@ -29,14 +29,20 @@ MA 02111-1307, USA. */
 #define random mrand48
 #endif
 
-
 double drand _PROTO((void)); 
 int ulp _PROTO((double, double)); 
 double dbl _PROTO((double, int)); 
 
+#define MINNORM 2.2250738585072013831e-308 /* 2^(-1022), smallest normalized */
+#define MAXNORM 1.7976931348623157081e308 /* 2^(1023)*(2-2^(-52)) */
+
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
+#define ABS(x) (((x)>0) ? (x) : (-x))
+
 /* generate a random double using the whole range of possible values,
    including denormalized numbers, NaN, infinities, ... */
-double drand()
+double drand ()
 {
   double d; int *i, expo;
 
@@ -52,7 +58,7 @@ double drand()
 }
 
 /* returns the number of ulp's between a and b */
-int ulp(a,b) double a,b;
+int ulp (double a, double b)
 {
   double eps=1.1102230246251565404e-16; /* 2^(-53) */
   if (a==0.0) {
@@ -68,7 +74,7 @@ int ulp(a,b) double a,b;
 }
 
 /* return double m*2^e */
-double dbl(m,e) double m; int e;
+double dbl (double m, int e)
 {
   if (e>=0) while (e-->0) m *= 2.0;
   else while (e++<0) m /= 2.0;
