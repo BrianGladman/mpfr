@@ -264,7 +264,9 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
       printf("overlap=%d\n",overlap);
 #endif
       if (overlap>=0) {
-	cn -= overlap/BITS_PER_MP_LIMB;
+        if (overlap/BITS_PER_MP_LIMB <= cn) 
+	  cn -= overlap/BITS_PER_MP_LIMB;
+	else cn=0;
 	overlap %= BITS_PER_MP_LIMB;
 	/* warning: a shift of zero with mpn_lshift is not allowed */
 	if (overlap) {
