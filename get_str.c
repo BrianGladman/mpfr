@@ -199,9 +199,16 @@ mpfr_ceil_double (double x)
    It is assumed that b^(m-1) <= Y < b^(m+1), thus the returned value
    satisfies b^(m-1) <= rnd(Y) < b^(m+1).
 
+   Rounding may fail for two reasons:
+   - the error is too large to determine the integer N nearest to Y
+   - either the number of digits of N in base b is too large (m+1),
+     N=2*N1+(b/2) and the rounding mode is too nearest. This can
+     only happen when b is even.
+
    Return value:
    - the direction of rounding (-1, 0, 1) if rounding is possible
-   - 2 otherwise (rounding is not possible)
+   - -MPFR_ROUND_FAILED if rounding not possible because m+1 digits
+   - MPFR_ROUND_FAILED otherwise (too large error)
 */
 static int
 mpfr_get_str_aux (char *const str, mp_exp_t *const exp, mp_limb_t *const r,
@@ -298,18 +305,21 @@ mpfr_get_str_aux (char *const str, mp_exp_t *const exp, mp_limb_t *const r,
             {
               if (2 * str1[size_s1 - 1] == b)
                 {
-                  if (dir < 0)
-                    rnd1 = GMP_RNDU;
-                  else if (dir == 0) /* exact: even rounding */
+                  if (dir == 0 && exact) /* exact: even rounding */
 		    {
-		      if (exact)
-			rnd1 = ((str1[size_s1-2] & 1) == 0)
-			  ? GMP_RNDD : GMP_RNDU;
-		      else
-                        goto cannot_round;
+                      rnd1 = ((str1[size_s1-2] & 1) == 0)
+                        ? GMP_RNDD : GMP_RNDU;
 		    }
                   else
-                    rnd1 = GMP_RNDD;
+                    {
+                      /* otherwise we cannot round correctly: for example
+                         if b=10, we might have a mantissa of
+                         xxxxxxx5.00000000 which can be rounded to nearest
+                         to 8 digits but not to 7 */
+                      dir = -MPFR_ROUND_FAILED;
+                      MPFR_ASSERTD(dir != MPFR_EVEN_INEX);
+                      goto free_and_return;
+                    }
                 }
               else if (2 * str1[size_s1 - 1] < b)
                 rnd1 = GMP_RNDD;
@@ -352,14 +362,14 @@ mpfr_get_str_aux (char *const str, mp_exp_t *const exp, mp_limb_t *const r,
   /* mpfr_can_round_raw failed: rounding is not possible */
   else
     {
-    cannot_round:
       dir = MPFR_ROUND_FAILED; /* should be different from MPFR_EVEN_INEX */
       MPFR_ASSERTD(dir != MPFR_EVEN_INEX);
     }
 
+ free_and_return:
   TMP_FREE(marker);
 
-  return (dir);
+  return dir;
 }
 
 /* returns ceil(e/log_2(beta)) */
@@ -405,6 +415,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
   size_t n, i;
   char *s0;
   int neg;
+  int ret; /* return value of mpfr_get_str_aux */
   TMP_DECL(marker);
 
   /* if exact = 1 then err is undefined */
@@ -666,12 +677,27 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
       /* check if rounding is possible */
       if (exact)
         err = -1;
-      if (mpfr_get_str_aux (s, e, a, n, exp_a, err, b, m, rnd) != 
-          MPFR_ROUND_FAILED)
-	break;
-
-      /* increment the working precision */
-      prec += log_2prec;
+      ret = mpfr_get_str_aux (s, e, a, n, exp_a, err, b, m, rnd);
+      if (ret == MPFR_ROUND_FAILED)
+        {
+          /* too large error: increment the working precision */
+          prec += log_2prec;
+        }
+      else if (ret == -MPFR_ROUND_FAILED)
+        {
+          /* too many digits in mantissa: exp = |m-g| */
+          if ((mp_exp_t) m > g) /* exp = m - g, multiply by b^exp */
+            {
+              g++;
+              exp --;
+            }
+          else /* exp = g - m, divide by b^exp */
+            {
+              g++;
+              exp ++;
+            }
+        }
+      else break;
 
       TMP_FREE(marker);
     }
