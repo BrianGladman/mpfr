@@ -23,7 +23,6 @@ MA 02111-1307, USA. */
 
  /* The computation of cosh is done by
         tanh= [e^(x)^2-1]/[e^(x)^2+1]  */
-
 int
 mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode) 
 {
@@ -46,8 +45,7 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
 	    else
 	      return mpfr_set_si (y, -1, rnd_mode); /* tanh(-inf) = -1 */
 	  }
-	/* tanh(0) = 0 */
-	else /* xt is zero */
+	else /* tanh (0) = 0 and xt is zero */
 	  {
             MPFR_ASSERTD (MPFR_IS_ZERO(xt));
 	    MPFR_SET_ZERO (y);
@@ -56,6 +54,7 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
 	  }
       }
 
+    mpfr_save_emin_emax ();
     MPFR_TMP_INIT_ABS (x, xt);
 
     /* General case */
@@ -114,6 +113,7 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
       mpfr_clear (te);
       mpfr_clear (t);
     }
-    return inexact;
+    mpfr_restore_emin_emax ();
+    return mpfr_check_range (y, inexact, rnd_mode);
 }
 
