@@ -326,7 +326,7 @@ mpfr_div (r, u, v, rnd_mode)
   if (q_limb)
     {
       mpn_rshift(rp, rp, rsize, 1);
-      rp[rsize - 1] |= 1 << (BITS_PER_MP_LIMB - 1); rexp ++; 
+      rp[rsize - 1] |= (mp_limb_t)1 << (BITS_PER_MP_LIMB - 1); rexp ++; 
     }
   else
     if (sh) { mpn_lshift(rp, rp, rsize, sh); rexp -= sh; }
