@@ -65,7 +65,7 @@ main(int argc, char **argv)
     }
 
   *(str2++) = 'e'; 
-  sprintf(str2, "%d", random() - (1 << 30)); 
+  sprintf(str2, "%d", (int) random() - (1 << 30)); 
 
   mpfr_init2(x, nc + 10); 
   mpfr_set_str_raw(x, str);
