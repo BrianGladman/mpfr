@@ -1617,7 +1617,7 @@ file, and helped to the Windows porting.
 Jean-Luc R@'emy contributed the @code{mpfr_zeta} code.
 Ludovic Meunier helped in the design of the @code{mpfr_erf} code.
 Kevin Ryde did many contributions concerning the interface with GNU MP,
-the testing tools, and the configure/automake mechanism.
+the testing tools, and the autoconf/automake mechanism.
 
 The development of the MPFR library would not have been possible without the
 continuous support of LORIA, INRIA and INRIA Lorraine.
