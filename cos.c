@@ -69,7 +69,7 @@ int
 mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
   mp_prec_t K0, K, precy, m, k, l;
-  int inexact;
+  int inexact, loops;
   mpfr_t r, s;
   mp_limb_t *rp, *sp;
   mp_size_t sm;
@@ -106,7 +106,7 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_TMP_INIT(rp, r, m, sm);
   MPFR_TMP_INIT(sp, s, m, sm);
   
-  for (;;)
+  for (loops = 1; ; loops++)
     {
       mpfr_mul (r, x, x, GMP_RNDU); /* err <= 1 ulp */
 
@@ -136,12 +136,16 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 				      precy + (rnd_mode == GMP_RNDN))))
 	break;
 
-      m += BITS_PER_MP_LIMB;
       if (exps < cancel)
         {
           m += cancel - exps;
           cancel = exps;
         }
+      m += BITS_PER_MP_LIMB;
+      /* if we already had two failures, possibly a huge cancellation,
+         for example cos(Pi) */
+      if (loops >= 2)
+        m += m / 2;
 
       sm = (m + BITS_PER_MP_LIMB - 1) / BITS_PER_MP_LIMB;
       MPFR_TMP_INIT(rp, r, m, sm);
