@@ -47,6 +47,7 @@ mpfr_random(x)
 {
   mp_limb_t *xp; unsigned long xn, i, cnt, prec=MPFR_PREC(x); 
 
+  MPFR_CLEAR_FLAGS(x);
   xp = MPFR_MANT(x);
   xn = (prec-1)/BITS_PER_MP_LIMB + 1;
 

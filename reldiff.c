@@ -36,21 +36,24 @@ mpfr_reldiff(a, b, c, rnd_mode)
      mp_rnd_t rnd_mode;
 #endif
 {
-  if (MPFR_IS_NAN(b) || MPFR_IS_NAN(c)) { MPFR_SET_NAN(a); return; }
+  if (MPFR_IS_NAN(b) || MPFR_IS_NAN(c))
+    { MPFR_CLEAR_FLAGS(a); MPFR_SET_NAN(a); return; }
   if (MPFR_IS_INF(b)) 
     { 
       if (MPFR_IS_INF(c) && (MPFR_SIGN(c) == MPFR_SIGN(b)))
-	{ MPFR_SET_ZERO(a); return; }
-      else { MPFR_SET_NAN(a); return; }
+	{ MPFR_CLEAR_FLAGS(a); MPFR_SET_ZERO(a); return; }
+      else
+	{ MPFR_CLEAR_FLAGS(a); MPFR_SET_NAN(a); return; }
     }
 
   if (MPFR_IS_INF(c)) 
     {
-      MPFR_SET_INF(a); 
-      if (MPFR_SIGN(a) == MPFR_SIGN(c)) { MPFR_CHANGE_SIGN(a); }
+      if (MPFR_SIGN(a) != MPFR_SIGN(b)) { MPFR_CHANGE_SIGN(a); }
+      MPFR_CLEAR_FLAGS(a);
+      MPFR_SET_INF(a);
     }
 
-  if (!MPFR_NOTZERO(b)) /* reldiff = abs(c)/c = sign(c) */
+  if (MPFR_IS_ZERO(b)) /* reldiff = abs(c)/c = sign(c) */
     /*    TODO: faire preciser la SEMANTIQUE DE CE FOUTOIR. */
     mpfr_set_ui(a, MPFR_SIGN(c), rnd_mode);
   else {

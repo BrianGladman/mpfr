@@ -52,6 +52,7 @@ mpfr_random2 (x, size, exp)
   mp_size_t xn; unsigned long cnt; mp_ptr xp = MPFR_MANT(x); 
   mp_size_t prec = (MPFR_PREC(x) - 1)/BITS_PER_MP_LIMB; 
 
+  MPFR_CLEAR_FLAGS(x);
   xn = ABS (size);
   if (xn != 0)
     {
