@@ -120,7 +120,7 @@ typedef union ieee_double_extract Ieee_double_extract;
 #define MPFR_SIGN(x) (((x)->_mp_size >> 31) ? -1 : 1)
 #define MPFR_ISNONNEG(x) (MPFR_NOTZERO((x)) && MPFR_SIGN(x)>=0)
 #define MPFR_ISNEG(x) (MPFR_NOTZERO((x)) && MPFR_SIGN(x)==-1)
-#define MPFR_CHANGE_SIGN(x) (MPFR_SIZE(x) = MPFR_SIZE(x) ^ (((mp_size_t)1)<<31))
+#define MPFR_CHANGE_SIGN(x) (MPFR_SIZE(x) ^= (((mp_size_t)1)<<31))
 #define MPFR_SET_SAME_SIGN(x, y) if (MPFR_SIGN((x)) != MPFR_SIGN((y))) { MPFR_CHANGE_SIGN((x)); }
 #define MPFR_PREC(x) ((x)->_mp_prec)
 #define MPFR_NOTZERO(x) (MPFR_MANT(x)[(MPFR_PREC(x)-1)/BITS_PER_MP_LIMB])
