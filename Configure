@@ -300,11 +300,11 @@ dump.o: mpfr.h
 set_prc_raw.o: mpfr.h
 urandomb.o: mpfr.h
 sub_ui.o: mpfr.h
-ceil.o: mpfr.h
+ceil.o: mpfr.h trunc.c
 	\$(CC) \$(CFLAGS) -DMPFR_CEIL -c trunc.c -o ceil.o
-floor.o: mpfr.h
+floor.o: mpfr.h trunc.c
 	\$(CC) \$(CFLAGS) -DMPFR_FLOOR -c trunc.c -o floor.o
-trunc.o: mpfr.h
+trunc.o: mpfr.h trunc.c
 	\$(CC) \$(CFLAGS) -DMPFR_TRUNC -c trunc.c
 EOF
 cat > tests/Makefile <<EOF
