@@ -24,7 +24,7 @@ MA 02111-1307, USA. */
 #include "gmp-impl.h"
 #include "mpfr.h"
 
-/* #define DEBUG2 */
+/* #define DEBUG */
 
 extern void mpfr_add1 _PROTO((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, 
 			      unsigned char, int));
@@ -70,7 +70,7 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
   int sh,dif,k,cancel,cancel1,cancel2;
   TMP_DECL(marker);
 
-#ifdef DEBUG2
+#ifdef DEBUG
   printf("b=  "); if (SIGN(b)>=0) putchar(' ');
   mpfr_print_raw(b); putchar('\n');
   printf("c=  "); if (SIGN(c)>=0) putchar(' ');
@@ -105,7 +105,7 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
   /* case 1: diff_exp>=prec(a), i.e. c only affects the last bit
      through rounding */
   dif = PREC(a)-diff_exp;
-#ifdef DEBUG2
+#ifdef DEBUG
   printf("PREC(a)=%d an=%u PREC(b)=%d bn=%u PREC(c)=%d diff_exp=%u dif=%d cancel=%d\n",
 	 PREC(a),an,PREC(b),bn,PREC(c),diff_exp,dif,cancel);
 #endif
@@ -210,7 +210,7 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
       MPN_ZERO(ap+k, an-k); /* do it now otherwise ap[k] may be 
 				       destroyed in case dif<0 */
     }
-#ifdef DEBUG2
+#ifdef DEBUG
     printf("cancel=%d dif=%d k=%d cn=%d sh=%d\n",cancel,dif,k,cn,sh);
 #endif
     if (dif<=PREC(c)) { /* c has to be truncated */
@@ -234,7 +234,7 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
     else { /* c is not truncated, but we have to fill low limbs with 0 */
       MPN_ZERO(ap, k-cn);
       overlap = cancel-diff_exp;
-#ifdef DEBUG2
+#ifdef DEBUG
       printf("0:a="); mpfr_print_raw(a); putchar('\n');
       printf("overlap=%d\n",overlap);
 #endif
@@ -259,7 +259,7 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
       }
       overlap=0;
     }
-#ifdef DEBUG2
+#ifdef DEBUG
       printf("1:a="); mpfr_print_raw(a); putchar('\n');
 #endif
     /* here overlap=1 iff ulp(c)<ulp(a) */
@@ -277,7 +277,7 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
     else /* PREC(b) > PREC(a): we have to truncate b */
       mpn_sub_lshift_n(ap, bp+(bn-an-cancel1), an, cancel2, an);
     /* remains to do the rounding */
-#ifdef DEBUG2
+#ifdef DEBUG
       printf("2:a="); mpfr_print_raw(a); putchar('\n');
       printf("overlap=%d\n",overlap);
 #endif
@@ -376,7 +376,7 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
     
   to_nearest: /* 0 <= sh < mp_bits_per_limb : number of bits of a to truncate
                  bp[k] : last significant limb from b */
-#ifdef DEBUG2
+#ifdef DEBUG
 mpfr_print_raw(a); putchar('\n');
 #endif
         if (sh) {
@@ -386,13 +386,13 @@ mpfr_print_raw(a); putchar('\n');
 	}
 	else /* no bit to truncate */
 	  { if (k) cc = bp[--k]; else cc = 0; c2 = 1<<(mp_bits_per_limb-1); }
-#ifdef DEBUG2
+#ifdef DEBUG
 	printf("cc=%lu c2=%lu k=%u\n",cc,c2,k);
 #endif
 	if (cc>c2) goto add_one_ulp; /* trunc(b)>1/2*lsb(a) -> round up */
 	else if (cc==c2) {
 	  cc=0; while (k && cc==0) cc=bp[--k];
-#ifdef DEBUG2
+#ifdef DEBUG
 	  printf("cc=%lu\n",cc);
 #endif
 	  /* special case of rouding c shifted to the right */
@@ -416,7 +416,7 @@ mpfr_print_raw(a); putchar('\n');
     cc = mpn_add_1(ap, ap, an, (mp_limb_t)1<<sh);
 
  end_of_sub:
-#ifdef DEBUG2
+#ifdef DEBUG
 printf("b-c="); if (SIGN(a)>0) putchar(' '); mpfr_print_raw(a); putchar('\n');
 #endif
   TMP_FREE(marker);
