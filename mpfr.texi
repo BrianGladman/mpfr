@@ -959,6 +959,11 @@ When a result is zero, its sign is the product of the signs of the operands
 (for types having no signed zero, it is considered positive).
 @end deftypefun
 
+@deftypefun int mpfr_sqr (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+Set @var{rop} to @m{@var{op}^{2}, the square of @var{op}}
+rounded in the direction @var{rnd}.
+@end deftypefun
+
 @deftypefun int mpfr_sqrt (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_sqrt_ui (mpfr_t @var{rop}, unsigned long int @var{op}, mp_rnd_t @var{rnd})
 Set @var{rop} to @m{\sqrt{@var{op}}, the square root of @var{op}}
