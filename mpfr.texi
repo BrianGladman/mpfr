@@ -224,8 +224,8 @@ where the directory @samp{/usr/local/gmp} is where you have installed
 GNU MP.
 When you install GNU MP, you have to copy the files
 @samp{config.h},
-@samp{gmp-impl.h}, @samp{gmp-mparam.h}, 
-@samp{longlong.h} and @samp{stack-alloc.h} from the GNU MP source directory 
+@samp{gmp-impl.h}, @samp{gmp-mparam.h} and
+@samp{longlong.h} from the GNU MP source directory 
 to @samp{/usr/local/gmp/include};
 these additional files are needed by MPFR.
 An alternative way is 
