@@ -25,7 +25,7 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-/* Returns the number of cancelled bits when one subtracts |c| from |b|
+/* Returns the number of canceled bits when one subtracts |c| from |b|
    if |b| != |c|, and the sign.
 
    Assumes neither of b or c is NaN or +/- infinity.

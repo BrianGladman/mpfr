@@ -150,7 +150,7 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
     mpfr_sub(cst,tmp2,tmp1,GMP_RNDN);     /* log(a), err<=7ulps+cancel */ 
     cancel -= MPFR_EXP(cst);
 #ifdef DEBUG
-    printf("cancelled bits=%d\n", cancel);
+    printf("canceled bits=%d\n", cancel);
     printf("approx="); mpfr_print_binary(cst); putchar('\n');
 #endif
     if (cancel<0) cancel=0;
@@ -159,7 +159,7 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
 
     /* we have 7 ulps of error from the above roundings,
        4 ulps from the 4/s^2 second order term,
-       plus the cancelled bits */
+       plus the canceled bits */
     if (mpfr_can_round (cst, p - cancel - 4, GMP_RNDN, rnd_mode, q) == 1) {
       inexact = mpfr_set (r, cst, rnd_mode);
 #ifdef DEBUG
