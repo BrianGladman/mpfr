@@ -84,6 +84,8 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
       return inexact;
     }
 
+  mpfr_save_emin_emax ();
+
   prec_asin = MPFR_PREC(asin);
   mpfr_ui_sub (xp, 1, xp, GMP_RNDD);
 
@@ -94,7 +96,7 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_init (arcs);
 
   /* use asin(x) = atan(x/sqrt(1-x^2)) */
-  while (1)
+  for (;;)
     {
       estimated_delta = 1 + supplement;
       Prec = realprec+estimated_delta;
@@ -107,19 +109,19 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_sqrt (tmp, tmp, GMP_RNDN);
       mpfr_div (tmp, x, tmp, GMP_RNDN);
       mpfr_atan (arcs, tmp, GMP_RNDN);
-      if (!mpfr_can_round (arcs, realprec, GMP_RNDN, GMP_RNDZ,
+      if (mpfr_can_round (arcs, realprec, GMP_RNDN, GMP_RNDZ,
                           MPFR_PREC(asin) + (rnd_mode == GMP_RNDN)))
-	realprec += __gmpfr_ceil_log2 ((double) realprec);
-      else
 	break;
+      realprec += __gmpfr_ceil_log2 ((double) realprec);
     }
 
   inexact = mpfr_set (asin, arcs, rnd_mode);
 
   mpfr_clear (tmp);
   mpfr_clear (arcs);
-
   mpfr_clear (xp);
 
-  return inexact;
+  mpfr_restore_emin_emax ();
+
+  return mpfr_check_range (asin, inexact, rnd_mode);
 }

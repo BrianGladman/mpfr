@@ -28,6 +28,32 @@ MA 02111-1307, USA. */
 #define TEST_FUNCTION mpfr_exp2
 #include "tgeneric.c"
 
+static void
+special_overflow (void)
+{
+  mpfr_t x, y;
+
+  mpfr_set_emin (-125);
+  mpfr_set_emax (128);
+
+  mpfr_init2 (x, 24);
+  mpfr_init2 (y, 24);
+
+  mpfr_set_str_binary (x, "0.101100100000000000110100E15");
+  mpfr_exp2 (y, x, GMP_RNDN);
+  if (!mpfr_inf_p(y))
+    {
+      printf("Overflow error.\n");
+      mpfr_dump (y);
+      exit (1);
+    }
+
+  mpfr_clear (y);
+  mpfr_clear (x);
+  mpfr_set_emin (MPFR_EMIN_MIN);
+  mpfr_set_emax (MPFR_EMAX_MAX);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -35,6 +61,8 @@ main (int argc, char *argv[])
   mp_exp_t emin, emax;
 
   tests_start_mpfr ();
+
+  special_overflow ();
 
   mpfr_init (x);
   mpfr_init (y);

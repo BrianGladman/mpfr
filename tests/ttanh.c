@@ -62,10 +62,8 @@ special_overflow (void)
 
   mpfr_set_emin (-125);
   mpfr_set_emax (128);
-
   mpfr_init2 (x, 24);
   mpfr_init2 (y, 24);
-
   mpfr_set_str_binary (x, "0.101100100000000000110100E7");
   mpfr_tanh (y, x, GMP_RNDN);
   if (mpfr_cmp_ui (y, 1))
@@ -74,7 +72,6 @@ special_overflow (void)
       mpfr_dump (y);
       exit (1);
     }
-
   mpfr_clear (y);
   mpfr_clear (x);
   mpfr_set_emin (MPFR_EMIN_MIN);

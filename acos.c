@@ -82,6 +82,8 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mp_rnd_t rnd_mode)
         }
     }
 
+  mpfr_save_emin_emax ();
+
   prec_acos = MPFR_PREC(acos);
   mpfr_ui_sub (xp, 1, xp, GMP_RNDD);
 
@@ -124,5 +126,6 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mp_rnd_t rnd_mode)
     }
   
   mpfr_clear (xp);
-  return inexact;
+  mpfr_restore_emin_emax ();
+  return mpfr_check_range (acos, inexact, rnd_mode);
 }

@@ -152,11 +152,36 @@ special (void)
 #define TEST_FUNCTION mpfr_atan
 #include "tgeneric.c"
 
+static void
+special_overflow (void)
+{
+  mpfr_t x, y;
+
+  mpfr_set_emin (-125);
+  mpfr_set_emax (128);
+  mpfr_init2 (x, 24);
+  mpfr_init2 (y, 48);
+  mpfr_set_str_binary (x, "0.101101010001001101111010E0");
+  mpfr_atan (y, x, GMP_RNDN);
+  if (mpfr_cmp_str (y, "0.100111011001100111000010111101000111010101011110E0",
+                    2, GMP_RNDN))
+    {
+      printf("Special Overflow error.\n");
+      mpfr_dump (y);
+      exit (1);
+    }
+  mpfr_clear (y);
+  mpfr_clear (x);
+  mpfr_set_emin (MPFR_EMIN_MIN);
+  mpfr_set_emax (MPFR_EMAX_MAX);
+}
+
 int
 main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
+  special_overflow ();
   special ();
 
   test_generic (2, 100, 7);

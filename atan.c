@@ -142,6 +142,8 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
   else
     supplement = 2 - MPFR_GET_EXP (xp);
 
+  mpfr_save_emin_emax ();
+
   prec_x = __gmpfr_ceil_log2 ((double) MPFR_PREC(x) / BITS_PER_MP_LIMB);
   logn = __gmpfr_ceil_log2 ((double) prec_x);
   if (logn < 2) 
@@ -256,5 +258,6 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpz_clear (ukz);
   mpz_clear (square);
 
-  return inexact;
+  mpfr_restore_emin_emax ();
+  return mpfr_check_range (arctgt, inexact, rnd_mode);
 }
