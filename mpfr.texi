@@ -832,22 +832,23 @@ an exact rounding in base @var{base} of that real number with the same
 precision. An error occurs when one is unable to determine the leading
 digit, which can happen especially if the precision of @var{op} is small.
 
-If @var{str} is NULL, space for the mantissa is allocated using the default
-allocation function, and a pointer to the string is returned.
+If @var{str} is a null pointer, space for the mantissa is allocated using
+the default allocation function, and a pointer to the string is returned.
 In that case, the user should her/himself free the corresponding memory
 with @code{(*_mp_free_func)(s, strlen(s) + 1)}.
 
-If @var{str} is not NULL, it should point to a block of storage large enough
-for the mantissa, i.e., @var{n_digits} + 2.  The two extra bytes are for a
-possible minus sign, and for the terminating null character.
+If @var{str} is not a null pointer, it should point to a block of storage
+large enough for the mantissa, i.e., @var{n_digits} + 2 or more. The extra
+two bytes are for a possible minus sign, and for the terminating null
+character.
 
 If the input number is a real number, the exponent is written through
 the pointer @var{expptr} (the current minimal exponent for 0).
 
-If @var{n_digits} is 0, note that the space
-requirements for @var{str} in this case will be impossible for the user to
-predetermine.  Therefore, one needs to pass NULL for the string argument
-whenever @var{n_digits} is 0.
+If @var{n_digits} is 0, note that the space requirements for @var{str}
+in this case will be impossible for the user to predetermine. Therefore,
+one needs to pass a null pointer for the string argument whenever
+@var{n_digits} is 0.
 
 The generated string is a fraction, with an implicit radix point immediately
 to the left of the first digit.  For example, the number 3.1416 would be
@@ -1211,7 +1212,7 @@ rounded to the direction @var{rnd} with the precision of @var{rop}.
 Functions that perform input from a standard input/output
 stream, and functions that output to
 a standard input/output stream.
-Passing a NULL pointer for a @var{stream} argument to any of
+Passing a null pointer for a @var{stream} argument to any of
 these functions will make them read from @code{stdin} and write to
 @code{stdout}, respectively.
 
