@@ -11,3 +11,5 @@ Knowns bugs:
   ones) and a possible bug.
 
 * TMP_ALLOC problems in agm.c and sqrt.c. (Kevin Ryde, 05 March 2002)
+
+* get_d.c: still some problems with subnormals (the test fails).
