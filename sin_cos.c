@@ -50,9 +50,9 @@ MA 02111-1307, USA. */
 
 int
 #if __STDC__
-mpfr_sin_cos(mpfr_ptr sinus, mpfr_ptr cosinus, mpfr_srcptr x, mp_rnd_t rnd_mode)
+mpfr_sin_cos (mpfr_ptr sinus, mpfr_ptr cosinus, mpfr_srcptr x, mp_rnd_t rnd_mode)
 #else
-mpfr_sin_cos(sinus, cosinus,x,rnd_mode)
+mpfr_sin_cos (sinus, cosinus, x, rnd_mode)
 mpfr_ptr sinus;
 mpfr_ptr cosinus;
 mpfr_srcptr x; 
@@ -214,7 +214,8 @@ mp_rnd_t rnd_mode;
 	  goto try_again;
 	}      
     }
-    if (mpfr_can_round(tmp_sin, realprec, GMP_RNDD, rnd_mode, PREC(sinus))){
+    if (mpfr_can_round(tmp_sin, realprec, GMP_RNDD, rnd_mode, PREC(sinus)) &&
+	mpfr_can_round(tmp_cos, realprec, GMP_RNDD, rnd_mode, PREC(cosinus))) {
 	mpfr_set(sinus, tmp_sin, rnd_mode);
 	mpfr_set(cosinus, tmp_cos, rnd_mode);
 	good = 1;
