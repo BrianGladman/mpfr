@@ -109,7 +109,7 @@ void mpfr_sub _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, unsigned char));
 void mpfr_set _PROTO ((mpfr_ptr, mpfr_srcptr, unsigned char));
 void mpfr_pi _PROTO ((mpfr_ptr, unsigned char));
 void mpfr_log2 _PROTO ((mpfr_ptr, unsigned char));
-void mpfr_mul_ui _PROTO((mpfr_ptr, mpfr_ptr, unsigned long, char));
+void mpfr_mul_ui _PROTO((mpfr_ptr, mpfr_srcptr, unsigned long, unsigned char));
 void mpfr_set_machine_rnd_mode _PROTO ((unsigned char));
 int mpfr_cmp _PROTO ((mpfr_srcptr, mpfr_srcptr));
 int mpfr_cmp_ui _PROTO ((mpfr_srcptr, unsigned long int));
