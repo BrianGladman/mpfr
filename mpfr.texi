@@ -222,7 +222,7 @@ the GNU MP floating-point numbers in a future release. The main differences
 with the @code{mpf} class are: 
 
 @itemize @bullet
-@item the @code{mpfr} code is portable, i.e. the result of any operation
+@item the @code{mpfr} code is portable, i.e.@: the result of any operation
 does not depend (or should not) on the machine word size 
 @code{mp_bits_per_limb} (32 or 64 on most machines);
 @item the precision in bits can be set exactly to any valid value
@@ -409,7 +409,7 @@ is @code{mpfr_t}.
 A floating-point number can have three special values: Not-a-Number (NaN)
 or plus or minus Infinity. NaN represents a value which cannot be represented
 in the floating-point format, like 0 divided by 0, or Infinity minus Infinity.
-Moreover, like in the IEEE 754-1985 standard, zero is signed, i.e. there are
+Moreover, like in the IEEE 754-1985 standard, zero is signed, i.e.@: there are
 a +0 and a -0; the behavior is the same as in the IEEE 754-1985 standard and
 it is generalized to the other functions supported by MPFR.
 
@@ -583,8 +583,8 @@ as last argument a rounding mode, and
 have a return value of type @code{int}. If this value is zero, it means
 that the value stored in the destination variable is the exact result of
 the corresponding mathematical function. If the returned value is positive
-(resp. negative), it means the value stored in the destination variable
-is greater (resp. lower) than the exact result.
+(resp.@: negative), it means the value stored in the destination variable
+is greater (resp.@: lower) than the exact result.
 For example with the @code{GMP_RNDU} rounding mode, the returned value
 is usually positive, except when the result is exact, in which case it is
 zero.
@@ -655,7 +655,7 @@ result is equal to the exact one, a positive value if the rounded
 result is larger than the exact one, a negative value if the rounded
 result is smaller than the exact one. Note that unlike most functions,
 the results is compared to the exact one, not the original value of
-@var{x}, i.e. the ternary value is propagated.
+@var{x}, i.e.@: the ternary value is propagated.
 @end deftypefun
 
 @deftypefun void mpfr_clear_underflow (void)
@@ -1148,7 +1148,7 @@ Return non-zero if @var{op} is plus or minus infinity, zero otherwise.
 @end deftypefun
 
 @deftypefun int mpfr_number_p (mpfr_t @var{op})
-Return non-zero if @var{op} is an ordinary number, i.e. neither Not-a-Number
+Return non-zero if @var{op} is an ordinary number, i.e.@: neither Not-a-Number
 nor plus or minus infinity.
 @end deftypefun
 
@@ -1206,7 +1206,7 @@ and a negative value when it is smaller.
 Set @var{cop} to the cosine of @var{op}, @var{sop} to the sine of @var{op},
 @var{top} to the tangent of @var{op}, rounded to the direction @var{rnd} with
 the precision of @var{rop}. Return 0 iff the result is exact (this occurs
-in fact only when @var{op} is 0 i.e. the sine is 0, the cosine is 1, and the
+in fact only when @var{op} is 0 i.e.@: the sine is 0, the cosine is 1, and the
 tangent is 0).
 @end deftypefun
 
@@ -1252,14 +1252,14 @@ Return 0 iff the result is exact.
 Set @var{rop} to the logarithm of one plus @var{op},
 rounded to the direction @var{rnd} with the precision of @var{rop}.
 Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
-i.e. the result is 0).
+i.e.@: the result is 0).
 @end deftypefun
 
 @deftypefun int mpfr_expm1 (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Set @var{rop} to the exponential of @var{op} minus one,
 rounded to the direction @var{rnd} with the precision of @var{rop}.
 Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
-i.e. the result is 0).
+i.e.@: the result is 0).
 @end deftypefun
 
 @deftypefun int mpfr_log2 (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
