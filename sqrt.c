@@ -24,22 +24,22 @@ MA 02111-1307, USA. */
 int
 mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
 {
-  mp_size_t rsize = MPFR_LIMB_SIZE(r); /* number of limbs of r */
-  mp_size_t rrsize = rsize + rsize;
-  mp_size_t usize = MPFR_LIMB_SIZE(u); /* number of limbs of u */
+  mp_size_t rsize; /* number of limbs of r */
+  mp_size_t rrsize;
+  mp_size_t usize; /* number of limbs of u */
   mp_size_t tsize; /* number of limbs of the sqrtrem remainder */
   mp_size_t k;
   mp_size_t l;
-  mp_ptr rp = MPFR_MANT(r);
-  mp_ptr up = MPFR_MANT(u);
+  mp_ptr rp;
+  mp_ptr up;
   mp_ptr sp;
   mp_ptr tp;
-  mp_limb_t sticky0 = MPFR_LIMB_ZERO; /* truncated part of input */
-  mp_limb_t sticky1 = MPFR_LIMB_ZERO; /* truncated part of rp[0] */
+  mp_limb_t sticky0; /* truncated part of input */
+  mp_limb_t sticky1; /* truncated part of rp[0] */
   mp_limb_t sticky;
-  int odd_exp = (unsigned int) MPFR_GET_EXP (u) & 1;
+  int odd_exp;
   int sh; /* number of extra bits in rp[0] */
-  int inexact = -1; /* return ternary flag */
+  int inexact; /* return ternary flag */
   TMP_DECL(marker);
 
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(u)))
@@ -77,6 +77,16 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
     }
   MPFR_CLEAR_FLAGS(r);
   MPFR_SET_POS(r);
+
+  rsize = MPFR_LIMB_SIZE(r); /* number of limbs of r */
+  rrsize = rsize + rsize;
+  usize = MPFR_LIMB_SIZE(u); /* number of limbs of u */
+  rp = MPFR_MANT(r);
+  up = MPFR_MANT(u);
+  sticky0 = MPFR_LIMB_ZERO; /* truncated part of input */
+  sticky1 = MPFR_LIMB_ZERO; /* truncated part of rp[0] */
+  odd_exp = (unsigned int) MPFR_GET_EXP (u) & 1;
+  inexact = -1; /* return ternary flag */
 
   sp = (mp_limb_t *) TMP_ALLOC (rrsize * sizeof (mp_limb_t));
 
