@@ -874,6 +874,14 @@ the result is undefined.
 See also @code{mpfr_fits_slong_p} and @code{mpfr_fits_ulong_p}.
 @end deftypefun
 
+@deftypefun intmax_t mpfr_get_sj (mpfr_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefunx uintmax_t mpfr_get_uj (mpfr_t @var{op}, mp_rnd_t @var{op})
+Convert @var{op} to an @code{intmax_t} or @code{uintmax_t}, after rounding
+it with respect to @var{rnd}.
+If @var{op} is NaN or Inf, or too big for the return type,
+the result is undefined.
+@end deftypefun
+
 @deftypefun mp_exp_t mpfr_get_z_exp (mpz_t @var{z}, mpfr_t @var{op})
 Put the scaled mantissa of @var{op} (regarded as an integer, with the
 precision of @var{op}) into @var{z}, and return the exponent @var{exp}
@@ -1785,7 +1793,7 @@ Jean-Luc R@'emy contributed the @code{mpfr_zeta} code.
 Ludovic Meunier helped in the design of the @code{mpfr_erf} code.
 Patrick P@'elissier has worked on low-precision optimizations
 (new internal format), on debugging (specially the file @file{gmp_op.c})
-and on some other functions (@code{MPFR_DECL_INIT}, @code{mpfr_set_sj}, ...).
+and on some other functions (@code{MPFR_DECL_INIT}, @code{mpfr_set_sj}, etc.).
 
 The development of the MPFR library would not have been possible without the
 continuous support of LORIA, INRIA and INRIA Lorraine.

@@ -231,10 +231,14 @@ int mpfr_neg _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t));
 #define mpfr_set_sj_2exp __gmpfr_set_sj_2exp
 #define mpfr_set_uj __gmpfr_set_uj
 #define mpfr_set_uj_2exp __gmpfr_set_uj_2exp
+#define mpfr_get_sj __gmpfr_mpfr_get_sj
+#define mpfr_get_uj __gmpfr_mpfr_get_uj
 int mpfr_set_sj _MPFR_PROTO ((mpfr_t, intmax_t, mpfr_rnd_t));
 int mpfr_set_sj_2exp _MPFR_PROTO ((mpfr_t, intmax_t, intmax_t, mpfr_rnd_t));
 int mpfr_set_uj _MPFR_PROTO ((mpfr_t, uintmax_t, mpfr_rnd_t));
 int mpfr_set_uj_2exp _MPFR_PROTO ((mpfr_t, uintmax_t, intmax_t, mpfr_rnd_t));
+intmax_t mpfr_get_sj _MPFR_PROTO ((mpfr_srcptr, mpfr_rnd_t));
+uintmax_t mpfr_get_uj _MPFR_PROTO ((mpfr_srcptr, mpfr_rnd_t));
 #endif
 
 mp_exp_t mpfr_get_z_exp _MPFR_PROTO ((mpz_ptr, mpfr_srcptr));
