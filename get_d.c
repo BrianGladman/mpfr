@@ -202,7 +202,7 @@ mpfr_get_d3 (mpfr_srcptr src, mp_exp_t e, mp_rnd_t rnd_mode)
     {
       int nbits;
       mp_size_t np, i;
-      mp_limb_t tp[ (IEEE_DBL_MANT_DIG-1)/BITS_PER_MP_LIMB+1 ];
+      mp_limb_t tp[ MPFR_LIMBS_PER_DOUBLE ];
       int carry;
 
       nbits = IEEE_DBL_MANT_DIG; /* 53 */
@@ -213,7 +213,7 @@ mpfr_get_d3 (mpfr_srcptr src, mp_exp_t e, mp_rnd_t rnd_mode)
           MPFR_ASSERTD (nbits >= 1);
         }
       np = (nbits + BITS_PER_MP_LIMB - 1) / BITS_PER_MP_LIMB;
-      MPFR_ASSERTD ( np <= (IEEE_DBL_MANT_DIG-1)/BITS_PER_MP_LIMB+1 );
+      MPFR_ASSERTD ( np <= MPFR_LIMBS_PER_DOUBLE );
       carry = mpfr_round_raw_4 (tp, MPFR_MANT(src), MPFR_PREC(src), negative,
 				nbits, rnd_mode);
       if (MPFR_UNLIKELY(carry))
@@ -231,8 +231,6 @@ mpfr_get_d3 (mpfr_srcptr src, mp_exp_t e, mp_rnd_t rnd_mode)
       d = mpfr_scale2 (d, e);
       if (negative)
         d = -d;
-
-      TMP_FREE(marker);
     }
 
   return d;
