@@ -229,6 +229,22 @@ check_diverse ()
       exit (1);
     }
 
+  mpfr_set_prec (x, 1);
+  mpfr_set_prec (y, 10);
+  mpfr_set_prec (z, 10);
+  mpfr_set_ui (y, 0, GMP_RNDN);
+  mpfr_set_str_raw (z, "0.100000000000000000000100E15");
+  if (mpfr_sub (x, y, z, GMP_RNDN) <= 0)
+    {
+      fprintf (stderr, "Wrong inexact flag in x=mpfr_sub(0,z) for prec(z)>prec(x)\n");
+      exit (1);
+    }
+  if (mpfr_sub (x, z, y, GMP_RNDN) >= 0)
+    {
+      fprintf (stderr, "Wrong inexact flag in x=mpfr_sub(z,0) for prec(z)>prec(x)\n");
+      exit (1);
+    }
+
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);
