@@ -1,6 +1,6 @@
 /* mpfr_log10 -- log in base 10
 
-Copyright (C) 2001 Free Software Foundation.
+Copyright (C) 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -31,14 +31,7 @@ MA 02111-1307, USA. */
  */
 
 int
-#if __STDC__
 mpfr_log10 (mpfr_ptr r, mpfr_srcptr a , mp_rnd_t rnd_mode) 
-#else
-mpfr_log10 (r, a, rnd_mode)
-     mpfr_ptr r;
-     mpfr_srcptr a;
-     mp_rnd_t rnd_mode;
-#endif
 {
 
   int inexact = 0;

@@ -30,14 +30,7 @@ MA 02111-1307, USA. */
  */
 
 int
-#if __STDC__
 mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode) 
-#else
-mpfr_exp2 (y, x, rnd_mode)
-     mpfr_ptr y;
-     mpfr_srcptr x;
-     mp_rnd_t rnd_mode;
-#endif
 {    
 
     int inexact =0;

@@ -1,6 +1,6 @@
 /* mpfr_set_str_raw -- set a floating-point number from a binary string
 
-Copyright (C) 1999-2001 Free Software Foundation.
+Copyright (C) 1999, 2000, 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -33,13 +33,7 @@ MA 02111-1307, USA. */
    to hold all the bits of str. */
 
 void
-#if __STDC__
 mpfr_set_str_raw (mpfr_ptr x, char *str)
-#else
-mpfr_set_str_raw (x, str)
-     mpfr_ptr x; 
-     char *str; 
-#endif
 {
   char *str2, *str0, negative = 0; 
   unsigned long j, l, k = 0, xsize, cnt, alloc; mp_limb_t *xp; 

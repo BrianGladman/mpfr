@@ -1,7 +1,6 @@
 /* mpfr_mul -- multiply two floating-point numbers
 
-Copyright (C) 1999-2001 Free Software Foundation.
-Contributed by Paul Zimmermann, INRIA Lorraine.
+Copyright (C) 1999, 2000, 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -26,21 +25,8 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-/* Remains to do:
-- do not use all bits of b and c when MPFR_PREC(b)>MPFR_PREC(a) or MPFR_PREC(c)>MPFR_PREC(a)
-  [current complexity is O(MPFR_PREC(b)*MPFR_PREC(c))]
-*/
-
 int
-#if __STDC__
 mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode) 
-#else
-mpfr_mul (a, b, c, rnd_mode) 
-     mpfr_ptr a;
-     mpfr_srcptr b;
-     mpfr_srcptr c;
-     mp_rnd_t rnd_mode;
-#endif
 {
   unsigned int bn, cn, an, tn, k;
   int cc, inexact = 0;

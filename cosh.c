@@ -31,14 +31,7 @@ MA 02111-1307, USA. */
  */
 
 int
-#if __STDC__
 mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode) 
-#else
-mpfr_cosh (y, xt, rnd_mode)
-     mpfr_ptr y;
-     mpfr_srcptr xt;
-     mp_rnd_t rnd_mode;
-#endif
 {
     
   /****** Declaration ******/

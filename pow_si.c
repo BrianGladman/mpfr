@@ -1,6 +1,6 @@
 /* mpfr_pow_si -- power function x^y with y an unsigned int 
 
-Copyright (C) 2001 Free Software Foundation.
+Copyright (C) 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -32,15 +32,7 @@ MA 02111-1307, USA. */
  */
 
 int
-#if __STDC__
 mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd_mode)
-#else
-mpfr_pow_si (y, x, n, rnd)
-     mpfr_ptr y;
-     mpfr_srcptr x;
-     long int n;
-     mp_rnd_t rnd_mode;
-#endif
 {
 
   if (n>0)

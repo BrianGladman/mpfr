@@ -27,14 +27,7 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
 int
-#if __STDC__
 mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
-#else
-mpfr_asin (asin, x, rnd_mode)
-     mpfr_ptr asin;
-     mpfr_srcptr x; 
-     mp_rnd_t rnd_mode;
-#endif
 {
   mpfr_t xp;
   mpfr_t arcs;

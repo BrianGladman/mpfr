@@ -28,14 +28,7 @@ MA 02111-1307, USA. */
 static int mpfr_cos2_aux       _PROTO ((mpfr_ptr, mpfr_srcptr));
 
 int 
-#if __STDC__
 mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode) 
-#else
-mpfr_cos (y, x, rnd_mode)
-     mpfr_ptr y;
-     mpfr_srcptr x;
-     mp_rnd_t rnd_mode;
-#endif
 {
   int K, precy, m, k, l, inexact;
   mpfr_t r, s;
@@ -107,13 +100,7 @@ mpfr_cos (y, x, rnd_mode)
    The absolute error on s is at most 2 * l0 * 2^(-m).
 */
 static int
-#if __STDC__
 mpfr_cos2_aux (mpfr_ptr s, mpfr_srcptr r)
-#else
-mpfr_cos2_aux (s, r)
-     mpfr_ptr s;
-     mpfr_srcptr r;
-#endif
 {
   unsigned int l, b = 2;
   int prec_t, m = MPFR_PREC(s);

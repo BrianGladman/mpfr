@@ -1,6 +1,6 @@
 /* mpfr_fma -- Floating multiply-add
 
-Copyright (C) 2001 Free Software Foundation.
+Copyright (C) 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -34,16 +34,7 @@ MA 02111-1307, USA. */
 */
 
 int
-#if __STDC__
 mpfr_fma (mpfr_ptr s, mpfr_srcptr x ,mpfr_srcptr y ,mpfr_srcptr z , mp_rnd_t rnd_mode) 
-#else
-mpfr_fma (s,x,y,z, rnd_mode)
-     mpfr_ptr s;
-     mpfr_srcptr x;
-     mpfr_srcptr y;
-     mpfr_srcptr z;
-     mp_rnd_t rnd_mode;
-#endif
 {
   int inexact =0;
   /* Flag calcul exacte */

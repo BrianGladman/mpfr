@@ -1,6 +1,6 @@
 /* mpfr_log1p -- Compute log(1+x)
 
-Copyright (C) 2001 Free Software Foundation.
+Copyright (C) 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -32,14 +32,7 @@ MA 02111-1307, USA. */
  */
 
 int
-#if __STDC__
 mpfr_log1p (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode) 
-#else
-mpfr_log1p (y, x, rnd_mode)
-     mpfr_ptr y;
-     mpfr_srcptr x;
-     mp_rnd_t rnd_mode;
-#endif
 {
   int comp, inexact = 0;
 

@@ -1,6 +1,6 @@
 /* mpfr_hypot -- Euclidean distance
 
-Copyright (C) 2001 Free Software Foundation.
+Copyright (C) 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -32,15 +32,7 @@ MA 02111-1307, USA. */
  */
 
 int
-#if __STDC__
 mpfr_hypot (mpfr_ptr z, mpfr_srcptr x ,mpfr_srcptr y , mp_rnd_t rnd_mode) 
-#else
-mpfr_hypot (z, x,y, rnd_mode)
-     mpfr_ptr z;
-     mpfr_srcptr x;
-     mpfr_srcptr y;
-     mp_rnd_t rnd_mode;
-#endif
 {
   int inexact;
   /* Flag calcul exacte */

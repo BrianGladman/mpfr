@@ -1,6 +1,6 @@
 /* mpfr_ui_pow -- power of n function n^x
 
-Copyright (C) 2001 Free Software Foundation.
+Copyright (C) 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -31,15 +31,7 @@ MA 02111-1307, USA. */
  */
 
 int
-#if __STDC__
 mpfr_ui_pow (mpfr_ptr y, unsigned long int n,mpfr_srcptr x, mp_rnd_t rnd_mode) 
-#else
-mpfr_ui_pow (y, n, x, rnd_mode)
-     mpfr_ptr y;
-     unsigned long int n;
-     mpfr_srcptr x;
-     mp_rnd_t rnd_mode;
-#endif
 {    
     int inexact;
 

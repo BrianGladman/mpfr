@@ -1,6 +1,6 @@
 /* mpfr_tan -- tangent of a floating-point number
 
-Copyright (C) 2001 Free Software Foundation.
+Copyright (C) 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -27,14 +27,7 @@ MA 02111-1307, USA. */
 
 /* computes tan(x) = sign(x)*sqrt(1/cos(x)^2-1) */
 int 
-#if __STDC__
 mpfr_tan (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode) 
-#else
-mpfr_tan (y, x, rnd_mode)
-     mpfr_ptr y;
-     mpfr_srcptr x;
-     mp_rnd_t rnd_mode;
-#endif
 {
   int precy, m, ok, e, inexact;
   mpfr_t c;

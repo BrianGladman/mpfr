@@ -32,14 +32,7 @@ MA 02111-1307, USA. */
  */
 
 int
-#if __STDC__
 mpfr_atanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode) 
-#else
-mpfr_atanh (y, xt, rnd_mode)
-     mpfr_ptr y;
-     mpfr_srcptr xt;
-     mp_rnd_t rnd_mode;
-#endif
 {
   int inexact =0;
   mpfr_t x;

@@ -54,13 +54,7 @@ static int mpfr_const_aux_log2 _PROTO ((mpfr_ptr, mp_rnd_t));
 #undef C2
 
 static int
-#if __STDC__
 mpfr_const_aux_log2 (mpfr_ptr mylog, mp_rnd_t rnd_mode)
-#else
-mpfr_const_aux_log2 (mylog, rnd_mode)
-     mpfr_ptr mylog;
-     mp_rnd_t rnd_mode;
-#endif
 {
   int prec;
   mpfr_t tmp1, tmp2, result,tmp3; 
@@ -131,11 +125,7 @@ mpfr_const_aux_log2 (mylog, rnd_mode)
    Then 2^N*log(2)-S'(N) <= N-1+2/N <= N for N>=2.
 */
 void 
-#if __STDC__
 mpfr_const_log2 (mpfr_ptr x, mp_rnd_t rnd_mode)
-#else
-mpfr_const_log2 (x, rnd_mode) mpfr_ptr x; mp_rnd_t rnd_mode;
-#endif
 {
   int N, oldN, k, precx; mpz_t s, t, u;
 

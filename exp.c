@@ -36,14 +36,7 @@ extern int mpfr_exp3 _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
    number of operations = O(K+prec(r)/K)
 */
 int 
-#if __STDC__
 mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode) 
-#else
-mpfr_exp (y, x, rnd_mode)
-     mpfr_ptr y;
-     mpfr_srcptr x;
-     mp_rnd_t rnd_mode;
-#endif
 {
   int expx, precy;
   double d;

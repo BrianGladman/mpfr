@@ -31,15 +31,7 @@ MA 02111-1307, USA. */
  */
 
 int
-#if __STDC__
 mpfr_copysign (mpfr_ptr z, mpfr_srcptr x ,mpfr_srcptr y , mp_rnd_t rnd_mode) 
-#else
-mpfr_copysign (z, x,y, rnd_mode)
-     mpfr_ptr z;
-     mpfr_srcptr x;
-     mpfr_srcptr y;
-     mp_rnd_t rnd_mode;
-#endif
 {
     
     if (MPFR_IS_NAN(y)) 

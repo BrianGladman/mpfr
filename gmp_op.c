@@ -1,6 +1,6 @@
 /* mpfr_cos -- cosine of a floating-point number
 
-Copyright (C) 2001 Free Software Foundation.
+Copyright (C) 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -26,15 +26,7 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
 int 
-#if __STDC__
 mpfr_mul_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z,mp_rnd_t rnd_mode) 
-#else
-mpfr_mul_z (y, x, rnd_mode)
-     mpfr_ptr y;
-     mpfr_srcptr x;
-     mpz_srcptr z;
-     mp_rnd_t rnd_mode;
-#endif
 {
   mpfr_t t;
   int res;
@@ -46,15 +38,7 @@ mpfr_mul_z (y, x, rnd_mode)
 }
 
 int 
-#if __STDC__
 mpfr_div_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd_mode) 
-#else
-mpfr_div_z (y, x, rnd_mode)
-     mpfr_ptr y;
-     mpfr_srcptr x;
-     mpz_srcptr z;
-     mp_rnd_t rnd_mode;
-#endif
 {
   mpfr_t t;
   int res;
@@ -66,15 +50,7 @@ mpfr_div_z (y, x, rnd_mode)
 }
 
 int 
-#if __STDC__
 mpfr_add_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd_mode) 
-#else
-mpfr_add_z (y, x, rnd_mode)
-     mpfr_ptr y;
-     mpfr_srcptr x;
-     mpz_srcptr z;
-     mp_rnd_t rnd_mode;
-#endif
 {
   mpfr_t t;
   int res;
@@ -86,15 +62,7 @@ mpfr_add_z (y, x, rnd_mode)
 }
 
 int 
-#if __STDC__
 mpfr_sub_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z,mp_rnd_t rnd_mode) 
-#else
-mpfr_sub_z (y, x, rnd_mode)
-     mpfr_ptr y;
-     mpfr_srcptr x;
-     mpz_srcptr z;
-     mp_rnd_t rnd_mode;
-#endif
 {
   mpfr_t t;
   int res;
@@ -106,15 +74,7 @@ mpfr_sub_z (y, x, rnd_mode)
 }
 
 int 
-#if __STDC__
 mpfr_mul_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z,mp_rnd_t rnd_mode) 
-#else
-mpfr_mul_q (y, x, rnd_mode)
-     mpfr_ptr y;
-     mpfr_srcptr x;
-     mpq_srcptr z;
-     mp_rnd_t rnd_mode;
-#endif
 {
   mpfr_t t;
   int res;
@@ -126,15 +86,7 @@ mpfr_mul_q (y, x, rnd_mode)
 }
 
 int 
-#if __STDC__
 mpfr_div_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mp_rnd_t rnd_mode) 
-#else
-mpfr_div_q (y, x, rnd_mode)
-     mpfr_ptr y;
-     mpfr_srcptr x;
-     mpq_srcptr z;
-     mp_rnd_t rnd_mode;
-#endif
 {
   mpfr_t t;
   int res;
@@ -146,15 +98,7 @@ mpfr_div_q (y, x, rnd_mode)
 }
 
 int 
-#if __STDC__
 mpfr_add_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mp_rnd_t rnd_mode) 
-#else
-mpfr_add_q (y, x, rnd_mode)
-     mpfr_ptr y;
-     mpfr_srcptr x;
-     mpq_srcptr z;
-     mp_rnd_t rnd_mode;
-#endif
 {
   mpfr_t t;
   int res;
@@ -166,15 +110,7 @@ mpfr_add_q (y, x, rnd_mode)
 }
 
 int 
-#if __STDC__
 mpfr_sub_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z,mp_rnd_t rnd_mode) 
-#else
-mpfr_sub_q (y, x, rnd_mode)
-     mpfr_ptr y;
-     mpfr_srcptr x;
-     mpq_srcptr z;
-     mp_rnd_t rnd_mode;
-#endif
 {
   mpfr_t t;
   int res;

@@ -1,6 +1,6 @@
 /* mpfr_set_default_rounding_mode -- set the default rounding mode
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 1999, 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -26,12 +26,7 @@ MA 02111-1307, USA. */
 mp_rnd_t __gmp_default_rounding_mode = 0;
 
 void
-#if __STDC__
 mpfr_set_default_rounding_mode (mp_rnd_t rnd_mode)
-#else
-mpfr_set_default_rounding_mode (rnd_mode)
-     mp_rnd_t rnd_mode;
-#endif
 {
   __gmp_default_rounding_mode = rnd_mode;
 }

@@ -1,6 +1,6 @@
 /* mpfr_sinh -- hyperbolic sine
 
-Copyright (C) 2001 Free Software Foundation.
+Copyright (C) 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -32,14 +32,7 @@ MA 02111-1307, USA. */
  */
 
 int
-#if __STDC__
 mpfr_sinh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode) 
-#else
-mpfr_sinh (y, xt, rnd_mode)
-     mpfr_ptr y;
-     mpfr_srcptr xt;
-     mp_rnd_t rnd_mode;
-#endif
 {
     /****** Declaration ******/
     mpfr_t x;

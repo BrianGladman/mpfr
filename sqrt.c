@@ -1,7 +1,6 @@
 /* mpfr_sqrt -- square root of a floating-point number
 
-Copyright (C) 1999-2001 Free Software Foundation.
-Contributed by the Spaces project.
+Copyright (C) 1999, 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -30,14 +29,7 @@ MA 02111-1307, USA. */
 /* #define DEBUG */
 
 int
-#if __STDC__
 mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
-#else
-mpfr_sqrt (r, u, rnd_mode)
-     mpfr_ptr r;
-     mpfr_srcptr u;
-     mp_rnd_t rnd_mode;
-#endif
 {
   mp_ptr up, rp, tmp, remp;
   mp_size_t usize, rrsize;

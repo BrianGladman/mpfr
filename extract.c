@@ -1,6 +1,6 @@
 /* mpfr_extract -- bit-extraction function for the binary splitting algorithm
 
-Copyright (C) 2000 Free Software Foundation.
+Copyright (C) 2000, 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -34,14 +34,7 @@ MA 02111-1307, USA. */
    - for i>0, y = (p * B^(2^i)) mod B^(2^(i-1))
  */
 void
-#if __STDC__
 mpfr_extract (mpz_ptr y, mpfr_srcptr p, unsigned int i)
-#else
-mpfr_extract (y, p, i)
-     mpz_ptr y; 
-     mpfr_srcptr p;
-     unsigned int i;
-#endif
 {
   int two_i = 1 << i;
   int two_i_2 = i ? two_i / 2 : 1;

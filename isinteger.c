@@ -1,6 +1,6 @@
 /* mpfr_isinteger -- test if a mpfr variable is integer
 
-Copyright (C) 2001 Free Software Foundation.
+Copyright (C) 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -24,18 +24,8 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
- /* The computation of y=pow(x,z) is done by
-
-    y=exp(z*log(x))=x^z
- */
-
 int 
-#if __STDC__
-mpfr_isinteger(mpfr_srcptr x)
-#else
-mpfr_isinteger(x)
-     mpfr_srcptr x;
-#endif
+mpfr_isinteger (mpfr_srcptr x)
 {
 
   mpfr_t u;

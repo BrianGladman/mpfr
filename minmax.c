@@ -1,6 +1,6 @@
 /* mpfr_min -- min and max of x, y  
 
-Copyright (C) 2001 Free Software Foundation.
+Copyright (C) 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -32,15 +32,7 @@ MA 02111-1307, USA. */
  */
 
 int
-#if __STDC__
 mpfr_min (mpfr_ptr z, mpfr_srcptr x ,mpfr_srcptr y ,mp_rnd_t rnd_mode) 
-#else
-mpfr_min (z, x, y, rnd_mode)
-     mpfr_ptr z;
-     mpfr_srcptr x;
-     mpfr_srcptr y;
-     mp_rnd_t rnd_mode;
-#endif
 {
     if (MPFR_IS_NAN(x) && MPFR_IS_NAN(y) ) 
     {  
@@ -65,15 +57,7 @@ mpfr_min (z, x, y, rnd_mode)
     z=y if x < y
  */
 int
-#if __STDC__
 mpfr_max (mpfr_ptr z, mpfr_srcptr x ,mpfr_srcptr y ,mp_rnd_t rnd_mode) 
-#else
-mpfr_max (z, x, y, rnd_mode)
-     mpfr_ptr z;
-     mpfr_srcptr x;
-     mpfr_srcptr y;
-     mp_rnd_t rnd_mode;
-#endif
 {
     if (MPFR_IS_NAN(x) && MPFR_IS_NAN(y) ) 
     {  

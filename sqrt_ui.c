@@ -1,6 +1,6 @@
 /* mpfr_sqrt_ui -- square root of a machine integer
 
-Copyright (C) 2000-2001 Free Software Foundation.
+Copyright (C) 2000, 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -28,14 +28,7 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
 int
-#if __STDC__
 mpfr_sqrt_ui (mpfr_ptr r, unsigned long u, mp_rnd_t rnd_mode)
-#else
-mpfr_sqrt_ui (r, u, rnd_mode)
-     mpfr_ptr r;
-     unsigned long u;
-     mp_rnd_t rnd_mode;
-#endif
 {
   if (u)
     {

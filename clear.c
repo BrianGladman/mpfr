@@ -26,12 +26,7 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
 void
-#if __STDC__
 mpfr_clear (mpfr_ptr m)
-#else
-mpfr_clear (m)
-     mpfr_ptr m;
-#endif
 {
   /* be careful to always free an entire number of limbs */
   (*__gmp_free_func) (MPFR_MANT(m), MPFR_ABSSIZE(m) * BYTES_PER_MP_LIMB);

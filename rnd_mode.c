@@ -1,6 +1,6 @@
 /* mpfr_set_machine_rnd_mode -- set the rounding mode for machine floats
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 1999, 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -116,12 +116,7 @@ char *out;
 
 /* sets the machine rounding mode to the value rnd_mode */
 void 
-#if __STDC__
-mpfr_set_machine_rnd_mode(mp_rnd_t rnd_mode)
-#else
-mpfr_set_machine_rnd_mode(rnd_mode)
-     mp_rnd_t rnd_mode;
-#endif
+mpfr_set_machine_rnd_mode (mp_rnd_t rnd_mode)
 {
   switch (rnd_mode) {
   case GMP_RNDN: TONEAREST; break;

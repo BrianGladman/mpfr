@@ -27,15 +27,7 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
 int
-#if __STDC__
 mpfr_add_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
-#else
-mpfr_add_ui (y, x, u, rnd_mode)
-     mpfr_ptr y;
-     mpfr_srcptr x;
-     unsigned long int u;
-     mp_rnd_t rnd_mode;
-#endif
 {
 
   if (u)  /* if u=0, do nothing */

@@ -1,5 +1,6 @@
 Documentation:
 
+- update AUTHORS
 - add a description of the algorithms used + proof of correctness
 
 Installation:
@@ -12,20 +13,9 @@ Installation:
 
 New functions to implement:
 
-- mpfr_mul_mpz, mpfr_div_mpz
-
-- fused multiply-add (suggestion from Dan Zuras)
-
 Rounding:
 
-- implement exact rounding in mpfr_pow_ui and mpfr_ui_pow_ui
-
-- in all functions that do rounding, return an int indicating if the result
-  is exact (i.e. no bit was lost) or not (like in mpfr_div_ui)
-
 Efficiency:
-
-- mpfr_div is currently O(n^2) when the divisor has two limbs
 
 Miscellaneous:
 
