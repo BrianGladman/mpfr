@@ -5,8 +5,9 @@ To compile source code obtained from CVS, you need some GNU development
 utilities: aclocal, autoheader, automake, autoconf 2.50 (at least). As
 some files like "configure" are not part of the CVS repository, you
 first need to run "autoreconf"; if you have both autoconf 2.13 and 2.50
-installed, you may need to run "autoreconf" a second time. Then you can
-run "configure" in the usual way (see the INSTALL file).
+installed and use a wrapper, you may need to run "autoreconf" a second
+time (as with old Debian packages, due to a bug in the wrapper). Then
+you can run "configure" in the usual way (see the INSTALL file).
 
 If for some reason, this doesn't work, there's still the old way: run
 the "prepare" script to generate these files; as the "prepare" script
