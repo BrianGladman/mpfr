@@ -914,6 +914,11 @@ Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
 i.e. the result is 1).
 @end deftypefun
 
+@deftypefun int mpfr_sin_cos (mpfr_t @var{sop}, mpfr_t @var{cop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+Set @var{sop} to the sinus of @var{op},@var{cop} to the cosinus of @var{op},
+rounded to the direction @var{rnd} with the precision of @var{rop}.
+@end deftypefun
+
 @deftypefun void mpfr_agm (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
 Set @var{rop} to the arithmetic-geometric mean of @var{op1} and @var{op2},
 rounded to the direction @var{rnd} with the precision of @var{rop}.
