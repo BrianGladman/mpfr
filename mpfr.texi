@@ -1059,6 +1059,11 @@ with the precision of @var{rop}. This function uses the Borwein, Borwein,
 Plouffe formula which directly gives the expansion of Pi in base 16.
 @end deftypefun
 
+@deftypefun void mpfr_const_euler (mpfr_t @var{rop}, mp_rnd_t @var{rnd})
+Set @var{rop} to the value of Euler's constant 0.577...
+rounded to the direction @var{rnd} with the precision of @var{rop}.
+@end deftypefun
+
 @node I/O of Floats, Miscellaneous Float Functions, Float Comparison, Floating-point Functions
 @comment  node-name,  next,  previous,  up
 @section Input and Output Functions
