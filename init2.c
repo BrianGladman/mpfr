@@ -42,6 +42,9 @@ mpfr_init2 (mpfr_ptr x, mp_prec_t p)
   MPFR_ASSERTN( __MPFR_EXP_ZERO == MPFR_EXP_ZERO );
   MPFR_ASSERTN( __MPFR_EXP_INF  == MPFR_EXP_INF  );
 
+  MPFR_ASSERTN( MPFR_EMAX_MAX <= (MPFR_EXP_MAX >> 1)  );
+  MPFR_ASSERTN( MPFR_EMIN_MIN >= -(MPFR_EXP_MAX >> 1) );
+
   /* p=1 is not allowed since the rounding to nearest even rule requires at
      least two bits of mantissa: the neighbours of 3/2 are 1*2^0 and 1*2^1,
      which both have an odd mantissa */
