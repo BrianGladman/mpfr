@@ -40,17 +40,15 @@ mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
 {
   mpfr_t t, u;
   int inexact, shift_exp = 0, inexact2 = 0;
-  double x;
 
-  x = d;
-  if (DOUBLE_ISNAN(x))
+  if (LONGDOUBLE_ISNAN(d))
     {
       MPFR_SET_NAN(r);
       MPFR_RET_NAN;
     }
 
   if (d == 0.0)
-    return mpfr_set_d (r, x, rnd_mode);
+    return mpfr_set_d (r, (double) d, rnd_mode);
 
   mpfr_init2 (t, LDBL_MANT_DIG);
   mpfr_init2 (u, DBL_MANT_DIG);

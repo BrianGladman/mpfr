@@ -102,6 +102,8 @@ typedef union ieee_double_extract Ieee_double_extract;
 			 ((((Ieee_double_extract *)&(x))->s.manl != 0) || \
                          (((Ieee_double_extract *)&(x))->s.manh != 0)))
 
+#define LONGDOUBLE_ISNAN(x) ((x) != (x))
+
 #define DBL_POS_INF (1.0/0.0)
 #define DBL_NEG_INF (-1.0/0.0)
 #define DBL_NAN (0.0/0.0)
