@@ -45,7 +45,7 @@ mpfr_cosh (y, xt, rnd_mode)
   /****** Declaration ******/
     mpfr_t x;
     mp_prec_t Nxt = MPFR_PREC(xt);
-    int flag_neg=0, inexact =0;
+    int inexact =0;
 
     if (MPFR_IS_NAN(xt)) 
       {
@@ -70,10 +70,10 @@ mpfr_cosh (y, xt, rnd_mode)
     mpfr_init2(x,Nxt);
     mpfr_set(x,xt,GMP_RNDN);
 
-    if(MPFR_SIGN(x)<0){
-      MPFR_CHANGE_SIGN(x);
-      flag_neg=1;
-    }
+    if(MPFR_SIGN(x)<0)
+      {
+        MPFR_CHANGE_SIGN(x);
+      }
 
     /* General case */
     {
