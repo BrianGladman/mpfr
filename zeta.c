@@ -161,7 +161,7 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
 {
   int p, n, l, dint, add, d, can_round;
   double beta, sd, dnep;
-  mpfr_t a,b,c,z_pre,f,g,s1;
+  mpfr_t a, b, c, z_pre, f, g, s1;
   mpfr_t *tc1;
   mp_prec_t precz, precs;
   int inex;
@@ -360,14 +360,14 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
   MPFR_CLEAR_FLAGS(z);
 
   /* s is neither Nan, nor Inf, nor Zero */
-  mpfr_init2(s2, mpfr_get_prec(s));
-  mpfr_div_2ui(s2, s, 1, rnd_mode);
+  mpfr_init2 (s2, mpfr_get_prec (s));
+  mpfr_div_2ui (s2, s, 1, rnd_mode);
   if (MPFR_IS_NEG(s) && mpfr_floor(s2, s2) == 0) /* Case s = -2n */
     {
       mpfr_clear (s2);
       return mpfr_set_ui (z, 0, rnd_mode);
     }
-  mpfr_clear(s2);
+  mpfr_clear (s2);
   precz = mpfr_get_prec (z);
   precs = mpfr_get_prec (s);
   /* Precision precs1 needed to represent 1 - s, and s + 2,
