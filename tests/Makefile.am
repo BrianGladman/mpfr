@@ -5,7 +5,7 @@ check_PROGRAMS = tversion tinits tsgn tcheck tisnan texceptions tset_exp tset ta
 EXTRA_DIST = tgeneric.c mpf_compat.h inp_str.data
 
 LDADD = libfrtests.la $(MPFR_LIBM) $(top_builddir)/libmpfr.la
-INCLUDES = -I$(top_srcdir) @INCLUDES@
+INCLUDES = -I$(top_srcdir)
 LOADLIBES=$(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) $(LDADD) $(LIBS)
 
 check_LTLIBRARIES = libfrtests.la

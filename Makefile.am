@@ -11,7 +11,7 @@ libmpfr_la_SOURCES = mpfr.h mpf2mpfr.h mpfr-gmp.h mpfr-impl.h mpfr-longlong.h mp
 
 libmpfr_la_LIBADD = @LIBOBJS@
 
-# Libtool -version-info for libmpfr.la
+# Libtool -version-info CURRENT.AGE.REVISION for libmpfr.la
 #
 # 1. No interfaces changed, only implementations (good):
 #    ==> Increment REVISION.
