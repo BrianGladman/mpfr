@@ -27,48 +27,100 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-test.h"
 
+void check_set_get _PROTO((long double, mpfr_t));
+
+/* checks that a long double converted to a mpfr (with precision >=113),
+   then converted back to a long double gives the initial value,
+   or in other words mpfr_get_ld(mpfr_set_ld(d)) = d.
+*/
+void
+check_set_get (long double d, mpfr_t x)
+{
+  mp_rnd_t r;
+  long double e;
+
+  for (r=0; r<4; r++)
+    {
+      if (mpfr_set_ld (x, d, r))
+        {
+          fprintf (stderr, "Error: mpfr_set_ld should be exact\n");
+          exit (1);
+        }
+      e = mpfr_get_ld (x, r);
+      if (e != d && !(isnan(e) && isnan(d)))
+        {
+          fprintf (stderr, "Error: mpfr_get_ld o mpfr_set_ld <> Id\n");
+          fprintf (stderr, "d=%1.30Le get_ld(set_ld(d))=%1.30Le\n", d, e);
+          exit (1);
+        }
+    }
+}
+
 int
 main (int argc, char *argv[])
 {
   /* Test removed as the minimal precision for a long double is something
      like 10 decimal digits. Anyway, there are implementations for which
      long double = double = IEEE double precision. */
-#if 0
   long double d, e;
   mpfr_t x;
+  int i;
 
   tests_start_mpfr ();
   mpfr_test_init ();
 
-  d = 9223372036854775808.0; /* 2^63 */
-  e = d + 1.0;
-  if (e == d)
+  mpfr_init2 (x, 113);
+
+  /* checks NaN, Inf and -Inf */
+  mpfr_set_nan (x);
+  d = mpfr_get_ld (x, GMP_RNDN);
+  check_set_get (d, x);
+  
+  mpfr_set_inf (x, 1);
+  d = mpfr_get_ld (x, GMP_RNDN);
+  check_set_get (d, x);
+
+  mpfr_set_inf (x, -1);
+  d = mpfr_get_ld (x, GMP_RNDN);
+  check_set_get (d, x);
+
+  /* checks the largest power of two */
+  d = 1.0; while ((e = d + d) != d) d = e;
+  check_set_get (d, x);
+  check_set_get (-d, x);
+
+  /* checks largest long double */
+  d = 0.0; while ((e = 1.0 + d / 2.0) != (long double) 2.0) d = e;
+  /* now d is the machine number just before 2.0 */
+  while ((e = d + d) != d) d = e;
+  check_set_get (d, x);
+  check_set_get (-d, x);
+
+  /* checks the smallest power of two */
+  d = 1.0; while ((e = d / 2.0) != (long double) 0.0) d = e;
+  check_set_get (d, x);
+  check_set_get (-d, x);
+
+  /* checks that 2^i, 2^i+1 and 2^i-1 are correctly converted */
+  d = 1.0;
+  for (i=1; i<=113; i++)
     {
-      fprintf (stderr, "long double should have >= 64 bits of mantissa\n");
-      exit (1);
+      d = 2.0 * d; /* d = 2^i */
+      check_set_get (d, x);
+      check_set_get (d + 1.0, x);
+      check_set_get (d - 1.0, x);
     }
 
-  mpfr_init2 (x, 64);
-  if (mpfr_set_ld (x, e, GMP_RNDN))
+  for (i=0; i<10000; i++)
     {
-      fprintf (stderr, "wrong inexact flag\n");
-      exit (1);
+      mpfr_random (x);
+      d = mpfr_get_ld (x, GMP_RNDN);
+      check_set_get (d, x);
     }
-  /* check that x is 2^63+1 */
-  if (mpfr_sub_ui (x, x, 1, GMP_RNDN))
-    {
-      fprintf (stderr, "wrong inexact flag\n");
-      exit (1);
-    }
-  if (mpfr_cmp_ui_2exp (x, 1, 63))
-    {
-      fprintf (stderr, "Error: x should be 2^63\n");
-      exit (1);
-    }
+     
   mpfr_clear (x);
 
   tests_end_mpfr ();
-#endif
 
   return 0; 
 }
