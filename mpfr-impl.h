@@ -21,6 +21,9 @@ MA 02111-1307, USA. */
 
 #ifndef HAVE_STRCASECMP
 #define strcasecmp mpfr_strcasecmp
+#endif
+
+#ifndef HAVE_STRNCASECMP
 #define strncasecmp mpfr_strncasecmp
 #endif
 
@@ -180,6 +183,14 @@ extern mp_prec_t __mpfr_const_log2_prec;
 
 extern mpfr_t __mpfr_const_pi;
 extern mp_prec_t __mpfr_const_pi_prec;
+
+#ifndef HAVE_STRCASECMP
+int mpfr_strcasecmp _PROTO ((const char *, const char *));
+#endif
+
+#ifndef HAVE_STRNCASECMP
+int mpfr_strncasecmp _PROTO ((const char *, const char *, size_t));
+#endif
 
 int mpfr_set_underflow _PROTO ((mpfr_ptr, mp_rnd_t, int));
 int mpfr_set_overflow _PROTO ((mpfr_ptr, mp_rnd_t, int));

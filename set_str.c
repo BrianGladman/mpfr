@@ -23,13 +23,8 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
-#include <errno.h>
-
-#ifdef HAVE_STRCASECMP
 #include <string.h>
-#else
-int strcasecmp (const char *, const char *);
-#endif
+#include <errno.h>
 
 #include "gmp.h"
 #include "gmp-impl.h"
