@@ -177,8 +177,8 @@ with the @code{mpf} class are:
 @item the @code{mpfr} code is portable, i.e. the result of any operation
 does not depend (or should not) on the machine word size 
 @code{mp_bits_per_limb} (32 or 64 on most machines);
-@item the precision in bits can be set exactly to any positive value 
-for each variable (including one bit of precision);
+@item the precision in bits can be set exactly to any valid value
+for each variable (including very small precision);
 @item @code{mpfr} provides the four rounding modes from the IEEE 754
 standard.
 @end itemize
@@ -376,7 +376,7 @@ of a floating-point number;
 the corresponding C data type is @code{mp_prec_t}.
 The precision can be any integer between @code{MPFR_PREC_MIN} and
 @code{MPFR_PREC_MAX}. In the current implementation, @code{MPFR_PREC_MIN}
-is equal to 1 and @code{MPFR_PREC_MAX} is equal to @code{ULONG_MAX}.
+is equal to 2 and @code{MPFR_PREC_MAX} is equal to @code{ULONG_MAX}.
 
 @cindex Rounding Mode
 @tindex @code{mp_rnd_t}
@@ -559,6 +559,8 @@ Otherwise, the mantissa is rounded to precision @var{prec} with the given
 direction. In both cases, the precision of @var{x} is changed to @var{prec}.
 The returned value is zero when the result is exact, positive when it is
 greater than the original value of @var{x}, and negative when it is smaller.
+The precision @var{prec} can be any integer between @code{MPFR_PREC_MIN} and
+@code{MPFR_PREC_MAX}.
 @end deftypefun
 
 @c @deftypefun void mpfr_set_machine_rnd_mode (mp_rnd_t @var{rnd})
@@ -636,6 +638,8 @@ All
 subsequent calls to @code{mpfr_init} will use this precision, but previously
 initialized variables are unaffected.
 This default precision is set to 53 bits initially.
+The precision can be any integer between @code{MPFR_PREC_MIN} and
+@code{MPFR_PREC_MAX}.
 @end deftypefun
 
 @deftypefun mp_prec_t mpfr_get_default_prec ()
@@ -661,6 +665,8 @@ Normally, a variable should be initialized once only or at
 least be cleared, using @code{mpfr_clear}, between initializations.
 To change the precision of a variable which has already been initialized,
 use @code{mpfr_set_prec} instead.
+The precision @var{prec} can be any integer between @code{MPFR_PREC_MIN} and
+@code{MPFR_PREC_MAX}.
 @end deftypefun
 
 @deftypefun void mpfr_clear (mpfr_t @var{x})
@@ -693,8 +699,8 @@ The previous value stored in @var{x} is lost. It is equivalent to
 a call to @code{mpfr_clear(x)} followed by a call to 
 @code{mpfr_init2(x, prec)}, but more efficient as no allocation is done in
 case the current allocated space for the mantissa of @var{x} is enough.
-It is not allowed to set @var{prec} to zero: in that case, a non-zero value
-is returned, as well as when the allocation fails.
+The precision @var{prec} can be any integer between @code{MPFR_PREC_MIN} and
+@code{MPFR_PREC_MAX}.
 
 In case you want to keep the previous value stored in @var{x},
 use @code{mpfr_round} instead.
