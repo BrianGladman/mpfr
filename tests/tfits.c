@@ -21,14 +21,34 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+#if HAVE_CONFIG_H
+# include "config.h"       /* for a build within gmp */
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
+
+/* The ISO C99 standard specifies that in C++ implementations the
+   INTMAX_MAX, ... macros should only be defined if explicitly requested.  */
+#if defined __cplusplus
+# define __STDC_LIMIT_MACROS
+# define __STDC_CONSTANT_MACROS
+#endif
+
+#ifdef HAVE_STDINT_H
+# include <stdint.h>
+#endif
+#ifdef HAVE_INTTYPES_H
+# include <inttypes.h>
+#endif
 
 #include "mpfr-test.h"
 
 #define ERROR1 { printf("Initial error for x="); mpfr_dump(x); exit(1); }
 #define ERROR2 { printf("Error for x="); mpfr_dump(x); exit(1); }
+
+static void check_intmax (void);
 
 int
 main (void)
@@ -145,6 +165,70 @@ main (void)
 
   mpfr_clear (x);
 
+  check_intmax ();
+
   tests_end_mpfr ();
   return 0;
 }
+
+static void check_intmax (void)
+{
+#ifdef _MPFR_H_HAVE_INTMAX_T
+  mpfr_t x;
+
+  mpfr_init2 (x, sizeof(uintmax_t)*CHAR_BIT);
+  
+  /* Check NAN */
+  mpfr_set_nan(x);
+  if (mpfr_fits_uintmax_p(x, GMP_RNDN))
+    ERROR1;
+  if (mpfr_fits_intmax_p(x, GMP_RNDN))
+    ERROR1;
+
+  /* Check INF */
+  mpfr_set_inf(x, 1);
+  if (mpfr_fits_uintmax_p(x, GMP_RNDN))
+    ERROR1;
+  if (mpfr_fits_intmax_p(x, GMP_RNDN))
+    ERROR1;
+  
+  /* Check Zero */
+  MPFR_SET_ZERO(x);
+  if (!mpfr_fits_uintmax_p(x, GMP_RNDN))
+    ERROR2;
+  if (!mpfr_fits_intmax_p(x, GMP_RNDN))
+    ERROR2;
+
+  /* Check small op */
+  mpfr_set_str1 (x, "1@-1");
+  if (!mpfr_fits_uintmax_p(x, GMP_RNDN))
+    ERROR2;
+  if (!mpfr_fits_intmax_p(x, GMP_RNDN))
+    ERROR2;
+
+  /* Check all other values */
+  mpfr_set_uj (x, UINTMAX_MAX, GMP_RNDN);
+  mpfr_add_ui (x, x, 1, GMP_RNDN);
+  if (mpfr_fits_uintmax_p (x, GMP_RNDN))
+    ERROR1;
+  mpfr_set_uj (x, UINTMAX_MAX, GMP_RNDN);
+  if (!mpfr_fits_uintmax_p (x, GMP_RNDN))
+    ERROR2;
+  mpfr_set_sj (x, INTMAX_MAX, GMP_RNDN);
+  mpfr_add_ui (x, x, 1, GMP_RNDN);
+  if (mpfr_fits_intmax_p (x, GMP_RNDN))
+    ERROR1;
+  mpfr_set_sj (x, INTMAX_MAX, GMP_RNDN);
+  if (!mpfr_fits_intmax_p (x, GMP_RNDN))
+    ERROR2;
+  mpfr_set_sj (x, INTMAX_MIN, GMP_RNDN);
+  if (!mpfr_fits_intmax_p (x, GMP_RNDN))
+    ERROR2;
+  mpfr_sub_ui (x, x, 1, GMP_RNDN);
+  if (mpfr_fits_intmax_p (x, GMP_RNDN))
+    ERROR1;
+
+  mpfr_clear (x);
+#endif
+}
+

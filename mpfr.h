@@ -58,22 +58,23 @@ typedef enum {
 #define MPFR_FLAGS_OVERFLOW 2
 #define MPFR_FLAGS_NAN 4
 #define MPFR_FLAGS_INEXACT 8
-#define MPFR_FLAGS_ALL 15
+#define MPFR_FLAGS_ERANGE 16
+#define MPFR_FLAGS_ALL 31
 
 /* Define precision : 1 (short), 2 (int) or 3 (long) (DON'T USE IT!)*/
-#ifndef MPFR_PREC_FORMAT
+#ifndef _MPFR_PREC_FORMAT
 # if __GMP_MP_SIZE_T_INT == 1
-#  define MPFR_PREC_FORMAT 2
+#  define _MPFR_PREC_FORMAT 2
 # else
-#  define MPFR_PREC_FORMAT 3
+#  define _MPFR_PREC_FORMAT 3
 # endif
 #endif
 
-#if   MPFR_PREC_FORMAT == 1
+#if   _MPFR_PREC_FORMAT == 1
 typedef unsigned short mpfr_prec_t;
-#elif MPFR_PREC_FORMAT == 2
+#elif _MPFR_PREC_FORMAT == 2
 typedef unsigned int   mpfr_prec_t;
-#elif MPFR_PREC_FORMAT == 3
+#elif _MPFR_PREC_FORMAT == 3
 typedef unsigned long  mpfr_prec_t;
 #else
 # error "Invalid MPFR Prec format"
@@ -183,10 +184,14 @@ void mpfr_clear_underflow _MPFR_PROTO ((void));
 void mpfr_clear_overflow _MPFR_PROTO ((void));
 void mpfr_clear_nanflag _MPFR_PROTO ((void));
 void mpfr_clear_inexflag _MPFR_PROTO ((void));
+void mpfr_clear_erangeflag _MPFR_PROTO ((void));
+
 int mpfr_underflow_p _MPFR_PROTO ((void));
 int mpfr_overflow_p _MPFR_PROTO ((void));
 int mpfr_nanflag_p _MPFR_PROTO ((void));
 int mpfr_inexflag_p _MPFR_PROTO ((void));
+int mpfr_erangeflag_p _MPFR_PROTO ((void));
+
 int mpfr_check_range _MPFR_PROTO ((mpfr_ptr, int, mpfr_rnd_t));
 
 void mpfr_init2 _MPFR_PROTO ((mpfr_ptr, mpfr_prec_t));
@@ -363,6 +368,8 @@ int mpfr_fits_uint_p _MPFR_PROTO((mpfr_srcptr, mpfr_rnd_t));
 int mpfr_fits_sint_p _MPFR_PROTO((mpfr_srcptr, mpfr_rnd_t));
 int mpfr_fits_ushort_p _MPFR_PROTO((mpfr_srcptr, mpfr_rnd_t));
 int mpfr_fits_sshort_p _MPFR_PROTO((mpfr_srcptr, mpfr_rnd_t));
+int mpfr_fits_uintmax_p _MPFR_PROTO((mpfr_srcptr, mpfr_rnd_t));
+int mpfr_fits_intmax_p _MPFR_PROTO((mpfr_srcptr, mpfr_rnd_t));
 
 void mpfr_extract _MPFR_PROTO((mpz_ptr, mpfr_srcptr, unsigned int));
 void mpfr_swap _MPFR_PROTO((mpfr_ptr, mpfr_ptr));
@@ -480,6 +487,8 @@ int  mpfr_strtofr _MPFR_PROTO ((mpfr_ptr, __gmp_const char *, char **,
   ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_NAN))
 #define mpfr_clear_inexflag() \
   ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_INEXACT))
+#define mpfr_clear_erangeflag() \
+  ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_ERANGE))
 #define mpfr_underflow_p() \
   ((int) (__gmpfr_flags & MPFR_FLAGS_UNDERFLOW))
 #define mpfr_overflow_p() \
@@ -488,7 +497,9 @@ int  mpfr_strtofr _MPFR_PROTO ((mpfr_ptr, __gmp_const char *, char **,
   ((int) (__gmpfr_flags & MPFR_FLAGS_NAN))
 #define mpfr_inexflag_p() \
   ((int) (__gmpfr_flags & MPFR_FLAGS_INEXACT))
-
+#define mpfr_erangeflag_p() \
+  ((int) (__gmpfr_flags & MPFR_FLAGS_ERANGE))
+ 
 #define mpfr_round(a,b) mpfr_rint((a), (b), GMP_RNDNA)
 #define mpfr_trunc(a,b) mpfr_rint((a), (b), GMP_RNDZ)
 #define mpfr_ceil(a,b)  mpfr_rint((a), (b), GMP_RNDU)
@@ -525,8 +536,9 @@ int  mpfr_strtofr _MPFR_PROTO ((mpfr_ptr, __gmp_const char *, char **,
 
 /* When using GCC, optimize certain common comparisons.  
    Remove ICC since it defines __GNUC__, but produces a
-   huge number of warnings if you use this code  */
-#if defined (__GNUC__) && !defined(__ICC)
+   huge number of warnings if you use this code 
+   Remove C++ too, since it complains too much... */
+#if defined (__GNUC__) && !defined(__ICC) && !defined(__cplusplus)
 #if (__GNUC__ >= 2)
 #undef mpfr_cmp_ui
 #define mpfr_cmp_ui(_f,_u)                 \
