@@ -42,8 +42,6 @@ mpfr_reldiff(a, b, c, rnd_mode)
     mpfr_set_ui(a, MPFR_SIGN(c), rnd_mode);
 
   else {
-    mp_rnd_t rnd1;
-
     mpfr_sub(a, b, c, rnd_mode);
     mpfr_abs(a, a, rnd_mode); /* for compatibility with MPF */
     mpfr_div(a, a, b, rnd_mode);
