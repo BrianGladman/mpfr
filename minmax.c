@@ -25,10 +25,6 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-int mpfr_min _PROTO ((mpfr_ptr z, mpfr_srcptr x ,mpfr_srcptr y,mp_rnd_t rnd_mode ));
-int mpfr_max _PROTO ((mpfr_ptr z, mpfr_srcptr x ,mpfr_srcptr y,mp_rnd_t rnd_mode ));
-
-
  /* The computation of z=min(x,y)
 
     z=x if x <= y
