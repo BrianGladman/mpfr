@@ -119,7 +119,9 @@ mpfr_eq (u, v, n_bits)
 	return 0;
     }
 
-  return (up[i] >> (BITS_PER_MP_LIMB - (n_bits & (BITS_PER_MP_LIMB - 1))) == 
-	  vp[i] >> (BITS_PER_MP_LIMB - (n_bits & (BITS_PER_MP_LIMB - 1)))); 
-
+  if (n_bits & (BITS_PER_MP_LIMB - 1))
+    return (up[i] >> (BITS_PER_MP_LIMB - (n_bits & (BITS_PER_MP_LIMB - 1))) == 
+	    vp[i] >> (BITS_PER_MP_LIMB - (n_bits & (BITS_PER_MP_LIMB - 1)))); 
+  else
+    return (up[i] == vp[i]); 
 }
