@@ -47,6 +47,19 @@ check_diverse (void)
       exit (1);
     }
 
+  /* other coverage test */
+  mpfr_set_prec (x, 2);
+  mpfr_set_prec (y, 2);
+  mpfr_set_prec (z, 2);
+  mpfr_set_ui (y, 1, GMP_RNDN);
+  mpfr_set_si (z, -2, GMP_RNDN);
+  mpfr_sub (x, y, z, GMP_RNDD);
+  if (mpfr_cmp_ui (x, 3))
+    {
+      printf ("Error in mpfr_sub(1,-1,RNDD)\n");
+      exit (1);
+    }
+
   mpfr_set_prec (x, 288);
   mpfr_set_prec (y, 288);
   mpfr_set_prec (z, 288);
