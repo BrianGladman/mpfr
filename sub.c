@@ -301,8 +301,9 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
       imax = (int)an-(int)bn+cancel1;
       for (i=0;i<imax;i++) ap[i] = ~ap[i];
       cc = (i) ? mpn_add_1(ap, ap, i, 1) : 1;
-      mpn_sub_lshift_n(ap+i, bp, bn-cancel1, cancel2, an);
-      mpn_sub_1(ap+i, ap+i, an-i, ONE-cc);
+      if (cancel1<bn) mpn_sub_lshift_n(ap+i, bp, bn-cancel1, cancel2, an);
+      /* warning: mpn_sub_1 doesn't accept a zero length */
+      if (i<an) mpn_sub_1(ap+i, ap+i, an-i, ONE-cc);
     }
     else /* PREC(b) > PREC(a): we have to truncate b */
       mpn_sub_lshift_n(ap, bp+(bn-an-cancel1), an, cancel2, an);
