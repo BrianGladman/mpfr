@@ -43,7 +43,7 @@ main(argc,argv) int argc; char *argv[];
     {
       fprintf(stderr, "%f != %f\n", x, z); 
       return (-1); 
-    };
+    }
   return (0); 
 }
 
