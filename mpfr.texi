@@ -891,17 +891,10 @@ case a null pointer is returned.
 @deftypefunx int mpfr_add_ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_add_z (mpfr_t @var{rop}, mpfr_t @var{op1}, mpz_t @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_add_q (mpfr_t @var{rop}, mpfr_t @var{op1}, mpq_t @var{op2}, mp_rnd_t @var{rnd})
-@ifinfo
-Set @var{rop} to @var{op1} + @var{op2} rounded in the direction @var{rnd}.
-@end ifinfo
-@iftex
-@tex
-Set @var{rop} to $@var{op1} + @var{op2}$ rounded in the direction @var{rnd}.
-@end tex
-@end iftex
-The return value is zero if @var{rop} is exactly @var{op1} + @var{op2},
-positive if @var{rop} is larger than @var{op1} + @var{op2},
-and negative if @var{rop} is smaller than @var{op1} + @var{op2}.
+Set @var{rop} to @var{op1} @math{+} @var{op2} rounded in the direction @var{rnd}.
+The return value is zero if @var{rop} is exactly @var{op1} @math{+} @var{op2},
+positive if @var{rop} is larger than @var{op1} @math{+} @var{op2},
+and negative if @var{rop} is smaller than @var{op1} @math{+} @var{op2}.
 @end deftypefun
 
 @deftypefun int mpfr_sub (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
@@ -921,20 +914,15 @@ and negative if @var{rop} is smaller than @var{op1} @minus{} @var{op2}.
 @deftypefunx int mpfr_mul_q (mpfr_t @var{rop}, mpfr_t @var{op1}, mpq_t @var{op2}, mp_rnd_t @var{rnd})
 @ifinfo
 Set @var{rop} to @var{op1} times @var{op2} rounded in the direction @var{rnd}.
-@end ifinfo
-@iftex
-@tex
-Set @var{rop} to $@var{op1} \times @var{op2}$ rounded in the direction @var{rnd}.
-@end tex
-@end iftex
 Return 0 if the result is exact, a positive value if 
 @var{rop}>@var{op1}*@var{op2}, a negative value otherwise.
+@end ifinfo
+@tex
+Set @var{rop} to $@var{op1} \times @var{op2}$ rounded in the direction @var{rnd}.
+Return 0 if the result is exact, a positive value if 
+$@var{rop} > @var{op1} \times @var{op2}$, a negative value otherwise.
+@end tex
 @end deftypefun
-
-Division is undefined if the divisor is zero, and passing a zero divisor to
-the divide functions will make these functions intentionally divide by zero.
-This gives the user the possibility to handle arithmetic exceptions in these
-functions in the same manner as other arithmetic exceptions.
 
 @deftypefun int mpfr_div (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_ui_div (mpfr_t @var{rop}, unsigned long int @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
@@ -952,11 +940,9 @@ and a negative value otherwise.
 @ifinfo
 Set @var{rop} to the square root of @var{op} rounded in the direction @var{rnd}.
 @end ifinfo
-@iftex
 @tex
 Set @var{rop} to $\sqrt{@var{op}}$ rounded in the direction @var{rnd}.
 @end tex
-@end iftex
 Set @var{rop} to NaN if @var{op} is negative.
 Return 0 if the operation is exact, a non-zero value otherwise.
 @end deftypefun
@@ -1011,11 +997,9 @@ the absolute value of @var{op}, and a negative value otherwise.
 @ifinfo
 Set @var{rop} to @var{op1} times 2 raised to @var{op2}
 @end ifinfo
-@iftex
 @tex
 Set @var{rop} to $@var{op1} \times 2^{op2}$
 @end tex
-@end iftex
 rounded to the direction @var{rnd}. Just increases the exponent by @var{op2}
 when @var{rop} and @var{op1} are identical.
 Return zero when @var{rop}=@var{op1}, a positive value when @var{rop}>@var{op1},
@@ -1030,11 +1014,9 @@ you should use @code{mpfr_mul_2ui} (or @code{mpfr_mul_2si}) instead.
 @ifinfo
 Set @var{rop} to @var{op1} divided by 2 raised to @var{op2}
 @end ifinfo
-@iftex
 @tex
 Set @var{rop} to $@var{op1}/2^{op2}$
 @end tex
-@end iftex
 rounded to the direction @var{rnd}. Just decreases the exponent by @var{op2}
 when @var{rop} and @var{op1} are identical.
 Return zero when @var{rop}=@var{op1}, a positive value when @var{rop}>@var{op1},
@@ -1057,13 +1039,11 @@ Compare @var{op1} and @var{op2}.  Return a positive value if @var{op1} >
 @var{op2}, zero if @var{op1} = @var{op2}, and a negative value if @var{op1} <
 @var{op2}.
 @end ifinfo
-@iftex
 @tex
 Compare @var{op1} and @var{op2}.  Return a positive value if $@var{op1} >
 @var{op2}$, zero if $@var{op1} = @var{op2}$, and a negative value if $@var{op1}
 < @var{op2}$.
 @end tex
-@end iftex
 Both @var{op1} and @var{op2} are considered to their full own precision,
 which may differ. In case @var{op1} and @var{op2} are of same sign but 
 different, the absolute value returned is
