@@ -282,7 +282,7 @@ FILE *src_fopen (const char *filename, const char *mode)
 
   if (srcdir == NULL)
     return fopen (filename, mode);
-  buffer = (char*) malloc (strlen (filename) + strlen (srcdir) + 1);
+  buffer = (char*) malloc (strlen (filename) + strlen (srcdir) + 2);
   if (buffer == NULL)
     {
       printf ("src_fopen: failed to alloc memory)\n");
