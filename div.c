@@ -5,36 +5,31 @@
 #include "gmp-impl.h"
 #include "mpfr.h"
 
-/* #define DEBUG */
-/* #define DEBUG2 */
-
-/* q <- n/d using Goldschmidt's iteration */
-void mpfr_div(Q, n, d, rnd_mode) 
+/* q <- n/d using Goldschmidt's iteration
+   returns 0 iff result is exact
+ */
+int mpfr_div(Q, n, d, rnd_mode) 
 mpfr_ptr Q; mpfr_srcptr n, d; unsigned char rnd_mode;
 {
-  mpfr_t eps, tmp, one; int expd, i, prec, precq, sh, guard, err;
-  mp_limb_t cc; mpfr_ptr q;
+  mpfr_t eps, tmp, one; mp_limb_t cc; mpfr_ptr q;
+  int expd, i, prec, precq, sh, guard, err, maxprec, exact=0;
+  TMP_DECL(marker);
 
-  if (FLAG_NAN(n) || FLAG_NAN(d)) { SET_NAN(Q); return; }
+  if (FLAG_NAN(n) || FLAG_NAN(d)) { SET_NAN(Q); return 1; }
 
-  if (!NOTZERO(n)) { SET_ZERO(Q); return; }
+  if (!NOTZERO(n)) { SET_ZERO(Q); return 0; }
   if (!NOTZERO(d)) { fprintf(stderr, "division by zero\n"); exit(1); }
 
   if (Q==n || Q==d) {
-    q = (mpfr_ptr) (*_mp_allocate_func) (sizeof(__mpfr_struct));
+    TMP_MARK(marker);
+    q = (mpfr_ptr) TMP_ALLOC(sizeof(__mpfr_struct));
     mpfr_init2(q, PREC(Q));
   }
   else q=Q;
-#ifdef DEBUG
-  printf("enter mpfr_div, prec(q)=%d n=%1.20e prec(n)=%d d=%1.20e prec(d)=%d rnd=%d\n",PREC(q),mpfr_get_d(n),PREC(n),mpfr_get_d(d),PREC(d),rnd_mode); 
-  printf("n="); mpfr_print_raw(n); putchar('\n');
-  printf("d="); mpfr_print_raw(d); putchar('\n');
-  if ((MANT(n)[(PREC(n)-1)/mp_bits_per_limb] & 
-      ((mp_limb_t)1<<(mp_bits_per_limb-1)))==0) {
-    printf("Error in mpfr_div: n is not msb-normalized\n"); exit(1);
-  }
-#endif
+
   prec = precq = PREC(q);
+  /* maxprec is the maximum number of consecutive 0's or 1's in the quotient */
+  maxprec = PREC(n); if (PREC(d)>maxprec) maxprec=PREC(d);
   for (i=0;i<2;i++)
     prec = precq + (int) ceil(log(2.0*ceil(log((double)prec)/log(2.0))+7.0)/
 			   log(2.0));
@@ -44,10 +39,7 @@ mpfr_ptr Q; mpfr_srcptr n, d; unsigned char rnd_mode;
   prec = (prec/mp_bits_per_limb)*mp_bits_per_limb;
   do {
     prec += mp_bits_per_limb;
-#ifdef DEBUG2
-  printf("PREC(q)=%d prec=%d\n",precq,prec);
-  printf("n=%1.20e d=%1.20e rnd=%d\n",mpfr_get_d(n),mpfr_get_d(d),rnd_mode); 
-#endif
+
   mpfr_set_prec(q, prec, GMP_RNDZ);
   mpfr_set(q, n, GMP_RNDZ);
   mpfr_init2(eps, prec); mpfr_init2(tmp, prec); mpfr_init2(one, prec);
@@ -57,7 +49,7 @@ mpfr_ptr Q; mpfr_srcptr n, d; unsigned char rnd_mode;
     if (--expd>=0) mpfr_div_2exp(q, n, expd, rnd_mode);
     else mpfr_mul_2exp(q, n, -expd, rnd_mode);
     if (SIGN(d)<0) mpfr_neg(q, q, rnd_mode);
-    return;
+    return exact;
   }
   mpfr_set_ui(one, 1, GMP_RNDZ); 
   mpfr_mul_2exp(eps, one, expd, GMP_RNDZ); /* eps = 2^expd */
@@ -70,13 +62,10 @@ mpfr_ptr Q; mpfr_srcptr n, d; unsigned char rnd_mode;
     mpfr_set(q, n, rnd_mode);
     EXP(q) -= expd-1;
     if (SIGN(d)<0) CHANGE_SIGN(q);
-    return;
+    return exact;
   }
   mpfr_mul_2exp(eps, tmp, -expd, GMP_RNDZ);
   for (;;) {
-#ifdef DEBUG2
-    printf("q=%1.20e eps=%1.20e\n",mpfr_get_d(q),mpfr_get_d(eps));
-#endif
     /* q[n+1] = q[n] * (1 + e[n])
        Numerically, it's better to compute q + (q*e) than q * (1+e).
        Rounding towards zero guarantees we get a lower bound of n/d.
@@ -93,24 +82,19 @@ mpfr_ptr Q; mpfr_srcptr n, d; unsigned char rnd_mode;
      if (SIGN(d)<0) CHANGE_SIGN(q);
      cc = mpfr_can_round(q, prec-err, GMP_RNDZ, rnd_mode, precq);
      if (cc==0) {
-#ifdef DEBUG
-       printf("not enough precision\n");
-       printf("q="); mpfr_print_raw(q); putchar('\n');
-       printf("prec-err=%d precq=%d\n",prec-err,precq);
-#endif
-       if (prec>2*precq) { printf("does not converge\n"); exit(1); }
+       if (prec>precq+maxprec+err) {
+	 rnd_mode=GMP_RNDN; cc=1; exact=0; /* result is exact */
+       }
      }
   } while (cc==0);
   mpfr_round(q, rnd_mode, precq);
   mpfr_mul_2exp(q, q, -expd, GMP_RNDZ);
   mpfr_set_prec(q, precq, rnd_mode);
   mpfr_clear(eps); mpfr_clear(tmp); mpfr_clear(one);
-#ifdef DEBUG
-  printf("q = %1.20e\n", mpfr_get_d(q));
-  printf("n/d=%1.20e\n", mpfr_get_d(n)/mpfr_get_d(d));
-#endif
   if (Q==n || Q==d) {
     mpfr_set(Q, q, rnd_mode);
     mpfr_clear(q);
+    TMP_FREE(marker);
   }
+  return exact;
 }
