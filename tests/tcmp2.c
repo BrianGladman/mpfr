@@ -27,6 +27,7 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
 void tcmp2 (double, double, int);
+void special (void);
 
 void tcmp2 (double x, double y, int i)
 {
@@ -45,17 +46,39 @@ void tcmp2 (double x, double y, int i)
     printf("Error in mpfr_cmp2: x=%1.20e y=%1.20e mpfr_cmp2(x,y)=%d instead of %d\n",x,y,j,i); 
     exit(1);
   }
-  mpfr_set_prec(xx, 127); mpfr_set_prec(yy, 127);
-  mpfr_set_str_raw(xx, "0.1011010000110111111000000101011110110001000101101011011110010010011110010000101101000010011001100110010000000010110000101000101E6");
-  mpfr_set_str_raw(yy, "0.1011010000110111111000000101011011111100011101000011001111000010100010100110110100110010011001100110010000110010010110000010110E6");
-  if ((j=mpfr_cmp2(xx, yy)) != 32) {
+  mpfr_clear(xx); mpfr_clear(yy);
+}
+
+void special ()
+{
+  mpfr_t x, y;
+  int j;
+
+  mpfr_init (x); mpfr_init (y);
+
+  mpfr_set_prec(x, 127); mpfr_set_prec(y, 127);
+  mpfr_set_str_raw(x, "0.1011010000110111111000000101011110110001000101101011011110010010011110010000101101000010011001100110010000000010110000101000101E6");
+  mpfr_set_str_raw(y, "0.1011010000110111111000000101011011111100011101000011001111000010100010100110110100110010011001100110010000110010010110000010110E6");
+  if ((j=mpfr_cmp2(x, y)) != 32) {
     printf("Error in mpfr_cmp2:\n");
-    printf("x="); mpfr_print_raw(xx); putchar('\n');
-    printf("y="); mpfr_print_raw(yy); putchar('\n');
+    printf("x="); mpfr_print_raw(x); putchar('\n');
+    printf("y="); mpfr_print_raw(y); putchar('\n');
     printf("got %d, expected 32\n", j);
     exit(1);
   }
-  mpfr_clear(xx); mpfr_clear(yy);
+
+  mpfr_set_prec (x, 128); mpfr_set_prec (y, 239);
+  mpfr_set_str_raw (x, "0.10001000110110000111011000101011111100110010010011001101000011111010010110001000000010100110100111111011011010101100100000000000E167");
+  mpfr_set_str_raw (y, "0.10001000110110000111011000101011111100110010010011001101000011111010010110001000000010100110100111111011011010101100011111111111111111111111111111111111111111111111011111100101011100011001101000100111000010000000000101100110000111111000101E167");
+  if ((j=mpfr_cmp2(x, y)) != 164) {
+    printf("Error in mpfr_cmp2:\n");
+    printf("x="); mpfr_print_raw(x); putchar('\n');
+    printf("y="); mpfr_print_raw(y); putchar('\n');
+    printf("got %d, expected 164\n", j);
+    exit(1);
+  }
+
+  mpfr_clear(x); mpfr_clear(y);
 }
 
 int main()
@@ -69,6 +92,7 @@ int main()
     set_fpc_csr(exp.fc_word);
 #endif
 
+  special ();
   tcmp2(5.43885304644369510000e+185, -1.87427265794105340000e-57, 1);
   tcmp2(1.06022698059744327881e+71, 1.05824655795525779205e+71, -1);
   tcmp2(1.0, 1.0, 53);
