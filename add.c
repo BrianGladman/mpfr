@@ -297,7 +297,6 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
 	  bp=cp; k=cn-k; goto to_nearest;
 
 	case 0: /* only b to round */
-        round_b:
 	  k=bn-an; dif=0;
 	  goto to_nearest;
         
