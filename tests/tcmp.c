@@ -44,8 +44,17 @@ int main()
   if (mpfr_cmp2(xx,yy)!=64) { printf("Error (1) in mpfr_cmp\n"); exit(1); }
   mpfr_set_str_raw(xx, "0.10100010001110110111000010001000010011111101000100011101000011100");
   mpfr_set_str_raw(yy, "0.10100010001110110111000010001000010011111101000100011101000011011");
-  if (mpfr_cmp2(xx,yy)!=64) { printf("Error (1) in mpfr_cmp\n"); exit(1); }
-  mpfr_set_prec(xx,53); mpfr_set_prec(yy,200);
+  if (mpfr_cmp2(xx,yy)!=64) { printf("Error (2) in mpfr_cmp\n"); exit(1); }
+
+  mpfr_set_prec (xx, 160); mpfr_set_prec (yy, 160);
+  mpfr_set_str_raw (xx, "0.1E1");
+  mpfr_set_str_raw (yy, "0.11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111000001100011101000001000111100001011101100111011101001101101111");
+  if (mpfr_cmp2 (xx, yy) != 144) {
+    printf("Error (3) in mpfr_cmp\n");
+    exit(1);
+  }
+
+  mpfr_set_prec(xx, 53); mpfr_set_prec(yy, 200);
   mpfr_set_d(xx, 1.0, 0);
   mpfr_set_d(yy, 1.0, 0);
   if (mpfr_cmp(xx,yy)!=0) {
