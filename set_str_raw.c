@@ -29,7 +29,7 @@ mpfr_set_str_raw(x, str)
 
   xp = x -> _mp_d; 
   xsize = 1 + (PREC(x)-1)/BITS_PER_MP_LIMB;
-  str0 = str2 = (char *) malloc(strlen(str)*sizeof(char)); 
+  str0 = str2 = (char *) malloc((strlen(str)+1)*sizeof(char)); 
 
   if (*str == '-') { negative = 1; str++; }
   else if (*str == '+') str++;
@@ -61,6 +61,7 @@ mpfr_set_str_raw(x, str)
   else expn=k;
 
   endstr2 = str2;
+  *str2 = (char) 0; /* end of string */
   l = (strlen(str0) - 1) / BITS_PER_MP_LIMB + 1; str2 = str0; 
 
   /* str2[0]..endstr2[-1] contains the mantissa */
