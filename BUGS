@@ -28,6 +28,11 @@ Known bugs:
   partially implemented. For instance, mpfr_pow (z, x, y, rnd) fails for
   very small x and some values of y.
 
+* Elementary functions may return an incorrect ternary value (e.g.
+  in the rounding to nearest mode, when the exact value is close to
+  a representable number). A rewrite of mpfr_can_round (as proposed
+  by Paul Zimmermann) can help to fix this bug.
+
 Potential bugs:
 
 * Possible integer overflows on some machines. Some types are used
