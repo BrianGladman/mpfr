@@ -10,5 +10,7 @@ Knowns bugs:
   This means that there are too many reallocations (possibly useless
   ones) and a possible bug.
 
+* TMP_ALLOC problems in agm.c and sqrt.c. (Kevin Ryde, 05 March 2002)
+
 * Possible use of an uninitialized value in mpfr_sinh, detected by valgrind.
   (Kevin Ryde, 06 March 2002)
