@@ -56,9 +56,9 @@ typedef union ieee_double_extract Ieee_double_extract;
 #define MPFR_CHANGE_SIGN(x) (MPFR_SIZE(x) ^= (((mp_size_t)1)<<31))
 #define MPFR_SET_SAME_SIGN(x, y) if (MPFR_SIGN((x)) != MPFR_SIGN((y))) { MPFR_CHANGE_SIGN((x)); }
 #define MPFR_PREC(x) ((x)->_mpfr_prec)
-#define MPFR_NOTZERO(x) (MPFR_MANT(x)[(MPFR_PREC(x)-1)/BITS_PER_MP_LIMB])
-#define MPFR_IS_ZERO(x) ((MPFR_NOTZERO(x))==0)
-#define MPFR_SET_ZERO(x) (MPFR_MANT(x)[(MPFR_PREC(x)-1)/BITS_PER_MP_LIMB] = 0)
+#define MPFR_NOTZERO(x) (MPFR_MANT(x)[(MPFR_PREC(x)-1)/BITS_PER_MP_LIMB] != (mp_limb_t) 0)
+#define MPFR_IS_ZERO(x) (MPFR_MANT(x)[(MPFR_PREC(x)-1)/BITS_PER_MP_LIMB] == (mp_limb_t) 0)
+#define MPFR_SET_ZERO(x) (MPFR_MANT(x)[(MPFR_PREC(x)-1)/BITS_PER_MP_LIMB] = (mp_limb_t) 0)
 
 /* Memory gestion */
 
