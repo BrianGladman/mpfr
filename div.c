@@ -30,7 +30,15 @@ MA 02111-1307, USA. */
 /* #define DEBUG */
 
 void
-mpfr_div (mpfr_ptr r, mpfr_srcptr u, mpfr_srcptr v, unsigned char rnd_mode)
+#if __STDC__
+mpfr_div (mpfr_ptr r, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
+#else
+mpfr_div (r, u, v, rnd_mode)
+     mpfr_ptr r;
+     mpfr_srcptr u;
+     mpfr_srcptr v;
+     mp_rnd_t rnd_mode;
+#endif
 {
   mp_srcptr up, vp;
   mp_ptr rp, tp, tp0, tmp;
@@ -49,7 +57,7 @@ mpfr_div (mpfr_ptr r, mpfr_srcptr u, mpfr_srcptr v, unsigned char rnd_mode)
   
   usize = (PREC(u) - 1)/BITS_PER_MP_LIMB + 1; 
   vsize = (PREC(v) - 1)/BITS_PER_MP_LIMB + 1; 
-  sign_quotient = (SIGN(u) == SIGN(v) ? 1 : -1); 
+  sign_quotient = ((MPFR_SIGN(u) * MPFR_SIGN(v) > 0) ? 1 : -1); 
   prec = PREC(r);
 
   if (!NOTZERO(u)) { SET_ZERO(r); return; }
@@ -228,7 +236,7 @@ mpfr_div (mpfr_ptr r, mpfr_srcptr u, mpfr_srcptr v, unsigned char rnd_mode)
 	/* cas 0111111 */
       }
 
-  if (sign_quotient != SIGN(r)) { CHANGE_SIGN(r); } 
+  if (sign_quotient * MPFR_SIGN(r) < 0) { CHANGE_SIGN(r); } 
   r->_mp_exp = rexp;
   
   if (cc) {
