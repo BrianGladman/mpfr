@@ -52,7 +52,7 @@ extern int swapRM();
 #define TOINFP fpsetround(FP_RP)
 #define TONEAREST fpsetround(FP_RN)
 #define TOINFM fpsetround(FP_RM)
-#elif alpha
+#elif defined (__alpha)
 #ifdef __GNUC__
 /* GCC patched include files forget to define those... */
 #define FP_RND_RZ       0
