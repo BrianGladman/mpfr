@@ -23,16 +23,14 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <stdlib.h>
 #include "gmp.h"
-#include "gmp-impl.h"
 #include "mpfr.h"
 #include "mpfr-test.h"
 
-extern int isnan(), getpid();
 void check _PROTO((unsigned long, unsigned char, double)); 
 
 int maxulp=0;
 
-void check (unsigned long a, unsigned char rnd_mode, double Q)
+void check (unsigned long a, mp_rnd_t rnd_mode, double Q)
 {
   mpfr_t q; double Q2; int u, ck;
 
