@@ -1,5 +1,6 @@
 \documentclass[12pt]{amsart}
 \usepackage{fullpage,amssymb}
+\usepackage{url}
 \pagestyle{empty}
 \title{The MPFR Library: Algorithms and Proofs}
 \author{The MPFR team}
@@ -35,12 +36,14 @@
 
 \tableofcontents
 
-\section{Basic rules}
+\section{Ulp calculus}
 
 Let $n$ be a positive integer (considered fixed in the following).
 We write any nonzero real number $x$ in the form $x = m \cdot 2^e$
 with $\frac{1}{2} \le |m| < 1$ and $e := {\rm EXP}(x)$, and
 we define $\ulp(x) := 2^{{\rm EXP}(x) - n}$.
+
+\subsection{Basic rules}
 
 \begin{Rule} \label{R1}
 $2^{-n} |x| < \ulp(x) \le 2^{-n+1} |x|$.
@@ -124,7 +127,7 @@ $\ulp(o(x)) \leq \ulp(x)$.
 
 \begin{Rule} \label{R9}
 \begin{eqnarray}\nonumber
-&&\n{For}\;\;  error(u) \leq k_u \ulp(u),\;\; u.c_u^- \leq x \leq u.c_u^+)\\\nonumber
+&&\n{For}\;\;  error(u) \leq k_u \ulp(u),\;\; u.c_u^- \leq x \leq u.c_u^+\\\nonumber
 &&\n{with}\;\;   c_u^{-}=1- k_u 2^{1-p} \n{ and } c_u^{+}=1+ k_u 2^{1-p}
 \end{eqnarray}
 
@@ -137,6 +140,204 @@ $\ulp(o(x)) \leq \ulp(x)$.
 &&\n{else}\;\;   c_u^{-}=1-2^{1-p} \n{ and } c_u^{+}=1+2^{1-p}
 \end{eqnarray}
 \end{Rule}
+
+% \section{Generic error on basic operations}
+
+\subsection{Generic error of addition/subtraction}\label{generic:sous}
+
+We want to compute the generic error of the subtraction, this following rules can be apply on addition too.
+
+\begin{eqnarray}\nonumber
+\textnormal{Note:}&& error(u) \leq k_u \, \ulp(u), \;\; error(v) \leq k_v \, \ulp(v)
+\end{eqnarray}
+
+\begin{eqnarray}\nonumber
+\textnormal{Note:}&& \ulp(w)=2^{e_w-p}, \;\; \ulp(u)=2^{e_u-p},\;\; \ulp(v)=2^{e_v-p}\;\;\textnormal{with} \; p \; \textnormal{the accuracy} \\\nonumber
+&& \ulp(u)=2^{d+e_w-p}, \;\; \ulp(v)=2^{d^{'}+e_w-p},\;\;\textnormal{with} \;\;d=e_u-e_w \;\; d^{'}=e_v-e_w 
+\end{eqnarray}
+\begin{eqnarray}\nonumber
+error(w)& \leq &c_w \ulp(w) + k_u \ulp(u) + k_v \ulp(v) \\\nonumber
+&\leq&(c_w+k_u 2^d+ k_v 2^{d^{'}}) \ulp(w)
+\end{eqnarray}
+\begin{eqnarray}\nonumber
+&&\textnormal{If} \;\; ( u \geq 0  \;\;\textnormal{and}\;\;  v \geq 0) \;\;\textnormal{or}\;\; (u \leq 0 \;\;\textnormal{and}\;\; v \leq 0)
+\end{eqnarray}
+\begin{eqnarray}\nonumber
+error(w)& \leq&(c_w + k_u + k_v) \, \ulp(w)
+\end{eqnarray}
+\begin{eqnarray}\nonumber
+\textnormal{Note:}&&\textnormal{If}\;\; w=N(u+v) \;\;\textnormal{Then}\;\; c_w =\frac{1}{2} \;\;\textnormal{else}\;\; c_w =1\\\nonumber
+\end{eqnarray}
+
+\subsection{Generic error of multiplication}\label{generic:mul}
+
+
+We want to compute the generic error of the multiplication.
+We assume here $u, v > 0$.
+
+\begin{eqnarray}\nonumber
+w&=&o(u.v) \\\nonumber
+\textnormal{Note:}&& error(u) \leq k_u \, \ulp(u), \;\; error(v) \leq k_v \, \ulp(v)
+\end{eqnarray}
+\begin{eqnarray}\nonumber
+error(w)& = &|w - x.y| \\\nonumber
+& \leq &|w - u v| +|u v - x y| \\\nonumber
+& \leq & c_w \ulp(w) +  \frac{1}{2} [|u v-u y|+|u y-x y|+|u v-x v|+|x v-x y|]\\\nonumber
+& \leq & c_w \ulp(w) +  \frac{u+x}{2} k_v \ulp(v) + \frac{v+y}{2} k_u \ulp(u)\\\nonumber
+& \leq & c_w \ulp(w) +  \frac{u(1+c_u^+)}{2} k_v \ulp(v) + \frac{v(1+c_v^+)}{2} k_u \ulp(u) \U{R9}\\\nonumber
+& \leq & c_w \ulp(w) +  (1+c_u^+) k_v \ulp(u.v) + (1+c_v^+) k_u \ulp(u.v) \U{R4}\\\nonumber
+& \leq & [ c_w +  (1+c_u^+) k_v + (1+c_v^+) k_u ] \ulp(w)\U{R8}\\\nonumber
+\end{eqnarray}
+\begin{eqnarray}\nonumber
+\textnormal{Note:}&&\textnormal{If}\;\; w=N(u+v) \;\;\textnormal{Then}\;\; c_w =\frac{1}{2} \;\;\textnormal{else}\;\; c_w =1
+\end{eqnarray}
+
+\subsection{Generic error of inverse}\label{generic:inv}
+
+We want to compute the generic error of the inverse.
+We assume $u > 0$.
+
+\begin{eqnarray}\nonumber
+w&=&o(\frac{1}{u}) \\\nonumber
+\textnormal{Note:}&& error(u) \leq k_u \, \ulp(u)
+\end{eqnarray}
+\begin{eqnarray}\nonumber
+error(w)& = &|w - \frac{1}{x}| \\\nonumber
+& \leq &|w - \frac{1}{u}| +|\frac{1}{u} - \frac{1}{x}| \\\nonumber
+& \leq & c_w \ulp(w) + \frac{1}{ux}|u-x| \\\nonumber
+& \leq & c_w \ulp(w) + \frac{k_u}{ux} \ulp(u)
+\end{eqnarray}
+\begin{eqnarray}\nonumber
+\textnormal{Note:}&& \frac{u}{c_u} \leq x\;\; \U{R6}\\\nonumber
+&&\n{for } u=\minf(x),\;c_u=1 \n{ else } c_u=2\\\nonumber
+&& \n{then: } \frac{1}{x} \leq c_u \frac{1}{u} 
+\end{eqnarray}
+\begin{eqnarray}\nonumber
+error(w)& \leq & c_w \ulp(w) + c_u\frac{k_u}{u^2} \ulp(u)\\\nonumber
+& \leq & c_w \ulp(w) + 2.c_u.k_u \ulp(\frac{u}{u^2}) \U{R4}\\\nonumber
+& \leq & [c_w + 2.c_u.k_u].\ulp(w) \U{R8}
+\end{eqnarray}
+\begin{eqnarray}\nonumber
+\textnormal{Note:}&&\textnormal{If}\;\; w=N(\frac{1}{u}) \;\;\textnormal{Then}\;\; c_w =\frac{1}{2} \;\;\textnormal{else}\;\; c_w =1\\\nonumber\end{eqnarray}
+
+\subsection{Generic error of division}\label{generic:div}
+
+
+We want to compute the generic error of the division.
+
+\begin{eqnarray}\nonumber
+w&=&o(\frac{u}{v}) \\\nonumber
+\textnormal{Note:}&& error(u) \leq k_u \, \ulp(u), \;\; error(v) \leq k_v \, \ulp(v)
+\end{eqnarray}
+\begin{eqnarray}\nonumber
+error(w)& = &|w - \frac{x}{y}| \\\nonumber
+& \leq &|w - \frac{u}{v}| +|\frac{u}{v} - \frac{x}{y}| \\\nonumber
+& \leq & c_w \ulp(w) + \frac{1}{vy}|uy-vx| \\\nonumber
+& \leq & c_w \ulp(w) + \frac{1}{vy}[|uy-xy|+|xy-vx| ]\\\nonumber
+& \leq & c_w \ulp(w) + \frac{1}{vy}[y k_u \ulp(u)+ x k_v \ulp(v)]\\\nonumber
+& \leq & c_w \ulp(w) + \frac{k_u}{v}  \ulp(u)+ \frac{k_v x}{vy} \ulp(v)
+\end{eqnarray}
+\begin{eqnarray}\nonumber
+\textnormal{Note:}&& \frac{\ulp(u)}{v} \leq  2 \ulp(\frac{u}{v}) \;\; \U{R4}\\\nonumber
+&& 2 \ulp(\frac{u}{v}) \leq  2 \ulp(w) \;\; \U{R8}
+\end{eqnarray}
+\begin{eqnarray}\nonumber
+\textnormal{Note:}&& x \leq c_u u \textnormal{ and } \frac{v}{c_v} \leq y\;\; \U{R6}\\\nonumber
+&&\n{with } \n{for } u=\pinf(x),\;c_u=1 \n{ else } c_u=2\\\nonumber
+&&\n{ and }\n{for } v=\minf(y),\;c_v=1 \n{ else } c_v=2\\\nonumber
+&& \n{then: } \frac{x}{y} \leq c_u c_v  \frac{u}{v} 
+\end{eqnarray}
+\begin{eqnarray}\nonumber
+error(w)& \leq & c_w \ulp(w) + 2.k_u  \ulp(w)+ c_u.c_v.\frac{k_v u}{vv} \ulp(v)\\\nonumber
+& \leq & c_w \ulp(w) + 2.k_u  \ulp(w)+ 2.c_u.c_v.k_v \ulp(\frac{u.v}{v.v}) \U{R4}\\\nonumber
+& \leq & [c_w  + 2.k_u+ 2.c_u.c_v.k_v].\ulp(w) \U{R8}
+\end{eqnarray}
+\begin{eqnarray}\nonumber
+\textnormal{Note:}&&\textnormal{If}\;\; w=N(\frac{u}{v}) \;\;\textnormal{Then}\;\; c_w =\frac{1}{2} \;\;\textnormal{else}\;\; c_w =1
+\end{eqnarray}
+
+\subsection{Generic error of square root}\label{generic:sqrt}
+
+
+We want to compute the generic error of the square root of a floating-point
+number $u$, itself an approximation to a real $x$,
+with $|u - x| \leq k_u \ulp(u)$.
+If $v = o(\sqrt{u})$, then:
+\begin{eqnarray}\nonumber
+error(v) := |v - \sqrt{x}| 
+& \leq &|v - \sqrt{u}| +|\sqrt{u} - \sqrt{x}| \\\nonumber
+& \leq & c_v \ulp(v) + \frac{1}{\sqrt{u} + \sqrt{x}}|u-x| \\\nonumber
+& \leq & c_v \ulp(v) + \frac{1}{\sqrt{u} + \sqrt{x}} k_u \ulp(u) \\\nonumber
+\end{eqnarray}
+Since by Rule~\ref{R9} we have $u.c_u^- \leq x$,
+it follows $\frac{1}{\sqrt{x}+\sqrt{u}} \leq
+	\frac{1}{\sqrt{u}.(1+\sqrt{c_u^-})}$:
+\begin{eqnarray}\nonumber
+error(v)& \leq & c_v \ulp(v) + 
+                 \frac{1}{\sqrt{u}.(1+\sqrt{c_u^-})}  k_u \ulp(u) \\\nonumber 
+& \leq & c_v \ulp(v) + \frac{2}{1+\sqrt{c_u^-}}  
+       k_u \ulp(\sqrt{u}) \;\; \U{R4}\\\nonumber 
+& \leq & (c_v + \frac{2k_u}{1+\sqrt{c_u^-}})  \ulp(v). \;\; \U{R8}\\\nonumber 
+\end{eqnarray}
+If $u$ is less than $x$, we have $c_u^-=1$ and
+we get the simpler formula
+$|v-\sqrt{x}| \leq (c_v + k_u)  \ulp(v)$.
+
+\subsection{Generic error of the exponential }\label{generic:exp}
+
+
+We want to compute the generic error of the exponential.
+
+\begin{eqnarray}\nonumber
+v&=&o(e^{u}) \\\nonumber
+\textnormal{Note:}&& error(u) \leq k_u \, \ulp(u)\\\nonumber
+\end{eqnarray}
+\begin{eqnarray}\nonumber
+error(v)& = &|v - e^{x}| \\\nonumber
+& \leq &|v - e^{u}| +|e^{u} - e^{x}| \\\nonumber
+& \leq & c_v \ulp(v) +  e^t |u-x| \n{ with Rolle's theorem, for } t\in[x,u]\n{ or }t\in[u,x]
+\end{eqnarray}
+\begin{eqnarray}\nonumber
+error(v)& \leq & c_v \ulp(v) +  c_u^* e^u k_u \ulp(u) \\\nonumber
+& \leq & c_v \ulp(v) +  2 c_u^* u k_u \ulp(e^u) \;\U{R4}\\\nonumber
+& \leq & (c_v +  2 c_u^* u k_u )\ulp(v) \;\U{R8}\\\nonumber
+& \leq & (c_v +  c_u^* 2^{\Exp(u)+1} k_u )\ulp(v)
+\end{eqnarray}
+\begin{eqnarray}\nonumber
+\textnormal{Note:}&& u= m_u 2^{e_u} \n{ and }\ulp(u)=2^{e_u-p} \n{ with } p \n{ the accuracy} \\\nonumber
+\n{ Case }&x \leq u&  c_u^* =1 \\\nonumber
+\n{ Case }&u \leq x& \\\nonumber
+&&  x \leq u + k_u \ulp(u)\\\nonumber
+&& e^x \leq e^u e^{k_u \ulp(u)}\\\nonumber
+&&e^x \leq e^u e^{k_u 2^{e_u-p}}\\\nonumber
+&\n{then}& c_u^* = e^{k_u 2^{\Exp(u)-p}}\\\nonumber
+\end{eqnarray}
+
+\subsection{Generic error of the logarithm }\label{generic:log}
+
+
+We want to compute the generic error of the logarithm.
+
+\begin{eqnarray}\nonumber
+v&=&o(\log{u}) \\\nonumber
+\textnormal{Note:}&& error(u) \leq k_u \, \ulp(u)\\\nonumber
+\end{eqnarray}
+\begin{eqnarray}\nonumber
+error(v)& = &|v - \log{x}| \\\nonumber
+& \leq &|v - \log{u}| +|\log{u} - \log{x}| \\\nonumber
+& \leq & c_v \ulp(v) + \log{|\frac{x}{u}|} \\\nonumber
+& \leq & c_v \ulp(v) + \frac{|x-u|}{u} \\\nonumber
+& \leq & c_v \ulp(v) + \frac{k_u \, \ulp(u)}{u}\\\nonumber
+& \leq & c_v \ulp(v) + k_u \, \ulp(1)\;\; \U{R7}\\\nonumber
+\end{eqnarray}
+\begin{eqnarray}\nonumber
+\textnormal{Note:}&& \ulp(1)=2^{1-p}, \n{ and } \ulp(v)=2^{e_v-p} \n{ with } p \n{ the accuracy} \\\nonumber
+&& \ulp(1)= 2^{1-e_v+e_v-p}=2^{1-e_v} \ulp(v)
+\end{eqnarray}
+\begin{eqnarray}\nonumber
+error(v)& \leq & c_v \ulp(v) + k_u 2^{1-e_v} \ulp(v)\\\nonumber
+& \leq & (c_v + k_u 2^{1-e_v} )\ulp(v)\\\nonumber
+\end{eqnarray}
 
 \section{Low level functions}
 
@@ -318,187 +519,6 @@ $\tilde{q} v_{lo} < 2^{\delta + 1}$, to be compared with $v_n 2^{\delta}$,
 so that a negative correction is at most 3. As a consequence, to be able
 to decide rounding after the first stage, one should choose 
 $\varepsilon_p \geq 3$ (to include the round-to-nearest case). 
-
-\section{Mathematical constants}
-
-\subsection{Euler's constant}
-
-Euler's constant is computed using the formula $\gamma = S(n) - R(n) - \log n$
-where:
-\[ S(n) = \sum_{k=1}^{\infty} \frac{n^k (-1)^{k-1}}{k! k}, \quad
-   R(n) = \int_n^{\infty} \frac{\exp(-u)}{u} du \sim \frac{\exp(-n)}{n}
-        \sum_{k=0}^{\infty} \frac{k!}{(-n)^k}. \]
-This identity is attributed to Sweeney by Brent \cite{Brent78}.
-We have $S(n) = _2 F_2(1,1;2,2;-n)$ and $R(n) = {\rm Ei}(1, n)$.
-
-\Paragraph{Evaluation of $S(n)$.}
-As in \cite{Brent78}, let $\alpha \sim 4.319136566$ the positive root
-of $\alpha + 2 = \alpha \log \alpha$, and $N = \lceil \alpha n \rceil$.
-We approximate $S(n)$ by
-\[ S'(n) = \sum_{k=1}^{N} \frac{n^k (-1)^{k-1}}{k! k}. \]
-%         = \frac{1}{N!} \sum_{k=1}^N \frac{a_k}{k}, 
-% where $a_k = n^k (-1)^{k-1} N!/k!$ is an integer.
-% Therefore $a_k$ is exactly computed, and when dividing it by $k$
-% (integer division)
-% the error is at most $1$, and thus the absolute error on $S'(n)$ is
-% at most $N/N! = 1/(N-1)!$.
-The remainder term $S(n) - S'(n)$ is bounded by:
-\[ |S(n) - S'(n)| \le \sum_{k=N+1}^{\infty} \frac{n^k}{k!}. \]
-Since $k! \ge (k/e)^k$, and $k \ge N+1 \ge \alpha n$, we have:
-\[ |S(n) - S'(n)| \le \sum_{k=N+1}^{\infty} \left( \frac{n e}{k} \right)^k
-                  \le \sum_{k=N+1}^{\infty} \left( \frac{e}{\alpha} \right)^k
-                  \le 2 \left( \frac{e}{\alpha} \right)^N
-                  \le 2 e^{-2n} \]
-since $(e/\alpha)^{\alpha} = e^{-2}$.
-
-To approximate $S'(n)$, we use the following algorithm, where $m$ is the
-working precision, and $a, s, t$ are integer variables:
-\begin{quote}
-$a \leftarrow 2^m$ \\
-$s \leftarrow 0$ \\
-{\bf for} $k$ {\bf from} $1$ {\bf to} $N$ {\bf do} \\
-\q $a \leftarrow \lfloor \frac{n a}{k} \rfloor$ \\
-\q $t \leftarrow \lfloor \frac{a}{k} \rfloor$ \\
-\q $s \leftarrow s + (-1)^{k-1} t$ \\
-return $x = s/2^m$
-\end{quote}
-The absolute error $\epsilon_k$ on $a$ at step $k$ satisfies
-$\epsilon_k \le 1 + n/k \epsilon_{k-1}$ with $\epsilon_0=0$.
-The maximum error is $\epsilon_n \le \frac{n^n}{n!} \le e^n$.
-Thus the error on $t$ at step $k$ is less than $1 + e^n/k$,
-and the total error on $s$ is bounded by $N (e^n + 1)$.
-Hence to get a precision of $n$ bits, we need to use
-$m ge n (1 + \frac{1}{\log 2})$.
-In such a case, the value $s/2^m$ converted to a floating-point number
-will have an error of at most $\ulp(x)$.
-
-\Paragraph{Evaluation of $R(n)$.}
-We estimate $R(n)$ using the terms up to $k=n-2$, again 
-as in \cite{Brent78}:
-\[ R'(n) = \frac{e^{-n}}{n} \sum_{k=0}^{n-2} \frac{k!}{(-n)^k}. \]
-% = \frac{\exp(-n)}{n^{n-1}} \sum_{k=0}^{n-2} (-1)^k \frac{k!} {n^{n-2-k}}.
-% Here again, the integer sum is computed exactly, converting it to a 
-% floating-point number introduces at most one ulp of error,
-% $\exp(-n)$ is computed within one ulp,
-% and $n^{n-1}$ within at most $n-2$ ulps.
-% The division by $n^{n-1}$ and the multiplication introduce one more ulp of
-% error, thus the total error on $R'(n)$ is at most $n+2$ ulps.
-Let us introduce $I_k = \int_n^{\infty} \frac{e^{-u}}{u^k} du$.
-We have $R(n) = I_1$ and the recurrence $I_k = \frac{e^{-n}}{n^k} - k I_{k+1}$,
-which gives
-\[ R(n) = \frac{e^{-n}}{n} \sum_{k=0}^{n-2} \frac{k!}{(-n)^k}
-        + (-1)^{n-1} (n-1)! I_n. \]
-Bounding $n!$ by $(n/e)^n \sqrt{2 \pi (n+1)}$ which holds\footnote{
-Formula 6.1.38 from \cite{AbSt73} gives
-$x! = \sqrt{2\pi} x^{x+1/2} e^{-x+\frac{\theta}{12x}}$ for $x>0$ and
-$0 < \theta < 1$.
-Using it for $x \ge 1$, we have $0 < \frac{\theta}{6x} < 1$, and
-$e^t < 1+2t$ for $0 < t < 1$, thus 
-$(x!)^2 \le 2\pi x^{2x} e^{-2x} (x+\frac{1}{3})$.}
-for $n \ge 1$, we have:
-\[ |R(n) - R'(n)| = (n-1)! I_n 
-        \le \frac{n!}{n} \int_n^{\infty} \frac{e^{-n}}{u^n} du
-        \le \frac{n^{n-1}}{e^n} \sqrt{2 \pi (n+1)} \frac{e^{-n}}{(n-1) 
-        n^{n-1}} \]
-and since $\sqrt{2 \pi (n+1)}/(n-1) \le 1$ for $n \ge 9$:
-\[ |R(n) - R'(n)| \le e^{-2n} \quad \mbox{for $n \ge 9$}. \]
-Thus we have:
-\[ |\gamma - S'(n) - R'(n) - \log n| \le 3 e^{-2n} \quad \mbox{for $n\ge 9$}.\]
-% If the working precision is $p$, then choose $n \ge \frac{\log 2}{2} (p+2)$
-% such that $3 e^{-2n}$ represents at most one ulp.
-
-To approximate $R'(n)$, we use the following:
-\begin{quote}
-$m \leftarrow {\rm prec}(x) - \lfloor \frac{n}{\log 2} \rfloor$ \\
-$a \leftarrow 2^m$ \\
-$s \leftarrow 1$ \\
-{\bf for} $k$ {\bf from} $1$ {\bf to} $n$ {\bf do} \\
-\q $a \leftarrow \lfloor \frac{k a}{n} \rfloor$ \\
-\q $s \leftarrow s + (-1)^{k} a$ \\
-$t \leftarrow \lfloor s/n \rfloor$ \\
-$x \leftarrow t/2^m$ \\
-return $r = e^{-n} x$
-\end{quote}
-The absolute error $\epsilon_k$ on $a$ at step $k$ satisfies
-$\epsilon_k \le 1 + k/n \epsilon_{k-1}$ with $\epsilon_0=0$.
-As $k/n \le 1$, we have $\epsilon_k \le k$, whence the error
-on $s$ is bounded by $n(n+1)/2$, and that on $t$ by 
-$1 + (n+1)/2 \le n+1$ since $n \ge 1$.
-The operation $x \leftarrow t/2^m$ is exact as soon as ${\rm prec}(x)$ is large
-enough, thus the error on $x$ is at most $(n+1) \frac{e^n}{2^{{\rm prec}(x)}}$.
-If $e^{-n}$ is computed with $m$ bits, then
-the error on it is at most $e^{-n} 2^{1-m}$.
-The error on $r$ is then $(n + 1 + 2/n) 2^{-{\rm prec}(x)} +
-\ulp(r)$.
-Since $x \ge \frac{2}{3} n$ for $n \ge 2$, and $x 2^{-{\rm prec}(x)}
-< \ulp(x)$, this gives an error bounded by 
-$\ulp(r) + (n + 1 + 2/n) \frac{3}{2n} \ulp(r)
-\le 4 \ulp(r)$ for $n \ge 2$ --- if ${\rm prec}(x) = {\rm prec}(r)$.
-Now since $r \le \frac{e^{-n}}{n} \le \frac{1}{8}$, that error
-is less than $\ulp(1/2)$.
-
-\Paragraph{Final computation.} We use the formula
-$\gamma = S(n) - R(n) - \log n$ with $n$ such that $e^{-2n} \le 
-\ulp(1/2) = 2^{-{\rm prec}}$, i.e.~$n \ge {\rm prec} \frac{\log 2}{2}$:
-\begin{quote}
-$s \leftarrow S'(n)$ \\
-$l \leftarrow \log(n)$ \\
-$r \leftarrow R'(n)$ \\
-return $(s - l) - r$
-\end{quote}
-Since the final result is in $[\frac{1}{2}, 1]$, and $R'(n) \le 
-\frac{e^{-n}}{n}$, then $S'(n)$ approximates $\log n$.
-If we use $m + \lceil \log_2({\rm prec}) \rceil$ bits to evaluate $s$ and $l$,
-then the error on $s-l$ will be at most $3 \ulp(1/2)$,
-so the error on $(s - l) - r$ is at most $5 \ulp(1/2)$,
-and adding the $3 e^{-2n}$ truncation error, we get a bound of
-$8 \ulp(1/2)$.
-
-\subsubsection{A faster formula}
-
-Brent and McMillan give in \cite{BrMc80} a faster algorithm (B2) using the
-modified Bessel functions, which was
-used by Gourdon and Demichel to compute 108,000,000 digits of $\gamma$ in
-October 1999:
-\[ \gamma = \frac{S_0 - K_0}{I_0} - \log n, \]
-where $S_0 = \sum_{k=1}^{\infty} \frac{n^{2k}}{(k!)^2} H_k$,
-$H_k = 1 + \frac{1}{2} + \cdots + \frac{1}{k}$ being the $k$-th harmonic
-number,
-$K_0 = \sqrt{\frac{\pi}{4n}} e^{-2n} \sum_{k=0}^{\infty}
-        (-1)^k \frac{[(2k)!]^2}{(k!)^3 (64n)^k}$,
-and $I_0 = \sum_{k=0}^{\infty} \frac{n^{2k}}{(k!)^2}$.
-
-We have $I_0 \ge \frac{e^{2n}}{\sqrt{4 \pi n}}$ (see \cite{BrMc80} page 306).
-From the remark following formula 9.7.2 of \cite{AbSt73},
-the remainder in the truncated expansion for $K_0$ up to $k$ does not
-exceed the $(k+1)$-th term, whence
-$K_0 \le \sqrt{\frac{\pi}{4n}} e^{-2n}$ and
-$\frac{K_0}{I_0} \le \pi e^{-4n}$ as in formula (5) of \cite{BrMc80}.
-Let $I'_0 = \sum_{k=0}^{K-1} \frac{n^{2k}}{(k!)^2}$ with
-$K = \lceil \beta n \rceil$, and $\beta$ is the root of
-$\beta (\log \beta - 1) = 3$
-($\beta \sim 4.971...$) then
-\[ |I_0 - I'_0| \le \frac{\beta}{2 \pi (\beta^2-1)} \frac{e^{-6n}}{n}. \]
-Let $K'_0 = \sqrt{\frac{\pi}{4n}} e^{-2n} \sum_{k=0}^{4n-1} (-1)^k
-        \frac{[(2k)!]^2}{(k!)^3 (64n)^k}$, then bounding by the next term:
-\[ |K_0 - K'_0| \le \frac{(8n+1)}{16 \sqrt{2} n} \frac{e^{-6n}}{n}
-        \le \frac{1}{2} \frac{e^{-6n}}{n}. \]
-We get from this
-\[ \left| \frac{K_0}{I_0} - \frac{K'_0}{I'_0} \right| 
-        \le \frac{1}{2 I_0} \frac{e^{-6n}}{n} \le \sqrt{\frac{\pi}{n}}
-        e^{-8n}. \]
-Let $S'_0 = \sum_{k=1}^{K-1} \frac{n^{2k}}{(k!)^2} H_k$,
-then using $\frac{H_{k+1}}{H_k} \le \frac{k+1}{k}$ and the same bound $K$
-than for $I'_0$ ($4n \le K \le 5n$), we get:
-\[ |S_0 - S'_0| \le \frac{\beta}{2 \pi (\beta^2-1)} H_k \frac{e^{-6n}}{n}. \]
-We deduce:
-\[ \left| \frac{S_0}{I_0} - \frac{S'_0}{I'_0} \right|
-        \le e^{-8n} H_K \frac{\sqrt{4 \pi n}}{\pi (\beta^2-1)}
-        \frac{\beta}{n} \le e^{-8n}. \]
-Hence we have
-\[ \left| \gamma - \left( \frac{S'_0 - K'_0}{I'_0} - \log n \right) \right|
-        \le (1 + \sqrt{\frac{\pi}{n}}) e^{-8n} 
-        \le 3 e^{-8n}. \]
 
 \section{High level functions}
 
@@ -688,208 +708,6 @@ Let $\varepsilon_k$ and $\tau_k$ the errors on $y$ and $t$
 at the beginning of loop $k$,
 then that for $t$ after $t \leftarrow \lceil y t/2^m \rceil$
 is at most $(\varepsilon_k t + \tau_k y)/2^m + 1$.
-
-\subsection{Generic error of addition/subtraction}\label{generic:sous}
-
-
-We want to compute the generic error of the subtraction, this following rules can be apply on addition too.
-
-\begin{eqnarray}\nonumber
-\textnormal{Note:}&& error(u) \leq k_u \, \ulp(u), \;\; error(v) \leq k_v \, \ulp(v)
-\end{eqnarray}
-
-\begin{eqnarray}\nonumber
-\textnormal{Note:}&& \ulp(w)=2^{e_w-p}, \;\; \ulp(u)=2^{e_u-p},\;\; \ulp(v)=2^{e_v-p}\;\;\textnormal{with} \; p \; \textnormal{the accuracy} \\\nonumber
-&& \ulp(u)=2^{d+e_w-p}, \;\; \ulp(v)=2^{d^{'}+e_w-p},\;\;\textnormal{with} \;\;d=e_u-e_w \;\; d^{'}=e_v-e_w 
-\end{eqnarray}
-\begin{eqnarray}\nonumber
-error(w)& \leq &c_w \ulp(w) + k_u \ulp(u) + k_v \ulp(v) \\\nonumber
-&\leq&(c_w+k_u 2^d+ k_v 2^{d^{'}}) \ulp(w)
-\end{eqnarray}
-\begin{eqnarray}\nonumber
-&&\textnormal{If} \;\; ( u \geq 0  \;\;\textnormal{and}\;\;  v \geq 0) \;\;\textnormal{or}\;\; (u \leq 0 \;\;\textnormal{and}\;\; v \leq 0)
-\end{eqnarray}
-\begin{eqnarray}\nonumber
-error(w)& \leq&(c_w + k_u + k_v) \, \ulp(w)
-\end{eqnarray}
-\begin{eqnarray}\nonumber
-\textnormal{Note:}&&\textnormal{If}\;\; w=N(u+v) \;\;\textnormal{Then}\;\; c_w =\frac{1}{2} \;\;\textnormal{else}\;\; c_w =1\\\nonumber
-\end{eqnarray}
-
-\subsection{Generic error of multiplication}\label{generic:mul}
-
-
-We want to compute the generic error of the multiplication.
-We assume here $u, v > 0$.
-
-\begin{eqnarray}\nonumber
-w&=&o(u.v) \\\nonumber
-\textnormal{Note:}&& error(u) \leq k_u \, \ulp(u), \;\; error(v) \leq k_v \, \ulp(v)
-\end{eqnarray}
-\begin{eqnarray}\nonumber
-error(w)& = &|w - x.y| \\\nonumber
-& \leq &|w - u v| +|u v - x y| \\\nonumber
-& \leq & c_w \ulp(w) +  \frac{1}{2} [|u v-u y|+|u y-x y|+|u v-x v|+|x v-x y|]\\\nonumber
-& \leq & c_w \ulp(w) +  \frac{u+x}{2} k_v \ulp(v) + \frac{v+y}{2} k_u \ulp(u)\\\nonumber
-& \leq & c_w \ulp(w) +  \frac{u(1+c_u^+)}{2} k_v \ulp(v) + \frac{v(1+c_v^+)}{2} k_u \ulp(u) \U{R9}\\\nonumber
-& \leq & c_w \ulp(w) +  (1+c_u^+) k_v \ulp(u.v) + (1+c_v^+) k_u \ulp(u.v) \U{R4}\\\nonumber
-& \leq & [ c_w +  (1+c_u^+) k_v + (1+c_v^+) k_u ] \ulp(w)\U{R8}\\\nonumber
-\end{eqnarray}
-\begin{eqnarray}\nonumber
-\textnormal{Note:}&&\textnormal{If}\;\; w=N(u+v) \;\;\textnormal{Then}\;\; c_w =\frac{1}{2} \;\;\textnormal{else}\;\; c_w =1
-\end{eqnarray}
-
-\subsection{Generic error of inverse}\label{generic:inv}
-
-We want to compute the generic error of the inverse.
-We assume $u > 0$.
-
-\begin{eqnarray}\nonumber
-w&=&o(\frac{1}{u}) \\\nonumber
-\textnormal{Note:}&& error(u) \leq k_u \, \ulp(u)
-\end{eqnarray}
-\begin{eqnarray}\nonumber
-error(w)& = &|w - \frac{1}{x}| \\\nonumber
-& \leq &|w - \frac{1}{u}| +|\frac{1}{u} - \frac{1}{x}| \\\nonumber
-& \leq & c_w \ulp(w) + \frac{1}{ux}|u-x| \\\nonumber
-& \leq & c_w \ulp(w) + \frac{k_u}{ux} \ulp(u)
-\end{eqnarray}
-\begin{eqnarray}\nonumber
-\textnormal{Note:}&& \frac{u}{c_u} \leq x\;\; \U{R6}\\\nonumber
-&&\n{for } u=\minf(x),\;c_u=1 \n{ else } c_u=2\\\nonumber
-&& \n{then: } \frac{1}{x} \leq c_u \frac{1}{u} 
-\end{eqnarray}
-\begin{eqnarray}\nonumber
-error(w)& \leq & c_w \ulp(w) + c_u\frac{k_u}{u^2} \ulp(u)\\\nonumber
-& \leq & c_w \ulp(w) + 2.c_u.k_u \ulp(\frac{u}{u^2}) \U{R4}\\\nonumber
-& \leq & [c_w + 2.c_u.k_u].\ulp(w) \U{R8}
-\end{eqnarray}
-\begin{eqnarray}\nonumber
-\textnormal{Note:}&&\textnormal{If}\;\; w=N(\frac{1}{u}) \;\;\textnormal{Then}\;\; c_w =\frac{1}{2} \;\;\textnormal{else}\;\; c_w =1\\\nonumber\end{eqnarray}
-
-\subsection{Generic error of division}\label{generic:div}
-
-
-We want to compute the generic error of the division.
-
-\begin{eqnarray}\nonumber
-w&=&o(\frac{u}{v}) \\\nonumber
-\textnormal{Note:}&& error(u) \leq k_u \, \ulp(u), \;\; error(v) \leq k_v \, \ulp(v)
-\end{eqnarray}
-\begin{eqnarray}\nonumber
-error(w)& = &|w - \frac{x}{y}| \\\nonumber
-& \leq &|w - \frac{u}{v}| +|\frac{u}{v} - \frac{x}{y}| \\\nonumber
-& \leq & c_w \ulp(w) + \frac{1}{vy}|uy-vx| \\\nonumber
-& \leq & c_w \ulp(w) + \frac{1}{vy}[|uy-xy|+|xy-vx| ]\\\nonumber
-& \leq & c_w \ulp(w) + \frac{1}{vy}[y k_u \ulp(u)+ x k_v \ulp(v)]\\\nonumber
-& \leq & c_w \ulp(w) + \frac{k_u}{v}  \ulp(u)+ \frac{k_v x}{vy} \ulp(v)
-\end{eqnarray}
-\begin{eqnarray}\nonumber
-\textnormal{Note:}&& \frac{\ulp(u)}{v} \leq  2 \ulp(\frac{u}{v}) \;\; \U{R4}\\\nonumber
-&& 2 \ulp(\frac{u}{v}) \leq  2 \ulp(w) \;\; \U{R8}
-\end{eqnarray}
-\begin{eqnarray}\nonumber
-\textnormal{Note:}&& x \leq c_u u \textnormal{ and } \frac{v}{c_v} \leq y\;\; \U{R6}\\\nonumber
-&&\n{with } \n{for } u=\pinf(x),\;c_u=1 \n{ else } c_u=2\\\nonumber
-&&\n{ and }\n{for } v=\minf(y),\;c_v=1 \n{ else } c_v=2\\\nonumber
-&& \n{then: } \frac{x}{y} \leq c_u c_v  \frac{u}{v} 
-\end{eqnarray}
-\begin{eqnarray}\nonumber
-error(w)& \leq & c_w \ulp(w) + 2.k_u  \ulp(w)+ c_u.c_v.\frac{k_v u}{vv} \ulp(v)\\\nonumber
-& \leq & c_w \ulp(w) + 2.k_u  \ulp(w)+ 2.c_u.c_v.k_v \ulp(\frac{u.v}{v.v}) \U{R4}\\\nonumber
-& \leq & [c_w  + 2.k_u+ 2.c_u.c_v.k_v].\ulp(w) \U{R8}
-\end{eqnarray}
-\begin{eqnarray}\nonumber
-\textnormal{Note:}&&\textnormal{If}\;\; w=N(\frac{u}{v}) \;\;\textnormal{Then}\;\; c_w =\frac{1}{2} \;\;\textnormal{else}\;\; c_w =1
-\end{eqnarray}
-
-\subsection{Generic error of square root}\label{generic:sqrt}
-
-
-We want to compute the generic error of the square root.
-
-\begin{eqnarray}\nonumber
-v&=&o(\sqrt{u}) \\\nonumber
-\textnormal{Note:}&& error(u) \leq k_u \, \ulp(u)\\\nonumber
-\end{eqnarray}
-\begin{eqnarray}\nonumber
-error(v)& = &|v - \sqrt{x}| \\\nonumber
-& \leq &|v - \sqrt{u}| +|\sqrt{u} - \sqrt{x}| \\\nonumber
-& \leq & c_v \ulp(v) + \frac{1}{\sqrt{u} + \sqrt{x}}|u-x| \\\nonumber
-& \leq & c_v \ulp(v) + \frac{1}{\sqrt{u} + \sqrt{x}} k_u \ulp(u) \\\nonumber
-\end{eqnarray}
-\begin{eqnarray}\nonumber
-\textnormal{Note:}&& u.c_u^- \leq x \;\; \U{R9}\\\nonumber
- && \sqrt{u.c_u^-} \leq \sqrt{x} \\\nonumber 
- && \sqrt{u}.(1+\sqrt{c_u^-}) \leq \sqrt{x}+\sqrt{u} \\\nonumber 
- && \frac{1}{\sqrt{x}+\sqrt{u}} \leq
-    \frac{1}{\sqrt{u}.(1+\sqrt{c_u^-})} 
-\end{eqnarray}
-\begin{eqnarray}\nonumber
-error(v)& \leq & c_v \ulp(v) + 
-                 \frac{1}{\sqrt{u}.(1+\sqrt{c_u^-})}  k_u \ulp(u) \\\nonumber 
-& \leq & c_v \ulp(v) + \frac{2}{1+\sqrt{c_u^-}}  
-       k_u \ulp(\sqrt{u}) \;\; \U{R4}\\\nonumber 
-& \leq & (c_v + \frac{2.k_u}{1+\sqrt{c_u^-}})  \ulp(v) \;\; \U{R8}\\\nonumber 
-\end{eqnarray}
-
-\subsection{Generic error of the exponential }\label{generic:exp}
-
-
-We want to compute the generic error of the exponential.
-
-\begin{eqnarray}\nonumber
-v&=&o(e^{u}) \\\nonumber
-\textnormal{Note:}&& error(u) \leq k_u \, \ulp(u)\\\nonumber
-\end{eqnarray}
-\begin{eqnarray}\nonumber
-error(v)& = &|v - e^{x}| \\\nonumber
-& \leq &|v - e^{u}| +|e^{u} - e^{x}| \\\nonumber
-& \leq & c_v \ulp(v) +  e^t |u-x| \n{ with Rolle's theorem, for } t\in[x,u]\n{ or }t\in[u,x]
-\end{eqnarray}
-\begin{eqnarray}\nonumber
-error(v)& \leq & c_v \ulp(v) +  c_u^* e^u k_u \ulp(u) \\\nonumber
-& \leq & c_v \ulp(v) +  2 c_u^* u k_u \ulp(e^u) \;\U{R4}\\\nonumber
-& \leq & (c_v +  2 c_u^* u k_u )\ulp(v) \;\U{R8}\\\nonumber
-& \leq & (c_v +  c_u^* 2^{\Exp(u)+1} k_u )\ulp(v)
-\end{eqnarray}
-\begin{eqnarray}\nonumber
-\textnormal{Note:}&& u= m_u 2^{e_u} \n{ and }\ulp(u)=2^{e_u-p} \n{ with } p \n{ the accuracy} \\\nonumber
-\n{ Case }&x \leq u&  c_u^* =1 \\\nonumber
-\n{ Case }&u \leq x& \\\nonumber
-&&  x \leq u + k_u \ulp(u)\\\nonumber
-&& e^x \leq e^u e^{k_u \ulp(u)}\\\nonumber
-&&e^x \leq e^u e^{k_u 2^{e_u-p}}\\\nonumber
-&\n{then}& c_u^* = e^{k_u 2^{\Exp(u)-p}}\\\nonumber
-\end{eqnarray}
-
-
-
-\subsection{Generic error of the logarithm }\label{generic:log}
-
-
-We want to compute the generic error of the logarithm.
-
-\begin{eqnarray}\nonumber
-v&=&o(\log{u}) \\\nonumber
-\textnormal{Note:}&& error(u) \leq k_u \, \ulp(u)\\\nonumber
-\end{eqnarray}
-\begin{eqnarray}\nonumber
-error(v)& = &|v - \log{x}| \\\nonumber
-& \leq &|v - \log{u}| +|\log{u} - \log{x}| \\\nonumber
-& \leq & c_v \ulp(v) + \log{|\frac{x}{u}|} \\\nonumber
-& \leq & c_v \ulp(v) + \frac{|x-u|}{u} \\\nonumber
-& \leq & c_v \ulp(v) + \frac{k_u \, \ulp(u)}{u}\\\nonumber
-& \leq & c_v \ulp(v) + k_u \, \ulp(1)\;\; \U{R7}\\\nonumber
-\end{eqnarray}
-\begin{eqnarray}\nonumber
-\textnormal{Note:}&& \ulp(1)=2^{1-p}, \n{ and } \ulp(v)=2^{e_v-p} \n{ with } p \n{ the accuracy} \\\nonumber
-&& \ulp(1)= 2^{1-e_v+e_v-p}=2^{1-e_v} \ulp(v)
-\end{eqnarray}
-\begin{eqnarray}\nonumber
-error(v)& \leq & c_v \ulp(v) + k_u 2^{1-e_v} \ulp(v)\\\nonumber
-& \leq & (c_v + k_u 2^{1-e_v} )\ulp(v)\\\nonumber
-\end{eqnarray}
 
 \subsection{The hyperbolic cosine function}
 
@@ -2247,138 +2065,24 @@ In this case we need to take into account the error caused by the substration:
 
 \subsection{The euclidean distance function}
 
-The {\tt mpfr\_hypot} ($\textnormal{hypot}(x,y)$) function implements the euclidean distance function  as :
-
+The \texttt{mpfr\_hypot} function implements the euclidean distance function:
 \[
-\textnormal{hypot} (x,y) = \sqrt{x^2+y^2}
+\textnormal{hypot} (x,y) = \sqrt{x^2+y^2}.
 \]
-
-The algorithm used for the calculation of the euclidean distance is as follows:
-
+The algorithm used is as follows, where all roundings are done towards zero:
 \begin{eqnarray}\nonumber
 u&\leftarrow&o(x^2)\\\nonumber
-v&\leftarrow&o({y}^{2})\\\nonumber
+v&\leftarrow&o(y^2)\\\nonumber
 w&\leftarrow&o(u+v)\\\nonumber
 s&\leftarrow&o(\sqrt{w})
 \end{eqnarray}
-
-Now, we have to bound the rounding error for each step of this
-algorithm.  
-
-
-
-\begin{center}
-\begin{tabular}{l l l}
-
-\begin{minipage}{2.5cm}
-
-
-${\textnormal{error}}(u)$
-
-
-$u \leftarrow o(x^2)$
-
-\end{minipage} &
-\begin{minipage}{7.5cm}
-
-\begin{eqnarray}\nonumber
-  |u-x^2| &\leq& ulp(u)\\\nonumber
-\end{eqnarray}
-
-\end{minipage} &
-\begin{minipage}{6cm}
-{\hspace{7cm}}
-\end{minipage}\\%\hline
-\begin{minipage}{2.5cm}
-${\textnormal{error}}(v)$
-
-
-$v \leftarrow o({y}^{2}) $
-
-\end{minipage} &
-\begin{minipage}{7.5cm}
-
-\begin{eqnarray}\nonumber
-  |v-y^2| &\leq& ulp(v)\\\nonumber
-\end{eqnarray}
-
-
-\end{minipage} &
-\begin{minipage}{6cm}
-
-
-\end{minipage}\\%\hline
-\begin{minipage}{2.5cm}
-${\textnormal{error}}(w)$
-
-
-$w \leftarrow \minf(u+v) $\\
-$(\bullet)$
-\end{minipage} &
-\begin{minipage}{7.8cm}
-
-
-
-\begin{eqnarray}\nonumber
-  &&|w-(x^2+y^2)| \\\nonumber
-  &       \leq&  |w - (u+v)|+|u - x^2|+|v - y^2|\\\nonumber
-  &       \leq& \ulp(w) + \ulp(u) + \ulp(v)\\\nonumber
-  &       \leq& 3\ulp(w)\;\;(\star)\\\nonumber
-\end{eqnarray}
-
-
-\end{minipage} &
-\begin{minipage}{6cm}
-
-$(\star)$
-
-With $v \leq w$ and $u \leq w$
-
-\end{minipage}\\%\hline
-\begin{minipage}{2.5cm}
-${\textnormal{error}}(s)$
-
-$s \leftarrow o(\sqrt{w}) $
-
-\end{minipage} &
-\begin{minipage}{7.5cm}
-
-\begin{center}
-
-
-
-\begin{eqnarray}\nonumber
-  &&|s-(\sqrt{x^2+y^2})| \\\nonumber
-  &\leq& (1+\frac{2 \times  3}{1+\sqrt{1}}) \ulp(s) \;\; (\star)\\\nonumber
-   &\leq& 4 \ulp(s) 
-\end{eqnarray}
-
-
-
-\end{center}
-
-\end{minipage} &
-\begin{minipage}{6cm}
-
-$(\star)$
-see subsection \ref{generic:sqrt}
-
-with $c_w^- = 1$ 
-
-for $w \leftarrow \minf(u+v)$ ($\bullet$)
-
-\end{minipage}
-
-
-\end{tabular}
-\end{center}
-
-
-
-That shows the rounding error on the calculation of $\sqrt{x^2+y^2}$ can be
-bound by $4 \, \ulp$ on the result. So, to calculate the size of
-intermediary variables, we have to add, at least, $\lceil \log_2 4 \rceil=2$ bits the wanted precision.
-
+Since the inputs $x$ and $y$ are exact, we have $|u-x^2| \leq \ulp(u)$
+and $|v-y^2| \leq \ulp(v)$;
+then $|w-(x^2+y^2)| \leq \ulp(w) + |u-x^2| + |v-y^2| \leq 3 \ulp(w)$
+since $w$ is greater or equal to $u$ and $v$.
+For the last step $s \leftarrow o(\sqrt{w})$, we use the last formula
+from~\textsection\ref{generic:sqrt}, which gives
+$|s-\sqrt{x^2+y^2}| \leq 4 \ulp(s)$.
 
 \subsection{The floating multiply-add function}
 
@@ -2864,210 +2568,39 @@ return {\em true}
 
 \subsection{The real cube root}
 
-The {\tt mpf\_cbrt} ($\sqrt[3]{x}$) function implements a Newton
-algorithm to calculate the real cube root of $x$. {\bf Note:} The case
-$x<0$ will not be considered, the function {\tt mpf\_cbrt} returns $-\sqrt[3](-x)$ if $x<0$.
+The \texttt{mpfr\_cbrt} function computes the real cube root of $x$.
+Since for $x<0$, we have $\sqrt[3]{x} = - \sqrt[3]{-x}$, we can focus 
+on $x > 0$.
 
-\subsubsection{Newton algorithm applied on cubic}
+Let $n$ be the number of wanted bits of the result.
+We write $x = m \cdot 2^{3e}$ where $m$ is a positive integer 
+with $m \geq 2^{3n-3}$.
+Then we compute the integer cubic root of $m$: let $m=s^3+r$ with
+$0 \leq r$ and $m < (s+1)^3$.
+Let $k$ be the number of bits of $s$: since $m \geq 2^{3n-3}$,
+we have $s \geq 2^{n-1}$ thus $k \geq n$.
+If $k > n$, we replace $s$ by $\lfloor s 2^{n-k} \rfloor$,
+$e$ by $e+(k-n)$,
+and update $r$ accordingly so that $x = (s^3+r) 2^{3e}$ still holds
+(be careful that $r$ may no longer be an integer in that case).
 
-In general case, to converge iterativelly to a
-root of the equation $f(x)=0$, we can use a Newton algoritm which is describe by the formulation :
-$x_{k+1}=x_k-\frac{f(x_k)}{f^{'}(x_k)}$.
+Then the correct rounding of $\sqrt[3]{x}$ is:
+\begin{eqnarray*}
+s 2^e && \mbox{if $r=0$ or round down or round nearest and
+	$r < \frac{3}{2} s^2 +\frac{3}{4}s+ \frac{1}{8}$,} \\
+(s+1) 2^e && \mbox{otherwise}.
+\end{eqnarray*}
 
-To applied this algorithm to calculate the real cubic root of
-$N,\;\;: \sqrt[3]{N}$, we want to solve the equation $f(x)=x^3-N=0$. The
-Newton algorithm become :
+Note: for rounding to nearest, one may consider $m \geq 2^{3n}$ instead of
+$m \geq 2^{3n-3}$, i.e.~taking $n+1$ instead of $n$.
+In that case, there is no need to compare the remainder $r$ to
+$\frac{3}{2} s^2 +\frac{3}{4}s+ \frac{1}{8}$: we just need to know
+whether $r=0$ or not.
+The even rounding rule is needed only when the input $x$ has at least
+$3n+1$ bits, since the cube of a odd number of $n+1$ bits has at least
+$3n+1$ bits.
 
-\begin{equation}\label{NewtonCbrt}
-x_{k+1}=\frac{1}{3}[2x_k+\frac{N}{x^2_k}]
-\end{equation}
-
-{\bf Note :} The value of $x_0$ will be discuss after.
-
-\subsubsection{Number representation}
-
-The MPFR natural representatio of a number is: $N=m \times 2^e$, with
-$m$ the mantissa ($\frac{1}{2} \leq m < 1$) and $e$ the exponent.
-
-To simplify the implantation of this real cube root algorithm, we
-choose to represent the exponent of $N$ by $e=3 \times e^{'}-r$ where $r \in {0,1,2}$.
-In this condition the representation of $N$ become:
-$\frac{m}{2^r} \times 2^{3 e^{'}}$. Now, we put $m^{'}=\frac{m}{2^r}$
-with $\frac{1}{8} \leq m^{'} < 1$.
-
-
-Calculate $\sqrt[3]{m \times 2^e} = \sqrt[3]{\frac{m}{2^r} \times 2^{3 e^{'}}}$, that is egal to
-compute $\sqrt[3]{\frac{m}{2^r}} \times 2^{e^{'}}$.
-
-
-So, the calculation of $\sqrt[3]{N}$ is reduce to the calculation of
-$\sqrt[3]{m^{'}}$.
-
-\subsubsection{Newton iteration error}
-
-By considering the simplifications introduce on the section before, we
-want to produice the error $\epsilon_{k+1}$ between the calculation of the real cube
-root of $N, \;\; \frac{1}{8}\leq N < 1$ at the iteration $k+1$ of the
-nwton algorithm, noted $x_{k+1}$, and the real value of
-$\sqrt[3]{N}$. First, we want to express this error as a function of
-the error $\epsilon_{k}$ at tke iteration $k$.
-
-\begin{equation}\label{ErrorCbrt}
-\epsilon_{k+1}= |x_{k+1}-N^{\frac{1}{3}}|
-\end{equation}
-
-By using, equation \ref{NewtonCbrt} and \ref{ErrorCbrt} we obtain :
-
-\begin{eqnarray}\nonumber
-\epsilon_{k+1}&=&   \arrowvert\frac{1}{3}[2x_k+\frac{N}{x^2_k}]-N^{\frac{1}{3}} \arrowvert\\\nonumber
-  &=& \arrowvert (x_k-N^{\frac{1}{3}})-\frac{1}{3x^2_k}[x^3_k-N] \arrowvert \\\nonumber
-  &=& \arrowvert
-  \frac{x_k-N^{\frac{1}{3}}}{3x^2_k}[(x_k-N^{\frac{1}{3}})(x_k+N^{\frac{1}{3}})+x_k(x_k-N^{\frac{1}{3}})] \arrowvert\\\nonumber
-  &=&\arrowvert \frac{(x_k-N^{\frac{1}{3}})^2}{3x^2_k}
-  [2x_k+N^{\frac{1}{3}}]\arrowvert\\\nonumber
-  &=&  \epsilon^2_{k}\arrowvert \frac{2x_k+N^{\frac{1}{3}}}{3x^2_k}\arrowvert\\\nonumber
-\end{eqnarray}
-
-To bound this expression, we put $x_0=\frac{3}{4}$. If $x_k >0 $, with
-$\frac{1}{8}\leq N <1$, $\frac{2x_k+N^{\frac{1}{3}}}{3x^2_k} >0 $ and
-then $\epsilon_{k+1} >0$ in othe hand $ N^{\frac{1}{3}}\leq x_{k+1}$,
-we can obtain this inegality for $1 \leq k$:
-
-\begin{equation}
-N^{\frac{1}{3}}\leq x_{k}
-\end{equation}
-
-
-We can now bound $\epsilon_{k+1}$ :
-
-\begin{eqnarray}\nonumber
-\epsilon_{k+1} =  \epsilon^2_{k}
-\frac{2x_k+N^{\frac{1}{3}}}{3x^2_k} \leq
-\epsilon^2_{k}\frac{2x_k+x_k}{3x^2_k}\leq 2 \epsilon^2_{k}\\\nonumber
-\end{eqnarray}
-
-Because $\frac{1}{2}\leq<N^{\frac{1}{3}}$, $2\geq\frac{1}{x_k}$
-
-
-
-\subsubsection{Size of tempory variables}
-
-
-First, $z_k$ is the MPFR calculation approximation of $x_k$. The error
-produce by the calculation of $z_k$ at the iteration $k$ is bounded by
-:
-\[
-|z_k-x_k| \leq n_k \times ulp(z_k)
-\]
-
-with $n_k$ the number of ulp()...a completer
-
-The algorithm used to calculate one Newton iteration is:
-
-\begin{eqnarray}\nonumber
-t&\leftarrow&2z_k\\\nonumber
-u&\leftarrow&z_k^2\\\nonumber
-v&\leftarrow&\frac{N}{u}\\\nonumber
-w&\leftarrow&t+v\\\nonumber
-z_{k+1}&\leftarrow&\frac{w}{3}\\\nonumber
-\end{eqnarray}
-
-Let describe the additionnal error produce at each step of the
-algorithm :
-
-\[
-t \leftarrow 2 z_k
-\]
-
-The error associate with the calculation of $t$ can be bound as
-following:
-
-\begin{eqnarray}\nonumber
-  error(t) &\leq& 2 n_k ulp(z_k)\\\nonumber
-         &\leq& n_k ulp(t)\\\nonumber
-\end{eqnarray}
-
-
-\[
-u\leftarrow z_k^2
-\]
-
-
-
-\begin{eqnarray}\nonumber
-  error(u) = |o(z_k^2)-x_k^2| &\leq& |o(z_k^2)-z_k^2| +
-  |z_k^2-x_k^2|\\\nonumber
-         &\leq& 1 ulp(z_k^2) + n_k ulp(1) (z_k+x_k)\\\nonumber
-         &\leq& (2 n_k + 1) ulp(1)\\\nonumber
-\end{eqnarray}
-
-\[
-v \leftarrow \frac{N}{u}
-\]
-
-\begin{eqnarray}\nonumber
-  error(v) = |o(\frac{N}{u})-\frac{N}{x_k^2}| &\leq& ulp(v) +
-  |\frac{N}{u}-\frac{N}{x_k^2}|\\\nonumber
-         &\leq& 4 ulp(1) + \frac{N}{u
-           x_k^2}|x_k^2-u|\;\;\;{\textnormal{with}} \frac{1}{8}\leq v <4\\\nonumber
-         &\leq& 4 ulp(1) + 4 |x_k^2-u|\;\;\;{\textnormal{with}} \;\;N^{\frac{1}{3}} \leq x_k\;\;\frac{N}{u
-           x_k^2} \leq \frac{x_k^3}{u x_k^2}\leq 4
-         \\\nonumber
-         &\leq& 4 ulp(1) + 4(2 n_k + 1) ulp(1)\\\nonumber
-         &\leq& (8 n_k + 8) ulp(1)\\\nonumber
-\end{eqnarray}
-
-
-\[
-w \leftarrow t+v
-\]
-
-\begin{eqnarray}\nonumber
-  error(w) = |o(t+v)-(2x_k + \frac{N}{u})| &\leq& ulp(w) +
-  |v-\frac{N}{u}|+|t-2x_k|\\\nonumber
-  &\leq& 2ulp(1) +(2 n_k + 1) ulp(1)  + (8 n_k + 8)
-  ulp(1)\;\;\;{\textnormal{with ... demander Paul}}\\\nonumber
-  &\leq& (10 n_k + 11) ulp(1)\\\nonumber  
-\end{eqnarray}
-
-\[
-z_{k+1} \leftarrow \frac{w}{3}
-\]
-
-\begin{eqnarray}\label{errsize}
-  error(z_{k+1}) = |o(\frac{w}{3})-\frac{1}{3}[2x_k + \frac{N}{u}]| &\leq& ulp(z_{k+1}) +
-  \frac{1}{3}[(10 n_k + 11) ulp(1)]\\\nonumber  
-&\leq& ulp(2) + \frac{1}{3}[(10 n_k + 11) ulp(1)]\\\nonumber  
-  &\leq& \frac{10 n_k + 17}{3} ulp(1)\\\nonumber  
-\end{eqnarray}
-
-
-
-\subsubsection{Implentation}
-
-First, we have to calculate the number of iteration of Newton's
-algorithme need to garanty the wanted precision of the result with $n$ exact bits.
-
-The section "Newton iteration error" show how we can calculate the
-error between two Newton iterations : we obtain $\epsilon_{k+1} \leq 2
-\epsilon_k^2$.  If $x_0=\frac{3}{4}$ we get :
-
-\[
-\epsilon_{0}=|x_0-N^{\frac{1}{3}}|\leq\frac{1}{4}\;\;{\textnormal{With  }}N^{\frac{1}{3}} \geq\frac{1}{2}
-\]
-
-then, $\epsilon_1 \leq \frac{1}{8}$, $\epsilon_2 \leq \frac{1}{32}$, ....
-
-
-To certifiate result with $n$ bits of precision, we have to get $\epsilon_k\leq\frac{1}{2^{n}}$, so $n\geq\tau_k$, with $\tau_k=-\log_2 \epsilon_k$.
-
-To calculate $k$ the number of iteration need to certifiate result, we have the compute $\tau_0=2,\, \tau_1=3,\, \tau_{k}=2\tau_{k-1} -1$ such as $\tau_k \leq n$.
-
-For each Newton iteration the intermediate calculation give an error bound by inequality \ref{errsize}. With the knowledge of $k$, for an intitial error null $n_0=0$, we can compute the error for all Newton iterations : $n_{k} = \frac{10 n_{k-1}+14}{3}$. Then, the size in bits $m$ of the precision of the intermediary variables is give by :
-
-\[
-m > n + \log_2 n_k + \log_2 n
-\]
+\subsection{Summary}
 
 \begin{table}
 \begin{center}
@@ -3096,6 +2629,187 @@ Remark 1: in the addition case, when $u v > 0$,
 necessarily one of $2^{e_u-e_w}$ and $2^{e_v-e_w}$ is less than $1/2$,
 thus $\err(w)/\ulp(w) \le c_w + {\rm max}(k_u + k_v/2, k_u/2 + k_v)
 	\le c_w + \frac{3}{2} {\rm max}(k_u, k_v)$.
+
+\section{Mathematical constants}
+
+\subsection{Euler's constant}
+
+Euler's constant is computed using the formula $\gamma = S(n) - R(n) - \log n$
+where:
+\[ S(n) = \sum_{k=1}^{\infty} \frac{n^k (-1)^{k-1}}{k! k}, \quad
+   R(n) = \int_n^{\infty} \frac{\exp(-u)}{u} du \sim \frac{\exp(-n)}{n}
+        \sum_{k=0}^{\infty} \frac{k!}{(-n)^k}. \]
+This identity is attributed to Sweeney by Brent \cite{Brent78}.
+We have $S(n) = _2 F_2(1,1;2,2;-n)$ and $R(n) = {\rm Ei}(1, n)$.
+
+\Paragraph{Evaluation of $S(n)$.}
+As in \cite{Brent78}, let $\alpha \sim 4.319136566$ the positive root
+of $\alpha + 2 = \alpha \log \alpha$, and $N = \lceil \alpha n \rceil$.
+We approximate $S(n)$ by
+\[ S'(n) = \sum_{k=1}^{N} \frac{n^k (-1)^{k-1}}{k! k}. \]
+%         = \frac{1}{N!} \sum_{k=1}^N \frac{a_k}{k}, 
+% where $a_k = n^k (-1)^{k-1} N!/k!$ is an integer.
+% Therefore $a_k$ is exactly computed, and when dividing it by $k$
+% (integer division)
+% the error is at most $1$, and thus the absolute error on $S'(n)$ is
+% at most $N/N! = 1/(N-1)!$.
+The remainder term $S(n) - S'(n)$ is bounded by:
+\[ |S(n) - S'(n)| \le \sum_{k=N+1}^{\infty} \frac{n^k}{k!}. \]
+Since $k! \ge (k/e)^k$, and $k \ge N+1 \ge \alpha n$, we have:
+\[ |S(n) - S'(n)| \le \sum_{k=N+1}^{\infty} \left( \frac{n e}{k} \right)^k
+                  \le \sum_{k=N+1}^{\infty} \left( \frac{e}{\alpha} \right)^k
+                  \le 2 \left( \frac{e}{\alpha} \right)^N
+                  \le 2 e^{-2n} \]
+since $(e/\alpha)^{\alpha} = e^{-2}$.
+
+To approximate $S'(n)$, we use the following algorithm, where $m$ is the
+working precision, and $a, s, t$ are integer variables:
+\begin{quote}
+$a \leftarrow 2^m$ \\
+$s \leftarrow 0$ \\
+{\bf for} $k$ {\bf from} $1$ {\bf to} $N$ {\bf do} \\
+\q $a \leftarrow \lfloor \frac{n a}{k} \rfloor$ \\
+\q $t \leftarrow \lfloor \frac{a}{k} \rfloor$ \\
+\q $s \leftarrow s + (-1)^{k-1} t$ \\
+return $x = s/2^m$
+\end{quote}
+The absolute error $\epsilon_k$ on $a$ at step $k$ satisfies
+$\epsilon_k \le 1 + n/k \epsilon_{k-1}$ with $\epsilon_0=0$.
+The maximum error is $\epsilon_n \le \frac{n^n}{n!} \le e^n$.
+Thus the error on $t$ at step $k$ is less than $1 + e^n/k$,
+and the total error on $s$ is bounded by $N (e^n + 1)$.
+Hence to get a precision of $n$ bits, we need to use
+$m ge n (1 + \frac{1}{\log 2})$.
+In such a case, the value $s/2^m$ converted to a floating-point number
+will have an error of at most $\ulp(x)$.
+
+\Paragraph{Evaluation of $R(n)$.}
+We estimate $R(n)$ using the terms up to $k=n-2$, again 
+as in \cite{Brent78}:
+\[ R'(n) = \frac{e^{-n}}{n} \sum_{k=0}^{n-2} \frac{k!}{(-n)^k}. \]
+% = \frac{\exp(-n)}{n^{n-1}} \sum_{k=0}^{n-2} (-1)^k \frac{k!} {n^{n-2-k}}.
+% Here again, the integer sum is computed exactly, converting it to a 
+% floating-point number introduces at most one ulp of error,
+% $\exp(-n)$ is computed within one ulp,
+% and $n^{n-1}$ within at most $n-2$ ulps.
+% The division by $n^{n-1}$ and the multiplication introduce one more ulp of
+% error, thus the total error on $R'(n)$ is at most $n+2$ ulps.
+Let us introduce $I_k = \int_n^{\infty} \frac{e^{-u}}{u^k} du$.
+We have $R(n) = I_1$ and the recurrence $I_k = \frac{e^{-n}}{n^k} - k I_{k+1}$,
+which gives
+\[ R(n) = \frac{e^{-n}}{n} \sum_{k=0}^{n-2} \frac{k!}{(-n)^k}
+        + (-1)^{n-1} (n-1)! I_n. \]
+Bounding $n!$ by $(n/e)^n \sqrt{2 \pi (n+1)}$ which holds\footnote{
+Formula 6.1.38 from \cite{AbSt73} gives
+$x! = \sqrt{2\pi} x^{x+1/2} e^{-x+\frac{\theta}{12x}}$ for $x>0$ and
+$0 < \theta < 1$.
+Using it for $x \ge 1$, we have $0 < \frac{\theta}{6x} < 1$, and
+$e^t < 1+2t$ for $0 < t < 1$, thus 
+$(x!)^2 \le 2\pi x^{2x} e^{-2x} (x+\frac{1}{3})$.}
+for $n \ge 1$, we have:
+\[ |R(n) - R'(n)| = (n-1)! I_n 
+        \le \frac{n!}{n} \int_n^{\infty} \frac{e^{-n}}{u^n} du
+        \le \frac{n^{n-1}}{e^n} \sqrt{2 \pi (n+1)} \frac{e^{-n}}{(n-1) 
+        n^{n-1}} \]
+and since $\sqrt{2 \pi (n+1)}/(n-1) \le 1$ for $n \ge 9$:
+\[ |R(n) - R'(n)| \le e^{-2n} \quad \mbox{for $n \ge 9$}. \]
+Thus we have:
+\[ |\gamma - S'(n) - R'(n) - \log n| \le 3 e^{-2n} \quad \mbox{for $n\ge 9$}.\]
+% If the working precision is $p$, then choose $n \ge \frac{\log 2}{2} (p+2)$
+% such that $3 e^{-2n}$ represents at most one ulp.
+
+To approximate $R'(n)$, we use the following:
+\begin{quote}
+$m \leftarrow {\rm prec}(x) - \lfloor \frac{n}{\log 2} \rfloor$ \\
+$a \leftarrow 2^m$ \\
+$s \leftarrow 1$ \\
+{\bf for} $k$ {\bf from} $1$ {\bf to} $n$ {\bf do} \\
+\q $a \leftarrow \lfloor \frac{k a}{n} \rfloor$ \\
+\q $s \leftarrow s + (-1)^{k} a$ \\
+$t \leftarrow \lfloor s/n \rfloor$ \\
+$x \leftarrow t/2^m$ \\
+return $r = e^{-n} x$
+\end{quote}
+The absolute error $\epsilon_k$ on $a$ at step $k$ satisfies
+$\epsilon_k \le 1 + k/n \epsilon_{k-1}$ with $\epsilon_0=0$.
+As $k/n \le 1$, we have $\epsilon_k \le k$, whence the error
+on $s$ is bounded by $n(n+1)/2$, and that on $t$ by 
+$1 + (n+1)/2 \le n+1$ since $n \ge 1$.
+The operation $x \leftarrow t/2^m$ is exact as soon as ${\rm prec}(x)$ is large
+enough, thus the error on $x$ is at most $(n+1) \frac{e^n}{2^{{\rm prec}(x)}}$.
+If $e^{-n}$ is computed with $m$ bits, then
+the error on it is at most $e^{-n} 2^{1-m}$.
+The error on $r$ is then $(n + 1 + 2/n) 2^{-{\rm prec}(x)} +
+\ulp(r)$.
+Since $x \ge \frac{2}{3} n$ for $n \ge 2$, and $x 2^{-{\rm prec}(x)}
+< \ulp(x)$, this gives an error bounded by 
+$\ulp(r) + (n + 1 + 2/n) \frac{3}{2n} \ulp(r)
+\le 4 \ulp(r)$ for $n \ge 2$ --- if ${\rm prec}(x) = {\rm prec}(r)$.
+Now since $r \le \frac{e^{-n}}{n} \le \frac{1}{8}$, that error
+is less than $\ulp(1/2)$.
+
+\Paragraph{Final computation.} We use the formula
+$\gamma = S(n) - R(n) - \log n$ with $n$ such that $e^{-2n} \le 
+\ulp(1/2) = 2^{-{\rm prec}}$, i.e.~$n \ge {\rm prec} \frac{\log 2}{2}$:
+\begin{quote}
+$s \leftarrow S'(n)$ \\
+$l \leftarrow \log(n)$ \\
+$r \leftarrow R'(n)$ \\
+return $(s - l) - r$
+\end{quote}
+Since the final result is in $[\frac{1}{2}, 1]$, and $R'(n) \le 
+\frac{e^{-n}}{n}$, then $S'(n)$ approximates $\log n$.
+If we use $m + \lceil \log_2({\rm prec}) \rceil$ bits to evaluate $s$ and $l$,
+then the error on $s-l$ will be at most $3 \ulp(1/2)$,
+so the error on $(s - l) - r$ is at most $5 \ulp(1/2)$,
+and adding the $3 e^{-2n}$ truncation error, we get a bound of
+$8 \ulp(1/2)$.
+
+\subsubsection{A faster formula}
+
+Brent and McMillan give in \cite{BrMc80} a faster algorithm (B2) using the
+modified Bessel functions, which was
+used by Gourdon and Demichel to compute 108,000,000 digits of $\gamma$ in
+October 1999:
+\[ \gamma = \frac{S_0 - K_0}{I_0} - \log n, \]
+where $S_0 = \sum_{k=1}^{\infty} \frac{n^{2k}}{(k!)^2} H_k$,
+$H_k = 1 + \frac{1}{2} + \cdots + \frac{1}{k}$ being the $k$-th harmonic
+number,
+$K_0 = \sqrt{\frac{\pi}{4n}} e^{-2n} \sum_{k=0}^{\infty}
+        (-1)^k \frac{[(2k)!]^2}{(k!)^3 (64n)^k}$,
+and $I_0 = \sum_{k=0}^{\infty} \frac{n^{2k}}{(k!)^2}$.
+
+We have $I_0 \ge \frac{e^{2n}}{\sqrt{4 \pi n}}$ (see \cite{BrMc80} page 306).
+From the remark following formula 9.7.2 of \cite{AbSt73},
+the remainder in the truncated expansion for $K_0$ up to $k$ does not
+exceed the $(k+1)$-th term, whence
+$K_0 \le \sqrt{\frac{\pi}{4n}} e^{-2n}$ and
+$\frac{K_0}{I_0} \le \pi e^{-4n}$ as in formula (5) of \cite{BrMc80}.
+Let $I'_0 = \sum_{k=0}^{K-1} \frac{n^{2k}}{(k!)^2}$ with
+$K = \lceil \beta n \rceil$, and $\beta$ is the root of
+$\beta (\log \beta - 1) = 3$
+($\beta \sim 4.971...$) then
+\[ |I_0 - I'_0| \le \frac{\beta}{2 \pi (\beta^2-1)} \frac{e^{-6n}}{n}. \]
+Let $K'_0 = \sqrt{\frac{\pi}{4n}} e^{-2n} \sum_{k=0}^{4n-1} (-1)^k
+        \frac{[(2k)!]^2}{(k!)^3 (64n)^k}$, then bounding by the next term:
+\[ |K_0 - K'_0| \le \frac{(8n+1)}{16 \sqrt{2} n} \frac{e^{-6n}}{n}
+        \le \frac{1}{2} \frac{e^{-6n}}{n}. \]
+We get from this
+\[ \left| \frac{K_0}{I_0} - \frac{K'_0}{I'_0} \right| 
+        \le \frac{1}{2 I_0} \frac{e^{-6n}}{n} \le \sqrt{\frac{\pi}{n}}
+        e^{-8n}. \]
+Let $S'_0 = \sum_{k=1}^{K-1} \frac{n^{2k}}{(k!)^2} H_k$,
+then using $\frac{H_{k+1}}{H_k} \le \frac{k+1}{k}$ and the same bound $K$
+than for $I'_0$ ($4n \le K \le 5n$), we get:
+\[ |S_0 - S'_0| \le \frac{\beta}{2 \pi (\beta^2-1)} H_k \frac{e^{-6n}}{n}. \]
+We deduce:
+\[ \left| \frac{S_0}{I_0} - \frac{S'_0}{I'_0} \right|
+        \le e^{-8n} H_K \frac{\sqrt{4 \pi n}}{\pi (\beta^2-1)}
+        \frac{\beta}{n} \le e^{-8n}. \]
+Hence we have
+\[ \left| \gamma - \left( \frac{S'_0 - K'_0}{I'_0} - \log n \right) \right|
+        \le (1 + \sqrt{\frac{\pi}{n}}) e^{-8n} 
+        \le 3 e^{-8n}. \]
 
 \nocite{BoBo98,DeHi02}
 
