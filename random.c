@@ -55,7 +55,7 @@ mpfr_random(x)
       /* random() c/sh/ould be replaced by a homemade random number generator.
 	 Indeed, if on Linux random is a good RNG, this is definitely not
 	 the case in most Un*xes. */
-      xp[i] = random();
+      xp[i] = (random() << 1) | (random() & 1);
     }
   
   count_leading_zeros(cnt, xp[xn - 1]); 
