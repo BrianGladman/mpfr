@@ -748,7 +748,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   inexact2 = mpfr_sub1 (tmpa, tmpb, tmpc, rnd_mode); 
   inexact  = mpfr_sub1sp2(a, b, c, rnd_mode);
 
-  if (mpfr_cmp(tmpa, a) /*|| inexact!=inexact2*/)
+  if (mpfr_cmp(tmpa, a) || inexact!=inexact2)
     {
       printf("sub1 & sub1sp return different values for %s\n"
 	     "Prec_a= %lu Prec_b= %lu Prec_c= %lu\nB=",
