@@ -16,9 +16,6 @@ main()
   mpf_random2(y, 10, 0); 
   mpfr_set_f(x, y, 53, rand() & 3); 
 
-  mpf_out_str(stdout, 10, 0, y); 
-  printf("\n%1.21g\n", mpfr_get_d(x)); 
-
   mpf_clear(y); mpfr_clear(x); 
 
   for (k = 1; k <= 100000; k++)
