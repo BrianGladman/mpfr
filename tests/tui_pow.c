@@ -94,9 +94,8 @@ check1 (mpfr_ptr x, mp_prec_t prec, unsigned long nt, mp_rnd_t rnd)
           ((inexact > 0) && (compare <= 0)) ||
           ((inexact < 0) && (compare >= 0)))
         {
-          fprintf (stderr,
-                   "Wrong inexact flag for rnd=%s: expected %d, got %d\n",
-                   mpfr_print_rnd_mode (rnd), compare, inexact);
+          printf ("Wrong inexact flag for rnd=%s: expected %d, got %d\n",
+                  mpfr_print_rnd_mode (rnd), compare, inexact);
           printf ("x="); mpfr_print_binary (x); puts ("");
           printf ("y="); mpfr_print_binary (y); puts ("");
           printf ("t="); mpfr_print_binary (t); puts ("");

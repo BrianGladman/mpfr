@@ -59,7 +59,7 @@ main (int argc, char *argv[])
     nc = 100;
 
   bd = randlimb () & 8;
-  
+
   str2 = str = (*__gmp_allocate_func) (nc * sizeof(char));
 
   if (bd)
@@ -71,15 +71,15 @@ main (int argc, char *argv[])
   else
     *(str2++) = '0';
 
-  *(str2++) = '.'; 
+  *(str2++) = '.';
 
   for (k = 1; k < nc - 17 - bd; k++)
     *(str2++) = '0' + (randlimb () & 1);
 
-  *(str2++) = 'e'; 
+  *(str2++) = 'e';
   sprintf (str2, "%d", (int) (randlimb () & INT_MAX) + INT_MIN/2);
 
-  mpfr_set_prec (x, nc + 10); 
+  mpfr_set_prec (x, nc + 10);
   mpfr_set_str_raw (x, str);
 
   mpfr_set_prec (x, 54);
@@ -88,13 +88,13 @@ main (int argc, char *argv[])
   mpfr_set_str (y, "4.936a52bc17254@-133", 16, GMP_RNDN);
   if (mpfr_cmp (x, y))
     {
-      fprintf (stderr, "Error in mpfr_set_str (1a):\n");
+      printf ("Error in mpfr_set_str (1a):\n");
       mpfr_print_binary (x);
       puts ("");
       mpfr_print_binary (y);
       puts ("");
       mpfr_clear (x);
-      mpfr_clear (y); 
+      mpfr_clear (y);
       exit (1);
     }
 
@@ -102,7 +102,7 @@ main (int argc, char *argv[])
   mpfr_set_str (y, "0.fedcba98765434P-529", 16, GMP_RNDN);
   if (mpfr_cmp (x, y))
     {
-      fprintf (stderr, "Error in mpfr_set_str (1b):\n");
+      printf ("Error in mpfr_set_str (1b):\n");
       mpfr_print_binary (x);
       puts ("");
       mpfr_print_binary (y);
@@ -120,9 +120,9 @@ main (int argc, char *argv[])
   mpfr_set_str_raw (x, "1.0");
   if (mpfr_get_d1 (x) != 1.0)
     {
-      fprintf (stderr, "Error in mpfr_set_str_raw for s=1.0\n"); 
+      printf ("Error in mpfr_set_str_raw for s=1.0\n");
       mpfr_clear(x);
-      mpfr_clear(y); 
+      mpfr_clear(y);
       exit(1);
     }
 
@@ -131,7 +131,7 @@ main (int argc, char *argv[])
   mpfr_set_str_raw (x, "0000E0");
   if (mpfr_get_d1 (x) != 0.0)
     {
-      fprintf (stderr, "Error in mpfr_set_str_raw for s=0.0\n"); 
+      printf ("Error in mpfr_set_str_raw for s=0.0\n");
       mpfr_clear (x);
       mpfr_clear (y);
       exit (1);
@@ -153,7 +153,7 @@ main (int argc, char *argv[])
       k = randlimb () % 4;
       logbase = (randlimb () % 5) + 1;
       base = 1 << logbase;
-      /* Warning: the number of bits needed to print exactly a number of 
+      /* Warning: the number of bits needed to print exactly a number of
 	 'prec' bits in base 2^logbase may be greater than ceil(prec/logbase),
 	 for example 0.11E-1 in base 2 cannot be written exactly with only
 	 one digit in base 4 */
@@ -165,20 +165,20 @@ main (int argc, char *argv[])
       mpfr_set_str (y, str, base, k);
       MPFR_EXP(y) += logbase * (e - strlen (str));
       if (mpfr_cmp (x, y))
-	{
-	  fprintf (stderr, "mpfr_set_str o mpfr_get_str <> id for rnd_mode=%s\n",
-		   mpfr_print_rnd_mode (k));
-	  printf ("x=");
-	  mpfr_print_binary (x);
-	  puts ("");
-	  printf ("s=%s, exp=%d, base=%d\n", str, (int) e, base);
-	  printf ("y=");
-	  mpfr_print_binary (y);
-	  puts ("");
-	  mpfr_clear (x);
-	  mpfr_clear (y);
-	  exit (1);
-	}
+        {
+          printf ("mpfr_set_str o mpfr_get_str <> id for rnd_mode=%s\n",
+                  mpfr_print_rnd_mode (k));
+          printf ("x=");
+          mpfr_print_binary (x);
+          puts ("");
+          printf ("s=%s, exp=%d, base=%d\n", str, (int) e, base);
+          printf ("y=");
+          mpfr_print_binary (y);
+          puts ("");
+          mpfr_clear (x);
+          mpfr_clear (y);
+          exit (1);
+        }
       (*__gmp_free_func) (str, strlen (str) + 1);
     }
 
@@ -187,28 +187,28 @@ main (int argc, char *argv[])
       if (mpfr_set_str (x, "@NaN@garbage", i, GMP_RNDN) != 0 ||
           !mpfr_nan_p(x))
         {
-          fprintf (stderr, "mpfr_set_str failed on @NaN@garbage\n");
+          printf ("mpfr_set_str failed on @NaN@garbage\n");
           exit (1);
         }
 
       if (mpfr_set_str (x, "@Inf@garbage", i, GMP_RNDN) != 0 ||
           !mpfr_inf_p(x) || MPFR_SIGN(x) < 0)
         {
-          fprintf (stderr, "mpfr_set_str failed on @Inf@garbage\n");
+          printf ("mpfr_set_str failed on @Inf@garbage\n");
           exit (1);
         }
 
       if (mpfr_set_str (x, "-@Inf@garbage", i, GMP_RNDN) != 0 ||
           !mpfr_inf_p(x) || MPFR_SIGN(x) > 0)
         {
-          fprintf (stderr, "mpfr_set_str failed on -@Inf@garbage\n");
+          printf ("mpfr_set_str failed on -@Inf@garbage\n");
           exit (1);
         }
 
       if (mpfr_set_str (x, "+@Inf@garbage", i, GMP_RNDN) != 0 ||
           !mpfr_inf_p(x) || MPFR_SIGN(x) < 0)
         {
-          fprintf (stderr, "mpfr_set_str failed on +@Inf@garbage\n");
+          printf ("mpfr_set_str failed on +@Inf@garbage\n");
           exit (1);
         }
 
@@ -218,28 +218,28 @@ main (int argc, char *argv[])
       if (mpfr_set_str (x, "NaN", i, GMP_RNDN) != 0 ||
           !mpfr_nan_p(x))
         {
-          fprintf (stderr, "mpfr_set_str failed on NaN\n");
+          printf ("mpfr_set_str failed on NaN\n");
           exit (1);
         }
 
       if (mpfr_set_str (x, "Inf", i, GMP_RNDN) != 0 ||
           !mpfr_inf_p(x) || MPFR_SIGN(x) < 0)
         {
-          fprintf (stderr, "mpfr_set_str failed on Inf\n");
+          printf ("mpfr_set_str failed on Inf\n");
           exit (1);
         }
 
       if (mpfr_set_str (x, "-Inf", i, GMP_RNDN) != 0 ||
           !mpfr_inf_p(x) || MPFR_SIGN(x) > 0)
         {
-          fprintf (stderr, "mpfr_set_str failed on -Inf\n");
+          printf ("mpfr_set_str failed on -Inf\n");
           exit (1);
         }
 
       if (mpfr_set_str (x, "+Inf", i, GMP_RNDN) != 0 ||
           !mpfr_inf_p(x) || MPFR_SIGN(x) < 0)
         {
-          fprintf (stderr, "mpfr_set_str failed on +Inf\n");
+          printf ("mpfr_set_str failed on +Inf\n");
           exit (1);
         }
     }
@@ -249,7 +249,7 @@ main (int argc, char *argv[])
   mpfr_set_str (x, "B", 16, GMP_RNDN);
   if (mpfr_cmp_ui (x, 11) != 0)
     {
-      fprintf (stderr, "mpfr_set_str does not work for uppercase letters\n");
+      printf ("mpfr_set_str does not work for uppercase letters\n");
       exit (1);
     }
 
@@ -262,13 +262,13 @@ main (int argc, char *argv[])
   mpfr_set_str (y, "0.71128279983522479470@-160", 10, GMP_RNDU);
   if (mpfr_cmp (x, y))
     {
-      fprintf (stderr, "Error in mpfr_set_str (2):\n");
+      printf ("Error in mpfr_set_str (2):\n");
       mpfr_print_binary (x);
       puts ("");
       mpfr_print_binary (y);
       puts ("");
       mpfr_clear (x);
-      mpfr_clear (y); 
+      mpfr_clear (y);
       exit (1);
     }
 
@@ -283,13 +283,13 @@ main (int argc, char *argv[])
   /* y = 49027884868983130654865109690613178467841148597221480052 */
   if (mpfr_cmp (x, y))
     {
-      fprintf (stderr, "Error in mpfr_set_str (3):\n");
+      printf ("Error in mpfr_set_str (3):\n");
       mpfr_print_binary (x);
       puts ("");
       mpfr_print_binary (y);
       puts ("");
       mpfr_clear (x);
-      mpfr_clear (y); 
+      mpfr_clear (y);
       exit (1);
     }
 
@@ -307,13 +307,13 @@ main (int argc, char *argv[])
   /* y = 100433627392042473064661483711179345482301462325708736552078 */
   if (mpfr_cmp (x, y))
     {
-      fprintf (stderr, "Error in mpfr_set_str (4):\n");
+      printf ("Error in mpfr_set_str (4):\n");
       mpfr_print_binary (x);
       puts ("");
       mpfr_print_binary (y);
       puts ("");
       mpfr_clear (x);
-      mpfr_clear (y); 
+      mpfr_clear (y);
       exit (1);
     }
 
@@ -326,13 +326,13 @@ main (int argc, char *argv[])
   /* y = 3053110535624388280648330929253842828159081875986159414 */
   if (mpfr_cmp (x, y))
     {
-      fprintf (stderr, "Error in mpfr_set_str (5):\n");
+      printf ("Error in mpfr_set_str (5):\n");
       mpfr_print_binary (x);
       puts ("");
       mpfr_print_binary (y);
       puts ("");
       mpfr_clear (x);
-      mpfr_clear (y); 
+      mpfr_clear (y);
       exit (1);
     }
 
@@ -343,13 +343,13 @@ main (int argc, char *argv[])
   mpfr_set_str_raw (x, "0.1111111111111111111111111111111000000000000011100000001111100001E187");
   if (mpfr_cmp (x, y))
     {
-      fprintf (stderr, "Error in mpfr_set_str (6):\n");
+      printf ("Error in mpfr_set_str (6):\n");
       mpfr_print_binary (x);
       puts ("");
       mpfr_print_binary (y);
       puts ("");
       mpfr_clear (x);
-      mpfr_clear (y); 
+      mpfr_clear (y);
       exit (1);
     }
 
@@ -360,13 +360,13 @@ main (int argc, char *argv[])
   mpfr_set_str_raw (x, "0.1111111111111100000000001000000000000000000011111111111111101111E215");
   if (mpfr_cmp (x, y))
     {
-      fprintf (stderr, "Error in mpfr_set_str (7):\n");
+      printf ("Error in mpfr_set_str (7):\n");
       mpfr_print_binary (x);
       puts ("");
       mpfr_print_binary (y);
       puts ("");
       mpfr_clear (x);
-      mpfr_clear (y); 
+      mpfr_clear (y);
       exit (1);
     }
 
@@ -391,41 +391,42 @@ main (int argc, char *argv[])
     mpfr_set_ui (x, 1, GMP_RNDN); /* ensures that x is not NaN or Inf */
     for (; nb_digit < 100000; nb_digit *= 10)
       for (cbase = 0; cbase < 3; cbase++)
-	for (climb = 0; climb < 2; climb++)
-	  for (crnd = 0; crnd < 3; crnd++)
-	    {
-	      char *str1;
-	      mp_exp_t exp;
-	      
-	      *(MPFR_MANT(x)) = check_limb[climb];
-	      MPFR_EXP(x) = 0;
+        for (climb = 0; climb < 2; climb++)
+          for (crnd = 0; crnd < 3; crnd++)
+            {
+              char *str1;
+              mp_exp_t exp;
 
-	      mpfr_get_str (str + 2, &exp, base[cbase],
-			    nb_digit, x, rnd[crnd]);
-	      str[0] = '-';
-	      str[(str[2] == '-')] =  '0';
-	      str[(str[2] == '-') + 1] =  '.';
+              *(MPFR_MANT(x)) = check_limb[climb];
+              MPFR_EXP(x) = 0;
 
-	      for (str1 = str; *str1 != 0; str1++);
-	      sprintf (str1, "@%i", (int) exp);
+              mpfr_get_str (str + 2, &exp, base[cbase],
+                            nb_digit, x, rnd[crnd]);
+              str[0] = '-';
+              str[(str[2] == '-')] =  '0';
+              str[(str[2] == '-') + 1] =  '.';
 
-	      mpfr_set_str (y, str, base[cbase], rnd[2 - crnd]);
-	      
-	      if (mpfr_cmp (x, y) != 0)
-		{
-		  fprintf (stderr, "Error in mpfr_set_str for nb_digit=%u, base=%u, rnd=%s:\n", (unsigned int) nb_digit, base[cbase], mpfr_print_rnd_mode (rnd[crnd]));
-		  fprintf (stderr, "instead of: ");
-		  mpfr_print_binary (x);
-		  puts ("");
-		  fprintf (stderr, "return    : ");
-		  mpfr_print_binary (y);
-		  puts ("");
-		}
+              for (str1 = str; *str1 != 0; str1++)
+                ;
+              sprintf (str1, "@%i", (int) exp);
 
-	    }
+              mpfr_set_str (y, str, base[cbase], rnd[2 - crnd]);
+
+              if (mpfr_cmp (x, y) != 0)
+                {
+                  printf ("Error in mpfr_set_str for nb_digit=%u, base=%u, "
+                          "rnd=%s:\n", (unsigned int) nb_digit, base[cbase],
+                          mpfr_print_rnd_mode (rnd[crnd]));
+                  printf ("instead of: ");
+                  mpfr_print_binary (x);
+                  puts ("");
+                  printf ("return    : ");
+                  mpfr_print_binary (y);
+                  puts ("");
+                }
+            }
 
     (*__gmp_free_func) (str, 100000 + 20);
-
   }
 
   /* end of tests added by Alain Delplanque */
@@ -435,13 +436,13 @@ main (int argc, char *argv[])
   mpfr_set_str (x, "+0.0", 10, GMP_RNDN);
   if (!mpfr_number_p(x) || mpfr_cmp_ui (x, 0) != 0 || mpfr_sgn (x) < 0)
     {
-      fprintf (stderr, "x <- +0.0 failed after x=NaN\n");
+      printf ("x <- +0.0 failed after x=NaN\n");
       exit (1);
     }
   mpfr_set_str (x, "-0.0", 10, GMP_RNDN);
   if (!mpfr_number_p(x) || mpfr_cmp_ui (x, 0) != 0 || mpfr_sgn (x) > 0)
     {
-      fprintf (stderr, "x <- -0.0 failed after x=NaN\n");
+      printf ("x <- -0.0 failed after x=NaN\n");
       exit (1);
     }
 
