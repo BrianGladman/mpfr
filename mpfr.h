@@ -174,6 +174,7 @@ void mpfr_set_default_rounding_mode _PROTO((mp_rnd_t));
 #define mpfr_cmp_ui(b,i) mpfr_cmp_ui_2exp(b,i,0)
 #define mpfr_cmp_si(b,i) mpfr_cmp_si_2exp(b,i,0)
 #define mpfr_set(a,b,r) mpfr_set4(a,b,r,MPFR_SIGN(b))
+#define mpfr_abs(a,b,r) mpfr_set4(a,b,r,1)
 #define mpfr_cmp(b,c) mpfr_cmp3(b,c,1)
 
 #if (BITS_PER_MP_LIMB==32)
