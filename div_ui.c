@@ -56,8 +56,6 @@ mpfr_div_ui(y, x, u, rnd_mode)
   EXP(y) = EXP(x);
   if (SIGN(x)!=SIGN(y)) CHANGE_SIGN(y);
 
-  /* save limb yp[-1] that will be used to store an extra limb of
-     the quotient */
   dif = yn+1-xn;
 #ifdef DEBUG
   printf("dif=%d u=%lu xn=%d\n",dif,u,xn);
@@ -81,6 +79,7 @@ mpfr_div_ui(y, x, u, rnd_mode)
   else /* dif < 0 i.e. xn > yn */
     c = mpn_divrem_1(tmp, 0, xp-dif, yn, c);
 
+  if (tmp[yn]==0) { tmp--; sh=0; EXP(y) -= mp_bits_per_limb; }
   /* shift left to normalize */
   count_leading_zeros(sh, tmp[yn]);
   if (sh) {
