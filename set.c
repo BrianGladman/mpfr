@@ -19,7 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -69,16 +68,12 @@ mpfr_set4 (a, b, rnd_mode, signb)
     if (carry)
     {
       mp_exp_t exp = MPFR_EXP(a);
+
       if (exp == __mpfr_emax)
-      {
-        mpfr_set_overflow(a, rnd_mode, signb);
-        MPFR_RET(inex);
-      }
-      else
-      {
-        MPFR_EXP(a)++;
-        ap[(MPFR_PREC(a)-1)/BITS_PER_MP_LIMB] = MP_LIMB_T_HIGHBIT;
-      }
+        return mpfr_set_overflow(a, rnd_mode, signb);
+
+      MPFR_EXP(a)++;
+      ap[(MPFR_PREC(a)-1)/BITS_PER_MP_LIMB] = MP_LIMB_T_HIGHBIT;
     }
   }
 

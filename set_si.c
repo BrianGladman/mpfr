@@ -19,53 +19,66 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "longlong.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-void
+int
 #if __STDC__
-mpfr_set_si (mpfr_ptr x, long int i, mp_rnd_t rnd_mode)
+mpfr_set_si (mpfr_ptr x, long i, mp_rnd_t rnd_mode)
 #else
 mpfr_set_si (x, i, rnd_mode)
      mpfr_ptr x;
-     long int i;
+     long i;
      mp_rnd_t rnd_mode;
 #endif
 {
+  int inex;
   mp_size_t xn;
-  unsigned int cnt;
+  unsigned int cnt, nbits;
   mp_limb_t ai, *xp;
 
   MPFR_CLEAR_FLAGS(x);
-  if (i==0) { MPFR_SET_ZERO(x); return; }
-  xn = (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB;
-  ai = (unsigned long) ABS(i); 
+  if (i == 0)
+  {
+    MPFR_SET_ZERO(x);
+    if (MPFR_SIGN(x) < 0) MPFR_CHANGE_SIGN(x);
+    return 0;
+  }
 
-  count_leading_zeros(cnt, ai); 
+  xn = (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB;
+  ai = SAFE_ABS(long, i);
+  count_leading_zeros(cnt, ai);
 
   xp = MPFR_MANT(x);
   xp[xn] = ai << cnt;
   /* don't forget to put zero in lower limbs */
   MPN_ZERO(xp, xn);
 
-  MPFR_EXP(x) = BITS_PER_MP_LIMB - cnt;
+  MPFR_EXP(x) = nbits = BITS_PER_MP_LIMB - cnt;
 
   /* round if MPFR_PREC(x) smaller than length of i */
-  if (MPFR_PREC(x) < BITS_PER_MP_LIMB-cnt) {
-    cnt = mpfr_round_raw(xp+xn, xp+xn, BITS_PER_MP_LIMB-cnt, (ai<0),
-                         MPFR_PREC(x), rnd_mode, NULL);
-    if (cnt) { /* special case 1.000...000 */
+  if (MPFR_PREC(x) < nbits)
+  {
+    int carry;
+    carry = mpfr_round_raw(xp+xn, xp+xn, nbits, (ai < 0), MPFR_PREC(x),
+                           rnd_mode, &inex);
+    if (carry)
+    {
+      mp_exp_t exp = MPFR_EXP(x);
+
+      if (exp == __mpfr_emax)
+        return mpfr_set_overflow(x, rnd_mode, (ai < 0 ? -1 : 1));
+
       MPFR_EXP(x)++;
-      xp[xn] = ((mp_limb_t) 1) << (BITS_PER_MP_LIMB-1);
+      xp[xn] = MP_LIMB_T_HIGHBIT;
     }
   }
 
   /* warning: don't change the precision of x! */
-  if (i*MPFR_SIGN(x) < 0) MPFR_CHANGE_SIGN(x);
+  if ((i < 0) ^ (MPFR_SIGN(x) < 0)) MPFR_CHANGE_SIGN(x);
 
-  return; 
+  MPFR_RET(inex);
 }
