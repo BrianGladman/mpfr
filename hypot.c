@@ -39,7 +39,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode)
   int not_exact;
   mpfr_t t, te, ti; /* auxiliary variables */
   mp_prec_t Nx, Ny, Nz; /* size variables */
-  int Nt;   /* precision of the intermediary variable */
+  mp_prec_t Nt;   /* precision of the intermediary variable */
 
   /* particular cases */
 
@@ -73,7 +73,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode)
   Nz = MPFR_PREC(z);   /* Precision of output variable */
       
   /* compute the working precision -- see algorithms.ps */
-  Nt = MAX(MAX(Nx, Ny), Nz);
+  Nt = MAX(MAX(MAX(Nx, Ny), Nz), 8);
   Nt = Nt - 8 + _mpfr_ceil_log2 (Nt);
 
   /* initialise the intermediary variables */
@@ -88,7 +88,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode)
       Nt += 10; 
 
       not_exact = 0;
-      /* reactualisation of the precision */
+      /* reactualization of the precision */
       mpfr_set_prec (t, Nt);             
       mpfr_set_prec (te, Nt);             
       mpfr_set_prec (ti, Nt);   
