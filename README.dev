@@ -141,3 +141,8 @@ But:
 
  since mp_limb_t may be "unsigned long long", and some buggy compiler
 produce illegal codes with the first form.
+
+===========================================================================
+
+The GNU Coding standards can be read at:
+http://www.gnu.org/prep/standards_toc.html
