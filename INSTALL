@@ -69,22 +69,6 @@ Known problems.
 See file BUGS for known bugs in MPFR. Some patches may be available on the
 MPFR web page <http://www.mpfr.org/> or <http://www.loria.fr/projets/mpfr/>.
 
-Linux on Alpha is known to have problems with IEEE conformance. Also with
-OSF and gcc 2.8.1, we had problems with the square root functions:
-
-   Testing tsqrt
-   libm.a differs from mpfr_sqrt for a=1.72800271916104480000e+210, rnd_mode=GMP_RNDZ
-   libm.a gives 1.31453517227993750000e+105, mpfr_sqrt gives 1.31453517227993730000e+105 (-1 ulp)
-   maybe you've found a bug in libm.a...
-   ### tsqrt failed ###
-   Testing tsqrt_ui
-   mpfr_sqrt_ui differs from sqrt for a=851401618, rnd_mode=GMP_RNDU
-   sqrt gives 2.91787871235251990000e+04, mpfr_sqrt_ui gives 2.91787871235252020000e+04 (1 ulp)
-   maybe you've found a bug in libm.a
-   ### tsqrt_ui failed ###
-
-(in both cases the MPFR result is the correct one).
-
 In case of problem.
 ===================
 
