@@ -109,6 +109,17 @@ main (int argc, char *argv[])
   mpfr_set_prec (y, 93);
   mpfr_mul_ui (y, x, 1, GMP_RNDN);
 
+  mpfr_set_prec (x, 287);
+  mpfr_set_str_raw (x, "0.1111E7");
+  mpfr_set_prec (y, 289);
+  mpfr_mul_ui (y, x, 6, GMP_RNDN);
+  mpfr_set_str_raw (x, "0.101101E10");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error for 6 * 120\n");
+      exit (1);
+    }
+
   for (xprec = 53; xprec <= 128; xprec++)
     {
       mpfr_set_prec (x, xprec);
