@@ -30,6 +30,8 @@ Documentation:
 
 - web page: add a html version of the documentation
 
+- mpfr_set_prec: add an explanation of how to speed up calculations which increase their precision at each step.
+
 Installation:
 
 - from Kevin Ryde <user42@zip.com.au>:
