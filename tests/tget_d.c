@@ -49,13 +49,13 @@ check_denorms ()
         break; /* second iteration */
       rnd_mode = GMP_RNDN;
 #endif
-      for (k = 1; k <= 7; k += 2)
+      for (k = -17; k <= 17; k += 2)
         {
           d = k * DBL_MIN; /* k * 2^(-1022) */
           f = 1.0;
-          mpfr_set_ui (x, k, GMP_RNDN);
+          mpfr_set_si (x, k, GMP_RNDN);
           mpfr_div_2exp (x, x, 1022, GMP_RNDN); /* k * 2^(-1022) */
-          for (n=0; n<=55; n++)
+          for (n = 0; n <= 58; n++)
             {
               d2 = d * f;
               dd = mpfr_get_d (x, rnd_mode);
