@@ -96,13 +96,12 @@ How to install and use MPFR, a library for reliable multiple precision floating-
 @end ifnothtml
 
 @menu
-* Copying::                   GMP Copying Conditions (LGPL).
-* Introduction to MPFR::      Brief introduction to MPFR.
-* Installing MPFR::           How to configure and compile the MPFR library.
-* MPFR Basics::               What every MPFR user should now.
-* Reporting Bugs::            How to usefully report bugs.
-* Floating-point Functions::  Functions for arithmetic on floats.
-
+* Copying::                     GMP Copying Conditions (LGPL).
+* Introduction to MPFR::        Brief introduction to MPFR.
+* Installing MPFR::             How to configure and compile the MPFR library.
+* Reporting Bugs::              How to usefully report bugs.
+* MPFR Basics::                 What every MPFR user should now.
+* Floating-point Functions::    Functions for arithmetic on floats.
 * Contributors::
 * References::
 * GNU Free Documentation License::
@@ -343,6 +342,7 @@ Delete all files not included in the distribution.
 
 @item
 @samp{uninstall}
+
 Delete all files copied by @samp{make install}.
 @end itemize
 
@@ -556,21 +556,21 @@ precision, then MPFR will still compute the result with full precision.
 @menu
 * Rounding Modes::
 * Exceptions::
-* Initializing Floats::
-* Assigning Floats::
-* Simultaneous Float Init & Assign::
-* Converting Floats::
-* Float Arithmetic::
-* Float Comparison::
+* Initialization Functions::
+* Assignment Functions::
+* Combined Initialization and Assignment Functions::
+* Conversion Functions::
+* Basic Arithmetic Functions::
+* Comparison Functions::
 * Special Functions::
-* I/O of Floats::
-* Miscellaneous Float Functions::
+* Input and Output Functions::
+* Miscellaneous Functions::
 * Internals::
 @end menu
 
 @node Rounding Modes, Exceptions, Floating-point Functions, Floating-point Functions
-@cindex Rounding modes
 @section Rounding Modes
+@cindex Rounding modes
 
 The following four rounding modes are supported:
 
@@ -635,9 +635,10 @@ corresponding to the rounding mode @var{rnd} or a null pointer if
 @var{rnd} is an invalid rounding mode.
 @end deftypefun
 
-@node Exceptions, Initializing Floats, Rounding Modes, Floating-point Functions
+@node Exceptions, Initialization Functions, Rounding Modes, Floating-point Functions
 @comment  node-name,  next,  previous,  up
 @section Exceptions
+@cindex Exceptions
 
 Note: Overflow handling is still experimental and currently implemented
 very partially. If an overflow occurs internally at the wrong place,
@@ -699,8 +700,9 @@ Return the corresponding (underflow, overflow, invalid, inexact) flag,
 which is non-zero iff the flag is set.
 @end deftypefun
 
-@node Initializing Floats, Assigning Floats, Exceptions, Floating-point Functions
+@node Initialization Functions, Assignment Functions, Exceptions, Floating-point Functions
 @comment  node-name,  next,  previous,  up
+@cindex Initialization functions
 @section Initialization Functions
 
 @deftypefun void mpfr_set_default_prec (mp_prec_t @var{prec})
@@ -794,13 +796,13 @@ be small enough so that the mantissa fits into the current allocated memory
 space for @var{x}. Otherwise the behavior is undefined.
 @end deftypefun
 
-@node Assigning Floats, Simultaneous Float Init & Assign, Initializing Floats, Floating-point Functions
+@node Assignment Functions, Combined Initialization and Assignment Functions, Initialization Functions, Floating-point Functions
 @comment  node-name,  next,  previous,  up
+@cindex Assignment functions
 @section Assignment Functions
-@cindex Float assignment functions
 
 These functions assign new values to already initialized floats
-(@pxref{Initializing Floats}).
+(@pxref{Initialization Functions}).
 
 @deftypefun int mpfr_set (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_ui (mpfr_t @var{rop}, unsigned long int @var{op}, mp_rnd_t @var{rnd})
@@ -854,10 +856,10 @@ precisions are exchanged too; in case the precisions are different,
 using a third auxiliary variable.
 @end deftypefun
 
-@node Simultaneous Float Init & Assign, Converting Floats, Assigning Floats, Floating-point Functions
+@node Combined Initialization and Assignment Functions, Conversion Functions, Assignment Functions, Floating-point Functions
 @comment  node-name,  next,  previous,  up
+@cindex Combined initialization and assignment functions
 @section Combined Initialization and Assignment Functions
-@cindex Initialization and assignment functions
 
 @deftypefn Macro int mpfr_init_set (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefnx Macro int mpfr_init_set_ui (mpfr_t @var{rop}, unsigned long int @var{op}, mp_rnd_t @var{rnd})
@@ -880,10 +882,10 @@ rounded in the direction @var{rnd}.
 See @code{mpfr_set_str}.
 @end deftypefun
 
-@node Converting Floats, Float Arithmetic, Simultaneous Float Init & Assign, Floating-point Functions
+@node Conversion Functions, Basic Arithmetic Functions, Combined Initialization and Assignment Functions, Floating-point Functions
 @comment  node-name,  next,  previous,  up
-@section Conversion Functions
 @cindex Conversion functions
+@section Conversion Functions
 
 @deftypefun double mpfr_get_d (mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx {long double} mpfr_get_ld (mpfr_t @var{op}, mp_rnd_t @var{rnd})
@@ -915,7 +917,7 @@ If @var{op} is NaN or Inf, or too big for the return type,
 the result is undefined.
 
 See also @code{mpfr_fits_slong_p} and @code{mpfr_fits_ulong_p}
-(@pxref{Miscellaneous Float Functions}).
+(@pxref{Miscellaneous Functions}).
 @end deftypefun
 
 @deftypefun mp_exp_t mpfr_get_z_exp (mpz_t @var{z}, mpfr_t @var{op})
@@ -972,9 +974,10 @@ case a null pointer is returned.
 @end deftypefun
 
 
-@node Float Arithmetic, Float Comparison, Converting Floats, Floating-point Functions
+@node Basic Arithmetic Functions, Comparison Functions, Conversion Functions, Floating-point Functions
 @comment  node-name,  next,  previous,  up
 @section Basic Arithmetic Functions
+@cindex Basic arithmetic functions
 @cindex Float arithmetic functions
 @cindex Arithmetic functions
 
@@ -1089,7 +1092,7 @@ when @var{rop} and @var{op1} are identical.
 (or @code{mpfr_div_2si}) instead.]
 @end deftypefun
 
-@node Float Comparison, Special Functions, Float Arithmetic, Floating-point Functions
+@node Comparison Functions, Special Functions, Basic Arithmetic Functions, Floating-point Functions
 @comment  node-name,  next,  previous,  up
 @section Comparison Functions
 @cindex Float comparisons functions
@@ -1188,7 +1191,7 @@ Return non-zero if @var{op1} or @var{op2} is a NaN (i.e.@: they cannot be
 compared), zero otherwise.
 @end deftypefun
 
-@node Special Functions, I/O of Floats, Float Comparison, Floating-point Functions
+@node Special Functions, Input and Output Functions, Comparison Functions, Floating-point Functions
 @section Special Functions
 @cindex Special functions
 
@@ -1301,7 +1304,7 @@ calculations if a lower or equal precision is requested. There is
 currently no way to free the cache.
 @end deftypefun
 
-@node I/O of Floats, Miscellaneous Float Functions, Special Functions, Floating-point Functions
+@node Input and Output Functions, Miscellaneous Functions, Special Functions, Floating-point Functions
 @comment  node-name,  next,  previous,  up
 @section Input and Output Functions
 @cindex Float input and output functions
@@ -1368,7 +1371,7 @@ they should always be zero.
 @c @code{mpfr_out_raw}, and put the result in @var{float}.
 @c @end deftypefun
 
-@node Miscellaneous Float Functions, Internals, I/O of Floats, Floating-point Functions
+@node Miscellaneous Functions, Internals, Input and Output Functions, Floating-point Functions
 @comment  node-name,  next,  previous,  up
 @section Miscellaneous Functions
 @cindex Miscellaneous float functions
@@ -1462,7 +1465,7 @@ Negative random numbers are generated when @var{size} is negative.
 @c releases.}
 @c @end deftypefun
 
-@node Internals,  , Miscellaneous Float Functions, Floating-point Functions
+@node Internals,  , Miscellaneous Functions, Floating-point Functions
 @section Internals
 @cindex Internals
 
