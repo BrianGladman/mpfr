@@ -209,9 +209,9 @@ typedef unsigned long int  mpfr_uexp_t;
 #undef MPFR_EMIN_MAX
 #undef MPFR_EMAX_MIN
 #undef MPFR_EMAX_MAX
-#define MPFR_EMIN_MIN (-MPFR_EXP_INVALID+1)
+#define MPFR_EMIN_MIN (1-MPFR_EXP_INVALID)
 #define MPFR_EMIN_MAX (MPFR_EXP_INVALID-1)
-#define MPFR_EMAX_MIN (-MPFR_EXP_INVALID+1)
+#define MPFR_EMAX_MIN (1-MPFR_EXP_INVALID)
 #define MPFR_EMAX_MAX (MPFR_EXP_INVALID-1)
 
 /* Use MPFR_GET_EXP and MPFR_SET_EXP instead of MPFR_EXP directly,
@@ -531,6 +531,15 @@ do { \
 #define MPFR_DECL_INIT_CACHE(_cache,_func) \
  mpfr_cache_t _cache = {{{{0,MPFR_SIGN_POS,0,(mp_limb_t*)0}},0,_func}}
 
+/* Ceil log 2: If GCC, uses a GCC extension */
+#if __MPFR_GNUC(2,95)
+# define MPFR_INT_CEIL_LOG2(x) \
+    ({int b; mp_limb_t limb = (x); MPFR_ASSERTD (limb == x); \
+      count_leading_zeros(b,limb); (BITS_PER_MP_LIMB - b); })
+#else
+# define MPFR_INT_CEIL_LOG2(x) (__gmpfr_int_ceil_log2(x))
+#endif
+
 #if defined (__cplusplus)
 extern "C" {
 #endif
@@ -566,11 +575,12 @@ int mpfr_can_round_raw _MPFR_PROTO ((mp_limb_t *, mp_size_t, int,
 double mpfr_get_d3 _MPFR_PROTO ((mpfr_srcptr, mp_exp_t, mp_rnd_t));
 int mpfr_cmp2 _MPFR_PROTO ((mpfr_srcptr, mpfr_srcptr, mp_prec_t *));
 
-long          __gmpfr_ceil_log2 _MPFR_PROTO ((double));
-long          __gmpfr_floor_log2 _MPFR_PROTO ((double));
-double        __gmpfr_ceil_exp2 _MPFR_PROTO ((double));
-unsigned long __gmpfr_isqrt _MPFR_PROTO ((unsigned long));
-unsigned long __gmpfr_cuberoot _MPFR_PROTO ((unsigned long));
+long          __gmpfr_ceil_log2     _MPFR_PROTO ((double));
+long          __gmpfr_floor_log2    _MPFR_PROTO ((double));
+double        __gmpfr_ceil_exp2     _MPFR_PROTO ((double));
+unsigned long __gmpfr_isqrt         _MPFR_PROTO ((unsigned long));
+unsigned long __gmpfr_cuberoot      _MPFR_PROTO ((unsigned long));
+int           __gmpfr_int_ceil_log2 _MPFR_PROTO ((unsigned long));
 
 int mpfr_exp_2 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_exp_3 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
