@@ -189,7 +189,13 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
       /* Principal loop: we compute, in z_pre,
 	 an approximation of Zeta(s), that we send to mpfr_can_round */
       mpfr_sub_ui (s1, s, 1, GMP_RNDN);
-      if (MPFR_GET_EXP (s1) <= -(d-3)/2) 
+      MPFR_ASSERTN (MPFR_IS_FP (s1));
+      if (MPFR_IS_ZERO (s1))
+        {
+          mpfr_set_inf (z, 1);
+          return;
+        }
+      else if (MPFR_GET_EXP (s1) <= -(d-3)/2)
 	/* Branch 1: when s-1 is very small, one
 	  uses the approximation Zeta(s)=1/(s-1)+gamma,
 	  where gamma is Euler's constant */
@@ -205,69 +211,69 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
 	  mpfr_const_euler (g, GMP_RNDN);
 	  mpfr_add (z_pre, z_pre, g, GMP_RNDN);
 	}
-    else /* Branch 2 */
-      {
+      else /* Branch 2 */
+        {
 #ifdef DEBUG	
-	printf ("branch 2\n");
+          printf ("branch 2\n");
 #endif
-	/* Computation of parameters n, p and working precision */
-	dnep = (double) d * log (2.0);
-	sd = mpfr_get_d (s, GMP_RNDN);
-	beta = dnep + 0.61 + sd * log (6.2832 / sd);
-	if (beta <= 0.0)
-	  {
-	    p = 0;
-	    n = 1 + (int) (exp ((dnep - log(2.0)) / sd));
-	  }
-	else
-	  {
-	    p = 1 + (int) beta / 2;
-	    n = 1 + (int) floor((sd + 2.0 * (double) p - 1.0) / 6.2832);
-	  }
+          /* Computation of parameters n, p and working precision */
+          dnep = (double) d * log (2.0);
+          sd = mpfr_get_d (s, GMP_RNDN);
+          beta = dnep + 0.61 + sd * log (6.2832 / sd);
+          if (beta <= 0.0)
+            {
+              p = 0;
+              n = 1 + (int) (exp ((dnep - log(2.0)) / sd));
+            }
+          else
+            {
+              p = 1 + (int) beta / 2;
+              n = 1 + (int) floor((sd + 2.0 * (double) p - 1.0) / 6.2832);
+            }
 #ifdef DEBUG
-	printf ("\nn=%d\np=%d\n",n,p);
+          printf ("\nn=%d\np=%d\n",n,p);
 #endif
-	add = 4 + (int) floor (1.5 * log ((double) d) / log(2.0));
-	if (add < 10)
-	  add = 10;
-	dint = d + add;
-	if (dint < precs)
-	  dint = precs;
+          add = 4 + (int) floor (1.5 * log ((double) d) / log(2.0));
+          if (add < 10)
+            add = 10;
+          dint = d + add;
+          if (dint < precs)
+            dint = precs;
 #ifdef DEBUG
-	printf("internal precision=%d\n",dint);
+          printf("internal precision=%d\n",dint);
 #endif
-	tc1 = (mpfr_t*) malloc ((p + 1) * sizeof(mpfr_t));
-	for (l=1; l<=p; l++)
-	  mpfr_init2 (tc1[l], dint);
-	mpfr_set_prec (a, dint);
-	mpfr_set_prec (b, dint);
-	mpfr_set_prec (c, dint);
-	mpfr_set_prec (z_pre, dint);
-	mpfr_set_prec (f, dint);
+          tc1 = (mpfr_t*) malloc ((p + 1) * sizeof(mpfr_t));
+          for (l=1; l<=p; l++)
+            mpfr_init2 (tc1[l], dint);
+          mpfr_set_prec (a, dint);
+          mpfr_set_prec (b, dint);
+          mpfr_set_prec (c, dint);
+          mpfr_set_prec (z_pre, dint);
+          mpfr_set_prec (f, dint);
 #ifdef DEBUG
-	printf ("precision of z =%d\n", precz);
+          printf ("precision of z =%d\n", precz);
 #endif
-	/* Computation of the coefficients c_k */
-	mpfr_zeta_c (p, tc1);
-	/* Computation of the 3 parts of the fonction Zeta. */
-	mpfr_zeta_part_a (a, s, n);
-	mpfr_zeta_part_b (b, s, n, p, tc1);
-	mpfr_sub_ui (s1, s, 1, GMP_RNDN);
-	mpfr_ui_div (c, 1, s1, GMP_RNDN);
-	mpfr_ui_pow (f, n, s1, GMP_RNDN);
-	mpfr_div (c, c, f, GMP_RNDN);
+          /* Computation of the coefficients c_k */
+          mpfr_zeta_c (p, tc1);
+          /* Computation of the 3 parts of the fonction Zeta. */
+          mpfr_zeta_part_a (a, s, n);
+          mpfr_zeta_part_b (b, s, n, p, tc1);
+          mpfr_sub_ui (s1, s, 1, GMP_RNDN);
+          mpfr_ui_div (c, 1, s1, GMP_RNDN);
+          mpfr_ui_pow (f, n, s1, GMP_RNDN);
+          mpfr_div (c, c, f, GMP_RNDN);
 #ifdef DEBUG
-	printf ("\npart c=");
-	mpfr_out_str (stdout, 10, 0, c, GMP_RNDN);
-	printf ("\n");
+          printf ("\npart c=");
+          mpfr_out_str (stdout, 10, 0, c, GMP_RNDN);
+          printf ("\n");
 #endif
-	mpfr_add (z_pre, a, c, GMP_RNDN);
-	mpfr_add (z_pre, z_pre, b, GMP_RNDN);
-	for (l=1; l<=p; l++)
-	  mpfr_clear (tc1[l]);
-	free(tc1);
-	/* End branch 2 */
-      }
+          mpfr_add (z_pre, a, c, GMP_RNDN);
+          mpfr_add (z_pre, z_pre, b, GMP_RNDN);
+          for (l=1; l<=p; l++)
+            mpfr_clear (tc1[l]);
+          free(tc1);
+          /* End branch 2 */
+        }
 #ifdef DEBUG
       printf ("\nZeta(s) before rounding=");
       mpfr_print_binary (z_pre);
