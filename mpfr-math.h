@@ -62,9 +62,10 @@ MA 02111-1307, USA. */
 #define MPFR_DBL_NAN ((double) NAN)
 #else
 #ifdef _MPFR_NAN_BYTES
-static union { unsigned char c[4]; float d; } __mpfr_nan
-= { _MPFR_NAN_BYTES };
-#define MPFR_DBL_NAN ((double) __mpfr_nan.d)
+/* Note: do not use an initialized union, because, though it is standard,
+   the HP compiler doesn't like that. */
+static unsigned char __mpfr_nan[4] = _MPFR_NAN_BYTES;
+#define MPFR_DBL_NAN ((double) *((float *) __mpfr_nan))
 #else
 #define MPFR_DBL_NAN (0./0.)
 #endif
@@ -75,12 +76,10 @@ static union { unsigned char c[4]; float d; } __mpfr_nan
 #define MPFR_DBL_INFM (-HUGE_VAL)
 #else
 #ifdef _MPFR_INFP_BYTES
-static union { unsigned char c[4]; float d; } __mpfr_infp
-= { _MPFR_INFP_BYTES };
-static union { unsigned char c[4]; float d; } __mpfr_infm
-= { _MPFR_INFM_BYTES };
-#define MPFR_DBL_INFP ((double) __mpfr_infp.d)
-#define MPFR_DBL_INFM ((double) __mpfr_infm.d)
+static unsigned char __mpfr_infp[4] = _MPFR_INFP_BYTES;
+static unsigned char __mpfr_infm[4] = _MPFR_INFM_BYTES;
+#define MPFR_DBL_INFP ((double) *((float *) __mpfr_infp))
+#define MPFR_DBL_INFM ((double) *((float *) __mpfr_infm))
 #else
 #define MPFR_DBL_INFP (1/0.)
 #define MPFR_DBL_INFM (-1/0.)
