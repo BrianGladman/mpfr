@@ -5,6 +5,10 @@
 #include "gmp.h"
 #include "mpfr.h"
 
+extern long int lrand48();
+extern int isnan();
+extern void srand48();
+
 double drand()
 {
   double d; long int *i;
@@ -189,14 +193,13 @@ void check_worst_cases()
   check2(428.315247165198229595, GMP_RNDU, 6.05985948325268353187); 
 }
 
-
-
-void main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
   int N=0;
 
+  check2(1.01979300812244555452, GMP_RNDN, 1.95996734891603664741e-02);
   if (argc==4) {   /* tlog x prec rnd */
     check3(atof(argv[1]), atoi(argv[2]), atoi(argv[3]));
-    return;
+    return 0;
   }
   if (argc==2) { /* tlog N: N tests with random double's */
     N=atoi(argv[1]);
@@ -249,5 +252,6 @@ void main(int argc, char *argv[]) {
   } 
   if (N!=0)
     check4(N);
+  return 0;
 } 
 
