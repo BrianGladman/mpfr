@@ -220,16 +220,17 @@ ck(ap, k-cn, 14);
 #endif
       if (overlap>=0) {
 	cn -= overlap/mp_bits_per_limb;
+	overlap %= mp_bits_per_limb;
 	/* warning: a shift of zero with mpn_lshift is not allowed */
 	if (overlap) {
 	  if (an<cn) {
 ck(ap, an, 15);
-	    mpn_lshift(ap, cp+(cn-an), an, overlap%mp_bits_per_limb);
+	    mpn_lshift(ap, cp+(cn-an), an, overlap);
 	    ap[0] += cp[cn-an-1]>>(mp_bits_per_limb-overlap);
 	  }
 	  else {
 ck(ap+(an-cn), cn, 15);
-	    mpn_lshift(ap+(an-cn), cp, cn, overlap%mp_bits_per_limb);
+	    mpn_lshift(ap+(an-cn), cp, cn, overlap);
 	  }
 	}
 	else { ck(ap+(an-cn), cn, 15); MPN_COPY(ap+(an-cn), cp, cn); }
