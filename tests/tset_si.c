@@ -156,7 +156,6 @@ main (int argc, char *argv[])
       fprintf (stderr, "mpfr_set_si (x, -31) fails\n");
       exit (1);
     }
-  if (
 
   mpfr_clear(x); 
 
