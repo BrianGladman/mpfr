@@ -127,3 +127,17 @@ List of the used macros for checking MPFR:
 + HAVE_SYS_TIME_H:	Define if the header sys/time.h is usuable.
 + HAVE_GETTIMEOFDAY:	Define if the function gettimeofday is present.
 + MPFR_HAVE_TESTS_x86:	Define if we are on x86.
+
+===========================================================================
+
+Don't write:
+  mp_limb_t l;
+  [...]
+  if (l) do_action ();
+But:
+  mp_limb_t l;
+  [...]
+  if (l != 0) do_action ();
+
+ since mp_limb_t may be "unsigned long long", and some buggy compiler
+produce illegal codes with the first form.

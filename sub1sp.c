@@ -380,7 +380,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	      else
 		bcp1 = 1;
 	    }
-	  DEBUG( printf("(D=P) Cp=-1 Cp+1=%lu C'p+1=%lu \n", bbcp, bcp1) );
+	  DEBUG( printf("(D=P) Cp=-1 Cp+1=%d C'p+1=%d \n", bbcp!=0, bcp1!=0) );
 	  bp = MPFR_MANT (b);
 
 	  /* Even if src and dest overlap, it is ok using MPN_COPY */
@@ -413,7 +413,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	{
 	  /* Cp=0, Cp+1=-1 if d==p+1, C'p+1=-1 */
           bcp = 0; bbcp = (d==p+1); bcp1 = 1;
-          DEBUG( printf("(D>P) Cp=%lu Cp+1=%lu C'p+1=%lu\n", bcp,bbcp,bcp1) );
+          DEBUG( printf("(D>P) Cp=%d Cp+1=%d C'p+1=%d\n", bcp!=0,bbcp!=0,bcp1!=0) );
 	  /* Need to compute C'p+2 if d==p+1 and if rnd_mode=NEAREST
 	     (Because of a very improbable case) */
 	  if (MPFR_UNLIKELY(d==p+1 && rnd_mode==GMP_RNDN))
@@ -429,7 +429,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 		}
 	      else
 		bbcp1 = 1;
-	      DEBUG( printf("(D>P) C'p+2=%lu\n", bbcp1) );
+	      DEBUG( printf("(D>P) C'p+2=%d\n", bbcp1!=0) );
 	    }
 	  /* Copy mantissa B in A */
 	  MPN_COPY(ap, MPFR_MANT(b), n);
@@ -539,7 +539,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	      bcp1 = (kx>=0);
 	    }
 	}
-      DEBUG( printf("sh=%lu Cp=%lu C'p+1=%lu\n", sh, bcp, bcp1) );
+      DEBUG( printf("sh=%lu Cp=%d C'p+1=%d\n", sh, bcp!=0, bcp1!=0) );
 
       /* Check if we can lose a bit, and if so compute Cp+1 and C'p+2 */
       bp = MPFR_MANT(b);
@@ -578,7 +578,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 		  DEBUG( printf("(Pre) Scan done for %ld\n", kx));
 		}
 	    } /*End of Bcp1 != 0*/
-	  DEBUG( printf("(Pre) Cp+1=%lu C'p+2=%lu\n", bbcp, bbcp1) );
+	  DEBUG( printf("(Pre) Cp+1=%d C'p+2=%d\n", bbcp!=0, bbcp1!=0) );
 	} /* End of "can lose a bit" */
 
       /* Clean shifted C' */
@@ -591,17 +591,17 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       DEBUG( mpfr_print_mant_binary("Sub=  ", ap, p) );
 
      /* Normalize: we lose at max one bit*/
-      if (MPFR_UNLIKELY(!MPFR_LIMB_MSB(ap[n-1])))
+      if (MPFR_UNLIKELY(MPFR_LIMB_MSB(ap[n-1]) == 0))
 	{
 	  /* High bit is not set and we have to fix it! */
 	  /* Ap >= 010000xxx001 */
 	  mpn_lshift(ap, ap, n, 1);
 	  /* Ap >= 100000xxx010 */
-	  if (MPFR_UNLIKELY(bcp)) /* Check if Cp = -1 */
+	  if (MPFR_UNLIKELY(bcp!=0)) /* Check if Cp = -1 */
 	    /* Since Cp == -1, we have to substract one more */
 	    {
 	      mpn_sub_1(ap, ap, n, MPFR_LIMB_ONE<<sh);
-	      MPFR_ASSERTD(MPFR_LIMB_MSB(ap[n-1]));
+	      MPFR_ASSERTD(MPFR_LIMB_MSB(ap[n-1]) != 0);
 	    }
 	  /* Ap >= 10000xxx001 */
 	  /* Final exponent -1 since we have shifted the mantissa */
@@ -639,7 +639,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   /* Result should be smaller than exact value: inexact=-1 */
   inexact = -1;
   /* Check normalisation */
-  if (MPFR_UNLIKELY(!MPFR_LIMB_MSB(ap[n-1])))
+  if (MPFR_UNLIKELY(MPFR_LIMB_MSB(ap[n-1]) == 0))
     {
       /* ap was a power of 2, and we lose a bit */
       /* Now it is 0111111111111111111[00000 */
@@ -650,7 +650,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       /* FIXME: Is this case possible? */
       if (MPFR_UNLIKELY(d == 1))
 	bbcp = 0;
-      DEBUG( printf("(SubOneUlp)Cp=%lu, Cp+1=%lu C'p+1=%lu\n", bcp,bbcp,bcp1));
+      DEBUG( printf("(SubOneUlp)Cp=%d, Cp+1=%d C'p+1=%d\n", bcp!=0,bbcp!=0,bcp1!=0));
       /* Compute the last bit (Since we have shifted the mantissa)
 	 we need one more bit!*/
       if ( (rnd_mode == GMP_RNDZ && bcp==0) 
@@ -700,8 +700,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	  /* FIXME: Is this case possible? */
 	  if (d == 1)
 	    bbcp=0;
-	  DEBUG( printf("(Truncate) Cp=%lu, Cp+1=%lu C'p+1=%lu C'p+2=%lu\n", \
-		 bcp, bbcp, bcp1, bbcp1) );
+	  DEBUG( printf("(Truncate) Cp=%d, Cp+1=%d C'p+1=%d C'p+2=%d\n", \
+		 bcp!=0, bbcp!=0, bcp1!=0, bbcp1!=0) );
 	  if (( ((rnd_mode == GMP_RNDN) || (rnd_mode != GMP_RNDZ)) && bcp) 
 	      ||
 	      ((rnd_mode == GMP_RNDN) && (bcp == 0) && (bbcp) && (bbcp1)))
