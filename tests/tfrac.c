@@ -133,8 +133,19 @@ special (void)
 {
   mpfr_t z, t;
 
-  mpfr_init2 (z, 6);
-  mpfr_init2 (t, 3);
+  mpfr_init (z);
+  mpfr_init (t);
+
+  mpfr_set_nan (z);
+  mpfr_frac (t, z, GMP_RNDN);
+  if (!mpfr_nan_p (t))
+    {
+      printf ("Error for frac(NaN)\n");
+      exit (1);
+    }
+
+  mpfr_set_prec (z, 6);
+  mpfr_set_prec (t, 3);
 
   mpfr_set_str_binary (z, "0.101101E3");
   mpfr_frac (t, z, GMP_RNDN);
