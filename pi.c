@@ -35,8 +35,9 @@ so Pi*16^N-S'(N) <= N+1 (as 1/4/N^2 < 1)
 #include "longlong.h"
 #include "mpfr.h"
 
-mpfr_t __mpfr_pi; /* stored value of Pi with rnd_mode=GMP_RNDZ */
+mpfr_t __mpfr_pi; /* stored value of Pi */
 int __mpfr_pi_prec=0; /* precision of stored value */
+char __mpfr_pi_rnd; /* rounding mode of stored value */
 
 void 
 #if __STDC__
@@ -52,13 +53,12 @@ mpfr_pi(x, rnd_mode)
   prec=PREC(x);
 
   /* has stored value enough precision ? */
-  if (prec <= __mpfr_pi_prec) {
-    if (rnd_mode==GMP_RNDZ || rnd_mode==GMP_RNDD ||
-	mpfr_can_round(__mpfr_pi, __mpfr_pi_prec, GMP_RNDZ, rnd_mode, prec))
-      {
-	mpfr_set(x, __mpfr_pi, rnd_mode); return; 
-      }
-  }
+  if ((prec==__mpfr_pi_prec && rnd_mode==__mpfr_pi_rnd) ||
+      (prec<=__mpfr_pi_prec &&
+      mpfr_can_round(__mpfr_pi, __mpfr_pi_prec, __mpfr_pi_rnd, rnd_mode, prec)))
+    {
+      mpfr_set(x, __mpfr_pi, rnd_mode); return; 
+    }
 
   /* need to recompute */
   N=1; 
@@ -104,6 +104,7 @@ mpfr_pi(x, rnd_mode)
   /* store computed value */
   if (__mpfr_pi_prec==0) mpfr_init2(__mpfr_pi, prec);
   else mpfr_set_prec(__mpfr_pi, prec);
-  mpfr_set(__mpfr_pi, x, GMP_RNDZ);
+  mpfr_set(__mpfr_pi, x, rnd_mode);
   __mpfr_pi_prec=prec;
+  __mpfr_pi_rnd=rnd_mode;
 }
