@@ -92,7 +92,14 @@ Efficiency:
 - idem for mpfr_atanh (2^(-1021) for example)
 - improve generic.c to work for number of terms <> 2^k
 - rewrite mpfr_greater_p...
-
+- combine tests for singular values [from Torbjorn Granlund]:
+    For example, mpfr_add could have this structure:
+    if (MPFR_SINGULAR (a))
+      ...
+    else if (MPFR_SINGULAR (b)
+      ...
+    else
+      plain operands
 - mpf_t uses a scheme where the number of limbs actually present can
   be less than the selected precision, thereby allowing low precision
   values (for instance small integers) to be stored and manipulated in
