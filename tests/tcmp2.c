@@ -36,15 +36,12 @@ void tcmp2(x, y, i) double x, y; int i;
 {
   mpfr_t xx,yy; int j;
 
-  if (i==-1) {
-    if (x==y) i=53;
-    else i = (int) floor(log(x)/log(2.0)) - (int) floor(log(x-y)/log(2.0));
-  }
+  if (i==-1) i = (int) floor(log(x)/log(2.0)) - (int) floor(log(x-y)/log(2.0));
   mpfr_init2(xx, 53); mpfr_init2(yy, 53);
   mpfr_set_d(xx, x, 0);
   mpfr_set_d(yy, y, 0);
   if ((j=mpfr_cmp2(xx, yy)) != i) {
-    printf("Error in mpfr_cmp2: x=%1.16e y=%1.16e mpfr_cmp2(x,y)=%d instead of %d\n",x,y,j,i); 
+    printf("Error in mpfr_cmp2: x=%1.20e y=%1.20e mpfr_cmp2(x,y)=%d instead of %d\n",x,y,j,i); 
     exit(1);
   }
   mpfr_clear(xx); mpfr_clear(yy);
@@ -71,7 +68,7 @@ int main()
     x = drand48();
     y = drand48();
     if (x<y) { z=x; x=y; y=z; }
-    tcmp2(x, y, -1);
+    if (y != 0.0 && y != -0.0) tcmp2(x, y, -1);
   }
   return 0;
 }
