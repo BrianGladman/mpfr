@@ -73,6 +73,14 @@ main (void)
     exit(1);
   }
 
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_ui_div (x, 1, x, GMP_RNDU);
+  if (mpfr_cmp_ui (x, 0) == 0)
+    {
+      fprintf (stderr, "Error in mpfr_cmp_ui (Inf, 0)\n");
+      exit (1);
+    }
+
   mpfr_clear(x); 
 
   return 0;
