@@ -27,16 +27,13 @@ MA 02111-1307, USA. */
 
 #define ONE ((mp_limb_t) 1)
 
-extern void mpfr_sub1 _PROTO((mpfr_ptr, mpfr_srcptr, mpfr_srcptr,
-                              mp_rnd_t, mp_exp_unsigned_t));
-void mpfr_add1 _PROTO((mpfr_ptr, mpfr_srcptr, mpfr_srcptr,
-                       mp_rnd_t, mp_exp_unsigned_t));
-
 /* signs of b and c are supposed equal,
    diff_exp is the difference between the exponents of b and c,
    which is supposed >= 0 */
 
-void
+/* returns an int, but ternary inexact value currently unsupported */
+
+int
 #if __STDC__
 mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c,
 	   mp_rnd_t rnd_mode, mp_exp_unsigned_t diff_exp)
@@ -132,8 +129,8 @@ mpfr_add1 (a, b, c, rnd_mode, diff_exp)
     } /* bq <= aq */
     else /* bq > aq */
     {
-      mp_limb_t inv, bb = 0, cc = 0;
-      int difs, r = 0;
+      mp_limb_t inv, bb, cc = 0;
+      int difs, r;
       mp_exp_t difw;  /* mp_exp_t may be larger than mp_size_t */
 
       /* MPFR_PREC(b)>MPFR_PREC(a) : we have to round b+c */
@@ -403,7 +400,7 @@ mpfr_add1 (a, b, c, rnd_mode, diff_exp)
 	  }
 	  if ((long)cout>0 || (cout==0 && cc)) goto add_one_ulp;
 	  else if ((long)cout<0)
-	    { TMP_FREE(marker); return; /* no carry possible any more */ }
+	    { TMP_FREE(marker); return 2; /* no carry possible any more */ }
 	  else if (kc==0) {
 	    while (k && cout==0) cout=bp[--k];
 	    if ((~cout) && (cout || (rnd_mode==GMP_RNDN && (*ap & (ONE<<sh)))))
@@ -516,10 +513,10 @@ mpfr_add1 (a, b, c, rnd_mode, diff_exp)
 
  end_of_add:
   TMP_FREE(marker);
-  return;
+  return 2;
 }
 
-void
+int
 #if __STDC__
 mpfr_add (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 #else
@@ -533,7 +530,7 @@ mpfr_add (a, b, c, rnd_mode)
   if (MPFR_IS_NAN(b) || MPFR_IS_NAN(c))
   {
     MPFR_SET_NAN(a);
-    return;
+    MPFR_RET_NAN;
   }
 
   MPFR_CLEAR_NAN(a);
@@ -544,17 +541,20 @@ mpfr_add (a, b, c, rnd_mode)
     {
       MPFR_SET_INF(a);
       MPFR_SET_SAME_SIGN(a, b);
+      MPFR_RET(0); /* exact */
     }
     else
+    {
       MPFR_SET_NAN(a);
-    return;
+      MPFR_RET_NAN;
+    }
   }
   else
     if (MPFR_IS_INF(c))
     {
       MPFR_SET_INF(a);
       MPFR_SET_SAME_SIGN(a, c);
-      return;
+      MPFR_RET(0); /* exact */
     }
 
   MPFR_ASSERTN(MPFR_IS_FP(b) && MPFR_IS_FP(c));
@@ -570,16 +570,14 @@ mpfr_add (a, b, c, rnd_mode)
         MPFR_CHANGE_SIGN(a);
       MPFR_CLEAR_INF(a);
       MPFR_SET_ZERO(a);
-      return;
+      MPFR_RET(0); /* 0 + 0 is exact */
     }
-    mpfr_set(a, c, rnd_mode);
-    return;
+    return mpfr_set(a, c, rnd_mode);
   }
 
   if (MPFR_IS_ZERO(c))
   {
-    mpfr_set(a, b, rnd_mode);
-    return;
+    return mpfr_set(a, b, rnd_mode);
   }
 
   MPFR_CLEAR_INF(a); /* clear Inf flag */
@@ -588,13 +586,13 @@ mpfr_add (a, b, c, rnd_mode)
   { /* signs differ, it's a subtraction */
     if (MPFR_EXP(b) < MPFR_EXP(c))
     {
-      mpfr_sub1(a, c, b, rnd_mode,
-                (mp_exp_unsigned_t) MPFR_EXP(c) - MPFR_EXP(b));
+      return mpfr_sub1(a, c, b, rnd_mode,
+                       (mp_exp_unsigned_t) MPFR_EXP(c) - MPFR_EXP(b));
     }
     else if (MPFR_EXP(b) > MPFR_EXP(c))
     {
-      mpfr_sub1(a, b, c, rnd_mode,
-                (mp_exp_unsigned_t) MPFR_EXP(b) - MPFR_EXP(c));
+      return mpfr_sub1(a, b, c, rnd_mode,
+                       (mp_exp_unsigned_t) MPFR_EXP(b) - MPFR_EXP(c));
     }
     else
     { /* MPFR_EXP(b) == MPFR_EXP(c) */
@@ -606,24 +604,25 @@ mpfr_add (a, b, c, rnd_mode)
         else
           MPFR_SET_POS(a);
         MPFR_SET_ZERO(a);
+        MPFR_RET(0);
       }
       else if (d > 0)
-        mpfr_sub1(a, b, c, rnd_mode, 0);
+        return mpfr_sub1(a, b, c, rnd_mode, 0);
       else
-        mpfr_sub1(a, c, b, rnd_mode, 0);
+        return mpfr_sub1(a, c, b, rnd_mode, 0);
     }
   }
   else
   { /* signs are equal, it's an addition */
     if (MPFR_EXP(b) < MPFR_EXP(c))
     {
-      mpfr_add1(a, c, b, rnd_mode,
-                (mp_exp_unsigned_t) MPFR_EXP(c) - MPFR_EXP(b));
+      return mpfr_add1(a, c, b, rnd_mode,
+                       (mp_exp_unsigned_t) MPFR_EXP(c) - MPFR_EXP(b));
     }
     else
     {
-      mpfr_add1(a, b, c, rnd_mode,
-                (mp_exp_unsigned_t) MPFR_EXP(b) - MPFR_EXP(c));
+      return mpfr_add1(a, b, c, rnd_mode,
+                       (mp_exp_unsigned_t) MPFR_EXP(b) - MPFR_EXP(c));
     }
   }
 }

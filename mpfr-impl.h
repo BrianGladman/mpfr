@@ -129,6 +129,10 @@ int mpfr_set_overflow _PROTO ((mpfr_ptr, mp_rnd_t, int));
 void mpfr_save_emin_emax _PROTO ((void));
 void mpfr_restore_emin_emax _PROTO ((void));
 
+int mpfr_add1 _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr,
+                       mp_rnd_t, mp_exp_unsigned_t));
+int mpfr_sub1 _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr,
+                       mp_rnd_t, mp_exp_unsigned_t));
 int mpfr_round_raw _PROTO ((mp_limb_t *, mp_limb_t *, mp_prec_t, int,
                             mp_prec_t, mp_rnd_t, int *));
 int mpfr_round_raw2 _PROTO((mp_limb_t *, mp_prec_t, int, mp_rnd_t, mp_prec_t));
