@@ -71,7 +71,7 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       {
         double xd;
 
-        if (mpfr_cmp_si_2exp (x, __mpfr_emax, 0) > 0)
+        if (mpfr_cmp_si_2exp (x, __gmpfr_emax, 0) > 0)
           return mpfr_set_overflow (y, rnd_mode, 1);
 
         xd = mpfr_get_d1 (x);
