@@ -1,5 +1,12 @@
 2002-04-15  Vincent Lefevre  <lefevre@greux.loria.fr>
 
+	* VERSION, mpfr.texi, README.dev:
+	Back to version 2.0.1, updated documentation.
+
+	* README.dev, VERSION: Post-release commit.
+
+	* ChangeLog: Update for mpfr 2.0.1.
+
 	* cmp_ui.c:
 	mpfr_cmp_ui_2exp and mpfr_cmp_si_2exp can no longer be called with a NaN.
 	Misc bugs fixed.
