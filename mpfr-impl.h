@@ -25,12 +25,16 @@ MA 02111-1307, USA. */
    including denormalized numbers, NaN, infinities, ... */
 double drand()
 {
-  double d; int *i;
+  double d; int *i, expo;
 
   i = (int*) &d;
+  d = 1.0;
+  if (i[0]==0) expo=1; /* little endian, exponent in i[1] */
+  else expo=0;
   i[0] = lrand48();
   i[1] = lrand48();
-  if (lrand48()%2) d=-d; /* generates negative numbers */
+  while (i[expo]>=2146435072) i[expo] = lrand48(); /* avoids NaNs */
+  if (lrand48()%2 && !isnan(d)) d=-d; /* generates negative numbers */
   return d;
 }
 
