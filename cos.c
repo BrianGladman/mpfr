@@ -33,8 +33,8 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mp_limb_t *rp, *sp;
   mp_size_t sm;
   mp_exp_t exps, cancel = 0;
-  TMP_DECL (marker);
   MPFR_SAVE_EXPO_DECL (expo);
+  TMP_DECL (marker);
 
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(x)))
     {
