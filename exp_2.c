@@ -92,12 +92,10 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   TMP_DECL(marker);
 
   precy = MPFR_PREC(y);
-  
-  MPFR_TRACE ( printf("Py=%d Px=%d", MPFR_PREC(y), MPFR_PREC(x)) );
-  MPFR_TRACE ( MPFR_DUMP (x) );
 
   n = (long) (mpfr_get_d1 (x) / LOG2);
-
+  MPFR_LOG_MSG (("d(x)=%1.30e n=%ld\n", mpfr_get_d1(x), n));
+ 
   /* error bounds the cancelled bits in x - n*log(2) */
   if (MPFR_UNLIKELY (n == 0))
     error_r = 0;
@@ -127,7 +125,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_ZIV_INIT (loop, q);
   for (;;)
     {
-      MPFR_TRACE ( printf("n=%d K=%d l=%d q=%d\n",n,K,l,q) );
+      MPFR_LOG_MSG (("n=%d K=%d l=%d q=%d\n",n,K,l,q) );
       
       /* if n<0, we have to get an upper bound of log(2)
 	 in order to get an upper bound of r = x-n*log(2) */
@@ -140,8 +138,8 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	MPFR_CHANGE_SIGN (r);
       /* r = floor(n*log(2)), within 3 ulps */
       
-      MPFR_TRACE ( MPFR_DUMP (x) );
-      MPFR_TRACE ( MPFR_DUMP (r) );
+      MPFR_LOG_VAR (x);
+      MPFR_LOG_VAR (r);
       
       mpfr_sub (r, x, r, GMP_RNDU);
       /* possible cancellation here: the error on r is at most
@@ -152,7 +150,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	  mpfr_add (r, r, s, GMP_RNDU);
 	}
       mpfr_prec_round (r, q, GMP_RNDU);
-      MPFR_TRACE ( MPFR_DUMP (r) );
+      MPFR_LOG_VAR (r);
       MPFR_ASSERTD (MPFR_IS_POS (r));
       mpfr_div_2ui (r, r, K, GMP_RNDU); /* r = (x-n*log(2))/2^K, exact */
       
@@ -160,11 +158,11 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       MY_INIT_MPZ(ss, 3 + 2*((q-1)/BITS_PER_MP_LIMB));
       exps = mpfr_get_z_exp (ss, s);
       /* s <- 1 + r/1! + r^2/2! + ... + r^l/l! */
-      l = (precy < MPFR_EXP_2_THRESHOLD) ? 
-	mpfr_exp2_aux (ss, r, q, &exps)      /* naive method */
-	: mpfr_exp2_aux2 (ss, r, q, &exps);  /* Brent/Kung method */
+      l = (precy < MPFR_EXP_2_THRESHOLD) 
+	? mpfr_exp2_aux (ss, r, q, &exps)      /* naive method */
+	: mpfr_exp2_aux2 (ss, r, q, &exps);    /* Brent/Kung method */
       
-      MPFR_TRACE(printf("l=%d q=%d (K+l)*q^2=%1.3e\n", l, q, (K+l)*(double)q*q));
+      MPFR_LOG_MSG (("l=%d q=%d (K+l)*q^2=%1.3e\n", l, q, (K+l)*(double)q*q));
       
       for (k = 0; k < K; k++)
 	{
@@ -182,15 +180,13 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       /* error is at most 2^K*l */
       K += MPFR_INT_CEIL_LOG2 (l);
 
-      MPFR_TRACE ( printf("after mult. by 2^n:\n") );
-      MPFR_TRACE ( MPFR_DUMP (s) );
-      MPFR_TRACE ( printf("err=%d bits\n", K) );
+      MPFR_LOG_MSG (("after mult. by 2^n:\n", 0));
+      MPFR_LOG_VAR (s);
+      MPFR_LOG_MSG (("err=%d bits\n", K));
       
       if (mpfr_can_round (s, q - K, GMP_RNDN, GMP_RNDZ,
 			  precy + (rnd_mode == GMP_RNDN)) )
 	break;
-      MPFR_TRACE (printf("prec++, use %d\n", q+BITS_PER_MP_LIMB) );
-      MPFR_TRACE (printf("q=%d q-K=%d precy=%d\n",q,q-K,precy) );
       MPFR_ZIV_NEXT (loop, q);
       mpfr_set_prec (r, q);
       mpfr_set_prec (s, q);
