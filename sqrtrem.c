@@ -1,7 +1,7 @@
 /* mpn_sqrtrem_new -- integer square root with remainder
    (should be directly integrated in a future release of GNU MP)
 
-Copyright (C) 2000 Free Software Foundation.
+Copyright (C) 1999, 2000 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -48,7 +48,8 @@ static const unsigned char approx_tab[192] = {
    251, 251, 252, 252, 253, 253, 254, 254, 255};
 
 /* same as mpn_sqrtrem, but for size=1 and {np, 1} normalized */
-mp_size_t mpn_sqrtrem1 (mp_ptr sp, mp_ptr rp, mp_srcptr np)
+mp_size_t
+mpn_sqrtrem1 (mp_ptr sp, mp_ptr rp, mp_srcptr np)
 {
   mp_limb_t np0, s, r, q, u;
   int prec;
@@ -95,7 +96,8 @@ mp_size_t mpn_sqrtrem1 (mp_ptr sp, mp_ptr rp, mp_srcptr np)
 
 /* same as mpn_sqrtrem, but for size=2 and {np, 2} normalized
    return cc such that {np, 2} = sp[0]^2 + cc*2^BITS+PER_MP_LIMB + rp[0] */
-mp_limb_t mpn_sqrtrem2 (mp_ptr sp, mp_ptr rp, mp_srcptr np)
+mp_limb_t
+mpn_sqrtrem2 (mp_ptr sp, mp_ptr rp, mp_srcptr np)
 {
   mp_limb_t qhl, q, u, np0;
   int cc;
@@ -134,7 +136,8 @@ mp_limb_t mpn_sqrtrem2 (mp_ptr sp, mp_ptr rp, mp_srcptr np)
    Assumes {np, 2n} is normalized, i.e. np[2n-1] >= B/4
    where B=2^BITS_PER_MP_LIMB.
 */
-mp_limb_t mpn_dq_sqrtrem (mp_ptr sp, mp_ptr np, mp_size_t n)
+mp_limb_t
+mpn_dq_sqrtrem (mp_ptr sp, mp_ptr np, mp_size_t n)
 {
   mp_limb_t q; /* carry out of {sp, n} */
   int c, b; /* carry out of remainder */
@@ -152,7 +155,7 @@ mp_limb_t mpn_dq_sqrtrem (mp_ptr sp, mp_ptr np, mp_size_t n)
   sp[l-1] |= q << (BITS_PER_MP_LIMB - 1);
   q >>= 1;
   if (c) c = mpn_add_n (np + l, np + l, sp + l, h);
-  mpn_mul_n (np + n, sp, sp, l);
+  mpn_sqr_n (np + n, sp, l);
   b = q + mpn_sub_n (np, np, np + n, 2 * l);
   c -= (l == h) ? b : mpn_sub_1 (np + 2 * l, np + 2 * l, 1, b);
   q = mpn_add_1 (sp + l, sp + l, h, q);
@@ -167,23 +170,22 @@ mp_limb_t mpn_dq_sqrtrem (mp_ptr sp, mp_ptr np, mp_size_t n)
 }
 
 /* main function */
-mp_size_t mpn_sqrtrem_new (mp_ptr sp, mp_ptr rp, mp_srcptr np, mp_size_t nn)
+mp_size_t
+mpn_sqrtrem_new (mp_ptr sp, mp_ptr rp, mp_srcptr np, mp_size_t nn)
 {
-  mp_limb_t *tp, s0[1], cc;
-  int c, tn;
-  mp_size_t rn;
+  mp_limb_t *tp, s0[1], cc, high, rl;
+  int c;
+  mp_size_t rn, tn;
   TMP_DECL (marker);
 
-#ifdef DEBUG
-  if (np[nn-1] == 0) {
-    fprintf (stderr, "Error in mpn_sqrtrem: most significant limb is zero\n");
-    exit(1);
-  }
-#endif
+  /* If OP is zero, both results are zero.  */
+  if (nn == 0)
+    return 0;
 
-  count_leading_zeros(c, np[nn-1]);
-
-  if (nn == 1 && c == 0) return mpn_sqrtrem1 (sp, rp, np);
+  high = np[nn-1];
+  if (nn == 1 && (high & MP_LIMB_T_HIGHBIT))
+    return mpn_sqrtrem1 (sp, rp, np);
+  count_leading_zeros(c, high);
 
   c = c / 2; /* we have to shift left by 2c bits to normalize {np, nn} */
   tn = (nn+1) / 2; /* 2*tn is the smallest even integer >= nn */
@@ -194,21 +196,20 @@ mp_size_t mpn_sqrtrem_new (mp_ptr sp, mp_ptr rp, mp_srcptr np, mp_size_t nn)
     tp[0] = 0; /* needed only when 2*tn > nn, but saves a test */
     if (c) mpn_lshift(tp + 2*tn - nn, np, nn, 2 * c);
     else MPN_COPY (tp + 2*tn - nn, np, nn);
-    rn = mpn_dq_sqrtrem (sp, tp, tn);
+    rl = mpn_dq_sqrtrem (sp, tp, tn);
     /* we have 2^(2k)*N = S^2 + R where k = c + (2tn-nn)*BITS_PER_MP_LIMB/2,
        thus 2^(2k)*N = (S-s0)^2 + 2*S*s0 - s0^2 + R where s0=S mod 2^k */
     c += (nn % 2) * BITS_PER_MP_LIMB / 2; /* c now represents k */
     s0[0] = sp[0] & (((mp_limb_t) 1 << c) - 1); /* S mod 2^k */
-    rn += mpn_addmul_1 (tp, sp, tn, 2 * s0[0]); /* R = R + 2*s0*S */
+    rl += mpn_addmul_1 (tp, sp, tn, 2 * s0[0]); /* R = R + 2*s0*S */
     cc = mpn_submul_1 (tp, s0, 1, s0[0]);
-    rn -= (tn > 1) ? mpn_sub_1(tp + 1, tp + 1, tn - 1, cc) : cc;
+    rl -= (tn > 1) ? mpn_sub_1(tp + 1, tp + 1, tn - 1, cc) : cc;
     mpn_rshift (sp, sp, tn, c);
-    tp[tn] = rn;
+    tp[tn] = rl;
     if (rp == NULL) rp = tp;
     c = c << 1;
     if (c < BITS_PER_MP_LIMB) tn++; else { tp++; c -= BITS_PER_MP_LIMB; }
-    if (c) mpn_rshift (rp, tp, tn, c);
-    else MPN_COPY(rp, tp, tn);
+    if (c) mpn_rshift (rp, tp, tn, c); else MPN_COPY(rp, tp, tn);
     rn = tn;
   }
   else {
@@ -217,9 +218,10 @@ mp_size_t mpn_sqrtrem_new (mp_ptr sp, mp_ptr rp, mp_srcptr np, mp_size_t nn)
     if (rp != np) MPN_COPY (rp, np, nn);
     rn = tn + (rp[tn] = mpn_dq_sqrtrem (sp, rp, tn));
   }
-  while (rn && rp[rn-1]==0) rn--;
-  TMP_FREE (marker);
+  
+  MPN_NORMALIZE (rp, rn);
 
+  TMP_FREE (marker);
   return rn;
 }
 
