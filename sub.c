@@ -95,7 +95,9 @@ mpfr_sub1 (a, b, c, rnd_mode, diff_exp)
   cp = MPFR_MANT(c);
   bn = (MPFR_PREC(b) - 1) / BITS_PER_MP_LIMB + 1; /* significant limbs of b */
   cn = (MPFR_PREC(c) - 1) / BITS_PER_MP_LIMB + 1;
+
   c_is_not_zero = MPFR_NOTZERO(c); /* precompute it in case a = c */
+
   if (ap == bp)
     {
       bp = (mp_ptr) TMP_ALLOC(bn * BYTES_PER_MP_LIMB);
@@ -108,18 +110,23 @@ mpfr_sub1 (a, b, c, rnd_mode, diff_exp)
       cp = (mp_ptr) TMP_ALLOC (cn * BYTES_PER_MP_LIMB);
       MPN_COPY(cp, ap, cn);
     }
+
   an = (MPFR_PREC(a)-1)/BITS_PER_MP_LIMB+1; /* number of significant limbs of a */
   sh = an*BITS_PER_MP_LIMB-MPFR_PREC(a); /* non-significant bits in low limb */
   MPFR_EXP(a) = MPFR_EXP(b)-cancel;
+
   /* adjust sign to that of b */
   if (MPFR_SIGN(a)*MPFR_SIGN(b)<0) MPFR_CHANGE_SIGN(a);
+
   /* case 1: diff_exp>=prec(a), i.e. c only affects the last bit
      through rounding */
   dif = MPFR_PREC(a) - diff_exp;
+
 #ifdef DEBUG
   printf("MPFR_PREC(a)=%d an=%u MPFR_PREC(b)=%d bn=%u MPFR_PREC(c)=%d diff_exp=%u dif=%d cancel=%d\n",
 	 MPFR_PREC(a),an,MPFR_PREC(b),bn,MPFR_PREC(c),diff_exp,dif,cancel);
 #endif
+
   if (dif<=0) { /* diff_exp>=MPFR_PREC(a): c does not overlap with a */
     /* either MPFR_PREC(b)<=MPFR_PREC(a), and we can copy the mantissa of b directly 
        into that of a, or MPFR_PREC(b)>MPFR_PREC(a) and we have to round b-c */
@@ -295,6 +302,7 @@ mpfr_sub1 (a, b, c, rnd_mode, diff_exp)
   else { /* case 2: diff_exp < MPFR_PREC(a) : c overlaps with a by dif bits */
     /* first copy upper part of c into a (after shift) */
     int overlap;
+
     dif += cancel;
     k = (dif-1)/BITS_PER_MP_LIMB + 1; /* only the highest k limbs from c
 					 have to be considered */
@@ -378,8 +386,13 @@ mpfr_sub1 (a, b, c, rnd_mode, diff_exp)
       /* warning: mpn_sub_1 doesn't accept a zero length */
       if (i < an) mpn_sub_1(ap+i, ap+i, an-i, ONE-cc);
     }
-    else /* MPFR_PREC(b) > MPFR_PREC(a): we have to truncate b */
-      mpn_sub_lshift_n(ap, bp+(bn-an-cancel1), an, cancel2, an);
+    else /* MPFR_PREC(b) > MPFR_PREC(a): we have to truncate b */ 
+      {
+	mpn_sub_lshift_n(ap, bp+(bn-an-cancel1), an, cancel2, an);
+	if (cancel2) 
+	  mpn_add_1(ap, ap, an, 
+		    bp[bn-an-cancel1-1] >> (BITS_PER_MP_LIMB - cancel2)); 
+      }
     /* remains to do the rounding */
 #ifdef DEBUG
       printf("2:a="); mpfr_print_raw(a); putchar('\n');
