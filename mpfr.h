@@ -118,6 +118,10 @@ typedef __gmp_const __mpfr_struct *mpfr_srcptr;
        ((x)->_mp_d, (MPFR_PREC(x)-1)>>3, (q+7)>>3); \
     MPFR_PREC(x) = q; }
 
+#if defined (__cplusplus)
+extern "C" {
+#endif  
+
 void mpfr_init2 _PROTO ((mpfr_ptr, mp_prec_t));
 void mpfr_init _PROTO ((mpfr_ptr));
 int mpfr_round_raw _PROTO ((mp_limb_t *, mp_limb_t *, mp_prec_t, int,
@@ -198,6 +202,10 @@ void mpfr_floor _PROTO((mpfr_ptr, mpfr_srcptr));
 void mpfr_trunc _PROTO((mpfr_ptr, mpfr_srcptr));
 void mpfr_ceil _PROTO((mpfr_ptr, mpfr_srcptr));
 
+#if defined (__cplusplus)
+}
+#endif  
+
 #define mpfr_cmp_ui(b,i) mpfr_cmp_ui_2exp(b,i,0)
 #define mpfr_cmp_si(b,i) mpfr_cmp_si_2exp(b,i,0)
 #define mpfr_set(a,b,r) mpfr_set4(a,b,r,MPFR_SIGN(b))
@@ -208,15 +216,6 @@ void mpfr_ceil _PROTO((mpfr_ptr, mpfr_srcptr));
 #define MPFR_LIMBS_PER_DOUBLE 2
 #elif (BITS_PER_MP_LIMB==64)
 #define MPFR_LIMBS_PER_DOUBLE 1
-#endif
-
-/* gmp-2.0.2 had only one threshold for both multiplication and squaring */
-#ifndef KARATSUBA_MUL_THRESHOLD 
-#ifdef KARATSUBA_THRESHOLD
-#define KARATSUBA_MUL_THRESHOLD KARATSUBA_THRESHOLD
-#else
-#define KARATSUBA_MUL_THRESHOLD 16
-#endif
 #endif
 
 #define mpfr_init_set_si(x, i, rnd) \
