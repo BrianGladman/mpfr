@@ -385,6 +385,9 @@ is @code{mpfr_t}.
 A floating-point number can have three special values: Not-a-Number (NaN)
 or plus or minus Infinity. NaN represents a value which cannot be represented
 in the floating-point format, like 0 divided by 0, or Infinity minus Infinity.
+Moreover, like in the IEEE 754 standard, zero is signed, i.e. there is a +0
+and a -0; the behavior is the same as in the IEEE 754 standard and it is
+generalized to the other functions supported by MPFR.
 
 
 @cindex Precision
