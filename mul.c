@@ -21,8 +21,8 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include "gmp.h"
-#include "gmp-impl.h"
 #include "mpfr.h"
+#include "gmp-impl.h"
 
 /* Remains to do:
 - do not use all bits of b and c when MPFR_PREC(b)>MPFR_PREC(a) or MPFR_PREC(c)>MPFR_PREC(a)

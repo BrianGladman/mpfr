@@ -20,8 +20,8 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
 #include "gmp.h"
-#include "gmp-impl.h"
 #include "mpfr.h"
+#include "gmp-impl.h"
 
 mp_rnd_t __gmp_default_rounding_mode = 0;
 

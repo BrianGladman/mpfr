@@ -22,8 +22,8 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <math.h>
 #include "gmp.h"
-#include "gmp-impl.h"
 #include "mpfr.h"
+#include "gmp-impl.h"
 
 /*Memory gestion */
 #define MON_INIT(xp, x, p, s) xp = (mp_ptr) TMP_ALLOC(s*BYTES_PER_MP_LIMB);    x -> _mp_prec = p; x -> _mp_d = xp; x -> _mp_size = s; x -> _mp_exp = 0; 

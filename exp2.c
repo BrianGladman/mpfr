@@ -23,8 +23,8 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <math.h>
 #include "gmp.h"
-#include "gmp-impl.h"
 #include "mpfr.h"
+#include "gmp-impl.h"
 
 int mpfr_exp2_aux  (mpz_t, mpfr_srcptr, int, int*);
 int mpfr_exp2_aux2 (mpz_t, mpfr_srcptr, int, int*);

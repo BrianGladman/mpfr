@@ -21,8 +21,8 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include "gmp.h"
-#include "gmp-impl.h"
 #include "mpfr.h"
+#include "gmp-impl.h"
 
 /* reldiff(b, c) = abs(b-c)/b */
 void 

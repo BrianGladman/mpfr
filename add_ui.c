@@ -21,9 +21,9 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include "gmp.h"
-#include "gmp-impl.h"
 #include "longlong.h"
 #include "mpfr.h"
+#include "gmp-impl.h"
 
 #define MON_INIT(xp, x, p, s) MPFR_PREC(x)=p; MPFR_MANT(x)=xp; MPFR_SIZE(x)=s;
 
