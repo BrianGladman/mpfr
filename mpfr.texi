@@ -1359,19 +1359,39 @@ You need to include @code{mpfr-impl.h} to use them.
 
 The @code{mpfr_t} type consists of four fields.
 The @code{_mpfr_prec} field is used to store the precision of
-the variable.
+the variable (in bits); this is not less than 2.
+
 The @code{_mpfr_size} field is used to store the number of
 allocated limbs, with the high bits reserved to store
 the sign (bit 31), the NaN flag (bit 30),
 and the Infinity flag (bit 29);
 thus bits 0 to 28 remain for the number of allocated limbs, with a maximal
 value of 536870911.
-The @code{_mpfr_exp} field stores the exponent,
-and the @code{_mpfr_d} is a pointer to the limbs, least
+A NaN is indicated by the NaN flag set, and no other fields are
+relevant.
+An Infinity is indicated by the NaN flag clear and the Inf flag set;
+the sign bit of an Infinity indicates the sign, the limb data is not relevant.
+
+The @code{_mpfr_exp} field stores the exponent.
+An exponent of 0 means a radix point just above the most significant
+limb.  Non-zero values are a multiplier @math{2^n} relative to that
+point.
+
+Finally, the @code{_mpfr_d} is a pointer to the limbs, least
 significant limbs stored first.
 The number zero is represented with its most significant limb set to zero,
 i.e. @code{_mpfr_d[n-1]} where 
 n=ceil(@code{_mpfr_prec}/@code{BITS_PER_MP_LIMB}).
+The number of limbs in use is controlled by @code{_mpfr_prec}, namely
+ceil(@code{_mpfr_prec}/@code{BITS_PER_MP_LIMB}).
+Zero is represented by the most significant limb being zero, other
+limb data is not relevant in this case.
+Non-zero values always have the most significant bit of the most
+significant limb set to 1.  When the precision is not a whole number
+of limbs, the excess bits at the low end of the data are zero.
+When the precision has been lowered by @code{mpfr_set_prec}, the space
+allocated at @code{_mpfr_d} remains as given by @code{_mpfr_size}, but
+@code{_mpfr_prec} indicates how much of that space is actually used.
 
 @deftypefun int mpfr_add_one_ulp (mpfr_t @var{x}, mp_rnd_t @var{rnd})
 Add one unit in last place (ulp) to @var{x} if @var{x} is finite
