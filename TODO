@@ -46,8 +46,7 @@ Changes in existing functions:
 	 mpfr_strtofr -> without final '\0', returns the number of characters
 	 read (or name mpfr_strtod suggested by Kevin, see below)]
 
-Suggestion from Kevin:
-- Function: char * mpf_strto (mpz_t ROP, const char *STR)
+- [suggestion from Kevin:] char * mpf_strto (mpz_t ROP, const char *STR)
      Read a floating point number from a string.  If successful the
      result is stored in ROP and the return value points to the
      character after those parsed.  If STR doesn't start with a valid
@@ -183,6 +182,11 @@ Portability:
 
 - mpfr_get_d3 assumes a double is IEEE format.
 
+- [Kevin about texp.c long strings]
+  For strings longer than c99 guarantees, it might be cleaner to
+  introduce a "tests_strdupcat" or something to concatenate literal
+  strings into newly allocated memory.  I thought I'd done that in a
+  couple of places already.  Arrays of chars are not much fun.
 
 Possible future MPF / MPFR integration:
 
