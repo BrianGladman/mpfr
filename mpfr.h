@@ -112,8 +112,8 @@ void mpfr_log2 _PROTO ((mpfr_ptr, unsigned char));
 void mpfr_mul_ui _PROTO((mpfr_ptr, mpfr_srcptr, unsigned long, unsigned char));
 void mpfr_set_machine_rnd_mode _PROTO ((unsigned char));
 int mpfr_cmp _PROTO ((mpfr_srcptr, mpfr_srcptr));
-int mpfr_cmp_ui _PROTO ((mpfr_srcptr, unsigned long int));
-int mpfr_cmp_si _PROTO ((mpfr_srcptr, long int));
+int mpfr_cmp_ui_2exp _PROTO ((mpfr_srcptr, unsigned long int, int));
+int mpfr_cmp_si_2exp _PROTO ((mpfr_srcptr, long int, int));
 int mpfr_cmp2 _PROTO ((mpfr_srcptr, mpfr_srcptr));
 void mpfr_mul_2exp _PROTO((mpfr_ptr, mpfr_srcptr, unsigned long int,unsigned char));
 void mpfr_div_2exp _PROTO((mpfr_ptr, mpfr_srcptr, unsigned long int,unsigned char));
@@ -122,6 +122,8 @@ extern mp_size_t __gmp_default_fp_bit_precision;
 extern char __gmp_default_rounding_mode;
 
 #define mpfr_init(x) mpfr_init2(x, __gmp_default_fp_bit_precision)
+#define mpfr_cmp_ui(b,i) mpfr_cmp_ui_2exp(b,i,0)
+#define mpfr_cmp_si(b,i) mpfr_cmp_si_2exp(b,i,0)
 
 #if (BITS_PER_MP_LIMB==32)
 #define LOG_MP_BITS_PER_LIMB 5
