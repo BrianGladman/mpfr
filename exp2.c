@@ -319,6 +319,8 @@ mpfr_exp2_aux2(s, r, q, exps)
   /* estimate value of l */
   l = q / (-MPFR_EXP(r));
   m = (int) sqrt((double) l);
+  /* we access R[2], thus we need m >= 2 */
+  if (m < 2) m = 2;
   TMP_MARK(marker);
   R = (mpz_t*) TMP_ALLOC((m+1)*sizeof(mpz_t)); /* R[i] stands for r^i */
   expR = (int*) TMP_ALLOC((m+1)*sizeof(int)); /* exponent for R[i] */
