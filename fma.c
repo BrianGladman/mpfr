@@ -88,7 +88,25 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
   MPFR_CLEAR_INF(s);
 
   if (MPFR_IS_ZERO(x) || MPFR_IS_ZERO(y))
-    return mpfr_set (s, z, rnd_mode);
+    {
+      if (MPFR_IS_ZERO(z))
+        {
+          int sign_p, sign_z;
+          sign_p = MPFR_SIGN(x) * MPFR_SIGN(y);
+          sign_z = MPFR_SIGN(z);
+          if (MPFR_SIGN(s) !=
+              (rnd_mode != GMP_RNDD ?
+               ((sign_p < 0 && sign_z < 0) ? -1 : 1) :
+               ((sign_p > 0 && sign_z > 0) ? 1 : -1)))
+            {
+              MPFR_CHANGE_SIGN(s);
+            }
+          MPFR_SET_ZERO(s);
+          MPFR_RET(0);
+        }
+      else
+        return mpfr_set (s, z, rnd_mode);
+    }
 
   if (MPFR_IS_ZERO(z))
     return mpfr_mul (s, x, y, rnd_mode);
