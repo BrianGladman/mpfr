@@ -182,31 +182,66 @@ main (int argc, char *argv[])
       (*__gmp_free_func) (str, strlen (str) + 1);
     }
 
-  if (mpfr_set_str (x, "@NaN@garbage", 10, GMP_RNDN) != 0 || !mpfr_nan_p(x))
+  for (i = 2; i <= 36; i++)
     {
-      fprintf (stderr, "mpfr_set_str failed on NaN\n");
-      exit (1);
-    }
+      if (mpfr_set_str (x, "@NaN@garbage", i, GMP_RNDN) != 0 ||
+          !mpfr_nan_p(x))
+        {
+          fprintf (stderr, "mpfr_set_str failed on @NaN@garbage\n");
+          exit (1);
+        }
 
-  if (mpfr_set_str (x, "@Inf@garbage", 10, GMP_RNDN) != 0 || !mpfr_inf_p(x) ||
-      MPFR_SIGN(x) < 0)
-    {
-      fprintf (stderr, "mpfr_set_str failed on Inf\n");
-      exit (1);
-    }
+      if (mpfr_set_str (x, "@Inf@garbage", i, GMP_RNDN) != 0 ||
+          !mpfr_inf_p(x) || MPFR_SIGN(x) < 0)
+        {
+          fprintf (stderr, "mpfr_set_str failed on @Inf@garbage\n");
+          exit (1);
+        }
 
-  if (mpfr_set_str (x, "-@Inf@garbage", 10, GMP_RNDN) != 0 || !mpfr_inf_p(x) ||
-      MPFR_SIGN(x) > 0)
-    {
-      fprintf (stderr, "mpfr_set_str failed on -Inf\n");
-      exit (1);
-    }
+      if (mpfr_set_str (x, "-@Inf@garbage", i, GMP_RNDN) != 0 ||
+          !mpfr_inf_p(x) || MPFR_SIGN(x) > 0)
+        {
+          fprintf (stderr, "mpfr_set_str failed on -@Inf@garbage\n");
+          exit (1);
+        }
 
-  if (mpfr_set_str (x, "+@Inf@garbage", 10, GMP_RNDN) != 0 || !mpfr_inf_p(x) ||
-      MPFR_SIGN(x) < 0)
-    {
-      fprintf (stderr, "mpfr_set_str failed on +Inf\n");
-      exit (1);
+      if (mpfr_set_str (x, "+@Inf@garbage", i, GMP_RNDN) != 0 ||
+          !mpfr_inf_p(x) || MPFR_SIGN(x) < 0)
+        {
+          fprintf (stderr, "mpfr_set_str failed on +@Inf@garbage\n");
+          exit (1);
+        }
+
+      if (i > 16)
+        continue;
+
+      if (mpfr_set_str (x, "NaN", i, GMP_RNDN) != 0 ||
+          !mpfr_nan_p(x))
+        {
+          fprintf (stderr, "mpfr_set_str failed on NaN\n");
+          exit (1);
+        }
+
+      if (mpfr_set_str (x, "Inf", i, GMP_RNDN) != 0 ||
+          !mpfr_inf_p(x) || MPFR_SIGN(x) < 0)
+        {
+          fprintf (stderr, "mpfr_set_str failed on Inf\n");
+          exit (1);
+        }
+
+      if (mpfr_set_str (x, "-Inf", i, GMP_RNDN) != 0 ||
+          !mpfr_inf_p(x) || MPFR_SIGN(x) > 0)
+        {
+          fprintf (stderr, "mpfr_set_str failed on -Inf\n");
+          exit (1);
+        }
+
+      if (mpfr_set_str (x, "+Inf", i, GMP_RNDN) != 0 ||
+          !mpfr_inf_p(x) || MPFR_SIGN(x) < 0)
+        {
+          fprintf (stderr, "mpfr_set_str failed on +Inf\n");
+          exit (1);
+        }
     }
 
   /* check that mpfr_set_str works for uppercase letters too */
