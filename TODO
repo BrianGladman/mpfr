@@ -13,6 +13,8 @@ Installation:
 New functions to implement:
 
 - those from LIA: missing secant, cosecant, cotangent (trigo/hyperbolic)
+- nextafter/nextforward : X + epsilon if X < Y, X - epsilon if X > Y
+- nextabove/nextbelow ?
 
 Rounding:
 
