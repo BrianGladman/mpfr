@@ -230,7 +230,7 @@ main(argc,argv) int argc; char *argv[];
 	GMP_RNDU, 53, 53, 53, 0.0);
   check(3.14553393112021279444e-67, 3.14553401015952024126e-67,
 	GMP_RNDU, 53, 53, 53, 0.0);
-  printf("Checking random precisions\n");
+  /* printf("Checking random precisions\n"); */
   srand(getpid());
   check2(2.26531902208967707071e+168,99,-2.67795218510613988524e+168,67,94,2);
   check2(-1.21510626304662318398e+145,70,1.21367733647758957118e+145,65,61,3);
@@ -275,7 +275,7 @@ printf("\nTest i=%d\n",i);
     do { y = drand(); } while (isnan(y));
     check2(x,px,y,py,pz,rnd_mode);
   }
-  printf("Checking double precision (53 bits)\n");
+  /* printf("Checking double precision (53 bits)\n"); */
   prec = (argc<2) ? 53 : atoi(argv[1]);
   rnd_mode = (argc<3) ? -1 : atoi(argv[2]);
   check(-8.22183238641455905806e-19, 7.42227178769761587878e-19,
@@ -332,7 +332,7 @@ printf("\nTest i=%d\n",i);
       rnd = (rnd_mode==-1) ? lrand48()%4 : rnd_mode;
       check(x, y, rnd, prec, prec, prec, 0.0);
   } 
-  printf("Checking mpfr_add(x, x, y) with prec=53\n");
+  /* printf("Checking mpfr_add(x, x, y) with prec=53\n"); */
   for (i=0;i<100000;i++) {
     x = drand(); 
     y = drand();
@@ -341,7 +341,7 @@ printf("\nTest i=%d\n",i);
       rnd = (rnd_mode==-1) ? lrand48()%4 : rnd_mode;
       check3(x, y, rnd);
   } 
-  printf("Checking mpfr_add(x, y, x) with prec=53\n");
+  /* printf("Checking mpfr_add(x, y, x) with prec=53\n"); */
   for (i=0;i<100000;i++) {
     x = drand(); 
     y = drand();
@@ -350,7 +350,7 @@ printf("\nTest i=%d\n",i);
       rnd = (rnd_mode==-1) ? lrand48()%4 : rnd_mode;
       check4(x, y, rnd);
   } 
-  printf("Checking mpfr_add(x, x, x) with prec=53\n");
+  /* printf("Checking mpfr_add(x, x, x) with prec=53\n"); */
   for (i=0;i<100000;i++) {
     do { x = drand(); } while (ABS(x)<2.2e-307 || ABS(x)>0.8e308);
     /* avoid denormalized numbers and overflows */
