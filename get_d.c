@@ -28,14 +28,6 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-#ifdef XDEBUG
-#undef _GMP_IEEE_FLOATS
-#endif
-
-#ifndef _GMP_IEEE_FLOATS
-#define _GMP_IEEE_FLOATS 0
-#endif
-
 /* "double" NaN and infinities are written as explicit bytes to be sure of
    getting what we want, and to be sure of not depending on libm.
 

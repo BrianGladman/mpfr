@@ -32,7 +32,7 @@ mpfr_powerof2_raw (mpfr_srcptr x)
   mp_limb_t *xp;
   mp_size_t xn;
 
-  MPFR_ASSERTN(MPFR_IS_FP(x));
+  MPFR_ASSERTN(MPFR_IS_PURE_FP(x));
   xp = MPFR_MANT(x);
   xn = (MPFR_PREC(x) - 1) / BITS_PER_MP_LIMB;
   if (NOT_POW2(xp[xn]))

@@ -264,6 +264,14 @@ long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CO
 # endif
 #endif
 
+/* Debug non IEEE floats */
+#ifdef XDEBUG
+# undef _GMP_IEEE_FLOATS
+#endif
+#ifndef _GMP_IEEE_FLOATS
+# define _GMP_IEEE_FLOATS 0
+#endif
+
 /* We want to test this :
  *  (rnd == GMP_RNDU && test) || (rnd == RNDD && !test)
  * This macro does this test faster*/
@@ -421,28 +429,36 @@ void mpfr_inits2 _MPFR_PROTO ((mp_prec_t, mpfr_ptr, ...));
 void mpfr_inits _MPFR_PROTO ((mpfr_ptr, ...));
 void mpfr_clears _MPFR_PROTO ((mpfr_ptr, ...));
 
+
 int mpfr_set_underflow _MPFR_PROTO ((mpfr_ptr, mp_rnd_t, int));
 int mpfr_set_overflow _MPFR_PROTO ((mpfr_ptr, mp_rnd_t, int));
 void mpfr_save_emin_emax _MPFR_PROTO ((void));
 void mpfr_restore_emin_emax _MPFR_PROTO ((void));
+
 int mpfr_add1 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_sub1 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_can_round_raw _MPFR_PROTO ((mp_limb_t *, mp_size_t, int, mp_exp_t,
 				     mp_rnd_t, mp_rnd_t, mp_prec_t));
+
 double mpfr_get_d3 _MPFR_PROTO ((mpfr_srcptr, mp_exp_t, mp_rnd_t));
 int mpfr_cmp2 _MPFR_PROTO ((mpfr_srcptr, mpfr_srcptr, mp_prec_t *));
-long __gmpfr_ceil_log2 _MPFR_PROTO ((double));
-long __gmpfr_floor_log2 _MPFR_PROTO ((double));
-double __gmpfr_ceil_exp2 _MPFR_PROTO ((double));
+
+long          __gmpfr_ceil_log2 _MPFR_PROTO ((double));
+long          __gmpfr_floor_log2 _MPFR_PROTO ((double));
+double        __gmpfr_ceil_exp2 _MPFR_PROTO ((double));
 unsigned long __gmpfr_isqrt _MPFR_PROTO ((unsigned long));
 unsigned long __gmpfr_cuberoot _MPFR_PROTO ((unsigned long));
+
 int mpfr_exp_2 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_exp3 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_powerof2_raw _MPFR_PROTO ((mpfr_srcptr));
+
 void mpfr_setmax _MPFR_PROTO ((mpfr_ptr, mp_exp_t));
 void mpfr_setmin _MPFR_PROTO ((mpfr_ptr, mp_exp_t));
+
 long mpn_exp _MPFR_PROTO ((mp_limb_t *, mp_exp_t *, int, 
 			   mp_exp_t, size_t));
+
 void mpfr_print_binary _MPFR_PROTO ((mpfr_srcptr));
 void mpfr_set_str_binary _MPFR_PROTO ((mpfr_ptr, __gmp_const char *));
 

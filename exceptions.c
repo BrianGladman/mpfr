@@ -179,7 +179,7 @@ mpfr_inexflag_p (void)
   return __gmpfr_flags & MPFR_FLAGS_INEXACT;
 }
 
-#undef mpfr_set_underflow
+/* #undef mpfr_set_underflow */
 
 /* Note: In the rounding to the nearest mode, mpfr_set_underflow
    always rounds away from 0. In this rounding mode, you must call
@@ -209,7 +209,7 @@ mpfr_set_underflow (mpfr_ptr x, mp_rnd_t rnd_mode, int sign)
   return sign > 0 ? inex : -inex;
 }
 
-#undef mpfr_set_overflow
+/* #undef mpfr_set_overflow */
 
 int
 mpfr_set_overflow (mpfr_ptr x, mp_rnd_t rnd_mode, int sign)

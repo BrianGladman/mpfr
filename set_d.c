@@ -34,16 +34,6 @@ MA 02111-1307, USA. */
 #error "Unsupported value of BITS_PER_MP_LIMB"
 #endif
 
-/* Included from gmp-2.0.2, patched to support denorms */
-
-#ifdef XDEBUG
-#undef _GMP_IEEE_FLOATS
-#endif
-
-#ifndef _GMP_IEEE_FLOATS
-#define _GMP_IEEE_FLOATS 0
-#endif
-
 static int
 __mpfr_extract_double (mp_ptr rp, double d)
      /* e=0 iff BITS_PER_MP_LIMB=32 and rp has only one limb */
