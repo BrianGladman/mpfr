@@ -245,7 +245,7 @@ mpfr_add1 (a, b, c, rnd_mode, diff_exp)
       MPFR_ASSERTD(fb != 0);
       if (fb > 0)
       {
-        if (bb != (mp_limb_t) -1)
+        if (bb != MP_LIMB_T_MAX)
         {
           fb = 1; /* c hasn't been taken into account ==> sticky bit != 0 */
           goto rounding;
@@ -259,7 +259,7 @@ mpfr_add1 (a, b, c, rnd_mode, diff_exp)
           bb |= MP_LIMB_T_HIGHBIT;
         }
         fb = 1;
-        if (bb != (mp_limb_t) -1)
+        if (bb != MP_LIMB_T_MAX)
           goto rounding;
       }
 
@@ -328,7 +328,7 @@ mpfr_add1 (a, b, c, rnd_mode, diff_exp)
         }
 
         fb = bb != 0;
-        if (fb && bb != (mp_limb_t) -1)
+        if (fb && bb != MP_LIMB_T_MAX)
           goto rounding;
       } /* fb < 0 */
 
@@ -379,7 +379,7 @@ mpfr_add1 (a, b, c, rnd_mode, diff_exp)
           fb = 1;
           goto rounding;
         }
-        if (fb && bb != (mp_limb_t) -1)
+        if (fb && bb != MP_LIMB_T_MAX)
           goto rounding;
       } /* while */
 
