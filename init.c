@@ -43,7 +43,7 @@ mpfr_init2 (x, p)
 
   MPFR_PREC(x) = p;
   MPFR_MANT(x) = (mp_ptr) (*_mp_allocate_func) (xsize * BYTES_PER_MP_LIMB);
-  if (MPFR_MANT(x) == 0) {
+  if (MPFR_MANT(x) == NULL) {
     fprintf (stderr, "Error in mpfr_init2: no more memory available\n");
     exit (1);
   }
