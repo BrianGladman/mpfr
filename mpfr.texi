@@ -1201,8 +1201,13 @@ If any operand is negative, the return value is NaN.
 Set @var{rop} to the logarithm of 2, the value of @m{\pi,Pi}, the value
 of Euler's constant 0.577@dots{}, respectively, rounded in the direction
 @var{rnd}. These functions cache the computed values to avoid other
-calculations if a lower or equal precision is requested. There is
-currently no way to free the cache.
+calculations if a lower or equal precision is requested. To free theses caches,
+use @code{mpfr_free_cache}.
+@end deftypefun
+
+@deftypefun void mpfr_free_cache (void)
+Free the cache used by @code{mpfr_const_log2}, @code{mpfr_const_pi} and
+@code{mpfr_const_euler} if needed.
 @end deftypefun
 
 @deftypefun int mpfr_sum (mpfr_t @var{ret}, const mpfr_t* const @var{tab}[], unsigned int @var{n}, mp_rnd_t @var{rnd})

@@ -1,6 +1,6 @@
 /* Miscellaneous support for test programs.
 
-Copyright 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -56,19 +56,8 @@ tests_start_mpfr (void)
 void
 tests_end_mpfr (void)
 {
+  mpfr_free_cache ();
   tests_rand_end ();
-  if (__gmpfr_const_pi_prec != 0)
-    {
-      mpfr_clear (__mpfr_const_pi);
-      __gmpfr_const_pi_prec = 0;
-    }
-
-  if (__gmpfr_const_log2_prec != 0)
-    {
-      mpfr_clear (__mpfr_const_log2);
-      __gmpfr_const_log2_prec = 0;
-    }
-
   tests_memory_end ();
 }
 
