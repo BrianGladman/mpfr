@@ -173,8 +173,8 @@ mpfr_div3 (mpfr_ptr r, mpfr_srcptr u, mpfr_srcptr v, unsigned char rnd_mode)
     /* Use the remainder to find out the correct rounding */
     /* Note that at this point the division has been done */
     /* EXACTLY. */
-    if ((rnd_mode == GMP_RNDD && sign_quotient == 1) 
-	|| (rnd_mode == GMP_RNDU && sign_quotient == -1)
+    if ((rnd_mode == GMP_RNDD && sign_quotient == -1) 
+	|| (rnd_mode == GMP_RNDU && sign_quotient == 1)
 	|| (rnd_mode == GMP_RNDN))
       {	  
 	/* We cannot round, so that the last bits of the quotient
