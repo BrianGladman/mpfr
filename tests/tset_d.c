@@ -1,24 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "gmp.h"
-#include "mpfr.h"
 #include <time.h>
-#include <math.h>
 #ifdef IRIX64
 #include <sys/fpu.h>
 #endif
+#include "gmp.h"
+#include "mpfr.h"
+#include "mpfr-impl.h"
 
 extern int isnan();
-
-double drand()
-{
-  double d; long int *i;
-
-  i = (long int*) &d;
-  i[0] = lrand48();
-  i[1] = lrand48();
-  return d;
-}
 
 int
 main(int argc, char **argv)
