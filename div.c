@@ -42,7 +42,7 @@ mpfr_div (r, u, v, rnd_mode)
 {
   mp_srcptr up, vp;
   mp_ptr rp, tp, tp0, tmp;
-  mp_size_t usize, vsize, rrsize;
+  mp_size_t usize, vsize, rrsize, oldrrsize;
   mp_size_t rsize;
   mp_size_t sign_quotient;
   mp_size_t prec, err;
@@ -163,7 +163,7 @@ mpfr_div (r, u, v, rnd_mode)
 	{
 	  count_leading_zeros(k, q_limb); 
 	  mpn_rshift(rp, rp, rrsize, BITS_PER_MP_LIMB - k);
-	  rp[rrsize - 1] |= (q_limb << k);  
+	  rp[rrsize - 1] |= (q_limb << k);
 	  rexp += BITS_PER_MP_LIMB - k; 
 	}
       else
@@ -191,26 +191,27 @@ mpfr_div (r, u, v, rnd_mode)
 	}
     }
   while (!can_round && (rsize < usize || rsize < vsize) 
-	 && (rsize++) && (rrsize++)); 
+	 && (rsize++) && (rrsize++));
 
   /* ON PEUT PROBABLEMENT SE DEBROUILLER DES QUE rsize >= vsize */
   /* MAIS IL FAUT AJOUTER LE BOUT QUI MANQUE DE usize A rsize */
     
+  oldrrsize = rrsize;
   rrsize = (PREC(r) - 1)/BITS_PER_MP_LIMB + 1;
 
   if (can_round) 
     {
       cc = mpfr_round_raw(rp, rp, err, (sign_quotient == -1 ? 1 : 0),
-			  PREC(r), rnd_mode);  
+			  PREC(r), rnd_mode);
     }
-  else
+  else {
     /* Use the remainder to find out the correct rounding */
     /* Note that at this point the division has been done */
     /* EXACTLY. */
     if ((rnd_mode == GMP_RNDD && sign_quotient == -1) 
 	|| (rnd_mode == GMP_RNDU && sign_quotient == 1)
 	|| (rnd_mode == GMP_RNDN))
-      {	  
+      {
 	/* We cannot round, so that the last bits of the quotient
 	   have to be zero; just look if the remainder is nonzero */
 	k = rsize - 1; 
@@ -242,6 +243,13 @@ mpfr_div (r, u, v, rnd_mode)
 	    }
 	/* cas 0111111 */
       }
+    /* Warning: we computed the result on oldrrsize limbs, but we want it
+       on rrsize limbs only. Both can differ, especially when the target
+       precision is a multiple of the number of bits per limb, since we've
+       taken an extra bit to make rounding to nearest easier. */
+    rp += oldrrsize-rrsize;
+  }
+
 
   if (sign_quotient * MPFR_SIGN(r) < 0) { CHANGE_SIGN(r); } 
   r->_mp_exp = rexp;
@@ -252,8 +260,8 @@ mpfr_div (r, u, v, rnd_mode)
     r->_mp_exp++; 
   }
     
+  rw = rrsize * BITS_PER_MP_LIMB - PREC(r);
   MPN_COPY(MANT(r), rp, rrsize); 
-  rw = rrsize * BITS_PER_MP_LIMB - PREC(r); 
   MANT(r)[0] &= ~(((mp_limb_t)1 << rw) - 1);
 
   TMP_FREE (marker);
