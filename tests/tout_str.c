@@ -29,6 +29,8 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
+extern int isnan();
+
 FILE *fout;
 
 #define check(d,r,b) check4(d,r,b,53)
@@ -39,7 +41,6 @@ void check4(d, rnd, base, prec) double d; unsigned char rnd; int base, prec;
 
   mpfr_init2(x, prec);
   mpfr_set_d(x, d, rnd);
-  mpfr_set_machine_rnd_mode(rnd);
   fprintf(fout, "%1.19e base %d rnd %d:\n ", d, base, rnd);
   mpfr_out_str(fout, base, (base==2) ? prec : 0, x, rnd);
   fputc('\n', fout);

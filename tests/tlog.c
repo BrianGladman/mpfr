@@ -21,11 +21,13 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include <stdlib.h> 
-#include <unistd.h>
 #include <math.h>
+#include <unistd.h>
 #include "gmp.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
+
+extern int isnan();
 
 double drand_log()
 {
@@ -40,8 +42,8 @@ double drand_log()
   return d;
 }
 
+#define check2(a,rnd,res) check1(a,rnd,res,1)
 #define check(a,r) check2(a,r,0.0)
-
 
 int check1(double a, unsigned char rnd_mode, double res1, int ck)
 {
@@ -49,9 +51,10 @@ int check1(double a, unsigned char rnd_mode, double res1, int ck)
   double res2;
   /* ck=1 iff res1 is certified correct */
 
-  mpfr_set_machine_rnd_mode(rnd_mode);  
+#ifdef TEST
+  mpfr_set_machine_rnd_mode(rnd_mode);
+#endif
   if (ck==0 && res1==0.0) res1=log(a); 
-  /* printf("mpfr_log working on a=%1.20e, rnd_mode=%d\n",a,rnd_mode);*/
   mpfr_init2(ta, 53);
   mpfr_init2(tres, 53);
   mpfr_set_d(ta, a, GMP_RNDN);
@@ -74,12 +77,6 @@ int check1(double a, unsigned char rnd_mode, double res1, int ck)
     return ulp(res1,res2);
   else
     return 0;
-}
-
-
-void check2(double a, unsigned char rnd_mode, double res1) {
-  check1(a,rnd_mode, res1,1);
-  return;
 }
 
 void check3(double d, unsigned long prec, unsigned char rnd)
@@ -234,7 +231,6 @@ int main(int argc, char *argv[]) {
   if (argc==2) { /* tlog N: N tests with random double's */
     N=atoi(argv[1]);
     printf("Doing %d random tests in double precision\n", N);
-    /*printf("GMP_RNDN : %i, GMP_RNDZ : %i,GMP_RNDU : %i,GMP_RNDD : %i\n",GMP_RNDN, GMP_RNDZ,GMP_RNDU, GMP_RNDD); */
     check4(N);
   }
   else {

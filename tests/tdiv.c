@@ -33,52 +33,45 @@ MA 02111-1307, USA. */
 
 extern int isnan();
 
-/* #define DEBUG */
+#define check53(n, d, rnd, res) check4(n, d, rnd, 53, res)
 
-#define check(n,d,r) check4(n,d,r,53)
-
-void check4(N, D, rnd_mode, p) double N, D; unsigned char rnd_mode; int p;
+void check4(N, D, rnd_mode, p, Q)
+double N, D, Q; unsigned char rnd_mode; int p;
 {
-  mpfr_t q, n, d; double Q,Q2;
+  mpfr_t q, n, d; double Q2;
 
-#ifdef DEBUG
-  printf("N=%1.20e D=%1.20e rnd_mode=%d\n",N,D,rnd_mode);
-#endif
   mpfr_init2(q, p); mpfr_init2(n, p); mpfr_init2(d, p);
   mpfr_set_d(n, N, rnd_mode);
   mpfr_set_d(d, D, rnd_mode);
   mpfr_div(q, n, d, rnd_mode);
+#ifdef TEST
   mpfr_set_machine_rnd_mode(rnd_mode);
-  Q = N/D;
-  Q2 = mpfr_get_d(q);
-#ifdef DEBUG
-    printf("expected quotient is %1.20e, got %1.20e (%d ulp)\n",Q,Q2,
-	   ulp(Q2,Q));
-    mpfr_print_raw(q); putchar('\n');
 #endif
-  if (Q!=Q2 && (!isnan(Q) || !isnan(Q2))) {
-    printf("mpfr_div failed for n=%1.20e, d=%1.20e, rnd_mode=%d\n",N,D,rnd_mode);
-    printf("expected quotient is %1.20e, got %1.20e (%d ulp)\n",Q,Q2,
-	   ulp(Q2,Q));
+  if (Q==0.0) Q = N/D;
+  Q2 = mpfr_get_d(q);
+  if (p==53 && Q!=Q2 && (!isnan(Q) || !isnan(Q2))) {
+    printf("mpfr_div failed for n=%1.20e, d=%1.20e, rnd_mode=%s\n",
+	   N, D, mpfr_print_rnd_mode(rnd_mode));
+    printf("expected quotient is %1.20e, got %1.20e (%d ulp)\n", Q, Q2,
+	   ulp(Q2, Q));
     exit(1);
   }
   mpfr_clear(q); mpfr_clear(n); mpfr_clear(d);  
 }
 
-void check24(float N, float D, unsigned char rnd_mode)
+void check24(float N, float D, unsigned char rnd_mode, float Q)
 {
-  mpfr_t q, n, d; float Q,Q2;
+  mpfr_t q, n, d; float Q2;
 
   mpfr_init2(q, 24); mpfr_init2(n, 24); mpfr_init2(d, 24);
   mpfr_set_d(n, N, rnd_mode);
   mpfr_set_d(d, D, rnd_mode);
   mpfr_div(q, n, d, rnd_mode);
-  mpfr_set_machine_rnd_mode(rnd_mode);
-  Q = N/D;
   Q2 = mpfr_get_d(q);
-  if (Q!=Q2 && (!isnan(Q) || !isnan(Q2))) {
-    printf("mpfr_div failed for n=%1.10e, d=%1.10e, prec=24, rnd_mode=%d\n",N,D,rnd_mode);
-    printf("expected quotient is %1.10e, got %1.10e\n",Q,Q2);
+  if (Q!=Q2) {
+    printf("mpfr_div failed for n=%1.10e, d=%1.10e, prec=24, rnd_mode=%s\n",
+	   N, D, mpfr_print_rnd_mode(rnd_mode));
+    printf("expected quotient is %1.10e, got %1.10e\n", Q, Q2);
     exit(1);
   }
   mpfr_clear(q); mpfr_clear(n); mpfr_clear(d);  
@@ -88,19 +81,47 @@ void check24(float N, float D, unsigned char rnd_mode)
    Generation for Directed Rounding" from Michael Parks, Table 2 */
 void check_float()
 {
-  int i; float b=8388608.0; /* 2^23 */
+  float b=8388608.0; /* 2^23 */
 
-  for (i=0;i<4;i++) {
-    check24(b*8388610.0, 8388609.0, i);
-    check24(b*16777215.0, 16777213.0, i);
-    check24(b*8388612.0, 8388611.0, i);
-    check24(b*12582914.0, 12582911.0, i);
-    check24(12582913.0, 12582910.0, i);
-    check24(b*16777215.0, 8388609.0, i);
-    check24(b*8388612.0, 8388609.0, i);
-    check24(b*12582914.0, 8388610.0, i);
-    check24(b*12582913.0, 8388610.0, i);
-  }
+  check24(b*8388610.0, 8388609.0, GMP_RNDN, 8.388609e6);
+  check24(b*16777215.0, 16777213.0, GMP_RNDN, 8.388609e6);
+  check24(b*8388612.0, 8388611.0, GMP_RNDN, 8.388609e6);
+  check24(b*12582914.0, 12582911.0, GMP_RNDN, 8.38861e6);
+  check24(12582913.0, 12582910.0, GMP_RNDN, 1.000000238);
+  check24(b*16777215.0, 8388609.0, GMP_RNDN, 1.6777213e7);
+  check24(b*8388612.0, 8388609.0, GMP_RNDN, 8.388611e6);
+  check24(b*12582914.0, 8388610.0, GMP_RNDN, 1.2582911e7);
+  check24(b*12582913.0, 8388610.0, GMP_RNDN, 1.258291e7);
+
+  check24(b*8388610.0, 8388609.0, GMP_RNDZ, 8.388608e6);
+  check24(b*16777215.0, 16777213.0, GMP_RNDZ, 8.388609e6);
+  check24(b*8388612.0, 8388611.0, GMP_RNDZ, 8.388608e6);
+  check24(b*12582914.0, 12582911.0, GMP_RNDZ, 8.38861e6);
+  check24(12582913.0, 12582910.0, GMP_RNDZ, 1.000000238);
+  check24(b*16777215.0, 8388609.0, GMP_RNDZ, 1.6777213e7);
+  check24(b*8388612.0, 8388609.0, GMP_RNDZ, 8.38861e6);
+  check24(b*12582914.0, 8388610.0, GMP_RNDZ, 1.2582911e7);
+  check24(b*12582913.0, 8388610.0, GMP_RNDZ, 1.258291e7);
+
+  check24(b*8388610.0, 8388609.0, GMP_RNDU, 8.388609e6);
+  check24(b*16777215.0, 16777213.0, GMP_RNDU, 8.38861e6);
+  check24(b*8388612.0, 8388611.0, GMP_RNDU, 8.388609e6);
+  check24(b*12582914.0, 12582911.0, GMP_RNDU, 8.388611e6);
+  check24(12582913.0, 12582910.0, GMP_RNDU, 1.000000357);
+  check24(b*16777215.0, 8388609.0, GMP_RNDU, 1.6777214e7);
+  check24(b*8388612.0, 8388609.0, GMP_RNDU, 8.388611e6);
+  check24(b*12582914.0, 8388610.0, GMP_RNDU, 1.2582912e7);
+  check24(b*12582913.0, 8388610.0, GMP_RNDU, 1.2582911e7);
+
+  check24(b*8388610.0, 8388609.0, GMP_RNDD, 8.388608e6);
+  check24(b*16777215.0, 16777213.0, GMP_RNDD, 8.388609e6);
+  check24(b*8388612.0, 8388611.0, GMP_RNDD, 8.388608e6);
+  check24(b*12582914.0, 12582911.0, GMP_RNDD, 8.38861e6);
+  check24(12582913.0, 12582910.0, GMP_RNDD, 1.000000238);
+  check24(b*16777215.0, 8388609.0, GMP_RNDD, 1.6777213e7);
+  check24(b*8388612.0, 8388609.0, GMP_RNDD, 8.38861e6);
+  check24(b*12582914.0, 8388610.0, GMP_RNDD, 1.2582911e7);
+  check24(b*12582913.0, 8388610.0, GMP_RNDD, 1.258291e7);
 }
 
 void check_convergence()
@@ -117,7 +138,9 @@ void check_convergence()
 
 int main(int argc, char *argv[])
 {
-  int i, N; double n, d, e; 
+  int N;
+#ifdef TEST
+  int i; double n, d, e;
 #ifdef IRIX64
     /* to get denormalized numbers on IRIX64 */
     union fpc_csr exp;
@@ -125,30 +148,40 @@ int main(int argc, char *argv[])
     exp.fc_struct.flush = 0;
     set_fpc_csr(exp.fc_word);
 #endif
+#endif
 
   N = (argc>1) ? atoi(argv[1]) : 100000;
   check_float(); /* checks single precision */
   check_convergence();
-  check(0.0, 1.0, 1);
-  check(-7.49889692246885910000e+63, 4.88168664502887320000e+306, GMP_RNDD);
-  check(-1.33225773037748601769e+199, 3.63449540676937123913e+79, GMP_RNDZ);
-  d = 1.0; for (i=0;i<52;i++) d *= 2.0;
-  check4(4.0, d, GMP_RNDZ, 62);
-  check4(1.0, 2.10263340267725788209e+187, 2, 65);
-  check4(2.44394909079968374564e-150, 2.10263340267725788209e+187, 2, 65);
-  /* the following tests when d is an exact power of two */
-  check(9.89438396044940256501e-134, 5.93472984109987421717e-67, 2);
-  check(9.89438396044940256501e-134, -5.93472984109987421717e-67, 2);
-  check(-4.53063926135729747564e-308, 7.02293374921793516813e-84, 3);
-  check(6.25089225176473806123e-01, -2.35527154824420243364e-230, 3);
-  check(6.52308934689126000000e+15, -1.62063546601505417497e+273, 0);
-  check(1.04636807108079349236e-189, 3.72295730823253012954e-292, 1);
+  check53(0.0, 1.0, GMP_RNDZ, 0.0);
+  check53(-7.4988969224688591e63, 4.8816866450288732e306, GMP_RNDD,
+	  -1.5361282826510687291e-243);
+  check53(-1.33225773037748601769e+199, 3.63449540676937123913e+79, GMP_RNDZ,
+	  -3.6655920045905428978e119);
+  check4(4.0, 4.503599627370496e15, GMP_RNDZ, 62, 0.0);
+  check4(1.0, 2.10263340267725788209e+187, GMP_RNDU, 65, 0.0);
+  check4(2.44394909079968374564e-150, 2.10263340267725788209e+187, GMP_RNDU,
+	 65, 0.0);
+  check53(9.89438396044940256501e-134, 5.93472984109987421717e-67, GMP_RNDU,
+	  1.6672003992376663654e-67);
+  check53(9.89438396044940256501e-134, -5.93472984109987421717e-67, GMP_RNDU,
+	  -1.6672003992376663654e-67);
+  check53(-4.53063926135729747564e-308, 7.02293374921793516813e-84, GMP_RNDD,
+	  -6.4512060388748850857e-225);
+  check53(6.25089225176473806123e-01, -2.35527154824420243364e-230, GMP_RNDD,
+	  -2.6540006635008291192e229);
+  check53(6.52308934689126e15, -1.62063546601505417497e273, GMP_RNDN,
+	  -4.0250194961676020848e-258);
+  check53(1.04636807108079349236e-189, 3.72295730823253012954e-292, GMP_RNDZ,
+	  2.810583051186143125e102);
+#ifdef TEST
   srand48(getpid());
   for (i=0;i<N;i++) {
     do { n = drand(); d = drand(); e = fabs(n)/fabs(d); }
     /* smallest normalized is 2^(-1022), largest is 2^(1023)*(2-2^(-52)) */
     while (e>=1.7976931348623157081e308 || e<2.225073858507201383e-308);
-    check(n, d, rand() % 4);
+    check4(n, d, rand() % 4, 53, 0.0);
   }
+#endif
   return 0;
 }

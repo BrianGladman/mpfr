@@ -49,7 +49,9 @@ void check3(double x, unsigned long y, unsigned int rnd_mode, double z1)
   mpfr_init2(zz, 53);
   mpfr_set_d(xx, x, rnd_mode);
   mpfr_add_ui(zz, xx, y, rnd_mode);
+#ifdef TEST
   mpfr_set_machine_rnd_mode(rnd_mode);
+#endif
   if (z1==0.0) z1 = x+y;
   z2 = mpfr_get_d(zz);
   if (z1!=z2 && !(isnan(z1) && isnan(z2))) {
@@ -63,6 +65,7 @@ void check3(double x, unsigned long y, unsigned int rnd_mode, double z1)
 
 int main(argc,argv) int argc; char *argv[];
 {
+#ifdef TEST
   double x; unsigned long y, N; int i,rnd_mode,rnd;
 #ifdef IRIX64
     /* to get denormalized numbers on IRIX64 */
@@ -72,8 +75,6 @@ int main(argc,argv) int argc; char *argv[];
     set_fpc_csr(exp.fc_word);
 #endif
 
-  check3(-1.716113812768534e-140, 1271212614, GMP_RNDZ, 1.27121261399999976e9);
-  check(1.22191250737771397120e+20, 948002822, GMP_RNDN);
   srand(getpid());
   N = (argc<2) ? 1000000 : atoi(argv[1]);
   rnd_mode = (argc<3) ? -1 : atoi(argv[2]);
@@ -86,6 +87,12 @@ int main(argc,argv) int argc; char *argv[];
       check(x, y, rnd);
     }
   } 
+#endif
+  check3(-1.716113812768534e-140, 1271212614, GMP_RNDZ, 1.27121261399999976e9);
+  check3(1.22191250737771397120e+20, 948002822, GMP_RNDN, 
+	 122191250738719408128.0);
+  check3(-6.72658901114033715233e-165, 2000878121, GMP_RNDZ,
+	 2.0008781209999997615e9);
   return 0;
 }
 

@@ -36,7 +36,6 @@ void check(d, rnd) double d; unsigned char rnd;
   mpfr_init2(x, 53);
   mpfr_set_d(x, d, rnd);
   str = mpfr_get_str(NULL, &e, 10, 5, x, rnd);
-printf("%s\n", str);
   mpfr_clear(x);
   free(str);
 }
