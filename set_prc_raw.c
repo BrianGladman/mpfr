@@ -37,7 +37,7 @@ mpfr_set_prec_raw (x, p)
     fprintf(stderr, "*** cannot set precision to 0 bits\n"); exit(1);
   }
 
-  if (p > ABSSIZE * BITS_PER_MP_LIMB) {
+  if (p > ABSSIZE(x) * BITS_PER_MP_LIMB) {
     fprintf(stderr, "*** precision too large for allocated space\n");
     exit(1);
   }
