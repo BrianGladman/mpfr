@@ -52,6 +52,42 @@ check53 (double x, double tan_x, mp_rnd_t rnd_mode)
 #define TEST_FUNCTION mpfr_tan
 #include "tgeneric.c"
 
+void
+check_nans (void)
+{
+  mpfr_t  x, y;
+
+  mpfr_init2 (x, 123L);
+  mpfr_init2 (y, 123L);
+
+  mpfr_set_nan (x);
+  mpfr_tan (y, x, GMP_RNDN);
+  if (! mpfr_nan_p (y))
+    {
+      fprintf (stderr, "Error: tan(NaN) != NaN\n");
+      exit (1);
+    }
+
+  mpfr_set_inf (x, 1);
+  mpfr_tan (y, x, GMP_RNDN);
+  if (! mpfr_nan_p (y))
+    {
+      fprintf (stderr, "Error: tan(Inf) != NaN\n");
+      exit (1);
+    }
+
+  mpfr_set_inf (x, -1);
+  mpfr_tan (y, x, GMP_RNDN);
+  if (! mpfr_nan_p (y))
+    {
+      fprintf (stderr, "Error: tan(-Inf) != NaN\n");
+      exit (1);
+    }
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -62,11 +98,7 @@ main(int argc, char *argv[])
 
   tests_start_mpfr ();
 
-#ifdef HAVE_INFS
-  check53 (DBL_NAN, DBL_NAN, GMP_RNDN);
-  check53 (DBL_POS_INF, DBL_NAN, GMP_RNDN);
-  check53 (DBL_NEG_INF, DBL_NAN, GMP_RNDN);
-#endif
+  check_nans ();
 
   mpfr_init (x);
 
