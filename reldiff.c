@@ -1,6 +1,6 @@
 /* mpfr_reldiff -- compute relative difference of two floating-point numbers.
 
-Copyright 2000, 2001, 2004 Free Software Foundation, Inc.
+Copyright 2000, 2001, 2004, 2005 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -19,7 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-
 #include "mpfr-impl.h"
 
 /* reldiff(b, c) = abs(b-c)/b */
@@ -28,39 +27,46 @@ mpfr_reldiff (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 {
   mpfr_t b_copy;
 
-  if (MPFR_IS_NAN(b) || MPFR_IS_NAN(c))
-    { MPFR_CLEAR_FLAGS(a); MPFR_SET_NAN(a); return; }
-  if (MPFR_IS_INF(b))
+  if (MPFR_ARE_SINGULAR (b, c))
     {
-      if (MPFR_IS_INF(c) && (MPFR_SIGN(c) == MPFR_SIGN(b)))
-	{ MPFR_CLEAR_FLAGS(a); MPFR_SET_ZERO(a); return; }
-      else
-	{ MPFR_CLEAR_FLAGS(a); MPFR_SET_NAN(a); return; }
+      if (MPFR_IS_NAN(b) || MPFR_IS_NAN(c))
+	{ 
+	  MPFR_SET_NAN(a); 
+	  return;
+	}
+      else if (MPFR_IS_INF(b))
+	{
+	  if (MPFR_IS_INF (c) && (MPFR_SIGN (c) == MPFR_SIGN (b)))
+	    MPFR_SET_ZERO(a);
+	  else
+	    MPFR_SET_NAN(a);
+	  return;
+	}
+      else if (MPFR_IS_INF(c))
+	{
+	  MPFR_SET_SAME_SIGN (a, b);
+	  MPFR_SET_INF (a);
+	  return;
+	}
+      else if (MPFR_IS_ZERO(b)) /* reldiff = abs(c)/c = sign(c) */
+	{
+	  mpfr_set_si (a, MPFR_INT_SIGN (c), rnd_mode);
+	  return;
+	}
+      /* Fall throught */
     }
 
-  if (MPFR_IS_INF(c))
+  if (a == b)
     {
-      MPFR_SET_SAME_SIGN(a, b);
-      MPFR_CLEAR_FLAGS(a);
-      MPFR_SET_INF(a);
-      return;
+      mpfr_init2 (b_copy, MPFR_PREC(b));
+      mpfr_set (b_copy, b, GMP_RNDN);
     }
-
-  if (MPFR_IS_ZERO(b)) /* reldiff = abs(c)/c = sign(c) */
-    mpfr_set_ui(a, MPFR_SIGN(c), rnd_mode);
-  else
-    {
-      if (a == b)
-        {
-          mpfr_init2 (b_copy, MPFR_PREC(b));
-          mpfr_set (b_copy, b, GMP_RNDN);
-        }
-
-      mpfr_sub (a, b, c, rnd_mode);
-      mpfr_abs (a, a, rnd_mode); /* for compatibility with MPF */
-      mpfr_div (a, a, (a == b) ? b_copy : b, rnd_mode);
-
-      if (a == b)
-        mpfr_clear (b_copy);
-    }
+  
+  mpfr_sub (a, b, c, rnd_mode);
+  mpfr_abs (a, a, rnd_mode); /* for compatibility with MPF */
+  mpfr_div (a, a, (a == b) ? b_copy : b, rnd_mode);
+  
+  if (a == b)
+    mpfr_clear (b_copy);
+  
 }
