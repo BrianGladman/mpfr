@@ -89,7 +89,7 @@ mpfr_log (r, a, rnd_mode)
       MPFR_SET_INF(r); 
       if (MPFR_SIGN(r) > 0)
 	MPFR_CHANGE_SIGN(r);
-      return 1; 
+      return 0; /* log(0) is an exact infinity */
     }
 
   /* If a is negative, the result is NaN */
