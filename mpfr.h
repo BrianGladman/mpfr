@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 /* Definition of rounding modes */
 
 #define GMP_RNDN 0
@@ -77,11 +79,15 @@ typedef __gmp_const __mpfr_struct *mpfr_srcptr;
 void mpfr_init2 _PROTO ((mpfr_ptr, unsigned long int));
 int mpfr_round_raw _PROTO ((mp_limb_t *, mp_limb_t *, char, long,
 			     unsigned long));
+int mpfr_round_raw2 _PROTO ((mp_limb_t *, unsigned long, char, char,
+			     unsigned long));
 void mpfr_round _PROTO ((mpfr_ptr, char, unsigned long)); 
 int mpfr_can_round _PROTO ((mpfr_ptr, unsigned int, unsigned char, 
 			    unsigned char, unsigned long));
 void mpfr_set_d _PROTO ((mpfr_ptr, double, unsigned char)); 
-double mpfr_get_d _PROTO ((mpfr_ptr)); 
+int mpfr_set_z _PROTO ((mpfr_ptr, mpz_srcptr, unsigned char)); 
+double mpfr_get_d _PROTO ((mpfr_srcptr)); 
+double mpfr_get_d2 _PROTO ((mpfr_srcptr, long)); 
 void mpfr_set_f _PROTO ((mpfr_ptr, mpf_srcptr, unsigned long, char)); 
 void mpfr_set_si _PROTO ((mpfr_ptr, long, unsigned char)); 
 void mpfr_set_ui _PROTO ((mpfr_ptr, unsigned long, unsigned char)); 
@@ -98,6 +104,7 @@ void mpfr_div _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, unsigned char));
 void mpfr_agm _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, unsigned char));
 void mpfr_sqrt _PROTO ((mpfr_ptr, mpfr_srcptr, unsigned char));
 void mpfr_add _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, unsigned char));
+int mpfr_add_one_ulp _PROTO ((mpfr_ptr));
 void mpfr_sub _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, unsigned char));
 void mpfr_set _PROTO ((mpfr_ptr, mpfr_srcptr, unsigned char));
 void mpfr_set_machine_rnd_mode _PROTO ((unsigned char));
