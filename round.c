@@ -50,7 +50,7 @@ mpfr_round_raw2(xp, xn, neg, rnd, prec)
 	{
 	  if (!wd) /* all bits are significative */ return 0; 
 	  wd--;
-	  if (xp[wd] == (1UL << (BITS_PER_MP_LIMB - 1)))
+	  if (xp[wd] == ((mp_limb_t)1 << (BITS_PER_MP_LIMB - 1)))
 	    {
 	      do wd--; while (wd > 0 && !xp[wd]);
 	      if (!wd) { return 1; } else return xp[xn - nw] & 1;
@@ -103,7 +103,7 @@ mpfr_round_raw(y, xp, xprec, negative, yprec, RND_MODE)
      char RND_MODE; 
 #endif
 {
-  unsigned long nw, mask, xsize;
+  unsigned long nw, xsize; mp_limb_t mask;
   char rw, xrw, carry = 0;
 
   xsize = (xprec-1)/BITS_PER_MP_LIMB + 1;
@@ -118,7 +118,7 @@ mpfr_round_raw(y, xp, xprec, negative, yprec, RND_MODE)
   if (rw) nw++; 
   /* number of words needed to represent x */
 
-  mask = ~((1UL<<(BITS_PER_MP_LIMB - rw)) - 1); 
+  mask = ~((((mp_limb_t)1)<<(BITS_PER_MP_LIMB - rw)) - (mp_limb_t)1); 
 
   /* precision is larger than the size of x. No rounding is necessary. 
      Just add zeroes at the end */
@@ -130,7 +130,7 @@ mpfr_round_raw(y, xp, xprec, negative, yprec, RND_MODE)
   }
   /* Patch hideux xp[0] &= ~((1UL << (BITS_PER_MP_LIMB - xrw)) - 1); */
 
-  if (mpfr_round_raw2(xp, xsize, negative, RND_MODE, yprec)) 
+  if (mpfr_round_raw2(xp, xsize, negative, RND_MODE, yprec))
     carry = mpn_add_1(y, xp + xsize - nw, nw,
                           1UL << (BITS_PER_MP_LIMB - rw));
   else MPN_COPY(y, xp + xsize - nw, nw);
