@@ -38,28 +38,45 @@ void check_lowr _PROTO((void));
 void check_inexact _PROTO((void));
 void check_nan _PROTO((void));
 
+/* if Q is not zero, then it is the correct result */
 void
 check4 (double N, double D, mp_rnd_t rnd_mode, int p, double Q)
 {
-  mpfr_t q, n, d; double Q2;
+  mpfr_t q, n, d;
+  double Q2;
+  int Q_is_correct;
 
-  mpfr_init2(q, p); mpfr_init2(n, p); mpfr_init2(d, p);
+  Q_is_correct = Q != 0.0;
+  mpfr_init2 (q, p);
+  mpfr_init2 (n, p);
+  mpfr_init2 (d, p);
   mpfr_set_d(n, N, rnd_mode);
   mpfr_set_d(d, D, rnd_mode);
   mpfr_div(q, n, d, rnd_mode);
 #ifdef MPFR_HAVE_FESETROUND
   mpfr_set_machine_rnd_mode(rnd_mode);
 #endif
-  if (Q==0.0) Q = N/D;
+  if (Q_is_correct == 0)
+    Q = N / D;
   Q2 = mpfr_get_d1 (q);
-  if (p==53 && Q!=Q2 && (!isnan(Q) || !isnan(Q2))) {
-    printf("mpfr_div failed for n=%1.20e, d=%1.20e, rnd_mode=%s\n",
-	   N, D, mpfr_print_rnd_mode(rnd_mode));
-    printf("expected quotient is %1.20e, got %1.20e (%d ulp)\n", Q, Q2,
-	   ulp(Q2, Q));
-    exit(1);
-  }
-  mpfr_clear(q); mpfr_clear(n); mpfr_clear(d);  
+  if (p == 53 && Q != Q2 && (!isnan(Q) || !isnan(Q2)))
+    {
+      if (Q_is_correct)
+        printf ("mpfr_div failed");
+      else
+        printf ("mpfr_div differs from libm");
+      printf (" for n=%1.20e, d=%1.20e, rnd_mode=%s\n",
+              N, D, mpfr_print_rnd_mode(rnd_mode));
+      if (Q_is_correct)
+        printf ("correct quotient is");
+      else
+        printf ("libm gives");
+      printf ("%1.20e, mpfr_div gives %1.20e (%d ulp)\n", Q, Q2, ulp (Q2, Q));
+      exit (1);
+    }
+  mpfr_clear (q);
+  mpfr_clear (n);
+  mpfr_clear (d);
 }
 
 void
