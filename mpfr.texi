@@ -224,7 +224,7 @@ not be supported.
 If you want to compile in a separate object directory, cd to that directory,
 and prefix the configure command with the path to the MPFR source directory.
 Not all @samp{make} programs have the necessary features to support this.  In
-particular, SunOS and Slowaris @samp{make} have bugs that makes them unable to
+particular, SunOS and Slowaris @samp{make} have bugs that make them unable to
 build from a separate object directory.  Use GNU @samp{make} instead.
 Also, the generated makefiles use some pattern matching rules that are not
 supported by all @samp{make} programs. Again, use GNU @samp{make} instead.
@@ -312,7 +312,7 @@ All declarations needed to use MPFR are collected in the include file
 @tindex @code{mpfr_t}
 @noindent
 @dfn{Floating point number} or @dfn{Float} for short, is an arbitrary precision
-mantissa with an limited precision exponent.  The C data type for such objects
+mantissa with a limited precision exponent.  The C data type for such objects
 is @code{mpfr_t}.
 
 @cindex Limb
@@ -471,7 +471,7 @@ The following four rounding modes are supported:
 @end itemize
 The @samp{round to nearest} mode works as in the IEEE P754 standard: in case
 the number to be rounded lies exactly in the middle of two reprensentable
-numbers, it is rounded to the one with the less significant bit set to zero.
+numbers, it is rounded to the one with the least significant bit set to zero.
 For example, the number 5, which is represented by (101) in binary, is rounded
 to (100)=4 with a precision of two bits, and not to (110)=6.
 This rule avoids the @dfn{drift} phenomena mentioned by Knuth in volume 2
@@ -482,7 +482,7 @@ Sets the default rounding mode to @var{rnd}.
 The default rounding mode is to nearest initially.
 @end deftypefun
 
-@deftypefun int mpfr_round (mpfr_t @var{x}, char @var{rnd}, unsigned long @var{prec})
+@deftypefun void mpfr_round (mpfr_t @var{x}, char @var{rnd}, unsigned long @var{prec})
 Round @var{x} according to @var{rnd} with precision @var{prec}, which
 may be different from that of @var{x}. 
 If @var{prec} is greater or equal to the precision of @var{x}, then new
@@ -738,7 +738,7 @@ Set @var{rop} to $@var{op1} \times 2^{op2}$
 @end tex
 @end iftex
 rounded to the direction @var{rnd}. Just increases the exponent by @var{op2}
-when @var{rop} and @var{op} are identical.
+when @var{rop} and @var{op1} are identical.
 @end deftypefun
 
 @deftypefun void mpfr_div_2exp (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2})
@@ -751,7 +751,7 @@ Set @var{rop} to $@var{op1}/2^{op2}$.
 @end tex
 @end iftex
 rounded to the direction @var{rnd}. Just decreases the exponent by @var{op2}
-when @var{rop} and @var{op} are identical.
+when @var{rop} and @var{op1} are identical.
 @end deftypefun
 
 @node Float Comparison, I/O of Floats, Float Arithmetic, Floating-point Functions
@@ -907,7 +907,7 @@ Return the number of bytes written, or if an error occurred, return 0.
 @deftypefun void mpfr_print_raw (mpfr_t @var{float})
 Output @var{float} on stdout (should be changed to allow any io stream), 
 in raw binary format (the exponent is in decimal, yet).
-The last bits from the less significant limb which do not belong to
+The last bits from the least significant limb which do not belong to
 the mantissa are printed between square brackets;
 they should always be zero.
 @end deftypefun
@@ -1008,7 +1008,7 @@ rounded with mode @var{rnd} to precision @var{yprec}.
 
 @deftypefun int mpfr_round_raw2 (mp_limb_t* @var{x}, long @var{xn}, char @var{neg}, char @var{rnd}, unsigned long @var{prec})
 Returns 0 if the multiple precision number stored in the @var{xn} limbs
-starting at @var{xp} (less significant limbs first) with sign @var{neg}
+starting at @var{xp} (least significant limbs first) with sign @var{neg}
 (positive iff @var{neg} equals zero)
 is rounded similarly with direction @var{rnd} and precision @var{prec}
 than towards zero, and 1 otherwise.
