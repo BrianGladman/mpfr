@@ -196,14 +196,7 @@ mpfr_set_underflow (mpfr_ptr x, mp_rnd_t rnd_mode, int sign)
       || (rnd_mode == GMP_RNDU && sign > 0)
       || (rnd_mode == GMP_RNDD && sign < 0))
     {
-      mp_size_t xn;
-      mp_limb_t *xp;
-
-      MPFR_EXP(x) = __mpfr_emin;
-      xn = (MPFR_PREC(x) - 1) / BITS_PER_MP_LIMB;
-      xp = MPFR_MANT(x);
-      xp[xn] = MPFR_LIMB_HIGHBIT;
-      MPN_ZERO(xp, xn);
+      mpfr_setmin (x);
       inex = 1;
     }
   else
@@ -228,17 +221,7 @@ mpfr_set_overflow (mpfr_ptr x, mp_rnd_t rnd_mode, int sign)
   if ((rnd_mode == GMP_RNDU && sign < 0)
    || (rnd_mode == GMP_RNDD && sign > 0))
     {
-      mp_size_t xn, i;
-      int sh;
-      mp_limb_t *xp;
-
-      MPFR_EXP(x) = __mpfr_emax;
-      xn = 1 + (MPFR_PREC(x) - 1) / BITS_PER_MP_LIMB;
-      sh = (mp_prec_t) xn * BITS_PER_MP_LIMB - MPFR_PREC(x);
-      xp = MPFR_MANT(x);
-      xp[0] = MP_LIMB_T_MAX << sh;
-      for (i = 1; i < xn; i++)
-        xp[i] = MP_LIMB_T_MAX;
+      mpfr_setmax (x);
       inex = -1;
     }
   else

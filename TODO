@@ -35,8 +35,6 @@ New functions to implement:
 - mpz_set_fr (to set a mpz from a mpfr, with a rounding mode)
 - those from LIA: missing secant, cosecant, cotangent (trigo/hyperbolic)
 - atan2
-- nextafter/nextforward : X + epsilon if X < Y, X - epsilon if X > Y
-- nextabove/nextbelow ?
 - mpfr_greater_p (Kevin, Vincent ok)
                          =     <     >     unordered
 mpfr_greater_p           0     0     1     0
@@ -102,3 +100,5 @@ Miscellaneous:
 - make MPFR thread-safe (e.g. temporary changes of emin/emax in mpfr_set_q)
 
 - randomized tests: do like GMP (see misc.c), but using MPFR_CHECK_RANDOMIZE
+
+- add tests for nextabove/nextbelow/nexttoward.

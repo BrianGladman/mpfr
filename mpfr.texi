@@ -1347,6 +1347,24 @@ The returned value is zero when the result is exact, positive when it is
 greater than the exact value, and negative when it is smaller.
 @end deftypefun
 
+@deftypefun void mpfr_nexttoward (mpfr_t @var{x}, mpfr_t @var{y})
+If @var{x} or @var{y} is NaN, set @var{x} to NaN; the global invalid
+flag is set too. Otherwise, if @var{x} is different from @var{y},
+replace @var{x} by the next floating-point number (with the precision
+of @var{x} and the current exponent range) in the direction of @var{y}
+(the infinite values are seen as the smallest and largest floating-point
+numbers). If the result is zero, it keeps the same sign. No underflow or
+overflow is generated.
+@end deftypefun
+
+@deftypefun void mpfr_nextabove (mpfr_t @var{x})
+Equivalent to @code{mpfr_nexttoward} where @var{y} is plus infinity.
+@end deftypefun
+
+@deftypefun void mpfr_nextbelow (mpfr_t @var{x})
+Equivalent to @code{mpfr_nexttoward} where @var{y} is minus infinity.
+@end deftypefun
+
 @deftypefun void mpfr_urandomb (mpfr_t @var{rop}, gmp_randstate_t @var{state})
 Generate a uniformly distributed random float in the interval 0 <= X < 1.
 @end deftypefun

@@ -1,6 +1,7 @@
-/* mpfr_sub_one_ulp -- subtract one unit in last place
+/* mpfr_setmax -- maximum representable floating-point number (raw version)
 
-Copyright 1999, 2001, 2002 Free Software Foundation, Inc.
+Copyright 2002 Free Software Foundation.
+Contributed by the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.
 
@@ -24,41 +25,19 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-/* sets x to x-sign(x)*ulp(x) */
-int
-mpfr_sub_one_ulp(mpfr_ptr x, mp_rnd_t rnd_mode)
+/* Note: the flags are not cleared and the current sign is kept. */
+
+void mpfr_setmax (mpfr_ptr x)
 {
-  mp_size_t xn;
+  mp_size_t xn, i;
   int sh;
   mp_limb_t *xp;
 
-  if (MPFR_IS_NAN(x))
-    MPFR_RET_NAN;
-
-  if (MPFR_IS_INF(x) || MPFR_IS_ZERO(x))
-    return 0;
-
-  MPFR_ASSERTN(MPFR_PREC_MIN > 1);
-
+  MPFR_EXP(x) = __mpfr_emax;
   xn = 1 + (MPFR_PREC(x) - 1) / BITS_PER_MP_LIMB;
   sh = (mp_prec_t) xn * BITS_PER_MP_LIMB - MPFR_PREC(x);
   xp = MPFR_MANT(x);
-  mpn_sub_1 (xp, xp, xn, MP_LIMB_T_ONE << sh);
-  if (xp[xn-1] >> (BITS_PER_MP_LIMB - 1) == 0)
-    { /* was an exact power of two: not normalized any more */
-      mp_exp_t exp = MPFR_EXP(x);
-      /* Note: In case of underflow and rounding to the nearest mode,
-         x won't be changed. Beware of infinite loops! */
-      if (exp == __mpfr_emin)
-        return mpfr_set_underflow(x, rnd_mode, MPFR_SIGN(x));
-      else
-        {
-          mp_size_t i;
-          MPFR_EXP(x)--;
-          xp[0] = (sh + 1 == BITS_PER_MP_LIMB) ? 0 : MP_LIMB_T_MAX << (sh + 1);
-          for (i = 1; i < xn; i++)
-            xp[i] = MP_LIMB_T_MAX;
-        }
-    }
-  return 0;
+  xp[0] = MP_LIMB_T_MAX << sh;
+  for (i = 1; i < xn; i++)
+    xp[i] = MP_LIMB_T_MAX;
 }
