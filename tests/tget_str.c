@@ -4,42 +4,18 @@
 #include <string.h>
 #include "gmp.h"
 #include "mpfr.h"
+#include "mpfr-impl.h"
 #include <time.h>
 
-void print_double(d) double d;
+void check(d, rnd) double d; unsigned char rnd;
 {
-  int e, i;
-
-  e = (int) ceil(log(fabs(d))/log(2.0));
-  /* d <= 2^e */
-  e -= 53;
-  if (e>0) for (i=0;i<e;i++) d /= 2.0;
-  else for (i=0;i<-e;i++) d *= 2.0;
-  printf("%1.0f*2^(%d)",d,e);
-}
-
-double drand()
-{
-  double d; long int *i;
-
-  i = (long int*) &d;
-  i[0] = lrand48();
-  i[1] = lrand48();
-  if (lrand48()%2) d=-d; /* generates negative numbers */
-  return d;
-}
-
-check(d, rnd) double d; unsigned char rnd;
-{
-  mpfr_t x; char *str, str2[30]; int l, l2; mp_exp_t e;
+  mpfr_t x; char *str, str2[30]; mp_exp_t e;
 
   mpfr_init2(x, 53);
   mpfr_set_d(x, d, rnd);
   str = mpfr_get_str(NULL, &e, 10, 5, x, rnd);
   mpfr_set_machine_rnd_mode(rnd);
   sprintf(str2, "%1.4e", d);
-  l2 = strlen(str2);
-  l = strlen(str); 
   mpfr_clear(x);
   free(str);
 }
@@ -62,6 +38,7 @@ main(int argc, char **argv)
     do { d = drand(); } while (isnan(d));
     check(d, 0);
   }
+  return 0;
 }
 
 
