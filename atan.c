@@ -108,7 +108,6 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
     }
 
   MPFR_CLEAR_FLAGS(arctangent);
-
   if (MPFR_IS_ZERO(x))
     {
       mpfr_set_ui (arctangent, 0, GMP_RNDN);
@@ -137,7 +136,7 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
     return 0; /* Result correct */
   }
   if (comparaison > 0)
-      suplement = 1;
+      suplement = 2;
   else
       suplement = 2-MPFR_EXP(xp);
 
@@ -172,9 +171,9 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
     if (comparaison > 0)
       {
 	mpfr_init2(Pisur2, Prec);
-	mpfr_const_pi(Pisur2, GMP_RNDD);
-	mpfr_div_2exp(Pisur2, Pisur2, 1, GMP_RNDD);
-	mpfr_ui_div(sk, 1, xp, GMP_RNDD);
+	mpfr_const_pi(Pisur2, GMP_RNDN);
+	mpfr_div_2exp(Pisur2, Pisur2, 1, GMP_RNDN);
+	mpfr_ui_div(sk, 1, xp, GMP_RNDN);
       }
     else
 	mpfr_set(sk, xp, GMP_RNDN);
@@ -183,7 +182,7 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
     mpfr_set_ui (tmp_arctan, 0, GMP_RNDN);
     twopoweri = 1;
     for(i = 0; i <= N0; i++){
-      mpfr_mul_2exp (tmp, sk, twopoweri, GMP_RNDD);
+      mpfr_mul_2exp(tmp, sk, twopoweri, GMP_RNDN);
       /* Calculation of  trunc(tmp) --> mpz */
       mpfr_trunc (ukf, tmp);
       exptol = mpz_set_fr (ukz, ukf);
@@ -196,31 +195,31 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpz_mul(square, ukz, ukz);
       mpz_neg(square, square);
       mpfr_atan_aux(t_arctan, square, 2*twopoweri, N0 - i);
-      mpfr_set_z(Ak, ukz, GMP_RNDD);
-      mpfr_div_2exp(Ak, Ak, twopoweri, GMP_RNDD);
-      mpfr_mul(t_arctan, t_arctan, Ak, GMP_RNDD);
+      mpfr_set_z(Ak, ukz, GMP_RNDN);
+      mpfr_div_2exp(Ak, Ak, twopoweri, GMP_RNDN);
+      mpfr_mul(t_arctan, t_arctan, Ak, GMP_RNDN);
 
       /* Addition and iteration */
-      mpfr_add(tmp_arctan, tmp_arctan, t_arctan, GMP_RNDD);
+      mpfr_add(tmp_arctan, tmp_arctan, t_arctan, GMP_RNDN);
       if (i<N0)
 	{
-	  mpfr_sub(tmp, sk, Ak, GMP_RNDD);
-	  mpfr_mul(tmp2, sk, Ak, GMP_RNDU);
-	  mpfr_add_ui(tmp2, tmp2, 1, GMP_RNDU);
-	  mpfr_div(sk, tmp, tmp2, GMP_RNDD);
+	  mpfr_sub(tmp, sk, Ak, GMP_RNDN);
+	  mpfr_mul(tmp2, sk, Ak, GMP_RNDN);
+	  mpfr_add_ui(tmp2, tmp2, 1, GMP_RNDN);
+	  mpfr_div(sk, tmp, tmp2, GMP_RNDN);
 	  twopoweri <<= 1;
 	}
     }
 
     if (comparaison > 0)
       {
-	mpfr_sub(arctgt, Pisur2, tmp_arctan, GMP_RNDD);
+	mpfr_sub(arctgt, Pisur2, tmp_arctan, GMP_RNDN);
 	if (signe == -1)
 	    MPFR_CHANGE_SIGN(arctgt);
       }
     else
       {
-	mpfr_set(arctgt, tmp_arctan, GMP_RNDD);
+	mpfr_set(arctgt, tmp_arctan, GMP_RNDN);
 	if (signe == -1)
 	    MPFR_CHANGE_SIGN(arctgt);
       }
@@ -229,7 +228,7 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
     mpfr_set(tst, arctgt, rnd_mode);
 #endif
 
-    if (mpfr_can_round(arctgt, realprec, GMP_RNDD, rnd_mode, MPFR_PREC(arctangent)))
+    if (mpfr_can_round(arctgt, realprec, GMP_RNDN, rnd_mode, MPFR_PREC(arctangent)))
       {
 	mpfr_set(arctangent, arctgt, rnd_mode);
 	good = 1;
