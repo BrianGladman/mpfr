@@ -358,7 +358,7 @@ tune_mulder_upto (mp_size_t n)
     kbest = 0, tbest = t;
 
   /* Check Mulder */
-  for (k = (n+1)/2 ; k < n ; k++) {
+  for (k = n/2+1 ; k < n ; k++) {
     mulhigh_ktab[n] = k;
     t =  speed_measure (speed_mpfr_mulhigh, &s);
     if (t * TOLERANCE < tbest)
@@ -466,6 +466,7 @@ all (const char *filename)
     printf ("Tuning mpfr_exp_2...\n");
   tune_simple_func (&mpfr_exp_2_threshold, speed_mpfr_exp_2,
 		    MPFR_PREC_MIN);  
+  mpfr_exp_2_threshold = MAX (BITS_PER_MP_LIMB, mpfr_exp_2_threshold);
   fprintf (f, "#define MPFR_EXP_2_THRESHOLD %lu\n", 
 	   (unsigned long) mpfr_exp_2_threshold);
 
@@ -499,7 +500,7 @@ int main (int argc, char *argv[])
   verbose = argc > 1;
 
   if (verbose)
-    printf ("Tuning MPFR. It may take some times.\n");
+    printf ("Tuning MPFR (Coffee time?)...\n");
 
   all ("mparam.h");
 
