@@ -177,7 +177,7 @@ dft: libmpfr.a
 all: libmpfr.a tests
 
 clean:
-	-rm libmpfr.a \$(OBJS) config.in
+	-rm libmpfr.a \$(OBJS)
 
 libmpfr.a: \$(OBJS)
 	ar cr libmpfr.a \$(OBJS)
