@@ -1,6 +1,8 @@
 /* mpfr_div_ui -- divide a floating-point number by a machine integer
+   mpfr_div_si -- divide a floating-point number by a machine integer
 
-Copyright 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2005
+   Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -184,4 +186,18 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 	}
     }
   return 0; /* To avoid warning*/
+}
+
+int mpfr_div_si (mpfr_ptr y, mpfr_srcptr x, long int u, mp_rnd_t rnd_mode)
+{
+  int res;
+
+  if (u >= 0)
+    res = mpfr_div_ui (y, x, u, rnd_mode);
+  else
+    {
+      res = -mpfr_div_ui (y, x, -u, MPFR_INVERT_RND (rnd_mode));
+      MPFR_CHANGE_SIGN (y);
+    }
+  return res;
 }

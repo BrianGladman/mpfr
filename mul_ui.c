@@ -1,6 +1,8 @@
 /* mpfr_mul_ui -- multiply a floating-point number by a machine integer
+   mpfr_mul_si -- multiply a floating-point number by a machine integer
 
-Copyright 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2005
+  Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -25,75 +27,72 @@ MA 02111-1307, USA. */
 int
 mpfr_mul_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 {
-  mp_limb_t *yp, *old_yp;
+  mp_limb_t *yp;
   mp_size_t xn, yn;
-  int cnt, c, inexact;
-  TMP_DECL(marker);
+  int cnt, inexact;
+  TMP_DECL (marker);
 
-  if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(x)))
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
-      if (MPFR_IS_NAN(x))
+      if (MPFR_IS_NAN (x))
 	{
-	  MPFR_SET_NAN(y);
+	  MPFR_SET_NAN (y);
 	  MPFR_RET_NAN;
 	}
-      else if (MPFR_IS_INF(x)) 
+      else if (MPFR_IS_INF (x)) 
 	{
 	  if (u != 0)
 	    {
-	      MPFR_CLEAR_FLAGS(y);
-	      MPFR_SET_INF(y);
-	      MPFR_SET_SAME_SIGN(y, x);
-	      MPFR_RET(0); /* infinity is exact */
+	      MPFR_SET_INF (y);
+	      MPFR_SET_SAME_SIGN (y, x);
+	      MPFR_RET (0); /* infinity is exact */
 	    }
 	  else /* 0 * infinity */
 	    {
-	      MPFR_SET_NAN(y);
+	      MPFR_SET_NAN (y);
 	      MPFR_RET_NAN;
 	    }
 	}
       else /* x is zero */
 	{
-          MPFR_ASSERTD(MPFR_IS_ZERO(x));
-	  MPFR_SET_ZERO(y);
-	  MPFR_SET_SAME_SIGN(y, x);
-	  MPFR_RET(0); /* zero is exact */
+          MPFR_ASSERTD (MPFR_IS_ZERO (x));
+	  MPFR_SET_ZERO (y);
+	  MPFR_SET_SAME_SIGN (y, x);
+	  MPFR_RET (0); /* zero is exact */
 	}
     }
-  else if (MPFR_UNLIKELY(u <= 1))
+  else if (MPFR_UNLIKELY (u <= 1))
     {
       if (u == 0)
 	{
-	  MPFR_SET_ZERO(y);
-	  MPFR_SET_SAME_SIGN(y, x);
-	  MPFR_RET(0); /* zero is exact */
+	  MPFR_SET_ZERO (y);
+	  MPFR_SET_SAME_SIGN (y, x);
+	  MPFR_RET (0); /* zero is exact */
 	}
       else
 	return mpfr_set (y, x, rnd_mode);
     }
 
-  TMP_MARK(marker);
-  yp = MPFR_MANT(y);
-  yn = (MPFR_PREC(y) - 1) / BITS_PER_MP_LIMB + 1;
-  xn = (MPFR_PREC(x) - 1) / BITS_PER_MP_LIMB + 1;
-
-  old_yp = yp;
+  yp = MPFR_MANT (y);
+  yn = MPFR_LIMB_SIZE (y);
+  xn = MPFR_LIMB_SIZE (x);
 
   MPFR_ASSERTD (xn < MP_SIZE_T_MAX);
-  if (yn < xn + 1)
+  TMP_MARK(marker);
+  if (MPFR_LIKELY (yn < xn + 1))
     yp = (mp_ptr) TMP_ALLOC ((size_t) (xn + 1) * BYTES_PER_MP_LIMB);
 
   MPFR_ASSERTN (u == (mp_limb_t) u);
-  yp[xn] = mpn_mul_1 (yp, MPFR_MANT(x), xn, u);
+  yp[xn] = mpn_mul_1 (yp, MPFR_MANT (x), xn, u);
 
   /* x * u is stored in yp[xn], ..., yp[0] */
 
   /* since the case u=1 was treated above, we have u >= 2, thus
      yp[xn] >= 1 since x was msb-normalized */
   MPFR_ASSERTD (yp[xn] != 0);
-  if (MPFR_LIMB_MSB (yp[xn]) == 0)
+  if (MPFR_LIKELY (MPFR_LIMB_MSB (yp[xn]) == 0))
     {
-      count_leading_zeros(cnt, yp[xn]);
+      count_leading_zeros (cnt, yp[xn]);
       mpn_lshift (yp, yp, xn + 1, cnt);
     }
   else
@@ -103,26 +102,32 @@ mpfr_mul_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 
   /* now yp[xn], ..., yp[0] is msb-normalized too, and has at most
      PREC(x) + (BITS_PER_MP_LIMB - cnt) non-zero bits */
+  MPFR_RNDRAW (inexact, y, yp, (mp_prec_t) (xn + 1) * BITS_PER_MP_LIMB, 
+	       rnd_mode, MPFR_SIGN (x), cnt -- );
 
-  c = mpfr_round_raw (old_yp, yp, (mp_prec_t) (xn + 1) * BITS_PER_MP_LIMB,
-		      MPFR_IS_NEG(x), MPFR_PREC(y), rnd_mode, &inexact);
+  TMP_FREE (marker);
 
   cnt = BITS_PER_MP_LIMB - cnt;
-
-  if (MPFR_UNLIKELY(c)) /* rounded result is 1.0000000000000000... */
-    {
-      old_yp[yn-1] = MPFR_LIMB_HIGHBIT;
-      cnt++;
-    }
-
-  TMP_FREE(marker);
-
-  if (MPFR_UNLIKELY(__gmpfr_emax < MPFR_EMAX_MIN + cnt ||
-		    MPFR_GET_EXP (x) > __gmpfr_emax - cnt))
-    return mpfr_overflow(y, rnd_mode, MPFR_SIGN(x));
+  if (MPFR_UNLIKELY (__gmpfr_emax < MPFR_EMAX_MIN + cnt 
+		     || MPFR_GET_EXP (x) > __gmpfr_emax - cnt))
+    return mpfr_overflow (y, rnd_mode, MPFR_SIGN(x));
 
   MPFR_SET_EXP (y, MPFR_GET_EXP (x) + cnt);
-  MPFR_SET_SAME_SIGN(y, x);
+  MPFR_SET_SAME_SIGN (y, x);
 
   return inexact;
+}
+
+int mpfr_mul_si (mpfr_ptr y, mpfr_srcptr x, long int u, mp_rnd_t rnd_mode)
+{
+  int res;
+
+  if (u >= 0)
+    res = mpfr_mul_ui (y, x, u, rnd_mode);
+  else
+    {
+      res = -mpfr_mul_ui (y, x, -u, MPFR_INVERT_RND (rnd_mode));
+      MPFR_CHANGE_SIGN (y);
+    }
+  return res;
 }
