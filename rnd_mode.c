@@ -13,8 +13,12 @@ extern int swapRM();
 #define TOINFP swapRM(ROUND_TO_PLUS_INFINITY)
 #define TONEAREST swapRM(ROUND_TO_NEAREST)
 #define TOINFM swapRM(ROUND_TO_MINUS_INFINITY)
-#elif (defined (solaris) || defined (sun4))
+#elif (defined (solaris) || defined (sun4) || defined(hpux))
+#ifdef hpux
+#include <math.h>
+#else
 #include <ieeefp.h>
+#endif
 #define TOZERO fpsetround(FP_RZ)
 #define TOINFP fpsetround(FP_RP)
 #define TONEAREST fpsetround(FP_RN)
@@ -45,11 +49,6 @@ char *out;
 #define TOINFP ieee_flags("set","direction","positive",&out)
 #define TONEAREST ieee_flags("set","direction","nearest",&out)
 #define TOINFM ieee_flags("set","direction","negative",&out)
-#elif hp700
-#define TOZERO fpsetround(FP_RZ)
-#define TOINFP fpsetround(FP_RP)
-#define TONEAREST fpsetround(FP_RN)
-#define TOINFM fpsetround(FP_RM)
 #elif (defined (__i386__) || defined (__i486__) || defined (linux))
 #include <fpu_control.h>
 #ifdef LIBC211
