@@ -232,6 +232,13 @@ libmpfr.a: \$(OBJS)
 tests: mpfr.h libmpfr.a
 	-cd tests; $make all
 
+doc: mpfr.texi
+	texi2dvi mpfr.texi
+
+dist:
+	tar cf mpfr.tar *.c COPYING.LIB Configure INSTALL mpfr.texi mpfr.h mpfr-impl.h tests/*.c
+	gzip mpfr.tar
+
 add.o: mpfr.h
 div_2exp.o: mpfr.h
 neg.o: mpfr.h
