@@ -161,7 +161,7 @@ mpfr_round_raw (yp, xp, xprec, neg, yprec, rnd_mode, inexp)
   }
   else
   {
-    mp_limb_t rb, sb;
+    mp_limb_t rb = 0, sb;
 
     if ((rnd_mode == GMP_RNDU && neg) ||
         (rnd_mode == GMP_RNDD && !neg))
@@ -209,7 +209,7 @@ mpfr_round_raw (yp, xp, xprec, neg, yprec, rnd_mode, inexp)
   return carry;
 }
 
-void
+int
 #if __STDC__
 mpfr_round (mpfr_ptr x, mp_rnd_t rnd_mode, mp_prec_t prec)
 #else
@@ -220,11 +220,16 @@ mpfr_round (x, rnd_mode, prec)
 #endif
 {
   mp_limb_t *tmp;
-  int carry, neg;
+  int carry, neg, inexact;
   mp_prec_t nw;
   TMP_DECL(marker);
 
-  if (MPFR_IS_NAN(x) || MPFR_IS_INF(x)) return; 
+  if (MPFR_IS_NAN(x))
+    return 1; /* a NaN is always inexact */
+
+  if (MPFR_IS_INF(x))
+    return 0; /* infinity is exact */
+
   nw = 1 + (prec - 1) / BITS_PER_MP_LIMB; /* needed allocated limbs */
   neg = MPFR_SIGN(x) < 0;
 
@@ -233,13 +238,14 @@ mpfr_round (x, rnd_mode, prec)
     MPFR_MANT(x) = (mp_ptr) (*__gmp_reallocate_func) 
       (MPFR_MANT(x), MPFR_ABSSIZE(x)*BYTES_PER_MP_LIMB, nw * BYTES_PER_MP_LIMB);
     MPFR_SIZE(x) = nw; /* new number of allocated limbs */
-    if (neg) MPFR_CHANGE_SIGN(x);
+    if (neg)
+      MPFR_CHANGE_SIGN(x);
   }
 
   TMP_MARK(marker); 
   tmp = TMP_ALLOC (nw * BYTES_PER_MP_LIMB);
   carry = mpfr_round_raw(tmp, MPFR_MANT(x), MPFR_PREC(x), neg, prec, rnd_mode,
-                         NULL);
+                         &inexact);
 
   if (carry)
     {      
@@ -251,6 +257,8 @@ mpfr_round (x, rnd_mode, prec)
   MPFR_PREC(x) = prec; 
   MPN_COPY(MPFR_MANT(x), tmp, nw); 
   TMP_FREE(marker);
+
+  return inexact;
 }
 
 /* hypotheses : BITS_PER_MP_LIMB est une puissance de 2 
