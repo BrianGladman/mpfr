@@ -50,7 +50,9 @@ mpfr_add1 (a, b, c, rnd_mode, diff_exp)
      int diff_exp;
 #endif
 {
-  mp_limb_t *ap, *bp, *cp, cc, c2, c3=0; unsigned int an,bn,cn; int sh,dif,k;
+  mp_limb_t *ap, *bp, *cp, cc, c2=0, c3=0;
+  unsigned int an, bn, cn;
+  int sh, dif, k;
   TMP_DECL(marker); 
 
   TMP_MARK(marker); 
@@ -79,7 +81,7 @@ mpfr_add1 (a, b, c, rnd_mode, diff_exp)
 
   /* case 1: diff_exp>=prec(a), i.e. c only affects the last bit
      through rounding */
-  dif = MPFR_PREC(a)-diff_exp;
+  dif = MPFR_PREC(a) - diff_exp;
 
 #ifdef DEBUG
   printf("diff_exp=%u dif=MPFR_PREC(a)-diff_exp=%d\n", diff_exp, dif);
@@ -87,13 +89,13 @@ mpfr_add1 (a, b, c, rnd_mode, diff_exp)
   printf("c="); for (k=0;k<diff_exp;k++) putchar(' ');
   if (MPFR_SIGN(c)>0) putchar(' '); mpfr_print_raw(c); putchar('\n');
 #endif
-  if (dif<=0) { 
-    
+  if (dif <= 0)
+    { 
     /* diff_exp>=MPFR_PREC(a): c does not overlap with a */
     /* either MPFR_PREC(b)<=MPFR_PREC(a), and we can copy the mantissa of b directly 
        into that of a, or MPFR_PREC(b)>MPFR_PREC(a) and we have to round b+c */
 
-    if (MPFR_PREC(b)<=MPFR_PREC(a)) {
+    if (MPFR_PREC(b) <= MPFR_PREC(a)) {
 
       MPN_COPY(ap+(an-bn), bp, bn);
       /* fill low significant limbs with zero */
@@ -136,13 +138,13 @@ mpfr_add1 (a, b, c, rnd_mode, diff_exp)
       /* in the other cases (round to zero, or up/down with sign -/+),
          nothing to do */
     }
-    else { 
-
+    else
+      {
       /* MPFR_PREC(b)>MPFR_PREC(a) : we have to round b+c */      
-      k=bn-an;
+      k = bn - an;
 
       /* first copy the 'an' most significant limbs of b to a */
-      MPN_COPY(ap, bp+k, an);
+      MPN_COPY(ap, bp + k, an);
       { /* treat all rounding modes together */
 	mp_limb_t c2old; long int cout=0; int sign=0;
 	if (sh) {
@@ -152,15 +154,18 @@ mpfr_add1 (a, b, c, rnd_mode, diff_exp)
 	else cc=0;
 
         dif += sh; 
-	if (dif>0) {
-	  cn--;
-	  c2old = cp[cn]; /* last limb from c considered */
-	  cout += mpn_add_1(&cc, &cc, 1, c2old >> (BITS_PER_MP_LIMB-dif));
-	}
-	else c2 = c2old = 0;
-	if (sh && rnd_mode==GMP_RNDN)
-	    cout -= mpn_sub_1(&cc, &cc, 1, ONE<<(sh-1));
-	if (cout==0) {
+	if (dif > 0)
+	  {
+	    cn--;
+	    c2old = cp[cn]; /* last limb from c considered */
+	    cout += mpn_add_1(&cc, &cc, 1, c2old >> (BITS_PER_MP_LIMB-dif));
+	  }
+	else
+	  c2 = c2old = 0;
+	if (sh && rnd_mode == GMP_RNDN)
+	    cout -= mpn_sub_1 (&cc, &cc, 1, ONE << (sh - 1));
+	if (cout == 0)
+	  {
 	   dif += BITS_PER_MP_LIMB;
 	   while (cout==0 && (k || cn)) {
 	     cout = (cc>(mp_limb_t)1) ? 2 : cc;
@@ -171,13 +176,15 @@ mpfr_add1 (a, b, c, rnd_mode, diff_exp)
 	     }
 	     /* next limb from c to consider is cp[cn-1], with lower part of
 		c2old */
-	     c2 = c2old << dif;
-	     if (cn && (dif>=0)) {
-	       cn--; 
-	       c2old = cp[cn];
-	       c2 += c2old >> (BITS_PER_MP_LIMB-dif);
-	     }
-	     else dif += BITS_PER_MP_LIMB;
+	     if (cn && (dif >= 0))
+	       {
+		 c2 = c2old << dif;
+		 cn--;
+		 c2old = cp[cn];
+		 c2 += c2old >> (BITS_PER_MP_LIMB - dif);
+	       }
+	     else
+	       dif += BITS_PER_MP_LIMB;
 	     cout += mpn_add_1(&cc, &cc, 1, c2);
 	   }
 	}
