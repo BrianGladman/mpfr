@@ -8,8 +8,6 @@ check_LIBRARIES = libfrtests.a
 libfrtests_a_SOURCES = memory.c tests.c
 
 ../libmpfr.a:
-	cd $(top_srcdir); make libmpfr.a  
+	cd $(top_srcdir); make libmpfr.a
 
-check: 	all
-	for i in $(check_PROGRAMS); do echo Testing $$i ; ./$$i || echo "### $$i failed ###"; done
-
+TESTS = $(check_PROGRAMS)
