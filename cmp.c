@@ -89,3 +89,9 @@ mpfr_cmp3 (mpfr_srcptr b, mpfr_srcptr c, int s)
 
    return 0;
 }
+
+int
+(mpfr_cmp) (mpfr_srcptr b, mpfr_srcptr c)
+{
+  return mpfr_cmp(b, c);
+}

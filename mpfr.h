@@ -315,6 +315,7 @@ int mpfr_exp2 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t));
 int mpfr_exp10 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t));
 int mpfr_expm1 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t));
 
+int mpfr_cmp  _MPFR_PROTO ((mpfr_srcptr, mpfr_srcptr));
 int mpfr_cmp3 _MPFR_PROTO ((mpfr_srcptr, mpfr_srcptr, int));
 int mpfr_cmp_d _MPFR_PROTO ((mpfr_srcptr, double));
 int mpfr_cmp_ld _MPFR_PROTO ((mpfr_srcptr, long double));
