@@ -1,6 +1,6 @@
 /* mpfr_set_default_prec, mpfr_get_default_prec -- set/get default precision
 
-Copyright (C) 1999, 2000, 2001 Free Software Foundation, Inc.
+Copyright 1999, 2000, 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 

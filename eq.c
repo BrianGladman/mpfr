@@ -1,6 +1,6 @@
 /* mpfr_eq -- Compare two floats up to a specified bit #.
 
-Copyright (C) 1999, 2001 Free Software Foundation, Inc.
+Copyright 1999, 2001 Free Software Foundation, Inc.
 (Copied from GNU MP, file mpf_eq.)
 
 This file is part of the MPFR Library.

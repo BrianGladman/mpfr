@@ -1,6 +1,6 @@
 /* Test file for hyperbolic function : mpfr_cosh, mpfr_sinh, mpfr_tanh, mpfr_acosh, mpfr_asinh, mpfr_atanh.
  
-Copyright (C) 2001, 2002 Free Software Foundation, Inc.
+Copyright 2001, 2002 Free Software Foundation, Inc.
  
 This file is part of the MPFR Library.
  

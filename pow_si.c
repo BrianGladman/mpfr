@@ -1,6 +1,6 @@
 /* mpfr_pow_si -- power function x^y with y an unsigned int 
 
-Copyright (C) 2001-2002 Free Software Foundation, Inc.
+Copyright 2001, 2002 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 

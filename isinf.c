@@ -1,6 +1,6 @@
 /* mpfr_inf_p -- check for infinities
 
-Copyright (C) 2000-2001 Free Software Foundation.
+Copyright 2000, 2001 Free Software Foundation.
 
 This file is part of the MPFR Library.
 

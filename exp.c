@@ -1,6 +1,6 @@
 /* mpfr_exp -- exponential of a floating-point number
 
-Copyright (C) 1999-2002 Free Software Foundation.
+Copyright 1999, 2000, 2001, 2002 Free Software Foundation.
 Contributed by the Spaces project.
 
 This file is part of the MPFR Library.

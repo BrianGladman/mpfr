@@ -1,6 +1,6 @@
 /* mpfr_neg -- change the sign of a floating-point number
 
-Copyright (C) 1999-2001 Free Software Foundation.
+Copyright 1999, 2000, 2001 Free Software Foundation.
 
 This file is part of the MPFR Library.
 Contributed by the Spaces project (LORIA/LIP6).

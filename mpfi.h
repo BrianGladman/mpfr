@@ -1,6 +1,6 @@
 /* mpfi.h -- Include file for mpfi.
  
-Copyright (C) 1999 PolKA project, Inria Lorraine and Loria
+Copyright 1999 PolKA project, Inria Lorraine and Loria
 
 This file is part of the MPFR Library.
  

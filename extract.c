@@ -1,6 +1,6 @@
 /* mpfr_extract -- bit-extraction function for the binary splitting algorithm
 
-Copyright (C) 2000, 2001 Free Software Foundation, Inc.
+Copyright 2000, 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 

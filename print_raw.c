@@ -1,7 +1,7 @@
 /* mpfr_print_binary -- print the internal binary representation of a 
                      floating-point number
 
-Copyright (C) 1999, 2000, 2001 Free Software Foundation, Inc.
+Copyright 1999, 2000, 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 

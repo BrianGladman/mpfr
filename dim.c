@@ -1,6 +1,6 @@
 /* mpfr_dim -- dim of x, y  
 
-Copyright (C) 2001-2002 Free Software Foundation.
+Copyright 2001, 2002 Free Software Foundation.
 
 This file is part of the MPFR Library.
 

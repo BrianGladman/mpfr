@@ -1,6 +1,6 @@
 /* Test file for mpfr_trunc, mpfr_floor, mpfr_ceil, mpfr_round.
 
-Copyright (C) 2002 Free Software Foundation.
+Copyright 2002 Free Software Foundation.
 
 This file is part of the MPFR Library.
 

@@ -1,6 +1,6 @@
 /* Test file for mpfr_expm1.
 
-Copyright (C) 2001 Free Software Foundation.
+Copyright 2001 Free Software Foundation.
 Adapted from tsinh.c.
 
 This file is part of the MPFR Library.

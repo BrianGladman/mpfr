@@ -1,6 +1,6 @@
 /* mpfr_reldiff -- compute relative difference of two floating-point numbers.
 
-Copyright (C) 2000, 2001 Free Software Foundation, Inc.
+Copyright 2000, 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 

@@ -1,6 +1,6 @@
 /* mpfr_add1 -- internal function to perform a "real" addition
 
-Copyright (C) 1999-2001 Free Software Foundation.
+Copyright 1999, 2000, 2001 Free Software Foundation.
 Contributed by the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.

@@ -1,6 +1,6 @@
 /* mpfr_add_ui -- add a floating-point number with a machine integer
 
-Copyright (C) 2000-2002 Free Software Foundation.
+Copyright 2000, 2001, 2002 Free Software Foundation.
 
 This file is part of the MPFR Library.
 

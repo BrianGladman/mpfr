@@ -1,6 +1,6 @@
 /* mpfr_copysign -- Produce a value with the magnitude of x and sign of y
 
-Copyright (C) 2001-2002 Free Software Foundation.
+Copyright 2001, 2002 Free Software Foundation.
 
 This file is part of the MPFR Library.
 

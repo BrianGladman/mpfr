@@ -3,7 +3,7 @@
    using STATE as the random state previously initialized by a call to
    gmp_randinit().
 
-Copyright (C) 2000, 2001 Free Software Foundation, Inc.
+Copyright 2000, 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 

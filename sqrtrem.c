@@ -1,7 +1,7 @@
 /* mpn_sqrtrem_new -- integer square root with remainder
    (should be directly integrated in a future release of GNU MP)
 
-Copyright (C) 1999, 2000, 2001 Free Software Foundation, Inc.
+Copyright 1999, 2000, 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 

@@ -1,6 +1,6 @@
 /* Test file for mpfr_acos.
 
-Copyright (C) 2001 Free Software Foundation.
+Copyright 2001 Free Software Foundation.
 Contributed by Mathieu Dutour.
 
 This file is part of the MPFR Library.

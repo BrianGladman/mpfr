@@ -1,6 +1,6 @@
 /* mpfr_set_f -- set a MPFR number from a GNU MPF number
 
-Copyright (C) 1999, 2000, 2001 Free Software Foundation, Inc.
+Copyright 1999, 2000, 2001 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 

@@ -1,7 +1,7 @@
 /* srandom.h -- define srandom to initialize the seed of the urandom() 
    function. 
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright 1999 Free Software Foundation.
 
 This file is part of the MPFR Library.
 

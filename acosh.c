@@ -1,6 +1,6 @@
 /* mpfr_acosh -- Inverse Hyperbolic Cosine of Unsigned Integer Number
 
-Copyright (C) 2001-2002 Free Software Foundation.
+Copyright 2001, 2002 Free Software Foundation.
 
 This file is part of the MPFR Library.
 

@@ -1,6 +1,6 @@
 /* _mpfr_floor_log2 - returns floor(log(d)/log(2))
 
-Copyright (C) 1999-2002 Free Software Foundation.
+Copyright 1999, 2000, 2001, 2002 Free Software Foundation.
 
 This file is part of the MPFR Library.
 

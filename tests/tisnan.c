@@ -1,6 +1,6 @@
 /* Test file for mpfr_nan_p, mpfr_inf_p and mpfr_number_p.
 
-Copyright (C) 2001 Free Software Foundation.
+Copyright 2001 Free Software Foundation.
 
 This file is part of the MPFR Library.
 

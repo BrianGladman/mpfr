@@ -1,6 +1,6 @@
 /* Generic test file for functions with one mpfr_t argument.
 
-Copyright (C) 2001 Free Software Foundation.
+Copyright 2001 Free Software Foundation.
 
 This file is part of the MPFR Library.
 

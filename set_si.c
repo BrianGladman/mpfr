@@ -1,6 +1,6 @@
 /* mpfr_set_si -- set a MPFR number from a machine signed integer
 
-Copyright (C) 1999-2001 Free Software Foundation.
+Copyright 1999, 2000, 2001 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
