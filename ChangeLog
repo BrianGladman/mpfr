@@ -1,4 +1,14 @@
+2002-04-10  Vincent Lefevre  <lefevre@greux.loria.fr>
+
+	* tests/tsqrt.c, tests/tsqrt_ui.c, tests/tsub_ui.c, tests/tui_div.c, tests/tui_sub.c, tests/tadd.c, tests/tadd_ui.c, tests/tagm.c, tests/tdiv.c, tests/tdiv_ui.c, tests/texp.c, tests/tget_d.c, tests/tget_str.c, tests/tlog.c, tests/tmul.c, tests/tset_q.c, rnd_mode.c, configure.in:
+	HAVE_FESETROUND renamed to MPFR_HAVE_FESETROUND to avoid possible
+	name conflict.
+
+	* Makefile.am, srandom.h: Added missing headers in libmpfr_a_SOURCES.
+
 2002-04-09  Vincent Lefevre  <lefevre@greux.loria.fr>
+
+	* ChangeLog: Update for the next pre-release.
 
 	* INSTALL: Possible tconst_log2 crash under Solaris.
 
