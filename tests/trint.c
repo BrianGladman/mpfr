@@ -116,6 +116,9 @@ special (void)
   /* since mpfr_round breaks ties away, should give 3 and not 2 as with
      the "round to even" rule */
   MPFR_ASSERTN(mpfr_cmp_ui (y, 3) == 0);
+  /* same test for the function */
+  (mpfr_round) (y, x);
+  MPFR_ASSERTN(mpfr_cmp_ui (y, 3) == 0);
 
   mpfr_set_prec (x, 6);
   mpfr_set_prec (y, 3);
