@@ -466,7 +466,8 @@ check_inexact (void)
 		: MPFR_EXP(u)-MPFR_EXP(x);
 	      /* x + u is exactly representable with precision
 		 abs(EXP(x)-EXP(u)) + max(prec(x), prec(u)) + 1 */
-	      pz = pz + MAX(MPFR_PREC(x), MPFR_PREC(u)) + 1;
+	      pz = MIN (MPFR_PREC_MIN,
+                        pz + MAX(MPFR_PREC(x), MPFR_PREC(u)) + 1);
 	      mpfr_set_prec (z, pz);
 	      rnd = randlimb () % 4;
 	      if (mpfr_add (z, x, u, rnd))
