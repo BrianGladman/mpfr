@@ -28,9 +28,6 @@ Documentation:
 - mpfr_set_prec: add an explanation of how to speed up calculations
   which increase their precision at each step.
 
-- solve the problem with @pxref{Custom Allocation,,, gmp,GNU MP}
-	[gives broken link on the html version]
-
 Installation:
 
 - from Kevin Ryde <user42@zip.com.au>:
@@ -49,7 +46,6 @@ Installation:
 
 Changes in existing functions:
 
-- merge mpfr_inp_str, mpfr_set_str to use mpfr_strtofr
 - mpfr_get_str should support base up to 62 too.
 
 - mpfr_can_round:
