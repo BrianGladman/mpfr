@@ -175,7 +175,7 @@ mpfr_test_init ()
    exponent range is only enforced when storing to memory.
 
    For reference, on most i386 systems the default is 64-bit "long double"
-   precision, but on FreeBSD 3.x it's 53-bit "double".  */
+   precision, but on FreeBSD 3.x and amd64 5.x it's 53-bit "double".  */
 
 void
 tests_machine_prec_double (void)
