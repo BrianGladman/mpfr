@@ -25,8 +25,6 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-static int mpfr_pow_is_exact _PROTO((mpfr_srcptr, mpfr_srcptr));
-
 /* return non zero iff x^y is exact.
    Assumes x and y are ordinary numbers (neither NaN nor Inf),
    and y is not zero.
