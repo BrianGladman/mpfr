@@ -1,6 +1,6 @@
 /* mpfr_fma -- Floating multiply-add
 
-Copyright (C) 2001 Free Software Foundation, Inc.
+Copyright (C) 2001, 2002 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -22,7 +22,6 @@ the file COPYING.LIB.  If not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -34,63 +33,66 @@ MA 02111-1307, USA. */
 */
 
 int
-mpfr_fma (mpfr_ptr s, mpfr_srcptr x ,mpfr_srcptr y ,mpfr_srcptr z , mp_rnd_t rnd_mode) 
+mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
+          mp_rnd_t rnd_mode)
 {
-  int inexact =0;
+  int inexact = 0;
   /* Flag calcul exacte */
-  int not_exact=0;
+  int not_exact = 0;
 
-        /* particular cases */
-        if (MPFR_IS_NAN(x) || MPFR_IS_NAN(y) ||  MPFR_IS_NAN(z))
-	  {
-	    MPFR_SET_NAN(s); 
-	    return 1; 
-	  }
+  /* particular cases */
+  if (MPFR_IS_NAN(x) || MPFR_IS_NAN(y) || MPFR_IS_NAN(z))
+    {
+      MPFR_SET_NAN(s);
+      MPFR_RET_NAN;
+    }
 
-        /* cases Inf*0+z, 0*Inf+z, Inf-Inf */
-        if ((MPFR_IS_INF(x) && MPFR_IS_ZERO(y)) ||
-	    (MPFR_IS_INF(y) && MPFR_IS_ZERO(x)) ||
-	    ((MPFR_IS_INF(x) || MPFR_IS_INF(y)) && MPFR_IS_INF(z) &&
-	     ((MPFR_SIGN(x) * MPFR_SIGN(y)) != MPFR_SIGN(z))))
-	  {
-	    MPFR_SET_NAN(s);
-	    return 1;
-	  }
+  if (MPFR_IS_INF(x) || MPFR_IS_INF(y))
+    {
+      /* cases Inf*0+z, 0*Inf+z, Inf-Inf */
+      if ((MPFR_IS_FP(y) && MPFR_IS_ZERO(y)) ||
+          (MPFR_IS_FP(x) && MPFR_IS_ZERO(x)) ||
+          (MPFR_IS_INF(z) && ((MPFR_SIGN(x) * MPFR_SIGN(y)) != MPFR_SIGN(z))))
+        {
+          MPFR_SET_NAN(s);
+          MPFR_RET_NAN;
+        }
 
-	MPFR_CLEAR_NAN(s);
+      MPFR_CLEAR_NAN(s);
 
-        if (MPFR_IS_INF(x) || MPFR_IS_INF(y))
-	  {
-	    if (MPFR_IS_INF(z)) /* case Inf-Inf already checked above */
-	      {
-		MPFR_SET_INF(s);
-		MPFR_SET_SAME_SIGN(s, z);
-		return 0;
-	      }
-	    else /* z is finite */
-	      {
-		MPFR_SET_INF(s);
-		if (MPFR_SIGN(s) != (MPFR_SIGN(x) * MPFR_SIGN(y)))
-		  MPFR_CHANGE_SIGN(s);
-		return 0;
-	      }
-	  }
+      if (MPFR_IS_INF(z)) /* case Inf-Inf already checked above */
+        {
+          MPFR_SET_INF(s);
+          MPFR_SET_SAME_SIGN(s, z);
+          MPFR_RET(0);
+        }
+      else /* z is finite */
+        {
+          MPFR_SET_INF(s);
+          if (MPFR_SIGN(s) != (MPFR_SIGN(x) * MPFR_SIGN(y)))
+            MPFR_CHANGE_SIGN(s);
+          MPFR_RET(0);
+        }
+    }
 
-	/* now x and y are finite */
-	if (MPFR_IS_INF(z))
-	  {
-	    MPFR_SET_INF(s);
-	    MPFR_SET_SAME_SIGN(s, z);
-	    return 0;
-	  }
+  MPFR_CLEAR_NAN(s);
 
-        MPFR_CLEAR_INF(s);
+  /* now x and y are finite */
+  if (MPFR_IS_INF(z))
+    {
+      MPFR_SET_INF(s);
+      MPFR_SET_SAME_SIGN(s, z);
+      MPFR_RET(0);
+    }
 
-        if(!MPFR_NOTZERO(x) || !MPFR_NOTZERO(y))
-	  return mpfr_set (s, z, rnd_mode);
-        if (!MPFR_NOTZERO(z))
-	  return mpfr_mul (s, x, y, rnd_mode);
-	
+  MPFR_CLEAR_INF(s);
+
+  if (MPFR_IS_ZERO(x) || MPFR_IS_ZERO(y))
+    return mpfr_set (s, z, rnd_mode);
+
+  if (MPFR_IS_ZERO(z))
+    return mpfr_mul (s, x, y, rnd_mode);
+
         /* General case */
         /* Detail of the compute */
 
@@ -194,4 +196,3 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x ,mpfr_srcptr y ,mpfr_srcptr z , mp_rnd_t rnd
           return inexact;
         
 }
-
