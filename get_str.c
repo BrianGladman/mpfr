@@ -165,7 +165,7 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
   bz->_mp_size=q;
 
   /* computes the number of characters needed */
-  q = neg + n + 1;
+  q = neg + n + 2; /* n+1 may not be enough for 100000... */
   if (str==NULL) str0=str=(*_mp_allocate_func)(q); 
   if (neg) *str++='-';
   mpz_get_str(str, base, bz); /* n digits of mantissa */
