@@ -28,8 +28,10 @@ MA 02111-1307, USA. */
 
 #if (BITS_PER_MP_LIMB==32)
 #define MPFR_LIMBS_PER_DOUBLE 2
-#elif (BITS_PER_MP_LIMB==64)
+#elif (BITS_PER_MP_LIMB >= 64)
 #define MPFR_LIMBS_PER_DOUBLE 1
+#elif (BITS_PER_MP_LIMB == 16)
+#define MPFR_LIMBS_PER_DOUBLE 4
 #endif
 
 int __mpfr_extract_double _PROTO ((mp_ptr, double, int));
@@ -250,7 +252,8 @@ mpfr_set_d (r, d, rnd_mode)
      mp_rnd_t rnd_mode;
 #endif
 {
-  int signd, sizer; unsigned int cnt;
+  int signd, sizer, carry; unsigned int cnt; mpfr_ptr tmp; 
+  TMP_MARK(marker); 
 
   MPFR_CLEAR_FLAGS(r);
   if (d == 0) {
@@ -272,26 +275,36 @@ mpfr_set_d (r, d, rnd_mode)
       return;
     }
 
+  if (sizer < MPFR_LIMBS_PER_DOUBLE) 
+    {
+      tmp = TMP_ALLOC(sizeof(mpfr_ptr)); 
+      MPFR_MANT(tmp) = TMP_ALLOC(MPFR_LIMBS_PER_DOUBLE * BYTES_PER_MP_LIMB); 
+      MPFR_PREC(tmp) = 53; 
+      MPFR_SIZE(tmp) = 2; 
+    }
+  else tmp = r; 
+
   signd = (d < 0) ? -1 : 1;
   d = ABS (d);
-  sizer = (MPFR_PREC(r)-1)/BITS_PER_MP_LIMB + 1;
+  sizer = (MPFR_PREC(tmp)-1)/BITS_PER_MP_LIMB + 1;
 
   /* warning: __mpfr_extract_double requires at least two limbs */
   if (sizer < MPFR_LIMBS_PER_DOUBLE)
-    MPFR_EXP(r) = __mpfr_extract_double (MPFR_MANT(r), d, 0);
+    MPFR_EXP(tmp) = __mpfr_extract_double (MPFR_MANT(tmp), d, 0);
   else
-    MPFR_EXP(r) = __mpfr_extract_double (MPFR_MANT(r) + sizer - MPFR_LIMBS_PER_DOUBLE, d, 1);
+    MPFR_EXP(tmp) = __mpfr_extract_double (MPFR_MANT(tmp) + sizer - MPFR_LIMBS_PER_DOUBLE, d, 1);
   
   if (sizer > MPFR_LIMBS_PER_DOUBLE)
-    MPN_ZERO(MPFR_MANT(r), sizer - MPFR_LIMBS_PER_DOUBLE); 
+    MPN_ZERO(MPFR_MANT(tmp), sizer - MPFR_LIMBS_PER_DOUBLE); 
 
-  count_leading_zeros(cnt, MPFR_MANT(r)[sizer-1]);
-  if (cnt) mpn_lshift(MPFR_MANT(r), MPFR_MANT(r), sizer, cnt); 
+  count_leading_zeros(cnt, MPFR_MANT(tmp)[sizer-1]);
+  if (cnt) mpn_lshift(MPFR_MANT(tmp), MPFR_MANT(tmp), sizer, cnt); 
   
-  MPFR_EXP(r) -= cnt; 
-  if (MPFR_SIGN(r)*signd<0) MPFR_CHANGE_SIGN(r);
+  MPFR_EXP(tmp) -= cnt; 
 
-  mpfr_round(r, rnd_mode, MPFR_PREC(r)); 
+  mpfr_set4(r, tmp, rnd_mode, signd); 
+
+  TMP_FREE(marker); 
   return; 
 }
 
