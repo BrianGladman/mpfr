@@ -23,19 +23,10 @@ MA 02111-1307, USA. */
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "longlong.h"
+#include "urandom.h"
 #include "mpfr.h"
 
 /* Computes a random mpfr in [0, 1[ with precision MPFR_PREC */
-
-extern long random _PROTO((void)); 
-extern int srandom _PROTO((unsigned int)); 
-
-/* extracted from GNU mpf */
-#if defined (__hpux) || defined (__alpha)
-/* HPUX lacks random().  DEC OSF/1 1.2 random() returns a double.  */
-#define random mrand48
-#define srandom srand48
-#endif
 
 void
 #if __STDC__
