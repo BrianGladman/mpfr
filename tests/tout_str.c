@@ -50,6 +50,7 @@ main(int argc, char **argv)
 
   srand(getpid());
   /* printf seems to round towards nearest in all cases, at least with gcc */
+  check(1.0, 2, 10);
   check(4.059650008e-83, 0, 10);
   check(-6.606499965302424244461355e233, 0, 10);
   check(-7.4, 0, 10);
