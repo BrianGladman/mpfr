@@ -1,8 +1,8 @@
 /* Utilities for MPFR developers, not exported.
 
-Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2005 
+Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2005
   Free Software Foundation, Inc.
- 
+
 This file is part of the MPFR Library.
 
 The MPFR Library is free software; you can redistribute it and/or modify
@@ -76,7 +76,7 @@ MA 02111-1307, USA. */
 # define strncasecmp mpfr_strncasecmp
 #endif
 
-/* Define theses variables if we have built MPFR with 
+/* Define theses variables if we have built MPFR with
    MPFR_USE_NO_MACRO (ie mpfr.h doesn't declare them).
    I don't see any interest to build MPFR with it. */
 #ifdef MPFR_USE_NO_MACRO
@@ -157,7 +157,7 @@ extern mpfr_cache_t __gmpfr_cache_const_euler;
 # error "Can't compute log2(BITS_PER_MP_LIMB)"
 #endif
 
-/* mpn_sub_nc is internal but may be defined in the header 
+/* mpn_sub_nc is internal but may be defined in the header
    but not in the library! */
 #ifndef MPFR_HAVE_MPN_SUB_NC
 mp_limb_t mpfr_sub_nc _MPFR_PROTO ((mp_ptr, mp_srcptr, mp_srcptr, mp_size_t,
@@ -226,14 +226,14 @@ mp_limb_t mpfr_sub_nc _MPFR_PROTO ((mp_ptr, mp_srcptr, mp_srcptr, mp_size_t,
 #endif
 #define MPFR_LIMBS_PER_DOUBLE ((IEEE_DBL_MANT_DIG-1)/BITS_PER_MP_LIMB+1)
 
-/* Visual C++ doesn't support +1.0/.00, -1.0/0.0 and 0.0/0.0 
+/* Visual C++ doesn't support +1.0/.00, -1.0/0.0 and 0.0/0.0
    at compile time. */
 #if defined(_MSC_VER) && defined(_WIN32) && (_MSC_VER >= 1200)
 static double double_zero = 0.0;
 # define DBL_NAN (double_zero/double_zero)
 # define DBL_POS_INF ((double) 1.0/double_zero)
 # define DBL_NEG_INF ((double)-1.0/double_zero)
-#else 
+#else
 # define DBL_POS_INF ((double) 1.0/0.0)
 # define DBL_NEG_INF ((double)-1.0/0.0)
 # define DBL_NAN     ((double) 0.0/0.0)
@@ -324,15 +324,15 @@ long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CO
 /* Some special case for IEEE_EXT Litle Endian */
 #if HAVE_LDOUBLE_IEEE_EXT_LITTLE
 
-typedef union {                                                  
-  long double    ld;                                       
+typedef union {
+  long double    ld;
   struct {
     unsigned long manl : 32;
     unsigned long manh : 32;
     unsigned long expl : 8 ;
     unsigned long exph : 7;
     unsigned long sign : 1;
-  } s;                    
+  } s;
 } mpfr_long_double_t;
 
 #undef MPFR_LDBL_MANT_DIG
@@ -377,14 +377,14 @@ typedef unsigned long int  mpfr_uexp_t;
 # define MPFR_EXP_MAX (LONG_MAX)
 # define MPFR_EXP_MIN (LONG_MIN)
 #endif
-#ifndef mp_exp_unsigned_t 
+#ifndef mp_exp_unsigned_t
 # define mp_exp_unsigned_t mpfr_uexp_t
 #endif
 
 /* Invalid exponent value (to track bugs...) */
 #define MPFR_EXP_INVALID \
  ((mp_exp_t) 1 << (BITS_PER_MP_LIMB*sizeof(mp_exp_t)/sizeof(mp_limb_t)-2))
- 
+
 /* Definition of the intervals of the exponent limits */
 #undef MPFR_EMIN_MIN
 #undef MPFR_EMIN_MAX
@@ -418,15 +418,15 @@ typedef unsigned long int  mpfr_uexp_t;
  ********** Singular Values (NAN, INF, ZERO) **********
  ******************************************************/
 
-/* 
+/*
  * Clear flags macros are still defined and should be still used
  * since the functions must not assume the internal format.
  * How to deal with special values ?
  *  1. Check if is a special value (Zero, Nan, Inf) wiht MPFR_IS_SINGULAR
  *  2. Deal with the special value with MPFR_IS_NAN, MPFR_IS_INF, etc
- *  3. Else clear the flags of the dest (it must be done after since src 
+ *  3. Else clear the flags of the dest (it must be done after since src
  *     may be also the dest!)
- * MPFR_SET_INF, MPFR_SET_NAN, MPFR_SET_ZERO must clear by 
+ * MPFR_SET_INF, MPFR_SET_NAN, MPFR_SET_ZERO must clear by
  * themselves the other flags.
  */
 
@@ -527,7 +527,7 @@ typedef unsigned long int  mpfr_uexp_t;
   do {  \
     if (MPFR_UNLIKELY(MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd, test))) \
       rnd = GMP_RNDZ; \
-  } while (0) 
+  } while (0)
 
 
 
@@ -603,7 +603,7 @@ extern unsigned char *mpfr_stack;
  ( MPFR_PREC(x) = (p), \
    MPFR_MANT(x) = (xp), \
    MPFR_SET_POS(x), \
-   MPFR_SET_INVALID_EXP(x)) 
+   MPFR_SET_INVALID_EXP(x))
 
 #define MPFR_TMP_INIT(xp, x, p, s) \
   (xp = (mp_ptr) TMP_ALLOC(BYTES_PER_MP_LIMB * ((size_t) s)), \
@@ -652,7 +652,7 @@ extern unsigned char *mpfr_stack;
  *****************  Useful macros *********************
  ******************************************************/
 
-/* Theses macros help the compiler to determine if a test is 
+/* Theses macros help the compiler to determine if a test is
  * likely or unlikely. */
 #if __MPFR_GNUC(3,0) || __MPFR_ICC(8,1,0)
 # define MPFR_LIKELY(x) (__builtin_expect(!!(x),1))
@@ -663,7 +663,7 @@ extern unsigned char *mpfr_stack;
 #endif
 
 /* Ceil log 2: If GCC, uses a GCC extension, otherwise calls a function */
-/* Warning: 
+/* Warning:
  *   Needs to define MPFR_NEED_LONGLONG.
  *   Computes ceil(log2(x)) only for x integer (unsigned long)
  *   Undefined if x is 0 */
@@ -716,20 +716,22 @@ do { \
 } while (0)
 
 /* Compute s = (-a) % BITS_PER_MP_LIMB
- * a is unsigned! Check if it works, 
+ * a is unsigned! Check if it works,
  * otherwise tries another way to compute it */
-#define MPFR_UNSIGNED_MINUS_MODULO(s, a) \
-  do { \
-  if ((UINT_MAX % BITS_PER_MP_LIMB) == (BITS_PER_MP_LIMB-1) \
-      && ((-(unsigned) 1)%BITS_PER_MP_LIMB > 0)) \
-    (s) = (-(a)) % BITS_PER_MP_LIMB; \
-  else \
-    {(s) = (a) % BITS_PER_MP_LIMB;  \
-    if (s)  \
-      (s) = BITS_PER_MP_LIMB - (s); \
-    } \
-  MPFR_ASSERTD( (s) >= 0 && (s) < BITS_PER_MP_LIMB); \
-  } while (0) 
+#define MPFR_UNSIGNED_MINUS_MODULO(s, a)                          \
+  do                                                              \
+    {                                                             \
+      if ((UINT_MAX % BITS_PER_MP_LIMB) == (BITS_PER_MP_LIMB-1))  \
+        (s) = (-(a)) % BITS_PER_MP_LIMB;                          \
+      else                                                        \
+        {                                                         \
+          (s) = (a) % BITS_PER_MP_LIMB;                           \
+          if (s != 0)                                             \
+            (s) = BITS_PER_MP_LIMB - (s);                         \
+        }                                                         \
+      MPFR_ASSERTD ((s) >= 0 && (s) < BITS_PER_MP_LIMB);          \
+    }                                                             \
+  while (0)
 
 /* Use it only for debug reasons */
 /*   MPFR_TRACE (operation) : execute operation iff DEBUG flag is set */
@@ -775,7 +777,7 @@ typedef struct {
   mp_exp_t saved_emin;
   mp_exp_t saved_emax;
 } mpfr_save_expo_t;
-  
+
 #define MPFR_SAVE_EXPO_DECL(x) mpfr_save_expo_t x
 #define MPFR_SAVE_EXPO_MARK(x)     \
  ((x).saved_flags = __gmpfr_flags, \
@@ -1049,7 +1051,7 @@ int mpfr_add1 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_sub1 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_add1sp _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_sub1sp _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
-int mpfr_can_round_raw _MPFR_PROTO ((mp_limb_t *, mp_size_t, int, 
+int mpfr_can_round_raw _MPFR_PROTO ((mp_limb_t *, mp_size_t, int,
 				     mp_exp_t, mp_rnd_t, mp_rnd_t, mp_prec_t));
 
 int mpfr_cmp2 _MPFR_PROTO ((mpfr_srcptr, mpfr_srcptr, mp_prec_t *));
@@ -1068,11 +1070,11 @@ int mpfr_powerof2_raw _MPFR_PROTO ((mpfr_srcptr));
 void mpfr_setmax _MPFR_PROTO ((mpfr_ptr, mp_exp_t));
 void mpfr_setmin _MPFR_PROTO ((mpfr_ptr, mp_exp_t));
 
-long mpfr_mpn_exp _MPFR_PROTO ((mp_limb_t *, mp_exp_t *, int, 
+long mpfr_mpn_exp _MPFR_PROTO ((mp_limb_t *, mp_exp_t *, int,
 			   mp_exp_t, size_t));
 
 void mpfr_print_binary _MPFR_PROTO ((mpfr_srcptr));
-void mpfr_print_mant_binary _MPFR_PROTO ((__gmp_const char *, 
+void mpfr_print_mant_binary _MPFR_PROTO ((__gmp_const char *,
 					  __gmp_const mp_limb_t *, mp_prec_t));
 void mpfr_set_str_binary _MPFR_PROTO ((mpfr_ptr, __gmp_const char *));
 
