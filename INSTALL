@@ -27,6 +27,7 @@ Alpha 21264/OSF1 V4.0
 SGI R10000/IRIX 6.5 (both using 32- and 64-bit limbs)
 Sun UltraSparc/Solaris 2.6
 HP 9000/HP-UX A.09.05
+Pentium/Windows with Cygnus compiler
 
 Known problems.
 ===============
