@@ -10,6 +10,7 @@ Vincent Lefèvre		Main author
 David Daney		Hyperbolic and inverse hyperbolic functions, base-2
 			and base-10 exponential and logarithm, factorial
 Patrick Pélissier	Working on low-precision optimizations
+Laurent Fousse		Original version of sum.c.
 
 All authors are included in the MPFR mailing-list <mpfr@loria.fr>.
 This is the preferred way to contact us. For further information, please
