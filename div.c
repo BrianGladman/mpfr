@@ -15,9 +15,7 @@ mpfr_ptr Q; mpfr_srcptr n, d; unsigned char rnd_mode;
   mpfr_t eps, tmp, one; int expd, i, prec, precq, sh, guard, err;
   mp_limb_t cc; mpfr_ptr q;
 
-  if (FLAG_NAN(n) || FLAG_NAN(d)) {
-    SET_NAN(q); return;
-  }
+  if (FLAG_NAN(n) || FLAG_NAN(d)) { SET_NAN(Q); return; }
   if (Q==n || Q==d) {
     q = (mpfr_ptr) (*_mp_allocate_func) (sizeof(__mpfr_struct));
     mpfr_init2(q, PREC(Q));
