@@ -191,14 +191,14 @@ int mpfr_log10 _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 #define mpfr_sgn(x) mpfr_cmp_ui(x,0)
 
 #define mpfr_init_set_si(x, i, rnd) \
- do { mpfr_init(x); mpfr_set_si((x), (i), (rnd)); } while (0)
+ ( mpfr_init(x), mpfr_set_si((x), (i), (rnd)) )
 #define mpfr_init_set_ui(x, i, rnd) \
- do { mpfr_init(x); mpfr_set_ui((x), (i), (rnd)); } while (0)
+ ( mpfr_init(x), mpfr_set_ui((x), (i), (rnd)) )
 #define mpfr_init_set_d(x, d, rnd) \
- do { mpfr_init(x); mpfr_set_d((x), (d), (rnd)); } while (0)
+ ( mpfr_init(x), mpfr_set_d((x), (d), (rnd)) )
 #define mpfr_init_set(x, y, rnd) \
- do { mpfr_init(x); mpfr_set((x), (y), (rnd)); } while (0)
+ ( mpfr_init(x), mpfr_set((x), (y), (rnd)) )
 #define mpfr_init_set_f(x, y, rnd) \
- do { mpfr_init(x); mpfr_set_f((x), (y), (rnd)); } while (0)
+ ( mpfr_init(x), mpfr_set_f((x), (y), (rnd)) )
 
 #endif
