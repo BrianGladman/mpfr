@@ -83,6 +83,7 @@ AC_TRY_LINK([#include <fenv.h>], [fesetround(FE_TONEAREST);],
 LIBS="$saved_LIBS"
 ])
 if test "$mpfr_cv_have_fesetround" = "yes"; then
+  LIBS="$LIBS $LM9X"
   AC_DEFINE(MPFR_HAVE_FESETROUND,1,[Define if you have the `fesetround' function via the <fenv.h> header file.])
 fi
 
