@@ -40,6 +40,7 @@ void check2 _PROTO((double, int, double, int, int, int));
 void check2a _PROTO((double, int, double, int, int, int, char *)); 
 void check64 _PROTO((void)); 
 void check_same _PROTO((void)); 
+void check_case_1b _PROTO((void)); 
 
 /* checks that x+y gives the same results in double
    and with mpfr with 53 bits of precision */
@@ -378,6 +379,54 @@ void check64 ()
   mpfr_clear(x); mpfr_clear(t); mpfr_clear(u);
 }
 
+void check_case_1b ()
+{
+  mpfr_t a, b, c;
+  unsigned int prec_a, prec_b, prec_c, dif;
+
+  mpfr_init (a);
+  mpfr_init (b);
+  mpfr_init (c);
+
+  for (prec_a = 1; prec_a <= 64; prec_a++)
+    {
+      mpfr_set_prec (a, prec_a);
+      for (prec_b = prec_a + 1; prec_b <= 64; prec_b++)
+	{
+	  dif = prec_b - prec_a;
+	  mpfr_set_prec (b, prec_b);
+	  /* b = 1 - 2^(-prec_a) + 2^(-prec_b) */
+	  mpfr_set_ui (b, 1, GMP_RNDN);
+	  mpfr_div_2exp (b, b, dif, GMP_RNDN);
+	  mpfr_sub_ui (b, b, 1, GMP_RNDN);
+	  mpfr_div_2exp (b, b, prec_a, GMP_RNDN);
+	  mpfr_add_ui (b, b, 1, GMP_RNDN);
+	  for (prec_c = dif; prec_c <= 64; prec_c++)
+	    {
+	      /* c = 2^(-prec_a) - 2^(-prec_b) */
+	      mpfr_set_prec (c, prec_c);
+	      mpfr_set_si (c, -1, GMP_RNDN);
+	      mpfr_div_2exp (c, c, dif, GMP_RNDN);
+	      mpfr_add_ui (c, c, 1, GMP_RNDN);
+	      mpfr_div_2exp (c, c, prec_a, GMP_RNDN);
+	      mpfr_add (a, b, c, GMP_RNDN);
+	      if (mpfr_cmp_ui (a, 1) != 0)
+		{
+		  fprintf (stderr, "case (1b) failed for prec_a=%u, prec_b=%u, prec_c=%u\n", prec_a, prec_b, prec_c);
+		  printf("b="); mpfr_print_raw(b); putchar('\n');
+		  printf("c="); mpfr_print_raw(c); putchar('\n');
+		  printf("a="); mpfr_print_raw(a); putchar('\n');
+		  exit (1);
+		}
+	    }
+	}
+    }
+
+  mpfr_clear (a);
+  mpfr_clear (b);
+  mpfr_clear (c);
+}
+
 /* checks when source and destination are equal */
 void check_same ()
 {
@@ -410,6 +459,7 @@ main (int argc, char *argv[])
     set_fpc_csr(exp.fc_word);
 #endif
 
+  check_case_1b ();
   check64();
   check(293607738.0, 1.9967571564050541e-5, GMP_RNDU, 64, 53, 53,
 	2.9360773800002003e8);
