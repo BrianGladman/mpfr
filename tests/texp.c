@@ -64,7 +64,8 @@ int check3(double d, unsigned char rnd, double e)
     }
     if (u!=0) {
       if (ck) {
-	printf("mpfr_exp failed for x=%1.20e, rnd=%d\n",d,rnd);
+	printf("mpfr_exp failed for x=%1.20e, rnd=%s\n", d,
+	       mpfr_print_rnd_mode(rnd));
 	printf("expected result is %1.20e, got %1.20e, dif=%d ulp\n",e,f,u);
 	exit(1);
       }
@@ -222,8 +223,7 @@ main(int argc, char **argv)
            /* +45 ulp, wrong side */
   check3(-2.41175390197331687148e+01, 3, 3.3564940885530624592e-11);/*-45 ulp*/
   check3(2.46363885231578088053e+01, 2, 5.0055014282693267822e10); /* +45 ulp*/
-  d=7819821913254249.0; d /= 70368744177664.0;
-  check3(d, GMP_RNDN, 1.8262572323517295459e48); /*-73 ulp*/
+  check3(1.111263531080090984914932e2, GMP_RNDN, 1.8262572323517295459e48);
   check3(-3.56196340354684821250e+02, 0, 2.0225297096141478156e-155); /*+352 */
   check3(6.59678273772710895173e+02, 2, 3.1234469273830195529e286); /* +459 */
   check3(5.13772529701934331570e+02, 3, 1.3445427121297197752e223); /* -469 */
