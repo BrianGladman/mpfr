@@ -17,3 +17,7 @@ Miscellaneous:
 - detect overflow/underflow in exponent (from Ben Hinkle <bhinkle4@juno.com>)
 
 - specify exponent size (suggestion from Ben Hinkle <bhinkle4@juno.com>)
+
+	   - Ya un bug (feature ?) au debut de mpfr_cmp3 : dans le 
+	   cas b == 0 on ne prend pas en compte l'argument s. Comme quoi
+	   ca sert de regarder le code droit dans les yeux des fois. 
