@@ -151,17 +151,17 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
       ok=1;
       rnd_mode=GMP_RNDN;
     }
-    ok = pow2 || mpfr_can_round(b, q-err, rnd_mode, rnd_mode, prec);
+    else ok = pow2 || mpfr_can_round(b, q-err, rnd_mode, rnd_mode, prec);
 
   } while (ok==0 && (q+=BITS_PER_MP_LIMB) );
-
-  if (ok) mpfr_round(b, rnd_mode, EXP(b));
 
   if (neg)
     switch (rnd_mode) {
     case GMP_RNDU: rnd_mode=GMP_RNDZ; break;
     case GMP_RNDD: rnd_mode=GMP_RNDU; break;
   }
+
+  if (ok) mpfr_round(b, rnd_mode, EXP(b));
 
   prec=EXP(b); /* may have changed due to rounding */
 
