@@ -27,7 +27,7 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
 #endif
 {
   double d; long e, q, div, p, err, prec, sh; mpfr_t a, b; mpz_t bz;
-  char *str0; unsigned char rnd1; int f, pow2, ok=0, neg;
+  char *str0; unsigned char rnd1; int f, pow2, ok=0, neg, exact=0;
 
   if (base<2 || 36<base) {
     fprintf(stderr, "Error: too small or too large base in mpfr_get_str: %d\n",
@@ -53,6 +53,7 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
        y*base^(f-n) <= x*2^(e-p) < (x+1)*2^(e-p) <= (y+1)*base^(f-n)
        which implies 2^(EXP(op)-PREC(op)) <= base^(f-n)
      */
+    exact=1;
     n = f + (int) ceil(((double)PREC(op)-e)*log(2.0)/log((double)base));
     /*    n = (int) ceil((double)PREC(op)*log(2.0)/log((double)base)+
 	  log(4.0*fabs((double)((f==0) ? 1 : f)))/log(2.0)); */
@@ -101,9 +102,9 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
       fprintf(stderr, "no convergence in mpfr_get_str\n"); exit(1);
     }
     ok = pow2 || mpfr_can_round(b, q-err, rnd_mode, rnd_mode, prec);
-    /* check that value is the same at distance 2^(e-PREC(op))/base^(f-n)
+    if (ok && exact) { 
+      /* check that value is the same at distance 2^(e-PREC(op))/base^(f-n)
        in opposite from rounding direction */
-    if (ok) {
       if (e>=PREC(op)) mpfr_mul_2exp(a, a, e-PREC(op), rnd_mode);
       else mpfr_div_2exp(a, a, PREC(op)-e, rnd_mode);
       if (rnd_mode==GMP_RNDN) {
