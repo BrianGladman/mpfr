@@ -92,7 +92,12 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	 = B.BBBBBBBBBBBBBBB
 	  -                     C.CCCCCCCCCCCCC */
       /* A = S*ABS(B) +/- ulp(a) */
-      inexact = mpfr_set4 (a, b, rnd_mode, MPFR_SIGN (a)); 
+      MPFR_SET_EXP (a, MPFR_GET_EXP (b));
+      MPFR_RNDRAW_EVEN (inexact, a, MPFR_MANT (b), MPFR_PREC (b), 
+			rnd_mode, MPFR_SIGN (a), 
+			if (MPFR_UNLIKELY ( ++MPFR_EXP (a) > __gmpfr_emax)) 
+			inexact = mpfr_overflow (a, rnd_mode, MPFR_SIGN (a)));
+      /* inexact = mpfr_set4 (a, b, rnd_mode, MPFR_SIGN (a));  */
       if (inexact == 0)
 	{
 	  /* a = b (Exact)
@@ -127,7 +132,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	     which means we get a wrong rounded result if x==1, 
 	     i.e. inexact= MPFR_EVEN_INEX */
 	  if (MPFR_UNLIKELY (inexact == MPFR_EVEN_INEX*MPFR_INT_SIGN (a))) {
-	    mpfr_nexttoward (a, c);
+	    mpfr_nexttozero (a);
 	    inexact = -MPFR_INT_SIGN (a);
 	  }
 	  return inexact;
