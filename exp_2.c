@@ -1,7 +1,7 @@
 /* mpfr_exp_2 -- exponential of a floating-point number 
                 using Brent's algorithms in O(n^(1/2)*M(n)) and O(n^(1/3)*M(n))
 
-Copyright 1999, 2000, 2001, 2002 Free Software Foundation, Inc.
+Copyright 1999, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -23,6 +23,7 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include "gmp.h"
 #include "gmp-impl.h"
+#include "longlong.h" /* for count_leading_zeros */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
@@ -107,7 +108,7 @@ mpz_normalize2 (mpz_t rop, mpz_t z, int expz, int target)
 int 
 mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode) 
 {
-  int n, K, precy, q, k, l, err, exps, inexact;
+  int n, K, precy, q, k, l, err, exps, inexact, error_r;
   mpfr_t r, s, t; mpz_t ss;
   TMP_DECL(marker);
 
@@ -115,16 +116,20 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   n = (int) (mpfr_get_d1 (x) / LOG2);
 
+  /* error bounds the cancelled bits in x - n*log(2) */
+  count_leading_zeros (error_r, (mp_limb_t) (n < 0) ? -n : n);
+  error_r = BITS_PER_MP_LIMB - error_r + 2;
+
   /* for the O(n^(1/2)*M(n)) method, the Taylor series computation of
      n/K terms costs about n/(2K) multiplications when computed in fixed
      point */
   K = (precy<SWITCH) ? __gmpfr_isqrt((precy + 1) / 2) : __gmpfr_cuberoot (4*precy);
-  l = (precy-1)/K + 1;
+  l = (precy - 1) / K + 1;
   err = K + (int) __gmpfr_ceil_log2 (2.0 * (double) l + 18.0);
   /* add K extra bits, i.e. failure probability <= 1/2^K = O(1/precy) */
   q = precy + err + K + 3;
-  mpfr_init2 (r, q);
-  mpfr_init2 (s, q);
+  mpfr_init2 (r, q + error_r);
+  mpfr_init2 (s, q + error_r);
   mpfr_init2 (t, q);
   /* the algorithm consists in computing an upper bound of exp(x) using
      a precision of q bits, and see if we can round to MPFR_PREC(y) taking
@@ -136,50 +141,59 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   /* if n<0, we have to get an upper bound of log(2)
      in order to get an upper bound of r = x-n*log(2) */
-  mpfr_const_log2 (s, (n>=0) ? GMP_RNDZ : GMP_RNDU);
+  mpfr_const_log2 (s, (n >= 0) ? GMP_RNDZ : GMP_RNDU);
+  /* s is within 1 ulp of log(2) */
 #ifdef DEBUG
-  printf("n=%d log(2)=",n); mpfr_print_binary(s); putchar('\n');
+  printf ("n=%d log(2)=", n);
+  mpfr_print_binary (s);
+  putchar ('\n');
 #endif
-  mpfr_mul_ui (r, s, (n<0) ? -n : n, (n>=0) ? GMP_RNDZ : GMP_RNDU); 
-  if (n<0) mpfr_neg(r, r, GMP_RNDD);
-  /* r = floor(n*log(2)) */
+  mpfr_mul_ui (r, s, (n < 0) ? -n : n, (n >= 0) ? GMP_RNDZ : GMP_RNDU);
+  /* r is within 3 ulps of n*log(2) */
+  if (n < 0)
+    mpfr_neg (r, r, GMP_RNDD); /* exact */
+  /* r = floor(n*log(2)), within 3 ulps */
 
 #ifdef DEBUG
-  printf("x=%1.20e\n", mpfr_get_d1 (x));
-  printf(" ="); mpfr_print_binary(x); putchar('\n');
-  printf("r=%1.20e\n", mpfr_get_d1 (r));
-  printf(" ="); mpfr_print_binary(r); putchar('\n');
+  printf ("x="); mpfr_print_binary (x); putchar ('\n');
+  printf ("r="); mpfr_print_binary (r); putchar ('\n');
 #endif
-  mpfr_sub(r, x, r, GMP_RNDU);
-  if (MPFR_SIGN(r)<0) { /* initial approximation n was too large */
-    n--;
-    mpfr_mul_ui(r, s, (n<0) ? -n : n, GMP_RNDZ);
-    if (n<0) mpfr_neg(r, r, GMP_RNDD);
-    mpfr_sub(r, x, r, GMP_RNDU);
-  }
+  mpfr_sub (r, x, r, GMP_RNDU);
+  /* possible cancellation here: the error on r is at most 
+     3*2^(EXP(old_r)-EXP(new_r)) */
+  if (MPFR_SIGN(r) < 0)
+    { /* initial approximation n was too large */
+      n--;
+      mpfr_mul_ui (r, s, (n < 0) ? -n : n, GMP_RNDZ);
+      if (n < 0)
+        mpfr_neg (r, r, GMP_RNDD);
+      mpfr_sub (r, x, r, GMP_RNDU);
+    }
+  mpfr_round_prec (r, GMP_RNDU, q);
 #ifdef DEBUG
-  printf("x-r=%1.20e\n", mpfr_get_d1 (r));
-  printf(" ="); mpfr_print_binary(r); putchar('\n');
+  printf("x-r="); mpfr_print_binary(r); putchar('\n');
   if (MPFR_SIGN(r)<0) { fprintf(stderr,"Error in mpfr_exp: r<0\n"); exit(1); }
 #endif
-  mpfr_div_2ui(r, r, K, GMP_RNDU); /* r = (x-n*log(2))/2^K */
+  mpfr_div_2ui (r, r, K, GMP_RNDU); /* r = (x-n*log(2))/2^K, exact */
 
   TMP_MARK(marker);
   MY_INIT_MPZ(ss, 3 + 2*((q-1)/BITS_PER_MP_LIMB));
-  exps = mpfr_get_z_exp(ss, s);
+  exps = mpfr_get_z_exp (ss, s);
   /* s <- 1 + r/1! + r^2/2! + ... + r^l/l! */
-  l = (precy<SWITCH) ? mpfr_exp2_aux(ss, r, q, &exps) /* naive method */
-    : mpfr_exp2_aux2(ss, r, q, &exps); /* Brent/Kung method */
+  l = (precy < SWITCH) ? mpfr_exp2_aux (ss, r, q, &exps) /* naive method */
+    : mpfr_exp2_aux2 (ss, r, q, &exps); /* Brent/Kung method */
 
 #ifdef DEBUG
   printf("l=%d q=%d (K+l)*q^2=%1.3e\n", l, q, (K+l)*(double)q*q);
 #endif
 
-  for (k=0;k<K;k++) {
-    mpz_mul(ss, ss, ss); exps <<= 1;
-    exps += mpz_normalize(ss, ss, q);
-  }
-  mpfr_set_z(s, ss, GMP_RNDN); MPFR_EXP(s) += exps;
+  for (k = 0; k < K; k++)
+    {
+      mpz_mul (ss, ss, ss);
+      exps <<= 1;
+      exps += mpz_normalize (ss, ss, q);
+    }
+  mpfr_set_z (s, ss, GMP_RNDN); MPFR_EXP(s) += exps;
   TMP_FREE(marker); /* don't need ss anymore */
 
   if (n>0) mpfr_mul_2ui(s, s, n, GMP_RNDU);
@@ -193,9 +207,10 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   K += k;
 #ifdef DEBUG
     printf("after mult. by 2^n:\n");
-    if (MPFR_EXP(s) > -1024)
-      printf("s=%1.20e\n", mpfr_get_d1 (s));
-    printf(" ="); mpfr_print_binary(s); putchar('\n');
+    printf("s="); mpfr_print_binary(s); putchar('\n');
+    /* s = 2803359604126772727907*2^711367611 
+=0.100101111111100001101110000000110001111000010111111110011001000001100011
+=0.10010111111110000110111000000011000111011111100001000001100000001001000100100 */
     printf("err=%d bits\n", K);
 #endif
 
@@ -234,7 +249,7 @@ mpfr_exp2_aux (mpz_t s, mpfr_srcptr r, int q, int *exps)
 
   TMP_MARK(marker);
   qn = 1 + (q-1)/BITS_PER_MP_LIMB;
-  MY_INIT_MPZ(t, 2*qn+1); /* 2*qn+1 is neeeded since mpz_div_2exp may 
+  MY_INIT_MPZ(t, 2*qn+1); /* 2*qn+1 is needed since mpz_div_2exp may 
 			      need an extra limb */
   MY_INIT_MPZ(rr, qn+1);
   mpz_set_ui(t, 1); expt=0;
