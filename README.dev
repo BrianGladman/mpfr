@@ -340,3 +340,39 @@ mpfr_toto (mpfr_ptr rop, mpfr_srcptr op, mp_rnd_t rnd)
   MPFR_SAVE_EXPO_FREE (expo);            /* Restore exponent range */
   MPFR_RET (mpfr_check_range (rop, inexact, rnd));  /* Check range and quit */
 }
+
+
+===========================================================================
+
+If you plan to add a new threshold in MPFR which could be tune, 
+you should add its default value in the file `mparam_h.in'. When the
+script configure finishes, it creates the file `mparam.h' from `mparam_h.in'.
+
+Then you needs to modify the program `tuneup.c' to allow it to compute
+the new threshold. If it is a classical threshold (not complex), you could
+use this method (example of mpfr_exp):
+
+/* Define the threshold as a variable instead of a constant
+   Initialize it with the previous value of the threshold. */
+mp_prec_t mpfr_exp_threshold = MPFR_EXP_THRESHOLD;
+#undef  MPFR_EXP_THRESHOLD
+#define MPFR_EXP_THRESHOLD mpfr_exp_threshold
+/* Include the test function to threshold directly in the test
+   program. It will overide the mpfr_exp coming from libmpfr.a */
+#include "exp.c"
+/* Define the speed function related to mpfr_exp */
+static double speed_mpfr_exp (struct speed_params *s) {
+  SPEED_MPFR_FUNC (mpfr_exp);
+}
+
+Then in the function `all', you will have to call the tune function,
+and write the new THRESHOLD in the file `mparam.h':
+
+  /* Tune mpfr_exp */
+  if (verbose)
+    printf ("Tuning mpfr_exp...\n");
+  tune_simple_func (&mpfr_exp_threshold, speed_mpfr_exp);
+  fprintf (f, "#define MPFR_EXP_THRESHOLD %lu\n",
+           (unsigned long) mpfr_exp_threshold);
+
+More complex tune are possible but needs special attention.
