@@ -38,9 +38,10 @@ mpfr_set_z (f, z, rnd)
   int fn, zn, k, dif, sign_z, sh; mp_limb_t *fp = MANT(f), *zp, cc, c2;
 
   sign_z = mpz_cmp_ui(z,0);
+printf("sign=%d\n", sign_z);
   if (sign_z==0) return (SIZE(f)=0);
   fn = 1 + (PREC(f)-1)/BITS_PER_MP_LIMB;
-  zn = SIZ(z);
+  zn = ABS(SIZ(z));
   dif = zn-fn;
   zp = PTR(z);
   count_leading_zeros(k, zp[zn-1]);
