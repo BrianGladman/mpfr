@@ -186,6 +186,11 @@ MPFR_CONFIGS
 dnl
 dnl Setup LIBTOOL
 dnl
+dnl Currently libtool always detect a C++ and fortran compiler
+dnl Reduce the search list to g++ and g77
+dnl It may freeze with cl on some systems
+AC_PROG_CXX([g++])
+AC_PROG_F77([g77])
 
 dnl Configs for Windows DLLs.
 dnl libtool requires "-no-undefined" for win32 dll
@@ -270,6 +275,10 @@ AC_CHECK_LIB(gmp, __gmp_version, [LIBS="-lgmp $LIBS"],
  [AC_MSG_ERROR(libgmp not found)])
 
 dnl Check if we can use internal header files of GMP.
+dnl TODO: Check for this before including libgmp,
+dnl and remove sub_nc test after (setting gmp_internal)
+dnl TODO: Static and dynamic lib may be different. static may work
+dnl while dynamic not (according to include) and vice-versa.
 AC_MSG_CHECKING(for gmp internal files)
 AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
 #include "gmp.h"
