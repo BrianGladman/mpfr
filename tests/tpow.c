@@ -28,6 +28,7 @@ MA 02111-1307, USA. */
 
 void check_pow_ui  _PROTO ((void));
 void check_inexact _PROTO ((mp_prec_t));
+void special       _PROTO ((void));
 
 void
 check_pow_ui (void)
@@ -132,12 +133,37 @@ check_inexact (mp_prec_t p)
   mpfr_clear (t);
 }
 
+void
+special ()
+{
+  mpfr_t x, y, z;
+
+  mpfr_init2 (x, 53);
+  mpfr_init2 (y, 53);
+  mpfr_init2 (z, 53);
+
+  mpfr_set_d (x, 5.68824667828621954868e-01, GMP_RNDN);
+  mpfr_set_d (y, 9.03327850535952658895e-01, GMP_RNDN);
+  mpfr_pow (z, x, y, GMP_RNDZ);
+  if (mpfr_get_d1 (z) != 0.60071044650456473235)
+    {
+      fprintf (stderr, "Error in mpfr_pow for prec=53, rnd=GMP_RNDZ\n");
+      exit (1);
+    }
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+}
+
 int
 main (void)
 {
   mp_prec_t p;
 
   tests_start_mpfr ();
+
+  special ();
 
   check_pow_ui ();
 
