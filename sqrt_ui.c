@@ -1,6 +1,6 @@
 /* mpfr_sqrt_ui -- square root of a machine integer
 
-Copyright (C) 2000 Free Software Foundation.
+Copyright (C) 2000-2001 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -37,22 +37,23 @@ mpfr_sqrt_ui (r, u, rnd_mode)
      mp_rnd_t rnd_mode;
 #endif
 {
-  int error = 0;
-  mpfr_t uu;
-  mp_limb_t up[1];
-  unsigned long cnt;
-
-  if (u) { /* if u=0, do nothing */
-    MPFR_INIT1(up, uu, BITS_PER_MP_LIMB, 1);
-    count_leading_zeros(cnt, (mp_limb_t) u);
-    *up = (mp_limb_t) u << cnt;
-    MPFR_EXP(uu) = BITS_PER_MP_LIMB-cnt;
-
-    error = mpfr_sqrt(r, uu, rnd_mode);
-  }
-  else {
-    MPFR_CLEAR_FLAGS(r);
-    MPFR_SET_ZERO(r);
-  }
-  return error;
+  if (u)
+    {
+      mpfr_t uu;
+      mp_limb_t up[1];
+      unsigned long cnt;
+      
+      MPFR_INIT1(up, uu, BITS_PER_MP_LIMB, 1);
+      count_leading_zeros (cnt, (mp_limb_t) u);
+      *up = (mp_limb_t) u << cnt;
+      MPFR_EXP(uu) = BITS_PER_MP_LIMB - cnt;
+      
+      return mpfr_sqrt(r, uu, rnd_mode);
+    }
+  else /* sqrt(0) = 0 */
+    {
+      MPFR_CLEAR_FLAGS(r);
+      MPFR_SET_ZERO(r);
+      return 0;
+    }
 }
