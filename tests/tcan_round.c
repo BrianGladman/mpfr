@@ -1,6 +1,6 @@
 /* Test file for mpfr_can_round.
 
-Copyright 1999, 2001 Free Software Foundation, Inc.
+Copyright 1999, 2001, 2002, 2003 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -56,6 +56,10 @@ main (void)
        fprintf (stderr, "Error (3) in mpfr_can_round\n");
        exit (1);
      }
+
+   mpfr_set_prec (x, 62);
+   mpfr_set_str (x, "0.ff4ca619c76ba69", 16, GMP_RNDZ);
+   mpfr_can_round (x, 67, 0, 0, 65);
 
    mpfr_clear (x);
 

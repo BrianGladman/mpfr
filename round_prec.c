@@ -213,10 +213,9 @@ mpfr_round_prec (mpfr_ptr x, mp_rnd_t rnd_mode, mp_prec_t prec)
 
 /* assumption: BITS_PER_MP_LIMB is a power of 2 */
 
-/* assuming b is an approximation of x in direction rnd1 
-   with error at most 2^(MPFR_EXP(b)-err), returns 1 if one is 
-   able to round exactly x to precision prec with direction rnd2,
-   and 0 otherwise.
+/* assuming b is an approximation to x in direction rnd1 with error at
+   most 2^(MPFR_EXP(b)-err), returns 1 if one is able to round exactly
+   x to precision prec with direction rnd2, and 0 otherwise.
 
    Side effects: none.
 */
@@ -297,6 +296,7 @@ mpfr_can_round_raw (mp_limb_t *bp, mp_size_t bn, int neg, mp_exp_t err0,
       cc ^= mpfr_round_raw2(bp, bn, neg, rnd2, prec);
 
       /* now round b +/- 2^(MPFR_EXP(b)-err) */
+      MPFR_ASSERTN (k > 0);
       cc2 = rnd1 == GMP_RNDZ ?
         mpn_add_1 (tmp + bn - k, bp + bn - k, k, MP_LIMB_T_ONE << s) :
         mpn_sub_1 (tmp + bn - k, bp + bn - k, k, MP_LIMB_T_ONE << s);
@@ -304,6 +304,7 @@ mpfr_can_round_raw (mp_limb_t *bp, mp_size_t bn, int neg, mp_exp_t err0,
   else
     { /* GMP_RNDN */
       /* first round b+2^(MPFR_EXP(b)-err) */
+      MPFR_ASSERTN (k > 0);
       cc = mpn_add_1 (tmp + bn - k, bp + bn - k, k, MP_LIMB_T_ONE << s);
       cc = (tmp[bn - 1] >> s1) & 1; /* gives 0 when cc=1 */
       cc ^= mpfr_round_raw2 (tmp, bn, neg, rnd2, prec);
