@@ -22,7 +22,6 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -465,21 +464,21 @@ main (int argc, char *argv[])
 
   for (i = 0; i < ITER; i++)
     {
-      p = 2 + (time (NULL) % (MAX_DIGITS - 1));
-      b = 2 + (time (NULL) % 35);
+      p = 2 + (randlimb () % (MAX_DIGITS - 1));
+      b = 2 + (randlimb () % 35);
       check_special (b, p);
     }
 
   mpfr_init2 (x, MAX_DIGITS);
   for (i = 0; i < ITER; i++)
     {
-      m = 2 + (time (NULL) % (MAX_DIGITS - 1));
+      m = 2 + (randlimb () % (MAX_DIGITS - 1));
       mpfr_random (x);
-      e = (mp_exp_t) (time (NULL) % 21) - 10;
+      e = (mp_exp_t) (randlimb () % 21) - 10;
       mpfr_set_exp (x, (e == -10) ? mpfr_get_emin () :
                     ((e == 10) ? mpfr_get_emax () : e));
-      b = 2 + (time (NULL) % 35);
-      r = time (NULL) % 4;
+      b = 2 + (randlimb () % 35);
+      r = randlimb () % 4;
       mpfr_get_str (s, &f, b, m, x, r);
     }
   mpfr_clear (x);

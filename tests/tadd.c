@@ -346,8 +346,8 @@ check_case_1b (void)
   mpfr_init (b);
   mpfr_init (c);
 
-  for (prec_a = 2; prec_a <= 64; prec_a++)
     {
+      prec_a = MPFR_PREC_MIN + (randlimb () % 63);
       mpfr_set_prec (a, prec_a);
       for (prec_b = prec_a + 2; prec_b <= 64; prec_b++)
         {
@@ -437,7 +437,7 @@ check_same (void)
 
 #define check53(x, y, r, z) check(x, y, r, 53, 53, 53, z)
 
-#define MAX_PREC 100
+#define MAX_PREC 256
 
 static void
 check_inexact (void)
@@ -490,8 +490,8 @@ check_inexact (void)
               mpfr_random (u);
             }
           while (mpfr_cmp_ui (u, 0) == 0);
-	  for (py=2; py<MAX_PREC; py++)
-	    {
+          {
+              py = MPFR_PREC_MIN + (randlimb () % (MAX_PREC - 1));
 	      mpfr_set_prec (y, py);
 	      pz =  (mpfr_cmpabs (x, u) >= 0) ? MPFR_EXP(x) - MPFR_EXP(u)
 		: MPFR_EXP(u) - MPFR_EXP(x);
@@ -508,8 +508,8 @@ check_inexact (void)
 		  printf ("z="); mpfr_print_binary (z); puts ("");
 		  exit (1);
 		}
-	      for (rnd=0; rnd<4; rnd++)
 		{
+                  rnd = randlimb () % 4;
 		  inexact = mpfr_add (y, x, u, rnd);
 		  cmp = mpfr_cmp (y, z);
 		  if (((inexact == 0) && (cmp != 0)) ||

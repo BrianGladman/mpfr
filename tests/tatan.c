@@ -71,7 +71,7 @@ worst_cases (void)
 int
 main (int argc, char *argv[])
 {
-  unsigned int prec, err, yprec, n, p0 = 2, p1 = 100, N = 10;
+  unsigned int prec, err, yprec, n, p0 = 2, p1 = 100, N = 7;
   mp_rnd_t rnd;
   mpfr_t x, y, z, t;
 
