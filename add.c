@@ -355,7 +355,10 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
 
   add_one_ulp: /* add one unit in last place to a */
     cc = mpn_add_1(ap, ap, an, ONE<<sh);
-    if (cc) { fprintf(stderr, "carry(3) in mpfr_add\n"); exit(1); }
+    if (cc) {
+      ap[an-1] = (mp_limb_t)1 << (mp_bits_per_limb-1);
+      EXP(a)++;
+    }
 
  end_of_add:
   TMP_FREE(marker); 
