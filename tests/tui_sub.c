@@ -124,7 +124,10 @@ special (void)
   mpfr_set_prec (y, 10);
   mpfr_random (x);
   mpfr_ui_sub (y, 0, x, GMP_RNDN);
-  MPFR_ASSERTN(mpfr_cmpabs (x, y) == 0 && mpfr_sgn (x) != mpfr_sgn (y));
+  if (MPFR_IS_ZERO(x))
+    MPFR_ASSERTN(MPFR_IS_ZERO(y));
+  else
+    MPFR_ASSERTN(mpfr_cmpabs (x, y) == 0 && mpfr_sgn (x) != mpfr_sgn (y));
 
   mpfr_clear (x);
   mpfr_clear (y);
