@@ -23,12 +23,16 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
 static int mpfr_cos2_aux       _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr));
-
+ 
 int
 mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
-  int K0, K, precy, m, k, l, inexact;
+  int K0, K, precy, m, k, l;
+  int inexact;
   mpfr_t r, s;
+  mp_limb_t *rp, *sp;
+  mp_size_t sm;
+  TMP_DECL (marker);
 
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(x)))
     {
@@ -47,14 +51,13 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_save_emin_emax ();
 
   precy = MPFR_PREC(y);
+  K0 = __gmpfr_isqrt(precy / 2); /* Need K + log2(precy/K) extra bits */
+  m = precy + 3 * (K0 + 2 * MAX(MPFR_GET_EXP (x), 0)) + 3;
 
-  K0 = __gmpfr_isqrt(precy / 2);
-  /* we need at least K + log2(precy/K) extra bits */
-  K = MAX (MPFR_GET_EXP (r), 0);
-  m = precy + 3 * K0 + 2 * K + 3;
-
-  mpfr_init2 (r, m);
-  mpfr_init2 (s, m);
+  TMP_MARK(marker);
+  sm = (m + BITS_PER_MP_LIMB - 1) / BITS_PER_MP_LIMB;
+  MPFR_TMP_INIT(rp, r, m, sm);
+  MPFR_TMP_INIT(sp, s, m, sm);
 
   for (;;)
     {
@@ -68,11 +71,12 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       /* s <- 1 - r/2! + ... + (-1)^l r^l/(2l)! */
       l = mpfr_cos2_aux (s, r);
 
+      MPFR_SET_ONE (r);
       for (k = 0; k < K; k++)
 	{
-	  mpfr_mul (s, s, s, GMP_RNDU); /* err <= 2*olderr */
-	  mpfr_mul_2ui (s, s, 1, GMP_RNDU); /* err <= 4*olderr */
-	  mpfr_sub_ui (s, s, 1, GMP_RNDN);
+	  mpfr_mul (s, s, s, GMP_RNDU);       /* err <= 2*olderr */
+	  mpfr_mul_2ui (s, s, 1, GMP_RNDU);   /* err <= 4*olderr */
+	  mpfr_sub (s, s, r, GMP_RNDN);
 	}
 
       /* absolute error on s is bounded by (2l+1/3)*2^(2K-m) */
@@ -80,20 +84,20 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	k++;
       /* now the error is bounded by 2^(k-m) = 2^(EXP(s)-err) */
 
-      if (mpfr_can_round (s, MPFR_GET_EXP (s) + m - k,
-                          GMP_RNDN, GMP_RNDZ, precy + (rnd_mode == GMP_RNDN)))
+      if (MPFR_LIKELY(mpfr_can_round (s, MPFR_GET_EXP(s)+m-k,GMP_RNDN,GMP_RNDZ,
+				      precy + (rnd_mode == GMP_RNDN))))
 	break;
 
       m += BITS_PER_MP_LIMB;
-      mpfr_set_prec (r, m);
-      mpfr_set_prec (s, m);
+      sm++;
+      MPFR_TMP_INIT(rp, r, m, sm);
+      MPFR_TMP_INIT(sp, s, m, sm);
     }
 
   mpfr_restore_emin_emax ();
   inexact = mpfr_set (y, s, rnd_mode); /* FIXME: Dont' need check range? */
 
-  mpfr_clear (r);
-  mpfr_clear (s);
+  TMP_FREE(marker);
   
   return inexact;
 }
@@ -110,23 +114,25 @@ mpfr_cos2_aux (mpfr_ptr s, mpfr_srcptr r)
   long int prec, m = MPFR_PREC(s);
   mpfr_t t;
 
-  MPFR_ASSERTN (MPFR_GET_EXP (r) <= 0);
+  MPFR_ASSERTD (MPFR_GET_EXP (r) <= 0);
+  MPFR_ASSERTD (MPFR_PREC(s) == MPFR_PREC(t));
 
   mpfr_init2 (t, m);
-  mpfr_set_ui (t, 1, GMP_RNDN);
-  mpfr_set_ui (s, 1, GMP_RNDN);
+  MPFR_SET_ONE (t);
+  //mpfr_set_ui (t, 1, GMP_RNDN);
+  mpfr_set (s, t, GMP_RNDN);
 
   for (l = 1; MPFR_GET_EXP (t) + m >= 0; l++)
     {
-      mpfr_mul (t, t, r, GMP_RNDU); /* err <= (3l-1) ulp */
+      mpfr_mul (t, t, r, GMP_RNDU);                /* err <= (3l-1) ulp */
       mpfr_div_ui (t, t, (2*l-1)*(2*l), GMP_RNDU); /* err <= 3l ulp */
       if (l % 2 == 0)
 	mpfr_add (s, s, t, GMP_RNDD);
       else
 	mpfr_sub (s, s, t, GMP_RNDD);
-      MPFR_ASSERTN (MPFR_GET_EXP (s) == 0); /* check 1/2 <= s < 1 */
+      MPFR_ASSERTD (MPFR_GET_EXP (s) == 0);        /* check 1/2 <= s < 1 */
       /* err(s) <= l * 2^(-m) */
-      if (3 * l > (1U << b))
+      if (MPFR_UNLIKELY(3 * l > (1U << b)))
 	b++;
       /* now 3l <= 2^b, we want 3l*ulp(t) <= 2^(-m)
 	 i.e. b+EXP(t)-PREC(t) <= -m */
@@ -134,7 +140,6 @@ mpfr_cos2_aux (mpfr_ptr s, mpfr_srcptr r)
       if (MPFR_LIKELY(prec >= MPFR_PREC_MIN))
 	mpfr_prec_round (t, prec, GMP_RNDN);
     }
-
   mpfr_clear (t);
 
   return l;

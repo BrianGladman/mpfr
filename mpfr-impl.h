@@ -489,6 +489,15 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
    MPFR_SET_POS(d), \
    MPFR_EXP(d)  = MPFR_EXP(s))
 
+#define MPFR_SET_ONE(x) \
+do { \
+  mp_size_t s = MPFR_LIMB_SIZE(x) - 1;\
+  MPFR_SET_POS(x);\
+  MPFR_EXP(x) = 1;\
+  MPN_ZERO ( MPFR_MANT(x), s);\
+  MPFR_MANT(x)[s] = MPFR_LIMB_HIGHBIT;\
+} while (0)
+
 /* Use it only for debug reasons */
 #define MPFR_DUMP(x) do { printf(#x"="); mpfr_dump(x); } while (0)
 
