@@ -87,7 +87,7 @@ mpfr_get_str (str, expptr, base, n, op, rnd_mode)
     return str0; /* strlen(str0) = neg + n */
   }
 
-  count_leading_zeros(pow2, (mp_limb_t)base); 
+  count_leading_zeros(pow2, (mp_limb_t) base);
   pow2 = BITS_PER_MP_LIMB - pow2 - 1;
   if (base != (1<<pow2)) pow2=0; 
   /* if pow2 <> 0, then base = 2^pow2 */
@@ -103,7 +103,7 @@ mpfr_get_str (str, expptr, base, n, op, rnd_mode)
   /* when base = 2^pow2, then |op| < 2^(pow2*f)
      i.e. e <= pow2*f and f = ceil(e/pow2) */
   if (pow2)
-      f = (e + pow2 - 1) / pow2;
+      f = ((e < 0) ? e : (e + pow2 - 1)) / pow2;
   else
     {
       d = ((double) e + (double) _mpfr_floor_log2(d))
@@ -131,7 +131,7 @@ mpfr_get_str (str, expptr, base, n, op, rnd_mode)
   printf("prec=%d\n", prec);
 #endif
   err = 5;
-  q = prec+err;
+  q = prec + err;
   /* one has to use at least q bits */
   q = (((q-1)/BITS_PER_MP_LIMB)+1)*BITS_PER_MP_LIMB;
   mpfr_init2(a, q); mpfr_init2(b, q);
