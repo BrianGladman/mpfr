@@ -532,7 +532,8 @@ do { \
  mpfr_cache_t _cache = {{{{0,MPFR_SIGN_POS,0,(mp_limb_t*)0}},0,_func}}
 
 /* Ceil log 2: If GCC, uses a GCC extension
-   Warning: Needs to define MPFR_NEED_LONGLONG */
+   Warning: Needs to define MPFR_NEED_LONGLONG.
+   Computes ceil(log2(x)) only for x integer (unsigned long) */
 #if __MPFR_GNUC(2,95)
 # define MPFR_INT_CEIL_LOG2(x) \
     ({int b; mp_limb_t limb = (x); MPFR_ASSERTD (limb == x); \
