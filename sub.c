@@ -253,11 +253,11 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
 	if (cn >= k+1)
 	  ap[0] += cp[cn-k-1]>>(BITS_PER_MP_LIMB+dif);
       }
-      else MPN_COPY(ap, cp+(cn-k), k);
+      else MPN_COPY(ap, cp+(cn-k), (k<=an) ? k : an);
       overlap=1;
     }
     else { /* c is not truncated, but we have to fill low limbs with 0 */
-      MPN_ZERO(ap, k-cn);
+      MPN_ZERO(ap, (k-cn<an) ? k-cn : an);
       overlap = cancel-diff_exp;
 #ifdef DEBUG
       printf("0:a="); mpfr_print_raw(a); putchar('\n');
