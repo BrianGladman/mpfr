@@ -101,10 +101,10 @@ mpfr_div_ui(y, x, u, rnd_mode)
     c <<= sh;
     MPFR_EXP(y) += sh;
 #endif
-    c = mpn_divrem_1(tmp, dif, xp, xn, c);
+    c = mpn_divrem_1 (tmp, dif, xp, xn, c);
   }
   else /* dif < 0 i.e. xn > yn */
-    c = mpn_divrem_1(tmp, 0, xp-dif, yn, c);
+    c = mpn_divrem_1 (tmp, 0, xp - dif, yn + 1, c);
 
   if (tmp[yn]==0) { tmp--; sh=0; MPFR_EXP(y) -= BITS_PER_MP_LIMB; }
   /* shift left to normalize */
@@ -114,7 +114,7 @@ mpfr_div_ui(y, x, u, rnd_mode)
     yp[0] += tmp[0] >> (BITS_PER_MP_LIMB-sh);
     MPFR_EXP(y) -= sh; 
   }
-  else MPN_COPY(yp, tmp+1, yn);
+  else MPN_COPY(yp, tmp + 1, yn);
 #ifdef DEBUG
   printf("y="); mpfr_print_raw(y); putchar('\n');
 #endif
