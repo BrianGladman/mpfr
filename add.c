@@ -123,7 +123,7 @@ mpfr_add1 (a, b, c, rnd_mode, diff_exp)
 	      while (cp<bp && cc==0) cc = *++cp;
 	    }
 
-	    if (cc || (ap[an-1] & (ONE<<sh))) goto add_one_ulp;
+	    if (cc || ((ap[0] >> sh) & ONE)) goto add_one_ulp;
 	    /* mant(c) != 1/2 or mant(c) = 1/2: add 1 iff lsb(a)=1 */
 	  }
 	}
