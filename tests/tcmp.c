@@ -51,6 +51,16 @@ void main()
     printf("Error in mpfr_cmp: not 1.0000000002 > 1.0\n"); exit(1);
   }
   mpfr_set_prec(yy, 53);
+
+  /* bug found by Gerardo Ballabio */
+  mpfr_set_d(xx, 0.0, GMP_RNDN);
+  mpfr_set_d(yy, 0.1, GMP_RNDN);
+  if (mpfr_cmp(xx, yy) >= 0) {
+    fprintf(stderr,
+	    "Error in mpfr_cmp(0.0, 0.1), gives %d\n", mpfr_cmp(xx, yy));
+    exit(1);
+  }
+
   for (i=0;i<1000000;) {    x=drand(); y=drand();
     if (!isnan(x) && !isnan(y)) {
       i++;
