@@ -401,6 +401,6 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c,
   printf ("result is a="); mpfr_print_raw(a); putchar('\n');
 #endif
   /* check that result is msb-normalized */
-  ASSERT_ALWAYS(ap[an-1] > ~ap[an-1]);
+  MPFR_ASSERTN(ap[an-1] > ~ap[an-1]);
   return inexact * MPFR_SIGN(b);
 }

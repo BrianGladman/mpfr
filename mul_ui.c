@@ -86,7 +86,7 @@ mpfr_mul_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 
   /* since the case u=1 was treated above, we have u >= 2, thus
      my[xn] >= 1 since x was msb-normalized */
-  ASSERT_ALWAYS(my[xn] != 0);
+  MPFR_ASSERTN(my[xn] != 0);
   count_leading_zeros(cnt, my[xn]);
   mpn_lshift (my, my, xn + 1, cnt);
 
