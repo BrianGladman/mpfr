@@ -1587,11 +1587,11 @@ equal to zero, nothing visible happens.
 @comment  node-name,  next,  previous,  up
 @unnumbered Contributors
 
-The main developers consist of Guillaume Hanrot, Vincent Lefèvre and
+The main developers consist of Guillaume Hanrot, Vincent Lef@`evre and
 Paul Zimmermann.
 
 We would like to thank Jean-Michel Muller and Joris van der Hoeven for very
-fruitful discussions at the beginning of that project, Torbjorn Granlund
+fruitful discussions at the beginning of that project, Torbj@"orn Granlund
 and Kevin Ryde
 for their help about design issues 
 and their suggestions for an easy integration into GNU MP,
@@ -1619,8 +1619,8 @@ Jean-Luc Rémy contributed the @code{mpfr_zeta} code.
 @itemize @bullet
 
 @item
-Torbjorn Granlund, "GNU MP: The GNU Multiple Precision Arithmetic Library", 
-  version 4.0.1, 2002.
+Torbj@"orn Granlund, "GNU MP: The GNU Multiple Precision Arithmetic Library", 
+  version 4.1.2, 2002.
 
 @item
 IEEE standard for binary floating-point arithmetic, Technical Report 
