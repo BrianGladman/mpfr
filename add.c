@@ -351,6 +351,10 @@ mpfr_add1 (a, b, c, rnd_mode, diff_exp)
 
       /* shift one bit to the right */
 
+      /* first check overflow */
+      if (MPFR_EXP(a) == __mpfr_emax)
+	return mpfr_set_overflow (a, rnd_mode, MPFR_SIGN(a));
+
       c3 = (ap[0]&1) && (MPFR_PREC(a)%BITS_PER_MP_LIMB==0);
       mpn_rshift(ap, ap, an, 1);
       ap[an-1] += MP_LIMB_T_HIGHBIT;
