@@ -1,6 +1,6 @@
-/* mpfr_set_prec -- reset the precision of a floating-point number
+/* mpfr_set_prec_raw -- reset the precision of a floating-point number
 
-Copyright (C) 1999 PolKA project, Inria Lorraine and Loria
+Copyright (C) 2000 PolKA project, Inria Lorraine and Loria
 
 This file is part of the MPFR Library.
 
@@ -34,7 +34,12 @@ mpfr_set_prec_raw (x, p)
 #endif
 {
   if (p==0) {
-    printf("*** cannot set precision to 0 bits\n"); exit(1);
+    fprintf(stderr, "*** cannot set precision to 0 bits\n"); exit(1);
+  }
+
+  if (p > ABSSIZE * BITS_PER_MP_LIMB) {
+    fprintf(stderr, "*** precision too large for allocated space\n");
+    exit(1);
   }
 
   PREC(x) = p;
