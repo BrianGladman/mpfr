@@ -19,56 +19,10 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
-
-/* returns ceil(log(d)/log(2)) */
-long
-_mpfr_ceil_log2 (double d)
-{
-  long exp;
-  union ieee_double_extract x;
-
-  x.d = d;
-  exp = x.s.exp - 1023;
-  x.s.exp = 1023; /* value for 1 <= d < 2 */
-  if (x.d != 1.0) exp++;
-  return exp;
-}
-
-/* returns floor(log(d)/log(2)) */
-long
-_mpfr_floor_log2 (double d)
-{
-  union ieee_double_extract x;
-
-  x.d = d;
-  return (long) x.s.exp - 1023;
-}
-
-/* returns y >= 2^d */
-double
-_mpfr_ceil_exp2 (double d)
-{
-  long exp;
-  union ieee_double_extract x;
-
-  exp = (long) d;
-  if (d != (double) exp) exp++;
-  /* now exp = ceil(d) */
-  x.d = 1.0;
-  if (exp < -1022) exp = -1022;
-  else if (exp > 1024) {
-    fprintf (stderr, "Overflow in _mpfr_ceil_exp2\n");
-    exit (1);
-  }
-  x.s.exp = 1023 + exp;
-  return x.d;
-}
 
 void 
 mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
@@ -221,4 +175,3 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
   
   return ;
 }
-
