@@ -784,9 +784,8 @@ Set @var{x} to the value of the string @var{s} in base @var{base} (between
 2 and 36), rounded in direction @var{rnd} to the precision of @var{x}.
 See the documentation of @code{mpfr_inp_str} for a detailed description 
 of the valid string formats.
-This function returns @minus{}1 if an internal overflow occurred (for
-instance, because the exponent is too large), or if the input is incorrect.
-Otherwise it returns the number of characters read in @var{s}.
+This function returns 0 if the entire string up to the final '\0' is a
+valid number in base @var{base}; otherwise it returns @minus{}1.
 
 Special values can be read as follows: @code{NaN}, @code{Inf}, @code{+Inf}
 and @code{-Inf} (possibly in lower case when the base is less than 24).
@@ -975,6 +974,14 @@ Set @var{rop} to @m{\sqrt{@var{op}}, the square root of @var{op}}
 rounded in the direction @var{rnd}.
 Set @var{rop} to NaN if @var{op} is negative.
 Return 0 if the operation is exact, a non-zero value otherwise.
+@end deftypefun
+
+@deftypefun int mpfr_cbrt (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+Set @var{rop} to @m{{@var{op}^{1/3}}, the cubic root of @var{op}}
+rounded in the direction @var{rnd}.
+Return 0 if the operation is exact, a positive value when the return value
+is larger than @m{{@var{op}^{1/3}}, the cubic root of @var{op}},
+a negative value otherwise.
 @end deftypefun
 
 @deftypefun int mpfr_pow_ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
