@@ -121,36 +121,3 @@ void main() {
    printf("fin\n");
 }
 
-
-  /*void main() {
-  mpfr_t a,b,res;
-  int p,i;
-  double op1,op2;
-  p=100; */
-
-  /* srand48(getpid()); */
-  
-  /*printf("%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n",drand(), drand(), drand(), drand() , drand(), drand(), drand(), drand(), drand(), drand(), drand(), drand()); */ 
-
-  /* mpfr_init2(a,p);
-  mpfr_init2(b,p);
-  mpfr_init2(res,p);
-
-  for(i=0;i<10;i++) {
-    op1=drand();
-    op2=drand();
-
-    mpfr_set_d(a,op1,GMP_RNDN);
-    mpfr_set_d(b,op2,GMP_RNDN);
-    mpfr_agm(res,a,b,GMP_RNDN);
-
-    printf("mag entre %e et %e a la precision %i :\n",op1,op2,p);
-  
-    mpfr_out_str(stdout,10,0,res,GMP_RNDN);
-    printf("\n");
-  }
- 
- 
-  }*/
-
-  
