@@ -67,6 +67,8 @@ typedef __mpfr_struct mpfr_t[1];
 typedef __mpfr_struct *mpfr_ptr; 
 typedef __gmp_const __mpfr_struct *mpfr_srcptr;
 
+#define MPFR_SIGN(x) (((x)->_mpfr_size >> 31) ? -1 : 1)
+
 /* Prototypes */
 
 #ifndef _PROTO
@@ -156,11 +158,11 @@ void mpfr_dump _PROTO((mpfr_srcptr, mp_rnd_t));
 }
 #endif  
 
-#define mpfr_cmp_ui(b,i) mpfr_cmp_ui_2exp(b,i,0)
-#define mpfr_cmp_si(b,i) mpfr_cmp_si_2exp(b,i,0)
+#define mpfr_cmp_ui(b,i) mpfr_cmp_ui_2exp((b),(i),0)
+#define mpfr_cmp_si(b,i) mpfr_cmp_si_2exp((b),(i),0)
 #define mpfr_set(a,b,r) mpfr_set4(a,b,r,MPFR_SIGN(b))
 #define mpfr_abs(a,b,r) mpfr_set4(a,b,r,1)
-#define mpfr_cmp(b,c) mpfr_cmp3(b,c,1)
+#define mpfr_cmp(b, c) mpfr_cmp3(b, c, 1)
 
 #define mpfr_init_set_si(x, i, rnd) \
  do { mpfr_init(x); mpfr_set_si((x), (i), (rnd)); } while (0)
