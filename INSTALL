@@ -35,8 +35,8 @@ Known problems.
 1) On some architectures (for example Alpha/OSF), the default 'make' command 
 crashes in step 3. GNU make is preferred.
 
-2) Under HP-UX and Pentium/Linux, don't use the -pedantic option, otherwise
-gcc complains with the longlong.h file from GMP.
+2) Under HP-UX, Pentium/Linux and AIX, don't use the -pedantic option, 
+   otherwise gcc complains with the longlong.h file from GMP.
 
 3) On the Alpha, the test file for the square root (tsqrt) may produce
 errors as follows:
