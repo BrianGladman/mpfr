@@ -28,6 +28,7 @@ MA 02111-1307, USA. */
 #include "mpfr-test.h"
 
 void check_reuse _PROTO((void));
+void bug_ddefour _PROTO((void));
 
 void
 check_reuse ()
