@@ -53,21 +53,22 @@ with new systems.
 
 To make a release (for the MPFR team):
   1) Check the version and update the date in mpfr.texi.
-  2) Update the ChangeLog file (using a recent version of rcs2log,
+  2) Update the NEWS file.
+  3) Update the ChangeLog file (using a recent version of rcs2log,
      directly or with emacs), e.g. rcs2log > ChangeLog.2 and edit
      ChangeLog to insert ChangeLog.2 at the beginning and remove
      the duplicated lines.
-  3) Update the NEWS file.
-  4) Generate the release version with "make dist".
-  5) Test the release version on different machines, with and without
+  4) Fix the file permissions that have been broken by CVS.
+  5) Generate the release version with "make dist".
+  6) Test the release version on different machines, with and without
      the --disable-alloca configure option (or compile gmp with
      --enable-alloca=debug), with and without -DXDEBUG in $CFLAGS,
      with and without gmp internal files, with and without gmp built
      as a shared library.
-  6) If there is no problem, add a tag to the CVS corresponding to the
+  7) If there is no problem, add a tag to the CVS corresponding to the
      release, e.g. mpfr-2-0-1-rel for mpfr 2.0.1 (note that the periods
      are replaced by dashes): cvs tag mpfr-2-0-1-rel
-  7) Update the version with the update-version script to indicate the
+  8) Update the version with the update-version script to indicate the
      next version.
 
 A branch may be created first (e.g. with "cvs tag -b mpfr-2-0-2-branch")
@@ -75,7 +76,7 @@ to allow new features to be committed to the trunk.
 
 ===========================================
 
-To check the coverage of the test suite (for the MPFR team), 
+To check the coverage of the test suite (for the MPFR team),
 you can use gcov (with GCC):
 1. Clean MPFR:
   make clean
@@ -92,7 +93,7 @@ you can use gcov (with GCC):
 ===========================================================================
 
 List of the used macros for building MPFR:
- 
+
 + HAVE_STRCASECMP: 	Define if the system supports 'strcasecmp' function.
 + HAVE_STRNCASECMP:	Define if the system supports 'strncasecmp' function.
 
@@ -112,7 +113,7 @@ List of the used macros for building MPFR:
 + HAVE_LDOUBLE_IEEE_QUAD_BIG:           IEEE quad, big endian.
 
 + XDEBUG:		Use generic 'double' code instead of IEEE specific one.
-			The IEEE code for double needs GMP internal files. 
+			The IEEE code for double needs GMP internal files.
 + WANT_ASSERT:		Define if we want to turn on the assertions.
 + MPFR_EXP_CHECK:	Define if we want to check the exp field.
 
@@ -125,7 +126,7 @@ List of the used macros for building MPFR:
 
 List of the used macros for checking MPFR:
 
-+ MPFR_HAVE_FESETROUND:	Define if the fesetround function is defined 
++ MPFR_HAVE_FESETROUND:	Define if the fesetround function is defined
 			 (and in header fenv.h).
 + HAVE_DENORMS:		Define if denormalized floats work.
 + HAVE_SYS_TIME_H:	Define if the header sys/time.h is usuable.
