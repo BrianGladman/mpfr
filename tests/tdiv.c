@@ -4,6 +4,7 @@
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
+#include "mpfr-impl.h"
 #ifdef IRIX64
 #include <sys/fpu.h>
 #endif
@@ -11,25 +12,6 @@
 extern int isnan();
 
 /* #define DEBUG */
-
-double drand()
-{
-  double d; long int *i;
-
-  i = (long int*) &d;
-  i[0] = lrand48();
-  i[1] = lrand48();
-  if (lrand48()%2) d=-d; /* generates negative numbers */
-  return d;
-}
-
-/* returns the number of ulp's between a and b */
-int ulp(a,b) double a,b;
-{
-  double eps=1.1102230246251565404e-16; /* 2^(-53) */
-  b = (a-b)/a; if (b<0) b = -b;
-  return (int) floor(b/eps);
-}
 
 #define check(n,d,r) check4(n,d,r,53)
 
