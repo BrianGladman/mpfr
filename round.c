@@ -48,7 +48,7 @@ mpfr_round_raw_generic
 (mp_limb_t *yp, mp_limb_t *xp, mp_prec_t xprec, int neg,
  mp_prec_t yprec, mp_rnd_t rnd_mode, int *inexp, int flag)
 #else
-mpfr_round_raw_generic (yp, xp, xprec, neg, yprec, rnd_mode, inexp)
+mpfr_round_raw_generic (yp, xp, xprec, neg, yprec, rnd_mode, inexp, flag)
      mp_limb_t *yp;
      mp_limb_t *xp;
      mp_prec_t xprec;
@@ -56,6 +56,7 @@ mpfr_round_raw_generic (yp, xp, xprec, neg, yprec, rnd_mode, inexp)
      mp_prec_t yprec;
      mp_rnd_t rnd_mode;
      int *inexp;
+     int flag;
 #endif
 {
   mp_size_t xsize, nw;
