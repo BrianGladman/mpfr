@@ -15,3 +15,5 @@ Miscellaneous:
 - detect overflow/underflow in exponent (from Ben Hinkle <bhinkle4@juno.com>)
 
 - specify exponent size (suggestion from Ben Hinkle <bhinkle4@juno.com>)
+
+- get rid of <math.h> whenever possible
