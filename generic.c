@@ -76,7 +76,7 @@ int m;
       || (qtoj == NULL)
 #endif
       ) {
-    fprintf (stderr, "Error in %s: no more memory available\n", GENERIC);
+    fprintf (stderr, "Error in mpfr_generic: no more memory available\n");
     exit (1);
   }
   for (i=0;i<=m;i++) { mpz_init(P[i]); mpz_init(S[i]); mpz_init(ptoj[i]);

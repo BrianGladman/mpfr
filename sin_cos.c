@@ -26,6 +26,9 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "gmp-impl.h"
 
+int mpfr_sin_aux (mpfr_ptr, mpz_srcptr, int, int);
+int mpfr_cos_aux (mpfr_ptr, mpz_srcptr, int, int);
+
 #undef A
 #undef B
 #define C
