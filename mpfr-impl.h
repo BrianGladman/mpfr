@@ -49,7 +49,7 @@ MA 02111-1307, USA. */
 #  include "mpfr-gmp.h"
 # endif
 # ifdef MPFR_NEED_LONGLONG_H
-#  include "longlong.h"
+#  include "mpfr-longlong.h"
 # endif
 
 #endif
