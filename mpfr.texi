@@ -1138,15 +1138,13 @@ rounded to the direction @var{rnd} with the precision of @var{rop}.
 Return 0 iff the result is exact.
 @end deftypefun
 
-@deftypefun int mpfr_cosh (mpfr_t @var{cop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
-@deftypefunx int mpfr_sinh (mpfr_t @var{sop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
-@deftypefunx int mpfr_tanh (mpfr_t @var{top}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
-Set @var{cop} to the hyperbolic cosine of @var{op},
-    @var{sop} to the hyperbolic sine of @var{op},
-    @var{top} to the hyperbolic tangent of @var{op},
+@deftypefun int mpfr_cosh (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_sinh (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_tanh (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+Set @var{rop} to the hyperbolic cosine, sine or tangent of @var{op},
 rounded to the direction @var{rnd} with the precision of @var{rop}.
 Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
-i.e. the result is 1).
+or infinite).
 @end deftypefun
 
 @deftypefun int mpfr_acosh (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
