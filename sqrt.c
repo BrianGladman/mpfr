@@ -15,7 +15,7 @@ void mpfr_sqrt(mpfr_ptr X, mpfr_srcptr a, unsigned char rnd_mode)
 #endif
   /* use Newton's iteration x[n+1] = 1/2*(x[n]+a/x[n]),
      the error e[n] = x[n]-sqrt(a) satisfies e[n+1] <= e[n]/2/sqrt(a) */
-  if (FLAG_NAN(a) || SIGN(a)<0) { SET_NAN(x); return; }
+  if (FLAG_NAN(a) || SIGN(a)<0) { SET_NAN(X); return; }
   if (X==a) {
     x = (mpfr_ptr) (*_mp_allocate_func) (sizeof(__mpfr_struct));
     mpfr_init2(x, PREC(X));
