@@ -97,9 +97,12 @@ void check4(double a, double b, unsigned char rnd_mode, double res1)
   mpfr_set_d(tb, b, rnd_mode);
 
   mpfr_agm(tres, ta, tb, rnd_mode);
+#ifdef TEST
   mpfr_set_machine_rnd_mode(rnd_mode);
+#endif
   
   if (res1==0.0) res1=dagm(a,b); else ck=1;
+if (ck==0) printf("%1.20e\n", res1);
   res2 = mpfr_get_d(tres);
 
   if (ck && res1!=res2 && (!isnan(res1) || !isnan(res2))) {
@@ -171,15 +174,15 @@ int main(int argc, char* argv[]) {
    }
    else {
      check_large();
-     check(2,1,GMP_RNDN);
-     check(6,4,GMP_RNDN); 
-     check(62,61,GMP_RNDN);
-     check(0.5,1,GMP_RNDN);
-     check(1,2,GMP_RNDN); 
-     check4(234375765,234375000,GMP_RNDN,2.34375382499843955040e+08);
-     check(8,1,GMP_RNDU);
-     check(1,44,GMP_RNDU);  
-     check(1,3.725290298461914062500000e-9,GMP_RNDU); 
+     check4(2.0, 1.0, GMP_RNDN, 1.45679103104690677029);
+     check4(6.0, 4.0, GMP_RNDN, 4.94936087247260925182);
+     check4(62.0, 61.0, GMP_RNDN, 6.14989837188450749750e+01);
+     check4(0.5, 1.0, GMP_RNDN, 7.28395515523453385143e-01);
+     check4(1.0, 2.0, GMP_RNDN, 1.45679103104690677029);
+     check4(234375765.0, 234375000.0, GMP_RNDN, 2.3437538249984395504e8);
+     check4(8.0, 1.0, GMP_RNDU, 3.615756177597362786);
+     check4(1.0, 44.0, GMP_RNDU, 1.33658354512981247808e1);
+     check4(1.0, 3.7252902984619140625e-9, GMP_RNDU, 7.55393356971199025907e-02);
    } 
    return 0;
 }
