@@ -483,6 +483,12 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
   (xp = (mp_ptr) TMP_ALLOC(BYTES_PER_MP_LIMB * ((size_t) s)), \
    MPFR_TMP_INIT1(xp, x, p))
 
+#define MPFR_TMP_INIT_ABS(d, s) \
+ ( MPFR_PREC(d) = MPFR_PREC(s), \
+   MPFR_MANT(d) = MPFR_MANT(s), \
+   MPFR_SET_POS(d), \
+   MPFR_EXP(d)  = MPFR_EXP(s))
+
 /* Use it only for debug reasons */
 #define MPFR_DUMP(x) do { printf(#x"="); mpfr_dump(x); } while (0)
 
