@@ -229,6 +229,17 @@ check_small (void)
     }
   mpfr_free_str (s);
 
+  /* worst case found by Vincent Lefe`vre */
+  mpfr_set_prec (x, 53);
+  mpfr_set_str_binary (x, "10011110111100000000001011011110101100010000011011111E164");
+  s = mpfr_get_str (NULL, &e, 10, 17, x, GMP_RNDN);
+  if (strcmp (s, "13076622631878654") || (e != 66))
+    {
+      printf ("Error in mpfr_get_str (7): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+
   mpfr_set_prec (x, 45);
   mpfr_set_str_binary (x, "1E45");
   s = mpfr_get_str (NULL, &e, 32, 9, x, GMP_RNDN);
