@@ -1,8 +1,9 @@
 /* mpfr_neg -- change the sign of a floating-point number
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 1999-2001 Free Software Foundation.
 
 This file is part of the MPFR Library.
+Contributed by the Spaces project (LORIA/LIP6).
 
 The MPFR Library is free software; you can redistribute it and/or modify
 it under the terms of the GNU Library General Public License as published by
@@ -24,7 +25,7 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-void 
+int
 #if __STDC__
 mpfr_neg (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
 #else
@@ -34,7 +35,11 @@ mpfr_neg (a, b, rnd_mode)
      mp_rnd_t rnd_mode;
 #endif
 {
-  if (a != b) mpfr_set4(a, b, rnd_mode, -MPFR_SIGN(b));
-  else MPFR_CHANGE_SIGN(a);
-  return; 
+  if (a != b)
+    return mpfr_set4 (a, b, rnd_mode, -MPFR_SIGN(b));
+  else
+    {
+      MPFR_CHANGE_SIGN(a);
+      return 0;
+    }
 }

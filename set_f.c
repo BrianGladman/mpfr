@@ -26,7 +26,7 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-void 
+int
 #if __STDC__
 mpfr_set_f(mpfr_ptr y, mpf_srcptr x, mp_rnd_t rnd_mode)
 #else
@@ -36,41 +36,55 @@ mpfr_set_f(y, x, rnd_mode)
      mp_rnd_t rnd_mode;
 #endif
 {
-  mp_limb_t *my, *mx, *tmp; unsigned long cnt, sx, sy;
+  mp_limb_t *my, *mx, *tmp;
+  unsigned long cnt, sx, sy;
+  int inexact;
   TMP_DECL(marker);
 
-  if (SIZ(x) * MPFR_SIGN(y) < 0) MPFR_CHANGE_SIGN(y);
+  if (SIZ(x) * MPFR_SIGN(y) < 0)
+    MPFR_CHANGE_SIGN (y);
 
-  MPFR_CLEAR_FLAGS(y);
+  MPFR_CLEAR_FLAGS (y);
 
-  TMP_MARK(marker);
-  sx = ABS(SIZ(x)); sy = MPFR_ABSSIZE(y);
-  my = MPFR_MANT(y); mx = PTR(x);
+  sx = ABS(SIZ(x)); /* number of limbs of the mantissa of x */
+  sy = 1 + (MPFR_PREC(y) - 1) / BITS_PER_MP_LIMB;
+  my = MPFR_MANT(y);
+  mx = PTR(x);
 
-  if (sx==0) { /* x is zero */
-    MPFR_SET_ZERO(y); return;
-  }
+  if (sx == 0) /* x is zero */
+    {
+      MPFR_SET_ZERO(y);
+      return 0; /* 0 is exact */
+    }
 
   count_leading_zeros(cnt, mx[sx - 1]);  
 
-  if (sy < sx)
+  if (sy <= sx) /* we may have to round even when sy = sx */
     {
       unsigned long xprec = sx * BITS_PER_MP_LIMB;
 
+      TMP_MARK(marker);
       tmp = (mp_limb_t*) TMP_ALLOC(xprec);
-      if (cnt) mpn_lshift(tmp, mx, sx, cnt); 
-      else MPN_COPY(tmp, mx, sx); 
-      mpfr_round_raw(my, tmp, xprec, (SIZ(x)<0), MPFR_PREC(y), rnd_mode, NULL);
+      if (cnt)
+	mpn_lshift(tmp, mx, sx, cnt);
+      else
+	MPN_COPY(tmp, mx, sx);
+      mpfr_round_raw (my, tmp, xprec, (SIZ(x)<0), MPFR_PREC(y), rnd_mode,
+		      &inexact);
+      TMP_FREE(marker);
     }
   else
     {
-      if (cnt) mpn_lshift(my + sy - sx, mx, sx, cnt); 
-      else MPN_COPY(my + sy - sx, mx, sy); 
+      if (cnt)
+	mpn_lshift(my + sy - sx, mx, sx, cnt); 
+      else
+	MPN_COPY(my + sy - sx, mx, sy); 
       MPN_ZERO(my, sy - sx);
       /* no rounding necessary, since y has a larger mantissa */
+      inexact = 0;
     }
   
   MPFR_EXP(y) = EXP(x) * BITS_PER_MP_LIMB - cnt;
 
-  TMP_FREE(marker);
+  return inexact;
 }

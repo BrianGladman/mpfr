@@ -26,7 +26,7 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-void
+int
 #if __STDC__
 mpfr_ui_sub (mpfr_ptr y, unsigned long int u, mpfr_srcptr x, mp_rnd_t rnd_mode)
 #else
@@ -40,13 +40,11 @@ mpfr_ui_sub (y, u, x, rnd_mode)
   mpfr_t uu;
   mp_limb_t up[1];
   unsigned long cnt;
-
-
   
   if (MPFR_IS_NAN(x)) 
     {
       MPFR_SET_NAN(y);
-      return;
+      return 1; /* a NaN is inexact */
     }
 
   MPFR_CLEAR_NAN(y);
@@ -54,20 +52,19 @@ mpfr_ui_sub (y, u, x, rnd_mode)
   if (MPFR_IS_INF(x))
     {
       MPFR_SET_INF(y);
-      if (MPFR_SIGN(x) == MPFR_SIGN(y)) MPFR_CHANGE_SIGN(y);
-      return;
+      if (MPFR_SIGN(x) == MPFR_SIGN(y))
+	MPFR_CHANGE_SIGN(y);
+      return 0; /* +/-infinity is exact */
     }
 
   if (u) {
-
-
-    MPFR_INIT1(up, uu, BITS_PER_MP_LIMB, 1);
-    count_leading_zeros(cnt, (mp_limb_t) u);
+    MPFR_INIT1 (up, uu, BITS_PER_MP_LIMB, 1);
+    count_leading_zeros (cnt, (mp_limb_t) u);
     *up = (mp_limb_t) u << cnt;
-    MPFR_EXP(uu) = BITS_PER_MP_LIMB-cnt;
+    MPFR_EXP(uu) = BITS_PER_MP_LIMB - cnt;
   
-    mpfr_sub (y, uu, x, rnd_mode);
-
+    return mpfr_sub (y, uu, x, rnd_mode);
   }
-  else mpfr_neg (y, x, rnd_mode); /* if u=0, then set y to -x */
+  else
+    return mpfr_neg (y, x, rnd_mode); /* if u=0, then set y to -x */
 }
