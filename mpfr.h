@@ -185,7 +185,7 @@ char * mpfr_print_rnd_mode _PROTO((mp_rnd_t));
 int mpfr_neg _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t)); 
 void mpfr_sub_one_ulp _PROTO((mpfr_ptr)); 
 int mpfr_div_ui _PROTO((mpfr_ptr, mpfr_srcptr, unsigned long int, mp_rnd_t)); 
-void mpfr_ui_div _PROTO((mpfr_ptr, unsigned long int, mpfr_srcptr, mp_rnd_t)); 
+int mpfr_ui_div _PROTO((mpfr_ptr, unsigned long int, mpfr_srcptr, mp_rnd_t)); 
 mp_prec_t mpfr_get_prec _PROTO((mpfr_srcptr));
 void mpfr_set_default_rounding_mode _PROTO((mp_rnd_t));
 int mpfr_eq _PROTO((mpfr_srcptr, mpfr_srcptr, unsigned long));
