@@ -1019,24 +1019,11 @@ i.e. the result is 0).
 @end deftypefun
 
 @deftypefun int mpfr_acosh (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
-Set @var{rop} to the inverse hyperbolic cosine of @var{op},
+@deftypefunx int mpfr_asinh (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_atanh (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+Set @var{rop} to the inverse hyperbolic cosine, sine or tangent of @var{op},
 rounded to the direction @var{rnd} with the precision of @var{rop}.
-Return 0 iff the result is exact (this occurs in fact only when @var{op} is 1
-i.e. the result is 0).
-@end deftypefun
-
-@deftypefun int mpfr_asinh (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
-Set @var{rop} to the inverse hyperbolic sine of @var{op},
-rounded to the direction @var{rnd} with the precision of @var{rop}.
-Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
-i.e. the result is 0).
-@end deftypefun
-
-@deftypefun int mpfr_atanh (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
-Set @var{rop} to the inverse hyperbolic tangent of @var{op},
-rounded to the direction @var{rnd} with the precision of @var{rop}.
-Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
-i.e. the result is 0).
+Return 0 iff the result is exact.
 @end deftypefun
 
 @deftypefun int mpfr_factorial (mpfr_t @var{rop}, unsigned long int  @var{op}, mp_rnd_t @var{rnd})
@@ -1046,14 +1033,14 @@ Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
 i.e. the result is 1).
 @end deftypefun
 
-
 @deftypefun void mpfr_agm (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
 Set @var{rop} to the arithmetic-geometric mean of @var{op1} and @var{op2},
 rounded to the direction @var{rnd} with the precision of @var{rop}.
 @end deftypefun
 
-@deftypefun int mpfr_arctan (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
-Set @var{rop} to the arc-tangent of @var{op},
+@deftypefun int mpfr_asin (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_atan (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+Set @var{rop} to the arc-sine or arc-tangent of @var{op},
 rounded to the direction @var{rnd} with the precision of @var{rop}.
 Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
 i.e. the result is 0).
@@ -1275,7 +1262,7 @@ contributed the generic hypergeometric code in
 @code{generic.c}, as well as the @code{mpfr_exp3},
 the @code{mpfr_sin_cos} functions, and improved versions of
 @code{mpfr_const_log2} and @code{mpfr_const_pi}.
-Mathieu Dutour contributed the function @code{mpfr_arctan},
+Mathieu Dutour contributed the functions @code{mpfr_atan} and @code{mpfr_asin},
 David Daney contributed the hyperbolic and inverse hyperbolic functions,
 the base-2 exponential, and the factorial function.
 
