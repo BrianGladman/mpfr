@@ -183,15 +183,21 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
 	  *ap &= ~cc; /* truncate last bits */
 	}
 	else cc=0;
-        if (dif>-sh) c2 = cp[--cn]>>(mp_bits_per_limb-dif-sh);
+
+	cn--;
+        if (dif>-sh) c2 = cp[cn]>>(mp_bits_per_limb-dif-sh);
         else c2 = 0;
+	dif += mp_bits_per_limb;
 	while (cc==c2 && (k || cn)) {
 	  if (k) cc = bp[--k];
-	  if (cn) {
+	  if (cn && (dif+sh>=0)) {
 	    c2 = cp[cn]<<(dif+sh);
-	    if (--cn) c2 += cp[cn]>>(mp_bits_per_limb-dif-sh);
+	    if (cn--) c2 += cp[cn]>>(mp_bits_per_limb-dif-sh);
 	  }
+	  else dif += mp_bits_per_limb;
 	}
+	/* add lowest part of c when cn=0 */
+	if (cn==0) c2 += cp[cn]>>(mp_bits_per_limb-dif-sh);
 	dif = ((ISNONNEG(b) && rnd_mode==GMP_RNDU) || 
 	       (ISNEG(b) && rnd_mode==GMP_RNDD));
 	/* round towards infinity if dif=1, towards zero otherwise */
