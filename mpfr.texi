@@ -1422,7 +1422,7 @@ Negative random numbers are generated when @var{size} is negative.
 Put +0 in @var{rop} when size if zero.
 @end deftypefun
 
-@deftypefun {const char *} mpfr_version (void)
+@deftypefun {const char *} mpfr_get_version (void)
 Return the MPFR version, as a null-terminated string.
 @end deftypefun
 

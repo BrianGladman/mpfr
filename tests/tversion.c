@@ -33,7 +33,7 @@ main (void)
 
   sprintf (buffer, "%d.%d.%d", MPFR_VERSION_MAJOR, MPFR_VERSION_MINOR,
            MPFR_VERSION_PATCHLEVEL);
-  version = mpfr_version ();
+  version = mpfr_get_version ();
   if (strcmp (buffer, version) != 0)
     {
       printf ("Incorrect version (%s vs %s)\n", buffer, version);

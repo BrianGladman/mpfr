@@ -166,7 +166,7 @@ extern mpfr_cache_t __gmpfr_cache_const_pi;
 extern mpfr_cache_t __gmpfr_cache_const_log2;
 extern mpfr_cache_t __gmpfr_cache_const_euler;
 
-__gmp_const char * mpfr_version _MPFR_PROTO ((void));
+__gmp_const char * mpfr_get_version _MPFR_PROTO ((void));
 
 mp_exp_t mpfr_get_emin _MPFR_PROTO ((void));
 int mpfr_set_emin _MPFR_PROTO ((mp_exp_t));
@@ -507,6 +507,7 @@ int  mpfr_cache _MPFR_PROTO ((mpfr_ptr, mpfr_cache_t, mpfr_rnd_t));
  ( mpfr_init(x), mpfr_set((x), (y), (rnd)) )
 #define mpfr_init_set_f(x, y, rnd) \
  ( mpfr_init(x), mpfr_set_f((x), (y), (rnd)) )
+#define mpfr_version (mpfr_get_version())
 
 /* When using GCC, optimize certain common comparisons.  */
 #if defined (__GNUC__)

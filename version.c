@@ -1,4 +1,4 @@
-/* mpfr_version -- MPFR version
+/* mpfr_get_version -- MPFR version
 
 Copyright 2004 Free Software Foundation, Inc.
 
@@ -23,7 +23,7 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
 const char *
-mpfr_version (void)
+mpfr_get_version (void)
 {
   return "2.1.0";
 }
