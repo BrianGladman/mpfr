@@ -28,3 +28,12 @@ Miscellaneous:
 - add a description of the algorithms used
 
 - add undef's in mpf2mpfr.h to avoid warnings
+
+- rewrite mpfr_get_d2 to avoid rounding problems, for example on the IA64:
+x=8.94446216651049664713e+94,74 y=-8.69096029476006043478e+78,113 pz=102,rnd=GMP_RNDU
+got 8.94446216651049812927e+94
+result should be 8.94446216651049516499e+94 (diff=-2 ulp)
+i.e.0.101010111000010100110011011001011100111011100100010110000000000000000000000000000000000000000000000000[00000000000000000000000000]E316
+
+- problem when reading a float followed by a character, for example 1.5*x
+	[from Fabrice.Rouillier@loria.fr, Mon, 04 Dec 2000]
