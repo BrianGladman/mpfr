@@ -12,11 +12,11 @@ ac_help=
 ac_default_prefix=/usr/local
 # Any additions from configure.in:
 ac_help="$ac_help
- --with-gmp-include=DIR  GMP include directory "
+  --with-gmp-include=DIR  GMP include directory "
 ac_help="$ac_help
- --with-gmp-lib=DIR      GMP lib directory "
+  --with-gmp-lib=DIR      GMP lib directory "
 ac_help="$ac_help
- --with-gmp=DIR          GMP directory "
+  --with-gmp=DIR          GMP directory "
 ac_help="$ac_help
  --with-irix64=on/off    Irix 32/64 bits support "
 
