@@ -31,19 +31,6 @@ mpfr_const_pi (mpfr_ptr x, mp_rnd_t rnd_mode) {
   return mpfr_cache (x, __gmpfr_cache_const_pi, rnd_mode);
 }
 
-/* Time: mpfr_const_pi2 is this new version.
-   norroy% time ./pi2 1000000
-   mpfr_const_pi took 14110ms
-   mpfr_const_pi2 took 4730ms
-
-   norroy% time ./pi2 2000000
-   mpfr_const_pi took 39390ms
-   mpfr_const_pi2 took 13140ms
-
-   norroy% time ./pi2 5000000
-   mpfr_const_pi took 252120ms
-   mpfr_const_pi2 took 51780ms */
-
 int
 mpfr_const_pi_internal (mpfr_ptr x, mp_rnd_t rnd_mode)
 {
@@ -116,52 +103,3 @@ mpfr_const_pi_internal (mpfr_ptr x, mp_rnd_t rnd_mode)
 
   return inex;
 }
-
-/*
- int
-main (int argc, char *argv[])
-{
-  int n = atoi (argv[1]);
-  int k = (argc > 2) ? atoi (argv[2]) : 1;
-  int i;
-  mpfr_t x, y;
-  int st;
-  FILE *fp;
-
-  mpfr_init2 (x, n);
-  mpfr_init2 (y, n);
-
-#if 1
-  st = cputime ();
-  for (i = 0; i < k; i++)
-    (mpfr_const_pi) (x, GMP_RNDN);
-  printf ("mpfr_const_pi took %dms\n", cputime () - st);
-#endif
-
-  st = cputime ();
-  for (i = 0; i < k; i++)
-    mpfr_const_pi2 (y, GMP_RNDN);
-  printf ("mpfr_const_pi2 took %dms\n", cputime () - st);
-
-  fp = fopen ("pi", "w");
-  st = cputime ();
-  fprintf (fp, "pi2:=");
-  mpfr_out_str (fp, 10, 0, y, GMP_RNDZ);
-  fprintf (fp, ":\n");
-  printf ("output took %dms\n", cputime () - st);
-  fclose (fp);
-  
-#if 1
-  if (mpfr_cmp (x, y))
-    {
-      fprintf (stderr, "results differ\n");
-      exit (1);
-    }
-#endif
-
-  mpfr_clear (x);
-  mpfr_clear (y);
-  
-  return 0;
-}
-*/
