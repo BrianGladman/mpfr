@@ -37,6 +37,8 @@ mpfr_set4(a, b, rnd_mode, signb)
 {
   int carry, an, preca = PREC(a), sh; mp_limb_t *ap = MANT(a);
 
+  if (FLAG_NAN(b)) { SET_NAN(a); return; }
+
   carry = mpfr_round_raw(ap, MANT(b), PREC(b), (signb<0), preca, rnd_mode);
   EXP(a) = EXP(b);
   if (carry) {
