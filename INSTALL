@@ -72,8 +72,8 @@ In case of problem
      grep "^CC\|^CFLAGS" GMPBUILD/Makefile
 
    Then type (for example, under a sh-compatible shell):
-     CC=<C compiler> CFLAGS=<compiler options> ./configure \
-       --with-gmp-include=GMPBUILD --with-gmp-lib=GMPINSTALL/lib
+    ./configure --with-gmp-include=GMPBUILD --with-gmp-lib=GMPINSTALL/lib \
+      CC=<C compiler> CFLAGS=<compiler options>
    And continue the install.
 
    On some architectures, you should provide further options to match
@@ -88,7 +88,7 @@ In case of problem
    indicating the machine and operating system used (uname -a), the compiler
    and version used (gcc -v if you use gcc), the compile options used if any,
    the version of GMP and MPFR used and a description of the problem 
-   encountered. Please send us also a log of the installation.
+   encountered. Please send us also a log of the installation (`config.log`).
 
    Note that even if you can build MPFR with a C++ compiler you can't run
    the test suite: C and C++ are not the same language!

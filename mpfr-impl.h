@@ -707,13 +707,17 @@ do { \
  **************  Save exponent macros  ****************
  ******************************************************/
 
+/* See README.dev for details on how to use the macros.
+   They are used to make the exponent range to be maximal
+   temporarily */
+
 typedef struct {
   unsigned int saved_flags;
   mp_exp_t saved_emin;
   mp_exp_t saved_emax;
 } mpfr_save_expo_t;
   
-#define MPFR_SAVE_EXPO_DECL(x) mpfr_save_expo_t (x)
+#define MPFR_SAVE_EXPO_DECL(x) mpfr_save_expo_t x
 #define MPFR_SAVE_EXPO_MARK(x)     \
  ((x).saved_flags = __gmpfr_flags, \
   (x).saved_emin = __gmpfr_emin,   \

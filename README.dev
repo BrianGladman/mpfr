@@ -20,38 +20,23 @@ option to the "prepare" script to get better dependency tracking.
 
 To generate mpfr.info, you need texinfo version 4.2 (or higher).
 
-===========================================
+===========================================================================
 
 The VERSION file contains the number of the next release version, i.e.
 the version currently developed. If nightly snapshots are built, the
 date in the yyyymmdd format must be added to the version number, for
 instance: "2.0.1-20020319".
 
-===========================================
+===========================================================================
 
 When submitting patches, unified diffs (option -u) are recommended,
 as they are more readable. You can also use the option -d to generate
 a smaller set of changes. See diff(1) for more information.
 
-===========================================
-
-Though the ISO C standard requires that <stdlib.h> defines NULL,
-do not use NULL with #include <stdlib.h> only, because this will
-not work with the native SunOS 4 C compiler, whose headers are
-not conform to the standard (even with C90); other problems may
-occur on this architecture. You can either include <stdio.h> or
-use 0 (possibly casted to the target pointer type).
-
-===========================================
-
-In the tests, do not use mpfr_set_d (except when testing it), as the
-result will depend on the floating-point arithmetic of the system;
-this has shown many problems in the past and problems may still occur
-with new systems.
-
-===========================================
+===========================================================================
 
 To make a release (for the MPFR team):
+
   1) Check the version and update the date in mpfr.texi.
   2) Update the NEWS file.
   3) Update the ChangeLog file (using a recent version of rcs2log,
@@ -75,21 +60,22 @@ To make a release (for the MPFR team):
 A branch may be created first (e.g. with "cvs tag -b mpfr-2-0-2-branch")
 to allow new features to be committed to the trunk.
 
-===========================================
+===========================================================================
 
-To check the coverage of the test suite (for the MPFR team),
-you can use gcov (with GCC):
-1. Clean MPFR:
-  make clean
-2. Build MPFR with theses options:
-  make CFLAGS="-fprofile-arcs -ftest-coverage"
-3. Launch the tests:
-  make check CFLAGS="-fprofile-arcs -ftest-coverage"
-4. Get the results:
-  find . -name '*.c' -exec gcov '{}' ';' | grep "lines executed" | sort
+To check the coverage of the Test Suite, you can use GCOV.
+   ./configure CFLAGS="-fprofile-arcs -ftest-coverage"
+   make clean
+   make check
+   find . -name '*.c' -exec gcov '{}' ';' | grep "lines executed" | sort
 
- For each source file, there is a .c.gcov file which contains much more
- information.
+For each source file, there is a .c.gcov file which contains much more
+information. Building this version in a different directory is usually
+a good idea:
+   mkdir cov
+   cd cov
+   ../configure CFLAGS="-fprofile-arcs -ftest-coverage" --srcdir=..
+   make check
+   find .. -name '*.c' -exec gcov '{}' ';' | grep "lines executed" | sort
 
 ===========================================================================
 
@@ -136,6 +122,18 @@ List of the used macros for checking MPFR:
 
 ===========================================================================
 
+The GNU Coding standards can be read at:
+  http://www.gnu.org/prep/standards_toc.html
+ISO C Names and corresponding headers:
+  http://www.schweikhardt.net/identifiers.html
+Language C:
+  http://www.vmunix.com/~gabor/c/draft.html
+
+To allow MPFR to be built on some buggy compiler, try to follow
+theses rules:
+
+   =====================================================================
+
 Don't write:
   mp_limb_t l;
   [...]
@@ -148,12 +146,95 @@ But:
  since mp_limb_t may be "unsigned long long", and some buggy compiler
 produce illegal codes with the first form.
 
-===========================================================================
-
-The GNU Coding standards can be read at:
-http://www.gnu.org/prep/standards_toc.html
-
-===========================================================================
+   =====================================================================
 
 Don't use "near" and "far" as variable names since they are "Keywords"
 for some C compiler (Old DOS compiler).
+
+   =====================================================================
+
+Try to avoid "LONG_MIN/1" since it produces a SIGNAL on (old) FreeBsd.
+
+   =====================================================================
+
+Though the ISO C standard requires that <stdlib.h> defines NULL,
+do not use NULL with #include <stdlib.h> only, because this will
+not work with the native SunOS 4 C compiler, whose headers are
+not conform to the standard (even with C90); other problems may
+occur on this architecture. You can either include <stdio.h> or
+use 0 (possibly casted to the target pointer type).
+
+   ====================================================================
+
+In the tests, do not use `mpfr_set_d` (except when testing it), as the
+result will depend on the floating-point arithmetic of the system;
+this has shown many problems in the past and problems may still occur
+with new systems. Use `mpfr_set_si` or `mpfr_set_str` instead.
+
+   ====================================================================
+
+If you have to mix TMP_DECL and MPFR_SAVE_EXPO_DECL in the declaring
+section of your function, please declare MPFR_SAVE_EXPO_DECL before
+TMP_DECL, since TMP_DECL may be replace by nothing:
+
+Instead of:                                 Usually preprocessed as:
+  unsigned long t                             unsigned long t; 
+  TMP_DECL (maker);                           ;
+  MPFR_SAVE_EXPO_DECL (expo);                 mpfr_save_expo_t expo;
+use:
+  unsigned long t                             unsigned long t;
+  MPFR_SAVE_EXPO_DECL (expo);                 mpfr_save_expo_t expo;
+  TMP_DECL (maker);                           ;
+
+===========================================================================
+
+If you plan to add a new function, you could follow this schema:
+
+int
+mpfr_toto (mpfr_ptr rop, mpfr_srcptr op, mp_rnd_t rnd)
+{
+  [Declarate all used variables]
+  int inexact;
+  mp_prec_t prec;
+  MPFR_SAVE_EXPO_DECL (expo);
+
+  /* First deal with particular cases */
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (op)))
+    {
+      if (MPFR_IS_NAN (op))
+        {
+         MPFR_SET_NAN (rop);
+         MPFR_RET_NAN;
+        }
+      else if (MPFR_IS_INF (op))
+        { 
+         [Code to deal with Infinity]
+        }
+      else
+        {
+          MPFR_ASSERTD (MPFR_IS_ZERO (op));
+          [Code to deal with Zero]
+        }
+    }
+  [Other particular case: For example, op<0 or op == 1]
+
+  [Compute the first estimation of the used precision `prec`]
+  [Initalize the intermediate variables using mpfr_init2]
+  MPFR_SAVE_EXPO_MARK (expo);            /* Maximal range for exponent */
+
+  for (;;)                               /* Infinite loop */
+    {
+      [Compute an estimation of the function and]
+      [ an estimation of the error].
+      if (mpfr_can_round (...))          /* If we can round, quit the loop */
+        break;
+      prec += BITS_PER_MP_LIMB;          /* Increase used precision */
+      [Using `mpfr_set_prec`, resize all needed intermediate variables]
+    }
+  
+  inexact = mpfr_set (rop, temp, rnd);   /* Set rop to the computed value */
+  [Clear all intermediate variables]
+
+  MPFR_SAVE_EXPO_FREE (expo);            /* Restore exponent range */
+  return mpfr_check_range (rop, inexact, rnd); /* Quit and check range */
+}
