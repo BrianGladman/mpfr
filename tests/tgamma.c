@@ -52,7 +52,7 @@ main (void)
 	  err = (rnd == GMP_RNDN) ? yprec + 1 : yprec;
 	  if (mpfr_can_round (y, err, rnd, rnd, prec))
 	    {
-	      mpfr_round (y, rnd, prec);
+	      mpfr_round_prec (y, rnd, prec);
 	      mpfr_gamma (z, x, rnd);
 	      if (mpfr_cmp (y, z))
 		{

@@ -1,7 +1,7 @@
-/* mpfr_round_raw_generic, mpfr_round_raw2, mpfr_round_raw, mpfr_round,
+/* mpfr_round_raw_generic, mpfr_round_raw2, mpfr_round_raw, mpfr_round_prec,
    mpfr_can_round, mpfr_can_round_raw -- various rounding functions
 
-Copyright (C) 1999, 2001 Free Software Foundation, Inc.
+Copyright (C) 1999-2002 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -149,7 +149,7 @@ mpfr_round_raw_generic(mp_limb_t *yp, mp_limb_t *xp, mp_prec_t xprec,
 }
 
 int
-mpfr_round (mpfr_ptr x, mp_rnd_t rnd_mode, mp_prec_t prec)
+mpfr_round_prec (mpfr_ptr x, mp_rnd_t rnd_mode, mp_prec_t prec)
 {
   mp_limb_t *tmp, *xp;
   int carry, inexact;

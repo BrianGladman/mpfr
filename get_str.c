@@ -214,7 +214,7 @@ mpfr_get_str (char *str, mp_exp_t *expptr, int base, size_t n,
           case GMP_RNDD: rnd = GMP_RNDU; break;
           }
 
-      mpfr_round (b, rnd, MPFR_EXP(b));
+      mpfr_round_prec (b, rnd, MPFR_EXP(b));
     }
 
   prec = MPFR_EXP(b); /* may have changed due to rounding */
