@@ -1,4 +1,97 @@
+2004-10-22  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* tests/tests.c:
+	Declaration of "tests_rand_start" and "tests_rand_end" with the same storage class specifier
+	in tests.c (static missing line 65 and 109).
+
+2004-10-21  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* strtofr.c:
+	Bug fixed: cast to unsigned char instead of int for isspace (no,
+	these are not "psycho" systems, just systems with signed chars).
+	Untabified the source.
+
+2004-10-20  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* configure.in: Improve ICC CFLAGS by removins meaningless warnings.
+
+	* strtofr.c: Remove some warnings on some "psycho" systems.
+
+	* README.dev: Update the chapter "Make a release".
+
+	* mpfr-test.h, tests/mpf_compat.h, tests/tests.c, tests/tinp_str.c:
+	Fix bug when you build MPFR outside source directory.
+	Add function src_fopen to open a file in the source directory, which
+	may be different from the current directory.
+
+	* INSTALL: Fix a typo.
+
+2004-10-19  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* mpfr.texi: Another correction (English).
+
+	* mpfr.texi: Minor correction.
+
+2004-10-19  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* NEWS: Update NEWS to reflect the change in mpfr_set_str.
+
+	* mpfr.texi, set_str.c, tests/tset_str.c:
+	Update mpfr_set_str to be much more like strtofr.
+	Update the documentation to reflect the changes.
+
+2004-10-19  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* mpfr.texi: changed contributors section
+
+2004-10-19  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* NEWS: Add a line about binary compatibility.
+
+2004-10-19  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* mpfr.texi: changed "contributors" section
+
+	* mul.c: changed rights (remove executable permission)
+
+2004-10-18  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* mpfr.texi: Misc corrections:
+	  + spelling mistakes
+	  + consistency: in direction @var{rnd} -> in the direction @var{rnd}
+	  + @code{NULL} pointer -> null pointer (as in the C standard)
+	  + in the example for mpfr_inits2 / mpfr_clears: NULL -> (void *) 0
+	    as NULL isn't necessarily a pointer.
+
+2004-10-18  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* BUGS, README: Update
+
+	* tests/tstrtofr.c, set_str.c, strtofr.c, tests/tset_str.c, mpfr.h, mpfr.texi:
+	Change "unsigned int" to "int" for base in proto of strtofr.
+	Change set_str to use strtofr (Fix a bug too).
+	Limit base to 36 in strtofr (since get_str is limited to 36).
+	Update documentation to reflect the changes.
+	mpfr_get_d1 is moved to section internal in the documentation.
+	Update the tests.
+
+	* mpfr-impl.h: Hard code NAN, +INF and -INF values for MVC.
+
+	* tests/mpf_compat.h, tests/tout_str.c:
+	Fix problem on systems where "/dev/null" doesn't exist.
+
+2004-10-16  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* AUTHORS, mpfr.texi: Misc corrections.
+
 2004-10-15  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* README.dev: Updated the section "To make a release".
+
+	* VERSION, mpfr.h, mpfr.texi, version.c:
+	Updated the version on the trunk.
+
+	* ChangeLog: Update.
 
 	* NEWS: Update for 2.1.0.
 
