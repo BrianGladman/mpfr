@@ -19,7 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -29,12 +28,9 @@ MA 02111-1307, USA. */
 #include "longlong.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
-
 #include "log_b2.h"
 
 static double __gmpfr_ceil _PROTO((double));
-/* mpn_exp is defined in get_str.c */
-long mpn_exp _PROTO ((mp_limb_t *, mp_exp_t *, int, mp_exp_t, size_t));
 static int digit_value_in_base _PROTO ((int, int));
 
 static double
@@ -345,7 +341,8 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
 			      negative, MPFR_PREC(x), rnd, NULL, (int) 0))
     {
       /* overflaw when rounding y */
-      MPFR_MANT(x)[MPFR_ESIZE(x) - 1] = MPFR_LIMB_HIGHBIT;
+      MPFR_MANT(x)[MPFR_ESIZE(x) - 1] 
+	= MPFR_LIMB_HIGHBIT;
       exp_y ++;
     }
 
