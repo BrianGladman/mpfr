@@ -72,7 +72,7 @@ mpfr_urandomb (rop, rstate)
 
   cnt = nlimbs*BITS_PER_MP_LIMB - nbits; 
   /* cnt is the number of non significant bits in the low limb */
-  rp[0] &= ~((((mp_limb_t) 1) << cnt) - 1);
+  rp[0] &= ~((MP_LIMB_T_ONE << cnt) - 1);
 
   MPFR_EXP (rop) = exp;
 }
