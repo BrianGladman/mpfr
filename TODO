@@ -44,48 +44,8 @@ Installation:
 
 Changes in existing functions:
 
-- merge mpfr_inp_str and mpfr_set_str (cf glibc sscanf/fscanf)
-	[mpfr_set_str -> with final '\0',
-	 mpfr_strtofr -> without final '\0', returns the number of characters
-	 read (or name mpfr_strtod suggested by Kevin, see below)]
-
-- [suggestion from Kevin:]
-  [This has stalled on the gmp side, there'll be no hurry to do it in
-  mpfr until it's finalized in mpf.]
-  char * mpf_strto (mpz_t ROP, const char *STR)
-     Read a floating point number from a string.  If successful the
-     result is stored in ROP and the return value points to the
-     character after those parsed.  If STR doesn't start with a valid
-     number then the return value is `NULL' and the value in ROP is
-     undefined.
-
-     Parsing follows the standard C `strtod' function (*note Parsing of
-     Integers: (libc)Parsing of Integers.).  This means optional
-     leading whitespace, an optional `+' or `-', mantissa digits, and an
-     optional exponent consisting of an `e' or `E', an optional sign,
-     and digits.  A hex mantissa can be given with a leading `0x' or
-     `0X', in which case `p' or `P' introduces the exponent (still in
-     decimal).  In addition `inf' or `infinity' with an optional sign,
-     or `nan' or `nan(..chars..)', all non case significant, can be
-     given.
-
-     There must be at least one digit in the mantissa for the number to
-     be valid.  If an exponent has no digits it's ignored and parsing
-     stops after the mantissa.  If an `0x' or `0X' is not followed by
-     hexadecimal digits, parsing stops after the `0'.
-
-     Note that in the hex format the exponent represents a power of 2,
-     ie. the result is MANTISSA*2^EXPONENT.  This is as per the `%a'
-     format in `printf' (*note Formatted Output Strings::).
-
-     `mpf_t' does not currently support NaNs or infinities.  The value
-     stored to ROP for these is undefined.
-
-     The decimal point character, or string, expected is taken from the
-     current locale on systems providing `localeconv'. [end of suggestion]
-
-- in mpfr_set_str, possibly accept other strings, like those accepted
-  by strtod.
+- merge mpfr_inp_str, mpfr_set_str to use mpfr_strtofr
+- mpfr_get_str should support base up to 62 too.
 
 - mpfr_can_round:
 1) remove the first rounding mode (rnd1) that was giving the direction of
@@ -154,9 +114,6 @@ Miscellaneous:
    digits would be good value I think.  After all, say 10000 bits using
    1250 bytes would still be small compared to the code size!
    Store pi in round to zero mode (to recover other modes).
-
-- problem when reading a float followed by a character, for example 1.5*x
-	[from Fabrice.Rouillier@loria.fr, Mon, 04 Dec 2000]
 
 - add a new rounding mode: rounding away from 0. This can be easily
   implemented as follows: round to zero, and if the result is inexact,
