@@ -32,9 +32,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
   double uo, vo;
   mp_limb_t *up, *vp, *tmpp, *tmpup, *tmpvp, *ap, *bp;
   mpfr_t u, v, tmp, tmpu, tmpv, a, b;
-  TMP_DECL(marker1);
-  {
-  TMP_DECL(marker2);
+  TMP_DECL(marker);
 
   /* If a or b is NaN, the result is NaN */
   if (MPFR_IS_NAN(op1) || MPFR_IS_NAN(op2))
@@ -78,11 +76,10 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
   /* Initialisations */
   go_on=1;
  
-  TMP_MARK(marker1);
+  TMP_MARK(marker);
   s=(p-1)/BITS_PER_MP_LIMB+1;
   MPFR_INIT(ap, a, p, s);  
   MPFR_INIT(bp, b, p, s);
-  TMP_MARK(marker2);
   MPFR_INIT(up, u, p, s);
   MPFR_INIT(vp, v, p, s);   
   MPFR_INIT(tmpup, tmpu, p, s);  
@@ -151,8 +148,6 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
       else {
 	  go_on=1;
 	  p+=5;
-	  TMP_FREE(marker2); 
-	  TMP_MARK(marker2);
 	  s=(p-1)/BITS_PER_MP_LIMB+1;
 	  MPFR_INIT(up, u, p, s);
 	  MPFR_INIT(vp, v, p, s);   
@@ -167,11 +162,10 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
 
   /* Setting of the result */
 
-    mpfr_set(r,v,rnd_mode);
-  }
+  mpfr_set(r,v,rnd_mode);
 
   /* Let's clean */
-    TMP_FREE(marker1); 
+  TMP_FREE(marker); 
   
   return ;
 }
