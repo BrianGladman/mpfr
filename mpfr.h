@@ -211,15 +211,15 @@ void mpfr_ceil _PROTO((mpfr_t, mpfr_srcptr));
 #endif
 
 #define mpfr_init_set_si(x, i, rnd) \
- { mpfr_init(x); mpfr_set_si((x), (i), (rnd)); }
+ do { mpfr_init(x); mpfr_set_si((x), (i), (rnd)); } while (0)
 #define mpfr_init_set_ui(x, i, rnd) \
- { mpfr_init(x); mpfr_set_ui((x), (i), (rnd)); }
+ do { mpfr_init(x); mpfr_set_ui((x), (i), (rnd)); } while (0)
 #define mpfr_init_set_d(x, d, rnd) \
- { mpfr_init(x); mpfr_set_d((x), (d), (rnd)); }
+ do { mpfr_init(x); mpfr_set_d((x), (d), (rnd)); } while (0)
 #define mpfr_init_set(x, y, rnd) \
- { mpfr_init(x); mpfr_set((x), (y), (rnd)); }
+ do { mpfr_init(x); mpfr_set((x), (y), (rnd)); } while (0)
 #define mpfr_init_set_f(x, y, rnd) \
- { mpfr_init(x); mpfr_set_f((x), (y), (rnd)); }
+ do { mpfr_init(x); mpfr_set_f((x), (y), (rnd)); } while (0)
 #define mpfr_init_set_str_raw(x, y, rnd) \
- { mpfr_init(x); mpfr_set_str_raw((x), (y), (rnd)); }
+ do { mpfr_init(x); mpfr_set_str_raw((x), (y), (rnd)); } while (0)
 
