@@ -164,7 +164,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
             {
               mp_limb_t mask, bb;
 
-              mask = (MP_LIMB_T_ONE << sh) - 1;
+              mask = MPFR_LIMB_MASK (sh);
               bb = ap[0] & mask;
               ap[0] &= (~mask) << 1;
               if (bb == 0)
@@ -184,7 +184,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
     {
       mp_limb_t mask, bb;
 
-      mask = (MP_LIMB_T_ONE << sh) - 1;
+      mask = MPFR_LIMB_MASK (sh);
       bb = ap[0] & mask;
       ap[0] &= ~mask;
       rb = bb >> (sh - 1);
@@ -292,7 +292,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
               if (bb < cc /* carry */
                   && (rb < 0 || (rb ^= 1) == 0)
-                  && mpn_add_1(ap, ap, an, MP_LIMB_T_ONE << sh))
+                  && mpn_add_1(ap, ap, an, MPFR_LIMB_ONE << sh))
                 {
                   if (exp == __gmpfr_emax)
                     {
@@ -345,7 +345,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
                   if (fb)
                     goto rounding;
                   rb ^= 1;
-                  if (rb == 0 && mpn_add_1(ap, ap, an, MP_LIMB_T_ONE << sh))
+                  if (rb == 0 && mpn_add_1(ap, ap, an, MPFR_LIMB_ONE << sh))
                     {
                       if (MPFR_UNLIKELY(exp == __gmpfr_emax))
                         {
@@ -478,7 +478,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
               goto set_exponent;
             }
           /* round to even */
-          if (ap[0] & (MP_LIMB_T_ONE << sh))
+          if (ap[0] & (MPFR_LIMB_ONE << sh))
             goto rndn_away;
           else
             goto rndn_zero;
@@ -521,7 +521,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
     }
 
  add_one_ulp: /* add one unit in last place to a */
-  if (MPFR_UNLIKELY(mpn_add_1(ap, ap, an, MP_LIMB_T_ONE << sh)))
+  if (MPFR_UNLIKELY(mpn_add_1(ap, ap, an, MPFR_LIMB_ONE << sh)))
     {
       /* Case 100000x0 + 1*/
       if (MPFR_UNLIKELY(exp == __gmpfr_emax))

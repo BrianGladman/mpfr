@@ -101,8 +101,7 @@ main (void)
 	  if (mpfr_check(a))  ERROR("last bits non 0");
 	}
       MPFR_MANT(a)[0] = tmp;
-      MPFR_MANT(a)[MPFR_LIMB_SIZE(a)-1] &= 
-	(MP_LIMB_T_ONE<<(BITS_PER_MP_LIMB-1))-MP_LIMB_T_ONE;
+      MPFR_MANT(a)[MPFR_LIMB_SIZE(a)-1] &= MPFR_LIMB_MASK (BITS_PER_MP_LIMB-1);
       if (mpfr_check(a))  ERROR("last bits non 0");
       /* Final */
       mpfr_set_ui(a, 2137, GMP_RNDN);

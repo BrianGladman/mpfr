@@ -19,7 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-
 #include "mpfr-impl.h"
 
 /* sets x to x-sign(x)*ulp(x) */
@@ -34,17 +33,15 @@ mpfr_sub_one_ulp(mpfr_ptr x, mp_rnd_t rnd_mode)
     {
       if (MPFR_IS_NAN(x))
 	MPFR_RET_NAN;
-      if (MPFR_IS_INF(x) || MPFR_IS_ZERO(x))
-	return 0;
+      MPFR_ASSERTD (MPFR_IS_INF(x) || MPFR_IS_ZERO(x));
+      MPFR_RET (0);
     }
-
-  MPFR_ASSERTN(MPFR_PREC_MIN > 1);
 
   xn = MPFR_LIMB_SIZE(x); 
   MPFR_UNSIGNED_MINUS_MODULO(sh, MPFR_PREC(x) );
   xp = MPFR_MANT(x);
-  mpn_sub_1 (xp, xp, xn, MP_LIMB_T_ONE << sh);
-  if (xp[xn-1] >> (BITS_PER_MP_LIMB - 1) == 0)
+  mpn_sub_1 (xp, xp, xn, MPFR_LIMB_ONE << sh);
+  if (MPFR_UNLIKELY( MPFR_LIMB_MSB (xp[xn-1]) == 0))
     { /* was an exact power of two: not normalized any more */
       mp_exp_t exp = MPFR_EXP (x);
       /* Note: In case of underflow and rounding to the nearest mode,
@@ -61,5 +58,5 @@ mpfr_sub_one_ulp(mpfr_ptr x, mp_rnd_t rnd_mode)
             xp[i] = MP_LIMB_T_MAX;
         }
     }
-  return 0;
+  MPFR_RET (0);
 }

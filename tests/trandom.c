@@ -99,7 +99,7 @@ test_random2 (long nbtests, mp_prec_t prec, int verbose)
     {
       mpfr_random2 (x, xn, 0);
       /* check that lower bits are zero */
-      if (MPFR_MANT(x)[0] & ((MP_LIMB_T_ONE << sh) - MP_LIMB_T_ONE))
+      if (MPFR_MANT(x)[0] & MPFR_LIMB_MASK(sh))
         {
           printf ("Error: mpfr_random2() returns invalid numbers:\n");
           mpfr_print_binary (x); puts ("");
@@ -176,7 +176,7 @@ test_urandomb (long nbtests, mp_prec_t prec, int verbose)
     {
       mpfr_urandomb (x, state);
       /* check that lower bits are zero */
-      if (MPFR_MANT(x)[0] & ((MP_LIMB_T_ONE << sh) - MP_LIMB_T_ONE))
+      if (MPFR_MANT(x)[0] & MPFR_LIMB_MASK(sh))
         {
           printf ("Error: mpfr_urandomb() returns invalid numbers:\n");
           mpfr_print_binary (x); puts ("");

@@ -22,13 +22,13 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
 /*
- * Check if x is a valid mpfr_t init by mpfr_init
+ * Check if x is a valid mpfr_t initializes by mpfr_init
  * Returns 0 if isn't valid 
  */
 int
 mpfr_check (mpfr_srcptr x)
 {
-  mp_size_t s,i;
+  mp_size_t s, i;
   mp_limb_t tmp;
   volatile mp_limb_t *xm;
   int rw;
@@ -41,7 +41,7 @@ mpfr_check (mpfr_srcptr x)
     return 0;
   /* Check Mantissa */
   xm = MPFR_MANT(x);
- if (!xm)
+  if (!xm)
     return 0;
   /* Check size of mantissa */
   s = MPFR_GET_ALLOC_SIZE(x);
@@ -61,13 +61,12 @@ mpfr_check (mpfr_srcptr x)
       rw = (MPFR_PREC(x) % BITS_PER_MP_LIMB);
       if (rw != 0)
 	{
-	  tmp = ((MP_LIMB_T_ONE << (BITS_PER_MP_LIMB - rw))
-		 - MP_LIMB_T_ONE);
+	  tmp = MPFR_LIMB_MASK (BITS_PER_MP_LIMB - rw);
 	  if ((xm[0] & tmp) != 0)
 	    return 0;
 	}
       /* Check exponent range */
-      if ((MPFR_EXP(x) < __gmpfr_emin) || (MPFR_EXP(x) > __gmpfr_emax))
+      if ((MPFR_EXP (x) < __gmpfr_emin) || (MPFR_EXP (x) > __gmpfr_emax))
 	return 0;
     }
   else 

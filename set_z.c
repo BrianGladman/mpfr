@@ -87,7 +87,7 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
         MPN_COPY(fp, zp + dif, fn);
 
       sh = (mp_prec_t) fn * BITS_PER_MP_LIMB - MPFR_PREC(f);
-      cc = fp[0] & ((MP_LIMB_T_ONE << sh) - 1);
+      cc = fp[0] & MPFR_LIMB_MASK (sh);
       fp[0] &= ~cc;
 
       to0 = rnd_mode == GMP_RNDZ
@@ -103,7 +103,7 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
             {
               mp_limb_t rb;
 
-              rb = MP_LIMB_T_ONE << (sh - 1);
+              rb = MPFR_LIMB_ONE << (sh - 1);
               if ((cc & rb) == 0)
                 to0 = 1; /* rounding bit is 0 */
               else
@@ -128,7 +128,7 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
           if (!to0 && cc == 0) /* even rounding */
             {
               cc = 1;
-              if ((fp[0] & (MP_LIMB_T_ONE << sh)) == 0)
+              if ((fp[0] & (MPFR_LIMB_ONE << sh)) == 0)
                 to0 = 1;
             }
         } /* rnd_mode == GMP_RNDN */
@@ -145,7 +145,7 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
         inex = -sign_z;
       else
         {
-          if (mpn_add_1(fp, fp, fn, MP_LIMB_T_ONE << sh))
+          if (mpn_add_1(fp, fp, fn, MPFR_LIMB_ONE << sh))
             {
               if (exp == __gmpfr_emax)
                 return mpfr_set_overflow(f, rnd_mode, sign_z);

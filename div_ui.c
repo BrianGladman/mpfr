@@ -76,9 +76,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 
   TMP_MARK(marker);
   xn = MPFR_LIMB_SIZE(x);
-  /*(MPFR_PREC(x) - 1)/BITS_PER_MP_LIMB + 1;*/
   yn = MPFR_LIMB_SIZE(y);
-  /*(MPFR_PREC(y) - 1)/BITS_PER_MP_LIMB + 1;*/
 
   xp = MPFR_MANT(x);
   yp = MPFR_MANT(y);
@@ -136,7 +134,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
   sh = yn * BITS_PER_MP_LIMB - MPFR_PREC(y);
   /* it remains sh bits in less significant limb of y */
 
-  d = *yp & ((MP_LIMB_T_ONE << sh) - MP_LIMB_T_ONE);
+  d = *yp & MPFR_LIMB_MASK (sh);
   *yp ^= d; /* set to zero lowest sh bits */
 
   MPFR_SET_EXP (y, exp);
@@ -162,9 +160,9 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 
     default:
       MPFR_ASSERTD(rnd_mode == GMP_RNDN);
-      if (sh && d < (MP_LIMB_T_ONE << (sh - 1)))
+      if (sh && d < (MPFR_LIMB_ONE << (sh - 1)))
 	MPFR_RET(-MPFR_INT_SIGN(x));
-      else if (sh && d > (MP_LIMB_T_ONE << (sh - 1)))
+      else if (sh && d > (MPFR_LIMB_ONE << (sh - 1)))
 	{
 	  mpfr_add_one_ulp (y, rnd_mode);
 	  MPFR_RET(MPFR_INT_SIGN(x));
@@ -176,7 +174,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 	     (b) sh=0 and middle=1
 	  */
 	  if ((sh && inexact) || (!sh && (middle > 0)) ||
-	      (*yp & (MP_LIMB_T_ONE << sh)))
+	      (*yp & (MPFR_LIMB_ONE << sh)))
 	    {
 	      mpfr_add_one_ulp (y, rnd_mode);
 	      MPFR_RET(MPFR_INT_SIGN(x));

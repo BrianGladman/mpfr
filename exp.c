@@ -96,7 +96,7 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
           yn = 1 + (MPFR_PREC(y) - 1) / BITS_PER_MP_LIMB;
           sh = (mp_prec_t) yn * BITS_PER_MP_LIMB - MPFR_PREC(y);
-          MPFR_MANT(y)[0] += MP_LIMB_T_ONE << sh;
+          MPFR_MANT(y)[0] += MPFR_LIMB_ONE << sh;
           return 1;
         }
       return -MPFR_FROM_SIGN_TO_INT(signx);

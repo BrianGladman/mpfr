@@ -192,23 +192,23 @@ mpfr_can_round_raw (mp_limb_t *bp, mp_size_t bn, int neg, mp_exp_t err0,
       cc = (bp[bn - 1] >> s1) & 1;
       cc ^= mpfr_round_raw2(bp, bn, neg, rnd2, prec);
       /* now round b +/- 2^(MPFR_EXP(b)-err) */
-      cc2 = mpn_add_1 (tmp + bn - k, bp + bn - k, k, MP_LIMB_T_ONE << s);
+      cc2 = mpn_add_1 (tmp + bn - k, bp + bn - k, k, MPFR_LIMB_ONE << s);
       break;
     case GMP_RNDN:
       /* Round to nearest */
        /* first round b+2^(MPFR_EXP(b)-err) */
-      cc = mpn_add_1 (tmp + bn - k, bp + bn - k, k, MP_LIMB_T_ONE << s);
+      cc = mpn_add_1 (tmp + bn - k, bp + bn - k, k, MPFR_LIMB_ONE << s);
       cc = (tmp[bn - 1] >> s1) & 1; /* gives 0 when cc=1 */
       cc ^= mpfr_round_raw2 (tmp, bn, neg, rnd2, prec);
       /* now round b-2^(MPFR_EXP(b)-err) */
-      cc2 = mpn_sub_1 (tmp + bn - k, bp + bn - k, k, MP_LIMB_T_ONE << s);
+      cc2 = mpn_sub_1 (tmp + bn - k, bp + bn - k, k, MPFR_LIMB_ONE << s);
       break;
     default:
       /* Round away */
       cc = (bp[bn - 1] >> s1) & 1;
       cc ^= mpfr_round_raw2(bp, bn, neg, rnd2, prec);
       /* now round b +/- 2^(MPFR_EXP(b)-err) */
-      cc2 = mpn_sub_1 (tmp + bn - k, bp + bn - k, k, MP_LIMB_T_ONE << s);
+      cc2 = mpn_sub_1 (tmp + bn - k, bp + bn - k, k, MPFR_LIMB_ONE << s);
       break;
     }
 

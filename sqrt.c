@@ -243,7 +243,7 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
             /* or even r. */
             {
               cc = mpn_add_1 (rp + rrsize - nw, rp + rrsize - nw, rrsize,
-                              MP_LIMB_T_ONE << rw);
+                              MPFR_LIMB_ONE << rw);
               inexact = 1;
             }
           else
@@ -260,8 +260,8 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
           rsize = (MPFR_PREC(r) - 1)/BITS_PER_MP_LIMB + 1;
           cc = mpn_add_1 (rp + rrsize - rsize, rp + rrsize - rsize, rsize,
                           t != 0 ?
-                          MP_LIMB_T_ONE << (BITS_PER_MP_LIMB - t) :
-                          MP_LIMB_T_ONE);
+                          MPFR_LIMB_ONE << (BITS_PER_MP_LIMB - t) :
+                          MPFR_LIMB_ONE);
           break;
         }
     }
@@ -279,9 +279,8 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
   MPN_COPY(MPFR_MANT(r), rp + rsize - rrsize, rrsize);
 
   if (MPFR_PREC(r) & (BITS_PER_MP_LIMB - 1))
-    MPFR_MANT(r)[0] &= ~((MP_LIMB_T_ONE <<
-                          (BITS_PER_MP_LIMB -
-                           (MPFR_PREC(r) & (BITS_PER_MP_LIMB - 1)))) - 1);
+    MPFR_MANT(r)[0] &= ~MPFR_LIMB_MASK(BITS_PER_MP_LIMB -
+				       (MPFR_PREC(r) & (BITS_PER_MP_LIMB-1)));
 
   TMP_FREE(marker);
   return inexact;

@@ -26,16 +26,15 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
 #if (BITS_PER_MP_LIMB==32)
-#define MPFR_LIMBS_PER_DOUBLE 2
+# define MPFR_LIMBS_PER_DOUBLE 2
 #elif (BITS_PER_MP_LIMB >= 64)
-#define MPFR_LIMBS_PER_DOUBLE 1
+# define MPFR_LIMBS_PER_DOUBLE 1
 #else
-#error "Unsupported value of BITS_PER_MP_LIMB"
+# error "Unsupported value of BITS_PER_MP_LIMB"
 #endif
 
 /* extracts the bits of d in rp[0..n-1] where n=ceil(53/BITS_PER_MP_LIMB).
-   Assumes d is neither 0 nor NaN nor Inf.
- */
+   Assumes d is neither 0 nor NaN nor Inf. */
 static int
 __mpfr_extract_double (mp_ptr rp, double d)
      /* e=0 iff BITS_PER_MP_LIMB=32 and rp has only one limb */
@@ -67,10 +66,10 @@ __mpfr_extract_double (mp_ptr rp, double d)
     if (exp)
       {
 #if BITS_PER_MP_LIMB >= 64
-	manl = ((MP_LIMB_T_ONE << 63)
+	manl = ((MPFR_LIMB_ONE << 63)
 		| ((mp_limb_t) x.s.manh << 43) | ((mp_limb_t) x.s.manl << 11));
 #else
-	manh = (MP_LIMB_T_ONE << 31) | (x.s.manh << 11) | (x.s.manl >> 21);
+	manh = (MPFR_LIMB_ONE << 31) | (x.s.manh << 11) | (x.s.manl >> 21);
 	manl = x.s.manl << 11;
 #endif
       }

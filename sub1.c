@@ -234,7 +234,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   /* now perform rounding */
   sh = (mp_prec_t) an * BITS_PER_MP_LIMB - MPFR_PREC(a);
   /* last unused bits from a */
-  carry = ap[0] & ((MP_LIMB_T_ONE << sh) - MP_LIMB_T_ONE);
+  carry = ap[0] & MPFR_LIMB_MASK (sh);
   ap[0] -= carry;
 
   if (MPFR_LIKELY(rnd_mode == GMP_RNDN))
@@ -244,8 +244,8 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	  is_exact = (carry == 0);
 	  /* can decide except when carry = 2^(sh-1) [middle]
 	     or carry = 0 [truncate, but cannot decide inexact flag] */
-	  down = (carry < (MP_LIMB_T_ONE << (sh - 1)));
-	  if (carry > (MP_LIMB_T_ONE << (sh - 1)))
+	  down = (carry < (MPFR_LIMB_ONE << (sh - 1)));
+	  if (carry > (MPFR_LIMB_ONE << (sh - 1)))
 	    goto add_one_ulp;
 	  else if ((0 < carry) && down)
 	    {
@@ -402,12 +402,12 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   goto truncate;
   
  sub_one_ulp: /* sub one unit in last place to a */
-  mpn_sub_1 (ap, ap, an, MP_LIMB_T_ONE << sh);
+  mpn_sub_1 (ap, ap, an, MPFR_LIMB_ONE << sh);
   inexact = -1;
   goto end_of_sub;
 
  add_one_ulp: /* add one unit in last place to a */
-  if (MPFR_UNLIKELY(mpn_add_1 (ap, ap, an, MP_LIMB_T_ONE << sh)))
+  if (MPFR_UNLIKELY(mpn_add_1 (ap, ap, an, MPFR_LIMB_ONE << sh)))
     /* result is a power of 2: 11111111111111 + 1 = 1000000000000000 */
     {
       ap[an-1] = MPFR_LIMB_HIGHBIT;

@@ -41,38 +41,15 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mp_prec_t *cancel)
   mp_prec_t res = 0;
   int sign;
 
-  MPFR_ASSERTD(MPFR_IS_FP(b));
-  MPFR_ASSERTD(MPFR_IS_FP(c));
-
   /* b=c should not happen, since cmp2 is called only from agm
      (with different variables), and from sub1 (if same b=c, then
      sub1sp would be called instead */
-#if 0 
-  /* Optimized case x - x */
-  if (MPFR_UNLIKELY(b == c))
-    return 0;
-#endif
+  MPFR_ASSERTD (b != c);
 
-  /* the cases b=0 or c=0 are also treated apart in agm and sub (which calls 
-     sub1)
-   */
-#if 0
-  /*FIXME: Useless for sub1 ? */
-  if (MPFR_IS_ZERO(b))
-    {
-      if (MPFR_IS_ZERO(c))
-        return 0;
-
-      *cancel = 0;
-      return -1;
-    }
-
-  if (MPFR_IS_ZERO(c))
-    {
-      *cancel = 0;
-      return 1;
-    }
-#endif
+  /* the cases b=0 or c=0 are also treated apart in agm and sub 
+     (which calls sub1) */
+  MPFR_ASSERTD (MPFR_IS_PURE_FP(b));
+  MPFR_ASSERTD (MPFR_IS_PURE_FP(c));
 
   if (MPFR_GET_EXP (b) >= MPFR_GET_EXP (c))
     {
@@ -85,7 +62,7 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mp_prec_t *cancel)
       bn = (MPFR_PREC(b) - 1) / BITS_PER_MP_LIMB;
       cn = (MPFR_PREC(c) - 1) / BITS_PER_MP_LIMB;
 
-      if (diff_exp == 0)
+      if (MPFR_UNLIKELY( diff_exp == 0 ))
         {
           while (bn >= 0 && cn >= 0 && bp[bn] == cp[cn])
             {
@@ -109,7 +86,7 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mp_prec_t *cancel)
             {
               unsigned int z;
 
-              MPFR_ASSERTN(bn >= 0);
+              MPFR_ASSERTD (bn >= 0);
 
               while (bp[bn] == 0)
                 {
@@ -123,9 +100,9 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mp_prec_t *cancel)
               return sign;
             }
 
-          MPFR_ASSERTN(bn >= 0);
-          MPFR_ASSERTN(cn >= 0);
-          MPFR_ASSERTN(bp[bn] != cp[cn]);
+          MPFR_ASSERTD (bn >= 0);
+          MPFR_ASSERTD (cn >= 0);
+          MPFR_ASSERTD (bp[bn] != cp[cn]);
           if (bp[bn] < cp[cn])
             {
               mp_limb_t *tp;
@@ -207,7 +184,7 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mp_prec_t *cancel)
 
       count_leading_zeros(z, dif); /* dif > 1 here */
       res += z;
-      if (dif != (MP_LIMB_T_ONE << (BITS_PER_MP_LIMB - z - 1)))
+      if (dif != (MPFR_LIMB_ONE << (BITS_PER_MP_LIMB - z - 1)))
         { /* dif is not a power of two */
           *cancel = res;
           return sign;

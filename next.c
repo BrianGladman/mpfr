@@ -43,11 +43,11 @@ mpfr_nexttozero (mpfr_ptr x)
       int sh;
       mp_limb_t *xp;
 
-      xn = 1 + (MPFR_PREC(x) - 1) / BITS_PER_MP_LIMB;
-      sh = (mp_prec_t) xn * BITS_PER_MP_LIMB - MPFR_PREC(x);
+      xn = MPFR_LIMB_SIZE (x);
+      MPFR_UNSIGNED_MINUS_MODULO (sh, MPFR_PREC(x));
       xp = MPFR_MANT(x);
-      mpn_sub_1 (xp, xp, xn, MP_LIMB_T_ONE << sh);
-      if (xp[xn-1] >> (BITS_PER_MP_LIMB - 1) == 0)
+      mpn_sub_1 (xp, xp, xn, MPFR_LIMB_ONE << sh);
+      if (MPFR_UNLIKELY( MPFR_LIMB_MSB(xp[xn-1]) == 0) )
         { /* was an exact power of two: not normalized any more */
           mp_exp_t exp = MPFR_EXP (x);
           if (MPFR_UNLIKELY(exp == __gmpfr_emin))
@@ -77,10 +77,11 @@ mpfr_nexttoinf (mpfr_ptr x)
       int sh;
       mp_limb_t *xp;
 
-      xn = 1 + (MPFR_PREC(x) - 1) / BITS_PER_MP_LIMB;
-      sh = (mp_prec_t) xn * BITS_PER_MP_LIMB - MPFR_PREC(x);
+      xn = MPFR_LIMB_SIZE (x);
+      MPFR_UNSIGNED_MINUS_MODULO (sh, MPFR_PREC(x));
       xp = MPFR_MANT(x);
-      if (mpn_add_1 (xp, xp, xn, MP_LIMB_T_ONE << sh)) /* got 1.0000... */
+      if (MPFR_UNLIKELY( mpn_add_1 (xp, xp, xn, MPFR_LIMB_ONE << sh)) )
+	/* got 1.0000... */
         {
           mp_exp_t exp = MPFR_EXP (x);
           if (MPFR_UNLIKELY(exp == __gmpfr_emax))

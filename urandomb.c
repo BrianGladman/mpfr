@@ -41,14 +41,14 @@ mpfr_urandomb (mpfr_ptr rop, gmp_randstate_t rstate)
   rp = MPFR_MANT(rop);
   nbits = MPFR_PREC(rop);
   nlimbs = MPFR_LIMB_SIZE(rop);
-  /*(nbits + BITS_PER_MP_LIMB - 1) / BITS_PER_MP_LIMB;*/
+  MPFR_SET_POS (rop);
 
   _gmp_rand (rp, rstate, nlimbs * BITS_PER_MP_LIMB);
 
   /* If nbits isn't a multiple of BITS_PER_MP_LIMB, mask the low bits */
   cnt = nlimbs * BITS_PER_MP_LIMB - nbits;
-  if (cnt != 0)
-    rp[0] &= ~((MP_LIMB_T_ONE << cnt) - MP_LIMB_T_ONE);
+  if (MPFR_LIKELY(cnt != 0))
+    rp[0] &= ~MPFR_LIMB_MASK (cnt);
 
   exp = 0;
   k = 0;
@@ -59,13 +59,13 @@ mpfr_urandomb (mpfr_ptr rop, gmp_randstate_t rstate)
       exp -= BITS_PER_MP_LIMB;
     }
 
-  if (nlimbs != 0) /* otherwise value is zero */
+  if (MPFR_LIKELY(nlimbs != 0)) /* otherwise value is zero */
     {
       count_leading_zeros (cnt, rp[nlimbs - 1]); 
       if (mpfr_set_exp (rop, exp - cnt))
         {
           MPFR_SET_NAN (rop);
-          __gmpfr_flags |= MPFR_FLAGS_NAN;
+          __gmpfr_flags |= MPFR_FLAGS_NAN; /* Can't use MPFR_RET_NAN */
           return 1;
         }
       if (cnt != 0)
@@ -76,6 +76,5 @@ mpfr_urandomb (mpfr_ptr rop, gmp_randstate_t rstate)
   else
     MPFR_SET_ZERO(rop);
 
-  MPFR_SET_POS (rop);
   return 0;
 }
