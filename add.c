@@ -68,7 +68,7 @@ mpfr_add (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	    }
 	  return mpfr_set(a, c, rnd_mode);
 	}
-      else /* necessarily c is 0 */
+      else
 	{
           MPFR_ASSERTD(MPFR_IS_ZERO(c));
 	  return mpfr_set(a, b, rnd_mode);

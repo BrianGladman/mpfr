@@ -20,7 +20,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-
 #include "mpfr-impl.h"
 
 int
@@ -68,12 +67,11 @@ mpfr_sub (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	    }
 	  return mpfr_neg (a, c, rnd_mode);
 	}
-      else if (MPFR_IS_ZERO(c))
+      else
 	{
+	  MPFR_ASSERTD( MPFR_IS_ZERO(c) );
 	  return mpfr_set (a, b, rnd_mode);
 	}
-      /* Should never reach here */
-      MPFR_ASSERTN(0);
     }
   MPFR_CLEAR_FLAGS(a);
   MPFR_ASSERTD(MPFR_IS_PURE_FP(b) && MPFR_IS_PURE_FP(c));

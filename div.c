@@ -86,14 +86,12 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
 	      MPFR_RET(0);
 	    }
 	}
-      else if (MPFR_IS_ZERO(u))
+      else
 	{
+	  MPFR_ASSERTD(MPFR_IS_ZERO(u));
 	  MPFR_SET_ZERO(q);
 	  MPFR_RET(0);
 	}
-      else
-	/* Never reach this !*/
-	MPFR_ASSERTN(0);
     }
   MPFR_CLEAR_FLAGS(q);
  

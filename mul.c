@@ -69,14 +69,13 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	      MPFR_RET_NAN;
 	    }
 	}
-      else if (MPFR_IS_ZERO(b) || MPFR_IS_ZERO(c))
+      else
 	{
+	  MPFR_ASSERTD(MPFR_IS_ZERO(b) || MPFR_IS_ZERO(c));
 	  MPFR_SET_SIGN(a, sign_product);
 	  MPFR_SET_ZERO(a);
 	  MPFR_RET(0); /* 0 * 0 is exact */
 	}
-      /* Should never reach here */
-      MPFR_ASSERTN(0);
     }
   MPFR_CLEAR_FLAGS(a);
   sign_product = MPFR_MULT_SIGN( MPFR_SIGN(b) , MPFR_SIGN(c) );
