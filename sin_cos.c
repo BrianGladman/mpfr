@@ -26,8 +26,8 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-int mpfr_sin_aux (mpfr_ptr, mpz_srcptr, int, int);
-int mpfr_cos_aux (mpfr_ptr, mpz_srcptr, int, int);
+int mpfr_sin_aux _PROTO ((mpfr_ptr, mpz_srcptr, int, int));
+int mpfr_cos_aux _PROTO ((mpfr_ptr, mpz_srcptr, int, int));
 
 #undef A
 #undef B
@@ -83,6 +83,7 @@ mpfr_sin_cos (sinus, cosinus, x, rnd_mode)
   int logn;
   int tmp_factor;
   int tmpi;
+  TMP_DECL (marker);
 
   if (sinus == cosinus) {
     fprintf (stderr, "Error in mpfr_sin_cos: 1st and 2nd operands must be different\n");
@@ -90,15 +91,38 @@ mpfr_sin_cos (sinus, cosinus, x, rnd_mode)
   }
 
   if (MPFR_IS_NAN(x) || MPFR_IS_INF(x)) {
-    MPFR_SET_NAN(sinus);
-    MPFR_SET_NAN(cosinus);
+    if (sinus != NULL) MPFR_SET_NAN(sinus);
+    if (cosinus != NULL) MPFR_SET_NAN(cosinus);
     return 1; /* inexact */
   }
 
   if (!MPFR_NOTZERO(x)) { 
-    mpfr_set_ui(sinus, 0, GMP_RNDN); 
-    mpfr_set_ui(cosinus, 1, GMP_RNDN); 
+    if (sinus != NULL) mpfr_set_ui (sinus, 0, GMP_RNDN); 
+    if (cosinus != NULL) mpfr_set_ui (cosinus, 1, GMP_RNDN); 
     return 0; /* exact results */
+  }
+
+  TMP_MARK (marker);
+  /* allow sinus or cosinus to be NULL */
+  if (sinus == NULL) { mp_size_t s;
+    if (cosinus == NULL) {
+      fprintf (stderr, "Error in mpfr_sin_cos: 1st and 2nd operands cannot be NULL simultaneously\n");
+      exit (1);
+    }
+    s = 1 + (MPFR_PREC(cosinus) - 1) / BITS_PER_MP_LIMB;
+    sinus = TMP_ALLOC (sizeof(mpfr_t));
+    MPFR_MANT(sinus) = (mp_ptr) TMP_ALLOC(s*BYTES_PER_MP_LIMB);
+    MPFR_PREC(sinus) = MPFR_PREC(cosinus);
+    MPFR_SIZE(sinus) = s;
+    MPFR_EXP(sinus) = 0;
+  }
+  else if (cosinus == NULL) { mp_size_t s;
+    s = 1 + (MPFR_PREC(sinus) - 1) / BITS_PER_MP_LIMB;
+    cosinus = TMP_ALLOC (sizeof(mpfr_t));
+    MPFR_MANT(cosinus) = (mp_ptr) TMP_ALLOC(s*BYTES_PER_MP_LIMB);
+    MPFR_PREC(cosinus) = MPFR_PREC(sinus);
+    MPFR_SIZE(cosinus) = s;
+    MPFR_EXP(cosinus) = 0;
   }
 
   prec_x = _mpfr_ceil_log2 ((double) MPFR_PREC(x) / BITS_PER_MP_LIMB);
@@ -245,8 +269,7 @@ mpfr_sin_cos (sinus, cosinus, x, rnd_mode)
   mpz_clear (uk);
   mpz_clear (square);
   mpfr_clear (x_copy);
+  TMP_FREE (marker);
+
   return 1; /* inexact result */
 } 
-
-
-
