@@ -1,0 +1,90 @@
+/* mpfr_min -- min and max of x, y  
+
+Copyright (C) 2001 Free Software Foundation.
+
+This file is part of the MPFR Library.
+
+The MPFR Library is free software; you can redistribute it and/or modify
+it under the terms of the GNU Library General Public License as published by
+the Free Software Foundation; either version 2 of the License, or (at your
+option) any later version.
+
+The MPFR Library is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
+License for more details.
+
+You should have received a copy of the GNU Library General Public License
+along with the MPFR Library; see the file COPYING.LIB.  If not, write to
+the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
+MA 02111-1307, USA. */
+
+#include <stdio.h>
+#include "gmp.h"
+#include "gmp-impl.h"
+#include "mpfr.h"
+#include "mpfr-impl.h"
+
+int mpfr_min _PROTO ((mpfr_ptr z, mpfr_srcptr x ,mpfr_srcptr y,mp_rnd_t rnd_mode ));
+int mpfr_max _PROTO ((mpfr_ptr z, mpfr_srcptr x ,mpfr_srcptr y,mp_rnd_t rnd_mode ));
+
+
+ /* The computation of z=min(x,y)
+
+    z=x if x <= y
+    z=y if x > y
+ */
+
+int
+#if __STDC__
+mpfr_min (mpfr_ptr z, mpfr_srcptr x ,mpfr_srcptr y ,mp_rnd_t rnd_mode) 
+#else
+mpfr_min (z, x, y, rnd_mode)
+     mpfr_ptr z;
+     mpfr_srcptr x;
+     mpfr_srcptr y;
+     mp_rnd_t rnd_mode;
+#endif
+{
+    if (MPFR_IS_NAN(x) || MPFR_IS_NAN(y) ) 
+    {  
+      MPFR_SET_NAN(z); 
+      return 1; 
+    }
+    MPFR_CLEAR_NAN(z);
+
+    if(mpfr_cmp(x,y) <= 0)
+      return mpfr_set(z,x,rnd_mode);
+    else
+      return mpfr_set(z,y,rnd_mode);
+}
+ /* The computation of z=max(x,y)
+
+    z=x if x >= y
+    z=y if x < y
+ */
+int
+#if __STDC__
+mpfr_max (mpfr_ptr z, mpfr_srcptr x ,mpfr_srcptr y ,mp_rnd_t rnd_mode) 
+#else
+mpfr_max (z, x, y, rnd_mode)
+     mpfr_ptr z;
+     mpfr_srcptr x;
+     mpfr_srcptr y;
+     mp_rnd_t rnd_mode;
+#endif
+{
+    if (MPFR_IS_NAN(x) || MPFR_IS_NAN(y) ) 
+    {  
+      MPFR_SET_NAN(z); 
+      return 1; 
+    }
+    MPFR_CLEAR_NAN(z);
+
+    if(mpfr_cmp(x,y) <= 0)
+      return mpfr_set(z,y,rnd_mode);
+    else
+      return mpfr_set(z,x,rnd_mode);
+}
+
+
