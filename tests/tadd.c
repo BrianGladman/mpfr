@@ -646,7 +646,7 @@ check_1111 (void)
   for (n = 0; n < N; n++)
     {
       mp_prec_t prec_a, prec_b, prec_c;
-      mp_exp_t tb, tc, diff;
+      mp_exp_t tb=0, tc, diff;
       mpfr_t a, b, c, s;
       int m = 512;
       int sb, sc;
