@@ -3,6 +3,7 @@
 
 #include "gmp.h"
 #include "gmp-impl.h"
+#include "longlong.h"
 #include "cputime.h"
 
 #define DIVREM(qp,np,dp,nn) \
@@ -69,7 +70,7 @@ mpn_dc_divrem_n_high (mp_ptr qp, mp_ptr np, mp_srcptr dp, mp_size_t n)
   mp_ptr tmp;
   TMP_DECL (marker);
 
-  l = n / 2;
+  l = (n-1) / 2 ;
   m = n - l; /* m >= l */
 
   TMP_MARK (marker);
@@ -98,8 +99,7 @@ mpn_dc_divrem_n_high (mp_ptr qp, mp_ptr np, mp_srcptr dp, mp_size_t n)
   return qh;
 }
 
-int
-main (int argc, char *argv[])
+void bench (int argc, const char *argv[])
 {
   int n = (argc > 1) ? atoi (argv[1]) : 10000;
   int k = (argc > 2) ? atoi (argv[2]) : 1;
@@ -128,19 +128,6 @@ main (int argc, char *argv[])
     }
   printf ("mpn_divrem took %dms\n", cputime () - st);
 
-#if 0
-  st = cputime ();
-  for (i = 0; i < k; i++)
-    {
-      MPN_COPY (n2p, n0p, 2 * n);
-      mpn_sb_divrem_mn (q2p, n2p, n + n, dp, n);
-    }
-  printf ("mpn_sb_divrem_mn took %dms\n", cputime () - st);
-
-  if (mpn_cmp (np, n2p, n) || mpn_cmp (qp, q2p, n))
-    abort ();
-#endif
-
   st = cputime ();
   for (i = 0; i < k; i++)
     {
@@ -163,7 +150,77 @@ main (int argc, char *argv[])
   for (i = n - 1; i >= 0 && q2p[i] == qp[i]; i--);
 
   if (i >= 0)
-    printf ("limbs %d differ: %lu %lu\n", i, qp[i], q2p[i]);
+    printf ("limbs %d differ: %lu %lu %ld\n", i, qp[i], q2p[i],
+	    (long) q2p[i]-qp[i]); 
+}
 
-  return 0;
+void
+check (int argc, const char *argv[])
+{
+  int n = (argc > 1) ? atoi (argv[1]) : 1000;
+  int k = (argc > 2) ? atoi (argv[2]) : 10000000;
+  mp_limb_t *n0p, *np, *n2p, *qp, *q2p, *dp;
+  mp_limb_t max;
+  int st;
+  int i;
+  int j;
+  mp_limb_t max_error;
+
+  count_leading_zeros (max_error, n);
+  max_error = 2*(BITS_PER_MP_LIMB-max_error);
+  printf ("For N=%lu estimated max_error=%lu ulps\n",
+	  (unsigned long) n, (unsigned long) max_error);
+  n0p = malloc (2 * n * sizeof (mp_limb_t));
+  np = malloc (2 * n * sizeof (mp_limb_t));
+  n2p = malloc (2 * n * sizeof (mp_limb_t));
+  dp = malloc (n * sizeof (mp_limb_t));
+  qp = malloc (n * sizeof (mp_limb_t));
+  q2p = malloc (n * sizeof (mp_limb_t));
+
+  max = 0;
+  for (j = 0 ; j < k ; j++)
+    {
+      mpn_random2 (n0p, 2 * n);
+      mpn_random2 (dp, n);
+      dp[n - 1] |= GMP_LIMB_HIGHBIT;
+
+      MPN_COPY (np, n0p, 2 * n);
+      mpn_divrem (qp, 0, np, 2 * n, dp, n);
+
+      MPN_COPY (n2p, n0p, 2 * n);
+      mpn_dc_divrem_n_high (q2p, n2p, dp, n);
+
+      if (mpn_cmp (qp, q2p, n) > 0)
+	{
+	  printf ("QP > QP_high\n");
+	  return;
+	}
+      mpn_sub_n (q2p, q2p, qp, n);
+      for (i = n-1 ; i >= 0 && q2p[i] == 0 ; i--);
+      if (i > 0)
+	{
+	  printf ("Error for i=%d\n", i);
+	  return;
+	}
+      if (q2p[0] >= max_error)
+	{
+	  printf ("Too many wrong ulps: %lu\n",
+		  (unsigned long) q2p[0]);
+	  return;
+	}
+      if (max < q2p[0])
+	max = q2p[0];
+    }
+  printf ("Done. Max error=%lu ulps\n", max);
+  return;
+}
+
+int
+main (int argc, const char *argv[])
+{
+  if (argc > 1 && strcmp (argv[1], "-check") == 0)
+    check (argc-1, argv+1);
+  else
+    bench (argc, argv);
+  return 0;    
 }
