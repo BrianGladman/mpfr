@@ -209,12 +209,15 @@ mpfr_set_overflow (mpfr_ptr x, mp_rnd_t rnd_mode, int sign)
    || (rnd_mode == GMP_RNDD && sign > 0))
     {
       mp_size_t xn, i;
+      int sh;
       mp_limb_t *xp;
 
       MPFR_EXP(x) = __mpfr_emax;
-      xn = (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB;
+      xn = 1 + (MPFR_PREC(x) - 1) / BITS_PER_MP_LIMB;
+      sh = xn * BITS_PER_MP_LIMB - MPFR_PREC(x);
       xp = MPFR_MANT(x);
-      for (i = 0; i <= xn; i++)
+      xp[0] = MP_LIMB_T_MAX << sh;
+      for (i = 1; i < xn; i++)
         xp[i] = MP_LIMB_T_MAX;
       inex = -1;
     }
