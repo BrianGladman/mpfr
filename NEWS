@@ -1,3 +1,21 @@
+Changes from version 1.0 to version 1.1:
+- the default installation does not provide any more access to machine 
+  rounding mode, and as a consequence does not compare MPFR results with 
+  precision=53 to machine results. Add option -DTEST if you want to have
+  access to machine rounding mode, and to check MPFR results against.
+- the MPFR files do not need <math.h> any more
+- the header file <mpfr.h> was split into <mpfr.h> for exported functions
+  and <mpfr-impl.h> for internal functions. The user should not use functions
+  or macros from <mpfr-impl.h>, since those may change in further releases.
+- <mpfr.h> was modified in order to make easy a C++ interface
+- MPFR now deals with infinities (+infinity and -infinity) and NaN
+- the missing function mpfr_swap is now available
+- mpfr_zeta was removed (was incomplete)
+- mpfr_init and mpfr_init2 now initialize the corresponding variable to 0
+  (like in other initialization functions from GNU MP)
+- in case memory allocation fails, an error message is output
+- several bugs of version 0.4 were fixed
+
 Changes from version 0.4 to version 1.0:
 
 - Version 1.0 now uses a standard configure/make installation. 
