@@ -44,7 +44,7 @@ mpfr_cmp_ui_2exp (mpfr_srcptr b, unsigned long int i, mp_exp_t f)
   if (MPFR_IS_NEG(b))
     return -1;
   /* now b > 0 */
-  else if (i == 0)
+  else if (MPFR_UNLIKELY(i == 0))
     return 1;
   else /* b > 0, i > 0 */
     {

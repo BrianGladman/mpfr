@@ -177,7 +177,7 @@ mpfr_round_raw_generic(mp_limb_t *yp, mp_limb_t *xp, mp_prec_t xprec,
 	  if (use_inexp)
 	    /* rnd_mode == GMP_RNDZ and neg = 0 or 1 */
 	    /* (neg != 0) ^ (rnd_mode != GMP_RNDZ)) ? 1 : -1);*/ 
-	    *inexp = (sb == 0) ? 0 : (2*neg-1);
+	    *inexp = MPFR_UNLIKELY(sb == 0) ? 0 : (2*neg-1);
 	  if (flag)
 	    return 0; /*sb != 0 && rnd_mode != GMP_RNDZ;*/
 	  MPN_COPY_INCR(yp, xp + xsize - nw, nw);
@@ -189,7 +189,7 @@ mpfr_round_raw_generic(mp_limb_t *yp, mp_limb_t *xp, mp_prec_t xprec,
 	  /* rnd_mode = Away */
           while (MPFR_UNLIKELY(sb == 0) && k > 0)
             sb = xp[--k];
-	  if (sb == 0)
+	  if (MPFR_UNLIKELY(sb == 0))
 	    {
 	      /* sb = 0 && rnd_mode != GMP_RNDZ */
 	      if (use_inexp)
