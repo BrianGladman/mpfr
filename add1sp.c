@@ -101,29 +101,34 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       else
 	goto add_one_ulp;
     }
-  else if (MPFR_UNLIKELY(d >= p))
+  else if (MPFR_UNLIKELY (d >= p))
     {
-      if (MPFR_LIKELY(d > p))
+      if (MPFR_LIKELY (d > p))
 	{
 	  /* d > p : Copy B in A */
-	  ap = MPFR_MANT(a);
-	  MPN_COPY (ap, MPFR_MANT(b), n);
 	  /* Away:    Add 1
 	     Nearest: Trunc
 	     Zero:    Trunc */
-	  if (MPFR_LIKELY(rnd_mode==GMP_RNDN))
-	    { inexact = -1; goto set_exponent; }
-	  MPFR_UPDATE_RND_MODE(rnd_mode, MPFR_IS_NEG(b));
-	  if (rnd_mode==GMP_RNDZ)
-	    { inexact = -1; goto set_exponent; }
+	  if (MPFR_LIKELY (rnd_mode==GMP_RNDN
+			   || MPFR_IS_LIKE_RNDZ (rnd_mode, MPFR_IS_NEG (b))))
+	    {
+	    copy_set_exponent:
+	      ap = MPFR_MANT (a);
+	      MPN_COPY (ap, MPFR_MANT(b), n);
+	      inexact = -1; 
+	      goto set_exponent; 
+	    }
 	  else
-	    goto add_one_ulp;
+	    {
+	    copy_add_one_ulp:
+	      ap = MPFR_MANT(a);
+	      MPN_COPY (ap, MPFR_MANT(b), n);
+	      goto add_one_ulp;
+	    }
 	}
       else
 	{
 	  /* d==p : Copy B in A */
-	  ap = MPFR_MANT(a);
-          MPN_COPY (ap, MPFR_MANT(b), n);
           /* Away:    Add 1
              Nearest: Even Rule if C is a power of 2, else Add 1 
              Zero:    Trunc */
@@ -139,17 +144,16 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 		  } while (k>=0 && cp[k]==0);
 		  if (MPFR_UNLIKELY(k<0))
 		    /* Power of 2: Even rule */
-		    if ((ap[0]&(MPFR_LIMB_ONE<<sh))==0)
-		      { inexact = -1; goto set_exponent; }
+		    if ((MPFR_MANT (b)[0]&(MPFR_LIMB_ONE<<sh))==0)
+		      goto copy_set_exponent;
 		}
 	      /* Not a Power of 2 */
-	      goto add_one_ulp;
+	      goto copy_add_one_ulp;
 	    }
-          MPFR_UPDATE_RND_MODE(rnd_mode, MPFR_IS_NEG(b));
-	  if (rnd_mode==GMP_RNDZ)
-	    { inexact = -1; goto set_exponent; }
+	  else if (MPFR_IS_LIKE_RNDZ (rnd_mode, MPFR_IS_NEG (b)))
+	    goto copy_set_exponent;
 	  else
-            goto add_one_ulp;
+            goto copy_add_one_ulp;
 	}
     }
   else

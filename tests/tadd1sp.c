@@ -158,5 +158,18 @@ void check_special(void)
         STD_ERROR2;
     }
 
+  mpfr_set_prec (c, 2);
+  mpfr_set_prec (a1, 2);
+  mpfr_set_prec (a2, 2);
+  mpfr_set_str_binary (c, "1.0e1");
+  mpfr_set_str_binary (a2, "1.1e-1");
+  mpfr_set_str_binary (a1, "0.11E2");
+  mpfr_add1sp (a2, c, a2, GMP_RNDN);
+  if (mpfr_cmp (a1, a2))
+    {
+      printf ("Regression reuse test failed!\n");
+      exit (1);
+    }
+
   mpfr_clears(a1,a2,b,c,NULL);
 }
