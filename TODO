@@ -113,11 +113,6 @@ Miscellaneous:
 
 - rename mpf2mpfr.h to gmp-mpf2mpfr.h?
 
-- add mpfr_get_ld for 'long double' [asked by J-C Fauge`re] ?
-  (exists since K&R, but has not necessarily a greater precision than double)
-  cf http://anubis.dkuug.dk/jtc1/sc22/wg14/www/docs/n869/
-	[cf above]
-
 - from Kevin Ryde <user42@zip.com.au>:
    Also for pi.c, a pre-calculated compiled-in pi to a few thousand
    digits would be good value I think.  After all, say 10000 bits using
