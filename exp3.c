@@ -118,11 +118,10 @@ mpfr_exp_rational (mpfr_ptr y, mpz_srcptr p, int r, int m)
 
   diff = mpz_sizeinbase(P[0], 2) - precy;
   expo -= diff;
-  /* since prec_i_have, which overestimates nbits(P[0]), can only exceed
-     precy by nbits(i), we assume diff <= 0 here, but we did not manage
-     to prove it, thus the assertion should be checked. */
-  MPFR_ASSERTN(diff <= 0);
-  mpz_mul_2exp (P[0], P[0], -diff);
+  if (diff > 0)
+    mpz_div_2exp (P[0], P[0], diff);
+  else
+    mpz_mul_2exp (P[0], P[0], -diff);
 
   mpz_tdiv_q (S[0], S[0], P[0]);
   mpfr_set_z (y, S[0], GMP_RNDD);

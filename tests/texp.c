@@ -160,6 +160,16 @@ compare_exp2_exp3 (int n)
           exit (1);
         }
   }
+
+  /* bug found by Patrick Pe'lissier on 7 Jun 2004 */
+  prec = 203780;
+  mpfr_set_prec (x, prec);
+  mpfr_set_prec (z, prec);
+  mpfr_set_d (x, 3.0, GMP_RNDN);
+  mpfr_sqrt (x, x, GMP_RNDN);
+  mpfr_sub_ui (x, x, 1, GMP_RNDN);
+  mpfr_exp_3 (z, x, GMP_RNDN);
+
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);
