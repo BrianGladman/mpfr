@@ -208,6 +208,8 @@ special (void)
   if (mpfr_cmp (x, z))
     {
       printf ("Error: square root of 8093416094703476*2^(-1075)\n");
+      printf ("expected "); mpfr_dump (z);
+      printf ("got      "); mpfr_dump (x);
       exit (1);
     }
 
@@ -384,10 +386,10 @@ main (void)
 
   check_nan ();
 
+  special ();
   for (p=2; p<200; p++)
     for (k=0; k<200; k++)
       check_inexact (p);
-  special ();
   check_float();
 
   check3 ("-0.0", GMP_RNDN, "0.0");

@@ -19,23 +19,27 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-/* #define DEBUG */
 #include "mpfr-impl.h"
 
 int
 mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
 {
-  mp_ptr up, rp, tmp, remp;
-  mp_size_t usize, rrsize;
-  mp_size_t rsize;
-  mp_size_t err;
-  mp_limb_t q_limb;
-  int odd_exp_u;
-  long rw, nw, k;
-  int inexact = 0, t;
-  unsigned long cc = 0;
-  int can_round = 0;
-
+  mp_size_t rsize = MPFR_LIMB_SIZE(r); /* number of limbs of r */
+  mp_size_t rrsize = rsize + rsize;
+  mp_size_t usize = MPFR_LIMB_SIZE(u); /* number of limbs of u */
+  mp_size_t tsize; /* number of limbs of the sqrtrem remainder */
+  mp_size_t k;
+  mp_size_t l;
+  mp_ptr rp = MPFR_MANT(r);
+  mp_ptr up = MPFR_MANT(u);
+  mp_ptr sp;
+  mp_ptr tp;
+  mp_limb_t sticky0 = CNST_LIMB(0); /* truncated part of input */
+  mp_limb_t sticky1 = CNST_LIMB(0); /* truncated part of rp[0] */
+  mp_limb_t sticky;
+  int odd_exp = (unsigned int) MPFR_GET_EXP (u) & 1;
+  int sh; /* number of extra bits in rp[0] */
+  int inexact = -1; /* return ternary flag */
   TMP_DECL(marker);
 
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(u)))
@@ -74,201 +78,160 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
   MPFR_CLEAR_FLAGS(r);
   MPFR_SET_POS(r);
 
-  up = MPFR_MANT(u);
-  usize = MPFR_LIMB_SIZE(u);
+  sp = TMP_ALLOC_LIMBS(rrsize);
 
-  MPFR_TRACE( printf("Entering square root : ") );
-  MPFR_TRACE( for(k = usize - 1; k >= 0; k--) printf("%lu ", up[k]) );
-  MPFR_TRACE( printf(".\n") );
-
-  /* Compare the mantissas */
-  odd_exp_u = (unsigned int) MPFR_GET_EXP (u) & 1;
-  MPFR_ASSERTD (MPFR_PREC(r) <= MPFR_INTPREC_MAX - 3);
-  rrsize = (MPFR_PREC(r) + 2 + odd_exp_u) / BITS_PER_MP_LIMB + 1;
-  MPFR_ASSERTD (rrsize <= MP_SIZE_T_MAX/2);
-  rsize = rrsize << 1;
-
-  /* One extra bit is needed in order to get the square root with enough
-     precision ; take one extra bit for rrsize in order to solve more
-     easily the problem of rounding to nearest.
-     Need to have 2*rrsize = rsize...
-     Take one extra bit if the exponent of u is odd since we shall have
-     to shift then.
-  */
-
-  TMP_MARK(marker);
-  if (odd_exp_u) /* Shift u one bit to the right */
+  /* copy the most significant limbs of u to {sp, rrsize} */
+  if (MPFR_LIKELY(usize <= rrsize)) /* in case r and u have the same precision,
+				       we have indeed rrsize = 2 * usize */
     {
-      if (MPFR_LIKELY( MPFR_PREC(u) & (BITS_PER_MP_LIMB - 1)) )
-        {
-          up = (mp_limb_t*) TMP_ALLOC(usize * BYTES_PER_MP_LIMB);
-          mpn_rshift (up, MPFR_MANT(u), usize, 1);
-        }
+      k = rrsize - usize;
+      if (MPFR_LIKELY(k))
+	MPN_ZERO (sp, k);
+      if (odd_exp)
+	{
+	  if (MPFR_LIKELY(k))
+	    sp[k - 1] = mpn_rshift (sp + k, up, usize, 1);
+	  else
+	    sticky0 = mpn_rshift (sp, up, usize, 1);
+	}
       else
-        {
-          up = (mp_limb_t*) TMP_ALLOC((usize + 1) * BYTES_PER_MP_LIMB);
-          if (mpn_rshift (up + 1, MPFR_MANT(u), usize, 1))
-            up[0] = MPFR_LIMB_HIGHBIT;
-          else
-            up[0] = 0;
-          usize++;
-        }
+	MPN_COPY (sp + rrsize - usize, up, usize);
     }
+  else /* usize > rrsize: truncate the input */
+    {
+      k = usize - rrsize;
+      if (odd_exp)
+	sticky0 = mpn_rshift (sp, up + k, rrsize, 1);
+      else
+	MPN_COPY (sp, up + k, rrsize);
+      while (sticky0 == CNST_LIMB(0) && k != 0)
+	sticky0 = up[--k];
+    }
+
+  /* sticky0 is non-zero iff the truncated part of the input is non-zero */
+
+  tsize = mpn_sqrtrem (rp, tp = sp, sp, rrsize);
+
+  l = tsize;
+  sticky = sticky0;
+  while (sticky == CNST_LIMB(0) && l != 0)
+    sticky = tp[--l];
+
+  /* truncated low bits of rp[0] */
+  MPFR_UNSIGNED_MINUS_MODULO(sh,MPFR_PREC(r));
+  sticky1 = rp[0] & MPFR_LIMB_MASK(sh);
+  rp[0] -= sticky1;
+
+  sticky = sticky || sticky1;
 
   MPFR_SET_EXP(r, MPFR_LIKELY(MPFR_GET_EXP(u) != MPFR_EMAX_MAX)
-               ? (MPFR_GET_EXP(u) + odd_exp_u) / 2
-               : (MPFR_EMAX_MAX - 1) / 2 + 1);
+	       ? (MPFR_GET_EXP(u) + odd_exp) / 2  /* exact */
+	       : (MPFR_EMAX_MAX - 1) / 2 + 1);
 
-  do
+  if (rnd_mode == GMP_RNDZ || rnd_mode == GMP_RNDD || sticky == CNST_LIMB(0))
     {
-      err = rsize * BITS_PER_MP_LIMB;
-
-      if (MPFR_UNLIKELY(rsize < usize))
-        err--;
-
-      if (MPFR_LIKELY(err > rrsize * BITS_PER_MP_LIMB))
-        err = rrsize * BITS_PER_MP_LIMB;
-
-      tmp  = (mp_ptr) TMP_ALLOC (rsize * BYTES_PER_MP_LIMB);
-      rp   = (mp_ptr) TMP_ALLOC (rrsize * BYTES_PER_MP_LIMB);
-      remp = (mp_ptr) TMP_ALLOC (rsize * BYTES_PER_MP_LIMB);
-
-      if (MPFR_UNLIKELY(usize >= rsize))
-        {
-          MPN_COPY (tmp, up + usize - rsize, rsize);
-        }
+      inexact = (sticky == CNST_LIMB(0)) ? 0 : -1;
+      goto truncate;
+    }
+  else if (rnd_mode == GMP_RNDN)
+    {
+      /* if sh>0, the round bit is bit (sh-1) of sticky1
+	          and the sticky bit is formed by the low sh-1 bits from
+		  sticky1, together with {tp, tsize} and sticky0. */
+      if (sh)
+	{
+	  if (sticky1 & (CNST_LIMB(1) << (sh - 1)))
+	    { /* round bit is set */
+	      if (sticky1 == (CNST_LIMB(1) << (sh - 1)) && tsize == 0
+		  && sticky0 == 0)
+		goto even_rule;
+	      else
+		goto add_one_ulp;
+	    }
+	  else /* round bit is zero */
+	    goto truncate; /* with the default inexact=-1 */
+	}
       else
-        {
-          MPN_COPY (tmp + rsize - usize, up, usize);
-          MPN_ZERO (tmp, rsize - usize);
-        }
-
-      /* Do the real job */
-      MPFR_TRACE ( printf("Taking the sqrt of : ") );
-      MPFR_TRACE ( for(k = rsize - 1; k >= 0; k--)
-		   printf("+%lu*2^%lu",tmp[k],k*BITS_PER_MP_LIMB) );
-      MPFR_TRACE ( printf(".\n") );
-
-      q_limb = mpn_sqrtrem (rp, remp, tmp, rsize);
-
-      MPFR_TRACE ( printf ("The result is : \nsqrt : ") );
-      MPFR_TRACE ( for (k = rrsize - 1; k >= 0; k--)
-		   printf ("%lu ", rp[k]) );
-      MPFR_TRACE ( printf ("(inexact = %lu)\n", q_limb) );
-
-      can_round = mpfr_can_round_raw (rp, rrsize, 1, err,
-                                      GMP_RNDZ, rnd_mode, MPFR_PREC(r));
-
-      /* If we used all the limbs of both the dividend and the divisor,
-         then we have the correct RNDZ rounding */
-
-      if (!can_round && (rsize < usize))
-	MPFR_TRACE ( printf("Increasing the precision.\n") );
+	{
+	  /* if sh=0, we have to compare {tp, tsize} with {rp, rsize}:
+	        if {tp, tsize} < {rp, rsize}: truncate
+		if {tp, tsize} > {rp, rsize}: round up
+		if {tp, tsize} = {rp, rsize}: compare the truncated part of the
+		                              input to 1/4
+		   if < 1/4: truncate
+		   if > 1/4: round up
+		   if = 1/4: even rounding rule
+             Set inexact = -1 if truncate
+                 inexact = 1 if add one ulp
+                 inexact = 0 if even rounding rule
+	  */
+	  if (tsize < rsize)
+	    inexact = -1;
+	  else if (tsize > rsize) /* FIXME: may happen? */
+	    inexact = 1;
+	  else /* tsize = rsize */
+	    {
+	      sh = mpn_cmp (tp, rp, rsize);
+	      if (sh > 0)
+		inexact = 1;
+	      else if (sh < 0 || sticky0 == CNST_LIMB(0))
+		inexact = -1;
+	      /* now tricky case {tp, tsize} = {rp, rsize} */
+	      /* in case usize <= rrsize, the only case where sticky0 <> 0
+		 is when the exponent of u is odd and usize = rrsize (k=0),
+		 but in that case the truncated part is exactly 1/2, thus
+		 we have to round up.
+		 If the exponent of u is odd, and up[k] is odd, the truncated
+		 part is >= 1/2, so we round up too. */
+	      else if (usize <= rrsize || (odd_exp && (up[k] & CNST_LIMB(1))))
+		inexact = 1;
+	      else
+		{
+		  /* now usize > rrsize:
+		     (a) if the exponent of u is even, the 1/4 bit is the
+		     2nd most significant bit of up[k-1];
+		     (b) if the exponent of u is odd, the 1/4 bit is the
+		     1st most significant bit of up[k-1]; */
+		  sticky1 = CNST_LIMB(1) << (BITS_PER_MP_LIMB - 2 + odd_exp);
+		  if (up[k - 1] < sticky1)
+		    inexact = -1;
+		  else if (up[k - 1] > sticky1)
+		    inexact = 1;
+		  else
+		    {
+		      /* up[k - 1] == sticky1: consider low k-1 limbs */
+		      while (--k > 0 && up[k - 1] == CNST_LIMB(0));
+		      inexact = (k != 0);
+		    }
+		} /* end of case {tp, tsize} = {rp, rsize} */
+	    } /* end of case tsize = rsize */
+	  if (inexact == -1)
+	    goto truncate;
+	  else if (inexact == 1)
+	    goto add_one_ulp;
+	  /* else go through even_rule */
+	}
     }
-  while (!can_round && (rsize < usize) && (rsize += 2) && (rrsize++));
+  else /* rnd_mode=GMP_RDNU, necessarily sticky <> 0, thus add 1 ulp */
+    goto add_one_ulp;
+  
+ even_rule: /* has to set inexact */
+  inexact = (rp[0] & (CNST_LIMB(1) << sh)) ? 1 : -1;
+  if (inexact == -1)
+    goto truncate;
+  /* else go through add_one_ulp */
 
-  MPFR_TRACE ( printf ("can_round = %d\n", can_round) );
-
-  /* This part may be deplaced upper to avoid a few mpfr_can_round_raw */
-  /* when the square root is exact. It is however very unlikely that */
-  /* it would improve the behaviour of the present code on average.    */
-
-  if (MPFR_UNLIKELY(!q_limb))
-    /* the sqrtrem call was exact, possible exact square root */
+ add_one_ulp:
+  inexact = 1; /* always here */
+  if (mpn_add_1 (rp, rp, rsize, CNST_LIMB(1) << sh))
     {
-      /* if we have taken into account the whole of up */
-      for (k = usize - rsize - 1; k >= 0; k--)
-        if (up[k] != 0)
-          {
-            q_limb = 1; /* simulate positive remainder */
-            break;
-          }
-      if (k < 0)
-#if 0
-        goto fin; /* exact square root ==> inexact = 0 */
-#else
-      /* warning: the value in rp[] is the exact square root,
-         but it may have too many bits */
-      can_round = 1;
-#endif
+      MPFR_EXP(r) += 1;
+      rp[rsize - 1] = MPFR_LIMB_HIGHBIT;
     }
-
-  if (MPFR_LIKELY(can_round))
-    {
-      cc = mpfr_round_raw (rp, rp, err, 0, MPFR_PREC(r), rnd_mode, &inexact);
-      if (MPFR_UNLIKELY(inexact == 0))
-	/* exact high part: inex flag depends on remainder */
-        inexact = -q_limb;
-      rrsize = (MPFR_PREC(r) - 1)/BITS_PER_MP_LIMB + 1;
-    }
-  else
-    {
-      /* Use the return value of sqrtrem to decide of the rounding */
-      /* Note that at this point the sqrt has been computed        */
-      /* EXACTLY.                                                  */
-      switch (rnd_mode)
-        {
-        case GMP_RNDZ :
-        case GMP_RNDD :
-          inexact = -1; /* result is truncated */
-          break;
-
-        case GMP_RNDN :
-          /* round bit is bit rw of word nw */
-          rw = (MPFR_PREC(r) + 1) & (BITS_PER_MP_LIMB - 1);
-	  nw = (MPFR_PREC(r) + 1) / BITS_PER_MP_LIMB + 1; 
-
-          if (MPFR_LIKELY(rw != 0))
-            rw = BITS_PER_MP_LIMB - rw;
-          else
-            nw--;
-
-          if (((rp[rrsize - nw] >> rw) & 1) &&        /* Not 0111111111 */
-              (q_limb ||                              /* Nonzero remainder */
-              (rw ? (rp[rrsize - nw] >> (rw + 1)) & 1 :
-                (rp[rrsize - nw] >> (BITS_PER_MP_LIMB - 1)) & 1))) 
-            /* or even r. */
-            {
-              cc = mpn_add_1 (rp + rrsize - nw, rp + rrsize - nw, rrsize,
-                              MPFR_LIMB_ONE << rw);
-              inexact = 1;
-            }
-          else
-            inexact = -1;
-          break;
-
-        default: /* necessarily rnd_mode = GMP_RNDU */
-          /* we should arrive here only when the result is inexact, i.e.
-             either q_limb > 0 (the remainder from mpn_sqrtrem is non-zero)
-             or up[0..usize-rsize-1] is non zero, thus we have to add one
-             ulp, and inexact = 1 */
-          inexact = 1;
-          t = MPFR_PREC(r) & (BITS_PER_MP_LIMB - 1);
-          rsize = (MPFR_PREC(r) - 1)/BITS_PER_MP_LIMB + 1;
-          cc = mpn_add_1 (rp + rrsize - rsize, rp + rrsize - rsize, rsize,
-                          t != 0 ?
-                          MPFR_LIMB_ONE << (BITS_PER_MP_LIMB - t) :
-                          MPFR_LIMB_ONE);
-          break;
-        }
-    }
-
-  if (MPFR_UNLIKELY(cc))
-    {
-      /* Is a shift necessary here? Isn't the result 1.0000...? */
-      mpn_rshift (rp, rp, rrsize, 1);
-      rp[rrsize-1] |= MPFR_LIMB_HIGHBIT;
-      MPFR_SET_EXP (r, MPFR_GET_EXP (r) + 1);
-    }
-
-  rsize = rrsize;
-  rrsize = (MPFR_PREC(r) - 1)/BITS_PER_MP_LIMB + 1;
-  MPN_COPY(MPFR_MANT(r), rp + rsize - rrsize, rrsize);
-
-  if (MPFR_LIKELY(MPFR_PREC(r) & (BITS_PER_MP_LIMB - 1)))
-    MPFR_MANT(r)[0] &= ~MPFR_LIMB_MASK(BITS_PER_MP_LIMB -
-				       (MPFR_PREC(r) & (BITS_PER_MP_LIMB-1)));
+  
+ truncate: /* inexact = 0 or -1 */
 
   TMP_FREE(marker);
+
   return inexact;
 }
