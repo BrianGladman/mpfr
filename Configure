@@ -16,7 +16,7 @@ EOM
 fi
 echo $n ..."The star should be here-->$c"; echo '*'
 
-if test -r config.in; then . config.in; fi
+if test -r config.in; then . ./config.in; fi
 
 # TODO : gestion du echo -n...
 
