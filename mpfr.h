@@ -44,7 +44,9 @@ MA 02111-1307, USA. */
 
 #define MPFR_FLAGS_UNDERFLOW 1
 #define MPFR_FLAGS_OVERFLOW 2
-#define MPFR_FLAGS_ALL 3
+#define MPFR_FLAGS_NAN 4
+#define MPFR_FLAGS_INEXACT 8
+#define MPFR_FLAGS_ALL 15
 
 /* Definitions of types and their semantics */
 
@@ -111,9 +113,13 @@ int mpfr_set_emax _PROTO ((mp_exp_t));
 void mpfr_clear_flags _PROTO ((void));
 void mpfr_clear_underflow _PROTO ((void));
 void mpfr_clear_overflow _PROTO ((void));
+void mpfr_clear_nanflag _PROTO ((void));
+void mpfr_clear_inexflag _PROTO ((void));
 int mpfr_check_range _PROTO ((mpfr_ptr, mp_rnd_t));
 int mpfr_underflow_p _PROTO ((void));
 int mpfr_overflow_p _PROTO ((void));
+int mpfr_nanflag_p _PROTO ((void));
+int mpfr_inexflag_p _PROTO ((void));
 
 void mpfr_init2 _PROTO ((mpfr_ptr, mp_prec_t));
 void mpfr_init _PROTO ((mpfr_ptr));

@@ -129,6 +129,30 @@ mpfr_clear_overflow ()
   __mpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_OVERFLOW;
 }
 
+#undef mpfr_clear_nanflag
+
+void
+#if __STDC__
+mpfr_clear_nanflag (void)
+#else
+mpfr_clear_nanflag ()
+#endif
+{
+  __mpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_NAN;
+}
+
+#undef mpfr_clear_inexflag
+
+void
+#if __STDC__
+mpfr_clear_inexflag (void)
+#else
+mpfr_clear_inexflag ()
+#endif
+{
+  __mpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_INEXACT;
+}
+
 #undef mpfr_check_range
 
 int
@@ -177,6 +201,30 @@ mpfr_overflow_p ()
 #endif
 {
   return __mpfr_flags & MPFR_FLAGS_OVERFLOW;
+}
+
+#undef mpfr_nanflag_p
+
+int
+#if __STDC__
+mpfr_nanflag_p (void)
+#else
+mpfr_nanflag_p ()
+#endif
+{
+  return __mpfr_flags & MPFR_FLAGS_NAN;
+}
+
+#undef mpfr_inexflag_p
+
+int
+#if __STDC__
+mpfr_inexflag_p (void)
+#else
+mpfr_inexflag_p ()
+#endif
+{
+  return __mpfr_flags & MPFR_FLAGS_INEXACT;
 }
 
 #undef mpfr_set_underflow
