@@ -1,6 +1,6 @@
 /* mpfr_acosh -- Inverse Hyperbolic Cosine of Unsigned Integer Number
 
-Copyright (C) 1999, 2001 Free Software Foundation, Inc.
+Copyright (C) 2001 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -19,8 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <limits.h>
-#include <math.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -107,7 +105,8 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
       mpfr_log(t,t,GMP_RNDN);        /* ln(sqrt(x^2-1)+x)*/
 
       /* estimation of the error see- algorithms.ps*/
-      err=Nt-_mpfr_ceil_log2(0.5+pow(2,2-MPFR_EXP(t))+pow(2,1+MPFR_EXP(te)-MPFR_EXP(ti)-MPFR_EXP(t)));
+      /*err=Nt-_mpfr_ceil_log2(0.5+pow(2,2-MPFR_EXP(t))+pow(2,1+MPFR_EXP(te)-MPFR_EXP(ti)-MPFR_EXP(t)));*/
+      err=Nt-(-1+2*MAX(2+MAX(2-MPFR_EXP(t),1+MPFR_EXP(te)-MPFR_EXP(ti)-MPFR_EXP(t)),0));
 
       /* actualisation of the precision */
       Nt += 10;
@@ -122,3 +121,14 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
   }
   return inexact;
 }
+
+
+
+
+
+
+
+
+
+
+

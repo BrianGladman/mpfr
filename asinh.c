@@ -19,8 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <limits.h>
-#include <math.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -116,7 +114,8 @@ mpfr_asinh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
       mpfr_log(t,t,GMP_RNDN);        /* ln(sqrt(x^2+1)+x)*/
 
       /* estimation of the error see- algorithms.ps*/
-      err=Nt-_mpfr_ceil_log2(1+pow(2,3-MPFR_EXP(t)));
+      /*err=Nt-_mpfr_ceil_log2(1+pow(2,3-MPFR_EXP(t)));*/
+      err=Nt-(MAX(3-MPFR_EXP(t),0)+1);
 
       /* actualisation of the precision */
       Nt += 10;
