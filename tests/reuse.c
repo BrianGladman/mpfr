@@ -72,10 +72,11 @@ void test3 (char *foo, mp_prec_t prec, mp_rnd_t rnd)
 
     /* reference call: foo(a, b, c) */
     testfunc (ref1, ref2, ref3, rnd);
-
+ 
     /* foo(a, a, c) */
     mpfr_set (res1, ref2, rnd); /* exact operation */
     testfunc (res1, res1, ref3, rnd);
+ 
     if (mpfr_compare (res1, ref1)) {
       fprintf (stderr, "Error for %s(a, a, c) for a=%e, c=%e\n", foo,
 	       mpfr_get_d (ref2), mpfr_get_d (ref3));
@@ -100,7 +101,8 @@ void test3 (char *foo, mp_prec_t prec, mp_rnd_t rnd)
     testfunc (ref1, ref2, ref3, rnd);
     mpfr_set (res1, ref2, rnd);
     testfunc (res1, res1, res1, rnd);
-    if (mpfr_compare (res1, ref1)) {
+
+   if (mpfr_compare (res1, ref1)) {
       fprintf (stderr, "Error for %s(a, a, a) for a=%e\n", foo,
 	       mpfr_get_d (ref2));
       fprintf (stderr, "expected %e, got %e\n", mpfr_get_d (ref1),
@@ -404,8 +406,8 @@ main (void)
   testfunc = (void*) mpfr_sin; test2 ("mpfr_sin", 53, GMP_RNDN);
   testfunc = (void*) mpfr_tan; test2 ("mpfr_tan", 53, GMP_RNDN);
   testfunc = (void*) mpfr_log10; test2 ("mpfr_log10", 53, GMP_RNDN);
-  /* testfunc = (void*) mpfr_log10; test2 ("mpfr_log10", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_pow; test3 ("mpfr_pow", 53, GMP_RNDN);*/
+  testfunc = (void*) mpfr_log2; test2 ("mpfr_log10", 53, GMP_RNDN);
+  testfunc = (void*) mpfr_pow; test3 ("mpfr_pow", 53, GMP_RNDN);
 
   return 0;
 }
