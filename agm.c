@@ -5,7 +5,7 @@
 #include "mpfr.h"
 
 
-
+/*Memory gestion */
 #define MON_INIT(xp, x, p, s) xp = (mp_ptr) TMP_ALLOC(s*BYTES_PER_MP_LIMB);    x -> _mp_prec = p; x -> _mp_d = xp; x -> _mp_size = s; x -> _mp_exp = 0; 
 
 
@@ -22,13 +22,12 @@ mpfr_agm(r, a, b, rnd_mode)
      unsigned char rnd_mode; 
 #endif
 {
-  int i, s, ntotal, p, q, go_on, no, ulps;
+  int s, p, q, go_on;
   double uo, vo;
   mp_limb_t *up, *vp, *tmpp, *tmpup, *tmpvp, *ap, *bp;
   mpfr_t u, v, tmp, tmpu, tmpv, a, b;
   TMP_DECL(marker1);
   TMP_DECL(marker2);
-  TMP_DECL(marker3);
 
 
   /* If a or b is NaN, the result is NaN */
@@ -55,9 +54,7 @@ mpfr_agm(r, a, b, rnd_mode)
 
   /* Initialisations */
   go_on=1;
-  ntotal = ceil(log(p)/log(2)) +1;
-  no=0;
-
+ 
   TMP_MARK(marker1);
   s=(p-1)/BITS_PER_MP_LIMB+1;
   MON_INIT(ap, a, p, s);  
@@ -68,6 +65,7 @@ mpfr_agm(r, a, b, rnd_mode)
   MON_INIT(tmpup, tmpu, p, s);  
   MON_INIT(tmpvp, tmpv, p, s);  
   MON_INIT(tmpp, tmp, p, s);  
+
 
 
   /* b and a will be the 2 operands but I want b>= a */
@@ -84,76 +82,48 @@ mpfr_agm(r, a, b, rnd_mode)
   mpfr_set(u,a,GMP_RNDN);
   mpfr_set(v,b,GMP_RNDN);
  
+
   /* Main loop */
 
-  while (go_on==1) {
-    int err;
-
-    err=ceil((3*ntotal+2)*exp(-p*log(2))+3*exp(-p*uo*log(2)/(vo-uo))/log(2));
+  while (go_on) {
+    int err,  eq, can_round;
     
+    eq=0;
+    
+    err=ceil((3.0/2.0*log((double)p)/log(2.0)+1.0)*exp(-(double)p*log(2.0))+3.0*exp(-2.0*(double)p*uo*log(2.0)/(vo-uo)));
+    if(p-err-1<=q) {
+      p=q+err+2;
+      err=ceil((3.0/2.0*log((double)p)/log(2.0)+1.0)*exp(-(double)p*log(2.0))+3.0*exp(-2.0*(double)p*uo*log(2.0)/(vo-uo)));
+    }
+
     /* Calculus of un and vn */
-    for(i=no;i<ntotal;i++) {    
+    while (eq<=p-2) {
       mpfr_mul(tmp,u,v,GMP_RNDN);
-      /*  printf("dont la racine est\n");   */
       mpfr_sqrt(tmpu,tmp,GMP_RNDN); 
-      /*mpfr_print_raw(tmpu);  printf("\n");*/
       mpfr_add(tmp,u,v,GMP_RNDN);
       mpfr_div_2exp(tmpv,tmp,1,GMP_RNDN);
       mpfr_set(u,tmpu,GMP_RNDN);
-      mpfr_set(v,tmpv,GMP_RNDN); 
+      mpfr_set(v,tmpv,GMP_RNDN);
+      if (mpfr_cmp(v,u)>=0)
+	eq=mpfr_cmp2(v,u);
+      else
+	eq=mpfr_cmp2(u,v);
     }
 
-    /*    printf("avant can_round\n v : ");  */
-    /* mpfr_out_str(stdout,10,0,v,GMP_RNDN); printf("\n u :");
-      mpfr_out_str(stdout,10,0,u,GMP_RNDN);printf("\n"); */
+    /*  printf("avant can_round %i bits faux\n v : ",err+3);  
+	mpfr_print_raw(v); printf("\n u : ");
+	mpfr_print_raw(u);printf("\n");*/ 
     
 
-    /* Exactness of the result */
-
-    /* Calculus of the nomber of ulps between un and vn */
-    /*printf("avant sub entre\n");
-     mpfr_print_raw(v);  printf("    -\n");
-    mpfr_print_raw(u);  printf("   , en RNDN\n");*/
-    mpfr_sub(tmp,v,u,GMP_RNDN);
-    mpfr_div(tmpu,tmp,u,GMP_RNDN);
-    mpfr_mul_2exp(tmp,tmpu,q+1,GMP_RNDN);
-    ulps = (int) floor(mpfr_get_d(tmp));
-    if (ulps <0) ulps=-ulps;
-
-    /* If there is more than 2 ulps, we have to do more iterations
-       with the same precision */
-    if( ulps >=2) {
-      go_on=1;
-      no=ntotal;
-      ntotal+=5;
-    }
-   
-    /* Else, we could have to work with more precision */
-    else { 
-      int round1, round2; 
-      mpfr_t res1, res2;
-      mp_limb_t *res1p, *res2p;
-
-      TMP_MARK(marker3);
-      s=(q-1)/BITS_PER_MP_LIMB+1;
-      MON_INIT(res1p, res1, q, s);  
-      MON_INIT(res2p, res2, q, s);  
-      round1=mpfr_can_round(v,p-err-1,GMP_RNDU,rnd_mode,q);
-      round2=mpfr_can_round(u,p-err-1,GMP_RNDD,rnd_mode,q);
-      mpfr_set(res1, v, rnd_mode); 
-      mpfr_set(res2, u, rnd_mode); 
-
-      /* If u=v or u & v can be round to the same machine number, we
-	 we have found the correct result */
-
-      if (((ulps==0)&&round1)||((ulps==1)&&round1&&round2&&(mpfr_cmp(res1,res2)==0)))
+    /* Roundability of the result */
+      can_round=mpfr_can_round(v,p-err-3,GMP_RNDN,rnd_mode,q);
+    
+      if (can_round)
 	go_on=0;
 
       else {
 	  go_on=1;
 	  p+=5;
-	  no=0;
-	  ntotal+=3;
 	  TMP_FREE(marker2); 
 	  TMP_MARK(marker2);
 	  s=(p-1)/BITS_PER_MP_LIMB+1;
@@ -165,8 +135,6 @@ mpfr_agm(r, a, b, rnd_mode)
 	  mpfr_set(u,a,GMP_RNDN);
 	  mpfr_set(v,b,GMP_RNDN);
       }
-      TMP_FREE(marker3); 
-    }
   }
   /* End of while */
 
