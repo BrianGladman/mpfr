@@ -50,10 +50,11 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	  MPFR_SET_POS(y);
 	  MPFR_RET(0);
 	}
-      else if (MPFR_IS_ZERO(x))
-	return mpfr_set_ui (y, 1, GMP_RNDN);
       else
-	MPFR_ASSERTN(0);
+        {
+          MPFR_ASSERTD(MPFR_IS_ZERO(x));
+          return mpfr_set_ui (y, 1, GMP_RNDN);
+        }
     }
   MPFR_CLEAR_FLAGS(y);
 
@@ -69,14 +70,19 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   /* result is 0 when exp(x) < 1/2*2^(__gmpfr_emin), i.e.
      x < (__gmpfr_emin-1) * LOG2 */
   if (d < ((double) __gmpfr_emin - 1.0) * LOG2)
-    return mpfr_set_underflow (y, rnd_mode, 1);
+    {
+      /* warning: mpfr_set_underflow rounds away for RNDN */
+      if (rnd_mode == GMP_RNDN && d < ((double) __gmpfr_emin - 2.0) * LOG2)
+        rnd_mode = GMP_RNDZ;
+      return mpfr_set_underflow (y, rnd_mode, 1);
+    }
 
   /* if x < 2^(-precy), then exp(x) i.e. gives 1 +/- 1 ulp(1) */
   if (expx < -precy)
     {
       int signx = MPFR_SIGN(x);
 
-      if (MPFR_IS_NEG_SIGN(signx) && (rnd_mode == GMP_RNDD || rnd_mode == GMP_RNDZ))
+      if (MPFR_IS_NEG_SIGN(signx) && (rnd_mode == GMP_RNDD))
         {
           MPFR_SET_POS(y);
           mpfr_setmax (y, 0);  /* y = 1 - epsilon */
