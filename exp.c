@@ -129,7 +129,7 @@ mpfr_exp(y, x, rnd_mode)
     l++;
   } while (EXP(t)+expr > -q);
 #ifdef DEBUG
-  fprintf(stderr,"l=%d q=%d (K+l)*q^2=%1.3e\n", l, q, (K+l)*(double)q*q);
+  printf("l=%d q=%d (K+l)*q^2=%1.3e\n", l, q, (K+l)*(double)q*q);
 #endif
 
   /* add 2 ulp to take into account rest of summation */
@@ -160,7 +160,7 @@ mpfr_exp(y, x, rnd_mode)
   l = mpfr_can_round(s, q-K, GMP_RNDU, rnd_mode, precy);
   if (l==0) {
 #ifdef DEBUG
-     fprintf(stderr,"not enough precision, use %d\n", q+BITS_PER_MP_LIMB);
+     printf("not enough precision, use %d\n", q+BITS_PER_MP_LIMB);
      printf("q=%d q-K=%d precy=%d\n",q,q-K,precy);
 #endif
      q += BITS_PER_MP_LIMB;
