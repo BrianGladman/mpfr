@@ -229,6 +229,4 @@ void mpfr_ceil _PROTO((mpfr_ptr, mpfr_srcptr));
  do { mpfr_init(x); mpfr_set((x), (y), (rnd)); } while (0)
 #define mpfr_init_set_f(x, y, rnd) \
  do { mpfr_init(x); mpfr_set_f((x), (y), (rnd)); } while (0)
-#define mpfr_init_set_str_raw(x, y, rnd) \
- do { mpfr_init(x); mpfr_set_str_raw((x), (y), (rnd)); } while (0)
 
