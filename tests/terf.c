@@ -1,6 +1,6 @@
 /* Test file for mpfr_erf.
 
-Copyright 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 Contributed by Ludovic Meunier and Paul Zimmermann.
 
 This file is part of the MPFR Library.
@@ -29,25 +29,25 @@ MA 02111-1307, USA. */
 #define TEST_FUNCTION mpfr_erf
 #include "tgeneric.c"
 
-int
-main (int argc, char *argv[])
+static void
+special (void)
 {
   mpfr_t x, y;
   int inex;
 
-  tests_start_mpfr ();
-
   mpfr_init2 (x, 53);
   mpfr_init2 (y, 53);
 
+  /* erf(NaN) = NaN */
   mpfr_set_nan (x);
   mpfr_erf (y, x, GMP_RNDN);
-  if (mpfr_nan_p (y) == 0)
+  if (!mpfr_nan_p (y))
     {
       printf ("mpfr_erf failed for x=NaN\n");
       exit (1);
     }
 
+  /* erf(+Inf) = 1 */
   mpfr_set_inf (x, 1);
   mpfr_erf (y, x, GMP_RNDN);
   if (mpfr_cmp_ui (y, 1))
@@ -59,6 +59,7 @@ main (int argc, char *argv[])
       exit (1);
     }
 
+  /* erf(-Inf) = -1 */
   mpfr_set_inf (x, -1);
   mpfr_erf (y, x, GMP_RNDN);
   if (mpfr_cmp_si (y, -1))
@@ -67,17 +68,19 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-  mpfr_set_ui (x, 0, GMP_RNDN); /* x = +0 */
+  /* erf(+0) = +0 */
+  mpfr_set_ui (x, 0, GMP_RNDN);
   mpfr_erf (y, x, GMP_RNDN);
-  if (mpfr_cmp_ui (y, 0) || MPFR_SIGN(y) < 0)
+  if (mpfr_cmp_ui (y, 0) || mpfr_sgn (y) < 0)
     {
       printf ("mpfr_erf failed for x=+0\n");
       exit (1);
     }
 
-  mpfr_neg (x, x, GMP_RNDN); /* x = -0 */
+  /* erf(-0) = -0 */
+  mpfr_neg (x, x, GMP_RNDN);
   mpfr_erf (y, x, GMP_RNDN);
-  if (mpfr_cmp_ui (y, 0) || MPFR_SIGN(y) > 0)
+  if (mpfr_cmp_ui (y, 0) || mpfr_sgn (y) > 0)
     {
       printf ("mpfr_erf failed for x=-0\n");
       exit (1);
@@ -195,8 +198,115 @@ main (int argc, char *argv[])
       exit (1);
     }
 
+  mpfr_set_prec (x, 32);
+  mpfr_set_prec (y, 32);
+
+  mpfr_set_str_binary (x, "0.1010100100111011001111100101E-1");
+  mpfr_set_str_binary (y, "0.10111000001110011010110001101011E-1");
+  mpfr_erf (x, x, GMP_RNDN);
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error: erf for prec=32 (1)\n");
+      exit (1);
+    }
+
+  mpfr_set_str_binary (x, "-0.10110011011010111110010001100001");
+  mpfr_set_str_binary (y, "-0.1010110110101011100010111000111");
+  mpfr_erf (x, x, GMP_RNDN);
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error: erf for prec=32 (2)\n");
+      mpfr_print_binary (x); printf ("\n");
+      exit (1);
+    }
+
+  mpfr_set_str_binary (x, "100.10001110011110100000110000111");
+  mpfr_set_str_binary (y, "0.11111111111111111111111111111111");
+  mpfr_erf (x, x, GMP_RNDN);
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error: erf for prec=32 (3)\n");
+      exit (1);
+    }
+  mpfr_set_str_binary (x, "100.10001110011110100000110000111");
+  mpfr_erf (x, x, GMP_RNDZ);
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error: erf for prec=32 (4)\n");
+      exit (1);
+    }
+  mpfr_set_str_binary (x, "100.10001110011110100000110000111");
+  mpfr_erf (x, x, GMP_RNDU);
+  if (mpfr_cmp_ui (x, 1))
+    {
+      printf ("Error: erf for prec=32 (5)\n");
+      exit (1);
+    }
+
+  mpfr_set_str_binary (x, "100.10001110011110100000110001000");
+  mpfr_erf (x, x, GMP_RNDN);
+  if (mpfr_cmp_ui (x, 1))
+    {
+      printf ("Error: erf for prec=32 (6)\n");
+      exit (1);
+    }
+  mpfr_set_str_binary (x, "100.10001110011110100000110001000");
+  mpfr_set_str_binary (y, "0.11111111111111111111111111111111");
+  mpfr_erf (x, x, GMP_RNDZ);
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error: erf for prec=32 (7)\n");
+      exit (1);
+    }
+  mpfr_set_str_binary (x, "100.10001110011110100000110001000");
+  mpfr_erf (x, x, GMP_RNDU);
+  if (mpfr_cmp_ui (x, 1))
+    {
+      printf ("Error: erf for prec=32 (8)\n");
+      exit (1);
+    }
+
+  mpfr_set_ui (x, 5, GMP_RNDN);
+  mpfr_erf (x, x, GMP_RNDN);
+  if (mpfr_cmp_ui (x, 1))
+    {
+      printf ("Error: erf for prec=32 (9)\n");
+      exit (1);
+    }
+  mpfr_set_ui (x, 5, GMP_RNDN);
+  mpfr_erf (x, x, GMP_RNDU);
+  if (mpfr_cmp_ui (x, 1))
+    {
+      printf ("Error: erf for prec=32 (10)\n");
+      exit (1);
+    }
+  mpfr_set_ui (x, 5, GMP_RNDN);
+  mpfr_erf (x, x, GMP_RNDZ);
+  mpfr_set_str_binary (y, "0.11111111111111111111111111111111");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error: erf for prec=32 (11)\n");
+      exit (1);
+    }
+  mpfr_set_ui (x, 5, GMP_RNDN);
+  mpfr_erf (x, x, GMP_RNDD);
+  mpfr_set_str_binary (y, "0.11111111111111111111111111111111");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error: erf for prec=32 (12)\n");
+      exit (1);
+    }
+
   mpfr_clear (x);
   mpfr_clear (y);
+}
+
+int
+main (int argc, char *argv[])
+{
+  tests_start_mpfr ();
+
+  special ();
 
   test_generic (2, 100, 10);
 

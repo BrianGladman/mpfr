@@ -1,6 +1,6 @@
 /* Test file for mpfr_rint, mpfr_trunc, mpfr_floor, mpfr_ceil, mpfr_round.
 
-Copyright 2002, 2003 Free Software Foundation.
+Copyright 2002, 2003, 2004 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -24,6 +24,24 @@ MA 02111-1307, USA. */
 #include <string.h>
 
 #include "mpfr-test.h"
+
+static void
+special (void)
+{
+  mpfr_t x, y;
+
+  mpfr_init2 (x, 6);
+  mpfr_init2 (y, 3);
+  mpfr_set_str_binary (x, "110.111");
+  mpfr_round (y, x);
+  if (mpfr_cmp_ui (y, 7))
+    {
+      printf ("Error in round(110.111)\n");
+      exit (1);
+    }
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
 
 #if __STDC_VERSION__ >= 199901L
 
@@ -231,7 +249,8 @@ main (int argc, char *argv[])
   mpfr_clear (u);
   mpfr_clear (v);
 
-  /* TODO: add hardcoded tests */
+  special ();
+
 #if __STDC_VERSION__ >= 199901L
   if (argc > 1 && strcmp (argv[1], "-s") == 0)
     test_against_libc ();

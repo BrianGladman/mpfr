@@ -1,6 +1,6 @@
 /* mpfr_acos -- arc-cosinus of a floating-point number
 
-Copyright 2001, 2002, 2003 Free Software Foundation.
+Copyright 2001, 2002, 2003, 2004 Free Software Foundation.
 
 This file is part of the MPFR Library, and was contributed by Mathieu Dutour.
 
@@ -30,7 +30,7 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_t xp;
   mpfr_t arcc;
 
-  int signe, supplement;
+  int sign, supplement;
 
   mpfr_t tmp;
   int Prec;
@@ -60,7 +60,7 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_CLEAR_FLAGS(x);
 
   /* Set x_p=|x| */
-  signe = MPFR_SIGN(x);
+  sign = MPFR_SIGN(x);
   mpfr_init2 (xp, MPFR_PREC(x));
   mpfr_abs (xp, x, rnd_mode);
 
@@ -76,7 +76,7 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mp_rnd_t rnd_mode)
   if (compared == 0)
     {
       mpfr_clear (xp);
-      if (MPFR_IS_POS_SIGN(signe)) /* acos(+1) = 0 */
+      if (MPFR_IS_POS_SIGN(sign)) /* acos(+1) = 0 */
 	return mpfr_set_ui (acos, 0, rnd_mode);
       else /* acos(-1) = Pi */
         {
@@ -88,7 +88,7 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mp_rnd_t rnd_mode)
   prec_acos = MPFR_PREC(acos);
   mpfr_ui_sub (xp, 1, xp, GMP_RNDD);
 
-  if (MPFR_IS_POS_SIGN(signe))
+  if (MPFR_IS_POS_SIGN(sign))
     supplement = 2 - 2 * MPFR_GET_EXP (xp);
   else
     supplement = 2 - MPFR_GET_EXP(xp);
@@ -103,6 +103,7 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_init2 (tmp, Prec);
       mpfr_init2 (arcc, Prec);
 
+      /* acos(x) = Pi/2 - asin(x) = Pi/2 - atan(x/sqrt(1-x^2)) */
       mpfr_mul (tmp, x, x, GMP_RNDN);
       mpfr_ui_sub (tmp, 1, tmp, GMP_RNDN);
       mpfr_sqrt (tmp, tmp, GMP_RNDN);

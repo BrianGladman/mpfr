@@ -1,6 +1,6 @@
 /* mpfr_atanh -- Inverse Hyperbolic Tangente of Unsigned Integer Number
 
-Copyright 2001, 2002, 2003 Free Software Foundation.
+Copyright 2001, 2002, 2003, 2004 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -32,23 +32,19 @@ MA 02111-1307, USA. */
 int
 mpfr_atanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode) 
 {
-  int inexact =0;
+  int inexact = 0;
   mpfr_t x;
-  mp_prec_t Nx=MPFR_PREC(xt);   /* Precision of input variable */
+  mp_prec_t Nx = MPFR_PREC(xt);   /* Precision of input variable */
 
   /* Special cases */
   if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(xt) ))
     {
-      if (MPFR_IS_NAN(xt)) 
+      /* atanh(NaN) = NaN, and atanh(+/-Inf) = NaN since tanh gives a result
+         between -1 and 1 */
+      if (MPFR_IS_NAN(xt) || MPFR_IS_INF(xt))
 	{  
 	  MPFR_SET_NAN(y);
 	  MPFR_RET_NAN;
-	}
-      else if (MPFR_IS_INF(xt))
-	{ 
-	  MPFR_SET_INF(y);
-	  MPFR_SET_SAME_SIGN(y, xt);
-	  MPFR_RET(0);
 	}
       else if (MPFR_IS_ZERO(xt))
 	{
@@ -61,9 +57,25 @@ mpfr_atanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
     }
   /* Useless due to final mpfr_set
      MPFR_CLEAR_FLAGS(y);*/
-  
-  mpfr_init2(x,Nx);
-  mpfr_abs(x, xt, GMP_RNDN); 
+
+  /* atanh(x) = NaN as soon as |x| > 1, and arctanh(+/-1) = +/-Inf */
+  if (MPFR_EXP(xt) > 0)
+    {
+      if (MPFR_EXP(xt) == 1)
+        {
+          if (mpfr_cmp_ui (xt, 1) || mpfr_cmp_si (xt, -1))
+            {
+              MPFR_SET_INF(y);
+              MPFR_SET_SAME_SIGN(y, xt);
+              MPFR_RET(0);
+            }
+        }
+      MPFR_SET_NAN(y);
+      MPFR_RET_NAN;
+    }
+
+  mpfr_init2 (x, Nx);
+  mpfr_abs (x, xt, GMP_RNDN); 
 
   /* General case */
   {
@@ -108,7 +120,6 @@ mpfr_atanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
 
         /* actualisation of the precision */
         Nt += 10;
-
       }
     while ((err < 0) || (!mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
                                           Ny + (rnd_mode == GMP_RNDN))

@@ -39,7 +39,8 @@
 
 \section{Ulp calculus}
 
-Let $n$ be a positive integer (considered fixed in the following).
+Let $n$ --- the working precision ---
+be a positive integer (considered fixed in the following).
 We write any nonzero real number $x$ in the form $x = m \cdot 2^e$
 with $\frac{1}{2} \le |m| < 1$ and $e := {\rm EXP}(x)$, and
 we define $\ulp(x) := 2^{{\rm EXP}(x) - n}$.
@@ -63,13 +64,32 @@ Then $|a| \le |b|$ implies $e_a \le e_b$, thus
 $\ulp(a) = 2^{e_a-n} \le 2^{e_b-n} = \ulp(b)$.
 \end{proof}
 
-% \begin{Rule} \label{R3}
-% Let $\ulp(x) := 2^{{\rm EXP}(x) - n}$, then
-% $2^{n-1} \ulp(x) \le |x| < 2^{n} \ulp(x)$.
-% \end{Rule}
-% \begin{proof}
-% Same as rule~\ref{R1}.
-% \end{proof}
+\begin{Rule} \label{R3}
+Let $x$ be a real number, and $y = \circ(x)$.
+Then $|x - y| \leq \frac{1}{2} {\rm min}(\ulp(x), \ulp(y))$
+in rounding to nearest,
+and $|x - y| \leq {\rm min}(\ulp(x), \ulp(y))$ for the other rounding modes.
+\end{Rule}
+\begin{proof}
+First consider rounding to nearest.
+By definition, we have $|x-y| \leq \frac{1}{2} \ulp(y)$.
+If $\ulp(y) \leq \ulp(x)$, then $|x-y| \leq \frac{1}{2} \ulp(y)
+\leq \frac{1}{2} \ulp(x)$.
+The only difficult case is when $\ulp(x) < \ulp(y)$, but then 
+necessarily $y$ is a power of two;
+since in that case $y - \frac{1}{2} \ulp(y)$ is exactly representable,
+the maximal possible difference between $x$ and $y$
+is $\frac{1}{4} \ulp(y) = \frac{1}{2} \ulp(x)$, which concludes the proof
+in the rounding to nearest case.
+
+In rounding to zero, we always have $\ulp(y) \leq \ulp(x)$, so the rule
+holds.
+In rounding away from zero, the only difficult case is when
+$\ulp(x) < \ulp(y)$, but then $y$ is a power of two, and since
+$y - \frac{1}{2} \ulp(y)$ is exactly representable,
+the maximal possible difference between $x$ and $y$ is $\frac{1}{2} \ulp(y)
+= \ulp(x)$, which concludes the proof.
+\end{proof}
 
 \begin{Rule} \label{R4}
 $\frac{1}{2} |a| \cdot \ulp(b) < \ulp(a b) < 2 |a| \cdot \ulp(b)$.
@@ -2608,6 +2628,15 @@ Output: \emph{true} if $x^y$ is an exact power $e 2^f$, {\em false} otherwise\\
 \q {\bf if} $a$ is not a $2^{-d}$ power {\bf then} return {\em false} \\
 return {\em true}
 \end{quote}
+
+Detecting if the result is exactly representable is not enough, since it
+may be exact, but with a precision larger than the target precision.
+Thus we propose the following: modify Algorithm CheckExactPower so that
+it returns an upper bound $p$ for the number of significant bits
+of $x^y$ when it is exactly representable, i.e.~$x^y = m \cdot 2^e$
+with $|m| < 2^p$. Then if the relative error on the approximation of
+$x^y$ is less than $\frac{1}{2}$ ulp, then rounding it to nearest will give
+$x^y$.
 
 \subsection{The real cube root}
 

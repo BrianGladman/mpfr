@@ -125,11 +125,12 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   /* for the O(n^(1/2)*M(n)) method, the Taylor series computation of
      n/K terms costs about n/(2K) multiplications when computed in fixed
      point */
-  K = (precy<SWITCH) ? __gmpfr_isqrt((precy + 1) / 2) : __gmpfr_cuberoot (4*precy);
+  K = (precy < SWITCH) ? __gmpfr_isqrt ((precy + 1) / 2)
+    : __gmpfr_cuberoot (4*precy);
   l = (precy - 1) / K + 1;
   err = K + (int) __gmpfr_ceil_log2 (2.0 * (double) l + 18.0);
   /* add K extra bits, i.e. failure probability <= 1/2^K = O(1/precy) */
-  q = precy + err + K + 3;
+  q = precy + err + K + 5;
   mpfr_init2 (r, q + error_r);
   mpfr_init2 (s, q + error_r);
   mpfr_init2 (t, q);
@@ -166,10 +167,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   if (MPFR_SIGN(r) < 0)
     { /* initial approximation n was too large */
       n--;
-      mpfr_mul_ui (r, s, (n < 0) ? -n : n, GMP_RNDZ);
-      if (n < 0)
-        mpfr_neg (r, r, GMP_RNDD);
-      mpfr_sub (r, x, r, GMP_RNDU);
+      mpfr_add (r, r, s, GMP_RNDU);
     }
   mpfr_prec_round (r, q, GMP_RNDU);
 #ifdef DEBUG
@@ -222,7 +220,9 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
      printf("q=%d q-K=%d precy=%d\n",q,q-K,precy);
 #endif
      q += BITS_PER_MP_LIMB;
-     mpfr_set_prec(r, q); mpfr_set_prec(s, q); mpfr_set_prec(t, q);
+     mpfr_set_prec (r, q);
+     mpfr_set_prec (s, q);
+     mpfr_set_prec (t, q);
   }
   } while (l==0);
 

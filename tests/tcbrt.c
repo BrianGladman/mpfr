@@ -24,6 +24,92 @@ MA 02111-1307, USA. */
 
 #include "mpfr-test.h"
 
+static void
+special (void)
+{
+  mpfr_t x, y;
+
+  mpfr_init (x);
+  mpfr_init (y);
+
+  /* cbrt(NaN) = NaN */
+  mpfr_set_nan (x);
+  mpfr_cbrt (y, x, GMP_RNDN);
+  if (!mpfr_nan_p (y))
+    {
+      printf ("Error: cbrt(NaN) <> NaN\n");
+      exit (1);
+    }
+
+  /* cbrt(+Inf) = +Inf */
+  mpfr_set_inf (x, 1);
+  mpfr_cbrt (y, x, GMP_RNDN);
+  if (!mpfr_inf_p (y) || mpfr_sgn (y) < 0)
+    {
+      printf ("Error: cbrt(+Inf) <> +Inf\n");
+      exit (1);
+    }
+
+  /* cbrt(-Inf) =  -Inf */
+  mpfr_set_inf (x, -1);
+  mpfr_cbrt (y, x, GMP_RNDN);
+  if (!mpfr_inf_p (y) || mpfr_sgn (y) > 0)
+    {
+      printf ("Error: cbrt(-Inf) <> -Inf\n");
+      exit (1);
+    }
+
+  /* cbrt(+/-0) =  +/-0 */
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_cbrt (y, x, GMP_RNDN);
+  if (mpfr_cmp_ui (y, 0) || mpfr_sgn (y) < 0)
+    {
+      printf ("Error: cbrt(+0) <> +0\n");
+      exit (1);
+    }
+  mpfr_neg (x, x, GMP_RNDN);
+  mpfr_cbrt (y, x, GMP_RNDN);
+  if (mpfr_cmp_ui (y, 0) || mpfr_sgn (y) > 0)
+    {
+      printf ("Error: cbrt(-0) <> -0\n");
+      exit (1);
+    }
+
+  mpfr_set_prec (x, 53);
+  mpfr_set_str (x, "8.39005285514734966412e-01", 10, GMP_RNDN);
+  mpfr_cbrt (x, x, GMP_RNDN);
+  if (mpfr_cmp_str1 (x, "9.43166207799662426048e-01"))
+    {
+      printf ("Error in crbrt (1)\n");
+      exit (1);
+    }
+
+  mpfr_set_prec (x, 32);
+  mpfr_set_prec (y, 32);
+  mpfr_set_str_binary (x, "0.10000100001100101001001001011001");
+  mpfr_cbrt (x, x, GMP_RNDN);
+  mpfr_set_str_binary (y, "0.11001101011000100111000111111001");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error in cbrt (2)\n");
+      exit (1);
+    }
+
+  mpfr_set_prec (x, 32);
+  mpfr_set_prec (y, 32);
+  mpfr_set_str_binary (x, "-0.1100001110110000010101011001011");
+  mpfr_cbrt (x, x, GMP_RNDN);
+  mpfr_set_str_binary (y, "-0.11101010000100100101000101011001");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error in cbrt (3)\n");
+      exit (1);
+    }
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
 int
 main (void)
 {
@@ -33,16 +119,9 @@ main (void)
 
   tests_start_mpfr ();
 
-  mpfr_init (x);
+  special ();
 
-  mpfr_set_prec (x, 53);
-  mpfr_set_str (x, "8.39005285514734966412e-01", 10, GMP_RNDN);
-  mpfr_cbrt (x, x, GMP_RNDN);
-  if (mpfr_cmp_str1(x, "9.43166207799662426048e-01"))
-    {
-      printf ("Error (1)\n");
-      exit (1);
-    }
+  mpfr_init (x);
 
   for (p=2; p<100; p++)
     {

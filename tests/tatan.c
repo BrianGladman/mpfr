@@ -1,6 +1,6 @@
-/* Test file for mpfr_arctan.
+/* Test file for mpfr_atan.
 
-Copyright 2001, 2002, 2003 Free Software Foundation.
+Copyright 2001, 2002, 2003, 2004 Free Software Foundation.
 Written by Paul Zimmermann, INRIA Lorraine.
 
 This file is part of the MPFR Library.
@@ -26,9 +26,10 @@ MA 02111-1307, USA. */
 #include "mpfr-test.h"
 
 static void
-worst_cases (void)
+special (void)
 {
   mpfr_t x, y, z;
+  mp_rnd_t r;
 
   mpfr_init2 (x, 53);
   mpfr_init2 (y, 53);
@@ -50,13 +51,82 @@ worst_cases (void)
       exit (1);
     }
 
-  mpfr_set_inf (x, -1);
-  mpfr_atan (y, x, GMP_RNDN);
-  if (mpfr_sgn (y) >= 0)
+  /* atan(+Inf) = Pi/2 */
+  for (r = 0; r < 4; r++)
     {
-      printf ("Error: mpfr_atan (-inf) should be negative, got ");
-      mpfr_print_binary (y);
-      printf ("\n");
+      mpfr_set_inf (x, 1);
+      mpfr_atan (y, x, r);
+      mpfr_const_pi (x, r);
+      mpfr_div_2exp (x, x, 1, r);
+      if (mpfr_cmp (x, y))
+        {
+          printf ("Error: mpfr_atan(+Inf), rnd=%s\n", mpfr_print_rnd_mode (r));
+          exit (1);
+        }
+    }
+
+  /* atan(-Inf) = - Pi/2 */
+  for (r = 0; r < 4; r++)
+    {
+      mpfr_set_inf (x, -1);
+      mpfr_atan (y, x, r);
+      mpfr_const_pi (x, MPFR_INVERT_RND(r));
+      mpfr_neg (x, x, r);
+      mpfr_div_2exp (x, x, 1, r);
+      if (mpfr_cmp (x, y))
+        {
+          printf ("Error: mpfr_atan(-Inf), rnd=%s\n", mpfr_print_rnd_mode (r));
+          exit (1);
+        }
+    }
+
+  /* atan(NaN) = NaN */
+  mpfr_set_nan (x);
+  mpfr_atan (y, x, GMP_RNDN);
+  if (!mpfr_nan_p (y))
+    {
+      printf ("Error: mpfr_atan(NaN) <> NaN\n");
+      exit (1);
+    }
+
+  /* atan(+/-0) = +/-0 */
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_atan (y, x, GMP_RNDN);
+  if (mpfr_cmp_ui (y, 0) || mpfr_sgn (y) < 0)
+    {
+      printf ("Error: mpfr_atan (+0) <> +0\n");
+      exit (1);
+    }
+  mpfr_neg (x, x, GMP_RNDN);
+  mpfr_atan (y, x, GMP_RNDN);
+  if (mpfr_cmp_ui (y, 0) || mpfr_sgn (y) > 0)
+    {
+      printf ("Error: mpfr_atan (-0) <> -0\n");
+      exit (1);
+    }
+
+  mpfr_set_prec (x, 32);
+  mpfr_set_prec (y, 32);
+
+  /* test one random positive argument */
+  mpfr_set_str_binary (x, "0.10000100001100101001001001011001");
+  mpfr_atan (x, x, GMP_RNDN);
+  mpfr_set_str_binary (y, "0.1111010000001111001111000000011E-1");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error in mpfr_atan (1)\n");
+      exit (1);
+    }
+
+  /* test one random negative argument */
+  mpfr_set_str_binary (x, "-0.1100001110110000010101011001011");
+  mpfr_atan (x, x, GMP_RNDN);
+  mpfr_set_str_binary (y, "-0.101001110001010010110001110001");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error in mpfr_atan (2)\n");
+      mpfr_print_binary (x); printf ("\n");
+      mpfr_print_binary (y); printf ("\n");
       exit (1);
     }
 
@@ -71,20 +141,11 @@ worst_cases (void)
 int
 main (int argc, char *argv[])
 {
-  unsigned int p0 = 2, p1 = 100, N = 7;
-
   tests_start_mpfr ();
 
-  worst_cases ();
+  special ();
 
-  /* tarctan prec - perform one random computation with precision prec */
-  if (argc >= 2)
-    {
-      p0 = p1 = atoi (argv[1]);
-      N = 1;
-    }
-
-  test_generic (p0, p1, N);
+  test_generic (2, 100, 7);
 
   tests_end_mpfr ();
   return 0;

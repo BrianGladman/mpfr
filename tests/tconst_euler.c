@@ -1,6 +1,6 @@
 /* Test file for mpfr_const_euler.
 
-Copyright 2001 Free Software Foundation.
+Copyright 2001, 2004 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -48,6 +48,16 @@ main (int argc, char *argv[])
   mpfr_init (y);
   mpfr_init (z);
   mpfr_init (t);
+
+  mpfr_set_prec (y, 32);
+  mpfr_set_prec (z, 32);
+  mpfr_const_euler (y, GMP_RNDN);
+  mpfr_set_str_binary (z, "0.10010011110001000110011111100011");
+  if (mpfr_cmp (y, z))
+    {
+      printf ("Error for prec=32\n");
+      exit (1);
+    }
 
   for (prec = p0; prec <= p1; prec++)
     {

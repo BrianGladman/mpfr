@@ -79,6 +79,22 @@ check_nans (void)
       exit (1);
     }
 
+  /* cos(+/-0) = 1 */
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_cos (y, x, GMP_RNDN);
+  if (mpfr_cmp_ui (y, 1))
+    {
+      printf ("Error: cos(+0) != 1\n");
+      exit (1);
+    }
+  mpfr_neg (x, x, GMP_RNDN);
+  mpfr_cos (y, x, GMP_RNDN);
+  if (mpfr_cmp_ui (y, 1))
+    {
+      printf ("Error: cos(-0) != 1\n");
+      exit (1);
+    }
+
   mpfr_clear (x);
   mpfr_clear (y);
 }
@@ -135,6 +151,37 @@ main (int argc, char *argv[])
     {
       printf ("Error for x=1.1100e-2, rnd=GMP_RNDD\n");
       printf ("expected 1.1100e-1, got "); mpfr_print_binary (y); puts ("");
+      exit (1);
+    }
+
+  mpfr_set_prec (x, 32);
+  mpfr_set_prec (y, 32);
+
+  mpfr_set_str_binary (x, "0.10001000001001011000100001E-6");
+  mpfr_set_str_binary (y, "0.1111111111111101101111001100001");
+  mpfr_cos (x, x, GMP_RNDN);
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error for prec=32 (1)\n");
+      exit (1);
+    }
+
+  mpfr_set_str_binary (x, "-0.1101011110111100111010011001011E-1");
+  mpfr_set_str_binary (y, "0.11101001100110111011011010100011");
+  mpfr_cos (x, x, GMP_RNDN);
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error for prec=32 (2)\n");
+      exit (1);
+    }
+
+  /* huge argument reduction */
+  mpfr_set_str_binary (x, "0.10000010000001101011101111001011E40");
+  mpfr_set_str_binary (y, "0.10011000001111010000101011001011E-1");
+  mpfr_cos (x, x, GMP_RNDN);
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error for prec=32 (3)\n");
       exit (1);
     }
 

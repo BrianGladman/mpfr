@@ -1,6 +1,6 @@
 /* mpfr_erf -- error function of a floating-point number
 
-Copyright 2001, 2003 Free Software Foundation, Inc.
+Copyright 2001, 2003, 2004 Free Software Foundation, Inc.
 Contributed by Ludovic Meunier and Paul Zimmermann.
 
 This file is part of the MPFR Library.
@@ -65,17 +65,7 @@ mpfr_erf (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   xf = mpfr_get_d (x, GMP_RNDN);
   xf = xf * xf; /* xf ~ x^2 */
 
-  if (MPFR_IS_POS_SIGN(sign_x))
-    rnd2 = rnd_mode;
-  else
-    {
-      if (rnd_mode == GMP_RNDU)
-        rnd2 = GMP_RNDD;
-      else if (rnd_mode == GMP_RNDD)
-        rnd2 = GMP_RNDU;
-      else
-        rnd2 = rnd_mode;
-    }
+  rnd2 = MPFR_IS_POS_SIGN(sign_x) ? rnd_mode : MPFR_INVERT_RND(rnd_mode);
 
   /* use expansion at x=0 when e*x^2 <= n (target precision)
      otherwise use asymptotic expansion */
@@ -92,21 +82,18 @@ mpfr_erf (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
           mpfr_setmax (y, 0);
           inex = -1;
         }
+      if (MPFR_IS_NEG_SIGN(sign_x))
+        {
+          MPFR_CHANGE_SIGN (y);
+          inex = -inex;
+        }
     }
   else  /* use Taylor */
     {
       inex = mpfr_erf_0 (y, x, rnd2);
     }
 
-  if (MPFR_IS_NEG_SIGN(sign_x))
-    {
-      MPFR_CHANGE_SIGN (y);
-      return - inex;
-    }
-  else
-    {
-      return inex;
-    }
+  return inex;
 }
 
 /* return x*2^e */

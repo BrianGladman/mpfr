@@ -61,6 +61,15 @@ main (int argc, char *argv[])
       printf ("mpfr_const_pi failed for prec=53\n");
       exit (1);
     }
+
+  mpfr_set_prec (x, 32);
+  mpfr_const_pi (x, GMP_RNDN);
+  if (mpfr_cmp_str1 (x, "3.141592653468251") )
+    {
+      printf ("mpfr_const_pi failed for prec=32\n");
+      exit (1);
+    }
+
   mpfr_clear (x);
 
   tests_end_mpfr ();

@@ -1,6 +1,6 @@
 /* mpfr_atan -- arc-tangent of a floating-point number
 
-Copyright 2001, 2002, 2003 Free Software Foundation.
+Copyright 2001, 2002, 2003, 2004 Free Software Foundation.
 
 This file is part of the MPFR Library, and was contributed by Mathieu Dutour.
 
@@ -55,7 +55,7 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_t xp;
   mpfr_t arctgt;
 
-  int comparaison, signe, supplement, inexact;
+  int comparaison, sign, supplement, inexact;
 
   mpfr_t t_arctan;
   int i;
@@ -117,7 +117,7 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
     }
   MPFR_CLEAR_FLAGS(arctangent);
 
-  signe = MPFR_SIGN(x);
+  sign = MPFR_SIGN(x);
   prec_arctan = MPFR_PREC(arctangent);
 
   /* Set x_p=|x| */
@@ -130,7 +130,7 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
     {
       inexact = mpfr_const_pi (arctangent, rnd_mode);
       MPFR_SET_EXP (arctangent, MPFR_GET_EXP (arctangent) - 2);
-      if (MPFR_IS_NEG_SIGN( signe ))
+      if (MPFR_IS_NEG_SIGN( sign ))
         {
           inexact = -inexact;
           MPFR_CHANGE_SIGN(arctangent);
@@ -237,22 +237,23 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	break;
     }
 
-  inexact = mpfr_set (arctangent, arctgt, rnd_mode);
+  inexact = MPFR_IS_POS_SIGN(sign) ? mpfr_set (arctangent, arctgt, rnd_mode)
+    : mpfr_neg (arctangent, arctgt, rnd_mode);
 
-  mpfr_clear(sk);
-  mpfr_clear(ukf);
-  mpfr_clear(t_arctan);
-  mpfr_clear(tmp_arctan);
-  mpfr_clear(tmp);
-  mpfr_clear(tmp2);
-  mpfr_clear(Ak);
-  mpfr_clear(arctgt);
+  mpfr_clear (sk);
+  mpfr_clear (ukf);
+  mpfr_clear (t_arctan);
+  mpfr_clear (tmp_arctan);
+  mpfr_clear (tmp);
+  mpfr_clear (tmp2);
+  mpfr_clear (Ak);
+  mpfr_clear (arctgt);
 
-  mpfr_clear(Pisur2);
+  mpfr_clear (Pisur2);
 
-  mpfr_clear(xp);
-  mpz_clear(ukz);
-  mpz_clear(square);
+  mpfr_clear (xp);
+  mpz_clear (ukz);
+  mpz_clear (square);
 
   return inexact;
 }

@@ -104,10 +104,18 @@ main (int argc, char *argv[])
     }
 
   mpfr_set_prec (x, 53);
-  mpfr_const_log2 (x, rnd);
+  mpfr_const_log2 (x, GMP_RNDZ);
   if (mpfr_cmp_str1 (x, "6.9314718055994530941e-1") )
     {
       printf ("mpfr_const_log2 failed for prec=53\n");
+      exit (1);
+    }
+
+  mpfr_set_prec (x, 32);
+  mpfr_const_log2 (x, GMP_RNDN);
+  if (mpfr_cmp_str1 (x, "0.69314718060195446"))
+    {
+      printf ("mpfr_const_log2 failed for prec=32\n");
       exit (1);
     }
 

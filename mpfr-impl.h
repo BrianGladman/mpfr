@@ -288,6 +288,10 @@ long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CO
 #define MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd, test) \
   (((rnd) + (test)) == GMP_RNDD)
 
+/* invert a rounding mode */
+#define MPFR_INVERT_RND(rnd) ((rnd == GMP_RNDU) ? GMP_RNDD : \
+                             ((rnd == GMP_RNDD) ? GMP_RNDU : rnd))
+
 /* Transform RNDU and RNDD to RNDA or RNDZ */
 #define MPFR_UPDATE_RND_MODE(rnd, test) \
   do {  \
@@ -295,9 +299,9 @@ long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CO
       rnd = GMP_RNDZ; \
   } while (0) 
 
-/* Calcul s = (-a) % BITS_PER_MP_LIMB
+/* Compute s = (-a) % BITS_PER_MP_LIMB
  * a is unsigned! Check if it works, 
- * otherwise tries another way to calcul it */
+ * otherwise tries another way to compute it */
 #define MPFR_UNSIGNED_MINUS_MODULO(s, a) \
   do { \
   if ((UINT_MAX % BITS_PER_MP_LIMB) == (BITS_PER_MP_LIMB-1) \

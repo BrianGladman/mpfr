@@ -1,7 +1,7 @@
 /* Test file for mpfr_atanh.
 
-Copyright 2001, 2002, 2003 Free Software Foundation.
-Adapted from tarctan.c.
+Copyright 2001, 2002, 2003, 2004 Free Software Foundation.
+Adapted from tatan.c.
 
 This file is part of the MPFR Library.
 
@@ -28,10 +28,133 @@ MA 02111-1307, USA. */
 #define TEST_FUNCTION mpfr_atanh
 #include "tgeneric.c"
 
+static void
+special (void)
+{
+  mpfr_t x, y, z;
+
+  mpfr_init (x);
+  mpfr_init (y);
+
+  MPFR_SET_INF(x);
+  mpfr_set_ui (y, 0, GMP_RNDN);
+  mpfr_atanh (x, y, GMP_RNDN);
+  if (MPFR_IS_INF(x) || MPFR_IS_NAN(x) )
+    {
+      printf ("Inf flag not clears in atanh!\n");
+      exit (1);
+    }
+
+  MPFR_SET_NAN(x);
+  mpfr_atanh (x, y, GMP_RNDN);
+  if (MPFR_IS_NAN(x) || MPFR_IS_INF(x))
+    {
+      printf ("NAN flag not clears in atanh!\n");
+      exit (1);
+    }
+
+  /* atanh(+/-2) = NaN */
+  mpfr_set_ui (x, 2, GMP_RNDN);
+  mpfr_atanh (y, x, GMP_RNDN);
+  if (!mpfr_nan_p (y))
+    {
+      printf ("Error: mpfr_atanh(2) <> NaN\n");
+      exit (1);
+    }
+  mpfr_neg (x, x, GMP_RNDN);
+  mpfr_atanh (y, x, GMP_RNDN);
+  if (!mpfr_nan_p (y))
+    {
+      printf ("Error: mpfr_atanh(-2) <> NaN\n");
+      exit (1);
+    }
+
+  /* atanh(+0) = +0, atanh(-0) = -0 */
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_atanh (y, x, GMP_RNDN);
+  if (mpfr_cmp_ui (y, 0) || mpfr_sgn (y) < 0)
+    {
+      printf ("Error: mpfr_atanh(+0) <> +0\n");
+      exit (1);
+    }
+  mpfr_neg (x, x, GMP_RNDN);
+  mpfr_atanh (y, x, GMP_RNDN);
+  if (mpfr_cmp_ui (y, 0) || mpfr_sgn (y) > 0)
+    {
+      printf ("Error: mpfr_atanh(-0) <> -0\n");
+      exit (1);
+    }
+
+  MPFR_SET_NAN(x);
+  mpfr_atanh (y, x, GMP_RNDN);
+  if (!mpfr_nan_p (y))
+    {
+      printf ("Error: mpfr_atanh(NaN) <> NaN\n");
+      exit (1);
+    }
+
+  mpfr_set_inf (x, 1);
+  mpfr_atanh (y, x, GMP_RNDN);
+  if (!mpfr_nan_p (y))
+    {
+      printf ("Error: mpfr_atanh(+Inf) <> NaN\n");
+      mpfr_print_binary (y); printf ("\n");
+      exit (1);
+    }
+
+  mpfr_set_inf (x, -1);
+  mpfr_atanh (y, x, GMP_RNDN);
+  if (!mpfr_nan_p (y))
+    {
+      printf ("Error: mpfr_atanh(-Inf) <> NaN\n");
+      exit (1);
+    }
+
+  mpfr_set_prec (x, 32);
+  mpfr_set_prec (y, 32);
+
+  mpfr_set_str_binary (x, "0.10001000001001011000100001E-6");
+  mpfr_atanh (x, x, GMP_RNDN);
+  mpfr_set_str_binary (y, "0.10001000001001100101010110100001E-6");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error: mpfr_atanh (1)\n");
+      exit (1);
+    }
+
+  mpfr_set_str_binary (x, "-0.1101011110111100111010011001011E-1");
+  mpfr_atanh (x, x, GMP_RNDN);
+  mpfr_set_str_binary (y, "-0.11100110000100001111101100010111E-1");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error: mpfr_atanh (2)\n");
+      exit (1);
+    }
+
+  mpfr_set_prec (x, 33);
+  mpfr_set_prec (y, 43);
+  mpfr_set_str_binary (x, "0.111001101100000110011001010000101");
+  mpfr_atanh (y, x, GMP_RNDZ);
+  mpfr_init2 (z, 43);
+  mpfr_set_str_binary (z, "1.01111010110001101001000000101101011110101");
+  if (mpfr_cmp (y, z))
+    {
+      printf ("Error: mpfr_atanh (3)\n");
+      mpfr_print_binary (y); printf ("\n");
+      exit (1);
+    }
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+}
+
 int
 main (int argc, char *argv[])
 {
   tests_start_mpfr ();
+
+  special ();
 
   test_generic (2, 100, 25);
 

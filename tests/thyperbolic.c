@@ -1,6 +1,6 @@
 /* Test file for hyperbolic function : mpfr_cosh, mpfr_sinh, mpfr_tanh, mpfr_acosh, mpfr_asinh, mpfr_atanh.
 
-Copyright 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -204,17 +204,17 @@ check_zero (void)
 static int
 check_INF (void)
 {
-  mpfr_t t, ch,sh,th,ach,ash,ath;
+  mpfr_t t, ch, sh, th, ach, ash, ath;
   int tester;
   int fail = 0;
 
-  mpfr_init2(t,200);
-  mpfr_init2(ch,200);
-  mpfr_init2(sh,200);
-  mpfr_init2(th,200);
-  mpfr_init2(ach,200);
-  mpfr_init2(ash,200);
-  mpfr_init2(ath,200);
+  mpfr_init2 (t, 200);
+  mpfr_init2 (ch, 200);
+  mpfr_init2 (sh, 200);
+  mpfr_init2 (th, 200);
+  mpfr_init2 (ach, 200);
+  mpfr_init2 (ash, 200);
+  mpfr_init2 (ath, 200);
 
   MPFR_SET_INF(t);
 
@@ -273,8 +273,8 @@ check_INF (void)
 
   /******atanh********/
 
-  tester=mpfr_atanh(ath,t,GMP_RNDD);
-  if (!MPFR_IS_INF(ath) || tester != 0)
+  tester = mpfr_atanh (ath, t, GMP_RNDD);
+  if (!MPFR_IS_NAN(ath) || tester != 0)
     {
       printf("atanh(INF) \n");
       fail = 1;
@@ -335,8 +335,8 @@ check_INF (void)
 
   /******atanh********/
 
-  tester=mpfr_atanh(ath,t,GMP_RNDD);
-  if (!MPFR_IS_INF(ath) || MPFR_SIGN(ath) > 0 || tester != 0)
+  tester = mpfr_atanh (ath, t, GMP_RNDD);
+  if (!MPFR_IS_NAN(ath) || tester != 0)
     {
       printf("atanh(-INF) \n");
       fail = 1;

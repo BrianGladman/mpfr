@@ -1,6 +1,6 @@
 /* mpfr_asin -- arc-sinus of a floating-point number
 
-Copyright 2001, 2002, 2003 Free Software Foundation.
+Copyright 2001, 2002, 2003, 2004 Free Software Foundation.
 
 This file is part of the MPFR Library, and was contributed by Mathieu Dutour.
 
@@ -30,7 +30,7 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_t xp;
   mpfr_t arcs;
 
-  int signe, supplement;
+  int sign, supplement;
 
   mpfr_t tmp;
   int Prec;
@@ -58,7 +58,7 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_CLEAR_FLAGS(asin);
 
   /* Set x_p=|x| */
-  signe = MPFR_SIGN(x);
+  sign = MPFR_SIGN(x);
   mpfr_init2 (xp, MPFR_PREC(x));
   mpfr_abs (xp, x, rnd_mode);
 
@@ -73,15 +73,11 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   if (compared == 0) /* x = 1 or x = -1 */
     {
-      if (signe > 0) /* asin(+1) = Pi/2 */
+      if (MPFR_IS_POS_SIGN(sign)) /* asin(+1) = Pi/2 */
         inexact = mpfr_const_pi (asin, rnd_mode);
       else /* asin(-1) = -Pi/2 */
         {
-          if (rnd_mode == GMP_RNDU)
-            rnd_mode = GMP_RNDD;
-          else if (rnd_mode == GMP_RNDD)
-            rnd_mode = GMP_RNDU;
-          inexact = -mpfr_const_pi (asin, rnd_mode);
+          inexact = -mpfr_const_pi (asin, MPFR_INVERT_RND(rnd_mode));
           mpfr_neg (asin, asin, rnd_mode);
         }
       MPFR_SET_EXP (asin, MPFR_GET_EXP (asin) - 1);
@@ -98,6 +94,7 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_init (tmp);
   mpfr_init (arcs);
 
+  /* use asin(x) = atan(x/sqrt(1-x^2)) */
   while (1)
     {
       estimated_delta = 1 + supplement;
