@@ -144,15 +144,10 @@ typedef struct __gmpfr_cache_s mpfr_cache_t[1];
 */
 /* Extra MPFR defines */
 #define __MPFR_SENTINEL_ATTR
-#define __MPFR_THREAD_ATTR
 #if defined (__GNUC__)
 # if __GNUC__ >= 4
 #  undef __MPFR_SENTINEL_ATTR
 #  define __MPFR_SENTINEL_ATTR __attribute__ ((sentinel))
-# endif
-# if (__GNUC__*10+__GNUC_MINOR__) >= 33
-#  undef __MPFR_THREAD_ATTR
-#  define __MPFR_THREAD_ATTR __thread
 # endif
 #endif
 
