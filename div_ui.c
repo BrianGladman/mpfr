@@ -45,10 +45,18 @@ mpfr_div_ui(y, x, u, rnd_mode)
   if (ABSSIZE(y)>=yn+1) tmp=yp;
   else tmp=TMP_ALLOC((yn+1)*BYTES_PER_MP_LIMB);
 
-  if (dif>=0)
-    c = mpn_divrem_1(tmp, dif, xp, xn, (mp_limb_t) u);
+  c = (mp_limb_t) u;
+  if (dif>=0) {
+    /* patch for bug in mpn_divrem_1 */
+#if (UDIV_NEEDS_NORMALIZATION==1)
+    count_leading_zeros(sh, c);
+    c <<= sh;
+    EXP(y) += sh;
+#endif
+    c = mpn_divrem_1(tmp, dif, xp, xn, c);
+  }
   else /* dif < 0 i.e. xn > yn */
-    c = mpn_divrem_1(tmp, 0, xp-dif, yn, (mp_limb_t) u);
+    c = mpn_divrem_1(tmp, 0, xp-dif, yn, c);
 
   /* shift left to normalize */
   count_leading_zeros(sh, tmp[yn]);
@@ -102,3 +110,6 @@ printf("y="); mpfr_print_raw(y); putchar('\n');
   }
   return 0; /* to prevent warning from gcc */
 }
+
+
+
