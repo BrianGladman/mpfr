@@ -27,172 +27,143 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
- /* The computation of y=x^(1/3) is done by
+ /* The computation of y = x^(1/3) is done as follows:
 
-    Case exp-log y=e^((1/3)*log(x))
-    Case Newton y / y_{k+1}=(1/3)[(x/(y_k^2))+2y_k]
+    Let x = sign * m * 2^(3*e) where m is an integer
+
+    with 2^(3n-3) <= m < 2^(3n) where n = PREC(y)
+
+    and m = s^3 + r where 0 <= r and m < (s+1)^3
+
+    we want that s has n bits i.e. s >= 2^(n-1), or m >= 2^(3n-3)
+    i.e. m must have at least 3n-2 bits
+
+    then x^(1/3) = s * 2^e if r=0
+         x^(1/3) = (s+1) * 2^e if round up
+         x^(1/3) = (s-1) * 2^e if round down
+         x^(1/3) = s * 2^e if nearest and r < 3/2*s^2+3/4*s+1/8
+                   (s+1) * 2^e otherwise
  */
 
 int
-#if __STDC__
-mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode) 
-#else
-mpfr_cbrt (y, x, rnd_mode)
-     mpfr_ptr y;
-     mpfr_srcptr x;
-     mp_rnd_t rnd_mode;
-#endif
+mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode) 
 {
-    
-  /****** Declaration ******/
 
-    /* Variable of Intermediary Calculation*/
-    mpfr_t t1,t2,t;       
+  mpz_t m, s, t;
+  mp_exp_t e, r, sh;
+  mp_prec_t prec_y, size_m;
+  int inexact, sign_x;
 
-    int round;
-    int boucle;
-    long int exp_t;
-    ldiv_t epsilon;    
-    int tau=2;
-    int ktau=0;
-    int i;
-
-    mp_prec_t Nx;   /* Precision of input variable */
-    mp_prec_t Ny;   /* Precision of output variable */
-    mp_prec_t Nt;   /* Precision of Intermediary Calculation variable */
-    mp_prec_t Ntemp;   /* Precision of Intermediary Calculation variable */
-    mp_prec_t err;  /* Precision of error */
-
-    /* Gestion des NaN */
-    if (MPFR_IS_NAN(x)) {  MPFR_SET_NAN(y); return 1; }
-    MPFR_CLEAR_NAN(y);
-
-    /* Gestion des infinies*/
-    if (MPFR_IS_INF(x)){ 
-      MPFR_SET_INF(y);
-      if(MPFR_SIGN(x) > 0) {
-	if (MPFR_SIGN(y) < 0) MPFR_CHANGE_SIGN(y);}
-      else{
-	if (MPFR_SIGN(y) < 0) MPFR_CHANGE_SIGN(y);}
-
-      return 1;
+  /* special values */
+  if (MPFR_IS_NAN(x))
+    {
+      MPFR_SET_NAN(y);
+      MPFR_RET_NAN;
     }
-    MPFR_CLEAR_INF(y);
 
-    /*Gestion du cas 0*/
-    if(!MPFR_NOTZERO(x)){
-      MPFR_SET_ZERO(y);   /* cbrt(+/- 0) = +/- 0 */
+  MPFR_CLEAR_NAN(y);
 
-      if(MPFR_SIGN(x) > 0){
-	if (MPFR_SIGN(y) < 0) MPFR_CHANGE_SIGN(y);
-      }
-      else{
-	if (MPFR_SIGN(y) > 0) MPFR_CHANGE_SIGN(y);
-      }
+  if (MPFR_IS_INF(x))
+    {
+      MPFR_SET_INF(y);
+      MPFR_SET_SAME_SIGN (y, x);
       return 0;
     }
 
+  MPFR_CLEAR_INF(y);
 
-    /* Initialisation of the Precision */
-    Nx=MPFR_PREC(x);
-    Ny=MPFR_PREC(y);
-
-    /* compute the size of intermediary variable */
-    if(Ny>=Nx)
-      Nt=Ny; 
-    else
-      Nt=Nx;
-
-    /* Calcul du nombre d'iteration necessaire pour newton*/
-    /* t0=2, t{k+1}=2.t{k}-1 k / tk>n */ 
-    
-    while(tau<=Nt){
-      tau=2*tau-1;
-      ktau++;
+  /* case 0: cbrt(+/- 0) = +/- 0 */
+  if (MPFR_IS_ZERO(x))
+    {
+      MPFR_SET_ZERO(y);
+      MPFR_SET_SAME_SIGN (y, x);
+      return 0;
     }
 
+  sign_x = MPFR_SIGN(x);
 
-    /* Calcul de la taille des variable temporaire */
+  mpz_init (m);
 
-    Ntemp=0;
-    for(i=0;i<ktau;i++){
-      Ntemp=10*(Ntemp)+17;
-      epsilon=ldiv(Ntemp,3);
-      Ntemp=epsilon.quot+1;
+  e = mpfr_get_z_exp (m, x); /* x = m * 2^e */
+  if (sign_x < 0)
+    mpz_neg (m, m);
+  r = e % 3;
+  if (r < 0)
+    r += 3;
+  /* x = (m*2^r) * 2^(e-r) = (m*2^r) * 2^(3*q) */
+
+  size_m = mpz_sizeinbase (m, 2);
+  prec_y = MPFR_PREC(y);
+  
+  /* we want 3*prec_y-2 <= size_m + 3*sh + r <= 3*prec_y
+     i.e. 3*sh + size_m + r <= 3*prec_y */
+  sh = (3 * prec_y - size_m - r) / 3;
+  sh = 3 * sh + r;
+  if (sh >= 0)
+    {
+      mpz_mul_2exp (m, m, sh);
+      e = e - sh;
     }
 
-    Nt=Nt+(int)_mpfr_ceil_log2((double)Nt)+(int)_mpfr_ceil_log2((double)Ntemp);
+  /* invariant: x = m*2^e */
 
-    mpfr_init2(t1,Nt);
-    mpfr_init2(t2,Nt);
-    mpfr_init2(t,Nt);
+  mpz_init (s);
+  inexact = mpz_root (s, m, 3) == 0;
 
-    mpfr_set(t,x,GMP_RNDN);
+  sh = mpz_sizeinbase (s, 2) - prec_y;
+  while (sh > 0) /* we have to flush to 0 the last sh bits from s */
+    {
+      sh --;
+      inexact = inexact || mpz_tstbit (s, sh);
+      mpz_clrbit (s, sh);
+    }
 
+  if (inexact)
+    {
+      if (rnd_mode == GMP_RNDU)
+        {
+          mpz_add_ui (s, s, 1);
+          inexact = 1;
+        }
+      else if (rnd_mode == GMP_RNDD || rnd_mode == GMP_RNDZ)
+        {
+          inexact = -1;
+        }
+      else /* round to nearest */
+        {
+          /* s if m < (s+1/2)^3 = s^3+3/2*s^2+3/4*s+1/8 (equality not possible)
+             and s+1 otherwise
+             i.e. 4*m <= 4*s^3+6*s^2+3*s = ((2*s+3)*2*s+3)*s */
+          mpz_init (t);
+          mpz_mul_2exp (t, s, 1); /* 2*s */
+          mpz_add_ui (t, t, 3);   /* 2*s+3 */
+          mpz_mul (t, t, s);      /* (2*s+3)*s */
+          mpz_mul_2exp (t, t, 1); /* (2*s+3)*2*s */
+          mpz_add_ui (t, t, 3);   /* (2*s+3)*2*s+3 */
+          mpz_mul (t, t, s);      /* ((2*s+3)*2*s+3)*s */
+          mpz_mul_2exp (m, m, 2); /* 4*m */
+          if (mpz_cmp (m, t) > 0)
+            {
+              mpz_add_ui (s, s, 1);
+              inexact = 1;
+            }
+          else
+            inexact = -1;
+          mpz_clear (t);
+        }
+    }
 
-    /* normalisation de la valeur de t */
-    /* tel que t= (m/2^r)  x 2^(3e') avec e=3e'-r exposant et m mantisse de t*/
+  mpfr_set_z (y, s, GMP_RNDN); /* exact */
+  MPFR_EXP(y) += e / 3;
 
-    exp_t=(int)MPFR_EXP(t);
-    epsilon=ldiv(exp_t,3);
-    mpfr_div_2exp(t,t,MPFR_EXP(t),GMP_RNDN);
-    mpfr_div_2exp(t,t,(3-epsilon.rem),GMP_RNDN);
+  if (sign_x < 0)
+    {
+      mpfr_neg (y, y, GMP_RNDN);
+      inexact = -inexact;
+    }
 
+  mpz_clear (s);
+  mpz_clear (m);
 
-    /*Gestion des negatifs*/
-    if(MPFR_SIGN(x)<0) MPFR_CHANGE_SIGN(t);
-     
-    boucle=1;
-
-
-
-    while(boucle==1){
-
-      /* compute cbrt */
-      /*mpfr_log(t,x,GMP_RNDN);*/         /* ln(x) */
-      /*mpfr_div_ui(t,t,3,GMP_RNDN);*/    /* ln(x)/3 */
-      /*mpfr_exp(t,t,GMP_RNDN);*/         /* exp(ln(x)/3)*/
-
-      mpfr_set_d(t1,0.75,GMP_RNDN);
-
-      for(i=0;i<ktau;i++){
-
-	mpfr_mul_2exp(t2,t1,1,GMP_RNDN);  /*2x*/
-	mpfr_mul(t1,t1,t1,GMP_RNDN);      /*x^2*/
-        mpfr_div(t1,t,t1,GMP_RNDN);       /*N/x^2*/
-	mpfr_add(t1,t1,t2,GMP_RNDN);      /*2x+N/x^2*/
-	mpfr_div_ui(t1,t1,3,GMP_RNDN);    /*(1/3)[2x+N/x^2]*/
-
-      }
-
-      
-      err=Nt-1-(int)_mpfr_ceil_log2((double)Nt);
-
-      round=mpfr_can_round(t1,err,GMP_RNDN,rnd_mode,Ny);
-
-      
-      if(round == 1){
-	/*Gestion des negatifs*/
-	if(MPFR_SIGN(x)<0) MPFR_CHANGE_SIGN(t1);
-	mpfr_mul_2exp(t1,t1,(epsilon.quot+1),GMP_RNDN);
-	mpfr_set(y,t1,rnd_mode);
-	boucle=0;
-      }
-      else{
-	Nt=Nt+10; 
-	/* re-initialise of intermediary	variable */
-	mpfr_set_prec(t1,Nt);             
-	mpfr_set_prec(t2,Nt);             
-	boucle=1;
-      }
-
-   }
-
-   mpfr_clear(t1);
-   mpfr_clear(t2);
-   mpfr_clear(t);
-   return(1);
-
-   
-    
+  return inexact;
 }
