@@ -573,7 +573,8 @@ The precision @var{prec} can be any integer between @code{MPFR_PREC_MIN} and
 
 @deftypefun {char *} mpfr_print_rnd_mode (mp_rnd_t @var{rnd})
 Returns the input string (GMP_RNDD, GMP_RNDU, GMP_RNDN, GMP_RNDZ)
-corresponding to the rounding mode @var{rnd}.
+corresponding to the rounding mode @var{rnd} or a null pointer if
+@var{rnd} is an invalid rounding mode.
 @end deftypefun
 
 @node Exceptions, Initializing Floats, Rounding Modes, Floating-point Functions
