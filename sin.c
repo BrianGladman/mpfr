@@ -32,8 +32,8 @@ mpfr_sin_sign (mpfr_srcptr x)
   mp_prec_t m;
   mpfr_srcptr y;
 
-  m = MPFR_GET_EXP(x);
-  m = (m < 0) ? 0 : m;
+  K = MPFR_GET_EXP(x);
+  m = (K < 0) ? 0 : K;
 
   mpfr_init2 (c, 2);
   mpfr_init2 (k, 2);

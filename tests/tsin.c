@@ -90,6 +90,17 @@ test_sign (void)
   mpfr_set_str_binary (x, "11011010111101011110111100010101010101110000000001011E-106");
   MPFR_ASSERTN(mpfr_cmp (x, y) == 0);
   
+  /* Bug on Special cases */
+  mpfr_set_str_binary (x, "0.100011011010111101E-32");
+  mpfr_sin (y, x, GMP_RNDN);
+  if (mpfr_cmp_str (y, "0.10001101101011110100000000000000000000000000000000000E-32", 2, GMP_RNDN))
+    {
+      printf("sin special 97 error:\nx=");
+      mpfr_dump (x); printf("y=");
+      mpfr_dump (y);
+      exit (1);
+    }
+
   mpfr_clear (pid);
   mpfr_clear (piu);
   mpfr_clear (x);
