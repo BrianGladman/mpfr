@@ -81,15 +81,20 @@ main(int argc, char **argv)
     fprintf(stderr, "Error in mpfr_set_str\n");
     mpfr_print_raw(x); putchar('\n');
     mpfr_print_raw(y); putchar('\n');
+    mpfr_clear(x); mpfr_clear(y); 
     exit(1);
   }
+
+  free(str); 
 
   mpfr_set_prec(x, 53);
   mpfr_set_str_raw(x, "+110101100.01010000101101000000100111001000101011101110E00");
 
   mpfr_set_str_raw(x, "1.0");
   if (mpfr_get_d(x) != 1.0) {
-    fprintf(stderr, "Error in mpfr_set_str_raw for s=1.0\n"); exit(1);
+    fprintf(stderr, "Error in mpfr_set_str_raw for s=1.0\n"); 
+    mpfr_clear(x); mpfr_clear(y); 
+    exit(1);
   }
 
   mpfr_set_str(x, "+243495834958.53452345E1", 10, GMP_RNDN);
@@ -122,10 +127,12 @@ main(int argc, char **argv)
       printf("x="); mpfr_print_raw(x); putchar('\n');
       printf("s=%s, exp=%d, base=%d\n", str, (int) e, base);
       printf("y="); mpfr_print_raw(y); putchar('\n');
+      mpfr_clear(x); mpfr_clear(y); 
       exit(1);
     }
+    free(str); 
   }
 
-  mpfr_clear(x); mpfr_clear(y); free(str); 
+  mpfr_clear(x); mpfr_clear(y);
   return 0; 
 }

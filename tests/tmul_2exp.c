@@ -51,10 +51,12 @@ main(argc,argv) int argc; char *argv[];
     if (x != (z = mpfr_get_d(w)*1024))
       {
 	fprintf(stderr, "%f != %f\n", x, z); 
+	mpfr_clear(w); 
 	return (-1); 
       }
   }
 
+  mpfr_clear(w); 
   return (0); 
 }
 
