@@ -131,7 +131,7 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
     mpfr_const_pi(Pisur2, rnd_mode);
     mpfr_div_2exp(arctangent, Pisur2, 2, rnd_mode);
     if (signe == -1)
-	MPFR_CHANGE_SIGN(arctangent);
+      MPFR_CHANGE_SIGN(arctangent);
     mpfr_clear(Pisur2);
     mpfr_clear(xp);
     return 0; /* Result correct */
@@ -190,7 +190,7 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
       if (exptol>0)
 	  mpz_mul_2exp(ukz, ukz, exptol);
       else
-	  mpz_tdiv_q_2exp(ukz, ukz, (unsigned long int) (-exptol));
+	  mpz_tdiv_q_2exp(ukz, ukz, - (unsigned long int) exptol);
 
       /* Calculation of arctan(Ak) */
       mpz_mul(square, ukz, ukz);
