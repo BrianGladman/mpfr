@@ -42,8 +42,6 @@ mpfr_sqrt3 (mpfr_ptr r, mpfr_srcptr u, unsigned char rnd_mode)
 
   /* Compare the mantissas */
   
-  EXP(r) = ((EXP(u) + (EXP(u) & 1)) / 2) ;  
-  
   usize = (PREC(u) - 1)/BITS_PER_MP_LIMB + 1; 
   rsize = ((PREC(r) + 2 + (EXP(u) & 1))/BITS_PER_MP_LIMB + 1) << 1; 
   rrsize = (PREC(r) + 2 + (EXP(u) & 1))/BITS_PER_MP_LIMB + 1;
@@ -61,18 +59,20 @@ mpfr_sqrt3 (mpfr_ptr r, mpfr_srcptr u, unsigned char rnd_mode)
       if (PREC(u) & (BITS_PER_MP_LIMB - 1))
 	{
 	  up = TMP_ALLOC(usize*BYTES_PER_MP_LIMB);
-	  mpn_rshift(up, u->_mp_d - usize + ABSSIZE(u), usize, 1); 
+	  mpn_rshift(up, u->_mp_d, usize, 1); 
 	}
       else
 	{
 	  up = TMP_ALLOC((usize + 1)*BYTES_PER_MP_LIMB);
-	  if (mpn_rshift(up + 1, u->_mp_d - usize + ABSSIZE(u), ABSSIZE(u), 1))
+	  if (mpn_rshift(up + 1, u->_mp_d, ABSSIZE(u), 1))
 	    up [0] = ((mp_limb_t) 1) << (BITS_PER_MP_LIMB - 1); 
 	  else up[0] = 0; 
 	  usize++; 
 	}
     }
 
+  EXP(r) = ((EXP(u) + (EXP(u) & 1)) / 2) ;  
+  
   do
     {
       TMP_MARK (marker);
@@ -169,12 +169,11 @@ mpfr_sqrt3 (mpfr_ptr r, mpfr_srcptr u, unsigned char rnd_mode)
     r->_mp_exp++; 
   }
     
-
   rrsize = (PREC(r) - 1)/BITS_PER_MP_LIMB + 1;  
-  MPN_COPY(r->_mp_d + ABSSIZE(r) - rrsize, rp, rrsize); 
+  MPN_COPY(r->_mp_d, rp, rrsize); 
 
   if (PREC(r) & (BITS_PER_MP_LIMB - 1))
-    MANT(r) [ABSSIZE(r) - rrsize] &= ~(((mp_limb_t)1 << (BITS_PER_MP_LIMB - 
+    MANT(r) [0] &= ~(((mp_limb_t)1 << (BITS_PER_MP_LIMB - 
 				   (PREC(r) & (BITS_PER_MP_LIMB - 1)))) - 1) ; 
   
   TMP_FREE(marker0); TMP_FREE (marker);
