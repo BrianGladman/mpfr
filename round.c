@@ -55,7 +55,10 @@ mpfr_round_raw2(xp, xn, neg, rnd, prec)
   if (rnd==GMP_RNDZ || xn<nw || (rnd==GMP_RNDU && neg)
       || (rnd==GMP_RNDD && neg==0)) return 0;
 
-  mask = ~((((mp_limb_t)1)<<(BITS_PER_MP_LIMB - rw)) - 1);
+  if (rw) 
+    mask = ~((((mp_limb_t)1)<<(BITS_PER_MP_LIMB - rw)) - 1);
+  else mask = ~((mp_limb_t)0); 
+
   switch (rnd)
     {
     case GMP_RNDU:
@@ -139,7 +142,10 @@ mpfr_round_raw(y, xp, xprec, negative, yprec, rnd_mode)
   if (rw) nw++; 
   /* number of words needed to represent x */
 
-  mask = ~((((mp_limb_t)1)<<(BITS_PER_MP_LIMB - rw)) - (mp_limb_t)1); 
+  if (rw) 
+    mask = ~((((mp_limb_t)1)<<(BITS_PER_MP_LIMB - rw)) - (mp_limb_t)1); 
+  else
+    mask = ~((mp_limb_t)0); 
 
   /* precision is larger than the size of x. No rounding is necessary. 
      Just add zeroes at the end */
@@ -150,9 +156,15 @@ mpfr_round_raw(y, xp, xprec, negative, yprec, rnd_mode)
     return 0; 
   }
 
-  if (mpfr_round_raw2(xp, xsize, negative, rnd_mode, yprec))
-    carry = mpn_add_1(y, xp + xsize - nw, nw,
-                          ((mp_limb_t)1) << (BITS_PER_MP_LIMB - rw));
+  if (mpfr_round_raw2(xp, xsize, negative, rnd_mode, yprec)) 
+    {
+      if (rw) 
+	carry = mpn_add_1(y, xp + xsize - nw, nw,
+			  ((mp_limb_t)1) << (BITS_PER_MP_LIMB - rw));
+      else
+	carry = mpn_add_1(y, xp + xsize - nw, nw, 1); 
+    }
+
   else MPN_COPY(y, xp + xsize - nw, nw);
 
   y[0] &= mask;
