@@ -79,6 +79,8 @@ libmpfr_a_SOURCES = cputime.h mpfr.h mpfr-impl.h sin_cos.c extract.c add.c add_u
 libmpfr_a_LIBADD = ceil.o floor.o
 
 info_TEXINFOS = mpfr.texi
+
+DISTCLEANFILES = mpfr.info
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_CLEAN_FILES = 
@@ -561,6 +563,7 @@ clean-generic:
 distclean-generic:
 	-rm -f Makefile $(CONFIG_CLEAN_FILES)
 	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
+	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
 mostlyclean-am:  mostlyclean-libLIBRARIES mostlyclean-compile \
