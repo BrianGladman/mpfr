@@ -64,7 +64,7 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
     /* since the smallest representable non-zero float is 1/2*2^__mpfr_emin,
        if x < __mpfr_emin - 1, the result is either 1/2*2^__mpfr_emin or 0 */
-    if (mpfr_cmp_ui_2exp (x, 1, __mpfr_emin - 1) < 0)
+    if (mpfr_cmp_si_2exp (x, __mpfr_emin - 1, 0) < 0)
       return mpfr_set_underflow (y, rnd_mode, 1);
 
     /* General case */
