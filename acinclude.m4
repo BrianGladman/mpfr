@@ -36,7 +36,12 @@ then
 	then
 	  LDADD="$LDADD $1/lib$2.a"
 	else
-	   AC_MSG_ERROR($1/lib$2.a not found)
+	if  test -r "$1/lib$2.so"
+	then
+	  LDADD="$LDADD $1/lib$2.so"
+	else
+	   AC_MSG_ERROR($1/lib$2.a/so not found)
+	fi
 	fi
   AC_MSG_RESULT(yes)
 else
