@@ -248,6 +248,8 @@ void check_same()
   mpfr_clear(x);
 }
 
+#define check53(x, y, r) check(x, y, r, 53, 53, 53, 0.0)
+
 int main(argc,argv) int argc; char *argv[];
 {
   double x,y; int i,prec,rnd_mode,px,py,pz,rnd;
@@ -259,14 +261,14 @@ int main(argc,argv) int argc; char *argv[];
     set_fpc_csr(exp.fc_word);
 #endif
 
+  check53(1.22191250737771397120e+20, 948002822.0, GMP_RNDN);
+  check53(9966027674114492.0, 1780341389094537.0, GMP_RNDN);
+  check53(2.99280481918991653800e+272, 5.34637717585790933424e+271, GMP_RNDN);
   check64();
   check_same();
-  check(6.14384195492641560499e-02, -6.14384195401037683237e-02,
-	GMP_RNDU, 53, 53, 53, 0.0);
-  check(1.16809465359248765399e+196, 7.92883212101990665259e+196,
-	GMP_RNDU, 53, 53, 53, 0.0);
-  check(3.14553393112021279444e-67, 3.14553401015952024126e-67,
-	GMP_RNDU, 53, 53, 53, 0.0);
+  check53(6.14384195492641560499e-02, -6.14384195401037683237e-02, GMP_RNDU);
+  check53(1.16809465359248765399e+196, 7.92883212101990665259e+196, GMP_RNDU);
+  check53(3.14553393112021279444e-67, 3.14553401015952024126e-67, GMP_RNDU);
 #ifdef VERBOSE
   printf("Checking random precisions\n");
 #endif
@@ -373,10 +375,11 @@ printf("\nTest i=%d\n",i);
   for (i=0;i<N;i++) {
     x = drand(); 
     y = drand();
-    if (ABS(x)>2.2e-307 && ABS(y)>2.2e-307 && x+y<1.7e+308 && x+y>-1.7e308) 
+    if (ABS(x)>2.2e-307 && ABS(y)>2.2e-307 && x+y<1.7e+308 && x+y>-1.7e308) {
       /* avoid denormalized numbers and overflows */
       rnd = (rnd_mode==-1) ? lrand48()%4 : rnd_mode;
       check(x, y, rnd, prec, prec, prec, 0.0);
+    }
   } 
 #ifdef VERBOSE
   printf("Checking mpfr_add(x, x, y) with prec=53\n");
@@ -384,10 +387,11 @@ printf("\nTest i=%d\n",i);
   for (i=0;i<N;i++) {
     x = drand(); 
     y = drand();
-    if (ABS(x)>2.2e-307 && ABS(y)>2.2e-307 && x+y<1.7e+308 && x+y>-1.7e308) 
+    if (ABS(x)>2.2e-307 && ABS(y)>2.2e-307 && x+y<1.7e+308 && x+y>-1.7e308) {
       /* avoid denormalized numbers and overflows */
       rnd = (rnd_mode==-1) ? lrand48()%4 : rnd_mode;
       check3(x, y, rnd);
+    }
   } 
 #ifdef VERBOSE
   printf("Checking mpfr_add(x, y, x) with prec=53\n");
@@ -395,10 +399,11 @@ printf("\nTest i=%d\n",i);
   for (i=0;i<N;i++) {
     x = drand(); 
     y = drand();
-    if (ABS(x)>2.2e-307 && ABS(y)>2.2e-307 && x+y<1.7e+308 && x+y>-1.7e308) 
+    if (ABS(x)>2.2e-307 && ABS(y)>2.2e-307 && x+y<1.7e+308 && x+y>-1.7e308) {
       /* avoid denormalized numbers and overflows */
       rnd = (rnd_mode==-1) ? lrand48()%4 : rnd_mode;
       check4(x, y, rnd);
+    }
   } 
 #ifdef VERBOSE
   printf("Checking mpfr_add(x, x, x) with prec=53\n");
