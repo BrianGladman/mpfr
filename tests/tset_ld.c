@@ -59,9 +59,6 @@ check_set_get (long double d, mpfr_t x)
 int
 main (int argc, char *argv[])
 {
-  /* Test removed as the minimal precision for a long double is something
-     like 10 decimal digits. Anyway, there are implementations for which
-     long double = double = IEEE double precision. */
   long double d, e;
   mpfr_t x;
   int i;
