@@ -21,6 +21,7 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include <math.h>
+#include <limits.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -97,10 +98,9 @@ mpfr_ui_pow (y, n, x, rnd_mode)
 
       /* initialise of intermediary	variable */
       mpfr_init(t);
-      mpfr_init2(ti,sizeof(unsigned long int)*8);                          
+      mpfr_init2(ti,sizeof(unsigned long int)*CHAR_BIT);                          
       mpfr_init(te);             
 
-      /* First computation of cosh */
       do {
 
 	/* reactualisation of the precision */
