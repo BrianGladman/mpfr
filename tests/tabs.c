@@ -24,7 +24,6 @@ MA 02111-1307, USA. */
 #include <float.h>
 #include "gmp.h"
 #include "mpfr.h"
-#include "mpfr-impl.h"
 #include "mpfr-test.h"
 
 void check_inexact _PROTO((void));
@@ -139,7 +138,7 @@ main (int argc, char *argv[])
        mpfr_set_d (x, d, 0);
        mpfr_abs (x, x, rnd);
        dd = mpfr_get_d1 (x);
-       if (!isnan(d) && (dd != absd))
+       if (!Isnan(d) && (dd != absd))
 	 { 
 	   fprintf(stderr, 
 		   "Mismatch on d = %.20e\n", d);

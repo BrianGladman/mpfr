@@ -42,21 +42,22 @@ check3 (double x, unsigned long y, mp_rnd_t rnd_mode, double z1)
   double z2;
   mpfr_t xx,zz;
 
-  mpfr_init(xx);
-  mpfr_init(zz);
-  mpfr_set_prec(xx, 53);
-  mpfr_set_prec(zz, 53);
-  mpfr_set_d(xx, x, rnd_mode);
-  mpfr_sub_ui(zz, xx, y, rnd_mode);
+  mpfr_init (xx);
+  mpfr_init (zz);
+  mpfr_set_prec (xx, 53);
+  mpfr_set_prec (zz, 53);
+  mpfr_set_d (xx, x, rnd_mode);
+  mpfr_sub_ui (zz, xx, y, rnd_mode);
   z2 = mpfr_get_d1 (zz);
-  if (z1!=z2 && !(isnan(z1) && isnan(z2))) {
-    printf("expected sum is %1.20e, got %1.20e\n",z1,z2);
-    printf("mpfr_sub_ui failed for x=%1.20e y=%lu with rnd_mode=%s\n",
-	   x, y, mpfr_print_rnd_mode(rnd_mode));
-    exit(1);
+  if (z1!=z2 && !(Isnan(z1) && Isnan(z2)))
+    {
+      printf ("expected sum is %1.20e, got %1.20e\n",z1,z2);
+      printf ("mpfr_sub_ui failed for x=%1.20e y=%lu with rnd_mode=%s\n",
+              x, y, mpfr_print_rnd_mode (rnd_mode));
+      exit (1);
   }
-  mpfr_clear(xx);
-  mpfr_clear(zz);
+  mpfr_clear (xx);
+  mpfr_clear (zz);
 }
 
 /* FastTwoSum: if EXP(x) >= EXP(y), u = o(x+y), v = o(u-x), w = o(y-v),

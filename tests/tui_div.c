@@ -38,21 +38,23 @@ void check_nan _PROTO((void));
 void
 check (unsigned long y, double x, mp_rnd_t rnd_mode, double z1)
 {
-  double z2; mpfr_t xx, zz;
+  double z2;
+  mpfr_t xx, zz;
 
-  mpfr_init2(xx, 53);
-  mpfr_init2(zz, 53);
-  mpfr_set_d(xx, x, rnd_mode);
-  mpfr_ui_div(zz, y, xx, rnd_mode);
+  mpfr_init2 (xx, 53);
+  mpfr_init2 (zz, 53);
+  mpfr_set_d (xx, x, rnd_mode);
+  mpfr_ui_div (zz, y, xx, rnd_mode);
   z2 = mpfr_get_d1 (zz);
-  if (z1!=z2 && !(isnan(z1) && isnan(z2))) {
-    printf("expected quotient is %1.20e, got %1.20e\n",z1,z2);
-    printf("mpfr_ui_div failed for y=%lu x=%1.20e with rnd_mode=%s\n",
-	   y, x, mpfr_print_rnd_mode(rnd_mode));
-    exit(1);
+  if (z1 != z2 && !(Isnan(z1) && Isnan(z2)))
+    {
+      printf ("expected quotient is %1.20e, got %1.20e\n", z1, z2);
+      printf ("mpfr_ui_div failed for y=%lu x=%1.20e with rnd_mode=%s\n",
+              y, x, mpfr_print_rnd_mode (rnd_mode));
+      exit (1);
   }
-  mpfr_clear(xx);
-  mpfr_clear(zz);
+  mpfr_clear (xx);
+  mpfr_clear (zz);
 }
 
 void

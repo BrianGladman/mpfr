@@ -146,7 +146,7 @@ drand (void)
   i[1] = LONG_RAND();
   while (i[expo] >= 2146435072)
     i[expo] = LONG_RAND(); /* avoids NaNs */
-  if ((LONG_RAND() % 2) && !isnan (d))
+  if ((LONG_RAND() % 2) && !Isnan(d))
     d = -d; /* generates negative numbers */
   return d;
 }
@@ -201,10 +201,8 @@ dbl (double m, int e)
   return m;
 }
 
-#ifndef HAVE_ISNAN
 int
 Isnan (double d)
 {
   return (d) != (d);
 }
-#endif

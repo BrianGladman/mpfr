@@ -53,8 +53,8 @@ dagm (double a, double b)
 { 
   double u, v, tmpu, tmpv;
   
-  if ((isnan(a))||(isnan(b)))
-    return a+b;
+  if ((Isnan(a)) || (Isnan(b)))
+    return a + b;
 
   tmpv=MAX(a,b);
   tmpu=MIN(a,b);
@@ -91,7 +91,7 @@ check4 (double a, double b, mp_rnd_t rnd_mode, double res1)
   
   res2 = mpfr_get_d1 (tres);
 
-  if (res1!=res2 && (!isnan(res1) || !isnan(res2)))
+  if (res1!=res2 && !(Isnan(res1) && Isnan(res2)))
     {
       printf ("mpfr_agm failed for a=%1.20e, b=%1.20e, rnd_mode=%d\n",a,b,rnd_mode);
       printf ("expected result is %1.20e, got %1.20e (%d ulp)\n",res1,res2,

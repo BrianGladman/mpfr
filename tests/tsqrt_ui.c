@@ -34,19 +34,23 @@ int maxulp=0;
 void
 check (unsigned long a, mp_rnd_t rnd_mode, double Q)
 {
-  mpfr_t q; double Q2; int u;
+  mpfr_t q;
+  double Q2;
+  int u;
 
-  mpfr_init2(q, 53);
-  mpfr_sqrt_ui(q, a, rnd_mode);
+  mpfr_init2 (q, 53);
+  mpfr_sqrt_ui (q, a, rnd_mode);
   Q2 = mpfr_get_d1 (q);
-  if (Q!=Q2 && (!isnan(Q) || !isnan(Q2))) {
-    u = ulp(Q2,Q);
-    printf("mpfr_sqrt_ui failed for a=%lu, rnd_mode=%s\n",
-	   a, mpfr_print_rnd_mode(rnd_mode));
-    printf("sqrt gives %1.20e, mpfr_sqrt_ui gives %1.20e (%d ulp)\n",Q,Q2,u);
-    exit(1);
-  }
-  mpfr_clear(q);
+  if (Q != Q2 && !(Isnan(Q) && Isnan(Q2)))
+    {
+      u = ulp (Q2,Q);
+      printf ("mpfr_sqrt_ui failed for a=%lu, rnd_mode=%s\n",
+              a, mpfr_print_rnd_mode (rnd_mode));
+      printf ("sqrt gives %1.20e, mpfr_sqrt_ui gives %1.20e (%d ulp)\n",
+              Q, Q2, u);
+      exit (1);
+    }
+  mpfr_clear (q);
 }
 
 double five = 5.0;
