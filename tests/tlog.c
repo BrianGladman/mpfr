@@ -50,28 +50,37 @@ void check(double a, unsigned char rnd_mode)
     printf("expected result is %1.20e, got %1.20e (%d ulp)\n",res1,res2,
 	   ulp(res2,res1));
   }
-  else
-    printf("GOAL !!!\t \t pour le log de %1.20e \n",a);
+  /*else
+    printf("GOAL !!!\n");*/
   mpfr_clear(ta); mpfr_clear(tres); 
   
 }
 
+
+
 void main() {
   int i;
   double d;
+  printf("SUN Solaris: craffe\n 10000 essais\n");
   check(10,GMP_RNDU);
-  check(6,GMP_RNDU); 
-  check(1,GMP_RNDZ); 
-  check(62,GMP_RNDU);
-  check(0.5,GMP_RNDZ);  
-  check(3,GMP_RNDZ);
-  check(234375765,GMP_RNDU);
-  check(8,GMP_RNDZ); 
+  check(6,GMP_RNDU);  
+   check(1,GMP_RNDZ);  
+   check(62,GMP_RNDU);
+  check(0.5,GMP_RNDZ);   
+  check(3,GMP_RNDZ); 
+   check(234375765,GMP_RNDU); 
+  check(8,GMP_RNDZ);  
   check(44,GMP_RNDU); 
   check(exp(2),GMP_RNDU);
+  check(7.53428236571286402512e+34,1);
+  check(6.18784121531737948160e+19,1);
 
-  for(i=0;i<10;i++) {
+
+  srand48(getpid());
+  for(i=0;i<10000;i++) {
     d=drand();
-    check(d,GMP_RNDU);
+    check(d,rand() % 4);
   }
 }
+
+
