@@ -19,6 +19,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+#include <stdlib.h>
 #include <limits.h>
 #include <float.h>
 #include <math.h>
@@ -48,6 +49,11 @@ MA 02111-1307, USA. */
 #define __setfpucw(cw) __asm__ ("fldcw %0" : : "m" (cw))
 #endif /* ifndef __setfpucw */
 #endif /* __i386__ */
+
+/* Because of the SunOS 4 compiler */
+#ifndef RAND_MAX
+#define RAND_MAX 0x7FFFFFFF
+#endif
 
 /* generates a random long int, a random double,
    and corresponding seed initializing */
