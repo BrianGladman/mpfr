@@ -21,6 +21,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
 /* sets x to y^n, and return 0 if exact, non-zero otherwise */
@@ -88,7 +89,8 @@ mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
   __gmpfr_emin -= 3;  /* So that we can check for underflow properly */
 
   /* setup initial precision */
-  prec = MPFR_PREC (x) + 3 + BITS_PER_MP_LIMB;
+  prec = MPFR_PREC (x) + 3 + BITS_PER_MP_LIMB 
+    + MPFR_INT_CEIL_LOG2 (MPFR_PREC (x));
   mpfr_init2 (res, prec);
 
   rnd1 = MPFR_IS_POS (y) ? GMP_RNDU : GMP_RNDD; /* away */

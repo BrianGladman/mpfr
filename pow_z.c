@@ -43,7 +43,7 @@ mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
   SIZ (absz) = ABS(SIZ(absz)); /* Hack to get abs(z) */
   MPFR_MPZ_SIZEINBASE2 (size_z, z);
 
-  prec = MPFR_PREC (y) + 3 + size_z;
+  prec = MPFR_PREC (y) + 3 + size_z + MPFR_INT_CEIL_LOG2 (MPFR_PREC (y));
   mpfr_init2 (res, prec);
 
   MPFR_ZIV_INIT (loop, prec);
