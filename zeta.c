@@ -213,6 +213,7 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
 	}
       else /* Branch 2 */
         {
+          size_t size;
 #ifdef DEBUG	
           printf ("branch 2\n");
 #endif
@@ -242,7 +243,8 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
 #ifdef DEBUG
           printf("internal precision=%d\n",dint);
 #endif
-          tc1 = (mpfr_t*) malloc ((p + 1) * sizeof(mpfr_t));
+          size = (p + 1) * sizeof(mpfr_t);
+          tc1 = (mpfr_t*) (*__gmp_allocate_func) (size);
           for (l=1; l<=p; l++)
             mpfr_init2 (tc1[l], dint);
           mpfr_set_prec (a, dint);
@@ -271,7 +273,7 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
           mpfr_add (z_pre, z_pre, b, GMP_RNDN);
           for (l=1; l<=p; l++)
             mpfr_clear (tc1[l]);
-          free(tc1);
+          (*__gmp_free_func) (tc1, size);
           /* End branch 2 */
         }
 #ifdef DEBUG
