@@ -171,7 +171,15 @@ printf("x=%1.20e,%d y=%1.20e,%d pz=%d,rnd=%d\n",x,px,y,py,pz,rnd_mode);
 check64()
 {
   mpfr_t x, t, u;
-  mpfr_init2(x, 85); mpfr_init2(t, 85); mpfr_init2(u, 85);
+  mpfr_init2(x, 128); mpfr_init2(t, 128); mpfr_init2(u, 128);
+  mpfr_set_str_raw(x, "0.10101011111001001010111011001000101100111101000000111111111011010100001100011101010001010111111101111010100110111111100101100010E-4");
+  mpfr_set(t, x, GMP_RNDN);
+  mpfr_sub(u, x, t, GMP_RNDN);
+  mpfr_set_prec(x, 96); mpfr_set_prec(t, 96); mpfr_set_prec(u, 96);
+  mpfr_set_str_raw(x, "0.111000000001110100111100110101101001001010010011010011100111100011010100011001010011011011000010E-4");
+  mpfr_set(t, x, GMP_RNDN);
+  mpfr_sub(u, x, t, GMP_RNDN);
+  mpfr_set_prec(x, 85); mpfr_set_prec(t, 85); mpfr_set_prec(u, 85);
   mpfr_set_str_raw(x, "0.1111101110100110110110100010101011101001100010100011110110110010010011101100101111100E-4");
   mpfr_set_str_raw(t, "0.1111101110100110110110100010101001001000011000111000011101100101110100001110101010110E-4");
   mpfr_sub(u, x, t, GMP_RNDU);

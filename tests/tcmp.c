@@ -34,13 +34,13 @@ void main()
   if (mpfr_cmp(xx,yy)!=0) {
     printf("Error in mpfr_cmp: 1.0 != 1.0\n"); exit(1);
   }
-  mpfr_set_prec(yy, 31, GMP_RNDZ);
+  mpfr_set_prec(yy, 31);
   mpfr_set_d(xx, 1.0000000002, 0);
   mpfr_set_d(yy, 1.0, 0);
   if (!(mpfr_cmp(xx,yy)>0)) {
     printf("Error in mpfr_cmp: not 1.0000000002 > 1.0\n"); exit(1);
   }
-  mpfr_set_prec(yy, 53, GMP_RNDZ);
+  mpfr_set_prec(yy, 53);
   for (i=0;i<1000000;) {    x=drand(); y=drand();
     if (!isnan(x) && !isnan(y)) {
       i++;

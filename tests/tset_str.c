@@ -48,7 +48,7 @@ main(int argc, char **argv)
   mpfr_set_str_raw(x, str); 
   /* mpfr_print_raw(x); printf("\n");  */
 
-  mpfr_set_prec(x, 53, GMP_RNDN);
+  mpfr_set_prec(x, 53);
   mpfr_set_str_raw(x, "+110101100.01010000101101000000100111001000101011101110E00");
 
   mpfr_set_str_raw(x, "1.0");
