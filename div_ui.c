@@ -21,7 +21,7 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include "gmp.h"
-#ifdef GMP2
+#if (__GNU_MP_VERSION < 3)
 /* longlong.h has to come before gmp-impl.h, 
    otherwise UDIV_NEEDS_NORMALIZATION is wrongly defined */
 #include "longlong.h" 
@@ -73,8 +73,8 @@ mpfr_div_ui(y, x, u, rnd_mode)
 
   c = (mp_limb_t) u;
   if (dif>=0) {
-    /* patch for bug in mpn_divrem_1 */
-#if (UDIV_NEEDS_NORMALIZATION==1)
+#if (__GNU_MP_VERSION < 3) && (UDIV_NEEDS_NORMALIZATION==1)
+    /* patch for bug in mpn_divrem_1 for GMP 2.xxx */
     count_leading_zeros(sh, c);
     c <<= sh;
     EXP(y) += sh;
