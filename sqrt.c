@@ -49,24 +49,28 @@ mpfr_sqrt (r, u, rnd_mode)
   char can_round = 0; 
   TMP_DECL (marker); TMP_DECL(marker0); 
 
-  if (MPFR_IS_NAN(u) || MPFR_SIGN(u) == -1) { MPFR_SET_NAN(r); return 0; }
+  if (MPFR_IS_NAN(u) || MPFR_SIGN(u) == -1) { MPFR_SET_NAN(r); return 1; }
 
   if (MPFR_SIGN(r) != 1) { MPFR_CHANGE_SIGN(r); }
   if (MPFR_IS_INF(u)) 
     { 
-      MPFR_SET_INF(r); 
+      MPFR_SET_INF(r);
+      return 1;
     }
 
   prec = MPFR_PREC(r);
 
   if (!MPFR_NOTZERO(u))
     {
-      MPFR_EXP(r) = 0; 
-      MPN_ZERO(MPFR_MANT(r), MPFR_ABSSIZE(r)); 
-      return 1; 
+      MPFR_EXP(r) = 0;
+      rsize = (prec-1)/BITS_PER_MP_LIMB + 1;
+      MPN_ZERO(MPFR_MANT(r), rsize);
+      return 0;
     }
 
   up = MPFR_MANT(u);
+
+  usize = (MPFR_PREC(u) - 1)/BITS_PER_MP_LIMB + 1; 
 
 #ifdef DEBUG
       printf("Entering square root : "); 
@@ -76,7 +80,6 @@ mpfr_sqrt (r, u, rnd_mode)
 
   /* Compare the mantissas */
   
-  usize = (MPFR_PREC(u) - 1)/BITS_PER_MP_LIMB + 1; 
   rsize = ((MPFR_PREC(r) + 2 + (MPFR_EXP(u) & 1))/BITS_PER_MP_LIMB + 1) << 1; 
   rrsize = (MPFR_PREC(r) + 2 + (MPFR_EXP(u) & 1))/BITS_PER_MP_LIMB + 1;
   /* One extra bit is needed in order to get the square root with enough
@@ -98,7 +101,7 @@ mpfr_sqrt (r, u, rnd_mode)
       else
 	{
 	  up = TMP_ALLOC((usize + 1)*BYTES_PER_MP_LIMB);
-	  if (mpn_rshift(up + 1, u->_mp_d, MPFR_ABSSIZE(u), 1))
+	  if (mpn_rshift(up + 1, u->_mp_d, usize, 1))
 	    up [0] = ((mp_limb_t) 1) << (BITS_PER_MP_LIMB - 1); 
 	  else up[0] = 0; 
 	  usize++; 
@@ -234,5 +237,5 @@ mpfr_sqrt (r, u, rnd_mode)
 				   (MPFR_PREC(r) & (BITS_PER_MP_LIMB - 1)))) - 1) ; 
   
   TMP_FREE(marker0); TMP_FREE (marker);
-  return exact; 
+  return exact;
 }
