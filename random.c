@@ -59,7 +59,7 @@ mpfr_random(x)
       xp[i] = 0;
  
       for (z = 0; z < BITS_PER_MP_LIMB / 15; z++) {
-	xp[i] |= rand(); xp[i] <<= 15; 
+	xp[i] ^= rand(); xp[i] <<= 15; 
       }
 
       xp[i] ^= rand(); 
