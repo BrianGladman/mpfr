@@ -196,10 +196,14 @@ main (int argc, char *argv[])
   int i, N, s=0, e, maxe=0; double d, lo, hi;
 #endif
 
+  if (argc == 4)
+    {
+      check_large (atof(argv[1]), atoi(argv[2]), atoi(argv[3])); 
+      exit(1);
+    }
+
   srand(getpid());
   compare_exp2_exp3(1000);
-  if (argc==4) { check_large(atof(argv[1]), atoi(argv[2]), atoi(argv[3])); 
-		 exit(1); }
   check_worst_cases();
   check3(0.0, GMP_RNDU, 1.0);
   check3(-8.88024741073346941839e-17, GMP_RNDU, 1.0);
