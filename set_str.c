@@ -32,7 +32,9 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-/* from mpf/set_str.c */
+/* Compatible with any locale, but one still assumes that 'a', 'b', 'c',
+   ..., 'z', and 'A', 'B', 'C', ..., 'Z' are consecutive values (like
+   in any ASCII-based character set). */
 static int
 digit_value_in_base (int c, int base)
 {
@@ -40,9 +42,9 @@ digit_value_in_base (int c, int base)
 
   if (isdigit (c))
     digit = c - '0';
-  else if (islower (c))
+  else if (c >= 'a' && c <= 'z')
     digit = c - 'a' + 10;
-  else if (isupper (c))
+  else if (c >= 'A' && c <= 'Z')
     digit = c - 'A' + 10;
   else
     return -1;
