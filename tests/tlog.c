@@ -33,6 +33,7 @@ void check3 _PROTO((double, unsigned long, mp_rnd_t));
 void check4 _PROTO((int)); 
 void slave _PROTO((int, int)); 
 void check_worst_cases _PROTO((void)); 
+void special _PROTO((void));
 
 double drand_log ()
 {
@@ -220,6 +221,22 @@ void check_worst_cases ()
   check2(428.315247165198229595, GMP_RNDU, 6.05985948325268353187); 
 }
 
+void special ()
+{
+  mpfr_t x, y;
+
+  mpfr_init2 (x, 53);
+  mpfr_init2 (y, 53);
+  mpfr_set_ui (x, 3, GMP_RNDD);
+  mpfr_log (y, x, GMP_RNDD);
+  if (mpfr_get_d (y) != 1.09861228866810956) {
+    fprintf (stderr, "Error in mpfr_log(3) for GMP_RNDD\n");
+    exit (1);
+  }
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
 int main(int argc, char *argv[]) {
   int N=0;
 
@@ -241,6 +258,7 @@ int main(int argc, char *argv[]) {
     check4(N);
   }
   else {
+    special ();
     check_worst_cases();
 
   check2(1.01979300812244555452, GMP_RNDN, 1.95996734891603664741e-02);
