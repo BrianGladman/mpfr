@@ -25,6 +25,7 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
 #include <stdio.h>
+#include <strings.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -41,10 +42,10 @@ mpfr_dump (u)
   mp_exp_t exp;
   char *str;
 
-  str = mpfr_get_str (0, &exp, 10, 0, u, rnd_mode);
+  str = mpfr_get_str (NULL, &exp, 10, 0, u, rnd_mode);
   if (str[0] == '-')
     printf ("-0.%se%ld\n", str + 1, exp);
   else
     printf ("0.%se%ld\n", str, exp);
-  (*_mp_free_func) (str, 0);/* ??? broken alloc interface, pass what size ??? */
+  (*_mp_free_func) (str, strlen(str)+1);
 }
