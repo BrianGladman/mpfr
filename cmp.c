@@ -19,6 +19,8 @@ of b and c, i.e. one plus the number of bits shifts to align b and c
 #include "longlong.h"
 #include "mpfr.h"
 
+/* #define DEBUG */
+
 int mpfr_cmp ( mpfr_srcptr b, mpfr_srcptr c )
 {
    long int s, diff_exp;
@@ -60,7 +62,11 @@ int mpfr_cmp2 ( mpfr_srcptr b, mpfr_srcptr c )
 {
   long int d, bn, cn, k;
   mp_limb_t *bp, *cp, t, u=0, cc=0;
-  
+
+#ifdef DEBUG
+  printf("b="); mpfr_print_raw(b); putchar('\n');
+  printf("c="); mpfr_print_raw(c); putchar('\n');
+#endif  
   if (NOTZERO(c)==0) return 0;
   d = EXP(b)-EXP(c);
   k = 0; /* result can be d or d+1 if d>1, or >= d otherwise */
@@ -82,7 +88,7 @@ int mpfr_cmp2 ( mpfr_srcptr b, mpfr_srcptr c )
     while (bn>=0 && cn>=0 && (cc=(bp[bn--]-cp[cn--]))==0) {
       k+=mp_bits_per_limb;
     }
-    
+
     if (cc==0) { /* either bn<0 or cn<0 */
       while (bn>=0 && (cc=bp[bn--])==0) k+=mp_bits_per_limb;
     }
@@ -103,7 +109,6 @@ int mpfr_cmp2 ( mpfr_srcptr b, mpfr_srcptr c )
     /* We just need to compare the following limbs */
     /* until two of them differ. The result is either k or k+1. */
     {
-
       /* First flush all the unmatched limbs of b ; they all have to
 	 be 0 in order for the process to go on */
       while (bn >= 0)
@@ -127,7 +132,7 @@ int mpfr_cmp2 ( mpfr_srcptr b, mpfr_srcptr c )
 	}
 	  
       /* bn < 0; if some limb of c is nonzero, return k+1, otherwise return k*/
-      if (cp[cn--] << (mp_bits_per_limb - d)) { return k+1; }
+      if (cn>=0 & cp[cn--] << (mp_bits_per_limb - d)) { return k+1; }
       while (cn >= 0) 
 	if (cp[cn--]) return k+1; 
       return k; 
