@@ -21,7 +21,6 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -102,8 +101,8 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	prec_nec = realprec;
       }
     C = (double)(((double) prec_nec)*CST-0.5);
-    A = (int)C;
-    N = A-1;
+    A = (int) C;
+    N = A - 1;
 #ifdef DEBUG
     printf("C=%u", (int)C);
     printf(" A=%u", (int)A);
@@ -112,8 +111,8 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
 #endif
 
     /* estimated_cancel is the amount of bit that will be flushed */
-    estimated_cancel= (long) ceil(ecCST*A);
-    Prec = prec_nec + estimated_cancel+20;
+    estimated_cancel= (long) (ecCST * (double) A + 1.0);
+    Prec = prec_nec + estimated_cancel + 20;
 
 
     mpfr_set_prec (xp, Prec);
