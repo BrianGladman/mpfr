@@ -1,6 +1,6 @@
 /* mpfr_agm -- arithmetic-geometric mean of two floating-point numbers
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 1999, 2001 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -71,15 +71,7 @@ _mpfr_ceil_exp2 (double d)
 }
 
 void 
-#ifdef __STDC__
 mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
-#else
-mpfr_agm (r, op2, op1, rnd_mode)
-     mpfr_ptr r;
-     mpfr_srcptr op2;
-     mpfr_srcptr op1;
-     mp_rnd_t rnd_mode;
-#endif
 {
   int s, go_on, compare;
   mp_prec_t p, q;

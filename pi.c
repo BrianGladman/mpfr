@@ -1,6 +1,6 @@
 /* mpfr_const_pi -- compute Pi
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 1999-2001 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -44,13 +44,7 @@ static int mpfr_pi_machin3 _PROTO ((mpfr_ptr, mp_rnd_t));
 
 
 static int
-#if __STDC__
 mpfr_pi_machin3 (mpfr_ptr mylog, mp_rnd_t rnd_mode) 
-#else
-mpfr_pi_machin3 (mylog, rnd_mode) 
-     mpfr_ptr mylog;
-     mp_rnd_t rnd_mode;
-#endif
 {
   int prec, logn, prec_x;
   int prec_i_want=MPFR_PREC(mylog);
@@ -159,13 +153,7 @@ int __mpfr_const_pi_prec=0; /* precision of stored value */
 mp_rnd_t __mpfr_const_pi_rnd; /* rounding mode of stored value */
 
 void 
-#if __STDC__
-mpfr_const_pi(mpfr_ptr x, mp_rnd_t rnd_mode) 
-#else
-mpfr_const_pi(x, rnd_mode) 
-     mpfr_ptr x;
-     mp_rnd_t rnd_mode;
-#endif
+mpfr_const_pi (mpfr_ptr x, mp_rnd_t rnd_mode) 
 {
   int N, oldN, n, prec; mpz_t pi, num, den, d3, d2, tmp; mpfr_t y;
 
