@@ -264,7 +264,7 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
 	  /* (z, exp_z) = base^(exp_s-pr), then result = y*z */
 	  /* z is allocated at y - n */
 	  z = y - n;
-	  err = mpn_exp (z, &exp_z, base, exp_s - (mp_exp_t) pr, n);
+	  err = mpfr_mpn_exp (z, &exp_z, base, exp_s - (mp_exp_t) pr, n);
 	  exact = (exact && (err == -1));
 
 	  /* multiply (y = 0.mant_s[0]...mant_s[pr-1])_base by base^(exp_s-g) */
@@ -299,7 +299,7 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
 
 	  /* (z, exp_z) = base^(exp_s-pr) */
 	  z = TMP_ALLOC (n * sizeof (mp_limb_t));
-	  err = mpn_exp (z, &exp_z, base, pr - exp_s, n);
+	  err = mpfr_mpn_exp (z, &exp_z, base, pr - exp_s, n);
 	  exact = (exact && (err == -1));
 
 	  if (err == -1)

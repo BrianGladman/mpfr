@@ -460,7 +460,7 @@ int mpfr_powerof2_raw _MPFR_PROTO ((mpfr_srcptr));
 void mpfr_setmax _MPFR_PROTO ((mpfr_ptr, mp_exp_t));
 void mpfr_setmin _MPFR_PROTO ((mpfr_ptr, mp_exp_t));
 
-long mpn_exp _MPFR_PROTO ((mp_limb_t *, mp_exp_t *, int, 
+long mpfr_mpn_exp _MPFR_PROTO ((mp_limb_t *, mp_exp_t *, int, 
 			   mp_exp_t, size_t));
 
 void mpfr_print_binary _MPFR_PROTO ((mpfr_srcptr));

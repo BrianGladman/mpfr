@@ -191,7 +191,7 @@ _mpfr_ceil (double x)
    where a represents {a, n}, i.e. the integer 
    a[0] + a[1]*B + ... + a[n-1]*B^(n-1) where B=2^BITS_PER_MP_LIMB */
 long
-mpn_exp (mp_limb_t *a, mp_exp_t *exp_r, int b, mp_exp_t e, size_t n)
+mpfr_mpn_exp (mp_limb_t *a, mp_exp_t *exp_r, int b, mp_exp_t e, size_t n)
 {
   mp_limb_t *c, B;
   mp_exp_t f, h;
@@ -715,7 +715,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
       else if ((mp_exp_t) m > g) /* we have to multiply x by b^exp */
         {
 	  /* a2*2^exp_a =  b^e */
-	  err = mpn_exp (a, &exp_a, b, exp, n);
+	  err = mpfr_mpn_exp (a, &exp_a, b, exp, n);
 	  /* here, the error on a is at most 2^err ulps */
 	  exact = (err == -1);
 
@@ -752,7 +752,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
       else
         {
 	  /* a2*2^exp_a =  b^e */
-	  err = mpn_exp (a, &exp_a, b, exp, n);
+	  err = mpfr_mpn_exp (a, &exp_a, b, exp, n);
 	  exact = (err == -1);
 
 	  /* allocate memory for x1, result and reste */
