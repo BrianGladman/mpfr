@@ -49,7 +49,7 @@ int mpfr_cmp_si_2exp ( mpfr_srcptr b, long int i, int f )
 
   si = (i<0) ? -1 : 1; /* sign of i */
   if (SIGN(b)*i<0) return SIGN(b); /* both signs differ */
-  else if (NOTZERO(b)*i==0) { /* one is zero */
+  else if (!NOTZERO(b) || (i==0)) { /* one is zero */
     if (i==0) return ((NOTZERO(b)) ? SIGN(b) : 0);
     else return si; /* b is zero */
       
