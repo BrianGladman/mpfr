@@ -38,11 +38,13 @@ main ()
   inexact = mpfr_init_set (y, x, GMP_RNDN);
   inexact = mpfr_init_set_ui (z, 1, GMP_RNDN);
   inexact = mpfr_init_set_d (u, 1.0, GMP_RNDN);
-
+  
   for (p=1; p<500; p++)
     {
       mpfr_set_prec (x, p);
       mpfr_random (x);
+      if (rand () % 2)
+	mpfr_neg (x, x, GMP_RNDN);
       for (q=1; q<2*p; q++)
 	{
 	  mpfr_set_prec (y, q);
