@@ -9,6 +9,13 @@
 extern long random _PROTO((void)); 
 extern int srandom _PROTO((unsigned int)); 
 
+/* extracted from GNU mpf */
+#if defined (__hpux) || defined (__alpha)
+/* HPUX lacks random().  DEC OSF/1 1.2 random() returns a double.  */
+#define random mrand48
+#define srandom srand48
+#endif
+
 void
 #if __STDC__
 mpfr_random(mpfr_ptr x)
