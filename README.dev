@@ -15,3 +15,7 @@ To make a release:
      release, e.g. mpfr-2-0-1-rel for mpfr 2.0.1 (note that the periods
      are replaced by dashes).
   5) Update the VERSION file to indicate the next version.
+
+When submitting patches, unified diffs (option -u) are recommended,
+as they are more readable. You can also use the option -d to generate
+a smaller set of changes. See diff(1) for more information.
