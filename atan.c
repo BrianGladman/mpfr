@@ -167,7 +167,7 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   while (1)
     {
-      N0 = MPFR_INT_CEIL_LOG2 (realprec + supplement + CST);
+      N0 = __gmpfr_ceil_log2 ((double) realprec + supplement + CST);
       estimated_delta = 1 + supplement + MPFR_INT_CEIL_LOG2 (3*N0-2);
       Prec = realprec + estimated_delta;
 
