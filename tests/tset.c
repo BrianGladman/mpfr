@@ -38,6 +38,17 @@ main ()
   inexact = mpfr_init_set (y, x, GMP_RNDN);
   inexact = mpfr_init_set_ui (z, 1, GMP_RNDN);
   inexact = mpfr_init_set_d (u, 1.0, GMP_RNDN);
+
+  mpfr_set_prec (y, 11);
+  mpfr_set_str_raw (y, "0.11111111100E-8");
+  mpfr_set_prec (x, 1);
+  mpfr_set (x, y, GMP_RNDN);
+  mpfr_set_str_raw (y, "1.0E-8");
+  if (mpfr_cmp (x, y))
+    {
+      fprintf (stderr, "Error for y=0.11111111100E-8, prec=1, rnd=GMP_RNDN\n");
+      exit (1);
+    }
   
   for (p=1; p<500; p++)
     {
