@@ -23,6 +23,7 @@ MA 02111-1307, USA. */
 #include <stdlib.h>  /* for abort */
 #include "gmp.h"
 #include "gmp-impl.h"
+#include "mpfr.h"
 #include "mpfr-test.h"
 
 
