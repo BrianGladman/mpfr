@@ -54,10 +54,25 @@ void check(double a, unsigned char rnd_mode)
   mpfr_clear(ta); mpfr_clear(tres); 
 }
 
+check3(double d, unsigned long prec, unsigned char rnd)
+{
+  mpfr_t x, y;
+  
+  mpfr_init2(x, prec); mpfr_init2(y, prec);
+  mpfr_set_d(x, d, rnd);
+  mpfr_log(y, x, rnd);
+  mpfr_out_str(stdout, 10, 0, y, rnd); putchar('\n');
+  mpfr_clear(x); mpfr_clear(y);
+}
 
-void main() {
+void main(int argc, char *argv[]) {
   int i;
   double d;
+
+  if (argc==4) { /* tlog x prec rnd */
+    check3(atof(argv[1]), atoi(argv[2]), atoi(argv[3]));
+    return;
+  }
   printf("SUN Solaris: craffe\n 20000 essais\n");
   printf("GMP_RNDN : %i, GMP_RNDZ : %i,GMP_RNDU : %i,GMP_RNDD : %i\n",GMP_RNDN, GMP_RNDZ,GMP_RNDU, GMP_RNDD); 
    
