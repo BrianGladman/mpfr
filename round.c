@@ -20,7 +20,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -152,12 +151,21 @@ mpfr_round_raw_generic(mp_limb_t *yp, mp_limb_t *xp, mp_prec_t xprec,
 int
 mpfr_round (mpfr_ptr x, mp_rnd_t rnd_mode, mp_prec_t prec)
 {
-  mp_limb_t *tmp;
-  int carry, neg, inexact;
+  mp_limb_t *tmp, *xp;
+  int carry, inexact;
   mp_prec_t nw;
   TMP_DECL(marker);
 
-  /* Particular cases, MPFR_PREC(x) isn't changed. */
+  nw = 1 + (prec - 1) / BITS_PER_MP_LIMB; /* needed allocated limbs */
+
+  /* check if x has enough allocated space for the mantissa */
+  if (nw > MPFR_ABSSIZE(x))
+    {
+      MPFR_MANT(x) = (mp_ptr) (*__gmp_reallocate_func)
+        (MPFR_MANT(x), MPFR_ABSSIZE(x) * BYTES_PER_MP_LIMB,
+         nw * BYTES_PER_MP_LIMB);
+      MPFR_SET_ABSSIZE(x, nw); /* new number of allocated limbs */
+    }
 
   if (MPFR_IS_NAN(x))
     MPFR_RET_NAN;
@@ -167,28 +175,15 @@ mpfr_round (mpfr_ptr x, mp_rnd_t rnd_mode, mp_prec_t prec)
 
   /* x is a real number */
 
-  nw = 1 + (prec - 1) / BITS_PER_MP_LIMB; /* needed allocated limbs */
-  neg = MPFR_SIGN(x) < 0;
-
-  /* check if x has enough allocated space for the mantissa */
-  if (nw > MPFR_ABSSIZE(x))
-    {
-      MPFR_MANT(x) = (mp_ptr) (*__gmp_reallocate_func)
-        (MPFR_MANT(x), MPFR_ABSSIZE(x) * BYTES_PER_MP_LIMB,
-         nw * BYTES_PER_MP_LIMB);
-      MPFR_SIZE(x) = nw; /* new number of allocated limbs */
-      if (neg)
-        MPFR_CHANGE_SIGN(x);
-    }
-
   TMP_MARK(marker); 
   tmp = TMP_ALLOC (nw * BYTES_PER_MP_LIMB);
-  carry = mpfr_round_raw (tmp, MPFR_MANT(x), MPFR_PREC(x), neg, prec, rnd_mode,
-                          &inexact);
+  xp = MPFR_MANT(x);
+  carry = mpfr_round_raw (tmp, xp, MPFR_PREC(x), MPFR_SIGN(x) < 0,
+                          prec, rnd_mode, &inexact);
+  MPFR_PREC(x) = prec;
 
   if (carry)
     {
-      /* Is a shift necessary here? Isn't the result 1.0000...? */
       mp_exp_t exp = MPFR_EXP(x);
 
       if (exp == __mpfr_emax)
@@ -196,15 +191,15 @@ mpfr_round (mpfr_ptr x, mp_rnd_t rnd_mode, mp_prec_t prec)
       else
         {
           MPFR_EXP(x)++;
-          mpn_rshift (tmp, tmp, nw, 1);
-          tmp[nw-1] = MP_LIMB_T_HIGHBIT;
+          xp[nw - 1] = MP_LIMB_T_HIGHBIT;
+          if (nw - 1 > 0)
+            MPN_ZERO(xp, nw - 1);
         }
     }
+  else
+    MPN_COPY(xp, tmp, nw);
 
-  MPFR_PREC(x) = prec;
-  MPN_COPY(MPFR_MANT(x), tmp, nw);
   TMP_FREE(marker);
-
   return inexact;
 }
 

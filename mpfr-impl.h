@@ -162,7 +162,7 @@ unsigned long _mpfr_cuberoot _PROTO ((unsigned long));
   mpfr_round_raw_generic((yp), (xp), (xprec), (neg), (yprec), (r), (inexp), 0)
 
 #define mpfr_round_raw2(xp, xn, neg, r, prec) \
-  mpfr_round_raw_generic(NULL, (xp), (xn) * BITS_PER_MP_LIMB, (neg), \
+  mpfr_round_raw_generic(0, (xp), (xn) * BITS_PER_MP_LIMB, (neg), \
 			 (prec), (r), 0, 1); 
 
 #if defined (__cplusplus)
