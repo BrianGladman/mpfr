@@ -97,3 +97,29 @@ mpfr_print_mant_binary(const char *str, const mp_limb_t *p, mp_prec_t r)
     }
   putchar('\n');
 }
+
+void 
+mpfr_dump_mant (const mp_limb_t *p, mp_prec_t r, mp_prec_t precx, 
+		mp_prec_t error)
+{
+  int i;
+  mp_prec_t count = 0;
+  char c;
+  mp_size_t n = (r - 1) / BITS_PER_MP_LIMB + 1;
+
+  for(n-- ; n>=0 ; n--)
+    {
+      for(i = BITS_PER_MP_LIMB-1 ; i >=0 ; i--)
+        {
+          c = (p[n] & (((mp_limb_t)1L)<<i)) ? '1' : '0';
+          putchar(c);
+          count++;
+	  if (count == precx)
+	    putchar (',');
+          if (count == error)
+            putchar('[');
+        }
+      putchar('.');
+    }
+  putchar('\n');
+}

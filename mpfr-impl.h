@@ -1297,6 +1297,10 @@ __MPFR_DECLSPEC void mpfr_mulhigh_n _MPFR_PROTO ((mp_ptr, mp_srcptr,
 
 __MPFR_DECLSPEC int mpfr_round_p _MPFR_PROTO ((mp_limb_t *, mp_size_t, 
 					       mp_exp_t, mp_prec_t));
+
+__MPFR_DECLSPEC void mpfr_dump_mant _MPFR_PROTO ((const mp_limb_t *, 
+						  mp_prec_t, mp_prec_t,
+						  mp_prec_t));
 #if defined (__cplusplus)
 }
 #endif
