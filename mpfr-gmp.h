@@ -127,9 +127,12 @@ extern "C" {
 #define MPN_SAME_OR_DECR_P(dst, src, size)      \
   MPN_SAME_OR_DECR2_P(dst, size, src, size)
 
-/* If sqr_n is not exported, used mpn_mul instead */
+/* If sqr_n or mul_basecase are not exported, used mpn_mul instead */
 #ifndef mpn_sqr_n
 # define mpn_sqr_n(dst,src,n) mpn_mul((dst),(src),(n),(src),(n))
+#endif
+#ifndef mpn_mul_basecase
+# define mpn_mul_basecase(dst,s1,n1,s2,n2) mpn_mul((dst),(s1),(n1),(s2),(n2))
 #endif
 
 /* ASSERT */

@@ -1,25 +1,34 @@
-#include <stdio.h>
-#include <stdlib.h>
+/* Mulder's MulHigh function
+   
+Copyright 2005 Free Software Foundation.
 
-#if 0
+This file is part of the MPFR Library.
+
+The MPFR Library is free software; you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or (at your
+option) any later version.
+
+The MPFR Library is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
+License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with the MPFR Library; see the file COPYING.LIB.  If not, write to
+the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
+MA 02111-1307, USA. */
+
 
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-#define MPFR_MUL_BASECASE_THREEHOLD 5
-#define MPFR_MULHIGH_TAB_SIZE (sizeof(mulhigh_ktab) / sizeof(mulhigh_ktab[0]))
-static short mulhigh_ktab[] = {MPFR_MULHIGH_TAB};
-
-#else
-
-#include "gmp.h"
-#include "gmp-impl.h"
-#include "longlong.h"
-
-#define MPFR_MUL_BASECASE_THREEHOLD 5
-#define MPFR_MULHIGH_TAB_SIZE 1024
+/* Don't MPFR_MULHIGH_SIZE since it is handled by tuneup */
+#ifdef MPFR_MULHIGH_TAB_SIZE
 static short mulhigh_ktab[MPFR_MULHIGH_TAB_SIZE];
-
+#else
+static short mulhigh_ktab[] = {MPFR_MULHIGH_TAB};
+#define MPFR_MULHIGH_TAB_SIZE (sizeof(mulhigh_ktab) / sizeof(mulhigh_ktab[0]))
 #endif
 
 
@@ -42,8 +51,7 @@ mpfr_mulhigh_n (mp_ptr rp, mp_srcptr np, mp_srcptr mp, mp_size_t n)
 {
   mp_size_t k;
 
-  k = __builtin_expect (n < MPFR_MULHIGH_TAB_SIZE, 1) 
-    ?  mulhigh_ktab[n] : 2*n/3;
+  k = MPFR_LIKELY (n < MPFR_MULHIGH_TAB_SIZE) ? mulhigh_ktab[n] : 2*n/3;
   if (k < 0)
     mpn_mul_basecase (rp, np, n, mp, n);
   else if (k == 0)
@@ -62,140 +70,11 @@ mpfr_mulhigh_n (mp_ptr rp, mp_srcptr np, mp_srcptr mp, mp_size_t n)
     }
 }
 
-
-#if 1 /* Tune program */
-
-#include "timming.h"
-
-#define MAX_BASECASE_THREEHOLD 500
-#define TOLERANCE 102/100
-
-/* Tune: to improve */
-mp_size_t
-find_best_k (mp_size_t n)
-{
-  mp_limb_t a[n], b[n], c[2*n];
-  mp_size_t k, kbest;
-  unsigned long long t, tbest;
-  
-  if (n == 0)
-    return -1;
-
-  /* Amelioration:
-      Si n > 32
-      Recherche min, max dans [n-33,n-1]
-      max = MAX(BITS_PER_MP_LIMB+max,n)
-      Recherche entre min et max 
-      Marche pas pour P4 (Trop chaotique!) */
-
-  CALCUL_OVERHEAD;
-  mpn_random (a, n);
-  mpn_random (b, n);
-
-  /* Check k == -1, mpn_mul_base_basecase */
-  mulhigh_ktab[n] = -1;
-  kbest = -1;
-  tbest = MEASURE (mpfr_mulhigh_n (c, a, b, n) );
-
-  /* Check k == 0, mpn_mulhigh_basecase */
-  mulhigh_ktab[n] = 0;
-  t = MEASURE (mpfr_mulhigh_n (c, a, b, n) );
-  if (t * TOLERANCE < tbest)
-    kbest = 0, tbest = t;
-
-  /* Check Mulder */
-  for (k = (n+1)/2 ; k < n ; k++) {
-    mulhigh_ktab[n] = k;
-    t = MEASURE (mpfr_mulhigh_n (c, a, b, n));
-    if (t *TOLERANCE < tbest)
-      kbest = k, tbest = t;
-  }
-  return kbest;
-}
-
-void
-tune (mp_size_t n)
-{
-  /* Find ThreeHold */
-  mp_size_t k;
-  for (k = 0 ; k <= n ; k++) {
-    mulhigh_ktab[k] = find_best_k (k);
-    printf ("%d, ", mulhigh_ktab[k]);
-    fflush (stdout);
-  }
-  putchar ('\n');
-}
-
-
-int 
-main (int argc, const char *argv[])
-{
-  mp_limb_t *a, *b, *c, *r;
-  mp_size_t an, bn, cn, size, size_end, size_step;
-  int i;
-  unsigned long long t1, t2, t3;   
-
-  printf ("%s [SIZE_START [SIZE_END [SIZE_STEP]]]\n", argv[0]);
-
-  size = 15;
-  if (argc >= 2)
-    size = atol (argv[1]);
-  size_end = size;
-  if (argc >= 3)
-    size_end = atol (argv[2]);
-  size_step = 1;
-  if (argc >= 4)
-    size_step = atol (argv[3]);
-
-  printf ("Tune in progress...\n");
-  tune (size_end);
-  
-  for ( ; size <= size_end ; size += size_step) {
-    printf ("Size= %4u ", size);
-    
-    a = malloc (sizeof(mp_limb_t)*size);
-    b = malloc (sizeof(mp_limb_t)*size);
-    c = malloc (sizeof(mp_limb_t)*size*3);
-    r = malloc (sizeof(mp_limb_t)*size*3);
-    
-    CALCUL_OVERHEAD;
-    mpn_random (a, size);
-    mpn_random (b, size);
-    
-    t1 = MEASURE (mpfr_mulhigh_n (c, a, b, size));
-    printf ("mulhigh_n:  %7Lu ", t1);
-    t2 = MEASURE (mpn_mul_n (r, a, b, size));
-    printf ("mpn_mul_n:  %7Lu ", t2);
-    t3 = MEASURE (mpfr_mulhigh_n_basecase (c, a, b, size));
-    printf ("mulhigh_bc: %7Lu ", t3);
-
-    printf ("Ratio: %f %c %c\n", (double) t2 / t1,
-	    t1 < t2 ? '*' : ' ',
-	    t1 < t3 ? '$' : ' ' );
-
-    if (size < 50 && size == size_end)
-      {
-	printf ("High: ");
-	for (i = 2*size-1 ; i>=size-1 ; i--)
-	  printf ("%08X ", c[i]);
-	printf("\nmuln: ");
-	for (i = 2*size-1 ; i>=size-1 ; i--)
-	  printf ("%08X ", r[i]);
-	printf("\n");
-      }
-    free (a);
-    free (b);
-    free (c);
-    free (r);
-  }
-  
-  return 0;
-}
-#endif
-
 #if 0
 int mpfr_mul () 
 {
+#define MPFR_MUL_BASECASE_THREEHOLD 5
+
   /* multiplies two mantissa in temporary allocated space */
   b1 = MPFR_LIKELY (bn >= cn)
     ? mpn_mul (tmp, MPFR_MANT (b), bn, MPFR_MANT (c), cn)

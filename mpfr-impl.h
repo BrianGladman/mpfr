@@ -1286,7 +1286,8 @@ __MPFR_DECLSPEC int mpfr_const_pi_internal _MPFR_PROTO ((mpfr_ptr,mp_rnd_t));
 __MPFR_DECLSPEC int mpfr_const_log2_internal _MPFR_PROTO((mpfr_ptr,mp_rnd_t));
 __MPFR_DECLSPEC int mpfr_const_euler_internal _MPFR_PROTO((mpfr_ptr,
 							   mp_rnd_t));
-
+__MPFR_DECLSPEC void mpfr_mulhigh_n _MPFR_PROTO ((mp_ptr, mp_srcptr, 
+						  mp_srcptr, mp_size_t));
 #if defined (__cplusplus)
 }
 #endif

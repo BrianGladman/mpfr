@@ -79,7 +79,7 @@ int verbose;
    We can't use MPFR library since the THRESHOLD can't vary */
 
 /* Setup mpfr_exp_2 */
-mp_prec_t mpfr_exp_2_threshold = MPFR_EXP_2_THRESHOLD;
+mp_prec_t mpfr_exp_2_threshold;
 #undef  MPFR_EXP_2_THRESHOLD
 #define MPFR_EXP_2_THRESHOLD mpfr_exp_2_threshold
 #include "exp_2.c"
@@ -88,7 +88,7 @@ static double speed_mpfr_exp_2 (struct speed_params *s) {
 }
 
 /* Setup mpfr_exp */
-mp_prec_t mpfr_exp_threshold = MPFR_EXP_THRESHOLD;
+mp_prec_t mpfr_exp_threshold;
 #undef  MPFR_EXP_THRESHOLD
 #define MPFR_EXP_THRESHOLD mpfr_exp_threshold
 #include "exp.c"
@@ -134,6 +134,11 @@ static double domeasure (mp_prec_t *threshold,
   s.size = p;
   size = (p - 1)/BITS_PER_MP_LIMB+1;
   s.xp = malloc (size*sizeof (mp_limb_t));
+  if (s.xp == NULL)
+    {
+      fprintf (stderr, "Can't allocate memory.\n");
+      abort ();
+    }
   mpn_random (s.xp, size);
   *threshold = MPFR_PREC_MAX;
   t1 = speed_measure (func, &s);
@@ -238,10 +243,99 @@ tune_simple_func (mp_prec_t *threshold,
   i = analyze_data (measure, THRESHOLD_FINAL_WINDOW+1);
   *threshold = pmin + i;
   if (verbose)
-    printf ("Choosing %lu\n", *threshold);
+    printf ("Threshold = %lu\n", *threshold);
   return;
 }
 
+
+
+/************************************
+ * Tune Mulder's mulhigh function   *
+ ************************************/
+#define TOLERANCE 1.015
+#ifndef MPFR_MULHIGH_SIZE
+# define MPFR_MULHIGH_SIZE 512
+#endif
+#define MPFR_MULHIGH_TAB_SIZE MPFR_MULHIGH_SIZE
+#include "mulders.c"
+
+static double speed_mpfr_mulhigh (struct speed_params *s) {
+  SPEED_ROUTINE_MPN_MUL_N (mpfr_mulhigh_n);
+}
+
+/* Tune size N: to speed up! */
+static mp_size_t
+tune_mulder_upto (mp_size_t n)
+{
+  struct speed_params s;
+  mp_size_t k, kbest;
+  double t, tbest;
+  TMP_DECL (marker);
+
+  if (n == 0)
+    return -1;
+
+  TMP_MARK (marker);
+  s.align_xp = s.align_yp = s.align_wp = 64;
+  s.size = n;
+  s.xp   = TMP_ALLOC (n*sizeof (mp_limb_t));
+  s.yp   = TMP_ALLOC (n*sizeof (mp_limb_t));
+  mpn_random (s.xp, n);
+  mpn_random (s.yp, n);
+
+  /* Check k == -1, mpn_mul_base_basecase */
+  mulhigh_ktab[n] = -1;
+  kbest = -1;
+  tbest =  speed_measure (speed_mpfr_mulhigh, &s);
+
+  /* Check k == 0, mpn_mulhigh_basecase */
+  mulhigh_ktab[n] = 0;
+  t = speed_measure (speed_mpfr_mulhigh, &s);
+  if (t * TOLERANCE < tbest)
+    kbest = 0, tbest = t;
+
+  /* Check Mulder */
+  for (k = (n+1)/2 ; k < n ; k++) {
+    mulhigh_ktab[n] = k;
+    t =  speed_measure (speed_mpfr_mulhigh, &s);
+    if (t * TOLERANCE < tbest)
+      kbest = k, tbest = t;
+  }
+
+  mulhigh_ktab[n] = kbest;
+
+  TMP_FREE (marker);
+  return kbest;
+}
+
+static void
+tune_mulder (FILE *f)
+{
+  mp_size_t k;
+
+  if (verbose)
+    printf ("Tuning mpfr_mulhigh_n[%d]", (int) MPFR_MULHIGH_TAB_SIZE);
+  fprintf (f, "#define MPFR_MULHIGH_TAB  \\\n ");
+  for (k = 0 ; k < MPFR_MULHIGH_TAB_SIZE ; k++)
+    {
+      fprintf (f, "%d", (int) tune_mulder_upto (k));
+      if (k != MPFR_MULHIGH_TAB_SIZE-1)
+	fputc (',', f);
+      if ((k+1) % 16 == 0)
+	fprintf (f, " \\\n ");
+      if (verbose)
+	putchar ('.');
+    }
+  fprintf (f, " \n");
+  if (verbose)
+    putchar ('\n');
+}
+
+
+
+/**************************************************
+ *            Tune all the threshold of MPFR      *
+ **************************************************/
 static void all (const char *filename) 
 {
   FILE *f;
@@ -291,6 +385,9 @@ static void all (const char *filename)
 #endif
   fprintf (f, "\n");
 
+  /* Tune mulhigh */
+  tune_mulder (f);
+
   /* Tune mpfr_exp_2 */
   if (verbose)
     printf ("Tuning mpfr_exp_2...\n");
@@ -329,7 +426,7 @@ int main (int argc, char *argv[])
   verbose = argc > 1;
 
   if (verbose)
-    printf ("Tuning MPFR. Warning: it may take hours!\n");
+    printf ("Tuning MPFR.\n");
 
   all ("mparam.h");
 
