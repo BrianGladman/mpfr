@@ -64,6 +64,12 @@ mpfr_log (r, a, rnd_mode)
     return 1;
   }
 
+  /* If a is negative, the result is NaN */
+  if (MPFR_ISNEG(a)) {
+    MPFR_SET_NAN(r);
+    return 1;
+  }
+
   MPFR_CLEAR_NAN(r);
 
   /* check for infinity before zero */
