@@ -69,12 +69,11 @@ Miscellaneous:
 - problem when reading a float followed by a character, for example 1.5*x
 	[from Fabrice.Rouillier@loria.fr, Mon, 04 Dec 2000]
 
-- rewrite mpfr_get_str and mpfr_set_str to use mpn_get_str and mpn_set_str.
+- rewrite mpfr_set_str to use mpn_set_str.
 	(Torbjorn Granlund <tege@swox.com>, 30 Jan 2002)
 
 - mpfr_pow isn't completely specified (concerning signed zeros).
 
-- use AC_CHECK_FUNCS for __setfpucw rather than grepping a header file.
 - rename (and rewrite) mpfr_isinteger to mpfr_integer_p.
 	(Kevin Ryde, 05 Mar 2002)
 
@@ -85,8 +84,6 @@ Miscellaneous:
   An advantage of _gmp_rand of course is that it's the same on all
   systems, apart from limb size, so you're not at the mercy of random or
   lrand48, etc.
-
-- make MPFR thread-safe (e.g. temporary changes of emin/emax in mpfr_set_q)
 
 - randomized tests: do like GMP (see misc.c), but using MPFR_CHECK_RANDOMIZE
 
@@ -101,3 +98,23 @@ mpfr_lessequal_p         1     1     0     0
 mpfr_lessgreater_p       0     1     1     0
 mpfr_equal_p             1     0     0     0
 mpfr_unordered_p         0     0     0     1
+
+
+Reentrancy / Thread-Safety:
+
+- Temporary changes to emin/emax are not safe (all uses of
+  mpfr_save_emin_emax, eg. mpfr_set_q).
+
+- Global variables for caching in mpfr_const_log2 and mpfr_const_pi
+  are not safe.
+
+
+Portability:
+
+- MINGW has neither random() nor rand48(), making the setups in
+  mpfr-test.h fail.  It does have rand(), returning just 15 bits.
+  Switching to gmp_randstate_t etc would be better.
+
+- _mpfr_ceil_log2 is IEEE specific.  Many callers only seem to want
+  this operation on an integer, which could be done with
+  count_leading_zeros from longlong.h.
