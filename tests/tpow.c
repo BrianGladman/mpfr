@@ -26,7 +26,7 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 #include "mpfr-test.h"
 
-void check_pow_ui _PROTO ((void));
+void check_pow_ui  _PROTO ((void));
 void check_inexact _PROTO ((mp_prec_t));
 
 void
@@ -118,6 +118,14 @@ check_inexact (mp_prec_t p)
 	  }
       }
 
+  /* check exact power */
+  mpfr_set_prec (x, p);
+  mpfr_set_prec (y, p);
+  mpfr_set_prec (z, p);
+  mpfr_set_d (x, 4.0, GMP_RNDN);
+  mpfr_set_d (y, 0.5, GMP_RNDN);
+  mpfr_pow (z, x, y, GMP_RNDZ);
+
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);
@@ -136,3 +144,4 @@ main (void)
 
   return 0;
 }
+

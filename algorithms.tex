@@ -15,6 +15,7 @@
 \def\sign{{\rm sign}}
 \def\Paragraph#1{\noindent {\sc #1}}
 \def\Z{{\mathcal Z}}
+\def\Q{{\mathbb Q}}
 \def\N{{\mathcal N}}
 \def\If{{\bf if}}
 \def\then{{\bf then}}
@@ -2808,7 +2809,58 @@ to calculate the size of intermediary variables, we have to add, at
 least, $\lceil \log_2 (1+3.2^{\Exp(v)+1}) \rceil$ bits the wanted
 precision.
 
+\medskip
 
+\noindent
+\textsc{Exact results.}
+We have to detect cases where $x^y$ is exact, otherwise the program will
+loop forever.
+The theorem from Gelfond/Schneider (1934) states that if $\alpha$ and
+$\beta$ are algebraic numbers with $\alpha \neq 0$, $\alpha \neq 1$,
+and $\beta \notin \Q$, then $\alpha^{\beta}$ is transcendental.
+This is of little help for us since $\beta$ will always be a rational
+number.
+Let $x = a 2^b$, $y = c 2^d$, and assume $x^y = e 2^f$, where 
+$a, b, c, d, e, f$ are integers.
+Without loss of generality, we can assume $a, c, e$ odd integers.
+
+If $x$ is negative: either $y$ is integer, then $x^y$ is exact iff
+$(-x)^y$ is exact; or $y$ is rational, then $x^y$ is a complex number,
+and the answer is NaN (Not a Number).
+Thus we can assume $a$ (and therefore $e$) positive.
+
+If $y$ is negative, then $x^y = a^y 2^{b y}$ can be exact only when
+$a=1$.
+
+We have $a^{c 2^d} 2^{b c 2^d} = e 2^f$ with $a, c, e$ odd integers,
+and $a, e > 0$.
+As $a$ is an odd integer, necessarily we have $a^{c 2^d} = e$
+and $2^{b c 2^d} = 2^f$, thus $b c 2^d = f$.
+
+If $d \geq 0$, then $a^c$ must be an integer: this is true if $c \geq 0$,
+and false for $c < 0$ since $a^{c 2^d} = \frac{1}{a^{-c} 2^d} < 1$ cannot be an
+integer. In addition $a^{c 2^d}$ must be representable in the given precision.
+
+Assume now $d < 0$, 
+then $a^{c 2^d} = {a^c}^{1/2^{d'}}$ with $d'=-d$, thus
+we have $a^c = e^{2^{d'}}$, thus $a^c$ must be a $2^{d'}$-th power
+of an integer.
+Since $c$ is odd, $a$ itself must be a $2^{d'}$-th power.
+
+We therefore propose the following algorithm:
+\begin{quote}
+Algorithm CheckExactPower. \\
+Input: $x=a 2^b$, $y=c 2^d$, $a, c$ odd integers \\
+Output: \emph{true} if $x^y$ is an exact power $e 2^f$, {\em false} otherwise\\
+{\bf if} $x < 0$ {\bf then} \\
+\q {\bf if} $y$ is an integer {\bf then} return ${\rm CheckExactPower}(-x,y)$\\
+\q {\bf else} return {\em false} \\
+{\bf if} $y < 0$ {\bf then} \\
+\q {\bf if} $a=1$ {\bf then} return {\em true} {\bf else} return {\em false}\\
+{\bf if} $d < 0$ {\bf then} \\
+\q {\bf if} $a$ is not a $2^{-d}$ power {\bf then} return {\em false} \\
+return {\em true}
+\end{quote}
 
 \subsection{The real cube root}
 
