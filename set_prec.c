@@ -50,7 +50,7 @@ mpfr_set_prec (x, p)
 
   MPFR_PREC(x) = p;
 
-  return 0;
+  return MPFR_MANT(x) == NULL;
 }
 
 mp_prec_t
