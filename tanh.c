@@ -22,18 +22,14 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
  /* The computation of cosh is done by
-
-    tanh= [e^(x)^2-1]/+[e^(x)^2+1]
- */
+        tanh= [e^(x)^2-1]/[e^(x)^2+1]  */
 
 int
 mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode) 
 {
-
     /****** Declaration ******/
     mpfr_t x;
-    mp_prec_t Nxt = MPFR_PREC(xt);
-    int flag_neg=0, inexact=0;
+    int inexact;
     
     /* Special value checking */
     if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(xt)))
@@ -46,97 +42,78 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
 	else if (MPFR_IS_INF(xt))
 	  {
 	    if (MPFR_IS_POS(xt))
-	      return mpfr_set_si(y,1,rnd_mode); /* tanh(inf) = 1 */
+	      return mpfr_set_ui (y, 1, rnd_mode); /* tanh(inf) = 1 */
 	    else
-	      return mpfr_set_si(y,-1,rnd_mode); /* tanh(-inf) = -1 */
+	      return mpfr_set_si (y, -1, rnd_mode); /* tanh(-inf) = -1 */
 	  }
 	/* tanh(0) = 0 */
 	else /* xt is zero */
 	  {
-            MPFR_ASSERTD(MPFR_IS_ZERO(xt));
-	    MPFR_SET_ZERO(y);
-	    MPFR_SET_SAME_SIGN(y,xt);
-	    MPFR_RET(0);
+            MPFR_ASSERTD (MPFR_IS_ZERO(xt));
+	    MPFR_SET_ZERO (y);
+	    MPFR_SET_SAME_SIGN (y, xt);
+	    MPFR_RET (0);
 	  }
       }
 
-    mpfr_init2(x,Nxt);
-    mpfr_set(x,xt,GMP_RNDN);
-
-    if (MPFR_IS_NEG(x))
-      {
-        MPFR_CHANGE_SIGN(x);
-        flag_neg=1;
-      }
+    MPFR_TMP_INIT_ABS (x, xt);
 
     /* General case */
     {
       /* Declaration of the intermediary variable */
-      mpfr_t t, te, ta,tb;       
-      int d;
+      mpfr_t t, te;
+      mp_exp_t d;
 
       /* Declaration of the size variable */
-      mp_prec_t Nx = Nxt;   /* Precision of input variable */
-      mp_prec_t Ny = MPFR_PREC(y);   /* Precision of input variable */
-
-      mp_prec_t Nt;   /* Precision of the intermediary variable */
-      long int err;  /* Precision of error */
+      mp_prec_t Nx = MPFR_PREC(x);   /* Precision of input variable */
+      mp_prec_t Ny = MPFR_PREC(y);   /* Precision of output variable */
+      mp_prec_t Nt;                  /* Precision of intermediary variables */
+      long int err;                  /* Precision of error */
       
-      /* compute the precision of intermediary variable */
-      Nt=MAX(Nx,Ny);
-      /* the optimal number of bits : see algorithms.ps */
-      Nt = Nt+__gmpfr_ceil_log2(9)+__gmpfr_ceil_log2(Nt);
+      /* Compute the precision of intermediary variable */
+      Nt = MAX (Nx, Ny);
+      /* The optimal number of bits: see algorithms.ps */
+      Nt = Nt + /*__gmpfr_ceil_log2 (9)*/ 4 + __gmpfr_ceil_log2 (Nt);
 
-      /* initialise of intermediary	variable */
-      mpfr_init(t); 
-      mpfr_init(te);             
-      mpfr_init(ta);             
-      mpfr_init(tb);                    
-
+      /* initialise of intermediary variable */
+      mpfr_init2 (t, Nt); 
+      mpfr_init2 (te, Nt);
 
       /* First computation of cosh */
-      do
+      for (;;)
         {
-
-          /* reactualisation of the precision */
-          mpfr_set_prec (t, Nt);
-          mpfr_set_prec (te, Nt);
-          mpfr_set_prec (ta, Nt);
-          mpfr_set_prec (tb, Nt);
-
-          /* compute tanh */
+          /* Compute tanh */
           mpfr_mul_2ui (te, x, 1, GMP_RNDN);  /* 2x */
-          mpfr_exp (te, te, GMP_RNDN);       /* exp(2x) */
-          mpfr_add_ui (ta, te, 1, GMP_RNDD);  /* exp(2x) + 1*/
-          mpfr_sub_ui (tb, te, 1, GMP_RNDU);  /* exp(2x) - 1*/
-          mpfr_div (t, tb, ta, GMP_RNDN);     /* (exp(2x)-1)/(exp(2x)+1)*/
+          mpfr_exp (te, te, GMP_RNDN);        /* exp(2x) */
+	  d = MPFR_GET_EXP (te);              /* For Error calculation */
+          mpfr_add_ui (t, te, 1, GMP_RNDD);   /* exp(2x) + 1*/
+          mpfr_sub_ui (te, te, 1, GMP_RNDU);  /* exp(2x) - 1*/
+          mpfr_div (t, te, t, GMP_RNDN);      /* (exp(2x)-1)/(exp(2x)+1)*/
 
+          /* Calculation of the error*/
+          d = d - MPFR_GET_EXP (t);
 
-          /* calculation of the error*/
-          d = MPFR_GET_EXP (te) - MPFR_GET_EXP (t);
-
-          /* estimation of the error */
+          /* Estimation of the error */
           /*err = Nt-(__gmpfr_ceil_log2(7+pow(2,d+1)));*/
           err = Nt - (MAX(d + 1, 3) + 1);
+	  
+	  if (mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
+			      Ny + (rnd_mode == GMP_RNDN)))
+	    break;
 
-          /* actualisation of the precision */
-          Nt += 10; 
-
+          /* Actualisation of the precision */
+          Nt += BITS_PER_MP_LIMB;
+          mpfr_set_prec (t, Nt);
+          mpfr_set_prec (te, Nt);
         }
-      while ((err < 0) || !mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
-                                           Ny + (rnd_mode == GMP_RNDN)));
  
-      if (flag_neg==1)
+      if (MPFR_IS_NEG (xt) )
         MPFR_CHANGE_SIGN(t);
- 
+      
       inexact = mpfr_set (y, t, rnd_mode);
-      mpfr_clear (t);
       mpfr_clear (te);
-      mpfr_clear (ta);
-      mpfr_clear (tb);
+      mpfr_clear (t);
     }
-    mpfr_clear (x);
-
     return inexact;
 }
 
