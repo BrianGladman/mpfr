@@ -130,6 +130,9 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
      with tmp[k-1]>=2^(BITS_PER_MP_LIMB-2) */
   b1 >>= BITS_PER_MP_LIMB - 1; /* msb from the product */
 
+  /* if the mantissas of b and c are uniformly distributed in [1/2, 1],
+     then their product is in [1/4, 1/2] with probability 2*ln(2)-1 ~ 0.386
+     and in [1/2, 1] with probability 2-2*ln(2) ~ 0.614 */
   tmp += k - tn;
   if (MPFR_UNLIKELY(b1 == 0))
     mpn_lshift (tmp, tmp, tn, 1);
