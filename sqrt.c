@@ -182,10 +182,12 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
             inexact = 1;
           else /* tsize = rsize */
             {
-              sh = mpn_cmp (tp, rp, rsize);
-              if (sh > 0)
+	      int cmp;
+	      
+	      cmp = mpn_cmp (tp, rp, rsize);
+              if (cmp > 0)
                 inexact = 1;
-              else if (sh < 0 || sticky0 == MPFR_LIMB_ZERO)
+              else if (cmp < 0 || sticky0 == MPFR_LIMB_ZERO)
                 inexact = -1;
               /* now tricky case {tp, tsize} = {rp, rsize} */
               /* in case usize <= rrsize, the only case where sticky0 <> 0

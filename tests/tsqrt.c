@@ -60,8 +60,8 @@ check3 (const char *as, mp_rnd_t rnd_mode, const char *qs)
       printf ("mpfr_sqrt failed for a=%s, rnd_mode=%s\n",
               as, mpfr_print_rnd_mode (rnd_mode));
       printf ("expected sqrt is %s, got ",qs);
-      mpfr_out_str(stdout, 10, 0, q, GMP_RNDN);
-      putchar('\n');
+      mpfr_out_str (stdout, 10, 0, q, GMP_RNDN);
+      putchar ('\n');
       exit (1);
     }
   mpfr_clear (q);
@@ -72,20 +72,20 @@ check4 (const char *as, mp_rnd_t rnd_mode, const char *Qs)
 {
   mpfr_t q;
 
-  mpfr_init2(q, 53);
+  mpfr_init2 (q, 53);
   mpfr_set_str1 (q, as);
-  test_sqrt(q, q, rnd_mode);
+  test_sqrt (q, q, rnd_mode);
   if (mpfr_cmp_str (q, Qs, 16, GMP_RNDN))
     {
-      printf("mpfr_sqrt failed for a=%s, rnd_mode=%s\n",
-	     as, mpfr_print_rnd_mode(rnd_mode));
-      printf("expected ");
-      mpfr_out_str(stdout, 16, 0, q, GMP_RNDN);
-      printf("\ngot      %s\n", Qs);
-      mpfr_clear(q);
-      exit(1);
-  }
-  mpfr_clear(q);
+      printf ("mpfr_sqrt failed for a=%s, rnd_mode=%s\n",
+	      as, mpfr_print_rnd_mode(rnd_mode));
+      printf ("expected ");
+      mpfr_out_str (stdout, 16, 0, q, GMP_RNDN);
+      printf ("\ngot      %s\n", Qs);
+      mpfr_clear (q);
+      exit (1);
+    }
+  mpfr_clear (q);
 }
 
 static void
@@ -93,18 +93,39 @@ check24 (const char *as, mp_rnd_t rnd_mode, const char *qs)
 {
   mpfr_t q;
 
-  mpfr_init2(q, 24);
-  mpfr_set_str1(q, as);
-  test_sqrt(q, q, rnd_mode);
+  mpfr_init2 (q, 24);
+  mpfr_set_str1 (q, as);
+  test_sqrt (q, q, rnd_mode);
   if (mpfr_cmp_str1 (q, qs))
     {
-      printf("mpfr_sqrt failed for a=%s, prec=24, rnd_mode=%s\n",
-	     as, mpfr_print_rnd_mode(rnd_mode));
-      printf("expected sqrt is %s, got ",qs);
-      mpfr_out_str(stdout, 10, 0, q, GMP_RNDN);
-      exit(1);
+      printf ("mpfr_sqrt failed for a=%s, prec=24, rnd_mode=%s\n",
+	      as, mpfr_print_rnd_mode(rnd_mode));
+      printf ("expected sqrt is %s, got ",qs);
+      mpfr_out_str (stdout, 10, 0, q, GMP_RNDN);
+      printf ("\n");
+      exit (1);
     }
-  mpfr_clear(q);
+  mpfr_clear (q);
+}
+
+static void
+check_diverse (const char *as, mp_prec_t p, const char *qs)
+{
+  mpfr_t q;
+
+  mpfr_init2 (q, p);
+  mpfr_set_str1 (q, as);
+  test_sqrt (q, q, GMP_RNDN);
+  if (mpfr_cmp_str1 (q, qs))
+    {
+      printf ("mpfr_sqrt failed for a=%s, prec=%lu, rnd_mode=%s\n",
+	      as, p, mpfr_print_rnd_mode (GMP_RNDN));
+      printf ("expected sqrt is %s, got ", qs);
+      mpfr_out_str (stdout, 10, 0, q, GMP_RNDN);
+      printf ("\n");
+      exit (1);
+    }
+  mpfr_clear (q);
 }
 
 /* the following examples come from the paper "Number-theoretic Test
@@ -480,6 +501,7 @@ main (void)
 
   tests_start_mpfr ();
 
+  check_diverse ("635030154261163106768013773815762607450069292760790610550915652722277604820131530404842415587328", 160, "796887792767063979679855997149887366668464780637");
   special ();
   check_nan ();
 
