@@ -25,6 +25,7 @@ MA 02111-1307, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+/*
 #if (BITS_PER_MP_LIMB==32)
 # define MPFR_LIMBS_PER_DOUBLE 2
 #elif (BITS_PER_MP_LIMB >= 64)
@@ -32,11 +33,12 @@ MA 02111-1307, USA. */
 #else
 # error "Unsupported value of BITS_PER_MP_LIMB"
 #endif
+*/
 
 /* extracts the bits of d in rp[0..n-1] where n=ceil(53/BITS_PER_MP_LIMB).
    Assumes d is neither 0 nor NaN nor Inf. */
 static int
-__mpfr_extract_double (mp_ptr rp, double d)
+__gmpfr_extract_double (mp_ptr rp, double d)
      /* e=0 iff BITS_PER_MP_LIMB=32 and rp has only one limb */
 {
   long exp;
@@ -157,7 +159,7 @@ mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
  
   MPFR_CLEAR_FLAGS(r);
 
-  if (d == 0)
+  if (MPFR_UNLIKELY(d == 0))
     {
 #if _GMP_IEEE_FLOATS
       union ieee_double_extract x;
@@ -188,12 +190,12 @@ mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
 #endif
       return 0; /* 0 is exact */
     }
-  else if (DOUBLE_ISNAN(d))
+  else if (MPFR_UNLIKELY(DOUBLE_ISNAN(d)))
     {
       MPFR_SET_NAN(r);
       MPFR_RET_NAN;
     }
-  else if (DOUBLE_ISINF(d))
+  else if (MPFR_UNLIKELY(DOUBLE_ISINF(d)))
     {
       MPFR_SET_INF(r);
       if (d > 0)
@@ -212,15 +214,14 @@ mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
      would have same precision in the mpfr_set4 call below. */
   MPFR_MANT(tmp) = tmpmant;
   MPFR_PREC(tmp) = IEEE_DBL_MANT_DIG;
-  /*MPFR_SIZE(tmp) = MPFR_LIMBS_PER_DOUBLE;*/
 
   signd = (d < 0) ? MPFR_SIGN_NEG : MPFR_SIGN_POS;
   d = ABS (d);
 
   /* don't use MPFR_SET_EXP here since the exponent may be out of range */
-  MPFR_EXP(tmp) = __mpfr_extract_double (tmpmant, d);
+  MPFR_EXP(tmp) = __gmpfr_extract_double (tmpmant, d);
 
-#ifndef NDEBUG
+#ifdef WANT_ASSERT
   /* Failed assertion if the stored value is 0 (e.g., if the exponent range
      has been reduced at the wrong moment and an underflow to 0 occurred).
      Probably a bug in the C implementation if this happens. */
@@ -240,12 +241,12 @@ mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
 
   count_leading_zeros (cnt, tmpmant[i - 1]);
 
-  if (cnt)
+  if (MPFR_LIKELY(cnt != 0))
     mpn_lshift (tmpmant + k, tmpmant, i, cnt);
-  else if (k)
+  else if (k != 0)
     MPN_COPY (tmpmant + k, tmpmant, i);
 
-  if (k)
+  if (MPFR_UNLIKELY(k != 0))
     MPN_ZERO (tmpmant, k);
 
   /* don't use MPFR_SET_EXP here since the exponent may be out of range */
