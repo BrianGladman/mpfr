@@ -17,16 +17,12 @@ You should have received a copy of the GNU Library General Public License
 along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
-                         
-#include <math.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include "gmp.h"
-#include "mpfr.h"
-#include "mpfr-impl.h"
-#include "gmp-impl.h"
-#include "mpfr-test.h" 
-
+                   
+#include <stdio.h>
+#include <gmp.h>
+#include <gmp-impl.h>
+#include <mpfr.h>
+#include <mpfr-impl.h>
 
 
 int check_O _PROTO((void));
