@@ -30,7 +30,6 @@ MA 02111-1307, USA. */
 
     log1p(x)=log(1+x)
  */
-int mpfr_log1p _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 
 int
 #if __STDC__
@@ -51,7 +50,7 @@ mpfr_log1p (y, x, rnd_mode)
     }
   MPFR_CLEAR_NAN(y);
 
-  /* Test de l'entree = inf ou -inf (non defini)*/
+  /* check for inf or -inf (result is not defined) */
   if (MPFR_IS_INF(x))
     { 
       if(MPFR_SIGN(x) > 0)
@@ -71,16 +70,16 @@ mpfr_log1p (y, x, rnd_mode)
     }
 
   comp = mpfr_cmp_si(x,-1);
-  /* x<-1 undefined*/
+  /* x<-1 undefined */
   if(comp < 0) 
     {     
       MPFR_SET_NAN(y); 
       return 1;
     }
-  /*x=0 log1p(-1)=-inf (division par zero)*/
+  /* x=0: log1p(-1)=-inf (division by zero) */
   if(comp == 0)
     {
-      DIVIDE_BY_ZERO; /* Execption GMP*/
+      DIVIDE_BY_ZERO; /* Exception GMP */
       MPFR_SET_INF(y); 
       if (MPFR_SIGN(y) > 0) 
         MPFR_CHANGE_SIGN(y);
@@ -114,7 +113,7 @@ mpfr_log1p (y, x, rnd_mode)
     /* the optimal number of bits : see algorithms.ps */
     Nt=Nt+5+_mpfr_ceil_log2(Nt);
 
-    /* initialise of intermediary	variable */
+    /* initialise of intermediary variable */
     mpfr_init(t);             
 
     /* First computation of cosh */

@@ -30,7 +30,6 @@ MA 02111-1307, USA. */
 
     expm1(x)=exp(x)-1
  */
-int mpfr_expm1 _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 
 int
 #if __STDC__
@@ -53,7 +52,7 @@ mpfr_expm1 (y, x, rnd_mode)
   MPFR_CLEAR_NAN(y);
 
 
-  /* Test de l'entree = inf ou -inf (expm1(-inf)=-1)*/
+  /* check for inf or -inf (expm1(-inf)=-1) */
   if (MPFR_IS_INF(x))
     { 
       if(MPFR_SIGN(x) > 0)
