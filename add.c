@@ -64,13 +64,10 @@ mpfr_add (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
     {
       if (MPFR_IS_ZERO(c))
         {
-          if (MPFR_SIGN(a) !=
-              (rnd_mode != GMP_RNDD ?
-               ((MPFR_SIGN(b) < 0 && MPFR_SIGN(c) < 0) ? -1 : 1) :
-               ((MPFR_SIGN(b) > 0 && MPFR_SIGN(c) > 0) ? 1 : -1)))
-            {
-              MPFR_CHANGE_SIGN(a);
-            }
+	  MPFR_SET_SIGN(a,
+			(rnd_mode != GMP_RNDD ?
+			 ((MPFR_SIGN(b) < 0 && MPFR_SIGN(c) < 0) ? -1 : 1) :
+			 ((MPFR_SIGN(b) > 0 && MPFR_SIGN(c) > 0) ? 1 : -1)));
           MPFR_CLEAR_INF(a);
           MPFR_SET_ZERO(a);
           MPFR_RET(0); /* 0 + 0 is exact */

@@ -595,8 +595,12 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
     {
       switch (rnd)
 	{
-	case GMP_RNDU : rnd = GMP_RNDD; break;
-	case GMP_RNDD : rnd = GMP_RNDU; break;
+	case GMP_RNDU :
+	  rnd = GMP_RNDD; break;
+	case GMP_RNDD :
+	  rnd = GMP_RNDU; break;
+	default:
+	  break;
 	}
     }
 

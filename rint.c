@@ -114,8 +114,8 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
       up = MPFR_MANT(u);
       rp = MPFR_MANT(r);
 
-      un = MPFR_ESIZE(u);
-      rn = MPFR_ESIZE(r);
+      un = MPFR_LIMB_SIZE(u);
+      rn = MPFR_LIMB_SIZE(r);
       sh = (mp_prec_t) rn * BITS_PER_MP_LIMB - MPFR_PREC(r);
 
       MPFR_SET_EXP (r, exp);

@@ -158,7 +158,7 @@ mpfr_prec_round (mpfr_ptr x, mp_prec_t prec, mp_rnd_t rnd_mode)
 {
   mp_limb_t *tmp, *xp;
   int carry, inexact;
-  mp_prec_t nw;
+  mp_prec_t nw, ow;
   TMP_DECL(marker);
 
   MPFR_ASSERTN(prec >= MPFR_PREC_MIN && prec <= MPFR_PREC_MAX);
@@ -166,12 +166,13 @@ mpfr_prec_round (mpfr_ptr x, mp_prec_t prec, mp_rnd_t rnd_mode)
   nw = 1 + (prec - 1) / BITS_PER_MP_LIMB; /* needed allocated limbs */
 
   /* check if x has enough allocated space for the mantissa */
-  if (nw > MPFR_ABSSIZE(x))
+  ow = MPFR_GET_ALLOC_SIZE(x);
+  if (nw > ow)
     {
-      MPFR_MANT(x) = (mp_ptr) (*__gmp_reallocate_func)
-        (MPFR_MANT(x), (size_t) MPFR_ABSSIZE(x) * BYTES_PER_MP_LIMB,
-         (size_t) nw * BYTES_PER_MP_LIMB);
-      MPFR_SET_ABSSIZE(x, nw); /* new number of allocated limbs */
+      mp_ptr tmp = (mp_ptr) (*__gmp_reallocate_func)
+        (MPFR_GET_REAL_PTR(x),  MPFR_ALLOC_SIZE(ow), MPFR_ALLOC_SIZE(nw));
+      MPFR_SET_MANT_PTR(x, tmp);
+      MPFR_SET_ALLOC_SIZE(x, nw); /* new number of allocated limbs */
     }
 
   if (MPFR_IS_NAN(x))

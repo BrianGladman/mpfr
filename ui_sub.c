@@ -50,7 +50,7 @@ mpfr_ui_sub (mpfr_ptr y, unsigned long int u, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   if (u)
     {
-      MPFR_INIT1 (up, uu, BITS_PER_MP_LIMB, 1);
+      MPFR_TMP_INIT1 (up, uu, BITS_PER_MP_LIMB);
       MPFR_ASSERTN(u == (mp_limb_t) u);
       count_leading_zeros (cnt, (mp_limb_t) u);
       *up = (mp_limb_t) u << cnt;

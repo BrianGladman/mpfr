@@ -204,8 +204,7 @@ mpfr_set_underflow (mpfr_ptr x, mp_rnd_t rnd_mode, int sign)
       MPFR_SET_ZERO(x);
       inex = -1;
     }
-  if (MPFR_SIGN(x) != sign)
-    MPFR_CHANGE_SIGN(x);
+  MPFR_SET_SIGN(x, sign);
   __gmpfr_flags |= MPFR_FLAGS_INEXACT | MPFR_FLAGS_UNDERFLOW;
   return sign > 0 ? inex : -inex;
 }
@@ -230,8 +229,7 @@ mpfr_set_overflow (mpfr_ptr x, mp_rnd_t rnd_mode, int sign)
       mpfr_setmax (x, __gmpfr_emax);
       inex = -1;
     }
-  if (MPFR_SIGN(x) != sign)
-    MPFR_CHANGE_SIGN(x);
+  MPFR_SET_SIGN(x,sign);
   __gmpfr_flags |= MPFR_FLAGS_INEXACT | MPFR_FLAGS_OVERFLOW;
   return sign > 0 ? inex : -inex;
 }

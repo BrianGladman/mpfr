@@ -201,7 +201,7 @@ mpfr_get_d3 (mpfr_srcptr src, mp_exp_t e, mp_rnd_t rnd_mode)
           MPFR_ASSERTN(nbits >= 1);
         }
       np = (nbits - 1) / BITS_PER_MP_LIMB;
-      tp = (mp_ptr) (*__gmp_allocate_func) ((np + 1) * BYTES_PER_MP_LIMB);
+      tp = (mp_ptr) (*__gmp_allocate_func)((np+1) * BYTES_PER_MP_LIMB);
       carry = mpfr_round_raw (tp, MPFR_MANT(src), MPFR_PREC(src), negative,
                              nbits, rnd_mode, (int *) 0);
       if (carry)

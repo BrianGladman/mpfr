@@ -78,7 +78,6 @@ mpfr_set4 (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode, int signb)
         }
     }
 
-  if (MPFR_SIGN(a) * signb < 0)
-    MPFR_CHANGE_SIGN(a);
+  MPFR_SET_SIGN(a, signb);
   MPFR_RET(inex);
 }

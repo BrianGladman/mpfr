@@ -356,7 +356,7 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
 			      negative, MPFR_PREC(x), rnd, NULL, (int) 0))
     {
       /* overflaw when rounding y */
-      MPFR_MANT(x)[MPFR_ESIZE(x) - 1] 
+      MPFR_MANT(x)[MPFR_LIMB_SIZE(x) - 1] 
 	= MPFR_LIMB_HIGHBIT;
       exp_y ++;
     }

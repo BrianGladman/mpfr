@@ -78,15 +78,13 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
  
   TMP_MARK(marker);
   s=(p-1)/BITS_PER_MP_LIMB+1;
-  MPFR_INIT(ap, a, p, s);  
-  MPFR_INIT(bp, b, p, s);
-  MPFR_INIT(up, u, p, s);
-  MPFR_INIT(vp, v, p, s);   
-  MPFR_INIT(tmpup, tmpu, p, s);  
-  MPFR_INIT(tmpvp, tmpv, p, s);  
-  MPFR_INIT(tmpp, tmp, p, s);  
-
-
+  MPFR_TMP_INIT(ap, a, p, s);  
+  MPFR_TMP_INIT(bp, b, p, s);
+  MPFR_TMP_INIT(up, u, p, s);
+  MPFR_TMP_INIT(vp, v, p, s);   
+  MPFR_TMP_INIT(tmpup, tmpu, p, s);
+  MPFR_TMP_INIT(tmpvp, tmpv, p, s);
+  MPFR_TMP_INIT(tmpp, tmp, p, s);
 
   /* b and a are the 2 operands but we want b >= a */
   if ((compare = mpfr_cmp (op1,op2)) > 0)
@@ -155,11 +153,11 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
 	  go_on = 1;
 	  p+=5;
 	  s=(p-1)/BITS_PER_MP_LIMB+1;
-	  MPFR_INIT(up, u, p, s);
-	  MPFR_INIT(vp, v, p, s);   
-	  MPFR_INIT(tmpup, tmpu, p, s);  
-	  MPFR_INIT(tmpvp, tmpv, p, s);  
-	  MPFR_INIT(tmpp, tmp, p, s);
+	  MPFR_TMP_INIT(up, u, p, s);
+	  MPFR_TMP_INIT(vp, v, p, s);   
+	  MPFR_TMP_INIT(tmpup, tmpu, p, s);  
+	  MPFR_TMP_INIT(tmpvp, tmpv, p, s);  
+	  MPFR_TMP_INIT(tmpp, tmp, p, s);
 	  mpfr_set(u,a,GMP_RNDN);
 	  mpfr_set(v,b,GMP_RNDN);
       }

@@ -117,8 +117,8 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
   vp = MPFR_MANT(v);
 
   TMP_MARK (marker);
-  usize = MPFR_ESIZE(u); 
-  vsize = MPFR_ESIZE(v); 
+  usize = MPFR_LIMB_SIZE(u); 
+  vsize = MPFR_LIMB_SIZE(v); 
 
   /**************************************************************************
    *                                                                        *
@@ -355,8 +355,8 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
   cc = mpfr_round_raw_generic(qp, qp, err, (sign_quotient == -1 ? 1 : 0),
 			      MPFR_PREC(q), rnd_mode, &inex, 1);      
 
-  qp += qsize - MPFR_ESIZE(q); /* 0 or 1 */
-  qsize = MPFR_ESIZE(q); 
+  qp += qsize - MPFR_LIMB_SIZE(q); /* 0 or 1 */
+  qsize = MPFR_LIMB_SIZE(q); 
 
   /* 
      At that point, either we were able to round from the beginning, 

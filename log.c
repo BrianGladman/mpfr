@@ -126,13 +126,13 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
     /* All the mpfr_t needed have a precision of p */
     TMP_MARK(marker);
     size=(p-1)/BITS_PER_MP_LIMB+1;
-    MPFR_INIT(cstp, cst, p, size);  
-    MPFR_INIT(rapportp, rapport, p, size);
-    MPFR_INIT(agmp, agm, p, size);
-    MPFR_INIT(tmp1p, tmp1, p, size);  
-    MPFR_INIT(tmp2p, tmp2, p, size);  
-    MPFR_INIT(sp, s, p, size);
-    MPFR_INIT(mmp, mm, p, size);
+    MPFR_TMP_INIT(cstp, cst, p, size);  
+    MPFR_TMP_INIT(rapportp, rapport, p, size);
+    MPFR_TMP_INIT(agmp, agm, p, size);
+    MPFR_TMP_INIT(tmp1p, tmp1, p, size);  
+    MPFR_TMP_INIT(tmp2p, tmp2, p, size);  
+    MPFR_TMP_INIT(sp, s, p, size);
+    MPFR_TMP_INIT(mmp, mm, p, size);
 
     mpfr_set_si (mm, m, GMP_RNDN);        /* I have m, supposed exact */
     mpfr_set_si (tmp1, 1, GMP_RNDN);      /* I have 1, exact */
