@@ -54,6 +54,7 @@ mpfr_t a, b, c; unsigned char rnd_mode; int diff_exp;
 {
   mp_limb_t *ap, *bp, *cp, cc, c2; unsigned int an,bn,cn; 
   int sh,dif,k,cancel,cancel1,cancel2;
+  TMP_DECL(marker);
 
 #ifdef DEBUG2
   printf("b=  "); if (SIGN(b)>=0) putchar(' ');
@@ -66,9 +67,19 @@ mpfr_t a, b, c; unsigned char rnd_mode; int diff_exp;
   cancel = mpfr_cmp2(b, c);
   /* we have to take into account the first (PREC(a)+cancel) bits from b */
   cancel1 = cancel/mp_bits_per_limb; cancel2 = cancel%mp_bits_per_limb;
+  TMP_MARK(marker); 
   ap = MANT(a);
   bp = MANT(b);
   cp = MANT(c);
+  if (ap == bp) {
+    bp = (mp_ptr) TMP_ALLOC(ABSSIZE(b) * BYTES_PER_MP_LIMB); 
+    MPN_COPY (bp, ap, ABSSIZE(b));
+  }
+  else if (ap == cp)
+    {
+      cp = (mp_ptr) TMP_ALLOC (ABSSIZE(c) * BYTES_PER_MP_LIMB);
+      MPN_COPY(cp, ap, ABSSIZE(c)); 
+    }
   an = (PREC(a)-1)/mp_bits_per_limb+1; /* number of significant limbs of a */
 #ifdef DEBUG2
 ap0=ap; ap1=ap+an-1;
@@ -293,7 +304,7 @@ ck(ap, an, 21);
 	    if (cc==0 || cc==-1) cc=c2;
 	  }
 	  if ((long)cc>0) goto add_one_ulp;
-	  else if ((long)cc<-1) return; /* the carry can be at most 1 */
+	  else if ((long)cc<-1) goto end_of_sub; /* the carry can be at most 1 */
 	  else if (kc==0) goto round_b;
 	  /* else round c: go through */
 	case 3: /* only c to round */
@@ -410,6 +421,7 @@ mpfr_print_raw(a); putchar('\n');
 #ifdef DEBUG2
 printf("b-c="); if (SIGN(a)>0) putchar(' '); mpfr_print_raw(a); putchar('\n');
 #endif
+  TMP_FREE(marker);
   return;
 }
 
