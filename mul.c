@@ -100,9 +100,6 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
   bq = MPFR_PREC(b);
   cq = MPFR_PREC(c);
-
-  /* Set the sign: can't be done before to let the multiply done */
-  MPFR_SET_SIGN(a, sign_product);
   
   MPFR_ASSERTD(bq+cq > bq); /* PREC_MAX is /2 so no integer overflow */
  
@@ -143,22 +140,24 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
   TMP_FREE(marker);
 
-  ax += (mp_exp_t) (b1 - 1 + cc);
-  if (MPFR_UNLIKELY( ax > __gmpfr_emax))
-    return mpfr_set_overflow (a, rnd_mode, sign_product);
-  if (MPFR_UNLIKELY( ax < __gmpfr_emin))
-    {
-      /* In the rounding to the nearest mode, if the exponent of the exact
-         result (i.e. before rounding, i.e. without taking cc into account)
-         is < __gmpfr_emin - 1 or the exact result is a power of 2 (i.e. if
-         both arguments are powers of 2), then round to zero. */
-      if (rnd_mode == GMP_RNDN &&
-          (MPFR_GET_EXP(b)+MPFR_GET_EXP(c) + (mp_exp_t) b1 < __gmpfr_emin ||
-           (mpfr_powerof2_raw (b) && mpfr_powerof2_raw (c))))
-        rnd_mode = GMP_RNDZ;
-      return mpfr_set_underflow (a, rnd_mode, sign_product);
-    }
-  MPFR_SET_EXP (a, ax);
-
+  {
+    mp_exp_t ax2 = ax + (mp_exp_t) (b1 - 1 + cc);
+    if (MPFR_UNLIKELY( ax2 > __gmpfr_emax))
+      return mpfr_set_overflow (a, rnd_mode, sign_product);
+    if (MPFR_UNLIKELY( ax2 < __gmpfr_emin))
+      {
+	/* In the rounding to the nearest mode, if the exponent of the exact
+	   result (i.e. before rounding, i.e. without taking cc into account)
+	   is < __gmpfr_emin - 1 or the exact result is a power of 2 (i.e. if
+	   both arguments are powers of 2), then round to zero. */
+	if (rnd_mode == GMP_RNDN &&
+	    (ax + (mp_exp_t) b1 < __gmpfr_emin ||
+	     (mpfr_powerof2_raw (b) && mpfr_powerof2_raw (c))))
+	  rnd_mode = GMP_RNDZ;
+	return mpfr_set_underflow (a, rnd_mode, sign_product);
+      }
+    MPFR_SET_EXP (a, ax2);
+    MPFR_SET_SIGN(a, sign_product);
+  }
   return inexact;
 }
