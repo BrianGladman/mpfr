@@ -35,7 +35,7 @@ mpfr_set_si(x, i, rnd_mode)
      mp_rnd_t rnd_mode;
 #endif
 {
-  unsigned long xn, cnt; mp_limb_t ai;
+  unsigned long xn, cnt; mp_limb_t ai, *xp;
 
   if (i==0) { SET_ZERO(x); return; }
   xn = (PREC(x)-1)/BITS_PER_MP_LIMB;
@@ -43,10 +43,23 @@ mpfr_set_si(x, i, rnd_mode)
 
   count_leading_zeros(cnt, ai); 
 
-  x -> _mp_d[xn] = ai << cnt;
+  xp = MANT(x);
+  xp[xn] = ai << cnt;
   /* don't forget to put zero in lower limbs */
-  MPN_ZERO(MANT(x), xn);
-  x -> _mp_exp = BITS_PER_MP_LIMB - cnt;
+  MPN_ZERO(xp, xn);
+
+  EXP(x) = BITS_PER_MP_LIMB - cnt;
+
+  /* round if PREC(x) smaller than length of i */
+  if (PREC(x) < mp_bits_per_limb-cnt) {
+    cnt = mpfr_round_raw(xp+xn, xp+xn, mp_bits_per_limb-cnt, (ai<0), PREC(x), 
+		   rnd_mode);
+    if (cnt) { /* special case 1.000...000 */
+      EXP(x)++;
+      xp[xn] = ((mp_limb_t) 1) << (BITS_PER_MP_LIMB-1);
+    }
+  }
+
   /* warning: don't change the precision of x! */
   if (i*MPFR_SIGN(x) < 0) CHANGE_SIGN(x);
 
@@ -63,16 +76,29 @@ mpfr_set_ui(x, i, rnd_mode)
      mp_rnd_t rnd_mode;
 #endif  
 {
-  unsigned int xn, cnt;
+  unsigned int xn, cnt; mp_limb_t *xp;
 
   if (i==0) { SET_ZERO(x); return; }
   xn = (PREC(x)-1)/BITS_PER_MP_LIMB;
   count_leading_zeros(cnt, (mp_limb_t) i); 
 
-  x -> _mp_d[xn] = ((mp_limb_t) i) << cnt; 
+  xp = MANT(x);
+  xp[xn] = ((mp_limb_t) i) << cnt; 
   /* don't forget to put zero in lower limbs */
-  MPN_ZERO(MANT(x), xn);
-  x -> _mp_exp = BITS_PER_MP_LIMB - cnt;
+  MPN_ZERO(xp, xn);
+
+  EXP(x) = BITS_PER_MP_LIMB - cnt;
+
+  /* round if PREC(x) smaller than length of i */
+  if (PREC(x) < mp_bits_per_limb-cnt) {
+    cnt = mpfr_round_raw(xp+xn, xp+xn, mp_bits_per_limb-cnt, 0, PREC(x), 
+			 rnd_mode);
+    if (cnt) { /* special case 1.000...000 */
+      EXP(x)++;
+      xp[xn] = ((mp_limb_t) 1) << (BITS_PER_MP_LIMB-1);
+    }
+  }
+
   /* warning: don't change the precision of x! */
   if (MPFR_SIGN(x) < 0) CHANGE_SIGN(x);
 
