@@ -189,7 +189,7 @@ static int mpfr_list_sum_once (mpfr_ptr ret, mpfr_srcptr const tab[],
  * FIXME : add reference to Demmel-Hida's paper.
 */
 
-int mpfr_sum (mpfr_ptr ret, mpfr_ptr const tab[], unsigned long n, 
+int mpfr_sum (mpfr_ptr ret, mpfr_ptr const *tab, unsigned long n, 
               mp_rnd_t rnd)
 {
   mp_prec_t initial_f, current_f;

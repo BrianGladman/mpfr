@@ -447,7 +447,7 @@ int mpfr_cmp_f _MPFR_PROTO ((mpfr_srcptr, mpf_srcptr));
 
 int mpfr_fma _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_srcptr,
                            mpfr_rnd_t));
-int mpfr_sum _MPFR_PROTO ((mpfr_ptr, mpfr_ptr __gmp_const tab[], unsigned long,
+int mpfr_sum _MPFR_PROTO ((mpfr_ptr, mpfr_ptr __gmp_const *, unsigned long,
 			   mpfr_rnd_t));
 
 void mpfr_init_cache _MPFR_PROTO ((mpfr_cache_t,int(*)(mpfr_ptr,mpfr_rnd_t)));
