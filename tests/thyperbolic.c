@@ -165,18 +165,18 @@ int check_INF(void){
 
   /******cosh********/
 
-  tester=mpfr_cosh(ch,t,GMP_RNDD);
-  if (!MPFR_IS_INF(ch) || MPFR_SIGN(ch) < 0 || !tester ){printf("cosh(INF) \n");return(1);} 
+  tester = mpfr_cosh(ch,t,GMP_RNDD);
+  if (!MPFR_IS_INF(ch) || MPFR_SIGN(ch) < 0 || tester ){printf("cosh(INF) \n");return(1);} 
 
   /******sinh********/
 
   tester=mpfr_sinh(sh,t,GMP_RNDD);
-  if (!MPFR_IS_INF(sh) || MPFR_SIGN(sh) < 0  || !tester ){printf("sinh(INF) \n");return(1);} 
+  if (!MPFR_IS_INF(sh) || MPFR_SIGN(sh) < 0  || tester ){printf("sinh(INF) \n");return(1);} 
 
   /******tanh********/
 
   tester=mpfr_tanh(th,t,GMP_RNDD);
-  if (mpfr_cmp_ui(th,1) != 0 || tester!=0 ){printf("tanh(INF) \n");return(1);} 
+  if (mpfr_cmp_ui(th,1) != 0 || tester ){printf("tanh(INF) \n");return(1);} 
 
   /******acosh********/
 
@@ -198,12 +198,12 @@ int check_INF(void){
   /******cosh********/
 
   tester=mpfr_cosh(ch,t,GMP_RNDD);
-  if (!MPFR_IS_INF(ch) || MPFR_SIGN(ch) < 0  || !tester ){printf("cosh(-INF) \n");return(1);} 
+  if (!MPFR_IS_INF(ch) || MPFR_SIGN(ch) < 0  || tester ){printf("cosh(-INF) \n");return(1);} 
 
   /******sinh********/
 
   tester=mpfr_sinh(sh,t,GMP_RNDD);
-  if (!MPFR_IS_INF(sh)  || MPFR_SIGN(sh) > 0 || !tester ){printf("sinh(-INF) \n");return(1);} 
+  if (!MPFR_IS_INF(sh)  || MPFR_SIGN(sh) > 0 || tester ){printf("sinh(-INF) \n");return(1);} 
 
   /******tanh********/
 
