@@ -1,6 +1,7 @@
 \input texinfo    @c -*-texinfo-*-
 @c %**start of header
 @setfilename mpfr.info
+@documentencoding ISO-8859-1
 @set VERSION 2.0.2
 @set UPDATED-MONTH June 2002
 @settitle MPFR @value{VERSION}
@@ -694,7 +695,7 @@ The precision can be any integer between @code{MPFR_PREC_MIN} and
 @code{MPFR_PREC_MAX}.
 @end deftypefun
 
-@deftypefun mp_prec_t mpfr_get_default_prec ()
+@deftypefun mp_prec_t mpfr_get_default_prec (void)
 Returns the default MPFR precision in bits.
 @end deftypefun
 
@@ -767,9 +768,9 @@ Return the precision actually used for assignments of @var{x}, i.e.
 the number of bits used to store its mantissa.
 @end deftypefun
 
-@deftypefun void mpfr_set_prec_raw (mpfr_t @var{x}, unsigned long int @var{p})
+@deftypefun void mpfr_set_prec_raw (mpfr_t @var{x}, unsigned long int @var{prec})
 Reset the precision of @var{x} to be @strong{exactly} @var{prec} bits.
-The only difference with @code{mpfr_set_prec} is that @var{p} is assumed to
+The only difference with @code{mpfr_set_prec} is that @var{prec} is assumed to
 be small enough so that the mantissa fits into the current allocated memory
 space for @var{x}. Otherwise an error will occur.
 @end deftypefun
@@ -808,7 +809,7 @@ width of the long double type; the @code{mpfr_set_ld} function assumes
 it has at most 113 bits, and an exponent of at most 15 bits.
 @end deftypefun
 
-@deftypefun int mpfr_set_str (mpfr_t @var{x}, const char *@var{s}, int @var{base}, mp_rnd_t @var{rnd})
+@deftypefun int mpfr_set_str (mpfr_t @var{x}, __gmp_const char *@var{s}, int @var{base}, mp_rnd_t @var{rnd})
 Set @var{x} to the value of the string @var{s} in base @var{base} (between
 2 and 36), rounded in direction @var{rnd} to the precision of @var{x}.
 See the documentation of @code{mpfr_inp_str} for a detailed description 
@@ -820,7 +821,7 @@ Special values can be read as follows: @code{NaN}, @code{Inf}, @code{+Inf}
 and @code{-Inf} (possibly in lower case when the base is less than 24).
 @end deftypefun
 
-@deftypefun void mpfr_set_str_raw (mpfr_t @var{x}, const char *@var{s})
+@deftypefun void mpfr_set_str_raw (mpfr_t @var{x}, __gmp_const char *@var{s})
 Set @var{x} to the value of the binary number in string @var{s}, which has to 
 be of the
 form +/-xxxx.xxxxxxEyy. The exponent is read in decimal, but is interpreted
@@ -874,7 +875,7 @@ The return value if zero if @var{rop}=@var{op}, positive if @var{rop}>@var{op},
 and negative when @var{rop}<@var{op}.
 @end deftypefn
 
-@deftypefun int mpfr_init_set_str (mpfr_t @var{x}, const char *@var{s}, int @var{base}, mp_rnd_t @var{rnd})
+@deftypefun int mpfr_init_set_str (mpfr_t @var{x}, __gmp_const char *@var{s}, int @var{base}, mp_rnd_t @var{rnd})
 Initialize @var{x} and set its value from
 the string @var{s} in base @var{base}, 
 rounded to direction @var{rnd}.

@@ -25,6 +25,9 @@ Documentation:
 
 - add a description of the algorithms used + proof of correctness
 
+- support for accented characters when converting the texi file to
+  the dvi file
+
 Installation:
 
 - from Kevin Ryde <user42@zip.com.au>:
