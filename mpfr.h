@@ -36,6 +36,10 @@ MA 02111-1307, USA. */
 #define GMP_RNDU 2
 #define GMP_RNDD 3
 
+/* Definition of constants */
+
+#define LOG2 0.69314718055994528622 /* log(2) rounded to zero on 53 bits */
+
 /* Definitions of types and their semantics */
 
 typedef unsigned long int mp_prec_t; /* easy to change if necessary */

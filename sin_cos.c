@@ -100,7 +100,7 @@ mp_rnd_t rnd_mode;
 
   prec_x = (int) ceil(log
 		      ((double) (MPFR_PREC(x)) / (double) BITS_PER_MP_LIMB)
-		      /log(2.0));  
+		      /LOG2);  
   ttt = MPFR_EXP(x);
   mpfr_init2(x_copy,MPFR_PREC(x));
   mpfr_set(x_copy,x,GMP_RNDD);
@@ -114,7 +114,7 @@ mp_rnd_t rnd_mode;
     }
   target_prec = MPFR_PREC(sinus);
   if (MPFR_PREC(cosinus) > target_prec) target_prec = MPFR_PREC(cosinus);
-  logn =  (int) ceil(log((double)target_prec)/log(2.0));
+  logn =  (int) ceil(log((double)target_prec)/LOG2);
   if (logn < 2) logn = 2;
   factor = logn;
   realprec = target_prec + logn;
@@ -122,7 +122,7 @@ mp_rnd_t rnd_mode;
     Prec = realprec + 2*shift + 2 + shift_x + factor;
     k = (int) ceil(log
 		   ((double) (Prec) / (double) BITS_PER_MP_LIMB)
-		   /log(2.0));
+		   /LOG2);
     /* Maintenant, il faut extraire : */
     mpfr_init2(t_sin, Prec);
     mpfr_init2(t_cos, Prec);

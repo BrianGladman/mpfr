@@ -25,12 +25,8 @@ MA 02111-1307, USA. */
 #include "gmp-impl.h"
 #include "mpfr.h"
 
-
 /*Memory gestion */
 #define MON_INIT(xp, x, p, s) xp = (mp_ptr) TMP_ALLOC(s*BYTES_PER_MP_LIMB);    x -> _mp_prec = p; x -> _mp_d = xp; x -> _mp_size = s; x -> _mp_exp = 0; 
-
-
-
 
 void 
 #ifdef __STDC__
@@ -111,10 +107,10 @@ mpfr_agm(r, a, b, rnd_mode)
     
     eq=0;
     
-    err=ceil((3.0/2.0*log((double)p)/log(2.0)+1.0)*exp(-(double)p*log(2.0))+3.0*exp(-2.0*(double)p*uo*log(2.0)/(vo-uo)));
+    err=ceil((3.0/2.0*log((double)p)/LOG2+1.0)*exp(-(double)p*LOG2)+3.0*exp(-2.0*(double)p*uo*LOG2/(vo-uo)));
     if(p-err-3<=q) {
       p=q+err+4;
-      err=ceil((3.0/2.0*log((double)p)/log(2.0)+1.0)*exp(-(double)p*log(2.0))+3.0*exp(-2.0*(double)p*uo*log(2.0)/(vo-uo)));
+      err=ceil((3.0/2.0*log((double)p)/LOG2+1.0)*exp(-(double)p*LOG2)+3.0*exp(-2.0*(double)p*uo*LOG2/(vo-uo)));
     }
 
     /* Calculus of un and vn */

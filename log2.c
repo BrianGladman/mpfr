@@ -69,12 +69,12 @@ mpfr_const_aux_log2(mylog, rnd_mode) mpfr_ptr mylog; mp_rnd_t rnd_mode;
   mpz_init(cst);
   logn =  (int) ceil(log
                       ((double) MPFR_PREC(mylog))
-                      /log(2.0)); 
+                      /LOG2); 
   prec_x = prec_i_want + logn;
   while (!good){
     prec = (int) ceil(log
 		      ((double) (prec_x))
-		      /log(2.0));  
+		      /LOG2);  
     mpfr_init2(tmp1, prec_x);
     mpfr_init2(result, prec_x);
     mpfr_init2(tmp2, prec_x);
@@ -150,7 +150,7 @@ mpfr_const_log2(x, rnd_mode) mpfr_ptr x; mp_rnd_t rnd_mode;
      N=2;
      do {
        oldN = N;
-       N = precx + (int)ceil(log((double)N)/log(2.0));
+       N = precx + (int)ceil(log((double)N)/LOG2);
      } while (N != oldN);
      mpz_init_set_ui(s,0);
      mpz_init(u);

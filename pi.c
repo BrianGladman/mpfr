@@ -55,13 +55,13 @@ mpfr_pi_machin3(mylog, rnd_mode)
   mpz_t cst;
   logn =  (int) ceil(log
                       ((double) MPFR_PREC(mylog))
-                      /log(2.0)); 
+                      /LOG2); 
   prec_x = prec_i_want + logn + 5;
   mpz_init(cst);  
   while (!good){
   prec = (int) ceil(log
 		    ((double) (prec_x))
-		    /log(2.0));  
+		    /LOG2);  
 
   mpfr_init2(tmp1, prec_x);
   mpfr_init2(tmp2, prec_x);
@@ -183,7 +183,7 @@ mpfr_const_pi(x, rnd_mode)
     N=1; 
     do {
       oldN = N;
-      N = (prec+3)/4 + (int)ceil(log((double)N+1.0)/log(2.0));
+      N = (prec+3)/4 + (int)ceil(log((double)N+1.0)/LOG2);
     } while (N != oldN);
     mpz_init(pi); mpz_init(num); mpz_init(den); mpz_init(d3); mpz_init(d2);
     mpz_init(tmp);

@@ -91,12 +91,12 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
   /* the output exponent f is such that base^(f-1) <= |op| < base^f
      i.e. f = 1 + floor(log(|op|)/log(base))
      = 1 + floor((log(|m|)+e*log(2))/log(base)) */
-  f = 1 + (int) floor((log(d)+(double)e*log(2.0))/log((double)base));
+  f = 1 + (int) floor((log(d)+(double)e*LOG2)/log((double)base));
   if (n==0) {
     /* performs exact rounding, i.e. returns y such that for GMP_RNDU
        for example, we have:       x*2^(e-p) <= y*base^(f-n)
      */
-    n = (int) ((double)MPFR_PREC(op)*log(2.0)/log((double)base));
+    n = (int) ((double)MPFR_PREC(op)*LOG2/log((double)base));
     if (n==0) n=1;
   }
 #ifdef DEBUG  
@@ -105,7 +105,7 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
   /* now the first n digits of the mantissa are obtained from
      rnd(op*base^(n-f)) */
   if (pow2) prec = n*pow2;
-  else prec = (long) ceil((double)n*log((double)base)/log(2.0));
+  else prec = (long) ceil((double)n*log((double)base)/LOG2);
 #ifdef DEBUG
   printf("prec=%d\n", prec);
 #endif

@@ -191,10 +191,10 @@ mp_rnd_t rnd_mode;
      ----- k bits -- */
   prec_x = (int) ceil(log
 		      ((double) (MPFR_PREC(x)) / (double) BITS_PER_MP_LIMB)
-		      /log(2.0));  
+		      /LOG2);  
   logn =  (int) ceil(log
 		      ((double) prec_x+MPFR_PREC(y))
-		      /log(2.0));  
+		      /LOG2);  
   if (logn < 2) logn = 2;
   ttt = MPFR_EXP(x);
   mpfr_init2(x_copy,MPFR_PREC(x));
@@ -211,7 +211,7 @@ mp_rnd_t rnd_mode;
     Prec = realprec+shift+2+shift_x;
     k = (int) ceil(log
 		   ((double) (Prec) / (double) BITS_PER_MP_LIMB)
-		   /log(2.0));
+		   /LOG2);
     /* Maintenant, il faut extraire : */
     mpfr_init2(t, Prec);
     mpfr_init2(tmp, Prec);

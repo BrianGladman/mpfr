@@ -56,7 +56,7 @@ mpfr_pow_ui (x, y, n, rnd)
     mpfr_mul(x, x, x, rnd); err = 2.0*err+1.0;
     if (n & (1<<i)) { mpfr_mul(x, x, y, rnd); err += 1.0; }
   }
-  return (int) ceil(log(err)/log(2.0));
+  return (int) ceil(log(err)/LOG2);
 }
 
 /* sets x to y^n, and returns ceil(log2(max ulp error)) */
@@ -92,5 +92,5 @@ mpfr_ui_pow_ui (x, y, n, rnd)
       err = err + 1.0;
     }
   }
-  return (int) ceil(log(err)/log(2.0));
+  return (int) ceil(log(err)/LOG2);
 }

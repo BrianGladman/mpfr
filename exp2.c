@@ -39,8 +39,6 @@ int mpfr_exp2_aux2 (mpz_t, mpfr_srcptr, int, int*);
 
 /* #define DEBUG */
 
-#define LOG2 0.69314718055994528622 /* log(2) rounded to zero on 53 bits */
-
 /* if k = the number of bits of z > q, divides z by 2^(k-q) and returns k-q.
    Otherwise do nothing and return 0.
  */
