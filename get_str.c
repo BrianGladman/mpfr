@@ -480,20 +480,6 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
       return s0; /* strlen(s0) = neg + m */
     }
 
-  /* si x < 0, on se ram`ene au cas x > 0 */
-  if (neg)
-    {
-      switch (rnd)
-	{
-	case GMP_RNDU :
-	  rnd = GMP_RNDD; break;
-	case GMP_RNDD :
-	  rnd = GMP_RNDU; break;
-	default:
-	  break;
-	}
-    }
-
   if (s == NULL)
     s = (char*) (*__gmp_allocate_func) (neg + m + 1);
   s0 = s;
@@ -523,7 +509,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
 	}
 
       /* the first digit will contain only r bits */
-      prec = (m - 1) * pow2 + r;
+      prec = (m - 1) * pow2 + r; /* total number of bits */
       n = (prec - 1) / BITS_PER_MP_LIMB + 1;
 
       TMP_MARK (marker);
@@ -568,7 +554,11 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
       TMP_FREE(marker);
 
       return (s0);
-   }
+    }
+
+  /* if x < 0, reduce to x > 0 */
+  if (neg)
+    rnd = MPFR_INVERT_RND(rnd);
 
   g = mpfr_get_str_compute_g (b, MPFR_GET_EXP (x) - 1);
   exact = 1;

@@ -185,6 +185,26 @@ check_small (void)
     }
   (*__gmp_free_func) (s, strlen (s) + 1);
 
+  mpfr_set_prec (x, 145);
+  mpfr_set_str_binary (x, "-0.1000110011000001011000010101101010110110101100101110100011111100011110011001001001010000100001000011000011000000010111011001000111101001110100110e6");
+  s = mpfr_get_str (NULL, &e, 4, 53, x, GMP_RNDU);
+  if (strcmp (s, "-20303001120111222312230232203330132121021100201003003") || (e != 3))
+    {
+      printf ("Error in mpfr_get_str (5): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  (*__gmp_free_func) (s, strlen (s) + 1);
+
+  mpfr_set_prec (x, 45);
+  mpfr_set_str_binary (x, "-0.00100111010110010001011001110111010001010010010");
+  s = mpfr_get_str (NULL, &e, 32, 9, x, GMP_RNDN);
+  if (strcmp (s, "-4tchctq54") || (e != 0))
+    {
+      printf ("Error in mpfr_get_str (6): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  (*__gmp_free_func) (s, strlen (s) + 1);
+
   mpfr_clear (x);
 }
 

@@ -821,12 +821,14 @@ behavior is undefined.
 
 @deftypefun {char *} mpfr_get_str (char *@var{str}, mp_exp_t *@var{expptr}, int @var{base}, size_t @var{n}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Convert @var{op} to a string of digits in base @var{base}, with rounding in
-direction @var{rnd}. The base may vary
-from 2 to 36.
+direction @var{rnd}. The base may vary from 2 to 36.
 
 The generated string is a fraction, with an implicit radix point immediately
-to the left of the first digit.  For example, the number 3.1416 would be
-returned as "31416" in the string and 1 written at @var{expptr}.
+to the left of the first digit.  For example, the number -3.1416 would be
+returned as "-31416" in the string and 1 written at @var{expptr}.
+If @var{rnd} is to nearest, and @var{op} is exactly in the middle of two
+possible outputs, the one with an even last digit is chosen
+(for an odd base, this may not correspond to an even mantissa).
 
 If @var{n} is zero, the number of digits of the mantissa is determined
 automatically from the precision of @var{op} and the value of @var{base}.
