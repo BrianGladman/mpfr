@@ -8,6 +8,7 @@
 
 #ifdef IRIX64
 #include <sys/fpu.h>
+extern int swapRM();
 #define TOZERO swapRM(ROUND_TO_ZERO)
 #define TOINFP swapRM(ROUND_TO_PLUS_INFINITY)
 #define TONEAREST swapRM(ROUND_TO_NEAREST)
