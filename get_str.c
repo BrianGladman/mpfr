@@ -200,7 +200,7 @@ mpn_exp (mp_limb_t *a, mp_exp_t *exp_r, int b, mp_exp_t e, size_t n)
   unsigned long t; /* number of bits in e */
   unsigned long bits;
   size_t n1;
-  int erreur;                    /* (number - 1) of loop a^2b inexact */
+  unsigned int erreur;           /* (number - 1) of loop a^2b inexact */
                                  /* erreur == t meens no error */
   int err_s_a2 = 0;
   int err_s_ab = 0;              /* number of error when shift A^2, AB */
@@ -340,10 +340,10 @@ mpfr_get_str_aux (char *str, mp_exp_t *exp, mp_limb_t *r, mp_size_t n,
   int dir;                  /* direction of the rounded result */
   mp_limb_t ret = 0;        /* possible carry in addition */
   mp_size_t i0, j0;         /* number of limbs and bits of Y */
-  char *str1;               /* string of m+2 characters */
+  unsigned char *str1;      /* string of m+2 characters */
   size_t size_s1;           /* length of str1 */
   mp_rnd_t rnd1;
-  int i;
+  unsigned int i;
   char c;
   int exact = (e < 0);
   TMP_DECL(marker);
@@ -408,7 +408,7 @@ mpfr_get_str_aux (char *str, mp_exp_t *exp, mp_limb_t *r, mp_size_t n,
       /* now the rounded value Y is in {r+i0, n-i0} */
 
       /* convert r+i0 into base b */
-      str1 = TMP_ALLOC (m + 3); /* need one extra character for mpn_get_str */
+      str1 = (unsigned char*) TMP_ALLOC (m + 3); /* need one extra character for mpn_get_str */
       size_s1 = mpn_get_str (str1, b, r + i0, n - i0);
 
       /* round str1 */
@@ -502,7 +502,7 @@ mpfr_get_str_compute_g (int beta, mp_exp_t e)
   g1 = (double) e * log_b2_low[beta - 2];
   g = (mp_exp_t) _mpfr_ceil (g0);
   g0 -= (double) g;
-  return g + _mpfr_ceil (g0 + g1);
+  return g + (mp_exp_t) _mpfr_ceil (g0 + g1);
 }
 
 /* prints the mantissa of x in the string s, and writes the corresponding
@@ -559,7 +559,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
   if (MPFR_IS_NAN(x))
     {
       if (s == NULL)
-        s = (*__gmp_allocate_func) (4);
+        s = (char*) (*__gmp_allocate_func) (4);
       strcpy (s, "NaN");
       return s;
     }
@@ -569,7 +569,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
   if (MPFR_IS_INF(x))
     {
       if (s == NULL)
-        s = (*__gmp_allocate_func) (neg + 4);
+        s = (char*) (*__gmp_allocate_func) (neg + 4);
       strcpy (s, (neg) ? "-Inf" : "Inf");
       return s;
     }
@@ -579,7 +579,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
   if (MPFR_IS_ZERO(x))
     {
       if (s == NULL)
-        s = (*__gmp_allocate_func) (neg + m + 1);
+        s = (char*) (*__gmp_allocate_func) (neg + m + 1);
       s0 = s;
       if (neg)
         *s++ = '-';
@@ -600,7 +600,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
     }
 
   if (s == NULL)
-    s = (*__gmp_allocate_func) (neg + m + 1);
+    s = (char*) (*__gmp_allocate_func) (neg + m + 1);
   s0 = s;
   if (neg)
     *s++ = '-';
@@ -632,7 +632,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
       n = (prec - 1) / BITS_PER_MP_LIMB + 1;
 
       TMP_MARK (marker);
-      x1 = TMP_ALLOC((n + 1) * sizeof (mp_limb_t));
+      x1 = (mp_limb_t*) TMP_ALLOC((n + 1) * sizeof (mp_limb_t));
       nb = n * BITS_PER_MP_LIMB - prec;
       /* round xp to the precision prec, and put it into x1
 	 put the carry into x1[n] */
@@ -661,7 +661,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
             n --;
         }
       
-      mpn_get_str (s, b, x1, n);
+      mpn_get_str ((unsigned char*) s, b, x1, n);
       for (i=0; i<m; i++)
         s[i] = num_to_text[(int) s[i]];
       s[m] = 0;
@@ -693,7 +693,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
       n = 1 + (prec - 1) / BITS_PER_MP_LIMB;
 
       /* a will contain the approximation of the mantissa */
-      a = TMP_ALLOC (n * sizeof (mp_limb_t));
+      a = (mp_limb_t*) TMP_ALLOC (n * sizeof (mp_limb_t));
 
       nx = 1 + (MPFR_PREC(x) - 1) / BITS_PER_MP_LIMB;
 
@@ -727,7 +727,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
 	  err = (err <= 0) ? 2 : err + 1;
 	  
           /* result = a * x */
-	  result = TMP_ALLOC ((n + nx1) * sizeof (mp_limb_t));
+	  result = (mp_limb_t*) TMP_ALLOC ((n + nx1) * sizeof (mp_limb_t));
 	  mpn_mul (result, a, n, x1, nx1);
           exp_a += MPFR_EXP (x);
 	  if (mpn_scan1 (result, 0) < (nx1 * BITS_PER_MP_LIMB))
@@ -750,9 +750,9 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
 	  exact = (err == -1);
 
 	  /* allocate memory for x1, result and reste */
-	  x1 = TMP_ALLOC (2 * n * sizeof (mp_limb_t));
-	  result = TMP_ALLOC ((n + 1) * sizeof (mp_limb_t));
-          reste = TMP_ALLOC (n * sizeof (mp_limb_t));
+	  x1 = (mp_limb_t*) TMP_ALLOC (2 * n * sizeof (mp_limb_t));
+	  result = (mp_limb_t*) TMP_ALLOC ((n + 1) * sizeof (mp_limb_t));
+          reste = (mp_limb_t*) TMP_ALLOC (n * sizeof (mp_limb_t));
 
 	  /* initialize x1 = x */
 	  MPN_COPY2 (x1, 2 * n, xp, nx);
