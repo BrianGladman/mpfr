@@ -30,7 +30,8 @@ MA 02111-1307, USA. */
 mp_exp_t
 mpz_set_fr (mpz_ptr z, mpfr_srcptr f)
 {
-  int fn, sh;
+  mp_size_t fn;
+  int sh;
 
   MPFR_ASSERTN(MPFR_IS_FP(f));
 
@@ -40,7 +41,7 @@ mpz_set_fr (mpz_ptr z, mpfr_srcptr f)
   if (ALLOC(z) < fn)
     MPZ_REALLOC(z, fn);
 
-  sh = fn * BITS_PER_MP_LIMB - MPFR_PREC(f);
+  sh = (mp_prec_t) fn * BITS_PER_MP_LIMB - MPFR_PREC(f);
   if (sh)
     mpn_rshift (PTR(z), MPFR_MANT(f), fn, sh);
   else
@@ -48,5 +49,7 @@ mpz_set_fr (mpz_ptr z, mpfr_srcptr f)
 
   SIZ(z) = fn;
 
+  MPFR_ASSERTN((mp_exp_unsigned_t) MPFR_EXP(f) - MPFR_EMIN_MIN
+               >= (mp_exp_unsigned_t) MPFR_PREC(f));
   return MPFR_EXP(f) - MPFR_PREC(f);
 }

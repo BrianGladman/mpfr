@@ -210,7 +210,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c,
 
   /* determine rounding and sticky bits (and possible carry) */
 
-  difw = an - diff_exp / BITS_PER_MP_LIMB;
+  difw = (mp_exp_t) an - (mp_exp_t) (diff_exp / BITS_PER_MP_LIMB);
   /* difw is the number of limbs from b (regarded as having an infinite
      precision) that have already been combined with c; -n if the next
      n limbs from b won't be combined with c. */
