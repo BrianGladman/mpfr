@@ -2,12 +2,13 @@ Notes for the MPFR developers and CVS users
 ===========================================
 
 To compile source code obtained from CVS, you need some GNU development
-utilities: aclocal, autoheader, automake, autoconf 2.50 (at least). As
-some files like "configure" are not part of the CVS repository, you first
-need to run "autoreconf -i"; if you have both autoconf 2.13 and 2.50
-installed and use a wrapper, you may need to run "autoreconf" a second
-time (as with old Debian packages, due to a bug in the wrapper). Then
-you can run "configure" in the usual way (see the INSTALL file).
+utilities: aclocal, autoheader, automake, autoconf 2.50 (at least) and
+libtoolize. As some files like "configure" are not part of the CVS 
+repository, you first need to run "autoreconf -i"; if you have both 
+autoconf 2.13 and 2.50 installed and use a wrapper, you may need to 
+run "autoreconf" a second time (as with old Debian packages, due to
+ a bug in the wrapper). Then you can run "configure" in the usual way
+ (see the INSTALL file).
 
 If for some reason, this doesn't work, there's still the old way: run
 the "prepare" script to generate these files; as the "prepare" script
@@ -156,6 +157,8 @@ for some C compiler (Old DOS compiler).
    =====================================================================
 
 Try to avoid "LONG_MIN/1" since it produces a SIGNAL on (old) FreeBsd.
+Don't forget that LONG_MIN/-1 is not representable (specially
+with code like MPFR_EXP_MIN/n).
 
    =====================================================================
 
@@ -206,9 +209,9 @@ MPFR_LOG_LEVEL: Max recursive level (default: 7).
 MPFR_LOG_INPUT:    Log the inputs
 MPFR_LOG_OUTPUT:   Log the outputs
 MPFR_LOG_TIME:     Log the time spent inside the function.
-MPFR_LOG_INTERNAL: Log the intermediary variables.
-MPFR_LOG_MSG:      Log the messages sent by MPFR.
-MPFR_LOG_ZIV:       Log what the Ziv Loops do.
+MPFR_LOG_INTERNAL: Log the intermediary variables if any.
+MPFR_LOG_MSG:      Log the messages sent by MPFR if any.
+MPFR_LOG_ZIV:      Log what the Ziv Loops do.
 
 Define them. Run your program, and view `mpfr.log`.
 
@@ -241,6 +244,15 @@ Example:
  MPFR_LOG_END (("x[%#R]=%R i=%d", x, x, i));
  return i;
 }
+
++++ MPFR_LOG_FUNC (begin,end)
+  Add this macro at the beginning of a function. It does
+the same job as MPFR_LOG_BEGIN and MPFR_LOG_END but it is smatter
+since it intercepts the return itself to put the end statement.
+Example
+ MPFR_LOG_BEGIN (("op[%#R]=%R rnd=%d", op, op"),
+                 ("x[%#R]=%R inexact=%d", x, x, i));
+
 
 The double brackets "((" and "))" are needed since MPFR must still
 compile with non GNU compiler, so Macros with variable # of args
@@ -283,7 +295,8 @@ mpfr_toto (mpfr_ptr rop, mpfr_srcptr op, mp_rnd_t rnd)
   MPFR_SAVE_EXPO_DECL (expo);
 
   /* Log it if requested */
-  MPFR_LOG_BEGIN (("op[%#R]=%R rnd=%d", op, op, rnd));
+  MPFR_LOG_BEGIN (("op[%#R]=%R rnd=%d", op, op, rnd),
+                  ("rop[%#R]=%R inexact=%d", rop, rop, inexact));
 
   /* First deal with particular cases */
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (op)))
@@ -308,8 +321,8 @@ mpfr_toto (mpfr_ptr rop, mpfr_srcptr op, mp_rnd_t rnd)
   [Compute the first estimation of the used precision `prec`]
   [Initialize the intermediate variables using mpfr_init2]
   MPFR_SAVE_EXPO_MARK (expo);            /* Maximal range for exponent */
-  MPFR_ZIV_INIT (loop, prec);            /* Initialize the ZivLoop controler */
 
+  MPFR_ZIV_INIT (loop, prec);            /* Initialize the ZivLoop controler */
   for (;;)                               /* Infinite loop */
     {
       [Compute an estimation of the function and]
@@ -317,16 +330,13 @@ mpfr_toto (mpfr_ptr rop, mpfr_srcptr op, mp_rnd_t rnd)
       if (mpfr_can_round (...))          /* If we can round, quit the loop */
         break;
       MPFR_ZIV_NEXT (loop, prec);        /* Increase used precision */
-      [Using `mpfr_set_prec`, resize all needed intermediate variables]
+      [Use `mpfr_set_prec` to resize all needed intermediate variables]
     }
   MPFR_ZIV_FREE (loop);                  /* Free the ZivLoop Controler */
+
   inexact = mpfr_set (rop, temp, rnd);   /* Set rop to the computed value */
   [Clear all intermediate variables]
 
   MPFR_SAVE_EXPO_FREE (expo);            /* Restore exponent range */
-  inexact = mpfr_check_range (rop, inexact, rnd); /* check range */
-
-  MPFR_LOG_END (("rop[%#R]=%R inexact=%d", r, r, inexact));
-
-  return inexact;  /* Quit */
+  MPFR_RET (mpfr_check_range (rop, inexact, rnd));  /* Check range and quit */
 }
