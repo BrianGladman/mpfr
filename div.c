@@ -13,7 +13,7 @@ mpfr_ptr q; mpfr_srcptr n, d; unsigned char rnd_mode;
   mp_limb_t cc;
 
   if (q==n || q==d) {
-    printf(stderr, "destination equals source in mpfr_div\n");
+    fprintf(stderr, "destination equals source in mpfr_div\n");
     exit(1);
   }
 #ifdef DEBUG

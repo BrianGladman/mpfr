@@ -321,7 +321,7 @@ mpfr_ptr a; mpfr_srcptr b, c; unsigned char rnd_mode;
   int diff_exp;
 
   if (a==b || a==c) {
-    printf(stderr, "destination equals source in mpfr_add\n");
+    fprintf(stderr, "destination equals source in mpfr_add\n");
     exit(1);
   }
   diff_exp = EXP(b)-EXP(c);
