@@ -52,12 +52,7 @@ mpfr_set_str_raw (x, str)
   xp = MPFR_MANT(x);
   xsize = 1 + (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB;
   alloc = (strlen(str)+1) * sizeof(char);
-  str0 = str2 = (char *) (*_mp_allocate_func) (alloc);
-
-  if (str0 == NULL) {
-    fprintf (stderr, "Error in mpfr_set_str_raw: no more memory available\n");
-    exit (1);
-  }
+  str0 = str2 = (char *) (*__gmp_allocate_func) (alloc);
 
   if (*str == '-') { negative = 1; str++; }
   else if (*str == '+') str++;
@@ -131,7 +126,7 @@ mpfr_set_str_raw (x, str)
   MPFR_EXP(x) = expn - cnt; 
   MPFR_SIZE(x) = xsize; if (negative) MPFR_CHANGE_SIGN(x);
 
-  (*_mp_free_func) (str0, alloc);
+  (*__gmp_free_func) (str0, alloc);
   
   /* May change to take into account : syntax errors, overflow in exponent, 
      string truncated because of size of x */
