@@ -1,5 +1,35 @@
-- implanter tous les flags, qui sont pour le moment superbement ignores.
-J'ai quand meme laisse deux macros SIZ et SIZE selon qu'on affecte ou non.
+Configuration:
+
+- use autoconf [GH]
+
+Compatibility with MPF:
+
+- write a mpfr2mpfr.h header file with macros for compatibility with MPF, for
+  example #define mpf_add(x,y,z) mpfr_add(x,y,z,GMP_RNDN) [GH]
+
+- check missing functions for complete compatibility with MPF [GH]
+
+Changes in existing functions:
+
+- rewrite output routines (mpfr_get_str) [PZ]
+
+- improve mpfr_exp, currently in O(sqrt(n)*M(n)), to use algorithms in
+  O(n^(1/3)*M(n)) or even O(M(n)*log(n)) [PZ]
+
+- modify mpfr_div to use directly mpn_divrem, now that Burnikel/Ziegler
+  algorithm is in GMP [PZ]
+
+New functions to implement:
+
+- mpfr_sin, mpfr_cos
+
+- mpfr_mul_mpz, mpfr_div_mpz
+
+Miscellaneous:
+
+- implement a C++ wrapper [see with Torbjo"rn and/or Fabrice]
+
+- deal correctly with all special values (zero, infinities, NaN)
 
 - for all instructions that call malloc/realloc/etc, handle error cases
   (for example return an int indicating if an error occurred)
