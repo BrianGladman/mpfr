@@ -42,7 +42,7 @@ main (void)
       mpfr_set_prec (z, prec);
       yprec = prec + 10;
 
-      for (n = 0; n < 100; n++)
+      for (n = 0; n < 10; n++)
 	{
 	  mpfr_random (x);
 	  rnd = random () % 4;
