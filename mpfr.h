@@ -200,9 +200,19 @@ int mpfr_cmp3 _PROTO ((mpfr_srcptr, mpfr_srcptr, int));
 int mpfr_nan_p _PROTO((mpfr_srcptr));
 int mpfr_inf_p _PROTO((mpfr_srcptr));
 int mpfr_number_p _PROTO((mpfr_srcptr));
+int mpfr_asin _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
+int mpfr_atan _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
+
+int mpfr_exp2_si _PROTO((mpfr_ptr, long int n, mp_rnd_t));
+int mpfr_sinh _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t)); 
+int mpfr_tanh _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
+int mpfr_factorial _PROTO ((mpfr_ptr, unsigned long int, mp_rnd_t));
+int mpfr_ui_pow _PROTO ((mpfr_ptr, unsigned long int, mpfr_srcptr, mp_rnd_t));
+
 int mpfr_atanh _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t)); 
 int mpfr_acosh _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t)); 
 int mpfr_asinh _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t)); 
+
 int mpfr_cosh _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t)); 
 int mpfr_sinh _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t)); 
 int mpfr_tanh _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
@@ -211,13 +221,15 @@ int mpfr_atan _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_factorial _PROTO ((mpfr_ptr, unsigned long int, mp_rnd_t));
 int mpfr_fma _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_hypot _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
-  /*En cours ...*/
+
 int mpfr_pow _PROTO ((mpfr_ptr, mpfr_srcptr,mpfr_srcptr, mp_rnd_t)); 
-int mpfr_dim _PROTO ((mpfr_ptr, mpfr_srcptr,mpfr_srcptr, mp_rnd_t)); 
-int mpfr_max _PROTO ((mpfr_ptr, mpfr_srcptr,mpfr_srcptr, mp_rnd_t)); 
-int mpfr_min _PROTO ((mpfr_ptr, mpfr_srcptr,mpfr_srcptr, mp_rnd_t)); 
+int mpfr_pow_si _PROTO ((mpfr_ptr, mpfr_srcptr, long int, mp_rnd_t)); 
+int mpfr_isinteger _PROTO((mpfr_srcptr));
 int mpfr_log2 _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t)); 
-int mpfr_log10 _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t)); 
+int mpfr_log1p _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t)); 
+int mpfr_expm1 _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t)); 
+int mpfr_cbrt _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t)); 
+
 
 #if defined (__cplusplus)
 }
