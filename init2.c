@@ -20,9 +20,7 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
 #include <stdio.h>
-#include "gmp.h"
-#include "gmp-impl.h"
-#include "mpfr.h"
+#include <stdlib.h>
 #include "mpfr-impl.h"
 
 void
@@ -30,6 +28,10 @@ mpfr_init2 (mpfr_ptr x, mp_prec_t p)
 {
   mp_size_t xsize;
   mp_ptr tmp;
+
+  /* Check if we can represent the number of limbs
+   * associated to the maximum of mpfr_prec_t*/
+  MPFR_ASSERTN( MP_SIZE_T_MAX >= (MPFR_PREC_MAX/BYTES_PER_MP_LIMB) );
 
   /* p=1 is not allowed since the rounding to nearest even rule requires at
      least two bits of mantissa: the neighbours of 3/2 are 1*2^0 and 1*2^1,

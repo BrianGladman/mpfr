@@ -37,7 +37,7 @@ MA 02111-1307, USA. */
 #endif
 
 /* Check if stdio.h is included */
-#if defined (EOF)
+#if defined (_GMP_H_HAVE_FILE) || defined (MPFR_USE_FILE)
 # define _MPFR_H_HAVE_FILE 1
 #endif
 
@@ -77,7 +77,7 @@ typedef unsigned long  mpfr_prec_t;
 
 /* Definition of precision limits */
 #define MPFR_PREC_MIN 2
-#define MPFR_PREC_MAX ((mpfr_prec_t)(~(mpfr_prec_t)0) >>1)
+#define MPFR_PREC_MAX ((~(mpfr_prec_t)0) >> ((mpfr_prec_t)1) )
 
 /* Definition of sign */
 typedef int          mpfr_sign_t;
@@ -132,11 +132,14 @@ typedef __gmp_const __mpfr_struct *mpfr_srcptr;
 /* size_t is defined by GMP */
 
 /* Prototypes */
-#if defined (__STDC__) || defined (__cplusplus)
+#if defined (__GMP_PROTO)
+# define _MPFR_PROTO __GMP_PROTO
+#elif defined (__STDC__) || defined (__cplusplus)
 # define _MPFR_PROTO(x) x
 #else
 # define _MPFR_PROTO(x) ()
 #endif
+
 
 #if defined (__cplusplus)
 extern "C" {

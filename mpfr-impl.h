@@ -22,30 +22,32 @@ MA 02111-1307, USA. */
 #ifndef __MPFR_IMPL_H__
 #define __MPFR_IMPL_H__
 
-/* Auto-include limits.h (Before gmp-impl.h) */
-#include <limits.h>
+/* Auto-include limits.h (Before gmp-impl.h) if needed */
+#ifdef MPFR_USE_LIMITS_H
+# include <limits.h>
+#endif
 
 /* Auto include local gmp.h if not included */
 #ifndef __GMP_H__
-#include "gmp.h"
+# include "gmp.h"
 #endif
 
 /* Auto include local gmp-impl.h if not included */
 #ifndef __GMP_IMPL_H__
-#include "gmp-impl.h"
+# include "gmp-impl.h"
 #endif
 
 /* Auto include local mpfr.h if not included */
 #ifndef __MPFR_H
-#include "mpfr.h"
+# include "mpfr.h"
 #endif
 
 #ifndef HAVE_STRCASECMP
-#define strcasecmp mpfr_strcasecmp
+# define strcasecmp mpfr_strcasecmp
 #endif
 
 #ifndef HAVE_STRNCASECMP
-#define strncasecmp mpfr_strncasecmp
+# define strncasecmp mpfr_strncasecmp
 #endif
 
 /* Check GMP */
@@ -56,7 +58,6 @@ MA 02111-1307, USA. */
 #if (BITS_PER_MP_LIMB & (BITS_PER_MP_LIMB - 1))
 # error "BITS_PER_MP_LIMB must be a power of 2"
 #endif
-
 
  /* Definition of MPFR_LIMB_HIGHBIT and MPFR_LIMB_ONE */
 #ifdef GMP_LIMB_HIGHBIT
@@ -69,29 +70,15 @@ MA 02111-1307, USA. */
 # endif
 #endif
 
-#define MPFR_LIMB_ONE ((mp_limb_t) 1)
-#ifndef MP_LIMB_T_ONE
-# define MP_LIMB_T_ONE MPFR_LIMB_ONE
+/* Use GMP macro for limb constant if it exists */
+#ifdef CNST_LIMB
+# define MPFR_LIMB_ONE CNST_LIMB(1)
+#else
+# define MPFR_LIMB_ONE ((mp_limb_t) 1L)
 #endif
 
-/* Check if we can represent the number of limbs 
- * associated to the maximum of mpfr_prec_t*/
-/* Can't use MPFR_PREC_MAX, so use MPFR_PREC_FORMAT_INT */
-
-#if   MPFR_PREC_FORMAT == 1
-# if (MP_SIZE_T_MAX < (USHRT_MAX/BYTES_PER_MP_LIMB))
-#  error "Incompatibilty between mp_size_t and mpfr_prec_t."
-# endif
-#elif MPFR_PREC_FORMAT == 2
-# if (MP_SIZE_T_MAX < (UINT_MAX/BYTES_PER_MP_LIMB))
-#  error "Incompatibilty between mp_size_t and mpfr_prec_t."
-# endif
-#elif MPFR_PREC_FORMAT == 3
-# if (MP_SIZE_T_MAX < (ULONG_MAX/BYTES_PER_MP_LIMB))
-#  error "Incompatibilty between mp_size_t and mpfr_prec_t."
-# endif
-#else
-# error "MPFR Prec format invalid"
+#ifndef MP_LIMB_T_ONE
+# define MP_LIMB_T_ONE MPFR_LIMB_ONE
 #endif
 
 /* Test if X (positive) is a power of 2 */
@@ -104,7 +91,7 @@ typedef unsigned int            mpfr_uexp_t;
 # define MPFR_EXP_MAX (INT_MAX)
 # define MPFR_EXP_MIN (INT_MIN)
 #else
-typedef unsigned long int       mpfr_uexp_t;
+typedef unsigned long int  mpfr_uexp_t;
 # define MPFR_EXP_MAX (LONG_MAX)
 # define MPFR_EXP_MIN (LONG_MIN)
 #endif
@@ -134,7 +121,7 @@ typedef unsigned long int       mpfr_uexp_t;
 # define MPFR_ASSERTD(expr)  ((void) 0)
 #endif
 
-/* Check if the args are correct */
+/* Check if the args are correct (Buggy) */
 #define MPFR_CHECK1(x,r) \
  MPFR_ASSERTD(mpfr_check(x) && GMP_RNDN <= r && r <= GMP_RNDD)
 #define MPFR_CHECK2(x,y,r) \
@@ -323,11 +310,10 @@ long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CO
  */
 
 #define MPFR_PREC(x) ((x)->_mpfr_prec)
-#define MPFR_EXP(x) ((x)->_mpfr_exp)
+#define MPFR_EXP(x)  ((x)->_mpfr_exp)
 #define MPFR_MANT(x) ((x)->_mpfr_d)
 
-/* Old ESIZE */
-#define MPFR_LIMB_SIZE(x) ((MPFR_PREC((x)) - 1) / BITS_PER_MP_LIMB + 1)
+#define MPFR_LIMB_SIZE(x) ((MPFR_PREC((x))-1)/BITS_PER_MP_LIMB+1)
 
 /* Enum special value of exponent.*/
 # define MPFR_EXP_ZERO (MPFR_EXP_MIN+1)
