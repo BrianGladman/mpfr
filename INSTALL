@@ -1,7 +1,7 @@
 		Installing mpfr-0.0
 		===================
 
-0. You first need to install GMP. See http://www.swox.com/gmp.
+0. You first need to install GMP. See <http://www.swox.com/gmp/>.
    MPFR needs the gmp include file gmp-mparam.h that will be
    created during the compilation of gmp in the mpn subdirectory.
    So that all GMP include files are in the same directory, once
@@ -43,6 +43,9 @@ errors as follows:
 
 libm.a differs from mpfr_sqrt for a=9.89438396044940260000e-134, rnd_mode=2
 libm.a gives 3.14553397063986620000e-67, mpfr_sqrt gives 3.14553397063986680000e-67 (1 ulp)
+
+Also, Linux on Alpha is known to have problems with IEEE conformance. See
+http://www.linux.org.uk/VERSION/relnotes.2211.html.
 
 In most cases, as above, the error comes from the libm.a. On Alpha/Linux,
 which is known to have a bad libm.a, you may even find errors in the
