@@ -36,10 +36,6 @@ MA 02111-1307, USA. */
 
 static int __mpfr_extract_double _PROTO ((mp_ptr, double, int));
 
-#define NaN (0./0.) /* ensures a machine-independent NaN */
-#define Infp (1/0.)
-#define Infm (-1/0.)
-
 /* Included from gmp-2.0.2, patched to support denorms */
 
 #ifdef XDEBUG
@@ -171,7 +167,7 @@ __mpfr_extract_double (mp_ptr rp, double d, int e)
 int
 mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
 {
-  int signd, sizer, sizetmp, inexact;
+  int signd, sizetmp, inexact;
   unsigned int cnt;
   mpfr_ptr tmp;
   TMP_DECL(marker);
@@ -206,9 +202,7 @@ mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
       return 0; /* infinity is exact */
     }
 
-  sizer = (MPFR_PREC(r) - 1) / BITS_PER_MP_LIMB + 1;
-
-  /* warning: don't use tmp=r here, even if sizer >= MPFR_LIMBS_PER_DOUBLE,
+  /* warning: don't use tmp=r here, even if SIZE(r) >= MPFR_LIMBS_PER_DOUBLE,
      since PREC(r) may be different from PREC(tmp), and then both variables
      would have same precision in the mpfr_set4 call below. */
   tmp = (mpfr_ptr) TMP_ALLOC(sizeof(mpfr_t));
