@@ -6,5 +6,4 @@ Knowns bugs:
 
 * Possible integer overflows on some machines.
 
-* The semantics of mpfr_trunc, mpfr_floor and mpfr_ceil isn't completely
-  defined yet.
+* mpfr_out_str: __gmp_free_func may be called with a wrong size argument.
