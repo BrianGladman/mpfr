@@ -6,18 +6,12 @@
 
 /* #define DEBUG */
 
+extern void srand48();
+extern double drand48();
+extern int isnan();
+extern int getpid();
+
 int maxu=0;
-
-double drand()
-{
-  double d; long int *i;
-
-  i = (long int*) &d;
-  i[0] = lrand48();
-  i[1] = lrand48();
-  if (lrand48()%2) d=-d; /* generates negative numbers */
-  return d;
-}
 
 /* returns the number of ulp's between a and b */
 int ulp(a,b) double a,b;
@@ -30,7 +24,7 @@ int ulp(a,b) double a,b;
 #define check(d, r) check3(d, r, 0.0)
 
 /* returns the number of ulp of error */
-check3(double d, unsigned char rnd, double e)
+int check3(double d, unsigned char rnd, double e)
 {
   mpfr_t x, y; double f; int u=0, ck=0;
 
@@ -67,33 +61,35 @@ check3(double d, unsigned char rnd, double e)
 }
 
 /* computes n bits of exp(d) */
-check_large (double d, int n)
+int check_large (double d, int n, char rnd)
 {
   mpfr_t x; mpfr_t y;
   
   mpfr_init2(x, n); mpfr_init2(y, n);
   if (d==0.0) { /* try exp(Pi*sqrt(163)/3)-640320 */
-    mpfr_set_d(x, 163.0, GMP_RNDZ);
-    mpfr_sqrt(x, x, GMP_RNDZ);
-    mpfr_pi(y, GMP_RNDZ);
-    mpfr_mul(x, x, y, GMP_RNDZ);
-    mpfr_div_ui(x, x, 3, GMP_RNDZ);
+    mpfr_set_d(x, 163.0, rnd);
+    mpfr_sqrt(x, x, rnd);
+    mpfr_pi(y, rnd);
+    mpfr_mul(x, x, y, rnd);
+    mpfr_div_ui(x, x, 3, rnd);
   }
-  else mpfr_set_d(x, d, GMP_RNDZ);
-  mpfr_exp(x, x, GMP_RNDZ);
+  else mpfr_set_d(x, d, rnd);
+  mpfr_exp(x, x, rnd);
   if (d==0.0) {
-    mpfr_set_d(y, 640320.0, GMP_RNDZ);
-    mpfr_sub(x, x, y, GMP_RNDZ);
+    mpfr_set_d(y, 640320.0, rnd);
+    mpfr_sub(x, x, y, rnd);
     printf("exp(Pi*sqrt(163)/3)-640320=");
   }
   else printf("exp(%1.20e)=",d); 
-  mpfr_out_str(stdout, 10, 0, x, GMP_RNDZ);
+  mpfr_out_str(stdout, 10, 0, x, rnd);
   putchar('\n');
+  if (n==53) printf(" =%1.20e\n", mpfr_get_d(x));
   mpfr_clear(x); mpfr_clear(y);
+  return 0;
 }
 
 /* expx is the value of exp(X) rounded towards -infinity */
-check_worst_case(double X, double expx)
+int check_worst_case(double X, double expx)
 {
   mpfr_t x, y;
 
@@ -123,12 +119,13 @@ check_worst_case(double X, double expx)
     fprintf(stderr, "exp(x) rounded towards +infinity is wrong\n"); exit(1);
   }
   mpfr_clear(x); mpfr_clear(y);
+  return 0;
 }
 
 /* worst cases communicated by Jean-Michel Muller and Vincent Lefevre */
-check_worst_cases()
+int check_worst_cases()
 {
-  mpfr_t x; int i;
+  mpfr_t x;
 
   mpfr_init2(x, 53);
   check_worst_case(4.44089209850062517562e-16, 1.00000000000000022204);
@@ -144,6 +141,7 @@ check_worst_cases()
   printf(" ="); mpfr_print_raw(x); putchar('\n');
 #endif
   mpfr_clear(x);
+  return 0;
 }
 
 int
@@ -151,12 +149,13 @@ main(int argc, char **argv)
 {
   int i, N, s=0, e, maxe=0; double d, lo, hi;
 
-  if (argc==3) { check_large(atof(argv[1]), atoi(argv[2])); exit(1); }
+  if (argc==4) { check_large(atof(argv[1]), atoi(argv[2]), atoi(argv[3])); 
+		 exit(1); }
   check_worst_cases();
-  check(-8.88024741073346941839e-17, 2);
-  check3(8.70772839244701057915e-01, 0, 2.38875626491680437269e+00);
-  check(1.0, 0);
-  check(-3.42135637628104173534e-07, 1);
+  check3(-8.88024741073346941839e-17, GMP_RNDU, 1.0);
+  check3(8.70772839244701057915e-01, GMP_RNDN, 2.38875626491680437269);
+  check3(1.0, GMP_RNDN, 2.71828182845904509080);
+  check3(-3.42135637628104173534e-07, GMP_RNDZ, 0.999999657864420798958);
   srand48(getpid());
   N = (argc==1) ? 0 : atoi(argv[1]);
   lo = (argc>=3) ? atof(argv[2]) : -7.083964185e2;
@@ -165,7 +164,6 @@ main(int argc, char **argv)
     /* select d such that exp(d) can be represented as a normalized
        machine double-precision number, 
        i.e. 2^(-1022) <= exp(d) <= 2^(1023)*(2-2^(-52)) */
-    /* do { d = drand(); } while (d>7.097827129e2 || d<-7.083964185e2); */
     d = lo + (hi-lo)*drand48();
     e = check(d, rand() % 4);
     s += e;
@@ -173,7 +171,7 @@ main(int argc, char **argv)
   }
   if (N) printf("mean error=%1.2e max error=%d\n", (double)s/(double)N,maxe);
   check3(2.26523754332090625496e+01, 3, 6.8833785261699581146e9);
-  /* errors found in libm.a on PC under Linux (mean error = 0.03 ulp) */
+  /* errors found in libm.a on PC under Linux */
   check3(1.31478962104089092122e+01, GMP_RNDZ, 5.12930793917860137299e+05);
   check3(4.25637507920002378103e-01, GMP_RNDU, 1.53056585656161181497e+00);
   check3(6.26551618962329307459e-16, GMP_RNDU, 1.00000000000000066613e+00);
@@ -205,4 +203,5 @@ main(int argc, char **argv)
   check3(5.16239362447650933063e+02, 1, 1.5845518406744492105e224); /* -710 */
   /* between 1/2 and 1 */
   check3(6.00812634798592370977e-01, 0, 1.823600119339019443); /* +1 ulp */
+  return 0;
 }
