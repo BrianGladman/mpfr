@@ -155,7 +155,35 @@ if test -f confdefs.h; then
   mv confdefs.tmp confdefs.h
 fi
 
-AC_MY_LIBS($with_gmp_lib, gmp)
+AC_MSG_CHECKING(for GMP library)
+if `test "$with_gmp_lib"`; then
+  if test -r "$with_gmp_lib/libgmp.a"; then
+    LIBS="$with_gmp_lib/libgmp.a $LIBS"
+  elif test -r "$with_gmp_lib/libgmp.so"; then
+    LIBS="$with_gmp_lib/libgmp.so $LIBS"
+  elif test -r "$with_gmp_lib/libgmp.lib"; then
+    LIBS="$with_gmp_lib/libgmp.lib $LIBS"
+  else
+    AC_MSG_ERROR($with_gmp_lib/libgmp.a/so/lib not found)
+  fi
+  AC_MSG_RESULT(yes)
+else
+  LIBS="-lgmp $LIBS"
+  AC_RUN_IFELSE([AC_LANG_SOURCE([[
+#include "gmp.h"
+int main()
+{
+  return !gmp_version;
+}
+  ]])], [
+    AC_MSG_RESULT(yes)
+  ], [
+    AC_MSG_RESULT(no)
+    AC_MSG_ERROR(libgmp not found)
+  ], [
+    AC_MSG_RESULT([can't test])
+  ])
+fi
 
 dnl Check for corresponding 'gmp.h' and libgmp.a
 AC_MSG_CHECKING(if gmp.h version and libgmp version are the same)
@@ -168,13 +196,13 @@ int main()
   char buffer[100];
   if (__GNU_MP_VERSION_PATCHLEVEL != 0)
     sprintf (buffer, "%d.%d.%d", __GNU_MP_VERSION, __GNU_MP_VERSION_MINOR,
-	    __GNU_MP_VERSION_PATCHLEVEL); 
+	    __GNU_MP_VERSION_PATCHLEVEL);
   else
     sprintf (buffer, "%d.%d", __GNU_MP_VERSION, __GNU_MP_VERSION_MINOR);
   printf ("(%s/%s) ", buffer, gmp_version);
   return (strcmp (buffer, gmp_version) != 0) ? 1 : 0;
 }
-], AC_MSG_RESULT(yes), 
+], AC_MSG_RESULT(yes),
    [AC_MSG_RESULT(no)
     AC_MSG_ERROR(['gmp.h' and 'libgmp' have different versions! you have to properly reinstall GMP.])],
     AC_MSG_RESULT([can't test])

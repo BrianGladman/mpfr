@@ -27,34 +27,6 @@ dnl  The following line allows the autoconf wrapper (when installed)
 dnl  to work as expected.
 AC_PREREQ(2.50)
 
-AC_DEFUN([AC_MY_LIBS],
-[
-if ` test "$1" `
-then  
-  AC_MSG_CHECKING($2 library)
-	if  test -r "$1/lib$2.a"
-	then
-	  LIBS="$LIBS $1/lib$2.a"
-	else
-	if  test -r "$1/lib$2.so"
-	then
-	  LIBS="$LIBS $1/lib$2.so"
-	else
-	if  test -r "$1/lib$2.lib"
-	then
-	  LIBS="$LIBS $1/lib$2.lib"
-	else
-	   AC_MSG_ERROR($1/lib$2.a/so/lib not found)
-	fi
-	fi
-	fi
-  AC_MSG_RESULT(yes)
-else
-  AC_CHECK_LIB($2, main, , AC_MSG_ERROR($2 not found))
-fi
-]
-)
-
 dnl FIXME: Buggy?
 AC_DEFUN([AC_MY_HEADERS], 
 [
