@@ -171,6 +171,12 @@ abs
 @macro le
 <=
 @end macro
+@macro ge
+>=
+@end macro
+@macro ne
+<>
+@end macro
 @macro log
 log
 @end macro
@@ -1204,6 +1210,38 @@ Its result is undefined when @var{op} is NaN (Not-a-Number).
 This function is actually implemented as a macro.  It evaluates its arguments
 multiple times.
 @end deftypefn
+
+@deftypefun int mpfr_greater_p (mpfr_t @var{op1}, mpfr_t @var{op2})
+Return non-zero if @math{@var{op1} > @var{op2}}, zero otherwise.
+@end deftypefun
+
+@deftypefun int mpfr_greaterequal_p (mpfr_t @var{op1}, mpfr_t @var{op2})
+Return non-zero if @math{@var{op1} @ge{} @var{op2}}, zero otherwise.
+@end deftypefun
+
+@deftypefun int mpfr_less_p (mpfr_t @var{op1}, mpfr_t @var{op2})
+Return non-zero if @math{@var{op1} < @var{op2}}, zero otherwise.
+@end deftypefun
+
+@deftypefun int mpfr_lessequal_p (mpfr_t @var{op1}, mpfr_t @var{op2})
+Return non-zero if @math{@var{op1} @le{} @var{op2}}, zero otherwise.
+@end deftypefun
+
+@deftypefun int mpfr_lessgreater_p (mpfr_t @var{op1}, mpfr_t @var{op2})
+Return non-zero if @math{@var{op1} < @var{op2}} or
+@math{@var{op1} > @var{op2}} (neither @var{op1}, nor @var{op2} is a NaN,
+and @math{@var{op1} @ne{} @var{op2}}), zero otherwise.
+@end deftypefun
+
+@deftypefun int mpfr_equal_p (mpfr_t @var{op1}, mpfr_t @var{op2})
+Return non-zero if @math{@var{op1} = @var{op2}} (neither @var{op1},
+nor @var{op2} is a NaN), zero otherwise.
+@end deftypefun
+
+@deftypefun int mpfr_unordered_p (mpfr_t @var{op1}, mpfr_t @var{op2})
+Return non-zero if @var{op1} or @var{op2} is a NaN (they cannot be
+compared), zero otherwise.
+@end deftypefun
 
 @node Special Functions, I/O of Floats, Float Comparison, Floating-point Functions
 @section Special Functions

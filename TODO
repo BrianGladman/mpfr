@@ -150,16 +150,6 @@ Miscellaneous:
 - problem when reading a float followed by a character, for example 1.5*x
 	[from Fabrice.Rouillier@loria.fr, Mon, 04 Dec 2000]
 
-- documentation for:
-                         =     <     >     unordered
-mpfr_greater_p           0     0     1     0
-mpfr_greaterequal_p      1     0     1     0
-mpfr_less_p              0     1     0     0
-mpfr_lessequal_p         1     1     0     0
-mpfr_lessgreater_p       0     1     1     0
-mpfr_equal_p             1     0     0     0
-mpfr_unordered_p         0     0     0     1
-
 
 Reentrancy / Thread-Safety:
 
