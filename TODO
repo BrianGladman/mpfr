@@ -50,7 +50,10 @@ Changes in existing functions:
 	 mpfr_strtofr -> without final '\0', returns the number of characters
 	 read (or name mpfr_strtod suggested by Kevin, see below)]
 
-- [suggestion from Kevin:] char * mpf_strto (mpz_t ROP, const char *STR)
+- [suggestion from Kevin:]
+  [This has stalled on the gmp side, there'll be no hurry to do it in
+  mpfr until it's finalized in mpf.]
+  char * mpf_strto (mpz_t ROP, const char *STR)
      Read a floating point number from a string.  If successful the
      result is stored in ROP and the return value points to the
      character after those parsed.  If STR doesn't start with a valid
