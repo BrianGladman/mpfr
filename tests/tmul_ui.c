@@ -226,13 +226,13 @@ main (int argc, char *argv[])
 
   mpfr_set_prec (x, 128);
   mpfr_set_ui (x, 17, GMP_RNDN);
-  mpfr_mul_ui (x, x, MP_LIMB_T_HIGHBIT, GMP_RNDN);
+  mpfr_mul_ui (x, x, ULONG_HIGHBIT, GMP_RNDN);
   mpfr_set_prec (y, 128);
-  mpfr_set_ui (y, MP_LIMB_T_HIGHBIT, GMP_RNDN);
+  mpfr_set_ui (y, ULONG_HIGHBIT, GMP_RNDN);
   mpfr_mul_ui (y, y, 17, GMP_RNDN);
   if (mpfr_cmp (x, y))
     {
-      printf ("Error for 17 * 2^MP_LIMB_T_HIGHBIT\n");
+      printf ("Error for 17 * ULONG_HIGHBIT\n");
       exit (1);
     }
   
