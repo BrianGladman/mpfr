@@ -75,17 +75,6 @@ OSF and gcc 2.8.1, we had problems with the square root functions:
 
 (in both cases the MPFR result is the correct one).
 
-With Linux on a G4 PowerPC, we had the following problem with the addition:
-
-   Testing tadd
-   x=-1.67520091173293904017e+308,85 y=-1.56726081485363041888e+308,69 pz=82,rnd=GMP_RNDZ
-   got -1.79769313486231570815e+308
-   result should be -inf (diff=-2147483647 ulp)
-   i.e. -Inf
-   ### tadd failed ###
-
-The MPFR result is the correct one.
-
 In case of problem.
 ===================
 
