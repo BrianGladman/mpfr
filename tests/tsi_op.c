@@ -48,6 +48,22 @@ const struct {
   {"-1024.0", -0x16,  "-103A", "-100E", "16318", "bb.d1745d1745d0"}
 };
 
+static void
+check_invert ()
+{
+  mpfr_t x;
+  mpfr_init2 (x, MPFR_PREC_MIN);
+  
+  mpfr_set_ui (x, 0xC, GMP_RNDN);
+  mpfr_si_sub (x, -1, x, GMP_RNDD); /* -0001 - 1100 = - 1101 --> -1 0000 */
+  if (mpfr_cmp_si (x, -0x10) )
+    {
+      printf ("Special rounding error\n");
+      exit (1);
+    }
+  mpfr_clear (x);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -87,6 +103,9 @@ main (int argc, char *argv[])
     ERROR1("si_div", i, z, "-1024");
 
   mpfr_clears (x, z, NULL);
+
+  check_invert ();
+
   tests_end_mpfr ();
   return 0;
 }
