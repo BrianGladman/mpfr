@@ -1,4 +1,4 @@
-/* mpfr_round_raw_generic -- Generic roundin function
+/* mpfr_round_raw_generic -- Generic rounding function
 
 Copyright 1999, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 
@@ -55,9 +55,8 @@ mpfr_round_raw_generic(mp_limb_t *yp, mp_limb_t *xp, mp_prec_t xprec,
 		       )
 {
   mp_size_t xsize, nw;
-  mp_limb_t himask, lomask;
-  mp_limb_t sb;
-  int rw, carry;
+  mp_limb_t himask, lomask, sb;
+  int carry, rw;
 #if use_inexp == 0
   int *inexp;
 #endif
@@ -93,74 +92,152 @@ mpfr_round_raw_generic(mp_limb_t *yp, mp_limb_t *xp, mp_prec_t xprec,
     }
 
   /* Rounding is necessary */
-  if (MPFR_LIKELY(rw))
-    {
-      nw++;
-      lomask = ((MP_LIMB_T_ONE << (BITS_PER_MP_LIMB - rw)) - MP_LIMB_T_ONE);
-      himask = ~lomask;
-    }
-  else
-    {
-      lomask = -1;
-      himask = -1;
-    }
-    
   if (MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd_mode, neg))
     rnd_mode = GMP_RNDZ;
 
   if (use_inexp || rnd_mode != GMP_RNDZ)
-    {
-      mp_size_t k;
-      
-      k = xsize - nw;
-      if (MPFR_UNLIKELY(!rw))
-	k--;
+    {      
+      mp_size_t k = xsize - nw - 1;
+
+      if (MPFR_LIKELY(rw))
+	{
+	  nw++;
+	  lomask = ((MP_LIMB_T_ONE << (BITS_PER_MP_LIMB - rw))
+		    - MP_LIMB_T_ONE);
+	  himask = ~lomask;
+	}
+      else
+	{
+	  lomask = -1;
+	  himask = -1;
+	}
       MPFR_ASSERTD(k >= 0);
       sb = xp[k] & lomask;  /* First non-significant bits */
+      /* Rounding to nearest ? */
       if (rnd_mode == GMP_RNDN)
 	{
+	  /* Rounding to nearest */
 	  mp_limb_t rbmask = MP_LIMB_T_ONE << (BITS_PER_MP_LIMB - rw - 1);
 	  if (sb & rbmask) /* rounding bit */
 	    sb &= ~rbmask; /* it is 1, clear it */
 	  else
-	    rnd_mode = GMP_RNDZ; /* it is 0, behave like rounding to 0 */
-	}
-      while (sb == 0 && k > 0)
-	sb = xp[--k];
-      if (rnd_mode == GMP_RNDN)
-	{ /* rounding to nearest, with rounding bit = 1 */
-	  if (sb == 0) /* Even rounding. */
 	    {
-	      sb = xp[xsize - nw] & (himask ^ (himask << 1));
-	      if (use_inexp)
-		*inexp = ((neg != 0) ^ (sb != 0))
-		  ? MPFR_EVEN_INEX  : -MPFR_EVEN_INEX;
+	      /*rnd_mode = GMP_RNDZ;*/ 
+	      /* it is 0, behave like rounding to 0 */
+	      goto rnd_RNDZ;
 	    }
-	  else /* sb != 0 */
+	  while (sb == 0 && k > 0)
+	    sb = xp[--k];
+	  /* rounding to nearest, with rounding bit = 1 */
+	  if (MPFR_UNLIKELY(sb == 0)) /* Even rounding. */
+	    {
+	      /* sb == 0 && rnd_mode == GMP_RNDN */
+	      sb = xp[xsize - nw] & (himask ^ (himask << 1));
+	      if (sb == 0)
+		{
+		  if (use_inexp)
+		    *inexp = 2*MPFR_EVEN_INEX*neg-MPFR_EVEN_INEX;
+		  /* ((neg!=0)^(sb!=0)) ? MPFR_EVEN_INEX  : -MPFR_EVEN_INEX;*/
+		  /* Since neg = 0 or 1 and sb=0*/
+		  if (flag)
+		    return 0 /*sb != 0 && rnd_mode != GMP_RNDZ */;
+		  MPN_COPY_INCR(yp, xp + xsize - nw, nw);
+		  yp[0] &= himask;
+		  return 0;
+		}
+	      else
+		{
+		  /* sb != 0 && rnd_mode == GMP_RNDN */
+                  if (use_inexp)
+                    *inexp = MPFR_EVEN_INEX-2*MPFR_EVEN_INEX*neg;
+		  /*((neg!=0)^(sb!=0))? MPFR_EVEN_INEX  : -MPFR_EVEN_INEX; */
+		  /*Since neg= 0 or 1 and sb != 0 */
+		  goto rnd_RNDN_sb_return;
+		}
+	    }
+	  else /* sb != 0  && rnd_mode == GMP_RNDN*/
+	    {
 	      if (use_inexp)
-		*inexp = (neg == 0) ? 1 : -1;
+		/* *inexp = (neg == 0) ? 1 : -1; but since neg = 0 or 1 */
+		*inexp = 1-2*neg;
+	    rnd_RNDN_sb_return:
+	      if (flag)
+		return 1; /*sb != 0 && rnd_mode != GMP_RNDZ;*/
+	      carry = mpn_add_1(yp, xp + xsize - nw, nw,
+				rw ? 
+				MP_LIMB_T_ONE << (BITS_PER_MP_LIMB - rw) 
+				: 1);
+	      yp[0] &= himask;
+	      return carry;
+	    }
 	}
-      else if (use_inexp)
-	*inexp = sb == 0 ? 0
-	  : (((neg != 0) ^ (rnd_mode != GMP_RNDZ)) ? 1 : -1);
+      /* Rounding to Zero ? */
+      else if (rnd_mode == GMP_RNDZ)
+	{
+	  /* rnd_mode == GMP_RNDZ */
+	rnd_RNDZ:
+	  while ((sb == 0) && k > 0)
+	    sb = xp[--k];
+	  if (use_inexp)
+	    /* rnd_mode == GMP_RNDZ and neg = 0 or 1 */
+	    /* (neg != 0) ^ (rnd_mode != GMP_RNDZ)) ? 1 : -1);*/ 
+	    *inexp = (sb == 0) ? 0 : (2*neg-1);
+	  if (flag)
+	    return 0; /*sb != 0 && rnd_mode != GMP_RNDZ;*/
+	  MPN_COPY_INCR(yp, xp + xsize - nw, nw);
+	  yp[0] &= himask;	      
+	  return 0;
+	}
+      else 
+	{
+	  /* rnd_mode != GMP_RNDZ && rnd_mode != GMP_RNDN */
+          while (MPFR_UNLIKELY(sb == 0) && k > 0)
+            sb = xp[--k];
+	  if (sb == 0)
+	    {
+	      /* sb = 0 && rnd_mode != GMP_RNDZ */
+	      if (use_inexp)
+		/* (neg != 0) ^ (rnd_mode != GMP_RNDZ)) ? 1 : -1);*/
+		*inexp = 0;
+	      if (flag)
+		return 0;
+	      MPN_COPY_INCR(yp, xp + xsize - nw, nw);
+	      yp[0] &= himask;
+	      return 0;
+	    }
+	  else
+	    {
+              /* sb != 0 && rnd_mode != GMP_RNDZ */
+              if (use_inexp)
+                /* (neg != 0) ^ (rnd_mode != GMP_RNDZ)) ? 1 : -1);*/
+                *inexp = 1-2*neg;
+              if (flag)
+                return 1;
+	      carry = mpn_add_1(yp, xp + xsize - nw, nw,
+				rw ? MP_LIMB_T_ONE << (BITS_PER_MP_LIMB - rw)
+				: 1);
+              yp[0] &= himask;
+              return carry;
+	    }
+	}
     }
-  else
-    sb = 0;
-  
-  if (flag)
-    return sb != 0 && rnd_mode != GMP_RNDZ;
-  
-  if (sb != 0 && rnd_mode != GMP_RNDZ)
-    carry = mpn_add_1(yp, xp + xsize - nw, nw,
-		      rw ? MP_LIMB_T_ONE << (BITS_PER_MP_LIMB - rw) : 1);
   else
     {
+      /* sb = 0 */
+      if (flag)
+	return 0 /*sb != 0 && rnd_mode != GMP_RNDZ*/;
+      if (MPFR_LIKELY(rw))
+        {
+          nw++;
+          himask = ~( ((MP_LIMB_T_ONE << (BITS_PER_MP_LIMB - rw))
+		       - MP_LIMB_T_ONE));
+        }
+      else
+	himask = -1;
       MPN_COPY_INCR(yp, xp + xsize - nw, nw);
-      carry = 0;
+      yp[0] &= himask;
+      return 0;
     }
-  yp[0] &= himask;
-  
-  return carry;
 }
 
 #undef flag
