@@ -83,6 +83,9 @@ typedef union ieee_double_extract Ieee_double_extract;
 #define MPFR_IS_FP(x) ((((x) -> _mpfr_size >> 29) & 3) == 0)
 #define MPFR_ABSSIZE(x) \
   ((x)->_mpfr_size & (((mp_size_unsigned_t) 1 << 29) - 1))
+#define MPFR_SET_ABSSIZE(x, n) \
+  ((x)->_mpfr_size = ((x)->_mpfr_size & ((mp_size_unsigned_t) 7 << 29)) \
+                     | (mp_size_unsigned_t) (n))
 #define MPFR_SIZE(x) ((x)->_mpfr_size)
 #define MPFR_EXP(x) ((x)->_mpfr_exp)
 #define MPFR_MANT(x) ((x)->_mpfr_d)
