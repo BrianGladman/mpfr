@@ -34,6 +34,7 @@ main(int argc, char **argv)
   check(-4.53063926135729747564e-308, 0);
   check(2.14478198760196000000e+16, 0);
   check(7.02293374921793516813e-84, 0);
+  check(-6.7274500420134077e-87,0); 
   for (i=0;i<100000;i++) {
     do { d = drand(); } while (isnan(d));
     check(d, 0);
