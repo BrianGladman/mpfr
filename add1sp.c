@@ -262,10 +262,10 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       DEBUG( mpfr_print_mant_binary("Add=  ", ap, p) );
       
       /* Check for overflow */
-      if (MPFR_UNLIKELY(limb))
+      if (MPFR_UNLIKELY (limb))
 	{
 	  limb = ap[0] & (MPFR_LIMB_ONE<<sh); /* Get LSB */
-	  mpn_rshift(ap, ap, n, 1);           /* Shift mantissa*/
+	  mpn_rshift (ap, ap, n, 1);          /* Shift mantissa*/
 	  bx++;                               /* Fix exponent */
 	  ap[n-1] |= MPFR_LIMB_HIGHBIT;       /* Set MSB */
 	  ap[0]   &= mask;                    /* Clear LSB bit */
