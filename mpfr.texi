@@ -8,13 +8,13 @@
 @end iftex
 @comment %**end of header
 
-@ifinfo
+@ifnottex
 @format
 START-INFO-DIR-ENTRY
 * mpfr: (mpfr.info).               Multiple Precision Floating-Point Reliable Library.
 END-INFO-DIR-ENTRY
 @end format
-@end ifinfo
+@end ifnottex
 
 @c smallbook
 
@@ -29,7 +29,7 @@ END-INFO-DIR-ENTRY
 @c ==> following paragraph; update date, too.
 
 
-@ifinfo
+@ifnottex
 This file documents MPFR, a library for reliable multiple precision floating-point arithmetic
 
 Copyright (C) 1999-2002, Free Software Foundation.
@@ -54,7 +54,7 @@ Permission is granted to copy and distribute translations of this manual
 into another language, under the above conditions for modified versions,
 except that this permission notice may be stated in a translation approved
 by the Foundation.
-@end ifinfo
+@end ifnottex
 
 @setchapternewpage on
 @titlepage
@@ -102,7 +102,7 @@ by the Foundation.
 @end titlepage
 @headings double
 
-@ifinfo
+@ifnottex
 @node Top, Copying, (dir), (dir)
 
 @top MPFR
@@ -110,7 +110,7 @@ by the Foundation.
 This manual documents how to install and use the Multiple Precision
 Floating-Point Reliable Library, version 2.0.2
 
-@end ifinfo
+@end ifnottex
 
 @menu
 * Copying::                   GMP Copying Conditions (LGPL).
@@ -918,11 +918,11 @@ and negative if @var{rop} is smaller than @var{op1} @minus{} @var{op2}.
 @deftypefunx int mpfr_mul_ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_mul_z (mpfr_t @var{rop}, mpfr_t @var{op1}, mpz_t @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_mul_q (mpfr_t @var{rop}, mpfr_t @var{op1}, mpq_t @var{op2}, mp_rnd_t @var{rnd})
-@ifinfo
+@ifnottex
 Set @var{rop} to @var{op1} times @var{op2} rounded in the direction @var{rnd}.
 Return 0 if the result is exact, a positive value if 
 @var{rop}>@var{op1}*@var{op2}, a negative value otherwise.
-@end ifinfo
+@end ifnottex
 @tex
 Set @var{rop} to $@var{op1} \times @var{op2}$ rounded in the direction @var{rnd}.
 Return 0 if the result is exact, a positive value if 
@@ -943,9 +943,9 @@ and a negative value otherwise.
 
 @deftypefun int mpfr_sqrt (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_sqrt_ui (mpfr_t @var{rop}, unsigned long int @var{op}, mp_rnd_t @var{rnd})
-@ifinfo
+@ifnottex
 Set @var{rop} to the square root of @var{op} rounded in the direction @var{rnd}.
-@end ifinfo
+@end ifnottex
 @tex
 Set @var{rop} to $\sqrt{@var{op}}$ rounded in the direction @var{rnd}.
 @end tex
@@ -1000,9 +1000,9 @@ the absolute value of @var{op}, and a negative value otherwise.
 @deftypefun int mpfr_mul_2exp (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_mul_2ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_mul_2si (mpfr_t @var{rop}, mpfr_t @var{op1}, long int @var{op2}, mp_rnd_t @var{rnd})
-@ifinfo
+@ifnottex
 Set @var{rop} to @var{op1} times 2 raised to @var{op2}
-@end ifinfo
+@end ifnottex
 @tex
 Set @var{rop} to $@var{op1} \times 2^{op2}$
 @end tex
@@ -1017,9 +1017,9 @@ you should use @code{mpfr_mul_2ui} (or @code{mpfr_mul_2si}) instead.
 @deftypefun int mpfr_div_2exp (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_div_2ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_div_2si (mpfr_t @var{rop}, mpfr_t @var{op1}, long int @var{op2}, mp_rnd_t @var{rnd})
-@ifinfo
+@ifnottex
 Set @var{rop} to @var{op1} divided by 2 raised to @var{op2}
-@end ifinfo
+@end ifnottex
 @tex
 Set @var{rop} to $@var{op1}/2^{op2}$
 @end tex
@@ -1040,11 +1040,11 @@ you should use @code{mpfr_div_2ui} (or @code{mpfr_div_2si}) instead.
 @deftypefun int mpfr_cmp (mpfr_t @var{op1}, mpfr_t @var{op2})
 @deftypefunx int mpfr_cmp_ui (mpfr_t @var{op1}, unsigned long int @var{op2})
 @deftypefunx int mpfr_cmp_si (mpfr_t @var{op1}, signed long int @var{op2})
-@ifinfo
+@ifnottex
 Compare @var{op1} and @var{op2}.  Return a positive value if @var{op1} >
 @var{op2}, zero if @var{op1} = @var{op2}, and a negative value if @var{op1} <
 @var{op2}.
-@end ifinfo
+@end ifnottex
 @tex
 Compare @var{op1} and @var{op2}.  Return a positive value if $@var{op1} >
 @var{op2}$, zero if $@var{op1} = @var{op2}$, and a negative value if $@var{op1}
