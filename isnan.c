@@ -33,11 +33,11 @@ mpfr_nan_p (mpfr_srcptr x)
 int
 mpfr_inf_p (mpfr_srcptr x)
 {
-  return (!MPFR_IS_NAN(x) && MPFR_IS_INF(x));
+  return !MPFR_IS_NAN(x) && MPFR_IS_INF(x);
 }
 
 int
 mpfr_number_p (mpfr_srcptr x)
 {
-  return !MPFR_IS_NAN(x);
+  return !MPFR_IS_NAN(x) && !MPFR_IS_INF(x);
 }
