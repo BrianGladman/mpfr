@@ -20,6 +20,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+#include <stdio.h>
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
@@ -27,7 +28,6 @@ MA 02111-1307, USA. */
    TODO: Find a better (and faster?) check than using old implementation */
 #ifdef WANT_ASSERT
 # if WANT_ASSERT >= 2
-#include <stdio.h>
 
 int mpfr_mul2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode);
 static int
@@ -177,11 +177,11 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
              "Prec_a= %lu Prec_b= %lu Prec_c= %lu\nB=",
              mpfr_print_rnd_mode (rnd_mode),
              MPFR_PREC (a), MPFR_PREC (b), MPFR_PREC (c));
-      mpfr_dump (tb);
-      printf("C="); mpfr_dump (tc);
-      printf("OldMul: "); mpfr_dump (ta);
-      printf("NewMul: "); mpfr_dump (a);
-      printf("NewInexact = %d | OldInexact = %d\n", inexact1, inexact2);
+      mpfr_out_str (stdout, 16, 0, tb, GMP_RNDN);
+      printf("\nC="); mpfr_out_str (stdout, 16, 0, tc, GMP_RNDN);
+      printf("\nOldMul: "); mpfr_out_str (stdout, 16, 0, ta, GMP_RNDN);
+      printf("\nNewMul: "); mpfr_out_str (stdout, 16, 0, a, GMP_RNDN);
+      printf("\nNewInexact = %d | OldInexact = %d\n", inexact1, inexact2);
       MPFR_ASSERTN(0);
     }
 
