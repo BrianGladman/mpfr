@@ -29,6 +29,21 @@ MA 02111-1307, USA. */
 
 #define N 30000
 
+#define CHECK53(y, s, r, x, t, n) \
+  mpfr_set_str (y, s, 10, r); \
+  mpfr_set_str_binary (x, t); \
+  if (mpfr_cmp (x, y)) \
+    { \
+      printf ("Error in mpfr_set_str (%u):\n", n); \
+      mpfr_print_binary (x); \
+      puts (""); \
+      mpfr_print_binary (y); \
+      puts (""); \
+      mpfr_clear (x); \
+      mpfr_clear (y); \
+      exit (1); \
+    }
+
 static void 
 check_underflow (void)
 {
@@ -405,6 +420,311 @@ main (int argc, char *argv[])
       mpfr_clear (y);
       exit (1);
     }
+
+  /* worst cases for rounding to nearest in double precision */
+  mpfr_set_prec (x, 53);
+  mpfr_set_prec (y, 53);
+
+  mpfr_set_str (y, "5e125", 10, GMP_RNDN);
+  mpfr_set_str_binary (x, "0.10111101000101110110011000100000101001010000000111111E418");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error in mpfr_set_str (8):\n");
+      mpfr_print_binary (x);
+      puts ("");
+      mpfr_print_binary (y);
+      puts ("");
+      mpfr_clear (x);
+      mpfr_clear (y);
+      exit (1);
+    }
+
+  mpfr_set_str (y, "69e267", 10, GMP_RNDN);
+  mpfr_set_str_binary (x, "0.10000101101111100101101100000110010011001010011011010E894");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error in mpfr_set_str (9):\n");
+      mpfr_print_binary (x);
+      puts ("");
+      mpfr_print_binary (y);
+      puts ("");
+      mpfr_clear (x);
+      mpfr_clear (y);
+      exit (1);
+    }
+
+  mpfr_set_str (y, "623e100", 10, GMP_RNDN);
+  mpfr_set_str_binary (x, "0.10110010000001010011000101111001110101000001111011111E342");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error in mpfr_set_str (10):\n");
+      mpfr_print_binary (x);
+      puts ("");
+      mpfr_print_binary (y);
+      puts ("");
+      mpfr_clear (x);
+      mpfr_clear (y);
+      exit (1);
+    }
+
+  mpfr_set_str (y, "3571e263", 10, GMP_RNDN);
+  mpfr_set_str_binary (x, "0.10110001001100100010011000110000111010100000110101010E886");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error in mpfr_set_str (11):\n");
+      mpfr_print_binary (x);
+      puts ("");
+      mpfr_print_binary (y);
+      puts ("");
+      mpfr_clear (x);
+      mpfr_clear (y);
+      exit (1);
+    }
+
+  mpfr_set_str (y, "75569e-254", 10, GMP_RNDN);
+  mpfr_set_str_binary (x, "0.10101101001000110001011011001000111000110101010110011E-827");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error in mpfr_set_str (12):\n");
+      mpfr_print_binary (x);
+      puts ("");
+      mpfr_print_binary (y);
+      puts ("");
+      mpfr_clear (x);
+      mpfr_clear (y);
+      exit (1);
+    }
+
+  mpfr_set_str (y, "920657e-23", 10, GMP_RNDN);
+  mpfr_set_str_binary (x, "0.10101001110101001100110000101110110111101111001101100E-56");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error in mpfr_set_str (13):\n");
+      mpfr_print_binary (x);
+      puts ("");
+      mpfr_print_binary (y);
+      puts ("");
+      mpfr_clear (x);
+      mpfr_clear (y);
+      exit (1);
+    }
+
+  mpfr_set_str (y, "9210917e80", 10, GMP_RNDN);
+  mpfr_set_str_binary (x, "0.11101101000100011001000110100011111100110000000110010E289");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error in mpfr_set_str (14):\n");
+      mpfr_print_binary (x);
+      puts ("");
+      mpfr_print_binary (y);
+      puts ("");
+      mpfr_clear (x);
+      mpfr_clear (y);
+      exit (1);
+    }
+
+  mpfr_set_str (y, "87575437e-309", 10, GMP_RNDN);
+  mpfr_set_str_binary (x, "0.11110000001110011001000000110000000100000010101101100E-1000");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error in mpfr_set_str (15):\n");
+      mpfr_print_binary (x);
+      puts ("");
+      mpfr_print_binary (y);
+      puts ("");
+      mpfr_clear (x);
+      mpfr_clear (y);
+      exit (1);
+    }
+
+  mpfr_set_str (y, "245540327e122", 10, GMP_RNDN);
+  mpfr_set_str_binary (x, "0.10001101101100010001100011110000110001100010111001011E434");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error in mpfr_set_str (16):\n");
+      mpfr_print_binary (x);
+      puts ("");
+      mpfr_print_binary (y);
+      puts ("");
+      mpfr_clear (x);
+      mpfr_clear (y);
+      exit (1);
+    }
+
+  mpfr_set_str (y, "491080654e122", 10, GMP_RNDN);
+  mpfr_set_str_binary (x, "0.10001101101100010001100011110000110001100010111001011E435");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error in mpfr_set_str (17):\n");
+      mpfr_print_binary (x);
+      puts ("");
+      mpfr_print_binary (y);
+      puts ("");
+      mpfr_clear (x);
+      mpfr_clear (y);
+      exit (1);
+    }
+
+  mpfr_set_str (y, "83356057653e193", 10, GMP_RNDN);
+  mpfr_set_str_binary (x, "0.10101010001001110011011011010111011100010101000011000E678");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error in mpfr_set_str (18):\n");
+      mpfr_print_binary (x);
+      puts ("");
+      mpfr_print_binary (y);
+      puts ("");
+      mpfr_clear (x);
+      mpfr_clear (y);
+      exit (1);
+    }
+
+  CHECK53(y, "83356057653e193", GMP_RNDN, x,
+          "0.10101010001001110011011011010111011100010101000011000E678",
+          18);
+
+  CHECK53(y, "619534293513e124", GMP_RNDN, x,
+          "0.10001000011000010000000110000001111111110000011110001e452",
+          19);
+
+  CHECK53(y, "3142213164987e-294", GMP_RNDN, x,
+          "0.11101001101000000100111011111101111001010001001101111e-935",
+          20);
+
+  CHECK53(y, "36167929443327e-159", GMP_RNDN, x,
+          "0.11100111001110111110000101011001100110010100011111100e-483",
+          21);
+
+  CHECK53(y, "904198236083175e-161", GMP_RNDN, x,
+          "0.11100111001110111110000101011001100110010100011111100e-485",
+          22);
+
+  CHECK53(y, "3743626360493413e-165", GMP_RNDN, x,
+          "0.11000100000100011101001010111101011011011111011111001e-496",
+          23);
+
+  CHECK53(y, "94080055902682397e-242", GMP_RNDN, x,
+          "0.10110010010011000000111100011100111100110011011001010e-747",
+          24);
+
+  CHECK53(y, "7e-303", GMP_RNDD, x,
+          "0.10011001100111001000100110001110001000110111110001011e-1003",
+          25);
+  CHECK53(y, "7e-303", GMP_RNDU, x,
+          "0.10011001100111001000100110001110001000110111110001100e-1003",
+          26);
+
+  CHECK53(y, "93e-234", GMP_RNDD, x,
+          "0.10010011110110010111001001111001000010000000001110101E-770",
+          27);
+  CHECK53(y, "93e-234", GMP_RNDU, x,
+          "0.10010011110110010111001001111001000010000000001110110E-770",
+          28);
+
+  CHECK53(y, "755e174", GMP_RNDD, x,
+          "0.10111110110010011000110010011111101111000111111000101E588",
+          29);
+  CHECK53(y, "755e174", GMP_RNDU, x,
+          "0.10111110110010011000110010011111101111000111111000110E588",
+          30);
+
+  CHECK53(y, "8699e-276", GMP_RNDD, x,
+          "0.10010110100101101111100100100011011101100110100101100E-903",
+          31);
+  CHECK53(y, "8699e-276", GMP_RNDU, x,
+          "0.10010110100101101111100100100011011101100110100101101E-903",
+          32);
+
+  CHECK53(y, "82081e41", GMP_RNDD, x,
+          "0.10111000000010000010111011111001111010100011111001011E153",
+          33);
+  CHECK53(y, "82081e41", GMP_RNDU, x,
+          "0.10111000000010000010111011111001111010100011111001100E153",
+          34);
+
+  CHECK53(y, "584169e229", GMP_RNDD, x,
+          "0.11101011001010111000001011001110111000111100110101010E780",
+          35);
+  CHECK53(y, "584169e229", GMP_RNDU, x,
+          "0.11101011001010111000001011001110111000111100110101011E780",
+          36);
+
+  CHECK53(y, "5783893e-128", GMP_RNDD, x,
+          "0.10011000111100000110011110000101100111110011101110100E-402",
+          37);
+  CHECK53(y, "5783893e-128", GMP_RNDU, x,
+          "0.10011000111100000110011110000101100111110011101110101E-402",
+          38);
+  
+  CHECK53(y, "87575437e-310", GMP_RNDD, x,
+          "0.11000000001011100000110011110011010000000010001010110E-1003",
+          39);
+  CHECK53(y, "87575437e-310", GMP_RNDU, x,
+          "0.11000000001011100000110011110011010000000010001010111E-1003",
+          40);
+
+  CHECK53(y, "245540327e121", GMP_RNDD, x,
+          "0.11100010101101001111010010110100011100000100101000100E430",
+          41);
+  CHECK53(y, "245540327e121", GMP_RNDU, x,
+          "0.11100010101101001111010010110100011100000100101000101E430",
+          42);
+
+  CHECK53(y, "9078555839e-109", GMP_RNDD, x,
+          "0.11111110001010111010110000110011100110001010011101101E-329",
+          43);
+  CHECK53(y, "9078555839e-109", GMP_RNDU, x,
+          "0.11111110001010111010110000110011100110001010011101110E-329",
+          44);
+
+  CHECK53(y, "42333842451e201", GMP_RNDD, x,
+          "0.10000000110001001101000100110110111110101011101011111E704",
+          45);
+  CHECK53(y, "42333842451e201", GMP_RNDU, x,
+          "0.10000000110001001101000100110110111110101011101100000E704",
+          46);
+
+  CHECK53(y, "778380362293e218", GMP_RNDD, x,
+          "0.11001101010111000001001100001100110010000001010010010E764",
+          47);
+  CHECK53(y, "778380362293e218", GMP_RNDU, x,
+          "0.11001101010111000001001100001100110010000001010010011E764",
+          48);
+
+  CHECK53(y, "7812878489261e-179", GMP_RNDD, x,
+          "0.10010011011011010111001111011101111101101101001110100E-551",
+          49);
+  CHECK53(y, "7812878489261e-179", GMP_RNDU, x,
+          "0.10010011011011010111001111011101111101101101001110101E-551",
+          50);
+
+  CHECK53(y, "77003665618895e-73", GMP_RNDD, x,
+          "0.11000101111110111111001111111101001101111000000101001E-196",
+          51);
+  CHECK53(y, "77003665618895e-73", GMP_RNDU, x,
+          "0.11000101111110111111001111111101001101111000000101010E-196",
+          52);
+
+  CHECK53(y, "834735494917063e-300", GMP_RNDD, x,
+          "0.11111110001101100001001101111100010011001110111010001E-947",
+          53);
+  CHECK53(y, "834735494917063e-300", GMP_RNDU, x,
+          "0.11111110001101100001001101111100010011001110111010010E-947",
+          54);
+
+  CHECK53(y, "6182410494241627e-119", GMP_RNDD, x,
+          "0.10001101110010110010001011000010001000101110100000111E-342",
+          55);
+  CHECK53(y, "6182410494241627e-119", GMP_RNDU, x,
+          "0.10001101110010110010001011000010001000101110100001000E-342",
+          56);
+
+  CHECK53(y, "26153245263757307e49", GMP_RNDD, x,
+          "0.10011110111100000000001011011110101100010000011011110E218",
+          57);
+  CHECK53(y, "26153245263757307e49", GMP_RNDU, x,
+          "0.10011110111100000000001011011110101100010000011011111E218",
+          58);
 
   /* to check this problem : I convert limb (10--0 or 101--1) into base b
      with more than mp_bits_per_limb digits,
