@@ -87,9 +87,16 @@ mpfr_add (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
     }
   else
     { /* signs are equal, it's an addition */
-      if (MPFR_GET_EXP(b) < MPFR_GET_EXP(c))
-	return mpfr_add1(a, c, b, rnd_mode);
+      if (MPFR_LIKELY(MPFR_PREC(a) == MPFR_PREC(b)
+                      && MPFR_PREC(b) == MPFR_PREC(c)))
+	if (MPFR_GET_EXP(b) < MPFR_GET_EXP(c))
+	  return mpfr_add1sp(a, c, b, rnd_mode);
+	else
+	  return mpfr_add1sp(a, b, c, rnd_mode);
       else
-	return mpfr_add1(a, b, c, rnd_mode);
+	if (MPFR_GET_EXP(b) < MPFR_GET_EXP(c))
+	  return mpfr_add1(a, c, b, rnd_mode);
+	else
+	  return mpfr_add1(a, b, c, rnd_mode);
     }
 }

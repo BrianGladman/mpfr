@@ -247,6 +247,30 @@ check_inexact (void)
   mpfr_clear (y);
 }
 
+static void
+check_exp10(void)
+{
+  mpfr_t x;
+  int inexact;
+
+  mpfr_init2 (x, 200);
+  mpfr_set_ui(x, 4, GMP_RNDN);
+
+  inexact = mpfr_exp10 (x, x, GMP_RNDN);
+  if (mpfr_cmp_ui(x, 10*10*10*10))
+    {
+      printf ("exp10: Wrong returned value\n");
+      exit (1);
+    }
+  if (inexact != 0)
+    {
+      printf ("exp10: Wrong inexact flag\n");
+      exit (1);
+    }
+
+  mpfr_clear (x);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -302,7 +326,7 @@ main (int argc, char *argv[])
   check3("5.30015757134837031117e+02", GMP_RNDD, "1.5237672861171573939e230");
   check3("5.16239362447650933063e+02", GMP_RNDZ, "1.5845518406744492105e224");
   check3("6.00812634798592370977e-01", GMP_RNDN, "1.823600119339019443");
-
+  check_exp10 ();
  done:
   tests_end_mpfr ();
   return 0;

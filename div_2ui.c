@@ -22,7 +22,7 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
 int
-mpfr_div_2ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int n, mp_rnd_t rnd_mode)
+mpfr_div_2ui (mpfr_ptr y, mpfr_srcptr x, unsigned long n, mp_rnd_t rnd_mode)
 {
   int inexact;
 

@@ -53,8 +53,9 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
 	  MPFR_SET_ZERO(r);
 	  MPFR_RET(0); /* zero is exact */
 	}
-      else if (MPFR_IS_INF(u))
+      else
 	{ 
+	  MPFR_ASSERTD(MPFR_IS_INF(u));
 	  /* sqrt(-Inf) = NAN */
 	  if (MPFR_IS_NEG(u))
 	    {

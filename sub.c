@@ -95,13 +95,21 @@ mpfr_sub (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
             rnd_mode = GMP_RNDD;
           else if (rnd_mode == GMP_RNDD)
             rnd_mode = GMP_RNDU;
-          inexact = mpfr_add1(a, c, b, rnd_mode);
+          if (MPFR_LIKELY(MPFR_PREC(a) == MPFR_PREC(b)
+                          && MPFR_PREC(b) == MPFR_PREC(c)))
+            inexact = mpfr_add1sp(a, c, b, rnd_mode);
+          else
+	    inexact = mpfr_add1(a, c, b, rnd_mode);
           MPFR_CHANGE_SIGN(a);
           return -inexact;
         }
       else
         {
-          return mpfr_add1(a, b, c, rnd_mode);
+	  if (MPFR_LIKELY(MPFR_PREC(a) == MPFR_PREC(b)
+			  && MPFR_PREC(b) == MPFR_PREC(c)))
+	    return mpfr_add1sp(a, b, c, rnd_mode);
+	  else
+	    return mpfr_add1(a, b, c, rnd_mode);
         }
     }
 }

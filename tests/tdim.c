@@ -71,7 +71,7 @@ main (void)
   mpfr_dim (z, x, y, GMP_RNDN);
   if (mpfr_cmp_ui (z, 0) || mpfr_sgn (z) < 0)
     {
-      printf ("Error in mpfr_dim (+Inf, 0)\n");
+      printf ("Error in mpfr_dim (+Inf, +Inf)\n");
       exit (1);
     }
 

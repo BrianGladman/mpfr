@@ -83,27 +83,20 @@ main (int argc, char *argv[])
           exit(-1);
         }
     }
-
-  /*  for (k = 0; k < 100000; k++)
+  mpfr_set_ui(w, 1, GMP_RNDN);
+  mpfr_mul_2ui(w, w, (unsigned long) MPFR_EXP_MAX+12, GMP_RNDN);
+  if (!mpfr_inf_p(w))
     {
-      x = DBL_RAND ();
-      mpfr_set_d (w, x, 0);
-      mpfr_mul_2exp (w, w, 10, GMP_RNDZ);
-      if (x != (z = mpfr_get_d1 (w)/1024))
-        {
-          printf ("%f != %f\n", x, z);
-          exit (1);
-        }
-
-      mpfr_set_d(w, x, 0);
-      mpfr_div_2exp(w, w, 10, GMP_RNDZ);
-      if (x != (z = mpfr_get_d1 (w)*1024))
-        {
-          printf ("%f != %f\n", x, z);
-          mpfr_clear (w);
-          exit (1);
-        }
-	}*/
+      printf("Overflow error!\n");
+      exit(1);
+    }
+  mpfr_set_ui(w, 1, GMP_RNDN);
+  mpfr_div_2ui(w, w, (unsigned long) MPFR_EXP_MAX+12, GMP_RNDN);
+  if (mpfr_cmp_ui(w, 0))
+    {
+      printf("Underflow error!\n");
+      exit(1);
+    }
 
   mpfr_clears(w,z,NULL);
 
