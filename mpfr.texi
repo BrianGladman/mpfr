@@ -1112,9 +1112,9 @@ If one of the operands is NaN (Not-a-Number), the behavior is undefined.
 @end deftypefun
 
 @deftypefun int mpfr_eq (mpfr_t @var{op1}, mpfr_t @var{op2}, unsigned long int @var{op3})
-Return non-zero if @var{op1} and @var{op2} are both infinities of the
-same sign, both zero or both non-zero ordinary numbers with the same
-exponent and the same first @var{op3} bits. Return zero otherwise. This
+Return non-zero if @var{op1} and @var{op2} are both non-zero ordinary
+numbers with the same exponent and the same first @var{op3} bits, both
+zero, or both infinities of the same sign. Return zero otherwise. This
 function is defined for compatibility with @code{mpf}, but does not
 make much sense.
 @end deftypefun
