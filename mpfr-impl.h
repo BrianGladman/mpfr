@@ -63,11 +63,14 @@ typedef union ieee_double_extract Ieee_double_extract;
 /* Memory gestion */
 
 /* temporary allocate s limbs at xp, and initialize mpfr variable x */
-#define MPFR_INIT(xp, x, p, s) xp = (mp_ptr) TMP_ALLOC(s*BYTES_PER_MP_LIMB); \
-   MPFR_PREC(x) = p; MPFR_MANT(x) = xp; MPFR_SIZE(x) = s; MPFR_EXP(x) = 0; 
+#define MPFR_INIT(xp, x, p, s) do { \
+    xp = (mp_ptr) TMP_ALLOC((s)*BYTES_PER_MP_LIMB); \
+    MPFR_PREC(x) = p; MPFR_MANT(x) = xp; MPFR_SIZE(x) = s; MPFR_EXP(x) = 0; \
+  } while (0)
 /* same when xp is already allocated */
-#define MPFR_INIT1(xp, x, p, s) \
-   MPFR_PREC(x)=p; MPFR_MANT(x)=xp; MPFR_SIZE(x)=s;
+#define MPFR_INIT1(xp, x, p, s) do { \
+    MPFR_PREC(x)=p; MPFR_MANT(x)=xp; MPFR_SIZE(x)=s; \
+  } while (0)
 
 #ifndef _PROTO
 #if defined (__STDC__) || defined (__cplusplus)
