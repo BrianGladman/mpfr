@@ -322,7 +322,46 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       cn = tn;
     }
   MPFR_ASSERTD (bn >= cn);
-  if (MPFR_UNLIKELY (bn > MPFR_MUL_THRESHOLD))
+  if (MPFR_LIKELY (bn <= 2))
+    {
+      if (bn == 1)
+	{
+	  /* 1 limb * 1 limb */
+	  umul_ppmm (tmp[1], tmp[0], MPFR_MANT (b)[0], MPFR_MANT (c)[0]);
+	  b1 = tmp[1];
+	}
+      else if (MPFR_UNLIKELY (cn == 1))
+	{
+	  /* 2 limbs * 1 limb */
+	  mp_limb_t t;
+	  umul_ppmm (tmp[1], tmp[0], MPFR_MANT (b)[0], MPFR_MANT (c)[0]);
+	  umul_ppmm (tmp[2], t, MPFR_MANT (b)[1], MPFR_MANT (c)[0]);
+	  add_ssaaaa (tmp[2], tmp[1], tmp[2], tmp[1], 0, t);
+	  b1 = tmp[2];
+	}
+      else
+	{
+	  /* 2 limbs * 2 limbs */
+	  /* This isn't a generic 2 limbs*2 limbs code since it assumes
+	     the mantissa are MSB normalized */
+	  mp_limb_t t1, t2, t3, t4;
+	  umul_ppmm (tmp[1], tmp[0], MPFR_MANT (b)[0], MPFR_MANT (c)[0]);
+	  umul_ppmm (tmp[3], tmp[2], MPFR_MANT (b)[1], MPFR_MANT (c)[1]);
+	  umul_ppmm (t1, t2, MPFR_MANT (b)[1], MPFR_MANT (c)[0]);	  
+	  umul_ppmm (t3, t4, MPFR_MANT (b)[0], MPFR_MANT (c)[1]);
+
+	  add_ssaaaa (tmp[2], tmp[1], tmp[2], tmp[1], 0, t2);
+	  add_ssaaaa (tmp[2], tmp[1], tmp[2], tmp[1], 0, t4);
+	  add_ssaaaa (tmp[3], tmp[2], tmp[3], tmp[2], 0, t1);
+	  add_ssaaaa (tmp[3], tmp[2], tmp[3], tmp[2], 0, t3);
+	  b1 = tmp[3];
+	}
+      b1 >>= (BITS_PER_MP_LIMB - 1);
+      tmp += k - tn;
+      if (MPFR_UNLIKELY (b1 == 0))
+	mpn_lshift (tmp, tmp, tn, 1); /* tn <= k, so no stack corruption */
+    }
+  else if (MPFR_UNLIKELY (bn > MPFR_MUL_THRESHOLD))
     {
       mp_limb_t *bp, *cp;
       mp_size_t n;
@@ -334,7 +373,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       n = MPFR_LIMB_SIZE (a) + 1;
       n = MIN (n, cn);
       MPFR_ASSERTD (n >= 1 && 2*n <= k && n <= cn && n <= bn);
-      p = n*BITS_PER_MP_LIMB - MPFR_INT_CEIL_LOG2 (n + 2);
+      p = n*BITS_PER_MP_LIMB - MPFR_INT_CEIL_LOG2 (n + 2) ;
       bp = MPFR_MANT (b) + bn - n;
       cp = MPFR_MANT (c) + cn - n;
       /* Check if MulHigh can produce a roundable result.
@@ -368,7 +407,6 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	  /* We will compute with one extra limb */
 	  n++;
 	  p = n*BITS_PER_MP_LIMB - MPFR_INT_CEIL_LOG2 (n + 2);
-	  p += BITS_PER_MP_LIMB;
 	  MPFR_ASSERTD (MPFR_PREC (a) <= p - 5);
 	  if (MPFR_LIKELY (k < 2*n))
 	    {
@@ -379,7 +417,6 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       MPFR_LOG_MSG (("Use mpfr_mulhigh (%lu VS %lu)\n", MPFR_PREC (a), p));
       /* Compute an approximation of the product of b and c */
       mpfr_mulhigh_n (tmp+k-2*n, bp, cp, n);
-
       /* now tmp[0]..tmp[k-1] contains the product of both mantissa,
 	 with tmp[k-1]>=2^(BITS_PER_MP_LIMB-2) */
       b1 = tmp[k-1] >> (BITS_PER_MP_LIMB - 1); /* msb from the product */

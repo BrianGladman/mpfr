@@ -457,7 +457,7 @@ all (const char *filename)
   if (verbose)
     printf ("Tuning mpfr_mul...\n");
   tune_simple_func (&mpfr_mul_threshold, speed_mpfr_mul, 
-		    MPFR_PREC_MIN);  
+		    2*BITS_PER_MP_LIMB+1);  
   fprintf (f, "#define MPFR_MUL_THRESHOLD %lu\n", 
 	   (unsigned long) (mpfr_mul_threshold-1)/BITS_PER_MP_LIMB+1);
 

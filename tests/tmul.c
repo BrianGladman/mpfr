@@ -522,6 +522,41 @@ check_regression (void)
       exit (1);
     }
 
+  mpfr_set_prec (x, 606);
+  mpfr_set_prec (y, 606);
+  mpfr_set_prec (z, 606);
+
+  mpfr_set_str (y, "-f.ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff92daefc3f8052ca9f58736564d9e93e62d324@-1", 16, GMP_RNDN);
+  mpfr_set_str (z, "-f.ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff92daefc3f8052ca9f58736564d9e93e62d324@-1", 16, GMP_RNDN);
+  i = mpfr_mul (x, y, z, GMP_RNDU);
+  mpfr_set_str (y, "f.ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff25b5df87f00a5953eb0e6cac9b3d27cc5a64c@-1", 16, GMP_RNDN);
+  if (mpfr_cmp (x, y) || i <= 0)
+    {
+      printf ("Regression test (2) failed! (i=%d - Expected 1)\n", i);
+      mpfr_out_str (stdout, 16, 0, x, GMP_RNDN); putchar ('\n');
+      exit (1);
+    }
+
+  mpfr_set_prec (x, 184);
+  mpfr_set_prec (y, 92);
+  mpfr_set_prec (z, 1023);
+
+  mpfr_set_str (y, "6.9b8c8498882770d8038c3b0@-1", 16, GMP_RNDN);
+  mpfr_set_str (z, "7.44e24b986e7fb296f1e936ce749fec3504cbf0d5ba769466b1c9f1578115efd5d29b4c79271191a920a99280c714d3a657ad6e3afbab77ffce9d697e9bb9110e26d676069afcea8b69f1d1541f2365042d80a97c21dcccd8ace4f1bb58b49922003e738e6f37bb82ef653cb2e87f763974e6ae50ae54e7724c38b80653e3289@255", 16, GMP_RNDN);
+  i = mpfr_mul (x, y, z, GMP_RNDU);
+  mpfr_set_prec (y, 184);
+  mpfr_set_str (y, "3.0080038f2ac5054e3e71ccbb95f76aaab2221715025a28@255",
+		16, GMP_RNDN);
+  if (mpfr_cmp (x, y) || i <= 0)
+    {
+      printf ("Regression test (4) failed! (i=%d - expected 1)\n", i);
+      printf ("Ref: 3.0080038f2ac5054e3e71ccbb95f76aaab2221715025a28@255\n"
+	      "Got: ");
+      mpfr_out_str (stdout, 16, 0, x, GMP_RNDN);
+      printf ("\nt=");
+      exit (1);
+    }
+
   mpfr_clears (x, y, z, NULL);
 }
 
