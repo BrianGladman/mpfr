@@ -89,13 +89,27 @@ main (int argc, char *argv[])
   mpfr_set_str (y, "4.936a52bc17254@-133", 16, GMP_RNDN);
   if (mpfr_cmp (x, y))
     {
-      fprintf (stderr, "Error in mpfr_set_str (1):\n");
+      fprintf (stderr, "Error in mpfr_set_str (1a):\n");
       mpfr_print_binary (x);
       putchar ('\n');
       mpfr_print_binary (y);
       putchar ('\n');
       mpfr_clear (x);
       mpfr_clear (y); 
+      exit (1);
+    }
+
+  mpfr_set_str_raw (x, "0.111111101101110010111010100110000111011001010100001101E-529");
+  mpfr_set_str (y, "0.fedcba98765434P-529", 16, GMP_RNDN);
+  if (mpfr_cmp (x, y))
+    {
+      fprintf (stderr, "Error in mpfr_set_str (1b):\n");
+      mpfr_print_binary (x);
+      putchar ('\n');
+      mpfr_print_binary (y);
+      putchar ('\n');
+      mpfr_clear (x);
+      mpfr_clear (y);
       exit (1);
     }
 

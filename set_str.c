@@ -79,6 +79,7 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
   mp_exp_t pr;                 /* needed precision requise for str */
   mp_exp_t exp_s = 0;          /* exponent in base 'base', normalized for a
                                   mantissa 0.xxx...xxx */
+  mp_exp_t binexp = 0;         /* binary exponent (for base 16) */
   mp_exp_t prec_x;             /* working precision for x */
   char *str1;                  /* copy of str, should not be modified */
   size_t size_str1;            /* number of characters in str1 */
@@ -146,6 +147,17 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
             }
 	  break;
 	}
+      else if (base == 16 && (*str == 'p' || *str == 'P'))
+        {
+          char *endptr[1];
+          binexp = (mp_exp_t) strtol (str + 1, endptr, 10);
+          if (**endptr != '\0')
+            {
+              res = -1; /* invalid input: garbage after exponent */
+              goto end;
+            }
+	  break;
+        }
       else if (*str == '.')
 	{	
 	  point = 1;
@@ -177,7 +189,7 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
       goto sign_and_flags;
     }
 
-  /* now we have str = 0.mant_s[0]...mant_s[prec_s-1]*base^exp_s */
+  /* now we have str = 0.mant_s[0]...mant_s[prec_s-1]*base^exp_s*2^binexp */
 
   /* determine the minimal precision for the computation */
   prec_x = MPFR_PREC(x) + (mp_exp_t) __gmpfr_ceil_log2 ((double) MPFR_PREC(x));
@@ -239,8 +251,8 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
 
 	  count_leading_zeros (pow2, (mp_limb_t) base);
 	  pow2 = BITS_PER_MP_LIMB - pow2 - 1; /* base = 2^pow2 */
-	  
-	  exp_y = exp_y + pow2 * (exp_s - (mp_exp_t) pr);
+
+	  exp_y += pow2 * (exp_s - (mp_exp_t) pr) + binexp;
 
 	  result = y - n;
 	}

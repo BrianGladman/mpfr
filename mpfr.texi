@@ -1349,10 +1349,12 @@ Return the number of bytes written, or if an error occurred, return 0.
 Input a string in base @var{base} from stdio stream @var{stream},
 rounded in direction @var{rnd}, and put the
 read float in @var{rop}.  The string is of the form @samp{M@@N} or, if the
-base is 10 or less, alternatively @samp{MeN} or @samp{MEN}.
-@samp{M} is the mantissa and
-@samp{N} is the exponent.  The mantissa is always in the specified base.  The
-exponent is read in decimal.
+base is 10 or less, alternatively @samp{MeN} or @samp{MEN}, or, if the base
+is 16, alternatively @samp{MpB} or @samp{MPB}.
+@samp{M} is the mantissa in the specified base, @samp{N} is the exponent
+written in decimal for the specified base, and in base 16, @samp{B} is the
+binary exponent written in decimal (it indicates the power of 2 by which
+the mantissa is to be scaled).
 The argument @var{base} may be in the range 2 to 36.
 
 Unlike the corresponding @code{mpz} function, the base will not be determined
