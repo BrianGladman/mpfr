@@ -4,17 +4,7 @@
 #include "gmp.h"
 #include "longlong.h"
 #include "mpfr.h"
-
-double drand()
-{
-  double d; long int *i;
-
-  i = (long int*) &d;
-  i[0] = lrand48();
-  i[1] = lrand48();
-  if (lrand48()%2) d=-d; /* generates negative numbers */
-  return d;
-}
+#include "mpfr-impl.h"
 
 void main()
 {
