@@ -35,7 +35,7 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
     exit(1);
   }
   count_leading_zeros(pow2, (mp_limb_t)base); 
-  pow2 = mp_bits_per_limb - pow2 - 1;
+  pow2 = BITS_PER_MP_LIMB - pow2 - 1;
   if (base != (1<<pow2)) pow2=0; 
   /* if pow2 <> 0, then base = 2^pow2 */
 
@@ -64,23 +64,23 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
   err = 5;
   q = prec+err;
   /* one has to use at least q bits */
-  q = ((q-1)/mp_bits_per_limb)*mp_bits_per_limb;
-  mpfr_init(a); mpfr_init(b);
-  p = n-f; if ((div=(p<0))) p=-p;
+  q = (((q-1)/BITS_PER_MP_LIMB)+1)*BITS_PER_MP_LIMB;
+  mpfr_init2(a,q); mpfr_init2(b,q);
 
-  rnd1 = rnd_mode;
-  if (div) {
-    /* if div we divide by base^p so we have to invert the rounding mode */
-    switch (rnd1) {
-    case GMP_RNDN: rnd1=GMP_RNDN; break;
-    case GMP_RNDZ: rnd1=GMP_RNDU; break;
-    case GMP_RNDU: rnd1=GMP_RNDZ; break;
-    case GMP_RNDD: rnd1=GMP_RNDZ; break;
-    }
-  }
   neg = (SIGN(op)<0) ? 1 : 0;
   do {
-    q += mp_bits_per_limb;
+    p = n-f; if ((div=(p<0))) p=-p;
+    rnd1 = rnd_mode;
+    if (div) {
+      /* if div we divide by base^p so we have to invert the rounding mode */
+      switch (rnd1) {
+      case GMP_RNDN: rnd1=GMP_RNDN; break;
+      case GMP_RNDZ: rnd1=GMP_RNDU; break;
+      case GMP_RNDU: rnd1=GMP_RNDZ; break;
+      case GMP_RNDD: rnd1=GMP_RNDZ; break;
+      }
+    }
+
     if (pow2) {
       if (div) mpfr_div_2exp(b, op, pow2*p, rnd_mode);
       else mpfr_mul_2exp(b, op, pow2*p, rnd_mode);
@@ -92,48 +92,62 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
        else {
 	 mpfr_set_prec(a, q);
 	 mpfr_ui_pow_ui(a, base, p, rnd1);
+	 if (div) {
+	   mpfr_set_ui(b, 1, rnd_mode);
+	   mpfr_div(a, b, a, rnd_mode);
+	 }
 	 /* now a is an approximation by default of 1/base^(f-n) */
-	 if (div) mpfr_div(b, op, a, rnd_mode);
-	 else mpfr_mul(b, op, a, rnd_mode);
+	 mpfr_mul(b, op, a, rnd_mode);
        }
     }
-    if (neg) CHANGE_SIGN(b);
-    if (q>2*prec+mp_bits_per_limb) {
-      fprintf(stderr, "no convergence in mpfr_get_str\n"); exit(1);
+    if (neg) CHANGE_SIGN(b); /* put b positive */
+
+    if (q>2*prec+BITS_PER_MP_LIMB) {
+      /* happens when just in the middle between two digits */
+      n--; q-=BITS_PER_MP_LIMB;
+      if (n==0) {
+          fprintf(stderr, "cannot determine leading digit\n"); exit(1);
+        }
     }
     ok = pow2 || mpfr_can_round(b, q-err, rnd_mode, rnd_mode, prec);
+
     if (ok && exact) { 
-      /* check that value is the same at distance 2^(e-PREC(op))/base^(f-n)
-       in opposite from rounding direction */
-      if (e>=PREC(op)) mpfr_mul_2exp(a, a, e-PREC(op), rnd_mode);
-      else mpfr_div_2exp(a, a, PREC(op)-e, rnd_mode);
-      if (rnd_mode==GMP_RNDN) {
-	mpfr_div_2exp(a, a, 2, rnd_mode);
-	mpfr_sub(b, b, a, rnd_mode); /* b - a/2 */
-	mpfr_mul_2exp(a, a, 2, rnd_mode);
-	mpfr_add(a, b, a, rnd_mode); /* b + a/2 */
+      if (pow2) {
+	sh = e-PREC(op) + pow2*(n-f); /* error at most 2^e */
+	ok = mpfr_can_round(b, EXP(b)-sh-1, rnd_mode, rnd_mode, n*pow2);
       }
-      else if ((rnd_mode==GMP_RNDU && neg==0) || (rnd_mode==GMP_RNDD && neg))
-	mpfr_sub(a, b, a, rnd_mode);
-      else mpfr_add(a, b, a, rnd_mode);
-      /* check that a and b are rounded similarly */
-      prec=EXP(b);
-      if (EXP(a) != prec) ok=0;
       else {
-	mpfr_round(b, rnd_mode, prec);
-	mpfr_round(a, rnd_mode, prec);
-	if (mpfr_cmp(a, b)) ok=0;
-      }
+	 /* check that value is the same at distance 2^(e-PREC(op))/base^(f-n)
+	  in opposite from rounding direction */
+	 if (e>=PREC(op)) mpfr_mul_2exp(a, a, e-PREC(op), rnd_mode);
+	 else mpfr_div_2exp(a, a, PREC(op)-e, rnd_mode);
+	 if (rnd_mode==GMP_RNDN) {
+	   mpfr_div_2exp(a, a, 2, rnd_mode);
+	   mpfr_sub(b, b, a, rnd_mode); /* b - a/2 */
+	   mpfr_mul_2exp(a, a, 2, rnd_mode);
+	   mpfr_add(a, b, a, rnd_mode); /* b + a/2 */
+	 }
+	 else if ((rnd_mode==GMP_RNDU && neg==0) || (rnd_mode==GMP_RNDD && neg))
+	   mpfr_sub(a, b, a, rnd_mode);
+	 else mpfr_add(a, b, a, rnd_mode);
+	 /* check that a and b are rounded similarly */
+	 prec=EXP(b);
+	 if (EXP(a) != prec) ok=0;
+	 else {
+	   mpfr_round(b, rnd_mode, prec);
+	   mpfr_round(a, rnd_mode, prec);
+	   if (mpfr_cmp(a, b)) ok=0;
+	 }
+       }
       if (ok==0) { /* n is too large */
 	n--;
 	if (n==0) {
 	  fprintf(stderr, "cannot determine leading digit\n"); exit(1);
 	}
-	p--; if ((div=(p<0))) p=-p;
-	q -= mp_bits_per_limb;
+	q -= BITS_PER_MP_LIMB;
       }
     }
-  } while (ok==0);
+  } while (ok==0 && (q+=BITS_PER_MP_LIMB) );
   if (neg)
     switch (rnd_mode) {
     case GMP_RNDU: rnd_mode=GMP_RNDZ; break;
@@ -143,10 +157,10 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
   prec=EXP(b); /* may have changed due to rounding */
 
   /* now the mantissa is the integer part of b */
-  mpz_init(bz); q=1+(prec-1)/mp_bits_per_limb;
+  mpz_init(bz); q=1+(prec-1)/BITS_PER_MP_LIMB;
   _mpz_realloc(bz, q);
-  sh = prec%mp_bits_per_limb;
-  if (sh) mpn_rshift(PTR(bz), MANT(b), q, mp_bits_per_limb-sh);
+  sh = prec%BITS_PER_MP_LIMB;
+  if (sh) mpn_rshift(PTR(bz), MANT(b), q, BITS_PER_MP_LIMB-sh);
   else MPN_COPY(PTR(bz), MANT(b), q);
   bz->_mp_size=q;
 
