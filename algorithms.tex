@@ -14,9 +14,9 @@
 
 
 
-\newcommand{\U}[1]{
-    \n{ (--see \bf{R.{#1}}) }
-}        
+\newcommand{\U}[1]{\quad \mbox{[Rule~\ref{#1}]}}
+
+\newtheorem{Rule}{Rule}
 
 \begin{document}
 \maketitle
@@ -25,74 +25,92 @@
 
 \section{Useful formulas}
 
+In the following, $n$ is the precision (number of bits of the mantissa),
+each floating-point number is written $x = m \cdot 2^e$
+with $\frac{1}{2} \le |m| < 1$ and $e := {\rm EXP}(x)$, and
+$\ulp(x) := 2^{{\rm EXP}(x) - n}$.
 
-With a working precision of $n$ bits, and $x = m \cdot 2^e$
-with $\frac{1}{2} \le m < 1$, $e := {\rm EXP}(x)$, we have:
+\begin{Rule} \label{R1}
+$2^{-n} |x| < \ulp(x) \le 2^{-n+1} |x|$.
+\end{Rule}
+\begin{proof}
+Obvious from $x = m \cdot 2^e$ with $\frac{1}{2} \le |m| < 1$.
+\end{proof}
 
+\begin{Rule} \label{R2}
+If $a$ and $b$ have same precision $n$,
+and $|a| \le |b|$, then $\ulp(a) \le \ulp(b)$.
+\end{Rule}
+\begin{proof}
+Write $a = m_a \cdot 2^{e_a}$ and $b = m_b \cdot 2^{e_b}$.
+Then $|a| \le |b|$ implies $e_a \le e_b$, thus
+$\ulp(a) = 2^{e_a-n} \le 2^{e_b-n} = \ulp(b)$.
+\end{proof}
 
+\begin{Rule} \label{R3}
+Let $\ulp(x) := 2^{{\rm EXP}(x) - n}$, then
+$2^{n-1} \ulp(x) \le |x| < 2^{n} \ulp(x)$.
+\end{Rule}
+\begin{proof}
+Obvious from $x = m \cdot 2^e$ with $\frac{1}{2} \le |m| < 1$.
+\end{proof}
 
+\begin{Rule} \label{R4}
+$\frac{1}{2} |a| \cdot \ulp(b) < \ulp(a b) < 2 |a| \cdot \ulp(b)$.
+\end{Rule}
+\begin{proof}
+Write $a = m_a 2^{e_a}$, $b = m_b \cdot 2^{e_b}$, and $a b = m 2^e$
+with $\frac{1}{2} \le m_a, m_b, m < 1$,
+then $\frac{1}{4} 2^{e_a+e_b} \le |a b| < 2^{e_a+e_b}$,
+thus $e = e_a + e_b$ or $e = e_a + e_b - 1$, which implies
+$\frac{1}{2} 2^{e_a} \ulp(b) \le \ulp(a b) \le 2^{e_a} \ulp(b)$
+using $2^{e_b-n} = \ulp(b)$, and the rule follows from
+the fact that $|a| < 2^{e_a} \le 2|a|$ (equality on the right side can
+occur only if $e = e_a + e_b$ and $m_a = \frac{1}{2}$, which are
+incompatible).
+\end{proof}
 
-\begin{enumerate}
-\item[\bf{R.1}]
+\begin{Rule} \label{R5}
+$\ulp(2^k a) = 2^k \ulp(a)$.
+\end{Rule}
+\begin{proof}
+Easy: if $a = m_a \cdot 2^{e_a}$, then $2^k a = m_a \cdot 2^{e_a+k}$.
+\end{proof}
 
-\begin{equation}\nonumber
-x \cdot 2^{-1-n} \le \ulp(x) = 2^{{\rm EXP}(x) - n} < x \cdot 2^{-n} \
-\end{equation}
+\begin{Rule} \label{R6}
+Let $x > 0$, $o(\cdot)$ be any rounding, and $u := o(x)$, then $\frac{1}{2} u
+	< x < 2 u$.
+\end{Rule}
+\begin{proof}
+Assume $x \geq 2 u$, then $2u$ is another representable number which is closer 
+from $x$ than $u$, which leads to a contradiction. The same argument proves
+$\frac{1}{2} u < x$.
+\end{proof}
 
+\begin{Rule} \label{R7}
+$\frac{1}{2} |a| \cdot \ulp(1) \leq \ulp(a) \leq |a| \cdot \ulp(1)$.
+\end{Rule}
+\begin{proof}
+The left inegality comes from Rule~\ref{R4} with $b=1$,
+and the right one from $|a| \ulp(1) \geq \frac{1}{2} 2^{e_a} 2^{1-n} =\ulp(a)$.
+\end{proof}
 
-\item[\bf{R.2}]
+\begin{Rule} \label{R8}
+For any $x \neq 0$ and any rounding mode $o(\cdot)$,
+we have $\ulp(x) \leq \ulp(o(x))$, and equality holds when rounding towards
+zero, towards $-\infty$ for $x>0$, or towards $+\infty$ for $x<0$.
+\end{Rule}
+\begin{proof}
+Without loss of generality, assume $x > 0$.
+Let $x = m \cdot 2^e$ with $\frac{1}{2} \leq m < 1$.
+As $\frac{1}{2} 2^{e_x}$ is a machine number, necessarily $o(x) \geq
+\frac{1}{2} 2^{e_x}$, thus by Rule~\ref{R2}, then $\ulp(o(x)) \geq
+2^{e_x - n} = \ulp(x)$.
+If we round towards zero, then $o(x) \leq x$ and by Rule~\ref{R2} again,
+$\ulp(o(x)) \leq \ulp(x)$.
+\end{proof}
 
-
-\begin{equation}\nonumber
-\textnormal{If}\;\;\;\; a \leq b \;\;\;\;\textnormal{Then} \;\;\;\;\ulp(a) \le \ulp(b)
-\end{equation}
-
-\item[\bf{R.3}]
-
-
-\begin{equation}\nonumber
- 2^{n-1} \; \ulp(a) \leq a \leq 2^{n} \; \ulp(a)
-\end{equation}
-
-
-\item[\bf{R.4}]
-
-
-\begin{equation}\nonumber
- \frac{1}{2} \, a \cdot \ulp(b) \leq \ulp(a \cdot b) \leq 2 a \cdot \ulp(b)
-\end{equation}
-
-\item[\bf{R.5}]
-
-
-\begin{equation}\nonumber
- \ulp(2^k a) = 2^k \ulp(a)
-\end{equation}
-
-\item[\bf{R.6}]
-
-\begin{equation}\nonumber
-\textnormal{with}\;\;  u=o(x),\;\; \frac{1}{2} \, u \leq x \leq 2 \, u
-\end{equation}
-
-\item[\bf{R.7}]
-
-\begin{equation}\nonumber
- \frac{1}{2} \, a \cdot \ulp(1) \leq \ulp(a) \leq a \cdot \ulp(1)
-\end{equation}
-
-
-\item[\bf{R.8}]
-
-
-\begin{eqnarray}\nonumber
-&& \textnormal{with}\;\; u=o(x),\;\; \ulp(x) \leq \ulp(u) \\\nonumber
-&& \textnormal{with}\;\; u=o(x) \; \textnormal{to zero or +INF for $x<0$ or -INF for $x>0$},\;\; \ulp(x) = \ulp(u) 
-\end{eqnarray}
-
-
-\item[\bf{R.9}]
-
+\begin{Rule} \label{R9}
 \begin{eqnarray}\nonumber
 &&\textnormal{with}\;\;  u=o(x),\;\; u.(1-2^{1-p}) \leq x \leq u.(1+2^{1-p})\\\nonumber
 &&\;\;\;\;\;\;\textnormal{or with}\;\;  u=o(x),\;\; u.c_u^- \leq x \leq u.c_u^+\\\nonumber
@@ -102,11 +120,7 @@ x \cdot 2^{-1-n} \le \ulp(x) = 2^{{\rm EXP}(x) - n} < x \cdot 2^{-n} \
 &&\;\;\;\;\;\;\;\;\;\;\;\;\textnormal{if}\;\;  \n{for $x>0$ and } u=Z(x),\n{ then } c_u^-=1 \\\nonumber
 &&\;\;\;\;\;\;\;\;\;\;\;\;\textnormal{else}\;\;   c_u^{-}=1-2^{1-p} \n{ and } c_u^{+}=1+2^{1-p}
 \end{eqnarray}
-
-\end{enumerate}
-
-
-
+\end{Rule}
 
 \section{Low level functions}
 
@@ -516,7 +530,6 @@ The series at $z=0$ is implemented as follows,
 $m$ representing the working precision,
 $x, y, s, t, u$ being integer variables, and $p, r$ floating-point
 variables:
-\newpage
 \begin{quote}
 \verb|erf_0|$(z, n)$, assumes $z^2 \le n/e$ \\
 $m \leftarrow n + z^2/(\log 2)$ \\
@@ -589,9 +602,9 @@ error(w)& = &|w - x.y| \\\nonumber
 & \leq &|w - u.b| +|u.y - x.y| \\\nonumber
 & \leq & c_w \ulp(w) +  \frac{1}{2} [|u.v-u.y|+|u.y-x.y|+|u.v-x.v|+|x.v-x.y|]\\\nonumber
 & \leq & c_w \ulp(w) +  \frac{u+x}{2} k_v \ulp(v) + \frac{v+y}{2} k_u \ulp(u)\\\nonumber
-& \leq & c_w \ulp(w) +  \frac{u(1+c_u^+)}{2} k_v \ulp(v) + \frac{v(1+c_v^+)}{2} k_u \ulp(u) \U{9}\\\nonumber
-& \leq & c_w \ulp(w) +  (1+c_u^+) k_v \ulp(u.v) + (1+c_v^+) k_u \ulp(u.v) \U{4}\\\nonumber
-& \leq & [ c_w +  (1+c_u^+) k_v + (1+c_v^+) k_u ] \ulp(w)\U{8}\\\nonumber
+& \leq & c_w \ulp(w) +  \frac{u(1+c_u^+)}{2} k_v \ulp(v) + \frac{v(1+c_v^+)}{2} k_u \ulp(u) \U{R9}\\\nonumber
+& \leq & c_w \ulp(w) +  (1+c_u^+) k_v \ulp(u.v) + (1+c_v^+) k_u \ulp(u.v) \U{R4}\\\nonumber
+& \leq & [ c_w +  (1+c_u^+) k_v + (1+c_v^+) k_u ] \ulp(w)\U{R8}\\\nonumber
 &&\\\nonumber
 \textnormal{Note:}&&\textnormal{If}\;\; w=N(u+v) \;\;\textnormal{Then}\;\; c_w =\frac{1}{2} \;\;\textnormal{else}\;\; c_w =1\\\nonumber
 \end{eqnarray}
@@ -617,13 +630,13 @@ error(w)& = &|w - \frac{1}{x}| \\\nonumber
 & \leq & c_w \ulp(w) + \frac{1}{ux}|u-x| \\\nonumber
 & \leq & c_w \ulp(w) + \frac{k_u}{ux} \ulp(u)\\\nonumber
 &&\\\nonumber
-\textnormal{Note:}&& \frac{u}{c_u} \leq x\;\; \U{6}\\\nonumber
+\textnormal{Note:}&& \frac{u}{c_u} \leq x\;\; \U{R6}\\\nonumber
 &&\n{for } u=\minf(x),\;c_u=1 \n{ else } c_u=2\\\nonumber
 && \n{then: } \frac{1}{x} \leq c_u \frac{1}{u} \\\nonumber
 &&\\\nonumber
 error(w)& \leq & c_w \ulp(w) + c_u\frac{k_u}{u^2} \ulp(u)\\\nonumber
-& \leq & c_w \ulp(w) + 2.c_u.k_u \ulp(\frac{u}{u^2}) \U{4}\\\nonumber
-& \leq & [c_w + 2.c_u.k_u].\ulp(w) \U{8}\\\nonumber
+& \leq & c_w \ulp(w) + 2.c_u.k_u \ulp(\frac{u}{u^2}) \U{R4}\\\nonumber
+& \leq & [c_w + 2.c_u.k_u].\ulp(w) \U{R8}\\\nonumber
 &&\\\nonumber
 \textnormal{Note:}&&\textnormal{If}\;\; w=N(\frac{1}{u}) \;\;\textnormal{Then}\;\; c_w =\frac{1}{2} \;\;\textnormal{else}\;\; c_w =1\\\nonumber\end{eqnarray}
 
@@ -645,17 +658,17 @@ error(w)& = &|w - \frac{x}{y}| \\\nonumber
 & \leq & c_w \ulp(w) + \frac{1}{vy}[|uy-xy|+|xy-vx| ]\\\nonumber
 & \leq & c_w \ulp(w) + \frac{1}{vy}[y k_u \ulp(u)+ x k_v \ulp(v)]\\\nonumber
 & \leq & c_w \ulp(w) + \frac{k_u}{v}  \ulp(u)+ \frac{k_v x}{vy} \ulp(v)\\\nonumber
-\textnormal{Note:}&& \frac{\ulp(u)}{v} \leq  2 \ulp(\frac{u}{v}) \;\; \U{4}\\\nonumber
-&& 2 \ulp(\frac{u}{v}) \leq  2 \ulp(w) \;\; \U{8}\\\nonumber
+\textnormal{Note:}&& \frac{\ulp(u)}{v} \leq  2 \ulp(\frac{u}{v}) \;\; \U{R4}\\\nonumber
+&& 2 \ulp(\frac{u}{v}) \leq  2 \ulp(w) \;\; \U{R8}\\\nonumber
 &&\\\nonumber
-\textnormal{Note:}&& x \leq c_u u \textnormal{ and } \frac{v}{c_v} \leq y\;\; \U{6}\\\nonumber
+\textnormal{Note:}&& x \leq c_u u \textnormal{ and } \frac{v}{c_v} \leq y\;\; \U{R6}\\\nonumber
 &&\n{with } \n{for } u=\pinf(x),\;c_u=1 \n{ else } c_u=2\\\nonumber
 &&\n{ and }\n{for } v=\minf(y),\;c_v=1 \n{ else } c_v=2\\\nonumber
 && \n{then: } \frac{x}{y} \leq c_u c_v  \frac{u}{v} \\\nonumber
 &&\\\nonumber
 error(w)& \leq & c_w \ulp(w) + 2.k_u  \ulp(w)+ c_u.c_v.\frac{k_v u}{vv} \ulp(v)\\\nonumber
-& \leq & c_w \ulp(w) + 2.k_u  \ulp(w)+ 2.c_u.c_v.k_v \ulp(\frac{u.v}{v.v}) \U{4}\\\nonumber
-& \leq & [c_w  + 2.k_u+ 2.c_u.c_v.k_v].\ulp(w) \U{8}\\\nonumber
+& \leq & c_w \ulp(w) + 2.k_u  \ulp(w)+ 2.c_u.c_v.k_v \ulp(\frac{u.v}{v.v}) \U{R4}\\\nonumber
+& \leq & [c_w  + 2.k_u+ 2.c_u.c_v.k_v].\ulp(w) \U{R8}\\\nonumber
 &&\\\nonumber
 \textnormal{Note:}&&\textnormal{If}\;\; w=N(\frac{u}{v}) \;\;\textnormal{Then}\;\; c_w =\frac{1}{2} \;\;\textnormal{else}\;\; c_w =1\\\nonumber\end{eqnarray}
 
@@ -743,7 +756,7 @@ $u$ to $-\infty \;\; (\bullet)$
 
 $(\star\star)$
 
-From inequation \U{4}, 
+From inequation \U{R4}, 
 \[   a \cdot \ulp(b) \leq 2 \cdot \ulp(a \cdot b)\]
 if $a =\frac{1}{u^2},\;b = u$ then  
 \[ \frac{1}{u^2} \ulp(u)  \leq 2 \ulp(\frac{1}{u})\]
@@ -909,7 +922,7 @@ it is possible with $u=\minf(e^x)$ $(\bullet)$
 
 $(\star\star)$
 
-From inequation \U{4}, 
+From inequation \U{R4}, 
 \[   a \cdot \ulp(b) \leq 2 \cdot \ulp(a \cdot b)\]
 if $a =\frac{1}{u^2},\;b = u$ then  
 \[ \frac{1}{u^2} \ulp(u)  \leq 2 \ulp(\frac{1}{u})\]
@@ -1127,7 +1140,7 @@ we get $w \leq c \leq x^2+y^2$ \\
 and $\frac{1}{\sqrt{c}} \leq \frac{1}{\sqrt{w}}$
 
 $(\star\star)$
-with equation \U{4}.
+with equation \U{R4}.
 
 $(\star\star\star)$
 
