@@ -1,3 +1,7 @@
+2002-06-02  Richard Dawe  <richdawe@bigfoot.com>
+
+	* Use @ifnottex/@end iffnotex instead of @ifinfo/@end ifinfo.
+
 2002-04-15  Vincent Lefevre  <lefevre@greux.loria.fr>
 
 	* VERSION, mpfr.texi, README.dev:
