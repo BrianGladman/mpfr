@@ -1,4 +1,4 @@
-/* mpfr_nan_p, mpfr_inf_p -- check for NaN or infinities
+/* mpfr_nan_p -- check for NaN
 
 Copyright (C) 2000-2001 Free Software Foundation.
 
@@ -28,16 +28,4 @@ int
 mpfr_nan_p (mpfr_srcptr x)
 {
   return MPFR_IS_NAN (x);
-}
-
-int
-mpfr_inf_p (mpfr_srcptr x)
-{
-  return !MPFR_IS_NAN(x) && MPFR_IS_INF(x);
-}
-
-int
-mpfr_number_p (mpfr_srcptr x)
-{
-  return !MPFR_IS_NAN(x) && !MPFR_IS_INF(x);
 }
