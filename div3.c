@@ -87,7 +87,7 @@ mpfr_div3 (mpfr_ptr r, mpfr_srcptr u, mpfr_srcptr v, unsigned char rnd_mode)
       rp = (mp_ptr) TMP_ALLOC (rrsize * BYTES_PER_MP_LIMB); 
 
       if (vsize >= rsize) { 
-	MPN_COPY (tmp, vp + vsize - rsize, rsize);
+	MPN_COPY (tmp, vp, rsize);
       }
       else { 
 	MPN_COPY (tmp + rsize - vsize, vp, vsize);
@@ -95,7 +95,7 @@ mpfr_div3 (mpfr_ptr r, mpfr_srcptr u, mpfr_srcptr v, unsigned char rnd_mode)
       }
 
       if (usize >= rsize) { 
-	MPN_COPY (tp, up + usize - rsize, rsize);
+	MPN_COPY (tp, up, rsize);
       }
       else {
 	MPN_COPY (tp + rsize - usize, up, usize); 
@@ -209,12 +209,12 @@ mpfr_div3 (mpfr_ptr r, mpfr_srcptr u, mpfr_srcptr v, unsigned char rnd_mode)
     r->_mp_exp++; 
   }
     
-  rp [0] &= ~(((mp_limb_t)1 << (BITS_PER_MP_LIMB - 
-		     (PREC(r) & (BITS_PER_MP_LIMB - 1)))) - 1) ; 
-  
   rsize = rrsize; 
   rrsize = (PREC(r) - 1)/BITS_PER_MP_LIMB + 1;  
-  MPN_COPY(r->_mp_d + ABSSIZE(r) - rrsize, rp + rsize - rrsize, rrsize); 
+  MPN_COPY(r->_mp_d, rp + rsize - rrsize, rrsize); 
+  MANT(r) [0] &= ~(((mp_limb_t)1 << (BITS_PER_MP_LIMB - 
+		    (PREC(r) & (BITS_PER_MP_LIMB - 1)))) - 1) ; 
+  
   TMP_FREE (marker);
 }
 
