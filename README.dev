@@ -40,7 +40,8 @@ To make a release (for the MPFR team):
      the duplicated lines.
   3) Generate the release version with "make dist".
   4) Test the release version on different machines, with and without
-     the --disable-alloca configure option.
+     the --disable-alloca configure option (or compile gmp with 
+     --enable-alloca=debug).
   5) If there is no problem, add a tag to the CVS corresponding to the
      release, e.g. mpfr-2-0-1-rel for mpfr 2.0.1 (note that the periods
      are replaced by dashes): cvs tag mpfr-2-0-1-rel
