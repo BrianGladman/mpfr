@@ -30,14 +30,16 @@ MA 02111-1307, USA. */
 
 int main()
 {
-  mpfr_t p,result,res_p; int succes; size_t t;
+  mpfr_t p,result,res_p;
+#ifdef DEBUG
+  size_t t;
+#endif
 
   mpfr_init2(result, 53);
   mpfr_init2(res_p, 53);
   mpfr_init2(p, 53); mpfr_set_d(p, 2.0, GMP_RNDN);
 
   mpfr_zeta(result,p,GMP_RNDN);
-  /*printf("%d\n",succes);*/
 #ifdef DEBUG
   printf("Valeur de zeta(2) avec prec=53 et arrondi au plus pres:\n");
   mpfr_print_raw(result);printf("\n");
@@ -56,9 +58,8 @@ int main()
   mpfr_div(p,p,res_p,GMP_RNDN);
   /*mpfr_print_raw(p);printf("\n");
     t=mpfr_out_str(stdout,10,0,p,GMP_RNDN);printf("\n");*/
-  succes=mpfr_can_round(p,63,GMP_RNDN,GMP_RNDN,53);
+  mpfr_can_round(p,63,GMP_RNDN,GMP_RNDN,53);
   mpfr_set(res_p,p,GMP_RNDN);
-  /*printf("%d\n",succes);*/
 #ifdef DEBUG
   printf("Valeur de pi^2/6 avec prec=53 et arrondi au plus pres:\n");
   mpfr_print_raw(res_p);printf("\n");
