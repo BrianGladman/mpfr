@@ -1,6 +1,6 @@
 /* Test file for mpfr_erf.
 
-Copyright 2001, 2003 Free Software Foundation, Inc.
+Copyright 2001, 2002, 2003 Free Software Foundation, Inc.
 Contributed by Ludovic Meunier and Paul Zimmermann.
 
 This file is part of the MPFR Library.
@@ -27,9 +27,7 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-test.h"
 
-void test_generic _PROTO ((void));
-
-void
+static void
 test_generic (void)
 {
   unsigned int prec, err, yprec, n, p0 = 2, p1 = 100, N = 10;
@@ -101,7 +99,7 @@ main (int argc, char *argv[])
   mpfr_erf (y, x, GMP_RNDN);
   if (mpfr_nan_p (y) == 0)
     {
-      fprintf (stderr, "mpfr_erf failed for x=NaN\n");
+      printf ("mpfr_erf failed for x=NaN\n");
       exit (1);
     }
 
@@ -109,10 +107,10 @@ main (int argc, char *argv[])
   mpfr_erf (y, x, GMP_RNDN);
   if (mpfr_cmp_ui (y, 1))
     {
-      fprintf (stderr, "mpfr_erf failed for x=+Inf\n");
-      fprintf (stderr, "expected 1.0, got ");
-      mpfr_out_str (stderr, 2, 0, y, GMP_RNDN);
-      fprintf (stderr, "\n");
+      printf ("mpfr_erf failed for x=+Inf\n");
+      printf ("expected 1.0, got ");
+      mpfr_out_str (stdout, 2, 0, y, GMP_RNDN);
+      printf ("\n");
       exit (1);
     }
 
@@ -120,7 +118,7 @@ main (int argc, char *argv[])
   mpfr_erf (y, x, GMP_RNDN);
   if (mpfr_cmp_si (y, -1))
     {
-      fprintf (stderr, "mpfr_erf failed for x=-Inf\n");
+      printf ("mpfr_erf failed for x=-Inf\n");
       exit (1);
     }
 
@@ -128,7 +126,7 @@ main (int argc, char *argv[])
   mpfr_erf (y, x, GMP_RNDN);
   if (mpfr_cmp_ui (y, 0) || MPFR_SIGN(y) < 0)
     {
-      fprintf (stderr, "mpfr_erf failed for x=+0\n");
+      printf ("mpfr_erf failed for x=+0\n");
       exit (1);
     }
 
@@ -136,7 +134,7 @@ main (int argc, char *argv[])
   mpfr_erf (y, x, GMP_RNDN);
   if (mpfr_cmp_ui (y, 0) || MPFR_SIGN(y) > 0)
     {
-      fprintf (stderr, "mpfr_erf failed for x=-0\n");
+      printf ("mpfr_erf failed for x=-0\n");
       exit (1);
     }
 
@@ -145,13 +143,13 @@ main (int argc, char *argv[])
   mpfr_set_str_raw (y, "0.11010111101110110011110100111010000010000100010001011");
   if (mpfr_cmp (x, y))
     {
-      fprintf (stderr, "mpfr_erf failed for x=1.0, rnd=GMP_RNDN\n");
-      fprintf (stderr, "expected ");
-      mpfr_out_str (stderr, 2, 0, y, GMP_RNDN);
-      fprintf (stderr, "\n");
-      fprintf (stderr, "got      ");
-      mpfr_out_str (stderr, 2, 0, x, GMP_RNDN);
-      fprintf (stderr, "\n");
+      printf ("mpfr_erf failed for x=1.0, rnd=GMP_RNDN\n");
+      printf ("expected ");
+      mpfr_out_str (stdout, 2, 0, y, GMP_RNDN);
+      printf ("\n");
+      printf ("got      ");
+      mpfr_out_str (stdout, 2, 0, x, GMP_RNDN);
+      printf ("\n");
       exit (1);
     }
 
@@ -159,11 +157,11 @@ main (int argc, char *argv[])
   mpfr_erf (x, x, GMP_RNDN);
   if (mpfr_cmp_ui (x, 1))
     {
-      fprintf (stderr, "mpfr_erf failed for x=6.6, rnd=GMP_RNDN\n");
-      fprintf (stderr, "expected 1\n");
-      fprintf (stderr, "got      ");
-      mpfr_out_str (stderr, 2, 0, x, GMP_RNDN);
-      fprintf (stderr, "\n");
+      printf ("mpfr_erf failed for x=6.6, rnd=GMP_RNDN\n");
+      printf ("expected 1\n");
+      printf ("got      ");
+      mpfr_out_str (stdout, 2, 0, x, GMP_RNDN);
+      printf ("\n");
       exit (1);
     }
 
@@ -172,13 +170,13 @@ main (int argc, char *argv[])
   mpfr_set_str_raw (y, "0.11111111111111111111111111111111111111111111111111111");
   if (mpfr_cmp (x, y))
     {
-      fprintf (stderr, "mpfr_erf failed for x=6.6, rnd=GMP_RNDZ\n");
-      fprintf (stderr, "expected ");
-      mpfr_out_str (stderr, 2, 0, y, GMP_RNDN);
-      fprintf (stderr, "\n");
-      fprintf (stderr, "got      ");
-      mpfr_out_str (stderr, 2, 0, x, GMP_RNDN);
-      fprintf (stderr, "\n");
+      printf ("mpfr_erf failed for x=6.6, rnd=GMP_RNDZ\n");
+      printf ("expected ");
+      mpfr_out_str (stdout, 2, 0, y, GMP_RNDN);
+      printf ("\n");
+      printf ("got      ");
+      mpfr_out_str (stdout, 2, 0, x, GMP_RNDN);
+      printf ("\n");
       exit (1);
     }
 
@@ -187,13 +185,13 @@ main (int argc, char *argv[])
   mpfr_set_str_raw (y, "0.1111111111111111111111111111111100100111110100011");
   if (mpfr_cmp (x, y))
     {
-      fprintf (stderr, "mpfr_erf failed for x=4.5, rnd=GMP_RNDN\n");
-      fprintf (stderr, "expected ");
-      mpfr_out_str (stderr, 2, 0, y, GMP_RNDN);
-      fprintf (stderr, "\n");
-      fprintf (stderr, "got      ");
-      mpfr_out_str (stderr, 2, 0, x, GMP_RNDN);
-      fprintf (stderr, "\n");
+      printf ("mpfr_erf failed for x=4.5, rnd=GMP_RNDN\n");
+      printf ("expected ");
+      mpfr_out_str (stdout, 2, 0, y, GMP_RNDN);
+      printf ("\n");
+      printf ("got      ");
+      mpfr_out_str (stdout, 2, 0, x, GMP_RNDN);
+      printf ("\n");
       exit (1);
     }
 
@@ -204,13 +202,13 @@ main (int argc, char *argv[])
   mpfr_set_str_raw (y, "0.11111111111111111111111111111111111111111111111111111111111111111100111111000100111011111011010000110101111100011001101");
   if (mpfr_cmp (x, y))
     {
-      fprintf (stderr, "mpfr_erf failed for x=6.6, rnd=GMP_RNDN\n");
-      fprintf (stderr, "expected ");
-      mpfr_out_str (stderr, 2, 0, y, GMP_RNDN);
-      fprintf (stderr, "\n");
-      fprintf (stderr, "got      ");
-      mpfr_out_str (stderr, 2, 0, x, GMP_RNDN);
-      fprintf (stderr, "\n");
+      printf ("mpfr_erf failed for x=6.6, rnd=GMP_RNDN\n");
+      printf ("expected ");
+      mpfr_out_str (stdout, 2, 0, y, GMP_RNDN);
+      printf ("\n");
+      printf ("got      ");
+      mpfr_out_str (stdout, 2, 0, x, GMP_RNDN);
+      printf ("\n");
       exit (1);
     }
 

@@ -37,10 +37,10 @@ check53 (double x, double cos_x, mp_rnd_t rnd_mode)
   mpfr_cos (c, xx, rnd_mode);
   if (mpfr_get_d1 (c) != cos_x && !(Isnan(cos_x) && mpfr_nan_p(c)))
     {
-      fprintf (stderr, "mpfr_cos failed for x=%1.20e, rnd=%s\n", x,
-	       mpfr_print_rnd_mode (rnd_mode));
-      fprintf (stderr, "mpfr_cos gives cos(x)=%1.20e, expected %1.20e\n",
-	       mpfr_get_d1 (c), cos_x);
+      printf ("mpfr_cos failed for x=%1.20e, rnd=%s\n", x,
+              mpfr_print_rnd_mode (rnd_mode));
+      printf ("mpfr_cos gives cos(x)=%1.20e, expected %1.20e\n",
+              mpfr_get_d1 (c), cos_x);
       exit (1);
     }
   mpfr_clear (xx);
@@ -62,7 +62,7 @@ check_nans (void)
   mpfr_cos (y, x, GMP_RNDN);
   if (! mpfr_nan_p (y))
     {
-      fprintf (stderr, "Error: cos(NaN) != NaN\n");
+      printf ("Error: cos(NaN) != NaN\n");
       exit (1);
     }
 
@@ -70,7 +70,7 @@ check_nans (void)
   mpfr_cos (y, x, GMP_RNDN);
   if (! mpfr_nan_p (y))
     {
-      fprintf (stderr, "Error: cos(Inf) != NaN\n");
+      printf ("Error: cos(Inf) != NaN\n");
       exit (1);
     }
 
@@ -78,7 +78,7 @@ check_nans (void)
   mpfr_cos (y, x, GMP_RNDN);
   if (! mpfr_nan_p (y))
     {
-      fprintf (stderr, "Error: cos(-Inf) != NaN\n");
+      printf ("Error: cos(-Inf) != NaN\n");
       exit (1);
     }
 
@@ -110,7 +110,7 @@ main (int argc, char *argv[])
   mpfr_set_str_raw (x, "1.10111100010101011110101010100e-1");
   if (mpfr_cmp (y, x))
     {
-      fprintf (stderr, "Error for prec=30, rnd=GMP_RNDU\n");
+      printf ("Error for prec=30, rnd=GMP_RNDU\n");
       printf ("expected "); mpfr_print_binary (x); puts ("");
       printf ("     got "); mpfr_print_binary (y); puts ("");
       exit (1);
@@ -123,7 +123,7 @@ main (int argc, char *argv[])
   mpfr_set_str_raw (x, "1.1111011111110010001001001011100111101110100010000010010011e-1");
   if (mpfr_cmp (y, x))
     {
-      fprintf (stderr, "Error for prec=59, rnd=GMP_RNDU\n");
+      printf ("Error for prec=59, rnd=GMP_RNDU\n");
       printf ("expected "); mpfr_print_binary (x); puts ("");
       printf ("     got "); mpfr_print_binary (y); puts ("");
       exit (1);
@@ -136,7 +136,7 @@ main (int argc, char *argv[])
   mpfr_set_str_raw (x, "1.1100e-1");
   if (mpfr_cmp (y, x))
     {
-      fprintf (stderr, "Error for x=1.1100e-2, rnd=GMP_RNDD\n");
+      printf ("Error for x=1.1100e-2, rnd=GMP_RNDD\n");
       printf ("expected 1.1100e-1, got "); mpfr_print_binary (y); puts ("");
       exit (1);
     }

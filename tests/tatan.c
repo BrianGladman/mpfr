@@ -30,7 +30,7 @@ static void
 worst_cases (void)
 {
   mpfr_t x, y, z;
- 
+
   mpfr_init2 (x, 53);
   mpfr_init2 (y, 53);
   mpfr_init2 (z, 53);
@@ -40,14 +40,14 @@ worst_cases (void)
   mpfr_atan (z, x, GMP_RNDN);
   if (mpfr_cmp (y, z))
     {
-      fprintf (stderr, "Error in mpfr_atan for prec=53, rnd=GMP_RNDN\n");
-      fprintf (stderr, "x=");
-      mpfr_out_str (stderr, 2, 0, x, GMP_RNDN);
-      fprintf (stderr, "\nexpected ");
-      mpfr_out_str (stderr, 2, 0, y, GMP_RNDN);
-      fprintf (stderr, "\ngot      ");
-      mpfr_out_str (stderr, 2, 0, z, GMP_RNDN);
-      fprintf (stderr, "\n");
+      printf ("Error in mpfr_atan for prec=53, rnd=GMP_RNDN\n");
+      printf ("x=");
+      mpfr_out_str (stdout, 2, 0, x, GMP_RNDN);
+      printf ("\nexpected ");
+      mpfr_out_str (stdout, 2, 0, y, GMP_RNDN);
+      printf ("\ngot      ");
+      mpfr_out_str (stdout, 2, 0, z, GMP_RNDN);
+      printf ("\n");
       exit (1);
     }
 

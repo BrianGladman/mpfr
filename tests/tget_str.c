@@ -40,8 +40,8 @@ check3 (double d, mp_rnd_t rnd, char *res)
   str = mpfr_get_str (NULL, &e, 10, 5, x, rnd);
   if (strcmp (str, res))
     {
-      fprintf (stderr, "Error in mpfr_get_str for x=%1.20e\n", d);
-      fprintf (stderr, "got %s instead of %s\n", str, res);
+      printf ("Error in mpfr_get_str for x=%1.20e\n", d);
+      printf ("got %s instead of %s\n", str, res);
       exit (1);
     }
   mpfr_clear (x);
@@ -64,7 +64,8 @@ check_small (void)
   s = mpfr_get_str (NULL, &e, 4, 2, x, GMP_RNDU);
   if (strcmp (s, "20") || (e != 1))
     {
-      fprintf(stderr, "Error in mpfr_get_str: 2- rounded up with 2 digits in base 4\n");
+      printf ("Error in mpfr_get_str: 2- rounded up with 2 digits"
+              " in base 4\n");
       exit (1);
     }
   (*__gmp_free_func) (s, strlen (s) + 1);
@@ -85,14 +86,16 @@ check_small (void)
   s = mpfr_get_str (NULL, &e, 3, 21, x, GMP_RNDU);
   if (strcmp (s, "102002022201221111211") || (e != 21))
     {
-      fprintf(stderr, "Error in mpfr_get_str: 2^32-2^(-31) rounded up with 21 digits in base 3\n");
+      printf ("Error in mpfr_get_str: 2^32-2^(-31) rounded up with"
+              " 21 digits in base 3\n");
       exit (1);
     }
   (*__gmp_free_func) (s, strlen (s) + 1);
   s = mpfr_get_str (NULL, &e, 3, 20, x, GMP_RNDU);
   if (strcmp (s, "10200202220122111122") || (e != 21))
     {
-      fprintf(stderr, "Error in mpfr_get_str: 2^32-2^(-31) rounded up with 20 digits in base 3\n");
+      printf ("Error in mpfr_get_str: 2^32-2^(-31) rounded up with"
+              " 20 digits in base 3\n");
       exit (1);
     }
   (*__gmp_free_func) (s, strlen (s) + 1);
@@ -105,7 +108,8 @@ check_small (void)
       s = mpfr_get_str (NULL, &e, 6, 2, x, GMP_RNDN);
       if (strcmp (s, "10") || (e != 2))
         {
-          fprintf(stderr, "Error in mpfr_get_str: 6.5 rounded to nearest with 2 digits in base 6\n");
+          printf ("Error in mpfr_get_str: 6.5 rounded to nearest with"
+                  " 2 digits in base 6\n");
           exit (1);
         }
       (*__gmp_free_func) (s, strlen (s) + 1);
@@ -114,8 +118,9 @@ check_small (void)
       s = mpfr_get_str (NULL, &e, 6, 2, x, GMP_RNDN);
       if (strcmp (s, "11") || (e != 2))
         {
-          fprintf(stderr, "Error in mpfr_get_str: 6.5+ rounded to nearest with 2 digits in base 6\n");
-          fprintf(stderr, "got %se%d instead of 11e2\n", s, (int) e);
+          printf ("Error in mpfr_get_str: 6.5+ rounded to nearest with"
+                  " 2 digits in base 6\ngot %se%d instead of 11e2\n",
+                  s, (int) e);
           exit (1);
         }
       (*__gmp_free_func) (s, strlen (s) + 1);
@@ -125,7 +130,8 @@ check_small (void)
       s = mpfr_get_str (NULL, &e, 6, 2, x, GMP_RNDN);
       if (strcmp (s, "10") || (e != 2))
         {
-          fprintf(stderr, "Error in mpfr_get_str: 6.5- rounded to nearest with 2 digits in base 6\n");
+          printf ("Error in mpfr_get_str: 6.5- rounded to nearest with"
+                  " 2 digits in base 6\n");
           exit (1);
         }
       (*__gmp_free_func) (s, strlen (s) + 1);
@@ -136,9 +142,10 @@ check_small (void)
   s = mpfr_get_str (NULL, &e, 2, 2, x, GMP_RNDU);
   if (strcmp (s, "10") || (e != 4))
     {
-      fprintf(stderr, "Error in mpfr_get_str: 7 rounded up with 2 bits should give 0.10e3 instead of 0.%s*2^%d\n", s, (int) e);
-    exit (1);
-  }
+      printf ("Error in mpfr_get_str: 7 rounded up with 2 bits should"
+              " give 0.10e3 instead of 0.%s*2^%d\n", s, (int) e);
+      exit (1);
+    }
   (*__gmp_free_func) (s, strlen (s) + 1);
 
   /* problem found by Fabrice Rouillier */
@@ -153,11 +160,12 @@ check_small (void)
   s = mpfr_get_str (NULL, &e, 2, 4, x, GMP_RNDU);
   if (strcmp (s, "1011") || (e != 10))
     {
-      fprintf(stderr, "Error in mpfr_get_str: 688 printed up to 4 bits should give 1.011e9\ninstead of ");
-    mpfr_out_str (stderr, 2, 4, x, GMP_RNDU);
-    puts ("");
-    exit (1);
-  }
+      printf ("Error in mpfr_get_str: 688 printed up to 4 bits should"
+              " give 1.011e9\ninstead of ");
+      mpfr_out_str (stdout, 2, 4, x, GMP_RNDU);
+      puts ("");
+      exit (1);
+    }
   (*__gmp_free_func) (s, strlen (s) + 1);
 
   mpfr_set_prec (x, 38);
@@ -165,7 +173,7 @@ check_small (void)
   s = mpfr_get_str (NULL, &e, 8, 10, x, GMP_RNDU);
   if (strcmp (s, "1073721522") || (e != -1))
     {
-      fprintf (stderr, "Error in mpfr_get_str (3): s=%s e=%d\n", s, (int) e);
+      printf ("Error in mpfr_get_str (3): s=%s e=%d\n", s, (int) e);
       exit (1);
     }
   (*__gmp_free_func) (s, strlen (s) + 1);
@@ -175,7 +183,7 @@ check_small (void)
   s = mpfr_get_str (NULL, &e, 19, 12, x, GMP_RNDU);
   if (strcmp (s, "b1cgfa4gha0h") || (e != 107))
     {
-      fprintf (stderr, "Error in mpfr_get_str (4): s=%s e=%d\n", s, (int) e);
+      printf ("Error in mpfr_get_str (4): s=%s e=%d\n", s, (int) e);
       exit (1);
     }
   (*__gmp_free_func) (s, strlen (s) + 1);
@@ -298,8 +306,8 @@ check_large (void)
   s = mpfr_get_str (NULL, &e, 10, 1000, x, GMP_RNDN);
   if (s[999] != '1') /* s must be 5.04383...689071e-309 */
     {
-      fprintf (stderr, "Error in check_large: expected '689071', got '%s'\n",
-               s + 994);
+      printf ("Error in check_large: expected '689071', got '%s'\n",
+              s + 994);
       exit (1);
     }
   (*__gmp_free_func) (s, strlen (s) + 1);
@@ -308,8 +316,8 @@ check_large (void)
   s = mpfr_get_str (NULL, &e, 10, 2, x, GMP_RNDN);
   if (strcmp (s, "12") || (e != 1000))
     {
-      fprintf (stderr, "Error in check_large: expected 0.12e1000\n");
-      fprintf (stderr, "got %se%d\n", s, (int) e);
+      printf ("Error in check_large: expected 0.12e1000\n");
+      printf ("got %se%d\n", s, (int) e);
       exit (1);
     }
   (*__gmp_free_func) (s, strlen (s) + 1);
@@ -318,7 +326,7 @@ check_large (void)
   s = mpfr_get_str (NULL, &e, 10, 1000, x, GMP_RNDN);
   if (strcmp (s, "@NaN@"))
     {
-      fprintf (stderr, "Error for NaN\n");
+      printf ("Error for NaN\n");
       exit (1);
     }
   (*__gmp_free_func) (s, strlen (s) + 1);
@@ -329,7 +337,7 @@ check_large (void)
   s = mpfr_get_str (NULL, &e, 10, 1000, x, GMP_RNDN);
   if (strcmp (s, "@Inf@"))
     {
-      fprintf (stderr, "Error for Inf\n");
+      printf ("Error for Inf\n");
       exit (1);
     }
   (*__gmp_free_func) (s, strlen (s) + 1);
@@ -340,7 +348,7 @@ check_large (void)
   s = mpfr_get_str (NULL, &e, 10, 1000, x, GMP_RNDN);
   if (strcmp (s, "-@Inf@"))
     {
-      fprintf (stderr, "Error for -Inf\n");
+      printf ("Error for -Inf\n");
       exit (1);
     }
   (*__gmp_free_func) (s, strlen (s) + 1);
@@ -351,7 +359,7 @@ check_large (void)
   s = mpfr_get_str (NULL, &e, 10, 2, x, GMP_RNDN);
   if (e != 0 || strcmp (s, "00"))
     {
-      fprintf (stderr, "Error for 0.0\n");
+      printf ("Error for 0.0\n");
       exit (1);
     }
   (*__gmp_free_func) (s, strlen (s) + 1);
@@ -361,8 +369,7 @@ check_large (void)
   s = mpfr_get_str (NULL, &e, 10, 2, x, GMP_RNDN);
   if (e != 0 || strcmp (s, "-00"))
     {
-      fprintf (stderr, "Error for -0.0\n");
-      fprintf (stderr, "got %se%d\n", s, (int) e);
+      printf ("Error for -0.0\ngot %se%d\n", s, (int) e);
       exit (1);
     }
   (*__gmp_free_func) (s, strlen (s) + 1);
@@ -399,7 +406,7 @@ check_special (int b, mp_prec_t p)
             /* s should be 1 followed by (m-1) zeros, and e should be i+1 */
             if ((e != i+1) || strncmp (s, s2, m) != 0)
               {
-                fprintf (stderr, "Error in mpfr_get_str for %u^%u\n", b, i);
+                printf ("Error in mpfr_get_str for %u^%u\n", b, i);
                 exit (1);
               }
           }
@@ -415,8 +422,8 @@ check_special (int b, mp_prec_t p)
             for (j=0; (j < i) && (s[j] == c); j++);
             if ((j < i) || (e != i))
               {
-                fprintf (stderr, "Error in mpfr_get_str for %u^%u-1\n", b, i);
-                fprintf (stderr, "got 0.%s*2^%d\n", s, (int) e);
+                printf ("Error in mpfr_get_str for %u^%u-1\n", b, i);
+                printf ("got 0.%s*2^%d\n", s, (int) e);
                 exit (1);
               }
           }
@@ -426,8 +433,8 @@ check_special (int b, mp_prec_t p)
           /* should be b^i */
           if ((e != i+1) || strncmp (s, s2, i - 1) != 0)
             {
-              fprintf (stderr, "Error in mpfr_get_str for %u^%u-1\n", b, i);
-              fprintf (stderr, "got 0.%s*2^%d\n", s, (int) e);
+              printf ("Error in mpfr_get_str for %u^%u-1\n", b, i);
+              printf ("got 0.%s*2^%d\n", s, (int) e);
               exit (1);
             }
         }

@@ -64,8 +64,8 @@ check_large (void)
   s = mpfr_get_str (NULL, &e, 10, 2, x, GMP_RNDD);
   if (strcmp (s, "-12"))
     {
-      fprintf (stderr, "Error in mpfr_get_str for x=-11.5 and rnd=GMP_RNDD\n");
-      fprintf (stderr, "got %s instead of -12\n", s);
+      printf ("Error in mpfr_get_str for x=-11.5 and rnd=GMP_RNDD\n"
+              "got %s instead of -12\n", s);
       free (s);
       mpfr_clear (x);
       exit (1);
@@ -75,7 +75,7 @@ check_large (void)
   s = mpfr_get_str (NULL, &e, 10, 2, x, GMP_RNDU);
   if (strcmp (s, "-11"))
     {
-      fprintf (stderr, "Error in mpfr_get_str for x=-11.5 and rnd=GMP_RNDU\n");
+      printf ("Error in mpfr_get_str for x=-11.5 and rnd=GMP_RNDU\n");
       free (s);
       mpfr_clear (x);
       exit (1);
@@ -93,7 +93,8 @@ check_large (void)
   s = mpfr_get_str (NULL, &e, 10, 0, x, GMP_RNDD);
   if (e != 0)
     {
-      fprintf (stderr, "Error in mpfr_get_str for x=0.999999..., exponent is %d instead of 0\n", (int) e);
+      printf ("Error in mpfr_get_str for x=0.999999..., exponent is %d"
+              " instead of 0\n", (int) e);
       exit (1);
     }
   (*__gmp_free_func) (s, strlen (s) + 1);

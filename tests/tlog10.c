@@ -1,6 +1,6 @@
 /* Test file for mpfr_log10.
 
-Copyright 2001, 2002 Free Software Foundation.
+Copyright 2001, 2002, 2003 Free Software Foundation.
 Adapted from tsinh.c.
 
 This file is part of the MPFR Library.
@@ -50,7 +50,7 @@ main (int argc, char *argv[])
       mpfr_log10 (y, x, GMP_RNDN);
       if (mpfr_get_d1 (y) != (double) n)
         {
-          fprintf (stderr, "log10(10^n) <> n for n=%u\n", n);
+          printf ("log10(10^n) <> n for n=%u\n", n);
           exit (1);
         }
     }
