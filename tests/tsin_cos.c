@@ -21,14 +21,13 @@ MA 02111-1307, USA. */
 
 #include "gmp.h"
 #include "mpfr.h"
-#include "cputime.h"
 
-void large_test (int, int); 
-void check53 (double, double, double, mp_rnd_t); 
+void large_test (int, int);
+void check53 (double, double, double, mp_rnd_t);
 
 void large_test (int prec, int N)
 {
-  int i, st;
+  int i;
   mpfr_t x, s, c;
 
   mpfr_init2 (x, prec);
@@ -36,11 +35,8 @@ void large_test (int prec, int N)
   mpfr_init2 (c, prec);
   mpfr_set_d (x, 3.0, GMP_RNDN);
   mpfr_sqrt (x, x, GMP_RNDN);
-  st = cputime ();
   for (i=0; i<N; i++) mpfr_sin_cos (s, c, x, GMP_RNDN);
-  st = cputime () - st;
   mpfr_out_str (stdout, 10, 0, s, GMP_RNDN); putchar('\n');
-  fprintf(stderr, "sin_cos took %dms\n", st);
   mpfr_clear (x);
   mpfr_clear (s);
   mpfr_clear (c);
