@@ -133,6 +133,20 @@ void check_convergence()
   mpfr_init2(y, 130);
   mpfr_set_ui(y, 5, GMP_RNDN);
   mpfr_div(x, x, y, GMP_RNDD); /* exact division */
+
+  mpfr_set_prec(x, 64);
+  mpfr_set_prec(y, 64);
+  mpfr_set_str_raw(x, "0.10010010011011010100101001010111100000101110010010101E55");
+  mpfr_set_str_raw(y, "0.1E585");
+  mpfr_div(x, x, y, GMP_RNDN);
+  mpfr_set_str_raw(y, "0.10010010011011010100101001010111100000101110010010101E-529");
+  if (mpfr_cmp(x, y)) {
+    fprintf(stderr, "Error in mpfr_div for prec=64, rnd=GMP_RNDN\n");
+    printf("got        "); mpfr_print_raw(x); putchar('\n');
+    printf("instead of "); mpfr_print_raw(y); putchar('\n');
+    exit(1);
+  }
+
   mpfr_clear(x); mpfr_clear(y);
 }
 
