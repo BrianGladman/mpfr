@@ -41,6 +41,7 @@ mpfr_ui_pow_ui (mpfr_ptr x, unsigned long int y, unsigned long int n,
   if (y == 0) /* 0^n = 0 for any n > 0 */
     return mpfr_set_ui (x, 0, rnd);
 
+  mpfr_save_emin_emax ();
   mpfr_init (res);
 
   prec = MPFR_PREC(x);
@@ -77,5 +78,5 @@ mpfr_ui_pow_ui (mpfr_ptr x, unsigned long int y, unsigned long int n,
 
   mpfr_clear (res);
 
-  return inexact;
+  MPFR_RESTORE_RET(inexact, x, rnd);
 }
