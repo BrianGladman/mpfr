@@ -34,7 +34,7 @@ main (void)
 
   mpfr_init2(x, 53);
 
-  mpfr_set_d(x, 2.34763465, GMP_RNDN);
+  mpfr_set_str (x, "2.34763465", 10, GMP_RNDN);
   if (mpfr_cmp_d(x, 2.34763465)!=0) {
     printf("Error in mpfr_cmp_d(%1.20f,%1.20f)\n",mpfr_get_d1 (x), 2.34763465);
     mpfr_clear(x);

@@ -185,7 +185,7 @@ special (void)
   /* check large precision */
   mpfr_set_prec (x, 3322);
   mpfr_set_prec (y, 3322);
-  mpfr_set_d (x, 3.0, GMP_RNDN);
+  mpfr_set_ui (x, 3, GMP_RNDN);
   mpfr_sqrt (x, x, GMP_RNDN);
   mpfr_log (y, x, GMP_RNDN);
 

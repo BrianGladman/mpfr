@@ -159,7 +159,7 @@ check_diverse (void)
     }
 
   /* check in-place operations */
-  mpfr_set_d (x, 1.0, GMP_RNDN);
+  mpfr_set_ui (x, 1, GMP_RNDN);
   mpfr_sub (x, x, x, GMP_RNDN);
   if (mpfr_get_d1 (x) != 0.0)
     {
@@ -170,8 +170,8 @@ check_diverse (void)
   mpfr_set_prec (x, 53);
   mpfr_set_prec (y, 53);
   mpfr_set_prec (z, 53);
-  mpfr_set_d (x, 1.229318102e+09, GMP_RNDN);
-  mpfr_set_d (y, 2.32221184180698677665e+05, GMP_RNDN);
+  mpfr_set_str (x, "1.229318102e+09", 10, GMP_RNDN);
+  mpfr_set_str (y, "2.32221184180698677665e+05", 10, GMP_RNDN);
   mpfr_sub (z, x, y, GMP_RNDN);
   res = 1229085880.815819263458251953125;
   got = mpfr_get_d1 (z);

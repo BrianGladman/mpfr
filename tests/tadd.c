@@ -168,8 +168,8 @@ check64 (void)
     }
 
   mpfr_set_prec (x, 92); mpfr_set_prec (t, 86); mpfr_set_prec (u, 53);
-  mpfr_set_d (x, -5.03525136761487735093e-74, GMP_RNDN);
-  mpfr_set_d (t, 8.51539046314262304109e-91, GMP_RNDN);
+  mpfr_set_str (x, "-5.03525136761487735093e-74", 10, GMP_RNDN);
+  mpfr_set_str (t, "8.51539046314262304109e-91", 10, GMP_RNDN);
   mpfr_add (u, x, t, GMP_RNDN);
   if (mpfr_get_d1 (u) != -5.0352513676148773509283672e-74)
     {
@@ -321,8 +321,8 @@ check64 (void)
     }
 
   /* checks that NaN flag is correctly reset */
-  mpfr_set_d (t, 1.0, GMP_RNDN);
-  mpfr_set_d (u, 1.0, GMP_RNDN);
+  mpfr_set_ui (t, 1, GMP_RNDN);
+  mpfr_set_ui (u, 1, GMP_RNDN);
   mpfr_set_nan (x);
   mpfr_add (x, t, u, GMP_RNDN);
   if (mpfr_cmp_ui (x, 2))
@@ -425,7 +425,7 @@ check_same (void)
 {
   mpfr_t x;
 
-  mpfr_init(x); mpfr_set_d(x, 1.0, GMP_RNDZ);
+  mpfr_init(x); mpfr_set_ui(x, 1, GMP_RNDZ);
   mpfr_add(x, x, x, GMP_RNDZ);
   if (mpfr_get_d1 (x) != 2.0)
     {

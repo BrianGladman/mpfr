@@ -43,7 +43,7 @@ main (void)
   mpfr_init2(z2, SIZEX);
   mpfr_init2(t2, SIZEX);
 
-  mpfr_set_d(x, 0.5, GMP_RNDN);
+  mpfr_set_str (x, "0.5", 10, GMP_RNDN);
   mpfr_ceil(y, x);
   if (mpfr_get_d1 (y) != 1.0)
     {
@@ -52,7 +52,7 @@ main (void)
       exit (1);
     }
 
-  mpfr_set_d(x, 0.0, GMP_RNDN);
+  mpfr_set_ui (x, 0, GMP_RNDN);
   mpfr_ceil(y, x);
   if (mpfr_get_d1 (y) != 0.0)
     {
@@ -61,7 +61,7 @@ main (void)
       exit (1);
     }
 
-  mpfr_set_d(x, 1.0, GMP_RNDN);
+  mpfr_set_ui (x, 1, GMP_RNDN);
   mpfr_ceil(y, x);
   if (mpfr_get_d1 (y) != 1.0)
     {

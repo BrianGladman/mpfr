@@ -449,6 +449,8 @@ int mpfr_round_raw_4 _MPFR_PROTO ((mp_limb_t *, mp_limb_t *,
 #define mpfr_round_raw2(xp, xn, neg, r, prec) \
   mpfr_round_raw_2(0, (xp), (xn) * BITS_PER_MP_LIMB, (neg), (prec), (r) )
 
+int mpfr_check(mpfr_srcptr);
+
 #if defined (__cplusplus)
 }
 #endif

@@ -94,7 +94,7 @@ main (int argc, char *argv[])
 
   mpfr_init2(x, 53);
 
-  mpfr_set_d(x, 1.0, GMP_RNDN);
+  mpfr_set_ui(x, 1, GMP_RNDN);
   mpfr_abs(x, x, GMP_RNDN);
   if (mpfr_get_d1 (x) != 1.0)
     {
@@ -102,7 +102,7 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-  mpfr_set_d(x, -1.0, GMP_RNDN);
+  mpfr_set_si(x, -1, GMP_RNDN);
   mpfr_abs(x, x, GMP_RNDN);
   if (mpfr_get_d1 (x) != 1.0)
     {
@@ -140,7 +140,7 @@ main (int argc, char *argv[])
       while (absd < DBL_MIN);
 #endif
       rnd = randlimb () % 4;
-      mpfr_set_d (x, d, 0);
+      mpfr_set_d (x, d, GMP_RNDN);
       mpfr_abs (x, x, rnd);
       dd = mpfr_get_d1 (x);
       if (!Isnan(d) && (dd != absd))

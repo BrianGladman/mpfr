@@ -194,8 +194,8 @@ special (void)
   mpfr_set_prec (z, 2);
 
   /* checks the sign is correctly set */
-  mpfr_set_d (x, 1.0, GMP_RNDN);
-  mpfr_set_d (z, -1.0, GMP_RNDN);
+  mpfr_set_si (x, 1,  GMP_RNDN);
+  mpfr_set_si (z, -1, GMP_RNDN);
   mpfr_sqrt (z, x, GMP_RNDN);
   if (mpfr_cmp_ui (z, 0) < 0)
     {

@@ -160,10 +160,10 @@ check_convergence (void)
     {
       mpfr_set_prec(x, i);
       mpfr_set_prec(y, i);
-      mpfr_set_d(x, 1.0, GMP_RNDN);
+      mpfr_set_ui(x, 1, GMP_RNDN);
       for (j=0;j<4;j++)
         {
-          mpfr_set_d(y, 1.0, GMP_RNDN);
+          mpfr_set_ui (y, 1, GMP_RNDN);
           mpfr_div(y, x, y, j);
           if (mpfr_cmp_ui(y, 1))
             {

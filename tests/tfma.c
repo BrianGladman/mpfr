@@ -47,9 +47,9 @@ main (int argc, char *argv[])
   mpfr_set_prec (y, 2);
   mpfr_set_prec (z, 2);
   mpfr_set_prec (s, 2);
-  mpfr_set_d (x, -0.75, GMP_RNDN);
-  mpfr_set_d (y, 0.5, GMP_RNDN);
-  mpfr_set_d (z, 0.375, GMP_RNDN);
+  mpfr_set_str (x, "-0.75", 10, GMP_RNDN);
+  mpfr_set_str (y, "0.5", 10, GMP_RNDN);
+  mpfr_set_str (z, "0.375", 10, GMP_RNDN);
   mpfr_fma (s, x, y, z, GMP_RNDU); /* result is 0 */
 
   mpfr_set_prec (x, 27);

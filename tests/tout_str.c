@@ -61,7 +61,7 @@ check_large (void)
 
   /* checks rounding of negative numbers */
   mpfr_set_prec (x, 7);
-  mpfr_set_d (x, -11.5, GMP_RNDN);
+  mpfr_set_str (x, "-11.5", 10, GMP_RNDN);
   s = mpfr_get_str (NULL, &e, 10, 2, x, GMP_RNDD);
   if (strcmp (s, "-12"))
     {

@@ -80,7 +80,7 @@ main(int argc, char *argv[])
   mpfr_init (x);
 
   mpfr_set_prec (x, 2);
-  mpfr_set_d (x, 0.5, GMP_RNDN);
+  mpfr_set_str (x, "0.5", 10, GMP_RNDN);
   mpfr_tan (x, x, GMP_RNDD);
   if (mpfr_get_d1 (x) != 0.5)
     {

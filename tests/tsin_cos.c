@@ -36,7 +36,7 @@ large_test (int prec, int N)
   mpfr_init2 (x, prec);
   mpfr_init2 (s, prec);
   mpfr_init2 (c, prec);
-  mpfr_set_d (x, 3.0, GMP_RNDN);
+  mpfr_set_ui (x, 3, GMP_RNDN);
   mpfr_sqrt (x, x, GMP_RNDN);
   for (i=0; i<N; i++) mpfr_sin_cos (s, c, x, GMP_RNDN);
   mpfr_out_str (stdout, 10, 0, s, GMP_RNDN); puts ("");

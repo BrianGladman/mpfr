@@ -63,7 +63,8 @@ main (int argc, char *argv[])
 
   mpfr_set_prec (x, 53);
   mpfr_set_prec (y, 53);
-  mpfr_set_d (x, -1683977482443233.0 / 2199023255552.0, GMP_RNDN);
+  mpfr_set_str (x, /*-1683977482443233.0 / 2199023255552.0*/
+		"-7.6578429909351734750089235603809357e2", 10,GMP_RNDN);
   mpfr_exp2 (y, x, GMP_RNDN);
   if (mpfr_get_d1 (y) != 2.991959870867646566478e-231)
     {
