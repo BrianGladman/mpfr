@@ -20,7 +20,6 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
 #include <stdio.h>
-#include <stdlib.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -31,8 +30,7 @@ mpfr_set_prec (mpfr_ptr x, mp_prec_t p)
 {
   mp_prec_t xsize;
 
-  if (p == 0)
-    return 1;
+  MPFR_ASSERTN(p >= MPFR_PREC_MIN && p <= MPFR_PREC_MAX);
 
   xsize = (p - 1)/BITS_PER_MP_LIMB + 1; /* new limb size */
 
