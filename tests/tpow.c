@@ -49,6 +49,12 @@ void check_pow_ui ()
     fprintf (stderr, "Error for (-Inf)^4049053855\n"); exit (1);
   }
 
+  mpfr_set_d (a, -1.0/0.0, GMP_RNDN);
+  mpfr_pow_ui (a, a, 30002752UL, GMP_RNDN);
+  if (mpfr_get_d (a) != 1.0/0.0) {
+    fprintf (stderr, "Error for (-Inf)^30002752\n"); exit (1);
+  }
+
   mpfr_clear (a);
   mpfr_clear (b);
 }
