@@ -566,14 +566,16 @@ mpfr_add (a, b, c, rnd_mode)
     }
     else
     { /* MPFR_EXP(b) == MPFR_EXP(c) */
-      int diff_exp = mpfr_cmp3(b,c,-1);
-      /* if b>0 and diff_exp>0 or b<0 and diff_exp<0: abs(b) > abs(c) */
-      if (diff_exp == 0)
+      int d = mpfr_cmp_abs(b,c);
+      if (d == 0)
       {
-        MPFR_SET_POS(a);
+        if (rnd_mode == GMP_RNDD)
+          MPFR_SET_NEG(a);
+        else
+          MPFR_SET_POS(a);
         MPFR_SET_ZERO(a);
       }
-      else if (diff_exp * MPFR_SIGN(b) > 0)
+      else if (d > 0)
         mpfr_sub1(a, b, c, rnd_mode, 0);
       else
         mpfr_sub1(a, c, b, rnd_mode, 0);
