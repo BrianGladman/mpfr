@@ -31,9 +31,6 @@ MA 02111-1307, USA. */
 
 static double mpfr_scale2 _PROTO ((double, int));
 
-#define IEEE_DBL_MANT_DIG 53
-
-
 /* "double" NaN and infinities are written as explicit bytes to be sure of
    getting what we want, and to be sure of not depending on libm.
 
