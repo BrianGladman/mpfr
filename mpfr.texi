@@ -316,10 +316,14 @@ There are some other useful make targets:
 
 @itemize @bullet
 @item
+@samp{mpfr.info} or @samp{info}
+
+Create an info version of the manual, in @file{mpfr.info}.
+
+@item
 @samp{mpfr.dvi} or @samp{dvi}
 
 Create a DVI version of the manual, in @file{mpfr.dvi}.
-@c and a set of info files, in @file{mpfr.info}, @file{mpfr.info-1}, @file{mpfr.info-2}, etc.
 
 @item
 @samp{mpfr.ps}

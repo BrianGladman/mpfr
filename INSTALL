@@ -46,13 +46,25 @@
 
      make AR="ar -X64"
 
-3. Type "make dvi" to produce the documentation (DVI file mpfr.dvi).
+3. Type "make check" (produces and runs the test files).
 
-4. Type "make check" (produces and runs the test files).
-
-5. Type "make install" (installs the library in /usr/local or in the
+4. Type "make install" (installs the library in /usr/local or in the
    directory given in the --prefix option of configure). You'll probably
    need to be "root" to install MPFR in directories like /usr/local.
+
+
+Building the documentation
+==========================
+
+To build the documentation in various formats, you may first need to
+install recent versions of some utilities such as texinfo.
+
+* Type "make info" to produce the documentation in the info format.
+
+* Type "make dvi" to produce the documentation in the DVI format.
+
+* Type "make mpfr.ps" to produce the documentation in the Postscript format.
+
 
 ./configure options
 ===================
@@ -61,16 +73,21 @@
                         and DIR/lib respectively
 --with-gmp-include=DIR  assumes that DIR contains gmp-impl.h, longlong.h...
 --with-gmp-lib=DIR      assumes that DIR contains libgmp.a
---with-gmp=DIR          same as --with-gmp-lib=DIR/lib --with-gmp-include=DIR/include
+--with-gmp=DIR          same as --with-gmp-lib=DIR/lib and
+                        --with-gmp-include=DIR/include
 
-Known problems.
-===============
+Run "./configure --help" to see the other options.
+
+
+Known problems
+==============
 
 See file BUGS for known bugs in MPFR. Some patches may be available on the
 MPFR web page <http://www.mpfr.org/> or <http://www.loria.fr/projets/mpfr/>.
 
-In case of problem.
-===================
+
+In case of problem
+==================
 
 Please contact us at mpfr@loria.fr, indicating the machine and operating
 system used (uname -a), the compiler and version used (gcc -v if you use
