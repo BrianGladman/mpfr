@@ -519,6 +519,21 @@ check_inexact (void)
   mpfr_init (z);
   mpfr_init (u);
 
+  mpfr_set_prec (x, 28);
+  mpfr_set_prec (y, 28);
+  mpfr_set_prec (z, 1023);
+  mpfr_set_str_binary (x, "0.1000001001101101111100010011E0");
+  mpfr_set_str (z, "48284762641021308813686974720835219181653367326353400027913400579340343320519877153813133510034402932651132854764198688352364361009429039801248971901380781746767119334993621199563870113045276395603170432175354501451429471578325545278975153148347684600400321033502982713296919861760382863826626093689036010394", 10, GMP_RNDN);
+  mpfr_div (x, x, z, GMP_RNDN);
+  mpfr_set_str_binary (y, "0.1111001011001101001001111100E-1023");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error in mpfr_div for prec=28, RNDN\n");
+      printf ("Expected "); mpfr_dump (y);
+      printf ("Got      "); mpfr_dump (x);
+      exit (1);
+    }
+
   mpfr_set_prec (x, 53);
   mpfr_set_str_binary (x, "0.11101100110010100011011000000100001111011111110010101E0");
   mpfr_set_prec (u, 127);
@@ -721,8 +736,8 @@ main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
-  check_hard ();
   check_inexact ();
+  check_hard ();
 
   check_nan ();
   check_lowr();
