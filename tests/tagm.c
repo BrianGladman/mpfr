@@ -57,12 +57,15 @@ double dagm(double a, double b) {
   tmpv=max(a,b);
   tmpu=min(a,b);
 
-  while (!(((tmpu==u)&&(tmpv==v))||(ulp(u,v)==0))) {
-    u=tmpu;
-    v=tmpv;
-    tmpu=sqrt(u*v);
-    tmpv=(u+v)/2.0;
-  }
+  do
+    {
+      u=tmpu;
+      v=tmpv;
+      tmpu=sqrt(u*v);
+      tmpv=(u+v)/2.0;
+    }
+  while (!(((tmpu==u)&&(tmpv==v))||(ulp(u,v)==0))); 
+
   /*  printf("difference : %i ulp\n",ulp(u,v)); */
 	 return u;
 }
