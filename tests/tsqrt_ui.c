@@ -45,7 +45,8 @@ void check(a, rnd_mode) unsigned long a; unsigned char rnd_mode;
   Q2 = mpfr_get_d(q);
   if (Q!=Q2 && (!isnan(Q) || !isnan(Q2))) {
     u = ulp(Q2,Q);
-    printf("mpfr_sqrt_ui failed for a=%lu, rnd_mode=%d\n",a,rnd_mode);
+    printf("mpfr_sqrt_ui failed for a=%lu, rnd_mode=%s\n",
+	   a, mpfr_print_rnd_mode(rnd_mode));
     printf("expected sqrt is %1.20e, got %1.20e (%d ulp)\n",Q,Q2,u);
     exit(1);
   }
