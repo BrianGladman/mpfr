@@ -1,3 +1,84 @@
+2002-07-26  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* README, README.dev: Update (mainly concerning CVS use).
+
+	* TODO, exceptions.c, exp.c, mpfr-impl.h, next.c, setmax.c, setmin.c:
+	Prototype of mpfr_setmax and mpfr_setmin changed (exponent given).
+	In mpfr_exp for x ~= 0, add_one_ulp and sub_one_ulp are no longer
+	used (sub_one_ulp was incorrect). These cases should now be faster.
+	Small fix in mpfr_nextabove, mpfr_nextbelow and mpfr_nexttoward.
+
+	* next.c, setmax.c, setmin.c, sub_one_ulp.c, Makefile.am, TODO, exceptions.c, mpfr-impl.h, mpfr.h, mpfr.texi:
+	New internal functions mpfr_setmin and mpfr_setmax.
+	New functions mpfr_nextabove, mpfr_nextbelow, mpfr_nexttoward.
+	Small fix in mpfr_sub_one_ulp.
+
+2002-07-26  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* get_str.c:
+	improved the computation of g = ceil((e-1)/log_2(beta)), using two tables
+
+2002-07-25  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* mpfr-impl.h, mpfr.texi, save_expo.c, set_q.c, sqrt_ui.c, sub_ui.c, ui_pow_ui.c, add_ui.c, exceptions.c:
+	Function mpfr_check_range now propagates the inexact ternary value.
+	Function mpfr_restore_emin_emax OR's the saved flags with the current
+	flags, as this is more useful in general.
+	Macro MPFR_RESTORE_RET removed (no longer useful).
+
+2002-07-24  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* frac.c: Change concerning an assertion, due to GMP limitation.
+
+2002-07-24  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* tests/tout_str.c: gnu indentation
+
+	* tests/tgamma.c: reduce range of tests (did take too much time)
+
+	* tests/tget_str.c:
+	added plenty of new cases, now covers all lines of get_str.c
+
+	* mpfr.texi: updated documentation of mpfr_get_str
+
+	* get_str.c:
+	completely new version, written by Alain Delplanque and Paul Zimmermann.
+	It now directly uses mpn_get_str, with subquadratic complexity.
+	About 3 times faster than previous version in most cases.
+
+2002-07-24  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* frac.c:
+	Bug fixed: unsigned int variables changed to int to avoid operations
+	with mixed signed/unsigned variables and unwanted casts.
+
+	* Makefile.am, frac.c, mpfr.h, mpfr.texi, tests/Makefile.am, tests/tfrac.c:
+	Function mpfr_frac and tests added.
+
+	* set.c: Bug fixed (0 was forgotten).
+
+	* isinteger.c: Optimization: mpfr_trunc no longer used!
+
+	* isinteger.c: mpfr_isinteger extended to non-fp numbers and to zero.
+
+	* isnum.c: Simpler test.
+
+2002-07-23  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* mul.c: Re-adding mul.c with fixed permissions.
+
+	* mul.c:
+	Temporarily removing mul.c in order to try to fix its permissions.
+
+	* mul.c: Fixed permissions.
+
+	* exceptions.c, mpfr-impl.h, mpfr.h, mpfr.texi, set_si.c, set_ui.c, tests/texceptions.c:
+	Function mpfr_check_range improved in the underflow case.
+
+2002-07-22  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* ChangeLog: Update.
+
 2002-07-22  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
 
 	* dump.c: now dump in base 2
