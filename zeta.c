@@ -1,6 +1,6 @@
 /* mpfr_zeta -- Riemann Zeta function at a floating-point number
 
-Copyright 1999, 2000, 2001, 2002 Free Software Foundation.
+Copyright 1999, 2000, 2001, 2002, 2003 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -27,20 +27,36 @@ MA 02111-1307, USA. */
 #include "longlong.h"
 
 int
-#if __STDC__
 mpfr_zeta (mpfr_ptr result, mpfr_srcptr op, mp_rnd_t rnd_mode)
-#else
-mpfr_zeta (result, op, rnd_mode)
-     mpfr_ptr result;
-     mpfr_srcptr op;
-     mp_rnd_t rnd_mode;
-#endif
 {
   mpfr_t s,s2,x,y,u,b,v,nn,z,z2; 
   int i, n, succes;
+  int cmp1;
 
-  /* to do: check whether op is NaN or infinity,
-     and clear NaN/Inf flags of result */
+  if (MPFR_IS_NAN(op) || MPFR_SIGN(op) < 0)
+    {
+      MPFR_SET_NAN(result);
+      MPFR_RET_NAN;
+    }
+
+  if (MPFR_IS_INF(op))  /* +infinity */
+    return mpfr_set_ui(result, 1, rnd_mode);
+
+  cmp1 = mpfr_cmp_ui(op, 1);
+  if (cmp1 < 0)
+    {
+      MPFR_SET_NAN(result);
+      MPFR_RET_NAN;
+    }
+  if (cmp1 == 0)
+    {
+      MPFR_CLEAR_NAN(result);
+      MPFR_SET_INF(result);
+      MPFR_SET_POS(result);
+      return 0;
+    }
+
+  /* 1 < op < +infinity */
 
   /* first version */
   if (mpfr_get_d1 (op) != 2.0 || rnd_mode != GMP_RNDN
