@@ -41,9 +41,9 @@ main(int argc, char **argv)
       z = random() - (1 << 30);      
       mpfr_set_si(x, z, GMP_RNDZ); 
       d = (int)mpfr_get_d(x);
-      if (d != z)
-	fprintf(stderr, "Expected %ld got %ld\n", z, d); exit(1);
-      
+      if (d != z) {
+	fprintf(stderr, "Error in mpfr_set_si: expected %ld got %ld\n", z, d); exit(1);
+      }
     }
 
   for (k = 1; k <= N; k++)
@@ -51,9 +51,38 @@ main(int argc, char **argv)
       zl = random();
       mpfr_set_ui(x, zl, GMP_RNDZ); 
       dl = (unsigned int) mpfr_get_d(x);
-      if (dl != zl)
-	fprintf(stderr, "Expected %lu got %lu\n", zl, dl); exit(1);
+      if (dl != zl) {
+	fprintf(stderr, "Error in mpfr_set_ui: expected %lu got %lu\n", zl, dl); exit(1);
+      }
     }
+
+  mpfr_set_prec(x, 3);
+  mpfr_set_si(x, 77617, GMP_RNDD); /* should be 65536 */
+  if (MANT(x)[0] != ((mp_limb_t)1 << (mp_bits_per_limb-1))) {
+    fprintf(stderr, "Error in mpfr_set_si(x:3, 77617, GMP_RNDD)\n");
+    mpfr_print_raw(x); putchar('\n');
+    exit(1);
+  }
+  mpfr_set_ui(x, 77617, GMP_RNDD); /* should be 65536 */
+  if (MANT(x)[0] != ((mp_limb_t)1 << (mp_bits_per_limb-1))) {
+    fprintf(stderr, "Error in mpfr_set_ui(x:3, 77617, GMP_RNDD)\n");
+    mpfr_print_raw(x); putchar('\n');
+    exit(1);
+  }
+
+  mpfr_set_prec(x, 1);
+  mpfr_set_si(x, 33096, GMP_RNDU);
+  if (mpfr_get_d(x) != 65536.0) {
+    fprintf(stderr, "Error in mpfr_set_si, expected 65536, got %lu\n",
+	    (unsigned long) mpfr_get_d(x));
+    exit(1);
+  }
+  mpfr_set_ui(x, 33096, GMP_RNDU);
+  if (mpfr_get_d(x) != 65536.0) {
+    fprintf(stderr, "Error in mpfr_set_ui, expected 65536, got %lu\n",
+	    (unsigned long) mpfr_get_d(x));
+    exit(1);
+  }
 
   mpfr_clear(x); 
   return(0);
