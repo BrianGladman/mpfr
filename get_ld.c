@@ -45,7 +45,7 @@ mpfr_get_ld (mpfr_srcptr x, mp_rnd_t rnd_mode)
     }
   else if (MPFR_IS_ZERO(x))
     {
-      return 0.0;
+      return MPFR_SIGN(x) < 0 ? -0.0 : 0.0;
     }
   else /* now x is a normal non-zero number */
     {
