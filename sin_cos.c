@@ -77,7 +77,7 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
     {
       mpfr_cos (c, x, GMP_RNDZ);
       if (!mpfr_can_round (c, m, GMP_RNDZ, rnd_mode, MPFR_PREC (z)))
-	goto next_step;
+        goto next_step;
       inexact = mpfr_set (z, c, rnd_mode);
       mpfr_sqr (c, c, GMP_RNDU);
       mpfr_ui_sub (c, 1, c, GMP_RNDN);
@@ -91,6 +91,9 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
       if (mpfr_can_round (c, e, GMP_RNDN, rnd_mode, MPFR_PREC (y)))
 	break;
     next_step:
+      /* check for huge cancellation */
+      if (e < MPFR_PREC (y))
+        m += MPFR_PREC (y) - e;
       m += BITS_PER_MP_LIMB;
       mpfr_set_prec (c, m);
     }
