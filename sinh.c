@@ -27,112 +27,96 @@ MA 02111-1307, USA. */
 
 int
 mpfr_sinh (mpfr_ptr y, mpfr_srcptr xt, mp_rnd_t rnd_mode)
-{
-    /****** Declarations ******/
-    mpfr_t x;
-    mp_prec_t Nxt = MPFR_PREC(xt);
-    int flag_neg = 0, inexact = 0;
+{  
+  mpfr_t x;
+  int inexact;
 
-    if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(xt)))
-      {
-	if (MPFR_IS_NAN(xt))
-	  {
-	    MPFR_SET_NAN(y); 
-	    MPFR_RET_NAN;
-	  }
-	else if (MPFR_IS_INF(xt))
-	  { 
-	    MPFR_SET_INF(y);
-	    MPFR_SET_SAME_SIGN(y, xt);
-	    MPFR_RET(0);
-	  }
-	else /* xt is zero */
-	  {
-            MPFR_ASSERTD(MPFR_IS_ZERO(xt));
-	    MPFR_SET_ZERO(y);   /* sinh(0) = 0 */
-	    MPFR_SET_SAME_SIGN(y, xt);
-	    MPFR_RET(0);
-	  }
-      }
-
-    mpfr_init2 (x, Nxt);
-    mpfr_set (x, xt, GMP_RNDN);
-
-    if (MPFR_IS_NEG(x))
-      {
-        MPFR_CHANGE_SIGN(x);
-        flag_neg = 1;
-      }
-
-    /* General case */
+  if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(xt)))
     {
-    /* Declaration of the intermediary variable */
-      mpfr_t t, te, ti;
-      int d;
-
-      /* Declaration of the size variable */
-      mp_prec_t Nx = Nxt;   /* Precision of input variable */
-      mp_prec_t Ny = MPFR_PREC(y);   /* Precision of result */
-
-      mp_prec_t Nt;   /* Precision of the intermediary variable */
-      long int err;  /* Precision of error */
-      
-      /* compute the precision of intermediary variable */
-      Nt = MAX(Nx, Ny);
-      /* the optimal number of bits : see algorithms.ps */
-      Nt = Nt + MPFR_INT_CEIL_LOG2 (5) + MPFR_INT_CEIL_LOG2 (Nt);
-
-      /* initialise of intermediary	variable */
-      mpfr_init (t);
-      mpfr_init (te);
-      mpfr_init (ti);
-
-      /* First computation of sinh */
-      do
-        {
-
-          /* reactualisation of the precision */
-
-          mpfr_set_prec (t, Nt);
-          mpfr_set_prec (te, Nt);
-          mpfr_set_prec (ti, Nt);
-
-          /* compute sinh */
-          mpfr_exp (te, x, GMP_RNDD);        /* exp(x) */
-          mpfr_ui_div (ti, 1, te, GMP_RNDU); /* 1/exp(x) */
-          mpfr_sub (t, te, ti, GMP_RNDN);    /* exp(x) - 1/exp(x) */
-          mpfr_div_2ui (t, t, 1, GMP_RNDN);  /* 1/2(exp(x) - 1/exp(x)) */
-
-          /* it may be that t is zero (in fact, it can only occur when te=1,
-             and thus ti=1 too) */
-
-          if (MPFR_IS_ZERO(t))
-            err = -1;
-          else
-            {
-              /* calculation of the error */
-              d = MPFR_GET_EXP (te) - MPFR_GET_EXP (t) + 2;
-
-              /* error estimate */
-              /* err = Nt-(__gmpfr_ceil_log2(1+pow(2,d)));*/
-              err = Nt - (MAX(d,0) + 1);
-            }
-
-          /* actualisation of the precision */
-          Nt += 10; 
-
-        } while ((err < 0) || !mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
-                                               Ny + (rnd_mode == GMP_RNDN)));
-
-      if (flag_neg == 1)
-          MPFR_CHANGE_SIGN(t);
-
-      inexact = mpfr_set (y, t, rnd_mode);
-      mpfr_clear (t);
-      mpfr_clear (ti);
-      mpfr_clear (te);
+      if (MPFR_IS_NAN(xt))
+	{
+	  MPFR_SET_NAN(y); 
+	  MPFR_RET_NAN;
+	}
+      else if (MPFR_IS_INF(xt))
+	{ 
+	  MPFR_SET_INF(y);
+	  MPFR_SET_SAME_SIGN(y, xt);
+	  MPFR_RET(0);
+	}
+      else /* xt is zero */
+	{
+	  MPFR_ASSERTD(MPFR_IS_ZERO(xt));
+	  MPFR_SET_ZERO(y);   /* sinh(0) = 0 */
+	  MPFR_SET_SAME_SIGN(y, xt);
+	  MPFR_RET(0);
+	}
     }
-    mpfr_clear (x);
+  
+  MPFR_TMP_INIT_ABS (x, xt);
 
-    return inexact;
+  {
+    mpfr_t t, ti;
+    mp_exp_t d;    
+    mp_prec_t Nt;    /* Precision of the intermediary variable */
+    long int err;    /* Precision of error */
+    int overflow_p = mpfr_overflow_p ();
+
+    /* compute the precision of intermediary variable */
+    Nt = MAX (MPFR_PREC (x), MPFR_PREC (y));
+    /* the optimal number of bits : see algorithms.ps */
+    Nt = Nt + MPFR_INT_CEIL_LOG2 (Nt) + 4;
+    /* If x is near 0, exp(x) - 1/exp(x) = 2*x+x^3/3+O(x^5) */
+    if (MPFR_GET_EXP (x) < 0)
+      Nt -= 2*MPFR_GET_EXP (x);
+
+    /* initialise of intermediary	variable */
+    mpfr_init2 (t, Nt);
+    mpfr_init2 (ti, Nt);
+
+    /* First computation of sinh */
+    for (;;) {
+      /* compute sinh */
+      mpfr_clear_overflow ();
+      mpfr_exp (t, x, GMP_RNDD);        /* exp(x) */
+      /* exp(x) can overflow or underflow or return ~1 ! */
+      d = MPFR_GET_EXP (t);
+      if (MPFR_UNLIKELY (mpfr_overflow_p ())) {
+	MPFR_SET_INF (t);
+	break;
+      }
+      mpfr_ui_div (ti, 1, t, GMP_RNDU); /* 1/exp(x) */
+      mpfr_sub (t, t, ti, GMP_RNDN);    /* exp(x) - 1/exp(x) */
+      mpfr_div_2ui (t, t, 1, GMP_RNDN);  /* 1/2(exp(x) - 1/exp(x)) */
+      
+      /* it may be that t is zero (in fact, it can only occur when te=1,
+	 and thus ti=1 too) */
+      err = 0;
+      if (!MPFR_IS_ZERO (t))
+	{
+	  /* calculation of the error */
+	  d = d - MPFR_GET_EXP (t) + 2;	  
+	  /* error estimate */
+	  /* err = Nt-(__gmpfr_ceil_log2(1+pow(2,d)));*/
+	  err = Nt - (MAX (d, 0) + 1);
+	  
+	  if (mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
+			      MPFR_PREC (y) + (rnd_mode == GMP_RNDN)))
+	    break;
+	}
+      /* actualisation of the precision */
+      Nt += MAX (BITS_PER_MP_LIMB, err);
+      mpfr_set_prec (t, Nt);
+      mpfr_set_prec (ti, Nt);
+    }
+     
+    inexact = mpfr_set4 (y, t, rnd_mode, MPFR_SIGN (xt));
+    if (overflow_p != 0)
+      __gmpfr_flags |= MPFR_FLAGS_OVERFLOW;
+
+    mpfr_clear (t);
+    mpfr_clear (ti);
+  }
+  
+  return inexact;
 }
