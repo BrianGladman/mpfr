@@ -79,7 +79,7 @@ mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
       xp = MPFR_MANT (x);
       sh = MPFR_GET_EXP (x);
       MPFR_ASSERTN ((mp_prec_t) sh <= prec);
-      if (INTMAX_MIN + INTMAX_MAX != 0 
+      if (INTMAX_MIN + INTMAX_MAX != 0
           && MPFR_UNLIKELY ((mp_prec_t) sh == prec))
         {
           /* 2's complement and x <= INTMAX_MIN: in the case mp_limb_t
@@ -94,9 +94,9 @@ mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
           for (n = MPFR_LIMB_SIZE (x) - 1; n >= 0; n--)
             {
               sh -= BITS_PER_MP_LIMB;
-              r += (sh >= 0 
-                    ? (uintmax_t) xp[n] << sh
-                    : (uintmax_t) xp[n] >> (-sh));
+              r += (sh >= 0
+                    ? (intmax_t) xp[n] << sh
+                    : (intmax_t) ((uintmax_t) xp[n] >> (-sh)));
             }
         }
       else
@@ -105,8 +105,8 @@ mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
             {
               sh -= BITS_PER_MP_LIMB;
               r -= (sh >= 0
-                    ? (uintmax_t) xp[n] << sh 
-                    : (uintmax_t) xp[n] >> (-sh));
+                    ? (intmax_t) xp[n] << sh
+                    : (intmax_t) ((uintmax_t) xp[n] >> (-sh)));
             }
         }
     }
