@@ -82,6 +82,8 @@ In case of problem
 
    On some architectures, try with `gmake` instead of `make`.
 
+   Try to build MPFR with/without GMP internal files.
+
    If you can't solve your problem, you could contact us at mpfr@loria.fr,
    indicating the machine and operating system used (uname -a), the compiler
    and version used (gcc -v if you use gcc), the compile options used if any,
@@ -104,11 +106,18 @@ Notes on Windows
 2 - if you just want to make a binary with gcc, there is nothing to do:
     gmp, mpfr and the program compile exactly as under Linux.
 
-3 - if you want to make libraries to work under a native Windows compiler
+3 - if you want to make libraries to work under another Windows compiler
     like Visual C / C++, the "trick" is that the unix-like *.a files created
     by gcc are entirely compatible with the Windows *.lib files. So you just
     have to rename the *.a files into *.lib.
 
     With gmp-4.1.3, the only remaining problem seems to be the "alloca" calls
     in gmp. Configuring gmp and mpfr with --enable-alloca=malloc-reentrant
-    should work.
+    should work (If you build MPFR with gmp internal files).
+    
+    Or you could add the library 
+     "$MINGWIN$/lib/gcc-lib/mingw32/$VERSION$/libgcc.a"
+    to your project: it contains all the extra-functions needed by a program
+    compiled by GCC (Division of 64 bits integer, bcopy, alloca, ...).
+    Of course, include it iff your compiler is not GCC.
+
