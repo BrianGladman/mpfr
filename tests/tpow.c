@@ -174,6 +174,22 @@ check_pow_ui (void)
       exit (1);
     }
 
+  mpfr_set_prec (a, 29);
+  mpfr_set_prec (b, 29);
+  mpfr_set_str_binary (a, "1.0000000000000000000000001111");
+  mpfr_set_str_binary (b, "1.1001101111001100111001010111e165");
+  mpfr_pow_ui (a, a, 2055225053, GMP_RNDZ);
+  if (mpfr_cmp (a, b) != 0)
+    {
+      printf ("Error for x^2055225053\n");
+      printf ("Expected ");
+      mpfr_out_str (stdout, 2, 0, b, GMP_RNDN);
+      printf ("\nGot      ");
+      mpfr_out_str (stdout, 2, 0, a, GMP_RNDN);
+      printf ("\n");
+      exit (1);
+    }
+
   mpfr_clear (a);
   mpfr_clear (b);
 }
