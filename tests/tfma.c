@@ -242,7 +242,6 @@ main (int argc, char *argv[])
 
       for (n=0; n<N; n++)
 	{
-         
           mpfr_random (x);
 	  mpfr_random (y);
 	  mpfr_random (z);
