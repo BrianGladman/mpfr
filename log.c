@@ -16,6 +16,11 @@
   */
 
 
+#define MON_INIT(xp, x, p, s) xp = (mp_ptr) TMP_ALLOC(s*BYTES_PER_MP_LIMB);    x -> _mp_prec = p; x -> _mp_d = xp; x -> _mp_size = s; x -> _mp_exp = 0; 
+
+
+
+
 void 
 #if __STDC__
 mpfr_log(mpfr_ptr r, mpfr_srcptr a, unsigned char rnd_mode) 
@@ -26,9 +31,12 @@ mpfr_log()
      unsigned char rnd_mode; 
 #endif
 {
-  int p, m, q, bool, err;
+  int p, m, q, bool, err, size;
   mpfr_t cst, rapport, agm, tmp1, tmp2, s, mm;
-  double ref;
+  mp_limb_t *cstp, *rapportp, *agmp, *tmp1p, *tmp2p, *sp, *mmp;
+  double x, ref;
+  TMP_DECL(marker);
+
 
   /* If a is NaN, the result is NaN */
   if (FLAG_NAN(a)) 
@@ -68,16 +76,18 @@ mpfr_log()
 
     /* Calculus of m (depends on p) */
     m=(int) ceil(((double) p)/2.0) -EXP(a)+1;
-    
+
     /* All the mpfr_t needed have a precision of p */
-    mpfr_init2(cst,p);
-    mpfr_init2(rapport,p);
-    mpfr_init2(agm,p);
-    mpfr_init2(tmp1,p);
-    mpfr_init2(tmp2,p);
-    mpfr_init2(s,p);
-    mpfr_init2(mm,p);
-  
+    TMP_MARK(marker);
+    size=(p-1)/BYTES_PER_MP_LIMB+1;
+    MON_INIT(cstp, cst, p, size);  
+    MON_INIT(rapportp, rapport, p, size);
+    MON_INIT(agmp, agm, p, size);
+    MON_INIT(tmp1p, tmp1, p, size);  
+    MON_INIT(tmp2p, tmp2, p, size);  
+    MON_INIT(sp, s, p, size);
+    MON_INIT(mmp, mm, p, size);
+
     mpfr_set_si(mm,m,GMP_RNDN);           /* I have m */
     mpfr_set_si(tmp1,1,GMP_RNDN);         /* I have 1 */
     mpfr_set_si(tmp2,4,GMP_RNDN);         /* I have 4 */
@@ -91,10 +101,11 @@ mpfr_log()
     mpfr_mul(tmp1,cst,mm,GMP_RNDN);       /* I compute m*log(2) */
     mpfr_sub(cst,tmp2,tmp1,GMP_RNDN);     /* I compute log(a) */ 
  
+
     /*     printf("avant arrondi : ( %i bits faux)\n",7+err);
 	   mpfr_print_raw(cst);printf("\n"); */
-    
 
+    
     /* If we can round the result, we set it and go out of the loop */
 
     if(mpfr_can_round(cst,p-7-err,GMP_RNDN,rnd_mode,q)==1) {
@@ -102,18 +113,13 @@ mpfr_log()
       bool=0;
     }
     /* else we increase the precision */
-    else    
+    else {
       p+=5;
+    }
 
-    /* We clear all the mpfr_t : either they will not be used any more,
-       or their precision will be increased */
-    mpfr_clear(rapport);
-    mpfr_clear(agm);
-    mpfr_clear(tmp1);
-    mpfr_clear(tmp2);
-    mpfr_clear(s);
-    mpfr_clear(mm);
-    mpfr_clear(cst);
+    /* We clean */
+    TMP_FREE(marker);
+    
   }
  
 }
