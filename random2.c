@@ -38,6 +38,7 @@ mpfr_random2 (mpfr_ptr x, mp_size_t size, mp_exp_t exp)
   mp_limb_t elimb;
 
   MPFR_CLEAR_FLAGS(x);
+  MPFR_SET_POS(x);
   xn = ABS (size);
   prec = (MPFR_PREC(x) - 1) / GMP_NUMB_BITS;
   xp = MPFR_MANT(x);
@@ -54,8 +55,8 @@ mpfr_random2 (mpfr_ptr x, mp_size_t size, mp_exp_t exp)
   /* General random mantissa.  */
   mpn_random2 (xp, xn);
 
-  /* Set mandagtory most significant bit.  */
-  xp[xn - 1] |= (MP_LIMB_T_ONE << (GMP_NUMB_BITS - 1));
+  /* Set mandatory most significant bit.  */
+  xp[xn - 1] |= MPFR_LIMB_HIGHBIT;
 
   /* Generate random exponent.  */
   _gmp_rand (&elimb, RANDS, GMP_NUMB_BITS);
