@@ -40,7 +40,7 @@ mpfr_get_str_raw(digit_ptr, x)
   ex = EXP(x); 
   p = PREC(x); 
 
-  if (SIGN(x) < 0) { *digit_ptr = '-'; digit_ptr++; }
+  if (MPFR_SIGN(x) < 0) { *digit_ptr = '-'; digit_ptr++; }
   sprintf(digit_ptr, "0."); digit_ptr += 2; 
 
   sx = 1+(p-1)/mp_bits_per_limb; /* number of significant limbs */
