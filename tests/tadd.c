@@ -41,6 +41,7 @@ void check2a _PROTO((double, int, double, int, int, int, char *));
 void check64 _PROTO((void)); 
 void check_same _PROTO((void)); 
 void check_case_1b _PROTO((void)); 
+void check_case_2 _PROTO((void));
 
 /* checks that x+y gives the same results in double
    and with mpfr with 53 bits of precision */
@@ -379,7 +380,9 @@ void check64 ()
   mpfr_clear(x); mpfr_clear(t); mpfr_clear(u);
 }
 
-void check_case_1b ()
+/* check case when c does not overlap with a, but both b and c count
+   for rounding */
+void check_case_1b (void)
 {
   mpfr_t a, b, c;
   unsigned int prec_a, prec_b, prec_c, dif;
@@ -427,6 +430,37 @@ void check_case_1b ()
   mpfr_clear (c);
 }
 
+/* check case when c overlaps with a */
+void check_case_2 (void)
+{
+  mpfr_t a, b, c, d;
+
+  mpfr_init2(a, 300);
+  mpfr_init2(b, 800);
+  mpfr_init2(c, 500);
+  mpfr_init2(d, 800);
+
+  mpfr_set_str_raw(a, "1E110");  /* a = 2^110 */
+  mpfr_set_str_raw(b, "1E900");  /* b = 2^900 */
+  mpfr_set_str_raw(c, "1E500");  /* c = 2^500 */
+  mpfr_add(c, c, a, GMP_RNDZ);   /* c = 2^500 + 2^110 */
+  mpfr_sub(d, b, c, GMP_RNDZ);   /* d = 2^900 - 2^500 - 2^110 */
+  mpfr_add(b, b, c, GMP_RNDZ);   /* b = 2^900 + 2^500 + 2^110 */
+  mpfr_add(a, b, d, GMP_RNDZ);   /* a = 2^901 */
+  if (mpfr_cmp_ui (a, 1))
+    {
+      fprintf (stderr, "b + d fails for b=2^900+2^500+2^110, d=2^900-2^500-2^110\n");
+      fprintf (stderr, "expected 1.0e901, got ");
+      mpfr_out_str (stderr, 2, 0, a, GMP_RNDN);
+      fprintf (stderr, "\n");
+      exit (1);
+    }
+
+  mpfr_clear(a);
+  mpfr_clear(b);
+  mpfr_clear(c);
+}
+
 /* checks when source and destination are equal */
 void check_same ()
 {
@@ -460,6 +494,7 @@ main (int argc, char *argv[])
 #endif
 
   check_case_1b ();
+  check_case_2 ();
   check64();
   check(293607738.0, 1.9967571564050541e-5, GMP_RNDU, 64, 53, 53,
 	2.9360773800002003e8);
