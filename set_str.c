@@ -158,7 +158,7 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
             }
 	  break;
         }
-      else if (*str == '.')
+      else if (*str == '.' && point == 0) /* only one point is allowed! */
 	{
 	  point = 1;
 	  continue;    /* go to next character */
