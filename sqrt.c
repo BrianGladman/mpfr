@@ -19,9 +19,8 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include "mpfr-impl.h"
-
 /* #define DEBUG */
+#include "mpfr-impl.h"
 
 int
 mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
@@ -78,19 +77,17 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
   up = MPFR_MANT(u);
   usize = MPFR_LIMB_SIZE(u);
 
-#ifdef DEBUG
-  printf("Entering square root : ");
-  for(k = usize - 1; k >= 0; k--) { printf("%lu ", up[k]); }
-  printf(".\n");
-#endif
+  MPFR_TRACE( printf("Entering square root : ") );
+  MPFR_TRACE( for(k = usize - 1; k >= 0; k--) printf("%lu ", up[k]) );
+  MPFR_TRACE( printf(".\n") );
 
   /* Compare the mantissas */
-
   odd_exp_u = (unsigned int) MPFR_GET_EXP (u) & 1;
-  MPFR_ASSERTN(MPFR_PREC(r) <= MPFR_INTPREC_MAX - 3);
+  MPFR_ASSERTD (MPFR_PREC(r) <= MPFR_INTPREC_MAX - 3);
   rrsize = (MPFR_PREC(r) + 2 + odd_exp_u) / BITS_PER_MP_LIMB + 1;
-  MPFR_ASSERTN(rrsize <= MP_SIZE_T_MAX/2);
+  MPFR_ASSERTD (rrsize <= MP_SIZE_T_MAX/2);
   rsize = rrsize << 1;
+
   /* One extra bit is needed in order to get the square root with enough
      precision ; take one extra bit for rrsize in order to solve more
      easily the problem of rounding to nearest.
@@ -102,7 +99,7 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
   TMP_MARK(marker);
   if (odd_exp_u) /* Shift u one bit to the right */
     {
-      if (MPFR_PREC(u) & (BITS_PER_MP_LIMB - 1))
+      if (MPFR_LIKELY( MPFR_PREC(u) & (BITS_PER_MP_LIMB - 1)) )
         {
           up = (mp_limb_t*) TMP_ALLOC(usize * BYTES_PER_MP_LIMB);
           mpn_rshift (up, MPFR_MANT(u), usize, 1);
@@ -118,7 +115,7 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
         }
     }
 
-  MPFR_SET_EXP(r, MPFR_GET_EXP(u) != MPFR_EMAX_MAX
+  MPFR_SET_EXP(r, MPFR_LIKELY(MPFR_GET_EXP(u) != MPFR_EMAX_MAX)
                ? (MPFR_GET_EXP(u) + odd_exp_u) / 2
                : (MPFR_EMAX_MAX - 1) / 2 + 1);
 
@@ -126,17 +123,17 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
     {
       err = rsize * BITS_PER_MP_LIMB;
 
-      if (rsize < usize)
+      if (MPFR_UNLIKELY(rsize < usize))
         err--;
 
-      if (err > rrsize * BITS_PER_MP_LIMB)
+      if (MPFR_LIKELY(err > rrsize * BITS_PER_MP_LIMB))
         err = rrsize * BITS_PER_MP_LIMB;
 
-      tmp = (mp_ptr) TMP_ALLOC (rsize * BYTES_PER_MP_LIMB);
-      rp = (mp_ptr) TMP_ALLOC (rrsize * BYTES_PER_MP_LIMB);
+      tmp  = (mp_ptr) TMP_ALLOC (rsize * BYTES_PER_MP_LIMB);
+      rp   = (mp_ptr) TMP_ALLOC (rrsize * BYTES_PER_MP_LIMB);
       remp = (mp_ptr) TMP_ALLOC (rsize * BYTES_PER_MP_LIMB);
 
-      if (usize >= rsize)
+      if (MPFR_UNLIKELY(usize >= rsize))
         {
           MPN_COPY (tmp, up + usize - rsize, rsize);
         }
@@ -147,23 +144,17 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
         }
 
       /* Do the real job */
-
-#ifdef DEBUG
-      printf("Taking the sqrt of : ");
-      for(k = rsize - 1; k >= 0; k--)
-        printf("+%lu*2^%lu",tmp[k],k*BITS_PER_MP_LIMB);
-      printf(".\n");
-#endif
+      MPFR_TRACE ( printf("Taking the sqrt of : ") );
+      MPFR_TRACE ( for(k = rsize - 1; k >= 0; k--)
+		   printf("+%lu*2^%lu",tmp[k],k*BITS_PER_MP_LIMB) );
+      MPFR_TRACE ( printf(".\n") );
 
       q_limb = mpn_sqrtrem (rp, remp, tmp, rsize);
 
-#ifdef DEBUG
-      printf ("The result is : \n");
-      printf ("sqrt : ");
-      for (k = rrsize - 1; k >= 0; k--)
-        printf ("%lu ", rp[k]);
-      printf ("(inexact = %lu)\n", q_limb);
-#endif
+      MPFR_TRACE ( printf ("The result is : \nsqrt : ") );
+      MPFR_TRACE ( for (k = rrsize - 1; k >= 0; k--)
+		   printf ("%lu ", rp[k]) );
+      MPFR_TRACE ( printf ("(inexact = %lu)\n", q_limb) );
 
       can_round = mpfr_can_round_raw (rp, rrsize, 1, err,
                                       GMP_RNDZ, rnd_mode, MPFR_PREC(r));
@@ -172,22 +163,18 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
          then we have the correct RNDZ rounding */
 
       if (!can_round && (rsize < usize))
-        {
-#ifdef DEBUG
-          printf("Increasing the precision.\n");
-#endif
-        }
+	MPFR_TRACE ( printf("Increasing the precision.\n") );
     }
   while (!can_round && (rsize < usize) && (rsize += 2) && (rrsize++));
-#ifdef DEBUG
-  printf ("can_round = %d\n", can_round);
-#endif
+
+  MPFR_TRACE ( printf ("can_round = %d\n", can_round) );
 
   /* This part may be deplaced upper to avoid a few mpfr_can_round_raw */
   /* when the square root is exact. It is however very unlikely that */
   /* it would improve the behaviour of the present code on average.    */
 
-  if (!q_limb) /* the sqrtrem call was exact, possible exact square root */
+  if (MPFR_UNLIKELY(!q_limb))
+    /* the sqrtrem call was exact, possible exact square root */
     {
       /* if we have taken into account the whole of up */
       for (k = usize - rsize - 1; k >= 0; k--)
@@ -196,7 +183,6 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
             q_limb = 1; /* simulate positive remainder */
             break;
           }
-
       if (k < 0)
 #if 0
         goto fin; /* exact square root ==> inexact = 0 */
@@ -207,10 +193,11 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
 #endif
     }
 
-  if (can_round)
+  if (MPFR_LIKELY(can_round))
     {
       cc = mpfr_round_raw (rp, rp, err, 0, MPFR_PREC(r), rnd_mode, &inexact);
-      if (inexact == 0) /* exact high part: inex flag depends on remainder */
+      if (MPFR_UNLIKELY(inexact == 0))
+	/* exact high part: inex flag depends on remainder */
         inexact = -q_limb;
       rrsize = (MPFR_PREC(r) - 1)/BITS_PER_MP_LIMB + 1;
     }
@@ -231,7 +218,7 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
           rw = (MPFR_PREC(r) + 1) & (BITS_PER_MP_LIMB - 1);
 	  nw = (MPFR_PREC(r) + 1) / BITS_PER_MP_LIMB + 1; 
 
-          if (rw != 0)
+          if (MPFR_LIKELY(rw != 0))
             rw = BITS_PER_MP_LIMB - rw;
           else
             nw--;
@@ -266,7 +253,7 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
         }
     }
 
-  if (cc)
+  if (MPFR_UNLIKELY(cc))
     {
       /* Is a shift necessary here? Isn't the result 1.0000...? */
       mpn_rshift (rp, rp, rrsize, 1);
@@ -278,7 +265,7 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
   rrsize = (MPFR_PREC(r) - 1)/BITS_PER_MP_LIMB + 1;
   MPN_COPY(MPFR_MANT(r), rp + rsize - rrsize, rrsize);
 
-  if (MPFR_PREC(r) & (BITS_PER_MP_LIMB - 1))
+  if (MPFR_LIKELY(MPFR_PREC(r) & (BITS_PER_MP_LIMB - 1)))
     MPFR_MANT(r)[0] &= ~MPFR_LIMB_MASK(BITS_PER_MP_LIMB -
 				       (MPFR_PREC(r) & (BITS_PER_MP_LIMB-1)));
 
