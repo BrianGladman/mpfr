@@ -149,13 +149,12 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 {
   int inexact = 1;
 
-  /* pow(x, ±0) returns 1 for any x, even a NaN. */
-  if (MPFR_UNLIKELY( MPFR_IS_ZERO(y) ))
-    return mpfr_set_ui (z, 1, GMP_RNDN);
-
   if (MPFR_ARE_SINGULAR(x,y))
     {
-      if (MPFR_IS_NAN(x))
+      /* pow(x, 0) returns 1 for any x, even a NaN. */
+      if (MPFR_UNLIKELY( MPFR_IS_ZERO(y) ))
+	return mpfr_set_ui (z, 1, GMP_RNDN);
+      else if (MPFR_IS_NAN(x))
 	{
 	  MPFR_SET_NAN(z);
 	  MPFR_RET_NAN;

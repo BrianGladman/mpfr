@@ -29,7 +29,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 {
   int sign_product, cc, inexact;
   mp_exp_t ax, bx, cx;
-  mp_limb_t *ap, *bp, *cp, *tmp;
+  mp_limb_t *tmp;
   mp_limb_t b1;
   mp_prec_t aq, bq, cq;
   mp_size_t an, bn, cn, tn, k;
@@ -103,22 +103,21 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 			     sign_product);
   */
 
-  ap = MPFR_MANT(a);
-  bp = MPFR_MANT(b);
-  cp = MPFR_MANT(c);
-
   aq = MPFR_PREC(a);
   bq = MPFR_PREC(b);
   cq = MPFR_PREC(c);
+
+  /* Set the sign: can't be done before to let the multiply done */
+  MPFR_SET_SIGN(a, sign_product);
   
   MPFR_ASSERTD(bq+cq > bq); /* PREC_MAX is /2 so no integer overflow */
  
-  an = (aq-1)/BITS_PER_MP_LIMB + 1; /* number of significant limbs of a */
-  bn = (bq-1)/BITS_PER_MP_LIMB + 1; /* number of significant limbs of b */
-  cn = (cq-1)/BITS_PER_MP_LIMB + 1; /* number of significant limbs of c */
+  an = (aq+BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB; /* number of limbs of a */
+  bn = (bq+BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB; /* number of limbs of b */
+  cn = (cq+BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB; /* number of limbs of c */
   k = bn + cn; /* effective nb of limbs used by b*c (= tn or tn+1) below */
-
-  tn = (bq + cq - 1) / BITS_PER_MP_LIMB + 1; /* <= k, thus no int overflow */
+  tn = (bq + cq + BITS_PER_MP_LIMB - 1) / BITS_PER_MP_LIMB; 
+  /* <= k, thus no int overflow */
   MPFR_ASSERTD(tn <= k);
 
   /* Check for no size_t overflow*/
@@ -127,20 +126,21 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   tmp = (mp_limb_t *) TMP_ALLOC((size_t) k * BYTES_PER_MP_LIMB);
 
   /* multiplies two mantissa in temporary allocated space */
-  b1 = (MPFR_LIKELY(bn >= cn)) ? mpn_mul (tmp, bp, bn, cp, cn)
-    : mpn_mul (tmp, cp, cn, bp, bn);
+  b1 = (MPFR_LIKELY(bn >= cn)) ? 
+    mpn_mul (tmp, MPFR_MANT(b), bn, MPFR_MANT(c), cn)
+    : mpn_mul (tmp, MPFR_MANT(c), cn, MPFR_MANT(b), bn);
 
   /* now tmp[0]..tmp[k-1] contains the product of both mantissa,
      with tmp[k-1]>=2^(BITS_PER_MP_LIMB-2) */
   b1 >>= BITS_PER_MP_LIMB - 1; /* msb from the product */
 
   tmp += k - tn;
-  if (b1 == 0)
+  if (MPFR_UNLIKELY(b1 == 0))
     mpn_lshift (tmp, tmp, tn, 1);
-  cc = mpfr_round_raw (ap, tmp, bq + cq, MPFR_IS_NEG_SIGN(sign_product), aq,
-		       rnd_mode, &inexact);
+  cc = mpfr_round_raw (MPFR_MANT(a), tmp, bq + cq, 
+		       MPFR_IS_NEG_SIGN(sign_product), aq, rnd_mode, &inexact);
   if (MPFR_UNLIKELY(cc)) /* cc = 1 ==> result is a power of two */
-    ap[an-1] = MPFR_LIMB_HIGHBIT;
+    MPFR_MANT(a)[an-1] = MPFR_LIMB_HIGHBIT;
 
   TMP_FREE(marker);
 
@@ -160,8 +160,6 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       return mpfr_set_underflow (a, rnd_mode, sign_product);
     }
   MPFR_SET_EXP (a, ax);
-
-  MPFR_SET_SIGN(a, sign_product);
 
   return inexact;
 }

@@ -30,10 +30,10 @@ mpfr_set_ui (mpfr_ptr x, unsigned long i, mp_rnd_t rnd_mode)
 {
   int inex;
 
+  MPFR_SET_POS(x);
   if (i == 0)
     {
       MPFR_SET_ZERO(x);
-      MPFR_SET_POS(x);
       MPFR_RET(0);
     }
   else
@@ -76,8 +76,5 @@ mpfr_set_ui (mpfr_ptr x, unsigned long i, mp_rnd_t rnd_mode)
             }
         }
     }
-
-  MPFR_SET_POS(x);
-
   MPFR_RET(inex);
 }
