@@ -168,11 +168,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   d = (mp_exp_unsigned_t) bx - cx;
   DEBUG( printf("New with diff=%lu\n", d) );
 
-  /* Transform RNDU and RNDD to RNDA or RNDZ */
-  if (MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd_mode, MPFR_IS_NEG(a)))
-    rnd_mode = GMP_RNDZ;
-
-  if (d <=1)
+  if (d <= 1)
     {
       if (d == 0)
 	{
@@ -192,8 +188,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 		  mpn_lshift(ap, ap, n, cnt); /* Normalize number */
 		  bx -= cnt; /* Update final expo */
 		}
-	      MPFR_UNSIGNED_MINUS_MODULO(sh, p);
-	      ap[0] &= ~((MPFR_LIMB_ONE << sh) - MPFR_LIMB_ONE);
+	      /* Last limb should be ok */
+	      MPFR_ASSERTD(!(ap[0] & MPFR_LIMB_MASK((-p)%BITS_PER_MP_LIMB)));
 	    }
 	  else
 	    {
@@ -217,8 +213,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 		MPN_COPY_DECR(ap+len, ap, k);
 	      MPN_ZERO(ap, len); /* Zeroing the last limbs */
 	      bx -= cnt + len*BITS_PER_MP_LIMB; /* Update Expo */
-              MPFR_UNSIGNED_MINUS_MODULO(sh, p);
-	      ap[len] &= ~((MPFR_LIMB_ONE << sh) - MPFR_LIMB_ONE);
+              /* Last limb should be ok */
+              MPFR_ASSERTD(!(ap[len]&MPFR_LIMB_MASK((-p)%BITS_PER_MP_LIMB)));
 	    }
 	  /* Check expo underflow */
 	  if (MPFR_UNLIKELY(bx < __gmpfr_emin))
@@ -282,6 +278,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	      /* Rounding is necessary since c0 = 1*/	  
 	      /* Cp =-1 and C'p+1=0 */
 	      bcp = 1; bcp1 = 0;
+	      MPFR_UPDATE_RND_MODE(rnd_mode, MPFR_IS_NEG(a));
 	      switch (rnd_mode)
 		{
 		case GMP_RNDN:
@@ -354,6 +351,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
     {
       ap = MPFR_MANT(a);
       MPFR_UNSIGNED_MINUS_MODULO(sh, p);
+      MPFR_UPDATE_RND_MODE(rnd_mode, MPFR_IS_NEG(a));
       /* We can't set A before since we use cp for rounding... */
       /* Perform rounding: check if a=b or a=b-ulp(b) */
       if (MPFR_UNLIKELY(d == p))
@@ -579,6 +577,9 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       mpn_sub_n (ap, bp, cp, n);
       DEBUG( mpfr_print_mant_binary("Sub=  ", ap, p) );
 
+      /* Update rounding mode */
+      MPFR_UPDATE_RND_MODE(rnd_mode, MPFR_IS_NEG(a));
+
       /* Normalize: we lose at max one bit*/
       limb = ap[n-1];
       if (MPFR_UNLIKELY(limb < ~limb))
@@ -620,7 +621,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	default:
 	  goto truncate;
 	}      
- }
+    }
   MPFR_RET_NEVER_GO_HERE();
 
   /* Sub one ulp to the result */
