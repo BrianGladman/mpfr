@@ -519,7 +519,7 @@ do { \
 #endif
 
 #define MPFR_DECL_INIT_CACHE(_cache,_func) \
- mpfr_cache_t _cache = {{{{0,MPFR_SIGN_POS,0,(mp_limb_t*)0}},GMP_RNDN,0,_func}}
+ mpfr_cache_t _cache = {{{{0,MPFR_SIGN_POS,0,(mp_limb_t*)0}},0,_func}}
 
 #if defined (__cplusplus)
 extern "C" {

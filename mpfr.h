@@ -129,7 +129,6 @@ typedef __gmp_const __mpfr_struct *mpfr_srcptr;
 /* Cache struct */
 struct __gmpfr_cache_s {
   mpfr_t x;
-  mpfr_rnd_t rnd;
   int inexact;
   int (*func)(mpfr_ptr, mpfr_rnd_t);
 };
@@ -301,7 +300,6 @@ int mpfr_si_div _MPFR_PROTO ((mpfr_ptr, long int, mpfr_srcptr, mpfr_rnd_t));
 int mpfr_const_pi _MPFR_PROTO ((mpfr_ptr, mpfr_rnd_t));
 int mpfr_const_log2 _MPFR_PROTO ((mpfr_ptr, mpfr_rnd_t));
 int mpfr_const_euler _MPFR_PROTO ((mpfr_ptr, mpfr_rnd_t));
-void mpfr_free_cache _MPFR_PROTO ((void));
 
 int mpfr_agm _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t));
 
@@ -420,6 +418,7 @@ int mpfr_sum _MPFR_PROTO ((mpfr_ptr ret, mpfr_ptr const tab[], unsigned long n,
 void mpfr_init_cache _MPFR_PROTO ((mpfr_cache_t,int(*)(mpfr_ptr,mpfr_rnd_t)));
 void mpfr_clear_cache _MPFR_PROTO ((mpfr_cache_t));
 int  mpfr_cache _MPFR_PROTO ((mpfr_ptr, mpfr_cache_t, mpfr_rnd_t));
+void mpfr_free_cache _MPFR_PROTO ((void));
 
 #if defined (__cplusplus)
 }
