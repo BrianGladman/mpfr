@@ -5,3 +5,6 @@ Knowns bugs:
 * The overflows/underflows are not yet implemented in all functions.
 
 * Possible integer overflows on some machines.
+
+* The semantics of mpfr_trunc, mpfr_floor and mpfr_ceil isn't completely
+  defined yet.
