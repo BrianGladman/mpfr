@@ -1315,7 +1315,7 @@
 
 2004-05-10  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
 
-	* cos.c: Remove a forgotten "assertd" which isn't usefull anymore.
+	* cos.c: Remove a forgotten "assertd" which isn't useful anymore.
 
 2004-05-07  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
 

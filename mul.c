@@ -1,6 +1,6 @@
 /* mpfr_mul -- multiply two floating-point numbers
 
-Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2005 
+Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2005
   Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
@@ -80,13 +80,13 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
     }
   MPFR_CLEAR_FLAGS (a);
   sign = MPFR_MULT_SIGN (MPFR_SIGN (b), MPFR_SIGN (c));
- 
+
   ax = MPFR_GET_EXP (b) + MPFR_GET_EXP (c);
   /* Note: the exponent of the exact result will be e = bx + cx + ec with
      ec in {-1,0,1} and the following assumes that e is representable. */
 
-  /* FIXME: Usefull since we do an exponent check after ?
-   * It is usefull iff the precision is big, there is an overflow
+  /* FIXME: Useful since we do an exponent check after ?
+   * It is useful iff the precision is big, there is an overflow
    * and we are doing further mults...*/
 #ifdef HUGE
   if (MPFR_UNLIKELY (ax > __gmpfr_emax + 1))
@@ -98,22 +98,22 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
   bq = MPFR_PREC (b);
   cq = MPFR_PREC (c);
-  
+
   MPFR_ASSERTD (bq+cq > bq); /* PREC_MAX is /2 so no integer overflow */
- 
+
   bn = (bq+BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB; /* number of limbs of b */
   cn = (cq+BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB; /* number of limbs of c */
   k = bn + cn; /* effective nb of limbs used by b*c (= tn or tn+1) below */
-  tn = (bq + cq + BITS_PER_MP_LIMB - 1) / BITS_PER_MP_LIMB; 
+  tn = (bq + cq + BITS_PER_MP_LIMB - 1) / BITS_PER_MP_LIMB;
   MPFR_ASSERTD (tn <= k); /* tn <= k, thus no int overflow */
 
   /* Check for no size_t overflow*/
   MPFR_ASSERTD ((size_t) k <= ((size_t) ~0) / BYTES_PER_MP_LIMB);
-  TMP_MARK (marker); 
+  TMP_MARK (marker);
   tmp = (mp_limb_t *) TMP_ALLOC ((size_t) k * BYTES_PER_MP_LIMB);
 
   /* multiplies two mantissa in temporary allocated space */
-  b1 = MPFR_LIKELY (bn >= cn) 
+  b1 = MPFR_LIKELY (bn >= cn)
     ? mpn_mul (tmp, MPFR_MANT (b), bn, MPFR_MANT (c), cn)
     : mpn_mul (tmp, MPFR_MANT (c), cn, MPFR_MANT (b), bn);
 
@@ -136,13 +136,13 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   if (MPFR_UNLIKELY (ax2 > __gmpfr_emax))
     return mpfr_overflow (a, rnd_mode, sign);
   if (MPFR_UNLIKELY (ax2 < __gmpfr_emin))
-    {	
+    {
       /* In the rounding to the nearest mode, if the exponent of the exact
 	 result (i.e. before rounding, i.e. without taking cc into account)
 	 is < __gmpfr_emin - 1 or the exact result is a power of 2 (i.e. if
 	 both arguments are powers of 2), then round to zero. */
-      if (rnd_mode == GMP_RNDN 
-	  && (ax + (mp_exp_t) b1 < __gmpfr_emin 
+      if (rnd_mode == GMP_RNDN
+	  && (ax + (mp_exp_t) b1 < __gmpfr_emin
 	      || (mpfr_powerof2_raw (b) && mpfr_powerof2_raw (c))))
 	rnd_mode = GMP_RNDZ;
       return mpfr_underflow (a, rnd_mode, sign);

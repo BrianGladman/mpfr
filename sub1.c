@@ -83,7 +83,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   /* Check if c is too small.
      A more precise test is to replace 2 by
       (rnd == GMP_RNDN) + mpfr_power2_raw (b)
-      but it is more expensive and not very usefull */
+      but it is more expensive and not very useful */
   if (MPFR_UNLIKELY (MPFR_GET_EXP (c) <= MPFR_GET_EXP (b)
                      - (mp_exp_t) MAX (MPFR_PREC (a), MPFR_PREC (b)) - 2))
     {
