@@ -65,178 +65,165 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-  MPFR_SET_NAN(x);
-  mpfr_random(y);
-  mpfr_random(z);
-  mpfr_fma (s,x, y,z, GMP_RNDN);
-  if(!MPFR_IS_NAN(s))
+  mpfr_set_nan (x);
+  mpfr_random (y);
+  mpfr_random (z);
+  mpfr_fma (s, x, y, z, GMP_RNDN);
+  if(!mpfr_nan_p (s))
     {
       printf ("evaluation of function in x=NAN does not return NAN");
       exit (1);
     }
 
-  MPFR_CLEAR_FLAGS(x);
-  MPFR_CLEAR_FLAGS(y);
-  MPFR_CLEAR_FLAGS(z);
-
-  MPFR_SET_NAN(y);
-  mpfr_random(x);
-  mpfr_random(z);
-  mpfr_fma (s,x, y,z, GMP_RNDN);
-  if(!MPFR_IS_NAN(s))
+  mpfr_set_nan (y);
+  mpfr_random (x);
+  mpfr_random (z);
+  mpfr_fma (s, x, y, z, GMP_RNDN);
+  if (!mpfr_nan_p(s))
     {
       printf ("evaluation of function in y=NAN does not return NAN");
       exit (1);
     }
 
-  MPFR_CLEAR_FLAGS(x);
-  MPFR_CLEAR_FLAGS(y);
-  MPFR_CLEAR_FLAGS(z);
-
-  MPFR_SET_NAN(z);
-  mpfr_random(y);
-  mpfr_random(x);
-  mpfr_fma (s,x, y,z, GMP_RNDN);
-  if(!MPFR_IS_NAN(s))
+  mpfr_set_nan (z);
+  mpfr_random (y);
+  mpfr_random (x);
+  mpfr_fma (s, x, y, z, GMP_RNDN);
+  if (!mpfr_nan_p (s))
     {
       printf ("evaluation of function in z=NAN does not return NAN");
       exit (1);
     }
 
-  MPFR_CLEAR_FLAGS(x);
-  MPFR_CLEAR_FLAGS(y);
-  MPFR_CLEAR_FLAGS(z);
+  mpfr_set_inf (x, 1);
+  mpfr_set_inf (y, 1);
+  mpfr_set_inf (z, 1);
+  mpfr_fma (s, x, y, z, GMP_RNDN);
+  if (!mpfr_inf_p (s) || mpfr_sgn (s) < 0)
+    {
+      printf ("Error for (+inf) * (+inf) + (+inf)\n");
+      exit (1);
+    }
 
-  MPFR_SET_INF(x);
-  MPFR_SET_ZERO(y);
-  mpfr_random(z);
-  mpfr_fma (s,x, y,z, GMP_RNDN);
-  if(!MPFR_IS_NAN(s))
+  mpfr_set_inf (x, -1);
+  mpfr_set_inf (y, -1);
+  mpfr_set_inf (z, 1);
+  mpfr_fma (s, x, y, z, GMP_RNDN);
+  if (!mpfr_inf_p (s) || mpfr_sgn (s) < 0)
+    {
+      printf ("Error for (-inf) * (-inf) + (+inf)\n");
+      exit (1);
+    }
+
+  mpfr_set_inf (x, 1);
+  mpfr_set_inf (y, -1);
+  mpfr_set_inf (z, -1);
+  mpfr_fma (s, x, y, z, GMP_RNDN);
+  if (!mpfr_inf_p (s) || mpfr_sgn (s) > 0)
+    {
+      printf ("Error for (+inf) * (-inf) + (-inf)\n");
+      exit (1);
+    }
+
+  mpfr_set_inf (x, -1);
+  mpfr_set_inf (y, 1);
+  mpfr_set_inf (z, -1);
+  mpfr_fma (s, x, y, z, GMP_RNDN);
+  if (!mpfr_inf_p (s) || mpfr_sgn (s) > 0)
+    {
+      printf ("Error for (-inf) * (+inf) + (-inf)\n");
+      exit (1);
+    }
+
+  mpfr_set_inf (x, 1);
+  mpfr_set_ui (y, 0, GMP_RNDN);
+  mpfr_random (z);
+  mpfr_fma (s, x, y, z, GMP_RNDN);
+  if(!mpfr_nan_p (s))
     {
       printf ("evaluation of function in x=INF y=0  does not return NAN");
       exit (1);
     }
 
-  MPFR_CLEAR_FLAGS(z); 
-  MPFR_CLEAR_FLAGS(y); 
-  MPFR_CLEAR_FLAGS(x); 
-
-  MPFR_SET_INF(y);
-  MPFR_SET_ZERO(x);
-  mpfr_random(z);
-  mpfr_fma (s,x, y,z, GMP_RNDN);
-  if(!MPFR_IS_NAN(s))
+  mpfr_set_inf (y, 1);
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_random (z);
+  mpfr_fma (s, x, y, z, GMP_RNDN);
+  if(!mpfr_nan_p (s))
     {
       printf ("evaluation of function in x=0 y=INF does not return NAN");
       exit (1);
     }
 
-  MPFR_CLEAR_FLAGS(z); 
-  MPFR_CLEAR_FLAGS(y); 
-  MPFR_CLEAR_FLAGS(x); 
-
-  MPFR_SET_INF(x);
-  mpfr_random(y);
-  MPFR_SET_INF(z);
-  if((MPFR_SIGN(x) * MPFR_SIGN(y)) == MPFR_SIGN(z))
-    MPFR_CHANGE_SIGN(z);
-  mpfr_fma (s,x, y,z, GMP_RNDN);
-  if(!MPFR_IS_NAN(s))
+  mpfr_set_inf (x, 1);
+  mpfr_random (y); /* always positive */
+  mpfr_set_inf (z, -1);
+  mpfr_fma (s, x, y, z, GMP_RNDN);
+  if(!mpfr_nan_p (s))
     {
-      printf ("evaluation of function in x=INF z=(-sign(x)*sign(y))INF does not return NAN");
+      printf ("evaluation of function in x=INF y>0 z=-INF does not return NAN");
       exit (1);
     }
 
-  MPFR_CLEAR_FLAGS(z); 
-  MPFR_CLEAR_FLAGS(y); 
-  MPFR_CLEAR_FLAGS(x); 
-
-  MPFR_SET_INF(y);
-  mpfr_random(x);
-  MPFR_SET_INF(z);
-  if((MPFR_SIGN(x) * MPFR_SIGN(y)) == MPFR_SIGN(z))
-    MPFR_CHANGE_SIGN(z);
-  
-  mpfr_fma (s,x, y,z, GMP_RNDN);
-  if(!MPFR_IS_NAN(s))
+  mpfr_set_inf (y, 1);
+  mpfr_random (x);
+  mpfr_set_inf (z, -1);
+  mpfr_fma (s, x, y, z, GMP_RNDN);
+  if(!mpfr_nan_p (s))
     {
-      printf ("evaluation of function in y=INF z=(-sign(x)*sign(y))INF does not return NAN");
+      printf ("evaluation of function in x>0 y=INF z=-INF does not return NAN");
       exit (1);
     }
 
-  MPFR_CLEAR_FLAGS(z); 
-  MPFR_CLEAR_FLAGS(y); 
-  MPFR_CLEAR_FLAGS(x); 
-
-  MPFR_SET_INF(x);
-  mpfr_random(y);
-  mpfr_random(z);
-  mpfr_fma (s,x, y,z, GMP_RNDN);
-  if(!MPFR_IS_INF(s))
+  mpfr_set_inf (x, 1);
+  mpfr_random (y);
+  mpfr_random (z);
+  mpfr_fma (s, x, y, z, GMP_RNDN);
+  if(!mpfr_inf_p (s) || mpfr_sgn (s) < 0)
     {
       printf ("evaluation of function in x=INF does not return INF");
       exit (1);
     }
 
-  MPFR_CLEAR_FLAGS(z); 
-  MPFR_CLEAR_FLAGS(y); 
-  MPFR_CLEAR_FLAGS(x); 
-
-  MPFR_SET_INF(y);
-  mpfr_random(x);
-  mpfr_random(z);
-  mpfr_fma (s,x, y,z, GMP_RNDN);
-  if(!MPFR_IS_INF(s))
+  mpfr_set_inf (y, 1);
+  mpfr_random (x);
+  mpfr_random (z);
+  mpfr_fma (s, x, y, z, GMP_RNDN);
+  if(!mpfr_inf_p (s) || mpfr_sgn (s) < 0)
     {
       printf ("evaluation of function in y=INF does not return INF");
       exit (1);
     }
 
-  MPFR_CLEAR_FLAGS(z); 
-  MPFR_CLEAR_FLAGS(y); 
-  MPFR_CLEAR_FLAGS(x); 
-
-  MPFR_SET_INF(z);
-  mpfr_random(x);
-  mpfr_random(y);
-  mpfr_fma (s,x, y,z, GMP_RNDN);
-  if(!MPFR_IS_INF(s))
+  mpfr_set_inf (z, 1);
+  mpfr_random (x);
+  mpfr_random (y);
+  mpfr_fma (s, x, y, z, GMP_RNDN);
+  if(!mpfr_inf_p (s) || mpfr_sgn (s) < 0)
     {
       printf ("evaluation of function in z=INF does not return INF");
       exit (1);
     }
 
-  MPFR_CLEAR_FLAGS(z); 
-  MPFR_CLEAR_FLAGS(y); 
-  MPFR_CLEAR_FLAGS(x); 
-
-  MPFR_SET_ZERO(x);
-  mpfr_random(y);
-  mpfr_random(z);
-  mpfr_fma (s,x, y,z, GMP_RNDN);
-  if(mpfr_cmp(s,z)!=0)
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_random (y);
+  mpfr_random (z);
+  mpfr_fma (s, x, y, z, GMP_RNDN);
+  if(mpfr_cmp (s, z))
     {
       printf ("evaluation of function in x=0 does not return z\n");
       exit (1);
     }
 
-  MPFR_CLEAR_FLAGS(z); 
-  MPFR_CLEAR_FLAGS(y); 
-  MPFR_CLEAR_FLAGS(x); 
-
-  MPFR_SET_ZERO(y);
-  mpfr_random(x);
-  mpfr_random(z);
-  mpfr_fma (s,x, y,z, GMP_RNDN);
-  if(mpfr_cmp(s,z)!=0)
+  mpfr_set_ui (y, 0, GMP_RNDN);
+  mpfr_random (x);
+  mpfr_random (z);
+  mpfr_fma (s, x, y, z, GMP_RNDN);
+  if(mpfr_cmp (s, z))
     {
       printf ("evaluation of function in y=0 does not return z\n");
       exit (1);
     }
-
-  MPFR_CLEAR_FLAGS(z); 
-  MPFR_CLEAR_FLAGS(y); 
-  MPFR_CLEAR_FLAGS(x); 
 
   {
     mp_prec_t prec;

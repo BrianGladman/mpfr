@@ -44,6 +44,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
 	  MPFR_SET_NAN(s);
 	  MPFR_RET_NAN;
 	}
+      /* now neither x, y or z is NaN */
       else if (MPFR_IS_INF(x) || MPFR_IS_INF(y))
 	{
 	  /* cases Inf*0+z, 0*Inf+z, Inf-Inf */
@@ -92,10 +93,11 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
 	  else
 	    return mpfr_set (s, z, rnd_mode);
 	}
-      else if (MPFR_IS_ZERO(z))
-	return mpfr_mul (s, x, y, rnd_mode);
-      else
-	MPFR_ASSERTN(0);
+      else /* necessarily z is zero here */
+        {
+          MPFR_ASSERTD(MPFR_IS_ZERO(z));
+          return mpfr_mul (s, x, y, rnd_mode);
+        }
     }
   /* Useless since it is done by mpfr_add
    * MPFR_CLEAR_FLAGS(s); */
