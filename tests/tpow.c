@@ -132,6 +132,8 @@ static void
 check_special_pow_si ()
 {
   mpfr_t a, b;
+  mp_exp_t emin;
+
   mpfr_init (a);
   mpfr_init (b);
   mpfr_set_str (a, "2E100000000", 10, GMP_RNDN);
@@ -144,6 +146,19 @@ check_special_pow_si ()
       mpfr_dump (b);
       exit(1);
     }
+
+  emin = mpfr_get_emin ();
+  mpfr_set_emin (-10);
+  mpfr_set_si (a, -2, GMP_RNDN);
+  mpfr_pow_si (b, a, -10000, GMP_RNDN);
+  if (!MPFR_IS_ZERO (b))
+    {
+      printf ("Pow_so (1, -10000) doesn't underflow if emin=-10.\n");
+      mpfr_dump (a);
+      mpfr_dump (b);
+      exit (1);
+    }
+  mpfr_set_emin (emin);
   mpfr_clear (a);
   mpfr_clear (b);
 }

@@ -69,10 +69,9 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd_mode)
         {
           mp_exp_t expx = MPFR_EXP (x); /* warning: x and y may be the same
                                             variable */
-          mpfr_set_si (y, (n % 2) ? MPFR_SIGN(x) : 1, rnd_mode);
-	  /* TODO: CHECK FOR OVERFLOW AND UNDERFLOW !!!!!!! */
+          mpfr_set_si (y, (n % 2) ? MPFR_INT_SIGN(x) : 1, rnd_mode);
           MPFR_EXP(y) += n * (expx - 1);
-          return 0;
+          return mpfr_check_range (y, 0, rnd_mode);
         }
 
       n = -n;
