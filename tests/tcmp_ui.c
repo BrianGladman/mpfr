@@ -27,7 +27,10 @@ MA 02111-1307, USA. */
 int
 main (void)
 {
-  mpfr_t x; unsigned long i; long s;
+  mpfr_t x; 
+  unsigned long i; 
+  long s;
+  int c;
 
   tests_start_mpfr ();
 
@@ -122,6 +125,23 @@ main (void)
   mpfr_mul_2exp (x, x, BITS_PER_MP_LIMB - 1, GMP_RNDZ);
   /* now EXP(x)=BITS_PER_MP_LIMB */
   MPFR_ASSERTN(mpfr_cmp_si (x, 1) > 0);
+
+  /* Check NAN */
+  mpfr_set_nan (x);
+  mpfr_clear_erangeflag ();
+  c = mpfr_cmp_ui (x, 12);
+  if (c != 0 || !mpfr_erangeflag_p () ) 
+    {
+      printf ("NAN error (1)\n");
+      exit (1);
+    }
+  mpfr_clear_erangeflag ();
+  c = mpfr_cmp_si (x, -12);
+  if (c != 0 || !mpfr_erangeflag_p () ) 
+    {
+      printf ("NAN error (2)\n");
+      exit (1);
+    }
 
   mpfr_clear (x);
 

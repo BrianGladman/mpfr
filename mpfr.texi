@@ -1091,6 +1091,7 @@ when @var{rop} and @var{op1} are identical.
 @deftypefunx int mpfr_cmp_ui (mpfr_t @var{op1}, unsigned long int @var{op2})
 @deftypefunx int mpfr_cmp_si (mpfr_t @var{op1}, signed long int @var{op2})
 @deftypefunx int mpfr_cmp_d (mpfr_t @var{op1}, double @var{op2})
+@deftypefunx int mpfr_cmp_ld (mpfr_t @var{op1}, long double @var{op2})
 @deftypefunx int mpfr_cmp_z (mpfr_t @var{op1}, mpz_t @var{op2})
 @deftypefunx int mpfr_cmp_q (mpfr_t @var{op1}, mpq_t @var{op2})
 @deftypefunx int mpfr_cmp_f (mpfr_t @var{op1}, mpf_t @var{op2})
@@ -1099,7 +1100,8 @@ Compare @var{op1} and @var{op2}.  Return a positive value if @math{@var{op1} >
 @math{@var{op1} < @var{op2}}.
 Both @var{op1} and @var{op2} are considered to their full own precision,
 which may differ.
-If one of the operands is NaN (Not-a-Number), the behavior is undefined.
+If one of the operands is NaN (Not-a-Number), it returns 0 and set 
+the erange flag.
 @end deftypefun
 
 @deftypefun int mpfr_cmp_ui_2exp (mpfr_t @var{op1}, unsigned long int @var{op2}, mp_exp_t @var{e})
@@ -1112,7 +1114,8 @@ the power @var{e}}. Similar as above.
 Compare @math{|@var{op1}|} and @math{|@var{op2}|}.  Return a positive value if
 @math{|@var{op1}| > |@var{op2}|}, zero if @math{|@var{op1}| = |@var{op2}|}, and
 a negative value if @math{|@var{op1}| < |@var{op2}|}.
-If one of the operands is NaN (Not-a-Number), the behavior is undefined.
+If one of the operands is NaN (Not-a-Number), it returns 0 and set 
+the erange flag.
 @end deftypefun
 
 @deftypefun int mpfr_nan_p (mpfr_t @var{op})

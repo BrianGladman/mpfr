@@ -34,16 +34,19 @@ mpfr_cmp_si_2exp (mpfr_srcptr b, long int i, mp_exp_t f)
 {
   int si;
 
-  MPFR_ASSERTD(!MPFR_IS_NAN(b));
-
   si = i < 0 ? -1 : 1; /* sign of i */
-  if (MPFR_IS_INF(b) || (MPFR_NOTZERO(b) && MPFR_SIGN(b) != si))
-    return MPFR_SIGN(b);
-  /* both signs differ or b = 0 */
-  else if (MPFR_IS_ZERO(b))
-    return i != 0 ? -si : 0;
-  else if (i == 0)
-    return MPFR_SIGN(b);
+  if (MPFR_IS_SINGULAR (b))
+    {
+      if (MPFR_IS_INF(b))
+	return MPFR_INT_SIGN(b);
+      else if (MPFR_IS_ZERO(b))
+	return i != 0 ? -si : 0;
+      /* NAN */
+      MPFR_SET_ERANGE ();
+      return 0;
+    }
+  else if (MPFR_SIGN(b) != si || i == 0)
+    return MPFR_INT_SIGN (b);
   else /* b and i are of same sign si */
     {
       mp_exp_t e;

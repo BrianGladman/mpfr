@@ -33,17 +33,19 @@ mpfr_cmpabs (mpfr_srcptr b, mpfr_srcptr c)
 
   if (MPFR_ARE_SINGULAR (b, c))
     {
-      if (MPFR_IS_INF (b))
+      if (MPFR_IS_NAN (b) || MPFR_IS_NAN (c))
+	{
+	  MPFR_SET_ERANGE ();
+	  return 0;
+	}
+      else if (MPFR_IS_INF (b))
 	return ! MPFR_IS_INF (c);
       else if (MPFR_IS_INF (c))
 	return -1;
       else if (MPFR_IS_ZERO (c))
 	return ! MPFR_IS_ZERO (b);
-      else
-	{
-	  MPFR_ASSERTD (MPFR_IS_ZERO (b) );
-	  return -1;
-	}
+      else /* b == 0 */
+	return -1;
     }
 
   be = MPFR_GET_EXP (b);

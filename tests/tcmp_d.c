@@ -28,6 +28,7 @@ int
 main (void)
 {
   mpfr_t x;
+  int c;
 
   tests_start_mpfr ();
 
@@ -63,6 +64,23 @@ main (void)
   if (mpfr_cmp_d (x, 0.0) == 0)
     {
       printf ("Error in mpfr_cmp_d (Inf, 0)\n");
+      exit (1);
+    }
+
+  /* Check NAN */
+  mpfr_clear_erangeflag ();
+  c = mpfr_cmp_d (x, DBL_NAN);
+  if (c != 0 || !mpfr_erangeflag_p ())
+    {
+      printf ("ERROR for NAN (1)\n");
+      exit (1);
+    }
+  mpfr_set_nan (x);
+  mpfr_clear_erangeflag ();
+  c = mpfr_cmp_d (x, 2.0);
+  if (c != 0 || !mpfr_erangeflag_p ())
+    {
+      printf ("ERROR for NAN (2)\n");
       exit (1);
     }
 

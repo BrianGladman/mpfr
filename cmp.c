@@ -36,9 +36,14 @@ mpfr_cmp3 (mpfr_srcptr b, mpfr_srcptr c, int s)
 
   s = MPFR_MULT_SIGN( s , MPFR_SIGN(c) );
 
-  if (MPFR_ARE_SINGULAR(b,c))
+  if (MPFR_ARE_SINGULAR(b, c))
     {
-      if (MPFR_IS_INF(b))
+      if (MPFR_IS_NAN (b) || MPFR_IS_NAN (c))
+	{
+	  MPFR_SET_ERANGE ();
+	  return 0;
+	}
+      else if (MPFR_IS_INF(b))
 	{
 	  if (MPFR_IS_INF(c) && s == MPFR_SIGN(b) )
 	    return 0;

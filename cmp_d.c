@@ -25,15 +25,13 @@ int
 mpfr_cmp_d (mpfr_srcptr b, double d)
 {
   mpfr_t tmp; 
-  int z; 
-
-  MPFR_ASSERTN(!MPFR_IS_NAN(b));
+  int res; 
 
   mpfr_init2 (tmp, IEEE_DBL_MANT_DIG);
-  mpfr_set_d (tmp, d, GMP_RNDN); 
-
-  z = mpfr_cmp (b, tmp); 
+  res = mpfr_set_d (tmp, d, GMP_RNDN);
+  MPFR_ASSERTD (res == 0);
+  res = mpfr_cmp (b, tmp); 
   mpfr_clear (tmp); 
 
-  return z; 
+  return res; 
 }

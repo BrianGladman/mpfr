@@ -30,6 +30,7 @@ int
 main (void)
 {
   mpfr_t xx, yy;
+  int c;
 
   tests_start_mpfr ();
 
@@ -104,6 +105,30 @@ main (void)
 		       "00000000000000000000000000000000000000000000001E10");
   if (mpfr_cmpabs (xx, yy) >= 0)
     ERROR ("Error in mpfr_cmpabs(10.235, 2346.09234)\n");
+
+  /* Check for NAN */
+  mpfr_set_nan (xx);
+  mpfr_clear_erangeflag ();
+  c = mpfr_cmp (xx, yy);
+  if (c != 0 || !mpfr_erangeflag_p () ) 
+    {
+      printf ("NAN error (1)\n");
+      exit (1);
+    }
+  mpfr_clear_erangeflag ();
+  c = mpfr_cmp (yy, xx);
+  if (c != 0 || !mpfr_erangeflag_p () ) 
+    {
+      printf ("NAN error (2)\n");
+      exit (1);
+    }
+  mpfr_clear_erangeflag ();
+  c = mpfr_cmp (xx, xx);
+  if (c != 0 || !mpfr_erangeflag_p () ) 
+    {
+      printf ("NAN error (3)\n");
+      exit (1);
+    }
 
   mpfr_clear (xx);
   mpfr_clear (yy);

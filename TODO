@@ -69,12 +69,6 @@ Changes in existing functions:
    rounding, if the round bit is 0 (resp. 1), we just have to check
    round(approx-error) (resp. round(approx+error)).
 
-- add a flag MPFR_FLAGS_ERANGE to signal a domain error when the result
-  is not a MPFR number (otherwise NaN is used both in __gmpfr_flags and
-  in the result). Modify the following functions to use it:
-    * Conversions MPFR -> C integer (e.g. mpfr_get_ui).
-    * Comparisons when NaN is not accepted.
-
 New functions to implement:
 
 - modf (to extract integer and fractional parts), suggested by
