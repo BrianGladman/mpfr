@@ -21,9 +21,6 @@ MA 02111-1307, USA. */
 
 #include "mpfr-impl.h"
 
-/* This may be a standard rounding mode in the future. */
-/*#define NEAREST_AWAY ((mp_rnd_t) -1)*/
-
 /* Merge the following mpfr_rint code with mpfr_round_raw_generic? */
 
 int
@@ -74,7 +71,7 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
       /* Note: in the GMP_RNDN mode, 0.5 must be rounded to 0. */
       if (rnd_away != 0 &&
           (rnd_away > 0 ||
-           (exp == 0 && (rnd_mode == NEAREST_AWAY ||
+           (exp == 0 && (rnd_mode == GMP_RNDNA ||
                          !mpfr_powerof2_raw (u)))))
         {
           mp_limb_t *rp;
@@ -152,15 +149,15 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
               /* This is a rounding to nearest mode.
                  Decide the rounding direction here. */
               if (rnd_mode == GMP_RNDN &&
-                  (rp[0] & (MP_LIMB_T_ONE << sh)) == 0)
+                  (rp[0] & (MPFR_LIMB_ONE << sh)) == 0)
                 { /* halfway cases rounded towards zero */
                   mp_limb_t a, b;
                   /* a: rounding bit and some of the following bits */
                   /* b: boundary for a (weight of the rounding bit in a) */
                   if (sh != 0)
                     {
-                      a = rp[0] & ((MP_LIMB_T_ONE << sh) - 1);
-                      b = MP_LIMB_T_ONE << (sh - 1);
+                      a = rp[0] & ((MPFR_LIMB_ONE << sh) - 1);
+                      b = MPFR_LIMB_ONE << (sh - 1);
                     }
                   else
                     {
@@ -181,7 +178,7 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
                 }
               else  /* halfway cases rounded away from zero */
                 rnd_away =  /* rounding bit */
-                  ((sh != 0 && (rp[0] & (MP_LIMB_T_ONE << (sh - 1))) != 0) ||
+                  ((sh != 0 && (rp[0] & (MPFR_LIMB_ONE << (sh - 1))) != 0) ||
                    (sh == 0 && (up[un - rn - 1] & MPFR_LIMB_HIGHBIT) != 0));
             }
           if (uflags == 0)
@@ -225,8 +222,8 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
               /* If u is an integer (uflags == 0), we need to determine
                  if it is representable in r, i.e. if its sh - ush bits
                  in the non-significant part of r are all 0. */
-              if (uflags == 0 && (rp[0] & ((MP_LIMB_T_ONE << sh) -
-                                           (MP_LIMB_T_ONE << ush))) != 0)
+              if (uflags == 0 && (rp[0] & ((MPFR_LIMB_ONE << sh) -
+                                           (MPFR_LIMB_ONE << ush))) != 0)
                 uflags = 1;  /* u is an integer not representable in r */
             }
           else  /* The integer part of u fits in r, we'll round to it. */
@@ -239,15 +236,15 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
               if (uj == 0 && sh == 0)
                 rnd_away = 0; /* rounding bit = 0 (not represented in u) */
               else if (rnd_mode == GMP_RNDN &&
-                       (rp[0] & (MP_LIMB_T_ONE << sh)) == 0)
+                       (rp[0] & (MPFR_LIMB_ONE << sh)) == 0)
                 { /* halfway cases rounded towards zero */
                   mp_limb_t a, b;
                   /* a: rounding bit and some of the following bits */
                   /* b: boundary for a (weight of the rounding bit in a) */
                   if (sh != 0)
                     {
-                      a = rp[0] & ((MP_LIMB_T_ONE << sh) - 1);
-                      b = MP_LIMB_T_ONE << (sh - 1);
+                      a = rp[0] & ((MPFR_LIMB_ONE << sh) - 1);
+                      b = MPFR_LIMB_ONE << (sh - 1);
                     }
                   else
                     {
@@ -269,7 +266,7 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
                 }
               else  /* halfway cases rounded away from zero */
                 rnd_away =  /* rounding bit */
-                  ((sh != 0 && (rp[0] & (MP_LIMB_T_ONE << (sh - 1))) != 0) ||
+                  ((sh != 0 && (rp[0] & (MPFR_LIMB_ONE << (sh - 1))) != 0) ||
                    (sh == 0 && (MPFR_ASSERTN (uj >= 1),
                                 up[uj - 1] & MPFR_LIMB_HIGHBIT) != 0));
             }
@@ -283,7 +280,7 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
         MPFR_RET(0);
 
       MPFR_ASSERTN (rnd_away >= 0);  /* rounding direction is defined */
-      if (rnd_away && mpn_add_1(rp, rp, rn, MP_LIMB_T_ONE << sh))
+      if (rnd_away && mpn_add_1(rp, rp, rn, MPFR_LIMB_ONE << sh))
         {
           if (exp == __gmpfr_emax)
             return mpfr_set_overflow(r, rnd_mode, MPFR_SIGN(r)) >= 0 ?
@@ -304,7 +301,7 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
 int
 mpfr_round (mpfr_ptr r, mpfr_srcptr u)
 {
-  return mpfr_rint(r, u, NEAREST_AWAY);
+  return mpfr_rint(r, u, GMP_RNDNA);
 }
 
 #undef mpfr_trunc

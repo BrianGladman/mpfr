@@ -41,10 +41,10 @@ MA 02111-1307, USA. */
 # define _MPFR_H_HAVE_FILE 1
 #endif
 
-/* Definition of rounding modes */
+/* Definition of rounding modes (DON'T USE GMP_RNDNA!)*/
 typedef enum {
   GMP_RNDN=0, GMP_RNDZ, GMP_RNDU, GMP_RNDD, GMP_RND_MAX,
-  NEAREST_AWAY=-1
+  GMP_RNDNA=-1
 } mpfr_rnd_t;
 
 /* Flags of __gmpfr_flags */
@@ -54,7 +54,7 @@ typedef enum {
 #define MPFR_FLAGS_INEXACT 8
 #define MPFR_FLAGS_ALL 15
 
-/* Define precision : 1 (short), 2 (int) or 3 (long) */
+/* Define precision : 1 (short), 2 (int) or 3 (long) (DON'T USE IT!)*/
 #ifndef MPFR_PREC_FORMAT
 # if __GMP_MP_SIZE_T_INT == 1
 #  define MPFR_PREC_FORMAT 2
@@ -101,11 +101,6 @@ typedef struct {
 /* Compatibility with previous types of MPFR */
 #define mp_rnd_t  mpfr_rnd_t
 #define mp_prec_t mpfr_prec_t
-#define __gmp_default_rounding_mode __gmpfr_default_rounding_mode
-#define __mpfr_emin __gmpfr_emin
-#define __mpfr_emax __gmpfr_emax
-#define __mpfr_flags __gmpfr_flags
-#define  __mpfr_default_fp_bit_precision __gmpfr_default_fp_bit_precision
 
 /*
    The represented number is
@@ -399,6 +394,13 @@ int mpfr_sum _MPFR_PROTO ((mpfr_ptr ret, mpfr_ptr const tab[], unsigned long n,
 #define mpfr_cmp_abs mpfr_cmpabs
 #define mpfr_round_prec(x,r,p) mpfr_prec_round(x,p,r)
 
+/* To remove when MPFI and MPFR C++ interface are fixed */
+#define __gmp_default_rounding_mode __gmpfr_default_rounding_mode
+#define __mpfr_emin __gmpfr_emin
+#define __mpfr_emax __gmpfr_emax
+#define __mpfr_flags __gmpfr_flags
+#define __mpfr_default_fp_bit_precision __gmpfr_default_fp_bit_precision
+
 /* Prevent from using mpfr_get_e{min,max} as lvalues */
 #define mpfr_get_emin() (__gmpfr_emin + 0)
 #define mpfr_get_emax() (__gmpfr_emax + 0)
@@ -422,7 +424,7 @@ int mpfr_sum _MPFR_PROTO ((mpfr_ptr ret, mpfr_ptr const tab[], unsigned long n,
 #define mpfr_inexflag_p() \
   ((int) (__gmpfr_flags & MPFR_FLAGS_INEXACT))
 
-#define mpfr_round(a,b) mpfr_rint((a), (b), NEAREST_AWAY)
+#define mpfr_round(a,b) mpfr_rint((a), (b), GMP_RNDNA)
 #define mpfr_trunc(a,b) mpfr_rint((a), (b), GMP_RNDZ)
 #define mpfr_ceil(a,b)  mpfr_rint((a), (b), GMP_RNDU)
 #define mpfr_floor(a,b) mpfr_rint((a), (b), GMP_RNDD)
