@@ -23,8 +23,8 @@ MA 02111-1307, USA. */
 #include <stdlib.h>
 #include <unistd.h>
 #include "gmp.h"
-#include "gmp-impl.h"
 #include "mpfr.h"
+#include "gmp-impl.h"
 
 extern int ilogb();
 extern int isnan();
