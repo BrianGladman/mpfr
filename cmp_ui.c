@@ -6,11 +6,11 @@
 #include "longlong.h"
 #include "mpfr.h"
 
-/* returns a positive value if b>i,
-           a negative value if b<i,
-           zero if b=i 
+/* returns a positive value if b>i*2^f,
+           a negative value if b<i*2^f,
+           zero if b=i*2^f
 */
-int mpfr_cmp_ui ( mpfr_srcptr b, unsigned long int i )
+int mpfr_cmp_ui_2exp ( mpfr_srcptr b, unsigned long int i, int f )
 {
   int e, k, bn; mp_limb_t c, *bp;
 
@@ -18,15 +18,15 @@ int mpfr_cmp_ui ( mpfr_srcptr b, unsigned long int i )
   else if (!NOTZERO(b)) return((i) ? -1 : 0);
   else { /* b>0 */
     e = EXP(b); /* 2^(e-1) <= b < 2^e */
-    if (e>mp_bits_per_limb) return 1;
+    if (e>f+mp_bits_per_limb) return 1;
 
     c = (mp_limb_t) i;
     count_leading_zeros(k, c);
-    k = mp_bits_per_limb - k; /* 2^(k-1) <= i < 2^k */
+    k = f+mp_bits_per_limb - k; /* 2^(k-1) <= i*2^f < 2^k */
     if (k!=e) return (e-k);
 
     /* now k=e */
-    c <<= (mp_bits_per_limb-k);
+    c <<= (f+mp_bits_per_limb-k);
     bn = (PREC(b)-1)/mp_bits_per_limb;
     bp = MANT(b) + bn;
     if (*bp>c) return 1;
@@ -39,11 +39,11 @@ int mpfr_cmp_ui ( mpfr_srcptr b, unsigned long int i )
   }
 }
 
-/* returns a positive value if b>i,
-           a negative value if b<i,
-           zero if b=i 
+/* returns a positive value if b>i*2^f,
+           a negative value if b<i*2^f,
+           zero if b=i*2^f 
 */
-int mpfr_cmp_si ( mpfr_srcptr b, long int i )
+int mpfr_cmp_si_2exp ( mpfr_srcptr b, long int i, int f )
 {
   int e, k, bn, si; mp_limb_t c, *bp;
 
@@ -56,15 +56,15 @@ int mpfr_cmp_si ( mpfr_srcptr b, long int i )
   }
   else { /* b and i are of same sign */
     e = EXP(b); /* 2^(e-1) <= b < 2^e */
-    if (e>mp_bits_per_limb) return si;
+    if (e>f+mp_bits_per_limb) return si;
 
     c = (mp_limb_t) ((i<0) ? -i : i);
     count_leading_zeros(k, c);
-    k = mp_bits_per_limb - k; /* 2^(k-1) <= i < 2^k */
+    k = f+mp_bits_per_limb - k; /* 2^(k-1) <= i*2^f < 2^k */
     if (k!=e) return (si*(e-k));
 
     /* now k=e */
-    c <<= (mp_bits_per_limb-k);
+    c <<= (f+mp_bits_per_limb-k);
     bn = (PREC(b)-1)/mp_bits_per_limb;
     bp = MANT(b) + bn;
     if (*bp>c) return si;
