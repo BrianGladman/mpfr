@@ -505,7 +505,22 @@ int  mpfr_cache _MPFR_PROTO ((mpfr_ptr, mpfr_cache_t, mp_rnd_t));
 #define mpfr_init_set_f(x, y, rnd) \
  ( mpfr_init(x), mpfr_set_f((x), (y), (rnd)) )
 
-/* To remove when MPFI and MPFR C++ interface are fixed */
+/* When using GCC, optimize certain common comparisons.  */
+#if defined (__GNUC__)
+#undef mpfr_cmp_ui
+#define mpfr_cmp_ui(_f,_u)                 \
+ (__builtin_constant_p (_u) && (_u) == 0 ? \
+   mpfr_sgn (_f) :                         \
+   mpfr_cmp_ui_2exp ((_f),(_u),0))
+#undef mpfr_cmp_si
+#define mpfr_cmp_si(_f,_s)                 \
+ (__builtin_constant_p (_s) && (_s) >= 0 ? \
+   mpfr_cmp_ui ((_f), (_s)) :              \
+   mpfr_cmp_si_2exp ((_f), (_s), 0))
+#endif
+
+
+/* To remove when GMP MPFR C++ interface are fixed */
 #define __gmp_default_rounding_mode __gmpfr_default_rounding_mode
 #define __mpfr_emin __gmpfr_emin
 #define __mpfr_emax __gmpfr_emax
