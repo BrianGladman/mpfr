@@ -1266,8 +1266,9 @@ i.e. the result is 0).
 @deftypefunx int mpfr_log10 (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Set @var{rop} to @m{\log_2 @var{op}, log2(@var{op})} or @m{\log_{10} @var{op},
 log10(@var{op})}, respectively, rounded to the direction @var{rnd} with the
-precision of @var{rop}. Return 0 iff the result is exact (this occurs in fact
-only when @var{op} is 1 i.e. the result is 0).
+precision of @var{rop}. Return 0 iff the result is exact (this occurs
+only when @var{op} is 1 for @code{mpfr_log10}, and a power of two for
+@code{mpfr_log2}).
 @end deftypefun
 
 @deftypefun int mpfr_gamma (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
