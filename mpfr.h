@@ -127,6 +127,15 @@ typedef __gmp_const __mpfr_struct *mpfr_srcptr;
 /* For those who needs a direct access and fast access to the sign field */
 #define MPFR_SIGN(x) (((x)->_mpfr_sign))
 
+/* Cache struct */
+struct mpfr_cache_s {
+  mpfr_t x;
+  mp_rnd_t rnd;
+  int inexact;
+  int (*func)(mpfr_ptr, mp_rnd_t);
+};
+typedef struct mpfr_cache_s mpfr_cache_t[1];
+
 /* GMP defines:
     + size_t:                Standard size_t
     + __GMP_ATTRIBUTE_PURE   Attribute for math functions.
@@ -154,6 +163,9 @@ extern mp_exp_t __gmpfr_emin;
 extern mp_exp_t __gmpfr_emax;
 extern mp_prec_t __gmpfr_default_fp_bit_precision;
 extern mpfr_rnd_t __gmpfr_default_rounding_mode;
+extern mpfr_cache_t __gmpfr_cache_const_pi;
+extern mpfr_cache_t __gmpfr_cache_const_log2;
+extern mpfr_cache_t __gmpfr_cache_const_euler;
 
 __gmp_const char * mpfr_version _MPFR_PROTO ((void));
 
@@ -404,6 +416,10 @@ int mpfr_fma _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_srcptr,
 int mpfr_sum _MPFR_PROTO ((mpfr_ptr ret, mpfr_ptr const tab[], unsigned long n,
 			   mpfr_rnd_t rnd));
 
+void mpfr_init_cache _MPFR_PROTO ((mpfr_cache_t, int (*)(mpfr_ptr, mp_rnd_t)));
+void mpfr_clear_cache _MPFR_PROTO ((mpfr_cache_t));
+int  mpfr_cache _MPFR_PROTO ((mpfr_ptr, mpfr_cache_t, mp_rnd_t));
+
 #if defined (__cplusplus)
 }
 #endif
@@ -433,12 +449,10 @@ int mpfr_sum _MPFR_PROTO ((mpfr_ptr ret, mpfr_ptr const tab[], unsigned long n,
 #define mpfr_cmp_abs mpfr_cmpabs
 #define mpfr_round_prec(x,r,p) mpfr_prec_round(x,p,r)
 
-/* To remove when MPFI and MPFR C++ interface are fixed */
-#define __gmp_default_rounding_mode __gmpfr_default_rounding_mode
-#define __mpfr_emin __gmpfr_emin
-#define __mpfr_emax __gmpfr_emax
-#define __mpfr_flags __gmpfr_flags
-#define __mpfr_default_fp_bit_precision __gmpfr_default_fp_bit_precision
+/* Cached const */
+#define mpfr_const_pi(_d,_r) mpfr_cache(_d, __gmpfr_cache_const_pi, _r)
+#define mpfr_const_log2(_d,_r) mpfr_cache(_d, __gmpfr_cache_const_log2, _r)
+#define mpfr_const_euler(_d,_r) mpfr_cache(_d, __gmpfr_cache_const_euler, _r)
 
 /* Prevent from using mpfr_get_e{min,max} as lvalues */
 #define mpfr_get_emin() (__gmpfr_emin + 0)
@@ -490,5 +504,12 @@ int mpfr_sum _MPFR_PROTO ((mpfr_ptr ret, mpfr_ptr const tab[], unsigned long n,
  ( mpfr_init(x), mpfr_set((x), (y), (rnd)) )
 #define mpfr_init_set_f(x, y, rnd) \
  ( mpfr_init(x), mpfr_set_f((x), (y), (rnd)) )
+
+/* To remove when MPFI and MPFR C++ interface are fixed */
+#define __gmp_default_rounding_mode __gmpfr_default_rounding_mode
+#define __mpfr_emin __gmpfr_emin
+#define __mpfr_emax __gmpfr_emax
+#define __mpfr_flags __gmpfr_flags
+#define __mpfr_default_fp_bit_precision __gmpfr_default_fp_bit_precision
 
 #endif /* __MPFR_H*/

@@ -23,10 +23,6 @@ MA 02111-1307, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-mpfr_t __mpfr_const_log2; /* stored value of log(2) */
-mp_prec_t __gmpfr_const_log2_prec = 0; /* precision of stored value */
-static mp_rnd_t __mpfr_const_log2_rnd; /* rounding mode of stored value */
-
 static int mpfr_aux_log2 _MPFR_PROTO ((mpfr_ptr, mpz_srcptr, long, int));
 static int mpfr_const_aux_log2 _MPFR_PROTO ((mpfr_ptr, mp_rnd_t));
 
@@ -128,25 +124,13 @@ mpfr_const_aux_log2 (mpfr_ptr mylog, mp_rnd_t rnd_mode)
    Then 2^N*log(2)-S'(N) <= N-1+2/N <= N for N>=2.
 */
 int
-mpfr_const_log2 (mpfr_ptr x, mp_rnd_t rnd_mode)
+(mpfr_const_log2) (mpfr_ptr x, mp_rnd_t rnd_mode)
 {
   mp_prec_t N, k, precx;
   mpz_t s, t, u;
   int inexact;
 
   precx = MPFR_PREC(x);
-  MPFR_CLEAR_FLAGS(x);
-
-  /* has stored value enough precision ? */
-  if (precx <= __gmpfr_const_log2_prec)
-    {
-      if ((rnd_mode == __mpfr_const_log2_rnd) ||
-          mpfr_can_round (__mpfr_const_log2, __gmpfr_const_log2_prec - 1,
-                          __mpfr_const_log2_rnd, GMP_RNDZ, precx + (rnd_mode == GMP_RNDN)))
-        {
-          return mpfr_set (x, __mpfr_const_log2, rnd_mode);
-        }
-    }
 
   /* need to recompute */
   if (precx < LOG2_THRESHOLD) /* use nai"ve Taylor series evaluation */
@@ -177,16 +161,6 @@ mpfr_const_log2 (mpfr_ptr x, mp_rnd_t rnd_mode)
     }
   else /* use binary splitting method */
     inexact = mpfr_const_aux_log2 (x, rnd_mode);
-
-  /* store computed value */
-  if (__gmpfr_const_log2_prec == 0)
-    mpfr_init2 (__mpfr_const_log2, precx);
-  else
-    mpfr_set_prec (__mpfr_const_log2, precx);
-
-  mpfr_set (__mpfr_const_log2, x, rnd_mode);
-  __gmpfr_const_log2_prec = precx;
-  __mpfr_const_log2_rnd = rnd_mode;
 
   return inexact;
 }

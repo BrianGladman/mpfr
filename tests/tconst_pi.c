@@ -83,6 +83,7 @@ main (int argc, char *argv[])
   else if (mpfr_cmp_str1 (x, "3.141592653589793116") )
     {
       printf ("mpfr_const_pi failed for prec=53\n");
+      mpfr_out_str (stdout, 10, 0, x, GMP_RNDN); putchar('\n');
       exit (1);
     }
 

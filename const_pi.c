@@ -147,12 +147,8 @@ S(N)-S'(N) <= sum(1, n=0..N-1) = N
 so Pi*16^N-S'(N) <= N+1 (as 1/4/N^2 < 1)
 */
 
-mpfr_t __mpfr_const_pi; /* stored value of Pi */
-mp_prec_t __gmpfr_const_pi_prec = 0; /* precision of stored value */
-static mp_rnd_t __mpfr_const_pi_rnd; /* rounding mode of stored value */
-
 int
-mpfr_const_pi (mpfr_ptr x, mp_rnd_t rnd_mode)
+(mpfr_const_pi) (mpfr_ptr x, mp_rnd_t rnd_mode)
 {
   int N, oldN, n;
   mpfr_prec_t prec;
@@ -160,17 +156,7 @@ mpfr_const_pi (mpfr_ptr x, mp_rnd_t rnd_mode)
   mpfr_t y;
   int inex;
 
-  prec=MPFR_PREC(x);
-
-  /* has stored value enough precision ? */
-  if ((prec==__gmpfr_const_pi_prec && rnd_mode==__mpfr_const_pi_rnd) ||
-      (prec<=__gmpfr_const_pi_prec &&
-       mpfr_can_round(__mpfr_const_pi, __gmpfr_const_pi_prec,
-                      __mpfr_const_pi_rnd, GMP_RNDZ,
-                      prec + (rnd_mode == GMP_RNDN))))
-    {
-      return mpfr_set (x, __mpfr_const_pi, rnd_mode);
-    }
+  prec = MPFR_PREC(x);
 
   if (prec < 20000)
     {
@@ -230,15 +216,6 @@ mpfr_const_pi (mpfr_ptr x, mp_rnd_t rnd_mode)
     }
   else
     inex = mpfr_pi_machin3 (x, rnd_mode);
-
-  /* store computed value */
-  if (__gmpfr_const_pi_prec==0)
-    mpfr_init2(__mpfr_const_pi, prec);
-  else
-    mpfr_set_prec(__mpfr_const_pi, prec);
-  mpfr_set(__mpfr_const_pi, x, rnd_mode);
-  __gmpfr_const_pi_prec=prec;
-  __mpfr_const_pi_rnd=rnd_mode;
 
   return inex;
 }

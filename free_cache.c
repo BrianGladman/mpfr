@@ -24,15 +24,7 @@ MA 02111-1307, USA. */
 void
 mpfr_free_cache (void)
 {
-  if (__gmpfr_const_pi_prec != 0)
-    {
-      mpfr_clear (__mpfr_const_pi);
-      __gmpfr_const_pi_prec = 0;
-    }
-
-  if (__gmpfr_const_log2_prec != 0)
-    {
-      mpfr_clear (__mpfr_const_log2);
-      __gmpfr_const_log2_prec = 0;
-    }
+  mpfr_clear_cache (__gmpfr_cache_const_pi);
+  mpfr_clear_cache (__gmpfr_cache_const_log2);
+  mpfr_clear_cache (__gmpfr_cache_const_euler);
 }

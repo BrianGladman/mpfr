@@ -28,7 +28,7 @@ static void mpfr_const_euler_S _MPFR_PROTO ((mpfr_ptr, unsigned long));
 static void mpfr_const_euler_R _MPFR_PROTO ((mpfr_ptr, unsigned long));
 
 int
-mpfr_const_euler (mpfr_t x, mp_rnd_t rnd)
+(mpfr_const_euler) (mpfr_t x, mp_rnd_t rnd)
 {
   mp_prec_t prec = MPFR_PREC(x), m, log2m;
   mpfr_t y, z;
