@@ -106,15 +106,7 @@ mpfr_div_ui (y, x, u, rnd_mode)
 
   c = (mp_limb_t) u;
   if (dif >= 0)
-    {
-#if (__GNU_MP_VERSION < 3) && (UDIV_NEEDS_NORMALIZATION==1)
-      /* patch for bug in mpn_divrem_1 for GMP 2.xxx */
-      count_leading_zeros(sh, c);
-      c <<= sh;
-      MPFR_EXP(y) += sh;
-#endif
-      c = mpn_divrem_1 (tmp, dif, xp, xn, c); /* used all the dividend */
-    }
+    c = mpn_divrem_1 (tmp, dif, xp, xn, c); /* used all the dividend */
   else /* dif < 0 i.e. xn > yn, don't use the (-dif) low limbs from x */
     c = mpn_divrem_1 (tmp, 0, xp - dif, yn + 1, c);
 
