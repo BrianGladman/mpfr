@@ -25,14 +25,7 @@ MA 02111-1307, USA. */
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "gmp.h"
-#include "gmp-impl.h"
-#include "mpfr.h"
 #include "mpfr-impl.h"
-
-void mpfr_zeta_part_b _MPFR_PROTO ((mpfr_t, mpfr_srcptr, int, int, mpfr_t *));
-void mpfr_zeta_c      _MPFR_PROTO ((int, mpfr_t *));
-void mpfr_zeta_part_a _MPFR_PROTO ((mpfr_t, mpfr_srcptr, int));
 
 /*
    Parameters:
@@ -42,7 +35,7 @@ void mpfr_zeta_part_a _MPFR_PROTO ((mpfr_t, mpfr_srcptr, int));
    Output:
    b is the result
 */
-void
+static void
 mpfr_zeta_part_b (mpfr_t b, mpfr_srcptr s, int n, int p, mpfr_t *tc)
 {
   int n2, l, t, precb;
@@ -94,7 +87,7 @@ mpfr_zeta_part_b (mpfr_t b, mpfr_srcptr s, int n, int p, mpfr_t *tc)
 /* Input: p - an integer
    Output: fills tc[1..p]
 */
-void
+static void
 mpfr_zeta_c (int p, mpfr_t *tc)
 {
   mpfr_t d;
@@ -124,7 +117,7 @@ mpfr_zeta_c (int p, mpfr_t *tc)
 /* Input: s - a floating-point number
           n - an integer
    Output: sum - a floating-point number */
-void
+static void
 mpfr_zeta_part_a (mpfr_t sum, mpfr_srcptr s, int n)
 {
   int i, preca;
@@ -387,7 +380,7 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
   add = __gmpfr_ceil_log2 (c * c * c * (13.0 + m1));
   prec1 = precz + add; /* Note that prec1 is still incremented by  10 at the first  entry of loop below */
   prec1 = MAX(prec1, precs1);
-  if (MPFR_SIGN (s) != -1 && MPFR_GET_EXP (s) >= 0) /* Case s >= 1/2 */
+  if (MPFR_IS_POS (s) && MPFR_GET_EXP (s) >= 0) /* Case s >= 1/2 */
     inex = mpfr_zeta_pos (z, s, rnd_mode);
   else
     {
