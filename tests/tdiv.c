@@ -4,6 +4,11 @@
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
+#ifdef IRIX64
+#include <sys/fpu.h>
+#endif
+
+extern int isnan();
 
 /* #define DEBUG */
 
@@ -56,7 +61,7 @@ void check4(N, D, rnd_mode, p) double N, D; unsigned char rnd_mode; int p;
   mpfr_clear(q); mpfr_clear(n); mpfr_clear(d);  
 }
 
-check_convergence()
+void check_convergence()
 {
   mpfr_t x, y;
   
@@ -67,13 +72,21 @@ check_convergence()
   mpfr_clear(x); mpfr_clear(y);
 }
 
-void main()
+int main()
 {
   int i; double n, d, e; 
+#ifdef IRIX64
+    /* to get denormalized numbers on IRIX64 */
+    union fpc_csr exp;
+    exp.fc_word = get_fpc_csr();
+    exp.fc_struct.flush = 0;
+    set_fpc_csr(exp.fc_word);
+#endif
 
   check_convergence();
   check(0.0, 1.0, 1);
-  check(-1.33225773037748601769e+199, 3.63449540676937123913e+79, 1);
+  check(-7.49889692246885910000e+63, 4.88168664502887320000e+306, GMP_RNDD);
+  check(-1.33225773037748601769e+199, 3.63449540676937123913e+79, GMP_RNDZ);
   d = 1.0; for (i=0;i<52;i++) d *= 2.0;
   check4(4.0, d, GMP_RNDZ, 62);
   check4(1.0, 2.10263340267725788209e+187, 2, 65);
@@ -91,4 +104,5 @@ void main()
     while (e>=1.7976931348623157081e308 || e<2.225073858507201383e-308);
     check(n, d, rand() % 4);
   }
+  return 0;
 }
