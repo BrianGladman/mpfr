@@ -150,12 +150,7 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
             if ((rnd_mode == GMP_RNDZ) ||
                 (rnd_mode == GMP_RNDD && MPFR_IS_POS(s)) ||
                 (rnd_mode == GMP_RNDU && MPFR_IS_NEG(s)))
-              {
-                if (MPFR_IS_POS(s))
-                  mpfr_nextbelow (s);
-                else
-                  mpfr_nextabove (s);
-              }
+	      mpfr_nexttozero (s);
           break;
         }
 
