@@ -670,6 +670,27 @@ Here is an example on how to initialize floating-point variables:
 @}
 @end example
 
+@defmac MPFR_DECL_INIT (@var{name}, @var{prec})
+This macro declares @var{name} as an automatic variable of type @code{mpfr_t},
+inits it and sets its precision to be @strong{exactly} @var{prec} bits and
+its value to NaN. @var{name} must be a valid c identifier.
+You must use this macro in the declaration section. This macro is much faster than using @code{mpfr_init2} but has some
+drawbacks:
+
+@itemize @bullet
+@item You @strong{must not} call @code{mpfr_clear} with variables 
+created with this macro (The storage is allocated at the point of declaration
+and deallocated when the brace-level is exited.).
+@item You @strong{can not} change their precision.
+@item You @strong{should not} create variables with huge precision with this macro.
+@item Your compiler must support @samp{Non-Constant Initializers} (standard
+in C++ and ISO C99) and @samp{Tokken Pasting}
+(standard in ISO C89). If @var{prec} is not a compiler constant, your compiler
+must support @samp{Variable-length automatic arrays} (standard in ISO C99).
+@samp{GCC} supports all theses features.
+@end itemize
+@end defmac
+
 The following functions are useful for changing the precision during a
 calculation.  A typical use would be for adjusting the precision gradually in
 iterative algorithms like Newton-Raphson, making the computation precision

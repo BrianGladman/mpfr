@@ -389,6 +389,17 @@ int mpfr_sum _MPFR_PROTO ((mpfr_ptr ret, mpfr_ptr const tab[], unsigned long n,
 }
 #endif
 
+/* DON'T USE THIS! */
+#if __GMP_MP_SIZE_T_INT
+#define __MPFR_EXP_NAN ((~((~(unsigned int)0)>>1))+2)
+#else
+#define __MPFR_EXP_NAN ((~((~(unsigned long)0)>>1))+2)
+#endif
+
+#define MPFR_DECL_INIT(_x, _p) \
+  mp_limb_t __gmpfr_local_tab_##_x[(_p-1)/GMP_NUMB_BITS+1]; \
+  mpfr_t    _x = {{(_p),1,__MPFR_EXP_NAN,__gmpfr_local_tab_##_x}}
+
 /* Compatibility with 2.0.1 
    'mpfr_round_prec' is used to detect 2.0.1 and 2.0.2 */
 #define mpfr_cmp_abs mpfr_cmpabs
