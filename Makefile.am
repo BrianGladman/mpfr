@@ -1,7 +1,7 @@
 SUBDIRS=tests
-EXTRA_DIST=generic.c COPYING.LIB
+EXTRA_DIST=generic.c COPYING.LIB VERSION
 
-include_HEADERS = mpfr.h mpf2mpfr.h mpfr-test.h
+include_HEADERS = mpfr.h mpf2mpfr.h mpfr-test.h mpfr-math.h
 
 lib_LIBRARIES = libmpfr.a
 
