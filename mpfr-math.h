@@ -63,13 +63,15 @@ MA 02111-1307, USA. */
 #else
 #ifdef _MPFR_NAN_BYTES
 /* Note: do not use an initialized union, because, though it is standard,
-   the HP compiler doesn't like that. */
+   the HP compiler doesn't like that. Structures are used to get correct
+   alignment. */
 #ifdef __alpha
-static unsigned char __mpfr_nan[8] = { 0, 0, 0, 0, 0, 0, 0xf8, 0x7f };
-#define MPFR_DBL_NAN (*((double *) __mpfr_nan))
+static struct { unsigned char c[8]; } __mpfr_nan
+= { { 0, 0, 0, 0, 0, 0, 0xf8, 0x7f } };
+#define MPFR_DBL_NAN (*((double *) __mpfr_nan.c))
 #else
-static unsigned char __mpfr_nan[4] = _MPFR_NAN_BYTES;
-#define MPFR_DBL_NAN ((double) *((float *) __mpfr_nan))
+static struct { unsigned char c[4]; } __mpfr_nan = { _MPFR_NAN_BYTES };
+#define MPFR_DBL_NAN ((double) *((float *) __mpfr_nan.c))
 #endif
 #else
 #define MPFR_DBL_NAN (0./0.)
@@ -81,10 +83,10 @@ static unsigned char __mpfr_nan[4] = _MPFR_NAN_BYTES;
 #define MPFR_DBL_INFM (-HUGE_VAL)
 #else
 #ifdef _MPFR_INFP_BYTES
-static unsigned char __mpfr_infp[4] = _MPFR_INFP_BYTES;
-static unsigned char __mpfr_infm[4] = _MPFR_INFM_BYTES;
-#define MPFR_DBL_INFP ((double) *((float *) __mpfr_infp))
-#define MPFR_DBL_INFM ((double) *((float *) __mpfr_infm))
+static struct { unsigned char c[4]; } __mpfr_infp = { _MPFR_INFP_BYTES };
+static struct { unsigned char c[4]; } __mpfr_infm = { _MPFR_INFM_BYTES };
+#define MPFR_DBL_INFP ((double) *((float *) __mpfr_infp.c))
+#define MPFR_DBL_INFM ((double) *((float *) __mpfr_infm.c))
 #else
 #define MPFR_DBL_INFP (1/0.)
 #define MPFR_DBL_INFM (-1/0.)
