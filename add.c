@@ -33,6 +33,7 @@ mpfr_add (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	  MPFR_SET_NAN(a);
 	  MPFR_RET_NAN;
 	}
+      /* neither b nor c is NaN here */
       else if (MPFR_IS_INF(b))
 	{
 	  if (!MPFR_IS_INF(c) || MPFR_SIGN(b) == MPFR_SIGN(c))
@@ -53,6 +54,7 @@ mpfr_add (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	    MPFR_SET_SAME_SIGN(a, c);
 	    MPFR_RET(0); /* exact */
 	  }
+      /* now either b or c is zero */
       else if (MPFR_IS_ZERO(b))
 	{
 	  if (MPFR_IS_ZERO(c))
@@ -66,12 +68,11 @@ mpfr_add (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	    }
 	  return mpfr_set(a, c, rnd_mode);
 	}
-      else if (MPFR_IS_ZERO(c))
+      else /* necessarily c is 0 */
 	{
+          MPFR_ASSERTD(MPFR_IS_ZERO(c));
 	  return mpfr_set(a, b, rnd_mode);
 	}
-      /* Should never reach here */
-      MPFR_ASSERTN(0);
     }
 
   MPFR_ASSERTD(MPFR_IS_PURE_FP(b) && MPFR_IS_PURE_FP(c));
