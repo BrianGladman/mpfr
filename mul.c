@@ -42,8 +42,8 @@ mpfr_mul (a, b, c, rnd_mode)
      mp_rnd_t rnd_mode;
 #endif
 {
-  unsigned int bn, cn, an, tn, k, inexact = 0;
-  int cc;
+  unsigned int bn, cn, an, tn, k;
+  int cc, inexact = 0;
   mp_limb_t *ap=MPFR_MANT(a), *bp=MPFR_MANT(b), *cp=MPFR_MANT(c), *tmp, b1;
   long int sign_product;
   mp_prec_t prec_a=MPFR_PREC(a), prec_b=MPFR_PREC(b), prec_c=MPFR_PREC(c);
@@ -135,9 +135,9 @@ mpfr_mul (a, b, c, rnd_mode)
       /* 0 <= left_a < BITS_PER_MP_LIMB */
       tn -= an;
       if (left_a)
-	inexact = tmp[tn] & (((mp_limb_t) 1 << left_a) - 1);
+	inexact = (tmp[tn] & (((mp_limb_t) 1 << left_a) - 1)) != (mp_limb_t) 0;
       while ((inexact == 0) && tn)
-	inexact = tmp[--tn];
+	inexact = tmp[--tn] != (mp_limb_t) 0;
     }
   TMP_FREE(marker);
 
