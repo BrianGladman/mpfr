@@ -1,6 +1,7 @@
 /* mpfr_add -- add two floating-point numbers
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 1999-2001 Free Software Foundation.
+Contributed by the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.
 
@@ -284,6 +285,7 @@ mpfr_add1 (a, b, c, rnd_mode, diff_exp)
 
     /* first copy upper part of c into a (after shift) */
     dif = aq - diff_exp;
+    /* dif is the number of bits of c which overlap with a */
     MPFR_ASSERTN(dif > 0);
     k = (dif-1)/BITS_PER_MP_LIMB + 1; /* only the highest k limbs from c
 					 have to be considered */
@@ -422,9 +424,40 @@ mpfr_add1 (a, b, c, rnd_mode, diff_exp)
 	  /* otherwise the result is exact: nothing to do */
 	}
     }
-    /* else nothing to do: round towards zero, i.e. truncate last sh bits */
+    /* else round towards zero:
+       - if low(b)+low(c) >= ulp(a) then add one
+         (this can happen only if the last sh bits from a are all 1)
+       - else truncate
+     */
     else
-      *ap &= ~((ONE<<sh)-1);
+      {
+	mp_limb_t carry, mask, tp, lastc;
+
+	/*           
+	   <--------|---b----|-------->
+	     <--------|---c----|--------|--------> (dif bits to the right)
+	*/
+	mask = (ONE << sh) - 1;
+	carry = *ap & mask;
+	*ap -= carry;
+	if (carry == mask) /* all last sh bits from a are 1 */
+	  {
+	    bn -= an;
+	    cn -= k;
+	    carry = ~((mp_limb_t) 0);
+	    lastc = (dif) ? (cp[cn] << (BITS_PER_MP_LIMB - dif)) : 0;
+	    while ((bn || cn) && (~carry == 0))
+	      {
+		tp = (bn) ? bp[--bn] : 0; /* current limb from b */
+		if (cn)
+		  lastc += cp[--cn] >> dif; /* corresponding limb from c */
+		carry += lastc;
+		/* if carry < lastc : b[i] + c[i] >= BASE ==> add one ulp */
+		if (carry < lastc)
+		  goto add_one_ulp;
+	      }
+	  }
+      }
     goto end_of_add;
 
   to_nearest: /* 0 <= sh < BITS_PER_MP_LIMB : number of bits of a to truncate
