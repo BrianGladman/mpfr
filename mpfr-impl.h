@@ -111,8 +111,8 @@ typedef union ieee_double_extract Ieee_double_extract;
 extern "C" {
 #endif  
 
-void mpfr_set_underflow _PROTO ((mpfr_ptr, mp_rnd_t, int));
-void mpfr_set_overflow _PROTO ((mpfr_ptr, mp_rnd_t, int));
+int mpfr_set_underflow _PROTO ((mpfr_ptr, mp_rnd_t, int));
+int mpfr_set_overflow _PROTO ((mpfr_ptr, mp_rnd_t, int));
 void mpfr_save_emin_emax _PROTO ((void));
 void mpfr_restore_emin_emax _PROTO ((void));
 

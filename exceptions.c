@@ -166,15 +166,9 @@ mpfr_check_range ()
   { /* x is a non-zero FP */
     mp_exp_t exp = MPFR_EXP(x);
     if (exp < __mpfr_emin)
-    {
-      mpfr_set_underflow(x, rnd_mode, MPFR_SIGN(x));
-      return -1;
-    }
+      return mpfr_set_underflow(x, rnd_mode, MPFR_SIGN(x));
     if (exp > __mpfr_emax)
-    {
-      mpfr_set_overflow(x, rnd_mode, MPFR_SIGN(x));
-      return 1;
-    }
+      return mpfr_set_overflow(x, rnd_mode, MPFR_SIGN(x));
   }
   return 0;
 }
@@ -229,13 +223,15 @@ mpfr_inexflag_p ()
 
 #undef mpfr_set_underflow
 
-void
+int
 #if __STDC__
 mpfr_set_underflow (mpfr_ptr x, mp_rnd_t rnd_mode, int sign)
 #else
 mpfr_set_underflow ()
 #endif
 {
+  int inex;
+
   MPFR_CLEAR_FLAGS(x);
   if ((rnd_mode == GMP_RNDU && sign > 0)
    || (rnd_mode == GMP_RNDD && sign < 0))
@@ -247,24 +243,29 @@ mpfr_set_underflow ()
     xp = MPFR_MANT(x);
     xp[xn] = MP_LIMB_T_HIGHBIT;
     MPN_ZERO(xp, xn);
+    inex = 1;
   }
   else
   {
     MPFR_SET_ZERO(x);
+    inex = -1;
   }
   if (MPFR_SIGN(x) != sign) { MPFR_CHANGE_SIGN(x); }
-  __mpfr_flags |= MPFR_FLAGS_UNDERFLOW;
+  __mpfr_flags |= MPFR_FLAGS_INEXACT | MPFR_FLAGS_UNDERFLOW;
+  return sign > 0 ? inex : -inex;
 }
 
 #undef mpfr_set_overflow
 
-void
+int
 #if __STDC__
 mpfr_set_overflow (mpfr_ptr x, mp_rnd_t rnd_mode, int sign)
 #else
 mpfr_set_overflow ()
 #endif
 {
+  int inex;
+
   MPFR_CLEAR_FLAGS(x);
   if ((rnd_mode == GMP_RNDU && sign < 0)
    || (rnd_mode == GMP_RNDD && sign > 0))
@@ -276,11 +277,14 @@ mpfr_set_overflow ()
     xp = MPFR_MANT(x);
     for (i = 0; i <= xn; i++)
       xp[i] = MP_LIMB_T_MAX;
+    inex = -1;
   }
   else
   {
     MPFR_SET_INF(x);
+    inex = 1;
   }
   if (MPFR_SIGN(x) != sign) { MPFR_CHANGE_SIGN(x); }
-  __mpfr_flags |= MPFR_FLAGS_OVERFLOW;
+  __mpfr_flags |= MPFR_FLAGS_INEXACT | MPFR_FLAGS_OVERFLOW;
+  return sign > 0 ? inex : -inex;
 }
