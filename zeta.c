@@ -116,7 +116,7 @@ mpfr_zeta_c (int p, mpfr_t *tc)
 
 /* Input: s - a floating-point number
           n - an integer
-   Output: sum - a floating-point number */
+   Output: sum - a floating-point number approximating sum(1/i^s, i=1..n-1) */
 static void
 mpfr_zeta_part_a (mpfr_t sum, mpfr_srcptr s, int n)
 {
@@ -322,7 +322,7 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
   double sd, eps, m1, c;
   int can_round;
   long add;
-  mpfr_t z_pre, s1, s2, y, sfrac, sint, p;
+  mpfr_t z_pre, s1, s2, y, p;
   mp_prec_t precz, prec1, precs, precs1;
   int inex;
 
@@ -366,7 +366,7 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
   precs = mpfr_get_prec (s);
   /* Precision precs1 needed to represent 1 - s, and s + 2,
      without any truncation */
-  precs1 = precs + 2 + MAX (0, - abs (MPFR_GET_EXP (s)));
+  precs1 = precs + 2 + MAX (0, - MPFR_GET_EXP (s));
   sd = mpfr_get_d (s, GMP_RNDN) - 1.0;
   if (sd < 0.0)
     sd = -sd; /* now sd = abs(s-1.0) */
@@ -382,14 +382,13 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
   prec1 = MAX(prec1, precs1);
   if (MPFR_IS_POS (s) && MPFR_GET_EXP (s) >= 0) /* Case s >= 1/2 */
     inex = mpfr_zeta_pos (z, s, rnd_mode);
-  else
+  else /* use reflection formula 
+          zeta(s) = 2^s*Pi^(s-1)*sin(Pi*s/2)*gamma(1-s)*zeta(1-s) */
     {
-      mpfr_init2(z_pre, MPFR_PREC_MIN);
-      mpfr_init2(s1, MPFR_PREC_MIN);
-      mpfr_init2(y, MPFR_PREC_MIN);
-      mpfr_init2(p, MPFR_PREC_MIN);
-      mpfr_init2(sint, MPFR_PREC_MIN);
-      mpfr_init2(sfrac, MPFR_PREC_MIN);
+      mpfr_init2 (z_pre, MPFR_PREC_MIN);
+      mpfr_init2 (s1, MPFR_PREC_MIN);
+      mpfr_init2 (y, MPFR_PREC_MIN);
+      mpfr_init2 (p, MPFR_PREC_MIN);
       do
 	{
 	  prec1 = prec1 + 10;
@@ -397,33 +396,18 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
           mpfr_set_prec (s1, prec1);
           mpfr_set_prec (y, prec1);
           mpfr_set_prec (p, prec1);
-          mpfr_set_prec (sint, prec1);
-          mpfr_set_prec (sfrac, prec1);
-          mpfr_ui_sub (s1, 1, s, GMP_RNDN);
-          mpfr_add_ui (sfrac, s, 2, GMP_RNDN);
-          mpfr_div_2ui (sfrac, sfrac, 2, GMP_RNDN);
-          mpfr_floor (sint, sfrac);
-          mpfr_sub (sfrac, sfrac, sint, GMP_RNDN);
-          mpfr_mul_2ui (sfrac, sfrac, 2, GMP_RNDN);
-          mpfr_sub_ui (sfrac, sfrac, 2, GMP_RNDN);
-          if (mpfr_cmp_ui (sfrac, 1) > 0)
-            mpfr_ui_sub (sfrac, 2, sfrac, GMP_RNDN);
-          else if (mpfr_cmp_si (sfrac, -1) < 0)
-            {
-              mpfr_neg (sfrac, sfrac, GMP_RNDN);
-              mpfr_sub_ui (sfrac, sfrac, 2, GMP_RNDN);
-            }
-          mpfr_div_2ui (sfrac, sfrac, 1, GMP_RNDN);
-          mpfr_zeta_pos (z_pre, s1, GMP_RNDN);
-          mpfr_gamma (y, s1, GMP_RNDN);
-          mpfr_mul (z_pre, z_pre, y, GMP_RNDN);
+          mpfr_ui_sub (s1, 1, s, GMP_RNDN); /* s1 = 1-s */
+          mpfr_zeta_pos (z_pre, s1, GMP_RNDN); /* zeta(1-s)  */
+          mpfr_gamma (y, s1, GMP_RNDN);        /* gamma(1-s) */
+          mpfr_mul (z_pre, z_pre, y, GMP_RNDN); /* gamma(1-s)*zeta(1-s) */
           mpfr_const_pi (p, GMP_RNDD);
-          mpfr_mul (y, sfrac, p, GMP_RNDN);
-          mpfr_sin (y, y, GMP_RNDN);
+          mpfr_mul (y, s, p, GMP_RNDN);
+          mpfr_div_2ui (y, y, 1, GMP_RNDN); /* s*Pi/2 */
+          mpfr_sin (y, y, GMP_RNDN); /* sin(Pi*s/2) */
           mpfr_mul (z_pre, z_pre, y, GMP_RNDN);
-          mpfr_mul_2ui (y, p, 1, GMP_RNDN);
-          mpfr_neg (s1, s1, GMP_RNDN);
-          mpfr_pow (y, y, s1, GMP_RNDN);
+          mpfr_mul_2ui (y, p, 1, GMP_RNDN); /* 2*Pi */
+          mpfr_neg (s1, s1, GMP_RNDN); /* s-1 */
+          mpfr_pow (y, y, s1, GMP_RNDN); /* (2*Pi)^(s-1) */
           mpfr_mul (z_pre, z_pre, y, GMP_RNDN);
           mpfr_mul_2ui (z_pre, z_pre, 1, GMP_RNDN);
           can_round = mpfr_can_round (z_pre, prec1 - add, GMP_RNDN, GMP_RNDZ,
@@ -435,8 +419,6 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
       mpfr_clear(s1);
       mpfr_clear(y);
       mpfr_clear(p);
-      mpfr_clear(sint);
-      mpfr_clear(sfrac);
     }
   return inex;
 }
