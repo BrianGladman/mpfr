@@ -45,6 +45,7 @@ MA 02111-1307, USA. */
    compiler+system was seen incorrectly converting from a "float" NaN.  */
 
 #if _GMP_IEEE_FLOATS
+
 /* The "d" field guarantees alignment to a suitable boundary for a double.
    Could use a union instead, if we checked the compiler supports union
    initializers.  */
@@ -72,7 +73,14 @@ static const struct dbl_bytes dbl_infp = { { 0x7F, 0xF0, 0, 0, 0, 0, 0, 0 } };
 static const struct dbl_bytes dbl_infm = { { 0xFF, 0xF0, 0, 0, 0, 0, 0, 0 } };
 static const struct dbl_bytes dbl_nan  = { { 0x7F, 0xF8, 0, 0, 0, 0, 0, 0 } };
 #endif
-#endif
+
+#else /* _GMP_IEEE_FLOATS */
+
+#define MPFR_DBL_INFP DBL_POS_INF
+#define MPFR_DBL_INFM DBL_NEG_INF
+#define MPFR_DBL_NAN DBL_NAN
+
+#endif /* _GMP_IEEE_FLOATS */
 
 
 /* multiplies 1/2 <= d <= 1 by 2^exp */
@@ -142,24 +150,12 @@ mpfr_get_d3 (mpfr_srcptr src, mp_exp_t e, mp_rnd_t rnd_mode)
   int negative;
 
   if (MPFR_IS_NAN(src))
-    {
-#ifdef MPFR_DBL_NAN
-      return MPFR_DBL_NAN;
-#else
-      DIVIDE_BY_ZERO;
-#endif
-    }
+    return MPFR_DBL_NAN;
 
   negative = MPFR_SIGN(src) < 0;
 
   if (MPFR_IS_INF(src))
-    {
-#ifdef MPFR_DBL_INFP
-      return negative ? MPFR_DBL_INFM : MPFR_DBL_INFP;
-#else
-      DIVIDE_BY_ZERO;
-#endif
-    }
+    return negative ? MPFR_DBL_INFM : MPFR_DBL_INFP;
 
   if (MPFR_IS_ZERO(src))
     return negative ? -0.0 : 0.0;
