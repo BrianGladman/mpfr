@@ -41,8 +41,6 @@ unsigned int py, unsigned int pz, double res)
 {
   double z1,z2; mpfr_t xx,yy,zz;
 
-  /*  printf("x=%1.20e, y=%1.20e, rnd_mode=%u px=%u py=%u pz=%u\n",x,y,rnd_mode,
-      px, py, pz); */
   mpfr_init2(xx, px);
   mpfr_init2(yy, py);
   mpfr_init2(zz, pz);
@@ -52,7 +50,6 @@ unsigned int py, unsigned int pz, double res)
   mpfr_set_machine_rnd_mode(rnd_mode);
   z1 = (res==0.0) ? x+y : res;
   z2 = mpfr_get_d(zz);
-  /* printf("x+y=%1.20e\n",z2); */
   if (px==53 && py==53 && pz==53) res=1.0;
   if (res!=0.0 && z1!=z2 && !(isnan(z1) && isnan(z2))) {
     printf("expected sum is %1.20e, got %1.20e\n",z1,z2);
@@ -240,6 +237,10 @@ main(argc,argv) int argc; char *argv[];
 	GMP_RNDU, 53, 53, 53, 0.0);
   /* printf("Checking random precisions\n"); */
   srand(getpid());
+  check2(5.43885304644369509058e+185,53,-1.87427265794105342763e-57,53,53,0);
+  check2(5.43885304644369509058e+185,53,-1.87427265794105342763e-57,53,53,1);
+  check2(5.43885304644369509058e+185,53,-1.87427265794105342763e-57,53,53,2);
+  check2(5.43885304644369509058e+185,53,-1.87427265794105342763e-57,53,53,3);
   check2(2.26531902208967707071e+168,99,-2.67795218510613988524e+168,67,94,2);
   check2(-1.21510626304662318398e+145,70,1.21367733647758957118e+145,65,61,3);
   check2(2.73028857032080744543e+155,83,-1.16446121423113355603e+163,59,125,1);
