@@ -333,6 +333,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
       else
         mpz_tdiv_q_2exp (zi, zi, (unsigned long int) (-exptol));
 
+      MPFR_ASSERTN (mpz_fits_slong_p (zi));
       zii = mpz_get_si (zi);
 
       mpz_clear (zi);
