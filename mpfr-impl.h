@@ -560,7 +560,7 @@ do { \
          ua = (UTYPE) a; ub = (UTYPE) b; \
          MPFR_UADD_OVERFLOW (uc, ua, ub, ACTION_IF_POS_OVERFLOW); \
          if (uc > (UTYPE)(MAX)) ACTION_IF_POS_OVERFLOW; \
-         (c) = (STYPE) uc; \
+         else (c) = (STYPE) uc; \
   } else if ((a) < 0 && (b) < 0) { \
          UTYPE uc,ua,ub; \
          ua = -(UTYPE) a; ub = -(UTYPE) b; \
