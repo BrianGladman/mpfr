@@ -26,8 +26,9 @@ MA 02111-1307, USA. */
 #include "longlong.h"
 #include "mpfr.h"
 
-mpfr_t __mpfr_const_log2; /* stored value of log(2) with rnd_mode=GMP_RNDZ */
+mpfr_t __mpfr_const_log2; /* stored value of log(2) */
 int __mpfr_const_log2_prec=0; /* precision of stored value */
+mp_rnd_t __mpfr_const_log2_rnd; /* rounding mode of stored value */
 
 
 #define A
@@ -64,6 +65,7 @@ mpfr_const_aux_log2(mylog, rnd_mode) mpfr_ptr mylog; mp_rnd_t rnd_mode;
   int logn;
   int prec_i_want = PREC(mylog);
   int prec_x;
+
   mpz_init(cst);
   logn =  (int) ceil(log
                       ((double) PREC(mylog))
@@ -136,9 +138,8 @@ mpfr_const_log2(x, rnd_mode) mpfr_ptr x; mp_rnd_t rnd_mode;
 
   /* has stored value enough precision ? */
   if (precx <= __mpfr_const_log2_prec) {
-    if (rnd_mode==GMP_RNDZ || rnd_mode==GMP_RNDD ||
-	mpfr_can_round(__mpfr_const_log2, __mpfr_const_log2_prec, GMP_RNDZ, 
-		       rnd_mode, precx))
+    if (rnd_mode==__mpfr_const_log2_rnd || mpfr_can_round(__mpfr_const_log2, 
+	      __mpfr_const_log2_prec, __mpfr_const_log2_rnd, rnd_mode, precx))
       {
 	mpfr_set(x, __mpfr_const_log2, rnd_mode); return; 
       }
@@ -184,7 +185,7 @@ mpfr_const_log2(x, rnd_mode) mpfr_ptr x; mp_rnd_t rnd_mode;
   /* store computed value */
   if (__mpfr_const_log2_prec==0) mpfr_init2(__mpfr_const_log2, precx);
   else mpfr_set_prec(__mpfr_const_log2, precx);
-  mpfr_set(__mpfr_const_log2, x, GMP_RNDZ);
+  mpfr_set(__mpfr_const_log2, x, rnd_mode);
   __mpfr_const_log2_prec=precx;
-
+  __mpfr_const_log2_rnd=rnd_mode;
 }
