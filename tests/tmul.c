@@ -26,10 +26,10 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-test.h"
 
-void check _PROTO((double, double, unsigned int, unsigned int, 
+void check _PROTO((double, double, mp_rnd_t, unsigned int, 
 		   unsigned int, unsigned int, double)); 
-void check53 _PROTO((double, double, unsigned int, double)); 
-void check24 _PROTO((float, float, unsigned int, float)); 
+void check53 _PROTO((double, double, mp_rnd_t, double)); 
+void check24 _PROTO((float, float, mp_rnd_t, float)); 
 void check_float _PROTO((void)); 
 void check_sign _PROTO((void)); 
 

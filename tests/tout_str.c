@@ -29,17 +29,14 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-test.h"
 
-void check4 (double, mp_rnd_t, int, int);
-void check_large (void);
-
 FILE *fout;
 
 #define check(d,r,b) check4(d,r,b,53)
 
-void check4 _PROTO((double, unsigned char, int, int)); 
+void check4 _PROTO((double, mp_rnd_t, int, int)); 
 void check_large _PROTO((void)); 
 
-void check4(d, rnd, base, prec) double d; unsigned char rnd; int base, prec;
+void check4(double d, mp_rnd_t rnd, int base, int prec)
 {
   mpfr_t x;
 

@@ -27,7 +27,7 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-test.h"
 
-void check _PROTO((double, unsigned long, unsigned char, double)); 
+void check _PROTO((double, unsigned long, mp_rnd_t, double)); 
 
 void check (double d, unsigned long u, mp_rnd_t rnd, double e)
 {

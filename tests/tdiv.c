@@ -29,8 +29,8 @@ MA 02111-1307, USA. */
 
 #define check53(n, d, rnd, res) check4(n, d, rnd, 53, res)
 
-void check4 _PROTO((double, double, unsigned char, int, double)); 
-void check24 _PROTO((float, float, unsigned char, float)); 
+void check4 _PROTO((double, double, mp_rnd_t, int, double)); 
+void check24 _PROTO((float, float, mp_rnd_t, float)); 
 void check_float _PROTO((void)); 
 void check_convergence _PROTO((void)); 
 

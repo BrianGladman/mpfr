@@ -28,7 +28,7 @@ MA 02111-1307, USA. */
 #include "mpfr-test.h"
 #endif
 
-void check _PROTO((unsigned long, double, unsigned int, double)); 
+void check _PROTO((unsigned long, double, mp_rnd_t, double)); 
 
 /* checks that y/x gives the same results in double
    and with mpfr with 53 bits of precision */

@@ -30,13 +30,13 @@ MA 02111-1307, USA. */
 
 int maxulp=0;
 
-void check3 _PROTO((double, unsigned char, double)); 
-void check4 _PROTO((double, unsigned char, char *)); 
-void check24 _PROTO((float, unsigned char, float)); 
+void check3 _PROTO((double, mp_rnd_t, double)); 
+void check4 _PROTO((double, mp_rnd_t, char *)); 
+void check24 _PROTO((float, mp_rnd_t, float)); 
 void check_float _PROTO((void)); 
 void special _PROTO((void)); 
 
-void check3(double a, unsigned char rnd_mode, double Q)
+void check3(double a, mp_rnd_t rnd_mode, double Q)
 {
   mpfr_t q; double Q2; int ck,u;
 
