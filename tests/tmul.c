@@ -11,24 +11,17 @@
 void check(double x, double y, unsigned int rnd_mode, unsigned int px, 
 unsigned int py, unsigned int pz, double res)
 {
-  double z1,z2,z3; mpfr_t xx,yy,zz; int i;
-  mpf_t xxx,yyy,zzz;
+  double z1,z2; mpfr_t xx,yy,zz;
 
-  /* printf("x=%1.20e, y=%1.20e, rnd_mode=%u px=%u py=%u pz=%u\n",x,y,rnd_mode,
-     px, py, pz); */
   mpfr_init2(xx, px);
   mpfr_init2(yy, py);
   mpfr_init2(zz, pz);
-  mpf_init2(xxx,px); mpf_init2(yyy,py); mpf_init2(zzz,pz);
-  mpf_set_d(xxx, x); mpf_set_d(yyy, y);
   mpfr_set_d(xx, x, rnd_mode);
   mpfr_set_d(yy, y, rnd_mode);
-for (i=0;i<1;i++)  mpfr_mul(zz, xx, yy, rnd_mode);
-  mpf_mul(zzz, xxx, yyy);
+  mpfr_mul(zz, xx, yy, rnd_mode);
   mpfr_set_machine_rnd_mode(rnd_mode);
   z1 = (res==0.0) ? x*y : res;
   z2 = mpfr_get_d(zz);
-  z3 = mpf_get_d(zzz);
   if (px==53 && py==53 && pz==53) res=1.0;
   if (res!=0.0 && z1!=z2 && (z1>=MINNORM || z1<=-MINNORM)) {
     printf("expected product is %1.20e, got %1.20e\n",z1,z2);
@@ -37,7 +30,6 @@ mpfr_print_raw(zz); putchar('\n');
     exit(1);
   }
   mpfr_clear(xx); mpfr_clear(yy); mpfr_clear(zz);
-  mpf_clear(xxx); mpf_clear(yyy); mpf_clear(zzz);
 }
 
 /* check sign of result */
