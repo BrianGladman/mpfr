@@ -34,6 +34,9 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   mp_size_t bn, cn, tn, k;
   TMP_DECL (marker);
 
+  MPFR_LOG_FUNC (("b[%#R]=%R c[%#R]=%R rnd=%d", b, b, c, c, rnd_mode),
+		 ("a[%#R]=%R inexact=%d", a, a, inexact));
+
   /* deal with special cases */
   if (MPFR_ARE_SINGULAR (b, c))
     {
@@ -154,6 +157,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       if (MPFR_UNLIKELY (MPFR_PREC (a) > p - 4))
 	/* MulHigh can't produce a roundable result. */
 	goto full_multiply;
+      MPFR_LOG_MSG (("Use mpfr_mulhigh (%lu VS %lu)\n", MPFR_PREC (a), p));
       /* Compute an approximation of the product of b and c */
       mpfr_mulhigh_n (tmp+k-2*n, MPFR_MANT (b) + bn - n, 
 		      MPFR_MANT (c) + cn - n, n);
@@ -176,6 +180,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   else
     {
     full_multiply:
+      MPFR_LOG_MSG (("Use mpn_mul\n", 0));
       b1 = mpn_mul (tmp, MPFR_MANT (b), bn, MPFR_MANT (c), cn);      
 
       /* now tmp[0]..tmp[k-1] contains the product of both mantissa,
