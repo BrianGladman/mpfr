@@ -157,6 +157,17 @@ special (void)
 
   mpfr_init2 (x, 53);
   mpfr_init2 (y, 53);
+
+  /* Check special case: An overflow in const_pi could occurs! */
+  mpfr_set_emin (-125);
+  mpfr_set_emax (128);
+  mpfr_set_prec (y, 24*2);
+  mpfr_set_prec (x, 24);
+  mpfr_set_str_binary (x, "0.111110101010101011110101E0");
+  mpfr_log (y, x, GMP_RNDN);
+  mpfr_set_emin (MPFR_EMIN_MIN);
+  mpfr_set_emax (MPFR_EMAX_MAX);
+
   mpfr_set_ui (x, 3, GMP_RNDD);
   mpfr_log (y, x, GMP_RNDD);
   if (mpfr_cmp_str1 (y, "1.09861228866810956"))
