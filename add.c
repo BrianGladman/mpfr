@@ -431,7 +431,8 @@ mpfr_ptr a; mpfr_srcptr b, c; unsigned char rnd_mode;
       diff_exp = mpfr_cmp(b,c);
       CHANGE_SIGN(c);
       /* if b>0 and diff_exp>0 or b<0 and diff_exp<0: abs(b) > abs(c) */
-      if (diff_exp*SIGN(b)>=0) mpfr_sub1(a, b, c, rnd_mode, 0);
+      if (diff_exp==0) SET_ZERO(a);
+      else if (diff_exp*SIGN(b)>0) mpfr_sub1(a, b, c, rnd_mode, 0);
       else mpfr_sub1(a, c, b, rnd_mode, 0);
     }
   }
