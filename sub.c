@@ -68,7 +68,7 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
      int diff_exp;
 #endif
 {
-  mp_limb_t *ap, *bp, *cp, cc, c2; unsigned int an,bn,cn; 
+  mp_limb_t *ap, *bp, *cp, cc, c2; unsigned int an, bn, cn;
   int sh,dif,k,cancel,cancel1,cancel2;
   TMP_DECL(marker);
 
@@ -180,26 +180,32 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
 	/* if cc<0 : trunc(b) < 1/2*lsb(a) -> round down, i.e. do nothing */
       }
       else { /* round towards infinity or zero */
+	mp_limb_t c2old;
 	if (sh) {
 	  cc = *ap & ((ONE<<sh)-1);
 	  *ap &= ~cc; /* truncate last bits */
 	}
 	else cc=0;
 
-	cn--;
-        if (dif>-sh) c2 = cp[cn]>>(mp_bits_per_limb-dif-sh);
-        else c2 = 0;
+	if (dif>-sh) {
+	  cn--;
+	  c2old = cp[cn]; /* last limb from c considered */
+	  c2 = c2old >> (mp_bits_per_limb-dif-sh);
+	}
+	else c2 = c2old = 0;
 	dif += mp_bits_per_limb;
 	while (cc==c2 && (k || cn)) {
 	  if (k) cc = bp[--k];
+	  /* next limb from c to consider is cp[cn-1], with lower part of
+	     c2old */
+	  c2 = c2old << (dif+sh);
 	  if (cn && (dif+sh>=0)) {
-	    c2 = cp[cn]<<(dif+sh);
-	    if (cn--) c2 += cp[cn]>>(mp_bits_per_limb-dif-sh);
+            cn--; 
+	    c2old = cp[cn];
+	    c2 += c2old >> (mp_bits_per_limb-dif-sh);
 	  }
 	  else dif += mp_bits_per_limb;
 	}
-	/* add lowest part of c when cn=0 */
-	if (cn==0) c2 += cp[cn]>>(mp_bits_per_limb-dif-sh);
 	dif = ((ISNONNEG(b) && rnd_mode==GMP_RNDU) || 
 	       (ISNEG(b) && rnd_mode==GMP_RNDD));
 	/* round towards infinity if dif=1, towards zero otherwise */
