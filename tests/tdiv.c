@@ -1,6 +1,6 @@
 /* Test file for mpfr_div.
 
-Copyright 1999, 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright 1999, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -27,51 +27,48 @@ MA 02111-1307, USA. */
 
 #define check53(n, d, rnd, res) check4(n, d, rnd, 53, res)
 
-/* if Q is not zero, then it is the correct result */
 static void
-check4 (double N, double D, mp_rnd_t rnd_mode, int p, double Q)
+check4 (const char *Ns, const char *Ds, mp_rnd_t rnd_mode, int p, 
+	const char *Qs)
 {
   mpfr_t q, n, d;
-  double Q2;
 
-  mpfr_init2 (q, p);
-  mpfr_init2 (n, p);
-  mpfr_init2 (d, p);
-  mpfr_set_d(n, N, rnd_mode);
-  mpfr_set_d(d, D, rnd_mode);
+  mpfr_inits2 (p, q, n, d, NULL);
+  mpfr_set_str1 (n, Ns);
+  mpfr_set_str1 (d, Ds);
   mpfr_div(q, n, d, rnd_mode);
-  Q2 = mpfr_get_d1 (q);
-  if (p == 53 && Q != Q2 && !(Isnan(Q) && Isnan(Q2)))
+  if (mpfr_cmp_str (q, Qs, ((p==53) ? 10 : 2), GMP_RNDN) )
     {
-      printf ("mpfr_div failed for n=%1.20e, d=%1.20e, rnd_mode=%s\n",
-              N, D, mpfr_print_rnd_mode (rnd_mode));
-      printf ("correct quotient is %1.20e, mpfr_div gives %1.20e (%d ulp)\n",
-              Q, Q2, ulp (Q2, Q));
+      printf ("mpfr_div failed for n=%s, d=%s, p=%d, rnd_mode=%s\n",
+              Ns, Ds, p, mpfr_print_rnd_mode (rnd_mode));
+      printf ("got      ");mpfr_print_binary(q);
+      mpfr_set_str (q, Qs, ((p==53) ? 10 : 2), GMP_RNDN);
+      printf("\nexpected "); mpfr_print_binary(q);
+      putchar('\n');
       exit (1);
     }
-  mpfr_clear (q);
-  mpfr_clear (n);
-  mpfr_clear (d);
+  mpfr_clears (q, n, d, NULL);
 }
 
 static void
-check24 (float N, float D, mp_rnd_t rnd_mode, float Q)
+check24 (const char *Ns, const char *Ds, mp_rnd_t rnd_mode, const char *Qs)
 {
-  mpfr_t q, n, d; float Q2;
+  mpfr_t q, n, d;
 
-  mpfr_init2(q, 24); mpfr_init2(n, 24); mpfr_init2(d, 24);
-  mpfr_set_d(n, N, rnd_mode);
-  mpfr_set_d(d, D, rnd_mode);
+  mpfr_inits2(24, q, n, d, NULL);
+
+  mpfr_set_str1 (n, Ns);
+  mpfr_set_str1 (d, Ds);
   mpfr_div(q, n, d, rnd_mode);
-  Q2 = mpfr_get_d1 (q);
-  if (Q!=Q2)
+  if (mpfr_cmp_str1 (q, Qs) )
     {
-      printf ("mpfr_div failed for n=%1.10e, d=%1.10e, prec=24, rnd_mode=%s\n",
-             N, D, mpfr_print_rnd_mode(rnd_mode));
-      printf ("expected quotient is %1.10e, got %1.10e\n", Q, Q2);
+      printf ("mpfr_div failed for n=%s, d=%s, prec=24, rnd_mode=%s\n",
+             Ns, Ds, mpfr_print_rnd_mode(rnd_mode));
+      printf ("expected quotient is %s, got ", Qs);
+      mpfr_out_str(stdout,10,0,q, GMP_RNDN); putchar('\n');
       exit (1);
     }
-  mpfr_clear(q); mpfr_clear(n); mpfr_clear(d);
+  mpfr_clears(q,n,d,NULL);
 }
 
 /* the following examples come from the paper "Number-theoretic Test
@@ -79,53 +76,106 @@ check24 (float N, float D, mp_rnd_t rnd_mode, float Q)
 static void
 check_float(void)
 {
-  float b=8388608.0; /* 2^23 */
-
-  check24(b*8388610.0, 8388609.0, GMP_RNDN, 8.388609e6);
-  check24(b*16777215.0, 16777213.0, GMP_RNDN, 8.388609e6);
-  check24(b*8388612.0, 8388611.0, GMP_RNDN, 8.388609e6);
-  check24(b*12582914.0, 12582911.0, GMP_RNDN, 8.38861e6);
+  check24("70368760954880.0", "8388609.0", GMP_RNDN, "8.388609e6");
+  check24("140737479966720.0", "16777213.0", GMP_RNDN, "8.388609e6");
+  check24("70368777732096.0", "8388611.0", GMP_RNDN, "8.388609e6");
+  check24("105553133043712.0", "12582911.0", GMP_RNDN, "8.38861e6");
   /* the exponent for the following example was forgotten in
      the Arith'14 version of Parks' paper */
-  check24 (12582913.0, 12582910.0, GMP_RNDN, 1.000000238);
-  check24 (b * 12582913.0, 12582910.0, GMP_RNDN, 8388610.0);
-  check24(b*16777215.0, 8388609.0, GMP_RNDN, 1.6777213e7);
-  check24(b*8388612.0, 8388609.0, GMP_RNDN, 8.388611e6);
-  check24(b*12582914.0, 8388610.0, GMP_RNDN, 1.2582911e7);
-  check24(b*12582913.0, 8388610.0, GMP_RNDN, 1.258291e7);
+  check24 ("12582913.0", "12582910.0", GMP_RNDN, "1.000000238");
+  check24 ("105553124655104.0", "12582910.0", GMP_RNDN, "8388610.0");
+  check24("140737479966720.0", "8388609.0", GMP_RNDN, "1.6777213e7");
+  check24("70368777732096.0", "8388609.0", GMP_RNDN, "8.388611e6");
+  check24("105553133043712.0", "8388610.0", GMP_RNDN, "1.2582911e7");
+  check24("105553124655104.0", "8388610.0", GMP_RNDN, "1.258291e7");
 
-  check24(b*8388610.0, 8388609.0, GMP_RNDZ, 8.388608e6);
-  check24(b*16777215.0, 16777213.0, GMP_RNDZ, 8.388609e6);
-  check24(b*8388612.0, 8388611.0, GMP_RNDZ, 8.388608e6);
-  check24(b*12582914.0, 12582911.0, GMP_RNDZ, 8.38861e6);
-  check24(12582913.0, 12582910.0, GMP_RNDZ, 1.000000238);
-  check24 (b * 12582913.0, 12582910.0, GMP_RNDZ, 8388610.0);
-  check24(b*16777215.0, 8388609.0, GMP_RNDZ, 1.6777213e7);
-  check24(b*8388612.0, 8388609.0, GMP_RNDZ, 8.38861e6);
-  check24(b*12582914.0, 8388610.0, GMP_RNDZ, 1.2582911e7);
-  check24(b*12582913.0, 8388610.0, GMP_RNDZ, 1.258291e7);
+  check24("70368760954880.0", "8388609.0", GMP_RNDZ, "8.388608e6");
+  check24("140737479966720.0", "16777213.0", GMP_RNDZ, "8.388609e6");
+  check24("70368777732096.0", "8388611.0", GMP_RNDZ, "8.388608e6");
+  check24("105553133043712.0", "12582911.0", GMP_RNDZ, "8.38861e6");
+  check24("12582913.0", "12582910.0", GMP_RNDZ, "1.000000238");
+  check24 ("105553124655104.0", "12582910.0", GMP_RNDZ, "8388610.0");
+  check24("140737479966720.0", "8388609.0", GMP_RNDZ, "1.6777213e7");
+  check24("70368777732096.0", "8388609.0", GMP_RNDZ, "8.38861e6");
+  check24("105553133043712.0", "8388610.0", GMP_RNDZ, "1.2582911e7");
+  check24("105553124655104.0", "8388610.0", GMP_RNDZ, "1.258291e7");
 
-  check24(b*8388610.0, 8388609.0, GMP_RNDU, 8.388609e6);
-  check24(b*16777215.0, 16777213.0, GMP_RNDU, 8.38861e6);
-  check24(b*8388612.0, 8388611.0, GMP_RNDU, 8.388609e6);
-  check24(b*12582914.0, 12582911.0, GMP_RNDU, 8.388611e6);
-  check24(12582913.0, 12582910.0, GMP_RNDU, 1.000000357);
-  check24 (b * 12582913.0, 12582910.0, GMP_RNDU, 8388611.0);
-  check24(b*16777215.0, 8388609.0, GMP_RNDU, 1.6777214e7);
-  check24(b*8388612.0, 8388609.0, GMP_RNDU, 8.388611e6);
-  check24(b*12582914.0, 8388610.0, GMP_RNDU, 1.2582912e7);
-  check24(b*12582913.0, 8388610.0, GMP_RNDU, 1.2582911e7);
+  check24("70368760954880.0", "8388609.0", GMP_RNDU, "8.388609e6");
+  check24("140737479966720.0", "16777213.0", GMP_RNDU, "8.38861e6");
+  check24("70368777732096.0", "8388611.0", GMP_RNDU, "8.388609e6");
+  check24("105553133043712.0", "12582911.0", GMP_RNDU, "8.388611e6");
+  check24("12582913.0", "12582910.0", GMP_RNDU, "1.000000357");
+  check24 ("105553124655104.0", "12582910.0", GMP_RNDU, "8388611.0");
+  check24("140737479966720.0", "8388609.0", GMP_RNDU, "1.6777214e7");
+  check24("70368777732096.0", "8388609.0", GMP_RNDU, "8.388611e6");
+  check24("105553133043712.0", "8388610.0", GMP_RNDU, "1.2582912e7");
+  check24("105553124655104.0", "8388610.0", GMP_RNDU, "1.2582911e7");
 
-  check24(b*8388610.0, 8388609.0, GMP_RNDD, 8.388608e6);
-  check24(b*16777215.0, 16777213.0, GMP_RNDD, 8.388609e6);
-  check24(b*8388612.0, 8388611.0, GMP_RNDD, 8.388608e6);
-  check24(b*12582914.0, 12582911.0, GMP_RNDD, 8.38861e6);
-  check24(12582913.0, 12582910.0, GMP_RNDD, 1.000000238);
-  check24 (b * 12582913.0, 12582910.0, GMP_RNDD, 8388610.0);
-  check24(b*16777215.0, 8388609.0, GMP_RNDD, 1.6777213e7);
-  check24(b*8388612.0, 8388609.0, GMP_RNDD, 8.38861e6);
-  check24(b*12582914.0, 8388610.0, GMP_RNDD, 1.2582911e7);
-  check24(b*12582913.0, 8388610.0, GMP_RNDD, 1.258291e7);
+  check24("70368760954880.0", "8388609.0", GMP_RNDD, "8.388608e6");
+  check24("140737479966720.0", "16777213.0", GMP_RNDD, "8.388609e6");
+  check24("70368777732096.0", "8388611.0", GMP_RNDD, "8.388608e6");
+  check24("105553133043712.0", "12582911.0", GMP_RNDD, "8.38861e6");
+  check24("12582913.0", "12582910.0", GMP_RNDD, "1.000000238");
+  check24 ("105553124655104.0", "12582910.0", GMP_RNDD, "8388610.0");
+  check24("140737479966720.0", "8388609.0", GMP_RNDD, "1.6777213e7");
+  check24("70368777732096.0", "8388609.0", GMP_RNDD, "8.38861e6");
+  check24("105553133043712.0", "8388610.0", GMP_RNDD, "1.2582911e7");
+  check24("105553124655104.0", "8388610.0", GMP_RNDD, "1.258291e7");
+
+}
+
+static void
+check_double(void)
+{
+  check53("0.0", "1.0", GMP_RNDZ, "0.0");
+  check53("-7.4988969224688591e63", "4.8816866450288732e306", GMP_RNDD,
+	  "-1.5361282826510687291e-243");
+  check53("-1.33225773037748601769e+199", "3.63449540676937123913e+79",
+	  GMP_RNDZ, "-3.6655920045905428978e119");
+  check53("9.89438396044940256501e-134", "5.93472984109987421717e-67",GMP_RNDU,
+	  "1.6672003992376663654e-67");
+  check53("9.89438396044940256501e-134", "-5.93472984109987421717e-67",
+	  GMP_RNDU, "-1.6672003992376663654e-67");
+  check53("-4.53063926135729747564e-308", "7.02293374921793516813e-84",
+	  GMP_RNDD, "-6.4512060388748850857e-225");
+  check53("6.25089225176473806123e-01","-2.35527154824420243364e-230",
+	  GMP_RNDD, "-2.6540006635008291192e229");
+  check53("6.52308934689126e15", "-1.62063546601505417497e273", GMP_RNDN,
+	  "-4.0250194961676020848e-258");
+  check53("1.04636807108079349236e-189", "3.72295730823253012954e-292",
+	  GMP_RNDZ, "2.810583051186143125e102");
+  /* problems found by Kevin under HP-PA */
+  check53 ("2.861044553323177e-136", "-1.1120354257068143e+45", GMP_RNDZ,
+           "-2.5727998292003016e-181");
+  check53 ("-4.0559157245809205e-127", "-1.1237723844524865e+77", GMP_RNDN,
+           "3.6091968273068081e-204");
+  check53 ("-1.8177943561493235e-93", "-8.51233984260364e-104", GMP_RNDU,
+           "2.1354814184595821e+10");
+}
+
+static void
+check_64(void)
+{
+  mpfr_t x,y,z;
+
+  mpfr_inits2 (64, x, y, z, NULL);
+
+  mpfr_set_str_binary(x, "1.00100100110110101001010010101111000001011100100101010000000000E54");
+  mpfr_set_str_binary(y, "1.00000000000000000000000000000000000000000000000000000000000000E584");
+  mpfr_div(z, x, y, GMP_RNDU);
+  if (mpfr_cmp_str (z, "0.1001001001101101010010100101011110000010111001001010100000000000E-529", 2, GMP_RNDN))
+    {
+      printf("Error for tdiv for GMP_RNDU and p=64\nx=");
+      mpfr_print_binary(x);
+      printf("\ny="); 
+      mpfr_print_binary(y);
+      printf("\ngot      ");
+      mpfr_print_binary(z);
+      printf("\nexpected 0.1001001001101101010010100101011110000010111001001010100000000000E-529\n");
+      exit(1);
+    }
+
+  mpfr_clears(x, y, z, NULL);
 }
 
 static void
@@ -473,56 +523,24 @@ check_nan (void)
 int
 main (int argc, char *argv[])
 {
-  mpfr_t x, y, z;
-
   tests_start_mpfr ();
 
   check_inexact ();
 
-  mpfr_init2 (x, 64);
-  mpfr_init2 (y, 64);
-  mpfr_init2 (z, 64);
-
-  mpfr_set_str_binary(x, "1.00100100110110101001010010101111000001011100100101010000000000E54");
-  mpfr_set_str_binary(y, "1.00000000000000000000000000000000000000000000000000000000000000E584");
-  mpfr_div(z, x, y, GMP_RNDU);
-
   check_nan ();
   check_lowr();
   check_float(); /* checks single precision */
+  check_double();
   check_convergence();
-  check53(0.0, 1.0, GMP_RNDZ, 0.0);
-  check53(-7.4988969224688591e63, 4.8816866450288732e306, GMP_RNDD,
-	  -1.5361282826510687291e-243);
-  check53(-1.33225773037748601769e+199, 3.63449540676937123913e+79, GMP_RNDZ,
-	  -3.6655920045905428978e119);
-  check4(4.0, 4.503599627370496e15, GMP_RNDZ, 62, 0.0);
-  check4(1.0, 2.10263340267725788209e+187, GMP_RNDU, 65, 0.0);
-  check4(2.44394909079968374564e-150, 2.10263340267725788209e+187, GMP_RNDU,
-	 65, 0.0);
-  check53(9.89438396044940256501e-134, 5.93472984109987421717e-67, GMP_RNDU,
-	  1.6672003992376663654e-67);
-  check53(9.89438396044940256501e-134, -5.93472984109987421717e-67, GMP_RNDU,
-	  -1.6672003992376663654e-67);
-  check53(-4.53063926135729747564e-308, 7.02293374921793516813e-84, GMP_RNDD,
-	  -6.4512060388748850857e-225);
-  check53(6.25089225176473806123e-01, -2.35527154824420243364e-230, GMP_RNDD,
-	  -2.6540006635008291192e229);
-  check53(6.52308934689126e15, -1.62063546601505417497e273, GMP_RNDN,
-	  -4.0250194961676020848e-258);
-  check53(1.04636807108079349236e-189, 3.72295730823253012954e-292, GMP_RNDZ,
-	  2.810583051186143125e102);
-  /* problems found by Kevin under HP-PA */
-  check53 (2.861044553323177e-136, -1.1120354257068143e+45, GMP_RNDZ,
-           -2.5727998292003016e-181);
-  check53 (-4.0559157245809205e-127, -1.1237723844524865e+77, GMP_RNDN,
-           3.6091968273068081e-204);
-  check53 (-1.8177943561493235e-93, -8.51233984260364e-104, GMP_RNDU,
-           2.1354814184595821e+10);
+  check_64();
 
-  mpfr_clear (x);
-  mpfr_clear (y);
-  mpfr_clear (z);
+  check4("4.0","4.503599627370496e15", GMP_RNDZ, 62, 
+   "0.10000000000000000000000000000000000000000000000000000000000000E-49");
+  check4("1.0","2.10263340267725788209e+187", GMP_RNDU, 65, 
+   "0.11010011111001101011111001100111110100000001101001111100111000000E-622");
+  check4("2.44394909079968374564e-150", "2.10263340267725788209e+187",GMP_RNDU,
+	 65, 
+  "0.11010011111001101011111001100111110100000001101001111100111000000E-1119");
 
   tests_end_mpfr ();
   return 0;
