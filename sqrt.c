@@ -19,67 +19,200 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
 #include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
+#include "longlong.h"
 
-void 
-#if __STDC__
-mpfr_sqrt(mpfr_ptr X, mpfr_srcptr a, unsigned char rnd_mode)
-#else
-mpfr_sqrt(X, a, rnd_mode)
-     mpfr_ptr X;
-     mpfr_srcptr a;
-     unsigned char rnd_mode;
-#endif
+/* #define DEBUG */
+
+int
+mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, unsigned char rnd_mode)
 {
-  int p, q, err, i, e, n; mpfr_t t, u; mpfr_ptr x;
+  mp_ptr up, rp, tmp;
+  mp_size_t usize, rrsize;
+  mp_size_t rsize;
+  mp_size_t prec, err;
+  mp_limb_t q_limb;
+  long rw, nw, k; 
+  int exact = 0; 
+  unsigned long cc = 0; 
+  char can_round = 0; 
+  TMP_DECL (marker); TMP_DECL(marker0); 
 
-  /* use Newton's iteration x[n+1] = 1/2*(x[n]+a/x[n]),
-     the error e[n] = x[n]-sqrt(a) satisfies e[n+1] <= e[n]/2/sqrt(a) */
-  if (FLAG_NAN(a) || SIGN(a)<0) { SET_NAN(X); return; }
+  if (FLAG_NAN(u) || SIGN(u) == -1) { SET_NAN(r); return 0; }
+  
+  prec = PREC(r);
 
-  x = (mpfr_ptr) (*_mp_allocate_func) (sizeof(__mpfr_struct));
-  mpfr_init2(x, PREC(X));
-  MPN_COPY(x->_mp_d, X->_mp_d, (PREC(X)-1)/BITS_PER_MP_LIMB + 1); 
-
-  e = EXP(a)/2; if (2*e<EXP(a)) e++;
-  /* now 2^(2*e-2) <= a < 2^(2*e) i.e. 1/4 <= a/2^(2e) < 1 */
-  q = p = PREC(x);
-  for (i=0; i<3; i++)
-    q = p + (int) ceil(log(4.0*ceil(log((double)q)/log(2.0))+2.0)/log(2.0));
-  err = q-p; /* the error is at most 2^err ulp */
-  q = (q/mp_bits_per_limb)*mp_bits_per_limb; /* adjust to entire limb */
-  mpfr_init2(t, q+mp_bits_per_limb); mpfr_init2(u, q+mp_bits_per_limb);
-  do {
-    q += mp_bits_per_limb;
-    if (q>3*p+mp_bits_per_limb) {
-      /* try to detect exact roots */
-      mpfr_round(x, rnd_mode, p);
-      mpfr_mul(t, x, x, rnd_mode);
-      if (mpfr_cmp(t, a)==0) goto youpi; /* exact root */
-      fprintf(stderr, "no convergence in mpfr_sqrt for a=%1.20e, rnd=%d\n",
-	      mpfr_get_d(a), rnd_mode); exit(1);
+  if (!NOTZERO(u))
+    {
+      EXP(r) = 0; 
+      MPN_ZERO(MANT(r), ABSSIZE(r)); 
+      return 1; 
     }
-    mpfr_set_prec(t, q); 
-    mpfr_set_prec(x, q); 
-    mpfr_set_prec(u, q);
-    mpfr_set_ui(x, 1, GMP_RNDU);
-    EXP(x) += e;
-    n = (int) ceil(log((double) q)/log(2.0));
-    for (i=0; i<n; i++) {
-      mpfr_div(t, a, x, GMP_RNDU);
-      mpfr_add(u, x, t, GMP_RNDU);
-      mpfr_div_2exp(x, u, 1, GMP_RNDU);
+
+  up = MANT(u);
+
+#ifdef DEBUG
+      printf("Entering square root : "); 
+      for(k = usize - 1; k >= 0; k--) { printf("%lu ", up[k]); }
+      printf(".\n"); 
+#endif
+
+  /* Compare the mantissas */
+  
+  usize = (PREC(u) - 1)/BITS_PER_MP_LIMB + 1; 
+  rsize = ((PREC(r) + 2 + (EXP(u) & 1))/BITS_PER_MP_LIMB + 1) << 1; 
+  rrsize = (PREC(r) + 2 + (EXP(u) & 1))/BITS_PER_MP_LIMB + 1;
+  /* One extra bit is needed in order to get the square root with enough
+     precision ; take one extra bit for rrsize in order to solve more 
+     easily the problem of rounding to nearest.
+     Need to have 2*rrsize = rsize...
+     Take one extra bit if the exponent of u is odd since we shall have
+     to shift then.
+  */
+
+  TMP_MARK(marker0); 
+  if (EXP(u) & 1) /* Shift u one bit to the right */
+    {
+      if (PREC(u) & (BITS_PER_MP_LIMB - 1))
+	{
+	  up = TMP_ALLOC(usize*BYTES_PER_MP_LIMB);
+	  mpn_rshift(up, u->_mp_d, usize, 1); 
+	}
+      else
+	{
+	  up = TMP_ALLOC((usize + 1)*BYTES_PER_MP_LIMB);
+	  if (mpn_rshift(up + 1, u->_mp_d, ABSSIZE(u), 1))
+	    up [0] = ((mp_limb_t) 1) << (BITS_PER_MP_LIMB - 1); 
+	  else up[0] = 0; 
+	  usize++; 
+	}
     }
-  } while (mpfr_can_round(x, q-err, GMP_RNDU, rnd_mode, p)==0);
-  mpfr_round(x, rnd_mode, p);
- youpi:
-  mpfr_clear(t); mpfr_clear(u);
-  mpfr_set(X, x, rnd_mode);
-  mpfr_clear(x); (*_mp_free_func)(x, sizeof(__mpfr_struct)); 
+
+  EXP(r) = ((EXP(u) + (EXP(u) & 1)) / 2) ;  
+  
+  do
+    {
+      TMP_MARK (marker);
+
+      err = rsize*BITS_PER_MP_LIMB; 
+      if (rsize < usize) { err--; }
+      if (err > rrsize * BITS_PER_MP_LIMB) 
+	{ err = rrsize * BITS_PER_MP_LIMB; }
+      
+      tmp = (mp_ptr) TMP_ALLOC (rsize * BYTES_PER_MP_LIMB);  
+      rp = (mp_ptr) TMP_ALLOC (rrsize * BYTES_PER_MP_LIMB); 
+
+      if (usize >= rsize) { 
+	MPN_COPY (tmp, up + usize - rsize, rsize);
+      }
+      else { 
+	MPN_COPY (tmp + rsize - usize, up, usize);
+	MPN_ZERO (tmp, rsize - usize); 
+      }
+
+      /* Do the real job */
+ 
+#ifdef DEBUG
+      printf("Taking the sqrt of : "); 
+      for(k = rsize - 1; k >= 0; k--) { printf("%lu ", tmp[k]); }
+      printf(".\n"); 
+#endif
+
+      q_limb = mpn_sqrtrem (rp, NULL, tmp, rsize);
+
+#ifdef DEBUG
+      printf("The result is : \n"); 
+      printf("sqrt : "); 
+      for(k = rrsize - 1; k >= 0; k--) { printf("%lu ", rp[k]); }
+      printf("(q_limb = %lu)\n", q_limb); 
+#endif
+      
+      can_round = (mpfr_can_round_raw(rp, rrsize, 1, err, 
+				      GMP_RNDZ, rnd_mode, PREC(r))); 
+
+      /* If we used all the limbs of both the dividend and the divisor, 
+	 then we have the correct RNDZ rounding */
+
+      if (!can_round && (rsize < 2*usize)) 
+	{ 
+#ifdef DEBUG
+	  printf("Increasing the precision.\n"); 
+#endif
+	  TMP_FREE(marker); 
+	}
+    }
+  while (!can_round && (rsize < 2*usize) 
+	 && (rsize += 2) && (rrsize ++)); 
+
+
+  /* This part may be deplaced upper to avoid a few mpfr_can_round_raw */
+  /* when the square root is exact. It is however very unprobable that */
+  /* it would improve the behaviour of the present code on average.    */
+
+  if (!q_limb) /* possibly exact */
+    {
+      /* if we have taken into account the whole of up */
+      for (k = usize - rsize - 1; k >= 0; k ++)
+	if (up[k]) break; 
+      
+      if (k < 0) { exact = 1; goto fin; }
+    }
+
+  if (can_round) 
+    {
+      cc = mpfr_round_raw(rp, rp, err, 0, PREC(r), rnd_mode);  
+      rrsize = (PREC(r) - 1)/BITS_PER_MP_LIMB + 1; 
+    }
+  else
+    /* Use the return value of sqrtrem to decide of the rounding         */
+    /* Note that at this point the sqrt has been computed                */
+    /* EXACTLY. If rounding = GMP_RNDZ, do nothing [comes from           */
+    /* the fact that the exact square root can end with a bunch of ones, */
+    /* and in that case we indeed cannot round if we do not know that    */
+    /* the computation was exact.                                        */
+    switch (rnd_mode)
+      {
+      case GMP_RNDZ : 
+      case GMP_RNDD : break; 
+
+      case GMP_RNDN : 
+	/* Not in the situation ...0 111111 */
+	rw = (PREC(r) + 1) & (BITS_PER_MP_LIMB - 1);
+	if (rw) { rw = BITS_PER_MP_LIMB - rw; nw = 0; } else nw = 1; 
+	if ((rp[nw] >> rw) & 1 &&                     /* Not 0111111111 */
+	    (q_limb ||                                /* Nonzero remainder */
+	    (rw ? (rp[nw] >> (rw + 1)) & 1 : 
+	     (rp[nw] >> (BITS_PER_MP_LIMB - 1)) & 1))) /* or even rounding */ 
+	  cc = mpn_add_1(rp + nw, rp + nw, rrsize, ((mp_limb_t)1) << rw); 
+	break;
+ 
+      case GMP_RNDU : 
+	if (q_limb)
+	  cc = mpn_add_1(rp, rp, rrsize, 1 << (BITS_PER_MP_LIMB - 
+					       (PREC(r) & 
+						(BITS_PER_MP_LIMB - 1))));
+      }
+
+  if (cc) {
+    mpn_rshift(rp, rp, rrsize, 1);
+    rp[rrsize-1] |= (mp_limb_t) 1 << (BITS_PER_MP_LIMB-1);
+    r->_mp_exp++; 
+  }
+
+ fin:
+  rsize = rrsize; 
+  rrsize = (PREC(r) - 1)/BITS_PER_MP_LIMB + 1;  
+  MPN_COPY(r->_mp_d, rp + rsize - rrsize, rrsize); 
+
+  if (PREC(r) & (BITS_PER_MP_LIMB - 1))
+    MANT(r) [0] &= ~(((mp_limb_t)1 << (BITS_PER_MP_LIMB - 
+				   (PREC(r) & (BITS_PER_MP_LIMB - 1)))) - 1) ; 
+  
+  TMP_FREE(marker0); TMP_FREE (marker);
+  return exact; 
 }
-
-
