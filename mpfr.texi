@@ -769,7 +769,8 @@ to a @code{mpfr} floating-point number.
 @deftypefun int mpfr_set_str (mpfr_t @var{x}, char *@var{s}, int @var{base}, mp_rnd_t @var{rnd})
 Set @var{x} to the value of the string @var{s} in base @var{base} (between
 2 and 36), rounded in direction @var{rnd} to the precision of @var{x}.
-The exponent is read in decimal.
+See the documentation of @code{mpfr_inp_str} for a detailed description 
+of the valid string formats.
 This function returns @minus{}1 if an internal overflow occurred (for
 instance, because the exponent is too large), or if the input is incorrect.
 Otherwise it returns the number of characters read in @var{s}.
@@ -1288,14 +1289,8 @@ read float in @var{rop}.  The string is of the form @samp{M@@N} or, if the
 base is 10 or less, alternatively @samp{MeN} or @samp{MEN}.
 @samp{M} is the mantissa and
 @samp{N} is the exponent.  The mantissa is always in the specified base.  The
-exponent is 
-@c either in the specified base or, if @var{base} is negative, 
-in decimal.
-
+exponent is read in decimal.
 The argument @var{base} may be in the range 2 to 36.
-@c , or @minus{}36 to
-@c @minus{}2.  Negative values are used to specify that the exponent is in
-@c decimal.
 
 Unlike the corresponding @code{mpz} function, the base will not be determined
 from the leading characters of the string if @var{base} is 0.  This is so that
