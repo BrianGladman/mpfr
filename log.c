@@ -46,9 +46,9 @@ void mpfr_log(mpfr_ptr r, mpfr_srcptr a, unsigned char rnd_mode) {
   ref=mpfr_get_d(a)-1.0;
   if (ref<0)
     ref=-ref;
-  err=(int) ceil(log((double) q*log(2.0)/(2.0*ref)))+1;
+  err=(int) ceil(log(((double) q)*log(2.0)/(2*ref)))+1;
   if (err <0)
-    err=0;
+    err=1;
 
   /* The exactness depends on err */
   p=q+11+err;
@@ -58,13 +58,7 @@ void mpfr_log(mpfr_ptr r, mpfr_srcptr a, unsigned char rnd_mode) {
   while (bool==1) {
 
     /* Calculus of m (depends on p) */
-    x=mpfr_get_d(a);
-    ref=exp(((double) p) *log(2)/2);
-    m=0;
-    while (x<=ref) {
-      m++;
-      x*=2;
-    }
+    m=(int) ceil(((double) p)/2.0) -EXP(a)+1;
     
     /* All the mpfr_t needed have a precision of p */
     mpfr_init2(cst,p);
@@ -88,13 +82,13 @@ void mpfr_log(mpfr_ptr r, mpfr_srcptr a, unsigned char rnd_mode) {
     mpfr_mul(tmp1,cst,mm,GMP_RNDN);       /* I compute m*log(2) */
     mpfr_sub(cst,tmp2,tmp1,GMP_RNDN);     /* I compute log(a) */ 
  
-    /* printf("avant arrondi :\n");
-       mpfr_out_str(stdout,10,0,cst,GMP_RNDN);printf("\n");*/
+     printf("avant arrondi : ( %i bits faux)\n",7+err);
+     mpfr_print_raw(cst);printf("\n"); 
     
 
     /* If we can round the result, we set it and go out of the loop */
 
-    if(mpfr_can_round(cst,p-3-err,GMP_RNDN,rnd_mode,q)==1) {
+    if(mpfr_can_round(cst,p-7-err,GMP_RNDN,rnd_mode,q)==1) {
       mpfr_set(r,cst,rnd_mode);
       bool=0;
     }
