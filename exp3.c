@@ -25,21 +25,11 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-/* #define DEBUG */
-
-int mpfr_exp_rational _PROTO ((mpfr_ptr, mpz_srcptr, int, int));
+static int mpfr_exp_rational _PROTO ((mpfr_ptr, mpz_srcptr, int, int));
 int mpfr_exp3 _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 
-int
-#if __STDC__
+static int
 mpfr_exp_rational (mpfr_ptr y, mpz_srcptr p, int r, int m)
-#else
-mpfr_exp_rational (y, p, r, m)
-     mpfr_ptr y;
-     mpz_srcptr p;
-     int r;
-     int m;
-#endif
 {
   int n,i,k,j,l;
   mpz_t* P,*S;
@@ -154,8 +144,8 @@ mpfr_exp3 (y, x, rnd_mode)
   int iter;
   int logn, inexact = 0;
 
-  /* Decomposer x */
-  /* on commence par ecrire x = 1.xxxxxxxxxxxxx
+  /* decompose x */
+  /* we first write x = 1.xxxxxxxxxxxxx
      ----- k bits -- */
   prec_x = _mpfr_ceil_log2 ((double) (MPFR_PREC(x)) / BITS_PER_MP_LIMB);
   if (prec_x < 0) prec_x = 0;
@@ -164,7 +154,7 @@ mpfr_exp3 (y, x, rnd_mode)
   ttt = MPFR_EXP(x);
   mpfr_init2(x_copy,MPFR_PREC(x));
   mpfr_set(x_copy,x,GMP_RNDD);
-  /* on fait le shift pour que le nombre soit inferieur a 1 */
+  /* we shift to get a number less than 1 */
   if (ttt > 0) 
     {
       shift_x = ttt;
@@ -185,28 +175,18 @@ mpfr_exp3 (y, x, rnd_mode)
     if (k <= prec_x) iter = k; else iter= prec_x;
     for(i = 0; i <= iter; i++){
       mpfr_extract (uk, x_copy, i);
-#ifdef DEBUG
-	mpz_out_str(stderr,2, uk);  
-	fprintf(stderr, "---\n");
-	fprintf(stderr, "---%d\n", twopoweri - ttt);
-#endif 
 	if (i)
 	    mpfr_exp_rational (t, uk, twopoweri - ttt, k  - i + 1);
 	else
 	  {
-	    /* cas particulier : on est oblige de faire les calculs avec x/2^. 
-	       puis elever au carre (plus rapide) */    
+	    /* particular case: we have to compute with x/2^., then
+               do squarings (this is faster) */    
 	      mpfr_exp_rational (t, uk, shift + twopoweri - ttt, k+1);
 	    for (loop= 0 ; loop < shift; loop++)
 	      mpfr_mul(t,t,t,GMP_RNDD);
 
 	  }
 	mpfr_mul(tmp,tmp,t,GMP_RNDD); 
-#ifdef DEBUG
-	fprintf(stderr, "fin\n");
-	mpfr_out_str(stderr, 2, MPFR_PREC(y), t, GMP_RNDD);
-	fprintf(stderr, "\n ii --- ii \n");
-#endif
 	twopoweri <<= 1;
     }
       mpfr_clear (t);
