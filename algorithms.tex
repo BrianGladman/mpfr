@@ -430,7 +430,7 @@ $t$ is at most $3 \cdot 2^{-m}$, that on $u$ is at most $3 \cdot 2^{-m} +
 since $|t|, |u| < 1$, so that on $s$ is at most ${\rm error}(\sqrt{u})
  + \frac{1}{2} \ulp(s) \le 2^{-m} (1/2 + \frac{7}{4 \sqrt{u}})$.
 (By Rolle's theorem,
-$|\sqrt{u} - \sqrt{u'} \le \frac{1}{2 \sqrt{v}} |u-u'|$ for
+$|\sqrt{u} - \sqrt{u'}| \le \frac{1}{2 \sqrt{v}} |u-u'|$ for
 $v \in [u, u']$.)
 % |s'-s| <= ulp(s) + |sqrt(u)-sqrt(u')| <= ulp(s) + (u-u')/(2*sqrt(v))
 % for v in [u,u']
@@ -671,6 +671,80 @@ error(w)& \leq & c_w \ulp(w) + 2.k_u  \ulp(w)+ c_u.c_v.\frac{k_v u}{vv} \ulp(v)\
 & \leq & [c_w  + 2.k_u+ 2.c_u.c_v.k_v].\ulp(w) \U{R8}\\\nonumber
 &&\\\nonumber
 \textnormal{Note:}&&\textnormal{If}\;\; w=N(\frac{u}{v}) \;\;\textnormal{Then}\;\; c_w =\frac{1}{2} \;\;\textnormal{else}\;\; c_w =1\\\nonumber\end{eqnarray}
+
+\subsection{Generic error of square root}\label{generic:sqrt}
+
+
+We want to compute the generic error of the square root.
+
+\begin{eqnarray}\nonumber
+u&=&o(x) \\\nonumber
+v&=&o(\sqrt{u}) \\\nonumber
+&&\\\nonumber
+\textnormal{Note:}&& error(u) = k_u \, \ulp(u)\\\nonumber
+\end{eqnarray}
+
+
+\begin{eqnarray}\nonumber
+error(v)& = &|v - \sqrt{x}| \\\nonumber
+& \leq &|v - \sqrt{u}| +|\sqrt{u} - \sqrt{x}| \\\nonumber
+& \leq & c_v \ulp(v) + \frac{1}{\sqrt{u} + \sqrt{x}}|u-x| \\\nonumber
+& \leq & c_v \ulp(v) + \frac{1}{\sqrt{u} + \sqrt{x}} k_u \ulp(u) \\\nonumber
+\end{eqnarray}
+
+
+
+\begin{eqnarray}\nonumber
+\textnormal{Note:}&& u.c_u^- \leq x \;\; \U{R9}\\\nonumber
+ && \sqrt{u.c_u^-} \leq \sqrt{x} \\\nonumber 
+ && \sqrt{u}.(1+\sqrt{c_u^-}) \leq \sqrt{x}+\sqrt{u} \\\nonumber 
+ && \frac{1}{\sqrt{x}+\sqrt{u}} \leq
+    \frac{1}{\sqrt{u}.(1+\sqrt{c_u^-})} 
+\end{eqnarray}
+
+\begin{eqnarray}\nonumber
+error(v)& \leq & c_v \ulp(v) + 
+                 \frac{1}{\sqrt{u}.(1+\sqrt{c_u^-})}  k_u \ulp(u) \\\nonumber 
+& \leq & c_v \ulp(v) + \frac{2}{1+\sqrt{c_u^-}}  
+       k_u \ulp(\sqrt{u}) \;\; \U{R4}\\\nonumber 
+& \leq & (c_v + \frac{2.k_u}{1+\sqrt{c_u^-}})  \ulp(v) \;\; \U{R8}\\\nonumber 
+\end{eqnarray}
+
+\subsection{Generic error of the logarithm }\label{generic:log}
+
+
+We want to compute the generic error of the logarithm.
+
+\begin{eqnarray}\nonumber
+u&=&o(x) \\\nonumber
+v&=&o(\log{u}) \\\nonumber
+&&\\\nonumber
+\textnormal{Note:}&& error(u) = k_u \, \ulp(u)\\\nonumber
+\end{eqnarray}
+
+\begin{eqnarray}\nonumber
+error(v)& = &|v - \log{x}| \\\nonumber
+& \leq &|v - \log{u}| +|\log{u} - \log{x}| \\\nonumber
+& \leq & c_v \ulp(v) + \log{|\frac{x}{u}|} \\\nonumber
+& \leq & c_v \ulp(v) + \frac{|x-u|}{u} \\\nonumber
+& \leq & c_v \ulp(v) + \frac{k_u \, \ulp(u)}{u}\\\nonumber
+& \leq & c_v \ulp(v) + k_u \, \ulp(1)\;\; \U{R7}\\\nonumber
+\end{eqnarray}
+
+
+\begin{eqnarray}\nonumber
+\textnormal{Note:}&& \ulp(1)=2^{1-p}, \n{ and } \ulp(v)=2^{e_v-p} \n{ with } p \n{ the accuracy} \\\nonumber
+&& \ulp(1)= 2^{1-e_v+e_v-p}=2^{1-e_v} \ulp(v)
+\end{eqnarray}
+
+
+\begin{eqnarray}\nonumber
+error(v)& \leq & c_v \ulp(v) + k_u 2^{1-e_v} \ulp(v)\\\nonumber
+& \leq & (c_v + k_u 2^{1-e_v} )\ulp(v)\\\nonumber
+\end{eqnarray}
+
+
+
 
 
 \subsection{The hyperbolic cosine function}
@@ -1017,10 +1091,10 @@ The {\tt mpfr\_hypot} ($\textnormal{hypot}(x,y)$) function implements the euclid
 The algorithm used for the calculation of the euclidean distance is as follows:
 
 \begin{eqnarray}\nonumber
-u&\leftarrow&o(x^2)\\\label{hypotalgo1}
-v&\leftarrow&o({y}^{2})\\\label{hypotalgo2}
-w&\leftarrow&o(u+v)\\\label{hypotalgo3}
-s&\leftarrow&\sqrt{w}\\\label{hypotalgo4}
+u&\leftarrow&o(x^2)\\\nonumber
+v&\leftarrow&o({y}^{2})\\\nonumber
+w&\leftarrow&o(u+v)\\\nonumber
+s&\leftarrow&o(\sqrt{w})
 \end{eqnarray}
 
 Now, we have to bound the rounding error for each step of this
@@ -1073,8 +1147,8 @@ $v \leftarrow o({y}^{2}) $
 ${\textnormal{error}}(w)$
 
 
-$w \leftarrow o(u+v) $\\
-$-\infty \;\; (\bullet)$
+$w \leftarrow \minf(u+v) $\\
+$(\bullet)$
 \end{minipage} &
 \begin{minipage}{7.8cm}
 
@@ -1099,8 +1173,8 @@ With $v \leq w$ and $u \leq w$
 \begin{minipage}{2.5cm}
 ${\textnormal{error}}(s)$
 
-$s \leftarrow o(\sqrt{w}) $\\
-$+\infty \;\; (\bullet\bullet)$
+$s \leftarrow o(\sqrt{w}) $
+
 \end{minipage} &
 \begin{minipage}{7.5cm}
 
@@ -1110,12 +1184,8 @@ $+\infty \;\; (\bullet\bullet)$
 
 \begin{eqnarray}\nonumber
   &&|s-(\sqrt{x^2+y^2})| \\\nonumber
-  &       \leq&  |s - \sqrt{w}|+|\sqrt{w} - \sqrt{x^2+y^2}|\\\nonumber
-  &       \leq& \ulp(s) + \frac{1}{2 \cdot \sqrt{w}} |w - (x^2+y^2)|\;\;(\star)\\\nonumber
-  &       \leq&  \ulp(s) +  \frac{3}{2 \cdot \sqrt{w}} \ulp(w)\;\;(\star\star)\\\nonumber
-  &       \leq&  \ulp(s) +  \ulp(3 \cdot \sqrt{w})\;\;(\star\star)\\\nonumber
-  &       \leq&  \ulp(s) +  3 \cdot \ulp(\cdot \sqrt{w})\;\;(\star\star)\\\nonumber
-  &       \leq&  4 \cdot \ulp(s) \;\;(\star\star\star)\\\nonumber
+  &\leq& (1+\frac{2 \times  3}{1+\sqrt{1}}) \ulp(s) \;\; (\star)\\\nonumber
+   &\leq& 4 \ulp(s) 
 \end{eqnarray}
 
 
@@ -1126,26 +1196,12 @@ $+\infty \;\; (\bullet\bullet)$
 \begin{minipage}{6cm}
 
 $(\star)$
+see subsection \ref{generic:sqrt}
 
-With Rolle's Theorem
 
-\begin{equation}
-|\sqrt{a} - \sqrt{b}| \leq \frac{1}{2 \cdot \sqrt{c}} |a - b|
-\end{equation}
-with $c \in [a,b]$.
+with $c_w^- = 1$ 
 
-With $w$ rounding to $-\infty\;\; (\bullet)$\\
-For $a=w$ and $b=x^2+y^2$,\\
-we get $w \leq c \leq x^2+y^2$ \\
-and $\frac{1}{\sqrt{c}} \leq \frac{1}{\sqrt{w}}$
-
-$(\star\star)$
-with equation \U{R4}.
-
-$(\star\star\star)$
-
-if $s$ is rounded to $+\infty\;\; (\bullet\bullet)$\\
-then $\sqrt{w} \leq s$, $\ulp(\sqrt{w}) \leq \ulp(s)$.
+for $w \leftarrow \minf(u+v)$ ($\bullet$)
 
 \end{minipage}
 
@@ -1156,8 +1212,83 @@ then $\sqrt{w} \leq s$, $\ulp(\sqrt{w}) \leq \ulp(s)$.
 
 
 That shows the rounding error on the calculation of $\sqrt{x^2+y^2}$ can be
-bound by $4 \;\; \ulp$ on the result. So, to calculate the size of
+bound by $4 \, \ulp$ on the result. So, to calculate the size of
 intermediary variables, we have to add, at least, $\lceil \log_2 4 \rceil=2$ bits the wanted precision.
+
+
+\subsection{The floating multiply-add function}
+
+The {\tt mpfr\_fma} ($\n{fma}(x,y,z)$) function implements the floating multiply-add function  as :
+
+\[
+\textnormal{fma} (x,y,z) = z + x \times y
+\]
+
+The algorithm used for this calculation is as follows:
+
+\begin{eqnarray}\nonumber
+u&\leftarrow&o(x \times y)\\\nonumber
+v&\leftarrow&o(z + u)\\\nonumber
+\end{eqnarray}
+
+Now, we have to bound the rounding error for each step of this
+algorithm.  
+
+
+
+\begin{center}
+\begin{tabular}{l|l |l}
+
+\begin{minipage}{2.5cm}
+
+
+${\textnormal{error}}(u)$
+
+
+$u \leftarrow o(x \times y)$
+
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+\begin{eqnarray}\nonumber
+  |u-(xy)| &\leq& ulp(u)\\\nonumber
+\end{eqnarray}
+
+\end{minipage} &
+\begin{minipage}{6cm}
+{\hspace{7cm}}
+\end{minipage}\\\hline
+\begin{minipage}{2.5cm}
+${\textnormal{error}}(v)$
+
+
+$v \leftarrow o(z+u) $
+
+\end{minipage} &
+\begin{minipage}{7.5cm}
+
+\begin{eqnarray}\nonumber
+  |v-(z+xy)| &\leq& \ulp(v) + |u - xy)|\\\nonumber
+&\leq& (1+2^{e_u-e_v})\ulp(v)\;\;(\star)\\\nonumber
+\end{eqnarray}
+
+
+\end{minipage} &
+\begin{minipage}{6cm}
+($\star$)
+
+see subsection \ref{generic:sous}
+
+
+\end{minipage}
+\end{tabular}
+\end{center}
+
+
+
+That shows the rounding error on the calculation of $\n{fma}(x,y,z)$ can be
+bound by $(1+2^{e_u-e_v}) \ulp$ on the result. So, to calculate the size of
+intermediary variables, we have to add, at least, $\lceil \log_2 (1+2^{e_u-e_v})\rceil$ bits the wanted precision.
 
 \subsection{The hyperbolic tangent function}
 
@@ -1319,7 +1450,7 @@ number of bits need to add to the want accuracy to define intermediary
 variable is :
 
 \[
-N_t=\lceil \log_2(1+2 \times 2+2(1+2^{\exp(v)-\exp(r)})) \rceil
+N_t=\lceil \log_2(7+2^{\exp(v)-\exp(r)+1}) \rceil
 \]
 
 
