@@ -181,6 +181,7 @@ int main()
   srand(getpid());
   for (i=0;i<100000;i++) {
     a = drand();
+    if (a < 0.0) a = -a; /* ensures a is positive */
     check(a, rand() % 4);
   }
 #endif
