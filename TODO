@@ -43,6 +43,7 @@ Miscellaneous:
    Also for pi.c, a pre-calculated compiled-in pi to a few thousand
    digits would be good value I think.  After all, say 10000 bits using
    1250 bytes would still be small compared to the code size!
+   Store pi in round to zero mode (to recover other modes).
 
 - rewrite mpfr_get_d2 to avoid rounding problems, for example on the IA64:
 x=8.94446216651049664713e+94,74 y=-8.69096029476006043478e+78,113 pz=102,rnd=GMP_RNDU
