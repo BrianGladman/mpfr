@@ -154,5 +154,7 @@ main (int argc, char *argv[])
       check (d, r, p);
     }
 
+  fclose (fout);
+
   return 0;
 }
