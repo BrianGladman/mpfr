@@ -234,6 +234,7 @@ mpfr_exp_2 (y, x, rnd_mode)
     exps += mpz_normalize(ss, ss, q);
   }
   mpfr_set_z(s, ss, GMP_RNDN); MPFR_EXP(s) += exps;
+  TMP_FREE(marker); /* don't need ss anymore */
 
   if (n>0) mpfr_mul_2exp(s, s, n, GMP_RNDU);
   else mpfr_div_2exp(s, s, -n, GMP_RNDU);
@@ -264,7 +265,6 @@ mpfr_exp_2 (y, x, rnd_mode)
 
   mpfr_set(y, s, rnd_mode);
 
-  TMP_FREE(marker);
   mpfr_clear(r); mpfr_clear(s); mpfr_clear(t);
   return 1;
 }
