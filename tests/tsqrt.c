@@ -140,6 +140,7 @@ special (void)
   mpfr_t x, z;
   int inexact;
   mp_prec_t p;
+  mp_rnd_t r;
 
   mpfr_init (x);
   mpfr_init (z);
@@ -225,6 +226,54 @@ special (void)
     {
       printf ("Error: wrong inexact flag (1)\n");
       exit (1);
+    }
+
+  /* case prec(result) << prec(input) */
+  mpfr_set_prec (z, 2);
+  for (p = 2; p < 1000; p++)
+    {
+      mpfr_set_prec (x, p);
+      mpfr_set_ui (x, 1, GMP_RNDN);
+      mpfr_nextabove (x);
+      /* 1.0 < x <= 1.5 thus 1 < sqrt(x) <= 1.23 */
+      inexact = mpfr_sqrt (z, x, GMP_RNDN);
+      MPFR_ASSERTN(inexact < 0 && mpfr_cmp_ui (z, 1) == 0);
+      inexact = mpfr_sqrt (z, x, GMP_RNDZ);
+      MPFR_ASSERTN(inexact < 0 && mpfr_cmp_ui (z, 1) == 0);
+      inexact = mpfr_sqrt (z, x, GMP_RNDU);
+      MPFR_ASSERTN(inexact > 0 && mpfr_cmp_ui_2exp (z, 3, -1) == 0);
+      inexact = mpfr_sqrt (z, x, GMP_RNDD);
+      MPFR_ASSERTN(inexact < 0 && mpfr_cmp_ui (z, 1) == 0);
+    }
+
+  /* corner case rw = 0 in rounding to nearest */
+  mpfr_set_prec (z, mp_bits_per_limb - 1);
+  for (p = 2 * mp_bits_per_limb - 1; p <= 1000; p++)
+    {
+      mpfr_set_prec (x, p);
+      mpfr_set_ui (x, 1, GMP_RNDN);
+      mpfr_set_exp (x, mp_bits_per_limb);
+      mpfr_add_ui (x, x, 1, GMP_RNDN);
+      /* now x = 2^(mp_bits_per_limb - 1) + 1 (mp_bits_per_limb bits) */
+      MPFR_ASSERTN(mpfr_mul (x, x, x, GMP_RNDN) == 0); /* exact */
+      inexact = mpfr_sqrt (z, x, GMP_RNDN);
+      /* even rule: z should be 2^(mp_bits_per_limb - 1) */
+      MPFR_ASSERTN(inexact < 0 && 
+                   mpfr_cmp_ui_2exp (z, 1, mp_bits_per_limb - 1) == 0);
+      mpfr_nextbelow (x);
+      /* now x is just below [2^(mp_bits_per_limb - 1) + 1]^2 */
+      inexact = mpfr_sqrt (z, x, GMP_RNDN);
+      MPFR_ASSERTN(inexact < 0 &&
+                   mpfr_cmp_ui_2exp (z, 1, mp_bits_per_limb - 1) == 0);
+      mpfr_nextabove (x);
+      mpfr_nextabove (x);
+      /* now x is just above [2^(mp_bits_per_limb - 1) + 1]^2 */
+      inexact = mpfr_sqrt (z, x, GMP_RNDN);
+      if (inexact <= 0 || mpfr_cmp_ui_2exp (z, 1, mp_bits_per_limb - 1) == 0)
+        {
+          printf ("Error in corner case for p=%u\n", p);
+          exit (1);
+        }
     }
 
   mpfr_clear (x);

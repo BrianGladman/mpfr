@@ -905,6 +905,8 @@ direction @var{rnd}.
 @deftypefunx int mpfr_div_z (mpfr_t @var{rop}, mpfr_t @var{op1}, mpz_t @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_div_q (mpfr_t @var{rop}, mpfr_t @var{op1}, mpq_t @var{op2}, mp_rnd_t @var{rnd})
 Set @var{rop} to @math{@var{op1}/@var{op2}} rounded in the direction @var{rnd}.
+When a result is zero, its sign is the product of the signs of the operands
+(for types having no signed zero, it is considered positive).
 @end deftypefun
 
 @deftypefun int mpfr_sqrt (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
@@ -1574,7 +1576,7 @@ number.
 @deftypefun int mpfr_set_exp (mpfr_t @var{x}, mp_exp_t @var{e})
 Set the exponent of @var{x} if @var{e} is in the current exponent range,
 and return 0 (even if @var{x} is not a non-zero ordinary number);
-otherwise, return 1.
+otherwise, return a non-zero value.
 @end deftypefun
 
 @deftypefun void mpfr_set_str_binary (mpfr_t @var{x}, const char *@var{s})

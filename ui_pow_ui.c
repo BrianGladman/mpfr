@@ -55,8 +55,8 @@ mpfr_ui_pow_ui (mpfr_ptr x, unsigned long int y, unsigned long int n,
       mpfr_clear_flags ();
       inexact = mpfr_set_ui (res, y, GMP_RNDU);
       err = 1;
-      /* now 2^(i-1) <= n < 2^i */
-      for (i-=2; i>=0; i--)
+      /* now 2^(i-1) <= n < 2^i: i=1+floor(log2(n)) */
+      for (i -= 2; i >= 0; i--)
 	{
 	  if (mpfr_mul (res, res, res, GMP_RNDU))
 	    inexact = 1;
@@ -65,9 +65,10 @@ mpfr_ui_pow_ui (mpfr_ptr x, unsigned long int y, unsigned long int n,
 	    if (mpfr_mul_ui (res, res, y, GMP_RNDU))
 	      inexact = 1;
 	}
+      /* since the loop is executed floor(log2(n)) times,
+         we have err = 1+floor(log2(n)).
+         Since prec >= MPFR_PREC(x) + 4 + floor(log2(n)), prec > err */
       err = prec - err;
-      if (err < 0)
-	err = 0;
     }
   while (inexact && !mpfr_can_round (res, err, GMP_RNDN, GMP_RNDZ,
                                      MPFR_PREC(x) + (rnd == GMP_RNDN)));

@@ -36,7 +36,33 @@ main (int argc, char *argv[])
   tests_start_mpfr ();
   mpfr_test_init ();
 
-  mpfr_init2 (x, 2);
+  mpfr_init (x);
+
+  d = 0.0;
+  mpfr_set_d (x, d, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_POS(x));
+  mpfr_set_d (x, -d, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_NEG(x));
+
+  mpfr_set_nan (x);
+  d = mpfr_get_d (x, GMP_RNDN);
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_set_d (x, d, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_nan_p (x));
+
+  mpfr_set_inf (x, 1);
+  d = mpfr_get_d (x, GMP_RNDN);
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_set_d (x, d, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
+
+  mpfr_set_inf (x, -1);
+  d = mpfr_get_d (x, GMP_RNDN);
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_set_d (x, d, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) < 0);
+
+  mpfr_set_prec (x, 2);
 
   /* checks that denormalized are not flushed to zero */
   d = DBL_MIN; /* 2^(-1022) */

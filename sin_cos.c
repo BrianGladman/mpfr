@@ -36,15 +36,14 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	  MPFR_SET_NAN(z);
 	  MPFR_RET_NAN;
 	}
-      else if (MPFR_IS_ZERO(x))
+      else /* x is zero */
 	{
+          MPFR_ASSERTD(MPFR_IS_ZERO(x));
 	  MPFR_SET_ZERO(y);
 	  MPFR_SET_SAME_SIGN(y, x);
 	  mpfr_set_ui (z, 1, GMP_RNDN);
 	  MPFR_RET(0);
 	}
-      else
-	MPFR_ASSERTN(0);
     }
   /* MPFR_CLEAR_FLAGS is useless since we use mpfr_set to set y and z */
 

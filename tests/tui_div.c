@@ -134,6 +134,27 @@ check_nan (void)
   MPFR_ASSERTN (mpfr_ui_div (q, 0L, d, GMP_RNDZ) == 0); /* exact */
   MPFR_ASSERTN (mpfr_nan_p (q));
 
+  /* 1/+0 = +inf */
+  mpfr_set_ui (d, 0L, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_ui_div (q, 1L, d, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (mpfr_inf_p (q) && mpfr_sgn (q) > 0);
+
+  /* 1/-0 = -inf */
+  mpfr_set_ui (d, 0L, GMP_RNDN);
+  mpfr_neg (d, d, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_ui_div (q, 1L, d, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (mpfr_inf_p (q) && mpfr_sgn (q) < 0);
+
+  /* 0/1 = +0 */
+  mpfr_set_ui (d, 1L, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_ui_div (q, 0L, d, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (mpfr_cmp_ui (q, 0) == 0 && MPFR_IS_POS (q));
+
+  /* 0/-1 = -0 */
+  mpfr_set_si (d, -1, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_ui_div (q, 0L, d, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (mpfr_cmp_ui (q, 0) == 0 && MPFR_IS_NEG (q));
+
   mpfr_clear (d);
   mpfr_clear (q);
 }

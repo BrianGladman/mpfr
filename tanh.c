@@ -51,15 +51,13 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
 	      return mpfr_set_si(y,-1,rnd_mode); /* tanh(-inf) = -1 */
 	  }
 	/* tanh(0) = 0 */
-	else if (MPFR_IS_ZERO(xt))
-	  {              
+	else /* xt is zero */
+	  {
+            MPFR_ASSERTD(MPFR_IS_ZERO(xt));
 	    MPFR_SET_ZERO(y);
 	    MPFR_SET_SAME_SIGN(y,xt);
 	    MPFR_RET(0);
 	  }
-	/* Should never reach this point */
-	else
-	  MPFR_ASSERTN(0);
       }
 
     mpfr_init2(x,Nxt);

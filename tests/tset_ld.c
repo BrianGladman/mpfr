@@ -1,6 +1,6 @@
 /* Test file for mpfr_set_ld and mpfr_get_ld.
 
-Copyright 2002, 2003 Free Software Foundation, Inc.
+Copyright 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -59,12 +59,16 @@ check_set_get (long double d, mpfr_t x)
 {
   mp_rnd_t r;
   long double e;
+  int inex;
 
-  for (r=0; r<4; r++)
+  for (r = 0; r < 4; r++)
     {
-      if (mpfr_set_ld (x, d, r))
+      if (inex = mpfr_set_ld (x, d, r))
         {
           printf ("Error: mpfr_set_ld should be exact\n");
+          printf ("d=%1.30Le inex=%d\n", d, inex);
+          printf ("emin=%ld emax=%ld\n", mpfr_get_emin (), mpfr_get_emax ());
+          mpfr_dump (x);
           exit (1);
         }
       e = mpfr_get_ld (x, r);
@@ -88,6 +92,7 @@ main (int argc, char *argv[])
   long double d, e;
   mpfr_t x;
   int i;
+  mp_exp_t emax;
 
   check_gcc33_bug ();
 
@@ -148,7 +153,7 @@ main (int argc, char *argv[])
 
   /* checks that 2^i, 2^i+1 and 2^i-1 are correctly converted */
   d = 1.0;
-  for (i=1; i<=113; i++)
+  for (i = 1; i <= 113; i++)
     {
       d = 2.0 * d; /* d = 2^i */
       check_set_get (d, x);
@@ -156,12 +161,24 @@ main (int argc, char *argv[])
       check_set_get (d - 1.0, x);
     }
 
-  for (i=0; i<10000; i++)
+  for (i = 0; i < 10000; i++)
     {
       mpfr_random (x);
       d = mpfr_get_ld (x, GMP_RNDN);
       check_set_get (d, x);
     }
+
+  /* check with reduced emax to exercise overflow */
+  emax = mpfr_get_emax ();
+  mpfr_set_prec (x, 2);
+  mpfr_set_emax (1);
+  mpfr_set_ld (x, (long double) 2.0, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
+  for (d = (long double) 2.0, i = 0; i < 13; i++, d *= d);
+  /* now d = 2^8192 */
+  mpfr_set_ld (x, d, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
+  mpfr_set_emax (emax);
 
   mpfr_clear (x);
 

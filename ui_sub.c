@@ -43,12 +43,9 @@ mpfr_ui_sub (mpfr_ptr y, unsigned long int u, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	  MPFR_SET_OPPOSITE_SIGN(y,x);
 	  MPFR_RET(0); /* +/-infinity is exact */
 	}
-      else if (MPFR_IS_ZERO(x))
+      else /* x is zero */
 	/* u - 0 = u */
 	return mpfr_set_ui(y, u, rnd_mode);
-      /* Should never reach this code */
-      else
-	MPFR_RET_NEVER_GO_HERE();
     }
   else if (u)
     {

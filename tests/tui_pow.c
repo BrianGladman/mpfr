@@ -1,6 +1,6 @@
-/* Test file for mpfr_ui_pow.
+/* Test file for mpfr_ui_pow and mpfr_ui_pow_ui.
 
-Copyright 2001, 2002, 2003 Free Software Foundation.
+Copyright 2001, 2002, 2003, 2004 Free Software Foundation.
 Adapted from tarctan.c.
 
 This file is part of the MPFR Library.
@@ -48,6 +48,9 @@ test1 (void)
       printf ("Error for input of 40 bits, output of 74 bits\n");
       exit (1);
     }
+
+  mpfr_ui_pow_ui (x, 0, 1, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_POS (x));
 
   mpfr_clear (x);
   mpfr_clear (y);

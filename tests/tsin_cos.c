@@ -140,6 +140,25 @@ check_nans (void)
   MPFR_ASSERTN (mpfr_nan_p (s));
   MPFR_ASSERTN (mpfr_nan_p (c));
 
+  /* check zero */
+  mpfr_set_ui  (x, 0, GMP_RNDN);
+  mpfr_sin_cos (s, c, x, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_ui (s, 0) == 0 && MPFR_IS_POS (s));
+  MPFR_ASSERTN (mpfr_cmp_ui (c, 1) == 0);
+  mpfr_neg (x, x, GMP_RNDN);
+  mpfr_sin_cos (s, c, x, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_ui (s, 0) == 0 && MPFR_IS_NEG (s));
+  MPFR_ASSERTN (mpfr_cmp_ui (c, 1) == 0);
+
+  /* coverage test */
+  mpfr_set_prec (x, 2);
+  mpfr_set_ui (x, 4, GMP_RNDN);
+  mpfr_set_prec (s, 2);
+  mpfr_set_prec (c, 2);
+  mpfr_sin_cos (s, c, x, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_si_2exp (s, -3, -2) == 0);
+  MPFR_ASSERTN (mpfr_cmp_si_2exp (c, -3, -2) == 0);
+
   mpfr_clear (x);
   mpfr_clear (s);
   mpfr_clear (c);

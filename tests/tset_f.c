@@ -35,8 +35,8 @@ main (void)
 
   tests_start_mpfr ();
 
-  mpf_init(y);
-  mpf_init(z);
+  mpf_init (y);
+  mpf_init (z);
 
   mpf_set_d (y, 0.0);
 
@@ -45,33 +45,33 @@ main (void)
   mpfr_set_prec (x, 100);
   mpfr_set_f (x, y, GMP_RNDN);
 
-  mpf_random2(y, 10, 0);
-  mpfr_set_f(x, y, RND_RAND() );
+  mpf_random2 (y, 10, 0);
+  mpfr_set_f (x, y, RND_RAND() );
 
   /* bug found by Jean-Pierre Merlet */
-  mpfr_set_prec(x, 256);
-  mpf_set_prec(y, 256);
-  mpfr_init2(u, 256);
-  mpfr_set_str(u,
+  mpfr_set_prec (x, 256);
+  mpf_set_prec (y, 256);
+  mpfr_init2 (u, 256);
+  mpfr_set_str (u,
      "7.f10872b020c49ba5e353f7ced916872b020c49ba5e353f7ced916872b020c498@2",
      16, GMP_RNDN);
-  mpf_set_str(y, "2033.033", 10);
-  mpfr_set_f(x, y, GMP_RNDN);
-  if (mpfr_cmp(x, u))
+  mpf_set_str (y, "2033.033", 10);
+  mpfr_set_f (x, y, GMP_RNDN);
+  if (mpfr_cmp (x, u))
     {
       printf ("mpfr_set_f failed for y=2033.033\n");
       exit (1);
     }
-  mpf_set_str(y, "-2033.033", 10);
-  mpfr_set_f(x, y, GMP_RNDN);
-  mpfr_neg(u, u, GMP_RNDN);
-  if (mpfr_cmp(x, u))
+  mpf_set_str (y, "-2033.033", 10);
+  mpfr_set_f (x, y, GMP_RNDN);
+  mpfr_neg (u, u, GMP_RNDN);
+  if (mpfr_cmp (x, u))
     {
       printf ("mpfr_set_f failed for y=-2033.033\n");
       exit (1);
     }
 
-  mpfr_clear(u);
+  mpfr_clear (u);
 
   for (k = 1; k <= 100000; k++)
     {
@@ -83,9 +83,9 @@ main (void)
     }
 
   /* Check for +0 */
-  mpfr_set_prec(x, 53);
-  mpf_set_prec(y, 53);
-  mpf_set_ui(y, 0);
+  mpfr_set_prec (x, 53);
+  mpf_set_prec (y, 53);
+  mpf_set_ui (y, 0);
   for(r = 0 ; r < GMP_RND_MAX ; r++)
     {
       inexact = mpfr_set_f(x, y, r);
@@ -95,6 +95,18 @@ main (void)
 		 mpfr_print_rnd_mode(r));
 	  exit(1);
 	}
+    }
+
+  /* coverage test */
+  mpf_set_prec (y, 2);
+  mpfr_set_prec (x, 3 * mp_bits_per_limb);
+  mpf_set_ui (y, 1);
+  for (r = 0; r < mp_bits_per_limb; r++)
+    {
+      mpfr_random (x); /* to fill low limbs with random data */
+      inexact = mpfr_set_f (x, y, GMP_RNDN);
+      MPFR_ASSERTN(inexact == 0 && mpfr_cmp_ui_2exp (x, 1, r) == 0);
+      mpf_mul_2exp (y, y, 1);
     }
 
   mpfr_clear (x);

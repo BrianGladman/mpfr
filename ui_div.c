@@ -43,8 +43,9 @@ mpfr_ui_div (mpfr_ptr y, unsigned long int u, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	  MPFR_SET_SAME_SIGN(y,x);
 	  MPFR_RET(0);
 	}
-      else if (MPFR_IS_ZERO(x)) /* u / 0 */
+      else /* u / 0 */
 	{
+          MPFR_ASSERTD(MPFR_IS_ZERO(x));
 	  if (u)
 	    {
 	      /* u > 0, so y = sign(x) * Inf */
@@ -59,8 +60,6 @@ mpfr_ui_div (mpfr_ptr y, unsigned long int u, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	      MPFR_RET_NAN;
 	    }
 	}
-      else
-	MPFR_RET_NEVER_GO_HERE();
     }
   else if (u)
     {
@@ -74,6 +73,7 @@ mpfr_ui_div (mpfr_ptr y, unsigned long int u, mpfr_srcptr x, mp_rnd_t rnd_mode)
   else /* u = 0, and x != 0 */
     {
       MPFR_SET_ZERO(y); /* if u=0, then set y to 0 */
+      MPFR_SET_SAME_SIGN(y, x); /* u considered as +0: sign(+0/x) = sign(x) */
       MPFR_RET(0);
     }
 }

@@ -81,6 +81,15 @@ test_sign (void)
             exit (1);
           }
       }
+
+  /* worst case on 53 bits */
+  mpfr_set_prec (x, 53);
+  mpfr_set_prec (y, 53);
+  mpfr_set_str (x, "6134899525417045", 10, GMP_RNDN);
+  mpfr_sin (y, x, GMP_RNDN);
+  mpfr_set_str_binary (x, "11011010111101011110111100010101010101110000000001011E-106");
+  MPFR_ASSERTN(mpfr_cmp (x, y) == 0);
+  
   mpfr_clear (pid);
   mpfr_clear (piu);
   mpfr_clear (x);

@@ -59,6 +59,15 @@ check_nans (void)
       exit (1);
     }
 
+  /* exercise recomputation */
+  mpfr_set_prec (x, 14);
+  mpfr_set_str_binary (x, "0.10100000101010E0");
+  mpfr_set_prec (y, 24);
+  mpfr_tan (y, x, GMP_RNDU);
+  mpfr_set_prec (x, 24);
+  mpfr_set_str_binary (x, "101110011011001100100001E-24");
+  MPFR_ASSERTN(mpfr_cmp (x, y) == 0);
+
   mpfr_clear (x);
   mpfr_clear (y);
 }

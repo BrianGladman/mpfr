@@ -46,27 +46,18 @@ mpfr_set_q (mpfr_ptr f, mpq_srcptr q, mp_rnd_t rnd)
   if (prec < MPFR_PREC_MIN)
     prec = MPFR_PREC_MIN;
   mpfr_init2 (n, prec);
-  if (mpfr_set_z (n, num, GMP_RNDZ)) /* result is exact unless overflow */
-    {
-      mpfr_clear (n);
-      mpfr_clear_flags ();
-      mpfr_restore_emin_emax ();
-      MPFR_SET_NAN (f);
-      MPFR_RET_NAN;
-    }
-  prec = mpz_sizeinbase(den, 2);
+  __gmpfr_emax = prec;
+  MPFR_ASSERTN(mpfr_set_z (n, num, GMP_RNDZ) == 0);
+  /* result is exact: overflow cannot occur since emax = prec */
+
+  prec = mpz_sizeinbase (den, 2);
   if (prec < MPFR_PREC_MIN)
     prec = MPFR_PREC_MIN;
   mpfr_init2 (d, prec);
-  if (mpfr_set_z (d, den, GMP_RNDZ)) /* result is exact unless overflow */
-    {
-      mpfr_clear (d);
-      mpfr_clear (n);
-      mpfr_clear_flags ();
-      mpfr_restore_emin_emax ();
-      MPFR_SET_NAN (f);
-      MPFR_RET_NAN;
-    }
+  __gmpfr_emax = prec;
+  MPFR_ASSERTN(mpfr_set_z (d, den, GMP_RNDZ) == 0);
+  /* result is exact: overflow cannot occur, as above */
+
   inexact = mpfr_div (f, n, d, rnd);
   mpfr_clear (n);
   mpfr_clear (d);

@@ -37,6 +37,7 @@ main (int argc, char *argv[])
   unsigned long zl, dl;
   int inex;
   mp_rnd_t r;
+  mp_exp_t emax;
 
   tests_start_mpfr ();
 
@@ -152,6 +153,7 @@ main (int argc, char *argv[])
     }
   
   /* check potential bug in case mp_limb_t is unsigned */
+  emax = mpfr_get_emax ();
   mpfr_set_emax (0);
   mpfr_set_si (x, -1, GMP_RNDN);
   if (mpfr_sgn (x) >= 0)
@@ -159,7 +161,9 @@ main (int argc, char *argv[])
       printf ("mpfr_set_si (x, -1) fails\n");
       exit (1);
     }
+  mpfr_set_emax (emax);
 
+  emax = mpfr_get_emax ();
   mpfr_set_emax (5);
   mpfr_set_prec (x, 2);
   mpfr_set_si (x, -31, GMP_RNDN);
@@ -168,6 +172,7 @@ main (int argc, char *argv[])
       printf ("mpfr_set_si (x, -31) fails\n");
       exit (1);
     }
+  mpfr_set_emax (emax);
 
   /* test for get_ui */
   mpfr_set_ui (x, 0, GMP_RNDN);
@@ -175,6 +180,19 @@ main (int argc, char *argv[])
   mpfr_set_ui (x, ULONG_MAX, GMP_RNDU);
   mpfr_nextabove (x);
   mpfr_get_ui (x, GMP_RNDU);
+
+  /* coverage tests */
+  mpfr_set_prec (x, 2);
+  mpfr_set_si (x, -7, GMP_RNDD);
+  MPFR_ASSERTN(mpfr_cmp_si (x, -8) == 0);
+  mpfr_set_prec (x, 2);
+  mpfr_set_ui (x, 7, GMP_RNDU);
+  MPFR_ASSERTN(mpfr_cmp_ui (x, 8) == 0);
+  emax = mpfr_get_emax ();
+  mpfr_set_emax (3);
+  mpfr_set_ui (x, 7, GMP_RNDU);
+  MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
+  mpfr_set_emax (emax);
 
   mpfr_clear (x);
 

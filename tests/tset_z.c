@@ -77,10 +77,12 @@ check_large (void)
 {
   mpz_t z;
   mpfr_t x, y;
+  mp_exp_t emax, emin;
 
   mpz_init (z);
   mpfr_init2 (x, 160);
   mpfr_init2 (y, 160);
+
   mpz_set_str (z, "77031627725494291259359895954016675357279104942148788042", 10);
   mpfr_set_z (x, z, GMP_RNDN);
   mpfr_set_str_binary (y, "0.1100100100001111110110101010001000100001011010001100001000110100110001001100011001100010100010111000000011011100000111001101000100101001000000100100111000001001E186");
@@ -89,6 +91,31 @@ check_large (void)
       printf ("Error in mpfr_set_z on large input\n");
       exit (1);
     }
+
+  /* check overflow */
+  emax = mpfr_get_emax ();
+  mpfr_set_emax (2);
+  mpz_set_str (z, "7", 10);
+  mpfr_set_z (x, z, GMP_RNDU);
+  MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
+  mpfr_set_emax (3);
+  mpfr_set_prec (x, 2);
+  mpz_set_str (z, "7", 10);
+  mpfr_set_z (x, z, GMP_RNDU);
+  MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
+  mpfr_set_emax (emax);
+
+  /* check underflow */
+  emin = mpfr_get_emin ();
+  mpfr_set_emin (3);
+  mpz_set_str (z, "1", 10);
+  mpfr_set_z (x, z, GMP_RNDZ);
+  MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_POS(x));
+  mpfr_set_emin (2);
+  mpfr_set_z (x, z, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_POS(x));
+  mpfr_set_emin (emin);
+
   mpz_clear (z);
   mpfr_clear (x);
   mpfr_clear (y);

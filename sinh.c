@@ -30,7 +30,7 @@ mpfr_sinh (mpfr_ptr y, mpfr_srcptr xt, mp_rnd_t rnd_mode)
     /****** Declarations ******/
     mpfr_t x;
     mp_prec_t Nxt = MPFR_PREC(xt);
-    int flag_neg=0, inexact =0;
+    int flag_neg = 0, inexact = 0;
 
     if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(xt)))
       {
@@ -45,15 +45,13 @@ mpfr_sinh (mpfr_ptr y, mpfr_srcptr xt, mp_rnd_t rnd_mode)
 	    MPFR_SET_SAME_SIGN(y, xt);
 	    MPFR_RET(0);
 	  }
-	else if (MPFR_IS_ZERO(xt))
+	else /* xt is zero */
 	  {
+            MPFR_ASSERTD(MPFR_IS_ZERO(xt));
 	    MPFR_SET_ZERO(y);   /* sinh(0) = 0 */
 	    MPFR_SET_SAME_SIGN(y, xt);
 	    MPFR_RET(0);
 	  }
-	/* Should never reach this */
-	else
-	  MPFR_ASSERTN(0);
       }
 
     mpfr_init2 (x, Nxt);
@@ -62,7 +60,7 @@ mpfr_sinh (mpfr_ptr y, mpfr_srcptr xt, mp_rnd_t rnd_mode)
     if (MPFR_IS_NEG(x))
       {
         MPFR_CHANGE_SIGN(x);
-        flag_neg=1;
+        flag_neg = 1;
       }
 
     /* General case */
@@ -73,7 +71,7 @@ mpfr_sinh (mpfr_ptr y, mpfr_srcptr xt, mp_rnd_t rnd_mode)
 
       /* Declaration of the size variable */
       mp_prec_t Nx = Nxt;   /* Precision of input variable */
-      mp_prec_t Ny = MPFR_PREC(y);   /* Precision of input variable */
+      mp_prec_t Ny = MPFR_PREC(y);   /* Precision of result */
 
       mp_prec_t Nt;   /* Precision of the intermediary variable */
       long int err;  /* Precision of error */

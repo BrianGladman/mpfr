@@ -90,15 +90,7 @@ mpfr_set_str_binary (mpfr_ptr x, const char *str)
         {
           *(str2++) = *(str++);
         }
-
-      if (*str == '[')
-        while (*str != ']')
-          str++;
     }
-
-  if (*str == '[')
-    while (*str != ']')
-      str++;
 
   if (*str == 'e' || *str == 'E')
     {

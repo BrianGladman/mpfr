@@ -33,6 +33,9 @@ MA 02111-1307, USA. */
 #error "Unsupported value of BITS_PER_MP_LIMB"
 #endif
 
+/* extracts the bits of d in rp[0..n-1] where n=ceil(53/BITS_PER_MP_LIMB).
+   Assumes d is neither 0 nor NaN nor Inf.
+ */
 static int
 __mpfr_extract_double (mp_ptr rp, double d)
      /* e=0 iff BITS_PER_MP_LIMB=32 and rp has only one limb */
@@ -50,11 +53,9 @@ __mpfr_extract_double (mp_ptr rp, double d)
      4. This lits is incomplete and misspelled.
    */
 
-  if (d == 0.0)
-    {
-      rp[0] = 0;
-      return 0;
-    }
+  MPFR_ASSERTD(!DOUBLE_ISNAN(d));
+  MPFR_ASSERTD(!DOUBLE_ISINF(d));
+  MPFR_ASSERTD(d != 0.0);
 
 #if _GMP_IEEE_FLOATS
 
@@ -203,6 +204,8 @@ mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
       return 0; /* infinity is exact */
     }
 
+  /* now d is neither 0, nor NaN nor Inf */
+
   /* warning: don't use tmp=r here, even if SIZE(r) >= MPFR_LIMBS_PER_DOUBLE,
      since PREC(r) may be different from PREC(tmp), and then both variables
      would have same precision in the mpfr_set4 call below. */
@@ -248,5 +251,5 @@ mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
   /* tmp is exact since PREC(tmp)=53 */
   inexact = mpfr_set4 (r, tmp, rnd_mode, signd);
 
-  return inexact;
+  return mpfr_check_range (r, inexact, rnd_mode);
 }

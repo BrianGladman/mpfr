@@ -189,12 +189,21 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
     if (!q_limb) /* the sqrtrem call was exact, possible exact square root */
       {
         /* if we have taken into account the whole of up */
-        for (k = usize - rsize - 1; k >= 0; k++)
+        for (k = usize - rsize - 1; k >= 0; k--)
           if (up[k] != 0)
-            break;
+            {
+              q_limb = 1; /* simulate positive remainder */
+              break;
+            }
 
         if (k < 0)
+#if 0
           goto fin; /* exact square root ==> inexact = 0 */
+#else
+        /* warning: the value in rp[] is the exact square root,
+           but it may have too many bits */
+        can_round = 1;
+#endif
       }
 
     if (can_round)
@@ -238,7 +247,7 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
               inexact = -1;
             break;
  
-          case GMP_RNDU:
+          default: /* necessarily rnd_mode = GMP_RNDU */
             /* we should arrive here only when the result is inexact, i.e.
                either q_limb > 0 (the remainder from mpn_sqrtrem is non-zero)
                or up[0..usize-rsize-1] is non zero, thus we have to add one
@@ -251,8 +260,6 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
                             MP_LIMB_T_ONE << (BITS_PER_MP_LIMB - t) :
                             MP_LIMB_T_ONE);
 	    break;
-	  default:
-	    MPFR_ASSERTN(0);
           }
       }
 

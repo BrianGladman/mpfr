@@ -28,7 +28,7 @@ mpfr_sin_sign (mpfr_srcptr x)
 {
   mpfr_t c, k;
   mp_exp_t K;
-  int sign = 0;
+  int sign;
   mp_prec_t m;
   mpfr_srcptr y;
 
@@ -44,19 +44,31 @@ mpfr_sin_sign (mpfr_srcptr x)
       mpfr_set_prec (c, m);
       mpfr_set_prec (k, m);
 
-      /* first determine round(x/(2*Pi)): does not have to be exact since
+      /* first determine round(x/Pi): does not have to be exact since
          the result is an integer */
-      mpfr_const_pi (c, GMP_RNDN); /* err <= ulp(c) = 2^(2-m) */
+      mpfr_const_pi (c, GMP_RNDN); /* err <= 1/2*ulp(c) = 2^(1-m) */
       mpfr_div (k, x, c, GMP_RNDN);
-      MPFR_SET_EXP(k, MPFR_GET_EXP (k) - 1); /* x/(2Pi) = 1/2*(x/Pi) */
-      mpfr_rint (k, k, GMP_RNDN);
+      mpfr_round (k, k);
 
-      if (MPFR_NOTZERO(k))
+      sign = 1;
+
+      if (MPFR_NOTZERO(k)) /* subtract k*approx(Pi) */
         {
-          K = MPFR_GET_EXP (k); /* k is an integer, thus K >= 1 */
-          mpfr_mul (k, k, c, GMP_RNDN); /* err <= 2^(K+3-m) */
-          MPFR_SET_EXP (k, MPFR_GET_EXP (k) + 1);
-          mpfr_sub (k, x, k, GMP_RNDN); /* err<=2^(4-m)+2^(K+3-m)<=2^(K+4-m) */
+          /* determine parity of k for sign */
+          if (MPFR_EXP(k) <= m)
+            {
+              mp_size_t j = BITS_PER_MP_LIMB * MPFR_LIMB_SIZE(k) - MPFR_EXP(k);
+              mp_size_t l = j / BITS_PER_MP_LIMB;
+              /* parity bit is j-th bit starting from least significant bits */
+              if ((MPFR_MANT(k)[l] >> (j % BITS_PER_MP_LIMB)) & 1)
+                sign = -1; /* k is odd */
+            }
+          K = MPFR_GET_EXP (k); /* k is an integer, thus K >= 1, k < 2^K */
+          mpfr_mul (k, k, c, GMP_RNDN); /* err <= oldk*err(c) + 1/2*ulp(k)
+                                               <= 2^(K+2-m) */
+          mpfr_sub (k, x, k, GMP_RNDN);
+          /* assuming |k| <= Pi, err <= 2^(1-m)+2^(K+2-m) < 2^(K+3-m) */
+          MPFR_ASSERTN(MPFR_EXP(k) <= 2);
           y = k;
         }
       else
@@ -64,16 +76,13 @@ mpfr_sin_sign (mpfr_srcptr x)
           K = 1;
           y = x;
         }
-      if (mpfr_cmp (y, c) >= 0)
-        {
-          mpfr_sub (k, y, c, GMP_RNDN); /* err <= 2^(2-m)+2^(K+4-m)+2^(2-m)
-                                           = 2^(3-m) + 2^(K+4-m) */
-          y = k;
-        }
+      /* sign of sign(y) is uncertain if |y| <= err < 2^(K+3-m),
+         thus EXP(y) < K+4-m */
     }
-  while (MPFR_IS_ZERO (y) || (MPFR_GET_EXP (y) < K + 5 - (mp_exp_t) m));
+  while (MPFR_IS_ZERO (y) || (MPFR_GET_EXP (y) < K + 4 - (mp_exp_t) m));
 
-  sign = MPFR_SIGN(y);
+  if (MPFR_IS_NEG(y))
+    sign = -sign;
 
   mpfr_clear (k);
   mpfr_clear (c);
@@ -94,14 +103,14 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	  MPFR_SET_NAN(y);
 	  MPFR_RET_NAN;
 	}
-      else if (MPFR_IS_ZERO(x))
+      else /* x is zero */
 	{
+          MPFR_ASSERTD(MPFR_IS_ZERO(x));
 	  MPFR_CLEAR_FLAGS(y);
 	  MPFR_SET_ZERO(y);
 	  MPFR_SET_SAME_SIGN(y, x);
 	  MPFR_RET(0);
 	}
-      MPFR_ASSERTN(0);
     }
 
   precy = MPFR_PREC(y);

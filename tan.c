@@ -35,15 +35,14 @@ mpfr_tan (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	  MPFR_SET_NAN(y);
 	  MPFR_RET_NAN;
 	}
-      else if (MPFR_IS_ZERO(x))
+      else /* x is zero */
 	{
+          MPFR_ASSERTD(MPFR_IS_ZERO(x));
 	  MPFR_CLEAR_FLAGS(y);
 	  MPFR_SET_ZERO(y);
 	  MPFR_SET_SAME_SIGN(y, x);
 	  MPFR_RET(0);
 	}
-      /* Should never reach this point */
-      MPFR_ASSERTN(0);
     }
 
   precy = MPFR_PREC(y);
