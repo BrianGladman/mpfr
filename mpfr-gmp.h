@@ -133,7 +133,8 @@ extern "C" {
 #endif
 
 /* ASSERT */
-void mpfr_assert_fail _MPFR_PROTO((const char *filename, int linenum, const char *expr));
+__MPFR_DECLSPEC void mpfr_assert_fail _MPFR_PROTO((const char *, int, 
+						   const char *));
 
 #define ASSERT_FAIL(expr)  mpfr_assert_fail (__FILE__, __LINE__, #expr)
 #define ASSERT(expr)       MPFR_ASSERTD(expr)
@@ -199,7 +200,7 @@ struct bases
 };
 #undef  __mp_bases
 #define __mp_bases mpfr_bases
-extern const struct bases __mp_bases[257];
+__MPFR_DECLSPEC extern const struct bases mpfr_bases[257];
 
 /* Standard macros */
 #undef ABS
@@ -217,8 +218,8 @@ extern const struct bases __mp_bases[257];
 #define __gmp_rands_initialized mpfr_rands_initialized
 #define __gmp_rands             mpfr_rands
 
-extern char             __gmp_rands_initialized;
-extern gmp_randstate_t  __gmp_rands;
+__MPFR_DECLSPEC extern char             mpfr_rands_initialized;
+__MPFR_DECLSPEC extern gmp_randstate_t  mpfr_rands;
 
 #undef RANDS
 #define RANDS                                   \
@@ -241,11 +242,12 @@ typedef __gmp_randstate_struct *gmp_randstate_ptr;
 
 #undef _gmp_rand
 #define _gmp_rand mpfr_rand_raw
-void mpfr_rand_raw _MPFR_PROTO((mp_ptr, gmp_randstate_t, unsigned long int));
+__MPFR_DECLSPEC void mpfr_rand_raw _MPFR_PROTO((mp_ptr, gmp_randstate_t,
+						unsigned long));
 
 /* To be called BEFORE tests_start_mpfr () if the tests used 
    mpfr_random, mpfr_random2 or any functions which uses the macro RANDS */
-void mpfr_init_gmp_rand _MPFR_PROTO((void));
+__MPFR_DECLSPEC void mpfr_init_gmp_rand _MPFR_PROTO((void));
 #define MPFR_TEST_USE_RANDS() mpfr_init_gmp_rand ();
 
 
@@ -263,9 +265,11 @@ void mpfr_init_gmp_rand _MPFR_PROTO((void));
 #define __gmp_allocate_func   (MPFR_GET_MEMFUNC, mpfr_allocate_func)
 #define __gmp_reallocate_func (MPFR_GET_MEMFUNC, mpfr_reallocate_func)
 #define __gmp_free_func       (MPFR_GET_MEMFUNC, mpfr_free_func)
-extern void * (*mpfr_allocate_func)   _MPFR_PROTO ((size_t));
-extern void * (*mpfr_reallocate_func) _MPFR_PROTO ((void *, size_t, size_t));
-extern void   (*mpfr_free_func)       _MPFR_PROTO ((void *, size_t));
+__MPFR_DECLSPEC extern void * (*mpfr_allocate_func)   _MPFR_PROTO ((size_t));
+__MPFR_DECLSPEC extern void * (*mpfr_reallocate_func) _MPFR_PROTO ((void *,
+							  size_t, size_t));
+__MPFR_DECLSPEC extern void   (*mpfr_free_func)       _MPFR_PROTO ((void *,
+								    size_t));
 
 #endif
 
@@ -275,9 +279,10 @@ extern void   (*mpfr_free_func)       _MPFR_PROTO ((void *, size_t));
 #define __gmp_default_allocate   mpfr_default_allocate
 #define __gmp_default_reallocate mpfr_default_reallocate
 #define __gmp_default_free       mpfr_default_free
-void *__gmp_default_allocate _MPFR_PROTO ((size_t));
-void *__gmp_default_reallocate _MPFR_PROTO ((void *, size_t, size_t));
-void __gmp_default_free _MPFR_PROTO ((void *, size_t));
+__MPFR_DECLSPEC void *__gmp_default_allocate _MPFR_PROTO ((size_t));
+__MPFR_DECLSPEC void *__gmp_default_reallocate _MPFR_PROTO ((void *, size_t, 
+							     size_t));
+__MPFR_DECLSPEC void __gmp_default_free _MPFR_PROTO ((void *, size_t));
 
 #if defined (__cplusplus)
 }

@@ -143,9 +143,11 @@ int main()
 }
 ], mpfr_cv_valid_nan=yes, mpfr_cv_valid_nan=no, mpfr_cv_valid_nan=no)
 ])
-if test "$mpfr_cv_valid_nan" = "yes"; then
-   AC_DEFINE(HAVE_INFS,1,[Define if 0/0, 1/0, -1/0 and sqrt(-1) work to generate NaN/infinities.])
-fi
+
+dnl It isn't used anymore
+dnl if test "$mpfr_cv_valid_nan" = "yes"; then
+dnl   AC_DEFINE(HAVE_INFS,1,[Define if 0/0, 1/0, -1/0 and sqrt(-1) work to generate NaN/infinities.])
+dnl fi
 LIBS="$saved_LIBS"
 
 dnl Check for gcc float-conversion bug; if need be, -ffloat-store is used to
@@ -210,13 +212,15 @@ if test "$mpfr_cv_have_denorms" = "yes"; then
 fi
 
 dnl Check if HUGE_VAL is supported without the need of a specific library
-AC_CACHE_CHECK([for HUGE_VAL], mpfr_cv_have_huge_val, [
-AC_TRY_LINK([#include <math.h>], [HUGE_VAL;],
-  mpfr_cv_have_huge_val=yes, mpfr_cv_have_huge_val=no)
-])
-if test "$mpfr_cv_have_huge_val" = "yes"; then
-  AC_DEFINE(HAVE_HUGE_VAL,1,[Define if HUGE_VAL can be used without the need of a specific library.])
-fi
+dnl FIXME: It seems to be unused, so I disable the test
+dnl AC_CACHE_CHECK([for HUGE_VAL], mpfr_cv_have_huge_val, [
+dnl AC_TRY_LINK([#include <math.h>], [HUGE_VAL;],
+dnl  mpfr_cv_have_huge_val=yes, mpfr_cv_have_huge_val=no)
+dnl ])
+dnl if test "$mpfr_cv_have_huge_val" = "yes"; then
+dnl  AC_DEFINE(HAVE_HUGE_VAL,1,
+dnl   [Define if HUGE_VAL can be used without the need of a specific library.])
+dnl fi
 
 MPFR_C_LONG_DOUBLE_FORMAT
 ])

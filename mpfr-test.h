@@ -23,6 +23,7 @@ MA 02111-1307, USA. */
 #define __MPFR_TEST_H__
 
 #include <stdio.h>
+
 #include "mpfr-impl.h"
 
 /* generates a random long int, a random double,

@@ -14,3 +14,4 @@ sed -i "s/\(#define MPFR_VERSION_MAJOR \).*/\1$1/; \
         s/\(#define MPFR_VERSION_MINOR \).*/\1$2/; \
         s/\(#define MPFR_VERSION_PATCHLEVEL \).*/\1$3/" mpfr.h
 sed -i "s/\(return \"\).*\"/\1$vers\"/" version.c
+sed -i "s/\(AC_INIT(MPFR, \).*)/\1$vers)/" configure.in

@@ -38,6 +38,7 @@ a smaller set of changes. See diff(1) for more information.
 To make a release (for the MPFR team):
 
   1) Check the version and update the date in mpfr.texi.
+     Update the libtool version too (see Makefile.am).
   2) Update the NEWS file.
   3) Update the ChangeLog file (using a recent version of rcs2log,
      directly or with emacs), e.g. rcs2log > ChangeLog.2 and edit

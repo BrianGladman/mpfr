@@ -22,10 +22,11 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA.
 ])
 
-AC_INIT
-
-mpfr_version=`cat $srcdir/VERSION`
-AM_INIT_AUTOMAKE(mpfr, $mpfr_version, [no-define])
+dnl If MPFR becomes GNU MPFR, change the MPFR below to GNU MPFR
+dnl Add check-news when it checks for more than 15 lines
+AC_INIT(MPFR, 2.2.0)
+AM_INIT_AUTOMAKE([no-define dist-zip dist-bzip2])
+AM_MAINTAINER_MODE
 
 dnl AC_CONFIG_HEADERS([mpfrconf.h:mpfrconf.in])
 
@@ -90,6 +91,7 @@ if test -n "$CFLAGS" || test -n "$CC" ; then
  user_redefine_cc=yes
 fi
 AC_PROG_CC
+AC_LANG(C)
 
 dnl Check for GMP CFLAGS and CC (More optimized for the target)
 dnl But they may be invalid, so we must check them first
@@ -147,11 +149,10 @@ if test "$test_CFLAGS" != set && test -n "$GCC"; then
   fi
 fi
 
-AC_PROG_RANLIB
+AM_C_PROTOTYPES
 AC_CANONICAL_HOST
 AC_CHECK_OS
 AC_CHECK_MACHTYPE
-
 
 dnl Set the OS-dependent flags.
 case $OS_TYPE in
@@ -228,17 +229,6 @@ default target architecture may be different, hence the error.])],
    ],[AC_MSG_RESULT(no) AC_FUNC_ALLOCA
 ])
 
-dnl Recent autoconf creates AC_DEFINEs of PACKAGE_VERSION etc, unfortunately
-dnl those -D defines in $DEFS conflict with the same defines in config.h from
-dnl GMP.  Unless or until autoconf gives us a better way for two closely
-dnl related packages to cooperate, use this hack to get rid of them from $DEFS
-dnl here.
-dnl
-if test -f confdefs.h; then
-  sed '/#define PACKAGE_/d' <confdefs.h >confdefs.tmp
-  mv confdefs.tmp confdefs.h
-fi
-
 dnl AC_CHECK_LIB doesn't do what we want
 AC_MSG_CHECKING(for GMP library)
 if test -r "$with_gmp_lib/libgmp.a"; then
@@ -253,6 +243,7 @@ else
   fi  
   LIBS="-lgmp $LIBS"
 fi
+
 dnl FIXME: If AC_RUN_IFELSE failed try with AC_LINK_IFELSE?
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include "gmp.h"
@@ -308,6 +299,64 @@ int main () { f (); return 0; }
     AC_MSG_RESULT([can't test])
   ])
 
+dnl Configs for Windows DLLs.
+dnl libtool requires "-no-undefined" for win32 dll
+AC_DISABLE_SHARED
+AC_LIBTOOL_WIN32_DLL
+case $host in
+  *-*-cygwin* | *-*-mingw* | *-*-pw32* | *-*-os2*)
+   AC_MSG_CHECKING(for DLL/static GMP)
+   if test "$enable_shared" = yes; then
+     LDFLAGS="$LDFLAGS -no-undefined"
+     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include "gmp.h"
+#if !__GMP_LIBGMP_DLL
+# error "Dead man"
+#endif
+     ]], [[]])],[AC_MSG_RESULT(DLL)],[ 
+  AC_MSG_RESULT(static)
+  AC_MSG_ERROR([gmp.h isn't a DLL: use --enable-static --disable-shared]) ])
+   else
+     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include "gmp.h"
+#if __GMP_LIBGMP_DLL
+# error "Dead man"
+#endif
+     ]], [[]])],[AC_MSG_RESULT(static)],[
+  AC_MSG_RESULT(DLL) 
+  AC_MSG_ERROR([gmp.h is a DLL: use --disable-static --enable-shared]) ])
+  fi
+  ;;
+esac
+dnl Finally set up LibTool
+AC_PROG_LIBTOOL
+
+dnl Recent autoconf creates AC_DEFINEs of PACKAGE_VERSION etc, unfortunately
+dnl those -D defines in $DEFS conflict with the same defines in config.h from
+dnl GMP.  Unless or until autoconf gives us a better way for two closely
+dnl related packages to cooperate, use this hack to get rid of them from $DEFS
+dnl here.
+dnl
+dnl We remove also many MACROS which are unused by MPFR.
+if test -f confdefs.h; then
+  sed '/#define PACKAGE_/d' <confdefs.h >confdefs.tmp
+  sed '/#define HAVE_STRING/d' <confdefs.tmp >confdefs.h
+  sed '/#define HAVE_ALLOCA /d' <confdefs.h >confdefs.tmp
+  sed '/#define HAVE_DLFCN_H/d' <confdefs.tmp >confdefs.h
+  sed '/#define HAVE_MEM/d' <confdefs.h >confdefs.tmp
+  sed '/#define STDC_HEADERS/d' <confdefs.tmp >confdefs.h
+  sed '/#define HAVE_STRTOL/d' <confdefs.h >confdefs.tmp
+  sed '/#define HAVE_STDLIB_H/d' <confdefs.tmp >confdefs.h
+  sed '/#define HAVE_UNISTD_H/d' <confdefs.h >confdefs.tmp
+  sed '/#define HAVE_STDC_HEADERS/d' <confdefs.tmp >confdefs.h
+  sed '/#define HAVE_LONG_DOUBLE/d' <confdefs.h >confdefs.tmp
+  sed '/#define HAVE_SYS_STAT_H/d' <confdefs.tmp >confdefs.h
+  sed '/#define HAVE_SYS_TYPES_H/d' <confdefs.h >confdefs.tmp
+  sed '/#define PROTOTYPES/d' <confdefs.tmp >confdefs.h
+  sed '/#define __PROTOTYPES/d' <confdefs.h >confdefs.tmp
+
+  mv confdefs.tmp confdefs.h
+fi
 
 AC_SUBST(INCLUDES)
 AC_SUBST(LDADD)

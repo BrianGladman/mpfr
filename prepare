@@ -9,7 +9,7 @@ else
   include_deps="-i"
 fi
 
-if aclocal && automake $include_deps && autoconf && ./configure $@
+if libtoolize --automake --copy && aclocal && automake $include_deps && autoconf && ./configure $@
 then
   echo
   echo "The MPFR source code was successfully prepared."
