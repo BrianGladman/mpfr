@@ -175,7 +175,7 @@ mpfr_isinteger(x)
 {
 
   mpfr_t u;
-  int expo;
+  int expo, res;
   mp_prec_t prec;
 
   expo=(int)MPFR_EXP(x);
@@ -187,11 +187,14 @@ mpfr_isinteger(x)
   if (expo>=prec) 
     return 1;
 
-  mpfr_init2(u,prec);
-  mpfr_trunc(u,x);
+  mpfr_init2 (u, prec);
+  mpfr_trunc (u, x);
 
-  if(mpfr_cmp(x,u)==0) return 1;
-  else return 0;
+  res = (mpfr_cmp (x, u) == 0);
+
+  mpfr_clear (u);
+
+  return res;
 }
 
 int mpfr_pow _PROTO ((mpfr_ptr, mpfr_srcptr,mpfr_srcptr, mp_rnd_t));
