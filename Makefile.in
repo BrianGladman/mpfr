@@ -112,20 +112,6 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = gtar
 GZIP_ENV = --best
-DEP_FILES =  .deps/add.P .deps/add_ui.P .deps/add_ulp.P .deps/agm.P \
-.deps/clear.P .deps/cmp.P .deps/cmp_ui.P .deps/div.P .deps/div_2exp.P \
-.deps/div_ui.P .deps/dump.P .deps/eq.P .deps/exp.P .deps/exp2.P \
-.deps/exp3.P .deps/extract.P .deps/get_str.P .deps/init.P \
-.deps/inp_str.P .deps/karasqrt.P .deps/log.P .deps/log2.P .deps/mul.P \
-.deps/mul_2exp.P .deps/mul_ui.P .deps/neg.P .deps/out_str.P .deps/pi.P \
-.deps/pow.P .deps/print_raw.P .deps/print_rnd_mode.P .deps/random.P \
-.deps/random2.P .deps/reldiff.P .deps/rnd_mode.P .deps/round.P \
-.deps/set.P .deps/set_d.P .deps/set_dfl_prec.P .deps/set_dfl_rnd.P \
-.deps/set_f.P .deps/set_prc_raw.P .deps/set_prec.P .deps/set_q.P \
-.deps/set_si.P .deps/set_str.P .deps/set_str_raw.P .deps/set_z.P \
-.deps/sin_cos.P .deps/sqrt.P .deps/sqrt_ui.P .deps/sub.P .deps/sub_ui.P \
-.deps/trunc.P .deps/ui_div.P .deps/ui_sub.P .deps/urandomb.P \
-.deps/zeta.P
 SOURCES = $(libmpfr_a_SOURCES)
 OBJECTS = $(libmpfr_a_OBJECTS)
 
@@ -133,9 +119,9 @@ all: all-redirect
 .SUFFIXES:
 .SUFFIXES: .S .c .dvi .info .o .ps .s .texi .texinfo .txi
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
-	cd $(top_srcdir) && $(AUTOMAKE) --gnu Makefile
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu --include-deps Makefile
 
-Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
+Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) \
 	  && CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
@@ -178,6 +164,9 @@ uninstall-libLIBRARIES:
 	list='$(lib_LIBRARIES)'; for p in $$list; do \
 	  rm -f $(DESTDIR)$(libdir)/$$p; \
 	done
+
+.c.o:
+	$(COMPILE) -c $<
 
 .s.o:
 	$(COMPILE) -c $<
@@ -443,11 +432,6 @@ distdir: $(DISTFILES)
 	-rm -rf $(distdir)
 	mkdir $(distdir)
 	-chmod 777 $(distdir)
-	here=`cd $(top_builddir) && pwd`; \
-	top_distdir=`cd $(distdir) && pwd`; \
-	distdir=`cd $(distdir) && pwd`; \
-	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu Makefile
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
@@ -469,38 +453,6 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 	$(MAKE) $(AM_MAKEFLAGS) top_distdir="$(top_distdir)" distdir="$(distdir)" dist-info
-
-DEPS_MAGIC := $(shell mkdir .deps > /dev/null 2>&1 || :)
-
--include $(DEP_FILES)
-
-mostlyclean-depend:
-
-clean-depend:
-
-distclean-depend:
-	-rm -rf .deps
-
-maintainer-clean-depend:
-
-%.o: %.c
-	@echo '$(COMPILE) -c $<'; \
-	$(COMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
-	@-cp .deps/$(*F).pp .deps/$(*F).P; \
-	tr ' ' '\012' < .deps/$(*F).pp \
-	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
-	    >> .deps/$(*F).P; \
-	rm .deps/$(*F).pp
-
-%.lo: %.c
-	@echo '$(LTCOMPILE) -c $<'; \
-	$(LTCOMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
-	@-sed -e 's/^\([^:]*\)\.o[ 	]*:/\1.lo \1.o :/' \
-	  < .deps/$(*F).pp > .deps/$(*F).P; \
-	tr ' ' '\012' < .deps/$(*F).pp \
-	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
-	    >> .deps/$(*F).P; \
-	rm -f .deps/$(*F).pp
 info-am: $(INFO_DEPS)
 info: info-recursive
 dvi-am: $(DVIS)
@@ -539,27 +491,25 @@ distclean-generic:
 
 maintainer-clean-generic:
 mostlyclean-am:  mostlyclean-libLIBRARIES mostlyclean-compile \
-		mostlyclean-aminfo mostlyclean-tags mostlyclean-depend \
-		mostlyclean-generic
+		mostlyclean-aminfo mostlyclean-tags mostlyclean-generic
 
 mostlyclean: mostlyclean-recursive
 
 clean-am:  clean-libLIBRARIES clean-compile clean-aminfo clean-tags \
-		clean-depend clean-generic mostlyclean-am
+		clean-generic mostlyclean-am
 
 clean: clean-recursive
 
 distclean-am:  distclean-libLIBRARIES distclean-compile distclean-aminfo \
-		distclean-tags distclean-depend distclean-generic \
-		clean-am
+		distclean-tags distclean-generic clean-am
 
 distclean: distclean-recursive
 	-rm -f config.status
 
 maintainer-clean-am:  maintainer-clean-libLIBRARIES \
 		maintainer-clean-compile maintainer-clean-aminfo \
-		maintainer-clean-tags maintainer-clean-depend \
-		maintainer-clean-generic distclean-am
+		maintainer-clean-tags maintainer-clean-generic \
+		distclean-am
 	@echo "This command is intended for maintainers to use;"
 	@echo "it deletes files that may require special tools to rebuild."
 
@@ -577,14 +527,12 @@ uninstalldirs-recursive all-recursive check-recursive \
 installcheck-recursive info-recursive dvi-recursive \
 mostlyclean-recursive distclean-recursive clean-recursive \
 maintainer-clean-recursive tags tags-recursive mostlyclean-tags \
-distclean-tags clean-tags maintainer-clean-tags distdir \
-mostlyclean-depend distclean-depend clean-depend \
-maintainer-clean-depend info-am info dvi-am dvi check check-am \
-installcheck-am installcheck install-exec-am install-exec \
-install-data-am install-data install-am install uninstall-am uninstall \
-all-redirect all-am all installdirs-am installdirs mostlyclean-generic \
-distclean-generic clean-generic maintainer-clean-generic clean \
-mostlyclean distclean maintainer-clean
+distclean-tags clean-tags maintainer-clean-tags distdir info-am info \
+dvi-am dvi check check-am installcheck-am installcheck install-exec-am \
+install-exec install-data-am install-data install-am install \
+uninstall-am uninstall all-redirect all-am all installdirs-am \
+installdirs mostlyclean-generic distclean-generic clean-generic \
+maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
 
 ceil.o: trunc.c mpfr.h
