@@ -761,6 +761,11 @@ different, the absolute value returned is
 one plus the absolute difference of their exponents.
 @end deftypefun
 
+@deftypefun int mpfr_cmp_ui_2exp (mpfr_t @var{op1}, unsigned long int @var{op2}, int @var{e})
+@deftypefunx int mpfr_cmp_si_2exp (mpfr_t @var{op1}, unsigned long int @var{op2}, int @var{e})
+Compare @var{op1} and @var{op2} multiplied by two to the power @var{e}.
+@end deftypefun
+
 @c @deftypefun int mpfr_eq (mpfr_t @var{op1}, mpfr_t @var{op2}, unsigned long int op3)
 @c Return non-zero if the first @var{op3} bits of @var{op1} and @var{op2} are
 @c equal, zero otherwise.  I.e., test of @var{op1} and @var{op2} are
