@@ -287,6 +287,7 @@ check_small (void)
       exit (1);
     }
   mpfr_free_str (s);
+
   mpfr_set_str_binary (x, "10100100001011001000011001101101000110100110000010111E89");
   s = mpfr_get_str (NULL, &e, 10, 7, x, GMP_RNDN);
   if (strcmp (s, "3575392") || e != 43)
@@ -295,6 +296,7 @@ check_small (void)
       exit (1);
     }
   mpfr_free_str (s);
+
   mpfr_set_str_binary (x, "11000011011110110010100110001010000001010011001011001E-73");
   s = mpfr_get_str (NULL, &e, 10, 8, x, GMP_RNDN);
   if (strcmp (s, "72822386") || e != -6)
@@ -303,6 +305,7 @@ check_small (void)
       exit (1);
     }
   mpfr_free_str (s);
+
   mpfr_set_str_binary (x, "10101010001101000111001100001000100011100010010001010E78");
   s = mpfr_get_str (NULL, &e, 10, 9, x, GMP_RNDN);
   if (strcmp (s, "180992873") || e != 40)
@@ -311,6 +314,7 @@ check_small (void)
       exit (1);
     }
   mpfr_free_str (s);
+
   mpfr_set_str_binary (x, "10110111001000100000001101111001100101101110011011101E91");
   s = mpfr_get_str (NULL, &e, 10, 10, x, GMP_RNDN);
   if (strcmp (s, "1595312255") || e != 44)
@@ -343,6 +347,7 @@ check_small (void)
       exit (1);
     }
   mpfr_free_str (s);
+
   mpfr_set_str_binary (x, "10010011010110011100010010100101100011101000011111111E92");
   s = mpfr_get_str (NULL, &e, 10, 14, x, GMP_RNDN);
   if (strcmp (s, "25672105101864") || e != 44)
@@ -351,6 +356,7 @@ check_small (void)
       exit (1);
     }
   mpfr_free_str (s);
+
   mpfr_set_str_binary (x, "100110111110110001000101110100100101101000011111001E87");
   s = mpfr_get_str (NULL, &e, 10, 15, x, GMP_RNDN);
   if (strcmp (s, "212231308858721") || e != 42)
@@ -359,6 +365,15 @@ check_small (void)
       exit (1);
     }
   mpfr_free_str (s);
+  mpfr_set_str_binary (x, "10111010110000111000101100101111001011011100101001111E-128");
+  s = mpfr_get_str (NULL, &e, 10, 15, x, GMP_RNDN);
+  if (strcmp (s, "193109287087290") || e != -22)
+    {
+      printf ("Error in mpfr_get_str (22b): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+
   mpfr_set_str_binary (x, "10001101101011010001111110000111010111010000110101010E80");
   s = mpfr_get_str (NULL, &e, 10, 16, x, GMP_RNDN);
   if (strcmp (s, "6026241735727920") || e != 40)
@@ -367,6 +382,7 @@ check_small (void)
       exit (1);
     }
   mpfr_free_str (s);
+
   mpfr_set_str_binary (x, "100010001011101001110101000110011001001000110001001E-81");
   s = mpfr_get_str (NULL, &e, 10, 17, x, GMP_RNDN);
   if (strcmp (s, "49741483709103481") || e != -9)
