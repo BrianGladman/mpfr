@@ -67,6 +67,7 @@ mpfr_prec_round (mpfr_ptr x, mp_prec_t prec, mp_rnd_t rnd_mode)
 
   if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(x) ))
     {
+      MPFR_PREC(x) = prec; /* Special value: need to set prec */
       if (MPFR_IS_NAN(x))
 	MPFR_RET_NAN;
       MPFR_ASSERTD(MPFR_IS_INF(x) || MPFR_IS_ZERO(x));
