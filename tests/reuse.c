@@ -370,7 +370,6 @@ void test3a (char *foo, mp_prec_t prec, mp_rnd_t rnd)
 int
 main (void)
 {
-
   testfunc = (void*) mpfr_add; test3 ("mpfr_add", 53, GMP_RNDN);
   testfunc = (void*) mpfr_add_ui; test2ui ("mpfr_add_ui", 53, GMP_RNDN);
   testfunc = mpfr_agm; test3 ("mpfr_agm", 53, GMP_RNDN);
