@@ -45,17 +45,13 @@ void check53 (double x, double sin_x, mp_rnd_t rnd_mode)
   mpfr_clear (s);
 }
 
-int
-main(int argc, char *argv[])
-{
-  unsigned int prec, err, yprec, n, p0 = 1, p1 = 100, N = 100;
-  mp_rnd_t rnd;
-  mpfr_t x, y, z, t;
+#define TEST_FUNCTION mpfr_sin
+#include "tgeneric.c"
 
-  mpfr_init (x);
-  mpfr_init (y);
-  mpfr_init (z);
-  mpfr_init (t);
+int
+main (int argc, char *argv[])
+{
+  mpfr_t x;
 
   check53(0.0/0.0, 0.0/0.0, GMP_RNDN); 
   check53(1.0/0.0, 0.0/0.0, GMP_RNDN); 
@@ -72,7 +68,7 @@ main(int argc, char *argv[])
 
   check53 (1.00591265847407274059,  8.446508805292128885e-1, GMP_RNDN);
 
-  mpfr_set_prec (x, 1);
+  mpfr_init2 (x, 1);
   mpfr_set_d (x, 0.5, GMP_RNDN);
   mpfr_sin (x, x, GMP_RNDD);
   if (mpfr_get_d(x) != 0.25)
@@ -81,50 +77,7 @@ main(int argc, char *argv[])
       exit (1);
     }
 
-  /* generic test */
-  for (prec = p0; prec <= p1; prec++)
-    {
-      mpfr_set_prec (x, prec);
-      mpfr_set_prec (z, prec);
-      mpfr_set_prec (t, prec);
-      yprec = prec + 10;
-
-      for (n=0; n<N; n++)
-	{
-	  mpfr_random (x);
-	  rnd = random () % 4;
-	  mpfr_set_prec (y, yprec);
-	  mpfr_sin (y, x, rnd);
-	  err = (rnd == GMP_RNDN) ? yprec + 1 : yprec;
-	  if (mpfr_can_round (y, err, rnd, rnd, prec))
-	    {
-	      mpfr_set (t, y, rnd);
-	      mpfr_sin (z, x, rnd);
-	      if (mpfr_cmp (t, z))
-		{
-		  printf ("results differ for x=");
-		  mpfr_out_str (stdout, 2, prec, x, GMP_RNDN);
-		  printf (" prec=%u rnd_mode=%s\n", prec,
-			  mpfr_print_rnd_mode (rnd));
-		  printf ("   got ");
-		  mpfr_out_str (stdout, 2, prec, z, GMP_RNDN);
-		  putchar ('\n');
-		  printf ("   expected ");
-		  mpfr_out_str (stdout, 2, prec, t, GMP_RNDN);
-		  putchar ('\n');
-		  printf ("   approximation was ");
-		  mpfr_print_raw (y);
-		  putchar ('\n');
-		  exit (1);
-		}
-	    }
-	}
-    }
-
-  mpfr_clear (x);
-  mpfr_clear (y);
-  mpfr_clear (z);
-  mpfr_clear (t);
+  test_generic (1, 100, 80);
 
   return 0;
 }

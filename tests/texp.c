@@ -31,6 +31,8 @@ int check_large _PROTO((double, int, mp_rnd_t));
 int check_worst_case _PROTO((double, double)); 
 int check_worst_cases _PROTO((void)); 
 void compare_exp2_exp3 _PROTO((int)); 
+extern int mpfr_exp_2 _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
+extern int mpfr_exp3 _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 
 int maxu=0;
 
@@ -189,12 +191,17 @@ void compare_exp2_exp3 (int n)
   mpfr_clear(x); mpfr_clear(y); mpfr_clear(z);
 }
 
+#define TEST_FUNCTION mpfr_exp
+#include "tgeneric.c"
+
 int
 main (int argc, char *argv[])
 {
 #ifdef TEST
   int i, N, s=0, e, maxe=0; double d, lo, hi;
 #endif
+
+  test_generic (1, 100, 100);
 
   if (argc == 4)
     {
@@ -203,7 +210,7 @@ main (int argc, char *argv[])
     }
 
   srand(getpid());
-  compare_exp2_exp3(1000);
+  compare_exp2_exp3(500);
   check_worst_cases();
   check3(0.0, GMP_RNDU, 1.0);
   check3(-8.88024741073346941839e-17, GMP_RNDU, 1.0);

@@ -256,6 +256,9 @@ void special ()
   mpfr_clear (y);
 }
 
+#define TEST_FUNCTION mpfr_log
+#include "tgeneric.c"
+
 int
 main (int argc, char *argv[])
 {
@@ -341,6 +344,8 @@ main (int argc, char *argv[])
   check2(7.34302197248998461006e+43,GMP_RNDZ,1.01004909469513179942e+02);
   check2(6.09969788341579732815e+00,GMP_RNDD,1.80823924264386204363e+00);
   }
+
+  test_generic (1, 100, 40);
 
   return 0;
 }

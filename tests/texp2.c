@@ -28,86 +28,45 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
 #define TEST_FUNCTION mpfr_exp2
+#include "tgeneric.c"
 
 int
 main (int argc, char *argv[])
 {
-  unsigned int prec, yprec, n, p0 = 1, p1 = 100, N = 100;
-  mp_rnd_t rnd;
-  mpfr_t x, y, z, t;
+  mpfr_t x, y;
 
   mpfr_init (x);
   mpfr_init (y);
-  mpfr_init (z);
-  mpfr_init (t);
 
 
   MPFR_SET_INF(x);
-  TEST_FUNCTION(y,x,GMP_RNDN);
-  if(!MPFR_IS_INF(y)){ printf("evaluation of function in INF do not retun INF"); exit(1);}
+  mpfr_exp2 (y, x, GMP_RNDN);
+  if(!MPFR_IS_INF(y))
+    {
+      printf ("evaluation of function in INF does not return INF");
+      exit (1);
+    }
+
   MPFR_CHANGE_SIGN(x);
-  TEST_FUNCTION(y,x,GMP_RNDN);
-  if(!MPFR_IS_ZERO(y)){ printf("evaluation of function in -INF do not retun 0"); exit(1);}
-
-   MPFR_SET_NAN(x);
-  TEST_FUNCTION(y,x,GMP_RNDN);
-  if(!MPFR_IS_NAN(y)){ printf("evaluation of function in NAN do not retun NAN"); exit(1);}
-
-
-
-
-
-  /* tatanh prec - perform one random computation with precision prec */
-  if (argc >= 2)
+  mpfr_exp2 (y, x, GMP_RNDN);
+  if(!MPFR_IS_ZERO(y))
     {
-      p0 = p1 = atoi (argv[1]);
-      N = 1;
-      
+      printf ("evaluation of function in -INF does not return 0");
+      exit (1);
     }
 
-  for (prec = p0; prec <= p1; prec++)
+  MPFR_SET_NAN(x);
+  mpfr_exp2 (y, x, GMP_RNDN);
+  if(!MPFR_IS_NAN(y))
     {
-      mpfr_set_prec (x, prec);
-      mpfr_set_prec (z, prec);
-      mpfr_set_prec (t, prec);
-      yprec = prec + 10;
-      for (n=0; n<N; n++)
-	{
-	  mpfr_random (x);
-          if (random() % 2)
-	    mpfr_neg (x, x, GMP_RNDZ);
-	  rnd = random () % 4;
-	  mpfr_set_prec (y, yprec);
-	  TEST_FUNCTION (y, x, rnd);
-	  if (mpfr_can_round (y, yprec, rnd, rnd, prec))
-	    {
-	      mpfr_set (t, y, rnd);
-	      TEST_FUNCTION (z, x, rnd);
-	      if (mpfr_cmp (t, z))
-		{
-		  printf ("results differ for x=");
-		  mpfr_out_str (stdout, 2,prec, x, GMP_RNDN);
-		  printf (" prec=%u rnd_mode=%s\n", prec,
-			  mpfr_print_rnd_mode (rnd));
-		  printf ("   got      ");
-		  mpfr_out_str (stdout, 2, prec, z, GMP_RNDN);
-		  putchar ('\n');
-		  printf ("   expected ");
-		  mpfr_out_str (stdout, 2, prec, t, GMP_RNDN);
-		  putchar ('\n');
-		  printf ("   approximation was ");
-		  mpfr_print_raw (y);
-		  putchar ('\n');
-		  exit (1);
-		}
-	    }
-	}
+      printf ("evaluation of function in NAN does not return NAN");
+      exit (1);
     }
+
+  test_generic (1, 100, 100);
 
   mpfr_clear (x);
   mpfr_clear (y);
-  mpfr_clear (z);
-  mpfr_clear (t);
 
   return 0;
 }
