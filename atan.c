@@ -261,9 +261,10 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
   comparaison = mpfr_cmp_ui (xp, 1);
   if (MPFR_UNLIKELY (comparaison == 0))
     {
+      int neg = MPFR_IS_NEG (x);
       inexact = mpfr_const_pi (atan, MPFR_IS_POS (x) ? rnd_mode
                                : MPFR_INVERT_RND (rnd_mode));
-      if (MPFR_IS_NEG (x))
+      if (neg)
         {
           inexact = -inexact;
           MPFR_CHANGE_SIGN (atan);

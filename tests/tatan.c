@@ -161,6 +161,10 @@ special (void)
       mpfr_dump (y);
       exit (1);
     }
+  
+  mpfr_set_si (x, -1, GMP_RNDN);
+  mpfr_atan (x, x, GMP_RNDN);
+  MPFR_ASSERTN (MPFR_IS_NEG (x));
 
   mpfr_clear (x);
   mpfr_clear (y);
