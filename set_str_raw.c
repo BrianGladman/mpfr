@@ -48,10 +48,14 @@ mpfr_set_str_raw(x, str)
   unsigned long j, l, k = 0, xsize, cnt, alloc; mp_limb_t *xp; 
   long expn = 0, e; char *endstr2;
 
-  xp = MPFR_MANT (x); 
+  xp = MPFR_MANT(x);
   xsize = 1 + (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB;
   alloc = (strlen(str)+1) * sizeof(char);
   str0 = str2 = (char *) (*_mp_allocate_func) (alloc);
+  if (str0 == NULL) {
+    fprintf (stderr, "Error in mpfr_set_str_raw: no more memory available\n");
+    exit (1);
+  }
 
   if (*str == '-') { negative = 1; str++; }
   else if (*str == '+') str++;
