@@ -140,16 +140,18 @@ Ulp (double x)
    return (eps > y) ? 0.5 * eps : eps;
 }
 
-/* returns the number of ulp's between a and b */
+/* returns the number of ulp's between a and b,
+   where a and b can be any floating-point number, except NaN
+ */
 int
 ulp (double a, double b)
 {
-  if (a==0.0) {
-    if (b==0.0) return 0;
-    else if (b<0.0) return 2147483647;
-    else return -2147483647;
-  }
-  return (a-b)/Ulp(a);
+  if (a == b) return 0; /* also deals with a=b=inf or -inf */
+
+  if (a + a == a) /* a is +/-0.0 or +/-Inf */
+    return ((b < a) ? 2147483647 : -2147483647);
+
+  return (a - b) / Ulp (a);
 }
 
 /* return double m*2^e */

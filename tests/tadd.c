@@ -182,24 +182,36 @@ check5 (double x, mp_rnd_t rnd_mode)
 void
 check2 (double x, int px, double y, int py, int pz, mp_rnd_t rnd_mode)
 {
-  mpfr_t xx, yy, zz; double z,z2; int u;
+  mpfr_t xx, yy, zz;
+  double z, z2;
+  int u;
 
-  mpfr_init2(xx,px); mpfr_init2(yy,py); mpfr_init2(zz,pz);
-  mpfr_set_d(xx, x, rnd_mode);
-  mpfr_set_d(yy, y, rnd_mode);
-  mpfr_add(zz, xx, yy, rnd_mode);
-  mpfr_set_machine_rnd_mode(rnd_mode);
-  z = x+y; z2=mpfr_get_d1 (zz); u=ulp(z,z2);
-  /* one ulp difference is possible due to composed rounding */
-  if (px>=53 && py>=53 && pz>=53 && ABS(u)>1) { 
-    printf("x=%1.20e,%d y=%1.20e,%d pz=%d,rnd=%s\n",
-	   x,px,y,py,pz,mpfr_print_rnd_mode(rnd_mode));
-    printf("got %1.20e\n",z2);
-    printf("result should be %1.20e (diff=%d ulp)\n",z,u);
-    mpfr_set_d(zz, z, rnd_mode);
-    printf("i.e."); mpfr_print_binary(zz); putchar('\n');
-    exit(1); }
-  mpfr_clear(xx); mpfr_clear(yy); mpfr_clear(zz);
+  mpfr_init2 (xx, px);
+  mpfr_init2 (yy, py);
+  mpfr_init2 (zz, pz);
+  mpfr_set_d (xx, x, rnd_mode);
+  mpfr_set_d (yy, y, rnd_mode);
+  mpfr_add (zz, xx, yy, rnd_mode);
+  mpfr_set_machine_rnd_mode (rnd_mode);
+  z = x+y;
+  z2 = mpfr_get_d1 (zz);
+  u = ulp (z, z2);
+  /* one ulp difference is possible due to double rounding */
+  if ((px >= 53) && (py >= 53) && (pz >= 53) && ((u < -1) || (1 < u)))
+    {
+      printf ("x=%1.20e,%d y=%1.20e,%d pz=%d,rnd=%s\n",
+               x, px, y, py, pz, mpfr_print_rnd_mode(rnd_mode));
+      printf ("got %1.20e\n", z2);
+      printf ("result should be %1.20e (diff=%d ulp)\n", z, u);
+      mpfr_set_d (zz, z, rnd_mode);
+      printf ("i.e. ");
+      mpfr_print_binary (zz);
+      printf ("\n");
+      exit(1);
+    }
+  mpfr_clear(xx);
+  mpfr_clear(yy);
+  mpfr_clear(zz);
 }
 #endif
 
@@ -852,16 +864,19 @@ main (int argc, char *argv[])
         }
     } 
   /* tests with random precisions */
-  for (i=0;i<N;i++) {
-    int px, py, pz;
-    px = 53 + (LONG_RAND() % 64); 
-    py = 53 + (LONG_RAND() % 64); 
-    pz = 53 + (LONG_RAND() % 64); 
-    rnd_mode = LONG_RAND() % 4;
-    do { x = drand(); } while (isnan(x));
-    do { y = drand(); } while (isnan(y));
-    check2 (x, px, y, py, pz, rnd_mode);
-  }
+  check2 (-1.57042997938991596516e+308, 93, -3.44223949093574481399e+307, 70,
+          53, GMP_RNDN);
+  for (i=0;i<N;i++)
+    {
+      int px, py, pz;
+      px = 53 + (LONG_RAND() % 64); 
+      py = 53 + (LONG_RAND() % 64); 
+      pz = 53 + (LONG_RAND() % 64); 
+      rnd_mode = LONG_RAND() % 4;
+      do { x = drand(); } while (isnan(x));
+      do { y = drand(); } while (isnan(y));
+      check2 (x, px, y, py, pz, rnd_mode);
+    }
   /* Checking mpfr_add(x, x, y) with prec=53 */
   for (i=0;i<N;i++)
     {
