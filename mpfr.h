@@ -110,7 +110,7 @@ void mpfr_sqrt _PROTO ((mpfr_ptr, mpfr_srcptr, unsigned char));
 void mpfr_add _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, unsigned char));
 int mpfr_add_one_ulp _PROTO ((mpfr_ptr));
 void mpfr_sub _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, unsigned char));
-void mpfr_set _PROTO ((mpfr_ptr, mpfr_srcptr, unsigned char));
+void mpfr_set4 _PROTO ((mpfr_ptr, mpfr_srcptr, unsigned char, int));
 void mpfr_pi _PROTO ((mpfr_ptr, unsigned char));
 void mpfr_log2 _PROTO ((mpfr_ptr, unsigned char));
 void mpfr_log _PROTO ((mpfr_ptr, mpfr_srcptr, unsigned char));
@@ -118,7 +118,7 @@ int mpfr_exp _PROTO ((mpfr_ptr, mpfr_srcptr, unsigned char));
 int mpfr_zeta _PROTO ((mpfr_ptr, mpfr_srcptr, unsigned char));
 void mpfr_mul_ui _PROTO((mpfr_ptr, mpfr_srcptr, unsigned long, unsigned char));
 void mpfr_set_machine_rnd_mode _PROTO ((unsigned char));
-int mpfr_cmp _PROTO ((mpfr_srcptr, mpfr_srcptr));
+int mpfr_cmp3 _PROTO ((mpfr_srcptr, mpfr_srcptr, long int));
 int mpfr_cmp_ui_2exp _PROTO ((mpfr_srcptr, unsigned long int, int));
 int mpfr_cmp_si_2exp _PROTO ((mpfr_srcptr, long int, int));
 int mpfr_cmp2 _PROTO ((mpfr_srcptr, mpfr_srcptr));
@@ -129,7 +129,7 @@ void mpfr_set_default_prec _PROTO((unsigned long int));
 extern mp_size_t __gmp_default_fp_bit_precision;
 extern char __gmp_default_rounding_mode;
 char *mpfr_print_rnd_mode(unsigned char); 
-void mpfr_neg _PROTO((mpfr_t, mpfr_t, unsigned char)); 
+void mpfr_neg _PROTO((mpfr_ptr, mpfr_srcptr, unsigned char)); 
 int mpfr_sub_one_ulp _PROTO((mpfr_ptr x)); 
 int mpfr_div_ui _PROTO((mpfr_ptr y, mpfr_srcptr x, unsigned long u, unsigned char rnd_mode)); 
 unsigned long int mpfr_get_prec _PROTO((mpfr_t x)); 
@@ -138,6 +138,8 @@ void mpfr_div3 _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, unsigned char));
 #define mpfr_init(x) mpfr_init2(x, __gmp_default_fp_bit_precision)
 #define mpfr_cmp_ui(b,i) mpfr_cmp_ui_2exp(b,i,0)
 #define mpfr_cmp_si(b,i) mpfr_cmp_si_2exp(b,i,0)
+#define mpfr_set(a,b,r) mpfr_set4(a,b,r,SIGN(b))
+#define mpfr_cmp(b,c) mpfr_cmp3(b,c,1)
 
 #if (BITS_PER_MP_LIMB==32)
 #define LOG_MP_BITS_PER_LIMB 5
