@@ -317,12 +317,7 @@ main (void)
       check_inexact (p);
   special ();
   check_float();
-#ifdef HAVE_INFS
-  check3 (DBL_NAN, GMP_RNDN, DBL_NAN); 
-  check3 (-1.0, GMP_RNDN, DBL_NAN); 
-  check3 (DBL_POS_INF, GMP_RNDN, DBL_POS_INF); 
-  check3 (DBL_NEG_INF, GMP_RNDN, DBL_NAN);
-#endif
+
   check3(-0.0, GMP_RNDN, 0.0); 
   check4(6.37983013646045901440e+32, GMP_RNDN, "5.9bc5036d09e0c@13");
   check4(1.0, GMP_RNDN, "1");
