@@ -31,7 +31,9 @@ MA 02111-1307, USA. */
 int
 mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
-  int expx, precy, inexact;
+  mp_exp_t expx;
+  mp_prec_t precy;
+  int inexact;
   double d;
   MPFR_SAVE_EXPO_DECL (expo);
 
@@ -80,7 +82,7 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     }
 
   /* if x < 2^(-precy), then exp(x) i.e. gives 1 +/- 1 ulp(1) */
-  if (MPFR_UNLIKELY(expx < -precy))
+  if (MPFR_UNLIKELY (expx < 0 && (mpfr_uexp_t) (-expx) > precy))
     {
       int signx = MPFR_SIGN(x);
 
