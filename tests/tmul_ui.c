@@ -57,7 +57,7 @@ main(int argc, char **argv)
   mpfr_set_d(x, -2.0, GMP_RNDZ);
   mpfr_set_d(y, 3.0, GMP_RNDZ);
   mpfr_mul_ui(x, y, 4, GMP_RNDZ);
-  if (SIGN(x) != 1) {
+  if (mpfr_cmp_ui(x, 0) <= 0) {
     fprintf(stderr, "Error in mpfr_mul_ui: 4*3.0 does not give a positive result\n"); exit(1);
   }
 
