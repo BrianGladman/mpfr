@@ -34,8 +34,12 @@ MA 02111-1307, USA. */
 #define _FPU_RC_DOWN    0x400
 #define _FPU_RC_UP      0x800
 #define _FPU_RC_ZERO    0xC00
+#define HAVE_SETFPUCW
 #else
+#ifdef HAVE_FPU_CONTROL_H
 #include <fpu_control.h>
+#define HAVE_SETFPUCW
+#endif
 #endif /* ifdef __CYGWIN32__ */
 #ifndef __setfpucw
 #define __setfpucw(cw) __asm__ ("fldcw %0" : : "m" (cw))
@@ -92,7 +96,7 @@ mpfr_test_init ()
   set_fpc_csr(exp.fc_word);
 #endif
 
-#if defined(__i386__)
+#ifdef HAVE_SETFPUCW
   /* sets the precision to double */
   __setfpucw((_FPU_DEFAULT & (~_FPU_EXTENDED)) | _FPU_DOUBLE);
 #endif

@@ -57,6 +57,8 @@ case $OS_TYPE in
 		;;
 esac
 
+AC_CHECK_HEADERS(fpu_control.h)
+
 dnl Tests concerning the include directories.
 AC_MSG_CHECKING(for gmp files)
 if test -d "$with_gmp_include"; then
@@ -70,8 +72,7 @@ AC_TRY_COMPILE([
 #include "longlong.h"
 ], , AC_MSG_RESULT(yes),
     [AC_MSG_RESULT(no)
-     AC_MSG_ERROR([gmp.h or gmp-impl.h or config.h or gmp-mparam.h or
-longlong.h may be missing ${with_gmp_include:+in $with_gmp_include}])]
+     AC_MSG_ERROR(gmp.h or gmp-impl.h or config.h or gmp-mparam.h or longlong.h may be missing ${with_gmp_include:+in $with_gmp_include})]
 )
 
 dnl Check BITS_PER_MP_LIMB and BYTES_PER_MP_LIMB
@@ -87,11 +88,12 @@ int main()
 }
 ], AC_MSG_RESULT(yes),
   [AC_MSG_RESULT(no)
-   AC_MSG_ERROR([BITS_PER_MP_LIMB and/or BYTES_PER_MP_LIMB are incorrect.
+dnl do not use the AC_MSG_ERROR macro because of message truncation...
+{ echo "configure: error: BITS_PER_MP_LIMB and/or BYTES_PER_MP_LIMB are incorrect.
 You probably need to change some of the GMP or MPFR compile options:
 MPFR doesn't currently do as many architecture checks as GMP, so the
-default target architecture may be different, hence the error.])]
-)
+default target architecture may be different, hence the error." 1>&2
+  exit 1; }])
 
 dnl Check random functions
 AC_MSG_CHECKING(for rand48 functions)
