@@ -80,13 +80,13 @@ main (void)
   MPFR_ASSERTN(mpfr_cmp_ui (y, 0) == 0 && MPFR_IS_NEG(y));
 
   emax = mpfr_get_emax ();
-  mpfr_set_emax (0);
+  set_emax (0);
   mpfr_set_prec (x, 3);
   mpfr_set_str_binary (x, "0.111");
   mpfr_set_prec (y, 2);
   mpfr_set (y, x, GMP_RNDU);
   MPFR_ASSERTN(mpfr_inf_p (y) && mpfr_sgn (y) > 0);
-  mpfr_set_emax (emax);
+  set_emax (emax);
 
   mpfr_set_prec (y, 11);
   mpfr_set_str_binary (y, "0.11111111100E-8");

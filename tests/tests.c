@@ -27,6 +27,7 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <float.h>
 
 #if TIME_WITH_SYS_TIME
@@ -295,7 +296,7 @@ FILE *src_fopen (const char *filename, const char *mode)
   char *buffer;
   FILE *f;
 
-  if (srcdir == NULL) 
+  if (srcdir == NULL)
     return fopen (filename, mode);
   buffer = malloc (strlen (filename) + strlen (srcdir) + 1);
   if (buffer == NULL)
@@ -307,4 +308,22 @@ FILE *src_fopen (const char *filename, const char *mode)
   f = fopen (buffer, mode);
   free (buffer);
   return f;
+}
+
+void set_emin (mp_exp_t exponent)
+{
+  if (mpfr_set_emin (exponent))
+    {
+      printf ("set_emin: setting emin to %ld failed\n", (long int) exponent);
+      exit (1);
+    }
+}
+
+void set_emax (mp_exp_t exponent)
+{
+  if (mpfr_set_emax (exponent))
+    {
+      printf ("set_emax: setting emax to %ld failed\n", (long int) exponent);
+      exit (1);
+    }
 }

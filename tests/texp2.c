@@ -33,8 +33,8 @@ special_overflow (void)
 {
   mpfr_t x, y;
 
-  mpfr_set_emin (-125);
-  mpfr_set_emax (128);
+  set_emin (-125);
+  set_emax (128);
 
   mpfr_init2 (x, 24);
   mpfr_init2 (y, 24);
@@ -50,8 +50,8 @@ special_overflow (void)
 
   mpfr_clear (y);
   mpfr_clear (x);
-  mpfr_set_emin (MPFR_EMIN_MIN);
-  mpfr_set_emax (MPFR_EMAX_MAX);
+  set_emin (MPFR_EMIN_MIN);
+  set_emax (MPFR_EMAX_MAX);
 }
 
 int
@@ -102,7 +102,7 @@ main (int argc, char *argv[])
   mpfr_set_prec (y, 10);
   /* save emin */
   emin = mpfr_get_emin ();
-  mpfr_set_emin (-10);
+  set_emin (-10);
   mpfr_set_si (x, -12, GMP_RNDN);
   mpfr_exp2 (y, x, GMP_RNDN);
   if (mpfr_cmp_ui (y, 0) || mpfr_sgn (y) < 0)
@@ -113,11 +113,11 @@ main (int argc, char *argv[])
       exit (1);
     }
   /* restore emin */
-  mpfr_set_emin (emin);
+  set_emin (emin);
 
   /* save emax */
   emax = mpfr_get_emax ();
-  mpfr_set_emax (10);
+  set_emax (10);
   mpfr_set_ui (x, 11, GMP_RNDN);
   mpfr_exp2 (y, x, GMP_RNDN);
   if (!mpfr_inf_p (y) || mpfr_sgn (y) < 0)
@@ -126,7 +126,7 @@ main (int argc, char *argv[])
       exit (1);
     }
   /* restore emax */
-  mpfr_set_emax (emax);
+  set_emax (emax);
 
 
   MPFR_SET_INF(x);

@@ -32,8 +32,8 @@ check_overflow (void)
 {
   mpfr_t x, y, z1, z2;
 
-  mpfr_set_emin (-1021);
-  mpfr_set_emax (1024);
+  set_emin (-1021);
+  set_emax (1024);
 
   mpfr_inits (x, y, z1, z2, NULL);
   

@@ -140,11 +140,11 @@ main (int argc, char *argv[])
   MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_POS(x));
 
   emax = mpfr_get_emax ();
-  mpfr_set_emax (0);
+  set_emax (0);
   mpfr_set_str_binary (x, "0.1E0");
   mpfr_mul_ui (x, x, 2, GMP_RNDN);
   MPFR_ASSERTN(mpfr_inf_p (x) && MPFR_IS_POS(x));
-  mpfr_set_emax (emax);
+  set_emax (emax);
 
   mpfr_set_str (x, /*1.0/3.0*/ 
 		"0.333333333333333333333333333333333", 10, GMP_RNDZ);

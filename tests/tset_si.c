@@ -190,17 +190,17 @@ main (int argc, char *argv[])
   
   /* check potential bug in case mp_limb_t is unsigned */
   emax = mpfr_get_emax ();
-  mpfr_set_emax (0);
+  set_emax (0);
   mpfr_set_si (x, -1, GMP_RNDN);
   if (mpfr_sgn (x) >= 0)
     {
       printf ("mpfr_set_si (x, -1) fails\n");
       exit (1);
     }
-  mpfr_set_emax (emax);
+  set_emax (emax);
 
   emax = mpfr_get_emax ();
-  mpfr_set_emax (5);
+  set_emax (5);
   mpfr_set_prec (x, 2);
   mpfr_set_si (x, -31, GMP_RNDN);
   if (mpfr_sgn (x) >= 0)
@@ -208,7 +208,7 @@ main (int argc, char *argv[])
       printf ("mpfr_set_si (x, -31) fails\n");
       exit (1);
     }
-  mpfr_set_emax (emax);
+  set_emax (emax);
 
   /* test for get_ui */
   mpfr_set_ui (x, 0, GMP_RNDN);
@@ -244,13 +244,13 @@ main (int argc, char *argv[])
   mpfr_set_ui (x, 7, GMP_RNDU);
   MPFR_ASSERTN(mpfr_cmp_ui (x, 8) == 0);
   emax = mpfr_get_emax ();
-  mpfr_set_emax (3);
+  set_emax (3);
   mpfr_set_ui (x, 7, GMP_RNDU);
   MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
-  mpfr_set_emax (1);
+  set_emax (1);
   MPFR_ASSERTN( mpfr_set_ui (x, 7, GMP_RNDU) );
   MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
-  mpfr_set_emax (emax);
+  set_emax (emax);
 
   /* Test for ERANGE flag + correct behaviour if overflow */
   mpfr_set_prec (x, 256); 

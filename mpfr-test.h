@@ -66,7 +66,7 @@ void tests_machine_prec_double _MPFR_PROTO ((void));
 void tests_machine_prec_long_double _MPFR_PROTO ((void));
 
 unsigned short x86_fstcw _MPFR_PROTO ((void));
-void x86_fldcw _MPFR_PROTO ((unsigned short cw));
+void x86_fldcw _MPFR_PROTO ((unsigned short));
 
 int mpfr_set_machine_rnd_mode _MPFR_PROTO ((mp_rnd_t));
 void mpfr_test_init _MPFR_PROTO ((void));
@@ -79,10 +79,11 @@ int Isnan _MPFR_PROTO ((double));
 void d_trace _MPFR_PROTO ((const char *, double));
 void ld_trace _MPFR_PROTO ((const char *, long double));
 
-FILE *src_fopen _MPFR_PROTO ((const char *filename, const char *mode));
+FILE *src_fopen _MPFR_PROTO ((const char *, const char *));
+void set_emin _MPFR_PROTO ((mp_exp_t));
+void set_emax _MPFR_PROTO ((mp_exp_t));
 
-int mpfr_cmp_str _MPFR_PROTO ((mpfr_srcptr x, const char *s, int base,
-			       mp_rnd_t rnd));
+int mpfr_cmp_str _MPFR_PROTO ((mpfr_srcptr x, const char *, int, mp_rnd_t));
 #define mpfr_cmp_str1(x,s) mpfr_cmp_str(x,s,10,GMP_RNDN)
 #define mpfr_set_str1(x,s) mpfr_set_str(x,s,10,GMP_RNDN)
 

@@ -544,17 +544,17 @@ check_nan (void)
 
   /* check overflow */
   emax = mpfr_get_emax ();
-  mpfr_set_emax (1);
+  set_emax (1);
   mpfr_set_ui (a, 1, GMP_RNDZ);
   mpfr_set_ui (d, 1, GMP_RNDZ);
   mpfr_div_2exp (d, d, 1, GMP_RNDZ);
   mpfr_div (q, a, d, GMP_RNDU); /* 1 / 0.5 = 2 -> overflow */
   MPFR_ASSERTN (mpfr_inf_p (q) && mpfr_sgn (q) > 0);
-  mpfr_set_emax (emax);
+  set_emax (emax);
 
   /* check underflow */
   emin = mpfr_get_emin ();
-  mpfr_set_emin (-1);
+  set_emin (-1);
   mpfr_set_ui (a, 1, GMP_RNDZ);
   mpfr_div_2exp (a, a, 2, GMP_RNDZ);
   mpfr_set_ui (d, 2, GMP_RNDZ);
@@ -562,7 +562,7 @@ check_nan (void)
   MPFR_ASSERTN (mpfr_cmp_ui (q, 0) == 0 && MPFR_IS_POS (q));
   mpfr_div (q, a, d, GMP_RNDN); /* 0.5*2^(-2) -> underflow */
   MPFR_ASSERTN (mpfr_cmp_ui (q, 0) == 0 && MPFR_IS_POS (q));
-  mpfr_set_emin (emin);
+  set_emin (emin);
 
   mpfr_clear (a);
   mpfr_clear (d);

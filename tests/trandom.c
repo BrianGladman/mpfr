@@ -188,7 +188,7 @@ test_urandomb (long nbtests, mp_prec_t prec, int verbose)
 
   /* coverage test */
   emin = mpfr_get_emin ();
-  mpfr_set_emin (1); /* the generated number in [0,1[ is not in the exponent
+  set_emin (1); /* the generated number in [0,1[ is not in the exponent
                         range, except if it is zero */
   k = mpfr_urandomb (x, state);
   if (MPFR_IS_ZERO(x) == 0 && (k == 0 || mpfr_nan_p (x) == 0))
@@ -197,7 +197,7 @@ test_urandomb (long nbtests, mp_prec_t prec, int verbose)
       mpfr_dump (x);
       exit (1);
     }
-  mpfr_set_emin (emin);
+  set_emin (emin);
 
   mpfr_clear (x);
   gmp_randclear (state);

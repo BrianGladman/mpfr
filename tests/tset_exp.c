@@ -38,11 +38,11 @@ main (int argc, char *argv[])
   ret = mpfr_set_exp (x, 2);
   MPFR_ASSERTN(ret == 0 && mpfr_cmp_ui (x, 2) == 0);
 
-  mpfr_set_emin (-1);
+  set_emin (-1);
   ret = mpfr_set_exp (x, -1);
   MPFR_ASSERTN(ret == 0 && mpfr_cmp_ui_2exp (x, 1, -2) == 0);
 
-  mpfr_set_emax (1);
+  set_emax (1);
   ret = mpfr_set_exp (x, 1);
   MPFR_ASSERTN(ret == 0 && mpfr_cmp_ui (x, 1) == 0);
 

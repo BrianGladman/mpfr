@@ -56,12 +56,12 @@ main (void)
    MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_NEG(x));
 
    emax = mpfr_get_emax ();
-   mpfr_set_emax (0);
+   set_emax (0);
    mpfr_set_prec (x, 3);
    mpfr_set_str_binary (x, "0.111");
    mpfr_prec_round (x, 2, GMP_RNDN);
    MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
-   mpfr_set_emax (emax);
+   set_emax (emax);
 
    mpfr_set_prec (x, mp_bits_per_limb + 2);
    mpfr_set_ui (x, 1, GMP_RNDN);

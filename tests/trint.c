@@ -64,13 +64,13 @@ special (void)
 
   /* another coverage test */
   emax = mpfr_get_emax ();
-  mpfr_set_emax (1);
+  set_emax (1);
   mpfr_set_prec (x, 3);
   mpfr_set_str_binary (x, "1.11E0");
   mpfr_set_prec (y, 2);
   mpfr_rint (y, x, GMP_RNDU); /* x rounds to 1.0E1=0.1E2 which overflows */
   MPFR_ASSERTN(mpfr_inf_p (y) && mpfr_sgn (y) > 0);
-  mpfr_set_emax (emax);
+  set_emax (emax);
 
   /* yet another */
   mpfr_set_prec (x, 97);

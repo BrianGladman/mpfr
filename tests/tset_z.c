@@ -94,27 +94,27 @@ check_large (void)
 
   /* check overflow */
   emax = mpfr_get_emax ();
-  mpfr_set_emax (2);
+  set_emax (2);
   mpz_set_str (z, "7", 10);
   mpfr_set_z (x, z, GMP_RNDU);
   MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
-  mpfr_set_emax (3);
+  set_emax (3);
   mpfr_set_prec (x, 2);
   mpz_set_str (z, "7", 10);
   mpfr_set_z (x, z, GMP_RNDU);
   MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
-  mpfr_set_emax (emax);
+  set_emax (emax);
 
   /* check underflow */
   emin = mpfr_get_emin ();
-  mpfr_set_emin (3);
+  set_emin (3);
   mpz_set_str (z, "1", 10);
   mpfr_set_z (x, z, GMP_RNDZ);
   MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_POS(x));
-  mpfr_set_emin (2);
+  set_emin (2);
   mpfr_set_z (x, z, GMP_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_POS(x));
-  mpfr_set_emin (emin);
+  set_emin (emin);
 
   mpz_clear (z);
   mpfr_clear (x);

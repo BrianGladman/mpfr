@@ -217,7 +217,7 @@ check_special ()
 
   /* check overflow */
   emax = mpfr_get_emax ();
-  mpfr_set_emax (10);
+  set_emax (10);
   mpfr_set_ui (x, 7, GMP_RNDN);
   mpfr_exp (y, x, GMP_RNDN);
   if (!mpfr_inf_p (y) || mpfr_sgn (y) < 0)
@@ -225,11 +225,11 @@ check_special ()
       printf ("Error for exp(7) for emax=10\n");
       exit (1);
     }
-  mpfr_set_emax (emax);
+  set_emax (emax);
 
   /* check underflow */
   emin = mpfr_get_emin ();
-  mpfr_set_emin (-10);
+  set_emin (-10);
   mpfr_set_si (x, -9, GMP_RNDN);
   mpfr_exp (y, x, GMP_RNDN);
   if (mpfr_cmp_ui (y, 0) || mpfr_sgn (y) < 0)
@@ -239,7 +239,7 @@ check_special ()
       printf ("Got      "); mpfr_print_binary (y); puts ("");
       exit (1);
     }
-  mpfr_set_emin (emin);
+  set_emin (emin);
 
   /* check case EXP(x) < -precy */
   mpfr_set_prec (y, 2);
@@ -295,8 +295,8 @@ check_special ()
   mpfr_exp_3 (y, x, GMP_RNDN);
 
   /* Check some little things about overflow detection */
-  mpfr_set_emin (-125);
-  mpfr_set_emax (128);
+  set_emin (-125);
+  set_emax (128);
   mpfr_set_prec (x, 107);
   mpfr_set_prec (y, 107);
   mpfr_set_str_binary (x, "0.11110000000000000000000000000000000000000000000"
@@ -312,8 +312,8 @@ check_special ()
       exit (1);
     }
   
-  mpfr_set_emin (MPFR_EMIN_MIN);
-  mpfr_set_emax (MPFR_EMAX_MAX);
+  set_emin (MPFR_EMIN_MIN);
+  set_emax (MPFR_EMAX_MAX);
 
   /* Check for overflow producing a segfault with HUGE exponent */
   mpfr_set_ui  (x, 3, GMP_RNDN);

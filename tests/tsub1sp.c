@@ -470,7 +470,7 @@ void check_special(void)
        STD_ERROR2;
 
      es = mpfr_get_emin ();
-     mpfr_set_emin (-1024);
+     set_emin (-1024);
 
      mpfr_set_str_binary (y,
 			  "0.10000000000000000000000000000000"
@@ -498,7 +498,7 @@ void check_special(void)
      if (inexact1 != inexact2)
        STD_ERROR2;
 
-     mpfr_set_emin(es);
+     set_emin (es);
 
     }
 

@@ -110,8 +110,8 @@ special_overflow (void)
      3. cosh(x) exp overflow even with the largest range of exp */
   mpfr_t x, y;
 
-  mpfr_set_emin (-125);
-  mpfr_set_emax (128);
+  set_emin (-125);
+  set_emax (128);
   
   mpfr_init2 (x, 24);
   mpfr_init2 (y, 24);
@@ -134,8 +134,8 @@ special_overflow (void)
       exit (1);
     }
   
-  mpfr_set_emin (MPFR_EMIN_MIN);
-  mpfr_set_emax (MPFR_EMAX_MAX);
+  set_emin (MPFR_EMIN_MIN);
+  set_emax (MPFR_EMAX_MAX);
 
   mpfr_set_str_binary (x, "0.101100100000000000110100E1000000");
   mpfr_cosh (y, x, GMP_RNDN);

@@ -172,14 +172,14 @@ main (int argc, char *argv[])
   /* check with reduced emax to exercise overflow */
   emax = mpfr_get_emax ();
   mpfr_set_prec (x, 2);
-  mpfr_set_emax (1);
+  set_emax (1);
   mpfr_set_ld (x, (long double) 2.0, GMP_RNDN);
   MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
   for (d = (long double) 2.0, i = 0; i < 13; i++, d *= d);
   /* now d = 2^8192 */
   mpfr_set_ld (x, d, GMP_RNDN);
   MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
-  mpfr_set_emax (emax);
+  set_emax (emax);
 
   mpfr_clear (x);
 

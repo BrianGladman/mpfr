@@ -300,17 +300,17 @@ check_max(void)
 
   /* check underflow */
   emin = mpfr_get_emin ();
-  mpfr_set_emin (0);
+  set_emin (0);
   mpfr_set_str_binary (xx, "0.1E0");
   mpfr_set_str_binary (yy, "0.1E0");
   mpfr_mul (zz, xx, yy, GMP_RNDN);
   /* exact result is 0.1E-1, which should round to 0 */
   MPFR_ASSERTN(mpfr_cmp_ui (zz, 0) == 0 && MPFR_IS_POS(zz));
-  mpfr_set_emin (emin);
+  set_emin (emin);
   
   /* coverage test for mpfr_powerof2_raw */
   emin = mpfr_get_emin ();
-  mpfr_set_emin (0);
+  set_emin (0);
   mpfr_set_prec (xx, mp_bits_per_limb + 1);
   mpfr_set_str_binary (xx, "0.1E0");
   mpfr_nextabove (xx);
@@ -318,7 +318,7 @@ check_max(void)
   mpfr_mul (zz, xx, yy, GMP_RNDN);
   /* exact result is just above 0.1E-1, which should round to minfloat */
   MPFR_ASSERTN(mpfr_cmp (zz, yy) == 0);
-  mpfr_set_emin (emin);
+  set_emin (emin);
   
   mpfr_clear(xx);
   mpfr_clear(yy);

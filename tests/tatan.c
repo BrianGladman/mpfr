@@ -157,8 +157,8 @@ special_overflow (void)
 {
   mpfr_t x, y;
 
-  mpfr_set_emin (-125);
-  mpfr_set_emax (128);
+  set_emin (-125);
+  set_emax (128);
   mpfr_init2 (x, 24);
   mpfr_init2 (y, 48);
   mpfr_set_str_binary (x, "0.101101010001001101111010E0");
@@ -172,8 +172,8 @@ special_overflow (void)
     }
   mpfr_clear (y);
   mpfr_clear (x);
-  mpfr_set_emin (MPFR_EMIN_MIN);
-  mpfr_set_emax (MPFR_EMAX_MAX);
+  set_emin (MPFR_EMIN_MIN);
+  set_emax (MPFR_EMAX_MAX);
 }
 
 int

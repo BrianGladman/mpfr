@@ -82,8 +82,8 @@ mpfr_set_double_range (void)
      (We have to add one for mpfr since mantissa are between 1/2 and 1.)
   */
 
-  mpfr_set_emin (-1021);
-  mpfr_set_emax (1024);
+  set_emin (-1021);
+  set_emax (1024);
 }
 
 static void
@@ -249,7 +249,7 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-  mpfr_set_emax (1025);
+  set_emax (1025);
   mpfr_set_ui (x, 1, GMP_RNDN);
   mpfr_mul_2exp (x, x, 1024, GMP_RNDN);
   mpfr_set_double_range ();
@@ -293,7 +293,7 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-  mpfr_set_emin (-1026);
+  set_emin (-1026);
   mpfr_set_ui (x, 1, GMP_RNDN);
   mpfr_div_2exp (x, x, 1025, GMP_RNDN);
   mpfr_set_double_range ();
