@@ -110,15 +110,6 @@ if test "$mpfr_cv_have_fesetround" = "yes"; then
   AC_DEFINE(MPFR_HAVE_FESETROUND,1,[Define if you have the `fesetround' function via the <fenv.h> header file.])
 fi
 
-dnl Check for isnan
-AC_CACHE_CHECK([for isnan], mpfr_cv_have_isnan, [
-AC_TRY_LINK([#include <math.h>], [isnan(0.0);],
-  mpfr_cv_have_isnan=yes, mpfr_cv_have_isnan=no)
-])
-if test "$mpfr_cv_have_isnan" = "yes"; then
-  AC_DEFINE(MPFR_HAVE_ISNAN,1,[Define if you have the `isnan' function via the <math.h> header file.])
-fi
-
 dnl Check random functions
 AC_CHECK_FUNCS(lrand48)
 
