@@ -248,6 +248,29 @@ int mpfr_sub_q _PROTO ((mpfr_ptr, mpfr_srcptr, mpq_srcptr, mp_rnd_t));
 }
 #endif  
 
+/* prevent from using mpfr_get_e{min,max} as lvalues */
+#define mpfr_get_emin() (__mpfr_emin + 0)
+#define mpfr_get_emax() (__mpfr_emax + 0)
+
+#define mpfr_clear_flags() \
+  ((void) (__mpfr_flags = 0))
+#define mpfr_clear_underflow() \
+  ((void) (__mpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_UNDERFLOW))
+#define mpfr_clear_overflow() \
+  ((void) (__mpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_OVERFLOW))
+#define mpfr_clear_nanflag() \
+  ((void) (__mpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_NAN))
+#define mpfr_clear_inexflag() \
+  ((void) (__mpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_INEXACT))
+#define mpfr_underflow_p() \
+  ((int) (__mpfr_flags & MPFR_FLAGS_UNDERFLOW))
+#define mpfr_overflow_p() \
+  ((int) (__mpfr_flags & MPFR_FLAGS_OVERFLOW))
+#define mpfr_nanflag_p() \
+  ((int) (__mpfr_flags & MPFR_FLAGS_NAN))
+#define mpfr_inexflag_p() \
+  ((int) (__mpfr_flags & MPFR_FLAGS_INEXACT))
+
 #define mpfr_cmp_ui(b,i) mpfr_cmp_ui_2exp((b),(i),0)
 #define mpfr_cmp_si(b,i) mpfr_cmp_si_2exp((b),(i),0)
 #define mpfr_set(a,b,r) mpfr_set4(a,b,r,MPFR_SIGN(b))
