@@ -65,9 +65,16 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
     /* since the smallest representable non-zero float is 1/2*2^__gmpfr_emin,
        if x < __gmpfr_emin - 1, the result is either 1/2*2^__gmpfr_emin or 0 */
-    MPFR_ASSERTN(MPFR_EMIN_MIN - 1 >= LONG_MIN);
+    MPFR_ASSERTN(MPFR_EMIN_MIN - 2 >= LONG_MIN);
     if (mpfr_cmp_si_2exp (x, __gmpfr_emin - 1, 0) < 0)
-      return mpfr_set_underflow (y, rnd_mode, 1);
+      {
+        mp_rnd_t rnd2 = rnd_mode;
+        /* in round to nearest mode, round to zero when x <= __gmpfr_emin-2 */
+        if (rnd_mode == GMP_RNDN &&
+            mpfr_cmp_si_2exp (x, __gmpfr_emin - 2, 0) <= 0)
+          rnd2 = GMP_RNDZ;
+        return mpfr_set_underflow (y, rnd2, 1);
+      }
 
     if (mpfr_isinteger (x)) /* we know that x >= 2^(emin-1) */
       {
