@@ -1,6 +1,6 @@
 /* mpfr_gamma -- gamma function
 
-Copyright 2001, 2002, 2003, 2004 Free Software Foundation.
+Copyright 2001, 2002, 2003, 2004, 2005 Free Software Foundation.
 
 This file is part of the MPFR Library, and was contributed by Mathieu Dutour.
 
@@ -51,27 +51,28 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
   int sign;
   int inex;
   MPFR_SAVE_EXPO_DECL (expo);
+  MPFR_ZIV_DECL (loop);
 
   /* Trivial cases */
-  if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(x) ))
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
-      if (MPFR_IS_NAN(x))
+      if (MPFR_IS_NAN (x))
 	{
-	  MPFR_SET_NAN(gamma);
+	  MPFR_SET_NAN (gamma);
 	  MPFR_RET_NAN;
 	}
-      else if (MPFR_IS_INF(x))
+      else if (MPFR_IS_INF (x))
 	{
-	  if (MPFR_IS_NEG(x))
+	  if (MPFR_IS_NEG (x))
 	    {
-	      MPFR_SET_NAN(gamma);
+	      MPFR_SET_NAN (gamma);
 	      MPFR_RET_NAN;
 	    }
 	  else
 	    {
-	      MPFR_SET_INF(gamma);
-	      MPFR_SET_POS(gamma);
-	      return 0;  /* exact */
+	      MPFR_SET_INF (gamma);
+	      MPFR_SET_POS (gamma);
+	      MPFR_RET (0);  /* exact */
 	    }
 	}
       else
@@ -79,7 +80,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
           MPFR_ASSERTD(MPFR_IS_ZERO(x));
 	  MPFR_SET_INF(gamma);
 	  MPFR_SET_SAME_SIGN(gamma, x);
-	  return 0;  /* exact */
+	  MPFR_RET (0);  /* exact */
 	}
     }
   MPFR_CLEAR_FLAGS(gamma);
@@ -100,16 +101,16 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   MPFR_SAVE_EXPO_MARK (expo);
 
-  realprec = prec_gamma + 10;
+  realprec = prec_gamma + MPFR_INT_CEIL_LOG2 (prec_gamma) + 10;
 
-  mpfr_init2 (xp, 2);
-  /* Initialisation    */
-  mpfr_init (tmp);
-  mpfr_init (tmp2);
-  mpfr_init (the_pi);
-  mpfr_init (product);
-  mpfr_init (GammaTrial);
+  mpfr_init2 (xp, realprec + BITS_PER_MP_LIMB);
+  mpfr_init2 (tmp, realprec + BITS_PER_MP_LIMB);
+  mpfr_init2 (tmp2, realprec + BITS_PER_MP_LIMB);
+  mpfr_init2 (the_pi, realprec + BITS_PER_MP_LIMB);
+  mpfr_init2 (product, realprec + BITS_PER_MP_LIMB);
+  mpfr_init2 (GammaTrial, realprec + BITS_PER_MP_LIMB);
 
+  MPFR_ZIV_INIT (loop, realprec);
   for (;;)
     { 
       /* Precision stuff */
@@ -210,8 +211,10 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
                           MPFR_PREC(gamma) + (rnd_mode == GMP_RNDN)))
         break;
       
-      realprec += MPFR_INT_CEIL_LOG2 (realprec);
+      MPFR_ZIV_NEXT (loop, realprec);
     }
+  MPFR_ZIV_FREE (loop);
+
   inex = mpfr_set (gamma, GammaTrial, rnd_mode);
 
   mpfr_clear(tmp);

@@ -1,6 +1,6 @@
 /* mpfr_hypot -- Euclidean distance
 
-Copyright 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+Copyright 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -28,31 +28,30 @@ MA 02111-1307, USA. */
 int
 mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode)
 {
-  int inexact;
-  /* Flag exact computation */
-  int not_exact;
+  int inexact, exact;
   mpfr_t t, te, ti; /* auxiliary variables */
   mp_prec_t Nx, Ny, Nz; /* size variables */
   mp_prec_t Nt;   /* precision of the intermediary variable */
   mp_exp_t Ex, Ey, sh;
   mp_exp_unsigned_t diff_exp;
   MPFR_SAVE_EXPO_DECL (expo);
+  MPFR_ZIV_DECL (loop);
 
   /* particular cases */
-  if (MPFR_ARE_SINGULAR(x,y))
+  if (MPFR_ARE_SINGULAR (x, y))
     {
-      if (MPFR_IS_NAN(x) || MPFR_IS_NAN(y))
+      if (MPFR_IS_NAN (x) || MPFR_IS_NAN (y))
 	{
-	  MPFR_SET_NAN(z);
+	  MPFR_SET_NAN (z);
 	  MPFR_RET_NAN;
 	}
-      else if (MPFR_IS_INF(x) || MPFR_IS_INF(y))
+      else if (MPFR_IS_INF (x) || MPFR_IS_INF (y))
 	{
-	  MPFR_SET_INF(z);
-	  MPFR_SET_POS(z);
-	  MPFR_RET(0);
+	  MPFR_SET_INF (z);
+	  MPFR_SET_POS (z);
+	  MPFR_RET (0);
 	}
-      else if (MPFR_IS_ZERO(x))
+      else if (MPFR_IS_ZERO (x))
 	return mpfr_abs (z, y, rnd_mode);
       else /* y is necessarily 0 */
 	return mpfr_abs (z, x, rnd_mode);
@@ -73,7 +72,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode)
   Ey = MPFR_GET_EXP (y);
   diff_exp = (mp_exp_unsigned_t) Ex - Ey;
 
-  Nz = MPFR_PREC(z);   /* Precision of output variable */
+  Nz = MPFR_PREC (z);   /* Precision of output variable */
 
   /* we have x < 2^Ex thus x^2 < 2^(2*Ex),
      and ulp(x) = 2^(Ex-Nx) thus ulp(x^2) >= 2^(2*Ex-2*Nx).
@@ -84,7 +83,8 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode)
      Warning: this is true only for Nx <= Nz, otherwise the trailing bits
      of x may be already very close to 1/2*ulp(x,Nz)!
   */
-  if (MPFR_PREC(x) <= Nz && diff_exp > Nz / 2) /* result is |x| or |x|+ulp(|x|,Nz) */
+  if (MPFR_PREC (x) <= Nz && diff_exp > Nz / 2) 
+    /* result is |x| or |x|+ulp(|x|,Nz) */
     {
       if (rnd_mode == GMP_RNDU)
         {
@@ -106,58 +106,52 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode)
   Ny = MPFR_PREC(y);   /* Precision of input variable */
 
   /* compute the working precision -- see algorithms.ps */
-  Nt = MAX(MAX(MAX(Nx, Ny), Nz), 8);
-  Nt = Nt - 8 + MPFR_INT_CEIL_LOG2 (Nt);
+  Nt = MAX (MAX (MAX (Nx, Ny), Nz), 8);
+  Nt = Nt + MPFR_INT_CEIL_LOG2 (Nt) + 2;
 
   /* initialise the intermediary variables */
-  mpfr_init (t);
-  mpfr_init (te);
-  mpfr_init (ti);
+  mpfr_init2 (t, Nt);
+  mpfr_init2 (te, Nt);
+  mpfr_init2 (ti, Nt);
 
   MPFR_SAVE_EXPO_MARK (expo);
 
   sh = MAX (0, MIN (Ex, Ey));
 
-  do
+  MPFR_ZIV_INIT (loop, Nt);
+  for (;;)
     {
-      Nt += 10;
+      /* computations of hypot */
+      mpfr_div_2ui (te, x, sh, GMP_RNDZ); /* exact since Nt >= Nx */
+      mpfr_div_2ui (ti, y, sh, GMP_RNDZ); /* exact since Nt >= Ny */
+      exact = mpfr_mul (te, te, te, GMP_RNDZ);    /* x^2 */
+      exact |= mpfr_mul (ti, ti, ti, GMP_RNDZ);   /* y^2 */
+      exact |= mpfr_add (t, te, ti, GMP_RNDZ);    /* x^2+y^2 */
+      exact |= mpfr_sqrt (t, t, GMP_RNDZ);        /* sqrt(x^2+y^2)*/
 
-      not_exact = 0;
+      if (MPFR_LIKELY (exact == 0
+		       || mpfr_can_round (t, Nt - 2, GMP_RNDN, GMP_RNDZ,
+					  Nz + (rnd_mode == GMP_RNDN))))
+	break;
+
       /* reactualization of the precision */
+      MPFR_ZIV_NEXT (loop, Nt);
       mpfr_set_prec (t, Nt);
       mpfr_set_prec (te, Nt);
       mpfr_set_prec (ti, Nt);
 
-      /* computations of hypot */
-      mpfr_div_2ui (te, x, sh, GMP_RNDZ); /* exact since Nt >= Nx */
-      if (mpfr_mul (te, te, te, GMP_RNDZ))   /* x^2 */
-        not_exact = 1;
-
-      mpfr_div_2ui (ti, y, sh, GMP_RNDZ); /* exact since Nt >= Ny */
-      if (mpfr_mul (ti, ti, ti, GMP_RNDZ))   /* y^2 */
-        not_exact = 1;
-
-      if (mpfr_add (t, te, ti, GMP_RNDZ))  /* x^2+y^2 */
-        not_exact = 1;
-
-      if (mpfr_sqrt (t, t, GMP_RNDZ))     /* sqrt(x^2+y^2)*/
-        not_exact = 1;
-
     }
-  while (not_exact && !mpfr_can_round (t, Nt - 2, GMP_RNDN, GMP_RNDZ,
-                                       Nz + (rnd_mode == GMP_RNDN)));
-
+  MPFR_ZIV_FREE (loop);
   inexact = mpfr_mul_2ui (z, t, sh, rnd_mode);
-  /* if not_exact=1, necessarily the last (Nt-Nz) bits of t are not all zero,
-     otherwise it would not have been possible to round correctly */
-  MPFR_ASSERTD(not_exact == 0 || inexact != 0);
+
+  MPFR_ASSERTD (exact == 0 || inexact != 0);
 
   mpfr_clear (t);
   mpfr_clear (ti);
   mpfr_clear (te);
   
   /*
-    not_exact  inexact
+       exact  inexact
         0         0         result is exact, ternary flag is 0
         0       non zero    t is exact, ternary flag given by inexact
         1         0         impossible (see above)

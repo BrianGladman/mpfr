@@ -33,32 +33,33 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   int inexact;
   MPFR_SAVE_EXPO_DECL (expo);
 
-  if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(x) ))
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
-      if (MPFR_IS_NAN(x))
+      if (MPFR_IS_NAN (x))
 	{
-	  MPFR_SET_NAN(y);
+	  MPFR_SET_NAN (y);
 	  MPFR_RET_NAN;
 	}
-      else if (MPFR_IS_INF(x))
+      else if (MPFR_IS_INF (x))
 	{
-	  if (MPFR_IS_POS(x))
-	    MPFR_SET_INF(y);
+	  if (MPFR_IS_POS (x))
+	    MPFR_SET_INF (y);
 	  else
-	    MPFR_SET_ZERO(y);
-	  MPFR_SET_POS(y);
-	  MPFR_RET(0);
+	    MPFR_SET_ZERO (y);
+	  MPFR_SET_POS (y);
+	  MPFR_RET (0);
 	}
       else /* 2^0 = 1 */
 	{
-	  MPFR_ASSERTD(MPFR_IS_ZERO(x));
+	  MPFR_ASSERTD (MPFR_IS_ZERO(x));
 	  return mpfr_set_ui (y, 1, rnd_mode);
 	}
     }
   
   /* since the smallest representable non-zero float is 1/2*2^__gmpfr_emin,
      if x < __gmpfr_emin - 1, the result is either 1/2*2^__gmpfr_emin or 0 */
-  MPFR_ASSERTN(MPFR_EMIN_MIN - 2 >= LONG_MIN);
+  MPFR_ASSERTD (MPFR_EMIN_MIN - 2 >= LONG_MIN);
+
   if (mpfr_cmp_si_2exp (x, __gmpfr_emin - 1, 0) < 0)
     {
       mp_rnd_t rnd2 = rnd_mode;
@@ -73,7 +74,7 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     {
       long xd;
       
-      MPFR_ASSERTN(MPFR_EMAX_MAX <= LONG_MAX);
+      MPFR_ASSERTD (MPFR_EMAX_MAX <= LONG_MAX);
       if (mpfr_cmp_si_2exp (x, __gmpfr_emax, 0) > 0)
 	return mpfr_overflow (y, rnd_mode, 1);
       
@@ -93,12 +94,12 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     /* Declaration of the size variable */
     mp_prec_t Nx = MPFR_PREC(x);   /* Precision of input variable */
     mp_prec_t Ny = MPFR_PREC(y);   /* Precision of input variable */
-    
-    mp_prec_t Nt;   /* Precision of the intermediary variable */
-    long int err;  /* Precision of error */
-    
+    mp_prec_t Nt;       /* Precision of the intermediary variable */
+    mp_exp_t err;                           /* Precision of error */
+    MPFR_ZIV_DECL (loop);
+
     /* compute the precision of intermediary variable */
-    Nt = MAX(Nx, Ny);
+    Nt = MAX (Nx, Ny);
     /* the optimal number of bits : see algorithms.ps */
     Nt = Nt + 5 + MPFR_INT_CEIL_LOG2 (Nt);
     
@@ -106,6 +107,7 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     mpfr_init2 (t, Nt);
     
     /* First computation */
+    MPFR_ZIV_INIT (loop, Nt);
     for (;;)
       {
 	/* compute   exp(x*ln(2))*/
@@ -114,15 +116,16 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	err = Nt - (MPFR_GET_EXP (t) + 2);   /* Estimate of the error */
 	mpfr_exp (t, t, GMP_RNDN);           /* exp(x*ln(2))*/
 	
-	if (mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
-			    Ny + (rnd_mode == GMP_RNDN)))
+	if (MPFR_LIKELY (mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
+					 Ny + (rnd_mode == GMP_RNDN))))
 	  break;
 	
 	/* Actualisation of the precision */
-	Nt += __gmpfr_isqrt (Nt) + 10;
+	MPFR_ZIV_NEXT (loop, Nt);
 	mpfr_set_prec (t, Nt);
       }
-    
+    MPFR_ZIV_FREE (loop);
+
     inexact = mpfr_set (y, t, rnd_mode);
     
     mpfr_clear (t);
