@@ -55,19 +55,24 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
   m += (e < 0) ? -2*e : e;
 
   mpfr_init2 (c, m);
-  mpfr_init2 (k, m);
 
   /* first determine sign of sinus */
-  mpfr_const_pi (c, GMP_RNDN);
-  mpfr_mul_2ui (c, c, 1, GMP_RNDN);    /* 2*Pi */
-  mpfr_div (k, x, c, GMP_RNDN);        /* x/(2*Pi) */
-  mpfr_floor (k, k);                   /* floor(x/(2*Pi)) */
-  mpfr_mul (c, k, c, GMP_RNDN);
-  mpfr_sub (k, x, c, GMP_RNDN);        /* 0 <= k < 2*Pi */
-  mpfr_const_pi (c, GMP_RNDN);         /* PI is cached */
-  neg = mpfr_cmp (k, c) > 0;
-  mpfr_clear (k);
-  
+  if (MPFR_GET_EXP (x) > 0) 
+    {
+      mpfr_init2 (k, m);
+      mpfr_const_pi (c, GMP_RNDN);
+      mpfr_mul_2ui (c, c, 1, GMP_RNDN);    /* 2*Pi */
+      mpfr_div (k, x, c, GMP_RNDN);        /* x/(2*Pi) */
+      mpfr_floor (k, k);                   /* floor(x/(2*Pi)) */
+      mpfr_mul (c, k, c, GMP_RNDN);
+      mpfr_sub (k, x, c, GMP_RNDN);        /* 0 <= k < 2*Pi */
+      mpfr_const_pi (c, GMP_RNDN);         /* PI is cached */
+      neg = mpfr_cmp (k, c) > 0;
+      mpfr_clear (k);
+    }
+  else
+    neg = MPFR_SIGN (x) < 0;
+
   for (;;)
     {
       mpfr_cos (c, x, GMP_RNDZ);

@@ -34,7 +34,10 @@ mpfr_sin_sign (mpfr_srcptr x)
   mpfr_srcptr y;
 
   K = MPFR_GET_EXP(x);
-  m = (K < 0) ? 0 : K;
+
+  if (K < 0)  /* Trivial case if x < 1 */
+    return MPFR_SIGN (x);
+  m = K;
 
   mpfr_init2 (c, 2);
   mpfr_init2 (k, 2);
