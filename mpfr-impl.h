@@ -168,7 +168,7 @@ typedef unsigned long int  mpfr_uexp_t;
 
 /* MPFR_ASSERTN(expr): assertions that should always be checked */
 #define MPFR_ASSERTN(expr)  \
-   ((void) ((MPFR_UNLIKELY(expr)) || MPFR_UNLIKELY((ASSERT_FAIL (expr), 0))))
+   ((void) ((MPFR_UNLIKELY(expr)) || MPFR_UNLIKELY( (ASSERT_FAIL(expr),0) )))
 
 /* MPFR_ASSERTD(expr): assertions that should be checked when testing */
 #ifdef WANT_ASSERT
