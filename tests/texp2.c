@@ -32,6 +32,7 @@ int
 main (int argc, char *argv[])
 {
   mpfr_t x, y;
+  mp_exp_t emin, emax;
 
   tests_start_mpfr ();
 
@@ -68,6 +69,37 @@ main (int argc, char *argv[])
       printf ("Error for x=-1683977482443233/2^41\n");
       exit (1);
     }
+
+  mpfr_set_prec (x, 10);
+  mpfr_set_prec (y, 10);
+  /* save emin */
+  emin = mpfr_get_emin ();
+  mpfr_set_emin (-10);
+  mpfr_set_si (x, -12, GMP_RNDN);
+  mpfr_exp2 (y, x, GMP_RNDN);
+  if (mpfr_cmp_ui (y, 0) || mpfr_sgn (y) < 0)
+    {
+      printf ("Error for x=emin-2, RNDN\n");
+      printf ("Expected +0\n");
+      printf ("Got      "); mpfr_print_binary (y); puts ("");
+      exit (1);
+    }
+  /* restore emin */
+  mpfr_set_emin (emin);
+
+  /* save emax */
+  emax = mpfr_get_emax ();
+  mpfr_set_emax (10);
+  mpfr_set_ui (x, 11, GMP_RNDN);
+  mpfr_exp2 (y, x, GMP_RNDN);
+  if (!mpfr_inf_p (y) || mpfr_sgn (y) < 0)
+    {
+      printf ("Error for x=emax+1, RNDN\n");
+      exit (1);
+    }
+  /* restore emax */
+  mpfr_set_emax (emax);
+
 
   MPFR_SET_INF(x);
   MPFR_SET_POS(x);
