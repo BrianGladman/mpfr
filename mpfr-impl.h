@@ -542,6 +542,36 @@ do { \
 # define MPFR_INT_CEIL_LOG2(x) (__gmpfr_int_ceil_log2(x))
 #endif
 
+/* Add with overflow handling 
+   Example: MPFR_SADD_OVERFLOW (c, a, b, long, unsigned long,
+                                LONG_MIN, LONG_MAX,
+		                goto overflow, goto underflow); */
+#define MPFR_UADD_OVERFLOW(c,a,b,ACTION_IF_OVERFLOW) \
+ do { \
+  (c) = (a) + (b); \
+  if ((c) < (a)) ACTION_IF_OVERFLOW; \
+ } while (0)
+
+ 
+#define MPFR_SADD_OVERFLOW(c,a,b,STYPE,UTYPE,MIN,MAX,ACTION_IF_POS_OVERFLOW,ACTION_IF_NEG_OVERFLOW) \
+  do { \
+  if ((a) >= 0 && (b) >= 0) { \
+         UTYPE uc,ua,ub; \
+         ua = (UTYPE) a; ub = (UTYPE) b; \
+         MPFR_UADD_OVERFLOW (uc, ua, ub, ACTION_IF_POS_OVERFLOW); \
+         if (uc > (UTYPE)(MAX)) ACTION_IF_POS_OVERFLOW; \
+         (c) = (STYPE) uc; \
+  } else if ((a) < 0 && (b) < 0) { \
+         UTYPE uc,ua,ub; \
+         ua = -(UTYPE) a; ub = -(UTYPE) b; \
+         MPFR_UADD_OVERFLOW (uc, ua, ub, ACTION_IF_NEG_OVERFLOW); \
+         if (uc >= -(UTYPE)(MIN) || uc > (UTYPE)(MAX)) { \
+           if (uc ==  -(UTYPE)(MIN)) (c) = (MIN); \
+           else  ACTION_IF_NEG_OVERFLOW; } \
+         else (c) = -(STYPE) uc; \
+  } else (c) = (a) + (b); \
+ } while (0)
+
 #if defined (__cplusplus)
 extern "C" {
 #endif
