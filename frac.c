@@ -32,7 +32,7 @@ mpfr_frac (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
   mp_prec_t uq, fq;
   mp_size_t un, tn, t0;
   mp_limb_t *up, *tp, k;
-  unsigned int sh;
+  int sh;
   mpfr_t tmp;
   mpfr_ptr t;
 
@@ -65,7 +65,7 @@ mpfr_frac (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
 
   if (k != 0)
     {
-      unsigned int cnt;
+      int cnt;
 
       count_leading_zeros(cnt, k);
       re = -cnt;
