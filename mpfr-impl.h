@@ -79,6 +79,7 @@ typedef unsigned long int       mp_size_unsigned_t;
 /* MPFR_ASSERTD(expr): assertions that should be checked when testing */
 /* #define MPFR_ASSERTD(expr) ASSERT(expr) */
 #if WANT_ASSERT
+#define MPFR_EXP_CHECK 1
 #define MPFR_ASSERTD(expr)  MPFR_ASSERTN (expr)
 #else
 #define MPFR_ASSERTD(expr)  ((void) 0)
@@ -89,7 +90,10 @@ typedef unsigned long int       mp_size_unsigned_t;
 
 /* Use MPFR_GET_EXP and MPFR_SET_EXP instead of MPFR_EXP directly,
    unless when the exponent may be out-of-range, for instance when
-   setting the exponent before calling mpfr_check_range. */
+   setting the exponent before calling mpfr_check_range.
+   MPFR_EXP_CHECK is defined when WANT_ASSERT is defined, but if you
+   don't use WANT_ASSERT (for speed reasons), you can still define
+   MPFR_EXP_CHECK by setting -DMPFR_EXP_CHECK in $CFLAGS. */
 
 #if MPFR_EXP_CHECK
 #define MPFR_GET_EXP(x)          mpfr_get_exp (x)
