@@ -4,6 +4,11 @@
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
+#ifdef IRIX64
+#include <sys/fpu.h>
+#endif
+
+extern int isnan(), getpid();
 
 double drand()
 {
@@ -54,6 +59,13 @@ void check(a, rnd_mode) double a; unsigned char rnd_mode;
 int main()
 {
   int i; double a;
+#ifdef IRIX64
+    /* to get denormalized numbers on IRIX64 */
+    union fpc_csr exp;
+    exp.fc_word = get_fpc_csr();
+    exp.fc_struct.flush = 0;
+    set_fpc_csr(exp.fc_word);
+#endif
 
   srand(getpid());
   check(1.0, 0);
@@ -66,4 +78,5 @@ int main()
     do { a = drand(); } while (isnan(a));
     check(a, rand() % 4);
   }
+  return 0;
 }
