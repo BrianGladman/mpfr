@@ -66,4 +66,4 @@ i.e.0.10101011100001010011001101100101110011101110010001011000000000000000000000
 - rename mpfr_isinteger to mpfr_integer_p.
 	(Kevin Ryde, 05 Mar 2002)
 
-- rewrite mpfr_get_d3 (new specification) and the corresponding tests.
+- update mpfr_get_d3 to support the denormalized numbers.

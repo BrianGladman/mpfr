@@ -77,14 +77,14 @@ main (void)
                    d = si ? 0.5 - dd : 0.5 + dd;
                    if ((rand() / 1024) & 1)
                      {
-                       c = mpfr_get_d(y);
-                       f = "mpfr_get_d";
+                       c = mpfr_get_d2(y, rnd_mode);
+                       f = "mpfr_get_d2";
                      }
                    else
                      {
                        exp = (rand() % 47) - 23;
-                       c = mpfr_get_d2(y, exp);
-                       f = "mpfr_get_d2";
+                       c = mpfr_get_d3(y, exp, rnd_mode);
+                       f = "mpfr_get_d3";
                        if (si) /* then real d < 0.5 */
                          d *= sj && i == 1 ? 4 : 2; /* normalize real d */
                      }

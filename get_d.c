@@ -29,6 +29,8 @@ MA 02111-1307, USA. */
 
 static double __mpfr_scale2 _PROTO ((double, int));
 
+#define IEEE_DBL_MANT_DIG 53
+
 #define NaN (0./0.) /* ensures a machine-independent NaN */
 #define Infp (1/0.)
 #define Infm (-1/0.)
@@ -89,12 +91,15 @@ __mpfr_scale2 (double d, int exp)
 #endif
 }
 
+/* Assumes IEEE-754 double precision; otherwise, only an approximated
+   result will be returned, without any guaranty (and special cases
+   such as NaN must be avoided if not supported). */
+
 double
 mpfr_get_d3 (mpfr_srcptr src, mp_exp_t e, mp_rnd_t rnd_mode)
 {
   double d;
-  mpfr_t tmp;
-  int s, negative;
+  int negative;
 
   if (MPFR_IS_NAN(src))
     return NaN;
@@ -107,50 +112,46 @@ mpfr_get_d3 (mpfr_srcptr src, mp_exp_t e, mp_rnd_t rnd_mode)
   if (MPFR_IS_ZERO(src))
     return negative ? -0.0 : 0.0;
 
-  if (e < -1076)
-    { /* Simulate the underflow with the current IEEE rounding mode. */
-      d = DBL_MIN;
-      d *= negative ? -DBL_MIN : DBL_MIN;
-      /* -> double precision forced by the affectation */
+  if (e < -1077)
+    {
+      d = negative ?
+        (rnd_mode == GMP_RNDD ? -DBL_MIN * DBL_EPSILON : -0.0) :
+        (rnd_mode == GMP_RNDU ? DBL_MIN * DBL_EPSILON : 0.0);
     }
   else if (e > 1024)
-    { /* Simulate the overflow with the current IEEE rounding mode. */
-      d = DBL_MAX;
-      d *= negative ? -2 : 2;
+    {
+      d = negative ?
+        (rnd_mode == GMP_RNDZ || rnd_mode == GMP_RNDU ? -DBL_MAX : Infm) :
+        (rnd_mode == GMP_RNDZ || rnd_mode == GMP_RNDD ? DBL_MAX : Infp);
     }
   else
     {
-      mp_ptr tp;
       mp_size_t np, i;
-      double r;
+      mp_ptr tp;
+      int carry;
 
-      mpfr_save_emin_emax();
-
-      /* Truncate src to 54 bits
-       * --> rounding bit stored to the 54th bit
-       * --> sticky bit stored to variable s */
-      mpfr_init2(tmp, 54);
-      s = mpfr_set(tmp, src, GMP_RNDZ);
-      MPFR_ASSERTN(MPFR_IS_FP(tmp) && MPFR_NOTZERO(tmp));
-
-      /* Warning: the rounding may still be incorrect in the rounding
-         to the nearest mode when the result is a subnormal because of
-         a double rounding (-> 53 bits -> final precision). */
-      tp = MPFR_MANT(tmp);
-      d = (tp[0] & (MP_LIMB_T_MAX << 11)) / MP_BASE_AS_DOUBLE;
-      np = (MPFR_PREC(tmp) - 1) / BITS_PER_MP_LIMB;
-      for (i = 1; i <= np; i++)
-        d = (d + tp[i]) / MP_BASE_AS_DOUBLE;
-      /* d is the mantissa (between 1/2 and 1) of the argument truncated
-         to 53 bits */
-      r = (((tp[0] >> 9) & 2) + (s != 0)) * (DBL_EPSILON / 8.0);
-      d += r; /* double precision forced by the affectation */
+      np = (IEEE_DBL_MANT_DIG - 1) / BITS_PER_MP_LIMB;
+      tp = (mp_ptr) (*__gmp_allocate_func) ((np + 1) * BYTES_PER_MP_LIMB);
+      carry = mpfr_round_raw(tp, MPFR_MANT(src), MPFR_PREC(src), negative,
+                             IEEE_DBL_MANT_DIG, rnd_mode, (int *) 0);
+      if (carry)
+        d = 1.0;
+      else
+        {
+          /* Warning: the rounding may still be incorrect in the rounding
+             to the nearest mode when the result is a subnormal because of
+             a double rounding (-> 53 bits -> final precision). */
+          d = (double) tp[0] / MP_BASE_AS_DOUBLE;
+          for (i = 1; i <= np; i++)
+            d = (d + tp[i]) / MP_BASE_AS_DOUBLE;
+          /* d is the mantissa (between 1/2 and 1) of the argument rounded
+             to 53 bits */
+        }
       d = __mpfr_scale2(d, e);
       if (negative)
         d = -d;
 
-      mpfr_clear(tmp);
-      mpfr_restore_emin_emax();
+      (*__gmp_free_func) (tp, (np + 1) * BYTES_PER_MP_LIMB);
     }
 
   return d;
