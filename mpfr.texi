@@ -1121,7 +1121,7 @@ rounded to the direction @var{rnd} with the precision of @var{rop}.
 Return 0 iff the result is exact.
 @end deftypefun
 
-@deftypefun int mpfr_factorial (mpfr_t @var{rop}, unsigned long int  @var{op}, mp_rnd_t @var{rnd})
+@deftypefun int mpfr_fac_ui (mpfr_t @var{rop}, unsigned long int  @var{op}, mp_rnd_t @var{rnd})
 Set @var{rop} to the factorial of the unsigned long int @var{op},
 rounded to the direction @var{rnd} with the precision of @var{rop}.
 Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
