@@ -101,3 +101,5 @@ Miscellaneous:
   lrand48, etc.
 
 - make MPFR thread-safe (e.g. temporary changes of emin/emax in mpfr_set_q)
+
+- randomized tests: do like GMP (see misc.c), but using MPFR_CHECK_RANDOMIZE
