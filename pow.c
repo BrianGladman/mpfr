@@ -40,12 +40,8 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 
   if (MPFR_IS_INF(y))
     {
-      mpfr_t px;
+      mpfr_t one;
       int cmp;
-
-      /* This is inefficient and should be optimized later. */
-      mpfr_init2(px, MPFR_PREC(x));
-      mpfr_abs(px, x, GMP_RNDN);
 
       if (MPFR_SIGN(y) > 0)
         {
@@ -57,31 +53,34 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
               else
                 MPFR_SET_ZERO(z);
               MPFR_SET_POS(z);
-              mpfr_clear(px);
               MPFR_RET(0);
             }
-          cmp = mpfr_cmp_ui(px, 1);
+          MPFR_CLEAR_FLAGS(z);
+          if (MPFR_IS_ZERO(x))
+            {
+              MPFR_SET_ZERO(z);
+              MPFR_SET_POS(z);
+              MPFR_RET(0);
+            }
+          mpfr_init2(one, BITS_PER_MP_LIMB);
+          mpfr_set_ui(one, 1, GMP_RNDN);
+          cmp = mpfr_cmp_abs(x, one);
+          mpfr_clear(one);
           if (cmp > 0)
             {
-              MPFR_CLEAR_FLAGS(z);
               MPFR_SET_INF(z);
               MPFR_SET_POS(z);
-              mpfr_clear(px);
               MPFR_RET(0);
             }
           else if (cmp < 0)
             {
-              MPFR_CLEAR_FLAGS(z);
               MPFR_SET_ZERO(z);
               MPFR_SET_POS(z);
-              mpfr_clear(px);
               MPFR_RET(0);
             }
           else
             {
-              MPFR_CLEAR_FLAGS(z);
               MPFR_SET_NAN(z);
-              mpfr_clear(px);
               MPFR_RET_NAN;
             }
         }
@@ -95,31 +94,34 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
               else
                 MPFR_SET_INF(z);
               MPFR_SET_POS(z);
-              mpfr_clear(px);
               MPFR_RET(0);
             }
-          cmp = mpfr_cmp_ui(px, 1);
+          if (MPFR_IS_ZERO(x))
+            {
+              MPFR_SET_INF(z);
+              MPFR_SET_POS(z);
+              MPFR_RET(0);
+            }
+          mpfr_init2(one, BITS_PER_MP_LIMB);
+          mpfr_set_ui(one, 1, GMP_RNDN);
+          cmp = mpfr_cmp_abs(x, one);
+          mpfr_clear(one);
+          MPFR_CLEAR_FLAGS(z);
           if (cmp > 0)
             {
-              MPFR_CLEAR_FLAGS(z);
               MPFR_SET_ZERO(z);
               MPFR_SET_POS(z);
-              mpfr_clear(px);
               MPFR_RET(0);
             }
           else if (cmp < 0)
             {
-              MPFR_CLEAR_FLAGS(z);
               MPFR_SET_INF(z);
               MPFR_SET_POS(z);
-              mpfr_clear(px);
               MPFR_RET(0);
             }
           else
             {
-              MPFR_CLEAR_FLAGS(z);
               MPFR_SET_NAN(z);
-              mpfr_clear(px);
               MPFR_RET_NAN;
             }
         }
