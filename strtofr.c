@@ -479,7 +479,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mp_rnd_t rnd)
 
           count_leading_zeros (pow2, (mp_limb_t) pstr->base);
           pow2 = BITS_PER_MP_LIMB - pow2 - 1; /* base = 2^pow2 */
-	  MPFR_ASSERTD (0 <= pow2 && pow2 <= 4);
+	  MPFR_ASSERTD (0 < pow2 && pow2 <= 5);
 	  /* exp += pow2 * (pstr->exp_base - pstr_size) + pstr->exp_bin
 	     with overflow checking
 	     and check that we can add/substract 2 to exp without overflow */
@@ -487,13 +487,10 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mp_rnd_t rnd)
 			      mp_exp_t, mp_exp_unsigned_t,
 			      MPFR_EXP_MIN, MPFR_EXP_MAX,
 			      goto overflow, goto underflow);
-	  if (pow2 != 0)
-	    {
-	      if (tmp > 0 && MPFR_EXP_MAX/pow2 <= tmp)
-		goto overflow;
-	      else if (tmp < 0 && MPFR_EXP_MIN/pow2 >= tmp)
-		goto underflow;
-	    }
+	  if (tmp > 0 && MPFR_EXP_MAX/pow2 <= tmp)
+	    goto overflow;
+	  else if (tmp < 0 && MPFR_EXP_MIN/pow2 >= tmp)
+	    goto underflow;
 	  tmp *= pow2;
 	  MPFR_SADD_OVERFLOW (tmp, tmp, pstr->exp_bin,
 			      mp_exp_t, mp_exp_unsigned_t,
