@@ -62,7 +62,7 @@ check_sj (intmax_t s, mpfr_ptr x)
 
   for (i = -1; i <= 1; i++)
     {
-      mpfr_rnd_t rnd;
+      int rnd;
 
       mpfr_set_si_2exp (y, i, -2, GMP_RNDN);
       mpfr_add (y, y, x, GMP_RNDN);
@@ -79,12 +79,12 @@ check_sj (intmax_t s, mpfr_ptr x)
           if (rnd == GMP_RNDU && i > 0)
             continue;
           /* rint (y) == x == s */
-          r = mpfr_get_sj (y, rnd);
+          r = mpfr_get_sj (y, (mp_rnd_t) rnd);
           if (r != s)
             {
               printf ("Error in check_sj for y = ");
               mpfr_out_str (stdout, 2, 0, y, GMP_RNDN);
-              printf (" in %s\n", mpfr_print_rnd_mode (rnd));
+              printf (" in %s\n", mpfr_print_rnd_mode ((mp_rnd_t) rnd));
               printf ("Got %jd instead of %jd.\n", r, s);
               exit (1);
             }
@@ -104,7 +104,7 @@ check_uj (uintmax_t u, mpfr_ptr x)
 
   for (i = -1; i <= 1; i++)
     {
-      mpfr_rnd_t rnd;
+      int rnd;
 
       mpfr_set_si_2exp (y, i, -2, GMP_RNDN);
       mpfr_add (y, y, x, GMP_RNDN);
@@ -119,12 +119,12 @@ check_uj (uintmax_t u, mpfr_ptr x)
           if (rnd == GMP_RNDU && i > 0)
             continue;
           /* rint (y) == x == u */
-          r = mpfr_get_uj (y, rnd);
+          r = mpfr_get_uj (y, (mp_rnd_t) rnd);
           if (r != u)
             {
               printf ("Error in check_uj for y = ");
               mpfr_out_str (stdout, 2, 0, y, GMP_RNDN);
-              printf (" in %s\n", mpfr_print_rnd_mode (rnd));
+              printf (" in %s\n", mpfr_print_rnd_mode ((mp_rnd_t) rnd));
               printf ("Got %ju instead of %ju.\n", r, u);
               exit (1);
             }

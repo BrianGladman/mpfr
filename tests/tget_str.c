@@ -963,7 +963,7 @@ check_special (int b, mp_prec_t p)
   int i, j;
   char s[MAX_DIGITS + 2], s2[MAX_DIGITS + 2], c;
   mp_exp_t e;
-  mp_rnd_t r;
+  int r;
   size_t m;
 
   /* check for invalid base */
@@ -982,7 +982,7 @@ check_special (int b, mp_prec_t p)
       for (r = 0; r < GMP_RND_MAX; r++)
         for (m= (i<3)? 2 : i-1 ; (int) m <= i+1 ; m++)
           {
-            mpfr_get_str (s, &e, b, m, x, r);
+            mpfr_get_str (s, &e, b, m, x, (mp_rnd_t) r);
             /* s should be 1 followed by (m-1) zeros, and e should be i+1 */
             if ((e != i+1) || strncmp (s, s2, m) != 0)
               {
@@ -996,7 +996,7 @@ check_special (int b, mp_prec_t p)
       for (r = 0; r < GMP_RND_MAX; r++)
         if (i >= 2)
           {
-            mpfr_get_str (s, &e, b, i, x, r);
+            mpfr_get_str (s, &e, b, i, x, (mp_rnd_t) r);
             /* should be i times (b-1) */
             c = (b <= 10) ? '0' + b - 1 : 'a' + (b - 11);
             for (j=0; (j < i) && (s[j] == c); j++);
@@ -1087,7 +1087,7 @@ main (int argc, char *argv[])
       mpfr_set_exp (x, (e == -10) ? mpfr_get_emin () :
                     ((e == 10) ? mpfr_get_emax () : e));
       b = 2 + (randlimb () % 35);
-      r = RND_RAND();
+      r = (mp_rnd_t) RND_RAND();
       mpfr_get_str (s, &f, b, m, x, r);
     }
   mpfr_clear (x);

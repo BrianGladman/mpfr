@@ -147,7 +147,7 @@ main (int argc, char *argv[])
             mpfr_neg (x1, x1, GMP_RNDN);
           if (randlimb () % 2)
             mpfr_neg (x2, x2, GMP_RNDN);
-          rnd = RND_RAND ();
+          rnd = (mp_rnd_t) RND_RAND ();
           mpfr_set_prec (y, yprec);
 
           compare =TEST_FUNCTION (y, x1,x2, rnd);

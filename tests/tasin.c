@@ -32,7 +32,7 @@ static void
 special (void)
 {
   mpfr_t x, y;
-  mp_rnd_t r;
+  int r;
 
   mpfr_init (x);
   mpfr_init (y);
@@ -98,13 +98,13 @@ special (void)
   for (r = 0; r < GMP_RND_MAX; r++)
     {
       mpfr_set_ui (x, 1, GMP_RNDN); /* exact */
-      mpfr_asin (y, x, r);
-      mpfr_const_pi (x, r);
+      mpfr_asin (y, x, (mp_rnd_t) r);
+      mpfr_const_pi (x, (mp_rnd_t) r);
       mpfr_div_2exp (x, x, 1, GMP_RNDN); /* exact */
       if (mpfr_cmp (x, y))
         {
           printf ("Error: asin(1) != Pi/2 for rnd=%s\n",
-                  mpfr_print_rnd_mode (r));
+                  mpfr_print_rnd_mode ((mp_rnd_t) r));
           exit (1);
         }
     }
@@ -113,14 +113,14 @@ special (void)
   for (r = 0; r < GMP_RND_MAX; r++)
     {
       mpfr_set_si (x, -1, GMP_RNDN); /* exact */
-      mpfr_asin (y, x, r);
-      mpfr_const_pi (x, MPFR_INVERT_RND(r));
+      mpfr_asin (y, x, (mp_rnd_t) r);
+      mpfr_const_pi (x, MPFR_INVERT_RND((mp_rnd_t) r));
       mpfr_neg (x, x, GMP_RNDN); /* exact */
       mpfr_div_2exp (x, x, 1, GMP_RNDN); /* exact */
       if (mpfr_cmp (x, y))
         {
           printf ("Error: asin(-1) != -Pi/2 for rnd=%s\n",
-                  mpfr_print_rnd_mode (r));
+                  mpfr_print_rnd_mode ((mp_rnd_t) r));
           exit (1);
         }
     }

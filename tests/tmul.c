@@ -217,7 +217,7 @@ check_exact (void)
         {
           mpfr_random (a);
           mpfr_random (b);
-          rnd = RND_RAND ();
+          rnd = (mp_rnd_t) RND_RAND ();
           inexact = mpfr_mul (c, a, b, rnd);
           if (mpfr_mul (d, a, b, rnd)) /* should be always exact */
             {

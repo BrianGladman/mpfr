@@ -74,7 +74,7 @@ test_int (void)
   mpz_t f;
   mpfr_t x, y;
   mp_prec_t prec_f, p;
-  mp_rnd_t r;
+  int r;
   int inex1, inex2;
 
   mpz_init (f);
@@ -92,19 +92,19 @@ test_int (void)
           mpfr_set_prec (y, p);
           for (r = 0; r < GMP_RND_MAX; r++)
             {
-              inex1 = mpfr_fac_ui (x, n, r);
-              inex2 = mpfr_set_z (y, f, r);
+              inex1 = mpfr_fac_ui (x, n, (mp_rnd_t) r);
+              inex2 = mpfr_set_z (y, f, (mp_rnd_t) r);
               if (mpfr_cmp (x, y))
                 {
                   printf ("Error for n=%lu prec=%lu rnd=%s\n",
-                          n, (unsigned long) p, mpfr_print_rnd_mode (r));
+                          n, (unsigned long) p, mpfr_print_rnd_mode ((mp_rnd_t) r));
                   exit (1);
                 }
               if ((inex1 < 0 && inex2 >= 0) || (inex1 == 0 && inex2 != 0)
                   || (inex1 > 0 && inex2 <= 0))
                 {
                   printf ("Wrong inexact flag for n=%lu prec=%lu rnd=%s\n",
-                          n, (unsigned long) p, mpfr_print_rnd_mode (r));
+                          n, (unsigned long) p, mpfr_print_rnd_mode ((mp_rnd_t) r));
                   exit (1);
                 }
             }
@@ -120,7 +120,7 @@ int
 main (int argc, char *argv[])
 {
   unsigned int prec, err, yprec, n, k, zeros;
-  mp_rnd_t rnd;
+  int rnd;
   mpfr_t x, y, z, t;
   int inexact;
 
@@ -154,12 +154,12 @@ main (int argc, char *argv[])
       for (n = 0; n < 50; n++)
 	for (rnd = 0; rnd < GMP_RND_MAX; rnd++)
 	  {
-	    inexact = mpfr_fac_ui (y, n, rnd);
+	    inexact = mpfr_fac_ui (y, n, (mp_rnd_t) rnd);
 	    err = (rnd == GMP_RNDN) ? yprec + 1 : yprec;
-	    if (mpfr_can_round (y, err, rnd, rnd, prec))
+	    if (mpfr_can_round (y, err, (mp_rnd_t) rnd, (mp_rnd_t) rnd, prec))
 	      {
-		mpfr_set (t, y, rnd);
-		inexact = mpfr_fac_ui (z, n, rnd);
+		mpfr_set (t, y, (mp_rnd_t) rnd);
+		inexact = mpfr_fac_ui (z, n, (mp_rnd_t) rnd);
 		/* fact(n) ends with floor(n/2)+floor(n/4)+... zeros */
 		for (k=n/2, zeros=0; k; k >>= 1)
 		  zeros += k;
@@ -187,7 +187,7 @@ main (int argc, char *argv[])
 		    printf ("results differ for x=");
 		    mpfr_out_str (stdout, 2, prec, x, GMP_RNDN);
 		    printf (" prec=%u rnd_mode=%s\n", prec,
-			    mpfr_print_rnd_mode (rnd));
+			    mpfr_print_rnd_mode ((mp_rnd_t) rnd));
 		    printf ("   got ");
 		    mpfr_out_str (stdout, 2, prec, z, GMP_RNDN);
 		    puts ("");

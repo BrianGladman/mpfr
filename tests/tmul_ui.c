@@ -31,7 +31,7 @@ check_inexact (mp_prec_t p)
   unsigned long u;
   mp_prec_t q;
   int inexact, cmp;
-  mp_rnd_t rnd;
+  int rnd;
 
   mpfr_init2 (x, p);
   mpfr_init (y);
@@ -48,7 +48,7 @@ check_inexact (mp_prec_t p)
     for (rnd = 0; rnd < GMP_RND_MAX; rnd++)
       {
         mpfr_set_prec (y, q);
-        inexact = mpfr_mul_ui (y, x, u, rnd);
+        inexact = mpfr_mul_ui (y, x, u, (mp_rnd_t) rnd);
         cmp = mpfr_cmp (y, z);
         if (((inexact == 0) && (cmp != 0)) ||
             ((inexact < 0) && (cmp >= 0)) ||
@@ -56,7 +56,7 @@ check_inexact (mp_prec_t p)
           {
             printf ("Wrong inexact flag for p=%u, q=%u, rnd=%s\n",
                     (unsigned int) p, (unsigned int) q,
-                    mpfr_print_rnd_mode (rnd));
+                    mpfr_print_rnd_mode ((mp_rnd_t) rnd));
             exit (1);
           }
       }

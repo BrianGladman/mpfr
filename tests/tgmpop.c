@@ -118,7 +118,7 @@ check_for_zero ()
   mpq_t q;
   mpz_t z;
   mpfr_t x;
-  mp_rnd_t r;
+  int r;
   mpfr_sign_t i;
 
   mpfr_init (x);
@@ -135,43 +135,43 @@ check_for_zero ()
 	   i+=MPFR_SIGN_POS-MPFR_SIGN_NEG)
 	{
 	  MPFR_SET_SIGN(x, i);
-	  mpfr_add_z (x, x, z, r);
+	  mpfr_add_z (x, x, z, (mp_rnd_t) r);
 	  if (!MPFR_IS_ZERO(x) || MPFR_SIGN(x)!=i)
 	    {
 	      printf("GMP Zero errors for add_z & rnd=%s & s=%d\n", 
-		     mpfr_print_rnd_mode(r), i);
+		     mpfr_print_rnd_mode ((mp_rnd_t) r), i);
 	      mpfr_dump (x);
 	      exit (1);
 	    }
-	  mpfr_sub_z (x, x, z, r);
+	  mpfr_sub_z (x, x, z, (mp_rnd_t) r);
 	  if (!MPFR_IS_ZERO(x) || MPFR_SIGN(x)!=i)
 	    {
 	      printf("GMP Zero errors for sub_z & rnd=%s & s=%d\n",
-		     mpfr_print_rnd_mode(r), i);
+		     mpfr_print_rnd_mode ((mp_rnd_t) r), i);
 	      mpfr_dump (x);
 	      exit (1);
 	    }
-	  mpfr_mul_z (x, x, z, r);
+	  mpfr_mul_z (x, x, z, (mp_rnd_t) r);
           if (!MPFR_IS_ZERO(x) || MPFR_SIGN(x)!=i)
             {
               printf("GMP Zero errors for mul_z & rnd=%s & s=%d\n",
-                     mpfr_print_rnd_mode(r), i);
+                     mpfr_print_rnd_mode ((mp_rnd_t) r), i);
               mpfr_dump (x);
 	      exit (1);
             }
-          mpfr_add_q (x, x, q, r);
+          mpfr_add_q (x, x, q, (mp_rnd_t) r);
           if (!MPFR_IS_ZERO(x) || MPFR_SIGN(x)!=i)
             {
               printf("GMP Zero errors for add_q & rnd=%s & s=%d\n",
-                     mpfr_print_rnd_mode(r), i);
+                     mpfr_print_rnd_mode ((mp_rnd_t) r), i);
               mpfr_dump (x);
               exit (1);
             }
-          mpfr_sub_q (x, x, q, r);
+          mpfr_sub_q (x, x, q, (mp_rnd_t) r);
           if (!MPFR_IS_ZERO(x) || MPFR_SIGN(x)!=i)
             {
               printf("GMP Zero errors for sub_q & rnd=%s & s=%d\n",
-                     mpfr_print_rnd_mode(r), i);
+                     mpfr_print_rnd_mode ((mp_rnd_t) r), i);
               mpfr_dump (x);
               exit (1);
              }
@@ -399,7 +399,7 @@ test_genericz (mp_prec_t p0, mp_prec_t p1, unsigned int N,
         {
           mpfr_urandomb (arg1, RANDS);
 	  mpz_urandomb (arg2, RANDS, 1024);
-          rnd = RND_RAND ();
+          rnd = (mp_rnd_t) RND_RAND ();
           mpfr_set_prec (dst_big, 2*prec);
           compare = func(dst_big, arg1, arg2, rnd);
           if (mpfr_can_round (dst_big, 2*prec, rnd, rnd, prec))
@@ -477,7 +477,7 @@ test_genericq (mp_prec_t p0, mp_prec_t p1, unsigned int N,
           mpfr_urandomb (arg1, RANDS);
           mpq_set_ui (arg2, randlimb (), randlimb() );
 	  mpq_canonicalize (arg2);
-          rnd = RND_RAND ();
+          rnd = (mp_rnd_t) RND_RAND ();
           mpfr_set_prec (dst_big, prec+10);
           compare = func(dst_big, arg1, arg2, rnd);
           if (mpfr_can_round (dst_big, prec+10, rnd, rnd, prec))

@@ -46,7 +46,7 @@ main (void)
 {
   mp_prec_t p, q;
   mpfr_t x, y, z, u;
-  mp_rnd_t rnd;
+  int rnd;
   int inexact, cmp;
   mp_exp_t emax;
 
@@ -119,7 +119,7 @@ main (void)
           mpfr_set_prec (y, q);
           for (rnd = 0; rnd < GMP_RND_MAX; rnd++)
             {
-              inexact = mpfr_set (y, x, rnd);
+              inexact = mpfr_set (y, x, (mp_rnd_t) rnd);
               cmp = mpfr_cmp (y, x);
               if (((inexact == 0) && (cmp != 0)) ||
                   ((inexact > 0) && (cmp <= 0)) ||

@@ -55,7 +55,7 @@ main (int argc, char *argv[])
 {
   mpfr_t x;
   int p;
-  unsigned char rnd;
+  mp_rnd_t rnd;
 
   tests_start_mpfr ();
 
@@ -67,7 +67,7 @@ main (int argc, char *argv[])
         p = a;
     }
 
-  rnd = (argc > 2) ? atoi(argv[2]) : GMP_RNDZ;
+  rnd = (argc > 2) ? (mp_rnd_t) atoi(argv[2]) : GMP_RNDZ;
 
   mpfr_init2 (x, p);
   mpfr_const_pi (x, rnd);

@@ -100,7 +100,7 @@ main (void)
   mpfr_ptr *tabtmp;
   unsigned long i, n;
   mp_prec_t f;
-  mp_rnd_t rnd_mode;
+  int rnd_mode;
   mpfr_srcptr *perm;
   mpfr_t sum, real_sum, real_non_rounded;
 
@@ -118,8 +118,8 @@ main (void)
   algo_exact (real_non_rounded, tab, n, f);
   for (rnd_mode = 0; rnd_mode < GMP_RND_MAX; rnd_mode++)
   {
-      mpfr_list_sum (sum, tab, n, rnd_mode);
-      mpfr_set (real_sum, real_non_rounded, rnd_mode);
+      mpfr_list_sum (sum, tab, n, (mp_rnd_t) rnd_mode);
+      mpfr_set (real_sum, real_non_rounded, (mp_rnd_t) rnd_mode);
       if (mpfr_cmp (real_sum, sum) != 0)
       {
           printf ("mpfr_list_sum incorrect.\n");
@@ -142,8 +142,8 @@ main (void)
   
   for (rnd_mode = 0; rnd_mode < GMP_RND_MAX; rnd_mode++)
   {
-      mpfr_list_sum (sum, tab, n, rnd_mode);
-      mpfr_set (real_sum, real_non_rounded, rnd_mode);
+      mpfr_list_sum (sum, tab, n, (mp_rnd_t) rnd_mode);
+      mpfr_set (real_sum, real_non_rounded, (mp_rnd_t) rnd_mode);
       if (mpfr_cmp (real_sum, sum) != 0)
       {
           printf ("mpfr_list_sum incorrect.\n");

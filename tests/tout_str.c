@@ -188,7 +188,7 @@ main (int argc, char *argv[])
 #endif
       r = RND_RAND ();
       p = 2 + randlimb () % 35;
-      check (d, r, p);
+      check (d, (mp_rnd_t) r, p);
     }
 
   fclose (fout);

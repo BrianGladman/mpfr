@@ -27,7 +27,7 @@ MA 02111-1307, USA. */
 
 /* checks that x+y gives the right results with 53 bits of precision */
 static void
-check3 (const char *xs, unsigned long y, unsigned int rnd_mode, const char *zs)
+check3 (const char *xs, unsigned long y, mp_rnd_t rnd_mode, const char *zs)
 {
   mpfr_t xx, zz;
 

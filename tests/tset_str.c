@@ -111,7 +111,7 @@ main (int argc, char *argv[])
 
   bd = randlimb () & 8;
 
-  str2 = str = (*__gmp_allocate_func) (nc * sizeof(char));
+  str2 = str = (char*) (*__gmp_allocate_func) (nc * sizeof(char));
 
   if (bd)
     {
@@ -211,13 +211,13 @@ main (int argc, char *argv[])
 	baseprec = prec;
       else
 	baseprec = 1 + (prec - 2 + logbase) / logbase;
-      str = mpfr_get_str (NULL, &e, base, baseprec, x, k);
-      mpfr_set_str (y, str, base, k);
+      str = mpfr_get_str (NULL, &e, base, baseprec, x, (mp_rnd_t) k);
+      mpfr_set_str (y, str, base, (mp_rnd_t) k);
       MPFR_EXP(y) += logbase * (e - strlen (str));
       if (mpfr_cmp (x, y))
         {
           printf ("mpfr_set_str o mpfr_get_str <> id for rnd_mode=%s\n",
-                  mpfr_print_rnd_mode (k));
+                  mpfr_print_rnd_mode ((mp_rnd_t) k));
           printf ("x=");
           mpfr_print_binary (x);
           puts ("");
@@ -743,7 +743,7 @@ main (int argc, char *argv[])
     mpfr_set_prec (x, mp_bits_per_limb); /* x and y have only one limb */
     mpfr_set_prec (y, mp_bits_per_limb);
 
-    str = (*__gmp_allocate_func) (N + 20);
+    str = (char*) (*__gmp_allocate_func) (N + 20);
 
     mpfr_set_ui (x, 1, GMP_RNDN); /* ensures that x is not NaN or Inf */
     for (; nb_digit < N; nb_digit *= 10)

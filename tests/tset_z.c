@@ -31,17 +31,18 @@ static void check0(void)
   mpz_t y;
   mpfr_t x;
   int inexact, r;
+
   /* Check for +0 */
-  mpfr_init(x);
-  mpz_init(y);
-  mpz_set_si(y, 0);
-  for(r = 0 ; r < GMP_RND_MAX ; r++)
+  mpfr_init (x);
+  mpz_init (y);
+  mpz_set_si (y, 0);
+  for(r = 0; r < GMP_RND_MAX; r++)
     {
-      inexact = mpfr_set_z(x, y, r);
+      inexact = mpfr_set_z (x, y, (mp_rnd_t) r);
       if (!MPFR_IS_ZERO(x) || !MPFR_IS_POS(x) || inexact)
         {
           printf("mpfr_set_z(x,0) failed for %s\n",
-                 mpfr_print_rnd_mode(r));
+                 mpfr_print_rnd_mode ((mp_rnd_t) r));
           exit(1);
         }
     }
@@ -129,11 +130,12 @@ main (int argc, char *argv[])
   tests_start_mpfr ();
 
   check_large ();
-  check (0, 0);
+  check (0, (mp_rnd_t) 0);
   for (j = 0; j < 200000; j++)
-    check (randlimb () & LONG_MAX, RND_RAND () );
-  check0();
+    check (randlimb () & LONG_MAX, (mp_rnd_t) RND_RAND ());
+  check0 ();
 
   tests_end_mpfr ();
+
   return 0;
 }

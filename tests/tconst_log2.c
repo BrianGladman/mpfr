@@ -44,7 +44,7 @@ check (mp_prec_t p0, mp_prec_t p1)
       mpfr_set_prec (x, p0);
       mpfr_set_prec (y, p0);
         {
-          rnd = RND_RAND ();
+          rnd = (mp_rnd_t) RND_RAND ();
           mpfr_const_log2 (x, rnd);
           mpfr_set (y, z, rnd);
           if ((dif = mpfr_cmp (x, y)) 
@@ -134,7 +134,7 @@ main (int argc, char *argv[])
   tests_start_mpfr ();
 
   p = (argc>1) ? atoi(argv[1]) : 53;
-  rnd = (argc>2) ? atoi(argv[2]) : GMP_RNDZ;
+  rnd = (argc>2) ? (mp_rnd_t) atoi(argv[2]) : GMP_RNDZ;
 
   mpfr_init (x);
 

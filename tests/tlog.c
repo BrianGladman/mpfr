@@ -204,7 +204,7 @@ main (int argc, char *argv[])
 
   if (argc==4)
     {   /* tlog x prec rnd */
-      check3 (atof(argv[1]), atoi(argv[2]), atoi(argv[3]));
+      check3 (atof(argv[1]), atoi(argv[2]), (mp_rnd_t) atoi(argv[3]));
       goto done;
     }
 

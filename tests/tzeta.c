@@ -215,7 +215,7 @@ main (int argc, char *argv[])
       mpfr_init2 (s, prec);
       mpfr_init2 (z, prec);
       mpfr_set_str (s, argv[1], 10, GMP_RNDN);
-      rnd_mode = atoi(argv[3]);
+      rnd_mode = (mp_rnd_t) atoi(argv[3]);
 
       mpfr_zeta (z, s, rnd_mode);
       mpfr_out_str (stdout, 10, 0, z, GMP_RNDN);

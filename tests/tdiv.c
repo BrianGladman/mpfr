@@ -223,11 +223,11 @@ check_convergence (void)
       for (j = 0;j < GMP_RND_MAX; j++)
         {
           mpfr_set_ui (y, 1, GMP_RNDN);
-          mpfr_div (y, x, y, j);
+          mpfr_div (y, x, y, (mp_rnd_t) j);
           if (mpfr_cmp_ui (y, 1))
             {
               printf ("mpfr_div failed for x=1.0, y=1.0, prec=%d rnd=%s\n",
-                      i, mpfr_print_rnd_mode(j));
+                      i, mpfr_print_rnd_mode ((mp_rnd_t) j));
               printf ("got "); mpfr_print_binary(y); puts ("");
               exit (1);
             }
@@ -259,7 +259,7 @@ check_hard (void)
 {
   mpfr_t u, v, q, q2;
   mp_prec_t precu, precv, precq;
-  mp_rnd_t rnd;
+  int rnd;
   int inex, inex2, i, j;
 
   mpfr_init (q);
@@ -300,12 +300,12 @@ check_hard (void)
 		{
 		  for (rnd = 0; rnd < GMP_RND_MAX; rnd++)
 		    {
-		      inex = mpfr_div (q, u, v, rnd);
+		      inex = mpfr_div (q, u, v, (mp_rnd_t) rnd);
 		      inex2 = get_inexact (q, u, v);
 		      if (inex_cmp (inex, inex2))
 			{
 			  printf ("Wrong inexact flag for rnd=%s: expected %d, got %d\n",
-				  mpfr_print_rnd_mode (rnd), inex2, inex);
+				  mpfr_print_rnd_mode ((mp_rnd_t) rnd), inex2, inex);
 			  printf ("u=  "); mpfr_dump (u);
 			  printf ("v=  "); mpfr_dump (v);
 			  printf ("q=  "); mpfr_dump (q);
@@ -549,7 +549,7 @@ check_inexact (void)
 	      mpfr_set_prec (y, py);
 	      mpfr_set_prec (z, py + pu);
 		{
-                  rnd = RND_RAND ();
+                  rnd = (mp_rnd_t) RND_RAND ();
 		  inexact = mpfr_div (y, x, u, rnd);
 		  if (mpfr_mul (z, y, u, rnd))
 		    {

@@ -62,10 +62,10 @@ main (void)
   for (i = 30; i < 99; i++)
     for (j = 30; j < 99; j++)
       {
-        mp_rnd_t r1, r2;
+        int r1, r2;
         for (r1 = 0; r1 < GMP_RND_MAX ; r1++)
           for (r2 = 0; r2 < GMP_RND_MAX ; r2++)
-            mpfr_can_round (x, i, r1, r2, j); /* test for assertions */
+            mpfr_can_round (x, i, (mp_rnd_t) r1, (mp_rnd_t) r2, j); /* test for assertions */
       }
 
   mpfr_clear (x);

@@ -29,7 +29,7 @@ main (int argc, char *argv[])
 {
   mpfr_t gamma, y, z, t;
   unsigned int err, prec, yprec, p0 = 2, p1 = 200;
-  mp_rnd_t rnd;
+  int rnd;
 
   tests_start_mpfr ();
 
@@ -68,16 +68,16 @@ main (int argc, char *argv[])
       for (rnd = 0; rnd < GMP_RND_MAX; rnd++)
 	{
 	  mpfr_set_prec (y, yprec);
-	  mpfr_const_euler (y, rnd);
+	  mpfr_const_euler (y, (mp_rnd_t) rnd);
 	  err = (rnd == GMP_RNDN) ? yprec + 1 : yprec;
-	  if (mpfr_can_round (y, err, rnd, rnd, prec))
+	  if (mpfr_can_round (y, err, (mp_rnd_t) rnd, (mp_rnd_t) rnd, prec))
 	    {
-	      mpfr_set (t, y, rnd);
-	      mpfr_const_euler (z, rnd);
+	      mpfr_set (t, y, (mp_rnd_t) rnd);
+	      mpfr_const_euler (z, (mp_rnd_t) rnd);
 	      if (mpfr_cmp (t, z))
 		{
 		  printf ("results differ for prec=%u rnd_mode=%s\n", prec,
-			  mpfr_print_rnd_mode (rnd));
+			  mpfr_print_rnd_mode ((mp_rnd_t) rnd));
 		  printf ("   got      ");
 		  mpfr_out_str (stdout, 2, prec, z, GMP_RNDN);
 		  puts ("");

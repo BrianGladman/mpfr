@@ -509,7 +509,7 @@ check_inexact (void)
 		 abs(EXP(x)-EXP(u)) + max(prec(x), prec(u)) + 1 */
 	      pz = pz + MAX(MPFR_PREC(x), MPFR_PREC(u)) + 1;
 	      mpfr_set_prec (z, pz);
-	      rnd = RND_RAND();
+	      rnd = (mp_rnd_t) RND_RAND();
 	      if (test_add (z, x, u, rnd))
 		{
 		  printf ("z <- x + u should be exact\n");
@@ -519,7 +519,7 @@ check_inexact (void)
 		  exit (1);
 		}
 		{
-                  rnd = RND_RAND();
+                  rnd = (mp_rnd_t) RND_RAND();
 		  inexact = test_add (y, x, u, rnd);
 		  cmp = mpfr_cmp (y, z);
 		  if (((inexact == 0) && (cmp != 0)) ||
@@ -614,7 +614,7 @@ check_overflow (void)
 {
   mpfr_t a, b, c;
   mp_prec_t prec_a;
-  mp_rnd_t r;
+  int r;
 
   mpfr_init2 (a, 256);
   mpfr_init2 (b, 256);
@@ -629,7 +629,7 @@ check_overflow (void)
       {
         mpfr_set_prec (a, prec_a);
         mpfr_clear_overflow ();
-        test_add (a, b, c, r);
+        test_add (a, b, c, (mp_rnd_t) r);
         if (!mpfr_overflow_p ())
           {
             printf ("No overflow in check_overflow\n");
@@ -695,7 +695,7 @@ check_1111 (void)
       mpfr_add (c, c, one, GMP_RNDN);
       diff = (randlimb () % (2*m)) - m;
       mpfr_mul_2si (c, c, diff, GMP_RNDN);
-      rnd_mode = RND_RAND ();
+      rnd_mode = (mp_rnd_t) RND_RAND ();
       inex_a = test_add (a, b, c, rnd_mode);
       mpfr_init2 (s, MPFR_PREC_MIN + 2*m);
       inex_s = mpfr_add (s, b, c, GMP_RNDN); /* exact */
@@ -740,15 +740,15 @@ check_1minuseps (void)
     0, 1, 2, 3, 4, 29, 30, 31, 32, 33, 34, 35, 61, 62, 63, 64, 65, 66, 67
   };
   mpfr_t a, b, c;
-  int ia, ib, ic;
+  unsigned int ia, ib, ic;
 
   mpfr_init2 (c, MPFR_PREC_MIN);
 
-  for (ia = 0; ia < numberof(prec_a); ia++)
+  for (ia = 0; ia < numberof (prec_a); ia++)
     for (ib = 0; ib < numberof(supp_b); ib++)
       {
         mp_prec_t prec_b;
-        mp_rnd_t rnd_mode;
+        int rnd_mode;
 
         prec_b = prec_a[ia] + supp_b[ib];
 
@@ -767,23 +767,23 @@ check_1minuseps (void)
 
               mpfr_set_ui (c, 1, GMP_RNDN);
               mpfr_div_ui (c, c, prec_a[ia] + supp_b[ic], GMP_RNDN);
-              inex_a = test_add (a, b, c, rnd_mode);
+              inex_a = test_add (a, b, c, (mp_rnd_t) rnd_mode);
               mpfr_init2 (s, 256);
               inex_s = mpfr_add (s, b, c, GMP_RNDN); /* exact */
               if (inex_s)
                 {
                   printf ("check_1minuseps: result should have been exact "
-                          "(ia = %d, ib = %d, ic = %d)\n", ia, ib, ic);
+                          "(ia = %u, ib = %u, ic = %u)\n", ia, ib, ic);
                   exit (1);
                 }
-              inex_s = mpfr_prec_round (s, prec_a[ia], rnd_mode);
+              inex_s = mpfr_prec_round (s, prec_a[ia], (mp_rnd_t) rnd_mode);
               if ((inex_a < 0 && inex_s >= 0) ||
                   (inex_a == 0 && inex_s != 0) ||
                   (inex_a > 0 && inex_s <= 0) ||
                   !mpfr_equal_p (a, s))
                 {
                   printf ("check_1minuseps: results are different.\n");
-                  printf ("ia = %d, ib = %d, ic = %d\n", ia, ib, ic);
+                  printf ("ia = %u, ib = %u, ic = %u\n", ia, ib, ic);
                   exit (1);
                 }
               mpfr_clear (s);

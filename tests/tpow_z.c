@@ -137,7 +137,7 @@ static void check_special (void) {
 static void check_integer (mp_prec_t begin, mp_prec_t end, unsigned long max) {
   mpfr_t x, y1, y2;
   mpz_t z;
-  long i, n;
+  unsigned long i, n;
   mp_prec_t p;
   int res1, res2;
   mp_rnd_t rnd;
@@ -152,7 +152,7 @@ static void check_integer (mp_prec_t begin, mp_prec_t end, unsigned long max) {
       mpz_random (z, (i&1) == 0 ? -1 : 1);
       mpfr_random (x);
       mpfr_mul_2ui (x, x, 1, GMP_RNDN); /* 0 <= x < 2 */
-      rnd = RND_RAND ();
+      rnd = (mp_rnd_t) RND_RAND ();
       if (mpz_fits_slong_p (z)) {
 	n = mpz_get_si (z);
 	/* printf ("New test for x=%ld\nCheck Pow_si\n", n); */

@@ -140,7 +140,7 @@ check_inexact (void)
   mp_prec_t px, py;
   int inexact, cmp;
   unsigned long int u;
-  mp_rnd_t rnd;
+  int rnd;
 
   mpfr_init (x);
   mpfr_init (y);
@@ -161,8 +161,8 @@ check_inexact (void)
           mpfr_set_prec (z, py + mp_bits_per_limb);
           for (rnd = 0; rnd < GMP_RND_MAX; rnd++)
             {
-              inexact = mpfr_div_ui (y, x, u, rnd);
-              if (mpfr_mul_ui (z, y, u, rnd))
+              inexact = mpfr_div_ui (y, x, u, (mp_rnd_t) rnd);
+              if (mpfr_mul_ui (z, y, u, (mp_rnd_t) rnd))
                 {
                   printf ("z <- y * u should be exact for u=%lu\n", u);
                   printf ("y="); mpfr_print_binary (y); puts ("");
@@ -175,7 +175,7 @@ check_inexact (void)
                   ((inexact < 0) && (cmp >= 0)))
                 {
                   printf ("Wrong inexact flag for u=%lu, rnd=%s\n", u,
-                          mpfr_print_rnd_mode(rnd));
+                          mpfr_print_rnd_mode ((mp_rnd_t) rnd));
                   printf ("x="); mpfr_print_binary (x); puts ("");
                   printf ("y="); mpfr_print_binary (y); puts ("");
                   exit (1);
