@@ -258,13 +258,13 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
          (1) PREC(b) > PREC(a) and diff_exp+PREC(c) > PREC(a)
          (2) PREC(b) <= PREC(a) and diff_exp+PREC(c) <= PREC(a)
          (3)  PREC(b) <= PREC(a) and diff_exp+PREC(c) > PREC(a) */
-      
+
       switch (overlap)
 	{
         case 1: /* both b and c to round */
 	  kc = cn-k; /* remains kc limbs from c */
 	  k = bn-an; /* remains k limbs from b */
-	
+
 	  /* truncate last bits and store the difference with 1/2*ulp in cc */
 
 	  cc = *ap & ((ONE<<sh)-1);
@@ -345,9 +345,10 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
 	  { if (k) cc = bp[--k]; else cc = 0; c2 = ONE<<(mp_bits_per_limb-1); }
 	if (cc>c2) goto add_one_ulp; /* trunc(b)>1/2*lsb(a) -> round up */
 	else if (cc==c2) {
-	  cc=0; while (k && cc==0) cc=bp[--k];
 	  /* special case of rouding c shifted to the right */
-	  if (cc==0 && dif>0) cc=cp[0]<<(mp_bits_per_limb-dif);
+	  if (dif>0) cc=bp[k]<<(mp_bits_per_limb-dif);
+	  else cc=0;
+	  while (k && cc==0) cc=bp[--k];
 	  /* now if the truncated part of b = 1/2*lsb(a), check whether c=0 */
 	  if (cc || (*ap & (ONE<<sh))) goto add_one_ulp;
 	}
