@@ -1,6 +1,7 @@
 /* mpfr_set_default_rounding_mode -- set the default rounding mode
+   mpfr_get_default_rounding_mode -- get the default rounding mode
 
-Copyright 1999, 2001 Free Software Foundation, Inc.
+Copyright 1999, 2001, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -22,11 +23,19 @@ MA 02111-1307, USA. */
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
+#include "mpfr-impl.h"
 
-mp_rnd_t __gmpfr_default_rounding_mode = 0;
+mp_rnd_t __gmpfr_default_rounding_mode = GMP_RNDN;
 
 void
 mpfr_set_default_rounding_mode (mp_rnd_t rnd_mode)
 {
-  __gmpfr_default_rounding_mode = rnd_mode;
+  if (rnd_mode >= GMP_RNDN && rnd_mode <= GMP_RNDD)
+    __gmpfr_default_rounding_mode = rnd_mode;
+}
+
+mp_rnd_t
+mpfr_get_default_rounding_mode (void)
+{
+  return __gmpfr_default_rounding_mode;
 }

@@ -254,6 +254,7 @@ int mpfr_div_ui _MPFR_PROTO((mpfr_ptr, mpfr_srcptr, unsigned long int, mpfr_rnd_
 int mpfr_ui_div _MPFR_PROTO((mpfr_ptr, unsigned long int, mpfr_srcptr, mpfr_rnd_t));
 mp_prec_t mpfr_get_prec _MPFR_PROTO((mpfr_srcptr));
 void mpfr_set_default_rounding_mode _MPFR_PROTO((mpfr_rnd_t));
+mp_rnd_t mpfr_get_default_rounding_mode _MPFR_PROTO((void));
 int mpfr_eq _MPFR_PROTO((mpfr_srcptr, mpfr_srcptr, unsigned long));
 int mpfr_rint _MPFR_PROTO((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t));
 int mpfr_round _MPFR_PROTO((mpfr_ptr, mpfr_srcptr));

@@ -1,6 +1,6 @@
 /* Test file for exceptions.
 
-Copyright 2001, 2002, 2003 Free Software Foundation.
+Copyright 2001, 2002, 2003, 2004 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -23,6 +23,35 @@ MA 02111-1307, USA. */
 #include <stdlib.h>
 
 #include "mpfr-test.h"
+
+/* Test default rounding mode */
+static void
+check_default_rnd(void)
+{
+  mp_rnd_t r, t;
+  for(r = 0 ; r < 4 ; r++)
+    {
+      mpfr_set_default_rounding_mode (r);
+      t = mpfr_get_default_rounding_mode();
+      if (r !=t)
+	{
+	  printf("ERROR in setting / getting default rounding mode (1)\n");
+	  exit(1);
+	}
+    }
+  mpfr_set_default_rounding_mode(4);
+  if (mpfr_get_default_rounding_mode() != GMP_RNDD)
+    {
+      printf("ERROR in setting / getting default rounding mode (2)\n");
+      exit(1);
+    }
+  mpfr_set_default_rounding_mode(-1);
+  if (mpfr_get_default_rounding_mode() != GMP_RNDD)
+    {
+      printf("ERROR in setting / getting default rounding mode (3)\n");
+      exit(1);
+    }
+}
 
 static void
 mpfr_set_double_range (void)
@@ -141,6 +170,7 @@ main (int argc, char *argv[])
 
   test_set_underflow ();
   test_set_overflow ();
+  check_default_rnd();
 
   mpfr_init (x);
   mpfr_init (y);
