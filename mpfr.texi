@@ -1154,8 +1154,15 @@ for his help about design issues
 and his suggestions for a easy integration into GNU MP.
 
 Sylvie Boldo from ENS-Lyon, France,
-contributed the function @code{mpfr_agm} during her stage in the PolKA team
-in June and July 1999.
+contributed the functions @code{mpfr_agm} and @code{mpfr_log}.
+Emmanuel Jeandel, from ENS-Lyon too,
+contributed the generic hypergeometric code in
+@code{generic.c}, as well as the @code{mpfr_exp3},
+the @code{mpfr_sin_cos} functions, and improved versions of
+@code{mpfr_const_log2} and @code{mpfr_const_pi}.
+
+Thom Mulders (ETH Z\"urich) contributed the routines for short
+multiplication.
 
 @node References, , Contributors, Top
 @comment  node-name,  next,  previous,  up
