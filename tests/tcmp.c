@@ -27,7 +27,7 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-void main()
+int main()
 {
   double x,y; mpfr_t xx,yy; int i,c;
 
@@ -74,4 +74,5 @@ void main()
     }
   }
   mpfr_clear(xx); mpfr_clear(yy);
+  return 0;
 }
