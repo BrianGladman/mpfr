@@ -30,7 +30,7 @@ __mpfr_extract_double (rp, d)
      double d;
      int e;
 #endif
-     /* e=0 iff rp has only one limb */
+     /* e=0 iff BITS_PER_MP_LIMB=32 and rp has only one limb */
 {
   long exp;
   mp_limb_t manh, manl;
@@ -229,10 +229,10 @@ mpfr_set_d(r, d, rnd_mode)
   sizer = (PREC(r)-1)/BITS_PER_MP_LIMB + 1;
 
   /* warning: __mpfr_extract_double requires at least two limbs */
-  if (sizer == 1)
+  if (sizer < MPFR_LIMBS_PER_DOUBLE)
     EXP(r) = __mpfr_extract_double (MANT(r), d, 0);
   else
-    EXP(r) = __mpfr_extract_double (MANT(r) + sizer - 2, d, 1);
+    EXP(r) = __mpfr_extract_double (MANT(r) + sizer - MPFR_LIMBS_PER_DOUBLE, d, 1);
   
   if (sizer > MPFR_LIMBS_PER_DOUBLE)
     MPN_ZERO(MANT(r), sizer - MPFR_LIMBS_PER_DOUBLE); 
