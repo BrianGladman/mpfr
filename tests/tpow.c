@@ -56,6 +56,15 @@ test_pow (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 #define TWO_ARGS
 #include "tgeneric.c"
 
+#define TEST_FUNCTION mpfr_pow_ui
+#define INTEGER_TYPE  unsigned long
+#include "tgeneric_ui.c"
+
+#define TEST_FUNCTION mpfr_pow_si
+#define INTEGER_TYPE  long
+#define test_generic_ui test_generic_si
+#include "tgeneric_ui.c"
+
 static void
 check_pow_ui (void)
 {
@@ -572,23 +581,18 @@ main (void)
   tests_start_mpfr ();
 
   special ();
-
   particular_cases ();
-
   check_pow_ui ();
-
   check_pow_si ();
-
   check_special_pow_si ();
-
   for (p = 2; p < 100; p++)
     check_inexact (p);
-
   underflows ();
-
   overflows ();
 
   test_generic (2, 100, 100);
+  test_generic_ui (2, 100, 100);
+  test_generic_si (2, 100, 100);
 
   tests_end_mpfr ();
   return 0;
