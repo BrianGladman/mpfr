@@ -1,6 +1,6 @@
 /* Utilities for MPFR developers, not exported.
 
-Copyright (C) 1999, 2000, 2001 Free Software Foundation, Inc.
+Copyright (C) 1999-2002 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -113,6 +113,21 @@ typedef union ieee_double_extract Ieee_double_extract;
 #define MPFR_RET(I) return \
   (I) ? ((__mpfr_flags |= MPFR_FLAGS_INEXACT), (I)) : 0
 #define MPFR_RET_NAN return (__mpfr_flags |= MPFR_FLAGS_NAN), 0
+
+/* The following macro restores the exponent range and the flags,
+   checks that the result is in the exponent range and returns the
+   ternary inexact value. */
+#define MPFR_RESTORE_RET(inex, x, rnd_mode) \
+  do \
+    { \
+      int inex_cr; \
+      mpfr_restore_emin_emax(); \
+      inex_cr = mpfr_check_range(x, rnd_mode); \
+      if (inex_cr) \
+        return inex_cr; /* underflow or overflow */ \
+      MPFR_RET(inex); \
+    } \
+  while(0)
 
 /* Memory gestion */
 
