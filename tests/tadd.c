@@ -592,6 +592,32 @@ check_alloc (void)
   mpfr_clear (a);
 }
 
+static void
+check_overflow (void)
+{
+  mpfr_t a, b, c;
+
+  mpfr_init2 (a, 256);
+  mpfr_init2 (b, 256);
+  mpfr_init2 (c, 256);
+
+  mpfr_clear_overflow ();
+  mpfr_set_ui (b, 1, GMP_RNDN);
+  mpfr_setmax (b, mpfr_get_emax ());
+  mpfr_set_ui (c, 1, GMP_RNDN);
+  mpfr_set_exp (c, mpfr_get_emax () - 192);
+  mpfr_add (a, b, c, GMP_RNDD);
+  if (!mpfr_overflow_p ())
+    {
+      printf ("No overflow in check_overflow\n");
+      exit (1);
+    }
+
+  mpfr_clear (a);
+  mpfr_clear (b);
+  mpfr_clear (c);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -835,6 +861,8 @@ main (int argc, char *argv[])
   check53("9007199254740992.0", "-1.0", GMP_RNDN, "9007199254740991.0");
   check53("9007199254740994.0", "-1.0", GMP_RNDN, "9007199254740992.0");
   check53("9007199254740996.0", "-1.0", GMP_RNDN, "9007199254740996.0");
+
+  check_overflow ();
 
   tests_end_mpfr ();
   return 0;
