@@ -138,7 +138,7 @@ mpfr_cmp2(b, c)
   count_leading_zeros(u, cc);
   k += u; 
 
-  if (cc != (1<<(mp_bits_per_limb-u-1))) return k;
+  if (cc != ((mp_limb_t)1<<(mp_bits_per_limb-u-1))) return k;
 
   /* now cc is an exact power of two */
   if (cc != 1) 
