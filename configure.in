@@ -146,6 +146,12 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 ]], [[]])],[AC_MSG_RESULT(yes)
  GCC=
  CFLAGS="-fp_port -mp -wd1572 -wd265 -wd186 -wd239 $CFLAGS"
+dnl Mixing Libtool and ICC doesn't work well.
+dnl so disable shared while libtool doesn't support ICC
+dnl (-soname option not recognised).
+ enable_static=yes
+ enable_shared=no
+ AC_MSG_NOTICE(enable static, disable shared)
 ],[AC_MSG_RESULT(no)])
 
 dnl If compiler is gcc, then use some specific flags.
