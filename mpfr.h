@@ -104,7 +104,7 @@ size_t mpfr_out_str _PROTO ((FILE *, int, size_t, mpfr_srcptr, unsigned char));
 void mpfr_mul _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, unsigned char));
 void mpfr_pow_ui _PROTO ((mpfr_ptr, mpfr_srcptr, unsigned int, unsigned char));
 void mpfr_ui_pow_ui _PROTO ((mpfr_ptr, unsigned int, unsigned int, unsigned char));
-void mpfr_div _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, unsigned char));
+int mpfr_div _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, unsigned char));
 void mpfr_agm _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, unsigned char));
 void mpfr_sqrt _PROTO ((mpfr_ptr, mpfr_srcptr, unsigned char));
 void mpfr_add _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, unsigned char));
