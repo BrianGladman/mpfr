@@ -172,18 +172,19 @@ void check_lowr ()
   int k, c; 
   
 
-  mpfr_init2(x, 1000);   
-  mpfr_init2(y, 100); 
-  mpfr_init2(tmp, 850); 
-  mpfr_init2(z, 10); 
-  mpfr_init2(z2, 10);
+  mpfr_init2 (x, 1000);
+  mpfr_init2 (y, 100);
+  mpfr_init2 (tmp, 850);
+  mpfr_init2 (z, 10);
+  mpfr_init2 (z2, 10);
+  mpfr_init2 (z3, 50); 
 
   for (k = 1; k < 10000; k++) 
     {
-      mpfr_random(z); 
-      mpfr_random(tmp); 
-      mpfr_mul(x, z, tmp, GMP_RNDN); 
-      c = mpfr_div(z2, x, tmp, GMP_RNDN); 
+      mpfr_random (z);
+      mpfr_random (tmp);
+      mpfr_mul (x, z, tmp, GMP_RNDN);
+      c = mpfr_div (z2, x, tmp, GMP_RNDN);
 
       if (c || mpfr_cmp(z2, z))
 	{
@@ -247,7 +248,6 @@ void check_lowr ()
   mpfr_set_prec(tmp, 850); 
   mpfr_set_prec(z, 10); 
   mpfr_set_prec(z2, 10);
-  mpfr_init2(z3, 50); 
 
   /* almost exact divisions */
   for (k = 1; k < 10000; k++) 
@@ -285,8 +285,12 @@ void check_lowr ()
 	}      
     }
 
-  mpfr_clear(x); mpfr_clear(y); mpfr_clear(z); mpfr_clear(z2); 
-  mpfr_clear(z3); 
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+  mpfr_clear (z2);
+  mpfr_clear (z3);
+  mpfr_clear (tmp);
 }
 
 #define MAX_PREC 100
@@ -381,9 +385,10 @@ main (int argc, char *argv[])
   N = (argc>1) ? atoi(argv[1]) : 100000;
   check_inexact(); 
 
-  mpfr_init2(x, 64); 
-  mpfr_init2(y, 64); 
-  mpfr_init2(z, 64); 
+  mpfr_init2 (x, 64);
+  mpfr_init2 (y, 64);
+  mpfr_init2 (z, 64);
+
   mpfr_set_str_raw(x, "1.00100100110110101001010010101111000001011100100101010000000000E54"); 
   mpfr_set_str_raw(y, "1.00000000000000000000000000000000000000000000000000000000000000E584"); 
   mpfr_div(z, x, y, GMP_RNDU); 
@@ -419,7 +424,6 @@ main (int argc, char *argv[])
   check53(1.04636807108079349236e-189, 3.72295730823253012954e-292, GMP_RNDZ,
 	  2.810583051186143125e102);
 
-  check_lowr(); 
 #ifdef TEST
   srand48(getpid());
   for (i=0;i<N;i++) {
@@ -429,6 +433,10 @@ main (int argc, char *argv[])
     check4(n, d, rand() % 4, 53, 0.0);
   }
 #endif
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
 
   return 0;
 }
