@@ -34,7 +34,7 @@ MA 02111-1307, USA. */
 #define MPFR_LIMBS_PER_DOUBLE 4
 #endif
 
-static int __mpfr_extract_double _PROTO ((mp_ptr, double, int));
+static int __mpfr_extract_double _PROTO ((mp_ptr, double));
 
 /* Included from gmp-2.0.2, patched to support denorms */
 
@@ -47,7 +47,7 @@ static int __mpfr_extract_double _PROTO ((mp_ptr, double, int));
 #endif
 
 static int
-__mpfr_extract_double (mp_ptr rp, double d, int e)
+__mpfr_extract_double (mp_ptr rp, double d)
      /* e=0 iff BITS_PER_MP_LIMB=32 and rp has only one limb */
 {
   long exp;
@@ -67,9 +67,6 @@ __mpfr_extract_double (mp_ptr rp, double d, int e)
   if (d == 0.0)
     {
       rp[0] = 0;
-#if BITS_PER_MP_LIMB == 32
-      if (e) rp[1] = 0;
-#endif
       return 0;
     }
 
@@ -89,13 +86,14 @@ __mpfr_extract_double (mp_ptr rp, double d, int e)
 	manl = x.s.manl << 11;
 #endif
       }
-    else
+    else /* denormalized number */
       {
 #if BITS_PER_MP_LIMB == 64
 	manl = ((mp_limb_t) x.s.manh << 43) | ((mp_limb_t) x.s.manl << 11);
 #else
-    manh = (x.s.manh << 11) | (x.s.manl >> 21);
-	manl = x.s.manl << 11;
+        manh = (x.s.manh << 11) /* high 21 bits */
+          | (x.s.manl >> 21); /* middle 11 bits */
+	manl = x.s.manl << 11; /* low 21 bits */
 #endif
       }
   }
@@ -148,15 +146,10 @@ __mpfr_extract_double (mp_ptr rp, double d, int e)
   if (exp) exp = (unsigned) exp - 1022; else exp = -1021;
 
 #if BITS_PER_MP_LIMB == 64
-      rp[0] = manl;
+  rp[0] = manl;
 #else
-      if (e) {
-	rp[1] = manh;
-	rp[0] = manl;
-      }
-      else {
-	rp[0] = manh;
-      }
+  rp[1] = manh;
+  rp[0] = manl;
 #endif
 
   return exp;
@@ -168,7 +161,7 @@ int
 mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
 {
   int signd, sizetmp, inexact;
-  unsigned int cnt;
+  unsigned int cnt, k;
   mpfr_ptr tmp;
   TMP_DECL(marker);
 
@@ -214,17 +207,24 @@ mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
   signd = (d < 0) ? -1 : 1;
   d = ABS (d);
 
-  MPFR_EXP(tmp) = __mpfr_extract_double (MPFR_MANT(tmp), d, 1);
+  MPFR_EXP(tmp) = __mpfr_extract_double (MPFR_MANT(tmp), d);
 
-  count_leading_zeros(cnt, MPFR_MANT(tmp)[sizetmp - 1]);
+  /* determine number k of zero high limbs */
+  for (k = 0; k < sizetmp && MPFR_MANT(tmp)[sizetmp - 1 - k] == 0; k++);
+
+  count_leading_zeros (cnt, MPFR_MANT(tmp)[sizetmp - 1 - k]);
 
   if (cnt)
-    mpn_lshift (MPFR_MANT(tmp), MPFR_MANT(tmp), sizetmp, cnt);
+    mpn_lshift (MPFR_MANT(tmp) + k, MPFR_MANT(tmp), sizetmp - k, cnt);
+  else if (k)
+    MPN_COPY (MPFR_MANT(tmp) + k, MPFR_MANT(tmp), sizetmp - k);
+  if (k)
+    MPN_ZERO (MPFR_MANT(tmp), k);
 
-  MPFR_EXP(tmp) -= cnt;
+  MPFR_EXP(tmp) -= cnt + k * BITS_PER_MP_LIMB;
 
   /* tmp is exact since PREC(tmp)=53 */
-  inexact = mpfr_set4(r, tmp, rnd_mode, signd);
+  inexact = mpfr_set4 (r, tmp, rnd_mode, signd);
 
   TMP_FREE(marker);
   return inexact;
