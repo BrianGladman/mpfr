@@ -22,6 +22,7 @@ MA 02111-1307, USA. */
 /* Definition of constants */
 
 #define LOG2 0.69314718055994528622 /* log(2) rounded to zero on 53 bits */
+#define ALPHA 4.3191365662914471407 /* a+2 = a*log(a), rounded to +infinity */
 
 /* macros for doubles, based on gmp union ieee_double_extract */
 
