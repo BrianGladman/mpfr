@@ -35,6 +35,12 @@ mpz_set_fr (mpz_ptr z, mpfr_srcptr f)
 
   MPFR_ASSERTN(MPFR_IS_FP(f));
 
+  if (MPFR_IS_ZERO(f))
+    {
+      mpz_set_ui (z, 0);
+      return 0;
+    }
+
   fn = 1 + (MPFR_PREC(f) - 1) / BITS_PER_MP_LIMB;
 
   /* check whether allocated space for z is enough */
