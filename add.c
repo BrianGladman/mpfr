@@ -439,7 +439,8 @@ mpfr_add1 (a, b, c, rnd_mode, diff_exp)
 	*ap -= carry;
 	if (carry == mask) /* all last sh bits from a are 1 */
 	  {
-	    bn -= an;
+	    bn = (bn >= an) ? bn - an : 0;
+	    MPFR_ASSERTN(cn >= k);
 	    cn -= k;
 	    carry = ~((mp_limb_t) 0);
 	    lastc = (dif) ? (cp[cn] << (BITS_PER_MP_LIMB - dif)) : 0;
