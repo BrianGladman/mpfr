@@ -19,6 +19,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+#include <stdio.h>
 #include <stddef.h>
 #include <limits.h>
 
@@ -27,12 +28,12 @@ MA 02111-1307, USA. */
 static int
 mpfr_exp_rational (mpfr_ptr y, mpz_srcptr p, int r, int m)
 {
-  int n,i,k,j,l;
-  mpz_t* P,*S;
-  mpz_t* ptoj;
-  int diff,expo;
+  int n, i, k, j, l;
+  mpz_t *P, *S;
+  mpz_t *ptoj;
+  int diff, expo;
   int precy = MPFR_PREC(y);
-  int * mult;
+  int *mult;
   int prec_i_have;
   int *nb_terms;
   int accu;
@@ -47,69 +48,93 @@ mpfr_exp_rational (mpfr_ptr y, mpz_srcptr p, int r, int m)
   mult = (int*) TMP_ALLOC((m+1) * sizeof(int)); 
   nb_terms = (int*) TMP_ALLOC((m+1) * sizeof(int)); 
   mult[0] = 0;
-  for (i=0;i<=m;i++) { mpz_init(P[i]); mpz_init(S[i]); mpz_init(ptoj[i]); }
-  mpz_set(ptoj[0], p);
-  for (i=1;i<m;i++) mpz_mul(ptoj[i], ptoj[i-1], ptoj[i-1]);
-  mpz_set_ui(P[0], 1);
-  mpz_set_ui(S[0], 1);
+  for (i = 0; i <= m; i++)
+    {
+      mpz_init (P[i]);
+      mpz_init (S[i]);
+      mpz_init (ptoj[i]);
+    }
+  mpz_set (ptoj[0], p);
+  for (i = 1; i < m; i++)
+    mpz_mul (ptoj[i], ptoj[i-1], ptoj[i-1]);
+  mpz_set_ui (P[0], 1);
+  mpz_set_ui (S[0], 1);
   k = 0;
   nb_terms[0] = 1;
-   prec_i_have = 0; 
-   for (i=1;(prec_i_have < precy) && (i < n) ;i++) {
-    k++;
-    nb_terms[k] = 1;
-    mpz_set_ui(P[k], i+1);
-    mpz_set(S[k], P[k]);;
-    j=i+1; l=0; while ((j & 1) == 0) {      
-      MPFR_ASSERTN((size_t) l < sizeof(int) * CHAR_BIT - 1);
-      mpz_mul(S[k], S[k], ptoj[l]);
-      mpz_mul(S[k-1], S[k-1], P[k]);
-      mpz_mul_2exp(S[k-1], S[k-1], r*(1<<l));
-      mpz_add(S[k-1], S[k-1], S[k]);
-      mpz_mul(P[k-1], P[k-1], P[k]);
-      nb_terms[k-1] = nb_terms[k-1]+ nb_terms[k];
-      mult[k] = mult[k-1] + (1 << l)*(r >> 2) + mpz_sizeinbase(P[k],2) - 1;
-      prec_i_have = mult[k];
-      l++; j>>=1; k--;
-    }
-  }
-   l = 0;
-   accu = 0;
-   while (k > 0){
-     mpz_mul(S[k], S[k], ptoj[__gmpfr_ceil_log2((double) nb_terms[k])]);
-     mpz_mul(S[k-1], S[k-1], P[k]);
-     accu += nb_terms[k];
-     mpz_mul_2exp(S[k-1], S[k-1], r* accu);
-     mpz_add(S[k-1], S[k-1], S[k]);
-     mpz_mul(P[k-1], P[k-1], P[k]);     
-     l++; k--;
-   }
-   
-  diff = mpz_sizeinbase(S[0],2) - 2*precy;
-  expo = diff;
-  if (diff >=0)
-    {
-      mpz_div_2exp(S[0],S[0],diff);
-    } else 
-      {
-	mpz_mul_2exp(S[0],S[0],-diff);
-      }
-  diff = mpz_sizeinbase(P[0],2) - precy;
-  expo -= diff;
-  if (diff >=0)
-    {
-      mpz_div_2exp(P[0],P[0],diff);
-    } else
-      {
-	mpz_mul_2exp(P[0],P[0],-diff);
-	}
+  prec_i_have = 0; 
 
-  mpz_tdiv_q(S[0], S[0], P[0]);
-  mpfr_set_z(y,S[0], GMP_RNDD);
+  for (i = 1; (prec_i_have < precy) && (i < n); i++)
+    {
+      /* invariant: P[0]*P[1]*...*P[k] equals i! */
+      k++;
+      nb_terms[k] = 1;
+      mpz_set_ui (P[k], i + 1);
+      mpz_set (S[k], P[k]);
+      j = i + 1;
+      l = 0;
+      while ((j & 1) == 0)
+        {
+          MPFR_ASSERTN((size_t) l < sizeof(int) * CHAR_BIT - 1);
+          mpz_mul (S[k], S[k], ptoj[l]);
+          mpz_mul (S[k-1], S[k-1], P[k]);
+          mpz_mul_2exp (S[k-1], S[k-1], r * (1 << l));
+          mpz_add (S[k-1], S[k-1], S[k]);
+          mpz_mul (P[k-1], P[k-1], P[k]);
+          nb_terms[k-1] = nb_terms[k-1] + nb_terms[k];
+          mult[k] = mult[k-1] + (1 << l) * (r >> 2)
+            + mpz_sizeinbase (P[k], 2) - 1;
+          prec_i_have = mult[k];
+          /* since mult[k] >= mult[k-1] + nbits(P[k]),
+             we have P[0]*...*P[k] <= 2^mult[k] = 2^prec_i_have */
+          l++;
+          j >>= 1;
+          k--;
+        }
+    }
+
+  /* accumulate all products in P[0] */
+  l = 0;
+  accu = 0;
+  while (k > 0)
+    {
+      mpz_mul (S[k], S[k], ptoj[__gmpfr_ceil_log2((double) nb_terms[k])]);
+      mpz_mul (S[k-1], S[k-1], P[k]);
+      accu += nb_terms[k];
+      mpz_mul_2exp (S[k-1], S[k-1], r * accu);
+      mpz_add (S[k-1], S[k-1], S[k]);
+      mpz_mul (P[k-1], P[k-1], P[k]);     
+      l++;
+      k--;
+    }
+
+  /* P[0] now equals i! */
+   
+  diff = mpz_sizeinbase (S[0], 2) - 2 * precy;
+  expo = diff;
+  if (diff >= 0)
+    mpz_div_2exp (S[0], S[0], diff);
+  else 
+    mpz_mul_2exp (S[0], S[0], -diff);
+
+  diff = mpz_sizeinbase(P[0], 2) - precy;
+  expo -= diff;
+  /* since prec_i_have, which overestimates nbits(P[0]), can only exceed
+     precy by nbits(i), we assume diff <= 0 here, but we did not manage
+     to prove it, thus the assertion should be checked. */
+  MPFR_ASSERTN(diff <= 0);
+  mpz_mul_2exp (P[0], P[0], -diff);
+
+  mpz_tdiv_q (S[0], S[0], P[0]);
+  mpfr_set_z (y, S[0], GMP_RNDD);
   MPFR_SET_EXP (y, MPFR_GET_EXP (y) + expo);
 
-  mpfr_div_2ui(y, y, r*(i-1),GMP_RNDN); 
-  for (i=0;i<=m;i++) { mpz_clear(P[i]); mpz_clear(S[i]); mpz_clear(ptoj[i]); }
+  mpfr_div_2ui (y, y, r * (i - 1), GMP_RNDN); 
+  for (i = 0; i <= m; i++)
+    {
+      mpz_clear (P[i]);
+      mpz_clear (S[i]);
+      mpz_clear (ptoj[i]);
+    }
   TMP_FREE (marker);
   return 0;
 }
@@ -157,6 +182,10 @@ mpfr_exp3 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_div_2ui (x_copy, x, ttt, GMP_RNDN);
       ttt = MPFR_GET_EXP (x_copy);
     }
+  MPFR_ASSERTD(ttt <= 0);
+
+  /* the following code assumes BITS_PER_MP_LIMB is a power of two */
+  MPFR_ASSERTN((BITS_PER_MP_LIMB & (BITS_PER_MP_LIMB - 1)) == 0);
 
   realprec = MPFR_PREC(y) + logn;
   mpz_init (uk);

@@ -45,45 +45,6 @@ check3 (const char *op, mp_rnd_t rnd, const char *res)
   mpfr_clears (x, y, NULL);
 }
 
-/* computes n bits of exp(d) */
-static int
-check_large (double d, int n, mp_rnd_t rnd)
-{
-  mpfr_t x, y;
-
-  mpfr_init2 (x, n);
-  mpfr_init2 (y, n);
-  if (d == 0.0)
-    { /* try exp(Pi*sqrt(163)/3)-640320 */
-      mpfr_set_ui (x, 163, rnd);
-      mpfr_sqrt (x, x, rnd);
-      mpfr_const_pi (y, rnd);
-      mpfr_mul (x, x, y, rnd);
-      mpfr_div_ui (x, x, 3, rnd);
-    }
-  else
-    mpfr_set_d (x, d, rnd);
-  mpfr_exp (y, x, rnd);
-  if (d == 0.0)
-    {
-      mpfr_set_ui (x, 640320, rnd);
-      mpfr_sub (y, y, x, rnd);
-      printf ("exp(Pi*sqrt(163)/3)-640320=");
-    }
-  else
-    printf ("exp(%1.20e)=", d);
-  mpfr_out_str (stdout, 10, 0, y, rnd);
-  puts ("");
-  printf (" =");
-  mpfr_print_binary (y);
-  puts ("");
-
-  mpfr_clear (x);
-  mpfr_clear (y);
-
-  return 0;
-}
-
 /* expx is the value of exp(X) rounded towards -infinity */
 static void
 check_worst_case (const char *Xs, const char *expxs)
@@ -175,7 +136,7 @@ compare_exp2_exp3 (int n)
   mpfr_init (x);
   mpfr_init (y);
   mpfr_init (z);
-  for (prec=20; prec<=n; prec++)
+  for (prec = 20; prec <= n; prec++)
     {
       mpfr_set_prec (x, prec);
       mpfr_set_prec (y, prec);
@@ -317,6 +278,12 @@ check_special ()
       exit (1);
     }
 
+  /* corner cases in mpfr_exp3 */
+  mpfr_set_prec (x, 2);
+  mpfr_set_ui (x, 1, GMP_RNDN);
+  mpfr_set_prec (y, 2);
+  mpfr_exp3 (y, x, GMP_RNDN);
+
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);
@@ -377,11 +344,6 @@ main (int argc, char *argv[])
   check_inexact ();
   check_special ();
 
-  if (argc == 4)
-    {
-      check_large (atof(argv[1]), atoi(argv[2]), atoi(argv[3]));
-      goto done;
-    }
   test_generic (2, 100, 100);
 
   compare_exp2_exp3(500);
