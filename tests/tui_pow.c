@@ -65,7 +65,7 @@ main (int argc, char *argv[])
 
   {
   mp_prec_t prec, yprec;
-  mpfr_t x, y, z, t;
+  mpfr_t z, t;
   mp_rnd_t rnd;
   int inexact, compare, compare2;
   unsigned int n, err;
@@ -74,8 +74,6 @@ main (int argc, char *argv[])
   int p1=100;
   int N=100;
 
-  mpfr_init (x);
-  mpfr_init (y);
   mpfr_init (z);
   mpfr_init (t);
 
@@ -140,8 +138,10 @@ main (int argc, char *argv[])
 	}
     }
 
-
+  mpfr_clear (z);
+  mpfr_clear (t);
   }
+
   mpfr_clear (x);
   mpfr_clear (y);
 
