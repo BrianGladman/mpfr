@@ -120,7 +120,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
       /* A   = (prec_nec-0.5)*CST
 	 CST = ln(2)/(ln(2*pi))) = 0.38
 	 This strange formula is just to avoid any overflow */
-      A = (prec_nec/100)*38 + ((prec_nec%100)*38+100-50)/100 - 1;
+      A = (prec_nec/100)*38 + ((prec_nec%100)*38+100-38/2)/100 - 1;
       N = A - 1;
 #ifdef DEBUG
       printf("A=%d N=%d\n", (int)A, (int)N);
