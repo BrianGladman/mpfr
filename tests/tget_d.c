@@ -27,6 +27,23 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 #include "mpfr-test.h"
 
+#if (defined (__i386__) || defined (__i486__))
+#ifdef __CYGWIN32__ /* no fpu_control.h under Cygnus */
+#define _FPU_EXTENDED 0x300
+#define _FPU_DOUBLE   0x200
+#define _FPU_DEFAULT  0x137f
+#define _FPU_RC_NEAREST 0x0
+#define _FPU_RC_DOWN    0x400
+#define _FPU_RC_UP      0x800
+#define _FPU_RC_ZERO    0xC00
+#else
+#include <fpu_control.h>
+#endif /* ifdef __CYGWIN32__ */
+#ifndef __setfpucw
+#define __setfpucw(cw) __asm__ ("fldcw %0" : : "m" (cw))
+#endif /* ifndef __setfpucw */
+#endif /* __i386__ */
+
 int
 main (void)
 {
@@ -43,6 +60,11 @@ main (void)
    mpfr_init2(x, 128);
    mpfr_init2(y, 128);
 
+#if defined(__i386__)
+  /* sets the precision to double */
+  __setfpucw((_FPU_DEFAULT & (~_FPU_EXTENDED)) | _FPU_DOUBLE);
+#endif
+
    for (rnd_mode = 0; rnd_mode <= 3; rnd_mode++)
      {
        int i, j, si, sj;
@@ -52,8 +74,9 @@ main (void)
        for (i = 1, di = 0.25; i < 127; i++, di *= 0.5)
          for (si = 0; si <= 1; si++)
            {
-             mpfr_div_2ui(x, half, i, GMP_RNDZ);
+             mpfr_div_2ui (x, half, i, GMP_RNDZ);
              (si ? mpfr_sub : mpfr_add)(x, half, x, GMP_RNDZ);
+             /* x = 1/2 +/- 1/2^(1+i) */
              for (j = i+1, dj = di * 0.5; j < 128 && j < i+53; j++, dj *= 0.5)
                for (sj = 0; sj <= 1; sj++)
                  {
@@ -61,10 +84,11 @@ main (void)
                    int exp;
                    char *f;
 
-                   mpfr_div_2ui(y, half, j, GMP_RNDZ);
+                   mpfr_div_2ui (y, half, j, GMP_RNDZ);
                    (sj ? mpfr_sub : mpfr_add)(y, x, y, GMP_RNDZ);
+                   /* y = 1/2 +/- 1/2^(1+i) +/- 1/2^(1+j) */
                    exp = (LONG_RAND() % 47) - 23;
-                   mpfr_mul_2si(y, y, exp, GMP_RNDZ);
+                   mpfr_mul_2si (y, y, exp, GMP_RNDZ);
                    if (mpfr_inexflag_p())
                      {
                        fprintf(stderr, "Error in tget_d: inexact flag for "
@@ -76,13 +100,13 @@ main (void)
                    d = si ? 0.5 - dd : 0.5 + dd;
                    if ((LONG_RAND() / 1024) & 1)
                      {
-                       c = mpfr_get_d2(y, rnd_mode);
+                       c = mpfr_get_d2 (y, rnd_mode);
                        f = "mpfr_get_d2";
                      }
                    else
                      {
                        exp = (LONG_RAND() % 47) - 23;
-                       c = mpfr_get_d3(y, exp, rnd_mode);
+                       c = mpfr_get_d3 (y, exp, rnd_mode);
                        f = "mpfr_get_d3";
                        if (si) /* then real d < 0.5 */
                          d *= sj && i == 1 ? 4 : 2; /* normalize real d */
