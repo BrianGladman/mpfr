@@ -7,28 +7,27 @@
 
 void mpfr_agm(mpfr_ptr r, mpfr_srcptr a, mpfr_srcptr b, unsigned char rnd_mode)
 {
-  int i, n, p, q, go_on, dn, dp;
+  int i, ntotal, p, q, go_on, no, ulps;
   double uo, vo;
-  mpfr_t u, v, tmp;
+  mpfr_t u, v, tmp, tmpu, tmpv;
 
   /* I want b>= a */
   if (mpfr_cmp(a,b) > 0) 
     return mpfr_agm(r, b, a, rnd_mode);
 
 
-  /* printf("debut\n");*/
-  /* If a or b is NaN, let's return NaN */
+  /* If a or b is NaN, the result is NaN */
   if (FLAG_NAN(a) || FLAG_NAN(b)) 
     { SET_NAN(r); return; }
 
 
-  /* If a or b is negative, let's return NaN */
+  /* If a or b is negative, the result is NaN */
   if ((SIGN(a)<0)||(SIGN(b)<0))
     { SET_NAN(r); return; }
 
 
   
-  /* If a or b is 0, let's return 0 as a result */
+  /* If a or b is 0, the result is 0 */
   if ((SIGN(a)==0)||(SIGN(b)==0)) 
     { SET_ZERO(r);
     return;
@@ -36,114 +35,114 @@ void mpfr_agm(mpfr_ptr r, mpfr_srcptr a, mpfr_srcptr b, unsigned char rnd_mode)
 
  /* precision of the following calculus */
   q = PREC(r);
-  p = q + 12;
+  p = q + 15;
 
 
   /* Initialisations */
   go_on=1;
-
   vo=mpfr_get_d(b);
   uo=mpfr_get_d(a);
-  n = ceil(log(p)/log(2)) +1;
-  dn=0;
-  dp=0;
+  ntotal = ceil(log(p)/log(2)) +1;
+  no=0;
+
+  mpfr_init2(u,p);
+  mpfr_init2(v,p);
+  mpfr_init2(tmpu,p);
+  mpfr_init2(tmpv,p);
+  mpfr_init2(tmp,p);
+  mpfr_set(u,a,GMP_RNDN);
+  mpfr_set(v,b,GMP_RNDN);
+ 
 
   /* Main loop */
 
   while (go_on==1) {
     int can_go_on, err;
-    mpfr_t tmpu, tmpv;
 
-    n += dn;
-    p +=dp;
-    err=ceil((3*n+2)*exp(-p*log(2))+3*exp(-p*uo*log(2)/(vo-uo))/log(2));
+    err=ceil((3*ntotal+2)*exp(-p*log(2))+3*exp(-p*uo*log(2)/(vo-uo))/log(2));
     
-
-    /*    while (p<=err) {
-      p=err+1;
-      n = ceil(log(p)/log(2)) +1;
-      err=ceil(log((3*n+2)*exp(-p*log(2))+3*exp(-p*uo*log(2)/(vo-uo))/log(2)));
-      printf("s");
-      }*/
-
-    mpfr_init2(u,p);
-    mpfr_init2(v,p);
-
-    mpfr_set(u,a,GMP_RNDZ);
-    mpfr_set(v,b,GMP_RNDU);
-
-    mpfr_init2(tmpu,p);
-    mpfr_init2(tmpv,p);
-    mpfr_init2(tmp,p);
-
-    
-
-    /*    printf("p : %i et err : %i\n",p,err);
-
-	  printf("internal loop\n"); */
-    for(i=0;i<n;i++) { 
-      /*  printf("\n v :");    
-      mpfr_out_str(stdout,10,0,v,GMP_RNDN); printf("\n u :");
-      mpfr_out_str(stdout,10,0,u,GMP_RNDN);printf("\n u*v :"); */
-
+    /* Calculus of un and vn */
+    for(i=no;i<ntotal;i++) {    
       mpfr_mul(tmp,u,v,GMP_RNDN);
-      /* mpfr_out_str(stdout,10,0,tmp,GMP_RNDN);printf("\n sqrt(u*v) :");*/
       mpfr_sqrt(tmpu,tmp,GMP_RNDN);
-      /*mpfr_out_str(stdout,10,0,tmpu,GMP_RNDN);printf("\n"); */
       mpfr_add(tmp,u,v,GMP_RNDN);
       mpfr_div_2exp(tmpv,tmp,1,GMP_RNDN);
       mpfr_set(u,tmpu,GMP_RNDN);
       mpfr_set(v,tmpv,GMP_RNDN);       
     }
 
-    /* printf("avant can_round\n v :"); 
-    mpfr_out_str(stdout,10,0,v,GMP_RNDN); printf("\n u :");
-    mpfr_out_str(stdout,10,0,u,GMP_RNDN);printf("\n"); */
-    /*   mpfr_print_raw(v);
-	 printf(", %i, GMP_RNDU, %i, %i)\n",p-err,rnd_mode,q); */
-
+    /*printf("avant can_round\n v :"); 
+      mpfr_out_str(stdout,10,0,v,GMP_RNDN); printf("\n u :");
+      mpfr_out_str(stdout,10,0,u,GMP_RNDN);printf("\n"); */
+    
 
     /* Exactness of the result */
-    mpfr_sub(tmp,v,u,GMP_RNDU);
-    /*mpfr_out_str(stdout,10,0,tmp,GMP_RNDN); printf(" as sub\n");*/
-    mpfr_div(tmpu,tmp,u,GMP_RNDU);
-    mpfr_mul_2exp(tmp,tmpu,q,GMP_RNDU);
 
-    if( ((int) floor(mpfr_get_d(tmp))) >=3) {
-      /*     printf("Plus d'iterations effectuer tu dois : %i ulps de diff\n", (int) floor(mpfr_get_d(tmp))); */
+    /* Calculus of the nomber of ulps between un and vn */
+    mpfr_sub(tmp,v,u,GMP_RNDN);
+    mpfr_div(tmpu,tmp,u,GMP_RNDN);
+    mpfr_mul_2exp(tmp,tmpu,q+1,GMP_RNDN);
+    ulps = (int) floor(mpfr_get_d(tmp));
+    if (ulps <0) ulps=-ulps;
+
+    /* If there is more than 2 ulps, we have to do more iterations
+       with the same precision */
+    if( ulps >=2) {
       go_on=1;
-      dn=5;
-      dp=0;
+      no=ntotal;
+      ntotal+=5;
     }
+   
+    /* Else, we could have to work with more precision */
+    else { 
+      int round1, round2, equals;
+      mpfr_t res1, res2;
+      mpfr_init2(res1,q);
+      mpfr_init2(res2,q);
+      round1=mpfr_can_round(v,p-err-1,GMP_RNDU,rnd_mode,q);
+      round2=mpfr_can_round(u,p-err-1,GMP_RNDD,rnd_mode,q);
+      mpfr_set(res1, v, rnd_mode); 
+      mpfr_set(res2, u, rnd_mode); 
 
-    else {
-      go_on=1-mpfr_can_round(v,p-err,GMP_RNDN,rnd_mode,q);
-      dp=5;
-      dn=0;
-      /* printf("Avec plus de chiffres calculer tu dois\n");*/
+      /* If u=v or u & v can be round to the same machine number, we
+	 we have found the correct result */
+
+      if (((ulps==0)&&round1)||((ulps==1)&&round1&&round2&&(mpfr_cmp(res1,res2)==0)))
+	go_on=0;
+
+      else {
+	  go_on=1;
+	  p+=5;
+	  no=0;
+	  ntotal+=3;
+	  mpfr_clear(tmpu);
+	  mpfr_clear(tmpv);
+	  mpfr_clear(tmp);
+	  mpfr_clear(u);
+	  mpfr_clear(v);
+	  mpfr_init2(u,p);
+	  mpfr_init2(v,p);
+	  mpfr_init2(tmpu,p);
+	  mpfr_init2(tmpv,p);
+	  mpfr_init2(tmp,p);
+	  mpfr_set(u,a,GMP_RNDN);
+	  mpfr_set(v,b,GMP_RNDN);
+      }
     }
-
-    if(go_on==1) {
-      mpfr_clear(u);
-      mpfr_clear(v);
-    }
-
-    mpfr_clear(tmpu);
-    mpfr_clear(tmpv);
-    mpfr_clear(tmp);
-
   }
-
   /* End of while */
+
   /* Setting of the result */
- 
-  mpfr_set(r,v,rnd_mode);
+
+    mpfr_set(r,v,rnd_mode);
 
 
   /* Let's clean */
   mpfr_clear(u);
   mpfr_clear(v);
+  mpfr_clear(tmpu);
+  mpfr_clear(tmpv);
   mpfr_clear(tmp);
-
+  
   return ;
 }
