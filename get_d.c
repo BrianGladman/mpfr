@@ -246,24 +246,32 @@ double
 mpfr_get_d_2exp (long *expptr, mpfr_srcptr src, mp_rnd_t rnd_mode)
 {
   double ret;
-  long   exp;
-  exp = MPFR_GET_EXP (src);
+  mp_exp_t exp;
+
   ret = mpfr_get_d3 (src, 0, rnd_mode);
 
-  /* rounding can give 1.0, adjust back to 0.5 <= abs(ret) < 1.0 */
-  if (ret == 1.0)
+  if (MPFR_IS_FP(src) && MPFR_NOTZERO(src))
     {
-      ret = 0.5;
-      exp++;
-    }
-  else if (ret == -1.0)
-    {
-      ret = -0.5;
-      exp++;
-    }
+      exp = MPFR_GET_EXP (src);
 
-  ASSERT ((ret >= 0.5 && ret < 1.0)
-          || (ret <= 0.5 && ret > -1.0));
+      /* rounding can give 1.0, adjust back to 0.5 <= abs(ret) < 1.0 */
+      if (ret == 1.0)
+        {
+          ret = 0.5;
+          exp++;
+        }
+      else if (ret == -1.0)
+        {
+          ret = -0.5;
+          exp++;
+        }
+
+      MPFR_ASSERTN ((ret >= 0.5 && ret < 1.0)
+                    || (ret <= -0.5 && ret > -1.0));
+      MPFR_ASSERTN (exp >= LONG_MIN && exp <= LONG_MAX);
+    }
+  else
+    exp = 0;
 
   *expptr = exp;
   return ret;
