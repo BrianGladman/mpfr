@@ -347,20 +347,61 @@ check_min(void)
   mpfr_clear(zz);
 }
 
+void
+check_nans (void)
+{
+  mpfr_t  p, x, y;
+
+  mpfr_init2 (x, 123L);
+  mpfr_init2 (y, 123L);
+  mpfr_init2 (p, 123L);
+
+  /* nan * 0 == nan */
+  mpfr_set_nan (x);
+  mpfr_set_ui (y, 0L, GMP_RNDN);
+  mpfr_mul (p, x, y, GMP_RNDN);
+  ASSERT_ALWAYS (mpfr_nan_p (p));
+
+  /* 1 * nan == nan */
+  mpfr_set_ui (x, 1L, GMP_RNDN);
+  mpfr_set_nan (y);
+  mpfr_mul (p, x, y, GMP_RNDN);
+  ASSERT_ALWAYS (mpfr_nan_p (p));
+
+  /* 0 * +inf == nan */
+  mpfr_set_ui (x, 0L, GMP_RNDN);
+  mpfr_set_nan (y);
+  mpfr_mul (p, x, y, GMP_RNDN);
+  ASSERT_ALWAYS (mpfr_nan_p (p));
+
+  /* +1 * +inf == +inf */
+  mpfr_set_ui (x, 1L, GMP_RNDN);
+  mpfr_set_inf (y, 1);
+  mpfr_mul (p, x, y, GMP_RNDN);
+  ASSERT_ALWAYS (mpfr_inf_p (p));
+  ASSERT_ALWAYS (mpfr_sgn (p) > 0);
+
+  /* -1 * +inf == -inf */
+  mpfr_set_si (x, -1L, GMP_RNDN);
+  mpfr_set_inf (y, 1);
+  mpfr_mul (p, x, y, GMP_RNDN);
+  ASSERT_ALWAYS (mpfr_inf_p (p));
+  ASSERT_ALWAYS (mpfr_sgn (p) < 0);
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (p);
+}
+
 int
 main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
+  check_nans ();
   check_exact ();
   check_float ();
-#ifdef HAVE_INFS
-  check53 (0.0, DBL_POS_INF, GMP_RNDN, DBL_NAN);
-  check53(1.0, DBL_POS_INF, GMP_RNDN, DBL_POS_INF);
-  check53(-1.0, DBL_POS_INF, GMP_RNDN, DBL_NEG_INF);
-  check53(DBL_NAN, 0.0, GMP_RNDN, DBL_NAN); 
-  check53(1.0, DBL_NAN, GMP_RNDN, DBL_NAN); 
-#endif
+
   check53(6.9314718055994530941514e-1, 0.0, GMP_RNDZ, 0.0);
   check53(0.0, 6.9314718055994530941514e-1, GMP_RNDZ, 0.0);
   check_sign();
