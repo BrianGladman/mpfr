@@ -201,14 +201,14 @@ mpfr_can_round(b, err, rnd1, rnd2, prec)
 
 int
 #if __STDC__
-mpfr_can_round_raw(mp_limb_t *bp, unsigned long bn, char neg, 
+mpfr_can_round_raw(mp_limb_t *bp, unsigned long bn, int neg, 
 		   unsigned long err, unsigned char rnd1, unsigned char rnd2, 
 		   unsigned long prec)
 #else
 mpfr_can_round_raw(bp, bn, neg, err, rnd1, rnd2, prec)
      mp_limb_t *bp;
      unsigned long bn;
-     char neg; 
+     int neg; 
      unsigned long err; 
      unsigned char rnd1;
      unsigned char rnd2; 

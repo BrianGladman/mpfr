@@ -85,7 +85,7 @@ int mpfr_round_raw2 _PROTO ((mp_limb_t *, unsigned long, char, char,
 void mpfr_round _PROTO ((mpfr_ptr, char, unsigned long)); 
 int mpfr_can_round _PROTO ((mpfr_ptr, unsigned long, unsigned char, 
 			    unsigned char, unsigned long));
-int mpfr_can_round_raw _PROTO ((mp_limb_t *, unsigned long, char, 
+int mpfr_can_round_raw _PROTO ((mp_limb_t *, unsigned long, int, 
 				unsigned long, 
 				unsigned char, unsigned char, unsigned long));
 void mpfr_set_d _PROTO ((mpfr_ptr, double, unsigned char)); 
