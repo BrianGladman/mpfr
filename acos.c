@@ -110,8 +110,8 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_div_2ui (tmp, tmp, 1, GMP_RNDN);
       mpfr_sub (arcc, tmp, arcc, GMP_RNDN);
 
-      if (mpfr_can_round (arcc, prec-supplement, GMP_RNDN, GMP_RNDZ,
-                          MPFR_PREC (acos) + (rnd_mode == GMP_RNDN)))
+      if (MPFR_LIKELY (MPFR_CAN_ROUND (arcc, prec-supplement,
+				       MPFR_PREC (acos), rnd_mode)))
         break;
       MPFR_ZIV_NEXT (loop, prec);
       mpfr_set_prec (tmp, prec);

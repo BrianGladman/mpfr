@@ -64,8 +64,7 @@ mpfr_const_euler_internal (mpfr_t x, mp_rnd_t rnd)
       mpfr_set_prec (z, m - log2m);
       mpfr_const_euler_R (z, n);
       mpfr_sub (y, y, z, GMP_RNDN);
-      if (MPFR_LIKELY (mpfr_can_round (y, m - 3, GMP_RNDN, GMP_RNDZ,
-				       prec + (rnd == GMP_RNDN))))
+      if (MPFR_LIKELY (MPFR_CAN_ROUND (y, m - 3, prec, rnd)))
 	break;
       MPFR_ZIV_NEXT (loop, m);
       mpfr_set_prec (y, m);

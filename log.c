@@ -148,8 +148,7 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
       /* we have 7 ulps of error from the above roundings,
 	 4 ulps from the 4/s^2 second order term,
 	 plus the canceled bits */
-      if (MPFR_LIKELY (mpfr_can_round (tmp1, p - cancel - 4, GMP_RNDN, 
-				       GMP_RNDZ, q + (rnd_mode == GMP_RNDN))))
+      if (MPFR_LIKELY (MPFR_CAN_ROUND (tmp1, p-cancel-4, q, rnd_mode)))
 	break;
       p += cancel;
       MPFR_ZIV_NEXT (loop, p);

@@ -105,8 +105,7 @@ mpfr_sinh (mpfr_ptr y, mpfr_srcptr xt, mp_rnd_t rnd_mode)
 	  /* err = Nt-(__gmpfr_ceil_log2(1+pow(2,d)));*/
 	  err = Nt - (MAX (d, 0) + 1);
 	  
-	  if (mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
-			      MPFR_PREC (y) + (rnd_mode == GMP_RNDN)))
+	  if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, MPFR_PREC (y), rnd_mode)))
 	    break;
 	}
       /* actualisation of the precision */

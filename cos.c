@@ -135,8 +135,7 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       /* now the error is bounded by 2^(k-m) = 2^(EXP(s)-err) */
 
       exps = MPFR_GET_EXP(s);
-      if (MPFR_LIKELY(mpfr_can_round (s, exps + m - k, GMP_RNDN, GMP_RNDZ,
-				      precy + (rnd_mode == GMP_RNDN))))
+      if (MPFR_LIKELY (MPFR_CAN_ROUND (s, exps + m - k, precy, rnd_mode)))
 	break;
 
       if (MPFR_UNLIKELY (exps == 1))

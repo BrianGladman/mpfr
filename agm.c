@@ -146,8 +146,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
 	  mpfr_swap (v, tmp);
 	}
       /* Roundability of the result */
-      if (MPFR_LIKELY (mpfr_can_round (v, p - 4 - 3, GMP_RNDN, GMP_RNDZ,
-				       q + (rnd_mode == GMP_RNDN))))
+      if (MPFR_LIKELY (MPFR_CAN_ROUND (v, p - 4 - 3, q, rnd_mode)))
 	break; /* Stop the loop */
   
       /* Next iteration */

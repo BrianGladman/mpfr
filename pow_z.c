@@ -68,8 +68,7 @@ mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
 
     if (MPFR_LIKELY (inexact == 0 
 		     || mpfr_overflow_p () || mpfr_underflow_p ()
-		     || mpfr_can_round (res, err, GMP_RNDN, GMP_RNDZ,
-					MPFR_PREC (y) + (rnd == GMP_RNDN))))
+		     || MPFR_CAN_ROUND (res, err, MPFR_PREC (y), rnd)))
       break;
 
     /* Actualisation of the precision */
@@ -219,8 +218,7 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
 	inexact = inexact || MPFR_IS_ZERO (t) || MPFR_IS_INF (t);
 
 	if (MPFR_LIKELY (inexact != 0
-			 || mpfr_can_round (t, Nt - 3, GMP_RNDN, GMP_RNDZ,
-					 MPFR_PREC (y) + (rnd == GMP_RNDN))))
+			 || MPFR_CAN_ROUND (t, Nt-3, MPFR_PREC (y), rnd)))
 	  break;
 	/* actualisation of the precision */
 	MPFR_ZIV_NEXT (loop, Nt);

@@ -115,8 +115,7 @@ mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
 	}
       if (MPFR_LIKELY (inexact == 0 
 		       || mpfr_overflow_p () || mpfr_underflow_p ()
-		       || mpfr_can_round (res, err, GMP_RNDN, GMP_RNDZ,
-					  MPFR_PREC(x) + (rnd == GMP_RNDN))))
+		       || MPFR_CAN_ROUND (res, err, MPFR_PREC (x), rnd)))
 	break;
       /* Actualisation of the precision */
       MPFR_ZIV_NEXT (loop, prec);

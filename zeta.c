@@ -174,7 +174,7 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
   for (;;)
     {
       /* Principal loop: we compute, in z_pre,
-	 an approximation of Zeta(s), that we send to mpfr_can_round */
+	 an approximation of Zeta(s), that we send to can_round */
       mpfr_sub_ui (s1, s, 1, GMP_RNDN);
       MPFR_ASSERTN (MPFR_IS_FP (s1));
 
@@ -265,8 +265,7 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
         }
 
       MPFR_TRACE (MPFR_DUMP (z_pre));
-      if (MPFR_LIKELY (mpfr_can_round (z_pre, d - 3, GMP_RNDN, GMP_RNDZ,
-				       precz + (rnd_mode == GMP_RNDN))))
+      if (MPFR_LIKELY (MPFR_CAN_ROUND (z_pre, d-3, precz, rnd_mode)))
 	break;
       MPFR_ZIV_NEXT (loop, d);
     }
@@ -389,9 +388,8 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
           mpfr_mul (z_pre, z_pre, y, GMP_RNDN);
           mpfr_mul_2ui (z_pre, z_pre, 1, GMP_RNDN);
 
-          if (MPFR_LIKELY (mpfr_can_round (z_pre, prec1 - add, GMP_RNDN, 
-					   GMP_RNDZ,
-					   precz + (rnd_mode == GMP_RNDN))))
+          if (MPFR_LIKELY (MPFR_CAN_ROUND (z_pre, prec1 - add, precz, 
+					   rnd_mode)))
 	    break;
 
 	  /* Actualisation of the precision */

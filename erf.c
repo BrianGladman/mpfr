@@ -172,8 +172,7 @@ mpfr_erf_0 (mpfr_ptr res, mpfr_srcptr x, double xf2, mp_rnd_t rnd_mode)
       tauk = 4.0 * tauk + 11.0; /* final ulp-error on s */
       log2tauk = __gmpfr_ceil_log2 (tauk);
 
-      if (MPFR_LIKELY (mpfr_can_round (s, m - log2tauk, GMP_RNDN, GMP_RNDZ,
-				       n + (rnd_mode == GMP_RNDN))))
+      if (MPFR_LIKELY (MPFR_CAN_ROUND (s, m - log2tauk, n, rnd_mode)))
 	break;
 
       /* Actualisation of the precision */

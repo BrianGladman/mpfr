@@ -72,8 +72,7 @@ mpfr_tan (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_sin_cos (s, c, x, GMP_RNDN); /* err <= 1/2 ulp on s and c */
       mpfr_div (c, s, c, GMP_RNDN);     /* err <= 2 ulps */
       MPFR_ASSERTD (!MPFR_IS_SINGULAR (c));
-      if (MPFR_LIKELY (mpfr_can_round (c, m - 1, GMP_RNDN, GMP_RNDZ,
-				       precy + (rnd_mode == GMP_RNDN))))
+      if (MPFR_LIKELY (MPFR_CAN_ROUND (c, m-1, precy, rnd_mode)))
 	break;
       MPFR_ZIV_NEXT (loop, m);
       mpfr_set_prec (s, m);

@@ -350,8 +350,8 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	}
       MPFR_SET_POS (arctgt);
 
-      if (mpfr_can_round (arctgt, realprec, GMP_RNDN, GMP_RNDZ,
-                          MPFR_PREC (atan) + (rnd_mode == GMP_RNDN)))
+      if (MPFR_LIKELY (MPFR_CAN_ROUND (arctgt, realprec, MPFR_PREC (atan),
+				       rnd_mode)))
 	break;
       MPFR_ZIV_NEXT (loop, realprec);
     }

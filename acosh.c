@@ -101,8 +101,7 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
         err = Nt - (-1 + 2 * MAX (2 + MAX (2 - MPFR_GET_EXP (t),
 					   1 + exp_te - exp_ti
 					   - MPFR_GET_EXP (t)), 0));
-	if (MPFR_LIKELY (mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
-					 Ny + (rnd_mode == GMP_RNDN))))
+	if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
 	  break;
 
         /* reactualisation of the precision */

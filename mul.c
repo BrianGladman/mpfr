@@ -198,8 +198,6 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
 /****** END OF CHECK *******/
 
-
-
 /* Multiply 2 mpfr_t */
 
 int
@@ -394,8 +392,8 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	mpn_lshift (tmp, tmp, tn, 1);
       MPFR_ASSERTD (MPFR_LIMB_MSB (tmp[tn-1]) != 0);
 
-      if (MPFR_UNLIKELY (!mpfr_can_round_raw (tmp, tn, sign, p + b1 - 1,
-	    GMP_RNDN, GMP_RNDZ, MPFR_PREC(a)+(rnd_mode==GMP_RNDN))))
+      if (MPFR_UNLIKELY (!mpfr_round_p (tmp, tn, p+b1-1,
+					MPFR_PREC(a)+(rnd_mode==GMP_RNDN))))
 	{
 	  tmp -= k-tn; /* tmp may have changed, FIX IT!!!!! */
 	  goto full_multiply; 

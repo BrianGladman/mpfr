@@ -130,8 +130,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode)
       exact |= mpfr_sqrt (t, t, GMP_RNDZ);        /* sqrt(x^2+y^2)*/
 
       if (MPFR_LIKELY (exact == 0
-		       || mpfr_can_round (t, Nt - 2, GMP_RNDN, GMP_RNDZ,
-					  Nz + (rnd_mode == GMP_RNDN))))
+		       || MPFR_CAN_ROUND (t, Nt-2, Nz, rnd_mode)))
 	break;
 
       /* reactualization of the precision */

@@ -95,8 +95,7 @@ mpfr_asinh (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       err = Nt - (MAX (3 - MPFR_GET_EXP (t), 0) + 1);
 
       if (MPFR_LIKELY (MPFR_IS_ZERO (t) 
-		       || mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
-					  Ny + (rnd_mode == GMP_RNDN))))
+		       || MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
 	break;
 
       /* actualisation of the precision */

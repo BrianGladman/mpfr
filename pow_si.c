@@ -120,8 +120,7 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd_mode)
 	    /* error estimate -- see pow function in algorithms.ps */
 	    err = Nt - 3;
 	    if (MPFR_LIKELY (inexact != 0
-			     || mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
-						Ny + (rnd_mode == GMP_RNDN))))
+			     || MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
 	      break;
 
 	    /* actualisation of the precision */

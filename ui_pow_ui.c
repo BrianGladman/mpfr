@@ -70,8 +70,7 @@ mpfr_ui_pow_ui (mpfr_ptr x, unsigned long int y, unsigned long int n,
       err = prec - err;
       
       if (MPFR_LIKELY (inexact == 0
-		       || mpfr_can_round (res, err, GMP_RNDN, GMP_RNDZ,
-					  MPFR_PREC(x) + (rnd == GMP_RNDN))))
+		       || MPFR_CAN_ROUND (res, err, MPFR_PREC (x), rnd)))
 	break;
       
       /* Actualisation of the precision */

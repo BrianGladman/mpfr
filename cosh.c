@@ -94,9 +94,8 @@ mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
 	err = Nt - 3;
 	 
 	/* Check if we can round */
-	if (MPFR_UNLIKELY(MPFR_IS_INF(t)) ||
-	    mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
-			    Ny + (rnd_mode == GMP_RNDN)))
+	if (MPFR_UNLIKELY (MPFR_IS_INF (t)) 
+	    || MPFR_LIKELY (MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
 	  break;
 
 	/* Actualisation of the precision */

@@ -93,8 +93,7 @@ mpfr_const_pi_internal (mpfr_ptr x, mp_rnd_t rnd_mode)
       mpfr_div (A, B, D, GMP_RNDN);
 
       /* MPFR_ASSERTN(p >= 2 * k + 8); */
-      if (MPFR_LIKELY (mpfr_can_round (A, p - 2 * k - 8, GMP_RNDN, GMP_RNDZ,
-				       px + (rnd_mode == GMP_RNDN))))
+      if (MPFR_LIKELY (MPFR_CAN_ROUND (A, p - 2 * k - 8, px, rnd_mode)))
 	break;
       
       p += kmax;

@@ -378,8 +378,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 
 	/* estimate of the error -- see pow function in algorithms.ps */
         err = Nt - (exp_te + 3);
-        if (MPFR_LIKELY (mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
-					 Nz + (rnd_mode == GMP_RNDN))))
+        if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, Nz, rnd_mode)))
 	  break;
 
         /* check exact power */

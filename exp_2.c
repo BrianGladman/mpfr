@@ -184,8 +184,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       MPFR_LOG_VAR (s);
       MPFR_LOG_MSG (("err=%d bits\n", K));
       
-      if (mpfr_can_round (s, q - K, GMP_RNDN, GMP_RNDZ,
-			  precy + (rnd_mode == GMP_RNDN)) )
+      if (MPFR_LIKELY (MPFR_CAN_ROUND (s, q-K, precy, rnd_mode)))
 	break;
       MPFR_ZIV_NEXT (loop, q);
       mpfr_set_prec (r, q);

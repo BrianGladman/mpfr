@@ -116,8 +116,7 @@ mpfr_log2 (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
 	
         /* estimation of the error */
         err = Nt-3;
-	if (MPFR_LIKELY (mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
-                                         Ny + (rnd_mode == GMP_RNDN))))
+	if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
 	  break;
 	
         /* actualisation of the precision */

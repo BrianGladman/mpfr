@@ -106,8 +106,8 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_sqrt (xp, xp, GMP_RNDN);
       mpfr_div (xp, x, xp, GMP_RNDN);
       mpfr_atan (xp, xp, GMP_RNDN);
-      if (mpfr_can_round (xp, prec - xp_exp, GMP_RNDN, GMP_RNDZ,
-                          MPFR_PREC (asin) + (rnd_mode == GMP_RNDN)))
+      if (MPFR_LIKELY (MPFR_CAN_ROUND (xp, prec - xp_exp,
+				       MPFR_PREC (asin), rnd_mode)))
 	break;
       MPFR_ZIV_NEXT (loop, prec);
     }

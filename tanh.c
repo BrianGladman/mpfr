@@ -96,8 +96,7 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
       d = d - MPFR_GET_EXP (t);
       err = Nt - (MAX(d + 1, 3) + 1);
       
-      if (MPFR_LIKELY (mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
-				       Ny + (rnd_mode == GMP_RNDN))))
+      if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
 	break;
 
       /* if t=1, we still can round */

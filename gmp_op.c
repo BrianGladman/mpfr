@@ -196,8 +196,7 @@ mpfr_add_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mp_rnd_t rnd_mode)
       if (MPFR_LIKELY (!MPFR_IS_ZERO (t)))
 	{
 	  err = (mp_exp_t) p - 1 - MAX (MPFR_GET_EXP(q)-MPFR_GET_EXP(t), 0);
-	  if (MPFR_LIKELY (mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ, 
-				MPFR_PREC(y) + (rnd_mode == GMP_RNDN)))) 
+	  if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, MPFR_PREC (y), rnd_mode)))
 	    {
 	      res = mpfr_set (y, t, rnd_mode);	      
 	      break;
@@ -275,8 +274,7 @@ mpfr_sub_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z,mp_rnd_t rnd_mode)
       if (MPFR_LIKELY (!MPFR_IS_ZERO (t)))
 	{
 	  err = (mp_exp_t) p - 1 - MAX (MPFR_GET_EXP(q)-MPFR_GET_EXP(t), 0);
-	  res = mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
-				MPFR_PREC(y) + (rnd_mode == GMP_RNDN) );
+	  res = MPFR_CAN_ROUND (t, err, MPFR_PREC (y), rnd_mode);
 	  if (MPFR_LIKELY (res != 0))  /* We can round! */
 	    {
 	      res = mpfr_set (y, t, rnd_mode);
