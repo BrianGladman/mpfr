@@ -132,7 +132,9 @@ int mpfr_cmp2 ( mpfr_srcptr b, mpfr_srcptr c )
 	}
 	  
       /* bn < 0; if some limb of c is nonzero, return k+1, otherwise return k*/
+
       if (cn>=0 && (cp[cn--] << (mp_bits_per_limb - d))) { return k+1; }
+
       while (cn >= 0) 
 	if (cp[cn--]) return k+1; 
       return k; 
@@ -153,12 +155,15 @@ int mpfr_cmp2 ( mpfr_srcptr b, mpfr_srcptr c )
 	 }
        else u = cp[cn--]; 
        
-       if ((cc = bp[bn--] | ~u) != 0) 
+       if ((cc = (bp[bn--] | ~u)) != 0)
 	 { count_leading_zeros(u, cc); return k + u; }
        else k += mp_bits_per_limb; 
     }
 
-  count_leading_zeros(cc, ~(cp[cn--] << (mp_bits_per_limb - d))); 
+  if (cn >= 0)
+    count_leading_zeros(cc, ~(cp[cn--] << (mp_bits_per_limb - d))); 
+  else { cc = 0; }
+
   k += cc; 
   if (cc < d) return k;
   
