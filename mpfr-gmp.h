@@ -134,6 +134,9 @@ extern "C" {
 #ifndef mpn_mul_basecase
 # define mpn_mul_basecase(dst,s1,n1,s2,n2) mpn_mul((dst),(s1),(n1),(s2),(n2))
 #endif
+#ifndef mpn_sqr_basecase
+# define mpn_sqr_basecase(dst,src,n) mpn_mul((dst),(src),(n),(src),(n))
+#endif
 
 /* ASSERT */
 __MPFR_DECLSPEC void mpfr_assert_fail _MPFR_PROTO((const char *, int, 
