@@ -41,7 +41,7 @@ mpfr_sub_one_ulp(mpfr_ptr x, mp_rnd_t rnd_mode)
   MPFR_ASSERTN(MPFR_PREC_MIN > 1);
 
   xn = 1 + (MPFR_PREC(x) - 1) / BITS_PER_MP_LIMB;
-  sh = xn * BITS_PER_MP_LIMB - MPFR_PREC(x);
+  sh = (mp_prec_t) xn * BITS_PER_MP_LIMB - MPFR_PREC(x);
   xp = MPFR_MANT(x);
   mpn_sub_1 (xp, xp, xn, MP_LIMB_T_ONE << sh);
   if (xp[xn-1] >> (BITS_PER_MP_LIMB - 1) == 0)
