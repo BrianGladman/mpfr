@@ -35,7 +35,7 @@ mpfr_set_si (x, i, rnd_mode)
      mp_rnd_t rnd_mode;
 #endif
 {
-  int inex;
+  int inex = 0;
   mp_size_t xn;
   unsigned int cnt, nbits;
   mp_limb_t ai, *xp;
