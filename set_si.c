@@ -14,7 +14,7 @@ mpfr_set_si(x, i, rnd_mode)
      unsigned char rnd_mode;
 #endif
 {
-  unsigned long xn, ai, cnt; 
+  unsigned long xn, cnt; mp_limb_t ai;
 
   if (i==0) { SET_ZERO(x); return; }
   xn = (PREC(x)-1)/BITS_PER_MP_LIMB;
@@ -42,13 +42,13 @@ mpfr_set_ui(x, i, rnd_mode)
      unsigned char rnd_mode;
 #endif  
 {
-  unsigned int xn, cnt; 
+  unsigned int xn, cnt;
 
   if (i==0) { SET_ZERO(x); return; }
   xn = (PREC(x)-1)/BITS_PER_MP_LIMB;
-  count_leading_zeros(cnt, i); 
+  count_leading_zeros(cnt, (mp_limb_t) i); 
 
-  x -> _mp_d[xn] = i << cnt; 
+  x -> _mp_d[xn] = ((mp_limb_t) i) << cnt; 
   /* don't forget to put zero in lower limbs */
   MPN_ZERO(MANT(x), xn);
   x -> _mp_exp = BITS_PER_MP_LIMB - cnt;
