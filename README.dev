@@ -50,8 +50,8 @@ To make a release (for the MPFR team):
   5) If there is no problem, add a tag to the CVS corresponding to the
      release, e.g. mpfr-2-0-1-rel for mpfr 2.0.1 (note that the periods
      are replaced by dashes): cvs tag mpfr-2-0-1-rel
-  6) Update the VERSION file to indicate the next version.
-     Update the version in mpfr.texi.
+  6) Update the version with the update-version script to indicate the
+     next version.
 
 A branch may be created first (e.g. with "cvs tag -b mpfr-2-0-2-branch")
 to allow new features to be committed to the trunk.

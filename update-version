@@ -1,0 +1,11 @@
+#!/bin/sh
+
+set -e
+
+if [ $# -ne 1 ]; then
+  echo "Usage: $0 <version>"
+  exit 1
+fi
+
+echo $1 > VERSION
+sed -i "s/\(@set VERSION \).*/\1$1/" mpfr.texi
