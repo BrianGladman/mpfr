@@ -138,7 +138,7 @@ check_nans (void)
 int
 main (int argc, char *argv[])
 {
-  mpfr_t x;
+  mpfr_t x, c, s, c2, s2;
 
   tests_start_mpfr ();
 
@@ -177,6 +177,30 @@ main (int argc, char *argv[])
       exit (1);
     }
 
+  /* Can fail on an assert */
+  mpfr_set_prec (x, 53);
+  mpfr_set_str (x, "77291789194529019661184401408", 10, GMP_RNDN);
+  mpfr_init2 (c, 4); mpfr_init2 (s, 42);
+  mpfr_init2 (c2, 4); mpfr_init2 (s2, 42);
+
+  mpfr_sin (s, x, GMP_RNDN);
+  mpfr_cos (c, x, GMP_RNDN);
+  mpfr_sin_cos (s2, c2, x, GMP_RNDN);
+  if (mpfr_cmp (c2, c))
+    {
+      printf("cos differs for x=77291789194529019661184401408");
+      exit (1);
+    }
+  if (mpfr_cmp (s2, s))
+    {
+      printf("sin differs for x=77291789194529019661184401408");
+      exit (1);
+    }
+
+  mpfr_clear (s2);
+  mpfr_clear (c2);
+  mpfr_clear (s);
+  mpfr_clear (c);
   mpfr_clear (x);
 
   test_generic (2, 100, 20);
