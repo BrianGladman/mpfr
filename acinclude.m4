@@ -1,3 +1,9 @@
+dnl  autoconf 2.50 is necessary because of the use of AH_VERBATIM,
+dnl  but it would be better to make the config file compatible with
+dnl  both autoconf 2.13 and autoconf 2.50.
+dnl  The following line allows the autoconf wrapper (when installed)
+dnl  to work as expected.
+AC_PREREQ(2.50)
 
 AC_DEFUN(AC_MY_LIBS,
 [
