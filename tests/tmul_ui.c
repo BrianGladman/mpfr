@@ -50,7 +50,15 @@ main(int argc, char **argv)
   mpfr_set_d(x, 1.0/3.0, GMP_RNDZ); 
   mpfr_mul_ui(x, x, 3, GMP_RNDU); 
   if (mpfr_get_d(x) != 1.0) {
-    fprintf(stderr, "U(Z(1/3)*3) does not give 1\n"); exit(1);
+    fprintf(stderr, "Error in mpfr_mul_ui: U(Z(1/3)*3) does not give 1\n"); exit(1);
+  }
+
+  /* checks sign is correct */
+  mpfr_set_d(x, -2.0, GMP_RNDZ);
+  mpfr_set_d(y, 3.0, GMP_RNDZ);
+  mpfr_mul_ui(x, y, 4, GMP_RNDZ);
+  if (SIGN(x) != 1) {
+    fprintf(stderr, "Error in mpfr_mul_ui: 4*3.0 does not give a positive result\n"); exit(1);
   }
 
   mpfr_clear(x); mpfr_clear(y);
