@@ -35,7 +35,7 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
 
   sign_z = mpz_cmp_ui (z, 0);
 
-  if (sign_z == 0)
+  if (MPFR_UNLIKELY(sign_z == 0))
     {
       MPFR_SET_ZERO(f);
       MPFR_SET_POS(f);
@@ -43,14 +43,14 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
     }
 
   fp = MPFR_MANT(f);
-  fn = 1 + (MPFR_PREC(f) - 1) / BITS_PER_MP_LIMB;
+  fn = MPFR_LIMB_SIZE(f);
   zn = ABS(SIZ(z));
-  MPFR_ASSERTN(zn >= 1);
+  MPFR_ASSERTD (zn >= 1);
   dif = zn - fn;
   zp = PTR(z);
   count_leading_zeros(k, zp[zn-1]);
 
-  if (zn > MPFR_EMAX_MAX / BITS_PER_MP_LIMB + 1)
+  if (MPFR_UNLIKELY(zn > MPFR_EMAX_MAX / BITS_PER_MP_LIMB + 1))
     return mpfr_set_overflow(f, rnd_mode, sign_z);
   /* because zn >= __gmpfr_emax / BITS_PER_MP_LIMB + 2
      and zn * BITS_PER_MP_LIMB >= __gmpfr_emax + BITS_PER_MP_LIMB + 1
@@ -62,14 +62,15 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
              <= MPFR_EMAX_MAX + BITS_PER_MP_LIMB */
   exp = (mp_prec_t) zn * BITS_PER_MP_LIMB - k;
   /* The exponent will be exp or exp + 1 (due to rounding) */
-  if (exp > __gmpfr_emax)
+  if (MPFR_UNLIKELY(exp > __gmpfr_emax))
     return mpfr_set_overflow(f, rnd_mode, sign_z);
-  if (exp + 1 < __gmpfr_emin)
+  if (MPFR_UNLIKELY(exp + 1 < __gmpfr_emin))
     return mpfr_set_underflow(f, rnd_mode == GMP_RNDN ? GMP_RNDZ : rnd_mode,
                               sign_z);
-
-  if (MPFR_SIGN(f) * sign_z < 0)
-    MPFR_CHANGE_SIGN(f);
+  if (sign_z > 0)
+    MPFR_SET_POS (f);
+  else 
+    MPFR_SET_NEG (f);
 
   if (dif >= 0)
     {
@@ -77,7 +78,7 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
       int sh, to0;
 
       /* number has to be truncated */
-      if (k != 0)
+      if (MPFR_LIKELY(k != 0))
         {
           mpn_lshift(fp, zp + dif, fn, k);
           if (dif != 0)
@@ -95,7 +96,7 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
         || (rnd_mode == GMP_RNDD && sign_z > 0);
 
       /* remaining bits... */
-      if (rnd_mode == GMP_RNDN)
+      if (MPFR_LIKELY(rnd_mode == GMP_RNDN))
         {
           /* 1) If rounding bit is 0, behave like rounding to 0.
              2) Determine the sticky bit (cc != 0). */
@@ -145,9 +146,9 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
         inex = -sign_z;
       else
         {
-          if (mpn_add_1(fp, fp, fn, MPFR_LIMB_ONE << sh))
+          if (MPFR_UNLIKELY(mpn_add_1(fp, fp, fn, MPFR_LIMB_ONE << sh)))
             {
-              if (exp == __gmpfr_emax)
+              if (MPFR_UNLIKELY(exp == __gmpfr_emax))
                 return mpfr_set_overflow(f, rnd_mode, sign_z);
               else
                 {
@@ -160,7 +161,7 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
     } /* dif >= 0 */
   else /* dif < 0 */
     {
-      if (k != 0)
+      if (MPFR_LIKELY(k != 0))
         mpn_lshift(fp - dif, zp, zn, k);
       else
         MPN_COPY(fp - dif, zp, zn);
@@ -169,7 +170,7 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
       inex = 0; /* result is exact */
     }
 
-  if (exp < __gmpfr_emin)
+  if (MPFR_UNLIKELY(exp < __gmpfr_emin))
     {
       if (rnd_mode == GMP_RNDN && inex == 0 && mpfr_powerof2_raw (f))
         rnd_mode = GMP_RNDZ;
