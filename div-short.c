@@ -160,7 +160,7 @@ check (int argc, const char *argv[])
   int n = (argc > 1) ? atoi (argv[1]) : 1000;
   int k = (argc > 2) ? atoi (argv[2]) : 10000000;
   mp_limb_t *n0p, *np, *n2p, *qp, *q2p, *dp;
-  mp_limb_t max;
+  mp_limb_t max, qqh1, qqh2;
   int st;
   int i;
   int j;
@@ -188,7 +188,7 @@ check (int argc, const char *argv[])
       mpn_divrem (qp, 0, np, 2 * n, dp, n);
 
       MPN_COPY (n2p, n0p, 2 * n);
-      mpn_dc_divrem_n_high (q2p, n2p, dp, n);
+      qqh2 = mpn_dc_divrem_n_high (q2p, n2p, dp, n);
 
       if (mpn_cmp (qp, q2p, n) > 0)
 	{
@@ -201,6 +201,13 @@ check (int argc, const char *argv[])
 	      printf ("\nn0p=");
 	      for (i = 2*n-1 ; i >= 0 ; i--)
                 printf (" %016Lx", (unsigned long) n0p[i]);
+	      printf ("\nqp=");
+	      for (i = n-1 ; i >= 0 ; i--)
+                printf (" %016Lx", (unsigned long) qp[i]);
+              printf ("\nq2p=");
+              for (i = n-1 ; i >= 0 ; i--)
+                printf (" %016Lx", (unsigned long) q2p[i]);
+	      printf ("\nQcarry=%lu\n", qqh2);
 	    }
 	  return;
 	}
