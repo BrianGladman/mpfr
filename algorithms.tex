@@ -1947,7 +1947,41 @@ calculate the size of intermediary variables, we have to add, at
 least, $\lceil \log_2 (1+7 \times 2^{1-\Exp(v)} +
 2^{\Exp(x)-\Exp(t)-\Exp(v)+2}) \rceil$ bits the wanted precision.
  
+\subsection{The arc-sine function}
 
+\begin{enumerate}
+\item We use the formula $arcsin\,x=\arctan\,\frac{x}{\sqrt{1-x^2}}$
+\item We will have the when $x$ is near $1$ we will experience uncertainty problems:
+\item If $x=a(1+\delta)$ with $\delta$ being the relative error then we will have
+\begin{equation*}
+1-x=1-a-a\delta=(1-a)[1-\frac{a}{1-a}\delta]
+\end{equation*}
+Ans so when using the arctangent programs we need to take into account that decrease in precision.
+\item We will have 
+\end{enumerate}
+
+\subsection{The arc-cosine function} % from Mathieu Dutour
+
+\begin{enumerate}
+\item Obviously, we used the formula 
+\begin{equation*}
+\arccos\,x=\frac{\pi}{2}-\arcsin\,x
+\end{equation*}
+\item The problem of $\arccos$ is that it is $0$ at $1$, so, we have a cancellation problem to treat at $1$.
+\item (Suppose $x\geq 0$, this is where the problem happens) The derivative of $\arccos$ is $\frac{-1}{\sqrt{1-x^2}}$ and we will have
+\begin{equation*}
+\frac{1}{2\sqrt{1-x}}  \leq   |\frac{-1}{\sqrt{1-x^2}}|=\frac{1}{\sqrt{(1-x)(1+x)}}  \leq  \frac{1}{\sqrt{1-x}}
+\end{equation*}
+So, integrating the above inequality on $[x,1]$ we get
+\begin{equation*}
+\sqrt{1-x}\leq \arccos\,x\leq 2\sqrt{1-x}
+\end{equation*}
+\item The important part is the lower bound that we get which tell us a upper bound on the cancellation that will occur:\\
+The terms that are cancelled are $\pi/2$ and $\arcsin\,x$, their order is $2$. The number of canceled terms is so
+\begin{verbatim}
+1-1/2*MPFR_EXP(1-x)
+\end{verbatim}
+\end{enumerate}
 
 \subsection{The euclidean distance function}
 
