@@ -19,6 +19,15 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+/* redefinition of external symbols in the __gmpfr namespace */
+#define __mpfr_const_log2_prec __gmpfr_const_log2_prec
+#define __mpfr_const_pi_prec __gmpfr_const_pi_prec
+#define _mpfr_ceil_exp2 __gmpfr_ceil_exp2
+#define _mpfr_ceil_log2 __gmpfr_ceil_log2
+#define _mpfr_floor_log2 __gmpfr_floor_log2
+#define _mpfr_isqrt __gmpfr_isqrt
+#define _mpfr_cuberoot __gmpfr_cuberoot
+
 #ifndef HAVE_STRCASECMP
 #define strcasecmp mpfr_strcasecmp
 #endif

@@ -29,6 +29,13 @@ MA 02111-1307, USA. */
 #define _MPFR_H_HAVE_FILE 1
 #endif
 
+/* redefinition of external symbols in the __gmpfr namespace */
+#define __gmp_default_rounding_mode __gmpfr_default_rounding_mode
+#define __mpfr_default_fp_bit_precision __gmpfr_default_fp_bit_precision
+#define __mpfr_flags __gmpfr_flags
+#define __mpfr_emin __gmpfr_emin
+#define __mpfr_emax __gmpfr_emax
+
 /* Definition of rounding modes */
 
 #define GMP_RNDN 0
