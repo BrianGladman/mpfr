@@ -39,6 +39,7 @@ mpfr_print_raw(mpfr_srcptr x)
   char *str; 
 
   if (FLAG_NAN(x)) printf("NaN");
+  else if (!NOTZERO(x)) printf("0");
   else {
      /* 3 char for sign + 0 + binary point
 	+ ABSSIZE(x) * BITS_PER_MP_LIMB for mantissa
