@@ -41,13 +41,10 @@ long _mpfr_ceil_log2 (double d)
 /* returns floor(log(d)/log(2)) */
 long _mpfr_floor_log2 (double d)
 {
-  long exp;
   union ieee_double_extract x;
 
   x.d = d;
-  exp = x.s.exp - 1023;
-  x.s.exp = 1023; /* value for 1 <= d < 2 */
-  return exp;
+  return (long) x.s.exp - 1023;
 }
 
 /* returns y >= 2^d */
