@@ -19,6 +19,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+#ifdef TEST
 #include <stdio.h>
 #include "gmp.h"
 #include "mpfr.h"
@@ -120,4 +121,4 @@ mpfr_set_machine_rnd_mode(rnd_mode)
   default: fprintf(stderr, "invalid rounding mode\n"); exit(1);
   }
 }
-
+#endif
