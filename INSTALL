@@ -1,8 +1,8 @@
-		Installing MPFR version 1.1
-		===========================
+			Installing MPFR 2001
+			====================
 
 0. You first need to install GMP. See <http://www.swox.com/gmp/>.
-   MPFR version 1.1 requires GMP version 3.0 or latter.
+   MPFR version 2001 requires GMP version 3.1.1 or latter.
 
    After you have successfully built GMP, and installed it using
    "make install", you'll need to manually install some GMP header 

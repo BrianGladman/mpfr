@@ -1,4 +1,4 @@
-Changes from version 1.0 to version 1.1:
+Changes from version 1.0 to version 2001:
 - the default installation does not provide any more access to machine 
   rounding mode, and as a consequence does not compare MPFR results with 
   precision=53 to machine results. Add option -DTEST if you want to have
