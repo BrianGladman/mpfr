@@ -75,7 +75,7 @@ include_HEADERS = mpfr.h mpf2mpfr.h mpfr-test.h
 
 lib_LIBRARIES = libmpfr.a
 
-libmpfr_a_SOURCES = cputime.h mpfr.h mpfr-impl.h exceptions.c save_expo.c extract.c add.c add_ui.c add_ulp.c agm.c clear.c cmp.c cmp_abs.c cmp_ui.c div_2exp.c div.c div_ui.c dump.c eq.c exp2.c exp3.c exp.c get_str.c init.c inp_str.c isnan.c log2.c log.c mul_2exp.c mul.c mul_ui.c neg.c out_str.c pi.c pow.c print_raw.c print_rnd_mode.c random2.c random.c reldiff.c rnd_mode.c round.c set.c set_d.c set_dfl_prec.c set_rnd.c set_f.c set_prc_raw.c set_prec.c set_q.c set_si.c set_str.c set_str_raw.c set_ui.c set_z.c sqrt.c sqrt_ui.c sub.c sub_ui.c trunc.c ui_div.c ui_sub.c urandomb.c sqrtrem.c mpz_set_fr.c swap.c  factorial.c cosh.c sinh.c tanh.c acosh.c asinh.c atanh.c atan.c cmp2.c exp_2.c asin.c euler.c cos.c sin.c tan.c fma.c hypot.c log1p.c expm1.c log_base_2.c ui_pow.c pow2.c log_base_10.c
+libmpfr_a_SOURCES = cputime.h mpfr.h mpfr-impl.h exceptions.c save_expo.c extract.c add.c add_ui.c add_ulp.c agm.c clear.c cmp.c cmp_abs.c cmp_ui.c div_2exp.c div.c div_ui.c dump.c eq.c exp2.c exp3.c exp.c get_str.c init.c inp_str.c isnan.c log2.c log.c mul_2exp.c mul.c mul_ui.c neg.c out_str.c pi.c pow.c print_raw.c print_rnd_mode.c random2.c random.c reldiff.c rnd_mode.c round.c set.c set_d.c set_dfl_prec.c set_rnd.c set_f.c set_prc_raw.c set_prec.c set_q.c set_si.c set_str.c set_str_raw.c set_ui.c set_z.c sqrt.c sqrt_ui.c sub.c sub_ui.c trunc.c ui_div.c ui_sub.c urandomb.c sqrtrem.c mpz_set_fr.c swap.c  factorial.c cosh.c sinh.c tanh.c acosh.c asinh.c atanh.c atan.c cmp2.c exp_2.c asin.c euler.c cos.c sin.c tan.c fma.c hypot.c log1p.c expm1.c log_base_2.c ui_pow.c pow2.c log_base_10.c gmp_op.c
 
 libmpfr_a_LIBADD = ceil.o floor.o
 
@@ -103,7 +103,7 @@ set_ui.o set_z.o sqrt.o sqrt_ui.o sub.o sub_ui.o trunc.o ui_div.o \
 ui_sub.o urandomb.o sqrtrem.o mpz_set_fr.o swap.o factorial.o cosh.o \
 sinh.o tanh.o acosh.o asinh.o atanh.o atan.o cmp2.o exp_2.o asin.o \
 euler.o cos.o sin.o tan.o fma.o hypot.o log1p.o expm1.o log_base_2.o \
-ui_pow.o pow2.o log_base_10.o
+ui_pow.o pow2.o log_base_10.o gmp_op.o
 AR = ar
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
@@ -121,7 +121,7 @@ install-sh missing mkinstalldirs texinfo.tex
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = gtar
+TAR = tar
 GZIP_ENV = --best
 DEP_FILES =  .deps/acosh.P .deps/add.P .deps/add_ui.P .deps/add_ulp.P \
 .deps/agm.P .deps/asin.P .deps/asinh.P .deps/atan.P .deps/atanh.P \
@@ -483,7 +483,7 @@ distdir: $(DISTFILES)
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
-	    cp -pr $$d/$$file $(distdir)/$$file; \
+	    cp -pr $$/$$file $(distdir)/$$file; \
 	  else \
 	    test -f $(distdir)/$$file \
 	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \

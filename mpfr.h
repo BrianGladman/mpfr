@@ -231,6 +231,16 @@ int mpfr_log1p _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_expm1 _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t)); 
 int mpfr_cbrt _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t)); 
 
+int mpfr_mul_mpz _PROTO ((mpfr_ptr, mpfr_srcptr, mpz_srcptr, mp_rnd_t)); 
+int mpfr_div_mpz _PROTO ((mpfr_ptr, mpfr_srcptr, mpz_srcptr, mp_rnd_t)); 
+int mpfr_add_mpz _PROTO ((mpfr_ptr, mpfr_srcptr, mpz_srcptr, mp_rnd_t)); 
+int mpfr_sub_mpz _PROTO ((mpfr_ptr, mpfr_srcptr, mpz_srcptr, mp_rnd_t)); 
+
+int mpfr_mul_mpq _PROTO ((mpfr_ptr, mpfr_srcptr, mpq_srcptr, mp_rnd_t)); 
+int mpfr_div_mpq _PROTO ((mpfr_ptr, mpfr_srcptr, mpq_srcptr, mp_rnd_t)); 
+int mpfr_add_mpq _PROTO ((mpfr_ptr, mpfr_srcptr, mpq_srcptr, mp_rnd_t)); 
+int mpfr_sub_mpq _PROTO ((mpfr_ptr, mpfr_srcptr, mpq_srcptr, mp_rnd_t)); 
+
 
 #if defined (__cplusplus)
 }
@@ -249,6 +259,10 @@ int mpfr_cbrt _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
  ( mpfr_init(x), mpfr_set_ui((x), (i), (rnd)) )
 #define mpfr_init_set_d(x, d, rnd) \
  ( mpfr_init(x), mpfr_set_d((x), (d), (rnd)) )
+#define mpfr_init_set_z(x, i, rnd) \
+ ( mpfr_init(x), mpfr_set_z((x), (i), (rnd)) )
+#define mpfr_init_set_q(x, i, rnd) \
+ ( mpfr_init(x), mpfr_set_q((x), (i), (rnd)) )
 #define mpfr_init_set(x, y, rnd) \
  ( mpfr_init(x), mpfr_set((x), (y), (rnd)) )
 #define mpfr_init_set_f(x, y, rnd) \
