@@ -53,6 +53,8 @@ case $OS_TYPE in
 		;;
 esac
 
+AC_REPLACE_FUNCS(strcasecmp)
+
 dnl Check for IEEE-754 switches on Alpha
 if test "$MACHTYPE" = "alpha"; then
   saved_CFLAGS="$CFLAGS"
