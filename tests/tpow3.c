@@ -32,13 +32,12 @@ MA 02111-1307, USA. */
 int
 main (int argc, char *argv[])
 {
-  mpfr_t x, y,z,ax;
+  mpfr_t x, y, z, ax;
   long int iy;
   mpfr_init (x);
   mpfr_init (ax);
   mpfr_init2 (y,sizeof(unsigned long int)*CHAR_BIT);
   mpfr_init (z);
-
 
   MPFR_SET_NAN(x);
   mpfr_random(y);
@@ -85,7 +84,7 @@ main (int argc, char *argv[])
   if (MPFR_SIGN(y) < 0)
     MPFR_CHANGE_SIGN(y);
   mpfr_random(x);
-  mpfr_init2(ax,MPFR_PREC(x));
+  mpfr_set_prec (ax, MPFR_PREC(x));
   mpfr_abs(ax,x,GMP_RNDN);
   mpfr_pow (z, x,y, GMP_RNDN);
   if( !MPFR_IS_INF(z) && (mpfr_cmp_ui(ax,1) > 0) )
@@ -115,7 +114,7 @@ main (int argc, char *argv[])
   if (MPFR_SIGN(y) > 0)
     MPFR_CHANGE_SIGN(y);
   mpfr_random(x);
-  mpfr_init2(ax,MPFR_PREC(x));
+  mpfr_set_prec (ax, MPFR_PREC(x));
   mpfr_abs(ax,x,GMP_RNDN);
   mpfr_pow (z, x,y, GMP_RNDN);
   mpfr_pow (z, x,y, GMP_RNDN);
@@ -333,7 +332,7 @@ main (int argc, char *argv[])
  
   {
   mp_prec_t prec, yprec;
-  mpfr_t x, y, z, t,s;
+  mpfr_t t, s;
   mp_rnd_t rnd;
   int inexact, compare, compare2;
   unsigned int n, err;
@@ -342,10 +341,7 @@ main (int argc, char *argv[])
   int p1=100;
   int N=100;
 
-  mpfr_init (x);
   mpfr_init (s);
-  mpfr_init (y);
-  mpfr_init (z);
   mpfr_init (t);
 
   /* generic test */
@@ -414,10 +410,14 @@ main (int argc, char *argv[])
 	}
     }
 
+  mpfr_clear (s);
+  mpfr_clear (t);
 
   }
   mpfr_clear (x);
   mpfr_clear (y);
+  mpfr_clear (z);
+  mpfr_clear (ax);
 
   return 0;
 }
