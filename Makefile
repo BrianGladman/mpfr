@@ -104,8 +104,12 @@ o.$(dirname)/set_dfl_rnd.o: mpfr.h set_dfl_rnd.c
 o.$(dirname)/mul_ui.o: mpfr.h mul_ui.c
 	$(CC) $(CFLAGS) $(INCFLAGS) -c mul_ui.c -o o.$(dirname)/mul_ui.o
 
-o.$(dirname)/agm.o: mpfr.h agm.c o.$(dirname)/div.o
+o.$(dirname)/agm.o: mpfr.h agm.c
 	$(CC) $(CFLAGS) $(INCFLAGS) -c agm.c -o o.$(dirname)/agm.o
+
+o.$(dirname)/log.o: mpfr.h log.c
+	$(CC) $(CFLAGS) $(INCFLAGS) -c log.c -o o.$(dirname)/log.o
+
 
 tadd: tests/tadd.c o.$(dirname)/add.o libmpfr.a
 	$(CC) $(CFLAGS) $(INCFLAGS) -I. -o tests/tadd tests/tadd.c $(ODIR)/libmpfr.a $(LDFLAGS)
@@ -158,6 +162,8 @@ tout_str: tests/tout_str.c o.$(dirname)/out_str.o libmpfr.a
 tagm: tests/tagm.c agm.c libmpfr.a
 	$(CC) $(CFLAGS) $(INCFLAGS) -I. -o tests/tagm tests/tagm.c $(ODIR)/libmpfr.a $(LDFLAGS)
 
+tlog: tests/tlog.c agm.c libmpfr.a
+	$(CC) $(CFLAGS) $(INCFLAGS) -I. -o tests/tlog tests/tlog.c $(ODIR)/libmpfr.a $(LDFLAGS)
 
 all: 
 	./mmpfr; 
