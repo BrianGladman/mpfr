@@ -47,6 +47,25 @@ main(int argc, char **argv)
     exit(1);
   }
 
+
+  mpfr_set_d(x, 1.0/0.0, GMP_RNDZ); 
+  mpfr_mul_ui(x, x, 3, GMP_RNDU); 
+  if (mpfr_get_d(x) != 1.0/0.0) { 
+        fprintf(stderr, "Error in mpfr_mul_ui: Inf*3 does not give Inf\n"); exit(1);
+  }
+
+  mpfr_set_d(x, -1.0/0.0, GMP_RNDZ); 
+  mpfr_mul_ui(x, x, 3, GMP_RNDU); 
+  if (mpfr_get_d(x) != -1.0/0.0) { 
+        fprintf(stderr, "Error in mpfr_mul_ui: -Inf*3 does not give -Inf\n"); exit(1);
+  }
+
+  mpfr_set_d(x, 0.0/0.0, GMP_RNDZ); 
+  mpfr_mul_ui(x, x, 3, GMP_RNDU); 
+  if (!isnan(mpfr_get_d(x))) { 
+        fprintf(stderr, "Error in mpfr_mul_ui: NaN*3 does not give NaN\n"); exit(1);
+  }
+
   mpfr_set_d(x, 1.0/3.0, GMP_RNDZ); 
   mpfr_mul_ui(x, x, 3, GMP_RNDU); 
   if (mpfr_get_d(x) != 1.0) {

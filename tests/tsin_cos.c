@@ -52,14 +52,14 @@ void check53 (double x, double sin_x, double cos_x, mp_rnd_t rnd_mode)
   mpfr_init2 (c, 53);
   mpfr_set_d (xx, x, rnd_mode); /* should be exact */
   mpfr_sin_cos (s, c, xx, rnd_mode);
-  if (mpfr_get_d (s) != sin_x) {
+  if (mpfr_get_d (s) != sin_x && (!isnan(sin_x) || !isnan(mpfr_get_d(s)))) {
     fprintf (stderr, "mpfr_sin_cos failed for x=%1.20e, rnd=%s\n", x,
 	     mpfr_print_rnd_mode (rnd_mode));
     fprintf (stderr, "mpfr_sin_cos gives sin(x)=%1.20e, expected %1.20e\n",
 	     mpfr_get_d (s), sin_x);
     exit(1);
   }
-  if (mpfr_get_d (c) != cos_x) {
+  if (mpfr_get_d (c) != cos_x && (!isnan(cos_x) || !isnan(mpfr_get_d(c)))) {
     fprintf (stderr, "mpfr_sin_cos failed for x=%1.20e, rnd=%s\n", x,
 	     mpfr_print_rnd_mode (rnd_mode));
     fprintf (stderr, "mpfr_sin_cos gives cos(x)=%1.20e, expected %1.20e\n",
@@ -77,6 +77,10 @@ int main(int argc, char *argv[])
   if (argc > 1) {
     large_test (atoi (argv[1]), (argc > 2) ? atoi (argv[2]) : 1);
   }
+
+  check53(0.0/0.0, 0.0/0.0, 0.0/0.0, GMP_RNDN); 
+  check53(1.0/0.0, 0.0/0.0, 0.0/0.0, GMP_RNDN); 
+  check53(-1.0/0.0, 0.0/0.0, 0.0/0.0, GMP_RNDN); 
   /* worst case from PhD thesis of Vincent Lefe`vre: x=8980155785351021/2^54 */
   check53 (4.984987858808754279e-1, 4.781075595393330379e-1, 
 	   8.783012931285841817e-1, GMP_RNDN);

@@ -83,6 +83,9 @@ int main(argc,argv) int argc; char *argv[];
     }
   }
 #endif
+  check(1, 1.0/0.0, GMP_RNDN, -1.0/0.0); 
+  check(1, -1.0/0.0, GMP_RNDN, 1.0/0.0); 
+  check(1, 0.0/0.0, GMP_RNDN, 0.0/0.0); 
   check(1196426492, 1.4218093058435347e-3, GMP_RNDN, 1.1964264919985781e9);
   check(1092583421, -1.0880649218158844e9, GMP_RNDN, 2.1806483428158845901e9);
   check(948002822, 1.22191250737771397120e+20, GMP_RNDN,

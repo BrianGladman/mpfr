@@ -68,7 +68,7 @@ void check53(double x, double y, unsigned int rnd_mode, double z1)
   mpfr_set_d(yy, y, rnd_mode);
   mpfr_mul(zz, xx, yy, rnd_mode);
   z2 = mpfr_get_d(zz);
-  if (z1!=z2) {
+  if (z1!=z2 && (!isnan(z1) || !isnan(z2))) {
     printf("mpfr_mul failed for x=%1.20e y=%1.20e with rnd_mode=%s\n",
 	   x, y, mpfr_print_rnd_mode(rnd_mode));
     printf("libm.a gives %1.20e, mpfr_mul gives %1.20e\n", z1, z2);
@@ -165,6 +165,11 @@ int main(argc,argv) int argc; char *argv[];
 #endif
 
   check_float();
+  check53(0.0, 1.0/0.0, GMP_RNDN, 0.0/0.0); 
+  check53(1.0, 1.0/0.0, GMP_RNDN, 1.0/0.0); 
+  check53(-1.0, 1.0/0.0, GMP_RNDN, -1.0/0.0); 
+  check53(0.0/0.0, 0.0, GMP_RNDN, 0.0/0.0); 
+  check53(1.0, 0.0/0.0, GMP_RNDN, 0.0/0.0); 
   check53(6.9314718055994530941514e-1, 0.0, GMP_RNDZ, 0.0);
   check53(0.0, 6.9314718055994530941514e-1, GMP_RNDZ, 0.0);
   check_sign();

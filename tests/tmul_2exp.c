@@ -35,6 +35,14 @@ main(argc,argv) int argc; char *argv[];
 
   mpfr_init2(w, 53); 
 
+  mpfr_set_d(w, 1.0/0.0, 0); 
+  mpfr_mul_2exp(w, w, 10, GMP_RNDZ); 
+  if (!MPFR_IS_INF(w)) { fprintf(stderr, "Inf != Inf"); exit(-1); }
+  
+  mpfr_set_d(w, 0.0/0.0, 0); 
+  mpfr_mul_2exp(w, w, 10, GMP_RNDZ); 
+  if (!MPFR_IS_NAN(w)) { fprintf(stderr, "NaN != NaN"); exit(-1); }
+
   for (k = 0; k < 100000; k++) {
     srand48(time(NULL)); 
     x = drand48(); 
@@ -55,6 +63,8 @@ main(argc,argv) int argc; char *argv[];
 	return (-1); 
       }
   }
+
+  
 
   mpfr_clear(w); 
   return (0); 

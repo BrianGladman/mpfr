@@ -168,7 +168,8 @@ void check_convergence()
 
 int main(int argc, char *argv[])
 {
-  int N;
+  int N; long long N2;   
+  double z[1]; 
 #ifdef TEST
   int i; double n, d, e;
 #ifdef __mips
@@ -194,6 +195,12 @@ int main(int argc, char *argv[])
 	 65, 0.0);
   check53(9.89438396044940256501e-134, 5.93472984109987421717e-67, GMP_RNDU,
 	  1.6672003992376663654e-67);
+  check53(1.0, sqrt(-1.0), GMP_RNDD, sqrt(-1.0)); 
+  check53(sqrt(-1.0), 1.0, GMP_RNDD, sqrt(-1.0)); 
+  check53(2.0/0.0, 1.0, GMP_RNDD, 1.0/0.0); 
+  check53(1.0, 2.0/0.0, GMP_RNDD, 0.0); 
+  check53(0.0, 0.0, GMP_RNDD, sqrt(-1.0)); 
+  check53(1.0/0.0, 1.0/0.0, GMP_RNDD, sqrt(-1.0)); 
   check53(9.89438396044940256501e-134, -5.93472984109987421717e-67, GMP_RNDU,
 	  -1.6672003992376663654e-67);
   check53(-4.53063926135729747564e-308, 7.02293374921793516813e-84, GMP_RNDD,

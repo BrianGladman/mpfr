@@ -49,7 +49,7 @@ void check3(a, rnd_mode, Q) double a; unsigned char rnd_mode; double Q;
   mpfr_sqrt(q, q, rnd_mode);
   if (ck==0) Q = sqrt(a);
   else {
-    if (Q != sqrt(a)) {
+    if (Q != sqrt(a) && (!isnan(Q) || !isnan(sqrt(a)))) {
       fprintf(stderr, "you've found a bug in your machine's sqrt for x=%1.20e\n", a);
       mpfr_clear(q); 
       exit(1);
@@ -214,6 +214,11 @@ int main()
 #endif
   special ();
   check_float();
+  check3(0.0/0.0, GMP_RNDN, 0.0/0.0); 
+  check3(-1.0, GMP_RNDN, 0.0/0.0); 
+  check3(1.0/0.0, GMP_RNDN, 1.0/0.0); 
+  check3(-1.0/0.0, GMP_RNDN, 0.0/0.0); 
+  check3(-0.0, GMP_RNDN, 0.0); 
   check4(6.37983013646045901440e+32, GMP_RNDN, "5.9bc5036d09e0c@13");
   check4(1.0, GMP_RNDN, "1");
   check4(1.0, GMP_RNDZ, "1");

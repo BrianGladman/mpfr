@@ -89,6 +89,10 @@ int main(argc,argv) int argc; char *argv[];
   } 
 #endif
   check3(0.9999999999, 1, GMP_RNDN, -1.000000082740370999e-10);
+  check3(0.0/0.0, 1, GMP_RNDN, 0.0/0.0); 
+  check3(1.0/0.0, 1, GMP_RNDN, 1.0/0.0); 
+  check3(-1.0/0.0, 1, GMP_RNDN, -1.0/0.0); 
   return 0;
 }
+
 
