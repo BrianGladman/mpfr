@@ -58,12 +58,12 @@ mpfr_set_str(x, str, base, rnd_mode)
 
   /* allowed characters are '0' to '0'+base-1 if base <= 10,
      and '0' to '9' plus 'a' to 'a'+base-11 if 10 < base <= 36 */
-  while ((isdigit(*str) && *str < '0'+base)
-	 || (islower(*str) && *str < 'a'+base-10))
+  while ((isdigit((unsigned char) *str) && (unsigned char) *str < '0'+base)
+      || (islower((unsigned char) *str) && (unsigned char) *str < 'a'+base-10))
     { 
       mpz_mul_ui(mantissa, mantissa, base);
-      mpz_add_ui(mantissa, mantissa, (isdigit(*str)) ? (*str)-'0'
-		 : (*str)-'a'+10);
+      mpz_add_ui(mantissa, mantissa, isdigit((unsigned char) *str) ?
+		 (*str)-'0' : (*str)-'a'+10);
       str++; l--;
     }
 
@@ -72,12 +72,12 @@ mpfr_set_str(x, str, base, rnd_mode)
   if (*str == '.') 
     {
       str++; l--;
-      while ((isdigit(*str) && *str < '0'+base)
-	     || (islower(*str) && *str < 'a'+base-10))
+      while ((isdigit((unsigned char) *str) && (unsigned char) *str < '0'+base)
+      || (islower((unsigned char) *str) && (unsigned char) *str < 'a'+base-10))
 	{ 
 	  mpz_mul_ui(mantissa, mantissa, base);
-	  mpz_add_ui(mantissa, mantissa, (isdigit(*str)) ? (*str)-'0'
-		     : (*str)-'a'+10);
+	  mpz_add_ui(mantissa, mantissa, isdigit((unsigned char) *str) ?
+		     (*str)-'0' : (*str)-'a'+10);
 	  str++; l--;
 	  k++;
 	}
