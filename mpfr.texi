@@ -815,8 +815,13 @@ See @code{mpfr_set_str}.
 @section Conversion Functions
 @cindex Conversion functions
 
+@deftypefun double mpfr_get_d2 (mpfr_t @var{op}, mp_rnd_t @var{rnd})
+Convert @var{op} to a double, using the rounding mode @var{rnd}.
+@end deftypefun
+
 @deftypefun double mpfr_get_d (mpfr_t @var{op})
-Convert @var{op} to a double, using the current @emph{machine} rounding mode.
+Convert @var{op} to a double, using the default MPFR rounding mode
+(see function @code{mpfr_set_default_rounding_mode}).
 @end deftypefun
 
 @deftypefun mp_exp_t mpfr_get_z_exp (mpz_t @var{z}, mpfr_t @var{op})

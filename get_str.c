@@ -138,7 +138,7 @@ mpfr_get_str (char *str, mp_exp_t *expptr, int base, size_t n,
         {
           double d;
 
-          d = mpfr_get_d2(op, 0);
+          d = mpfr_get_d3(op, 0, GMP_RNDN);
           d = ((double) e + (double) _mpfr_floor_log2 (ABS(d)))
             * __mp_bases[base].chars_per_bit_exactly;
           MPFR_ASSERTN(d >= MP_EXP_T_MIN);

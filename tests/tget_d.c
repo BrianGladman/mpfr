@@ -26,12 +26,14 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-#define TEST
 #include "rnd_mode.c"
 
 int
 main (void)
 {
+
+#ifdef TEST
+
    mpfr_t half, x, y;
    mp_rnd_t rnd_mode;
 
@@ -105,5 +107,12 @@ main (void)
    mpfr_clear(half);
    mpfr_clear(x);
    mpfr_clear(y);
+
+#else
+
+   fprintf(stderr, "Disabled\n");
+
+#endif
+
    return 0;
 }

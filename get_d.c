@@ -90,7 +90,7 @@ __mpfr_scale2 (double d, int exp)
 }
 
 double
-mpfr_get_d2 (mpfr_srcptr src, mp_exp_t e)
+mpfr_get_d3 (mpfr_srcptr src, mp_exp_t e, mp_rnd_t rnd_mode)
 {
   double d;
   mpfr_t tmp;
@@ -157,7 +157,13 @@ mpfr_get_d2 (mpfr_srcptr src, mp_exp_t e)
 }
 
 double
+mpfr_get_d2 (mpfr_srcptr src, mp_rnd_t rnd_mode)
+{
+  return mpfr_get_d3 (src, MPFR_EXP(src), rnd_mode);
+}
+
+double
 mpfr_get_d (mpfr_srcptr src)
 {
-  return mpfr_get_d2 (src, MPFR_EXP(src));
+  return mpfr_get_d3 (src, MPFR_EXP(src), __gmp_default_rounding_mode);
 }
