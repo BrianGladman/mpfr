@@ -23,6 +23,7 @@ mpfr_ptr a; mpfr_srcptr b, c; unsigned char rnd_mode;
   unsigned int bn, cn, an, k; int sh; unsigned char b1;
   mp_limb_t *ap, *bp, *cp, cc;
   long int sign_product;
+  TMP_DECL(marker); 
 
   /* the multiplication works as follows:
      1. multiply all significant limbs from the mantissa of b and c in a 
@@ -39,7 +40,8 @@ mpfr_ptr a; mpfr_srcptr b, c; unsigned char rnd_mode;
   bn = (PREC(b)-1)/mp_bits_per_limb+1; /* number of significant limbs of b */
   cn = (PREC(c)-1)/mp_bits_per_limb+1; /* number of significant limbs of c */
   k = bn+cn; /* effective nb of limbs used by b*c */
-  ap = (mp_limb_t*) alloca(k*BYTES_PER_MP_LIMB);
+  TMP_MARK(marker); 
+  ap = (mp_limb_t*) TMP_ALLOC(k*BYTES_PER_MP_LIMB);
   bp = MANT(b); cp = MANT(c);
 
   /* step 1: multiplies two mantissa */
@@ -154,6 +156,7 @@ printf("*ap=%u\n",*ap);
      }
    }
   if (sign_product<0) CHANGE_SIGN(a);
+  TMP_FREE(marker); 
 #ifdef DEBUG2
 printf("b*c="); mpfr_print_raw(a); putchar('\n');
 #endif
