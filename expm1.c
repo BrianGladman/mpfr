@@ -49,14 +49,13 @@ mpfr_expm1 (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
 	  else
 	    return mpfr_set_si(y, -1, rnd_mode);
 	}
-      else if(MPFR_IS_ZERO(x))
+      else
 	{
+          MPFR_ASSERTD(MPFR_IS_ZERO(x));
 	  MPFR_SET_ZERO(y);   /* expm1(+/- 0) = +/- 0 */
 	  MPFR_SET_SAME_SIGN(y,x);
 	  MPFR_RET(0);
 	}
-      else
-	MPFR_ASSERTN(0);
     }
   /* Useless due to mpfr_set
      MPFR_CLEAR_FLAGS(y);*/
