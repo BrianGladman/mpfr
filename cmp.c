@@ -54,13 +54,13 @@ mpfr_cmp3(b, c, s)
    mp_limb_t *bp, *cp;
 
    if (!NOTZERO(b) && !NOTZERO(c)) { return 0; }
-   s = s*SIGN(b)*SIGN(c);
-   if (s<0) return(SIGN(b));
+   s = s * MPFR_SIGN(b) * MPFR_SIGN(c);
+   if (s<0) return(MPFR_SIGN(b));
 
    /* now signs are equal */
 
    diff_exp = EXP(b)-EXP(c);
-   s = (SIGN(b)>0) ? 1 : -1;
+   s = (MPFR_SIGN(b) > 0) ? 1 : -1;
 
    if (diff_exp>0) return(s*(1+diff_exp));
    else if (diff_exp<0) return(s*(-1+diff_exp));
