@@ -7,7 +7,7 @@ void
 #if __STDC__
 mpfr_clear (mpfr_ptr m)
 #else
-mpfr_init (m)
+mpfr_clear (m)
      mpfr_ptr m;
 #endif
 {
