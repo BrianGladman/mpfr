@@ -80,7 +80,10 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
   dif = PREC(a)-diff_exp;
 
 #ifdef DEBUG
-  printf("dif=%d\n", dif);
+  printf("diff_exp=%u dif=PREC(a)-diff_exp=%d\n", diff_exp, dif);
+  printf("b= "); mpfr_print_raw(b); putchar('\n');
+  printf("c="); for (k=0;k<diff_exp;k++) putchar(' ');
+  if (MPFR_SIGN(c)>0) putchar(' '); mpfr_print_raw(c); putchar('\n');
 #endif
   if (dif<=0) { 
     
@@ -264,9 +267,8 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
 #ifdef DEBUG
     printf("overlap=%d\n", overlap);
 #endif
-    if (rnd_mode==GMP_RNDN) { 
-
-      /* to nearest */
+    if (rnd_mode==GMP_RNDN || (ISNONNEG(b) && rnd_mode==GMP_RNDU)
+	|| (ISNEG(b) && rnd_mode==GMP_RNDD)) {
 
       int kc;
       
@@ -286,7 +288,9 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
 
 	  cc = *ap & ((ONE<<sh)-1);
 	  *ap &= ~cc; /* truncate last bits */
-          cout = -mpn_sub_1(&cc, &cc, 1, ONE<<(sh-1));
+	  if (rnd_mode==GMP_RNDN)
+	    cout = -mpn_sub_1(&cc, &cc, 1, ONE<<(sh-1));
+	  else cout=0;
 	  if ((~cout==0) && (~cc)) break;
 	  cout = cc;
 	  while ((cout==0 || cout==-1) && k!=0 && kc!=0) {
@@ -300,14 +304,15 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
 	    if (k!=0) cout += mpn_add_1(&cc, bp+(--k), 1, 
 				      cp[0]<<(mp_bits_per_limb-dif));
 	    else cc = cp[0]<<(mp_bits_per_limb-dif);
-	    if (cout==0 || (~cout==0 && ~cc==0)) cout=cc;
+	    if ((cout==0 && cc==0) || (~cout==0 && ~cc==0)) cout=cc;
 	  }
-	  if ((long)cout>0) goto add_one_ulp;
-	  else if ((long)cout<-1) 
-	    { TMP_FREE(marker); return; /* the carry can be at most 1 */ }
+	  if ((long)cout>0 || (cout==0 && cc)) goto add_one_ulp;
+	  else if ((long)cout<0)
+	    { TMP_FREE(marker); return; /* no carry possible any more */ }
 	  else if (kc==0) {
 	    while (k && cout==0) cout=bp[--k];
-	    if ((~cout) && (cout || (*ap & (ONE<<sh)))) goto add_one_ulp;
+	    if ((~cout) && (cout || (rnd_mode==GMP_RNDN && (*ap & (ONE<<sh)))))
+	      goto add_one_ulp;
 	    else goto end_of_add;
 	  }
 
@@ -323,41 +328,6 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
 	  /* otherwise the result is exact: nothing to do */
 	}
     }
-    else if ((ISNONNEG(b) && rnd_mode==GMP_RNDU) || 
-	     (ISNEG(b) && rnd_mode==GMP_RNDD)) {
-      cc = *ap & ((ONE<<sh)-1);
-      *ap &= ~cc; /* truncate last bits */
-      if (cc || c3) goto add_one_ulp; /* will happen most of the time */
-      else { 
-	
-	/* same four cases too */
-	
-	int kc = cn-k; /* remains kc limbs from c */
-	switch (overlap)
-	{
-        case 1: /* both b and c to round */
-	  k = bn-an; /* remains k limbs from b */
-	  while (cc==0 && k!=0 && kc!=0) {
-	    kc--;
-	    cc = mpn_add_1(&c2, bp+(--k), 1,(cp[kc+1]<<(mp_bits_per_limb-dif))
-			   + (cp[kc]>>dif));
-	  }
-	  if (cc) goto add_one_ulp;
-	  else if (kc==0) goto round_b2;
-	  /* else round c: go through */
-	case 3: /* only c to round */
-	  while (kc) if (cp[--kc]) goto add_one_ulp;
-	  /* if dif>0 : remains to check last dif bits from c */
-	  if (dif>0 && (cp[0]<<(mp_bits_per_limb-dif))) goto add_one_ulp;
-	  break;
-	case 0: /* only b to round */
-        round_b2:
-	  k=bn-an;
-	  while (k) if (bp[--k]) goto add_one_ulp;
-        /* otherwise the result is exact: nothing to do */
-	}
-      }
-    }
     /* else nothing to do: round towards zero, i.e. truncate last sh bits */
     else 
       *ap &= ~((ONE<<sh)-1);
@@ -366,13 +336,22 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
     
   to_nearest: /* 0 <= sh < mp_bits_per_limb : number of bits of a to truncate
                  bp[k] : last significant limb from b */
+        /* c3=1 whenever b+c gave a carry out in most significant limb 
+	   and the least significant bit (shifted right) was 1.
+	   This can occur only when mp_bits_per_limb divides PREC(a),
+	   i.e. sh=0.
+	 */
         if (sh) {
 	  cc = *ap & ((ONE<<sh)-1);
 	  *ap &= ~cc; /* truncate last bits */
-	  c2 = ONE<<(sh-1);
+	  c2 = (rnd_mode==GMP_RNDN) ? ONE<<(sh-1) : 0;
 	}
-	else /* no bit to truncate */
-	  { if (k) cc = bp[--k]; else cc = 0; c2 = ONE<<(mp_bits_per_limb-1); }
+	else /* sh=0: no bit to truncate */
+	  { 
+	    if (k) cc = bp[--k]; else cc = 0;
+	    c2 = (rnd_mode==GMP_RNDN) ? ONE<<(mp_bits_per_limb-1) : 0;
+	    if (c3 && (cc || c2==0)) cc=c2+1; /* will force adding one ulp */
+	  }
 	if (cc>c2) goto add_one_ulp; /* trunc(b)>1/2*lsb(a) -> round up */
 	else if (cc==c2) {
 	  /* special case of rouding c shifted to the right */
@@ -380,7 +359,8 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
 	  else cc=0;
 	  while (k && cc==0) cc=bp[--k];
 	  /* now if the truncated part of b = 1/2*lsb(a), check whether c=0 */
-	  if (cc || (*ap & (ONE<<sh))) goto add_one_ulp;
+	  if (cc || (rnd_mode==GMP_RNDN && (*ap & (ONE<<sh))))
+	    goto add_one_ulp;
 	}
         goto end_of_add;
 
