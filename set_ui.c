@@ -57,7 +57,7 @@ mpfr_set_ui (x, i, rnd_mode)
     MPFR_EXP(x) = nbits = BITS_PER_MP_LIMB - cnt;
     inex = mpfr_check_range(x, rnd_mode);
     if (inex)
-      return inex;
+      return inex; /* underflow or overflow */
 
     /* round if MPFR_PREC(x) smaller than length of i */
     if (MPFR_PREC(x) < nbits)
