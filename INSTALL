@@ -3,14 +3,13 @@
 
 0. You first need to install GMP. See http://www.swox.com/gmp.
 
-1. run ./Configure and answer to the questions
+1. type "./Configure" and answer to the questions
 
-   (Under Linux use the -DLIBC211 flag if you use the C library 2.1.1 or
-    higher.)
+2. type "make" (produces libmpfr.a)
 
-2. make (produces libmpfr.a)
+3. type "make doc" to produce the documentation (DVI file mpfr.dvi)
 
-3. cd tests; make (produces and runs the test files)
+4. type "cd tests; make" (produces and runs the test files)
 
 Notes:
 
@@ -28,7 +27,7 @@ Known problems.
 1) On some architectures (for example Alpha/OSF), the default 'make' command 
 crashes in step 3. GNU make is preferred.
 
-2) Under HP-UX, don't use the -pedantic option, otherwise
+2) Under HP-UX and Pentium/Linux, don't use the -pedantic option, otherwise
 gcc complains with the longlong.h file from GMP.
 
 3) On the Alpha, the test file for the square root (tsqrt) may produce
