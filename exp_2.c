@@ -33,9 +33,6 @@ mpz_normalize  (mpz_t, mpz_t, mp_exp_t);
 static mp_exp_t 
 mpz_normalize2 (mpz_t, mpz_t, mp_exp_t, mp_exp_t);
 
-#define SWITCH 100 /* number of bits to switch from O(n^(1/2)*M(n)) method
-		      to O(n^(1/3)*M(n)) method */
-
 #define MY_INIT_MPZ(x, s) { \
    (x)->_mp_alloc = (s); \
    PTR(x) = (mp_ptr) TMP_ALLOC((s)*BYTES_PER_MP_LIMB); \
@@ -111,7 +108,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   /* for the O(n^(1/2)*M(n)) method, the Taylor series computation of
      n/K terms costs about n/(2K) multiplications when computed in fixed
      point */
-  K = (precy < SWITCH) ? __gmpfr_isqrt ((precy + 1) / 2)
+  K = (precy < MPFR_EXP_2_THRESHOLD) ? __gmpfr_isqrt ((precy + 1) / 2)
     : __gmpfr_cuberoot (4*precy);
   l = (precy - 1) / K + 1;
   err = K + MPFR_INT_CEIL_LOG2 (2 * l + 18);
@@ -163,7 +160,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       MY_INIT_MPZ(ss, 3 + 2*((q-1)/BITS_PER_MP_LIMB));
       exps = mpfr_get_z_exp (ss, s);
       /* s <- 1 + r/1! + r^2/2! + ... + r^l/l! */
-      l = (precy < SWITCH) ? 
+      l = (precy < MPFR_EXP_2_THRESHOLD) ? 
 	mpfr_exp2_aux (ss, r, q, &exps)      /* naive method */
 	: mpfr_exp2_aux2 (ss, r, q, &exps);  /* Brent/Kung method */
       

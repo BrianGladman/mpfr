@@ -23,6 +23,7 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <time.h>
 
+#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
 #undef _PROTO
@@ -77,6 +78,15 @@ int verbose;
 /* First we include all the functions we want to tune inside this program.
    We can't use MPFR library since the THRESHOLD can't vary */
 
+/* Setup mpfr_exp_2 */
+mp_prec_t mpfr_exp_2_threshold = MPFR_EXP_2_THRESHOLD;
+#undef  MPFR_EXP_2_THRESHOLD
+#define MPFR_EXP_2_THRESHOLD mpfr_exp_2_threshold
+#include "exp_2.c"
+static double speed_mpfr_exp_2 (struct speed_params *s) {
+  SPEED_MPFR_FUNC (mpfr_exp_2);
+}
+
 /* Setup mpfr_exp */
 mp_prec_t mpfr_exp_threshold = MPFR_EXP_THRESHOLD;
 #undef  MPFR_EXP_THRESHOLD
@@ -88,7 +98,7 @@ static double speed_mpfr_exp (struct speed_params *s) {
 
 
 
-/* Common functions */
+/* Common functions (inspired by GMP function) */
 static int analyze_data (double *dat, int ndat) {
   double  x, min_x;
   int     j, min_j;
@@ -150,7 +160,9 @@ static double domeasure (mp_prec_t *threshold,
    the behaviour of this function is undefined. */
 static void 
 tune_simple_func (mp_prec_t *threshold, 
-		  double (*func) (struct speed_params *)) {
+		  double (*func) (struct speed_params *),
+		  mp_prec_t pstart) 
+{
   double measure[THRESHOLD_FINAL_WINDOW+1];
   double d;
   mp_prec_t pstep;
@@ -158,7 +170,7 @@ tune_simple_func (mp_prec_t *threshold,
   mp_prec_t pmin, pmax, p;
 
   /* First Look for a lower bound within 10% */
-  pmin = p = MPFR_PREC_MIN+BITS_PER_MP_LIMB;
+  pmin = p = pstart;
   d = domeasure (threshold, func, pmin);
   if (d < 0.0) {
     *threshold = MPFR_PREC_MIN;
@@ -225,6 +237,8 @@ tune_simple_func (mp_prec_t *threshold,
     measure[i] = domeasure (threshold, func, pmin+i);
   i = analyze_data (measure, THRESHOLD_FINAL_WINDOW+1);
   *threshold = pmin + i;
+  if (verbose)
+    printf ("Choosing %lu\n", *threshold);
   return;
 }
 
@@ -277,13 +291,22 @@ static void all (const char *filename)
 #endif
   fprintf (f, "\n");
 
+  /* Tune mpfr_exp_2 */
+  if (verbose)
+    printf ("Tuning mpfr_exp_2...\n");
+  tune_simple_func (&mpfr_exp_2_threshold, speed_mpfr_exp_2,
+		    MPFR_PREC_MIN);  
+  fprintf (f, "#define MPFR_EXP_2_THRESHOLD %lu\n", 
+	   (unsigned long) mpfr_exp_2_threshold);
+
   /* Tune mpfr_exp */
   if (verbose)
     printf ("Tuning mpfr_exp...\n");
-  tune_simple_func (&mpfr_exp_threshold, speed_mpfr_exp);  
+  tune_simple_func (&mpfr_exp_threshold, speed_mpfr_exp,
+		    MPFR_PREC_MIN+3*BITS_PER_MP_LIMB);  
   fprintf (f, "#define MPFR_EXP_THRESHOLD %lu\n", 
 	   (unsigned long) mpfr_exp_threshold);
-  
+
   /* End of tuning */
   time (&end_time);
   fprintf (f, "/* Tuneup completed successfully, took %ld seconds */\n",
