@@ -61,6 +61,35 @@ worst_cases ()
 
   mpfr_init2 (x, 200);
   mpfr_init2 (y, 200);
+
+  mpfr_set_ui (y, 1, GMP_RNDN);
+  for (i=1; i<MPFR_PREC(x); i++)
+    {
+      mpfr_set_ui (x, 1, GMP_RNDN);
+      mpfr_div_2exp (y, y, 1, GMP_RNDN); /* y = 1/2^i */
+
+      if ((l = mpfr_cmp2 (x, y)) != 1)
+	{
+	  fprintf (stderr, "Error in mpfr_cmp2:\nx=");
+	  mpfr_out_str (stderr, 2, 0, x, GMP_RNDN);
+	  fprintf (stderr, "\ny=");
+	  mpfr_out_str (stderr, 2, 0, y, GMP_RNDN);
+	  fprintf (stderr, "\ngot %u instead of %u\n", l, 1);
+	  exit(1);
+	}
+
+      mpfr_add (x, x, y, GMP_RNDN); /* x = 1 + 1/2^i */
+      if ((l = mpfr_cmp2 (x, y)) != 0)
+	{
+	  fprintf (stderr, "Error in mpfr_cmp2:\nx=");
+	  mpfr_out_str (stderr, 2, 0, x, GMP_RNDN);
+	  fprintf (stderr, "\ny=");
+	  mpfr_out_str (stderr, 2, 0, y, GMP_RNDN);
+	  fprintf (stderr, "\ngot %u instead of %u\n", l, 0);
+	  exit(1);
+	}
+    }
+
   for (i=0; i<64; i++) /* |u| = i */
     {
       mpfr_random (x);
@@ -110,6 +139,7 @@ worst_cases ()
 	    }
 	}
     }
+
   mpfr_clear (x);
   mpfr_clear (y);
 }
@@ -242,7 +272,11 @@ main (void)
   tcmp2(1.06022698059744327881e+71, 1.05824655795525779205e+71, -1);
   tcmp2(1.0, 1.0, 53);
   for (i=0;i<54;i++) {
-    tcmp2(1.0, 1.0-x, i);
+    tcmp2 (1.0, 1.0-x, i);
+    x /= 2.0;
+  }
+  for (x=0.5, i=1; i<100; i++) {
+    tcmp2 (1.0, x, 1);
     x /= 2.0;
   }
   for (j=0; j<100000; j++) {
