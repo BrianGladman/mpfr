@@ -69,7 +69,7 @@ saved_LIBS="$LIBS"
 LIBS="$LIBS $LM9X"
 AC_TRY_LINK([#include <fenv.h>], [fesetround(FE_TONEAREST);],
   [AC_MSG_RESULT(yes)
-   AC_DEFINE(HAVE_FESETROUND)],
+   AC_DEFINE(MPFR_HAVE_FESETROUND)],
   [AC_MSG_RESULT(no)
    LIBS="$saved_LIBS"]
 )

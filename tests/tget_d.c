@@ -61,7 +61,7 @@ int
 main (void)
 {
 
-#ifdef HAVE_FESETROUND
+#ifdef MPFR_HAVE_FESETROUND
 
    mpfr_t half, x, y;
    mp_rnd_t rnd_mode;
