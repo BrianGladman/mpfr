@@ -19,7 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
 #include "gmp.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
@@ -33,11 +32,7 @@ mpz_set_fr (mpz_ptr z, mpfr_srcptr f)
 {
   int fn, sh;
 
-  if (MPFR_IS_NAN(f) || MPFR_IS_INF(f))
-    {
-      fprintf (stderr, "Error in mpz_set_fr: input is NaN or Inf\n");
-      exit (1);
-    }
+  MPFR_ASSERTN(MPFR_IS_FP(f));
 
   fn = 1 + (MPFR_PREC(f) - 1) / BITS_PER_MP_LIMB;
 
