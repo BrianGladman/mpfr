@@ -26,14 +26,14 @@ MA 02111-1307, USA. */
 
 void
 #if __STDC__
-mpfr_set_prec (mpfr_t x, unsigned long int p)
+mpfr_set_prec (mpfr_t x, mp_prec_t p)
 #else
 mpfr_set_prec (x, p)
      mpfr_t x;
-     unsigned long int p;
+     mp_prec_t p;
 #endif
 {
-  unsigned long xsize;
+  mp_prec_t xsize;
 
   if (p==0) {
     printf("*** cannot set precision to 0 bits\n"); exit(1);
@@ -47,10 +47,10 @@ mpfr_set_prec (x, p)
     SIZE(x) = xsize; /* new number of allocated limbs */
   }
 
-  x -> _mp_prec = p;
+  PREC(x) = p;
 }
 
-unsigned long int
+mp_prec_t
 #if __STDC__
 mpfr_get_prec (mpfr_t x)
 #else
@@ -58,5 +58,5 @@ mpfr_get_prec (x)
      mpfr_t x;
 #endif
 {
-  return x -> _mp_prec;
+  return PREC(x);
 }
