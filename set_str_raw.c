@@ -54,7 +54,7 @@ mpfr_set_str_raw (mpfr_ptr x, char *str)
   if (*str == 'N')
     {
       MPFR_SET_NAN(x);
-      __mpfr_flags |= MPFR_FLAGS_NAN;
+      __gmpfr_flags |= MPFR_FLAGS_NAN;
       return;
     }
 

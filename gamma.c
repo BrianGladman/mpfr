@@ -198,7 +198,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
       }
     else
       {
-	realprec += _mpfr_ceil_log2 ((double) realprec);
+	realprec += __gmpfr_ceil_log2 ((double) realprec);
 #ifdef DEBUG
 	printf("RETRY\n");
 #endif

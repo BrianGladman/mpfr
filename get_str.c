@@ -680,10 +680,10 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
   exact = 1;
   prec = (mp_exp_t) _mpfr_ceil ((double) m / log_b2[b-2]) + 1;
   exp = ((mp_exp_t) m < g) ? g - (mp_exp_t) m : (mp_exp_t) m - g;
-  log_2prec = (mp_exp_t) _mpfr_ceil_log2 ((double) prec);
+  log_2prec = (mp_exp_t) __gmpfr_ceil_log2 ((double) prec);
   prec += log_2prec; /* number of guard bits */
   if (exp != 0) /* add maximal exponentiation error */
-    prec += 3 * (mp_exp_t) _mpfr_ceil_log2 ((double) exp);
+    prec += 3 * (mp_exp_t) __gmpfr_ceil_log2 ((double) exp);
 
   for (;;)
     {

@@ -114,7 +114,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode)
       
   /* compute the working precision -- see algorithms.ps */
   Nt = MAX(MAX(MAX(Nx, Ny), Nz), 8);
-  Nt = Nt - 8 + _mpfr_ceil_log2 (Nt);
+  Nt = Nt - 8 + __gmpfr_ceil_log2 (Nt);
 
   /* initialise the intermediary variables */
   mpfr_init (t);

@@ -193,7 +193,7 @@ mpfr_round_prec (mpfr_ptr x, mp_rnd_t rnd_mode, mp_prec_t prec)
     {
       mp_exp_t exp = MPFR_EXP(x);
 
-      if (exp == __mpfr_emax)
+      if (exp == __gmpfr_emax)
         (void) mpfr_set_overflow(x, rnd_mode, MPFR_SIGN(x));
       else
         {

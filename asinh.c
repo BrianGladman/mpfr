@@ -72,7 +72,7 @@ mpfr_asinh (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   Nt = MAX(Nx, Ny);
 
   /* the optimal number of bits : see algorithms.ps */
-  Nt = Nt + 4 + _mpfr_ceil_log2 (Nt);
+  Nt = Nt + 4 + __gmpfr_ceil_log2 (Nt);
 
   /* initialize intermediary variables */
   mpfr_init2 (t, 2);

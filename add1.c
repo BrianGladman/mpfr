@@ -160,7 +160,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c,
       if (cc) /* carry */
         {
           mp_exp_t exp = MPFR_EXP(a);
-          if (exp == __mpfr_emax)
+          if (exp == __gmpfr_emax)
             {
               inex = mpfr_set_overflow(a, rnd_mode, MPFR_SIGN(a));
               goto end_of_add;
@@ -302,7 +302,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c,
                   && mpn_add_1(ap, ap, an, MP_LIMB_T_ONE << sh))
                 {
                   mp_exp_t exp = MPFR_EXP(a);
-                  if (exp == __mpfr_emax)
+                  if (exp == __gmpfr_emax)
                     {
                       inex = mpfr_set_overflow(a, rnd_mode, MPFR_SIGN(a));
                       goto end_of_add;
@@ -356,7 +356,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c,
                   if (rb == 0 && mpn_add_1(ap, ap, an, MP_LIMB_T_ONE << sh))
                     {
                       mp_exp_t exp = MPFR_EXP(a);
-                      if (exp == __mpfr_emax)
+                      if (exp == __gmpfr_emax)
                         {
                           inex = mpfr_set_overflow(a, rnd_mode, MPFR_SIGN(a));
                           goto end_of_add;
@@ -533,7 +533,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c,
   if (mpn_add_1(ap, ap, an, MP_LIMB_T_ONE << sh))
     {
       mp_exp_t exp = MPFR_EXP(a);
-      if (exp == __mpfr_emax)
+      if (exp == __gmpfr_emax)
         inex = mpfr_set_overflow(a, rnd_mode, MPFR_SIGN(a));
       else
         {

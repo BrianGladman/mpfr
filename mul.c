@@ -94,9 +94,9 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
      ec in {-1,0,1} and the following assumes that e is representable. */
   MPFR_ASSERTN(MPFR_EMAX_MAX <= (MP_EXP_T_MAX >> 1));
   MPFR_ASSERTN(MPFR_EMIN_MIN >= -(MP_EXP_T_MAX >> 1));
-  if (bx + cx > __mpfr_emax + 1)
+  if (bx + cx > __gmpfr_emax + 1)
     return mpfr_set_overflow (a, rnd_mode, sign_product);
-  if (bx + cx < __mpfr_emin - 2)
+  if (bx + cx < __gmpfr_emin - 2)
     return mpfr_set_underflow (a, rnd_mode == GMP_RNDN ? GMP_RNDZ : rnd_mode,
                                sign_product);
 
@@ -141,16 +141,16 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   TMP_FREE(marker);
 
   ax = (bx + cx) + (mp_exp_t) (b1 - 1 + cc);
-  if (ax > __mpfr_emax)
+  if (ax > __gmpfr_emax)
     return mpfr_set_overflow (a, rnd_mode, sign_product);
-  if (ax < __mpfr_emin)
+  if (ax < __gmpfr_emin)
     {
       /* In the rounding to the nearest mode, if the exponent of the exact
          result (i.e. before rounding, i.e. without taking cc into account)
-         is < __mpfr_emin - 1 or the exact result is a power of 2 (i.e. if
+         is < __gmpfr_emin - 1 or the exact result is a power of 2 (i.e. if
          both arguments are powers of 2), then round to zero. */
       if (rnd_mode == GMP_RNDN &&
-          ((bx + cx) + (mp_exp_t) b1 < __mpfr_emin ||
+          ((bx + cx) + (mp_exp_t) b1 < __gmpfr_emin ||
            (mpfr_powerof2_raw (b) && mpfr_powerof2_raw (c))))
         rnd_mode = GMP_RNDZ;
       return mpfr_set_underflow (a, rnd_mode, sign_product);

@@ -75,7 +75,7 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
     /* compute the precision of intermediary variable */
     Nt = MAX(Nx, Ny);
     /* the optimal number of bits : see algorithms.ps */
-    Nt = Nt + 4 + _mpfr_ceil_log2 (Nt);
+    Nt = Nt + 4 + __gmpfr_ceil_log2 (Nt);
 
     /* initialization of intermediary variables */
     mpfr_init (t);

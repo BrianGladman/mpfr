@@ -32,14 +32,14 @@ mpfr_nexttozero (mpfr_ptr x)
   if (MPFR_IS_INF(x))
     {
       MPFR_CLEAR_FLAGS(x);
-      mpfr_setmax (x, __mpfr_emax);
+      mpfr_setmax (x, __gmpfr_emax);
       return;
     }
 
   if (MPFR_IS_ZERO(x))
     {
       MPFR_CHANGE_SIGN(x);
-      mpfr_setmin (x, __mpfr_emin);
+      mpfr_setmin (x, __gmpfr_emin);
     }
   else
     {
@@ -54,7 +54,7 @@ mpfr_nexttozero (mpfr_ptr x)
       if (xp[xn-1] >> (BITS_PER_MP_LIMB - 1) == 0)
         { /* was an exact power of two: not normalized any more */
           mp_exp_t exp = MPFR_EXP(x);
-          if (exp == __mpfr_emin)
+          if (exp == __gmpfr_emin)
             MPFR_SET_ZERO(x);
           else
             {
@@ -75,7 +75,7 @@ mpfr_nexttoinf (mpfr_ptr x)
     return;
 
   if (MPFR_IS_ZERO(x))
-    mpfr_setmin (x, __mpfr_emin);
+    mpfr_setmin (x, __gmpfr_emin);
   else
     {
       mp_size_t xn;
@@ -88,7 +88,7 @@ mpfr_nexttoinf (mpfr_ptr x)
       if (mpn_add_1 (xp, xp, xn, MP_LIMB_T_ONE << sh)) /* got 1.0000... */
         {
           mp_exp_t exp = MPFR_EXP(x);
-          if (exp == __mpfr_emax)
+          if (exp == __gmpfr_emax)
             MPFR_SET_INF(x);
           else
             {
@@ -104,7 +104,7 @@ mpfr_nextabove (mpfr_ptr x)
 {
   if (MPFR_IS_NAN(x))
     {
-      __mpfr_flags |= MPFR_FLAGS_NAN;
+      __gmpfr_flags |= MPFR_FLAGS_NAN;
       return;
     }
 
@@ -119,7 +119,7 @@ mpfr_nextbelow (mpfr_ptr x)
 {
   if (MPFR_IS_NAN(x))
     {
-      __mpfr_flags |= MPFR_FLAGS_NAN;
+      __gmpfr_flags |= MPFR_FLAGS_NAN;
       return;
     }
 
@@ -136,7 +136,7 @@ mpfr_nexttoward (mpfr_ptr x, mpfr_srcptr y)
 
   if (MPFR_IS_NAN(x) || MPFR_IS_NAN(y))
     {
-      __mpfr_flags |= MPFR_FLAGS_NAN;
+      __gmpfr_flags |= MPFR_FLAGS_NAN;
       return;
     }
 

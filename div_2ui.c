@@ -48,12 +48,12 @@ mpfr_div_2ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int n, mp_rnd_t rnd_mode)
       /* MPFR_EMAX_MAX - (long) n is signed and doesn't lead to an integer
          overflow; the first test useful so that the real test can't lead
          to an integer overflow. */
-      if (__mpfr_emin > MPFR_EMAX_MAX - (long) n ||
-          MPFR_EXP(y) < __mpfr_emin + (long) n)
+      if (__gmpfr_emin > MPFR_EMAX_MAX - (long) n ||
+          MPFR_EXP(y) < __gmpfr_emin + (long) n)
         {
           if (rnd_mode == GMP_RNDN &&
-              (__mpfr_emin > MPFR_EMAX_MAX - (long) (n - 1) ||
-               MPFR_EXP(y) < __mpfr_emin + (long) (n - 1) ||
+              (__gmpfr_emin > MPFR_EMAX_MAX - (long) (n - 1) ||
+               MPFR_EXP(y) < __gmpfr_emin + (long) (n - 1) ||
                mpfr_powerof2_raw (y)))
             rnd_mode = GMP_RNDZ;
           return mpfr_set_underflow (y, rnd_mode, MPFR_SIGN(y));

@@ -55,9 +55,9 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
 
   if (zn > MPFR_EMAX_MAX / BITS_PER_MP_LIMB + 1)
     return mpfr_set_overflow(f, rnd_mode, sign_z);
-  /* because zn >= __mpfr_emax / BITS_PER_MP_LIMB + 2
-     and zn * BITS_PER_MP_LIMB >= __mpfr_emax + BITS_PER_MP_LIMB + 1
-     and exp = zn * BITS_PER_MP_LIMB - k > __mpfr_emax */
+  /* because zn >= __gmpfr_emax / BITS_PER_MP_LIMB + 2
+     and zn * BITS_PER_MP_LIMB >= __gmpfr_emax + BITS_PER_MP_LIMB + 1
+     and exp = zn * BITS_PER_MP_LIMB - k > __gmpfr_emax */
 
   /* now zn <= MPFR_EMAX_MAX / BITS_PER_MP_LIMB + 1
      thus zn * BITS_PER_MP_LIMB <= MPFR_EMAX_MAX + BITS_PER_MP_LIMB
@@ -65,9 +65,9 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
              <= MPFR_EMAX_MAX + BITS_PER_MP_LIMB */
   exp = (mp_prec_t) zn * BITS_PER_MP_LIMB - k;
   /* The exponent will be exp or exp + 1 (due to rounding) */
-  if (exp > __mpfr_emax)
+  if (exp > __gmpfr_emax)
     return mpfr_set_overflow(f, rnd_mode, sign_z);
-  if (exp + 1 < __mpfr_emin)
+  if (exp + 1 < __gmpfr_emin)
     return mpfr_set_underflow(f, rnd_mode == GMP_RNDN ? GMP_RNDZ : rnd_mode,
                               sign_z);
 
@@ -150,7 +150,7 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
         {
           if (mpn_add_1(fp, fp, fn, MP_LIMB_T_ONE << sh))
             {
-              if (exp == __mpfr_emax)
+              if (exp == __gmpfr_emax)
                 return mpfr_set_overflow(f, rnd_mode, sign_z);
               else
                 {
@@ -172,7 +172,7 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
       inex = 0; /* result is exact */
     }
 
-  if (exp < __mpfr_emin)
+  if (exp < __gmpfr_emin)
     {
       if (rnd_mode == GMP_RNDN && inex == 0 && mpfr_powerof2_raw (f))
         rnd_mode = GMP_RNDZ;

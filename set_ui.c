@@ -63,7 +63,7 @@ mpfr_set_ui (mpfr_ptr x, unsigned long i, mp_rnd_t rnd_mode)
             {
               mp_exp_t exp = MPFR_EXP(x);
 
-              if (exp == __mpfr_emax)
+              if (exp == __gmpfr_emax)
                 return mpfr_set_overflow(x, rnd_mode, 1);
 
               MPFR_EXP(x)++;

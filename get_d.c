@@ -193,5 +193,5 @@ double
 mpfr_get_d1 (mpfr_srcptr src)
 {
   return mpfr_get_d3 (src, MPFR_IS_FP(src) && MPFR_NOTZERO(src) ?
-                      MPFR_EXP(src) : 0, __gmp_default_rounding_mode);
+                      MPFR_EXP(src) : 0, __gmpfr_default_rounding_mode);
 }

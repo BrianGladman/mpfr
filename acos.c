@@ -116,7 +116,7 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mp_rnd_t rnd_mode)
           good = 1;
         }
       else
-        realprec += _mpfr_ceil_log2 ((double) realprec);
+        realprec += __gmpfr_ceil_log2 ((double) realprec);
 
     mpfr_clear (tmp);
     mpfr_clear (arcc);

@@ -140,17 +140,17 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
   else
       suplement = 2-MPFR_EXP(xp);
 
-  prec_x = _mpfr_ceil_log2 ((double) MPFR_PREC(x) / BITS_PER_MP_LIMB);
-  logn = _mpfr_ceil_log2 ((double) prec_x);
+  prec_x = __gmpfr_ceil_log2 ((double) MPFR_PREC(x) / BITS_PER_MP_LIMB);
+  logn = __gmpfr_ceil_log2 ((double) prec_x);
   if (logn < 2) logn = 2;
-  realprec = prec_arctan + _mpfr_ceil_log2((double) prec_arctan) + 4;
+  realprec = prec_arctan + __gmpfr_ceil_log2((double) prec_arctan) + 4;
   mpz_init(ukz);
   mpz_init(square);
 
 
   while (!good){
-    N0 = _mpfr_ceil_log2((double) realprec + suplement + CST);
-    estimated_delta = 1 + suplement + _mpfr_ceil_log2((double) (3*N0-2));
+    N0 = __gmpfr_ceil_log2((double) realprec + suplement + CST);
+    estimated_delta = 1 + suplement + __gmpfr_ceil_log2((double) (3*N0-2));
     Prec = realprec+estimated_delta;
 
     /* Initialisation    */
@@ -236,7 +236,7 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
       }
     else
       {
-	realprec += _mpfr_ceil_log2 ((double) realprec);
+	realprec += __gmpfr_ceil_log2 ((double) realprec);
       }
 
     mpfr_clear(sk);

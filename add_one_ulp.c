@@ -44,7 +44,7 @@ mpfr_add_one_ulp (mpfr_ptr x, mp_rnd_t rnd_mode)
   if (mpn_add_1 (xp, xp, xn, MP_LIMB_T_ONE << sh)) /* got 1.0000... */
     {
       mp_exp_t exp = MPFR_EXP(x);
-      if (exp == __mpfr_emax)
+      if (exp == __gmpfr_emax)
         return mpfr_set_overflow(x, rnd_mode, MPFR_SIGN(x));
       else
         {

@@ -27,7 +27,7 @@ MA 02111-1307, USA. */
 int
 mpfr_set_exp (mpfr_ptr x, mp_exp_t exponent)
 {
-  if (exponent >= __mpfr_emin && exponent <= __mpfr_emax)
+  if (exponent >= __gmpfr_emin && exponent <= __gmpfr_emax)
     {
       MPFR_EXP(x) = exponent;
       return 0;

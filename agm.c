@@ -38,7 +38,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
   if (MPFR_IS_NAN(op1) || MPFR_IS_NAN(op2))
     {
       MPFR_SET_NAN(r);
-      __mpfr_flags |= MPFR_FLAGS_NAN;
+      __gmpfr_flags |= MPFR_FLAGS_NAN;
       MPFR_RET_NAN;
     }
 
@@ -46,7 +46,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
   if ((MPFR_SIGN(op1) < 0) || (MPFR_SIGN(op2) < 0))
     {
       MPFR_SET_NAN(r);
-      __mpfr_flags |= MPFR_FLAGS_NAN;
+      __gmpfr_flags |= MPFR_FLAGS_NAN;
       MPFR_RET_NAN;
     }
 
@@ -118,13 +118,13 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
     int err, can_round;
     mp_prec_t eq;
     
-    err=1 + (int) ((3.0/2.0*(double)_mpfr_ceil_log2((double)p)+1.0)*_mpfr_ceil_exp2(-(double)p)
-	     +3.0*_mpfr_ceil_exp2(-2.0*(double)p*uo/(vo-uo)));
+    err=1 + (int) ((3.0/2.0*(double)__gmpfr_ceil_log2((double)p)+1.0)*__gmpfr_ceil_exp2(-(double)p)
+	     +3.0*__gmpfr_ceil_exp2(-2.0*(double)p*uo/(vo-uo)));
     if(p-err-3<=q) {
       p=q+err+4;
       err= 1 + 
-	(int) ((3.0/2.0*_mpfr_ceil_log2((double)p)+1.0)*_mpfr_ceil_exp2(-(double)p)
-	       +3.0*_mpfr_ceil_exp2(-2.0*(double)p*uo/(vo-uo)));
+	(int) ((3.0/2.0*__gmpfr_ceil_log2((double)p)+1.0)*__gmpfr_ceil_exp2(-(double)p)
+	       +3.0*__gmpfr_ceil_exp2(-2.0*(double)p*uo/(vo-uo)));
     }
 
     /* Calculus of un and vn */

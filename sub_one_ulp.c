@@ -49,7 +49,7 @@ mpfr_sub_one_ulp(mpfr_ptr x, mp_rnd_t rnd_mode)
       mp_exp_t exp = MPFR_EXP(x);
       /* Note: In case of underflow and rounding to the nearest mode,
          x won't be changed. Beware of infinite loops! */
-      if (exp == __mpfr_emin)
+      if (exp == __gmpfr_emin)
         return mpfr_set_underflow(x, rnd_mode, MPFR_SIGN(x));
       else
         {

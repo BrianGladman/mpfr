@@ -29,8 +29,8 @@ MA 02111-1307, USA. */
 /* puts the mantissa of f into z, and returns 'exp' such that f = z * 2^exp
  *
  * 0 doesn't have an exponent, therefore the returned exponent in this case
- * isn't really important. We choose to return __mpfr_emin because
- *   1) it is in the exponent range [__mpfr_emin,__mpfr_emax],
+ * isn't really important. We choose to return __gmpfr_emin because
+ *   1) it is in the exponent range [__gmpfr_emin,__gmpfr_emax],
  *   2) the smaller a number is (in absolute value), the smaller its
  *      exponent is. In other words, the f -> exp function is monotonous
  *      on nonnegative numbers.
@@ -48,7 +48,7 @@ mpfr_get_z_exp (mpz_ptr z, mpfr_srcptr f)
   if (MPFR_IS_ZERO(f))
     {
       mpz_set_ui (z, 0);
-      return __mpfr_emin;
+      return __gmpfr_emin;
     }
 
   fn = 1 + (MPFR_PREC(f) - 1) / BITS_PER_MP_LIMB;

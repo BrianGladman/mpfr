@@ -212,7 +212,7 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
            (rnd_mode == GMP_RNDU && sign > 0))
           && mpn_add_1(rp, rp, rn, MP_LIMB_T_ONE << sh))
         {
-          if (exp == __mpfr_emax)
+          if (exp == __gmpfr_emax)
             return mpfr_set_overflow(r, rnd_mode, MPFR_SIGN(r)) >= 0 ?
               uflags : -uflags;
           else

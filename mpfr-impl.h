@@ -150,8 +150,8 @@ typedef union ieee_double_extract Ieee_double_extract;
    following two macros, unless the flag comes from another function
    returning the ternary inexact value */
 #define MPFR_RET(I) return \
-  (I) ? ((__mpfr_flags |= MPFR_FLAGS_INEXACT), (I)) : 0
-#define MPFR_RET_NAN return (__mpfr_flags |= MPFR_FLAGS_NAN), 0
+  (I) ? ((__gmpfr_flags |= MPFR_FLAGS_INEXACT), (I)) : 0
+#define MPFR_RET_NAN return (__gmpfr_flags |= MPFR_FLAGS_NAN), 0
 
 /* Memory gestion */
 
@@ -179,12 +179,10 @@ extern "C" {
 #endif  
 
 extern mpfr_t __mpfr_const_log2;
-#define __mpfr_const_log2_prec __gmpfr_const_log2_prec
-extern mp_prec_t __mpfr_const_log2_prec;
+extern mp_prec_t __gmpfr_const_log2_prec;
 
 extern mpfr_t __mpfr_const_pi;
-#define __mpfr_const_pi_prec __gmpfr_const_pi_prec
-extern mp_prec_t __mpfr_const_pi_prec;
+extern mp_prec_t __gmpfr_const_pi_prec;
 
 #ifndef HAVE_STRCASECMP
 int mpfr_strcasecmp _PROTO ((const char *, const char *));
@@ -208,16 +206,11 @@ int mpfr_can_round_raw _PROTO ((mp_limb_t *, mp_size_t, int, mp_exp_t,
 				mp_rnd_t, mp_rnd_t, mp_prec_t));
 double mpfr_get_d3 _PROTO ((mpfr_srcptr, mp_exp_t, mp_rnd_t));
 int mpfr_cmp2 _PROTO ((mpfr_srcptr, mpfr_srcptr, mp_prec_t *));
-#define _mpfr_ceil_log2 __gmpfr_ceil_log2
-long _mpfr_ceil_log2 _PROTO ((double));
-#define _mpfr_floor_log2 __gmpfr_floor_log2
-long _mpfr_floor_log2 _PROTO ((double));
-#define _mpfr_ceil_exp2 __gmpfr_ceil_exp2
-double _mpfr_ceil_exp2 _PROTO ((double));
-#define _mpfr_isqrt __gmpfr_isqrt
-unsigned long _mpfr_isqrt _PROTO ((unsigned long));
-#define _mpfr_cuberoot __gmpfr_cuberoot
-unsigned long _mpfr_cuberoot _PROTO ((unsigned long));
+long __gmpfr_ceil_log2 _PROTO ((double));
+long __gmpfr_floor_log2 _PROTO ((double));
+double __gmpfr_ceil_exp2 _PROTO ((double));
+unsigned long __gmpfr_isqrt _PROTO ((unsigned long));
+unsigned long __gmpfr_cuberoot _PROTO ((unsigned long));
 int mpfr_exp_2 _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_exp3 _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_powerof2_raw _PROTO ((mpfr_srcptr));

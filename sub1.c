@@ -394,11 +394,11 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode,
 
       cancel -= add_exp; /* still valid as unsigned long */
       exp_a = MPFR_EXP(b) - cancel;
-      if (exp_a < __mpfr_emin)
+      if (exp_a < __gmpfr_emin)
         {
           TMP_FREE(marker);
           if (rnd_mode == GMP_RNDN &&
-              (exp_a < __mpfr_emin - 1 ||
+              (exp_a < __gmpfr_emin - 1 ||
                (inexact >= 0 && mpfr_powerof2_raw (a))))
             rnd_mode = GMP_RNDZ;
           return mpfr_set_underflow (a, rnd_mode, MPFR_SIGN(a));
@@ -410,7 +410,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode,
       /* in case cancel = 0, add_exp can still be 1, in case b is just
 	 below a power of two, c is very small, prec(a) < prec(b),
 	 and rnd=away or nearest */
-      if (add_exp && MPFR_EXP(b) == __mpfr_emax)
+      if (add_exp && MPFR_EXP(b) == __gmpfr_emax)
 	{
 	  TMP_FREE(marker);
 	  return mpfr_set_overflow (a, rnd_mode, MPFR_SIGN(a));

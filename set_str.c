@@ -73,7 +73,7 @@ mpfr_set_str (mpfr_ptr x, __gmp_const char *str, int base, mp_rnd_t rnd_mode)
     {
       MPFR_SET_NAN(x);
       /* MPFR_RET_NAN not used as the return value isn't a ternary value */
-      __mpfr_flags |= MPFR_FLAGS_NAN;
+      __gmpfr_flags |= MPFR_FLAGS_NAN;
       return 3;
     }
 

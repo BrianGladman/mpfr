@@ -37,16 +37,16 @@ tests_start_mpfr (void)
 void
 tests_end_mpfr (void)
 {
-  if (__mpfr_const_pi_prec != 0)
+  if (__gmpfr_const_pi_prec != 0)
     {
       mpfr_clear (__mpfr_const_pi);
-      __mpfr_const_pi_prec = 0;
+      __gmpfr_const_pi_prec = 0;
     }
 
-  if (__mpfr_const_log2_prec != 0)
+  if (__gmpfr_const_log2_prec != 0)
     {
       mpfr_clear (__mpfr_const_log2);
-      __mpfr_const_log2_prec = 0;
+      __gmpfr_const_log2_prec = 0;
     }
 
   if (__gmp_rands_initialized)

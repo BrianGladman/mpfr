@@ -41,7 +41,7 @@ check (mp_prec_t p0, mp_prec_t p1)
   mpfr_init (y);
   mpfr_init2 (z, p1 + 10);
   mpfr_const_log2 (z, GMP_RNDN);
-  __mpfr_const_log2_prec = 1;
+  __gmpfr_const_log2_prec = 1;
 
   for (; p0<=p1; p0++)
     {

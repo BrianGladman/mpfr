@@ -68,7 +68,7 @@ mpfr_set4 (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode, int signb)
             {
               mp_exp_t exp = MPFR_EXP(a);
 
-              if (exp == __mpfr_emax)
+              if (exp == __gmpfr_emax)
                 return mpfr_set_overflow(a, rnd_mode, signb);
 
               MPFR_EXP(a)++;

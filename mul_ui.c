@@ -112,7 +112,7 @@ mpfr_mul_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 
   TMP_FREE(marker);
 
-  if (__mpfr_emax < MPFR_EMAX_MIN + cnt || MPFR_EXP(x) > __mpfr_emax - cnt)
+  if (__gmpfr_emax < MPFR_EMAX_MIN + cnt || MPFR_EXP(x) > __gmpfr_emax - cnt)
     return mpfr_set_overflow(y, rnd_mode, MPFR_SIGN(x));
 
   MPFR_EXP(y) = MPFR_EXP(x) + cnt;
