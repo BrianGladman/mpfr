@@ -1,6 +1,6 @@
 /* Test file for the various mpfr_random fonctions.
 
-Copyright 1999, 2000, 2001, 2002, 2003 Free Software Foundation.
+Copyright 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -157,7 +157,8 @@ test_urandomb (long nbtests, mp_prec_t prec, int verbose)
   mpfr_t x; 
   int *tab, size_tab, k, sh, xn;
   gmp_randstate_t state; 
-  double d, av = 0, var = 0, chi2 = 0, th; 
+  double d, av = 0, var = 0, chi2 = 0, th;
+  mp_exp_t emin;
 
   mpfr_init2 (x, prec);
   xn = 1 + (prec - 1) / mp_bits_per_limb;
@@ -185,8 +186,21 @@ test_urandomb (long nbtests, mp_prec_t prec, int verbose)
       tab[(int)(size_tab * d)]++;
     }
 
-  mpfr_clear(x);
-  gmp_randclear(state);
+  /* coverage test */
+  emin = mpfr_get_emin ();
+  mpfr_set_emin (1); /* the generated number in [0,1[ is not in the exponent
+                        range, except if it is zero */
+  k = mpfr_urandomb (x, state);
+  if (MPFR_IS_ZERO(x) == 0 && (k == 0 || mpfr_nan_p (x) == 0))
+    {
+      printf ("Error in mpfr_urandomb, expected NaN, got ");
+      mpfr_dump (x);
+      exit (1);
+    }
+  mpfr_set_emin (emin);
+
+  mpfr_clear (x);
+  gmp_randclear (state);
   if (!verbose)
     {
       free(tab);

@@ -80,6 +80,32 @@ test1 (void)
       exit (1);
     }
 
+  /* coverage test */
+  mpfr_set_prec (x, 7);
+  mpfr_set_str_binary (x, "1.000001");
+  mpfr_set_prec (y, 2);
+  mpfr_zeta (y, x, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (y, 64) == 0);
+
+  /* another coverage test */
+  mpfr_set_prec (x, 24);
+  mpfr_set_ui (x, 2, GMP_RNDN);
+  mpfr_set_prec (y, 2);
+  mpfr_zeta (y, x, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (y, 3, -1) == 0);
+
+  mpfr_set_nan (x);
+  mpfr_zeta (y, x, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_nan_p (y));
+
+  mpfr_set_inf (x, 1);
+  mpfr_zeta (y, x, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (y, 1) == 0);
+
+  mpfr_set_inf (x, -1);
+  mpfr_zeta (y, x, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_nan_p (y));
+
   mpfr_clear (x);
   mpfr_clear (y);
 }
@@ -316,7 +342,7 @@ main (int argc, char *argv[])
   mpfr_clear (z);
 
   test_generic (2, 70, 1);
-  test2();
+  test2 ();
 
   tests_end_mpfr ();
   return 0;

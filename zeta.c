@@ -33,7 +33,8 @@ MA 02111-1307, USA. */
    n, p - parameters from the algorithm
    tc - an array of p floating-point numbers tc[1]..tc[p]
    Output:
-   b is the result
+   b is the result, i.e.
+   sum(tc[i]*product((s+2j)*(s+2j-1)/n^2,j=1..i-1), i=1..p)*s*n^(-s-1)
 */
 static void
 mpfr_zeta_part_b (mpfr_t b, mpfr_srcptr s, int n, int p, mpfr_t *tc)
@@ -55,25 +56,26 @@ mpfr_zeta_part_b (mpfr_t b, mpfr_srcptr s, int n, int p, mpfr_t *tc)
   /* t equals 2p-2, 2p-3, ... ; s1 equals s+t */
   t = 2 * p - 2;
   mpfr_set (d, tc[p], GMP_RNDN);
-  for (l=1; l<p; l++)
+  for (l = 1; l < p; l++)
     {
-      mpfr_add_ui (s1, s, t, GMP_RNDN);
+      mpfr_add_ui (s1, s, t, GMP_RNDN); /* s + (2p-2l) */
       mpfr_mul (d, d, s1, GMP_RNDN);
       t = t - 1;
-      mpfr_add_ui (s1, s, t, GMP_RNDN);
+      mpfr_add_ui (s1, s, t, GMP_RNDN); /* s + (2p-2l-1) */
       mpfr_mul (d, d, s1, GMP_RNDN);
       t = t - 1;
       mpfr_div_ui (d, d, n2, GMP_RNDN);
       mpfr_add (d, d, tc[p-l], GMP_RNDN);
-      if (mpfr_cmpabs (d, tc[p-l]) > 0)
+      /* since s is positive and the tc[i] have alternate signs,
+         the following is unlikely */
+      if (MPFR_UNLIKELY(mpfr_cmpabs (d, tc[p-l]) > 0))
 	mpfr_set (d, tc[p-l], GMP_RNDN);
     }
   mpfr_mul (d, d, s, GMP_RNDN);
   mpfr_add_ui (s1, s, 1, GMP_RNDN);
   mpfr_neg (s1, s1, GMP_RNDN);
   mpfr_ui_pow (u, n, s1, GMP_RNDN);
-  mpfr_mul (d, d, u, GMP_RNDN);
-  mpfr_set (b, d, GMP_RNDN);
+  mpfr_mul (b, d, u, GMP_RNDN);
 #ifdef DEBUG
   printf ("\npart b=");
   mpfr_out_str (stdout, 10, 0, b, GMP_RNDN);
@@ -85,7 +87,8 @@ mpfr_zeta_part_b (mpfr_t b, mpfr_srcptr s, int n, int p, mpfr_t *tc)
 }
 
 /* Input: p - an integer
-   Output: fills tc[1..p]
+   Output: fills tc[1..p], tc[i] = bernoulli(2i)/(2i)!
+   tc[1]=1/12, tc[2]=-1/720, tc[3]=1/30240, ...
 */
 static void
 mpfr_zeta_c (int p, mpfr_t *tc)
@@ -98,7 +101,7 @@ mpfr_zeta_c (int p, mpfr_t *tc)
       mpfr_init2 (d, mpfr_get_prec (tc[1]));
       mpfr_set_ui (tc[1], 1, GMP_RNDN);
       mpfr_div_ui (tc[1], tc[1], 12, GMP_RNDN);
-      for (k=2; k<=p; k++)
+      for (k = 2; k <= p; k++)
 	{
 	  mpfr_set_ui (d, k-1, GMP_RNDN);
 	  mpfr_div_ui (d, d, 12*k+6, GMP_RNDN);
@@ -234,10 +237,11 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
 #ifdef DEBUG
           printf ("\nn=%d\np=%d\n",n,p);
 #endif
-          /* add = 4 + floor(1.5 * log(d) / log (2)) */
+          /* add = 4 + floor(1.5 * log(d) / log (2)).
+             We should have add >= 10, which is always fulfilled since
+             d = precz + 11 >= 12, thus ceil(log2(d)) >= 4 */
           add = 4 + (3 * __gmpfr_ceil_log2 ((double) d)) / 2;
-          if (add < 10)
-            add = 10;
+          MPFR_ASSERTD(add >= 10);
           dint = d + add;
           if (dint < precs)
             dint = precs;
@@ -343,15 +347,14 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
 	  MPFR_SET_NAN (z); /* Zeta(-Inf) = NaN */
 	  MPFR_RET_NAN;
 	}
-      else if (MPFR_IS_ZERO(s))
+      else /* s iz zero */
 	{
+          MPFR_ASSERTD(MPFR_IS_ZERO(s));
 	  mpfr_set_ui (z, 1, rnd_mode);
 	  mpfr_div_2ui (z, z, 1, rnd_mode);
 	  MPFR_CHANGE_SIGN(z);
 	  MPFR_RET(0);
 	}
-      else
-	MPFR_ASSERTN(0);
     }
   MPFR_CLEAR_FLAGS(z);
 
