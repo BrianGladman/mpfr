@@ -32,11 +32,12 @@ MA 02111-1307, USA. */
 int
 main (void)
 {
-   mpfr_t one, x, y;
+   mpfr_t half, x, y;
    mp_rnd_t rnd_mode;
 
-   mpfr_init2(one, 2);
-   mpfr_set_ui(one, 1, GMP_RNDZ);
+   mpfr_init2(half, 2);
+   mpfr_set_ui(half, 1, GMP_RNDZ);
+   mpfr_div_2ui(half, half, 1, GMP_RNDZ); /* has exponent 0 */
 
    mpfr_init2(x, 128);
    mpfr_init2(y, 128);
@@ -47,19 +48,19 @@ main (void)
        double di, dj;
 
        mpfr_set_machine_rnd_mode(rnd_mode);
-       for (i = 1, di = 0.5; i < 127; i++, di *= 0.5)
+       for (i = 1, di = 0.25; i < 127; i++, di *= 0.5)
          for (si = 0; si <= 1; si++)
            {
-             mpfr_div_2ui(x, one, i, GMP_RNDZ);
-             (si ? mpfr_sub : mpfr_add)(x, one, x, GMP_RNDZ);
+             mpfr_div_2ui(x, half, i, GMP_RNDZ);
+             (si ? mpfr_sub : mpfr_add)(x, half, x, GMP_RNDZ);
              for (j = i+1, dj = di * 0.5; j < 128 && j < i+53; j++, dj *= 0.5)
                for (sj = 0; sj <= 1; sj++)
                  {
-                   double c, d;
+                   double c, d, dd;
                    int exp;
                    char *f;
 
-                   mpfr_div_2ui(y, one, j, GMP_RNDZ);
+                   mpfr_div_2ui(y, half, j, GMP_RNDZ);
                    (sj ? mpfr_sub : mpfr_add)(y, x, y, GMP_RNDZ);
                    exp = (rand() % 47) - 23;
                    mpfr_mul_2si(y, y, exp, GMP_RNDZ);
@@ -70,6 +71,8 @@ main (void)
                                i, si, j, sj, rnd_mode, exp);
                        exit(1);
                      }
+                   dd = si != sj ? di - dj : di + dj;
+                   d = si ? 0.5 - dd : 0.5 + dd;
                    if ((rand() / 1024) & 1)
                      {
                        c = mpfr_get_d(y);
@@ -80,9 +83,9 @@ main (void)
                        exp = (rand() % 47) - 23;
                        c = mpfr_get_d2(y, exp);
                        f = "mpfr_get_d2";
+                       if (si) /* then real d < 0.5 */
+                         d *= sj && i == 1 ? 4 : 2; /* normalize real d */
                      }
-                   d = si != sj ? di - dj : di + dj;
-                   d = si ? 1 - d : 1 + d;
                    if (exp > 0)
                      d *= 1 << exp;
                    if (exp < 0)
@@ -99,7 +102,7 @@ main (void)
            }
      }
 
-   mpfr_clear(one);
+   mpfr_clear(half);
    mpfr_clear(x);
    mpfr_clear(y);
    return 0;
