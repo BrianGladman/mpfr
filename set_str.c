@@ -1,6 +1,6 @@
 /* mpfr_set_str -- set a floating-point number from a string
 
-Copyright (C) 2000, 2001 Free Software Foundation, Inc.
+Copyright (C) 2000-2002 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -37,6 +37,9 @@ mpfr_set_str (mpfr_ptr x, __gmp_const char *str, int base, mp_rnd_t rnd_mode)
   long expn = 0, e;
   mpz_t mantissa;
   mpfr_t y, z;
+
+  if (base < 2 || base > 36)
+    return -1;
 
   mpz_init(mantissa); mpz_set_ui(mantissa, 0);
   l = strlen(str);

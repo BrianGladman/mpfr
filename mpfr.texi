@@ -747,11 +747,11 @@ to a mpfr floating-point number.
 @end deftypefun
 
 @deftypefun int mpfr_set_str (mpfr_t @var{x}, char *@var{s}, int @var{base}, mp_rnd_t @var{rnd})
-Set @var{x} to the value of the string @var{s} in base @var{base}, 
-rounded in direction @var{rnd} to the precision of @var{x}.
+Set @var{x} to the value of the string @var{s} in base @var{base} (between
+2 and 36), rounded in direction @var{rnd} to the precision of @var{x}.
 The exponent is read in decimal.
-This function returns 0 if the entire string up to the final '\0' is a valid
-number in base @var{base}, and @minus{}1 otherwise.
+This function returns 0 if the base is valid and if the entire string up to
+the final '\0' is a valid number in base @var{base}, and @minus{}1 otherwise.
 @end deftypefun
 
 @deftypefun void mpfr_set_str_raw (mpfr_t @var{x}, char *@var{s})
