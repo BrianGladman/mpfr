@@ -26,26 +26,53 @@ MA 02111-1307, USA. */
 
 void check _PROTO((long int, long int, mp_rnd_t, double)); 
 
-void check(long int n, long int d, mp_rnd_t rnd, double y)
+void
+check (long int n, long int d, mp_rnd_t rnd, double y)
 {
-  mpq_t q; mpfr_t x; double z;
+  mpq_t q;
+  mpfr_t x, t;
+  double z;
+  int inexact, compare;
 
-  mpfr_init2(x, 53); mpq_init(q);
-  mpq_set_si(q, n, d);
+  mpfr_init2 (x, 53);
+  mpfr_init2 (t, mpfr_get_prec (x) + mp_bits_per_limb);
+  mpq_init (q);
+  mpq_set_si (q, n, d);
 #ifdef TEST
-  mpfr_set_machine_rnd_mode(rnd);
+  mpfr_set_machine_rnd_mode (rnd);
   y = (double) n / d;
 #endif
-  mpfr_set_q(x, q, rnd);
-  z = mpfr_get_d(x);
-  if (y != z) {
-    fprintf(stderr, "Error for q=%ld/%lu and rnd=%s\n", n, d, 
-	    mpfr_print_rnd_mode(rnd));
-    fprintf(stderr, "libm.a gives %1.20e, mpfr_set_q gives %1.20e\n",
-	    y, z);
-    exit(1);
-  }
-  mpfr_clear(x); mpq_clear(q);
+  inexact = mpfr_set_q (x, q, rnd);
+  z = mpfr_get_d (x);
+
+  /* check values */
+  if (y != z)
+    {
+    fprintf (stderr, "Error for q=%ld/%lu and rnd=%s\n", n, d, 
+	     mpfr_print_rnd_mode (rnd));
+    fprintf (stderr, "libm.a gives %1.20e, mpfr_set_q gives %1.20e\n", y, z);
+    exit (1);
+    }
+
+  /* check inexact flag */
+  if (mpfr_mul_ui (t, x, (d < 0) ? (-d) : d, rnd))
+    {
+      fprintf (stderr, "t <- x * d should be exact\n");
+      exit (1);
+    }
+  compare = mpfr_cmp_si (t, n);
+  if (((inexact == 0) && (compare != 0)) ||
+      ((inexact < 0) && (compare >= 0)) ||
+      ((inexact > 0) && (compare <= 0)))
+    {
+      fprintf (stderr, "wrong inexact flag: expected %d, got %d\n", compare,
+	       inexact);
+      exit (1);
+    }
+
+  mpfr_clear (x);
+  mpfr_clear (t);
+  mpq_clear (q);
 }
 
 int
