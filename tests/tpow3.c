@@ -1,6 +1,6 @@
 /* Test file for mpfr_pow.
 
-Copyright 2001, 2002 Free Software Foundation.
+Copyright 2001, 2002, 2003 Free Software Foundation.
 Adapted from tarctan.c.
 
 This file is part of the MPFR Library.
@@ -179,7 +179,7 @@ main (int argc, char *argv[])
   if (random() % 2)
     mpfr_neg (y, y, GMP_RNDN);
    mpfr_pow (z, x,y, GMP_RNDN);
-  if(!MPFR_IS_INF(z) && (MPFR_SIGN(y) > 0) && (mpfr_isinteger(y)))
+  if (!MPFR_IS_INF(z) && (MPFR_SIGN(y) > 0) && (mpfr_integer_p (y)))
     {
       printf ("evaluation of function in x=-INF does not return INF");
       printf ("\nx =");
@@ -189,14 +189,14 @@ main (int argc, char *argv[])
       printf ("\n result =");
       mpfr_out_str (stdout, 10, MPFR_PREC(z), z, GMP_RNDN);
       putchar('\n');
-      if(mpfr_isinteger(y))
+      if (mpfr_integer_p (y))
         printf("y is an integer\n");
       else
         printf("y is not an integer\n");
         
       exit (1);
     }
-  if(!MPFR_IS_ZERO(z) && (MPFR_SIGN(y) < 0) && (mpfr_isinteger(y)))
+  if (!MPFR_IS_ZERO(z) && (MPFR_SIGN(y) < 0) && (mpfr_integer_p (y)))
     {
       printf ("evaluation of function in x=-INF does not return 0");
       printf ("\nx =");
@@ -207,7 +207,7 @@ main (int argc, char *argv[])
       mpfr_out_str (stdout, 10, MPFR_PREC(z), z, GMP_RNDN);
       putchar('\n');
 
-      if(mpfr_isinteger(y))
+      if (mpfr_integer_p (y))
         printf("y is an integer\n");
       else
         printf("y is not an integer\n");
@@ -228,7 +228,7 @@ main (int argc, char *argv[])
     iy=-iy;
   mpfr_set_d(y,iy,GMP_RNDN);
   mpfr_pow (z, x,y, GMP_RNDN);
-  if(!MPFR_IS_INF(z) && (MPFR_SIGN(y) > 0) && (mpfr_isinteger(y)))
+  if (!MPFR_IS_INF(z) && (MPFR_SIGN(y) > 0) && (mpfr_integer_p (y)))
     {
       printf ("evaluation of function in x=-INF does not return INF");
       printf ("\nx =");
@@ -238,14 +238,14 @@ main (int argc, char *argv[])
       printf ("\n result =");
       mpfr_out_str (stdout, 10, MPFR_PREC(z), z, GMP_RNDN);
       putchar('\n');
-      if(mpfr_isinteger(y))
+      if (mpfr_integer_p (y))
         printf("y is an integer\n");
       else
         printf("y is not an integer\n");
         
       exit (1);
     }
-  if(!MPFR_IS_ZERO(z) && (MPFR_SIGN(y) < 0) && (mpfr_isinteger(y)))
+  if (!MPFR_IS_ZERO(z) && (MPFR_SIGN(y) < 0) && (mpfr_integer_p (y)))
     {
       printf ("evaluation of function in x=-INF does not return 0");
       printf ("\nx =");
@@ -256,7 +256,7 @@ main (int argc, char *argv[])
       mpfr_out_str (stdout, 10, MPFR_PREC(z), z, GMP_RNDN);
       putchar('\n');
 
-      if(mpfr_isinteger(y))
+      if (mpfr_integer_p (y))
         printf("y is an integer\n");
       else
         printf("y is not an integer\n");
@@ -295,7 +295,7 @@ main (int argc, char *argv[])
 
   mpfr_pow (z, x,y, GMP_RNDN);
 
-  if(!MPFR_IS_ZERO(z) && (MPFR_SIGN(y) < 0) && !(mpfr_isinteger(y)))
+  if (!MPFR_IS_ZERO(z) && (MPFR_SIGN(y) < 0) && !(mpfr_integer_p (y)))
     {
       printf ("evaluation of function in y<0 does not return 0");
       printf ("\nx =");
@@ -308,7 +308,7 @@ main (int argc, char *argv[])
 
       exit (1);
     }
-  if(!MPFR_IS_INF(z) && (MPFR_SIGN(y) < 0) && (mpfr_isinteger(y)))
+  if (!MPFR_IS_INF(z) && (MPFR_SIGN(y) < 0) && (mpfr_integer_p (y)))
     {
       printf ("evaluation of function in y<0 (y integer) does not return INF");
       printf ("\nx =");
@@ -320,7 +320,7 @@ main (int argc, char *argv[])
       putchar('\n');
       exit (1);
     }
-  if(!MPFR_IS_ZERO(z) && (MPFR_SIGN(y) > 0) && (mpfr_isinteger(y)))
+  if (!MPFR_IS_ZERO(z) && (MPFR_SIGN(y) > 0) && (mpfr_integer_p (y)))
     {
       printf ("evaluation of function in y<0 (y integer) does not return 0");
        printf ("\nx =");

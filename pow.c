@@ -1,6 +1,6 @@
 /* mpfr_pow -- power function x^y 
 
-Copyright 2001, 2002 Free Software Foundation, Inc.
+Copyright 2001, 2002, 2003 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -39,7 +39,7 @@ mpfr_pow_is_exact (mpfr_srcptr x, mpfr_srcptr y)
   mp_limb_t *yp;
   mp_size_t ysize;
   
-  if ((mpfr_sgn (x) < 0) && (mpfr_isinteger (y) == 0))
+  if ((mpfr_sgn (x) < 0) && (mpfr_integer_p (y) == 0))
       return 0;
 
   if (mpfr_sgn (y) < 0)
@@ -193,7 +193,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
       return mpfr_set_ui (z, 1, GMP_RNDN);
     }
 
-  if (mpfr_isinteger (y))
+  if (mpfr_integer_p (y))
     {
       mpz_t zi;
       long int zii;
