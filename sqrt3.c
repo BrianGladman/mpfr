@@ -8,7 +8,7 @@
 
 /* #define DEBUG */
 
-void
+int
 mpfr_sqrt3 (mpfr_ptr r, mpfr_srcptr u, unsigned char rnd_mode)
 {
   mp_ptr up, rp, tmp;
@@ -16,12 +16,13 @@ mpfr_sqrt3 (mpfr_ptr r, mpfr_srcptr u, unsigned char rnd_mode)
   mp_size_t rsize;
   mp_size_t prec, err;
   mp_limb_t q_limb;
-  long rw, nw; 
+  long rw, nw, k; 
+  int exact = 0; 
   unsigned long cc = 0; 
   char can_round = 0; 
   TMP_DECL (marker); TMP_DECL(marker0); 
 
-  if (FLAG_NAN(u) || SIGN(u) == -1) { SET_NAN(r); return; }
+  if (FLAG_NAN(u) || SIGN(u) == -1) { SET_NAN(r); return 0; }
   
   prec = PREC(r);
 
@@ -29,7 +30,7 @@ mpfr_sqrt3 (mpfr_ptr r, mpfr_srcptr u, unsigned char rnd_mode)
     {
       EXP(r) = 0; 
       MPN_ZERO(MANT(r), ABSSIZE(r)); 
-      return; 
+      return 1; 
     }
 
   up = MANT(u);
@@ -121,12 +122,25 @@ mpfr_sqrt3 (mpfr_ptr r, mpfr_srcptr u, unsigned char rnd_mode)
 #ifdef DEBUG
 	  printf("Increasing the precision.\n"); 
 #endif
-	  printf("#"); 
 	  TMP_FREE(marker); 
 	}
     }
   while (!can_round && (rsize < 2*usize) 
 	 && (rsize += 2) && (rrsize ++)); 
+
+
+  /* This part may be deplaced upper to avoid a few mpfr_can_round_raw */
+  /* when the square root is exact. It is however very unprobable that */
+  /* it would improve the behaviour of the present code on average.    */
+
+  if (!q_limb) /* possibly exact */
+    {
+      /* if we have taken into account the whole of up */
+      for (k = usize - rsize - 1; k >= 0; k ++)
+	if (up[k]) break; 
+      
+      if (k < 0) { exact = 1; goto fin; }
+    }
 
   if (can_round) 
     {
@@ -168,13 +182,16 @@ mpfr_sqrt3 (mpfr_ptr r, mpfr_srcptr u, unsigned char rnd_mode)
     rp[rrsize-1] |= (mp_limb_t) 1 << (BITS_PER_MP_LIMB-1);
     r->_mp_exp++; 
   }
-    
+
+ fin:
+  rsize = rrsize; 
   rrsize = (PREC(r) - 1)/BITS_PER_MP_LIMB + 1;  
-  MPN_COPY(r->_mp_d, rp, rrsize); 
+  MPN_COPY(r->_mp_d, rp + rsize - rrsize, rrsize); 
 
   if (PREC(r) & (BITS_PER_MP_LIMB - 1))
     MANT(r) [0] &= ~(((mp_limb_t)1 << (BITS_PER_MP_LIMB - 
 				   (PREC(r) & (BITS_PER_MP_LIMB - 1)))) - 1) ; 
   
   TMP_FREE(marker0); TMP_FREE (marker);
+  return exact; 
 }
