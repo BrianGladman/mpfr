@@ -21,6 +21,7 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <float.h>
 #include "gmp.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
@@ -130,7 +131,7 @@ main (int argc, char *argv[])
 #ifdef HAVE_DENORMS
        while (0);
 #else
-       while (absd <= 2.2e-307);
+       while (absd < DBL_MIN);
 #endif
        rnd = LONG_RAND() % 4;
        mpfr_set_d (x, d, 0);

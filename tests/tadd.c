@@ -23,6 +23,7 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <float.h>
 #include <time.h>
 #include "gmp.h"
 #include "mpfr.h"
@@ -839,15 +840,17 @@ main (int argc, char *argv[])
   prec = (argc<2) ? 53 : atoi(argv[1]);
   rnd_mode = (argc<3) ? -1 : atoi(argv[2]);
   /* Comparing to double precision using machine arithmetic */
-  for (i=0;i<N;i++) {
-    x = drand(); 
-    y = drand();
-    if (ABS(x)>2.2e-307 && ABS(y)>2.2e-307 && x+y<1.7e+308 && x+y>-1.7e308) {
-      /* avoid denormalized numbers and overflows */
-      rnd = (rnd_mode==-1) ? LONG_RAND()%4 : rnd_mode;
-      check(x, y, rnd, prec, prec, prec, 0.0);
-    }
-  } 
+  for (i=0;i<N;i++)
+    {
+      x = drand(); 
+      y = drand();
+      if (ABS(x)>=DBL_MIN && ABS(y)>=DBL_MIN && x+y<=DBL_MAX && x+y>=-DBL_MAX)
+        {
+          /* avoid denormalized numbers and overflows */
+          rnd = (rnd_mode==-1) ? LONG_RAND()%4 : rnd_mode;
+          check(x, y, rnd, prec, prec, prec, 0.0);
+        }
+    } 
   /* tests with random precisions */
   for (i=0;i<N;i++) {
     int px, py, pz;
@@ -860,28 +863,36 @@ main (int argc, char *argv[])
     check2 (x, px, y, py, pz, rnd_mode);
   }
   /* Checking mpfr_add(x, x, y) with prec=53 */
-  for (i=0;i<N;i++) {
-    x = drand(); 
-    y = drand();
-    if (ABS(x)>2.2e-307 && ABS(y)>2.2e-307 && x+y<1.7e+308 && x+y>-1.7e308) {
-      /* avoid denormalized numbers and overflows */
-      rnd = (rnd_mode==-1) ? LONG_RAND()%4 : rnd_mode;
-      check3(x, y, rnd);
+  for (i=0;i<N;i++)
+    {
+      x = drand(); 
+      y = drand();
+      if (ABS(x)>=DBL_MIN && ABS(y)>=DBL_MIN && x+y<=DBL_MAX && x+y>=-DBL_MAX)
+        {
+          /* avoid denormalized numbers and overflows */
+          rnd = (rnd_mode==-1) ? LONG_RAND()%4 : rnd_mode;
+          check3(x, y, rnd);
+        }
     }
-  }
   /* Checking mpfr_add(x, y, x) with prec=53 */
-  for (i=0;i<N;i++) {
-    x = drand(); 
-    y = drand();
-    if (ABS(x)>2.2e-307 && ABS(y)>2.2e-307 && x+y<1.7e+308 && x+y>-1.7e308) {
-      /* avoid denormalized numbers and overflows */
-      rnd = (rnd_mode==-1) ? LONG_RAND()%4 : rnd_mode;
-      check4(x, y, rnd);
+  for (i=0;i<N;i++)
+    {
+      x = drand(); 
+      y = drand();
+      if (ABS(x)>=DBL_MIN && ABS(y)>=DBL_MIN && x+y<=DBL_MAX && x+y>=-DBL_MAX)
+        {
+          /* avoid denormalized numbers and overflows */
+          rnd = (rnd_mode==-1) ? LONG_RAND()%4 : rnd_mode;
+          check4(x, y, rnd);
+        }
     }
-  }
   /* Checking mpfr_add(x, x, x) with prec=53 */
   for (i=0;i<N;i++) {
-    do { x = drand(); } while ((ABS(x)<2.2e-307) || (ABS(x)>0.8e308));
+    do
+      {
+        x = drand();
+      }
+    while ((ABS(x)<DBL_MIN) || (ABS(x)>DBL_MAX/2));
     /* avoid denormalized numbers and overflows */
     rnd = (rnd_mode==-1) ? LONG_RAND()%4 : rnd_mode;
     check5(x, rnd);

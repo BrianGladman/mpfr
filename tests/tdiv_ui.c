@@ -21,6 +21,7 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <float.h>
 #include <time.h>
 #include "gmp.h"
 #include "mpfr.h"
@@ -185,7 +186,7 @@ main (int argc, char **argv)
   for (i=0;i<1000000;i++)
     {
       do { u = LONG_RAND(); } while (u==0);
-      do { d = drand(); } while (ABS(d/u)<2.2e-307);
+      do { d = drand(); } while (ABS(d/u)<DBL_MIN);
       check (d, u, LONG_RAND() % 4, 0.0);
     }
 #endif

@@ -25,6 +25,7 @@ MA 02111-1307, USA. */
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <float.h>
 #include <time.h>
 #include "gmp.h"
 #include "mpfr.h"
@@ -88,7 +89,7 @@ main (int argc, char *argv[])
   for (i=0;i<1000000;i++) {
     x = drand();
     y = LONG_RAND();
-    if (ABS(x)>2.2e-307 && x+y<1.7e+308 && x+y>-1.7e308) {
+    if (ABS(x)>=DBL_MIN && x+y<DBL_MAX && x+y>-DBL_MAX) {
       /* avoid denormalized numbers and overflows */
       rnd = (rnd_mode==-1) ? LONG_RAND()%4 : rnd_mode;
       check(x, y, rnd);
