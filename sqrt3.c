@@ -151,7 +151,7 @@ mpfr_sqrt3 (mpfr_ptr r, mpfr_srcptr u, unsigned char rnd_mode)
 	if (rw) { rw = BITS_PER_MP_LIMB - rw; nw = 0; } else nw = 1; 
 	if ((rp[nw] >> rw) & 1 &&                     /* Not 0111111111 */
 	    (q_limb ||                                /* Nonzero remainder */
-	    (rw ? (rp[nw] >> (rw - 1)) & 1 : 
+	    (rw ? (rp[nw] >> (rw + 1)) & 1 : 
 	     (rp[nw] >> (BITS_PER_MP_LIMB - 1)) & 1))) /* or even rounding */ 
 	  cc = mpn_add_1(rp + nw, rp + nw, rrsize, ((mp_limb_t)1) << rw); 
 	break;

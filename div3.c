@@ -20,7 +20,7 @@ mpfr_div3 (mpfr_ptr r, mpfr_srcptr u, mpfr_srcptr v, unsigned char rnd_mode)
   mp_limb_t q_limb;
   mp_exp_t rexp;
   long k, mult, vn; 
-  unsigned long cc = 0; 
+  unsigned long cc = 0, rw, nw; 
   char can_round = 0; 
   TMP_DECL (marker);
 
@@ -181,12 +181,23 @@ mpfr_div3 (mpfr_ptr r, mpfr_srcptr u, mpfr_srcptr v, unsigned char rnd_mode)
 	   have to be zero; just look if the remainder is nonzero */
 	k = rsize - 1; 
 	while (k >= 0) { if (tp[k]) break; k--; }
-	if (k >= 0) /* non-zero remainder */
+	if (k >= 0) 
 	  cc = mpn_add_1(rp, rp, rrsize, (mp_limb_t)1 << (BITS_PER_MP_LIMB - 
 					       (PREC(r) & 
 						(BITS_PER_MP_LIMB - 1))));
-
-	/* cas 0111111 + arrondi pair */
+	else
+	  if (rnd_mode == GMP_RNDN) /* even rounding */
+	    {
+	      rw = (PREC(r) + 1) & (BITS_PER_MP_LIMB - 1);
+	      if (rw) { rw = BITS_PER_MP_LIMB - rw; nw = 0; } else nw = 1; 
+	      if ((rw ? (rp[nw] >> (rw + 1)) & 1 : 
+		   (rp[nw] >> (BITS_PER_MP_LIMB - 1)) & 1))
+		{
+		  cc = mpn_add_1(rp + nw, rp + nw, rrsize, 
+				 ((mp_limb_t)1) << rw); 
+		}
+	    }
+	/* cas 0111111 */
       }
 
   if (sign_quotient == -1) { CHANGE_SIGN(r); } 
