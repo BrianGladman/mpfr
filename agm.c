@@ -120,7 +120,7 @@ mpfr_agm(r, a, b, rnd_mode)
     /* Calculus of un and vn */
     while (eq<=p-2) {
       mpfr_mul(tmp,u,v,GMP_RNDN);
-      mpfr_sqrt3(tmpu,tmp,GMP_RNDN); 
+      mpfr_sqrt(tmpu,tmp,GMP_RNDN); 
       mpfr_add(tmp,u,v,GMP_RNDN);
       mpfr_div_2exp(tmpv,tmp,1,GMP_RNDN);
       mpfr_set(u,tmpu,GMP_RNDN);
