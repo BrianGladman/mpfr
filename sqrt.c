@@ -267,6 +267,7 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
         MPFR_EXP(r)++;
       }
 
+ fin:
     rsize = rrsize;
     rrsize = (MPFR_PREC(r) - 1)/BITS_PER_MP_LIMB + 1;
     MPN_COPY(MPFR_MANT(r), rp + rsize - rrsize, rrsize);
