@@ -1,4 +1,4 @@
-# Makefile.in generated automatically by automake 1.4 from Makefile.am
+# Makefile.in generated automatically by automake 1.4a from Makefile.am
 
 # Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
@@ -46,9 +46,10 @@ AUTOMAKE = @AUTOMAKE@
 AUTOHEADER = @AUTOHEADER@
 
 INSTALL = @INSTALL@
-INSTALL_PROGRAM = @INSTALL_PROGRAM@ $(AM_INSTALL_PROGRAM_FLAGS)
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
+INSTALL_STRIP_FLAG =
 transform = @program_transform_name@
 
 NORMAL_INSTALL = :
@@ -75,7 +76,7 @@ include_HEADERS = mpfr.h mpf2mpfr.h mpfr-test.h
 
 lib_LIBRARIES = libmpfr.a
 
-libmpfr_a_SOURCES = cputime.h mpfr.h mpfr-impl.h sin_cos.c extract.c add.c add_ui.c add_ulp.c agm.c clear.c cmp.c cmp_ui.c div_2exp.c div.c div_ui.c dump.c eq.c exp2.c exp3.c exp.c get_str.c init.c inp_str.c log2.c log.c mul_2exp.c mul.c mul_ui.c neg.c out_str.c pi.c pow.c print_raw.c print_rnd_mode.c random2.c random.c reldiff.c rnd_mode.c round.c set.c set_d.c set_dfl_prec.c set_rnd.c set_f.c set_prc_raw.c set_prec.c set_q.c set_si.c set_str.c set_str_raw.c set_z.c sqrt.c sqrt_ui.c sub.c sub_ui.c trunc.c ui_div.c ui_sub.c urandomb.c sqrtrem.c mpz_set_fr.c swap.c srandom.h
+libmpfr_a_SOURCES = cputime.h mpfr.h mpfr-impl.h sin_cos.c extract.c add.c add_ui.c add_ulp.c agm.c clear.c cmp.c cmp_ui.c div_2exp.c div.c div_ui.c dump.c eq.c exp2.c exp3.c exp.c get_str.c init.c inp_str.c isnan.c log2.c log.c mul_2exp.c mul.c mul_ui.c neg.c out_str.c pi.c pow.c print_raw.c print_rnd_mode.c random2.c random.c reldiff.c rnd_mode.c round.c set.c set_d.c set_dfl_prec.c set_rnd.c set_f.c set_prc_raw.c set_prec.c set_q.c set_si.c set_str.c set_str_raw.c set_ui.c set_z.c sqrt.c sqrt_ui.c sub.c sub_ui.c trunc.c ui_div.c ui_sub.c urandomb.c sqrtrem.c mpz_set_fr.c swap.c arctan.c
 libmpfr_a_LIBADD = ceil.o floor.o
 
 info_TEXINFOS = mpfr.texi
@@ -91,13 +92,13 @@ LIBS = @LIBS@
 libmpfr_a_DEPENDENCIES =  ceil.o floor.o
 libmpfr_a_OBJECTS =  sin_cos.o extract.o add.o add_ui.o add_ulp.o agm.o \
 clear.o cmp.o cmp_ui.o div_2exp.o div.o div_ui.o dump.o eq.o exp2.o \
-exp3.o exp.o get_str.o init.o inp_str.o log2.o log.o mul_2exp.o mul.o \
-mul_ui.o neg.o out_str.o pi.o pow.o print_raw.o print_rnd_mode.o \
+exp3.o exp.o get_str.o init.o inp_str.o isnan.o log2.o log.o mul_2exp.o \
+mul.o mul_ui.o neg.o out_str.o pi.o pow.o print_raw.o print_rnd_mode.o \
 random2.o random.o reldiff.o rnd_mode.o round.o set.o set_d.o \
 set_dfl_prec.o set_rnd.o set_f.o set_prc_raw.o set_prec.o set_q.o \
-set_si.o set_str.o set_str_raw.o set_z.o sqrt.o sqrt_ui.o sub.o \
-sub_ui.o trunc.o ui_div.o ui_sub.o urandomb.o sqrtrem.o mpz_set_fr.o \
-swap.o
+set_si.o set_str.o set_str_raw.o set_ui.o set_z.o sqrt.o sqrt_ui.o \
+sub.o sub_ui.o trunc.o ui_div.o ui_sub.o urandomb.o sqrtrem.o \
+mpz_set_fr.o swap.o arctan.o
 AR = ar
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
@@ -118,19 +119,20 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 TAR = gtar
 GZIP_ENV = --best
 DEP_FILES =  .deps/add.P .deps/add_ui.P .deps/add_ulp.P .deps/agm.P \
-.deps/clear.P .deps/cmp.P .deps/cmp_ui.P .deps/div.P .deps/div_2exp.P \
-.deps/div_ui.P .deps/dump.P .deps/eq.P .deps/exp.P .deps/exp2.P \
-.deps/exp3.P .deps/extract.P .deps/get_str.P .deps/init.P \
-.deps/inp_str.P .deps/log.P .deps/log2.P .deps/mpz_set_fr.P .deps/mul.P \
-.deps/mul_2exp.P .deps/mul_ui.P .deps/neg.P .deps/out_str.P .deps/pi.P \
-.deps/pow.P .deps/print_raw.P .deps/print_rnd_mode.P .deps/random.P \
-.deps/random2.P .deps/reldiff.P .deps/rnd_mode.P .deps/round.P \
-.deps/set.P .deps/set_d.P .deps/set_dfl_prec.P .deps/set_f.P \
-.deps/set_prc_raw.P .deps/set_prec.P .deps/set_q.P .deps/set_rnd.P \
-.deps/set_si.P .deps/set_str.P .deps/set_str_raw.P .deps/set_z.P \
-.deps/sin_cos.P .deps/sqrt.P .deps/sqrt_ui.P .deps/sqrtrem.P \
-.deps/sub.P .deps/sub_ui.P .deps/swap.P .deps/trunc.P .deps/ui_div.P \
-.deps/ui_sub.P .deps/urandomb.P
+.deps/arctan.P .deps/clear.P .deps/cmp.P .deps/cmp_ui.P .deps/div.P \
+.deps/div_2exp.P .deps/div_ui.P .deps/dump.P .deps/eq.P .deps/exp.P \
+.deps/exp2.P .deps/exp3.P .deps/extract.P .deps/get_str.P .deps/init.P \
+.deps/inp_str.P .deps/isnan.P .deps/log.P .deps/log2.P \
+.deps/mpz_set_fr.P .deps/mul.P .deps/mul_2exp.P .deps/mul_ui.P \
+.deps/neg.P .deps/out_str.P .deps/pi.P .deps/pow.P .deps/print_raw.P \
+.deps/print_rnd_mode.P .deps/random.P .deps/random2.P .deps/reldiff.P \
+.deps/rnd_mode.P .deps/round.P .deps/set.P .deps/set_d.P \
+.deps/set_dfl_prec.P .deps/set_f.P .deps/set_prc_raw.P .deps/set_prec.P \
+.deps/set_q.P .deps/set_rnd.P .deps/set_si.P .deps/set_str.P \
+.deps/set_str_raw.P .deps/set_ui.P .deps/set_z.P .deps/sin_cos.P \
+.deps/sqrt.P .deps/sqrt_ui.P .deps/sqrtrem.P .deps/sub.P .deps/sub_ui.P \
+.deps/swap.P .deps/trunc.P .deps/ui_div.P .deps/ui_sub.P \
+.deps/urandomb.P
 SOURCES = $(libmpfr_a_SOURCES)
 OBJECTS = $(libmpfr_a_OBJECTS)
 
@@ -544,7 +546,7 @@ uninstall: uninstall-recursive
 all-am: Makefile $(INFO_DEPS) $(LIBRARIES) $(HEADERS)
 all-redirect: all-recursive
 install-strip:
-	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
+	$(MAKE) $(AM_MAKEFLAGS) INSTALL_STRIP_FLAG=-s install
 installdirs: installdirs-recursive
 installdirs-am:
 	$(mkinstalldirs)  $(DESTDIR)$(libdir) $(DESTDIR)$(infodir) \
