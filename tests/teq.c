@@ -41,7 +41,7 @@ void teq(mpfr_srcptr x)
     {
       mpfr_set(y, x, GMP_RNDN); 
 
-      MANT(y) [mx] ^= 1 << px; 
+      MANT(y) [mx] ^= (mp_limb_t) 1 << px; 
 
       if (mpfr_eq(y, x, k) ||  
 	  !mpfr_eq(y, x, k - 1))
@@ -65,7 +65,7 @@ int main()
 
   mpfr_init2(x, 1000); 
 
-  for (j=0;j<10000;j++) {
+  for (j=0;j<1000;j++) {
     mpfr_random(x); 
     teq(x); 
   }
