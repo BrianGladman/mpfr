@@ -60,8 +60,8 @@ main (int argc, char *argv[])
   for (k = 1; k <= N; k++)
     {
       zl = random();
-      inex = mpfr_set_ui(x, zl, GMP_RNDZ);
-      dl = (unsigned long) mpfr_get_d(x);
+      inex = mpfr_set_ui (x, zl, GMP_RNDZ);
+      dl = (unsigned long) mpfr_get_d (x);
       if (dl != zl) {
 	fprintf(stderr, "Error in mpfr_set_ui: expected %lu got %lu\n", zl, dl); exit(1);
       }
@@ -74,7 +74,21 @@ main (int argc, char *argv[])
       }
     }
 
-  mpfr_set_prec(x, 3);
+  mpfr_set_prec (x, 1);
+  if (mpfr_set_si (x, 5, GMP_RNDZ) >= 0)
+    {
+      fprintf (stderr, "Wrong inexact flag for x=5, rnd=GMP_RNDZ\n");
+      exit (1);
+    }
+
+  mpfr_set_prec (x, 1);
+  if (mpfr_set_si (x, -5, GMP_RNDZ) <= 0)
+    {
+      fprintf (stderr, "Wrong inexact flag for x=-5, rnd=GMP_RNDZ\n");
+      exit (1);
+    }
+
+  mpfr_set_prec (x, 3);
   inex = mpfr_set_si(x, 77617, GMP_RNDD); /* should be 65536 */
   if (MPFR_MANT(x)[0] != ((mp_limb_t)1 << (mp_bits_per_limb-1))
       || inex >= 0)
