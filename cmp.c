@@ -132,7 +132,7 @@ int mpfr_cmp2 ( mpfr_srcptr b, mpfr_srcptr c )
 	}
 	  
       /* bn < 0; if some limb of c is nonzero, return k+1, otherwise return k*/
-      if (cn>=0 & cp[cn--] << (mp_bits_per_limb - d)) { return k+1; }
+      if (cn>=0 && (cp[cn--] << (mp_bits_per_limb - d))) { return k+1; }
       while (cn >= 0) 
 	if (cp[cn--]) return k+1; 
       return k; 
