@@ -8,22 +8,22 @@
    "make install", you'll need to manually install some GMP header
    files needed by MPFR. In the GMP build directory, type:
 
-     cp config.h gmp-impl.h gmp-mparam.h longlong.h DIR/include
+     cp config.h gmp-impl.h gmp-mparam.h longlong.h GMPINSTALL/include
 
-   where DIR is the directory where you have installed GMP, i.e. you
-   configured GMP with ./configure --prefix=DIR.
+   where GMPINSTALL is the directory where you have installed GMP,
+   i.e. you configured GMP with ./configure --prefix=GMPINSTALL.
 
-1. In the MPFR build directory, type "./configure --with-gmp=DIR" where
-   DIR is the directory where you have installed GMP. If this fails,
-   please check that the C compiler and its options are the same than
+1. In the MPFR build directory, type "./configure --with-gmp=GMPINSTALL"
+   where GMPINSTALL is the directory where you have installed GMP. If this
+   fails, please check that the C compiler and its options are the same as
    those for the GMP build. You can see the later with the following:
 
-     grep "^CC\|^CFLAGS" GMPDIR/Makefile
+     grep "^CC\|^CFLAGS" GMPBUILD/Makefile
 
-   where GMPDIR is the GMP build directory, then type (for example,
+   where GMPBUILD is the GMP build directory, then type (for example,
    under a sh-compatible shell):
 
-     CC=<C compiler> CFLAGS=<compiler options> ./configure --with-gmp=DIR
+     CC=<C compiler> CFLAGS=<compiler options> ./configure --with-gmp=GMPINSTALL
 
    Other options can be seen with "./configure --help". For example, if you
    want to install MPFR in /local instead of /usr/local (default), type:
@@ -76,25 +76,11 @@ gcc 2.8.1, we had problems with the square root functions:
 
 (in both cases the mpfr result is the correct one).
 
-* Some tests may fail under IRIX:
-
-   Testing tabs
-   Mismatch on d = 2.53345566708801000000e-309
-   dd=inf
-   0.11101001001011110001110110000010101001101110101010000[00000000000]E-1025
-   ### tabs failed ###
-
-   Testing tset_d
-   Mismatch on : 1.5131389614080547e-309 != inf
-   0.10001011010001011010110011000110010000000101010100000[00000000000]E-1025
-   ### tset_d failed ###
+* tget_d may fail under IRIX:
 
    Testing tget_d
    Wrong result for 2^(-1024), got inf instead of 0.00000000000000000000e+00
    ### tget_d failed ###
-
-We do not know yet if this comes from a bug in the test programs or in
-the tset_d/tget_d functions.
 
 In case of problem.
 ===================
