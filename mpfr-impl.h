@@ -244,6 +244,7 @@ typedef unsigned long int  mpfr_uexp_t;
 #ifndef IEEE_DBL_MANT_DIG
 #define IEEE_DBL_MANT_DIG 53
 #endif
+#define MPFR_LIMBS_PER_DOUBLE ((IEEE_DBL_MANT_DIG-1)/BITS_PER_MP_LIMB+1)
 
 /* for x of type ieee_double_extract */
 #if _GMP_IEEE_FLOATS
@@ -498,8 +499,17 @@ do { \
   MPFR_MANT(x)[s] = MPFR_LIMB_HIGHBIT;\
 } while (0)
 
+/* Speed up internal functions */
+/*#define mpfr_check_range(x,t,r) (MPFR_LIKELY(MPFR_EXP(x) >= __gmpfr_emin && MPFR_EXP(x) <= __gmpfr_emax) ? (t) : (mpfr_check_range)(x,t,r))*/
+
 /* Use it only for debug reasons */
-#define MPFR_DUMP(x) do { printf(#x"="); mpfr_dump(x); } while (0)
+#ifdef DEBUG
+# include <stdio.h>
+# define MPFR_TRACE(x) x
+#else
+# define MPFR_TRACE(x) (void) 0
+#endif
+#define MPFR_DUMP(x) ( printf(#x"="), mpfr_dump(x) )
 
 /* Cache Handling */
 #ifdef MPFR_NO_CACHE
@@ -514,12 +524,6 @@ do { \
 #if defined (__cplusplus)
 extern "C" {
 #endif
-
-extern mpfr_t __mpfr_const_log2;
-extern mpfr_prec_t __gmpfr_const_log2_prec;
-
-extern mpfr_t __mpfr_const_pi;
-extern mpfr_prec_t __gmpfr_const_pi_prec;
 
 #ifdef HAVE_STRCASECMP
 int strcasecmp _MPFR_PROTO ((const char *, const char *));
