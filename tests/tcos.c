@@ -105,9 +105,9 @@ main (int argc, char *argv[])
 
   mpfr_set_prec (x, 30);
   mpfr_set_prec (y, 30);
-  mpfr_set_str_raw (x, "1.00001010001101110010100010101e-1");
+  mpfr_set_str_binary (x, "1.00001010001101110010100010101e-1");
   mpfr_cos (y, x, GMP_RNDU);
-  mpfr_set_str_raw (x, "1.10111100010101011110101010100e-1");
+  mpfr_set_str_binary (x, "1.10111100010101011110101010100e-1");
   if (mpfr_cmp (y, x))
     {
       printf ("Error for prec=30, rnd=GMP_RNDU\n");
@@ -118,9 +118,9 @@ main (int argc, char *argv[])
 
   mpfr_set_prec (x, 59);
   mpfr_set_prec (y, 59);
-  mpfr_set_str_raw (x, "1.01101011101111010011111110111111111011011101100111100011e-3");
+  mpfr_set_str_binary (x, "1.01101011101111010011111110111111111011011101100111100011e-3");
   mpfr_cos (y, x, GMP_RNDU);
-  mpfr_set_str_raw (x, "1.1111011111110010001001001011100111101110100010000010010011e-1");
+  mpfr_set_str_binary (x, "1.1111011111110010001001001011100111101110100010000010010011e-1");
   if (mpfr_cmp (y, x))
     {
       printf ("Error for prec=59, rnd=GMP_RNDU\n");
@@ -131,9 +131,9 @@ main (int argc, char *argv[])
 
   mpfr_set_prec (x, 5);
   mpfr_set_prec (y, 5);
-  mpfr_set_str_raw (x, "1.1100e-2");
+  mpfr_set_str_binary (x, "1.1100e-2");
   mpfr_cos (y, x, GMP_RNDD);
-  mpfr_set_str_raw (x, "1.1100e-1");
+  mpfr_set_str_binary (x, "1.1100e-1");
   if (mpfr_cmp (y, x))
     {
       printf ("Error for x=1.1100e-2, rnd=GMP_RNDD\n");

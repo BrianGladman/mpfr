@@ -231,12 +231,12 @@ check_special ()
   /* bug reported by Franky Backeljauw, 28 Mar 2003 */
   mpfr_init2 (x, 53);
   mpfr_init2 (y, 53);
-  mpfr_set_str_raw (x, "1.1101011000111101011110000111010010101001101001110111e28");
+  mpfr_set_str_binary (x, "1.1101011000111101011110000111010010101001101001110111e28");
   mpfr_exp (y, x, GMP_RNDN);
 
   mpfr_set_prec (x, 153);
   mpfr_init2 (z, 153);
-  mpfr_set_str_raw (x, "1.1101011000111101011110000111010010101001101001110111e28");
+  mpfr_set_str_binary (x, "1.1101011000111101011110000111010010101001101001110111e28");
   mpfr_exp (z, x, GMP_RNDN);
   mpfr_prec_round (z, 53, GMP_RNDN);
 

@@ -33,6 +33,9 @@ Known bugs:
   a representable number). A rewrite of mpfr_can_round (as proposed
   by Paul Zimmermann) can help to fix this bug.
 
+* The mpfr_set_ld function assumes that the long double type has an
+  exponent of at most 15 bits.
+
 Potential bugs:
 
 * Possible integer overflows on some machines. Some types are used

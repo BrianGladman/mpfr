@@ -284,7 +284,7 @@ long double __gmpfr_longdouble_volatile __GMP_PROTO ((long double)) ATTRIBUTE_CO
 
 #if defined (__cplusplus)
 extern "C" {
-#endif  
+#endif
 
 extern mpfr_t __mpfr_const_log2;
 extern mp_prec_t __gmpfr_const_log2_prec;
@@ -333,14 +333,16 @@ int mpfr_powerof2_raw _PROTO ((mpfr_srcptr));
 void mpfr_setmax _PROTO ((mpfr_ptr, mp_exp_t));
 void mpfr_setmin _PROTO ((mpfr_ptr, mp_exp_t));
 long mpn_exp _PROTO ((mp_limb_t *, mp_exp_t *, int, mp_exp_t, size_t));
+void mpfr_print_binary _PROTO ((mpfr_srcptr));
+void mpfr_set_str_binary _PROTO ((mpfr_ptr, __gmp_const char *));
 
 #define mpfr_round_raw(yp, xp, xprec, neg, yprec, r, inexp) \
   mpfr_round_raw_generic((yp), (xp), (xprec), (neg), (yprec), (r), (inexp), 0)
 
 #define mpfr_round_raw2(xp, xn, neg, r, prec) \
   mpfr_round_raw_generic(0, (xp), (xn) * BITS_PER_MP_LIMB, (neg), \
-			 (prec), (r), 0, 1); 
+			 (prec), (r), 0, 1);
 
 #if defined (__cplusplus)
 }
-#endif  
+#endif

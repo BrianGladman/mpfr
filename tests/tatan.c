@@ -23,7 +23,9 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <stdlib.h>
 #include "gmp.h"
+#include "gmp-impl.h"
 #include "mpfr.h"
+#include "mpfr-impl.h"
 #include "mpfr-test.h"
 
 static void
@@ -35,8 +37,8 @@ worst_cases (void)
   mpfr_init2 (y, 53);
   mpfr_init2 (z, 53);
 
-  mpfr_set_str_raw (x, "1.0000100110000001100111100011001110101110100111011101");
-  mpfr_set_str_raw (y, "1.1001101101110100101100110011011101101000011010111110e-1");
+  mpfr_set_str_binary (x, "1.0000100110000001100111100011001110101110100111011101");
+  mpfr_set_str_binary (y, "1.1001101101110100101100110011011101101000011010111110e-1");
   mpfr_atan (z, x, GMP_RNDN);
   if (mpfr_cmp (y, z))
     {

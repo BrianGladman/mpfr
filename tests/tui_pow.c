@@ -36,7 +36,7 @@ test1 (void)
 
   mpfr_init2 (x, 32);
   mpfr_init2 (y, 65);
-  mpfr_set_str_raw (x, "-0.101110001001011011011e-9");
+  mpfr_set_str_binary (x, "-0.101110001001011011011e-9");
   mpfr_ui_pow (y, 7, x, GMP_RNDN);
   mpfr_clear (x);
   mpfr_clear (y);
@@ -162,7 +162,7 @@ main (int argc, char *argv[])
   mpfr_init2 (t, 6);
 
   /* check exact power */
-  mpfr_set_str_raw (t, "0.110000E5");
+  mpfr_set_str_binary (t, "0.110000E5");
   mpfr_ui_pow (z, 3, t, GMP_RNDN);
 
   mpfr_clear (z);

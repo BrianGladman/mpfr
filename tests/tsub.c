@@ -40,10 +40,10 @@ check_diverse (void)
   mpfr_set_prec (x, 32);
   mpfr_set_prec (y, 63);
   mpfr_set_prec (z, 63);
-  mpfr_set_str_raw (x, "0.101101111011011100100100100111E31");
-  mpfr_set_str_raw (y, "0.111110010010100100110101101010001001100101110001000101110111111E-1");
+  mpfr_set_str_binary (x, "0.101101111011011100100100100111E31");
+  mpfr_set_str_binary (y, "0.111110010010100100110101101010001001100101110001000101110111111E-1");
   mpfr_sub (z, x, y, GMP_RNDN);
-  mpfr_set_str_raw (y, "0.1011011110110111001001001001101100000110110101101100101001011E31");
+  mpfr_set_str_binary (y, "0.1011011110110111001001001001101100000110110101101100101001011E31");
   if (mpfr_cmp (z, y))
     {
       printf ("Error in mpfr_sub (5)\n");
@@ -54,9 +54,9 @@ check_diverse (void)
 
   mpfr_set_prec (y, 63);
   mpfr_set_prec (z, 63);
-  mpfr_set_str_raw (y, "0.1011011110110111001001001001101100000110110101101100101001011E31");
+  mpfr_set_str_binary (y, "0.1011011110110111001001001001101100000110110101101100101001011E31");
   mpfr_sub_ui (z, y, 1541116494, GMP_RNDN);
-  mpfr_set_str_raw (y, "-0.11111001001010010011010110101E-1");
+  mpfr_set_str_binary (y, "-0.11111001001010010011010110101E-1");
   if (mpfr_cmp (z, y))
     {
       printf ("Error in mpfr_sub (7)\n");
@@ -67,9 +67,9 @@ check_diverse (void)
 
   mpfr_set_prec (y, 63);
   mpfr_set_prec (z, 63);
-  mpfr_set_str_raw (y, "0.1011011110110111001001001001101100000110110101101100101001011E31");
+  mpfr_set_str_binary (y, "0.1011011110110111001001001001101100000110110101101100101001011E31");
   mpfr_sub_ui (z, y, 1541116494, GMP_RNDN);
-  mpfr_set_str_raw (y, "-0.11111001001010010011010110101E-1");
+  mpfr_set_str_binary (y, "-0.11111001001010010011010110101E-1");
   if (mpfr_cmp (z, y))
     {
       printf ("Error in mpfr_sub (6)\n");
@@ -80,8 +80,8 @@ check_diverse (void)
 
   mpfr_set_prec (x, 32);
   mpfr_set_prec (y, 32);
-  mpfr_set_str_raw (x, "0.10110111101001110100100101111000E0");
-  mpfr_set_str_raw (y, "0.10001100100101000100110111000100E0");
+  mpfr_set_str_binary (x, "0.10110111101001110100100101111000E0");
+  mpfr_set_str_binary (y, "0.10001100100101000100110111000100E0");
   if ((inexact = mpfr_sub (x, x, y, GMP_RNDN)))
     {
       printf ("Wrong inexact flag (2): got %d instead of 0\n", inexact);
@@ -90,8 +90,8 @@ check_diverse (void)
 
   mpfr_set_prec (x, 32);
   mpfr_set_prec (y, 32);
-  mpfr_set_str_raw (x, "0.11111000110111011000100111011010E0");
-  mpfr_set_str_raw (y, "0.10011111101111000100001000000000E-3");
+  mpfr_set_str_binary (x, "0.11111000110111011000100111011010E0");
+  mpfr_set_str_binary (y, "0.10011111101111000100001000000000E-3");
   if ((inexact = mpfr_sub (x, x, y, GMP_RNDN)))
     {
       printf ("Wrong inexact flag (1): got %d instead of 0\n", inexact);
@@ -101,9 +101,9 @@ check_diverse (void)
   mpfr_set_prec (x, 33);
   mpfr_set_prec (y, 33);
   mpfr_set_ui (x, 1, GMP_RNDN);
-  mpfr_set_str_raw (y, "-0.1E-32");
+  mpfr_set_str_binary (y, "-0.1E-32");
   mpfr_add (x, x, y, GMP_RNDN);
-  mpfr_set_str_raw (y, "0.111111111111111111111111111111111E0");
+  mpfr_set_str_binary (y, "0.111111111111111111111111111111111E0");
   if (mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_sub (1 - 1E-33) with prec=33\n");
@@ -115,7 +115,7 @@ check_diverse (void)
   mpfr_set_prec (x, 32);
   mpfr_set_prec (y, 33);
   mpfr_set_ui (x, 1, GMP_RNDN);
-  mpfr_set_str_raw (y, "-0.1E-32");
+  mpfr_set_str_binary (y, "-0.1E-32");
   mpfr_add (x, x, y, GMP_RNDN);
   if (mpfr_cmp_ui (x, 1))
     {
@@ -127,8 +127,8 @@ check_diverse (void)
   mpfr_set_prec (x, 65);
   mpfr_set_prec (y, 65);
   mpfr_set_prec (z, 64);
-  mpfr_set_str_raw (x, "1.1110111011110001110111011111111111101000011001011100101100101101");
-  mpfr_set_str_raw (y, "0.1110111011110001110111011111111111101000011001011100101100101100");
+  mpfr_set_str_binary (x, "1.1110111011110001110111011111111111101000011001011100101100101101");
+  mpfr_set_str_binary (y, "0.1110111011110001110111011111111111101000011001011100101100101100");
   mpfr_sub (z, x, y, GMP_RNDZ);
   if (mpfr_cmp_ui (z, 1))
     {
@@ -136,13 +136,13 @@ check_diverse (void)
       exit (1);
     }
   mpfr_sub (z, x, y, GMP_RNDU);
-  mpfr_set_str_raw (x, "1.000000000000000000000000000000000000000000000000000000000000001");
+  mpfr_set_str_binary (x, "1.000000000000000000000000000000000000000000000000000000000000001");
   if (mpfr_cmp (z, x))
     {
       printf ("Error in mpfr_sub (2)\n");
       exit (1);
     }
-  mpfr_set_str_raw (x, "1.1110111011110001110111011111111111101000011001011100101100101101");
+  mpfr_set_str_binary (x, "1.1110111011110001110111011111111111101000011001011100101100101101");
   mpfr_sub (z, x, y, GMP_RNDN);
   if (mpfr_cmp_ui (z, 1))
     {
@@ -150,7 +150,7 @@ check_diverse (void)
       exit (1);
     }
   mpfr_set_prec (x, 66);
-  mpfr_set_str_raw (x, "1.11101110111100011101110111111111111010000110010111001011001010111");
+  mpfr_set_str_binary (x, "1.11101110111100011101110111111111111010000110010111001011001010111");
   mpfr_sub (z, x, y, GMP_RNDN);
   if (mpfr_cmp_ui (z, 1))
     {
@@ -185,8 +185,8 @@ check_diverse (void)
   mpfr_set_prec (x, 112);
   mpfr_set_prec (y, 98);
   mpfr_set_prec (z, 54);
-  mpfr_set_str_raw (x, "0.11111100100000000011000011100000101101010001000111E-401");
-  mpfr_set_str_raw (y, "0.10110000100100000101101100011111111011101000111000101E-464");
+  mpfr_set_str_binary (x, "0.11111100100000000011000011100000101101010001000111E-401");
+  mpfr_set_str_binary (y, "0.10110000100100000101101100011111111011101000111000101E-464");
   mpfr_sub (z, x, y, GMP_RNDN);
   if (mpfr_cmp (z, x)) {
     printf ("mpfr_sub(z, x, y) failed for prec(x)=112, prec(y)=98\n");
@@ -202,10 +202,10 @@ check_diverse (void)
 
   mpfr_set_prec (x, 5);
   mpfr_set_prec (y, 5);
-  mpfr_set_str_raw (x, "1e-12");
+  mpfr_set_str_binary (x, "1e-12");
   mpfr_set_ui (y, 1, GMP_RNDN);
   mpfr_sub (x, y, x, GMP_RNDD);
-  mpfr_set_str_raw (y, "0.11111");
+  mpfr_set_str_binary (y, "0.11111");
   if (mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_sub (x, y, x, GMP_RNDD) for x=2^(-12), y=1\n");
@@ -214,10 +214,10 @@ check_diverse (void)
 
   mpfr_set_prec (x, 24);
   mpfr_set_prec (y, 24);
-  mpfr_set_str_raw (x, "-0.100010000000000000000000E19");
-  mpfr_set_str_raw (y, "0.100000000000000000000100E15");
+  mpfr_set_str_binary (x, "-0.100010000000000000000000E19");
+  mpfr_set_str_binary (y, "0.100000000000000000000100E15");
   mpfr_add (x, x, y, GMP_RNDD);
-  mpfr_set_str_raw (y, "-0.1E19");
+  mpfr_set_str_binary (y, "-0.1E19");
   if (mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_add (2)\n");
@@ -228,7 +228,7 @@ check_diverse (void)
   mpfr_set_prec (y, 10);
   mpfr_set_prec (z, 10);
   mpfr_set_ui (y, 0, GMP_RNDN);
-  mpfr_set_str_raw (z, "0.100000000000000000000100E15");
+  mpfr_set_str_binary (z, "0.100000000000000000000100E15");
   if (mpfr_sub (x, y, z, GMP_RNDN) <= 0)
     {
       printf ("Wrong inexact flag in x=mpfr_sub(0,z) for prec(z)>prec(x)\n");

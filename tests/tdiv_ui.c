@@ -24,7 +24,9 @@ MA 02111-1307, USA. */
 #include <float.h>
 #include <time.h>
 #include "gmp.h"
+#include "gmp-impl.h"
 #include "mpfr.h"
+#include "mpfr-impl.h"
 #include "mpfr-test.h"
 
 static void
@@ -79,9 +81,9 @@ special (void)
   /* bug found by Norbert Mueller, 21 Aug 2001 */
   mpfr_set_prec (x, 110);
   mpfr_set_prec (y, 60);
-  mpfr_set_str_raw (x, "0.110101110011111110011111001110011001110111000000111110001000111011000011E-44");
+  mpfr_set_str_binary (x, "0.110101110011111110011111001110011001110111000000111110001000111011000011E-44");
   mpfr_div_ui (y, x, 17, GMP_RNDN);
-  mpfr_set_str_raw (x, "0.11001010100101100011101110000001100001010110101001010011011E-48");
+  mpfr_set_str_binary (x, "0.11001010100101100011101110000001100001010110101001010011011E-48");
   if (mpfr_cmp (x, y))
     {
       printf ("Error in x/17 for x=1/16!\n");
@@ -96,7 +98,7 @@ special (void)
   for (xprec = 53; xprec <= 128; xprec++)
     {
       mpfr_set_prec (x, xprec);
-      mpfr_set_str_raw (x, "0.1100100100001111110011111000000011011100001100110111E2");
+      mpfr_set_str_binary (x, "0.1100100100001111110011111000000011011100001100110111E2");
       for (yprec = 53; yprec <= 128; yprec++)
 	{
 	  mpfr_set_prec (y, yprec);

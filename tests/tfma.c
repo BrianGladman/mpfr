@@ -56,9 +56,9 @@ main (int argc, char *argv[])
   mpfr_set_prec (y, 27);
   mpfr_set_prec (z, 27);
   mpfr_set_prec (s, 27);
-  mpfr_set_str_raw (x, "1.11111111111111111111111111e-1");
+  mpfr_set_str_binary (x, "1.11111111111111111111111111e-1");
   mpfr_set (y, x, GMP_RNDN);
-  mpfr_set_str_raw (z, "-1.00011110100011001011001001e-1");
+  mpfr_set_str_binary (z, "-1.00011110100011001011001001e-1");
   if (mpfr_fma (s, x, y, z, GMP_RNDN) >= 0)
     {
       printf ("Wrong inexact flag for x=y=1-2^(-27)\n");

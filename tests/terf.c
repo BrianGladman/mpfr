@@ -24,7 +24,9 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <stdlib.h>
 #include "gmp.h"
+#include "gmp-impl.h"
 #include "mpfr.h"
+#include "mpfr-impl.h"
 #include "mpfr-test.h"
 
 static void
@@ -140,7 +142,7 @@ main (int argc, char *argv[])
 
   mpfr_set_d (x, 1.0, GMP_RNDN);
   mpfr_erf (x, x, GMP_RNDN);
-  mpfr_set_str_raw (y, "0.11010111101110110011110100111010000010000100010001011");
+  mpfr_set_str_binary (y, "0.11010111101110110011110100111010000010000100010001011");
   if (mpfr_cmp (x, y))
     {
       printf ("mpfr_erf failed for x=1.0, rnd=GMP_RNDN\n");
@@ -167,7 +169,7 @@ main (int argc, char *argv[])
 
   mpfr_set_d (x, 6.6, GMP_RNDN);
   mpfr_erf (x, x, GMP_RNDZ);
-  mpfr_set_str_raw (y, "0.11111111111111111111111111111111111111111111111111111");
+  mpfr_set_str_binary (y, "0.11111111111111111111111111111111111111111111111111111");
   if (mpfr_cmp (x, y))
     {
       printf ("mpfr_erf failed for x=6.6, rnd=GMP_RNDZ\n");
@@ -182,7 +184,7 @@ main (int argc, char *argv[])
 
   mpfr_set_d (x, 4.5, GMP_RNDN);
   mpfr_erf (x, x, GMP_RNDN);
-  mpfr_set_str_raw (y, "0.1111111111111111111111111111111100100111110100011");
+  mpfr_set_str_binary (y, "0.1111111111111111111111111111111100100111110100011");
   if (mpfr_cmp (x, y))
     {
       printf ("mpfr_erf failed for x=4.5, rnd=GMP_RNDN\n");
@@ -197,9 +199,9 @@ main (int argc, char *argv[])
 
   mpfr_set_prec (x, 120);
   mpfr_set_prec (y, 120);
-  mpfr_set_str_raw (x, "0.110100110011001100110011001100110011001100110011001100110011001100110011001100110011001100110011001100110011001100110011E3");
+  mpfr_set_str_binary (x, "0.110100110011001100110011001100110011001100110011001100110011001100110011001100110011001100110011001100110011001100110011E3");
   mpfr_erf (x, x, GMP_RNDN);
-  mpfr_set_str_raw (y, "0.11111111111111111111111111111111111111111111111111111111111111111100111111000100111011111011010000110101111100011001101");
+  mpfr_set_str_binary (y, "0.11111111111111111111111111111111111111111111111111111111111111111100111111000100111011111011010000110101111100011001101");
   if (mpfr_cmp (x, y))
     {
       printf ("mpfr_erf failed for x=6.6, rnd=GMP_RNDN\n");

@@ -22,7 +22,9 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <stdlib.h>
 #include "gmp.h"
+#include "gmp-impl.h"
 #include "mpfr.h"
+#include "mpfr-impl.h"
 #include "mpfr-test.h"
 
 int
@@ -36,14 +38,14 @@ main (void)
   /* checks that rounds to nearest sets the last
      bit to zero in case of equal distance */
   mpfr_init2 (x, 59);
-  mpfr_set_str_raw (x, "-0.10010001010111000011110010111010111110000000111101100111111E663"); 
+  mpfr_set_str_binary (x, "-0.10010001010111000011110010111010111110000000111101100111111E663"); 
   if (mpfr_can_round (x, 54, GMP_RNDZ, GMP_RNDZ, 53) != 0)
     {
       printf ("Error (1) in mpfr_can_round\n");
       exit (1);
     }
 
-  mpfr_set_str_raw (x, "-Inf"); 
+  mpfr_set_str_binary (x, "-Inf"); 
   if (mpfr_can_round (x, 2000, GMP_RNDZ, GMP_RNDZ, 2000) != 0)
     {
       printf ("Error (2) in mpfr_can_round\n");
@@ -51,7 +53,7 @@ main (void)
     }
 
   mpfr_set_prec (x, 64);
-  mpfr_set_str_raw (x, "0.1011001000011110000110000110001111101011000010001110011000000000");
+  mpfr_set_str_binary (x, "0.1011001000011110000110000110001111101011000010001110011000000000");
   if (mpfr_can_round (x, 65, GMP_RNDN, GMP_RNDN, 54))
     {
       printf ("Error (3) in mpfr_can_round\n");

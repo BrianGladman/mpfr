@@ -195,8 +195,8 @@ check_exact (void)
   mpfr_set_prec (a, 17);
   mpfr_set_prec (b, 17);
   mpfr_set_prec (c, 32);
-  mpfr_set_str_raw (a, "1.1000111011000100e-1");
-  mpfr_set_str_raw (b, "1.0010001111100111e-1");
+  mpfr_set_str_binary (a, "1.1000111011000100e-1");
+  mpfr_set_str_binary (b, "1.0010001111100111e-1");
   if (mpfr_mul (c, a, b, GMP_RNDZ))
     {
       printf ("wrong return value (1)\n");

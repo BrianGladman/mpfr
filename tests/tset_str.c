@@ -45,7 +45,7 @@ main (int argc, char *argv[])
     {
       prec = (argc>=3) ? atoi(argv[2]) : 53;
       mpfr_init2 (x, prec);
-      mpfr_set_str_raw (x, argv[1]);
+      mpfr_set_str_binary (x, argv[1]);
       mpfr_out_str (stdout, 10, 0, x, GMP_RNDN);
       puts ("");
       mpfr_clear (x);
@@ -80,10 +80,10 @@ main (int argc, char *argv[])
   sprintf (str2, "%d", (int) (randlimb () & INT_MAX) + INT_MIN/2);
 
   mpfr_set_prec (x, nc + 10);
-  mpfr_set_str_raw (x, str);
+  mpfr_set_str_binary (x, str);
 
   mpfr_set_prec (x, 54);
-  mpfr_set_str_raw (x, "0.100100100110110101001010010101111000001011100100101010E-529");
+  mpfr_set_str_binary (x, "0.100100100110110101001010010101111000001011100100101010E-529");
   mpfr_init2 (y, 54);
   mpfr_set_str (y, "4.936a52bc17254@-133", 16, GMP_RNDN);
   if (mpfr_cmp (x, y))
@@ -98,7 +98,7 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-  mpfr_set_str_raw (x, "0.111111101101110010111010100110000111011001010100001101E-529");
+  mpfr_set_str_binary (x, "0.111111101101110010111010100110000111011001010100001101E-529");
   mpfr_set_str (y, "0.fedcba98765434P-529", 16, GMP_RNDN);
   if (mpfr_cmp (x, y))
     {
@@ -115,23 +115,23 @@ main (int argc, char *argv[])
   (*__gmp_free_func) (str, nc * sizeof(char));
 
   mpfr_set_prec (x, 53);
-  mpfr_set_str_raw (x, "+110101100.01010000101101000000100111001000101011101110E00");
+  mpfr_set_str_binary (x, "+110101100.01010000101101000000100111001000101011101110E00");
 
-  mpfr_set_str_raw (x, "1.0");
+  mpfr_set_str_binary (x, "1.0");
   if (mpfr_get_d1 (x) != 1.0)
     {
-      printf ("Error in mpfr_set_str_raw for s=1.0\n");
+      printf ("Error in mpfr_set_str_binary for s=1.0\n");
       mpfr_clear(x);
       mpfr_clear(y);
       exit(1);
     }
 
-  mpfr_set_str_raw (x, "+0000");
-  mpfr_set_str_raw (x, "+0000E0");
-  mpfr_set_str_raw (x, "0000E0");
+  mpfr_set_str_binary (x, "+0000");
+  mpfr_set_str_binary (x, "+0000E0");
+  mpfr_set_str_binary (x, "0000E0");
   if (mpfr_get_d1 (x) != 0.0)
     {
-      printf ("Error in mpfr_set_str_raw for s=0.0\n");
+      printf ("Error in mpfr_set_str_binary for s=0.0\n");
       mpfr_clear (x);
       mpfr_clear (y);
       exit (1);
@@ -258,7 +258,7 @@ main (int argc, char *argv[])
   /* in this example an overflow can occur */
   mpfr_set_prec (x, 64);
   mpfr_set_prec (y, 64);
-  mpfr_set_str_raw (x, "1.0E-532");
+  mpfr_set_str_binary (x, "1.0E-532");
   mpfr_set_str (y, "0.71128279983522479470@-160", 10, GMP_RNDU);
   if (mpfr_cmp (x, y))
     {
@@ -278,7 +278,7 @@ main (int argc, char *argv[])
      this result is the same as mpfr_set_str */
   mpfr_set_prec (x, 64);
   mpfr_set_prec (y, 64);
-  mpfr_set_str_raw (x, "1.111111111110000000000000000111111111111111111111111110000000001E184");
+  mpfr_set_str_binary (x, "1.111111111110000000000000000111111111111111111111111110000000001E184");
   mpfr_set_str (y, "0.jo08hg31hc5mmpj5mjjmgn55p2h35g@39", 27, GMP_RNDU);
   /* y = 49027884868983130654865109690613178467841148597221480052 */
   if (mpfr_cmp (x, y))
@@ -302,7 +302,7 @@ main (int argc, char *argv[])
      I have increase err by 1 */
   mpfr_set_prec (x, 64);  /* it was round down instead of up */
   mpfr_set_prec (y, 64);
-  mpfr_set_str_raw (x, "1.111111111111111111111111111000000000000000000000000000000000001e195");
+  mpfr_set_str_binary (x, "1.111111111111111111111111111000000000000000000000000000000000001e195");
   mpfr_set_str (y, "0.6e23ekb6acgh96abk10b6c9f2ka16i@45", 21, GMP_RNDU);
   /* y = 100433627392042473064661483711179345482301462325708736552078 */
   if (mpfr_cmp (x, y))
@@ -321,7 +321,7 @@ main (int argc, char *argv[])
      with more precision : 1.111111100000001111110000000000011111011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111110111101010001110111011000010111001011100110110e180 */
   mpfr_set_prec (x, 64);  /* it was round down instead of up */
   mpfr_set_prec (y, 64);
-  mpfr_set_str_raw (x, "1.111111100000001111110000000000011111011111111111111111111111111e180");
+  mpfr_set_str_binary (x, "1.111111100000001111110000000000011111011111111111111111111111111e180");
   mpfr_set_str (y, "0.10j8j2k82ehahha56390df0a1de030@41", 23, GMP_RNDZ);
   /* y = 3053110535624388280648330929253842828159081875986159414 */
   if (mpfr_cmp (x, y))
@@ -340,7 +340,7 @@ main (int argc, char *argv[])
   mpfr_set_prec (y, 64);
   mpfr_set_str (y, "0.jrchfhpp9en7hidqm9bmcofid9q3jg@39", 28, GMP_RNDU);
   /* y = 196159429139499688661464718784226062699788036696626429952 */
-  mpfr_set_str_raw (x, "0.1111111111111111111111111111111000000000000011100000001111100001E187");
+  mpfr_set_str_binary (x, "0.1111111111111111111111111111111000000000000011100000001111100001E187");
   if (mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_set_str (6):\n");
@@ -357,7 +357,7 @@ main (int argc, char *argv[])
   mpfr_set_prec (y, 64);
   mpfr_set_str (y, "0.h148m5ld5cf8gk1kd70b6ege92g6ba@47", 24, GMP_RNDZ);
   /* y = 52652933527468502324759448399183654588831274530295083078827114496 */
-  mpfr_set_str_raw (x, "0.1111111111111100000000001000000000000000000011111111111111101111E215");
+  mpfr_set_str_binary (x, "0.1111111111111100000000001000000000000000000011111111111111101111E215");
   if (mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_set_str (7):\n");

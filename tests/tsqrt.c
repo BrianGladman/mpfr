@@ -158,7 +158,7 @@ special (void)
   mpfr_init (z);
 
   mpfr_set_prec (x, 27);
-  mpfr_set_str_raw (x, "0.110100111010101000010001011");
+  mpfr_set_str_binary (x, "0.110100111010101000010001011");
   if ((inexact = mpfr_sqrt (x, x, GMP_RNDZ)) >= 0)
     {
       printf ("Wrong inexact flag: expected -1, got %d\n", inexact);
@@ -183,7 +183,7 @@ special (void)
 
   /* check inexact flag */
   mpfr_set_prec (x, 5);
-  mpfr_set_str_raw (x, "1.1001E-2");
+  mpfr_set_str_binary (x, "1.1001E-2");
   if ((inexact = mpfr_sqrt (x, x, GMP_RNDN)))
     {
       printf ("Wrong inexact flag: expected 0, got %d\n", inexact);
@@ -206,7 +206,7 @@ special (void)
 
   mpfr_set_prec (x, 192);
   mpfr_set_prec (z, 160);
-  mpfr_set_str_raw (z, "0.1011010100000100100100100110011001011100100100000011000111011001011101101101110000110100001000100001100001011000E1");
+  mpfr_set_str_binary (z, "0.1011010100000100100100100110011001011100100100000011000111011001011101101101110000110100001000100001100001011000E1");
   mpfr_set_prec (x, 160);
   mpfr_sqrt(x, z, GMP_RNDN);
   mpfr_sqrt(z, x, GMP_RNDN);

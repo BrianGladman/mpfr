@@ -200,7 +200,7 @@ main (int argc, char *argv[])
 
   mpfr_set_ui (x, 1, GMP_RNDN);
   mpfr_div_2exp (x, x, 1022, GMP_RNDN);
-  mpfr_set_str_raw (y, "1.1e-1022"); /* y = 3/2*x */
+  mpfr_set_str_binary (y, "1.1e-1022"); /* y = 3/2*x */
   mpfr_sub (y, y, x, GMP_RNDZ);
   if (mpfr_cmp_ui (y, 0))
     {

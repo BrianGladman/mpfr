@@ -26,6 +26,7 @@ MA 02111-1307, USA. */
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
+#include "mpfr-impl.h"
 #include "mpfr-test.h"
 
 static void
@@ -169,7 +170,7 @@ check_small (void)
   (*__gmp_free_func) (s, strlen (s) + 1);
 
   mpfr_set_prec (x, 38);
-  mpfr_set_str_raw (x, "1.0001110111110100011010100010010100110e-6");
+  mpfr_set_str_binary (x, "1.0001110111110100011010100010010100110e-6");
   s = mpfr_get_str (NULL, &e, 8, 10, x, GMP_RNDU);
   if (strcmp (s, "1073721522") || (e != -1))
     {
@@ -179,7 +180,7 @@ check_small (void)
   (*__gmp_free_func) (s, strlen (s) + 1);
 
   mpfr_set_prec (x, 53);
-  mpfr_set_str_raw (x, "0.11010111011101100010000100010101110001000000010111001E454");
+  mpfr_set_str_binary (x, "0.11010111011101100010000100010101110001000000010111001E454");
   s = mpfr_get_str (NULL, &e, 19, 12, x, GMP_RNDU);
   if (strcmp (s, "b1cgfa4gha0h") || (e != 107))
     {

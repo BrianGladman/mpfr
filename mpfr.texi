@@ -814,11 +814,6 @@ These functions assign new values to already initialized floats
 @deftypefunx int mpfr_set_f (mpfr_t @var{rop}, mpf_t @var{op}, mp_rnd_t @var{rnd})
 Set the value of @var{rop} from @var{op}, rounded
 towards the given direction @var{rnd}.
-
-Please note that the ISO/IEC 9899:1999 (ISO C99)
-standard does not specify exactly the mantissa
-width of the @code{long double} type; the @code{mpfr_set_ld} function assumes
-it has at most 113 bits, and an exponent of at most 15 bits.
 @end deftypefun
 
 @deftypefun int mpfr_set_str (mpfr_t @var{x}, const char *@var{s}, int @var{base}, mp_rnd_t @var{rnd})
@@ -828,18 +823,6 @@ See the documentation of @code{mpfr_inp_str} for a detailed description
 of the valid string formats.
 This function returns 0 if the entire string up to the final @code{\0} is a
 valid number in base @var{base}; otherwise it returns @minus{}1.
-@end deftypefun
-
-@deftypefun void mpfr_set_str_raw (mpfr_t @var{x}, const char *@var{s})
-Set @var{x} to the value of the binary number in string @var{s}, which has to
-be of the
-form +/-xxxx.xxxxxxEyy. The exponent is read in decimal, but is interpreted
-as the power of two to be multiplied by the mantissa.
-The mantissa length of @var{s} has to be less or equal to the precision of
-@var{x}, otherwise an error occurs.
-If @var{s} starts with @code{N}, it is interpreted as NaN (Not-a-Number);
-if it starts with @code{I} after the sign, it is interpreted as infinity,
-with the corresponding sign.
 @end deftypefun
 
 @deftypefun void mpfr_set_inf (mpfr_t @var{x}, int @var{sign})
@@ -891,10 +874,6 @@ See @code{mpfr_set_str}.
 @deftypefunx {long double} mpfr_get_ld (mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Convert @var{op} to a @code{double} (respectively @code{long double}),
 using the rounding mode @var{rnd}.
-Please note that the ISO/IEC 9899:1999 (ISO C99)
-standard does not specify exactly the mantissa
-width of the @code{long double} type; the @code{mpfr_get_ld} function assumes
-it has at most 113 bits, and an exponent of at most 15 bits.
 @end deftypefun
 
 @deftypefun double mpfr_get_d1 (mpfr_t @var{op})
@@ -1358,14 +1337,6 @@ to 16, the following strings are accepted too: @code{NaN}, @code{Inf},
 Return the number of bytes read, or if an error occurred, return 0.
 @end deftypefun
 
-@deftypefun void mpfr_print_binary (mpfr_t @var{float})
-Output @var{float} on stdout
-in raw binary format (the exponent is in decimal, yet).
-The last bits from the least significant limb which do not belong to
-the mantissa are printed between square brackets;
-they should always be zero.
-@end deftypefun
-
 @c @deftypefun void mpfr_inp_raw (mpfr_t @var{float}, FILE *@var{stream})
 @c Input from stdio stream @var{stream} in the format written by
 @c @code{mpfr_out_raw}, and put the result in @var{float}.
@@ -1545,6 +1516,23 @@ number.
 Set the exponent of @var{x} if @var{e} is in the current exponent range,
 and return 0 (even if @var{x} is not a non-zero ordinary number);
 otherwise, return 1.
+@end deftypefun
+
+@deftypefun void mpfr_set_str_binary (mpfr_t @var{x}, const char *@var{s})
+Set @var{x} to the value of the binary number in string @var{s}, which has to
+be of the
+form +/-xxxx.xxxxxxEyy. The exponent is read in decimal, but is interpreted
+as the power of two to be multiplied by the mantissa.
+The mantissa length of @var{s} has to be less or equal to the precision of
+@var{x}, otherwise an error occurs.
+If @var{s} starts with @code{N}, it is interpreted as NaN (Not-a-Number);
+if it starts with @code{I} after the sign, it is interpreted as infinity,
+with the corresponding sign.
+@end deftypefun
+
+@deftypefun void mpfr_print_binary (mpfr_t @var{float})
+Output @var{float} on stdout
+in raw binary format (the exponent is written in decimal, yet).
 @end deftypefun
 
 @node Contributors, References, Floating-point Functions, Top

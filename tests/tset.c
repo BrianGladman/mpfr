@@ -22,7 +22,9 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <stdlib.h>
 #include "gmp.h"
+#include "gmp-impl.h"
 #include "mpfr.h"
+#include "mpfr-impl.h"
 #include "mpfr-test.h"
 
 int
@@ -42,10 +44,10 @@ main (void)
   inexact = mpfr_init_set_d (u, 1.0, GMP_RNDN);
 
   mpfr_set_prec (y, 11);
-  mpfr_set_str_raw (y, "0.11111111100E-8");
+  mpfr_set_str_binary (y, "0.11111111100E-8");
   mpfr_set_prec (x, 2);
   mpfr_set (x, y, GMP_RNDN);
-  mpfr_set_str_raw (y, "1.0E-8");
+  mpfr_set_str_binary (y, "1.0E-8");
   if (mpfr_cmp (x, y))
     {
       printf ("Error for y=0.11111111100E-8, prec=2, rnd=GMP_RNDN\n");

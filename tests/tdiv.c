@@ -137,17 +137,17 @@ check_convergence (void)
   mpfr_t x, y; int i, j;
 
   mpfr_init2(x, 130);
-  mpfr_set_str_raw(x, "0.1011111101011010101000001010011111101000011100011101010011111011000011001010000000111100100111110011001010110100100001001000111001E6944");
+  mpfr_set_str_binary(x, "0.1011111101011010101000001010011111101000011100011101010011111011000011001010000000111100100111110011001010110100100001001000111001E6944");
   mpfr_init2(y, 130);
   mpfr_set_ui(y, 5, GMP_RNDN);
   mpfr_div(x, x, y, GMP_RNDD); /* exact division */
 
   mpfr_set_prec(x, 64);
   mpfr_set_prec(y, 64);
-  mpfr_set_str_raw(x, "0.10010010011011010100101001010111100000101110010010101E55");
-  mpfr_set_str_raw(y, "0.1E585");
+  mpfr_set_str_binary(x, "0.10010010011011010100101001010111100000101110010010101E55");
+  mpfr_set_str_binary(y, "0.1E585");
   mpfr_div(x, x, y, GMP_RNDN);
-  mpfr_set_str_raw(y, "0.10010010011011010100101001010111100000101110010010101E-529");
+  mpfr_set_str_binary(y, "0.10010010011011010100101001010111100000101110010010101E-529");
   if (mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_div for prec=64, rnd=GMP_RNDN\n");
@@ -343,9 +343,9 @@ check_inexact (void)
   mpfr_init (u);
 
   mpfr_set_prec (x, 33);
-  mpfr_set_str_raw (x, "0.101111100011011101010011101100001E0");
+  mpfr_set_str_binary (x, "0.101111100011011101010011101100001E0");
   mpfr_set_prec (u, 2);
-  mpfr_set_str_raw (u, "0.1E0");
+  mpfr_set_str_binary (u, "0.1E0");
   mpfr_set_prec (y, 28);
   if ((inexact = mpfr_div (y, x, u, GMP_RNDN) >= 0))
     {
@@ -355,9 +355,9 @@ check_inexact (void)
     }
 
   mpfr_set_prec (x, 129);
-  mpfr_set_str_raw (x, "0.111110101111001100000101011100101100110011011101010001000110110101100101000010000001110110100001101010001010100010001111001101010E-2");
+  mpfr_set_str_binary (x, "0.111110101111001100000101011100101100110011011101010001000110110101100101000010000001110110100001101010001010100010001111001101010E-2");
   mpfr_set_prec (u, 15);
-  mpfr_set_str_raw (u, "0.101101000001100E-1");
+  mpfr_set_str_binary (u, "0.101101000001100E-1");
   mpfr_set_prec (y, 92);
   if ((inexact = mpfr_div (y, x, u, GMP_RNDN) <= 0))
     {
@@ -486,8 +486,8 @@ main (int argc, char *argv[])
   mpfr_init2 (y, 64);
   mpfr_init2 (z, 64);
 
-  mpfr_set_str_raw(x, "1.00100100110110101001010010101111000001011100100101010000000000E54");
-  mpfr_set_str_raw(y, "1.00000000000000000000000000000000000000000000000000000000000000E584");
+  mpfr_set_str_binary(x, "1.00100100110110101001010010101111000001011100100101010000000000E54");
+  mpfr_set_str_binary(y, "1.00000000000000000000000000000000000000000000000000000000000000E584");
   mpfr_div(z, x, y, GMP_RNDU);
 
   check_nan ();

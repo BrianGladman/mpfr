@@ -155,9 +155,9 @@ main (int argc, char *argv[])
 
   mpfr_set_prec (x, 9);
   mpfr_set_prec (y, 9);
-  mpfr_set_str_raw (y, "0.100001111E9"); /* 271 */
+  mpfr_set_str_binary (y, "0.100001111E9"); /* 271 */
   mpfr_mul_ui (x, y, 1335, GMP_RNDN);
-  mpfr_set_str_raw (y, "0.101100001E19"); /* 361472 */
+  mpfr_set_str_binary (y, "0.101100001E19"); /* 361472 */
   if (mpfr_cmp (x, y))
     {
       printf ("Error in mul_ui for 1335*(0.100001111E9)\n");
@@ -168,10 +168,10 @@ main (int argc, char *argv[])
   mpfr_set_prec(y, 100);
   mpfr_set_prec(x, 100);
   /* y = 1199781142214086656 */
-  mpfr_set_str_raw(y, "0.1000010100110011110101001011110010101111000100001E61");
+  mpfr_set_str_binary(y, "0.1000010100110011110101001011110010101111000100001E61");
   mpfr_mul_ui(x, y, 121, GMP_RNDD);
   /* 121*y = 145173518207904485376, representable exactly */
-  mpfr_set_str_raw(y, "0.1111101111010101111111100011010010111010111110110011001E67");
+  mpfr_set_str_binary(y, "0.1111101111010101111111100011010010111010111110110011001E67");
   if (mpfr_cmp(x, y))
     {
       printf("Error for 121*y: expected result is:\n");
@@ -179,15 +179,15 @@ main (int argc, char *argv[])
     }
 
   mpfr_set_prec (x, 32);
-  mpfr_set_str_raw (x, "0.10000000000000000000000000000000E1");
+  mpfr_set_str_binary (x, "0.10000000000000000000000000000000E1");
   mpfr_set_prec (y, 93);
   mpfr_mul_ui (y, x, 1, GMP_RNDN);
 
   mpfr_set_prec (x, 287);
-  mpfr_set_str_raw (x, "0.1111E7");
+  mpfr_set_str_binary (x, "0.1111E7");
   mpfr_set_prec (y, 289);
   mpfr_mul_ui (y, x, 6, GMP_RNDN);
-  mpfr_set_str_raw (x, "0.101101E10");
+  mpfr_set_str_binary (x, "0.101101E10");
   if (mpfr_cmp (x, y))
     {
       printf ("Error for 6 * 120\n");
@@ -198,7 +198,7 @@ main (int argc, char *argv[])
   mpfr_set_prec (y, 64);
   mpfr_set_d (x, 2143861251406875.0, GMP_RNDN);
   mpfr_mul_ui (y, x, 23, GMP_RNDN);
-  mpfr_set_str_raw (x, "10101111001011100001100110101111110001010010011001101101.0");
+  mpfr_set_str_binary (x, "10101111001011100001100110101111110001010010011001101101.0");
   if (mpfr_cmp (x, y))
     {
       printf ("Error for 23 * 2143861251406875.0\n");
@@ -211,7 +211,7 @@ main (int argc, char *argv[])
   for (xprec = 53; xprec <= 128; xprec++)
     {
       mpfr_set_prec (x, xprec);
-      mpfr_set_str_raw (x, "0.1100100100001111110011111000000011011100001100110111E2");
+      mpfr_set_str_binary (x, "0.1100100100001111110011111000000011011100001100110111E2");
       for (yprec = 53; yprec <= 128; yprec++)
         {
           mpfr_set_prec (y, yprec);
