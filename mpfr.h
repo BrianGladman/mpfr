@@ -114,8 +114,7 @@ typedef struct {
    where k=ceil(_mp_prec/BITS_PER_MP_LIMB) and B=2^BITS_PER_MP_LIMB.
 
    For the msb (most significant bit) normalized representation, we must have
-   _mpfr_d[k-1]>=B/2, unless the number is zero (in that case its sign is still
-   given by sign(_mpfr_size)).
+   _mpfr_d[k-1]>=B/2, unless the number is singular.
 
    We must also have the last k*BITS_PER_MP_LIMB-_mp_prec bits set to zero.
 */
@@ -124,11 +123,18 @@ typedef __mpfr_struct mpfr_t[1];
 typedef __mpfr_struct *mpfr_ptr;
 typedef __gmp_const __mpfr_struct *mpfr_srcptr;
 
+/* For those who needs a direct access and fast access to the sign filed */
 #define MPFR_SIGN(x) (((x)->_mpfr_sign))
 
-/* size_t is defined by GMP */
+/* GMP defines:
+    + size_t:                Standard size_t
+    + __GMP_ATTRIBUTE_PURE   Attribute for math functions.
+    + __GMP_NOTHROW          For C++: can't throw .
+    + __GMP_EXTERN_INLINE    Attribute for inline function.
+    * __gmp_const            const (Supports for K&R compiler only for mpfr.h).
+*/
 
-/* Prototypes */
+/* Prototypes: Support of K&R compiler */
 #if defined (__GMP_PROTO)
 # define _MPFR_PROTO __GMP_PROTO
 #elif defined (__STDC__) || defined (__cplusplus)
@@ -145,8 +151,11 @@ extern "C" {
 extern unsigned int __gmpfr_flags;
 extern mp_exp_t __gmpfr_emin;
 extern mp_exp_t __gmpfr_emax;
+extern mp_prec_t __gmpfr_default_fp_bit_precision;
+extern mpfr_rnd_t __gmpfr_default_rounding_mode;
 
 __gmp_const char * mpfr_version _MPFR_PROTO ((void));
+
 mp_exp_t mpfr_get_emin _MPFR_PROTO ((void));
 int mpfr_set_emin _MPFR_PROTO ((mp_exp_t));
 mp_exp_t mpfr_get_emax _MPFR_PROTO ((void));
@@ -242,8 +251,6 @@ void mpfr_set_prec _MPFR_PROTO((mpfr_ptr, mp_prec_t));
 void mpfr_set_prec_raw _MPFR_PROTO((mpfr_ptr, mp_prec_t));
 void mpfr_set_default_prec _MPFR_PROTO((mp_prec_t));
 mp_prec_t mpfr_get_default_prec _MPFR_PROTO((void));
-extern mp_prec_t __gmpfr_default_fp_bit_precision;
-extern mpfr_rnd_t __gmpfr_default_rounding_mode;
 __gmp_const char * mpfr_print_rnd_mode _MPFR_PROTO((mpfr_rnd_t));
 int mpfr_neg _MPFR_PROTO((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t));
 int mpfr_sub_one_ulp _MPFR_PROTO((mpfr_ptr, mpfr_rnd_t));
@@ -334,7 +341,7 @@ int mpfr_unordered_p _MPFR_PROTO ((mpfr_srcptr, mpfr_srcptr));
 int mpfr_sgn _MPFR_PROTO ((mpfr_srcptr));
 
 int mpfr_sum _MPFR_PROTO ((mpfr_ptr ret, mpfr_ptr const tab[], unsigned long n,
-			   mp_rnd_t rnd));
+			   mpfr_rnd_t rnd));
 
 #if defined (__cplusplus)
 }
@@ -395,4 +402,4 @@ int mpfr_sum _MPFR_PROTO ((mpfr_ptr ret, mpfr_ptr const tab[], unsigned long n,
 #define mpfr_init_set_f(x, y, rnd) \
  ( mpfr_init(x), mpfr_set_f((x), (y), (rnd)) )
 
-#endif
+#endif /* __MPFR_H*/
