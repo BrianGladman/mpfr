@@ -127,8 +127,8 @@ mpfr_cmp2(b, c)
   if (d)
     {
       cc = bp[bn--];
-      if (d<BITS_PER_MP_LIMB)
-	cc -= cp[cn]>>d;
+      if (d < BITS_PER_MP_LIMB)
+	cc -= cp[cn] >> d;
     }
   else { /* d=0 */
     while (bn>=0 && cn>=0 && (cc=(bp[bn--]-cp[cn--]))==0) {
@@ -148,7 +148,7 @@ mpfr_cmp2(b, c)
   count_leading_zeros(u, cc);
   k += u;
 
-  if (cc != ((mp_limb_t)1<<(BITS_PER_MP_LIMB-u-1))) return k;
+  if (cc != ((mp_limb_t) 1 << (BITS_PER_MP_LIMB - u - 1))) return k;
 
   /* now cc is an exact power of two */
   if (cc != 1) 
@@ -192,14 +192,16 @@ mpfr_cmp2(b, c)
                         or k+z+1 if low(b) < low(c) */
   if (d > BITS_PER_MP_LIMB) { return k; }
 
-  while (bn >= 0)
+  while (bn >= 0) /* the next limb of b to be considered is b[bn] */
     { 
+      /* for c we have to consider the low d bits of c[cn]
+	 and the high (BITS_PER_MP_LIMB-d) bits of c[cn-1] */
       if (cn < 0) return k;
 
       if (d) 
 	 { 
-	   u = cp[cn--] << (BITS_PER_MP_LIMB - d); 
-	   if (cn >= 0) u+=(cp[cn]>>d);
+	   u = cp[cn--] << (BITS_PER_MP_LIMB - d);
+	   if (cn >= 0) u += cp[cn] >> d;
 	 }
        else u = cp[cn--]; 
 
@@ -208,8 +210,12 @@ mpfr_cmp2(b, c)
          bp[bn--] < cp[cn--] : borrow
       */
        if ((cc = bp[bn--]) != u) {
-	 if (cc>u) return k;
-	 else { count_leading_zeros(u, cc-u); return k + 1 + z + u; }
+	 if (cc > u) return k;
+	 else {
+	   count_leading_zeros(u, cc-u);
+	   z += u + 1;
+	   if (u + 1 < BITS_PER_MP_LIMB) return k + z;
+	 }
        }
        else z += BITS_PER_MP_LIMB; 
     }
