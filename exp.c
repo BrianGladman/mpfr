@@ -26,6 +26,7 @@ mpfr_exp(y, x, rnd_mode)
   mpfr_t r, s, t;
 
   if (FLAG_NAN(x)) { SET_NAN(y); return 1; }
+  if (!NOTZERO(x)) { mpfr_set_ui(y, 1, GMP_RNDN); return 0; }
 
   expx = EXP(x);
   precy = PREC(y);
