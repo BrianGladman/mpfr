@@ -37,6 +37,7 @@ mpfr_set_si(x, i, rnd_mode)
 {
   unsigned long xn, cnt; mp_limb_t ai, *xp;
 
+  MPFR_CLEAR_FLAGS(x);
   if (i==0) { MPFR_SET_ZERO(x); return; }
   xn = (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB;
   ai = ABS(i); 
@@ -78,6 +79,7 @@ mpfr_set_ui(x, i, rnd_mode)
 {
   unsigned int xn, cnt; mp_limb_t *xp;
 
+  MPFR_CLEAR_FLAGS(x);
   if (i==0) { MPFR_SET_ZERO(x); return; }
   xn = (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB;
   count_leading_zeros(cnt, (mp_limb_t) i); 

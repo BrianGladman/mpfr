@@ -38,6 +38,18 @@ mpfr_set_f(y, x, rnd_mode)
   mp_limb_t *my, *mx, *tmp; unsigned long cnt, sx, sy;
   TMP_DECL(marker);
 
+  if (MPFR_IS_NAN(x))
+    { MPFR_CLEAR_FLAGS(y); MPFR_SET_NAN(y); return; }
+
+  MPFR_SET_SAME_SIGN(y, x);
+
+  if (MPFR_IS_INF(x))
+    {
+      MPFR_CLEAR_FLAGS(y);
+      MPFR_SET_INF(y);
+      return;
+    }
+
   TMP_MARK(marker);
   sx = ABS(SIZ(x)); sy = MPFR_ABSSIZE(y);
   my = MPFR_MANT(y); mx = MPFR_MANT(x);
@@ -47,8 +59,6 @@ mpfr_set_f(y, x, rnd_mode)
   }
 
   count_leading_zeros(cnt, mx[sx - 1]);  
-
-  if (SIZ(x)*MPFR_SIGN(y)<0) MPFR_CHANGE_SIGN(y);
 
   if (sy < sx)
     {

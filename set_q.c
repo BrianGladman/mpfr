@@ -40,6 +40,7 @@ mpfr_set_q (f, q, rnd)
   unsigned int prec;
   mpfr_t n,d;
 
+  MPFR_CLEAR_FLAGS(f);
   num = mpq_numref(q);
   sign = mpz_cmp_ui(num, 0);
   if (sign==0) {

@@ -242,7 +242,7 @@ mpfr_set_d(r, d, rnd_mode)
 {
   int signd, sizer; unsigned int cnt;
 
-  
+  MPFR_CLEAR_FLAGS(r);
   if (d == 0) { MPFR_SET_ZERO(r); return; }
   else if (DOUBLE_ISNAN(d)) { MPFR_SET_NAN(r); return; }
   else if (DOUBLE_ISINF(d))
@@ -253,7 +253,6 @@ mpfr_set_d(r, d, rnd_mode)
       return;
     }
 
-  MPFR_CLEAR_FLAGS(r); 
   signd = (d < 0) ? -1 : 1;
   d = ABS (d);
   sizer = (MPFR_PREC(r)-1)/BITS_PER_MP_LIMB + 1;

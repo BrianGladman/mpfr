@@ -37,9 +37,11 @@ mpfr_set4(a, b, rnd_mode, signb)
 {
   int carry, an, preca = MPFR_PREC(a), sh; mp_limb_t *ap = MPFR_MANT(a);
 
-  if (MPFR_IS_NAN(b)) { MPFR_SET_NAN(a); return; }
+  if (MPFR_IS_NAN(b))
+    { MPFR_CLEAR_FLAGS(a); MPFR_SET_NAN(a); return; }
   if (MPFR_IS_INF(b)) 
     { 
+      MPFR_CLEAR_FLAGS(a);
       MPFR_SET_INF(a); 
       if (MPFR_SIGN(a) * signb < 0) MPFR_CHANGE_SIGN(a); 
       return; 

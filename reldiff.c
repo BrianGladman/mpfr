@@ -48,9 +48,10 @@ mpfr_reldiff(a, b, c, rnd_mode)
 
   if (MPFR_IS_INF(c)) 
     {
-      if (MPFR_SIGN(a) != MPFR_SIGN(b)) { MPFR_CHANGE_SIGN(a); }
+      MPFR_SET_SAME_SIGN(a, b);
       MPFR_CLEAR_FLAGS(a);
       MPFR_SET_INF(a);
+      return;
     }
 
   if (MPFR_IS_ZERO(b)) /* reldiff = abs(c)/c = sign(c) */
