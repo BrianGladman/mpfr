@@ -1208,6 +1208,11 @@ Set @var{rop} to @m{2^{op}, 2 power of @var{op}},
 rounded in the direction @var{rnd}.
 @end deftypefun
 
+@deftypefun int mpfr_exp10 (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+Set @var{rop} to @m{10^{op}, 10 power of @var{op}},
+rounded in the direction @var{rnd}.
+@end deftypefun
+
 @deftypefun int mpfr_cos (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_sin (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_tan (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})

@@ -202,6 +202,7 @@ int mpfr_const_euler _MPFR_PROTO ((mpfr_ptr, mpfr_rnd_t));
 int mpfr_log _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t));
 int mpfr_exp _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t));
 int mpfr_exp2 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t));
+int mpfr_exp10 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t));
 int mpfr_sin _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t));
 int mpfr_sin_cos _MPFR_PROTO ((mpfr_ptr, mpfr_ptr, mpfr_srcptr, mpfr_rnd_t));
 int mpfr_cos _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t));
