@@ -36,7 +36,8 @@ int mpfr_round_raw2(mp_limb_t *xp, unsigned long xn, char neg, char rnd,
       wd = xn - nw;
       if (!rw)
 	{
-	  wd--; 
+	  if (!wd) /* all bits are significative */ return 0; 
+	  wd--;
 	  if ((xp[wd] & (~mask)) == (1UL << (BITS_PER_MP_LIMB - rw - 1)))
 	      do wd--; while (wd > 0 && !xp[wd]);
 
