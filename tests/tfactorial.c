@@ -1,7 +1,6 @@
 /* Test file for mpfr_factorial.
 
-Copyright 2001, 2002, 2003 Free Software Foundation.
-Adapted from tarctan.c.
+Copyright 2001, 2002, 2003, 2004 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -27,6 +26,43 @@ MA 02111-1307, USA. */
 
 #define TEST_FUNCTION mpfr_fac_ui
 
+static void
+special (void)
+{
+  mpfr_t x, y;
+  int inex;
+
+  mpfr_init (x);
+  mpfr_init (y);
+
+  mpfr_set_prec (x, 21);
+  mpfr_set_prec (y, 21);
+  mpfr_fac_ui (x, 119, GMP_RNDZ);
+  mpfr_set_str_binary (y, "0.101111101110100110110E654");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error in mpfr_fac_ui (119)\n");
+      exit (1);
+    }
+
+  mpfr_set_prec (y, 206);
+  inex = mpfr_fac_ui (y, 767, GMP_RNDN);
+  mpfr_set_prec (x, 206);
+  mpfr_set_str_binary (x, "0.110111100001000001101010010001000111000100000100111000010011100011011111001100011110101000111101101100110001001100110100001001111110000101010000100100011100010011101110000001000010001100010000101001111E6250");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error in mpfr_fac_ui (767)\n");
+      exit (1);
+    }
+  if (inex <= 0)
+    {
+      printf ("Wrong flag for mpfr_fac_ui (767)\n");
+      exit (1);
+    }
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -36,6 +72,8 @@ main (int argc, char *argv[])
   int inexact;
 
   tests_start_mpfr ();
+
+  special ();
 
   mpfr_init (x);
   mpfr_init (y);

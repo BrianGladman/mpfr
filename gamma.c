@@ -1,6 +1,6 @@
 /* mpfr_gamma -- gamma function
 
-Copyright 2001, 2002, 2003 Free Software Foundation.
+Copyright 2001, 2002, 2003, 2004 Free Software Foundation.
 
 This file is part of the MPFR Library, and was contributed by Mathieu Dutour.
 
@@ -97,6 +97,16 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
   if (compared == 0)
     return mpfr_set_ui (gamma, 1, rnd_mode);
 
+  /* if x is an integer that fits into an unsigned long, use mpfr_fac_ui */
+  if (mpfr_integer_p (x))
+    {
+      unsigned long int u;
+      u = mpfr_get_ui (x, GMP_RNDN);
+      /* u = 0 when x is 0 or x does not fit in an unsigned long */
+      if (u != 0)
+        return mpfr_fac_ui (gamma, u - 1, rnd_mode);
+    }
+
   realprec = prec_gamma + 10;
 
   mpfr_init2 (xp, 2);
@@ -113,7 +123,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
       prec_nec = compared < 0 ?
         2 + realprec  /* We will use the reflexion formula! */
         : realprec;
-      C = (double)(((double) prec_nec)*CST-0.5);
+      C = (double) (((double) prec_nec) * CST - 0.5);
       A = (mp_prec_t) C;
       N = A - 1;
 #ifdef DEBUG
@@ -144,24 +154,24 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_set_prec (product, Prec);
       mpfr_set_prec (GammaTrial, Prec);
 
-      mpfr_set_ui(GammaTrial, 0, GMP_RNDN);
+      mpfr_set_ui (GammaTrial, 0, GMP_RNDN);
       sign = 1;
       for (k = 1; k <= N; k++)
         {
-          mpfr_set_ui(tmp, A-k, GMP_RNDN);
-          mpfr_exp(product, tmp, GMP_RNDN);
-          mpfr_ui_pow_ui(tmp, A-k, k-1, GMP_RNDN);
-          mpfr_mul(product, product, tmp, GMP_RNDN);
-          mpfr_sqrt_ui(tmp, A-k, GMP_RNDN);
-          mpfr_mul(product, product, tmp, GMP_RNDN);
-          mpfr_fac_ui(tmp, k-1, GMP_RNDN);
-          mpfr_div(product, product, tmp, GMP_RNDN);
-          mpfr_add_ui(tmp, xp, k, GMP_RNDN);
-          mpfr_div(product, product, tmp, GMP_RNDN);
+          mpfr_set_ui (tmp, A - k, GMP_RNDN);
+          mpfr_exp (product, tmp, GMP_RNDN);
+          mpfr_ui_pow_ui (tmp, A - k, k - 1, GMP_RNDN);
+          mpfr_mul (product, product, tmp, GMP_RNDN);
+          mpfr_sqrt_ui (tmp, A - k, GMP_RNDN);
+          mpfr_mul (product, product, tmp, GMP_RNDN);
+          mpfr_fac_ui (tmp, k - 1, GMP_RNDN);
+          mpfr_div (product, product, tmp, GMP_RNDN);
+          mpfr_add_ui (tmp, xp, k, GMP_RNDN);
+          mpfr_div (product, product, tmp, GMP_RNDN);
           sign = -sign;
           if (sign == 1)
             {
-              mpfr_neg(product, product, GMP_RNDN);
+              mpfr_neg (product, product, GMP_RNDN);
 #ifdef DEBUG
               /*    printf(" k=%u", k);
                     printf("\n");*/

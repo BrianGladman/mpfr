@@ -33,6 +33,7 @@ static void
 special (void)
 {
   mpfr_t x, y;
+  int inex;
 
   mpfr_init (x);
   mpfr_init (y);
@@ -72,6 +73,37 @@ special (void)
   if (mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_gamma (1)\n");
+      exit (1);
+    }
+
+  mpfr_set_prec (x, 21);
+  mpfr_set_prec (y, 8);
+  mpfr_set_ui (y, 120, GMP_RNDN);
+  mpfr_gamma (x, y, GMP_RNDZ);
+  mpfr_set_prec (y, 21);
+  mpfr_set_str_binary (y, "0.101111101110100110110E654");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error in mpfr_gamma (120)\n");
+      printf ("Expected "); mpfr_print_binary (y); puts ("");
+      printf ("Got      "); mpfr_print_binary (x); puts ("");
+      exit (1);
+    }
+
+  mpfr_set_prec (x, 3);
+  mpfr_set_prec (y, 206);
+  mpfr_set_str_binary (x, "0.110e10");
+  inex = mpfr_gamma (y, x, GMP_RNDN);
+  mpfr_set_prec (x, 206);
+  mpfr_set_str_binary (x, "0.110111100001000001101010010001000111000100000100111000010011100011011111001100011110101000111101101100110001001100110100001001111110000101010000100100011100010011101110000001000010001100010000101001111E6250");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error in mpfr_gamma (768)\n");
+      exit (1);
+    }
+  if (inex <= 0)
+    {
+      printf ("Wrong flag for mpfr_gamma (768)\n");
       exit (1);
     }
 
