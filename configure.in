@@ -85,11 +85,9 @@ main() { long int l = lrand48 (); return 0; }],
 
 dnl Check for ISOC9X interface for rounding modes
 AC_MSG_CHECKING(for fenv.h)
-AC_TRY_RUN([#include <fenv.h>
-main() { fesetround(FE_DOWNWARD); }],
+AC_TRY_CPP([#include <fenv.h>],
   [AC_MSG_RESULT(yes)
    AC_DEFINE(HAVE_FENV)],
-  AC_MSG_RESULT(no),
   AC_MSG_RESULT(no)
 )
 
