@@ -76,22 +76,12 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
      x >= __mpfr_emax * log(2) */
   d = mpfr_get_d (x);
   if (d >= (double) __mpfr_emax * LOG2)
-    {
-          MPFR_SET_INF(y);
-          if (MPFR_SIGN(y) < 0)
-            MPFR_CHANGE_SIGN(y);
-	  return 1; /* overflow */
-    }
+    return mpfr_set_overflow(y, rnd_mode, 1);
 
   /* result is 0 when exp(x) < 1/2*2^(__mpfr_emin), i.e.
      x < (__mpfr_emin-1) * LOG2 */
   if (d < ((double) __mpfr_emin - 1.0) * LOG2)
-    {
-      MPFR_SET_ZERO(y);
-      if (MPFR_SIGN(y) < 0)
-            MPFR_CHANGE_SIGN(y);
-      return 1; /* underflow */
-    }
+    return mpfr_set_underflow(y, rnd_mode, 1);
 
   /* if x < 2^(-precy), then exp(x) i.e. gives 1 +/- 1 ulp(1) */
   if (expx < -precy)
