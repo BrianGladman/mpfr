@@ -105,10 +105,11 @@ mpfr_sin_sign (mpfr_srcptr x)
 int 
 mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode) 
 {
-  int precy, m, inexact, sign, loop;
+  int precy, m, inexact, sign;
   mpfr_t c;
   mp_exp_t e;
-
+  MPFR_ZIV_DECL (loop);
+  
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
       if (MPFR_IS_NAN (x) || MPFR_IS_INF (x))
@@ -125,8 +126,10 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	}
     }
 
+  MPFR_LOG_BEGIN (("x[%#R]=%R rnd=%d", x, x, rnd_mode));
+
   /* Compute initial precision */
-  precy = MPFR_PREC(y);
+  precy = MPFR_PREC (y);
   m = precy + MPFR_INT_CEIL_LOG2 (precy) + 13;
   e = MPFR_GET_EXP (x);
   m += (e < 0) ? -2*e : e;  
@@ -134,11 +137,11 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   sign = mpfr_sin_sign (x);
   mpfr_init2 (c, m);
 
-  for (loop = 1 ;; loop++)
+  MPFR_ZIV_INIT (loop, m);
+  for (;;)
     {
-      mpfr_cos (c, x, GMP_RNDZ); /* can't be exact */
-      mpfr_nexttoinf (c);
-      /* now c = cos(x) rounded away */
+      mpfr_cos (c, x, GMP_RNDZ);    /* can't be exact */
+      mpfr_nexttoinf (c);           /* now c = cos(x) rounded away */
       mpfr_mul (c, c, c, GMP_RNDU); /* away */
       mpfr_ui_sub (c, 1, c, GMP_RNDZ);
       mpfr_sqrt (c, c, GMP_RNDZ);
@@ -148,32 +151,30 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       /* Warning c may be 0 ! */
       if (MPFR_UNLIKELY (MPFR_IS_ZERO (c)))
 	{
-	  m = 3*m; /* If c is 0, we really need a lot of bits! */
-	  mpfr_set_prec (c, m);
-	  continue;
+	  /* Huge cancellation: increase prec a lot! */
+	  m = MAX (m, MPFR_PREC (x));
+	  m = 2*m;
 	}
+      else
+	{
+	  /* the absolute error on c is at most 2^(3-m-EXP(c)) */
+	  e = 2 * MPFR_GET_EXP (c) + m - 3;
+	  if (mpfr_can_round (c, e, GMP_RNDZ, rnd_mode, precy))
+	    break;
 
-      /* the absolute error on c is at most 2^(3-m-EXP(c)) */
-      e = 2 * MPFR_GET_EXP (c) + m - 3;
-      if (mpfr_can_round (c, e, GMP_RNDZ, rnd_mode, precy))
-	break;
-
-      /* Normal increase */
-      m += BITS_PER_MP_LIMB;
+	  /* check for huge cancellation (Near 0) */
+	  if (e < (mp_exp_t) MPFR_PREC (y))
+	    m += MPFR_PREC (y) - e;
+	  /* Check if near 1 */
+	  if (MPFR_GET_EXP (c) == 1)
+	    m += m;
+	}
       
-      /* check for huge cancellation (Near 0) */
-      if (e < (mp_exp_t) MPFR_PREC (y))
-	m += MPFR_PREC (y) - e;
-      
-      /* Check if near 1 */
-      if (MPFR_GET_EXP (c) == 1
-	  && MPFR_MANT (c)[MPFR_LIMB_SIZE (c)-1] == MPFR_LIMB_HIGHBIT)
-	m = 2*m;
-      else if (loop >= 2)
-	m += m/2; 
-      
+      /* Else generic increase */
+      MPFR_ZIV_NEXT (loop, m);
       mpfr_set_prec (c, m);
     }
+  MPFR_ZIV_FREE (loop);
 
   inexact = mpfr_set (y, c, rnd_mode);
 
@@ -182,11 +183,12 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
      is exactly representable with PREC(y) bits. Since c is an approximation
      towards zero, in that case the inexact flag should have the opposite sign
      as y. */
-
-  if (inexact == 0)
-    inexact = (MPFR_IS_POS(y)) ? -1 : 1;
+  if (MPFR_UNLIKELY (inexact == 0))
+    inexact = -MPFR_INT_SIGN (y);
 
   mpfr_clear (c);
+
+  MPFR_LOG_END (("y[%#R]=%R inexact=%d", y, y, inexact));
 
   return inexact; /* inexact */
 }
