@@ -1,6 +1,6 @@
 /* mpf2mpfr.h -- Compatibility include file with mpf.
 
-Copyright 1999, 2000, 2001, 2002 Free Software Foundation, Inc.
+Copyright 1999, 2000, 2001, 2002, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -19,10 +19,19 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+#ifndef __MPFR_FROM_MPF__
+#define __MPFR_FROM_MFF__
+
 /* types */
 #define mpf_t mpfr_t
 #define mpf_srcptr mpfr_srcptr
 #define mpf_ptr mpfr_ptr
+
+/* mpf_init initalizes at 0 */
+#undef mpf_init
+#define mpf_init(x) mpfr_init_set_ui ((x), 0, __gmpfr_default_rounding_mode)
+#undef mpf_init2
+#define mpf_init2(x,p) (mpfr_init2((x),(p)), mpfr_set_ui ((x), 0, __gmpfr_default_rounding_mode))
 
 /* functions which don't take as argument the rounding mode */
 #undef mpf_ceil
@@ -43,10 +52,6 @@ MA 02111-1307, USA. */
 #define mpf_floor mpfr_floor
 #undef mpf_get_prec
 #define mpf_get_prec mpfr_get_prec
-#undef mpf_init
-#define mpf_init mpfr_init
-#undef mpf_init2
-#define mpf_init2 mpfr_init2
 #undef mpf_integer_p
 #define mpf_integer_p mpfr_integer_p
 #undef mpf_random2
@@ -161,3 +166,5 @@ MA 02111-1307, USA. */
 #define mpf_ui_sub(x,y,z) mpfr_ui_sub(x,y,z,__gmpfr_default_rounding_mode)
 #undef mpf_urandomb
 #define mpf_urandomb(x,y,n) mpfr_urandomb(x,y)
+
+#endif
