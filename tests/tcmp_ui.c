@@ -48,6 +48,13 @@ main (void)
     mpfr_clear(x); 
     exit(1);
   }
+  mpfr_set_ui (x, 0, GMP_RNDZ);
+  mpfr_neg (x, x, GMP_RNDZ);
+  if (mpfr_cmp_ui (x, i=0)) {
+    printf("Error in mpfr_cmp_ui(%1.20f,%lu)\n",mpfr_get_d(x), i);
+    mpfr_clear(x);
+    exit(1);
+  }
 
   mpfr_set_si(x, -3, GMP_RNDZ);
   if (mpfr_cmp_si(x, s=-3)!=0) {
