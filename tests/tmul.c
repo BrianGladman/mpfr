@@ -43,11 +43,12 @@ unsigned int py, unsigned int pz, double res)
   mpfr_set_machine_rnd_mode(rnd_mode);
   z1 = (res==0.0) ? x*y : res;
   z2 = mpfr_get_d(zz);
-  if (px==53 && py==53 && pz==53) res=1.0;
-  if (res!=0.0 && z1!=z2 && (z1>=MINNORM || z1<=-MINNORM)) {
-    printf("expected product is %1.20e, got %1.20e\n",z1,z2);
-    printf("mpfr_mul failed for x=%1.20e y=%1.20e with rnd_mode=%u\n",x,y,rnd_mode);
-mpfr_print_raw(zz); putchar('\n');
+  if (z1!=z2 && (z1>=MINNORM || z1<=-MINNORM)) {
+    printf("mpfr_mul ");
+    if (res==0.0) printf("differs from libm.a"); else printf("failed");
+    printf(" for x=%1.20e y=%1.20e with rnd_mode=%u\n",x,y,rnd_mode);
+    mpfr_print_raw(zz); putchar('\n');
+    printf("libm.a gives %1.20e, mpfr_mul gives %1.20e\n",z1,z2);
     exit(1);
   }
   mpfr_clear(xx); mpfr_clear(yy); mpfr_clear(zz);
@@ -69,9 +70,11 @@ void check24(float x, float y, unsigned int rnd_mode, float res)
   z1 = (res==0.0) ? x*y : res;
   z2 = (float) mpfr_get_d(zz);
   if (z1!=z2) {
-    printf("expected product is %1.10e, got %1.10e\n",z1,z2);
-    printf("mpfr_mul failed for x=%1.10e y=%1.10e with prec=24 and rnd_mode=%u\n",x,y,rnd_mode);
-    exit(1);
+    printf("mpfr_mul ");
+    if (res==0.0) printf("differs from libm.a"); else printf("failed");
+    printf(" for x=%1.10e y=%1.10e with prec=24 and rnd_mode=%u\n",x,y,rnd_mode);
+    printf("libm.a gives %1.10e, mpfr_mul gives %1.10e\n",z1,z2);
+    if (res!=0.0) exit(1);
   }
   mpfr_clear(xx); mpfr_clear(yy); mpfr_clear(zz);
 }
@@ -82,17 +85,28 @@ void check_float()
 {
   int i;
   for (i=0;i<4;i++) {
+    if (i!=2) {
     check24(8388609.0, 8388609.0, i, 0.0);
     check24(16777213.0, 8388609.0, i, 0.0);
     check24(8388611.0, 8388609.0, i, 0.0);
-    check24(12582911.0, 8388610.0, i, 0.0);
     check24(12582911.0, 8388610.0, i, 0.0);
     check24(12582914.0, 8388610.0, i, 0.0);
     check24(13981013.0, 8388611.0, i, 0.0);
     check24(11184811.0, 8388611.0, i, 0.0);
     check24(11184810.0, 8388611.0, i, 0.0);
     check24(13981014.0, 8388611.0, i, 0.0);
+    }
   }
+  i=GMP_RNDU;
+  check24(8388609.0,  8388609.0, GMP_RNDU, 70368769343488.0);
+  check24(16777213.0, 8388609.0, GMP_RNDU, 140737479966720.0);
+  check24(8388611.0,  8388609.0, GMP_RNDU, 70368786120704.0);
+  check24(12582911.0, 8388610.0, GMP_RNDU, 105553133043712.0);
+  check24(12582914.0, 8388610.0, GMP_RNDU, 105553166598144.0);
+  check24(13981013.0, 8388611.0, GMP_RNDU, 117281279442944.0);
+  check24(11184811.0, 8388611.0, GMP_RNDU, 93825036976128.0);
+  check24(11184810.0, 8388611.0, GMP_RNDU, 93825020198912.0);
+  check24(13981014.0, 8388611.0, GMP_RNDU, 117281296220160.0);
 }
 
 /* check sign of result */
