@@ -1,6 +1,6 @@
 /* Test file for mpfr_sub_ui
 
-Copyright (C) 2000 Free Software Foundation.
+Copyright (C) 2000-2001 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -29,7 +29,8 @@ MA 02111-1307, USA. */
 #include <sys/fpu.h>
 #endif
 
-extern int getpid();
+void check_two_sum _PROTO ((mp_prec_t));
+void check3 _PROTO ((double, unsigned long, mp_rnd_t, double));
 
 #define ABS(x) (((x)>0) ? (x) : (-x))
 
@@ -37,9 +38,10 @@ extern int getpid();
 
 /* checks that x+y gives the same results in double
    and with mpfr with 53 bits of precision */
-void check3(double x, unsigned long y, unsigned int rnd_mode, double z1)
+void check3 (double x, unsigned long y, mp_rnd_t rnd_mode, double z1)
 {
-  double z2; mpfr_t xx,zz;
+  double z2;
+  mpfr_t xx,zz;
 
   mpfr_init(xx);
   mpfr_init(zz);
@@ -62,8 +64,57 @@ void check3(double x, unsigned long y, unsigned int rnd_mode, double z1)
   mpfr_clear(zz);
 }
 
+/* FastTwoSum: if EXP(x) >= EXP(y), u = o(x+y), v = o(u-x), w = o(y-v),
+               then x + y = u + w
+thus if u = o(y-x), v = o(u+x), w = o(v-y), then y-x = u-w */
+void
+check_two_sum (mp_prec_t p)
+{
+  unsigned int x;
+  mpfr_t y, u, v, w;
+  mp_rnd_t rnd;
+  int inexact;
+  
+  mpfr_init2 (y, p);
+  mpfr_init2 (u, p);
+  mpfr_init2 (v, p);
+  mpfr_init2 (w, p);
+  do
+    {
+      x = lrand48 ();
+    }
+  while (x < 1);
+  mpfr_random (y);
+  rnd = rand() % 4;
+  rnd = GMP_RNDN;
+  inexact = mpfr_sub_ui (u, y, x, GMP_RNDN);
+  mpfr_add_ui (v, u, x, GMP_RNDN);
+  mpfr_sub (w, v, y, GMP_RNDN);
+  /* as u - (y-x) = w, we should have inexact and w of same sign */
+  if (((inexact == 0) && mpfr_cmp_ui (w, 0)) ||
+      ((inexact > 0) && (mpfr_cmp_ui (w, 0) <= 0)) ||
+      ((inexact < 0) && (mpfr_cmp_ui (w, 0) >= 0)))
+    {
+      fprintf (stderr, "Wrong inexact flag for prec=%u, rnd=%s\n", (unsigned)p,
+	       mpfr_print_rnd_mode (rnd));
+      printf ("x=%u\n", x);
+      printf ("y="); mpfr_print_raw(y); putchar('\n');
+      printf ("u="); mpfr_print_raw(u); putchar('\n');
+      printf ("v="); mpfr_print_raw(v); putchar('\n');
+      printf ("w="); mpfr_print_raw(w); putchar('\n');
+      printf ("inexact = %d\n", inexact);
+      exit (1);
+    }
+  mpfr_clear (y);
+  mpfr_clear (u);
+  mpfr_clear (v);
+  mpfr_clear (w);
+}
+
 int main(argc,argv) int argc; char *argv[];
 {
+  mp_prec_t p;
+  int k;
 #ifdef __mips
     /* to get denormalized numbers on IRIX64 */
     union fpc_csr exp;
@@ -87,6 +138,10 @@ int main(argc,argv) int argc; char *argv[];
     }
   } 
 #endif
+  
+  for (p=1; p<200; p++)
+    for (k=0; k<200; k++)
+      check_two_sum (p);
   check3(0.9999999999, 1, GMP_RNDN, -1.000000082740370999e-10);
   check3(0.0/0.0, 1, GMP_RNDN, 0.0/0.0); 
   check3(1.0/0.0, 1, GMP_RNDN, 1.0/0.0); 
