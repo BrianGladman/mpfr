@@ -83,10 +83,16 @@ special (void)
   mpfr_set_prec (x, 110);
   mpfr_set_prec (y, 60);
   mpfr_set_str_raw (x, "0.110101110011111110011111001110011001110111000000111110001000111011000011E-44");
-  mpfr_div_ui(y, x, 17, __gmp_default_rounding_mode);
-  if (mpfr_get_d (y) != 2.8114572543455207632e-15)
+  mpfr_div_ui (y, x, 17, GMP_RNDN);
+  mpfr_set_str_raw (x, "0.11001010100101100011101110000001100001010110101001010011011E-48");
+  if (mpfr_cmp (x, y))
     {
-      fprintf (stderr, "Error in x / 17 for x=1/16!\n");
+      fprintf (stderr, "Error in x/17 for x=1/16!\n");
+      fprintf (stderr, "Expected ");
+      mpfr_out_str (stderr, 2, 0, x, GMP_RNDN);
+      fprintf (stderr, "\nGot      ");
+      mpfr_out_str (stderr, 2, 0, y, GMP_RNDN);
+      fprintf (stderr, "\n");
       exit (1);
     }
 
