@@ -108,15 +108,11 @@ mpz_normalize2 (mpz_t rop, mpz_t z, int expz, int target)
 int 
 mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode) 
 {
-  int n, expx, K, precy, q, k, l, err, exps, inexact;
+  int n, K, precy, q, k, l, err, exps, inexact;
   mpfr_t r, s, t; mpz_t ss;
   TMP_DECL(marker);
 
-  expx = MPFR_EXP(x);
   precy = MPFR_PREC(y);
-#ifdef DEBUG
-  printf("MPFR_EXP(x)=%d\n",expx);
-#endif
 
   n = (int) (mpfr_get_d(x) / LOG2);
 
