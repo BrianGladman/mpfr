@@ -740,9 +740,10 @@ Just changes the sign
 if @var{rop} and @var{op} are the same variable.
 @end deftypefun
 
-@c @deftypefun void mpfr_abs (mpfr_t @var{rop}, mpfr_t @var{op})
-@c Set @var{rop} to the absolute value of @var{op}.
-@c @end deftypefun
+@deftypefun void mpfr_abs (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+Set @var{rop} to the absolute value of @var{op},
+rounded in the direction @var{rnd}.
+@end deftypefun
 
 @deftypefun void mpfr_mul_2exp (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
 @ifinfo
