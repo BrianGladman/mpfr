@@ -384,7 +384,23 @@ main (int argc, char *argv[])
 
   }
 
-   /* end of tests added by Alain Delplanque */
+  /* end of tests added by Alain Delplanque */
+
+  /* check that flags are correctly cleared */
+  mpfr_set_nan (x);
+  mpfr_set_str (x, "+0.0", 10, GMP_RNDN);
+  if (!mpfr_number_p(x) || mpfr_cmp_ui (x, 0) != 0 || mpfr_sgn (x) < 0)
+    {
+      fprintf (stderr, "x <- +0.0 failed after x=NaN\n");
+      exit (1);
+    }
+  mpfr_set_str (x, "-0.0", 10, GMP_RNDN);
+  if (!mpfr_number_p(x) || mpfr_cmp_ui (x, 0) != 0 || mpfr_sgn (x) > 0)
+    {
+      fprintf (stderr, "x <- -0.0 failed after x=NaN\n");
+      exit (1);
+    }
+
 
   mpfr_clear (x);
   mpfr_clear (y);
