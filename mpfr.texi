@@ -634,7 +634,7 @@ if the destination precision is less than the machine word width.
 
 @deftypefun int mpfr_set_str (mpfr_t @var{x}, char *@var{s}, int @var{base}, mp_rnd_t @var{rnd})
 Set @var{x} to the value of the string @var{s} in base @var{base}, 
-rounded to direction @var{rnd}.
+rounded in direction @var{rnd} to the precision of @var{x}.
 The exponent is read in decimal.
 This function returns 0 if the entire string up to the final '\0' is a valid
 number in base @var{base}, and @minus{}1 otherwise.
@@ -927,8 +927,10 @@ i.e. the result is 1).
 @end deftypefun
 
 @deftypefun int mpfr_sin_cos (mpfr_t @var{sop}, mpfr_t @var{cop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
-Set @var{sop} to the sinus of @var{op},@var{cop} to the cosinus of @var{op},
+Set @var{sop} to the sinus of @var{op}, @var{cop} to the cosinus of @var{op},
 rounded to the direction @var{rnd} with the precision of @var{rop}.
+Return 0 iff the results are exact (this occurs in fact only when @var{op} is 0
+i.e. the sine is 0 and the cosine is 1).
 @end deftypefun
 
 @deftypefun void mpfr_agm (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
@@ -1033,7 +1035,7 @@ and @code{mpfr_trunc} to the integer towards zero.
 @end deftypefun
 
 @deftypefun void mpfr_urandomb (mpfr_t @var{rop}, gmp_randstate_t @var{state})
-Generate a universally distributed random float in the interval 0 <= X < 1.
+Generate a uniformly distributed random float in the interval 0 <= X < 1.
 @end deftypefun
 
 @deftypefun void mpfr_random (mpfr_t @var{rop})
