@@ -40,14 +40,12 @@ mpfr_set4 (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode, int signb)
 	  MPFR_SET_INF(a);
 	  inex = 0;
 	}
-      else if (MPFR_IS_ZERO(b))
+      else
 	{
+	  MPFR_ASSERTD(MPFR_IS_ZERO(b));
           MPFR_SET_ZERO(a);
           inex = 0;
         }
-      else
-	/* Should never reach this code */
-	MPFR_ASSERTN(0);
     }
   else if (MPFR_LIKELY(MPFR_PREC(b) == MPFR_PREC(a)))
     {

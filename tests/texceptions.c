@@ -24,9 +24,11 @@ MA 02111-1307, USA. */
 
 #include "mpfr-test.h"
 
+#define ERROR(s) do { printf(s); exit(1); } while(0)
+
 /* Test default rounding mode */
 static void
-check_default_rnd(void)
+check_default_rnd (void)
 {
   mp_rnd_t r, t;
   for(r = 0 ; r < GMP_RND_MAX ; r++)
@@ -34,23 +36,33 @@ check_default_rnd(void)
       mpfr_set_default_rounding_mode (r);
       t = mpfr_get_default_rounding_mode();
       if (r !=t)
-	{
-	  printf("ERROR in setting / getting default rounding mode (1)\n");
-	  exit(1);
-	}
+	ERROR("ERROR in setting / getting default rounding mode (1)\n");
     }
   mpfr_set_default_rounding_mode(4);
   if (mpfr_get_default_rounding_mode() != GMP_RNDD)
-    {
-      printf("ERROR in setting / getting default rounding mode (2)\n");
-      exit(1);
-    }
+    ERROR("ERROR in setting / getting default rounding mode (2)\n");
   mpfr_set_default_rounding_mode(-1);
   if (mpfr_get_default_rounding_mode() != GMP_RNDD)
-    {
-      printf("ERROR in setting / getting default rounding mode (3)\n");
-      exit(1);
-    }
+    ERROR("ERROR in setting / getting default rounding mode (3)\n");
+}
+
+static void
+check_emin_emax (void)
+{
+  /* Check the functions not the macros ! */
+  if ((mpfr_set_emin)(MPFR_EMIN_MIN) != 0)
+    ERROR("set_emin failed!");
+  if ((mpfr_get_emin)() != MPFR_EMIN_MIN)
+    ERROR("get_emin FAILED!");
+  if ((mpfr_set_emin)(MPFR_EMIN_MIN-1) == 0)
+    ERROR("set_emin failed! (2)");
+
+  if ((mpfr_set_emax)(MPFR_EMAX_MAX) != 0)
+    ERROR("set_emax failed!");
+  if ((mpfr_get_emax)() != MPFR_EMAX_MAX)
+    ERROR("get_emax FAILED!");
+  if ((mpfr_set_emax)(MPFR_EMAX_MAX+1) == 0)
+    ERROR("set_emax failed! (2)");  
 }
 
 static void
@@ -72,6 +84,40 @@ mpfr_set_double_range (void)
 
   mpfr_set_emin (-1021);
   mpfr_set_emax (1024);
+}
+
+static void
+check_flags (void)
+{
+  mpfr_t x;
+  mpfr_init(x);
+
+  /* Check the functions not the macros ! */
+  (mpfr_clear_flags)();
+  mpfr_set_double_range ();
+
+  mpfr_set_ui (x, 1, GMP_RNDN);
+  (mpfr_clear_overflow)();
+  mpfr_mul_2exp (x, x, 1024, GMP_RNDN);
+  if (!(mpfr_overflow_p)())
+    ERROR("ERROR: No overflow detected!\n");
+  (mpfr_clear_underflow)();
+  mpfr_set_ui (x, 1, GMP_RNDN);
+  mpfr_div_2exp (x, x, 1025, GMP_RNDN);
+  if (!(mpfr_underflow_p)())
+    ERROR("ERROR: No underflow detected!\n");
+  (mpfr_clear_nanflag)();
+  MPFR_SET_NAN(x);
+  mpfr_add (x, x, x, GMP_RNDN);
+  if (!(mpfr_nanflag_p)())
+    ERROR("ERROR: No NaN flag!\n");
+  (mpfr_clear_inexflag)();
+  mpfr_set_ui(x, 2, GMP_RNDN);
+  mpfr_cos(x, x, GMP_RNDN);
+  if (!(mpfr_inexflag_p)())
+    ERROR("ERROR: No inexact flag!\n");
+
+  mpfr_clear(x);
 }
 
 static void
@@ -237,8 +283,24 @@ main (int argc, char *argv[])
       exit (1);
     }
 
+  mpfr_set_emin (-1026);
+  mpfr_set_ui (x, 1, GMP_RNDN);
+  mpfr_div_2exp (x, x, 1025, GMP_RNDN);
+  mpfr_set_double_range ();
+  mpfr_check_range (x, 0, GMP_RNDN);
+  if (!MPFR_IS_ZERO (x) )
+    {
+      printf ("Error: x rounded to nearest for x=2^-1024 should give Zero\n");
+      printf ("emin = %ld\n", mpfr_get_emin ());
+      printf ("got "); mpfr_dump (x);
+      exit (1);
+    }
+
   mpfr_clear (x);
   mpfr_clear (y);
+
+  check_emin_emax();
+  check_flags();
 
   tests_end_mpfr ();
   return 0;

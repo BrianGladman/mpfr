@@ -1,6 +1,6 @@
 /* mpfr_check -- Check if a floating-point number has not been corrupted.
 
-Copyright 2003 Free Software Foundation, Inc.
+Copyright 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -21,8 +21,12 @@ MA 02111-1307, USA. */
 
 #include "mpfr-impl.h"
 
+/*
+ * Check if x is a valid mpfr_t init by mpfr_init
+ * Returns 0 if isn't valid 
+ */
 int
-mpfr_check(mpfr_srcptr x)
+mpfr_check (mpfr_srcptr x)
 {
   mp_size_t s,i;
   mp_limb_t tmp;
@@ -66,8 +70,11 @@ mpfr_check(mpfr_srcptr x)
       if ((MPFR_EXP(x) < __gmpfr_emin) || (MPFR_EXP(x) > __gmpfr_emax))
 	return 0;
     }
-  else if (!(MPFR_IS_ZERO(x) || MPFR_IS_NAN(x) || MPFR_IS_INF(x)))
-    return 0;
+  else 
+    {
+      /* Singular value is zero, inf or nan */
+      MPFR_ASSERTD(MPFR_IS_ZERO(x) || MPFR_IS_NAN(x) || MPFR_IS_INF(x));
+    }
   return 1;
 }
 
