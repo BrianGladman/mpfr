@@ -142,6 +142,14 @@ times
 @end macro
 @end ifnottex
 
+@c  Math operators already available in tex, made available in info too.
+@c  For example @log{} can be used in both tex and info.
+@ifnottex
+@macro log
+log
+@end macro
+@end ifnottex
+
 
 @node Copying, Introduction to MPFR, Top, Top
 @comment  node-name, next, previous,  up
@@ -922,10 +930,10 @@ case a null pointer is returned.
 @deftypefunx int mpfr_add_ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_add_z (mpfr_t @var{rop}, mpfr_t @var{op1}, mpz_t @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_add_q (mpfr_t @var{rop}, mpfr_t @var{op1}, mpq_t @var{op2}, mp_rnd_t @var{rnd})
-Set @var{rop} to @var{op1} @math{+} @var{op2} rounded in the direction @var{rnd}.
-The return value is zero if @var{rop} is exactly @var{op1} @math{+} @var{op2},
-positive if @var{rop} is larger than @var{op1} @math{+} @var{op2},
-and negative if @var{rop} is smaller than @var{op1} @math{+} @var{op2}.
+Set @var{rop} to @math{@var{op1} + @var{op2}} rounded in the direction @var{rnd}.
+The return value is zero if @var{rop} is exactly @math{@var{op1} + @var{op2}},
+positive if @var{rop} is larger than @math{@var{op1} + @var{op2}},
+and negative if @var{rop} is smaller than @math{@var{op1} + @var{op2}}.
 @end deftypefun
 
 @deftypefun int mpfr_sub (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
@@ -933,10 +941,10 @@ and negative if @var{rop} is smaller than @var{op1} @math{+} @var{op2}.
 @deftypefunx int mpfr_sub_ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_sub_z (mpfr_t @var{rop}, mpfr_t @var{op1}, mpz_t @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_sub_q (mpfr_t @var{rop}, mpfr_t @var{op1}, mpq_t @var{op2}, mp_rnd_t @var{rnd})
-Set @var{rop} to @var{op1} @minus{} @var{op2} rounded in the direction @var{rnd}.
-The return value is zero if @var{rop} is exactly @var{op1} @minus{} @var{op2},
-positive if @var{rop} is larger than @var{op1} @minus{} @var{op2},
-and negative if @var{rop} is smaller than @var{op1} @minus{} @var{op2}.
+Set @var{rop} to @math{@var{op1} - @var{op2}} rounded in the direction @var{rnd}.
+The return value is zero if @var{rop} is exactly @math{@var{op1} - @var{op2}},
+positive if @var{rop} is larger than @math{@var{op1} - @var{op2}},
+and negative if @var{rop} is smaller than @math{@var{op1} - @var{op2}}.
 @end deftypefun
 
 @deftypefun int mpfr_mul (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
@@ -954,9 +962,9 @@ negative value otherwise.
 @deftypefunx int mpfr_div_ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_div_z (mpfr_t @var{rop}, mpfr_t @var{op1}, mpz_t @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_div_q (mpfr_t @var{rop}, mpfr_t @var{op1}, mpq_t @var{op2}, mp_rnd_t @var{rnd})
-Set @var{rop} to @var{op1}/@var{op2} rounded in the direction @var{rnd}.
+Set @var{rop} to @math{@var{op1}/@var{op2}} rounded in the direction @var{rnd}.
 These functions return 0 if the division is exact, 
-a positive value when @var{rop} is larger than @var{op1} divided by @var{op2},
+a positive value when @var{rop} is larger than @math{@var{op1}/@var{op2}},
 and a negative value otherwise.
 @end deftypefun
 
@@ -978,29 +986,29 @@ a negative value otherwise.
 
 @deftypefun int mpfr_pow_ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_ui_pow_ui (mpfr_t @var{rop}, unsigned long int @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
-Set @var{rop} to @var{op1} raised to @var{op2}. The computation is done by
-binary exponentiation.
+Set @var{rop} to @m{@var{op1}^{op2}, @var{op1} raised to @var{op2}}. The
+computation is done by binary exponentiation.
 Return 0 if the result is exact, a non-zero value otherwise (but the sign
 of the return value has no meaning).
 @end deftypefun
 
 @deftypefun int mpfr_ui_pow (mpfr_t @var{rop}, unsigned long int @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
-Set @var{rop} to @var{op1} raised to @var{op2},
+Set @var{rop} to @m{@var{op1}^{op2}, @var{op1} raised to @var{op2}},
 rounded to the direction @var{rnd} with the precision of @var{rop}.
 Return zero iff the result is exact, a positive value when the
-result is greater than @var{op1} to the power @var{op2}, and a negative value
-when it is smaller.
+result is greater than @m{@var{op1}^{op2}, @var{op1} to the power @var{op2}},
+and a negative value when it is smaller.
 @end deftypefun
 
 @deftypefun int mpfr_pow_si (mpfr_t @var{rop}, mpfr_t @var{op1}, long int @var{op2}, mp_rnd_t @var{rnd})
-Set @var{rop} to @var{op1} raised to the power @var{op2},
+Set @var{rop} to @m{@var{op1}^{op2}, @var{op1} raised to the power @var{op2}},
 rounded to the direction @var{rnd} with the
 precision of @var{rop}. 
 Return zero iff the result is exact.
 @end deftypefun
 
 @deftypefun int mpfr_pow (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
-Set @var{rop} to @var{op1} raised to the power @var{op2},
+Set @var{rop} to @m{@var{op1}^{op2}, @var{op1} raised to the power @var{op2}},
 rounded to the direction @var{rnd} with the precision of @var{rop}.
 If @var{op1} is negative then @var{rop} is set to NaN,
 even if @var{op2} is an integer.
@@ -1008,7 +1016,7 @@ Return zero iff the result is exact.
 @end deftypefun
 
 @deftypefun int mpfr_neg (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
-Set @var{rop} to @minus{}@var{op} rounded in the direction @var{rnd}.
+Set @var{rop} to @math{-@var{op}} rounded in the direction @var{rnd}.
 Just changes the sign
 if @var{rop} and @var{op} are the same variable.
 @end deftypefun
@@ -1055,16 +1063,9 @@ you should use @code{mpfr_div_2ui} (or @code{mpfr_div_2si}) instead.
 @deftypefun int mpfr_cmp (mpfr_t @var{op1}, mpfr_t @var{op2})
 @deftypefunx int mpfr_cmp_ui (mpfr_t @var{op1}, unsigned long int @var{op2})
 @deftypefunx int mpfr_cmp_si (mpfr_t @var{op1}, signed long int @var{op2})
-@ifnottex
-Compare @var{op1} and @var{op2}.  Return a positive value if @var{op1} >
-@var{op2}, zero if @var{op1} = @var{op2}, and a negative value if @var{op1} <
-@var{op2}.
-@end ifnottex
-@tex
-Compare @var{op1} and @var{op2}.  Return a positive value if $@var{op1} >
-@var{op2}$, zero if $@var{op1} = @var{op2}$, and a negative value if $@var{op1}
-< @var{op2}$.
-@end tex
+Compare @var{op1} and @var{op2}.  Return a positive value if @math{@var{op1} >
+@var{op2}}, zero if @math{@var{op1} = @var{op2}}, and a negative value if
+@math{@var{op1} < @var{op2}}.
 Both @var{op1} and @var{op2} are considered to their full own precision,
 which may differ. In case @var{op1} and @var{op2} are of same sign but 
 different, the absolute value returned is
@@ -1074,20 +1075,14 @@ It is not allowed that one of the operands is NaN (Not-a-Number).
 
 @deftypefun int mpfr_cmp_ui_2exp (mpfr_t @var{op1}, unsigned long int @var{op2}, mp_exp_t @var{e})
 @deftypefunx int mpfr_cmp_si_2exp (mpfr_t @var{op1}, long int @var{op2}, mp_exp_t @var{e})
-Compare @var{op1} and @var{op2} multiplied by two to the power @var{e}.
+Compare @var{op1} and @m{@var{op2} \times 2^e, @var{op2} multiplied by two to
+the power @var{e}}.
 @end deftypefun
 
 @deftypefun int mpfr_cmpabs (mpfr_t @var{op1}, mpfr_t @var{op2})
-@ifinfo
-Compare |@var{op1}| and |@var{op2}|.  Return a positive value if
-|@var{op1}| > |@var{op2}|, zero if |@var{op1}| = |@var{op2}|, and
-a negative value if |@var{op1}| < |@var{op2}|.
-@end ifinfo
-@tex
-Compare $|@var{op1}|$ and $|@var{op2}|$.  Return a positive value if
-$|@var{op1}| > |@var{op2}|$, zero if $|@var{op1}| = |@var{op2}|$, and
-a negative value if $|@var{op1}| < |@var{op2}|$.
-@end tex
+Compare @math{|@var{op1}|} and @math{|@var{op2}|}.  Return a positive value if
+@math{|@var{op1}| > |@var{op2}|}, zero if @math{|@var{op1}| = |@var{op2}|}, and
+a negative value if @math{|@var{op1}| < |@var{op2}|}.
 It is not allowed that one of the operands is NaN (Not-a-Number) or an
 infinity.
 @end deftypefun
@@ -1115,13 +1110,13 @@ nor plus or minus infinity.
 Compute the relative difference between @var{op1} and @var{op2} 
 and store the result in @var{rop}.
 This function does not guarantee the exact rounding on the relative difference;
-it just computes abs(@var{op1}@minus{}@var{op2})/@var{op1}, using the
+it just computes @math{|@var{op1}-@var{op2}|/@var{op1}}, using the
 rounding mode @var{rnd} for all operations.
 @end deftypefun
 
 @deftypefun int mpfr_sgn (mpfr_t @var{op})
-Return a positive value if @var{op} > 0, zero if @var{op} = 0,
-and a negative value if @var{op} < 0.
+Return a positive value if @math{@var{op} > 0}, zero if @math{@var{op} = 0},
+and a negative value if @math{@var{op} < 0}.
 Its result is not specified when @var{op} is NaN (Not-a-Number).
 @end deftypefun
 
@@ -1135,7 +1130,7 @@ rounded to the direction @var{rnd} with the precision of @var{rop}.
 Return zero when the result is exact
 (this occurs in fact only when @var{op} is 0, 1, or +infinity)
 and a non-zero value otherwise (except for rounding to nearest,
-the sign of the return value is that of @var{rop}-log(@var{op}).
+the sign of the return value is that of @math{@var{rop}-@log{}(@var{op})}.
 @end deftypefun
 
 @deftypefun int mpfr_exp (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
@@ -1148,7 +1143,7 @@ and a negative value when it is smaller.
 @end deftypefun
 
 @deftypefun int mpfr_exp2 (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
-Set @var{rop} to 2 power of @var{op},
+Set @var{rop} to @m{2^{op}, 2 power of @var{op}},
 rounded to the direction @var{rnd} with the precision of @var{rop}.
 Return zero iff the result is exact (this occurs in fact only when @var{op} 
 is -infinity, 0, or +infinity),
@@ -1220,7 +1215,10 @@ i.e. the result is 0).
 
 @deftypefun int mpfr_log2 (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_log10 (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
-Set @var{rop} to the log[t] (t=2 or 10)(log x / log t) of @var{op}, rounded to the direction @var{rnd} with the precision of @var{rop}. Return 0 iff the result is exact (this occurs in fact only when @var{op} is 1 i.e. the result is 0).
+Set @var{rop} to @m{\log_2 @var{op}, log2(@var{op})} or @m{\log_{10} @var{op},
+log10(@var{op})}, respectively, rounded to the direction @var{rnd} with the
+precision of @var{rop}. Return 0 iff the result is exact (this occurs in fact
+only when @var{op} is 1 i.e. the result is 0).
 @end deftypefun
 
 @deftypefun int mpfr_gamma (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
@@ -1230,9 +1228,9 @@ Return 0 iff the result is exact.
 @end deftypefun
 
 @deftypefun int mpfr_fma (mpfr_t @var{rop}, mpfr_t @var{opx},mpfr_t @var{opy},mpfr_t @var{opz}, mp_rnd_t @var{rnd}) 
-Set @var{rop} to @var{opx} * @var{opy} + @var{opz}, rounded to the direction 
+Set @var{rop} to @math{@var{opx} @GMPtimes{} @var{opy} + @var{opz}}, rounded to the direction 
 @var{rnd} with the precision of @var{rop}. Return 0 iff the result is exact,
-a positive value if @var{rop} is larger than @var{opx} * @var{opy} + @var{opz},
+a positive value if @var{rop} is larger than @math{@var{opx} @GMPtimes{} @var{opy} + @var{opz}},
 and a negative value otherwise.
 @end deftypefun
 
@@ -1254,13 +1252,13 @@ requested.
 @end deftypefun
 
 @deftypefun void mpfr_const_pi (mpfr_t @var{rop}, mp_rnd_t @var{rnd})
-Set @var{rop} to the value of Pi rounded to the direction @var{rnd}
+Set @var{rop} to the value of @m{\pi,Pi} rounded to the direction @var{rnd}
 with the precision of @var{rop}. This function uses the Borwein, Borwein,
-Plouffe formula which directly gives the expansion of Pi in base 16.
+Plouffe formula which directly gives the expansion of @m{\pi,Pi} in base 16.
 @end deftypefun
 
 @deftypefun void mpfr_const_euler (mpfr_t @var{rop}, mp_rnd_t @var{rnd})
-Set @var{rop} to the value of Euler's constant 0.577...
+Set @var{rop} to the value of Euler's constant 0.577@dots{}
 rounded to the direction @var{rnd} with the precision of @var{rop}.
 @end deftypefun
 
@@ -1555,3 +1553,7 @@ Donald E. Knuth, "The Art of Computer Programming", vol 2,
 @printindex fn
 
 @bye
+
+@c Local variables:
+@c fill-column: 78
+@c End:
