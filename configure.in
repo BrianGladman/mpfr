@@ -14,10 +14,13 @@ AC_PROG_RANLIB
 AC_CHECK_OS
 AC_CHECK_MACHTYPE
 
+MISCFLAGS="$$<" 
 dnl Mettre les flags OS dependants
 case $OS_TYPE in 
 	HP-UX*)
 		AC_CHECK_LIB(M, main);;
+	SunOS*)
+		MISCFLAGS="trunc.c" 
 	Linux*)
 		AC_CHECK_LIB(m, main)
 		fpucw=`grep __setfpucw /usr/include/fpu_control.h`
@@ -60,6 +63,7 @@ AC_SUBST(INCLUDES)
 AC_SUBST(LDADD)
 AC_SUBST(LDFLAGS)
 AC_SUBST(CFLAGS)
+AC_SUBST(MISCFLAGS)
 AC_OUTPUT(Makefile tests/Makefile)
 
 dnl NEWS README AUTHORS Changelog

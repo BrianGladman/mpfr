@@ -8,11 +8,11 @@ libmpfr_a_LIBADD= ceil.o floor.o
 
 
 ceil.o: trunc.c mpfr.h
-	$(COMPILE) -DMPFR_CEIL -c trunc.c -o ceil.o
+	$(COMPILE) -DMPFR_CEIL -c @MISCFLAGS@ -o ceil.o
 floor.o: trunc.c  mpfr.h
-	$(COMPILE) -DMPFR_FLOOR -c trunc.c -o floor.o
+	$(COMPILE) -DMPFR_FLOOR -c @MISCFLAGS@ -o floor.o
 trunc.o: trunc.c  mpfr.h
-	$(COMPILE) -DMPFR_TRUNC -c trunc.c
+	$(COMPILE) -DMPFR_TRUNC -c @MISCFLAGS@
 
 info_TEXINFOS = mpfr.texi
 
