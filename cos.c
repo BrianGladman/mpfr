@@ -19,7 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
 #include "mpfr-impl.h"
 
 /* s <- 1 - r/2! + r^2/4! + ... + (-1)^l r^l/(2l)! + ...
@@ -69,13 +68,16 @@ int
 mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
   mp_prec_t K0, K, precy, m, k, l;
-  int inexact, loops;
+  int inexact;
   mpfr_t r, s;
   mp_limb_t *rp, *sp;
   mp_size_t sm;
   mp_exp_t exps, cancel = 0;
+  MPFR_ZIV_DECL (loop);
   MPFR_SAVE_EXPO_DECL (expo);
   TMP_DECL (marker);
+
+  MPFR_LOG_BEGIN (("x[%#R]=%R rnd=%d", x, x, rnd_mode));
 
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(x)))
     {
@@ -106,7 +108,8 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_TMP_INIT(rp, r, m, sm);
   MPFR_TMP_INIT(sp, s, m, sm);
   
-  for (loops = 1; ; loops++)
+  MPFR_ZIV_INIT (loop, m);
+  for (;;)
     {
       mpfr_mul (r, x, x, GMP_RNDU); /* err <= 1 ulp */
 
@@ -161,22 +164,20 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
           cancel = exps;
         }
 
-      m += BITS_PER_MP_LIMB;
-      /* if we already had two failures, possibly a huge cancellation,
-         for example cos(Pi) */
-      if (loops >= 2)
-        m += m / 2;
+      MPFR_ZIV_NEXT (loop, m);
       sm = (m + BITS_PER_MP_LIMB - 1) / BITS_PER_MP_LIMB;
       MPFR_TMP_INIT(rp, r, m, sm);
       MPFR_TMP_INIT(sp, s, m, sm);
     }
-
+  MPFR_ZIV_FREE (loop);
   MPFR_SAVE_EXPO_FREE (expo);
   inexact = mpfr_set (y, s, rnd_mode); 
   /* FIXME: Dont' need check range? */
 
   TMP_FREE(marker);
   
+  MPFR_LOG_END (("y[%#R]=%R inexact=%d", y, y, inexact));
+
   return inexact;
 }
 

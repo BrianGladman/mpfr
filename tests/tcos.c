@@ -96,7 +96,7 @@ check_nans (void)
     }
 
   /* Compute ~Pi/2 to check */
-  /* TOO SLOW: Disable it.
+  /* FIXME: Too slow! 
   mpfr_set_prec (x, 20000);
   mpfr_const_pi (x, GMP_RNDD); mpfr_div_2ui (x, x, 1, GMP_RNDN);
   mpfr_set_prec (y, 24);
