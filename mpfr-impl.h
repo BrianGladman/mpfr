@@ -34,7 +34,7 @@ typedef unsigned long int       mp_exp_unsigned_t;
 
 #include <assert.h>
 #define MPFR_ASSERT(level, expr) \
-  ((level) < MPFR_DEBUG_LEVEL && (assert(expr), 0))
+  if ((level) < MPFR_DEBUG_LEVEL && (assert(expr), 0))
 #define MPFR_ASSERTN(expr) MPFR_ASSERT(16, expr)
 #define MPFR_ASSERTD(expr) MPFR_ASSERT(32, expr)
 
