@@ -27,6 +27,7 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
+#define MPFR_DEBUG_LEVEL 30
 #if MPFR_DEBUG_LEVEL > 20
 void affiche_mp(mp_srcptr, mp_size_t); 
 
@@ -309,6 +310,9 @@ mpfr_div (q, u, v, rnd_mode)
      
       /* Compute ulo + r. The two of them do not overlap. */
       MPN_COPY(rem2 + rsize - 1 - qsize, rp, bsize);
+      
+      if (qsize + 1 > bsize)
+	MPN_ZERO(rem2 + rsize - 1 - qsize + bsize, qsize + 1 - bsize); 
     
       if (asize < usize) 
 	{
