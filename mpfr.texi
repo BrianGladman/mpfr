@@ -827,6 +827,9 @@ These functions assign new values to already initialized floats
 @deftypefunx int mpfr_set_f (mpfr_t @var{rop}, mpf_t @var{op}, mp_rnd_t @var{rnd})
 Set the value of @var{rop} from @var{op}, rounded
 towards the given direction @var{rnd}.
+Note that the input 0 is converted to +0 by @code{mpfr_set_ui},
+@code{mpfr_set_si}, @code{mpfr_set_z}, @code{mpfr_set_q} and
+@code{mpfr_set_f}, regardless of the rounding mode.
 @end deftypefun
 
 @deftypefun int mpfr_set_str (mpfr_t @var{x}, const char *@var{s}, int @var{base}, mp_rnd_t @var{rnd})
