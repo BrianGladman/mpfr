@@ -30,14 +30,10 @@ case $OS_TYPE in
 		;;
 	SunOS*)
 		MISCFLAGS="trunc.c"
-		LM9X="-lm9x"
 		AC_CHECK_LIB(m, main)
 		;;
 	Linux*)
 		AC_CHECK_LIB(m, main)
-		if [[ "$MACHTYPE" = "alpha" ]];	then
-		  CFLAGS="$CFLAGS -mfp-rounding-mode=d -mieee-with-inexact"
-		fi
 		;;
 	IRIX64)
 		AC_CHECK_LIB(m, main)
@@ -49,16 +45,49 @@ case $OS_TYPE in
 		;;
 	OSF*)
 		AC_CHECK_LIB(m, main)
-		CFLAGS="$CFLAGS -mfp-rounding-mode=d -mieee-with-inexact"
-		if test -n "$GCC"; then
-		  CFLAGS="$CFLAGS -ffloat-store"
-		fi
 		AC_DEFINE(__STDC__)
 		;;
 	*)
 		AC_CHECK_LIB(m, main)
 		;;
 esac
+
+dnl Tests concerning the include directories.
+AC_MSG_CHECKING(for gmp files)
+if test -d "$with_gmp_include"; then
+  CPPFLAGS="$CPPFLAGS -I$with_gmp_include"
+else
+  with_gmp_include=
+fi
+AC_TRY_COMPILE([
+#include "gmp.h"
+#include "gmp-impl.h"
+#include "longlong.h"
+], , AC_MSG_RESULT(yes),
+    [AC_MSG_RESULT(no)
+     AC_MSG_ERROR([gmp.h or gmp-impl.h or config.h or gmp-mparam.h or
+longlong.h may be missing ${with_gmp_include:+in $with_gmp_include}])]
+)
+
+dnl Check for valid BITS_PER_MP_LIMB and BYTES_PER_MP_LIMB
+AC_MSG_CHECKING(for valid BITS_PER_MP_LIMB and BYTES_PER_MP_LIMB)
+AC_TRY_RUN([
+#include <limits.h>
+#include "gmp.h"
+#include "gmp-impl.h"
+int main()
+{
+  return BITS_PER_MP_LIMB == BYTES_PER_MP_LIMB * CHAR_BIT
+         && sizeof(mp_limb_t) == BYTES_PER_MP_LIMB ? 0 : 1;
+}
+], AC_MSG_RESULT(yes),
+  [AC_MSG_RESULT(no)
+   AC_MSG_ERROR([BITS_PER_MP_LIMB and/or BYTES_PER_MP_LIMB are incorrect.
+You probably need to change some of the GMP or MPFR compile options:
+MPFR doesn't currently do as many architecture checks as GMP, so the
+default target architecture may be different, hence the error.])],
+   AC_MSG_RESULT([can't test])
+)
 
 MPFR_CONFIGS
 
