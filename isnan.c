@@ -1,6 +1,6 @@
-/* mpfr_nan_d, mpfr_inf_d -- check for NaN or infinities
+/* mpfr_nan_p, mpfr_inf_p -- check for NaN or infinities
 
-Copyright (C) 2000 Free Software Foundation.
+Copyright (C) 2000-2001 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -25,13 +25,19 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
 int
-mpfr_nan_d (mpfr_srcptr x)
+mpfr_nan_p (mpfr_srcptr x)
 {
   return MPFR_IS_NAN (x);
 }
 
 int
-mpfr_inf_d (mpfr_srcptr x)
+mpfr_inf_p (mpfr_srcptr x)
 {
   return (!MPFR_IS_NAN(x) && MPFR_IS_INF(x));
+}
+
+int
+mpfr_number_p (mpfr_srcptr x)
+{
+  return !MPFR_IS_NAN(x);
 }
