@@ -62,7 +62,7 @@ mpfr_div (r, u, v, rnd_mode)
   mp_exp_t rexp;
   long k, t; 
   unsigned long cc = 0, rw, nw; 
-  char can_round = 0, sh; 
+  int can_round = 0, sh; 
   TMP_DECL (marker);
 
 
@@ -220,7 +220,7 @@ mpfr_div (r, u, v, rnd_mode)
   if (!can_round && (drsize < usize || dsize < vsize)) 
     {
       mp_size_t ulrsize; 
-      char b = 0; 
+      int b = 0; 
       mp_ptr rp2, ulorem, ulorem2; 
 
   /**************************************************************************
