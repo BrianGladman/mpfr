@@ -101,6 +101,13 @@ test_sign (void)
       exit (1);
     }
 
+  mpfr_set_prec (x, 53);
+  mpfr_set_prec (y, 53);
+  mpfr_set_str_binary (x, "1.1001001000011111101101010100010001000010110100010011");
+  mpfr_set_str_binary (y, "1.1111111111111111111111111111111111111111111111111111e-1");
+  mpfr_sin (x, x, GMP_RNDZ);
+  MPFR_ASSERTN(mpfr_cmp (x, y) == 0);
+
   mpfr_clear (pid);
   mpfr_clear (piu);
   mpfr_clear (x);
