@@ -72,7 +72,6 @@ int m;
   n = 1 << m;
   P = (mpz_t*) malloc((m+1) * sizeof(mpz_t));
   S = (mpz_t*) malloc((m+1) * sizeof(mpz_t));
-
   ptoj = (mpz_t*) malloc((m+1) * sizeof(mpz_t)); /* ptoj[i] = mantissa^(2^i) */
   mult = (int*) malloc((m+1) * sizeof(int)); 
   nb_terms = (int*) malloc((m+1) * sizeof(int)); 
@@ -89,7 +88,6 @@ int m;
     k++;
     nb_terms[k] = 1;
     mpz_set_ui(P[k], i+1);
-    /*    mpz_set_ui(S[k], i+1);*/
     mpz_set(S[k], P[k]);;
     j=i+1; l=0; while ((j & 1) == 0) {      
       mpz_mul(S[k], S[k], ptoj[l]);
@@ -114,7 +112,7 @@ int m;
      mpz_mul(P[k-1], P[k-1], P[k]);     
      l++; k--;
    }
-
+   
   diff = mpz_sizeinbase(S[0],2) - 2*precy;
   expo = diff;
   if (diff >=0)
@@ -133,14 +131,15 @@ int m;
       {
 	mpz_mul_2exp(P[0],P[0],-diff);
 	}
+
   mpz_tdiv_q(S[0], S[0], P[0]);
   mpfr_set_z(y,S[0], GMP_RNDD);
   EXP(y) += expo;
 
-
   mpfr_div_2exp(y, y, r*(i-1),GMP_RNDN); 
   for (i=0;i<=m;i++) { mpz_clear(P[i]); mpz_clear(S[i]); mpz_clear(ptoj[i]); }
-  TMP_FREE(marker);
+  free(P);  free(S);   free(ptoj);
+  free(mult);  free(nb_terms);  
   return 0;
 }
 
@@ -179,8 +178,10 @@ mp_rnd_t rnd_mode;
   int logn;
   /* commencons par 0 */
   if (FLAG_NAN(x)) { SET_NAN(y); return 1; }
-  if (!NOTZERO(x)) { mpfr_set_ui(y, 1, GMP_RNDN); return 0; }
-
+  if (!NOTZERO(x)) { 
+    mpfr_set_ui(y, 1, GMP_RNDN); 
+    return 0;
+ }
   /* Decomposer x */
   /* on commence par ecrire x = 1.xxxxxxxxxxxxx
      ----- k bits -- */
@@ -194,7 +195,6 @@ mp_rnd_t rnd_mode;
   ttt = EXP(x);
   mpfr_init2(x_copy,PREC(x));
   mpfr_set(x_copy,x,GMP_RNDD);
-  
   /* on fait le shift pour que le nombre soit inferieur a 1 */
   if (ttt > 0) 
     {
@@ -204,8 +204,7 @@ mp_rnd_t rnd_mode;
     }
   realprec = PREC(y)+logn;
   while (!good){      
-/*    Prec = realprec+shift +shift_x + 2*prec_x;*/
-      Prec = realprec+shift+2+shift_x;
+    Prec = realprec+shift+2+shift_x;
     k = (int) ceil(log
 		   ((double) (Prec) / (double) BITS_PER_MP_LIMB)
 		   /log(2.0));
@@ -213,7 +212,7 @@ mp_rnd_t rnd_mode;
     mpfr_init2(t, Prec);
     mpfr_init2(tmp, Prec);
     mpfr_set_ui(tmp,1,GMP_RNDN);
-    twopoweri = BITS_PER_MP_LIMB;   
+    twopoweri = BITS_PER_MP_LIMB;
     if (k <= prec_x) iter = k; else iter= prec_x;
     for(i = 0; i <= iter; i++){
       mpfr_extract(uk,x_copy,i);
@@ -240,6 +239,7 @@ mp_rnd_t rnd_mode;
 	      mpfr_exp_rational(t,uk, shift + twopoweri - ttt, k+1);
 	    for (loop= 0 ; loop < shift; loop++)
 	      mpfr_mul(t,t,t,GMP_RNDD);
+
 	  }
 	mpfr_mul(tmp,tmp,t,GMP_RNDD); 
 #ifdef TIMING
@@ -251,16 +251,21 @@ mp_rnd_t rnd_mode;
 	fprintf(stderr, "\n ii --- ii \n");
 #endif
 	twopoweri <<= 1;
+	mpz_clear(uk);
       }
       for (loop= 0 ; loop < shift_x; loop++)
 	mpfr_mul(tmp,tmp,tmp,GMP_RNDD);
+      mpfr_clear(t);      	    
       if (mpfr_can_round(tmp, realprec, GMP_RNDD, rnd_mode, PREC(y))){
 	    mpfr_set(y,tmp,rnd_mode);
+	    mpfr_clear(tmp);
 	    good = 1;
       } else {
+	mpfr_clear(tmp);
 	realprec += 3*logn;
       }
     }
+  mpfr_clear(x_copy);
     return 0;
 } 
 
