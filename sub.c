@@ -100,7 +100,7 @@ mpfr_sub (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
           inexact = mpfr_add1(a, c, b, rnd_mode,
                               (mp_exp_unsigned_t) MPFR_EXP(c) - MPFR_EXP(b));
           MPFR_CHANGE_SIGN(a);
-          return inexact;
+          return -inexact;
         }
       else
         {
