@@ -921,7 +921,7 @@ nor plus or minus infinity.
 Compute the relative difference between @var{op1} and @var{op2} 
 and store the result in @var{rop}.
 This function does not guarantee the exact rounding on the relative difference;
-it just computes @var{abs(op1-op2)/op1}, using the rounding mode @var{rnd} for
+it just computes @var{abs}(@var{op1}-@var{op2})/@var{op1}, using the rounding mode @var{rnd} for
 all operations.
 @end deftypefun
 
@@ -976,6 +976,13 @@ Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
 i.e. the result is 1).
 @end deftypefun
 
+@deftypefun int mpfr_exp2 (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+Set @var{rop} to 2 power of @var{op},
+rounded to the direction @var{rnd} with the precision of @var{rop}.
+Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
+i.e. the result is 1).
+@end deftypefun
+
 @deftypefun int mpfr_sin_cos (mpfr_t @var{sop}, mpfr_t @var{cop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Set @var{sop} to the sinus of @var{op}, @var{cop} to the cosinus of @var{op},
 rounded to the direction @var{rnd} with the precision of @var{rop}.
@@ -991,6 +998,49 @@ rounded to the direction @var{rnd} with the precision of @var{rop}.
 Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
 i.e. the result is 1).
 @end deftypefun
+
+@deftypefun int mpfr_sinh (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+Set @var{rop} to the hyperbolic sine of @var{op},
+rounded to the direction @var{rnd} with the precision of @var{rop}.
+Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
+i.e. the result is 1).
+@end deftypefun
+
+@deftypefun int mpfr_tanh (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+Set @var{rop} to the hyperbolic tangent of @var{op},
+rounded to the direction @var{rnd} with the precision of @var{rop}.
+Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
+i.e. the result is 1).
+@end deftypefun
+
+@deftypefun int mpfr_acosh (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+Set @var{rop} to the inverse hyperbolic cosine of @var{op},
+rounded to the direction @var{rnd} with the precision of @var{rop}.
+Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
+i.e. the result is 1).
+@end deftypefun
+
+@deftypefun int mpfr_asinh (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+Set @var{rop} to the inverse hyperbolic sine of @var{op},
+rounded to the direction @var{rnd} with the precision of @var{rop}.
+Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
+i.e. the result is 1).
+@end deftypefun
+
+@deftypefun int mpfr_atanh (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+Set @var{rop} to the inverse hyperbolic tangent of @var{op},
+rounded to the direction @var{rnd} with the precision of @var{rop}.
+Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
+i.e. the result is 1).
+@end deftypefun
+
+@deftypefun int mpfr_factorial (mpfr_t @var{rop}, unsigned long int  @var{op}, mp_rnd_t @var{rnd})
+Set @var{rop} to the factorial of the unsigned long int @var{op},
+rounded to the direction @var{rnd} with the precision of @var{rop}.
+Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
+i.e. the result is 1).
+@end deftypefun
+
 
 @deftypefun void mpfr_agm (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
 Set @var{rop} to the arithmetic-geometric mean of @var{op1} and @var{op2},
