@@ -16,14 +16,20 @@ option to the "prepare" script to get better dependency tracking.
 
 To generate mpfr.info, you need texinfo version 4.2 (or higher).
 
+===========================================
+
 The VERSION file contains the number of the next release version, i.e.
 the version currently developed. If nightly snapshots are built, the
 date in the yyyymmdd format must be added to the version number, for
 instance: "2.0.1-20020319".
 
+===========================================
+
 When submitting patches, unified diffs (option -u) are recommended,
 as they are more readable. You can also use the option -d to generate
 a smaller set of changes. See diff(1) for more information.
+
+===========================================
 
 Though the ISO C standard requires that <stdlib.h> defines NULL,
 do not use NULL with #include <stdlib.h> only, because this will
@@ -32,10 +38,14 @@ not conform to the standard (even with C90); other problems may
 occur on this architecture. You can either include <stdio.h> or
 use 0 (possibly casted to the target pointer type).
 
+===========================================
+
 In the tests, do not use mpfr_set_d (except when testing it), as the
 result will depend on the floating-point arithmetic of the system;
 this has shown many problems in the past and problems may still occur
 with new systems.
+
+===========================================
 
 To make a release (for the MPFR team):
   1) Check the version and update the date in mpfr.texi.
@@ -47,7 +57,8 @@ To make a release (for the MPFR team):
   4) Generate the release version with "make dist".
   5) Test the release version on different machines, with and without
      the --disable-alloca configure option (or compile gmp with
-     --enable-alloca=debug), with and without -DXDEBUG in $CFLAGS.
+     --enable-alloca=debug), with and without -DXDEBUG in $CFLAGS,
+     with and without gmp internal files.
   6) If there is no problem, add a tag to the CVS corresponding to the
      release, e.g. mpfr-2-0-1-rel for mpfr 2.0.1 (note that the periods
      are replaced by dashes): cvs tag mpfr-2-0-1-rel
@@ -56,3 +67,19 @@ To make a release (for the MPFR team):
 
 A branch may be created first (e.g. with "cvs tag -b mpfr-2-0-2-branch")
 to allow new features to be committed to the trunk.
+
+===========================================
+
+To check the consistency of the test suite (for the MPFR team), 
+you can use gcov (with GCC):
+1. Clean MPFR:
+  make clean
+2. Build MPFR with theses options:
+  make CFLAGS="-fprofile-arcs -ftest-coverage"
+3. Launch the tests:
+  make check CFLAGS="-fprofile-arcs -ftest-coverage"
+4. Get the summary of the consistency:
+  find . -name '*.c' -exec gcov '{}' ';' | grep "lines executed" | sort
+
+ For each source file, there is a .c.gcov file which contains much more
+ information.
