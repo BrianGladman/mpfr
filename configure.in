@@ -93,6 +93,53 @@ main() { fesetround(FE_DOWNWARD); }],
   AC_MSG_RESULT(no)
 )
 
+dnl Check whether 0/0, 1/0, -1/0 are valid expressions
+AC_MSG_CHECKING(for 0/0 as a valid expression)
+AC_TRY_RUN([#include <math.h>
+main() { double x = 0.0/0.0; exit (0); }],
+  [AC_MSG_RESULT(yes)
+   AC_DEFINE(HAVE_INFS)],
+  AC_MSG_RESULT(no),
+  AC_MSG_RESULT(no)
+)
+
+dnl Check if denormalized numbers are supported
+AC_MSG_CHECKING(for denormalized numbers)
+AC_TRY_RUN([
+#include <math.h>
+#include <stdio.h>
+main() { double x = 2.22507385850720138309e-308;
+         fprintf (stderr, "%e\n", x / 2.0);
+         exit (2.0 * (x / 2.0) != x);}],
+  [AC_MSG_RESULT(yes)
+   AC_DEFINE(HAVE_DENORMS)],
+  AC_MSG_RESULT(no),
+  AC_MSG_RESULT(no)
+)
+
+dnl Check for extended precision
+AC_MSG_CHECKING(for extended precision)
+AC_TRY_RUN([
+main()
+{
+  double c, d, dj;
+  int j;
+
+  c = 1.46484375e-3;
+
+  dj = 1.0;
+  for (j=0; j<54; j++) dj *= 0.5;
+  d = 0.75 + dj;
+  d /= 1 << 9;
+  exit (c == d);
+}],
+  [AC_MSG_RESULT(yes)
+   CFLAGS="$CFLAGS -ffloat-store"
+   AC_DEFINE(USE_EXTENDED)],
+  AC_MSG_RESULT(no),
+  AC_MSG_RESULT(no)
+)
+
 AC_MY_LIBS($with_gmp_lib, gmp)
 AC_SUBST(INCLUDES)
 AC_SUBST(LDADD)
