@@ -166,13 +166,38 @@ special (void)
   mpfr_clear (y);
 }
 
+static void
+special_overflow (void)
+{
+  mpfr_t x, y;
+
+  mpfr_set_emin (-125);
+  mpfr_set_emax (128);
+
+  mpfr_init2 (x, 24);
+  mpfr_init2 (y, 24);
+  mpfr_set_str_binary (x, "0.101100100000000000110100E7");
+  mpfr_gamma (y, x, GMP_RNDN);
+  if (!mpfr_inf_p (y))
+    {
+      printf("Overflow error.\n");
+      mpfr_dump (y);
+      exit (1);
+    }
+
+  mpfr_clear (y);
+  mpfr_clear (x);
+  mpfr_set_emin (MPFR_EMIN_MIN);
+  mpfr_set_emax (MPFR_EMAX_MAX);
+}
+
 int
 main (void)
 {
   tests_start_mpfr ();
 
   special ();
-
+  special_overflow ();
   test_generic (2, 100, 2);
 
   tests_end_mpfr ();

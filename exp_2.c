@@ -110,6 +110,10 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   TMP_DECL(marker);
 
   precy = MPFR_PREC(y);
+  
+#ifdef DEBUG
+  printf("Py=%d Px=%d X=", MPFR_PREC(y), MPFR_PREC(x)); mpfr_dump (x);
+#endif
 
   n = (int) (mpfr_get_d1 (x) / LOG2);
 
@@ -192,6 +196,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       exps += mpz_normalize (ss, ss, q);
     }
   mpfr_set_z (s, ss, GMP_RNDN);
+  
   MPFR_SET_EXP(s, MPFR_GET_EXP (s) + exps);
   TMP_FREE(marker); /* don't need ss anymore */
 

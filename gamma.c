@@ -99,6 +99,8 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
         return mpfr_fac_ui (gamma, u - 1, rnd_mode);
     }
 
+  mpfr_save_emin_emax ();
+
   realprec = prec_gamma + 10;
 
   mpfr_init2 (xp, 2);
@@ -220,6 +222,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_clear(GammaTrial);
 
   mpfr_clear (xp);
+  mpfr_restore_emin_emax ();
 
-  return inex; /* inexact result */
+  return mpfr_check_range(gamma, inex, rnd_mode); 
 }

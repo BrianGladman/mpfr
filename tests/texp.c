@@ -284,6 +284,26 @@ check_special ()
   mpfr_set_prec (y, 2);
   mpfr_exp_3 (y, x, GMP_RNDN);
 
+  /* Check some little things about overflow detection */
+  mpfr_set_emin (-125);
+  mpfr_set_emax (128);
+  mpfr_set_prec (x, 107);
+  mpfr_set_prec (y, 107);
+  mpfr_set_str_binary (x, "0.11110000000000000000000000000000000000000000000"
+		       "0000000000000000000000000000000000000000000000000000"
+		       "00000000E4");
+  mpfr_exp (y, x, GMP_RNDN);
+  if (mpfr_cmp_str (y, "0.11000111100001100110010101111101011010010101010000"
+		    "1101110111100010111001011111111000110111001011001101010"
+		    "01E22", 2, GMP_RNDN))
+    {
+      printf ("Special overflow error (1)\n");
+      mpfr_dump (y);
+      exit (1);
+    }
+  mpfr_set_emin (MPFR_EMIN_MIN);
+  mpfr_set_emax (MPFR_EMAX_MAX);
+
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);
