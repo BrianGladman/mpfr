@@ -71,7 +71,7 @@ mpfr_sin_cos (sinus, cosinus, x, rnd_mode)
   mpfr_t tmp;
   mpfr_t inter;
   int ttt;
-  int twopoweri;
+  int twopoweri, expo;
   int Prec;
   int loop;
   int prec_x;
@@ -105,7 +105,7 @@ mpfr_sin_cos (sinus, cosinus, x, rnd_mode)
   ttt = MPFR_EXP(x);
   mpfr_init2(x_copy, MPFR_PREC(x));
   mpfr_set(x_copy,x,GMP_RNDD);
-  mpz_init(square);
+  mpz_init (square);
   /* on fait le shift pour que le nombre soit inferieur a 1 */
   if (ttt > 0) 
     {
@@ -135,25 +135,31 @@ mpfr_sin_cos (sinus, cosinus, x, rnd_mode)
     mpfr_set_ui(tmp_cos,1,GMP_RNDN);
     twopoweri = BITS_PER_MP_LIMB;   
     if (k <= prec_x) iter = k; else iter= prec_x;
-    for(i = 0; i <= iter; i++){
+    for(i = 0; i <= iter; i++) {
       mpfr_extract (uk, x_copy, i);
+      expo = twopoweri - ttt;
 	if (i)
 	  {
+	    if (twopoweri > target_prec) {
+	      /* truncate the last uk, i.e. bits twopoweri/2 to twopoweri */
+	      mpz_div_2exp (uk, uk, twopoweri - target_prec);
+	      expo -= twopoweri - target_prec;
+	    }
 	    mpz_mul (square, uk, uk);
 	    mpz_neg (square, square);
-	    mpfr_sin_aux (t_sin, square, 2*(twopoweri - ttt) + 2, k - i + 1);
-	    mpfr_cos_aux (t_cos, square, 2*(twopoweri - ttt) + 2, k - i + 1);
+	    mpfr_sin_aux (t_sin, square, 2*expo + 2, k - i + 1);
+	    mpfr_cos_aux (t_cos, square, 2*expo + 2, k - i + 1);
 	    mpfr_set_z (tmp, uk, GMP_RNDD);
 	    mpfr_mul (t_sin, t_sin, tmp, GMP_RNDD);
-	    mpfr_div_2exp (t_sin, t_sin, twopoweri - ttt, GMP_RNDD);
+	    mpfr_div_2exp (t_sin, t_sin, MIN(twopoweri, target_prec) - ttt, GMP_RNDD);
 	  }
 	else
 	  {
 	    /* cas particulier : on est oblige de faire les calculs avec x/2^. 
 	       puis elever au carre (plus rapide) */    
 	    mpz_set (square, uk);
-	    mpz_mul(square, square, square);
-	    mpz_neg(square, square);
+	    mpz_mul (square, square, square);
+	    mpz_neg (square, square);
 	    /* pour l'instant, shift = 0 ... */
 	    /* ATTENTION, IL FAUT AUSSI MULTIPLIER LE DENOMINATEUR */
 	    mpfr_sin_aux(t_sin,square, 2*(shift + twopoweri - ttt) + 2, k+1);
