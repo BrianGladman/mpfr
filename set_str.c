@@ -173,7 +173,8 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
   if (prec_s == 0)
     {
       MPFR_SET_ZERO (x);
-      return 0;
+      res = 0;
+      goto end;
     }
 
   /* now we have str = 0.mant_s[0]...mant_s[prec_s-1]*base^exp_s */
@@ -320,7 +321,10 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
       /* test if rounding is possible, and if so exit the loop */
       if (exact || mpfr_can_round_raw (result + n, n, (negative) ? -1 : 1,
 			       n * BITS_PER_MP_LIMB - err - 1, GMP_RNDN, rnd, MPFR_PREC(x)))
-	break;
+        {
+          TMP_FREE(marker);
+          break;
+        }
 
       /* update for next loop */
       if (cboucle == 2)
