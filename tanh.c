@@ -76,8 +76,7 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
     
     /* The optimal number of bits: see algorithms.ps */
     Nt = Nt + MPFR_INT_CEIL_LOG2 (Nt) + 4;
-    if (MPFR_GET_EXP (x) > 0)
-      Nt += MPFR_GET_EXP (x);
+    Nt += ABS (MPFR_GET_EXP (x));
 
     /* initialise of intermediary variable */
     mpfr_init2 (t, Nt); 
