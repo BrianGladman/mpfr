@@ -16,6 +16,10 @@ mpfr_ptr Q; mpfr_srcptr n, d; unsigned char rnd_mode;
   mp_limb_t cc; mpfr_ptr q;
 
   if (FLAG_NAN(n) || FLAG_NAN(d)) { SET_NAN(Q); return; }
+
+  if (!NOTZERO(n)) { SET_ZERO(Q); return; }
+  if (!NOTZERO(d)) { fprintf(stderr, "division by zero\n"); exit(1); }
+
   if (Q==n || Q==d) {
     q = (mpfr_ptr) (*_mp_allocate_func) (sizeof(__mpfr_struct));
     mpfr_init2(q, PREC(Q));
@@ -25,11 +29,11 @@ mpfr_ptr Q; mpfr_srcptr n, d; unsigned char rnd_mode;
   printf("enter mpfr_div, prec(q)=%d n=%1.20e prec(n)=%d d=%1.20e prec(d)=%d rnd=%d\n",PREC(q),mpfr_get_d(n),PREC(n),mpfr_get_d(d),PREC(d),rnd_mode); 
   printf("n="); mpfr_print_raw(n); putchar('\n');
   printf("d="); mpfr_print_raw(d); putchar('\n');
-#endif
   if ((MANT(n)[(PREC(n)-1)/mp_bits_per_limb] & 
       ((mp_limb_t)1<<(mp_bits_per_limb-1)))==0) {
     printf("Error in mpfr_div: n is not msb-normalized\n"); exit(1);
   }
+#endif
   prec = precq = PREC(q);
   for (i=0;i<2;i++)
     prec = precq + (int) ceil(log(2.0*ceil(log((double)prec)/log(2.0))+7.0)/
