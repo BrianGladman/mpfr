@@ -50,6 +50,12 @@ int main() { return 0; }
 
 #define ERROR(str) {printf("Error for "str"\n"); exit(1);}
 
+static int 
+inexact_sign (int x)
+{
+  return (x < 0) ? -1 : (x > 0);
+}
+
 static void
 check_set_uj (mp_prec_t pmin, mp_prec_t pmax, int N)
 {
@@ -78,7 +84,7 @@ check_set_uj (mp_prec_t pmin, mp_prec_t pmax, int N)
 	      printf ("Y="); mpfr_dump (y);
 	      exit (1);
 	    }
-	  if (inex1 != inex2)
+	  if (inexact_sign (inex1) != inexact_sign (inex2))
 	    {
 	      printf ("ERROR for inexact(set_uj): j=%lu p=%lu\n"
 		      "Inexact1= %d Inexact2= %d\n",

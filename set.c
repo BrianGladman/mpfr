@@ -21,81 +21,46 @@ MA 02111-1307, USA. */
 
 #include "mpfr-impl.h"
 
-/* #include "rndraw.c" */
-
 /* set a to abs(b) * signb: a=b when signb = SIGN(b), a=abs(b) when signb=1 */
 int
 mpfr_set4 (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode, int signb)
 {
-  int inex;
-  
-  if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(b) ))
+  /* Sign is ALWAYS copied */
+  MPFR_SET_SIGN (a, signb);
+
+  /* Exponent is also always copied since if the number is singular,
+     the exponent field determined the number.
+     Can't use MPFR_SET_EXP since the exponent may be singular */
+  MPFR_EXP (a) = MPFR_EXP (b);
+
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (b)))
     {
-      if (MPFR_IS_NAN(b))
-	{
-	  MPFR_SET_NAN(a);
-	  MPFR_RET_NAN;
-	}
-      else if (MPFR_IS_INF(b))
-	{
-	  MPFR_CLEAR_FLAGS(a);
-	  MPFR_SET_INF(a);
-	  inex = 0;
-	}
-      else
-	{
-	  MPFR_ASSERTD(MPFR_IS_ZERO(b));
-          MPFR_SET_ZERO(a);
-          inex = 0;
-        }
+      /* MPFR_SET_NAN, MPFR_SET_ZERO and MPFR_SET_INF are useless
+	 since MPFR_EXP (a) = MPFR_EXP (b) does the job */
+      if (MPFR_IS_NAN (b))
+	MPFR_RET_NAN;
+      else 
+	MPFR_RET (0);
     }
-  else if (MPFR_LIKELY(MPFR_PREC(b) == MPFR_PREC(a)))
+  else if (MPFR_LIKELY (MPFR_PREC (b) == MPFR_PREC (a)))
     {
-      /* Same precision and b is not special: 
-       * just copy the mantissa, and set the exponent and the sign */
-      MPFR_CLEAR_FLAGS(a);
-      MPN_COPY(MPFR_MANT(a), MPFR_MANT(b), MPFR_LIMB_SIZE(b));
-      MPFR_SET_SIGN(a, signb);
-      MPFR_SET_EXP(a, MPFR_GET_EXP(b));
-      MPFR_RET(0);
+      /* Same precision and b is not singular:
+       * just copy the mantissa, and set the exponent and the sign
+       * The result is exact. */
+      MPN_COPY (MPFR_MANT (a), MPFR_MANT (b), 
+		(MPFR_PREC (b) + BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB);
+      MPFR_RET (0);
     }
   else
     {
-      mp_limb_t *ap;
-      mp_prec_t aq;
-      int carry;
-      
-      MPFR_CLEAR_FLAGS(a);
+      int inex;
 
-#if 1
-      ap = MPFR_MANT(a);
-      aq = MPFR_PREC(a);
-      
-      carry = mpfr_round_raw(ap, MPFR_MANT(b), MPFR_PREC(b),
-			     MPFR_IS_NEG_SIGN(signb),
-			     aq, rnd_mode, &inex);
-      /* carry is unlikely since it has probability < 2^(-aq) */
-      if (MPFR_UNLIKELY(carry))
-	{
-	  mp_exp_t exp = MPFR_GET_EXP (b);
-	  
-	  if (MPFR_UNLIKELY(exp == __gmpfr_emax))
-	    return mpfr_set_overflow(a, rnd_mode, signb);
-	  
-	  MPFR_SET_EXP(a, exp + 1);
-	  ap[(MPFR_PREC(a)-1)/BITS_PER_MP_LIMB] = MPFR_LIMB_HIGHBIT;
-	}
-      else
-	MPFR_SET_EXP (a, MPFR_GET_EXP (b));
-#else
-      MPFR_SET_EXP (a, MPFR_GET_EXP (b));
-      MPFR_SET_SIGN (a, signb);
-      return mpfr_rndraw (a, MPFR_MANT (b), MPFR_PREC (b), rnd_mode);
-#endif
+      /* Else Round B inside a */
+      MPFR_RNDRAW (inex, a, MPFR_MANT (b), MPFR_PREC (b), rnd_mode, signb, 
+		   if (MPFR_UNLIKELY ( ++MPFR_EXP (a) > __gmpfr_emax)) 
+		    return mpfr_set_overflow (a, rnd_mode, signb) );
+      MPFR_RET (inex);
     }
-
-  MPFR_SET_SIGN(a, signb);
-  MPFR_RET(inex);
 }
 
 /* Set a to b (Define function which calls the macro) */

@@ -47,7 +47,7 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mp_rnd_t rnd)
 {
   mp_prec_t prec = MPFR_PREC (dest);
   mp_prec_t pold = MPFR_PREC (cache->x);
-  int inexact;
+  int inexact, sign;
 
   /* Check if the cache has been already filled */
   if (MPFR_UNLIKELY(pold == 0))
@@ -71,8 +71,16 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mp_rnd_t rnd)
      and abs(x-exact) <= ulp(x)/2 */
   MPFR_ASSERTD (MPFR_IS_POS(cache->x)); /* TODO...*/
   /* We must use nextbelow instead of sub_one_ulp, since we know
-     that the exact value is < 1/2ulp(x) (We want sub_demi_ulp(x)). */
-  inexact = mpfr_set (dest, cache->x, rnd);
+     that the exact value is < 1/2ulp(x) (We want sub_demi_ulp(x)).
+     Can't use mpfr_set since we need the even flag. */
+  sign = MPFR_SIGN (cache->x);
+  MPFR_SET_EXP (dest, MPFR_GET_EXP (cache->x));
+  MPFR_SET_SIGN (dest, sign);
+  MPFR_RNDRAW_EVEN (inexact, dest, 
+		    MPFR_MANT (cache->x), MPFR_PREC (cache->x), rnd, sign, 
+		    if (MPFR_UNLIKELY ( ++MPFR_EXP (dest) > __gmpfr_emax)) 
+		       mpfr_set_overflow (dest, rnd, sign) ); 
+  /* inexact = mpfr_set (dest, cache->x, rnd); */
   if (MPFR_LIKELY(cache->inexact != 0))
     {
       switch (rnd)
