@@ -5,24 +5,6 @@
 
 /* #define DEBUG2 */
 
-void 
-#if __STDC__
-mpfr_sub(mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, unsigned char rnd_mode)
-#else
-mpfr_sub(a, b, c, rnd_mode) 
-     mpfr_ptr a; 
-     mpfr_srcptr b;
-     mpfr_srcptr c; 
-     unsigned char rnd_mode;
-#endif
-{
-  if (FLAG_NAN(b) || FLAG_NAN(c)) { SET_NAN(a); return; }
-  if (b==c) { SET_ZERO(a); return; }
-  CHANGE_SIGN(c);
-  mpfr_add(a, b, c, rnd_mode);
-  if (c!=a) CHANGE_SIGN(c);
-}
-
 /* put in ap[0]..ap[an-1] the value of bp[0]..bp[n-1] shifted by sh bits
    to the left minus ap[0]..ap[n-1], with 0 <= sh < mp_bits_per_limb, and
    returns the borrow.
@@ -50,12 +32,12 @@ mpn_sub_lshift_n (ap, bp, n, sh, an) mp_limb_t *ap, *bp; int n,sh,an;
 /* signs of b and c differ, abs(b)>=abs(c), diff_exp>=0 */
 void 
 #if __STDC__
-mpfr_sub1(mpfr_t a, mpfr_t b, mpfr_t c, unsigned char rnd_mode, int diff_exp) 
+mpfr_sub1(mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, unsigned char rnd_mode, int diff_exp) 
 #else
 mpfr_sub1(a, b, c, rnd_mode, diff_exp) 
-     mpfr_t a;
-     mpfr_t b;
-     mpfr_t c; 
+     mpfr_ptr a;
+     mpfr_srcptr b;
+     mpfr_srcptr c; 
      unsigned char rnd_mode; 
      int diff_exp;
 #endif
@@ -415,5 +397,58 @@ printf("b-c="); if (SIGN(a)>0) putchar(' '); mpfr_print_raw(a); putchar('\n');
 #endif
   TMP_FREE(marker);
   return;
+}
+
+void 
+#if __STDC__
+mpfr_sub(mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, unsigned char rnd_mode)
+#else
+mpfr_sub(a, b, c, rnd_mode) 
+     mpfr_ptr a; 
+     mpfr_srcptr b;
+     mpfr_srcptr c; 
+     unsigned char rnd_mode;
+#endif
+{
+  int diff_exp;
+
+  if (FLAG_NAN(b) || FLAG_NAN(c)) { SET_NAN(a); return; }
+
+  if (!NOTZERO(b)) { mpfr_neg(a, c, rnd_mode); return; }
+  if (!NOTZERO(c)) { mpfr_set(a, b, rnd_mode); return; }
+
+  diff_exp = EXP(b)-EXP(c);
+  if (SIGN(b) == SIGN(c)) { /* signs are equal, it's a real subtraction */
+    if (diff_exp<0) {
+      /* exchange rounding modes towards +/- infinity */
+      if (rnd_mode==GMP_RNDU) rnd_mode=GMP_RNDD;
+      else if (rnd_mode==GMP_RNDD) rnd_mode=GMP_RNDU;
+      mpfr_sub1(a, c, b, rnd_mode, -diff_exp);
+      CHANGE_SIGN(a);
+    }
+    else if (diff_exp>0) mpfr_sub1(a, b, c, rnd_mode, diff_exp);
+    else { /* diff_exp=0 */
+      diff_exp = mpfr_cmp3(b,c,1);
+      /* if b>0 and diff_exp>0 or b<0 and diff_exp<0: abs(b) > abs(c) */
+      if (diff_exp==0) SET_ZERO(a);
+      else if (diff_exp*SIGN(b)>0) mpfr_sub1(a, b, c, rnd_mode, 0);
+      else { 
+	/* exchange rounding modes towards +/- infinity */
+	if (rnd_mode==GMP_RNDU) rnd_mode=GMP_RNDD;
+	else if (rnd_mode==GMP_RNDD) rnd_mode=GMP_RNDU;
+	mpfr_sub1(a, c, b, rnd_mode, 0); 
+	CHANGE_SIGN(a); 
+      }
+    }
+  }
+  else /* signs differ, it's an addition */
+    if (diff_exp<0) {
+      /* exchange rounding modes towards +/- infinity */
+      if (rnd_mode==GMP_RNDU) rnd_mode=GMP_RNDD;
+      else if (rnd_mode==GMP_RNDD) rnd_mode=GMP_RNDU;
+      mpfr_add1(a, c, b, rnd_mode, -diff_exp);
+      CHANGE_SIGN(a); 
+    }
+    else mpfr_add1(a, b, c, rnd_mode, diff_exp);
 }
 
