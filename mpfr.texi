@@ -431,8 +431,8 @@ for such objects is @code{mpfr_t}. A floating-point number can have
 three special values: Not-a-Number (NaN) or plus or minus Infinity. NaN
 represents an uninitialized object, the result of an invalid operation
 (like 0 divided by 0), or a value that cannot be determined (like
-+Infinity minus +Infinity). Moreover, like in the IEEE 754-1985
-standard, zero is signed, i.e.@: there are both +0 and -0; the behavior
++Infinity minus +Infinity). Moreover, like in the IEEE 754-1985 standard,
+zero is signed, i.e.@: there are both +0 and @minus{}0; the behavior
 is the same as in the IEEE 754-1985 standard and it is generalized to
 the other functions supported by MPFR.
 
