@@ -578,8 +578,9 @@ These functions assign new values to already initialized floats
 
 @deftypefun void mpfr_set (mpfr_t @var{rop}, mpfr_t @var{op}, char @var{rnd})
 @deftypefunx void mpfr_set_ui (mpfr_t @var{rop}, unsigned long int @var{op}, char @var{rnd})
-@deftypefunx void mpfr_set_si (mpfr_t @var{rop}, long int @var{op}, char @var{rnd})
+@deftypefunx void mpfr_set_si (mpfr_t @var{rop}, long int @var{op}, char @var{rnd}
 @deftypefunx void mpfr_set_d (mpfr_t @var{rop}, double @var{op}, char @var{rnd})
+@deftypefunx void mpfr_set_z (mpfr_t @var{rop}, mpz_t @var{op}, char @var{rnd})
 Set the value of @var{rop} from @var{op}, rounded to the precision of @var{rop}
 towards the given direction @var{rnd}.
 Please note that even a @code{long int} may have to be rounded,
@@ -921,6 +922,11 @@ Returns the precision of @var{x}.
 Changes the sign of @var{x}.
 @end deftypefun
 
+@deftypefun int mpfr_add_one_ulp (mpfr_t @var(x))
+Add one ulp to @var{x} if it is positive or zero, 
+and subtracts one ulp otherwise.
+@end deftypefun
+
 @deftypefun int mpfr_cmp2 (mpfr_t @var{a}, mpfr_t @var{b})
 Assuming @var{a} is greater or equal to @var{b}, returns the number of 
 cancelled bits when one subtracts @var{b} from @var{a}. 
@@ -934,9 +940,10 @@ beginning at @var{x} (with sign and number of limbs given by @var{xs})
 rounded with mode @var{rnd} to precision @var{p}.
 @end deftypefun
 
-@deftypefun int mpfr_round_raw2 (mp_limb_t* @var{x}, long @var{xn}, char @var{neg}, char @var{rnd})
+@deftypefun int mpfr_round_raw2 (mp_limb_t* @var{x}, long @var{xn}, char @var{neg}, char @var{rnd}, unsigned long @var{prec})
 Returns 0 if the multiple precision number stored in the @var{xn} limbs
 starting at @var{xp} (less significant limbs first) with sign @var{neg}
+(positive iff @var{neg} equals zero)
 is rounded similarly with direction @var{rnd} and precision @var{prec}
 than towards zero, and 1 otherwise.
 In other words, the bit returned is what has to be added to bit @var{prec}
