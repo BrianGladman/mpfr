@@ -169,11 +169,12 @@ mpfr_round(x, rnd_mode, prec)
      mp_prec_t prec; 
 #endif
 {
-  mp_limb_t *tmp; int carry; mp_prec_t nw; 
+  mp_limb_t *tmp; int carry, signx; mp_prec_t nw;
   TMP_DECL(marker);
 
   nw = prec / BITS_PER_MP_LIMB; 
   if (prec & (BITS_PER_MP_LIMB - 1)) nw++;
+  signx = MPFR_SIGN(x);
 
   /* check if x has enough allocated space for the mantissa */
   if (nw > ABSSIZE(x)) {
@@ -194,10 +195,11 @@ mpfr_round(x, rnd_mode, prec)
       EXP(x)++; 
     }
 
-  if (MPFR_SIGN(x)<0) { SIZE(x)=nw; CHANGE_SIGN(x); } else SIZE(x)=nw;
+  SIZE(x)=nw;
+  if (signx * MPFR_SIGN(x)<0) CHANGE_SIGN(x);
   PREC(x) = prec; 
   MPN_COPY(MANT(x), tmp, nw); 
-  TMP_FREE(marker); 
+  TMP_FREE(marker);
 }
 
 /* hypotheses : BITS_PER_MP_LIMB est une puissance de 2 
