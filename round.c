@@ -37,18 +37,18 @@ MA 02111-1307, USA. */
 */
 int 
 #if __STDC__
-mpfr_round_raw2(mp_limb_t *xp, unsigned long xn, 
-		char neg, char rnd, unsigned long prec)
+mpfr_round_raw2(mp_limb_t *xp, mp_prec_t xn, 
+		int neg, mp_rnd_t rnd, mp_prec_t prec)
 #else
 mpfr_round_raw2(xp, xn, neg, rnd, prec)
      mp_limb_t *xp; 
-     unsigned long xn; 
-     char neg; 
-     char rnd; 
-     unsigned long prec; 
+     mp_prec_t xn; 
+     int neg; 
+     mp_rnd_t rnd;
+     mp_prec_t prec; 
 #endif
 {
-  unsigned long nw; long wd; char rw; short l; mp_limb_t mask;
+  mp_prec_t nw; long wd; char rw; short l; mp_limb_t mask;
 
   nw = prec / BITS_PER_MP_LIMB; rw = prec & (BITS_PER_MP_LIMB - 1); 
   if (rw) nw++; 
@@ -113,19 +113,19 @@ mpfr_round_raw2(xp, xn, neg, rnd, prec)
 */
 int
 #if __STDC__
-mpfr_round_raw(mp_limb_t *y, mp_limb_t *xp, unsigned long xprec, char negative,
-	       unsigned long yprec, char RND_MODE)
+mpfr_round_raw(mp_limb_t *y, mp_limb_t *xp, mp_prec_t xprec, int negative,
+	       mp_prec_t yprec, mp_rnd_t RND_MODE)
 #else
 mpfr_round_raw(y, xp, xprec, negative, yprec, RND_MODE)
      mp_limb_t *y; 
      mp_limb_t *xp; 
-     unsigned long xprec; 
+     mp_prec_t xprec; 
      cher negative;
-     unsigned long yprec; 
-     char RND_MODE; 
+     mp_prec_t yprec; 
+     mp_rnd_t RND_MODE; 
 #endif
 {
-  unsigned long nw, xsize; mp_limb_t mask;
+  mp_prec_t nw, xsize; mp_limb_t mask;
   char rw, xrw, carry = 0;
 
   xsize = (xprec-1)/BITS_PER_MP_LIMB + 1;
@@ -162,22 +162,23 @@ mpfr_round_raw(y, xp, xprec, negative, yprec, RND_MODE)
 
 void
 #if __STDC__
-mpfr_round(mpfr_t x, char RND_MODE, unsigned long prec)
+mpfr_round(mpfr_t x, mp_rnd_t RND_MODE, mp_prec_t prec)
 #else
 mpfr_round(x, RND_MODE, prec)
      mpfr_t x; 
-     char RND_MODE; 
-     unsigned long prec; 
+     mp_rnd_t RND_MODE; 
+     mp_prec_t prec; 
 #endif
 {
-  mp_limb_t *tmp; int carry; unsigned long nw; 
+  mp_limb_t *tmp; int carry; mp_prec_t nw; 
   TMP_DECL(marker); 
 
   nw = prec / BITS_PER_MP_LIMB; 
   if (prec & (BITS_PER_MP_LIMB - 1)) nw++;
   TMP_MARK(marker); 
   tmp = TMP_ALLOC (nw * BYTES_PER_MP_LIMB);
-  carry = mpfr_round_raw(tmp, MANT(x), PREC(x), (SIGN(x)<0), prec, RND_MODE);
+  carry = mpfr_round_raw(tmp, MANT(x), PREC(x), (MPFR_SIGN(x)<0), prec, 
+			 RND_MODE);
 
   if (carry)
     {      
@@ -186,7 +187,7 @@ mpfr_round(x, RND_MODE, prec)
       EXP(x)++; 
     }
 
-  if (SIGN(x)<0) { SIZE(x)=nw; CHANGE_SIGN(x); } else SIZE(x)=nw;
+  if (MPFR_SIGN(x)<0) { SIZE(x)=nw; CHANGE_SIGN(x); } else SIZE(x)=nw;
   PREC(x) = prec; 
   MPN_COPY(MANT(x), tmp, nw); 
   TMP_FREE(marker); 
@@ -206,35 +207,34 @@ mpfr_round(x, RND_MODE, prec)
 
 int 
 #if __STDC__
-mpfr_can_round(mpfr_t b, unsigned long err, unsigned char rnd1, 
-	       unsigned char rnd2, unsigned long prec)
+mpfr_can_round(mpfr_t b, mp_prec_t err, mp_rnd_t rnd1, 
+	       mp_rnd_t rnd2, mp_prec_t prec)
 #else
 mpfr_can_round(b, err, rnd1, rnd2, prec) 
      mpfr_t b; 
-     unsigned long err;
-     unsigned char rnd1;
-     unsigned char rnd2; 
-     unsigned long prec;
+     mp_prec_t err;
+     mp_rnd_t rnd1;
+     mp_rnd_t rnd2; 
+     mp_prec_t prec;
 #endif
 {
   return mpfr_can_round_raw(MANT(b), (PREC(b) - 1)/BITS_PER_MP_LIMB + 1, 
-			    SIGN(b), err, rnd1, rnd2, prec); 
+			    MPFR_SIGN(b), err, rnd1, rnd2, prec); 
 }
 
 int
 #if __STDC__
-mpfr_can_round_raw(mp_limb_t *bp, unsigned long bn, int neg, 
-		   unsigned long err, unsigned char rnd1, unsigned char rnd2, 
-		   unsigned long prec)
+mpfr_can_round_raw(mp_limb_t *bp, mp_prec_t bn, int neg, mp_prec_t err,
+		   mp_rnd_t rnd1, mp_rnd_t rnd2, mp_prec_t prec)
 #else
 mpfr_can_round_raw(bp, bn, neg, err, rnd1, rnd2, prec)
      mp_limb_t *bp;
-     unsigned long bn;
+     mp_prec_t bn;
      int neg; 
-     unsigned long err; 
-     unsigned char rnd1;
-     unsigned char rnd2; 
-     unsigned long prec; 
+     mp_prec_t err;
+     mp_rnd_t rnd1;
+     mp_rnd_t rnd2; 
+     mp_prec_t prec; 
 #endif
 {
   int k, k1, l, l1, tn; mp_limb_t cc, cc2, *tmp;
