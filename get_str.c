@@ -406,11 +406,10 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
   size_t n, i;
   char *s0;
   int neg;
+  TMP_DECL(marker);
 
   /* if exact = 1 then err is undefined */
   /* otherwise err is such that |x*b^(m-g)-a*2^exp_a| < 2^(err+exp_a) */
-
-  TMP_DECL(marker);
 
   /* is the base valid? */
   if (b < 2 || b > 36)

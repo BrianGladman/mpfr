@@ -97,6 +97,30 @@ check_small (void)
     }
   (*__gmp_free_func) (s, strlen (s) + 1);
 
+  /* check corner case ret!=0, j0!=0 in mpfr_get_str_aux */
+  mpfr_set_prec (x, 100);
+  mpfr_set_str_binary (x, "0.1001011111010001101110010101010101111001010111111101101101100110100011110110000101110110001011110000E-9");
+  s = mpfr_get_str (NULL, &e, 3, 2, x, GMP_RNDU);
+  if (strcmp (s, "22") || (e != -6))
+    {
+      printf ("Error in mpfr_get_str: 100-bit number rounded up with"
+              " 2 digits in base 3\n");
+      exit (1);
+    }
+  (*__gmp_free_func) (s, strlen (s) + 1);
+
+  /* check corner case exact=0 in mpfr_get_str_aux */
+  mpfr_set_prec (x, 100);
+  mpfr_set_str_binary (x, "0.1001001111101101111000101000110111111010101100000110010001111111011001101011101100001100110000000000E8");
+  s = mpfr_get_str (NULL, &e, 10, 2, x, GMP_RNDZ);
+  if (strcmp (s, "14") || (e != 3))
+    {
+      printf ("Error in mpfr_get_str: 100-bit number rounded to zero with"
+              " 2 digits in base 10\n");
+      exit (1);
+    }
+  (*__gmp_free_func) (s, strlen (s) + 1);
+
   for (p=4; p<=200; p++)
     {
       mpfr_set_prec (x, p);
@@ -203,6 +227,11 @@ check_small (void)
       printf ("Error in mpfr_get_str (6): s=%s e=%d\n", s, (int) e);
       exit (1);
     }
+  (*__gmp_free_func) (s, strlen (s) + 1);
+
+  mpfr_set_prec (x, 45);
+  mpfr_set_str_binary (x, "1E45");
+  s = mpfr_get_str (NULL, &e, 32, 9, x, GMP_RNDN);
   (*__gmp_free_func) (s, strlen (s) + 1);
 
   mpfr_clear (x);
@@ -406,6 +435,10 @@ check_special (int b, mp_prec_t p)
   mp_exp_t e;
   mp_rnd_t r;
   size_t m;
+
+  /* check for invalid base */
+  MPFR_ASSERTN(mpfr_get_str (s, &e, 1, 10, x, GMP_RNDN) == NULL);
+  MPFR_ASSERTN(mpfr_get_str (s, &e, 37, 10, x, GMP_RNDN) == NULL);
 
   s2[0] = '1';
   for (i=1; i<MAX_DIGITS+2; i++)
