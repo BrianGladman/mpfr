@@ -94,6 +94,7 @@ typedef unsigned long int       mp_size_unsigned_t;
 
 typedef union ieee_double_extract Ieee_double_extract;
 
+/* for x of type ieee_double_extract */
 #define DOUBLE_ISNANorINF(x) (((Ieee_double_extract *)&(x))->s.exp == 0x7ff)
 #define DOUBLE_ISINF(x) (DOUBLE_ISNANorINF(x) && \
 			 (((Ieee_double_extract *)&(x))->s.manl == 0) && \
@@ -101,8 +102,6 @@ typedef union ieee_double_extract Ieee_double_extract;
 #define DOUBLE_ISNAN(x) (DOUBLE_ISNANorINF(x) && \
 			 ((((Ieee_double_extract *)&(x))->s.manl != 0) || \
                          (((Ieee_double_extract *)&(x))->s.manh != 0)))
-
-#define LONGDOUBLE_ISNAN(x) ((x) != (x))
 
 #define DBL_POS_INF (1.0/0.0)
 #define DBL_NEG_INF (-1.0/0.0)
