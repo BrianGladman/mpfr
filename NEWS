@@ -41,6 +41,7 @@ Changes from version 2.0.3 to version 2.1.0:
 - GMP internal files are not needed to install MPFR.
 - It is faster with low-precision floatting point.
 - New global flag: ERANGE_FLAG.
+- Binary incompatible with previous versions.
 
 Changes from version 2.0.2 to version 2.0.3:
 - Bug fixes.
