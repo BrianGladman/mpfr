@@ -77,6 +77,7 @@ AC_DEFUN(MPFR_CONFIGS,
 [
 AC_REQUIRE([AC_OBJEXT])
 AC_REQUIRE([MPFR_CHECK_LIBM])
+AC_REQUIRE([AC_HEADER_TIME])
 
 # CPU-dependent objects for the test programs
 case $host in
@@ -87,6 +88,7 @@ case $host in
     ;;
 esac
 
+AC_CHECK_HEADERS(sys/time.h)
 
 # Reasons for testing:
 #   gettimeofday - not in mingw
