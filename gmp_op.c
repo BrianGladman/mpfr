@@ -105,8 +105,9 @@ mpfr_div_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mp_rnd_t rnd_mode)
 int
 mpfr_add_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mp_rnd_t rnd_mode)
 {
-  mpfr_t t,q;
+  mpfr_t    t,q;
   mp_prec_t p = MPFR_PREC(y)+10;
+  mp_exp_t  err;
   int res;
 
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(x)))
@@ -133,9 +134,13 @@ mpfr_add_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mp_rnd_t rnd_mode)
   do {
     mpfr_set_q(q, z, GMP_RNDN);  /* Error <= 1/2 ulp(q) */
     mpfr_add(t, x, q, GMP_RNDN); /* Error <= 1/2 ulp(t) */
-    /* Error / ulp(t) <= 1/2 + 1/2 * 2^(EXP(q)-EXP(t)) */
-    res = mpfr_can_round(t, p-1, GMP_RNDN, GMP_RNDZ, 
-			 MPFR_PREC(y) + (rnd_mode == GMP_RNDN) );
+    /* Error / ulp(t)      <= 1/2 + 1/2 * 2^(EXP(q)-EXP(t))
+       If EXP(q)-EXP(t)>0, <= 2^(EXP(q)-EXP(t)-1)*(1+2^-(EXP(q)-EXP(t)))
+                           <= 2^(EXP(q)-EXP(t))
+       If EXP(q)-EXP(t)<0, <= 2^0 */
+    err = (mp_exp_t) p - 1 - MAX(MPFR_GET_EXP(q)-MPFR_GET_EXP(t), 0);
+    res = mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ, 
+			  MPFR_PREC(y) + (rnd_mode == GMP_RNDN) );
     if (!res)
       {
 	p += BITS_PER_MP_LIMB;
@@ -154,6 +159,7 @@ mpfr_sub_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z,mp_rnd_t rnd_mode)
   mpfr_t t,q;
   mp_prec_t p = MPFR_PREC(y)+10;
   int res;
+  mp_exp_t err;
 
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(x)))
     {
@@ -185,7 +191,12 @@ mpfr_sub_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z,mp_rnd_t rnd_mode)
   do {
     mpfr_set_q(q, z, GMP_RNDN);  /* Error <= 1/2 ulp(q) */
     mpfr_sub(t, x, q, GMP_RNDN); /* Error <= 1/2 ulp(t) */
-    res = mpfr_can_round(t, p-1, GMP_RNDN, GMP_RNDZ,
+    /* Error / ulp(t)      <= 1/2 + 1/2 * 2^(EXP(q)-EXP(t))
+       If EXP(q)-EXP(t)>0, <= 2^(EXP(q)-EXP(t)-1)*(1+2^-(EXP(q)-EXP(t)))
+                           <= 2^(EXP(q)-EXP(t))
+			   If EXP(q)-EXP(t)<0, <= 2^0 */
+    err = (mp_exp_t) p - 1 - MAX(MPFR_GET_EXP(q)-MPFR_GET_EXP(t), 0);
+    res = mpfr_can_round(t, err, GMP_RNDN, GMP_RNDZ,
                          MPFR_PREC(y) + (rnd_mode == GMP_RNDN) );
     if (!res)
       {
