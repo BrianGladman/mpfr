@@ -42,7 +42,7 @@ check3 (double d, mp_rnd_t rnd, char *res)
       exit (1);
     }
   mpfr_clear (x);
-  (*__gmp_free_func) (str, strlen (str) + 1);
+  mpfr_free_str (str);
 }
 
 static void
@@ -65,16 +65,16 @@ check_small (void)
               " in base 4\n");
       exit (1);
     }
-  (*__gmp_free_func) (s, strlen (s) + 1);
-
+  mpfr_free_str (s);
+  
   /* check n_digits=0 */
   mpfr_set_prec (x, 5);
   mpfr_set_ui (x, 17, GMP_RNDN);
   s = mpfr_get_str (NULL, &e, 3, 0, x, GMP_RNDN);
-  (*__gmp_free_func) (s, strlen (s) + 1);
+  mpfr_free_str (s);
   s = mpfr_get_str (NULL, &e, 36, 0, x, GMP_RNDN);
-  (*__gmp_free_func) (s, strlen (s) + 1);
-
+  mpfr_free_str (s);
+  
   mpfr_set_prec (x, 64);
   mpfr_set_si (x, -1, GMP_RNDN);
   mpfr_div_2exp (x, x, 63, GMP_RNDN); /* x = -2^(-63) */
@@ -87,7 +87,7 @@ check_small (void)
               " 21 digits in base 3\n");
       exit (1);
     }
-  (*__gmp_free_func) (s, strlen (s) + 1);
+  mpfr_free_str (s);
   s = mpfr_get_str (NULL, &e, 3, 20, x, GMP_RNDU);
   if (strcmp (s, "10200202220122111122") || (e != 21))
     {
@@ -95,8 +95,8 @@ check_small (void)
               " 20 digits in base 3\n");
       exit (1);
     }
-  (*__gmp_free_func) (s, strlen (s) + 1);
-
+  mpfr_free_str (s);
+  
   /* check corner case ret!=0, j0!=0 in mpfr_get_str_aux */
   mpfr_set_prec (x, 100);
   mpfr_set_str_binary (x, "0.1001011111010001101110010101010101111001010111111101101101100110100011110110000101110110001011110000E-9");
@@ -107,8 +107,8 @@ check_small (void)
               " 2 digits in base 3\n");
       exit (1);
     }
-  (*__gmp_free_func) (s, strlen (s) + 1);
-
+  mpfr_free_str (s);
+  
   /* check corner case exact=0 in mpfr_get_str_aux */
   mpfr_set_prec (x, 100);
   mpfr_set_str_binary (x, "0.1001001111101101111000101000110111111010101100000110010001111111011001101011101100001100110000000000E8");
@@ -119,8 +119,8 @@ check_small (void)
               " 2 digits in base 10\n");
       exit (1);
     }
-  (*__gmp_free_func) (s, strlen (s) + 1);
-
+  mpfr_free_str (s);
+  
   for (p=4; p<=200; p++)
     {
       mpfr_set_prec (x, p);
@@ -133,8 +133,8 @@ check_small (void)
                   " 2 digits in base 6\n");
           exit (1);
         }
-      (*__gmp_free_func) (s, strlen (s) + 1);
-
+      mpfr_free_str (s);
+  
       mpfr_add_one_ulp (x, GMP_RNDU);
       s = mpfr_get_str (NULL, &e, 6, 2, x, GMP_RNDN);
       if (strcmp (s, "11") || (e != 2))
@@ -144,7 +144,7 @@ check_small (void)
                   s, (int) e);
           exit (1);
         }
-      (*__gmp_free_func) (s, strlen (s) + 1);
+      mpfr_free_str (s);
 
       mpfr_set_str (x, "6.5", 10, GMP_RNDN);
       mpfr_sub_one_ulp (x, GMP_RNDU);
@@ -155,7 +155,7 @@ check_small (void)
                   " 2 digits in base 6\n");
           exit (1);
         }
-      (*__gmp_free_func) (s, strlen (s) + 1);
+      mpfr_free_str (s);
     }
 
   mpfr_set_prec (x, 3);
@@ -167,13 +167,13 @@ check_small (void)
               " give 0.10e3 instead of 0.%s*2^%d\n", s, (int) e);
       exit (1);
     }
-  (*__gmp_free_func) (s, strlen (s) + 1);
+  mpfr_free_str (s);
 
   /* problem found by Fabrice Rouillier */
   mpfr_set_prec (x, 63);
   mpfr_set_str (x, "5e14", 10, GMP_RNDN);
   s = mpfr_get_str (NULL, &e, 10, 18, x, GMP_RNDU);
-  (*__gmp_free_func) (s, strlen (s) + 1);
+  mpfr_free_str (s);
 
   /* bug found by Johan Vervloet */
   mpfr_set_prec (x, 6);
@@ -187,7 +187,7 @@ check_small (void)
       puts ("");
       exit (1);
     }
-  (*__gmp_free_func) (s, strlen (s) + 1);
+  mpfr_free_str (s);
 
   mpfr_set_prec (x, 38);
   mpfr_set_str_binary (x, "1.0001110111110100011010100010010100110e-6");
@@ -197,7 +197,7 @@ check_small (void)
       printf ("Error in mpfr_get_str (3): s=%s e=%d\n", s, (int) e);
       exit (1);
     }
-  (*__gmp_free_func) (s, strlen (s) + 1);
+  mpfr_free_str (s);
 
   mpfr_set_prec (x, 53);
   mpfr_set_str_binary (x, "0.11010111011101100010000100010101110001000000010111001E454");
@@ -207,7 +207,7 @@ check_small (void)
       printf ("Error in mpfr_get_str (4): s=%s e=%d\n", s, (int) e);
       exit (1);
     }
-  (*__gmp_free_func) (s, strlen (s) + 1);
+  mpfr_free_str (s);
 
   mpfr_set_prec (x, 145);
   mpfr_set_str_binary (x, "-0.1000110011000001011000010101101010110110101100101110100011111100011110011001001001010000100001000011000011000000010111011001000111101001110100110e6");
@@ -217,7 +217,7 @@ check_small (void)
       printf ("Error in mpfr_get_str (5): s=%s e=%d\n", s, (int) e);
       exit (1);
     }
-  (*__gmp_free_func) (s, strlen (s) + 1);
+  mpfr_free_str (s);
 
   mpfr_set_prec (x, 45);
   mpfr_set_str_binary (x, "-0.00100111010110010001011001110111010001010010010");
@@ -227,12 +227,12 @@ check_small (void)
       printf ("Error in mpfr_get_str (6): s=%s e=%d\n", s, (int) e);
       exit (1);
     }
-  (*__gmp_free_func) (s, strlen (s) + 1);
+  mpfr_free_str (s);
 
   mpfr_set_prec (x, 45);
   mpfr_set_str_binary (x, "1E45");
   s = mpfr_get_str (NULL, &e, 32, 9, x, GMP_RNDN);
-  (*__gmp_free_func) (s, strlen (s) + 1);
+  mpfr_free_str (s);
 
   mpfr_clear (x);
 }
@@ -356,7 +356,7 @@ check_large (void)
               s + 994);
       exit (1);
     }
-  (*__gmp_free_func) (s, strlen (s) + 1);
+  mpfr_free_str (s);
 
   mpfr_mul_2exp (x, x, 4343, GMP_RNDN);
   s = mpfr_get_str (NULL, &e, 10, 2, x, GMP_RNDN);
@@ -366,7 +366,7 @@ check_large (void)
       printf ("got %se%d\n", s, (int) e);
       exit (1);
     }
-  (*__gmp_free_func) (s, strlen (s) + 1);
+  mpfr_free_str (s);
 
   mpfr_set_nan (x);
   s = mpfr_get_str (NULL, &e, 10, 1000, x, GMP_RNDN);
@@ -375,7 +375,7 @@ check_large (void)
       printf ("Error for NaN\n");
       exit (1);
     }
-  (*__gmp_free_func) (s, strlen (s) + 1);
+  mpfr_free_str (s);
 
   mpfr_get_str (s1, &e, 10, 1000, x, GMP_RNDN);
 
@@ -386,7 +386,7 @@ check_large (void)
       printf ("Error for Inf\n");
       exit (1);
     }
-  (*__gmp_free_func) (s, strlen (s) + 1);
+  mpfr_free_str (s);
 
   mpfr_get_str (s1, &e, 10, 1000, x, GMP_RNDN);
 
@@ -397,7 +397,7 @@ check_large (void)
       printf ("Error for -Inf\n");
       exit (1);
     }
-  (*__gmp_free_func) (s, strlen (s) + 1);
+  mpfr_free_str (s);
 
   mpfr_get_str (s1, &e, 10, 1000, x, GMP_RNDN);
 
@@ -408,7 +408,7 @@ check_large (void)
       printf ("Error for 0.0\n");
       exit (1);
     }
-  (*__gmp_free_func) (s, strlen (s) + 1);
+  mpfr_free_str (s);
   mpfr_get_str (s1, &e, 10, 2, x, GMP_RNDN);
 
   mpfr_neg (x, x, GMP_RNDN); /* -0.0 */
@@ -418,7 +418,7 @@ check_large (void)
       printf ("Error for -0.0\ngot %se%d\n", s, (int) e);
       exit (1);
     }
-  (*__gmp_free_func) (s, strlen (s) + 1);
+  mpfr_free_str (s);
   mpfr_get_str (s1, &e, 10, 2, x, GMP_RNDN);
 
   mpfr_clear (x);
@@ -519,7 +519,7 @@ check_bug_base2k(void)
 "Error for get_str base 16\nGot %s expected -263b22b55697e8000000000008\n", s);
       exit(1);
     }
-  (*__gmp_free_func) (s, strlen (s) + 1);
+  mpfr_free_str (s);
   mpfr_clears(xx,yy,zz,NULL);
 }
 

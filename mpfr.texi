@@ -840,9 +840,7 @@ least 2.
 
 If @var{str} is a null pointer, space for the mantissa is allocated using
 the current allocation function, and a pointer to the string is returned.
-The block will be @code{strlen(s)+1} bytes. For more information on how
-this block is allocated and how to free it: @pxref{Custom Allocation,,, gmp,
-GNU MP}.
+To free the returned string, you must use @code{mpfr_free_str}.
 
 If @var{str} is not a null pointer, it should point to a block of storage
 large enough for the mantissa, i.e., at least @var{n} + 2. The extra
@@ -859,6 +857,13 @@ the pointer @var{expptr} (the current minimal exponent for 0).
 
 A pointer to the string is returned, unless there is an error, in which
 case a null pointer is returned.
+@end deftypefun
+
+@deftypefun void mpfr_free_str (char *@var{str})
+Free a string allocated by @code{mpfr_get_str} using the current unallocation
+function. The block is assumed to be @code{strlen(@var{str})+1} bytes.
+For more information on how it is done:
+@pxref{Custom Allocation,,, gmp,GNU MP}.
 @end deftypefun
 
 @deftypefun int mpfr_fits_ulong_p (mpfr_t @var{op}, mp_rnd_t @var{rnd})

@@ -683,3 +683,8 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
   return s0;
 
 }
+
+void mpfr_free_str (char *str)
+{
+   (*__gmp_free_func) (str, strlen (str) + 1);
+}

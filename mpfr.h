@@ -219,6 +219,9 @@ unsigned long mpfr_get_ui _MPFR_PROTO ((mpfr_srcptr, mpfr_rnd_t));
 char* mpfr_get_str _MPFR_PROTO ((char *, mp_exp_t *, int, size_t, mpfr_srcptr,
 				   mpfr_rnd_t));
 
+void mpfr_free_str _MPFR_PROTO ((char *str));
+
+
 void mpfr_random _MPFR_PROTO ((mpfr_ptr));
 void mpfr_random2 _MPFR_PROTO ((mpfr_ptr, mp_size_t, mp_exp_t));
 int mpfr_urandomb _MPFR_PROTO ((mpfr_ptr, gmp_randstate_t));
