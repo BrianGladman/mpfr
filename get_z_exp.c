@@ -20,7 +20,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
 /* puts the mantissa of f into z, and returns 'exp' such that f = z * 2^exp
@@ -40,9 +39,9 @@ mpfr_get_z_exp (mpz_ptr z, mpfr_srcptr f)
   mp_size_t fn;
   int sh;
 
-  MPFR_ASSERTN(MPFR_IS_FP(f));
+  MPFR_ASSERTD (MPFR_IS_FP (f));
 
-  if (MPFR_IS_ZERO(f))
+  if (MPFR_UNLIKELY (MPFR_IS_ZERO (f)))
     {
       mpz_set_ui (z, 0);
       return __gmpfr_emin;
@@ -51,22 +50,22 @@ mpfr_get_z_exp (mpz_ptr z, mpfr_srcptr f)
   fn = MPFR_LIMB_SIZE(f);
 
   /* check whether allocated space for z is enough */
-  if (ALLOC(z) < fn)
-    MPZ_REALLOC(z, fn);
+  if (MPFR_UNLIKELY (ALLOC (z) < fn))
+    MPZ_REALLOC (z, fn);
 
-  sh = (mp_prec_t) fn * BITS_PER_MP_LIMB - MPFR_PREC(f);
-  if (sh)
-    mpn_rshift (PTR(z), MPFR_MANT(f), fn, sh);
+  MPFR_UNSIGNED_MINUS_MODULO (sh, MPFR_PREC (f));
+  if (MPFR_LIKELY (sh))
+    mpn_rshift (PTR (z), MPFR_MANT (f), fn, sh);
   else
-    MPN_COPY (PTR(z), MPFR_MANT(f), fn);
+    MPN_COPY (PTR (z), MPFR_MANT (f), fn);
 
-  SIZ(z) = MPFR_SIGN(f) < 0 ? -fn : fn;
+  SIZ(z) = MPFR_IS_NEG (f) ? -fn : fn;
 
   /* Test if the result is representable. Later, we could choose
      to return MPFR_EXP_MIN if it isn't, or perhaps MPFR_EXP_MAX
      to signal an error. The mantissa would still be meaningful. */
-  MPFR_ASSERTN((mp_exp_unsigned_t) MPFR_GET_EXP (f) - MPFR_EXP_MIN
-               >= (mp_exp_unsigned_t) MPFR_PREC(f));
+  MPFR_ASSERTD ((mp_exp_unsigned_t) MPFR_GET_EXP (f) - MPFR_EXP_MIN
+		>= (mp_exp_unsigned_t) MPFR_PREC(f));
 
   return MPFR_GET_EXP (f) - MPFR_PREC (f);
 }

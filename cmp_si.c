@@ -35,7 +35,7 @@ mpfr_cmp_si_2exp (mpfr_srcptr b, long int i, mp_exp_t f)
   int si;
 
   si = i < 0 ? -1 : 1; /* sign of i */
-  if (MPFR_IS_SINGULAR (b))
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (b)))
     {
       if (MPFR_IS_INF(b))
 	return MPFR_INT_SIGN(b);
