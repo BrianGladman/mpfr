@@ -73,13 +73,16 @@ mpfr_log()
   bool=1;
 
   while (bool==1) {
-
+    err=(int) ceil(log(((double) p)*log(2.0)/(2*ref)))+1;
+    if (err <0)
+      err=1;
+    
     /* Calculus of m (depends on p) */
     m=(int) ceil(((double) p)/2.0) -EXP(a)+1;
 
     /* All the mpfr_t needed have a precision of p */
     TMP_MARK(marker);
-    size=(p-1)/BYTES_PER_MP_LIMB+1;
+    size=(p-1)/BITS_PER_MP_LIMB+1;
     MON_INIT(cstp, cst, p, size);  
     MON_INIT(rapportp, rapport, p, size);
     MON_INIT(agmp, agm, p, size);
@@ -102,8 +105,8 @@ mpfr_log()
     mpfr_sub(cst,tmp2,tmp1,GMP_RNDN);     /* I compute log(a) */ 
  
 
-    /*     printf("avant arrondi : ( %i bits faux)\n",7+err);
-	   mpfr_print_raw(cst);printf("\n"); */
+    /*printf("avant arrondi : ( %i bits faux)\n",7+err);
+      mpfr_print_raw(cst);printf("\n"); */
 
     
     /* If we can round the result, we set it and go out of the loop */
@@ -115,6 +118,7 @@ mpfr_log()
     /* else we increase the precision */
     else {
       p+=5;
+      TMP_FREE(marker);
     }
 
     /* We clean */
