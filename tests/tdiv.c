@@ -126,7 +126,7 @@ void check_float()
 
 void check_convergence()
 {
-  mpfr_t x, y;
+  mpfr_t x, y; int i, j;
   
   mpfr_init2(x, 130); 
   mpfr_set_str_raw(x, "0.1011111101011010101000001010011111101000011100011101010011111011000011001010000000111100100111110011001010110100100001001000111001E6944");
@@ -145,6 +145,22 @@ void check_convergence()
     printf("got        "); mpfr_print_raw(x); putchar('\n');
     printf("instead of "); mpfr_print_raw(y); putchar('\n');
     exit(1);
+  }
+
+  for (i=32; i<=64; i+=32) {
+      mpfr_set_prec(x, i);
+      mpfr_set_prec(y, i);
+      mpfr_set_d(x, 1.0, GMP_RNDN);
+      for (j=0;j<4;j++) {
+	mpfr_set_d(y, 1.0, GMP_RNDN);
+	mpfr_div(y, x, y, j);
+	if (mpfr_cmp_ui(y, 1)) {
+	  fprintf(stderr, "mpfr_div failed for x=1.0, y=1.0, prec=%u rnd=%s\n",
+		  i, mpfr_print_rnd_mode(j));
+	  printf("got "); mpfr_print_raw(y); putchar('\n');
+	  exit(1);
+	}
+      }
   }
 
   mpfr_clear(x); mpfr_clear(y);
