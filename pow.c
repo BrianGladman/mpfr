@@ -37,6 +37,7 @@ mpfr_pow_is_exact (mpfr_srcptr x, mpfr_srcptr y)
   mp_exp_t d;
   unsigned long i, c;
   mp_limb_t *yp;
+  mp_size_t ysize;
   
   if ((mpfr_sgn (x) < 0) && (mpfr_isinteger (y) == 0))
       return 0;
@@ -45,7 +46,8 @@ mpfr_pow_is_exact (mpfr_srcptr x, mpfr_srcptr y)
     return mpfr_cmp_si_2exp (x, MPFR_SIGN(x), MPFR_EXP(x) - 1) == 0;
 
   /* compute d such that y = c*2^d with c odd integer */
-  d = MPFR_EXP(y) - MPFR_PREC(y);
+  ysize = 1 + (MPFR_PREC(y) - 1) / BITS_PER_MP_LIMB;
+  d = MPFR_EXP(y) - ysize * BITS_PER_MP_LIMB;
   /* since y is not zero, necessarily one of the mantissa limbs is not zero,
      thus we can simply loop until we find a non zero limb */
   yp = MPFR_MANT(y);

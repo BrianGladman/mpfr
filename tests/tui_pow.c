@@ -78,8 +78,12 @@ main (int argc, char *argv[])
   int p1=100;
   int N=100;
 
-  mpfr_init (z);
-  mpfr_init (t);
+  mpfr_init2 (z, 38);
+  mpfr_init2 (t, 6);
+
+  /* check exact power */
+  mpfr_set_str_raw (t, "0.110000E5");
+  mpfr_ui_pow (z, 3, t, GMP_RNDN);
 
   /* generic test */
   for (prec = p0; prec <= p1; prec++)
