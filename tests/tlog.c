@@ -64,12 +64,14 @@ int check1(double a, unsigned char rnd_mode, double res1, int ck)
 
   if (res1!=res2 && (!isnan(res1) || !isnan(res2))) {
       if (ck) { 
-	printf("mpfr_log failed for    a=%1.20e, rnd_mode=%d\n",a,rnd_mode);
+	printf("mpfr_log failed for    a=%1.20e, rnd_mode=%s\n", a,
+	       mpfr_print_rnd_mode(rnd_mode));
 	printf("correct result is        %1.20e\n mpfr_log gives          %1.20e (%d ulp)\n",res1,res2,ulp(res1,res2));
 	exit(1);
       }
       else {
-	printf("mpfr_log differs from libm.a for a=%1.20e, rnd_mode=%d\n",a,rnd_mode);
+	printf("mpfr_log differs from libm.a for a=%1.20e, rnd_mode=%s\n", a,
+	       mpfr_print_rnd_mode(rnd_mode));
 	printf(" double calculus gives %1.20e\n mpfr_log        gives %1.20e (%d ulp)\n",res1,res2,ulp(res1,res2));
       }
   }
