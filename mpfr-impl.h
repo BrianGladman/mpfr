@@ -1094,7 +1094,8 @@ typedef struct {
   static unsigned long  _x ## _loop = 0, _x ## _bad = 0;      \
   static const char *_x ## _fname = __func__;                 \
   static void _x ## _f (void) __attribute__ ((destructor));   \
-  static void _x ## _f (void) {fprintf (mpfr_log_file,        \
+  static void _x ## _f (void) { if (_x ## _loop != 0)         \
+     fprintf (mpfr_log_file,                                  \
     "%s: Ziv failed %2.2f%% (%lu bad cases / %lu calls)\n", _x ## _fname,     \
        (double) 100.0 * _x ## _bad / _x ## _loop,  _x ## _bad, _x ## _loop ); }
 
