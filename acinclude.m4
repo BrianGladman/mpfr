@@ -40,7 +40,12 @@ then
 	then
 	  LIBS="$LIBS $1/lib$2.so"
 	else
-	   AC_MSG_ERROR($1/lib$2.a/so not found)
+	if  test -r "$1/lib$2.lib"
+	then
+	  LIBS="$LIBS $1/lib$2.lib"
+	else
+	   AC_MSG_ERROR($1/lib$2.a/so/lib not found)
+	fi
 	fi
 	fi
   AC_MSG_RESULT(yes)

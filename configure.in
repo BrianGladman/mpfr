@@ -171,6 +171,7 @@ int main()
 	    __GNU_MP_VERSION_PATCHLEVEL); 
   else
     sprintf (buffer, "%d.%d", __GNU_MP_VERSION, __GNU_MP_VERSION_MINOR);
+  printf ("(%s/%s) ", buffer, gmp_version);
   return (strcmp (buffer, gmp_version) != 0) ? 1 : 0;
 }
 ], AC_MSG_RESULT(yes), 
