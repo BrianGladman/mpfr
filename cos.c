@@ -136,6 +136,25 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 				      precy + (rnd_mode == GMP_RNDN))))
 	break;
 
+      if (exps == 1) /* s = 1 or -1, and except x=0 which was
+                                   already checked above, cos(x) cannot
+                                   be 1 or -1, so we can round */
+        {
+          if (exps + m - k > precy + (rnd_mode == GMP_RNDN))
+            /* if round to nearest or away, result is s,
+               otherwise it is round(nexttoward (s, 0)) */
+            if ((rnd_mode == GMP_RNDZ) ||
+                (rnd_mode == GMP_RNDD && MPFR_IS_POS(s)) ||
+                (rnd_mode == GMP_RNDU && MPFR_IS_NEG(s)))
+              {
+                if (MPFR_IS_POS(s))
+                  mpfr_nextbelow (s);
+                else
+                  mpfr_nextabove (s);
+              }
+          break;
+        }
+
       if (exps < cancel)
         {
           m += cancel - exps;
