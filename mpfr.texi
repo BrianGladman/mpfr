@@ -1099,8 +1099,9 @@ and a negative value when it is smaller.
 @deftypefunx int mpfr_sin (mpfr_t @var{sop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_tan (mpfr_t @var{top}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Set @var{cop} to the cosine of @var{op}, @var{sop} to the sine of @var{op},
-@var{top} to the tangent of @var{op}, rounded to the direction @var{rnd} with the precision of @var{rop}. Return 0 iff the results are exact (this occurs in fact only when @var{op} is 0
-i.e. the sine is 0 and the cosine is 1).
+@var{top} to the tangent of @var{op}, rounded to the direction @var{rnd} with the precision of @var{rop}. Return 0 iff the results are exact (this occurs
+in fact only when @var{op} is 0 i.e. the sine is 0, the cosine is 1, and the
+tangent is 0).
 @end deftypefun
 
 @deftypefun int mpfr_cosh (mpfr_t @var{cop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
