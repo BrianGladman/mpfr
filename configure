@@ -1464,10 +1464,11 @@ else
   cat > conftest.$ac_ext <<EOF
 #line 1466 "configure"
 #include "confdefs.h"
-#include <$with_gmp_include/gmp-impl.h>
-#include <$with_gmp_include/longlong.h>
+#include "gmp.h"
+#include "gmp-impl.h"
+#include "longlong.h"
 EOF
-ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
+ac_try="$ac_cpp $INCLUDES -I$with_gmp_include conftest.$ac_ext >/dev/null 2>conftest.out"
 { (eval echo configure:1471: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
 if test -z "$ac_err"; then
@@ -1487,7 +1488,7 @@ if eval "test \"`echo '$ac_cv_header_'$ac_safe`\" = yes"; then
   INCLUDES="$INCLUDES -I$with_gmp_include"
 else
   echo "$ac_t""no" 1>&6
-{ echo "configure: error: echo gmp-impl.h or config.h or gmp-mparam.h or longlong.h not found in $with_gmp_include" 1>&2; exit 1; }
+{ echo "configure: error: gmp.h or gmp-impl.h or config.h or gmp-mparam.h or longlong.h may be missing in $with_gmp_include" 1>&2; exit 1; }
 fi
  
 else
