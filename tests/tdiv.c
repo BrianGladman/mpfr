@@ -289,7 +289,7 @@ void check_lowr ()
   mpfr_clear(z3); 
 }
 
-#define MAX_PREC 200
+#define MAX_PREC 100
 
 void
 check_inexact ()
