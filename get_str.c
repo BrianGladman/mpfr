@@ -412,7 +412,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
 {
   int exact;                      /* exact result */
   mp_exp_t exp, g;
-  mp_exp_t prec, log_2prec; /* precision of the computation */
+  mp_exp_t prec; /* precision of the computation */
   long err;
   mp_limb_t *a;
   mp_exp_t exp_a;
@@ -424,6 +424,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
   char *s0;
   int neg;
   int ret; /* return value of mpfr_get_str_aux */
+  MPFR_ZIV_DECL (loop);
   TMP_DECL(marker);
 
   /* if exact = 1 then err is undefined */
@@ -579,11 +580,11 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
   exact = 1;
   prec = (mp_exp_t) mpfr_ceil_double ((double) m / log_b2[b-2]) + 1;
   exp = ((mp_exp_t) m < g) ? g - (mp_exp_t) m : (mp_exp_t) m - g;
-  log_2prec = (mp_exp_t) MPFR_INT_CEIL_LOG2 (prec);
-  prec += log_2prec; /* number of guard bits */
+  prec += MPFR_INT_CEIL_LOG2 (prec); /* number of guard bits */
   if (exp != 0) /* add maximal exponentiation error */
     prec += 3 * (mp_exp_t) MPFR_INT_CEIL_LOG2 (exp);
 
+  MPFR_ZIV_INIT (loop, prec);
   for (;;)
     {
       TMP_MARK(marker);
@@ -689,7 +690,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
       if (ret == MPFR_ROUND_FAILED)
         {
           /* too large error: increment the working precision */
-          prec += log_2prec;
+          MPFR_ZIV_NEXT (loop, prec);
         }
       else if (ret == -MPFR_ROUND_FAILED)
         {
@@ -705,10 +706,12 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
               exp ++;
             }
         }
-      else break;
+      else 
+	break;
 
       TMP_FREE(marker);
     }
+  MPFR_ZIV_FREE (loop);
 
   *e += g;
 
