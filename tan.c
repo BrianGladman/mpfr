@@ -29,6 +29,7 @@ mpfr_tan (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   int precy, m, inexact;
   mpfr_t s, c;
   MPFR_ZIV_DECL (loop);
+  MPFR_SAVE_EXPO_DECL (expo);
 
   MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
 		  ("y[%#R]=%R inexact=%d", y, y, inexact));
@@ -49,6 +50,9 @@ mpfr_tan (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	}
     }
 
+  MPFR_SAVE_EXPO_MARK (expo);
+
+  /* Compute initial precision */
   precy = MPFR_PREC (y);
   m = precy + MPFR_INT_CEIL_LOG2 (precy) + 13;
   if (MPFR_GET_EXP (x) > 0)
@@ -62,10 +66,13 @@ mpfr_tan (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_ZIV_INIT (loop, m);
   for (;;)
     {
+      /* The only way to get an overflow is to get ~ Pi/2
+	 But the result will be ~ 2^Prec(y). */
       mpfr_sin_cos (s, c, x, GMP_RNDN); /* err <= 1/2 ulp on s and c */
       mpfr_div (c, s, c, GMP_RNDN);     /* err <= 2 ulps */
-      if (MPFR_IS_INF(x) || mpfr_can_round (c, m - 1, GMP_RNDN, GMP_RNDZ,
-					    precy + (rnd_mode == GMP_RNDN)))
+      MPFR_ASSERTD (!MPFR_IS_SINGULAR (c));
+      if (MPFR_LIKELY (mpfr_can_round (c, m - 1, GMP_RNDN, GMP_RNDZ,
+				       precy + (rnd_mode == GMP_RNDN))))
 	break;
       MPFR_ZIV_NEXT (loop, m);
       mpfr_set_prec (s, m);
@@ -78,5 +85,6 @@ mpfr_tan (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_clear (s);
   mpfr_clear (c);
 
-  return inexact;
+  MPFR_SAVE_EXPO_FREE (expo);
+  return mpfr_check_range (y, inexact, rnd_mode);
 }
