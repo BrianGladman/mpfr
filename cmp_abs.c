@@ -1,4 +1,4 @@
-/* mpfr_cmp_abs -- compare the absolute values of two nonzero FP numbers
+/* mpfr_cmp_abs -- compare the absolute values of two FP numbers
 
 Copyright 1999, 2001, 2002 Free Software Foundation, Inc.
 
