@@ -12,7 +12,7 @@ ceil.o: trunc.c mpfr.h
 floor.o: trunc.c  mpfr.h
 	$(COMPILE) -DMPFR_FLOOR -c @MISCFLAGS@ -o floor.o
 trunc.o: trunc.c  mpfr.h
-	$(COMPILE) -DMPFR_TRUNC -c  @MISCFLAGS@
+	$(COMPILE) -DMPFR_TRUNC -c @MISCFLAGS@
 
 info_TEXINFOS = mpfr.texi
 
