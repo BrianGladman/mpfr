@@ -36,7 +36,8 @@ int mpfr_compare (mpfr_t, mpfr_t);
 /* same than mpfr_cmp, but returns 0 for both NaN's */
 int mpfr_compare (mpfr_t a, mpfr_t b)
 {
-  return (MPFR_IS_NAN(a)) ? !MPFR_IS_NAN(b) : mpfr_cmp(a, b);
+  return (MPFR_IS_NAN(a)) ? !MPFR_IS_NAN(b) : 
+    (MPFR_IS_NAN(b) || mpfr_cmp(a, b));
 }
 
 void test3 (char *foo, mp_prec_t prec, mp_rnd_t rnd)
@@ -389,7 +390,7 @@ main (void)
   testfunc = (void*) mpfr_sub; test3 ("mpfr_sub", 53, GMP_RNDN);
   testfunc = (void*) mpfr_sub_ui; test2ui ("mpfr_sub_ui", 53, GMP_RNDN);
   testfunc = (void*) mpfr_sqrt; test2 ("mpfr_sqrt", 53, GMP_RNDN);
-  testfunc = mpfr_ui_div; testui2 ("mpfr_ui_div", 53, GMP_RNDN);
+  testfunc = (void*) mpfr_ui_div; testui2 ("mpfr_ui_div", 53, GMP_RNDN);
   testfunc = (void*) mpfr_ui_sub; testui2 ("mpfr_ui_sub", 53, GMP_RNDN);
   testfunc = mpfr_trunc; test2 ("mpfr_trunc", 53, GMP_RNDN);
   testfunc = (void*) mpfr_asin; test2 ("mpfr_asin", 53, GMP_RNDN);
@@ -405,7 +406,7 @@ main (void)
   testfunc = (void*) mpfr_sin; test2 ("mpfr_sin", 53, GMP_RNDN);
   testfunc = (void*) mpfr_tan; test2 ("mpfr_tan", 53, GMP_RNDN);
   testfunc = (void*) mpfr_log10; test2 ("mpfr_log10", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_log2; test2 ("mpfr_log10", 53, GMP_RNDN);
+  testfunc = (void*) mpfr_log2; test2 ("mpfr_log2", 53, GMP_RNDN);
   testfunc = (void*) mpfr_pow; test3 ("mpfr_pow", 53, GMP_RNDN);
   return 0;
 }
