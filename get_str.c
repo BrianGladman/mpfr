@@ -187,7 +187,6 @@ mpfr_get_str (char *str, mp_exp_t *expptr, int base, size_t n,
           while (1)
             {
               mp_exp_unsigned_t p;
-              mp_rnd_t rnd1;
               int div;
 
               if (f < 0)
@@ -227,6 +226,8 @@ mpfr_get_str (char *str, mp_exp_t *expptr, int base, size_t n,
                     }
                   else
                     {
+                      mp_rnd_t rnd1;
+
                       mpfr_set_prec (a, q);
                       if (div)
                         {
@@ -238,6 +239,7 @@ mpfr_get_str (char *str, mp_exp_t *expptr, int base, size_t n,
                             case GMP_RNDZ: rnd1 = GMP_RNDU; break;
                             case GMP_RNDU: rnd1 = GMP_RNDZ; break;
                             case GMP_RNDD: rnd1 = GMP_RNDU; break;
+                            default: MPFR_ASSERTN(0);
                             }
                         }
                       else
