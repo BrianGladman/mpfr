@@ -83,7 +83,7 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd_mode)
 
         /* Declaration of the size variable */
         mp_prec_t Nx = MPFR_PREC(x);   /* Precision of input variable */
-        mp_prec_t Ny = MPFR_PREC(y);   /* Precision of input variable */
+        mp_prec_t Ny = MPFR_PREC(y);   /* Precision of output variable */
 
         mp_prec_t Nt;   /* Precision of the intermediary variable */
         long int err;   /* Precision of error */
@@ -97,8 +97,8 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd_mode)
         mpfr_save_emin_emax ();
 
         /* initialise of intermediary	variable */
-        mpfr_init (t);
-        mpfr_init (ti);
+        mpfr_init2 (t, Nt);
+        mpfr_init2 (ti, Nt);
 
         do
           {
@@ -116,8 +116,10 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd_mode)
             /* actualisation of the precision */
             Nt += 10;
           }
-        while (err < 0 || !mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
-                                           Ny + (rnd_mode == GMP_RNDN)));
+        while (err < 0 || (!mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
+					    Ny + (rnd_mode == GMP_RNDN))
+			   /* An overflow can occurs, producing an underflow */
+			   && !MPFR_IS_ZERO(t) ));
 
         inexact = mpfr_set (y, t, rnd_mode);
         mpfr_clear (t);

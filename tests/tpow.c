@@ -129,6 +129,26 @@ check_pow_si (void)
 }
 
 static void
+check_special_pow_si ()
+{
+  mpfr_t a, b;
+  mpfr_init (a);
+  mpfr_init (b);
+  mpfr_set_str (a, "2E100000000", 10, GMP_RNDN);
+  mpfr_set_si (b, -10, GMP_RNDN);
+  mpfr_pow (b, a, b, GMP_RNDN);
+  if (!MPFR_IS_ZERO(b))
+    {
+      printf("Pow(2E10000000, -10) failed\n");
+      mpfr_dump (a);
+      mpfr_dump (b);
+      exit(1);
+    }
+  mpfr_clear (a);
+  mpfr_clear (b);
+}
+
+static void
 check_inexact (mp_prec_t p)
 {
   mpfr_t x, y, z, t;
@@ -466,6 +486,8 @@ main (void)
   check_pow_ui ();
   
   check_pow_si ();
+
+  check_special_pow_si ();
 
   for (p=2; p<100; p++)
     check_inexact (p);
