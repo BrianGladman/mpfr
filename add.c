@@ -295,7 +295,8 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
 			    +(cp[kc]>>dif));
 	    if (cout==0 || (~cout==0)) cout=cc;
 	  }
-	  if (kc==0) { /* it still remains cp[0]<<(mp_bits_per_limb-dif) */
+	  if (kc==0 && dif) {
+	    /* it still remains cp[0]<<(mp_bits_per_limb-dif) */
 	    if (k!=0) cout += mpn_add_1(&cc, bp+(--k), 1, 
 				      cp[0]<<(mp_bits_per_limb-dif));
 	    else cc = cp[0]<<(mp_bits_per_limb-dif);
