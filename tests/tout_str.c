@@ -29,7 +29,8 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-test.h"
 
-extern int isnan();
+void check4 (double, mp_rnd_t, int, int);
+void check_large (void);
 
 FILE *fout;
 
@@ -50,7 +51,7 @@ void check4(d, rnd, base, prec) double d; unsigned char rnd; int base, prec;
   mpfr_clear(x);
 }
 
-void check_large()
+void check_large ()
 {
   mpfr_t x; mp_exp_t e; char *s;
 
@@ -89,9 +90,9 @@ void check_large()
 
   mpfr_set_prec(x, 381);
   mpfr_set_str_raw(x, "0.111111111111111111111111111111111111111111111111111111111111111111101110110000100110011101101101001010111000101111000100100011110101010110101110100000010100001000110100000100011111001000010010000010001010111001011110000001110010111101100001111000101101100000010110000101100100000101010110010110001010100111001111100011100101100000100100111001100010010011110011011010110000001000010");
-  s = mpfr_get_str(NULL, &e, 10, 0, x, GMP_RNDD);
+  s = mpfr_get_str (NULL, &e, 10, 0, x, GMP_RNDD);
   if (e != 0) {
-    fprintf(stderr, "Error in mpfr_get_str for x=0.999999..., exponent is %d instead of 0\n", (int)e);
+    fprintf(stderr, "Error in mpfr_get_str for x=0.999999..., exponent is %d instead of 0\n", (int) e);
     exit(1);
   }
   free(s);

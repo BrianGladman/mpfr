@@ -27,7 +27,6 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-test.h"
 
-extern int isnan();
 double drand_log _PROTO((void)); 
 int check1 _PROTO((double, unsigned char, double, int)); 
 void check3 _PROTO((double, unsigned long, unsigned char)); 
@@ -35,7 +34,7 @@ void check4 _PROTO((int));
 void slave _PROTO((int, int)); 
 void check_worst_cases _PROTO((void)); 
 
-double drand_log()
+double drand_log ()
 {
   double d; long int *i;
 
@@ -43,7 +42,7 @@ double drand_log()
   do {
     i[0] = lrand48();
     i[1] = lrand48();
-   } while ((d<1e-153)||(d>1e153));    /* to avoid underflow or overflow
+   } while ((d<1e-153) || (d>1e153));    /* to avoid underflow or overflow
 					 in double calculus in sqrt(u*v) */
   return d;
 }
@@ -51,7 +50,7 @@ double drand_log()
 #define check2(a,rnd,res) check1(a,rnd,res,1)
 #define check(a,r) check2(a,r,0.0)
 
-int check1(double a, unsigned char rnd_mode, double res1, int ck)
+int check1 (double a, mp_rnd_t rnd_mode, double res1, int ck)
 {
   mpfr_t ta, tres;
   double res2;
@@ -87,7 +86,7 @@ int check1(double a, unsigned char rnd_mode, double res1, int ck)
     return 0;
 }
 
-void check3(double d, unsigned long prec, unsigned char rnd)
+void check3 (double d, unsigned long prec, mp_rnd_t rnd)
 {
   mpfr_t x, y;
   
@@ -99,7 +98,8 @@ void check3(double d, unsigned long prec, unsigned char rnd)
   mpfr_clear(x); mpfr_clear(y);
 }
 
-void check4(int N) {
+void check4 (int N)
+{
   int i, max=-1, sum=0, cur;
   double d;
 
@@ -116,7 +116,8 @@ void check4(int N) {
   printf("max error : %i \t mean error : %f   (in ulps)\n",max,d);
 }
 
-void slave(int N, int p) {
+void slave (int N, int p)
+{
   int i;
   double d;
   mpfr_t ta, tres;
@@ -132,13 +133,11 @@ void slave(int N, int p) {
   printf("fin\n");
 }
 
-
-
 /* examples from Jean-Michel Muller and Vincent Lefevre 
    Cf http://www.ens-lyon.fr/~jmmuller/Intro-to-TMD.htm
 */
 
-void check_worst_cases()
+void check_worst_cases ()
 { 
   check2(1.00089971802309629645, GMP_RNDD, 8.99313519443722736088e-04); 
   check2(1.00089971802309629645, GMP_RNDN, 8.99313519443722844508e-04);
