@@ -49,7 +49,10 @@ mpfr_sqrt (r, u, rnd_mode)
   char can_round = 0; 
   TMP_DECL (marker); TMP_DECL(marker0); 
 
-  if (MPFR_IS_NAN(u) || MPFR_SIGN(u) == -1) { MPFR_SET_NAN(r); return 1; }
+  if (MPFR_IS_NAN(u) || MPFR_SIGN(u) == -1) {
+    MPFR_SET_NAN(r);
+    return 1;
+  }
 
   if (MPFR_SIGN(r) != 1) { MPFR_CHANGE_SIGN(r); }
   if (MPFR_IS_INF(u)) 
@@ -57,6 +60,8 @@ mpfr_sqrt (r, u, rnd_mode)
       MPFR_SET_INF(r);
       return 1;
     }
+
+  MPFR_CLEAR_FLAGS (r);
 
   prec = MPFR_PREC(r);
 
