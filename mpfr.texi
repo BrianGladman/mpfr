@@ -754,9 +754,11 @@ Set @var{x} to the value of the string @var{s} in base @var{base} (between
 2 and 36), rounded in direction @var{rnd} to the precision of @var{x}.
 The exponent is read in decimal.
 This function returns @minus{}1 if an internal overflow occurred (for
-instance, because the exponent is too large). Otherwise it returns 0
-if the base is valid and if the entire string up to the final '\0' is
-a valid number in base @var{base}, and 1 if the input is incorrect.
+instance, because the exponent is too large), or if the input is incorrect.
+Otherwise it returns the number of characters read in @var{s}.
+
+Special values can be read as follows: @code{NaN}, @code{Inf}, @code{+Inf}
+and @code{-Inf} (possibly in lower case when the base is less than 24).
 @end deftypefun
 
 @deftypefun void mpfr_set_str_raw (mpfr_t @var{x}, char *@var{s})
