@@ -34,7 +34,6 @@ MISCFLAGS='$<'
 dnl Set the OS-dependent flags.
 case $OS_TYPE in
 	HP-UX*)
-		AC_CHECK_LIB(M, main)
 		AC_DEFINE(hpux)
 		if test -n "$GCC"; then
 		  LDFLAGS="-Xlinker +allowunsats $LDFLAGS"
@@ -42,13 +41,8 @@ case $OS_TYPE in
 		;;
 	SunOS*)
 		MISCFLAGS="trunc.c"
-		AC_CHECK_LIB(m, main)
-		;;
-	Linux*)
-		AC_CHECK_LIB(m, main)
 		;;
 	IRIX64)
-		AC_CHECK_LIB(m, main)
 		if [[ "$irix64" = "on" ]]; then
 		  CFLAGS ="-mabi=64 $CFLAGS"
 		else
@@ -56,11 +50,7 @@ case $OS_TYPE in
 		fi
 		;;
 	OSF*)
-		AC_CHECK_LIB(m, main)
 		AC_DEFINE(__STDC__)
-		;;
-	*)
-		AC_CHECK_LIB(m, main)
 		;;
 esac
 
