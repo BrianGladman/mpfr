@@ -1,6 +1,6 @@
 /* Test file for mpfr_get_d
 
-Copyright 1999, 2000, 2001, 2002, 2003 Free Software Foundation.
+Copyright 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -97,24 +97,47 @@ check_inf_nan ()
 }
 
 static void
-check_max(void)
+check_max (void)
 {
   double d, e;
   mpfr_t u;
 
-  d = 1.0; while (d < (DBL_MAX / 2.0)) d += d;
-  mpfr_init(u);
-  if (mpfr_set_d(u, d, GMP_RNDN) == 0)
+  d = 1.0;
+  while (d < (DBL_MAX / 2.0))
+    d += d;
+  mpfr_init (u);
+  if (mpfr_set_d (u, d, GMP_RNDN) == 0)
     {
       /* If setting is exact */
-      e = mpfr_get_d1(u);
+      e = mpfr_get_d1 (u);
       if (e != d)
 	{
-	  printf("get_d(set_d)(1): %1.20e != %1.20e\n", d, e);
-	  exit(1);
+	  printf ("get_d(set_d)(1): %1.20e != %1.20e\n", d, e);
+	  exit (1);
 	}
     }
-  mpfr_clear(u);
+
+  mpfr_set_str_binary (u, "-1E1024");
+  d = mpfr_get_d (u, GMP_RNDZ);
+  MPFR_ASSERTN(d == -DBL_MAX);
+  d = mpfr_get_d (u, GMP_RNDU);
+  MPFR_ASSERTN(d == -DBL_MAX);
+  d = mpfr_get_d (u, GMP_RNDN);
+  MPFR_ASSERTN(DOUBLE_ISINF(d) && d < 0.0);
+  d = mpfr_get_d (u, GMP_RNDD);
+  MPFR_ASSERTN(DOUBLE_ISINF(d) && d < 0.0);
+
+  mpfr_set_str_binary (u, "1E1024");
+  d = mpfr_get_d (u, GMP_RNDZ);
+  MPFR_ASSERTN(d == DBL_MAX);
+  d = mpfr_get_d (u, GMP_RNDD);
+  MPFR_ASSERTN(d == DBL_MAX);
+  d = mpfr_get_d (u, GMP_RNDN);
+  MPFR_ASSERTN(DOUBLE_ISINF(d) && d > 0.0);
+  d = mpfr_get_d (u, GMP_RNDU);
+  MPFR_ASSERTN(DOUBLE_ISINF(d) && d > 0.0);
+
+  mpfr_clear (u);
 }
 
 static void

@@ -169,6 +169,13 @@ main (int argc, char *argv[])
       exit (1);
     }
 
+  /* test for get_ui */
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_get_ui (x, GMP_RNDN) == 0);
+  mpfr_set_ui (x, ULONG_MAX, GMP_RNDU);
+  mpfr_nextabove (x);
+  mpfr_get_ui (x, GMP_RNDU);
+
   mpfr_clear (x);
 
   tests_end_mpfr ();
