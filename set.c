@@ -6,17 +6,18 @@
 
 void 
 #if __STDC__
-mpfr_set(mpfr_ptr a, mpfr_srcptr b, unsigned char rnd_mode)
+mpfr_set4(mpfr_ptr a, mpfr_srcptr b, unsigned char rnd_mode, int signb)
 #else
-mpfr_set(a, b, rnd_mode) 
+mpfr_set4(a, b, rnd_mode) 
      mpfr_ptr a; 
      mpfr_srcptr b; 
      unsigned char rnd_mode;
+     int signb;
 #endif
 {
   int carry, an, preca = PREC(a), sh; mp_limb_t *ap = MANT(a);
 
-  carry = mpfr_round_raw(ap, MANT(b), PREC(b), (SIGN(b)<0), preca, rnd_mode);
+  carry = mpfr_round_raw(ap, MANT(b), PREC(b), (signb<0), preca, rnd_mode);
   EXP(a) = EXP(b);
   if (carry) {
     an = (preca-1)/BITS_PER_MP_LIMB + 1;
@@ -28,5 +29,5 @@ mpfr_set(a, b, rnd_mode)
     ap[an-1] |= (mp_limb_t) 1 << (BITS_PER_MP_LIMB-1);
     EXP(a)++;
   }
-  if (SIGN(a) != SIGN(b)) CHANGE_SIGN(a);
+  if (SIGN(a) != signb) CHANGE_SIGN(a);
 }
