@@ -131,12 +131,15 @@ void mpfr_print_raw _PROTO ((mpfr_srcptr));
 void mpfr_random _PROTO ((mpfr_ptr)); 
 void mpfr_clear _PROTO ((mpfr_ptr)); 
 void mpfr_set_str_raw _PROTO ((mpfr_ptr, char *));
+int mpfr_set_str _PROTO ((mpfr_ptr, char *, int, mp_rnd_t));
+int mpfr_init_set_str _PROTO ((mpfr_ptr, char *, int, mp_rnd_t));
+size_t mpfr_inp_str _PROTO ((mpfr_ptr, FILE *, int, mp_rnd_t));
 void mpfr_get_str_raw _PROTO ((char *, mpfr_srcptr));
 char* mpfr_get_str _PROTO ((char *, mp_exp_t *, int, size_t, mpfr_srcptr, mp_rnd_t));
 size_t mpfr_out_str _PROTO ((FILE *, int, size_t, mpfr_srcptr, mp_rnd_t));
 void mpfr_mul _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
-void mpfr_pow_ui _PROTO ((mpfr_ptr, mpfr_srcptr, unsigned long int, mp_rnd_t));
-void mpfr_ui_pow_ui _PROTO ((mpfr_ptr, unsigned long int, unsigned long int,
+int mpfr_pow_ui _PROTO ((mpfr_ptr, mpfr_srcptr, unsigned long int, mp_rnd_t));
+int mpfr_ui_pow_ui _PROTO ((mpfr_ptr, unsigned long int, unsigned long int,
 			     mp_rnd_t));
 mp_limb_t mpn_divrem_n _PROTO ((mp_limb_t *, mp_limb_t *, mp_limb_t *, mp_size_t));
 mp_size_t kara_sqrtrem _PROTO ((mp_limb_t *, mp_limb_t *, mp_limb_t *, mp_size_t));
@@ -208,8 +211,6 @@ void mpfr_set_default_rounding_mode _PROTO((mp_rnd_t));
  { mpfr_init(x); mpfr_set((x), (y), (rnd)); }
 #define mpfr_init_set_f(x, y, rnd) \
  { mpfr_init(x); mpfr_set_f((x), (y), (rnd)); }
-#define mpfr_init_set_str(x, y, rnd) \
- { mpfr_init(x); mpfr_set_str((x), (y), (rnd)); }
 #define mpfr_init_set_str_raw(x, y, rnd) \
  { mpfr_init(x); mpfr_set_str_raw((x), (y), (rnd)); }
 
