@@ -32,7 +32,8 @@ mpfr_sin_sign (mpfr_srcptr x)
   mp_prec_t m;
   mpfr_srcptr y;
 
-  m = MPFR_PREC(x);
+  m = MPFR_GET_EXP(x);
+  m = (m < 0) ? 0 : m;
 
   mpfr_init2 (c, 2);
   mpfr_init2 (k, 2);
@@ -47,6 +48,8 @@ mpfr_sin_sign (mpfr_srcptr x)
       /* first determine round(x/Pi): does not have to be exact since
          the result is an integer */
       mpfr_const_pi (c, GMP_RNDN); /* err <= 1/2*ulp(c) = 2^(1-m) */
+      /* we need that k is not-to-badly rounded to an integer,
+         i.e. ulp(k) <= 1, so m >= EXP(k). */
       mpfr_div (k, x, c, GMP_RNDN);
       mpfr_round (k, k);
 
