@@ -59,6 +59,59 @@ special (void)
       printf ("Wrong flag for mpfr_fac_ui (767)\n");
       exit (1);
     }
+
+  mpfr_set_prec (y, 202);
+  mpfr_fac_ui (y, 69, GMP_RNDU);
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
+static void
+test_int (void)
+{
+  unsigned long n0 = 1, n1 = 80, n;
+  mpz_t f;
+  mpfr_t x, y;
+  mp_prec_t prec_f, p;
+  mp_rnd_t r;
+  int inex1, inex2;
+
+  mpz_init (f);
+  mpfr_init (x);
+  mpfr_init (y);
+
+  mpz_fac_ui (f, n0 - 1);
+  for (n = n0; n <= n1; n++)
+    {
+      mpz_mul_ui (f, f, n); /* f = n! */
+      prec_f = mpz_sizeinbase (f, 2) - mpz_scan1 (f, 0);
+      for (p = MPFR_PREC_MIN; p <= prec_f; p++)
+        {
+          mpfr_set_prec (x, p);
+          mpfr_set_prec (y, p);
+          for (r = 0; r < 4; r++)
+            {
+              inex1 = mpfr_fac_ui (x, n, r);
+              inex2 = mpfr_set_z (y, f, r);
+              if (mpfr_cmp (x, y))
+                {
+                  printf ("Error for n=%u prec=%u rnd=%s\n", n, p,
+                          mpfr_print_rnd_mode (r));
+                  exit (1);
+                }
+              if ((inex1 < 0 && inex2 >= 0) || (inex1 == 0 && inex2 != 0)
+                  || (inex1 > 0 && inex2 <= 0))
+                {
+                  printf ("Wrong inexact flag for n=%u prec=%u rnd=%s\n", n, p,
+                          mpfr_print_rnd_mode (r));
+                  exit (1);
+                }
+            }
+        }
+    }
+
+  mpz_clear (f);
   mpfr_clear (x);
   mpfr_clear (y);
 }
@@ -74,6 +127,8 @@ main (int argc, char *argv[])
   tests_start_mpfr ();
 
   special ();
+
+  test_int ();
 
   mpfr_init (x);
   mpfr_init (y);

@@ -28,7 +28,7 @@ MA 02111-1307, USA. */
  */
 
 int
-mpfr_fac_ui (mpfr_ptr y, unsigned long int x , mp_rnd_t rnd_mode) 
+mpfr_fac_ui (mpfr_ptr y, unsigned long int x, mp_rnd_t rnd_mode) 
 {
 
   /****** Declaration ******/
@@ -56,7 +56,7 @@ mpfr_fac_ui (mpfr_ptr y, unsigned long int x , mp_rnd_t rnd_mode)
 	Ny = MPFR_PREC(y);
         
         /* compute the size of intermediary variable */
-	Nt = Ny + 2 * (int) __gmpfr_ceil_log2 ((double) x) + 10;
+	Nt = Ny + 2 * (int) __gmpfr_ceil_log2 ((double) x) + 7;
 	
         mpfr_init2 (t, Nt); /* initialise of intermediary variable */
         
