@@ -184,5 +184,7 @@ int main(int argc, char* argv[]) {
      check4(1.0, 44.0, GMP_RNDU, 1.33658354512981247808e1);
      check4(1.0, 3.7252902984619140625e-9, GMP_RNDU, 7.55393356971199025907e-02);
    } 
+
+   /* TODO : tests des infinis dans tagm.c */
    return 0;
 }

@@ -94,6 +94,8 @@ int main(argc,argv) int argc; char *argv[];
   check3(-6.72658901114033715233e-165, 2000878121, GMP_RNDZ,
 	 2.0008781209999997615e9);
   check3(-2.0769715792901673e-5, 880524, GMP_RNDN, 8.8052399997923023e5);
+  check3(1/0., 2394875, GMP_RNDN, 1/0.); 
+  check3(-1/0., 2394875, GMP_RNDN, -1/0.); 
   return 0;
 }
 

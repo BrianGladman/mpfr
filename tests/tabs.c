@@ -27,6 +27,7 @@ MA 02111-1307, USA. */
 #ifdef __mips
 #include <sys/fpu.h>
 #endif
+#define Infp 1/0.
 
 extern int isnan();
 
@@ -55,22 +56,35 @@ int main(int argc, char *argv[])
      fprintf(stderr, "Error in mpfr_abs(-1.0)\n"); exit(1);
    }
 
-  n = (argc==1) ? 1000000 : atoi(argv[1]);
-  for (k = 1; k <= n; k++)
-    {      
-      d = drand();
-      rnd = rand() % 4;
-      mpfr_set_d(x, d, 0);
-      mpfr_abs(x, x, rnd);
-      dd = mpfr_get_d(x);
-      if (dd != fabs(d) && !isnan(d))
-	{ 
-	  fprintf(stderr, 
-		  "Mismatch on d = %1.18g\n", d); 
-	  mpfr_print_raw(x); putchar('\n');
-	  exit(1);
-	} 
-    }
+   mpfr_set_d(x, -6/-0., GMP_RNDN); 
+   mpfr_abs(x, x, GMP_RNDN); 
+   if (mpfr_get_d(x) != Infp) { 
+     fprintf(stderr, "Error in mpfr_abs(Inf).\n"); exit(1); 
+   }
+
+   mpfr_set_d(x, 2/-0., GMP_RNDN); 
+   mpfr_abs(x, x, GMP_RNDN); 
+   if (mpfr_get_d(x) != Infp) { 
+     fprintf(stderr, "Error in mpfr_abs(-Inf).\n"); exit(1); 
+   }
+
+
+   n = (argc==1) ? 1000000 : atoi(argv[1]);
+   for (k = 1; k <= n; k++)
+     {      
+       d = drand();
+       rnd = rand() % 4;
+       mpfr_set_d(x, d, 0);
+       mpfr_abs(x, x, rnd);
+       dd = mpfr_get_d(x);
+       if (dd != fabs(d) && !isnan(d))
+	 { 
+	   fprintf(stderr, 
+		   "Mismatch on d = %1.18g\n", d); 
+	   mpfr_print_raw(x); putchar('\n');
+	   exit(1);
+	 } 
+     }
 
    mpfr_clear(x);
    return 0;

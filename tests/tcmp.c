@@ -27,6 +27,9 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
+#define Infp 1/0.
+#define Infm -1/0.
+
 extern int isnan();
 
 int main()
@@ -60,6 +63,38 @@ int main()
   if (mpfr_cmp(xx, yy) >= 0) {
     fprintf(stderr,
 	    "Error in mpfr_cmp(0.0, 0.1), gives %d\n", mpfr_cmp(xx, yy));
+    exit(1);
+  }
+
+  mpfr_set_d(xx, Infp, GMP_RNDN); 
+  mpfr_set_d(yy, -23489745.0329, GMP_RNDN); 
+  if (mpfr_cmp(xx, yy) <= 0) { 
+    fprintf(stderr,
+	    "Error in mpfr_cmp(Infp, 23489745.0329), gives %d\n", mpfr_cmp(xx, yy));
+    exit(1);
+  }
+
+  mpfr_set_d(xx, Infp, GMP_RNDN); 
+  mpfr_set_d(yy, Infm, GMP_RNDN); 
+  if (mpfr_cmp(xx, yy) <= 0) { 
+    fprintf(stderr,
+	    "Error in mpfr_cmp(Infp, Infm), gives %d\n", mpfr_cmp(xx, yy));
+    exit(1);
+  }
+
+  mpfr_set_d(xx, Infm, GMP_RNDN); 
+  mpfr_set_d(yy, Infp, GMP_RNDN); 
+  if (mpfr_cmp(xx, yy) >= 0) { 
+    fprintf(stderr,
+	    "Error in mpfr_cmp(Infm, Infp), gives %d\n", mpfr_cmp(xx, yy));
+    exit(1);
+  }
+
+  mpfr_set_d(xx, Infm, GMP_RNDN); 
+  mpfr_set_d(yy, 2346.09234, GMP_RNDN); 
+  if (mpfr_cmp(xx, yy) >= 0) { 
+    fprintf(stderr,
+	    "Error in mpfr_cmp(Infm, 2346.09234), gives %d\n", mpfr_cmp(xx, yy));
     exit(1);
   }
 

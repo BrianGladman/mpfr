@@ -64,6 +64,28 @@ unsigned int py, unsigned int pz, double z1)
   mpfr_clear(xx); mpfr_clear(yy); mpfr_clear(zz);
 }
 
+void checknan(double x, double y, unsigned int rnd_mode, unsigned int px, 
+unsigned int py, unsigned int pz)
+{
+  double z2; mpfr_t xx,yy,zz; int cert=0;
+
+  mpfr_init2(xx, px);
+  mpfr_init2(yy, py);
+  mpfr_init2(zz, pz);
+  mpfr_set_d(xx, x, rnd_mode);
+  mpfr_set_d(yy, y, rnd_mode);
+  mpfr_add(zz, xx, yy, rnd_mode);
+#ifdef TEST
+  mpfr_set_machine_rnd_mode(rnd_mode);
+  if (px==53 && py==53 && pz==53) cert=1;
+#endif
+  if (MPFR_IS_NAN(zz) == 0) { printf("Error, not an MPFR_NAN for xx = %1.20e, y = %1.20e\n", x, y); exit(1); }
+  z2 = mpfr_get_d(zz);
+  if (!isnan(z2)) { printf("Error, not a NaN after conversion, xx = %1.20e yy = %1.20e\n", x, y); exit(1); }
+
+  mpfr_clear(xx); mpfr_clear(yy); mpfr_clear(zz);
+}
+
 #ifdef TEST
 /* idem than check for mpfr_add(x, x, y) */
 void check3(double x, double y, unsigned int rnd_mode)
@@ -296,6 +318,7 @@ void check_same()
 }
 
 #define check53(x, y, r, z) check(x, y, r, 53, 53, 53, z)
+#define check53nan(x, y, r) checknan(x, y, r, 53, 53, 53); 
 
 int main(argc,argv) int argc; char *argv[];
 {
@@ -475,6 +498,14 @@ int main(argc,argv) int argc; char *argv[];
   /* test denormalized numbers too */
   check53(8.06294740693074521573e-310, 6.95250701071929654575e-310, GMP_RNDU,
 	  1.5015454417650041761e-309);
+  check53(1/0., 6.95250701071929654575e-310, GMP_RNDU, 1/0.); 
+  check53(-1/0., 6.95250701071929654575e-310, GMP_RNDU, -1/0.); 
+  check53(6.95250701071929654575e-310, 1/0., GMP_RNDU, 1/0.);
+  check53(6.95250701071929654575e-310, -1/0., GMP_RNDU, -1/0.);
+
+  check53nan(1/0., -1/0., GMP_RNDN); 
+  
+
 #ifdef TEST
   /* Comparing to double precision using machine arithmetic */
   for (i=0;i<N;i++) {
