@@ -916,8 +916,8 @@ the current allocation function, and a pointer to the string is returned.
 To free the returned string, you must use @code{mpfr_free_str}.
 
 If @var{str} is not a null pointer, it should point to a block of storage
-large enough for the mantissa, i.e., at least @var{n} + 2. The extra
-two bytes are for a possible minus sign, and for the terminating null
+large enough for the mantissa, i.e., at least @code{max(@var{n} + 2, 7)}. 
+The extra two bytes are for a possible minus sign, and for the terminating null
 character.
 
 If @var{n} is 0, note that the space requirements for @var{str}
