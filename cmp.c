@@ -227,7 +227,7 @@ mpfr_cmp2(b, c)
     }
 
   /* warning: count_leading_zeros doesn't work with zero */
-  if ((cn >= 0) && (u = ~(cp[cn--] << (BITS_PER_MP_LIMB - d))))
+  if ((cn >= 0) && d && (u = ~(cp[cn--] << (BITS_PER_MP_LIMB - d))))
     count_leading_zeros(cc, u);
   else
     cc = 0;
@@ -239,7 +239,7 @@ mpfr_cmp2(b, c)
   
   while (cn >= 0 && !~cp[cn]) { z += BITS_PER_MP_LIMB; cn--; } 
   /* now either cn<0 or cp[cn] is not 111...111 */
-  if (cn >= 0) { count_leading_zeros(cc, ~cp[cn]); return (k + d+ z + cc); }
+  if (cn >= 0) { count_leading_zeros(cc, ~cp[cn]); return (k + 1 + z + cc); }
 
   return k; /* We **need** that the nonsignificant limbs of c are set
 	       to zero there */	       
