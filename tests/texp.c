@@ -99,7 +99,7 @@ int check_large (double d, int n, char rnd)
     mpfr_div_ui(x, x, 3, rnd);
   }
   else mpfr_set_d(x, d, rnd);
-  mpfr_exp(y, x, rnd);
+  mpfr_exp (y, x, rnd);
   if (d==0.0) {
     mpfr_set_d(x, 640320.0, rnd);
     mpfr_sub(y, y, x, rnd);
@@ -162,6 +162,29 @@ int check_worst_cases()
   return 0;
 }
 
+void compare_exp2_exp3(int n)
+{
+  mpfr_t x, y, z; int prec; mp_rnd_t rnd;
+
+  mpfr_init(x); mpfr_init(y); mpfr_init(z);
+  for (prec=20;prec<=n;prec++) {
+    mpfr_set_prec(x, prec); mpfr_set_prec(y, prec); mpfr_set_prec(z, prec);
+    mpfr_random(x);
+    rnd = rand() % 4;
+    mpfr_exp2 (y, x, rnd);
+    mpfr_exp3 (z, x, rnd);
+    if (mpfr_cmp(y,z)) {
+      printf("mpfr_exp2 and mpfr_exp3 disagree for rnd=%s and\nx=",
+	     mpfr_print_rnd_mode(rnd));
+      mpfr_print_raw(x); putchar('\n');
+      printf("mpfr_exp2 gives  "); mpfr_print_raw(y); putchar('\n');
+      printf("mpfr_exp3 gives "); mpfr_print_raw(z); putchar('\n');
+      exit(1);
+    }
+  }
+  mpfr_clear(x); mpfr_clear(y); mpfr_clear(z);
+}
+
 int
 main(int argc, char **argv)
 {
@@ -169,6 +192,8 @@ main(int argc, char **argv)
   int i, N, s=0, e, maxe=0; double d, lo, hi;
 #endif
 
+  srand(getpid());
+  compare_exp2_exp3(1000);
   if (argc==4) { check_large(atof(argv[1]), atoi(argv[2]), atoi(argv[3])); 
 		 exit(1); }
   check_worst_cases();
