@@ -19,7 +19,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#define N 20000
+#define N 30000
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -648,7 +648,8 @@ check_1111 (void)
       mp_prec_t prec_a, prec_b, prec_c;
       mp_exp_t tb, tc, diff;
       mpfr_t a, b, c, s;
-      int m = 256;
+      int m = 512;
+      int sb, sc;
       int inex_a, inex_s;
       mp_rnd_t rnd_mode;
 
@@ -661,8 +662,14 @@ check_1111 (void)
       tb = 1 + (randlimb () % (prec_b - 1));
       tc = 1 + (randlimb () % (prec_c - 1));
       mpfr_div_2ui (b, one, tb, GMP_RNDN);
+      sb = randlimb () % 2;
+      if (sb)
+        mpfr_neg (b, b, GMP_RNDN);
       mpfr_add (b, b, one, GMP_RNDN);
       mpfr_div_2ui (c, one, tc, GMP_RNDN);
+      sc = randlimb () % 2;
+      if (sc)
+        mpfr_neg (c, c, GMP_RNDN);
       mpfr_add (c, c, one, GMP_RNDN);
       diff = (randlimb () % (2*m)) - m;
       mpfr_mul_2ui (c, c, diff, GMP_RNDN);
@@ -687,6 +694,7 @@ check_1111 (void)
           printf ("tb = %d, tc = %d, diff = %d, rnd = %s\n",
                   (int) tb, (int) tc, (int) diff,
                   mpfr_print_rnd_mode (rnd_mode));
+          printf ("sb = %d, sc = %d\n", sb, sc);
           printf ("a = "); mpfr_print_binary (a); puts ("");
           printf ("s = "); mpfr_print_binary (s); puts ("");
           printf ("inex_a = %d, inex_s = %d\n", inex_a, inex_s);
