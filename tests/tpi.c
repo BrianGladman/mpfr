@@ -1,9 +1,10 @@
+#include <stdlib.h>
 #include "gmp.h"
 #include "mpfr.h"
 
 /* tpi [prec] [rnd] [0 = no print] */
 
-main(argc, argv) int argc; char *argv[];
+int main(argc, argv) int argc; char *argv[];
 {
   mpfr_t x; int p; unsigned char rnd;
 
@@ -18,4 +19,5 @@ main(argc, argv) int argc; char *argv[];
     fprintf(stderr, "mpfr_pi failed for prec=53\n"); exit(1);
   }
   mpfr_clear(x);
+  return 0;
 }
