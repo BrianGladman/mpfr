@@ -447,10 +447,10 @@ void check_case_1b (void)
   mpfr_init (b);
   mpfr_init (c);
 
-  for (prec_a = 1; prec_a <= 64; prec_a++)
+  for (prec_a = 2; prec_a <= 64; prec_a++)
     {
       mpfr_set_prec (a, prec_a);
-      for (prec_b = prec_a + 1; prec_b <= 64; prec_b++)
+      for (prec_b = prec_a + 2; prec_b <= 64; prec_b++)
 	{
 	  dif = prec_b - prec_a;
 	  mpfr_set_prec (b, prec_b);
@@ -549,7 +549,7 @@ check_inexact ()
   mpfr_init (z);
   mpfr_init (u);
 
-  mpfr_set_prec (x, 1);
+  mpfr_set_prec (x, 2);
   mpfr_set_str_raw (x, "0.1E-4");
   mpfr_set_prec (u, 33);
   mpfr_set_str_raw (u, "0.101110100101101100000000111100000E-1");
@@ -560,7 +560,7 @@ check_inexact ()
       exit (1);
     }
 
-  mpfr_set_prec (x, 1);
+  mpfr_set_prec (x, 2);
   mpfr_set_str_raw (x, "0.1E-4");
   mpfr_set_prec (u, 33);
   mpfr_set_str_raw (u, "0.101110100101101100000000111100000E-1");
@@ -571,15 +571,15 @@ check_inexact ()
       exit (1);
     }
 
-  for (px=1; px<MAX_PREC; px++)
+  for (px=2; px<MAX_PREC; px++)
     {
       mpfr_set_prec (x, px);
       mpfr_random (x);
-      for (pu=1; pu<MAX_PREC; pu++)
+      for (pu=2; pu<MAX_PREC; pu++)
 	{
 	  mpfr_set_prec (u, pu);
 	  mpfr_random (u);
-	  for (py=1; py<MAX_PREC; py++)
+	  for (py=2; py<MAX_PREC; py++)
 	    {
 	      mpfr_set_prec (y, py);
 	      pz =  (mpfr_cmp_abs (x, u) >= 0) ? MPFR_EXP(x)-MPFR_EXP(u)

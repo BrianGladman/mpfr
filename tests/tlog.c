@@ -345,7 +345,7 @@ main (int argc, char *argv[])
   check2(6.09969788341579732815e+00,GMP_RNDD,1.80823924264386204363e+00);
   }
 
-  test_generic (1, 100, 40);
+  test_generic (2, 100, 40);
 
   return 0;
 }

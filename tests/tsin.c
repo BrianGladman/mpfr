@@ -69,17 +69,17 @@ main (int argc, char *argv[])
 
   check53 (1.00591265847407274059,  8.446508805292128885e-1, GMP_RNDN);
 
-  mpfr_init2 (x, 1);
+  mpfr_init2 (x, 2);
   mpfr_set_d (x, 0.5, GMP_RNDN);
   mpfr_sin (x, x, GMP_RNDD);
-  if (mpfr_get_d(x) != 0.25)
+  if (mpfr_get_d(x) != 0.375)
     {
-      fprintf (stderr, "mpfr_sin(0.5, GMP_RNDD) failed\n");
+      fprintf (stderr, "mpfr_sin(0.5, GMP_RNDD) failed with precision=2\n");
       exit (1);
     }
   mpfr_clear (x);
 
-  test_generic (1, 100, 80);
+  test_generic (2, 100, 80);
 
   return 0;
 }

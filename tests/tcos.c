@@ -58,6 +58,11 @@ main (int argc, char *argv[])
   mpfr_init (x);
   mpfr_init (y);
 
+  mpfr_set_prec (x, 53);
+  mpfr_set_prec (y, 2);
+  mpfr_set_d (x, 9.81333845856942e-1, GMP_RNDN);
+  mpfr_cos (y, x, GMP_RNDN);
+
   mpfr_set_prec (x, 30);
   mpfr_set_prec (y, 30);
   mpfr_set_str_raw (x, "1.00001010001101110010100010101e-1");
@@ -112,7 +117,7 @@ main (int argc, char *argv[])
 
   check53 (1.00591265847407274059, 0.53531755997839769456,  GMP_RNDN);
 
-  test_generic (1, 100, 100);
+  test_generic (2, 100, 100);
 
   mpfr_clear (x);
   mpfr_clear (y);

@@ -29,7 +29,7 @@ int
 main (int argc, char *argv[])
 {
   mpfr_t gamma, y, z, t;
-  unsigned int err, prec, yprec, p0 = 1, p1 = 200;
+  unsigned int err, prec, yprec, p0 = 2, p1 = 200;
   mp_rnd_t rnd;
 
   prec = (argc < 2) ? 53 : atoi(argv[1]);

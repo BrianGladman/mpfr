@@ -139,7 +139,7 @@ int main(argc,argv) int argc; char *argv[];
   } 
 #endif
   
-  for (p=1; p<200; p++)
+  for (p=2; p<200; p++)
     for (k=0; k<200; k++)
       check_two_sum (p);
   check3(0.9999999999, 1, GMP_RNDN, -1.000000082740370999e-10);

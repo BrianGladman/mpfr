@@ -63,7 +63,7 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-  test_generic (1, 100, 100);
+  test_generic (2, 100, 100);
 
   mpfr_clear (x);
   mpfr_clear (y);

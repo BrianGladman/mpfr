@@ -41,9 +41,9 @@ void check (double x, double y, mp_rnd_t rnd_mode, unsigned int px,
 {
   double z1, z2; mpfr_t xx, yy, zz;
 
-  mpfr_init2(xx, px);
-  mpfr_init2(yy, py);
-  mpfr_init2(zz, pz);
+  mpfr_init2 (xx, px);
+  mpfr_init2 (yy, py);
+  mpfr_init2 (zz, pz);
   mpfr_set_d(xx, x, rnd_mode);
   mpfr_set_d(yy, y, rnd_mode);
   mpfr_mul(zz, xx, yy, rnd_mode);
@@ -67,13 +67,13 @@ void check53 (double x, double y, mp_rnd_t rnd_mode, double z1)
 {
   double z2; mpfr_t xx, yy, zz;
 
-  mpfr_init2(xx, 53);
-  mpfr_init2(yy, 53);
-  mpfr_init2(zz, 53);
-  mpfr_set_d(xx, x, rnd_mode);
-  mpfr_set_d(yy, y, rnd_mode);
-  mpfr_mul(zz, xx, yy, rnd_mode);
-  z2 = mpfr_get_d(zz);
+  mpfr_init2 (xx, 53);
+  mpfr_init2 (yy, 53);
+  mpfr_init2 (zz, 53);
+  mpfr_set_d (xx, x, rnd_mode);
+  mpfr_set_d (yy, y, rnd_mode);
+  mpfr_mul (zz, xx, yy, rnd_mode);
+  z2 = mpfr_get_d (zz);
   if (z1!=z2 && (!isnan(z1) || !isnan(z2))) {
     printf("mpfr_mul failed for x=%1.20e y=%1.20e with rnd_mode=%s\n",
 	   x, y, mpfr_print_rnd_mode(rnd_mode));
@@ -89,13 +89,13 @@ void check24 (float x, float y, mp_rnd_t rnd_mode, float z1)
 {
   float z2; mpfr_t xx, yy, zz;
 
-  mpfr_init2(xx, 24);
-  mpfr_init2(yy, 24);
-  mpfr_init2(zz, 24);
-  mpfr_set_d(xx, x, rnd_mode);
-  mpfr_set_d(yy, y, rnd_mode);
-  mpfr_mul(zz, xx, yy, rnd_mode);
-  z2 = (float) mpfr_get_d(zz);
+  mpfr_init2 (xx, 24);
+  mpfr_init2 (yy, 24);
+  mpfr_init2 (zz, 24);
+  mpfr_set_d (xx, x, rnd_mode);
+  mpfr_set_d (yy, y, rnd_mode);
+  mpfr_mul (zz, xx, yy, rnd_mode);
+  z2 = (float) mpfr_get_d (zz);
   if (z1!=z2) {
     printf("mpfr_mul failed for x=%1.0f y=%1.0f with prec=24 and rnd_mode=%s\n", x, y, mpfr_print_rnd_mode(rnd_mode));
     printf("libm.a gives %1.0f, mpfr_mul gives %1.0f\n", z1, z2);
@@ -154,7 +154,8 @@ void check_sign ()
 {
   mpfr_t a, b;
 
-  mpfr_init2(a, 53); mpfr_init2(b, 53);
+  mpfr_init2 (a, 53);
+  mpfr_init2 (b, 53);
   mpfr_set_d(a, -1.0, GMP_RNDN);
   mpfr_set_d(b, 2.0, GMP_RNDN);
   mpfr_mul(a, b, b, GMP_RNDN);
@@ -258,7 +259,7 @@ main (int argc, char *argv[])
   check53(0.31869277231188065, 0.88642843322303122, GMP_RNDZ,
 	  2.8249833483992453642e-1);
   check(8.47622108205396074254e-01, 3.24039313247872939883e-01, GMP_RNDU,
-	28, 45, 1, 0.5);
+	28, 45, 2, 0.375);
   check(2.63978122803639081440e-01, 6.8378615379333496093e-1, GMP_RNDN,
 	34, 23, 31, 0.180504585267044603);
   check(1.0, 0.11835170935876249132, GMP_RNDU, 6, 41, 36, 0.1183517093595583);
@@ -270,7 +271,7 @@ main (int argc, char *argv[])
   check(3.90798504668055102229e-14, 9.85394674650308388664e-04, GMP_RNDN,
 	46, 22, 12, 0.385027296503914762e-16);
   check(4.58687081072827851358e-01, 2.20543551472118792844e-01, GMP_RNDN,
-	49, 3, 1, 0.125);
+	49, 3, 2, 0.09375);
 #ifdef TEST
   srand48(getpid());
   prec = (argc<2) ? 53 : atoi(argv[1]);

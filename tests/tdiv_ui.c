@@ -125,12 +125,12 @@ check_inexact ()
   mpfr_init (y);
   mpfr_init (z);
 
-  for (px=1; px<300; px++)
+  for (px=2; px<300; px++)
     {
       mpfr_set_prec (x, px);
       mpfr_random (x);
       do { u = lrand48 (); } while (u == 0);
-      for (py=1; py<300; py++)
+      for (py=2; py<300; py++)
 	{
 	  mpfr_set_prec (y, py);
 	  mpfr_set_prec (z, py + mp_bits_per_limb);

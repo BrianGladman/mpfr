@@ -173,23 +173,36 @@ void compare_exp2_exp3 (int n)
 {
   mpfr_t x, y, z; int prec; mp_rnd_t rnd;
 
-  mpfr_init(x); mpfr_init(y); mpfr_init(z);
-  for (prec=20;prec<=n;prec++) {
-    mpfr_set_prec(x, prec); mpfr_set_prec(y, prec); mpfr_set_prec(z, prec);
-    mpfr_random(x);
-    rnd = rand() % 4;
-    mpfr_exp_2 (y, x, rnd);
-    mpfr_exp3 (z, x, rnd);
-    if (mpfr_cmp(y,z)) {
-      printf("mpfr_exp_2 and mpfr_exp3 disagree for rnd=%s and\nx=",
-	     mpfr_print_rnd_mode(rnd));
-      mpfr_print_binary(x); putchar('\n');
-      printf("mpfr_exp_2 gives  "); mpfr_print_binary(y); putchar('\n');
-      printf("mpfr_exp3 gives "); mpfr_print_binary(z); putchar('\n');
-      exit(1);
-    }
+  mpfr_init (x);
+  mpfr_init (y);
+  mpfr_init (z);
+  for (prec=20; prec<=n; prec++)
+    {
+      mpfr_set_prec (x, prec);
+      mpfr_set_prec (y, prec);
+      mpfr_set_prec (z, prec);
+      mpfr_random (x);
+      rnd = rand() % 4;
+      mpfr_exp_2 (y, x, rnd);
+      mpfr_exp3 (z, x, rnd);
+      if (mpfr_cmp (y,z))
+        {
+          printf ("mpfr_exp_2 and mpfr_exp3 disagree for rnd=%s and\nx=",
+                  mpfr_print_rnd_mode (rnd));
+          mpfr_print_binary (x);
+          putchar ('\n');
+          printf ("mpfr_exp_2 gives  ");
+          mpfr_print_binary (y);
+          putchar ('\n');
+          printf ("mpfr_exp3 gives ");
+          mpfr_print_binary (z);
+          putchar ('\n');
+          exit (1);
+        }
   }
-  mpfr_clear(x); mpfr_clear(y); mpfr_clear(z);
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
 }
 
 #define TEST_FUNCTION mpfr_exp
@@ -202,7 +215,7 @@ main (int argc, char *argv[])
   int i, N, s=0, e, maxe=0; double d, lo, hi;
 #endif
 
-  test_generic (1, 100, 100);
+  test_generic (2, 100, 100);
 
   if (argc == 4)
     {

@@ -230,7 +230,7 @@ main (int argc, char *argv[])
   }
 #endif
   special ();
-  for (p=1; p<100; p++)
+  for (p=2; p<100; p++)
     for (k=0; k<100; k++)
       check_two_sum (p);
   check(1, 1.0/0.0, GMP_RNDN, -1.0/0.0); 

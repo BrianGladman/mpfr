@@ -64,9 +64,9 @@ main (void)
   for (j=0;j<1000;j++) {
 
     mpfr_random(x); 
-    MPFR_EXP(x) = 1; 
+    MPFR_EXP(x) = 2;
         
-    for (k = 1; k <= SIZEX; k++) 
+    for (k = 2; k <= SIZEX; k++) 
       {
 	mpfr_set_prec(y, k); 
 	mpfr_set_prec(y2, k); 

@@ -310,7 +310,7 @@ check_inexact ()
 
   mpfr_set_prec (x, 33);
   mpfr_set_str_raw (x, "0.101111100011011101010011101100001E0");
-  mpfr_set_prec (u, 1);
+  mpfr_set_prec (u, 2);
   mpfr_set_str_raw (u, "0.1E0");
   mpfr_set_prec (y, 28);
   if ((inexact = mpfr_div (y, x, u, GMP_RNDN) >= 0))
@@ -333,15 +333,15 @@ check_inexact ()
       exit (1);
     }
 
-  for (px=1; px<MAX_PREC; px++)
+  for (px=2; px<MAX_PREC; px++)
     {
       mpfr_set_prec (x, px);
       mpfr_random (x);
-      for (pu=1; pu<=MAX_PREC; pu++)
+      for (pu=2; pu<=MAX_PREC; pu++)
 	{
 	  mpfr_set_prec (u, pu);
 	  do { mpfr_random (u); } while (mpfr_cmp_ui (u, 0) == 0);
-	  for (py=1; py<=MAX_PREC; py++)
+	  for (py=2; py<=MAX_PREC; py++)
 	    {
 	      mpfr_set_prec (y, py);
 	      mpfr_set_prec (z, py + pu);

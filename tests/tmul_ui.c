@@ -47,7 +47,8 @@ check_inexact (mp_prec_t p)
       fprintf (stderr, "Error: result should be exact\n");
       exit (1);
     }
-  for (q=1; q<=p; q++)
+
+  for (q=2; q<=p; q++)
     for (rnd=0; rnd<4; rnd++)
       {
 	mpfr_set_prec (y, q);
@@ -63,11 +64,11 @@ check_inexact (mp_prec_t p)
 	  }
       }
 
-  mpfr_set_prec (x, 1);
-  mpfr_set_ui (x, 2, GMP_RNDN);
-  if (mpfr_mul_ui (x, x, 3, GMP_RNDZ) == 0)
+  mpfr_set_prec (x, 2);
+  mpfr_set_ui (x, 1, GMP_RNDN);
+  if (mpfr_mul_ui (x, x, 5, GMP_RNDZ) == 0)
     {
-      fprintf (stderr, "mul_ui(2, 3) cannot be exact with prec=1\n");
+      fprintf (stderr, "mul_ui(1, 5) cannot be exact with prec=2\n");
       exit (1);
     }
 
@@ -83,7 +84,7 @@ main (int argc, char *argv[])
   unsigned int xprec, yprec, i;
   mp_prec_t p;
 
-  for (p=1; p<100; p++)
+  for (p=2; p<100; p++)
     for (i=1; i<50; i++)
       check_inexact (p);
   

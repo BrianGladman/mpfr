@@ -37,13 +37,14 @@ main (int argc, char *argv[])
   mpfr_init (x);
   mpfr_init (y);
 
-  n=abs(random());
+  n = abs(random());
 
+  MPFR_CLEAR_NAN(x);
   MPFR_SET_INF(x);
-  mpfr_ui_pow (y, n,x, GMP_RNDN);
+  mpfr_ui_pow (y, n, x, GMP_RNDN);
   if(!MPFR_IS_INF(y))
     {
-      printf ("evaluation of function in INF does not return INF");
+      printf ("evaluation of function in INF does not return INF\n");
       exit (1);
     }
 
@@ -70,7 +71,7 @@ main (int argc, char *argv[])
   int inexact, compare, compare2;
   unsigned int n, err;
 
-  int p0=1;
+  int p0=2;
   int p1=100;
   int N=100;
 

@@ -232,7 +232,7 @@ check_diverse ()
       exit (1);
     }
 
-  mpfr_set_prec (x, 1);
+  mpfr_set_prec (x, 2);
   mpfr_set_prec (y, 10);
   mpfr_set_prec (z, 10);
   mpfr_set_ui (y, 0, GMP_RNDN);
@@ -348,15 +348,15 @@ check_inexact ()
   mpfr_init (z);
   mpfr_init (u);
 
-  for (px=1; px<MAX_PREC; px++)
+  for (px=2; px<MAX_PREC; px++)
     {
       mpfr_set_prec (x, px);
       mpfr_random (x);
-      for (pu=1; pu<MAX_PREC; pu++)
+      for (pu=2; pu<MAX_PREC; pu++)
 	{
 	  mpfr_set_prec (u, pu);
 	  mpfr_random (u);
-	  for (py=1; py<MAX_PREC; py++)
+	  for (py=2; py<MAX_PREC; py++)
 	    {
 	      mpfr_set_prec (y, py);
 	      pz =  (mpfr_cmp_abs (x, u) >= 0) ? MPFR_EXP(x)-MPFR_EXP(u)
@@ -407,7 +407,7 @@ main()
   check_inexact ();
   bug_ddefour ();
 
-  for (p=1; p<200; p++)
+  for (p=2; p<200; p++)
     for (i=0; i<200; i++)
       check_two_sum (p);
 

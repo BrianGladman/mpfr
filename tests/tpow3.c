@@ -337,7 +337,7 @@ main (int argc, char *argv[])
   int inexact, compare, compare2;
   unsigned int n, err;
 
-  int p0=1;
+  int p0=2;
   int p1=100;
   int N=100;
 
