@@ -1,4 +1,4 @@
-Copyright 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation.
+Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation.
 Contributed by the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.
@@ -28,6 +28,8 @@ Documentation:
 - mpfr_set_prec: add an explanation of how to speed up calculations
   which increase their precision at each step.
 
+
+
 Installation:
 
 - from Kevin Ryde <user42@zip.com.au>:
@@ -37,12 +39,7 @@ Installation:
   faster.  Hopefully this will go away with improvements to the exp
   code.
 
-- Build a dynamic library (.so / .dll).
 
-- Maybe use the autotools to manage properly the version number,
-  ie create mpfr.texi.in, mpfr.h.in, version.c.in, VERSION.in
-  and substitute MPFR_MAJOR_VERSION, MPFR_MINOR_VERSION,
-  MPFR_PATCHLEVEL_VERSION within configure?
 
 Changes in existing functions:
 
@@ -65,6 +62,21 @@ Changes in existing functions:
    rounding, if the round bit is 0 (resp. 1), we just have to check
    round(approx-error) (resp. round(approx+error)).
 
+- mpfr_set_q first tries to convert the numerator and the denominator
+  to mpfr_t. But this convertion may fail even if the correctly rounded
+  result is representable. New way to implement:
+  Function q = a/b.  nq = PREC(q) na = PREC(a) nb = PREC(b)
+    If na < nb
+       a <- a*2^(nb-na)
+    n <- na-nb+ (HIGH(a,nb) >= b)
+    if (n >= nq)
+       bb <- b*2^(n-nq)
+       a  = q*bb+r     --> q has exactly n bits.
+    else
+       aa <- a*2^(nq-n)
+       aa = q*b+r      --> q has exaclty n bits.
+  If RNDN, takes nq+1 bits. (See also the new division function).
+
 New functions to implement:
 
 - modf (to extract integer and fractional parts), suggested by
@@ -84,6 +96,8 @@ New functions to implement:
 - dilog() [the dilogarithm: dilog(x) =  int(ln(t)/(1-t), t=1..x)]
 - mpfr_printf [Sisyphus <kalinabears@iinet.net.au> Tue, 04 Jan 2005]
   for example mpfr_printf ("%.2Ff\n", x)
+
+
 
 Efficiency:
 
@@ -107,8 +121,7 @@ Efficiency:
 - improve generic.c to work for number of terms <> 2^k
 - rewrite mpfr_greater_p... as native code.
 - mpfr_mul(a,b,c): truncate b,c when their precision is larger than that of a
-- mpfr_tanh is inefficient is x is large (Pb of overflow too).
-  Should compute tanh(x)=1-2/(exp(2x)+1) instead?
+- rewrite const_pi / const_log2 to be much faster for huge precision.
 
 - mpf_t uses a scheme where the number of limbs actually present can
   be less than the selected precision, thereby allowing low precision
@@ -120,22 +133,8 @@ Efficiency:
   perhaps those mpfr routines like mpfr_mul where optimizations are
   possible through stripping low zero bits or limbs could check for
   that (this would be less efficient but easier).
-
-- mpfr_set_q first tries to convert the numerator and the denominator
-  to mpfr_t. But this convertion may fail even if the correctly rounded
-  result is representable. New way to implement:
-  Function q = a/b.  nq = PREC(q) na = PREC(a) nb = PREC(b)
-    If na < nb
-       a <- a*2^(nb-na)
-    n <- na-nb+ (HIGH(a,nb) >= b)
-    if (n >= nq)
-       bb <- b*2^(n-nq)
-       a  = q*bb+r     --> q has exactly n bits.
-    else
-       aa <- a*2^(nq-n)
-       aa = q*b+r      --> q has exaclty n bits.
-  If RNDN, takes nq+1 bits. (See also the new division function).
   
+
 
 Miscellaneous:
 
@@ -165,13 +164,6 @@ Miscellaneous:
 
 - add tests of the ternary value for constants
 
-Reentrancy / Thread-Safety:
-
-- Temporary changes to emin/emax are not safe (all uses of
-  mpfr_save_emin_emax, eg. mpfr_set_q).
-
-- Global variables for caching in mpfr_const_log2 and mpfr_const_pi
-  are not safe.
 
 
 Portability:
@@ -181,6 +173,8 @@ Portability:
   introduce a "tests_strdupcat" or something to concatenate literal
   strings into newly allocated memory.  I thought I'd done that in a
   couple of places already.  Arrays of chars are not much fun.
+
+
 
 Possible future MPF / MPFR integration:
 
