@@ -1,0 +1,42 @@
+\documentclass[12pt]{amsart}
+\usepackage{fullpage}
+\pagestyle{empty}
+\title{The MPFR Library: Algorithms and Proofs}
+\author{The MPFR team}
+\date{\tt www.mpfr.org}
+\begin{document}
+\maketitle
+
+\section{The exponential function}
+
+The {\tt mpfr\_exp} function implements three different algorithms.
+For very large precision, it uses a $\O(M(n) \log^2 n)$ algorithm
+based on binary splitting, based on the generic implementation for
+hypergeometric functions in the file {\tt generic.c} (see \cite{Jeandel00}).
+Currently this third algorithm is used only for precision greater
+than $13000$ bits.
+
+For smaller precisions, it uses Brent's method~;
+if $r = (x - n \log 2)/2^k$ where $0 \le r < \log 2$, then 
+\[ \exp(x) = 2^n \cdot \exp(r)^{2^k} \]
+and $\exp(r)$ is computed using the Taylor expansion:
+\[ \exp(r) =  1 + r + \frac{r^2}{2!} + \frac{r^3}{3!} + \cdots \]
+As $r < 2^{-k}$, if the target precision is $n$ bits, then only
+about $l = n/k$ terms of the Taylor expansion are needed.
+This method thus requires the evaluation of the Taylor series to
+order $n/k$, and $k$ squares to compute $\exp(r)^{2^k}$.
+If the Taylor series is evaluated using a na\"{\i}ve way, the optimal
+value of $k$ is about $n^{1/2}$, giving a complexity of $\O(n^{1/2} M(n))$.
+This is what is implemented in {\tt mpfr\_exp2\_aux}.
+
+If we use a baby step/giant step approach, the Taylor series
+can be evaluated in $\O(l^{1/2})$ operations, 
+thus the evaluation requires $(n/k)^{1/2} + k$ multiplications,
+and the optimal $k$ is now about $n^{1/3}$,
+giving a total complexity of $\O(n^{1/3} M(n))$.
+This is implemented in the function {\tt mpfr\_exp2\_aux2}.
+
+\bibliographystyle{acm}
+\bibliography{algo}
+
+\end{document}
