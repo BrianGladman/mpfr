@@ -1,5 +1,5 @@
 #!/bin/csh
-foreach f (*.c mpfr.h mpfr-impl.h mpfr.texi)
+foreach f (*.c *.h mpfr.texi)
    sed "s/$1/$2/g" $f > /tmp/$f
    mv /tmp/$f $f
 end
