@@ -125,7 +125,7 @@ main ()
   l = mpf_get_si (x);
   u = mpf_get_ui (x);
   s = mpf_get_str (NULL, &exp, 10, 10, x);
-  free (s);
+  mpf_free_str (s);
 
   /* Arithmetic Functions */
 

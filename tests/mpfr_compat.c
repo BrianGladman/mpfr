@@ -20,4 +20,5 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
 #define MPFR
+#define mpf_free_str mpfr_free_str
 #include "mpf_compat.h"
