@@ -63,12 +63,28 @@ mpfr_print_raw(zz); putchar('\n');
   mpf_clear(xxx); mpf_clear(yyy); mpf_clear(zzz);
 }
 
+/* check sign of result */
+check_sign()
+{
+  mpfr_t a, b;
+
+  mpfr_init2(a, 53); mpfr_init2(b, 53);
+  mpfr_set_d(a, -1.0, GMP_RNDN);
+  mpfr_set_d(b, 2.0, GMP_RNDN);
+  mpfr_mul(a, b, b, GMP_RNDN);
+  if (mpfr_get_d(a) != 4.0) {
+    fprintf(stderr,"2.0*2.0 gives %1.20e\n", mpfr_get_d(a)); exit(1);
+  }
+  mpfr_clear(a); mpfr_clear(b);
+}
+
 main(argc,argv) int argc; char *argv[];
 {
   double x,y,z; int i,prec,rnd_mode;
 
   prec = (argc<2) ? 53 : atoi(argv[1]);
   rnd_mode = (argc<3) ? -1 : atoi(argv[2]);
+  check_sign();
   check(2.71331408349172961467e-08, -6.72658901114033715233e-165,
 	GMP_RNDZ, 53, 53, 53, 0.0);
   x=0.31869277231188065; y=0.88642843322303122;
