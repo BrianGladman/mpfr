@@ -1,5 +1,5 @@
 \documentclass[12pt]{amsart}
-\usepackage{fullpage}
+\usepackage{fullpage,amssymb}
 \pagestyle{empty}
 \title{The MPFR Library: Algorithms and Proofs}
 \author{The MPFR team}
@@ -11,8 +11,19 @@
 \def\q{\hspace*{5mm}}
 \def\ulp{{\rm ulp}}
 \def\Exp{{\rm EXP}}
-
-
+\def\prec{{\rm prec}}
+\def\sign{{\rm sign}}
+\def\Paragraph#1{\noindent {\sc #1}}
+\def\Z{{\mathcal Z}}
+\def\N{{\mathcal N}}
+\def\If{{\bf if}}
+\def\then{{\bf then}}
+\def\Else{{\bf else}}
+\def\elif{{\bf elif}}
+\def\for{{\bf for}}
+\def\to{{\bf to}}
+\def\while{{\bf while}}
+\def\err{{\rm err}}
 
 \newcommand{\U}[1]{\quad \mbox{[Rule~\ref{#1}]}}
 
@@ -21,9 +32,9 @@
 \begin{document}
 \maketitle
 
+\tableofcontents
 
-
-\section{Useful formulas}
+\section{Basic rules}
 
 In the following, $n$ is the precision (number of bits of the mantissa),
 each floating-point number is written $x = m \cdot 2^e$
@@ -196,6 +207,77 @@ exponent of $c$ is smaller than that of $b$.
    return res + (b[n] < c[n]);
 \end{verbatim}
 
+\subsection{The {\tt mpfr\_sub} function}
+
+The algorithm used is as follows, where $w$ denotes the number of bits
+per word. We assume that $a$, $b$ and $c$ denote different variables
+(if $a:=b$ or $a:=c$, we have first to copy $b$ or $c$), and
+that the rounding mode is either $\N$ (nearest),
+$\Z$ (towards zero), or $\infty$ (away from zero).
+\begin{quote}
+Algorithm {\tt mpfr\_sub}. \\
+Input: $b$, $c$ of opposite sign with $b > c > 0$, a rounding mode 
+$\circ \in \{ \N, \Z, \infty \}$ \\
+Side effect: store in $a$ the value of $\circ(b - c)$ \\
+Output: $0$ if $\circ(b - c) = b-c$, $1$ if $\circ(b - c) > b-c$,
+	and $-1$ if $\circ(b - c) < b-c$ \\
+${\tt an} \leftarrow \lceil \frac{\prec(a)}{w} \rceil$, 
+${\tt bn} \leftarrow \lceil \frac{\prec(b)}{w} \rceil$, 
+${\tt cn} \leftarrow \lceil \frac{\prec(c)}{w} \rceil$ \\
+${\tt cancel} \leftarrow {\tt mpfr\_cmp2}(b, c)$; \quad
+	${\tt diff\_exp} \leftarrow \Exp(b)-\Exp(c)$ \\
+${\tt shift_b} \leftarrow (-{\tt cancel}) \bmod w$; \quad
+	${\tt cancel_b} \leftarrow ({\tt cancel} + {\tt shift_b})/w$ \\
+\If\ ${\tt shift_b} > 0$ \then\
+	${\tt b}[0 \dots \mbox{\tt bn}] \leftarrow
+	{\tt mpn\_rshift}({\tt b}[0 \dots {\tt bn}-1], {\tt shift_b})$;
+	${\tt bn} \leftarrow {\tt bn} + 1$ \\
+${\tt shift_c} \leftarrow ({\tt diff\_exp}-{\tt cancel}) \bmod w$; \quad
+${\tt cancel_c} \leftarrow ({\tt cancel} + {\tt shift_c}-{\tt diff\_exp})/w$ \\
+\If\ ${\tt shift_c} > 0$ \then\
+	${\tt c}[0 \dots \mbox{\tt cn}] \leftarrow
+	{\tt mpn\_rshift}({\tt c}[0 \dots {\tt cn}-1], {\tt shift_c})$;
+	${\tt cn} \leftarrow {\tt cn} + 1$ \\
+$\Exp(a) \leftarrow \Exp(b) - {\tt cancel}$; \quad
+	$\sign(a) \leftarrow \sign(b)$ \\
+$a[0 \dots {\tt an}-1] \leftarrow b[{\tt bn} - {\tt cancel_b} - {\tt an}
+	\dots {\tt bn} - {\tt cancel_b} - 1]$ \\
+$a[0 \dots {\tt an}-1] \leftarrow a[0 \dots {\tt an}-1] - c[{\tt cn} -
+	{\tt cancel_c} - {\tt an} \dots {\tt cn} - {\tt cancel_c} - 1]$ \\
+${\tt sh} \leftarrow {\tt an} \cdot w - \prec(a)$; \quad
+	$r \leftarrow a[0] \bmod 2^{\tt sh}$; \quad
+	$a[0] \leftarrow a[0] - r$ \\
+\If\ $\circ = \N$ and ${\tt sh} > 0$ \then \\
+\q \If\ $r > 2^{{\tt sh}-1}$ \then\
+	$a \leftarrow a + \ulp(a)$; return $1$
+   \elif\ $0 < r < 2^{{\tt sh}-1}$ \then\ return $-1$ \\
+\elif\ $\circ \in \{ \Z, \infty \}$ and $r > 0$ \then \\
+\q \If\ $\circ = \Z$ return $-1$
+   \Else\ $a \leftarrow a + \ulp(a)$; return $1$ \\
+${\tt bl} \leftarrow {\tt bn} - {\tt an} - {\tt cancel_b}$ \\
+${\tt cl} \leftarrow {\tt cn} - {\tt an} - {\tt cancel_c}$ \\
+\for\ $k=0$ \while\ ${\tt bl} > 0$ and ${\tt cl} > 0$ {\bf do} \\
+\q ${\tt bl} \leftarrow {\tt bl} - 1$; ${\tt bp} \leftarrow b[{\tt bl}]$ \\
+\q ${\tt cl} \leftarrow {\tt cl} - 1$; ${\tt cp} \leftarrow c[{\tt cl}]$ \\
+\q \If\ $\circ = \N$ and $k=0$ and ${\tt sh}=0$ \then \\
+\q \q \If\ ${\tt cp} \ge 2^{w-1}$ \then\ return $-1$ \\
+\q \q $r \leftarrow {\tt bp} - {\tt cp}$; \quad 
+	${\tt cp} \leftarrow {\tt cp} + 2^{w-1}$ \\
+\q \If\ ${\tt bp} < {\tt cp}$ \then \\
+\q \q \If\ $\circ = \Z$ \then\ $a \leftarrow a - \ulp(a)$; \quad
+      \If\ $\circ = \infty$ \then\ return $1$ \Else\ return $-1$
+\q \If\ ${\tt bp} > {\tt cp}$ \then \\
+\q \q \If\ $\circ = \Z$ \then\ return $-1$ \Else\
+	$a \leftarrow a + \ulp(a)$; return $1$ \\
+\If\ $\circ = \N$ and $r > 0$ \then \\
+\q \If\ $a[0] \, {\rm div} \, 2^{\tt sh}$ is odd \then\
+	$a \leftarrow a + \ulp(a)$; return $1$ \Else\ return $-1$ \\
+Return $0$.
+\end{quote}
+where $b[i]$ and $c[i]$ is meant as $0$ for negative $i$,
+and $c[i]$ is meant as $0$ for $i \ge {\tt cn}$
+(${\tt cancel_b} \ge 0$, but ${\tt cancel_c}$ may be negative).
+
 \subsection{The {\tt mpfr\_div} function}
 The goals of the code of the {\tt mpfr\_div} function include the fact
 that the complexity should, as much as possible while preserving exact
@@ -248,7 +330,7 @@ where:
 This identity is attributed to Sweeney by Brent \cite{Brent78}.
 We have $S(n) = _2 F_2(1,1;2,2;-n)$ and $R(n) = {\rm Ei}(1, n)$.
 
-\paragraph{Evaluation of $S(n)$.}
+\Paragraph{Evaluation of $S(n)$.}
 As in \cite{Brent78}, let $\alpha \sim 4.319136566$ the positive root
 of $\alpha + 2 = \alpha \log \alpha$, and $N = \lceil \alpha n \rceil$.
 We approximate $S(n)$ by
@@ -289,7 +371,7 @@ $m ge n (1 + \frac{1}{\log 2})$.
 In such a case, the value $s/2^m$ converted to a floating-point number
 will have an error of at most $\ulp(x)$.
 
-\paragraph{Evaluation of $R(n)$.}
+\Paragraph{Evaluation of $R(n)$.}
 We estimate $R(n)$ using the terms up to $k=n-2$, again 
 as in \cite{Brent78}:
 \[ R'(n) = \frac{e^{-n}}{n} \sum_{k=0}^{n-2} \frac{k!}{(-n)^k}. \]
@@ -354,7 +436,7 @@ $\ulp(r) + (n + 1 + 2/n) \frac{3}{2n} \ulp(r)
 Now since $r \le \frac{e^{-n}}{n} \le \frac{1}{8}$, that error
 is less than $\ulp(1/2)$.
 
-\paragraph{Final computation.} We use the formula
+\Paragraph{Final computation.} We use the formula
 $\gamma = S(n) - R(n) - \log n$ with $n$ such that $e^{-2n} \le 
 \ulp(1/2) = 2^{-{\rm prec}}$, i.e.~$n \ge {\rm prec} \frac{\log 2}{2}$:
 \begin{quote}
@@ -1219,7 +1301,6 @@ variables, we have to add, at least, $\lceil \log_2
 (1+15.2^{1-\Exp(w)}+2^{\Exp(x)-\Exp(r)-\Exp(w)+2}) \rceil$ bits the
 wanted precision.
  
-
 \subsection{The hyperbolic sine function}
 
 The {\tt mpfr\_sinh} ($\sinh{x}$) function implements the hyperbolic
@@ -1986,7 +2067,6 @@ $s \leftarrow o(\sqrt{w}) $
 $(\star)$
 see subsection \ref{generic:sqrt}
 
-
 with $c_w^- = 1$ 
 
 for $w \leftarrow \minf(u+v)$ ($\bullet$)
@@ -2435,8 +2515,6 @@ precision.
 
 
 
-
-
 \subsection{The real cube root}
 
 The {\tt mpf\_cbrt} ($\sqrt[3]{x}$) function implements a Newton
@@ -2643,6 +2721,34 @@ For each Newton iteration the intermediate calculation give an error bound by in
 \[
 m > n + \log_2 n_k + \log_2 n
 \]
+
+\begin{table}
+\begin{center}
+\begin{tabular}{|c|c|c|} \hline
+   $w$        & $\err(w)/\ulp(w) \le c_w + \ldots$ &special case\\ \hline\hline
+$o(u+v)$ & $k_u 2^{e_u-e_w} + k_v 2^{e_v-e_w}$ & $k_u + k_v$ if $u v \ge 0$\\
+$o(u \cdot v)$ & $(1+c^{+}_u)k_u + (1+c^{+}_v)k_v$ & $2k_u + 2k_v$ if $u \ge x$, $v \ge y$\\
+$o(1/v)$ & $4 k_v$ & $2 k_v$ if $v \le y$ \\
+$o(u/v)$ & $4 k_u + 4 k_v$ & $2 k_u + 2 k_v$ if $v \le y$ \\
+$o(\sqrt{u})$ & $2 k_u/(1+\sqrt{c^{-}_u})$ & $k_u$ if $u \le x$ \\
+$o(e^u)$ & $e^{k_u 2^{e_u-p}} 2^{e_u+1} k_u$ & $2^{e_u+1} k_u$ if $u \ge x$ \\
+$o(\log u)$ & $k_u 2^{1-e_w}$ & \\
+\hline
+\end{tabular}
+\end{center}
+\caption{Generic error for several operations, assuming all variables have a
+mantissa of $p$ bits, and no overflow/underflow occurs.
+The inputs $u$ and $v$ are
+approximations of $x$ and $y$ with $|u-x| \le k_u \ulp(u)$ and 
+$|v-y| \le k_v \ulp(v)$. The additional rounding error $c_w$ is $1/2$ for
+rounding to nearest, and $1$ otherwise.
+The value $c^{\pm}_u$ equals $1 \pm k_u 2^{1-p}$.
+}
+\end{table}
+Remark 1: in the addition case, when $u v > 0$,
+necessarily one of $2^{e_u-e_w}$ and $2^{e_v-e_w}$ is less than $1/2$,
+thus $\err(w)/\ulp(w) \le c_w + {\rm max}(k_u + k_v/2, k_u/2 + k_v)
+	\le c_w + \frac{3}{2} {\rm max}(k_u, k_v)$.
 
 
 \bibliographystyle{acm}
