@@ -121,7 +121,7 @@ mpfr_acosh (y, x, rnd_mode)
       /* actualisation of the precision */
       Nt += 10;
 
-    } while (!mpfr_can_round(t,err,GMP_RNDN,rnd_mode,Ny));
+    } while ((err<0) ||!mpfr_can_round(t,err,GMP_RNDN,rnd_mode,Ny));
  
     inexact = mpfr_set(y,t,rnd_mode);
 

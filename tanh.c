@@ -94,7 +94,7 @@ mpfr_tanh (y, xt, rnd_mode)
       mp_prec_t Ny = MPFR_PREC(y);   /* Precision of input variable */
 
       mp_prec_t Nt;   /* Precision of the intermediary variable */
-      mp_prec_t err;  /* Precision of error */
+      long int err;  /* Precision of error */
       
       /* compute the precision of intermediary variable */
       Nt=MAX(Nx,Ny);
@@ -129,15 +129,12 @@ mpfr_tanh (y, xt, rnd_mode)
         d = MPFR_EXP(te)-MPFR_EXP(t);
 	
 	/* estimation of the error */
-	if ((int)(Nt) < (int) (_mpfr_ceil_log2(7+pow(2,d+1))) ) 
-            err = 0; 
-        else 
-            err = Nt-(_mpfr_ceil_log2(7+pow(2,d+1)));
+        err = Nt-(_mpfr_ceil_log2(7+pow(2,d+1)));
 
 	/* actualisation of the precision */
         Nt += 10; 
 
-      } while (!mpfr_can_round(t,err,GMP_RNDN,rnd_mode,Ny));
+      } while ((err <0)||!mpfr_can_round(t,err,GMP_RNDN,rnd_mode,Ny));
  
       if (flag_neg==1)
           MPFR_CHANGE_SIGN(t);
@@ -148,6 +145,7 @@ mpfr_tanh (y, xt, rnd_mode)
       mpfr_clear(ta);
       mpfr_clear(tb);
     }
+    mpfr_clear(x);
     return inexact;
 
 }

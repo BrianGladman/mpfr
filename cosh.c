@@ -85,7 +85,7 @@ mpfr_cosh (y, xt, rnd_mode)
       mp_prec_t Ny = MPFR_PREC(y);   /* Precision of input variable */
 
       mp_prec_t Nt;   /* Precision of the intermediary variable */
-      mp_prec_t err;  /* Precision of error */
+      long int err;  /* Precision of error */
                 
       /* compute the precision of intermediary variable */
       Nt=MAX(Nx,Ny);
@@ -120,7 +120,7 @@ mpfr_cosh (y, xt, rnd_mode)
 	/* actualisation of the precision */
 	Nt += 10;
 
-      } while (!mpfr_can_round(t,err,GMP_RNDN,rnd_mode,Ny));
+      } while ((err <0) || !mpfr_can_round(t,err,GMP_RNDN,rnd_mode,Ny));
  
       inexact = mpfr_set(y,t,rnd_mode);
 
@@ -128,6 +128,7 @@ mpfr_cosh (y, xt, rnd_mode)
       mpfr_clear(ti);
       mpfr_clear(te);
     }
+    mpfr_clear(x);
     return inexact;
 
 }

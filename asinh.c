@@ -1,6 +1,6 @@
 /* mpfr_asinh -- Inverse Hyperbolic Sinus of Unsigned Integer Number
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 2001 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -20,6 +20,7 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
 #include <limits.h>
+#include <math.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -33,123 +34,110 @@ int mpfr_asinh _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 
 int
 #if __STDC__
-mpfr_asinh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode) 
+mpfr_asinh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode) 
 #else
-mpfr_asinh (y, x, rnd_mode)
+mpfr_asinh (y, xt, rnd_mode)
      mpfr_ptr y;
-     mpfr_srcptr x;
+     mpfr_srcptr xt;
      mp_rnd_t rnd_mode;
 #endif
 {
-    
-  /****** Declaration ******/
+  int inexact =0;
+  mpfr_t x;
+  int flag_neg=0;
 
-    /* Variable of Intermediary Calculation*/
-    mpfr_t t,xt;       
-
-    /* Variable of Intermediary Calculation*/
-    mpfr_t ta,tb;
-
-    int round;
-    int boucle;
-    int flag_neg;
-
-    mp_prec_t Nx;   /* Precision of input variable */
-    mp_prec_t Ny;   /* Precision of output variable */
-    mp_prec_t Nt;   /* Precision of Intermediary Calculation variable */
-    mp_prec_t err;  /* Precision of error */
-
-    Nx=MPFR_PREC(x);
-    mpfr_init2(xt,Nx);
-    mpfr_set(xt,x,GMP_RNDN); 
-    
-    if (MPFR_IS_NAN(xt)) {  MPFR_SET_NAN(y); return 1; }
-    MPFR_CLEAR_NAN(y);
-
-    if (MPFR_IS_INF(xt)){ 
-      MPFR_SET_INF(y);
-      if(MPFR_SIGN(xt)>0){
-	if (MPFR_SIGN(y) < 0) MPFR_CHANGE_SIGN(y);
-      }
-      else{
-	if (MPFR_SIGN(y) > 0) MPFR_CHANGE_SIGN(y);
-      }
-      return 1;
-    }
-
-    MPFR_CLEAR_INF(y);
-
-    flag_neg=0;
-
-    if(MPFR_SIGN(xt)<0){
-      MPFR_CHANGE_SIGN(xt);
+  mp_prec_t Nx=MPFR_PREC(xt);   /* Precision of input variable */
+  mpfr_init2(x,Nx);
+  mpfr_set(x,xt,GMP_RNDN); 
+ 
+  if (MPFR_SIGN(x) < 0)
+    {
+      MPFR_CHANGE_SIGN(x);
       flag_neg=1;
     }
 
+  if (MPFR_IS_NAN(x)) 
+    {  
+      MPFR_SET_NAN(y); 
+      return 1; 
+    }
+  MPFR_CLEAR_NAN(y);
+  
 
-    if(!MPFR_NOTZERO(xt)){
+  if (MPFR_IS_INF(x))
+    { 
+      MPFR_SET_INF(y);
+      MPFR_SET_SAME_SIGN(y,x);
+      if(flag_neg)
+	MPFR_CHANGE_SIGN(y);
+      return 1;
+    }
+
+  MPFR_CLEAR_INF(y);
+
+  if(!MPFR_NOTZERO(x))
+    {
       MPFR_SET_ZERO(y);   /* asinh(0) = 0 */
-      if (MPFR_SIGN(y) < 0) MPFR_CHANGE_SIGN(y);
-      return(0);
+      MPFR_SET_SAME_SIGN(y,x);
+      if(flag_neg)
+	MPFR_CHANGE_SIGN(y);
+      return 0;
     }
-    else{
-      
 
-        /* Initialisation of the Precision */
-	Nx=MPFR_PREC(xt);
-	Ny=MPFR_PREC(y);
-
-	/* compute the size of intermediary variable */
-	if(Ny>=Nx)
-	  Nt=Ny+2*CHAR_BIT;
-	else
-	  Nt=Nx+2*CHAR_BIT;
-	  
-	  boucle=1;
-
-	  /* initialise of intermediary	variable */
-	  mpfr_init2(t,Nt);             
-      	  mpfr_init2(ta,Nt);             
-	  mpfr_init2(tb,Nt);             
-
-	  while(boucle==1){
-
-
-	    /* compute asinh */
-
-	    mpfr_mul(ta,xt,xt,GMP_RNDN);     /* (x^2) */
-	    mpfr_add_ui(ta,ta,1,GMP_RNDN);   /* (x^2+1) */
-	    mpfr_sqrt(ta,ta,GMP_RNDN);       /* sqrt(x^2+1) */
-	    mpfr_add(t,ta,xt,GMP_RNDN);      /* sqrt(x^2+1)+x */
-	    mpfr_log(t,t,GMP_RNDN);          /* ln(sqrt(x^2+1)+x) */
-	    
-	    err=Nt-1-MAX(0,(-MPFR_EXP(t)));
-
-	    round=mpfr_can_round(t,err,GMP_RNDN,rnd_mode,Ny);
-
-	    if(round == 1){
-	      if(flag_neg==1)MPFR_CHANGE_SIGN(t);
-	      mpfr_set(y,t,rnd_mode);
-	      boucle=0;
-	    }
-	    else{
-	      Nt=Nt+10;
-	      /* initialise of intermediary	variable */
-	      mpfr_set_prec(t,Nt);             
-	      mpfr_set_prec(ta,Nt);             
-	      mpfr_set_prec(tb,Nt);             
-
-	      boucle=1;
-	    }
-	    
-	  }
+  /* General case */
+  {
+    /* Declaration of the intermediary variable */
+    mpfr_t t, te,ti;       
     
-	  mpfr_clear(t);
-	  mpfr_clear(ta);
-	  mpfr_clear(tb);
-	  mpfr_clear(xt);
-          return(1);
-      
- 
-    }
+    /* Declaration of the size variable */
+    mp_prec_t Nx = MPFR_PREC(x);   /* Precision of input variable */
+    mp_prec_t Ny = MPFR_PREC(y);   /* Precision of input variable */
+    
+    mp_prec_t Nt;   /* Precision of the intermediary variable */
+    long int err;  /* Precision of error */
+                
+    /* compute the precision of intermediary variable */
+    Nt=MAX(Nx,Ny);
+    /* the optimal number of bits : see algorithms.ps */
+    Nt=Nt+4+_mpfr_ceil_log2(Nt);
+
+    /* initialise of intermediary	variable */
+    mpfr_init(t);             
+    mpfr_init(te);             
+    mpfr_init(ti);                    
+
+    /* First computation of cosh */
+    do {
+
+      /* reactualisation of the precision */
+      mpfr_set_prec(t,Nt);             
+      mpfr_set_prec(te,Nt);             
+      mpfr_set_prec(ti,Nt);             
+
+      /* compute asinh */
+      mpfr_mul(te,x,x,GMP_RNDD);  /* (x^2) */
+      mpfr_add_ui(ti,te,1,GMP_RNDD);  /* (x^2+1) */
+      mpfr_sqrt(t,ti,GMP_RNDN);     /* sqrt(x^2+1) */
+      mpfr_add(t,t,x,GMP_RNDN);    /* sqrt(x^2+1)+x */
+      mpfr_log(t,t,GMP_RNDN);        /* ln(sqrt(x^2+1)+x)*/
+
+      /* estimation of the error see- algorithms.ps*/
+      err=Nt-_mpfr_ceil_log2(1+pow(2,3-MPFR_EXP(t)));
+
+      /* actualisation of the precision */
+      Nt += 10;
+
+    } while ((err < 0) || (!mpfr_can_round(t,err,GMP_RNDN,rnd_mode,Ny) || (MPFR_IS_ZERO(t))));
+
+    if(flag_neg)
+      MPFR_CHANGE_SIGN(t);
+
+    inexact = mpfr_set(y,t,rnd_mode);
+
+    mpfr_clear(t);
+    mpfr_clear(ti);
+    mpfr_clear(te);
+  }
+  mpfr_clear(x);
+  return inexact;
 }

@@ -90,7 +90,7 @@ mpfr_sinh (y, xt, rnd_mode)
       mp_prec_t Ny = MPFR_PREC(y);   /* Precision of input variable */
 
       mp_prec_t Nt;   /* Precision of the intermediary variable */
-      mp_prec_t err;  /* Precision of error */
+      long int err;  /* Precision of error */
       
       /* compute the precision of intermediary variable */
       Nt=MAX(Nx,Ny);
@@ -119,18 +119,15 @@ mpfr_sinh (y, xt, rnd_mode)
 	mpfr_div_2exp(t,t,1,GMP_RNDN);   /* 1/2(exp(x) - 1/exp(x))*/
 
         /* calculation of the error*/
-        d = MPFR_EXP(te)-MPFR_EXP(t);
+        d = MPFR_EXP(te)-MPFR_EXP(t)+2;
 	
 	/* estimation of the error */
-	if ((int)(Nt) < (int) (_mpfr_ceil_log2(1+4*pow(2,d)))) 
-            err = 0; 
-        else 
-            err = Nt-(_mpfr_ceil_log2(1+4*pow(2,d)));
+        err = Nt-(_mpfr_ceil_log2(1+pow(2,d)));
 
 	/* actualisation of the precision */
         Nt += 10; 
 
-      } while (!mpfr_can_round(t,err,GMP_RNDN,rnd_mode,Ny));
+      } while ((err < 0) || !mpfr_can_round(t,err,GMP_RNDN,rnd_mode,Ny));
 
       if (flag_neg==1)
           MPFR_CHANGE_SIGN(t);
@@ -140,6 +137,7 @@ mpfr_sinh (y, xt, rnd_mode)
       mpfr_clear(ti);
       mpfr_clear(te);
     }
+    mpfr_clear(x);
     return inexact;
 
 }
