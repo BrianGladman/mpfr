@@ -1303,8 +1303,8 @@ requested.
 
 @deftypefun void mpfr_const_pi (mpfr_t @var{rop}, mp_rnd_t @var{rnd})
 Set @var{rop} to the value of @m{\pi,Pi} rounded to the direction @var{rnd}
-with the precision of @var{rop}. This function uses the Borwein, Borwein,
-Plouffe formula which directly gives the expansion of @m{\pi,Pi} in base 16.
+with the precision of @var{rop}. This function uses the Plouffe, Bailey,
+Borwein formula which directly gives the expansion of @m{\pi,Pi} in base 16.
 @end deftypefun
 
 @deftypefun void mpfr_const_euler (mpfr_t @var{rop}, mp_rnd_t @var{rnd})
