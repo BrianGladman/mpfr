@@ -1022,6 +1022,115 @@ typedef struct {
 
 
 /******************************************************
+ ***************  Ziv Loop Macro  *********************
+ ******************************************************/
+
+#ifndef MPFR_USE_LOGGING
+
+#define MPFR_ZIV_DECL(_x) mp_prec_t _x
+#define MPFR_ZIV_INIT(_x, _p) (_x) = BITS_PER_MP_LIMB
+#define MPFR_ZIV_NEXT(_x, _p) ((_p) += (_x), (_x) = (_p)/2)
+#define MPFR_ZIV_FREE(x)
+
+#else
+
+#define MPFR_ZIV_DECL(_x)                                     \
+  mp_prec_t _x;                                               \
+  int _x ## _cpt = 1;                                         \
+  static unsigned long  _x ## _loop = 0, _x ## _bad = 0;      \
+  static const char *_x ## _fname = __func__;                 \
+  static void _x ## _f (void) __attribute__ ((destructor));   \
+  static void _x ## _f (void) {fprintf (mpfr_log_file,        \
+    "%s: Ziv failed %2.2f%% (%lu bad cases / %lu calls)\n", _x ## _fname,     \
+       (double) 100.0 * _x ## _bad / _x ## _loop,  _x ## _bad, _x ## _loop ); }
+#define MPFR_ZIV_INIT(_x, _p) ((_x) = BITS_PER_MP_LIMB, _x ## _loop ++);           \
+  if (MPFR_LOG_BADCASE_F&mpfr_log_type && mpfr_log_current<=mpfr_log_level)        \
+   fprintf (mpfr_log_file, "%s:ZIV 1st prec=%lu\n", __func__, (unsigned long) (_p))
+#define MPFR_ZIV_NEXT(_x, _p)                                                      \
+  ((_p) += (_x), (_x) = (_p)/2, _x ## _bad += (_x ## _cpt == 1), _x ## _cpt ++);   \
+  if (MPFR_LOG_BADCASE_F&mpfr_log_type && mpfr_log_current<=mpfr_log_level)        \
+   fprintf (mpfr_log_file, "%s:ZIV new prec=%lu\n", __func__, (unsigned long) (_p))
+  
+#define MPFR_ZIV_FREE(_x)                                             \
+  if (MPFR_LOG_BADCASE_F&mpfr_log_type && _x##_cpt>1                  \
+      && mpfr_log_current<=mpfr_log_level)                            \
+   fprintf (mpfr_log_file, "%s:ZIV %d loops\n", __func__, _x ## _cpt)
+
+#endif
+
+
+/******************************************************
+ ***************  Logging Macros  *********************
+ ******************************************************/
+
+/* The different kind of LOG */
+#define MPFR_LOG_INPUT_F    1
+#define MPFR_LOG_OUTPUT_F   2
+#define MPFR_LOG_INTERNAL_F 4
+#define MPFR_LOG_TIME_F     8
+#define MPFR_LOG_BADCASE_F  16
+#define MPFR_LOG_MSG_F      32
+
+#ifdef MPFR_USE_LOGGING
+
+# include <stdio.h>
+
+/* Check if we can support this feature */
+# ifdef MPFR_USE_THREAD_SAFE
+#  error "Enable either `Logging' or `thread-safe', not both"
+# endif 
+# if !__MPFR_GNUC(3,0) || !__MPFR_GLIBC(2,0)
+#  error "Logging not supported"
+# endif
+
+extern FILE *mpfr_log_file;
+extern int   mpfr_log_type;
+extern int   mpfr_log_level;
+extern int   mpfr_log_current;
+extern int   mpfr_log_base;
+extern mp_prec_t mpfr_log_prec;
+
+
+#define MPFR_LOG_VAR(x)                                                       \
+  if((MPFR_LOG_INTERNAL_F&mpfr_log_type)&&(mpfr_log_current<=mpfr_log_level)) \
+   fprintf (mpfr_log_file, "%s.%d:%s[%#R]=%R\n", __func__,__LINE__, #x, x, x);
+
+#define MPFR_LOG_MSG2(format, ...)                                       \
+ if ((MPFR_LOG_MSG_F&mpfr_log_type)&&(mpfr_log_current<=mpfr_log_level)) \
+  fprintf (mpfr_log_file, "%s.%d:"format, __func__, __LINE__, __VA_ARGS__);
+#define MPFR_LOG_MSG(x) MPFR_LOG_MSG2 x
+
+#define MPFR_LOG_BEGIN2(format, ...)                                          \
+  int __gmpfr_log_time = 0;                                                   \
+  mpfr_log_current ++;                                                        \
+  if ((MPFR_LOG_INPUT_F&mpfr_log_type)&&(mpfr_log_current<=mpfr_log_level))   \
+    fprintf (mpfr_log_file, "%s:IN  "format"\n",__func__,__VA_ARGS__);        \
+  if ((MPFR_LOG_TIME_F&mpfr_log_type)&&(mpfr_log_current<=mpfr_log_level))    \
+    __gmpfr_log_time = mpfr_get_cputime ();
+#define MPFR_LOG_BEGIN(x) MPFR_LOG_BEGIN2 x
+
+#define MPFR_LOG_END2(format, ...)                                           \
+  if ((MPFR_LOG_TIME_F&mpfr_log_type)&&(mpfr_log_current<=mpfr_log_level))   \
+    fprintf (mpfr_log_file, "%s:TIM %dms\n", __func__,                       \
+	     mpfr_get_cputime () - __gmpfr_log_time);                        \
+  if ((MPFR_LOG_OUTPUT_F&mpfr_log_type)&&(mpfr_log_current<=mpfr_log_level)) \
+    fprintf (mpfr_log_file, "%s:OUT "format"\n",__func__,__VA_ARGS__);       \
+  mpfr_log_current --;
+#define MPFR_LOG_END(x) MPFR_LOG_END2 x
+
+#else /* MPFR_USE_LOGGING */
+
+/* Define void macro for logging */
+
+#define MPFR_LOG_VAR(x)
+#define MPFR_LOG_BEGIN(x)
+#define MPFR_LOG_END(x)
+#define MPFR_LOG_MSG(x)
+
+#endif /* MPFR_USE_LOGGING */
+
+
+/******************************************************
  ***************  Internal Functions  *****************
  ******************************************************/
 
@@ -1095,6 +1204,8 @@ int mpfr_sub1sp _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
 
 void mpfr_count_sort _MPFR_PROTO ((mpfr_ptr const tab[], unsigned long n,
 				   mpfr_srcptr *perm));
+
+int mpfr_get_cputime _MPFR_PROTO ((void));
 
 #if defined (__cplusplus)
 }
