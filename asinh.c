@@ -59,6 +59,7 @@ mpfr_asinh (y, xt, rnd_mode)
   if (MPFR_IS_NAN(x)) 
     {  
       MPFR_SET_NAN(y); 
+      mpfr_clear(x);
       return 1; 
     }
   MPFR_CLEAR_NAN(y);
@@ -70,6 +71,7 @@ mpfr_asinh (y, xt, rnd_mode)
       MPFR_SET_SAME_SIGN(y,x);
       if(flag_neg)
 	MPFR_CHANGE_SIGN(y);
+      mpfr_clear(x);
       return 1;
     }
 
@@ -81,6 +83,7 @@ mpfr_asinh (y, xt, rnd_mode)
       MPFR_SET_SAME_SIGN(y,x);
       if(flag_neg)
 	MPFR_CHANGE_SIGN(y);
+      mpfr_clear(x);
       return 0;
     }
 
