@@ -221,10 +221,10 @@ mpfr_round (x, rnd_mode, prec)
 
 int 
 #if __STDC__
-mpfr_can_round(mpfr_ptr b, mp_prec_t err, mp_rnd_t rnd1, 
-	       mp_rnd_t rnd2, mp_prec_t prec)
+mpfr_can_round (mpfr_ptr b, mp_prec_t err, mp_rnd_t rnd1, 
+		mp_rnd_t rnd2, mp_prec_t prec)
 #else
-mpfr_can_round(b, err, rnd1, rnd2, prec) 
+mpfr_can_round (b, err, rnd1, rnd2, prec) 
      mpfr_ptr b; 
      mp_prec_t err;
      mp_rnd_t rnd1;
@@ -232,16 +232,17 @@ mpfr_can_round(b, err, rnd1, rnd2, prec)
      mp_prec_t prec;
 #endif
 {
-  return mpfr_can_round_raw(MPFR_MANT(b), (MPFR_PREC(b) - 1)/BITS_PER_MP_LIMB + 1, 
-			    MPFR_SIGN(b), err, rnd1, rnd2, prec); 
+  return mpfr_can_round_raw (MPFR_MANT(b),
+			     (MPFR_PREC(b) - 1)/BITS_PER_MP_LIMB + 1, 
+			     MPFR_SIGN(b), err, rnd1, rnd2, prec); 
 }
 
 int
 #if __STDC__
-mpfr_can_round_raw(mp_limb_t *bp, mp_prec_t bn, int neg, mp_prec_t err,
-		   mp_rnd_t rnd1, mp_rnd_t rnd2, mp_prec_t prec)
+mpfr_can_round_raw (mp_limb_t *bp, mp_prec_t bn, int neg, mp_prec_t err,
+		    mp_rnd_t rnd1, mp_rnd_t rnd2, mp_prec_t prec)
 #else
-mpfr_can_round_raw(bp, bn, neg, err, rnd1, rnd2, prec)
+mpfr_can_round_raw (bp, bn, neg, err, rnd1, rnd2, prec)
      mp_limb_t *bp;
      mp_prec_t bn;
      int neg; 
@@ -251,16 +252,23 @@ mpfr_can_round_raw(bp, bn, neg, err, rnd1, rnd2, prec)
      mp_prec_t prec; 
 #endif
 {
-  int k, k1, l, l1, tn; mp_limb_t cc, cc2, *tmp;
+  int k, k1, l, l1, tn;
+  mp_limb_t cc, cc2, *tmp;
   TMP_DECL(marker); 
 
   if (err<=prec) return 0;
-  neg = (neg > 0 ? 0 : 1); 
+  neg = (neg > 0 ? 0 : 1);
+
+  /* if the error is smaller than ulp(b), then anyway it will propagate
+     up to ulp(b) */
+  if (err > bn * BITS_PER_MP_LIMB)
+    err = bn * BITS_PER_MP_LIMB;
 
   /* warning: if k = m*BITS_PER_MP_LIMB, consider limb m-1 and not m */
   k = (err-1)/BITS_PER_MP_LIMB;
   l = err % BITS_PER_MP_LIMB; if (l) l = BITS_PER_MP_LIMB-l;
-  /* the error corresponds to bit l in limb k */
+  /* the error corresponds to bit l in limb k, the most significant limb
+   being limb 0 */
   k1 = (prec-1)/BITS_PER_MP_LIMB;
   l1 = prec%BITS_PER_MP_LIMB; if (l1) l1 = BITS_PER_MP_LIMB-l1;
 
