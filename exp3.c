@@ -1,6 +1,6 @@
 /* mpfr_exp -- exponential of a floating-point number
 
-Copyright 1999, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+Copyright 1999, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -144,21 +144,16 @@ mpfr_exp_rational (mpfr_ptr y, mpz_srcptr p, int r, int m)
 int
 mpfr_exp_3 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
-  mpfr_t t;
-  mpfr_t x_copy;
-  int i, k;
+  mpfr_t t, x_copy, tmp;
+  int i, k, loop;
   mpz_t uk;
-  mpfr_t tmp;
-  int ttt;
-  int twopoweri;
-  int Prec;
-  int loop;
+  mp_exp_t ttt, shift_x;
+  unsigned long twopoweri;
   int prec_x;
-  int shift_x = 0;
-  int good = 0;
-  int realprec = 0;
+  mp_prec_t realprec, Prec;
   int iter;
-  int logn, inexact = 0;
+  int inexact = 0;
+  MPFR_ZIV_DECL (ziv_loop);
 
   /* decompose x */
   /* we first write x = 1.xxxxxxxxxxxxx
@@ -167,10 +162,6 @@ mpfr_exp_3 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   prec_x = __gmpfr_ceil_log2 ((double) (MPFR_PREC(x)) / BITS_PER_MP_LIMB);
   if (prec_x < 0)
     prec_x = 0;
-
-  logn =  MPFR_INT_CEIL_LOG2 (prec_x + MPFR_PREC (y));
-  if (logn < 2)
-    logn = 2;
 
   ttt = MPFR_GET_EXP (x);
   mpfr_init2 (x_copy, MPFR_PREC(x));
@@ -183,55 +174,58 @@ mpfr_exp_3 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_div_2ui (x_copy, x, ttt, GMP_RNDN);
       ttt = MPFR_GET_EXP (x_copy);
     }
-  MPFR_ASSERTD(ttt <= 0);
+  else
+    shift_x = 0;
+  MPFR_ASSERTD (ttt <= 0);
 
-  /* the following code assumes BITS_PER_MP_LIMB is a power of two */
-  MPFR_ASSERTN((BITS_PER_MP_LIMB & (BITS_PER_MP_LIMB - 1)) == 0);
-
-  realprec = MPFR_PREC(y) + logn;
+  /* Init prec and vars */
+  realprec = MPFR_PREC (y) + MPFR_INT_CEIL_LOG2 (prec_x + MPFR_PREC (y));
+  Prec = realprec + shift + 2 + shift_x;
+  mpfr_init2 (t, Prec);
+  mpfr_init2 (tmp, Prec);
   mpz_init (uk);
-  while (!good)
+
+  /* Main loop */
+  MPFR_ZIV_INIT (ziv_loop, realprec);
+  for (;;)
     {
-      Prec = realprec + shift + 2 + shift_x;
       k = __gmpfr_ceil_log2 ((double) Prec / BITS_PER_MP_LIMB);
 
       /* now we have to extract */
-      mpfr_init2 (t, Prec);
-      mpfr_init2 (tmp, Prec);
-      mpfr_set_ui (tmp, 1, GMP_RNDN);
       twopoweri = BITS_PER_MP_LIMB;
+
+      /* Particular case for i==0 */
+      mpfr_extract (uk, x_copy, 0);
+      mpfr_exp_rational (tmp, uk, shift + twopoweri - ttt, k + 1);
+      for (loop = 0 ; loop < shift; loop++)
+	mpfr_mul (tmp, tmp, tmp, GMP_RNDD);
+      twopoweri *=2;
+
+      /* General case */
       iter = (k <= prec_x) ? k : prec_x;
-      for (i = 0; i <= iter; i++)
+      for (i = 1 ; i <= iter; i++)
         {
           mpfr_extract (uk, x_copy, i);
-          if (i)
-	    mpfr_exp_rational (t, uk, twopoweri - ttt, k  - i + 1);
-          else
-            {
-              /* particular case: we have to compute with x/2^., then
-                 do squarings (this is faster) */    
-	      mpfr_exp_rational (t, uk, shift + twopoweri - ttt, k + 1);
-              for (loop = 0 ; loop < shift; loop++)
-                mpfr_mul (t, t, t, GMP_RNDD);
-
-            }
-          mpfr_mul (tmp, tmp, t, GMP_RNDD); 
-          MPFR_ASSERTN(twopoweri <= INT_MAX/2);
-          twopoweri <<= 1;
+	  mpfr_exp_rational (t, uk, twopoweri - ttt, k  - i + 1);
+	  mpfr_mul (tmp, tmp, t, GMP_RNDD); 
+          MPFR_ASSERTN (twopoweri <= INT_MAX/2);
+          twopoweri *=2;
         }
-      mpfr_clear (t);
       for (loop = 0 ; loop < shift_x; loop++)
 	mpfr_mul (tmp, tmp, tmp, GMP_RNDD);
+
       if (mpfr_can_round (tmp, realprec, GMP_RNDD, GMP_RNDZ,
                           MPFR_PREC(y) + (rnd_mode == GMP_RNDN)))
-	{
-	  inexact = mpfr_set (y, tmp, rnd_mode);
-	  good = 1;
-	}
-      else
-	realprec += 3 * logn;
-      mpfr_clear (tmp);
-  }
+	break;
+      MPFR_ZIV_NEXT (ziv_loop, realprec);
+      Prec = realprec + shift + 2 + shift_x;
+      mpfr_set_prec (t, Prec);
+      mpfr_set_prec (tmp, Prec);
+    }
+  MPFR_ZIV_FREE (ziv_loop);
+  inexact = mpfr_set (y, tmp, rnd_mode);
+  mpfr_clear (tmp);
+  mpfr_clear (t);
   mpz_clear (uk);
   mpfr_clear (x_copy);
   return inexact;

@@ -53,6 +53,8 @@ mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
 	}
     }
 
+  MPFR_LOG_BEGIN (("x[%#R]=%R rnd=%d", x, x, rnd_mode));
+
   MPFR_SAVE_EXPO_MARK (expo);
   MPFR_TMP_INIT_ABS(x, xt);
   
@@ -67,9 +69,10 @@ mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
     
     mp_prec_t Nt;                  /* Precision of the intermediary variable */
     long int err;                  /* Precision of error */
-    
+    MPFR_ZIV_DECL (loop);
+
     /* compute the precision of intermediary variable */
-    Nt = MAX(Nx, Ny);
+    Nt = MAX (Nx, Ny);
     /* The optimal number of bits : see algorithms.ps */
     Nt = Nt + 3 + MPFR_INT_CEIL_LOG2 (Nt);
         
@@ -78,6 +81,7 @@ mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
     mpfr_init2 (te, Nt);
 
     /* First computation of cosh */
+    MPFR_ZIV_INIT (loop, Nt);
     for (;;)
       {
 	/* Compute cosh */
@@ -96,11 +100,11 @@ mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
 	  break;
 
 	/* Actualisation of the precision */
- 	Nt += BITS_PER_MP_LIMB;
+	MPFR_ZIV_NEXT (loop, Nt);
         mpfr_set_prec (t, Nt);
         mpfr_set_prec (te, Nt);
       }
-
+    MPFR_ZIV_FREE (loop);
     inexact = mpfr_set (y, t, rnd_mode);
 
     mpfr_clear (te);
@@ -108,5 +112,7 @@ mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
   }
 
   MPFR_SAVE_EXPO_FREE (expo);
-  return mpfr_check_range (y, inexact, rnd_mode);
+  inexact = mpfr_check_range (y, inexact, rnd_mode);
+  MPFR_LOG_END (("y[%#R]=%R inexact=%d", y, y, rnd_mode));
+  return inexact;
 }

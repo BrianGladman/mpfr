@@ -60,6 +60,7 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
         }
     }
   MPFR_CLEAR_FLAGS(y);
+  MPFR_LOG_BEGIN (("x[%#R]=%R rnd=%d", x, x, rnd_mode));
 
   expx  = MPFR_GET_EXP (x);
   precy = MPFR_PREC (y);
@@ -69,48 +70,59 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   /* TODO: Don't convert to double! */
   d = mpfr_get_d1 (x);
   if (MPFR_UNLIKELY (d >= (double) __gmpfr_emax * LOG2))
-    return mpfr_overflow (y, rnd_mode, 1);
+    inexact = mpfr_overflow (y, rnd_mode, 1);
 
   /* result is 0 when exp(x) < 1/2*2^(__gmpfr_emin), i.e.
      x < (__gmpfr_emin-1) * LOG2 */
-  if (MPFR_UNLIKELY(d < ((double) __gmpfr_emin - 1.0) * LOG2))
+  else if (MPFR_UNLIKELY(d < ((double) __gmpfr_emin - 1.0) * LOG2))
     {
       /* warning: mpfr_underflow rounds away for RNDN */
       if (rnd_mode == GMP_RNDN && d < ((double) __gmpfr_emin - 2.0) * LOG2)
         rnd_mode = GMP_RNDZ;
-      return mpfr_underflow (y, rnd_mode, 1);
+      inexact = mpfr_underflow (y, rnd_mode, 1);
     }
 
   /* if x < 2^(-precy), then exp(x) i.e. gives 1 +/- 1 ulp(1) */
-  if (MPFR_UNLIKELY (expx < 0 && (mpfr_uexp_t) (-expx) > precy))
+  else if (MPFR_UNLIKELY (expx < 0 && (mpfr_uexp_t) (-expx) > precy))
     {
-      int signx = MPFR_SIGN(x);
+      int signx = MPFR_SIGN (x);
 
-      MPFR_SET_POS(y);
-      if (MPFR_IS_NEG_SIGN(signx) && rnd_mode == GMP_RNDD)
+      MPFR_SET_POS (y);
+      if (MPFR_IS_NEG_SIGN (signx) && rnd_mode == GMP_RNDD)
         {
           mpfr_setmax (y, 0);  /* y = 1 - epsilon */
-          return -1;
+          inexact = -1;
         }
-      mpfr_setmin (y, 1);  /* y = 1 */
-      if (MPFR_IS_POS_SIGN(signx) && rnd_mode == GMP_RNDU)
-        {
-          mp_size_t yn;
-          int sh;
-
-          yn = 1 + (MPFR_PREC(y) - 1) / BITS_PER_MP_LIMB;
-          sh = (mp_prec_t) yn * BITS_PER_MP_LIMB - MPFR_PREC(y);
-          MPFR_MANT(y)[0] += MPFR_LIMB_ONE << sh;
-          return 1;
-        }
-      return -MPFR_FROM_SIGN_TO_INT(signx);
+      else
+	{
+	  mpfr_setmin (y, 1);  /* y = 1 */
+	  if (MPFR_IS_POS_SIGN (signx) && rnd_mode == GMP_RNDU)
+	    {
+	      mp_size_t yn;
+	      int sh;
+	      
+	      yn = 1 + (MPFR_PREC(y) - 1) / BITS_PER_MP_LIMB;
+	      sh = (mp_prec_t) yn * BITS_PER_MP_LIMB - MPFR_PREC(y);
+	      MPFR_MANT(y)[0] += MPFR_LIMB_ONE << sh;
+	      inexact = 1;
+	    }
+	  else
+	    inexact = -MPFR_FROM_SIGN_TO_INT(signx);
+	}
     }
 
-  MPFR_SAVE_EXPO_MARK (expo);
-  if (MPFR_UNLIKELY (precy > MPFR_EXP_THRESHOLD))
-    inexact = mpfr_exp_3 (y, x, rnd_mode); /* O(M(n) log(n)^2) */
-  else
-    inexact = mpfr_exp_2 (y, x, rnd_mode); /* O(n^(1/3) M(n)) */
-  MPFR_SAVE_EXPO_FREE (expo);
-  return mpfr_check_range (y, inexact, rnd_mode);
+  /* General case */
+  else 
+    {
+      MPFR_SAVE_EXPO_MARK (expo);
+      if (MPFR_UNLIKELY (precy > MPFR_EXP_THRESHOLD))
+	inexact = mpfr_exp_3 (y, x, rnd_mode); /* O(M(n) log(n)^2) */
+      else
+	inexact = mpfr_exp_2 (y, x, rnd_mode); /* O(n^(1/3) M(n)) */
+      MPFR_SAVE_EXPO_FREE (expo);
+      inexact = mpfr_check_range (y, inexact, rnd_mode);
+    }
+
+  MPFR_LOG_END (("y[%#R]=%R inexact=%d", y, y, inexact));
+  return inexact;
 }

@@ -1,6 +1,6 @@
 /* mpfr_log -- natural logarithm of a floating-point number
 
-Copyright 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation.
+Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -49,6 +49,7 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
   mp_prec_t p, q;
   mpfr_t tmp1, tmp2;
   mp_limb_t *tmp1p, *tmp2p;
+  MPFR_ZIV_DECL (loop);
   TMP_DECL(marker);
   
   /* Special cases */
@@ -100,6 +101,7 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
       MPFR_RET (0); /* only "normal" case where the result is exact */
     }
   MPFR_CLEAR_FLAGS (r);
+  MPFR_LOG_BEGIN (("a[%#R]=%R rnd=%d", a, a, rnd_mode));
 
   q = MPFR_PREC (r);
 
@@ -112,6 +114,7 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
       
   TMP_MARK(marker);
 
+  MPFR_ZIV_INIT (loop, p);
   for (;;) 
     {
       mp_size_t size;
@@ -152,11 +155,14 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
       if (mpfr_can_round (tmp1, p - cancel - 4, GMP_RNDN, GMP_RNDZ,
 			  q + (rnd_mode == GMP_RNDN)))
 	break;
-      p += BITS_PER_MP_LIMB + cancel;
+      p += cancel;
+      MPFR_ZIV_NEXT (loop, p);
     }
+  MPFR_ZIV_FREE (loop);
   inexact = mpfr_set (r, tmp1, rnd_mode);
   /* We clean */
   TMP_FREE(marker);
 
+  MPFR_LOG_END (("r[%#R]=%R inexact=%d", r, r, inexact));
   return inexact; /* result is inexact */
 }

@@ -52,7 +52,8 @@ mpfr_sinh (mpfr_ptr y, mpfr_srcptr xt, mp_rnd_t rnd_mode)
 	  MPFR_RET(0);
 	}
     }
-  
+  MPFR_LOG_BEGIN (("x[%#R]=%R rnd=%d", x, x, rnd_mode));
+
   MPFR_TMP_INIT_ABS (x, xt);
 
   {
@@ -60,6 +61,7 @@ mpfr_sinh (mpfr_ptr y, mpfr_srcptr xt, mp_rnd_t rnd_mode)
     mp_exp_t d;    
     mp_prec_t Nt;    /* Precision of the intermediary variable */
     long int err;    /* Precision of error */
+    MPFR_ZIV_DECL (loop);
     int overflow_p = mpfr_overflow_p ();
 
     /* compute the precision of intermediary variable */
@@ -75,6 +77,7 @@ mpfr_sinh (mpfr_ptr y, mpfr_srcptr xt, mp_rnd_t rnd_mode)
     mpfr_init2 (ti, Nt);
 
     /* First computation of sinh */
+    MPFR_ZIV_INIT (loop, Nt);
     for (;;) {
       /* compute sinh */
       mpfr_clear_overflow ();
@@ -105,11 +108,12 @@ mpfr_sinh (mpfr_ptr y, mpfr_srcptr xt, mp_rnd_t rnd_mode)
 	    break;
 	}
       /* actualisation of the precision */
-      Nt += MAX (BITS_PER_MP_LIMB, err);
+      Nt += err;
+      MPFR_ZIV_NEXT (loop, Nt);
       mpfr_set_prec (t, Nt);
       mpfr_set_prec (ti, Nt);
     }
-     
+    MPFR_ZIV_FREE (loop);
     inexact = mpfr_set4 (y, t, rnd_mode, MPFR_SIGN (xt));
     if (overflow_p != 0)
       __gmpfr_flags |= MPFR_FLAGS_OVERFLOW;
@@ -117,6 +121,7 @@ mpfr_sinh (mpfr_ptr y, mpfr_srcptr xt, mp_rnd_t rnd_mode)
     mpfr_clear (t);
     mpfr_clear (ti);
   }
-  
+  MPFR_LOG_END (("y[%#R]=%R inexact=%d", y, y, inexact));
+
   return inexact;
 }

@@ -30,6 +30,7 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
   int prec, m, neg;
   mpfr_t c, k;
   mp_exp_t e;
+  MPFR_ZIV_DECL (loop);
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
@@ -48,7 +49,7 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	  MPFR_RET (0);
 	}
     }
-  /* MPFR_CLEAR_FLAGS is useless since we use mpfr_set to set y and z */
+  MPFR_LOG_BEGIN (("x[%#R]=%R rnd=%d", x, x, rnd_mode));
 
   prec = MAX (MPFR_PREC (y), MPFR_PREC (z)); 
   m = prec + MPFR_INT_CEIL_LOG2 (prec) + 13;
@@ -74,6 +75,7 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
   else
     neg = MPFR_SIGN (x) < 0;
 
+  MPFR_ZIV_INIT (loop, m);
   for (;;)
     {
       mpfr_cos (c, x, GMP_RNDZ);
@@ -100,13 +102,15 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	m = 2*m;
 
     next_step:
-      m += BITS_PER_MP_LIMB;
+      MPFR_ZIV_NEXT (loop, m);
       mpfr_set_prec (c, m);
     }
+  MPFR_ZIV_FREE (loop);
 
   mpfr_set (y, c, rnd_mode);
 
   mpfr_clear (c);
 
+  MPFR_LOG_END (("sin[%#R]=%R cos[%#R]=%R", y, y, z, z));
   MPFR_RET (1); /* Always inexact */
 }

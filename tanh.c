@@ -52,6 +52,8 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
 	}
     }
   
+  MPFR_LOG_BEGIN (("x[%#R]=%R rnd_mode=%d", x, x, rnd_mode));
+
   MPFR_SAVE_EXPO_MARK (expo);
   MPFR_TMP_INIT_ABS (x, xt);
   
@@ -66,7 +68,8 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
     mp_prec_t Ny = MPFR_PREC(y);   /* Precision of output variable */
     mp_prec_t Nt;                  /* Precision of intermediary variables */
     long int err;                  /* Precision of error */
-    
+    MPFR_ZIV_DECL (loop);
+
     /* Compute the precision of intermediary variable */
     Nt = MAX (Nx, Ny);
     
@@ -76,7 +79,8 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
     /* initialise of intermediary variable */
     mpfr_init2 (t, Nt); 
     mpfr_init2 (te, Nt);
-    
+
+    MPFR_ZIV_INIT (loop, Nt);
     if (MPFR_GET_EXP (x) > 10)
       for (;;) {
 	/* tanh(x)=1-2/(exp(2x)+1)  */
@@ -88,7 +92,7 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
 	d = MPFR_GET_EXP (t);
 	mpfr_ui_sub (t, 1, t, GMP_RNDZ);    /*1-2/(exp(2x)+1) */
 	
-	/* Calculation of the error*/
+	/* Calculation of the error */
 	/* err (t) <= (1+8*2^(d-EXP(t)))*ulp(t) */
 	d = d - MPFR_GET_EXP (t);
 	err = Nt - MAX (d + 4, 1);
@@ -98,7 +102,7 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
 	  break;
 	
 	/* Actualisation of the precision */
-	Nt += BITS_PER_MP_LIMB;
+	MPFR_ZIV_NEXT (loop, Nt);
 	mpfr_set_prec (t, Nt);
 	mpfr_set_prec (te, Nt);
       }
@@ -121,16 +125,19 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
 	  break;
 	
 	/* Actualisation of the precision */
-	Nt += BITS_PER_MP_LIMB;
+	MPFR_ZIV_NEXT (loop, Nt);
 	mpfr_set_prec (t, Nt);
 	mpfr_set_prec (te, Nt);
       }
-    
+    MPFR_ZIV_FREE (loop);
     inexact = mpfr_set4 (y, t, rnd_mode, MPFR_SIGN (xt));
     mpfr_clear (te);
     mpfr_clear (t);
   }
   MPFR_SAVE_EXPO_FREE (expo);
-  return mpfr_check_range (y, inexact, rnd_mode);
+  inexact = mpfr_check_range (y, inexact, rnd_mode);
+
+  MPFR_LOG_END (("y[%#R]=%R inexact=%d", y, y, inexact));
+  return inexact;
 }
 

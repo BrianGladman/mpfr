@@ -91,6 +91,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   int inexact;
   mpfr_t r, s, t;
   mpz_t ss;
+  MPFR_ZIV_DECL (loop);
   TMP_DECL(marker);
 
   precy = MPFR_PREC(y);
@@ -126,6 +127,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   /* the algorithm consists in computing an upper bound of exp(x) using
      a precision of q bits, and see if we can round to MPFR_PREC(y) taking
      into account the maximal error. Otherwise we increase q. */
+  MPFR_ZIV_INIT (loop, q);
   for (;;)
     {
       MPFR_TRACE ( printf("n=%d K=%d l=%d q=%d\n",n,K,l,q) );
@@ -192,12 +194,13 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	break;
       MPFR_TRACE (printf("prec++, use %d\n", q+BITS_PER_MP_LIMB) );
       MPFR_TRACE (printf("q=%d q-K=%d precy=%d\n",q,q-K,precy) );
-      q += BITS_PER_MP_LIMB;
+      MPFR_ZIV_NEXT (loop, q);
       mpfr_set_prec (r, q);
       mpfr_set_prec (s, q);
       mpfr_set_prec (t, q);
     }
-  
+  MPFR_ZIV_FREE (loop);
+
   inexact = mpfr_set (y, s, rnd_mode);
 
   mpfr_clear (r); 

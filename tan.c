@@ -1,6 +1,6 @@
 /* mpfr_tan -- tangent of a floating-point number
 
-Copyright 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+Copyright 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -28,6 +28,7 @@ mpfr_tan (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
   int precy, m, inexact;
   mpfr_t s, c;
+  MPFR_ZIV_DECL (loop);
 
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(x)))
     {
@@ -44,6 +45,7 @@ mpfr_tan (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	  MPFR_RET(0);
 	}
     }
+  MPFR_LOG_BEGIN (("x[%#R]=%R rnd=%d", x, x, rnd_mode));
 
   precy = MPFR_PREC (y);
   m = precy + MPFR_INT_CEIL_LOG2 (precy) + 13;
@@ -55,6 +57,7 @@ mpfr_tan (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_init2 (s, m);
   mpfr_init2 (c, m);
 
+  MPFR_ZIV_INIT (loop, m);
   for (;;)
     {
       mpfr_sin_cos (s, c, x, GMP_RNDN); /* err <= 1/2 ulp on s and c */
@@ -62,15 +65,18 @@ mpfr_tan (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       if (MPFR_IS_INF(x) || mpfr_can_round (c, m - 1, GMP_RNDN, GMP_RNDZ,
 					    precy + (rnd_mode == GMP_RNDN)))
 	break;
-      m += BITS_PER_MP_LIMB;
+      MPFR_ZIV_NEXT (loop, m);
       mpfr_set_prec (s, m);
       mpfr_set_prec (c, m);
     }
+  MPFR_ZIV_FREE (loop);
 
   inexact = mpfr_set (y, c, rnd_mode);
 
   mpfr_clear (s);
   mpfr_clear (c);
+
+  MPFR_LOG_END (("y[%#R]=%R inexact=%d", y, y, inexact));
 
   return inexact;
 }
