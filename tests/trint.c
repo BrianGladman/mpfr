@@ -39,15 +39,13 @@ main (void)
   mpz_init (z);
   mpfr_init (t);
   mpz_set_ui (z, 1);
-  for (s=1; s<100; s++)
+  for (s = 2; s < 100; s++)
     {
       /* z has exactly s bits */
       
       mpz_mul_2exp (z, z, 1);
       if (rand () % 2)
         mpz_add_ui (z, z, 1);
-      if (s == 1)
-        continue;
       mpfr_set_prec (x, s);
       mpfr_set_prec (t, s);
       if (mpfr_set_z (x, z, GMP_RNDN))
