@@ -28,13 +28,10 @@ mpfr_div(Q, n, d, rnd_mode)
   if (!NOTZERO(n)) { SET_ZERO(Q); return 0; }
   if (!NOTZERO(d)) { fprintf(stderr, "division by zero\n"); exit(1); }
 
-  if (Q==n || Q==d) {
-    TMP_MARK(marker);
-    q = (mpfr_ptr) TMP_ALLOC(sizeof(__mpfr_struct));
-    mpfr_init2(q, PREC(Q));
-  }
-  else q=Q;
-
+  TMP_MARK(marker);
+  q = (mpfr_ptr) TMP_ALLOC(sizeof(__mpfr_struct));
+  mpfr_init2(q, PREC(Q));
+  
   prec = precq = PREC(q);
   /* maxprec is the maximum number of consecutive 0's or 1's in the quotient */
   maxprec = PREC(n); if (PREC(d)>maxprec) maxprec=PREC(d);
@@ -47,7 +44,6 @@ mpfr_div(Q, n, d, rnd_mode)
   prec = (prec/mp_bits_per_limb)*mp_bits_per_limb;
   do {
     prec += mp_bits_per_limb;
-
   mpfr_set_prec(q, prec);
   mpfr_set(q, n, GMP_RNDZ);
   mpfr_init2(eps, prec); mpfr_init2(tmp, prec); mpfr_init2(one, prec);
@@ -58,6 +54,9 @@ mpfr_div(Q, n, d, rnd_mode)
     else mpfr_mul_2exp(q, n, -expd, rnd_mode);
     if (SIGN(d)<0) mpfr_neg(q, q, rnd_mode);
     mpfr_clear(eps); mpfr_clear(tmp); mpfr_clear(one);
+    mpfr_set(Q, q, rnd_mode);
+    mpfr_clear(q);
+    TMP_FREE(marker);
     return exact;
   }
   mpfr_set_ui(one, 1, GMP_RNDZ); 
@@ -72,6 +71,9 @@ mpfr_div(Q, n, d, rnd_mode)
     EXP(q) -= expd-1;
     if (SIGN(d)<0) CHANGE_SIGN(q);
     mpfr_clear(eps); mpfr_clear(tmp); mpfr_clear(one);
+    mpfr_set(Q, q, rnd_mode);
+    mpfr_clear(q);
+    TMP_FREE(marker);
     return exact;
   }
   mpfr_mul_2exp(eps, tmp, -expd, GMP_RNDZ);
@@ -101,10 +103,9 @@ mpfr_div(Q, n, d, rnd_mode)
   mpfr_mul_2exp(q, q, -expd, rnd_mode);
   mpfr_set_prec(q, precq);
   mpfr_clear(eps); mpfr_clear(tmp); mpfr_clear(one);
-  if (Q==n || Q==d) {
-    mpfr_set(Q, q, rnd_mode);
-    mpfr_clear(q);
-    TMP_FREE(marker);
-  }
+  mpfr_set(Q, q, rnd_mode);
+  mpfr_clear(q);
+  TMP_FREE(marker);
+
   return exact;
 }
