@@ -123,7 +123,7 @@ mpfr_mpn_exp (mp_limb_t *a, mp_exp_t *exp_r, int b, mp_exp_t e, size_t n)
           (mpn_scan1 (c + 2 * n1, 0) < (n - 2 * n1) * BITS_PER_MP_LIMB))
         error = i;
 
-      if (e & (1 << i))
+      if (e & ((mp_exp_t) 1 << i))
         {
           /* multiply A by B */
           c[2 * n - 1] = mpn_mul_1 (c + n - 1, a, n, B);

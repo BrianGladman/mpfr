@@ -376,14 +376,22 @@ mpfr_get_str_aux (char *const str, mp_exp_t *const exp, mp_limb_t *const r,
 static mp_exp_t
 mpfr_get_str_compute_g (int beta, mp_exp_t e)
 {
-  double g0, g1;
+  double g0, g1, de;
   mp_exp_t g;
 
-  g0 = (double) e * log_b2[beta - 2];
-  g1 = (double) e * log_b2_low[beta - 2];
+  de = (double) e;
+  g0 = de * log_b2[beta - 2];
+  g1 = de * log_b2_low[beta - 2];
+  if (de > 9007199254740992.0 || de < -9007199254740992.0)
+    /* can happen on 64-bit machines */
+    {
+      mp_exp_t low_e = e - (mp_exp_t) de;
+      g1 += (double) low_e * log_b2[beta - 2];
+    }
   g = (mp_exp_t) mpfr_ceil_double (g0);
   g0 -= (double) g;
-  return g + (mp_exp_t) mpfr_ceil_double (g0 + g1);
+  g += (mp_exp_t) mpfr_ceil_double (g0 + g1);
+  return g;
 }
 
 /* prints the mantissa of x in the string s, and writes the corresponding
