@@ -57,6 +57,23 @@ void special ()
 
   mpfr_init (x); mpfr_init (y);
 
+  /* bug found by Nathalie Revol, 21 March 2001 */
+  mpfr_set_prec (x, 65);
+  mpfr_set_prec (y, 65);
+  mpfr_set_str_raw (x, "0.10000000000000000000000000000000000001110010010110100110011110000E1");
+  mpfr_set_str_raw (y, "0.11100100101101001100111011111111110001101001000011101001001010010E-35");
+  if ((j = mpfr_cmp2 (x, y)) != 1) {
+    printf ("Error in mpfr_cmp2:\n");
+    printf ("x=");
+    mpfr_print_raw (x);
+    putchar ('\n');
+    printf ("y=");
+    mpfr_print_raw (y);
+    putchar ('\n');
+    printf ("got %d, expected 1\n", j);
+    exit (1);
+  }
+
   mpfr_set_prec(x, 127); mpfr_set_prec(y, 127);
   mpfr_set_str_raw(x, "0.1011010000110111111000000101011110110001000101101011011110010010011110010000101101000010011001100110010000000010110000101000101E6");
   mpfr_set_str_raw(y, "0.1011010000110111111000000101011011111100011101000011001111000010100010100110110100110010011001100110010000110010010110000010110E6");
