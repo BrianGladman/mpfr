@@ -21,7 +21,7 @@
 
 
 
-void 
+int
 #if __STDC__
 mpfr_log(mpfr_ptr r, mpfr_srcptr a, unsigned char rnd_mode) 
 #else
@@ -38,20 +38,15 @@ mpfr_log()
   TMP_DECL(marker);
 
 
-  /* If a is NaN, the result is NaN */
-  if (FLAG_NAN(a)) 
-    { SET_NAN(r); return; }
-
-  /* If a is negative or null, the result is NaN */
-  if (SIGN(a)<=0)
-    { SET_NAN(r); return; }
+  /* If a is NaN or a is negative or null, the result is NaN */
+  if (FLAG_NAN(a) || (SIGN(a)<=0))
+    { SET_NAN(r); return 1; }
 
   /* If a is 1, the result is 0 */
   if (mpfr_cmp_ui_2exp(a,1,0)==0){
     SET_ZERO(r);
-    return;
+    return 0; /* only case where the result is exact */
   }
-
 
   q=PREC(r);
   
@@ -125,7 +120,7 @@ mpfr_log()
     TMP_FREE(marker);
     
   }
- 
+  return 1; /* result is inexact */
 }
 
 
