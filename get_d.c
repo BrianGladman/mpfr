@@ -207,9 +207,8 @@ mpfr_get_d3 (mpfr_srcptr src, mp_exp_t e, mp_rnd_t rnd_mode)
         d = 1.0;
       else
         {
-          /* Warning: the rounding may still be incorrect in the rounding
-             to the nearest mode when the result is a subnormal because of
-             a double rounding (-> 53 bits -> final precision). */
+          /* The following computations are exact thanks to the previous
+             mpfr_round_raw. */
           d = (double) tp[0] / MP_BASE_AS_DOUBLE;
           for (i = 1; i <= np; i++)
             d = (d + tp[i]) / MP_BASE_AS_DOUBLE;
