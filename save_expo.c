@@ -1,6 +1,6 @@
-/* mpfr_add_ui -- add a floating-point number with a machine integer
+/* Save/restore the minimum and maximum exponents.
 
-Copyright (C) 2000 Free Software Foundation.
+Copyright (C) 1999 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -20,40 +20,51 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "gmp.h"
-#include "gmp-impl.h"
-#include "longlong.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
+static unsigned int saved_flags;
+static mp_exp_t saved_emin;
+static mp_exp_t saved_emax;
+static unsigned int save_ctr = 0;
+
 void
 #if __STDC__
-mpfr_add_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
+mpfr_save_emin_emax (void)
 #else
-mpfr_add_ui (y, x, u, rnd_mode)
-     mpfr_ptr y;
-     mpfr_srcptr x;
-     unsigned long int u;
-     mp_rnd_t rnd_mode;
+mpfr_save_emin_emax ()
 #endif
 {
-  mpfr_t uu;
-  mp_limb_t up[1];
-  unsigned long cnt;
-
-  if (u) { /* if u=0, do nothing */
-    MPFR_INIT1(up, uu, BITS_PER_MP_LIMB, 1);
-    count_leading_zeros(cnt, (mp_limb_t) u);
-    *up = (mp_limb_t) u << cnt;
-    MPFR_EXP(uu) = BITS_PER_MP_LIMB-cnt;
-
-    /* Optimization note: Exponent operations may be removed
-       if mpfr_add works even when uu is out-of-range. */
-    mpfr_save_emin_emax();
-    mpfr_add(y, x, uu, rnd_mode);
-    mpfr_restore_emin_emax();
-    mpfr_check_range(y, rnd_mode);
+  if (save_ctr++ == 0)
+  {
+    saved_flags = __mpfr_flags;
+    saved_emin = __mpfr_emin;
+    saved_emax = __mpfr_emax;
+    __mpfr_emin = MPFR_EMIN_MIN;
+    __mpfr_emax = MPFR_EMAX_MAX;
   }
-  else
-    mpfr_set (y, x, rnd_mode);
+  else if (save_ctr == 0)
+  {
+    fprintf(stderr,
+            "Error: Too many consecutive calls to mpfr_save_emin_emax!\n"
+            "Probably a bug.\n");
+    exit(1);
+  }
+}
+
+void
+#if __STDC__
+mpfr_restore_emin_emax (void)
+#else
+mpfr_restore_emin_emax ()
+#endif
+{
+  if (--save_ctr == 0)
+  {
+    __mpfr_flags = saved_flags;
+    __mpfr_emin = saved_emin;
+    __mpfr_emax = saved_emax;
+  }
 }

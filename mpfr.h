@@ -30,6 +30,22 @@ MA 02111-1307, USA. */
 #define GMP_RNDU 2
 #define GMP_RNDD 3
 
+/* Definition of exponent limits */
+
+#define MPFR_EMAX_DEFAULT ((mp_exp_t) ((1UL<<31)-1))
+#define MPFR_EMIN_DEFAULT (-(MPFR_EMAX_DEFAULT))
+
+#define MPFR_EMIN_MIN MPFR_EMIN_DEFAULT
+#define MPFR_EMIN_MAX MPFR_EMAX_DEFAULT
+#define MPFR_EMAX_MIN MPFR_EMIN_DEFAULT
+#define MPFR_EMAX_MAX MPFR_EMAX_DEFAULT
+
+/* Flags */
+
+#define MPFR_FLAGS_UNDERFLOW 1
+#define MPFR_FLAGS_OVERFLOW 2
+#define MPFR_FLAGS_ALL 3
+
 /* Definitions of types and their semantics */
 
 typedef unsigned long int mp_prec_t; /* easy to change if necessary */
@@ -84,6 +100,20 @@ typedef __gmp_const __mpfr_struct *mpfr_srcptr;
 #if defined (__cplusplus)
 extern "C" {
 #endif  
+
+extern unsigned int __mpfr_flags;
+extern mp_exp_t __mpfr_emin;
+extern mp_exp_t __mpfr_emax;
+mp_exp_t mpfr_get_emin _PROTO ((void));
+int mpfr_set_emin _PROTO ((mp_exp_t));
+mp_exp_t mpfr_get_emax _PROTO ((void));
+int mpfr_set_emax _PROTO ((mp_exp_t));
+void mpfr_clear_flags _PROTO ((void));
+void mpfr_clear_underflow _PROTO ((void));
+void mpfr_clear_overflow _PROTO ((void));
+int mpfr_check_range _PROTO ((mpfr_ptr, mp_rnd_t));
+int mpfr_underflow_p _PROTO ((void));
+int mpfr_overflow_p _PROTO ((void));
 
 void mpfr_init2 _PROTO ((mpfr_ptr, mp_prec_t));
 void mpfr_init _PROTO ((mpfr_ptr));

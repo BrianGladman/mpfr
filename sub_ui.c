@@ -46,8 +46,13 @@ mpfr_sub_ui (y, x, u, rnd_mode)
     count_leading_zeros(cnt, (mp_limb_t) u);
     *up = (mp_limb_t) u << cnt;
     MPFR_EXP(uu) = BITS_PER_MP_LIMB-cnt;
-  
+
+    /* Optimization note: Exponent operations may be removed
+     if mpfr_add works even when uu is out-of-range. */
+    mpfr_save_emin_emax();
     mpfr_sub (y, x, uu, rnd_mode);
+    mpfr_restore_emin_emax();
+    mpfr_check_range(y, rnd_mode);
   }
   else
     mpfr_set (y, x, rnd_mode);

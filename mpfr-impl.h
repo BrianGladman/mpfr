@@ -19,6 +19,13 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+/* This unsigned type must correspond to the signed one defined in gmp.h */
+#if defined (_CRAY) && ! defined (_CRAYMPP)
+typedef unsigned int            mp_exp_unsigned_t;
+#else
+typedef unsigned long int       mp_exp_unsigned_t;
+#endif
+
 /* Definition of constants */
 
 #define LOG2 0.69314718055994528622 /* log(2) rounded to zero on 53 bits */
@@ -86,6 +93,11 @@ typedef union ieee_double_extract Ieee_double_extract;
 #if defined (__cplusplus)
 extern "C" {
 #endif  
+
+void mpfr_set_underflow _PROTO ((mpfr_ptr, mp_rnd_t, int));
+void mpfr_set_overflow _PROTO ((mpfr_ptr, mp_rnd_t, int));
+void mpfr_save_emin_emax _PROTO ((void));
+void mpfr_restore_emin_emax _PROTO ((void));
 
 int mpfr_round_raw _PROTO ((mp_limb_t *, mp_limb_t *, mp_prec_t, int,
 			     mp_prec_t, mp_rnd_t));
