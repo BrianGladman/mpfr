@@ -23,7 +23,7 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
 void
-mpz_set_fr (mpz_ptr z, mpfr_srcptr f, mp_rnd_t rnd)
+mpfr_get_z (mpz_ptr z, mpfr_srcptr f, mp_rnd_t rnd)
 {
   mpfr_t r;
   mp_exp_t exp = MPFR_EXP(f);

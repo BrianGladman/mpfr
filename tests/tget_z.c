@@ -1,4 +1,4 @@
-/* Test file for mpz_set_fr.
+/* Test file for mpz_set_fr / mpfr_get_z.
 
 Copyright 2004 Free Software Foundation.
 
@@ -52,7 +52,7 @@ check_one (mpz_ptr z)
 	      mpfr_mul_2exp (f, f, sh, GMP_RNDN);
 	    }
 
-	  mpz_set_fr (got, f, GMP_RNDZ); 
+	  mpfr_get_z (got, f, GMP_RNDZ); 
 
 	  if (mpz_cmp (got, z) != 0)
 	    {

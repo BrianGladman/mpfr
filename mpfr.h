@@ -242,7 +242,7 @@ long mpfr_get_si _MPFR_PROTO ((mpfr_srcptr, mpfr_rnd_t));
 unsigned long mpfr_get_ui _MPFR_PROTO ((mpfr_srcptr, mpfr_rnd_t));
 char* mpfr_get_str _MPFR_PROTO ((char *, mp_exp_t *, int, size_t, mpfr_srcptr,
 				   mpfr_rnd_t));
-void mpz_set_fr _MPFR_PROTO ((mpz_ptr z, mpfr_srcptr f, mpfr_rnd_t rnd));
+void mpfr_get_z _MPFR_PROTO ((mpz_ptr z, mpfr_srcptr f, mpfr_rnd_t rnd));
 
 void mpfr_free_str _MPFR_PROTO ((char *str));
 
@@ -504,7 +504,12 @@ int  mpfr_strtofr _MPFR_PROTO ((mpfr_ptr, __gmp_const char *, char **,
  ( mpfr_init(x), mpfr_set((x), (y), (rnd)) )
 #define mpfr_init_set_f(x, y, rnd) \
  ( mpfr_init(x), mpfr_set_f((x), (y), (rnd)) )
+
 #define mpfr_version (mpfr_get_version())
+
+#ifndef mpz_set_fr
+# define mpz_set_fr mpfr_get_z
+#endif 
 
 /* When using GCC, optimize certain common comparisons.  */
 #if defined (__GNUC__)
