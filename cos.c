@@ -118,7 +118,6 @@ mpfr_cos2_aux (mpfr_ptr s, mpfr_srcptr r)
 
   mpfr_init2 (t, m);
   MPFR_SET_ONE (t);
-  //mpfr_set_ui (t, 1, GMP_RNDN);
   mpfr_set (s, t, GMP_RNDN);
 
   for (l = 1; MPFR_GET_EXP (t) + m >= 0; l++)
