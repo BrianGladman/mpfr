@@ -4,28 +4,6 @@ Configuration:
 
 Compatibility with MPF:
 
-- write a mpfr2mpfr.h header file with macros for compatibility with MPF, for
-  example #define mpf_add(x,y,z) mpfr_add(x,y,z,GMP_RNDN) [GH]
-
-- implement missing functions for complete compatibility with MPF:
-mpfr_abs
-mpfr_add_ui
-mpfr_ceil
-mpfr_dump
-mpfr_eq
-mpfr_floor
-mpfr_inp_str
-mpfr_random2
-mpfr_reldiff
-mpfr_set_prec_raw
-mpfr_size
-mpfr_sqrt_ui
-mpfr_trunc
-mpfr_ui_div
-mpfr_ui_sub
-mpfr_urandomb
-mpfr_sgn
-
 Changes in existing functions:
 
 - improve mpfr_exp, currently in O(sqrt(n)*M(n)), to use algorithms in
