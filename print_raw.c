@@ -38,17 +38,20 @@ mpfr_print_raw(mpfr_srcptr x)
 {
   char *str; 
 
-  /* 3 char for sign + 0 + binary point
-     + ABSSIZE(x) * BITS_PER_MP_LIMB for mantissa
-     + 2 for brackets in mantissa
-     + 1 for 'E'
-     + 11 for exponent (including sign)
-     = 17 + ABSSIZE(x) * BITS_PER_MP_LIMB
-   */
-  str = (char *) malloc((17 + ABSSIZE(x) * BITS_PER_MP_LIMB)*sizeof(char)); 
-  mpfr_get_str_raw(str, x);
+  if (FLAG_NAN(x)) printf("NaN");
+  else {
+     /* 3 char for sign + 0 + binary point
+	+ ABSSIZE(x) * BITS_PER_MP_LIMB for mantissa
+	+ 2 for brackets in mantissa
+	+ 1 for 'E'
+	+ 11 for exponent (including sign)
+	= 17 + ABSSIZE(x) * BITS_PER_MP_LIMB
+      */
+     str = (char *) malloc((17 + ABSSIZE(x) * BITS_PER_MP_LIMB)*sizeof(char));
+     mpfr_get_str_raw(str, x);
 
-  printf("%s", str); 
-  free(str); 
+     printf("%s", str); 
+     free(str); 
+  }
 }
 
