@@ -20,18 +20,37 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdarg.h>
-#include "gmp.h"
-#include "gmp-impl.h"
-#include "mpfr.h"
+/* Needed for build with GMP */
+#ifndef HAVE_STDARG
+# include "config.h"
+#endif
+
+#if HAVE_STDARG
+# include <stdarg.h>
+#else
+# include <varargs.h>
+#endif
+
 #include "mpfr-impl.h"
 
 void
+#if HAVE_STDARG
 mpfr_clears (mpfr_ptr x, ...)
+#else
+mpfr_clears (va_alist)
+ va_dcl
+#endif
 {
   va_list arg;
 
+#if HAVE_STDARG
   va_start (arg, x);
+#else
+  mpfr_ptr x;
+  va_start(arg);
+  x =  va_arg (arg, mpfr_ptr);
+#endif
+
   while (x != 0)
     {
       mpfr_clear (x);
