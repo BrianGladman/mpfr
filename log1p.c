@@ -75,7 +75,7 @@ mpfr_log1p (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	{
 	  MPFR_SET_INF(y);
 	  MPFR_SET_POS(y);
-	  MPFR_RET_NAN;
+	  MPFR_RET(0);
 	}
       MPFR_SET_NAN(y);
       MPFR_RET_NAN;
