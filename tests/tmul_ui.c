@@ -103,6 +103,11 @@ main (int argc, char *argv[])
     mpfr_print_raw(y); putchar('\n');
   }
 
+  mpfr_set_prec (x, 32);
+  mpfr_set_str_raw (x, "0.10000000000000000000000000000000E1");
+  mpfr_set_prec (y, 93);
+  mpfr_mul_ui(y, x, 1, GMP_RNDN);
+
   mpfr_clear(x); mpfr_clear(y);
 
   return 0;
