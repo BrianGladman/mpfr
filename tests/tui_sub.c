@@ -28,15 +28,11 @@ MA 02111-1307, USA. */
 #include "mpfr-test.h"
 #endif
 
-extern int isnan();
-extern int getpid();
 void check _PROTO((unsigned long, double, unsigned int, double)); 
-
-#define ABS(x) (((x)>0) ? (x) : (-x))
 
 /* checks that y/x gives the same results in double
    and with mpfr with 53 bits of precision */
-void check(unsigned long y, double x, unsigned int rnd_mode, double z1)
+void check (unsigned long y, double x, mp_rnd_t rnd_mode, double z1)
 {
   double z2; mpfr_t xx, zz;
 
