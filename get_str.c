@@ -63,11 +63,7 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
 
   if (MPFR_IS_INF(op)) { 
     if (str == NULL) {
-      str = (*_mp_allocate_func)(neg + 4);
-      if (str == NULL) {
-	fprintf (stderr, "Error in mpfr_get_str: no more memory available\n");
-	exit (1);
-      }
+      str = (*__gmp_allocate_func)(neg + 4);
     }
     str0 = str; 
     if (neg) { *str++ = '-'; }
@@ -77,11 +73,7 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
 
   if (!MPFR_NOTZERO(op)) {
     if (str == NULL) {
-      str = (*_mp_allocate_func)(neg + n + 1);
-      if (str == NULL) {
-	fprintf (stderr, "Error in mpfr_get_str: no more memory available\n");
-	exit (1);
-      }
+      str = (*__gmp_allocate_func)(neg + n + 1);
     }
     str0 = str;
     if (MPFR_SIGN(op)<0) *str++ = '-';
@@ -205,11 +197,7 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
   /* computes the number of characters needed */
   q = neg + n + 2; /* n+1 may not be enough for 100000... */
   if (str == NULL) {
-    str0 = str = (*_mp_allocate_func)(q);
-    if (str == NULL) {
-      fprintf (stderr, "Error in mpfr_get_str: no more memory available\n");
-      exit (1);
-    }
+    str0 = str = (*__gmp_allocate_func) (q);
   }
   if (neg) *str++='-';
   mpz_get_str(str, base, bz); /* n digits of mantissa */
