@@ -1,6 +1,6 @@
 /* mpfr_fma -- Floating multiply-add
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 2001 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -33,8 +33,6 @@ MA 02111-1307, USA. */
     fma(s,x,y,z)= z + x*y = s
 */
 
-int mpfr_fma _PROTO((mpfr_ptr, mpfr_srcptr,mpfr_srcptr,mpfr_srcptr,mp_rnd_t));
-
 int
 #if __STDC__
 mpfr_fma (mpfr_ptr s, mpfr_srcptr x ,mpfr_srcptr y ,mpfr_srcptr z , mp_rnd_t rnd_mode) 
@@ -47,38 +45,59 @@ mpfr_fma (s,x,y,z, rnd_mode)
      mp_rnd_t rnd_mode;
 #endif
 {
-        /* particular cases */
-        if (MPFR_IS_NAN(x) || MPFR_IS_NAN(y) ||  MPFR_IS_NAN(z)){
-                MPFR_SET_NAN(s); 
-                return 1; 
-        }
-        
-        if (MPFR_IS_INF(x) && MPFR_IS_ZERO(y)){ 
-                MPFR_SET_NAN(s);
-                return 1;
-        }
-        if (MPFR_IS_INF(y) && MPFR_IS_ZERO(x)){ 
-                MPFR_SET_NAN(s);
-                return 1;
-        }
-        if (MPFR_IS_INF(x) && MPFR_IS_INF(z)
-                        && MPFR_SIGN(x)!=MPFR_SIGN(z)){
-                MPFR_SET_NAN(s);
-                return 1;
-        }
+  int inexact;
 
-        MPFR_CLEAR_NAN(s);
+        /* particular cases */
+        if (MPFR_IS_NAN(x) || MPFR_IS_NAN(y) ||  MPFR_IS_NAN(z))
+	  {
+	    MPFR_SET_NAN(s); 
+	    return 1; 
+	  }
+
+        /* cases Inf*0+z, 0*Inf+z, Inf-Inf */
+        if ((MPFR_IS_INF(x) && MPFR_IS_ZERO(y)) ||
+	    (MPFR_IS_INF(y) && MPFR_IS_ZERO(x)) ||
+	    ((MPFR_IS_INF(x) || MPFR_IS_INF(y)) && MPFR_IS_INF(z) &&
+	     ((MPFR_SIGN(x) * MPFR_SIGN(y)) != MPFR_SIGN(z))))
+	  {
+	    MPFR_SET_NAN(s);
+	    return 1;
+	  }
+
+	MPFR_CLEAR_NAN(s);
+
+        if (MPFR_IS_INF(x) || MPFR_IS_INF(y))
+	  {
+	    if (MPFR_IS_INF(z)) /* case Inf-Inf already checked above */
+	      {
+		MPFR_SET_INF(s);
+		MPFR_SET_SAME_SIGN(s, z);
+		return 0;
+	      }
+	    else /* z is finite */
+	      {
+		MPFR_SET_INF(s);
+		if (MPFR_SIGN(s) != (MPFR_SIGN(x) * MPFR_SIGN(y)))
+		  MPFR_CHANGE_SIGN(s);
+		return 0;
+	      }
+	  }
+
+	/* now x and y are finite */
+	if (MPFR_IS_INF(z))
+	  {
+	    MPFR_SET_INF(s);
+	    MPFR_SET_SAME_SIGN(s, z);
+	    return 0;
+	  }
+
         MPFR_CLEAR_INF(s);
 
-        if(!MPFR_NOTZERO(x) || !MPFR_NOTZERO(y)){
-                mpfr_set(s,z,rnd_mode);
-                return 1;
-        }
-        if (!MPFR_NOTZERO(z)) {
-                mpfr_mul(s,x,y,rnd_mode);
-                return 1;
-        }
-
+        if(!MPFR_NOTZERO(x) || !MPFR_NOTZERO(y))
+	  return mpfr_set (s, z, rnd_mode);
+        if (!MPFR_NOTZERO(z))
+	  return mpfr_mul (s, x, y, rnd_mode);
+	
         /* General case */
         /* Detail of the compute */
         /* u <- x*y */
@@ -130,12 +149,12 @@ mpfr_fma (s,x,y,z, rnd_mode)
                         
                         first_pass=1;
 
-                } while (mpfr_can_round(t,err,GMP_RNDN,rnd_mode,Ns)!=1);
+                } while (!mpfr_can_round(t,err,GMP_RNDN,rnd_mode,Ns));
                   
-                mpfr_set(s,t,rnd_mode);
+                inexact = mpfr_set (s, t, rnd_mode);
                 mpfr_clear(t);
                 mpfr_clear(u);
         }
-        return 1;
+        return inexact;
 }
 
