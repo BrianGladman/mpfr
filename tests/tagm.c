@@ -30,7 +30,7 @@ MA 02111-1307, USA. */
 
 double drand_agm _PROTO((void)); 
 double dagm _PROTO((double, double)); 
-void check4 _PROTO((double, double, unsigned char, double)); 
+void check4 _PROTO((double, double, mp_rnd_t, double)); 
 void check_large _PROTO((void)); 
 void slave _PROTO((int, int)); 
 
