@@ -282,3 +282,26 @@ d_trace (const char *name, double d)
     }
   printf ("] %.20g\n", d);
 }
+
+void
+ld_trace (const char *name, long double ld)
+{
+  union {
+    long double    ld;
+    unsigned char  b[sizeof(long double)];
+  } u;
+  int  i;
+
+  if (name != NULL && name[0] != '\0')
+    printf ("%s=", name);
+
+  u.ld = ld;
+  printf ("[");
+  for (i = 0; i < sizeof (u.b); i++)
+    {
+      if (i != 0)
+        printf (" ");
+      printf ("%02X", (int) u.b[i]);
+    }
+  printf ("] %.20Lg\n", ld);
+}
