@@ -37,7 +37,7 @@ mpfr_cos (y, x, rnd_mode)
      mp_rnd_t rnd_mode;
 #endif
 {
-  int K, precy, m, k, l;
+  int K, precy, m, k, l, inexact;
   mpfr_t r, s;
 
   if (MPFR_IS_NAN(x) || MPFR_IS_INF(x))
@@ -48,7 +48,7 @@ mpfr_cos (y, x, rnd_mode)
 
   if (!MPFR_NOTZERO(x))
     {
-      mpfr_set_ui(y, 1, GMP_RNDN);
+      mpfr_set_ui (y, 1, GMP_RNDN);
       return 0;
     }
 
@@ -82,7 +82,7 @@ mpfr_cos (y, x, rnd_mode)
       for (k = 2 * K, l = 2 * l + 1; l > 1; k++, l = (l + 1) >> 1);
       /* now the error is bounded by 2^(k-m) = 2^(EXP(s)-err) */
 
-      l = mpfr_can_round (s, MPFR_EXP(s) + m - k, GMP_RNDD, rnd_mode, precy);
+      l = mpfr_can_round (s, MPFR_EXP(s) + m - k, GMP_RNDN, rnd_mode, precy);
 
       if (l == 0)
 	{
@@ -93,12 +93,12 @@ mpfr_cos (y, x, rnd_mode)
     }
   while (l == 0);
 
-  mpfr_set (y, s, rnd_mode);
+  inexact = mpfr_set (y, s, rnd_mode);
 
   mpfr_clear (r);
   mpfr_clear (s);
 
-  return 1;
+  return inexact;
 }
 
 /* s <- 1 - r/2! + r^2/4! + ... + (-1)^l r^l/(2l)! + ...

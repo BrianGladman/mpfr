@@ -51,7 +51,7 @@ mpfr_log (r, a, rnd_mode)
      mp_rnd_t rnd_mode;
 #endif
 {
-  int m, bool, size, cancel;
+  int m, bool, size, cancel, inexact = 0;
   mp_prec_t p, q;
   mpfr_t cst, rapport, agm, tmp1, tmp2, s, mm;
   mp_limb_t *cstp, *rapportp, *agmp, *tmp1p, *tmp2p, *sp, *mmp;
@@ -62,7 +62,7 @@ mpfr_log (r, a, rnd_mode)
   if (MPFR_IS_NAN(a))
     {
       MPFR_SET_NAN(r);
-      return 1;
+      return 1; /* NaN is inexact */
     }
 
   MPFR_CLEAR_NAN(r);
@@ -71,14 +71,17 @@ mpfr_log (r, a, rnd_mode)
   if (MPFR_IS_INF(a))
     {
       if (MPFR_SIGN(a) < 0) /* log(-Inf) = NaN */
-	MPFR_SET_NAN(r);
+	{
+	  MPFR_SET_NAN(r);
+	  return 1;
+	}
       else /* log(+Inf) = +Inf */
 	{
 	  MPFR_SET_INF(r);
 	  if (MPFR_SIGN(r) < 0)
 	    MPFR_CHANGE_SIGN(r);
+	  return 0;
 	}
-      return 1;
     }
 
   /* Now we can clear the flags without damage even if r == a */
@@ -100,10 +103,10 @@ mpfr_log (r, a, rnd_mode)
     }
 
   /* If a is 1, the result is 0 */
-  if (mpfr_cmp_ui_2exp(a,1,0) == 0)
+  if (mpfr_cmp_ui_2exp (a, 1, 0) == 0)
     {
       MPFR_SET_ZERO(r);
-      return 0; /* only case where the result is exact */
+      return 0; /* only "normal" case where the result is exact */
     }
 
   q=MPFR_PREC(r);
@@ -165,7 +168,7 @@ mpfr_log (r, a, rnd_mode)
        4 ulps from the 4/s^2 second order term,
        plus the cancelled bits */
     if (mpfr_can_round (cst, p - cancel - 4, GMP_RNDN, rnd_mode, q) == 1) {
-      mpfr_set (r, cst, rnd_mode);
+      inexact = mpfr_set (r, cst, rnd_mode);
 #ifdef DEBUG
       printf("result="); mpfr_print_raw(r); putchar('\n');
 #endif
@@ -180,7 +183,7 @@ mpfr_log (r, a, rnd_mode)
     TMP_FREE(marker);
     
   }
-  return 1; /* result is inexact */
+  return inexact; /* result is inexact */
 }
 
 

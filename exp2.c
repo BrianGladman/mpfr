@@ -1,6 +1,6 @@
 /* mpfr_exp2 -- power of 2 function 2^y 
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 1999-2001 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -47,20 +47,26 @@ mpfr_exp2 (y, x, rnd_mode)
     mpfr_t t;       
 
     int round;
-    int boucle;
+    int boucle = 1;
+    int inexact = 0;
 
     mp_prec_t Nx;   /* Precision of input variable */
     mp_prec_t Ny;   /* Precision of output variable */
     mp_prec_t Nt;   /* Precision of Intermediary Calculation variable */
     mp_prec_t err;  /* Precision of error */
 
-    if (MPFR_IS_NAN(x)) {  MPFR_SET_NAN(y); return 1; }
+    if (MPFR_IS_NAN(x))
+      {
+	MPFR_SET_NAN(y); /* 2^NaN = NaN */
+	return 1;
+      }
     MPFR_CLEAR_NAN(y);
 
-    if(mpfr_cmp_ui(x,0)==0){
-
-      mpfr_set_ui(y,1,GMP_RNDN);return(0); 
-    }
+    if (mpfr_cmp_ui (x, 0) == 0)
+      {
+	mpfr_set_ui (y, 1, GMP_RNDN); /* 2^0 = 1 */
+	return 0;
+      }
     else
       {
 
@@ -69,22 +75,20 @@ mpfr_exp2 (y, x, rnd_mode)
 	    if (MPFR_SIGN(x) < 0)
 	      {
 		MPFR_CLEAR_INF(y);
-		MPFR_SET_ZERO(y);
-		return(0);
+		MPFR_SET_ZERO(y); /* 2^(-Inf) = 0 */
+		return 0;
 	      }
 	      else
 		{
-		  MPFR_SET_INF(y);
-		  if(MPFR_SIGN(y) < 0) MPFR_CHANGE_SIGN(y);
-		  return(1);
+		  MPFR_SET_INF(y); /* 2^(+Inf) = +Inf */
+		  if(MPFR_SIGN(y) < 0)
+		    MPFR_CHANGE_SIGN(y);
+		  return 0;
 		}
 	  }
       
     }
     MPFR_CLEAR_INF(y);
-
-    
- 
 
         /* Initialisation of the Precision */
 	Nx=MPFR_PREC(x);
@@ -97,9 +101,8 @@ mpfr_exp2 (y, x, rnd_mode)
 	else
 	  Nt=Nx+2*(BITS_PER_CHAR); 
 
-	  boucle=1;
-
-	  while(boucle==1){
+	  while (boucle)
+	    {
 
 	    /* initialise of intermediary	variable */
 	    mpfr_init2(t,Nt);             
@@ -111,23 +114,18 @@ mpfr_exp2 (y, x, rnd_mode)
 
 	    err=Nt-1;
 
-	    round=mpfr_can_round(t,err,GMP_RNDN,rnd_mode,Ny);
+	    round = mpfr_can_round(t,err,GMP_RNDN,rnd_mode,Ny);
 
-	    if(round == 1){
-	      mpfr_set(y,t,rnd_mode);
-	      boucle=0;
-	    }
-	    else{
-	      Nt=Nt+10;
-	      boucle=1;
-	    }
+	    if (round)
+	      {
+		inexact = mpfr_set (y, t, rnd_mode);
+		boucle = 0;
+	      }
+	    else
+	      Nt += 10;
 
 	  }
 
-	  mpfr_clear(t);
-          return(1);
-
-    
- 
-    
+	  mpfr_clear (t);
+          return inexact;
 }

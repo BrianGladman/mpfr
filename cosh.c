@@ -1,6 +1,6 @@
-/* mpfr_cosh -- Hyperbolic Cosine of Unsigned Integer Number
+/* mpfr_cosh -- hyperbolic cosine
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 1999-2001 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -50,84 +50,85 @@ mpfr_cosh (y, x, rnd_mode)
     /* Variable of Intermediary Calculation*/
     mpfr_t te,ti;
 
-    int round;
-    int boucle;
+    int round, inexact = 0;
+    int boucle = 1;
 
     mp_prec_t Nx;   /* Precision of input variable */
     mp_prec_t Ny;   /* Precision of output variable */
     mp_prec_t Nt;   /* Precision of Intermediary Calculation variable */
     mp_prec_t err;  /* Precision of error */
 
-    if (MPFR_IS_NAN(x)) {  MPFR_SET_NAN(y); return 1; }
+    if (MPFR_IS_NAN(x))
+      {
+	MPFR_SET_NAN(y);
+	return 1;
+      }
+
     MPFR_CLEAR_NAN(y);
 
-    if (MPFR_IS_INF(x)){ 
-      MPFR_SET_INF(y);
-      if (MPFR_SIGN(y) < 0) MPFR_CHANGE_SIGN(y);
-      return 1;
-    }
+    if (MPFR_IS_INF(x))
+      {
+	MPFR_SET_INF(y);
+	if (MPFR_SIGN(y) < 0)
+	  MPFR_CHANGE_SIGN(y);
+	return 0;
+      }
 
     MPFR_CLEAR_INF(y);
   
-    if(!MPFR_NOTZERO(x)){
-      mpfr_set_ui(y,1,GMP_RNDN); /* cosh(0) = 1 */
-      return(0);
-    }
-    else{
- 
-        /* Initialisation of the Precision */
-	Nx=MPFR_PREC(x);
-	Ny=MPFR_PREC(y);
+    if(!MPFR_NOTZERO(x))
+      {
+	mpfr_set_ui (y, 1, GMP_RNDN); /* cosh(0) = 1 */
+	return 0;
+      }
+	
+    /* Initialisation of the Precision */
+    Nx=MPFR_PREC(x);
+    Ny=MPFR_PREC(y);
 
-	/* compute the size of intermediary variable */
-	if(Ny>=Nx)
-	  Nt=Ny+2*(BITS_PER_CHAR); 
+    /* compute the size of intermediary variable */
+    if (Ny >= Nx)
+	  Nt = Ny + 2 * BITS_PER_CHAR;
 	else
-	  Nt=Nx+2*(BITS_PER_CHAR); 
+	  Nt = Nx + 2 * BITS_PER_CHAR;
 	  
-	  boucle=1;
+    /* initialize intermediary variables */
+    mpfr_init2 (t, Nt);
+    mpfr_init2 (te, Nt);
+    mpfr_init2 (ti, Nt);
 
-	    /* initialise of intermediary	variable */
-	    mpfr_init2(t,Nt);             
-	    mpfr_init2(te,Nt);             
-	    mpfr_init2(ti,Nt);                    
-
-	  while(boucle==1){
-
+    while (boucle)
+      {
 	  
-	    /* compute cosh */
-	    mpfr_exp(te,x,GMP_RNDN);         /* exp(x) */
-	    mpfr_ui_div(ti,1,te,GMP_RNDN);   /* 1/exp(x) */
-	    mpfr_add(t,te,ti,GMP_RNDN);      /* exp(x) + 1/exp(x)*/
-	    mpfr_div_2exp(t,t,1,GMP_RNDN);   /* 1/2(exp(x) + 1/exp(x))*/
+	/* compute cosh */
+	mpfr_exp (te, x, GMP_RNDN);         /* exp(x) */
+	mpfr_ui_div (ti, 1, te, GMP_RNDN);   /* 1/exp(x) */
+	mpfr_add (t, te, ti, GMP_RNDN);      /* exp(x) + 1/exp(x)*/
+	mpfr_div_2exp (t, t, 1, GMP_RNDN);   /* 1/2(exp(x) + 1/exp(x))*/
 
-	    err=Nt-1;
+	err = Nt - 1;
+	
+	round = mpfr_can_round (t, err, GMP_RNDN, rnd_mode, Ny);
 
-	    round=mpfr_can_round(t,err,GMP_RNDN,rnd_mode,Ny);
-
-	    if(round == 1){
-	      mpfr_set(y,t,rnd_mode);
-	      boucle=0;
-	    }
-	    else{
-	      Nt=Nt+10;
-	      /* re-initialise of intermediary	variable */
-	      mpfr_set_prec(t,Nt);             
-	      mpfr_set_prec(te,Nt);             
-  	      mpfr_set_prec(ti,Nt);                    
-
-	      boucle=1;
-	    }
-	    
-
+	if (round)
+	  {
+	    inexact = mpfr_set (y, t, rnd_mode);
+	    boucle=0;
+	  }
+	else
+	  {
+	    Nt += 10;
+	    /* re-initialize intermediary variables */
+	    mpfr_set_prec (t, Nt);
+	    mpfr_set_prec (te, Nt);
+	    mpfr_set_prec (ti, Nt);                    
 	  }
 
-	  mpfr_clear(t);
-	  mpfr_clear(ti);
-	  mpfr_clear(te);
-          return(1);
+      }
 
+    mpfr_clear (t);
+    mpfr_clear (ti);
+    mpfr_clear (te);
 
- 
-    }
+    return inexact;
 }

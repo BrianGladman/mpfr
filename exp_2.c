@@ -130,44 +130,15 @@ mpfr_exp_2 (y, x, rnd_mode)
      mp_rnd_t rnd_mode;
 #endif
 {
-  int n, expx, K, precy, q, k, l, err, exps; 
+  int n, expx, K, precy, q, k, l, err, exps, inexact;
   mpfr_t r, s, t; mpz_t ss;
   TMP_DECL(marker);
-
-  if (MPFR_IS_NAN(x)) { MPFR_SET_NAN(y); return 1; }
-  if (MPFR_IS_INF(x)) 
-    { 
-      if (MPFR_SIGN(x) > 0) 
-	{ MPFR_SET_INF(y); if (MPFR_SIGN(y) == -1) { MPFR_CHANGE_SIGN(y); } }
-      else 
-	{ MPFR_SET_ZERO(y);  if (MPFR_SIGN(y) == -1) { MPFR_CHANGE_SIGN(y); } }
-      /*    TODO: conflits entre infinis et zeros ? */
-	    }
-  if (!MPFR_NOTZERO(x)) { mpfr_set_ui(y, 1, GMP_RNDN); return 0; }
 
   expx = MPFR_EXP(x);
   precy = MPFR_PREC(y);
 #ifdef DEBUG
   printf("MPFR_EXP(x)=%d\n",expx);
 #endif
-
-  /* if x > (2^31-1)*ln(2), then exp(x) > 2^(2^31-1) i.e. gives +infinity */
-  if (expx > 30) {
-    if (MPFR_SIGN(x) > 0) {
-      MPFR_SET_INF(y);
-      if (MPFR_SIGN(y) < 0) MPFR_CHANGE_SIGN(y);
-      return 1;
-    }
-    else { MPFR_SET_ZERO(y); return 1; }
-  }
-
-  /* if x < 2^(-precy), then exp(x) i.e. gives 1 +/- 1 ulp(1) */
-  if (expx < -precy) { int signx = MPFR_SIGN(x);
-    mpfr_set_ui(y, 1, rnd_mode);
-    if (signx>0 && rnd_mode==GMP_RNDU) mpfr_add_one_ulp(y);
-    else if (signx<0 && (rnd_mode==GMP_RNDD || rnd_mode==GMP_RNDZ)) 
-      mpfr_sub_one_ulp(y);
-    return 1; }
 
   n = (int) (mpfr_get_d(x) / LOG2);
 
@@ -179,7 +150,9 @@ mpfr_exp_2 (y, x, rnd_mode)
   err = K + (int) _mpfr_ceil_log2 (2.0 * (double) l + 18.0);
   /* add K extra bits, i.e. failure probability <= 1/2^K = O(1/precy) */
   q = precy + err + K + 3;
-  mpfr_init2(r, q); mpfr_init2(s, q); mpfr_init2(t, q);
+  mpfr_init2 (r, q);
+  mpfr_init2 (s, q);
+  mpfr_init2 (t, q);
   /* the algorithm consists in computing an upper bound of exp(x) using
      a precision of q bits, and see if we can round to MPFR_PREC(y) taking
      into account the maximal error. Otherwise we increase q. */
@@ -194,7 +167,7 @@ mpfr_exp_2 (y, x, rnd_mode)
 #ifdef DEBUG
   printf("n=%d log(2)=",n); mpfr_print_raw(s); putchar('\n');
 #endif
-  mpfr_mul_ui(r, s, (n<0) ? -n : n, (n>=0) ? GMP_RNDZ : GMP_RNDU); 
+  mpfr_mul_ui (r, s, (n<0) ? -n : n, (n>=0) ? GMP_RNDZ : GMP_RNDU); 
   if (n<0) mpfr_neg(r, r, GMP_RNDD);
   /* r = floor(n*log(2)) */
 
@@ -263,10 +236,10 @@ mpfr_exp_2 (y, x, rnd_mode)
   }
   } while (l==0);
 
-  mpfr_set(y, s, rnd_mode);
+  inexact = mpfr_set (y, s, rnd_mode);
 
   mpfr_clear(r); mpfr_clear(s); mpfr_clear(t);
-  return 1;
+  return inexact;
 }
 
 /* s <- 1 + r/1! + r^2/2! + ... + r^l/l! while MPFR_EXP(r^l/l!)+MPFR_EXPR(r)>-q
