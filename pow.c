@@ -205,10 +205,10 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
       else
         mpz_tdiv_q_2exp(zi, zi, (unsigned long int) (-exptol));
 
-      zii=mpz_get_ui(zi);
-        
+      zii=mpz_get_si(zi);
+
       mpz_clear(zi);
-      return mpfr_pow_si (z, x, zii, rnd_mode); 
+      return mpfr_pow_si (z, x, zii, rnd_mode);
     }
 
   if (MPFR_IS_INF(x))
