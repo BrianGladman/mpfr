@@ -217,6 +217,7 @@ void mpfr_floor _PROTO((mpfr_ptr, mpfr_srcptr));
 void mpfr_trunc _PROTO((mpfr_ptr, mpfr_srcptr));
 void mpfr_ceil _PROTO((mpfr_ptr, mpfr_srcptr));
 void mpfr_extract _PROTO((mpz_ptr, mpfr_srcptr, unsigned int));
+void mpfr_swap _PROTO((mpfr_ptr, mpfr_ptr));
 
 #if defined (__cplusplus)
 }

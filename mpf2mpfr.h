@@ -19,6 +19,7 @@
 #define mpf_set_prec_raw mpfr_set_prec_raw
 #define mpf_trunc mpfr_trunc
 #define mpf_sgn mpfr_sgn
+#define mpf_swap mpfr_swap
 
 /* functions which take as argument the rounding mode */
 #define mpf_abs(x,y) mpfr_abs(x,y,__gmp_default_rounding_mode)
