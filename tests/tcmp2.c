@@ -43,7 +43,8 @@ void tcmp2(x, y, i) double x, y; int i;
   mpfr_init2(xx, 53); mpfr_init2(yy, 53);
   mpfr_set_d(xx, x, 0);
   mpfr_set_d(yy, y, 0);
-  if ((j=mpfr_cmp2(xx, yy)) != i) {
+  j = mpfr_cmp2(xx, yy);
+  if (j != i) {
     printf("Error in mpfr_cmp2: x=%1.20e y=%1.20e mpfr_cmp2(x,y)=%d instead of %d\n",x,y,j,i); 
     exit(1);
   }
@@ -71,6 +72,7 @@ int main()
     set_fpc_csr(exp.fc_word);
 #endif
 
+  tcmp2(5.43885304644369510000e+185, -1.87427265794105340000e-57, 1);
   tcmp2(1.06022698059744327881e+71, 1.05824655795525779205e+71, -1);
   tcmp2(1.0, 1.0, 53);
   for (i=0;i<54;i++) {
