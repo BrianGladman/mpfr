@@ -32,5 +32,6 @@ mpfr_clear (m)
      mpfr_ptr m;
 #endif
 {
-  (*_mp_free_func) (m->_mp_d, (PREC(m)+7) >> 3);
+  /* be careful to always free an entire number of limbs */
+  (*_mp_free_func) (MANT(m), ABSSIZE(m) * BYTES_PER_MP_LIMB);
 }
