@@ -41,6 +41,26 @@ main (int argc, char *argv[])
   mpfr_init (x);
   mpfr_init (y);
 
+  mpfr_set_ui (x, 4, GMP_RNDN);
+  mpfr_exp2 (y, x, GMP_RNDN);
+  mpfr_exp2 (y, x, GMP_RNDD);
+  mpfr_exp2 (y, x, GMP_RNDU);
+  if (mpfr_cmp_ui (y, 16) != 0)
+    {
+      fprintf (stderr, "Error for 2^4\n");
+      exit (1);
+    }
+
+  mpfr_set_si (x, -4, GMP_RNDN);
+  mpfr_exp2 (y, x, GMP_RNDN);
+  mpfr_exp2 (y, x, GMP_RNDD);
+  mpfr_exp2 (y, x, GMP_RNDU);
+  if (mpfr_cmp_ui_2exp (y, 1, -4) != 0)
+    {
+      fprintf (stderr, "Error for 2^(-4)\n");
+      exit (1);
+    }
+
   mpfr_set_prec (x, 53);
   mpfr_set_prec (y, 53);
   mpfr_set_d (x, -1683977482443233.0 / 2199023255552.0, GMP_RNDN);
