@@ -1,6 +1,6 @@
 /* mpfr_add_ui -- add a floating-point number with a machine integer
 
-Copyright (C) 2000 Free Software Foundation.
+Copyright (C) 2000-2001 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -26,7 +26,7 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-void
+int
 #if __STDC__
 mpfr_add_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 #else
@@ -40,20 +40,23 @@ mpfr_add_ui (y, x, u, rnd_mode)
   mpfr_t uu;
   mp_limb_t up[1];
   unsigned long cnt;
+  int inexact;
 
-  if (u) { /* if u=0, do nothing */
-    MPFR_INIT1(up, uu, BITS_PER_MP_LIMB, 1);
-    count_leading_zeros(cnt, (mp_limb_t) u);
-    *up = (mp_limb_t) u << cnt;
-    MPFR_EXP(uu) = BITS_PER_MP_LIMB-cnt;
+  if (u)  /* if u=0, do nothing */
+    {
+      MPFR_INIT1(up, uu, BITS_PER_MP_LIMB, 1);
+      count_leading_zeros(cnt, (mp_limb_t) u);
+      *up = (mp_limb_t) u << cnt;
+      MPFR_EXP(uu) = BITS_PER_MP_LIMB-cnt;
 
-    /* Optimization note: Exponent operations may be removed
-       if mpfr_add works even when uu is out-of-range. */
-    mpfr_save_emin_emax();
-    mpfr_add(y, x, uu, rnd_mode);
-    mpfr_restore_emin_emax();
-    mpfr_check_range(y, rnd_mode);
-  }
+      /* Optimization note: Exponent operations may be removed
+	 if mpfr_add works even when uu is out-of-range. */
+      mpfr_save_emin_emax();
+      inexact = mpfr_add(y, x, uu, rnd_mode);
+      mpfr_restore_emin_emax();
+      mpfr_check_range(y, rnd_mode);
+      return inexact;
+    }
   else
-    mpfr_set (y, x, rnd_mode);
+    return mpfr_set (y, x, rnd_mode);
 }
