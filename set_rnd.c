@@ -32,6 +32,7 @@ mpfr_set_default_rounding_mode (mp_rnd_t rnd_mode)
     __gmpfr_default_rounding_mode = rnd_mode;
 }
 
+#undef mpfr_get_default_rounding_mode
 mp_rnd_t
 mpfr_get_default_rounding_mode (void)
 {

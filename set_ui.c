@@ -22,6 +22,7 @@ MA 02111-1307, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+#undef mpfr_set_ui
 int
 mpfr_set_ui (mpfr_ptr x, unsigned long i, mp_rnd_t rnd_mode)
 {

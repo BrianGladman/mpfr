@@ -31,6 +31,7 @@ mpfr_set_default_prec (mp_prec_t prec)
   __gmpfr_default_fp_bit_precision = prec;
 }
 
+#undef mpfr_get_default_prec
 mp_prec_t
 mpfr_get_default_prec (void)
 {

@@ -21,6 +21,7 @@ MA 02111-1307, USA. */
 
 #include "mpfr-impl.h"
 
+#undef mpfr_get_exp
 mp_exp_t
 mpfr_get_exp (mpfr_srcptr x)
 {

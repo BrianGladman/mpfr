@@ -478,8 +478,12 @@ int  mpfr_strtofr _MPFR_PROTO ((mpfr_ptr, __gmp_const char *, char **,
 #define mpfr_const_euler(_d,_r) mpfr_cache(_d, __gmpfr_cache_const_euler, _r)
 
 /* Prevent from using mpfr_get_e{min,max} as lvalues */
+#define mpfr_get_prec(_x) ((_x)->_mpfr_prec + 0)
+#define mpfr_get_exp(_x)  ((_x)->_mpfr_exp + 0)
 #define mpfr_get_emin() (__gmpfr_emin + 0)
 #define mpfr_get_emax() (__gmpfr_emax + 0)
+#define mpfr_get_default_rounding_mode() (__gmpfr_default_rounding_mode + 0)
+#define mpfr_get_default_prec() (__gmpfr_default_fp_bit_precision + 0)
 
 #define mpfr_clear_flags() \
   ((void) (__gmpfr_flags = 0))
@@ -538,10 +542,11 @@ int  mpfr_strtofr _MPFR_PROTO ((mpfr_ptr, __gmp_const char *, char **,
 # define mpz_set_fr mpfr_get_z
 #endif 
 
-/* When using GCC, optimize certain common comparisons.  
-   Remove ICC since it defines __GNUC__, but produces a
-   huge number of warnings if you use this code 
-   Remove C++ too, since it complains too much... */
+/* When using GCC, optimize certain common comparisons and affectations.
+   + Remove ICC since it defines __GNUC__ but produces a
+     huge number of warnings if you use this code 
+   + Remove C++ too, since it complains too much... 
+   FIXME: Use __extension__? */
 #if defined (__GNUC__) && !defined(__ICC) && !defined(__cplusplus)
 #if (__GNUC__ >= 2)
 #undef mpfr_cmp_ui
@@ -554,6 +559,12 @@ int  mpfr_strtofr _MPFR_PROTO ((mpfr_ptr, __gmp_const char *, char **,
  (__builtin_constant_p (_s) && (_s) >= 0 ? \
    mpfr_cmp_ui ((_f), (_s)) :              \
    mpfr_cmp_si_2exp ((_f), (_s), 0))
+#undef mpfr_set_ui
+#define mpfr_set_ui(_f,_u,_r)              \
+ (__builtin_constant_p (_u) && (_u) == 0 ? \
+   ((_f)->_mpfr_sign = 1,                  \
+    (_f)->_mpfr_exp = __MPFR_EXP_ZERO, 0): \
+    mpfr_set_ui (_f,_u,_r)) 
 #undef mpfr_set_si
 #define mpfr_set_si(_f,_s,_r)              \
  (__builtin_constant_p (_s) && (_s) >= 0 ? \
