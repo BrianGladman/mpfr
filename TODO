@@ -1,20 +1,9 @@
 - implanter tous les flags, qui sont pour le moment superbement ignores.
 J'ai quand meme laisse deux macros SIZ et SIZE selon qu'on affecte ou non.
 
-- for the rounding modes, replace 'unsigned char' by 'int' which is usually
-  preferred (also take care between 'char' and 'unsigned char')
-
-- create a type 'mpfr_prec' (easier to change to unsigned long long if
-	necessary)
-
 - for all instructions that call malloc/realloc/etc, handle error cases
   (for example return an int indicating if an error occurred)
 
 - in all functions that do rounding, return an int indicating if the result
   is exact (i.e. no bit was lost) or not (like in mpfr_div_ui)
 
-- rename mpfr_log2 into mpfr_const_log2 (since log2 exists in C,
-	mpfr_log2 should give the logarithm in base 2 of a number)
-  and mpfr_pi into mpfr_const_pi
-
-- rename SIGN into MPFR_SIGN (to avoid conflict with other packages)
