@@ -19,8 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
-#include <math.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -30,7 +28,6 @@ MA 02111-1307, USA. */
 
     y=exp(z*log(2))=2^z
  */
-int mpfr_exp2 _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 
 int
 #if __STDC__
@@ -111,8 +108,8 @@ mpfr_exp2 (y, x, rnd_mode)
         mpfr_mul(te,x,t,GMP_RNDU);       /* x*ln(2) */
         mpfr_exp(t,te,GMP_RNDN);         /* exp(x*ln(2))*/
 
-	/* estimation of the error -- see pow function in algorithms.ps*/
-	err=Nt-_mpfr_ceil_log2(1+pow(2,MPFR_EXP(te)+1));
+	/* estimate of the error -- see pow function in algorithms.ps*/
+	err=Nt-(MPFR_EXP(te)+2);
 
 	/* actualisation of the precision */
 	Nt += 10;
