@@ -21,9 +21,10 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
 #include "gmp.h"
-#include "longlong.h"
+#include "gmp-mparam.h"
 #include "mpfr.h"
 #include "gmp-impl.h"
+#include "longlong.h"
 
 #define NaN (0./0.) /* ensures a machine-independent NaN */
 #define Infp (1/0.)

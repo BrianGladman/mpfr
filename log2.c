@@ -22,9 +22,9 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <math.h>
 #include "gmp.h"
-#include "longlong.h"
 #include "mpfr.h"
 #include "gmp-impl.h"
+#include "longlong.h"
 
 mpfr_t __mpfr_const_log2; /* stored value of log(2) */
 int __mpfr_const_log2_prec=0; /* precision of stored value */
