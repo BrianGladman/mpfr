@@ -30,11 +30,11 @@ static unsigned int save_ctr = 0;
 void
 mpfr_save_emin_emax (void)
 {
-  if (save_ctr++ == 0)
+  if (MPFR_LIKELY(save_ctr++ == 0))
     {
-      saved_flags = __gmpfr_flags;
-      saved_emin = __gmpfr_emin;
-      saved_emax = __gmpfr_emax;
+      saved_flags  = __gmpfr_flags;
+      saved_emin   = __gmpfr_emin;
+      saved_emax   = __gmpfr_emax;
       __gmpfr_emin = MPFR_EMIN_MIN;
       __gmpfr_emax = MPFR_EMAX_MAX;
     }
@@ -47,10 +47,10 @@ mpfr_save_emin_emax (void)
 void
 mpfr_restore_emin_emax (void)
 {
-  if (--save_ctr == 0)
+  if (MPFR_LIKELY(--save_ctr == 0))
     {
       __gmpfr_flags |= saved_flags;
-      __gmpfr_emin = saved_emin;
-      __gmpfr_emax = saved_emax;
+      __gmpfr_emin   = saved_emin;
+      __gmpfr_emax   = saved_emax;
     }
 }
