@@ -67,6 +67,26 @@ main (void)
               fprintf (stderr, "\n");
               exit (1);
             }
+
+          if (p >= 5)
+            {
+              int i;
+              for (i = -12; i <= 12; i++)
+                {
+                  mpfr_set_d (x, 27.0, GMP_RNDN);
+                  mpfr_mul_2si (x, x, 3*i, GMP_RNDN);
+                  mpfr_cbrt (x, x, GMP_RNDN);
+                  if (mpfr_cmp_si_2exp (x, 3, i))
+                    {
+                      fprintf (stderr, "Error in mpfr_cbrt for "
+                               "x = 27.0 * 2^(%d), rnd=%s\ngot ",
+                               3*i, mpfr_print_rnd_mode (r));
+                      mpfr_out_str (stderr, 2, 0, x, GMP_RNDN);
+                      fprintf (stderr, "\ninstead of 3 * 2^(%d)\n", i);
+                      exit (1);
+                    }
+                }
+            }
         }
     }
 
