@@ -30,7 +30,10 @@ MA 02111-1307, USA. */
    that is:
    a*2^exp_r <= b^e <= 2^exp_r (a + 2^f),
    where a represents {a, n}, i.e. the integer
-   a[0] + a[1]*B + ... + a[n-1]*B^(n-1) where B=2^BITS_PER_MP_LIMB */
+   a[0] + a[1]*B + ... + a[n-1]*B^(n-1) where B=2^BITS_PER_MP_LIMB
+   
+   Return -2 if an overflow occurred in the computation of exp_r.
+*/
 
 long
 mpfr_mpn_exp (mp_limb_t *a, mp_exp_t *exp_r, int b, mp_exp_t e, size_t n)
@@ -91,7 +94,17 @@ mpfr_mpn_exp (mp_limb_t *a, mp_exp_t *exp_r, int b, mp_exp_t e, size_t n)
 
       /* set {c+n, 2n1-n} to 0 : {c, n} = {a, n}^2*K^n */
 
-      f = 2 * f + n * BITS_PER_MP_LIMB;
+      /* check overflow on f */
+      {
+        mp_exp_t oldf = f;
+        f = 2 * f;
+        if (f / 2 != oldf)
+          {
+            TMP_FREE(marker);
+            return -2;
+          }
+      }
+      f += n * BITS_PER_MP_LIMB;
       if ((c[2*n - 1] & MPFR_LIMB_HIGHBIT) == 0)
         {
           /* shift A by one bit to the left */

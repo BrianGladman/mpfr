@@ -33,12 +33,12 @@ static void
 check_underflow (void)
 {
   mpfr_t a;
-  mp_exp_t emin;
+  mp_exp_t emin, emax;
   int res;
 
   mpfr_init (a);
 
-  /* Check undeflow */
+  /* Check underflow */
   emin = mpfr_get_emin ();
   mpfr_set_emin (-20);
   res = mpfr_set_str (a, "0.00000000001", 10, GMP_RNDZ);
@@ -51,6 +51,17 @@ check_underflow (void)
       exit (1);
     }
   mpfr_set_emin (emin);
+
+  /* check overflow */
+  emax = mpfr_get_emax ();
+  mpfr_set_emax (1073741823); /* 2^30-1 */
+  mpfr_set_str (a, "2E1000000000", 10, GMP_RNDN);
+  if (!mpfr_inf_p (a) || mpfr_sgn (a) < 0)
+    {
+      printf("ERROR for mpfr_set_str (a, \"2E1000000000\", 10, GMP_RNDN);\n");
+      exit (1);
+    }
+  mpfr_set_emax (emax);
 
   mpfr_clear (a);
 }

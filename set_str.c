@@ -269,6 +269,11 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
 	  /* z is allocated at y - n */
 	  z = y - n;
 	  err = mpfr_mpn_exp (z, &exp_z, base, exp_s - (mp_exp_t) pr, n);
+          if (err == -2) /* overflow in exp_z, return Inf */
+            {
+              exp_y = __mpfr_emax;
+              goto free;
+            }
 	  exact = (exact && (err == -1));
 
 	  /* multiply(y = 0.mant_s[0]...mant_s[pr-1])_base by base^(exp_s-g) */
@@ -363,6 +368,7 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
       exp_y ++;
     }
 
+ free:
   TMP_FREE(marker);
 
   /* Set sign of x before exp since check_range needs a valid sign */
@@ -372,7 +378,7 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
     MPFR_SET_POS(x);
   /* DO NOT USE MPFR_SET_EXP. The exp may be out of range! */
   MPFR_EXP (x) = exp_y + n * BITS_PER_MP_LIMB;
-  res = mpfr_check_range (x, res, rnd );
+  res = mpfr_check_range (x, res, rnd);
 
  end:
   (*__gmp_free_func) (str1, size_str1 * sizeof (char));
