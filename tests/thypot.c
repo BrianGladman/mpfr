@@ -31,7 +31,8 @@ MA 02111-1307, USA. */
    
 #define TEST_FUNCTION mpfr_hypot
 
-static void test_large (void)
+static void
+test_large (void)
 {
   mpfr_t x, y, z, t;
 
