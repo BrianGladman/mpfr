@@ -34,7 +34,7 @@ MA 02111-1307, USA. */
 
    In other terms mpfr_cmp2 (b, c) returns EXP(b) - EXP(b-c).
 */
-unsigned long
+mp_prec_t
 mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c)
 {
   mp_limb_t *bp, *cp, bb, cc = 0, lastc = 0, dif, high_dif = 0;
