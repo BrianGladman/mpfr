@@ -98,6 +98,17 @@ default target architecture may be different, hence the error.])],
 
 MPFR_CONFIGS
 
+# Recent autoconf creates AC_DEFINEs of PACKAGE_VERSION etc, unfortunately
+# those -D defines in $DEFS conflict with the same defines in config.h from
+# GMP.  Unless or until autoconf gives us a better way for two closely
+# related packages to cooperate, use this hack to get rid of them from $DEFS
+# here.
+#
+if test -f confdefs.h; then
+  sed '/#define PACKAGE_/d' <confdefs.h >confdefs.tmp
+  mv confdefs.tmp confdefs.h
+fi
+
 AC_MY_LIBS($with_gmp_lib, gmp)
 AC_SUBST(INCLUDES)
 AC_SUBST(LDADD)
