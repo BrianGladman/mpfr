@@ -26,7 +26,7 @@ mpfr_mul_2ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int n, mp_rnd_t rnd_mode)
 {
   int inexact;
 
-  inexact = y != x ? mpfr_set (y, x, rnd_mode) : 0;
+  inexact = MPFR_UNLIKELY(y != x) ? mpfr_set (y, x, rnd_mode) : 0;
 
   if (MPFR_LIKELY( MPFR_IS_PURE_FP(y)) )
     {
