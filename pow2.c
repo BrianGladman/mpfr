@@ -217,14 +217,35 @@ mpfr_pow (z, x, y, rnd_mode)
 
   if (MPFR_IS_INF(y))
     {
-
       mpfr_t px;
       mpfr_init2(px,MPFR_PREC(x));
       mpfr_abs(px,x,GMP_RNDN);
       if(MPFR_SIGN(y)>0)
-        {  
+        {
+          if(MPFR_IS_INF(x))
+          {
+            if(MPFR_SIGN(x)>0)
+            {
+              MPFR_CLEAR_FLAGS(z);
+              MPFR_SET_INF(z);
+              if(MPFR_SIGN(z) <0)
+                MPFR_CHANGE_SIGN(z);
+              mpfr_clear(px);
+              return 0;
+            }
+            else
+            {
+              MPFR_CLEAR_FLAGS(z);  
+              MPFR_SET_ZERO(z);
+              if(MPFR_SIGN(z) <0)
+                MPFR_CHANGE_SIGN(z);
+              mpfr_clear(px);
+              return 0;
+            }
+          }
           if(mpfr_cmp_ui(px,1) > 0)
             {
+              MPFR_CLEAR_FLAGS(z);
               MPFR_SET_INF(z);
               if(MPFR_SIGN(z) <0)
                 MPFR_CHANGE_SIGN(z);
@@ -233,7 +254,7 @@ mpfr_pow (z, x, y, rnd_mode)
             }
           if(mpfr_cmp_ui(px,1) < 0)
             {
-
+              MPFR_CLEAR_FLAGS(z);
               MPFR_SET_ZERO(z);
               if(MPFR_SIGN(z) <0)
                 MPFR_CHANGE_SIGN(z);
@@ -242,6 +263,7 @@ mpfr_pow (z, x, y, rnd_mode)
             }
           if(mpfr_cmp_ui(px,1)==0)
             {
+              MPFR_CLEAR_FLAGS(z);
               MPFR_SET_NAN(z);
               mpfr_clear(px);
               return 1;
@@ -249,8 +271,30 @@ mpfr_pow (z, x, y, rnd_mode)
         }
       else
         {
+          if(MPFR_IS_INF(x))
+          {
+            if(MPFR_SIGN(x)>0)
+            {
+              MPFR_CLEAR_FLAGS(z);
+              MPFR_SET_ZERO(z);
+              if(MPFR_SIGN(z) <0)
+                MPFR_CHANGE_SIGN(z);
+              mpfr_clear(px);
+              return 0;
+            }
+            else
+            {
+              MPFR_CLEAR_FLAGS(z);
+              MPFR_SET_INF(z);
+              if(MPFR_SIGN(z) <0)
+                MPFR_CHANGE_SIGN(z);
+              mpfr_clear(px);
+              return 0;
+            }
+          }
           if(mpfr_cmp_ui(px,1) > 0)
             {
+              MPFR_CLEAR_FLAGS(z);
               MPFR_SET_ZERO(z);
               if(MPFR_SIGN(z) <0)
                 MPFR_CHANGE_SIGN(z);
@@ -259,6 +303,7 @@ mpfr_pow (z, x, y, rnd_mode)
             }
           if(mpfr_cmp_ui(px,1) < 0)
             {
+              MPFR_CLEAR_FLAGS(z);
               MPFR_SET_INF(z);
               if(MPFR_SIGN(z) <0)
                 MPFR_CHANGE_SIGN(z);
@@ -267,6 +312,7 @@ mpfr_pow (z, x, y, rnd_mode)
             }
           if(mpfr_cmp_ui(px,1)==0)
             {
+              MPFR_CLEAR_FLAGS(z);
               MPFR_SET_NAN(z);
               mpfr_clear(px);
               return 1;
@@ -304,6 +350,7 @@ mpfr_pow (z, x, y, rnd_mode)
         {
         if (MPFR_SIGN(y) >0)
           {
+            MPFR_CLEAR_FLAGS(z);
             MPFR_SET_INF(z);
             if(MPFR_SIGN(z) <0)
               MPFR_CHANGE_SIGN(z);
@@ -311,6 +358,7 @@ mpfr_pow (z, x, y, rnd_mode)
           }
         else
           {
+            MPFR_CLEAR_FLAGS(z);
             MPFR_SET_ZERO(z);
             if(MPFR_SIGN(z) <0)
               MPFR_CHANGE_SIGN(z);
@@ -319,6 +367,7 @@ mpfr_pow (z, x, y, rnd_mode)
         }
       else
         {
+          MPFR_CLEAR_FLAGS(z);
           MPFR_SET_NAN(z); 
           return 1; 
         }
