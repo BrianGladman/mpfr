@@ -869,6 +869,8 @@ Both @var{op1} and @var{op2} are considered to their full own precision,
 which may differ. In case @var{op1} and @var{op2} are of same sign but 
 different, the absolute value returned is
 one plus the absolute difference of their exponents.
+In case one of the operands is NaN (Not-a-Number), it returns 1, even if
+both are NaN.
 @end deftypefun
 
 @deftypefun int mpfr_cmp_ui_2exp (mpfr_t @var{op1}, unsigned long int @var{op2}, int @var{e})
@@ -945,6 +947,7 @@ i.e. the result is 1).
 @deftypefun int mpfr_sin_cos (mpfr_t @var{sop}, mpfr_t @var{cop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Set @var{sop} to the sinus of @var{op}, @var{cop} to the cosinus of @var{op},
 rounded to the direction @var{rnd} with the precision of @var{rop}.
+@var{sop} and @var{cop} must be different variables.
 Return 0 iff the results are exact (this occurs in fact only when @var{op} is 0
 i.e. the sine is 0 and the cosine is 1).
 @end deftypefun
