@@ -19,7 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -28,12 +27,30 @@ MA 02111-1307, USA. */
 int
 mpfr_mul_2exp (mpfr_ptr y, mpfr_srcptr x, unsigned long int n, mp_rnd_t rnd_mode)
 {
-  int inexact = 0;
+  int inexact;
 
-  /* Important particular case */ 
-  if (y != x)
-    inexact = mpfr_set (y, x, rnd_mode);
-  return ((MPFR_EXP(y) += n) > __mpfr_emax)
-    ? mpfr_set_overflow (y, rnd_mode, MPFR_SIGN(y)) : inexact;
+  inexact = y != x ? mpfr_set (y, x, rnd_mode) : 0;
+
+  if (MPFR_IS_FP(y) && MPFR_NOTZERO(y))
+    {
+      /* n will have to be casted to long to make sure that the addition
+         and subtraction below (for overflow detection) are signed */
+      while (n > LONG_MAX)
+        {
+          int inex2;
+
+          n -= LONG_MAX;
+          inex2 = mpfr_mul_2exp(y, y, LONG_MAX, rnd_mode);
+          if (inex2)
+            return inex2; /* overflow */
+        }
+
+      if (__mpfr_emax < MPFR_EMIN_MIN + (long) n ||
+          MPFR_EXP(y) > __mpfr_emax - (long) n)
+        return mpfr_set_overflow (y, rnd_mode, MPFR_SIGN(y));
+
+      MPFR_EXP(y) += (long) n;
+    }
+
+  return inexact;
 }
-
