@@ -550,6 +550,8 @@ the ternary value is usually positive, except when the result is exact, in
 which case it is zero. In the case of an infinite result, it is considered
 as inexact when it was obtained by overflow, and exact otherwise. A NaN
 result (Not-a-Number) always corresponds to an exact return value.
+The opposite of a returned ternary value is guaranteed to be representable
+in an @code{int}.
 
 @node MPFR Interface, Contributors, MPFR Basics, Top
 @comment  node-name,  next,  previous,  up
