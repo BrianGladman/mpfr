@@ -324,25 +324,41 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
 	  kc = cn-k; /* remains kc limbs from c */
 	  k = bn-an; /* remains k limbs from b */
 	  /* truncate last bits and store the difference with 1/2*ulp in cc */
-	  cc = *ap & ((ONE<<sh)-1);
-	  *ap &= ~cc; /* truncate last bits */
-	  cc -= ONE<<(sh-1);
-	  while ((cc==0 || cc==-1) && k!=0 && kc>=0) {
-	    kc--;
-	    if (kc>=0) cc -= mpn_sub_1(&c2, bp+(--k), 1, (cp[kc]>>dif) +
-				      (cp[kc+1]<<(mp_bits_per_limb-dif)));
-	    else /* don't forget last right chunck from c */
-	      cc -= mpn_sub_1(&c2, bp+(--k), 1,
-				 cp[0]<<(mp_bits_per_limb-dif));
-	    if (cc==0 || (~cc==0 && ~c2==0)) cc=c2;
+	  c2 = *ap & ((ONE<<sh)-1);
+	  *ap &= ~c2; /* truncate last bits */
+	  cc = -mpn_sub_1(&c2, &c2, 1, ONE<<(sh-1));
+	  if (cc==0) cc=c2;
+	  /* loop invariant: cc*2^BITS_PER_MP_LIMB+c2 is the current difference
+	     between b - 1/2*ulp(a) and c shifted by dif bits to the right.
+	     cc > 0 ==> add one ulp
+	     cc < 0 ==> truncate
+	     cc = 0 ==> go to next limb
+	  */
+	  while ((cc==0) && (k>=0 || kc>=0)) {
+	    k--; kc--;
+	    if (k>=0) {
+	       if (kc>=0) cc -= mpn_sub_1(&c2, bp+k, 1, (cp[kc]>>dif) +
+					 (cp[kc+1]<<(mp_bits_per_limb-dif)));
+	       else /* don't forget last right chunck from c */
+		 cc -= mpn_sub_1(&c2, bp+k, 1, cp[0]<<(mp_bits_per_limb-dif));
+	    }
+	    else { /* no more limb from b */
+	      if (cp[kc+1]<<(mp_bits_per_limb-dif)) cc=-1;
+	      else while ((cc==0) && (kc>=0)) {
+		if (cp[kc]) cc=-1;
+		kc--;
+	      }
+	    }
+	    if (cc==0) cc=c2;
 	  }
-	  if ((long)cc>0) goto add_one_ulp;
-	  else if ((long)cc<0) goto end_of_sub; /* carry can be at most 1 */
-	  else if (kc==0) {
-	    while (k && cc==0) cc=bp[--k];
-	    if (cc || (*ap & (ONE<<sh))) goto add_one_ulp;
-	    else goto end_of_sub;
-	  }
+	  /* cc should either 0 or -1 here */
+	  if ((int)cc>0) goto add_one_ulp;
+	  else if ((int)cc<0) goto end_of_sub; /* carry can be at most 1 */
+	  else /* cc=0 */
+	    {
+	      if (c2 || (*ap & (ONE<<sh))) goto add_one_ulp;
+	      else goto end_of_sub;
+	    }
 	  /* else round c: go through */
 	case 3: /* only c to round */
 	  bp=cp; k=cn-k; goto to_nearest;
