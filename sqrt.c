@@ -31,7 +31,7 @@ mpfr_sqrt(X, a, rnd_mode)
     q = p + (int) ceil(log(4.0*ceil(log((double)q)/log(2.0))+2.0)/log(2.0));
   err = q-p; /* the error is at most 2^err ulp */
   q = (q/mp_bits_per_limb)*mp_bits_per_limb; /* adjust to entire limb */
-  mpfr_init(t, q+mp_bits_per_limb); mpfr_init(u, q+mp_bits_per_limb);
+  mpfr_init2(t, q+mp_bits_per_limb); mpfr_init2(u, q+mp_bits_per_limb);
   do {
     q += mp_bits_per_limb;
     if (q>3*p+mp_bits_per_limb) {
