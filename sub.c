@@ -30,6 +30,8 @@ MA 02111-1307, USA. */
 
 extern void mpfr_add1 _PROTO((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, 
 			      mp_rnd_t, int));
+mp_limb_t mpn_sub_lshift_n (mp_limb_t *, mp_limb_t *, int, int, int);
+void mpfr_sub1 (mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t, int);
 
 /* put in ap[0]..ap[an-1] the value of bp[0]..bp[n-1] shifted by sh bits
    to the left minus ap[0]..ap[n-1], with 0 <= sh < BITS_PER_MP_LIMB, and
@@ -39,7 +41,9 @@ mp_limb_t
 #if __STDC__ 
 mpn_sub_lshift_n (mp_limb_t *ap, mp_limb_t *bp, int n, int sh, int an)
 #else
-mpn_sub_lshift_n (ap, bp, n, sh, an) mp_limb_t *ap, *bp; int n,sh,an;
+mpn_sub_lshift_n (ap, bp, n, sh, an)
+     mp_limb_t *ap, *bp;
+     int n,sh,an;
 #endif
 {
   mp_limb_t c, bh=0;
@@ -58,9 +62,10 @@ mpn_sub_lshift_n (ap, bp, n, sh, an) mp_limb_t *ap, *bp; int n,sh,an;
 /* signs of b and c differ, abs(b)>=abs(c), diff_exp>=0 */
 void 
 #if __STDC__
-mpfr_sub1(mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode, int diff_exp) 
+mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c,
+	   mp_rnd_t rnd_mode, int diff_exp) 
 #else
-mpfr_sub1(a, b, c, rnd_mode, diff_exp) 
+mpfr_sub1 (a, b, c, rnd_mode, diff_exp) 
      mpfr_ptr a;
      mpfr_srcptr b;
      mpfr_srcptr c;
@@ -504,9 +509,9 @@ printf("b-c="); if (MPFR_SIGN(a)>0) putchar(' '); mpfr_print_raw(a); putchar('\n
 
 void 
 #if __STDC__
-mpfr_sub(mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
+mpfr_sub (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 #else
-mpfr_sub(a, b, c, rnd_mode) 
+mpfr_sub (a, b, c, rnd_mode) 
      mpfr_ptr a;
      mpfr_srcptr b;
      mpfr_srcptr c;
@@ -515,7 +520,10 @@ mpfr_sub(a, b, c, rnd_mode)
 {
   int diff_exp;
 
-  if (MPFR_IS_NAN(b) || MPFR_IS_NAN(c)) { MPFR_SET_NAN(a); return; }
+  if (MPFR_IS_NAN(b) || MPFR_IS_NAN(c)) {
+    MPFR_SET_NAN(a);
+    return;
+  }
 
   if (MPFR_IS_INF(b)) 
     { 
@@ -544,6 +552,8 @@ mpfr_sub(a, b, c, rnd_mode)
 
   if (!MPFR_NOTZERO(b)) { mpfr_neg(a, c, rnd_mode); return; }
   if (!MPFR_NOTZERO(c)) { mpfr_set(a, b, rnd_mode); return; }
+
+  MPFR_CLEAR_FLAGS (a);
 
   diff_exp = MPFR_EXP(b)-MPFR_EXP(c);
   if (MPFR_SIGN(b) == MPFR_SIGN(c)) {
