@@ -110,9 +110,9 @@ mpfr_atanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
       /* compute atanh */
       mpfr_ui_sub(te,1,x,GMP_RNDU);   /* (1-xt)*/
       mpfr_add_ui(ti,x,1,GMP_RNDD);   /* (xt+1)*/
-      mpfr_div(te,ti,te,GMP_RNDN);     /* (1+xt)/(1-xt)*/
-      mpfr_log(te,te,GMP_RNDN);        /* ln((1+xt)/(1-xt))*/
-      mpfr_div_2exp(t,te,1,GMP_RNDN);  /* (1/2)*ln((1+xt)/(1-xt))*/
+      mpfr_div(te,ti,te,GMP_RNDN);    /* (1+xt)/(1-xt)*/
+      mpfr_log(te,te,GMP_RNDN);       /* ln((1+xt)/(1-xt))*/
+      mpfr_div_2ui(t,te,1,GMP_RNDN);  /* (1/2)*ln((1+xt)/(1-xt))*/
 	
       /* estimation of the error see- algorithms.ps*/
       /* err=Nt-_mpfr_ceil_log2(1+5*pow(2,1-MPFR_EXP(t)));*/

@@ -107,7 +107,7 @@ mpfr_sinh (mpfr_ptr y, mpfr_srcptr xt, mp_rnd_t rnd_mode)
 	mpfr_exp(te,x,GMP_RNDD);         /* exp(x) */
 	mpfr_ui_div(ti,1,te,GMP_RNDU);   /* 1/exp(x) */
 	mpfr_sub(t,te,ti,GMP_RNDN);      /* exp(x) - 1/exp(x)*/
-	mpfr_div_2exp(t,t,1,GMP_RNDN);   /* 1/2(exp(x) - 1/exp(x))*/
+	mpfr_div_2ui(t,t,1,GMP_RNDN);    /* 1/2(exp(x) - 1/exp(x))*/
 
         /* calculation of the error*/
         d = MPFR_EXP(te)-MPFR_EXP(t)+2;

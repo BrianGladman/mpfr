@@ -69,7 +69,7 @@ mpfr_zeta (result, op, rnd_mode)
   /*   mpfr_set_ui(nn,n,GMP_RNDN); */
   mpfr_div_ui(z,u,n,GMP_RNDN);
   mpfr_mul(z2,z,z,GMP_RNDN);
-  mpfr_div_2exp(v,z2,1,GMP_RNDN);
+  mpfr_div_2ui(v,z2,1,GMP_RNDN);
 
   mpfr_set(s2,z,GMP_RNDN);
   mpfr_sub(s2,s2,v,GMP_RNDN);

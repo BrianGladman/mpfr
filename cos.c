@@ -61,7 +61,7 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       /* we need that |r| < 1 for mpfr_cos2_aux, i.e. up(x^2)/2^(2K) < 1 */
       K = K0 + MAX(MPFR_EXP(r), 0);
 
-      mpfr_div_2exp (r, r, 2 * K, GMP_RNDN); /* r = (x/2^K)^2, err <= 1 ulp */
+      mpfr_div_2ui (r, r, 2 * K, GMP_RNDN); /* r = (x/2^K)^2, err <= 1 ulp */
 
       /* s <- 1 - r/2! + ... + (-1)^l r^l/(2l)! */
       l = mpfr_cos2_aux (s, r);
@@ -69,7 +69,7 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       for (k = 0; k < K; k++)
 	{
 	  mpfr_mul (s, s, s, GMP_RNDU); /* err <= 2*olderr */
-	  mpfr_mul_2exp (s, s, 1, GMP_RNDU); /* err <= 4*olderr */
+	  mpfr_mul_2ui (s, s, 1, GMP_RNDU); /* err <= 4*olderr */
 	  mpfr_sub_ui (s, s, 1, GMP_RNDN);
 	}
 

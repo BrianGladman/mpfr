@@ -167,7 +167,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   printf(" ="); mpfr_print_binary(r); putchar('\n');
   if (MPFR_SIGN(r)<0) { fprintf(stderr,"Error in mpfr_exp: r<0\n"); exit(1); }
 #endif
-  mpfr_div_2exp(r, r, K, GMP_RNDU); /* r = (x-n*log(2))/2^K */
+  mpfr_div_2ui(r, r, K, GMP_RNDU); /* r = (x-n*log(2))/2^K */
 
   TMP_MARK(marker);
   MY_INIT_MPZ(ss, 3 + 2*((q-1)/BITS_PER_MP_LIMB));
@@ -187,8 +187,8 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_set_z(s, ss, GMP_RNDN); MPFR_EXP(s) += exps;
   TMP_FREE(marker); /* don't need ss anymore */
 
-  if (n>0) mpfr_mul_2exp(s, s, n, GMP_RNDU);
-  else mpfr_div_2exp(s, s, -n, GMP_RNDU);
+  if (n>0) mpfr_mul_2ui(s, s, n, GMP_RNDU);
+  else mpfr_div_2ui(s, s, -n, GMP_RNDU);
 
   /* error is at most 2^K*(3l*(l+1)) ulp for mpfr_exp2_aux */
   if (precy<SWITCH) l = 3*l*(l+1);

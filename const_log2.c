@@ -75,19 +75,19 @@ mpfr_const_aux_log2 (mpfr_ptr mylog, mp_rnd_t rnd_mode)
     mpfr_init2(tmp3, prec_x);
     mpz_set_ui(cst, 1);
     mpfr_aux_log2(tmp1, cst, 4, prec-2);
-    mpfr_div_2exp(tmp1, tmp1, 4,GMP_RNDD);
-    mpfr_mul_ui(tmp1, tmp1, 15,GMP_RNDD);
+    mpfr_div_2ui(tmp1, tmp1, 4, GMP_RNDD);
+    mpfr_mul_ui(tmp1, tmp1, 15, GMP_RNDD);
 
     mpz_set_ui(cst, 3);
     mpfr_aux_log2(tmp2, cst, 7, prec-2);
-    mpfr_div_2exp(tmp2, tmp2, 7,GMP_RNDD);
-    mpfr_mul_ui(tmp2, tmp2, 5*3,GMP_RNDD);
+    mpfr_div_2ui(tmp2, tmp2, 7, GMP_RNDD);
+    mpfr_mul_ui(tmp2, tmp2, 5*3, GMP_RNDD);
     mpfr_sub(result, tmp1, tmp2, GMP_RNDD);
 
     mpz_set_ui(cst, 13);
     mpfr_aux_log2(tmp3, cst, 8, prec-2);
-    mpfr_div_2exp(tmp3, tmp3, 8,GMP_RNDD);
-    mpfr_mul_ui(tmp3, tmp3, 3*13,GMP_RNDD);
+    mpfr_div_2ui(tmp3, tmp3, 8, GMP_RNDD);
+    mpfr_mul_ui(tmp3, tmp3, 3*13, GMP_RNDD);
     mpfr_sub(result, result, tmp3, GMP_RNDD);
 
     mpfr_clear(tmp1);

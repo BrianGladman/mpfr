@@ -227,9 +227,9 @@ mpfr_get_str (char *str, mp_exp_t *expptr, int base, size_t n,
     if (pow2)
       {
 	if (div)
-	  mpfr_div_2exp (b, op, pow2*p, rnd_mode);
+	  mpfr_div_2ui (b, op, pow2*p, rnd_mode);
 	else
-	  mpfr_mul_2exp (b, op, pow2*p, rnd_mode);
+	  mpfr_mul_2ui (b, op, pow2*p, rnd_mode);
       }
     else
       {

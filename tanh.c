@@ -115,7 +115,7 @@ mpfr_tanh (y, xt, rnd_mode)
 	mpfr_set_prec(tb,Nt);             
 
         /* compute tanh */
-        mpfr_mul_2exp(te,x,1,GMP_RNDN); /* 2x */
+        mpfr_mul_2ui(te,x,1,GMP_RNDN);  /* 2x */
         mpfr_exp(te,te,GMP_RNDN);       /* exp(2x) */
         mpfr_add_ui(ta,te,1,GMP_RNDD);  /* exp(2x) + 1*/
         mpfr_sub_ui(tb,te,1,GMP_RNDU);  /* exp(2x) - 1*/

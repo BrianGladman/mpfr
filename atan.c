@@ -128,7 +128,7 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
   if (comparaison == 0) {
     mpfr_init2(Pisur2, prec_arctan);
     mpfr_const_pi(Pisur2, rnd_mode);
-    mpfr_div_2exp(arctangent, Pisur2, 2, rnd_mode);
+    mpfr_div_2ui(arctangent, Pisur2, 2, rnd_mode);
     if (signe == -1)
       MPFR_CHANGE_SIGN(arctangent);
     mpfr_clear(Pisur2);
@@ -172,7 +172,7 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
       {
 	mpfr_init2(Pisur2, Prec);
 	mpfr_const_pi(Pisur2, GMP_RNDN);
-	mpfr_div_2exp(Pisur2, Pisur2, 1, GMP_RNDN);
+	mpfr_div_2ui(Pisur2, Pisur2, 1, GMP_RNDN);
 	mpfr_ui_div(sk, 1, xp, GMP_RNDN);
       }
     else
@@ -182,7 +182,7 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
     mpfr_set_ui (tmp_arctan, 0, GMP_RNDN);
     twopoweri = 1;
     for(i = 0; i <= N0; i++){
-      mpfr_mul_2exp(tmp, sk, twopoweri, GMP_RNDN);
+      mpfr_mul_2ui(tmp, sk, twopoweri, GMP_RNDN);
       /* Calculation of  trunc(tmp) --> mpz */
       mpfr_trunc (ukf, tmp);
       exptol = mpz_set_fr (ukz, ukf);
@@ -196,7 +196,7 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpz_neg(square, square);
       mpfr_atan_aux(t_arctan, square, 2*twopoweri, N0 - i);
       mpfr_set_z(Ak, ukz, GMP_RNDN);
-      mpfr_div_2exp(Ak, Ak, twopoweri, GMP_RNDN);
+      mpfr_div_2ui(Ak, Ak, twopoweri, GMP_RNDN);
       mpfr_mul(t_arctan, t_arctan, Ak, GMP_RNDN);
 
       /* Addition and iteration */

@@ -104,7 +104,7 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_div (tmp, x, tmp, GMP_RNDN);
       mpfr_atan (arcc, tmp, GMP_RNDN);
       mpfr_const_pi (tmp, GMP_RNDN);
-      mpfr_div_2exp (tmp, tmp, 1, GMP_RNDN);
+      mpfr_div_2ui (tmp, tmp, 1, GMP_RNDN);
       mpfr_sub (arcc, tmp, arcc, GMP_RNDN);
 
       if (mpfr_can_round (arcc, realprec, GMP_RNDN, rnd_mode, MPFR_PREC(acos)))

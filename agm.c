@@ -182,7 +182,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
         mpfr_mul(tmp, u, v, GMP_RNDN);
         mpfr_sqrt (tmpu, tmp, GMP_RNDN); 
         mpfr_add(tmp, u, v, GMP_RNDN);
-        mpfr_div_2exp(tmpv, tmp, 1, GMP_RNDN);
+        mpfr_div_2ui(tmpv, tmp, 1, GMP_RNDN);
         mpfr_set(u, tmpu, GMP_RNDN);
         mpfr_set(v, tmpv, GMP_RNDN);
       }

@@ -52,7 +52,7 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   /* first determine sign */
   mpfr_const_pi (c, GMP_RNDN);
-  mpfr_mul_2exp (c, c, 1, GMP_RNDN); /* 2*Pi */
+  mpfr_mul_2ui (c, c, 1, GMP_RNDN); /* 2*Pi */
   mpfr_div (k, x, c, GMP_RNDN);      /* x/(2*Pi) */
   mpfr_floor (k, k);                 /* floor(x/(2*Pi)) */
   mpfr_mul (c, k, c, GMP_RNDN);

@@ -164,12 +164,12 @@ mpfr_gamma (gamma, x, rnd_mode)
 #endif
     mpfr_const_pi(the_pi, GMP_RNDN);
     mpfr_const_pi(tmp, GMP_RNDN);
-    mpfr_mul_2exp(tmp, tmp, 1, GMP_RNDN);
+    mpfr_mul_2ui(tmp, tmp, 1, GMP_RNDN);
     mpfr_sqrt(tmp, tmp, GMP_RNDN);
     mpfr_add(GammaTrial, GammaTrial, tmp, GMP_RNDN);
     mpfr_add_ui(tmp2, xp, A, GMP_RNDN);
     mpfr_set_ui(tmp, 1, GMP_RNDN);
-    mpfr_div_2exp(tmp, tmp, 1, GMP_RNDN);
+    mpfr_div_2ui(tmp, tmp, 1, GMP_RNDN);
     mpfr_add(tmp, tmp, xp, GMP_RNDN);
     mpfr_pow(tmp, tmp2, tmp, GMP_RNDN);
     mpfr_mul(GammaTrial, GammaTrial, tmp, GMP_RNDN);
