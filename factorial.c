@@ -1,6 +1,6 @@
-/* mpfr_facrorial -- Factorial of Unsigned Integer Number
+/* mpfr_factorial -- factorial of a non-negative integer
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 2001 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -45,8 +45,8 @@ mpfr_factorial (y, x, rnd_mode)
 
     mpfr_t t;       /* Variable of Intermediary Calculation*/
     int i;
-    int round;
-    int boucle;
+    int round, inexact;
+    int boucle = 1;
 
     mp_prec_t Nx;   /* Precision of input variable */
     mp_prec_t Ny;   /* Precision of output variable */
@@ -55,13 +55,13 @@ mpfr_factorial (y, x, rnd_mode)
 
   /***** test x = 0  ******/
   	  
-    if(x==0){
-      mpfr_set_ui(y,1,GMP_RNDN); /* 0! = 1 */
-      return(0);
-    }
-    else{
- 
-
+    if (x == 0)
+      {
+	mpfr_set_ui (y, 1, GMP_RNDN); /* 0! = 1 */
+	return 0;
+      }
+    else
+      {
         /* Initialisation of the Precision */
 	Nx=sizeof(unsigned long int)*CHAR_BIT;
 	Ny=MPFR_PREC(y);
@@ -69,36 +69,42 @@ mpfr_factorial (y, x, rnd_mode)
 	Nt=Ny+2*(int)_mpfr_ceil_log2((double)x)+10; /*compute the size of intermediary variable */
 
 	
-	  boucle=1;
-	  mpfr_init2(t,Nt);/* initialise of intermediary variable */
+	  mpfr_init2(t, Nt);/* initialise of intermediary variable */
 
-	  while(boucle==1){
-	   
-	    mpfr_set_ui(t, 1, GMP_RNDZ);
+	  while (boucle)
+	    {
+	      inexact = mpfr_set_ui (t, 1, GMP_RNDZ);
 
-	    for(i=2;i<=x;i++)              /* compute factorial */
-	      mpfr_mul_ui(t,t,i,GMP_RNDZ);
+	      for(i=2;i<=x;i++)              /* compute factorial */
+		{
+		  round = mpfr_mul_ui (t, t, i, GMP_RNDZ);
+		  /* assume the first inexact product gives the sign
+		     of difference: is that always correct? */
+		  if (inexact == 0)
+		    inexact = round;
+		}
 	    
-	    err=Nt-1-(int)_mpfr_ceil_log2((double)Nt);
+	      err = Nt - 1 - (int) _mpfr_ceil_log2 ((double) Nt);
 
+	      round = !inexact || mpfr_can_round (t,err,GMP_RNDZ,rnd_mode,Ny);
 
-	    round=mpfr_can_round(t,err,GMP_RNDZ,rnd_mode,Ny);
-
-	    if(round == 1){
-	      mpfr_set(y,t,rnd_mode);
-	      boucle=0;
-	    }
-	    else{
-	      Nt=Nt+10; 
-	      /*initialise of intermediary variable */
-	      mpfr_set_prec(t,Nt);
-	      boucle=1;
-	    }
-	    
+	      if (round)
+		{
+		  round = mpfr_set (y, t, rnd_mode);
+		  if (inexact == 0)
+                    inexact = round;
+		  boucle=0;
+		}
+	      else
+		{
+		  Nt=Nt+10;
+		  /*initialise of intermediary variable */
+		  mpfr_set_prec(t, Nt);
+		}
 	  }
    
 	  mpfr_clear(t);
-          return(1);
+          return inexact;
       
  
     }
