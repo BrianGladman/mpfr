@@ -1,6 +1,6 @@
 /* Test file for mpfr_ui_sub.
 
-Copyright (C) 2000 Free Software Foundation.
+Copyright (C) 2000-2001 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -28,11 +28,63 @@ MA 02111-1307, USA. */
 #include "mpfr-test.h"
 #endif
 
+void special _PROTO((void));
 void check _PROTO((unsigned long, double, mp_rnd_t, double)); 
+
+void
+special ()
+{
+  mpfr_t x, y, res;
+  
+  mpfr_init (x);
+  mpfr_init (y);
+  mpfr_init (res);
+
+  /* bug found by Mathieu Dutour, 12 Apr 2001 */
+  mpfr_set_prec (x, 5);
+  mpfr_set_prec (y, 5);
+  mpfr_set_prec (res, 5);
+  mpfr_set_str_raw (x, "1e-12");
+
+  mpfr_ui_sub (y, 1, x, GMP_RNDD);
+  mpfr_set_str_raw (res, "0.11111");
+  if (mpfr_cmp (y, res))
+    {
+      fprintf (stderr, "Error in mpfr_ui_sub (y, 1, x, GMP_RNDD) for x=2^(-12)\nexpected 1.1111e-1, got ");
+      mpfr_out_str (stderr, 2, 0, y, GMP_RNDN);
+      fprintf (stderr, "\n");
+      exit (1);
+    }
+  
+  mpfr_ui_sub (y, 1, x, GMP_RNDU);
+  mpfr_set_str_raw (res, "1.0");
+  if (mpfr_cmp (y, res))
+    {
+      fprintf (stderr, "Error in mpfr_ui_sub (y, 1, x, GMP_RNDU) for x=2^(-12)\nexpected 1.0, got ");
+      mpfr_out_str (stderr, 2, 0, y, GMP_RNDN);
+      fprintf (stderr, "\n");
+      exit (1);
+    }
+  
+  mpfr_ui_sub (y, 1, x, GMP_RNDN);
+  mpfr_set_str_raw (res, "1.0");
+  if (mpfr_cmp (y, res))
+    {
+      fprintf (stderr, "Error in mpfr_ui_sub (y, 1, x, GMP_RNDN) for x=2^(-12)\nexpected 1.0, got ");
+      mpfr_out_str (stderr, 2, 0, y, GMP_RNDN);
+      fprintf (stderr, "\n");
+      exit (1);
+    }
+  
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (res);
+}
 
 /* checks that y/x gives the same results in double
    and with mpfr with 53 bits of precision */
-void check (unsigned long y, double x, mp_rnd_t rnd_mode, double z1)
+void
+check (unsigned long y, double x, mp_rnd_t rnd_mode, double z1)
 {
   double z2; mpfr_t xx, zz;
 
@@ -80,6 +132,7 @@ main (int argc, char *argv[])
     }
   }
 #endif
+  special ();
   check(1, 1.0/0.0, GMP_RNDN, -1.0/0.0); 
   check(1, -1.0/0.0, GMP_RNDN, 1.0/0.0); 
   check(1, 0.0/0.0, GMP_RNDN, 0.0/0.0); 
