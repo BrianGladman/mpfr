@@ -92,7 +92,8 @@ mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
           MPFR_CLEAR_INF(u);
           MPFR_SET_ZERO(u);
         }
-      else if (MPFR_IS_ZERO(u) && (d != (long double) 0.0)) /* underflow */
+      /* warning: using MPFR_IS_ZERO will cause a READ_UNINIT_MEM if u=Inf */
+      else if (mpfr_cmp_ui (u, 0) == 0 && (d != (long double) 0.0)) /* underflow */
         {
           long double div10, div11, div12, div13;
           div10 = (long double) (double) 5.5626846462680034577255e-309; /* 2^(-2^10) */

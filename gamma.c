@@ -88,6 +88,8 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
     }
   realprec = prec_gamma + 10;
 
+  mpfr_init2 (xp, 2);
+
   while (!good)
     {
     /* Precision stuff */
@@ -114,7 +116,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
     Prec = prec_nec + estimated_cancel+20;
 
 
-    mpfr_init2(xp, Prec);
+    mpfr_set_prec (xp, Prec);
     if (compared < 0)
       {
 	mpfr_ui_sub (xp, 1, x, GMP_RNDN);
@@ -208,7 +210,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
     mpfr_clear(GammaTrial);
   }
 
-  mpfr_clear(xp);
+  mpfr_clear (xp);
 
   return 1; /* inexact result */
 }
