@@ -225,16 +225,17 @@ int mul ()
   -->;
   
   if (MPFR_LIKELY (bn == cn)) {
-    mp_size_t log2bn;
+    mp_prec_t prec_bn;
     if (MPFR_LIKELY (bn < MPFR_MUL_BASECASE_THREEHOLD))
       goto mul_normal;
-    log2bn = MPFR_INT_CEIL_LOG2 (bn);
-    if (MPFR_PREC (a) > bn*BITS_PER_MP_LIMB-log2bn-4)
+    prec_bn = bn*BITS_PER_MP_LIMB-MPFR_INT_CEIL_LOG2 (bn);
+    if (MPFR_UNLIKELY (MPFR_PREC (a) > prec_bn-4))
       goto mul_normal;
     else {
+      /* mp_size_t offset;
+	 offset = (prec_bn - 4 - MPFR_PREC (a)) / BITS_PER_MP_LIMB; */
       mpfr_mpn_mulhigh_n (tmp, MPFR_MANT (b), MPFR_MANT (c), bn);
-      if (MPFR_LIKELY (mpfr_can_round_raw (tmp, bn+tn, sign,
-					   bn*BITS_PER_MP_LIMB-log2bn, 
+      if (MPFR_LIKELY (mpfr_can_round_raw (tmp, bn+tn, sign, prec_bn,
 					   GMP_RNDN, GMP_RNDZ,
 					   MPFR_PREC(a)+(rnd_mode==GMP_RNDN))))
 	b1 = tmp[2*bn-1];
