@@ -79,19 +79,19 @@ mpfr_mul_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 
   old_yp = yp;
 
-  MPFR_ASSERTN(xn < MP_SIZE_T_MAX);
+  MPFR_ASSERTD (xn < MP_SIZE_T_MAX);
   if (yn < xn + 1)
     yp = (mp_ptr) TMP_ALLOC ((size_t) (xn + 1) * BYTES_PER_MP_LIMB);
 
-  MPFR_ASSERTN(u == (mp_limb_t) u);
+  MPFR_ASSERTN (u == (mp_limb_t) u);
   yp[xn] = mpn_mul_1 (yp, MPFR_MANT(x), xn, u);
 
   /* x * u is stored in yp[xn], ..., yp[0] */
 
   /* since the case u=1 was treated above, we have u >= 2, thus
      yp[xn] >= 1 since x was msb-normalized */
-  MPFR_ASSERTN(yp[xn] != 0);
-  if ((yp[xn] & MPFR_LIMB_HIGHBIT) == 0)
+  MPFR_ASSERTD (yp[xn] != 0);
+  if (MPFR_LIMB_MSB (yp[xn]) == 0)
     {
       count_leading_zeros(cnt, yp[xn]);
       mpn_lshift (yp, yp, xn + 1, cnt);
@@ -105,11 +105,11 @@ mpfr_mul_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
      PREC(x) + (BITS_PER_MP_LIMB - cnt) non-zero bits */
 
   c = mpfr_round_raw (old_yp, yp, (mp_prec_t) (xn + 1) * BITS_PER_MP_LIMB,
-		      (MPFR_SIGN(x) < 0), MPFR_PREC(y), rnd_mode, &inexact);
+		      MPFR_IS_NEG(x), MPFR_PREC(y), rnd_mode, &inexact);
 
   cnt = BITS_PER_MP_LIMB - cnt;
 
-  if (c) /* rounded result is 1.0000000000000000... */
+  if (MPFR_UNLIKELY(c)) /* rounded result is 1.0000000000000000... */
     {
       old_yp[yn-1] = MPFR_LIMB_HIGHBIT;
       cnt++;
