@@ -247,7 +247,7 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
         if (k>an) ap[an-1] += cp[cn-k+an]<<(BITS_PER_MP_LIMB-dif);
       }
       else if (dif<0) {
-	cc = mpn_lshift(ap, cp+(cn-k), k, -dif);
+	cc = mpn_lshift(ap, cp+(cn-k), (k<=an) ? k : an, -dif);
 	if (k<an) ap[k]=cc;
 	/* put the non-significant bits in low limb for further rounding */
 	if (cn >= k+1)
