@@ -42,15 +42,15 @@ typedef union ieee_double_extract Ieee_double_extract;
 #define MPFR_CLEAR_FLAGS(x) (((x) -> _mpfr_size &= ~(3 << 29)))
 #define MPFR_IS_NAN(x) (((x)->_mpfr_size >> 30)&1)
 #define MPFR_SET_NAN(x) ((x)->_mpfr_size |= (1<<30))
+#define MPFR_CLEAR_NAN(x) (((x) -> _mpfr_size &= ~(1 << 30)))
 #define MPFR_IS_INF(x) (((x)->_mpfr_size >> 29)&1)
 #define MPFR_SET_INF(x) ((x)->_mpfr_size |= (1<<29))
-#define MPFR_RESET_INF(x) ((x)->_mpfr_size &= (~0 - (1<<29)))
+#define MPFR_CLEAR_INF(x) ((x)->_mpfr_size &= ~(1 << 29))
 #define MPFR_IS_FP(x) ((((x) -> _mpfr_size >> 29) & 3) == 0)
 #define MPFR_ABSSIZE(x) ((x)->_mpfr_size & ((1<<29)-1))
 #define MPFR_SIZE(x) ((x)->_mpfr_size)
 #define MPFR_EXP(x) ((x)->_mpfr_exp)
 #define MPFR_MANT(x) ((x)->_mpfr_d)
-#define MPFR_SIGN(x) (((x)->_mpfr_size >> 31) ? -1 : 1)
 #define MPFR_ISNONNEG(x) (MPFR_NOTZERO((x)) && MPFR_SIGN(x)>=0)
 #define MPFR_ISNEG(x) (MPFR_NOTZERO((x)) && MPFR_SIGN(x)==-1)
 #define MPFR_CHANGE_SIGN(x) (MPFR_SIZE(x) ^= (((mp_size_t)1)<<31))
@@ -92,6 +92,11 @@ mp_size_t mpn_sqrtrem_new _PROTO ((mp_limb_t *, mp_limb_t *, mp_limb_t *, mp_siz
 void mpfr_set4 _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t, int));
 int mpfr_cmp3 _PROTO ((mpfr_srcptr, mpfr_srcptr, long int));
 int mpfr_cmp2 _PROTO ((mpfr_srcptr, mpfr_srcptr));
+long _mpfr_ceil_log2 _PROTO ((double));
+long _mpfr_floor_log2 _PROTO ((double));
+double _mpfr_ceil_exp2 _PROTO ((double));
+unsigned long _mpfr_isqrt _PROTO ((unsigned long));
+unsigned long _mpfr_cuberoot _PROTO ((unsigned long));
 
 #if defined (__cplusplus)
 }
