@@ -38,14 +38,7 @@ int mpfr_gamma _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 #define ecCST  1.84  /* {1+sup_{x\in [0,1]} x*ln((1-x)/x)}/ln(2)  */
 
 int
-#if __STDC__
 mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
-#else
-mpfr_gamma (gamma, x, rnd_mode)
-     mpfr_ptr gamma;
-     mpfr_srcptr x; 
-     mp_rnd_t rnd_mode;
-#endif
 {
   mpfr_t xp;
   mpfr_t product;

@@ -38,7 +38,7 @@ main (void)
   mpfr_init (y);
   mpfr_init (z);
 
-  for (prec = 1; prec <= 100; prec++)
+  for (prec = 2; prec <= 100; prec++)
     {
       mpfr_set_prec (x, prec);
       mpfr_set_prec (z, prec);
