@@ -85,9 +85,11 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode)
      y does not overlap with the result when
      x^2+y^2 < (|x| + 1/2*ulp(x,Nz))^2 = x^2 + |x|*ulp(x,Nz) + 1/4*ulp(x,Nz)^2,
      i.e. a sufficient condition is y^2 < |x|*ulp(x,Nz),
-     or 2^(2*Ey) <= 2^(2*Ex-1-Nz), i.e. 2*diff_exp > Nz
+     or 2^(2*Ey) <= 2^(2*Ex-1-Nz), i.e. 2*diff_exp > Nz.
+     Warning: this is true only for Nx <= Nz, otherwise the trailing bits
+     of x may be already very close to 1/2*ulp(x,Nz)!
   */
-  if (diff_exp > Nz / 2) /* result is |x| or |x|+ulp(|x|,Nz) */
+  if (MPFR_PREC(x) <= Nz && diff_exp > Nz / 2) /* result is |x| or |x|+ulp(|x|,Nz) */
     {
       if (rnd_mode == GMP_RNDU)
         {

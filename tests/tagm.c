@@ -53,6 +53,7 @@ static void
 check_large (void)
 {
   mpfr_t a, b, agm;
+  int inex;
 
   mpfr_init2 (a, 82);
   mpfr_init2 (b, 82);
@@ -76,6 +77,24 @@ check_large (void)
   mpfr_set_str (a, "703.93543315330225238487276503953366664991725089988315253092140138947103394917006", 10, GMP_RNDN);
   mpfr_set_str (b, "703.93543315330225238487279020523738740563816490895994499256063816906728642622316", 10, GMP_RNDN);
   mpfr_agm (agm, a, b, GMP_RNDN);
+
+  mpfr_set_prec (a, 18);
+  mpfr_set_prec (b, 70);
+  mpfr_set_prec (agm, 67);
+  mpfr_set_str_binary (a, "0.111001111100101000e8");
+  mpfr_set_str_binary (b, "0.1101110111100100010100110000010111011011011100110100111001010100100001e10");
+  inex = mpfr_agm (agm, a, b, GMP_RNDN);
+  mpfr_set_str_binary (b, "0.1111110010011101101100010101011011010010010000001010100011000110011e9");
+  if (mpfr_cmp (agm, b))
+    {
+      printf ("Error in mpfr_agm (1)\n");
+      exit (1);
+    }
+  if (inex >= 0)
+    {
+      printf ("Wrong flag for mpfr_agm (1)\n");
+      exit (1);
+    }
 
   mpfr_clear (a);
   mpfr_clear (b);

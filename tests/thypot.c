@@ -1,6 +1,6 @@
 /* Test file for mpfr_hypot.
 
-Copyright 2001, 2002, 2003 Free Software Foundation.
+Copyright 2001, 2002, 2003, 2004 Free Software Foundation.
 Adapted from tarctan.c.
 
 This file is part of the MPFR Library.
@@ -63,6 +63,19 @@ test_large (void)
   mpfr_set_str_binary (x, "0.11101100011110000011101000010101010011001101000001100E-1021");
   mpfr_set_str_binary (t, "0.11111001010011000001110110001101011100001000010010100E-1021");
   mpfr_hypot (y, x, t, GMP_RNDN);
+
+  mpfr_set_prec (x, 240);
+  mpfr_set_prec (y, 22);
+  mpfr_set_prec (t, 2);
+  mpfr_set_str_binary (x, "0.100111011010010010110100000100000001100010011100110101101111111101011110111011011101010110100101111000111100010100110000100101011110111011100110100110100101110101101100011000001100000001111101110100100100011011011010110111100110010101000111e-7");
+  mpfr_set_str_binary (y, "0.1111000010000011000111e-10");
+  mpfr_hypot (t, x, y, GMP_RNDN);
+  mpfr_set_str_binary (y, "0.11E-7");
+  if (mpfr_cmp (t, y))
+    {
+      printf ("Error in mpfr_hypot (1)\n");
+      exit (1);
+    }
 
   mpfr_clear (x);
   mpfr_clear (y);

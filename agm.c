@@ -27,7 +27,7 @@ MA 02111-1307, USA. */
 int
 mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
 {
-  int s, go_on, compare;
+  int s, go_on, compare, inexact;
   mp_prec_t p, q;
   double uo, vo;
   mp_limb_t *up, *vp, *tmpp, *tmpup, *tmpvp, *ap, *bp;
@@ -165,12 +165,12 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
 
   /* Setting of the result */
 
-  mpfr_set(r,v,rnd_mode);
+  inexact = mpfr_set (r, v, rnd_mode);
 
   /* Let's clean */
   TMP_FREE(marker); 
 
-  return 1; /* agm(u,v) can be exact for u, v rational only for u=v.
+  return inexact; /* agm(u,v) can be exact for u, v rational only for u=v.
                Proof (due to Nicolas Brisebarre): it suffices to consider
                u=1 and v<1. Then 1/AGM(1,v) = 2F1(1/2,1/2,1;1-v^2),
                and a theorem due to G.V. Chudnovsky states that for x a
