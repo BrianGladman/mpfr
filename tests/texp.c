@@ -152,6 +152,7 @@ main(int argc, char **argv)
   if (argc==4) { check_large(atof(argv[1]), atoi(argv[2]), atoi(argv[3])); 
 		 exit(1); }
   check_worst_cases();
+  check3(0.0, GMP_RNDU, 1.0);
   check3(-8.88024741073346941839e-17, GMP_RNDU, 1.0);
   check3(8.70772839244701057915e-01, GMP_RNDN, 2.38875626491680437269);
   check3(1.0, GMP_RNDN, 2.71828182845904509080);
