@@ -26,7 +26,7 @@ MA 02111-1307, USA. */
 int 
 mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode) 
 {
-  int prec, m, ok, e, inexact, neg;
+  int prec, m, e, inexact, neg;
   mpfr_t c, k;
 
   if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(x) ))
@@ -48,49 +48,44 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
     }
   /* MPFR_CLEAR_FLAGS is useless since we use mpfr_set to set y and z */
 
-  prec = MAX(MPFR_PREC(y), MPFR_PREC(z)); 
+  prec = MAX (MPFR_PREC(y), MPFR_PREC(z)); 
   m = prec + MPFR_INT_CEIL_LOG2 (prec) + MAX (MPFR_GET_EXP (x), 0) + 13;
 
   mpfr_init2 (c, m);
   mpfr_init2 (k, m);
 
-  /* first determine sign */
+  /* first determine sign of sinus */
   mpfr_const_pi (c, GMP_RNDN);
-  mpfr_mul_2ui (c, c, 1, GMP_RNDN); /* 2*Pi */
-  mpfr_div (k, x, c, GMP_RNDN);      /* x/(2*Pi) */
-  mpfr_floor (k, k);                 /* floor(x/(2*Pi)) */
+  mpfr_mul_2ui (c, c, 1, GMP_RNDN);    /* 2*Pi */
+  mpfr_div (k, x, c, GMP_RNDN);        /* x/(2*Pi) */
+  mpfr_floor (k, k);                   /* floor(x/(2*Pi)) */
   mpfr_mul (c, k, c, GMP_RNDN);
-  mpfr_sub (k, x, c, GMP_RNDN);      /* 0 <= k < 2*Pi */
-  mpfr_const_pi (c, GMP_RNDN); /* cached */
+  mpfr_sub (k, x, c, GMP_RNDN);        /* 0 <= k < 2*Pi */
+  mpfr_const_pi (c, GMP_RNDN);         /* PI is cached */
   neg = mpfr_cmp (k, c) > 0;
   mpfr_clear (k);
 
-  do
+  for (;;)
     {
       mpfr_cos (c, x, GMP_RNDZ);
-      if ((ok = mpfr_can_round (c, m, GMP_RNDZ, rnd_mode, MPFR_PREC(z))))
-        {
-          inexact = mpfr_set (z, c, rnd_mode);
-          mpfr_mul (c, c, c, GMP_RNDU);
-          mpfr_ui_sub (c, 1, c, GMP_RNDN);
-          e = 2 + (- MPFR_GET_EXP (c)) / 2;
-          mpfr_sqrt (c, c, GMP_RNDN);
-          if (neg)
-            mpfr_neg (c, c, GMP_RNDN);
+      if (!mpfr_can_round (c, m, GMP_RNDZ, rnd_mode, MPFR_PREC (z)))
+	goto next_step;
+      inexact = mpfr_set (z, c, rnd_mode);
+      mpfr_sqr (c, c, GMP_RNDU);
+      mpfr_ui_sub (c, 1, c, GMP_RNDN);
+      e = 2 + (- MPFR_GET_EXP (c)) / 2;
+      mpfr_sqrt (c, c, GMP_RNDN);
+      if (neg)
+	MPFR_CHANGE_SIGN (c);
 
-          /* the absolute error on c is at most 2^(e-m) = 2^(EXP(c)-err) */
-          e = MPFR_GET_EXP (c) + m - e;
-          ok = (e >= 0) && mpfr_can_round (c, e, GMP_RNDN, rnd_mode,
-                                           MPFR_PREC(y));
-        }
-
-      if (ok == 0)
-	{
-	  m += MPFR_INT_CEIL_LOG2 (m);
-	  mpfr_set_prec (c, m);
-	}
+      /* the absolute error on c is at most 2^(e-m) = 2^(EXP(c)-err) */
+      e = MPFR_GET_EXP (c) + m - e;
+      if (mpfr_can_round (c, e, GMP_RNDN, rnd_mode, MPFR_PREC (y)))
+	break;
+    next_step:
+      m += BITS_PER_MP_LIMB;
+      mpfr_set_prec (c, m);
     }
-  while (ok == 0);
 
   inexact = mpfr_set (y, c, rnd_mode) || inexact;
 
