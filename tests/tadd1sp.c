@@ -84,18 +84,21 @@ void check_random(mp_prec_t p)
     {
       mpfr_random(b);
       mpfr_random(c);
-      if (MPFR_GET_EXP(b) < MPFR_GET_EXP(c))
-	mpfr_swap(b, c);
       if (MPFR_IS_PURE_FP(b) && MPFR_IS_PURE_FP(c))
-	for(r = 0 ; r < GMP_RND_MAX ; r++)
-	  {
-	    inexact1 = mpfr_add1(a1, b, c, r);
-	    inexact2 = mpfr_add1sp(a2, b, c, r);
-	    if (mpfr_cmp(a1, a2))
-	      STD_ERROR;
-	    if (inexact1 != inexact2)
-	      STD_ERROR2;
-	  }
+	{
+	  if (MPFR_GET_EXP(b) < MPFR_GET_EXP(c))
+	    mpfr_swap(b, c);
+	  if (MPFR_IS_PURE_FP(b) && MPFR_IS_PURE_FP(c))
+	    for(r = 0 ; r < GMP_RND_MAX ; r++)
+	      {
+		inexact1 = mpfr_add1(a1, b, c, r);
+		inexact2 = mpfr_add1sp(a2, b, c, r);
+		if (mpfr_cmp(a1, a2))
+		  STD_ERROR;
+		if (inexact1 != inexact2)
+		  STD_ERROR2;
+	      }
+	}
     }
 
   mpfr_clears(a1,a2,b,c,NULL);
