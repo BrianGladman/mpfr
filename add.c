@@ -276,10 +276,20 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
 			    +(cp[kc]>>dif));
 	    if (cc==0 || cc==-1) cc=c2;
 	  }
+	  if (kc==0) { /* it still remains cp[0]<<(mp_bits_per_limb-dif) */
+	    if (k!=0) cc += mpn_add_1(&c2, bp+(--k), 1, 
+				      cp[0]<<(mp_bits_per_limb-dif));
+	    else c2 = cp[0]<<(mp_bits_per_limb-dif);
+	  } 
 	  if ((long)cc>0) goto add_one_ulp;
 	  else if ((long)cc<-1) 
 	    { TMP_FREE(marker); return; /* the carry can be at most 1 */ }
-	  else if (kc==0) goto round_b;
+	  else if (kc==0) {
+	    /* it still remains cp[0]<<(mp_bits_per_limb-dif) */
+	    while (k && cc==0) cc=bp[--k];
+	    if (cc || (*ap & (ONE<<sh))) goto add_one_ulp;
+	    else goto end_of_add;
+	  }
 
 	  /* else round c: go through */
 
@@ -288,7 +298,8 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
 
 	case 0: /* only b to round */
         round_b:
-	  k=bn-an; dif=0; goto to_nearest;
+	  k=bn-an; dif=0;
+	  goto to_nearest;
         
 	  /* otherwise the result is exact: nothing to do */
 	}
