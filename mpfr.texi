@@ -1349,11 +1349,29 @@ Negative random numbers are generated when @var{max_size} is negative.
 @c releases.}
 @c @end deftypefun
 
-@section Internal Functions
+@section Internals
 
-These functions were mainly designed for the implementation of @code{mpfr},
+These types and 
+functions were mainly designed for the implementation of @code{mpfr},
 but may be useful for users too.
+However no upward compatibility is guaranteed.
 You need to include @code{mpfr-impl.h} to use them.
+
+The @code{mpfr_t} type consists of four fields.
+The @code{_mpfr_prec} field is used to store the precision of
+the variable.
+The @code{_mpfr_size} field is used to store the number of
+allocated limbs, with the high bits reserved to store
+the sign (bit 31), the NaN flag (bit 30),
+and the Infinity flag (bit 29);
+thus bits 0 to 28 remain for the number of allocated limbs, with a maximal
+value of 536870911.
+The @code{_mpfr_exp} field stores the exponent,
+and the @code{_mpfr_d} is a pointer to the limbs, least
+significant limbs stored first.
+The number zero is represented with its most significant limb set to zero,
+i.e. @code{_mpfr_d[n-1]} where 
+n=ceil(@code{_mpfr_prec}/@code{BITS_PER_MP_LIMB}).
 
 @deftypefun int mpfr_add_one_ulp (mpfr_t @var{x}, mp_rnd_t @var{rnd})
 Add one unit in last place (ulp) to @var{x} if @var{x} is finite
