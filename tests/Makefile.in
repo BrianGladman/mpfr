@@ -66,7 +66,7 @@ PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
 
-check_PROGRAMS = reuse tabs tadd tagm tcan_round tcmp tcmp2 tcmp_ui tdiv tdiv_ui tdump teq texp tget_str tlog tlog2 tmul tmul_2exp tmul_ui tout_str tpi tpow trandom tround tset_d tset_f tset_q tset_si tset_str tset_z tsqrt tsqrt_ui tui_div tui_sub tsin_cos tswap ttrunc
+check_PROGRAMS = reuse tabs tadd tagm tcan_round tcmp tcmp2 tcmp_ui tdiv tdiv_ui tdump teq texp tget_str tlog tlog2 tmul tmul_2exp tmul_ui tout_str tpi tpow trandom tround tset_d tset_f tset_q tset_si tset_str tset_z tsqrt tsqrt_ui tui_div tui_sub tsin_cos tswap ttrunc tisnan tget_d tarctan tcosh tsinh ttanh tacosh tasinh tatanh thyperbolic texp2 tfactorial tsub
 
 LDADD = $(top_builddir)/libmpfr.a  @LDADD@
 INCLUDES = @INCLUDES@ -I$(top_srcdir)
@@ -261,6 +261,71 @@ ttrunc_OBJECTS =  ttrunc.o
 ttrunc_LDADD = $(LDADD)
 ttrunc_DEPENDENCIES =  $(top_builddir)/libmpfr.a
 ttrunc_LDFLAGS = 
+tisnan_SOURCES = tisnan.c
+tisnan_OBJECTS =  tisnan.o
+tisnan_LDADD = $(LDADD)
+tisnan_DEPENDENCIES =  $(top_builddir)/libmpfr.a
+tisnan_LDFLAGS = 
+tget_d_SOURCES = tget_d.c
+tget_d_OBJECTS =  tget_d.o
+tget_d_LDADD = $(LDADD)
+tget_d_DEPENDENCIES =  $(top_builddir)/libmpfr.a
+tget_d_LDFLAGS = 
+tarctan_SOURCES = tarctan.c
+tarctan_OBJECTS =  tarctan.o
+tarctan_LDADD = $(LDADD)
+tarctan_DEPENDENCIES =  $(top_builddir)/libmpfr.a
+tarctan_LDFLAGS = 
+tcosh_SOURCES = tcosh.c
+tcosh_OBJECTS =  tcosh.o
+tcosh_LDADD = $(LDADD)
+tcosh_DEPENDENCIES =  $(top_builddir)/libmpfr.a
+tcosh_LDFLAGS = 
+tsinh_SOURCES = tsinh.c
+tsinh_OBJECTS =  tsinh.o
+tsinh_LDADD = $(LDADD)
+tsinh_DEPENDENCIES =  $(top_builddir)/libmpfr.a
+tsinh_LDFLAGS = 
+ttanh_SOURCES = ttanh.c
+ttanh_OBJECTS =  ttanh.o
+ttanh_LDADD = $(LDADD)
+ttanh_DEPENDENCIES =  $(top_builddir)/libmpfr.a
+ttanh_LDFLAGS = 
+tacosh_SOURCES = tacosh.c
+tacosh_OBJECTS =  tacosh.o
+tacosh_LDADD = $(LDADD)
+tacosh_DEPENDENCIES =  $(top_builddir)/libmpfr.a
+tacosh_LDFLAGS = 
+tasinh_SOURCES = tasinh.c
+tasinh_OBJECTS =  tasinh.o
+tasinh_LDADD = $(LDADD)
+tasinh_DEPENDENCIES =  $(top_builddir)/libmpfr.a
+tasinh_LDFLAGS = 
+tatanh_SOURCES = tatanh.c
+tatanh_OBJECTS =  tatanh.o
+tatanh_LDADD = $(LDADD)
+tatanh_DEPENDENCIES =  $(top_builddir)/libmpfr.a
+tatanh_LDFLAGS = 
+thyperbolic_SOURCES = thyperbolic.c
+thyperbolic_OBJECTS =  thyperbolic.o
+thyperbolic_LDADD = $(LDADD)
+thyperbolic_DEPENDENCIES =  $(top_builddir)/libmpfr.a
+thyperbolic_LDFLAGS = 
+texp2_SOURCES = texp2.c
+texp2_OBJECTS =  texp2.o
+texp2_LDADD = $(LDADD)
+texp2_DEPENDENCIES =  $(top_builddir)/libmpfr.a
+texp2_LDFLAGS = 
+tfactorial_SOURCES = tfactorial.c
+tfactorial_OBJECTS =  tfactorial.o
+tfactorial_LDADD = $(LDADD)
+tfactorial_DEPENDENCIES =  $(top_builddir)/libmpfr.a
+tfactorial_LDFLAGS = 
+tsub_SOURCES = tsub.c
+tsub_OBJECTS =  tsub.o
+tsub_LDADD = $(LDADD)
+tsub_DEPENDENCIES =  $(top_builddir)/libmpfr.a
+tsub_LDFLAGS = 
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
@@ -271,17 +336,20 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = gtar
 GZIP_ENV = --best
-DEP_FILES =  .deps/reuse.P .deps/tabs.P .deps/tadd.P .deps/tagm.P \
+DEP_FILES =  .deps/reuse.P .deps/tabs.P .deps/tacosh.P .deps/tadd.P \
+.deps/tagm.P .deps/tarctan.P .deps/tasinh.P .deps/tatanh.P \
 .deps/tcan_round.P .deps/tcmp.P .deps/tcmp2.P .deps/tcmp_ui.P \
-.deps/tdiv.P .deps/tdiv_ui.P .deps/tdump.P .deps/teq.P .deps/texp.P \
-.deps/tget_str.P .deps/tlog.P .deps/tlog2.P .deps/tmul.P \
-.deps/tmul_2exp.P .deps/tmul_ui.P .deps/tout_str.P .deps/tpi.P \
-.deps/tpow.P .deps/trandom.P .deps/tround.P .deps/tset_d.P \
-.deps/tset_f.P .deps/tset_q.P .deps/tset_si.P .deps/tset_str.P \
-.deps/tset_z.P .deps/tsin_cos.P .deps/tsqrt.P .deps/tsqrt_ui.P \
-.deps/tswap.P .deps/ttrunc.P .deps/tui_div.P .deps/tui_sub.P
-SOURCES = reuse.c tabs.c tadd.c tagm.c tcan_round.c tcmp.c tcmp2.c tcmp_ui.c tdiv.c tdiv_ui.c tdump.c teq.c texp.c tget_str.c tlog.c tlog2.c tmul.c tmul_2exp.c tmul_ui.c tout_str.c tpi.c tpow.c trandom.c tround.c tset_d.c tset_f.c tset_q.c tset_si.c tset_str.c tset_z.c tsqrt.c tsqrt_ui.c tui_div.c tui_sub.c tsin_cos.c tswap.c ttrunc.c
-OBJECTS = reuse.o tabs.o tadd.o tagm.o tcan_round.o tcmp.o tcmp2.o tcmp_ui.o tdiv.o tdiv_ui.o tdump.o teq.o texp.o tget_str.o tlog.o tlog2.o tmul.o tmul_2exp.o tmul_ui.o tout_str.o tpi.o tpow.o trandom.o tround.o tset_d.o tset_f.o tset_q.o tset_si.o tset_str.o tset_z.o tsqrt.o tsqrt_ui.o tui_div.o tui_sub.o tsin_cos.o tswap.o ttrunc.o
+.deps/tcosh.P .deps/tdiv.P .deps/tdiv_ui.P .deps/tdump.P .deps/teq.P \
+.deps/texp.P .deps/texp2.P .deps/tfactorial.P .deps/tget_d.P \
+.deps/tget_str.P .deps/thyperbolic.P .deps/tisnan.P .deps/tlog.P \
+.deps/tlog2.P .deps/tmul.P .deps/tmul_2exp.P .deps/tmul_ui.P \
+.deps/tout_str.P .deps/tpi.P .deps/tpow.P .deps/trandom.P \
+.deps/tround.P .deps/tset_d.P .deps/tset_f.P .deps/tset_q.P \
+.deps/tset_si.P .deps/tset_str.P .deps/tset_z.P .deps/tsin_cos.P \
+.deps/tsinh.P .deps/tsqrt.P .deps/tsqrt_ui.P .deps/tsub.P .deps/tswap.P \
+.deps/ttanh.P .deps/ttrunc.P .deps/tui_div.P .deps/tui_sub.P
+SOURCES = reuse.c tabs.c tadd.c tagm.c tcan_round.c tcmp.c tcmp2.c tcmp_ui.c tdiv.c tdiv_ui.c tdump.c teq.c texp.c tget_str.c tlog.c tlog2.c tmul.c tmul_2exp.c tmul_ui.c tout_str.c tpi.c tpow.c trandom.c tround.c tset_d.c tset_f.c tset_q.c tset_si.c tset_str.c tset_z.c tsqrt.c tsqrt_ui.c tui_div.c tui_sub.c tsin_cos.c tswap.c ttrunc.c tisnan.c tget_d.c tarctan.c tcosh.c tsinh.c ttanh.c tacosh.c tasinh.c tatanh.c thyperbolic.c texp2.c tfactorial.c tsub.c
+OBJECTS = reuse.o tabs.o tadd.o tagm.o tcan_round.o tcmp.o tcmp2.o tcmp_ui.o tdiv.o tdiv_ui.o tdump.o teq.o texp.o tget_str.o tlog.o tlog2.o tmul.o tmul_2exp.o tmul_ui.o tout_str.o tpi.o tpow.o trandom.o tround.o tset_d.o tset_f.o tset_q.o tset_si.o tset_str.o tset_z.o tsqrt.o tsqrt_ui.o tui_div.o tui_sub.o tsin_cos.o tswap.o ttrunc.o tisnan.o tget_d.o tarctan.o tcosh.o tsinh.o ttanh.o tacosh.o tasinh.o tatanh.o thyperbolic.o texp2.o tfactorial.o tsub.o
 
 all: all-redirect
 .SUFFIXES:
@@ -466,6 +534,58 @@ tswap: $(tswap_OBJECTS) $(tswap_DEPENDENCIES)
 ttrunc: $(ttrunc_OBJECTS) $(ttrunc_DEPENDENCIES)
 	@rm -f ttrunc
 	$(LINK) $(ttrunc_LDFLAGS) $(ttrunc_OBJECTS) $(ttrunc_LDADD) $(LIBS)
+
+tisnan: $(tisnan_OBJECTS) $(tisnan_DEPENDENCIES)
+	@rm -f tisnan
+	$(LINK) $(tisnan_LDFLAGS) $(tisnan_OBJECTS) $(tisnan_LDADD) $(LIBS)
+
+tget_d: $(tget_d_OBJECTS) $(tget_d_DEPENDENCIES)
+	@rm -f tget_d
+	$(LINK) $(tget_d_LDFLAGS) $(tget_d_OBJECTS) $(tget_d_LDADD) $(LIBS)
+
+tarctan: $(tarctan_OBJECTS) $(tarctan_DEPENDENCIES)
+	@rm -f tarctan
+	$(LINK) $(tarctan_LDFLAGS) $(tarctan_OBJECTS) $(tarctan_LDADD) $(LIBS)
+
+tcosh: $(tcosh_OBJECTS) $(tcosh_DEPENDENCIES)
+	@rm -f tcosh
+	$(LINK) $(tcosh_LDFLAGS) $(tcosh_OBJECTS) $(tcosh_LDADD) $(LIBS)
+
+tsinh: $(tsinh_OBJECTS) $(tsinh_DEPENDENCIES)
+	@rm -f tsinh
+	$(LINK) $(tsinh_LDFLAGS) $(tsinh_OBJECTS) $(tsinh_LDADD) $(LIBS)
+
+ttanh: $(ttanh_OBJECTS) $(ttanh_DEPENDENCIES)
+	@rm -f ttanh
+	$(LINK) $(ttanh_LDFLAGS) $(ttanh_OBJECTS) $(ttanh_LDADD) $(LIBS)
+
+tacosh: $(tacosh_OBJECTS) $(tacosh_DEPENDENCIES)
+	@rm -f tacosh
+	$(LINK) $(tacosh_LDFLAGS) $(tacosh_OBJECTS) $(tacosh_LDADD) $(LIBS)
+
+tasinh: $(tasinh_OBJECTS) $(tasinh_DEPENDENCIES)
+	@rm -f tasinh
+	$(LINK) $(tasinh_LDFLAGS) $(tasinh_OBJECTS) $(tasinh_LDADD) $(LIBS)
+
+tatanh: $(tatanh_OBJECTS) $(tatanh_DEPENDENCIES)
+	@rm -f tatanh
+	$(LINK) $(tatanh_LDFLAGS) $(tatanh_OBJECTS) $(tatanh_LDADD) $(LIBS)
+
+thyperbolic: $(thyperbolic_OBJECTS) $(thyperbolic_DEPENDENCIES)
+	@rm -f thyperbolic
+	$(LINK) $(thyperbolic_LDFLAGS) $(thyperbolic_OBJECTS) $(thyperbolic_LDADD) $(LIBS)
+
+texp2: $(texp2_OBJECTS) $(texp2_DEPENDENCIES)
+	@rm -f texp2
+	$(LINK) $(texp2_LDFLAGS) $(texp2_OBJECTS) $(texp2_LDADD) $(LIBS)
+
+tfactorial: $(tfactorial_OBJECTS) $(tfactorial_DEPENDENCIES)
+	@rm -f tfactorial
+	$(LINK) $(tfactorial_LDFLAGS) $(tfactorial_OBJECTS) $(tfactorial_LDADD) $(LIBS)
+
+tsub: $(tsub_OBJECTS) $(tsub_DEPENDENCIES)
+	@rm -f tsub
+	$(LINK) $(tsub_LDFLAGS) $(tsub_OBJECTS) $(tsub_LDADD) $(LIBS)
 
 tags: TAGS
 

@@ -921,8 +921,8 @@ nor plus or minus infinity.
 Compute the relative difference between @var{op1} and @var{op2} 
 and store the result in @var{rop}.
 This function does not guarantee the exact rounding on the relative difference;
-it just computes @var{abs}(@var{op1}-@var{op2})/@var{op1}, using the rounding mode @var{rnd} for
-all operations.
+it just computes abs(@var{op1}@minus{}@var{op2})/@var{op1}, using the
+rounding mode @var{rnd} for all operations.
 @end deftypefun
 
 @deftypefun int mpfr_sgn (mpfr_t @var{op})
