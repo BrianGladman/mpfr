@@ -25,7 +25,7 @@ MA 02111-1307, USA. */
 int 
 mpfr_tan (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
-  int precy, m, ok, inexact;
+  int precy, m, inexact;
   mpfr_t s, c;
 
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(x)))
@@ -38,7 +38,6 @@ mpfr_tan (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       else /* x is zero */
 	{
           MPFR_ASSERTD(MPFR_IS_ZERO(x));
-	  MPFR_CLEAR_FLAGS(y);
 	  MPFR_SET_ZERO(y);
 	  MPFR_SET_SAME_SIGN(y, x);
 	  MPFR_RET(0);
@@ -52,21 +51,17 @@ mpfr_tan (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_init2 (s, m);
   mpfr_init2 (c, m);
 
-  do
+  for (;;)
     {
       mpfr_sin_cos (s, c, x, GMP_RNDN); /* err <= 1/2 ulp on s and c */
       mpfr_div (c, s, c, GMP_RNDN);     /* err <= 2 ulps */
-      ok = mpfr_can_round (c, m - 1, GMP_RNDN, GMP_RNDZ,
-                           precy + (rnd_mode == GMP_RNDN));
-
-      if (ok == 0)
-	{
-	  m += BITS_PER_MP_LIMB;
-	  mpfr_set_prec (s, m);
-	  mpfr_set_prec (c, m);
-	}
+      if (MPFR_IS_INF(x) || mpfr_can_round (c, m - 1, GMP_RNDN, GMP_RNDZ,
+					    precy + (rnd_mode == GMP_RNDN)))
+	break;
+      m += BITS_PER_MP_LIMB;
+      mpfr_set_prec (s, m);
+      mpfr_set_prec (c, m);
     }
-  while (!ok);
 
   inexact = mpfr_set (y, c, rnd_mode);
 
