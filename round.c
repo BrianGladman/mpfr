@@ -126,10 +126,9 @@ mpfr_round_raw(y, xp, xprec, negative, yprec, RND_MODE)
 #endif
 {
   mp_prec_t nw, xsize; mp_limb_t mask;
-  char rw, xrw, carry = 0;
+  char rw, carry = 0;
 
   xsize = (xprec-1)/BITS_PER_MP_LIMB + 1;
-  xrw = xprec % BITS_PER_MP_LIMB; if (xrw == 0) { xrw = BITS_PER_MP_LIMB; }
 
 #ifdef Exp
   count_leading_zeros(flag, xp[xsize-1]); 
