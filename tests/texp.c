@@ -104,6 +104,7 @@ int check_large (double d, int n, char rnd)
   else printf("exp(%1.20e)=",d); 
   mpfr_out_str(stdout, 10, 0, x, rnd);
   putchar('\n');
+  printf(" ="); mpfr_print_raw(x); putchar('\n');
   if (n==53) printf(" =%1.20e\n", mpfr_get_d(x));
   mpfr_clear(x); mpfr_clear(y);
   return 0;
@@ -178,6 +179,12 @@ main(int argc, char **argv)
   check3(8.70772839244701057915e-01, GMP_RNDN, 2.38875626491680437269);
   check3(1.0, GMP_RNDN, 2.71828182845904509080);
   check3(-3.42135637628104173534e-07, GMP_RNDZ, 0.999999657864420798958);
+  /* worst case for argument reduction, very near from 5*log(2),
+     thanks to Jean-Michel Muller
+   */
+  check3(3.4657359027997265421, GMP_RNDN, 32.0);
+  check3(3.4657359027997265421, GMP_RNDU, 32.0);
+  check3(3.4657359027997265421, GMP_RNDD, 31.999999999999996447);
   srand48(getpid());
   N = (argc==1) ? 0 : atoi(argv[1]);
   lo = (argc>=3) ? atof(argv[2]) : -7.083964185e2;
