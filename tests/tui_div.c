@@ -30,7 +30,7 @@ MA 02111-1307, USA. */
 
 extern int isnan();
 extern int getpid();
-
+void check _PROTO((unsigned long, double, unsigned int, double)); 
 #define ABS(x) (((x)>0) ? (x) : (-x))
 
 /* checks that y/x gives the same results in double

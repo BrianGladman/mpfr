@@ -33,6 +33,12 @@ extern int isnan(), getpid();
 
 int maxulp=0;
 
+void check3 _PROTO((double, unsigned char, double)); 
+void check4 _PROTO((double, unsigned char, char *)); 
+void check24 _PROTO((float, unsigned char, float)); 
+void check_float _PROTO((void)); 
+void special _PROTO((void)); 
+
 void check3(double a, unsigned char rnd_mode, double Q)
 {
   mpfr_t q; double Q2; int ck,u;

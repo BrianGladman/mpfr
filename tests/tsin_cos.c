@@ -23,6 +23,9 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "cputime.h"
 
+void large_test (int, int); 
+void check53 (double, double, double, mp_rnd_t); 
+
 void large_test (int prec, int N)
 {
   int i, st;

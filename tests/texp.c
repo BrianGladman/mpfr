@@ -30,6 +30,12 @@ extern int ilogb();
 extern int isnan();
 extern double drand48();
 extern void srand48();
+int ulp _PROTO((double, double)); 
+int check3 _PROTO((double, unsigned char, double)); 
+int check_large _PROTO((double, int, char)); 
+int check_worst_case _PROTO((double, double)); 
+int check_worst_cases _PROTO((void)); 
+void compare_exp2_exp3 _PROTO((int)); 
 
 int maxu=0;
 

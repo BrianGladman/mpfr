@@ -28,6 +28,13 @@ MA 02111-1307, USA. */
 #include "mpfr-test.h"
 #endif
 
+void check _PROTO((double, double, unsigned int, unsigned int, 
+		   unsigned int, unsigned int, double)); 
+void check53 _PROTO((double, double, unsigned int, double)); 
+void check24 _PROTO((float, float, unsigned int, float)); 
+void check_float _PROTO((void)); 
+void check_sign _PROTO((void)); 
+
 #define MINNORM 2.2250738585072013831e-308 /* 2^(-1022), smallest normalized */
 
 /* checks that x*y gives the same results in double

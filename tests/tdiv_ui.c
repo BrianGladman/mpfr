@@ -28,6 +28,7 @@ MA 02111-1307, USA. */
 #include "mpfr-test.h"
 
 extern int isnan();
+void check _PROTO((double, unsigned long, unsigned char, double)); 
 
 void check(double d, unsigned long u, unsigned char rnd, double e)
 {

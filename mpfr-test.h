@@ -29,6 +29,11 @@ MA 02111-1307, USA. */
 #define random mrand48
 #endif
 
+
+double drand(); 
+int ulp _PROTO((double, double)); 
+double dbl _PROTO((double, double)); 
+
 /* generate a random double using the whole range of possible values,
    including denormalized numbers, NaN, infinities, ... */
 double drand()

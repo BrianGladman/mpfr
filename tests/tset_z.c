@@ -26,6 +26,9 @@ MA 02111-1307, USA. */
 
 /* tset_z z rnd prec */
 
+void check _PROTO((long, unsigned char)); 
+void check_large _PROTO((void)); 
+
 void check(long i, unsigned char rnd) {
   mpfr_t f; mpz_t z; 
 

@@ -33,6 +33,15 @@ MA 02111-1307, USA. */
 
 extern int isnan();
 extern int getpid();
+void check _PROTO((double, double, unsigned int, unsigned int, unsigned int, unsigned int, double)); 
+void checknan _PROTO((double, double, unsigned int, unsigned int, unsigned int, unsigned int)); 
+void check3 _PROTO((double, double, unsigned int)); 
+void check4 _PROTO((double, double, unsigned int)); 
+void check5 _PROTO((double, unsigned int)); 
+void check2 _PROTO((double, int, double, int, int, int)); 
+void check2a _PROTO((double, int, double, int, int, int, char *)); 
+void check64 _PROTO((void)); 
+void check_same _PROTO((void)); 
 
 #define ABS(x) (((x)>0) ? (x) : (-x))
 
@@ -67,7 +76,10 @@ unsigned int py, unsigned int pz, double z1)
 void checknan(double x, double y, unsigned int rnd_mode, unsigned int px, 
 unsigned int py, unsigned int pz)
 {
-  double z2; mpfr_t xx,yy,zz; int cert=0;
+  double z2; mpfr_t xx,yy,zz; 
+#ifdef TEST
+  int cert=0;
+#endif
 
   mpfr_init2(xx, px);
   mpfr_init2(yy, py);
@@ -155,9 +167,7 @@ void check5(double x, unsigned int rnd_mode)
   }
   mpfr_clear(xx);
 }
-#endif
 
-#ifdef TEST
 void check2(x,px,y,py,pz,rnd_mode) double x,y; int px,py,pz,rnd_mode;
 {
   mpfr_t xx, yy, zz; double z,z2; int u;

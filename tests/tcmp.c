@@ -111,11 +111,11 @@ int main()
 
   mpfr_set_d (xx, 0.0, GMP_RNDN);
   mpfr_set_d (yy, 1.0, GMP_RNDN);
-  if (i = mpfr_cmp3 (xx, yy, 1) >= 0) {
+  if ((i = mpfr_cmp3 (xx, yy, 1)) >= 0) {
     fprintf (stderr, "Error: mpfr_cmp3 (0, 1, 1) gives %d instead of a negative value\n", i);
     exit (1);
   }
-  if (i = mpfr_cmp3 (xx, yy, -1) <= 0) {
+  if ((i = mpfr_cmp3 (xx, yy, -1)) <= 0) {
     fprintf (stderr, "Error: mpfr_cmp3 (0, 1, -1) gives %d instead of a positive value\n", i);
     exit (1);
   }

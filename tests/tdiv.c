@@ -29,6 +29,10 @@ MA 02111-1307, USA. */
 #include "mpfr-test.h"
 
 extern int isnan();
+void check4 _PROTO((double, double, unsigned char, int, double)); 
+void check24 _PROTO((float, float, unsigned char, float)); 
+void check_float _PROTO((void)); 
+void check_convergence _PROTO((void)); 
 
 #define check53(n, d, rnd, res) check4(n, d, rnd, 53, res)
 
@@ -165,8 +169,8 @@ void check_convergence()
 
 int main(int argc, char *argv[])
 {
-  int N; long long N2;   
-  double z[1]; 
+  int N;
+
 #ifdef TEST
   int i; double n, d, e;
 #ifdef __mips
