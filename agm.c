@@ -61,6 +61,10 @@ _mpfr_ceil_exp2 (double d)
   /* now exp = ceil(d) */
   x.d = 1.0;
   if (exp < -1022) exp = -1022;
+  else if (exp > 1024) {
+    fprintf (stderr, "Overflow in _mpfr_ceil_exp2\n");
+    exit (1);
+  }
   x.s.exp = 1023 + exp;
   return x.d;
 }
