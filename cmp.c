@@ -53,7 +53,11 @@ mpfr_cmp3(b, c, s)
    unsigned long bn, cn;
    mp_limb_t *bp, *cp;
 
-   if (!NOTZERO(b) && !NOTZERO(c)) { return 0; }
+   if (!NOTZERO(b)) {
+     if (!NOTZERO(c)) return 0; else return -(MPFR_SIGN(c));
+   }
+   else if (!NOTZERO(c)) return MPFR_SIGN(b);
+
    s = s * MPFR_SIGN(b) * MPFR_SIGN(c);
    if (s<0) return(MPFR_SIGN(b));
 
