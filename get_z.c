@@ -31,7 +31,7 @@ mpz_set_fr (mpz_ptr z, mpfr_srcptr f, mp_rnd_t rnd)
   /* if exp <= 0, then |f|<1, thus |o(f)|<=1 */
   mpfr_init2 (r, (exp <= 0) ? MPFR_PREC_MIN : exp + 1);
   mpfr_rint (r, f, rnd);
-  MPFR_ASSERTN (mpfr_number_p (r) );
+  MPFR_ASSERTN (MPFR_IS_FP (r) );
   exp = mpfr_get_z_exp (z, r);
   if (exp >= 0)
     mpz_mul_2exp (z, z, exp);
