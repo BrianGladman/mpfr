@@ -23,7 +23,9 @@ MA 02111-1307, USA. */
 #include <stdlib.h>
 #include <unistd.h>
 #include "gmp.h"
+#include "gmp-impl.h"
 #include "mpfr.h"
+#include "mpfr-impl.h"
 #include "mpfr-test.h"
 
 void check _PROTO((double, double, mp_rnd_t, unsigned int,
@@ -33,6 +35,7 @@ void check24 _PROTO((float, float, mp_rnd_t, float));
 void check_float _PROTO((void));
 void check_sign _PROTO((void));
 void check_exact _PROTO((void));
+void check_max _PROTO((void));
 
 /* checks that x*y gives the same results in double
    and with mpfr with 53 bits of precision */
@@ -236,6 +239,50 @@ check_exact ()
   mpfr_clear (d);
 }
 
+void check_max(void)
+{
+  mpfr_t xx, yy, zz;
+
+  mpfr_init2(xx, 4);
+  mpfr_init2(yy, 4);
+  mpfr_init2(zz, 4);
+  mpfr_set_d(xx, 11.0/16, GMP_RNDN);
+  mpfr_mul_2exp(xx, xx, MPFR_EMAX_DEFAULT/2, GMP_RNDN);
+  mpfr_set_d(yy, 11.0/16, GMP_RNDN);
+  mpfr_mul_2exp(yy, yy, MPFR_EMAX_DEFAULT - MPFR_EMAX_DEFAULT/2 + 1, GMP_RNDN);
+  mpfr_clear_flags();
+  mpfr_mul(zz, xx, yy, GMP_RNDU);
+  if (!(mpfr_overflow_p() && MPFR_IS_INF(zz)))
+    {
+      printf("check_max failed (should be an overflow)\n");
+      exit(1);
+    }
+
+  mpfr_clear_flags();
+  mpfr_mul(zz, xx, yy, GMP_RNDD);
+  if (mpfr_overflow_p() || MPFR_IS_INF(zz))
+    {
+      printf("check_max failed (should NOT be an overflow)\n");
+      exit(1);
+    }
+  mpfr_set_d(xx, 15.0/16, GMP_RNDN);
+  mpfr_mul_2exp(xx, xx, MPFR_EMAX_DEFAULT, GMP_RNDN);
+  if (!(MPFR_IS_FP(xx) && MPFR_IS_FP(zz)))
+    {
+      printf("check_max failed (internal error)\n");
+      exit(1);
+    }
+  if (mpfr_cmp(xx, zz) != 0)
+    {
+      printf("check_max failed: got ");
+      mpfr_out_str(stdout, 2, 0, zz, GMP_RNDZ);
+      printf(" instead of ");
+      mpfr_out_str(stdout, 2, 0, xx, GMP_RNDZ);
+      printf("\n");
+      exit(1);
+    }
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -272,6 +319,7 @@ main (int argc, char *argv[])
 	46, 22, 12, 0.385027296503914762e-16);
   check(4.58687081072827851358e-01, 2.20543551472118792844e-01, GMP_RNDN,
 	49, 3, 2, 0.09375);
+  check_max();
 #ifdef TEST
   srand48(getpid());
   prec = (argc<2) ? 53 : atoi(argv[1]);
