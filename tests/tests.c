@@ -48,6 +48,10 @@ MA 02111-1307, USA. */
 static void tests_rand_start (void);
 static void tests_rand_end   (void);
 
+extern void (*dummy_func) (mpfr_srcptr);
+
+void (*dummy_func)(mpfr_srcptr) = mpfr_dump;
+
 void
 tests_start_mpfr (void)
 {
