@@ -349,7 +349,8 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 	/* actualisation of the precision */
         Nt += 10;
 
-        ok = mpfr_can_round (t, err, GMP_RNDN, rnd_mode, Nz);
+        ok = mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
+                             Nz + (rnd_mode == GMP_RNDN));
 
         /* check exact power */
         if (ok == 0 && loop == 1)
