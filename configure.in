@@ -176,16 +176,20 @@ MPFR_CONFIGS
 dnl
 dnl Setup LIBTOOL
 dnl
-dnl Currently libtool always detect a C++ and fortran compiler
-dnl Reduce the search list to g++ and g77
-dnl It may freeze with cl on some systems with old libtool.
-dnl For CXXCPP, it is definitevely an ugly hack which should be remove
-dnl as soon as possible but otherwise some systems may not be able to
-dnl build MPFR while they should.
+dnl Currently libtool always want to detect a C++ and fortran compiler
+dnl Remove this by hacking a few: AC_PROG_CXX, AC_PROG_F77 are defined
+dnl but they are never called. Set with_tag to ''
+dnl Set am__fastdepCXX to something
 dnl Remove this when Libtool >= 2.0 is used
-AC_PROG_CXX([g++])
-AC_PROG_F77([g77])
-dnl CXXCPP="grep limits"
+if test -n "$variable_indefinie" ; then
+ AC_PROG_CXX([g++])
+ AC_PROG_F77([g77])
+ AC_PROG_CXXCPP
+fi
+am__fastdepCXX_FALSE='#'
+if test "${with_tags+set}" != set; then
+  with_tags=
+fi
 
 dnl Configs for Windows DLLs.
 dnl libtool requires "-no-undefined" for win32 dll
@@ -217,9 +221,6 @@ case $host in
   ;;
 esac
 # Never enable CXX and GCJ in libtool (remove this for libtool >= 2.0)
-if test "${with_tags+set}" != set; then
-  with_tags=
-fi
 dnl Finally set up LibTool
 AC_PROG_LIBTOOL
 
