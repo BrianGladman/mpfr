@@ -30,7 +30,7 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
 static double mpfr_ceil_double (double);
-static int mpfr_get_str_aux (char *, mp_exp_t *, mp_limb_t *,
+static int mpfr_get_str_aux (char *const, mp_exp_t *const, mp_limb_t *const,
 		       mp_size_t, mp_exp_t, long, int, size_t, mp_rnd_t);
 static mp_exp_t mpfr_get_str_compute_g (int, mp_exp_t);
 
