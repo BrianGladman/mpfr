@@ -146,6 +146,7 @@ test4 (char *foo, mp_prec_t prec, mp_rnd_t rnd)
   for (i=0; i<6; i++) 
     {
 
+      MPFR_CLEAR_FLAGS(op1);
       if (i==0) MPFR_SET_NAN(op1);
       if (i==1) mpfr_set_d (op1, 1.0/0.0, GMP_RNDN);
       if (i==2) mpfr_set_d (op1, -1.0/0.0, GMP_RNDN);
@@ -156,6 +157,7 @@ test4 (char *foo, mp_prec_t prec, mp_rnd_t rnd)
       for (j=0; j<6; j++) 
         {
 
+          MPFR_CLEAR_FLAGS(op2);
           if (j==0) MPFR_SET_NAN(op2);
           if (j==1) mpfr_set_d (op2, 1.0/0.0, GMP_RNDN);
           if (j==2) mpfr_set_d (op2, -1.0/0.0, GMP_RNDN);
@@ -166,6 +168,7 @@ test4 (char *foo, mp_prec_t prec, mp_rnd_t rnd)
           for (k=0; k<6; k++) 
             {
 
+              MPFR_CLEAR_FLAGS(op3);
               if (k==0) MPFR_SET_NAN(op3);
               if (k==1) mpfr_set_d (op3, 1.0/0.0, GMP_RNDN);
               if (k==2) mpfr_set_d (op3, -1.0/0.0, GMP_RNDN);
@@ -279,10 +282,6 @@ test4 (char *foo, mp_prec_t prec, mp_rnd_t rnd)
                           mpfr_get_d (res));
                  exit (1);
                }
-
-              MPFR_CLEAR_FLAGS(op1);
-              MPFR_CLEAR_FLAGS(op2);
-              MPFR_CLEAR_FLAGS(op3);
             }
         }
     }
