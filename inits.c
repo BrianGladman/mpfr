@@ -1,6 +1,6 @@
 /* mpfr_inits -- initialize several floating-point numbers
 
-Copyright 2003 Free Software Foundation, Inc.
+Copyright 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 

@@ -1,6 +1,6 @@
 /* mpfr_random -- generate a random floating-point number
 
-Copyright 1999, 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright 1999, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -19,8 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-
-#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
 /* Computes a random mpfr in [0, 1[ with precision MPFR_PREC */

@@ -1,6 +1,6 @@
 /* mpfr_nan_p -- check for NaN
 
-Copyright 2000, 2001 Free Software Foundation.
+Copyright 2000, 2001, 2004 Free Software Foundation.
 
 This file is part of the MPFR Library.
 

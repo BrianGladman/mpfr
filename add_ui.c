@@ -1,6 +1,6 @@
 /* mpfr_add_ui -- add a floating-point number with a machine integer
 
-Copyright 2000, 2001, 2002, 2003 Free Software Foundation.
+Copyright 2000, 2001, 2002, 2003, 2004 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -18,7 +18,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
-
 
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"

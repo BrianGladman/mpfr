@@ -1,6 +1,6 @@
 /* mpfr_swap (U, V) -- Swap U and V.
 
-Copyright 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -23,7 +23,7 @@ MA 02111-1307, USA. */
 
 #include "mpfr-impl.h"
 
-/*
+/* (Outdated rem)
  * We now use memcpy instead of copying the structure field by field.
  * Thus we avoid copying values that may have trap representations,
  * and if we change the structure in the future, this will still be
