@@ -236,7 +236,7 @@ ck(ap+k, an-k, 8);
       overlap = diff_exp%mp_bits_per_limb;
 
       /* warning: a shift of zero bit is not allowed */
-
+      MPN_ZERO(ap, an-k-cn); 
       if (overlap) { 
 	cc=mpn_rshift(ap+(an-k-cn), cp, cn, overlap); 
 	if (an-k-cn>0) ap[an-k-cn-1]=cc;
