@@ -56,8 +56,6 @@ int check1(double a, unsigned char rnd_mode, double res1, int bugs)
       }
     }
   }
-    /*else 
-      printf("GOAL : log a=%1.20e is %1.20e\n",a,res1);*/
   if (!isnan(res1) || !isnan(res2))
     return ulp(res1,res2);
   else
@@ -268,4 +266,5 @@ int main(int argc, char *argv[]) {
   check2(7.34302197248998461006e+43,GMP_RNDZ,1.01004909469513179942e+02);
   check2(6.09969788341579732815e+00,GMP_RNDD,1.80823924264386204363e+00);
   }
+  return 0;
 }
