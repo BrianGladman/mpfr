@@ -52,7 +52,7 @@ mpfr_log10 (r, a, rnd_mode)
  /* If a is negative, the result is NaN */
   if (MPFR_SIGN(a) < 0)
     {
-      if (MPFR_IS_ZERO(a)) 
+      if (!MPFR_IS_INF(a) && MPFR_IS_ZERO(a))
       {
         MPFR_SET_INF(r); 
         if (MPFR_SIGN(r) > 0)
@@ -71,7 +71,8 @@ mpfr_log10 (r, a, rnd_mode)
 
   /* check for infinity before zero */
   if (MPFR_IS_INF(a))
-    {      
+    {
+      /* only +Inf can go here */
       MPFR_SET_INF(r);
       if(MPFR_SIGN(r) < 0)
         MPFR_CHANGE_SIGN(r);
