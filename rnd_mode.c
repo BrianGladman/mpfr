@@ -38,11 +38,15 @@ extern int swapRM();
 #define TOINFP swapRM(ROUND_TO_PLUS_INFINITY)
 #define TONEAREST swapRM(ROUND_TO_NEAREST)
 #define TOINFM swapRM(ROUND_TO_MINUS_INFINITY)
-#elif (defined (solaris) || defined (sun4) || defined(hpux))
+#elif (defined (solaris) || defined (sun4) || defined(hpux) || defined(freebsd))
 #ifdef hpux
 #include <math.h>
 #else
+#ifdef freebsd
+#include <floatingpoint.h>
+#else
 #include <ieeefp.h>
+#endif
 #endif
 #define TOZERO fpsetround(FP_RZ)
 #define TOINFP fpsetround(FP_RP)
