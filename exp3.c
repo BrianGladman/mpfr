@@ -152,24 +152,7 @@ mpfr_exp3 (y, x, rnd_mode)
   int good = 0;
   int realprec = 0;
   int iter;
-  int logn;
-
-  /* commencons par 0 */
-  if (MPFR_IS_NAN(x)) { MPFR_SET_NAN(y); return 1; }
-
-  if (MPFR_IS_INF(x)) 
-    { 
-      if (MPFR_SIGN(x) > 0) 
-	{ MPFR_SET_INF(y); if (MPFR_SIGN(y) == -1) { MPFR_CHANGE_SIGN(y); } }
-      else 
-	{ MPFR_SET_ZERO(y);  if (MPFR_SIGN(y) == -1) { MPFR_CHANGE_SIGN(y); } }
-      /* TODO: conflits entre infinis et zeros ? */
-    }
-
-  if (!MPFR_NOTZERO(x)) {
-    mpfr_set_ui(y, 1, GMP_RNDN); 
-    return 0;
-  }
+  int logn, inexact = 0;
 
   /* Decomposer x */
   /* on commence par ecrire x = 1.xxxxxxxxxxxxx
@@ -195,8 +178,8 @@ mpfr_exp3 (y, x, rnd_mode)
     k = _mpfr_ceil_log2 ((double) Prec / BITS_PER_MP_LIMB);
 
     /* now we have to extract */
-    mpfr_init2(t, Prec);
-    mpfr_init2(tmp, Prec);
+    mpfr_init2 (t, Prec);
+    mpfr_init2 (tmp, Prec);
     mpfr_set_ui(tmp,1,GMP_RNDN);
     twopoweri = BITS_PER_MP_LIMB;
     if (k <= prec_x) iter = k; else iter= prec_x;
@@ -226,21 +209,21 @@ mpfr_exp3 (y, x, rnd_mode)
 #endif
 	twopoweri <<= 1;
     }
+      mpfr_clear (t);
       for (loop= 0 ; loop < shift_x; loop++)
-	mpfr_mul(tmp,tmp,tmp,GMP_RNDD);
-      mpfr_clear(t);      	    
-      if (mpfr_can_round(tmp, realprec, GMP_RNDD, rnd_mode, MPFR_PREC(y))){
-	    mpfr_set(y,tmp,rnd_mode);
-	    mpfr_clear(tmp);
-	    good = 1;
-      } else {
-	mpfr_clear(tmp);
+	mpfr_mul (tmp, tmp, tmp, GMP_RNDD);
+      if (mpfr_can_round (tmp, realprec, GMP_RNDD, rnd_mode, MPFR_PREC(y)))
+	{
+	  inexact = mpfr_set (y, tmp, rnd_mode);
+	  good = 1;
+	}
+      else
 	realprec += 3*logn;
-      }
+      mpfr_clear (tmp);
   }
   mpz_clear (uk);
   mpfr_clear(x_copy);
-  return 0;
+  return inexact;
 } 
 
 

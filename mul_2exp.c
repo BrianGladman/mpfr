@@ -25,20 +25,23 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-void
+int
 #if __STDC__
-mpfr_mul_2exp(mpfr_ptr y, mpfr_srcptr x, unsigned long int n, mp_rnd_t rnd_mode)
+mpfr_mul_2exp (mpfr_ptr y, mpfr_srcptr x, unsigned long int n, mp_rnd_t rnd_mode)
 #else
-mpfr_mul_2exp(y, x, n, rnd_mode)
+mpfr_mul_2exp (y, x, n, rnd_mode)
      mpfr_ptr y;
      mpfr_srcptr x;
      unsigned long int n;
      mp_rnd_t rnd_mode;
 #endif
 {
+  int inexact = 0;
+
   /* Important particular case */ 
-  if (y != x) mpfr_set(y, x, rnd_mode);
-  MPFR_EXP(y) += n;
-  return;
+  if (y != x)
+    inexact = mpfr_set (y, x, rnd_mode);
+  return ((MPFR_EXP(y) += n) > __mpfr_emax)
+    ? mpfr_set_overflow (y, rnd_mode, MPFR_SIGN(y)) : inexact;
 }
 
