@@ -944,7 +944,12 @@ Free a string allocated by @code{mpfr_get_str} using the current unallocation
 function (preliminary interface).
 The block is assumed to be @code{strlen(@var{str})+1} bytes.
 For more information about how it is done:
+@ifnothtml
 @pxref{Custom Allocation,,, gmp,GNU MP}.
+@end ifnothtml
+@ifhtml
+see Custom Allocation (GNU MP).
+@end ifhtml
 @end deftypefun
 
 @deftypefun int mpfr_fits_ulong_p (mpfr_t @var{op}, mp_rnd_t @var{rnd})
