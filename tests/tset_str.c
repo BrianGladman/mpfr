@@ -480,6 +480,12 @@ main (int argc, char *argv[])
   MPFR_ASSERTN(mpfr_cmp_ui (x, 1) == 0 && ret == -1);
   ret = mpfr_set_str (x, "1p10toto", 16, GMP_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui (x, 1) == 0 && ret == -1);
+  ret = mpfr_set_str (x, "", 16, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (x, 1) == 0 && ret == -1);
+  ret = mpfr_set_str (x, "+", 16, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (x, 1) == 0 && ret == -1);
+  ret = mpfr_set_str (x, "-", 16, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (x, 1) == 0 && ret == -1);
   ret = mpfr_set_str (x, "this_is_an_invalid_number_in_base_36", 36, GMP_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui (x, 1) == 0 && ret == -1);
   mpfr_set_prec (x, 135);
