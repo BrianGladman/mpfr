@@ -93,8 +93,8 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 AC_MSG_CHECKING(for recent GMP)
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include "gmp.h"
-#if (__GNU_MP_VERSION < 4)
-# error "min: GMP 4.0.0"
+#if (__GNU_MP_VERSION*100+__GNU_MP_VERSION_MINOR*10+__GNU_MP_VERSION_PATCHLEVEL < 412)
+# error "min GMP version is 4.1.2"
 #endif
 ]], [[]])],[AC_MSG_RESULT(yes)],[AC_MSG_RESULT(no)
      AC_MSG_ERROR([GMP 4.0.0 min required])
@@ -142,6 +142,26 @@ if test -f confdefs.h; then
 fi
 
 AC_MY_LIBS($with_gmp_lib, gmp)
+
+dnl Check for corresponding 'gmp.h' and libgmp.a
+AC_MSG_CHECKING(if gmp.h version and libgmp version are the same)
+AC_TRY_RUN([
+#include <stdio.h>
+#include <string.h>
+#include "gmp.h"
+int main()
+{
+  char buffer[100];
+  sprintf (buffer, "%d.%d.%d", __GNU_MP_VERSION, __GNU_MP_VERSION_MINOR,
+  __GNU_MP_VERSION_PATCHLEVEL);
+  return strcmp (buffer, gmp_version);
+}
+], AC_MSG_RESULT(yes), 
+   [AC_MSG_RESULT(no)
+    AC_MSG_ERROR(['gmp.h' and 'libgmp' have different versions! you have to properly reinstall GMP.])],
+    AC_MSG_RESULT([can't test])
+)
+
 AC_SUBST(INCLUDES)
 AC_SUBST(LDADD)
 AC_SUBST(LDFLAGS)
