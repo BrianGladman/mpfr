@@ -47,6 +47,18 @@ mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
       MPFR_RET_NAN;
     }
 
+  if (d > LDBL_MAX)
+    {
+      mpfr_set_inf (r, 1);
+      return 0;
+    }
+
+  if (d < -LDBL_MAX)
+    {
+      mpfr_set_inf (r, -1);
+      return 0;
+    }
+
   if (d == 0.0)
     return mpfr_set_d (r, (double) d, rnd_mode);
 
@@ -55,15 +67,14 @@ mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
   mpfr_set_ui (t, 0, GMP_RNDN);
   while (d != 0.0)
     {
-      mpfr_set_d (u, (double) d, GMP_RNDN);
-      if (mpfr_inf_p (u) && (d + d != d))
+      if ((d > (long double) DBL_MAX) || ((-d) > (long double) DBL_MAX))
         { /* d is neither +Inf nor -Inf and u is Inf: this implies that an
              overflow occured, i.e. the exponent of d is too large for the
              double format */
-          long double div10, div11, div12, div13;
+          long double div9, div10, div11, div12, div13;
 
-          div10 = (long double) (double) 1.34078079299425971e154; /* 2^(2^9) */
-          div10 = div10 * div10;
+          div9 = (long double) (double) 1.34078079299425971e154; /* 2^(2^9) */
+          div10 = div9 * div9;
           div11 = div10 * div10; /* 2^(2^11) */
           div12 = div11 * div11; /* 2^(2^12) */
           div13 = div12 * div12; /* 2^(2^13) */
@@ -87,11 +98,22 @@ mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
               d = d / div10; /* exact */
               shift_exp += 1024;
             }
-          MPFR_CLEAR_INF(u);
-          MPFR_SET_ZERO(u);
+          /* warning: we may have DBL_MAX=2^1024*(1-2^(-53)) < d < 2^1024,
+             therefore we have one extra exponent reduction step */
+          if (ABS(d) >= div9)
+            {
+              d = d / div9; /* exact */
+              shift_exp += 512;
+            }
+          mpfr_set_ui (u, 0, GMP_RNDZ);
         }
+      else
+        {
+          /* since -DBL_MAX <= d <= DBL_MAX, the cast to double should not
+             overflow here */
+          mpfr_set_d (u, (double) d, GMP_RNDN);
       /* warning: using MPFR_IS_ZERO will cause a READ_UNINIT_MEM if u=Inf */
-      else if (mpfr_cmp_ui (u, 0) == 0 && (d != (long double) 0.0)) /* underflow */
+      if (mpfr_cmp_ui (u, 0) == 0 && (d != (long double) 0.0)) /* underflow */
         {
           long double div10, div11, div12, div13;
           div10 = (long double) (double) 5.5626846462680034577255e-309; /* 2^(-2^10) */
@@ -118,6 +140,7 @@ mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
               d = d / div10; /* exact */
               shift_exp -= 1024;
             }
+        }
         }
       mpfr_add (t, t, u, GMP_RNDN); /* exact */
       if (!mpfr_number_p (t))
