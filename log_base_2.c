@@ -45,15 +45,17 @@ mpfr_log2 (r, a, rnd_mode)
 
   /* If a is NaN, the result is NaN */
   if (MPFR_IS_NAN(a))
-    {
+    {  
+      MPFR_CLEAR_FLAGS(r);
       MPFR_SET_NAN(r);
       return 1;
     }
  /* If a is negative, the result is NaN */
   if (MPFR_SIGN(a) < 0)
     {
-      if (MPFR_IS_ZERO(a)) 
+      if (!MPFR_IS_INF(a) && MPFR_IS_ZERO(a)) 
       {
+        MPFR_CLEAR_FLAGS(r);
         MPFR_SET_INF(r); 
         if (MPFR_SIGN(r) > 0)
           MPFR_CHANGE_SIGN(r);
@@ -62,6 +64,7 @@ mpfr_log2 (r, a, rnd_mode)
       }
       else
       {
+        MPFR_CLEAR_FLAGS(r);
         MPFR_SET_NAN(r);
         return 1;
       }
@@ -72,6 +75,7 @@ mpfr_log2 (r, a, rnd_mode)
   /* check for infinity before zero */
   if (MPFR_IS_INF(a))
     {      
+      MPFR_CLEAR_FLAGS(r);
       MPFR_SET_INF(r);
       if(MPFR_SIGN(r) < 0)
         MPFR_CHANGE_SIGN(r);
@@ -84,6 +88,7 @@ mpfr_log2 (r, a, rnd_mode)
 
   if (MPFR_IS_ZERO(a)) 
     {
+      MPFR_CLEAR_FLAGS(r);
       MPFR_SET_INF(r); 
       if (MPFR_SIGN(r) > 0)
 	MPFR_CHANGE_SIGN(r);
@@ -94,6 +99,7 @@ mpfr_log2 (r, a, rnd_mode)
   /* If a is 1, the result is 0 */
   if (mpfr_cmp_ui(a,1) == 0)
     {
+      MPFR_CLEAR_FLAGS(r);
       MPFR_SET_SAME_SIGN(r,a);
       MPFR_SET_ZERO(r);
       return 0; 
