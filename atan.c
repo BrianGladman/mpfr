@@ -87,11 +87,12 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
   if (MPFR_IS_NAN(x))
     {
       MPFR_SET_NAN(arctangent);
-      return 1;
+      MPFR_RET_NAN;
     }
 
   if (MPFR_IS_INF(x))
     {
+      MPFR_CLEAR_FLAGS(arctangent);
       if (MPFR_SIGN(x) > 0) /* arctan(+inf) = Pi/2 */
 	mpfr_const_pi (arctangent, rnd_mode);
       else /* arctan(-inf) = -Pi/2 */
@@ -106,7 +107,9 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
       return 1; /* inexact */
     }
 
-  if (!MPFR_NOTZERO(x))
+  MPFR_CLEAR_FLAGS(arctangent);
+
+  if (MPFR_IS_ZERO(x))
     {
       mpfr_set_ui(arctangent, 0, GMP_RNDN);
       return 0; /* exact result */
