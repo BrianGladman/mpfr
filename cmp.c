@@ -95,8 +95,9 @@ mpfr_cmp3 (mpfr_srcptr b, mpfr_srcptr c, int s)
    return 0;
 }
 
+#undef mpfr_cmp
 int
-(mpfr_cmp) (mpfr_srcptr b, mpfr_srcptr c)
+mpfr_cmp (mpfr_srcptr b, mpfr_srcptr c)
 {
-  return mpfr_cmp(b, c);
+  return mpfr_cmp3 (b, c, 1);
 }

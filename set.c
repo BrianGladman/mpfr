@@ -63,16 +63,18 @@ mpfr_set4 (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode, int signb)
     }
 }
 
-/* Set a to b (Define function which calls the macro) */
+/* Set a to b  */
+#undef mpfr_set
 int
-(mpfr_set) (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
+mpfr_set (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
 {
-  return mpfr_set (a, b, rnd_mode);
+  return mpfr_set4 (a, b, rnd_mode, MPFR_SIGN (b));
 }
 
-/* Set a to |b| (Define function which calls the macro) */
+/* Set a to |b| */
+#undef mpfr_abs
 int
-(mpfr_abs) (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
+mpfr_abs (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
 {
-  return mpfr_abs (a, b, rnd_mode);
+  return mpfr_set4 (a, b, rnd_mode, MPFR_SIGN_POS);
 }

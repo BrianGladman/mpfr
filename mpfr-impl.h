@@ -75,6 +75,20 @@ MA 02111-1307, USA. */
 # define strncasecmp mpfr_strncasecmp
 #endif
 
+/* Define theses variables if we have built MPFR with 
+   MPFR_USE_NO_MACRO (ie mpfr.h doesn't declare them).
+   I don't see any interest to build MPFR with it. */
+#ifdef MPFR_USE_NO_MACRO
+extern unsigned int __gmpfr_flags;
+extern mp_exp_t     __gmpfr_emin;
+extern mp_exp_t     __gmpfr_emax;
+extern mp_prec_t    __gmpfr_default_fp_bit_precision;
+extern mpfr_rnd_t   __gmpfr_default_rounding_mode;
+extern mpfr_cache_t __gmpfr_cache_const_pi;
+extern mpfr_cache_t __gmpfr_cache_const_log2;
+extern mpfr_cache_t __gmpfr_cache_const_euler;
+#endif
+
 
 /******************************************************
  ***************** Detection macros *******************
@@ -575,11 +589,14 @@ extern unsigned char *mpfr_stack;
  *****************  Cache macros **********************
  ******************************************************/
 
-/* Cache Handling */
-#ifdef MPFR_NO_CACHE
-# undef mpfr_const_pi
-# undef mpfr_const_log2
-# undef mpfr_const_euler
+/* Cache Handling: Check if we can use it */
+#undef mpfr_const_pi
+#undef mpfr_const_log2
+#undef mpfr_const_euler
+#ifndef MPFR_NO_CACHE
+# define mpfr_const_pi(_d,_r)    mpfr_cache(_d, __gmpfr_cache_const_pi, _r)
+# define mpfr_const_log2(_d,_r)  mpfr_cache(_d, __gmpfr_cache_const_log2, _r)
+# define mpfr_const_euler(_d,_r) mpfr_cache(_d, __gmpfr_cache_const_euler, _r)
 #endif
 
 #define MPFR_DECL_INIT_CACHE(_cache,_func) \
