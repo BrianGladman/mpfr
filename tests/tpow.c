@@ -270,22 +270,25 @@ special ()
   MPFR_ASSERTN(mpfr_inf_p (z) && MPFR_IS_NEG(z));
   mpfr_set_str_binary (y, "1.000000001E8");
   mpfr_pow (z, x, y, GMP_RNDN);
-  MPFR_ASSERTN(mpfr_nan_p (z));
+  MPFR_ASSERTN(mpfr_inf_p (z) && MPFR_IS_POS(z));
 
   mpfr_set_inf (x, -1);
   mpfr_set_prec (y, 2 * mp_bits_per_limb);
   mpfr_set_ui (y, 1, GMP_RNDN);
   mpfr_mul_2exp (y, y, mp_bits_per_limb - 1, GMP_RNDN);
+  /* y = 2^(mp_bits_per_limb - 1) */
   mpfr_pow (z, x, y, GMP_RNDN);
   MPFR_ASSERTN(mpfr_inf_p (z) && MPFR_IS_POS(z));
   mpfr_nextabove (y);
   mpfr_pow (z, x, y, GMP_RNDN);
-  MPFR_ASSERTN(mpfr_nan_p (z));
+  /* y = 2^(mp_bits_per_limb - 1) + epsilon */
+  MPFR_ASSERTN(mpfr_inf_p (z) && MPFR_IS_POS(z));
   mpfr_nextbelow (y);
   mpfr_div_2exp (y, y, 1, GMP_RNDN);
   mpfr_nextabove (y);
   mpfr_pow (z, x, y, GMP_RNDN);
-  MPFR_ASSERTN(mpfr_nan_p (z));
+  /* y = 2^(mp_bits_per_limb - 2) + epsilon */
+  MPFR_ASSERTN(mpfr_inf_p (z) && MPFR_IS_POS(z));
 
   mpfr_set_si (x, -1, GMP_RNDN);
   mpfr_set_prec (y, 2);
@@ -331,7 +334,7 @@ particular_cases (void)
           /*          NaN +inf -inf  +0   -0   +1   -1   +2   -2  +0.5 -0.5 */
           /*  NaN */ { 0,   0,   0,  128, 128,  0,   0,   0,   0,   0,   0  },
           /* +inf */ { 0,   1,   2,  128, 128,  1,   2,   1,   2,   1,   2  },
-          /* -inf */ { 0,   1,   2,  128, 128, -1,  -2,   1,   2,   0,   0  },
+          /* -inf */ { 0,   1,   2,  128, 128, -1,  -2,   1,   2,   1,   2  },
           /*  +0  */ { 0,   2,   1,  128, 128,  2,   1,   2,   1,   2,   1  },
           /*  -0  */ { 0,   2,   1,  128, 128, -2,  -1,   2,   1,   2,   1  },
           /*  +1  */ {128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128 },

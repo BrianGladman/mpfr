@@ -140,7 +140,7 @@ is_odd (mpfr_srcptr y)
 
 /* The computation of z = pow(x,y) is done by
    z = exp(y * log(x)) = x^y
-   For the special cases, see Section F.9.4.4 of the C standard:
+   For the special cases, see Section F.9.4.4 of the C99 standard:
      _ pow(±0, y) = ±inf for y an odd integer < 0.
      _ pow(±0, y) = +inf for y < 0 and not an odd integer.
      _ pow(±0, y) = ±0 for y an odd integer > 0.
@@ -226,37 +226,33 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 		}
 	    }
 	}
-      /* x is Inf or zero, and y is now an ordinary number (even non-zero) */
+      /* x is Inf or zero, and y is now an ordinary number (non-zero) */
       MPFR_ASSERTD(MPFR_IS_FP(y));
       if (MPFR_IS_INF(x))
 	{
           /* +Inf^y gives +Inf if y > 0, +0 if y < 0
-             -Inf^y gives NaN for y non-integer
-                          s*Inf for y positive integer of sign s
-                          s*0   for y negative integer of sign s */
+             -Inf^y gives -Inf for y an odd integer > 0           (a)
+                          +Inf for y > 0 and not an odd integer   (b)
+                          -0 for y an odd integer < 0             (c)
+                          +0 for y < 0 and not an odd integer     (d).
+             Warning: these are the rules of the C99 standard, which
+             may be counter-intuitive, especially (b) and (d), where
+             we might expect NaN when taking the limit of x^y when x -> -Inf.
+          */
 	  int negative;
 	  /* Determine the sign now, in case y and z are the same object */
 	  negative = MPFR_IS_NEG(x);
 	  MPFR_CLEAR_FLAGS(z);
           if (negative) /* x = -Inf */
             {
-              int odd = is_odd (y);
-              if (odd == 0) /* non-integer */
-                {
-                  MPFR_SET_NAN(z);
-                  MPFR_RET_NAN;
-                }
-              else 
-                {
-                  if (MPFR_IS_POS(y))
-                    MPFR_SET_INF(z);
-                  else
-                    MPFR_SET_ZERO(z);
-                  if (odd == 1) /* odd integer */
-                    MPFR_SET_NEG(z);
-                  else
-                    MPFR_SET_POS(z);
-                }
+              if (MPFR_IS_POS(y))
+                MPFR_SET_INF(z);
+              else
+                MPFR_SET_ZERO(z);
+              if (is_odd (y) == 1) /* y is an odd integer */
+                MPFR_SET_NEG(z);
+              else
+                MPFR_SET_POS(z);
             }
           else /* x = +Inf */
             {
