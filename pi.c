@@ -18,14 +18,14 @@ R(N) = sum((4/(8*n+1)-2/(8*n+4)-1/(8*n+5)-1/(8*n+6))/16^(n-N), n=N..infinity)
 Let f(n) = 4/(8*n+1)-2/(8*n+4)-1/(8*n+5)-1/(8*n+6), we can show easily that
 f(n) < 15/(64*n^2), so R(N) < sum(15/(64*n^2)/16^(n-N), n=N..infinity)
                             < 15/64/N^2*sum(1/16^(n-N), n=N..infinity)
-			    = 1/64/N^2
+			    = 1/4/N^2
 
 Now let S'(N) = sum(floor(16^(N-n)*(120*n^2+151*n+47),
   (512*n^4+1024*n^3+712*n^2+194*n+15)), n=0..N-1)
 
 S(N)-S'(N) <= sum(1, n=0..N-1) = N
 
-so Pi*16^N-S'(N) <= N+1
+so Pi*16^N-S'(N) <= N+1 (as 1/4/N^2 < 1)
 */
 
 #include <stdio.h>
