@@ -78,7 +78,9 @@ mpfr_log()
   if (ref<0)
     ref=-ref;
 
-  p=q+4;
+  /* use initial precision about q+lg(q)+5 */
+  p=q+5; m=q; while (m) { p++; m >>= 1; }
+
   /* adjust to entire limb */
   if (p%BITS_PER_MP_LIMB) p += BITS_PER_MP_LIMB - (p%BITS_PER_MP_LIMB);
 
