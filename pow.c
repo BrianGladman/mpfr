@@ -50,9 +50,9 @@ mpfr_pow_ui (x, y, n, rnd)
     {
       if (n == 0) { MPFR_SET_NAN(x); return 0; }
       /* Inf^n = Inf, (-Inf)^n = Inf for n even, -Inf for n odd */
-      else if ((MPFR_SIGN(y) < 0 && (MPFR_SIGN(x) > 0 || n % 2 == 1)) ||
+      else if ((MPFR_SIGN(y) < 0 && (MPFR_SIGN(x) > 0 && n % 2 == 1)) ||
 	       (MPFR_SIGN(y) > 0 && (MPFR_SIGN(x) < 0)))
-	MPFR_CHANGE_SIGN(x); 
+	MPFR_CHANGE_SIGN(x);
       MPFR_SET_INF(x); return 0; 
     }
   
