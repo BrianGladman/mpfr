@@ -145,9 +145,7 @@ mpfr_div (r, u, v, rnd_mode)
       printf(".\n"); 
 #endif
 
-      q_limb = (rsize==rrsize) /* use Burnikel-Ziegler algorithm */
-	? mpn_divrem_n (rp, tp0, tmp, rsize)
-	: mpn_divrem (rp, 0, tp0, rsize+rrsize, tmp, rsize);
+      q_limb = mpn_divrem (rp, 0, tp0, rsize+rrsize, tmp, rsize);
       tp = tp0; /* location of remainder */
 
 #ifdef DEBUG
