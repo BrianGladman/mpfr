@@ -99,7 +99,7 @@ typedef unsigned long  mpfr_prec_t;
 
 /* Definition of precision limits */
 #define MPFR_PREC_MIN 2
-#define MPFR_PREC_MAX ((~(mpfr_prec_t)0)>>1)
+#define MPFR_PREC_MAX ((mpfr_prec_t)((~(mpfr_prec_t)0)>>1))
 
 /* Definition of sign */
 typedef int          mpfr_sign_t;
