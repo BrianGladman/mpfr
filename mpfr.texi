@@ -537,6 +537,9 @@ is greater (resp. lower) than the exact result.
 For example with the @code{GMP_RNDU} rounding mode, the returned value
 is usually positive, except when the result is exact, in which case it is
 zero.
+In the case of an infinite result, it is considered as inexact when it was
+obtained by overflow, and exact otherwise.
+A NaN result (Not-a-Number) always corresponds to an inexact return value.
 
 @deftypefun void mpfr_set_default_rounding_mode (mp_rnd_t @var{rnd})
 Sets the default rounding mode to @var{rnd}.
@@ -637,7 +640,7 @@ a call to @code{mpfr_clear(x)} followed by a call to
 @code{mpfr_init2(x, prec)}, but more efficient as no allocation is done in
 case the current allocated space for the mantissa of @var{x} is enough.
 It is not allowed to set @var{prec} to zero: in that case, a non-zero value
-is returned.
+is returned, as well as when the allocation fails.
 
 In case you want to keep the previous value stored in @var{x},
 use @code{mpfr_round} instead.
@@ -871,7 +874,7 @@ Set @var{rop} to the absolute value of @var{op},
 rounded in the direction @var{rnd}.
 @end deftypefun
 
-@deftypefun void mpfr_mul_2exp (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
+@deftypefun int mpfr_mul_2exp (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
 @ifinfo
 Set @var{rop} to @var{op1} times 2 raised to @var{op2}
 @end ifinfo
@@ -882,9 +885,11 @@ Set @var{rop} to $@var{op1} \times 2^{op2}$
 @end iftex
 rounded to the direction @var{rnd}. Just increases the exponent by @var{op2}
 when @var{rop} and @var{op1} are identical.
+Return zero when @code{rop=op1}, a positive value when @code{rop > op1},
+and a negative value when @code{rop < op1}.
 @end deftypefun
 
-@deftypefun void mpfr_div_2exp (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
+@deftypefun int mpfr_div_2exp (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
 @ifinfo
 Set @var{rop} to @var{op1} divided by 2 raised to @var{op2}.
 @end ifinfo
@@ -895,6 +900,8 @@ Set @var{rop} to $@var{op1}/2^{op2}$.
 @end iftex
 rounded to the direction @var{rnd}. Just decreases the exponent by @var{op2}
 when @var{rop} and @var{op1} are identical.
+Return zero when @code{rop=op1}, a positive value when @code{rop > op1},
+and a negative value when @code{rop < op1}.
 @end deftypefun
 
 @node Float Comparison, I/O of Floats, Float Arithmetic, Floating-point Functions
@@ -959,38 +966,10 @@ rounding mode @var{rnd} for all operations.
 @end deftypefun
 
 @deftypefun int mpfr_sgn (mpfr_t @var{op})
-@ifinfo
-Return +1 if @var{op} > 0, 0 if @var{op} = 0, and @minus{}1 if @var{op} < 0.
-@end ifinfo
-@iftex
-@tex
-Return $+1$ if $@var{op} > 0$, $0$ if $@var{op} = 0$, 
-and $-1$ if $@var{op} < 0$.
-@end tex
-@end iftex
-This function is provided for compatibility with @var{mpf}.
+Return a positive value if @var{op} > 0, zero if @var{op} = 0,
+and a negative value if @var{op} < 0.
 Its result is not specified when @var{op} is NaN (Not-a-Number).
 @end deftypefun
-
-@deftypefn Macro int SIGN (mpfr_t @var{op})
-@ifinfo
-Return +1 if @var{op} > 0, and @minus{}1 if @var{op} < 0.
-@end ifinfo
-@iftex
-@tex
-Return $+1$ if $@var{op} > 0$, and $-1$ if $@var{op} < 0$.
-@end tex
-@end iftex
-This function is actually implemented as a macro.  It evaluates its
-arguments multiple times.
-As in the IEEE 754 standard, there is a positive zero and a negative one, 
-therefore the @var{SIGN} macro does not distinguish zero from non-zero
-numbers.
-@end deftypefn
-
-@deftypefn Macro int MPFR_NOTZERO (mpfr_t @var{op})
-Returns zero when its argument is zero, and a non-zero value otherwise.
-@end deftypefn
 
 @section Special Functions
 @cindex Special functions
@@ -998,51 +977,47 @@ Returns zero when its argument is zero, and a non-zero value otherwise.
 @deftypefun int mpfr_log (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Set @var{rop} to the natural logarithm of @var{op},
 rounded to the direction @var{rnd} with the precision of @var{rop}.
-Return 0 iff the result is exact (this occurs in fact only when @var{op} is 1
-i.e. the result is 0).
+Return zero when the result is exact
+(this occurs in fact only when @var{op} is 0, 1, or +infinity)
+and a non-zero value otherwise (except for rounding to nearest,
+the sign of the return value is that of @code{rop - log(op)}).
 @end deftypefun
 
 @deftypefun int mpfr_exp (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Set @var{rop} to the exponential of @var{op},
 rounded to the direction @var{rnd} with the precision of @var{rop}.
-Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
-i.e. the result is 1).
+Return zero when the result is exact
+(this occurs in fact only when @var{op} is -infinity, 0, or +infinity),
+a positive value when the result is greater than the exponential of @var{op},
+and a negative value when it is smaller.
 @end deftypefun
 
 @deftypefun int mpfr_exp2 (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Set @var{rop} to 2 power of @var{op},
 rounded to the direction @var{rnd} with the precision of @var{rop}.
-Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
-i.e. the result is 1).
+Return zero iff the result is exact (this occurs in fact only when @var{op} 
+is -infinity, 0, or +infinity),
+a positive value when the result is greater than the exponential of @var{op},
+and a negative value when it is smaller.
 @end deftypefun
 
-@deftypefun int mpfr_sin (mpfr_t @var{sop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
-@deftypefunx int mpfr_cos (mpfr_t @var{cop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
-Set @var{sop} to the sine of @var{op}, @var{cop} to the cosine of @var{op},
+@deftypefun int mpfr_cos (mpfr_t @var{cop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_sin (mpfr_t @var{sop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_tan (mpfr_t @var{top}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+Set @var{cop} to the cosine of @var{op}, @var{sop} to the sine of @var{op},
+@var{top} to the tangent of @var{op},
 rounded to the direction @var{rnd} with the precision of @var{rop}.
-Return 0 iff the results are exact (this occurs in fact only when @var{op} is 0
-i.e. the sine is 0 and the cosine is 1).
+Return zero when the result is exact, a non-zero value otherwise.
 @end deftypefun
 
-@deftypefun int mpfr_cosh (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
-Set @var{rop} to the hyperbolic cosine of @var{op},
+@deftypefun int mpfr_cosh (mpfr_t @var{cop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_sinh (mpfr_t @var{sop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_tanh (mpfr_t @var{top}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+Set @var{cop} to the hyperbolic cosine of @var{op},
+    @var{sop} to the hyperbolic sine of @var{op},
+    @var{top} to the hyperbolic tangent of @var{op},
 rounded to the direction @var{rnd} with the precision of @var{rop}.
-Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
-i.e. the result is 1).
-@end deftypefun
-
-@deftypefun int mpfr_sinh (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
-Set @var{rop} to the hyperbolic sine of @var{op},
-rounded to the direction @var{rnd} with the precision of @var{rop}.
-Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
-i.e. the result is 0).
-@end deftypefun
-
-@deftypefun int mpfr_tanh (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
-Set @var{rop} to the hyperbolic tangent of @var{op},
-rounded to the direction @var{rnd} with the precision of @var{rop}.
-Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
-i.e. the result is 0).
+Return zero when the result is exact, a non-zero value otherwise.
 @end deftypefun
 
 @deftypefun int mpfr_acosh (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
