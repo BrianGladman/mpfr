@@ -53,6 +53,48 @@ mpfr_print_raw(zz); putchar('\n');
   mpfr_clear(xx); mpfr_clear(yy); mpfr_clear(zz);
 }
 
+/* checks that x*y gives the same results in double
+   and with mpfr with 24 bits of precision */
+void check24(float x, float y, unsigned int rnd_mode, float res)
+{
+  float z1,z2; mpfr_t xx,yy,zz;
+
+  mpfr_init2(xx, 24);
+  mpfr_init2(yy, 24);
+  mpfr_init2(zz, 24);
+  mpfr_set_d(xx, x, rnd_mode);
+  mpfr_set_d(yy, y, rnd_mode);
+  mpfr_mul(zz, xx, yy, rnd_mode);
+  mpfr_set_machine_rnd_mode(rnd_mode);
+  z1 = (res==0.0) ? x*y : res;
+  z2 = (float) mpfr_get_d(zz);
+  if (z1!=z2) {
+    printf("expected product is %1.10e, got %1.10e\n",z1,z2);
+    printf("mpfr_mul failed for x=%1.10e y=%1.10e with prec=24 and rnd_mode=%u\n",x,y,rnd_mode);
+    exit(1);
+  }
+  mpfr_clear(xx); mpfr_clear(yy); mpfr_clear(zz);
+}
+
+/* the following examples come from the paper "Number-theoretic Test 
+   Generation for Directed Rounding" from Michael Parks, Table 1 */
+void check_float()
+{
+  int i;
+  for (i=0;i<4;i++) {
+    check24(8388609.0, 8388609.0, i, 0.0);
+    check24(16777213.0, 8388609.0, i, 0.0);
+    check24(8388611.0, 8388609.0, i, 0.0);
+    check24(12582911.0, 8388610.0, i, 0.0);
+    check24(12582911.0, 8388610.0, i, 0.0);
+    check24(12582914.0, 8388610.0, i, 0.0);
+    check24(13981013.0, 8388611.0, i, 0.0);
+    check24(11184811.0, 8388611.0, i, 0.0);
+    check24(11184810.0, 8388611.0, i, 0.0);
+    check24(13981014.0, 8388611.0, i, 0.0);
+  }
+}
+
 /* check sign of result */
 void check_sign()
 {
@@ -72,6 +114,7 @@ int main(argc,argv) int argc; char *argv[];
 {
   double x,y,z; int i,prec,rnd_mode;
 
+  check_float();
   check(6.9314718055994530941514e-1, 0.0, GMP_RNDZ, 53, 53, 53, 0.0);
   check(0.0, 6.9314718055994530941514e-1, GMP_RNDZ, 53, 53, 53, 0.0);
   prec = (argc<2) ? 53 : atoi(argv[1]);

@@ -64,6 +64,44 @@ void check4(N, D, rnd_mode, p) double N, D; unsigned char rnd_mode; int p;
   mpfr_clear(q); mpfr_clear(n); mpfr_clear(d);  
 }
 
+void check24(float N, float D, unsigned char rnd_mode)
+{
+  mpfr_t q, n, d; float Q,Q2;
+
+  mpfr_init2(q, 24); mpfr_init2(n, 24); mpfr_init2(d, 24);
+  mpfr_set_d(n, N, rnd_mode);
+  mpfr_set_d(d, D, rnd_mode);
+  mpfr_div(q, n, d, rnd_mode);
+  mpfr_set_machine_rnd_mode(rnd_mode);
+  Q = N/D;
+  Q2 = mpfr_get_d(q);
+  if (Q!=Q2 && (!isnan(Q) || !isnan(Q2))) {
+    printf("mpfr_div failed for n=%1.10e, d=%1.10e, prec=24, rnd_mode=%d\n",N,D,rnd_mode);
+    printf("expected quotient is %1.10e, got %1.10e\n",Q,Q2);
+    exit(1);
+  }
+  mpfr_clear(q); mpfr_clear(n); mpfr_clear(d);  
+}
+
+/* the following examples come from the paper "Number-theoretic Test 
+   Generation for Directed Rounding" from Michael Parks, Table 2 */
+void check_float()
+{
+  int i; float b=8388608.0; /* 2^23 */
+
+  for (i=0;i<4;i++) {
+    check24(b*8388610.0, 8388609.0, i);
+    check24(b*16777215.0, 16777213.0, i);
+    check24(b*8388612.0, 8388611.0, i);
+    check24(b*12582914.0, 12582911.0, i);
+    check24(12582913.0, 12582910.0, i);
+    check24(b*16777215.0, 8388609.0, i);
+    check24(b*8388612.0, 8388609.0, i);
+    check24(b*12582914.0, 8388610.0, i);
+    check24(b*12582913.0, 8388610.0, i);
+  }
+}
+
 void check_convergence()
 {
   mpfr_t x, y;
@@ -86,6 +124,7 @@ int main()
     set_fpc_csr(exp.fc_word);
 #endif
 
+  check_float(); /* checks single precision */
   check_convergence();
   check(0.0, 1.0, 1);
   check(-7.49889692246885910000e+63, 4.88168664502887320000e+306, GMP_RNDD);

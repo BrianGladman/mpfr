@@ -63,6 +63,44 @@ void check3(a, rnd_mode, Q) double a; unsigned char rnd_mode; double Q;
   mpfr_clear(q);
 }
 
+void check24(a, rnd_mode) float a; unsigned char rnd_mode;
+{
+  mpfr_t q; float Q,Q2;
+
+  mpfr_init2(q, 24);
+  mpfr_set_d(q, a, rnd_mode);
+  mpfr_set_machine_rnd_mode(rnd_mode);
+  mpfr_sqrt(q, q, rnd_mode);
+  Q = sqrt(a);
+  Q2 = mpfr_get_d(q);
+  if (Q!=Q2 && (!isnan(Q) || !isnan(Q2))) {
+    printf("mpfr_sqrt failed for a=%1.10e, rnd_mode=%d\n",a,rnd_mode);
+    printf("expected sqrt is %1.10e, got %1.10e\n",Q,Q2);
+    exit(1);
+  }
+  mpfr_clear(q);
+}
+
+/* the following examples come from the paper "Number-theoretic Test 
+   Generation for Directed Rounding" from Michael Parks, Table 3 */
+void check_float()
+{
+  int i; float b = 8388608.0; /* 2^23 */
+
+  for (i=0;i<4;i++) {
+    check24(b*8388610.0, i);
+    check24(b*2.0*16777214.0, i);
+    check24(b*8388612.0, i);
+    check24(b*2.0*16777212.0, i);
+    check24(b*11946704.0, i);
+    check24(b*14321479.0, i);
+    check24(b*2.0*13689673.0, i);
+    check24(b*8388614.0, i);
+    check24(b*2.0*16777210.0, i);
+    check24(b*10873622.0, i);
+  }
+}
+
 int main()
 {
   int i; double a;
@@ -74,7 +112,23 @@ int main()
     set_fpc_csr(exp.fc_word);
 #endif
 
+  check_float();
   srand(getpid());
+/* the following examples come from the paper "Number-theoretic Test 
+   Generation for Directed Rounding" from Michael Parks, Table 4 */
+  a = 4503599627370496.0; /* 2^52 */
+  for (i=0;i<4;i++) {
+    check(a*2.0*8732221479794286.0, i);
+    check(a*8550954388695124.0, i);
+    check(a*7842344481681754.0, i);
+    check(a*5935035262218600.0, i);
+    check(a*5039650445085418.0, i);
+    check(a*5039721545366078.0, i);
+    check(a*8005963117781324.0, i);
+    check(a*6703494707970582.0, i);
+    check(a*8010323124937260.0, i);
+    check(a*2.0*8010776873384260.0, i);
+  }
   check(6.37983013646045901440e+32, GMP_RNDN);
   check(1.0, GMP_RNDN);
   check(1.0, GMP_RNDZ);
