@@ -1,4 +1,4 @@
-SUBDIRS=. tests
+SUBDIRS=tests
 EXTRA_DIST=generic.c
 
 lib_LIBRARIES = libmpfr.a
