@@ -23,11 +23,14 @@ MA 02111-1307, USA. */
 #include "gmp.h"
 #include "mpfr.h"
 
-/* functions to set/get the machine rounding mode,
-   this should use the interface from the ISO C9X draft
-   (file <fenv.h>) */
-
-#ifdef IRIX64
+/* functions to set/get the machine rounding mode */
+#ifdef _ISOC9X_SOURCE
+#include <fenv.h>
+#define TONEAREST fesetround(FE_TONEAREST)
+#define TOZERO    fesetround(FE_TOWARDZERO)
+#define TOINFP    fesetround(FE_UPWARD)
+#define TOINFM    fesetround(FE_DOWNWARD)
+#elif IRIX64
 #include <sys/fpu.h>
 extern int swapRM();
 #define TOZERO swapRM(ROUND_TO_ZERO)
@@ -75,13 +78,14 @@ char *out;
 #ifdef LIBC211
 #define __setfpucw(cw) __asm__ ("fldcw %0" : : "m" (cw))
 #endif
-/* be careful to put bits 9-8 (Precision control) 
-   to 10 (round to double precision) instead of the
-   default 11 (round to extended precision) */
-#define TOZERO __setfpucw(0x1e7f)
-#define TOINFP __setfpucw(0x1a7f)
-#define TOINFM __setfpucw(0x167f)
-#define TONEAREST __setfpucw(0x127f)
+/* be careful to put Precision control bits
+   to round to double precision instead of the
+   default (round to extended precision) */
+#define _fpu_ieee ((_FPU_DEFAULT & (~_FPU_EXTENDED)) | _FPU_DOUBLE)
+#define TOZERO __setfpucw(_fpu_ieee | _FPU_RC_ZERO)
+#define TOINFP __setfpucw(_fpu_ieee | _FPU_RC_UP)
+#define TOINFM __setfpucw(_fpu_ieee | _FPU_RC_DOWN)
+#define TONEAREST __setfpucw(_fpu_ieee)
 #endif
 
 /* sets the machine rounding mode to the value rnd_mode */
