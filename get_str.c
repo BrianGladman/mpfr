@@ -65,7 +65,7 @@ mpfr_get_str (str, expptr, base, n, op, rnd_mode)
     exit(1);
   }
   
-  neg = (MPFR_SIGN(op)<0) ? 1 : 0;
+  neg = MPFR_SIGN(op) < 0;
 
   if (MPFR_IS_INF(op)) { 
     if (str == NULL)
