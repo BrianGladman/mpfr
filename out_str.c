@@ -56,16 +56,20 @@ mpfr_out_str (stream, base, n_digits, op, rnd_mode)
   s0 = s;
   /* for op=3.1416 we have s = "31416" and e = 1 */
   
-  l = strlen(s)+1;
-  if (*s == '-') fputc(*s++, stream);
+  l = strlen (s) + 1; /* size of allocated block returned by mpfr_get_str */
+  if (*s == '-')
+    fputc (*s++, stream);
 
-  fputc(*s++, stream); e--; /* writes leading digit */
-  fputc('.', stream);       /* decimal point */
-  fputs(s, stream);         /* rest of mantissa */
+  /* outputs mantissa */
+  fputc (*s++, stream); e--; /* leading digit */
+  fputc ('.', stream);       /* decimal point */
+  fputs (s, stream);         /* rest of mantissa */
+  (*__gmp_free_func) (s0, l);
+
+  /* outputs exponent */
   if (e) {
     l += fprintf (stream, (base <= 10 ? "e%ld" : "@%ld"), e);
   }
 
-  (*__gmp_free_func)(s0, l); 
   return l;
 }
