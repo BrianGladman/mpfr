@@ -4,21 +4,13 @@
 #include "gmp.h"
 #include "longlong.h"
 #include "mpfr.h"
+#include "mpfr-impl.h"
 #ifdef IRIX64
 #include <sys/fpu.h>
 #endif
 
 extern int isnan();
-
-double drand()
-{
-  double d; int *i;
-
-  i = (int*) &d;
-  i[0] = lrand48();
-  i[1] = lrand48();
-  return d;
-}
+extern double drand48(void);
 
 void tcmp2(x, y, i) double x, y; int i;
 {
@@ -53,12 +45,10 @@ int main()
     x /= 2.0;
   }
   for (j=0;j<1000000;j++) {
-    x = drand(); if (x<0) x = -x;
-    y = drand(); if (y<0) y = -y;
-    if (!isnan(x) && !isnan(y)) {
-      if (x<y) { z=x; x=y; y=z; }
-      tcmp2(x, y, -1);
-    }
+    x = drand48();
+    y = drand48();
+    if (x<y) { z=x; x=y; y=z; }
+    tcmp2(x, y, -1);
   }
   return 0;
 }
