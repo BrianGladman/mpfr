@@ -19,6 +19,8 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+/* #define DEBUG */
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -49,7 +51,7 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
 #endif
 {
   double d; long e, q, div, p, err, prec, sh; mpfr_t a, b; mpz_t bz;
-  char *str0; mp_rnd_t rnd1; int f, pow2, ok=0, neg, n0=n;
+  char *str0=NULL; mp_rnd_t rnd1; int f, pow2, ok=0, neg;
 
   if (base<2 || 36<base) {
     fprintf(stderr, "Error: too small or too large base in mpfr_get_str: %d\n",
@@ -81,19 +83,19 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
      = 1 + floor((log(|m|)+e*log(2))/log(base)) */
   f = 1 + (int) floor((log(d)+(double)e*log(2.0))/log((double)base));
   if (n==0) {
-    /* performs exact rounding, i.e. returns y such that for rnd_mode=RNDN
-       for example, we have:
-       y*base^(f-n) <= x*2^(e-p) < (x+1)*2^(e-p) <= (y+1)*base^(f-n)
-       which implies 2^(EXP(op)-PREC(op)) <= base^(f-n)
+    /* performs exact rounding, i.e. returns y such that for GMP_RNDU
+       for example, we have:       x*2^(e-p) <= y*base^(f-n)
      */
-    n = f + (int) floor(((double)PREC(op)-e)*log(2.0)/log((double)base));
+    n = (int) ((double)PREC(op)*log(2.0)/log((double)base));
+    if (n==0) n=1;
   }
 #ifdef DEBUG  
   printf("f=%d n=%d EXP(op)=%d PREC(op)=%d\n", f, n, e, PREC(op));
 #endif
   /* now the first n digits of the mantissa are obtained from
      rnd(op*base^(n-f)) */
-  prec = (long) ceil((double)n*log((double)base)/log(2.0));
+  if (pow2) prec = n*pow2;
+  else prec = (long) ceil((double)n*log((double)base)/log(2.0));
 #ifdef DEBUG
   printf("prec=%d\n", prec);
 #endif
@@ -101,7 +103,7 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
   q = prec+err;
   /* one has to use at least q bits */
   q = (((q-1)/BITS_PER_MP_LIMB)+1)*BITS_PER_MP_LIMB;
-  mpfr_init2(a,q); mpfr_init2(b,q);
+  mpfr_init2(a, q); mpfr_init2(b, q);
 
   do {
     p = n-f; if ((div=(p<0))) p=-p;
@@ -133,7 +135,7 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
 	 }
 	 /* now a is an approximation by default of 1/base^(f-n) */
 #ifdef DEBUG
-	 printf("a=%1.20e\n", mpfr_get_d(a));
+	 printf("base^(n-f)=%1.20e\n", mpfr_get_d(a));
 #endif
 	 mpfr_mul(b, op, a, rnd_mode);
        }
@@ -144,70 +146,17 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
     printf("q=%d 2*prec+BITS_PER_MP_LIMB=%d\n", q, 2*prec+BITS_PER_MP_LIMB);
 #endif
     if (q>2*prec+BITS_PER_MP_LIMB) {
-      /* happens when just in the middle between two digits */
-      n--; q-=BITS_PER_MP_LIMB;
-      if (n==0) {
-          fprintf(stderr, "Error in mpfr_get_str: cannot determine leading digit\n");
-	  printf("base=%d, digits=%u, mode=%s, op=", base, n0,
-		  mpfr_print_rnd_mode(rnd_mode));
-	  mpfr_print_raw(op); putchar('\n');
-	  exit(1);
-        }
+      /* if the intermediate precision exceeds twice that of the input,
+	 a worst-case for the division cannot occur */
+      ok=1;
+      rnd_mode=GMP_RNDN;
     }
     ok = pow2 || mpfr_can_round(b, q-err, rnd_mode, rnd_mode, prec);
 
-    if (ok) { 
-      if (pow2) {
-	sh = e-PREC(op) + pow2*(n-f); /* error at most 2^e */
-	ok = mpfr_can_round(b, EXP(b)-sh-1, rnd_mode, rnd_mode, n*pow2);
-      }
-      else {
-	 /* check that value is the same at distance 2^(e-PREC(op))/base^(f-n)
-	  in opposite from rounding direction */
-	 if (e>=PREC(op)) mpfr_mul_2exp(a, a, e-PREC(op), rnd_mode);
-	 else mpfr_div_2exp(a, a, PREC(op)-e, rnd_mode);
-	 if (rnd_mode==GMP_RNDN) {
-	   mpfr_div_2exp(a, a, 2, rnd_mode);
-	   mpfr_sub(b, b, a, rnd_mode); /* b - a/2 */
-	   mpfr_mul_2exp(a, a, 2, rnd_mode);
-	   mpfr_add(a, b, a, rnd_mode); /* b + a/2 */
-	 }
-	 else if ((rnd_mode==GMP_RNDU && neg==0) || (rnd_mode==GMP_RNDD && neg))
-	   mpfr_sub(a, b, a, rnd_mode);
-	 else mpfr_add(a, b, a, rnd_mode);
-#ifdef DEBUG
-	 printf("a=%1.20e = ", mpfr_get_d(a)); mpfr_print_raw(a); putchar('\n');
-	 printf("b=%1.20e = ", mpfr_get_d(b)); mpfr_print_raw(b); putchar('\n');
-#endif
-	 /* check that a and b are rounded similarly */
-	 prec=EXP(b);
-#ifdef DEBUG
-	 printf("%d %d\n", EXP(a), prec);
-#endif
-	 if (EXP(a) != prec) ok=0;
-	 else {
-	   mpfr_round(b, rnd_mode, prec);
-	   mpfr_round(a, rnd_mode, prec);
-#ifdef DEBUG
-	   printf("a=%1.20e = ", mpfr_get_d(a)); mpfr_print_raw(a); putchar('\n');
-	   printf("b=%1.20e = ", mpfr_get_d(b)); mpfr_print_raw(b); putchar('\n');
-#endif
-	   if (mpfr_cmp(a, b)) ok=0;
-	 }
-       }
-      if (ok==0) { /* n is too large */
-	n--;
-	if (n==0) {
-	  fprintf(stderr, "Error in mpfr_get_str: cannot determine leading digit\n");
-	  printf("base=%d, digits=%u, mode=%s, op=", base, n0,
-		  mpfr_print_rnd_mode(rnd_mode));
-	  mpfr_print_raw(op); putchar('\n');
-	  exit(1);
-	}
-	q -= BITS_PER_MP_LIMB;
-      }
-    }
   } while (ok==0 && (q+=BITS_PER_MP_LIMB) );
+
+  if (ok) mpfr_round(b, rnd_mode, EXP(b));
+
   if (neg)
     switch (rnd_mode) {
     case GMP_RNDU: rnd_mode=GMP_RNDZ; break;
@@ -230,7 +179,10 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
   if (str==NULL) str0=str=(*_mp_allocate_func)(q);
   if (neg) *str++='-';
   mpz_get_str(str, base, bz); /* n digits of mantissa */
-  if (strlen(str)==n+1) f++; /* possible due to rounding */
+  if (strlen(str)==n+1) {
+    f++; /* possible due to rounding */
+    str[n]='\0'; /* ensures we get only n digits of output */
+  }
   *expptr = f;
   mpfr_clear(a); mpfr_clear(b); mpz_clear(bz);
   return str0;
