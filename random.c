@@ -68,7 +68,12 @@ mpfr_random(x)
 }
 
 void
-mpfr_srandom(unsigned long seed)
+#if __STDC__
+mpfr_srandom(unsigned long int seed)
+#else
+mpfr_srandom(seed)
+     unsigned long int seed;
+#endif
 {
   srandom(seed); 
 }
