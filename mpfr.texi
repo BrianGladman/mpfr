@@ -729,6 +729,22 @@ Free the space occupied by @var{x}.  Make sure to call this function for all
 @code{mpfr_t} variables when you are done with them.
 @end deftypefun
 
+@deftypefun void mpfr_inits (mpfr_t @var{x}, ...)
+Initialize the given floating-point numbers with @code{mpfr_init}.
+The list of arguments must be terminated by a null pointer.
+@end deftypefun
+
+@deftypefun void mpfr_inits2 (mp_prec_t @var{prec}, mpfr_t @var{x}, ...)
+Initialize the given floating-point numbers and set their precision to
+be @strong{exactly} @var{prec} bits with @code{mpfr_init2}. The list of
+arguments must be terminated by a null pointer.
+@end deftypefun
+
+@deftypefun void mpfr_clears (mpfr_t @var{x}, ...)
+Free the space occupied by the given floating-point numbers with
+@code{mpfr_clear}.
+@end deftypefun
+
 @need 2000
 Here is an example on how to initialize floating-point variables:
 
@@ -739,8 +755,7 @@ Here is an example on how to initialize floating-point variables:
   mpfr_init2 (y, 256);		/* precision @emph{exactly} 256 bits */
   @dots{}
   /* Unless the program is about to exit, do ... */
-  mpfr_clear (x);
-  mpfr_clear (y);
+  mpfr_clears (x, y, (void *) 0);
 @}
 @end example
 
@@ -1559,12 +1574,12 @@ E(b)-@var{err} where E(b) is the exponent of
 This function @strong{does not modify} its arguments.
 @end deftypefun
 
-@deftypefun mp_exp_t mpfr_get_exp (mpfr_srcptr @var{x})
+@deftypefun mp_exp_t mpfr_get_exp (mpfr_t @var{x})
 Get the exponent of @var{x}, assuming that @var{x} is a non-zero real
 number.
 @end deftypefun
 
-@deftypefun int mpfr_set_exp (mpfr_ptr @var{x}, mp_exp_t @var{e})
+@deftypefun int mpfr_set_exp (mpfr_t @var{x}, mp_exp_t @var{e})
 Set the exponent of @var{x} if @var{e} is in the current exponent range,
 and return 0; otherwise, return 1. If @var{x} is not a real number or is
 equal to zero, nothing visible happens.
