@@ -143,7 +143,7 @@ mpfr_agm (r, op2, op1, rnd_mode)
 
 
 
-  /* b and a will be the 2 operands but I want b>= a */
+  /* b and a are the 2 operands but we want b >= a */
   if ((compare = mpfr_cmp (op1,op2)) > 0)
     {
       mpfr_set (b,op1,GMP_RNDN);
@@ -196,11 +196,6 @@ mpfr_agm (r, op2, op1, rnd_mode)
       else
 	eq = mpfr_cmp2(u,v);
     }
-
-    /*  printf("avant can_round %i bits faux\n v : ",err+3);  
-	mpfr_print_raw(v); printf("\n u : ");
-	mpfr_print_raw(u);printf("\n");*/ 
-    
 
     /* Roundability of the result */
       can_round=mpfr_can_round(v,p-err-3,GMP_RNDN,rnd_mode,q);
