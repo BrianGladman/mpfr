@@ -37,6 +37,11 @@ main (int argc, char *argv[])
 
   mpfr_set_prec (x, 15);
   f = fopen ("inp_str.data", "r");
+  if (f == NULL)
+    {
+      printf ("Error, can't open inp_str.data\n");
+      exit (1);
+    }
   i = mpfr_inp_str (x, f, 10, GMP_RNDN);
   if (i == 0 || mpfr_cmp_ui (x, 31415))
     {

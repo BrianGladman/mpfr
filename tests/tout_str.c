@@ -142,6 +142,12 @@ main (int argc, char *argv[])
       N = atoi (argv[1]);
     }
 
+  if (fout == NULL)
+    {
+      printf ("Can't open /dev/null or stdout\n");
+      exit (1);
+    }
+
   special ();
 
   check_large ();
