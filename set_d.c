@@ -208,28 +208,23 @@ __mpfr_scale2 (d, exp)
 void
 mpfr_set_d(mpfr_t r, double d, unsigned char rnd_mode)
 {
-  int negative, sizer; unsigned int cnt;
+  int signd, sizer; unsigned int cnt;
 
-  if (d == 0)
-    {      
-      EXP(r) = 0;
-      for (cnt = 0; cnt < MPFR_LIMBS_PER_DOUBLE; cnt++) { MANT(r)[cnt] = 0; }
-      return;
-    }
+  if (d == 0) { SET_ZERO(r); return; }
   else if (isnan(d)) { SET_NAN(r); return; }
 
-  negative = d < 0;
+  signd = (d < 0) ? -1 : 1;
   d = ABS (d);
+  sizer = (PREC(r)-1)/BITS_PER_MP_LIMB + 1;
 
-  sizer = MPFR_LIMBS_PER_DOUBLE; if (ABSSIZE(r)<sizer) sizer=ABSSIZE(r);
   /* warning: __mpfr_extract_double requires at least two limbs */
-  EXP(r) = __mpfr_extract_double (MANT(r), d, (sizer>=2) );
+  EXP(r) = __mpfr_extract_double (MANT(r)+sizer-2, d, (sizer>=2) );
   
   count_leading_zeros(cnt, MANT(r)[sizer-1]);
   if (cnt) mpn_lshift(MANT(r), MANT(r), sizer, cnt); 
   
   EXP(r) -= cnt; 
-  SIZE(r) = sizer; if (negative) CHANGE_SIGN(r);
+  if (SIZE(r)*signd<0) CHANGE_SIGN(r);
 
   mpfr_round(r, rnd_mode, PREC(r)); 
   return; 
