@@ -56,14 +56,17 @@ mpfr_urandomb (mpfr_ptr rop, gmp_randstate_t rstate)
       exp--;
     }
 
-  count_leading_zeros (cnt, rp[nlimbs - 1]); 
-  if (cnt != 0)
-    mpn_lshift (rp, rp, nlimbs, cnt);
-  exp -= cnt;
+  if (nlimbs != 0) /* otherwise value is zero */
+    {
+      count_leading_zeros (cnt, rp[nlimbs - 1]); 
+      if (cnt != 0)
+        mpn_lshift (rp, rp, nlimbs, cnt);
+      exp -= cnt;
 
-  cnt = (mp_prec_t) nlimbs * BITS_PER_MP_LIMB - nbits;
-  /* cnt is the number of non significant bits in the low limb */
-  rp[0] &= ~((MP_LIMB_T_ONE << cnt) - 1);
+      cnt = (mp_prec_t) nlimbs * BITS_PER_MP_LIMB - nbits;
+      /* cnt is the number of non significant bits in the low limb */
+      rp[0] &= ~((MP_LIMB_T_ONE << cnt) - 1);
+    }
 
   MPFR_EXP (rop) = exp;
   MPFR_SET_POS (rop);
