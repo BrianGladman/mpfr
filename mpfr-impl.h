@@ -59,7 +59,6 @@ typedef union ieee_double_extract Ieee_double_extract;
 #define MPFR_NOTZERO(x) (MPFR_MANT(x)[(MPFR_PREC(x)-1)/BITS_PER_MP_LIMB])
 #define MPFR_IS_ZERO(x) ((MPFR_NOTZERO(x))==0)
 #define MPFR_SET_ZERO(x) (MPFR_MANT(x)[(MPFR_PREC(x)-1)/BITS_PER_MP_LIMB] = 0)
-#define mpfr_sgn(x) ((MPFR_NOTZERO(x)) ? MPFR_SIGN(x) : 0)
 
 /* Memory gestion */
 
