@@ -19,6 +19,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+#include <stdio.h>
 #include "mpfr-impl.h"
 
 static int mpfr_cos2_aux       _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr));
@@ -42,6 +43,8 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	  return mpfr_set_ui (y, 1, GMP_RNDN);
         }
     }
+
+  mpfr_save_emin_emax ();
 
   precy = MPFR_PREC(y);
 
@@ -85,11 +88,12 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_set_prec (s, m);
     }
 
-  inexact = mpfr_set (y, s, rnd_mode);
+  mpfr_restore_emin_emax ();
+  inexact = mpfr_set (y, s, rnd_mode); /* FIXME: Dont' need check range? */
 
   mpfr_clear (r);
   mpfr_clear (s);
-
+  
   return inexact;
 }
 
@@ -105,7 +109,7 @@ mpfr_cos2_aux (mpfr_ptr s, mpfr_srcptr r)
   long int prec, m = MPFR_PREC(s);
   mpfr_t t;
 
-  MPFR_ASSERTD (MPFR_GET_EXP (r) <= 0);
+  MPFR_ASSERTN (MPFR_GET_EXP (r) <= 0);
 
   mpfr_init2 (t, m);
   mpfr_set_ui (t, 1, GMP_RNDN);

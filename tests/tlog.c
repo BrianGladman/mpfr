@@ -168,6 +168,8 @@ special (void)
   mpfr_set_emin (MPFR_EMIN_MIN);
   mpfr_set_emax (MPFR_EMAX_MAX);
 
+  mpfr_set_prec (y, 53);
+  mpfr_set_prec (x, 53);
   mpfr_set_ui (x, 3, GMP_RNDD);
   mpfr_log (y, x, GMP_RNDD);
   if (mpfr_cmp_str1 (y, "1.09861228866810956"))

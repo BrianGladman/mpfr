@@ -99,6 +99,26 @@ check_nans (void)
   mpfr_clear (y);
 }
 
+static void
+special_overflow (void)
+{
+  mpfr_t x, y;
+
+  mpfr_init2 (x, 24);
+  mpfr_init2 (y, 73);
+
+  /* Check special case: An overflow in const_pi could occurs! */
+  mpfr_set_emin (-125);
+  mpfr_set_emax (128);
+  mpfr_set_str_binary (x, "0.111101010110110011101101E6");
+  mpfr_cos (y, x, GMP_RNDZ);
+  mpfr_set_emin (MPFR_EMIN_MIN);
+  mpfr_set_emax (MPFR_EMAX_MAX);
+  
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -106,6 +126,7 @@ main (int argc, char *argv[])
 
   tests_start_mpfr ();
 
+  special_overflow ();
   check_nans ();
 
   mpfr_init (x);
