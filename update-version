@@ -2,10 +2,14 @@
 
 set -e
 
-if [ $# -ne 1 ]; then
-  echo "Usage: $0 <version>"
+if [ $# -ne 3 ]; then
+  echo "Usage: $0 <major> <minor> <patchlevel>"
   exit 1
 fi
 
-echo $1 > VERSION
-sed -i "s/\(@set VERSION \).*/\1$1/" mpfr.texi
+vers="$1.$2.$3"
+echo $vers > VERSION
+sed -i "s/\(@set VERSION \).*/\1$vers/" mpfr.texi
+sed -i "s/\(#define MPFR_VERSION_MAJOR \).*/\1$1/; \
+        s/\(#define MPFR_VERSION_MINOR \).*/\1$2/; \
+        s/\(#define MPFR_VERSION_PATCHLEVEL \).*/\1$3/" mpfr.h
