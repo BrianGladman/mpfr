@@ -21,10 +21,13 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
 #include <stdio.h>
+#include <limits.h>
 #include <stdlib.h>
 #include <gmp.h>
+#include "gmp-impl.h"
 #include <mpfr.h>
-
+#include "mpfr-impl.h"
+   
 #define TEST_FUNCTION mpfr_hypot
 
 int
@@ -33,6 +36,7 @@ main (int argc, char *argv[])
   unsigned int prec, err, yprec, n, p0 = 1, p1 = 100, N = 100;
   mp_rnd_t rnd;
   mpfr_t x1, x2, y, z, t;
+  int inexact, compare, compare2;
 
   mpfr_init (x1);
   mpfr_init (x2);
@@ -66,12 +70,12 @@ main (int argc, char *argv[])
 	  rnd = random () % 4;
 	  mpfr_set_prec (y, yprec);
 
-	  TEST_FUNCTION (y, x1,x2, rnd);
+	  compare =TEST_FUNCTION (y, x1,x2, rnd);
 	  err = (rnd == GMP_RNDN) ? yprec + 1 : yprec;
 	  if (mpfr_can_round (y, err, rnd, rnd, prec))
 	    {
 	      mpfr_set (t, y, rnd);
-	      TEST_FUNCTION (z, x1,x2, rnd);
+	      inexact = TEST_FUNCTION (z, x1,x2, rnd);
 	      if (mpfr_cmp (t, z))
 		{ 
 		  printf ("results differ for x1=");
@@ -91,6 +95,24 @@ main (int argc, char *argv[])
 		  putchar ('\n');
 		  exit (1);
 		}
+	      compare2 = mpfr_cmp (t, y);
+	      /* if rounding to nearest, cannot know the sign of t - f(x)
+		 because of composed rounding: y = o(f(x)) and t = o(y) */
+	      if ((rnd != GMP_RNDN) && (compare * compare2 >= 0))
+		compare = compare + compare2;
+	      else
+		compare = inexact; /* cannot determine sign(t-f(x)) */
+	      if (((inexact == 0) && (compare != 0)) ||
+		  ((inexact > 0) && (compare <= 0)) ||
+		  ((inexact < 0) && (compare >= 0)))
+              {
+		  fprintf (stderr, "Wrong inexact flag for rnd=%s: expected %d, got %d\n",
+			   mpfr_print_rnd_mode (rnd), compare, inexact);
+		  printf ("x1="); mpfr_print_raw (x1); putchar ('\n');
+		  printf ("x2="); mpfr_print_raw (x2); putchar ('\n');
+		  printf ("t="); mpfr_print_raw (t); putchar ('\n');
+		  exit (1);
+              }
 	    }
 	}
     }
