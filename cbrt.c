@@ -49,9 +49,9 @@ int
 mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode) 
 {
 
-  mpz_t m, s, t;
+  mpz_t m;
   mp_exp_t e, r, sh;
-  mp_prec_t prec_y, size_m;
+  mp_prec_t n, size_m;
   int inexact, sign_x;
 
   /* special values */
@@ -93,11 +93,13 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   /* x = (m*2^r) * 2^(e-r) = (m*2^r) * 2^(3*q) */
 
   size_m = mpz_sizeinbase (m, 2);
-  prec_y = MPFR_PREC(y);
+  n = MPFR_PREC(y);
+  if (rnd_mode == GMP_RNDN)
+    n ++;
   
-  /* we want 3*prec_y-2 <= size_m + 3*sh + r <= 3*prec_y
-     i.e. 3*sh + size_m + r <= 3*prec_y */
-  sh = (3 * prec_y - size_m - r) / 3;
+  /* we want 3*n-2 <= size_m + 3*sh + r <= 3*n
+     i.e. 3*sh + size_m + r <= 3*n */
+  sh = (3 * n - size_m - r) / 3;
   sh = 3 * sh + r;
   if (sh >= 0)
     {
@@ -107,53 +109,31 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   /* invariant: x = m*2^e */
 
-  mpz_init (s);
-  inexact = mpz_root (s, m, 3) == 0;
+  /* we reuse the variable m to store the cube root, since it is not needed
+     any more: we just need to know if the root is exact */
+  inexact = mpz_root (m, m, 3) == 0;
 
-  sh = mpz_sizeinbase (s, 2) - prec_y;
-  while (sh > 0) /* we have to flush to 0 the last sh bits from s */
+  sh = mpz_sizeinbase (m, 2) - n;
+  if (sh > 0) /* we have to flush to 0 the last sh bits from m */
     {
-      sh --;
-      inexact = inexact || mpz_tstbit (s, sh);
-      mpz_clrbit (s, sh);
+      inexact = inexact || (mpz_scan1 (m, 0) < sh);
+      mpz_div_2exp (m, m, sh);
+      e += 3 * sh;
     }
 
   if (inexact)
     {
-      if (rnd_mode == GMP_RNDU)
-        {
-          mpz_add_ui (s, s, 1);
-          inexact = 1;
-        }
-      else if (rnd_mode == GMP_RNDD || rnd_mode == GMP_RNDZ)
-        {
-          inexact = -1;
-        }
-      else /* round to nearest */
-        {
-          /* s if m < (s+1/2)^3 = s^3+3/2*s^2+3/4*s+1/8 (equality not possible)
-             and s+1 otherwise
-             i.e. 4*m <= 4*s^3+6*s^2+3*s = ((2*s+3)*2*s+3)*s */
-          mpz_init (t);
-          mpz_mul_2exp (t, s, 1); /* 2*s */
-          mpz_add_ui (t, t, 3);   /* 2*s+3 */
-          mpz_mul (t, t, s);      /* (2*s+3)*s */
-          mpz_mul_2exp (t, t, 1); /* (2*s+3)*2*s */
-          mpz_add_ui (t, t, 3);   /* (2*s+3)*2*s+3 */
-          mpz_mul (t, t, s);      /* ((2*s+3)*2*s+3)*s */
-          mpz_mul_2exp (m, m, 2); /* 4*m */
-          if (mpz_cmp (m, t) > 0)
-            {
-              mpz_add_ui (s, s, 1);
-              inexact = 1;
-            }
-          else
-            inexact = -1;
-          mpz_clear (t);
-        }
+      if ((rnd_mode == GMP_RNDU) ||
+          ((rnd_mode == GMP_RNDN) && mpz_tstbit (m, 0)))
+        mpz_add_ui (m, m, inexact = 1);
+      else
+        inexact = -1;
     }
 
-  mpfr_set_z (y, s, GMP_RNDN); /* exact */
+  /* either inexact is not zero, and the conversion is exact, i.e. inexact
+     is not changed; or inexact=0, and inexact is set only when
+     rnd_mode=GMP_RNDN and bit (n+1) from m is 1 */
+  inexact += mpfr_set_z (y, m, GMP_RNDN);
   MPFR_EXP(y) += e / 3;
 
   if (sign_x < 0)
@@ -162,7 +142,6 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       inexact = -inexact;
     }
 
-  mpz_clear (s);
   mpz_clear (m);
 
   return inexact;
