@@ -103,11 +103,13 @@ mpfr_get_ld (mpfr_srcptr x, mp_rnd_t rnd_mode)
               sh = -sh;
             }
           e = 1; /* invariant: m = 2^e */
-          while (sh)
+          for (;;)
             {
               if (sh % 2)
                 r = r * m;
               sh >>= 1;
+              if (sh == 0)
+                break;
               m = m * m;
               e = e + e;
             }
