@@ -20,6 +20,12 @@ precision       *    mpf_add mpfr_add(RNDZ/RNDN/RNDU)   maple   mupad
 #include <stdlib.h>
 #include "gmp.h"
 #include "mpfr.h"
+#ifdef IRIX64
+#include <sys/fpu.h>
+#endif
+
+extern int isnan();
+extern int getpid();
 
 #define ABS(x) (((x)>0) ? (x) : (-x))
 
@@ -165,7 +171,7 @@ printf("x=%1.20e,%d y=%1.20e,%d pz=%d,rnd=%d\n",x,px,y,py,pz,rnd_mode);
   mpfr_clear(xx); mpfr_clear(yy); mpfr_clear(zz);
 }
 
-check64()
+void check64()
 {
   mpfr_t x, t, u;
   mpfr_init2(x, 128); mpfr_init2(t, 128); mpfr_init2(u, 128);
@@ -211,7 +217,7 @@ check64()
 }
 
 /* checks when source and destination are equal */
-check_same()
+void check_same()
 {
   mpfr_t x;
 
@@ -223,9 +229,16 @@ check_same()
   mpfr_clear(x);
 }
 
-main(argc,argv) int argc; char *argv[];
+int main(argc,argv) int argc; char *argv[];
 {
   double x,y; int i,prec,rnd_mode,px,py,pz,rnd;
+#ifdef IRIX64
+    /* to get denormalized numbers on IRIX64 */
+    union fpc_csr exp;
+    exp.fc_word = get_fpc_csr();
+    exp.fc_struct.flush = 0;
+    set_fpc_csr(exp.fc_word);
+#endif
 
   check64();
   check_same();
@@ -366,5 +379,6 @@ printf("\nTest i=%d\n",i);
     rnd = (rnd_mode==-1) ? lrand48()%4 : rnd_mode;
     check5(x, rnd);
   } 
+  return 0;
 }
 
