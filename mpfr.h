@@ -427,9 +427,9 @@ int mpfr_sum _MPFR_PROTO ((mpfr_ptr ret, mpfr_ptr const tab[], unsigned long n,
 
 /* DON'T USE THIS! */
 #if __GMP_MP_SIZE_T_INT
-#define __MPFR_EXP_NAN ((~((~(unsigned int)0)>>1))+2)
+#define __MPFR_EXP_NAN ((mp_exp_t)((~((~(unsigned int)0)>>1))+2))
 #else
-#define __MPFR_EXP_NAN ((~((~(unsigned long)0)>>1))+2)
+#define __MPFR_EXP_NAN ((mp_exp_t)((~((~(unsigned long)0)>>1))+2))
 #endif
 
 #define MPFR_DECL_INIT(_x, _p) \
