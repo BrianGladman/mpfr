@@ -105,7 +105,7 @@ char *mpfr_get_str(char *str, mp_exp_t *expptr, int base, size_t n,
 
   /* computes the number of characters needed */
   q = ((SIGN(op)<0) ? 1 : 0) + n + 1;
-  if (str==NULL) str0=str=malloc(q); 
+  if (str==NULL) str0=str=(*_mp_allocate_func)(q); 
   if (SIGN(op)<0) *str++='-';
   mpz_get_str(str, base, bz); /* n digits of mantissa */
   if (strlen(str)==n+1) f++; /* possible due to rounding */

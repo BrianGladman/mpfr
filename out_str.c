@@ -7,12 +7,13 @@
 size_t mpfr_out_str (FILE *stream, int base, size_t n_digits, mpfr_srcptr op,
 		     unsigned char rnd_mode)
 {
-  char *s; size_t l; mp_exp_t e;
+  char *s,*s0; size_t l; mp_exp_t e;
 
   if (FLAG_NAN(op)) { fprintf(stream, "NaN"); return 3; }
   if (!NOTZERO(op)) { fprintf(stream, "0"); return 1; }
 
   s = mpfr_get_str(NULL, &e, base, n_digits, op, rnd_mode);
+  s0 = s;
   /* for op=3.1416 we have s = "31416" and e = 1 */
   
   l = strlen(s)+1;
@@ -28,6 +29,6 @@ size_t mpfr_out_str (FILE *stream, int base, size_t n_digits, mpfr_srcptr op,
     fprintf(stream, "%s", s);
   }
 
-  free(s); 
+  (*_mp_free_func)(s0, l); 
   return l;
 }
