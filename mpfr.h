@@ -128,7 +128,7 @@ void mpfr_set_prec _PROTO((mpfr_ptr, unsigned long int));
 void mpfr_set_default_prec _PROTO((unsigned long int));
 extern mp_size_t __gmp_default_fp_bit_precision;
 extern char __gmp_default_rounding_mode;
-char *mpfr_print_rnd_mode(unsigned char); 
+char * mpfr_print_rnd_mode _PROTO((unsigned char)); 
 void mpfr_neg _PROTO((mpfr_ptr, mpfr_srcptr, unsigned char)); 
 int mpfr_sub_one_ulp _PROTO((mpfr_ptr x)); 
 int mpfr_div_ui _PROTO((mpfr_ptr y, mpfr_srcptr x, unsigned long u, unsigned char rnd_mode)); 
