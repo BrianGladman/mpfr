@@ -72,7 +72,7 @@ main (void)
       for (n = 0; n < 4; n++)
 	{
 	  mpfr_random (x);
-	  rnd = random () % 4;
+	  rnd = randlimb () % 4;
 	  mpfr_set_prec (y, yprec);
 	  mpfr_gamma (y, x, rnd);
 	  err = (rnd == GMP_RNDN) ? yprec + 1 : yprec;

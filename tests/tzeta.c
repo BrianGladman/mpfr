@@ -54,12 +54,12 @@ test_generic ()
 	{
 	  mpfr_random (x); /* x is in [0, 1[ */
 	  mpfr_add_ui (x, x, 1, GMP_RNDN);
-	  e = random () % 5;
+	  e = randlimb () % 5;
 	  mpfr_div_2exp (x, x, 1, GMP_RNDN); /* now in [1/2, 1[ */
 	  mpfr_mul_2exp (x, x, e, GMP_RNDN); /* now in [2^(e-1), 2^e[ */
-          if (random () % 2)
+          if (randlimb () % 2)
             mpfr_ui_sub (x, 1, x, GMP_RNDN); /* now less or equal to 1/2 */
-	  rnd = random () % 4;
+	  rnd = randlimb () % 4;
 	  mpfr_set_prec (y, yprec);
 	  mpfr_zeta (y, x, rnd);
 	  err = (rnd == GMP_RNDN) ? yprec + 1 : yprec;

@@ -51,8 +51,8 @@ test_generic (void)
       for (n=0; n<N; n++)
 	{
 	  mpfr_random (x);
-          mpfr_mul_2exp (x, x, random () % 4, GMP_RNDN);
-	  rnd = random () % 4;
+          mpfr_mul_2exp (x, x, randlimb () % 4, GMP_RNDN);
+	  rnd = randlimb () % 4;
 	  mpfr_set_prec (y, yprec);
 	  mpfr_erf (y, x, rnd);
 	  err = (rnd == GMP_RNDN) ? yprec + 1 : yprec;

@@ -128,9 +128,6 @@ if test "$mpfr_cv_have_fesetround" = "yes"; then
   AC_DEFINE(MPFR_HAVE_FESETROUND,1,[Define if you have the `fesetround' function via the <fenv.h> header file.])
 fi
 
-dnl Check random functions
-AC_CHECK_FUNCS(lrand48)
-
 dnl Check whether 0/0, 1/0, -1/0, sqrt(-1) are valid expressions
 AC_CACHE_CHECK([for valid NaN], mpfr_cv_valid_nan, [
 AC_TRY_RUN([

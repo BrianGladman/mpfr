@@ -129,28 +129,6 @@ tests_machine_prec_long_double (void)
 }
 
 
-/* generate a random double using the whole range of possible values,
-   including denormalized numbers, NaN, infinities, ... */
-double
-drand (void)
-{
-  double d; int *i, expo;
-
-  i = (int*) &d;
-  d = 1.0;
-  if (i[0] == 0)
-    expo = 1; /* little endian, exponent in i[1] */
-  else
-    expo = 0;
-  i[0] = LONG_RAND();
-  i[1] = LONG_RAND();
-  while (i[expo] >= 2146435072)
-    i[expo] = LONG_RAND(); /* avoids NaNs */
-  if ((LONG_RAND() % 2) && !Isnan(d))
-    d = -d; /* generates negative numbers */
-  return d;
-}
-
 /* generate a random limb */
 mp_limb_t
 randlimb (void)
@@ -160,6 +138,17 @@ randlimb (void)
   _gmp_rand (&limb, RANDS, GMP_NUMB_BITS);
   return limb;
 }
+
+void
+randseed (unsigned int s)
+{
+  mpz_t t;
+
+  mpz_init_set_ui (t, s);
+  gmp_randseed (RANDS, t);
+  mpz_clear (t);
+}
+
 
 /* returns ulp(x) for x a 'normal' double-precision number */
 double
