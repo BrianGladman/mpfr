@@ -55,7 +55,7 @@ mpn_mulhigh_n_basecase (mp_ptr rp, mp_ptr up, mp_ptr vp, mp_size_t n)
 
 /* Put in  rp[n-1..2n-1] an approximation of the n+1 high limbs
    of {mp, n} * {np, n}. 
-   The error is at worst of ln(n) for rp[n] and rp[n-1] is totally false */
+   The error is at worst of ln(n) for rp[n] and rp[n-1] is totally wrong */
 void
 mpn_mulhigh_n_basecase (mp_ptr rp, mp_srcptr up, mp_srcptr vp, mp_size_t n)
 {
