@@ -34,14 +34,17 @@ extern int isnan(), getpid();
 
 int maxulp=0;
 
-void check(a, rnd_mode) unsigned long a; unsigned char rnd_mode;
+void check(a, rnd_mode, Q)
+unsigned long a; unsigned char rnd_mode; double Q;
 {
-  mpfr_t q; double Q, Q2; int u;
+  mpfr_t q; double Q2; int u;
 
   mpfr_init2(q, 53);
+#ifdef TEST
   mpfr_set_machine_rnd_mode(rnd_mode);
+#endif
   mpfr_sqrt_ui(q, a, rnd_mode);
-  Q = sqrt(1.0 * a);
+  if (Q<0.0) Q = sqrt(1.0 * a);
   Q2 = mpfr_get_d(q);
   if (Q!=Q2 && (!isnan(Q) || !isnan(Q2))) {
     u = ulp(Q2,Q);
@@ -55,6 +58,7 @@ void check(a, rnd_mode) unsigned long a; unsigned char rnd_mode;
 
 int main()
 {
+#ifdef TEST
   int i; unsigned long a;
 #ifdef IRIX64
     /* to get denormalized numbers on IRIX64 */
@@ -65,12 +69,13 @@ int main()
 #endif
 
   srand(getpid());
-  check(0, GMP_RNDN);
-  check(2116118, GMP_RNDU);
   for (i=0;i<1000000;i++) {
     a = lrand48();
     /* machine arithmetic must agree if a <= 2.0^53 */
-    if (1.0*a < 9007199254872064.0) check(a, rand() % 4);
+    if (1.0*a < 9007199254872064.0) check(a, rand() % 4, -1.0);
   }
+#endif
+  check(0, GMP_RNDN, 0.0);
+  check(2116118, GMP_RNDU, 1.45468828276026215e3);
   return 0;
 }
