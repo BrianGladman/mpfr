@@ -62,6 +62,15 @@ check_inexact (mp_prec_t p)
 	    exit (1);
 	  }
       }
+
+  mpfr_set_prec (x, 1);
+  mpfr_set_ui (x, 2, GMP_RNDN);
+  if (mpfr_mul_ui (x, x, 3, GMP_RNDZ) == 0)
+    {
+      fprintf (stderr, "mul_ui(2, 3) cannot be exact with prec=1\n");
+      exit (1);
+    }
+
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);
