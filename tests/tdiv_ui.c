@@ -89,6 +89,28 @@ special (void)
       exit (1);
     }
 
+  /* corner case */
+  mpfr_set_prec (x, 2 * mp_bits_per_limb);
+  mpfr_set_prec (y, 2);
+  mpfr_set_ui (x, 4, GMP_RNDN);
+  mpfr_nextabove (x);
+  mpfr_div_ui (y, x, 2, GMP_RNDN); /* exactly in the middle */
+  MPFR_ASSERTN(mpfr_cmp_ui (y, 2) == 0);
+
+  mpfr_set_prec (x, 3 * mp_bits_per_limb);
+  mpfr_set_prec (y, 2);
+  mpfr_set_ui (x, 2, GMP_RNDN);
+  mpfr_nextabove (x);
+  mpfr_div_ui (y, x, 2, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (y, 1) == 0);
+
+  mpfr_set_prec (x, 3 * mp_bits_per_limb);
+  mpfr_set_prec (y, 2);
+  mpfr_set_si (x, -4, GMP_RNDN);
+  mpfr_nextbelow (x);
+  mpfr_div_ui (y, x, 2, GMP_RNDD);
+  MPFR_ASSERTN(mpfr_cmp_si (y, -3) == 0);
+
   for (xprec = 53; xprec <= 128; xprec++)
     {
       mpfr_set_prec (x, xprec);
@@ -174,9 +196,9 @@ main (int argc, char **argv)
 
   tests_start_mpfr ();
 
-  check_inexact ();
-
   special ();
+
+  check_inexact ();
 
   check("1.0", 3, GMP_RNDN, "3.3333333333333331483e-1");
   check("1.0", 3, GMP_RNDZ, "3.3333333333333331483e-1");

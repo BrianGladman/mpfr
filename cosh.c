@@ -49,15 +49,15 @@ mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
 	    MPFR_SET_POS(y);
 	    MPFR_RET(0);
 	  }
-	else if (MPFR_IS_ZERO(xt))
-	  return mpfr_set_ui(y, 1, rnd_mode); /* cosh(0) = 1 */
-	/* Should never reach this code */
 	else
-	  MPFR_ASSERTN(0);
+          {
+            MPFR_ASSERTD(MPFR_IS_ZERO(xt));
+            return mpfr_set_ui (y, 1, rnd_mode); /* cosh(0) = 1 */
+          }
       }
 
-    mpfr_init2(x,Nxt);
-    mpfr_abs(x, xt, GMP_RNDN);
+    mpfr_init2 (x, Nxt);
+    mpfr_abs (x, xt, GMP_RNDN);
 
     /* General case */
     {

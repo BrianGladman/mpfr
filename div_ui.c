@@ -46,8 +46,9 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 	  MPFR_SET_SAME_SIGN(y, x);
 	  MPFR_RET(0);
 	}
-      else if (MPFR_IS_ZERO(x))
+      else
 	{
+          MPFR_ASSERTD(MPFR_IS_ZERO(x));
 	  if (u == 0)/* 0/0 is NaN */
 	    {
 	      MPFR_SET_NAN(y);
@@ -59,8 +60,6 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 	      MPFR_RET(0);
 	    }
 	}
-      else
-	MPFR_ASSERTN(0);
     }
 
   if (MPFR_UNLIKELY(u == 0))
@@ -161,7 +160,8 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 	mpfr_add_one_ulp (y, rnd_mode);
       MPFR_RET(-1); /* result is inexact */
 
-    case GMP_RNDN:
+    default:
+      MPFR_ASSERTD(rnd_mode == GMP_RNDN);
       if (sh && d < (MP_LIMB_T_ONE << (sh - 1)))
 	MPFR_RET(-MPFR_INT_SIGN(x));
       else if (sh && d > (MP_LIMB_T_ONE << (sh - 1)))
@@ -184,8 +184,6 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 	  else
 	    MPFR_RET(-MPFR_INT_SIGN(x));
 	}
-    default:
-      MPFR_ASSERTN(0);
     }
   return 0; /* To avoid warning*/
 }
