@@ -728,11 +728,16 @@ space for @var{x}. Otherwise the behavior is undefined.
 @section Assignment Functions
 
 These functions assign new values to already initialized floats
-(@pxref{Initialization Functions}).
+(@pxref{Initialization Functions}). When using any functions using
+@code{intmax_t}, you must include @code{<stdint.h>} or @code{<inttypes.h>}
+before @file{mpfr.h}, to allow @file{mpfr.h} to define prototypes for 
+these functions.
 
 @deftypefun int mpfr_set (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_ui (mpfr_t @var{rop}, unsigned long int @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_si (mpfr_t @var{rop}, long int @var{op}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_set_uj (mpfr_t @var{rop}, uintmax_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_set_sj (mpfr_t @var{rop}, intmax_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_d (mpfr_t @var{rop}, double @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_ld (mpfr_t @var{rop}, long double @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_z (mpfr_t @var{rop}, mpz_t @var{op}, mp_rnd_t @var{rnd})
@@ -747,6 +752,8 @@ Note that the input 0 is converted to +0 by @code{mpfr_set_ui},
 
 @deftypefun int mpfr_set_ui_2exp (mpfr_t @var{rop}, unsigned long int @var{op}, mp_exp_t @var{e}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_si_2exp (mpfr_t @var{rop}, long int @var{op}, mp_exp_t @var{e}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_set_uj_2exp (mpfr_t @var{rop}, uintmax_t @var{op}, intmax_t @var{e}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_set_sj_2exp (mpfr_t @var{rop}, intmax_t @var{op}, intmax_t @var{e}, mp_rnd_t @var{rnd})
 Set the value of @var{rop} from @m{@var{op} \times 2^e, @var{op} multiplied by
 two to the power @var{e}}, rounded towards the given direction @var{rnd}.
 Note that the input 0 is converted to +0.
