@@ -132,8 +132,8 @@ mpfr_add1 (a, b, c, rnd_mode, diff_exp)
     } /* bq <= aq */
     else /* bq > aq */
     {
-      mp_limb_t inv, bb, cc = 0;
-      int difs, r;
+      mp_limb_t inv, bb = 0, cc = 0;
+      int difs, r = 0;
       mp_exp_t difw;  /* mp_exp_t may be larger than mp_size_t */
 
       /* MPFR_PREC(b)>MPFR_PREC(a) : we have to round b+c */
