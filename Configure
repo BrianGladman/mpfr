@@ -28,7 +28,7 @@ case $syst in
         ostype=solaris	
 	defC=/usr/local/bin/gcc
 	machtype=sparc
-	make=/usr/ccs/bin/make
+	make=/usr/ccs/bin/make	
 	;;
     Linux*)
 	fpucw=`grep __setfpucw /usr/include/fpu_control.h`
@@ -168,14 +168,14 @@ cat > Makefile <<EOF
 #
 CC=$defC
 CFLAGS=$special $incflags $cflags -D$ostype
-OBJS=add.o div_2exp.o neg.o set_dfl_prec.o set_str_raw.o agm.o get_str.o print_raw.o set_dfl_rnd.o sqrt.o clear.o init.o rnd_mode.o set_f.o sub.o cmp.o mul.o  round.o set_prec.o cmp_ui.o mul_2exp.o set.o set_si.o div.o mul_ui.o set_d.o set_str.o pow.o out_str.o pi.o set_z.o add_ulp.o log2.o
+OBJS=add.o div_2exp.o neg.o set_dfl_prec.o set_str_raw.o agm.o get_str.o print_raw.o set_dfl_rnd.o sqrt.o clear.o init.o rnd_mode.o set_f.o sub.o cmp.o mul.o  round.o set_prec.o cmp_ui.o mul_2exp.o set.o set_si.o div.o mul_ui.o set_d.o set_str.o pow.o out_str.o pi.o set_z.o add_ulp.o log2.o random.o
 
 dft: libmpfr.a
 
 all: libmpfr.a tests
 
 clean:
-	-rm libmpfr.a \$(OBJS)
+	-rm libmpfr.a \$(OBJS) config.in
 
 libmpfr.a: \$(OBJS)
 	ar cr libmpfr.a \$(OBJS)
@@ -201,6 +201,7 @@ set_f.o: mpfr.h
 sub.o: mpfr.h
 cmp.o: mpfr.h
 mul.o: mpfr.h
+random.o: mpfr.h
 round.o: mpfr.h
 set_prec.o: mpfr.h
 cmp_ui.o: mpfr.h
