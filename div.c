@@ -41,7 +41,7 @@ mpfr_div (r, u, v, rnd_mode)
 #endif
 {
   mp_srcptr up, vp;
-  mp_ptr rp, tp, tp0, tmp;
+  mp_ptr rp, tp, tp0, tmp, tmp2;
   mp_size_t usize, vsize, rrsize, oldrrsize;
   mp_size_t rsize;
   mp_size_t sign_quotient;
@@ -116,13 +116,13 @@ mpfr_div (r, u, v, rnd_mode)
       tp0 = (mp_ptr) TMP_ALLOC ((rsize+rrsize) * BYTES_PER_MP_LIMB);
       /* fill by zero rrsize low limbs of t */
       MPN_ZERO(tp0, rrsize); tp = tp0 + rrsize; 
-      tmp = (mp_ptr) TMP_ALLOC (rsize * BYTES_PER_MP_LIMB);
-      rp = (mp_ptr) TMP_ALLOC (rrsize * BYTES_PER_MP_LIMB); 
+      rp = (mp_ptr) TMP_ALLOC ((rrsize+1) * BYTES_PER_MP_LIMB); 
 
       if (vsize >= rsize) { 
-	MPN_COPY (tmp, vp + vsize - rsize, rsize);
+	tmp = vp + vsize - rsize;
       }
       else { 
+	tmp = (mp_ptr) TMP_ALLOC (rsize * BYTES_PER_MP_LIMB);
 	MPN_COPY (tmp + rsize - vsize, vp, vsize);
 	MPN_ZERO (tmp, rsize - vsize); 
       }
@@ -145,8 +145,15 @@ mpfr_div (r, u, v, rnd_mode)
       printf(".\n"); 
 #endif
 
+#if (__GNU_MP_VERSION < 3)
       q_limb = mpn_divrem (rp, 0, tp0, rsize+rrsize, tmp, rsize);
       tp = tp0; /* location of remainder */
+#else /* mpn_tdiv_qr is the preferred division interface in GMP 3 */
+      tmp2 = (mp_ptr) TMP_ALLOC (rsize * BYTES_PER_MP_LIMB);
+      mpn_tdiv_qr(rp, tmp2, 0, tp0, rsize+rrsize, tmp, rsize);
+      q_limb = rp[rrsize];
+      tp = tmp2; /* location of remainder */
+#endif
 
 #ifdef DEBUG
       printf("The result is : \n"); 
