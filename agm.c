@@ -6,7 +6,7 @@
 
 void mpfr_agm(mpfr_ptr r, mpfr_srcptr a, mpfr_srcptr b, unsigned char rnd_mode)
 {
-  int i, n, p, q;
+  int i, n, p, q, go_on;
   mpfr_t u, v, tmpu, tmpv, tmp, zero,prec;
 
 
@@ -24,7 +24,7 @@ void mpfr_agm(mpfr_ptr r, mpfr_srcptr a, mpfr_srcptr b, unsigned char rnd_mode)
 
   
   /* If a or b is 0, let's return 0 set to the precision of the result */
-  if ((mpfr_cmp(a,zero)==0)||(mpfr_cmp(b,zero)==0)) 
+  if ((SIGN(a)==0)||(SIGN(b)==0)) 
     {  mpfr_set(r,zero,GMP_RNDZ);
     return;
     }
@@ -32,11 +32,11 @@ void mpfr_agm(mpfr_ptr r, mpfr_srcptr a, mpfr_srcptr b, unsigned char rnd_mode)
  /* precision of the following calculus */
   q = PREC(r);
   p = q + 12;
- 
-  n = floor(log(p)/log(2));
 
 
   /* Initialisations */
+  go_on=1;
+
   mpfr_init2(u,p);
   mpfr_init2(v,p);
 
@@ -55,26 +55,62 @@ void mpfr_agm(mpfr_ptr r, mpfr_srcptr a, mpfr_srcptr b, unsigned char rnd_mode)
 
 
   /* Main loop */
-  for(i=0;i<n;i++) {
-    mpfr_mul(tmp,u,v,GMP_RNDZ);
-    mpfr_sqrt(tmpu,tmp,GMP_RNDZ);
-    mpfr_add(tmp,u,v,GMP_RNDU);
-    mpfr_div_2exp(tmpv,tmp,1,GMP_RNDU);
-    
-    mpfr_set(u,tmpu,GMP_RNDZ);
-    mpfr_set(v,tmpv,GMP_RNDU);
-  }
 
+  while (go_on==1) {
+    int can_round;
+
+    n = ceil(log(p)/log(2));
+
+    for(i=0;i<n;i++) {
+      mpfr_mul(tmp,u,v,GMP_RNDZ);
+      mpfr_sqrt(tmpu,tmp,GMP_RNDZ);
+      mpfr_add(tmp,u,v,GMP_RNDU);
+      mpfr_div_2exp(tmpv,tmp,1,GMP_RNDU);
+    
+      mpfr_set(u,tmpu,GMP_RNDZ);
+      mpfr_set(v,tmpv,GMP_RNDU);
+    }
+    printf("avant can_round(");
+    mpfr_out_str(stdout,10,0,v,GMP_RNDU);
+    printf(", %i, GMP_RNDU, %i, %i)\n",p-q,rnd_mode,q);
+
+    can_round=mpfr_can_round(v,p-q,GMP_RNDU,rnd_mode,q);
+
+    printf("apres can_round\n");
+    if (can_round==1) {
+      go_on=0;
+    }
+    else {
+      double vo, uo, tmp, rap;
+      vo=mpfr_get_d(a);
+      uo=mpfr_get_d(b);
+      if (uo > vo) 
+	{ tmp=uo; uo=vo; vo=tmp;}
+
+      rap=log((vo-uo)/uo)/log(2);
+      if (rap <=1)
+	printf("Erreur bizarre\n");
+      else {
+	p*=rap;
+      printf("Avec plus de chiffres calculer tu dois\n");
+      }
+    }
+  }
   /* Setting of the result */
-  mpfr_set(r,v,GMP_RNDN);
+ 
+  mpfr_set(r,v,rnd_mode);
+ 
 
   /* Exactness of the result */
   mpfr_init2(prec,p);
   mpfr_sub(prec,v,u,GMP_RNDU);
   mpfr_div(tmp,prec,u,GMP_RNDU);
-  mpfr_div_2exp(prec,tmp,q,GMP_RNDU);
+  mpfr_div_2exp(prec,tmp,p,GMP_RNDU);
 
-  /* printf("entre u et v : %i ulp\n",(int) floor(mpfr_get_d(prec))); */
+  if( (int) floor(mpfr_get_d(prec)) !=0)
+    printf("Plus d'iterations effectuer tu dois : %i ulps de diff\n", (int) floor(mpfr_get_d(prec)));
+
+  /*printf("entre u et v : %i ulp\n",(int) floor(mpfr_get_d(prec))); */
   
 
 

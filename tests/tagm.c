@@ -136,27 +136,33 @@ void check(double a, double b, unsigned char rnd_mode)
 
 void main() {
   mpfr_t a,b,res;
-  int p;
+  int p,i;
   double op1,op2;
-  char * strptr,* expptr;
-  printf("debut\n");
-  p=53;
-  op1=1;
-  op2=2;
+  p=100;
+
+  /* srand48(getpid()); */
+  
+  /*printf("%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n",drand(), drand(), drand(), drand() , drand(), drand(), drand(), drand(), drand(), drand(), drand(), drand()); */ 
 
   mpfr_init2(a,p);
   mpfr_init2(b,p);
   mpfr_init2(res,p);
 
-  mpfr_set_d(a,op1,GMP_RNDN);
-  mpfr_set_d(b,op2,GMP_RNDN);
-  mpfr_agm(res,a,b,GMP_RNDN);
+  for(i=0;i<10;i++) {
+    op1=drand();
+    op2=drand();
 
-  printf("avant\n");
-  strptr= mpfr_get_str(NULL,expptr,10,0,res,GMP_RNDN);
+    mpfr_set_d(a,op1,GMP_RNDN);
+    mpfr_set_d(b,op2,GMP_RNDN);
+    mpfr_agm(res,a,b,GMP_RNDN);
 
-  printf("mag entre %f et %f a la precision %i :\n",op1,op2,p);
-  printf("%sE%s\n",strptr,expptr);
+    printf("mag entre %e et %e a la precision %i :\n",op1,op2,p);
+  
+    mpfr_out_str(stdout,10,0,res,GMP_RNDN);
+    printf("\n");
+  }
+ 
+ 
 }
 
   
