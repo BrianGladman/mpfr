@@ -690,13 +690,13 @@ the divide functions will make these functions intentionally divide by zero.
 This gives the user the possibility to handle arithmetic exceptions in these
 functions in the same manner as other arithmetic exceptions.
 
-@deftypefun int mpfr_div (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, char @var{rnd})
+@deftypefun void mpfr_div (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, char @var{rnd})
 @deftypefunx int mpfr_div_ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, char @var{rnd})
 Set @var{rop} to @var{op1}/@var{op2} rounded in the direction @var{rnd}.
-Return 0 if the division is exact, a non-zero value otherwise.
+@c Return 0 if the division is exact, a non-zero value otherwise.
 @end deftypefun
 
-@deftypefun void mpfr_sqrt (mpfr_t @var{rop}, mpfr_t @var{op}, char @var{rnd})
+@deftypefun int mpfr_sqrt (mpfr_t @var{rop}, mpfr_t @var{op}, char @var{rnd})
 @ifinfo
 Set @var{rop} to the square root of @var{op} rounded in the direction @var{rnd}.
 @end ifinfo
@@ -705,7 +705,8 @@ Set @var{rop} to the square root of @var{op} rounded in the direction @var{rnd}.
 Set @var{rop} to $\sqrt{@var{op}}$ rounded in the direction @var{rnd}.
 @end tex
 @end iftex
-Returns NaN if @var{op} is negative.
+Set @var{rop} to NaN if @var{op} is negative.
+Return 0 if the operation is exact, a non-zero value otherwise.
 @end deftypefun
 
 @deftypefun void mpfr_pow_ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, char @var{rnd})
