@@ -249,8 +249,8 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
 	[eg. HI(vlo*q) = r => compare LO(vlo*q) with b.]
       */
 
-      rem = TMP_ALLOC(rsize * BYTES_PER_MP_LIMB);
-      rem2 = TMP_ALLOC(rsize * BYTES_PER_MP_LIMB);
+      rem = (mp_ptr) TMP_ALLOC(rsize * BYTES_PER_MP_LIMB);
+      rem2 = (mp_ptr) TMP_ALLOC(rsize * BYTES_PER_MP_LIMB);
 
       rem[rsize - 1] = rem2 [rsize - 1] = 0; 
 
