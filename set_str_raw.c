@@ -125,12 +125,14 @@ mpfr_set_str_raw (mpfr_ptr x, __gmp_const char *str)
 	xp[xsize - k] <<= (BITS_PER_MP_LIMB - j); 
       }
 
-    for (; k <= xsize; k++) { xp[xsize - k] = 0; }
+    for (; k <= xsize; k++)
+      xp[xsize - k] = 0;
 
-    count_leading_zeros(cnt, xp[xsize - 1]); 
-    if (cnt) mpn_lshift(xp, xp, xsize, cnt); 
+    count_leading_zeros(cnt, xp[xsize - 1]);
+    if (cnt)
+      mpn_lshift(xp, xp, xsize, cnt);
 
-    MPFR_EXP(x) = expn - cnt; 
+    MPFR_SET_EXP (x, expn - cnt);
     if (MPFR_ISNEG(x) != negative)
       MPFR_CHANGE_SIGN(x);
   }

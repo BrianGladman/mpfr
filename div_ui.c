@@ -1,6 +1,6 @@
 /* mpfr_div_ui -- divide a floating-point number by a machine integer
 
-Copyright 1999, 2000, 2001, 2002 Free Software Foundation, Inc.
+Copyright 1999, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -80,7 +80,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 
   xp = MPFR_MANT(x);
   yp = MPFR_MANT(y);
-  MPFR_EXP(y) = MPFR_EXP(x);
+  MPFR_SET_EXP (y, MPFR_GET_EXP (x));
 
   dif = yn + 1 - xn;
 
@@ -113,7 +113,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
     {
       tmp--;
       sh = 0;
-      MPFR_EXP(y) -= BITS_PER_MP_LIMB;
+      MPFR_SET_EXP (y, MPFR_GET_EXP (y) - BITS_PER_MP_LIMB);
     }
 
   /* now we have yn limbs starting from tmp[1], with tmp[yn]<>0 */
@@ -126,7 +126,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
       yp[0] += tmp[0] >> (BITS_PER_MP_LIMB - sh);
       middle = middle || ((tmp[0] << sh) != 0);
       inexact = inexact || ((tmp[0] << sh) != 0);
-      MPFR_EXP(y) -= sh; 
+      MPFR_SET_EXP (y, MPFR_GET_EXP (y) - sh);
     }
   else
     MPN_COPY(yp, tmp + 1, yn);

@@ -361,7 +361,7 @@ mpfr_set_str (mpfr_t x, __gmp_const char *str, int base, mp_rnd_t rnd)
 
   TMP_FREE(marker);
 
-  MPFR_EXP(x) = exp_y + n * BITS_PER_MP_LIMB;
+  MPFR_SET_EXP (x, exp_y + n * BITS_PER_MP_LIMB);
 
  sign_and_flags:
   MPFR_CLEAR_FLAGS(x);

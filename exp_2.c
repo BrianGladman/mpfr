@@ -196,7 +196,8 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       exps <<= 1;
       exps += mpz_normalize (ss, ss, q);
     }
-  mpfr_set_z (s, ss, GMP_RNDN); MPFR_EXP(s) += exps;
+  mpfr_set_z (s, ss, GMP_RNDN);
+  MPFR_SET_EXP(s, MPFR_GET_EXP (s) + exps);
   TMP_FREE(marker); /* don't need ss anymore */
 
   if (n>0) mpfr_mul_2ui(s, s, n, GMP_RNDU);
@@ -301,10 +302,11 @@ mpfr_exp2_aux2 (mpz_t s, mpfr_srcptr r, int q, int *exps)
   TMP_DECL(marker);
 
   /* estimate value of l */
-  l = q / (-MPFR_EXP(r));
+  l = q / (- MPFR_GET_EXP (r));
   m = (int) __gmpfr_isqrt (l);
   /* we access R[2], thus we need m >= 2 */
-  if (m < 2) m = 2;
+  if (m < 2)
+    m = 2;
   TMP_MARK(marker);
   R = (mpz_t*) TMP_ALLOC((m+1)*sizeof(mpz_t)); /* R[i] stands for r^i */
   expR = (int*) TMP_ALLOC((m+1)*sizeof(int)); /* exponent for R[i] */
@@ -313,68 +315,85 @@ mpfr_exp2_aux2 (mpz_t s, mpfr_srcptr r, int q, int *exps)
   MY_INIT_MPZ(rr, sizer+2);
   MY_INIT_MPZ(t, 2*sizer); /* double size for products */
   mpz_set_ui(s, 0); *exps = 1-q; /* initialize s to zero, 1 ulp = 2^(1-q) */
-  for (i=0;i<=m;i++) MY_INIT_MPZ(R[i], sizer+2);
+  for (i=0;i<=m;i++)
+    MY_INIT_MPZ(R[i], sizer+2);
   expR[1] = mpfr_get_z_exp(R[1], r); /* exact operation: no error */
   expR[1] = mpz_normalize2(R[1], R[1], expR[1], 1-q); /* error <= 1 ulp */
   mpz_mul(t, R[1], R[1]); /* err(t) <= 2 ulps */
   mpz_div_2exp(R[2], t, q-1); /* err(R[2]) <= 3 ulps */
   expR[2] = 1-q;
-  for (i=3;i<=m;i++) {
-    mpz_mul(t, R[i-1], R[1]); /* err(t) <= 2*i-2 */
-    mpz_div_2exp(R[i], t, q-1); /* err(R[i]) <= 2*i-1 ulps */
-    expR[i] = 1-q;
-  }
-  mpz_set_ui(R[0], 1); mpz_mul_2exp(R[0], R[0], q-1); expR[0]=1-q; /* R[0]=1 */
-  mpz_set_ui(rr, 1); expr=0; /* rr contains r^l/l! */
+  for (i=3;i<=m;i++)
+    {
+      mpz_mul(t, R[i-1], R[1]); /* err(t) <= 2*i-2 */
+      mpz_div_2exp(R[i], t, q-1); /* err(R[i]) <= 2*i-1 ulps */
+      expR[i] = 1-q;
+    }
+  mpz_set_ui(R[0], 1);
+  mpz_mul_2exp(R[0], R[0], q-1);
+  expR[0]=1-q; /* R[0]=1 */
+  mpz_set_ui(rr, 1);
+  expr=0; /* rr contains r^l/l! */
   /* by induction: err(rr) <= 2*l ulps */
 
   l = 0;
   ql = q; /* precision used for current giant step */
-  do {
-    /* all R[i] must have exponent 1-ql */
-    if (l) for (i=0;i<m;i++) {
-      expR[i] = mpz_normalize2(R[i], R[i], expR[i], 1-ql);
-    }
-    /* the absolute error on R[i]*rr is still 2*i-1 ulps */
-    expt = mpz_normalize2(t, R[m-1], expR[m-1], 1-ql); 
-    /* err(t) <= 2*m-1 ulps */
-    /* computes t = 1 + r/(l+1) + ... + r^(m-1)*l!/(l+m-1)! 
-       using Horner's scheme */
-    for (i=m-2;i>=0;i--) {
-      mpz_div_ui(t, t, l+i+1); /* err(t) += 1 ulp */
-      mpz_add(t, t, R[i]);
-    }
-    /* now err(t) <= (3m-2) ulps */
-    
-    /* now multiplies t by r^l/l! and adds to s */
-    mpz_mul(t, t, rr); expt += expr;
-    expt = mpz_normalize2(t, t, expt, *exps);
-    /* err(t) <= (3m-1) + err_rr(l) <= (3m-2) + 2*l */
-#ifdef DEBUG
-    if (expt != *exps) {
-      fprintf(stderr, "Error: expt != exps %d %d\n", expt, *exps); exit(1);
-    }
-#endif
-    mpz_add(s, s, t); /* no error here */
+  do
+    {
+      /* all R[i] must have exponent 1-ql */
+      if (l)
+        for (i=0;i<m;i++)
+          {
+            expR[i] = mpz_normalize2(R[i], R[i], expR[i], 1-ql);
+          }
+      /* the absolute error on R[i]*rr is still 2*i-1 ulps */
+      expt = mpz_normalize2(t, R[m-1], expR[m-1], 1-ql); 
+      /* err(t) <= 2*m-1 ulps */
+      /* computes t = 1 + r/(l+1) + ... + r^(m-1)*l!/(l+m-1)! 
+         using Horner's scheme */
+      for (i=m-2;i>=0;i--)
+        {
+          mpz_div_ui(t, t, l+i+1); /* err(t) += 1 ulp */
+          mpz_add(t, t, R[i]);
+        }
+      /* now err(t) <= (3m-2) ulps */
 
-    /* updates rr, the multiplication of the factors l+i could be done 
-       using binary splitting too, but it is not sure it would save much */
-    mpz_mul(t, rr, R[m]); /* err(t) <= err(rr) + 2m-1 */
-    expr += expR[m];
-    mpz_set_ui (tmp, 1);
-    for (i=1, c=1; i<=m; i++) {
-      if (l+i > ~((unsigned long int) 0)/c) {
-	mpz_mul_ui(tmp, tmp, c);
-	c = l+i;
-      }
-      else c *= (unsigned long int) l+i;
+      /* now multiplies t by r^l/l! and adds to s */
+      mpz_mul(t, t, rr);
+      expt += expr;
+      expt = mpz_normalize2(t, t, expt, *exps);
+      /* err(t) <= (3m-1) + err_rr(l) <= (3m-2) + 2*l */
+#ifdef DEBUG
+      if (expt != *exps)
+        {
+          fprintf(stderr, "Error: expt != exps %d %d\n", expt, *exps);
+          exit(1);
+        }
+#endif
+      mpz_add(s, s, t); /* no error here */
+
+      /* updates rr, the multiplication of the factors l+i could be done 
+         using binary splitting too, but it is not sure it would save much */
+      mpz_mul(t, rr, R[m]); /* err(t) <= err(rr) + 2m-1 */
+      expr += expR[m];
+      mpz_set_ui (tmp, 1);
+      for (i=1, c=1; i<=m; i++)
+        {
+          if (l+i > ~((unsigned long int) 0)/c)
+            {
+              mpz_mul_ui(tmp, tmp, c);
+              c = l+i;
+            }
+          else
+            c *= (unsigned long int) l+i;
+        }
+      if (c != 1)
+        mpz_mul_ui (tmp, tmp, c); /* tmp is exact */
+      mpz_fdiv_q(t, t, tmp); /* err(t) <= err(rr) + 2m */
+      expr += mpz_normalize(rr, t, ql); /* err_rr(l+1) <= err_rr(l) + 2m+1 */
+      ql = q - *exps - mpz_sizeinbase(s, 2) + expr + mpz_sizeinbase(rr, 2);
+      l+=m;
     }
-    if (c != 1) mpz_mul_ui (tmp, tmp, c); /* tmp is exact */
-    mpz_fdiv_q(t, t, tmp); /* err(t) <= err(rr) + 2m */
-    expr += mpz_normalize(rr, t, ql); /* err_rr(l+1) <= err_rr(l) + 2m+1 */
-    ql = q - *exps - mpz_sizeinbase(s, 2) + expr + mpz_sizeinbase(rr, 2);
-    l+=m;
-  } while (expr+mpz_sizeinbase(rr, 2) > -q);
+  while (expr+mpz_sizeinbase(rr, 2) > -q);
 
   TMP_FREE(marker);
   mpz_clear(tmp);

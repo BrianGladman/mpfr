@@ -1,6 +1,6 @@
 /* mpfr_add1 -- internal function to perform a "real" addition
 
-Copyright 1999, 2000, 2001, 2002 Free Software Foundation.
+Copyright 1999, 2000, 2001, 2002, 2003 Free Software Foundation.
 Contributed by the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.
@@ -71,7 +71,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c,
   bn = (bq-1)/BITS_PER_MP_LIMB + 1; /* number of significant limbs of b */
   cn = (cq-1)/BITS_PER_MP_LIMB + 1; /* number of significant limbs of c */
 
-  MPFR_EXP(a) = MPFR_EXP(b);
+  MPFR_SET_EXP (a, MPFR_GET_EXP (b));
   MPFR_SET_SAME_SIGN(a, b);
 
   /*
@@ -159,13 +159,13 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c,
 
       if (cc) /* carry */
         {
-          mp_exp_t exp = MPFR_EXP(a);
+          mp_exp_t exp = MPFR_GET_EXP (a);
           if (exp == __gmpfr_emax)
             {
               inex = mpfr_set_overflow(a, rnd_mode, MPFR_SIGN(a));
               goto end_of_add;
             }
-          MPFR_EXP(a)++;
+          MPFR_SET_EXP (a, exp + 1);
           rb = (ap[0] >> sh) & 1; /* LSB(a) --> rounding bit after the shift */
           if (sh)
             {
@@ -301,13 +301,13 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c,
                   && (rb < 0 || (rb ^= 1) == 0)
                   && mpn_add_1(ap, ap, an, MP_LIMB_T_ONE << sh))
                 {
-                  mp_exp_t exp = MPFR_EXP(a);
+                  mp_exp_t exp = MPFR_GET_EXP (a);
                   if (exp == __gmpfr_emax)
                     {
                       inex = mpfr_set_overflow(a, rnd_mode, MPFR_SIGN(a));
                       goto end_of_add;
                     }
-                  MPFR_EXP(a)++;
+                  MPFR_SET_EXP (a, exp + 1);
                   ap[an-1] = MPFR_LIMB_HIGHBIT;
                   rb = 0;
                 }
@@ -355,13 +355,13 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c,
                   rb ^= 1;
                   if (rb == 0 && mpn_add_1(ap, ap, an, MP_LIMB_T_ONE << sh))
                     {
-                      mp_exp_t exp = MPFR_EXP(a);
+                      mp_exp_t exp = MPFR_GET_EXP (a);
                       if (exp == __gmpfr_emax)
                         {
                           inex = mpfr_set_overflow(a, rnd_mode, MPFR_SIGN(a));
                           goto end_of_add;
                         }
-                      MPFR_EXP(a)++;
+                      MPFR_SET_EXP (a, exp + 1);
                       ap[an-1] = MPFR_LIMB_HIGHBIT;
                     }
                 } /* bb < cc */
@@ -532,12 +532,12 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c,
  add_one_ulp: /* add one unit in last place to a */
   if (mpn_add_1(ap, ap, an, MP_LIMB_T_ONE << sh))
     {
-      mp_exp_t exp = MPFR_EXP(a);
+      mp_exp_t exp = MPFR_GET_EXP (a);
       if (exp == __gmpfr_emax)
         inex = mpfr_set_overflow(a, rnd_mode, MPFR_SIGN(a));
       else
         {
-          MPFR_EXP(a)++;
+          MPFR_SET_EXP (a, exp + 1);
           ap[an-1] = MPFR_LIMB_HIGHBIT;
         }
     }

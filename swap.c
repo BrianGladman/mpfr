@@ -1,6 +1,6 @@
 /* mpfr_swap (U, V) -- Swap U and V.
 
-Copyright 2000, 2001 Free Software Foundation, Inc.
+Copyright 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -20,6 +20,7 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
 #include "gmp.h"
+#include "gmp-impl.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
@@ -41,10 +42,10 @@ mpfr_swap (mpfr_ptr u, mpfr_ptr v)
   MPFR_SIZE(v) = usize;
   MPFR_SIZE(u) = vsize;
 
-  uexp = MPFR_EXP(u);
-  vexp = MPFR_EXP(v);
-  MPFR_EXP(v) = uexp;
-  MPFR_EXP(u) = vexp;
+  uexp = MPFR_GET_EXP (u);
+  vexp = MPFR_GET_EXP (v);
+  MPFR_SET_EXP (v, uexp);
+  MPFR_SET_EXP (u, vexp);
 
   up = MPFR_MANT(u);
   vp = MPFR_MANT(v);

@@ -63,8 +63,8 @@ mpfr_eq (mpfr_srcptr u, mpfr_srcptr v, unsigned long int n_bits)
       return MPFR_IS_ZERO(u) && MPFR_IS_ZERO(v);
     }
 
-  uexp = MPFR_EXP(u);
-  vexp = MPFR_EXP(v);
+  uexp = MPFR_GET_EXP (u);
+  vexp = MPFR_GET_EXP (v);
 
   /* 2. Are the exponents different?  */
   if (uexp != vexp)

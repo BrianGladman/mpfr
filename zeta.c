@@ -189,7 +189,7 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
       /* Principal loop: we compute, in z_pre,
 	 an approximation of Zeta(s), that we send to mpfr_can_round */
       mpfr_sub_ui (s1, s, 1, GMP_RNDN);
-      if (MPFR_EXP(s1) <= -(d-3)/2) 
+      if (MPFR_GET_EXP (s1) <= -(d-3)/2) 
 	/* Branch 1: when s-1 is very small, one
 	  uses the approximation Zeta(s)=1/(s-1)+gamma,
 	  where gamma is Euler's constant */
@@ -356,7 +356,7 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
   precs = mpfr_get_prec (s);
   /* Precision precs1 needed to represent 1 - s, and s + 2,
      without any truncation */
-  precs1 = precs + 2 + MAX(0, - abs(MPFR_EXP(s)));
+  precs1 = precs + 2 + MAX (0, - abs (MPFR_GET_EXP (s)));
   sd = mpfr_get_d (s, GMP_RNDN);
   /* Precision prec1 is the precision on elementary computations; it ensures
      a final precision prec1 - add for zeta(s) */
@@ -367,7 +367,7 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
   add = __gmpfr_ceil_log2 (c * c * c * (13.0 + m1));
   prec1 = precz + add; /* Note that prec1 is still incremented by  10 at the first  entry of loop below */
   prec1 = MAX(prec1, precs1);
-  if (MPFR_SIGN(s) != -1 && MPFR_EXP(s) >= 0) /* Case s >= 1/2 */
+  if (MPFR_SIGN (s) != -1 && MPFR_GET_EXP (s) >= 0) /* Case s >= 1/2 */
     mpfr_zeta_pos (z, s, rnd_mode);
   else
     {

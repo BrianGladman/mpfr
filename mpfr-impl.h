@@ -84,12 +84,17 @@ typedef unsigned long int       mp_size_unsigned_t;
 #define MPFR_ASSERTD(expr)  ((void) 0)
 #endif
 
-#if WANT_ASSERT
-#define MPFR_GET_EXP(x)       mpfr_get_exp(x)
-#define MPFR_SET_EXP(x, exp)  MPFR_ASSERTD (!mpfr_set_exp ((x), (exp)))
+/* Invalid exponent value (to track bugs...) */
+#define MPFR_EXP_INVALID ((mp_exp_t) 1 << 30)
+
+#if MPFR_EXP_CHECK
+#define MPFR_GET_EXP(x)          mpfr_get_exp (x)
+#define MPFR_SET_EXP(x, exp)     MPFR_ASSERTN (!mpfr_set_exp ((x), (exp)))
+#define MPFR_SET_INVALID_EXP(x)  ((void) (MPFR_EXP (x) = MPFR_EXP_INVALID))
 #else
-#define MPFR_GET_EXP(x)       MPFR_EXP(x)
-#define MPFR_SET_EXP(x, exp)  ((void) (MPFR_EXP(x) = (exp)))
+#define MPFR_GET_EXP(x)          MPFR_EXP (x)
+#define MPFR_SET_EXP(x, exp)     ((void) (MPFR_EXP (x) = (exp)))
+#define MPFR_SET_INVALID_EXP(x)  ((void) 0)
 #endif
 
 /* Definition of constants */
@@ -181,11 +186,15 @@ long double __gmpfr_longdouble_volatile __GMP_PROTO ((long double)) ATTRIBUTE_CO
 #define MPFR_CLEAR_FLAGS(x) \
   (((x) -> _mpfr_size &= ~((mp_size_unsigned_t) 3 << 29)))
 #define MPFR_IS_NAN(x) (((x)->_mpfr_size >> 30) & 1)
-#define MPFR_SET_NAN(x) ((x)->_mpfr_size |= ((mp_size_unsigned_t) 1 << 30))
+#define MPFR_SET_NAN(x) \
+  (MPFR_SET_INVALID_EXP(x), \
+   (x)->_mpfr_size |= ((mp_size_unsigned_t) 1 << 30))
 #define MPFR_CLEAR_NAN(x) \
   (((x) -> _mpfr_size &= ~((mp_size_unsigned_t) 1 << 30)))
 #define MPFR_IS_INF(x) (((x)->_mpfr_size >> 29) & 1)
-#define MPFR_SET_INF(x) ((x)->_mpfr_size |= ((mp_size_unsigned_t) 1 << 29))
+#define MPFR_SET_INF(x) \
+  (MPFR_SET_INVALID_EXP(x), \
+   (x)->_mpfr_size |= ((mp_size_unsigned_t) 1 << 29))
 #define MPFR_CLEAR_INF(x) ((x)->_mpfr_size &= ~((mp_size_unsigned_t) 1 << 29))
 #define MPFR_IS_FP(x) ((((x) -> _mpfr_size >> 29) & 3) == 0)
 #define MPFR_ABSSIZE(x) \
@@ -209,7 +218,8 @@ long double __gmpfr_longdouble_volatile __GMP_PROTO ((long double)) ATTRIBUTE_CO
 #define MPFR_IS_ZERO(x) \
   (MPFR_MANT(x)[(MPFR_PREC(x)-1)/BITS_PER_MP_LIMB] == (mp_limb_t) 0)
 #define MPFR_SET_ZERO(x) \
-  (MPFR_MANT(x)[(MPFR_PREC(x)-1)/BITS_PER_MP_LIMB] = (mp_limb_t) 0)
+  (MPFR_SET_INVALID_EXP(x), \
+   MPFR_MANT(x)[(MPFR_PREC(x)-1)/BITS_PER_MP_LIMB] = (mp_limb_t) 0)
 #define MPFR_ESIZE(x) \
   ((MPFR_PREC((x)) - 1) / BITS_PER_MP_LIMB + 1)
 #define MPFR_EVEN_INEX 2
@@ -229,7 +239,7 @@ long double __gmpfr_longdouble_volatile __GMP_PROTO ((long double)) ATTRIBUTE_CO
    MPFR_PREC(x) = (p), \
    MPFR_MANT(x) = (xp), \
    MPFR_SIZE(x) = (s), \
-   MPFR_SET_EXP((x), 0))
+   MPFR_SET_INVALID_EXP(x))
 /* same when xp is already allocated */
 #define MPFR_INIT1(xp, x, p, s) \
   (MPFR_PREC(x) = (p), MPFR_MANT(x) = (xp), MPFR_SIZE(x) = (s))

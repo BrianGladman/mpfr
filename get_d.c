@@ -186,19 +186,19 @@ double
 mpfr_get_d (mpfr_srcptr src, mp_rnd_t rnd_mode)
 {
   return mpfr_get_d3 (src, MPFR_IS_FP(src) && MPFR_NOTZERO(src) ?
-                      MPFR_EXP(src) : 0, rnd_mode);
+                      MPFR_GET_EXP (src) : 0, rnd_mode);
 }
 
 double
 mpfr_get_d1 (mpfr_srcptr src)
 {
   return mpfr_get_d3 (src, MPFR_IS_FP(src) && MPFR_NOTZERO(src) ?
-                      MPFR_EXP(src) : 0, __gmpfr_default_rounding_mode);
+                      MPFR_GET_EXP (src) : 0, __gmpfr_default_rounding_mode);
 }
 
 double
 mpfr_get_d_2exp (mp_exp_t *exp, mpfr_srcptr src, mp_rnd_t rnd_mode)
 {
-  *exp = MPFR_EXP (src);
+  *exp = MPFR_GET_EXP (src);
   return mpfr_get_d3 (src, 0, rnd_mode);
 } 
