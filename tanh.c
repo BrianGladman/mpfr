@@ -69,6 +69,7 @@ mpfr_tanh (y, xt, rnd_mode)
     /* tanh(0) = 0 */
     if(!MPFR_NOTZERO(xt))
       {              
+        MPFR_SET_ZERO(y);
         MPFR_SET_SAME_SIGN(y,xt);
         return 0;
       }
