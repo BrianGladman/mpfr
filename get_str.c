@@ -62,9 +62,11 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
   neg = (MPFR_SIGN(op)<0) ? 1 : 0;
 
   if (!NOTZERO(op)) {
-    if (str==NULL) str0=str=(*_mp_allocate_func)(neg + n + 2);
+    if (str==NULL) str = (*_mp_allocate_func)(neg + n + 1);
+    str0 = str;
     if (MPFR_SIGN(op)<0) *str++ = '-';
     for (f=0;f<n;f++) *str++ = '0';
+    *str++ = '\0';
     *expptr = 1;
     return str0;
   }
