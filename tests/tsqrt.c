@@ -34,7 +34,8 @@ void check3 _PROTO((double, mp_rnd_t, double));
 void check4 _PROTO((double, mp_rnd_t, char *)); 
 void check24 _PROTO((float, mp_rnd_t, float)); 
 void check_float _PROTO((void)); 
-void special _PROTO((void)); 
+void special _PROTO((void));
+void check_inexact _PROTO((mp_prec_t));
 
 void check3(double a, mp_rnd_t rnd_mode, double Q)
 {
@@ -167,9 +168,46 @@ void check_float ()
 void special ()
 {
   mpfr_t x, z;
+  int inexact;
+  mp_prec_t p;
 
-  mpfr_init2 (x, 1);
-  mpfr_init2 (z, 1);
+  mpfr_init (x);
+  mpfr_init (z);
+
+  mpfr_set_prec (x, 27);
+  mpfr_set_str_raw (x, "0.110100111010101000010001011");
+  if ((inexact = mpfr_sqrt (x, x, GMP_RNDZ)) >= 0)
+    {
+      fprintf (stderr, "Wrong inexact flag: expected -1, got %d\n", inexact);
+      exit (1);
+    }
+
+  mpfr_set_prec (x, 1);
+  for (p=1; p<1000; p++)
+    {
+      mpfr_set_prec (z, p);
+      mpfr_set_ui (z, 1, GMP_RNDN);
+      mpfr_add_one_ulp (z);
+      mpfr_sqrt (x, z, GMP_RNDU);
+      if (mpfr_cmp_ui (x, 2))
+	{
+	  fprintf (stderr, "Error: sqrt(1+ulp(1), up) should give 2 (prec=%u)\n", (unsigned) p);
+	  printf ("got "); mpfr_print_raw (x); putchar ('\n');
+	  exit (1);
+	}
+    }
+
+  /* check inexact flag */
+  mpfr_set_prec (x, 5);
+  mpfr_set_str_raw (x, "1.1001E-2");
+  if ((inexact = mpfr_sqrt (x, x, GMP_RNDN)))
+    {
+      fprintf (stderr, "Wrong inexact flag: expected 0, got %d\n", inexact);
+      exit (1);
+    }
+
+  mpfr_set_prec (x, 1);
+  mpfr_set_prec (z, 1);
 
   /* checks the sign is correctly set */
   mpfr_set_d (x, 1.0, GMP_RNDN);
@@ -192,10 +230,49 @@ void special ()
   mpfr_clear (z);
 }
 
+void
+check_inexact (mp_prec_t p)
+{
+  mpfr_t x, y, z;
+  mp_rnd_t rnd;
+  int inexact, sign;
+
+  mpfr_init2 (x, p);
+  mpfr_init2 (y, p);
+  mpfr_init2 (z, 2*p);
+  mpfr_random (x);
+  rnd = rand() % 4;
+  inexact = mpfr_sqrt (y, x, rnd);
+  if (mpfr_mul (z, y, y, rnd)) /* exact since prec(z) = 2*prec(y) */
+    {
+      fprintf (stderr, "Error: multiplication should be exact\n");
+      exit (1);
+    }
+  mpfr_sub (z, z, x, rnd); /* exact also */
+  sign = mpfr_cmp_ui (z, 0);
+  if (((inexact == 0) && (sign)) ||
+      ((inexact > 0) && (sign <= 0)) ||
+      ((inexact < 0) && (sign >= 0)))
+    {
+      fprintf (stderr, "Error: wrong inexact flag, expected %d, got %d\n",
+	       sign, inexact);
+      printf ("x=");
+      mpfr_print_raw (x);
+      printf (" rnd=%s\n", mpfr_print_rnd_mode (rnd));
+      printf ("y="); mpfr_print_raw (y); putchar ('\n');
+      exit (1);
+    }
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+}
+
 int
 main (void)
 {
   double a;
+  mp_prec_t p;
+  int k;
 #ifdef TEST
   int i; 
 #ifdef __mips
@@ -213,6 +290,9 @@ main (void)
     check(a, rand() % 4);
   }
 #endif
+  for (p=1; p<200; p++)
+    for (k=0; k<200; k++)
+      check_inexact (p);
   special ();
   check_float();
   check3(0.0/0.0, GMP_RNDN, 0.0/0.0); 
