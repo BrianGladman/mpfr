@@ -60,6 +60,7 @@ mpfr_atanh (y, xt, rnd_mode)
   if (MPFR_IS_NAN(x)) 
     {  
       MPFR_SET_NAN(y); 
+      mpfr_clear(x);
       return 1; 
     }
   MPFR_CLEAR_NAN(y);
@@ -71,6 +72,7 @@ mpfr_atanh (y, xt, rnd_mode)
       MPFR_SET_SAME_SIGN(y,x);
       if(flag_neg)
 	MPFR_CHANGE_SIGN(y);
+      mpfr_clear(x);
       return 0;
     }
 
@@ -82,7 +84,8 @@ mpfr_atanh (y, xt, rnd_mode)
       MPFR_SET_SAME_SIGN(y,x);
       if(flag_neg)
 	MPFR_CHANGE_SIGN(y);
-      return 0;
+      mpfr_clear(x); 
+     return 0;
     }
 
   /* General case */
@@ -142,3 +145,6 @@ mpfr_atanh (y, xt, rnd_mode)
   mpfr_clear(x);
   return inexact;
 }
+
+
+
