@@ -40,10 +40,16 @@ mpfr_get_ui (mpfr_srcptr f, mp_rnd_t rnd)
   mpfr_init2 (x, prec);
   mpfr_rint (x, f, rnd);
 
-  /* now the result is in the most significant limb of x */
-  exp = MPFR_GET_EXP (x); /* since |x| >= 1, exp >= 1 */
-  n = MPFR_LIMB_SIZE(x);
-  s = MPFR_MANT(x)[n - 1] >> (BITS_PER_MP_LIMB - exp);
+  /* warning: if x=0, taking its exponent is illegal */
+  if (MPFR_IS_ZERO(x))
+    s = 0;
+  else
+    {
+      /* now the result is in the most significant limb of x */
+      exp = MPFR_GET_EXP (x); /* since |x| >= 1, exp >= 1 */
+      n = MPFR_LIMB_SIZE(x);
+      s = MPFR_MANT(x)[n - 1] >> (BITS_PER_MP_LIMB - exp);
+    }
 
   mpfr_clear (x);
 
