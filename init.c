@@ -24,5 +24,4 @@ mpfr_init2 (x, p)
   x -> _mp_d = (mp_ptr) (*_mp_allocate_func) 
     (xsize * BYTES_PER_MP_LIMB);
   x -> _mp_size = xsize; 
-  x -> _mp_exp = 0; 
 }
