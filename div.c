@@ -44,6 +44,13 @@ mpfr_ptr q; mpfr_srcptr n, d; unsigned char rnd_mode;
   mpfr_set(q, n, GMP_RNDZ);
   mpfr_init2(eps, prec); mpfr_init2(tmp, prec); mpfr_init2(one, prec);
   expd = EXP(d);
+  if (mpfr_cmp_si_2exp(d, SIGN(d), expd-1)==0) {
+    /* d is an exact power of two */
+    if (--expd>=0) mpfr_div_2exp(q, n, expd, rnd_mode);
+    else mpfr_mul_2exp(q, n, -expd, rnd_mode);
+    if (SIGN(d)<0) mpfr_neg(q, q, rnd_mode);
+    return;
+  }
   mpfr_set_ui(one, 1, GMP_RNDZ); 
   mpfr_mul_2exp(eps, one, expd, GMP_RNDZ); /* eps = 2^expd */
   if (SIGN(d)<0) mpfr_add(tmp, eps, d, GMP_RNDZ);
@@ -80,6 +87,7 @@ mpfr_ptr q; mpfr_srcptr n, d; unsigned char rnd_mode;
      if (cc==0) {
 #ifdef DEBUG
        printf("not enough precision\n");
+       printf("q="); mpfr_print_raw(q); putchar('\n');
 #endif
        if (prec>2*precq) { printf("does not converge\n"); exit(1); }
      }
