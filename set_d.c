@@ -31,6 +31,8 @@ extern int isnan(double);
 #include "mpfr.h"
 
 #define NaN sqrt(-1) /* ensures a machine-independent NaN */
+#define Infp 1/0.
+#define Infm -1/0.
 
 /* Included from gmp-2.0.2, patched to support denorms */
 
@@ -247,6 +249,12 @@ mpfr_set_d(r, d, rnd_mode)
 
   if (d == 0) { MPFR_SET_ZERO(r); return; }
   else if (isnan(d)) { MPFR_SET_NAN(r); return; }
+  else if (isinf(d)) 
+    { 
+      MPFR_SET_INF(r); 
+      if ((d > 0 && (MPFR_SIGN(r) == -1)) || (d < 0 && (MPFR_SIGN(r) == 1)))
+	MPFR_CHANGE_SIGN(r); 
+    }
 
   signd = (d < 0) ? -1 : 1;
   d = ABS (d);
@@ -290,6 +298,12 @@ mpfr_get_d2(src, e)
     printf("recognized NaN\n");
 #endif
     return NaN; }
+  if (MPFR_IS_INF(src)) { 
+#ifdef DEBUG
+    printf("Found Inf.\n");
+#endif
+    return (MPFR_SIGN(src) == 1 ? Infp : Infm); 
+  }
   if (MPFR_NOTZERO(src)==0) return 0.0;
   size = 1+(MPFR_PREC(src)-1)/BITS_PER_MP_LIMB;
   qp = MPFR_MANT(src);

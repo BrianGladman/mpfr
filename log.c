@@ -62,9 +62,19 @@ mpfr_log(r, a, rnd_mode)
   double ref;
   TMP_DECL(marker);
 
-  /* If a is NaN or a is negative or null, the result is NaN */
-  if (MPFR_IS_NAN(a) || (MPFR_NOTZERO(a)==0) || (MPFR_SIGN(a)<0))
+  /* If a is NaN, the result is NaN */
+  if (MPFR_IS_NAN(a))
     { MPFR_SET_NAN(r); return 1; }
+  
+  if (MPFR_IS_ZERO(a)) 
+    {
+      MPFR_SET_INF(r); if (MPFR_SIGN(r) != -1) { MPFR_CHANGE_SIGN(r); }
+    }
+
+  if (MPFR_IS_INF(a))
+    {
+      MPFR_SET_INF(r); if (MPFR_SIGN(r) != 1) { MPFR_CHANGE_SIGN(r); }
+    }
 
   /* If a is 1, the result is 0 */
   if (mpfr_cmp_ui_2exp(a,1,0)==0){

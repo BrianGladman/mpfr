@@ -515,6 +515,31 @@ mpfr_sub(a, b, c, rnd_mode)
 
   if (MPFR_IS_NAN(b) || MPFR_IS_NAN(c)) { MPFR_SET_NAN(a); return; }
 
+  if (MPFR_IS_INF(b)) 
+    { 
+      if (MPFR_IS_INF(c)) 
+	{
+	  if (MPFR_SIGN(b) != MPFR_SIGN(c)) 
+	    { 
+	      MPFR_SET_INF(a); 
+	      if (MPFR_SIGN(a) != MPFR_SIGN(b)) { MPFR_CHANGE_SIGN(a); }
+	    }
+	  else
+	    MPFR_SET_NAN(a); 
+	}
+      else
+	{
+	  MPFR_SET_INF(a); 
+	  if (MPFR_SIGN(b) != MPFR_SIGN(a)) { MPFR_CHANGE_SIGN(a); }
+	}
+    }
+  else 
+    if (MPFR_IS_INF(c))
+      {
+	MPFR_SET_INF(a); 
+	if (MPFR_SIGN(c) == MPFR_SIGN(a)) { MPFR_CHANGE_SIGN(a); }
+      }
+
   if (!MPFR_NOTZERO(b)) { mpfr_neg(a, c, rnd_mode); return; }
   if (!MPFR_NOTZERO(c)) { mpfr_set(a, b, rnd_mode); return; }
 

@@ -50,7 +50,12 @@ mpfr_sqrt (r, u, rnd_mode)
   TMP_DECL (marker); TMP_DECL(marker0); 
 
   if (MPFR_IS_NAN(u) || MPFR_SIGN(u) == -1) { MPFR_SET_NAN(r); return 0; }
-  
+  if (MPFR_IS_INF(u)) 
+    { 
+      MPFR_SET_INF(r); 
+      if (MPFR_SIGN(r) != 1) { MPFR_CHANGE_SIGN(r); }
+    }
+
   prec = MPFR_PREC(r);
 
   if (!MPFR_NOTZERO(u))

@@ -106,6 +106,14 @@ mpfr_exp2(y, x, rnd_mode)
   TMP_DECL(marker);
 
   if (MPFR_IS_NAN(x)) { MPFR_SET_NAN(y); return 1; }
+  if (MPFR_IS_INF(x)) 
+    { 
+      if (MPFR_SIGN(x) > 0) 
+	{ MPFR_SET_INF(y); if (MPFR_SIGN(y) == -1) { MPFR_CHANGE_SIGN(y); } }
+      else 
+	{ MPFR_SET_ZERO(y);  if (MPFR_SIGN(y) == -1) { MPFR_CHANGE_SIGN(y); } }
+      /*    TODO: conflits entre infinis et zeros ? */
+	    }
   if (!MPFR_NOTZERO(x)) { mpfr_set_ui(y, 1, GMP_RNDN); return 0; }
 
   expx = MPFR_EXP(x);

@@ -55,6 +55,7 @@ mpfr_cmp3(b, c, s)
 
    if (!MPFR_NOTZERO(b)) {
      if (!MPFR_NOTZERO(c)) return 0; else return -(MPFR_SIGN(c));
+     /*TODO: bug ou feature ? s pas pris en compte... */
    }
    else if (!MPFR_NOTZERO(c)) return MPFR_SIGN(b);
 
@@ -62,6 +63,8 @@ mpfr_cmp3(b, c, s)
    if (s<0) return(MPFR_SIGN(b));
 
    /* now signs are equal */
+   if (MPFR_IS_INF(b)) 
+     return MPFR_SIGN(b) * !MPFR_IS_INF(c); 
 
    diff_exp = MPFR_EXP(b)-MPFR_EXP(c);
    s = (MPFR_SIGN(b) > 0) ? 1 : -1;
@@ -89,6 +92,8 @@ mpfr_cmp3(b, c, s)
    Assumes b>=c, which implies MPFR_EXP(b)>=MPFR_EXP(c).
    if b=c, returns prec(b).
 */
+/* TODO: semantique ? */
+
 int 
 #if __STDC__
 mpfr_cmp2 ( mpfr_srcptr b, mpfr_srcptr c )

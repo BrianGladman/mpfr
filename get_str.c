@@ -58,8 +58,16 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
 	    base);
     exit(1);
   }
-
+  
   neg = (MPFR_SIGN(op)<0) ? 1 : 0;
+
+  if (MPFR_IS_INF(op)) { 
+    if (str==NULL) str = (*_mp_allocate_func)(neg + 4);
+    str0 = str; 
+    if (neg) { *str++ = '-'; }
+    *str++ = 'I'; *str++ = 'n'; *str++ = 'f'; *str='\0'; 
+    return str0; 
+  }
 
   if (!MPFR_NOTZERO(op)) {
     if (str==NULL) str = (*_mp_allocate_func)(neg + n + 1);

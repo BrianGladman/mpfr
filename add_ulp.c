@@ -34,6 +34,7 @@ mpfr_add_one_ulp(x)
 {
   int xn, sh; mp_limb_t *xp;
 
+  if (MPFR_IS_INF(x)) { return; }
   xn = 1 + (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB;
   sh = xn*BITS_PER_MP_LIMB - MPFR_PREC(x);
   xp = MPFR_MANT(x);
@@ -50,6 +51,7 @@ int mpfr_sub_one_ulp(mpfr_ptr x)
 {
   int xn, sh; mp_limb_t *xp;
 
+  if (MPFR_IS_INF(x)) { return; }
   xn = 1 + (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB;
   sh = xn*BITS_PER_MP_LIMB-MPFR_PREC(x);
   xp = MPFR_MANT(x);

@@ -42,6 +42,17 @@ mpfr_dump (u, rnd_mode)
   mp_exp_t exp;
   char *str;
 
+  if (MPFR_IS_INF(u)) 
+    {
+      if (MPFR_SIGN(u) == 1) printf("Inf\n"); else printf("-Inf\n"); 
+      return; 
+    }
+  if (MPFR_IS_NAN(u)) 
+    {
+      printf("NaN\n"); 
+      return; 
+    }
+
   str = mpfr_get_str (NULL, &exp, 10, 0, u, rnd_mode);
   if (str[0] == '-')
     printf ("-0.%se%ld\n", str + 1, exp);

@@ -184,6 +184,7 @@ mpfr_round(x, rnd_mode, prec)
   mp_limb_t *tmp; int carry, signx; mp_prec_t nw;
   TMP_DECL(marker);
 
+  if (MPFR_IS_INF(x) || MPFR_IS_NAN(x)) return; 
   nw = prec / BITS_PER_MP_LIMB; 
   if (prec & (BITS_PER_MP_LIMB - 1)) nw++;
   signx = MPFR_SIGN(x);

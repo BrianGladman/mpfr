@@ -40,6 +40,17 @@ mpfr_mul_ui(y, x, u, rnd_mode)
   unsigned long xsize, ysize, cnt, dif, ex, sh; 
   TMP_DECL(marker);
 
+  if (MPFR_IS_INF(x)) 
+    {
+      if (u) 
+	{ 
+	  MPFR_SET_INF(y); 
+	  if (MPFR_SIGN(y) != MPFR_SIGN(x) * u) { MPFR_CHANGE_SIGN(y); }
+	  return; 
+	}
+      else { MPFR_SET_NAN(y); return; }
+    }
+
   TMP_MARK(marker);
   my = MPFR_MANT(y); ex = MPFR_EXP(x);  
   ysize = (MPFR_PREC(y)-1)/BITS_PER_MP_LIMB + 1;

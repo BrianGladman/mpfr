@@ -55,7 +55,18 @@ mpfr_set_str_raw(x, str)
 
   if (*str == '-') { negative = 1; str++; }
   else if (*str == '+') str++;
-
+  
+  if (*str == 'I') 
+    { 
+      MPFR_SET_INF(x); if (MPFR_ISNEG(x) != negative) { MPFR_CHANGE_SIGN(x); }
+      return; 
+    }
+     
+  if (*str == 'N')
+    {
+      MPFR_SET_NAN(x); return; 
+    }
+ 
   while (*str == '0') { str++; } 
 
   while (*str == '0' || *str == '1')

@@ -88,17 +88,23 @@ typedef __gmp_const __mpfr_struct *mpfr_srcptr;
 
 /* bit 31 of _mp_size is used for sign,
    bit 30 of _mp_size is used for Nan flag,
+   bit 29 of _mp_size is used for Inf flag,
    remaining bits are used to store the number of allocated limbs */
 #define MPFR_IS_NAN(x) (((x)->_mp_size >> 30)&1)
 #define MPFR_SET_NAN(x) ((x)->_mp_size |= (1<<30))
+#define MPFR_IS_INF(x) (((x)->_mp_size >> 29)&1)
+#define MPFR_SET_INF(x) ((x)->_mp_size |= (1<<29))
+#define MPFR_IS_FP(x) ((((x) -> _mp_size >> 29) & 3) == 0)
+#define MPFR_SET_IS_FP(x) ((x) -> _mp_size &= 2684354559UL); /* 1001111...1 */
 #define MPFR_ABSSIZE(x) ((x)->_mp_size & ((1<<30)-1))
 #define MPFR_SIZE(x) ((x)->_mp_size)
 #define MPFR_EXP(x) ((x)->_mp_exp)
 #define MPFR_MANT(x) ((x)->_mp_d)
 #define MPFR_SIGN(x) (((x)->_mp_size >> 31) ? -1 : 1)
-#define MPFR_ISNONNEG(x) (MPFR_SIGN(x)>=0)
-#define MPFR_ISNEG(x) (MPFR_SIGN(x)==-1)
+#define MPFR_ISNONNEG(x) (MPFR_NOTZERO((x)) && MPFR_SIGN(x)>=0)
+#define MPFR_ISNEG(x) (MPFR_NOTZERO((x)) && MPFR_SIGN(x)==-1)
 #define MPFR_CHANGE_SIGN(x) (MPFR_SIZE(x) = MPFR_SIZE(x) ^ (((mp_size_t)1)<<31))
+#define MPFR_SET_SAME_SIGN(x, y) if (MPFR_SIGN((x)) != MPFR_SIGN((y))) { MPFR_CHANGE_SIGN((x)); }
 #define MPFR_PREC(x) ((x)->_mp_prec)
 #define MPFR_NOTZERO(x) (MPFR_MANT(x)[(MPFR_PREC(x)-1)/BITS_PER_MP_LIMB])
 #define MPFR_SET_ZERO(x) (MPFR_MANT(x)[(MPFR_PREC(x)-1)/BITS_PER_MP_LIMB] = 0)

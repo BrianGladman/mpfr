@@ -44,6 +44,7 @@ mpfr_cmp_ui_2exp (b, i, f)
 
   if (MPFR_SIGN(b) < 0) return -1;
   /* now b>=0 */
+  else if (MPFR_IS_INF(b)) return 1; 
   else if (!MPFR_NOTZERO(b)) return((i) ? -1 : 0);
   /* now b>0 */
   else if (i==0) return 1;
@@ -88,7 +89,8 @@ mpfr_cmp_si_2exp(b, i, f)
   int e, k, bn, si; mp_limb_t c, *bp;
 
   si = (i<0) ? -1 : 1; /* sign of i */
-  if (MPFR_SIGN(b) * i < 0) return MPFR_SIGN(b); /* both signs differ */
+  if (MPFR_SIGN(b) * i < 0 || MPFR_IS_INF(b)) return MPFR_SIGN(b); 
+  /* both signs differ */
   else if (!MPFR_NOTZERO(b) || (i==0)) { /* one is zero */
     if (i==0) return ((MPFR_NOTZERO(b)) ? MPFR_SIGN(b) : 0);
     else return si; /* b is zero */

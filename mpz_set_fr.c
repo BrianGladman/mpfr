@@ -37,6 +37,8 @@ mpz_set_fr (z, f)
 {
   int fn, sh;
 
+  /* TODO: semantique de INF, NAN dans ce contexte ; lever une FPE ? */
+
   fn = 1 + (MPFR_PREC(f)-1)/BITS_PER_MP_LIMB;
 
   /* check whether allocated space for z is enough */

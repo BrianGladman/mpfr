@@ -40,6 +40,8 @@ mpfr_get_str_raw(digit_ptr, x)
   ex = MPFR_EXP(x); 
   p = MPFR_PREC(x); 
 
+  /* TODO: utilite de gerer l'infini a ce niveau ? */
+
   if (MPFR_SIGN(x) < 0) { *digit_ptr = '-'; digit_ptr++; }
   sprintf(digit_ptr, "0."); digit_ptr += 2; 
 
@@ -72,6 +74,9 @@ mpfr_print_raw(x)
   char *str; 
 
   if (MPFR_IS_NAN(x)) printf("NaN");
+  else if (MPFR_IS_INF(x)) {
+    if (MPFR_SIGN(x) == 1) { printf("Inf"); } else printf("-Inf"); 
+  }
   else if (!MPFR_NOTZERO(x)) printf("0");
   else {
      /* 3 char for sign + 0 + binary point

@@ -54,23 +54,51 @@ mpfr_div (r, u, v, rnd_mode)
   TMP_DECL (marker);
 
   if (MPFR_IS_NAN(u) || MPFR_IS_NAN(v)) { MPFR_SET_NAN(r); return; }
-  
+  if (MPFR_IS_INF(u)) 
+    { 
+      if (MPFR_IS_INF(v)) 
+	{
+	  MPFR_SET_NAN(r); return; 
+	}
+      else
+	{ 
+	  MPFR_SET_INF(r); 
+	  if (MPFR_SIGN(r) != MPFR_SIGN(u) * MPFR_SIGN(v)) 
+	    { MPFR_CHANGE_SIGN(r); }
+	  return; 
+	}
+    }
+  else
+    { 
+      if (MPFR_IS_INF(v)) 
+	{
+	  MPFR_SET_ZERO(r); 
+	  if (MPFR_SIGN(r) != MPFR_SIGN(u) * MPFR_SIGN(v)) 
+	    { MPFR_CHANGE_SIGN(r); }
+	  return; 
+	}
+    }
+
   usize = (MPFR_PREC(u) - 1)/BITS_PER_MP_LIMB + 1; 
   vsize = (MPFR_PREC(v) - 1)/BITS_PER_MP_LIMB + 1; 
   sign_quotient = ((MPFR_SIGN(u) * MPFR_SIGN(v) > 0) ? 1 : -1); 
   prec = MPFR_PREC(r);
 
-  if (!MPFR_NOTZERO(u)) { MPFR_SET_ZERO(r); return; }
 
   if (!MPFR_NOTZERO(v))
-    vsize = 1 / v->_mp_d[vsize - 1];    /* Gestion des infinis ? */
-  
-  if (!MPFR_NOTZERO(v))
     {
-      r->_mp_exp = 0;
-      MPN_ZERO(r->_mp_d, r->_mp_size); 
-      return;
+      if (!MPFR_NOTZERO(u)) 
+	{ MPFR_SET_NAN(r); return; }
+      else
+	{
+	  MPFR_SET_INF(r); 
+	  if (MPFR_SIGN(r) != MPFR_SIGN(v) * MPFR_SIGN(u)) 
+	    MPFR_CHANGE_SIGN(r); 
+	  return;
+	}
     }
+  
+  if (!MPFR_NOTZERO(u)) { MPFR_SET_ZERO(r); return; }
 
   up = u->_mp_d;
   vp = v->_mp_d;

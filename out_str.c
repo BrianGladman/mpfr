@@ -42,8 +42,14 @@ mpfr_out_str (stream, base, n_digits, op, rnd_mode)
 
   if (MPFR_IS_NAN(op)) { fprintf(stream, "NaN"); return 3; }
   if (!MPFR_NOTZERO(op)) { fprintf(stream, "0"); return 1; }
+  if (MPFR_IS_INF(op)) 
+    { 
+      if (MPFR_SIGN(op) == 1) { fprintf(stream, "Inf"); return 3; }
+      else { fprintf(stream, "-Inf"); return 4; }
+    }
 
   s = mpfr_get_str(NULL, &e, base, n_digits, op, rnd_mode);
+  /*	  TODO: maintenir le code pour les infinis dans get_str ?  */
   s0 = s;
   /* for op=3.1416 we have s = "31416" and e = 1 */
   

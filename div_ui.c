@@ -50,7 +50,25 @@ mpfr_div_ui(y, x, u, rnd_mode)
   TMP_DECL(marker);
 
   if (MPFR_IS_NAN(x)) { MPFR_SET_NAN(y); return 1; }
-  if (u==0) { fprintf(stderr, "division by zero\n"); exit(1); }
+
+  if (MPFR_IS_INF(x)) 
+    { 
+      MPFR_SET_INF(y); 
+      if (MPFR_SIGN(y) * MPFR_SIGN(x) * u < 0)
+	MPFR_CHANGE_SIGN(y); 
+      return 0; 
+      /*    TODO: semantique de la division par un zero entier ? signe ? */
+    }
+
+  if (u==0) 
+    {
+      if (MPFR_IS_ZERO(x)) { MPFR_SET_NAN(y) ; return 1; }
+      else
+	{ 
+	  MPFR_SET_INF(y); MPFR_SET_SAME_SIGN(y, x); return 0; 
+	  /* TODO: semantique de la division dans ce cas-la aussi ? */
+	}
+    }
 
   TMP_MARK(marker);
   xn = (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB + 1;

@@ -66,7 +66,7 @@ mp_rnd_t rnd_mode;
   int logn;
   int tmp_factor;
   int tmpi;
-  if (MPFR_IS_NAN(x)) { MPFR_SET_NAN(sinus);  MPFR_SET_NAN(cosinus); return 1; }
+  if (MPFR_IS_NAN(x) || MPFR_IS_INF(x)) { MPFR_SET_NAN(sinus);  MPFR_SET_NAN(cosinus); return 1; }
   if (!MPFR_NOTZERO(x)) { 
     mpfr_set_ui(sinus, 0, GMP_RNDN); 
     mpfr_set_ui(cosinus, 1, GMP_RNDN); 

@@ -51,6 +51,7 @@ mpfr_agm(r, a, b, rnd_mode)
   TMP_DECL(marker1);
   TMP_DECL(marker2);
 
+  /* TODO : CHECK FOR INFINITY. */
 
   /* If a or b is NaN, the result is NaN */
   if (MPFR_IS_NAN(op1) || MPFR_IS_NAN(op2)) 
@@ -60,8 +61,6 @@ mpfr_agm(r, a, b, rnd_mode)
   /* If a or b is negative, the result is NaN */
   if ((MPFR_SIGN(op1) < 0) || (MPFR_SIGN(op2) < 0))
     { MPFR_SET_NAN(r); return; }
-
-
   
   /* If a or b is 0, the result is 0 */
   if ((MPFR_NOTZERO(op1) && MPFR_NOTZERO(op2)) == 0)

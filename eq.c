@@ -47,8 +47,10 @@ mpfr_eq (u, v, n_bits)
   usize = (MPFR_PREC(u)-1)/BITS_PER_MP_LIMB + 1;
   vsize = (MPFR_PREC(v)-1)/BITS_PER_MP_LIMB + 1;
 
+  usign = MPFR_SIGN(u); 
+
   /* 1. Are the signs different?  */
-  if (MPFR_SIGN(u) ==  MPFR_SIGN(v))
+  if (usign ==  MPFR_SIGN(v))
     {
       /* U and V are both non-negative or both negative.  */
       if (!MPFR_NOTZERO(u))
@@ -61,12 +63,15 @@ mpfr_eq (u, v, n_bits)
   else
     {
       /* Either U or V is negative, but not both.  */
-      return 0;
+      if (MPFR_NOTZERO(u) || MPFR_NOTZERO(v)) 
+	return 0;
+      else return 1; /* particular case -0 = +0 */
     }
 
   /* U and V have the same sign and are both non-zero.  */
-
-  usign = MPFR_SIGN(u); 
+  if (MPFR_IS_INF(u)) 
+    return (MPFR_IS_INF(v) && (usign == MPFR_SIGN(v))); 
+  else if (MPFR_IS_INF(v)) return 0; 
 
   /* 2. Are the exponents different?  */
   if (uexp > vexp)

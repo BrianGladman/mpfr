@@ -23,6 +23,8 @@ int  i;
   int size;
   int j;
 
+  /* TODO: gestion de l'infini. */
+  
   if (MPFR_ABSSIZE(p) < two_i){
     int j;
     y->_mp_alloc=two_i_2 ;	

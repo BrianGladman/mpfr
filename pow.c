@@ -38,7 +38,16 @@ mpfr_pow_ui (x, y, n, rnd)
 #endif
 {
   long int i; double err;
-  
+
+  if (MPFR_IS_INF(y)) 
+    {
+      if (n == 0) { MPFR_SET_NAN(x); return; }
+      else if ((MPFR_SIGN(y) < 0 && (MPFR_SIGN(x) > 0 || n % 2 == 0)) ||
+	       MPFR_SIGN(y) > 0 && (MPFR_SIGN(x) < 0 && n % 2 == 1))
+	MPFR_CHANGE_SIGN(x); 
+      MPFR_SET_INF(x); return; 
+    }
+
   if (n==0) { mpfr_set_ui(x, 1, rnd); return 0; }
   mpfr_set(x, y, rnd); err = 1.0;
   for (i=0;(1<<i)<=n;i++);
@@ -51,6 +60,10 @@ mpfr_pow_ui (x, y, n, rnd)
 }
 
 /* sets x to y^n, and returns ceil(log2(max ulp error)) */
+
+/* TODO: gerer l'infini en cas de debordement ? Fait mecaniquement si fait 
+   dans mul ? */
+
 int
 #if __STDC__
 mpfr_ui_pow_ui (mpfr_ptr x, unsigned long int y, unsigned long int n,

@@ -47,6 +47,22 @@ mpfr_mul(a, b, c, rnd_mode)
 
   /* deal with NaN and zero */
   if (MPFR_IS_NAN(b) || MPFR_IS_NAN(c)) { MPFR_SET_NAN(a); return; }
+  if (MPFR_IS_INF(b)) 
+    {
+      if (!MPFR_NOTZERO(c)) { MPFR_SET_NAN(a); return; }
+      else 
+	{ 
+	  if (MPFR_SIGN(a) != MPFR_SIGN(b) * MPFR_SIGN(c)) MPFR_CHANGE_SIGN(a);
+	}
+    }
+  else if (MPFR_IS_INF(c)) 
+    {
+      if (!MPFR_NOTZERO(b)) { MPFR_SET_NAN(a); return; }
+      else 
+	{ 
+	  if (MPFR_SIGN(a) != MPFR_SIGN(b) * MPFR_SIGN(c)) MPFR_CHANGE_SIGN(a);
+	}
+    }
   if (!MPFR_NOTZERO(b) || !MPFR_NOTZERO(c)) { MPFR_SET_ZERO(a); return; }
 
   sign_product = MPFR_SIGN(b) * MPFR_SIGN(c);
