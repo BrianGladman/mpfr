@@ -27,8 +27,6 @@ Changes in existing functions:
   or v=0.
 - use nextafter/nexttoward instead of add_one_ulp/sub_one_ulp in mpfr_exp
 	(they differ for a power of 2)
-- thread-safe version of mpfr_set_q wrt temporary changes in emin/emax?
-	Suggested by Kevin.
 
 New functions to implement:
 
@@ -102,4 +100,4 @@ Miscellaneous:
   systems, apart from limb size, so you're not at the mercy of random or
   lrand48, etc.
 
-- make MPFR thread-safe.
+- make MPFR thread-safe (e.g. temporary changes of emin/emax in mpfr_set_q)
