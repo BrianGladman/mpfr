@@ -31,7 +31,7 @@ mpfr_sin_sign (mpfr_srcptr x)
 {
   mpfr_t c, k;
   mp_exp_t K;
-  int sign;
+  int sign, loops = 0;
   mp_prec_t m;
   mpfr_srcptr y;
 
@@ -46,7 +46,10 @@ mpfr_sin_sign (mpfr_srcptr x)
 
   do
     {
+      loops ++;
       m += BITS_PER_MP_LIMB;
+      if (loops > 2) /* maybe a massive cancellation, like for x near from Pi */
+        m += MPFR_PREC(x) / 2;
 
       mpfr_set_prec (c, m);
       mpfr_set_prec (k, m);
