@@ -99,8 +99,12 @@ typedef struct {
 } __mpfr_struct;
 
 /* Compatibility with previous types of MPFR */
-#define mp_rnd_t  mpfr_rnd_t
-#define mp_prec_t mpfr_prec_t
+#ifndef mp_rnd_t
+# define mp_rnd_t  mpfr_rnd_t
+#endif
+#ifndef mp_prec_t
+# define mp_prec_t mpfr_prec_t
+#endif
 
 /*
    The represented number is
@@ -515,6 +519,7 @@ int  mpfr_strtofr _MPFR_PROTO ((mpfr_ptr, __gmp_const char *, char **,
    Remove ICC since it defines __GNUC__, but produces a
    huge number of warnings if you use this code  */
 #if defined (__GNUC__) && !defined(__ICC)
+#if (__GNUC__ >= 2)
 #undef mpfr_cmp_ui
 #define mpfr_cmp_ui(_f,_u)                 \
  (__builtin_constant_p (_u) && (_u) == 0 ? \
@@ -530,6 +535,7 @@ int  mpfr_strtofr _MPFR_PROTO ((mpfr_ptr, __gmp_const char *, char **,
  (__builtin_constant_p (_s) && (_s) >= 0 ? \
    mpfr_set_ui ((_f), (_s), (_r)) :        \
    mpfr_set_si ((_f), (_s), (_r))) 
+#endif
 #endif
 
 /* Compatibility layer -- obsolete functions and macros */
