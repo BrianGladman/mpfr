@@ -49,10 +49,10 @@ void check2(double a, unsigned char rnd_mode, double res1)
 
   if (res1!=res2 && (!isnan(res1) || !isnan(res2))) {
     if (ck) 
-      printf("mpfr_log failed for    a=%1.40e, rnd_mode=%d\n",a,rnd_mode);
+      printf("mpfr_log failed for    a=%1.20e, rnd_mode=%d\n",a,rnd_mode);
     else
-      printf("mpfr_log differs from libm.a for a=%1.40e, rnd_mode=%d\n",a,rnd_mode);
-    printf(" double calculus gives %1.40e\n mpfr_log        gives %1.40e (%d ulp)\n pari            gives \n \n",res1,res2,ulp(res1,res2));
+      printf("mpfr_log differs from libm.a for a=%1.20e, rnd_mode=%d\n",a,rnd_mode);
+    printf(" double calculus gives %1.20e\n mpfr_log        gives %1.20e (%d ulp)\n pari            gives \n \n",res1,res2,ulp(res1,res2));
   }
   /*else {
     printf("GOAL !!! for           a=%1.20e, rnd_mode=%d\n",a,rnd_mode);
@@ -189,7 +189,7 @@ void main(int argc, char *argv[]) {
   else {
     check_worst_cases();
 
-   check(10,GMP_RNDU);
+    check(10,GMP_RNDU);
   check(6,GMP_RNDU);  
   check(1,GMP_RNDZ);  
   check(62,GMP_RNDU);
@@ -206,27 +206,27 @@ void main(int argc, char *argv[]) {
   check(7.53428236571286402512e+34,GMP_RNDZ);
   check(1.42470900831881198052e+49,GMP_RNDZ); 
   
-  check(1.08013816255293777466e+11,GMP_RNDN);
+  check2(1.08013816255293777466e+11,GMP_RNDN,2.54055249841782604392e+01);
   check(6.72783635300509015581e-37,GMP_RNDU);
   check(2.25904918906057891180e-52,GMP_RNDU);
   check(1.48901209246462951085e+00,GMP_RNDD);
   check(1.70322470467612341327e-01,GMP_RNDN);
   check(1.94572026316065240791e+01,GMP_RNDD);
   check(4.01419512207026418764e+04,GMP_RNDD);
-  check(9.47077365236487591672e-04,GMP_RNDZ);
-  check(3.95906157687589643802e-109,GMP_RNDD);
-  check(2.73874914516503004113e-02,GMP_RNDD);
-  check(9.18989072589566467669e-17,GMP_RNDZ);
-  check(7.70603645360819104595e+54,GMP_RNDZ);
-  check(1.74827399630587801934e-23,GMP_RNDZ);
+  check2(9.47077365236487591672e-04,GMP_RNDZ,-6.96212977303956748187e+00);
+  check2(3.95906157687589643802e-109,GMP_RNDD,-2.49605768114704119399e+02);
+  check2(2.73874914516503004113e-02,GMP_RNDD,-3.59766888618655977794e+00);
+  check2(9.18989072589566467669e-17,GMP_RNDZ,-3.69258425351464083519e+01);
+  check2(7.70603645360819104595e+54,GMP_RNDZ,1.26381598998419917734e+02);
+  check2(1.74827399630587801934e-23,GMP_RNDZ,-5.24008281254547156891e+01);
   check(4.35302958401482307665e+22,GMP_RNDD);
   check(9.70791868689332915209e+00,GMP_RNDD);
   check(2.22183639799464011100e-01,GMP_RNDN);
   check(2.27313466156682375540e+00,GMP_RNDD);
   check(6.58057413965851156767e-01,GMP_RNDZ);
-  check(7.34302197248998461006e+43,GMP_RNDZ);
+  check2(7.34302197248998461006e+43,GMP_RNDZ,1.01004909469513179942e+02);
   check(6.09969788341579732815e+00,GMP_RNDD);
-  check(8.94529798779875738679e+82,GMP_RNDD);
+  check2(8.94529798779875738679e+82,GMP_RNDD,1.91003105655254444172e+02);
   check(1.68775280934272742250e+00,GMP_RNDZ); 
   check(5.32204288784834943727e+02,GMP_RNDZ);
   } 
