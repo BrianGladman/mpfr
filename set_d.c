@@ -275,6 +275,7 @@ mpfr_set_d (r, d, rnd_mode)
       return;
     }
 
+  sizer = (MPFR_PREC(tmp)-1)/BITS_PER_MP_LIMB + 1;
   if (sizer < MPFR_LIMBS_PER_DOUBLE) 
     {
       tmp = TMP_ALLOC(sizeof(mpfr_ptr)); 
@@ -286,7 +287,6 @@ mpfr_set_d (r, d, rnd_mode)
 
   signd = (d < 0) ? -1 : 1;
   d = ABS (d);
-  sizer = (MPFR_PREC(tmp)-1)/BITS_PER_MP_LIMB + 1;
 
   /* warning: __mpfr_extract_double requires at least two limbs */
   if (sizer < MPFR_LIMBS_PER_DOUBLE)
