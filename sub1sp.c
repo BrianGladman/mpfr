@@ -637,6 +637,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       bx--;
       /* And the lost bit x depends on Cp+1, and Cp */
       /* Compute Cp+1 if it isn't already compute (ie d==1) */
+      /* FIXME: Is this case possible? */
       if (MPFR_UNLIKELY(d == 1))
 	bbcp = 0;
       DEBUG( printf("(SubOneUlp)Cp=%lu, Cp+1=%lu C'p+1=%lu\n", bcp,bbcp,bcp1));
@@ -686,6 +687,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	{
 	  /* It is a power of 2! */
 	  /* Compute Cp+1 if it isn't already compute (ie d==1) */
+	  /* FIXME: Is this case possible? */
 	  if (d == 1)
 	    bbcp=0;
 	  DEBUG( printf("(Truncate) Cp=%lu, Cp+1=%lu C'p+1=%lu C'p+2=%lu\n", \
