@@ -236,6 +236,7 @@ mpfr_sqrt (r, u, rnd_mode)
     MPFR_MANT(r) [0] &= ~(((mp_limb_t)1 << (BITS_PER_MP_LIMB - 
 				   (MPFR_PREC(r) & (BITS_PER_MP_LIMB - 1)))) - 1) ; 
   
-  TMP_FREE(marker0); TMP_FREE (marker);
+  TMP_FREE (marker);
+  TMP_FREE(marker0);
   return exact;
 }
