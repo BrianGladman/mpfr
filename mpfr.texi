@@ -550,7 +550,7 @@ Sets the default rounding mode to @var{rnd}.
 The default rounding mode is to nearest initially.
 @end deftypefun
 
-@deftypefun int mpfr_round (mpfr_t @var{x}, mp_rnd_t @var{rnd}, mp_prec_t @var{prec})
+@deftypefun int mpfr_round_prec (mpfr_t @var{x}, mp_rnd_t @var{rnd}, mp_prec_t @var{prec})
 Rounds @var{x} according to @var{rnd} with precision @var{prec}, which
 may be different from that of @var{x}. 
 If @var{prec} is greater or equal to the precision of @var{x}, then new
@@ -703,7 +703,7 @@ The precision @var{prec} can be any integer between @code{MPFR_PREC_MIN} and
 @code{MPFR_PREC_MAX}.
 
 In case you want to keep the previous value stored in @var{x},
-use @code{mpfr_round} instead.
+use @code{mpfr_round_prec} instead.
 @end deftypefun
 
 @deftypefun mp_prec_t mpfr_get_prec (mpfr_t @var{x})
@@ -1271,12 +1271,23 @@ they should always be zero.
 @section Miscellaneous Functions
 @cindex Miscellaneous float functions
 
-@deftypefun void mpfr_ceil (mpfr_t @var{rop}, mpfr_t @var{op})
-@deftypefunx void mpfr_floor (mpfr_t @var{rop}, mpfr_t @var{op})
-@deftypefunx void mpfr_trunc (mpfr_t @var{rop}, mpfr_t @var{op})
+@deftypefun int mpfr_rint (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_ceil (mpfr_t @var{rop}, mpfr_t @var{op})
+@deftypefunx int mpfr_floor (mpfr_t @var{rop}, mpfr_t @var{op})
+@deftypefunx int mpfr_round (mpfr_t @var{rop}, mpfr_t @var{op})
+@deftypefunx int mpfr_trunc (mpfr_t @var{rop}, mpfr_t @var{op})
 Set @var{rop} to @var{op} rounded to an integer. @code{mpfr_ceil} rounds
-to the next higher integer, @code{mpfr_floor} to the next lower,
-and @code{mpfr_trunc} to the integer towards zero.
+to the next higher representable integer, @code{mpfr_floor} to the next lower,
+@code{mpfr_round} to the nearest representable integer, rounding halfway cases
+away from zero, and @code{mpfr_trunc} to the representable integer towards
+zero. @code{mpfr_rint} behaves like one of these four functions, depending
+on the rounding mode.
+The returned value is zero when the result is exact, positive when it is
+greater than the original value of @var{op}, and negative when it is smaller.
+More precisely, the returned value is 0 when @var{op} is an integer
+representable in @var{rop}, 1 or @minus{}1 when @var{op} is an integer
+that is not representable in @var{rop}, 2 or @minus{}2 when @var{op} is
+not an integer.
 @end deftypefun
 
 @deftypefun void mpfr_urandomb (mpfr_t @var{rop}, gmp_randstate_t @var{state})
