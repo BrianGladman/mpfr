@@ -159,7 +159,7 @@ check_inexact (void)
         {
           mpfr_set_prec (y, py);
           mpfr_set_prec (z, py + mp_bits_per_limb);
-          for (rnd=0; rnd<4; rnd++)
+          for (rnd = 0; rnd < GMP_RND_MAX; rnd++)
             {
               inexact = mpfr_div_ui (y, x, u, rnd);
               if (mpfr_mul_ui (z, y, u, rnd))

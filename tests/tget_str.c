@@ -449,7 +449,7 @@ check_special (int b, mp_prec_t p)
   for (i=1; i<MAX_DIGITS && mpfr_mul_ui (x, x, b, GMP_RNDN) == 0; i++)
     {
       /* x = b^i (exact) */
-      for (r=0; r<4; r++)
+      for (r = 0; r < GMP_RND_MAX; r++)
         for (m= (i<3)? 2 : i-1 ; (int) m <= i+1 ; m++)
           {
             mpfr_get_str (s, &e, b, m, x, r);
@@ -463,7 +463,7 @@ check_special (int b, mp_prec_t p)
       if (mpfr_sub_ui (x, x, 1, GMP_RNDN) != 0)
         break;
       /* now x = b^i-1 (exact) */
-      for (r=0; r<4; r++)
+      for (r = 0; r < GMP_RND_MAX; r++)
         if (i >= 2)
           {
             mpfr_get_str (s, &e, b, i, x, r);

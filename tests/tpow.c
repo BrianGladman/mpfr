@@ -143,8 +143,8 @@ check_inexact (mp_prec_t p)
   mpfr_init (t);
   mpfr_random (x);
   u = randlimb () % 2;
-  for (q=2; q<=p; q++)
-    for (rnd=0; rnd<4; rnd++)
+  for (q = 2; q <= p; q++)
+    for (rnd = 0; rnd < GMP_RND_MAX; rnd++)
       {
         mpfr_set_prec (y, q);
         mpfr_set_prec (z, q + 10);

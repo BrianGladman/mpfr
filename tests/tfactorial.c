@@ -90,7 +90,7 @@ test_int (void)
         {
           mpfr_set_prec (x, p);
           mpfr_set_prec (y, p);
-          for (r = 0; r < 4; r++)
+          for (r = 0; r < GMP_RND_MAX; r++)
             {
               inex1 = mpfr_fac_ui (x, n, r);
               inex2 = mpfr_set_z (y, f, r);
@@ -151,8 +151,8 @@ main (int argc, char *argv[])
       yprec = prec + 10;
       mpfr_set_prec (y, yprec);
 
-      for (n=0; n<50; n++)
-	for (rnd=0; rnd<4; rnd++)
+      for (n = 0; n < 50; n++)
+	for (rnd = 0; rnd < GMP_RND_MAX; rnd++)
 	  {
 	    inexact = mpfr_fac_ui (y, n, rnd);
 	    err = (rnd == GMP_RNDN) ? yprec + 1 : yprec;

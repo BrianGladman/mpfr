@@ -208,11 +208,11 @@ check_convergence (void)
       mpfr_set_prec(x, i);
       mpfr_set_prec(y, i);
       mpfr_set_ui(x, 1, GMP_RNDN);
-      for (j=0;j<4;j++)
+      for (j = 0;j < GMP_RND_MAX; j++)
         {
           mpfr_set_ui (y, 1, GMP_RNDN);
-          mpfr_div(y, x, y, j);
-          if (mpfr_cmp_ui(y, 1))
+          mpfr_div (y, x, y, j);
+          if (mpfr_cmp_ui (y, 1))
             {
               printf ("mpfr_div failed for x=1.0, y=1.0, prec=%u rnd=%s\n",
                       i, mpfr_print_rnd_mode(j));
@@ -222,7 +222,8 @@ check_convergence (void)
         }
     }
 
-  mpfr_clear(x); mpfr_clear(y);
+  mpfr_clear (x);
+  mpfr_clear (y);
 }
 
 #define KMAX 10000

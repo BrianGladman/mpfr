@@ -65,7 +65,7 @@ main (int argc, char *argv[])
       mpfr_set_prec (t, prec);
       yprec = prec + 10;
 
-      for (rnd=0; rnd<4; rnd++)
+      for (rnd = 0; rnd < GMP_RND_MAX; rnd++)
 	{
 	  mpfr_set_prec (y, yprec);
 	  mpfr_const_euler (y, rnd);

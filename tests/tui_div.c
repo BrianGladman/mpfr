@@ -70,7 +70,7 @@ check_inexact (void)
         {
           mpfr_set_prec (y, py);
           mpfr_set_prec (z, py + px);
-          for (rnd=0; rnd<4; rnd++)
+          for (rnd = 0; rnd < GMP_RND_MAX; rnd++)
             {
               inexact = mpfr_ui_div (y, u, x, rnd);
               if (mpfr_mul (z, y, x, rnd))

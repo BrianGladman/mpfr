@@ -52,7 +52,7 @@ check_inexact (void)
       for (q=2; q<2*p; q++)
         {
           mpfr_set_prec (y, q);
-          for (rnd=0; rnd<4; rnd++)
+          for (rnd = 0; rnd < GMP_RND_MAX; rnd++)
             {
               inexact = mpfr_abs (y, x, rnd);
               cmp = mpfr_cmp (y, absx);

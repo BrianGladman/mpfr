@@ -148,7 +148,7 @@ main (void)
   for (p=2; p<100; p++)
     {
       mpfr_set_prec (x, p);
-      for (r=0; r<4; r++)
+      for (r = 0; r < GMP_RND_MAX; r++)
         {
           mpfr_set_ui (x, 1, GMP_RNDN);
           mpfr_cbrt (x, x, r);

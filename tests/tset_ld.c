@@ -61,7 +61,7 @@ check_set_get (long double d, mpfr_t x)
   long double e;
   int inex;
 
-  for (r = 0; r < 4; r++)
+  for (r = 0; r < GMP_RND_MAX; r++)
     {
       inex = mpfr_set_ld (x, d, r);
       if (inex != 0)
