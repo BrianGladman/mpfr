@@ -1,6 +1,6 @@
 /* mpfr_fits_*_p -- test whether an mpfr fits a C signed type.
 
-Copyright 2003, 2004 Free Software Foundation.
+Copyright 2003, 2004, 2005 Free Software Foundation.
 Contributed by the Spaces project, INRIA Lorraine.
 Copied from mpf/fits_s.h.
 
@@ -33,21 +33,19 @@ FUNCTION (mpfr_srcptr f, mp_rnd_t rnd)
   int neg;
   int res;
 
-  if (MPFR_IS_NAN(f) || MPFR_IS_INF(f))
-    return 0; /* does not fit */
-
-  if (MPFR_IS_ZERO(f))
-    return 1; /* zero always fits */
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (f)))
+    /* Zero always fit */
+    return MPFR_IS_ZERO (f) ? 1 : 0;
 
   /* now it fits if either
      (a) MINIMUM <= f <= MAXIMUM
      (b) or MINIMUM <= round(f, prec(slong), rnd) <= MAXIMUM */
 
-  exp = MPFR_EXP(f);
+  exp = MPFR_GET_EXP (f);
   if (exp < 1)
     return 1; /* |f| < 1: always fits */
 
-  neg = (MPFR_SIGN(f) > 0) ? 0 : 1;
+  neg = MPFR_IS_NEG (f);
 
   /* let EXTREMUM be MAXIMUM if f > 0, and MINIMUM if f < 0 */
 
