@@ -30,6 +30,9 @@ mpfr_tan (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_t s, c;
   MPFR_ZIV_DECL (loop);
 
+  MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
+		  ("y[%#R]=%R inexact=%d", y, y, inexact));
+
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(x)))
     {
       if (MPFR_IS_NAN(x) || MPFR_IS_INF(x))
@@ -45,7 +48,6 @@ mpfr_tan (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	  MPFR_RET(0);
 	}
     }
-  MPFR_LOG_BEGIN (("x[%#R]=%R rnd=%d", x, x, rnd_mode));
 
   precy = MPFR_PREC (y);
   m = precy + MPFR_INT_CEIL_LOG2 (precy) + 13;
@@ -75,8 +77,6 @@ mpfr_tan (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   mpfr_clear (s);
   mpfr_clear (c);
-
-  MPFR_LOG_END (("y[%#R]=%R inexact=%d", y, y, inexact));
 
   return inexact;
 }

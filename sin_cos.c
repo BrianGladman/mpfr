@@ -49,7 +49,9 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	  MPFR_RET (0);
 	}
     }
-  MPFR_LOG_BEGIN (("x[%#R]=%R rnd=%d", x, x, rnd_mode));
+
+  MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
+		  ("sin[%#R]=%R cos[%#R]=%R", y, y, z, z));
 
   prec = MAX (MPFR_PREC (y), MPFR_PREC (z)); 
   m = prec + MPFR_INT_CEIL_LOG2 (prec) + 13;
@@ -73,7 +75,7 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_clear (k);
     }
   else
-    neg = MPFR_SIGN (x) < 0;
+    neg = MPFR_IS_NEG (x);
 
   MPFR_ZIV_INIT (loop, m);
   for (;;)
@@ -111,6 +113,5 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   mpfr_clear (c);
 
-  MPFR_LOG_END (("sin[%#R]=%R cos[%#R]=%R", y, y, z, z));
   MPFR_RET (1); /* Always inexact */
 }
