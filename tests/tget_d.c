@@ -97,8 +97,10 @@ main (void)
                      {
                        fprintf (stderr, "Error in tget_d (%s) for "
                                 "(i,si,j,sj,rnd,exp) = (%d,%d,%d,%d,%d,%d)\n"
-                                "got %.19e instead of %.19e\n",
-                                f, i, si, j, sj, rnd_mode, exp, c, d);
+                                "got %.25Le instead of %.25Le\n"
+                                "Difference: %.19e\n",
+                                f, i, si, j, sj, rnd_mode, exp,
+                                (long double) c, (long double) d, d - c);
                        exit (1);
                      }
                  }
