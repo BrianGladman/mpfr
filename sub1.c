@@ -1,6 +1,6 @@
 /* mpfr_sub1 -- internal function to perform a "real" subtraction
 
-Copyright 2001 Free Software Foundation.
+Copyright 2001, 2002 Free Software Foundation.
 Contributed by the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.
@@ -389,17 +389,20 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode,
      exponent range */
   if (cancel)
     {
-      mp_exp_t exp_b;
+      mp_exp_t exp_a;
 
       cancel -= add_exp; /* still valid as unsigned long */
-      exp_b = MPFR_EXP(b); /* save it in case a equals b */
-      MPFR_EXP(a) = MPFR_EXP(b) - cancel;
-      if ((MPFR_EXP(a) > exp_b) /* underflow in type mp_exp_t */
-	  || (MPFR_EXP(a) < __mpfr_emin))
-	{
-	  TMP_FREE(marker); 
-	  return mpfr_set_underflow (a, rnd_mode, MPFR_SIGN(a));
-	}
+      exp_a = MPFR_EXP(b) - cancel;
+      if (exp_a < __mpfr_emin)
+        {
+          TMP_FREE(marker);
+          if (rnd_mode == GMP_RNDN &&
+              (exp_a < __mpfr_emin - 1 ||
+               (inexact >= 0 && mpfr_powerof2_raw (a))))
+            rnd_mode = GMP_RNDZ;
+          return mpfr_set_underflow (a, rnd_mode, MPFR_SIGN(a));
+        }
+      MPFR_EXP(a) = exp_a;
     }
   else /* cancel = 0: MPFR_EXP(a) <- MPFR_EXP(b) + add_exp */
     {

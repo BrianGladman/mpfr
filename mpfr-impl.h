@@ -196,6 +196,7 @@ unsigned long _mpfr_isqrt _PROTO ((unsigned long));
 unsigned long _mpfr_cuberoot _PROTO ((unsigned long));
 int mpfr_exp_2 _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_exp3 _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
+int mpfr_powerof2_raw _PROTO ((mpfr_srcptr));
 
 #define mpfr_round_raw(yp, xp, xprec, neg, yprec, r, inexp) \
   mpfr_round_raw_generic((yp), (xp), (xprec), (neg), (yprec), (r), (inexp), 0)
