@@ -47,13 +47,26 @@ void check4(d, rnd, base, prec) double d; unsigned char rnd; int base, prec;
 
 void check_large()
 {
-  mpfr_t x; mp_exp_t e;
+  mpfr_t x; mp_exp_t e; char *s;
 
   mpfr_init(x);
 
   mpfr_set_prec(x, 7);
   mpfr_set_str_raw(x, "0.1010101E10");
   mpfr_get_str(NULL, &e, 10, 2, x, GMP_RNDU);
+
+  /* checks rounding of negative numbers */
+  mpfr_set_d(x, -1.5, GMP_RNDN);
+  s = mpfr_get_str(NULL, &e, 10, 1, x, GMP_RNDD);
+  if (strcmp(s, "-2")) {
+    fprintf(stderr, "Error in mpfr_get_str for x=-1.5 and rnd=GMP_RNDD\n");
+    exit(1);
+  }
+  s = mpfr_get_str(NULL, &e, 10, 1, x, GMP_RNDU);
+  if (strcmp(s, "-1")) {
+    fprintf(stderr, "Error in mpfr_get_str for x=-1.5 and rnd=GMP_RNDU\n");
+    exit(1);
+  }
 
   /* bug found by Jean-Pierre Merlet, produced error in mpfr_get_str */
   mpfr_set_prec(x, 128);
@@ -66,13 +79,14 @@ void check_large()
 int
 main(int argc, char **argv)
 {
-  int i,N=100,r,p; double d;
+  int i,N=10000,r,p; double d;
 
   check_large();
   /* with no argument: prints to /dev/null,
      tout_str N: prints N tests to stdout */
   if (argc==1) fout=fopen("/dev/null", "w");
   else { fout=stdout; N=atoi(argv[1]); }
+  check(-1.37247529013405550000e+15, GMP_RNDN, 7);
   check(-1.5674376729569697500e+15, GMP_RNDN, 19);
   check(-5.71262771772792640000e-79, GMP_RNDU, 16);
   check(-0.0, GMP_RNDU, 7);
