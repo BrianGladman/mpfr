@@ -18,6 +18,7 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 
 
 The MPFR distribution contains the following files:
+(This does not apply to code retrieved by CVS.)
 
 AUTHORS     - the authors of the library
 BUGS        - bugs in MPFR - please read this file!
@@ -46,3 +47,10 @@ mpfr.info   - info file for MPFR
 mpfr.texi   - texinfo documentation for MPFR
 tests/      - test directory
 texinfo.tex - TeX macros to handle mpfr.texi
+
+
+You can get the latest source code by CVS:
+
+  cvs -d :pserver:cvs@cvs-sop.inria.fr:/CVS/spaces checkout mpfr
+
+(empty password). CVS users should read the file "README.dev".
