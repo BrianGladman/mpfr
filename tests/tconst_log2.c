@@ -88,7 +88,7 @@ main (int argc, char *argv[])
   /* check precision of 2 bits */
   mpfr_set_prec (x, 2);
   mpfr_const_log2 (x, GMP_RNDN);
-  if (mpfr_get_d1 (x) != 0.75)
+  if (mpfr_cmp_ui_2exp(x, 3, -2)) /* 3*2^-2 */
     {
       printf ("mpfr_const_log2 failed for prec=2, rnd=GMP_RNDN\n"
               "expected 0.75, got %f\n", mpfr_get_d1 (x));

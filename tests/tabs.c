@@ -96,7 +96,7 @@ main (int argc, char *argv[])
 
   mpfr_set_ui(x, 1, GMP_RNDN);
   mpfr_abs(x, x, GMP_RNDN);
-  if (mpfr_get_d1 (x) != 1.0)
+  if (mpfr_cmp_ui (x, 1))
     {
       printf ("Error in mpfr_abs(1.0)\n");
       exit (1);
@@ -104,7 +104,7 @@ main (int argc, char *argv[])
 
   mpfr_set_si(x, -1, GMP_RNDN);
   mpfr_abs(x, x, GMP_RNDN);
-  if (mpfr_get_d1 (x) != 1.0)
+  if (mpfr_cmp_ui (x, 1))
     {
       printf ("Error in mpfr_abs(-1.0)\n");
       exit (1);

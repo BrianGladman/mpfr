@@ -165,7 +165,7 @@ special ()
   mpfr_set_str_binary (x, "0.111011000111100000111010000101010100110011010000011");
   mpfr_set_str_binary (y, "0.111110010100110000011101100011010111000010000100101");
   mpfr_set_str_binary (t, "0.1110110011110110001000110100100001001111010011111000010000011001");
-    ;
+  
   mpfr_pow (z, x, y, GMP_RNDN);
   if (mpfr_cmp (z, t))
     {
@@ -179,7 +179,7 @@ special ()
   mpfr_set_str (x, "5.68824667828621954868e-01", 10, GMP_RNDN);
   mpfr_set_str (y, "9.03327850535952658895e-01", 10, GMP_RNDN);
   mpfr_pow (z, x, y, GMP_RNDZ);
-  if (mpfr_get_d1 (z) != 0.60071044650456473235)
+  if (mpfr_cmp_d(z, 0.60071044650456473235))
     {
       printf ("Error in mpfr_pow for prec=53, rnd=GMP_RNDZ\n");
       exit (1);
@@ -365,7 +365,7 @@ main (void)
   for (p=2; p<100; p++)
     check_inexact (p);
 
-  /* underflows (); */
+  /*underflows ();*/
 
   overflows ();
 

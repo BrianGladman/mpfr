@@ -42,7 +42,7 @@ mpfr_set_prec (mpfr_ptr x, mpfr_prec_t p)
   if (xsize > xoldsize)
     {
       tmp = (mp_ptr) (*__gmp_reallocate_func)
-        (MPFR_GET_REAL_PTR(x), MPFR_ALLOC_SIZE(xoldsize), MPFR_ALLOC_SIZE(xsize));
+        (MPFR_GET_REAL_PTR(x), MPFR_MALLOC_SIZE(xoldsize), MPFR_MALLOC_SIZE(xsize));
       MPFR_SET_MANT_PTR(x, tmp);
       MPFR_SET_ALLOC_SIZE(x, xsize);
     }

@@ -172,7 +172,7 @@ special (void)
       mpfr_set_ui (z, 1, GMP_RNDN);
       mpfr_add_one_ulp (z, GMP_RNDN);
       mpfr_sqrt (x, z, GMP_RNDU);
-      if (mpfr_get_d1 (x) != 1.5)
+      if (mpfr_cmp_ui_2exp(x, 3, -1))
 	{
 	  printf ("Error: sqrt(1+ulp(1), up) should give 1.5 (prec=%u)\n",
                   (unsigned int) p);

@@ -170,7 +170,7 @@ check_sign (void)
   mpfr_set_si (a, -1, GMP_RNDN);
   mpfr_set_ui (b, 2, GMP_RNDN);
   mpfr_mul(a, b, b, GMP_RNDN);
-  if (mpfr_get_d1 (a) != 4.0)
+  if (mpfr_cmp_ui (a, 4) )
     {
       printf ("2.0*2.0 gives %1.20e\n", mpfr_get_d1 (a));
       exit (1);

@@ -79,9 +79,13 @@ mpfr_add (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   MPFR_ASSERTD(MPFR_IS_PURE_FP(b) && MPFR_IS_PURE_FP(c));
   MPFR_CLEAR_FLAGS(a); /* clear flags */
 
-  if (MPFR_SIGN(b) != MPFR_SIGN(c))
+  if (MPFR_UNLIKELY(MPFR_SIGN(b) != MPFR_SIGN(c)))
     { /* signs differ, it's a subtraction */
-      return mpfr_sub1(a, b, c, rnd_mode);
+      if (MPFR_LIKELY(MPFR_PREC(a) == MPFR_PREC(b) 
+		      && MPFR_PREC(b) == MPFR_PREC(c)))
+	return mpfr_sub1sp(a,b,c,rnd_mode);
+      else
+	return mpfr_sub1(a, b, c, rnd_mode);
     }
   else
     { /* signs are equal, it's an addition */

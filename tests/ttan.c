@@ -82,7 +82,7 @@ main(int argc, char *argv[])
   mpfr_set_prec (x, 2);
   mpfr_set_str (x, "0.5", 10, GMP_RNDN);
   mpfr_tan (x, x, GMP_RNDD);
-  if (mpfr_get_d1 (x) != 0.5)
+  if (mpfr_cmp_ui_2exp(x, 1, -1))
     {
       printf ("mpfr_tan(0.5, GMP_RNDD) failed\n"
               "expected 0.5, got %f\n", mpfr_get_d1 (x));

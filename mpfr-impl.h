@@ -105,6 +105,28 @@ typedef unsigned long int       mpfr_exp_unsigned_t;
 
 #define MPFR_INTPREC_MAX (ULONG_MAX & ~(unsigned long) (BITS_PER_MP_LIMB - 1))
 
+/* Redefine MPN_COPY if compilation for small vars
+   FIXME: Usefull ?*/
+#ifdef SMALL
+#undef MPN_COPY
+#define MPN_COPY(dest, src, n) \
+ do {                          \
+  if ((n) != 0)                \
+    {                          \
+      mp_size_t __n = ((n)-1); \
+      mp_ptr __dst = (dest);   \
+      mp_srcptr __src = (src); \
+      mp_limb_t __x = *__src++;\
+      if (__n)                 \
+	do {                   \
+	  *__dst++ = __x;      \
+	  __x      = *__src++; \
+	} while (--__n);       \
+      *__dst = __x;            \
+    }                          \
+ } while (0)                   
+#endif
+
 /* Assertions */
 
 /* Compile with -DWANT_ASSERT to check all assert statements */
@@ -309,6 +331,7 @@ long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CO
  */
 
 #define MPFR_PREC(x) ((x)->_mpfr_prec)
+
 #define MPFR_EXP(x) ((x)->_mpfr_exp)
 #define MPFR_MANT(x) ((x)->_mpfr_d)
 
@@ -380,14 +403,16 @@ long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CO
 #define MPFR_RET_NAN return (__gmpfr_flags |= MPFR_FLAGS_NAN), 0
 
 /* Heap Memory gestion */ /* Old ABSSIZE */
-#define MPFR_GET_ALLOC_SIZE(x) ( ((mp_size_t*) MPFR_MANT(x))[-1] + 0)
-#define MPFR_SET_ALLOC_SIZE(x, n) ( ((mp_size_t*) MPFR_MANT(x))[-1] = n)
-#define MPFR_ALLOC_SIZE(s) \
-  ((size_t) (sizeof(mp_size_t) + BYTES_PER_MP_LIMB*(s)))
+#define MPFR_GET_ALLOC_SIZE(x) \
+ ( ((mp_size_t*) MPFR_MANT(x))[-1] + 0)
+#define MPFR_SET_ALLOC_SIZE(x, n) \
+ ( ((mp_size_t*) MPFR_MANT(x))[-1] = n)
+#define MPFR_MALLOC_SIZE(s) \
+  ((size_t) (sizeof(mp_size_t)*2 + BYTES_PER_MP_LIMB*(s)))
 #define MPFR_SET_MANT_PTR(x,p) \
-   (MPFR_MANT(x) = (mp_limb_t*) ((mp_size_t*) p + 1))
+   (MPFR_MANT(x) = (mp_limb_t*) ((mp_size_t*) p + 2))
 #define MPFR_GET_REAL_PTR(x) \
-   ((mp_limb_t*) ((mp_size_t*) MPFR_MANT(x) - 1))
+   ((mp_limb_t*) ((mp_size_t*) MPFR_MANT(x) - 2))
 
 /* Temporary memory gestion */
 /* temporary allocate 1 limb at xp, and initialize mpfr variable x */
@@ -437,6 +462,7 @@ void mpfr_restore_emin_emax _MPFR_PROTO ((void));
 
 int mpfr_add1 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_sub1 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
+int mpfr_sub1sp _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_can_round_raw _MPFR_PROTO ((mp_limb_t *, mp_size_t, int, mp_exp_t,
 				     mp_rnd_t, mp_rnd_t, mp_prec_t));
 
@@ -460,6 +486,8 @@ long mpn_exp _MPFR_PROTO ((mp_limb_t *, mp_exp_t *, int,
 			   mp_exp_t, size_t));
 
 void mpfr_print_binary _MPFR_PROTO ((mpfr_srcptr));
+void mpfr_print_mant_binary _MPFR_PROTO ((const char *, const mp_limb_t *,
+					  mp_prec_t));
 void mpfr_set_str_binary _MPFR_PROTO ((mpfr_ptr, __gmp_const char *));
 
 int mpfr_round_raw _MPFR_PROTO ((mp_limb_t *, mp_limb_t *,
@@ -474,7 +502,8 @@ int mpfr_round_raw_4 _MPFR_PROTO ((mp_limb_t *, mp_limb_t *,
 #define mpfr_round_raw2(xp, xn, neg, r, prec) \
   mpfr_round_raw_2(0, (xp), (xn) * BITS_PER_MP_LIMB, (neg), (prec), (r) )
 
-int mpfr_check(mpfr_srcptr);
+int mpfr_check _MPFR_PROTO ((mpfr_srcptr));
+int mpfr_sub1sp _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
 
 #if defined (__cplusplus)
 }

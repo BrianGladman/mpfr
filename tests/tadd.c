@@ -237,7 +237,7 @@ check64 (void)
   mpfr_set_str_binary(x, "0.10011010101000110101010000000011001001001110001011101011111011101E623");
   mpfr_set_str_binary(t, "0.10011010101000110101010000000011001001001110001011101011111011100E623");
   mpfr_sub(u, x, t, GMP_RNDU);
-  if (mpfr_get_d1 (u) != 9.4349060620538533806e167)
+  if (mpfr_cmp_ui_2exp(u, 1, 558))
     { /* 2^558 */
       printf ("Error (1) in mpfr_sub\n");
       exit (1);
@@ -427,7 +427,7 @@ check_same (void)
 
   mpfr_init(x); mpfr_set_ui(x, 1, GMP_RNDZ);
   mpfr_add(x, x, x, GMP_RNDZ);
-  if (mpfr_get_d1 (x) != 2.0)
+  if (mpfr_cmp_ui (x, 2)) 
     {
       printf ("Error when all 3 operands are equal\n");
       exit (1);

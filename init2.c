@@ -37,7 +37,7 @@ mpfr_init2 (mpfr_ptr x, mpfr_prec_t p)
   MPFR_ASSERTN(p >= MPFR_PREC_MIN && p <= MPFR_PREC_MAX);
 
   xsize = (mp_size_t) ((p - 1) / BITS_PER_MP_LIMB) + 1;
-  tmp   = (mp_ptr) (*__gmp_allocate_func)(MPFR_ALLOC_SIZE(xsize));
+  tmp   = (mp_ptr) (*__gmp_allocate_func)(MPFR_MALLOC_SIZE(xsize));
 
   MPFR_PREC(x) = p;
   MPFR_EXP (x) = MPFR_EXP_INVALID; /* make sure that the exp field has a

@@ -80,9 +80,13 @@ mpfr_sub (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   MPFR_CLEAR_FLAGS(a);
   MPFR_ASSERTD(MPFR_IS_PURE_FP(b) && MPFR_IS_PURE_FP(c));
 
-  if (MPFR_SIGN(b) == MPFR_SIGN(c))
+  if (MPFR_LIKELY(MPFR_SIGN(b) == MPFR_SIGN(c)))
     { /* signs are equal, it's a real subtraction */
-      return mpfr_sub1(a, b, c, rnd_mode);
+      if (MPFR_LIKELY(MPFR_PREC(a) == MPFR_PREC(b)
+                      && MPFR_PREC(b) == MPFR_PREC(c)))
+        return mpfr_sub1sp(a,b,c,rnd_mode);
+      else
+	return mpfr_sub1(a, b, c, rnd_mode);
     }
   else
     { /* signs differ, it's an addition */

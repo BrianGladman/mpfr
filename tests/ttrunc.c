@@ -45,7 +45,7 @@ main (void)
 
   mpfr_set_str (x, "0.5", 10, GMP_RNDN);
   mpfr_ceil(y, x);
-  if (mpfr_get_d1 (y) != 1.0)
+  if (mpfr_cmp_ui (y, 1))
     {
       printf ("Error in mpfr_ceil for x=0.5: expected 1.0, got %f\n",
               mpfr_get_d1 (y));
@@ -54,7 +54,7 @@ main (void)
 
   mpfr_set_ui (x, 0, GMP_RNDN);
   mpfr_ceil(y, x);
-  if (mpfr_get_d1 (y) != 0.0)
+  if (mpfr_cmp_ui(y,0))
     {
       printf ("Error in mpfr_ceil for x=0.0: expected 0.0, got %f\n",
               mpfr_get_d1 (y));
@@ -63,7 +63,7 @@ main (void)
 
   mpfr_set_ui (x, 1, GMP_RNDN);
   mpfr_ceil(y, x);
-  if (mpfr_get_d1 (y) != 1.0)
+  if (mpfr_cmp_ui(y,1))
     {
       printf ("Error in mpfr_ceil for x=1.0: expected 1.0, got %f\n",
               mpfr_get_d1 (y));

@@ -161,9 +161,9 @@ check_diverse (void)
   /* check in-place operations */
   mpfr_set_ui (x, 1, GMP_RNDN);
   mpfr_sub (x, x, x, GMP_RNDN);
-  if (mpfr_get_d1 (x) != 0.0)
+  if (mpfr_cmp_ui(x, 0))
     {
-      printf ("Error for mpfr_add (x, x, x, GMP_RNDN) with x=1.0\n");
+      printf ("Error for mpfr_sub (x, x, x, GMP_RNDN) with x=1.0\n");
       exit (1);
     }
 

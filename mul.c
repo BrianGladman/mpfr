@@ -94,14 +94,14 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
   /* FIXME: Usefull since we do an exponent check after ?
    * It is usefull iff the precision is big, there is an overflow
-   * and we are doing further mults... Probable ? */
-  /*
+   * and we are doing further mults...*/
+#ifdef HUGE
   if (MPFR_UNLIKELY(bx + cx > __gmpfr_emax + 1))
     return mpfr_set_overflow (a, rnd_mode, sign_product);
   if (MPFR_UNLIKELY(bx + cx < __gmpfr_emin - 2))
   return mpfr_set_underflow (a, rnd_mode == GMP_RNDN ? GMP_RNDZ : rnd_mode,
 			     sign_product);
-  */
+#endif
 
   aq = MPFR_PREC(a);
   bq = MPFR_PREC(b);

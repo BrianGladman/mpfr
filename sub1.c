@@ -40,7 +40,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   mp_size_t cancel2, an, bn, cn, cn0;
   mp_limb_t *ap, *bp, *cp;
   mp_limb_t carry, bb, cc, borrow = 0;
-  int inexact = 0, shift_b, shift_c, is_exact = 1, down = 0, add_exp = 0;
+  int inexact, shift_b, shift_c, is_exact = 1, down = 0, add_exp = 0;
   int sh, k;
   TMP_DECL(marker);
 

@@ -152,7 +152,7 @@ main (int argc, char *argv[])
 
   mpfr_set_str (x, "0.5", 10, GMP_RNDN);
   mpfr_sin (x, x, GMP_RNDD);
-  if (mpfr_get_d1 (x) != 0.375)
+  if (mpfr_cmp_ui_2exp (x, 3, -3)) /* x != 0.375 = 3/8 */
     {
       printf ("mpfr_sin(0.5, GMP_RNDD) failed with precision=2\n");
       exit (1);
