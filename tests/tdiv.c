@@ -108,7 +108,8 @@ void check_convergence()
   
   mpfr_init2(x, 130); 
   mpfr_set_str_raw(x, "0.1011111101011010101000001010011111101000011100011101010011111011000011001010000000111100100111110011001010110100100001001000111001E6944");
-  mpfr_init_set_ui(y, 5, 130, GMP_RNDN);
+  mpfr_init2(y, 130);
+  mpfr_set_ui(y, 5, GMP_RNDN);
   mpfr_div(x, x, y, GMP_RNDD); /* exact division */
   mpfr_clear(x); mpfr_clear(y);
 }
