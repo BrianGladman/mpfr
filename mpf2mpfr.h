@@ -1,3 +1,6 @@
+/* types */
+#define mpf_t mpfr_t
+
 /* functions which don't take as argument the rounding mode */
 #define mpf_ceil mpfr_ceil
 #define mpf_clear mpfr_clear
@@ -11,12 +14,10 @@
 #define mpf_init mpfr_init
 #define mpf_init2 mpfr_init2
 #define mpf_random2 mpfr_random2
-#define mpf_reldiff mpfr_reldiff
 #define mpf_set_default_prec mpfr_set_default_prec
 #define mpf_set_prec(x,p) mpfr_round(x,__gmp_default_rounding_mode,p)
 #define mpf_set_prec_raw mpfr_set_prec_raw
 #define mpf_trunc mpfr_trunc
-#define mpf_urandomb mpfr_urandomb
 #define mpf_sgn mpfr_sgn
 
 /* functions which take as argument the rounding mode */
@@ -46,6 +47,7 @@
 #define mpf_neg(x,y) mpfr_neg(x,y,__gmp_default_rounding_mode) 
 #define mpf_out_str(x,y,z,t) mpfr_out_str(x,y,z,t,__gmp_default_rounding_mode) 
 #define mpf_pow_ui(x,y,z) mpfr_pow_ui(x,y,z,__gmp_default_rounding_mode) 
+#define mpf_reldiff(x,y,z) mpfr_reldiff(x,y,z,__gmp_default_rounding_mode)
 #define mpf_set(x,y) mpfr_set(x,y,__gmp_default_rounding_mode) 
 #define mpf_set_d(x,y) mpfr_set_d(x,y,__gmp_default_rounding_mode) 
 #define mpf_set_q(x,y) mpfr_set_q(x,y,__gmp_default_rounding_mode) 
@@ -58,3 +60,4 @@
 #define mpf_sub_ui(x,y,z) mpfr_sub_ui(x,y,z,__gmp_default_rounding_mode) 
 #define mpf_ui_div(x,y,z) mpfr_ui_div(x,y,z,__gmp_default_rounding_mode)
 #define mpf_ui_sub(x,y,z) mpfr_ui_sub(x,y,z,__gmp_default_rounding_mode)
+#define mpf_urandomb(x,y,n) mpfr_urandomb(x,y)
