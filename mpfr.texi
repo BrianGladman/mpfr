@@ -189,7 +189,7 @@ floating-point
 numbers (@code{double} type in C), except the range of values is much wider
 (the exponent has at least 32 bits instead of 11).
 
-This version of MPFR is released under the GNU Library General Public
+This version of MPFR is released under the GNU Lesser General Public
 License.
 It is permitted to link MPFR to non-free programs, as long as when
 distributing them the MPFR source code and a means to re-link with a
