@@ -23,6 +23,7 @@ MA 02111-1307, USA. */
 #include <stdlib.h>
 #include <math.h>
 #include "gmp.h"
+#include "gmp-impl.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
@@ -222,6 +223,19 @@ main (int argc, char *argv[])
 	    }
 	}
     }
+
+  mpfr_set_prec (x, 128);
+  mpfr_set_ui (x, 17, GMP_RNDN);
+  mpfr_mul_ui (x, x, MP_LIMB_T_HIGHBIT, GMP_RNDN);
+  mpfr_set_prec (y, 128);
+  mpfr_set_ui (y, MP_LIMB_T_HIGHBIT, GMP_RNDN);
+  mpfr_mul_ui (y, y, 17, GMP_RNDN);
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error for 17 * 2^MP_LIMB_T_HIGHBIT\n");
+      exit (1);
+    }
+  
 
   mpfr_clear(x); mpfr_clear(y);
 
