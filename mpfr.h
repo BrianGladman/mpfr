@@ -102,6 +102,7 @@ typedef __gmp_const __mpfr_struct *mpfr_srcptr;
 #define PREC(x) ((x)->_mp_prec)
 #define NOTZERO(x) (MANT(x)[(PREC(x)-1)/BITS_PER_MP_LIMB])
 #define SET_ZERO(x) (MANT(x)[(PREC(x)-1)/BITS_PER_MP_LIMB] = 0)
+#define mpfr_sgn(x) ((NOTZERO(x)) ? MPFR_SIGN(x) : 0)
 
 /* reallocates the mantissa of x to q bits and sets the precision to q */
 #define _mpfr_realloc(x, q) { \
@@ -197,18 +198,18 @@ void mpfr_set_default_rounding_mode _PROTO((mp_rnd_t));
 #endif
 #endif
 
-#define mpfr_init_set_si(x, i, p, rnd) \
- mpfr_init2((x), (p)); mpfr_set_si((x), (i), (rnd)); 
-#define mpfr_init_set_ui(x, i, p, rnd) \
- mpfr_init2((x), (p)); mpfr_set_ui((x), (i), (rnd));
-#define mpfr_init_set_d(x, d, p, rnd) \
- mpfr_init2((x), (p)); mpfr_set_d((x), (d), (rnd));
-#define mpfr_init_set(x, y, p, rnd) \
- mpfr_init2((x), (p)); mpfr_set((x), (y), (rnd)); 
-#define mpfr_init_set_f(x, y, p, rnd) \
- mpfr_init2((x), (p)); mpfr_set_f((x), (y), (rnd));
-#define mpfr_init_set_str(x, y, p, rnd) \
- mpfr_init2((x), (p)); mpfr_set_str((x), (y), (rnd)); 
-#define mpfr_init_set_str_raw(x, y, p, rnd) \
- mpfr_init2((x), (p)); mpfr_set_str_raw((x), (y), (rnd)); 
+#define mpfr_init_set_si(x, i, rnd) \
+ { mpfr_init(x); mpfr_set_si((x), (i), (rnd)); }
+#define mpfr_init_set_ui(x, i, rnd) \
+ { mpfr_init(x); mpfr_set_ui((x), (i), (rnd)); }
+#define mpfr_init_set_d(x, d, rnd) \
+ { mpfr_init(x); mpfr_set_d((x), (d), (rnd)); }
+#define mpfr_init_set(x, y, rnd) \
+ { mpfr_init(x); mpfr_set((x), (y), (rnd)); }
+#define mpfr_init_set_f(x, y, rnd) \
+ { mpfr_init(x); mpfr_set_f((x), (y), (rnd)); }
+#define mpfr_init_set_str(x, y, rnd) \
+ { mpfr_init(x); mpfr_set_str((x), (y), (rnd)); }
+#define mpfr_init_set_str_raw(x, y, rnd) \
+ { mpfr_init(x); mpfr_set_str_raw((x), (y), (rnd)); }
 
