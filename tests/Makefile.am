@@ -9,23 +9,8 @@ INCLUDES = -I$(top_srcdir) @INCLUDES@
 
 check_LIBRARIES = libfrtests.a
 libfrtests_a_SOURCES = memory.c rnd_mode.c tests.c cmp_str.c
-EXTRA_libfrtests_a_SOURCES = amd64.asm x86.asm
-libfrtests_a_DEPENDENCIES = $(TESTS_ASM_OBJECTS)
-libfrtests_a_LIBADD = $(libfrtests_a_DEPENDENCIES)
 
 $(top_builddir)/libmpfr.a:
 	cd $(top_builddir); make libmpfr.a
 
 TESTS = $(check_PROGRAMS)
-
-
-# This $(srcdir) and $(CYGPATH_W) stuff follows automake 1.7.2
-SUFFIXES = .asm
-.asm.o:
-	grep -v '^#' `test -f '$<' || echo '$(srcdir)/'`$< >tmp-$*.s
-	$(COMPILE) -c tmp-$*.s -o $@
-	rm -f tmp-$*.s
-.asm.obj:
-	grep -v '^#' `if test -f '$<'; then $(CYGPATH_W) '$<'; else $(CYGPATH_W) '$(srcdir)/$<' >tmp-$*.s
-	$(COMPILE) -c tmp-$*.s -o $@
-	rm -f tmp-$*.s

@@ -112,11 +112,12 @@ tests_rand_end (void)
   RANDS_CLEAR ();
 }
 
-/* initialization function for tests using the hardware floats */
+/* initialization function for tests using the hardware floats
+   Not very usefull now. */
 void
 mpfr_test_init ()
 {
-  double c, d, eps;
+  double d;
 #if HAVE_FPC_CSR
   /* to get denormalized numbers on IRIX64 */
   union fpc_csr exp;
@@ -134,11 +135,10 @@ mpfr_test_init ()
     }
 #endif
 
-  tests_machine_prec_double ();
-
   /* generate DBL_EPSILON with a loop to avoid that the compiler
      optimizes the code below in non-IEEE 754 mode, deciding that
      c = d is always false. */
+#if 0
   for (eps = 1.0; eps != DBL_EPSILON; eps /= 2.0);
   c = 1.0 + eps;
   d = eps * (1.0 - eps) / 2.0;
@@ -149,30 +149,6 @@ mpfr_test_init ()
               "         (maybe extended precision not disabled)\n"
               "         Some tests may fail\n");
     }
-}
-
-
-/* Set the machine floating point precision, to double or long double.
-
-   On i386 this controls the mantissa precision on the x87 stack, but the
-   exponent range is only enforced when storing to memory.
-
-   For reference, on most i386 systems the default is 64-bit "long double"
-   precision, but on FreeBSD 3.x and amd64 5.x it's 53-bit "double".  */
-
-void
-tests_machine_prec_double (void)
-{
-#if MPFR_HAVE_TESTS_x86
-  x86_fldcw ((x86_fstcw () & ~0x300) | 0x200);
-#endif
-}
-
-void
-tests_machine_prec_long_double (void)
-{
-#if MPFR_HAVE_TESTS_x86
-  x86_fldcw (x86_fstcw () | 0x300);
 #endif
 }
 

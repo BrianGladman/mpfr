@@ -62,19 +62,6 @@ AC_REQUIRE([AC_OBJEXT])
 AC_REQUIRE([MPFR_CHECK_LIBM])
 AC_REQUIRE([AC_HEADER_TIME])
 
-# CPU-dependent objects for the test programs
-case $host in
-  X86_PATTERN)
-    AC_SUBST(TESTS_ASM_OBJECTS, x86.$OBJEXT)
-    AC_DEFINE(MPFR_HAVE_TESTS_x86, 1,
-              [Define to 1 if mpfr x86/amd64 test routines are available.])
-    ;;
-  amd64-*-*)
-    AC_SUBST(TESTS_ASM_OBJECTS, amd64.$OBJEXT)
-    AC_DEFINE(MPFR_HAVE_TESTS_x86, 1)
-    ;;
-esac
-
 dnl Check for sizeof size_t
 dnl AC_CHECK_SIZEOF
 dnl AC_TYPE_SIZE_T

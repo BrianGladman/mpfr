@@ -99,7 +99,6 @@ main (int argc, char *argv[])
 
   tests_start_mpfr ();
   mpfr_test_init ();
-  tests_machine_prec_long_double ();
 
   mpfr_init2 (x, 113);
 

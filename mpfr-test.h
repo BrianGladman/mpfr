@@ -62,12 +62,6 @@ void tests_memory_end _MPFR_PROTO ((void));
 void tests_start_mpfr _MPFR_PROTO ((void));
 void tests_end_mpfr _MPFR_PROTO ((void));
 
-void tests_machine_prec_double _MPFR_PROTO ((void));
-void tests_machine_prec_long_double _MPFR_PROTO ((void));
-
-unsigned short x86_fstcw _MPFR_PROTO ((void));
-void x86_fldcw _MPFR_PROTO ((unsigned short));
-
 int mpfr_set_machine_rnd_mode _MPFR_PROTO ((mp_rnd_t));
 void mpfr_test_init _MPFR_PROTO ((void));
 mp_limb_t randlimb _MPFR_PROTO ((void));
