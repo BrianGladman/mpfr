@@ -27,26 +27,63 @@ MA 02111-1307, USA. */
 #define DISP(s, t) {printf(s); mpfr_out_str(stdout, 10, 0, t, GMP_RNDN); }
 #define DISP2(s,t) {DISP(s,t); putchar('\n');}
 
+#define SPECIAL_MAX 12
+
+static void 
+set_special (mpfr_ptr x, unsigned int select)
+{
+  MPFR_ASSERTN (select < SPECIAL_MAX);
+  switch (select) 
+    {
+    case 0: 
+      MPFR_SET_NAN (x);
+      break;
+    case 1:
+      MPFR_SET_INF (x);
+      MPFR_SET_POS (x);
+      break;
+    case 2:
+      MPFR_SET_INF (x);
+      MPFR_SET_NEG (x);
+      break;
+    case 3:
+      MPFR_SET_ZERO (x);
+      MPFR_SET_POS  (x);
+      break;
+    case 4:
+      MPFR_SET_ZERO (x);
+      MPFR_SET_NEG  (x);
+      break;
+    case 5:
+      mpfr_set_str_binary (x, "1");
+      break;
+    case 6:
+      mpfr_set_str_binary (x, "-1");
+      break;
+    case 7:
+      mpfr_set_str_binary (x, "1e-1");
+      break;
+    case 8:
+      mpfr_set_str_binary (x, "1e+1");
+      break;
+    case 9:
+      mpfr_const_pi (x, GMP_RNDN);
+      break;
+    case 10:
+      mpfr_const_pi (x, GMP_RNDN);
+      MPFR_SET_EXP (x, MPFR_GET_EXP (x)-1);
+      break;
+    default:
+      mpfr_random (x);
+      break;
+    }
+}
 /* same than mpfr_cmp, but returns 0 for both NaN's */
 static int
 mpfr_compare (mpfr_srcptr a, mpfr_srcptr b)
 {
   return (MPFR_IS_NAN(a)) ? !MPFR_IS_NAN(b) :
     (MPFR_IS_NAN(b) || mpfr_cmp(a, b));
-}
-
-static void
-mpfr_set_pos_zero(mpfr_t a)
-{
-  MPFR_SET_ZERO(a);
-  MPFR_SET_POS(a);
-}
-
-static void
-mpfr_set_neg_zero(mpfr_t a)
-{
-  MPFR_SET_ZERO(a);
-  MPFR_SET_NEG(a);
 }
 
 static void
@@ -67,20 +104,9 @@ test3 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t),
 
   /* for each variable, consider each of the following 6 possibilities:
      NaN, +Infinity, -Infinity, +0, -0 or a random number */
-  for (i=0; i<36; i++) {
-    if (i%6==0) mpfr_set_nan (ref2);
-    if (i%6==1) mpfr_set_inf (ref2, 1);
-    if (i%6==2) mpfr_set_inf (ref2, -1);
-    if (i%6==3) mpfr_set_pos_zero (ref2);
-    if (i%6==4) mpfr_set_neg_zero (ref2);
-    if (i%6==5) mpfr_random (ref2);
-
-    if (i/6==0) mpfr_set_nan (ref3);
-    if (i/6==1) mpfr_set_inf (ref3, 1);
-    if (i/6==2) mpfr_set_inf (ref3, -1);
-    if (i/6==3) mpfr_set_pos_zero (ref3);
-    if (i/6==4) mpfr_set_neg_zero (ref3);
-    if (i/6==5) mpfr_random (ref3);
+  for (i=0; i < SPECIAL_MAX*SPECIAL_MAX ; i++) {
+    set_special (ref2, i%SPECIAL_MAX);
+    set_special (ref3, i/SPECIAL_MAX);
 
     /* reference call: foo(a, b, c) */
     testfunc (ref1, ref2, ref3, rnd);
@@ -151,35 +177,15 @@ test4 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_srcptr,
   /* for each variable, consider each of the following 6 possibilities:
      NaN, +Infinity, -Infinity, +0, -0 or a random number */
 
-  for (i=0; i<6; i++)
+  for (i=0; i<SPECIAL_MAX; i++)
     {
-      MPFR_CLEAR_FLAGS(op1);
-      if (i==0) mpfr_set_nan (op1);
-      if (i==1) mpfr_set_inf (op1, 1);
-      if (i==2) mpfr_set_inf (op1, -1);
-      if (i==3) mpfr_set_pos_zero (op1);
-      if (i==4) mpfr_set_neg_zero (op1);
-      if (i==5) mpfr_random (op1);
-
-      for (j=0; j<6; j++)
+      set_special (op1, i);
+      for (j=0; j<SPECIAL_MAX; j++)
         {
-          MPFR_CLEAR_FLAGS(op2);
-          if (j==0) mpfr_set_nan (op2);
-          if (j==1) mpfr_set_inf (op2, 1);
-          if (j==2) mpfr_set_inf (op2, -1);
-          if (j==3) mpfr_set_pos_zero (op2);
-          if (j==4) mpfr_set_neg_zero (op2);
-          if (j==5) mpfr_random (op2);
-
-          for (k=0; k<6; k++)
+	  set_special (op2, j);
+          for (k=0; k<SPECIAL_MAX; k++)
             {
-              MPFR_CLEAR_FLAGS(op3);
-              if (k==0) mpfr_set_nan (op3);
-              if (k==1) mpfr_set_inf (op3, 1);
-              if (k==2) mpfr_set_inf (op3, -1);
-              if (k==3) mpfr_set_pos_zero (op3);
-              if (k==4) mpfr_set_neg_zero (op3);
-              if (k==5) mpfr_random (op3);
+	      set_special (op3, k);
 
               /* reference call: foo(s, a, b, c) */
               testfunc (ref, op1, op2, op3, rnd);
@@ -285,7 +291,6 @@ test2ui (int (*testfunc)(mpfr_ptr, mpfr_srcptr, unsigned long int, mp_rnd_t),
 {
   mpfr_t ref1, ref2;
   unsigned int ref3;
-  mp_limb_t c[1];
   mpfr_t res1;
   int i;
 
@@ -296,26 +301,12 @@ test2ui (int (*testfunc)(mpfr_ptr, mpfr_srcptr, unsigned long int, mp_rnd_t),
   mpfr_init2 (ref2, prec);
   mpfr_init2 (res1, prec);
 
-
-
   /* ref2 can be NaN, +Inf, -Inf, +0, -0 or any number
      ref3 can be 0 or any number */
-  for (i=0; i<12; i++)
+  for (i=0; i<SPECIAL_MAX*2; i++)
     {
-      if (i%6==0) mpfr_set_nan (ref2);
-      if (i%6==1) mpfr_set_inf (ref2, 1);
-      if (i%6==2) mpfr_set_inf (ref2, -1);
-      if (i%6==3) mpfr_set_pos_zero (ref2);
-      if (i%6==4) mpfr_set_neg_zero (ref2);
-      if (i%6==5) mpfr_random (ref2);
-
-      if (i/6==0)
-	ref3=0;
-      else
-	{
-	  mpn_random (c, 1);
-	  ref3 = (unsigned int) c[0];
-	}
+      set_special (ref2, i%SPECIAL_MAX);
+      ref3 = i/SPECIAL_MAX == 0 ? 0 : randlimb ();
 
       /* reference call: foo(a, b, c) */
       testfunc (ref1, ref2, ref3, rnd);
@@ -345,7 +336,6 @@ testui2 (int (*testfunc)(mpfr_ptr, unsigned long int, mpfr_srcptr, mp_rnd_t),
 {
   mpfr_t ref1, ref3;
   unsigned int ref2;
-  mp_limb_t c[1];
   mpfr_t res1;
   int i;
 
@@ -355,23 +345,10 @@ testui2 (int (*testfunc)(mpfr_ptr, unsigned long int, mpfr_srcptr, mp_rnd_t),
   mpfr_init2 (ref1, prec);
   mpfr_init2 (ref3, prec);
   mpfr_init2 (res1, prec);
-  mpfr_random (ref3);
-  mpn_random (c, 1);
-  ref2 = (unsigned int) c[0];
 
-  for (i=0; i<12; i++) {
-    if (i%6==0) mpfr_set_nan (ref3);
-    if (i%6==1) mpfr_set_inf (ref3, 1);
-    if (i%6==2) mpfr_set_inf (ref3, -1);
-    if (i%6==3) mpfr_set_pos_zero (ref3);
-    if (i%6==4) mpfr_set_neg_zero (ref3);
-    if (i%6==5) mpfr_random (ref3);
-
-    if (i/6==0) ref2=0;
-    else {
-      mpn_random (c, 1);
-      ref2 = (unsigned int) c[0];
-    }
+  for (i=0; i<SPECIAL_MAX*2; i++) {
+    set_special (ref3, i%SPECIAL_MAX);
+    ref2 = i/SPECIAL_MAX==0 ? 0 : randlimb ();
 
     /* reference call: foo(a, b, c) */
     testfunc (ref1, ref2, ref3, rnd);
@@ -408,16 +385,10 @@ test2 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mp_rnd_t),
   mpfr_init2 (ref1, prec);
   mpfr_init2 (ref2, prec);
   mpfr_init2 (res1, prec);
-  mpfr_random (ref2);
 
-  for (i=0; i<6; i++)
+  for (i=0; i<SPECIAL_MAX; i++)
     {
-      if (i==0) mpfr_set_nan (ref2);
-      if (i==1) mpfr_set_inf (ref2, 1);
-      if (i==2) mpfr_set_inf (ref2, -1);
-      if (i==3) mpfr_set_pos_zero (ref2);
-      if (i==4) mpfr_set_neg_zero (ref2);
-      if (i==5) mpfr_random (ref2);
+      set_special (ref2, i);
 
       /* reference call: foo(a, b) */
       testfunc (ref1, ref2, rnd);
@@ -454,16 +425,10 @@ test2a (int (*testfunc)(mpfr_ptr, mpfr_srcptr),
   mpfr_init2 (ref1, prec);
   mpfr_init2 (ref2, prec);
   mpfr_init2 (res1, prec);
-  mpfr_random (ref2);
 
-  for (i=0; i<6; i++)
+  for (i=0; i<SPECIAL_MAX; i++)
     {
-      if (i==0) mpfr_set_nan (ref2);
-      if (i==1) mpfr_set_inf (ref2, 1);
-      if (i==2) mpfr_set_inf (ref2, -1);
-      if (i==3) mpfr_set_pos_zero (ref2);
-      if (i==4) mpfr_set_neg_zero (ref2);
-      if (i==5) mpfr_random (ref2);
+      set_special (ref2, i);
 
       /* reference call: foo(a, b) */
       testfunc (ref1, ref2);
@@ -503,16 +468,10 @@ test3a (char *foo, mp_prec_t prec, mp_rnd_t rnd)
   mpfr_init2 (ref3, prec);
   mpfr_init2 (res1, prec);
   mpfr_init2 (res2, prec);
-  mpfr_random (ref3);
 
-  for (i=0; i<6; i++)
+  for (i=0; i<SPECIAL_MAX; i++)
     {
-      if (i==0) mpfr_set_nan (ref3);
-      if (i==1) mpfr_set_inf (ref3, 1);
-      if (i==2) mpfr_set_inf (ref3, -1);
-      if (i==3) mpfr_set_pos_zero (ref3);
-      if (i==4) mpfr_set_neg_zero (ref3);
-      if (i==5) mpfr_random (ref3);
+      set_special (ref3, i);
 
       /* reference call: foo(a, b, c) */
       testfunc (ref1, ref2, ref3, rnd);
@@ -561,49 +520,61 @@ reldiff_wrapper (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 int
 main (void)
 {
+  mp_rnd_t rnd;
+  mp_prec_t p;
   MPFR_TEST_USE_RANDS ();
   tests_start_mpfr ();
 
-  test3 (mpfr_add, "mpfr_add", 53, GMP_RNDN);
-  test2ui (mpfr_add_ui, "mpfr_add_ui", 53, GMP_RNDN);
-  test3 (mpfr_agm, "mpfr_agm", 53, GMP_RNDN);
-  test2a (mpfr_ceil, "mpfr_ceil", 53);
-  test3 (mpfr_div, "mpfr_div", 53, GMP_RNDN);
-  test2ui (mpfr_div_2exp, "mpfr_div_2exp", 53, GMP_RNDN);
-  test2ui (mpfr_div_ui, "mpfr_div_ui", 53, GMP_RNDN);
-  test2 (mpfr_exp, "mpfr_exp", 53, GMP_RNDN);
-  test2a (mpfr_floor, "mpfr_floor", 53);
-  test2 (mpfr_log, "mpfr_log", 53, GMP_RNDN);
-  test3 (mpfr_mul, "mpfr_mul", 53, GMP_RNDN);
-  test2ui (mpfr_mul_2exp, "mpfr_mul_2exp", 53, GMP_RNDN);
-  test2ui (mpfr_mul_ui, "mpfr_mul_ui", 53, GMP_RNDN);
-  test2 (mpfr_neg, "mpfr_neg", 53, GMP_RNDN);
-  test2ui (mpfr_pow_ui, "mpfr_pow_ui", 53, GMP_RNDN);
-  test3 (reldiff_wrapper, "mpfr_reldiff", 53, GMP_RNDN);
-  test3 (mpfr_sub, "mpfr_sub", 53, GMP_RNDN);
-  test2ui (mpfr_sub_ui, "mpfr_sub_ui", 53, GMP_RNDN);
-  test2 (mpfr_sqrt, "mpfr_sqrt", 53, GMP_RNDN);
-  testui2 (mpfr_ui_div, "mpfr_ui_div", 53, GMP_RNDN);
-  testui2 (mpfr_ui_sub, "mpfr_ui_sub", 53, GMP_RNDN);
-  test2a (mpfr_trunc, "mpfr_trunc", 53);
-  test2 (mpfr_asin, "mpfr_asin", 53, GMP_RNDN);
-  test2 (mpfr_acos, "mpfr_acos", 53, GMP_RNDN);
-  test2 (mpfr_atan, "mpfr_atan", 53, GMP_RNDN);
-  test2 (mpfr_sinh, "mpfr_sinh", 53, GMP_RNDN);
-  test2 (mpfr_cosh, "mpfr_cosh", 53, GMP_RNDN);
-  test2 (mpfr_tanh, "mpfr_tanh", 53, GMP_RNDN);
-  test2 (mpfr_asinh, "mpfr_asinh", 53, GMP_RNDN);
-  test2 (mpfr_acosh, "mpfr_acosh", 53, GMP_RNDN);
-  test2 (mpfr_atanh, "mpfr_atanh", 53, GMP_RNDN);
-  test2 (mpfr_exp2, "mpfr_exp2", 53, GMP_RNDN);
-  test2 (mpfr_cos, "mpfr_cos", 53, GMP_RNDN);
-  test2 (mpfr_sin, "mpfr_sin", 53, GMP_RNDN);
-  test2 (mpfr_tan, "mpfr_tan", 53, GMP_RNDN);
-  test2 (mpfr_log10, "mpfr_log10", 53, GMP_RNDN);
-  test2 (mpfr_log2, "mpfr_log2", 53, GMP_RNDN);
-  test2 (mpfr_zeta, "mpfr_zeta", 53, GMP_RNDN);
-  test3 (mpfr_pow, "mpfr_pow", 53, GMP_RNDN);
-  test4 (mpfr_fma, "mpfr_fma", 53, GMP_RNDN);
+  p = (randlimb () % 200)+ MPFR_PREC_MIN;
+  for (rnd = GMP_RNDN ; rnd < GMP_RND_MAX ; (mp_rnd_t) ((int) rnd++)) {
+    test3 (mpfr_add, "mpfr_add", p, rnd);
+    test3 (mpfr_sub, "mpfr_sub", p, rnd);
+    test3 (mpfr_mul, "mpfr_mul", p, rnd);
+    test3 (mpfr_div, "mpfr_div", p, rnd);
+
+    test3 (mpfr_agm, "mpfr_agm", p, rnd);
+    test3 (reldiff_wrapper, "mpfr_reldiff", p, rnd);
+
+    test2a (mpfr_ceil, "mpfr_ceil", p);
+    test2a (mpfr_floor, "mpfr_floor", p);
+    test2a (mpfr_trunc, "mpfr_trunc", p);
+
+    test2ui (mpfr_add_ui, "mpfr_add_ui", p, rnd);
+    test2ui (mpfr_mul_2exp, "mpfr_mul_2exp", p, rnd);
+    test2ui (mpfr_mul_ui, "mpfr_mul_ui", p, rnd);
+    test2ui (mpfr_pow_ui, "mpfr_pow_ui", p, rnd);
+    test2ui (mpfr_sub_ui, "mpfr_sub_ui", p, rnd);
+    test2ui (mpfr_div_2exp, "mpfr_div_2exp", p, rnd);
+    test2ui (mpfr_div_ui, "mpfr_div_ui", p, rnd);
+
+    testui2 (mpfr_ui_div, "mpfr_ui_div", p, rnd);
+    testui2 (mpfr_ui_sub, "mpfr_ui_sub", p, rnd);
+    
+    test2 (mpfr_sqrt, "mpfr_sqrt", p, rnd);
+    test2 (mpfr_neg, "mpfr_neg", p, rnd);
+    test2 (mpfr_log, "mpfr_log", p, rnd);
+    test2 (mpfr_exp, "mpfr_exp", p, rnd);
+    test2 (mpfr_asin, "mpfr_asin", p, rnd);
+    test2 (mpfr_acos, "mpfr_acos", p, rnd);
+    test2 (mpfr_atan, "mpfr_atan", p, rnd);
+    test2 (mpfr_sinh, "mpfr_sinh", p, rnd);
+    test2 (mpfr_cosh, "mpfr_cosh", p, rnd);
+    test2 (mpfr_tanh, "mpfr_tanh", p, rnd);
+    test2 (mpfr_asinh, "mpfr_asinh", p, rnd);
+    test2 (mpfr_acosh, "mpfr_acosh", p, rnd);
+    test2 (mpfr_atanh, "mpfr_atanh", p, rnd);
+    test2 (mpfr_exp2, "mpfr_exp2", p, rnd);
+    test2 (mpfr_cos, "mpfr_cos", p, rnd);
+    test2 (mpfr_sin, "mpfr_sin", p, rnd);
+    test2 (mpfr_tan, "mpfr_tan", p, rnd);
+    test2 (mpfr_log10, "mpfr_log10", p, rnd);
+    test2 (mpfr_log2, "mpfr_log2", p, rnd);
+    test2 (mpfr_zeta, "mpfr_zeta", p, rnd);
+    test2 (mpfr_gamma, "mpfr_gamma", p, rnd);
+    test3 (mpfr_pow, "mpfr_pow", p, rnd);
+
+    test4 (mpfr_fma, "mpfr_fma", p, rnd);
+  }
 
   tests_end_mpfr ();
   return 0;
