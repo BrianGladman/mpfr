@@ -100,68 +100,19 @@ mpfr_fma (s,x,y,z, rnd_mode)
 	
         /* General case */
         /* Detail of the compute */
-        /* u <- x*y */
-        /* t <- z+u */
-        {
-                /* Declaration of the intermediary variable */
-                mpfr_t t, u;       
-                int d;
+        /* u <- x*y exact */
+        /* s <- z+u */
+	{
+	  mpfr_t u;
 
-                /* Flag calcul exacte */
-                int not_exact=0;
-
-                /* Declaration of the size variable */
-                mp_prec_t Nx = MPFR_PREC(x);   /* Precision of input variable */
-                mp_prec_t Ny = MPFR_PREC(y);   /* Precision of input variable */
-                mp_prec_t Nz = MPFR_PREC(z);   /* Precision of input variable */
-                mp_prec_t Ns = MPFR_PREC(s);   /* Precision of output variable */
-                mp_prec_t Nt;   /* Precision of the intermediary variable */
-                mp_prec_t err;  /* Precision of error */
-                unsigned int first_pass=0; /* temporary precision */
-                
-                /* compute the precision of intermediary variable */
-                Nt=MAX(MAX(Nx,Ny),Nz);
-
-                /* the optimal number of bits is MPFR_EXP(u)-MPFR_EXP(v)+1 */
-                /* but u and v are not yet compute, also we take in account */
-                /* just one bit */
-                Nt=Nt+1+_mpfr_ceil_log2(Nt);
-
-                /* initialise the intermediary variables */
-                mpfr_init(u);             
-                mpfr_init(t);             
-                printf("New \n********\n\n");
-                /* First computation of fma */
-                do {
-
-                  printf("Nt = %i\n",Nt);
-                        /* reactualisation of the precision */
-                        mpfr_set_prec(u,Nt);             
-                        mpfr_set_prec(t,Nt);             
-
-                        /* computations */
-                        if(mpfr_mul(u,x,y,GMP_RNDN)) 
-                          not_exact=1;        
-                        if(mpfr_add(t,z,u,GMP_RNDN))
-                          not_exact=1;        
-                        
-                        /*Nt=Nt+(d+1)+_mpfr_ceil_log2(Nt); */
-                        d = MPFR_EXP(u)-MPFR_EXP(t);
-
-                        /* estimation of the error */
-                        err=Nt-(d+1);
-
-                        /* actualisation of the precision */
-                        Nt += (1-first_pass)*d + first_pass*10;
-                        
-                        first_pass=1;
-
-                } while (!mpfr_can_round(t,err,GMP_RNDN,rnd_mode,Ns)&& not_exact);
-                  
-                inexact = mpfr_set (s, t, rnd_mode);
-                mpfr_clear(t);
-                mpfr_clear(u);
-        }
+	  /* if we take prec(u) >= prec(x) + prec(y), the product
+	     u <- x*y is always exact */
+	  mpfr_init2 (u, MPFR_PREC(x) + MPFR_PREC(y));
+	  
+	  mpfr_mul (u, x, y, GMP_RNDN); /* always exact */
+	  inexact = mpfr_add (s, z, u, rnd_mode);
+	  mpfr_clear(u);
+	}
         return inexact;
 }
 
