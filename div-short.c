@@ -80,7 +80,7 @@ mpn_dc_divrem_n_high (mp_ptr qp, mp_ptr np, mp_srcptr dp, mp_size_t n)
   /* subtract Q1 * D0, where Q1 = {qp + l, m}, D0 = {d, l} */
   tmp = TMP_ALLOC_LIMBS (n);
   mpn_mul (tmp, qp + l, m, dp, l); /* FIXME: use a short product */
-  //mpfr_mulhigh_n (tmp+m+l-2*l, qp+l+m-l, dp, l); 
+  /* mpfr_mulhigh_n (tmp+m+l-2*l, qp+l+m-l, dp, l); */
   cc = mpn_sub_n (np + l, np + l, tmp, n);
   TMP_FREE (marker);
   if (qh) cc += mpn_sub_n (np + n, np + n, dp, l);
