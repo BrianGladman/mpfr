@@ -83,8 +83,7 @@ MA 02111-1307, USA. */
 #define mpf_div_2exp(x,y,z) \
                          mpfr_div_2exp(x,y,z,__gmpfr_default_rounding_mode)
 #undef mpf_dump
-#define mpf_dump(x,y,z) \
-                mpfr_dump(x,y,z,__gmpfr_default_rounding_mode)
+#define mpf_dump(x)         mpfr_dump(x)
 #undef mpf_fits_slong_p
 #define mpf_fits_slong_p(x) mpfr_fits_ulong_p(x,__gmpfr_default_rounding_mode)
 #undef mpf_fits_ulong_p

@@ -267,7 +267,7 @@ int mpfr_fits_ushort_p _MPFR_PROTO((mpfr_srcptr, mpfr_rnd_t));
 int mpfr_fits_sshort_p _MPFR_PROTO((mpfr_srcptr, mpfr_rnd_t));
 void mpfr_extract _MPFR_PROTO((mpz_ptr, mpfr_srcptr, unsigned int));
 void mpfr_swap _MPFR_PROTO((mpfr_ptr, mpfr_ptr));
-void mpfr_dump _MPFR_PROTO((mpfr_srcptr, mpfr_rnd_t));
+void mpfr_dump _MPFR_PROTO((mpfr_srcptr));
 int mpfr_set4 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t, int));
 int mpfr_cmp3 _MPFR_PROTO ((mpfr_srcptr, mpfr_srcptr, int));
 int mpfr_cmp_d _MPFR_PROTO ((mpfr_srcptr, double));
