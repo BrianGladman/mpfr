@@ -48,7 +48,7 @@ MA 02111-1307, USA. */
 
 /* generates a random long int, a random double,
    and corresponding seed initializing */
-#ifdef HAVE_RAND48
+#ifdef HAVE_LRAND48
 #define LONG_RAND lrand48
 #define DBL_RAND  drand48
 #define SEED_RAND srand48

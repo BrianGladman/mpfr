@@ -57,7 +57,7 @@ case $OS_TYPE in
 		;;
 esac
 
-AC_CHECK_HEADERS(fpu_control.h)
+AC_CHECK_HEADERS(fenv.h fpu_control.h)
 
 dnl Tests concerning the include directories.
 AC_MSG_CHECKING(for gmp files)
@@ -97,22 +97,7 @@ default target architecture may be different, hence the error.])],
 )
 
 dnl Check random functions
-AC_MSG_CHECKING(for rand48 functions)
-AC_TRY_RUN([#include <stdlib.h>
-int main() { long int l = lrand48 (); return 0; }],
-  [AC_MSG_RESULT(yes)
-   AC_DEFINE(HAVE_RAND48)],
-  AC_MSG_RESULT(no),
-  AC_MSG_RESULT(no)
-)
-
-dnl Check for ISOC9X interface for rounding modes
-AC_MSG_CHECKING(for fenv.h)
-AC_TRY_CPP([#include <fenv.h>],
-  [AC_MSG_RESULT(yes)
-   AC_DEFINE(HAVE_FENV)],
-  AC_MSG_RESULT(no)
-)
+AC_CHECK_FUNCS(lrand48)
 
 dnl Check whether 0/0, 1/0, -1/0 are valid expressions
 AC_MSG_CHECKING(for 0/0 as a valid expression)

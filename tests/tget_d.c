@@ -61,7 +61,7 @@ int
 main (void)
 {
 
-#ifdef HAVE_FENV
+#ifdef HAVE_FENV_H
 
    mpfr_t half, x, y;
    mp_rnd_t rnd_mode;
