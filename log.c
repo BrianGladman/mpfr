@@ -19,7 +19,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-
+#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
   /* The computation of log(a) is done using the formula :
@@ -45,7 +45,6 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
   mp_prec_t p, q;
   mpfr_t cst, rapport, agm, tmp1, tmp2, s, mm;
   mp_limb_t *cstp, *rapportp, *agmp, *tmp1p, *tmp2p, *sp, *mmp;
-  double ref;
   TMP_DECL(marker);
 
   /* Special cases */
@@ -96,19 +95,19 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
       MPFR_SET_POS(r);
       MPFR_RET(0); /* only "normal" case where the result is exact */
     }
-  MPFR_CLEAR_FLAGS(r);
+  MPFR_CLEAR_FLAGS (r);
 
-  q=MPFR_PREC(r);
-
-  ref = mpfr_get_d1 (a) - 1.0;
-  if (ref<0)
-    ref=-ref;
+  q = MPFR_PREC(r);
 
   /* use initial precision about q+lg(q)+5 */
-  p=q+5; m=q; while (m) { p++; m >>= 1; }
+  MPFR_ASSERTN ( q == (mp_limb_t) q);
+  count_leading_zeros (m, q);
+  p = q + 5 + (BITS_PER_MP_LIMB - m);
+  /* m=q; while (m) { p++; m >>= 1; } */
 
   /* adjust to entire limb */
-  if (p%BITS_PER_MP_LIMB) p += BITS_PER_MP_LIMB - (p%BITS_PER_MP_LIMB);
+  if (MPFR_LIKELY(p % BITS_PER_MP_LIMB != 0))
+    p += BITS_PER_MP_LIMB - (p%BITS_PER_MP_LIMB);
 
   go_on=1;
 
