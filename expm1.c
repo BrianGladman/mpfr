@@ -119,6 +119,7 @@ mpfr_expm1 (y, x, rnd_mode)
       inexact = mpfr_set(y,t,rnd_mode);
 
       mpfr_clear(t);
+      mpfr_clear(te);
   }
   return inexact;
 }
