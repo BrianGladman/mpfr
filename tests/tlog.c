@@ -90,6 +90,7 @@ void check3(double d, unsigned long prec, unsigned char rnd)
   mpfr_set_d(x, d, rnd);
   mpfr_log(y, x, rnd);
   mpfr_out_str(stdout, 10, 0, y, rnd); putchar('\n');
+  mpfr_print_raw(y); putchar('\n');
   mpfr_clear(x); mpfr_clear(y);
 }
 
@@ -264,6 +265,10 @@ int main(int argc, char *argv[]) {
   check2(1.18615436389927785905e+77, GMP_RNDN, 1.77469768607706015473e+02);
   check2(9.48868723578399476187e+77, GMP_RNDZ, 1.79549152432275803903e+02);
   check2(2.31822210096938820854e+89, GMP_RNDN, 2.05770873832573869322e+02);
+  /* further bugs found by Vincent Lefe`vre */
+  check2(9.99999989485669482647e-01, GMP_RNDZ, -1.05143305726283042331e-08);
+  check2(9.99999989237970177136e-01, GMP_RNDZ, -1.07620298807745377934e-08);
+  check2(9.99999989239339082125e-01, GMP_RNDN, -1.07606609757704445430e-08);
 
   check2(7.3890560989306504,GMP_RNDU,2.0000000000000004); /* exp(2.0) */
   check2(7.3890560989306495,GMP_RNDU,2.0); /* exp(2.0) */
