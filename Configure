@@ -192,7 +192,7 @@ case "$ans" in
 esac
 contrspecial=$ans
 
-if test -z "$cflags"; then cflags="-ansi -Wall -pedantic -g"; fi; 
+if test -z "$cflags"; then cflags="-ansi -Wall -pedantic -g -O2"; fi; 
 
 echo
 echo $n "What supplementary (optimization/debugging) flags are you willing to use [$cflags] ? $c"
@@ -222,7 +222,7 @@ cat > Makefile <<EOF
 #
 CC=$defC
 CFLAGS=$special $incflags $cflags $contrspecial -D$ostype
-OBJS=add.o div_2exp.o neg.o set_dfl_prec.o set_str_raw.o agm.o get_str.o print_raw.o set_dfl_rnd.o sqrt.o clear.o init.o rnd_mode.o set_f.o sub.o cmp.o mul.o  round.o set_prec.o cmp_ui.o mul_2exp.o set.o set_si.o div.o mul_ui.o set_d.o pow.o out_str.o pi.o set_z.o add_ulp.o log2.o random.o log.o exp.o div_ui.o zeta.o karadiv.o karasqrt.o print_rnd_mode.o
+OBJS=add.o div_2exp.o neg.o set_dfl_prec.o set_str_raw.o agm.o get_str.o print_raw.o set_dfl_rnd.o sqrt.o clear.o init.o rnd_mode.o set_f.o sub.o cmp.o mul.o  round.o set_prec.o cmp_ui.o mul_2exp.o set.o set_si.o div.o mul_ui.o set_d.o pow.o out_str.o pi.o set_z.o add_ulp.o log2.o random.o log.o exp.o div_ui.o zeta.o karadiv.o karasqrt.o print_rnd_mode.o set_q.o
 VERSION=0.0
 
 dft: libmpfr.a
