@@ -19,7 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-
 #include "mpfr-impl.h"
 
 int
@@ -50,9 +49,9 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	{
           MPFR_ASSERTD(MPFR_IS_ZERO(x));
 	  /* acos(0)=Pi/2 */
-	  mpfr_const_pi (acos, rnd_mode);
+	  inexact = mpfr_const_pi (acos, rnd_mode);
 	  MPFR_SET_EXP (acos, MPFR_GET_EXP (acos) - 1);
-	  return 1; /* inexact */
+	  return mpfr_check_range (acos, inexact, rnd_mode);
 	}
     }
   MPFR_CLEAR_FLAGS(x);
