@@ -34,16 +34,17 @@ mpfr_ui_pow_ui (mpfr_ptr x, unsigned long int y, unsigned long int n,
 
   MPFR_CLEAR_FLAGS(x);
 
-  if (n == 0) /* y^0 = 1 for any y */
+  if (MPFR_UNLIKELY (n == 0))
+    /* y^0 = 1 for any y */
     return mpfr_set_ui (x, 1, rnd);
 
-  if (y == 0) /* 0^n = 0 for any n > 0 */
+  if (MPFR_UNLIKELY (y == 0))
+    /* 0^n = 0 for any n > 0 */
     return mpfr_set_ui (x, 0, rnd);
 
   MPFR_SAVE_EXPO_MARK (expo);
-  mpfr_init (res);
-
-  prec = MPFR_PREC(x);
+  prec = MPFR_PREC (x);
+  mpfr_init2 (res, 2*prec);
 
   do
     {
@@ -53,18 +54,15 @@ mpfr_ui_pow_ui (mpfr_ptr x, unsigned long int y, unsigned long int n,
       for (i = 0, m = n; m; i++, m >>= 1)
         prec++;
       mpfr_set_prec (res, prec);
-      mpfr_clear_flags ();
       inexact = mpfr_set_ui (res, y, GMP_RNDU);
       err = 1;
       /* now 2^(i-1) <= n < 2^i: i=1+floor(log2(n)) */
       for (i -= 2; i >= 0; i--)
 	{
-	  if (mpfr_mul (res, res, res, GMP_RNDU))
-	    inexact = 1;
+	  inexact |= mpfr_mul (res, res, res, GMP_RNDU);
 	  err++;
 	  if (n & (1UL << i))
-	    if (mpfr_mul_ui (res, res, y, GMP_RNDU))
-	      inexact = 1;
+	    inexact |= mpfr_mul_ui (res, res, y, GMP_RNDU);
 	}
       /* since the loop is executed floor(log2(n)) times,
          we have err = 1+floor(log2(n)).
@@ -74,8 +72,7 @@ mpfr_ui_pow_ui (mpfr_ptr x, unsigned long int y, unsigned long int n,
   while (inexact && !mpfr_can_round (res, err, GMP_RNDN, GMP_RNDZ,
                                      MPFR_PREC(x) + (rnd == GMP_RNDN)));
 
-  if (mpfr_set (x, res, rnd))
-    inexact = 1;
+  inexact = mpfr_set (x, res, rnd);
 
   mpfr_clear (res);
 
