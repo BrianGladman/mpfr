@@ -101,7 +101,7 @@ How to install and use MPFR, a library for reliable multiple precision floating-
 * Installing MPFR::             How to configure and compile the MPFR library.
 * Reporting Bugs::              How to usefully report bugs.
 * MPFR Basics::                 What every MPFR user should now.
-* Floating-point Functions::    Functions for arithmetic on floats.
+* MPFR Interface::              MPFR functions and macros.
 * Contributors::
 * References::
 * GNU Free Documentation License::
@@ -407,7 +407,7 @@ Send your bug report to: @samp{mpfr@@loria.fr}.
 If you think something in this manual is unclear, or downright incorrect, or if
 the language needs to be improved, please send a note to the same address.
 
-@node MPFR Basics, Floating-point Functions, Reporting Bugs, Top
+@node MPFR Basics, MPFR Interface, Reporting Bugs, Top
 @comment  node-name,  next,  previous,  up
 @chapter MPFR Basics
 
@@ -530,9 +530,9 @@ The default rounding mode (to nearest initially).
 The latest version of MPFR is available from @url{http://www.mpfr.org/}
 or @url{http://www.loria.fr/projets/mpfr/}.
 
-@node Floating-point Functions, Contributors, MPFR Basics, Top
+@node MPFR Interface, Contributors, MPFR Basics, Top
 @comment  node-name,  next,  previous,  up
-@chapter Floating-point Functions
+@chapter MPFR Interface
 @cindex Floating-point functions
 @cindex Float functions
 
@@ -581,7 +581,7 @@ precision, then MPFR will still compute the result with full precision.
 * Internals::
 @end menu
 
-@node Rounding Modes, Exceptions, Floating-point Functions, Floating-point Functions
+@node Rounding Modes, Exceptions, MPFR Interface, MPFR Interface
 @section Rounding Modes
 @cindex Rounding modes
 
@@ -648,7 +648,7 @@ corresponding to the rounding mode @var{rnd} or a null pointer if
 @var{rnd} is an invalid rounding mode.
 @end deftypefun
 
-@node Exceptions, Initialization Functions, Rounding Modes, Floating-point Functions
+@node Exceptions, Initialization Functions, Rounding Modes, MPFR Interface
 @comment  node-name,  next,  previous,  up
 @section Exceptions
 @cindex Exceptions
@@ -713,7 +713,7 @@ Return the corresponding (underflow, overflow, invalid, inexact) flag,
 which is non-zero iff the flag is set.
 @end deftypefun
 
-@node Initialization Functions, Assignment Functions, Exceptions, Floating-point Functions
+@node Initialization Functions, Assignment Functions, Exceptions, MPFR Interface
 @comment  node-name,  next,  previous,  up
 @cindex Initialization functions
 @section Initialization Functions
@@ -809,7 +809,7 @@ be small enough so that the mantissa fits into the current allocated memory
 space for @var{x}. Otherwise the behavior is undefined.
 @end deftypefun
 
-@node Assignment Functions, Combined Initialization and Assignment Functions, Initialization Functions, Floating-point Functions
+@node Assignment Functions, Combined Initialization and Assignment Functions, Initialization Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
 @cindex Assignment functions
 @section Assignment Functions
@@ -855,7 +855,7 @@ precisions are exchanged too; in case the precisions are different,
 using a third auxiliary variable.
 @end deftypefun
 
-@node Combined Initialization and Assignment Functions, Conversion Functions, Assignment Functions, Floating-point Functions
+@node Combined Initialization and Assignment Functions, Conversion Functions, Assignment Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
 @cindex Combined initialization and assignment functions
 @section Combined Initialization and Assignment Functions
@@ -881,7 +881,7 @@ rounded in the direction @var{rnd}.
 See @code{mpfr_set_str}.
 @end deftypefun
 
-@node Conversion Functions, Basic Arithmetic Functions, Combined Initialization and Assignment Functions, Floating-point Functions
+@node Conversion Functions, Basic Arithmetic Functions, Combined Initialization and Assignment Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
 @cindex Conversion functions
 @section Conversion Functions
@@ -977,7 +977,7 @@ Return non-zero if @var{op} would fit in the respective C data type, when
 rounded to an integer in the direction @var{rnd}.
 @end deftypefun
 
-@node Basic Arithmetic Functions, Comparison Functions, Conversion Functions, Floating-point Functions
+@node Basic Arithmetic Functions, Comparison Functions, Conversion Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
 @section Basic Arithmetic Functions
 @cindex Basic arithmetic functions
@@ -1086,7 +1086,7 @@ when @var{rop} and @var{op1} are identical.
 [@code{mpfr_div_2exp} is kept for upward compatibility.]
 @end deftypefun
 
-@node Comparison Functions, Special Functions, Basic Arithmetic Functions, Floating-point Functions
+@node Comparison Functions, Special Functions, Basic Arithmetic Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
 @section Comparison Functions
 @cindex Float comparisons functions
@@ -1184,7 +1184,7 @@ Return non-zero if @var{op1} or @var{op2} is a NaN (i.e.@: they cannot be
 compared), zero otherwise.
 @end deftypefun
 
-@node Special Functions, Input and Output Functions, Comparison Functions, Floating-point Functions
+@node Special Functions, Input and Output Functions, Comparison Functions, MPFR Interface
 @section Special Functions
 @cindex Special functions
 
@@ -1306,7 +1306,7 @@ calculations if a lower or equal precision is requested. There is
 currently no way to free the cache.
 @end deftypefun
 
-@node Input and Output Functions, Miscellaneous Functions, Special Functions, Floating-point Functions
+@node Input and Output Functions, Miscellaneous Functions, Special Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
 @section Input and Output Functions
 @cindex Float input and output functions
@@ -1365,7 +1365,7 @@ Return the number of bytes read, or if an error occurred, return 0.
 @c @code{mpfr_out_raw}, and put the result in @var{float}.
 @c @end deftypefun
 
-@node Miscellaneous Functions, Internals, Input and Output Functions, Floating-point Functions
+@node Miscellaneous Functions, Internals, Input and Output Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
 @section Miscellaneous Functions
 @cindex Miscellaneous float functions
@@ -1450,6 +1450,10 @@ proven to be more likely to trigger corner-case bugs.
 Negative random numbers are generated when @var{size} is negative.
 @end deftypefun
 
+@deftypefun {const char *} mpfr_version (void)
+Return the MPFR version, as a null-terminated string.
+@end deftypefun
+
 @c @deftypefun size_t mpfr_size (mpfr_t @var{op})
 @c Return the size of @var{op} measured in number of limbs.  If @var{op} is
 @c zero, the returned value will be zero.  (@xref{Nomenclature}, for an
@@ -1459,7 +1463,7 @@ Negative random numbers are generated when @var{size} is negative.
 @c releases.}
 @c @end deftypefun
 
-@node Internals,  , Miscellaneous Functions, Floating-point Functions
+@node Internals,  , Miscellaneous Functions, MPFR Interface
 @section Internals
 @cindex Internals
 
@@ -1558,7 +1562,7 @@ Output @var{float} on stdout
 in raw binary format (the exponent is written in decimal, yet).
 @end deftypefun
 
-@node Contributors, References, Floating-point Functions, Top
+@node Contributors, References, MPFR Interface, Top
 @comment  node-name,  next,  previous,  up
 @unnumbered Contributors
 

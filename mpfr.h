@@ -149,6 +149,7 @@ extern unsigned int __gmpfr_flags;
 extern mp_exp_t __gmpfr_emin;
 extern mp_exp_t __gmpfr_emax;
 
+__gmp_const char * mpfr_version _MPFR_PROTO ((void));
 mp_exp_t mpfr_get_emin _MPFR_PROTO ((void));
 int mpfr_set_emin _MPFR_PROTO ((mp_exp_t));
 mp_exp_t mpfr_get_emax _MPFR_PROTO ((void));
