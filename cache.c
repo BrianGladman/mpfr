@@ -54,7 +54,7 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mp_rnd_t rnd)
     mpfr_init2 (cache->x, MPFR_PREC_MIN);
   
   /* Check if we can round with the previous result */
-  else if (prec <= pold)
+  else if (MPFR_LIKELY(prec <= pold))
     goto round;
   
   /* Update the cache */ 
