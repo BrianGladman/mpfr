@@ -376,6 +376,7 @@ mpfr_pow (z, x, y, rnd_mode)
   MPFR_CLEAR_INF(z);
   if(MPFR_SIGN(x) < 0)
     {
+      MPFR_CLEAR_FLAGS(z);
       MPFR_SET_NAN(z); 
       return 1; 
     }
@@ -383,11 +384,10 @@ mpfr_pow (z, x, y, rnd_mode)
 
   if(mpfr_cmp_ui(x,0) == 0)
     {
+      MPFR_CLEAR_FLAGS(z);
       MPFR_SET_ZERO(z);
       return 0;
-    }   
-
-
+    }
   /* General case */
   {
     /* Declaration of the intermediary variable */
