@@ -19,7 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <limits.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -48,7 +47,6 @@ mpfr_fac_ui (y, x, rnd_mode)
     int round, inexact = 0;
     int boucle = 1;
 
-    mp_prec_t Nx;   /* Precision of input variable */
     mp_prec_t Ny;   /* Precision of output variable */
     mp_prec_t Nt;   /* Precision of Intermediary Calculation variable */
     mp_prec_t err;  /* Precision of error */
@@ -63,34 +61,33 @@ mpfr_fac_ui (y, x, rnd_mode)
     else
       {
         /* Initialisation of the Precision */
-	Nx=sizeof(unsigned long int)*CHAR_BIT;
 	Ny=MPFR_PREC(y);
-	 
+        
 	Nt=Ny+2*(int)_mpfr_ceil_log2((double)x)+10; /*compute the size of intermediary variable */
 
 	
-	  mpfr_init2(t, Nt);/* initialise of intermediary variable */
-
-	  while (boucle)
-	    {
-	      inexact = mpfr_set_ui (t, 1, GMP_RNDZ);
-
-	      for(i=2;i<=x;i++)              /* compute factorial */
-		{
-		  round = mpfr_mul_ui (t, t, i, GMP_RNDZ);
-		  /* assume the first inexact product gives the sign
-		     of difference: is that always correct? */
-		  if (inexact == 0)
-		    inexact = round;
-		}
+        mpfr_init2(t, Nt);/* initialise of intermediary variable */
+        
+        while (boucle)
+          {
+            inexact = mpfr_set_ui (t, 1, GMP_RNDZ);
+            
+            for(i=2;i<=x;i++)              /* compute factorial */
+              {
+                round = mpfr_mul_ui (t, t, i, GMP_RNDZ);
+                /* assume the first inexact product gives the sign
+                   of difference: is that always correct? */
+                if (inexact == 0)
+                  inexact = round;
+              }
 	    
-	      err = Nt - 1 - (int) _mpfr_ceil_log2 ((double) Nt);
+            err = Nt - 1 - (int) _mpfr_ceil_log2 ((double) Nt);
 
-	      round = !inexact || mpfr_can_round (t,err,GMP_RNDZ,rnd_mode,Ny);
-
-	      if (round)
-		{
-		  round = mpfr_set (y, t, rnd_mode);
+            round = !inexact || mpfr_can_round (t,err,GMP_RNDZ,rnd_mode,Ny);
+            
+            if (round)
+              {
+                round = mpfr_set (y, t, rnd_mode);
 		  if (inexact == 0)
                     inexact = round;
 		  boucle=0;
