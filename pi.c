@@ -1,4 +1,4 @@
-/* mpfr_pi -- compute Pi
+/* mpfr_const_pi -- compute Pi
 
 Copyright (C) 1999 PolKA project, Inria Lorraine and Loria
 
@@ -56,17 +56,17 @@ S(N)-S'(N) <= sum(1, n=0..N-1) = N
 so Pi*16^N-S'(N) <= N+1 (as 1/4/N^2 < 1)
 */
 
-mpfr_t __mpfr_pi; /* stored value of Pi */
-int __mpfr_pi_prec=0; /* precision of stored value */
-char __mpfr_pi_rnd; /* rounding mode of stored value */
+mpfr_t __mpfr_const_pi; /* stored value of Pi */
+int __mpfr_const_pi_prec=0; /* precision of stored value */
+mp_rnd_t __mpfr_const_pi_rnd; /* rounding mode of stored value */
 
 void 
 #if __STDC__
-mpfr_pi(mpfr_ptr x, unsigned char rnd_mode) 
+mpfr_const_pi(mpfr_ptr x, mp_rnd_t rnd_mode) 
 #else
-mpfr_pi(x, rnd_mode) 
-     mpfr_ptr x; 
-     unsigned char rnd_mode;
+mpfr_const_pi(x, rnd_mode) 
+     mpfr_ptr x;
+     mp_rnd_t rnd_mode;
 #endif
 {
   int N, oldN, n, prec; mpz_t pi, num, den, d3, d2, tmp; mpfr_t y;
@@ -74,11 +74,12 @@ mpfr_pi(x, rnd_mode)
   prec=PREC(x);
 
   /* has stored value enough precision ? */
-  if ((prec==__mpfr_pi_prec && rnd_mode==__mpfr_pi_rnd) ||
-      (prec<=__mpfr_pi_prec &&
-      mpfr_can_round(__mpfr_pi, __mpfr_pi_prec, __mpfr_pi_rnd, rnd_mode, prec)))
+  if ((prec==__mpfr_const_pi_prec && rnd_mode==__mpfr_const_pi_rnd) ||
+      (prec<=__mpfr_const_pi_prec &&
+      mpfr_can_round(__mpfr_const_pi, __mpfr_const_pi_prec, 
+		     __mpfr_const_pi_rnd, rnd_mode, prec)))
     {
-      mpfr_set(x, __mpfr_pi, rnd_mode); return; 
+      mpfr_set(x, __mpfr_const_pi, rnd_mode); return; 
     }
 
   /* need to recompute */
@@ -123,9 +124,9 @@ mpfr_pi(x, rnd_mode)
   mpz_clear(tmp); mpfr_clear(y);
 
   /* store computed value */
-  if (__mpfr_pi_prec==0) mpfr_init2(__mpfr_pi, prec);
-  else mpfr_set_prec(__mpfr_pi, prec);
-  mpfr_set(__mpfr_pi, x, rnd_mode);
-  __mpfr_pi_prec=prec;
-  __mpfr_pi_rnd=rnd_mode;
+  if (__mpfr_const_pi_prec==0) mpfr_init2(__mpfr_const_pi, prec);
+  else mpfr_set_prec(__mpfr_const_pi, prec);
+  mpfr_set(__mpfr_const_pi, x, rnd_mode);
+  __mpfr_const_pi_prec=prec;
+  __mpfr_const_pi_rnd=rnd_mode;
 }
