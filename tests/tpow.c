@@ -136,11 +136,13 @@ check_inexact (mp_prec_t p)
 void
 special ()
 {
-  mpfr_t x, y, z;
+  mpfr_t x, y, z, t;
 
   mpfr_init2 (x, 53);
   mpfr_init2 (y, 53);
   mpfr_init2 (z, 53);
+  mpfr_init2 (t, 2);
+  mpfr_set_d (t, -0.5, GMP_RNDN);
 
   mpfr_set_d (x, 5.68824667828621954868e-01, GMP_RNDN);
   mpfr_set_d (y, 9.03327850535952658895e-01, GMP_RNDN);
@@ -155,8 +157,7 @@ special ()
   mpfr_set_prec (y, 30);
   mpfr_set_prec (z, 30);
   mpfr_set_str (x, "1.00000000001010111110001111011e1", 2, GMP_RNDN);
-  mpfr_set_d (y, -0.5, GMP_RNDN);
-  mpfr_pow (z, x, y, GMP_RNDN);
+  mpfr_pow (z, x, t, GMP_RNDN);
   mpfr_set_str (y, "1.01101001111010101110000101111e-1", 2, GMP_RNDN);
   if (mpfr_cmp (z, y))
     {
@@ -168,8 +169,7 @@ special ()
   mpfr_set_prec (y, 21);
   mpfr_set_prec (z, 21);
   mpfr_set_str (x, "1.11111100100001100101", 2, GMP_RNDN);
-  mpfr_set_d (y, -0.5, GMP_RNDN);
-  mpfr_pow (z, x, y, GMP_RNDZ);
+  mpfr_pow (z, x, t, GMP_RNDZ);
   mpfr_set_str (y, "1.01101011010001100000e-1", 2, GMP_RNDN);
   if (mpfr_cmp (z, y))
     {
