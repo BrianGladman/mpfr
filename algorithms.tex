@@ -749,26 +749,29 @@ giving $\epsilon_k \le (2 l_0+1/3) 2^{2k-m}$.
 The sine function is computed from the cosine, with a working precision of
 $m$ bits:
 \begin{quote}
-$c \leftarrow \cos x$ rounded to zero \\
-$t \leftarrow c^2$ rounded up \\
-$u \leftarrow 1 - t$ rounded to nearest \\
-$s \leftarrow {\rm sign}(x) \sqrt{u}$ rounded to nearest \\
+$c \leftarrow \cos x$ rounded away \\
+$t \leftarrow c^2$ rounded away \\
+$u \leftarrow 1 - t$ rounded to zero \\
+$s \leftarrow {\rm sign}(x) \sqrt{u}$ rounded to zero \\
 \end{quote}
-The absolute error on $c$ is at most $\ulp(c)
-\le 2^{-m}$ since $|c| < 1$,
-then that on
-$t$ is at most $3 \cdot 2^{-m}$, that on $u$ is at most $3 \cdot 2^{-m} + 
-\frac{1}{2}\ulp(u) \le \frac{7}{2} \cdot 2^{-m}$
-since $|t|, |u| < 1$, so that on $s$ is at most ${\rm error}(\sqrt{u})
- + \frac{1}{2} \ulp(s) \le 2^{-m} (1/2 + \frac{7}{4 \sqrt{u}})$.
-(By Rolle's theorem,
+This algorithm ensures that the approximation $s$ is between zero and $\sin x$.
+
+Since all variables are in $[-1, 1]$, where $\ulp() \leq 2^{-m}$,
+all absolute errors are less than $2^{-m}$.
+We denote by $\epsilon_i$ a generic error with $0 \leq \epsilon_i < 2^{-m}$.
+We have $c = \cos x + \epsilon_1$;
+$t = c^2 + \epsilon_2 = \cos^2 x + 4 \epsilon_3$;
+$u = 1 - t - \epsilon_4 = 1 - \cos^2 x - 5 \epsilon_5$;
+$|s| = \sqrt{u} - \epsilon_6 = 
+\sqrt{1 - \cos^2 x - 5 \epsilon_5} - \epsilon_6
+\geq |\sin x| - \frac{5 \epsilon_5}{2 |s|} + \epsilon_6$
+(by Rolle's theorem,
 $|\sqrt{u} - \sqrt{u'}| \le \frac{1}{2 \sqrt{v}} |u-u'|$ for
-$v \in [u, u']$.)
-% |s'-s| <= ulp(s) + |sqrt(u)-sqrt(u')| <= ulp(s) + (u-u')/(2*sqrt(v))
-% for v in [u,u']
-Let $u = m 2^{-2e}$ with $1 \le m < 4$ and $e \ge 1$, then 
-the error on $s$ is at most $2^{-m} (1/2 + \frac{7 \cdot 2^{e}}{4})
-        \le 2^{e + 1 - m}$.
+$v \in [u, u']$, we apply it here with $u=1 - \cos^2 x - 5 \epsilon_5$, 
+$u'=1 - \cos^2 x$.)
+
+Therefore, if $2^{e-1} \leq |s| < 2^e$, the absolute error on $s$
+is bounded by $2^{-m} (\frac{5}{2} 2^{1-e}+1) \leq 2^{3-m-e}$.
 
 \subsection{The tangent function}
 

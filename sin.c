@@ -138,17 +138,20 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   do
     {
       mpfr_cos (c, x, GMP_RNDZ);
-      mpfr_mul (c, c, c, GMP_RNDU);
-      mpfr_ui_sub (c, 1, c, GMP_RNDN);
-      e = 2 + (- MPFR_GET_EXP (c)) / 2;
-      mpfr_sqrt (c, c, GMP_RNDN);
+      if (MPFR_IS_POS(c))
+	mpfr_nextabove (c);
+      else
+	mpfr_nextbelow (c);
+      /* now c = cos(x) rounded away */
+      mpfr_mul (c, c, c, GMP_RNDU); /* away */
+      mpfr_ui_sub (c, 1, c, GMP_RNDZ);
+      mpfr_sqrt (c, c, GMP_RNDZ);
       if (MPFR_IS_NEG_SIGN(sign))
 	MPFR_CHANGE_SIGN(c);
 
-      /* the absolute error on c is at most 2^(e-m) = 2^(EXP(c)-err) */
-      e = MPFR_GET_EXP (c) + m - e;
-      ok = (e >= 0) && mpfr_can_round (c, e, GMP_RNDN, GMP_RNDZ,
-                                       precy + (rnd_mode == GMP_RNDN));
+      /* the absolute error on c is at most 2^(3-m-EXP(c)) */
+      e = 2 * MPFR_GET_EXP (c) + m - 3;
+      ok = (e >= 0) && mpfr_can_round (c, e, GMP_RNDZ, rnd_mode, precy);
 
       if (ok == 0)
 	{
