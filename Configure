@@ -236,8 +236,12 @@ doc: mpfr.texi
 	texi2dvi mpfr.texi
 
 dist:
+	mkdir mpfr-0.0
 	tar cf mpfr.tar *.c COPYING.LIB Configure INSTALL mpfr.texi mpfr.h mpfr-impl.h tests/*.c
-	gzip mpfr.tar
+	cd mpfr-0.0; mv ../mpfr.tar .; tar xf mpfr.tar; rm mpfr.tar
+	tar cf mpfr-0.0.tar mpfr-0.0
+	gzip mpfr-0.0.tar
+	rm -r mpfr-0.0
 
 add.o: mpfr.h
 div_2exp.o: mpfr.h
