@@ -18,12 +18,16 @@ double drand()
 }
 
 
+
 /* returns the number of ulp's between a and b */
 int ulp(a,b) double a,b;
 {
   double eps=1.1102230246251565404e-16; /* 2^(-53) */
   b = (a-b)/a;
-  return (int) floor(b/eps);
+  if (b>0)
+    return (int) floor(b/eps);
+  else
+    return (int) ceil(b/eps);
 }
 
 #define check(a,r) check2(a,r,0.0)
@@ -40,7 +44,6 @@ void check2(double a, unsigned char rnd_mode, double res1)
   mpfr_init2(ta, 53);
   mpfr_init2(tres, 53);
   mpfr_set_d(ta, a, GMP_RNDN);
-
   mpfr_log(tres, ta, rnd_mode);
   res2=mpfr_get_d(tres);
 
@@ -58,6 +61,7 @@ void check2(double a, unsigned char rnd_mode, double res1)
   mpfr_clear(ta); mpfr_clear(tres); 
 }
 
+
 check3(double d, unsigned long prec, unsigned char rnd)
 {
   mpfr_t x, y;
@@ -73,14 +77,19 @@ check3(double d, unsigned long prec, unsigned char rnd)
    Cf http://www.ens-lyon.fr/~jmmuller/Intro-to-TMD.htm
 */
 check_worst_cases()
-{
-  check2(1.00089971802309629645, GMP_RNDD, 8.99313519443722736088e-04); /*-2*/
+{ /*-2*/
+  check2(1.00089971802309629645, GMP_RNDD, 8.99313519443722736088e-04); 
   check2(1.00089971802309629645, GMP_RNDN, 8.99313519443722844508e-04);
-  check2(1.00089971802309629645, GMP_RNDU, 8.99313519443722844508e-04);
+  check2(1.00089971802309629645, GMP_RNDU, 8.99313519443722844508e-04); 
 
-  check2(1.01979300812244555452, GMP_RNDD, 1.95996734891603630047e-02); /*+1*/
+  check2(4507651597124051/(2^52), GMP_RNDD, 8.99313519443722736088e-04); 
+  check2(4507651597124051/(2^52), GMP_RNDN, 8.99313519443722844508e-04);
+  check2(4507651597124051/(2^52), GMP_RNDU, 8.99313519443722844508e-04); 
+
+  /*+1*/
+  check2(1.01979300812244555452, GMP_RNDD, 1.95996734891603630047e-02); 
   check2(1.01979300812244555452, GMP_RNDN, 1.95996734891603664741e-02);
-  check2(1.01979300812244555452, GMP_RNDD, 1.95996734891603664741e-02);
+  check2(1.01979300812244555452, GMP_RNDU, 1.95996734891603664741e-02);
 
   check2(1.02900871924604464525, GMP_RNDD, 2.85959303301472726744e-02);
   check2(1.02900871924604464525, GMP_RNDN, 2.85959303301472761438e-02);
@@ -132,7 +141,7 @@ check_worst_cases()
 
   check2(10.6856587560831854944, GMP_RNDD, 2.36890253928838445674); /* segv */
   check2(10.6856587560831854944, GMP_RNDN, 2.36890253928838445674);
-  check2(10.6856587560831854944, GMP_RNDU, 2.36890253928838490083); /* segv */
+  check2(10.6856587560831854944, GMP_RNDU, 2.36890253928838490083);
 
   check2(12.4646345033981766903, GMP_RNDD, 2.52289539471636015122); /* segv */
   check2(12.4646345033981766903, GMP_RNDN, 2.52289539471636015122);
@@ -152,14 +161,16 @@ check_worst_cases()
 
   check2(428.315247165198229595, GMP_RNDD, 6.05985948325268264369);
   check2(428.315247165198229595, GMP_RNDN, 6.05985948325268353187);
-  check2(428.315247165198229595, GMP_RNDU, 6.05985948325268353187);
+  check2(428.315247165198229595, GMP_RNDU, 6.05985948325268353187); 
 }
+
+
 
 void main(int argc, char *argv[]) {
   int i, N=0;
   double d;
 
-  if (argc==4) { /* tlog x prec rnd */
+  if (argc==4) {   /* tlog x prec rnd */
     check3(atof(argv[1]), atoi(argv[2]), atoi(argv[3]));
     return;
   }
@@ -170,6 +181,7 @@ void main(int argc, char *argv[]) {
   }
   else {
   check_worst_cases();
+
   check(10,GMP_RNDU);
   check(6,GMP_RNDU);  
   check(1,GMP_RNDZ);  
@@ -179,6 +191,7 @@ void main(int argc, char *argv[]) {
   check(234375765,GMP_RNDU);
   check(8,GMP_RNDZ);  
   check(44,GMP_RNDU); 
+
   check(exp(2),GMP_RNDU);
   check(7.53428236571286402512e+34,GMP_RNDZ);
   check(6.18784121531737948160e+19,GMP_RNDZ); 
@@ -209,10 +222,11 @@ void main(int argc, char *argv[]) {
   check(8.94529798779875738679e+82,GMP_RNDD);
   check(1.68775280934272742250e+00,GMP_RNDZ);
   }
+
   srand48(getpid());
   for(i=0;i<N;i++) {
     d=drand();
     check(d,rand() % 4);
   }
-}
+} 
 
