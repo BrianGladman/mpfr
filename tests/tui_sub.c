@@ -29,11 +29,7 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 #include "mpfr-test.h"
 
-void special _PROTO ((void));
-void check _PROTO ((unsigned long, double, mp_rnd_t, double));
-void check_two_sum _PROTO ((mp_prec_t));
-
-void
+static void
 special (void)
 {
   mpfr_t x, y, res;
@@ -132,7 +128,7 @@ special (void)
 
 /* checks that y/x gives the same results in double
    and with mpfr with 53 bits of precision */
-void
+static void
 check (unsigned long y, double x, mp_rnd_t rnd_mode, double z1)
 {
   double z2;
@@ -155,7 +151,7 @@ check (unsigned long y, double x, mp_rnd_t rnd_mode, double z1)
 }
 
 /* if u = o(x-y), v = o(u-x), w = o(v+y), then x-y = u-w */
-void
+static void
 check_two_sum (mp_prec_t p)
 {
   unsigned int x;
@@ -199,7 +195,7 @@ check_two_sum (mp_prec_t p)
   mpfr_clear (w);
 }
 
-void
+static void
 check_nans (void)
 {
   mpfr_t  x, y;

@@ -31,18 +31,6 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 #include "mpfr-test.h"
 
-void check3 _PROTO((double, double, mp_rnd_t));
-void check4 _PROTO((double, double, mp_rnd_t));
-void check5 _PROTO((double, mp_rnd_t));
-void check2 _PROTO((double, int, double, int, int, int)); 
-void check2a _PROTO((double, int, double, int, int, int, char *)); 
-void check64 _PROTO((void)); 
-void check_same _PROTO((void)); 
-void check_case_1b _PROTO((void)); 
-void check_case_2 _PROTO((void));
-void check_inexact _PROTO((void));
-
-
 /* Parameter "z1" of check() used to be last in the argument list, but that
    tickled a bug in 32-bit sparc gcc 2.95.2.  A "double" in that position is
    passed on the stack at an address which is 4mod8, but the generated code
@@ -56,7 +44,7 @@ void check_inexact _PROTO((void));
 /* checks that x+y gives the same results in double
    and with mpfr with 53 bits of precision */
 static void
-_check (double x, double y, double z1, mp_rnd_t rnd_mode, unsigned int px, 
+_check (double x, double y, double z1, mp_rnd_t rnd_mode, unsigned int px,
         unsigned int py, unsigned int pz)
 {
   double z2; mpfr_t xx,yy,zz; int cert=0;
@@ -83,9 +71,9 @@ _check (double x, double y, double z1, mp_rnd_t rnd_mode, unsigned int px,
   mpfr_clear (zz);
 }
 
-void
+static void
 check2a (double x, int px, double y, int py, int pz, mp_rnd_t rnd_mode,
-	      char *res)
+         char *res)
 {
   mpfr_t xx, yy, zz;
 
@@ -105,7 +93,7 @@ check2a (double x, int px, double y, int py, int pz, mp_rnd_t rnd_mode,
   mpfr_clear(xx); mpfr_clear(yy); mpfr_clear(zz);
 }
 
-void
+static void
 check64 (void)
 {
   mpfr_t x, t, u;
@@ -328,7 +316,7 @@ check64 (void)
 
 /* check case when c does not overlap with a, but both b and c count
    for rounding */
-void
+static void
 check_case_1b (void)
 {
   mpfr_t a, b, c;
@@ -378,7 +366,7 @@ check_case_1b (void)
 }
 
 /* check case when c overlaps with a */
-void
+static void
 check_case_2 (void)
 {
   mpfr_t a, b, c, d;
@@ -411,7 +399,7 @@ check_case_2 (void)
 }
 
 /* checks when source and destination are equal */
-void
+static void
 check_same (void)
 {
   mpfr_t x;
@@ -428,7 +416,7 @@ check_same (void)
 
 #define MAX_PREC 100
 
-void
+static void
 check_inexact (void)
 {
   mpfr_t x, y, z, u;
@@ -517,7 +505,7 @@ check_inexact (void)
   mpfr_clear (u);
 }
 
-void
+static void
 check_nans (void)
 {
   mpfr_t  s, x, y;

@@ -28,22 +28,13 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 #include "mpfr-test.h"
 
-void check53 _PROTO((double, double, mp_rnd_t, double));
-void check24 _PROTO((float, float, mp_rnd_t, float));
-void check_float _PROTO((void));
-void check_sign _PROTO((void));
-void check_exact _PROTO((void));
-void check_max _PROTO((void));
-void check_min _PROTO((void));
-
-
 /* Workaround for sparc gcc 2.95.x bug, see notes in tadd.c. */
 #define check(x,y,rnd_mode,px,py,pz,res)  _check(x,y,res,rnd_mode,px,py,pz)
 
 /* checks that x*y gives the same results in double
    and with mpfr with 53 bits of precision */
 static void
-_check (double x, double y, double res, mp_rnd_t rnd_mode, unsigned int px, 
+_check (double x, double y, double res, mp_rnd_t rnd_mode, unsigned int px,
         unsigned int py, unsigned int pz)
 {
   double z2;
@@ -65,7 +56,7 @@ _check (double x, double y, double res, mp_rnd_t rnd_mode, unsigned int px,
   mpfr_clear(xx); mpfr_clear(yy); mpfr_clear(zz);
 }
 
-void
+static void
 check53 (double x, double y, mp_rnd_t rnd_mode, double z1)
 {
   double z2;
@@ -92,7 +83,7 @@ check53 (double x, double y, mp_rnd_t rnd_mode, double z1)
 
 /* checks that x*y gives the same results in double
    and with mpfr with 24 bits of precision */
-void
+static void
 check24 (float x, float y, mp_rnd_t rnd_mode, float z1)
 {
   float z2;
@@ -119,7 +110,7 @@ check24 (float x, float y, mp_rnd_t rnd_mode, float z1)
 
 /* the following examples come from the paper "Number-theoretic Test 
    Generation for Directed Rounding" from Michael Parks, Table 1 */
-void
+static void
 check_float (void)
 {
   float z;
@@ -167,7 +158,7 @@ check_float (void)
 }
 
 /* check sign of result */
-void
+static void
 check_sign (void)
 {
   mpfr_t a, b;
@@ -184,7 +175,7 @@ check_sign (void)
 }
 
 /* checks that the inexact return value is correct */
-void
+static void
 check_exact (void)
 {
   mpfr_t a, b, c, d;
@@ -254,7 +245,7 @@ check_exact (void)
   mpfr_clear (d);
 }
 
-void
+static void
 check_max(void)
 {
   mpfr_t xx, yy, zz;
@@ -303,7 +294,7 @@ check_max(void)
   mpfr_clear(zz);
 }
 
-void
+static void
 check_min(void)
 {
   mpfr_t xx, yy, zz;
@@ -347,7 +338,7 @@ check_min(void)
   mpfr_clear(zz);
 }
 
-void
+static void
 check_nans (void)
 {
   mpfr_t  p, x, y;

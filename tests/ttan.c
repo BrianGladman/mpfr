@@ -26,33 +26,10 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 #include "mpfr-test.h"
 
-void check53 _PROTO ((double, double, mp_rnd_t));
-
-void
-check53 (double x, double tan_x, mp_rnd_t rnd_mode)
-{
-  mpfr_t xx, s;
-
-  mpfr_init2 (xx, 53);
-  mpfr_init2 (s, 53);
-  mpfr_set_d (xx, x, rnd_mode); /* should be exact */
-  mpfr_tan (s, xx, rnd_mode);
-  if (mpfr_get_d1 (s) != tan_x && !(Isnan(tan_x) && mpfr_nan_p(s)))
-    {
-      fprintf (stderr, "mpfr_tan failed for x=%1.20e, rnd=%s\n", x,
-               mpfr_print_rnd_mode (rnd_mode));
-      fprintf (stderr, "mpfr_tan gives tan(x)=%1.20e, expected %1.20e\n",
-               mpfr_get_d1 (s), tan_x);
-      exit (1);
-    }
-  mpfr_clear (xx);
-  mpfr_clear (s);
-}
-
 #define TEST_FUNCTION mpfr_tan
 #include "tgeneric.c"
 
-void
+static void
 check_nans (void)
 {
   mpfr_t  x, y;

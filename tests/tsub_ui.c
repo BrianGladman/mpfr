@@ -29,14 +29,11 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 #include "mpfr-test.h"
 
-void check_two_sum _PROTO ((mp_prec_t));
-void check3 _PROTO ((double, unsigned long, mp_rnd_t, double));
-
 #define check(x,y,r) check3(x,y,r,0.0)
 
 /* checks that x+y gives the same results in double
    and with mpfr with 53 bits of precision */
-void
+static void
 check3 (double x, unsigned long y, mp_rnd_t rnd_mode, double z1)
 {
   double z2;
@@ -63,7 +60,7 @@ check3 (double x, unsigned long y, mp_rnd_t rnd_mode, double z1)
 /* FastTwoSum: if EXP(x) >= EXP(y), u = o(x+y), v = o(u-x), w = o(y-v),
                then x + y = u + w
 thus if u = o(y-x), v = o(u+x), w = o(v-y), then y-x = u-w */
-void
+static void
 check_two_sum (mp_prec_t p)
 {
   unsigned int x;
@@ -107,7 +104,7 @@ check_two_sum (mp_prec_t p)
   mpfr_clear (w);
 }
 
-void
+static void
 check_nans (void)
 {
   mpfr_t  x, y;
@@ -155,5 +152,3 @@ main (int argc, char *argv[])
   tests_end_mpfr ();
   return 0;
 }
-
-

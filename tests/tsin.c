@@ -90,7 +90,7 @@ test_sign (void)
   mpfr_clear (y);
 }
 
-void
+static void
 check_nans (void)
 {
   mpfr_t  x, y;

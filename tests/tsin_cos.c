@@ -27,12 +27,8 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 #include "mpfr-test.h"
 
-void large_test _PROTO ((int, int));
-void check53 _PROTO ((double, double, double, mp_rnd_t));
-void check53sin _PROTO ((double, double, mp_rnd_t));
-void check53cos _PROTO ((double, double, mp_rnd_t));
-
-void large_test (int prec, int N)
+static void
+large_test (int prec, int N)
 {
   int i;
   mpfr_t x, s, c;
@@ -49,7 +45,8 @@ void large_test (int prec, int N)
   mpfr_clear (c);
 }
 
-void check53 (double x, double sin_x, double cos_x, mp_rnd_t rnd_mode)
+static void
+check53 (double x, double sin_x, double cos_x, mp_rnd_t rnd_mode)
 {
   mpfr_t xx, s, c;
 
@@ -79,7 +76,8 @@ void check53 (double x, double sin_x, double cos_x, mp_rnd_t rnd_mode)
   mpfr_clear (c);
 }
 
-void check53sin (double x, double sin_x, mp_rnd_t rnd_mode)
+static void
+check53sin (double x, double sin_x, mp_rnd_t rnd_mode)
 {
   mpfr_t xx, s, c;
 
@@ -101,7 +99,8 @@ void check53sin (double x, double sin_x, mp_rnd_t rnd_mode)
   mpfr_clear (c);
 }
 
-void check53cos (double x, double cos_x, mp_rnd_t rnd_mode)
+static void
+check53cos (double x, double cos_x, mp_rnd_t rnd_mode)
 {
   mpfr_t xx, c, s;
 
@@ -123,7 +122,7 @@ void check53cos (double x, double cos_x, mp_rnd_t rnd_mode)
   mpfr_clear (s);
 }
 
-void
+static void
 check_nans (void)
 {
   mpfr_t  x, s, c;

@@ -26,9 +26,7 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 #include "mpfr-test.h"
 
-void check53 _PROTO ((double, double, mp_rnd_t));
-
-void
+static void
 check53 (double x, double cos_x, mp_rnd_t rnd_mode)
 {
   mpfr_t xx, c;
@@ -52,7 +50,7 @@ check53 (double x, double cos_x, mp_rnd_t rnd_mode)
 #define TEST_FUNCTION mpfr_cos
 #include "tgeneric.c"
 
-void
+static void
 check_nans (void)
 {
   mpfr_t  x, y;

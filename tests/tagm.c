@@ -28,12 +28,7 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 #include "mpfr-test.h"
 
-double drand_agm _PROTO((void)); 
-void check4 _PROTO((double, double, mp_rnd_t, double)); 
-void check_large _PROTO((void)); 
-void slave _PROTO((int, int)); 
-
-double
+static double
 drand_agm (void)
 {
   double d; long int *i;
@@ -50,7 +45,7 @@ drand_agm (void)
 
 #define check(a,b,r) check4(a,b,r,0.0)
 
-void
+static void
 check4 (double a, double b, mp_rnd_t rnd_mode, double res1)
 {
   mpfr_t ta, tb, tres;
@@ -79,7 +74,7 @@ check4 (double a, double b, mp_rnd_t rnd_mode, double res1)
   mpfr_clear (tres);
 }
 
-void
+static void
 check_large (void)
 {
   mpfr_t a, b, agm;
@@ -95,7 +90,7 @@ check_large (void)
   mpfr_clear(a); mpfr_clear(b); mpfr_clear(agm);
 }
 
-void
+static void
 slave (int N, int p)
 {
   int i;
@@ -116,8 +111,7 @@ slave (int N, int p)
     printf("fin\n");
 }
 
-
-void
+static void
 check_nans (void)
 {
   mpfr_t  x, y, m;

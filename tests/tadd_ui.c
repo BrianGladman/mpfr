@@ -29,14 +29,11 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 #include "mpfr-test.h"
 
-void check3 _PROTO((double, unsigned long, unsigned int, double));
-void special _PROTO((void));
-
 #define check(x,y,r) check3(x,y,r,0.0)
 
 /* checks that x+y gives the same results in double
    and with mpfr with 53 bits of precision */
-void
+static void
 check3 (double x, unsigned long y, unsigned int rnd_mode, double z1)
 {
   double z2;
@@ -58,7 +55,7 @@ check3 (double x, unsigned long y, unsigned int rnd_mode, double z1)
   mpfr_clear (zz);
 }
 
-void
+static void
 special (void)
 {
   mpfr_t x, y;
@@ -71,7 +68,7 @@ special (void)
   mpfr_clear (y);
 }
 
-void
+static void
 check_nans (void)
 {
   mpfr_t  x, y;
@@ -119,4 +116,3 @@ main (int argc, char *argv[])
   tests_end_mpfr ();
   return 0;
 }
-
