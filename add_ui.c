@@ -37,13 +37,14 @@ mpfr_add_ui (y, x, u, rnd_mode)
      mp_rnd_t rnd_mode;
 #endif
 {
-  mpfr_t uu;
-  mp_limb_t up[1];
-  unsigned long cnt;
-  int inexact;
 
   if (u)  /* if u=0, do nothing */
     {
+      mpfr_t uu;
+      mp_limb_t up[1];
+      unsigned long cnt;
+      int inex_add, inex_cr;
+
       MPFR_INIT1(up, uu, BITS_PER_MP_LIMB, 1);
       count_leading_zeros(cnt, (mp_limb_t) u);
       *up = (mp_limb_t) u << cnt;
@@ -52,10 +53,12 @@ mpfr_add_ui (y, x, u, rnd_mode)
       /* Optimization note: Exponent operations may be removed
 	 if mpfr_add works even when uu is out-of-range. */
       mpfr_save_emin_emax();
-      inexact = mpfr_add(y, x, uu, rnd_mode);
-      mpfr_restore_emin_emax();
-      mpfr_check_range(y, rnd_mode);
-      return inexact;
+      inex_add = mpfr_add(y, x, uu, rnd_mode);
+      mpfr_restore_emin_emax(); /* flags are restored too */
+      inex_cr = mpfr_check_range(y, rnd_mode);
+      if (inex_cr)
+        return inex_cr; /* underflow or overflow */
+      MPFR_RET(inex_add);
     }
   else
     return mpfr_set (y, x, rnd_mode);
