@@ -6,4 +6,9 @@ Knowns bugs:
 
 * Possible integer overflows on some machines.
 
-* mpfr_out_str: __gmp_free_func may be called with a wrong size argument.
+* get_str.c: condition len != n + 1 is always satisfied at the end.
+  This means that there are too many reallocations (possibly useless
+  ones) and a possible bug.
+
+* Possible use of an uninitialized value in mpfr_sinh, detected by valgrind.
+  (Kevin Ryde, 06 March 2002)
