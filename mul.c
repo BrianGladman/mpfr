@@ -22,7 +22,7 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
 int
-mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode) 
+mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 {
   int sign_product, cc, inexact;
   mp_exp_t  ax;
