@@ -22,6 +22,7 @@ MA 02111-1307, USA. */
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "longlong.h"
@@ -55,6 +56,17 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
 	    base);
     exit(1);
   }
+
+  neg = (SIGN(op)<0) ? 1 : 0;
+
+  if (!NOTZERO(op)) {
+    if (str==NULL) str0=str=(*_mp_allocate_func)(neg + n + 2);
+    if (SIGN(op)<0) *str++ = '-';
+    for (f=0;f<n;f++) *str++ = '0';
+    *expptr = 1;
+    return str0;
+  }
+
   count_leading_zeros(pow2, (mp_limb_t)base); 
   pow2 = BITS_PER_MP_LIMB - pow2 - 1;
   if (base != (1<<pow2)) pow2=0; 
@@ -85,7 +97,6 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
   q = (((q-1)/BITS_PER_MP_LIMB)+1)*BITS_PER_MP_LIMB;
   mpfr_init2(a,q); mpfr_init2(b,q);
 
-  neg = (SIGN(op)<0) ? 1 : 0;
   do {
     p = n-f; if ((div=(p<0))) p=-p;
     rnd1 = rnd_mode;
@@ -178,13 +189,14 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
   mpz_init(bz); q=1+(prec-1)/BITS_PER_MP_LIMB;
   _mpz_realloc(bz, q);
   sh = prec%BITS_PER_MP_LIMB;
-  if (sh) mpn_rshift(PTR(bz), MANT(b), q, BITS_PER_MP_LIMB-sh);
-  else MPN_COPY(PTR(bz), MANT(b), q);
+  e = 1 + (PREC(b)-1)/BITS_PER_MP_LIMB-q;
+  if (sh) mpn_rshift(PTR(bz), MANT(b)+e, q, BITS_PER_MP_LIMB-sh);
+  else MPN_COPY(PTR(bz), MANT(b)+e, q);
   bz->_mp_size=q;
 
   /* computes the number of characters needed */
   q = neg + n + 2; /* n+1 may not be enough for 100000... */
-  if (str==NULL) str0=str=(*_mp_allocate_func)(q); 
+  if (str==NULL) str0=str=(*_mp_allocate_func)(q);
   if (neg) *str++='-';
   mpz_get_str(str, base, bz); /* n digits of mantissa */
   if (strlen(str)==n+1) f++; /* possible due to rounding */
