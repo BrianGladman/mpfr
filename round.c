@@ -193,6 +193,10 @@ mpfr_round(x, rnd_mode, prec)
   if (nw > MPFR_ABSSIZE(x)) {
     MPFR_MANT(x) = (mp_ptr) (*_mp_reallocate_func) 
       (MPFR_MANT(x), MPFR_ABSSIZE(x)*BYTES_PER_MP_LIMB, nw * BYTES_PER_MP_LIMB);
+    if (MPFR_MANT(x) == NULL) {
+      fprintf (stderr, "Error in mpfr_round: no more memory available\n");
+      exit (1);
+    }
     MPFR_SIZE(x) = nw; /* new number of allocated limbs */
   }
 

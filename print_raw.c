@@ -71,7 +71,8 @@ mpfr_print_raw(x)
      mpfr_srcptr x; 
 #endif
 {
-  char *str; 
+  char *str;
+  unsigned long alloc_size;
 
   if (MPFR_IS_NAN(x)) printf("NaN");
   else if (MPFR_IS_INF(x)) {
@@ -86,11 +87,16 @@ mpfr_print_raw(x)
 	+ 11 for exponent (including sign)
 	= 17 + MPFR_ABSSIZE(x) * BITS_PER_MP_LIMB
       */
-     str = (char *) (*_mp_allocate_func) ((17 + MPFR_ABSSIZE(x) * BITS_PER_MP_LIMB)*sizeof(char));
+    alloc_size = 17 + MPFR_ABSSIZE(x) * BITS_PER_MP_LIMB;
+     str = (char *) (*_mp_allocate_func) (alloc_size * sizeof(char));
+     if (str == NULL) {
+       fprintf (stderr, "Error in mpfr_print_raw: no more memory available\n");
+       exit (1);
+     }
      mpfr_get_str_raw(str, x);
 
      printf("%s", str); 
-     (*_mp_free_func) (str, (17 + MPFR_ABSSIZE(x) * BITS_PER_MP_LIMB)*sizeof(char));
+     (*_mp_free_func) (str, alloc_size * sizeof(char));
   }
 }
 

@@ -49,6 +49,10 @@ mpfr_inp_str (rop, stream, base, rnd_mode)
 
   alloc_size = 100;
   str = (char *) (*_mp_allocate_func) (alloc_size);
+  if (str == NULL) {
+    fprintf (stderr, "Error in mpfr_inp_str: no more memory available\n");
+    exit (1);
+  }
   str_size = 0;
   nread = 0;
 
@@ -67,6 +71,10 @@ mpfr_inp_str (rop, stream, base, rnd_mode)
 	  size_t old_alloc_size = alloc_size;
 	  alloc_size = alloc_size * 3 / 2;
 	  str = (char *) (*_mp_reallocate_func) (str, old_alloc_size, alloc_size);
+	  if (str == NULL) {
+	    fprintf (stderr, "Error in mpfr_inp_str: no more memory available\n");
+	    exit (1);
+	  }
 	}
       if (c == EOF || isspace (c))
 	break;
@@ -80,6 +88,10 @@ mpfr_inp_str (rop, stream, base, rnd_mode)
       size_t old_alloc_size = alloc_size;
       alloc_size = alloc_size * 3 / 2;
       str = (char *) (*_mp_reallocate_func) (str, old_alloc_size, alloc_size);
+      if (str == NULL) {
+	fprintf (stderr, "Error in mpfr_inp_str: no more memory available\n");
+	exit (1);
+      }
     }
   str[str_size] = 0;
 
