@@ -50,7 +50,8 @@ mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
   for (;;) {
     mp_size_t i = size_z;
     /* now 2^(i-1) <= z < 2^i */
-    err = prec <= (mpfr_prec_t) i ? 0 : prec - (mpfr_prec_t) i;
+    /* see pow_ui.c for the error analusis, which is identical */
+    err = prec <= (mpfr_prec_t) i ? 0 : prec - 1 - (mpfr_prec_t) i;
     MPFR_ASSERTD (i >= 2);
     mpfr_clear_overflow ();
     mpfr_clear_underflow ();

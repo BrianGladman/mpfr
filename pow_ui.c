@@ -99,7 +99,7 @@ mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
       int i;
       for (m = n, i = 0; m; i++, m >>= 1);
       /* now 2^(i-1) <= n < 2^i */
-      err = prec <= (mpfr_prec_t) i ? 0 : prec - (mpfr_prec_t) i;
+      err = prec <= (mpfr_prec_t) i ? 0 : prec - 1 - (mpfr_prec_t) i;
       MPFR_ASSERTD (i >= 1);
       mpfr_clear_overflow ();
       mpfr_clear_underflow ();
@@ -113,6 +113,14 @@ mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
 	  if (n & (1UL << i))
 	    inexact |= mpfr_mul (res, res, y, rnd1);
 	}
+      /* let r(n) be the number of roundings: we have r(2)=1, r(3)=2,
+	 and r(2n)=2r(n)+1, r(2n+1)=2r(n)+2, thus r(n)=n-1.
+	 Using Higham's method, to each rounding corresponds a factor
+	 (1-theta) with 0 <= theta <= 2^(1-p), thus at the end the
+	 absolute error is bounded by (n-1)*2^(1-p)*res <= 2*(n-1)*ulp(res)
+	 since 2^(-p)*x <= ulp(x). Since n < 2^i, this gives a maximal
+	 error of 2^(1+i)*ulp(res).
+      */
       if (MPFR_LIKELY (inexact == 0 
 		       || mpfr_overflow_p () || mpfr_underflow_p ()
 		       || MPFR_CAN_ROUND (res, err, MPFR_PREC (x), rnd)))

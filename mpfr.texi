@@ -1252,6 +1252,7 @@ rounded in the direction @var{rnd}.
 @deftypefun int mpfr_gamma (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Set @var{rop} to the value of the Gamma function on @var{op},
 rounded in the direction @var{rnd}.
+When @var{op} is a negative integer, NaN is returned.
 @end deftypefun
 
 @deftypefun int mpfr_zeta (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})

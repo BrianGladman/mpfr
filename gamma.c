@@ -50,6 +50,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
   unsigned long k;
   int sign;
   int inex;
+  int is_integer;
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_ZIV_DECL (loop);
 
@@ -78,7 +79,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	      MPFR_RET (0);  /* exact */
 	    }
 	}
-      else
+      else /* x is zero */
 	{
           MPFR_ASSERTD(MPFR_IS_ZERO(x));
 	  MPFR_SET_INF(gamma);
@@ -86,6 +87,15 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	  MPFR_RET (0);  /* exact */
 	}
     }
+
+  is_integer = mpfr_integer_p (x);
+  /* gamma(x) for x a negative integer gives NaN */
+  if (is_integer && MPFR_IS_NEG(x))
+    {
+      MPFR_SET_NAN (gamma);
+      MPFR_RET_NAN;
+    }
+
   MPFR_CLEAR_FLAGS(gamma);
 
   /* Set x_p=x if x> 1 else set x_p=2-x */
@@ -95,7 +105,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
     return mpfr_set_ui (gamma, 1, rnd_mode);
 
   /* if x is an integer that fits into an unsigned long, use mpfr_fac_ui */
-  if (mpfr_integer_p (x) && mpfr_fits_ulong_p (x, GMP_RNDN))
+  if (is_integer && mpfr_fits_ulong_p (x, GMP_RNDN))
     {
       unsigned long int u;
       u = mpfr_get_ui (x, GMP_RNDN);

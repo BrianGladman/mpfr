@@ -87,6 +87,14 @@ special (void)
       exit (1);
     }
 
+  mpfr_set_si (x, -1, GMP_RNDN);
+  mpfr_gamma (y, x, GMP_RNDN);
+  if (!mpfr_nan_p (y))
+    {
+      printf ("Error for gamma(-1)\n");
+      exit (1);
+    }
+
   mpfr_set_prec (x, 53);
   mpfr_set_prec (y, 53);
 
