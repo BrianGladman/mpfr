@@ -32,7 +32,7 @@ mpfr_mul_2ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int n, mp_rnd_t rnd_mode)
     {
       /* n will have to be casted to long to make sure that the addition
          and subtraction below (for overflow detection) are signed */
-      while (n > LONG_MAX)
+      while (MPFR_UNLIKELY(n > LONG_MAX))
         {
           int inex2;
 
