@@ -149,3 +149,8 @@ produce illegal codes with the first form.
 
 The GNU Coding standards can be read at:
 http://www.gnu.org/prep/standards_toc.html
+
+===========================================================================
+
+Don't use "near" and "far" as variable names since they are "Keywords"
+for some C compiler (Old DOS compiler).
