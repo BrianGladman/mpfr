@@ -40,8 +40,29 @@ int main()
   mpfr_init2(t, SIZEX); 
   mpfr_init2(y2, SIZEX); 
   mpfr_init2(z2, SIZEX); 
-  mpfr_init2(t2, SIZEX); 
-  
+  mpfr_init2(t2, SIZEX);
+
+  mpfr_set_d(x, 0.5, GMP_RNDN);
+  mpfr_ceil(y, x);
+  if (mpfr_get_d(y) != 1.0) {
+    fprintf(stderr, "Error in mpfr_ceil for x=0.5: expected 1.0, got %f\n",
+	    mpfr_get_d(y)); exit(1); 
+  }
+
+  mpfr_set_d(x, 0.0, GMP_RNDN);
+  mpfr_ceil(y, x);
+  if (mpfr_get_d(y) != 0.0) {
+    fprintf(stderr, "Error in mpfr_ceil for x=0.0: expected 0.0, got %f\n",
+	    mpfr_get_d(y)); exit(1); 
+  }
+
+  mpfr_set_d(x, 1.0, GMP_RNDN);
+  mpfr_ceil(y, x);
+  if (mpfr_get_d(y) != 1.0) {
+    fprintf(stderr, "Error in mpfr_ceil for x=1.0: expected 1.0, got %f\n",
+	    mpfr_get_d(y)); exit(1); 
+  }
+
   for (j=0;j<1000;j++) {
 
     mpfr_random(x); 
@@ -58,7 +79,7 @@ int main()
 
 	mpfr_floor(y, x); 
 	mpfr_set(y2, x, GMP_RNDD); 
-	
+
 	mpfr_trunc(z, x); 
 	mpfr_set(z2, x, GMP_RNDZ); 
 
