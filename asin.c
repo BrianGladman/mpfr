@@ -68,6 +68,7 @@ mpfr_asin (asin, x, rnd_mode)
   if (compared > 0) /* asin(x) = NaN for |x| > 1 */
     {
       MPFR_SET_NAN(asin);
+      mpfr_clear(xp);
       return 1;
     }
 
@@ -84,12 +85,14 @@ mpfr_asin (asin, x, rnd_mode)
           mpfr_const_pi (asin, rnd_mode);
         }
       MPFR_EXP(asin)--;
+      mpfr_clear(xp);
       return 1; /* inexact */
     }
 
   if (!MPFR_NOTZERO(x)) /* x = 0 */
     {
       mpfr_set_ui (asin, 0, GMP_RNDN);
+      mpfr_clear(xp);
       return 0; /* exact result */
     }
 
@@ -178,3 +181,8 @@ mpfr_asin (asin, x, rnd_mode)
 
   return 1; /* inexact result */
 }
+
+
+
+
+
