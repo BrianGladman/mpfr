@@ -47,7 +47,8 @@ int
 #if __STDC__
 mpfr_set_emin (mp_exp_t exponent)
 #else
-mpfr_set_emin ()
+mpfr_set_emin (exponent)
+     mp_exp_t exponent;
 #endif
 {
   if (exponent >= MPFR_EMIN_MIN && exponent <= MPFR_EMIN_MAX)
@@ -79,7 +80,8 @@ int
 #if __STDC__
 mpfr_set_emax (mp_exp_t exponent)
 #else
-mpfr_set_emax ()
+mpfr_set_emax (exponent)
+     mp_exp_t exponent;
 #endif
 {
   if (exponent >= MPFR_EMAX_MIN && exponent <= MPFR_EMAX_MAX)
@@ -159,7 +161,9 @@ int
 #if __STDC__
 mpfr_check_range (mpfr_ptr x, mp_rnd_t rnd_mode)
 #else
-mpfr_check_range ()
+mpfr_check_range (x, rnd_mode)
+     mpfr_ptr x;
+     mp_rnd_t rnd_mode;
 #endif
 {
   if (MPFR_IS_FP(x) && MPFR_NOTZERO(x))
@@ -227,7 +231,10 @@ int
 #if __STDC__
 mpfr_set_underflow (mpfr_ptr x, mp_rnd_t rnd_mode, int sign)
 #else
-mpfr_set_underflow ()
+mpfr_set_underflow (x, rnd_mode, sign)
+     mpfr_ptr x;
+     mp_rnd_t rnd_mode;
+     int sign;
 #endif
 {
   int inex;
@@ -261,7 +268,10 @@ int
 #if __STDC__
 mpfr_set_overflow (mpfr_ptr x, mp_rnd_t rnd_mode, int sign)
 #else
-mpfr_set_overflow ()
+mpfr_set_overflow (x, rnd_mode, sign)
+     mpfr_ptr x;
+     mp_rnd_t rnd_mode;
+     int sign;
 #endif
 {
   int inex;
