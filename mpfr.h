@@ -297,6 +297,8 @@ int mpfr_mul_si _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, long int, mpfr_rnd_t));
 int mpfr_div_si _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, long int, mpfr_rnd_t));
 int mpfr_si_div _MPFR_PROTO ((mpfr_ptr, long int, mpfr_srcptr, mpfr_rnd_t));
 
+int mpfr_sqr _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t));
+
 int mpfr_const_pi _MPFR_PROTO ((mpfr_ptr, mpfr_rnd_t));
 int mpfr_const_log2 _MPFR_PROTO ((mpfr_ptr, mpfr_rnd_t));
 int mpfr_const_euler _MPFR_PROTO ((mpfr_ptr, mpfr_rnd_t));
@@ -412,8 +414,8 @@ int mpfr_cmp_f _MPFR_PROTO ((mpfr_srcptr, mpf_srcptr));
 
 int mpfr_fma _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_srcptr,
                            mpfr_rnd_t));
-int mpfr_sum _MPFR_PROTO ((mpfr_ptr ret, mpfr_ptr const tab[], unsigned long n,
-			   mpfr_rnd_t rnd));
+int mpfr_sum _MPFR_PROTO ((mpfr_ptr, mpfr_ptr const tab[], unsigned long,
+			   mpfr_rnd_t));
 
 void mpfr_init_cache _MPFR_PROTO ((mpfr_cache_t,int(*)(mpfr_ptr,mpfr_rnd_t)));
 void mpfr_clear_cache _MPFR_PROTO ((mpfr_cache_t));
