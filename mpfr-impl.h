@@ -94,6 +94,9 @@ typedef union ieee_double_extract Ieee_double_extract;
   (MPFR_MANT(x)[(MPFR_PREC(x)-1)/BITS_PER_MP_LIMB] == (mp_limb_t) 0)
 #define MPFR_SET_ZERO(x) \
   (MPFR_MANT(x)[(MPFR_PREC(x)-1)/BITS_PER_MP_LIMB] = (mp_limb_t) 0)
+#define MPFR_ESIZE(x) \
+  ((MPFR_PREC((x)) - 1) / BITS_PER_MP_LIMB + 1); 
+#define MPFR_EVEN_INEX 2
 
 /* When returning the ternary inexact value, ALWAYS use one of the
    following two macros, unless the flag comes from another function
@@ -128,14 +131,12 @@ int mpfr_set_underflow _PROTO ((mpfr_ptr, mp_rnd_t, int));
 int mpfr_set_overflow _PROTO ((mpfr_ptr, mp_rnd_t, int));
 void mpfr_save_emin_emax _PROTO ((void));
 void mpfr_restore_emin_emax _PROTO ((void));
-
 int mpfr_add1 _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr,
                        mp_rnd_t, mp_exp_unsigned_t));
 int mpfr_sub1 _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr,
                        mp_rnd_t, mp_exp_unsigned_t));
-int mpfr_round_raw _PROTO ((mp_limb_t *, mp_limb_t *, mp_prec_t, int,
-                            mp_prec_t, mp_rnd_t, int *));
-int mpfr_round_raw2 _PROTO((mp_limb_t *, mp_prec_t, int, mp_rnd_t, mp_prec_t));
+int mpfr_round_raw_generic _PROTO ((mp_limb_t *, mp_limb_t *, mp_prec_t, int,
+				    mp_prec_t, mp_rnd_t, int *, int));
 int mpfr_can_round_raw _PROTO ((mp_limb_t *, mp_prec_t, int, mp_prec_t, 
 				mp_rnd_t, mp_rnd_t, mp_prec_t));
 double mpfr_get_d2 _PROTO ((mpfr_srcptr, long)); 
@@ -147,6 +148,13 @@ long _mpfr_floor_log2 _PROTO ((double));
 double _mpfr_ceil_exp2 _PROTO ((double));
 unsigned long _mpfr_isqrt _PROTO ((unsigned long));
 unsigned long _mpfr_cuberoot _PROTO ((unsigned long));
+
+#define mpfr_round_raw(yp, xp, xprec, neg, yprec, r, inexp) \
+  mpfr_round_raw_generic((yp), (xp), (xprec), (neg), (yprec), (r), (inexp), 0)
+
+#define mpfr_round_raw2(xp, xn, neg, r, prec) \
+  mpfr_round_raw_generic(NULL, (xp), (xn) * BITS_PER_MP_LIMB, (neg), \
+			 (prec), (r), 0, 1); 
 
 #if defined (__cplusplus)
 }

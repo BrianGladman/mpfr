@@ -30,97 +30,25 @@ MA 02111-1307, USA. */
 #error "BITS_PER_MP_LIMB must be a power of 2"
 #endif
 
-/* returns 0 if round(sign*xp[0..xn-1], prec, rnd) = 
-   round(sign*xp[0..xn-1], prec, GMP_RNDZ), 1 otherwise,
-   where sign=1 if neg=0, sign=-1 otherwise.
+/* 
+   If flag = 0, puts in y the value of xp (with precision xprec and
+   sign 1 if negative=0, -1 otherwise) rounded to precision yprec and
+   direction rnd_mode. Supposes x is not zero nor NaN nor +/- Infinity
+   (i.e. *xp != 0). If inexp != NULL, computes the inexact flag of the
+   rounding. 
 
-   Does *not* modify anything.
+   In case of even rounding when rnd = GMP_RNDN, returns 2 or -2. 
+
+   If flag = 1, just returns whether one should add 1 or not for rounding.   
 */
-int 
-#if __STDC__
-mpfr_round_raw2 (mp_limb_t *xp, mp_prec_t xn, 
-		int neg, mp_rnd_t rnd, mp_prec_t prec)
-#else
-mpfr_round_raw2 (xp, xn, neg, rnd, prec)
-     mp_limb_t *xp; 
-     mp_prec_t xn; 
-     int neg; 
-     mp_rnd_t rnd;
-     mp_prec_t prec; 
-#endif
-{
-  mp_prec_t nw; long wd; char rw; short l; mp_limb_t mask;
 
-  nw = prec / BITS_PER_MP_LIMB; rw = prec & (BITS_PER_MP_LIMB - 1); 
-  if (rw) nw++; 
-  if (rnd==GMP_RNDZ || xn<nw || (rnd==GMP_RNDU && neg)
-      || (rnd==GMP_RNDD && neg==0)) return 0;
-
-  if (rw) 
-    mask = ~((((mp_limb_t)1)<<(BITS_PER_MP_LIMB - rw)) - 1);
-  else mask = ~((mp_limb_t)0); 
-
-  switch (rnd)
-    {
-    case GMP_RNDU:
-    case GMP_RNDD:
-      if (xp[xn - nw] & ~mask) return 1;
-      for (l = nw + 1;l <= xn; l++)
-	if (xp[xn - l]) break;
-      return (l <= xn);
-
-    case GMP_RNDN:
-    /* First check if we are just halfway between two representable numbers */
-      wd = xn - nw;
-      if (!rw)
-	{
-	  if (!wd) /* all bits are significative */ return 0; 
-	  wd--;
-	  if (xp[wd] == ((mp_limb_t)1 << (BITS_PER_MP_LIMB - 1)))
-	    {
-	      do wd--; while (wd > 0 && !xp[wd]);
-	      if (!wd) { return 1; } else return xp[xn - nw] & 1;
-	    }
-
-	  return xp[wd]>>(BITS_PER_MP_LIMB - 1);
-	}
-      else
-      if (rw + 1 < BITS_PER_MP_LIMB)
-	{
-	  if ((xp[wd] & (~mask)) == (((mp_limb_t)1) << (BITS_PER_MP_LIMB - rw - 1)))
-	      do { wd--; } while (wd >= 0 && !xp[wd]);
-	  else return ((xp[wd]>>(BITS_PER_MP_LIMB - rw - 1)) & 1);
-	  
-	  /* first limb was in the middle, and others down to wd+1 were 0 */
-	  if (wd>=0) return 1;
-	  else
-	      return ((xp[xn - nw] & mask) >> (BITS_PER_MP_LIMB - rw)) & 1;
-	}
-      else
-	/* Modified PZ, 27 May 1999:
-	   rw, i.e. the number of bits stored in xp[xn-nw], is 
-	   BITS_PER_MP_LIMB-1, i.e. there is exactly one non significant bit. 
-	   We are just halfway iff xp[wd] has its low significant bit 
-	   set and all limbs xp[0]...xp[wd-1] are zero */
-	{
-	  if (xp[wd] & 1)
-	      do wd--; while (wd >= 0 && !xp[wd]);
-	  return ((wd<0) ? xp[xn-nw]>>1 : xp[xn-nw]) & 1;
-	}
-    default: return 0;
-    }
-}
-
-/* puts in y the value of xp (with precision xprec and sign 1 if negative=0,
-   -1 otherwise) rounded to precision yprec and direction rnd_mode 
-   Supposes x is not zero nor NaN nor +/- Infinity (i.e. *xp != 0).
-*/
 int
 #if __STDC__
-mpfr_round_raw (mp_limb_t *yp, mp_limb_t *xp, mp_prec_t xprec, int neg,
-                mp_prec_t yprec, mp_rnd_t rnd_mode, int *inexp)
+mpfr_round_raw_generic
+(mp_limb_t *yp, mp_limb_t *xp, mp_prec_t xprec, int neg,
+ mp_prec_t yprec, mp_rnd_t rnd_mode, int *inexp, int flag)
 #else
-mpfr_round_raw (yp, xp, xprec, neg, yprec, rnd_mode, inexp)
+mpfr_round_raw_generic (yp, xp, xprec, neg, yprec, rnd_mode, inexp)
      mp_limb_t *yp;
      mp_limb_t *xp;
      mp_prec_t xprec;
@@ -138,6 +66,12 @@ mpfr_round_raw (yp, xp, xprec, neg, yprec, rnd_mode, inexp)
 
   nw = yprec / BITS_PER_MP_LIMB;
   rw = yprec & (BITS_PER_MP_LIMB - 1);
+
+  if (flag && !inexp && (rnd_mode==GMP_RNDZ || xprec <= yprec 
+			 || (rnd_mode==GMP_RNDU && neg)
+			 || (rnd_mode==GMP_RNDD && neg==0))) 
+    return 0; 
+
   if (rw)
   {
     nw++;
@@ -155,9 +89,10 @@ mpfr_round_raw (yp, xp, xprec, neg, yprec, rnd_mode, inexp)
   { /* No rounding is necessary. */
     /* if yp=xp, maybe an overlap: MPN_COPY_DECR is ok when src <= dst */
     MPFR_ASSERTN(nw >= xsize);
+    if (inexp) *inexp = 0;
+    if (flag) return 0; 
     MPN_COPY_DECR(yp + (nw - xsize), xp, xsize);
     MPN_ZERO(yp, nw - xsize); /* PZ 27 May 99 */
-    if (inexp) *inexp = 0;
   }
   else
   {
@@ -187,11 +122,14 @@ mpfr_round_raw (yp, xp, xprec, neg, yprec, rnd_mode, inexp)
         sb = xp[--k];
       if (rnd_mode == GMP_RNDN)
       {
-        /* rounding bit is 1 */
-        if (sb == 0) /* round to even... */
-          sb = xp[xsize - nw] & (himask ^ (himask << 1));
-        if (inexp)
-          *inexp = ((neg != 0) ^ (sb != 0)) ? 1 : -1;
+	if (sb == 0) /* Even rounding. */
+	  {
+	    sb = xp[xsize - nw] & (himask ^ (himask << 1)); 
+	    if (inexp) *inexp = ((neg != 0) ^ (sb != 0)) 
+			 ? MPFR_EVEN_INEX  : -MPFR_EVEN_INEX;
+	  }
+	else 
+	  { sb = 1; if (inexp) *inexp = ((neg != 0) ^ (sb != 0)) ? 1 : -1; }
       }
       else if (inexp)
         *inexp = sb == 0 ? 0
@@ -199,6 +137,8 @@ mpfr_round_raw (yp, xp, xprec, neg, yprec, rnd_mode, inexp)
     }
     else
       sb = 0;
+
+    if (flag) return (sb != 0 && rnd_mode != GMP_RNDZ); 
 
     if (sb != 0 && rnd_mode != GMP_RNDZ)
       carry = mpn_add_1(yp, xp + xsize - nw, nw,
