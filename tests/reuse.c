@@ -1,6 +1,6 @@
 /* Test file for in-place operations.
 
-Copyright 2000, 2001, 2002, 2003, 2004 Free Software Foundation.
+Copyright 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -533,8 +533,11 @@ main (void)
     test3 (mpfr_div, "mpfr_div", p, rnd);
 
     test3 (mpfr_agm, "mpfr_agm", p, rnd);
+    test3 (mpfr_min, "mpfr_min", p, rnd);
+    test3 (mpfr_max, "mpfr_max", p, rnd);
     test3 (reldiff_wrapper, "mpfr_reldiff", p, rnd);
 
+    test2a (mpfr_round, "mpfr_round", p);
     test2a (mpfr_ceil, "mpfr_ceil", p);
     test2a (mpfr_floor, "mpfr_floor", p);
     test2a (mpfr_trunc, "mpfr_trunc", p);
@@ -549,11 +552,23 @@ main (void)
 
     testui2 (mpfr_ui_div, "mpfr_ui_div", p, rnd);
     testui2 (mpfr_ui_sub, "mpfr_ui_sub", p, rnd);
-    
+    testui2 (mpfr_ui_pow, "mpfr_ui_pow", p, rnd);
+
+    test2 (mpfr_sqr, "mpfr_sqr", p, rnd);
     test2 (mpfr_sqrt, "mpfr_sqrt", p, rnd);
+    test2 (mpfr_abs, "mpfr_abs", p, rnd);
     test2 (mpfr_neg, "mpfr_neg", p, rnd);
+
     test2 (mpfr_log, "mpfr_log", p, rnd);
+    test2 (mpfr_log2, "mpfr_log2", p, rnd);
+    test2 (mpfr_log10, "mpfr_log10", p, rnd);
+    test2 (mpfr_log1p, "mpfr_log1p", p, rnd);
+
     test2 (mpfr_exp, "mpfr_exp", p, rnd);
+    test2 (mpfr_exp2, "mpfr_exp2", p, rnd);
+    test2 (mpfr_exp10, "mpfr_exp10", p, rnd);
+    test2 (mpfr_expm1, "mpfr_expm1", p, rnd);
+
     test2 (mpfr_asin, "mpfr_asin", p, rnd);
     test2 (mpfr_acos, "mpfr_acos", p, rnd);
     test2 (mpfr_atan, "mpfr_atan", p, rnd);
@@ -563,14 +578,16 @@ main (void)
     test2 (mpfr_asinh, "mpfr_asinh", p, rnd);
     test2 (mpfr_acosh, "mpfr_acosh", p, rnd);
     test2 (mpfr_atanh, "mpfr_atanh", p, rnd);
-    test2 (mpfr_exp2, "mpfr_exp2", p, rnd);
     test2 (mpfr_cos, "mpfr_cos", p, rnd);
     test2 (mpfr_sin, "mpfr_sin", p, rnd);
     test2 (mpfr_tan, "mpfr_tan", p, rnd);
-    test2 (mpfr_log10, "mpfr_log10", p, rnd);
-    test2 (mpfr_log2, "mpfr_log2", p, rnd);
+
+    test2 (mpfr_erf, "mpfr_erf", p, rnd);
     test2 (mpfr_zeta, "mpfr_zeta", p, rnd);
     test2 (mpfr_gamma, "mpfr_gamma", p, rnd);
+    test2 (mpfr_rint, "mpfr_rint", p, rnd);
+    test2 (mpfr_frac, "mpfr_frac", p, rnd);
+
     test3 (mpfr_pow, "mpfr_pow", p, rnd);
 
     test4 (mpfr_fma, "mpfr_fma", p, rnd);
