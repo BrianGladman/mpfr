@@ -27,19 +27,23 @@ MA 02111-1307, USA. */
 int 
 mpfr_isinteger (mpfr_srcptr x)
 {
-
-  mpfr_t u;
-  int expo;
+  mp_exp_t expo;
   mp_prec_t prec;
+  mpfr_t u;
   int result;
 
-  expo=(int)MPFR_EXP(x);
-  prec=MPFR_PREC(x);
-
-  if (expo<=0) 
+  if (!MPFR_IS_FP(x))
     return 0;
 
-  if (expo>=prec) 
+  if (MPFR_IS_ZERO(x))
+    return 1;
+
+  expo = MPFR_EXP(x);
+  if (expo <= 0)
+    return 0;
+
+  prec = MPFR_PREC(x);
+  if (expo >= prec)
     return 1;
 
   mpfr_init2(u,prec);
