@@ -81,6 +81,14 @@ OSF and gcc 2.8.1, we had problems with the square root functions:
    Wrong result for 2^(-1024), got inf instead of 0.00000000000000000000e+00
    ### tget_d failed ###
 
+* Under Solaris, tconst_log2 may crash:
+
+   Testing tconst_log2
+   Bus Error - core dumped
+   ### tconst_log2 failed ###
+
+The problem hasn't been identified yet.
+
 In case of problem.
 ===================
 
