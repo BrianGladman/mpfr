@@ -100,11 +100,18 @@ mpfr_get_str (str, expptr, base, n, op, rnd_mode)
      i.e. f = 1 + floor(log(|op|)/log(base))
      = 1 + floor((log(|m|)+e*log(2))/log(base)) */
   /* f = 1 + (int) floor((log(d)/LOG2+(double)e)*LOG2/log((double)base)); */
-  d = ((double) e + (double) _mpfr_floor_log2(d))
+  /* when base = 2^pow2, then |op| < 2^(pow2*f)
+     i.e. e <= pow2*f and f = ceil(e/pow2) */
+  if (pow2)
+      f = (e + pow2 - 1) / pow2;
+  else
+    {
+      d = ((double) e + (double) _mpfr_floor_log2(d))
                       * __mp_bases[base].chars_per_bit_exactly;
-  /* warning: (int) d rounds towards 0 */
-  f = (int) d; /* f equals floor(d) if d >= 0 and ceil(d) if d < 0 */
-  if (f <= d) f++;
+      /* warning: (int) d rounds towards 0 */
+      f = (int) d; /* f equals floor(d) if d >= 0 and ceil(d) if d < 0 */
+      if (f <= d) f++;
+    }
   if (n==0) {
     /* performs exact rounding, i.e. returns y such that for GMP_RNDU
        for example, we have:       x*2^(e-p) <= y*base^(f-n)
@@ -142,10 +149,13 @@ mpfr_get_str (str, expptr, base, n, op, rnd_mode)
       }
     }
 
-    if (pow2) {
-      if (div) mpfr_div_2exp(b, op, pow2*p, rnd_mode);
-      else mpfr_mul_2exp(b, op, pow2*p, rnd_mode);
-    } 
+    if (pow2)
+      {
+	if (div)
+	  mpfr_div_2exp (b, op, pow2*p, rnd_mode);
+	else
+	  mpfr_mul_2exp (b, op, pow2*p, rnd_mode);
+      }
     else {
        /* compute base^p with q bits and rounding towards zero */
        mpfr_set_prec(b, q);
@@ -185,7 +195,8 @@ mpfr_get_str (str, expptr, base, n, op, rnd_mode)
     case GMP_RNDD: rnd_mode=GMP_RNDU; break;
   }
 
-  if (ok) mpfr_round(b, rnd_mode, MPFR_EXP(b));
+  if (ok)
+    mpfr_round (b, rnd_mode, MPFR_EXP(b));
 
   prec=MPFR_EXP(b); /* may have changed due to rounding */
 
