@@ -27,14 +27,12 @@ MA 02111-1307, USA. */
 int
 mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode) 
 {
-  int sign_product, ec, em = 0;
+  int sign_product, cc, inexact, ec, em = 0;
   mp_exp_t bx, cx;
   mp_limb_t *ap, *bp, *cp, *tmp;
   mp_limb_t b1;
   mp_prec_t aq, bq, cq;
   mp_size_t an, bn, cn, tn, k;
-
-  int cc, inexact = 0;
   TMP_DECL(marker);
 
   /* deal with NaN and zero */
