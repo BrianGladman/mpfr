@@ -631,6 +631,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
       prec = (m - 1) * pow2 + r;
       n = (prec - 1) / BITS_PER_MP_LIMB + 1;
 
+      TMP_MARK (marker);
       x1 = TMP_ALLOC((n + 1) * sizeof (mp_limb_t));
       nb = n * BITS_PER_MP_LIMB - prec;
       /* round xp to the precision prec, and put it into x1
