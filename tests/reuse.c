@@ -25,7 +25,9 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-void (*testfunc) _PROTO (()) = NULL;
+typedef void (*fct_t)();
+fct_t testfunc;
+
 void test3 _PROTO ((char *, mp_prec_t, mp_rnd_t));
 void test4 _PROTO ((char *, mp_prec_t, mp_rnd_t));
 void test3a _PROTO ((char *, mp_prec_t, mp_rnd_t));
@@ -605,45 +607,44 @@ test3a (char *foo, mp_prec_t prec, mp_rnd_t rnd)
 int
 main (void)
 {
-  testfunc = (void*) mpfr_add; test3 ("mpfr_add", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_add_ui; test2ui ("mpfr_add_ui", 53, GMP_RNDN);
-  testfunc = mpfr_agm; test3 ("mpfr_agm", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_ceil; test2 ("mpfr_ceil", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_div; test3 ("mpfr_div", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_div_2exp; test2ui ("mpfr_div_2exp", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_div_ui; test2ui ("mpfr_div_ui", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_exp; test2 ("mpfr_exp", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_floor; test2 ("mpfr_floor", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_log; test2 ("mpfr_log", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_mul; test3 ("mpfr_mul", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_mul_2exp; test2ui ("mpfr_mul_2exp", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_mul_ui; test2ui ("mpfr_mul_ui", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_neg; test2 ("mpfr_neg", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_pow_ui; test2ui ("mpfr_pow_ui", 53, GMP_RNDN);
-  testfunc = mpfr_reldiff; test3 ("mpfr_reldiff", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_sub; test3 ("mpfr_sub", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_sub_ui; test2ui ("mpfr_sub_ui", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_sqrt; test2 ("mpfr_sqrt", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_ui_div; testui2 ("mpfr_ui_div", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_ui_sub; testui2 ("mpfr_ui_sub", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_trunc; test2 ("mpfr_trunc", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_asin; test2 ("mpfr_asin", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_acos; test2 ("mpfr_acos", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_atan; test2 ("mpfr_atan", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_sinh; test2 ("mpfr_sinh", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_cosh; test2 ("mpfr_cosh", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_tanh; test2 ("mpfr_tanh", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_asinh; test2 ("mpfr_asinh", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_acosh; test2 ("mpfr_acosh", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_atanh; test2 ("mpfr_atanh", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_exp2; test2 ("mpfr_exp2", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_cos; test2 ("mpfr_cos", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_sin; test2 ("mpfr_sin", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_tan; test2 ("mpfr_tan", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_log10; test2 ("mpfr_log10", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_log2; test2 ("mpfr_log2", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_pow; test3 ("mpfr_pow", 53, GMP_RNDN);
-  testfunc = (void*) mpfr_fma; test4 ("mpfr_fma", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_add; test3 ("mpfr_add", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_add_ui; test2ui ("mpfr_add_ui", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_agm; test3 ("mpfr_agm", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_ceil; test2 ("mpfr_ceil", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_div; test3 ("mpfr_div", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_div_2exp; test2ui ("mpfr_div_2exp", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_div_ui; test2ui ("mpfr_div_ui", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_exp; test2 ("mpfr_exp", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_floor; test2 ("mpfr_floor", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_log; test2 ("mpfr_log", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_mul; test3 ("mpfr_mul", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_mul_2exp; test2ui ("mpfr_mul_2exp", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_mul_ui; test2ui ("mpfr_mul_ui", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_neg; test2 ("mpfr_neg", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_pow_ui; test2ui ("mpfr_pow_ui", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_reldiff; test3 ("mpfr_reldiff", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_sub; test3 ("mpfr_sub", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_sub_ui; test2ui ("mpfr_sub_ui", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_sqrt; test2 ("mpfr_sqrt", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_ui_div; testui2 ("mpfr_ui_div", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_ui_sub; testui2 ("mpfr_ui_sub", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_trunc; test2 ("mpfr_trunc", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_asin; test2 ("mpfr_asin", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_acos; test2 ("mpfr_acos", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_atan; test2 ("mpfr_atan", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_sinh; test2 ("mpfr_sinh", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_cosh; test2 ("mpfr_cosh", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_tanh; test2 ("mpfr_tanh", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_asinh; test2 ("mpfr_asinh", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_acosh; test2 ("mpfr_acosh", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_atanh; test2 ("mpfr_atanh", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_exp2; test2 ("mpfr_exp2", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_cos; test2 ("mpfr_cos", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_sin; test2 ("mpfr_sin", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_tan; test2 ("mpfr_tan", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_log10; test2 ("mpfr_log10", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_log2; test2 ("mpfr_log2", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_pow; test3 ("mpfr_pow", 53, GMP_RNDN);
+  testfunc = (fct_t) mpfr_fma; test4 ("mpfr_fma", 53, GMP_RNDN);
   return 0;
 }
-
