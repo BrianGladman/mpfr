@@ -90,6 +90,7 @@ void mpfr_clear _PROTO ((mpfr_ptr));
 void mpfr_set_str_raw _PROTO ((mpfr_ptr, char *)); 
 void mpfr_get_str_raw _PROTO ((char *, mpfr_srcptr));
 char* mpfr_get_str _PROTO ((char *, mp_exp_t *, int, size_t, mpfr_srcptr, unsigned char));
+size_t mpfr_out_str _PROTO ((FILE *, int, size_t, mpfr_srcptr, unsigned char));
 void mpfr_mul _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, unsigned char));
 void mpfr_div _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, unsigned char));
 void mpfr_agm _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, unsigned char));
