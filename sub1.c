@@ -56,8 +56,8 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       MPFR_RET (0);
     }
 
-  /* 
-   * If subtraction: sign(a) = sign * sign(b) 
+  /*
+   * If subtraction: sign(a) = sign * sign(b)
    * If addition: sign(a) = sign of the larger argument in absolute value.
    *
    * Both cases can be simplidied in:
@@ -75,88 +75,90 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
     {
       mpfr_srcptr t;
       MPFR_SET_OPPOSITE_SIGN (a,b);
-      t = b; b = c; c = t;      
+      t = b; b = c; c = t;
     }
   else
     MPFR_SET_SAME_SIGN (a,b);
 
   /* Check if c is too small.
-     A more precise test is to replace 2 by   
-      (rnd == GMP_RNDN) + mpfr_power2_raw (b) 
+     A more precise test is to replace 2 by
+      (rnd == GMP_RNDN) + mpfr_power2_raw (b)
       but it is more expensive and not very usefull */
-  if (MPFR_UNLIKELY (MPFR_GET_EXP (c) <= MPFR_GET_EXP (b) 
-		     - (mp_exp_t) MAX (MPFR_PREC (a), MPFR_PREC (b)) - 2))
+  if (MPFR_UNLIKELY (MPFR_GET_EXP (c) <= MPFR_GET_EXP (b)
+                     - (mp_exp_t) MAX (MPFR_PREC (a), MPFR_PREC (b)) - 2))
     {
       /* Remember, we can't have an exact result! */
       /*   A.AAAAAAAAAAAAAAAAA
-	 = B.BBBBBBBBBBBBBBB
-	  -                     C.CCCCCCCCCCCCC */
+         = B.BBBBBBBBBBBBBBB
+          -                     C.CCCCCCCCCCCCC */
       /* A = S*ABS(B) +/- ulp(a) */
       MPFR_SET_EXP (a, MPFR_GET_EXP (b));
-      MPFR_RNDRAW_EVEN (inexact, a, MPFR_MANT (b), MPFR_PREC (b), 
-			rnd_mode, MPFR_SIGN (a), 
-			if (MPFR_UNLIKELY ( ++MPFR_EXP (a) > __gmpfr_emax)) 
-			inexact = mpfr_overflow (a, rnd_mode, MPFR_SIGN (a)));
+      MPFR_RNDRAW_EVEN (inexact, a, MPFR_MANT (b), MPFR_PREC (b),
+                        rnd_mode, MPFR_SIGN (a),
+                        if (MPFR_UNLIKELY ( ++MPFR_EXP (a) > __gmpfr_emax))
+                        inexact = mpfr_overflow (a, rnd_mode, MPFR_SIGN (a)));
       /* inexact = mpfr_set4 (a, b, rnd_mode, MPFR_SIGN (a));  */
       if (inexact == 0)
-	{
-	  /* a = b (Exact)
-	     But we know it isn't (Since we have to remove `c')
-	     So if we round to Zero, we have to remove one ulp.
-	     Otherwise the result is correctly rounded. */
-	  if (MPFR_IS_LIKE_RNDZ (rnd_mode, MPFR_IS_NEG (a))) {
-	    mpfr_nexttozero (a);
-	    return -MPFR_INT_SIGN (a);
-	  }
+        {
+          /* a = b (Exact)
+             But we know it isn't (Since we have to remove `c')
+             So if we round to Zero, we have to remove one ulp.
+             Otherwise the result is correctly rounded. */
+          if (MPFR_IS_LIKE_RNDZ (rnd_mode, MPFR_IS_NEG (a)))
+            {
+              mpfr_nexttozero (a);
+              return -MPFR_INT_SIGN (a);
+            }
 	  return MPFR_INT_SIGN (a);
-	}
+        }
       else
-	{
-	  /*   A.AAAAAAAAAAAAAA
+        {
+          /*   A.AAAAAAAAAAAAAA
              = B.BBBBBBBBBBBBBBB
-  	      -                   C.CCCCCCCCCCCCC */
-	  /* It isn't exact so Prec(b) > Prec(a) and the last
-	     Prec(b)-Prec(a) bits of `b' are not zeros.
-	     Which means that removing c from b can't generate a carry
-	     execpt in case of even rounding.
-	     In all other case the result and the inexact flag should be
-	     correct (We can't have an exact result).
-	     In case of EVEN rounding:
-	       1.BBBBBBBBBBBBBx10
-	     -                     1.CCCCCCCCCCCC 
-	     = 1.BBBBBBBBBBBBBx01  Rounded to Prec(b)
-	     = 1.BBBBBBBBBBBBBx    Nearest / Rounded to Prec(a)
-	     Set gives:
-	       1.BBBBBBBBBBBBB0   if inexact == EVEN_INEX  (x == 0)
-  	       1.BBBBBBBBBBBBB1+1 if inexact == -EVEN_INEX (x == 1) 
-	     which means we get a wrong rounded result if x==1, 
-	     i.e. inexact= MPFR_EVEN_INEX */
-	  if (MPFR_UNLIKELY (inexact == MPFR_EVEN_INEX*MPFR_INT_SIGN (a))) {
-	    mpfr_nexttozero (a);
-	    inexact = -MPFR_INT_SIGN (a);
-	  }
-	  return inexact;
-	}
+              -                   C.CCCCCCCCCCCCC */
+          /* It isn't exact so Prec(b) > Prec(a) and the last
+             Prec(b)-Prec(a) bits of `b' are not zeros.
+             Which means that removing c from b can't generate a carry
+             execpt in case of even rounding.
+             In all other case the result and the inexact flag should be
+             correct (We can't have an exact result).
+             In case of EVEN rounding:
+               1.BBBBBBBBBBBBBx10
+             -                     1.CCCCCCCCCCCC
+             = 1.BBBBBBBBBBBBBx01  Rounded to Prec(b)
+             = 1.BBBBBBBBBBBBBx    Nearest / Rounded to Prec(a)
+             Set gives:
+               1.BBBBBBBBBBBBB0   if inexact == EVEN_INEX  (x == 0)
+               1.BBBBBBBBBBBBB1+1 if inexact == -EVEN_INEX (x == 1)
+             which means we get a wrong rounded result if x==1,
+             i.e. inexact= MPFR_EVEN_INEX */
+          if (MPFR_UNLIKELY (inexact == MPFR_EVEN_INEX*MPFR_INT_SIGN (a)))
+            {
+              mpfr_nexttozero (a);
+              inexact = -MPFR_INT_SIGN (a);
+            }
+          return inexact;
+        }
     }
 
   diff_exp = (mp_exp_unsigned_t) MPFR_GET_EXP (b) - MPFR_GET_EXP (c);
 
   /* reserve a space to store b aligned with the result, i.e. shifted by
      (-cancel) % BITS_PER_MP_LIMB to the right */
-  bn      = MPFR_LIMB_SIZE (b); 
+  bn      = MPFR_LIMB_SIZE (b);
   MPFR_UNSIGNED_MINUS_MODULO (shift_b, cancel);
   cancel1 = (cancel + shift_b) / BITS_PER_MP_LIMB;
- 
+
   /* the high cancel1 limbs from b should not be taken into account */
   if (MPFR_UNLIKELY (shift_b == 0))
     {
       bp = MPFR_MANT(b); /* no need of an extra space */
       /* Ensure ap != bp */
       if (MPFR_UNLIKELY (ap == bp))
-	{
-	  bp = (mp_ptr) TMP_ALLOC(bn * BYTES_PER_MP_LIMB);
-	  MPN_COPY (bp, ap, bn);
-	}
+        {
+          bp = (mp_ptr) TMP_ALLOC(bn * BYTES_PER_MP_LIMB);
+          MPN_COPY (bp, ap, bn);
+        }
     }
   else
     {
@@ -182,10 +184,10 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
        cp = MPFR_MANT(c);
       /* Ensure ap != cp */
       if (ap == cp)
-	{
-	  cp = (mp_ptr) TMP_ALLOC (cn * BYTES_PER_MP_LIMB);
-	  MPN_COPY(cp, ap, cn);
-	}
+        {
+          cp = (mp_ptr) TMP_ALLOC (cn * BYTES_PER_MP_LIMB);
+          MPN_COPY(cp, ap, cn);
+        }
     }
  else
     {
@@ -233,13 +235,13 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
     /* a: <----------------+-----------|---->
        b: <-----------------------------------------> */
       MPN_COPY (ap, bp + bn - (an + cancel1), an);
-  else  
+  else
     /* a: <----------------+-----------|---->
        b: <-------------------------> */
     if ((mp_size_t) cancel1 < bn) /* otherwise b does not overlap with a */
       {
-	MPN_ZERO (ap, an + cancel1 - bn);
-	MPN_COPY (ap + an + cancel1 - bn, bp, bn - cancel1);
+        MPN_ZERO (ap, an + cancel1 - bn);
+        MPN_COPY (ap + an + cancel1 - bn, bp, bn - cancel1);
       }
     else
       MPN_ZERO (ap, an);
@@ -255,39 +257,42 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
       if (cancel2 >= 0)
 	{
-	  if (an + cancel2 <= cn) 
-	    /* a: <----------------------------->
-	       c: <-----------------------------------------> */
-	    mpn_sub_n (ap, ap, cp + cn - (an + cancel2), an);
-	  else 
-	    /* a: <---------------------------->
-	       c: <-------------------------> */
-	    {
-	      ap2 = ap + an + cancel2 - cn;
-	      if (cn > cancel2)
-		mpn_sub_n (ap2, ap2, cp, cn - cancel2);
-	    }
-	}
+          if (an + cancel2 <= cn)
+            /* a: <----------------------------->
+               c: <-----------------------------------------> */
+            mpn_sub_n (ap, ap, cp + cn - (an + cancel2), an);
+          else
+            /* a: <---------------------------->
+               c: <-------------------------> */
+            {
+              ap2 = ap + an + cancel2 - cn;
+              if (cn > cancel2)
+                mpn_sub_n (ap2, ap2, cp, cn - cancel2);
+            }
+        }
       else /* cancel2 < 0 */
-	{
-	  if (an + cancel2 <= cn) 
-	    /* a: <----------------------------->
-	       c: <-----------------------------> */
-	    borrow = mpn_sub_n (ap, ap, cp + cn - (an + cancel2), an + cancel2);
-	  else 
-	    /* a: <---------------------------->
-	       c: <----------------> */
-	    {
-	      ap2 = ap + an + cancel2 - cn;
-	      borrow = mpn_sub_n (ap2, ap2, cp, cn);
-	    }
-	  ap2 = ap + an + cancel2;
-	  mpn_sub_1 (ap2, ap2, -cancel2, borrow);
-	}
+        {
+          if (an + cancel2 <= cn)
+            /* a: <----------------------------->
+               c: <-----------------------------> */
+            borrow = mpn_sub_n (ap, ap, cp + cn - (an + cancel2),
+                                an + cancel2);
+          else
+            /* a: <---------------------------->
+               c: <----------------> */
+            {
+              ap2 = ap + an + cancel2 - cn;
+              borrow = mpn_sub_n (ap2, ap2, cp, cn);
+            }
+          ap2 = ap + an + cancel2;
+          mpn_sub_1 (ap2, ap2, -cancel2, borrow);
+        }
     }
 
 #ifdef DEBUG
-  printf("after subtracting high(c), a="); mpfr_print_binary(a); putchar('\n');
+  printf("after subtracting high(c), a=");
+  mpfr_print_binary(a);
+  putchar('\n');
 #endif
 
   /* now perform rounding */
@@ -299,35 +304,35 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   if (MPFR_LIKELY(rnd_mode == GMP_RNDN))
     {
       if (MPFR_LIKELY(sh))
-	{
-	  is_exact = (carry == 0);
-	  /* can decide except when carry = 2^(sh-1) [middle]
-	     or carry = 0 [truncate, but cannot decide inexact flag] */
-	  down = (carry < (MPFR_LIMB_ONE << (sh - 1)));
-	  if (carry > (MPFR_LIMB_ONE << (sh - 1)))
-	    goto add_one_ulp;
-	  else if ((0 < carry) && down)
-	    {
-	      inexact = -1; /* result if smaller than exact value */
-	      goto truncate;
-	    }
-	}
+        {
+          is_exact = (carry == 0);
+          /* can decide except when carry = 2^(sh-1) [middle]
+             or carry = 0 [truncate, but cannot decide inexact flag] */
+          down = (carry < (MPFR_LIMB_ONE << (sh - 1)));
+          if (carry > (MPFR_LIMB_ONE << (sh - 1)))
+            goto add_one_ulp;
+          else if ((0 < carry) && down)
+            {
+              inexact = -1; /* result if smaller than exact value */
+              goto truncate;
+            }
+        }
     }
   else /* directed rounding: set rnd_mode to RNDZ iff towards zero */
     {
       if (MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd_mode, MPFR_IS_NEG(a)))
-	rnd_mode = GMP_RNDZ;
+        rnd_mode = GMP_RNDZ;
 
       if (carry)
-	{
-	  if (rnd_mode == GMP_RNDZ)
-	    {
-	      inexact = -1;
-	      goto truncate;
-	    }
-	  else /* round away */
-	    goto add_one_ulp;
-	}
+        {
+          if (rnd_mode == GMP_RNDZ)
+            {
+              inexact = -1;
+              goto truncate;
+            }
+          else /* round away */
+            goto add_one_ulp;
+        }
     }
 
   /* we have to consider the low (bn - (an+cancel1)) limbs from b,
@@ -345,18 +350,18 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       /* get next limbs */
       bb = (bn > 0) ? bp[--bn] : 0;
       if ((cn > 0) && (cn-- <= cn0))
-	cc = cp[cn];
+        cc = cp[cn];
       else
-	cc = 0;
+        cc = 0;
 
       /* down is set when low(b) < low(c) */
       if (down == 0)
-	down = (bb < cc);
+        down = (bb < cc);
 
       /* the case rounding to nearest with sh=0 is special since one couldn't
          subtract above 1/2 ulp in the trailing limb of the result */
       if ((rnd_mode == GMP_RNDN) && sh == 0 && k == 0)
-	{
+        {
           mp_limb_t half = MPFR_LIMB_HIGHBIT;
 
           is_exact = (bb == cc);
@@ -380,25 +385,26 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
               else
                 bb -= half;
             }
-	}
-      
+        }
+
 #ifdef DEBUG
-      printf("    bb=%lu cc=%lu down=%d is_exact=%d\n", bb, cc, down, is_exact);
+      printf("    bb=%lu cc=%lu down=%d is_exact=%d\n",
+             bb, cc, down, is_exact);
 #endif
       if (bb < cc)
-	{
-	  if (rnd_mode == GMP_RNDZ)
-	    goto sub_one_ulp;
-	  else if (rnd_mode != GMP_RNDN) /* round away */
-	    {
-	      inexact = 1;
-	      goto truncate;
-	    }
-	  else /* round to nearest: special case here since for sh=k=0
+        {
+          if (rnd_mode == GMP_RNDZ)
+            goto sub_one_ulp;
+          else if (rnd_mode != GMP_RNDN) /* round away */
+            {
+              inexact = 1;
+              goto truncate;
+            }
+          else /* round to nearest: special case here since for sh=k=0
                   bb = bb0 - MPFR_LIMB_HIGHBIT */
-	    {
-	      if (is_exact && sh == 0)
-		{
+            {
+              if (is_exact && sh == 0)
+                {
                   /* For k=0 we can't decide exactness since it may depend
                      from low order bits.
                      For k=1, the first low limbs matched: low(b)-low(c)<0. */
@@ -407,60 +413,60 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
                       inexact = 1;
                       goto truncate;
                     }
-		}
-	      else if (down && sh == 0)
-		goto sub_one_ulp;
-	      else
-		{
-		  inexact = (is_exact) ? 1 : -1;
-		  goto truncate;
-		}
-	    }
-	}
+                }
+              else if (down && sh == 0)
+                goto sub_one_ulp;
+              else
+                {
+                  inexact = (is_exact) ? 1 : -1;
+                  goto truncate;
+                }
+            }
+        }
       else if (bb > cc)
-	{
-	  if (rnd_mode == GMP_RNDZ)
-	    {
-	      inexact = -1;
-	      goto truncate;
-	    }
-	  else if (rnd_mode != GMP_RNDN) /* round away */
-	      goto add_one_ulp;
-	  else /* round to nearest */
-	    {
-	      if (is_exact)
-		{
-		  inexact = -1;
-		  goto truncate;
-		}
-	      else if (down)
-		{
-		  inexact = 1;
-		  goto truncate;
-		}
-	      else
-		goto add_one_ulp;
-	    }
-	}
+        {
+          if (rnd_mode == GMP_RNDZ)
+            {
+              inexact = -1;
+              goto truncate;
+            }
+          else if (rnd_mode != GMP_RNDN) /* round away */
+            goto add_one_ulp;
+          else /* round to nearest */
+            {
+              if (is_exact)
+                {
+                  inexact = -1;
+                  goto truncate;
+                }
+              else if (down)
+                {
+                  inexact = 1;
+                  goto truncate;
+                }
+              else
+                goto add_one_ulp;
+            }
+        }
     }
 
   if ((rnd_mode == GMP_RNDN) && !is_exact)
     {
       /* even rounding rule */
       if ((ap[0] >> sh) & 1)
-	{
-	  if (down) 
-	    goto sub_one_ulp;
-	  else 
-	    goto add_one_ulp;
-	}
+        {
+          if (down)
+            goto sub_one_ulp;
+          else
+            goto add_one_ulp;
+        }
       else
-	inexact = (down) ? 1 : -1;
+        inexact = (down) ? 1 : -1;
     }
   else
     inexact = 0;
   goto truncate;
-  
+
  sub_one_ulp: /* sub one unit in last place to a */
   mpn_sub_1 (ap, ap, an, MPFR_LIMB_ONE << sh);
   inexact = -1;
@@ -507,16 +513,16 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   else /* cancel = 0: MPFR_EXP(a) <- MPFR_EXP(b) + add_exp */
     {
       /* in case cancel = 0, add_exp can still be 1, in case b is just
-	 below a power of two, c is very small, prec(a) < prec(b),
-	 and rnd=away or nearest */
+         below a power of two, c is very small, prec(a) < prec(b),
+         and rnd=away or nearest */
       mp_exp_t exp_b;
 
       exp_b = MPFR_GET_EXP (b);
       if (MPFR_UNLIKELY(add_exp && exp_b == __gmpfr_emax))
-	{
-	  TMP_FREE(marker);
-	  return mpfr_overflow (a, rnd_mode, MPFR_SIGN(a));
-	}
+        {
+          TMP_FREE(marker);
+          return mpfr_overflow (a, rnd_mode, MPFR_SIGN(a));
+        }
       MPFR_SET_EXP (a, exp_b + add_exp);
     }
   TMP_FREE(marker);
