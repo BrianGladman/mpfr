@@ -51,6 +51,7 @@ mpfr_mulhigh_n (mp_ptr rp, mp_srcptr np, mp_srcptr mp, mp_size_t n)
   
   MPFR_ASSERTD (MPFR_MULHIGH_TAB_SIZE > 4);
   k = MPFR_LIKELY (n < MPFR_MULHIGH_TAB_SIZE) ? mulhigh_ktab[n] : 2*n/3;
+  MPFR_ASSERTD (k == -1 || k == 0 || (k > n/2 && k < n));
   if (k < 0)
     mpn_mul_basecase (rp, np, n, mp, n);
   else if (k == 0)
