@@ -156,6 +156,8 @@ mpfr_round (mpfr_ptr x, mp_rnd_t rnd_mode, mp_prec_t prec)
   mp_prec_t nw;
   TMP_DECL(marker);
 
+  MPFR_ASSERTN(prec >= MPFR_PREC_MIN && prec <= MPFR_PREC_MAX);
+
   nw = 1 + (prec - 1) / BITS_PER_MP_LIMB; /* needed allocated limbs */
 
   /* check if x has enough allocated space for the mantissa */

@@ -29,7 +29,7 @@ mpfr_init2 (mpfr_ptr x, mp_prec_t p)
 {
   mp_size_t xsize;
 
-  MPFR_ASSERTN (p > 0);
+  MPFR_ASSERTN(p >= MPFR_PREC_MIN && p <= MPFR_PREC_MAX);
 
   xsize = (mp_size_t) ((p - 1) / BITS_PER_MP_LIMB) + 1;
 

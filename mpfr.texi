@@ -374,6 +374,9 @@ in the floating-point format, like 0 divided by 0, or Infinity minus Infinity.
 The @dfn{Precision} is the number of bits used to represent the mantissa
 of a floating-point number;
 the corresponding C data type is @code{mp_prec_t}.
+The precision can be any integer between @code{MPFR_PREC_MIN} and
+@code{MPFR_PREC_MAX}. In the current implementation, @code{MPFR_PREC_MIN}
+is equal to 1 and @code{MPFR_PREC_MAX} is equal to @code{ULONG_MAX}.
 
 @cindex Rounding Mode
 @tindex @code{mp_rnd_t}
@@ -633,7 +636,6 @@ All
 subsequent calls to @code{mpfr_init} will use this precision, but previously
 initialized variables are unaffected.
 This default precision is set to 53 bits initially.
-The precision can be any positive integer, even a precision of 1 is possible.
 @end deftypefun
 
 @deftypefun mp_prec_t mpfr_get_default_prec ()
