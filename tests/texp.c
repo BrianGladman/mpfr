@@ -6,6 +6,8 @@
 
 /* #define DEBUG */
 
+int maxu=0;
+
 double drand()
 {
   double d; long int *i;
@@ -48,9 +50,16 @@ check3(double d, unsigned char rnd, double e)
       u=-u;
     }
     if (u!=0) {
-    printf("mpfr_exp failed for x=%1.20e, rnd=%d\n",d,rnd);
-    printf("expected result is %1.20e, got %1.20e, dif=%d ulp\n",e,f,u);
-    exit(1);
+      if (ck) {
+	printf("mpfr_exp failed for x=%1.20e, rnd=%d\n",d,rnd);
+	printf("expected result is %1.20e, got %1.20e, dif=%d ulp\n",e,f,u);
+	exit(1);
+      }
+      else if (u>maxu) {
+	maxu=u;
+	printf("mpfr_exp differs from libm.a for x=%1.20e, rnd=%d\n",d,rnd);
+	printf("libm.a gave %1.20e, mpfr_exp got %1.20e, dif=%d ulp\n",e,f,u);
+      }
     }
   }
   mpfr_clear(x); mpfr_clear(y);
@@ -135,44 +144,45 @@ check_worst_cases()
   printf(" ="); mpfr_print_raw(x); putchar('\n');
 #endif
   mpfr_clear(x);
-exit(1);
 }
 
 int
 main(int argc, char **argv)
 {
-  int i, N, s=0, e, maxe=0; double d;
+  int i, N, s=0, e, maxe=0; double d, lo, hi;
 
   if (argc==3) { check_large(atof(argv[1]), atoi(argv[2])); exit(1); }
   check_worst_cases();
   check(-8.88024741073346941839e-17, 2);
-  check(8.70772839244701057915e-01, 0);
+  check3(8.70772839244701057915e-01, 0, 2.38875626491680437269e+00);
   check(1.0, 0);
   check(-3.42135637628104173534e-07, 1);
   srand48(getpid());
-  N = 100000;
+  N = (argc==1) ? 0 : atoi(argv[1]);
+  lo = (argc>=3) ? atof(argv[2]) : -7.083964185e2;
+  hi = (argc>=4) ? atof(argv[3]) : 7.097827129e2;
   for (i=0;i<N;i++) {
     /* select d such that exp(d) can be represented as a normalized
        machine double-precision number, 
        i.e. 2^(-1022) <= exp(d) <= 2^(1023)*(2-2^(-52)) */
     /* do { d = drand(); } while (d>7.097827129e2 || d<-7.083964185e2); */
-    do { d = drand48(); } while ((d<0.5) || (1.0<d));
+    d = lo + (hi-lo)*drand48();
     e = check(d, rand() % 4);
     s += e;
     if (e>maxe) maxe=e;
   }
-  printf("mean error=%1.2e max error=%d\n", (double)s/(double)N,maxe);
+  if (N) printf("mean error=%1.2e max error=%d\n", (double)s/(double)N,maxe);
   check3(2.26523754332090625496e+01, 3, 6.8833785261699581146e9);
   /* errors found in libm.a on PC under Linux (mean error = 0.03 ulp) */
-  check(1.31478962104089092122e+01, 1); /* -6 ulp error */
-  check(4.25637507920002378103e-01, 2); /* +1 ulp error */
-  check(6.26551618962329307459e-16, 2); /* +1 ulp error */
-  check(-3.35589513871216568383e-03, 3); /* -1 ulp */
-  check(1.95151388850007272424e+01, 2); /* +16 ulp */
-  check(2.45045953503350730784e+01, 0); /* -18 ulp */
-  check(2.58165606081678085104e+01, 3); /* -35 ulp */
-  check(-2.36539020084338638128e+01, 1); /* +42 ulp, wrong side */
-  check(2.39211946135858077866e+01, 2); /* +44 ulp */
+  check3(1.31478962104089092122e+01, GMP_RNDZ, 5.12930793917860137299e+05);
+  check3(4.25637507920002378103e-01, GMP_RNDU, 1.53056585656161181497e+00);
+  check3(6.26551618962329307459e-16, GMP_RNDU, 1.00000000000000066613e+00);
+  check3(-3.35589513871216568383e-03, GMP_RNDD, 9.96649729583626853291e-01);
+  check3(1.95151388850007272424e+01, GMP_RNDU, 2.98756340674767792225e+08);
+  check3(2.45045953503350730784e+01, GMP_RNDN, 4.38743344916128387451e+10);
+  check3(2.58165606081678085104e+01, GMP_RNDD, 1.62925781879432281494e+11);
+  check3(-2.36539020084338638128e+01, GMP_RNDZ, 5.33630792749924762447e-11);
+  check3(2.39211946135858077866e+01, GMP_RNDU, 2.44817704330214385986e+10);
   check3(-2.78190533055889162029e+01, 1, 8.2858803483596879512e-13); 
            /* +45 ulp, wrong side */
   check3(2.64028186174889789584e+01, 3, 2.9281844652878973388e11); /* -45 ulp*/
