@@ -23,11 +23,8 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <stdlib.h>
 #include "gmp.h"
-#include "gmp-impl.h"
 #include "mpfr.h"
 #include "mpfr-test.h"
-
-extern int isnan(), getpid();
 
 #define check(a,r) check3(a,r,-1.0)
 
@@ -79,7 +76,7 @@ void check3(double a, unsigned char rnd_mode, double Q)
   mpfr_clear(q);
 }
 
-void check4(a, rnd_mode, Q) double a; unsigned char rnd_mode; char *Q;
+void check4 (double a, mp_rnd_t rnd_mode, char *Q)
 {
   mpfr_t q, res;
 
@@ -99,7 +96,7 @@ void check4(a, rnd_mode, Q) double a; unsigned char rnd_mode; char *Q;
   mpfr_clear(q);
 }
 
-void check24(a, rnd_mode, Q) float a; unsigned char rnd_mode; float Q;
+void check24 (float a, mp_rnd_t rnd_mode, float Q)
 {
   mpfr_t q; float Q2;
 
@@ -118,7 +115,7 @@ void check24(a, rnd_mode, Q) float a; unsigned char rnd_mode; float Q;
 
 /* the following examples come from the paper "Number-theoretic Test 
    Generation for Directed Rounding" from Michael Parks, Table 3 */
-void check_float()
+void check_float ()
 {
   float b = 8388608.0; /* 2^23 */
 
@@ -167,7 +164,7 @@ void check_float()
   check24(b*10873622.0, GMP_RNDD, 9.550631e6);
 }
 
-void special()
+void special ()
 {
   mpfr_t x, z;
 
