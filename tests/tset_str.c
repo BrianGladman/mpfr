@@ -71,7 +71,18 @@ main(int argc, char **argv)
   sprintf(str2, "%d", random() - (1 << 30)); 
 
   mpfr_init2(x, nc + 10); 
-  mpfr_set_str_raw(x, str); 
+  mpfr_set_str_raw(x, str);
+
+  mpfr_set_prec(x, 54);
+  mpfr_set_str_raw(x, "0.100100100110110101001010010101111000001011100100101010E-529");
+  mpfr_init2(y, 54);
+  mpfr_set_str(y, "4.936a52bc17254@-133", 16, GMP_RNDN);
+  if (mpfr_cmp(x, y)) {
+    fprintf(stderr, "Error in mpfr_set_str\n");
+    mpfr_print_raw(x); putchar('\n');
+    mpfr_print_raw(y); putchar('\n');
+    exit(1);
+  }
 
   mpfr_set_prec(x, 53);
   mpfr_set_str_raw(x, "+110101100.01010000101101000000100111001000101011101110E00");
@@ -90,7 +101,7 @@ main(int argc, char **argv)
   /* check a random number printed and read is not modified */
   prec = 53;
   mpfr_set_prec(x, prec);
-  mpfr_init2(y, prec);
+  mpfr_set_prec(y, prec);
   for (i=0;i<100000;i++) {
     mpfr_random(x);
     k = rand() % 4;
