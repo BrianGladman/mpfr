@@ -229,9 +229,10 @@ mpfr_can_round (b, err, rnd1, rnd2, prec)
      mp_prec_t prec;
 #endif
 {
-  return mpfr_can_round_raw (MPFR_MANT(b),
-			     (MPFR_PREC(b) - 1)/BITS_PER_MP_LIMB + 1, 
-			     MPFR_SIGN(b), err, rnd1, rnd2, prec);
+  return (MPFR_IS_ZERO(b)) ? 0 : /* we cannot round if b=0 */
+    mpfr_can_round_raw (MPFR_MANT(b),
+			(MPFR_PREC(b) - 1)/BITS_PER_MP_LIMB + 1, 
+			MPFR_SIGN(b), err, rnd1, rnd2, prec);
 }
 
 int
@@ -251,7 +252,7 @@ mpfr_can_round_raw (bp, bn, neg, err, rnd1, rnd2, prec)
 {
   int k, k1, l, l1, tn;
   mp_limb_t cc, cc2, *tmp;
-  TMP_DECL(marker); 
+  TMP_DECL(marker);
 
   if (err <= prec)
     return 0;
