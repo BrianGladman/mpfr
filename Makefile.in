@@ -64,6 +64,7 @@ INCLUDES = @INCLUDES@
 LDADD = @LDADD@
 LDFLAGS = @LDFLAGS@
 MAKEINFO = @MAKEINFO@
+MISCFLAGS = @MISCFLAGS@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
@@ -536,11 +537,11 @@ maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
 
 ceil.o: trunc.c mpfr.h
-	$(COMPILE) -DMPFR_CEIL -c trunc.c -o ceil.o
+	$(COMPILE) -DMPFR_CEIL -c @MISCFLAGS@ -o ceil.o
 floor.o: trunc.c  mpfr.h
-	$(COMPILE) -DMPFR_FLOOR -c trunc.c -o floor.o
+	$(COMPILE) -DMPFR_FLOOR -c @MISCFLAGS@ -o floor.o
 trunc.o: trunc.c  mpfr.h
-	$(COMPILE) -DMPFR_TRUNC -c trunc.c
+	$(COMPILE) -DMPFR_TRUNC -c @MISCFLAGS@
 
 tests: 
 	cd tests ; make tests

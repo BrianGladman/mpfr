@@ -10,13 +10,25 @@
 
 	ln -s mpn/gmp-mparam.h .
 
-1. type "./Configure" and answer to the questions
+We have now a new autoconf script, but you can still you the old ./Configure
 
-2. type "make" (produces libmpfr.a)
 
-3. type "make doc" to produce the documentation (DVI file mpfr.dvi)
+old ./Configure                     new autoconf
+---------------                     ---------------
+1. type "./Configure" and answer    1. type "./configure --help", 
+to the questions                    to see the options you have to choose          
+                                    For most users, "./configure --with-gmp=DIR" 
+				    will suffice.
+	
+2. type "make" (produces libmpfr.a) 2. type "make" (produces libmpfr.a and
+                                    tests files)
 
-4. type "cd tests; make" (produces and runs the test files)
+3. type "make doc" to produce       3. type "make dvi" to produce the  
+the documentation                   documentation (DVI file mpfr.dvi)
+ (DVI file mpfr.dvi)
+
+4. type "cd tests; make"            4. type "cd tests; make tests"
+(produces and runs the test files)  (runs the test files)
 
 Notes:
 
@@ -33,7 +45,8 @@ Known problems.
 ===============
 
 1) On some architectures (for example Alpha/OSF), the default 'make' command 
-crashes in step 3. GNU make is preferred.
+crashes in step 3 with old Configure . GNU make is preferred. There is no
+problem with autconf script.
 
 2) Under HP-UX, Pentium/Linux and AIX, don't use the -pedantic option, 
    otherwise gcc complains with the longlong.h file from GMP.

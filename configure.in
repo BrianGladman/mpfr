@@ -14,13 +14,15 @@ AC_PROG_RANLIB
 AC_CHECK_OS
 AC_CHECK_MACHTYPE
 
-MISCFLAGS="$$<" 
+MISCFLAGS='$<' 
 dnl Mettre les flags OS dependants
 case $OS_TYPE in 
 	HP-UX*)
 		AC_CHECK_LIB(M, main);;
 	SunOS*)
 		MISCFLAGS="trunc.c" 
+		AC_CHECK_LIB(m, main)
+		;;
 	Linux*)
 		AC_CHECK_LIB(m, main)
 		fpucw=`grep __setfpucw /usr/include/fpu_control.h`
