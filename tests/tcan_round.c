@@ -3,7 +3,7 @@
 #include "gmp.h"
 #include "mpfr.h"
 
-main()
+int main()
 {
    mpfr_t x;
 
@@ -14,4 +14,6 @@ main()
    if (mpfr_can_round(x, 54, GMP_RNDZ, GMP_RNDZ, 53) != 0) {
      fprintf(stderr, "Error in mpfr_can_round\n"); exit(1);
    }
+   mpfr_clear(x);
+   return 0;
 }
