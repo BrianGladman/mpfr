@@ -256,26 +256,27 @@ probably a good idea to glance through it.
 @chapter Installing MPFR
 @cindex Installation
 
-To build MPFR, you first have to install GNU MP 
-(version 4.1 or higher) on your computer.
-You need a C compiler, preferably GCC, but any reasonable compiler should
-work.  And you need a standard Unix @samp{make} program, plus some other
-standard Unix utility programs.
-
 Here are the steps needed to install the library on Unix systems
 (more details are provided in the @file{INSTALL} file):
 
 @enumerate
 @item
-In most cases, @samp{./configure --with-gmp=/usr/local/gmp} should work,
-where the directory @samp{/usr/local/gmp} is where you have installed
-GNU MP.
-When you install GNU MP, you have to copy the files
-@samp{config.h},
-@samp{gmp-impl.h}, @samp{gmp-mparam.h} and
-@samp{longlong.h} from the GNU MP source directory 
-to @samp{/usr/local/gmp/include};
-these additional files are needed by MPFR.
+To build MPFR, you first have to install GNU MP 
+(version 4.1 or higher) on your computer.
+You need a C compiler, preferably GCC, but any reasonable compiler should
+work.  And you need a standard Unix @samp{make} program, plus some other
+standard Unix utility programs.
+MPFR needs some internal GMP header files that are not installed.
+So, keep the GMP build directory as is, at least until you have
+built MPFR.
+
+@item
+In the MPFR build directory, type
+@samp{./configure --with-gmp-include=GMPBUILD --with-gmp-lib=GMPINSTALL/lib}
+where @samp{GMPBUILD} is the GMP build directory and @samp{GMPINSTALL} the
+directory where you have installed GMP. Because of the internal header files
+required by MPFR, the option @samp{--with-gmp=GMPINSTALL} is not sufficient
+and should not be used.
 If you get error messages, you might check that you use the same compiler
 and compile options as for GNU MP (see the @file{INSTALL} file).
 

@@ -4,26 +4,36 @@
 0. You first need to install GMP. See <http://www.swox.com/gmp/>.
    MPFR requires GMP version 4.1 or later.
 
-   After you have successfully built GMP and installed it using
-   "make install", you'll need to manually install some GMP header
-   files needed by MPFR. In the GMP build directory, type:
+   MPFR needs some internal GMP header files that are not installed.
+   So, keep the GMP build directory as is, at least until you have
+   built MPFR.
 
-     cp config.h gmp-impl.h gmp-mparam.h longlong.h GMPINSTALL/include
+   The old recommendation was to copy these header files (config.h,
+   gmp-impl.h, gmp-mparam.h and longlong.h) to GMPINSTALL/include,
+   GMPINSTALL being the directory where you have installed GMP (i.e.
+   the directory specified by the --prefix configure option), but
+   this method may lead to clashes with other packages. Therefore,
+   it should be avoided.
 
-   where GMPINSTALL is the directory where you have installed GMP,
-   i.e. you configured GMP with ./configure --prefix=GMPINSTALL.
+1. In the MPFR build directory, type
 
-1. In the MPFR build directory, type "./configure --with-gmp=GMPINSTALL"
-   where GMPINSTALL is the directory where you have installed GMP. If this
-   fails, please check that the C compiler and its options are the same as
-   those for the GMP build. You can see the later with the following:
+     ./configure --with-gmp-include=GMPBUILD --with-gmp-lib=GMPINSTALL/lib
+
+   where GMPBUILD is the GMP build directory and GMPINSTALL the
+   directory where you have installed GMP. Because of the internal
+   header files required by MPFR, the option --with-gmp=GMPINSTALL
+   is not sufficient and should not be used.
+
+   If this fails, please check that the C compiler and its options
+   are the same as those for the GMP build. You can see the latter
+   with the following:
 
      grep "^CC\|^CFLAGS" GMPBUILD/Makefile
 
-   where GMPBUILD is the GMP build directory, then type (for example,
-   under a sh-compatible shell):
+   Then type (for example, under a sh-compatible shell):
 
-     CC=<C compiler> CFLAGS=<compiler options> ./configure --with-gmp=GMPINSTALL
+     CC=<C compiler> CFLAGS=<compiler options> ./configure \
+       --with-gmp-include=GMPBUILD --with-gmp-lib=GMPINSTALL/lib
 
    Other options can be seen with "./configure --help". For example, if you
    want to install MPFR in /local instead of /usr/local (default), type:
