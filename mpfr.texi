@@ -675,6 +675,7 @@ returned as "31416" in the string and 1 written at @var{expptr}.
 @cindex Arithmetic functions
 
 @deftypefun void mpfr_add (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
+@deftypefunx void mpfr_add_ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
 @ifinfo
 Set @var{rop} to @var{op1} + @var{op2} rounded in the direction @var{rnd}.
 @end ifinfo
@@ -686,6 +687,7 @@ Set @var{rop} to $@var{op1} + @var{op2}$ rounded in the direction @var{rnd}.
 @end deftypefun
 
 @deftypefun void mpfr_sub (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
+@deftypefunx void mpfr_ui_sub (mpfr_t @var{rop}, unsigned long int @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
 Set @var{rop} to @var{op1} @minus{} @var{op2} rounded in the direction @var{rnd}.
 @end deftypefun
 
@@ -707,12 +709,15 @@ This gives the user the possibility to handle arithmetic exceptions in these
 functions in the same manner as other arithmetic exceptions.
 
 @deftypefun void mpfr_div (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
+@deftypefunx void mpfr_ui_div (mpfr_t @var{rop}, unsigned long int @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_div_ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
 Set @var{rop} to @var{op1}/@var{op2} rounded in the direction @var{rnd}.
-@c Return 0 if the division is exact, a non-zero value otherwise.
+@code{mpfr_div_ui} returns 0 if the division is exact, 
+a non-zero value otherwise.
 @end deftypefun
 
 @deftypefun int mpfr_sqrt (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_sqrt_ui (mpfr_t @var{rop}, unsigned long int @var{op}, mp_rnd_t @var{rnd})
 @ifinfo
 Set @var{rop} to the square root of @var{op} rounded in the direction @var{rnd}.
 @end ifinfo
@@ -809,10 +814,13 @@ Compare @var{op1} and @var{op2} multiplied by two to the power @var{e}.
 @c approximately equal.
 @c @end deftypefun
 
-@c @deftypefun void mpfr_reldiff (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2})
-@c Compute the relative difference between @var{op1} and @var{op2} and store the
-@c result in @var{rop}.
-@c @end deftypefun
+@deftypefun void mpfr_reldiff (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
+Compute the relative difference between @var{op1} and @var{op2} 
+and store the result in @var{rop}.
+This function does not guarantee the exact rounding on the relative difference;
+it just computes @var{abs(op1-op2)/op1}, using the rounding mode @var{rnd} for
+all operations.
+@end deftypefun
 
 @deftypefn Macro int SIGN (mpfr_t @var{op})
 @ifinfo
