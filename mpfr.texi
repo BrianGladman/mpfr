@@ -806,7 +806,7 @@ width of the long double type; the @code{mpfr_set_ld} function assumes
 it has at most 113 bits, and an exponent of at most 15 bits.
 @end deftypefun
 
-@deftypefun int mpfr_set_str (mpfr_t @var{x}, const unsigned char *@var{s}, int @var{base}, mp_rnd_t @var{rnd})
+@deftypefun int mpfr_set_str (mpfr_t @var{x}, const char *@var{s}, int @var{base}, mp_rnd_t @var{rnd})
 Set @var{x} to the value of the string @var{s} in base @var{base} (between
 2 and 36), rounded in direction @var{rnd} to the precision of @var{x}.
 See the documentation of @code{mpfr_inp_str} for a detailed description 
@@ -818,7 +818,7 @@ Special values can be read as follows: @code{NaN}, @code{Inf}, @code{+Inf}
 and @code{-Inf} (possibly in lower case when the base is less than 24).
 @end deftypefun
 
-@deftypefun void mpfr_set_str_raw (mpfr_t @var{x}, const unsigned char *@var{s})
+@deftypefun void mpfr_set_str_raw (mpfr_t @var{x}, const char *@var{s})
 Set @var{x} to the value of the binary number in string @var{s}, which has to 
 be of the
 form +/-xxxx.xxxxxxEyy. The exponent is read in decimal, but is interpreted
@@ -872,7 +872,7 @@ The return value if zero if @var{rop}=@var{op}, positive if @var{rop}>@var{op},
 and negative when @var{rop}<@var{op}.
 @end deftypefn
 
-@deftypefun int mpfr_init_set_str (mpfr_t @var{x}, const unsigned char *@var{s}, int @var{base}, mp_rnd_t @var{rnd})
+@deftypefun int mpfr_init_set_str (mpfr_t @var{x}, const char *@var{s}, int @var{base}, mp_rnd_t @var{rnd})
 Initialize @var{x} and set its value from
 the string @var{s} in base @var{base}, 
 rounded to direction @var{rnd}.
