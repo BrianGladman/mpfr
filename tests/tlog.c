@@ -90,12 +90,16 @@ check3 (double d, unsigned long prec, mp_rnd_t rnd)
 {
   mpfr_t x, y;
   
-  mpfr_init2(x, prec); mpfr_init2(y, prec);
-  mpfr_set_d(x, d, rnd);
-  mpfr_log(y, x, rnd);
-  mpfr_out_str(stdout, 10, 0, y, rnd); puts ("");
-  mpfr_print_binary(y); puts ("");
-  mpfr_clear(x); mpfr_clear(y);
+  mpfr_init2 (x, prec);
+  mpfr_init2 (y, prec);
+  mpfr_set_d (x, d, rnd);
+  mpfr_log (y, x, rnd);
+  mpfr_out_str (stdout, 10, 0, y, rnd);
+  puts ("");
+  mpfr_print_binary (y);
+  puts ("");
+  mpfr_clear (x);
+  mpfr_clear (y);
 }
 
 #if 0
@@ -268,13 +272,13 @@ main (int argc, char *argv[])
   randseed (time(NULL));
   if (argc==4)
     {   /* tlog x prec rnd */
-      check3(atof(argv[1]), atoi(argv[2]), atoi(argv[3]));
+      check3 (atof(argv[1]), atoi(argv[2]), atoi(argv[3]));
       goto done;
     }
 
   if (argc==3)
     {   /* tlog N p : N calculus with precision p*/
-      printf("Doing %d random tests in %d precision\n",
+      printf ("Doing %d random tests in %d precision\n",
              atoi(argv[1]),atoi(argv[2]));
       /* slave(atoi(argv[1]),atoi(argv[2])); */
       goto done;
