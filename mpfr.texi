@@ -721,6 +721,8 @@ Note that the input 0 is converted to +0 by @code{mpfr_set_ui},
 @code{mpfr_set_f}, regardless of the rounding mode.
 If the system doesn't support the IEEE-754 standard, @code{mpfr_set_d} and
 @code{mpfr_set_ld} might not preserve the signed zeros.
+@code{mpfr_set_q} might not be able to work if the numerator (or the 
+denominator) can not be representable as a @code{mpfr_t}.
 @end deftypefun
 
 @deftypefun int mpfr_set_ui_2exp (mpfr_t @var{rop}, unsigned long int @var{op}, mp_exp_t @var{e}, mp_rnd_t @var{rnd})

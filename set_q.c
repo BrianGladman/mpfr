@@ -29,35 +29,45 @@ mpfr_set_q (mpfr_ptr f, mpq_srcptr q, mp_rnd_t rnd)
   mpz_srcptr num, den;
   mpfr_t n, d;
   int inexact;
-  mp_prec_t prec;
+  mp_prec_t pnum, pden;
   MPFR_SAVE_EXPO_DECL (expo);
 
-  MPFR_CLEAR_FLAGS (f);
   num = mpq_numref (q);
-  if (mpz_cmp_ui (num, 0) == 0)
+  if (MPFR_UNLIKELY (mpz_sgn (num) == 0))
     {
       MPFR_SET_ZERO (f);
       MPFR_SET_POS (f);
       MPFR_RET (0);
     }
-
   den = mpq_denref (q);
-  MPFR_SAVE_EXPO_MARK (expo);
-  prec = mpz_sizeinbase (num, 2);
-  if (prec < MPFR_PREC_MIN)
-    prec = MPFR_PREC_MIN;
-  mpfr_init2 (n, prec);
-  inexact = mpfr_set_z (n, num, GMP_RNDZ);
-  MPFR_ASSERTD (inexact == 0);
-  /* result is exact: overflow cannot occur since emax = prec */
+  pnum = mpz_sizeinbase (num, 2);
+  pden = mpz_sizeinbase (den, 2);
+ 
+  /* Check for underflow */
+  if (MPFR_UNLIKELY ((mp_exp_t) pnum - (mp_exp_t) pden+1 <= __gmpfr_emin - 1))
+    {
+      if (rnd == GMP_RNDN 
+	  && ((mp_exp_t) pnum-pden+1 <= __gmpfr_emin - 2
+	      || mpq_cmp_si (q, 1, __gmpfr_emin - 2) <= 0))
+	rnd = GMP_RNDZ;
+      return mpfr_set_underflow (f, rnd, mpq_sgn (q));
+    }
 
-  prec = mpz_sizeinbase (den, 2);
-  if (prec < MPFR_PREC_MIN)
-    prec = MPFR_PREC_MIN;
-  mpfr_init2 (d, prec);
+  if (MPFR_UNLIKELY (pnum < MPFR_PREC_MIN))
+    pnum = MPFR_PREC_MIN;
+  if (MPFR_UNLIKELY (pden < MPFR_PREC_MIN))
+    pden = MPFR_PREC_MIN;
+
+  MPFR_SAVE_EXPO_MARK (expo);
+  mpfr_init2 (n, pnum);
+  inexact = mpfr_set_z (n, num, GMP_RNDZ);
+  MPFR_ASSERTN (inexact == 0);
+  /* result is exact: overflow can occur but we can't handle it */
+
+  mpfr_init2 (d, pden);
   inexact = mpfr_set_z (d, den, GMP_RNDZ);
-  MPFR_ASSERTD (inexact == 0);
-  /* result is exact: overflow cannot occur, as above */
+  MPFR_ASSERTN (inexact == 0);
+  /* result is exact: overflow can occur but we can't handle it */
 
   inexact = mpfr_div (f, n, d, rnd);
   mpfr_clear (n);
