@@ -20,6 +20,7 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
 #include <stdio.h>
+#include <float.h>
 
 #include "gmp.h"
 #include "gmp-impl.h"
@@ -67,7 +68,6 @@ void
 mpfr_test_init ()
 {
   double c, d;
-  int j;
 #ifdef __mips
   /* to get denormalized numbers on IRIX64 */
   union fpc_csr exp;
@@ -87,11 +87,9 @@ mpfr_test_init ()
 
   tests_machine_prec_double ();
 
-  c = 1.46484375e-3;
-  d = 1.0;
-  for (j=0; j<54; j++) d *= 0.5;
-  d = 0.75 + d;
-  d /= 1 << 9;
+  c = 1.0 + DBL_EPSILON;
+  d = DBL_EPSILON * (1.0 - DBL_EPSILON) / 2.0;
+  d += c;
   if (c != d)
     {
       fprintf (stderr, "Warning: extended precision not disabled\n");
