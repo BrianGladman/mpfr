@@ -212,9 +212,6 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
                           MPFR_PREC(gamma) + (rnd_mode == GMP_RNDN)))
         {
           realprec += __gmpfr_ceil_log2 ((double) realprec);
-#ifdef DEBUG
-          printf("RETRY\n");
-#endif
         }
       else
 	break;

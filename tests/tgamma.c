@@ -156,6 +156,12 @@ special (void)
       exit (1);
     }
 
+  /* worst case to exercise retry */
+  mpfr_set_prec (x, 1000);
+  mpfr_set_prec (y, 869);
+  mpfr_const_pi (x, GMP_RNDN);
+  mpfr_gamma (y, x, GMP_RNDN);
+
   mpfr_clear (x);
   mpfr_clear (y);
 }
