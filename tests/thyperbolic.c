@@ -236,6 +236,7 @@ int check_INF(void){
   mpfr_clear(ash);
   mpfr_clear(ath);
 
+
   return(0);
 
 }
