@@ -94,6 +94,7 @@ typedef __gmp_const __mpfr_struct *mpfr_srcptr;
 #define MPFR_SET_NAN(x) ((x)->_mp_size |= (1<<30))
 #define MPFR_IS_INF(x) (((x)->_mp_size >> 29)&1)
 #define MPFR_SET_INF(x) ((x)->_mp_size |= (1<<29))
+#define MPFR_RESET_INF(x) ((x)->_mp_size &= (~0 - (1<<29)))
 #define MPFR_IS_FP(x) ((((x) -> _mp_size >> 29) & 3) == 0)
 #define MPFR_SET_IS_FP(x) ((x) -> _mp_size &= 2684354559UL); /* 1001111...1 */
 #define MPFR_ABSSIZE(x) ((x)->_mp_size & ((1<<30)-1))
