@@ -27,7 +27,6 @@ case $OS_TYPE in
 	HP-UX*)
 		AC_CHECK_LIB(M, main)
 		AC_DEFINE(hpux)
-	        LDFLAGS="$LDFLAGS -L/lib/pa1.1"
 		;;
 	SunOS*)
 		MISCFLAGS="trunc.c"
