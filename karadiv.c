@@ -28,6 +28,7 @@ MA 02111-1307, USA. */
 
 #include "gmp.h"
 #include "gmp-impl.h"
+#include "mpfr.h"
 
 extern void mpn_divrem_n2 (mp_limb_t *, mp_limb_t *, mp_limb_t *, mp_size_t, mp_limb_t *);
 extern void mpn_divrem_3by2 (mp_limb_t *, mp_limb_t *, mp_limb_t *, mp_size_t, mp_limb_t *);
@@ -36,14 +37,6 @@ extern void mpn_divrem_3by2 (mp_limb_t *, mp_limb_t *, mp_limb_t *, mp_size_t, m
    div(n)=4*div(n/2), we need mul(n/2) to be faster than the classic way,
    i.e. n/2 >= KARATSUBA_MUL_THRESHOLD */
 
-/* gmp-2.0.2 had only one threshold for both multiplication and squaring */
-#ifndef KARATSUBA_MUL_THRESHOLD 
-#ifdef KARATSUBA_THRESHOLD
-#define KARATSUBA_MUL_THRESHOLD KARATSUBA_THRESHOLD
-#else
-#define KARATSUBA_MUL_THRESHOLD 16
-#endif
-#endif
 #define DIV_LIMIT (7*KARATSUBA_MUL_THRESHOLD)
 
 static void mpn_decr(mp_limb_t *Q)
