@@ -33,9 +33,9 @@ extern int isnan();
 extern int getpid();
 void check _PROTO((double, double, mp_rnd_t, unsigned int, unsigned int, unsigned int, double)); 
 void checknan _PROTO((double, double, mp_rnd_t, unsigned int, unsigned int, unsigned int)); 
-void check3 _PROTO((double, double, unsigned int)); 
-void check4 _PROTO((double, double, unsigned int)); 
-void check5 _PROTO((double, unsigned int)); 
+void check3 _PROTO((double, double, mp_rnd_t));
+void check4 _PROTO((double, double, mp_rnd_t));
+void check5 _PROTO((double, mp_rnd_t));
 void check2 _PROTO((double, int, double, int, int, int)); 
 void check2a _PROTO((double, int, double, int, int, int, char *)); 
 void check64 _PROTO((void)); 
@@ -60,7 +60,8 @@ unsigned int py, unsigned int pz, double z1)
 #endif
   if (z1==0.0) z1=x+y; else cert=1;
   z2 = mpfr_get_d(zz);
-  if (cert && z1!=z2 && !(isnan(z1) && isnan(z2))) {
+  mpfr_set_d (yy, z2, GMP_RNDN);
+  if (!mpfr_cmp (xx, yy) && cert && z1!=z2 && !(isnan(z1) && isnan(z2))) {
     printf("expected sum is %1.20e, got %1.20e\n",z1,z2);
     printf("mpfr_add failed for x=%1.20e y=%1.20e with rnd_mode=%s\n",
 	   x, y, mpfr_print_rnd_mode(rnd_mode));
@@ -73,9 +74,6 @@ void checknan (double x, double y, mp_rnd_t rnd_mode, unsigned int px,
 unsigned int py, unsigned int pz)
 {
   double z2; mpfr_t xx, yy, zz;
-#ifdef TEST
-  int cert=0;
-#endif
 
   mpfr_init2(xx, px);
   mpfr_init2(yy, py);
@@ -109,7 +107,8 @@ void check3 (double x, double y, mp_rnd_t rnd_mode)
   mpfr_set_machine_rnd_mode(rnd_mode);
   z1 = (neg) ? x-y : x+y;
   z2 = mpfr_get_d(xx);
-  if (z1!=z2 && !(isnan(z1) && isnan(z2))) {
+  mpfr_set_d (yy, z2, GMP_RNDN);
+  if (!mpfr_cmp (xx, yy) && z1!=z2 && !(isnan(z1) && isnan(z2))) {
     printf("expected result is %1.20e, got %1.20e\n",z1,z2);
     printf("mpfr_%s(x,x,y) failed for x=%1.20e y=%1.20e with rnd_mode=%u\n",
 	   (neg) ? "sub" : "add",x,y,rnd_mode);
@@ -121,7 +120,9 @@ void check3 (double x, double y, mp_rnd_t rnd_mode)
 /* idem than check for mpfr_add(x, y, x) */
 void check4 (double x, double y, mp_rnd_t rnd_mode)
 {
-  double z1,z2; mpfr_t xx,yy; int neg;
+  double z1, z2;
+  mpfr_t xx, yy;
+  int neg;
 
   neg = rand() % 2;
   mpfr_init2(xx, 53);
@@ -133,10 +134,12 @@ void check4 (double x, double y, mp_rnd_t rnd_mode)
   mpfr_set_machine_rnd_mode(rnd_mode);
   z1 = (neg) ? y-x : x+y;
   z2 = mpfr_get_d(xx);
-  if (z1!=z2 && !(isnan(z1) && isnan(z2))) {
-    printf("expected result is %1.20e, got %1.20e\n",z1,z2);
-    printf("mpfr_%s(x,y,x) failed for x=%1.20e y=%1.20e with rnd_mode=%u\n",
-	   (neg) ? "sub" : "add",x,y,rnd_mode);
+  mpfr_set_d (yy, z2, GMP_RNDN);
+  /* check that xx is representable as a double and no overflow occurred */
+  if ((mpfr_cmp (xx, yy) == 0) && (z1 != z2)) {
+    printf("expected result is %1.20e, got %1.20e\n", z1, z2);
+    printf("mpfr_%s(x,y,x) failed for x=%1.20e y=%1.20e with rnd_mode=%s\n",
+	   (neg) ? "sub" : "add", x, y, mpfr_print_rnd_mode(rnd_mode));
     exit(1);
   }
   mpfr_clear(xx); mpfr_clear(yy);
@@ -145,22 +148,26 @@ void check4 (double x, double y, mp_rnd_t rnd_mode)
 /* idem than check for mpfr_add(x, x, x) */
 void check5 (double x, mp_rnd_t rnd_mode)
 {
-  double z1,z2; mpfr_t xx; int neg;
+  double z1,z2; mpfr_t xx, yy; int neg;
 
-  mpfr_init2(xx, 53); neg = rand() % 2;
+  mpfr_init2(xx, 53);
+  mpfr_init2(yy, 53);
+  neg = rand() % 2;
   mpfr_set_d(xx, x, rnd_mode);
   if (neg) mpfr_sub(xx, xx, xx, rnd_mode);
   else mpfr_add(xx, xx, xx, rnd_mode);
   mpfr_set_machine_rnd_mode(rnd_mode);
   z1 = (neg) ? x-x : x+x;
   z2 = mpfr_get_d(xx);
-  if (z1!=z2 && !(isnan(z1) && isnan(z2))) {
+  mpfr_set_d (yy, z2, GMP_RNDN);
+  if (!mpfr_cmp (xx, yy) && z1!=z2 && !(isnan(z1) && isnan(z2))) {
     printf("expected result is %1.20e, got %1.20e\n",z1,z2);
-    printf("mpfr_%s(x,x,x) failed for x=%1.20e with rnd_mode=%u\n",
-	   (neg) ? "sub" : "add",x,rnd_mode);
+    printf("mpfr_%s(x,x,x) failed for x=%1.20e with rnd_mode=%s\n",
+	   (neg) ? "sub" : "add", x, mpfr_print_rnd_mode (rnd_mode));
     exit(1);
   }
   mpfr_clear(xx);
+  mpfr_clear(yy);
 }
 
 void check2 (double x, int px, double y, int py, int pz, mp_rnd_t rnd_mode)
@@ -213,6 +220,24 @@ void check64 ()
 
   mpfr_init(x); mpfr_init(t); mpfr_init(u);
 
+  mpfr_set_prec (x, 112); mpfr_set_prec (t, 98); mpfr_set_prec (u, 54);
+  mpfr_set_str_raw (x, "-0.11111100100000000011000011100000101101010001000111E-401");
+  mpfr_set_str_raw (t, "0.10110000100100000101101100011111111011101000111000101E-464");
+  mpfr_add (u, x, t, GMP_RNDN);
+  if (mpfr_cmp (u, x)) {
+    fprintf (stderr, "mpfr_add(u, x, t) failed for prec(x)=112, prec(t)=98\n");
+    exit (1);
+  }
+
+  mpfr_set_prec (x, 92); mpfr_set_prec (t, 86); mpfr_set_prec (u, 53);
+  mpfr_set_d (x, -5.03525136761487735093e-74, GMP_RNDN);
+  mpfr_set_d (t, 8.51539046314262304109e-91, GMP_RNDN);
+  mpfr_add (u, x, t, GMP_RNDN);
+  if (mpfr_get_d (u) != -5.0352513676148773509283672e-74) {
+    fprintf (stderr, "mpfr_add(u, x, t) failed for prec(x)=92, prec(t)=86\n");
+    exit (1);
+  }
+
   mpfr_set_prec(x, 53); mpfr_set_prec(t, 76); mpfr_set_prec(u, 76);
   mpfr_set_str_raw(x, "-0.10010010001001011011110000000000001010011011011110001E-32");
   mpfr_set_str_raw(t, "-0.1011000101110010000101111111011111010001110011110111100110101011110010011111");
@@ -220,7 +245,7 @@ void check64 ()
   mpfr_set_str_raw(t, "0.1011000101110010000101111111011100111111101010011011110110101011101000000100");
   if (mpfr_cmp(u,t)) {
     printf("expect "); mpfr_print_raw(t); putchar('\n');
-    fprintf(stderr, "mpfr_add failed for precisions 53-76\n"); exit(1);
+    fprintf (stderr, "mpfr_add failed for precisions 53-76\n"); exit(1);
   }
   mpfr_set_prec(x, 53); mpfr_set_prec(t, 108); mpfr_set_prec(u, 108);
   mpfr_set_str_raw(x, "-0.10010010001001011011110000000000001010011011011110001E-32");
@@ -358,6 +383,7 @@ int main(argc,argv) int argc; char *argv[];
     set_fpc_csr(exp.fc_word);
 #endif
 
+  check64();
   check(293607738.0, 1.9967571564050541e-5, GMP_RNDU, 64, 53, 53,
 	2.9360773800002003e8);
   check(880524.0, -2.0769715792901673e-5, GMP_RNDN, 64, 53, 53,
@@ -398,7 +424,6 @@ int main(argc,argv) int argc; char *argv[];
 	  11746369063209028.0);
   check53(2.99280481918991653800e+272, 5.34637717585790933424e+271, GMP_RNDN,
 	  3.5274425367757071711e272);
-  check64();
   check_same();
   check53(6.14384195492641560499e-02, -6.14384195401037683237e-02, GMP_RNDU,
 	  9.1603877261370314499e-12);
@@ -525,8 +550,10 @@ int main(argc,argv) int argc; char *argv[];
   check53(-1/0., 6.95250701071929654575e-310, GMP_RNDU, -1/0.); 
   check53(6.95250701071929654575e-310, 1/0., GMP_RNDU, 1/0.);
   check53(6.95250701071929654575e-310, -1/0., GMP_RNDU, -1/0.);
+  check53(1.44791789689198883921e-140, -1.90982880222349071284e-121,
+	  GMP_RNDN, -1.90982880222349071e-121);
 
-  check53nan(1/0., -1/0., GMP_RNDN); 
+  check53nan(1/0., -1/0., GMP_RNDN);
   
 #ifdef TEST
   /* Comparing to double precision using machine arithmetic */
