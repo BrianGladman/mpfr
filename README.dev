@@ -40,10 +40,13 @@ To make a release (for the MPFR team):
      the duplicated lines.
   3) Generate the release version with "make dist".
   4) Test the release version on different machines, with and without
-     the --disable-alloca configure option (or compile gmp with 
-     --enable-alloca=debug).
+     the --disable-alloca configure option (or compile gmp with
+     --enable-alloca=debug), with and without -DXDEBUG in $CFLAGS.
   5) If there is no problem, add a tag to the CVS corresponding to the
      release, e.g. mpfr-2-0-1-rel for mpfr 2.0.1 (note that the periods
      are replaced by dashes): cvs tag mpfr-2-0-1-rel
   6) Update the VERSION file to indicate the next version.
      Update the version in mpfr.texi.
+
+A branch may be created first (e.g. with "cvs tag -b mpfr-2-0-2-branch")
+to allow new features to be committed to the trunk.
