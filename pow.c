@@ -322,22 +322,12 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
   if (mpfr_integer_p (y))
     {
       mpz_t zi;
-      long int zii;
-      int exptol;
 
       mpz_init (zi);
-      exptol = mpfr_get_z_exp (zi, y);
-
-      if (exptol > 0)
-        mpz_mul_2exp (zi, zi, exptol);
-      else
-        mpz_tdiv_q_2exp (zi, zi, (unsigned long int) (-exptol));
-
-      MPFR_ASSERTN (mpz_fits_slong_p (zi));
-      zii = mpz_get_si (zi);
-
+      mpfr_get_z (zi, y, GMP_RNDN);
+      inexact = mpfr_pow_z (z, x, zi, rnd_mode);
       mpz_clear (zi);
-      return mpfr_pow_si (z, x, zii, rnd_mode);
+      return inexact;
     }
 
   if (MPFR_IS_NEG(x))
