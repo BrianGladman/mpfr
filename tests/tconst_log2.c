@@ -22,11 +22,12 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <stdlib.h>
 #include "gmp.h"
+#include "gmp-impl.h"
 #include "mpfr.h"
+#include "mpfr-impl.h"
 
 /* tlog2 [prec] [rnd] [0 = no print] */
 
-extern mp_prec_t __mpfr_const_log2_prec;
 void check _PROTO ((mp_prec_t, mp_prec_t));
 
 void
