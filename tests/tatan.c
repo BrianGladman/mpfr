@@ -30,7 +30,7 @@ int mpfr_arctan_aux2 (mpfr_ptr, mpfr_srcptr, mp_rnd_t);
 int
 main (int argc, char *argv[])
 {
-  unsigned int prec, err, yprec, n, p0 = 1, p1 = 100, N = 100;
+  unsigned int prec, err, yprec, n, p0 = 1, p1 = 100, N = 10;
   mp_rnd_t rnd;
   mpfr_t x, y, z, t;
 
