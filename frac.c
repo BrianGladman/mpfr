@@ -75,8 +75,9 @@ mpfr_frac (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
   else
     {
       re = sh - BITS_PER_MP_LIMB;
-      while ((MPFR_ASSERTD(un > 0), k = up[--un]) == 0)
+      while ((k = up[--un]) == 0)
         re -= BITS_PER_MP_LIMB;
+      MPFR_ASSERTN(un >= 0);
       count_leading_zeros(sh, k);
       re -= sh;
       k <<= sh;
