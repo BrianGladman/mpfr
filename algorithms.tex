@@ -94,7 +94,7 @@ Easy: if $a = m_a \cdot 2^{e_a}$, then $2^k a = m_a \cdot 2^{e_a+k}$.
 
 \begin{Rule} \label{R6}
 Let $x > 0$, $o(\cdot)$ be any rounding, and $u := o(x)$, then $\frac{1}{2} u
-	< x < 2 u$.
+        < x < 2 u$.
 \end{Rule}
 \begin{proof}
 Assume $x \geq 2 u$, then $2u$ is another representable number which is closer 
@@ -271,7 +271,7 @@ error(v) := |v - \sqrt{x}|
 \end{eqnarray}
 Since by Rule~\ref{R9} we have $u.c_u^- \leq x$,
 it follows $\frac{1}{\sqrt{x}+\sqrt{u}} \leq
-	\frac{1}{\sqrt{u}.(1+\sqrt{c_u^-})}$:
+        \frac{1}{\sqrt{u}.(1+\sqrt{c_u^-})}$:
 \begin{eqnarray}\nonumber
 error(v)& \leq & c_v \ulp(v) + 
                  \frac{1}{\sqrt{u}.(1+\sqrt{c_u^-})}  k_u \ulp(u) \\\nonumber 
@@ -338,6 +338,41 @@ error(v)& = &|v - \log{x}| \\\nonumber
 error(v)& \leq & c_v \ulp(v) + k_u 2^{1-e_v} \ulp(v)\\\nonumber
 & \leq & (c_v + k_u 2^{1-e_v} )\ulp(v)\\\nonumber
 \end{eqnarray}
+
+\subsection{Ulp calculus vs relative error}
+
+The error in ulp (ulp-error) and the relative error are related as follows.
+
+Let $n$ be the working precision.
+Consider $u = \circ(x)$, then the error on $u$ is at most
+$\ulp(u) = 2^{\Exp(u)-n} \leq |u| \cdot 2^{1-n}$, thus the relative error
+is $\leq 2^{1-n}$.
+
+Respectively, if the relative error is $\leq \delta$, then the error
+is at most $\delta |u| \leq \delta 2^n \ulp(u)$. (Going from the ulp-error
+to the relative error and back, we loose a factor of two.)
+
+It is sometimes more convenient to use the relative error instead of the
+error in ulp (ulp-error), in particular when only multiplications or
+divisions are made.
+In that case,
+Higham \cite{Higham96} proposes the following framework:
+we associate to each variable the cumulated number $k$ of roundings that were
+made.
+The $i$th rounding introduces a relative error of $\delta_i$,
+with $|\delta_i| \leq 2^{1-n}$, i.e. the computed result is
+$1+\delta_i$ times the exact result.
+Hence $k$ successive roundings give a error factor of $(1+\delta_1)
+(1+\delta_2) \cdots (1+\delta_k)$, which is between $(1-\varepsilon)^k$
+and $(1+\varepsilon)^k$ with $\varepsilon = 2^{1-n}$.
+In particular, if all roundings are away, the final relative error is
+at most $k \varepsilon = k \cdot 2^{1-n}$, thus at most $2k$ ulps.
+
+\begin{lemma} \label{rel_ulp}
+If a value if computed by $k$ successive multiplications or divisions,
+each with rounding away from zero, and precision $n$, then the final 
+error is bounded by $2k$ ulps.
+\end{lemma}
 
 \section{Low level functions}
 
@@ -422,36 +457,36 @@ Input: $b$, $c$ of opposite sign with $b > c > 0$, a rounding mode
 $\circ \in \{ \N, \Z, \infty \}$ \\
 Side effect: store in $a$ the value of $\circ(b - c)$ \\
 Output: $0$ if $\circ(b - c) = b-c$, $1$ if $\circ(b - c) > b-c$,
-	and $-1$ if $\circ(b - c) < b-c$ \\
+        and $-1$ if $\circ(b - c) < b-c$ \\
 ${\tt an} \leftarrow \lceil \frac{\prec(a)}{w} \rceil$, 
 ${\tt bn} \leftarrow \lceil \frac{\prec(b)}{w} \rceil$, 
 ${\tt cn} \leftarrow \lceil \frac{\prec(c)}{w} \rceil$ \\
 ${\tt cancel} \leftarrow {\tt mpfr\_cmp2}(b, c)$; \quad
-	${\tt diff\_exp} \leftarrow \Exp(b)-\Exp(c)$ \\
+        ${\tt diff\_exp} \leftarrow \Exp(b)-\Exp(c)$ \\
 ${\tt shift_b} \leftarrow (-{\tt cancel}) \bmod w$; \quad
-	${\tt cancel_b} \leftarrow ({\tt cancel} + {\tt shift_b})/w$ \\
+        ${\tt cancel_b} \leftarrow ({\tt cancel} + {\tt shift_b})/w$ \\
 \If\ ${\tt shift_b} > 0$ \then\
-	${\tt b}[0 \dots \mbox{\tt bn}] \leftarrow
-	{\tt mpn\_rshift}({\tt b}[0 \dots {\tt bn}-1], {\tt shift_b})$;
-	${\tt bn} \leftarrow {\tt bn} + 1$ \\
+        ${\tt b}[0 \dots \mbox{\tt bn}] \leftarrow
+        {\tt mpn\_rshift}({\tt b}[0 \dots {\tt bn}-1], {\tt shift_b})$;
+        ${\tt bn} \leftarrow {\tt bn} + 1$ \\
 ${\tt shift_c} \leftarrow ({\tt diff\_exp}-{\tt cancel}) \bmod w$; \quad
 ${\tt cancel_c} \leftarrow ({\tt cancel} + {\tt shift_c}-{\tt diff\_exp})/w$ \\
 \If\ ${\tt shift_c} > 0$ \then\
-	${\tt c}[0 \dots \mbox{\tt cn}] \leftarrow
-	{\tt mpn\_rshift}({\tt c}[0 \dots {\tt cn}-1], {\tt shift_c})$;
-	${\tt cn} \leftarrow {\tt cn} + 1$ \\
+        ${\tt c}[0 \dots \mbox{\tt cn}] \leftarrow
+        {\tt mpn\_rshift}({\tt c}[0 \dots {\tt cn}-1], {\tt shift_c})$;
+        ${\tt cn} \leftarrow {\tt cn} + 1$ \\
 $\Exp(a) \leftarrow \Exp(b) - {\tt cancel}$; \quad
-	$\sign(a) \leftarrow \sign(b)$ \\
+        $\sign(a) \leftarrow \sign(b)$ \\
 $a[0 \dots {\tt an}-1] \leftarrow b[{\tt bn} - {\tt cancel_b} - {\tt an}
-	\dots {\tt bn} - {\tt cancel_b} - 1]$ \\
+        \dots {\tt bn} - {\tt cancel_b} - 1]$ \\
 $a[0 \dots {\tt an}-1] \leftarrow a[0 \dots {\tt an}-1] - c[{\tt cn} -
-	{\tt cancel_c} - {\tt an} \dots {\tt cn} - {\tt cancel_c} - 1]$ \\
+        {\tt cancel_c} - {\tt an} \dots {\tt cn} - {\tt cancel_c} - 1]$ \\
 ${\tt sh} \leftarrow {\tt an} \cdot w - \prec(a)$; \quad
-	$r \leftarrow a[0] \bmod 2^{\tt sh}$; \quad
-	$a[0] \leftarrow a[0] - r$ \\
+        $r \leftarrow a[0] \bmod 2^{\tt sh}$; \quad
+        $a[0] \leftarrow a[0] - r$ \\
 \If\ $\circ = \N$ and ${\tt sh} > 0$ \then \\
 \q \If\ $r > 2^{{\tt sh}-1}$ \then\
-	$a \leftarrow a + \ulp(a)$; return $1$
+        $a \leftarrow a + \ulp(a)$; return $1$
    \elif\ $0 < r < 2^{{\tt sh}-1}$ \then\ return $-1$ \\
 \elif\ $\circ \in \{ \Z, \infty \}$ and $r > 0$ \then \\
 \q \If\ $\circ = \Z$ return $-1$
@@ -464,16 +499,16 @@ ${\tt cl} \leftarrow {\tt cn} - {\tt an} - {\tt cancel_c}$ \\
 \q \If\ $\circ = \N$ and $k=0$ and ${\tt sh}=0$ \then \\
 \q \q \If\ ${\tt cp} \ge 2^{w-1}$ \then\ return $-1$ \\
 \q \q $r \leftarrow {\tt bp} - {\tt cp}$; \quad 
-	${\tt cp} \leftarrow {\tt cp} + 2^{w-1}$ \\
+        ${\tt cp} \leftarrow {\tt cp} + 2^{w-1}$ \\
 \q \If\ ${\tt bp} < {\tt cp}$ \then \\
 \q \q \If\ $\circ = \Z$ \then\ $a \leftarrow a - \ulp(a)$; \quad
       \If\ $\circ = \infty$ \then\ return $1$ \Else\ return $-1$
 \q \If\ ${\tt bp} > {\tt cp}$ \then \\
 \q \q \If\ $\circ = \Z$ \then\ return $-1$ \Else\
-	$a \leftarrow a + \ulp(a)$; return $1$ \\
+        $a \leftarrow a + \ulp(a)$; return $1$ \\
 \If\ $\circ = \N$ and $r > 0$ \then \\
 \q \If\ $a[0] \, {\rm div} \, 2^{\tt sh}$ is odd \then\
-	$a \leftarrow a + \ulp(a)$; return $1$ \Else\ return $-1$ \\
+        $a \leftarrow a + \ulp(a)$; return $1$ \Else\ return $-1$ \\
 Return $0$.
 \end{quote}
 where $b[i]$ and $c[i]$ is meant as $0$ for negative $i$,
@@ -655,7 +690,7 @@ Otherwise we use the Taylor expansion.
 \subsubsection{Taylor expansion}
 
 \[ {\rm erf} \, z = \frac{2}{\sqrt{\pi}} \sum_{k=0}^{\infty} \frac{(-1)^k}
-	{k! (2k+1)} z^{2k+1} \]
+        {k! (2k+1)} z^{2k+1} \]
 
 \begin{quote}
 \verb|erf_0|$(z, n)$, assumes $z^2 \le n/e$ \\
@@ -669,23 +704,20 @@ $t \leftarrow 1$ \\
 \q $u \leftarrow \circ (\frac{t}{2k+1})$ [rounded up] \\
 \q $s \leftarrow \circ (s + (-1)^k u)$ [nearest] \\
 \q {\bf if} ${\rm EXP}(u) < {\rm EXP}(s) - m$ and $k \geq z^2$ 
-	{\bf then} break \\
+        {\bf then} break \\
 $r \leftarrow 2 \circ (z s)$ [rounded up] \\
 $p \leftarrow \circ (\pi)$ [rounded down] \\
 $p \leftarrow \circ (\sqrt{p})$ [rounded down] \\
 $r \leftarrow \circ (r/p)$ [nearest]
 \end{quote}
 
-Let $\varepsilon_k$ be the ulp-error on $t$ after the loop with index $k$.
-We have initially $\varepsilon_0=0$.
-After $t \leftarrow \circ (y t)$, the error on $t$
-is bounded by $2 \varepsilon_{k-1} + 3$.
-After $t \leftarrow \circ (t/k)$, we have thus
-$\varepsilon_k \leq 1 + 2 (2 \varepsilon_{k-1} + 3) = 4 \varepsilon_{k-1} + 7$.
-This gives $\varepsilon_k \leq \frac{7}{3} (4^k-1)$.
+Let $\varepsilon_k$ be the ulp-error on $t$ (denoted $t_k$)
+after the loop with index $k$.
+According to Lemma~\ref{rel_ulp}, since $t_k$ is computed after $2k$
+roundings ($t_0=1$ is exact), we have $\varepsilon_k \leq 4k$.
 
 The error on $u$ at loop $k$ is thus at most
-$1+2\varepsilon_k \leq \frac{14}{3} 4^k - \frac{11}{3} \leq 2^{2k+3}$.
+$1+2\varepsilon_k \leq 1+8k$.
 
 Let $\sigma_k$ and $\nu_k$ be the exponent shifts between the new value of
 $s$ at step $k$ and respectively the old value of $s$, and $u$.
@@ -693,7 +725,7 @@ Writing $s_k$ and $u_k$ for the values of $s$ and $u$ at the end of step $k$,
 we have $\sigma_k := {\rm EXP}(s_{k-1}) - {\rm EXP}(s_k)$
 and $\nu_k := {\rm EXP}(u_k) - {\rm EXP}(s_k)$.
 The ulp-error $\tau_k$ on $s_k$ satisfies
-$\tau_k \leq \frac{1}{2} + \tau_{k-1} 2^{\sigma_k} + 2^{2k+3+\nu_k}$.
+$\tau_k \leq \frac{1}{2} + \tau_{k-1} 2^{\sigma_k} + (1+8k) 2^{\nu_k}$.
 
 The halting condition $k \geq z^2$ ensures that $u_j \leq u_{j-1}$ for
 $j \geq k$, thus the series $\sum_{j=k}^{\infty} u_j$ is an alternating series,
@@ -2597,7 +2629,7 @@ and update $r$ accordingly so that $x = (s^3+r) 2^{3e}$ still holds
 Then the correct rounding of $\sqrt[3]{x}$ is:
 \begin{eqnarray*}
 s 2^e && \mbox{if $r=0$ or round down or round nearest and
-	$r < \frac{3}{2} s^2 +\frac{3}{4}s+ \frac{1}{8}$,} \\
+        $r < \frac{3}{2} s^2 +\frac{3}{4}s+ \frac{1}{8}$,} \\
 (s+1) 2^e && \mbox{otherwise}.
 \end{eqnarray*}
 
@@ -2638,7 +2670,7 @@ The value $c^{\pm}_u$ equals $1 \pm k_u 2^{1-p}$.
 Remark 1: in the addition case, when $u v > 0$,
 necessarily one of $2^{e_u-e_w}$ and $2^{e_v-e_w}$ is less than $1/2$,
 thus $\err(w)/\ulp(w) \le c_w + {\rm max}(k_u + k_v/2, k_u/2 + k_v)
-	\le c_w + \frac{3}{2} {\rm max}(k_u, k_v)$.
+        \le c_w + \frac{3}{2} {\rm max}(k_u, k_v)$.
 
 \section{Mathematical constants}
 

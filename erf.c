@@ -175,9 +175,9 @@ mpfr_erf_0 (mpfr_ptr res, mpfr_srcptr x, mp_rnd_t rnd_mode)
           if ((nuk < - (mp_exp_t) m) && ((double) k >= xf * xf))
             break;
 
-          /* tauk <- 1/2 + tauk * 2^sigmak + 2^(2k+3+nuk) */
+          /* tauk <- 1/2 + tauk * 2^sigmak + (1+8k)*2^nuk */
           tauk = 0.5 + mul_2exp (tauk, sigmak) 
-            + mul_2exp (1.0, 2 * k + 3 + nuk);
+            + mul_2exp (1.0 + 8.0 * (double) k, nuk);
         }
 
       mpfr_mul (s, x, s, GMP_RNDU);
