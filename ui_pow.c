@@ -19,9 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
-#include <math.h>
-#include <limits.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -97,7 +94,7 @@ mpfr_ui_pow (y, n, x, rnd_mode)
 
       /* initialise of intermediary	variable */
       mpfr_init(t);
-      mpfr_init2(ti,sizeof(unsigned long int)*CHAR_BIT);                          
+      mpfr_init2(ti,sizeof(unsigned long int)*8); /* 8 = CHAR_BIT */                          
       mpfr_init(te);             
 
       do {
@@ -113,7 +110,7 @@ mpfr_ui_pow (y, n, x, rnd_mode)
         mpfr_exp(t,te,GMP_RNDN);         /* exp(x*ln(n))*/
 
 	/* estimation of the error -- see pow function in algorithms.ps*/
-	err = Nt - _mpfr_ceil_log2(1+pow(2,MPFR_EXP(te)+2));
+	err = Nt - (MPFR_EXP(te)+3);
 
 	/* actualisation of the precision */
 	Nt += 10;
