@@ -25,6 +25,10 @@ MA 02111-1307, USA. */
 
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
+
+/* Old code */
+#if 0
+
 #include "log_b2.h"
 
 static double __gmpfr_ceil _MPFR_PROTO((double));
@@ -384,6 +388,50 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
 
   return res;
 }
+#endif
+
+int
+mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
+{
+  char *p = (char*) str;
+  int negative;
+  mpfr_t y;
+
+  /* Check base */
+  if (MPFR_UNLIKELY (base < 2 || base > 36 || *str == 0))
+    return -1;
+
+  /* Check special value with dummy chars after */
+  if (strncasecmp (p, "@NaN@", 5) == 0)
+    {
+      MPFR_SET_NAN (x);
+      /* MPFR_RET_NAN not used as the return value isn't a ternary value */
+      __gmpfr_flags |= MPFR_FLAGS_NAN;
+      return 0;
+    }
+  negative = (*p == '-');
+  if ((str[0] == '-') || (str[0] == '+'))
+   p ++;
+  if (strncasecmp (p, "@Inf@", 5) == 0)
+    {
+      MPFR_SET_INF (x);
+      (negative) ? MPFR_SET_NEG (x) : MPFR_SET_POS (x);
+      return 0;
+    }
+  
+  /* Call Strtofr */
+  mpfr_init2 (y, MPFR_PREC (x));
+  mpfr_strtofr (y, str, &p, base, rnd);
+  if (MPFR_LIKELY (*p == 0))
+    {
+      negative = mpfr_set (x, y, GMP_RNDN);
+      MPFR_ASSERTD (negative == 0);
+    }
+  mpfr_clear (y);
+
+  return (*p == 0) ? 0 : -1;
+}
+
 
 int
 mpfr_init_set_str (mpfr_ptr x, const char *str, int base, mp_rnd_t rnd)

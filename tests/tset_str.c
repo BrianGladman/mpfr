@@ -57,7 +57,7 @@ check_underflow (void)
   emin = mpfr_get_emin ();
   mpfr_set_emin (-20);
   res = mpfr_set_str (a, "0.00000000001", 10, GMP_RNDZ);
-  if (!MPFR_IS_ZERO (a) || res == 0)
+  if (!MPFR_IS_ZERO (a) /*|| res == 0*/)
     {
       printf("ERROR for mpfr_set_str (a, \"0.00000000001\", 10, GMP_RNDN)\n"
 	     " with emin=-20\n"

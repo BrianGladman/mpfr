@@ -271,14 +271,16 @@ parse_string (mpfr_t x, struct parsed_string *pstr,
 
   /* If base=0 or 16, it may include '0x' prefix */
   prefix_str = NULL;
-  if ((base == 0 || base == 16) && str[0]=='0' && str[1]=='x')
+  if ((base == 0 || base == 16) && str[0]=='0' 
+      && (str[1]=='x' || str[1] == 'X'))
     {
       prefix_str = str;
       base = 16;
       str += 2;
     }
   /* If base=0 or 2, it may include '0b' prefix */
-  if ((base == 0 || base == 2) && str[0]=='0' && str[1]=='b')
+  if ((base == 0 || base == 2) && str[0]=='0' 
+      && (str[1]=='b' || str[1] == 'B'))
     {
       prefix_str = str;
       base = 2;
@@ -679,7 +681,7 @@ free_parsed_string (struct parsed_string *pstr)
 }
 
 int
-mpfr_strtofr (mpfr_t x, const char *string, char **end, unsigned int base,
+mpfr_strtofr (mpfr_t x, const char *string, char **end, int base,
 	      mp_rnd_t rnd)
 {
   int res = -1;
@@ -689,7 +691,7 @@ mpfr_strtofr (mpfr_t x, const char *string, char **end, unsigned int base,
   MPFR_SET_ZERO (x);
   MPFR_SET_POS (x);
 
-  if (base == 0 || (base >= 2 && base <= MPFR_MAX_BASE))
+  if (base == 0 || (base >= 2 && base <= /*MPFR_MAX_BASE*/36))
     {
       res = parse_string (x, &pstr, &string, base);
       /* If res == 0, then it was exact (NAN or INF),

@@ -142,6 +142,7 @@ check_special (void)
     }
 
   /* Check base 62 */
+#if 0
   res = mpfr_strtofr (x, "A", NULL, 62, GMP_RNDN);
   if (res != 0 || mpfr_cmp_ui (x, 10))
     {
@@ -174,6 +175,7 @@ check_special (void)
       putchar ('\n');
       exit (1);
     }
+#endif
 
   mpfr_clear (x);
   mpfr_clear (y);

@@ -444,7 +444,7 @@ int  mpfr_cache _MPFR_PROTO ((mpfr_ptr, mpfr_cache_t, mpfr_rnd_t));
 void mpfr_free_cache _MPFR_PROTO ((void));
 
 int  mpfr_strtofr _MPFR_PROTO ((mpfr_ptr, __gmp_const char *, char **,
-				unsigned int, mpfr_rnd_t));
+				int, mpfr_rnd_t));
 
 #if defined (__cplusplus)
 }
