@@ -198,7 +198,7 @@ int mpfr_sin_cos _PROTO ((mpfr_ptr, mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_cos _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_tan _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_mul_ui _PROTO((mpfr_ptr, mpfr_srcptr, unsigned long int, mp_rnd_t));
-void mpfr_set_machine_rnd_mode _PROTO ((mp_rnd_t));
+int mpfr_set_machine_rnd_mode _PROTO ((mp_rnd_t));
 int mpfr_cmp_ui_2exp _PROTO ((mpfr_srcptr, unsigned long int, mp_exp_t));
 int mpfr_cmp_si_2exp _PROTO ((mpfr_srcptr, long int, mp_exp_t));
 int mpfr_mul_2exp _PROTO((mpfr_ptr, mpfr_srcptr, unsigned long int, mp_rnd_t));

@@ -19,8 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -29,20 +27,52 @@ MA 02111-1307, USA. */
    may be defined from it (if MPFR is built with GMP). */
 
 #ifdef MPFR_HAVE_FESETROUND
-
 #include <fenv.h>
+#endif
+
+/* It is important to test each FE_* macro -- see the ISO C99 standard.
+   For instance, with some ARM implementations, only FE_TONEAREST may
+   be defined. */
 
 /* sets the machine rounding mode to the value rnd_mode */
-void 
+int
 mpfr_set_machine_rnd_mode (mp_rnd_t rnd_mode)
 {
-  switch (rnd_mode) {
-  case GMP_RNDN: fesetround(FE_TONEAREST); break;
-  case GMP_RNDZ: fesetround(FE_TOWARDZERO); break;
-  case GMP_RNDU: fesetround(FE_UPWARD); break;
-  case GMP_RNDD: fesetround(FE_DOWNWARD); break;
-  default: fprintf(stderr, "invalid rounding mode\n"); exit(1);
-  }
-}
-
+  switch (rnd_mode)
+    {
+    case GMP_RNDN:
+      return
+#if defined (MPFR_HAVE_FESETROUND) && defined (FE_TONEAREST)
+        fesetround(FE_TONEAREST)
+#else
+        -1
 #endif
+        ;
+    case GMP_RNDZ:
+      return
+#if defined (MPFR_HAVE_FESETROUND) && defined (FE_TOWARDZERO)
+        fesetround(FE_TOWARDZERO)
+#else
+        -1
+#endif
+        ;
+    case GMP_RNDU:
+      return
+#if defined (MPFR_HAVE_FESETROUND) && defined (FE_UPWARD)
+        fesetround(FE_UPWARD)
+#else
+        -1
+#endif
+        ;
+    case GMP_RNDD:
+      return
+#if defined (MPFR_HAVE_FESETROUND) && defined (FE_DOWNWARD)
+        fesetround(FE_DOWNWARD)
+#else
+        -1
+#endif
+        ;
+    default:
+      return -1;
+    }
+}
