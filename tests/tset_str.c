@@ -4,6 +4,11 @@
 #include "mpfr.h"
 #include <time.h>
 
+#if defined (hpux)
+#define srandom srand48
+#define random mrand48
+#endif
+
 int
 main(int argc, char **argv)
 {
