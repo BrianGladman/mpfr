@@ -24,12 +24,11 @@ MA 02111-1307, USA. */
 #include <math.h>
 #include "gmp.h"
 #include "mpfr.h"
+#include "mpfr-impl.h"
 #include "mpfr-test.h"
 
 #define Infp 1/0.
 #define Infm -1/0.
-
-extern int isnan();
 
 int
 main (void)

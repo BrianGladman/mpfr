@@ -32,7 +32,6 @@ MA 02111-1307, USA. */
 #include <sys/fpu.h>
 #endif
 
-extern int isnan();
 extern int getpid();
 
 #define ABS(x) (((x)>0) ? (x) : (-x))
