@@ -19,9 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-/* #define DEBUG */
-/* #define VERBOSE */
-
 #define N 100000
 
 #include <math.h>
@@ -142,9 +139,6 @@ void check2(x,px,y,py,pz,rnd_mode) double x,y; int px,py,pz,rnd_mode;
 {
   mpfr_t xx, yy, zz; double z,z2; int u;
 
-#ifdef DEBUG
-printf("x=%1.20e,%d y=%1.20e,%d pz=%d,rnd=%d\n",x,px,y,py,pz,rnd_mode);
-#endif
   mpfr_init2(xx,px); mpfr_init2(yy,py); mpfr_init2(zz,pz);
   mpfr_set_d(xx, x, rnd_mode);
   mpfr_set_d(yy, y, rnd_mode);
@@ -153,14 +147,10 @@ printf("x=%1.20e,%d y=%1.20e,%d pz=%d,rnd=%d\n",x,px,y,py,pz,rnd_mode);
   mpfr_set_machine_rnd_mode(rnd_mode);
 #endif
   z = x+y; z2=mpfr_get_d(zz); u=ulp(z,z2);
-#ifdef DEBUG
-  printf("x+y=%1.20e,%d (%d ulp) rnd_mode=%d\n",z2,pz,u,rnd_mode);
-  mpfr_set_d(zz, z2, rnd_mode); 
-  printf("i.e."); mpfr_print_raw(zz); putchar('\n');
-#endif
-    /* one ulp difference is possible due to composed rounding */
+  /* one ulp difference is possible due to composed rounding */
   if (px>=53 && py>=53 && pz>=53 && ABS(u)>1) { 
-    printf("x=%1.20e,%d y=%1.20e,%d pz=%d,rnd=%d\n",x,px,y,py,pz,rnd_mode);
+    printf("x=%1.20e,%d y=%1.20e,%d pz=%d,rnd=%s\n",
+	   x,px,y,py,pz,mpfr_print_rnd_mode(rnd_mode));
     printf("got %1.20e\n",z2);
     printf("result should be %1.20e (diff=%d ulp)\n",z,u);
     mpfr_set_d(zz, z, rnd_mode);
@@ -181,7 +171,8 @@ double x,y; int px,py,pz,rnd_mode; char *res;
   mpfr_set_prec(xx, pz);
   mpfr_set_str(xx, res, 16, GMP_RNDN);
   if (mpfr_cmp(xx, zz)) { 
-    printf("x=%1.20e,%d y=%1.20e,%d pz=%d,rnd=%d\n",x,px,y,py,pz,rnd_mode);
+    printf("x=%1.20e,%d y=%1.20e,%d pz=%d,rnd=%s\n",
+	   x,px,y,py,pz,mpfr_print_rnd_mode(rnd_mode));
     printf("got        "); mpfr_print_raw(zz); putchar('\n');
     printf("instead of "); mpfr_print_raw(xx); putchar('\n');
     exit(1); 
@@ -325,8 +316,8 @@ int main(argc,argv) int argc; char *argv[];
 	  5.4388530464436950905e185);
   check53(5.43885304644369509058e+185,-1.87427265794105342763e-57, GMP_RNDD,
 	  5.4388530464436944867e185);
-  check2a(2.26531902208967707071e+168,99,-2.67795218510613988524e+168,67,94,
-	GMP_RNDU, "-1.bfd7ff2647098@139");
+  check2a(6.85523243386777784171e+107,187,-2.78148588123699111146e+48,87,178,
+	  GMP_RNDD, "4.ab980a5cb9407ffffffffffffffffffffffffffffffe@89");
   check2a(-1.21510626304662318398e+145,70,1.21367733647758957118e+145,65,61,
 	 GMP_RNDD, "-1.2bfad031d94@118");
   check2a(2.73028857032080744543e+155,83,-1.16446121423113355603e+163,59,125,
@@ -335,14 +326,14 @@ int main(argc,argv) int argc; char *argv[];
 	  GMP_RNDD, "-2.5e09955c663d@65");
   check2a(-1.49963910666191123860e+265,76,-2.30915090591874527520e-191,8,75,
 	  GMP_RNDZ, "-1.dc3ec027da54e@220");
+  check2a(3.25471707846623300604e-160,81,-7.93846654265839958715e-274,58,54,
+	  GMP_RNDN, "4.936a52bc17254@-133");
   check2a(5.17945380930936917508e+112,119,1.11369077158813567738e+108,15,150,
 	  GMP_RNDZ, "5.62661692498ec@93");
   check2a(-2.66910493504493276454e-52,117,1.61188644159592323415e-52,61,68,
 	  GMP_RNDZ, "-a.204acdd25d788@-44");
   check2a(-1.87427265794105342764e-57,175,1.76570844587489516446e+190,2,115,
 	  GMP_RNDZ, "b.fffffffffffffffffffffffffffe@157");
-  check2a(6.85523243386777784171e+107,187,-2.78148588123699111146e+48,87,178,
-	  GMP_RNDD, "4.ab980a5cb9407ffffffffffffffffffffffffffffffe@89");
   check2a(-1.15706375390780417299e-135,94,-1.07455137477117851576e-129,66,111,
 	  GMP_RNDU, "-b.eae2643497ff6286b@-108");
   check2a(-1.15706375390780417299e-135,94,-1.07455137477117851576e-129,66,111,
@@ -353,8 +344,8 @@ int main(argc,argv) int argc; char *argv[];
 	  GMP_RNDN, "-5.4781549356e1c@124");
   check2a(4.49465557237618783128e+53,108,-2.45103927353799477871e+48,60,105,
 	  GMP_RNDN, "4.b14f230f909dc803e@44");
-  check2a(3.25471707846623300604e-160,81,-7.93846654265839958715e-274,58,54,
-	  GMP_RNDN, "4.936a52bc17254@-133");
+  check2a(2.26531902208967707071e+168,99,-2.67795218510613988524e+168,67,94,
+	GMP_RNDU, "-1.bfd7ff2647098@139");
   check2a(-8.88471912490080158206e+253,79,-7.84488427404526918825e+124,95,53,
 	  GMP_RNDD, "-c.1e533b8d835@210");
   check2a(-2.18548638152863831959e-125,61,-1.22788940592412363564e+226,71,54,
@@ -383,9 +374,7 @@ int main(argc,argv) int argc; char *argv[];
 	 GMP_RNDZ, "1.655c53ff5719c8@42");
   check2a(2.72046257722708717791e+243,97,-1.62158447436486437113e+243,83,96,
 	  GMP_RNDN, "a.4cc63e002d2e8@201");
-#ifdef VERBOSE
-  printf("Checking double precision (53 bits)\n");
-#endif
+  /* Checking double precision (53 bits) */
   prec = (argc<2) ? 53 : atoi(argv[1]);
   rnd_mode = (argc<3) ? -1 : atoi(argv[2]);
   check53(-8.22183238641455905806e-19, 7.42227178769761587878e-19, GMP_RNDD, 
