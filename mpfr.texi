@@ -3,7 +3,7 @@
 @setfilename mpfr.info
 @documentencoding ISO-8859-1
 @set VERSION 2.1.0
-@set UPDATED-MONTH April 2004
+@set UPDATED-MONTH May 2004
 @settitle MPFR @value{VERSION}
 @synindex tp fn
 @iftex
@@ -284,17 +284,12 @@ To build MPFR, you first have to install GNU MP
 You need a C compiler, preferably GCC, but any reasonable compiler should
 work.  And you need a standard Unix @samp{make} program, plus some other
 standard Unix utility programs.
-MPFR needs some internal GMP header files that are not installed.
-So, keep the GMP build directory as is, at least until you have
-built MPFR.
 
 @item
 In the MPFR build directory, type
-@samp{./configure --with-gmp-include=GMPBUILD --with-gmp-lib=GMPINSTALL/lib}
-where @samp{GMPBUILD} is the GMP build directory and @samp{GMPINSTALL} the
-directory where you have installed GMP. Because of the internal header files
-required by MPFR, the option @samp{--with-gmp=GMPINSTALL} is not sufficient
-and should not be used.
+@samp{./configure}
+
+This will prepare the build and setup the options according to your system.
 If you get error messages, you might check that you use the same compiler
 and compile options as for GNU MP (see the @file{INSTALL} file).
 
@@ -854,6 +849,11 @@ $z \times 2^{\rm exp}$.
 @end tex
 If the exponent is not representable in the @code{mp_exp_t} type, the
 behavior is undefined.
+@end deftypefun
+
+@deftypefun void mpz_set_fr (mpz_ptr @var{z}, mpfr_srcptr @var{op}, mp_rnd_t @var{rnd})
+Convert @var{op} to a @code{mpz_t}, after rounding it with respect to 
+@var{rnd}. If @var{op} is NaN or Inf, the result is undefined.
 @end deftypefun
 
 @deftypefun {char *} mpfr_get_str (char *@var{str}, mp_exp_t *@var{expptr}, int @var{base}, size_t @var{n}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
