@@ -19,8 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -29,18 +27,16 @@ MA 02111-1307, USA. */
 void
 mpfr_init2 (mpfr_ptr x, mp_prec_t p)
 {
-  mp_prec_t xsize; 
+  mp_size_t xsize;
 
-  if (p==0) {
-    fprintf(stderr, "*** cannot initialize mpfr with precision 0\n"); exit(1);
-  }
+  MPFR_ASSERTN (p > 0);
 
-  xsize = (p - 1)/BITS_PER_MP_LIMB + 1; 
+  xsize = (mp_size_t) ((p - 1) / BITS_PER_MP_LIMB) + 1;
 
   MPFR_PREC(x) = p;
   MPFR_MANT(x) = (mp_ptr) (*__gmp_allocate_func) (xsize * BYTES_PER_MP_LIMB);
   MPFR_SIZE(x) = xsize;
-  MPFR_CLEAR_FLAGS(x); 
+  MPFR_CLEAR_FLAGS(x); /* though not necessary in our current implementation */
   MPFR_SET_ZERO(x); /* initializes to zero */
   MPFR_EXP(x) = 0; /* avoids uninitialized memory reads for zero */
 }
