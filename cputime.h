@@ -1,11 +1,9 @@
 /* Return user CPU time measured in milliseconds. Thanks to Torbjorn. */
 
-int cputime _MPFR_PROTO((void)); 
-
 #if defined (ANSIONLY) || defined (USG) || defined (__SVR4) || defined (_UNICOS) || defined(__hpux)
 #include <time.h>
 
-int
+static int
 cputime ()
 {
   return (int) ((double) clock () * 1000 / CLOCKS_PER_SEC);
@@ -14,7 +12,7 @@ cputime ()
 #include <sys/types.h>
 #include <sys/resource.h>
 
-int
+static int
 cputime ()
 {
   struct rusage rus;
