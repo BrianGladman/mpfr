@@ -33,7 +33,7 @@ install recent versions of some utilities such as texinfo.
 Building MPFR with internal GMP header files
 ============================================
 
-   MPFR built with internal GMP header files is a few faster,
+   MPFR built with internal GMP header files is a bit faster,
    so you may want to build it with them. Just do this in step 1:
 
      ./configure --with-gmp-build=GMPBUILD
