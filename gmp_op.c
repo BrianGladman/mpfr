@@ -130,25 +130,33 @@ mpfr_add_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mp_rnd_t rnd_mode)
 	}
     }
 
-  mpfr_inits2(p, t, q, NULL);
-  do {
-    mpfr_set_q(q, z, GMP_RNDN);  /* Error <= 1/2 ulp(q) */
-    mpfr_add(t, x, q, GMP_RNDN); /* Error <= 1/2 ulp(t) */
-    /* Error / ulp(t)      <= 1/2 + 1/2 * 2^(EXP(q)-EXP(t))
-       If EXP(q)-EXP(t)>0, <= 2^(EXP(q)-EXP(t)-1)*(1+2^-(EXP(q)-EXP(t)))
-                           <= 2^(EXP(q)-EXP(t))
-       If EXP(q)-EXP(t)<0, <= 2^0 */
-    err = (mp_exp_t) p - 1 - MAX(MPFR_GET_EXP(q)-MPFR_GET_EXP(t), 0);
-    res = mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ, 
-			  MPFR_PREC(y) + (rnd_mode == GMP_RNDN) );
-    if (!res)
-      {
-	p += BITS_PER_MP_LIMB;
-	mpfr_set_prec(t, p);
-	mpfr_set_prec(q, p);
-      }
-  } while (!res); 
-  res = mpfr_set(y, t, rnd_mode);
+  mpfr_inits(t, q, NULL);
+  for(;;)
+    {
+      mpfr_set_prec(t, p);
+      mpfr_set_prec(q, p);
+      
+      res = mpfr_set_q(q, z, GMP_RNDN);  /* Error <= 1/2 ulp(q) */
+      if (res == 0) /* Result is exact so we can add it directly!*/
+	{
+	  res = mpfr_add(y, x, q, rnd_mode);
+	  break;
+	}
+      mpfr_add(t, x, q, GMP_RNDN);       /* Error <= 1/2 ulp(t) */
+      /* Error / ulp(t)      <= 1/2 + 1/2 * 2^(EXP(q)-EXP(t))
+	 If EXP(q)-EXP(t)>0, <= 2^(EXP(q)-EXP(t)-1)*(1+2^-(EXP(q)-EXP(t)))
+	                     <= 2^(EXP(q)-EXP(t))
+	 If EXP(q)-EXP(t)<0, <= 2^0 */
+      err = (mp_exp_t) p - 1 - MAX(MPFR_GET_EXP(q)-MPFR_GET_EXP(t), 0);
+      res = mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ, 
+			    MPFR_PREC(y) + (rnd_mode == GMP_RNDN) );
+      p += BITS_PER_MP_LIMB;             /* Next precision if we continue */
+      if (res != 0)  /* We can round! */
+	{
+	  res = mpfr_set(y, t, rnd_mode);
+	  break;
+	}
+    } 
   mpfr_clears(t, q, NULL);
   return res;
 }
@@ -187,25 +195,33 @@ mpfr_sub_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z,mp_rnd_t rnd_mode)
         }
     }
 
-  mpfr_inits2(p, t, q, NULL);
-  do {
-    mpfr_set_q(q, z, GMP_RNDN);  /* Error <= 1/2 ulp(q) */
-    mpfr_sub(t, x, q, GMP_RNDN); /* Error <= 1/2 ulp(t) */
-    /* Error / ulp(t)      <= 1/2 + 1/2 * 2^(EXP(q)-EXP(t))
-       If EXP(q)-EXP(t)>0, <= 2^(EXP(q)-EXP(t)-1)*(1+2^-(EXP(q)-EXP(t)))
-                           <= 2^(EXP(q)-EXP(t))
-			   If EXP(q)-EXP(t)<0, <= 2^0 */
-    err = (mp_exp_t) p - 1 - MAX(MPFR_GET_EXP(q)-MPFR_GET_EXP(t), 0);
-    res = mpfr_can_round(t, err, GMP_RNDN, GMP_RNDZ,
-                         MPFR_PREC(y) + (rnd_mode == GMP_RNDN) );
-    if (!res)
-      {
-        p += BITS_PER_MP_LIMB;
-        mpfr_set_prec(t, p);
-        mpfr_set_prec(q, p);
-      }
-  } while (!res);
-  res = mpfr_set(y, t, rnd_mode);
+  mpfr_inits(t, q, NULL);
+  for(;;)
+    {
+      mpfr_set_prec(t, p);
+      mpfr_set_prec(q, p);
+
+      res = mpfr_set_q(q, z, GMP_RNDN);  /* Error <= 1/2 ulp(q) */
+      if (res == 0)            /* Result is exact so we can add it directly!*/
+        {
+          res = mpfr_sub(y, x, q, rnd_mode);
+          break;
+        }
+      mpfr_sub(t, x, q, GMP_RNDN);       /* Error <= 1/2 ulp(t) */
+      /* Error / ulp(t)      <= 1/2 + 1/2 * 2^(EXP(q)-EXP(t))
+         If EXP(q)-EXP(t)>0, <= 2^(EXP(q)-EXP(t)-1)*(1+2^-(EXP(q)-EXP(t)))
+                             <= 2^(EXP(q)-EXP(t))
+			     If EXP(q)-EXP(t)<0, <= 2^0 */
+      err = (mp_exp_t) p - 1 - MAX(MPFR_GET_EXP(q)-MPFR_GET_EXP(t), 0);
+      res = mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
+                            MPFR_PREC(y) + (rnd_mode == GMP_RNDN) );
+      p += BITS_PER_MP_LIMB;             /* Next precision if we continue */
+      if (res != 0)  /* We can round! */
+        {
+          res = mpfr_set(y, t, rnd_mode);
+          break;
+        }
+    }
   mpfr_clears(t, q, NULL);
   return res;
 }

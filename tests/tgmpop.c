@@ -28,6 +28,7 @@ special (void)
 {
   mpfr_t x, y;
   mpq_t z;
+  int res;
 
   mpfr_init (x);
   mpfr_init (y);
@@ -58,6 +59,18 @@ special (void)
   mpfr_set_prec (y, 118);
   mpfr_add_q (y, x, z, GMP_RNDU);
   MPFR_ASSERTN(mpfr_inf_p (y) && mpfr_sgn (y) > 0);
+
+
+  /* Exact value */
+  mpfr_set_prec (x, 60);
+  mpfr_set_prec (y, 60);
+  mpfr_set_str1 (x, "0.5");
+  mpz_set_str (mpq_numref (z), "3", 10);
+  mpz_set_str (mpq_denref (z), "2", 10);
+  res = mpfr_add_q (y, x, z, GMP_RNDU);
+  MPFR_ASSERTN(mpfr_cmp_ui(y, 2)==0 && res==0);
+  res = mpfr_sub_q (y, x, z, GMP_RNDU);
+  MPFR_ASSERTN(mpfr_cmp_si(y, -1)==0 && res==0);
 
   mpq_clear (z);
   mpfr_clear (x);
