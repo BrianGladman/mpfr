@@ -34,6 +34,7 @@ void check24 _PROTO((float, float, mp_rnd_t, float));
 void check_float _PROTO((void)); 
 void check_convergence _PROTO((void)); 
 void check_lowr _PROTO((void));
+void check_inexact _PROTO((void));
 
 void check4 (double N, double D, mp_rnd_t rnd_mode, int p, double Q)
 {
@@ -288,7 +289,7 @@ void check_lowr ()
   mpfr_clear(z3); 
 }
 
-#define MAX_PREC 24
+#define MAX_PREC 35
 
 void
 check_inexact ()
@@ -297,7 +298,7 @@ check_inexact ()
   mp_prec_t px, py, pu;
   int inexact, cmp;
   mp_rnd_t rnd;
-
+  
   mpfr_init (x);
   mpfr_init (y);
   mpfr_init (z);
@@ -308,49 +309,45 @@ check_inexact ()
       mpfr_set_prec (x, px);
       mpfr_random (x);
       for (pu=1; pu<MAX_PREC; pu++)
-        {
-          mpfr_set_prec (u, pu);
-          do { mpfr_random (u); } while (mpfr_cmp_ui (u, 0) == 0);
-          for (py=1; py<MAX_PREC; py++)
-            {
-              mpfr_set_prec (y, py);
-              mpfr_set_prec (z, py + pu);
-              for (rnd=0; rnd<4; rnd++)
-                {
-                  inexact = mpfr_div (y, x, u, rnd);
-                  if (mpfr_mul (z, y, u, rnd))
-                    {
-                      fprintf (stderr, "z <- y * u should be exact\n");
-                      exit (1);
-                    }
-                  cmp = mpfr_cmp (z, x);
-
-                  if (((inexact == 0) && (cmp != 0)) ||
-                      ((inexact > 0) && (cmp <= 0)) ||
-                      ((inexact < 0) && (cmp >= 0)))
-                    {
-                      fprintf (stderr, "Wrong inexact flag for rnd=%s\n",
-                           mpfr_print_rnd_mode(rnd));
-                      printf ("expected %d, got %d\n", cmp, inexact);
-                      printf ("x="); mpfr_print_raw (x); putchar ('\n');
-                      printf ("u="); mpfr_print_raw (u); putchar ('\n');
-                      printf ("y="); mpfr_print_raw (y); putchar ('\n');
-                      printf ("y*u="); mpfr_print_raw (z); putchar ('\n');
-                    }
-                }
-            }
-        }
+	{
+	  mpfr_set_prec (u, pu);
+	  do { mpfr_random (u); } while (mpfr_cmp_ui (u, 0) == 0);
+	  for (py=1; py<MAX_PREC; py++)
+	    {
+	      mpfr_set_prec (y, py);
+	      mpfr_set_prec (z, py + pu);
+	      for (rnd=0; rnd<4; rnd++)
+		{
+		  inexact = mpfr_div (y, x, u, rnd);
+		  if (mpfr_mul (z, y, u, rnd))
+		    {
+		      fprintf (stderr, "z <- y * u should be exact\n");
+		      exit (1);
+		    }
+		  cmp = mpfr_cmp (z, x);
+		  if (((inexact == 0) && (cmp != 0)) ||
+		      ((inexact > 0) && (cmp <= 0)) ||
+		      ((inexact < 0) && (cmp >= 0)))
+		    {
+		      fprintf (stderr, "Wrong inexact flag for rnd=%s\n",
+			   mpfr_print_rnd_mode(rnd));
+		      printf ("expected %d, got %d\n", cmp, inexact);
+		      printf ("x="); mpfr_print_raw (x); putchar ('\n');
+		      printf ("u="); mpfr_print_raw (u); putchar ('\n');
+		      printf ("y="); mpfr_print_raw (y); putchar ('\n');
+		      printf ("y*u="); mpfr_print_raw (z); putchar ('\n');
+		      exit (1);
+		    }
+		}
+	    }
+	}
     }
-                      
+
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);
   mpfr_clear (u);
 }
-
-
-
-
 
 int
 main (int argc, char *argv[])
@@ -371,6 +368,7 @@ main (int argc, char *argv[])
 
   N = (argc>1) ? atoi(argv[1]) : 100000;
   check_inexact(); 
+
   mpfr_init2(x, 64); 
   mpfr_init2(y, 64); 
   mpfr_init2(z, 64); 
