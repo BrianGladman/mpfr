@@ -192,6 +192,9 @@ main (int argc, char *argv[])
   mpfr_set_emax (3);
   mpfr_set_ui (x, 7, GMP_RNDU);
   MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
+  mpfr_set_emax (1);
+  MPFR_ASSERTN( mpfr_set_ui (x, 7, GMP_RNDU) );
+  MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
   mpfr_set_emax (emax);
 
   mpfr_clear (x);

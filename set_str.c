@@ -117,6 +117,8 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
       return 0;
     }
 
+  MPFR_CLEAR_FLAGS(x);
+
   /* string "", "+" and "-" are invalid */
   if (str[0] == '\0')
     return -1;
@@ -184,7 +186,11 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
     {
       MPFR_SET_ZERO (x);
       res = 0;
-      goto sign_and_flags;
+      if (negative)
+	MPFR_SET_NEG(x);
+      else
+	MPFR_SET_POS(x);
+      goto end;
     }
 
   /* now we have str = 0.mant_s[0]...mant_s[prec_s-1]*base^exp_s*2^binexp */
@@ -359,14 +365,14 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
 
   TMP_FREE(marker);
 
-  MPFR_SET_EXP (x, exp_y + n * BITS_PER_MP_LIMB);
-
- sign_and_flags:
-  MPFR_CLEAR_FLAGS(x);
+  /* Set sign of x before exp since check_range needs a valid sign */
   if (negative)
     MPFR_SET_NEG(x);
   else
     MPFR_SET_POS(x);
+  /* DO NOT USE MPFR_SET_EXP. The exp may be out of range! */
+  MPFR_EXP (x) = exp_y + n * BITS_PER_MP_LIMB;
+  res = mpfr_check_range (x, res, rnd );
 
  end:
   (*__gmp_free_func) (str1, size_str1 * sizeof (char));

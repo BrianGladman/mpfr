@@ -30,6 +30,7 @@ static void
 check_pow_ui (void)
 {
   mpfr_t a, b;
+  int res;
 
   mpfr_init2 (a, 53);
   mpfr_init2 (b, 53);
@@ -61,6 +62,25 @@ check_pow_ui (void)
   if (!mpfr_inf_p (a) || (mpfr_sgn (a) <= 0))
     {
       printf ("Error for (-Inf)^30002752\n");
+      exit (1);
+    }
+
+  /* Check underflow */
+  mpfr_set_str_binary (a, "1E-1");
+  res = mpfr_pow_ui (a, a, MPFR_EMAX_MAX, GMP_RNDN);
+  if (MPFR_GET_EXP (a) != MPFR_EMIN_MIN+1)
+    {
+      printf ("Error for (1e-1)^MPFR_EMAX_MAX\n");
+      mpfr_dump (a);
+      exit (1);
+    }
+
+  /* Check overflow */
+  mpfr_set_str_binary (a, "1E10");
+  res = mpfr_pow_ui (a, a, ULONG_MAX, GMP_RNDN);
+  if (!MPFR_IS_INF (a) || MPFR_SIGN (a) < 0)
+    {
+      printf ("Error for (1e10)^ULONG_MAX\n");
       exit (1);
     }
 

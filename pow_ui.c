@@ -103,15 +103,23 @@ mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
               inexact = 1;
         }
 
-      /* FIXME: infinity and 0 should be checked too. */
-      MPFR_ASSERTN (MPFR_IS_FP (res));
-      MPFR_ASSERTN (MPFR_NOTZERO (res));
-      /* check underflow */
-      if (MPFR_UNLIKELY (MPFR_GET_EXP (res) <= __gmpfr_emin))
+      /* Check Overflow (can't use MPFR_GET_EXP since there can be an INF )*/
+      if (MPFR_UNLIKELY (MPFR_EXP (res) >= __gmpfr_emax ||
+                         MPFR_IS_INF (res)))
+	{
+          mpfr_clear (res);
+          mpfr_restore_emin_emax ();
+          return mpfr_set_overflow (x, rnd, 
+				    (n % 2) ? MPFR_SIGN(y) : MPFR_SIGN_POS);
+	}
+      /* Check Underflow (can't use MPFR_GET_EXP since there can be a ZERO )*/
+      if (MPFR_UNLIKELY (MPFR_EXP (res) <= __gmpfr_emin || 
+			 MPFR_IS_ZERO (res)))
         {
           mpfr_clear (res);
           mpfr_restore_emin_emax ();
-          return mpfr_set_underflow (x, rnd, (n % 2) ? MPFR_SIGN(y) : 1);
+          return mpfr_set_underflow (x, rnd, 
+				     (n % 2) ? MPFR_SIGN(y) : MPFR_SIGN_POS);
         }
     }
   while (inexact && !mpfr_can_round (res, err, GMP_RNDN, GMP_RNDZ,

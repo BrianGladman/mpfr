@@ -29,6 +29,32 @@ MA 02111-1307, USA. */
 
 #define N 30000
 
+static void 
+check_underflow (void)
+{
+  mpfr_t a;
+  mp_exp_t emin;
+  int res;
+
+  mpfr_init (a);
+
+  /* Check undeflow */
+  emin = mpfr_get_emin ();
+  mpfr_set_emin (-20);
+  res = mpfr_set_str (a, "0.00000000001", 10, GMP_RNDZ);
+  if (!MPFR_IS_ZERO (a) || res == 0)
+    {
+      printf("ERROR for mpfr_set_str (a, \"0.00000000001\", 10, GMP_RNDN)\n"
+	     " with emin=-20\n"
+	     "res=%d\n", res);
+      mpfr_dump (a);
+      exit (1);
+    }
+  mpfr_set_emin (emin);
+
+  mpfr_clear (a);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -479,6 +505,8 @@ main (int argc, char *argv[])
 
   mpfr_clear (x);
   mpfr_clear (y);
+
+  check_underflow ();
 
   tests_end_mpfr ();
   return 0;

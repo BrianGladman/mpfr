@@ -59,7 +59,14 @@ special (void)
   mpfr_set_prec (y, 118);
   mpfr_add_q (y, x, z, GMP_RNDU);
   MPFR_ASSERTN(mpfr_inf_p (y) && mpfr_sgn (y) > 0);
+  mpfr_sub_q (y, x, z, GMP_RNDU);
+  MPFR_ASSERTN(mpfr_inf_p (y) && mpfr_sgn (y) > 0);
 
+  MPFR_SET_NAN (x);
+  mpfr_add_q (y, x, z, GMP_RNDU);
+  MPFR_ASSERTN(mpfr_nan_p (y) );
+  mpfr_sub_q (y, x, z, GMP_RNDU);
+  MPFR_ASSERTN(mpfr_nan_p (y) );
 
   /* Exact value */
   mpfr_set_prec (x, 60);
@@ -71,6 +78,7 @@ special (void)
   MPFR_ASSERTN(mpfr_cmp_ui(y, 2)==0 && res==0);
   res = mpfr_sub_q (y, x, z, GMP_RNDU);
   MPFR_ASSERTN(mpfr_cmp_si(y, -1)==0 && res==0);
+
 
   mpq_clear (z);
   mpfr_clear (x);
