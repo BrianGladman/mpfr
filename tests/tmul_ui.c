@@ -58,7 +58,31 @@ main(int argc, char **argv)
   mpfr_set_d(y, 3.0, GMP_RNDZ);
   mpfr_mul_ui(x, y, 4, GMP_RNDZ);
   if (mpfr_cmp_ui(x, 0) <= 0) {
-    fprintf(stderr, "Error in mpfr_mul_ui: 4*3.0 does not give a positive result\n"); exit(1);
+    fprintf(stderr, "Error in mpfr_mul_ui: 4*3.0 does not give a positive result:\n"); 
+    mpfr_print_raw(x); putchar('\n');
+    printf("mpfr_cmp_ui(x, 0) = %d\n", mpfr_cmp_ui(x, 0));
+    exit(1);
+  }
+
+  mpfr_set_prec(x, 9);
+  mpfr_set_prec(y, 9);
+  mpfr_set_str_raw(y,"0.100001111E9");
+  mpfr_mul_ui(x, y, 1335, GMP_RNDN);
+  mpfr_set_str_raw(y,"0.100111001E19");
+  if (mpfr_cmp(x, y)) {
+    fprintf(stderr, "Error in mul_ui for 1335*(0.100001111E9)\n"); exit(1);
+  }
+
+  mpfr_set_prec(y, 100);
+  mpfr_set_prec(x, 100);
+  /* y = 1199781142214086656 */
+  mpfr_set_str_raw(y, "0.1000010100110011110101001011110010101111000100001E61");
+  mpfr_mul_ui(x, y, 121, GMP_RNDD);
+  /* 121*y = 145173518207904485376, representable exactly */
+  mpfr_set_str_raw(y, "0.1111101111010101111111100011010010111010111110110011001E67");
+  if (mpfr_cmp(x, y)) {
+    printf("Error for 121*y: expected result is:\n");
+    mpfr_print_raw(y); putchar('\n');
   }
 
   mpfr_clear(x); mpfr_clear(y);
