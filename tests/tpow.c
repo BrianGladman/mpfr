@@ -23,6 +23,7 @@ MA 02111-1307, USA. */
 #include <stdlib.h>
 #include "gmp.h"
 #include "mpfr.h"
+#include "mpfr-impl.h"
 
 void check_pow_ui _PROTO ((void));
 void check_inexact _PROTO ((mp_prec_t));
@@ -45,17 +46,17 @@ check_pow_ui (void)
 
   /* check large exponents */
   mpfr_set_d (b, 1, GMP_RNDN);
-  mpfr_pow_ui (a, b, (unsigned long) 4294967295, GMP_RNDN);
+  mpfr_pow_ui (a, b, 4294967295UL, GMP_RNDN);
 
-  mpfr_set_d (a, -1.0/0.0, GMP_RNDN);
-  mpfr_pow_ui (a, a, (unsigned long) 4049053855, GMP_RNDN);
-  if (mpfr_get_d (a) != -1.0/0.0) {
+  mpfr_set_inf (a, -1);
+  mpfr_pow_ui (a, a, 4049053855UL, GMP_RNDN);
+  if (mpfr_get_d (a) != DBL_NEG_INF) {
     fprintf (stderr, "Error for (-Inf)^4049053855\n"); exit (1);
   }
 
-  mpfr_set_d (a, -1.0/0.0, GMP_RNDN);
+  mpfr_set_inf (a, -1);
   mpfr_pow_ui (a, a, (unsigned long) 30002752, GMP_RNDN);
-  if (mpfr_get_d (a) != 1.0/0.0) {
+  if (mpfr_get_d (a) != DBL_POS_INF) {
     fprintf (stderr, "Error for (-Inf)^30002752\n"); exit (1);
   }
 

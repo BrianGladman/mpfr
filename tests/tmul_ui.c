@@ -1,6 +1,6 @@
 /* Test file for mpfr_mul_ui.
 
-Copyright 1999, 2000, 2001 Free Software Foundation.
+Copyright 1999, 2000, 2001, 2002 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -109,25 +109,25 @@ main (int argc, char *argv[])
   }
 
 
-  mpfr_set_d (x, 1.0/0.0, GMP_RNDZ);
+  mpfr_set_inf (x, 1);
   mpfr_mul_ui (x, x, 3, GMP_RNDU);
-  if (mpfr_get_d (x) != 1.0/0.0)
+  if (mpfr_get_d (x) != DBL_POS_INF)
     {
       fprintf (stderr, "Error in mpfr_mul_ui: Inf*3 does not give Inf\n");
       exit (1);
     }
 
-  mpfr_set_d (x, -1.0/0.0, GMP_RNDZ);
+  mpfr_set_inf (x, -1);
   mpfr_mul_ui (x, x, 3, GMP_RNDU);
-  if (mpfr_get_d (x) != -1.0/0.0)
+  if (mpfr_get_d (x) != DBL_NEG_INF)
     {
       fprintf (stderr, "Error in mpfr_mul_ui: -Inf*3 does not give -Inf\n");
       exit (1);
     }
 
-  mpfr_set_d (x, 0.0/0.0, GMP_RNDZ);
+  mpfr_set_nan (x);
   mpfr_mul_ui (x, x, 3, GMP_RNDU);
-  if (!isnan(mpfr_get_d(x)))
+  if (!mpfr_nan_p(x))
     {
       fprintf (stderr, "Error in mpfr_mul_ui: NaN*3 does not give NaN\n");
       exit (1);

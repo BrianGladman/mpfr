@@ -24,6 +24,7 @@ MA 02111-1307, USA. */
 #include <stdlib.h>
 #include "gmp.h"
 #include "mpfr.h"
+#include "mpfr-impl.h"
 #include "mpfr-test.h"
 
 void check _PROTO((unsigned long, double, mp_rnd_t, double)); 
@@ -134,10 +135,10 @@ main (int argc, char *argv[])
   }
 #endif
   check_inexact ();
-  check(1, 1.0/0.0, GMP_RNDN, 0.0); 
-  check(1, -1.0/0.0, GMP_RNDN, -0.0); 
-  check(1, 0.0/0.0, GMP_RNDN, 0.0/0.0); 
-  check(0, 0.0, GMP_RNDN, 0.0/0.0); 
+  check (1, DBL_POS_INF, GMP_RNDN, 0.0); 
+  check(1, DBL_NEG_INF, GMP_RNDN, -0.0); 
+  check(1, DBL_NAN, GMP_RNDN, DBL_NAN); 
+  check(0, 0.0, GMP_RNDN, DBL_NAN); 
   check(948002822, 1.22191250737771397120e+20, GMP_RNDN,
 	7.758352715731357946e-12);
   check(1976245324, 1.25296395864546893357e+232, GMP_RNDZ,

@@ -24,6 +24,7 @@ MA 02111-1307, USA. */
 #include <math.h>
 #include "gmp.h"
 #include "mpfr.h"
+#include "mpfr-impl.h"
 #include "mpfr-test.h"
 
 void check53 _PROTO ((double, double, mp_rnd_t));
@@ -37,13 +38,14 @@ check53 (double x, double sin_x, mp_rnd_t rnd_mode)
   mpfr_init2 (s, 53);
   mpfr_set_d (xx, x, rnd_mode); /* should be exact */
   mpfr_sin (s, xx, rnd_mode);
-  if (mpfr_get_d (s) != sin_x && (!isnan(sin_x) || !isnan(mpfr_get_d(s)))) {
-    fprintf (stderr, "mpfr_sin failed for x=%1.20e, rnd=%s\n", x,
-	     mpfr_print_rnd_mode (rnd_mode));
-    fprintf (stderr, "mpfr_sin gives sin(x)=%1.20e, expected %1.20e\n",
-	     mpfr_get_d (s), sin_x);
-    exit(1);
-  }
+  if (mpfr_get_d (s) != sin_x && (!isnan(sin_x) || !mpfr_nan_p(s)))
+    {
+      fprintf (stderr, "mpfr_sin failed for x=%1.20e, rnd=%s\n", x,
+	       mpfr_print_rnd_mode (rnd_mode));
+      fprintf (stderr, "mpfr_sin gives sin(x)=%1.20e, expected %1.20e\n",
+	       mpfr_get_d (s), sin_x);
+      exit(1);
+    }
   mpfr_clear (xx);
   mpfr_clear (s);
 }
@@ -56,9 +58,9 @@ main (int argc, char *argv[])
 {
   mpfr_t x;
 
-  check53(0.0/0.0, 0.0/0.0, GMP_RNDN); 
-  check53(1.0/0.0, 0.0/0.0, GMP_RNDN); 
-  check53(-1.0/0.0, 0.0/0.0, GMP_RNDN); 
+  check53 (DBL_NAN, DBL_NAN, GMP_RNDN);
+  check53 (DBL_POS_INF, DBL_NAN, GMP_RNDN);
+  check53 (DBL_NEG_INF, DBL_NAN, GMP_RNDN);
   /* worst case from PhD thesis of Vincent Lefe`vre: x=8980155785351021/2^54 */
   check53 (4.984987858808754279e-1, 4.781075595393330379e-1, GMP_RNDN);
   check53 (4.984987858808754279e-1, 4.781075595393329824e-1, GMP_RNDD);

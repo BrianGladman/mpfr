@@ -24,6 +24,7 @@ MA 02111-1307, USA. */
 #include <math.h>
 #include "gmp.h"
 #include "mpfr.h"
+#include "mpfr-impl.h"
 #include "mpfr-test.h"
 
 void check53 _PROTO ((double, double, mp_rnd_t));
@@ -37,7 +38,7 @@ check53 (double x, double cos_x, mp_rnd_t rnd_mode)
   mpfr_init2 (c, 53);
   mpfr_set_d (xx, x, rnd_mode); /* should be exact */
   mpfr_cos (c, xx, rnd_mode);
-  if (mpfr_get_d (c) != cos_x && (!isnan(cos_x) || !isnan(mpfr_get_d(c))))
+  if (mpfr_get_d (c) != cos_x && (!isnan(cos_x) || !mpfr_nan_p(c)))
     {
       fprintf (stderr, "mpfr_cos failed for x=%1.20e, rnd=%s\n", x,
 	       mpfr_print_rnd_mode (rnd_mode));
@@ -103,9 +104,9 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-  check53(0.0/0.0, 0.0/0.0, GMP_RNDN); 
-  check53(1.0/0.0, 0.0/0.0, GMP_RNDN); 
-  check53(-1.0/0.0, 0.0/0.0, GMP_RNDN); 
+  check53 (DBL_NAN, DBL_NAN, GMP_RNDN); 
+  check53 (DBL_POS_INF, DBL_NAN, GMP_RNDN); 
+  check53 (DBL_NEG_INF, DBL_NAN, GMP_RNDN); 
 
   /* worst case from PhD thesis of Vincent Lefe`vre: x=8980155785351021/2^54 */
   check53 (4.984987858808754279e-1, 8.783012931285841817e-1, GMP_RNDN);

@@ -144,10 +144,12 @@ main (int argc, char *argv[])
   for (p=2; p<200; p++)
     for (k=0; k<200; k++)
       check_two_sum (p);
-  check3(0.9999999999, 1, GMP_RNDN, -1.000000082740370999e-10);
-  check3(0.0/0.0, 1, GMP_RNDN, 0.0/0.0); 
-  check3(1.0/0.0, 1, GMP_RNDN, 1.0/0.0); 
-  check3(-1.0/0.0, 1, GMP_RNDN, -1.0/0.0); 
+
+  check3 (0.9999999999, 1, GMP_RNDN, -1.000000082740370999e-10);
+  check3 (DBL_NAN, 1, GMP_RNDN, DBL_NAN);
+  check3 (DBL_POS_INF, 1, GMP_RNDN, DBL_POS_INF);
+  check3 (DBL_NEG_INF, 1, GMP_RNDN, DBL_NEG_INF);
+
   return 0;
 }
 

@@ -435,7 +435,7 @@ check64 (void)
   /* checks that NaN flag is correctly reset */
   mpfr_set_d (t, 1.0, GMP_RNDN);
   mpfr_set_d (u, 1.0, GMP_RNDN);
-  MPFR_SET_NAN(x);
+  mpfr_set_nan (x);
   mpfr_add (x, t, u, GMP_RNDN);
   if (mpfr_cmp_ui (x, 2)) {
     fprintf (stderr, "Error in mpfr_add: 1+1 gives %e\n", mpfr_get_d (x));
@@ -792,7 +792,7 @@ main (int argc, char *argv[])
 	  1.4245325800982785854e240);
   /* the following check double overflow */
   check53(6.27557402141211962228e+307, 1.32141396570101687757e+308,
-     GMP_RNDZ, 1.0/0.0);
+     GMP_RNDZ, DBL_POS_INF);
   check53(1.00944884131046636376e+221, 2.33809162651471520268e+215, GMP_RNDN,
 	  1.0094511794020929787e221);
   check53(4.29232078932667367325e-278, 1.07735250473897938332e-281, GMP_RNDU,
@@ -817,14 +817,14 @@ main (int argc, char *argv[])
   /* test denormalized numbers too */
   check53(8.06294740693074521573e-310, 6.95250701071929654575e-310, GMP_RNDU,
 	  1.5015454417650041761e-309);
-  check53(1/0., 6.95250701071929654575e-310, GMP_RNDU, 1/0.); 
-  check53(-1/0., 6.95250701071929654575e-310, GMP_RNDU, -1/0.); 
-  check53(6.95250701071929654575e-310, 1/0., GMP_RNDU, 1/0.);
-  check53(6.95250701071929654575e-310, -1/0., GMP_RNDU, -1/0.);
+  check53(DBL_POS_INF, 6.95250701071929654575e-310, GMP_RNDU, DBL_POS_INF);
+  check53(DBL_NEG_INF, 6.95250701071929654575e-310, GMP_RNDU, DBL_NEG_INF);
+  check53(6.95250701071929654575e-310, DBL_POS_INF, GMP_RNDU, DBL_POS_INF);
+  check53(6.95250701071929654575e-310, DBL_NEG_INF, GMP_RNDU, DBL_NEG_INF);
   check53(1.44791789689198883921e-140, -1.90982880222349071284e-121,
 	  GMP_RNDN, -1.90982880222349071e-121);
 
-  check53nan(1/0., -1/0., GMP_RNDN);
+  check53nan (DBL_POS_INF, DBL_NEG_INF, GMP_RNDN);
 
   /* tests for particular cases (Vincent Lefevre, 22 Aug 2001) */
   check53(9007199254740992.0, 1.0, GMP_RNDN, 9007199254740992.0);

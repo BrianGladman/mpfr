@@ -1,6 +1,6 @@
 /* Test file for mpfr_mul_2exp.
 
-Copyright 1999, 2001 Free Software Foundation.
+Copyright 1999, 2001, 2002 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -36,12 +36,12 @@ main (int argc, char *argv[])
 
   mpfr_init2(w, 53); 
 
-  mpfr_set_d(w, 1.0/0.0, 0); 
-  mpfr_mul_2exp(w, w, 10, GMP_RNDZ); 
+  mpfr_set_inf (w, 1);
+  mpfr_mul_2exp (w, w, 10, GMP_RNDZ); 
   if (!MPFR_IS_INF(w)) { fprintf(stderr, "Inf != Inf"); exit(-1); }
   
-  mpfr_set_d(w, 0.0/0.0, 0); 
-  mpfr_mul_2exp(w, w, 10, GMP_RNDZ); 
+  mpfr_set_nan (w);
+  mpfr_mul_2exp (w, w, 10, GMP_RNDZ); 
   if (!MPFR_IS_NAN(w)) { fprintf(stderr, "NaN != NaN"); exit(-1); }
 
   for (k = 0; k < 100000; k++) {

@@ -1,6 +1,6 @@
 /* Test file for mpfr_ui_sub.
 
-Copyright 2000, 2001 Free Software Foundation.
+Copyright 2000, 2001, 2002 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -24,6 +24,7 @@ MA 02111-1307, USA. */
 #include <stdlib.h>
 #include "gmp.h"
 #include "mpfr.h"
+#include "mpfr-impl.h"
 #include "mpfr-test.h"
 
 void special _PROTO ((void));
@@ -231,9 +232,9 @@ main (int argc, char *argv[])
   for (p=2; p<100; p++)
     for (k=0; k<100; k++)
       check_two_sum (p);
-  check(1, 1.0/0.0, GMP_RNDN, -1.0/0.0); 
-  check(1, -1.0/0.0, GMP_RNDN, 1.0/0.0); 
-  check(1, 0.0/0.0, GMP_RNDN, 0.0/0.0); 
+  check (1, DBL_POS_INF, GMP_RNDN, DBL_NEG_INF); 
+  check (1, DBL_NEG_INF, GMP_RNDN, DBL_POS_INF); 
+  check (1, DBL_NAN, GMP_RNDN, DBL_NAN); 
   check(1196426492, 1.4218093058435347e-3, GMP_RNDN, 1.1964264919985781e9);
   check(1092583421, -1.0880649218158844e9, GMP_RNDN, 2.1806483428158845901e9);
   check(948002822, 1.22191250737771397120e+20, GMP_RNDN,

@@ -63,16 +63,16 @@ test3 (char *foo, mp_prec_t prec, mp_rnd_t rnd)
   /* for each variable, consider each of the following 6 possibilities:
      NaN, +Infinity, -Infinity, +0, -0 or a random number */
   for (i=0; i<36; i++) {
-    if (i%6==0) MPFR_SET_NAN(ref2);
-    if (i%6==1) mpfr_set_d (ref2, 1.0/0.0, GMP_RNDN);
-    if (i%6==2) mpfr_set_d (ref2, -1.0/0.0, GMP_RNDN);
+    if (i%6==0) mpfr_set_nan (ref2);
+    if (i%6==1) mpfr_set_inf (ref2, 1);
+    if (i%6==2) mpfr_set_inf (ref2, -1);
     if (i%6==3) mpfr_set_d (ref2, 0.0, GMP_RNDN);
     if (i%6==4) mpfr_set_d (ref2, -0.0, GMP_RNDN);
     if (i%6==5) mpfr_random (ref2);
 
-    if (i/6==0) MPFR_SET_NAN(ref3);
-    if (i/6==1) mpfr_set_d (ref3, 1.0/0.0, GMP_RNDN);
-    if (i/6==2) mpfr_set_d (ref3, -1.0/0.0, GMP_RNDN);
+    if (i/6==0) mpfr_set_nan (ref3);
+    if (i/6==1) mpfr_set_inf (ref3, 1);
+    if (i/6==2) mpfr_set_inf (ref3, -1);
     if (i/6==3) mpfr_set_d (ref3, 0.0, GMP_RNDN);
     if (i/6==4) mpfr_set_d (ref3, -0.0, GMP_RNDN);
     if (i/6==5) mpfr_random (ref3);
@@ -147,9 +147,9 @@ test4 (char *foo, mp_prec_t prec, mp_rnd_t rnd)
     {
 
       MPFR_CLEAR_FLAGS(op1);
-      if (i==0) MPFR_SET_NAN(op1);
-      if (i==1) mpfr_set_d (op1, 1.0/0.0, GMP_RNDN);
-      if (i==2) mpfr_set_d (op1, -1.0/0.0, GMP_RNDN);
+      if (i==0) mpfr_set_nan (op1);
+      if (i==1) mpfr_set_inf (op1, 1);
+      if (i==2) mpfr_set_inf (op1, -1);
       if (i==3) mpfr_set_d (op1, 0.0, GMP_RNDN);
       if (i==4) mpfr_set_d (op1, -0.0, GMP_RNDN);
       if (i==5) mpfr_random (op1);
@@ -158,9 +158,9 @@ test4 (char *foo, mp_prec_t prec, mp_rnd_t rnd)
         {
 
           MPFR_CLEAR_FLAGS(op2);
-          if (j==0) MPFR_SET_NAN(op2);
-          if (j==1) mpfr_set_d (op2, 1.0/0.0, GMP_RNDN);
-          if (j==2) mpfr_set_d (op2, -1.0/0.0, GMP_RNDN);
+          if (j==0) mpfr_set_nan (op2);
+          if (j==1) mpfr_set_inf (op2, 1);
+          if (j==2) mpfr_set_inf (op2, -1);
           if (j==3) mpfr_set_d (op2, 0.0, GMP_RNDN);
           if (j==4) mpfr_set_d (op2, -0.0, GMP_RNDN);
           if (j==5) mpfr_random (op2);
@@ -169,9 +169,9 @@ test4 (char *foo, mp_prec_t prec, mp_rnd_t rnd)
             {
 
               MPFR_CLEAR_FLAGS(op3);
-              if (k==0) MPFR_SET_NAN(op3);
-              if (k==1) mpfr_set_d (op3, 1.0/0.0, GMP_RNDN);
-              if (k==2) mpfr_set_d (op3, -1.0/0.0, GMP_RNDN);
+              if (k==0) mpfr_set_nan (op3);
+              if (k==1) mpfr_set_inf (op3, 1);
+              if (k==2) mpfr_set_inf (op3, -1);
               if (k==3) mpfr_set_d (op3, 0.0, GMP_RNDN);
               if (k==4) mpfr_set_d (op3, -0.0, GMP_RNDN);
               if (k==5) mpfr_random (op3);
@@ -316,9 +316,9 @@ test2ui (char *foo, mp_prec_t prec, mp_rnd_t rnd)
      ref3 can be 0 or any number */
   for (i=0; i<12; i++)
     {
-      if (i%6==0) MPFR_SET_NAN(ref2);
-      if (i%6==1) mpfr_set_d (ref2, 1.0/0.0, GMP_RNDN);
-      if (i%6==2) mpfr_set_d (ref2, -1.0/0.0, GMP_RNDN);
+      if (i%6==0) mpfr_set_nan (ref2);
+      if (i%6==1) mpfr_set_inf (ref2, 1);
+      if (i%6==2) mpfr_set_inf (ref2, -1);
       if (i%6==3) mpfr_set_d (ref2, 0.0, GMP_RNDN);
       if (i%6==4) mpfr_set_d (ref2, -0.0, GMP_RNDN);
       if (i%6==5) mpfr_random (ref2);
@@ -373,9 +373,9 @@ testui2 (char *foo, mp_prec_t prec, mp_rnd_t rnd)
   ref2 = (unsigned int) c[0];
 
   for (i=0; i<12; i++) {
-    if (i%6==0) MPFR_SET_NAN(ref3);
-    if (i%6==1) mpfr_set_d (ref3, 1.0/0.0, GMP_RNDN);
-    if (i%6==2) mpfr_set_d (ref3, -1.0/0.0, GMP_RNDN);
+    if (i%6==0) mpfr_set_nan (ref3);
+    if (i%6==1) mpfr_set_inf (ref3, 1);
+    if (i%6==2) mpfr_set_inf (ref3, -1);
     if (i%6==3) mpfr_set_d (ref3, 0.0, GMP_RNDN);
     if (i%6==4) mpfr_set_d (ref3, -0.0, GMP_RNDN);
     if (i%6==5) mpfr_random (ref3);
@@ -423,9 +423,9 @@ test2 (char *foo, mp_prec_t prec, mp_rnd_t rnd)
   mpfr_random (ref2);
 
   for (i=0; i<6; i++) {
-    if (i==0) MPFR_SET_NAN(ref2);
-    if (i==1) mpfr_set_d (ref2, 1.0/0.0, GMP_RNDN);
-    if (i==2) mpfr_set_d (ref2, -1.0/0.0, GMP_RNDN);
+    if (i==0) mpfr_set_nan (ref2);
+    if (i==1) mpfr_set_inf (ref2, 1);
+    if (i==2) mpfr_set_inf (ref2, -1);
     if (i==3) mpfr_set_d (ref2, 0.0, GMP_RNDN);
     if (i==4) mpfr_set_d (ref2, -0.0, GMP_RNDN);
     if (i==5) mpfr_random (ref2);
@@ -466,9 +466,9 @@ test2a (char *foo, mp_prec_t prec)
   mpfr_random (ref2);
 
   for (i=0; i<6; i++) {
-    if (i==0) MPFR_SET_NAN(ref2);
-    if (i==1) mpfr_set_d (ref2, 1.0/0.0, GMP_RNDN);
-    if (i==2) mpfr_set_d (ref2, -1.0/0.0, GMP_RNDN);
+    if (i==0) mpfr_set_nan (ref2);
+    if (i==1) mpfr_set_inf (ref2, 1);
+    if (i==2) mpfr_set_inf (ref2, -1);
     if (i==3) mpfr_set_d (ref2, 0.0, GMP_RNDN);
     if (i==4) mpfr_set_d (ref2, -0.0, GMP_RNDN);
     if (i==5) mpfr_random (ref2);
@@ -511,9 +511,9 @@ test3a (char *foo, mp_prec_t prec, mp_rnd_t rnd)
   mpfr_random (ref3);
 
   for (i=0; i<6; i++) {
-    if (i==0) MPFR_SET_NAN(ref3);
-    if (i==1) mpfr_set_d (ref3, 1.0/0.0, GMP_RNDN);
-    if (i==2) mpfr_set_d (ref3, -1.0/0.0, GMP_RNDN);
+    if (i==0) mpfr_set_nan (ref3);
+    if (i==1) mpfr_set_inf (ref3, 1);
+    if (i==2) mpfr_set_inf (ref3, -1);
     if (i==3) mpfr_set_d (ref3, 0.0, GMP_RNDN);
     if (i==4) mpfr_set_d (ref3, -0.0, GMP_RNDN);
     if (i==5) mpfr_random (ref3);

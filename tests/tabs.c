@@ -25,8 +25,6 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-test.h"
 
-#define Infp (1/0.)
-
 void check_inexact _PROTO((void));
 
 void
@@ -107,18 +105,21 @@ main (int argc, char *argv[])
      fprintf(stderr, "Error in mpfr_abs(-1.0)\n"); exit(1);
    }
 
-   mpfr_set_d(x, -6/-0., GMP_RNDN); 
-   mpfr_abs(x, x, GMP_RNDN); 
-   if (mpfr_get_d(x) != Infp) { 
-     fprintf(stderr, "Error in mpfr_abs(Inf).\n"); exit(1); 
-   }
+   mpfr_set_d (x, -6/-0., GMP_RNDN);
+   mpfr_abs (x, x, GMP_RNDN);
+   if (!mpfr_inf_p(x) || (mpfr_sgn(x) <= 0))
+     {
+       fprintf (stderr, "Error in mpfr_abs(Inf).\n");
+       exit (1);
+     }
 
-   mpfr_set_d(x, 2/-0., GMP_RNDN); 
-   mpfr_abs(x, x, GMP_RNDN); 
-   if (mpfr_get_d(x) != Infp) { 
-     fprintf(stderr, "Error in mpfr_abs(-Inf).\n"); exit(1); 
-   }
-
+   mpfr_set_d (x, 2/-0., GMP_RNDN);
+   mpfr_abs (x, x, GMP_RNDN);
+   if (!mpfr_inf_p(x) || (mpfr_sgn(x) <= 0))
+     {
+       fprintf (stderr, "Error in mpfr_abs(-Inf).\n");
+       exit (1);
+     }
 
    n = (argc==1) ? 1000000 : atoi(argv[1]);
    for (k = 1; k <= n; k++)

@@ -24,6 +24,7 @@ MA 02111-1307, USA. */
 #include <math.h>
 #include "gmp.h"
 #include "mpfr.h"
+#include "mpfr-impl.h"
 #include "mpfr-test.h"
 
 void check53 _PROTO ((double, double, mp_rnd_t));
@@ -37,7 +38,7 @@ check53 (double x, double tan_x, mp_rnd_t rnd_mode)
   mpfr_init2 (s, 53);
   mpfr_set_d (xx, x, rnd_mode); /* should be exact */
   mpfr_tan (s, xx, rnd_mode);
-  if (mpfr_get_d (s) != tan_x && (!isnan(tan_x) || !isnan(mpfr_get_d(s)))) {
+  if (mpfr_get_d (s) != tan_x && (!isnan(tan_x) || !mpfr_nan_p(s))) {
     fprintf (stderr, "mpfr_tan failed for x=%1.20e, rnd=%s\n", x,
 	     mpfr_print_rnd_mode (rnd_mode));
     fprintf (stderr, "mpfr_tan gives tan(x)=%1.20e, expected %1.20e\n",
@@ -59,9 +60,9 @@ main(int argc, char *argv[])
   unsigned int prec[10] = {14, 15, 19, 22, 23, 24, 25, 40, 41, 52};
   unsigned int prec2[10] = {4, 5, 6, 19, 70, 95, 100, 106, 107, 108};
 
-  check53(0.0/0.0, 0.0/0.0, GMP_RNDN); 
-  check53(1.0/0.0, 0.0/0.0, GMP_RNDN); 
-  check53(-1.0/0.0, 0.0/0.0, GMP_RNDN); 
+  check53 (DBL_NAN, DBL_NAN, GMP_RNDN); 
+  check53 (DBL_POS_INF, DBL_NAN, GMP_RNDN); 
+  check53 (DBL_NEG_INF, DBL_NAN, GMP_RNDN); 
 
   mpfr_init (x);
 

@@ -347,11 +347,11 @@ main (int argc, char *argv[])
 
   check_exact ();
   check_float ();
-  check53(0.0, 1.0/0.0, GMP_RNDN, 0.0/0.0); 
-  check53(1.0, 1.0/0.0, GMP_RNDN, 1.0/0.0); 
-  check53(-1.0, 1.0/0.0, GMP_RNDN, -1.0/0.0); 
-  check53(0.0/0.0, 0.0, GMP_RNDN, 0.0/0.0); 
-  check53(1.0, 0.0/0.0, GMP_RNDN, 0.0/0.0); 
+  check53 (0.0, DBL_POS_INF, GMP_RNDN, DBL_NAN);
+  check53(1.0, DBL_POS_INF, GMP_RNDN, DBL_POS_INF);
+  check53(-1.0, DBL_POS_INF, GMP_RNDN, DBL_NEG_INF);
+  check53(DBL_NAN, 0.0, GMP_RNDN, DBL_NAN); 
+  check53(1.0, DBL_NAN, GMP_RNDN, DBL_NAN); 
   check53(6.9314718055994530941514e-1, 0.0, GMP_RNDZ, 0.0);
   check53(0.0, 6.9314718055994530941514e-1, GMP_RNDZ, 0.0);
   check_sign();
