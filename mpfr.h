@@ -107,6 +107,7 @@ typedef __gmp_const __mpfr_struct *mpfr_srcptr;
 #define MPFR_SET_SAME_SIGN(x, y) if (MPFR_SIGN((x)) != MPFR_SIGN((y))) { MPFR_CHANGE_SIGN((x)); }
 #define MPFR_PREC(x) ((x)->_mp_prec)
 #define MPFR_NOTZERO(x) (MPFR_MANT(x)[(MPFR_PREC(x)-1)/BITS_PER_MP_LIMB])
+#define MPFR_IS_ZERO(x) ((MPFR_NOTZERO(x))==0)
 #define MPFR_SET_ZERO(x) (MPFR_MANT(x)[(MPFR_PREC(x)-1)/BITS_PER_MP_LIMB] = 0)
 #define mpfr_sgn(x) ((MPFR_NOTZERO(x)) ? MPFR_SIGN(x) : 0)
 
