@@ -31,6 +31,7 @@ case $OS_TYPE in
 		;;
 	SunOS*)
 		MISCFLAGS="trunc.c"
+		LM9X="-lm9x"
 		AC_CHECK_LIB(m, main)
 		;;
 	Linux*)
@@ -61,10 +62,13 @@ AC_CHECK_HEADERS(fpu_control.h)
 
 dnl Check for fesetround
 AC_MSG_CHECKING(for fesetround)
+saved_LIBS="$LIBS"
+LIBS="$LIBS $LM9X"
 AC_TRY_LINK([#include <fenv.h>], [fesetround(FE_TONEAREST);],
   [AC_MSG_RESULT(yes)
    AC_DEFINE(HAVE_FESETROUND)],
-  AC_MSG_RESULT(no)
+  [AC_MSG_RESULT(no)
+   LIBS="$saved_LIBS"]
 )
 
 dnl Tests concerning the include directories.
