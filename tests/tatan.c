@@ -1,6 +1,6 @@
 /* Test file for mpfr_atan.
 
-Copyright 2001, 2002, 2003, 2004 Free Software Foundation.
+Copyright 2001, 2002, 2003, 2004, 2005 Free Software Foundation.
 Written by Paul Zimmermann, INRIA Lorraine.
 
 This file is part of the MPFR Library.
