@@ -59,42 +59,52 @@ mpfr_log (r, a, rnd_mode)
   TMP_DECL(marker);
 
   /* If a is NaN, the result is NaN */
-  if (MPFR_IS_NAN(a)) {
-    MPFR_SET_NAN(r);
-    return 1;
-  }
-
-  /* If a is negative, the result is NaN */
-  if (MPFR_ISNEG(a)) {
-    MPFR_SET_NAN(r);
-    return 1;
-  }
+  if (MPFR_IS_NAN(a))
+    {
+      MPFR_SET_NAN(r);
+      return 1;
+    }
 
   MPFR_CLEAR_NAN(r);
 
   /* check for infinity before zero */
   if (MPFR_IS_INF(a))
     {
-      MPFR_SET_INF(r); 
-      if (MPFR_SIGN(r) > 0) MPFR_CHANGE_SIGN(r);
-      return 1; 
-    }
-
-  if (MPFR_IS_ZERO(a)) 
-    {
-      MPFR_SET_INF(r); 
-      if (MPFR_SIGN(r) < 0) MPFR_CHANGE_SIGN(r);
-      return 1; 
+      if (MPFR_SIGN(a) < 0) /* log(-Inf) = NaN */
+	MPFR_SET_NAN(r);
+      else /* log(+Inf) = +Inf */
+	{
+	  MPFR_SET_INF(r);
+	  if (MPFR_SIGN(r) < 0)
+	    MPFR_CHANGE_SIGN(r);
+	}
+      return 1;
     }
 
   /* Now we can clear the flags without damage even if r == a */
   MPFR_CLEAR_INF(r); 
 
+  if (MPFR_IS_ZERO(a)) 
+    {
+      MPFR_SET_INF(r); 
+      if (MPFR_SIGN(r) > 0)
+	MPFR_CHANGE_SIGN(r);
+      return 1; 
+    }
+
+  /* If a is negative, the result is NaN */
+  if (MPFR_SIGN(a) < 0)
+    {
+      MPFR_SET_NAN(r);
+      return 1;
+    }
+
   /* If a is 1, the result is 0 */
-  if (mpfr_cmp_ui_2exp(a,1,0)==0){
-    MPFR_SET_ZERO(r);
-    return 0; /* only case where the result is exact */
-  }
+  if (mpfr_cmp_ui_2exp(a,1,0) == 0)
+    {
+      MPFR_SET_ZERO(r);
+      return 0; /* only case where the result is exact */
+    }
 
   q=MPFR_PREC(r);
   
