@@ -534,13 +534,13 @@ Otherwise, the mantissa is rounded to precision @var{prec} with the given
 direction. In both cases, the precision of @var{x} is changed to @var{prec}.
 @end deftypefun
 
-@deftypefun void mpfr_set_machine_rnd_mode (mp_rnd_t @var{rnd})
-Set the machine rounding mode to @var{rnd}.
-This function is useful for debugging purpose, but
-also as a common interface to all different ways of setting the
-rounding mode, which unfortunately differ from one operating system to
-another one.
-@end deftypefun
+@c @deftypefun void mpfr_set_machine_rnd_mode (mp_rnd_t @var{rnd})
+@c Set the machine rounding mode to @var{rnd}.
+@c This function is useful for debugging purpose, but
+@c also as a common interface to all different ways of setting the
+@c rounding mode, which unfortunately differ from one operating system to
+@c another one.
+@c @end deftypefun
 
 @deftypefun {char *} mpfr_print_rnd_mode (mp_rnd_t @var{rnd})
 Returns the input string (GMP_RNDD, GMP_RNDU, GMP_RNDN, GMP_RNDZ)
