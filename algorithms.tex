@@ -194,6 +194,52 @@ so the error on $(s - l) - r$ is at most $5 {\rm ulp}(1/2)$,
 and adding the $3 e^{-2n}$ truncation error, we get a bound of
 $8 {\rm ulp}(1/2)$.
 
+\subsubsection{A faster formula}
+
+Brent and McMillan give in \cite{BrMc80} a faster algorithm (B2) using the
+modified Bessel functions, which was
+used by Gourdon and Demichel to compute 108,000,000 digits of $\gamma$ in
+October 1999:
+\[ \gamma = \frac{S_0 - K_0}{I_0} - \log n, \]
+where $S_0 = \sum_{k=1}^{\infty} \frac{n^{2k}}{(k!)^2} H_k$,
+$H_k = 1 + \frac{1}{2} + \cdots + \frac{1}{k}$ being the $k$-th harmonic
+number,
+$K_0 = \sqrt{\frac{\pi}{4n}} e^{-2n} \sum_{k=0}^{\infty}
+	(-1)^k \frac{[(2k)!]^2}{(k!)^3 (64n)^k}$,
+and $I_0 = \sum_{k=0}^{\infty} \frac{n^{2k}}{(k!)^2}$.
+
+We have $I_0 \ge \frac{e^{2n}}{\sqrt{4 \pi n}}$ (see \cite{BrMc80} page 306).
+From the remark following formula 9.7.2 of \cite{AbSt73},
+the remainder in the truncated expansion for $K_0$ up to $k$ does not
+exceed the $(k+1)$-th term, whence
+$K_0 \le \sqrt{\frac{\pi}{4n}} e^{-2n}$ and
+$\frac{K_0}{I_0} \le \pi e^{-4n}$ as in formula (5) of \cite{BrMc80}.
+Let $I'_0 = \sum_{k=0}^{K-1} \frac{n^{2k}}{(k!)^2}$ with
+$K = \lceil \beta n \rceil$, and $\beta$ is the root of
+$\beta (\log \beta - 1) = 3$
+($\beta \sim 4.971...$) then
+\[ |I_0 - I'_0| \le \frac{\beta}{2 \pi (\beta^2-1)} \frac{e^{-6n}}{n}. \]
+Let $K'_0 = \sqrt{\frac{\pi}{4n}} e^{-2n} \sum_{k=0}^{4n-1} (-1)^k
+	\frac{[(2k)!]^2}{(k!)^3 (64n)^k}$, then bounding by the next term:
+\[ |K_0 - K'_0| \le \frac{(8n+1)}{16 \sqrt{2} n} \frac{e^{-6n}}{n}
+	\le \frac{1}{2} \frac{e^{-6n}}{n}. \]
+We get from this
+\[ \left| \frac{K_0}{I_0} - \frac{K'_0}{I'_0} \right| 
+	\le \frac{1}{2 I_0} \frac{e^{-6n}}{n} \le \sqrt{\frac{\pi}{n}}
+	e^{-8n}. \]
+Let $S'_0 = \sum_{k=1}^{K-1} \frac{n^{2k}}{(k!)^2} H_k$,
+then using $\frac{H_{k+1}}{H_k} \le \frac{k+1}{k}$ and the same bound $K$
+than for $I'_0$ ($4n \le K \le 5n$), we get:
+\[ |S_0 - S'_0| \le \frac{\beta}{2 \pi (\beta^2-1)} H_k \frac{e^{-6n}}{n}. \]
+We deduce:
+\[ \left| \frac{S_0}{I_0} - \frac{S'_0}{I'_0} \right|
+	\le e^{-8n} H_K \frac{\sqrt{4 \pi n}}{\pi (\beta^2-1)}
+	\frac{\beta}{n} \le e^{-8n}. \]
+Hence we have
+\[ \left| \gamma - \left( \frac{S'_0 - K'_0}{I'_0} - \log n \right) \right|
+	\le (1 + \sqrt{\frac{\pi}{n}}) e^{-8n} 
+	\le 3 e^{-8n}. \]
+
 \section{High level functions}
 
 \subsection{The exponential function}
