@@ -70,7 +70,8 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mp_rnd_t rnd)
      x-ulp(x) and x if cache->inexact > 0 
      and abs(x-exact) <= ulp(x)/2 */
   MPFR_ASSERTD (MPFR_IS_POS(cache->x)); /* TODO...*/
-     
+  /* We must use nextbelow instead of sub_one_ulp, since we know
+     that the exact value is < 1/2ulp(x) (We want sub_demi_ulp(x)). */
   inexact = mpfr_set (dest, cache->x, rnd);
   if (MPFR_LIKELY(cache->inexact != 0))
     {
@@ -82,7 +83,7 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mp_rnd_t rnd)
 	    {
               inexact = cache->inexact;
 	      if (inexact > 0)
-		mpfr_sub_one_ulp (dest, rnd);
+		mpfr_nextbelow (dest);
 	    }
 	  break;
 	case GMP_RNDU:
@@ -90,7 +91,7 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mp_rnd_t rnd)
             {
               inexact = cache->inexact;
               if (inexact < 0)
-                mpfr_add_one_ulp (dest, rnd);
+                mpfr_nextabove (dest);
             }
           break;
 	default: /* GMP_RNDN */
@@ -98,9 +99,9 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mp_rnd_t rnd)
 			    inexact == -MPFR_EVEN_INEX))
 	    {
 	      if (cache->inexact < 0)
-		mpfr_add_one_ulp (dest, rnd);
+		mpfr_nextabove (dest);
 	      else
-		mpfr_sub_one_ulp (dest, rnd);
+		mpfr_nextbelow (dest);
 	      inexact = -inexact;
 	    }
 	  else if (MPFR_UNLIKELY(inexact == 0))
