@@ -33,72 +33,90 @@ static const char * const val[] = {
   "42@-17","1.0800000000000@-13","1.0800000000000@-18"
 };
 
+static int
+test_mul (int i, int div, mpfr_ptr y, mpfr_srcptr x,
+          unsigned long int n, mp_rnd_t r)
+{
+  return
+    i == 0 ? (div ? mpfr_div_2ui : mpfr_mul_2ui) (y, x, n, r) :
+    i == 1 ? (div ? mpfr_div_2si : mpfr_mul_2si) (y, x, n, r) :
+    i == 2 ? (div ? mpfr_mul_2si : mpfr_div_2si) (y, x, -n, r) :
+    (exit (1), 0);
+}
+
 int
 main (int argc, char *argv[])
 {
   mpfr_t w,z;
   unsigned long k;
+  int i;
 
   tests_start_mpfr ();
 
-  mpfr_inits2(53, w, z, NULL);
+  mpfr_inits2 (53, w, z, NULL);
 
-  mpfr_set_inf (w, 1);
-  mpfr_mul_2ui (w, w, 10, GMP_RNDZ);
-  if (!MPFR_IS_INF(w))
+  for (i = 0; i < 3; i++)
     {
-      printf ("Inf != Inf");
-      exit (1);
-    }
-
-  mpfr_set_nan (w);
-  mpfr_mul_2ui (w, w, 10, GMP_RNDZ);
-  if (!MPFR_IS_NAN(w))
-    {
-      printf ("NaN != NaN");
-      exit (1);
-    }
-
-  for( k = 0 ; k < numberof(val) ; k+=3 )
-    {
-      mpfr_set_str (w, val[k], 16, GMP_RNDN);
-      mpfr_mul_2ui (z, w, 10, GMP_RNDZ);
-      if (mpfr_cmp_str(z, val[k+1], 16, GMP_RNDN))
-	{
-	  printf("ERROR for mpfr_mul_2ui for %s\n", val[k]);
-	  printf("Expected: %s\n"
-		 "Got     : ", val[k+1]);
-	  mpfr_out_str(stdout, 16, 0, z, GMP_RNDN);
-	  putchar('\n');
-	  exit(-1);
-	}
-      mpfr_div_2ui (z, w, 10, GMP_RNDZ);
-      if (mpfr_cmp_str(z, val[k+2], 16, GMP_RNDN))
+      mpfr_set_inf (w, 1);
+      test_mul (i, 0, w, w, 10, GMP_RNDZ);
+      if (!MPFR_IS_INF(w))
         {
-          printf("ERROR for mpfr_div_2ui for %s\n"
-		 "Expected: %s\n"
-                 "Got     : ", val[k], val[k+2]);
-          mpfr_out_str(stdout, 16, 0, z, GMP_RNDN);
-          putchar('\n');
-          exit(-1);
+          printf ("Result is not Inf (i = %d)\n", i);
+          exit (1);
+        }
+
+      mpfr_set_nan (w);
+      test_mul (i, 0, w, w, 10, GMP_RNDZ);
+      if (!MPFR_IS_NAN(w))
+        {
+          printf ("Result is not NaN (i = %d)\n", i);
+          exit (1);
+        }
+
+      for (k = 0 ; k < numberof(val) ; k+=3)
+        {
+          mpfr_set_str (w, val[k], 16, GMP_RNDN);
+          test_mul (i, 0, z, w, 10, GMP_RNDZ);
+          if (mpfr_cmp_str (z, val[k+1], 16, GMP_RNDN))
+            {
+              printf ("ERROR for x * 2^n (i = %d) for %s\n", i, val[k]);
+              printf ("Expected: %s\n"
+                      "Got     : ", val[k+1]);
+              mpfr_out_str (stdout, 16, 0, z, GMP_RNDN);
+              putchar ('\n');
+              exit (1);
+            }
+          test_mul (i, 1, z, w, 10, GMP_RNDZ);
+          if (mpfr_cmp_str (z, val[k+2], 16, GMP_RNDN))
+            {
+              printf ("ERROR for x / 2^n (i = %d) for %s\n", i, val[k]);
+              printf ("Expected: %s\n"
+                      "Got     : ", val[k+2]);
+              mpfr_out_str (stdout, 16, 0, z, GMP_RNDN);
+              putchar ('\n');
+              exit (1);
+            }
+        }
+
+      mpfr_set_inf (w, 1);
+      mpfr_nextbelow (w);
+      test_mul (i, 0, w, w, 1, GMP_RNDN);
+      if (!mpfr_inf_p (w))
+        {
+          printf ("Overflow error (i = %d)!\n", i);
+          exit (1);
+        }
+      mpfr_set_ui (w, 0, GMP_RNDN);
+      mpfr_nextabove (w);
+      test_mul (i, 1, w, w, 1, GMP_RNDN);
+      if (mpfr_cmp_ui (w, 0))
+        {
+          printf ("Underflow error (i = %d)!\n", i);
+          exit (1);
         }
     }
-  mpfr_set_ui(w, 1, GMP_RNDN);
-  mpfr_mul_2ui(w, w, (unsigned long) MPFR_EXP_MAX+12, GMP_RNDN);
-  if (!mpfr_inf_p(w))
-    {
-      printf("Overflow error!\n");
-      exit(1);
-    }
-  mpfr_set_ui(w, 1, GMP_RNDN);
-  mpfr_div_2ui(w, w, (unsigned long) MPFR_EXP_MAX+12, GMP_RNDN);
-  if (mpfr_cmp_ui(w, 0))
-    {
-      printf("Underflow error!\n");
-      exit(1);
-    }
 
-  mpfr_clears(w,z,NULL);
+  mpfr_clears (w, z, NULL);
 
   tests_end_mpfr ();
   return 0;
