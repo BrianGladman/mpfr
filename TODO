@@ -33,16 +33,6 @@ New functions to implement:
 - mpz_set_fr (to set a mpz from a mpfr, with a rounding mode)
 - those from LIA: missing secant, cosecant, cotangent (trigo/hyperbolic)
 - atan2
-- mpfr_greater_p (Kevin, Vincent ok)
-                         =     <     >     unordered
-mpfr_greater_p           0     0     1     0
-mpfr_greaterequal_p      1     0     1     0
-mpfr_less_p              0     1     0     0
-mpfr_lessequal_p         1     1     0     0
-mpfr_lessgreater_p       0     1     1     0
-mpfr_equal_p             1     0     0     0
-mpfr_unordered_p         0     0     0     1
-
 - mpfr_set_f (MPF -> float) or mpfr_strtof, mpfr_set_ld or mpfr_strtold
 	(idem for mpfr_get_*)
 - implement accurate summation algorithms from Demmel
@@ -59,6 +49,7 @@ Efficiency:
 	(currently too slow for 2^1024)
 - mpfr_asin/acos are too slow for small values (2^(-1021) for example)
 - idem for mpfr_atanh (2^(-1021) for example)
+- rewrite mpfr_greater_p...
 
 Miscellaneous:
 
@@ -100,3 +91,13 @@ Miscellaneous:
 - randomized tests: do like GMP (see misc.c), but using MPFR_CHECK_RANDOMIZE
 
 - add tests for nextabove/nextbelow/nexttoward.
+
+- documentation and tests for:
+                         =     <     >     unordered
+mpfr_greater_p           0     0     1     0
+mpfr_greaterequal_p      1     0     1     0
+mpfr_less_p              0     1     0     0
+mpfr_lessequal_p         1     1     0     0
+mpfr_lessgreater_p       0     1     1     0
+mpfr_equal_p             1     0     0     0
+mpfr_unordered_p         0     0     0     1

@@ -280,6 +280,14 @@ int mpfr_div_q _PROTO ((mpfr_ptr, mpfr_srcptr, mpq_srcptr, mp_rnd_t));
 int mpfr_add_q _PROTO ((mpfr_ptr, mpfr_srcptr, mpq_srcptr, mp_rnd_t)); 
 int mpfr_sub_q _PROTO ((mpfr_ptr, mpfr_srcptr, mpq_srcptr, mp_rnd_t)); 
 
+int mpfr_greater_p _PROTO ((mpfr_srcptr, mpfr_srcptr));
+int mpfr_greaterequal_p _PROTO ((mpfr_srcptr, mpfr_srcptr));
+int mpfr_less_p _PROTO ((mpfr_srcptr, mpfr_srcptr));
+int mpfr_lessequal_p _PROTO ((mpfr_srcptr, mpfr_srcptr));
+int mpfr_lessgreater_p _PROTO ((mpfr_srcptr, mpfr_srcptr));
+int mpfr_equal_p _PROTO ((mpfr_srcptr, mpfr_srcptr));
+int mpfr_unordered_p _PROTO ((mpfr_srcptr, mpfr_srcptr));
+
 #if defined (__cplusplus)
 }
 #endif  
