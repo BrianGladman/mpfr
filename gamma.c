@@ -30,8 +30,10 @@ MA 02111-1307, USA. */
 int mpfr_gamma _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 
 /* We use the reflection formula 
-  Gamma(1+x)Gamma(1-x)=\pi x/(sin(\pi x))
-  in order to treat the case x<=1  */
+  Gamma(1+t) Gamma(1-t) = - Pi t / sin(Pi (1 + t))
+  in order to treat the case x <= 1,
+  i.e. if x = 1-t, then Gamma(x) = -Pi*(1-x)/sin(Pi*(2-x))/GAMMA(2-x)
+*/
 
 #define CST   0.38  /* CST=ln(2)/(ln(2*pi)) */
 #define zCST  0.26  /* zCST=1/(2*ln(2*pi)) */
@@ -43,7 +45,6 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_t xp;
   mpfr_t product;
   mpfr_t the_pi;
-  mpfr_t Csin;
   mpfr_t GammaTrial;
   mpfr_t tmp, tmp2;
 
@@ -57,35 +58,40 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
   int compared;
   int k;
   int sign;
+
   /* Trivial cases */
   if (MPFR_IS_NAN(x))
     {
       MPFR_SET_NAN(gamma);
       return 1;
     }
+
   if (!MPFR_NOTZERO(x))
     {
       MPFR_SET_INF(gamma);
       return 1;
     }
+
   if (MPFR_IS_INF(x))
     {
       MPFR_SET_INF(gamma);
       return 1;
     }
+
   /* Set x_p=x if x> 1 else set x_p=2-x */
-  prec_gamma = MPFR_PREC(gamma);
-  compared = mpfr_cmp_ui(x, 1);
+  prec_gamma = MPFR_PREC (gamma);
+  compared = mpfr_cmp_ui (x, 1);
   if (compared == 0)
     {
-      mpfr_set_ui(gamma, 1, rnd_mode);
+      mpfr_set_ui (gamma, 1, rnd_mode);
       return 1;
     }
-  realprec = prec_gamma+10;
+  realprec = prec_gamma + 10;
 
-  while (!good){
+  while (!good)
+    {
     /* Precision stuff */
-    if (compared == -1)
+    if (compared < 0)
       {
 	prec_nec = 2+realprec; /* We will use the reflexion formula! */
       }
@@ -109,14 +115,15 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
 
     mpfr_init2(xp, Prec);
-    if (compared == -1)
+    if (compared < 0)
       {
-	mpfr_ui_sub(xp, 1, x, GMP_RNDN);
+	mpfr_ui_sub (xp, 1, x, GMP_RNDN);
       }
     else
       {
-	mpfr_sub_ui(xp, x, 1, GMP_RNDN);
+	mpfr_sub_ui (xp, x, 1, GMP_RNDN);
       }
+
     /* Initialisation    */
     mpfr_init2(tmp, Prec);
     mpfr_init2(tmp2, Prec);
@@ -169,24 +176,22 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
     mpfr_neg(tmp, tmp2, GMP_RNDN);
     mpfr_exp(tmp, tmp, GMP_RNDN);
     mpfr_mul(GammaTrial, GammaTrial, tmp, GMP_RNDN);
-    if (compared == -1)
+    if (compared < 0)
       {
-	mpfr_init2(Csin, Prec);
-	mpfr_sub_ui(tmp, x, 1, GMP_RNDN);
-	mpfr_mul(tmp, the_pi, tmp, GMP_RNDN);
-	mpfr_div(GammaTrial, tmp, GammaTrial, GMP_RNDN);
-	mpfr_sin(tmp, tmp, GMP_RNDN);
-	mpfr_div(GammaTrial, GammaTrial, tmp, GMP_RNDN);
-	mpfr_neg(GammaTrial, GammaTrial, GMP_RNDN);
+	mpfr_sub_ui (tmp, x, 1, GMP_RNDN);
+	mpfr_mul (tmp, the_pi, tmp, GMP_RNDN);
+	mpfr_div (GammaTrial, tmp, GammaTrial, GMP_RNDN);
+	mpfr_sin (tmp, tmp, GMP_RNDN);
+	mpfr_div (GammaTrial, GammaTrial, tmp, GMP_RNDN);
       }
 #ifdef DEBUG
     printf("GammaTrial =");
     mpfr_out_str (stdout, 10, 0, GammaTrial, GMP_RNDD);
     printf ("\n");
 #endif
-    if (mpfr_can_round(GammaTrial, realprec, GMP_RNDD, rnd_mode, MPFR_PREC(gamma)))
+    if (mpfr_can_round (GammaTrial, realprec, GMP_RNDD, rnd_mode, MPFR_PREC(gamma)))
       {
-	mpfr_set(gamma, GammaTrial, rnd_mode);
+	mpfr_set (gamma, GammaTrial, rnd_mode);
 	good = 1;
       }
     else

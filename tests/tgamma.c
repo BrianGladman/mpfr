@@ -33,10 +33,33 @@ main (void)
   unsigned int prec, err, yprec, n;
   mp_rnd_t rnd;
   mpfr_t x, y, z;
+  double xd, yd;
 
   mpfr_init (x);
   mpfr_init (y);
   mpfr_init (z);
+
+  mpfr_set_prec (x, 53);
+  mpfr_set_prec (y, 53);
+
+  mpfr_set_d (x, xd = 1.0762904832837976166, GMP_RNDN);
+  mpfr_gamma (y, x, GMP_RNDN);
+  if (mpfr_get_d (y, GMP_RNDN) != (yd = 0.96134843256452096050))
+    {
+      fprintf (stderr, "mpfr_gamma(%1.20e) is wrong: expected %1.20e, got %1.20e\n",
+               xd, yd, mpfr_get_d (y, GMP_RNDN));
+      exit (1);
+    }
+
+
+  mpfr_set_d (x, xd = 9.23709516716202383435e-01, GMP_RNDN);
+  mpfr_gamma (y, x, GMP_RNDN);
+  if (mpfr_get_d (y, GMP_RNDN) != (yd = 1.0502315560291053398))
+    {
+      fprintf (stderr, "mpfr_gamma(%1.20e) is wrong: expected %1.20e, got %1.20e\n",
+               xd, yd, mpfr_get_d (y, GMP_RNDN));
+      exit (1);
+    }
 
   for (prec = 2; prec <= 100; prec++)
     {
