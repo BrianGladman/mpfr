@@ -17,6 +17,14 @@ Miscellaneous:
   (exists since K&R, but has not necessarily a greater precision than double)
   cf http://anubis.dkuug.dk/jtc1/sc22/wg14/www/docs/n869/
 
+- from Kevin Ryde <user42@zip.com.au>:
+   Also for pi.c, a pre-calculated compiled-in pi to a few thousand
+   digits would be good value I think.  After all, say 10000 bits using
+   1250 bytes would still be small compared to the code size!
+
+- from Kevin Ryde <user42@zip.com.au>:
+   Determine the exp2/exp3 thresholds using tune/tuneup.c.
+
 - add a description of the algorithms used
 
 - add undef's in mpf2mpfr.h to avoid warnings
