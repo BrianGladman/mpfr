@@ -176,7 +176,8 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
   printf ("\n");
 #endif
   d = precz + 11;
-  mpfr_init2 (s1, precs);
+  /* we want that s1 = s-1 is exact, i.e. we should have PREC(s1) >= EXP(s) */
+  mpfr_init2 (s1, (precs > MPFR_EXP(s)) ? precs : MPFR_EXP(s));
   do
     {
       /* Principal loop: we compute, in z_pre,
@@ -260,7 +261,8 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
           /* Computation of the 3 parts of the fonction Zeta. */
           mpfr_zeta_part_a (a, s, n);
           mpfr_zeta_part_b (b, s, n, p, tc1);
-          mpfr_sub_ui (s1, s, 1, GMP_RNDN);
+          /* s1 = s-1 is already computed above */
+          /* mpfr_sub_ui (s1, s, 1, GMP_RNDN); */
           mpfr_ui_div (c, 1, s1, GMP_RNDN);
           mpfr_ui_pow (f, n, s1, GMP_RNDN);
           mpfr_div (c, c, f, GMP_RNDN);

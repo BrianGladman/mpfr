@@ -63,6 +63,8 @@ test1 (void)
   if (mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_zeta (1)\n");
+      printf ("Expected "); mpfr_print_binary (x); puts ("");
+      printf ("Got      "); mpfr_print_binary (y); puts ("");
       exit (1);
     }
 
