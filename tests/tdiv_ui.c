@@ -32,7 +32,8 @@ void special _PROTO((void));
 
 void check (double d, unsigned long u, mp_rnd_t rnd, double e)
 {
-  mpfr_t x, y; double f;
+  mpfr_t x, y;
+  double f;
 
   mpfr_init2(x, 53); mpfr_init2(y, 53);
 #ifdef TEST
@@ -55,6 +56,7 @@ void
 special (void)
 {
   mpfr_t x, y;
+  unsigned xprec, yprec;
 
   mpfr_init2 (x, 100);
   mpfr_init2 (y, 100);
@@ -78,6 +80,24 @@ special (void)
     {
       fprintf (stderr, "Error in x / 17 for x=1/16!\n");
       exit (1);
+    }
+
+  for (xprec = 53; xprec <= 128; xprec++)
+    {
+      mpfr_set_prec (x, xprec);
+      mpfr_set_str_raw (x, "0.1100100100001111110011111000000011011100001100110111E2");
+      for (yprec = 53; yprec <= 128; yprec++)
+	{
+	  mpfr_set_prec (y, yprec);
+	  mpfr_div_ui (y, x, 1, GMP_RNDN);
+	  if (mpfr_get_d (x) != mpfr_get_d (y))
+	    {
+	      fprintf (stderr, "division by 1.0 fails for xprec=%u, yprec=%u\n", xprec, yprec);
+	      printf ("expected "); mpfr_print_raw (x); putchar ('\n');
+	      printf ("got      "); mpfr_print_raw (y); putchar ('\n');
+	      exit (1);
+	    }
+	}
     }
 
   mpfr_clear (x);
