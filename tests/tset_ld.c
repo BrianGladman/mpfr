@@ -101,7 +101,7 @@ main (int argc, char *argv[])
   tests_start_mpfr ();
   mpfr_test_init ();
 
-  mpfr_init2 (x, sizeof(long double)*CHAR_BIT);
+  mpfr_init2 (x, MPFR_LDBL_MANT_DIG);
 
   /* check +0.0 and -0.0 */
   d = 0.0;

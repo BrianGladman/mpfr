@@ -263,18 +263,10 @@ typedef union ieee_double_extract Ieee_double_extract;
 
 /* we only require that LDBL_MANT_DIG is a bound on the mantissa length
    of the "long double" type */
-#ifndef LDBL_MANT_DIG
-# define LDBL_MANT_DIG 113 /* works also if long double == quad */
-#endif
-
-/* Various i386 systems have been seen with incorrect LDBL constants in
-   float.h (notes in set_ld.c), so force the value we know is right for IEEE
-   extended.  */
-#ifdef HAVE_LDOUBLE_IEEE_EXT_LITTLE
-# define MPFR_LDBL_MANT_DIG   64
-#else
-# define MPFR_LDBL_MANT_DIG   LDBL_MANT_DIG
-#endif
+#define MPFR_LDBL_MANT_DIG   \
+  (sizeof(long double)*BITS_PER_MP_LIMB/sizeof(mp_limb_t))
+#define MPFR_LIMBS_PER_LONG_DOUBLE \
+  ((sizeof(long double)-1)/sizeof(mp_limb_t)+1)
 
 /* LONGDOUBLE_NAN_ACTION executes the code "action" if x is a NaN. */
 
@@ -329,7 +321,26 @@ long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CO
 # endif
 #endif
 
+/* Some special case for IEEE_EXT Litle Endian */
+#if HAVE_LDOUBLE_IEEE_EXT_LITTLE
 
+typedef union {                                                  
+  long double    ld;                                       
+  struct {
+    unsigned long manl : 32;
+    unsigned long manh : 32;
+    unsigned long expl : 8 ;
+    unsigned long exph : 7;
+    unsigned long sign : 1;
+  } s;                    
+} mpfr_long_double_t;
+
+#undef MPFR_LDBL_MANT_DIG
+#undef MPFR_LIMBS_PER_LONG_DOUBLE
+#define MPFR_LDBL_MANT_DIG   64
+#define MPFR_LIMBS_PER_LONG_DOUBLE ((64-1)/BITS_PER_MP_LIMB+1)
+
+#endif
 
 /******************************************************
  **************** mpfr_t properties *******************

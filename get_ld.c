@@ -22,8 +22,9 @@ MA 02111-1307, USA. */
 
 #include <float.h>
 
-
 #include "mpfr-impl.h"
+
+#ifndef HAVE_LDOUBLE_IEEE_EXT_LITTLE
 
 long double
 mpfr_get_ld (mpfr_srcptr x, mp_rnd_t rnd_mode)
@@ -97,3 +98,79 @@ mpfr_get_ld (mpfr_srcptr x, mp_rnd_t rnd_mode)
       return r;
     }
 }
+
+#else
+
+static const struct {
+  char         bytes[10];
+  long double  dummy;  /* for memory alignment */
+} ldbl_max_struct = {
+  { '\377','\377','\377','\377',
+    '\377','\377','\377','\377',
+    '\376','\177' }, 0.0
+};
+
+#define MPFR_LDBL_MAX   (* (const long double *) ldbl_max_struct.bytes)
+
+long double
+mpfr_get_ld (mpfr_srcptr x, mp_rnd_t rnd_mode)
+{
+  mpfr_long_double_t ld;
+  mp_exp_t e, denorm;
+  mpfr_t tmp;
+  mp_limb_t tmpmant[MPFR_LIMBS_PER_LONG_DOUBLE];
+  MPFR_SAVE_EXPO_DECL (expo);
+
+  MPFR_SAVE_EXPO_MARK (expo);
+  mpfr_set_emin (-16382-63);
+  mpfr_set_emax (16383);
+  
+  MPFR_MANT (tmp) = tmpmant;
+  MPFR_PREC (tmp) = 64;
+  denorm = 0;
+  if (MPFR_UNLIKELY (!MPFR_IS_SINGULAR (x) && MPFR_GET_EXP (x) < -16382))
+    {
+      MPFR_PREC (tmp) += MPFR_GET_EXP (x) + 16382;
+      if (MPFR_PREC (tmp) < MPFR_PREC_MIN)
+	MPFR_PREC (tmp) = MPFR_PREC_MIN;
+    }
+  MPN_ZERO (tmpmant, MPFR_LIMBS_PER_LONG_DOUBLE);
+  mpfr_set (tmp, x, rnd_mode);
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (tmp)))
+    ld.ld = (long double) mpfr_get_d (tmp, rnd_mode);
+  else
+    {
+      e = MPFR_GET_EXP (tmp);
+      if (MPFR_UNLIKELY (e < -16382))
+	denorm = -e - 16382 + 1;
+      else
+	denorm = 0;
+#if BITS_PER_MP_LIMB >= 64
+      ld.s.manl = (tmpmant[0] >> denorm);
+      ld.s.manh = (tmpmant[0] >> denorm) >> 32;
+#else
+      if (MPFR_LIKELY (denorm == 0))
+	{
+	  ld.s.manl = tmpmant[0];
+	  ld.s.manh = tmpmant[1];
+	}
+      else
+	{
+	  ld.s.manl = (tmpmant[0] >> denorm) | (tmpmant[1] << (32-denorm));
+	  ld.s.manh = tmpmant[1] >> denorm;
+	}
+#endif
+      if (MPFR_LIKELY (denorm == 0))
+	{
+	  ld.s.exph = (e + 0x3FFE) >> 8;
+	  ld.s.expl = (e + 0x3FFE);
+	}
+      else
+	ld.s.exph = ld.s.expl = 0;
+      ld.s.sign = MPFR_IS_NEG (x);
+    }
+  MPFR_SAVE_EXPO_FREE (expo);
+  return ld.ld;
+}
+
+#endif

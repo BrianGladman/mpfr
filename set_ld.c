@@ -1,7 +1,7 @@
 /* mpfr_set_ld -- convert a machine long double to
                   a multiple precision floating-point number
 
-Copyright 2002, 2003, 2004 Free Software Foundation, Inc.
+Copyright 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -21,6 +21,8 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
 #include <float.h>
+
+#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
 /* Various i386 systems have been seen with float.h LDBL constants equal to
@@ -42,15 +44,20 @@ static const struct {
 #define MPFR_LDBL_MAX   LDBL_MAX
 #endif
 
+#ifndef HAVE_LDOUBLE_IEEE_EXT_LITTLE
+
+/* Generic code */
 int
 mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
 {
   mpfr_t t, u;
-  int inexact, shift_exp = 0, inexact2 = 0;
+  int inexact, shift_exp = 0, inexact2;
   MPFR_SAVE_EXPO_DECL (expo);
 
+  /* Check for NAN */
   LONGDOUBLE_NAN_ACTION (d, goto nan);
-
+  
+  /* Check for INF */
   if (d > MPFR_LDBL_MAX)
     {
       mpfr_set_inf (r, 1);
@@ -61,18 +68,21 @@ mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
       mpfr_set_inf (r, -1);
       return 0;
     }
+  /* Check for ZERO */
   else if (d == 0.0)
     return mpfr_set_d (r, (double) d, rnd_mode);
 
   mpfr_init2 (t, MPFR_LDBL_MANT_DIG);
   mpfr_init2 (u, IEEE_DBL_MANT_DIG);
+
   MPFR_SET_ZERO (t);
   MPFR_SAVE_EXPO_MARK (expo);
 
   while (d != (long double) 0.0)
     {
-      if ((d > (long double) DBL_MAX) || ((-d) > (long double) DBL_MAX))
-        {
+      /* Check overflow of Double */
+      if (d > (long double) DBL_MAX || (-d) > (long double) DBL_MAX)
+	{
           long double div9, div10, div11, div12, div13;
 
 #define TWO_64 18446744073709551616.0 /* 2^64 */
@@ -83,86 +93,81 @@ mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
           div11 = div10 * div10; /* 2^(2^11) */
           div12 = div11 * div11; /* 2^(2^12) */
           div13 = div12 * div12; /* 2^(2^13) */
-#if 1
-          if (ABS(d) >= div13)
+          if (ABS (d) >= div13)
             {
               d = d / div13; /* exact */
               shift_exp += 8192;
             }
-          if (ABS(d) >= div12)
+          if (ABS (d) >= div12)
             {
               d = d / div12; /* exact */
               shift_exp += 4096;
             }
-          if (ABS(d) >= div11)
+          if (ABS (d) >= div11)
             {
               d = d / div11; /* exact */
               shift_exp += 2048;
             }
-          if (ABS(d) >= div10)
+          if (ABS (d) >= div10)
             {
               d = d / div10; /* exact */
               shift_exp += 1024;
             }
           /* warning: we may have DBL_MAX=2^1024*(1-2^(-53)) < d < 2^1024,
              therefore we have one extra exponent reduction step */
-          if (ABS(d) >= div9)
+          if (ABS (d) >= div9)
             {
               d = d / div9; /* exact */
               shift_exp += 512;
             }
-#else
-	  while (ABS(d) >= (long double) 2.0) {
-	    d /= 2.0;
-	    shift_exp ++;
-	  }
-#endif
-	  MPFR_SET_ZERO (u);
         }
-      else
+      /* Check underflow of double */
+      else if (d < (long double)DBL_MIN && (-d) < (long double)DBL_MIN)
         {
-          /* since -DBL_MAX <= d <= DBL_MAX, the cast to double should not
-             overflow here */
+	  long double div10, div11, div12, div13;
+	  div10 = (long double) (double) 5.5626846462680034577255e-309; /* 2^(-2^10) */
+	  div11 = div10 * div10; /* 2^(-2^11) */
+	  div12 = div11 * div11; /* 2^(-2^12) */
+	  div13 = div12 * div12; /* 2^(-2^13) */
+	  if (ABS (d) <= div13)
+	    {
+	      d = d / div13; /* exact */
+	      shift_exp -= 8192;
+	    }
+	  if (ABS (d) <= div12)
+	    {
+	      d = d / div12; /* exact */
+	      shift_exp -= 4096;
+	    }
+	  if (ABS (d) <= div11)
+	    {
+	      d = d / div11; /* exact */
+	      shift_exp -= 2048;
+	    }
+	  if (ABS (d) <= div10)
+	    {
+	      d = d / div10; /* exact */
+	      shift_exp -= 1024;
+	    }
+	}
+      else
+	{
+	  /* since DBL_MIN < ABS(d) < DBL_MAX, the cast to double should not
+	     overflow here */
+	  MPFR_ASSERTD ((long double) DBL_MIN < ABS (d));
+	  MPFR_ASSERTD ((long double) DBL_MAX > ABS (d));
 	  inexact = mpfr_set_d (u, (double) d, GMP_RNDN);
 	  MPFR_ASSERTD (inexact == 0);
-	  if (MPFR_IS_ZERO (u) && (d != (long double) 0.0)) /* underflow */
-	    {
-	      long double div10, div11, div12, div13;
-	      div10 = (long double) (double) 5.5626846462680034577255e-309; /* 2^(-2^10) */
-	      div11 = div10 * div10; /* 2^(-2^11) */
-	      div12 = div11 * div11; /* 2^(-2^12) */
-	      div13 = div12 * div12; /* 2^(-2^13) */
-	      if (ABS(d) <= div13)
-		{
-		  d = d / div13; /* exact */
-		  shift_exp -= 8192;
-		}
-	      if (ABS(d) <= div12)
-		{
-		  d = d / div12; /* exact */
-		  shift_exp -= 4096;
-		}
-	      if (ABS(d) <= div11)
-		{
-		  d = d / div11; /* exact */
-		  shift_exp -= 2048;
-		}
-	      if (ABS(d) <= div10)
-		{
-		  d = d / div10; /* exact */
-		  shift_exp -= 1024;
-		}
- 	    }
-	  mpfr_add (t, t, u, GMP_RNDN); /* exact */
-	  if (!mpfr_number_p (t))
-	    break;
-	  d = d - (long double) mpfr_get_d1 (u); /* exact */
-        }
+	  MPFR_ASSERTD (!MPFR_IS_ZERO (u));
+	  inexact = mpfr_add (t, t, u, GMP_RNDN); /* exact */
+	  MPFR_ASSERTD (inexact == 0);
+	  d = d - (long double) mpfr_get_d1 (u);
+	}
     }
   /* now t is exactly the input value d */
   inexact = mpfr_set (r, t, rnd_mode);
   inexact2 = mpfr_mul_2si (r, r, shift_exp, rnd_mode);
-  if (inexact2) /* overflow */
+  if (inexact2) /* overflow or underflow */
     inexact = inexact2;
   mpfr_clear (t);
   mpfr_clear (u);
@@ -170,8 +175,102 @@ mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (r, inexact, rnd_mode);
 
-
  nan:
   MPFR_SET_NAN(r);
   MPFR_RET_NAN;
 }
+
+#else /* IEEE Extended Little Endian Code */
+
+int
+mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
+{
+  int inexact, i, k, cnt;
+  mpfr_t tmp;
+  mp_limb_t tmpmant[MPFR_LIMBS_PER_LONG_DOUBLE];
+  mpfr_long_double_t x;
+  mp_exp_t exp;
+  int signd;
+  MPFR_SAVE_EXPO_DECL (expo);
+
+  /* Check for NAN */
+  if (MPFR_UNLIKELY (d != d))
+    { 
+      MPFR_SET_NAN (r);
+      MPFR_RET_NAN;
+    }  
+  /* Check for INF */
+  else if (MPFR_UNLIKELY (d > MPFR_LDBL_MAX))
+    {
+      MPFR_SET_INF (r);
+      MPFR_SET_POS (r);
+      return 0;
+    }
+  else if (MPFR_UNLIKELY (d < -MPFR_LDBL_MAX))
+    {
+      MPFR_SET_INF (r);
+      MPFR_SET_NEG (r);
+      return 0;
+    }
+  /* Check for ZERO */
+  else if (MPFR_UNLIKELY (d == 0.0))
+    {
+      x.ld = d;
+      MPFR_SET_ZERO (r);
+      if (x.s.sign == 1)
+	MPFR_SET_NEG(r);
+      else
+	MPFR_SET_POS(r);
+      return 0;
+    }
+  
+  /* now d is neither 0, nor NaN nor Inf */
+  MPFR_SAVE_EXPO_MARK (expo);
+  
+  MPFR_MANT (tmp) = tmpmant;
+  MPFR_PREC (tmp) = 64;
+
+  /* Extract sign */
+  x.ld = d;
+  signd = MPFR_SIGN_POS;
+  if (x.ld < 0.0) {
+    signd = MPFR_SIGN_NEG;
+    x.ld = -x.ld;
+  }
+
+  /* Extract mantissa */
+#if BITS_PER_MP_LIMB >= 64
+  tmpmant[0] = ((mp_limb_t) x.s.manh << 32) | ((mp_limb_t) x.s.manl);
+#else
+  tmpmant[0] = (mp_limb_t) x.s.manl;
+  tmpmant[1] = (mp_limb_t) x.s.manh;
+#endif
+  
+  /* Normalize mantissa */
+  i = MPFR_LIMBS_PER_LONG_DOUBLE;
+  MPN_NORMALIZE_NOT_ZERO (tmpmant, i);
+  k = MPFR_LIMBS_PER_LONG_DOUBLE - i;
+  count_leading_zeros (cnt, tmpmant[i - 1]);
+  if (MPFR_LIKELY (cnt != 0))
+    mpn_lshift (tmpmant + k, tmpmant, i, cnt);
+  else if (k != 0)
+    MPN_COPY (tmpmant + k, tmpmant, i);  
+  if (MPFR_UNLIKELY (k != 0))
+    MPN_ZERO (tmpmant, k);
+
+  /* Set exponent */
+  if (x.s.exph == 0 && x.s.expl == 0)
+    exp = -0x3FFD;
+  else
+    exp = (x.s.exph << 8) + x.s.expl - 0x3FFE;
+
+  MPFR_SET_EXP (tmp, exp - cnt - k * BITS_PER_MP_LIMB);
+
+  /* tmp is exact */
+  inexact = mpfr_set4 (r, tmp, rnd_mode, signd);
+
+  MPFR_SAVE_EXPO_FREE (expo);
+  return mpfr_check_range (r, inexact, rnd_mode);
+}
+
+#endif
