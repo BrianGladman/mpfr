@@ -105,40 +105,39 @@ mpfr_sin_sign (mpfr_srcptr x)
 int 
 mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode) 
 {
-  int precy, m, ok, inexact, sign;
+  int precy, m, inexact, sign, loop;
   mpfr_t c;
   mp_exp_t e;
 
-  if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(x) ))
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
-      if (MPFR_IS_NAN(x) || MPFR_IS_INF(x))
+      if (MPFR_IS_NAN (x) || MPFR_IS_INF (x))
 	{
-	  MPFR_SET_NAN(y);
+	  MPFR_SET_NAN (y);
 	  MPFR_RET_NAN;
 	}
       else /* x is zero */
 	{
-          MPFR_ASSERTD(MPFR_IS_ZERO(x));
-	  MPFR_CLEAR_FLAGS(y);
-	  MPFR_SET_ZERO(y);
-	  MPFR_SET_SAME_SIGN(y, x);
-	  MPFR_RET(0);
+          MPFR_ASSERTD (MPFR_IS_ZERO (x));
+	  MPFR_SET_ZERO (y);
+	  MPFR_SET_SAME_SIGN (y, x);
+	  MPFR_RET (0);
 	}
     }
 
+  /* Compute initial precision */
   precy = MPFR_PREC(y);
   m = precy + MPFR_INT_CEIL_LOG2 (precy) + 13;
   e = MPFR_GET_EXP (x);
-  m += (e < 0) ? -2*e : e;
-  
-  sign = mpfr_sin_sign (x);
+  m += (e < 0) ? -2*e : e;  
 
+  sign = mpfr_sin_sign (x);
   mpfr_init2 (c, m);
 
-  do
+  for (loop = 1 ;; loop++)
     {
       mpfr_cos (c, x, GMP_RNDZ);
-      if (MPFR_IS_POS(c))
+      if (MPFR_IS_POS (c))
 	mpfr_nextabove (c);
       else
 	mpfr_nextbelow (c);
@@ -149,24 +148,36 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       if (MPFR_IS_NEG_SIGN(sign))
 	MPFR_CHANGE_SIGN(c);
 
+      /* Warning c may be 0 ! */
+      if (MPFR_UNLIKELY (MPFR_IS_ZERO (c)))
+	{
+	  m = 3*m; /* If c is 0, we really need a lot of bits! */
+	  mpfr_set_prec (c, m);
+	  continue;
+	}
+
       /* the absolute error on c is at most 2^(3-m-EXP(c)) */
       e = 2 * MPFR_GET_EXP (c) + m - 3;
-      ok = (e >= 0) && mpfr_can_round (c, e, GMP_RNDZ, rnd_mode, precy);
+      if (mpfr_can_round (c, e, GMP_RNDZ, rnd_mode, precy))
+	break;
 
-      if (ok == 0)
-	{
-	  m += BITS_PER_MP_LIMB;
-	  /* check for huge cancellation */
-	  if (e < (mp_exp_t) MPFR_PREC (y))
-	    m += MPFR_PREC (y) - e;
-	  /* Check if near 1 */
-	  if (MPFR_GET_EXP (c) == 1
-	      && MPFR_MANT (c)[MPFR_LIMB_SIZE (c)-1] == MPFR_LIMB_HIGHBIT)
-	    m = 2*m;
-	  mpfr_set_prec (c, m);
-	}
+      /* Normal increase */
+      m += BITS_PER_MP_LIMB;
+      
+      /* check for huge cancellation (Near 0) */
+      if (e < (mp_exp_t) MPFR_PREC (y))
+	m += MPFR_PREC (y) - e;
+      
+      /* Check if near 1 */
+      if (MPFR_GET_EXP (c) == 1
+	  && MPFR_MANT (c)[MPFR_LIMB_SIZE (c)-1] == MPFR_LIMB_HIGHBIT)
+	m = 2*m;
+      else if (loop >= 2)
+	m += m/2; 
+      
+      mpfr_set_prec (c, m);
     }
-  while (!ok);
+
 
   inexact = mpfr_set (y, c, rnd_mode);
 
