@@ -12,6 +12,4 @@ Knowns bugs:
 
 * TMP_ALLOC problems in agm.c and sqrt.c. (Kevin Ryde, 05 March 2002)
 
-* get_d.c: still some problems with subnormals (the test fails).
-
 * mpfr_set_d may give wrong results on some architectures.
