@@ -91,15 +91,15 @@ mpfr_agm(r, a, b, rnd_mode)
     eq=0;
     
     err=ceil((3.0/2.0*log((double)p)/log(2.0)+1.0)*exp(-(double)p*log(2.0))+3.0*exp(-2.0*(double)p*uo*log(2.0)/(vo-uo)));
-    if(p-err-1<=q) {
-      p=q+err+2;
+    if(p-err-3<=q) {
+      p=q+err+4;
       err=ceil((3.0/2.0*log((double)p)/log(2.0)+1.0)*exp(-(double)p*log(2.0))+3.0*exp(-2.0*(double)p*uo*log(2.0)/(vo-uo)));
     }
 
     /* Calculus of un and vn */
     while (eq<=p-2) {
       mpfr_mul(tmp,u,v,GMP_RNDN);
-      mpfr_sqrt(tmpu,tmp,GMP_RNDN); 
+      mpfr_sqrt3(tmpu,tmp,GMP_RNDN); 
       mpfr_add(tmp,u,v,GMP_RNDN);
       mpfr_div_2exp(tmpv,tmp,1,GMP_RNDN);
       mpfr_set(u,tmpu,GMP_RNDN);
