@@ -22,9 +22,45 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <limits.h>
 
 #include "mpfr-test.h"
 
+#define ERROR(str) {printf("Error for "str); exit(1);}
+
+static void
+test_2exp (void)
+{
+  mpfr_t x;
+
+  mpfr_init2 (x, 32);
+  
+  mpfr_set_ui_2exp (x, 1, 0, GMP_RNDN);
+  if (mpfr_cmp_ui(x, 1))
+    ERROR("(1U,0)");
+
+  mpfr_set_ui_2exp (x, 1024, -10, GMP_RNDN);
+  if (mpfr_cmp_ui(x, 1))
+    ERROR("(1024U,-10)");
+
+  mpfr_set_ui_2exp (x, 1024, 10, GMP_RNDN);
+  if (mpfr_cmp_ui(x, 1024*1024))
+    ERROR("(1024U,+10)");
+
+  mpfr_set_si_2exp (x, -1024*1024, -10, GMP_RNDN);
+  if (mpfr_cmp_si(x, -1024))
+    ERROR("(1M,-10)");
+
+  mpfr_set_ui_2exp (x, 0x92345678, 16, GMP_RNDN);
+  if (mpfr_cmp_str (x, "92345678@4", 16, GMP_RNDN))
+    ERROR("(x92345678U,+16)");
+
+  mpfr_set_si_2exp (x, -0x1ABCDEF0, -256, GMP_RNDN);
+  if (mpfr_cmp_str (x, "-1ABCDEF0@-64", 16, GMP_RNDN))
+    ERROR("(-x1ABCDEF0,-256)");
+
+  mpfr_clear (x);
+}
 
 /* FIXME: Comparing against mpfr_get_si/ui is not ideal, it'd be better to
    have all tests examine the bits in mpfr_t for what should come out.  */
@@ -199,6 +235,7 @@ main (int argc, char *argv[])
 
   mpfr_clear (x);
 
+  test_2exp ();
   tests_end_mpfr ();
   return 0;
 }

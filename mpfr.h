@@ -201,6 +201,8 @@ void mpfr_set_inf _MPFR_PROTO ((mpfr_ptr, int));
 int mpfr_set_f _MPFR_PROTO ((mpfr_ptr, mpf_srcptr, mpfr_rnd_t));
 int mpfr_set_si _MPFR_PROTO ((mpfr_ptr, long, mpfr_rnd_t));
 int mpfr_set_ui _MPFR_PROTO ((mpfr_ptr, unsigned long, mpfr_rnd_t));
+int mpfr_set_si_2exp _MPFR_PROTO ((mpfr_ptr, long, mp_exp_t, mpfr_rnd_t));
+int mpfr_set_ui_2exp _MPFR_PROTO ((mpfr_ptr, unsigned long, mp_exp_t, mpfr_rnd_t));
 int mpfr_set_q _MPFR_PROTO ((mpfr_ptr, mpq_srcptr, mpfr_rnd_t));
 int mpfr_set_str _MPFR_PROTO ((mpfr_ptr, __gmp_const char *, int, mpfr_rnd_t));
 int mpfr_init_set_str _MPFR_PROTO ((mpfr_ptr, __gmp_const char *, int,
