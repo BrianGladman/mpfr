@@ -42,6 +42,25 @@ special ()
   mpfr_init (y);
   mpfr_init (res);
 
+  mpfr_set_prec (x, 24);
+  mpfr_set_prec (y, 24);
+  mpfr_set_str_raw (y, "0.111100110001011010111");
+  inexact = mpfr_ui_sub (x, 1, y, GMP_RNDN);
+  if (inexact)
+    {
+      fprintf (stderr, "Wrong inexact flag: got %d, expected 0\n", inexact);
+      exit (1);
+    }
+
+  mpfr_set_prec (x, 24);
+  mpfr_set_prec (y, 24);
+  mpfr_set_str_raw (y, "0.111100110001011010111");
+  if ((inexact = mpfr_ui_sub (x, 38181761, y, GMP_RNDN)) >= 0)
+    {
+      fprintf (stderr, "Wrong inexact flag: got %d, expected -1\n", inexact);
+      exit (1);
+    }
+
   mpfr_set_prec (x, 63);
   mpfr_set_prec (y, 63);
   mpfr_set_str_raw (y, "0.111110010010100100110101101010001001100101110001000101110111111E-1");
