@@ -49,15 +49,14 @@ mpfr_log2 (r, a, rnd_mode)
       MPFR_SET_NAN(r);
       return 1;
     }
-
-  MPFR_CLEAR_NAN(r);
-
-  /* If a is negative, the result is NaN */
+ /* If a is negative, the result is NaN */
   if (MPFR_SIGN(a) < 0)
     {
       MPFR_SET_NAN(r);
       return 1;
     }
+
+  MPFR_CLEAR_NAN(r);
 
   /* check for infinity before zero */
   if (MPFR_IS_INF(a))
@@ -78,6 +77,8 @@ mpfr_log2 (r, a, rnd_mode)
       DIVIDE_BY_ZERO; /* Execption GMP*/
       return 0; 
     }
+
+  MPFR_CLEAR_INF(r);
 
   /* If a is 1, the result is 0 */
   if (mpfr_cmp_ui_2exp(a,1,0) == 0)
