@@ -39,8 +39,6 @@ Installation:
 
 Changes in existing functions:
 
-- allow the ISO C "P" exponent separator for base 16 in input functions
-
 - merge mpfr_inp_str and mpfr_set_str (cf glibc sscanf/fscanf)
 	[mpfr_set_str -> with final '\0',
 	 mpfr_strtofr -> without final '\0', returns the number of characters
