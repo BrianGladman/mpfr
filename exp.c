@@ -66,8 +66,8 @@ mpfr_exp(y, x, rnd_mode)
       mpfr_sub_one_ulp(y);
     return 1; }
 
-  if (precy > 7000) mpfr_exp3(y,x,rnd_mode);
-  else mpfr_exp2(y,x,rnd_mode);
+  if (precy > 13000) mpfr_exp3(y, x, rnd_mode); /* O(M(n) log(n)^2) */
+  else mpfr_exp2(y, x, rnd_mode); /* O(n^(1/3) M(n)) */
   return 1;
 }
 
