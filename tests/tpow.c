@@ -267,6 +267,38 @@ particular_cases (void)
     exit (1);
 }
 
+static void
+underflows(void)
+{
+  mpfr_t x, y;
+  int i;
+
+  mpfr_init2 (x, 64);
+  mpfr_init2 (y, 64);
+
+  mpfr_set_ui (x, 1, GMP_RNDN);
+  mpfr_set_exp (x, mpfr_get_emin());
+
+  for (i = 3; i < 10; i++)
+    {
+      mpfr_set_ui (y, i, GMP_RNDN);
+      mpfr_div_2ui (y, y, 1, GMP_RNDN);
+      mpfr_pow (y, x, y, GMP_RNDN);
+      if (!MPFR_IS_FP(y) || mpfr_cmp_ui (y, 0))
+        {
+          fprintf (stderr, "Error in mpfr_pow for ");
+          mpfr_out_str (stderr, 2, 0, x, GMP_RNDN);
+          fprintf (stderr, " ^ (%d/2)\nGot ", i);
+          mpfr_out_str (stderr, 2, 0, y, GMP_RNDN);
+          fprintf (stderr, " instead of 0.\n");
+          exit (1);
+        }
+    }
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
 int
 main (void)
 {
@@ -282,6 +314,8 @@ main (void)
 
   for (p=2; p<100; p++)
     check_inexact (p);
+
+  underflows ();
 
   tests_end_mpfr ();
   return 0;
