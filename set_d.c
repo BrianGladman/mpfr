@@ -25,9 +25,9 @@ MA 02111-1307, USA. */
 #include "longlong.h"
 #include "mpfr.h"
 
-#define NaN sqrt(-1) /* ensures a machine-independent NaN */
-#define Infp 1/0.
-#define Infm -1/0.
+#define NaN (0./0.) /* ensures a machine-independent NaN */
+#define Infp (1/0.)
+#define Infm (-1/0.)
 
 /* Included from gmp-2.0.2, patched to support denorms */
 
