@@ -159,58 +159,65 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
       k=bn-an;
       /* first copy the 'an' most significant limbs of b to a */
       MPN_COPY(ap, bp+k, an);
-      if (rnd_mode==GMP_RNDN) { /* to nearest */
-	/* first check whether the truncated bits from b are 1/2*lsb(a) */
-	if (sh) {
-	  cc = *ap & ((ONE<<sh)-1);
-	  *ap &= ~cc; /* truncate last bits */
-	  cc -= ONE<<(sh-1);
-	}
-	else /* no bit to truncate */
-	  cc = bp[--k] - (ONE<<(mp_bits_per_limb-1));
-	if ((long)cc>0) { /* suppose sizeof(long)=sizeof(mp_limb_t) */
-	  goto add_one_ulp; /* trunc(b)>1/2*lsb(a) -> round up */
-	}
-	else if (cc==0) {
-	  while (k>1 && cc==0) cc=bp[--k];
-	  /* now if the truncated part of b = 1/2*lsb(a), check whether c=0 */
-	  if (NOTZERO(c) || (*ap & (ONE<<sh))) goto sub_one_ulp;
-	  /* if trunc(b)-c is exactly 1/2*lsb(a) : round to even lsb */
-	}
-	/* if cc<0 : trunc(b) < 1/2*lsb(a) -> round down, i.e. do nothing */
-      }
-      else { /* round towards infinity or zero */
-	mp_limb_t c2old;
+      { /* treat all rounding modes together */
+	mp_limb_t c2old; int sign=0, cout=0;
 	if (sh) {
 	  cc = *ap & ((ONE<<sh)-1);
 	  *ap &= ~cc; /* truncate last bits */
 	}
 	else cc=0;
 
-	if (dif>-sh) {
+        dif += sh; 
+	if (dif>0) {
 	  cn--;
 	  c2old = cp[cn]; /* last limb from c considered */
-	  c2 = c2old >> (mp_bits_per_limb-dif-sh);
+	  cout -= mpn_sub_1(&cc, &cc, 1, c2old >> (mp_bits_per_limb-dif));
 	}
 	else c2 = c2old = 0;
-	dif += mp_bits_per_limb;
-	while (cc==c2 && (k || cn)) {
-	  if (k) cc = bp[--k];
-	  /* next limb from c to consider is cp[cn-1], with lower part of
-	     c2old */
-	  c2 = c2old << (dif+sh);
-	  if (cn && (dif+sh>=0)) {
-            cn--; 
-	    c2old = cp[cn];
-	    c2 += c2old >> (mp_bits_per_limb-dif-sh);
+	if (sh && rnd_mode==GMP_RNDN) {
+	  if (cout>=0) {
+	    sign = 1;
+	    cout -= mpn_sub_1(&cc, &cc, 1, ONE<<(sh-1));
 	  }
-	  else dif += mp_bits_per_limb;
+	  else {
+	    sign = -1;
+	    cout += mpn_add_1(&cc, &cc, 1, ONE<<(sh-1));
+	  }
 	}
-	dif = ((ISNONNEG(b) && rnd_mode==GMP_RNDU) || 
-	       (ISNEG(b) && rnd_mode==GMP_RNDD));
+	if (cout==0) { /* if cout<0, it will remain negative */
+	   dif += mp_bits_per_limb;
+	   while (cout==0 && (k || cn)) {
+	     cout = cc;
+	     cc = (k) ? bp[--k] : 0;
+	     if (sh==0) {
+	       if (cout>=0) {
+		 sign = 1;
+		 cout -= mpn_sub_1(&cc, &cc, 1, ONE << (mp_bits_per_limb-1));
+	       }
+	       else {
+		 sign = -1;
+		 cout += mpn_add_1(&cc, &cc, 1, ONE << (mp_bits_per_limb-1));
+	       }
+	       sh = 0;
+	     }
+	     /* next limb from c to consider is cp[cn-1], with lower part of
+		c2old */
+	     c2 = c2old << dif;
+	     if (cn && (dif>=0)) {
+	       cn--; 
+	       c2old = cp[cn];
+	       c2 += c2old >> (mp_bits_per_limb-dif);
+	     }
+	     else dif += mp_bits_per_limb;
+	     cout -= mpn_sub_1(&cc, &cc, 1, c2);
+	   }
+	}
+        if (rnd_mode==GMP_RNDU) sign=1; 
+	else if (rnd_mode==GMP_RNDD || rnd_mode==GMP_RNDZ) sign=-1;
+	if (ISNEG(b)) sign=-sign;
 	/* round towards infinity if dif=1, towards zero otherwise */
-	if (dif && cc>c2) goto add_one_ulp;
-	else if (dif==0 && cc<c2) goto sub_one_ulp;
+	if ((sign==1) && cout>0) goto add_one_ulp;
+	else if ((sign==-1) && cout<0) goto sub_one_ulp;
       }
     }
   }
