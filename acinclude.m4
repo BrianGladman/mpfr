@@ -1,3 +1,25 @@
+dnl  MPFR specific autoconf macros
+
+dnl  Copyright 2000, 2002, 2003 Free Software Foundation.
+dnl  Contributed by the Spaces project, INRIA Lorraine.
+dnl  
+dnl  This file is part of the MPFR Library.
+dnl  
+dnl  The MPFR Library is free software; you can redistribute it and/or modify
+dnl  it under the terms of the GNU Lesser General Public License as published
+dnl  by the Free Software Foundation; either version 2.1 of the License, or (at
+dnl  your option) any later version.
+dnl  
+dnl  The MPFR Library is distributed in the hope that it will be useful, but
+dnl  WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+dnl  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
+dnl  License for more details.
+dnl  
+dnl  You should have received a copy of the GNU Lesser General Public License
+dnl  along with the MPFR Library; see the file COPYING.LIB.  If not, write to
+dnl  the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
+dnl  MA 02111-1307, USA.
+
 dnl  autoconf 2.50 is necessary because of the use of AH_VERBATIM,
 dnl  but it would be better to make the config file compatible with
 dnl  both autoconf 2.13 and autoconf 2.50.
