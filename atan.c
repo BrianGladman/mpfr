@@ -113,7 +113,8 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	  mpfr_set_ui (arctangent, 0, GMP_RNDN);
 	  return 0; /* exact result */
 	}
-      MPFR_ASSERTN(1);
+      else
+	MPFR_ASSERTN(0);
     }
   MPFR_CLEAR_FLAGS(arctangent);
 

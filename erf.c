@@ -52,11 +52,12 @@ mpfr_erf (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	  MPFR_SET_NAN(y);
 	  MPFR_RET_NAN;
 	}
-      if (MPFR_IS_INF(x)) /* erf(+inf) = +1, erf(-inf) = -1 */
+      else if (MPFR_IS_INF(x)) /* erf(+inf) = +1, erf(-inf) = -1 */
 	return mpfr_set_si (y, MPFR_FROM_SIGN_TO_INT(sign_x), GMP_RNDN);
-      if (MPFR_IS_ZERO(x)) /* erf(+0) = +0, erf(-0) = -0 */
+      else if (MPFR_IS_ZERO(x)) /* erf(+0) = +0, erf(-0) = -0 */
 	return mpfr_set (y, x, GMP_RNDN); /* should keep the sign of x */
-      MPFR_ASSERTN(1);
+      else
+	MPFR_ASSERTN(0);
     }
 
   /* now x is neither NaN, Inf nor 0 */

@@ -57,39 +57,39 @@ MA 02111-1307, USA. */
 #endif
 
 #if GMP_NAIL_BITS != 0
-#error "MPFR doesn't support nonzero values of GMP_NAIL_BITS"
+# error "MPFR doesn't support nonzero values of GMP_NAIL_BITS"
 #endif
 
 #if (BITS_PER_MP_LIMB & (BITS_PER_MP_LIMB - 1))
-#error "BITS_PER_MP_LIMB must be a power of 2"
+# error "BITS_PER_MP_LIMB must be a power of 2"
 #endif
 
 /* Test if X (positive) is a power of 2 */
 #define IS_POW2(X) (((X) & ((X) - 1)) == 0)
 #define NOT_POW2(X) (((X) & ((X) - 1)) != 0)
 
-/* Set Exponent absolute limits (ie they are invalid exponent values */
-#ifdef  MPFR_EXP_FORMAT_INT
+/* Defined limits and unsigned types of exponent */
+#ifdef MPFR_EXP_FORMAT_INT
+  typedef unsigned int            mp_exp_unsigned_t;
 # define MPFR_EXP_MAX (INT_MAX)
 # define MPFR_EXP_MIN (INT_MIN)
 #else
+  typedef unsigned long int       mp_exp_unsigned_t;
 # define MPFR_EXP_MAX (LONG_MAX)
 # define MPFR_EXP_MIN (LONG_MIN)
 #endif
 
-/* This unsigned type must correspond to the signed one defined in gmp.h */
-#ifdef MPFR_EXP_FORMAT_INT
-typedef unsigned int            mp_exp_unsigned_t;
-typedef unsigned int            mp_size_unsigned_t;
+/* Defined limits and unsigned types of size */
+#ifdef MPFR_SIZE_FORMAT_INT
+ typedef unsigned int            mp_size_unsigned_t;
+# define MPFR_SIZE_MAX (INT_MAX)
 #else
-typedef unsigned long int       mp_exp_unsigned_t;
-typedef unsigned long int       mp_size_unsigned_t;
+ typedef unsigned long int       mp_size_unsigned_t;
+# define MPFR_SIZE_MAX (LONG_MAX)
 #endif
 
-#define MP_EXP_T_MAX MPFR_EXP_MAX
-/* FIXME: Is this really portable? */
-/*#define MP_EXP_T_MAX ((mp_exp_t) ((~ (mp_exp_unsigned_t) 0) >> 1))*/
-#define MP_EXP_T_MIN (-MP_EXP_T_MAX-1)
+/*#define MP_EXP_T_MAX ((mp_exp_t) ((~ (mp_exp_unsigned_t) 0) >> 1))
+#define MP_EXP_T_MIN (-MP_EXP_T_MAX-1)*/
 
 #define MP_LIMB_T_ONE ((mp_limb_t) 1)
 
@@ -181,16 +181,16 @@ typedef union ieee_double_extract Ieee_double_extract;
 /* we only require that LDBL_MANT_DIG is a bound on the mantissa length
    of the "long double" type */
 #ifndef LDBL_MANT_DIG
-#define LDBL_MANT_DIG 113 /* works also if long double == quad */
+# define LDBL_MANT_DIG 113 /* works also if long double == quad */
 #endif
 
 /* Various i386 systems have been seen with incorrect LDBL constants in
    float.h (notes in set_ld.c), so force the value we know is right for IEEE
    extended.  */
 #if HAVE_LDOUBLE_IEEE_EXT_LITTLE
-#define MPFR_LDBL_MANT_DIG   64
+# define MPFR_LDBL_MANT_DIG   64
 #else
-#define MPFR_LDBL_MANT_DIG   LDBL_MANT_DIG
+# define MPFR_LDBL_MANT_DIG   LDBL_MANT_DIG
 #endif
 
 /* LONGDOUBLE_NAN_ACTION executes the code "action" if x is a NaN. */
@@ -200,7 +200,7 @@ typedef union ieee_double_extract Ieee_double_extract;
    happen only after other comparisons, not sure what's really going on.  In
    any case we can pick apart the bytes to identify a NaN.  */
 #if HAVE_LDOUBLE_IEEE_QUAD_BIG
-#define LONGDOUBLE_NAN_ACTION(x, action)                        \
+# define LONGDOUBLE_NAN_ACTION(x, action)                        \
   do {                                                          \
     union {                                                     \
       long double    ld;                                        \
@@ -224,26 +224,26 @@ typedef union ieee_double_extract Ieee_double_extract;
    "volatile" here stops "cc" on mips64-sgi-irix6.5 from optimizing away
    x!=x. */
 #ifndef LONGDOUBLE_NAN_ACTION
-#define LONGDOUBLE_NAN_ACTION(x, action)                \
+# define LONGDOUBLE_NAN_ACTION(x, action)                \
   do {                                                  \
     volatile long double __x = LONGDOUBLE_VOLATILE (x); \
     if ((x) != __x)                                     \
       { action; }                                       \
   } while (0)
-#define WANT_LONGDOUBLE_VOLATILE 1
+# define WANT_LONGDOUBLE_VOLATILE 1
 #endif
 
 /* If we don't have a proper "volatile" then volatile is #defined to empty,
    in this case call through an external function to stop the compiler
    optimizing anything. */
 #if WANT_LONGDOUBLE_VOLATILE
-#ifdef volatile
+# ifdef volatile
 long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CONST;
-#define LONGDOUBLE_VOLATILE(x)  (__gmpfr_longdouble_volatile (x))
-#define WANT_GMPFR_LONGDOUBLE_VOLATILE 1
-#else
-#define LONGDOUBLE_VOLATILE(x)  (x)
-#endif
+#  define LONGDOUBLE_VOLATILE(x)  (__gmpfr_longdouble_volatile (x))
+#  define WANT_GMPFR_LONGDOUBLE_VOLATILE 1
+# else
+#  define LONGDOUBLE_VOLATILE(x)  (x)
+# endif
 #endif
 
 /* Definition of the special values of the exponent */
@@ -266,12 +266,17 @@ long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CO
 /* Old ESIZE */
 #define MPFR_LIMB_SIZE(x) ((MPFR_PREC((x)) - 1) / BITS_PER_MP_LIMB + 1)
 
-#define MPFR_EXP_ZERO (MPFR_EXP_MIN+0xB)
-#define MPFR_EXP_NAN  (MPFR_EXP_MIN+0xD)
-#define MPFR_EXP_INF  (MPFR_EXP_MIN+0xE)
+/* Enum special value of exponent. It is an enum for debug reason (gdb)
+  But ANSI C restricts enumerator values to range of `int'...
+typedef enum {
+  MPFR_EXP_ZERO = MPFR_EXP_MIN+0xB,
+  MPFR_EXP_NAN  = MPFR_EXP_MIN+0xD,
+  MPFR_EXP_INF  = MPFR_EXP_MIN+0xE
+  } mpfr_special_exp_t; */
 
-#define MPFR_SIGN_POS (1)
-#define MPFR_SIGN_NEG (-1)
+#define MPFR_EXP_ZERO (MPFR_EXP_MIN+1)
+#define MPFR_EXP_NAN  (MPFR_EXP_MIN+2)
+#define MPFR_EXP_INF  (MPFR_EXP_MIN+3)
 
 #define MPFR_CLEAR_FLAGS(x)
 /*#define MPFR_CLEAR_NAN(x)*/
@@ -293,6 +298,9 @@ long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CO
   (MPFR_UNLIKELY(MPFR_IS_SINGULAR(x)) || MPFR_UNLIKELY(MPFR_IS_SINGULAR(y)))
 
 /* TODO: Redo all the macros dealing with the signs */
+
+#define MPFR_SIGN_POS (1)
+#define MPFR_SIGN_NEG (-1)
 
 /* Without zeros */
 #define MPFR_ISNONNEG(x)  (MPFR_NOTZERO((x)) && MPFR_SIGN(x) > 0)

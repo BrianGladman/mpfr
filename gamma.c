@@ -88,7 +88,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	  return 0;  /* exact */
 	}
       else
-	MPFR_ASSERTN(1);
+	MPFR_ASSERTN(0);
     }
   MPFR_CLEAR_FLAGS(gamma);
 

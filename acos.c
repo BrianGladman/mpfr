@@ -55,7 +55,7 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	  MPFR_SET_EXP (acos, MPFR_GET_EXP (acos) - 1);
 	  return 1; /* inexact */
 	}
-      MPFR_ASSERTN(1);
+      MPFR_ASSERTN(0);
     }
   MPFR_CLEAR_FLAGS(x);
 

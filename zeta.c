@@ -340,21 +340,22 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
 	  MPFR_SET_NAN (z);
 	  MPFR_RET_NAN;
 	}
-      if (MPFR_IS_INF(s))
+      else if (MPFR_IS_INF(s))
 	{
 	  if (MPFR_SIGN(s) > 0)
 	    return mpfr_set_ui (z, 1, GMP_RNDN); /* Zeta(+Inf) = 1 */
 	  MPFR_SET_NAN (z); /* Zeta(-Inf) = NaN */
 	  MPFR_RET_NAN;
 	}
-      if (MPFR_IS_ZERO(s))
+      else if (MPFR_IS_ZERO(s))
 	{
 	  mpfr_set_ui (z, 1, rnd_mode);
 	  mpfr_div_2ui (z, z, 1, rnd_mode);
 	  MPFR_CHANGE_SIGN(z);
 	  MPFR_RET(0);
 	}
-      MPFR_ASSERTN(1);
+      else
+	MPFR_ASSERTN(0);
     }
   MPFR_CLEAR_FLAGS(z);
 

@@ -62,7 +62,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode)
       else if (MPFR_IS_ZERO(y))
 	return mpfr_abs (z, x, rnd_mode);
       else
-	MPFR_ASSERTN(1);
+	MPFR_ASSERTN(0);
     }
   MPFR_CLEAR_FLAGS(z);
 

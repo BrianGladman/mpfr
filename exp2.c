@@ -56,7 +56,7 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	else if (MPFR_IS_ZERO(x))
 	  return mpfr_set_ui (y, 1, rnd_mode);
 	else
-	  MPFR_ASSERTN(1);
+	  MPFR_ASSERTN(0);
       }
     /* Useless due to mpfr_set 
        MPFR_CLEAR_FLAGS(y);*/

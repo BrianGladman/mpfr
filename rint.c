@@ -54,7 +54,7 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
 	  MPFR_SET_ZERO(r);
 	  MPFR_RET(0);  /* zero is exact */
 	}
-      MPFR_ASSERTN(1);
+      MPFR_ASSERTN(0);
     }
   MPFR_SET_SAME_SIGN(r, u);
  

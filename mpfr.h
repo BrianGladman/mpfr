@@ -50,6 +50,7 @@ typedef enum {
 /* Define precision, exponent, sign */
 #if __GMP_MP_SIZE_T_INT == 1
 #define MPFR_EXP_FORMAT_INT
+#define MPFR_SIZE_FORMAT_INT
 typedef unsigned int mpfr_prec_t;
 typedef unsigned int mpfr_size_t;
 typedef int          mpfr_exp_t;
@@ -173,7 +174,6 @@ int mpfr_set_str _MPFR_PROTO ((mpfr_ptr, __gmp_const char *, int, mpfr_rnd_t));
 int mpfr_init_set_str _MPFR_PROTO ((mpfr_ptr, __gmp_const char *, int, mpfr_rnd_t));
 char* mpfr_get_str _MPFR_PROTO ((char *, mp_exp_t *, int, size_t, mpfr_srcptr, mpfr_rnd_t));
 #ifdef _MPFR_H_HAVE_FILE
-  /* They are only accessible if you include stdio.h first */ 
 #define mpfr_inp_str mpfr_inp_str_internal
 #define mpfr_out_str mpfr_out_str_internal
 size_t mpfr_inp_str _MPFR_PROTO ((mpfr_ptr, FILE *, int, mpfr_rnd_t));
@@ -345,7 +345,6 @@ int mpfr_sgn _MPFR_PROTO ((mpfr_srcptr));
 #define mpfr_set(a,b,r) mpfr_set4(a,b,r,MPFR_SIGN(b))
 #define mpfr_abs(a,b,r) mpfr_set4(a,b,r,1)
 #define mpfr_cmp(b, c) mpfr_cmp3(b, c, 1)
-/*#define mpfr_sgn(x) mpfr_cmp_ui(x,0)*/
 #define mpfr_mul_2exp(y,x,n,r) mpfr_mul_2ui((y),(x),(n),(r))
 #define mpfr_div_2exp(y,x,n,r) mpfr_div_2ui((y),(x),(n),(r))
 

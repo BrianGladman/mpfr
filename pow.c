@@ -244,7 +244,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 	  MPFR_RET(0);
 	}
       /* Should never reach this code */
-      MPFR_ASSERTN(1);
+      MPFR_ASSERTN(0);
       return 0;
     }
 

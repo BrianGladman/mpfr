@@ -57,7 +57,7 @@ mpfr_atanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
 	  MPFR_RET(0);
 	}
       else
-	MPFR_ASSERTN(1);
+	MPFR_ASSERTN(0);
     }
   /* Useless due to final mpfr_set
      MPFR_CLEAR_FLAGS(y);*/

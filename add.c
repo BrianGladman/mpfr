@@ -73,7 +73,7 @@ mpfr_add (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	  return mpfr_set(a, b, rnd_mode);
 	}
       /* Should never reach here */
-      MPFR_ASSERTN(1);
+      MPFR_ASSERTN(0);
     }
 
   MPFR_ASSERTD(MPFR_IS_PURE_FP(b) && MPFR_IS_PURE_FP(c));

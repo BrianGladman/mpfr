@@ -50,7 +50,7 @@ mpfr_set4 (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode, int signb)
         }
       else
 	/* Should never reach this code */
-	MPFR_ASSERTN(1);
+	MPFR_ASSERTN(0);
     }
   else if (MPFR_LIKELY(MPFR_PREC(b) == MPFR_PREC(a)))
     {

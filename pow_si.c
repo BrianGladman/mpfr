@@ -38,7 +38,6 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd_mode)
     return mpfr_pow_ui (y, x, n, rnd_mode);
   else
     {
-      MPFR_CLEAR_FLAGS(y);
       if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(x) ))
 	{
 	  if (MPFR_IS_NAN(x))
@@ -65,8 +64,9 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd_mode)
 	      MPFR_RET(0);
 	    }
 	  else
-	    MPFR_ASSERTN(1);
+	    MPFR_ASSERTN(0);
 	}
+      MPFR_CLEAR_FLAGS(y);
 
       /* detect exact powers: x^(-n) is exact iff x is a power of 2 */
       if (mpfr_cmp_si_2exp (x, MPFR_SIGN(x), MPFR_EXP(x) - 1) == 0)

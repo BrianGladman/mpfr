@@ -54,7 +54,7 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	  mpfr_set_ui (asin, 0, GMP_RNDN);
 	  MPFR_RET(0); /* exact result */
 	}
-      MPFR_ASSERTN(1);
+      MPFR_ASSERTN(0);
     }
   MPFR_CLEAR_FLAGS(asin);
 

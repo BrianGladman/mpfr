@@ -42,7 +42,7 @@ mpfr_cmp_ui_2exp (mpfr_srcptr b, unsigned long int i, mp_exp_t f)
       else if (MPFR_IS_ZERO(b))
 	return i != 0 ? -1 : 0;
       else
-	MPFR_ASSERTN(1);
+	MPFR_ASSERTN(0);
     }
 
   if (MPFR_IS_NEG(b))

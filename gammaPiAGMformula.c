@@ -37,15 +37,7 @@ int mpfr_gamma _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 #define zCST  0.26  /* zCST=1/(2*ln(2*pi)) */
 
 
-int
-#if __STDC__
-mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
-#else
-mpfr_gamma (gamma, x, rnd_mode)
-     mpfr_ptr gamma;
-     mpfr_srcptr x; 
-     mp_rnd_t rnd_mode;
-#endif
+int mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
   mpfr_t xp;
   mpfr_t product;
@@ -77,19 +69,21 @@ mpfr_gamma (gamma, x, rnd_mode)
       if (MPFR_IS_NAN(x))
 	{
 	  MPFR_SET_NAN(gamma);
+	  /* FIXME: MPFR_RET_NAN ? */
 	  return 1;
 	}
-      if (MPFR_ISZERO(x))
+      else if (MPFR_ISZERO(x))
 	{
 	  MPFR_SET_INF(gamma);
 	  return 1;
 	}
-      if (MPFR_IS_INF(x))
+      else if (MPFR_IS_INF(x))
 	{
 	  MPFR_SET_INF(gamma);
 	  return 1;
 	}
-      MPFR_ASSERTN(1);
+      else
+	MPFR_ASSERTN(0);
     }
 
   /* Set x_p=x if x> 1 else set x_p=2-x */

@@ -47,7 +47,7 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	  MPFR_RET(0);
 	}
       else
-	MPFR_ASSERTN(1);
+	MPFR_ASSERTN(0);
     }
   /* MPFR_CLEAR_FLAGS is useless since we use mpfr_set to set y and z */
 

@@ -61,7 +61,8 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
 	    MPFR_RET(0);
 	  }
 	/* Should never reach this point */
-	MPFR_ASSERTN(1);
+	else
+	  MPFR_ASSERTN(0);
       }
 
     mpfr_init2(x,Nxt);

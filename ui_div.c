@@ -62,8 +62,8 @@ mpfr_ui_div (mpfr_ptr y, unsigned long int u, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	      MPFR_RET_NAN; 
 	    }
 	}
-      MPFR_ASSERTN(1);
-      return 0; /* To avoid warning */
+      else
+	MPFR_ASSERTN(0);
     }
   else if (u)
     {

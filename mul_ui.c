@@ -62,7 +62,7 @@ mpfr_mul_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 	  MPFR_RET(0); /* zero is exact */
 	}
       else
-	MPFR_ASSERTN(1);
+	MPFR_ASSERTN(0);
     }
   else if (MPFR_UNLIKELY(u <= 1))
     {

@@ -63,7 +63,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 	    }
 	}
       else
-	MPFR_ASSERTN(1);
+	MPFR_ASSERTN(0);
     }
 
   if (MPFR_UNLIKELY(u == 0))
@@ -188,6 +188,6 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 	    MPFR_RET(-MPFR_INT_SIGN(x));
 	}
     }
-  MPFR_ASSERTN(1); /* should never go here */
+  MPFR_ASSERTN(0); /* should never go here */
   return 0; /* To avoid warning*/
 }

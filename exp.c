@@ -56,6 +56,8 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	}
       else if (MPFR_IS_ZERO(x))
 	return mpfr_set_ui (y, 1, GMP_RNDN);
+      else
+	MPFR_ASSERTN(0);
     }
   MPFR_CLEAR_FLAGS(y);
 

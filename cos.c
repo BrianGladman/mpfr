@@ -43,7 +43,7 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       else if (MPFR_IS_ZERO(x))
 	  return mpfr_set_ui (y, 1, GMP_RNDN);
       /* Never reach this */
-      MPFR_ASSERTN(1);
+      MPFR_ASSERTN(0);
     }
 
   precy = MPFR_PREC(y);

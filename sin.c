@@ -104,7 +104,7 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	  MPFR_SET_SAME_SIGN(y, x);
 	  MPFR_RET(0);
 	}
-      MPFR_ASSERTN(1);
+      MPFR_ASSERTN(0);
     }
 
   precy = MPFR_PREC(y);

@@ -83,7 +83,7 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
 	  MPFR_RET(0); /* log(0) is an exact -infinity */
 	}
       else
-	MPFR_ASSERTN(1);
+	MPFR_ASSERTN(0);
     }
   
   /* If a is negative, the result is NaN */

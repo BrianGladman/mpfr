@@ -46,7 +46,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
   TMP_MARK(marker);
   ap = MPFR_MANT(a);
-  an = 1 + (MPFR_PREC(a) - 1) / BITS_PER_MP_LIMB;
+  an = MPFR_LIMB_SIZE(a);
 
   sign = mpfr_cmp2 (b, c, &cancel);
   if (MPFR_UNLIKELY(sign == 0))
@@ -86,14 +86,26 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
   /* reserve a space to store b aligned with the result, i.e. shifted by
      (-cancel) % BITS_PER_MP_LIMB to the right */
-  bn = 1 + (MPFR_PREC(b) - 1) / BITS_PER_MP_LIMB;
-  shift_b = cancel % BITS_PER_MP_LIMB;
-  if (shift_b)
-    shift_b = BITS_PER_MP_LIMB - shift_b;
-  cancel1 = (cancel + shift_b) / BITS_PER_MP_LIMB;
+  bn      = MPFR_LIMB_SIZE(b); 
+  /* shift_b = cancel % BITS_PER_MP_LIMB;
+     if (shift_b)
+     shift_b = BITS_PER_MP_LIMB - shift_b;
+     I think (-cancel)%BITS_PER_MP_LIMB is ok. I add an assert anyway */
+  shift_b = (-cancel) % BITS_PER_MP_LIMB;
+  cancel1 = (cancel + shift_b) / BITS_PER_MP_LIMB; 
+  MPFR_ASSERTD( shift_b >= 0 && shift_b < BITS_PER_MP_LIMB);
+ 
   /* the high cancel1 limbs from b should not be taken into account */
-  if (shift_b == 0)
-    bp = MPFR_MANT(b); /* no need of an extra space */
+  if (MPFR_UNLIKELY(shift_b == 0))
+    {
+      bp = MPFR_MANT(b); /* no need of an extra space */
+      /* Ensure ap != bp */
+      if (ap == bp)
+	{
+	  bp = (mp_ptr) TMP_ALLOC(bn * BYTES_PER_MP_LIMB);
+	  MPN_COPY (bp, ap, bn);
+	}
+    }
   else
     {
       bp = TMP_ALLOC ((bn + 1) * BYTES_PER_MP_LIMB);
@@ -102,12 +114,23 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
   /* reserve a space to store c aligned with the result, i.e. shifted by
      (diff_exp-cancel) % BITS_PER_MP_LIMB to the right */
-  cn = 1 + (MPFR_PREC(c) - 1) / BITS_PER_MP_LIMB;
-  shift_c = diff_exp - (cancel % BITS_PER_MP_LIMB);
-  shift_c = (shift_c + BITS_PER_MP_LIMB) % BITS_PER_MP_LIMB;
-  if (shift_c == 0)
-    cp = MPFR_MANT(c);
-  else
+  cn      = MPFR_LIMB_SIZE(c);
+  /*  shift_c = diff_exp - (cancel % BITS_PER_MP_LIMB);
+      shift_c = (shift_c + BITS_PER_MP_LIMB) % BITS_PER_MP_LIMB;*/
+  shift_c = (diff_exp - cancel) % BITS_PER_MP_LIMB;
+  MPFR_ASSERTD( shift_c >= 0 && shift_c < BITS_PER_MP_LIMB);
+
+  if (MPFR_UNLIKELY(shift_c == 0))
+    {
+       cp = MPFR_MANT(c);
+      /* Ensure ap != cp */
+      if (ap == cp)
+	{
+	  cp = (mp_ptr) TMP_ALLOC (cn * BYTES_PER_MP_LIMB);
+	  MPN_COPY(cp, ap, cn);
+	}
+    }
+ else
     {
       cp = TMP_ALLOC ((cn + 1) * BYTES_PER_MP_LIMB);
       cp[0] = mpn_rshift (cp + 1, MPFR_MANT(c), cn++, shift_c);
@@ -117,22 +140,8 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   printf("shift_b=%u shift_c=%u\n", shift_b, shift_c);
 #endif
 
-  /* ensure ap != bp and ap != cp */
-  if (ap == bp)
-    {
-      bp = (mp_ptr) TMP_ALLOC(bn * BYTES_PER_MP_LIMB);
-      MPN_COPY (bp, ap, bn);
-      /* ap == cp cannot occur since we would have b = c, and this case
-         has already been processed (in mpfr_add or mpfr_sub if there is
-         a special value, else earlier in this function: sign == 0). */
-    }
-  else if (ap == cp)
-    {
-      cp = (mp_ptr) TMP_ALLOC (cn * BYTES_PER_MP_LIMB);
-      MPN_COPY(cp, ap, cn);
-    }
-  MPFR_ASSERTN (ap != cp);
-  MPFR_ASSERTN (bp != cp);
+  MPFR_ASSERTD (ap != cp);
+  MPFR_ASSERTD (bp != cp);
 
   /* here we have shift_c = (diff_exp - cancel) % BITS_PER_MP_LIMB,
      thus we want cancel2 = ceil((cancel - diff_exp) / BITS_PER_MP_LIMB) */
@@ -162,10 +171,12 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
    */
 
   /* copy high(b) into a */
-  if (an + cancel1 <= bn) /* a: <----------------+-----------|---->
-		         b: <-----------------------------------------> */
+  if (MPFR_LIKELY(an + cancel1 <= bn))
+    /* a: <----------------+-----------|---->
+       b: <-----------------------------------------> */
       MPN_COPY (ap, bp + bn - (an + cancel1), an);
-  else  /* a: <----------------+-----------|---->
+  else  
+    /* a: <----------------+-----------|---->
        b: <-------------------------> */
     if (cancel1 < bn) /* otherwise b does not overlap with a */
       {
@@ -186,11 +197,13 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
       if (cancel2 >= 0)
 	{
-	  if (an + cancel2 <= cn) /* a: <----------------------------->
-			      c: <-----------------------------------------> */
+	  if (an + cancel2 <= cn) 
+	    /* a: <----------------------------->
+	       c: <-----------------------------------------> */
 	    mpn_sub_n (ap, ap, cp + cn - (an + cancel2), an);
-	  else /* a: <---------------------------->
-	      c: <-------------------------> */
+	  else 
+	    /* a: <---------------------------->
+	       c: <-------------------------> */
 	    {
 	      ap2 = ap + an + cancel2 - cn;
 	      if (cn > cancel2)
@@ -199,11 +212,13 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	}
       else /* cancel2 < 0 */
 	{
-	  if (an + cancel2 <= cn) /* a: <----------------------------->
-			                  c: <-----------------------------> */
-	      borrow = mpn_sub_n (ap, ap, cp + cn - (an + cancel2), an + cancel2);
-	  else /* a: <---------------------------->
-	                c: <----------------> */
+	  if (an + cancel2 <= cn) 
+	    /* a: <----------------------------->
+	       c: <-----------------------------> */
+	    borrow = mpn_sub_n (ap, ap, cp + cn - (an + cancel2), an + cancel2);
+	  else 
+	    /* a: <---------------------------->
+	       c: <----------------> */
 	    {
 	      ap2 = ap + an + cancel2 - cn;
 	      borrow = mpn_sub_n (ap2, ap2, cp, cn);
@@ -225,7 +240,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
   if (rnd_mode == GMP_RNDN)
     {
-      if (sh)
+      if (MPFR_LIKELY(sh))
 	{
 	  is_exact = (carry == 0);
 	  /* can decide except when carry = 2^(sh-1) [middle]
@@ -242,8 +257,8 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
     }
   else /* directed rounding: set rnd_mode to RNDZ iff towards zero */
     {
-      if (((rnd_mode == GMP_RNDD) && (MPFR_SIGN(a) > 0)) ||
-	  ((rnd_mode == GMP_RNDU) && (MPFR_SIGN(a) < 0)))
+      if (((rnd_mode == GMP_RNDD) && (MPFR_IS_POS(a))) ||
+	  ((rnd_mode == GMP_RNDU) && (MPFR_IS_NEG(a))))
 	rnd_mode = GMP_RNDZ;
 
       if (carry)
@@ -365,8 +380,10 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       /* even rounding rule */
       if ((ap[0] >> sh) & 1)
 	{
-	  if (down) goto sub_one_ulp;
-	  else goto add_one_ulp;
+	  if (down) 
+	    goto sub_one_ulp;
+	  else 
+	    goto add_one_ulp;
 	}
       else
 	inexact = (down) ? 1 : -1;
@@ -399,13 +416,13 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   /* we have to set MPFR_EXP(a) to MPFR_EXP(b) - cancel + add_exp, taking
      care of underflows/overflows in that computation, and of the allowed
      exponent range */
-  if (cancel)
+  if (MPFR_LIKELY(cancel))
     {
       mp_exp_t exp_a;
 
       cancel -= add_exp; /* still valid as unsigned long */
       exp_a = MPFR_GET_EXP (b) - cancel;
-      if (exp_a < __gmpfr_emin)
+      if (MPFR_UNLIKELY(exp_a < __gmpfr_emin))
         {
           TMP_FREE(marker);
           if (rnd_mode == GMP_RNDN &&
@@ -424,7 +441,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       mp_exp_t exp_b;
 
       exp_b = MPFR_GET_EXP (b);
-      if (add_exp && exp_b == __gmpfr_emax)
+      if (MPFR_UNLIKELY(add_exp && exp_b == __gmpfr_emax))
 	{
 	  TMP_FREE(marker);
 	  return mpfr_set_overflow (a, rnd_mode, MPFR_SIGN(a));
@@ -436,6 +453,6 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   printf ("result is a="); mpfr_print_binary(a); putchar('\n');
 #endif
   /* check that result is msb-normalized */
-  MPFR_ASSERTN(ap[an-1] > ~ap[an-1]);
-  return inexact * MPFR_SIGN(a);
+  MPFR_ASSERTD(ap[an-1] > ~ap[an-1]);
+  return inexact * MPFR_INT_SIGN(a);
 }

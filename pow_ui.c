@@ -64,7 +64,7 @@ mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
 	  MPFR_RET(0);
 	}
       else
-	MPFR_ASSERTN(1);
+	MPFR_ASSERTN(0);
     }
   else if (MPFR_UNLIKELY( n <= 1))
     { 
@@ -75,7 +75,8 @@ mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
       /* y^1 = y */
       return mpfr_set(x, y, rnd);	
     }
-  
+  /* MPFR_CLEAR_FLAGS useless due to mpfr_set */
+
   mpfr_save_emin_emax ();
   mpfr_init (res);
 

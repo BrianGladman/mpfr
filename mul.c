@@ -79,7 +79,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	  MPFR_RET(0); /* 0 * 0 is exact */
 	}
       /* Should never reach here */
-      MPFR_ASSERTN(1);
+      MPFR_ASSERTN(0);
     }
   MPFR_CLEAR_FLAGS(a);
   sign_product = MPFR_MULT_SIGN( MPFR_SIGN(b) , MPFR_SIGN(c) );
@@ -88,8 +88,8 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   cx = MPFR_GET_EXP (c);
   /* Note: the exponent of the exact result will be e = bx + cx + ec with
      ec in {-1,0,1} and the following assumes that e is representable. */
-  MPFR_ASSERTN(MPFR_EMAX_MAX <= (MP_EXP_T_MAX >> 1));
-  MPFR_ASSERTN(MPFR_EMIN_MIN >= -(MP_EXP_T_MAX >> 1));
+  MPFR_ASSERTN(MPFR_EMAX_MAX <= (MPFR_EXP_MAX >> 1));
+  MPFR_ASSERTN(MPFR_EMIN_MIN >= -(MPFR_EXP_MAX >> 1));
   if (bx + cx > __gmpfr_emax + 1)
     return mpfr_set_overflow (a, rnd_mode, sign_product);
   if (bx + cx < __gmpfr_emin - 2)

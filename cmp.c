@@ -55,7 +55,7 @@ mpfr_cmp3 (mpfr_srcptr b, mpfr_srcptr c, int s)
 	return MPFR_SIGN(b);
       else
 	/* Should never reach here */
-	MPFR_ASSERTN(1);
+	MPFR_ASSERTN(0);
     }
   /* b and c are real numbers */
   if (s != MPFR_SIGN(b))

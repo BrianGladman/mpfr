@@ -63,7 +63,7 @@ mpfr_log1p (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	  MPFR_RET(0);
 	}
       else
-	MPFR_ASSERTN(1);
+	MPFR_ASSERTN(0);
     }
   
   comp = mpfr_cmp_si(x,-1);

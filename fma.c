@@ -100,7 +100,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
       else if (MPFR_IS_ZERO(z))
 	return mpfr_mul (s, x, y, rnd_mode);
       else
-	MPFR_ASSERTN(1);
+	MPFR_ASSERTN(0);
     }
   /* Useless since it is done by mpfr_add
    * MPFR_CLEAR_FLAGS(s); */

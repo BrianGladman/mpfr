@@ -97,7 +97,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
 	  MPFR_RET(0);
 	}
       /* Never reach this !*/
-      MPFR_ASSERTN(1);
+      MPFR_ASSERTN(0);
     }
   MPFR_CLEAR_FLAGS(q);
 

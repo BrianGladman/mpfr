@@ -45,7 +45,7 @@ mpfr_cmpabs (mpfr_srcptr b, mpfr_srcptr c)
       else if (MPFR_IS_ZERO (b))
 	return -1;
       else
-	MPFR_ASSERTN(1);
+	MPFR_ASSERTN(0);
     }
 
   be = MPFR_GET_EXP (b);

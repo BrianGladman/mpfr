@@ -76,7 +76,7 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	  return 0;
 	}
       else
-	MPFR_ASSERTN(1);
+	MPFR_ASSERTN(0);
     }
   /* Useless due to mpz_init 
      MPFR_CLEAR_FLAGS(y);*/

@@ -51,7 +51,8 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
 	  MPFR_SET_POS(y);
 	  MPFR_RET(0);
 	}
-      MPFR_ASSERTN(1);
+      else
+	MPFR_ASSERTN(0);
     }
   comp = mpfr_cmp_ui (x, 1);
   if (MPFR_UNLIKELY( comp < 0 ))

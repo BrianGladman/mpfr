@@ -36,9 +36,10 @@ mpfr_add_one_ulp (mpfr_ptr x, mp_rnd_t rnd_mode)
     {
       if (MPFR_IS_NAN(x))
 	MPFR_RET_NAN;
-      if (MPFR_IS_INF(x) || MPFR_IS_ZERO(x))
-	return 0;
-      MPFR_ASSERTN(1);
+      else if (MPFR_IS_INF(x) || MPFR_IS_ZERO(x))
+	MPFR_RET(0);
+      else
+	MPFR_ASSERTN(0);
     }
 
   xn = 1 + (MPFR_PREC(x) - 1) / BITS_PER_MP_LIMB;

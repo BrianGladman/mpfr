@@ -55,7 +55,8 @@ mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
 	else if (MPFR_IS_ZERO(xt))
 	  return mpfr_set_ui(y, 1, rnd_mode); /* cosh(0) = 1 */
 	/* Should never reach this code */
-	MPFR_ASSERTN(1);
+	else
+	  MPFR_ASSERTN(0);
       }
 
     mpfr_init2(x,Nxt);
