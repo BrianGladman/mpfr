@@ -640,8 +640,8 @@ check_inexact (void)
 int
 main (int argc, char *argv[])
 {
-  int prec, rnd_mode;
 #ifdef TEST
+  int prec, rnd_mode;
   int i, rnd;
   double x, y; 
 #endif
@@ -772,8 +772,6 @@ main (int argc, char *argv[])
   check2a(2.72046257722708717791e+243,97,-1.62158447436486437113e+243,83,96,
 	  GMP_RNDN, "a.4cc63e002d2e8@201");
   /* Checking double precision (53 bits) */
-  prec = (argc<2) ? 53 : atoi(argv[1]);
-  rnd_mode = (argc<3) ? -1 : atoi(argv[2]);
   check53(-8.22183238641455905806e-19, 7.42227178769761587878e-19, GMP_RNDD, 
 	  -7.9956059871694317927e-20);
   check53(5.82106394662028628236e+234, -5.21514064202368477230e+89, GMP_RNDD,
@@ -836,6 +834,8 @@ main (int argc, char *argv[])
   check53(9007199254740996.0, -1.0, GMP_RNDN, 9007199254740996.0);
   
 #ifdef TEST
+  prec = (argc<2) ? 53 : atoi(argv[1]);
+  rnd_mode = (argc<3) ? -1 : atoi(argv[2]);
   /* Comparing to double precision using machine arithmetic */
   for (i=0;i<N;i++) {
     x = drand(); 
