@@ -254,7 +254,7 @@ void mpfr_init_gmp_rand _MPFR_PROTO(());
 #undef __gmp_allocate_func      
 #undef __gmp_reallocate_func    
 #undef __gmp_free_func          
-#define MPFR_GET_MEMFUN mp_get_memory_functions(mpfr_allocate_func, mpfr_reallocate_func, mpfr_free_func)
+#define MPFR_GET_MEMFUNC mp_get_memory_functions(mpfr_allocate_func, mpfr_reallocate_func, mpfr_free_func)
 #define __gmp_allocate_func   (MPFR_GET_MEMFUNC, mpfr_allocate_func)
 #define __gmp_reallocate_func (MPFR_GET_MEMFUNC, mpfr_reallocate_func)
 #define __gmp_free_func       (MPFR_GET_MEMFUNC, mpfr_free_func)
