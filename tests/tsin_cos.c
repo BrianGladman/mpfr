@@ -1,6 +1,6 @@
 /* Test file for mpfr_sin_cos.
 
-Copyright 2000, 2001, 2002 Free Software Foundation, Inc.
+Copyright 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -21,9 +21,10 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 #include "gmp.h"
 #include "mpfr.h"
+#include "mpfr-impl.h"
+#include "mpfr-test.h"
 
 void large_test _PROTO ((int, int));
 void check53 _PROTO ((double, double, double, mp_rnd_t));
@@ -79,12 +80,13 @@ void check53 (double x, double sin_x, double cos_x, mp_rnd_t rnd_mode)
 
 void check53sin (double x, double sin_x, mp_rnd_t rnd_mode)
 {
-  mpfr_t xx, s;
+  mpfr_t xx, s, c;
 
   mpfr_init2 (xx, 53);
   mpfr_init2 (s, 53);
+  mpfr_init2 (c, 53);
   mpfr_set_d (xx, x, rnd_mode); /* should be exact */
-  mpfr_sin_cos (s, NULL, xx, rnd_mode);
+  mpfr_sin_cos (s, c, xx, rnd_mode);
   if (mpfr_get_d1 (s) != sin_x && !(Isnan(sin_x) && mpfr_nan_p(s)))
     {
       fprintf (stderr, "mpfr_sin_cos failed for x=%1.20e, rnd=%s\n", x,
@@ -95,16 +97,18 @@ void check53sin (double x, double sin_x, mp_rnd_t rnd_mode)
     }
   mpfr_clear (xx);
   mpfr_clear (s);
+  mpfr_clear (c);
 }
 
 void check53cos (double x, double cos_x, mp_rnd_t rnd_mode)
 {
-  mpfr_t xx, c;
+  mpfr_t xx, c, s;
 
   mpfr_init2 (xx, 53);
   mpfr_init2 (c, 53);
+  mpfr_init2 (s, 53);
   mpfr_set_d (xx, x, rnd_mode); /* should be exact */
-  mpfr_sin_cos (NULL, c, xx, rnd_mode);
+  mpfr_sin_cos (s, c, xx, rnd_mode);
   if (mpfr_get_d1 (c) != cos_x && !(Isnan(cos_x) && mpfr_nan_p(c)))
     {
       fprintf (stderr, "mpfr_sin_cos failed for x=%1.20e, rnd=%s\n", x,
@@ -115,15 +119,17 @@ void check53cos (double x, double cos_x, mp_rnd_t rnd_mode)
     }
   mpfr_clear (xx);
   mpfr_clear (c);
+  mpfr_clear (s);
 }
 
 /* tsin_cos prec [N] performs N tests with prec bits */
 int
 main(int argc, char *argv[])
 {
-  if (argc > 1) {
-    large_test (atoi (argv[1]), (argc > 2) ? atoi (argv[2]) : 1);
-  }
+  if (argc > 1)
+    {
+      large_test (atoi (argv[1]), (argc > 2) ? atoi (argv[2]) : 1);
+    }
 
 #ifdef HAVE_INFS
   check53 (DBL_NAN, DBL_NAN, DBL_NAN, GMP_RNDN);
@@ -148,7 +154,7 @@ main(int argc, char *argv[])
   check53 (1.00591265847407274059,  8.446508805292128885e-1,
 	   0.53531755997839769456,  GMP_RNDN);
 
-  /* check with one argument NULL */
+  /* check one argument only */
   check53sin (1.00591265847407274059,  8.446508805292128885e-1, GMP_RNDN);
   check53cos (1.00591265847407274059, 0.53531755997839769456,  GMP_RNDN);
 
