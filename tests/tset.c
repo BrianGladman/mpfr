@@ -1,0 +1,69 @@
+/* Test file for mpfr_set.
+
+Copyright (C) 2001 Free Software Foundation.
+
+This file is part of the MPFR Library.
+
+The MPFR Library is free software; you can redistribute it and/or modify
+it under the terms of the GNU Library General Public License as published by
+the Free Software Foundation; either version 2 of the License, or (at your
+option) any later version.
+
+The MPFR Library is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
+License for more details.
+
+You should have received a copy of the GNU Library General Public License
+along with the MPFR Library; see the file COPYING.LIB.  If not, write to
+the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
+MA 02111-1307, USA. */
+
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include "gmp.h"
+#include "mpfr.h"
+
+int
+main ()
+{
+  mp_prec_t p, q;
+  mpfr_t x, y, z, u;
+  mp_rnd_t rnd;
+  int inexact, cmp;
+
+  /* check prototypes of mpfr_init_set_* */
+  inexact = mpfr_init_set_si (x, -1, GMP_RNDN);
+  inexact = mpfr_init_set (y, x, GMP_RNDN);
+  inexact = mpfr_init_set_ui (z, 1, GMP_RNDN);
+  inexact = mpfr_init_set_d (u, 1.0, GMP_RNDN);
+
+  for (p=1; p<500; p++)
+    {
+      mpfr_set_prec (x, p);
+      mpfr_random (x);
+      for (q=1; q<2*p; q++)
+	{
+	  mpfr_set_prec (y, q);
+	  for (rnd=0; rnd<4; rnd++)
+	    {
+	      inexact = mpfr_set (y, x, rnd);
+	      cmp = mpfr_cmp (y, x);
+	      if (((inexact == 0) && (cmp != 0)) ||
+		  ((inexact > 0) && (cmp <= 0)) ||
+		  ((inexact < 0) && (cmp >= 0)))
+		{
+		  fprintf (stderr, "Wrong inexact flag in mpfr_set: expected %d, got %d\n", cmp, inexact);
+		  exit (1);
+		}
+	    }
+	}
+    }
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+  mpfr_clear (u);
+  return 0;
+}
