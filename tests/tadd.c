@@ -446,7 +446,7 @@ void check_case_2 (void)
   mpfr_sub(d, b, c, GMP_RNDZ);   /* d = 2^900 - 2^500 - 2^110 */
   mpfr_add(b, b, c, GMP_RNDZ);   /* b = 2^900 + 2^500 + 2^110 */
   mpfr_add(a, b, d, GMP_RNDZ);   /* a = 2^901 */
-  if (mpfr_cmp_ui (a, 1))
+  if (mpfr_cmp_ui_2exp (a, 1, 901))
     {
       fprintf (stderr, "b + d fails for b=2^900+2^500+2^110, d=2^900-2^500-2^110\n");
       fprintf (stderr, "expected 1.0e901, got ");
