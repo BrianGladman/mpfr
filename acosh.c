@@ -19,7 +19,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
+#include <limits.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -97,9 +97,9 @@ mpfr_acosh (y, x, rnd_mode)
 
 	/* compute the size of intermediary variable */
 	if(Ny>=Nx)
-	  Nt=Ny+2*(BITS_PER_CHAR); 
+	  Nt=Ny+2*CHAR_BIT;
 	else
-	  Nt=Nx+2*(BITS_PER_CHAR); 
+	  Nt=Nx+2*CHAR_BIT;
 	  
 	  boucle=1;
 

@@ -19,7 +19,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
+#include <limits.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -63,7 +63,7 @@ mpfr_factorial (y, x, rnd_mode)
  
 
         /* Initialisation of the Precision */
-	Nx=sizeof(unsigned long int)*(BITS_PER_CHAR);
+	Nx=sizeof(unsigned long int)*CHAR_BIT;
 	Ny=MPFR_PREC(y);
 	 
 	Nt=Ny+2*(int)_mpfr_ceil_log2((double)x)+10; /*compute the size of intermediary variable */
