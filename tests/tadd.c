@@ -548,6 +548,28 @@ check_inexact ()
   mpfr_init (z);
   mpfr_init (u);
 
+  mpfr_set_prec (x, 1);
+  mpfr_set_str_raw (x, "0.1E-4");
+  mpfr_set_prec (u, 33);
+  mpfr_set_str_raw (u, "0.101110100101101100000000111100000E-1");
+  mpfr_set_prec (y, 31);
+  if ((inexact = mpfr_add (y, x, u, GMP_RNDN)))
+    {
+      fprintf (stderr, "Wrong inexact flag (2): expected 0, got %d\n", inexact);
+      exit (1);
+    }
+
+  mpfr_set_prec (x, 1);
+  mpfr_set_str_raw (x, "0.1E-4");
+  mpfr_set_prec (u, 33);
+  mpfr_set_str_raw (u, "0.101110100101101100000000111100000E-1");
+  mpfr_set_prec (y, 28);
+  if ((inexact = mpfr_add (y, x, u, GMP_RNDN)))
+    {
+      fprintf (stderr, "Wrong inexact flag (1): expected 0, got %d\n", inexact);
+      exit (1);
+    }
+
   for (px=1; px<MAX_PREC; px++)
     {
       mpfr_set_prec (x, px);
@@ -561,12 +583,17 @@ check_inexact ()
 	      mpfr_set_prec (y, py);
 	      pz =  (mpfr_cmp_abs (x, u) >= 0) ? MPFR_EXP(x)-MPFR_EXP(u)
 		: MPFR_EXP(u)-MPFR_EXP(x);
-	      pz = pz + MAX(MPFR_PREC(x), MPFR_PREC(u));
+	      /* x + u is exactly representable with precision
+		 abs(EXP(x)-EXP(u)) + max(prec(x), prec(u)) + 1 */
+	      pz = pz + MAX(MPFR_PREC(x), MPFR_PREC(u)) + 1;
 	      mpfr_set_prec (z, pz);
 	      rnd = rand () % 4;
 	      if (mpfr_add (z, x, u, rnd))
 		{
 		  fprintf (stderr, "z <- x + u should be exact\n");
+		  printf ("x="); mpfr_print_raw (x); putchar ('\n');
+		  printf ("u="); mpfr_print_raw (u); putchar ('\n');
+		  printf ("z="); mpfr_print_raw (z); putchar ('\n');
 		  exit (1);
 		}
 	      for (rnd=0; rnd<4; rnd++)
