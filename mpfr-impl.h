@@ -66,8 +66,9 @@ typedef unsigned long int       mp_size_unsigned_t;
 #define ALPHA 4.3191365662914471407 /* a+2 = a*log(a), rounded to +infinity */
 
 /* Safe absolute value (to avoid possible integer overflow) */
+/* type is the target (unsigned) type */
 
-#define SAFE_ABS(type,x) ((x) >= 0 ? (unsigned type)(x) : -(unsigned type)(x))
+#define SAFE_ABS(type,x) ((x) >= 0 ? (type)(x) : -(type)(x))
 
 /* macros for doubles, based on gmp union ieee_double_extract */
 

@@ -55,7 +55,7 @@ mpfr_cmp_si_2exp (mpfr_srcptr b, long int i, mp_exp_t f)
       mp_size_t bn;
       mp_limb_t c, *bp;
 
-      ai = SAFE_ABS(long, i);
+      ai = SAFE_ABS(unsigned long, i);
 
       /* ai must be representable in a mp_limb_t */
       MPFR_ASSERTN(ai == (mp_limb_t) ai);
