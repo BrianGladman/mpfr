@@ -205,6 +205,74 @@ special ()
   mpfr_clear (t);
 }
 
+static void
+particular_cases (void)
+{
+  mpfr_t t[11], r;
+  int i, j;
+  int error = 0;
+
+  for (i = 0; i < 11; i++)
+    mpfr_init2 (t[i], 2);
+  mpfr_init2 (r, 6);
+
+  mpfr_set_nan (t[0]);
+  mpfr_set_inf (t[1], 1);
+  mpfr_set_ui (t[3], 0, GMP_RNDN);
+  mpfr_set_ui (t[5], 1, GMP_RNDN);
+  mpfr_set_ui (t[7], 2, GMP_RNDN);
+  mpfr_div_2ui (t[9], t[5], 1, GMP_RNDN);
+  for (i = 1; i < 11; i += 2)
+    mpfr_neg (t[i+1], t[i], GMP_RNDN);
+
+  for (i = 0; i < 11; i++)
+    for (j = 0; j < 11; j++)
+      {
+        int p;
+        static int q[11][11] = {
+          /*          NaN +inf -inf  +0   -0   +1   -1   +2   -2  +0.5 -0.5 */
+          /*  NaN */ { 0,   0,   0,  128, 128,  0,   0,   0,   0,   0,   0  },
+          /* +inf */ { 0,   1,   2,  128, 128,  1,   2,   1,   2,   1,   2  },
+          /* -inf */ { 0,   1,   2,  128, 128, -1,  -2,   1,   2,   1,   2  },
+          /*  +0  */ { 0,   2,   1,  128, 128,  2,   1,   2,   1,   2,   1  },
+          /*  -0  */ { 0,   2,   1,  128, 128, -2,  -1,   2,   1,   2,   1  },
+          /*  +1  */ {128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128 },
+          /*  -1  */ { 0,  128, 128, 128, 128,-128,-128, 128, 128,  0,   0  },
+          /*  +2  */ { 0,   1,   2,  128, 128, 256,  64, 512,  32, 180,  90 },
+          /*  -2  */ { 0,   1,   2,  128, 128,-256, -64, 512,  32,  0,   0  },
+          /* +0.5 */ { 0,   2,   1,  128, 128,  64, 256,  32, 512,  90, 180 },
+          /* -0.5 */ { 0,   2,   1,  128, 128, -64,-256,  32, 512,  0,   0  }
+        };
+
+        if (i == 5 && (j == 9 || j == 10))
+          {
+            fprintf (stderr, "In mpfr_pow, particular case (%d,%d) "
+                     "not tested due to an infinite loop.\n", i, j);
+            error = 1;
+            continue;
+          }
+        mpfr_pow (r, t[i], t[j], GMP_RNDN);
+        p = mpfr_nan_p (r) ? 0 : mpfr_inf_p (r) ? 1 :
+          mpfr_cmp_ui (r, 0) == 0 ? 2 : mpfr_get_d (r, GMP_RNDN) * 128;
+        if (p != 0 && MPFR_SIGN(r) < 0)
+          p = -p;
+        if (p != q[i][j])
+          {
+            fprintf (stderr,
+                     "Error in mpfr_pow for particular case (%d,%d):\n"
+                     "got %d instead of %d\n", i, j, p, q[i][j]);
+            error = 1;
+          }
+      }
+
+  for (i = 0; i < 11; i++)
+    mpfr_clear (t[i]);
+  mpfr_clear (r);
+
+  if (error)
+    exit (1);
+}
+
 int
 main (void)
 {
@@ -213,6 +281,8 @@ main (void)
   tests_start_mpfr ();
 
   special ();
+
+  particular_cases ();
 
   check_pow_ui ();
 
