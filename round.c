@@ -145,14 +145,12 @@ mpfr_round(x, RND_MODE, prec)
      unsigned long prec; 
 #endif
 {
-  mp_limb_t *tmp; int carry; unsigned long nw, xn; 
+  mp_limb_t *tmp; int carry; unsigned long nw; 
 
   nw = prec / BITS_PER_MP_LIMB; 
   if (prec & (BITS_PER_MP_LIMB - 1)) nw++;
-  xn = (PREC(x)-1) / BITS_PER_MP_LIMB + 1;
-  if (SIGN(x)<0) xn ^= 1<<31;
   tmp = (mp_ptr) (*_mp_allocate_func) (nw * BYTES_PER_MP_LIMB);
-  carry = mpfr_round_raw(tmp, MANT(x), RND_MODE, xn, prec); 
+  carry = mpfr_round_raw(tmp, MANT(x), PREC(x), (SIGN(x)<0), prec, RND_MODE);
 
   if (carry)
     {      
