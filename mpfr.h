@@ -83,8 +83,10 @@ int mpfr_round_raw _PROTO ((mp_limb_t *, mp_limb_t *, char, long,
 int mpfr_round_raw2 _PROTO ((mp_limb_t *, unsigned long, char, char,
 			     unsigned long));
 void mpfr_round _PROTO ((mpfr_ptr, char, unsigned long)); 
-int mpfr_can_round _PROTO ((mpfr_ptr, unsigned int, unsigned char, 
+int mpfr_can_round _PROTO ((mpfr_ptr, unsigned long, unsigned char, 
 			    unsigned char, unsigned long));
+int mpfr_can_round_raw _PROTO ((mp_limb_t *, unsigned char, unsigned long, 
+				unsigned char, unsigned char, unsigned long));
 void mpfr_set_d _PROTO ((mpfr_ptr, double, unsigned char)); 
 int mpfr_set_z _PROTO ((mpfr_ptr, mpz_srcptr, unsigned char)); 
 double mpfr_get_d _PROTO ((mpfr_srcptr)); 
@@ -123,6 +125,7 @@ void mpfr_set_prec _PROTO((mpfr_ptr, unsigned long int,unsigned char));
 extern mp_size_t __gmp_default_fp_bit_precision;
 extern char __gmp_default_rounding_mode;
 char *mpfr_print_rnd_mode(unsigned char rnd_mode); 
+
 
 #define mpfr_init(x) mpfr_init2(x, __gmp_default_fp_bit_precision)
 #define mpfr_cmp_ui(b,i) mpfr_cmp_ui_2exp(b,i,0)
