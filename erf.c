@@ -52,10 +52,11 @@ mpfr_erf (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	}
       else if (MPFR_IS_INF(x)) /* erf(+inf) = +1, erf(-inf) = -1 */
 	return mpfr_set_si (y, MPFR_FROM_SIGN_TO_INT(sign_x), GMP_RNDN);
-      else if (MPFR_IS_ZERO(x)) /* erf(+0) = +0, erf(-0) = -0 */
-	return mpfr_set (y, x, GMP_RNDN); /* should keep the sign of x */
-      else
-	MPFR_ASSERTN(0);
+      else /* erf(+0) = +0, erf(-0) = -0 */
+        {
+          MPFR_ASSERTD(MPFR_IS_ZERO(x));
+          return mpfr_set (y, x, GMP_RNDN); /* should keep the sign of x */
+        }
     }
 
   /* now x is neither NaN, Inf nor 0 */
@@ -193,12 +194,6 @@ mpfr_erf_0 (mpfr_ptr res, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
       ok = mpfr_can_round (s, m - log2tauk, GMP_RNDN, GMP_RNDZ,
                            n + (rnd_mode == GMP_RNDN));
-
-      if (ok == 0)
-        {
-          if (m < n + log2tauk)
-            m = n + log2tauk;
-        }
     }
   while (ok == 0);
 

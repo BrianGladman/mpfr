@@ -113,6 +113,18 @@ special (void)
       exit (1);
     }
 
+  mpfr_set_str (x, "-6.6", 10, GMP_RNDN);
+  mpfr_erf (x, x, GMP_RNDN);
+  if (mpfr_cmp_si (x, -1))
+    {
+      printf ("mpfr_erf failed for x=-6.6, rnd=GMP_RNDN\n");
+      printf ("expected -1\n");
+      printf ("got      ");
+      mpfr_out_str (stdout, 2, 0, x, GMP_RNDN);
+      printf ("\n");
+      exit (1);
+    }
+
   mpfr_set_str (x, "6.6", 10, GMP_RNDN);
   mpfr_erf (x, x, GMP_RNDZ);
   mpfr_set_str_binary (y, "0.11111111111111111111111111111111111111111111111111111");
