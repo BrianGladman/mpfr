@@ -1373,11 +1373,11 @@ the sign (bit 31), the NaN flag (bit 30),
 and the Infinity flag (bit 29);
 thus bits 0 to 28 remain for the number of allocated limbs, with a maximal
 value of 536870911.
-A NaN is indicated by the NaN flag set, and no other fields are
-relevant.
+A NaN is indicated by the NaN flag set, and the other fields are
+undefined.
 An Infinity is indicated by the NaN flag clear and the Inf flag set;
 the sign bit of an Infinity indicates the sign, the limb data 
-and the exponent are not relevant.
+and the exponent are undefined.
 
 The @code{_mpfr_exp} field stores the exponent.
 An exponent of 0 means a radix point just above the most significant
