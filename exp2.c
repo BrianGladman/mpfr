@@ -1,6 +1,7 @@
-/* mpfr_exp -- exponential of a floating-point number
+/* mpfr_exp2 -- exponential of a floating-point number 
+                using Brent's algorithms in O(n^(1/2)*M(n)) and O(n^(1/3)*M(n))
 
-Copyright (C) 1999 PolKA project, Inria Lorraine and Loria
+Copyright (C) 1999-2000 PolKA project, Inria Lorraine and Loria
 
 This file is part of the MPFR Library.
 
@@ -25,12 +26,49 @@ MA 02111-1307, USA. */
 #include "gmp-impl.h"
 #include "mpfr.h"
 
-int mpfr_exp2_aux  (mpfr_t, mpfr_t, mpfr_t, int);
-int mpfr_exp2_aux2 (mpfr_t, mpfr_t, mpfr_t, int);
+int mpfr_exp2_aux  (mpz_t, mpfr_t, int, int*);
+int mpfr_exp2_aux2 (mpz_t, mpfr_t, int, int*);
+
+#define SWITCH 100 /* number of bits to switch from O(n^(1/2)*M(n)) method
+		      to O(n^(1/3)*M(n)) method */
+
+#define MY_INIT_MPZ(x, s) { \
+   (x)->_mp_alloc = (s); \
+   (x)->_mp_d = (mp_ptr) TMP_ALLOC((s)*BYTES_PER_MP_LIMB); \
+   (x)->_mp_size = 0; }
 
 /* #define DEBUG */
 
 #define LOG2 0.69314718055994528622 /* log(2) rounded to zero on 53 bits */
+
+/* if k = the number of bits of z > q, divides z by 2^(k-q) and returns k-q.
+   Otherwise do nothing and return 0.
+ */
+mp_exp_t mpz_normalize(mpz_t rop, mpz_t z, int q)
+{
+  int k;
+
+  k = mpz_sizeinbase(z, 2);
+  if (k > q) {
+    mpz_div_2exp(rop, z, k-q);
+    return k-q;
+  }
+  else {
+    if (rop != z) mpz_set(rop, z);
+    return 0;
+  }
+}
+
+/* if expz > target, shift z by (expz-target) bits to the left.
+   if expz < target, shift z by (target-expz) bits to the right.
+   Returns target.
+*/
+int mpz_normalize2(mpz_t rop, mpz_t z, int expz, int target)
+{
+  if (target > expz) mpz_div_2exp(rop, z, target-expz);
+  else mpz_mul_2exp(rop, z, expz-target);
+  return target;
+}
 
 /* use Brent's formula exp(x) = (1+r+r^2/2!+r^3/3!+...)^(2^K)*2^n
    where x = n*log(2)+(2^K)*r
@@ -47,8 +85,9 @@ mpfr_exp2(y, x, rnd_mode)
      mp_rnd_t rnd_mode;
 #endif
 {
-  int n, expx, K, precy, q, k, l, err; 
-  mpfr_t r, s, t;
+  int n, expx, K, precy, q, k, l, err, exps; 
+  mpfr_t r, s, t; mpz_t ss;
+  TMP_DECL(marker);
 
   if (FLAG_NAN(x)) { SET_NAN(y); return 1; }
   if (!NOTZERO(x)) { mpfr_set_ui(y, 1, GMP_RNDN); return 0; }
@@ -75,8 +114,11 @@ mpfr_exp2(y, x, rnd_mode)
 
   n = (int) floor(mpfr_get_d(x)/LOG2);
 
-  K = (int) (precy<500) ? sqrt( (double) precy )
-    : pow( 8.0 * (double) precy, 1.0/3.0);
+  /* for the O(n^(1/2)*M(n)) method, the Taylor series computation of
+     n/K terms costs about n/(2K) multiplications when computed in fixed
+     point */
+  K = (int) (precy<SWITCH) ? sqrt( (double) (precy + 1)/ 2.0 )
+    : pow( 4.0 * (double) precy, 1.0/3.0);
   l = (precy-1)/K + 1;
   err = K + (int) ceil(log(2.0*(double)l+18.0)/LOG2);
   /* add K extra bits, i.e. failure probability <= 1/2^K = O(1/precy) */
@@ -120,31 +162,31 @@ mpfr_exp2(y, x, rnd_mode)
 #endif
   mpfr_div_2exp(r, r, K, GMP_RNDU); /* r = (x-n*log(2))/2^K */
 
+  TMP_MARK(marker);
+  MY_INIT_MPZ(ss, 3 + 2*((q-1)/BITS_PER_MP_LIMB));
+  exps = mpz_set_fr(ss, s);
   /* s <- 1 + r/1! + r^2/2! + ... + r^l/l! */
-  l = (precy<500) ? mpfr_exp2_aux(s, r, t, q) /* naive method */
-    : mpfr_exp2_aux2(s, r, t, q); /* Brent/Kung method */
+  l = (precy<SWITCH) ? mpfr_exp2_aux(ss, r, q, &exps) /* naive method */
+    : mpfr_exp2_aux2(ss, r, q, &exps); /* Brent/Kung method */
 
 #ifdef DEBUG
   printf("l=%d q=%d (K+l)*q^2=%1.3e\n", l, q, (K+l)*(double)q*q);
 #endif
 
-  /* add 2 ulp to take into account rest of summation */
-  mpfr_add_one_ulp(s);
-  mpfr_add_one_ulp(s);
-  
   for (k=0;k<K;k++) {
-    mpfr_mul(s, s, s, GMP_RNDU);
-#ifdef DEBUG
-    printf("k=%d s=%1.20e\n",k,mpfr_get_d(s)); 
-#endif
+    mpz_mul(ss, ss, ss); exps <<= 1;
+    exps += mpz_normalize(ss, ss, q);
   }
+  mpfr_set_z(s, ss, GMP_RNDN); EXP(s) += exps;
 
   if (n>0) mpfr_mul_2exp(s, s, n, GMP_RNDU);
   else mpfr_div_2exp(s, s, -n, GMP_RNDU);
 
-  /* error is at most 2^K*(2l+18) ulp */
-  l = 2*l+17; k=0; while (l) { k++; l >>= 1; }
-  /* now k = ceil(log(2l+18)/log(2)) */
+  /* error is at most 2^K*(3l*(l+1)) ulp for mpfr_exp2_aux */
+  if (precy<SWITCH) l = 3*l*(l+1);
+  else l = l*(l+4);
+  k=0; while (l) { k++; l >>= 1; }
+  /* now k = ceil(log(error in ulps)/log(2)) */
   K += k;
 #ifdef DEBUG
     printf("after mult. by 2^n:\n");
@@ -153,7 +195,7 @@ mpfr_exp2(y, x, rnd_mode)
     printf("err=%d bits\n", K);
 #endif
 
-  l = mpfr_can_round(s, q-K, GMP_RNDU, rnd_mode, precy);
+  l = mpfr_can_round(s, q-K, GMP_RNDN, rnd_mode, precy);
   if (l==0) {
 #ifdef DEBUG
      printf("not enough precision, use %d\n", q+BITS_PER_MP_LIMB);
@@ -166,94 +208,148 @@ mpfr_exp2(y, x, rnd_mode)
 
   mpfr_set(y, s, rnd_mode);
 
+  TMP_FREE(marker);
   mpfr_clear(r); mpfr_clear(s); mpfr_clear(t);
   return 1;
 }
 
 /* s <- 1 + r/1! + r^2/2! + ... + r^l/l! while EXP(r^l/l!)+EXPR(r)>-q
-   using naive method with O(l) multiplications
-   and auxiliary variable t.
-   Return l
+   using naive method with O(l) multiplications.
+   Return the number of iterations l.
+   The absolute error on s is less than 3*l*(l+1)*2^(-q).
+   Version using fixed-point arithmetic with mpz instead 
+   of mpfr for internal computations.
+   s must have at least qn+1 limbs (qn should be enough, but currently fails
+   since mpz_mul_2exp(s, s, q-1) reallocates qn+1 limbs)
 */
-int mpfr_exp2_aux(mpfr_t s, mpfr_t r, mpfr_t t, int q)
+int mpfr_exp2_aux(mpz_t s, mpfr_t r, int q, int *exps)
 {
-  int expr, l;
+  int l, dif, qn;
+  mpz_t t, rr; mp_exp_t expt, expr;
+  TMP_DECL(marker);
 
-  mpfr_set_ui(s, 1, GMP_RNDU);
-  mpfr_set_ui(t, 1, GMP_RNDU);
+  TMP_MARK(marker);
+  qn = 1 + (q-1)/BITS_PER_MP_LIMB;
+  MY_INIT_MPZ(t, 2*qn+1); /* 2*qn+1 is neeeded since mpz_div_2exp may 
+			      need an extra limb */
+  MY_INIT_MPZ(rr, qn+1);
+  mpz_set_ui(t, 1); expt=0;
+  mpz_set_ui(s, 1); mpz_mul_2exp(s, s, q-1); *exps = 1-q; /* s = 2^(q-1) */
+  expr = mpz_set_fr(rr, r); /* no error here */
 
-  l = 1; expr = EXP(r);
+  l = 0;
   do {
-    mpfr_mul(t, t, r, GMP_RNDU);
-    mpfr_div_ui(t, t, l, GMP_RNDU);
-    mpfr_add(s, s, t, GMP_RNDU);
     l++;
-  } while (EXP(t)+expr > -q);
+    mpz_mul(t, t, rr); expt=expt+expr;
+    dif = *exps + mpz_sizeinbase(s, 2) - expt - mpz_sizeinbase(t, 2);
+    /* truncates the bits of t which are < ulp(s) = 2^(1-q) */
+    expt += mpz_normalize(t, t, q-dif); /* error at most 2^(1-q) */
+    mpz_div_ui(t, t, l); /* error at most 2^(1-q) */
+    /* the error wrt t^l/l! is here at most 3*l*ulp(s) */
+#ifdef DEBUG
+    if (expt != *exps) {
+      fprintf(stderr, "Error: expt != exps %d %d\n", expt, *exps); exit(1);
+    }
+#endif
+    mpz_add(s, s, t); /* no error here: exact */
+    /* ensures rr has the same size as t: after several shifts, the error
+       on rr is still at most ulp(t)=ulp(s) */
+    expr += mpz_normalize(rr, rr, mpz_sizeinbase(t, 2));
+  } while (mpz_cmp_ui(t, 0));
 
+  TMP_FREE(marker);
   return l;
 }
 
-#define MY_INIT(x, p, s) { \
-   PREC(x) = p; \
-   MANT(x) = (mp_ptr) TMP_ALLOC(s*BYTES_PER_MP_LIMB); \
-   SIZE(x) = s; \
-   EXP(x) = 0; }
-
 /* s <- 1 + r/1! + r^2/2! + ... + r^l/l! while EXP(r^l/l!)+EXPR(r)>-q
-   using Brent/Kung method with O(sqrt(l)) multiplications
-   and auxiliary variable t.
+   using Brent/Kung method with O(sqrt(l)) multiplications.
    Return l.
+   Uses m multiplications of full size and 2l/m of decreasing size, 
+   i.e. a total equivalent to about m+l/m full multiplications,
+   i.e. 2*sqrt(l) for m=sqrt(l).
+   Version using mpz. ss must have at least (sizer+1) limbs.
+   The error is bounded by (l^2+4*l) ulps where l is the return value.
 */
-int mpfr_exp2_aux2(mpfr_t s, mpfr_t r, mpfr_t t, int q)
+int mpfr_exp2_aux2(mpz_t s, mpfr_t r, int q, int *exps)
 {
-  int expr, l, m, i, sizer; mpfr_t *R; mp_limb_t c;
+  int expr, l, m, i, sizer, *expR, expt, dif, ql; mp_limb_t c;
+  mpz_t t, *R, rr, tmp;
   TMP_DECL(marker);
 
-  mpfr_set_ui(s, 0, GMP_RNDU);
-  expr = EXP(r);
-
   /* estimate value of l */
-  l = q / (-expr);
-  m = (int) sqrt(2.0 * (double) l);
+  l = q / (-EXP(r));
+  m = (int) sqrt((double) l);
   TMP_MARK(marker);
-  R = (mpfr_t*) TMP_ALLOC((m+1)*sizeof(mpfr_t)); /* R[i] stands for r^i */
-  sizer = (PREC(r)+BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB;
-  for (i=0;i<=m;i++) MY_INIT(R[i], PREC(r), sizer);
-  mpfr_mul(R[2], r, r, GMP_RNDU);
-  for (i=3;i<=m;i++) mpfr_mul(R[i], R[i-1], r, GMP_RNDU);
-  mpfr_set_ui(R[0], 1, GMP_RNDU); /* R[0]=1 */
-  mpfr_set_ui(R[1], 1, GMP_RNDU); /* R[1] contains r^l/l! */
+  R = (mpz_t*) TMP_ALLOC((m+1)*sizeof(mpz_t)); /* R[i] stands for r^i */
+  expR = (int*) TMP_ALLOC((m+1)*sizeof(int)); /* exponent for R[i] */
+  sizer = 1 + (PREC(r)-1)/BITS_PER_MP_LIMB;
+  mpz_init(tmp);
+  MY_INIT_MPZ(rr, sizer+2);
+  MY_INIT_MPZ(t, 2*sizer); /* double size for products */
+  mpz_set_ui(s, 0); *exps = 1-q; /* initialize s to zero, 1 ulp = 2^(1-q) */
+  for (i=0;i<=m;i++) MY_INIT_MPZ(R[i], sizer+2);
+  expR[1] = mpz_set_fr(R[1], r); /* exact operation: no error */
+  expR[1] = mpz_normalize2(R[1], R[1], expR[1], 1-q); /* error <= 1 ulp */
+  mpz_mul(t, R[1], R[1]); /* err(t) <= 2 ulps */
+  mpz_div_2exp(R[2], t, q-1); /* err(R[2]) <= 3 ulps */
+  expR[2] = 1-q;
+  for (i=3;i<=m;i++) {
+    mpz_mul(t, R[i-1], R[1]); /* err(t) <= 2*i-2 */
+    mpz_div_2exp(R[i], t, q-1); /* err(R[i]) <= 2*i-1 ulps */
+    expR[i] = 1-q;
+  }
+  mpz_set_ui(R[0], 1); mpz_mul_2exp(R[0], R[0], q-1); expR[0]=1-q; /* R[0]=1 */
+  mpz_set_ui(rr, 1); expr=0; /* rr contains r^l/l! */
+  /* by induction: err(rr) <= 2*l ulps */
 
-  l = 0; 
+  l = 0;
+  ql = q; /* precision used for current giant step */
   do {
-    mpfr_set(t, R[m-1], GMP_RNDU);
-    /* computes t = 1 + r/(l+1) + ... + r^(m-1)*l!/(l+m-1)! */
-    for (i=m-2;i>1;i--) {
-      mpfr_div_ui(t, t, l+i+1, GMP_RNDU);
-      mpfr_add(t, t, R[i], GMP_RNDU);
+    /* all R[i] must have exponent 1-ql */
+    if (l) for (i=0;i<m;i++) 
+      expR[i] = mpz_normalize2(R[i], R[i], expR[i], 1-ql);
+    /* the absolute error on R[i]*rr is still 2*i-1 ulps */
+    expt = mpz_normalize2(t, R[m-1], expR[m-1], 1-ql); 
+    /* err(t) <= 2*m-1 ulps */
+    /* computes t = 1 + r/(l+1) + ... + r^(m-1)*l!/(l+m-1)! 
+       using Horner's scheme */
+    for (i=m-2;i>=0;i--) {
+      mpz_div_ui(t, t, l+i+1); /* err(t) += 1 ulp */
+      mpz_add(t, t, R[i]);
     }
-    mpfr_div_ui(t, t, l+2, GMP_RNDU);
-    mpfr_add(t, t, r, GMP_RNDU);
-    mpfr_div_ui(t, t, l+1, GMP_RNDU);
-    mpfr_add(t, t, R[0], GMP_RNDU);
+    /* now err(t) <= (3m-2) ulps */
     
     /* now multiplies t by r^l/l! and adds to s */
-    mpfr_mul(t, t, R[1], GMP_RNDU);
-    mpfr_add(s, s, t, GMP_RNDU);
+    mpz_mul(t, t, rr); expt += expr;
+    expt = mpz_normalize2(t, t, expt, *exps);
+    /* err(t) <= (3m-1) + err_rr(l) <= (3m-2) + 2*l */
+#ifdef DEBUG
+    if (expt != *exps) {
+      fprintf(stderr, "Error: expt != exps %d %d\n", expt, *exps); exit(1);
+    }
+#endif
+    mpz_add(s, s, t); /* no error here */
 
-    /* updates R[1], should be done using binary splitting too */
-    mpfr_mul(R[1], R[1], R[m], GMP_RNDU);
+    /* updates rr, the multiplication of the factors l+i could be done 
+       using binary splitting too, but it is not sure it would save much */
+    mpz_mul(t, rr, R[m]); /* err(t) <= err(rr) + 2m-1 */
+    expr += expR[m];
+    mpz_set_ui(tmp, 1);
     for (i=1,c=1;i<=m;i++) {
       if (l+i > ~((mp_limb_t)0)/c) {
-	mpfr_div_ui(R[1], R[1], c, GMP_RNDU);
+	mpz_mul_ui(tmp, tmp, c);
 	c = l+i;
       }
       else c *= l+i;
     }
-    if (c != 1) mpfr_div_ui(R[1], R[1], c, GMP_RNDU);
+    if (c != 1) mpz_mul_ui(tmp, tmp, c); /* tmp is exact */
+    mpz_fdiv_q(t, t, tmp); /* err(t) <= err(rr) + 2m */
+    expr += mpz_normalize(rr, t, ql); /* err_rr(l+1) <= err_rr(l) + 2m+1 */
+    ql = q - *exps - mpz_sizeinbase(s, 2) + expr + mpz_sizeinbase(rr, 2);
     l+=m;
-  } while (EXP(R[1]) > -q);
+  } while (expr+mpz_sizeinbase(rr, 2) > -q);
 
   TMP_FREE(marker);
+  mpz_clear(tmp);
   return l;
 }
