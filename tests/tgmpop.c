@@ -33,6 +33,15 @@ special (void)
   mpfr_init (y);
   mpq_init (z);
 
+  /* cancellation in mpfr_add_q */
+  mpfr_set_prec (x, 60);
+  mpfr_set_prec (y, 20);
+  mpz_set_str (mpq_numref (z), "-187207494", 10);
+  mpz_set_str (mpq_denref (z), "5721", 10);
+  mpfr_set_str_binary (x, "11111111101001011011100101100011011110010011100010000100001E-44");
+  mpfr_add_q (y, x, z, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (y, 256783, -64) == 0);
+
   mpfr_set_prec (x, 19);
   mpfr_set_str_binary (x, "0.1011110101110011100E0");
   mpz_set_str (mpq_numref (z), "187207494", 10);
