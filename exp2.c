@@ -26,27 +26,6 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-
- /* The computation of y=2^z where z is a long int*/
-int mpfr_exp2_si _PROTO((mpfr_ptr, long int n, mp_rnd_t));
-
-int
-#if __STDC__
-mpfr_exp2_si (mpfr_ptr y, long int n, mp_rnd_t rnd_mode) 
-#else
-mpfr_exp2_si (y, n, rnd_mode)
-     mpfr_ptr y;
-     long int n;
-     mp_rnd_t rnd_mode;
-#endif
-{    
-
-  mpfr_set_ui(y,1,rnd_mode);
-  MPFR_EXP(y)+=n;
-  return 0;
-}
-
-
  /* The computation of y=pow(2,z) is done by
 
     y=exp(z*log(2))=2^z
