@@ -151,6 +151,16 @@ drand (void)
   return d;
 }
 
+/* generate a random limb */
+mp_limb_t
+randlimb (void)
+{
+  mp_limb_t limb;
+
+  _gmp_rand (&limb, RANDS, GMP_NUMB_BITS);
+  return limb;
+}
+
 /* returns ulp(x) for x a 'normal' double-precision number */
 double
 Ulp (double x)

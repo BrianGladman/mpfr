@@ -82,8 +82,8 @@ double drand _PROTO ((void));
 double drand48 _PROTO ((void));
 long int lrand48 _PROTO ((void));
 void srand48 _PROTO ((long int));
+mp_limb_t randlimb _PROTO ((void));
 int ulp _PROTO ((double, double));
 double dbl _PROTO ((double, int));
 double Ulp _PROTO ((double));
-
 int Isnan _PROTO ((double));
