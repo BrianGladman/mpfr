@@ -49,7 +49,7 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
   /* MPFR_CLEAR_FLAGS is useless since we use mpfr_set to set y and z */
 
   prec = MAX(MPFR_PREC(y), MPFR_PREC(z)); 
-  m = prec + MPFR_INT_CEIL_LOG2 (prec) + ABS (MPFR_GET_EXP (x)) + 13;
+  m = prec + MPFR_INT_CEIL_LOG2 (prec) + MAX (MPFR_GET_EXP (x), 0) + 13;
 
   mpfr_init2 (c, m);
   mpfr_init2 (k, m);
