@@ -117,7 +117,10 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   n = (int) (mpfr_get_d1 (x) / LOG2);
 
   /* error bounds the cancelled bits in x - n*log(2) */
-  count_leading_zeros (error_r, (mp_limb_t) (n < 0) ? -n : n);
+  if (n == 0)
+    error_r = 0;
+  else
+    count_leading_zeros (error_r, (mp_limb_t) (n < 0) ? -n : n);
   error_r = BITS_PER_MP_LIMB - error_r + 2;
 
   /* for the O(n^(1/2)*M(n)) method, the Taylor series computation of
