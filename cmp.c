@@ -19,78 +19,83 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
 #include "gmp.h"
 #include "gmp-impl.h"
-#include "longlong.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-/* returns 0 iff b = c
-            a positive value iff b > c
-            a negative value iff b < c
-
-More precisely, in case b and c are of same sign, the absolute value 
-of the result is one plus the absolute difference between the exponents 
-of b and c, i.e. one plus the number of bits shifts to align b and c
-(this value is useful in mpfr_sub).
-
+/* returns 0 iff b = sign(s) * c
+           a positive value iff b > sign(s) * c
+           a negative value iff b < sign(s) * c
 */
 
-/* #define DEBUG */
-
-/* compares b and sign(s)*c */
-int 
+int
 #if __STDC__
-mpfr_cmp3 (mpfr_srcptr b, mpfr_srcptr c, long int s)
+mpfr_cmp3 (mpfr_srcptr b, mpfr_srcptr c, int s)
 #else
 mpfr_cmp3 (b, c, s)
      mpfr_srcptr b;
-     mpfr_srcptr c; 
-     long int s;
+     mpfr_srcptr c;
+     int s;
 #endif
 {
-   long int diff_exp;
-   unsigned long bn, cn;
-   mp_limb_t *bp, *cp;
+  mp_exp_t be, ce;
+  mp_size_t bn, cn;
+  mp_limb_t *bp, *cp;
 
-   if (MPFR_IS_NAN(b) || MPFR_IS_NAN(c)) return 1;
+  MPFR_ASSERTN(!MPFR_IS_NAN(b));
+  MPFR_ASSERTN(!MPFR_IS_NAN(c));
+  s *= MPFR_SIGN(c);
 
-   if (MPFR_IS_INF(b)) {
-     if (MPFR_IS_INF(c) && (MPFR_SIGN(b) * s * MPFR_SIGN(c) > 0))
-       return 0;
-     else 
-       return MPFR_SIGN(b);
-   }
+  if (MPFR_IS_INF(b))
+    return (MPFR_IS_INF(c) && s * MPFR_SIGN(b) > 0) ? 0 : MPFR_SIGN(b);
 
-   if (!MPFR_NOTZERO(b)) {
-     if (!MPFR_NOTZERO(c)) return 0; else return -(s*MPFR_SIGN(c));
-   }
-   else if (!MPFR_NOTZERO(c)) return MPFR_SIGN(b);
+  if (MPFR_IS_INF(c))
+    return -s;
 
-   s = s * MPFR_SIGN(b) * MPFR_SIGN(c);
-   if (s<0) return(MPFR_SIGN(b));
+  /* b and c are real numbers */
 
-   /* now signs are equal */
-   diff_exp = MPFR_EXP(b)-MPFR_EXP(c);
-   s = (MPFR_SIGN(b) > 0) ? 1 : -1;
+  if (MPFR_IS_ZERO(b))
+    return MPFR_IS_ZERO(c) ? 0 : -s;
 
-   if (diff_exp>0) return(s*(1+diff_exp));
-   else if (diff_exp<0) return(s*(-1+diff_exp));
-   /* both signs and exponents are equal */
+  if (MPFR_IS_ZERO(c))
+    return MPFR_SIGN(b);
 
-   bn = (MPFR_PREC(b)-1)/BITS_PER_MP_LIMB+1;
-   cn = (MPFR_PREC(c)-1)/BITS_PER_MP_LIMB+1;
-   bp = MPFR_MANT(b); cp = MPFR_MANT(c);
+  if (s * MPFR_SIGN(b) < 0)
+    return MPFR_SIGN(b);
 
-   while (bn && cn) {
-     if (bp[--bn] != cp[--cn])
-       return((bp[bn]>cp[cn]) ? s : -s);
-   }
+  /* now signs are equal */
 
-   if (bn) { while (bn) if (bp[--bn]) return(s); }
-   else if (cn) while (cn) if (cp[--cn]) return(-s);
+  be = MPFR_EXP(b);
+  ce = MPFR_EXP(c);
+  if (be > ce)
+    return s;
+  if (be < ce)
+    return -s;
+
+  /* both signs and exponents are equal */
+
+  bn = (MPFR_PREC(b)-1)/BITS_PER_MP_LIMB;
+  cn = (MPFR_PREC(c)-1)/BITS_PER_MP_LIMB;
+
+  bp = MPFR_MANT(b);
+  cp = MPFR_MANT(c);
+
+  for ( ; bn >= 0 && cn >= 0; bn--, cn--)
+  {
+    if (bp[bn] > cp[cn])
+      return s;
+    if (bp[bn] < cp[cn])
+      return -s;
+  }
+
+  for ( ; bn >= 0; bn--)
+    if (bp[bn])
+      return s;
+
+  for ( ; cn >= 0; cn--)
+    if (cp[cn])
+      return -s;
 
    return 0;
 }
-
