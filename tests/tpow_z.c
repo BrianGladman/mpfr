@@ -182,12 +182,38 @@ static void check_integer (mp_prec_t begin, mp_prec_t end, unsigned long max) {
   mpz_clear (z);
 }
 
+static void check_regression (void) 
+{
+  mpfr_t x, y;
+  mpz_t  z;
+  int res1, res2;
+
+  mpz_init_set_ui (z, 2026876995);
+  mpfr_init2 (x, 122);
+  mpfr_init2 (y, 122);
+
+  mpfr_set_str_binary (x, "0.1000001001000011110100111010010110101001111001110"
+"0001111000001001101000110011001001001001011001011010110110110101000111011E1");
+  res1 = mpfr_pow_z (y, x, z, GMP_RNDU);
+  res2 = mpfr_pow_ui (x, x, 2026876995UL, GMP_RNDU);
+  if (mpfr_cmp (x, y) || res1 != res2)
+    {
+      printf ("Regression (1) tested failed (%d=?%d)\n",res1, res2);
+      printf ("pow_ui: "); mpfr_dump (x);
+      printf ("pow_z:  "); mpfr_dump (y);
+      exit (1);
+    }
+
+  mpz_clear (z);
+}
+
 int main () {
   MPFR_TEST_USE_RANDS ();
   tests_start_mpfr ();
   
   check_special ();
   check_integer (2, 163, 100);
+  check_regression ();
 
   tests_end_mpfr ();
   return 0;
