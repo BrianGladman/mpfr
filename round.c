@@ -183,14 +183,12 @@ unsigned char rnd1, rnd2; unsigned long prec;
     /* now round b+2^(EXP(b)-err) */
     mpn_add_1(MANT(b)+bn-k-1, MANT(b)+bn-k-1, k+1, (mp_limb_t)1<<l);
     cc2 = (MANT(b)[bn-k1-1]>>l1) & 1;
+    cc2 ^= mpfr_round_raw2(MANT(b), bn, neg, rnd2, prec);
 
-    /* as mpfr_round_raw2 returns a nonnegative value, if cc2>cc
-       then we already know we can't round */
-    if (cc2<=cc) cc2^=mpfr_round_raw2(MANT(b), bn, neg, rnd2, prec);
-
-    /* if parity of cc and cc2 equals, then one is able to round */
     /* reset b to original value */
     mpn_sub_1(MANT(b)+bn-k-1, MANT(b)+bn-k-1, k+1, (mp_limb_t)1<<l);
+
+    /* if parity of cc and cc2 equals, then one is able to round */
     return (cc == cc2);
 
   case GMP_RNDU: /* b-2^(EXP(b)-err) <= x <= b */
@@ -204,9 +202,10 @@ unsigned char rnd1, rnd2; unsigned long prec;
     cc2 = (MANT(b)[bn-k1-1]>>l1) & 1;
     cc2 ^= mpfr_round_raw2(MANT(b), bn, neg, rnd2, prec);
 
-    /* if parity of cc and cc2 equals, then one is able to round */
     /* reset b to original value */
     mpn_add_1(MANT(b)+bn-k-1, MANT(b)+bn-k-1, k+1, (mp_limb_t)1<<l);
+
+    /* if parity of cc and cc2 equals, then one is able to round */
     return (cc == cc2);
 
   case GMP_RNDN: /* b-2^(EXP(b)-err-1) <= x <= b+2^(EXP(b)-err-1) */
