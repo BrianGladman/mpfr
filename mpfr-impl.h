@@ -91,7 +91,7 @@ typedef union ieee_double_extract Ieee_double_extract;
   (MPFR_MANT(x)[(MPFR_PREC(x)-1)/BITS_PER_MP_LIMB] = (mp_limb_t) 0)
 
 #define MPFR_RET(I) return \
-  ((I) ? (__mpfr_flags |= MPFR_FLAGS_INEXACT) : 0), (I)
+  (I) ? ((__mpfr_flags |= MPFR_FLAGS_INEXACT), (I)) : 0
 
 /* Memory gestion */
 
