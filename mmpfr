@@ -21,8 +21,7 @@ case $SYST in
 esac
 
 GMPDIR=/users/polka/logiciels/gmp/$dirname
-ODIR=/users/polka/logiciels/mpfr/C/msb_norm/o.$dirname
-export GMPDIR ODIR dirname special
+export GMPDIR dirname special
 if [ "$1" = "tests" ]
 then 
     cd tests; make all
