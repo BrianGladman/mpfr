@@ -721,6 +721,13 @@ check_parse (void)
       mpfr_out_str (stdout, 16, 0, x, GMP_RNDN); putchar ('\n');
       exit (1);
     }   
+  mpfr_strtofr (x, "  0x", &s, 0, GMP_RNDN);
+  if (mpfr_cmp_ui (x, 0) || strcmp(s,"x"))
+    {
+      printf ("Failed parsing '  0x'\n S=%s\n X=", s);
+      mpfr_out_str (stdout, 16, 0, x, GMP_RNDN); putchar ('\n');
+      exit (1);
+    }   
 
   mpfr_clear (x);
 }
