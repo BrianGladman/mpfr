@@ -169,27 +169,27 @@ main (int argc, char *argv[])
       (*__gmp_free_func) (str, strlen (str) + 1);
     }
 
-  if (mpfr_set_str (x, "NaNgarbage", 10, GMP_RNDN) != 0 || !mpfr_nan_p(x))
+  if (mpfr_set_str (x, "@NaN@garbage", 10, GMP_RNDN) != 0 || !mpfr_nan_p(x))
     {
       fprintf (stderr, "mpfr_set_str failed on NaN\n");
       exit (1);
     }
 
-  if (mpfr_set_str (x, "Infgarbage", 10, GMP_RNDN) != 0 || !mpfr_inf_p(x) ||
+  if (mpfr_set_str (x, "@Inf@garbage", 10, GMP_RNDN) != 0 || !mpfr_inf_p(x) ||
       MPFR_SIGN(x) < 0)
     {
       fprintf (stderr, "mpfr_set_str failed on Inf\n");
       exit (1);
     }
 
-  if (mpfr_set_str (x, "-Infgarbage", 10, GMP_RNDN) != 0 || !mpfr_inf_p(x) ||
+  if (mpfr_set_str (x, "-@Inf@garbage", 10, GMP_RNDN) != 0 || !mpfr_inf_p(x) ||
       MPFR_SIGN(x) > 0)
     {
       fprintf (stderr, "mpfr_set_str failed on -Inf\n");
       exit (1);
     }
 
-  if (mpfr_set_str (x, "+Infgarbage", 10, GMP_RNDN) != 0 || !mpfr_inf_p(x) ||
+  if (mpfr_set_str (x, "+@Inf@garbage", 10, GMP_RNDN) != 0 || !mpfr_inf_p(x) ||
       MPFR_SIGN(x) < 0)
     {
       fprintf (stderr, "mpfr_set_str failed on +Inf\n");

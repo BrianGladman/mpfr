@@ -95,10 +95,7 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
   if (base < 2 || base > 36)
     return -1;
 
-  /* be careful that 'nan' is a valid number in base >= 24,
-     since n=23, a=10, n=23 */
-  if (((base < 24) ? strncasecmp (str, "NaN", 3) : strncmp (str, "NaN", 3))
-      == 0)
+  if (strlen(str) >= 5 && strncasecmp (str, "@NaN@", 5) == 0)
     {
       MPFR_SET_NAN(x);
       /* MPFR_RET_NAN not used as the return value isn't a ternary value */
@@ -113,8 +110,7 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
 
   /* be careful that 'inf' is a valid number in base >= 24,
      since i=18, n=23, f=15 */
-  if (((base < 24) ? strncasecmp (str, "Inf", 3) : strncmp (str, "Inf", 3))
-      == 0)
+  if (strlen(str) >= 3 && strncasecmp (str, "@Inf@", 5) == 0)
     {
       MPFR_CLEAR_NAN (x);
       MPFR_SET_INF (x);

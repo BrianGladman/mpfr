@@ -35,16 +35,16 @@ mpfr_dump (mpfr_srcptr u, mp_rnd_t rnd_mode)
 
   if (MPFR_IS_NAN(u)) 
     {
-      printf ("NaN\n"); 
+      printf ("@NaN@\n"); 
       return; 
     }
 
   if (MPFR_IS_INF(u)) 
     {
       if (MPFR_SIGN(u) == 1)
-        printf ("Inf\n");
+        printf ("@Inf@\n");
       else
-        printf ("-Inf\n"); 
+        printf ("-@Inf@\n"); 
       return; 
     }
 
