@@ -52,8 +52,6 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   bq = MPFR_PREC(b);
   cq = MPFR_PREC(c);
 
-  diff_exp = (mp_exp_unsigned_t) bq - cq;
-
   an = (aq-1)/BITS_PER_MP_LIMB + 1; /* number of significant limbs of a */
   aq2 = (mp_prec_t) an * BITS_PER_MP_LIMB;
   sh = aq2 - aq;                    /* non-significant bits in low limb */
