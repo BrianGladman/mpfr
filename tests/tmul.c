@@ -36,6 +36,7 @@ void check_float _PROTO((void));
 void check_sign _PROTO((void));
 void check_exact _PROTO((void));
 void check_max _PROTO((void));
+void check_min _PROTO((void));
 
 /* checks that x*y gives the same results in double
    and with mpfr with 53 bits of precision */
@@ -247,9 +248,9 @@ void check_max(void)
   mpfr_init2(yy, 4);
   mpfr_init2(zz, 4);
   mpfr_set_d(xx, 11.0/16, GMP_RNDN);
-  mpfr_mul_2exp(xx, xx, MPFR_EMAX_DEFAULT/2, GMP_RNDN);
+  mpfr_mul_2si(xx, xx, MPFR_EMAX_DEFAULT/2, GMP_RNDN);
   mpfr_set_d(yy, 11.0/16, GMP_RNDN);
-  mpfr_mul_2exp(yy, yy, MPFR_EMAX_DEFAULT - MPFR_EMAX_DEFAULT/2 + 1, GMP_RNDN);
+  mpfr_mul_2si(yy, yy, MPFR_EMAX_DEFAULT - MPFR_EMAX_DEFAULT/2 + 1, GMP_RNDN);
   mpfr_clear_flags();
   mpfr_mul(zz, xx, yy, GMP_RNDU);
   if (!(mpfr_overflow_p() && MPFR_IS_INF(zz)))
@@ -266,7 +267,7 @@ void check_max(void)
       exit(1);
     }
   mpfr_set_d(xx, 15.0/16, GMP_RNDN);
-  mpfr_mul_2exp(xx, xx, MPFR_EMAX_DEFAULT, GMP_RNDN);
+  mpfr_mul_2si(xx, xx, MPFR_EMAX_DEFAULT, GMP_RNDN);
   if (!(MPFR_IS_FP(xx) && MPFR_IS_FP(zz)))
     {
       printf("check_max failed (internal error)\n");
@@ -281,6 +282,53 @@ void check_max(void)
       printf("\n");
       exit(1);
     }
+
+  mpfr_clear(xx);
+  mpfr_clear(yy);
+  mpfr_clear(zz);
+}
+
+void check_min(void)
+{
+  mpfr_t xx, yy, zz;
+
+  mpfr_init2(xx, 4);
+  mpfr_init2(yy, 4);
+  mpfr_init2(zz, 3);
+  mpfr_set_d(xx, 15.0/16, GMP_RNDN);
+  mpfr_mul_2si(xx, xx, MPFR_EMIN_DEFAULT/2, GMP_RNDN);
+  mpfr_set_d(yy, 15.0/16, GMP_RNDN);
+  mpfr_mul_2si(yy, yy, MPFR_EMIN_DEFAULT - MPFR_EMIN_DEFAULT/2 - 1, GMP_RNDN);
+  mpfr_mul(zz, xx, yy, GMP_RNDD);
+  if (mpfr_sgn(zz) != 0)
+    {
+      printf("check_min failed: got ");
+      mpfr_out_str(stdout, 2, 0, zz, GMP_RNDZ);
+      printf(" instead of 0\n");
+      exit(1);
+    }
+
+  mpfr_mul(zz, xx, yy, GMP_RNDU);
+  mpfr_set_d(xx, 0.5, GMP_RNDN);
+  mpfr_mul_2si(xx, xx, MPFR_EMIN_DEFAULT, GMP_RNDN);
+  if (mpfr_sgn(xx) <= 0)
+    {
+      printf("check_min failed (internal error)\n");
+      exit(1);
+    }
+  if (mpfr_cmp(xx, zz) != 0)
+    {
+      printf("check_min failed: got ");
+      mpfr_out_str(stdout, 2, 0, zz, GMP_RNDZ);
+      printf(" instead of ");
+      mpfr_out_str(stdout, 2, 0, xx, GMP_RNDZ);
+      printf("\n");
+      exit(1);
+    }
+
+  mpfr_clear(xx);
+  mpfr_clear(yy);
+  mpfr_clear(zz);
 }
 
 int
@@ -320,6 +368,7 @@ main (int argc, char *argv[])
   check(4.58687081072827851358e-01, 2.20543551472118792844e-01, GMP_RNDN,
 	49, 3, 2, 0.09375);
   check_max();
+  check_min();
 #ifdef TEST
   srand48(getpid());
   prec = (argc<2) ? 53 : atoi(argv[1]);
