@@ -24,8 +24,7 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
  /* The computation of y = 2^z is done by
-
-    y = exp(z*log(2)). The result is exact iff z is an integer.
+       y = exp(z*log(2)). The result is exact iff z is an integer.
  */
 
 int
@@ -56,8 +55,6 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
             return mpfr_set_ui (y, 1, rnd_mode);
           }
       }
-    /* Useless due to mpfr_set 
-       MPFR_CLEAR_FLAGS(y);*/
     
     /* since the smallest representable non-zero float is 1/2*2^__gmpfr_emin,
        if x < __gmpfr_emin - 1, the result is either 1/2*2^__gmpfr_emin or 0 */
@@ -89,7 +86,7 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     /* General case */
     {
     /* Declaration of the intermediary variable */
-      mpfr_t t, te;
+      mpfr_t t;
 
       /* Declaration of the size variable */
       mp_prec_t Nx = MPFR_PREC(x);   /* Precision of input variable */
@@ -103,38 +100,30 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       /* the optimal number of bits : see algorithms.ps */
       Nt = Nt + 5 + __gmpfr_ceil_log2 (Nt);
 
-
       /* initialise of intermediary	variable */
-      mpfr_init (t);
-      mpfr_init (te);
+      mpfr_init2 (t, Nt);
 
       /* First computation */
-      do
+      for (;;)
         {
-
-          /* reactualisation of the precision */
-          mpfr_set_prec (t, Nt);             
-          mpfr_set_prec (te, Nt);             
-
           /* compute   exp(x*ln(2))*/
-          mpfr_const_log2 (t, GMP_RNDU);    /* ln(2) */
-          mpfr_mul (te, x, t, GMP_RNDU);    /* x*ln(2) */
-          mpfr_exp (t, te, GMP_RNDN);       /* exp(x*ln(2))*/
+          mpfr_const_log2 (t, GMP_RNDU);       /* ln(2) */
+          mpfr_mul (t, x, t, GMP_RNDU);        /* x*ln(2) */
+	  err = Nt - (MPFR_GET_EXP (t) + 2);   /* Estimate of the error */
+          mpfr_exp (t, t, GMP_RNDN);           /* exp(x*ln(2))*/
 
-          /* estimate of the error -- see pow function in algorithms.ps*/
-          err = Nt - (MPFR_GET_EXP (te) + 2);
-
-          /* actualisation of the precision */
+	  if (mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
+			      Ny + (rnd_mode == GMP_RNDN)))
+	    break;
+          
+	  /* Actualisation of the precision */
           Nt += __gmpfr_isqrt (Nt) + 10;
-
+          mpfr_set_prec (t, Nt);
         }
-      while ((err < 0) || !mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
-                                           Ny + (rnd_mode == GMP_RNDN)));
  
       inexact = mpfr_set (y, t, rnd_mode);
 
       mpfr_clear (t);
-      mpfr_clear (te);
     }
 
     return inexact;
