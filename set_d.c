@@ -205,6 +205,18 @@ mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
 
   MPFR_EXP(tmp) = __mpfr_extract_double (tmpmant, d);
 
+#ifndef NDEBUG
+  /* Failed assertion if the stored value is 0 (e.g., if the exponent range
+     has been reduced at the wrong moment and an underflow to 0 occurred).
+     Probably a bug in the C implementation if this happens. */
+  i = 0;
+  while (tmpmant[i] == 0)
+    {
+      i++;
+      MPFR_ASSERTN(i < MPFR_LIMBS_PER_DOUBLE);
+    }
+#endif
+
   /* determine the index i-1 of the most significant non-zero limb
      and the number k of zero high limbs */
   i = MPFR_LIMBS_PER_DOUBLE;
