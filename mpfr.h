@@ -56,19 +56,31 @@ typedef enum {
 #define MPFR_FLAGS_INEXACT 8
 #define MPFR_FLAGS_ALL 15
 
-/* Define precision, exponent, sign */
-#if __GMP_MP_SIZE_T_INT == 1
-#define MPFR_PREC_FORMAT_INT
-typedef unsigned int mpfr_prec_t;
-typedef int          mpfr_sign_t;
+/* Define precision : 1 (short), 2 (int) or 3 (long) */
+#ifndef MPFR_PREC_FORMAT
+# if __GMP_MP_SIZE_T_INT == 1
+#  define MPFR_PREC_FORMAT 2
+# else
+#  define MPFR_PREC_FORMAT 3
+# endif
+#endif
+
+#if   MPFR_PREC_FORMAT == 1
+typedef unsigned short mpfr_prec_t;
+#elif MPFR_PREC_FORMAT == 2
+typedef unsigned int   mpfr_prec_t;
+#elif MPFR_PREC_FORMAT == 3
+typedef unsigned long  mpfr_prec_t;
 #else
-typedef unsigned long mpfr_prec_t;
-typedef int           mpfr_sign_t;
+# error "Invalid MPFR Prec format"
 #endif
 
 /* Definition of precision limits */
 #define MPFR_PREC_MIN 2
-#define MPFR_PREC_MAX ((~(mpfr_prec_t)0) >> 1)
+#define MPFR_PREC_MAX ((mpfr_prec_t)(~(mpfr_prec_t)0) >>1)
+
+/* Definition of sign */
+typedef int          mpfr_sign_t;
 
 /* Definition of the standard exponent limits */
 #define MPFR_EMAX_DEFAULT ((mp_exp_t) (((unsigned long) 1 << 30) - 1))

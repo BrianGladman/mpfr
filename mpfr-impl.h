@@ -58,7 +58,7 @@ MA 02111-1307, USA. */
 #endif
 
 
-/* Definition of MPFR_LIMB_HIGHBIT and MPFR_LIMB_ONE */
+ /* Definition of MPFR_LIMB_HIGHBIT and MPFR_LIMB_ONE */
 #ifdef GMP_LIMB_HIGHBIT
 # define MPFR_LIMB_HIGHBIT GMP_LIMB_HIGHBIT
 #else
@@ -77,20 +77,21 @@ MA 02111-1307, USA. */
 /* Check if we can represent the number of limbs 
  * associated to the maximum of mpfr_prec_t*/
 /* Can't use MPFR_PREC_MAX, so use MPFR_PREC_FORMAT_INT */
-#ifdef MPFR_PREC_FORMAT_INT
+
+#if   MPFR_PREC_FORMAT == 1
+# if (MP_SIZE_T_MAX < (USHRT_MAX/BYTES_PER_MP_LIMB))
+#  error "Incompatibilty between mp_size_t and mpfr_prec_t."
+# endif
+#elif MPFR_PREC_FORMAT == 2
 # if (MP_SIZE_T_MAX < (UINT_MAX/BYTES_PER_MP_LIMB))
 #  error "Incompatibilty between mp_size_t and mpfr_prec_t."
 # endif
-#else
-# ifdef MPFR_PREC_FORMAT_SHORT
-#  if (MP_SIZE_T_MAX < (USHORT_MAX/BYTES_PER_MP_LIMB))
-#   error "Incompatibilty between mp_size_t and mpfr_prec_t."
-#  endif
-# else
-#  if (MP_SIZE_T_MAX < (ULONG_MAX/BYTES_PER_MP_LIMB))
-#   error "Incompatibilty between mp_size_t and mpfr_prec_t."
-#  endif
+#elif MPFR_PREC_FORMAT == 3
+# if (MP_SIZE_T_MAX < (ULONG_MAX/BYTES_PER_MP_LIMB))
+#  error "Incompatibilty between mp_size_t and mpfr_prec_t."
 # endif
+#else
+# error "MPFR Prec format invalid"
 #endif
 
 /* Test if X (positive) is a power of 2 */
@@ -322,7 +323,6 @@ long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CO
  */
 
 #define MPFR_PREC(x) ((x)->_mpfr_prec)
-
 #define MPFR_EXP(x) ((x)->_mpfr_exp)
 #define MPFR_MANT(x) ((x)->_mpfr_d)
 
@@ -335,8 +335,6 @@ long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CO
 # define MPFR_EXP_INF  (MPFR_EXP_MIN+3)
 
 #define MPFR_CLEAR_FLAGS(x)
-/*#define MPFR_CLEAR_NAN(x)*/
-/*#define MPFR_CLEAR_INF(x)*/
 
 #define MPFR_IS_NAN(x)   (MPFR_EXP(x) == MPFR_EXP_NAN)
 #define MPFR_SET_NAN(x)  (MPFR_EXP(x) =  MPFR_EXP_NAN)
@@ -352,8 +350,6 @@ long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CO
 
 #define MPFR_ARE_SINGULAR(x,y) \
   (MPFR_UNLIKELY(MPFR_IS_SINGULAR(x)) || MPFR_UNLIKELY(MPFR_IS_SINGULAR(y)))
-
-/* TODO: Redo all the macros dealing with the signs */
 
 #define MPFR_SIGN_POS (1)
 #define MPFR_SIGN_NEG (-1)
@@ -377,8 +373,6 @@ long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CO
 #define MPFR_IS_POS_SIGN(s1) (s1 > 0)
 #define MPFR_IS_NEG_SIGN(s1) (s1 < 0)
 #define MPFR_MULT_SIGN(s1, s2) ((s1) * (s2))
-#define MPFR_SET_MULT_SIGN(x, s) \
-  (MPFR_CHECK_SIGN(s), MPFR_SIGN(x) = MPFR_MULT_SIGN(s,MPFR_SIGN(x)))
 /* Transform a sign to 1 or -1 */
 #define MPFR_FROM_SIGN_TO_INT(s) (s)
 #define MPFR_INT_SIGN(x) MPFR_FROM_SIGN_TO_INT(MPFR_SIGN(x))
@@ -393,17 +387,17 @@ long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CO
   (I) ? ((__gmpfr_flags |= MPFR_FLAGS_INEXACT), (I)) : 0
 #define MPFR_RET_NAN return (__gmpfr_flags |= MPFR_FLAGS_NAN), 0
 
-/* Heap Memory gestion */ /* Old ABSSIZE */
+/* Heap Memory gestion */
 #define MPFR_GET_ALLOC_SIZE(x) \
  ( ((mp_size_t*) MPFR_MANT(x))[-1] + 0)
 #define MPFR_SET_ALLOC_SIZE(x, n) \
  ( ((mp_size_t*) MPFR_MANT(x))[-1] = n)
 #define MPFR_MALLOC_SIZE(s) \
-  ((size_t) (sizeof(mp_size_t)*2 + BYTES_PER_MP_LIMB*(s)))
+  ((size_t) (sizeof(mp_size_t)*1 + BYTES_PER_MP_LIMB*(s)))
 #define MPFR_SET_MANT_PTR(x,p) \
-   (MPFR_MANT(x) = (mp_limb_t*) ((mp_size_t*) p + 2))
+   (MPFR_MANT(x) = (mp_limb_t*) ((mp_size_t*) p + 1))
 #define MPFR_GET_REAL_PTR(x) \
-   ((mp_limb_t*) ((mp_size_t*) MPFR_MANT(x) - 2))
+   ((mp_limb_t*) ((mp_size_t*) MPFR_MANT(x) - 1))
 
 /* Temporary memory gestion */
 /* temporary allocate 1 limb at xp, and initialize mpfr variable x */
@@ -444,7 +438,6 @@ int mpfr_strncasecmp _MPFR_PROTO ((const char *, const char *, size_t));
 void mpfr_inits2 _MPFR_PROTO ((mp_prec_t, mpfr_ptr, ...));
 void mpfr_inits _MPFR_PROTO ((mpfr_ptr, ...));
 void mpfr_clears _MPFR_PROTO ((mpfr_ptr, ...));
-
 
 int mpfr_set_underflow _MPFR_PROTO ((mpfr_ptr, mp_rnd_t, int));
 int mpfr_set_overflow _MPFR_PROTO ((mpfr_ptr, mp_rnd_t, int));

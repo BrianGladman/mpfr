@@ -43,9 +43,6 @@ mpfr_get_ui (mpfr_srcptr f, mp_rnd_t rnd)
   mpfr_init2 (x, prec);
   mpfr_set (x, f, rnd);
 
-  ASSERT(GMP_NAIL_BITS == 0); /* otherwise we may have to consider two or
-				 more limbs */
-
   /* now the result is in the most significant limb of x */
   exp = MPFR_GET_EXP (x); /* since |x| >= 1, exp >= 1 */
   n = MPFR_LIMB_SIZE(x);
