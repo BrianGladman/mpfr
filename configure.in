@@ -99,10 +99,16 @@ default target architecture may be different, hence the error.])],
 dnl Check random functions
 AC_CHECK_FUNCS(lrand48)
 
-dnl Check whether 0/0, 1/0, -1/0 are valid expressions
-AC_MSG_CHECKING(for 0/0 as a valid expression)
-AC_TRY_RUN([#include <math.h>
-int main() { double x = 0.0/0.0; exit (0); }],
+dnl Check whether 0/0, 1/0, -1/0, sqrt(-1) are valid expressions
+AC_MSG_CHECKING(for valid NaN)
+AC_TRY_RUN([
+#include <math.h>
+int main()
+{
+  double x = (0.0/0.0) + sqrt(-1.0);
+  return x == 1.0/0.0;
+}
+],
   [AC_MSG_RESULT(yes)
    AC_DEFINE(HAVE_INFS)],
   AC_MSG_RESULT(no),
@@ -114,9 +120,13 @@ AC_MSG_CHECKING(for denormalized numbers)
 AC_TRY_RUN([
 #include <math.h>
 #include <stdio.h>
-int main() { double x = 2.22507385850720138309e-308;
-             fprintf (stderr, "%e\n", x / 2.0);
-             exit (2.0 * (x / 2.0) != x);}],
+int main()
+{
+  double x = 2.22507385850720138309e-308;
+  fprintf (stderr, "%e\n", x / 2.0);
+  return 2.0 * (x / 2.0) != x;
+}
+],
   [AC_MSG_RESULT(yes)
    AC_DEFINE(HAVE_DENORMS)],
   AC_MSG_RESULT(no),
