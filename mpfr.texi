@@ -453,7 +453,7 @@ The precision can be any integer between @code{MPFR_PREC_MIN} and
 @code{MPFR_PREC_MAX}. In the current implementation, @code{MPFR_PREC_MIN}
 is equal to 2 and @code{MPFR_PREC_MAX} is equal to @code{ULONG_MAX}/2.
 
-@cindex Rounding Mode
+@cindex Rounding Modes
 @tindex @code{mp_rnd_t}
 @noindent
 The @dfn{rounding mode} specifies the way to round the result of a
@@ -1362,7 +1362,7 @@ Return the MPFR version, as a null-terminated string.
 
 @node Rounding Modes, Exceptions, Miscellaneous Functions, MPFR Interface
 @section Rounding Modes
-@cindex Rounding modes
+@cindex Rounding Modes
 
 @deftypefun void mpfr_set_default_rounding_mode (mp_rnd_t @var{rnd})
 Sets the default rounding mode to @var{rnd}.
