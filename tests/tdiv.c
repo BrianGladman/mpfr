@@ -24,20 +24,17 @@ MA 02111-1307, USA. */
 #include <stdlib.h>
 #include <unistd.h>
 #include "gmp.h"
-#include "gmp-impl.h"
 #include "mpfr.h"
 #include "mpfr-test.h"
 
-extern int isnan();
+#define check53(n, d, rnd, res) check4(n, d, rnd, 53, res)
+
 void check4 _PROTO((double, double, unsigned char, int, double)); 
 void check24 _PROTO((float, float, unsigned char, float)); 
 void check_float _PROTO((void)); 
 void check_convergence _PROTO((void)); 
 
-#define check53(n, d, rnd, res) check4(n, d, rnd, 53, res)
-
-void check4(N, D, rnd_mode, p, Q)
-double N, D, Q; unsigned char rnd_mode; int p;
+void check4 (double N, double D, mp_rnd_t rnd_mode, int p, double Q)
 {
   mpfr_t q, n, d; double Q2;
 
@@ -60,7 +57,7 @@ double N, D, Q; unsigned char rnd_mode; int p;
   mpfr_clear(q); mpfr_clear(n); mpfr_clear(d);  
 }
 
-void check24(float N, float D, unsigned char rnd_mode, float Q)
+void check24 (float N, float D, mp_rnd_t rnd_mode, float Q)
 {
   mpfr_t q, n, d; float Q2;
 
@@ -125,7 +122,7 @@ void check_float()
   check24(b*12582913.0, 8388610.0, GMP_RNDD, 1.258291e7);
 }
 
-void check_convergence()
+void check_convergence ()
 {
   mpfr_t x, y; int i, j;
   
@@ -217,7 +214,7 @@ int main(int argc, char *argv[])
   for (i=0;i<N;i++) {
     do { n = drand(); d = drand(); e = fabs(n)/fabs(d); }
     /* smallest normalized is 2^(-1022), largest is 2^(1023)*(2-2^(-52)) */
-    while (e>=1.7976931348623157081e308 || e<2.225073858507201383e-308);
+    while (e>=MAXNORM || e<MINNORM);
     check4(n, d, rand() % 4, 53, 0.0);
   }
 #endif
