@@ -128,7 +128,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
     mp_prec_t Ny = MPFR_PREC(y);   /* Precision of input variable */
     mp_prec_t Nz = MPFR_PREC(z);   /* Precision of input variable */
     mp_prec_t Ns = MPFR_PREC(s);   /* Precision of output variable */
-    mp_prec_t Nt;   /* Precision of the intermediary variable */
+    long int Nt;   /* Precision of the intermediary variable */
     long int err;  /* Precision of error */
     unsigned int first_pass = 0; /* temporary precision */
 
@@ -181,7 +181,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
         err = Nt - (d+1);
 
         /* actualisation of the precision */
-        Nt += (1-first_pass) * d + first_pass * 10;
+        Nt += (1 - first_pass) * d + first_pass * 10;
         if (Nt < 0)
           Nt = 0;
 
