@@ -19,7 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdlib.h>
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
@@ -104,7 +103,7 @@ S (mpz_t *T, mpz_t *P, mpz_t *Q, unsigned long n1, unsigned long n2, int need_P)
 int
 mpfr_const_log2_internal (mpfr_ptr x, mp_rnd_t rnd_mode)
 {
-  unsigned long n = mpfr_get_prec (x);
+  unsigned long n = MPFR_PREC (x);
   mp_prec_t w; /* working precision */
   unsigned long N;
   mpz_t *T, *P, *Q;
@@ -112,6 +111,7 @@ mpfr_const_log2_internal (mpfr_ptr x, mp_rnd_t rnd_mode)
   int inexact;
   int ok = 1; /* ensures that the 1st try will give correct rounding */
   unsigned long lgN, i;
+  MPFR_ZIV_DECL (loop);
   MPFR_SAVE_EXPO_DECL (expo);
 
   MPFR_SAVE_EXPO_MARK (expo);
@@ -135,7 +135,8 @@ mpfr_const_log2_internal (mpfr_ptr x, mp_rnd_t rnd_mode)
       ok = 0;
     }
 
-  do
+  MPFR_ZIV_INIT (loop, w);
+  for (;;)
     {
       N = w / 3 + 1; /* Warning: do not change that (even increasing N!)
 			without checking correct rounding in the above
@@ -144,10 +145,10 @@ mpfr_const_log2_internal (mpfr_ptr x, mp_rnd_t rnd_mode)
       /* the following are needed for error analysis (see algorithms.tex) */
       MPFR_ASSERTD(w >= 3 && N >= 2);
 
-      lgN = __gmpfr_ceil_log2 ((double) N) + 1;
-      T = (mpz_t*) malloc (lgN * sizeof (mpz_t));
-      P = (mpz_t*) malloc (lgN * sizeof (mpz_t));
-      Q = (mpz_t*) malloc (lgN * sizeof (mpz_t));
+      lgN = MPFR_INT_CEIL_LOG2 (N) + 1;
+      T  = (*__gmp_allocate_func) (3 * lgN * sizeof (mpz_t));
+      P  = T + lgN;
+      Q  = T + 2*lgN;
       for (i = 0; i < lgN; i++)
         {
           mpz_init (T[i]);
@@ -170,18 +171,15 @@ mpfr_const_log2_internal (mpfr_ptr x, mp_rnd_t rnd_mode)
           mpz_clear (P[i]);
           mpz_clear (Q[i]);
         }
-      free (T);
-      free (P);
-      free (Q);
+      (*__gmp_free_func) (T, 3 * lgN * sizeof (mpz_t));
 
-      if (ok == 0)
-	{
-	  ok = mpfr_can_round (t, w - 2, GMP_RNDN, rnd_mode, n);
-	  if (ok == 0)
-	    w += __gmpfr_ceil_log2 ((double) w);
-	}
+      if (MPFR_LIKELY (ok != 0 
+		       || mpfr_can_round (t, w - 2, GMP_RNDN, rnd_mode, n)))
+	break;
+
+      MPFR_ZIV_NEXT (loop, w);
     }
-  while (ok == 0);
+  MPFR_ZIV_FREE (loop);
 
   inexact = mpfr_set (x, t, rnd_mode);
 
