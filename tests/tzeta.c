@@ -137,6 +137,14 @@ main (int argc, char *argv[])
   mpfr_set_prec (y, 53);
   mpfr_set_prec (z, 53);
 
+  mpfr_set_ui (s, 1, GMP_RNDN);
+  mpfr_zeta (z, s, GMP_RNDN);
+  if (!mpfr_inf_p (z) || MPFR_SIGN (z) < 0)
+    {
+      fprintf (stderr, "Error in mpfr_zeta for s = 1 (should be +inf)\n");
+      exit (1);
+    }
+
   mpfr_set_str_raw (s, "0.1100011101110111111111111010000110010111001011001011");
   mpfr_set_str_raw (y, "-0.11111101111011001001001111111000101010000100000100100E2");
   mpfr_zeta (z, s, GMP_RNDN);
@@ -229,5 +237,3 @@ main (int argc, char *argv[])
 
   return 0;
 }
-
-
