@@ -280,6 +280,13 @@ bug_ddefour()
 	printf ("ex3="); mpfr_print_raw (ex3); putchar ('\n');
 	exit (1);
       }
+
+    mpfr_clear (ex);
+    mpfr_clear (ex1);
+    mpfr_clear (ex2);
+    mpfr_clear (ex3);
+    mpfr_clear (tot);
+    mpfr_clear (tot1);
 }
 
 /* if u = o(x-y), v = o(u-x), w = o(v+y), then x-y = u-w */
