@@ -55,6 +55,17 @@ Efficiency:
 - idem for mpfr_atanh (2^(-1021) for example)
 - rewrite mpfr_greater_p...
 
+- mpf_t uses a scheme where the number of limbs actually present can
+  be less than the selected precision, thereby allowing low precision
+  values (for instance small integers) to be stored and manipulated in
+  an mpf_t efficiently.
+
+  Perhaps mpfr should get something similar, especially if looking to
+  replace mpf with mpfr, though it'd be a major change.  Alternately
+  perhaps those mpfr routines like mpfr_mul where optimizations are
+  possible through stripping low zero bits or limbs could check for
+  that (this would be less efficient but easier).
+
 Miscellaneous:
 
 - rename mpf2mpfr.h to gmp-mpf2mpfr.h?
