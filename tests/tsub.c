@@ -30,6 +30,7 @@ MA 02111-1307, USA. */
 void check_diverse _PROTO((void));
 void bug_ddefour _PROTO((void));
 void check_two_sum _PROTO((mp_prec_t));
+void check_inexact _PROTO((void));
 
 void
 check_diverse ()
@@ -41,6 +42,21 @@ check_diverse ()
   mpfr_init (x);
   mpfr_init (y);
   mpfr_init (z);
+
+  mpfr_set_prec (x, 32);
+  mpfr_set_prec (y, 63);
+  mpfr_set_prec (z, 63);
+  mpfr_set_str_raw (x, "0.101101111011011100100100100111E31");
+  mpfr_set_str_raw (y, "0.111110010010100100110101101010001001100101110001000101110111111E-1");
+  mpfr_sub (z, x, y, GMP_RNDN);
+  mpfr_set_str_raw (y, "0.1011011110110111001001001001101100000110110101101100101001011E31");
+  if (mpfr_cmp (z, y))
+    {
+      fprintf (stderr, "Error in mpfr_sub (5)\n");
+      printf ("expected "); mpfr_print_raw (y); putchar ('\n');
+      printf ("got      "); mpfr_print_raw (z); putchar ('\n');
+      exit (1);
+    }
 
   mpfr_set_prec (y, 63);
   mpfr_set_prec (z, 63);
@@ -65,19 +81,6 @@ check_diverse ()
       fprintf (stderr, "Error in mpfr_sub (6)\n");
       printf ("expected "); mpfr_print_raw (y); putchar ('\n');
       printf ("got      "); mpfr_print_raw (z); putchar ('\n');
-      exit (1);
-    }
-
-  mpfr_set_prec (x, 32);
-  mpfr_set_prec (y, 63);
-  mpfr_set_prec (z, 63);
-  mpfr_set_str_raw (x, "0.101101111011011100100100100111E31");
-  mpfr_set_str_raw (y, "0.111110010010100100110101101010001001100101110001000101110111111E-1");
-  mpfr_sub (z, x, y, GMP_RNDN);
-  mpfr_set_str_raw (y, "0.1011011110110111001001001001101100000110110101101100101001011E31");
-  if (mpfr_cmp (z, y))
-    {
-      fprintf (stderr, "Error in mpfr_sub (5)\n");
       exit (1);
     }
 
@@ -323,6 +326,70 @@ check_two_sum (mp_prec_t p)
   mpfr_clear (w);
 }
 
+#define MAX_PREC 100
+
+void
+check_inexact ()
+{
+  mpfr_t x, y, z, u;
+  mp_prec_t px, py, pu, pz;
+  int inexact, cmp;
+  mp_rnd_t rnd;
+  
+  mpfr_init (x);
+  mpfr_init (y);
+  mpfr_init (z);
+  mpfr_init (u);
+
+  for (px=1; px<MAX_PREC; px++)
+    {
+      mpfr_set_prec (x, px);
+      mpfr_random (x);
+      for (pu=1; pu<MAX_PREC; pu++)
+	{
+	  mpfr_set_prec (u, pu);
+	  mpfr_random (u);
+	  for (py=1; py<MAX_PREC; py++)
+	    {
+	      mpfr_set_prec (y, py);
+	      pz =  (mpfr_cmp_abs (x, u) >= 0) ? MPFR_EXP(x)-MPFR_EXP(u)
+		: MPFR_EXP(u)-MPFR_EXP(x);
+	      pz = pz + MAX(MPFR_PREC(x), MPFR_PREC(u));
+	      mpfr_set_prec (z, pz);
+	      rnd = rand () % 4;
+	      if (mpfr_sub (z, x, u, rnd))
+		{
+		  fprintf (stderr, "z <- x - u should be exact\n");
+		  exit (1);
+		}
+	      for (rnd=0; rnd<4; rnd++)
+		{
+		  inexact = mpfr_sub (y, x, u, rnd);
+		  cmp = mpfr_cmp (y, z);
+		  if (((inexact == 0) && (cmp != 0)) ||
+		      ((inexact > 0) && (cmp <= 0)) ||
+		      ((inexact < 0) && (cmp >= 0)))
+		    {
+		      fprintf (stderr, "Wrong inexact flag for rnd=%s\n",
+			   mpfr_print_rnd_mode(rnd));
+		      printf ("expected %d, got %d\n", cmp, inexact);
+		      printf ("x="); mpfr_print_raw (x); putchar ('\n');
+		      printf ("u="); mpfr_print_raw (u); putchar ('\n');
+		      printf ("y=  "); mpfr_print_raw (y); putchar ('\n');
+		      printf ("x-u="); mpfr_print_raw (z); putchar ('\n');
+		      exit (1);
+		    }
+		}
+	    }
+	}
+    }
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+  mpfr_clear (u);
+}
+
 int
 main()
 {
@@ -330,6 +397,7 @@ main()
   unsigned i;
 
   check_diverse ();
+  check_inexact ();
   bug_ddefour ();
 
   for (p=1; p<200; p++)

@@ -29,6 +29,7 @@ MA 02111-1307, USA. */
 #endif
 
 void check _PROTO((unsigned long, double, mp_rnd_t, double)); 
+void check_inexact _PROTO((void));
 
 /* checks that y/x gives the same results in double
    and with mpfr with 53 bits of precision */
@@ -51,7 +52,60 @@ void check (unsigned long y, double x, mp_rnd_t rnd_mode, double z1)
 	   y, x, mpfr_print_rnd_mode(rnd_mode));
     exit(1);
   }
-  mpfr_clear(xx); mpfr_clear(zz);
+  mpfr_clear(xx);
+  mpfr_clear(zz);
+}
+
+void
+check_inexact ()
+{
+  mpfr_t x, y, z;
+  mp_prec_t px, py;
+  int inexact, cmp;
+  unsigned long int u;
+  mp_rnd_t rnd;
+  
+  mpfr_init (x);
+  mpfr_init (y);
+  mpfr_init (z);
+
+  for (px=1; px<300; px++)
+    {
+      mpfr_set_prec (x, px);
+      mpfr_random (x);
+      u = lrand48 ();
+      for (py=1; py<300; py++)
+	{
+	  mpfr_set_prec (y, py);
+	  mpfr_set_prec (z, py + px);
+	  for (rnd=0; rnd<4; rnd++)
+	    {
+	      inexact = mpfr_ui_div (y, u, x, rnd);
+	      if (mpfr_mul (z, y, x, rnd))
+		{
+		  fprintf (stderr, "z <- y * x should be exact\n");
+		  exit (1);
+		}
+	      cmp = mpfr_cmp_ui (z, u);
+	      if (((inexact == 0) && (cmp != 0)) ||
+		  ((inexact > 0) && (cmp <= 0)) ||
+		  ((inexact < 0) && (cmp >= 0)))
+		{
+		  fprintf (stderr, "Wrong inexact flag for u=%lu, rnd=%s\n", u,
+			   mpfr_print_rnd_mode(rnd));
+		  printf ("expected %d, got %d\n", cmp, inexact);
+		  printf ("x="); mpfr_print_raw (x); putchar ('\n');
+		  printf ("y="); mpfr_print_raw (y); putchar ('\n');
+		  printf ("y*x="); mpfr_print_raw (z); putchar ('\n');
+		  exit (1);
+		}
+	    }
+	}
+    }
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
 }
 
 int
@@ -80,6 +134,7 @@ main (int argc, char *argv[])
     }
   }
 #endif
+  check_inexact ();
   check(1, 1.0/0.0, GMP_RNDN, 0.0); 
   check(1, -1.0/0.0, GMP_RNDN, -0.0); 
   check(1, 0.0/0.0, GMP_RNDN, 0.0/0.0); 

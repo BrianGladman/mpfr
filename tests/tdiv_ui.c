@@ -29,6 +29,7 @@ MA 02111-1307, USA. */
 
 void check _PROTO((double, unsigned long, mp_rnd_t, double)); 
 void special _PROTO((void));
+void check_inexact _PROTO((void));
 
 void check (double d, unsigned long u, mp_rnd_t rnd, double e)
 {
@@ -58,9 +59,16 @@ special (void)
   mpfr_t x, y;
   unsigned xprec, yprec;
 
-  mpfr_init2 (x, 100);
-  mpfr_init2 (y, 100);
+  mpfr_init (x);
+  mpfr_init (y);
 
+  mpfr_set_prec (x, 32);
+  mpfr_set_prec (y, 32);
+  mpfr_set_ui (x, 1, GMP_RNDN);
+  mpfr_div_ui (y, x, 3, GMP_RNDN);
+
+  mpfr_set_prec (x, 100);
+  mpfr_set_prec (y, 100);
   mpfr_random (x);
   mpfr_div_ui (y, x, 123456, GMP_RNDN);
   mpfr_set_ui (x, 0, GMP_RNDN);
@@ -104,6 +112,58 @@ special (void)
   mpfr_clear (y);
 }
 
+void
+check_inexact ()
+{
+  mpfr_t x, y, z;
+  mp_prec_t px, py;
+  int inexact, cmp;
+  unsigned long int u;
+  mp_rnd_t rnd;
+  
+  mpfr_init (x);
+  mpfr_init (y);
+  mpfr_init (z);
+
+  for (px=1; px<300; px++)
+    {
+      mpfr_set_prec (x, px);
+      mpfr_random (x);
+      do { u = lrand48 (); } while (u == 0);
+      for (py=1; py<300; py++)
+	{
+	  mpfr_set_prec (y, py);
+	  mpfr_set_prec (z, py + mp_bits_per_limb);
+	  for (rnd=0; rnd<4; rnd++)
+	    {
+	      inexact = mpfr_div_ui (y, x, u, rnd);
+	      if (mpfr_mul_ui (z, y, u, rnd))
+		{
+		  fprintf (stderr, "z <- y * u should be exact for u=%lu\n", u);
+		  printf ("y="); mpfr_print_raw (y); putchar ('\n');
+		  printf ("z="); mpfr_print_raw (z); putchar ('\n');
+		  exit (1);
+		}
+	      cmp = mpfr_cmp (z, x);
+	      if (((inexact == 0) && (cmp != 0)) ||
+		  ((inexact > 0) && (cmp <= 0)) ||
+		  ((inexact < 0) && (cmp >= 0)))
+		{
+		  fprintf (stderr, "Wrong inexact flag for u=%lu, rnd=%s\n", u,
+			   mpfr_print_rnd_mode(rnd));
+		  printf ("x="); mpfr_print_raw (x); putchar ('\n');
+		  printf ("y="); mpfr_print_raw (y); putchar ('\n');
+		  exit (1);
+		}
+	    }
+	}
+    }
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -118,6 +178,8 @@ main (int argc, char **argv)
     check(d, u, rand() % 4, 0.0);
   }
 #endif
+
+  check_inexact ();
 
   special ();
 

@@ -1,6 +1,6 @@
 /* Test file for mpfr_add and mpfr_sub.
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 1999-2001 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -41,6 +41,7 @@ void check64 _PROTO((void));
 void check_same _PROTO((void)); 
 void check_case_1b _PROTO((void)); 
 void check_case_2 _PROTO((void));
+void check_inexact _PROTO((void));
 
 /* checks that x+y gives the same results in double
    and with mpfr with 53 bits of precision */
@@ -532,6 +533,70 @@ void check_same ()
 #define check53(x, y, r, z) check(x, y, r, 53, 53, 53, z)
 #define check53nan(x, y, r) checknan(x, y, r, 53, 53, 53); 
 
+#define MAX_PREC 100
+
+void
+check_inexact ()
+{
+  mpfr_t x, y, z, u;
+  mp_prec_t px, py, pu, pz;
+  int inexact, cmp;
+  mp_rnd_t rnd;
+  
+  mpfr_init (x);
+  mpfr_init (y);
+  mpfr_init (z);
+  mpfr_init (u);
+
+  for (px=1; px<MAX_PREC; px++)
+    {
+      mpfr_set_prec (x, px);
+      mpfr_random (x);
+      for (pu=1; pu<MAX_PREC; pu++)
+	{
+	  mpfr_set_prec (u, pu);
+	  mpfr_random (u);
+	  for (py=1; py<MAX_PREC; py++)
+	    {
+	      mpfr_set_prec (y, py);
+	      pz =  (mpfr_cmp_abs (x, u) >= 0) ? MPFR_EXP(x)-MPFR_EXP(u)
+		: MPFR_EXP(u)-MPFR_EXP(x);
+	      pz = pz + MAX(MPFR_PREC(x), MPFR_PREC(u));
+	      mpfr_set_prec (z, pz);
+	      rnd = rand () % 4;
+	      if (mpfr_add (z, x, u, rnd))
+		{
+		  fprintf (stderr, "z <- x + u should be exact\n");
+		  exit (1);
+		}
+	      for (rnd=0; rnd<4; rnd++)
+		{
+		  inexact = mpfr_add (y, x, u, rnd);
+		  cmp = mpfr_cmp (y, z);
+		  if (((inexact == 0) && (cmp != 0)) ||
+		      ((inexact > 0) && (cmp <= 0)) ||
+		      ((inexact < 0) && (cmp >= 0)))
+		    {
+		      fprintf (stderr, "Wrong inexact flag for rnd=%s\n",
+			   mpfr_print_rnd_mode(rnd));
+		      printf ("expected %d, got %d\n", cmp, inexact);
+		      printf ("x="); mpfr_print_raw (x); putchar ('\n');
+		      printf ("u="); mpfr_print_raw (u); putchar ('\n');
+		      printf ("y=  "); mpfr_print_raw (y); putchar ('\n');
+		      printf ("x+u="); mpfr_print_raw (z); putchar ('\n');
+		      exit (1);
+		    }
+		}
+	    }
+	}
+    }
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+  mpfr_clear (u);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -548,6 +613,7 @@ main (int argc, char *argv[])
     set_fpc_csr(exp.fc_word);
 #endif
 
+  check_inexact ();
   check_case_1b ();
   check_case_2 ();
   check64();
