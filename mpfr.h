@@ -193,6 +193,10 @@ void mpfr_init2 _MPFR_PROTO ((mpfr_ptr, mpfr_prec_t));
 void mpfr_init _MPFR_PROTO ((mpfr_ptr));
 void mpfr_clear _MPFR_PROTO ((mpfr_ptr));
 
+void mpfr_inits2 _MPFR_PROTO ((mp_prec_t, mpfr_ptr, ...));
+void mpfr_inits _MPFR_PROTO ((mpfr_ptr, ...));
+void mpfr_clears _MPFR_PROTO ((mpfr_ptr, ...));
+
 int mpfr_prec_round _MPFR_PROTO ((mpfr_ptr, mpfr_prec_t, mpfr_rnd_t));
 int mpfr_can_round _MPFR_PROTO ((mpfr_ptr, mp_exp_t, mpfr_rnd_t, mpfr_rnd_t,
 				 mpfr_prec_t));

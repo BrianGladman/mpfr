@@ -1616,6 +1616,8 @@ which is non-zero iff the flag is set.
 @section Advanced Functions
 @cindex Advanced Functions
 
+All the given interface are preliminary. It might change incompatibly in future revisions.
+
 @defmac MPFR_DECL_INIT (@var{name}, @var{prec})
 This macro declares @var{name} as an automatic variable of type @code{mpfr_t},
 initializes it and sets its precision to be @strong{exactly} @var{prec} bits
@@ -1636,6 +1638,42 @@ must support @samp{Variable-length automatic arrays} (standard in ISO C99).
 @samp{GCC 2.95.3} supports all theses features.
 @end itemize
 @end defmac
+
+@deftypefun void mpfr_inits (mpfr_t @var{x}, ...)
+Initialize all the @code{mpfr_t} variables of the given @code{va_list},
+set their precision to be the default precision and their value to NaN. 
+See @code{mpfr_init} for more details.
+The @code{va_list} is assumed to be composed only of type @code{mpfr_t}.
+It begins from @var{x}. It ends when it encounters a @code{NULL} pointer.
+@end deftypefun
+
+
+@deftypefun void mpfr_inits2 (mp_prec_t @var{prec}, mpfr_t @var{x}, ...)
+Initialize all the @code{mpfr_t} variables of the given @code{va_list},
+set their precision to be @strong{exactly}
+@var{prec} bits and their value to NaN. 
+See @code{mpfr_init2} for more details.
+The @code{va_list} is assumed to be composed only of type @code{mpfr_t}.
+It begins from @var{x}. It ends when it encounters a @code{NULL} pointer.
+@end deftypefun
+
+@deftypefun void mpfr_clears (mpfr_t @var{x}, ...)
+Free the space occupied by all the @code{mpfr_t} variables of the given
+@code{va_list}. See @code{mpfr_clear} for more details.
+The @code{va_list} is assumed to be composed only of type @code{mpfr_t}.
+It begins from @var{x}. It ends when it encounters a @code{NULL} pointer.
+@end deftypefun
+
+Here is an example of how to use multiple initialization functions:
+
+@example
+@{
+  mpfr_t x, y, z, t;
+  mpfr_inits2 (256, x, y, z, t, NULL);
+  @dots{}
+  mpfr_clears (x, y, z, t, NULL);
+@}
+@end example
 
 
 @node Compatibility with MPF, Internals, Advanced Functions, MPFR Interface
