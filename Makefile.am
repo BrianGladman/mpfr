@@ -40,6 +40,6 @@ tuneup_LDFLAGS = -static
 
 tune:
 	$(MAKE) $(AM_MAKEFLAGS) tuneup$(EXEEXT)
-	./tuneup
+	./tuneup -v
 	$(MAKE) $(AM_MAKEFLAGS) clean
 	$(MAKE) $(AM_MAKEFLAGS) libmpfr.la
