@@ -120,7 +120,7 @@ mpfr_sub1 (a, b, c, rnd_mode, diff_exp)
 
   /* case 1: diff_exp>=prec(a), i.e. c only affects the last bit
      through rounding */
-  dif = MPFR_PREC(a) - diff_exp;
+  dif = MPFR_PREC(a) + cancel - diff_exp;
 
 #ifdef DEBUG
   printf("MPFR_PREC(a)=%d an=%u MPFR_PREC(b)=%d bn=%u MPFR_PREC(c)=%d diff_exp=%u dif=%d cancel=%d\n",
@@ -153,9 +153,12 @@ mpfr_sub1 (a, b, c, rnd_mode, diff_exp)
 
                     mp_limb_t *cp2 = cp + (cn-1);  /* highest limb */
 
+		    /* first check if highest limb is 2^(BITS_PER_MP_LIMB-1) */
                     cc = *cp2 - MP_LIMB_T_HIGHBIT;
+		    /* then check if low significant limbs are zero */
                     while (cc == 0 && cp2 > cp) cc = *--cp2;
 
+		    /* now c is an exact power of two iff cc = 0 */
 		    if (cc || ((ap[0] >> sh) & ONE))
 		      goto sub_one_ulp;
 		    /* mant(c)>1/2 or mant(c) = 1/2: subtract 1 iff lsb(a)=1 */
@@ -302,8 +305,7 @@ mpfr_sub1 (a, b, c, rnd_mode, diff_exp)
     /* first copy upper part of c into a (after shift) */
     int overlap;
 
-    dif += cancel;
-    k = (dif-1)/BITS_PER_MP_LIMB + 1; /* only the highest k limbs from c
+    k = (dif - 1) / BITS_PER_MP_LIMB + 1; /* only the highest k limbs from c
 					 have to be considered */
     if (k<an) {
       MPN_ZERO(ap+k, an-k); /* do it now otherwise ap[k] may be 
