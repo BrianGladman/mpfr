@@ -436,7 +436,7 @@ AC_DEFUN(MPFR_CHECK_LIBM,
 AC_SUBST(MPFR_LIBM,'')
 case $host in
   *-*-beos* | *-*-cygwin* | *-*-pw32*)
-    # According to libtool AC_CHECK_LIBM, these systems don't have libm
+    # According to libtool AC CHECK LIBM, these systems don't have libm
     ;;
   *-*-hpux*)
     # -lM means something subtly different to -lm, SVID style error handling
@@ -450,7 +450,7 @@ case $host in
     AC_CHECK_LIB(m,   main, MPFR_LIBM="$MPFR_LIBM -lm")
     ;;
   *-ncr-sysv4.3*)
-    # FIXME: What does -lmw mean?  Libtool AC_CHECK_LIBM does it this way.
+    # FIXME: What does -lmw mean?  Libtool AC CHECK LIBM does it this way.
     AC_CHECK_LIB(mw, _mwvalidcheckl, MPFR_LIBM="-lmw")
     AC_CHECK_LIB(m, main, MPFR_LIBM="$MPFR_LIBM -lm")
     ;;
