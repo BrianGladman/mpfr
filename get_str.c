@@ -29,10 +29,10 @@ MA 02111-1307, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-static double mpfr_ceil_double _MPFR_PROTO ((double));
-static int mpfr_get_str_aux _MPFR_PROTO ((char *, mp_exp_t *, mp_limb_t *,
-		       mp_size_t, mp_exp_t, long, int, size_t, mp_rnd_t));
-static mp_exp_t mpfr_get_str_compute_g _MPFR_PROTO ((int, mp_exp_t));
+static double mpfr_ceil_double (double);
+static int mpfr_get_str_aux (char *, mp_exp_t *, mp_limb_t *,
+		       mp_size_t, mp_exp_t, long, int, size_t, mp_rnd_t);
+static mp_exp_t mpfr_get_str_compute_g (int, mp_exp_t);
 
 static const char num_to_text[] = "0123456789abcdefghijklmnopqrstuvwxyz";
 

@@ -24,8 +24,8 @@ MA 02111-1307, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-static void mpfr_const_euler_S _MPFR_PROTO ((mpfr_ptr, unsigned long));
-static void mpfr_const_euler_R _MPFR_PROTO ((mpfr_ptr, unsigned long));
+static void mpfr_const_euler_S (mpfr_ptr, unsigned long);
+static void mpfr_const_euler_R (mpfr_ptr, unsigned long);
 
 int
 (mpfr_const_euler) (mpfr_t x, mp_rnd_t rnd)
