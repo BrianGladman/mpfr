@@ -41,6 +41,14 @@ Sun UltraSparc/Solaris 2.6
 HP 9000/HP-UX A.09.05
 Pentium/Windows with Cygnus compiler
 
+
+./configure options
+===================
+
+--with-gmp-include=DIR  assumes that DIR contains mpfr-impl.h, longlong.h...
+--with-gmp-lib=DIR      assumes that DIR contains libgmp.a
+--with-gmp=DIR          same as --with-gmp-lib=DIR/lib --with-gmp-include=DIR/include
+
 Known problems.
 ===============
 
