@@ -1043,13 +1043,17 @@ typedef struct {
   static void _x ## _f (void) {fprintf (mpfr_log_file,        \
     "%s: Ziv failed %2.2f%% (%lu bad cases / %lu calls)\n", _x ## _fname,     \
        (double) 100.0 * _x ## _bad / _x ## _loop,  _x ## _bad, _x ## _loop ); }
-#define MPFR_ZIV_INIT(_x, _p) ((_x) = BITS_PER_MP_LIMB, _x ## _loop ++);           \
-  if (MPFR_LOG_BADCASE_F&mpfr_log_type && mpfr_log_current<=mpfr_log_level)        \
-   fprintf (mpfr_log_file, "%s:ZIV 1st prec=%lu\n", __func__, (unsigned long) (_p))
-#define MPFR_ZIV_NEXT(_x, _p)                                                      \
-  ((_p) += (_x), (_x) = (_p)/2, _x ## _bad += (_x ## _cpt == 1), _x ## _cpt ++);   \
-  if (MPFR_LOG_BADCASE_F&mpfr_log_type && mpfr_log_current<=mpfr_log_level)        \
-   fprintf (mpfr_log_file, "%s:ZIV new prec=%lu\n", __func__, (unsigned long) (_p))
+
+#define MPFR_ZIV_INIT(_x, _p) ((_x) = BITS_PER_MP_LIMB, _x ## _loop ++);     \
+  if (MPFR_LOG_BADCASE_F&mpfr_log_type && mpfr_log_current<=mpfr_log_level)  \
+   fprintf (mpfr_log_file, "%s:ZIV 1st prec=%lu\n", __func__,                \
+            (unsigned long) (_p))
+
+#define MPFR_ZIV_NEXT(_x, _p)                                                \
+ ((_p)+=(_x),(_x)=(_p)/2, _x ## _bad += (_x ## _cpt == 1), _x ## _cpt ++);   \
+  if (MPFR_LOG_BADCASE_F&mpfr_log_type && mpfr_log_current<=mpfr_log_level)  \
+   fprintf (mpfr_log_file, "%s:ZIV new prec=%lu\n", __func__,                \
+     (unsigned long) (_p))
   
 #define MPFR_ZIV_FREE(_x)                                             \
   if (MPFR_LOG_BADCASE_F&mpfr_log_type && _x##_cpt>1                  \
