@@ -236,7 +236,7 @@ libmpfr.a: \$(OBJS)
 	ranlib libmpfr.a    
 
 tests: mpfr.h libmpfr.a
-	-cd tests; $make all
+	-cd tests; \$(MAKE) all
 
 doc: mpfr.texi
 	texi2dvi mpfr.texi
