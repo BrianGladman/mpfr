@@ -168,7 +168,7 @@ cat > Makefile <<EOF
 #
 CC=$defC
 CFLAGS=$special $incflags $cflags -D$ostype
-OBJS=add.o div_2exp.o neg.o set_dfl_prec.o set_str_raw.o agm.o get_str.o print_raw.o set_dfl_rnd.o sqrt.o clear.o init.o rnd_mode.o set_f.o sub.o cmp.o mul.o  round.o set_prec.o cmp_ui.o mul_2exp.o set.o set_si.o div.o mul_ui.o set_d.o set_str.o
+OBJS=add.o div_2exp.o neg.o set_dfl_prec.o set_str_raw.o agm.o get_str.o print_raw.o set_dfl_rnd.o sqrt.o clear.o init.o rnd_mode.o set_f.o sub.o cmp.o mul.o  round.o set_prec.o cmp_ui.o mul_2exp.o set.o set_si.o div.o mul_ui.o set_d.o set_str.o pow.o out_str.o pi.o set_z.o add_ulp.o log2.o
 
 dft: libmpfr.a
 
@@ -211,13 +211,19 @@ div.o: mpfr.h
 mul_ui.o: mpfr.h
 set_d.o: mpfr.h
 set_str.o: mpfr.h
+pow.o: mpfr.h
+out_str.o: mpfr.h
+pi.o: mpfr.h
+set_z.o: mpfr.h
+add_ulp.o: mpfr.h
+log2.o: mpfr.h
 
 EOF
 cat > tests/Makefile <<EOF
 CC=$defC
 CFLAGS=$special $incflags -I.. $cflags -D$ostype
 LDLIBS=../libmpfr.a $lib -lm
-TESTS=tadd tcmp2 tget_str tmul_ui tset_f tsqrt tagm tcmp_ui tmul tround tset_si tcmp tdiv tmul_2exp tset_d tset_str
+TESTS=tadd tcmp2 tget_str tmul_ui tset_f tsqrt tagm tcmp_ui tmul tround tset_si tcmp tdiv tmul_2exp tset_d tset_str tpi tset_z tlog2
 
 tests all: \$(TESTS)
 	for i in \$(TESTS); do \
