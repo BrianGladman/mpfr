@@ -1,6 +1,10 @@
 \documentclass[12pt]{amsart}
-\usepackage{fullpage,amssymb}
+
+\usepackage{fullpage}
+\usepackage{amssymb}
 \usepackage{url}
+\usepackage{comment}
+
 \pagestyle{empty}
 \title{The MPFR Library: Algorithms and Proofs}
 \author{The MPFR team}
@@ -537,10 +541,92 @@ and $c[i]$ is meant as $0$ for $i \ge {\tt cn}$
 (${\tt cancel_b} \ge 0$, but ${\tt cancel_c}$ may be negative).
 
 \subsection{The {\tt mpfr\_div} function}
+
 The goals of the code of the {\tt mpfr\_div} function include the fact
-that the complexity should, as much as possible while preserving exact
+that the complexity should, while preserving correct
 rounding, depend on the precision required on the result rather than
-on the precision given on the operands. Let $u = u_n 2^{u_e}$, $v = v_n
+on the precision given on the operands.
+
+Let $u$ be the dividend, $v$ the divisor, and $p$ the target precision
+for the quotient. We denote by $q$ the real quotient $u/v$, with infinite
+precision, and $n \geq p$ the working precision.
+The idea --- as in the square root algorithm below --- is to use GMP's
+integer division: divide the most $2n$ or $2n-1$ significant bits from $u$ by 
+the most $n$ significant bits from $v$ will give a good approximation of 
+the quotient's integer significand.
+The main difficulties arise when $u$ and $v$ have a larger precision than
+$2n$ and $n$ respectively, since we have to truncate them.
+We distinguish two cases: whether the divisor is truncated or not.
+
+\subsubsection{Full divisor.}
+This is the easy case. Write $u = u_1 + u_0$ where $u_0$ is the truncated
+part, and $v = v_1$. Without loss of generality we can assume that 
+$\ulp(u_1)=\ulp(v_1)=1$, thus $u_1$ and $v_1$ are integers, and 
+$0 \leq u_0 < 1$.
+Since $v_1$ has $n$ significant bits, we have $2^{n-1} \leq v_1 < 2^n$.
+(We normalize $u$ so that the integer quotient gives exactly $n$ bits;
+this is easy by comparing the most significant bits of $u$ and $v$,
+thus $2^{2n-2} \leq u_1 < 2^{2n}$.)
+The integer division of $u_1$ by $v_1$ yields $q_1$ and $r$
+such that $u_1 = q_1 v_1 + r$, with $0 \leq r < v_1$, and 
+$q_1$ having exactly $n$ bits.
+In that case we have
+\[ q_1 \leq q=\frac{u}{v} < q_1 + 1. \]
+Indeed, $q = \frac{u}{v} \geq \frac{u_1}{v_1} = \frac{q_1 v_1 + r}{v_1}$,
+and $q \leq \frac{u_1+u_0}{v_1} \leq q_1 + \frac{r + u_0}{v_1} < q_1 + 1$,
+since $r + u_0 < r+1 \leq v_1$.
+
+\subsubsection{Truncated divisor.} This is the hard case.
+Write $u = u_1 + u_0$, and $v = v_1 + v_0$, where $0 \leq u_0, v_0 < 1$
+with the same conventions as above.
+We prove in that case that:
+\begin{equation} \label{diveq}
+q_1-2 < q = \frac{u}{v} < q_1 + 1.
+\end{equation}
+The upper bound holds as above.
+For the lower bound, we have $u - (q_1-2) v >
+u_1 - (q_1-2) (v_1+1) \geq q_1 v_1 - (q_1-2) (v_1+1)
+= 2 (v_1+1) - q_1 \geq 2^n - q_1 > 0$.
+This lower bound is the best possible, since $q_1-1$ would be wrong;
+indeed, consider $n=3$, $v_1=4$, $v_0 = 7/8$, $u=24$: this gives $q_1 = 6$,
+but $u/v = 64/13 < q_1-1 = 5$.
+
+As a consequence of Eq.~(\ref{diveq}), if the open interval $(q_1-2, q_1+1)$
+contains no rounding boundary for the target precision, we can deduce the
+correct rounding of $u/v$ just from the value of $q_1$.
+In other words, for directed rounding, the two only ``bad cases'' are when
+the binary representation of $q_1$ ends with $\underbrace{0000}_{n-p}$
+or $\underbrace{0001}_{n-p}$.
+We even can decide if rounding is correct, since when $q_1$ ends with $0010$,
+the exact value cannot end with $0000$, and similarly
+when $q_1$ ends with $1111$.
+Hence if $n=p+k$, i.e.~if we use $k$ extra bits with respect to the target
+precision $p$, the failure probability is $2^{1-k}$.
+
+\subsubsection{Avoiding Ziv's strategy.}
+In the failure case ($q_1$ ending with $000\ldots 000x$ with directed rounding,
+or $100 \ldots 000x$ with rounding to nearest),
+we could try again with a larger working precision $p$.
+However, we then need to perform a second
+division, and we are not sure this new computation will enable us to conclude.
+In fact, we can conclude directly. Recall that $u_1 = q_1 v_1 + r$.
+Thus $u = q_1 v + (r + u_0 - q_1 v_0)$.
+We have to decide which of the following five cases holds:
+(a) $q_1 - 2 < q < q_1 - 1$, (b) $q = q_1-1$,
+(c) $q_1-1 < q < q_1$, (d) $q=q_1$, (e) $q_1 < q < q_1+1$.
+\begin{quote}
+$s \leftarrow q_1 v_0$ \\
+\textbf{if} $s < r + u_0$ \textbf{then} $q \in (q_1, q_1+1)$ \\
+\textbf{elif} $s = r + u_0$ \textbf{then} $q = q_1$ \\
+\textbf{else} \\ % u = (q1-1) v + (r + u_0 - s + v)
+\q $t \leftarrow s - (r + u_0)$ \\ % u = (q1-1) v + (v - t)
+\q \textbf{if} $t < v$ \textbf{then} $q \in (q_1 - 1, q_1)$ \\
+\textbf{elif} $t=v$ \textbf{then} $q = q_1-1$ \\
+\textbf{else} $q \in (q_1 - 2, q_1-1)$
+\end{quote}
+
+\begin{comment}
+Let $u = u_n 2^{u_e}$, $v = v_n
 2^{v_e}$, where $u_n$ and $v_n$ are in $[1/2, 1[$. Let $q_p$ be the 
 precision required on $q$. Put 
 $b_p = \min(v_p, q_p + \varepsilon_p)$, 
@@ -575,6 +661,48 @@ $\tilde{q} v_{lo} < 2^{\delta + 1}$, to be compared with $v_n 2^{\delta}$,
 so that a negative correction is at most 3. As a consequence, to be able
 to decide rounding after the first stage, one should choose 
 $\varepsilon_p \geq 3$ (to include the round-to-nearest case). 
+\end{comment}
+
+\subsection{The {\tt mpfr\_sqrt} function}
+
+The \texttt{mpfr\_sqrt} implementation uses the \texttt{mpn\_sqrtrem}
+function from GMP's \texttt{mpn} level:
+given a positive integer $m$, it computes $s$ and $r$ such that
+$m = s^2 + r$ with $s^2 \leq m < (s+1)^2$, or equivalently $0 \leq r \leq 2s$.
+In other words, $s$ is the integer square root of $m$, rounded towards zero.
+
+The idea is to multiply the input significand by some power of two,
+in order to obtain an integer significand $m$ whose integer square root
+$s$ will have exactly $p$ bits, where $p$ is the target precision.
+This is easy: $m$ should have either $2p$ or $2p-1$ bits.
+For directed rounding, we then know that the result significand will be
+either $s$ or $s+1$, depending on the square root remainder $r$ being zero
+or not.
+\begin{quote}
+Algorithm $\texttt{FPSqrt}$. \\
+Input: $x = m \cdot 2^e$, a target precision $p$, a rounding mode $\circ$ \\
+Output: $y = \circ_p(\sqrt{x})$ \\
+If $e$ is odd, $(m', f) \leftarrow (2m, e-1)$, else $(m',f) \leftarrow (m,e)$ \\
+Write $m' := m_1 2^{2k} + m_0$, $m_1$ having $2p$ or $2p-1$ bits, $0 \leq m_0 < 2^{2k}$ \\
+$(s, r) \leftarrow \texttt{SqrtRem}(m_1)$ \\
+If round to zero or down or $r=m_0=0$, return $s \cdot 2^{k+f/2}$ \\
+else return $(s+1) \cdot 2^{k+f/2}$.
+\end{quote}
+In case the input has more than $2p$ or $2p-1$ bits, it needs to be truncated,
+but the crucial point is that that truncated part will not overlap with the
+remainder $r$ from the integer square root, so the \emph{sticky bit} is
+simply zero when both parts are zero.
+
+For rounding to nearest, the simplest way is to ask $p+1$ bits for the
+integer square root --- thus $m$ has now $2p+1$ or $2p+2$ bits.
+In such a way, we directly get the rounding bit, which is the parity bit
+of $s$, and the sticky bit is determined as above.
+Otherwise, we have to compare the value of the whole remainder, i.e.~$r$ plus
+the possible truncated input, with $s + 1/4$, since $(s+1/2)^2 = 
+s^2 + s + 1/4$.
+Note that equality can occur --- i.e.~the ``nearest even rounding rule'' ---
+only when the input has at least $2p+1$ bits; in particular it can not
+happen in the common case when input and output have the same precision.
 
 \section{High level functions}
 
