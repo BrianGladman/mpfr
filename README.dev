@@ -8,9 +8,10 @@ instance: "2.0.1-20020319".
 
 To make a release:
   1) Check the version and update the date in mpfr.texi.
-  2) Update the ChangeLog file (using rcs2log): rcs2log > ChangeLog.2
-     and edit ChangeLog to insert ChangeLog.2 at the beginning and
-     remove the duplicated lines.
+  2) Update the ChangeLog file (using a recent version of rcs2log,
+     directly or with emacs), e.g. rcs2log > ChangeLog.2 and edit
+     ChangeLog to insert ChangeLog.2 at the beginning and remove
+     the duplicated lines.
   3) Generate the release version with "make dist".
   4) Test the release version on different machines, with and without
      the --disable-alloca configure option.
