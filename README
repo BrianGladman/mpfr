@@ -22,7 +22,7 @@ The MPFR distribution contains the following files:
 AUTHORS     - the authors of the library
 BUGS        - bugs in MPFR - please read this file!
 COPYING     - the GNU General Public License, version 2
-COPYING.LIB - the Gnu Lesser General Public License, version 2.1
+COPYING.LIB - the GNU Lesser General Public License, version 2.1
 ChangeLog   - the log of changes
 INSTALL     - how to install MPFR (see also mpfr.texi)
 Makefile*   - files for building the library
