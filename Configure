@@ -29,17 +29,19 @@ case $syst in
 	defC=/usr/local/bin/gcc
 	machtype=sparc
 	make=/usr/ccs/bin/make	
+	ldlibs="-lm"
 	;;
     Linux*)
 	fpucw=`grep __setfpucw /usr/include/fpu_control.h`
-	if test -z "$fpucw"; then special="-DLIBC211 $special"; fi;  # for __setfpucw
+	if test -z "$fpucw"; then special="-DLIBC211"; fi;  # for __setfpucw
         ostype=linux
 	defC=/usr/bin/gcc
 	make=/usr/bin/make
 	machtype=`uname -a | awk '{print $11}'`
 	if [ "$machtype" = "alpha" ]; 
-	then special="$special -mfp-rounding-mode=d -mieee-with-inexact";
+	then special="-mfp-rounding-mode=d -mieee-with-inexact";
 	fi; 
+	ldlibs="-lm"
 	;;
     OSF*)
         special="-D__STDC__ $special -mfp-rounding-mode=d -mieee-with-inexact";
@@ -47,19 +49,31 @@ case $syst in
 	defC=/usr/local/bin/gcc
 	make=/usr/local/gnu/bin/make # pour $LDLIBS des tests
 	machtype=dec
+	ldlibs="-lm"
 	;;
     SunOS4*)
         ostype=sunos
 	machtype=sparc
 	defC=/usr/local/gnu/bin/gcc 
 	make=/usr/local/gnu/bin/make
+	ldlibs="-lm"	
 	;;
     IRIX64*)
 	ostype=IRIX64
 	machtype=sgi
 	defC=/usr/local/gnu/bin/gcc
 	make=/usr/local/gnu/bin/make
+	ldlibs="-lm"
 	;;
+    HP-UX*)
+	ostype=HPUX
+	machtype=HP
+	defC=/usr/local/gnu/bin/gcc
+	make=/usr/local/gnu/bin/make
+	special="-Dhpux"
+	ldpath="-L/lib/pa1.1"
+	ldlibs="-lM"	
+	;;	
     *)
 	ostype=unknown
 	make=/usr/local/gnu/bin/make
@@ -202,7 +216,7 @@ cat > Makefile <<EOF
 #
 CC=$defC
 CFLAGS=$special $incflags $cflags $contrspecial -D$ostype
-OBJS=add.o div_2exp.o neg.o set_dfl_prec.o set_str_raw.o agm.o get_str.o print_raw.o set_dfl_rnd.o sqrt.o clear.o init.o rnd_mode.o set_f.o sub.o cmp.o mul.o  round.o set_prec.o cmp_ui.o mul_2exp.o set.o set_si.o div.o mul_ui.o set_d.o pow.o out_str.o pi.o set_z.o add_ulp.o log2.o random.o log.o exp.o div_ui.o zeta.o div3.o sqrt3.o print_rnd_mode.o
+OBJS=add.o div_2exp.o neg.o set_dfl_prec.o set_str_raw.o agm.o get_str.o print_raw.o set_dfl_rnd.o sqrt.o clear.o init.o rnd_mode.o set_f.o sub.o cmp.o mul.o  round.o set_prec.o cmp_ui.o mul_2exp.o set.o set_si.o div.o mul_ui.o set_d.o pow.o out_str.o pi.o set_z.o add_ulp.o log2.o random.o log.o exp.o div_ui.o zeta.o div3.o sqrt3.o
 
 dft: libmpfr.a
 
@@ -257,13 +271,12 @@ div_ui.o: mpfr.h
 zeta.o: mpfr.h
 div3.o: mpfr.h
 sqrt3.o: mpfr.h
-print_rnd_mode.o: mpfr.h
 
 EOF
 cat > tests/Makefile <<EOF
 CC=$defC
-CFLAGS=$special $incflags -I.. $cflags -D$ostype
-LDLIBS=../libmpfr.a $lib -lm
+CFLAGS=$special $incflags -I.. $cflags $ldpath -D$ostype
+LDLIBS=$ldflags ../libmpfr.a $lib $ldlibs
 TESTS=tadd tcmp2 tget_str tmul_ui tset_f tsqrt tagm tcmp_ui tmul tround tset_si tcmp tdiv tmul_2exp tset_d tset_str tpi tset_z tlog2 tcan_round tlog texp tdiv_ui tzeta
 
 tests all: \$(TESTS)
