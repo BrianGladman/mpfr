@@ -372,7 +372,8 @@ check_inexact (void)
 	      mpfr_set_prec (y, py);
 	      pz =  (mpfr_cmpabs (x, u) >= 0) ? MPFR_EXP(x)-MPFR_EXP(u)
 		: MPFR_EXP(u)-MPFR_EXP(x);
-	      pz = pz + MAX(MPFR_PREC(x), MPFR_PREC(u));
+	      pz = MAX (MPFR_PREC_MIN,
+                        pz + MAX(MPFR_PREC(x), MPFR_PREC(u)));
 	      mpfr_set_prec (z, pz);
 	      rnd = randlimb () % 4;
 	      if (mpfr_sub (z, x, u, rnd))
