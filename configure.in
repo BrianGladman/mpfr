@@ -50,7 +50,10 @@ case $OS_TYPE in
 		;;
 	OSF*)
 		AC_CHECK_LIB(m, main)
-		CFLAGS="$CFLAGS -mfp-rounding-mode=d -mieee-with-inexact -ffloat-store"
+		CFLAGS="$CFLAGS -mfp-rounding-mode=d -mieee-with-inexact"
+		if test -n "$GCC"; then
+		  CFLAGS="$CFLAGS -ffloat-store"
+		fi
 		AC_DEFINE(__STDC__)
 		;;
 	*)
