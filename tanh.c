@@ -1,6 +1,6 @@
 /* mpfr_tanh -- hyperbolic tangent
 
-Copyright (C) 2001 Free Software Foundation, Inc.
+Copyright (C) 2001 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -19,8 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
-#include <math.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -32,7 +30,14 @@ MA 02111-1307, USA. */
  */
 
 int
+#if __STDC__
 mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode) 
+#else
+mpfr_tanh (y, xt, rnd_mode)
+     mpfr_ptr y;
+     mpfr_srcptr xt;
+     mp_rnd_t rnd_mode;
+#endif
 {
 
     /****** Declaration ******/
@@ -121,7 +126,8 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
         d = MPFR_EXP(te)-MPFR_EXP(t);
 	
 	/* estimation of the error */
-        err = Nt-(_mpfr_ceil_log2(7+pow(2,d+1)));
+        /*err = Nt-(_mpfr_ceil_log2(7+pow(2,d+1)));*/
+        err = Nt-(MAX(d+1,3)+1);
 
 	/* actualisation of the precision */
         Nt += 10; 
