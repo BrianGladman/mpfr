@@ -819,6 +819,12 @@ See @code{mpfr_set_str}.
 Convert @var{op} to a double, using the current @emph{machine} rounding mode.
 @end deftypefun
 
+@deftypefun mp_exp_t mpfr_get_z_exp (mpz_t @var{z}, mpfr_t @var{op})
+Puts the mantissa of @var{op} into @var{z}, and returns the exponent
+@var{exp} such that @var{op} equals @var{z} multiplied by two exponent 
+@var{exp}.
+@end deftypefun
+
 @deftypefun {char *} mpfr_get_str (char *@var{str}, mp_exp_t *@var{expptr}, int @var{base}, size_t @var{n_digits}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Convert @var{op} to a string of digits in base @var{base}, with rounding in
 direction @var{rnd}. The base may vary

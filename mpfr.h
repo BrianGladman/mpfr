@@ -143,7 +143,7 @@ int mpfr_can_round _PROTO ((mpfr_ptr, mp_exp_t, mp_rnd_t, mp_rnd_t,
 			    mp_prec_t));
 int mpfr_set_d _PROTO ((mpfr_ptr, double, mp_rnd_t)); 
 int mpfr_set_z _PROTO ((mpfr_ptr, mpz_srcptr, mp_rnd_t)); 
-mp_exp_t mpz_set_fr _PROTO ((mpz_ptr, mpfr_srcptr)); 
+mp_exp_t mpfr_get_z_exp _PROTO ((mpz_ptr, mpfr_srcptr)); 
 int mpfr_set_q _PROTO ((mpfr_ptr, mpq_srcptr, mp_rnd_t)); 
 double mpfr_get_d _PROTO ((mpfr_srcptr)); 
 int mpfr_set_f _PROTO ((mpfr_ptr, mpf_srcptr, mp_rnd_t));

@@ -185,7 +185,7 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_mul_2ui(tmp, sk, twopoweri, GMP_RNDN);
       /* Calculation of  trunc(tmp) --> mpz */
       mpfr_trunc (ukf, tmp);
-      exptol = mpz_set_fr (ukz, ukf);
+      exptol = mpfr_get_z_exp (ukz, ukf);
       if (exptol>0)
 	  mpz_mul_2exp (ukz, ukz, exptol);
       else

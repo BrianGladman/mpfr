@@ -1,4 +1,5 @@
-/* mpz_set_fr -- set a multiple-precision integer from a floating-point number
+/* mpfr_get_z_exp -- get a multiple-precision integer and an exponent
+                     from a floating-point number
 
 Copyright (C) 2000-2002 Free Software Foundation, Inc.
 
@@ -37,7 +38,7 @@ MA 02111-1307, USA. */
  */
 
 mp_exp_t
-mpz_set_fr (mpz_ptr z, mpfr_srcptr f)
+mpfr_get_z_exp (mpz_ptr z, mpfr_srcptr f)
 {
   mp_size_t fn;
   int sh;

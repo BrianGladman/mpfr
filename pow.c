@@ -139,7 +139,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
       int exptol;
     
       mpz_init(zi);  
-      exptol=mpz_set_fr(zi,y);     
+      exptol = mpfr_get_z_exp (zi, y);
         
       if (exptol>0)
         mpz_mul_2exp(zi, zi, exptol);
