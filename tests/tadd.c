@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include "gmp.h"
 #include "mpfr.h"
+#include "mpfr-impl.h"
 #ifdef IRIX64
 #include <sys/fpu.h>
 #endif
@@ -17,17 +18,6 @@ extern int getpid();
 extern long int lrand48();
 
 #define ABS(x) (((x)>0) ? (x) : (-x))
-
-double drand()
-{
-  double d; int *i;
-
-  i = (int*) &d;
-  i[0] = lrand48();
-  i[1] = lrand48();
-  if (lrand48()%2) d=-d; /* generates negative numbers */
-  return d;
-}
 
 /* checks that x+y gives the same results in double
    and with mpfr with 53 bits of precision */
@@ -121,14 +111,6 @@ void check5(double x, unsigned int rnd_mode)
     exit(1);
   }
   mpfr_clear(xx);
-}
-
-/* returns the number of ulp's between a and b */
-int ulp(a,b) double a,b;
-{
-  double eps=1.1102230246251565404e-16; /* 2^(-53) */
-  b = (a-b)/a; if (b<0) b = -b;
-  return (int) floor(b/eps);
 }
 
 void check2(x,px,y,py,pz,rnd_mode) double x,y; int px,py,pz,rnd_mode;
