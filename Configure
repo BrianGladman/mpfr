@@ -242,7 +242,7 @@ clean:
 	-rm \$(TESTS)
 
 t%: t%.c ../libmpfr.a 
-	$(CC) $(CFLAGS) -o \$@ \$@.c $(LDLIBS)
+	\$(CC) \$(CFLAGS) -o \$@ \$@.c \$(LDLIBS)
 EOF
 
 
