@@ -30,6 +30,19 @@ MA 02111-1307, USA. */
 #include "mpfr-test.h"
 
 static void
+test1 (void)
+{
+  mpfr_t x, y;
+
+  mpfr_init2 (x, 32);
+  mpfr_init2 (y, 65);
+  mpfr_set_str_raw (x, "-0.101110001001011011011e-9");
+  mpfr_ui_pow (y, 7, x, GMP_RNDN);
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
+static void
 check1 (mpfr_ptr x, mp_prec_t prec, unsigned long nt, mp_rnd_t rnd)
 {
   mpfr_t y, z, t;
@@ -133,6 +146,8 @@ main (int argc, char *argv[])
       printf ("evaluation of function in NAN does not return NAN");
       exit (1);
     }
+
+  test1 ();
 
   {
   mpfr_t z, t;
