@@ -125,8 +125,6 @@ mpfr_ui_pow (mpfr_ptr y, unsigned long int n, mpfr_srcptr x, mp_rnd_t rnd_mode)
       return mpfr_set_ui (y, 1, rnd_mode);
 
     inexact = mpfr_ui_pow_is_exact (n, x) == 0;
-    if (inexact == 0)
-      printf ("n=%lu x=%f\n", n, mpfr_get_d1(x));
 
     /* General case */
     {
