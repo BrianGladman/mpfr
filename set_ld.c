@@ -37,9 +37,9 @@ static const struct {
   char         bytes[10];
   long double  dummy;  /* for memory alignment */
 } ldbl_max_struct = {
-  { '\xFF','\xFF','\xFF','\xFF',
-    '\xFF','\xFF','\xFF','\xFF',
-    '\xFE','\x7F' }
+  { '\377','\377','\377','\377',
+    '\377','\377','\377','\377',
+    '\376','\177' }
 };
 #define MPFR_LDBL_MAX   (* (const long double *) ldbl_max_struct.bytes)
 #else
