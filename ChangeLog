@@ -1,5 +1,12 @@
 2002-04-13  Vincent Lefevre  <lefevre@greux.loria.fr>
 
+	* tests/tset_str.c, Makefile.am, acinclude.m4, set_str.c, strcasecmp.c:
+	Support for NaN and Inf (case insensitive) in mpfr_set_str. Tests.
+
+	* acinclude.m4: Bug fixed.
+
+	* ChangeLog: Update for the next pre-release.
+
 	* acinclude.m4, configure.in: Misc changes. Use of AC_CACHE_CHECK.
 
 2002-04-12  Vincent Lefevre  <lefevre@greux.loria.fr>
