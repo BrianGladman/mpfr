@@ -50,32 +50,91 @@ int check_NAN(void){
   /******cosh********/
 
   tester=mpfr_cosh(ch,t,GMP_RNDD);
-  if (!MPFR_IS_NAN(ch) || !tester ){printf("cosh NAN \n");return(1);} 
+  if (!MPFR_IS_NAN(ch) || !tester )
+  {
+    printf("cosh NAN \n");
+    mpfr_clear(t);
+    mpfr_clear(ch);
+    mpfr_clear(sh);
+    mpfr_clear(th);
+    mpfr_clear(ach);
+    mpfr_clear(ash);
+    mpfr_clear(ath);
+    return(1);
+  } 
 
   /******sinh********/
 
   tester=mpfr_sinh(sh,t,GMP_RNDD);
-  if (!MPFR_IS_NAN(sh) || !tester ){printf("sinh NAN \n");return(1);} 
+  if (!MPFR_IS_NAN(sh) || !tester )
+  {
+    printf("sinh NAN \n");
+    mpfr_clear(t);
+    mpfr_clear(ch);
+    mpfr_clear(sh);
+    mpfr_clear(th);
+    mpfr_clear(ach);
+    mpfr_clear(ash);
+    mpfr_clear(ath);
+    return(1);
+  } 
 
   /******tanh********/
 
   tester=mpfr_tanh(th,t,GMP_RNDD);
-  if (!MPFR_IS_NAN(th) || !tester ){printf("tanh NAN \n");return(1);} 
+  if (!MPFR_IS_NAN(th) || !tester )
+  {
+    printf("tanh NAN \n");
+    mpfr_clear(t);
+    mpfr_clear(ch);
+    mpfr_clear(sh);
+    mpfr_clear(th);
+    mpfr_clear(ach);
+    mpfr_clear(ash);
+    mpfr_clear(ath);
+    return(1);
+  } 
 
   /******acosh********/
 
   tester=mpfr_acosh(ach,t,GMP_RNDD);
-  if (!MPFR_IS_NAN(ach) || !tester ){printf("acosh NAN \n");return(1);} 
+  if (!MPFR_IS_NAN(ach) || !tester )
+  {
+    printf("acosh NAN \n");
+    return(1);
+  } 
 
   /******asinh********/
 
   tester=mpfr_asinh(ash,t,GMP_RNDD);
-  if (!MPFR_IS_NAN(ash) || !tester ){printf("asinh NAN \n");return(1);} 
+  if (!MPFR_IS_NAN(ash) || !tester )
+  {
+    printf("asinh NAN \n");
+    mpfr_clear(t);
+    mpfr_clear(ch);
+    mpfr_clear(sh);
+    mpfr_clear(th);
+    mpfr_clear(ach);
+    mpfr_clear(ash);
+    mpfr_clear(ath);
+    return(1);
+  } 
 
   /******atanh********/
 
   tester=mpfr_atanh(ath,t,GMP_RNDD);
-  if (!MPFR_IS_NAN(ath) || !tester ){printf("atanh NAN \n");return(1);} 
+  if (!MPFR_IS_NAN(ath) || !tester )
+  {
+    printf("atanh NAN \n");
+    mpfr_clear(t);
+    mpfr_clear(ch);
+    mpfr_clear(sh);
+    mpfr_clear(th);
+    mpfr_clear(ach);
+    mpfr_clear(ash);
+    mpfr_clear(ath);
+    return(1);
+  } 
 
   mpfr_clear(t);
   mpfr_clear(ch);
@@ -107,32 +166,98 @@ int check_zero(void){
   /******cosh********/
 
   tester=mpfr_cosh(ch,t,GMP_RNDD);
-  if (!mpfr_cmp_ui(ch,1) || !tester ){printf("cosh(0) \n");return(1);} 
+  if (!mpfr_cmp_ui(ch,1) || !tester )
+  {
+    printf("cosh(0) \n");
+    mpfr_clear(t);
+    mpfr_clear(ch);
+    mpfr_clear(sh);
+    mpfr_clear(th);
+    mpfr_clear(ach);
+    mpfr_clear(ash);
+    mpfr_clear(ath);
+    return(1);
+  } 
 
   /******sinh********/
 
   tester=mpfr_sinh(sh,t,GMP_RNDD);
-  if (!MPFR_IS_ZERO(sh) || !tester ){printf("sinh(0) \n");return(1);} 
+  if (!MPFR_IS_ZERO(sh) || !tester )
+  {
+    printf("sinh(0) \n");
+    mpfr_clear(t);
+    mpfr_clear(ch);
+    mpfr_clear(sh);
+    mpfr_clear(th);
+    mpfr_clear(ach);
+    mpfr_clear(ash);
+    mpfr_clear(ath);
+    return(1);
+  } 
 
   /******tanh********/
 
   tester=mpfr_tanh(th,t,GMP_RNDD);
-  if (!MPFR_IS_ZERO(th) || !tester ){printf("tanh(0) \n");return(1);} 
+  if (!MPFR_IS_ZERO(th) || !tester )
+  {
+    printf("tanh(0) \n");
+   mpfr_clear(t);
+   mpfr_clear(ch);
+   mpfr_clear(sh);
+   mpfr_clear(th);
+   mpfr_clear(ach);
+   mpfr_clear(ash);
+   mpfr_clear(ath);
+   return(1);
+  } 
 
   /******acosh********/
 
   tester=mpfr_acosh(ach,t,GMP_RNDD);
-  if (!MPFR_IS_NAN(ach) || tester != -1 ){printf("acosh(0) \n");return(1);} 
+  if (!MPFR_IS_NAN(ach) || tester != -1 )
+  {
+    printf("acosh(0) \n");
+    mpfr_clear(t);
+    mpfr_clear(ch);
+    mpfr_clear(sh);
+    mpfr_clear(th);
+    mpfr_clear(ach);
+    mpfr_clear(ash);
+    mpfr_clear(ath);
+    return(1);
+  } 
 
   /******asinh********/
 
   tester=mpfr_asinh(ash,t,GMP_RNDD);
-  if (!MPFR_IS_ZERO(ash) || !tester ){printf("asinh(0) \n");return(1);} 
+  if (!MPFR_IS_ZERO(ash) || !tester )
+  {
+    printf("asinh(0) \n");
+    mpfr_clear(t);
+    mpfr_clear(ch);
+    mpfr_clear(sh);
+    mpfr_clear(th);
+    mpfr_clear(ach);
+    mpfr_clear(ash);
+    mpfr_clear(ath);
+    return(1);
+  } 
 
   /******atanh********/
 
   tester=mpfr_atanh(ath,t,GMP_RNDD);
-  if (!MPFR_IS_ZERO(ath) || !tester ){printf("atanh(0) \n");return(1);} 
+  if (!MPFR_IS_ZERO(ath) || !tester )
+  {
+    printf("atanh(0) \n");
+    mpfr_clear(t);
+    mpfr_clear(ch);
+    mpfr_clear(sh);
+    mpfr_clear(th);
+    mpfr_clear(ach);
+    mpfr_clear(ash);
+    mpfr_clear(ath);
+    return(1);
+  } 
 
   mpfr_clear(t);
   mpfr_clear(ch);
@@ -169,64 +294,196 @@ int check_INF(void){
   /******cosh********/
 
   tester = mpfr_cosh(ch,t,GMP_RNDD);
-  if (!MPFR_IS_INF(ch) || MPFR_SIGN(ch) < 0 || tester ){printf("cosh(INF) \n");return(1);} 
+  if (!MPFR_IS_INF(ch) || MPFR_SIGN(ch) < 0 || tester )
+  {
+    printf("cosh(INF) \n");
+    mpfr_clear(t);
+    mpfr_clear(ch);
+    mpfr_clear(sh);
+    mpfr_clear(th);
+    mpfr_clear(ach);
+    mpfr_clear(ash);
+    mpfr_clear(ath);
+    return(1);
+  } 
 
   /******sinh********/
 
   tester=mpfr_sinh(sh,t,GMP_RNDD);
-  if (!MPFR_IS_INF(sh) || MPFR_SIGN(sh) < 0  || tester ){printf("sinh(INF) \n");return(1);} 
+  if (!MPFR_IS_INF(sh) || MPFR_SIGN(sh) < 0  || tester )
+  {
+    printf("sinh(INF) \n");
+    mpfr_clear(t);
+    mpfr_clear(ch);
+    mpfr_clear(sh);
+    mpfr_clear(th);
+    mpfr_clear(ach);
+    mpfr_clear(ash);
+    mpfr_clear(ath);
+    return(1);
+  } 
 
   /******tanh********/
 
   tester=mpfr_tanh(th,t,GMP_RNDD);
-  if (mpfr_cmp_ui(th,1) != 0 || tester ){printf("tanh(INF) \n");return(1);} 
+  if (mpfr_cmp_ui(th,1) != 0 || tester )
+  {
+    printf("tanh(INF) \n");
+    mpfr_clear(t);
+    mpfr_clear(ch);
+    mpfr_clear(sh);
+    mpfr_clear(th);
+    mpfr_clear(ach);
+    mpfr_clear(ash);
+    mpfr_clear(ath);
+    return(1);
+  } 
 
   /******acosh********/
 
   tester=mpfr_acosh(ach,t,GMP_RNDD);
-  if (!MPFR_IS_INF(ach) || MPFR_SIGN(ach) < 0  || !tester ){printf("acosh(INF) \n");return(1);} 
+  if (!MPFR_IS_INF(ach) || MPFR_SIGN(ach) < 0  || !tester )
+  {
+    printf("acosh(INF) \n");
+    mpfr_clear(t);
+    mpfr_clear(ch);
+    mpfr_clear(sh);
+    mpfr_clear(th);
+    mpfr_clear(ach);
+    mpfr_clear(ash);
+    mpfr_clear(ath);
+    return(1);
+  } 
 
   /******asinh********/
 
   tester=mpfr_asinh(ash,t,GMP_RNDD);
-  if (!MPFR_IS_INF(ash) || MPFR_SIGN(ash) < 0  || !tester ){printf("asinh(INF) \n");return(1);} 
+  if (!MPFR_IS_INF(ash) || MPFR_SIGN(ash) < 0  || !tester )
+  {
+    printf("asinh(INF) \n");
+    mpfr_clear(t);
+    mpfr_clear(ch);
+    mpfr_clear(sh);
+    mpfr_clear(th);
+    mpfr_clear(ach);
+    mpfr_clear(ash);
+    mpfr_clear(ath);
+    return(1);
+  } 
 
   /******atanh********/
 
   tester=mpfr_atanh(ath,t,GMP_RNDD);  
-  if (!MPFR_IS_INF(ath) || tester != 0){  printf("atanh(INF) \n");return(1);} 
+  if (!MPFR_IS_INF(ath) || tester != 0)
+  {
+    printf("atanh(INF) \n");
+    mpfr_clear(t);
+    mpfr_clear(ch);
+    mpfr_clear(sh);
+    mpfr_clear(th);
+    mpfr_clear(ach);
+    mpfr_clear(ash);
+    mpfr_clear(ath);
+    return(1);
+  } 
 
  MPFR_CHANGE_SIGN(t);
 
   /******cosh********/
 
   tester=mpfr_cosh(ch,t,GMP_RNDD);
-  if (!MPFR_IS_INF(ch) || MPFR_SIGN(ch) < 0  || tester ){printf("cosh(-INF) \n");return(1);} 
+  if (!MPFR_IS_INF(ch) || MPFR_SIGN(ch) < 0  || tester )
+  {
+    printf("cosh(-INF) \n");
+    mpfr_clear(t);
+    mpfr_clear(ch);
+    mpfr_clear(sh);
+    mpfr_clear(th);
+    mpfr_clear(ach);
+    mpfr_clear(ash);
+    mpfr_clear(ath);
+    return(1);
+  } 
 
   /******sinh********/
 
   tester=mpfr_sinh(sh,t,GMP_RNDD);
-  if (!MPFR_IS_INF(sh)  || MPFR_SIGN(sh) > 0 || tester ){printf("sinh(-INF) \n");return(1);} 
+  if (!MPFR_IS_INF(sh)  || MPFR_SIGN(sh) > 0 || tester )
+  {
+    printf("sinh(-INF) \n");
+    mpfr_clear(t);
+    mpfr_clear(ch);
+    mpfr_clear(sh);
+    mpfr_clear(th);
+    mpfr_clear(ach);
+    mpfr_clear(ash);
+    mpfr_clear(ath);
+    return(1);
+  } 
 
   /******tanh********/
 
   tester=mpfr_tanh(th,t,GMP_RNDD);
-  if (!mpfr_cmp_ui(th,-1) || tester ){printf("tanh(-INF) \n");return(1);} 
+  if (!mpfr_cmp_ui(th,-1) || tester )
+  {
+    printf("tanh(-INF) \n");
+    mpfr_clear(t);
+    mpfr_clear(ch);
+    mpfr_clear(sh);
+    mpfr_clear(th);
+    mpfr_clear(ach);
+    mpfr_clear(ash);
+    mpfr_clear(ath);
+    return(1);
+  } 
 
   /******acosh********/
 
   tester=mpfr_acosh(ach,t,GMP_RNDD);
-  if (!MPFR_IS_INF(ach) || MPFR_SIGN(ach) < 0  || !tester ){printf("acosh(-INF) \n");return(1);} 
+  if (!MPFR_IS_INF(ach) || MPFR_SIGN(ach) < 0  || !tester )
+  {
+    printf("acosh(-INF) \n");
+    mpfr_clear(t);
+    mpfr_clear(ch);
+    mpfr_clear(sh);
+    mpfr_clear(th);
+    mpfr_clear(ach);
+    mpfr_clear(ash);
+    mpfr_clear(ath);
+    return(1);
+  } 
 
   /******asinh********/
 
   tester=mpfr_asinh(ash,t,GMP_RNDD);
-  if (!MPFR_IS_INF(ash) || MPFR_SIGN(ash) > 0  || !tester ){printf("asinh(-INF) \n");return(1);} 
+  if (!MPFR_IS_INF(ash) || MPFR_SIGN(ash) > 0  || !tester )
+  {
+    printf("asinh(-INF) \n");
+    mpfr_clear(t);
+    mpfr_clear(ch);
+    mpfr_clear(sh);
+    mpfr_clear(th);
+    mpfr_clear(ach);
+    mpfr_clear(ash);
+    mpfr_clear(ath);
+    return(1);
+  } 
 
   /******atanh********/
 
   tester=mpfr_atanh(ath,t,GMP_RNDD);
-  if (!MPFR_IS_INF(ath) || MPFR_SIGN(ath) > 0 || tester != 0 ){printf("atanh(-INF) \n");return(1);} 
+  if (!MPFR_IS_INF(ath) || MPFR_SIGN(ath) > 0 || tester != 0 )
+  {
+    printf("atanh(-INF) \n");
+    mpfr_clear(t);
+    mpfr_clear(ch);
+    mpfr_clear(sh);
+    mpfr_clear(th);
+    mpfr_clear(ach);
+    mpfr_clear(ash);
+    mpfr_clear(ath);
+   return(1);
+  } 
 
   mpfr_clear(t);
   mpfr_clear(ch);
@@ -258,13 +515,35 @@ int check_O(void){
 
   mpfr_cosh(ch,t,GMP_RNDN);
   mpfr_acosh(ach,ch,GMP_RNDN);
-  if(mpfr_cmp_ui(ach,2)!=0){printf("cosh o acosh \n");return(1);}
+  if(mpfr_cmp_ui(ach,2)!=0)
+  {
+    printf("cosh o acosh \n");
+    mpfr_clear(t);
+    mpfr_clear(ch);
+    mpfr_clear(sh);
+    mpfr_clear(th);
+    mpfr_clear(ach);
+    mpfr_clear(ash);
+    mpfr_clear(ath);
+    return(1);
+  }
 
   /******asinh o sinh********/
 
   mpfr_sinh(sh,t,GMP_RNDN);
   mpfr_asinh(ash,sh,GMP_RNDN);
-  if(mpfr_cmp_ui(ash,2)!=0){printf("sinh o asinh \n");return(1);}
+  if(mpfr_cmp_ui(ash,2)!=0)
+  {
+    printf("sinh o asinh \n");
+    mpfr_clear(t);
+    mpfr_clear(ch);
+    mpfr_clear(sh);
+    mpfr_clear(th);
+    mpfr_clear(ach);
+    mpfr_clear(ash);
+    mpfr_clear(ath);
+    return(1);
+  }
   
 
   /******atanh o tanh********/
@@ -280,7 +559,18 @@ int check_O(void){
   putchar('\n');
   */
 
-  if(mpfr_cmp_ui(ath,2)!=0){printf("tanh o atanh \n");return(1);}
+  if(mpfr_cmp_ui(ath,2)!=0)
+  {
+    printf("tanh o atanh \n");
+    mpfr_clear(t);
+    mpfr_clear(ch);
+    mpfr_clear(sh);
+    mpfr_clear(th);
+    mpfr_clear(ach);
+    mpfr_clear(ash);
+    mpfr_clear(ath);
+    return(1);
+  }
 
   mpfr_clear(t);
   mpfr_clear(ch);
