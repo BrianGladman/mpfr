@@ -24,6 +24,7 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 
 void check_pow_ui (void);
+void check_inexact (mp_prec_t);
 
 void check_pow_ui ()
 {
