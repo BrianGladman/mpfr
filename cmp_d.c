@@ -1,7 +1,6 @@
-/* mpfr_cmp_ui_2exp -- compare a floating-point number with an unsigned
-machine integer multiplied by a power of 2
+/* mpfr_cmp_d -- compare a floating-point number with a double
 
-Copyright 1999, 2001, 2002 Free Software Foundation, Inc.
+Copyright 2003 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -22,7 +21,6 @@ MA 02111-1307, USA. */
 
 #include "gmp.h"
 #include "gmp-impl.h"
-#include "longlong.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
@@ -34,11 +32,11 @@ mpfr_cmp_d (mpfr_srcptr b, double d)
 
   MPFR_ASSERTN(!MPFR_IS_NAN(b));
 
-  mpfr_init2(tmp, 53); 
-  mpfr_set_d(tmp, d, GMP_RNDN); 
+  mpfr_init2 (tmp, 53); 
+  mpfr_set_d (tmp, d, GMP_RNDN); 
 
-  z = mpfr_cmp(b, tmp); 
-  mpfr_clear(tmp); 
+  z = mpfr_cmp (b, tmp); 
+  mpfr_clear (tmp); 
 
   return z; 
 }

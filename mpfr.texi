@@ -1111,6 +1111,7 @@ you should use @code{mpfr_div_2ui} (or @code{mpfr_div_2si}) instead.
 @deftypefun int mpfr_cmp (mpfr_t @var{op1}, mpfr_t @var{op2})
 @deftypefunx int mpfr_cmp_ui (mpfr_t @var{op1}, unsigned long int @var{op2})
 @deftypefunx int mpfr_cmp_si (mpfr_t @var{op1}, signed long int @var{op2})
+@deftypefunx int mpfr_cmp_d (mpfr_t @var{op1}, double @var{op2})
 Compare @var{op1} and @var{op2}.  Return a positive value if @math{@var{op1} >
 @var{op2}}, zero if @math{@var{op1} = @var{op2}}, and a negative value if
 @math{@var{op1} < @var{op2}}.
