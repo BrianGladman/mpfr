@@ -154,7 +154,7 @@ int main()
   char buffer[100];
   sprintf (buffer, "%d.%d.%d", __GNU_MP_VERSION, __GNU_MP_VERSION_MINOR,
   __GNU_MP_VERSION_PATCHLEVEL);
-  return strcmp (buffer, gmp_version);
+  return (strcmp (buffer, gmp_version) != 0) ? 1 : 0;
 }
 ], AC_MSG_RESULT(yes), 
    [AC_MSG_RESULT(no)

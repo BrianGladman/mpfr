@@ -34,11 +34,11 @@ then
   AC_MSG_CHECKING($2 library)
 	if  test -r "$1/lib$2.a"
 	then
-	  LDADD="$LDADD $1/lib$2.a"
+	  LIBS="$LIBS $1/lib$2.a"
 	else
 	if  test -r "$1/lib$2.so"
 	then
-	  LDADD="$LDADD $1/lib$2.so"
+	  LIBS="$LIBS $1/lib$2.so"
 	else
 	   AC_MSG_ERROR($1/lib$2.a/so not found)
 	fi
