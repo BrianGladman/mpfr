@@ -5,9 +5,15 @@ Documentation:
 Installation:
 
 - from Kevin Ryde <user42@zip.com.au>:
-   Determine the exp2/exp3 thresholds using tune/tuneup.c.
+  Determine the exp2/exp3 thresholds using tune/tuneup.c.
+  A start has been made on this, but there's a noticable step-effect
+  in the times making them cross back and forward between which is
+  faster.  Hopefully this will go away with improvements to the exp
+  code.
 - install config.h gmp-impl.h gmp-mparam.h longlong.h only in the mpfr
-	build directory ["Nelson H. F. Beebe" <beebe@math.utah.edu>]
+  build directory ["Nelson H. F. Beebe" <beebe@math.utah.edu>]
+  Alternately, insist on having a gmp build tree for the mpfr build to
+  access.
 
 Changes in existing functions:
 
@@ -120,3 +126,27 @@ Portability:
   count_leading_zeros from longlong.h.
 
 - test set_ld for special values (+/- 0, LDBL_MAX, LDBL_MIN...)
+
+
+Possible future MPF / MPFR integration:
+
+- mpf routines can become "extern inline"s calling mpfr equivalents,
+  probably just with GMP_RNDZ hard coded, since that's what mpf has
+  always done.
+
+- Want to preserve the mpf_t size, for binary compatibility.  Breaking
+  compatibility would cause lots of pain and potential subtle breakage
+  for users.  If the fields in mpf_t are not enough then extra space
+  under _mp_d can be used.
+
+- mpf_sgn has been a macro directly accessing the _mp_size field, so a
+  compatible representation would be required.  At worst that field
+  could be maintained for mpf_sgn, but not otherwise used internally.
+
+  mpf_sgn should probably throw an exception if called with NaN, since
+  there's no useful value it can return, so it might want to become a
+  function.  Inlined copies in existing binaries would hopefully never
+  see a NaN, if they only do old-style mpf things.
+
+- mpfr routines replacing mpf routines must be reentrant and thread
+  safe, since of course that's what has been documented for mpf.
