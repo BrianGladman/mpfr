@@ -31,7 +31,7 @@ AC_DEFUN([AC_MY_LIBS],
 [
 if ` test "$1" `
 then  
-  AC_MSG_CHECKING(gmp library)
+  AC_MSG_CHECKING($2 library)
 	if  test -r "$1/lib$2.a"
 	then
 	  LDADD="$LDADD $1/lib$2.a"
