@@ -150,21 +150,20 @@ mpfr_sub1 (a, b, c, rnd_mode, diff_exp)
 		if (c_is_not_zero)
 		  { /* c is not zero */
 		    /* check whether mant(c)=1/2 or not */
-		    cc = *cp - (ONE << (BITS_PER_MP_LIMB - 1));
-		    if (cc == 0)
-		      {
-			bp = cp + (MPFR_PREC(c) - 1) / BITS_PER_MP_LIMB;
-			while (cp < bp && cc == 0)
-			  cc = *++cp;
-		      }
-		    if (cc || (ap[an-1] & ONE << sh))
+
+                    mp_limb_t *cp2 = cp + (cn-1);  /* highest limb */
+
+                    cc = *cp2 - MP_LIMB_T_HIGHBIT;
+                    while (cc == 0 && cp2 > cp) cc = *--cp2;
+
+		    if (cc || ((ap[0] >> sh) & ONE))
 		      goto sub_one_ulp;
 		    /* mant(c)>1/2 or mant(c) = 1/2: subtract 1 iff lsb(a)=1 */
 		  }
 	      }
 	    else if (ap[an-1] == 0)
 	      { /* case b=2^n */
-		ap[an-1] = ONE << (BITS_PER_MP_LIMB - 1);
+		ap[an-1] = MP_LIMB_T_HIGHBIT;
 		MPFR_EXP(a)++;
 	      }
 	  }
