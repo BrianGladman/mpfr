@@ -9,6 +9,7 @@ mpfr_set_si(mpfr_ptr x, long i, unsigned char rnd_mode)
 {
   unsigned long xsize, ai, cnt; 
 
+  if (i==0) { SET_ZERO(x); return; }
   xsize = ABSSIZE(x);
   ai = ABS(i); 
 
@@ -29,6 +30,7 @@ mpfr_set_ui(mpfr_ptr x, unsigned long i, unsigned char rnd_mode)
 {
   unsigned int xsize, cnt; 
 
+  if (i==0) { SET_ZERO(x); return; }
   xsize = ABSSIZE(x);
   count_leading_zeros(cnt, i); 
 
