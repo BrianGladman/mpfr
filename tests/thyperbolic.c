@@ -319,7 +319,7 @@ check_INF (void)
   /******acosh********/
 
   tester=mpfr_acosh(ach,t,GMP_RNDD);
-  if (!MPFR_IS_INF(ach) || MPFR_SIGN(ach) < 0  || tester!=0)
+  if (!MPFR_IS_NAN(ach) || tester!=0)
     {
       printf("acosh(-INF) \n");
       fail = 1;
