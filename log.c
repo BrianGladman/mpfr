@@ -47,22 +47,23 @@ MA 02111-1307, USA. */
 
 int
 #if __STDC__
-mpfr_log(mpfr_ptr r, mpfr_srcptr a, unsigned char rnd_mode) 
+mpfr_log(mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode) 
 #else
 mpfr_log()
      mpfr_ptr r;
      mpfr_srcptr a;
-     unsigned char rnd_mode; 
+     mp_rnd_t rnd_mode;
 #endif
 {
-  int p, m, q, bool, size, cancel;
+  int m, bool, size, cancel;
+  mp_prec_t p, q;
   mpfr_t cst, rapport, agm, tmp1, tmp2, s, mm;
   mp_limb_t *cstp, *rapportp, *agmp, *tmp1p, *tmp2p, *sp, *mmp;
   double ref;
   TMP_DECL(marker);
 
   /* If a is NaN or a is negative or null, the result is NaN */
-  if (FLAG_NAN(a) || (SIGN(a)<=0))
+  if (FLAG_NAN(a) || (NOTZERO(a)==0) || (MPFR_SIGN(a)<0))
     { SET_NAN(r); return 1; }
 
   /* If a is 1, the result is 0 */
@@ -109,9 +110,9 @@ mpfr_log()
     mpfr_div(rapport,tmp2,s,GMP_RNDN);    /* I compute 4/s, err <= 2 ulps */
     mpfr_agm(agm,tmp1,rapport,GMP_RNDN);  /* AG(1,4/s), err<=3 ulps */
     mpfr_mul_2exp(tmp1,agm,1,GMP_RNDN);   /* 2*AG(1,4/s), still err<=3 ulps */
-    mpfr_pi(cst, GMP_RNDN);               /* I compute pi, err<=1ulp */
+    mpfr_const_pi(cst, GMP_RNDN);         /* compute pi, err<=1ulp */
     mpfr_div(tmp2,cst,tmp1,GMP_RNDN);     /* pi/2*AG(1,4/s), err<=5ulps */
-    mpfr_log2(cst,GMP_RNDN);              /* I compute log(2), err<=1ulp */
+    mpfr_const_log2(cst,GMP_RNDN);        /* compute log(2), err<=1ulp */
     mpfr_mul(tmp1,cst,mm,GMP_RNDN);       /* I compute m*log(2), err<=2ulps */
     cancel = EXP(tmp2); 
     mpfr_sub(cst,tmp2,tmp1,GMP_RNDN);     /* log(a), err<=7ulps+cancel */ 

@@ -37,19 +37,19 @@ MA 02111-1307, USA. */
  */
 #if __STDC__
 char *mpfr_get_str(char *str, mp_exp_t *expptr, int base, size_t n,
-		  mpfr_srcptr op, unsigned char rnd_mode)
+		  mpfr_srcptr op, mp_rnd_t rnd_mode)
 #else
 char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
-     char *str;  
+     char *str;
      mp_exp_t *expptr;
      int base;
      size_t n;
-     mpfr_srcptr op; 
-     unsigned char rnd_mode; 
+     mpfr_srcptr op;
+     mp_rnd_t rnd_mode;
 #endif
 {
   double d; long e, q, div, p, err, prec, sh; mpfr_t a, b; mpz_t bz;
-  char *str0; unsigned char rnd1; int f, pow2, ok=0, neg;
+  char *str0; mp_rnd_t rnd1; int f, pow2, ok=0, neg, n0=n;
 
   if (base<2 || 36<base) {
     fprintf(stderr, "Error: too small or too large base in mpfr_get_str: %d\n",
@@ -57,11 +57,11 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
     exit(1);
   }
 
-  neg = (SIGN(op)<0) ? 1 : 0;
+  neg = (MPFR_SIGN(op)<0) ? 1 : 0;
 
   if (!NOTZERO(op)) {
     if (str==NULL) str0=str=(*_mp_allocate_func)(neg + n + 2);
-    if (SIGN(op)<0) *str++ = '-';
+    if (MPFR_SIGN(op)<0) *str++ = '-';
     for (f=0;f<n;f++) *str++ = '0';
     *expptr = 1;
     return str0;
@@ -86,11 +86,17 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
        y*base^(f-n) <= x*2^(e-p) < (x+1)*2^(e-p) <= (y+1)*base^(f-n)
        which implies 2^(EXP(op)-PREC(op)) <= base^(f-n)
      */
-    n = f + (int) ceil(((double)PREC(op)-e)*log(2.0)/log((double)base));
+    n = f + (int) floor(((double)PREC(op)-e)*log(2.0)/log((double)base));
   }
+#ifdef DEBUG  
+  printf("f=%d n=%d EXP(op)=%d PREC(op)=%d\n", f, n, e, PREC(op));
+#endif
   /* now the first n digits of the mantissa are obtained from
      rnd(op*base^(n-f)) */
   prec = (long) ceil((double)n*log((double)base)/log(2.0));
+#ifdef DEBUG
+  printf("prec=%d\n", prec);
+#endif
   err = 5;
   q = prec+err;
   /* one has to use at least q bits */
@@ -126,16 +132,26 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
 	   mpfr_div(a, b, a, rnd_mode);
 	 }
 	 /* now a is an approximation by default of 1/base^(f-n) */
+#ifdef DEBUG
+	 printf("a=%1.20e\n", mpfr_get_d(a));
+#endif
 	 mpfr_mul(b, op, a, rnd_mode);
        }
     }
     if (neg) CHANGE_SIGN(b); /* put b positive */
-
+#ifdef DEBUG
+    printf("p=%d b=%1.20e\n", p, mpfr_get_d(b));
+    printf("q=%d 2*prec+BITS_PER_MP_LIMB=%d\n", q, 2*prec+BITS_PER_MP_LIMB);
+#endif
     if (q>2*prec+BITS_PER_MP_LIMB) {
       /* happens when just in the middle between two digits */
       n--; q-=BITS_PER_MP_LIMB;
       if (n==0) {
-          fprintf(stderr, "cannot determine leading digit\n"); exit(1);
+          fprintf(stderr, "Error in mpfr_get_str: cannot determine leading digit\n");
+	  printf("base=%d, digits=%u, mode=%s, op=", base, n0,
+		  mpfr_print_rnd_mode(rnd_mode));
+	  mpfr_print_raw(op); putchar('\n');
+	  exit(1);
         }
     }
     ok = pow2 || mpfr_can_round(b, q-err, rnd_mode, rnd_mode, prec);
@@ -159,19 +175,34 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
 	 else if ((rnd_mode==GMP_RNDU && neg==0) || (rnd_mode==GMP_RNDD && neg))
 	   mpfr_sub(a, b, a, rnd_mode);
 	 else mpfr_add(a, b, a, rnd_mode);
+#ifdef DEBUG
+	 printf("a=%1.20e = ", mpfr_get_d(a)); mpfr_print_raw(a); putchar('\n');
+	 printf("b=%1.20e = ", mpfr_get_d(b)); mpfr_print_raw(b); putchar('\n');
+#endif
 	 /* check that a and b are rounded similarly */
 	 prec=EXP(b);
+#ifdef DEBUG
+	 printf("%d %d\n", EXP(a), prec);
+#endif
 	 if (EXP(a) != prec) ok=0;
 	 else {
 	   mpfr_round(b, rnd_mode, prec);
 	   mpfr_round(a, rnd_mode, prec);
+#ifdef DEBUG
+	   printf("a=%1.20e = ", mpfr_get_d(a)); mpfr_print_raw(a); putchar('\n');
+	   printf("b=%1.20e = ", mpfr_get_d(b)); mpfr_print_raw(b); putchar('\n');
+#endif
 	   if (mpfr_cmp(a, b)) ok=0;
 	 }
        }
       if (ok==0) { /* n is too large */
 	n--;
 	if (n==0) {
-	  fprintf(stderr, "cannot determine leading digit\n"); exit(1);
+	  fprintf(stderr, "Error in mpfr_get_str: cannot determine leading digit\n");
+	  printf("base=%d, digits=%u, mode=%s, op=", base, n0,
+		  mpfr_print_rnd_mode(rnd_mode));
+	  mpfr_print_raw(op); putchar('\n');
+	  exit(1);
 	}
 	q -= BITS_PER_MP_LIMB;
       }

@@ -34,16 +34,17 @@ MA 02111-1307, USA. */
 
 void 
 #ifdef __STDC__
-mpfr_agm(mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, unsigned char rnd_mode)
+mpfr_agm(mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
 #else
 mpfr_agm(r, a, b, rnd_mode)
-     mpfr_ptr r; 
-     mpfr_srcptr a; 
-     mpfr_srcptr b; 
-     unsigned char rnd_mode; 
+     mpfr_ptr r;
+     mpfr_srcptr a;
+     mpfr_srcptr b;
+     mp_rnd_t rnd_mode;
 #endif
 {
-  int s, p, q, go_on;
+  int s, go_on;
+  mp_prec_t p, q;
   double uo, vo;
   mp_limb_t *up, *vp, *tmpp, *tmpup, *tmpvp, *ap, *bp;
   mpfr_t u, v, tmp, tmpu, tmpv, a, b;
@@ -57,13 +58,13 @@ mpfr_agm(r, a, b, rnd_mode)
 
 
   /* If a or b is negative, the result is NaN */
-  if ((SIGN(op1)<0)||(SIGN(op2)<0))
+  if ((MPFR_SIGN(op1) < 0) || (MPFR_SIGN(op2) < 0))
     { SET_NAN(r); return; }
 
 
   
   /* If a or b is 0, the result is 0 */
-  if ((SIGN(op1)==0)||(SIGN(op2)==0)) 
+  if ((NOTZERO(op1) && NOTZERO(op2)) == 0)
     { SET_ZERO(r);
     return;
     }

@@ -35,12 +35,12 @@ MA 02111-1307, USA. */
 */
 int 
 #if __STDC__
-mpfr_exp(mpfr_ptr y, mpfr_srcptr x, unsigned char rnd_mode) 
+mpfr_exp(mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode) 
 #else
 mpfr_exp(y, x, rnd_mode)
-     mpfr_ptr y; 
-     mpfr_srcptr x; 
-     unsigned char rnd_mode; 
+     mpfr_ptr y;
+     mpfr_srcptr x;
+     mp_rnd_t rnd_mode;
 #endif
 {
   int n, expx, K, precy, q, k, l, expr, err; 
@@ -57,12 +57,12 @@ mpfr_exp(y, x, rnd_mode)
 
   /* if x > (2^31-1)*ln(2), then exp(x) > 2^(2^31-1) i.e. gives +infinity */
   if (expx > 30) {
-    if (SIGN(x)>0) { printf("+infinity"); return 1; }
+    if (MPFR_SIGN(x)>0) { printf("+infinity"); return 1; }
     else { SET_ZERO(y); return 1; }
   }
 
   /* if x < 2^(-precy), then exp(x) i.e. gives 1 +/- 1 ulp(1) */
-  if (expx < -precy) { int signx = SIGN(x);
+  if (expx < -precy) { int signx = MPFR_SIGN(x);
     mpfr_set_ui(y, 1, rnd_mode);
     if (signx>0 && rnd_mode==GMP_RNDU) mpfr_add_one_ulp(y);
     else if (signx<0 && (rnd_mode==GMP_RNDD || rnd_mode==GMP_RNDZ)) 
@@ -87,7 +87,7 @@ mpfr_exp(y, x, rnd_mode)
 
   /* if n<0, we have to get an upper bound of log(2)
      in order to get an upper bound of r = x-n*log(2) */
-  mpfr_log2(s, (n>=0) ? GMP_RNDZ : GMP_RNDU);
+  mpfr_const_log2(s, (n>=0) ? GMP_RNDZ : GMP_RNDU);
 #ifdef DEBUG
   printf("n=%d log(2)=",n); mpfr_print_raw(s); putchar('\n');
 #endif
@@ -102,7 +102,7 @@ mpfr_exp(y, x, rnd_mode)
   printf(" ="); mpfr_print_raw(r); putchar('\n');
 #endif
   mpfr_sub(r, x, r, GMP_RNDU);
-  if (SIGN(r)<0) { /* initial approximation n was too large */
+  if (MPFR_SIGN(r)<0) { /* initial approximation n was too large */
     n--;
     mpfr_mul_ui(r, s, (n<0) ? -n : n, GMP_RNDZ);
     if (n<0) mpfr_neg(r, r, GMP_RNDD);
@@ -111,7 +111,7 @@ mpfr_exp(y, x, rnd_mode)
 #ifdef DEBUG
   printf("x-r=%1.20e\n",mpfr_get_d(r));
   printf(" ="); mpfr_print_raw(r); putchar('\n');
-  if (SIGN(r)<0) { fprintf(stderr,"Error in mpfr_exp: r<0\n"); exit(1); }
+  if (MPFR_SIGN(r)<0) { fprintf(stderr,"Error in mpfr_exp: r<0\n"); exit(1); }
 #endif
   mpfr_div_2exp(r, r, K, GMP_RNDU); /* r = (x-n*log(2))/2^K */
   mpfr_set_ui(s, 1, GMP_RNDU);

@@ -25,7 +25,7 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 
 extern void mpfr_sub1 _PROTO((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, 
-			      unsigned char, int));
+			      mp_rnd_t, int));
 
 #define ONE ((mp_limb_t) 1)
 
@@ -36,13 +36,13 @@ extern void mpfr_sub1 _PROTO((mpfr_ptr, mpfr_srcptr, mpfr_srcptr,
 void 
 #if __STDC__
 mpfr_add1(mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, 
-	  unsigned char rnd_mode, int diff_exp) 
+	  mp_rnd_t rnd_mode, int diff_exp) 
 #else
 mpfr_add1(a, b, c, rnd_mode, diff_exp) 
-     mpfr_ptr a; 
-     mpfr_srcptr b; 
-     mpfr_srcptr c; 
-     unsigned char rnd_mode; 
+     mpfr_ptr a;
+     mpfr_srcptr b;
+     mpfr_srcptr c;
+     mp_rnd_t rnd_mode;
      int diff_exp;
 #endif
 {
@@ -70,7 +70,7 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
   bn = (PREC(b)-1)/mp_bits_per_limb+1; /* number of significant limbs of b */
   EXP(a) = EXP(b);
 
-  if (SIGN(a)!=SIGN(b)) CHANGE_SIGN(a);
+  if (MPFR_SIGN(a) * MPFR_SIGN(b) < 0) CHANGE_SIGN(a);
 
   /* case 1: diff_exp>=prec(a), i.e. c only affects the last bit
      through rounding */
@@ -364,14 +364,13 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
 
 void
 #if __STDC__
-mpfr_add(mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, 
-	      unsigned char rnd_mode) 
+mpfr_add(mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode) 
 #else
 mpfr_add(a, b, c, rnd_mode)
-     mpfr_ptr a; 
-     mpfr_srcptr b; 
-     mpfr_srcptr c; 
-     unsigned char rnd_mode; 
+     mpfr_ptr a;
+     mpfr_srcptr b;
+     mpfr_srcptr c;
+     mp_rnd_t rnd_mode;
 #endif
 {
   int diff_exp;
@@ -384,7 +383,7 @@ mpfr_add(a, b, c, rnd_mode)
   if (!NOTZERO(c)) { mpfr_set(a, b, rnd_mode); return; }
 
   diff_exp = EXP(b)-EXP(c);
-  if (SIGN(b) != SIGN(c)) { /* signs differ, it's a subtraction */
+  if (MPFR_SIGN(b) * MPFR_SIGN(c) < 0) { /* signs differ, it's a subtraction */
     if (diff_exp<0) {
       mpfr_sub1(a, c, b, rnd_mode, -diff_exp);
     }
@@ -393,7 +392,7 @@ mpfr_add(a, b, c, rnd_mode)
       diff_exp = mpfr_cmp3(b,c,-1);
       /* if b>0 and diff_exp>0 or b<0 and diff_exp<0: abs(b) > abs(c) */
       if (diff_exp==0) SET_ZERO(a);
-      else if (diff_exp*SIGN(b)>0) mpfr_sub1(a, b, c, rnd_mode, 0);
+      else if (diff_exp * MPFR_SIGN(b)>0) mpfr_sub1(a, b, c, rnd_mode, 0);
       else mpfr_sub1(a, c, b, rnd_mode, 0);
     }
   }

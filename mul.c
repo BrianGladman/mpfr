@@ -31,13 +31,13 @@ MA 02111-1307, USA. */
 
 void 
 #if __STDC__
-mpfr_mul(mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, unsigned char rnd_mode) 
+mpfr_mul(mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode) 
 #else
 mpfr_mul(a, b, c, rnd_mode) 
-     mpfr_ptr a; 
-     mpfr_srcptr b; 
-     mpfr_srcptr c; 
-     unsigned char rnd_mode;
+     mpfr_ptr a;
+     mpfr_srcptr b;
+     mpfr_srcptr c;
+     mp_rnd_t rnd_mode;
 #endif
 {
   unsigned int bn, cn, an, tn, k; int cc;
@@ -49,7 +49,7 @@ mpfr_mul(a, b, c, rnd_mode)
   if (FLAG_NAN(b) || FLAG_NAN(c)) { SET_NAN(a); return; }
   if (!NOTZERO(b) || !NOTZERO(c)) { SET_ZERO(a); return; }
 
-  sign_product = SIGN(b) * SIGN(c);
+  sign_product = MPFR_SIGN(b) * MPFR_SIGN(c);
   bn = (PREC(b)-1)/mp_bits_per_limb+1; /* number of significant limbs of b */
   cn = (PREC(c)-1)/mp_bits_per_limb+1; /* number of significant limbs of c */
   tn = (PREC(c)+PREC(b)-1)/mp_bits_per_limb+1; 
@@ -72,7 +72,7 @@ mpfr_mul(a, b, c, rnd_mode)
     ap[an-1] = (mp_limb_t) 1 << (BITS_PER_MP_LIMB-1);
   }
   EXP(a) = EXP(b) + EXP(c) + b1 - 1 + cc;
-  if (sign_product * SIGN(a)<0) CHANGE_SIGN(a);
+  if (sign_product * MPFR_SIGN(a)<0) CHANGE_SIGN(a);
   TMP_FREE(marker); 
   return;
 }

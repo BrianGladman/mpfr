@@ -27,13 +27,13 @@ MA 02111-1307, USA. */
 
 void
 #if __STDC__
-mpfr_mul_ui(mpfr_ptr y, mpfr_srcptr x, unsigned long u, unsigned char RND_MODE)
+mpfr_mul_ui(mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 #else
-mpfr_mul_ui()
-     mpfr_ptr y; 
-     mpfr_srcptr x; 
-     unsigned long u; 
-     unsigned char RND_MODE; 
+mpfr_mul_ui(y, x, u, rnd_mode)
+     mpfr_ptr y;
+     mpfr_srcptr x;
+     unsigned long int u;
+     mp_rnd_t rnd_mode;
 #endif
 {
   mp_limb_t carry, *my, *old_my; unsigned long c; 
@@ -59,8 +59,8 @@ mpfr_mul_ui()
   if (carry) count_leading_zeros(cnt, carry);
   else cnt=BITS_PER_MP_LIMB;
       
-  c = mpfr_round_raw(my, my, PREC(x), (SIGN(x)<0), 
-		     PREC(y)-BITS_PER_MP_LIMB+cnt, RND_MODE);
+  c = mpfr_round_raw(my, my, PREC(x), (MPFR_SIGN(x)<0), 
+		     PREC(y)-BITS_PER_MP_LIMB+cnt, rnd_mode);
   
   /* If cnt = 1111111111111 and c = 1 we shall get depressed */
   if (c && (carry == (((mp_limb_t)1) << (BITS_PER_MP_LIMB - cnt)) - 1))
@@ -79,6 +79,6 @@ mpfr_mul_ui()
   EXP(y) = EXP(x) + BITS_PER_MP_LIMB - cnt; 
   if (ysize < xsize) MPN_COPY(old_my, my, ysize);
   /* set sign */
-  if (SIGN(y) != SIGN(x)) CHANGE_SIGN(y);
+  if (MPFR_SIGN(y) * MPFR_SIGN(x) < 0) CHANGE_SIGN(y);
   TMP_FREE(marker);
 }

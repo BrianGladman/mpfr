@@ -32,13 +32,13 @@ MA 02111-1307, USA. */
 /* returns 0 if result exact, non-zero otherwise */
 int
 #ifdef __STDC__
-mpfr_div_ui(mpfr_ptr y, mpfr_srcptr x, unsigned long u, unsigned char rnd_mode)
+mpfr_div_ui(mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 #else
 mpfr_div_ui(y, x, u, rnd_mode)
-     mpfr_ptr y;  
+     mpfr_ptr y;
      mpfr_srcptr x;
-     unsigned long u;
-     unsigned char rnd_mode; 
+     unsigned long int u;
+     mp_rnd_t rnd_mode;
 #endif
 {
   int xn, yn, dif, sh, i; mp_limb_t *xp, *yp, *tmp, c, d;
@@ -54,7 +54,7 @@ mpfr_div_ui(y, x, u, rnd_mode)
   xp = MANT(x);
   yp = MANT(y);
   EXP(y) = EXP(x);
-  if (SIGN(x)!=SIGN(y)) CHANGE_SIGN(y);
+  if (MPFR_SIGN(x) * MPFR_SIGN(y) < 0) CHANGE_SIGN(y);
 
   dif = yn+1-xn;
 #ifdef DEBUG
@@ -108,10 +108,10 @@ printf("y="); mpfr_print_raw(y); putchar('\n');
   case GMP_RNDZ:
     return 1; /* result is inexact */
   case GMP_RNDU:
-    if (SIGN(y)>0) mpfr_add_one_ulp(y);
+    if (MPFR_SIGN(y)>0) mpfr_add_one_ulp(y);
     return 1; /* result is inexact */
   case GMP_RNDD:
-    if (SIGN(y)<0) mpfr_add_one_ulp(y);
+    if (MPFR_SIGN(y)<0) mpfr_add_one_ulp(y);
     return 1; /* result is inexact */
   case GMP_RNDN:
     if (d < ((mp_limb_t)1 << (sh-1))) return 1;
