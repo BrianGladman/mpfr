@@ -299,6 +299,7 @@ eq.o: mpfr.h
 dump.o: mpfr.h
 set_prc_raw.o: mpfr.h
 urandomb.o: mpfr.h
+sub_ui.o: mpfr.h
 ceil.o: mpfr.h
 	\$(CC) \$(CFLAGS) -DMPFR_CEIL -c trunc.c -o ceil.o
 floor.o: mpfr.h
