@@ -271,7 +271,7 @@ main (int argc, char *argv[])
 {
   int N=0;
 
-  SEED_RAND (getpid ());
+  SEED_RAND (time(NULL));
   if (argc==4) {   /* tlog x prec rnd */
     check3(atof(argv[1]), atoi(argv[2]), atoi(argv[3]));
     return 0;

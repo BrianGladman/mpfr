@@ -108,7 +108,7 @@ main (int argc, char *argv[])
 #ifdef TEST
   int i; double d;
 
-  SEED_RAND (getpid ());
+  SEED_RAND (time(NULL));
   for (i=0;i<100000;i++) {
     do { d = drand(); } while (isnan(d));
     check(d, GMP_RNDN);

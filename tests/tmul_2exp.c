@@ -45,7 +45,7 @@ main (int argc, char *argv[])
   mpfr_mul_2exp (w, w, 10, GMP_RNDZ); 
   if (!MPFR_IS_NAN(w)) { fprintf(stderr, "NaN != NaN"); exit(-1); }
 
-  SEED_RAND (getpid ());
+  SEED_RAND (time(NULL));
   for (k = 0; k < 100000; k++) {
     x = DBL_RAND ();
     mpfr_set_d (w, x, 0);

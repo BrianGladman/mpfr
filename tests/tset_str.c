@@ -48,7 +48,7 @@ main (int argc, char *argv[])
       return 0;
     }
 
-  SEED_RAND (getpid ());
+  SEED_RAND (time(NULL));
   
   nc = (argc > 1) ? atoi(argv[1]) : 53;
   if (nc < 100)

@@ -130,7 +130,6 @@ slave (int N, int p)
   double a,b;
   mpfr_t ta, tb, tres;
 
-  SEED_RAND (getpid ());
   mpfr_init2(ta, 53);
   mpfr_init2(tb, 53);
   mpfr_init2(tres, p);
@@ -151,6 +150,8 @@ main (int argc, char* argv[])
 {
    int N;
 
+   SEED_RAND (time(NULL));
+
    if (argc==3) {   /* tagm N p : N calculus with precision p*/
      printf("Doing %d random tests in %d precision\n",atoi(argv[1]),atoi(argv[2]));
      slave(atoi(argv[1]),atoi(argv[2]));
@@ -161,7 +162,6 @@ main (int argc, char* argv[])
      int i;
      double a,b;
 
-     SEED_RAND (getpid ());
      N = atoi(argv[1]);
      for (i=0;i<N;i++) {
        a = drand(); 

@@ -336,7 +336,7 @@ main (void)
     set_fpc_csr(exp.fc_word);
 #endif
 
-  SEED_RAND (getpid ());
+  SEED_RAND (time(NULL));
   for (i=0;i<100000;i++) {
     a = drand();
     if (a < 0.0) a = -a; /* ensures a is positive */

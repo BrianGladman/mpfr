@@ -69,7 +69,7 @@ main (void)
     set_fpc_csr(exp.fc_word);
 #endif
 
-  SEED_RAND (getpid ());
+  SEED_RAND (time(NULL));
   for (i=0;i<1000000;i++) {
     a = LONG_RAND();
     /* machine arithmetic must agree if a <= 2.0^53 */

@@ -270,7 +270,7 @@ main (int argc, char *argv[])
   check3(5.16239362447650933063e+02, GMP_RNDZ, 1.5845518406744492105e224);
   check3(6.00812634798592370977e-01, GMP_RNDN, 1.823600119339019443);
 #ifdef TEST
-  SEED_RAND (getpid());
+  SEED_RAND (time(NULL));
   N = (argc==1) ? 0 : atoi(argv[1]);
   lo = (argc>=3) ? atof(argv[2]) : -7.083964185e2;
   hi = (argc>=4) ? atof(argv[3]) : 7.097827129e2;

@@ -443,7 +443,7 @@ main (int argc, char *argv[])
 
 #ifdef TEST
   N = (argc>1) ? atoi(argv[1]) : 100000;
-  SEED_RAND (getpid ());
+  SEED_RAND (time(NULL));
   for (i=0;i<N;i++) {
     do { n = drand(); d = drand(); e = ABS(n)/ABS(d); }
     /* smallest normalized is 2^(-1022), largest is 2^(1023)*(2-2^(-52)) */

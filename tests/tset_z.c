@@ -67,7 +67,7 @@ main (int argc, char *argv[])
   long j; 
 
   check_large();
-  SEED_RAND (getpid ());
+  SEED_RAND (time(NULL));
   check(0, 0);
   for (j=0; j<1000000; j++)
     check(LONG_RAND(), LONG_RAND()%4);

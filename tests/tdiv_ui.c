@@ -177,7 +177,7 @@ main (int argc, char **argv)
 #ifdef TEST
   int i; unsigned long u; double d;
 
-  SEED_RAND (getpid ());
+  SEED_RAND (time(NULL));
   for (i=0;i<1000000;i++) {
     do { u = LONG_RAND(); } while (u==0);
     do { d = drand(); } while (ABS(d/u)<2.2e-307);

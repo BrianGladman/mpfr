@@ -23,12 +23,12 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "gmp.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
 #include "mpfr-test.h"
 
-extern int getpid();
 void check _PROTO((double, double, mp_rnd_t, unsigned int, unsigned int, unsigned int, double)); 
 void checknan _PROTO((double, double, mp_rnd_t, unsigned int, unsigned int, unsigned int)); 
 void check3 _PROTO((double, double, mp_rnd_t));
@@ -705,7 +705,7 @@ main (int argc, char *argv[])
   check53(3.14553393112021279444e-67, 3.14553401015952024126e-67, GMP_RNDU,
 	  6.2910679412797336946e-67);
 
-  SEED_RAND (getpid ());
+  SEED_RAND (time(NULL));
   check53(5.43885304644369509058e+185,-1.87427265794105342763e-57,GMP_RNDN,
 	  5.4388530464436950905e185);
   check53(5.43885304644369509058e+185,-1.87427265794105342763e-57, GMP_RNDZ,

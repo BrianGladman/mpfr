@@ -377,7 +377,7 @@ main (int argc, char *argv[])
   check_max();
   check_min();
 #ifdef TEST
-  SEED_RAND (getpid ());
+  SEED_RAND (time(NULL));
   prec = (argc<2) ? 53 : atoi(argv[1]);
   rnd_mode = (argc<3) ? -1 : atoi(argv[2]);
   for (i=0;i<1000000;) {

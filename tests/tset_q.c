@@ -86,7 +86,7 @@ main (void)
   double y;
   unsigned char rnd;
 
-  SEED_RAND(getpid());
+  SEED_RAND(time(NULL));
   for (i=0;i<1000000;i++) {
     n = LONG_RAND();
     d = LONG_RAND();

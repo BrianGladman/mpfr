@@ -216,7 +216,7 @@ main (int argc, char *argv[])
     set_fpc_csr(exp.fc_word);
 #endif
 
-  SEED_RAND (getpid());
+  SEED_RAND (time(NULL));
   N = (argc<2) ? 1000000 : atoi(argv[1]);
   rnd_mode = (argc<3) ? -1 : atoi(argv[2]);
   for (i=0;i<1000000;i++) {

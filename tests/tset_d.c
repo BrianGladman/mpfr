@@ -79,7 +79,7 @@ main (int argc, char *argv[])
 	   mpfr_get_d(x)); exit(1);
   }
 
-  SEED_RAND (getpid ());
+  SEED_RAND (time(NULL));
   mpfr_set_d(x, 8.06294740693074521573e-310, 0); 
   d = -6.72658901114033715233e-165;
   mpfr_set_d(x, d, 0);

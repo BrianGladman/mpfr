@@ -135,7 +135,7 @@ test_urandomb (unsigned long nbtests, unsigned long prec, int verbose)
   for (k = 0; k < size_tab; ++k) tab[k] = 0; 
 
   gmp_randinit (state, GMP_RAND_ALG_LC, 128); 
-  gmp_randseed_ui (state, getpid ());
+  gmp_randseed_ui (state, time(NULL));
 
   for (k = 0; k < nbtests; k++) {
     mpfr_urandomb(x, state); 

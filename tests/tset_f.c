@@ -43,7 +43,7 @@ main (void)
   mpfr_set_prec (x, 100);
   mpfr_set_f (x, y, GMP_RNDN);
 
-  SEED_RAND (getpid ());
+  SEED_RAND (time(NULL));
   mpf_random2(y, 10, 0); 
   mpfr_set_f(x, y, LONG_RAND() & 3);
 
