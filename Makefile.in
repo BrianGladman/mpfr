@@ -101,7 +101,7 @@ COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CF
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
 TEXI2DVI = texi2dvi
-INFO_DEPS = gmp.info
+INFO_DEPS = mpfr.info
 DVIS = mpfr.dvi
 TEXINFOS = mpfr.texi
 DIST_COMMON =  README AUTHORS COPYING ChangeLog INSTALL Makefile.am \
@@ -190,9 +190,7 @@ libmpfr.a: $(libmpfr_a_OBJECTS) $(libmpfr_a_DEPENDENCIES)
 	$(AR) cru libmpfr.a $(libmpfr_a_OBJECTS) $(libmpfr_a_LIBADD)
 	$(RANLIB) libmpfr.a
 
-gmp.info: mpfr.texi
 mpfr.dvi: mpfr.texi
-
 
 DVIPS = dvips
 
