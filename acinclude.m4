@@ -88,6 +88,10 @@ case $host in
 esac
 
 
+# Reasons for testing:
+#   gettimeofday - not in mingw
+#
+AC_CHECK_FUNCS(gettimeofday)
 AC_REPLACE_FUNCS(strcasecmp strncasecmp)
 
 dnl Check for IEEE-754 switches on Alpha
