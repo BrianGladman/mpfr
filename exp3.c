@@ -1,6 +1,6 @@
 /* mpfr_exp -- exponential of a floating-point number
 
-Copyright 1999, 2001, 2002 Free Software Foundation, Inc.
+Copyright 1999, 2001, 2002, 2003 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -19,13 +19,11 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
+#include <limits.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
-
-static int mpfr_exp_rational _PROTO ((mpfr_ptr, mpz_srcptr, int, int));
 
 static int
 mpfr_exp_rational (mpfr_ptr y, mpz_srcptr p, int r, int m)
@@ -42,6 +40,7 @@ mpfr_exp_rational (mpfr_ptr y, mpz_srcptr p, int r, int m)
   TMP_DECL (marker);
 
   TMP_MARK (marker);
+  MPFR_ASSERTN(m < sizeof(int) * CHAR_BIT - 1);
   n = 1 << m;
   P = (mpz_t*) TMP_ALLOC((m+1) * sizeof(mpz_t));
   S = (mpz_t*) TMP_ALLOC((m+1) * sizeof(mpz_t));
@@ -63,6 +62,7 @@ mpfr_exp_rational (mpfr_ptr y, mpz_srcptr p, int r, int m)
     mpz_set_ui(P[k], i+1);
     mpz_set(S[k], P[k]);;
     j=i+1; l=0; while ((j & 1) == 0) {      
+      MPFR_ASSERTN(l < sizeof(int) * CHAR_BIT - 1);
       mpz_mul(S[k], S[k], ptoj[l]);
       mpz_mul(S[k-1], S[k-1], P[k]);
       mpz_mul_2exp(S[k-1], S[k-1], r*(1<<l));
@@ -179,6 +179,7 @@ mpfr_exp3 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
 	  }
 	mpfr_mul(tmp,tmp,t,GMP_RNDD); 
+        MPFR_ASSERTN(twopoweri <= INT_MAX/2);
 	twopoweri <<= 1;
     }
       mpfr_clear (t);
