@@ -524,7 +524,7 @@ mostlyclean distclean maintainer-clean
 
 
 ../libmpfr.a:
-	cd $(top_srcdir); make libmpfr.a  
+	cd $(top_srcdir); make  libmpfr.a  
 
 check: 	all
 	for i in $(bin_PROGRAMS); do echo Testing $$i ; ./$$i; done
