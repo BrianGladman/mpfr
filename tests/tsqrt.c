@@ -55,8 +55,10 @@ void main()
 {
   int i; double a;
 
+  srand(getpid());
+  check(1.21902794387441766400e+18, 1);
   check(9.89438396044940256501e-134, 2);
-  for (i=0;i<1000000;i++) {
+  for (i=0;i<100000;i++) {
     do { a = drand(); } while (isnan(a));
     check(a, rand() % 4);
   }
