@@ -19,7 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-
 #include "mpfr-impl.h"
 
 static int mpfr_cos2_aux       _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr));
@@ -53,7 +52,7 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_init2 (r, m);
   mpfr_init2 (s, m);
 
-  do
+  for (;;)
     {
       mpfr_mul (r, x, x, GMP_RNDU); /* err <= 1 ulp */
 
@@ -73,20 +72,18 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	}
 
       /* absolute error on s is bounded by (2l+1/3)*2^(2K-m) */
-      for (k = 2 * K, l = 2 * l + 1; l > 1; k++, l = (l + 1) >> 1);
+      for (k = 2 * K, l = 2 * l + 1; l > 1; l = (l + 1) >> 1)
+	k++;
       /* now the error is bounded by 2^(k-m) = 2^(EXP(s)-err) */
 
-      l = mpfr_can_round (s, MPFR_GET_EXP (s) + m - k,
-                          GMP_RNDN, GMP_RNDZ, precy + (rnd_mode == GMP_RNDN));
+      if (mpfr_can_round (s, MPFR_GET_EXP (s) + m - k,
+                          GMP_RNDN, GMP_RNDZ, precy + (rnd_mode == GMP_RNDN)))
+	break;
 
-      if (l == 0)
-	{
-	  m += BITS_PER_MP_LIMB;
-	  mpfr_set_prec (r, m);
-	  mpfr_set_prec (s, m);
-	}
+      m += BITS_PER_MP_LIMB;
+      mpfr_set_prec (r, m);
+      mpfr_set_prec (s, m);
     }
-  while (l == 0);
 
   inexact = mpfr_set (y, s, rnd_mode);
 
@@ -105,13 +102,14 @@ static int
 mpfr_cos2_aux (mpfr_ptr s, mpfr_srcptr r)
 {
   unsigned int l, b = 2;
-  long int prec_t, m = MPFR_PREC(s);
+  long int prec, m = MPFR_PREC(s);
   mpfr_t t;
 
-  MPFR_ASSERTN (MPFR_GET_EXP (r) <= 0);
+  MPFR_ASSERTD (MPFR_GET_EXP (r) <= 0);
+
   mpfr_init2 (t, m);
   mpfr_set_ui (t, 1, GMP_RNDN);
-  mpfr_set_ui(s, 1, GMP_RNDN);
+  mpfr_set_ui (s, 1, GMP_RNDN);
 
   for (l = 1; MPFR_GET_EXP (t) + m >= 0; l++)
     {
@@ -127,9 +125,9 @@ mpfr_cos2_aux (mpfr_ptr s, mpfr_srcptr r)
 	b++;
       /* now 3l <= 2^b, we want 3l*ulp(t) <= 2^(-m)
 	 i.e. b+EXP(t)-PREC(t) <= -m */
-      prec_t = m + MPFR_GET_EXP (t) + b;
-      if (prec_t >= MPFR_PREC_MIN)
-	mpfr_prec_round (t, prec_t, GMP_RNDN);
+      prec = m + MPFR_GET_EXP (t) + b;
+      if (MPFR_LIKELY(prec >= MPFR_PREC_MIN))
+	mpfr_prec_round (t, prec, GMP_RNDN);
     }
 
   mpfr_clear (t);
