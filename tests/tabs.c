@@ -23,6 +23,7 @@ MA 02111-1307, USA. */
 #include <stdlib.h>
 #include "gmp.h"
 #include "mpfr.h"
+#include "mpfr-impl.h"
 #include "mpfr-test.h"
 
 void check_inexact _PROTO((void));
@@ -80,14 +81,11 @@ check_inexact (void)
 int
 main (int argc, char *argv[])
 {
-   mpfr_t x; int n, k, rnd; double d, dd;
-#ifdef __mips
-   /* to get denormalized numbers on IRIX64 */
-   union fpc_csr exp;
-   exp.fc_word = get_fpc_csr();
-   exp.fc_struct.flush = 0;
-   set_fpc_csr(exp.fc_word);
-#endif
+   mpfr_t x;
+   int n, k, rnd;
+   double d, absd, dd;
+
+   mpfr_test_init ();
 
    check_inexact ();
 
@@ -105,7 +103,7 @@ main (int argc, char *argv[])
      fprintf(stderr, "Error in mpfr_abs(-1.0)\n"); exit(1);
    }
 
-   mpfr_set_d (x, -6/-0., GMP_RNDN);
+   mpfr_set_inf (x, 1);
    mpfr_abs (x, x, GMP_RNDN);
    if (!mpfr_inf_p(x) || (mpfr_sgn(x) <= 0))
      {
@@ -113,7 +111,7 @@ main (int argc, char *argv[])
        exit (1);
      }
 
-   mpfr_set_d (x, 2/-0., GMP_RNDN);
+   mpfr_set_inf (x, -1);
    mpfr_abs (x, x, GMP_RNDN);
    if (!mpfr_inf_p(x) || (mpfr_sgn(x) <= 0))
      {
@@ -123,16 +121,26 @@ main (int argc, char *argv[])
 
    n = (argc==1) ? 1000000 : atoi(argv[1]);
    for (k = 1; k <= n; k++)
-     {      
-       d = drand();
+     {
+       do
+	 {
+	   d = drand ();
+	   absd = ABS(d);
+	 }
+#ifdef HAVE_DENORMS
+       while (0);
+#else
+       while (absd <= 2.2e-307);
+#endif
        rnd = LONG_RAND() % 4;
-       mpfr_set_d(x, d, 0);
-       mpfr_abs(x, x, rnd);
-       dd = mpfr_get_d(x);
-       if (!isnan(d) && dd != ABS(d))
+       mpfr_set_d (x, d, 0);
+       mpfr_abs (x, x, rnd);
+       dd = mpfr_get_d (x);
+       if (!isnan(d) && (dd != absd))
 	 { 
 	   fprintf(stderr, 
-		   "Mismatch on d = %1.18g\n", d); 
+		   "Mismatch on d = %.20e\n", d);
+	   fprintf(stderr, "dd=%.20e\n", dd);
 	   mpfr_print_binary(x); putchar('\n');
 	   exit(1);
 	 } 

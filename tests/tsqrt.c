@@ -22,6 +22,7 @@ MA 02111-1307, USA. */
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -48,7 +49,7 @@ check3 (double a, mp_rnd_t rnd_mode, double Q)
   ck = (Q!=-1.0); /* if ck=1, then Q is certified correct */
   mpfr_init2(q, 53);
   mpfr_set_d(q, a, rnd_mode);
-#ifdef TEST
+#ifdef HAVE_FENV
   mpfr_set_machine_rnd_mode(rnd_mode);
 #endif
   mpfr_sqrt(q, q, rnd_mode);
@@ -325,22 +326,18 @@ main (void)
   double a;
   mp_prec_t p;
   int k;
-#ifdef TEST
-  int i; 
-#ifdef __mips
-    /* to get denormalized numbers on IRIX64 */
-    union fpc_csr exp;
-    exp.fc_word = get_fpc_csr();
-    exp.fc_struct.flush = 0;
-    set_fpc_csr(exp.fc_word);
-#endif
+#ifdef HAVE_FENV
+  int i;
+
+  mpfr_test_init ();
 
   SEED_RAND (time(NULL));
-  for (i=0;i<100000;i++) {
-    a = drand();
-    if (a < 0.0) a = -a; /* ensures a is positive */
-    check(a, LONG_RAND() % 4);
-  }
+  for (i=0;i<100000;i++)
+    {
+      a = drand();
+      if (a < 0.0) a = -a; /* ensures a is positive */
+      check (a, LONG_RAND() % 4);
+    }
 #endif
   check_nan ();
 

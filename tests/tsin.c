@@ -58,9 +58,11 @@ main (int argc, char *argv[])
 {
   mpfr_t x;
 
+#ifdef HAVE_INFS
   check53 (DBL_NAN, DBL_NAN, GMP_RNDN);
   check53 (DBL_POS_INF, DBL_NAN, GMP_RNDN);
   check53 (DBL_NEG_INF, DBL_NAN, GMP_RNDN);
+#endif
   /* worst case from PhD thesis of Vincent Lefe`vre: x=8980155785351021/2^54 */
   check53 (4.984987858808754279e-1, 4.781075595393330379e-1, GMP_RNDN);
   check53 (4.984987858808754279e-1, 4.781075595393329824e-1, GMP_RNDD);

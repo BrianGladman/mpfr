@@ -22,6 +22,7 @@ MA 02111-1307, USA. */
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "gmp.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
@@ -46,7 +47,7 @@ check3 (double x, unsigned long y, mp_rnd_t rnd_mode, double z1)
   mpfr_set_prec(zz, 53);
   mpfr_set_d(xx, x, rnd_mode);
   mpfr_sub_ui(zz, xx, y, rnd_mode);
-#ifdef TEST
+#ifdef HAVE_FENV
   mpfr_set_machine_rnd_mode(rnd_mode);
 #endif
   if (z1==0.0) z1 = x-y;
@@ -113,15 +114,10 @@ main (int argc, char *argv[])
 {
   mp_prec_t p;
   int k;
-#ifdef __mips
-    /* to get denormalized numbers on IRIX64 */
-    union fpc_csr exp;
-    exp.fc_word = get_fpc_csr();
-    exp.fc_struct.flush = 0;
-    set_fpc_csr(exp.fc_word);
-#endif
-#ifdef TEST
+#ifdef HAVE_FENV
   double x; unsigned long y, N; int i,rnd_mode,rnd;
+
+  mpfr_test_init ();
 
   SEED_RAND (time(NULL));
   N = (argc<2) ? 1000000 : atoi(argv[1]);
@@ -141,10 +137,12 @@ main (int argc, char *argv[])
     for (k=0; k<200; k++)
       check_two_sum (p);
 
-  check3 (0.9999999999, 1, GMP_RNDN, -1.000000082740370999e-10);
+  check3 (0.9999999999, 1, GMP_RNDN, -56295.0 / 562949953421312.0);
+#ifdef HAVE_INFS
   check3 (DBL_NAN, 1, GMP_RNDN, DBL_NAN);
   check3 (DBL_POS_INF, 1, GMP_RNDN, DBL_POS_INF);
   check3 (DBL_NEG_INF, 1, GMP_RNDN, DBL_NEG_INF);
+#endif
 
   return 0;
 }

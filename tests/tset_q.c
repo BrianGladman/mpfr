@@ -21,6 +21,7 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "gmp.h"
 #include "mpfr.h"
 #include "mpfr-test.h"
@@ -39,7 +40,7 @@ check (long int n, long int d, mp_rnd_t rnd, double y)
   mpfr_init2 (t, mpfr_get_prec (x) + mp_bits_per_limb);
   mpq_init (q);
   mpq_set_si (q, n, d);
-#ifdef TEST
+#ifdef HAVE_FENV
   mpfr_set_machine_rnd_mode (rnd);
   y = (double) n / d;
 #endif
@@ -79,11 +80,13 @@ check (long int n, long int d, mp_rnd_t rnd, double y)
 int
 main (void)
 {
-#ifdef TEST
+#ifdef HAVE_FENV
   long int i, n;
   unsigned long int d;
   double y;
   unsigned char rnd;
+
+  mpfr_test_init ();
 
   SEED_RAND(time(NULL));
   for (i=0;i<1000000;i++) {

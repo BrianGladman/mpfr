@@ -22,6 +22,7 @@ MA 02111-1307, USA. */
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "gmp.h"
 #include "mpfr.h"
 #include "mpfr-test.h"
@@ -36,7 +37,7 @@ check (unsigned long a, mp_rnd_t rnd_mode, double Q)
   mpfr_t q; double Q2; int u, ck;
 
   mpfr_init2(q, 53);
-#ifdef TEST
+#ifdef HAVE_FENV
   mpfr_set_machine_rnd_mode(rnd_mode);
 #endif
   mpfr_sqrt_ui(q, a, rnd_mode);
@@ -58,25 +59,23 @@ check (unsigned long a, mp_rnd_t rnd_mode, double Q)
 int
 main (void)
 {
-#ifdef TEST
-  int i; unsigned long a;
-#ifdef __mips
-    /* to get denormalized numbers on IRIX64 */
-    union fpc_csr exp;
-    exp.fc_word = get_fpc_csr();
-    exp.fc_struct.flush = 0;
-    set_fpc_csr(exp.fc_word);
-#endif
+#ifdef HAVE_FENV
+  int i;
+  unsigned long a;
+
+  mpfr_test_init ();
 
   SEED_RAND (time(NULL));
-  for (i=0;i<1000000;i++) {
-    a = LONG_RAND();
-    /* machine arithmetic must agree if a <= 2.0^53 */
-    if (1.0*a < 9007199254872064.0) check(a, LONG_RAND() % 4, -1.0);
-  }
+  for (i=0;i<1000000;i++)
+    {
+      a = LONG_RAND();
+      /* machine arithmetic must agree if a <= 2.0^53 */
+      if (1.0*a < 9007199254872064.0)
+        check(a, LONG_RAND() % 4, -1.0);
+    }
 #endif
-  check(0, GMP_RNDN, 0.0);
-  check(2116118, GMP_RNDU, 1.45468828276026215e3);
+  check (0, GMP_RNDN, 0.0);
+  check (2116118, GMP_RNDU, 1.45468828276026215e3);
 
   return 0;
 }

@@ -21,6 +21,7 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -46,7 +47,7 @@ check4 (double N, double D, mp_rnd_t rnd_mode, int p, double Q)
   mpfr_set_d(n, N, rnd_mode);
   mpfr_set_d(d, D, rnd_mode);
   mpfr_div(q, n, d, rnd_mode);
-#ifdef TEST
+#ifdef HAVE_FENV
   mpfr_set_machine_rnd_mode(rnd_mode);
 #endif
   if (Q==0.0) Q = N/D;
@@ -450,16 +451,11 @@ main (int argc, char *argv[])
 {
   mpfr_t x, y, z; 
 
-#ifdef TEST
+#ifdef HAVE_FENV
   int N, i;
   double n, d, e;
-#ifdef __mips
-    /* to get denormalized numbers on IRIX64 */
-    union fpc_csr exp;
-    exp.fc_word = get_fpc_csr();
-    exp.fc_struct.flush = 0;
-    set_fpc_csr(exp.fc_word);
-#endif
+
+  mpfr_test_init ();
 #endif
 
   check_inexact(); 
@@ -498,15 +494,16 @@ main (int argc, char *argv[])
   check53(1.04636807108079349236e-189, 3.72295730823253012954e-292, GMP_RNDZ,
 	  2.810583051186143125e102);
 
-#ifdef TEST
+#ifdef HAVE_FENV
   N = (argc>1) ? atoi(argv[1]) : 100000;
   SEED_RAND (time(NULL));
-  for (i=0;i<N;i++) {
-    do { n = drand(); d = drand(); e = ABS(n)/ABS(d); }
-    /* smallest normalized is 2^(-1022), largest is 2^(1023)*(2-2^(-52)) */
-    while (e>=MAXNORM || e<MINNORM);
-    check4(n, d, LONG_RAND() % 4, 53, 0.0);
-  }
+  for (i=0;i<N;i++)
+    {
+      do { n = drand(); d = drand(); e = ABS(n)/ABS(d); }
+      /* smallest normalized is 2^(-1022), largest is 2^(1023)*(2-2^(-52)) */
+      while (e>=MAXNORM || e<MINNORM);
+      check4 (n, d, LONG_RAND() % 4, 53, 0.0);
+    }
 #endif
 
   mpfr_clear (x);

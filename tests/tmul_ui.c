@@ -112,15 +112,15 @@ main (int argc, char *argv[])
 
   mpfr_set_inf (x, 1);
   mpfr_mul_ui (x, x, 3, GMP_RNDU);
-  if (mpfr_get_d (x) != DBL_POS_INF)
+  if (!mpfr_inf_p (x) || (mpfr_sgn (x) <= 0))
     {
-      fprintf (stderr, "Error in mpfr_mul_ui: Inf*3 does not give Inf\n");
+      fprintf (stderr, "Error in mpfr_mul_ui: +Inf*3 does not give +Inf\n");
       exit (1);
     }
 
   mpfr_set_inf (x, -1);
   mpfr_mul_ui (x, x, 3, GMP_RNDU);
-  if (mpfr_get_d (x) != DBL_NEG_INF)
+  if (!mpfr_inf_p (x) || (mpfr_sgn (x) >= 0))
     {
       fprintf (stderr, "Error in mpfr_mul_ui: -Inf*3 does not give -Inf\n");
       exit (1);

@@ -49,6 +49,19 @@ main (int argc, char *argv[])
   mpfr_set_d (z, 0.375, GMP_RNDN);
   mpfr_fma (s, x, y, z, GMP_RNDU); /* result is 0 */
 
+  mpfr_set_prec (x, 27);
+  mpfr_set_prec (y, 27);
+  mpfr_set_prec (z, 27);
+  mpfr_set_prec (s, 27);
+  mpfr_set_str_raw (x, "1.11111111111111111111111111e-1");
+  mpfr_set (y, x, GMP_RNDN);
+  mpfr_set_str_raw (z, "-1.00011110100011001011001001e-1");
+  if (mpfr_fma (s, x, y, z, GMP_RNDN) >= 0)
+    {
+      fprintf (stderr, "Wrong inexact flag for x=y=1-2^(-27)\n");
+      exit (1);
+    }
+
   MPFR_SET_NAN(x);
   mpfr_random(y);
   mpfr_random(z);
@@ -294,6 +307,13 @@ main (int argc, char *argv[])
           {
             fprintf (stderr, "Wrong inexact flag for rnd=%s: expected %d, got %d\n",
 		       mpfr_print_rnd_mode (rnd), compare, inexact);
+            fprintf (stderr, "x="); mpfr_out_str (stderr, 2, 0, x, GMP_RNDN);
+            fprintf (stderr, " y="); mpfr_out_str (stderr, 2, 0, y, GMP_RNDN);
+            fprintf (stderr, " z="); mpfr_out_str (stderr, 2, 0, z, GMP_RNDN);
+            fprintf (stderr, " s="); mpfr_out_str (stderr, 2, 0, s, GMP_RNDN);
+            fprintf (stderr, "\n");
+            fprintf (stderr, "z=%1.20e s=%1.20e\n", mpfr_get_d (z),
+                     mpfr_get_d (s));
             exit (1);
 	    }
 	}

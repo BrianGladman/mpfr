@@ -21,6 +21,7 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -51,7 +52,7 @@ check (double x, double y, mp_rnd_t rnd_mode, unsigned int px,
   mpfr_set_d(xx, x, rnd_mode);
   mpfr_set_d(yy, y, rnd_mode);
   mpfr_mul(zz, xx, yy, rnd_mode);
-#ifdef TEST
+#ifdef HAVE_FENV
   mpfr_set_machine_rnd_mode(rnd_mode);
 #endif
   z1 = (res==0.0) ? x*y : res;
@@ -93,7 +94,8 @@ check53 (double x, double y, mp_rnd_t rnd_mode, double z1)
 void
 check24 (float x, float y, mp_rnd_t rnd_mode, float z1)
 {
-  float z2; mpfr_t xx, yy, zz;
+  float z2;
+  mpfr_t xx, yy, zz;
 
   mpfr_init2 (xx, 24);
   mpfr_init2 (yy, 24);
@@ -102,12 +104,16 @@ check24 (float x, float y, mp_rnd_t rnd_mode, float z1)
   mpfr_set_d (yy, y, rnd_mode);
   mpfr_mul (zz, xx, yy, rnd_mode);
   z2 = (float) mpfr_get_d (zz);
-  if (z1!=z2) {
-    printf("mpfr_mul failed for x=%1.0f y=%1.0f with prec=24 and rnd_mode=%s\n", x, y, mpfr_print_rnd_mode(rnd_mode));
-    printf("libm.a gives %1.0f, mpfr_mul gives %1.0f\n", z1, z2);
-    exit(1);
-  }
-  mpfr_clear(xx); mpfr_clear(yy); mpfr_clear(zz);
+  if (z1 != z2)
+    {
+      fprintf (stderr, "mpfr_mul failed for x=%1.0f y=%1.0f with prec=24 and"
+	      "rnd=%s\n", x, y, mpfr_print_rnd_mode(rnd_mode));
+      fprintf (stderr, "libm.a gives %.10e, mpfr_mul gives %.10e\n", z1, z2);
+      exit (1);
+    }
+  mpfr_clear(xx);
+  mpfr_clear(yy);
+  mpfr_clear(zz);
 }
 
 /* the following examples come from the paper "Number-theoretic Test 
@@ -115,6 +121,8 @@ check24 (float x, float y, mp_rnd_t rnd_mode, float z1)
 void
 check_float (void)
 {
+  float z;
+
   check24(8388609.0,  8388609.0, GMP_RNDN, 70368760954880.0);
   check24(16777213.0, 8388609.0, GMP_RNDN, 140737479966720.0);
   check24(8388611.0,  8388609.0, GMP_RNDN, 70368777732096.0);
@@ -127,7 +135,8 @@ check_float (void)
 
   check24(8388609.0,  8388609.0, GMP_RNDZ, 70368760954880.0);
   check24(16777213.0, 8388609.0, GMP_RNDZ, 140737471578112.0);
-  check24(8388611.0,  8388609.0, GMP_RNDZ, 70368777732096.0);
+  z = 70368777732096.0;
+  check24(8388611.0,  8388609.0, GMP_RNDZ, z);
   check24(12582911.0, 8388610.0, GMP_RNDZ, 105553124655104.0);
   check24(12582914.0, 8388610.0, GMP_RNDZ, 105553158209536.0);
   check24(13981013.0, 8388611.0, GMP_RNDZ, 117281271054336.0);
@@ -340,17 +349,22 @@ check_min(void)
 int
 main (int argc, char *argv[])
 {
-#ifdef TEST
-  double x, y, z; int i, prec, rnd_mode;
+#ifdef HAVE_FENV
+  double x, y, z;
+  int i, prec, rnd_mode;
+
+  mpfr_test_init ();
 #endif
 
   check_exact ();
   check_float ();
+#ifdef HAVE_INFS
   check53 (0.0, DBL_POS_INF, GMP_RNDN, DBL_NAN);
   check53(1.0, DBL_POS_INF, GMP_RNDN, DBL_POS_INF);
   check53(-1.0, DBL_POS_INF, GMP_RNDN, DBL_NEG_INF);
   check53(DBL_NAN, 0.0, GMP_RNDN, DBL_NAN); 
   check53(1.0, DBL_NAN, GMP_RNDN, DBL_NAN); 
+#endif
   check53(6.9314718055994530941514e-1, 0.0, GMP_RNDZ, 0.0);
   check53(0.0, 6.9314718055994530941514e-1, GMP_RNDZ, 0.0);
   check_sign();
@@ -375,7 +389,7 @@ main (int argc, char *argv[])
 	49, 3, 2, 0.09375);
   check_max();
   check_min();
-#ifdef TEST
+#ifdef HAVE_FENV
   SEED_RAND (time(NULL));
   prec = (argc<2) ? 53 : atoi(argv[1]);
   rnd_mode = (argc<3) ? -1 : atoi(argv[2]);

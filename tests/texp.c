@@ -22,6 +22,7 @@ MA 02111-1307, USA. */
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "gmp.h"
 #include "mpfr.h"
 #include "mpfr-test.h"
@@ -45,7 +46,7 @@ check3 (double d, mp_rnd_t rnd, double e)
   mpfr_t x, y; double f; int u=0, ck=0;
 
   mpfr_init2(x, 53); mpfr_init2(y, 53);
-#ifdef TEST
+#ifdef HAVE_FENV
   mpfr_set_machine_rnd_mode(rnd);
 #endif
   if (e==0.0) e = exp(d); else ck=1; /* really check */
@@ -215,9 +216,11 @@ compare_exp2_exp3 (int n)
 int
 main (int argc, char *argv[])
 {
-#ifdef TEST
-  int i, N, s=0, e, maxe=0; double d, lo, hi;
+#ifdef HAVE_FENV
+  int i, N, s=0, e, maxe=0;
+  double lo, hi;
 #endif
+  double d;
 
   test_generic (2, 100, 100);
 
@@ -256,8 +259,9 @@ main (int argc, char *argv[])
   check3(-2.46355324071459982349e+01, GMP_RNDZ, 1.9995129297760994791e-11);
   check3(-2.23509444608605427618e+01, GMP_RNDZ, 1.9638492867489702307e-10);
   check3(-2.41175390197331687148e+01, GMP_RNDD, 3.3564940885530624592e-11);
-  check3(2.46363885231578088053e+01, GMP_RNDU, 5.0055014282693267822e10); 
-  check3(1.111263531080090984914932e2, GMP_RNDN, 1.8262572323517295459e48);
+  check3(2.46363885231578088053e+01, GMP_RNDU, 5.0055014282693267822e10);
+  d = 7819821913254249.0 / 70368744177664.0;
+  check3(d, GMP_RNDN, 1.8262572323517295459e48);
   check3(-3.56196340354684821250e+02, GMP_RNDN, 2.0225297096141478156e-155);
   check3(6.59678273772710895173e+02, GMP_RNDU, 3.1234469273830195529e286); 
   check3(5.13772529701934331570e+02, GMP_RNDD, 1.3445427121297197752e223); 
@@ -268,7 +272,7 @@ main (int argc, char *argv[])
   check3(5.30015757134837031117e+02, GMP_RNDD, 1.5237672861171573939e230);
   check3(5.16239362447650933063e+02, GMP_RNDZ, 1.5845518406744492105e224);
   check3(6.00812634798592370977e-01, GMP_RNDN, 1.823600119339019443);
-#ifdef TEST
+#ifdef HAVE_FENV
   SEED_RAND (time(NULL));
   N = (argc==1) ? 0 : atoi(argv[1]);
   lo = (argc>=3) ? atof(argv[2]) : -7.083964185e2;

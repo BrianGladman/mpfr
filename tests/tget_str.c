@@ -23,9 +23,10 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "gmp.h"
 #include "mpfr.h"
-#ifdef TEST
+#ifdef HAVE_FENV
 #include "mpfr-test.h"
 #endif
 
@@ -104,8 +105,9 @@ check_small (void)
 int
 main (int argc, char *argv[])
 {
-#ifdef TEST
-  int i; double d;
+#ifdef HAVE_FENV
+  int i;
+  double d;
 
   SEED_RAND (time(NULL));
   for (i=0;i<100000;i++) {

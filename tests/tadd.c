@@ -56,7 +56,7 @@ check (double x, double y, mp_rnd_t rnd_mode, unsigned int px,
   mpfr_set_d(xx, x, rnd_mode);
   mpfr_set_d(yy, y, rnd_mode);
   mpfr_add(zz, xx, yy, rnd_mode);
-#ifdef TEST
+#ifdef HAVE_FENV
   mpfr_set_machine_rnd_mode(rnd_mode);
   if (px==53 && py==53 && pz==53) cert=1;
 #endif
@@ -84,7 +84,7 @@ checknan (double x, double y, mp_rnd_t rnd_mode, unsigned int px,
   mpfr_set_d(xx, x, rnd_mode);
   mpfr_set_d(yy, y, rnd_mode);
   mpfr_add(zz, xx, yy, rnd_mode);
-#ifdef TEST
+#ifdef HAVE_FENV
   mpfr_set_machine_rnd_mode(rnd_mode);
 #endif
   if (MPFR_IS_NAN(zz) == 0) { printf("Error, not an MPFR_NAN for xx = %1.20e, y = %1.20e\n", x, y); exit(1); }
@@ -94,7 +94,7 @@ checknan (double x, double y, mp_rnd_t rnd_mode, unsigned int px,
   mpfr_clear(xx); mpfr_clear(yy); mpfr_clear(zz);
 }
 
-#ifdef TEST
+#ifdef HAVE_FENV
 /* idem than check for mpfr_add(x, x, y) */
 void
 check3 (double x, double y, mp_rnd_t rnd_mode)
@@ -640,19 +640,15 @@ check_inexact (void)
 int
 main (int argc, char *argv[])
 {
-#ifdef TEST
+#ifdef HAVE_FENV
   int prec, rnd_mode;
-  int i, rnd;
-  double x, y; 
+  int rnd;
+  double y;
 #endif
-#ifdef __mips
-    /* to get denormalized numbers on IRIX64 */
-    union fpc_csr exp;
-    exp.fc_word = get_fpc_csr();
-    exp.fc_struct.flush = 0;
-    set_fpc_csr(exp.fc_word);
-#endif
+  double x;
+  int i;
 
+  mpfr_test_init ();
   check_inexact ();
   check_case_1b ();
   check_case_2 ();
@@ -738,8 +734,9 @@ main (int argc, char *argv[])
 	  GMP_RNDD, "-b.eae2643497ff6286b@-108");
   check2a(-3.31624349995221499866e-22,107,-8.20150212714204839621e+156,79,99,
 	 GMP_RNDD, "-2.63b22b55697e8000000000008@130");
-  check2a(-1.08007920352320089721e+150,63,1.77607317509426332389e+73,64,64,
-	  GMP_RNDN, "-5.4781549356e1c@124");
+  x = -5943982715394951; for (i=0; i<446; i++) x *= 2.0;
+  check2a(x, 63, 1.77607317509426332389e+73, 64, 64, GMP_RNDN,
+	  "-5.4781549356e1c@124");
   check2a(4.49465557237618783128e+53,108,-2.45103927353799477871e+48,60,105,
 	  GMP_RNDN, "4.b14f230f909dc803e@44");
   check2a(2.26531902208967707071e+168,99,-2.67795218510613988524e+168,67,94,
@@ -785,18 +782,17 @@ main (int argc, char *argv[])
 	  -2.96695924471135255027e27);
   check53(1.74693641655743793422e-227, -7.71776956366861843469e-229, GMP_RNDN,
 	  1.669758720920751867e-227);
+  x = -7883040437021647.0; for (i=0; i<468; i++) x = x / 2.0;
   check53(-1.03432206392780011159e-125, 1.30127034799251347548e-133, GMP_RNDN,
-	  -1.0343220509150965661e-125);
+	  x);
   check53(1.05824655795525779205e+71, -1.06022698059744327881e+71, GMP_RNDZ,
 	  -1.9804226421854867632e68);
   check53(-5.84204911040921732219e+240, 7.26658169050749590763e+240, GMP_RNDD,
 	  1.4245325800982785854e240);
-  /* the following check double overflow */
-  check53(6.27557402141211962228e+307, 1.32141396570101687757e+308,
-     GMP_RNDZ, DBL_POS_INF);
   check53(1.00944884131046636376e+221, 2.33809162651471520268e+215, GMP_RNDN,
 	  1.0094511794020929787e221);
-  check53(4.29232078932667367325e-278, 1.07735250473897938332e-281, GMP_RNDU,
+  x = 7045852550057985.0; for (i=0; i<986; i++) x = x / 2.0;
+  check53(4.29232078932667367325e-278, x, GMP_RNDU,
 	  4.2933981418314132787e-278);
   check53(5.27584773801377058681e-80, 8.91207657803547196421e-91, GMP_RNDN,
 	  5.2758477381028917269e-80);
@@ -818,14 +814,19 @@ main (int argc, char *argv[])
   /* test denormalized numbers too */
   check53(8.06294740693074521573e-310, 6.95250701071929654575e-310, GMP_RNDU,
 	  1.5015454417650041761e-309);
+#ifdef HAVE_INFS
+  /* the following check double overflow */
+  check53(6.27557402141211962228e+307, 1.32141396570101687757e+308,
+     GMP_RNDZ, DBL_POS_INF);
   check53(DBL_POS_INF, 6.95250701071929654575e-310, GMP_RNDU, DBL_POS_INF);
   check53(DBL_NEG_INF, 6.95250701071929654575e-310, GMP_RNDU, DBL_NEG_INF);
   check53(6.95250701071929654575e-310, DBL_POS_INF, GMP_RNDU, DBL_POS_INF);
   check53(6.95250701071929654575e-310, DBL_NEG_INF, GMP_RNDU, DBL_NEG_INF);
+  check53nan (DBL_POS_INF, DBL_NEG_INF, GMP_RNDN);
+#endif
   check53(1.44791789689198883921e-140, -1.90982880222349071284e-121,
 	  GMP_RNDN, -1.90982880222349071e-121);
 
-  check53nan (DBL_POS_INF, DBL_NEG_INF, GMP_RNDN);
 
   /* tests for particular cases (Vincent Lefevre, 22 Aug 2001) */
   check53(9007199254740992.0, 1.0, GMP_RNDN, 9007199254740992.0);
@@ -834,7 +835,7 @@ main (int argc, char *argv[])
   check53(9007199254740994.0, -1.0, GMP_RNDN, 9007199254740992.0);
   check53(9007199254740996.0, -1.0, GMP_RNDN, 9007199254740996.0);
   
-#ifdef TEST
+#ifdef HAVE_FENV
   prec = (argc<2) ? 53 : atoi(argv[1]);
   rnd_mode = (argc<3) ? -1 : atoi(argv[2]);
   /* Comparing to double precision using machine arithmetic */

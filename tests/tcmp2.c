@@ -280,13 +280,8 @@ int
 main (void)
 {
   int i,j; double x=1.0, y, z;
-#ifdef __mips
-    /* to get denormalized numbers on IRIX64 */
-    union fpc_csr exp;
-    exp.fc_word = get_fpc_csr();
-    exp.fc_struct.flush = 0;
-    set_fpc_csr(exp.fc_word);
-#endif
+
+  mpfr_test_init ();
 
   worst_cases ();
   special ();

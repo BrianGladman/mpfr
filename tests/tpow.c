@@ -51,15 +51,19 @@ check_pow_ui (void)
 
   mpfr_set_inf (a, -1);
   mpfr_pow_ui (a, a, 4049053855UL, GMP_RNDN);
-  if (mpfr_get_d (a) != DBL_NEG_INF) {
-    fprintf (stderr, "Error for (-Inf)^4049053855\n"); exit (1);
-  }
+  if (!mpfr_inf_p (a) || (mpfr_sgn (a) >= 0))
+    {
+      fprintf (stderr, "Error for (-Inf)^4049053855\n");
+      exit (1);
+    }
 
   mpfr_set_inf (a, -1);
   mpfr_pow_ui (a, a, (unsigned long) 30002752, GMP_RNDN);
-  if (mpfr_get_d (a) != DBL_POS_INF) {
-    fprintf (stderr, "Error for (-Inf)^30002752\n"); exit (1);
-  }
+  if (!mpfr_inf_p (a) || (mpfr_sgn (a) <= 0))
+    {
+      fprintf (stderr, "Error for (-Inf)^30002752\n");
+      exit (1);
+    }
 
   mpfr_clear (a);
   mpfr_clear (b);

@@ -22,6 +22,7 @@ MA 02111-1307, USA. */
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -43,7 +44,7 @@ check (unsigned long y, double x, mp_rnd_t rnd_mode, double z1)
   mpfr_init2(zz, 53);
   mpfr_set_d(xx, x, rnd_mode);
   mpfr_ui_div(zz, y, xx, rnd_mode);
-#ifdef TEST
+#ifdef HAVE_FENV
   mpfr_set_machine_rnd_mode(rnd_mode);
 #endif
   if (z1==0.0) z1 = y/x;
@@ -151,29 +152,27 @@ check_nan (void)
 int
 main (int argc, char *argv[])
 {
-#ifdef TEST
-  {
-  double x; unsigned long y, N; int i,rnd_mode,rnd;
-#ifdef __mips
-    /* to get denormalized numbers on IRIX64 */
-    union fpc_csr exp;
-    exp.fc_word = get_fpc_csr();
-    exp.fc_struct.flush = 0;
-    set_fpc_csr(exp.fc_word);
-#endif
+#ifdef HAVE_FENV
+  double x;
+  unsigned long y, N;
+  int i, rnd_mode, rnd;
+
+  mpfr_test_init ();
 
   SEED_RAND(time(NULL));
   N = (argc<2) ? 1000000 : atoi(argv[1]);
   rnd_mode = (argc<3) ? -1 : atoi(argv[2]);
-  for (i=0;i<1000000;i++) {
-    x = drand(); 
-    y = LONG_RAND();
-    if (ABS(x)>4e-286) {
-      /* avoid denormalized numbers and overflows */
-      rnd = (rnd_mode==-1) ? LONG_RAND()%4 : rnd_mode;
-      check(y, x, rnd, 0.0);
+  for (i=0;i<1000000;i++)
+    {
+      x = drand(); 
+      y = LONG_RAND();
+      if (ABS(x)>4e-286)
+        {
+          /* avoid denormalized numbers and overflows */
+          rnd = (rnd_mode==-1) ? LONG_RAND()%4 : rnd_mode;
+          check(y, x, rnd, 0.0);
+        }
     }
-  }
 #endif
   check_inexact ();
   check(948002822, 1.22191250737771397120e+20, GMP_RNDN,

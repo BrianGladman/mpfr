@@ -121,9 +121,11 @@ main(int argc, char *argv[])
     large_test (atoi (argv[1]), (argc > 2) ? atoi (argv[2]) : 1);
   }
 
-  check53 (DBL_NAN, DBL_NAN, DBL_NAN, GMP_RNDN); 
-  check53 (DBL_POS_INF, DBL_NAN, DBL_NAN, GMP_RNDN); 
-  check53 (DBL_NEG_INF, DBL_NAN, DBL_NAN, GMP_RNDN); 
+#ifdef HAVE_INFS
+  check53 (DBL_NAN, DBL_NAN, DBL_NAN, GMP_RNDN);
+  check53 (DBL_POS_INF, DBL_NAN, DBL_NAN, GMP_RNDN);
+  check53 (DBL_NEG_INF, DBL_NAN, DBL_NAN, GMP_RNDN);
+#endif
   /* worst case from PhD thesis of Vincent Lefe`vre: x=8980155785351021/2^54 */
   check53 (4.984987858808754279e-1, 4.781075595393330379e-1, 
 	   8.783012931285841817e-1, GMP_RNDN);

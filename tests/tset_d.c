@@ -29,14 +29,11 @@ MA 02111-1307, USA. */
 int
 main (int argc, char *argv[])
 {
-  mpfr_t x,y,z; unsigned long k,n; double d, dd;
-#ifdef __mips
-    /* to get denormalized numbers on IRIX64 */
-    union fpc_csr exp;
-    exp.fc_word = get_fpc_csr();
-    exp.fc_struct.flush = 0;
-    set_fpc_csr(exp.fc_word);
-#endif
+  mpfr_t x, y, z;
+  unsigned long k, n;
+  double d, dd;
+  
+  mpfr_test_init ();
 
    mpfr_init2 (x, 2);
 
@@ -91,9 +88,17 @@ main (int argc, char *argv[])
   n = (argc==1) ? 1000000 : atoi(argv[1]);
   for (k = 1; k <= n; k++)
     {      
-      d = drand();
-      mpfr_set_d(x, d, 0); 
-      dd = mpfr_get_d(x);
+      do
+	{
+	  d = drand();
+	}
+#ifdef HAVE_DENORMS
+      while (0);
+#else
+      while (ABS(d) <= 2.2e-307);
+#endif
+      mpfr_set_d (x, d, 0);
+      dd = mpfr_get_d (x);
       if (d != dd && (!isnan(d) || !isnan(dd)))
 	{ 
 	  fprintf(stderr, 
