@@ -575,13 +575,6 @@ The precision @var{prec} can be any integer between @code{MPFR_PREC_MIN} and
 @code{MPFR_PREC_MAX}.
 @end deftypefun
 
-@deftypefun int mpfr_set_machine_rnd_mode (mp_rnd_t @var{rnd})
-Set the machine rounding mode to @var{rnd}. Return zero when it was
-successful. A non-zero result may be return on some architectures
-or with some rounding modes only (for instance, some architectures
-support only the rounding to the nearest mode).
-@end deftypefun
-
 @deftypefun {char *} mpfr_print_rnd_mode (mp_rnd_t @var{rnd})
 Returns the input string (GMP_RNDD, GMP_RNDU, GMP_RNDN, GMP_RNDZ)
 corresponding to the rounding mode @var{rnd} or a null pointer if
