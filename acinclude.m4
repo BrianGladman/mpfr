@@ -131,6 +131,8 @@ fi
 
 dnl Check whether 0/0, 1/0, -1/0, sqrt(-1) are valid expressions
 AC_CACHE_CHECK([for valid NaN], mpfr_cv_valid_nan, [
+saved_LIBS="$LIBS"
+LIBS="$LIBS $MPFR_LIBM"
 AC_TRY_RUN([
 #include <math.h>
 int main()
@@ -143,6 +145,7 @@ int main()
 if test "$mpfr_cv_valid_nan" = "yes"; then
    AC_DEFINE(HAVE_INFS,1,[Define if 0/0, 1/0, -1/0 and sqrt(-1) work to generate NaN/infinities.])
 fi
+LIBS="$saved_LIBS"
 
 dnl Check for gcc float-conversion bug; if need be, -ffloat-store is used to
 dnl force the conversion to the destination type when a value is stored to
@@ -159,8 +162,8 @@ if test -n "$GCC"; then
 #ifdef MPFR_HAVE_FESETROUND
 #include <fenv.h>
 #endif
-int main()
-{
+static double get_max (void);
+int main() {
   double x = 0.5;
   int i;
   for (i = 1; i <= 11; i++)
@@ -170,13 +173,14 @@ int main()
 #ifdef MPFR_HAVE_FESETROUND
   /* Useful test for the G4 PowerPC */
   fesetround(FE_TOWARDZERO);
-  x = DBL_MAX;
+  x = get_max ();
   x *= 2.0;
-  if (x != DBL_MAX)
+  if (x != get_max ())
     return 1;
 #endif
   return 0;
 }
+static double get_max (void) { return DBL_MAX; }
   ], [mpfr_cv_gcc_floatconv_bug="no"],
      [mpfr_cv_gcc_floatconv_bug="yes, use -ffloat-store"],
      [mpfr_cv_gcc_floatconv_bug="cannot test, use -ffloat-store"])
