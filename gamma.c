@@ -33,9 +33,8 @@ MA 02111-1307, USA. */
   i.e. if x = 1-t, then Gamma(x) = -Pi*(1-x)/sin(Pi*(2-x))/GAMMA(2-x)
 */
 
-#define CST   0.38  /* CST=ln(2)/(ln(2*pi)) */
-#define zCST  0.26  /* zCST=1/(2*ln(2*pi)) */
-#define ecCST  1.84  /* {1+sup_{x\in [0,1]} x*ln((1-x)/x)}/ln(2)  */
+#define CST100     38  /* CST=(ln(2)/(ln(2*pi))) * 100  */
+#define ecCST100  184  /* ({1+sup_{x\in [0,1]} x*ln((1-x)/x)}/ln(2)) *100  */
 
 int
 mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
@@ -48,7 +47,6 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mp_prec_t Prec;
   mp_prec_t prec_gamma;
   mp_prec_t prec_nec;
-  double C;
   mp_prec_t A, N, estimated_cancel;
   mp_prec_t realprec;
   int compared;
@@ -114,24 +112,20 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_init (product);
   mpfr_init (GammaTrial);
 
-  while (1)
+  for (;;)
     {
       /* Precision stuff */
       prec_nec = compared < 0 ?
         2 + realprec  /* We will use the reflexion formula! */
         : realprec;
-      C = (double) (((double) prec_nec) * CST - 0.5);
-      A = (mp_prec_t) C;
+      A = (prec_nec * CST100 - 50) / 100;
       N = A - 1;
 #ifdef DEBUG
-      printf("C=%u", (int)C);
-      printf(" A=%u", (int)A);
-      printf(" N=%u", (int)N);
-      printf("\n");
+      printf("A=%d N=%d\n", (int)A, (int)N);
 #endif
 
       /* estimated_cancel is the amount of bit that will be flushed */
-      estimated_cancel= (mp_prec_t) (ecCST * (double) A + 1.0);
+      estimated_cancel= (ecCST100 * A + 100) / 100;
       Prec = prec_nec + estimated_cancel + 16;
 
       mpfr_set_prec (xp, Prec);
@@ -208,13 +202,11 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_out_str (stdout, 10, 0, GammaTrial, GMP_RNDD);
       printf ("\n");
 #endif
-      if (!mpfr_can_round (GammaTrial, realprec, GMP_RNDD, GMP_RNDZ,
+      if (mpfr_can_round (GammaTrial, realprec, GMP_RNDD, GMP_RNDZ,
                           MPFR_PREC(gamma) + (rnd_mode == GMP_RNDN)))
-        {
-          realprec += __gmpfr_ceil_log2 ((double) realprec);
-        }
-      else
-	break;
+        break;
+      
+      realprec += __gmpfr_ceil_log2 ((double) realprec);
     }
   inex = mpfr_set (gamma, GammaTrial, rnd_mode);
 
