@@ -346,11 +346,13 @@ void check_special(void)
      if (inexact1 != inexact2)
        STD_ERROR2;
 
+     MPFR_SET_NAN(x);
+     MPFR_SET_NAN(x2);
      mpfr_set_str_binary (y,
       "0.1000000000000000000000000000000000000000000000000000000000000000"
 			  "E-1073741823");
      mpfr_set_str_binary (z,
-      "0.1010000000000000000000000000000000000000000000000000000000000000"
+      "0.1100000000000000000000000000000000000000000000000000000000000000"
 			  "E-1073741823");
      inexact1 = mpfr_sub1(x2, y, z, r);
      inexact2 = mpfr_sub1sp(x, y, z, r);

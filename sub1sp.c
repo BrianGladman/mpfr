@@ -209,7 +209,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	  if (MPFR_LIKELY(sh))
 	    ap[len] &= ~((MPFR_LIMB_ONE << sh) - MPFR_LIMB_ONE);
 	}
-      /* Check expo overflow */
+      /* Check expo underflow */
       if (MPFR_UNLIKELY(bx < __gmpfr_emin))
 	{
 	  TMP_FREE(marker);
