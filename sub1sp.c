@@ -1,7 +1,7 @@
 /* mpfr_sub1sp -- internal function to perform a "real" substraction
    All the op must have the same precision
 
-Copyright 2003, 2004 Free Software Foundation.
+Copyright 2003, 2004, 2005 Free Software Foundation.
 Contributed by the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.
@@ -228,7 +228,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 		  (bx < __gmpfr_emin - 1 ||
 		   (/*inexact >= 0 &&*/ mpfr_powerof2_raw (a))))
 		rnd_mode = GMP_RNDZ;
-	      return mpfr_set_underflow (a, rnd_mode, MPFR_SIGN(a));
+	      return mpfr_underflow (a, rnd_mode, MPFR_SIGN(a));
 	    }
 	  MPFR_SET_EXP (a, bx);
 	  /* No rounding is necessary since the result is exact */
@@ -744,7 +744,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	   (inexact >= 0 && mpfr_powerof2_raw (a))))
 	rnd_mode = GMP_RNDZ;
       TMP_FREE(marker);
-      return mpfr_set_underflow (a, rnd_mode, MPFR_SIGN(a));
+      return mpfr_underflow (a, rnd_mode, MPFR_SIGN(a));
     }
   */
   MPFR_SET_EXP (a, bx);

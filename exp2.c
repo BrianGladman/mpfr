@@ -1,6 +1,6 @@
 /* mpfr_exp2 -- power of 2 function 2^y 
 
-Copyright 2001, 2002, 2003, 2004 Free Software Foundation.
+Copyright 2001, 2002, 2003, 2004, 2005 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -66,7 +66,7 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       if (rnd_mode == GMP_RNDN &&
 	  mpfr_cmp_si_2exp (x, __gmpfr_emin - 2, 0) <= 0)
 	rnd2 = GMP_RNDZ;
-      return mpfr_set_underflow (y, rnd2, 1);
+      return mpfr_underflow (y, rnd2, 1);
     }
 
   if (mpfr_integer_p (x)) /* we know that x >= 2^(emin-1) */
@@ -75,7 +75,7 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       
       MPFR_ASSERTN(MPFR_EMAX_MAX <= LONG_MAX);
       if (mpfr_cmp_si_2exp (x, __gmpfr_emax, 0) > 0)
-	return mpfr_set_overflow (y, rnd_mode, 1);
+	return mpfr_overflow (y, rnd_mode, 1);
       
       xd = mpfr_get_si (x, GMP_RNDN);
       

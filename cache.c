@@ -1,6 +1,6 @@
 /* mpfr_cache -- cache interface for multi-precision const in MPFR.
 
-Copyright 2004 Free Software Foundation.
+Copyright 2004, 2005 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -79,7 +79,7 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mp_rnd_t rnd)
   MPFR_RNDRAW_EVEN (inexact, dest, 
 		    MPFR_MANT (cache->x), MPFR_PREC (cache->x), rnd, sign, 
 		    if (MPFR_UNLIKELY ( ++MPFR_EXP (dest) > __gmpfr_emax)) 
-		       mpfr_set_overflow (dest, rnd, sign) ); 
+		       mpfr_overflow (dest, rnd, sign) ); 
   /* inexact = mpfr_set (dest, cache->x, rnd); */
   if (MPFR_LIKELY(cache->inexact != 0))
     {

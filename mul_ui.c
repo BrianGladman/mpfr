@@ -119,7 +119,7 @@ mpfr_mul_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 
   if (MPFR_UNLIKELY(__gmpfr_emax < MPFR_EMAX_MIN + cnt ||
 		    MPFR_GET_EXP (x) > __gmpfr_emax - cnt))
-    return mpfr_set_overflow(y, rnd_mode, MPFR_SIGN(x));
+    return mpfr_overflow(y, rnd_mode, MPFR_SIGN(x));
 
   MPFR_SET_EXP (y, MPFR_GET_EXP (x) + cnt);
   MPFR_SET_SAME_SIGN(y, x);

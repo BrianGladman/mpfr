@@ -1,7 +1,8 @@
 /* mpfr_pow_ui-- compute the power of a floating-point
                                   by a machine integer
 
-Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
+Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2005 
+  Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -121,7 +122,7 @@ mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
   /* Check Overflow */
   if (MPFR_UNLIKELY (mpfr_overflow_p ())) {
     MPFR_SAVE_EXPO_FREE (expo);
-    return mpfr_set_overflow (x, rnd,
+    return mpfr_overflow (x, rnd,
 			      (n % 2) ? MPFR_SIGN (y) : MPFR_SIGN_POS);
   }
   /* Check Underflow  */
@@ -130,7 +131,7 @@ mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
       if (rnd == GMP_RNDN)
 	rnd = GMP_RNDZ;
       MPFR_SAVE_EXPO_FREE (expo);
-      return mpfr_set_underflow (x, rnd,
+      return mpfr_underflow (x, rnd,
 				 (n % 2) ? MPFR_SIGN(y) : MPFR_SIGN_POS);
     }
   MPFR_SAVE_EXPO_FREE (expo);

@@ -73,14 +73,14 @@ mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
 
   /* Check Overflow */
   if (MPFR_UNLIKELY (mpfr_overflow_p ()))
-    return mpfr_set_overflow (y, rnd,
+    return mpfr_overflow (y, rnd,
 	      mpz_odd_p (absz) ? MPFR_SIGN (x) : MPFR_SIGN_POS);
   /* Check Underflow */
   else if (MPFR_UNLIKELY (mpfr_underflow_p ()))
     {
       if (rnd == GMP_RNDN)
 	rnd = GMP_RNDZ;
-      return mpfr_set_underflow (y, rnd,
+      return mpfr_underflow (y, rnd,
 	 mpz_odd_p (absz) ? MPFR_SIGN (x) : MPFR_SIGN_POS);
     }
   return inexact;
@@ -160,7 +160,7 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
       if (MPFR_UNLIKELY (mpz_cmp_si (tmp, __gmpfr_emin) < 0))
         {
           /* The following test is necessary because in the rounding to the
-           * nearest mode, mpfr_set_underflow always rounds away from 0. In
+           * nearest mode, mpfr_underflow always rounds away from 0. In
            * this rounding mode, we need to round to 0 if:
            *   _ |y| < 2^(emin-2), or
            *   _ |y| = 2^(emin-2) and the absolute value of the exact
@@ -169,10 +169,10 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
            */
           if (rnd == GMP_RNDN && mpz_cmp_si (tmp, __gmpfr_emin-1) < 0)
             rnd = GMP_RNDZ;
-          inexact = mpfr_set_underflow (y, rnd, MPFR_SIGN (y));
+          inexact = mpfr_underflow (y, rnd, MPFR_SIGN (y));
         }
       else if (MPFR_UNLIKELY (mpz_cmp_si (tmp, __gmpfr_emax) > 0))
-        inexact = mpfr_set_overflow (y, rnd, MPFR_SIGN(x));
+        inexact = mpfr_overflow (y, rnd, MPFR_SIGN(x));
       else
 	MPFR_SET_EXP (y, mpz_get_si (tmp));
       mpz_clear (tmp);

@@ -495,7 +495,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
               (exp_a < __gmpfr_emin - 1 ||
                (inexact >= 0 && mpfr_powerof2_raw (a))))
             rnd_mode = GMP_RNDZ;
-          return mpfr_set_underflow (a, rnd_mode, MPFR_SIGN(a));
+          return mpfr_underflow (a, rnd_mode, MPFR_SIGN(a));
         }
       MPFR_SET_EXP (a, exp_a);
     }
@@ -510,7 +510,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       if (MPFR_UNLIKELY(add_exp && exp_b == __gmpfr_emax))
 	{
 	  TMP_FREE(marker);
-	  return mpfr_set_overflow (a, rnd_mode, MPFR_SIGN(a));
+	  return mpfr_overflow (a, rnd_mode, MPFR_SIGN(a));
 	}
       MPFR_SET_EXP (a, exp_b + add_exp);
     }

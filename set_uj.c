@@ -1,6 +1,6 @@
 /* mpfr_set_uj -- set a MPFR number from a huge machine unsigned integer
 
-Copyright 2004 Free Software Foundation.
+Copyright 2004, 2005 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -94,17 +94,17 @@ mpfr_set_uj_2exp (mpfr_t x, uintmax_t j, intmax_t e, mp_rnd_t rnd)
   if (MPFR_UNLIKELY(e < __gmpfr_emin))
     {
       /* The following test is necessary because in the rounding to the
-       * nearest mode, mpfr_set_underflow always rounds away from 0. In
+       * nearest mode, mpfr_underflow always rounds away from 0. In
        * this rounding mode, we need to round to 0 if:
        *   _ |x| < 2^(emin-2), or
        *   _ |x| = 2^(emin-2) and the absolute value of the exact
        *     result is <= 2^(emin-2). */
       if (rnd == GMP_RNDN && (e+1 < __gmpfr_emin || mpfr_powerof2_raw(y)))
 	rnd = GMP_RNDZ;
-      return mpfr_set_underflow (x, rnd, MPFR_SIGN_POS);
+      return mpfr_underflow (x, rnd, MPFR_SIGN_POS);
     }
   if (MPFR_UNLIKELY(e > __gmpfr_emax))
-    return mpfr_set_overflow (x, rnd, MPFR_SIGN_POS);
+    return mpfr_overflow (x, rnd, MPFR_SIGN_POS);
   MPFR_SET_EXP (y, e);
 
   /* Final: set x to y (rounding if necessary) */

@@ -1,6 +1,6 @@
 /* mpfr_div_2si -- divide a floating-point number by a power of two
 
-Copyright 1999, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+Copyright 1999, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -38,12 +38,12 @@ mpfr_div_2si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd_mode)
               (__gmpfr_emin > MPFR_EMAX_MAX - (n - 1) ||
                exp < __gmpfr_emin + (n - 1) || mpfr_powerof2_raw (y)))
             rnd_mode = GMP_RNDZ;
-          return mpfr_set_underflow (y, rnd_mode, MPFR_SIGN(y));
+          return mpfr_underflow (y, rnd_mode, MPFR_SIGN(y));
         }
 
       if (MPFR_UNLIKELY(n < 0 && (__gmpfr_emax < MPFR_EMIN_MIN - n ||
 				  exp > __gmpfr_emax + n)) )
-        return mpfr_set_overflow (y, rnd_mode, MPFR_SIGN(y));
+        return mpfr_overflow (y, rnd_mode, MPFR_SIGN(y));
 
       MPFR_SET_EXP (y, exp - n);
     }

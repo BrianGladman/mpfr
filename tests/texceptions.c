@@ -194,7 +194,7 @@ test_set_underflow (void)
           int inex;
 
           j = s < 0 && i > 1 ? 5 - i : i;
-          inex = mpfr_set_underflow (x, (mp_rnd_t) i, s);
+          inex = mpfr_underflow (x, (mp_rnd_t) i, s);
           if (mpfr_cmp (x, r[j]) || inex * t[j] <= 0)
             {
               printf ("Error in test_set_underflow, sign = %d,"
@@ -237,7 +237,7 @@ test_set_overflow (void)
           int inex;
 
           j = s < 0 && i > 1 ? 5 - i : i;
-          inex = mpfr_set_overflow (x, (mp_rnd_t) i, s);
+          inex = mpfr_overflow (x, (mp_rnd_t) i, s);
           if (mpfr_cmp (x, r[j]) || inex * t[j] <= 0)
             {
               printf ("Error in test_set_overflow, sign = %d,"

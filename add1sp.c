@@ -1,7 +1,7 @@
 /* mpfr_add1sp -- internal function to perform a "real" addition
    All the op must have the same precision
 
-Copyright 2004 Free Software Foundation.
+Copyright 2004, 2005 Free Software Foundation.
 Contributed by the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.
@@ -324,7 +324,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       DEBUG( printf("Overflow\n") );
       TMP_FREE(marker);
       MPFR_SET_SAME_SIGN(a,b);
-      return mpfr_set_overflow(a, rnd_mode, MPFR_SIGN(a));
+      return mpfr_overflow(a, rnd_mode, MPFR_SIGN(a));
     }
   MPFR_SET_EXP (a, bx);
   MPFR_SET_SAME_SIGN(a,b);

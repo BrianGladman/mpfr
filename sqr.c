@@ -1,6 +1,6 @@
 /* mpfr_sqr -- Floating square
 
-Copyright 2004 Free Software Foundation, Inc.
+Copyright 2004, 2005 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -87,7 +87,7 @@ mpfr_sqr (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
   {
     mp_exp_t ax2 = ax + (mp_exp_t) (b1 - 1 + cc);
     if (MPFR_UNLIKELY( ax2 > __gmpfr_emax))
-      return mpfr_set_overflow (a, rnd_mode, MPFR_SIGN_POS);
+      return mpfr_overflow (a, rnd_mode, MPFR_SIGN_POS);
     if (MPFR_UNLIKELY( ax2 < __gmpfr_emin))
       {
         /* In the rounding to the nearest mode, if the exponent of the exact
@@ -97,7 +97,7 @@ mpfr_sqr (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
         if (rnd_mode == GMP_RNDN &&
             (ax + (mp_exp_t) b1 < __gmpfr_emin || mpfr_powerof2_raw (b)))
           rnd_mode = GMP_RNDZ;
-        return mpfr_set_underflow (a, rnd_mode, MPFR_SIGN_POS);
+        return mpfr_underflow (a, rnd_mode, MPFR_SIGN_POS);
       }
     MPFR_SET_EXP (a, ax2);
     MPFR_SET_POS (a);

@@ -315,7 +315,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
     if (exy >= (double) __gmpfr_emax)
       {
         negative = MPFR_SIGN(x) < 0 && is_odd (y);
-        return mpfr_set_overflow (z, rnd_mode, negative ? -1 : 1);
+        return mpfr_overflow (z, rnd_mode, negative ? -1 : 1);
       }
   }
 

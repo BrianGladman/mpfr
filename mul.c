@@ -1,6 +1,7 @@
 /* mpfr_mul -- multiply two floating-point numbers
 
-Copyright 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2005 
+  Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -89,9 +90,9 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
    * and we are doing further mults...*/
 #ifdef HUGE
   if (MPFR_UNLIKELY (ax > __gmpfr_emax + 1))
-    return mpfr_set_overflow (a, rnd_mode, sign);
+    return mpfr_overflow (a, rnd_mode, sign);
   if (MPFR_UNLIKELY (ax < __gmpfr_emin - 2))
-  return mpfr_set_underflow (a, rnd_mode == GMP_RNDN ? GMP_RNDZ : rnd_mode,
+  return mpfr_underflow (a, rnd_mode == GMP_RNDN ? GMP_RNDZ : rnd_mode,
 			     sign);
 #endif
 
@@ -133,7 +134,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   MPFR_EXP  (a) = ax2; /* Can't use MPFR_SET_EXP: Exponent may be out of range */
   MPFR_SET_SIGN (a, sign);
   if (MPFR_UNLIKELY (ax2 > __gmpfr_emax))
-    return mpfr_set_overflow (a, rnd_mode, sign);
+    return mpfr_overflow (a, rnd_mode, sign);
   if (MPFR_UNLIKELY (ax2 < __gmpfr_emin))
     {	
       /* In the rounding to the nearest mode, if the exponent of the exact
@@ -144,7 +145,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	  && (ax + (mp_exp_t) b1 < __gmpfr_emin 
 	      || (mpfr_powerof2_raw (b) && mpfr_powerof2_raw (c))))
 	rnd_mode = GMP_RNDZ;
-      return mpfr_set_underflow (a, rnd_mode, sign);
+      return mpfr_underflow (a, rnd_mode, sign);
     }
   return inexact;
 }

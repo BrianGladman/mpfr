@@ -1,6 +1,6 @@
 /* mpfr_strtofr -- set a floating-point number from a string
 
-Copyright 2004 Free Software Foundation, Inc.
+Copyright 2004, 2005 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -664,11 +664,11 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mp_rnd_t rnd)
      (Real expo < MPFR_EXP_MIN << __gmpfr_emin */
   if (rnd == GMP_RNDN)
     rnd = GMP_RNDZ;
-  res = mpfr_set_underflow (x, rnd, (pstr->negative) ? -1 : 1);
+  res = mpfr_underflow (x, rnd, (pstr->negative) ? -1 : 1);
   goto end;
 
  overflow:
-  res = mpfr_set_overflow (x, rnd, (pstr->negative) ? -1 : 1);
+  res = mpfr_overflow (x, rnd, (pstr->negative) ? -1 : 1);
 
  end:
   TMP_FREE (marker);
@@ -703,14 +703,14 @@ mpfr_strtofr (mpfr_t x, const char *string, char **end, int base,
           free_parsed_string (&pstr);
         }
       else if (res == 2)
-        res = mpfr_set_overflow (x, rnd, (pstr.negative) ? -1 : 1);
+        res = mpfr_overflow (x, rnd, (pstr.negative) ? -1 : 1);
       else if (res == 3)
         {
           /* This is called when there is a huge overflow
              (Real expo < MPFR_EXP_MIN << __gmpfr_emin */
           if (rnd == GMP_RNDN)
             rnd = GMP_RNDZ;
-          res = mpfr_set_underflow (x, rnd, (pstr.negative) ? -1 : 1);
+          res = mpfr_underflow (x, rnd, (pstr.negative) ? -1 : 1);
         }
     }
   if (end != NULL)

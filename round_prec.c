@@ -1,7 +1,8 @@
 /* mpfr_round_raw_generic, mpfr_round_raw2, mpfr_round_raw, mpfr_prec_round,
    mpfr_can_round, mpfr_can_round_raw -- various rounding functions
 
-Copyright 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2005 
+  Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -88,7 +89,7 @@ mpfr_prec_round (mpfr_ptr x, mp_prec_t prec, mp_rnd_t rnd_mode)
       mp_exp_t exp = MPFR_EXP (x);
 
       if (MPFR_UNLIKELY(exp == __gmpfr_emax))
-        (void) mpfr_set_overflow(x, rnd_mode, MPFR_SIGN(x));
+        (void) mpfr_overflow(x, rnd_mode, MPFR_SIGN(x));
       else
         {
           MPFR_ASSERTD (exp < __gmpfr_emax);

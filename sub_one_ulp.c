@@ -1,6 +1,6 @@
 /* mpfr_sub_one_ulp -- subtract one unit in last place
 
-Copyright 1999, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+Copyright 1999, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -47,7 +47,7 @@ mpfr_sub_one_ulp(mpfr_ptr x, mp_rnd_t rnd_mode)
       /* Note: In case of underflow and rounding to the nearest mode,
          x won't be changed. Beware of infinite loops! */
       if (MPFR_UNLIKELY( exp == __gmpfr_emin ))
-        return mpfr_set_underflow(x, rnd_mode, MPFR_SIGN(x));
+        return mpfr_underflow(x, rnd_mode, MPFR_SIGN(x));
       else
         {
           mp_size_t i;

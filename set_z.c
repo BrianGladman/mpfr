@@ -1,6 +1,7 @@
 /* mpfr_set_z -- set a floating-point number from a multiple-precision integer
 
-Copyright 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2005
+  Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -51,7 +52,7 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
   count_leading_zeros (k, zp[zn-1]);
 
   if (MPFR_UNLIKELY (zn > MPFR_EMAX_MAX / BITS_PER_MP_LIMB + 1))
-    return mpfr_set_overflow(f, rnd_mode, sign_z);
+    return mpfr_overflow(f, rnd_mode, sign_z);
   /* because zn >= __gmpfr_emax / BITS_PER_MP_LIMB + 2
      and zn * BITS_PER_MP_LIMB >= __gmpfr_emax + BITS_PER_MP_LIMB + 1
      and exp = zn * BITS_PER_MP_LIMB - k > __gmpfr_emax */
@@ -63,9 +64,9 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
   exp = (mp_prec_t) zn * BITS_PER_MP_LIMB - k;
   /* The exponent will be exp or exp + 1 (due to rounding) */
   if (MPFR_UNLIKELY (exp > __gmpfr_emax))
-    return mpfr_set_overflow (f, rnd_mode, sign_z);
+    return mpfr_overflow (f, rnd_mode, sign_z);
   if (MPFR_UNLIKELY (exp + 1 < __gmpfr_emin))
-    return mpfr_set_underflow(f, rnd_mode == GMP_RNDN ? GMP_RNDZ : rnd_mode,
+    return mpfr_underflow(f, rnd_mode == GMP_RNDN ? GMP_RNDZ : rnd_mode,
                               sign_z);
 
   if (MPFR_LIKELY (dif >= 0))
@@ -145,7 +146,7 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
 	{ 
 	  /* Pow 2 case */
 	  if (MPFR_UNLIKELY (exp == __gmpfr_emax))
-	    return mpfr_set_overflow (f, rnd_mode, sign_z);
+	    return mpfr_overflow (f, rnd_mode, sign_z);
 	  exp ++;
 	  fp[fn-1] = MPFR_LIMB_HIGHBIT;
 	}
@@ -167,7 +168,7 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
     {
       if (rnd_mode == GMP_RNDN && inex == 0 && mpfr_powerof2_raw (f))
         rnd_mode = GMP_RNDZ;
-      return mpfr_set_underflow(f, rnd_mode, sign_z);
+      return mpfr_underflow(f, rnd_mode, sign_z);
     }
 
   MPFR_SET_EXP (f, exp);

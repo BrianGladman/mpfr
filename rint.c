@@ -283,7 +283,7 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
       if (rnd_away && mpn_add_1(rp, rp, rn, MPFR_LIMB_ONE << sh))
         {
           if (exp == __gmpfr_emax)
-            return mpfr_set_overflow(r, rnd_mode, MPFR_SIGN(r)) >= 0 ?
+            return mpfr_overflow(r, rnd_mode, MPFR_SIGN(r)) >= 0 ?
               uflags : -uflags;
           else
             {
@@ -347,7 +347,7 @@ mpfr_rint_round (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
       mpfr_clear_overflow ();
       mpfr_round (tmp, u);
       inex = (mpfr_overflow_p ()
-              ? mpfr_set_overflow (r, rnd_mode, MPFR_SIGN (u))
+              ? mpfr_overflow (r, rnd_mode, MPFR_SIGN (u))
               : mpfr_set (r, tmp, rnd_mode));
       mpfr_clear (tmp);
       MPFR_SAVE_EXPO_FREE (expo);
@@ -398,7 +398,7 @@ mpfr_rint_ceil (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
       mpfr_clear_overflow ();
       mpfr_ceil (tmp, u);
       inex = (mpfr_overflow_p ()
-              ? mpfr_set_overflow (r, rnd_mode, MPFR_SIGN_POS)
+              ? mpfr_overflow (r, rnd_mode, MPFR_SIGN_POS)
               : mpfr_set (r, tmp, rnd_mode));
       mpfr_clear (tmp);
       MPFR_SAVE_EXPO_FREE (expo);
@@ -425,7 +425,7 @@ mpfr_rint_floor (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
       mpfr_clear_overflow ();
       mpfr_floor (tmp, u);
       inex = (mpfr_overflow_p ()
-              ? mpfr_set_overflow (r, rnd_mode, MPFR_SIGN_NEG)
+              ? mpfr_overflow (r, rnd_mode, MPFR_SIGN_NEG)
               : mpfr_set (r, tmp, rnd_mode));
       mpfr_clear (tmp);
       MPFR_SAVE_EXPO_FREE (expo);

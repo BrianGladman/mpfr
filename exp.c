@@ -69,16 +69,16 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   /* TODO: Don't convert to double! */
   d = mpfr_get_d1 (x);
   if (MPFR_UNLIKELY (d >= (double) __gmpfr_emax * LOG2))
-    return mpfr_set_overflow (y, rnd_mode, 1);
+    return mpfr_overflow (y, rnd_mode, 1);
 
   /* result is 0 when exp(x) < 1/2*2^(__gmpfr_emin), i.e.
      x < (__gmpfr_emin-1) * LOG2 */
   if (MPFR_UNLIKELY(d < ((double) __gmpfr_emin - 1.0) * LOG2))
     {
-      /* warning: mpfr_set_underflow rounds away for RNDN */
+      /* warning: mpfr_underflow rounds away for RNDN */
       if (rnd_mode == GMP_RNDN && d < ((double) __gmpfr_emin - 2.0) * LOG2)
         rnd_mode = GMP_RNDZ;
-      return mpfr_set_underflow (y, rnd_mode, 1);
+      return mpfr_underflow (y, rnd_mode, 1);
     }
 
   /* if x < 2^(-precy), then exp(x) i.e. gives 1 +/- 1 ulp(1) */
