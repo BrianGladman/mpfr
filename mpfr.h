@@ -53,14 +53,6 @@ typedef enum {
   GMP_RNDNA=-1
 } mpfr_rnd_t;
 
-/* Flags of __gmpfr_flags */
-#define MPFR_FLAGS_UNDERFLOW 1
-#define MPFR_FLAGS_OVERFLOW 2
-#define MPFR_FLAGS_NAN 4
-#define MPFR_FLAGS_INEXACT 8
-#define MPFR_FLAGS_ERANGE 16
-#define MPFR_FLAGS_ALL 31
-
 /* Define precision : 1 (short), 2 (int) or 3 (long) (DON'T USE IT!)*/
 #ifndef _MPFR_PREC_FORMAT
 # if __GMP_MP_SIZE_T_INT == 1
@@ -163,17 +155,6 @@ typedef struct __gmpfr_cache_s mpfr_cache_t[1];
 
 #if defined (__cplusplus)
 extern "C" {
-#endif
-
-#ifndef MPFR_USE_NO_MACRO
-extern unsigned int __gmpfr_flags;
-extern mp_exp_t     __gmpfr_emin;
-extern mp_exp_t     __gmpfr_emax;
-extern mp_prec_t    __gmpfr_default_fp_bit_precision;
-extern mpfr_rnd_t   __gmpfr_default_rounding_mode;
-extern mpfr_cache_t __gmpfr_cache_const_pi;
-extern mpfr_cache_t __gmpfr_cache_const_log2;
-extern mpfr_cache_t __gmpfr_cache_const_euler;
 #endif
 
 __gmp_const char * mpfr_get_version _MPFR_PROTO ((void));
@@ -495,37 +476,10 @@ int  mpfr_strtofr _MPFR_PROTO ((mpfr_ptr, __gmp_const char *, char **,
 #define mpfr_zero_p(_x)   ((_x)->_mpfr_exp == __MPFR_EXP_ZERO)
 #define mpfr_sgn(_x)      (mpfr_zero_p(_x) ? 0 : MPFR_SIGN(_x))
 
-/* Prevent from using mpfr_get_e{min,max} as lvalues */
+/* Prevent them from using as lvalues */
 #define mpfr_get_prec(_x) ((_x)->_mpfr_prec + 0)
 #define mpfr_get_exp(_x)  ((_x)->_mpfr_exp + 0)
-#define mpfr_get_emin() (__gmpfr_emin + 0)
-#define mpfr_get_emax() (__gmpfr_emax + 0)
-#define mpfr_get_default_rounding_mode() (__gmpfr_default_rounding_mode + 0)
-#define mpfr_get_default_prec() (__gmpfr_default_fp_bit_precision + 0)
 
-#define mpfr_clear_flags() \
-  ((void) (__gmpfr_flags = 0))
-#define mpfr_clear_underflow() \
-  ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_UNDERFLOW))
-#define mpfr_clear_overflow() \
-  ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_OVERFLOW))
-#define mpfr_clear_nanflag() \
-  ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_NAN))
-#define mpfr_clear_inexflag() \
-  ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_INEXACT))
-#define mpfr_clear_erangeflag() \
-  ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_ERANGE))
-#define mpfr_underflow_p() \
-  ((int) (__gmpfr_flags & MPFR_FLAGS_UNDERFLOW))
-#define mpfr_overflow_p() \
-  ((int) (__gmpfr_flags & MPFR_FLAGS_OVERFLOW))
-#define mpfr_nanflag_p() \
-  ((int) (__gmpfr_flags & MPFR_FLAGS_NAN))
-#define mpfr_inexflag_p() \
-  ((int) (__gmpfr_flags & MPFR_FLAGS_INEXACT))
-#define mpfr_erangeflag_p() \
-  ((int) (__gmpfr_flags & MPFR_FLAGS_ERANGE))
- 
 #define mpfr_round(a,b) mpfr_rint((a), (b), GMP_RNDNA)
 #define mpfr_trunc(a,b) mpfr_rint((a), (b), GMP_RNDZ)
 #define mpfr_ceil(a,b)  mpfr_rint((a), (b), GMP_RNDU)
@@ -533,11 +487,12 @@ int  mpfr_strtofr _MPFR_PROTO ((mpfr_ptr, __gmp_const char *, char **,
 
 #define mpfr_cmp_ui(b,i) mpfr_cmp_ui_2exp((b),(i),0)
 #define mpfr_cmp_si(b,i) mpfr_cmp_si_2exp((b),(i),0)
-#define mpfr_set(a,b,r) mpfr_set4(a,b,r,MPFR_SIGN(b))
-#define mpfr_abs(a,b,r) mpfr_set4(a,b,r,1)
-#define mpfr_cmp(b, c) mpfr_cmp3(b, c, 1)
+#define mpfr_set(a,b,r)  mpfr_set4(a,b,r,MPFR_SIGN(b))
+#define mpfr_abs(a,b,r)  mpfr_set4(a,b,r,1)
+#define mpfr_cmp(b, c)   mpfr_cmp3(b, c, 1)
 #define mpfr_mul_2exp(y,x,n,r) mpfr_mul_2ui((y),(x),(n),(r))
 #define mpfr_div_2exp(y,x,n,r) mpfr_div_2ui((y),(x),(n),(r))
+
 
 /* When using GCC, optimize certain common comparisons and affectations.
    + Remove ICC since it defines __GNUC__ but produces a
@@ -590,11 +545,10 @@ int  mpfr_strtofr _MPFR_PROTO ((mpfr_ptr, __gmp_const char *, char **,
 /* Compatibility layer -- obsolete functions and macros */
 #define mpfr_cmp_abs mpfr_cmpabs
 #define mpfr_round_prec(x,r,p) mpfr_prec_round(x,p,r)
-#define __gmp_default_rounding_mode __gmpfr_default_rounding_mode
-#define __mpfr_emin __gmpfr_emin
-#define __mpfr_emax __gmpfr_emax
-#define __mpfr_flags __gmpfr_flags
-#define __mpfr_default_fp_bit_precision __gmpfr_default_fp_bit_precision
+#define __gmp_default_rounding_mode (mpfr_get_default_rounding_mode())
+#define __mpfr_emin (mpfr_get_emin())
+#define __mpfr_emax (mpfr_get_emax())
+#define __mpfr_default_fp_bit_precision (mpfr_get_default_fp_bit_precision())
 #define MPFR_EMIN_MIN mpfr_get_emin_min()
 #define MPFR_EMIN_MAX mpfr_get_emin_max()
 #define MPFR_EMAX_MIN mpfr_get_emax_min()

@@ -76,10 +76,15 @@ MA 02111-1307, USA. */
 # define strncasecmp mpfr_strncasecmp
 #endif
 
-/* Define theses variables if we have built MPFR with
-   MPFR_USE_NO_MACRO (ie mpfr.h doesn't declare them).
-   I don't see any interest to build MPFR with it. */
-#ifdef MPFR_USE_NO_MACRO
+
+/******************************************************
+ ***************** Global Variables *******************
+ ******************************************************/
+
+#if defined (__cplusplus)
+extern "C" {
+#endif
+
 extern unsigned int __gmpfr_flags;
 extern mp_exp_t     __gmpfr_emin;
 extern mp_exp_t     __gmpfr_emax;
@@ -88,8 +93,48 @@ extern mpfr_rnd_t   __gmpfr_default_rounding_mode;
 extern mpfr_cache_t __gmpfr_cache_const_pi;
 extern mpfr_cache_t __gmpfr_cache_const_log2;
 extern mpfr_cache_t __gmpfr_cache_const_euler;
+
+#if defined (__cplusplus)
+ }
 #endif
 
+/* Flags of __gmpfr_flags */
+#define MPFR_FLAGS_UNDERFLOW 1
+#define MPFR_FLAGS_OVERFLOW 2
+#define MPFR_FLAGS_NAN 4
+#define MPFR_FLAGS_INEXACT 8
+#define MPFR_FLAGS_ERANGE 16
+#define MPFR_FLAGS_ALL 31
+
+/* Replace some commun functions for direct access to the global vars */
+#define mpfr_get_emin() (__gmpfr_emin + 0)
+#define mpfr_get_emax() (__gmpfr_emax + 0)
+#define mpfr_get_default_rounding_mode() (__gmpfr_default_rounding_mode + 0)
+#define mpfr_get_default_prec() (__gmpfr_default_fp_bit_precision + 0)
+
+#define mpfr_clear_flags() \
+  ((void) (__gmpfr_flags = 0))
+#define mpfr_clear_underflow() \
+  ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_UNDERFLOW))
+#define mpfr_clear_overflow() \
+  ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_OVERFLOW))
+#define mpfr_clear_nanflag() \
+  ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_NAN))
+#define mpfr_clear_inexflag() \
+  ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_INEXACT))
+#define mpfr_clear_erangeflag() \
+  ((void) (__gmpfr_flags &= MPFR_FLAGS_ALL ^ MPFR_FLAGS_ERANGE))
+#define mpfr_underflow_p() \
+  ((int) (__gmpfr_flags & MPFR_FLAGS_UNDERFLOW))
+#define mpfr_overflow_p() \
+  ((int) (__gmpfr_flags & MPFR_FLAGS_OVERFLOW))
+#define mpfr_nanflag_p() \
+  ((int) (__gmpfr_flags & MPFR_FLAGS_NAN))
+#define mpfr_inexflag_p() \
+  ((int) (__gmpfr_flags & MPFR_FLAGS_INEXACT))
+#define mpfr_erangeflag_p() \
+  ((int) (__gmpfr_flags & MPFR_FLAGS_ERANGE))
+ 
 
 /******************************************************
  ***************** Detection macros *******************

@@ -1,6 +1,6 @@
 /* mpf2mpfr.h -- Compatibility include file with mpf.
 
-Copyright 1999, 2000, 2001, 2002, 2004 Free Software Foundation, Inc.
+Copyright 1999, 2000, 2001, 2002, 2004, 2005 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -28,10 +28,8 @@ MA 02111-1307, USA. */
 #define mpf_ptr mpfr_ptr
 
 /* Get current Rounding Mode */
-#ifdef MPFR_USE_NO_MACRO
+#ifndef MPFR_DEFAULT_RND
 # define MPFR_DEFAULT_RND mpfr_get_default_rounding_mode ()
-#else
-# define MPFR_DEFAULT_RND __gmpfr_default_rounding_mode
 #endif
 
 /* mpf_init initalizes at 0 */
