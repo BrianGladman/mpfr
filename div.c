@@ -41,10 +41,9 @@ mpfr_div(Q, n, d, rnd_mode)
   err = prec-precq; /* the error is at most 2^err ulp */
   /* adjust to use complete limbs: the following formula guarantees we get
      at least one guard bit */
-  prec = (prec/BITS_PER_MP_LIMB)*BITS_PER_MP_LIMB;
+  prec = (1 + prec/BITS_PER_MP_LIMB)*BITS_PER_MP_LIMB;
   mpfr_init2(eps, prec); mpfr_init2(tmp, prec); mpfr_init2(one, prec);
   do {
-    prec += BITS_PER_MP_LIMB;
   mpfr_set_prec(q, prec);
   mpfr_set_prec(eps, prec); mpfr_set_prec(tmp, prec); mpfr_set_prec(one, prec);
   mpfr_set(q, n, GMP_RNDZ);
@@ -99,7 +98,7 @@ mpfr_div(Q, n, d, rnd_mode)
 	 rnd_mode=GMP_RNDN; cc=1; exact=0; /* result is exact */
        }
      }
-  } while (cc==0);
+  } while (cc==0 && (prec += BITS_PER_MP_LIMB));
   mpfr_round(q, rnd_mode, precq);
   mpfr_mul_2exp(q, q, -expd, rnd_mode);
   mpfr_set_prec(q, precq);
