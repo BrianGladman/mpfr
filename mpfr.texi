@@ -678,6 +678,11 @@ Please note that even a @code{long int} may have to be rounded,
 if the destination precision is less than the machine word width.
 The return value is zero when @code{rop=op}, positive when @code{rop>op},
 and negative when @code{rop<op}.
+For @code{mpfr_set_d}, be careful that the number you type
+may not be exactly representable as a double-precision number (this happens for
+0.1 for instance), in which case it is first
+rounded by the C compiler to a double-precision number, and then only
+to a mpfr floating-point number.
 @end deftypefun
 
 @deftypefun int mpfr_set_str (mpfr_t @var{x}, char *@var{s}, int @var{base}, mp_rnd_t @var{rnd})
