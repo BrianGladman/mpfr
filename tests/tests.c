@@ -87,8 +87,8 @@ mpfr_test_init ()
 
   tests_machine_prec_double ();
 
-  /* generate DBL_EPSILON with a loop to avoid that the preprocessor
-     optimizes the code below in non-IEEE 754 mode, deciding that 
+  /* generate DBL_EPSILON with a loop to avoid that the compiler
+     optimizes the code below in non-IEEE 754 mode, deciding that
      c = d is always false. */
   for (eps = 1.0; eps != DBL_EPSILON; eps /= 2.0);
   c = 1.0 + eps;
