@@ -83,11 +83,11 @@ mpfr_exp(y, x, rnd_mode)
   printf("n=%d K=%d l=%d q=%d\n",n,K,l,q);
 #endif
 
-  mpfr_log2(r, GMP_RNDZ);
+  mpfr_log2(s, GMP_RNDZ);
 #ifdef DEBUG
-  printf("n=%d r=",n); mpfr_print_raw(r); putchar('\n');
+  printf("n=%d log(2)=",n); mpfr_print_raw(s); putchar('\n');
 #endif
-  mpfr_mul_ui(r, r, (n<0) ? -n : n, GMP_RNDZ); /* r = n*log(2) */
+  mpfr_mul_ui(r, s, (n<0) ? -n : n, GMP_RNDZ); /* r = n*log(2) */
   if (n<0) mpfr_neg(r, r, GMP_RNDD);
 
 #ifdef DEBUG
@@ -96,6 +96,12 @@ mpfr_exp(y, x, rnd_mode)
   printf(" ="); mpfr_print_raw(r); putchar('\n');
 #endif
   mpfr_sub(r, x, r, GMP_RNDU);
+  if (SIGN(r)<0) { /* initial approximation n was too large */
+    n--;
+    mpfr_mul_ui(r, s, (n<0) ? -n : n, GMP_RNDZ);
+    if (n<0) mpfr_neg(r, r, GMP_RNDD);
+    mpfr_sub(r, x, r, GMP_RNDU);
+  }
 #ifdef DEBUG
   printf("x-r=%1.20e\n",mpfr_get_d(r));
   if (SIGN(r)<0) { fprintf(stderr,"Error in mpfr_exp: r<0\n"); exit(1); }
