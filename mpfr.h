@@ -198,6 +198,12 @@ void mpfr_clear_nanflag _MPFR_PROTO ((void));
 void mpfr_clear_inexflag _MPFR_PROTO ((void));
 void mpfr_clear_erangeflag _MPFR_PROTO ((void));
 
+void mpfr_set_underflow _MPFR_PROTO ((void));
+void mpfr_set_overflow _MPFR_PROTO ((void));
+void mpfr_set_nanflag _MPFR_PROTO ((void));
+void mpfr_set_inexflag _MPFR_PROTO ((void));
+void mpfr_set_erangeflag _MPFR_PROTO ((void));
+
 int mpfr_underflow_p _MPFR_PROTO ((void));
 int mpfr_overflow_p _MPFR_PROTO ((void));
 int mpfr_nanflag_p _MPFR_PROTO ((void));

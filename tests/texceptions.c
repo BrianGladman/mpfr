@@ -256,6 +256,24 @@ test_set_overflow (void)
   mpfr_clears (x, inf, max, (mpfr_ptr) 0);
 }
 
+static void
+check_set () {
+  mpfr_clear_flags ();
+  
+  mpfr_set_overflow ();
+  MPFR_ASSERTN ((mpfr_overflow_p) ());
+  mpfr_set_underflow ();
+  MPFR_ASSERTN ((mpfr_underflow_p) ());
+  mpfr_set_nanflag ();
+  MPFR_ASSERTN ((mpfr_nanflag_p) ());
+  mpfr_set_inexflag ();
+  MPFR_ASSERTN ((mpfr_inexflag_p) ());
+  mpfr_set_erangeflag ();
+  MPFR_ASSERTN ((mpfr_erangeflag_p) ());
+
+  mpfr_clear_flags ();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -353,6 +371,8 @@ main (int argc, char *argv[])
   check_flags();
   check_set_get_prec ();
   check_powerof2 ();
+  check_set ();
+
   tests_end_mpfr ();
   return 0;
 }
