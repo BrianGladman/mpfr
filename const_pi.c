@@ -156,6 +156,8 @@ int
   mpfr_t y;
   int inex;
 
+  mpfr_save_emin_emax ();
+
   prec = MPFR_PREC(x);
 
   if (prec < 20000)
@@ -206,16 +208,18 @@ int
       mpfr_set_z (y, pi, rnd_mode);
       MPFR_ASSERTN (mpfr_cmp (x, y) == 0);
       MPFR_SET_EXP (x, MPFR_GET_EXP(x) - 4*N);
+      mpfr_clear (y);
       mpz_clear(pi);
       mpz_clear(num);
       mpz_clear(den);
       mpz_clear(d3);
       mpz_clear(d2);
       mpz_clear(tmp);
-      mpfr_clear(y);
     }
   else
     inex = mpfr_pi_machin3 (x, rnd_mode);
+
+  mpfr_restore_emin_emax ();
 
   return inex;
 }
