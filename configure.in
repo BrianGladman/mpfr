@@ -189,10 +189,12 @@ dnl
 dnl Currently libtool always detect a C++ and fortran compiler
 dnl Reduce the search list to g++ and g77
 dnl It may freeze with cl on some systems
+dnl For CXXCPP, it is defintevely an ugly hack which should be remove
+dnl as soon as possible but otherwise some systems may not be able to
+dnl build MPFR while they should
 AC_PROG_CXX([g++])
 AC_PROG_F77([g77])
-AC_PROG_CPP
-CXXCPP="$CPP"
+CXXCPP="grep limits"
 
 dnl Configs for Windows DLLs.
 dnl libtool requires "-no-undefined" for win32 dll
