@@ -37,7 +37,7 @@ mpfr_mul_ui(y, x, u, rnd_mode)
 #endif
 {
   mp_limb_t carry, *my, *old_my, *my2; unsigned long c; 
-  unsigned long xsize, ysize, cnt, dif, ex; 
+  unsigned long xsize, ysize, cnt, dif, ex, sh; 
   TMP_DECL(marker);
 
   TMP_MARK(marker);
@@ -60,9 +60,13 @@ mpfr_mul_ui(y, x, u, rnd_mode)
   if (carry) count_leading_zeros(cnt, carry);
   else cnt=BITS_PER_MP_LIMB;
 
+  /* Warning: the number of limbs used by x and the lower part
+     of y may differ */
+  sh = (PREC(x)+BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB
+     - (PREC(y)+cnt-1)/BITS_PER_MP_LIMB; 
+
   /* Warning: if all significant bits are in the carry, one has to 
      be careful */
-
   if (cnt + PREC(y) < BITS_PER_MP_LIMB)
     {
       /* Quick 'n dirty */
@@ -82,7 +86,7 @@ mpfr_mul_ui(y, x, u, rnd_mode)
       carry = 0; cnt = BITS_PER_MP_LIMB;
     }
 
-    c = mpfr_round_raw(my, my, PREC(x), (MPFR_SIGN(x)<0), 
+    c = mpfr_round_raw(my+sh, my, PREC(x), (MPFR_SIGN(x)<0), 
 		       PREC(y)-BITS_PER_MP_LIMB+cnt, rnd_mode);
 
   /* If cnt = 1111111111111 and c = 1 we shall get depressed */
