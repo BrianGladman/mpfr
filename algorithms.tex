@@ -3058,6 +3058,36 @@ Hence we have
         \le (1 + \sqrt{\frac{\pi}{n}}) e^{-8n} 
         \le 3 e^{-8n}. \]
 
+\subsection{The $\log 2$ constant}
+
+This constant is used in the exponential function,
+and in the base $2$ exponential and logarithm.
+
+We use the following formula:
+\[ \log 2 = \frac{3}{4} \sum_{n \geq 0} (-1)^n \frac{{n!}^2}{2^n (2n+1)!}. \]
+Let $w$ be the working precision. We take $N = \lfloor w/3 \rfloor + 1$,
+and evaluate exactly using binary spitting:
+\[ \frac{T}{Q}
+ = \frac{3}{4} \sum_{n \geq 0}^{N-1} (-1)^n \frac{{n!}^2}{2^n (2n+1)!}, \]
+where $T$ and $Q$ are integers.
+Since the series has alternating signs with decreasing absolute values,
+the truncating error is bounded by the first neglected term,
+which is less than $2^{-3N-1}$ for $N \geq 2$;
+since $N \geq (w+1)/3$, this error is bounded by $2^{-w-2}$.
+
+We then use the following algorithm:
+\begin{quote}
+$t \leftarrow \circ(T)$ [rounded to nearest] \\
+$q \leftarrow \circ(Q)$ [rounded to nearest] \\
+$x \leftarrow \circ(t/q)$ [rounded to nearest]
+\end{quote}
+Using Higham's notation, we write $t = T (1+\theta_1)$, 
+$q = Q (1+\theta_2)$, $x = t/q (1+\theta_3)$ with $|\theta_i| \leq 2^{-w}$.
+We thus have $x = T/Q (1+\theta)^3$ with $|\theta| \leq 2^{-w}$.
+Since $T/Q \leq 1$, the total absolute error on $x$ is thus bounded by 
+$3 |\theta| + 3 \theta^2 + |\theta|^3 + 2^{-w-2} < 2^{-w+2}$ as long
+as $w \geq 3$.
+
 \nocite{BoBo98,DeHi02}
 
 \bibliographystyle{acm}
