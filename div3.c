@@ -9,7 +9,7 @@
 /* #define DEBUG */
 
 void
-mpfr_div3 (mpf_ptr r, mpf_srcptr u, mpf_srcptr v, unsigned char rnd_mode)
+mpfr_div3 (mpfr_ptr r, mpfr_srcptr u, mpfr_srcptr v, unsigned char rnd_mode)
 {
   mp_srcptr up, vp;
   mp_ptr rp, tp, tmp;
