@@ -25,7 +25,7 @@ int  i;
   if (ABSSIZE(p) < two_i){
     int j;
     y->_mp_alloc=two_i_2 ;	
-   y->_mp_size=two_i_2 ;	
+    y->_mp_size=two_i_2 ;	
     y->_mp_d = calloc(two_i_2,sizeof(  mp_limb_t));
     assert(y->_mp_d!=NULL);
     /* attention : initialiser a 0 si on utilise malloc */
@@ -34,13 +34,12 @@ int  i;
     }
   } else
     {
-      y->_mp_d = p->_mp_d+ABSSIZE(p) - two_i;
+      y->_mp_d = malloc(two_i_2  * sizeof(mp_limb_t));
+      memcpy(y -> _mp_d, p->_mp_d+ABSSIZE(p) - two_i, two_i_2 * sizeof(mp_limb_t));
       y->_mp_alloc=two_i_2 ;	
       y->_mp_size=two_i_2 ;
     }
-  /* if ISNEG(p)
-     CHANGE_SIGN(y);*/
-   
+  
   size = ABSSIZE(y);
   for (j = 0; j < size; j++)
     {
