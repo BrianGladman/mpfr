@@ -95,6 +95,19 @@ check_nans (void)
       exit (1);
     }
 
+  /* Compute ~Pi/2 to check */
+  /* TOO SLOW: Disable it.
+  mpfr_set_prec (x, 20000);
+  mpfr_const_pi (x, GMP_RNDD); mpfr_div_2ui (x, x, 1, GMP_RNDN);
+  mpfr_set_prec (y, 24);
+  mpfr_cos (y, x, GMP_RNDN);
+  if (mpfr_cmp_str (y, "0.111001010110100011000001E-20000", 2, GMP_RNDN))
+    {
+      printf("Error computing cos(~Pi/2)\n"); 
+      mpfr_dump (y);
+      exit (1);
+      } */
+
   mpfr_clear (x);
   mpfr_clear (y);
 }
