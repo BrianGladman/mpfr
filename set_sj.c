@@ -30,7 +30,6 @@ MA 02111-1307, USA. */
 # include <inttypes.h>
 #endif
 
-#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
 #ifdef _MPFR_H_HAVE_INTMAX_T
