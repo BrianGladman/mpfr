@@ -64,7 +64,7 @@ mpfr_round_p (mp_limb_t *bp, mp_size_t bn, mp_exp_t err0, mp_prec_t prec)
   int s;
 
   err = (mp_prec_t) bn * BITS_PER_MP_LIMB;
-  if (MPFR_UNLIKELY (err0 < 0 || (mpfr_uexp_t) err0 <= prec || prec > err))
+  if (MPFR_UNLIKELY (err0 <= 0 || (mpfr_uexp_t) err0 <= prec || prec >= err))
     return 0;  /* can't round */
   err = MIN (err, (mpfr_uexp_t) err0);
 
