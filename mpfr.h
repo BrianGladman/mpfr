@@ -126,7 +126,7 @@ void mpfr_ui_sub _PROTO ((mpfr_ptr, unsigned long, mpfr_srcptr, mp_rnd_t));
 void mpfr_reldiff _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
 void mpfr_const_pi _PROTO ((mpfr_ptr, mp_rnd_t));
 void mpfr_const_log2 _PROTO ((mpfr_ptr, mp_rnd_t));
-void mpfr_const_euler _PROTO ((mpfr_ptr, mp_rnd_t));
+int mpfr_const_euler _PROTO ((mpfr_ptr, mp_rnd_t));
 int mpfr_log _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_exp _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_exp2 _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
