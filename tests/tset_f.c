@@ -101,13 +101,19 @@ main (void)
   mpf_set_ui (y, 0);
   for(r = 0 ; r < GMP_RND_MAX ; r++)
     {
-      inexact = mpfr_set_f(x, y, r);
-      if (!MPFR_IS_ZERO(x) || !MPFR_IS_POS(x) || inexact)
-	{
-	  printf("mpfr_set_f(x,0) failed for %s\n",
-		 mpfr_print_rnd_mode(r));
-	  exit(1);
-	}
+      int i;
+      for (i = -1; i <= 1; i++)
+        {
+          if (i)
+            mpfr_set_si (x, i, GMP_RNDN);
+          inexact = mpfr_set_f (x, y, r);
+          if (!MPFR_IS_ZERO(x) || !MPFR_IS_POS(x) || inexact)
+            {
+              printf ("mpfr_set_f(x,0) failed for %s, i = %d\n",
+                      mpfr_print_rnd_mode (r), i);
+              exit (1);
+            }
+        }
     }
 
   /* coverage test */

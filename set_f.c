@@ -31,22 +31,25 @@ mpfr_set_f (mpfr_ptr y, mpf_srcptr x, mp_rnd_t rnd_mode)
   int inexact, carry = 0;
   TMP_DECL(marker);
 
+  sx = ABS(SIZ(x)); /* number of limbs of the mantissa of x */
+
+  if (sx == 0) /* x is zero */
+    {
+      MPFR_CLEAR_FLAGS (y);
+      MPFR_SET_ZERO(y);
+      MPFR_SET_POS(y);
+      return 0; /* 0 is exact */
+    }
+
   if (SIZ(x) * MPFR_FROM_SIGN_TO_INT(MPFR_SIGN(y)) < 0)
     MPFR_CHANGE_SIGN (y);
 
   MPFR_CLEAR_FLAGS (y);
 
-  sx = ABS(SIZ(x)); /* number of limbs of the mantissa of x */
   sy = 1 + (MPFR_PREC(y) - 1) / BITS_PER_MP_LIMB;
   my = MPFR_MANT(y);
   mx = PTR(x);
 
-  if (sx == 0) /* x is zero */
-    {
-      MPFR_SET_ZERO(y);
-      return 0; /* 0 is exact */
-    }
-  
   count_leading_zeros(cnt, mx[sx - 1]);
 
   if (sy <= sx) /* we may have to round even when sy = sx */
