@@ -89,7 +89,7 @@ int check_large (double d, int n, char rnd)
   if (d==0.0) { /* try exp(Pi*sqrt(163)/3)-640320 */
     mpfr_set_d(x, 163.0, rnd);
     mpfr_sqrt(x, x, rnd);
-    mpfr_pi(y, rnd);
+    mpfr_const_pi(y, rnd);
     mpfr_mul(x, x, y, rnd);
     mpfr_div_ui(x, x, 3, rnd);
   }
