@@ -20,7 +20,7 @@ then
 	then
 	  LDADD="$LDADD $1/lib$2.a"
 	else
-	  AC_MSG_ERROR($2 not found)
+	   AC_MSG_ERROR($2 not found)
 	fi
   AC_MSG_RESULT(yes)
 else
