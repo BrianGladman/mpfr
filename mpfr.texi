@@ -1,7 +1,7 @@
 \input texinfo    @c -*-texinfo-*-
 @c %**start of header
 @setfilename mpfr.info
-@settitle MPFR 2.0.1
+@settitle MPFR 2.0.2
 @synindex tp fn
 @iftex
 @afourpaper
@@ -62,7 +62,7 @@ by the Foundation.
 
 @title MPFR
 @subtitle The Multiple Precision Floating-Point Reliable Library
-@subtitle Edition 2.0.1
+@subtitle Edition 2.0.2
 @subtitle April 2002
 
 @author The MPFR team, LORIA/INRIA Lorraine
@@ -108,7 +108,7 @@ by the Foundation.
 @top MPFR
 
 This manual documents how to install and use the Multiple Precision
-Floating-Point Reliable Library, version 2.0.1
+Floating-Point Reliable Library, version 2.0.2
 
 @end ifinfo
 
