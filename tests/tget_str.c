@@ -36,27 +36,32 @@ void check_large _PROTO((void));
 void
 check (double d, mp_rnd_t rnd)
 {
-  mpfr_t x; char *str; mp_exp_t e;
+  mpfr_t x;
+  char *str;
+  mp_exp_t e;
 
-  mpfr_init2(x, 53);
-  mpfr_set_d(x, d, rnd);
-  str = mpfr_get_str(NULL, &e, 10, 5, x, rnd);
-  mpfr_clear(x);
+  mpfr_init2 (x, 53);
+  mpfr_set_d (x, d, rnd);
+  str = mpfr_get_str (NULL, &e, 10, 5, x, rnd);
+  mpfr_clear (x);
   (*__gmp_free_func) (str, strlen (str) + 1);
 }
 
 void
 check3 (double d, mp_rnd_t rnd, char *res)
 {
-  mpfr_t x; char *str; mp_exp_t e;
+  mpfr_t x;
+  char *str;
+  mp_exp_t e;
 
   mpfr_init2 (x, 53);
   mpfr_set_d (x, d, rnd);
   str = mpfr_get_str (NULL, &e, 10, 5, x, rnd);
-  if (strcmp(str, res))
+  if (strcmp (str, res))
     {
       fprintf (stderr, "Error in mpfr_get_str for x=%1.20e\n", d);
       fprintf (stderr, "got %s instead of %s\n", str, res);
+      exit (1);
     }
   mpfr_clear (x);
   (*__gmp_free_func) (str, strlen (str) + 1);
@@ -69,22 +74,24 @@ check_small (void)
   char *s;
   mp_exp_t e;
   
-  mpfr_init(x);
+  mpfr_init (x);
 
   /* problem found by Fabrice Rouillier */
-  mpfr_set_prec(x, 63);
-  mpfr_set_d(x, 5e14, GMP_RNDN);
-  s = mpfr_get_str(NULL, &e, 10, 18, x, GMP_RNDU);
+  mpfr_set_prec (x, 63);
+  mpfr_set_d (x, 5e14, GMP_RNDN);
+  s = mpfr_get_str (NULL, &e, 10, 18, x, GMP_RNDU);
   (*__gmp_free_func) (s, strlen (s) + 1);
 
   /* bug found by Johan Vervloet */
-  mpfr_set_prec(x, 6);
-  mpfr_set_d(x, 688.0, GMP_RNDN);
-  s = mpfr_get_str(NULL, &e, 2, 4, x, GMP_RNDU);
-  if (strcmp(s, "1011") || (e!=10)) {
-    fprintf(stderr, "Error in mpfr_get_str: 688 printed up to 4 bits should give 1.011e9\ninstead of ");
-    mpfr_out_str(stderr, 2, 4, x, GMP_RNDU); putchar('\n');
-    exit(1);
+  mpfr_set_prec (x, 6);
+  mpfr_set_d (x, 688.0, GMP_RNDN);
+  s = mpfr_get_str (NULL, &e, 2, 4, x, GMP_RNDU);
+  if (strcmp (s, "1011") || (e != 10))
+    {
+      fprintf(stderr, "Error in mpfr_get_str: 688 printed up to 4 bits should give 1.011e9\ninstead of ");
+    mpfr_out_str (stderr, 2, 4, x, GMP_RNDU);
+    putchar ('\n');
+    exit (1);
   }
   (*__gmp_free_func) (s, strlen (s) + 1);
 
@@ -119,6 +126,7 @@ check_large (void)
                s + 994);
       exit (1);
     }
+  (*__gmp_free_func) (s, strlen (s) + 1);
   mpfr_clear (x);
 }
 
