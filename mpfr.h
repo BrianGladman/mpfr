@@ -69,6 +69,7 @@ typedef __gmp_const __mpfr_struct *mpfr_srcptr;
 #define CHANGE_SIGN(x) (SIZE(x) = SIZE(x) ^ (1<<31))
 #define PREC(x) ((x)->_mp_prec)
 #define NOTZERO(x) (ABSSIZE(x))
+#define SET_ZERO(x) (SIZE(x) = 0)
 
 /* reallocates the mantissa of x to q bits and sets the precision to q */
 #define _mpfr_realloc(x, q) { \
