@@ -1,6 +1,6 @@
-/* Test file for mpfr_cmp_d.
+/* Test file for mpfr_cmp_ld.
 
-Copyright 1999, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+Copyright 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -18,7 +18,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
-
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -31,38 +30,38 @@ main (void)
 
   tests_start_mpfr ();
 
-  mpfr_init2(x, IEEE_DBL_MANT_DIG);
-
-  mpfr_set_d (x, 2.34763465, GMP_RNDN);
-  if (mpfr_cmp_d(x, 2.34763465)!=0) {
-    printf("Error in mpfr_cmp_d 2.34763465 and ");
+  mpfr_init2(x, MPFR_LDBL_MANT_DIG);
+  
+  mpfr_set_ld (x, 2.34763465, GMP_RNDN);
+  if (mpfr_cmp_ld(x, 2.34763465)!=0) {
+    printf("Error in mpfr_cmp_ld 2.34763465 and ");
     mpfr_out_str(stdout, 10, 0, x, GMP_RNDN); putchar('\n');
     exit(1);
   }
-  if (mpfr_cmp_d(x, 2.345)<=0) {
-    printf("Error in mpfr_cmp_d 2.345 and ");
+  if (mpfr_cmp_ld(x, 2.345)<=0) {
+    printf("Error in mpfr_cmp_ld 2.345 and ");
     mpfr_out_str(stdout, 10, 0, x, GMP_RNDN); putchar('\n');
     exit(1);
   }
-  if (mpfr_cmp_d(x, 2.4)>=0) {
-    printf("Error in mpfr_cmp_d 2.4 and ");
+  if (mpfr_cmp_ld(x, 2.4)>=0) {
+    printf("Error in mpfr_cmp_ld 2.4 and ");
     mpfr_out_str(stdout, 10, 0, x, GMP_RNDN); putchar('\n');
     exit(1);
   }
 
   mpfr_set_ui (x, 0, GMP_RNDZ);
   mpfr_neg (x, x, GMP_RNDZ);
-  if (mpfr_cmp_d (x, 0.0)) {
-    printf("Error in mpfr_cmp_d 0.0 and ");
+  if (mpfr_cmp_ld (x, 0.0)) {
+    printf("Error in mpfr_cmp_ld 0.0 and ");
     mpfr_out_str(stdout, 10, 0, x, GMP_RNDN); putchar('\n');
     exit(1);
   }
 
   mpfr_set_ui (x, 0, GMP_RNDN);
   mpfr_ui_div (x, 1, x, GMP_RNDU);
-  if (mpfr_cmp_d (x, 0.0) == 0)
+  if (mpfr_cmp_ld (x, 0.0) == 0)
     {
-      printf ("Error in mpfr_cmp_d (Inf, 0)\n");
+      printf ("Error in mpfr_cmp_ld (Inf, 0)\n");
       exit (1);
     }
 
@@ -71,3 +70,5 @@ main (void)
   tests_end_mpfr ();
   return 0;
 }
+
+

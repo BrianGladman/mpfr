@@ -290,6 +290,7 @@ int mpfr_expm1 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t));
 
 int mpfr_cmp3 _MPFR_PROTO ((mpfr_srcptr, mpfr_srcptr, int));
 int mpfr_cmp_d _MPFR_PROTO ((mpfr_srcptr, double));
+int mpfr_cmp_ld _MPFR_PROTO ((mpfr_srcptr, long double));
 int mpfr_cmpabs _MPFR_PROTO ((mpfr_srcptr, mpfr_srcptr));
 int mpfr_cmp_ui _MPFR_PROTO ((mpfr_srcptr, unsigned long int));
 int mpfr_cmp_si _MPFR_PROTO ((mpfr_srcptr, long int));
