@@ -7,18 +7,42 @@ Installation:
 - from Kevin Ryde <user42@zip.com.au>:
    Determine the exp2/exp3 thresholds using tune/tuneup.c.
 
-- problems when mpfr uses a different compiler (gcc) than gmp (for example
-	cc under Solaris 2.7).
+Changes in existing functions:
+
+- invert 2nd and 3rd arguments of mpfr_round_prec (to be coherent with
+	mpfr_set_prec)
+- merge mpfr_inp_str and mpfr_set_str (cf glibc sscanf/fscanf)
 
 New functions to implement:
 
 - those from LIA: missing secant, cosecant, cotangent (trigo/hyperbolic)
 - nextafter/nextforward : X + epsilon if X < Y, X - epsilon if X > Y
 - nextabove/nextbelow ?
+- mpfr_get_exp / mpfr_set_exp
+- mpfr_greater_p (Kevin, Vincent ok)
+                         =     <     >     unordered
+mpfr_greater_p           0     0     1     0
+mpfr_greaterequal_p      1     0     1     0
+mpfr_less_p              0     1     0     0
+mpfr_lessequal_p         1     1     0     0
+mpfr_lessgreater_p       0     1     1     0
+mpfr_equal_p             1     0     0     0
+mpfr_unordered_p         0     0     0     1
+
+- mpfr_set_f (MPF -> float) or mpfr_strtof, mpfr_set_ld or mpfr_strtold
+	(idem for mpfr_get_*)
 
 Rounding:
 
+- mpfr_pow -> loops when exact (for example 4^(1/2)).
+- mpfr_pow isn't completely specified (concerning signed zeros).
+
 Efficiency:
+
+- implement range reduction in sin/cos/tan for large arguments
+	(currently too slow for 2^1024)
+- mpfr_asin/acos are too slow for small values (2^(-1021) for example)
+- idem for mpfr_atanh (2^(-1021) for example)
 
 Miscellaneous:
 
@@ -27,6 +51,7 @@ Miscellaneous:
 - add mpfr_get_ld for 'long double' [asked by J-C Fauge`re] ?
   (exists since K&R, but has not necessarily a greater precision than double)
   cf http://anubis.dkuug.dk/jtc1/sc22/wg14/www/docs/n869/
+	[cf above]
 
 - from Kevin Ryde <user42@zip.com.au>:
    Also for pi.c, a pre-calculated compiled-in pi to a few thousand
@@ -40,10 +65,14 @@ Miscellaneous:
 - rewrite mpfr_get_str and mpfr_set_str to use mpn_get_str and mpn_set_str.
 	(Torbjorn Granlund <tege@swox.com>, 30 Jan 2002)
 
-- mpfr_pow isn't completely specified (concerning signed zeros).
-
-- rename mpfr_isinteger to mpfr_integer_p.
+- rename (and rewrite) mpfr_isinteger to mpfr_integer_p.
 	(Kevin Ryde, 05 Mar 2002)
 
-- some comparison functions aren't completely specified (concerning NaN).
-  Add new comparison functions (eq, ne, lt, gt, le, ge)?
+- use GMP rand/srand functions instead for SEED_RAND (time(NULL)). Kevin:
+  GMP tests/misc.c has a scheme to print the seed chosen and allow for a
+  re-run with a given seed.  If you moved towards _gmp_rand and friends
+  at some stage you could probably use that scheme almost unchanged.
+  An advantage of _gmp_rand of course is that it's the same on all
+  systems, apart from limb size, so you're not at the mercy of random or
+  lrand48, etc.
+
