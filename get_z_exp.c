@@ -63,7 +63,7 @@ mpfr_get_z_exp (mpz_ptr z, mpfr_srcptr f)
   else
     MPN_COPY (PTR(z), MPFR_MANT(f), fn);
 
-  SIZ(z) = fn;
+  SIZ(z) = MPFR_SIGN(f) < 0 ? -fn : fn;
 
   MPFR_ASSERTN((mp_exp_unsigned_t) MPFR_EXP(f) - MPFR_EMIN_MIN
                >= (mp_exp_unsigned_t) MPFR_PREC(f));
