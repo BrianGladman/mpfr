@@ -203,12 +203,14 @@ int
           mpz_add(pi, pi, tmp);
         }
       inex = mpfr_set_z (x, pi, rnd_mode);
+#ifdef WANT_ASSERT
       mpfr_init2 (y, mpfr_get_prec(x));
       mpz_add_ui (pi, pi, N+1);
       mpfr_set_z (y, pi, rnd_mode);
       MPFR_ASSERTN (mpfr_cmp (x, y) == 0);
-      MPFR_SET_EXP (x, MPFR_GET_EXP(x) - 4*N);
       mpfr_clear (y);
+#endif
+      MPFR_SET_EXP (x, MPFR_GET_EXP(x) - 4*N);
       mpz_clear(pi);
       mpz_clear(num);
       mpz_clear(den);
