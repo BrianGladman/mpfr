@@ -17,3 +17,7 @@ Miscellaneous:
 - specify exponent size (suggestion from Ben Hinkle <bhinkle4@juno.com>)
 
 - get rid of <math.h> whenever possible
+
+- add mpfr_get_ld for 'long double' [asked by J-C Fauge`re] ?
+  (exists since K&R, but has not necessarily a greater precision than double)
+  cf http://anubis.dkuug.dk/jtc1/sc22/wg14/www/docs/n869/
