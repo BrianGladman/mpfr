@@ -131,24 +131,20 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x ,mpfr_srcptr y ,mpfr_srcptr z , mp_rnd_t rnd
               goto fma_paul;
             }
 
-            not_exact=0;
-
             /* reactualisation of the precision */
             mpfr_set_prec(u,Nt);             
             mpfr_set_prec(t,Nt);             
             
             /* computations */
-            fl1=mpfr_mul(u,x,y,GMP_RNDN);
-            if(fl1) not_exact=1;
+            not_exact = mpfr_mul (u, x, y, GMP_RNDN);
 
-            fl2=mpfr_add(t,z,u,GMP_RNDN);
-            if(fl2) not_exact=1;        
+            not_exact |= mpfr_add (t, z, u, GMP_RNDN);
 
             /*Nt=Nt+(d+1)+_mpfr_ceil_log2(Nt); */
-            d = MPFR_EXP(u)-MPFR_EXP(t);
+            d = MPFR_EXP(u) - MPFR_EXP(t);
 
             /* estimation of the error */
-            err=Nt-(d+1);
+            err = Nt - (d+1);
 
             /* actualisation of the precision */
             Nt +=(1-first_pass)*d + first_pass*10;
@@ -156,7 +152,8 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x ,mpfr_srcptr y ,mpfr_srcptr z , mp_rnd_t rnd
 
             first_pass=1;
 
-          } while ( (fl1!=fl2) || (err <0) || ((!mpfr_can_round(t,err,GMP_RNDN,rnd_mode,Ns)) && not_exact ));
+          } while (not_exact && ((err < 0) ||
+                           !mpfr_can_round (t, err, GMP_RNDN, rnd_mode, Ns)));
 
                 inexact = mpfr_set (s, t, rnd_mode);
                 mpfr_clear(t);
