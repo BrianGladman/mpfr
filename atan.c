@@ -78,7 +78,7 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
   int realprec;
   int estimated_delta;
   /* calculation of the floor */
-  int exptol;
+  mp_exp_t exptol;
 
   int N0;
   int logn;
@@ -111,7 +111,7 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   if (MPFR_IS_ZERO(x))
     {
-      mpfr_set_ui(arctangent, 0, GMP_RNDN);
+      mpfr_set_ui (arctangent, 0, GMP_RNDN);
       return 0; /* exact result */
     }
 
@@ -180,17 +180,17 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	mpfr_set(sk, xp, GMP_RNDN);
 
     /* Assignation  */
-    mpfr_set_ui(tmp_arctan, 0, GMP_RNDN);
+    mpfr_set_ui (tmp_arctan, 0, GMP_RNDN);
     twopoweri = 1;
     for(i = 0; i <= N0; i++){
-      mpfr_mul_2exp(tmp, sk, twopoweri, GMP_RNDD);
+      mpfr_mul_2exp (tmp, sk, twopoweri, GMP_RNDD);
       /* Calculation of  trunc(tmp) --> mpz */
-      mpfr_trunc(ukf, tmp);
-      exptol=mpz_set_fr(ukz, ukf);
+      mpfr_trunc (ukf, tmp);
+      exptol = mpz_set_fr (ukz, ukf);
       if (exptol>0)
-	  mpz_mul_2exp(ukz, ukz, exptol);
+	  mpz_mul_2exp (ukz, ukz, exptol);
       else
-	  mpz_tdiv_q_2exp(ukz, ukz, - (unsigned long int) exptol);
+	  mpz_tdiv_q_2exp (ukz, ukz, (unsigned long int) (-exptol));
 
       /* Calculation of arctan(Ak) */
       mpz_mul(square, ukz, ukz);
