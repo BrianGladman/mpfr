@@ -207,7 +207,7 @@ MPFR_LOG_OUTPUT:   Log the outputs
 MPFR_LOG_TIME:     Log the time spent inside the function.
 MPFR_LOG_INTERNAL: Log the intermediary variables.
 MPFR_LOG_MSG:      Log the messages sent by MPFR.
-MPFR_LOG_BADCASE:  Log what the Ziv Loops do.
+MPFR_LOG_ZIV:       Log what the Ziv Loops do.
 
 Define them. Run your program, and view `mpfr.log`.
 

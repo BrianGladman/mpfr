@@ -106,7 +106,7 @@ mpfr_log_begin (void)
     mpfr_log_type |= MPFR_LOG_INTERNAL_F;
   if (getenv ("MPFR_LOG_MSG") != NULL)
     mpfr_log_type |= MPFR_LOG_MSG_F;
-  if (getenv ("MPFR_LOG_BADCASE") != NULL)
+  if (getenv ("MPFR_LOG_ZIV") != NULL)
     mpfr_log_type |= MPFR_LOG_BADCASE_F;
 
   time (&tt);
