@@ -724,6 +724,13 @@ Note that the input 0 is converted to +0 by @code{mpfr_set_ui},
 @code{mpfr_set_f}, regardless of the rounding mode.
 @end deftypefun
 
+@deftypefun int mpfr_set_ui_2exp (mpfr_t @var{rop}, unsigned long int @var{op}, mp_exp_t @var{e}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_set_si_2exp (mpfr_t @var{rop}, long int @var{op}, mp_exp_t @var{e}, mp_rnd_t @var{rnd})
+Set the value of @var{rop} from @m{@var{op} \times 2^e, @var{op} multiplied by
+two to the power @var{e}}, rounded towards the given direction @var{rnd}.
+Note that the input 0 is converted to +0.
+@end deftypefun
+
 @deftypefun int mpfr_set_str (mpfr_t @var{x}, const char *@var{s}, int @var{base}, mp_rnd_t @var{rnd})
 Set @var{x} to the value of the whole string @var{s} in base @var{base}
 (between 2 and 36), rounded in direction @var{rnd}.
