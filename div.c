@@ -27,7 +27,6 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-#define MPFR_DEBUG_LEVEL 30
 #if MPFR_DEBUG_LEVEL > 20
 void affiche_mp(mp_srcptr, mp_size_t); 
 
