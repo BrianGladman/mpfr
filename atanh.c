@@ -71,7 +71,7 @@ mpfr_atanh (y, xt, rnd_mode)
       MPFR_SET_SAME_SIGN(y,x);
       if(flag_neg)
 	MPFR_CHANGE_SIGN(y);
-      return 1;
+      return 0;
     }
 
   MPFR_CLEAR_INF(y);
