@@ -1,3 +1,5 @@
+#include <math.h>
+
 /* generate a random double using the whole range of possible values,
    including denormalized numbers, NaN, infinities, ... */
 double drand()
