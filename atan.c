@@ -29,7 +29,7 @@ MA 02111-1307, USA. */
 #define CST   2.27  /* CST=1+ln(2.4)/ln(2) */
 #define CST2  1.45  /* CST2=1/ln(2) */
 
-int mpfr_atan_aux _PROTO((mpfr_ptr, mpz_srcptr, int, int));
+static int mpfr_atan_aux _PROTO((mpfr_ptr, mpz_srcptr, int, int));
 
 #undef B
 #define A
@@ -51,14 +51,7 @@ int mpfr_atan_aux _PROTO((mpfr_ptr, mpz_srcptr, int, int));
 #undef GENERIC
 
 int
-#if __STDC__
 mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
-#else
-mpfr_atan (arctangent, x, rnd_mode)
-     mpfr_ptr arctangent;
-     mpfr_srcptr x; 
-     mp_rnd_t rnd_mode;
-#endif
 {
   mpfr_t Pisur2;
   mpfr_t xp;

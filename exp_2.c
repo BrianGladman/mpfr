@@ -26,11 +26,11 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-int mpfr_exp2_aux      _PROTO ((mpz_t, mpfr_srcptr, int, int*));
-int mpfr_exp2_aux2     _PROTO ((mpz_t, mpfr_srcptr, int, int*));
-mp_exp_t mpz_normalize _PROTO ((mpz_t, mpz_t, int));
-int mpz_normalize2     _PROTO ((mpz_t, mpz_t, int, int));
-int mpfr_exp_2          _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
+static int mpfr_exp2_aux      _PROTO ((mpz_t, mpfr_srcptr, int, int*));
+static int mpfr_exp2_aux2     _PROTO ((mpz_t, mpfr_srcptr, int, int*));
+static mp_exp_t mpz_normalize _PROTO ((mpz_t, mpz_t, int));
+static int mpz_normalize2     _PROTO ((mpz_t, mpz_t, int, int));
+int mpfr_exp_2                _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 
 /* returns floor(sqrt(n)) */
 unsigned long
@@ -72,7 +72,7 @@ _mpfr_cuberoot (unsigned long n)
 /* if k = the number of bits of z > q, divides z by 2^(k-q) and returns k-q.
    Otherwise do nothing and return 0.
  */
-mp_exp_t
+static mp_exp_t
 #if __STDC__
 mpz_normalize (mpz_t rop, mpz_t z, int q)
 #else
@@ -99,7 +99,7 @@ mpz_normalize (rop, z, q)
    if expz < target, shift z by (target-expz) bits to the right.
    Returns target.
 */
-int
+static int
 #if __STDC__
 mpz_normalize2 (mpz_t rop, mpz_t z, int expz, int target)
 #else
@@ -251,16 +251,8 @@ mpfr_exp_2 (y, x, rnd_mode)
    s must have at least qn+1 limbs (qn should be enough, but currently fails
    since mpz_mul_2exp(s, s, q-1) reallocates qn+1 limbs)
 */
-int
-#if __STDC__
-mpfr_exp2_aux(mpz_t s, mpfr_srcptr r, int q, int *exps)
-#else
-mpfr_exp2_aux(s, r, q, exps)
-     mpz_t s;
-     mpfr_srcptr r;
-     int q;
-     int *exps;
-#endif
+static int
+mpfr_exp2_aux (mpz_t s, mpfr_srcptr r, int q, int *exps)
 {
   int l, dif, qn;
   mpz_t t, rr; mp_exp_t expt, expr;
@@ -308,16 +300,8 @@ mpfr_exp2_aux(s, r, q, exps)
    Version using mpz. ss must have at least (sizer+1) limbs.
    The error is bounded by (l^2+4*l) ulps where l is the return value.
 */
-int
-#if __STDC__
+static int
 mpfr_exp2_aux2 (mpz_t s, mpfr_srcptr r, int q, int *exps)
-#else
-mpfr_exp2_aux2 (s, r, q, exps)
-     mpz_t s;
-     mpfr_srcptr r;
-     int q;
-     int *exps;
-#endif
 {
   int expr, l, m, i, sizer, *expR, expt, ql;
   unsigned long int c;

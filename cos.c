@@ -25,7 +25,7 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
-int mpfr_cos2_aux       _PROTO ((mpfr_ptr, mpfr_srcptr));
+static int mpfr_cos2_aux       _PROTO ((mpfr_ptr, mpfr_srcptr));
 
 int 
 #if __STDC__
@@ -106,7 +106,7 @@ mpfr_cos (y, x, rnd_mode)
    Returns the index l0 of the last term (-1)^l r^l/(2l)!.
    The absolute error on s is at most 2 * l0 * 2^(-m).
 */
-int
+static int
 #if __STDC__
 mpfr_cos2_aux (mpfr_ptr s, mpfr_srcptr r)
 #else
