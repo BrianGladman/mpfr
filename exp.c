@@ -1,6 +1,6 @@
 /* mpfr_exp -- exponential of a floating-point number
 
-Copyright 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation.
+Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation.
 Contributed by the Spaces project.
 
 This file is part of the MPFR Library.
@@ -86,9 +86,9 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     {
       int signx = MPFR_SIGN(x);
 
-      if (MPFR_IS_NEG_SIGN(signx) && (rnd_mode == GMP_RNDD))
+      MPFR_SET_POS(y);
+      if (MPFR_IS_NEG_SIGN(signx) && rnd_mode == GMP_RNDD)
         {
-          MPFR_SET_POS(y);
           mpfr_setmax (y, 0);  /* y = 1 - epsilon */
           return -1;
         }
