@@ -22,6 +22,43 @@ MA 02111-1307, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+/*
+ * Set f to z, choosing the smallest precision for f
+ * so that z = f*(2^BPML)*zs*2^(RetVal)
+ */
+static int
+set_z (mpfr_ptr f, mpz_srcptr z, mp_size_t *zs)
+{
+  mp_limb_t *p;
+  mp_size_t s;
+  int c;
+  mp_prec_t pf;
+
+  MPFR_ASSERTD (mpz_sgn (z) != 0);
+
+  /* Remove useless ending 0 */
+  for (p = PTR (z), s = *zs = ABS (SIZ (z)) ; *p == 0; p++, s--)
+    MPFR_ASSERTD (s >= 0);
+
+  /* Get working precision */
+  count_leading_zeros (c, p[s-1]);
+  pf = s * BITS_PER_MP_LIMB - c;
+  if (pf < MPFR_PREC_MIN)
+    pf = MPFR_PREC_MIN;
+  mpfr_init2 (f, pf);
+
+  /* Copy Mantissa */
+  if (MPFR_LIKELY (c))
+    mpn_lshift (MPFR_MANT (f), p, s, c);
+  else
+    MPN_COPY (MPFR_MANT (f), p, s);
+  
+  MPFR_SET_SIGN (f, mpz_sgn (z));
+  MPFR_SET_EXP (f, 0);
+
+  return -c;
+}
+
 /* set f to the rational q */
 int
 mpfr_set_q (mpfr_ptr f, mpq_srcptr q, mp_rnd_t rnd)
@@ -29,49 +66,67 @@ mpfr_set_q (mpfr_ptr f, mpq_srcptr q, mp_rnd_t rnd)
   mpz_srcptr num, den;
   mpfr_t n, d;
   int inexact;
-  mp_prec_t pnum, pden;
+  int cn, cd;
+  long shift;
+  mp_size_t sn, sd;
   MPFR_SAVE_EXPO_DECL (expo);
 
   num = mpq_numref (q);
+  den = mpq_denref (q);
+  /* NAN and INF for mpq are not really documented, but could be found */
   if (MPFR_UNLIKELY (mpz_sgn (num) == 0))
     {
-      MPFR_SET_ZERO (f);
-      MPFR_SET_POS (f);
+      if (MPFR_UNLIKELY (mpz_sgn (den) == 0))
+	{
+	  MPFR_SET_NAN (f);
+	  MPFR_RET_NAN;
+	}
+      else
+	{
+	  MPFR_SET_ZERO (f);
+	  MPFR_SET_POS (f);
+	  MPFR_RET (0);
+	}
+    }
+  if (MPFR_UNLIKELY (mpz_sgn (den) == 0))
+    {
+      MPFR_SET_INF (f);
+      MPFR_SET_SIGN (f, mpz_sgn (num));
       MPFR_RET (0);
     }
-  den = mpq_denref (q);
-  pnum = mpz_sizeinbase (num, 2);
-  pden = mpz_sizeinbase (den, 2);
- 
-  /* Check for underflow */
-  if (MPFR_UNLIKELY ((mp_exp_t) pnum - (mp_exp_t) pden+1 <= __gmpfr_emin - 1))
-    {
-      if (rnd == GMP_RNDN 
-	  && ((mp_exp_t) pnum-pden+1 <= __gmpfr_emin - 2
-	      || mpq_cmp_si (q, 1, __gmpfr_emin - 2) <= 0))
-	rnd = GMP_RNDZ;
-      return mpfr_set_underflow (f, rnd, mpq_sgn (q));
-    }
-
-  if (MPFR_UNLIKELY (pnum < MPFR_PREC_MIN))
-    pnum = MPFR_PREC_MIN;
-  if (MPFR_UNLIKELY (pden < MPFR_PREC_MIN))
-    pden = MPFR_PREC_MIN;
 
   MPFR_SAVE_EXPO_MARK (expo);
-  mpfr_init2 (n, pnum);
-  inexact = mpfr_set_z (n, num, GMP_RNDZ);
-  MPFR_ASSERTN (inexact == 0);
-  /* result is exact: overflow can occur but we can't handle it */
 
-  mpfr_init2 (d, pden);
-  inexact = mpfr_set_z (d, den, GMP_RNDZ);
-  MPFR_ASSERTN (inexact == 0);
-  /* result is exact: overflow can occur but we can't handle it */
+  cn = set_z (n, num, &sn);
+  cd = set_z (d, den, &sd);
+  
+  sn -= sd;
+  if (MPFR_UNLIKELY (sn > MPFR_EMAX_MAX / BITS_PER_MP_LIMB))
+    {
+      inexact = mpfr_set_overflow (f, rnd, MPFR_SIGN (f));
+      goto end;
+    }
+  if (MPFR_UNLIKELY (sn < MPFR_EMIN_MIN / BITS_PER_MP_LIMB -1))
+    {
+      if (rnd == GMP_RNDN)
+	rnd = GMP_RNDZ;
+      inexact = mpfr_set_underflow (f, rnd, MPFR_SIGN (f));
+      goto end;
+    }
 
   inexact = mpfr_div (f, n, d, rnd);
-  mpfr_clear (n);
-  mpfr_clear (d);
+  shift = BITS_PER_MP_LIMB*sn+cn-cd;
+  MPFR_ASSERTD (shift == BITS_PER_MP_LIMB*sn+cn-cd);
+  cd = mpfr_mul_2si (f, f, shift, rnd);
   MPFR_SAVE_EXPO_FREE (expo);
-  return mpfr_check_range (f, inexact, rnd);
+  if (MPFR_UNLIKELY (cd != 0))
+    inexact = cd;
+  else
+    inexact = mpfr_check_range (f, inexact, rnd);
+ end:
+  mpfr_clear (d);
+  mpfr_clear (n);
+  return inexact;
 }
+
+
