@@ -33,7 +33,6 @@ fi
 dnl Set the OS-dependent flags.
 case $OS_TYPE in
 	HP-UX*)
-		AC_DEFINE(hpux)
 		if test -n "$GCC"; then
 		  LDFLAGS="-Xlinker +allowunsats $LDFLAGS"
 		fi
