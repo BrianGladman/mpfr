@@ -30,6 +30,8 @@ MA 02111-1307, USA. */
    Assumes b>=c, which implies MPFR_EXP(b)>=MPFR_EXP(c).
    if b=c, returns prec(b).
 
+   Assumes neither of b or c is NaN or +/- infinity.
+
    In other terms mpfr_cmp2 (b, c) returns EXP(b) - EXP(b-c).
 */
 unsigned long
@@ -38,6 +40,8 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c)
   mp_limb_t *bp, *cp, bb, cc = 0, lastc = 0, dif, high_dif = 0;
   long bn, cn, z;
   unsigned long diff_exp, res = 0;
+
+  if (MPFR_IS_ZERO(c)) return 0;
 
   bp = MPFR_MANT(b);
   cp = MPFR_MANT(c);
