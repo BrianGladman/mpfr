@@ -1,6 +1,6 @@
 /* Test file for mpfr_atanh.
 
-Copyright 2001, 2002, 2003, 2004 Free Software Foundation.
+Copyright 2001, 2002, 2003, 2004, 2005 Free Software Foundation.
 Adapted from tatan.c.
 
 This file is part of the MPFR Library.
@@ -32,6 +32,7 @@ static void
 special (void)
 {
   mpfr_t x, y, z;
+  int i;
 
   mpfr_init (x);
   mpfr_init (y);
@@ -53,20 +54,24 @@ special (void)
       exit (1);
     }
 
-  /* atanh(+/-2) = NaN */
-  mpfr_set_ui (x, 2, GMP_RNDN);
-  mpfr_atanh (y, x, GMP_RNDN);
-  if (!mpfr_nan_p (y))
+  /* atanh(+/-x) = NaN if x > 1 */
+  for (i = 3; i <= 6; i++)
     {
-      printf ("Error: mpfr_atanh(2) <> NaN\n");
-      exit (1);
-    }
-  mpfr_neg (x, x, GMP_RNDN);
-  mpfr_atanh (y, x, GMP_RNDN);
-  if (!mpfr_nan_p (y))
-    {
-      printf ("Error: mpfr_atanh(-2) <> NaN\n");
-      exit (1);
+      mpfr_set_si (x, i, GMP_RNDN);
+      mpfr_div_2ui (x, x, 1, GMP_RNDN);
+      mpfr_atanh (y, x, GMP_RNDN);
+      if (!mpfr_nan_p (y))
+        {
+          printf ("Error: mpfr_atanh(%d/2) <> NaN\n", i);
+          exit (1);
+        }
+      mpfr_neg (x, x, GMP_RNDN);
+      mpfr_atanh (y, x, GMP_RNDN);
+      if (!mpfr_nan_p (y))
+        {
+          printf ("Error: mpfr_atanh(-%d/2) <> NaN\n", i);
+          exit (1);
+        }
     }
 
   /* atanh(+0) = +0, atanh(-0) = -0 */
