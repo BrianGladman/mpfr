@@ -7,17 +7,29 @@ Compatibility with MPF:
 - write a mpfr2mpfr.h header file with macros for compatibility with MPF, for
   example #define mpf_add(x,y,z) mpfr_add(x,y,z,GMP_RNDN) [GH]
 
-- check missing functions for complete compatibility with MPF [GH]
+- implement missing functions for complete compatibility with MPF:
+mpfr_abs
+mpfr_add_ui
+mpfr_ceil
+mpfr_dump
+mpfr_eq
+mpfr_floor
+mpfr_inp_str
+mpfr_random2
+mpfr_reldiff
+mpfr_set_prec_raw
+mpfr_size
+mpfr_sqrt_ui
+mpfr_trunc
+mpfr_ui_div
+mpfr_ui_sub
+mpfr_urandomb
+mpfr_sgn
 
 Changes in existing functions:
 
-- rewrite output routines (mpfr_get_str) [PZ]
-
 - improve mpfr_exp, currently in O(sqrt(n)*M(n)), to use algorithms in
   O(n^(1/3)*M(n)) or even O(M(n)*log(n)) [PZ]
-
-- modify mpfr_div to use directly mpn_divrem, now that Burnikel/Ziegler
-  algorithm is in GMP [PZ]
 
 New functions to implement:
 
