@@ -24,9 +24,7 @@ MA 02111-1307, USA. */
 #include <unistd.h>
 #include "gmp.h"
 #include "mpfr.h"
-#ifdef TEST
 #include "mpfr-test.h"
-#endif
 
 void check _PROTO((double, double, unsigned int, unsigned int, 
 		   unsigned int, unsigned int, double)); 
@@ -35,11 +33,9 @@ void check24 _PROTO((float, float, unsigned int, float));
 void check_float _PROTO((void)); 
 void check_sign _PROTO((void)); 
 
-#define MINNORM 2.2250738585072013831e-308 /* 2^(-1022), smallest normalized */
-
 /* checks that x*y gives the same results in double
    and with mpfr with 53 bits of precision */
-void check(double x, double y, unsigned int rnd_mode, unsigned int px, 
+void check (double x, double y, mp_rnd_t rnd_mode, unsigned int px, 
 	   unsigned int py, unsigned int pz, double res)
 {
   double z1, z2; mpfr_t xx, yy, zz;
@@ -66,7 +62,7 @@ void check(double x, double y, unsigned int rnd_mode, unsigned int px,
   mpfr_clear(xx); mpfr_clear(yy); mpfr_clear(zz);
 }
 
-void check53(double x, double y, unsigned int rnd_mode, double z1)
+void check53 (double x, double y, mp_rnd_t rnd_mode, double z1)
 {
   double z2; mpfr_t xx, yy, zz;
 
@@ -88,7 +84,7 @@ void check53(double x, double y, unsigned int rnd_mode, double z1)
 
 /* checks that x*y gives the same results in double
    and with mpfr with 24 bits of precision */
-void check24(float x, float y, unsigned int rnd_mode, float z1)
+void check24 (float x, float y, mp_rnd_t rnd_mode, float z1)
 {
   float z2; mpfr_t xx, yy, zz;
 
@@ -109,7 +105,7 @@ void check24(float x, float y, unsigned int rnd_mode, float z1)
 
 /* the following examples come from the paper "Number-theoretic Test 
    Generation for Directed Rounding" from Michael Parks, Table 1 */
-void check_float()
+void check_float ()
 {
   check24(8388609.0,  8388609.0, GMP_RNDN, 70368760954880.0);
   check24(16777213.0, 8388609.0, GMP_RNDN, 140737479966720.0);
@@ -153,7 +149,7 @@ void check_float()
 }
 
 /* check sign of result */
-void check_sign()
+void check_sign ()
 {
   mpfr_t a, b;
 
@@ -167,7 +163,7 @@ void check_sign()
   mpfr_clear(a); mpfr_clear(b);
 }
 
-int main(argc,argv) int argc; char *argv[];
+int main (int argc, char *argv[])
 {
 #ifdef TEST
   double x, y, z; int i, prec, rnd_mode;
