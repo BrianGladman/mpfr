@@ -187,7 +187,6 @@ mpfr_div (r, u, v, rnd_mode)
 #ifdef DEBUG
 	  printf("Increasing the precision.\n"); 
 #endif
-	  printf("#"); 
 	  TMP_FREE(marker); 
 	}
     }
@@ -248,6 +247,6 @@ mpfr_div (r, u, v, rnd_mode)
   MPN_COPY(r->_mp_d, rp + rsize - rrsize, rrsize); 
   MANT(r) [0] &= ~(((mp_limb_t)1 << (BITS_PER_MP_LIMB - 
 		    (PREC(r) & (BITS_PER_MP_LIMB - 1)))) - 1) ; 
-  
+
   TMP_FREE (marker);
 }
