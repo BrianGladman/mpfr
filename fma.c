@@ -120,7 +120,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
   {
     /* Declaration of the intermediary variable */
     mpfr_t t, u;       
-    int d;
+    mp_exp_t d;
     int accu = 0;
 
     /* Declaration of the size variable */
@@ -128,7 +128,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
     mp_prec_t Ny = MPFR_PREC(y);   /* Precision of input variable */
     mp_prec_t Nz = MPFR_PREC(z);   /* Precision of input variable */
     mp_prec_t Ns = MPFR_PREC(s);   /* Precision of output variable */
-    long int Nt;   /* Precision of the intermediary variable */
+    mp_prec_t Nt;   /* Precision of the intermediary variable */
     long int err;  /* Precision of error */
     unsigned int first_pass = 0; /* temporary precision */
 
@@ -178,7 +178,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
         d = MPFR_EXP(u) - MPFR_EXP(t);
 
         /* estimate of the error */
-        err = Nt - (d+1);
+        err = (mp_exp_t) Nt - (d+1);
 
         /* actualisation of the precision */
         Nt += (1 - first_pass) * d + first_pass * 10;
