@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h> 
-
+#include <strings.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
