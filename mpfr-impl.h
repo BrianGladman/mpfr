@@ -346,6 +346,12 @@ long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CO
   MPFR_ASSERTD( (s) >= 0 && (s) < BITS_PER_MP_LIMB); \
   } while (0) 
 
+/*  Set various THRESHOLD */
+#ifdef __ia64
+# define MPFR_EXP_THRESHOLD 12500
+#else
+# define MPFR_EXP_THRESHOLD 25000
+#endif
 
 /* Definition of the special values of the exponent */
 /* 
@@ -499,7 +505,7 @@ unsigned long __gmpfr_isqrt _MPFR_PROTO ((unsigned long));
 unsigned long __gmpfr_cuberoot _MPFR_PROTO ((unsigned long));
 
 int mpfr_exp_2 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
-int mpfr_exp3 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
+int mpfr_exp_3 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_powerof2_raw _MPFR_PROTO ((mpfr_srcptr));
 
 void mpfr_setmax _MPFR_PROTO ((mpfr_ptr, mp_exp_t));

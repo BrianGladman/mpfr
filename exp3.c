@@ -142,7 +142,7 @@ mpfr_exp_rational (mpfr_ptr y, mpz_srcptr p, int r, int m)
 #define shift (BITS_PER_MP_LIMB/2)
 
 int
-mpfr_exp3 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
+mpfr_exp_3 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
   mpfr_t t;
   mpfr_t x_copy;

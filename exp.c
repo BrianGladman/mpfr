@@ -102,8 +102,8 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       return -MPFR_FROM_SIGN_TO_INT(signx);
     }
 
-  if (precy > 13000)
-    return mpfr_exp3 (y, x, rnd_mode); /* O(M(n) log(n)^2) */
+  if (precy > MPFR_EXP_THRESHOLD)
+    return mpfr_exp_3 (y, x, rnd_mode); /* O(M(n) log(n)^2) */
   else
     return mpfr_exp_2 (y, x, rnd_mode); /* O(n^(1/3) M(n)) */
 }

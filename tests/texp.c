@@ -100,10 +100,10 @@ check_worst_cases (void)
   mpfr_set_str (x, "0.88b6ba510e10450edc258748bc9dfdd466f21b47ed264cdf24aa8f64af1f3fad9ec2301d43c0743f534b5aa20091ff6d352df458ef1ba519811ef6f5b11853534fd8fa32764a0a6d2d0dd20@0", 16, GMP_RNDZ);
   mpfr_init2 (y, 601);
   mpfr_exp_2 (y, x, GMP_RNDD);
-  mpfr_exp3 (x, x, GMP_RNDD);
+  mpfr_exp_3 (x, x, GMP_RNDD);
   if (mpfr_cmp (x, y))
     {
-      printf ("mpfr_exp_2 and mpfr_exp3 differ for prec=601\n");
+      printf ("mpfr_exp_2 and mpfr_exp_3 differ for prec=601\n");
       printf ("mpfr_exp_2 gives ");
       mpfr_out_str (stdout, 2, 0, y, GMP_RNDN);
       printf ("\nmpfr_exp_3 gives ");
@@ -115,11 +115,11 @@ check_worst_cases (void)
   mpfr_set_prec (x, 13001);
   mpfr_set_prec (y, 13001);
   mpfr_random (x);
-  mpfr_exp (y, x, GMP_RNDN);
+  mpfr_exp_3 (y, x, GMP_RNDN);
   mpfr_exp_2 (x, x, GMP_RNDN);
   if (mpfr_cmp (x, y))
     {
-      printf ("mpfr_exp_2 and mpfr_exp3 differ for prec=13001\n");
+      printf ("mpfr_exp_2 and mpfr_exp_3 differ for prec=13001\n");
       exit (1);
     }
 
@@ -144,17 +144,17 @@ compare_exp2_exp3 (int n)
       mpfr_random (x);
       rnd = RND_RAND() ;
       mpfr_exp_2 (y, x, rnd);
-      mpfr_exp3 (z, x, rnd);
+      mpfr_exp_3 (z, x, rnd);
       if (mpfr_cmp (y,z))
         {
-          printf ("mpfr_exp_2 and mpfr_exp3 disagree for rnd=%s and\nx=",
+          printf ("mpfr_exp_2 and mpfr_exp_3 disagree for rnd=%s and\nx=",
                   mpfr_print_rnd_mode (rnd));
           mpfr_print_binary (x);
           puts ("");
           printf ("mpfr_exp_2 gives  ");
           mpfr_print_binary (y);
           puts ("");
-          printf ("mpfr_exp3 gives ");
+          printf ("mpfr_exp_3 gives ");
           mpfr_print_binary (z);
           puts ("");
           exit (1);
@@ -278,11 +278,11 @@ check_special ()
       exit (1);
     }
 
-  /* corner cases in mpfr_exp3 */
+  /* corner cases in mpfr_exp_3 */
   mpfr_set_prec (x, 2);
   mpfr_set_ui (x, 1, GMP_RNDN);
   mpfr_set_prec (y, 2);
-  mpfr_exp3 (y, x, GMP_RNDN);
+  mpfr_exp_3 (y, x, GMP_RNDN);
 
   mpfr_clear (x);
   mpfr_clear (y);
