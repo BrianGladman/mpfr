@@ -42,18 +42,6 @@ mpfr_dim (z, x, y, rnd_mode)
      mp_rnd_t rnd_mode;
 #endif
 {
-    
-  /****** Declaration ******/
-
-    /* Variable of Intermediary Calculation*/
-    mpfr_t t;       
-
-    mp_prec_t Nx;   /* Precision of input variable */
-    mp_prec_t Nz;   /* Precision of input variable */
-    mp_prec_t Ny;   /* Precision of output variable */
-    mp_prec_t Nt;
-
-    int inexact=0;
 
     if (MPFR_IS_NAN(x) || MPFR_IS_NAN(y) ) 
     {  
@@ -62,29 +50,14 @@ mpfr_dim (z, x, y, rnd_mode)
     }
     MPFR_CLEAR_NAN(z);
 
-    /* Initialisation of the Precision */
-    Nx=MPFR_PREC(x);
-    Ny=MPFR_PREC(y);
-    Nz=MPFR_PREC(z);
-
-    /* compute the size of intermediary variable */
-    Nt=MAX(Nx,MAX(Ny,Nz));
-    
-    /* initialise of intermediary variable */
-    mpfr_init2(t,Nt);             
-
     if(mpfr_cmp(x,y) > 0)
-      mpfr_sub(t,x,y,GMP_RNDN);
+      return mpfr_sub(z,x,y,rnd_mode);
     else
     {
-      MPFR_SET_ZERO(t);
-      if(MPFR_SIGN(t) < 0) 
-        CHANGE_SIGN(t);
+      MPFR_SET_ZERO(z);
+      if(MPFR_SIGN(z) < 0) 
+        MPFR_CHANGE_SIGN(z);
+      return 0;
     }
-
-    inexact = mpfr_set(z,t,rnd_mode);
-    
-    mpfr_clear(t);
-    return inexact;
-
 }
+
