@@ -30,9 +30,9 @@ MA 02111-1307, USA. */
 
 void
 #if __STDC__
-mpfr_ui_div(mpfr_ptr y, unsigned long int u, mpfr_srcptr x, mp_rnd_t rnd_mode)
+mpfr_ui_div (mpfr_ptr y, unsigned long int u, mpfr_srcptr x, mp_rnd_t rnd_mode)
 #else
-mpfr_ui_div(y, u, x, rnd_mode)
+mpfr_ui_div (y, u, x, rnd_mode)
      mpfr_ptr y;
      unsigned long int u;
      mpfr_srcptr x;
@@ -44,12 +44,19 @@ mpfr_ui_div(y, u, x, rnd_mode)
   unsigned long cnt;
   TMP_DECL(marker);
 
-  if (MPFR_IS_NAN(x)) { MPFR_SET_NAN(y); return; }
-  if (MPFR_IS_INF(y)) 
-    { 
-      MPFR_SET_ZERO(x); 
-      if (MPFR_SIGN(x) != MPFR_SIGN(y)) { MPFR_CHANGE_SIGN(y); }
-      return; 
+  if (MPFR_IS_NAN(x))
+    {
+      MPFR_SET_NAN(y);
+      return;
+    }
+  
+  MPFR_CLEAR_FLAGS(y);
+
+  if (MPFR_IS_INF(x))
+    {
+      MPFR_SET_ZERO(y);
+      if (MPFR_SIGN(x) != MPFR_SIGN(y)) MPFR_CHANGE_SIGN(y);
+      return;
     }
 
   if (u) {
@@ -64,7 +71,7 @@ mpfr_ui_div(y, u, x, rnd_mode)
     TMP_FREE(marker);
   }
   else { 
-    if (MPFR_IS_ZERO(x)) { MPFR_SET_NAN(y); } 
+    if (MPFR_IS_ZERO(x)) MPFR_SET_NAN(y); /* 0/0 */
     else MPFR_SET_ZERO(y); /* if u=0, then set y to 0 */
   }
 }

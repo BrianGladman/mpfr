@@ -82,8 +82,22 @@ FUNC_NAME (r, u)
   mp_exp_t exp;
   int signu; long diff;
 
-  if (MPFR_IS_NAN(u)) { MPFR_SET_NAN(r); return; }
-  if (!MPFR_NOTZERO(u)) { MPFR_SET_ZERO(r); return; }
+  if (MPFR_IS_NAN(u)) {
+    MPFR_SET_NAN(r);
+    return;
+  }
+
+  if (MPFR_IS_INF(u)) {
+    MPFR_SET_INF(r);
+    return;
+  }
+
+  MPFR_CLEAR_FLAGS(r);
+
+  if (!MPFR_NOTZERO(u)) {
+    MPFR_SET_ZERO(r);
+    return;
+  }
 
   signu = MPFR_SIZE(u);
   rp = MPFR_MANT(r);
