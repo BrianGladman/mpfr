@@ -1,6 +1,10 @@
 /* mpfr_exp2 -- power of 2 function 2^y 
 
+<<<<<<< exp2.c
+Copyright (C) 2001 Free Software Foundation.
+=======
 Copyright (C) 1999-2001 Free Software Foundation.
+>>>>>>> 1.19
 
 This file is part of the MPFR Library.
 
@@ -20,10 +24,32 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
 #include <stdio.h>
+#include <math.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
+
+
+ /* The computation of y=2^z where z is a long int*/
+int mpfr_exp2_si _PROTO((mpfr_ptr, long int n, mp_rnd_t));
+
+int
+#if __STDC__
+mpfr_exp2_si (mpfr_ptr y, long int n, mp_rnd_t rnd_mode) 
+#else
+mpfr_exp2_si (y, n, rnd_mode)
+     mpfr_ptr y;
+     long int n;
+     mp_rnd_t rnd_mode;
+#endif
+{    
+
+  mpfr_set_ui(y,1,rnd_mode);
+  MPFR_EXP(y)+=n;
+  return 0;
+}
+
 
  /* The computation of y=pow(2,z) is done by
 
@@ -41,91 +67,85 @@ mpfr_exp2 (y, x, rnd_mode)
      mp_rnd_t rnd_mode;
 #endif
 {    
-  /****** Declaration ******/
-
-    /* Variable of Intermediary Calculation*/
-    mpfr_t t;       
-
-    int round;
-    int boucle = 1;
-    int inexact = 0;
-
-    mp_prec_t Nx;   /* Precision of input variable */
-    mp_prec_t Ny;   /* Precision of output variable */
-    mp_prec_t Nt;   /* Precision of Intermediary Calculation variable */
-    mp_prec_t err;  /* Precision of error */
 
     if (MPFR_IS_NAN(x))
       {
-	MPFR_SET_NAN(y); /* 2^NaN = NaN */
-	return 1;
+        MPFR_SET_NAN(y); 
+        return 1; 
       }
+
     MPFR_CLEAR_NAN(y);
 
-    if (mpfr_cmp_ui (x, 0) == 0)
+    if (MPFR_IS_INF(x))
       {
-	mpfr_set_ui (y, 1, GMP_RNDN); /* 2^0 = 1 */
-	return 0;
+        if (MPFR_SIGN(x) < 0)
+          {
+            MPFR_SET_ZERO(y);
+            if (MPFR_SIGN(y) < 0)
+              MPFR_CHANGE_SIGN(y);
+            return 0;
+          }
+        else
+          {
+            MPFR_SET_INF(y);
+            if(MPFR_SIGN(y) < 0) 
+              MPFR_CHANGE_SIGN(y);
+            return 0;
+          }
       }
-    else
+
+    /* 2^0 = 1 */
+    if(mpfr_cmp_ui(x,0)==0)
       {
+        return mpfr_set_ui(y,1,rnd_mode); 
+      }
 
-	if (MPFR_IS_INF(x))
-	  {
-	    if (MPFR_SIGN(x) < 0)
-	      {
-		MPFR_CLEAR_INF(y);
-		MPFR_SET_ZERO(y); /* 2^(-Inf) = 0 */
-		return 0;
-	      }
-	      else
-		{
-		  MPFR_SET_INF(y); /* 2^(+Inf) = +Inf */
-		  if(MPFR_SIGN(y) < 0)
-		    MPFR_CHANGE_SIGN(y);
-		  return 0;
-		}
-	  }
-      
+    /* General case */
+    {
+    /* Declaration of the intermediary variable */
+      mpfr_t t, te;
+
+      /* Declaration of the size variable */
+      mp_prec_t Nx = MPFR_PREC(x);   /* Precision of input variable */
+      mp_prec_t Ny = MPFR_PREC(y);   /* Precision of input variable */
+
+      mp_prec_t Nt;   /* Precision of the intermediary variable */
+      mp_prec_t err;  /* Precision of error */
+                
+      /* compute the precision of intermediary variable */
+      Nt=MAX(Nx,Ny);
+      /* the optimal number of bits : see algorithms.ps */
+      Nt=Nt+5+_mpfr_ceil_log2(Nt);
+
+
+      /* initialise of intermediary	variable */
+      mpfr_init(t);             
+      mpfr_init(te);             
+
+      /* First computation of cosh */
+      do {
+
+	/* reactualisation of the precision */
+	mpfr_set_prec(t,Nt);             
+	mpfr_set_prec(te,Nt);             
+
+	/* compute   exp(x*ln(2))*/
+        mpfr_const_log2(t,GMP_RNDU);    /* ln(2) */
+        mpfr_mul(te,x,t,GMP_RNDU);       /* x*ln(2) */
+        mpfr_exp(t,te,GMP_RNDN);         /* exp(x*ln(2))*/
+
+	/* estimation of the error -- see pow function in algorithms.ps*/
+	err=Nt-_mpfr_ceil_log2(1+pow(2,MPFR_EXP(te)+1));
+
+	/* actualisation of the precision */
+	Nt += 10;
+
+      } while (!mpfr_can_round(t,err,GMP_RNDN,rnd_mode,Ny));
+ 
+      mpfr_set(y,t,rnd_mode);
+      mpfr_clear(t);
+      mpfr_clear(te);
     }
-    MPFR_CLEAR_INF(y);
+    return 1;
 
-        /* Initialisation of the Precision */
-	Nx=MPFR_PREC(x);
-	Ny=MPFR_PREC(y);
-	
-
-	/* compute the size of intermediary variable */
-	if(Ny>=Nx)
-	  Nt=Ny+2*(BITS_PER_CHAR); 
-	else
-	  Nt=Nx+2*(BITS_PER_CHAR); 
-
-	  while (boucle)
-	    {
-
-	    /* initialise of intermediary	variable */
-	    mpfr_init2(t,Nt);             
-
-	    /* compute cosh */
-	    mpfr_const_log2(t,GMP_RNDN);    /* ln(2) */
-	    mpfr_mul(t,x,t,GMP_RNDN);       /* x*ln(2) */
-	    mpfr_exp(t,t,GMP_RNDN);         /* exp(x*ln(2))*/
-
-	    err=Nt-1;
-
-	    round = mpfr_can_round(t,err,GMP_RNDN,rnd_mode,Ny);
-
-	    if (round)
-	      {
-		inexact = mpfr_set (y, t, rnd_mode);
-		boucle = 0;
-	      }
-	    else
-	      Nt += 10;
-
-	  }
-
-	  mpfr_clear (t);
-          return inexact;
 }
