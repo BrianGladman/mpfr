@@ -1,6 +1,6 @@
 /* Utilities for MPFR developers, not exported.
 
-Copyright 1999, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
  
 This file is part of the MPFR Library.
 
@@ -379,7 +379,7 @@ long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CO
 #define MPFR_SET_ALLOC_SIZE(x, n) \
  ( ((mp_size_t*) MPFR_MANT(x))[-1] = n)
 #define MPFR_MALLOC_SIZE(s) \
-  ((size_t) (sizeof(mp_size_t)*1 + BYTES_PER_MP_LIMB*(s)))
+  ( sizeof(mp_size_t) * 1 + BYTES_PER_MP_LIMB * ((size_t) s) )
 #define MPFR_SET_MANT_PTR(x,p) \
    (MPFR_MANT(x) = (mp_limb_t*) ((mp_size_t*) p + 1))
 #define MPFR_GET_REAL_PTR(x) \
@@ -396,7 +396,7 @@ long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CO
    MPFR_SET_INVALID_EXP(x)) 
 
 #define MPFR_TMP_INIT(xp, x, p, s) \
-  (xp = (mp_ptr) TMP_ALLOC(BYTES_PER_MP_LIMB*(s)), \
+  (xp = (mp_ptr) TMP_ALLOC(BYTES_PER_MP_LIMB * ((size_t) s)), \
    MPFR_TMP_INIT1(xp, x, p))
 
 #if defined (__cplusplus)
