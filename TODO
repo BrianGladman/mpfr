@@ -20,10 +20,16 @@ Changes in existing functions:
   Possibly accept other strings, like those accepted by strtod.
 - implement ternary flag for mpfr_agm: result is exact when u=v, or u=0,
   or v=0.
+- use nextafter/nexttoward instead of add_one_ulp/sub_one_ulp in mpfr_exp
+	(they differ for a power of 2)
+- thread-safe version of mpfr_set_q wrt temporary changes in emin/emax?
+	Suggested by Kevin.
 
 New functions to implement:
 
-- modf
+- modf (to extract integer and fractional parts), suggested by
+	Dmitry Antipov <dmitry.antipov@mail.ru> Thu, 13 Jun 2002
+- mpz_set_fr (to set a mpz from a mpfr, with a rounding mode)
 - those from LIA: missing secant, cosecant, cotangent (trigo/hyperbolic)
 - nextafter/nextforward : X + epsilon if X < Y, X - epsilon if X > Y
 - nextabove/nextbelow ?
@@ -40,8 +46,8 @@ mpfr_unordered_p         0     0     0     1
 
 - mpfr_set_f (MPF -> float) or mpfr_strtof, mpfr_set_ld or mpfr_strtold
 	(idem for mpfr_get_*)
-- mpfr_modf (to extract integer and fractional parts), suggested by
-	Dmitry Antipov <dmitry.antipov@mail.ru> Thu, 13 Jun 2002
+- implement accurate summation algorithms from Demmel
+	(http://www.cs.berkeley.edu/~demmel/AccurateSummation.ps)
 
 Rounding:
 
