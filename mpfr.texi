@@ -319,7 +319,7 @@ This will copy the files @file{mpfr.h} and @file{mpf2mpfr.h} to the directory
 @file{/usr/local/include}, the file @file{libmpfr.a} to the directory
 @file{/usr/local/lib}, and the file @file{mpfr.info} to the directory
 @file{/usr/local/info} (or if you passed the @samp{--prefix} option to
-@file{configure}, using the prefix directory given as argument to
+ @file{configure}, using the prefix directory given as argument to
 @samp{--prefix} instead of @file{/usr/local}).
 @end enumerate
 
@@ -371,12 +371,11 @@ MPFR suffers from all bugs from the GNU MP library, plus many more.
 Please report other problems to @samp{mpfr@@loria.fr}.
 @xref{Reporting Bugs}.
 Some bug fixes are available on the MPFR web page
-@url{http://www.loria.fr/projets/mpfr/} or @url{http://www.mpfr.org/}.
+@url{http://www.mpfr.org/}.
 
 @section Getting the Latest Version of MPFR
 
-The latest version of MPFR is available from @url{http://www.mpfr.org/}
-or @url{http://www.loria.fr/projets/mpfr/}.
+The latest version of MPFR is available from @url{http://www.mpfr.org/}.
 
 @node Reporting Bugs, MPFR Basics, Installing MPFR, Top
 @comment  node-name,  next,  previous,  up
@@ -384,8 +383,7 @@ or @url{http://www.loria.fr/projets/mpfr/}.
 @cindex Reporting bugs
 
 If you think you have found a bug in the MPFR library, first have a look on the
-MPFR web page @url{http://www.mpfr.org/} or
-@url{http://www.loria.fr/projets/mpfr/}: perhaps this bug is already known,
+MPFR web page @url{http://www.mpfr.org/}: perhaps this bug is already known,
 in which case you may find there a workaround for it.
 Otherwise, please investigate
 and report it. We have made this library available to you, and it is not to ask
@@ -448,7 +446,7 @@ the other functions supported by MPFR.
 @cindex Precision
 @tindex @code{mp_prec_t}
 @noindent
-The @dfn{Precision} is the number of bits used to represent the mantissa
+The @dfn{precision} is the number of bits used to represent the mantissa
 of a floating-point number;
 the corresponding C data type is @code{mp_prec_t}.
 The precision can be any integer between @code{MPFR_PREC_MIN} and
@@ -594,18 +592,18 @@ precision, then MPFR will still compute the result with full precision.
 * Assignment Functions::
 * Combined Initialization and Assignment Functions::
 * Conversion Functions::
-* Rounding Modes::
-* Exceptions::
 * Basic Arithmetic Functions::
 * Comparison Functions::
 * Special Functions::
 * Input and Output Functions::
 * Miscellaneous Functions::
+* Rounding Modes::
+* Exceptions::
 * Compatibility with MPF::
 * Internals::
 @end menu
 
-@node Initialization Functions, Assignment Functions, Exceptions, MPFR Interface
+@node Initialization Functions, Assignment Functions, MPFR Interface, MPFR Interface
 @comment  node-name,  next,  previous,  up
 @cindex Initialization functions
 @section Initialization Functions
@@ -867,104 +865,6 @@ case a null pointer is returned.
 @deftypefunx int mpfr_fits_sshort_p (mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Return non-zero if @var{op} would fit in the respective C data type, when
 rounded to an integer in the direction @var{rnd}.
-@end deftypefun
-
-@node Rounding Modes, Exceptions, MPFR Interface, MPFR Interface
-@section Rounding Modes
-@cindex Rounding modes
-
-@deftypefun void mpfr_set_default_rounding_mode (mp_rnd_t @var{rnd})
-Sets the default rounding mode to @var{rnd}.
-The default rounding mode is to nearest initially.
-@end deftypefun
-
-@deftypefun mp_rnd_t mpfr_get_default_rounding_mode (void)
-Gets the default rounding mode.
-@end deftypefun
-
-@deftypefun int mpfr_prec_round (mpfr_t @var{x}, mp_prec_t @var{prec}, mp_rnd_t @var{rnd})
-Rounds @var{x} according to @var{rnd} with precision @var{prec}, which
-must be an integer between @code{MPFR_PREC_MIN} and @code{MPFR_PREC_MAX}
-(otherwise the behavior is undefined).
-If @var{prec} is greater or equal to the precision of @var{x}, then new
-space is allocated for the mantissa, and it is filled with zeros.
-Otherwise, the mantissa is rounded to precision @var{prec} with the given
-direction. In both cases, the precision of @var{x} is changed to @var{prec}.
-@end deftypefun
-
-@deftypefun int mpfr_round_prec (mpfr_t @var{x}, mp_rnd_t @var{rnd}, mp_prec_t @var{prec})
-[This function is obsolete. Please use @code{mpfr_prec_round} instead.]
-@end deftypefun
-
-@deftypefun {const char *} mpfr_print_rnd_mode (mp_rnd_t @var{rnd})
-Returns the input string (GMP_RNDD, GMP_RNDU, GMP_RNDN, GMP_RNDZ)
-corresponding to the rounding mode @var{rnd} or a null pointer if
-@var{rnd} is an invalid rounding mode.
-@end deftypefun
-
-@node Exceptions, Initialization Functions, Rounding Modes, MPFR Interface
-@comment  node-name,  next,  previous,  up
-@section Exceptions
-@cindex Exceptions
-
-Note: Overflow handling is still experimental and currently implemented
-very partially. If an overflow occurs internally at the wrong place,
-anything can happen (crash, wrong results, etc).
-
-@deftypefun mp_exp_t mpfr_get_emin (void)
-@deftypefunx mp_exp_t mpfr_get_emax (void)
-Return the (current) smallest and largest exponents allowed for a
-floating-point variable. The smallest positive value of a floating-point
-variable is @m{1/2 \times 2^{\rm emin}, one half times 2 raised to the
-smallest exponent} and the largest value has the form @m{(1 - \varepsilon)
-\times 2^{\rm emax}, (1 - epsilon) times 2 raised to the largest exponent}.
-@end deftypefun
-
-@deftypefun int mpfr_set_emin (mp_exp_t @var{exp})
-@deftypefunx int mpfr_set_emax (mp_exp_t @var{exp})
-Set the smallest and largest exponents allowed for a floating-point variable.
-Return a non-zero value when @var{exp} is not in the range accepted by the
-implementation (in that case the smallest or largest exponent is not changed),
-and zero otherwise.
-If the user changes the exponent range, it is her/his responsibility to check
-that all current floating-point variables are in the new allowed range
-(for example using @code{mpfr_check_range}),
-otherwise the subsequent
-behavior will be undefined, in the sense of the ISO C standard.
-@end deftypefun
-
-@deftypefun int mpfr_check_range (mpfr_t @var{x}, int @var{t}, mp_rnd_t @var{rnd})
-This function forces @var{x} to be in the current range of acceptable
-values, @var{t} being the current ternary value: negative if @var{x}
-is smaller than the exact value, positive if @var{x} is larger than
-the exact value and zero if @var{x} is exact (before the call). It
-generates an underflow or an overflow if the exponent of @var{x} is
-outside the current allowed range; the value of @var{t} may be used
-to avoid a double rounding. This function returns zero if the rounded
-result is equal to the exact one, a positive value if the rounded
-result is larger than the exact one, a negative value if the rounded
-result is smaller than the exact one. Note that unlike most functions,
-the result is compared to the exact one, not the input value @var{x},
-i.e.@: the ternary value is propagated.
-@end deftypefun
-
-@deftypefun void mpfr_clear_underflow (void)
-@deftypefunx void mpfr_clear_overflow (void)
-@deftypefunx void mpfr_clear_nanflag (void)
-@deftypefunx void mpfr_clear_inexflag (void)
-Clear the underflow, overflow, invalid, and inexact flags.
-@end deftypefun
-
-@deftypefun void mpfr_clear_flags (void)
-Clear all global flags (underflow, overflow, inexact, invalid).
-@end deftypefun
-
-@deftypefun int mpfr_underflow_p (void)
-@deftypefunx int mpfr_overflow_p (void)
-@deftypefunx int mpfr_nanflag_p (void)
-@deftypefunx int mpfr_inexflag_p (void)
-Return the corresponding (underflow, overflow, invalid, inexact) flag,
-which is non-zero iff the flag is set.
 @end deftypefun
 
 @node Basic Arithmetic Functions, Comparison Functions, Conversion Functions, MPFR Interface
@@ -1355,7 +1255,7 @@ Return the number of bytes read, or if an error occurred, return 0.
 @c @code{mpfr_out_raw}, and put the result in @var{float}.
 @c @end deftypefun
 
-@node Miscellaneous Functions, Compatibility with MPF, Input and Output Functions, MPFR Interface
+@node Miscellaneous Functions, Rounding Modes, Input and Output Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
 @section Miscellaneous Functions
 @cindex Miscellaneous float functions
@@ -1460,6 +1360,104 @@ Negative random numbers are generated when @var{size} is negative.
 Return the MPFR version, as a null-terminated string.
 @end deftypefun
 
+@node Rounding Modes, Exceptions, Miscellaneous Functions, MPFR Interface
+@section Rounding Modes
+@cindex Rounding modes
+
+@deftypefun void mpfr_set_default_rounding_mode (mp_rnd_t @var{rnd})
+Sets the default rounding mode to @var{rnd}.
+The default rounding mode is to nearest initially.
+@end deftypefun
+
+@deftypefun mp_rnd_t mpfr_get_default_rounding_mode (void)
+Gets the default rounding mode.
+@end deftypefun
+
+@deftypefun int mpfr_prec_round (mpfr_t @var{x}, mp_prec_t @var{prec}, mp_rnd_t @var{rnd})
+Rounds @var{x} according to @var{rnd} with precision @var{prec}, which
+must be an integer between @code{MPFR_PREC_MIN} and @code{MPFR_PREC_MAX}
+(otherwise the behavior is undefined).
+If @var{prec} is greater or equal to the precision of @var{x}, then new
+space is allocated for the mantissa, and it is filled with zeros.
+Otherwise, the mantissa is rounded to precision @var{prec} with the given
+direction. In both cases, the precision of @var{x} is changed to @var{prec}.
+@end deftypefun
+
+@deftypefun int mpfr_round_prec (mpfr_t @var{x}, mp_rnd_t @var{rnd}, mp_prec_t @var{prec})
+[This function is obsolete. Please use @code{mpfr_prec_round} instead.]
+@end deftypefun
+
+@deftypefun {const char *} mpfr_print_rnd_mode (mp_rnd_t @var{rnd})
+Returns the input string (GMP_RNDD, GMP_RNDU, GMP_RNDN, GMP_RNDZ)
+corresponding to the rounding mode @var{rnd} or a null pointer if
+@var{rnd} is an invalid rounding mode.
+@end deftypefun
+
+@node Exceptions, Compatibility with MPF, Rounding Modes, MPFR Interface
+@comment  node-name,  next,  previous,  up
+@section Exceptions
+@cindex Exceptions
+
+Note: Overflow handling is still experimental and currently implemented
+very partially. If an overflow occurs internally at the wrong place,
+anything can happen (crash, wrong results, etc).
+
+@deftypefun mp_exp_t mpfr_get_emin (void)
+@deftypefunx mp_exp_t mpfr_get_emax (void)
+Return the (current) smallest and largest exponents allowed for a
+floating-point variable. The smallest positive value of a floating-point
+variable is @m{1/2 \times 2^{\rm emin}, one half times 2 raised to the
+smallest exponent} and the largest value has the form @m{(1 - \varepsilon)
+\times 2^{\rm emax}, (1 - epsilon) times 2 raised to the largest exponent}.
+@end deftypefun
+
+@deftypefun int mpfr_set_emin (mp_exp_t @var{exp})
+@deftypefunx int mpfr_set_emax (mp_exp_t @var{exp})
+Set the smallest and largest exponents allowed for a floating-point variable.
+Return a non-zero value when @var{exp} is not in the range accepted by the
+implementation (in that case the smallest or largest exponent is not changed),
+and zero otherwise.
+If the user changes the exponent range, it is her/his responsibility to check
+that all current floating-point variables are in the new allowed range
+(for example using @code{mpfr_check_range}),
+otherwise the subsequent
+behavior will be undefined, in the sense of the ISO C standard.
+@end deftypefun
+
+@deftypefun int mpfr_check_range (mpfr_t @var{x}, int @var{t}, mp_rnd_t @var{rnd})
+This function forces @var{x} to be in the current range of acceptable
+values, @var{t} being the current ternary value: negative if @var{x}
+is smaller than the exact value, positive if @var{x} is larger than
+the exact value and zero if @var{x} is exact (before the call). It
+generates an underflow or an overflow if the exponent of @var{x} is
+outside the current allowed range; the value of @var{t} may be used
+to avoid a double rounding. This function returns zero if the rounded
+result is equal to the exact one, a positive value if the rounded
+result is larger than the exact one, a negative value if the rounded
+result is smaller than the exact one. Note that unlike most functions,
+the result is compared to the exact one, not the input value @var{x},
+i.e.@: the ternary value is propagated.
+@end deftypefun
+
+@deftypefun void mpfr_clear_underflow (void)
+@deftypefunx void mpfr_clear_overflow (void)
+@deftypefunx void mpfr_clear_nanflag (void)
+@deftypefunx void mpfr_clear_inexflag (void)
+Clear the underflow, overflow, invalid, and inexact flags.
+@end deftypefun
+
+@deftypefun void mpfr_clear_flags (void)
+Clear all global flags (underflow, overflow, inexact, invalid).
+@end deftypefun
+
+@deftypefun int mpfr_underflow_p (void)
+@deftypefunx int mpfr_overflow_p (void)
+@deftypefunx int mpfr_nanflag_p (void)
+@deftypefunx int mpfr_inexflag_p (void)
+Return the corresponding (underflow, overflow, invalid, inexact) flag,
+which is non-zero iff the flag is set.
+@end deftypefun
+
 @c @deftypefun size_t mpfr_size (mpfr_t @var{op})
 @c Return the size of @var{op} measured in number of limbs.  If @var{op} is
 @c zero, the returned value will be zero.  (@xref{Nomenclature}, for an
@@ -1469,7 +1467,7 @@ Return the MPFR version, as a null-terminated string.
 @c releases.}
 @c @end deftypefun
 
-@node Compatibility with MPF, Internals, Miscellaneous Functions, MPFR Interface
+@node Compatibility with MPF, Internals, Exceptions, MPFR Interface
 @section Compatibility with MPF
 @cindex Compatibility with MPF
 
@@ -1593,11 +1591,13 @@ in raw binary format (the exponent is written in decimal, yet).
 @unnumbered Contributors
 
 The main developers consist of Guillaume Hanrot, Vincent Lef@`evre,
-Patrick P@'elissier and Paul Zimmermann.
+Kevin Ryde and Paul Zimmermann.
 
 We would like to thank Jean-Michel Muller and Joris van der Hoeven for very
 fruitful discussions at the beginning of that project, Torbj@"orn Granlund
-and Kevin Ryde for their help about design issues,
+and Kevin Ryde
+for their help about design issues
+and their suggestions for an easy integration into GNU MP,
 and Nathalie Revol for her careful reading of a previous version of
 this documentation.
 
@@ -1616,8 +1616,6 @@ contributed the original version of @file{mul_ui.c}, the @file{gmp_op.c}
 file, and helped to the Windows porting.
 Jean-Luc R@'emy contributed the @code{mpfr_zeta} code.
 Ludovic Meunier helped in the design of the @code{mpfr_erf} code.
-Kevin Ryde did many contributions concerning the interface with GNU MP,
-the testing tools, and the autoconf/automake mechanism.
 
 The development of the MPFR library would not have been possible without the
 continuous support of LORIA, INRIA and INRIA Lorraine.
