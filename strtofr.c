@@ -125,22 +125,22 @@ int main ()
       mpfr_ui_div (x, 1, x, GMP_RNDN);
       printf ("Base: %d x=%e ", base, mpfr_get_d1 (x));
       for (i = 0 ; i < N ; i++)
-	{
-	  mpfr_floor (y, x);
-	  tab[i] = mpfr_get_ui (y, GMP_RNDN);
-	  mpfr_sub (x, x, y, GMP_RNDN);
-	  mpfr_ui_div (x, 1, x, GMP_RNDN);
-	}
+        {
+          mpfr_floor (y, x);
+          tab[i] = mpfr_get_ui (y, GMP_RNDN);
+          mpfr_sub (x, x, y, GMP_RNDN);
+          mpfr_ui_div (x, 1, x, GMP_RNDN);
+        }
       for (i = N-1 ; i >= 0 ; i--)
-	if (tab[i] != 0)
-	  break;
+        if (tab[i] != 0)
+          break;
       mpq_set_ui (q1, tab[i], 1);
       for (i = i-1 ; i >= 0 ; i--)
-	  {
-	    mpq_inv (q1, q1);
-	    mpq_set_ui (q2, tab[i], 1);
-	    mpq_add (q1, q1, q2);
-	  }
+          {
+            mpq_inv (q1, q1);
+            mpq_set_ui (q2, tab[i], 1);
+            mpq_add (q1, q1, q2);
+          }
       printf("Approx: ", base);
       mpq_out_str (stdout, 10, q1);
       printf (" = %e\n", mpq_get_d (q1) );
@@ -150,10 +150,10 @@ int main ()
       mpz_out_str (stderr, 10, mpq_denref (q1));
       fprintf (stderr, "UL},\n");
       if (mpz_cmp_ui (mpq_numref (q1), 1<<16-1) >= 0
-	  || mpz_cmp_ui (mpq_denref (q1), 1<<16-1) >= 0)
-	overflow = 1, base_overflow = base;
+          || mpz_cmp_ui (mpq_denref (q1), 1<<16-1) >= 0)
+        overflow = 1, base_overflow = base;
     }
-  
+
   mpq_clear (q2);
   mpq_clear (q1);
   mpfr_clear (y);
@@ -182,7 +182,7 @@ digit_value_in_base (int c, int base)
     digit = c - 'A' + 10;
   else
     return -1;
-  
+
   return MPFR_LIKELY (digit < base) ? digit : -1;
 }
 
@@ -191,27 +191,27 @@ digit_value_in_base (int c, int base)
    It returns:
       -1 if invalid string,
       0 if special string (like nan),
-      1 if the string is ok. 
+      1 if the string is ok.
       2 if overflows
       3 if underflows
    So it doesn't return the ternary value
    BUT if it returns 0 (NAN or INF), the ternary value is also '0'
    (ie NAN and INF are exact) */
 static int
-parse_string (mpfr_t x, struct parsed_string *pstr, 
-	      const char **string, int base)
+parse_string (mpfr_t x, struct parsed_string *pstr,
+              const char **string, int base)
 {
   const char *str = *string;
   unsigned char *mant;
   int point;
   int res = -1;  /* Invalid input return value */
   const char *prefix_str;
- 
+
   /* Init variable */
   pstr->mantissa = NULL;
 
   /* Optional leading whitespace */
-  while (isspace((int) *str)) str++;
+  while (isspace((unsigned char) *str)) str++;
 
   /* Can be case-insensitive NAN */
   if (strncasecmp (str, "@nan@", 5) == 0)
@@ -225,17 +225,17 @@ parse_string (mpfr_t x, struct parsed_string *pstr,
     set_nan:
       /* Check for "(dummychars)" */
       if (*str == '(')
-	{
-	  const char *s;
-	  for (s = str+1 ; *s != ')' ; s++)
-	    if (!(*s >= 'A' && *s <= 'Z')
-		&& !(*s >= 'a' && *s <= 'z')
-		&& !(*s >= '0' && *s <= '9')
-		&& *s != '_')
-	      break;
-	  if (*s == ')')
-	    str = s+1;
-	}
+        {
+          const char *s;
+          for (s = str+1 ; *s != ')' ; s++)
+            if (!(*s >= 'A' && *s <= 'Z')
+                && !(*s >= 'a' && *s <= 'z')
+                && !(*s >= '0' && *s <= '9')
+                && *s != '_')
+              break;
+          if (*s == ')')
+            str = s+1;
+        }
       *string = str;
       MPFR_SET_NAN(x);
       /* MPFR_RET_NAN not used as the return value isn't a ternary value */
@@ -267,11 +267,11 @@ parse_string (mpfr_t x, struct parsed_string *pstr,
       MPFR_SET_INF (x);
       (pstr->negative) ? MPFR_SET_NEG (x) : MPFR_SET_POS (x);
       return 0;
-    } 
+    }
 
   /* If base=0 or 16, it may include '0x' prefix */
   prefix_str = NULL;
-  if ((base == 0 || base == 16) && str[0]=='0' 
+  if ((base == 0 || base == 16) && str[0]=='0'
       && (str[1]=='x' || str[1] == 'X'))
     {
       prefix_str = str;
@@ -279,7 +279,7 @@ parse_string (mpfr_t x, struct parsed_string *pstr,
       str += 2;
     }
   /* If base=0 or 2, it may include '0b' prefix */
-  if ((base == 0 || base == 2) && str[0]=='0' 
+  if ((base == 0 || base == 2) && str[0]=='0'
       && (str[1]=='b' || str[1] == 'B'))
     {
       prefix_str = str;
@@ -307,15 +307,15 @@ parse_string (mpfr_t x, struct parsed_string *pstr,
       int c = *str++;
       if (c == '.')
         {
-	  if (MPFR_UNLIKELY(point)) /* Second '.': stop parsing */
-	    break;
+          if (MPFR_UNLIKELY(point)) /* Second '.': stop parsing */
+            break;
           point = 1;
           continue;
         }
       c = digit_value_in_base (c, base);
       if (c == -1)
-	break;
-      *mant++ = (char) c; 
+        break;
+      *mant++ = (char) c;
       if (!point)
         pstr->exp_base ++;
     }
@@ -327,46 +327,47 @@ parse_string (mpfr_t x, struct parsed_string *pstr,
   if (pstr->prec == 0)
     {
       /* Check if there was a prefix (in such a case, we have to read
-	 again the mantissa without skipping the prefix)
-	 The allocated mantissa is still enought big since we will 
-	 read only 0, and we alloc one more char than needed.
-	 FIXME: Not really friendly. Maybe cleaner code? */
+         again the mantissa without skipping the prefix)
+         The allocated mantissa is still enought big since we will
+         read only 0, and we alloc one more char than needed.
+         FIXME: Not really friendly. Maybe cleaner code? */
       if (prefix_str != NULL)
-	{
-	  str = prefix_str;
-	  prefix_str = NULL;
-	  goto parse_begin;
-	}
+        {
+          str = prefix_str;
+          prefix_str = NULL;
+          goto parse_begin;
+        }
       goto end;
     }
 
   /* Valid entry */
-  res = 1; 
+  res = 1;
 
   /* an optional exponent (e or E, p or P, @) */
-  if ( (*str == '@' || (base <= 10 && (*str == 'e' || *str == 'E'))) 
-       && (!isspace((int) str[1])) ) 
+  if ( (*str == '@' || (base <= 10 && (*str == 'e' || *str == 'E')))
+       && (!isspace((unsigned char) str[1])) )
     {
       char *endptr[1];
       /* the exponent digits are kept in ASCII */
       mp_exp_t read_exp = strtol (str + 1, endptr, 10);
       mp_exp_t sum = 0;
       if (endptr[0] != str+1)
-	str = endptr[0];
+        str = endptr[0];
       MPFR_ASSERTN (read_exp == (long) read_exp);
       MPFR_SADD_OVERFLOW (sum, read_exp, pstr->exp_base,
-			  mp_exp_t, mp_exp_unsigned_t,
-			  MPFR_EXP_MIN, MPFR_EXP_MAX,
-			  res = 2, res = 3); 
+                          mp_exp_t, mp_exp_unsigned_t,
+                          MPFR_EXP_MIN, MPFR_EXP_MAX,
+                          res = 2, res = 3);
       pstr->exp_base = sum;
     }
   else if ((base == 2 || base == 16)
-	   && (*str == 'p' || *str == 'P') && (!isspace((int) str[1])))
+           && (*str == 'p' || *str == 'P')
+           && (!isspace((unsigned char) str[1])))
     {
       char *endptr[1];
       pstr->exp_bin = (mp_exp_t) strtol (str + 1, endptr, 10);
       if (endptr[0] != str+1)
-	str = endptr[0];
+        str = endptr[0];
     }
 
   /* Remove 0's at the beginning and end of mant_s[0..prec_s-1] */
@@ -392,7 +393,7 @@ parse_string (mpfr_t x, struct parsed_string *pstr,
   if (pstr->mantissa != NULL && res != 1)
     (*__gmp_free_func) (pstr->mantissa, pstr->alloc);
   return res;
-} 
+}
 
 /* Transform a parsed string to a mpfr_t according to the rounding mode
    and the precision of x.
@@ -422,27 +423,27 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mp_rnd_t rnd)
       ysize_bits = ysize * BITS_PER_MP_LIMB;
       y = (mp_limb_t*) TMP_ALLOC ((2 * ysize + 1) * sizeof (mp_limb_t));
       y += ysize;
- 
-      /* required precision for str to have ~ysize limbs 
-	 We must have (2^(BITS_PER_MP_LIMB))^ysize ~= base^pstr_size
-	 aka pstr_size = ceil (ysize*BITS_PER_MP_LIMB/log2(base))     
-	  ysize ~ prec/BITS_PER_MP_LIMB and prec < Umax/2 => 
-	  ysize*BITS_PER_MP_LIMB can not overflow.
-	 Compute pstr_size = ysize_bits * Num / Den 
-	  Where Num/Den ~ 1/log2(base)
-	 It is not exactly ceil(1/log2(base)) but could be one more (base 2)
-	 Quite ugly since it tries to avoid overflow */
+
+      /* required precision for str to have ~ysize limbs
+         We must have (2^(BITS_PER_MP_LIMB))^ysize ~= base^pstr_size
+         aka pstr_size = ceil (ysize*BITS_PER_MP_LIMB/log2(base))
+          ysize ~ prec/BITS_PER_MP_LIMB and prec < Umax/2 =>
+          ysize*BITS_PER_MP_LIMB can not overflow.
+         Compute pstr_size = ysize_bits * Num / Den
+          Where Num/Den ~ 1/log2(base)
+         It is not exactly ceil(1/log2(base)) but could be one more (base 2)
+         Quite ugly since it tries to avoid overflow */
       pstr_size = ( ysize_bits / RedInvLog2Table[pstr->base-2][1]
-		    * RedInvLog2Table[pstr->base-2][0] )
-	+ (( ysize_bits % RedInvLog2Table[pstr->base-2][1])
-	   * RedInvLog2Table[pstr->base-2][0]
-	   / RedInvLog2Table[pstr->base-2][1] )
-	+ 1;
+                    * RedInvLog2Table[pstr->base-2][0] )
+        + (( ysize_bits % RedInvLog2Table[pstr->base-2][1])
+           * RedInvLog2Table[pstr->base-2][0]
+           / RedInvLog2Table[pstr->base-2][1] )
+        + 1;
 
       if (pstr_size >= pstr->prec)
         pstr_size = pstr->prec;
       MPFR_ASSERTD ((mp_exp_t) pstr_size == (mp_exp_t) pstr_size);
-      
+
       /* convert str into binary */
       real_ysize = mpn_set_str (y, pstr->mant, pstr_size, pstr->base);
       MPFR_ASSERTD ( real_ysize <= ysize+1);
@@ -463,13 +464,13 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mp_rnd_t rnd)
               MPN_ZERO (y, ysize - real_ysize);
             }
           /* for each bit shift decrease exponent of y */
-	  /* (This should not overflow) */
+          /* (This should not overflow) */
           exp = - ((ysize - real_ysize) * BITS_PER_MP_LIMB + count);
         }
       else  /* shift y for the right */
         {
           /* shift {y, num_limb} for (BITS_PER_MP_LIMB - count) bits
-	     to the right */
+             to the right */
           mpn_rshift (y, y, real_ysize, BITS_PER_MP_LIMB - count);
           /* for each bit shift increase exponent of y */
           exp = BITS_PER_MP_LIMB - count;
@@ -478,53 +479,53 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mp_rnd_t rnd)
       /* compute base^(exp_s-pr) on n limbs */
       if (IS_POW2 (pstr->base))
         {
-	  /* Base: 2, 4, 8, 16, 32 */
+          /* Base: 2, 4, 8, 16, 32 */
           int pow2;
-	  mp_exp_t tmp;
+          mp_exp_t tmp;
 
           count_leading_zeros (pow2, (mp_limb_t) pstr->base);
           pow2 = BITS_PER_MP_LIMB - pow2 - 1; /* base = 2^pow2 */
-	  MPFR_ASSERTD (0 < pow2 && pow2 <= 5);
-	  /* exp += pow2 * (pstr->exp_base - pstr_size) + pstr->exp_bin
-	     with overflow checking
-	     and check that we can add/substract 2 to exp without overflow */
-	  MPFR_SADD_OVERFLOW (tmp, pstr->exp_base, -(mp_exp_t) pstr_size,
-			      mp_exp_t, mp_exp_unsigned_t,
-			      MPFR_EXP_MIN, MPFR_EXP_MAX,
-			      goto overflow, goto underflow);
-	  /* On some FreeBsd/Alpha, LONG_MIN/1 produces an exception
-	     so we check for this before doing the division */
-	  if (tmp > 0 && pow2 != 1 && MPFR_EXP_MAX/pow2 <= tmp)
-	    goto overflow;
-	  else if (tmp < 0 && pow2 != 1 && MPFR_EXP_MIN/pow2 >= tmp)
-	    goto underflow;
-	  tmp *= pow2;
-	  MPFR_SADD_OVERFLOW (tmp, tmp, pstr->exp_bin,
-			      mp_exp_t, mp_exp_unsigned_t,
-			      MPFR_EXP_MIN, MPFR_EXP_MAX,
-			      goto overflow, goto underflow);
-	  MPFR_SADD_OVERFLOW (exp, exp, tmp,
-			      mp_exp_t, mp_exp_unsigned_t,
-			      MPFR_EXP_MIN+2, MPFR_EXP_MAX-2,
-			      goto overflow, goto underflow);
-	  result = y;
-	  err = 0;
+          MPFR_ASSERTD (0 < pow2 && pow2 <= 5);
+          /* exp += pow2 * (pstr->exp_base - pstr_size) + pstr->exp_bin
+             with overflow checking
+             and check that we can add/substract 2 to exp without overflow */
+          MPFR_SADD_OVERFLOW (tmp, pstr->exp_base, -(mp_exp_t) pstr_size,
+                              mp_exp_t, mp_exp_unsigned_t,
+                              MPFR_EXP_MIN, MPFR_EXP_MAX,
+                              goto overflow, goto underflow);
+          /* On some FreeBsd/Alpha, LONG_MIN/1 produces an exception
+             so we check for this before doing the division */
+          if (tmp > 0 && pow2 != 1 && MPFR_EXP_MAX/pow2 <= tmp)
+            goto overflow;
+          else if (tmp < 0 && pow2 != 1 && MPFR_EXP_MIN/pow2 >= tmp)
+            goto underflow;
+          tmp *= pow2;
+          MPFR_SADD_OVERFLOW (tmp, tmp, pstr->exp_bin,
+                              mp_exp_t, mp_exp_unsigned_t,
+                              MPFR_EXP_MIN, MPFR_EXP_MAX,
+                              goto overflow, goto underflow);
+          MPFR_SADD_OVERFLOW (exp, exp, tmp,
+                              mp_exp_t, mp_exp_unsigned_t,
+                              MPFR_EXP_MIN+2, MPFR_EXP_MAX-2,
+                              goto overflow, goto underflow);
+          result = y;
+          err = 0;
         }
       /* case pstr->exp_base > pstr_size */
       else if (pstr->exp_base > (mp_exp_t) pstr_size)
         {
-	  mp_limb_t *z;
-	  mp_exp_t   exp_z;
-	  
+          mp_limb_t *z;
+          mp_exp_t   exp_z;
+
           result = (mp_limb_t*) TMP_ALLOC ((2*ysize+1)*BYTES_PER_MP_LIMB);
 
           /* z = base^(exp_base-sptr_size) using space allocated at y-ysize */
           z = y - ysize;
-	  /* NOTE: exp_base-pstr_size can't overflow since pstr_size > 0 */
-	  err = mpfr_mpn_exp (z, &exp_z, pstr->base, 
-			      pstr->exp_base - pstr_size, ysize);
+          /* NOTE: exp_base-pstr_size can't overflow since pstr_size > 0 */
+          err = mpfr_mpn_exp (z, &exp_z, pstr->base,
+                              pstr->exp_base - pstr_size, ysize);
           if (err == -2)
-	    goto overflow;
+            goto overflow;
           exact = exact && (err == -1);
 
           /* multiply(y = 0.mant_s[0]...mant_s[pr-1])_base by base^(exp_s-g) */
@@ -536,35 +537,35 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mp_rnd_t rnd)
           err ++;
 
           /* compute the exponent of y */
-	  /* exp += exp_z + ysize_bits with overflow checking
-	     and check that we can add/substract 2 to exp without overflow */
-	  MPFR_SADD_OVERFLOW (exp_z, exp_z, ysize_bits,
-			      mp_exp_t, mp_exp_unsigned_t,
-			      MPFR_EXP_MIN, MPFR_EXP_MAX,
-			      goto overflow, goto underflow);
-	  MPFR_SADD_OVERFLOW (exp, exp, exp_z,
-			      mp_exp_t, mp_exp_unsigned_t,
-			      MPFR_EXP_MIN+2, MPFR_EXP_MAX-2,
-			      goto overflow, goto underflow);
+          /* exp += exp_z + ysize_bits with overflow checking
+             and check that we can add/substract 2 to exp without overflow */
+          MPFR_SADD_OVERFLOW (exp_z, exp_z, ysize_bits,
+                              mp_exp_t, mp_exp_unsigned_t,
+                              MPFR_EXP_MIN, MPFR_EXP_MAX,
+                              goto overflow, goto underflow);
+          MPFR_SADD_OVERFLOW (exp, exp, exp_z,
+                              mp_exp_t, mp_exp_unsigned_t,
+                              MPFR_EXP_MIN+2, MPFR_EXP_MAX-2,
+                              goto overflow, goto underflow);
 
           /* normalize result */
           if (MPFR_LIMB_MSB (result[2 * ysize - 1]) == 0)
             {
-	      mp_limb_t *r = result + ysize - 1;
+              mp_limb_t *r = result + ysize - 1;
               mpn_lshift (r, r, ysize + 1, 1);
-	      /* Overflow checking not needed */
+              /* Overflow checking not needed */
               exp --;
             }
 
-          exact = exact && (mpn_scan1 (result, 0) 
-			    >= (unsigned long) ysize_bits);
-	  result += ysize;
+          exact = exact && (mpn_scan1 (result, 0)
+                            >= (unsigned long) ysize_bits);
+          result += ysize;
         }
       /* case exp_base < pstr_size */
       else if (pstr->exp_base < (mp_exp_t) pstr_size)
         {
-	  mp_limb_t *z;
-	  mp_exp_t exp_z;
+          mp_limb_t *z;
+          mp_exp_t exp_z;
 
           result = (mp_limb_t*) TMP_ALLOC ( (3*ysize+1) * BYTES_PER_MP_LIMB);
 
@@ -572,63 +573,63 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mp_rnd_t rnd)
           y = y - ysize;  /* we have allocated ysize limbs at y - ysize */
           MPN_ZERO (y, ysize);
 
-	  /* pstr_size - pstr->exp_base can overflow */
-	  MPFR_SADD_OVERFLOW (exp_z, (mp_exp_t) pstr_size, -pstr->exp_base,
-			      mp_exp_t, mp_exp_unsigned_t,
-			      MPFR_EXP_MIN, MPFR_EXP_MAX,
-			      goto underflow, goto overflow);
+          /* pstr_size - pstr->exp_base can overflow */
+          MPFR_SADD_OVERFLOW (exp_z, (mp_exp_t) pstr_size, -pstr->exp_base,
+                              mp_exp_t, mp_exp_unsigned_t,
+                              MPFR_EXP_MIN, MPFR_EXP_MAX,
+                              goto underflow, goto overflow);
 
           /* (z, exp_z) = base^(exp_base-pstr_size) */
-	  z = result + 2*ysize + 1;
+          z = result + 2*ysize + 1;
           err = mpfr_mpn_exp (z, &exp_z, pstr->base, exp_z, ysize);
           exact = exact && (err == -1);
-	  if (err == -2)
-	    goto underflow; /* FIXME: Sure? */
+          if (err == -2)
+            goto underflow; /* FIXME: Sure? */
           if (err == -1)
             err = 0;
 
           /* compute y / z */
           /* result will be put into result + n, and remainder into result */
-          mpn_tdiv_qr (result + ysize, result, (mp_size_t) 0, y, 
-		       2*ysize, z, ysize);
+          mpn_tdiv_qr (result + ysize, result, (mp_size_t) 0, y,
+                       2*ysize, z, ysize);
 
-	  /* exp -= exp_z + ysize_bits with overflow checking
-	     and check that we can add/substract 2 to exp without overflow */
-	  MPFR_SADD_OVERFLOW (exp_z, exp_z, ysize_bits,
-			      mp_exp_t, mp_exp_unsigned_t,
-			      MPFR_EXP_MIN, MPFR_EXP_MAX,
-			      goto underflow, goto overflow);
-	  MPFR_SADD_OVERFLOW (exp, exp, -exp_z,
-			      mp_exp_t, mp_exp_unsigned_t,
-			      MPFR_EXP_MIN+2, MPFR_EXP_MAX-2,
-			      goto overflow, goto underflow);
+          /* exp -= exp_z + ysize_bits with overflow checking
+             and check that we can add/substract 2 to exp without overflow */
+          MPFR_SADD_OVERFLOW (exp_z, exp_z, ysize_bits,
+                              mp_exp_t, mp_exp_unsigned_t,
+                              MPFR_EXP_MIN, MPFR_EXP_MAX,
+                              goto underflow, goto overflow);
+          MPFR_SADD_OVERFLOW (exp, exp, -exp_z,
+                              mp_exp_t, mp_exp_unsigned_t,
+                              MPFR_EXP_MIN+2, MPFR_EXP_MAX-2,
+                              goto overflow, goto underflow);
           err += 2;
           exact = exact && (mpn_popcount (result, ysize) == 0);
 
           /* normalize result */
           if (result[2 * ysize] == MPFR_LIMB_ONE)
             {
-	      mp_limb_t *r = result + ysize;
+              mp_limb_t *r = result + ysize;
               exact = exact && ((*r & MPFR_LIMB_ONE) == 0);
               mpn_rshift (r, r, ysize + 1, 1);
-	      /* Overflow Checking not needed */
+              /* Overflow Checking not needed */
               exp ++;
             }
-	  result += ysize;
+          result += ysize;
         }
       /* case exp_base = pstr_size */
       else
         {
           /* base^(exp_s-pr) = 1             nothing to compute */
           result = y;
-	  err = 0;
+          err = 0;
         }
 
       /* test if rounding is possible, and if so exit the loop */
-      if (exact || mpfr_can_round_raw (result, ysize, 
-				       (pstr->negative) ? -1 : 1,
-				       ysize_bits - err - 1,
-				       GMP_RNDN, rnd, MPFR_PREC(x)))
+      if (exact || mpfr_can_round_raw (result, ysize,
+                                       (pstr->negative) ? -1 : 1,
+                                       ysize_bits - err - 1,
+                                       GMP_RNDN, rnd, MPFR_PREC(x)))
         break;
 
       /* update the prec for next loop */
@@ -637,8 +638,8 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mp_rnd_t rnd)
 
   /* round y */
   if (mpfr_round_raw (MPFR_MANT (x), result,
-		      ysize_bits,
-		      pstr->negative, MPFR_PREC(x), rnd, &res ))
+                      ysize_bits,
+                      pstr->negative, MPFR_PREC(x), rnd, &res ))
     {
       /* overflow when rounding y */
       MPFR_MANT (x)[MPFR_LIMB_SIZE (x) - 1] = MPFR_LIMB_HIGHBIT;
@@ -651,26 +652,26 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mp_rnd_t rnd)
 
   /* DO NOT USE MPFR_SET_EXP. The exp may be out of range! */
   MPFR_SADD_OVERFLOW (exp, exp, ysize_bits,
-		      mp_exp_t, mp_exp_unsigned_t,
-		      MPFR_EXP_MIN, MPFR_EXP_MAX,
-		      goto overflow, goto underflow); 
+                      mp_exp_t, mp_exp_unsigned_t,
+                      MPFR_EXP_MIN, MPFR_EXP_MAX,
+                      goto overflow, goto underflow);
   MPFR_EXP (x) = exp;
   res = mpfr_check_range (x, res, rnd);
   goto end;
 
  underflow:
-  /* This is called when there is a huge overflow 
+  /* This is called when there is a huge overflow
      (Real expo < MPFR_EXP_MIN << __gmpfr_emin */
   if (rnd == GMP_RNDN)
     rnd = GMP_RNDZ;
   res = mpfr_set_underflow (x, rnd, (pstr->negative) ? -1 : 1);
   goto end;
-  
+
  overflow:
   res = mpfr_set_overflow (x, rnd, (pstr->negative) ? -1 : 1);
 
  end:
-  TMP_FREE (maker); 
+  TMP_FREE (maker);
   return res;
 }
 
@@ -682,7 +683,7 @@ free_parsed_string (struct parsed_string *pstr)
 
 int
 mpfr_strtofr (mpfr_t x, const char *string, char **end, int base,
-	      mp_rnd_t rnd)
+              mp_rnd_t rnd)
 {
   int res = -1;
   struct parsed_string pstr;
@@ -695,22 +696,22 @@ mpfr_strtofr (mpfr_t x, const char *string, char **end, int base,
     {
       res = parse_string (x, &pstr, &string, base);
       /* If res == 0, then it was exact (NAN or INF),
-	 so it is also the ternary value */
+         so it is also the ternary value */
       if (res == 1)
-	{
-	  res = parsed_string_to_mpfr (x, &pstr, rnd);
-	  free_parsed_string (&pstr);
-	}
+        {
+          res = parsed_string_to_mpfr (x, &pstr, rnd);
+          free_parsed_string (&pstr);
+        }
       else if (res == 2)
-	res = mpfr_set_overflow (x, rnd, (pstr.negative) ? -1 : 1);
+        res = mpfr_set_overflow (x, rnd, (pstr.negative) ? -1 : 1);
       else if (res == 3)
-	{
-	  /* This is called when there is a huge overflow 
-	     (Real expo < MPFR_EXP_MIN << __gmpfr_emin */
-	  if (rnd == GMP_RNDN)
-	    rnd = GMP_RNDZ;
-	  res = mpfr_set_underflow (x, rnd, (pstr.negative) ? -1 : 1);
-	}
+        {
+          /* This is called when there is a huge overflow
+             (Real expo < MPFR_EXP_MIN << __gmpfr_emin */
+          if (rnd == GMP_RNDN)
+            rnd = GMP_RNDZ;
+          res = mpfr_set_underflow (x, rnd, (pstr.negative) ? -1 : 1);
+        }
     }
   if (end != NULL)
     *end = (char *) string;
