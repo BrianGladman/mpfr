@@ -387,7 +387,7 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
   prec1 = MAX(prec1, precs1);
   if (MPFR_IS_POS (s) && MPFR_GET_EXP (s) >= 0) /* Case s >= 1/2 */
     inex = mpfr_zeta_pos (z, s, rnd_mode);
-  else /* use reflection formula 
+  else /* use reflection formula
           zeta(s) = 2^s*Pi^(s-1)*sin(Pi*s/2)*gamma(1-s)*zeta(1-s) */
     {
       mpfr_init2 (z_pre, MPFR_PREC_MIN);
