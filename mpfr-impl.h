@@ -292,6 +292,8 @@ long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CO
 #define MPFR_ARE_SINGULAR(x,y) \
   (MPFR_UNLIKELY(MPFR_IS_SINGULAR(x)) || MPFR_UNLIKELY(MPFR_IS_SINGULAR(y)))
 
+/* TODO: Redo all the macros dealing with the signs */
+
 /* Without zeros */
 #define MPFR_ISNONNEG(x)  (MPFR_NOTZERO((x)) && MPFR_SIGN(x) > 0)
 #define MPFR_ISNEG(x)     (MPFR_NOTZERO((x)) && MPFR_SIGN(x) < 0)
@@ -312,8 +314,7 @@ long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CO
   (MPFR_CHECK_SIGN(s), MPFR_SIGN(x) = s)
 #define MPFR_IS_POS_SIGN(s1) (s1 > 0)
 #define MPFR_IS_NEG_SIGN(s1) (s1 < 0)
-#define MPFR_MULT_SIGN(s1, s2) \
-  ((s1) * (s2))
+#define MPFR_MULT_SIGN(s1, s2) ((s1) * (s2))
 #define MPFR_SET_MULT_SIGN(x, s) \
   (MPFR_CHECK_SIGN(s), MPFR_SIGN(x) *= s)
 /* Transform a sign to 1 or -1 */

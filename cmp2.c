@@ -47,9 +47,10 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mp_prec_t *cancel)
   MPFR_ASSERTD(MPFR_IS_FP(c));
 
   /* Optimized case x - x */
-  if (b == c)
+  if (MPFR_UNLIKELY(b == c))
     return 0;
 
+  /*FIXME: Useless for sub1 ? */
   if (MPFR_IS_ZERO(b))
     {
       if (MPFR_IS_ZERO(c))

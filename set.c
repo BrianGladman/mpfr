@@ -52,6 +52,16 @@ mpfr_set4 (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode, int signb)
 	/* Should never reach this code */
 	MPFR_ASSERTN(1);
     }
+  else if (MPFR_LIKELY(MPFR_PREC(b) == MPFR_PREC(a)))
+    {
+      /* Same precision and b is not special: 
+       * just copy the mantissa, and set the exponent and the sign */
+      MPFR_CLEAR_FLAGS(a);
+      MPN_COPY(MPFR_MANT(a), MPFR_MANT(b), MPFR_LIMB_SIZE(b));
+      MPFR_SET_SIGN(a, signb);
+      MPFR_SET_EXP(a, MPFR_GET_EXP(b));
+      MPFR_RET(0);
+    }
   else
     {
       mp_limb_t *ap;

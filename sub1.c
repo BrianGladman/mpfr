@@ -49,11 +49,10 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   an = 1 + (MPFR_PREC(a) - 1) / BITS_PER_MP_LIMB;
 
   sign = mpfr_cmp2 (b, c, &cancel);
-  if (sign == 0)
+  if (MPFR_UNLIKELY(sign == 0))
     {
       if (rnd_mode == GMP_RNDD)
         MPFR_SET_NEG(a);
-
       else
         MPFR_SET_POS(a);
       MPFR_SET_ZERO(a);
@@ -80,7 +79,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
     {
       mpfr_srcptr t;
       MPFR_CHANGE_SIGN(a);
-      t = b; b = c; c = t;
+      t = b; b = c; c = t;      
     }
 
   diff_exp = (mp_exp_unsigned_t) MPFR_GET_EXP (b) - MPFR_GET_EXP (c);

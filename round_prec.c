@@ -72,12 +72,12 @@ mpfr_round_raw_generic(mp_limb_t *yp, mp_limb_t *xp, mp_prec_t xprec,
       lomask = -1;
       himask = -1;
     }
-  MPFR_ASSERTN(nw >= 1);
+  MPFR_ASSERTD(nw >= 1);
 
   if (xprec <= yprec)
     { /* No rounding is necessary. */
       /* if yp=xp, maybe an overlap: MPN_COPY_DECR is ok when src <= dst */
-      MPFR_ASSERTN(nw >= xsize);
+      MPFR_ASSERTD(nw >= xsize);
       if (inexp)
         *inexp = 0;
       if (flag)
@@ -100,7 +100,7 @@ mpfr_round_raw_generic(mp_limb_t *yp, mp_limb_t *xp, mp_prec_t xprec,
           k = xsize - nw;
           if (!rw)
             k--;
-          MPFR_ASSERTN(k >= 0);
+          MPFR_ASSERTD(k >= 0);
           sb = xp[k] & lomask;  /* First non-significant bits */
           if (rnd_mode == GMP_RNDN)
             {
@@ -172,7 +172,7 @@ mpfr_prec_round (mpfr_ptr x, mp_prec_t prec, mp_rnd_t rnd_mode)
       MPFR_SET_ALLOC_SIZE(x, nw); /* new number of allocated limbs */
     }
 
-  if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(x)))
+  if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(x) ))
     {
       if (MPFR_IS_NAN(x))
 	MPFR_RET_NAN;
@@ -185,7 +185,7 @@ mpfr_prec_round (mpfr_ptr x, mp_prec_t prec, mp_rnd_t rnd_mode)
   TMP_MARK(marker); 
   tmp = TMP_ALLOC (nw * BYTES_PER_MP_LIMB);
   xp = MPFR_MANT(x);
-  carry = mpfr_round_raw (tmp, xp, MPFR_PREC(x), MPFR_SIGN(x) < 0,
+  carry = mpfr_round_raw (tmp, xp, MPFR_PREC(x), MPFR_IS_NEG(x),
                           prec, rnd_mode, &inexact);
   MPFR_PREC(x) = prec;
 
