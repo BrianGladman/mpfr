@@ -137,7 +137,7 @@ mpfr_mul (a, b, c, rnd_mode)
       if (left_a)
 	inexact = tmp[tn] & (((mp_limb_t) 1 << left_a) - 1);
       while ((inexact == 0) && tn)
-	inexact = tmp[tn--];
+	inexact = tmp[--tn];
     }
   TMP_FREE(marker);
 
