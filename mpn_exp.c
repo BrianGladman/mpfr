@@ -95,16 +95,18 @@ mpfr_mpn_exp (mp_limb_t *a, mp_exp_t *exp_r, int b, mp_exp_t e, size_t n)
       /* set {c+n, 2n1-n} to 0 : {c, n} = {a, n}^2*K^n */
 
       /* check overflow on f */
-      {
-        mp_exp_t oldf = f;
-        f = 2 * f;
-        if (f / 2 != oldf)
-          {
-            TMP_FREE(marker);
-            return -2;
-          }
-      }
-      f += n * BITS_PER_MP_LIMB;
+      if (MPFR_UNLIKELY(f < MPFR_EXP_MIN/2 || f > MPFR_EXP_MAX/2))
+	{
+	overflow:
+	  TMP_FREE(marker);
+	  return -2;
+	}
+      /* FIXME: Could f = 2*f + n * BITS_PER_MP_LIMB be used? */
+      f = 2*f;
+      MPFR_SADD_OVERFLOW (f, f, n * BITS_PER_MP_LIMB,
+                          mp_exp_t, mp_exp_unsigned_t,
+                          MPFR_EXP_MIN, MPFR_EXP_MAX,
+                          goto overflow, goto overflow);
       if ((c[2*n - 1] & MPFR_LIMB_HIGHBIT) == 0)
         {
           /* shift A by one bit to the left */
