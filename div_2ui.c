@@ -26,13 +26,14 @@ mpfr_div_2ui (mpfr_ptr y, mpfr_srcptr x, unsigned long n, mp_rnd_t rnd_mode)
 {
   int inexact;
 
-  inexact = y != x ? mpfr_set (y, x, rnd_mode) : 0;
+  /* Most of the times, this function is called with y==x */
+  inexact = MPFR_UNLIKELY(y != x) ? mpfr_set (y, x, rnd_mode) : 0;
 
   if (MPFR_LIKELY( MPFR_IS_PURE_FP(y)) )
     {
       /* n will have to be casted to long to make sure that the addition
          and subtraction below (for overflow detection) are signed */
-      while (n > LONG_MAX)
+      while (MPFR_UNLIKELY(n > LONG_MAX))
         {
           int inex2;
 
