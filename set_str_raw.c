@@ -26,6 +26,7 @@ mpfr_set_str_raw(mpfr_ptr x, char *str)
   str0 = str2 = (char *) malloc(strlen(str)*sizeof(char)); 
 
   if (*str == '-') { negative = 1; str++; }
+  else if (*str == '+') str++;
 
   while (*str == '0') { str++; } 
 
