@@ -183,6 +183,11 @@ char *mpfr_get_str(str, expptr, base, n, op, rnd_mode)
     f++; /* possible due to rounding */
     str[n]='\0'; /* ensures we get only n digits of output */
   }
+  else if (strlen(str)==n-1) {
+    f--;
+    str[n-1]='0';
+    str[n]='\0';
+  }
   *expptr = f;
   mpfr_clear(a); mpfr_clear(b); mpz_clear(bz);
   return str0;
