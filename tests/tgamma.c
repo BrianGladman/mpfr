@@ -38,6 +38,55 @@ special (void)
   mpfr_init (x);
   mpfr_init (y);
   
+  mpfr_set_nan (x);
+  mpfr_gamma (y, x, GMP_RNDN);
+  if (!mpfr_nan_p (y))
+    {
+      printf ("Error for gamma(NaN)\n");
+      exit (1);
+    }
+  
+  mpfr_set_inf (x, -1);
+  mpfr_gamma (y, x, GMP_RNDN);
+  if (!mpfr_nan_p (y))
+    {
+      printf ("Error for gamma(-Inf)\n");
+      exit (1);
+    }
+  
+  mpfr_set_inf (x, 1);
+  mpfr_gamma (y, x, GMP_RNDN);
+  if (!mpfr_inf_p (y) || mpfr_sgn (y) < 0)
+    {
+      printf ("Error for gamma(+Inf)\n");
+      exit (1);
+    }
+
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_gamma (y, x, GMP_RNDN);
+  if (!mpfr_inf_p (y) || mpfr_sgn (y) < 0)
+    {
+      printf ("Error for gamma(+0)\n");
+      exit (1);
+    }
+
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_neg (x, x, GMP_RNDN);
+  mpfr_gamma (y, x, GMP_RNDN);
+  if (!mpfr_inf_p (y) || mpfr_sgn (y) > 0)
+    {
+      printf ("Error for gamma(-0)\n");
+      exit (1);
+    }
+
+  mpfr_set_ui (x, 1, GMP_RNDN);
+  mpfr_gamma (y, x, GMP_RNDN);
+  if (mpfr_cmp_ui (y, 1))
+    {
+      printf ("Error for gamma(1)\n");
+      exit (1);
+    }
+
   mpfr_set_prec (x, 53);
   mpfr_set_prec (y, 53);
 

@@ -78,14 +78,13 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	      return 0;  /* exact */
 	    }
 	}
-      else if (MPFR_IS_ZERO(x))
+      else
 	{
+          MPFR_ASSERTD(MPFR_IS_ZERO(x));
 	  MPFR_SET_INF(gamma);
 	  MPFR_SET_SAME_SIGN(gamma, x);
 	  return 0;  /* exact */
 	}
-      else
-	MPFR_ASSERTN(0);
     }
   MPFR_CLEAR_FLAGS(gamma);
 
@@ -133,7 +132,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
       /* estimated_cancel is the amount of bit that will be flushed */
       estimated_cancel= (mp_prec_t) (ecCST * (double) A + 1.0);
-      Prec = prec_nec + estimated_cancel + 20;
+      Prec = prec_nec + estimated_cancel + 16;
 
       mpfr_set_prec (xp, Prec);
       if (compared < 0)
