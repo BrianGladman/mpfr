@@ -64,7 +64,7 @@ How to install and use MPFR, a library for reliable multiple precision floating-
 @subtitle Edition @value{VERSION}
 @subtitle @value{UPDATED-MONTH}
 
-@author The MPFR team, LORIA/INRIA Lorraine
+@author The MPFR team
 @email{mpfr@@loria.fr}
 
 @c Include the Distribution inside the titlepage so
@@ -1576,6 +1576,12 @@ the base-2 exponential, and the factorial function. Fabrice Rouillier
 contributed the original version of @file{mul_ui.c}, the @file{gmp_op.c}
 file, and helped to the Windows porting.
 Jean-Luc Rémy contributed the @code{mpfr_zeta} code.
+Ludovic Meunier helped in the design of the @code{mpfr_erf} code.
+
+The development of the MPFR library would not have been possible without the
+continuous support of LORIA, INRIA and INRIA Lorraine.
+The development of MPFR was also supported by a grant 
+(202F0659 00 MPN 121) from the Conseil Régional de Lorraine in 2002.
 
 @node References, GNU Free Documentation License, Contributors, Top
 @comment  node-name,  next,  previous,  up
