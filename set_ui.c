@@ -40,6 +40,7 @@ mpfr_set_ui (mpfr_ptr x, unsigned long i, mp_rnd_t rnd_mode)
       mp_limb_t *xp;
 
       xn = (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB;
+      MPFR_ASSERTN(i == (mp_limb_t) i);
       count_leading_zeros(cnt, (mp_limb_t) i);
 
       xp = MPFR_MANT(x);

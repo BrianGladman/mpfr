@@ -43,6 +43,7 @@ mpfr_set_si (mpfr_ptr x, long i, mp_rnd_t rnd_mode)
 
   xn = (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB;
   ai = SAFE_ABS(unsigned long, i);
+  MPFR_ASSERTN(SAFE_ABS(unsigned long, i) == ai);
   count_leading_zeros(cnt, ai);
 
   xp = MPFR_MANT(x);

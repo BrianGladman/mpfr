@@ -78,6 +78,7 @@ mpfr_mul_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
   if (yn < xn + 1)
     yp = (mp_ptr) TMP_ALLOC ((size_t) (xn + 1) * BYTES_PER_MP_LIMB);
 
+  MPFR_ASSERTN(u == (mp_limb_t) u);
   yp[xn] = mpn_mul_1 (yp, MPFR_MANT(x), xn, u);
 
   /* x * u is stored in yp[xn], ..., yp[0] */
