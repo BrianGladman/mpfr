@@ -95,7 +95,7 @@ Efficiency:
 - rewrite mpfr_greater_p... as native code.
 - mpfr_mul(a,b,c): truncate b,c when their precision is larger than that of a
 - mpfr_tanh is inefficient is x is large (Pb of overflow too).
-  Should compute tanh(x)-1=-2/(exp(2x)+1) instead?
+  Should compute tanh(x)=1-2/(exp(2x)+1) instead?
 
 - mpf_t uses a scheme where the number of limbs actually present can
   be less than the selected precision, thereby allowing low precision
