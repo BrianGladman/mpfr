@@ -637,6 +637,16 @@ check_overflow (void)
           }
       }
 
+  mpfr_set_exp (c, mpfr_get_emax () - 512);
+  mpfr_set_prec (a, 256);
+  mpfr_clear_overflow ();
+  test_add (a, b, c, GMP_RNDU);
+  if (!mpfr_overflow_p ())
+    {
+      printf ("No overflow in check_overflow\n");
+      exit (1);
+    }
+
   mpfr_clear (a);
   mpfr_clear (b);
   mpfr_clear (c);
