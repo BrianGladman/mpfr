@@ -7,10 +7,7 @@ else
   include_deps="-i"
 fi
 
-if aclocal \
-  && automake --gnu Makefile $include_deps \
-  && automake --gnu tests/Makefile $include_deps \
-  && autoconf && ./configure $@
+if aclocal && automake $include_deps && autoconf && ./configure $@
 then
   echo
   echo "The MPFR source code was successfully prepared."

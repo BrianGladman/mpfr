@@ -1,3 +1,5 @@
+AUTOMAKE_OPTIONS = gnu
+
 SUBDIRS = tests
 EXTRA_DIST = BUGS VERSION generic.c
 
