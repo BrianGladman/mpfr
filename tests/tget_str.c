@@ -424,6 +424,278 @@ check_small (void)
     }
   mpfr_free_str (s);
 
+  /* 8116315218207718*2^(-293) ~ 0.5100000000000000000015*10^(-72) */
+  mpfr_set_str_binary (x, "11100110101011011111011100101011101110110001111100110E-293");
+  s = mpfr_get_str (NULL, &e, 10, 2, x, GMP_RNDU);
+  if (strcmp (s, "52") || e != -72)
+    {
+      printf ("Error in mpfr_get_str (31u): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+  s = mpfr_get_str (NULL, &e, 10, 2, x, GMP_RNDD);
+  if (strcmp (s, "51") || e != -72)
+    {
+      printf ("Error in mpfr_get_str (31d): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+
+  /* 6712731423444934*2^536 ~ .151000000000000000000067*10^178 */
+  mpfr_set_str_binary (x, "10111110110010011000110010011111101111000111111000110E536");
+  s = mpfr_get_str (NULL, &e, 10, 3, x, GMP_RNDU);
+  if (strcmp (s, "152") || e != 178)
+    {
+      printf ("Error in mpfr_get_str (32u): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+  s = mpfr_get_str (NULL, &e, 10, 3, x, GMP_RNDD);
+  if (strcmp (s, "151") || e != 178)
+    {
+      printf ("Error in mpfr_get_str (32d): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+
+  /* 3356365711722467*2^540 ~ .120800000000000000000054*10^179 */
+  mpfr_set_str_binary (x, "1011111011001001100011001001111110111100011111100011E540");
+  s = mpfr_get_str (NULL, &e, 10, 4, x, GMP_RNDU);
+  if (strcmp (s, "1209") || e != 179)
+    {
+      printf ("Error in mpfr_get_str (33u): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+  s = mpfr_get_str (NULL, &e, 10, 4, x, GMP_RNDD);
+  if (strcmp (s, "1208") || e != 179)
+    {
+      printf ("Error in mpfr_get_str (33d): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+
+  /* 6475049196144587*2^100 ~ .8208099999999999999999988*10^46 */
+  mpfr_set_str_binary (x, "10111000000010000010111011111001111010100011111001011E100");
+  s = mpfr_get_str (NULL, &e, 10, 5, x, GMP_RNDU);
+  if (strcmp (s, "82081") || e != 46)
+    {
+      printf ("Error in mpfr_get_str (34u): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+  s = mpfr_get_str (NULL, &e, 10, 5, x, GMP_RNDD);
+  if (strcmp (s, "82080") || e != 46)
+    {
+      printf ("Error in mpfr_get_str (34d): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+
+  /* 6722280709661868*2^364 ~ .25260100000000000000000012*10^126 */
+  mpfr_set_str_binary (x, "10111111000011110000011110001110001111010010010101100E364");
+  s = mpfr_get_str (NULL, &e, 10, 6, x, GMP_RNDU);
+  if (strcmp (s, "252602") || e != 126)
+    {
+      printf ("Error in mpfr_get_str (35u): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+  s = mpfr_get_str (NULL, &e, 10, 6, x, GMP_RNDD);
+  if (strcmp (s, "252601") || e != 126)
+    {
+      printf ("Error in mpfr_get_str (35d): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+
+  /* 5381065484265332*2^(-455) ~ .578389299999999999999999982*10^(-121) */
+  mpfr_set_str_binary (x, "10011000111100000110011110000101100111110011101110100E-455");
+  s = mpfr_get_str (NULL, &e, 10, 7, x, GMP_RNDU);
+  if (strcmp (s, "5783893") || e != -121)
+    {
+      printf ("Error in mpfr_get_str (36u): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+  s = mpfr_get_str (NULL, &e, 10, 7, x, GMP_RNDD);
+  if (strcmp (s, "5783892") || e != -121)
+    {
+      printf ("Error in mpfr_get_str (36d): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+
+  /* 8369123604277281*2^(-852) ~ .27869147000000000000000000056*10^(-240) */
+  mpfr_set_str_binary (x, "11101101110111010110001101111100000111010100000100001E-852");
+  s = mpfr_get_str (NULL, &e, 10, 8, x, GMP_RNDU);
+  if (strcmp (s, "27869148") || e != -240)
+    {
+      printf ("Error in mpfr_get_str (37u): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+  s = mpfr_get_str (NULL, &e, 10, 8, x, GMP_RNDD);
+  if (strcmp (s, "27869147") || e != -240)
+    {
+      printf ("Error in mpfr_get_str (37d): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+
+  /* 7976538478610756*2^377 ~ .245540326999999999999999999982*10^130 */
+  mpfr_set_str_binary (x, "11100010101101001111010010110100011100000100101000100E377");
+  s = mpfr_get_str (NULL, &e, 10, 9, x, GMP_RNDU);
+  if (strcmp (s, "245540327") || e != 130)
+    {
+      printf ("Error in mpfr_get_str (38u): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+  s = mpfr_get_str (NULL, &e, 10, 9, x, GMP_RNDD);
+  if (strcmp (s, "245540326") || e != 130)
+    {
+      printf ("Error in mpfr_get_str (38d): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+
+  /* 8942832835564782*2^(-382) ~ .9078555839000000000000000000038*10^(-99) */
+  mpfr_set_str_binary (x, "11111110001010111010110000110011100110001010011101110E-382");
+  s = mpfr_get_str (NULL, &e, 10, 10, x, GMP_RNDU);
+  if (strcmp (s, "9078555840") || e != -99)
+    {
+      printf ("Error in mpfr_get_str (39u): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+  s = mpfr_get_str (NULL, &e, 10, 10, x, GMP_RNDD);
+  if (strcmp (s, "9078555839") || e != -99)
+    {
+      printf ("Error in mpfr_get_str (39d): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+
+  /* 4471416417782391*2^(-380) ~ .18157111678000000000000000000077*10^(-98) */
+  mpfr_set_str_binary (x, "1111111000101011101011000011001110011000101001110111E-380");
+  s = mpfr_get_str (NULL, &e, 10, 11, x, GMP_RNDU);
+  if (strcmp (s, "18157111679") || e != -98)
+    {
+      printf ("Error in mpfr_get_str (40u): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+  s = mpfr_get_str (NULL, &e, 10, 11, x, GMP_RNDD);
+  if (strcmp (s, "18157111678") || e != -98)
+    {
+      printf ("Error in mpfr_get_str (40d): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+
+  /* 7225450889282194*2^711 ~ .778380362292999999999999999999971*10^230 */
+  mpfr_set_str_binary (x, "11001101010111000001001100001100110010000001010010010E711");
+  s = mpfr_get_str (NULL, &e, 10, 12, x, GMP_RNDU);
+  if (strcmp (s, "778380362293") || e != 230)
+    {
+      printf ("Error in mpfr_get_str (41u): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+  s = mpfr_get_str (NULL, &e, 10, 12, x, GMP_RNDD);
+  if (strcmp (s, "778380362292") || e != 230)
+    {
+      printf ("Error in mpfr_get_str (41d): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+
+  /* 3612725444641097*2^713 ~ .1556760724585999999999999999999942*10^231 */
+  mpfr_set_str_binary (x, "1100110101011100000100110000110011001000000101001001E713");
+  s = mpfr_get_str (NULL, &e, 10, 13, x, GMP_RNDU);
+  if (strcmp (s, "1556760724586") || e != 231)
+    {
+      printf ("Error in mpfr_get_str (42u): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+  s = mpfr_get_str (NULL, &e, 10, 13, x, GMP_RNDD);
+  if (strcmp (s, "1556760724585") || e != 231)
+    {
+      printf ("Error in mpfr_get_str (42d): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+
+  /* 6965949469487146*2^(-248) ~ .15400733123779000000000000000000016*10^(-58) */
+  mpfr_set_str_binary (x, "11000101111110111111001111111101001101111000000101010E-248");
+  s = mpfr_get_str (NULL, &e, 10, 14, x, GMP_RNDU);
+  if (strcmp (s, "15400733123780") || e != -58)
+    {
+      printf ("Error in mpfr_get_str (43u): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+  s = mpfr_get_str (NULL, &e, 10, 14, x, GMP_RNDD);
+  if (strcmp (s, "15400733123779") || e != -58)
+    {
+      printf ("Error in mpfr_get_str (43d): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+
+  /* 3482974734743573*2^(-244) ~ .12320586499023200000000000000000013*10^(-57) */
+  mpfr_set_str_binary (x, "1100010111111011111100111111110100110111100000010101E-244");
+  s = mpfr_get_str (NULL, &e, 10, 15, x, GMP_RNDU);
+  if (strcmp (s, "123205864990233") || e != -57)
+    {
+      printf ("Error in mpfr_get_str (44u): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+  s = mpfr_get_str (NULL, &e, 10, 15, x, GMP_RNDD);
+  if (strcmp (s, "123205864990232") || e != -57)
+    {
+      printf ("Error in mpfr_get_str (44d): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+
+  /* 7542952370752766*2^(-919) ~ .170206189963739699999999999999999974*10^(-260) */
+  mpfr_set_str_binary (x, "11010110011000100011001110100100111011100110011111110E-919");
+  s = mpfr_get_str (NULL, &e, 10, 16, x, GMP_RNDU);
+  if (strcmp (s, "1702061899637397") || e != -260)
+    {
+      printf ("Error in mpfr_get_str (45u): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+  s = mpfr_get_str (NULL, &e, 10, 16, x, GMP_RNDD);
+  if (strcmp (s, "1702061899637396") || e != -260)
+    {
+      printf ("Error in mpfr_get_str (45d): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+
+  /* 5592117679628511*2^165 ~ .26153245263757307000000000000000000074*10^66 */
+  mpfr_set_str_binary (x, "10011110111100000000001011011110101100010000011011111E165");
+  s = mpfr_get_str (NULL, &e, 10, 17, x, GMP_RNDU);
+  if (strcmp (s, "26153245263757308") || e != 66)
+    {
+      printf ("Error in mpfr_get_str (46u): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+  s = mpfr_get_str (NULL, &e, 10, 17, x, GMP_RNDD);
+  if (strcmp (s, "26153245263757307") || e != 66)
+    {
+      printf ("Error in mpfr_get_str (46d): s=%s e=%d\n", s, (int) e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+      
   mpfr_set_prec (x, 45);
   mpfr_set_str_binary (x, "1E45");
   s = mpfr_get_str (NULL, &e, 32, 9, x, GMP_RNDN);
