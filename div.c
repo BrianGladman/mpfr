@@ -433,12 +433,8 @@ mpfr_div (q, u, v, rnd_mode)
 	    
 	    if (k >= 0) /* In fact the quotient is larger than expected */
 	      {
-		if (inex == -2 * sign_quotient) 
-		  {
-		    cc = 1; 
-		    inex = sign_quotient; /* To infinity, finally. */
-		  }
-		else inex = -sign_quotient; /* Not even, finally. */
+		inex = sign_quotient; /* To infinity, finally. */
+		cc = 1; 
 	      }
 	  }
     }

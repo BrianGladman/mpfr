@@ -196,6 +196,46 @@ exponent of $c$ is smaller than that of $b$.
    return res + (b[n] < c[n]);
 \end{verbatim}
 
+\subsection{The {\tt mpfr\_div} function}
+The goals of the code of the {\tt mpfr\_div} function include the fact
+that the complexity should, as much as possible while preserving exact
+rounding, depend on the precision required on the result rather than
+on the precision given on the operands. Let $u = u_n 2^{u_e}$, $v = v_n
+2^{v_e}$, where $u_n$ and $v_n$ are in $[1/2, 1[$. Let $q_p$ be the 
+precision required on $q$. Put 
+$b_p = \min(v_p, q_p + \varepsilon_p)$, 
+$a_p = b_p + q_p + \varepsilon_p$, where $\varepsilon_p$ is a small value
+to be chosen.
+
+First, a integer division of $u_{hi} = \lfloor 
+u_n 2^{a_p} \rfloor$ by 
+$v_{hi} = \lfloor v_n 2^{b_p} \rfloor$ 
+is performed. Write $u_{hi} = \tilde{q} v_{hi} + \tilde{r}$. 
+
+If this division is not a full one, to obtain the real value 
+of the quotient, if $\delta = max(u_p, v_p)$, we have to 
+divide $u_n 2^{q_p + \varepsilon_p + \delta}$ by 
+$v_n 2^{\delta}$. 
+
+In that case, $2^{q_p + \varepsilon_p + \delta} u_n = \tilde{q}v_n
+2^{\delta} + \tilde{r} 2^{\delta - q_p - \varepsilon_p} + u_{lo} -
+\tilde{q}v_{lo}$, with obvious notations.
+
+A positive correction on $q$ has to come from the contribution of 
+$\tilde{r} 2^{\delta - q_p - \varepsilon_p} + u_{lo}$. The
+first term is at most $v_{hi} 2^{\delta - q_p - \varepsilon_p}$.
+As for $u_{lo}$, we have $u_{lo} < 2^{\delta-q_p-\varepsilon_p}$. Hence, 
+the sum $u_{lo} + \tilde{r} 2^{\delta - q_p - \varepsilon_p} < 2v$, 
+and the positive correction is at most 1. 
+
+We now have to estimate $\tilde{q}v_{lo}$. It is easily seen that 
+$\tilde{q} < 2^{q_p + \varepsilon_p + 1}$. As for $v_{lo}$, we have
+$v_{lo} < 2^{\delta - q_p - \varepsilon_p}$, so that 
+$\tilde{q} v_{lo} < 2^{\delta + 1}$, to be compared with $v_n 2^{\delta}$, 
+so that a negative correction is at most 3. As a consequence, to be able
+to decide rounding after the first stage, one should choose 
+$\varepsilon_p \geq 3$ (to include the round-to-nearest case). 
+
 \section{Mathematical constants}
 
 \subsection{Euler's constant}
