@@ -866,20 +866,17 @@ and @m{@var{d}\times 2^{exp}, @var{d} times 2 raised to @var{exp}} equals
 
 @deftypefun long mpfr_get_si (mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx {unsigned long} mpfr_get_ui (mpfr_t @var{op}, mp_rnd_t @var{rnd})
-Convert @var{op} to a @code{long} or @code{unsigned long}, after rounding
-it with respect to @var{rnd}.
-If @var{op} is NaN or Inf, or too big for the return type,
-the result is undefined.
-
-See also @code{mpfr_fits_slong_p} and @code{mpfr_fits_ulong_p}.
-@end deftypefun
-
-@deftypefun intmax_t mpfr_get_sj (mpfr_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefunx intmax_t mpfr_get_sj (mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx uintmax_t mpfr_get_uj (mpfr_t @var{op}, mp_rnd_t @var{rnd})
-Convert @var{op} to an @code{intmax_t} or @code{uintmax_t}, after rounding
+Convert @var{op} to a @code{long}, an @code{unsigned long}, 
+an @code{intmax_t} or an @code{uintmax_t} (respectively) after rounding
 it with respect to @var{rnd}.
-If @var{op} is NaN or Inf, or too big for the return type,
-the result is undefined.
+If @var{op} is NaN, the result is undefined.
+If @var{op} is too big for the return type, it returns the maximum
+or the minimum of the corresponding C type, depending on the direction
+of the overflow. The flag erange is set too.
+See also @code{mpfr_fits_slong_p}, @code{mpfr_fits_ulong_p},
+@code{mpfr_fits_intmax_p} and @code{mpfr_fits_uintmax_p}.
 @end deftypefun
 
 @deftypefun mp_exp_t mpfr_get_z_exp (mpz_t @var{rop}, mpfr_t @var{op})
@@ -954,6 +951,8 @@ For more information about how it is done:
 @deftypefunx int mpfr_fits_sint_p (mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_fits_ushort_p (mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_fits_sshort_p (mpfr_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_fits_intmax_p (mpfr_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_fits_uintmax_p (mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Return non-zero if @var{op} would fit in the respective C data type, when
 rounded to an integer in the direction @var{rnd}.
 @end deftypefun
@@ -1587,19 +1586,21 @@ i.e.@: the ternary value is propagated.
 @deftypefunx void mpfr_clear_overflow (void)
 @deftypefunx void mpfr_clear_nanflag (void)
 @deftypefunx void mpfr_clear_inexflag (void)
-Clear the underflow, overflow, invalid, and inexact flags.
+@deftypefunx void mpfr_clear_erangeflag (void)
+Clear the underflow, overflow, invalid, inexact and erange flags.
 @end deftypefun
 
 @deftypefun void mpfr_clear_flags (void)
-Clear all global flags (underflow, overflow, inexact, invalid).
+Clear all global flags (underflow, overflow, inexact, invalid, erange).
 @end deftypefun
 
 @deftypefun int mpfr_underflow_p (void)
 @deftypefunx int mpfr_overflow_p (void)
 @deftypefunx int mpfr_nanflag_p (void)
 @deftypefunx int mpfr_inexflag_p (void)
-Return the corresponding (underflow, overflow, invalid, inexact) flag,
-which is non-zero iff the flag is set.
+@deftypefunx int mpfr_erangeflag_p (void)
+Return the corresponding (underflow, overflow, invalid, inexact, erange) 
+flag, which is non-zero iff the flag is set.
 @end deftypefun
 
 @c @deftypefun size_t mpfr_size (mpfr_t @var{op})
