@@ -39,6 +39,10 @@ MA 02111-1307, USA. */
 #  include <time.h>
 #endif
 
+#if HAVE_SYS_FPU_H
+# include <sys/fpu.h>
+#endif
+
 #include "mpfr-test.h"
 
 static void tests_rand_start (void);

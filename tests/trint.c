@@ -25,6 +25,10 @@ MA 02111-1307, USA. */
 
 #include "mpfr-test.h"
 
+#if __MPFR_STDC (199901L)
+# include <math.h>
+#endif
+
 static void
 special (void)
 {
