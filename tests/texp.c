@@ -154,10 +154,10 @@ int check_worst_cases ()
   mpfr_set_prec (x, 601);
   mpfr_set_str_raw (x, "0.1000100010110110101110100101000100001110000100000100010100001110110111000010010110000111010010001011110010011101111111011101010001100110111100100001101101000111111011010010011001001100110111110010010010101010100011110110010010101111000111110011111110101101100111101100001000110000000111010100001111000000011101000011111101010011010010110101101010100010000000001001000111111111011011010011010100101101111101000101100011101111000110111010010100011001100000010001111011110110111101011011000100011000010100110101001101001111110110001111101000110010011101100100101000001010011011010010110100001101110100100E0");
   mpfr_init2 (y, 601);
-  mpfr_exp2 (y, x, GMP_RNDD);
+  mpfr_exp_2 (y, x, GMP_RNDD);
   mpfr_exp3 (x, x, GMP_RNDD);
   if (mpfr_cmp (x, y)) {
-    fprintf (stderr, "mpfr_exp2 and mpfr_exp3 for prec=601\n");
+    fprintf (stderr, "mpfr_exp_2 and mpfr_exp3 for prec=601\n");
     exit (1);
   }
 
@@ -175,13 +175,13 @@ void compare_exp2_exp3 (int n)
     mpfr_set_prec(x, prec); mpfr_set_prec(y, prec); mpfr_set_prec(z, prec);
     mpfr_random(x);
     rnd = rand() % 4;
-    mpfr_exp2 (y, x, rnd);
+    mpfr_exp_2 (y, x, rnd);
     mpfr_exp3 (z, x, rnd);
     if (mpfr_cmp(y,z)) {
-      printf("mpfr_exp2 and mpfr_exp3 disagree for rnd=%s and\nx=",
+      printf("mpfr_exp_2 and mpfr_exp3 disagree for rnd=%s and\nx=",
 	     mpfr_print_rnd_mode(rnd));
       mpfr_print_raw(x); putchar('\n');
-      printf("mpfr_exp2 gives  "); mpfr_print_raw(y); putchar('\n');
+      printf("mpfr_exp_2 gives  "); mpfr_print_raw(y); putchar('\n');
       printf("mpfr_exp3 gives "); mpfr_print_raw(z); putchar('\n');
       exit(1);
     }
