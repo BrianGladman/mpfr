@@ -92,7 +92,7 @@ void tests_memory_end _PROTO ((void));
 void tests_start_mpfr _PROTO ((void));
 void tests_end_mpfr _PROTO ((void));
 
-void mpfr_set_machine_rnd_mode _PROTO ((mp_rnd_t));
+int mpfr_set_machine_rnd_mode _PROTO ((mp_rnd_t));
 void mpfr_test_init _PROTO ((void));
 double drand _PROTO ((void)); 
 int ulp _PROTO ((double, double)); 
