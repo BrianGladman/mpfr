@@ -320,24 +320,19 @@ check_inexact ()
       exit (1);
     }
 
-<<<<<<< tdiv.c
   mpfr_set_prec (x, 129);
   mpfr_set_str_raw (x, "0.111110101111001100000101011100101100110011011101010001000110110101100101000010000001110110100001101010001010100010001111001101010E-2"); 
-  mpfr_print_raw(x); putchar('\n'); 
   mpfr_set_prec (u, 15);
   mpfr_set_str_raw (u, "0.101101000001100E-1");
-  mpfr_print_raw(u); putchar('\n'); 
   mpfr_set_prec (y, 92);
   if ((inexact = mpfr_div (y, x, u, GMP_RNDN) <= 0))
-=======
-  for (px=1; px<=MAX_PREC; px++)
->>>>>>> 1.31
     {
       fprintf (stderr, "Wrong inexact flag (1): expected 1, got %d\n",
 	       inexact);
+      mpfr_print_raw(y); putchar('\n'); 
       exit (1);
     }
-  mpfr_print_raw(y); putchar('\n'); 
+
   for (px=1; px<MAX_PREC; px++)
     {
       mpfr_set_prec (x, px);
