@@ -32,12 +32,12 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
   mp_ptr up, rp, tmp, remp;
   mp_size_t usize, rrsize;
   mp_size_t rsize;
-  mp_size_t prec, err;
+  mp_size_t err;
   mp_limb_t q_limb;
   long rw, nw, k; 
   int inexact = 0, t;
   unsigned long cc = 0; 
-  char can_round = 0; 
+  int can_round = 0;
   TMP_DECL(marker0);
   {
     TMP_DECL (marker);
@@ -75,15 +75,11 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
 
     MPFR_CLEAR_INF(r);
 
-  prec = MPFR_PREC(r);
-
-  if (!MPFR_NOTZERO(u))
-    {
-      MPFR_EXP(r) = 0;
-      rsize = (prec-1)/BITS_PER_MP_LIMB + 1;
-      MPN_ZERO(MPFR_MANT(r), rsize);
-      return 0; /* zero is exact */
-    }
+    if (MPFR_IS_ZERO(u))
+      {
+        MPFR_SET_ZERO(r);
+        MPFR_RET(0); /* zero is exact */
+      }
 
   up = MPFR_MANT(u);
   usize = (MPFR_PREC(u) - 1)/BITS_PER_MP_LIMB + 1; 
