@@ -83,6 +83,12 @@ char *out;
 #define TOINFP ieee_flags("set","direction","positive",&out)
 #define TONEAREST ieee_flags("set","direction","nearest",&out)
 #define TOINFM ieee_flags("set","direction","negative",&out)
+#elif (defined (__powerpc__) && defined(linux))
+#include <fpu_control.h>
+#define TOZERO _FPU_SETCW(_FPU_RC_ZERO)
+#define TOINFP _FPU_SETCW(_FPU_RC_UP)
+#define TOINFM _FPU_SETCW(_FPU_RC_DOWN)
+#define TONEAREST _FPU_SETCW(_FPU_RC_NEAREST)
 #elif (defined (__i386__) || defined (__i486__) || defined (linux))
 #ifdef __CYGWIN32__ /* no fpu_control.h under Cygnus */
 #define _FPU_EXTENDED 0x300
