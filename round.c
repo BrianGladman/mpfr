@@ -165,10 +165,11 @@ mpfr_can_round_raw(mp_limb_t *bp, unsigned long bn, char neg,
   if (err<=prec) return 0;
   neg = (neg > 0 ? 0 : 1); 
 
-  k = err/BITS_PER_MP_LIMB;
+  /* warning: if k = m*BITS_PER_MP_LIMB, consider limb m-1 and not m */
+  k = (err-1)/BITS_PER_MP_LIMB;
   l = err % BITS_PER_MP_LIMB; if (l) l = BITS_PER_MP_LIMB-l;
   /* the error corresponds to bit l in limb k */
-  k1 = prec/BITS_PER_MP_LIMB;
+  k1 = (prec-1)/BITS_PER_MP_LIMB;
   l1 = prec%BITS_PER_MP_LIMB; if (l1) l1 = BITS_PER_MP_LIMB-l1;
 
   /* the last significant bit is bit l1 in limb k1 */
