@@ -1,4 +1,4 @@
-Copyright 2000, 2001, 2002, 2003 Free Software Foundation.
+Copyright 2000, 2001, 2002, 2003, 2004 Free Software Foundation.
 Contributed by the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.
@@ -45,7 +45,6 @@ mkinst*     - auxiliary installation file
 mpf2mpfr.h  - header file for compatibility with MPF
 mpfr.h      - external header file for MPFR
 mpfr-impl.h - internal header file for MPFR
-mpfr-math.h - another internal header file for MPFR
 mpfr-test.h - header file for test files
 mpfr.info   - info file for MPFR
 mpfr.texi   - texinfo documentation for MPFR
@@ -55,6 +54,7 @@ texinfo.tex - TeX macros to handle mpfr.texi
 
 You can get the latest source code by CVS:
 
-  cvs -d :pserver:cvs@cvs-sop.inria.fr:/CVS/spaces checkout mpfr
+  cvs -d :pserver:cvs@cvs-sop.inria.fr:/CVS/spaces login
+  cvs -d :pserver:cvs@cvs-sop.inria.fr:/CVS/spaces -z3 checkout -P mpfr
 
 (empty password). CVS users should read the file "README.dev".

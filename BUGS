@@ -24,9 +24,9 @@ Probably many bugs.
 
 Known bugs:
 
-* The overflows/underflows are not yet implemented in all functions, or
-  partially implemented. For instance, mpfr_pow (z, x, y, rnd) fails for
-  very small x and some values of y.
+* The overflows/underflows are partially implemented in some functions.
+  For instance, mpfr_pow (z, x, y, rnd) fails for very small x and some
+  values of y.
 
 * The mpfr_set_ld function assumes that the long double type has an
   exponent of at most 15 bits.
