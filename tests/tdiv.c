@@ -168,33 +168,86 @@ void check_convergence ()
 void check_lowr ()
 {
   mpfr_t x, y, z, z2, z3, tmp; 
-  int k; 
+  int k, c; 
   
+
   mpfr_init2(x, 1000);   
   mpfr_init2(y, 100); 
   mpfr_init2(tmp, 850); 
   mpfr_init2(z, 10); 
   mpfr_init2(z2, 10);
-  mpfr_init2(z3, 1000); 
 
-  /* Exact divisions *
   for (k = 1; k < 10000; k++) 
     {
       mpfr_random(z); 
       mpfr_random(tmp); 
       mpfr_mul(x, z, tmp, GMP_RNDN); 
-      mpfr_set(y, tmp, GMP_RNDN); 
-      mpfr_div(z2, x, y, GMP_RNDN); 
+      c = mpfr_div(z2, x, tmp, GMP_RNDN); 
 
-      if (mpfr_cmp(z2, z))
+      if (c || mpfr_cmp(z2, z))
 	{
 	  fprintf(stderr, "Error in mpfr_div rnd=GMP_RNDN\n");
+	  printf("Dividing "); 
 	  printf("got        "); mpfr_print_raw(z2); putchar('\n');
 	  printf("instead of "); mpfr_print_raw(z); putchar('\n');
+	  printf("inex flag = %d\n", c); 
 	  exit(1);
 	}
     }
-*/
+
+  mpfr_set_prec(z2, 9); 
+  for (k = 1; k < 10000; k++) 
+    {
+      mpfr_random(z); 
+      mpfr_random(tmp); 
+      mpfr_mul(x, z, tmp, GMP_RNDN); 
+      c = mpfr_div(z2, x, tmp, GMP_RNDN); 
+
+      if ((mpfr_cmp(z2, z) == 0 && c) || c == -1)
+	{
+	  fprintf(stderr, "Error in mpfr_div rnd=GMP_RNDN\n");
+	  printf("Dividing "); 
+	  printf("got        "); mpfr_print_raw(z2); putchar('\n');
+	  printf("instead of "); mpfr_print_raw(z); putchar('\n');
+	  printf("inex flag = %d\n", c); 
+	  exit(1);
+	}
+      else if (c == 2) 
+	{
+	  mpfr_add_one_ulp(z); 
+	  if (mpfr_cmp(z2, z))
+	    {
+	      fprintf(stderr, "Error in mpfr_div [even rnd?] rnd=GMP_RNDN\n");
+	      printf("Dividing "); 
+	      printf("got        "); mpfr_print_raw(z2); putchar('\n');
+	      printf("instead of "); mpfr_print_raw(z); putchar('\n');
+	      printf("inex flag = %d\n", 1); 
+	      exit(1); 	      
+	    }
+	}
+      else if (c == -2)
+	{ 
+	  mpfr_sub_one_ulp(z); 
+	  if (mpfr_cmp(z2, z))
+	    {
+	      fprintf(stderr, "Error in mpfr_div [even rnd?] rnd=GMP_RNDN\n");
+	      printf("Dividing "); 
+	      printf("got        "); mpfr_print_raw(z2); putchar('\n');
+	      printf("instead of "); mpfr_print_raw(z); putchar('\n');
+	      printf("inex flag = %d\n", 1); 
+	      exit(1); 	      
+	    }
+	}	  
+    }
+
+
+  mpfr_set_prec(x, 1000);   
+  mpfr_set_prec(y, 100); 
+  mpfr_set_prec(tmp, 850); 
+  mpfr_set_prec(z, 10); 
+  mpfr_set_prec(z2, 10);
+  mpfr_init2(z3, 50); 
+
   /* almost exact divisions */
   for (k = 1; k < 10000; k++) 
     {
@@ -204,26 +257,29 @@ void check_lowr ()
       mpfr_set(y, tmp, GMP_RNDD); 
       mpfr_add_one_ulp(x); 
 
-      mpfr_div(z2, x, y, GMP_RNDD); 
+      c = mpfr_div(z2, x, y, GMP_RNDD); 
       mpfr_div(z3, x, y, GMP_RNDD); 
       mpfr_set(z, z3, GMP_RNDD); 
 
-      if (mpfr_cmp(z2, z))
+      if (c != -1 || mpfr_cmp(z2, z))
 	{
 	  fprintf(stderr, "Error in mpfr_div rnd=GMP_RNDD\n");
 	  printf("got        "); mpfr_print_raw(z2); putchar('\n');
 	  printf("instead of "); mpfr_print_raw(z); putchar('\n');
+	  printf("inex flag = %d\n", c); 
 	  exit(1);
 	}
 
-      mpfr_div(z2, x, y, GMP_RNDU); 
+      mpfr_set(y, tmp, GMP_RNDU); 
+      c = mpfr_div(z2, x, y, GMP_RNDU); 
       mpfr_div(z3, x, y, GMP_RNDU); 
       mpfr_set(z, z3, GMP_RNDU); 
-      if (mpfr_cmp(z2, z))
+      if (c != 1 || mpfr_cmp(z2, z))
 	{
 	  fprintf(stderr, "Error in mpfr_div rnd=GMP_RNDU\n");
 	  printf("got        "); mpfr_print_raw(z2); putchar('\n');
 	  printf("instead of "); mpfr_print_raw(z); putchar('\n');
+	  printf("inex flag = %d\n", c); 
 	  exit(1);
 	}      
     }
@@ -232,9 +288,74 @@ void check_lowr ()
   mpfr_clear(z3); 
 }
 
+#define MAX_PREC 24
+
+void
+check_inexact ()
+{
+  mpfr_t x, y, z, u;
+  mp_prec_t px, py, pu;
+  int inexact, cmp;
+  mp_rnd_t rnd;
+
+  mpfr_init (x);
+  mpfr_init (y);
+  mpfr_init (z);
+  mpfr_init (u);
+
+  for (px=1; px<MAX_PREC; px++)
+    {
+      mpfr_set_prec (x, px);
+      mpfr_random (x);
+      for (pu=1; pu<MAX_PREC; pu++)
+        {
+          mpfr_set_prec (u, pu);
+          do { mpfr_random (u); } while (mpfr_cmp_ui (u, 0) == 0);
+          for (py=1; py<MAX_PREC; py++)
+            {
+              mpfr_set_prec (y, py);
+              mpfr_set_prec (z, py + pu);
+              for (rnd=0; rnd<4; rnd++)
+                {
+                  inexact = mpfr_div (y, x, u, rnd);
+                  if (mpfr_mul (z, y, u, rnd))
+                    {
+                      fprintf (stderr, "z <- y * u should be exact\n");
+                      exit (1);
+                    }
+                  cmp = mpfr_cmp (z, x);
+
+                  if (((inexact == 0) && (cmp != 0)) ||
+                      ((inexact > 0) && (cmp <= 0)) ||
+                      ((inexact < 0) && (cmp >= 0)))
+                    {
+                      fprintf (stderr, "Wrong inexact flag for rnd=%s\n",
+                           mpfr_print_rnd_mode(rnd));
+                      printf ("expected %d, got %d\n", cmp, inexact);
+                      printf ("x="); mpfr_print_raw (x); putchar ('\n');
+                      printf ("u="); mpfr_print_raw (u); putchar ('\n');
+                      printf ("y="); mpfr_print_raw (y); putchar ('\n');
+                      printf ("y*u="); mpfr_print_raw (z); putchar ('\n');
+                    }
+                }
+            }
+        }
+    }
+                      
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+  mpfr_clear (u);
+}
+
+
+
+
+
 int
 main (int argc, char *argv[])
 {
+  mpfr_t x, y, z; 
   int N;
 
 #ifdef TEST
@@ -249,6 +370,14 @@ main (int argc, char *argv[])
 #endif
 
   N = (argc>1) ? atoi(argv[1]) : 100000;
+  check_inexact(); 
+  mpfr_init2(x, 64); 
+  mpfr_init2(y, 64); 
+  mpfr_init2(z, 64); 
+  mpfr_set_str_raw(x, "1.00100100110110101001010010101111000001011100100101010000000000E54"); 
+  mpfr_set_str_raw(y, "1.00000000000000000000000000000000000000000000000000000000000000E584"); 
+  mpfr_div(z, x, y, GMP_RNDU); 
+
   check_lowr(); 
   check_float(); /* checks single precision */
   check_convergence();
