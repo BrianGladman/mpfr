@@ -43,7 +43,7 @@ mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
   SIZ (absz) = ABS(SIZ(absz)); /* Hack to get abs(z) */
   MPFR_MPZ_SIZEINBASE2 (size_z, z);
 
-  prec = MPFR_PREC (x) + 3 + size_z;
+  prec = MPFR_PREC (y) + 3 + size_z;
   mpfr_init2 (res, prec);
 
   MPFR_ZIV_INIT (loop, prec);
@@ -51,7 +51,8 @@ mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
     mp_size_t i = size_z;
     /* now 2^(i-1) <= z < 2^i */
     /* see pow_ui.c for the error analusis, which is identical */
-    err = prec <= (mpfr_prec_t) i ? 0 : prec - 1 - (mpfr_prec_t) i;
+    MPFR_ASSERTD (prec > (mpfr_prec_t) i);
+    err = prec - 1 - (mpfr_prec_t) i;
     MPFR_ASSERTD (i >= 2);
     mpfr_clear_overflow ();
     mpfr_clear_underflow ();
@@ -62,16 +63,16 @@ mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
       inexact |= mpfr_mul (res, res, x, rnd1);
     for (i -= 3; i >= 0 && !mpfr_underflow_p() && !mpfr_overflow_p (); i--)
       {
-	inexact |= mpfr_sqr (res, res, GMP_RNDU);
+	inexact |= mpfr_mul (res, res, res, GMP_RNDU);
 	if (mpz_tstbit (absz, i))
 	  inexact |= mpfr_mul (res, res, x, rnd1);      
       }
-
+    /*    printf ("pow_z "); 
+	  mpfr_dump_mant (MPFR_MANT (res), prec, MPFR_PREC (x), err); */
     if (MPFR_LIKELY (inexact == 0 
 		     || mpfr_overflow_p () || mpfr_underflow_p ()
 		     || MPFR_CAN_ROUND (res, err, MPFR_PREC (y), rnd)))
       break;
-
     /* Actualisation of the precision */
     MPFR_ZIV_NEXT (loop, prec);
     mpfr_set_prec (res, prec);

@@ -200,6 +200,7 @@ static void check_regression (void)
       printf ("Regression (1) tested failed (%d=?%d)\n",res1, res2);
       printf ("pow_ui: "); mpfr_dump (x);
       printf ("pow_z:  "); mpfr_dump (y);
+      
       exit (1);
     }
 

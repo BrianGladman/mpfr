@@ -80,7 +80,7 @@ mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
 	return mpfr_set (x, y, rnd);	
       else
 	/* y^2 = sqr(y) */
-	return mpfr_sqr (x, y, rnd);
+	return mpfr_mul (x, y, y, rnd);
     }
 
   /* Augment exponent range */
@@ -99,17 +99,18 @@ mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
       int i;
       for (m = n, i = 0; m; i++, m >>= 1);
       /* now 2^(i-1) <= n < 2^i */
-      err = prec <= (mpfr_prec_t) i ? 0 : prec - 1 - (mpfr_prec_t) i;
+      MPFR_ASSERTD (prec > (mpfr_prec_t) i);
+      err = prec - 1 - (mpfr_prec_t) i; 
       MPFR_ASSERTD (i >= 1);
       mpfr_clear_overflow ();
       mpfr_clear_underflow ();
       /* First step: compute square from y */
-      inexact = mpfr_sqr (res, y, GMP_RNDU);
+      inexact = mpfr_mul (res, y, y, GMP_RNDU); 
       if (n & (1UL << (i-2)))
 	inexact |= mpfr_mul (res, res, y, rnd1);
       for (i -= 3; i >= 0 && !mpfr_overflow_p () && !mpfr_underflow_p (); i--) 
 	{
-	  inexact |= mpfr_sqr (res, res, GMP_RNDU);
+	  inexact |= mpfr_mul (res, res, res, GMP_RNDU);
 	  if (n & (1UL << i))
 	    inexact |= mpfr_mul (res, res, y, rnd1);
 	}
