@@ -217,7 +217,7 @@ mp_size_t mpn_sqrtrem_new (mp_ptr sp, mp_ptr rp, mp_srcptr np, mp_size_t nn)
     if (rp != np) MPN_COPY (rp, np, nn);
     rn = tn + (rp[tn] = mpn_dq_sqrtrem (sp, rp, tn));
   }
-  while (rp[rn-1]==0 && rn) rn--;
+  while (rn && rp[rn-1]==0) rn--;
   TMP_FREE (marker);
 
   return rn;
