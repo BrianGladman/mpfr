@@ -48,7 +48,7 @@ void check(double d, unsigned long u, unsigned char rnd, double e)
     printf("expected result is %1.20e, got %1.20e, dif=%d ulp\n",e,f,ulp(e,f));
     exit(1);
   }
-  mpfr_clear(x); 
+  mpfr_clear(x); mpfr_clear(y); 
 }
 
 int

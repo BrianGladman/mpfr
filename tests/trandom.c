@@ -88,7 +88,8 @@ void test_random2(unsigned long nbtests, unsigned long prec, int verbose)
   for (k = 0; k < nbtests; k++) {
     mpfr_random2(x, ABSSIZE(x), 0); 
     d = mpfr_get_d(x); av += d; var += d*d; 
-    tab[(int)(size_tab * d)]++;     
+    if (d < 1)
+      tab[(int)(size_tab * d)]++;     
   }
 
   mpfr_clear(x);
@@ -99,7 +100,7 @@ void test_random2(unsigned long nbtests, unsigned long prec, int verbose)
 
   th = (double)nbtests / size_tab; 
   printf("Average = %.5f\nVariance = %.5f\n", av, var); 
-  printf("Repartition for random2.\n"); 
+  printf("Repartition for random2 (taking only values < 1 into account.\n"); 
 
   for (k = 0; k < size_tab; k++) {
     chi2 += (tab[k] - th) * (tab[k] - th) / th; 
@@ -127,7 +128,10 @@ void test_urandomb(unsigned long nbtests, unsigned long prec, int verbose)
   tab = (int *) malloc (size_tab * sizeof(int)); 
   for (k = 0; k < size_tab; ++k) tab[k] = 0; 
 
-  gmp_randinit(state, 128, GMP_RAND_ALG_LC); 
+  printf("%ld\n", (unsigned long int)time(NULL));
+
+  gmp_randinit(state, GMP_RAND_ALG_LC, 128); 
+  gmp_randseed_ui(state, (unsigned long int)time(NULL)); 
 
   for (k = 0; k < nbtests; k++) {
     mpfr_urandomb(x, state); 

@@ -91,6 +91,13 @@ int main()
 	    printf("Error in floor, x = "); mpfr_print_raw(x); printf("\n"); 
 	    printf("floor(x) = "); mpfr_print_raw(y); printf("\n"); 
 	    printf("round(x, RNDD) = "); mpfr_print_raw(y2); printf("\n"); 
+	    mpfr_clear(x); 
+	    mpfr_clear(y); 
+	    mpfr_clear(y2); 
+	    mpfr_clear(z); 
+	    mpfr_clear(z2); 
+	    mpfr_clear(t); 
+	    mpfr_clear(t2); 
 	    exit(-1); 
 	  }
 
@@ -99,6 +106,13 @@ int main()
 	    printf("Error in trunc, x = "); mpfr_print_raw(x); printf("\n"); 
 	    printf("trunc(x) = "); mpfr_print_raw(z); printf("\n"); 
 	    printf("round(x, RNDZ) = "); mpfr_print_raw(z2); printf("\n"); 
+	    mpfr_clear(x); 
+	    mpfr_clear(y); 
+	    mpfr_clear(y2); 
+	    mpfr_clear(z); 
+	    mpfr_clear(z2); 
+	    mpfr_clear(t); 
+	    mpfr_clear(t2); 
 	    exit(-1); 
 	  }
 
@@ -107,11 +121,27 @@ int main()
 	    printf("Error in ceil, x = "); mpfr_print_raw(x); printf("\n"); 
 	    printf("ceil(x) = "); mpfr_print_raw(t); printf("\n"); 
 	    printf("round(x, RNDU) = "); mpfr_print_raw(t2); printf("\n"); 
+	    mpfr_clear(x); 
+	    mpfr_clear(y); 
+	    mpfr_clear(y2); 
+	    mpfr_clear(z); 
+	    mpfr_clear(z2); 
+	    mpfr_clear(t); 
+	    mpfr_clear(t2); 
 	    exit(-1); 
 	  }
 	EXP(x)++; 
       }
   }
+
+  mpfr_clear(x); 
+  mpfr_clear(y); 
+  mpfr_clear(y2); 
+  mpfr_clear(z); 
+  mpfr_clear(z2); 
+  mpfr_clear(t); 
+  mpfr_clear(t2); 
+
   return 0;
 }
 

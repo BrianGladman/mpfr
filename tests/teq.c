@@ -51,12 +51,13 @@ void teq(mpfr_srcptr x)
 	  printf("y = "); mpfr_print_raw(y); printf("\n"); 	
 	  printf("k = %ld\n", k); 
 	  printf("mpfr_eq(y, x, k) = %d\nmpfr_eq(y, x, k - 1) = %d\n", mpfr_eq(y, x, k),mpfr_eq(y, x, k - 1)); 
-
+	  mpfr_clear(x); mpfr_clear(y); 
 	  exit(-1); 
 	}
 
       if (px) { --px; } else { --mx; px = BITS_PER_MP_LIMB - 1; }
     }
+  mpfr_clear(y); 
 }
 
 int main()
@@ -69,6 +70,7 @@ int main()
     mpfr_random(x); 
     teq(x); 
   }
+  mpfr_clear (x); 
   return 0;
 }
 

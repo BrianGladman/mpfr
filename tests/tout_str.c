@@ -55,26 +55,35 @@ void check_large()
 
   mpfr_set_prec(x, 7);
   mpfr_set_str_raw(x, "0.1010101E10");
-  mpfr_get_str(NULL, &e, 10, 2, x, GMP_RNDU);
+  s = mpfr_get_str(NULL, &e, 10, 2, x, GMP_RNDU);
+  free(s); 
 
   /* checks rounding of negative numbers */
   mpfr_set_d(x, -1.5, GMP_RNDN);
   s = mpfr_get_str(NULL, &e, 10, 1, x, GMP_RNDD);
   if (strcmp(s, "-2")) {
     fprintf(stderr, "Error in mpfr_get_str for x=-1.5 and rnd=GMP_RNDD\n");
+    free(s); mpfr_clear(x); 
     exit(1);
   }
+  free(s); 
+
   s = mpfr_get_str(NULL, &e, 10, 1, x, GMP_RNDU);
   if (strcmp(s, "-1")) {
     fprintf(stderr, "Error in mpfr_get_str for x=-1.5 and rnd=GMP_RNDU\n");
+    free(s); 
+    mpfr_clear(x); 
     exit(1);
   }
+
+  free(s); 
 
   /* bug found by Jean-Pierre Merlet, produced error in mpfr_get_str */
   mpfr_set_prec(x, 128);
   mpfr_set_str_raw(x, "0.10111001100110011001100110011001100110011001100110011001100110011001100110011001100110011001100110011001100110011001100110011010E3");
-  mpfr_get_str(NULL, &e, 10, 0, x, GMP_RNDU);
+  s = mpfr_get_str(NULL, &e, 10, 0, x, GMP_RNDU);
 
+  free(s); 
   mpfr_clear(x);
 }
 
