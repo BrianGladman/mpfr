@@ -39,22 +39,22 @@ mpfr_eq (u, v, n_bits)
   mp_srcptr up, vp;
   mp_size_t usize, vsize, size, i;
   mp_exp_t uexp, vexp;
-  int usign;
+  int usign, k;
 
   uexp = u->_mp_exp;
   vexp = v->_mp_exp;
 
-  usize = u->_mp_size;
-  vsize = v->_mp_size;
+  usize = (PREC(u)-1)/BITS_PER_MP_LIMB + 1;
+  vsize = (PREC(v)-1)/BITS_PER_MP_LIMB + 1;
 
   /* 1. Are the signs different?  */
-  if ((usize ^ vsize) >= 0)
+  if (MPFR_SIGN(u) ==  MPFR_SIGN(v))
     {
       /* U and V are both non-negative or both negative.  */
-      if (usize == 0)
-	return vsize == 0;
-      if (vsize == 0)
-	return 0;
+      if (!NOTZERO(u))
+	return !NOTZERO(v); 
+      if (!NOTZERO(v))
+	return !NOTZERO(u);
 
       /* Fall out.  */
     }
@@ -66,7 +66,7 @@ mpfr_eq (u, v, n_bits)
 
   /* U and V have the same sign and are both non-zero.  */
 
-  usign = usize >= 0 ? 1 : -1;
+  usign = MPFR_SIGN(u); 
 
   /* 2. Are the exponents different?  */
   if (uexp > vexp)
@@ -80,28 +80,26 @@ mpfr_eq (u, v, n_bits)
   up = u->_mp_d;
   vp = v->_mp_d;
 
-  /* Ignore zeroes at the low end of U and V.  */
-  while (up[0] == 0)
-    {
-      up++;
-      usize--;
-    }
-  while (vp[0] == 0)
-    {
-      vp++;
-      vsize--;
-    }
-
   if (usize > vsize)
     {
       if (vsize * BITS_PER_MP_LIMB < n_bits)
-	return 0;		/* surely too different */
+	{
+	  k = usize - vsize - 1; 
+	  while (k >= 0 && !up[k]) --k; 
+	  if (k >= 0) 
+	    return 0;		/* surely too different */
+	}
       size = vsize;
     }
   else if (vsize > usize)
     {
       if (usize * BITS_PER_MP_LIMB < n_bits)
-	return 0;		/* surely too different */
+	{
+	  k = vsize - usize - 1; 
+	  while (k >= 0 && !vp[k]) --k; 
+	  if (k >= 0) 
+	    return 0;		/* surely too different */
+	}
       size = usize;
     }
   else
@@ -115,11 +113,13 @@ mpfr_eq (u, v, n_bits)
   up += usize - size;
   vp += vsize - size;
 
-  for (i = size - 1; i >= 0; i--)
+  for (i = size - 1; i > 0; i--)
     {
       if (up[i] != vp[i])
 	return 0;
     }
 
-  return 1;
+  return (up[i] >> (BITS_PER_MP_LIMB - (n_bits & (BITS_PER_MP_LIMB - 1))) == 
+	  vp[i] >> (BITS_PER_MP_LIMB - (n_bits & (BITS_PER_MP_LIMB - 1)))); 
+
 }
