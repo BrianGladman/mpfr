@@ -230,7 +230,7 @@ mpfr_can_round (mpfr_ptr b, mp_exp_t err, mp_rnd_t rnd1,
      mpfr_can_round_raw (MPFR_MANT(b),
 			 (MPFR_PREC(b) - 1)/BITS_PER_MP_LIMB + 1,
 			 MPFR_SIGN(b), err, rnd1, rnd2, prec))
-    : 1; /* can always round NaN or Inf */
+    : 0; /* cannnot round NaN or Inf */
 }
 
 int

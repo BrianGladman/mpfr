@@ -1554,7 +1554,8 @@ Assuming @var{b} is an approximation of an unknown number
 E(b)-@var{err} where E(b) is the exponent of 
 @var{b}, returns 1 if one is able to round exactly @var{x} to precision 
 @var{prec} with direction @var{rnd2},
-   and 0 otherwise. This function @strong{does not modify} its arguments.
+   and 0 otherwise (including for NaN and Inf).
+This function @strong{does not modify} its arguments.
 @end deftypefun
 
 @deftypefun mp_exp_t mpfr_get_exp (mpfr_srcptr @var{x})
