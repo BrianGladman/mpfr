@@ -52,7 +52,9 @@ mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
              overflow occured, i.e. the exponent of d is too large for the
              double format */
           long double div10, div11, div12, div13;
-          div10 = (long double) (double) 1.797693134862315907729e308; /* 2^(2^10) */
+
+          div10 = (long double) (double) 1.34078079299425971e154; /* 2^(2^9) */
+          div10 = div10 * div10;
           div11 = div10 * div10; /* 2^(2^11) */
           div12 = div11 * div11; /* 2^(2^12) */
           div13 = div12 * div12; /* 2^(2^13) */
@@ -76,6 +78,8 @@ mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
               d = d / div10; /* exact */
               shift_exp += 1024;
             }
+          MPFR_CLEAR_INF(u);
+          MPFR_SET_ZERO(u);
         }
       else if (MPFR_IS_ZERO(u) && (d != (long double) 0.0)) /* underflow */
         {
