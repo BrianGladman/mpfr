@@ -120,6 +120,11 @@ Efficiency:
       ...
     else
       plain operands
+
+- Nan, inf and the sign as separate bits within mpfr_t is inefficient.
+  For instance when an inf is to be set it should be done as one
+  store, not a separate clear-nan / set-inf.
+
 - mpf_t uses a scheme where the number of limbs actually present can
   be less than the selected precision, thereby allowing low precision
   values (for instance small integers) to be stored and manipulated in
