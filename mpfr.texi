@@ -863,13 +863,30 @@ The returned value @var{k} is such that the error in ulps on the result
 is less than 2 power @var{k}.
 @end deftypefun
 
-@deftypefun int mpfr_ui_pow (mpfr_t @var{rop}, unsign log int @var{nop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefun int mpfr_ui_pow (mpfr_t @var{rop}, unsigned long int @var{nop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Set @var{rop} to @var{nop} power of @var{op} (pow(@var{nop},@var{op})),
 rounded to the direction @var{rnd} with the precision of @var{rop}.
 Return zero iff the result is exact, a positive value when the
 result is greater than the exponential of @var{op}, and a negative value
 when it is smaller.
 @end deftypefun
+
+@deftypefun int mpfr_pow_si (mpfr_t @var{rop}, mpfr_t @var{nop},  long int @var{op}, mp_rnd_t @var{rnd})
+Set @var{rop} to @var{nop} power of @var{op} (long int)
+(pow(@var{nop},@var{op})), rounded to the direction @var{rnd} with the
+precision of @var{rop}. This function call pow_ui(@var{nop},@var{op}) if
+@var{op} is >0, or return 1/pow_ui(@var{nop},-@var{op}) if @var{op} is
+<0. The exact result is done if pow_ui produce an exact result. Return
+zero iff the result is exact.
+@end deftypefun
+
+@deftypefun int mpfr_pow (mpfr_t @var{rop}, mpfr_t @var{nop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+Set @var{rop} to @var{nop} power of @var{op} (pow(@var{nop},@var{op})),
+rounded to the direction @var{rnd} with the precision of @var{rop}. If @var{nop} is less 0 the function return NaN, even @var{op} is not an integer. In this laste case mpfr_pow call mpfr_pow_si.
+Return zero iff the result is exact.
+@end deftypefun
+
+
 
 @deftypefun int mpfr_neg (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Set @var{rop} to @minus{}@var{op} rounded in the direction @var{rnd}.
