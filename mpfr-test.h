@@ -19,6 +19,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+#include <limits.h>
 #include <math.h>
 #ifdef __mips
 #include <sys/fpu.h>
@@ -146,10 +147,13 @@ Ulp (double x)
 int
 ulp (double a, double b)
 {
+  double twoa;
+
   if (a == b) return 0; /* also deals with a=b=inf or -inf */
 
-  if (a + a == a) /* a is +/-0.0 or +/-Inf */
-    return ((b < a) ? 2147483647 : -2147483647);
+  twoa = a + a;
+  if (twoa == a) /* a is +/-0.0 or +/-Inf */
+    return ((b < a) ? INT_MAX : -INT_MAX);
 
   return (a - b) / Ulp (a);
 }
