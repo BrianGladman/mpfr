@@ -73,7 +73,6 @@ FUNC_NAME (mpfr_ptr r, mpfr_srcptr u)
   mp_exp_t exp;
   int rw;
   int signu;
-  mp_exp_t diff;
 
   if (MPFR_IS_NAN(u))
     {
@@ -137,10 +136,13 @@ FUNC_NAME (mpfr_ptr r, mpfr_srcptr u)
       usize = rsize;
     }
 
-  diff = (mp_prec_t) usize * BITS_PER_MP_LIMB - exp;
-  if (diff > 0)
+  MPFR_ASSERTN(exp > 0);
+  if ((mp_prec_t) usize * BITS_PER_MP_LIMB > exp)
     {
-      diff /= BITS_PER_MP_LIMB;
+      mp_size_t diff;
+
+      diff = ((mp_prec_t) usize * BITS_PER_MP_LIMB - (mp_prec_t) exp)
+        / BITS_PER_MP_LIMB;
 #ifdef _MPFR_FLOOR_OR_CEIL
       ignored_n += diff;
 #endif
@@ -151,7 +153,7 @@ FUNC_NAME (mpfr_ptr r, mpfr_srcptr u)
   /* number of non significant bits in low limb of r */
   MPFR_ASSERTN ((mp_prec_t) usize * BITS_PER_MP_LIMB >= exp &&
                 (mp_prec_t) usize * BITS_PER_MP_LIMB - exp < BITS_PER_MP_LIMB);
-  rw = (mp_prec_t) usize * BITS_PER_MP_LIMB - exp;
+  rw = (mp_prec_t) usize * BITS_PER_MP_LIMB - (mp_prec_t) exp;
   MPN_ZERO(rp, rsize - usize);
   rp += rsize - usize;
 
