@@ -180,7 +180,8 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
 #endif
   d = precz + 11;
   /* we want that s1 = s-1 is exact, i.e. we should have PREC(s1) >= EXP(s) */
-  mpfr_init2 (s1, (precs > MPFR_EXP(s)) ? precs : MPFR_EXP(s));
+  mpfr_init2 (s1, (precs > (mp_exp_unsigned_t) MPFR_EXP(s)) ?
+	      precs : (mp_exp_unsigned_t) MPFR_EXP(s));
   do
     {
       /* Principal loop: we compute, in z_pre,
