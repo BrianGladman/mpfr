@@ -167,6 +167,15 @@ void check64()
   mpfr_t x, t, u;
 
   mpfr_init(x); mpfr_init(t); mpfr_init(u);
+  mpfr_set_prec(x, 53); mpfr_set_prec(t, 76); mpfr_set_prec(u, 76);
+  mpfr_set_str_raw(x, "-0.10010010001001011011110000000000001010011011011110001E-32");
+  mpfr_set_str_raw(t, "-0.1011000101110010000101111111011111010001110011110111100110101011110010011111");
+  mpfr_sub(u, x, t, GMP_RNDU);
+  mpfr_set_str_raw(t, "0.1011000101110010000101111111011100111111101010011011110110101011101000000100");
+  if (mpfr_cmp(u,t)) {
+    printf("expect "); mpfr_print_raw(t); putchar('\n');
+    fprintf(stderr, "mpfr_add failed for precisions 53-76\n"); exit(1);
+  }
   mpfr_set_prec(x, 53); mpfr_set_prec(t, 108); mpfr_set_prec(u, 108);
   mpfr_set_str_raw(x, "-0.10010010001001011011110000000000001010011011011110001E-32");
   mpfr_set_str_raw(t, "-0.101100010111001000010111111101111101000111001111011110011010101111001001111000111011001110011000000000111111");
