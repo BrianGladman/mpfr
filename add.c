@@ -270,7 +270,7 @@ mpfr_add1 (a, b, c, rnd_mode, diff_exp)
       }
 
       difw++;
-    }
+    } /* while */
     MPFR_ASSERTN(bk > 0 && difw >= 0);
 
     if (difw <= cn)
@@ -339,8 +339,10 @@ mpfr_add1 (a, b, c, rnd_mode, diff_exp)
             goto c_read;
           cc = cprev << (BITS_PER_MP_LIMB - difs);
           if (--ck >= 0)
+          {
             cprev = cp[ck];
-          cc += cprev >> difs;
+            cc += cprev >> difs;
+          }
         }
         else
         {
