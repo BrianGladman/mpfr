@@ -164,6 +164,73 @@ void check_convergence ()
   mpfr_clear(x); mpfr_clear(y);
 }
 
+void check_lowr ()
+{
+  mpfr_t x, y, z, z2, z3, tmp; 
+  int k; 
+  
+  mpfr_init2(x, 1000);   
+  mpfr_init2(y, 100); 
+  mpfr_init2(tmp, 850); 
+  mpfr_init2(z, 10); 
+  mpfr_init2(z2, 10);
+  mpfr_init2(z3, 1000); 
+
+  /* Exact divisions *
+  for (k = 1; k < 10000; k++) 
+    {
+      mpfr_random(z); 
+      mpfr_random(tmp); 
+      mpfr_mul(x, z, tmp, GMP_RNDN); 
+      mpfr_set(y, tmp, GMP_RNDN); 
+      mpfr_div(z2, x, y, GMP_RNDN); 
+
+      if (mpfr_cmp(z2, z))
+	{
+	  fprintf(stderr, "Error in mpfr_div rnd=GMP_RNDN\n");
+	  printf("got        "); mpfr_print_raw(z2); putchar('\n');
+	  printf("instead of "); mpfr_print_raw(z); putchar('\n');
+	  exit(1);
+	}
+    }
+*/
+  /* almost exact divisions */
+  for (k = 1; k < 10000; k++) 
+    {
+      mpfr_random(z); 
+      mpfr_random(tmp); 
+      mpfr_mul(x, z, tmp, GMP_RNDN); 
+      mpfr_set(y, tmp, GMP_RNDD); 
+      mpfr_add_one_ulp(x); 
+
+      mpfr_div(z2, x, y, GMP_RNDD); 
+      mpfr_div(z3, x, y, GMP_RNDD); 
+      mpfr_set(z, z3, GMP_RNDD); 
+
+      if (mpfr_cmp(z2, z))
+	{
+	  fprintf(stderr, "Error in mpfr_div rnd=GMP_RNDD\n");
+	  printf("got        "); mpfr_print_raw(z2); putchar('\n');
+	  printf("instead of "); mpfr_print_raw(z); putchar('\n');
+	  exit(1);
+	}
+
+      mpfr_div(z2, x, y, GMP_RNDU); 
+      mpfr_div(z3, x, y, GMP_RNDU); 
+      mpfr_set(z, z3, GMP_RNDU); 
+      if (mpfr_cmp(z2, z))
+	{
+	  fprintf(stderr, "Error in mpfr_div rnd=GMP_RNDU\n");
+	  printf("got        "); mpfr_print_raw(z2); putchar('\n');
+	  printf("instead of "); mpfr_print_raw(z); putchar('\n');
+	  exit(1);
+	}      
+    }
+
+  mpfr_clear(x); mpfr_clear(y); mpfr_clear(z); mpfr_clear(z2); 
+  mpfr_clear(z3); 
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -181,6 +248,7 @@ main (int argc, char *argv[])
 #endif
 
   N = (argc>1) ? atoi(argv[1]) : 100000;
+  check_lowr(); 
   check_float(); /* checks single precision */
   check_convergence();
   check53(0.0, 1.0, GMP_RNDZ, 0.0);
@@ -210,6 +278,8 @@ main (int argc, char *argv[])
 	  -4.0250194961676020848e-258);
   check53(1.04636807108079349236e-189, 3.72295730823253012954e-292, GMP_RNDZ,
 	  2.810583051186143125e102);
+
+  check_lowr(); 
 #ifdef TEST
   srand48(getpid());
   for (i=0;i<N;i++) {
