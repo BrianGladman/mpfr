@@ -152,8 +152,11 @@ AC_TRY_RUN([
 int main()
 {
   char buffer[100];
-  sprintf (buffer, "%d.%d.%d", __GNU_MP_VERSION, __GNU_MP_VERSION_MINOR,
-  __GNU_MP_VERSION_PATCHLEVEL);
+  if (__GNU_MP_VERSION_PATCHLEVEL != 0)
+    sprintf (buffer, "%d.%d.%d", __GNU_MP_VERSION, __GNU_MP_VERSION_MINOR,
+	    __GNU_MP_VERSION_PATCHLEVEL); 
+  else
+    sprintf (buffer, "%d.%d", __GNU_MP_VERSION, __GNU_MP_VERSION_MINOR);
   return (strcmp (buffer, gmp_version) != 0) ? 1 : 0;
 }
 ], AC_MSG_RESULT(yes), 
