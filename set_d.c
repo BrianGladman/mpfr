@@ -1,7 +1,7 @@
 /* mpfr_set_d, mpfr_get_d -- convert a multiple precision floating-point number
                              from/to a machine double precision float
 
-Copyright (C) 1999, 2001 Free Software Foundation, Inc.
+Copyright (C) 1999-2002 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -168,64 +168,62 @@ __mpfr_extract_double (mp_ptr rp, double d, int e)
 }
 
 /* End of part included from gmp-2.0.2 */
-/* Part included from gmp temporary releases */
+/* Part included from gmp temporary releases and modified */
 static double
 __mpfr_scale2 (double d, int exp)
 {
 #if _GMP_IEEE_FLOATS
   {
     union ieee_double_extract x;
+
+    if (exp < -2099)
+      return 0.0 * d; /* 0 with the correct sign */
+
     x.d = d;
-    exp += x.s.exp;
-    x.s.exp = exp;
-    if (exp >= 2047)
+    if (exp >= 2047 || exp + x.s.exp >= 2047)
       {
         /* Return +-infinity */
         x.s.exp = 2047;
         x.s.manl = x.s.manh = 0;
       }
-    else if (exp < 1)
+    else if (exp + x.s.exp < 1)
       {
-        x.s.exp = 1;            /* smallest exponent (biased) */
-        /* Divide result by 2 until we have scaled it to the right IEEE
-           denormalized number, but stop if it becomes zero.  */
-        while (exp < 1 && x.d != 0)
-          {
-            x.d *= 0.5;
-            exp++;
-          }
+        exp += x.s.exp;
+        if (exp <= -52)
+          return 0.0 * d; /* 0 with the correct sign */
+        x.s.exp = 1; /* smallest exponent (biased) */
+        x.d *= __mpfr_scale2(1.0, exp - 1);
+      }
+    else
+      {
+        x.s.exp += exp;
       }
     return x.d;
   }
 #else
   {
-    double factor, r;
+    double factor;
 
-    factor = 2.0;
     if (exp < 0)
       {
         factor = 0.5;
         exp = -exp;
       }
-    r = d;
-    if (exp != 0)
+    else
+      {
+        factor = 2.0;
+      }
+    while (exp != 0)
       {
         if ((exp & 1) != 0)
-          r *= factor;
+          d *= factor;
         exp >>= 1;
-        while (exp != 0)
-          {
-            factor *= factor;
-            if ((exp & 1) != 0)
-              r *= factor;
-            exp >>= 1;
-          }
+        factor *= factor;
       }
     return r;
   }
 #endif
 }
-
 
 /* End of part included from gmp */
 
@@ -298,7 +296,7 @@ mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
 }
 
 double
-mpfr_get_d2 (mpfr_srcptr src, long e)
+mpfr_get_d2 (mpfr_srcptr src, mp_exp_t e)
 {
   double res;
   mp_size_t size, i, n_limbs_to_use;
@@ -313,20 +311,21 @@ mpfr_get_d2 (mpfr_srcptr src, long e)
       return NaN;
     }
 
+  negative = MPFR_SIGN(src) < 0;
+
   if (MPFR_IS_INF(src))
     { 
 #ifdef DEBUG
       printf("Found Inf.\n");
 #endif
-      return (MPFR_SIGN(src) == 1 ? Infp : Infm); 
+      return (negative ? Infm : Infp);
     }
 
-  if (MPFR_NOTZERO(src) == 0)
-    return 0.0;
+  if (MPFR_IS_ZERO(src))
+    return negative ? -0.0 : 0.0;
 
-  size = 1+(MPFR_PREC(src)-1)/BITS_PER_MP_LIMB;
+  size = 1 + (MPFR_PREC(src) - 1) / BITS_PER_MP_LIMB;
   qp = MPFR_MANT(src);
-  negative = (MPFR_SIGN(src) < 0);
 
   /* Warning: don't compute the abs(res) and set the sign afterwards,
      otherwise the current machine rounding mode will not be taken
@@ -336,33 +335,36 @@ mpfr_get_d2 (mpfr_srcptr src, long e)
   /* Warning: an arbitrary number of limbs may be required for an exact 
      rounding. The following code is correct but not optimal since one
      may be able to decide without considering all limbs. */
+  /* VL: This code is not correct in the rounding to the nearest mode
+     because of multiple roundings - it must be rewritten, probably
+     using mpfr_set */
   /* n_limbs_to_use = MIN (MPFR_LIMBS_PER_DOUBLE, size); */
   n_limbs_to_use = size;
   /* Accumulate the limbs from less significant to most significant
      otherwise due to rounding we may accumulate several ulps,
      especially in rounding towards -/+infinity. */
-  for (i = n_limbs_to_use; i>=1; i--) {
+  for (i = n_limbs_to_use; i >= 1; i--)
+    {
 #if (BITS_PER_MP_LIMB == 32)
-    res = res / MP_BASE_AS_DOUBLE +
-      ((negative) ? -(double)qp[size - i] : qp[size - i]);
+      res = res / MP_BASE_AS_DOUBLE +
+        ((negative) ? -(double)qp[size - i] : qp[size - i]);
+#elif (BITS_PER_MP_LIMB == 64)
+      mp_limb_t q;
+      q = qp[size - i] & CNST_LIMB(0xFFFFFFFF);
+      res = res / MP_BASE_AS_DOUBLE + ((negative) ? -(double)q : q);
+      q = qp[size - i] - q;
+      res = res + ((negative) ? -(double)q : q);
 #else
-#if (BITS_PER_MP_LIMB == 64)
-    mp_limb_t q;
-    q = qp[size - i] & CNST_LIMB(0xFFFFFFFF);
-    res = res / MP_BASE_AS_DOUBLE + ((negative) ? -(double)q : q);
-    q = qp[size - i] - q;
-    res = res + ((negative) ? -(double)q : q);
-#endif /* BITS_PER_MP_LIMB == 64 */
-#endif /* BITS_PER_MP_LIMB == 32 */
-  }
-  res = __mpfr_scale2 (res, e - BITS_PER_MP_LIMB); 
+#error "BITS_PER_MP_LIMB must be 32 or 64"
+#endif
+    }
+  res = __mpfr_scale2 (res, e - BITS_PER_MP_LIMB);
 
   return res;
 }
 
-double 
+double
 mpfr_get_d (mpfr_srcptr src)
 {
   return mpfr_get_d2 (src, MPFR_EXP(src));
 }
-
