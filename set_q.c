@@ -32,6 +32,7 @@ mpfr_set_q (mpfr_ptr f, mpq_srcptr q, mp_rnd_t rnd)
   mpz_srcptr num, den;
   mpfr_t n, d;
   int inexact;
+  mp_prec_t prec;
 
   MPFR_CLEAR_FLAGS (f);
   num = mpq_numref (q);
@@ -44,7 +45,10 @@ mpfr_set_q (mpfr_ptr f, mpq_srcptr q, mp_rnd_t rnd)
 
   den = mpq_denref (q);
   mpfr_save_emin_emax ();
-  mpfr_init2 (n, mpz_sizeinbase (num, 2));
+  prec = mpz_sizeinbase (num, 2);
+  if (prec < MPFR_PREC_MIN)
+    prec = MPFR_PREC_MIN;
+  mpfr_init2 (n, prec);
   if (mpfr_set_z (n, num, GMP_RNDZ)) /* result is exact unless overflow */
     {
       mpfr_clear (n);
@@ -52,7 +56,10 @@ mpfr_set_q (mpfr_ptr f, mpq_srcptr q, mp_rnd_t rnd)
       MPFR_SET_NAN (f);
       MPFR_RET_NAN;
     }
-  mpfr_init2 (d, mpz_sizeinbase(den, 2));
+  prec = mpz_sizeinbase(den, 2);
+  if (prec < MPFR_PREC_MIN)
+    prec = MPFR_PREC_MIN;
+  mpfr_init2 (d, prec);
   if (mpfr_set_z (d, den, GMP_RNDZ)) /* result is exact unless overflow */
     {
       mpfr_clear (d);
