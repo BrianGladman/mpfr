@@ -60,6 +60,9 @@ void main()
 {
   int i; double n, d, e; 
 
+  check(-1.33225773037748601769e+199, 3.63449540676937123913e+79, 1);
+  d = 1.0; for (i=0;i<52;i++) d *= 2.0;
+  check4(4.0, d, GMP_RNDZ, 62);
   check4(1.0, 2.10263340267725788209e+187, 2, 65);
   check4(2.44394909079968374564e-150, 2.10263340267725788209e+187, 2, 65);
   /* the following tests when d is an exact power of two */
