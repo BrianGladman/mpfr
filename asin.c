@@ -19,7 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-
 #include "mpfr-impl.h"
 
 int
@@ -63,14 +62,14 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   compared = mpfr_cmp_ui (xp, 1);
 
-  if (compared > 0) /* asin(x) = NaN for |x| > 1 */
+  if (MPFR_UNLIKELY(compared > 0))     /* asin(x) = NaN for |x| > 1 */
     {
       MPFR_SET_NAN(asin);
       mpfr_clear (xp);
       MPFR_RET_NAN;
     }
 
-  if (compared == 0) /* x = 1 or x = -1 */
+  if (MPFR_UNLIKELY(compared == 0))   /* x = 1 or x = -1 */
     {
       if (MPFR_IS_POS_SIGN(sign)) /* asin(+1) = Pi/2 */
         inexact = mpfr_const_pi (asin, rnd_mode);

@@ -19,7 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-
 #include "mpfr-impl.h"
 
 #define CST   2.27  /* CST=1+ln(2.4)/ln(2) */
@@ -123,7 +122,7 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   /* Other simple case arctang(-+1)=-+pi/4 */
   comparaison = mpfr_cmp_ui (xp, 1);
-  if (comparaison == 0)
+  if (MPFR_UNLIKELY(comparaison == 0))
     {
       inexact = mpfr_const_pi (arctangent, MPFR_IS_POS_SIGN(sign) ? rnd_mode
                                : MPFR_INVERT_RND(rnd_mode));
@@ -145,7 +144,7 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_save_emin_emax ();
 
   prec_x = __gmpfr_ceil_log2 ((double) MPFR_PREC(x) / BITS_PER_MP_LIMB);
-  logn = __gmpfr_ceil_log2 ((double) prec_x);
+  logn   = __gmpfr_ceil_log2 ((double) prec_x);
   if (logn < 2) 
     logn = 2;
   realprec = prec_arctan + __gmpfr_ceil_log2((double) prec_arctan) + 4;
