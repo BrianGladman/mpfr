@@ -213,6 +213,7 @@ mpfr_set_d(mpfr_t r, double d, unsigned char rnd_mode)
   if (d == 0)
     {      
       EXP(r) = 0;
+      for (cnt = 0; cnt < MPFR_LIMBS_PER_DOUBLE; cnt++) { MANT(r)[cnt] = 0; }
       return;
     }
   else if (isnan(d)) { SET_NAN(r); return; }
