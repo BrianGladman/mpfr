@@ -36,7 +36,7 @@ MA 02111-1307, USA. */
 # include <gmp.h>
 #endif
 
-/* Check if stdio.h is included */
+/* Check if stdio.h is included or if the user wants to use FILE functions */
 #if defined (_GMP_H_HAVE_FILE) || defined (MPFR_USE_FILE)
 # define _MPFR_H_HAVE_FILE 1
 #endif
