@@ -7,7 +7,13 @@
 void mpfr_agm(mpfr_ptr r, mpfr_srcptr a, mpfr_srcptr b, unsigned char rnd_mode)
 {
   int i, n, p, q, go_on;
-  mpfr_t u, v, tmpu, tmpv, tmp, zero,prec;
+  double uo, vo, rap;
+  mpfr_t u, v, tmp, zero,prec;
+
+
+  /* I want b>= a */
+  if (mpfr_cmp(a,b) > 0) 
+    return mpfr_agm(r, b, a, rnd_mode);
 
 
   /* If a or b is NaN, let's return NaN */
@@ -19,7 +25,7 @@ void mpfr_agm(mpfr_ptr r, mpfr_srcptr a, mpfr_srcptr b, unsigned char rnd_mode)
   if ((SIGN(a)<0)||(SIGN(b)<0))
     { SET_NAN(r); return; }
 
-  mpfr_init(zero);
+  mpfr_init2(zero,PREC(r));
   mpfr_set_si(zero,0,GMP_RNDZ);
 
   
@@ -37,30 +43,33 @@ void mpfr_agm(mpfr_ptr r, mpfr_srcptr a, mpfr_srcptr b, unsigned char rnd_mode)
   /* Initialisations */
   go_on=1;
 
-  mpfr_init2(u,p);
-  mpfr_init2(v,p);
+  vo=mpfr_get_d(b);
+  uo=mpfr_get_d(a);
 
-  if (mpfr_cmp(a,b) >= 0) { 
-    mpfr_set(u,b,GMP_RNDZ);
-    mpfr_set(v,a,GMP_RNDU);
-  }
-  else {
-    mpfr_set(u,a,GMP_RNDZ);
-    mpfr_set(v,b,GMP_RNDU);
-  }
+  rap=ceil(log((vo-uo)/uo)/log(2));
+  printf("rap : %f\n",rap);
 
-  mpfr_init2(tmp,p);
-  mpfr_init2(tmpu,p);
-  mpfr_init2(tmpv,p);
-
-
+  printf("avant main loop\n");
   /* Main loop */
 
   while (go_on==1) {
-    int can_round;
+    int can_round, err;
+    mpfr_t tmpu, tmpv;
+
+    mpfr_init2(u,p);
+    mpfr_init2(v,p);
+
+    mpfr_set(u,a,GMP_RNDZ);
+    mpfr_set(v,b,GMP_RNDU);
+
+    mpfr_init2(tmpu,p);
+    mpfr_init2(tmpv,p);
+    mpfr_init2(tmp,p);
 
     n = ceil(log(p)/log(2));
-
+    err=ceil(log((3*n+2)*exp(-p*log(2))+3*exp(p*uo*log(2)/(vo-uo))/log(2)));
+    
+    printf("avant internal loop\n");
     for(i=0;i<n;i++) {
       mpfr_mul(tmp,u,v,GMP_RNDZ);
       mpfr_sqrt(tmpu,tmp,GMP_RNDZ);
@@ -71,30 +80,29 @@ void mpfr_agm(mpfr_ptr r, mpfr_srcptr a, mpfr_srcptr b, unsigned char rnd_mode)
       mpfr_set(v,tmpv,GMP_RNDU);
     }
     printf("avant can_round(");
-    mpfr_out_str(stdout,10,0,v,GMP_RNDU);
-    printf(", %i, GMP_RNDU, %i, %i)\n",p-q,rnd_mode,q);
+    /*mpfr_out_str(stdout,10,0,v,GMP_RNDU);*/
+    mpfr_print_raw(v);
+    printf(", %i, GMP_RNDU, %i, %i)\n",p-err,rnd_mode,q);
 
-    can_round=mpfr_can_round(v,p-q,GMP_RNDU,rnd_mode,q);
+    can_round=mpfr_can_round(v,p-err,GMP_RNDU,rnd_mode,q);
 
-    printf("apres can_round\n");
+    printf("apres can_round : %i \n",can_round);
     if (can_round==1) {
       go_on=0;
     }
     else {
-      double vo, uo, tmp, rap;
-      vo=mpfr_get_d(a);
-      uo=mpfr_get_d(b);
-      if (uo > vo) 
-	{ tmp=uo; uo=vo; vo=tmp;}
-
-      rap=log((vo-uo)/uo)/log(2);
       if (rap <=1)
 	printf("Erreur bizarre\n");
       else {
-	p*=rap;
-      printf("Avec plus de chiffres calculer tu dois\n");
+	p=ceil(p+rap);
+	printf("Avec plus de chiffres calculer tu dois\n");
+      	mpfr_clear(u);
+	mpfr_clear(v);
       }
     }
+    mpfr_clear(tmpu);
+    mpfr_clear(tmpv);
+    mpfr_clear(tmp);
   }
   /* Setting of the result */
  
@@ -103,6 +111,8 @@ void mpfr_agm(mpfr_ptr r, mpfr_srcptr a, mpfr_srcptr b, unsigned char rnd_mode)
 
   /* Exactness of the result */
   mpfr_init2(prec,p);
+  mpfr_init2(tmp,p);
+  
   mpfr_sub(prec,v,u,GMP_RNDU);
   mpfr_div(tmp,prec,u,GMP_RNDU);
   mpfr_div_2exp(prec,tmp,p,GMP_RNDU);
@@ -117,8 +127,6 @@ void mpfr_agm(mpfr_ptr r, mpfr_srcptr a, mpfr_srcptr b, unsigned char rnd_mode)
   /* Let's clean */
   mpfr_clear(u);
   mpfr_clear(v);
-  mpfr_clear(tmpu);
-  mpfr_clear(tmpv);
   mpfr_clear(tmp);
   mpfr_clear(zero);
   mpfr_clear(prec);
