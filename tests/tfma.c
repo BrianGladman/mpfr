@@ -242,6 +242,7 @@ main (int argc, char *argv[])
 
       for (n=0; n<N; n++)
 	{
+
           mpfr_random (x);
 	  mpfr_random (y);
 	  mpfr_random (z);
@@ -286,10 +287,10 @@ main (int argc, char *argv[])
 	  if (((inexact == 0) && (compare != 0)) ||
 	      ((inexact < 0) && (compare >= 0)) ||
 	      ((inexact > 0) && (compare <= 0)))
-	    {
-	      fprintf (stderr, "Wrong inexact flag for rnd=%s: expected %d, got %d\n",
+          {
+            fprintf (stderr, "Wrong inexact flag for rnd=%s: expected %d, got %d\n",
 		       mpfr_print_rnd_mode (rnd), compare, inexact);
-	      exit (1);
+            exit (1);
 	    }
 	}
     }
