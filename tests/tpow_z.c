@@ -204,6 +204,8 @@ static void check_regression (void)
       exit (1);
     }
 
+  mpfr_clear (x);
+  mpfr_clear (y);
   mpz_clear (z);
 }
 
