@@ -33,7 +33,10 @@ __mpfr_extract_double (rp, d)
      /* e=0 iff BITS_PER_MP_LIMB=32 and rp has only one limb */
 {
   long exp;
-  mp_limb_t manh, manl;
+  mp_limb_t manl;
+#if BITS_PER_MP_LIMB == 32
+  mp_limb_t manh;
+#endif
 
   /* BUGS
 
