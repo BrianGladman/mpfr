@@ -2,42 +2,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "gmp.h"
 #include "mpfr.h"
-#include <time.h>
+#include "mpfr-impl.h"
 
-void print_double(d) double d;
-{
-  int e, i;
+#define check(d,r,b) check4(d,r,b,53)
 
-  e = (int) ceil(log(fabs(d))/log(2.0));
-  /* d <= 2^e */
-  e -= 53;
-  if (e>0) for (i=0;i<e;i++) d /= 2.0;
-  else for (i=0;i<-e;i++) d *= 2.0;
-  printf("%1.0f*2^(%d)",d,e);
-}
-
-double drand()
-{
-  double d; long int *i;
-
-  i = (long int*) &d;
-  i[0] = lrand48();
-  i[1] = lrand48();
-  if (lrand48()%2) d=-d; /* generates negative numbers */
-  return d;
-}
-
-check(d, rnd, base) double d; unsigned char rnd; int base;
+void check4(d, rnd, base, prec) double d; unsigned char rnd; int base, prec;
 {
   mpfr_t x;
 
-  mpfr_init2(x, 53);
+  mpfr_init2(x, prec);
   mpfr_set_d(x, d, rnd);
+mpfr_print_raw(x); printf("\n");
   mpfr_set_machine_rnd_mode(rnd);
   printf("%1.19e base %d:\n ", d, base);
-  mpfr_out_str(stdout, base, (base==2) ? 53 : 0, x, rnd);
+  mpfr_out_str(stdout, base, (base==2) ? prec : 0, x, rnd);
   putchar('\n');
   if (base==2) { mpfr_print_raw(x); putchar('\n'); }
   mpfr_clear(x);
@@ -50,7 +31,8 @@ main(int argc, char **argv)
 
   srand(getpid());
   /* printf seems to round towards nearest in all cases, at least with gcc */
-  check(1.0, 2, 10);
+  check4(1.0, GMP_RNDN, 10, 120);
+  check(1.0, GMP_RNDU, 10);
   check(4.059650008e-83, 0, 10);
   check(-6.606499965302424244461355e233, 0, 10);
   check(-7.4, 0, 10);
@@ -62,6 +44,7 @@ main(int argc, char **argv)
     do { d = drand(); } while (isnan(d));
     check(d, 0, 2 + rand()%35);
   }
+  return 0;
 }
 
 
