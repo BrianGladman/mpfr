@@ -33,6 +33,7 @@ void check4 _PROTO((double, double, mp_rnd_t, int, double));
 void check24 _PROTO((float, float, mp_rnd_t, float)); 
 void check_float _PROTO((void)); 
 void check_convergence _PROTO((void)); 
+void check_lowr _PROTO((void));
 
 void check4 (double N, double D, mp_rnd_t rnd_mode, int p, double Q)
 {
