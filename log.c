@@ -29,18 +29,21 @@ MA 02111-1307, USA. */
   /* The computation of log(a) is done using the formula :
      if we want p bits of the result,
                        pi
-	  log(a) = ------------  -   m log 2
+	  log(a) ~ ------------  -   m log 2
 		    2 AG(1,4/s)
 
-
      where s = x 2^m > 2^(p/2)
+
+     More precisely, if F(x) = int(1/sqrt(1-(1-x^2)*sin(t)^2), t=0..PI/2),
+     then for s>=1.26 we have log(s) < F(4/s) < log(s)*(1+4/s^2)
+     from which we deduce pi/2/AG(1,4/s)*(1-4/s^2) < log(s) < pi/2/AG(1,4/s)
+     so the relative error 4/s^2 is < 4/2^p i.e. 4 ulps.
   */
 
 
 #define MON_INIT(xp, x, p, s) xp = (mp_ptr) TMP_ALLOC(s*BYTES_PER_MP_LIMB);    x -> _mp_prec = p; x -> _mp_d = xp; x -> _mp_size = s; x -> _mp_exp = 0; 
 
-
-
+/* #define DEBUG */
 
 int
 #if __STDC__
@@ -52,12 +55,11 @@ mpfr_log()
      unsigned char rnd_mode; 
 #endif
 {
-  int p, m, q, bool, err, size;
+  int p, m, q, bool, size, cancel;
   mpfr_t cst, rapport, agm, tmp1, tmp2, s, mm;
   mp_limb_t *cstp, *rapportp, *agmp, *tmp1p, *tmp2p, *sp, *mmp;
   double ref;
   TMP_DECL(marker);
-
 
   /* If a is NaN or a is negative or null, the result is NaN */
   if (FLAG_NAN(a) || (SIGN(a)<=0))
@@ -71,28 +73,20 @@ mpfr_log()
 
   q=PREC(r);
   
-  /* The error due to the lost of bits during the substraction is
-     err=lg(p*log(2)/(2*|x-1|)) : greater when x is next to 1 : the
-     result is next to 0 but the 2 terms that we substract could be 
-     about 10. */
-
   ref=mpfr_get_d(a)-1.0;
   if (ref<0)
     ref=-ref;
-  err=(int) ceil(log(((double) q)*log(2.0)/(2*ref)))+1;
-  if (err <0)
-    err=1;
 
-  /* The exactness depends on err */
-  p=q+11+err;
+  p=q+4;
+  /* adjust to entire limb */
+  if (p%BITS_PER_MP_LIMB) p += BITS_PER_MP_LIMB - (p%BITS_PER_MP_LIMB);
 
   bool=1;
 
   while (bool==1) {
-    err=(int) ceil(log(((double) p)*log(2.0)/(2*ref)))+1;
-    if (err <0)
-      err=1;
-    
+#ifdef DEBUG
+    printf("p=%d\n", p);
+#endif
     /* Calculus of m (depends on p) */
     m=(int) ceil(((double) p)/2.0) -EXP(a)+1;
 
@@ -107,33 +101,37 @@ mpfr_log()
     MON_INIT(sp, s, p, size);
     MON_INIT(mmp, mm, p, size);
 
-    mpfr_set_si(mm,m,GMP_RNDN);           /* I have m */
-    mpfr_set_si(tmp1,1,GMP_RNDN);         /* I have 1 */
-    mpfr_set_si(tmp2,4,GMP_RNDN);         /* I have 4 */
-    mpfr_mul_2exp(s,a,m,GMP_RNDN);        /* I compute s=a*2^m */ 
-    mpfr_div(rapport,tmp2,s,GMP_RNDN);    /* I compute 4/s */
-    mpfr_agm(agm,tmp1,rapport,GMP_RNDN);  /* I compute AG(1,4/s) */
-    mpfr_mul_2exp(tmp1,agm,1,GMP_RNDN);   /* I compute 2*AG(1,4/s) */
-    mpfr_pi(cst, GMP_RNDN);               /* I compute pi */
-    mpfr_div(tmp2,cst,tmp1,GMP_RNDN);     /* I compute pi/2*AG(1,4/s) */
-    mpfr_log2(cst,GMP_RNDN);              /* I compute log(2) */
-    mpfr_mul(tmp1,cst,mm,GMP_RNDN);       /* I compute m*log(2) */
-    mpfr_sub(cst,tmp2,tmp1,GMP_RNDN);     /* I compute log(a) */ 
- 
+    mpfr_set_si(mm,m,GMP_RNDN);           /* I have m, supposed exact */
+    mpfr_set_si(tmp1,1,GMP_RNDN);         /* I have 1, exact */
+    mpfr_set_si(tmp2,4,GMP_RNDN);         /* I have 4, exact */
+    mpfr_mul_2exp(s,a,m,GMP_RNDN);        /* I compute s=a*2^m, err <= 1 ulp */
+    mpfr_div(rapport,tmp2,s,GMP_RNDN);    /* I compute 4/s, err <= 2 ulps */
+    mpfr_agm(agm,tmp1,rapport,GMP_RNDN);  /* AG(1,4/s), err<=3 ulps */
+    mpfr_mul_2exp(tmp1,agm,1,GMP_RNDN);   /* 2*AG(1,4/s), still err<=3 ulps */
+    mpfr_pi(cst, GMP_RNDN);               /* I compute pi, err<=1ulp */
+    mpfr_div(tmp2,cst,tmp1,GMP_RNDN);     /* pi/2*AG(1,4/s), err<=5ulps */
+    mpfr_log2(cst,GMP_RNDN);              /* I compute log(2), err<=1ulp */
+    mpfr_mul(tmp1,cst,mm,GMP_RNDN);       /* I compute m*log(2), err<=2ulps */
+    cancel = EXP(tmp2); 
+    mpfr_sub(cst,tmp2,tmp1,GMP_RNDN);     /* log(a), err<=7ulps+cancel */ 
+    cancel -= EXP(cst);
+#ifdef DEBUG
+    printf("cancelled bits=%d\n", cancel);
+    printf("approx="); mpfr_print_raw(cst); putchar('\n');
+#endif
 
-    /*printf("avant arrondi : ( %i bits faux)\n",7+err);
-      mpfr_print_raw(cst);printf("\n"); */
-
-    
     /* If we can round the result, we set it and go out of the loop */
 
-    if(mpfr_can_round(cst,p-7-err,GMP_RNDN,rnd_mode,q)==1) {
+    /* we have 7 ulps of error from the above roundings,
+       4 ulps from the 4/s^2 second order term,
+       plus the cancelled bits */
+    if (mpfr_can_round(cst,p-cancel-4,GMP_RNDN,rnd_mode,q)==1) {
       mpfr_set(r,cst,rnd_mode);
       bool=0;
     }
     /* else we increase the precision */
     else {
-      p+=5;
+      p += BITS_PER_MP_LIMB+cancel;
       TMP_FREE(marker);
     }
 
