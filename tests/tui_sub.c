@@ -1,6 +1,6 @@
 /* Test file for mpfr_ui_sub.
 
-Copyright 2000, 2001, 2002, 2003, 2004 Free Software Foundation.
+Copyright 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -227,6 +227,41 @@ check_nans (void)
   mpfr_clear (y);
 }
 
+/* Check mpfr_ui_sub with u = 0 (unsigned). */
+static void check_neg (void)
+{
+  mpfr_t x, yneg, ysub;
+  int i, s;
+  int r;
+
+  mpfr_init2 (x, 64);
+  mpfr_init2 (yneg, 32);
+  mpfr_init2 (ysub, 32);
+
+  for (i = 0; i <= 25; i++)
+    {
+      mpfr_sqrt_ui (x, i, GMP_RNDN);
+      for (s = 0; s <= 1; s++)
+        {
+          RND_LOOP (r)
+            {
+              int tneg, tsub;
+
+              tneg = mpfr_neg (yneg, x, (mp_rnd_t) r);
+              tsub = mpfr_ui_sub (ysub, 0, x, (mp_rnd_t) r);
+              MPFR_ASSERTN (mpfr_equal_p (yneg, ysub));
+              MPFR_ASSERTN (!(MPFR_IS_POS (yneg) ^ MPFR_IS_POS (ysub)));
+              MPFR_ASSERTN (tneg == tsub);
+            }
+          mpfr_neg (x, x, GMP_RNDN);
+        }
+    }
+
+  mpfr_clear (x);
+  mpfr_clear (yneg);
+  mpfr_clear (ysub);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -242,9 +277,9 @@ main (int argc, char *argv[])
     for (k=0; k<100; k++)
       check_two_sum (p);
 
-  check(1196426492, "1.4218093058435347e-3", GMP_RNDN, 
+  check(1196426492, "1.4218093058435347e-3", GMP_RNDN,
 	"1.1964264919985781e9");
-  check(1092583421, "-1.0880649218158844e9", GMP_RNDN, 
+  check(1092583421, "-1.0880649218158844e9", GMP_RNDN,
 	"2.1806483428158845901e9");
   check(948002822, "1.22191250737771397120e+20", GMP_RNDN,
 	"-1.2219125073682338611e20");
@@ -254,10 +289,12 @@ main (int argc, char *argv[])
 	"-1.2529639586454686577e232");
   check(2128997392, "-1.08496826129284207724e+187", GMP_RNDU,
 	"1.0849682612928422704e187");
-  check(293607738, "-1.9967571564050541e-5", GMP_RNDU, 
+  check(293607738, "-1.9967571564050541e-5", GMP_RNDU,
 	"2.9360773800002003e8");
-  check(354270183, "2.9469161763489528e3", GMP_RNDN, 
+  check(354270183, "2.9469161763489528e3", GMP_RNDN,
 	"3.5426723608382362e8");
+
+  check_neg ();
 
   tests_end_mpfr ();
   return 0;
