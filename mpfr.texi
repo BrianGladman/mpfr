@@ -1078,10 +1078,15 @@ i.e. the result is 1).
 @end deftypefun
 
 @deftypefun int mpfr_log2 (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
-Set @var{rop} to the log2 ($\log x / \log 2$) of @var{op},
+@deftypefun int mpfr_log10 (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+Set @var{rop} to the logt (t=2 or 10)(log x / log t) of @var{op},
 rounded to the direction @var{rnd} with the precision of @var{rop}.
-Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0
-i.e. the result is 1).
+Return 0 iff the result is exact (this occurs in fact only when @var{op}
+is 0 i.e. the result is 1).
+@end deftypefun
+
+@deftypefun int mpfr_fma (mpfr_t @var{rop}, mpfr_t @var{opx},mpfr_t @var{opy},mpfr_t @var{opz}, mp_rnd_t @var{rnd}) 
+Set @var{rop} to the @var{opz} + @var{opx}*@var{opy}of @var{op}, rounded to the direction @var{rnd} with the precision of @var{rop}. Return 0 iff the result is exact (this occurs in fact only when @var{op} is 0 i.e. the result is 1).
 @end deftypefun
 
 @deftypefun void mpfr_agm (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
