@@ -27,7 +27,7 @@ mpfr_mul_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z,mp_rnd_t rnd_mode)
 {
   mpfr_t t;
   int res;
-  mpfr_init2(t, mpz_sizeinbase(z, 2) );
+  mpfr_init2(t, mpz_sizeinbase(z, 2) + MPFR_PREC_MIN );
   res = mpfr_set_z(t, z, rnd_mode);
   MPFR_ASSERTD(res == 0);
   res = mpfr_mul(y, x, t, rnd_mode);
@@ -40,7 +40,7 @@ mpfr_div_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd_mode)
 {
   mpfr_t t;
   int res;
-  mpfr_init2(t, mpz_sizeinbase(z, 2) );
+  mpfr_init2(t, mpz_sizeinbase(z, 2)  + MPFR_PREC_MIN );
   res = mpfr_set_z(t, z, rnd_mode);
   MPFR_ASSERTD(res == 0);
   res = mpfr_div(y, x, t, rnd_mode);
@@ -53,7 +53,7 @@ mpfr_add_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd_mode)
 {
   mpfr_t t;
   int res;
-  mpfr_init2 (t, mpz_sizeinbase(z, 2) );
+  mpfr_init2 (t, mpz_sizeinbase(z, 2)  + MPFR_PREC_MIN );
   res = mpfr_set_z (t, z, rnd_mode);
   MPFR_ASSERTD (res == 0);
   res = mpfr_add (y, x, t, rnd_mode);
@@ -66,7 +66,7 @@ mpfr_sub_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z,mp_rnd_t rnd_mode)
 {
   mpfr_t t;
   int res;
-  mpfr_init2 (t, mpz_sizeinbase(z, 2) );
+  mpfr_init2 (t, mpz_sizeinbase(z, 2)  + MPFR_PREC_MIN );
   res = mpfr_set_z (t, z, rnd_mode);
   MPFR_ASSERTD (res == 0);
   res=mpfr_sub (y, x, t, rnd_mode);
@@ -79,7 +79,7 @@ mpfr_cmp_z (mpfr_srcptr x, mpz_srcptr z)
 {
   mpfr_t t;
   int res;
-  mpfr_init2 (t, mpz_sizeinbase(z, 2) );
+  mpfr_init2 (t, mpz_sizeinbase(z, 2)  + MPFR_PREC_MIN );
   res = mpfr_set_z (t, z, GMP_RNDN);
   MPFR_ASSERTD(res == 0);
   res = mpfr_cmp (x, t);

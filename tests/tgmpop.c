@@ -271,7 +271,23 @@ test_specialz (int (*mpfr_func)(mpfr_ptr, mpfr_srcptr, mpz_srcptr, mp_rnd_t),
       putchar('\n');
       exit(1);
     }
-  
+
+  mpz_set_ui (z1, 1);
+  mpz_set_ui (z2, 0);
+  mpfr_set_ui (x1, 1, GMP_RNDN);
+  mpz_func (z1, z1, z2);
+  res = mpfr_func(x1, x1, z2, GMP_RNDN);
+  mpfr_set_z (x2, z1, GMP_RNDN);
+  if (mpfr_cmp(x1, x2))
+    {
+      printf("Specialz %s: results differ(2).\nx1=", op);
+      mpfr_print_binary(x1);
+      printf("\nx2=");
+      mpfr_print_binary(x2);
+      putchar('\n');
+      exit(1);
+    }
+
   mpz_clear (z1); mpz_clear(z2);
   mpfr_clears(x1, x2, NULL);
 }
