@@ -655,7 +655,7 @@ If the user changes the exponent range, it is her/his responsibility to check
 that all current floating-point variables are in the new allowed range
 (for example using @code{mpfr_check_range}),
 otherwise the subsequent
-behaviour will be undefined, in the sense of the ISO C standard.
+behavior will be undefined, in the sense of the ISO C standard.
 @end deftypefun
 
 @deftypefun int mpfr_check_range (mpfr_t @var{x}, int @var{t}, mp_rnd_t @var{rnd})
@@ -1644,11 +1644,11 @@ equal to zero, nothing visible happens.
 @comment  node-name,  next,  previous,  up
 @unnumbered Contributors
 
-The main developers consist of Guillaume Hanrot, Vincent Lef@`evre and
+The main developers consist of Guillaume Hanrot, Vincent Lefèvre and
 Paul Zimmermann.
 
 We would like to thank Jean-Michel Muller and Joris van der Hoeven for very
-fruitful discussions at the beginning of that project, Torbj@"orn Granlund
+fruitful discussions at the beginning of that project, Torbjörn Granlund
 and Kevin Ryde
 for their help about design issues
 and their suggestions for an easy integration into GNU MP,
@@ -1676,7 +1676,7 @@ Jean-Luc Rémy contributed the @code{mpfr_zeta} code.
 @itemize @bullet
 
 @item
-Torbj@"orn Granlund, "GNU MP: The GNU Multiple Precision Arithmetic Library",
+Torbjörn Granlund, "GNU MP: The GNU Multiple Precision Arithmetic Library",
   version 4.1.2, 2002.
 
 @item
