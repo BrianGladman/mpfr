@@ -141,10 +141,14 @@ mp_limb_t mpn_divrem_n _PROTO ((mp_limb_t *, mp_limb_t *, mp_limb_t *, mp_size_t
 mp_size_t kara_sqrtrem _PROTO ((mp_limb_t *, mp_limb_t *, mp_limb_t *, mp_size_t));
 void mpfr_div _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
 void mpfr_agm _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
-int mpfr_sqrt _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t)); 
+int mpfr_sqrt _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
+int mpfr_sqrt_ui _PROTO ((mpfr_ptr, unsigned long, mp_rnd_t));  
 void mpfr_add _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
+void mpfr_add_ui _PROTO ((mpfr_ptr, mpfr_srcptr, unsigned long, mp_rnd_t));
 int mpfr_add_one_ulp _PROTO ((mpfr_ptr));
 void mpfr_sub _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
+void mpfr_ui_sub _PROTO ((mpfr_ptr, unsigned long, mpfr_srcptr, mp_rnd_t));
+void mpfr_reldiff _PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t));
 void mpfr_set4 _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t, int));
 void mpfr_const_pi _PROTO ((mpfr_ptr, mp_rnd_t));
 void mpfr_const_log2 _PROTO ((mpfr_ptr, mp_rnd_t));
@@ -167,6 +171,7 @@ char * mpfr_print_rnd_mode _PROTO((mp_rnd_t));
 void mpfr_neg _PROTO((mpfr_ptr, mpfr_srcptr, mp_rnd_t)); 
 int mpfr_sub_one_ulp _PROTO((mpfr_ptr)); 
 int mpfr_div_ui _PROTO((mpfr_ptr, mpfr_srcptr, unsigned long int, mp_rnd_t)); 
+int mpfr_ui_div _PROTO((mpfr_ptr, unsigned long int, mpfr_srcptr, mp_rnd_t)); 
 mp_prec_t mpfr_get_prec _PROTO((mpfr_t));
 void mpfr_set_default_rounding_mode _PROTO((mp_rnd_t));
 
