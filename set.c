@@ -24,6 +24,7 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
+/* set a to abs(b) * signb: a=b when signb = SIGN(b), a=abs(b) when signb=1 */
 int
 #if __STDC__
 mpfr_set4 (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode, int signb)
@@ -77,6 +78,7 @@ mpfr_set4 (a, b, rnd_mode, signb)
     }
   }
 
-  if (MPFR_SIGN(a) * signb < 0) MPFR_CHANGE_SIGN(a);
+  if (MPFR_SIGN(a) * signb < 0)
+    MPFR_CHANGE_SIGN(a);
   MPFR_RET(inex);
 }
