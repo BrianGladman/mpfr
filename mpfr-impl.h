@@ -270,11 +270,15 @@ extern mp_prec_t __gmpfr_const_log2_prec;
 extern mpfr_t __mpfr_const_pi;
 extern mp_prec_t __gmpfr_const_pi_prec;
 
-#ifndef HAVE_STRCASECMP
+#ifdef HAVE_STRCASECMP
+int strcasecmp _PROTO ((const char *, const char *));
+#else
 int mpfr_strcasecmp _PROTO ((const char *, const char *));
 #endif
 
-#ifndef HAVE_STRNCASECMP
+#ifdef HAVE_STRNCASECMP
+int strncasecmp _PROTO ((const char *, const char *, size_t));
+#else
 int mpfr_strncasecmp _PROTO ((const char *, const char *, size_t));
 #endif
 
