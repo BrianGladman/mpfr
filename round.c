@@ -157,23 +157,29 @@ mpfr_round (mpfr_ptr x, mp_rnd_t rnd_mode, mp_prec_t prec)
   mp_prec_t nw;
   TMP_DECL(marker);
 
+  /* Particular cases, MPFR_PREC(x) isn't changed. */
+
   if (MPFR_IS_NAN(x))
     MPFR_RET_NAN;
 
   if (MPFR_IS_INF(x))
     return 0; /* infinity is exact */
 
+  /* x is a real number */
+
   nw = 1 + (prec - 1) / BITS_PER_MP_LIMB; /* needed allocated limbs */
   neg = MPFR_SIGN(x) < 0;
 
   /* check if x has enough allocated space for the mantissa */
-  if (nw > MPFR_ABSSIZE(x)) {
-    MPFR_MANT(x) = (mp_ptr) (*__gmp_reallocate_func) 
-      (MPFR_MANT(x), MPFR_ABSSIZE(x)*BYTES_PER_MP_LIMB, nw * BYTES_PER_MP_LIMB);
-    MPFR_SIZE(x) = nw; /* new number of allocated limbs */
-    if (neg)
-      MPFR_CHANGE_SIGN(x);
-  }
+  if (nw > MPFR_ABSSIZE(x))
+    {
+      MPFR_MANT(x) = (mp_ptr) (*__gmp_reallocate_func)
+        (MPFR_MANT(x), MPFR_ABSSIZE(x) * BYTES_PER_MP_LIMB,
+         nw * BYTES_PER_MP_LIMB);
+      MPFR_SIZE(x) = nw; /* new number of allocated limbs */
+      if (neg)
+        MPFR_CHANGE_SIGN(x);
+    }
 
   TMP_MARK(marker); 
   tmp = TMP_ALLOC (nw * BYTES_PER_MP_LIMB);
@@ -183,9 +189,16 @@ mpfr_round (mpfr_ptr x, mp_rnd_t rnd_mode, mp_prec_t prec)
   if (carry)
     {
       /* Is a shift necessary here? Isn't the result 1.0000...? */
-      mpn_rshift (tmp, tmp, nw, 1);
-      tmp [nw-1] |= MP_LIMB_T_HIGHBIT;
-      MPFR_EXP(x)++;
+      mp_exp_t exp = MPFR_EXP(x);
+
+      if (exp == __mpfr_emax)
+        (void) mpfr_set_overflow(x, rnd_mode, MPFR_SIGN(x));
+      else
+        {
+          MPFR_EXP(x)++;
+          mpn_rshift (tmp, tmp, nw, 1);
+          tmp[nw-1] = MP_LIMB_T_HIGHBIT;
+        }
     }
 
   MPFR_PREC(x) = prec;
