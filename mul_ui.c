@@ -60,6 +60,11 @@ mpfr_mul_ui(y, x, u, rnd_mode)
       else { MPFR_SET_NAN(y); return; }
     }
 
+  if (MPFR_IS_ZERO(x) || !u) 
+    {
+      MPFR_CLEAR_FLAGS(y); MPFR_SET_ZERO(y); return; 
+    }
+
   MPFR_CLEAR_FLAGS(y); 
 
   TMP_MARK(marker);
