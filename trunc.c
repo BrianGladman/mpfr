@@ -75,7 +75,7 @@ FUNC_NAME (r, u)
 {
   mp_ptr rp, up;
   mp_size_t size, asize;
-  mp_size_t prec;
+  mp_size_t prec, rw;
 #ifdef _MPFR_FLOOR_OR_CEIL
   mp_size_t ignored_n;
 #endif
@@ -143,6 +143,10 @@ FUNC_NAME (r, u)
   else
 #endif
   MPN_COPY_INCR (rp, up, asize);
+
+  /* Put to 0 the remaining bits */
+  rw = r->_mp_prec & (BITS_PER_MP_LIMB - 1);
+  rp[asize] &= ~((((mp_limb_t)1)<<(BITS_PER_MP_LIMB - rw)) - (mp_limb_t)1);
 
   r->_mp_exp = exp;
   r->_mp_size = size >= 0 ? asize : -asize;
