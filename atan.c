@@ -176,7 +176,6 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_t arctgt, sk, tmp, tmp2;
   mpz_t  ukz;
   int comparaison, inexact, inexact2;
-  mp_exp_t estimated_delta;
   mp_prec_t prec, realprec;
   mp_exp_t exptol;
   int i, n0, oldn0;
@@ -242,12 +241,12 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
     }
 
   realprec = MPFR_PREC (atan) + MPFR_INT_CEIL_LOG2 (MPFR_PREC (atan)) + 4;
-  if (MPFR_PREC (atan) + 5 > MPFR_PREC (x) && MPFR_GET_EXP (x) < 0)
+  /* if (MPFR_PREC (atan) + 5 > MPFR_PREC (x) && MPFR_GET_EXP (x) < 0)
     {
       mpfr_uexp_t ue = (mpfr_uexp_t) (-MPFR_GET_EXP (x));
       if (realprec < 2*ue + 5)
 	realprec = 2*ue + 5;
-    }
+	} */
   prec = realprec + BITS_PER_MP_LIMB;
 
   MPFR_SAVE_EXPO_MARK (expo);
@@ -266,10 +265,11 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
   for (;;)
     {
       /* n0 = ceil(log2(realprec + 2 + 1+ln(2.4)/ln(2))) */
-      n0 = MPFR_INT_CEIL_LOG2 (realprec + 2 + 3);
+      mp_prec_t sup = MAX (-MPFR_GET_EXP (xp), 0) + 2; 
+      n0 = MPFR_INT_CEIL_LOG2 (realprec + sup + 3);
       MPFR_ASSERTD (3*n0 > 2);
-      estimated_delta = 1 + 2 + MPFR_INT_CEIL_LOG2 (3*n0-2);
-      prec = realprec + estimated_delta;
+      prec = realprec + 1 + sup + MPFR_INT_CEIL_LOG2 (3*n0-2);
+      /* printf ("Prec=%lu realprec=%lu\n", prec, realprec); */
 
       /* Initialisation */
       mpfr_set_prec (sk, prec);
@@ -324,6 +324,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	      mpz_mul (ukz, ukz, ukz);
 	      mpz_neg (ukz, ukz);
 	      mpfr_atan_aux (tmp2, ukz, 2*twopoweri, n0 - i, tabz, tabi);
+
 	      mpfr_mul (tmp2, tmp2, tmp, GMP_RNDN);
 	      
 	      /* Addition and iteration */

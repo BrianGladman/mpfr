@@ -166,6 +166,20 @@ special (void)
   mpfr_atan (x, x, GMP_RNDN);
   MPFR_ASSERTN (MPFR_IS_NEG (x));
 
+  /* Test regression */
+  mpfr_set_prec (x, 48);
+  mpfr_set_prec (y, 48);
+  mpfr_set_str_binary (x, "1.11001110010000011111100000010000000000000000000e-19");
+  mpfr_atan (y, x, GMP_RNDD);
+  if (mpfr_cmp_str (y, "0.111001110010000011111100000001111111110000010011E-18", 2, GMP_RNDN))
+    {
+      printf ("Error in mpfr_atan (4)\n");
+      printf ("Input    1.11001110010000011111100000010000000000000000000e-19 [prec=48]\n");
+      printf ("Expected 0.111001110010000011111100000001111111110000010011E-18\n");
+      printf ("Got      "); mpfr_dump (y); 
+      exit (1);
+    }
+
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);
