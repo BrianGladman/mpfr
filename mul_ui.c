@@ -26,6 +26,8 @@ MA 02111-1307, USA. */
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
+#define ONE ((mp_limb_t) 1)
+
 void
 #if __STDC__
 mpfr_mul_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
@@ -37,8 +39,9 @@ mpfr_mul_ui (y, x, u, rnd_mode)
      mp_rnd_t rnd_mode;
 #endif
 {
-  mp_limb_t carry, *my, *old_my, *my2; unsigned long c; 
-  unsigned long xsize, ysize, cnt, dif, ex, sh; 
+  mp_limb_t carry, *my, *old_my, *my2;
+  unsigned long xsize, ysize, cnt, dif, ex, c;
+  long int sh;
   TMP_DECL(marker);
 
   if (MPFR_IS_NAN(x))
@@ -72,7 +75,7 @@ mpfr_mul_ui (y, x, u, rnd_mode)
   ysize = (MPFR_PREC(y) - 1) / BITS_PER_MP_LIMB + 1;
   xsize = (MPFR_PREC(x) - 1) / BITS_PER_MP_LIMB + 1;
 
-  old_my = my; 
+  old_my = my;
 
   if (ysize < xsize)
     {
@@ -82,13 +85,15 @@ mpfr_mul_ui (y, x, u, rnd_mode)
   else
     dif = ysize - xsize;
 
-  carry = mpn_mul_1 (my, MPFR_MANT(x), xsize, u);
+  carry = mpn_mul_1 (my + dif, MPFR_MANT(x), xsize, u);
+  MPN_ZERO (my, dif);
 
   /* WARNING: count_leading_zeros is undefined for carry=0 */
   if (carry)
     count_leading_zeros(cnt, carry);
   else
     cnt = BITS_PER_MP_LIMB;
+  /* BITS_PER_MP_LIMB - cnt is the number of significant bits in the carry */
 
   /* Warning: if all significant bits are in the carry, one has to 
      be careful */
@@ -113,14 +118,12 @@ mpfr_mul_ui (y, x, u, rnd_mode)
 
   /* Warning: the number of limbs used by x and the lower part
      of y may differ */
-  sh = (MPFR_PREC(x) < MPFR_PREC(y) - BITS_PER_MP_LIMB + cnt) ? 0
-    : xsize - (MPFR_PREC(y) + cnt - 1) / BITS_PER_MP_LIMB;
-
-  c = mpfr_round_raw (my + sh, my, MPFR_PREC(x), (MPFR_SIGN(x) < 0), 
+  sh = dif + xsize - (MPFR_PREC(y) + cnt - 1) / BITS_PER_MP_LIMB;
+  c = mpfr_round_raw (my + sh, my + dif, MPFR_PREC(x), (MPFR_SIGN(x) < 0), 
 		       MPFR_PREC(y) - BITS_PER_MP_LIMB + cnt, rnd_mode);
 
   /* If cnt = 1111111111111 and c = 1 we shall get depressed */
-  if (c && (carry == (((mp_limb_t)1) << (cnt ? BITS_PER_MP_LIMB - cnt : 0)) 
+  if (c && (carry == (ONE << (cnt ? BITS_PER_MP_LIMB - cnt : 0)) 
 	    - 1))
     {
       cnt--; 
