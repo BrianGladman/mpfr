@@ -85,6 +85,7 @@ mpfr_log()
 
   while (bool==1) {
 #ifdef DEBUG
+    printf("a="); mpfr_print_raw(a); putchar('\n');
     printf("p=%d\n", p);
 #endif
     /* Calculus of m (depends on p) */
@@ -128,6 +129,9 @@ mpfr_log()
        plus the cancelled bits */
     if (mpfr_can_round(cst,p-cancel-4,GMP_RNDN,rnd_mode,q)==1) {
       mpfr_set(r,cst,rnd_mode);
+#ifdef DEBUG
+      printf("result="); mpfr_print_raw(r); putchar('\n');
+#endif
       bool=0;
     }
     /* else we increase the precision */
