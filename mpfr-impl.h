@@ -28,14 +28,19 @@ typedef unsigned long int       mp_exp_unsigned_t;
 
 /* Assertions */
 
+/* Compile with -DMPFR_DEBUG_LEVEL=<level> to change the debug level */
 #ifndef MPFR_DEBUG_LEVEL
 #define MPFR_DEBUG_LEVEL 20
 #endif
 
 #include <assert.h>
 #define MPFR_ASSERT(level, expr) \
-  if ((level) < MPFR_DEBUG_LEVEL && (assert(expr), 0))
+  ((void) ((level) < MPFR_DEBUG_LEVEL && (assert(expr), 0)))
+
+/* MPFR_ASSERTN(expr): assertion checked in the normal debug level */
 #define MPFR_ASSERTN(expr) MPFR_ASSERT(16, expr)
+
+/* MPFR_ASSERTD(expr): assertion checked in debug level 33 or higher */
 #define MPFR_ASSERTD(expr) MPFR_ASSERT(32, expr)
 
 /* Definition of constants */
