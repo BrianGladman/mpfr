@@ -69,11 +69,25 @@ main (int argc, char *argv[])
 
   mpfr_init2 (x, 113);
 
+  /* check +0.0 and -0.0 */
+  d = 0.0;
+  check_set_get (d, x);
+  d = -0.0;
+  check_set_get (d, x);
+
+  /* checks that sign of -0.0 is set */
+  mpfr_set_ld (x, -0.0, GMP_RNDN);
+  if (MPFR_SIGN(x) > 0)
+    {
+      fprintf (stderr, "Error: sign of -0.0 is not set correctly\n");
+      exit (1);
+    }
+
   /* checks NaN, Inf and -Inf */
   mpfr_set_nan (x);
   d = mpfr_get_ld (x, GMP_RNDN);
   check_set_get (d, x);
-  
+
   mpfr_set_inf (x, 1);
   d = mpfr_get_ld (x, GMP_RNDN);
   check_set_get (d, x);
