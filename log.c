@@ -19,10 +19,11 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+/*#define DEBUG */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-  /* The computation of log(a) is done using the formula :
+/* The computation of log(a) is done using the formula :
      if we want p bits of the result,
                        pi
 	  log(a) ~ ------------  -   m log 2
@@ -34,19 +35,22 @@ MA 02111-1307, USA. */
      then for s>=1.26 we have log(s) < F(4/s) < log(s)*(1+4/s^2)
      from which we deduce pi/2/AG(1,4/s)*(1-4/s^2) < log(s) < pi/2/AG(1,4/s)
      so the relative error 4/s^2 is < 4/2^p i.e. 4 ulps.
-  */
+*/
 
-/* #define DEBUG */
+const mp_limb_t __gmpfr_limb1[1] = {MPFR_LIMB_HIGHBIT};
+const mpfr_t __gmpfr_one = {{2, MPFR_SIGN_POS, 1, (mp_limb_t*)__gmpfr_limb1}};
+const mpfr_t __gmpfr_two = {{2, MPFR_SIGN_POS, 2, (mp_limb_t*)__gmpfr_limb1}};
+const mpfr_t __gmpfr_four ={{2, MPFR_SIGN_POS, 3, (mp_limb_t*)__gmpfr_limb1}};
 
 int
 mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
 {
-  int m, go_on, size, cancel, inexact = 0;
+  int inexact;
   mp_prec_t p, q;
-  mpfr_t cst, rapport, agm, tmp1, tmp2, s, mm;
-  mp_limb_t *cstp, *rapportp, *agmp, *tmp1p, *tmp2p, *sp, *mmp;
+  mpfr_t tmp1, tmp2;
+  mp_limb_t *tmp1p, *tmp2p;
   TMP_DECL(marker);
-
+  
   /* Special cases */
   if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(a) ))
     {
@@ -84,91 +88,75 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
   /* If a is negative, the result is NaN */
   if (MPFR_UNLIKELY( MPFR_IS_NEG(a) ))
     {
-      MPFR_SET_NAN(r);
+      MPFR_SET_NAN (r);
       MPFR_RET_NAN;
     }
 
   /* If a is 1, the result is 0 */
   if (MPFR_UNLIKELY( mpfr_cmp_ui (a, 1) == 0) )
     {
-      MPFR_SET_ZERO(r);
-      MPFR_SET_POS(r);
-      MPFR_RET(0); /* only "normal" case where the result is exact */
+      MPFR_SET_ZERO (r);
+      MPFR_SET_POS (r);
+      MPFR_RET (0); /* only "normal" case where the result is exact */
     }
   MPFR_CLEAR_FLAGS (r);
 
-  q = MPFR_PREC(r);
+  q = MPFR_PREC (r);
 
   /* use initial precision about q+lg(q)+5 */
-  MPFR_ASSERTN ( q == (mp_limb_t) q);
-  count_leading_zeros (m, q);
-  p = q + 5 + (BITS_PER_MP_LIMB - m);
-  /* m=q; while (m) { p++; m >>= 1; } */
-
-  /* adjust to entire limb */
+  p = q + 5 + MPFR_INT_CEIL_LOG2 (q);
+  /* % ~(mp_prec_t)BITS_PER_MP_LIMB  ;
+     m=q; while (m) { p++; m >>= 1; }  */
   if (MPFR_LIKELY(p % BITS_PER_MP_LIMB != 0))
-    p += BITS_PER_MP_LIMB - (p%BITS_PER_MP_LIMB);
+    p += BITS_PER_MP_LIMB - (p%BITS_PER_MP_LIMB); 
+      
+  TMP_MARK(marker);
 
-  go_on=1;
+  for (;;) 
+    {
+      mp_size_t size;
+      long m;
+      mp_exp_t cancel;
 
-  while (go_on==1) {
-#ifdef DEBUG
-    printf("a="); mpfr_print_binary(a); putchar('\n');
-    printf("p=%d\n", p);
-#endif
-    /* Calculus of m (depends on p) */
-    m = (p + 1) / 2 - MPFR_GET_EXP (a) + 1;
+      MPFR_TRACE ( MPFR_DUMP(a) );
+      MPFR_TRACE ( printf("p=%lu\n", p) );
 
-    /* All the mpfr_t needed have a precision of p */
-    TMP_MARK(marker);
-    size=(p-1)/BITS_PER_MP_LIMB+1;
-    MPFR_TMP_INIT(cstp, cst, p, size);
-    MPFR_TMP_INIT(rapportp, rapport, p, size);
-    MPFR_TMP_INIT(agmp, agm, p, size);
-    MPFR_TMP_INIT(tmp1p, tmp1, p, size);
-    MPFR_TMP_INIT(tmp2p, tmp2, p, size);
-    MPFR_TMP_INIT(sp, s, p, size);
-    MPFR_TMP_INIT(mmp, mm, p, size);
+      /* Calculus of m (depends on p) */
+      m = (p + 1) / 2 - MPFR_GET_EXP (a) + 1;
+      
+      /* All the mpfr_t needed have a precision of p */
+      size = (p-1)/BITS_PER_MP_LIMB+1;
+      MPFR_TMP_INIT (tmp1p, tmp1, p, size);
+      MPFR_TMP_INIT (tmp2p, tmp2, p, size);
+      
+      mpfr_mul_2si (tmp2, a, m, GMP_RNDN);    /* s=a*2^m,        err<=1 ulp  */
+      mpfr_div (tmp1, __gmpfr_four, tmp2, GMP_RNDN);/* 4/s,      err<=2 ulps */
+      mpfr_agm (tmp2, __gmpfr_one, tmp1, GMP_RNDN); /* AG(1,4/s),err<=3 ulps */
+      mpfr_mul_2ui (tmp2, tmp2, 1, GMP_RNDN); /* 2*AG(1,4/s),    err<=3 ulps */
+      mpfr_const_pi (tmp1, GMP_RNDN);         /* compute pi,     err<=1ulp   */
+      mpfr_div (tmp2, tmp1, tmp2, GMP_RNDN);  /* pi/2*AG(1,4/s), err<=5ulps  */
+      mpfr_const_log2 (tmp1, GMP_RNDN);      /* compute log(2),  err<=1ulp   */
+      mpfr_mul_si (tmp1, tmp1, m, GMP_RNDN); /* compute m*log(2),err<=2ulps  */
+      mpfr_sub (tmp1, tmp2, tmp1, GMP_RNDN); /* log(a),    err<=7ulps+cancel */
+      cancel = MPFR_GET_EXP (tmp2) - MPFR_GET_EXP (tmp1);
 
-    mpfr_set_si (mm, m, GMP_RNDN);        /* I have m, supposed exact */
-    mpfr_set_si (tmp1, 1, GMP_RNDN);      /* I have 1, exact */
-    mpfr_set_si (tmp2, 4, GMP_RNDN);      /* I have 4, exact */
-    mpfr_mul_2si (s, a, m, GMP_RNDN);    /* I compute s=a*2^m, err <= 1 ulp */
-    mpfr_div (rapport, tmp2, s, GMP_RNDN);/* I compute 4/s, err <= 2 ulps */
-    mpfr_agm (agm, tmp1, rapport, GMP_RNDN); /* AG(1,4/s), err<=3 ulps */
-    mpfr_mul_2ui (tmp1, agm, 1, GMP_RNDN); /* 2*AG(1,4/s), still err<=3 ulps */
-    mpfr_const_pi (cst, GMP_RNDN);        /* compute pi, err<=1ulp */
-    mpfr_div (tmp2, cst, tmp1, GMP_RNDN); /* pi/2*AG(1,4/s), err<=5ulps */
-    mpfr_const_log2 (cst, GMP_RNDN);      /* compute log(2), err<=1ulp */
-    mpfr_mul(tmp1,cst,mm,GMP_RNDN);       /* I compute m*log(2), err<=2ulps */
-    cancel = MPFR_GET_EXP (tmp2);
-    mpfr_sub(cst,tmp2,tmp1,GMP_RNDN);     /* log(a), err<=7ulps+cancel */
-    cancel -= MPFR_GET_EXP (cst);
-#ifdef DEBUG
-    printf("canceled bits=%d\n", cancel);
-    printf("approx="); mpfr_print_binary(cst); putchar('\n');
-#endif
-    if (cancel<0) cancel=0;
+      MPFR_TRACE ( printf("canceled bits=%ld\n", cancel) );
+      MPFR_TRACE ( MPFR_DUMP(tmp1) );
 
-    /* If we can round the result, we set it and go out of the loop */
-
-    /* we have 7 ulps of error from the above roundings,
-       4 ulps from the 4/s^2 second order term,
-       plus the canceled bits */
-    if (mpfr_can_round (cst, p - cancel - 4, GMP_RNDN, GMP_RNDZ,
-                        q + (rnd_mode == GMP_RNDN)) == 1)
-      {
-        inexact = mpfr_set (r, cst, rnd_mode);
-        go_on = 0;
-      }
-    /* else we increase the precision */
-    else {
+      if (MPFR_UNLIKELY(cancel < 0))
+	cancel = 0;
+      
+      /* we have 7 ulps of error from the above roundings,
+	 4 ulps from the 4/s^2 second order term,
+	 plus the canceled bits */
+      if (mpfr_can_round (tmp1, p - cancel - 4, GMP_RNDN, GMP_RNDZ,
+			  q + (rnd_mode == GMP_RNDN)))
+	break;
       p += BITS_PER_MP_LIMB + cancel;
     }
+  inexact = mpfr_set (r, tmp1, rnd_mode);
+  /* We clean */
+  TMP_FREE(marker);
 
-    /* We clean */
-    TMP_FREE(marker);
-
-  }
   return inexact; /* result is inexact */
 }
