@@ -1,6 +1,6 @@
 New functions to implement:
 
-- mpfr_mul_mpz, mpfr_div_mpz
+- mpfr_swap, mpfr_mul_mpz, mpfr_div_mpz
 
 Miscellaneous:
 
