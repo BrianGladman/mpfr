@@ -26,6 +26,8 @@ MA 02111-1307, USA. */
 
 /* #define DEBUG */
 
+#define ONE ((mp_limb_t) 1)
+
 extern void mpfr_add1 _PROTO((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, 
 			      mp_rnd_t, int));
 
@@ -126,17 +128,17 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
 	     even) */
 	  if (NOTZERO(c)) { /* c is not zero */
 	    /* check whether mant(c)=1/2 or not */
-	    cc = *cp - ((mp_limb_t)1<<(mp_bits_per_limb-1));
+	    cc = *cp - (ONE<<(mp_bits_per_limb-1));
 	    if (cc==0) {
 	      bp = cp+(PREC(c)-1)/mp_bits_per_limb;
 	      while (cp<bp && cc==0) cc = *++cp;
 	    }
-	    if (cc || (ap[an-1] & (mp_limb_t)1<<sh)) goto sub_one_ulp;
+	    if (cc || (ap[an-1] & ONE<<sh)) goto sub_one_ulp;
 	      /* mant(c) > 1/2 or mant(c) = 1/2: subtract 1 iff lsb(a)=1 */
 	  }
 	}
 	else if (ap[an-1]==0) { /* case b=2^n */
-	  ap[an-1] = (mp_limb_t) 1 << (BITS_PER_MP_LIMB-1);
+	  ap[an-1] = ONE << (BITS_PER_MP_LIMB-1);
 	  EXP(a)++;
 	}
       }
@@ -144,7 +146,7 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
 	       (ISNEG(b) && rnd_mode==GMP_RNDD)) {
 	/* round up: nothing to do */
 	if (ap[an-1]==0) { /* case b=2^n */
-	  ap[an-1] = (mp_limb_t) 1 << (BITS_PER_MP_LIMB-1);
+	  ap[an-1] = ONE << (BITS_PER_MP_LIMB-1);
 	  EXP(a)++;
 	}
       }
@@ -160,26 +162,26 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
       if (rnd_mode==GMP_RNDN) { /* to nearest */
 	/* first check whether the truncated bits from b are 1/2*lsb(a) */
 	if (sh) {
-	  cc = *ap & (((mp_limb_t)1<<sh)-1);
+	  cc = *ap & ((ONE<<sh)-1);
 	  *ap &= ~cc; /* truncate last bits */
-	  cc -= (mp_limb_t)1<<(sh-1);
+	  cc -= ONE<<(sh-1);
 	}
 	else /* no bit to truncate */
-	  cc = bp[--k] - ((mp_limb_t)1<<(mp_bits_per_limb-1));
+	  cc = bp[--k] - (ONE<<(mp_bits_per_limb-1));
 	if ((long)cc>0) { /* suppose sizeof(long)=sizeof(mp_limb_t) */
 	  goto add_one_ulp; /* trunc(b)>1/2*lsb(a) -> round up */
 	}
 	else if (cc==0) {
 	  while (k>1 && cc==0) cc=bp[--k];
 	  /* now if the truncated part of b = 1/2*lsb(a), check whether c=0 */
-	  if (NOTZERO(c) || (*ap & ((mp_limb_t)1<<sh))) goto sub_one_ulp;
+	  if (NOTZERO(c) || (*ap & (ONE<<sh))) goto sub_one_ulp;
 	  /* if trunc(b)-c is exactly 1/2*lsb(a) : round to even lsb */
 	}
 	/* if cc<0 : trunc(b) < 1/2*lsb(a) -> round down, i.e. do nothing */
       }
       else { /* round towards infinity or zero */
 	if (sh) {
-	  cc = *ap & (((mp_limb_t)1<<sh)-1);
+	  cc = *ap & ((ONE<<sh)-1);
 	  *ap &= ~cc; /* truncate last bits */
 	}
 	else cc=0;
@@ -283,7 +285,7 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
       for (i=0;i<imax;i++) ap[i] = ~ap[i];
       cc = (i) ? mpn_add_1(ap, ap, i, 1) : 1;
       mpn_sub_lshift_n(ap+i, bp, bn-cancel1, cancel2, an);
-      mpn_sub_1(ap+i, ap+i, an-i, (mp_limb_t)1-cc);
+      mpn_sub_1(ap+i, ap+i, an-i, ONE-cc);
     }
     else /* PREC(b) > PREC(a): we have to truncate b */
       mpn_sub_lshift_n(ap, bp+(bn-an-cancel1), an, cancel2, an);
@@ -305,30 +307,38 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
 	  kc = cn-k; /* remains kc limbs from c */
 	  k = bn-an; /* remains k limbs from b */
 	  /* truncate last bits and store the difference with 1/2*ulp in cc */
-	  cc = *ap & (((mp_limb_t)1<<sh)-1);
+	  cc = *ap & ((ONE<<sh)-1);
 	  *ap &= ~cc; /* truncate last bits */
-	  cc -= (mp_limb_t)1<<(sh-1);
+	  cc -= ONE<<(sh-1);
 	  while ((cc==0 || cc==-1) && k!=0 && kc!=0) {
 	    kc--;
 	    cc -= mpn_sub_1(&c2, bp+(--k), 1, (cp[kc]>>dif) +
 			    (cp[kc+1]<<(mp_bits_per_limb-dif)));
 	    if (cc==0 || cc==-1) cc=c2;
 	  }
+	  if (kc==0) { /* it still remains cp[0]<<(mp_bits_per_limb-dif) */
+	    if (k!=0) cc -= mpn_sub_1(&c2, bp+(--k), 1, 
+				      cp[0]<<(mp_bits_per_limb-dif));
+	    else c2 = -cp[0]<<(mp_bits_per_limb-dif);
+	  }
 	  if ((long)cc>0) goto add_one_ulp;
-	  else if ((long)cc<-1) goto end_of_sub; /* the carry can be at most 1 */
-	  else if (kc==0) goto round_b;
+	  else if ((long)cc<-1) goto end_of_sub; /* carry can be at most 1 */
+	  else if (kc==0) {
+	    while (k && cc==0) cc=bp[--k];
+	    if (cc || (*ap & (ONE<<sh))) goto add_one_ulp;
+	    else goto end_of_sub;
+	  }
 	  /* else round c: go through */
 	case 3: /* only c to round */
 	  bp=cp; k=cn-k; goto to_nearest;
 	case 0: /* only b to round */
-        round_b:
 	  k=bn-an; dif=0; goto to_nearest;
         /* otherwise the result is exact: nothing to do */
 	}
     }
     else if ((ISNONNEG(b) && rnd_mode==GMP_RNDU) || 
 	     (ISNEG(b) && rnd_mode==GMP_RNDD)) {
-      cc = *ap & (((mp_limb_t)1<<sh)-1);
+      cc = *ap & ((ONE<<sh)-1);
       *ap &= ~cc; /* truncate last bits */
       if (cc) goto add_one_ulp; /* will happen most of the time */
       else { /* same four cases too */
@@ -361,7 +371,7 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
     }
     /* else round to zero: remove 1 ulp if neglected bits from b-c are < 0 */
     else {
-      cc = *ap & (((mp_limb_t)1<<sh)-1); 
+      cc = *ap & ((ONE<<sh)-1); 
       *ap &= ~cc;
       if (cc==0) { /* otherwise neglected difference cannot be < 0 */
 	/* take into account bp[0]..bp[bn-cancel1-1] shifted by cancel2 to left
@@ -391,12 +401,12 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
 mpfr_print_raw(a); putchar('\n');
 #endif
         if (sh) {
-	  cc = *ap & (((mp_limb_t)1<<sh)-1);
+	  cc = *ap & ((ONE<<sh)-1);
 	  *ap &= ~cc; /* truncate last bits */
-	  c2 = (mp_limb_t)1<<(sh-1);
+	  c2 = ONE<<(sh-1);
 	}
 	else /* no bit to truncate */
-	  { if (k) cc = bp[--k]; else cc = 0; c2 = (mp_limb_t)1<<(mp_bits_per_limb-1); }
+	  { if (k) cc = bp[--k]; else cc = 0; c2 = ONE<<(mp_bits_per_limb-1); }
 #ifdef DEBUG
 	printf("cc=%lu c2=%lu k=%u\n",cc,c2,k);
 #endif
@@ -410,21 +420,21 @@ mpfr_print_raw(a); putchar('\n');
 	  if (cc==0 && dif>0) cc=bp[0]<<(mp_bits_per_limb-dif);
 	  /* now if the truncated part of b = 1/2*lsb(a), check whether c=0 */
           if (bp!=cp) { 
-	    if (cc || (*ap & ((mp_limb_t)1<<sh))) goto add_one_ulp;
+	    if (cc || (*ap & (ONE<<sh))) goto add_one_ulp;
 	  }
 	  else {
 	    /* subtract: if cc>0, do nothing */
-	    if (cc==0 && (*ap & ((mp_limb_t)1<<sh))) goto add_one_ulp;
+	    if (cc==0 && (*ap & (ONE<<sh))) goto add_one_ulp;
 	  }
 	}
         goto end_of_sub;
 
  sub_one_ulp:
-    cc = mpn_sub_1(ap, ap, an, (mp_limb_t)1<<sh);
+    cc = mpn_sub_1(ap, ap, an, ONE<<sh);
   goto end_of_sub;
 
   add_one_ulp: /* add one unit in last place to a */
-    cc = mpn_add_1(ap, ap, an, (mp_limb_t)1<<sh);
+    cc = mpn_add_1(ap, ap, an, ONE<<sh);
 
  end_of_sub:
 #ifdef DEBUG
