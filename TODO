@@ -37,7 +37,6 @@ New functions to implement:
 - atan2
 - nextafter/nextforward : X + epsilon if X < Y, X - epsilon if X > Y
 - nextabove/nextbelow ?
-- mpfr_get_exp / mpfr_set_exp
 - mpfr_greater_p (Kevin, Vincent ok)
                          =     <     >     unordered
 mpfr_greater_p           0     0     1     0
