@@ -1,6 +1,6 @@
 /* mpfr_sub1 -- internal function to perform a "real" subtraction
 
-Copyright 2001, 2002, 2003, 2004 Free Software Foundation.
+Copyright 2001, 2002, 2003, 2004, 2005 Free Software Foundation.
 Contributed by the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.
@@ -19,7 +19,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
-
 
 #include "mpfr-impl.h"
 
@@ -81,6 +80,30 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   else
     MPFR_SET_SAME_SIGN (a,b);
 
+  /* Check if c is too small 
+     More precise test is to replace 2 by   
+      (rnd == GMP_RNDN) + mpfr_power2_raw (b) */
+  if (MPFR_UNLIKELY (MPFR_GET_EXP (c) <= MPFR_GET_EXP (b) 
+		     - (mp_exp_t) MAX (MPFR_PREC (a), MPFR_PREC (b)) - 2))
+    {
+      /* A = S*ABS(B) +/- ulp(a) */
+      inexact = mpfr_set4 (a, b, rnd_mode, MPFR_SIGN (a)); 
+      if (inexact == 0)
+	{
+	  if (MPFR_IS_LIKE_RNDZ (rnd_mode, MPFR_IS_NEG (a))) {
+	    mpfr_nexttoward (a, c);
+	    return -MPFR_INT_SIGN (a);
+	  }
+	  return MPFR_INT_SIGN (a);
+	}
+      else
+	{
+	  if (MPFR_UNLIKELY (inexact == -MPFR_EVEN_INEX*MPFR_INT_SIGN (a)))
+	    inexact = MPFR_INT_SIGN (a);
+	  return inexact;
+	}
+    }
+
   diff_exp = (mp_exp_unsigned_t) MPFR_GET_EXP (b) - MPFR_GET_EXP (c);
 
   /* reserve a space to store b aligned with the result, i.e. shifted by
@@ -136,19 +159,20 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
     }
 
 #ifdef DEBUG
-  printf("shift_b=%u shift_c=%u\n", shift_b, shift_c);
+  printf("shift_b=%u shift_c=%u diffexp=%lu\n", shift_b, shift_c, diff_exp);
 #endif
 
   MPFR_ASSERTD (ap != cp);
   MPFR_ASSERTD (bp != cp);
 
   /* here we have shift_c = (diff_exp - cancel) % BITS_PER_MP_LIMB,
+        0 <= shift_c < BITS_PER_MP_LIMB
      thus we want cancel2 = ceil((cancel - diff_exp) / BITS_PER_MP_LIMB) */
 
   cancel2 = (long int) (cancel - (diff_exp - shift_c)) / BITS_PER_MP_LIMB;
   /* the high cancel2 limbs from b should not be taken into account */
 #ifdef DEBUG
-  printf("cancel=%u cancel1=%u cancel2=%d\n", cancel, cancel1, cancel2);
+  printf("cancel=%lu cancel1=%lu cancel2=%ld\n", cancel, cancel1, cancel2);
 #endif
 
   /*               ap[an-1]        ap[0]
@@ -276,6 +300,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   bn -= an + cancel1;
   cn0 = cn;
   cn -= (long int) an + cancel2;
+
 #ifdef DEBUG
   printf("last %d bits from a are %lu, bn=%ld, cn=%ld\n", sh, carry, bn, cn);
 #endif
