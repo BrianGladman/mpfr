@@ -160,7 +160,8 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
       /* first copy the 'an' most significant limbs of b to a */
       MPN_COPY(ap, bp+k, an);
       { /* treat all rounding modes together */
-	mp_limb_t c2old; int sign=0, cout=0;
+	mp_limb_t c2old; int sign=0; long int cout=0;
+
 	if (sh) {
 	  cc = *ap & ((ONE<<sh)-1);
 	  *ap &= ~cc; /* truncate last bits */
@@ -212,10 +213,13 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
 	     cout -= mpn_sub_1(&cc, &cc, 1, c2);
 	   }
 	}
+	if (cout==0) cout=(cc!=0);
         if (rnd_mode==GMP_RNDU) sign=1; 
 	else if (rnd_mode==GMP_RNDD || rnd_mode==GMP_RNDZ) sign=-1;
 	if (ISNEG(b)) sign=-sign;
-	/* round towards infinity if dif=1, towards zero otherwise */
+	/* even rounding rule: */
+	if (rnd_mode==GMP_RNDN && cout==0 && (*ap & (ONE<<sh))) cout=sign;
+	/* round towards infinity if sign=1, towards zero otherwise */
 	if ((sign==1) && cout>0) goto add_one_ulp;
 	else if ((sign==-1) && cout<0) goto sub_one_ulp;
       }
@@ -329,10 +333,11 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
 			    (cp[kc+1]<<(mp_bits_per_limb-dif)));
 	    if (cc==0 || cc==-1) cc=c2;
 	  }
-	  if (kc==0) { /* it still remains cp[0]<<(mp_bits_per_limb-dif) */
+	  if ((cc==0 || cc==-1) && kc==0) { 
+	    /* it still remains cp[0]<<(mp_bits_per_limb-dif) */
 	    if (k!=0) cc -= mpn_sub_1(&c2, bp+(--k), 1, 
 				      cp[0]<<(mp_bits_per_limb-dif));
-	    else c2 = -cp[0]<<(mp_bits_per_limb-dif);
+	    else cc -= cp[0]<<(mp_bits_per_limb-dif);
 	  }
 	  if ((long)cc>0) goto add_one_ulp;
 	  else if ((long)cc<-1) goto end_of_sub; /* carry can be at most 1 */
@@ -383,17 +388,36 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
       }
     }
     /* else round to zero: remove 1 ulp if neglected bits from b-c are < 0 */
-    else {
+    else { int kc=cn-k;
       cc = *ap & ((ONE<<sh)-1); 
       *ap &= ~cc;
       if (cc==0) { /* otherwise neglected difference cannot be < 0 */
 	/* take into account bp[0]..bp[bn-cancel1-1] shifted by cancel2 to left
 	   and cp[0]..cp[cn-k-1] shifted by dif bits to right */
-	switch (overlap) {
+	switch (overlap) { 
 	case 0:
 	case 2:
 	  break; /* c is not truncated ==> no borrow */
 	case 1: /* both b and c are truncated */
+	  k = bn-an; /* remains k limbs from b */
+          dif = diff_exp % mp_bits_per_limb;
+	  while (k!=0 && kc!=0) {
+	    kc--;
+	    cc = cp[kc]>>dif;
+	    if (dif) cc += cp[kc+1]<<(mp_bits_per_limb-dif);
+	    k--;
+	    if (bp[k]>cc) goto end_of_sub;
+	    else if (bp[k]<cc) goto sub_one_ulp;
+	  }
+	  if (k==0) { /* is the remainder from c zero or not? */
+	    while (kc!=0) {
+	      kc--;
+	      cc = cp[kc]>>dif;
+	      if (dif) cc += cp[kc+1]<<(mp_bits_per_limb-dif);
+	      if (cc) goto sub_one_ulp;
+	    }
+	    if (cp[0]<<(mp_bits_per_limb-dif)) goto sub_one_ulp;
+	  }
 	  break;
 	case 3: /* only c is truncated */
 	  cn -= k; /* take into account cp[0]..cp[cn-1] shifted by dif bits

@@ -24,6 +24,8 @@ MA 02111-1307, USA. */
 #include "gmp-impl.h"
 #include "mpfr.h"
 
+/* #define DEBUG */
+
 extern void mpfr_sub1 _PROTO((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, 
 			      mp_rnd_t, int));
 
@@ -67,7 +69,8 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
   an = (PREC(a)-1)/mp_bits_per_limb+1; /* number of significant limbs of a */
 
   sh = an*mp_bits_per_limb-PREC(a); /* non-significant bits in low limb */
-  bn = (PREC(b)-1)/mp_bits_per_limb+1; /* number of significant limbs of b */
+  bn = (PREC(b)-1)/mp_bits_per_limb + 1; /* number of significant limbs of b */
+  cn = (PREC(c)-1)/mp_bits_per_limb + 1;
   EXP(a) = EXP(b);
 
   if (MPFR_SIGN(a) * MPFR_SIGN(b) < 0) CHANGE_SIGN(a);
@@ -76,6 +79,9 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
      through rounding */
   dif = PREC(a)-diff_exp;
 
+#ifdef DEBUG
+  printf("dif=%d\n", dif);
+#endif
   if (dif<=0) { 
     
     /* diff_exp>=PREC(a): c does not overlap with a */
@@ -133,47 +139,52 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
 
       /* first copy the 'an' most significant limbs of b to a */
       MPN_COPY(ap, bp+k, an);
-      if (rnd_mode==GMP_RNDN) { 
-	
-	/* to nearest */
-	/* first check whether the truncated bits from b are 1/2*lsb(a) */
-	
+      { /* treat all rounding modes together */
+	mp_limb_t c2old; long int cout=0; int sign=0;
 	if (sh) {
 	  cc = *ap & ((ONE<<sh)-1);
 	  *ap &= ~cc; /* truncate last bits */
-	  cc -= ONE<<(sh-1);
 	}
-	else /* no bit to truncate */
-	  cc = bp[--k] - (ONE<<(mp_bits_per_limb-1));
+	else cc=0;
 
-	if ((long)cc>0) goto add_one_ulp; /* trunc(b)>1/2*lsb(a) -> round up */
-	else if (cc==0) {
-
-	  while (k>1 && cc==0) cc=bp[--k];
-
-	  /* now if the truncated part of b = 1/2*lsb(a), check whether c=0 */
-	  if (NOTZERO(c) || (*ap & (ONE<<sh))) goto add_one_ulp;
-	  /* if trunc(b)+c is exactly 1/2*lsb(a) : round to even lsb */
+        dif += sh; 
+	if (dif>0) {
+	  cn--;
+	  c2old = cp[cn]; /* last limb from c considered */
+	  cout += mpn_add_1(&cc, &cc, 1, c2old >> (mp_bits_per_limb-dif));
 	}
-
-	/* if cc<0 : trunc(b) < 1/2*lsb(a) -> round down, i.e. do nothing */
+	else c2 = c2old = 0;
+	if (sh && rnd_mode==GMP_RNDN)
+	    cout -= mpn_sub_1(&cc, &cc, 1, ONE<<(sh-1));
+	if (cout==0) {
+	   dif += mp_bits_per_limb;
+	   while (cout==0 && (k || cn)) {
+	     cout = (cc>(mp_limb_t)1) ? 2 : cc;
+	     cc = (k) ? bp[--k] : 0;
+	     if (sh==0) {
+	       cout -= mpn_sub_1(&cc, &cc, 1, ONE << (mp_bits_per_limb-1));
+	       sh = 0;
+	     }
+	     /* next limb from c to consider is cp[cn-1], with lower part of
+		c2old */
+	     c2 = c2old << dif;
+	     if (cn && (dif>=0)) {
+	       cn--; 
+	       c2old = cp[cn];
+	       c2 += c2old >> (mp_bits_per_limb-dif);
+	     }
+	     else dif += mp_bits_per_limb;
+	     cout += mpn_add_1(&cc, &cc, 1, c2);
+	   }
+	}
+	if (cout==0) cout=(cc!=0);
+        sign = (ISNONNEG(b) && rnd_mode==GMP_RNDU)
+	  || (ISNEG(b) && rnd_mode==GMP_RNDD) || (rnd_mode==GMP_RNDN);
+	/* round towards infinity if dif=1, towards zero otherwise */
+	if ((sign==1) && (cout>0)) goto add_one_ulp;
+	else if (rnd_mode==GMP_RNDN && cout==0 && (*ap & (ONE<<sh)))
+	  goto add_one_ulp;
       }
-      else if ((ISNONNEG(b) && rnd_mode==GMP_RNDU) || 
-	       (ISNEG(b) && rnd_mode==GMP_RNDD)) {
-
-	/* first check whether trunc(b)+c is zero or not */
-	if (sh) {
-	  cc = *ap & ((ONE<<sh)-1); *ap &= ~cc; /* truncate last bits */
-	}
-	else cc = bp[--k] - (ONE<<(mp_bits_per_limb-1));
-	while (cc==0 && k>1) cc=bp[--k];
-	if (cc || NOTZERO(c)) goto add_one_ulp;
-      }
-
-      /* in the other cases (round to zero, or up/down with sign -/+),
-         nothing to do, since b and c don't overlap, there can't be any
-	 carry */
-
     }
   }
   else { 
@@ -187,6 +198,9 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
     MPN_ZERO(ap+k, an-k); /* do it now otherwise ap[k] may be destroyed
 			     in case dif<0 */
 
+#ifdef DEBUG
+    printf("PREC(c)=%d\n", PREC(c));
+#endif
     if (dif<=PREC(c)) { 
       /* c has to be truncated */
       dif = dif % mp_bits_per_limb;
@@ -247,6 +261,9 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
     
     /* remains to do the rounding */
 
+#ifdef DEBUG
+    printf("overlap=%d\n", overlap);
+#endif
     if (rnd_mode==GMP_RNDN) { 
 
       /* to nearest */
@@ -260,7 +277,7 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
          (3)  PREC(b) <= PREC(a) and diff_exp+PREC(c) > PREC(a) */
 
       switch (overlap)
-	{
+	{ mp_limb_t cout;
         case 1: /* both b and c to round */
 	  kc = cn-k; /* remains kc limbs from c */
 	  k = bn-an; /* remains k limbs from b */
@@ -269,24 +286,27 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
 
 	  cc = *ap & ((ONE<<sh)-1);
 	  *ap &= ~cc; /* truncate last bits */
-	  cc -= ONE<<(sh-1);
-	  while ((cc==0 || cc==-1) && k!=0 && kc!=0) {
+          cout = -mpn_sub_1(&cc, &cc, 1, ONE<<(sh-1));
+	  if ((~cout==0) && (~cc)) break;
+	  cout = cc;
+	  while ((cout==0 || cout==-1) && k!=0 && kc!=0) {
 	    kc--;
-	    cc += mpn_add_1(&c2, bp+(--k), 1,(cp[kc+1]<<(mp_bits_per_limb-dif))
+	    cout += mpn_add_1(&cc, bp+(--k), 1,(cp[kc+1]<<(mp_bits_per_limb-dif))
 			    +(cp[kc]>>dif));
-	    if (cc==0 || cc==-1) cc=c2;
+	    if (cout==0 || (~cout==0)) cout=cc;
 	  }
 	  if (kc==0) { /* it still remains cp[0]<<(mp_bits_per_limb-dif) */
-	    if (k!=0) cc += mpn_add_1(&c2, bp+(--k), 1, 
+	    if (k!=0) cout += mpn_add_1(&cc, bp+(--k), 1, 
 				      cp[0]<<(mp_bits_per_limb-dif));
-	    else c2 = cp[0]<<(mp_bits_per_limb-dif);
-	  } 
-	  if ((long)cc>0) goto add_one_ulp;
-	  else if ((long)cc<-1) 
+	    else cc = cp[0]<<(mp_bits_per_limb-dif);
+	    if (cout==0 || (~cout==0 && ~cc==0)) cout=cc;
+	  }
+	  if ((long)cout>0) goto add_one_ulp;
+	  else if ((long)cout<-1) 
 	    { TMP_FREE(marker); return; /* the carry can be at most 1 */ }
 	  else if (kc==0) {
-	    while (k && cc==0) cc=bp[--k];
-	    if (cc || (*ap & (ONE<<sh))) goto add_one_ulp;
+	    while (k && cout==0) cout=bp[--k];
+	    if ((~cout) && (cout || (*ap & (ONE<<sh)))) goto add_one_ulp;
 	    else goto end_of_add;
 	  }
 
