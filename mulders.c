@@ -1,63 +1,22 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "gmp.h"
-#include "gmp-impl.h"
-#include "longlong.h"
+
+#define MPFR_NEED_LONGLONG_H
+#include "mpfr-impl.h"
 
 #include "timming.h"
 
 #define MAX_BASECASE_THREEHOLD 500
 #define TOLERANCE 102/100
 
-/*
-
-               <----------- un ----------->
-               ___________________________
-              /            .             /  ^
-            / .            .           /    |
-          /   .            .         /      |
-        /     .            .       /        vn
-      /       .            .     /          |
-    /         .            .   /            |
-  /           .            . /              |
-/__________________________/                v
-
-<----- vn ----><-- un-vn --> <---- vn--- ->
-
-rn ------>            ignore low part of v and u for all partial products
-rn --------------->   ignore low part of u for all partial products
-rn -----------------------------> ignore low part of u for some partial products
-
-Algorithm:
-  1. Use common mpn_mul_1/mpn_addmul_1 loops, but exclude results more than one
-     limbs under result part.
-  2. If (lowest limb) > (number of rows of first ignored column), compute
-     another column, propagate carry.
-*/
-
-#if 0
-void
-mpn_mulhigh_n_basecase (mp_ptr rp, mp_ptr up, mp_ptr vp, mp_size_t n)
-{
-  mp_size_t i;
-
-  {
-    mp_limb_t tmp1, tmp2, tmp3;
-    umul_ppmm (tmp1, rp[0], up[n-2], vp[0]);
-    umul_ppmm (tmp3, tmp2, up[n-1], vp[0]);
-    add_ssaaaa (rp[2], rp[1], tmp3, tmp2, 0, tmp1);
-  }
-  for (i = 3 ; i <= n ; i++)
-    rp[i] = mpn_addmul_1 (rp, up + n - i, i, vp[i - 2]);
-  rp[n+1] = mpn_addmul_1 (rp + 1, up, n, vp[n - 1]);
-}
-#endif
+#define MPFR_MUL_BASECASE_THREEHOLD 5
+#define MPFR_MULHIGH_TAB_SIZE 1024
 
 /* Put in  rp[n-1..2n-1] an approximation of the n+1 high limbs
    of {mp, n} * {np, n}. 
    The error is at worst of ln(n) for rp[n] and rp[n-1] is totally wrong */
-void
-mpn_mulhigh_n_basecase (mp_ptr rp, mp_srcptr up, mp_srcptr vp, mp_size_t n)
+static void
+mpfr_mulhigh_n_basecase (mp_ptr rp, mp_srcptr up, mp_srcptr vp, mp_size_t n)
 {
   mp_size_t i;
 
@@ -67,17 +26,14 @@ mpn_mulhigh_n_basecase (mp_ptr rp, mp_srcptr up, mp_srcptr vp, mp_size_t n)
     rp[i+1] = mpn_addmul_1 (rp, up + (n - i - 1), i+1, vp[i]);
 }
 
-mp_size_t mpn_mulhigh_ktab[1024];
+static mp_size_t mulhigh_ktab[MPFR_MULHIGH_TAB_SIZE];
 
 void
-mpn_mulhigh_n (mp_ptr rp, mp_srcptr np, mp_srcptr mp, mp_size_t n)
+mpfr_mulhigh_n (mp_ptr rp, mp_srcptr np, mp_srcptr mp, mp_size_t n)
 {
   mp_size_t k;
 
-  if (n >= 1024)
-    abort ();
-
-  k = mpn_mulhigh_ktab[n];
+  k = MPFR_LIKELY (n < MPFR_MULHIGH_TAB_SIZE) ?  mulhigh_ktab[n] : 2*n/3;
   if (k < 0)
     mpn_mul_basecase (rp, np, n, mp, n);
   else if (k == 0)
@@ -96,6 +52,9 @@ mpn_mulhigh_n (mp_ptr rp, mp_srcptr np, mp_srcptr mp, mp_size_t n)
     }
 }
 
+
+
+/* Tune: to improve */
 mp_size_t
 find_best_k (mp_size_t n)
 {
@@ -215,37 +174,62 @@ main (int argc, const char *argv[])
 }
 
 #if 0
-int mul () 
+int mpfr_mul () 
 {
   /* multiplies two mantissa in temporary allocated space */
   b1 = MPFR_LIKELY (bn >= cn)
     ? mpn_mul (tmp, MPFR_MANT (b), bn, MPFR_MANT (c), cn)
     : mpn_mul (tmp, MPFR_MANT (c), cn, MPFR_MANT (b), bn);
 
-  -->;
+
+  /* TO REPLACE WITH -->; */
   
-  if (MPFR_LIKELY (bn == cn)) {
-    mp_prec_t prec_bn;
-    if (MPFR_LIKELY (bn < MPFR_MUL_BASECASE_THREEHOLD))
-      goto mul_normal;
-    prec_bn = bn*BITS_PER_MP_LIMB-MPFR_INT_CEIL_LOG2 (bn);
-    if (MPFR_UNLIKELY (MPFR_PREC (a) > prec_bn-4))
-      goto mul_normal;
-    else {
-      /* mp_size_t offset;
-	 offset = (prec_bn - 4 - MPFR_PREC (a)) / BITS_PER_MP_LIMB; */
-      mpfr_mpn_mulhigh_n (tmp, MPFR_MANT (b), MPFR_MANT (c), bn);
+  if (MPFR_UNLIKELY (bn < cn)) 
+    {
+      mpfr_ptr  tmp = b;
+      mp_size_t tn  = bn;
+      b = c;
+      c = tmp;
+      bn = cn;
+      cn = tn;
+    }
+  if (MPFR_LIKELY (bn < MPFR_MUL_BASECASE_THREEHOLD))
+    {
+    full_multiply:
+      b1 = mpn_mul (tmp, MPFR_MANT (b), bn, MPFR_MANT (c), cn);      
+    }
+  else
+    {
+      mp_size_t new_cn, cancel;
+      mp_prec_t prec_cn;
+
+      cancel  = 0;
+      new_cn  = cn;
+      prec_cn = cn*BITS_PER_MP_LIMB-MPFR_INT_CEIL_LOG2 (cn);
+      /* prec_cn is the expected precision of mulhigh */
+
+      MPFR_ASSERTD (bn >= cn);
+      /* FIXME: Find best guard bits to add */
+      if (MPFR_UNLIKELY (MPFR_PREC (a) > prec_cn - 4))
+	/* MulHigh can't produce a roundable result.
+	   Do the full multiply instead. */
+	goto full_multiply;
+      else if (MPFR_UNLIKELY (MPFR_PREC (a) < prec_cn - 4 -  BITS_PER_MP_LIMB))
+	{
+	  /* MulHigh will computes too much bits */
+	  cancel = (prec_cn - 4 - MPFR_PREC (a)) / BITS_PER_MP_LIMB;
+	  MPFR_ASSERTD (cancel >= 1);
+	  new_cn = cn - cancel;
+	}
+      mpfr_mulhigh_n (tmp, MPFR_MANT (b) + cancel, 
+		      MPFR_MANT (c) + cancel, new_cn);
       if (MPFR_LIKELY (mpfr_can_round_raw (tmp, bn+tn, sign, prec_bn,
 					   GMP_RNDN, GMP_RNDZ,
 					   MPFR_PREC(a)+(rnd_mode==GMP_RNDN))))
 	b1 = tmp[2*bn-1];
       else
-	goto mul_normal;
+	goto full_multiply;
+      }
     }
-  } else if (bn > cn) {
-  mul_normal:
-    b1 = mpn_mul (tmp, MPFR_MANT (b), bn, MPFR_MANT (c), cn);
-  } else
-    b1 = mpn_mul (tmp, MPFR_MANT (c), cn, MPFR_MANT (b), bn);
-}
+
 #endif
