@@ -401,6 +401,7 @@ main (void)
   testfunc = (void*) mpfr_exp2; test2 ("mpfr_exp2", 53, GMP_RNDN);
   testfunc = (void*) mpfr_cos; test2 ("mpfr_cos", 53, GMP_RNDN);
   testfunc = (void*) mpfr_sin; test2 ("mpfr_sin", 53, GMP_RNDN);
+  testfunc = (void*) mpfr_tan; test2 ("mpfr_tan", 53, GMP_RNDN);
 
   return 0;
 }
