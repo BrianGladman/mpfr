@@ -547,7 +547,7 @@ The default rounding mode is to nearest initially.
 Rounds @var{x} according to @var{rnd} with precision @var{prec}, which
 may be different from that of @var{x}. 
 If @var{prec} is greater or equal to the precision of @var{x}, then new
-space is allocated for the mantissa, and it is filled with zeroes.
+space is allocated for the mantissa, and it is filled with zeros.
 Otherwise, the mantissa is rounded to precision @var{prec} with the given
 direction. In both cases, the precision of @var{x} is changed to @var{prec}.
 The returned value is zero when the result is exact, positive when it is
@@ -1386,16 +1386,12 @@ point.
 
 Finally, the @code{_mpfr_d} is a pointer to the limbs, least
 significant limbs stored first.
-The number zero is represented with its most significant limb set to zero,
-i.e. @code{_mpfr_d[n-1]} where 
-n=ceil(@code{_mpfr_prec}/@code{BITS_PER_MP_LIMB}).
 The number of limbs in use is controlled by @code{_mpfr_prec}, namely
 ceil(@code{_mpfr_prec}/@code{BITS_PER_MP_LIMB}).
-Zero is represented by the most significant limb being zero, other
-limb data and the exponent are not relevant 
-("not relevant" implies that the corresponding objects may contain
-invalid values, thus should not be evaluated even if
-they are not taken into account).
+Zeros are represented by the most significant limb being zero, other
+limb data and the exponent are undefined (this implies that the
+corresponding objects may contain invalid values, thus should not be
+evaluated even if they are not taken into account).
 Non-zero values always have the most significant bit of the most
 significant limb set to 1.  When the precision is not a whole number
 of limbs, the excess bits at the low end of the data are zero.
