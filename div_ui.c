@@ -21,8 +21,10 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include "gmp.h"
+/* longlong.h has to come before gmp-impl.h, 
+   otherwise UDIV_NEEDS_NORMALIZATION is wrongly defined */
+#include "longlong.h" 
 #include "gmp-impl.h"
-#include "longlong.h"
 #include "mpfr.h"
 
 /* #define DEBUG */
