@@ -36,7 +36,7 @@ check_overflow (void)
   set_emax (1024);
 
   mpfr_inits (x, y, z1, z2, NULL);
-  
+
   mpfr_set_str1 (x, "8.00468257869324898448e+307");
   mpfr_set_str1 (y, "7.44784712422708645156e+307");
   mpfr_add1sp (z1, x, y, GMP_RNDN);
@@ -67,7 +67,7 @@ int main(void)
 #define STD_ERROR \
   {\
     printf("ERROR: for %s and p=%lu and i=%d:\nB=",\
-	   mpfr_print_rnd_mode(r), p, i);\
+           mpfr_print_rnd_mode(r), p, i);\
     mpfr_print_binary(b);\
     printf("\nC="); mpfr_print_binary(c);\
     printf("\nadd1  : "); mpfr_print_binary(a1);\
@@ -79,20 +79,21 @@ int main(void)
 #define STD_ERROR2 \
   {\
     printf("ERROR: Wrong inexact flag for %s and p=%lu and i=%d:\nB=",\
-	   mpfr_print_rnd_mode(r), p, i);\
+           mpfr_print_rnd_mode(r), p, i);\
     mpfr_print_binary(b);\
     printf("\nC="); mpfr_print_binary(c);\
     printf("\nA="); mpfr_print_binary(a1);\
     printf("\nAdd1: %d. Add1sp: %d\n", \
-	   inexact1, inexact2); \
+           inexact1, inexact2); \
     exit(1);\
   }
 
 #define SET_PREC(_p) \
-  { p = _p; \
-   mpfr_set_prec(a1, _p); mpfr_set_prec(a2, _p); \
-   mpfr_set_prec(b,  _p); mpfr_set_prec(c,  _p); \
- }
+  { \
+    p = _p; \
+    mpfr_set_prec(a1, _p); mpfr_set_prec(a2, _p); \
+    mpfr_set_prec(b,  _p); mpfr_set_prec(c,  _p); \
+  }
 
 
 void check_random(mp_prec_t p)
@@ -103,25 +104,25 @@ void check_random(mp_prec_t p)
 
   mpfr_inits2(p, a1,b,c,a2, NULL);
 
-  for(i = 0 ; i < 500 ; i++)
+  for (i = 0 ; i < 500 ; i++)
     {
       mpfr_random(b);
       mpfr_random(c);
       if (MPFR_IS_PURE_FP(b) && MPFR_IS_PURE_FP(c))
-	{
-	  if (MPFR_GET_EXP(b) < MPFR_GET_EXP(c))
-	    mpfr_swap(b, c);
-	  if (MPFR_IS_PURE_FP(b) && MPFR_IS_PURE_FP(c))
-	    for(r = 0 ; r < GMP_RND_MAX ; r++)
-	      {
-		inexact1 = mpfr_add1(a1, b, c, r);
-		inexact2 = mpfr_add1sp(a2, b, c, r);
-		if (mpfr_cmp(a1, a2))
-		  STD_ERROR;
-		if (inexact1 != inexact2)
-		  STD_ERROR2;
-	      }
-	}
+        {
+          if (MPFR_GET_EXP(b) < MPFR_GET_EXP(c))
+            mpfr_swap(b, c);
+          if (MPFR_IS_PURE_FP(b) && MPFR_IS_PURE_FP(c))
+            for (r = 0 ; r < GMP_RND_MAX ; r++)
+              {
+                inexact1 = mpfr_add1(a1, b, c, r);
+                inexact2 = mpfr_add1sp(a2, b, c, r);
+                if (mpfr_cmp(a1, a2))
+                  STD_ERROR;
+                if (inexact1 != inexact2)
+                  STD_ERROR2;
+              }
+        }
     }
 
   mpfr_clears(a1,a2,b,c,NULL);
@@ -136,7 +137,7 @@ void check_special(void)
 
   mpfr_inits(a1,a2,b,c,NULL);
 
-  for(r = 0 ; r < GMP_RND_MAX ; r++)
+  for (r = 0 ; r < GMP_RND_MAX ; r++)
     {
       SET_PREC(53);
       mpfr_set_str1 (b, "1@100");
@@ -144,9 +145,9 @@ void check_special(void)
       inexact1 = mpfr_add1(a1, b, c, r);
       inexact2 = mpfr_add1sp(a2, b, c, r);
       if (mpfr_cmp(a1, a2))
-	STD_ERROR;
+        STD_ERROR;
       if (inexact1 != inexact2)
-	STD_ERROR2;
+        STD_ERROR2;
       mpfr_set_str_binary (b, "1E53");
       mpfr_set_str_binary (c, "1E0");
       inexact1 = mpfr_add1(a1, b, c, r);
@@ -157,5 +158,5 @@ void check_special(void)
         STD_ERROR2;
     }
 
-  mpfr_clears(a1,a2,b,c,NULL);  
+  mpfr_clears(a1,a2,b,c,NULL);
 }
