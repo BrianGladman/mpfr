@@ -251,7 +251,7 @@ mpfr_get_str_aux (char *const str, mp_exp_t *const exp, mp_limb_t *const r,
 
       ret = mpfr_round_raw (r + i0, r, n * BITS_PER_MP_LIMB, 0,
 			    n * BITS_PER_MP_LIMB + f, rnd, &dir);
-      MPFR_ASSERTD(dir != MPFR_ROUND_FAIL);
+      MPFR_ASSERTD(dir != MPFR_ROUND_FAILED);
 
       /* warning: mpfr_round_raw_generic returns MPFR_EVEN_INEX (2) or 
          -MPFR_EVEN_INEX (-2) in case of even rounding */
