@@ -42,6 +42,11 @@ Installation:
 
 - Build a dynamic library (.so / .dll).
 
+- Maybe use the autotools to manage properly the version number,
+  ie create mpfr.texi.in, mpfr.h.in, version.c.in, VERSION.in
+  and substitute MPFR_MAJOR_VERSION, MPFR_MINOR_VERSION,
+  MPFR_PATCHLEVEL_VERSION within configure?
+
 Changes in existing functions:
 
 - merge mpfr_inp_str, mpfr_set_str to use mpfr_strtofr
