@@ -1,7 +1,7 @@
 SUBDIRS=tests
 EXTRA_DIST=generic.c VERSION
 
-include_HEADERS = mpfr.h mpf2mpfr.h mpfr-test.h mpfr-math.h
+include_HEADERS = mpfr.h mpf2mpfr.h
 
 lib_LIBRARIES = libmpfr.a
 
