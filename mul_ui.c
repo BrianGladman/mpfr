@@ -50,7 +50,9 @@ mpfr_mul_ui()
     }
   else
     {
-      mpn_rshift(my, my, ysize, BITS_PER_MP_LIMB - cnt); 
+      /* Warning: mpn_rshift is undefined for shift=0 */
+      if (cnt!=BITS_PER_MP_LIMB)
+	mpn_rshift(my, my, ysize, BITS_PER_MP_LIMB - cnt); 
       my[ysize - 1] |= (carry << cnt); 
     }
   EXP(y) = EXP(x) + BITS_PER_MP_LIMB - cnt; 
