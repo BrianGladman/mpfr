@@ -32,6 +32,12 @@ MA 02111-1307, USA. */
 #define MINNORM 2.2250738585072013831e-308 /* 2^(-1022), smallest normalized */
 #define MAXNORM 1.7976931348623157081e308 /* 2^(1023)*(2-2^(-52)) */
 
+/* Generates a random rounding mode */
+#define RND_RAND() (randlimb() % 4)
+
+/* Generates a random sign */
+#define SIGN_RAND() ( (randlimb()%2) ? MPFR_SIGN_POS : MPFR_SIGN_NEG)
+ 
 /* The MAX, MIN and ABS macros may already be defined if gmp-impl.h has
    been included. They have the same semantics as in gmp-impl.h, but the
    expressions may be slightly different. So, it's better to undefine
