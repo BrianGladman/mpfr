@@ -13,6 +13,7 @@ AC_ARG_WITH(irix64, [ --with-irix64=on/off    Irix 32/64 bits support ], with_ir
 dnl Checks for programs.
 AC_PROG_CC
 AC_PROG_RANLIB
+AC_CANONICAL_HOST
 AC_CHECK_OS
 AC_CHECK_MACHTYPE
 
