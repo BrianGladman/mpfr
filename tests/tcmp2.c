@@ -47,6 +47,16 @@ void tcmp2(x, y, i) double x, y; int i;
     printf("Error in mpfr_cmp2: x=%1.20e y=%1.20e mpfr_cmp2(x,y)=%d instead of %d\n",x,y,j,i); 
     exit(1);
   }
+  mpfr_set_prec(xx, 127); mpfr_set_prec(yy, 127);
+  mpfr_set_str_raw(xx, "0.1011010000110111111000000101011110110001000101101011011110010010011110010000101101000010011001100110010000000010110000101000101E6");
+  mpfr_set_str_raw(yy, "0.1011010000110111111000000101011011111100011101000011001111000010100010100110110100110010011001100110010000110010010110000010110E6");
+  if ((j=mpfr_cmp2(xx, yy)) != 32) {
+    printf("Error in mpfr_cmp2:\n");
+    printf("x="); mpfr_print_raw(xx); putchar('\n');
+    printf("y="); mpfr_print_raw(yy); putchar('\n');
+    printf("got %d, expected 32\n", j);
+    exit(1);
+  }
   mpfr_clear(xx); mpfr_clear(yy);
 }
 
