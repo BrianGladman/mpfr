@@ -1,4 +1,13 @@
+2002-04-13  Vincent Lefevre  <lefevre@greux.loria.fr>
+
+	* acinclude.m4, configure.in: Misc changes. Use of AC_CACHE_CHECK.
+
 2002-04-12  Vincent Lefevre  <lefevre@greux.loria.fr>
+
+	* tests/tconst_log2.c, tests/texp.c, exp3.c, exp_2.c, mpfr-impl.h, exp.c:
+	Code clean-up.
+
+	* ChangeLog: Update for the next pre-release.
 
 	* tests/tget_d.c: New tests.
 
