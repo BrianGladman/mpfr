@@ -137,9 +137,10 @@ int main()
   a=1190456976439861.0;
   check3(a, GMP_RNDZ, dbl(4630914205854029.0,-27));
   check3(1024.0*a, GMP_RNDZ, dbl(4630914205854029.0,-22));
-  /* the following example is a bug in Cygnus compiler/system, found by
+  /* the following examples are bugs in Cygnus compiler/system, found by
      Fabrice Rouillier while porting mpfr to Windows */
   check3(9.89438396044940256501e-134, GMP_RNDU, 3.14553397063986684729e-67);
+  check3(7.86528588050363751914e+31, GMP_RNDZ, 8.86864469944739400000e+15);
   for (i=0;i<100000;i++) {
     a = drand();
     check(a, rand() % 4);
