@@ -45,7 +45,8 @@ void test_random(unsigned long nbtests, unsigned long prec, int verbose)
     d = mpfr_get_d(x); av += d; var += d*d; 
     tab[(int)(size_tab * d)]++;     
   }
-  
+
+  mpfr_clear(x);
   if (!verbose) { free(tab); return; }
 
   av /= nbtests; 
@@ -66,8 +67,9 @@ void test_random(unsigned long nbtests, unsigned long prec, int verbose)
   printf("\nChi2 statistics value (with %d degrees of freedom) : %.5f\n\n", 
 	 size_tab - 1, chi2); 
 
-  printf("\n"); 
+  printf("\n");
 
+  free(tab);
   return;
 }
 
@@ -89,6 +91,7 @@ void test_random2(unsigned long nbtests, unsigned long prec, int verbose)
     tab[(int)(size_tab * d)]++;     
   }
 
+  mpfr_clear(x);
   if (!verbose) { free(tab); return; }
   
   av /= nbtests; 
@@ -124,14 +127,16 @@ void test_urandomb(unsigned long nbtests, unsigned long prec, int verbose)
   tab = (int *) malloc (size_tab * sizeof(int)); 
   for (k = 0; k < size_tab; ++k) tab[k] = 0; 
 
-  gmp_randinit(state, GMP_RAND_ALG_LC, 128); 
+  gmp_randinit(state, 128, GMP_RAND_ALG_LC); 
 
   for (k = 0; k < nbtests; k++) {
     mpfr_urandomb(x, state); 
     d = mpfr_get_d(x); av += d; var += d*d; 
     tab[(int)(size_tab * d)]++;     
   }
-  
+
+  mpfr_clear(x);
+  gmp_randclear(state);
   if (!verbose) { free(tab); return; }
 
   av /= nbtests; 
@@ -164,7 +169,7 @@ int main(int argc, char **argv)
   if (argc == 1) { nbtests = 10000; } else nbtests = atoi(argv[1]);
   if (argc <= 2) { prec = 1000; } else prec = atoi(argv[2]); 
 
-  test_random(nbtests, prec, verbose); 
+  test_random(nbtests, prec, verbose);
   test_random2(nbtests, prec, verbose); 
   test_urandomb(nbtests, prec, verbose);
   
