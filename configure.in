@@ -30,7 +30,6 @@ if test "$test_CFLAGS" != set && test -n "$GCC"; then
   CFLAGS="-Wall -Wmissing-prototypes $CFLAGS"
 fi
 
-MISCFLAGS='$<'
 dnl Set the OS-dependent flags.
 case $OS_TYPE in
 	HP-UX*)
@@ -38,9 +37,6 @@ case $OS_TYPE in
 		if test -n "$GCC"; then
 		  LDFLAGS="-Xlinker +allowunsats $LDFLAGS"
 		fi
-		;;
-	SunOS*)
-		MISCFLAGS="trunc.c"
 		;;
 	IRIX64)
 		if [[ "$irix64" = "on" ]]; then
@@ -109,7 +105,6 @@ AC_SUBST(INCLUDES)
 AC_SUBST(LDADD)
 AC_SUBST(LDFLAGS)
 AC_SUBST(CFLAGS)
-AC_SUBST(MISCFLAGS)
 AC_OUTPUT(Makefile tests/Makefile)
 
 dnl NEWS README AUTHORS Changelog
