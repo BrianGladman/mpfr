@@ -221,10 +221,14 @@ In most cases, @samp{./configure --with-gmp=/usr/local/gmp} should work,
 where @samp{/usr/local/gmp} is the directory where you have installed
 GNU MP.
 When you install GNU MP, you have to copy the files
-@samp{gmp-impl.h}, @samp{gmp-mparam.h}, @samp{longlong.h} and
-@samp{stack-alloc.h} from the GNU MP source directory 
+@samp{config.h},
+@samp{gmp-impl.h}, and @samp{longlong.h} from the GNU MP source directory 
 to @samp{/usr/local/gmp/include};
 these additional files are needed by MPFR.
+An alternative way is 
+@samp{./configure --with-gmp-include=dir1 --with-gmp-lib=dir2}, where
+@samp{dir1} contains the GNU MP header files, and
+@samp{dir2} the GNU MP library files.
 If you get error messages, your machine might not be supported.
 
 If you want to compile in a separate object directory, cd to that directory,
@@ -1160,7 +1164,7 @@ in June and July 1999.
 
 @item
 Torbjorn Granlund, "GNU MP: The GNU Multiple Precision Arithmetic Library", 
-  version 2.0.2, 1996.
+  version 3.1, 2000.
 
 @item
 IEEE standard for binary floating-point arithmetic, Technical Report 
