@@ -57,7 +57,7 @@ mpfr_sinh (y, xt, rnd_mode)
     if (MPFR_IS_INF(xt))
       { 
         MPFR_SET_INF(y);
-        MPFR_SET_SAME_SIGN(y,x);
+        MPFR_SET_SAME_SIGN(y,xt);
         return 0;
       }
 
