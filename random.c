@@ -52,10 +52,17 @@ mpfr_random(x)
 
   for (i = 0; i < xn; i++)
     {
-      /* random() c/sh/ould be replaced by a homemade random number generator.
+      /* rand() c/sh/ould be replaced by a homemade random number generator.
 	 Indeed, if on Linux random is a good RNG, this is definitely not
 	 the case in most Un*xes. */
-      xp[i] = (random() << 1) | (random() & 1);
+  
+      xp[i] = 0;
+ 
+      for (z = 0; z < BITS_PER_MP_LIMB / 15; z++) {
+	xp[i] |= rand(); xp[i] <<= 15; 
+      }
+
+      xp[i] ^= rand(); 
     }
   
   count_leading_zeros(cnt, xp[xn - 1]); 
