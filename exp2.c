@@ -151,7 +151,11 @@ mpfr_exp2 (y, x, rnd_mode)
 
   /* if x > (2^31-1)*ln(2), then exp(x) > 2^(2^31-1) i.e. gives +infinity */
   if (expx > 30) {
-    if (MPFR_SIGN(x)>0) { printf("+infinity"); return 1; }
+    if (MPFR_SIGN(x) > 0) {
+      MPFR_SET_INF(y);
+      if (MPFR_SIGN(y) < 0) MPFR_CHANGE_SIGN(y);
+      return 1;
+    }
     else { MPFR_SET_ZERO(y); return 1; }
   }
 
@@ -331,16 +335,17 @@ mpfr_exp2_aux(s, r, q, exps)
 */
 int
 #if __STDC__
-mpfr_exp2_aux2(mpz_t s, mpfr_srcptr r, int q, int *exps)
+mpfr_exp2_aux2 (mpz_t s, mpfr_srcptr r, int q, int *exps)
 #else
-mpfr_exp2_aux2(s, r, q, exps)
+mpfr_exp2_aux2 (s, r, q, exps)
      mpz_t s;
      mpfr_srcptr r;
      int q;
      int *exps;
 #endif
 {
-  int expr, l, m, i, sizer, *expR, expt, ql; mp_limb_t c;
+  int expr, l, m, i, sizer, *expR, expt, ql;
+  unsigned long int c;
   mpz_t t, *R, rr, tmp;
   TMP_DECL(marker);
 
@@ -376,8 +381,9 @@ mpfr_exp2_aux2(s, r, q, exps)
   ql = q; /* precision used for current giant step */
   do {
     /* all R[i] must have exponent 1-ql */
-    if (l) for (i=0;i<m;i++) 
+    if (l) for (i=0;i<m;i++) {
       expR[i] = mpz_normalize2(R[i], R[i], expR[i], 1-ql);
+    }
     /* the absolute error on R[i]*rr is still 2*i-1 ulps */
     expt = mpz_normalize2(t, R[m-1], expR[m-1], 1-ql); 
     /* err(t) <= 2*m-1 ulps */
@@ -404,15 +410,15 @@ mpfr_exp2_aux2(s, r, q, exps)
        using binary splitting too, but it is not sure it would save much */
     mpz_mul(t, rr, R[m]); /* err(t) <= err(rr) + 2m-1 */
     expr += expR[m];
-    mpz_set_ui(tmp, 1);
-    for (i=1,c=1;i<=m;i++) {
-      if (l+i > ~((mp_limb_t)0)/c) {
+    mpz_set_ui (tmp, 1);
+    for (i=1, c=1; i<=m; i++) {
+      if (l+i > ~((unsigned long int) 0)/c) {
 	mpz_mul_ui(tmp, tmp, c);
 	c = l+i;
       }
-      else c *= l+i;
+      else c *= (unsigned long int) l+i;
     }
-    if (c != 1) mpz_mul_ui(tmp, tmp, c); /* tmp is exact */
+    if (c != 1) mpz_mul_ui (tmp, tmp, c); /* tmp is exact */
     mpz_fdiv_q(t, t, tmp); /* err(t) <= err(rr) + 2m */
     expr += mpz_normalize(rr, t, ql); /* err_rr(l+1) <= err_rr(l) + 2m+1 */
     ql = q - *exps - mpz_sizeinbase(s, 2) + expr + mpz_sizeinbase(rr, 2);
