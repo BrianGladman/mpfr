@@ -46,6 +46,7 @@ mpfr_set4(a, b, rnd_mode, signb)
       if (MPFR_SIGN(a) * signb < 0) MPFR_CHANGE_SIGN(a); 
       return; 
     }
+  MPFR_CLEAR_FLAGS(a);
 
   carry = mpfr_round_raw(ap, MPFR_MANT(b), MPFR_PREC(b), (signb<0), preca, rnd_mode);
   MPFR_EXP(a) = MPFR_EXP(b);

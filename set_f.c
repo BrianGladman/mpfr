@@ -50,6 +50,8 @@ mpfr_set_f(y, x, rnd_mode)
       return;
     }
 
+  MPFR_CLEAR_FLAGS(y);
+
   TMP_MARK(marker);
   sx = ABS(SIZ(x)); sy = MPFR_ABSSIZE(y);
   my = MPFR_MANT(y); mx = MPFR_MANT(x);

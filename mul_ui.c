@@ -40,8 +40,16 @@ mpfr_mul_ui(y, x, u, rnd_mode)
   unsigned long xsize, ysize, cnt, dif, ex, sh; 
   TMP_DECL(marker);
 
+  if (MPFR_IS_NAN(x))
+    {
+      MPFR_CLEAR_FLAGS(y);
+      MPFR_SET_NAN(y);
+      return;
+    }
+
   if (MPFR_IS_INF(x)) 
     {
+      MPFR_CLEAR_FLAGS(y);
       if (u) 
 	{ 
 	  MPFR_SET_INF(y); 
