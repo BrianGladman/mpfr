@@ -896,7 +896,7 @@ they should always be zero.
 
 @section Internal Functions
 
-These functions were mainly designed for the implementation of {\tt mpfr},
+These functions were mainly designed for the implementation of @code{mpfr},
 but may be useful for users too.
 
 @deftypefun Macro int FLAG_NAN (mpfr_t x)
@@ -927,7 +927,7 @@ Returns the precision of @var{x}.
 Changes the sign of @var{x}.
 @end deftypefun
 
-@deftypefun int mpfr_add_one_ulp (mpfr_t @var(x))
+@deftypefun int mpfr_add_one_ulp (mpfr_t @var{x})
 Add one ulp to @var{x} if it is positive or zero, 
 and subtracts one ulp otherwise.
 @end deftypefun
@@ -997,6 +997,8 @@ Approved March 21, 1985: IEEE Standards Board; approved July 26,
 @item
 Donald E. Knuth, "The Art of Computer Programming", vol 2,
 "Seminumerical Algorithms", 2nd edition, Addison-Wesley, 1981.
+
+@end itemize
 
 @node Concept Index, , , Top
 @comment  node-name,  next,  previous,  up
