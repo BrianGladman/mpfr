@@ -170,7 +170,8 @@ $\ulp(o(x)) \leq \ulp(x)$.
 
 \subsection{Generic error of addition/subtraction}\label{generic:sous}
 
-We want to compute the generic error of the subtraction, this following rules can be apply on addition too.
+We want to compute the generic error of the subtraction, the following rules
+apply to addition too.
 
 \begin{eqnarray}\nonumber
 \textnormal{Note:}&& error(u) \leq k_u \, \ulp(u), \;\; error(v) \leq k_v \, \ulp(v)
@@ -2831,6 +2832,49 @@ thus $\err(w)/\ulp(w) \le c_w + {\rm max}(k_u + k_v/2, k_u/2 + k_v)
         \le c_w + \frac{3}{2} {\rm max}(k_u, k_v)$.
 
 \section{Mathematical constants}
+
+\subsection{The constant $\pi$}
+
+The computation of $\pi$ uses the AGM formula
+\[ \pi = \frac{\mu^2}{D}, \]
+where $\mu = {\rm AGM}(\frac{1}{\sqrt{2}}, 1)$ is the common limit
+of the sequences $a_0=1, b_0 = \frac{1}{\sqrt{2}}, 
+a_{k+1} = (a_k+b_k)/2, b_{k+1} = \sqrt{a_k b_k}$,
+$D=\frac{1}{4} - \sum_{k=1}^{\infty} 2^{k-1} (a_k^2-b_k^2)$.
+This formula can be evaluated efficiently as shown in \cite{ScGrVe94},
+starting from $a_0 = A_0 = 1, B_0 = 1/2, D_0 = 1/4$, where $A_k$ and 
+$B_k$ represent respectively $a_k^2$ and $b_k^2$:
+\begin{quote}
+$S_{k+1} \leftarrow (A_k + B_k)/4$ \\
+$b_k \leftarrow \sqrt{B_k}$ \\
+$a_{k+1} \leftarrow (a_k + b_k)/2$ \\
+$A_{k+1} \leftarrow a_k^2$ \\
+$B_{k+1} \leftarrow 2 (A_{k+1} - S_{k+1})$ \\
+$D_{k+1} \leftarrow D_k - 2^k (A_{k+1} - B_{k+1})$
+\end{quote}
+For each variable $x$ approximation a true value $\tilde{x}$,
+denote by $\epsilon(x)$ the exponent of the maximal error,
+i.e.~$x = \tilde{x} (1\pm\delta)^e$ with $|e| \leq \epsilon(x)$,
+and $\delta = 2^{-p}$ for precision $p$ (we assume all roundings to
+nearest).
+We can prove by an easy induction that $\epsilon(a_k) = 3 \cdot 2^{k-1} - 1$,
+for $k \geq 1$, $\epsilon(A_k) = 3 \cdot 2^k - 1$,
+$\epsilon(B_k) = 6 \cdot 2^k - 6$.
+Thus the relative error on $B_k$ is at most $12 \cdot 2^{k-p}$,
+--- assuming $12 \cdot 2^{k-p} \leq 1$ ---
+which is at most $12 \cdot 2^k \ulp(B_k)$, since $1/2 \leq B_k$.
+
+If we stop when $|A_k-B_k| \leq 2^{k-p}$ where $p$ is the working precision,
+then $|\mu^2 - B_k| \leq 13 \cdot 2^{k-p}$.
+The error on $D$ is bounded by $\sum_{j=0}^k 2^{j} (6 \cdot 2^{k-p} + 
+12 \cdot 2^{k-p}) \leq 6 \cdot 2^{2k-p+2}$, which gives a relative error less
+than $2^{2k-p+7}$ since $D_k \geq 3/16$.
+
+Thus we have $\pi = \frac{B_k (1+\epsilon)}{D (1+\epsilon')}$
+with $|\epsilon| \leq 13 \cdot 2^{k-p}$ and $|\epsilon'| \leq 2^{2k-p+7}$.
+This gives $\pi = \frac{B_k}{D} (1+\epsilon'')$ with
+$|\epsilon''| \leq 2 \epsilon + \epsilon' \leq (26 + 2^{k+7}) 2^{k-p}
+\leq 2^{2k-p+8}$, assuming $|\epsilon'| \leq 1$.
 
 \subsection{Euler's constant}
 
