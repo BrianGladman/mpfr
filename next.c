@@ -32,14 +32,14 @@ mpfr_nexttozero (mpfr_ptr x)
   if (MPFR_IS_INF(x))
     {
       MPFR_CLEAR_FLAGS(x);
-      mpfr_setmax (x);
+      mpfr_setmax (x, __mpfr_emax);
       return;
     }
 
   if (MPFR_IS_ZERO(x))
     {
       MPFR_CHANGE_SIGN(x);
-      mpfr_setmin (x);
+      mpfr_setmin (x, __mpfr_emin);
     }
   else
     {
@@ -75,7 +75,7 @@ mpfr_nexttoinf (mpfr_ptr x)
     return;
 
   if (MPFR_IS_ZERO(x))
-    mpfr_setmin (x);
+    mpfr_setmin (x, __mpfr_emin);
   else
     {
       mp_size_t xn;
@@ -103,7 +103,10 @@ void
 mpfr_nextabove (mpfr_ptr x)
 {
   if (MPFR_IS_NAN(x))
-    MPFR_RET_NAN;
+    {
+      __mpfr_flags |= MPFR_FLAGS_NAN;
+      return;
+    }
 
   if (MPFR_SIGN(x) < 0)
     mpfr_nexttozero (x);
@@ -115,7 +118,10 @@ void
 mpfr_nextbelow (mpfr_ptr x)
 {
   if (MPFR_IS_NAN(x))
-    MPFR_RET_NAN;
+    {
+      __mpfr_flags |= MPFR_FLAGS_NAN;
+      return;
+    }
 
   if (MPFR_SIGN(x) < 0)
     mpfr_nexttoinf (x);
@@ -129,7 +135,10 @@ mpfr_nexttoward (mpfr_ptr x, mpfr_srcptr y)
   int s;
 
   if (MPFR_IS_NAN(x) || MPFR_IS_NAN(y))
-    MPFR_RET_NAN;
+    {
+      __mpfr_flags |= MPFR_FLAGS_NAN;
+      return;
+    }
 
   s = mpfr_cmp (x, y);
   if (s == 0)

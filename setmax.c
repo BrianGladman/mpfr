@@ -27,13 +27,13 @@ MA 02111-1307, USA. */
 
 /* Note: the flags are not cleared and the current sign is kept. */
 
-void mpfr_setmax (mpfr_ptr x)
+void mpfr_setmax (mpfr_ptr x, mp_exp_t e)
 {
   mp_size_t xn, i;
   int sh;
   mp_limb_t *xp;
 
-  MPFR_EXP(x) = __mpfr_emax;
+  MPFR_EXP(x) = e;
   xn = 1 + (MPFR_PREC(x) - 1) / BITS_PER_MP_LIMB;
   sh = (mp_prec_t) xn * BITS_PER_MP_LIMB - MPFR_PREC(x);
   xp = MPFR_MANT(x);

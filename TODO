@@ -25,8 +25,6 @@ Changes in existing functions:
   Possibly accept other strings, like those accepted by strtod.
 - implement ternary flag for mpfr_agm: result is exact when u=v, or u=0,
   or v=0.
-- use nextafter/nexttoward instead of add_one_ulp/sub_one_ulp in mpfr_exp
-	(they differ for a power of 2)
 
 New functions to implement:
 

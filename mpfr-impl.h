@@ -198,8 +198,8 @@ unsigned long _mpfr_cuberoot _PROTO ((unsigned long));
 int mpfr_exp_2 _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_exp3 _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t));
 int mpfr_powerof2_raw _PROTO ((mpfr_srcptr));
-void mpfr_setmax _PROTO ((mpfr_ptr));
-void mpfr_setmin _PROTO ((mpfr_ptr));
+void mpfr_setmax _PROTO ((mpfr_ptr, mp_exp_t));
+void mpfr_setmin _PROTO ((mpfr_ptr, mp_exp_t));
 
 #define mpfr_round_raw(yp, xp, xprec, neg, yprec, r, inexp) \
   mpfr_round_raw_generic((yp), (xp), (xprec), (neg), (yprec), (r), (inexp), 0)

@@ -85,17 +85,24 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     {
       int signx = MPFR_SIGN(x);
 
-      mpfr_set_ui (y, 1, rnd_mode);
+      if (signx < 0 && (rnd_mode == GMP_RNDD || rnd_mode == GMP_RNDZ))
+        {
+          MPFR_CLEAR_FLAGS(y);
+          MPFR_SET_POS(y);
+          mpfr_setmax (y, 0);  /* y = 1 - epsilon */
+          return -1;
+        }
+      mpfr_setmin (y, 1);  /* y = 1 */
       if (signx > 0 && rnd_mode == GMP_RNDU)
-	{
-	  mpfr_add_one_ulp (y, rnd_mode);
-	  return 1;
-	}
-      else if (signx < 0 && (rnd_mode == GMP_RNDD || rnd_mode == GMP_RNDZ))
-	{
-	  mpfr_sub_one_ulp (y, rnd_mode);
-	  return -1;
-	}
+        {
+          mp_size_t yn;
+          int sh;
+
+          yn = 1 + (MPFR_PREC(y) - 1) / BITS_PER_MP_LIMB;
+          sh = (mp_prec_t) yn * BITS_PER_MP_LIMB - MPFR_PREC(y);
+          MPFR_MANT(y)[0] += MP_LIMB_T_ONE << sh;
+          return 1;
+        }
       return -signx;
     }
 

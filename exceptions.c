@@ -196,7 +196,7 @@ mpfr_set_underflow (mpfr_ptr x, mp_rnd_t rnd_mode, int sign)
       || (rnd_mode == GMP_RNDU && sign > 0)
       || (rnd_mode == GMP_RNDD && sign < 0))
     {
-      mpfr_setmin (x);
+      mpfr_setmin (x, __mpfr_emin);
       inex = 1;
     }
   else
@@ -221,7 +221,7 @@ mpfr_set_overflow (mpfr_ptr x, mp_rnd_t rnd_mode, int sign)
   if ((rnd_mode == GMP_RNDU && sign < 0)
    || (rnd_mode == GMP_RNDD && sign > 0))
     {
-      mpfr_setmax (x);
+      mpfr_setmax (x, __mpfr_emax);
       inex = -1;
     }
   else
