@@ -129,7 +129,7 @@ int main(argc,argv) int argc; char *argv[];
   N = (argc<2) ? 1000000 : atoi(argv[1]);
   rnd_mode = (argc<3) ? -1 : atoi(argv[2]);
   for (i=0;i<1000000;i++) {
-    x = drand(); 
+    x = drand48();
     y = lrand48();
     if (ABS(x)>2.2e-307 && x+y<1.7e+308 && x+y>-1.7e308) {
       /* avoid denormalized numbers and overflows */
