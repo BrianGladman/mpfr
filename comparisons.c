@@ -20,9 +20,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include "gmp.h"
-#include "gmp-impl.h"
-#include "mpfr.h"
+
 #include "mpfr-impl.h"
 
 /* Note: these functions currently use mpfr_cmp; they could have their

@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT()
+AC_INIT
 
 mpfr_version=`cat $srcdir/VERSION`
 AM_INIT_AUTOMAKE(mpfr, $mpfr_version, [no-define])
@@ -9,6 +9,22 @@ AC_ARG_WITH(gmp_lib, [ --with-gmp-lib=DIR      GMP lib directory ], with_gmp_lib
 AC_ARG_WITH(gmp, [ --with-gmp=DIR          GMP directory ], with_gmp_include=$withval/include with_gmp_lib=$withval/lib)
 
 AC_ARG_WITH(irix64, [ --with-irix64=on/off    Irix 32/64 bits support ], with_irix64=$withval, with_irix64=off)
+
+AC_ARG_ENABLE(assert,
+AS_HELP_STRING(--enable-assert,enable ASSERT checking [[default=no]]),
+[case $enableval in
+yes|no|full) ;;
+*) AC_MSG_ERROR([bad value $enableval for --enable-assert, need yes, no or full]) ;;
+esac],
+[enable_assert=no])
+if test "$enable_assert" = "yes"; then
+  AC_DEFINE([WANT_ASSERT],1)
+fi
+if test "$enable_assert" = "full"; then
+  AC_DEFINE([WANT_ASSERT],1)
+  AC_DEFINE([CHECK_AGAINST_SUB1],1)
+fi
+
 
 test_CFLAGS=${CFLAGS+set}
 
@@ -47,25 +63,33 @@ case $OS_TYPE in
 esac
 
 dnl Tests concerning the include directories.
-AC_MSG_CHECKING(for gmp files)
 if test -d "$with_gmp_include"; then
   CPPFLAGS="$CPPFLAGS -I$with_gmp_include"
 else
   with_gmp_include=
 fi
-AC_TRY_COMPILE([
+
+AC_C_CONST
+AC_C_VOLATILE
+MPFR_CONFIGS
+
+AC_MSG_CHECKING(for gmp.h)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include "gmp.h"
+]], [[]])],[AC_MSG_RESULT(yes)],[AC_MSG_RESULT(no)
+     AC_MSG_ERROR([gmp.h may be missing ${with_gmp_include:+in $with_gmp_include}])
+])
+
+AC_MSG_CHECKING(for gmp internal files)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "longlong.h"
-], , AC_MSG_RESULT(yes),
-    [AC_MSG_RESULT(no)
-     AC_MSG_ERROR([gmp.h or gmp-impl.h or config.h or gmp-mparam.h or
-longlong.h may be missing ${with_gmp_include:+in $with_gmp_include}])]
-)
-
-dnl Check for valid BITS_PER_MP_LIMB and BYTES_PER_MP_LIMB
-AC_MSG_CHECKING(for valid BITS_PER_MP_LIMB and BYTES_PER_MP_LIMB)
-AC_TRY_RUN([
+]], [[]])],[AC_MSG_RESULT(yes)
+     AC_DEFINE([MPFR_HAVE_GMP_IMPL],1)
+     dnl Check for valid BITS_PER_MP_LIMB and BYTES_PER_MP_LIMB
+     AC_MSG_CHECKING(for valid BITS_PER_MP_LIMB and BYTES_PER_MP_LIMB)
+     AC_TRY_RUN([
 #include <limits.h>
 #include "gmp.h"
 #include "gmp-impl.h"
@@ -74,16 +98,27 @@ int main()
   return BITS_PER_MP_LIMB == BYTES_PER_MP_LIMB * CHAR_BIT
          && sizeof(mp_limb_t) == BYTES_PER_MP_LIMB ? 0 : 1;
 }
-], AC_MSG_RESULT(yes),
-  [AC_MSG_RESULT(no)
-   AC_MSG_ERROR([BITS_PER_MP_LIMB and/or BYTES_PER_MP_LIMB are incorrect.
+	], AC_MSG_RESULT(yes),
+	  [AC_MSG_RESULT(no)
+	   AC_MSG_ERROR([BITS_PER_MP_LIMB or BYTES_PER_MP_LIMB are incorrect.
 You probably need to change some of the GMP or MPFR compile options:
 MPFR doesn't currently do as many architecture checks as GMP, so the
 default target architecture may be different, hence the error.])],
-   AC_MSG_RESULT([can't test])
-)
+	AC_MSG_RESULT([can't test])
+   )
+   ],[AC_MSG_RESULT(no) AC_FUNC_ALLOCA
+])
 
-MPFR_CONFIGS
+AC_MSG_CHECKING(for valid GMP)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include "gmp.h"
+#if (__GNU_MP_VERSION < 4)
+# error "min: GMP 4.0.0"
+#endif
+]], [[]])],[AC_MSG_RESULT(yes)],[AC_MSG_RESULT(no)
+     AC_MSG_ERROR([GMP 4.0.0 min required])
+])
+
 
 # Recent autoconf creates AC_DEFINEs of PACKAGE_VERSION etc, unfortunately
 # those -D defines in $DEFS conflict with the same defines in config.h from
@@ -101,6 +136,7 @@ AC_SUBST(INCLUDES)
 AC_SUBST(LDADD)
 AC_SUBST(LDFLAGS)
 AC_SUBST(CFLAGS)
-AC_OUTPUT(Makefile tests/Makefile)
+AC_CONFIG_FILES([Makefile tests/Makefile])
+AC_OUTPUT
 
 dnl NEWS README AUTHORS Changelog

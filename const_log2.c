@@ -19,10 +19,8 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include "gmp.h"
-#include "gmp-impl.h"
-#include "longlong.h"
-#include "mpfr.h"
+
+#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
 mpfr_t __mpfr_const_log2; /* stored value of log(2) */

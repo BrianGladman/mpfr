@@ -21,9 +21,7 @@ MA 02111-1307, USA. */
 
 #include <stddef.h>
 #include <limits.h>
-#include "gmp.h"
-#include "gmp-impl.h"
-#include "mpfr.h"
+
 #include "mpfr-impl.h"
 
 static int

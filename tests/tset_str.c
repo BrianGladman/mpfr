@@ -149,7 +149,7 @@ main (int argc, char *argv[])
   for (i=0;i<N;i++)
     {
       mpfr_random (x);
-      k = randlimb () % 4;
+      k = RND_RAND ();
       logbase = (randlimb () % 5) + 1;
       base = 1 << logbase;
       /* Warning: the number of bits needed to print exactly a number of
@@ -422,6 +422,7 @@ main (int argc, char *argv[])
                   printf ("return    : ");
                   mpfr_print_binary (y);
                   puts ("");
+		  exit (1);
                 }
             }
 

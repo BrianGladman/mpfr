@@ -115,7 +115,7 @@ check1 (mpfr_ptr ip, mpfr_ptr fp)
 {
   mp_rnd_t rnd;
 
-  for (rnd = 0; rnd < 4; rnd++)
+  for (rnd = 0; rnd < GMP_RND_MAX ; rnd++)
     {
       check0 (ip, fp, PMAX, rnd);
       check0 (ip, fp, 70, rnd);

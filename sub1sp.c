@@ -22,8 +22,9 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
 #include <stdio.h>
+
+#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
-#include "longlong.h"
 
 /* 
    compute sgn(b)*(|b| - |c|) if |b|>|c| else -sgn(b)*(|c| -|b|)
@@ -583,7 +584,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
       /* Normalize: we lose at max one bit*/
       limb = ap[n-1];
-      if (MPFR_UNLIKELY(limb < ~limb))
+      if (MPFR_UNLIKELY(!MPFR_LIMB_MSB(limb)))
 	{
 	  /* High bit is not set and we have to fix it! */
 	  /* Ap >= 010000xxx001 */
@@ -593,7 +594,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	    /* Since Cp == -1, we have to substract one more */
 	    {
 	      mpn_sub_1(ap, ap, n, MPFR_LIMB_ONE<<sh);
-	      MPFR_ASSERTD(ap[n-1] > ~ap[n-1]);
+	      MPFR_ASSERTD(MPFR_LIMB_MSB(ap[n-1]));
 	    }
 	  /* Ap >= 10000xxx001 */
 	  /* Final exponent -1 since we have shifted the mantissa */
@@ -632,7 +633,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   inexact = -1;
   /* Check normalisation */
   limb = ap[n-1];
-  if (MPFR_UNLIKELY(limb < ~limb))
+  if (MPFR_UNLIKELY(!MPFR_LIMB_MSB(limb)))
     {
       /* ap was a power of 2, and we lose a bit */
       /* Now it is 0111111111111111111[00000 */
@@ -645,9 +646,9 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       DEBUG( printf("(SubOneUlp)Cp=%lu, Cp+1=%lu C'p+1=%lu\n", bcp,bbcp,bcp1));
       /* Compute the last bit (Since we have shifted the mantissa)
 	 we need one more bit!*/
-      if ((rnd_mode == GMP_RNDZ && bcp==0) 
-	  || (rnd_mode==GMP_RNDN && bbcp ==0)
-	  || (bcp && bcp1==0 )) /*Exact result*/
+      if ( (rnd_mode == GMP_RNDZ && bcp==0) 
+	   || (rnd_mode==GMP_RNDN && bbcp==0)
+	   || (bcp && bcp1==0) ) /*Exact result*/
 	{
 	  ap[0] |= MPFR_LIMB_ONE<<sh;
 	  if (rnd_mode == GMP_RNDN)
@@ -657,7 +658,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       /* Result could be exact if C'p+1 = 0 and rnd == Zero 
 	 since we have had one more bit to the result */
       /* Fixme: rnd_mode == GMP_RNDZ needed ? */
-      if (bcp1==0 && rnd_mode == GMP_RNDZ)
+      if (bcp1==0 && rnd_mode==GMP_RNDZ)
 	{
 	  DEBUG( printf("(SubOneUlp) Exact result\n") );
 	  inexact = 0;

@@ -20,10 +20,9 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include "gmp.h"
-#include "gmp-impl.h"
-#include "longlong.h"
-#include "mpfr.h"
+#include <string.h> /* For memcmp if _GMP_IEEE_FLOAT == 0 */
+
+#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
 #if (BITS_PER_MP_LIMB==32)
@@ -66,7 +65,7 @@ __mpfr_extract_double (mp_ptr rp, double d)
     exp = x.s.exp;
     if (exp)
       {
-#if BITS_PER_MP_LIMB == 64
+#if BITS_PER_MP_LIMB >= 64
 	manl = ((MP_LIMB_T_ONE << 63)
 		| ((mp_limb_t) x.s.manh << 43) | ((mp_limb_t) x.s.manl << 11));
 #else
@@ -76,7 +75,7 @@ __mpfr_extract_double (mp_ptr rp, double d)
       }
     else /* denormalized number */
       {
-#if BITS_PER_MP_LIMB == 64
+#if BITS_PER_MP_LIMB >= 64
 	manl = ((mp_limb_t) x.s.manh << 43) | ((mp_limb_t) x.s.manl << 11);
 #else
         manh = (x.s.manh << 11) /* high 21 bits */
@@ -125,7 +124,7 @@ __mpfr_extract_double (mp_ptr rp, double d)
       }
 
     d *= MP_BASE_AS_DOUBLE;
-#if BITS_PER_MP_LIMB == 64
+#if BITS_PER_MP_LIMB >= 64
     manl = d;
 #else
     manh = d;
@@ -135,7 +134,7 @@ __mpfr_extract_double (mp_ptr rp, double d)
 
 #endif /* _GMP_IEEE_FLOATS */
 
-#if BITS_PER_MP_LIMB == 64
+#if BITS_PER_MP_LIMB >= 64
   rp[0] = manl;
 #else
   rp[1] = manh;

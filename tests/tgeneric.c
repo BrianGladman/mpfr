@@ -48,7 +48,7 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
 #else
           mpfr_random (x);
 #endif
-          rnd = randlimb () % 4;
+          rnd = RND_RAND ();
           mpfr_set_prec (y, yprec);
           compare = TEST_FUNCTION (y, x, rnd);
           if (mpfr_can_round (y, yprec, rnd, rnd, prec))

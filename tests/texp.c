@@ -170,7 +170,7 @@ compare_exp2_exp3 (int n)
       mpfr_set_prec (y, prec);
       mpfr_set_prec (z, prec);
       mpfr_random (x);
-      rnd = randlimb () % 4;
+      rnd = RND_RAND() ;
       mpfr_exp_2 (y, x, rnd);
       mpfr_exp3 (z, x, rnd);
       if (mpfr_cmp (y,z))

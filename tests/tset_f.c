@@ -46,7 +46,7 @@ main (void)
   mpfr_set_f (x, y, GMP_RNDN);
 
   mpf_random2(y, 10, 0);
-  mpfr_set_f(x, y, randlimb () & 3);
+  mpfr_set_f(x, y, RND_RAND() );
 
   /* bug found by Jean-Pierre Merlet */
   mpfr_set_prec(x, 256);
@@ -86,7 +86,7 @@ main (void)
   mpfr_set_prec(x, 53);
   mpf_set_prec(y, 53);
   mpf_set_ui(y, 0);
-  for(r = 0 ; r < 4 ; r++)
+  for(r = 0 ; r < GMP_RND_MAX ; r++)
     {
       inexact = mpfr_set_f(x, y, r);
       if (!MPFR_IS_ZERO(x) || !MPFR_IS_POS(x) || inexact)

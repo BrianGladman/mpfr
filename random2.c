@@ -22,10 +22,8 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include "gmp.h"
-#include "gmp-impl.h"
-#include "longlong.h"
-#include "mpfr.h"
+
+#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
 void
@@ -40,7 +38,7 @@ mpfr_random2 (mpfr_ptr x, mp_size_t size, mp_exp_t exp)
   MPFR_CLEAR_FLAGS(x);
   MPFR_SET_POS(x);
   xn = ABS (size);
-  prec = (MPFR_PREC(x) - 1) / GMP_NUMB_BITS;
+  prec = (MPFR_PREC(x) - 1) / BITS_PER_MP_LIMB;
   xp = MPFR_MANT(x);
 
   if (xn == 0)
@@ -59,11 +57,11 @@ mpfr_random2 (mpfr_ptr x, mp_size_t size, mp_exp_t exp)
   xp[xn - 1] |= MPFR_LIMB_HIGHBIT;
 
   /* Generate random exponent.  */
-  _gmp_rand (&elimb, RANDS, GMP_NUMB_BITS);
+  _gmp_rand (&elimb, RANDS, BITS_PER_MP_LIMB);
   exp = ABS (exp);
   MPFR_SET_EXP (x, elimb % (2 * exp + 1) - exp);
 
   /* Mask off non significant bits in the low limb.  */
-  cnt = xn * GMP_NUMB_BITS - MPFR_PREC(x);
+  cnt = xn * BITS_PER_MP_LIMB - MPFR_PREC(x);
   xp[0] &= ~((MP_LIMB_T_ONE << cnt) - 1);
 }

@@ -20,10 +20,8 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include "gmp.h"
-#include "gmp-impl.h"
-#include "longlong.h" /* for count_leading_zeros */
-#include "mpfr.h"
+
+#define MPFR_NEED_LONGLONG_H /* for count_leading_zeros */
 #include "mpfr-impl.h"
 
 static int mpfr_exp2_aux      _MPFR_PROTO ((mpz_t, mpfr_srcptr, int, int*));

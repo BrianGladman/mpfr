@@ -1,6 +1,6 @@
 /* mpfr_get_ui -- convert a floating-point number to an unsigned long.
 
-Copyright 2003 Free Software Foundation, Inc.
+Copyright 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -19,9 +19,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include "gmp.h"
-#include "gmp-impl.h"
-#include "mpfr.h"
+
 #include "mpfr-impl.h"
 
 unsigned long
@@ -46,7 +44,7 @@ mpfr_get_ui (mpfr_srcptr f, mp_rnd_t rnd)
   /* now the result is in the most significant limb of x */
   exp = MPFR_GET_EXP (x); /* since |x| >= 1, exp >= 1 */
   n = MPFR_LIMB_SIZE(x);
-  s = MPFR_MANT(x)[n - 1] >> (GMP_NUMB_BITS - exp);
+  s = MPFR_MANT(x)[n - 1] >> (BITS_PER_MP_LIMB - exp);
 
   mpfr_clear (x);
 

@@ -29,7 +29,7 @@ static void
 check_default_rnd(void)
 {
   mp_rnd_t r, t;
-  for(r = 0 ; r < 4 ; r++)
+  for(r = 0 ; r < GMP_RND_MAX ; r++)
     {
       mpfr_set_default_rounding_mode (r);
       t = mpfr_get_default_rounding_mode();
@@ -92,7 +92,7 @@ test_set_underflow (void)
   r[1] = r[3] = zero;
   for (s = 1; s > 0; s = -1)
     {
-      for (i = 0; i < 4; i++)
+      for (i = 0; i < GMP_RND_MAX ; i++)
         {
           int j;
           int inex;
@@ -135,7 +135,7 @@ test_set_overflow (void)
   r[1] = r[3] = max;
   for (s = 1; s > 0; s = -1)
     {
-      for (i = 0; i < 4; i++)
+      for (i = 0; i < GMP_RND_MAX ; i++)
         {
           int j;
           int inex;

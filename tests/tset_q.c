@@ -74,12 +74,14 @@ static void check0(void)
 {
   mpq_t y;
   mpfr_t x;
-  int inexact, r;
+  int inexact;
+  mp_rnd_t r;
+
   /* Check for +0 */
   mpfr_init(x);
   mpq_init(y);
   mpq_set_si(y, 0, 1);
-  for(r = 0 ; r < 4 ; r++)
+  for(r = 0 ; r < GMP_RND_MAX ; r++)
     {
       inexact = mpfr_set_q(x, y, r);
       if (!MPFR_IS_ZERO(x) || !MPFR_IS_POS(x) || inexact)

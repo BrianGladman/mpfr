@@ -106,7 +106,7 @@ main (void)
     }
 
   /* acos (0) = Pi/2 */
-  for (r = 0; r < 4; r++)
+  for (r = 0; r < GMP_RND_MAX; r++)
     {
       mpfr_set_ui (x, 0, GMP_RNDN); /* exact */
       mpfr_acos (y, x, r);
@@ -121,7 +121,7 @@ main (void)
     }
 
   /* acos (-1) = Pi */
-  for (r = 0; r < 4; r++)
+  for (r = 0; r < GMP_RND_MAX; r++)
     {
       mpfr_set_si (x, -1, GMP_RNDN); /* exact */
       mpfr_acos (y, x, r);

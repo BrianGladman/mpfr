@@ -36,7 +36,7 @@ main (int argc, char *argv[])
   long k, z, d, N;
   unsigned long zl, dl;
   int inex;
-  int r;
+  mp_rnd_t r;
 
   tests_start_mpfr ();
 
@@ -130,7 +130,7 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-  for(r = 0 ; r < 4 ; r++)
+  for(r = 0 ; r < GMP_RND_MAX ; r++)
     {
       mpfr_set_si (x, -1, r);
       mpfr_set_ui (x, 0, r);

@@ -80,13 +80,13 @@ test_fct (double (*f)(double), int (*g)(), char *s, mp_rnd_t r)
 static void
 test_against_libc (void)
 {
-  int r = 0;
+  mp_rnd_t r;
 
   TEST_FCT (round);
   TEST_FCT (trunc);
   TEST_FCT (floor);
   TEST_FCT (ceil);
-  for (r = 0; r < 4; r++)
+  for (r = 0; r < GMP_RND_MAX ; r++)
     if (mpfr_set_machine_rnd_mode (r) == 0)
       test_fct (&nearbyint, &mpfr_rint, "rint", r);
 }
@@ -151,7 +151,7 @@ main (int argc, char *argv[])
           int trint;
           mpfr_set_prec (y, p);
           mpfr_set_prec (v, p);
-          for (r = 0; r < 4; r++)
+          for (r = 0; r < GMP_RND_MAX ; r++)
             for (trint = 0; trint < 2; trint++)
               {
                 if (trint)

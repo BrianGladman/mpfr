@@ -45,11 +45,12 @@ fi
 ]
 )
 
+dnl FIXME: Buggy?
 AC_DEFUN([AC_MY_HEADERS], 
 [
 if  test "$1" 
 then  
-  AC_CHECK_HEADER($1/$2, INCLUDES="$INCLUDES -I$1",AC_MSG_ERROR(echo $2 not found in $1)) 
+  AC_CHECK_HEADER($1/$2, INCLUDES="$INCLUDES -I$1",AC_MSG_ERROR($2 not found in $1)) 
 else
   AC_CHECK_HEADER($2,, 	  AC_MSG_ERROR($2 not found))
 fi
@@ -92,6 +93,21 @@ case $host in
     ;;
 esac
 
+dnl Check for sizeof size_t
+dnl AC_CHECK_SIZEOF
+dnl AC_TYPE_SIZE_T
+
+dnl
+AC_CHECK_FUNCS([memset])
+AC_CHECK_FUNCS([strtol])
+AC_CHECK_HEADER([limits.h],, AC_MSG_ERROR([limits.h not found]))
+AC_CHECK_HEADER([float.h],,  AC_MSG_ERROR([float.h not found]))
+
+dnl Check for stdargs
+AC_CHECK_HEADER([stdarg.h],[AC_DEFINE([HAVE_STDARG])],
+	[AC_CHECK_HEADER([varargs.h],, 
+	AC_MSG_ERROR([stdarg.h or varargs.h not found]))])
+
 AC_CHECK_HEADERS(sys/time.h)
 
 # Reasons for testing:
@@ -121,7 +137,6 @@ alpha*-*-*)
 esac
 
 # Reasons for testing:
-#
 #   sys/fpu.h - MIPS specific
 #
 AC_CHECK_HEADERS(sys/fpu.h)
@@ -260,7 +275,7 @@ AC_DEFUN([MPFR_C_LONG_DOUBLE_FORMAT],
 AC_REQUIRE([AC_PROG_AWK])
 AC_REQUIRE([AC_OBJEXT])
 AC_CHECK_TYPES([long double])
-AC_CACHE_CHECK([format of \`long double' floating point],
+AC_CACHE_CHECK([format of `long double' floating point],
                 mpfr_cv_c_long_double_format,
 [mpfr_cv_c_long_double_format=unknown
 if test "$ac_cv_type_long_double" != yes; then

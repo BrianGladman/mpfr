@@ -427,7 +427,7 @@ check_inexact (void)
 	      mpfr_set_prec (y, py);
 	      mpfr_set_prec (z, py + pu);
 		{
-                  rnd = randlimb () % 4;
+                  rnd = RND_RAND ();
 		  inexact = mpfr_div (y, x, u, rnd);
 		  if (mpfr_mul (z, y, u, rnd))
 		    {

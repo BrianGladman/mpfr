@@ -26,8 +26,7 @@ MA 02111-1307, USA. */
 #include <stdlib.h>  /* for abort */
 #include <limits.h>
 
-#include "gmp.h"
-#include "gmp-impl.h"
+
 #include "mpfr-test.h"
 
 /* Each block allocated is a separate malloc, for the benefit of a redzoning

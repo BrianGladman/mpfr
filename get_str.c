@@ -25,10 +25,8 @@ MA 02111-1307, USA. */
 #include <string.h>
 #include <ctype.h>
 #include <limits.h>
-#include "gmp.h"
-#include "gmp-impl.h"
-#include "longlong.h"
-#include "mpfr.h"
+
+#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
 static double mpfr_ceil_double _MPFR_PROTO ((double));
@@ -43,8 +41,7 @@ static char num_to_text[] = "0123456789abcdefghijklmnopqrstuvwxyz";
    bits only. These approximations were computed with the following program.
 
 #include <stdio.h>
-#include "gmp.h"
-#include "mpfr.h"
+
 
 double log_b2[35], log_b2_low[35];
 
@@ -206,8 +203,9 @@ mpfr_ceil_double (double x)
    - 2 otherwise (rounding is not possible)
 */
 static int
-mpfr_get_str_aux (char *str, mp_exp_t *exp, mp_limb_t *r, mp_size_t n,
-		  mp_exp_t f, long e, int b, size_t m, mp_rnd_t rnd)
+mpfr_get_str_aux (char *const str, mp_exp_t *const exp, mp_limb_t *const r,
+		  mp_size_t n, mp_exp_t f, long e, int b, size_t m, 
+		  mp_rnd_t rnd)
 {
   int dir;                  /* direction of the rounded result */
   mp_limb_t ret = 0;        /* possible carry in addition */
@@ -351,7 +349,7 @@ mpfr_get_str_aux (char *str, mp_exp_t *exp, mp_limb_t *r, mp_size_t n,
       /* copy str1 into str and convert to ASCII */
       for (i = 0; i < m; i++)
 	str[i] = num_to_text[(int) str1[i]];
-      str[m] = 0;
+	str[m] = 0;
     }
   /* mpfr_can_round_raw failed: rounding is not possible */
   else

@@ -20,10 +20,8 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
 #include <stdlib.h>
-#include "gmp.h"
-#include "gmp-impl.h"
-#include "longlong.h"
-#include "mpfr.h"
+
+#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
 static void mpfr_const_euler_S _MPFR_PROTO ((mpfr_ptr, unsigned long));

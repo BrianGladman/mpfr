@@ -20,9 +20,7 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
 #include <stdio.h>
-#include "gmp.h"
-#include "gmp-impl.h"
-#include "mpfr.h"
+
 #include "mpfr-impl.h"
 
 void
@@ -30,6 +28,7 @@ mpfr_clear (mpfr_ptr m)
 {
   /* be careful to always free an entire number of limbs */
   (*__gmp_free_func) 
-    (MPFR_GET_REAL_PTR(m), MPFR_MALLOC_SIZE(MPFR_GET_ALLOC_SIZE(m)));
+    (MPFR_GET_REAL_PTR(m), 
+     MPFR_MALLOC_SIZE(MPFR_GET_ALLOC_SIZE(m)));
   MPFR_MANT(m) = NULL;
 }

@@ -147,7 +147,7 @@ main (int argc, char *argv[])
 #else
       while (ABS(d) < DBL_MIN);
 #endif
-      r = randlimb () % 4;
+      r = RND_RAND ();
       p = 2 + randlimb () % 35;
       check (d, r, p);
     }

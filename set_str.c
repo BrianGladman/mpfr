@@ -22,10 +22,8 @@ MA 02111-1307, USA. */
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "gmp.h"
-#include "gmp-impl.h"
-#include "longlong.h"
-#include "mpfr.h"
+
+#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 #include "log_b2.h"
 

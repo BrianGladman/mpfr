@@ -22,10 +22,8 @@ MA 02111-1307, USA. */
 
 #include <float.h>
 
-#include "gmp.h"
-#include "gmp-impl.h"
-#include "longlong.h"
-#include "mpfr.h"
+
+#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
 /* "double" NaN and infinities are written as explicit bytes to be sure of

@@ -19,6 +19,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+#include <limits.h>
 #include <stdlib.h>
 #include "mpfr-impl.h"
 
@@ -31,6 +32,9 @@ mpfr_init2 (mpfr_ptr x, mp_prec_t p)
   /* Check if we can represent the number of limbs
    * associated to the maximum of mpfr_prec_t*/
   MPFR_ASSERTN( MP_SIZE_T_MAX >= (MPFR_PREC_MAX/BYTES_PER_MP_LIMB) );
+  /* Check for correct BITS_PER_MP_LIMB and BYTES_PER_MP_LIMB */
+  MPFR_ASSERTN( BITS_PER_MP_LIMB == BYTES_PER_MP_LIMB * CHAR_BIT
+		&& sizeof(mp_limb_t) == BYTES_PER_MP_LIMB );
 
   /* p=1 is not allowed since the rounding to nearest even rule requires at
      least two bits of mantissa: the neighbours of 3/2 are 1*2^0 and 1*2^1,

@@ -52,7 +52,7 @@ special (void)
     }
 
   /* atan(+Inf) = Pi/2 */
-  for (r = 0; r < 4; r++)
+  for (r = 0; r < GMP_RND_MAX ; r++)
     {
       mpfr_set_inf (x, 1);
       mpfr_atan (y, x, r);
@@ -66,7 +66,7 @@ special (void)
     }
 
   /* atan(-Inf) = - Pi/2 */
-  for (r = 0; r < 4; r++)
+  for (r = 0; r < GMP_RND_MAX ; r++)
     {
       mpfr_set_inf (x, -1);
       mpfr_atan (y, x, r);

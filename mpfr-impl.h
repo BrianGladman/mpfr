@@ -22,25 +22,38 @@ MA 02111-1307, USA. */
 #ifndef __MPFR_IMPL_H__
 #define __MPFR_IMPL_H__
 
-/* Auto-include limits.h (Before gmp-impl.h) if needed */
-#ifdef MPFR_USE_LIMITS_H
-# include <limits.h>
-#endif
+#ifdef  MPFR_HAVE_GMP_IMPL /* Build with gmp internals*/
 
-/* Auto include local gmp.h if not included */
-#ifndef __GMP_H__
-# include "gmp.h"
-#endif
+# ifndef __GMP_H__
+#  include "gmp.h"
+# endif
+# ifndef __GMP_IMPL_H__
+#  include "gmp-impl.h"
+# endif
+# ifdef MPFR_NEED_LONGLONG_H
+#  include "longlong.h"
+# endif
+# ifndef __MPFR_H
+#  include "mpfr.h"
+# endif
 
-/* Auto include local gmp-impl.h if not included */
-#ifndef __GMP_IMPL_H__
-# include "gmp-impl.h"
-#endif
+#else /* Build without gmp internals */
 
-/* Auto include local mpfr.h if not included */
-#ifndef __MPFR_H
-# include "mpfr.h"
+# ifndef __GMP_H__
+#  include "gmp.h"
+# endif
+# ifndef __MPFR_H
+#  include "mpfr.h"
+# endif
+# ifndef __GMPFR_GMP_H__
+#  include "mpfr-gmp.h"
+# endif
+# ifdef MPFR_NEED_LONGLONG_H
+#  include "longlong.h"
+# endif
+
 #endif
+#undef MPFR_NEED_LONGLONG_H
 
 #ifndef HAVE_STRCASECMP
 # define strcasecmp mpfr_strcasecmp
@@ -55,11 +68,11 @@ MA 02111-1307, USA. */
 # error "MPFR doesn't support nonzero values of GMP_NAIL_BITS"
 #endif
 
-#if (BITS_PER_MP_LIMB & (BITS_PER_MP_LIMB - 1))
-# error "BITS_PER_MP_LIMB must be a power of 2"
+#if (BITS_PER_MP_LIMB<32) || (BITS_PER_MP_LIMB & (BITS_PER_MP_LIMB - 1))
+# error "BITS_PER_MP_LIMB must be a power of 2, and >= 32"
 #endif
 
- /* Definition of MPFR_LIMB_HIGHBIT and MPFR_LIMB_ONE */
+ /* Definition of MPFR_LIMB_HIGHBIT */
 #if defined(GMP_LIMB_HIGHBIT)
 # define MPFR_LIMB_HIGHBIT GMP_LIMB_HIGHBIT
 #elif defined(MP_LIMB_T_HIGHBIT)
@@ -68,7 +81,10 @@ MA 02111-1307, USA. */
 # error "Neither GMP_LIMB_HIGHBIT nor MP_LIMB_T_HIGHBIT defined in GMP"
 #endif
 
-/* Use GMP macro for limb constant if it exists */
+/* Mask to get the MSB of a limb (excluding nails) */
+#define MPFR_LIMB_MSB(l) ((l)&MPFR_LIMB_HIGHBIT)
+
+/* Definition of MPFR_LIMB_ONE */
 #ifdef CNST_LIMB
 # define MPFR_LIMB_ONE CNST_LIMB(1)
 #else
@@ -123,7 +139,7 @@ typedef unsigned long int  mpfr_uexp_t;
    ((void) ((MPFR_UNLIKELY(expr)) || MPFR_UNLIKELY((ASSERT_FAIL (expr), 0))))
 
 /* MPFR_ASSERTD(expr): assertions that should be checked when testing */
-#if WANT_ASSERT
+#ifdef WANT_ASSERT
 # define MPFR_EXP_CHECK 1
 # define MPFR_ASSERTD(expr)  MPFR_ASSERTN (expr)
 #else
@@ -163,7 +179,7 @@ typedef unsigned long int  mpfr_uexp_t;
    don't use WANT_ASSERT (for speed reasons), you can still define
    MPFR_EXP_CHECK by setting -DMPFR_EXP_CHECK in $CFLAGS. */
 
-#if MPFR_EXP_CHECK
+#ifdef MPFR_EXP_CHECK
 # define MPFR_GET_EXP(x)          mpfr_get_exp (x)
 # define MPFR_SET_EXP(x, exp)     MPFR_ASSERTN (!mpfr_set_exp ((x), (exp)))
 # define MPFR_SET_INVALID_EXP(x)  ((void) (MPFR_EXP (x) = MPFR_EXP_INVALID))
@@ -209,9 +225,8 @@ typedef union ieee_double_extract Ieee_double_extract;
 			 ((((Ieee_double_extract *)&(x))->s.manl != 0) || \
                          (((Ieee_double_extract *)&(x))->s.manh != 0)))
 #else
-# include <math.h>   /* For isnan and isinf */
-# define DOUBLE_ISINF(x) (isinf(x))
-# define DOUBLE_ISNAN(x) (isnan(x))
+# define DOUBLE_ISINF(x) (((x)==((double)+1.0/0.0))||((x)==((double)-1.0/0.0)))
+# define DOUBLE_ISNAN(x) ((x)!=(x))
 #endif
 
 #define DBL_POS_INF (1.0/0.0)
@@ -229,7 +244,7 @@ typedef union ieee_double_extract Ieee_double_extract;
 /* Various i386 systems have been seen with incorrect LDBL constants in
    float.h (notes in set_ld.c), so force the value we know is right for IEEE
    extended.  */
-#if HAVE_LDOUBLE_IEEE_EXT_LITTLE
+#ifdef HAVE_LDOUBLE_IEEE_EXT_LITTLE
 # define MPFR_LDBL_MANT_DIG   64
 #else
 # define MPFR_LDBL_MANT_DIG   LDBL_MANT_DIG
@@ -241,7 +256,7 @@ typedef union ieee_double_extract Ieee_double_extract;
    has been seen false, meaning NaNs are not detected.  This seemed to
    happen only after other comparisons, not sure what's really going on.  In
    any case we can pick apart the bytes to identify a NaN.  */
-#if HAVE_LDOUBLE_IEEE_QUAD_BIG
+#ifdef HAVE_LDOUBLE_IEEE_QUAD_BIG
 # define LONGDOUBLE_NAN_ACTION(x, action)                        \
   do {                                                          \
     union {                                                     \
@@ -278,7 +293,7 @@ typedef union ieee_double_extract Ieee_double_extract;
 /* If we don't have a proper "volatile" then volatile is #defined to empty,
    in this case call through an external function to stop the compiler
    optimizing anything. */
-#if WANT_LONGDOUBLE_VOLATILE
+#ifdef WANT_LONGDOUBLE_VOLATILE
 # ifdef volatile
 long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CONST;
 #  define LONGDOUBLE_VOLATILE(x)  (__gmpfr_longdouble_volatile (x))
@@ -400,16 +415,17 @@ long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CO
 #define MPFR_RET_NAN return (__gmpfr_flags |= MPFR_FLAGS_NAN), 0
 
 /* Heap Memory gestion */
+typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
 #define MPFR_GET_ALLOC_SIZE(x) \
  ( ((mp_size_t*) MPFR_MANT(x))[-1] + 0)
 #define MPFR_SET_ALLOC_SIZE(x, n) \
  ( ((mp_size_t*) MPFR_MANT(x))[-1] = n)
 #define MPFR_MALLOC_SIZE(s) \
-  ( sizeof(mp_size_t) * 1 + BYTES_PER_MP_LIMB * ((size_t) s) )
+  ( sizeof(mpfr_size_limb_t) + BYTES_PER_MP_LIMB * ((size_t) s) )
 #define MPFR_SET_MANT_PTR(x,p) \
-   (MPFR_MANT(x) = (mp_limb_t*) ((mp_size_t*) p + 1))
+   (MPFR_MANT(x) = (mp_limb_t*) ((mpfr_size_limb_t*) p + 1))
 #define MPFR_GET_REAL_PTR(x) \
-   ((mp_limb_t*) ((mp_size_t*) MPFR_MANT(x) - 1))
+   ((mp_limb_t*) ((mpfr_size_limb_t*) MPFR_MANT(x) - 1))
 
 /* Temporary memory gestion */
 /* temporary allocate 1 limb at xp, and initialize mpfr variable x */

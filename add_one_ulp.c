@@ -1,6 +1,6 @@
 /* mpfr_add_one_ulp -- add one unit in last place
 
-Copyright 1999, 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright 1999, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -19,9 +19,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include "gmp.h"
-#include "gmp-impl.h"
-#include "mpfr.h"
+
 #include "mpfr-impl.h"
 
 /* sets x to x+sign(x)*ulp(x) */
@@ -42,10 +40,10 @@ mpfr_add_one_ulp (mpfr_ptr x, mp_rnd_t rnd_mode)
 	MPFR_ASSERTN(0);
     }
 
-  xn = 1 + (MPFR_PREC(x) - 1) / BITS_PER_MP_LIMB;
-  sh = (mp_prec_t) xn * BITS_PER_MP_LIMB - MPFR_PREC(x);
+  xn = MPFR_LIMB_SIZE(x);
+  MPFR_UNSIGNED_MINUS_MODULO(sh, MPFR_PREC(x) );
   xp = MPFR_MANT(x);
-  if (mpn_add_1 (xp, xp, xn, MP_LIMB_T_ONE << sh)) /* got 1.0000... */
+  if (mpn_add_1 (xp, xp, xn, MPFR_LIMB_ONE << sh)) /* got 1.0000... */
     {
       mp_exp_t exp = MPFR_EXP (x);
       if (MPFR_UNLIKELY(exp == __gmpfr_emax))
@@ -57,5 +55,5 @@ mpfr_add_one_ulp (mpfr_ptr x, mp_rnd_t rnd_mode)
           xp[xn-1] = MPFR_LIMB_HIGHBIT;
         }
     }
-  return 0;
+  MPFR_RET(0);
 }

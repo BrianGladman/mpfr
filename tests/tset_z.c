@@ -35,7 +35,7 @@ static void check0(void)
   mpfr_init(x);
   mpz_init(y);
   mpz_set_si(y, 0);
-  for(r = 0 ; r < 4 ; r++)
+  for(r = 0 ; r < GMP_RND_MAX ; r++)
     {
       inexact = mpfr_set_z(x, y, r);
       if (!MPFR_IS_ZERO(x) || !MPFR_IS_POS(x) || inexact)
@@ -54,7 +54,7 @@ static void check0(void)
    mpfr_get_si is a rather indirect test of a low level routine.  */
 
 static void
-check (long i, unsigned char rnd)
+check (long i, mp_rnd_t rnd)
 {
   mpfr_t f;
   mpz_t z;
@@ -104,7 +104,7 @@ main (int argc, char *argv[])
   check_large ();
   check (0, 0);
   for (j = 0; j < 200000; j++)
-    check (randlimb () & LONG_MAX, randlimb () % 4);
+    check (randlimb () & LONG_MAX, RND_RAND () );
   check0();
 
   tests_end_mpfr ();

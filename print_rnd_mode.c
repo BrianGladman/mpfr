@@ -19,8 +19,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include "gmp.h"
-#include "mpfr.h"
+#include "mpfr-impl.h"
 
 const char *
 mpfr_print_rnd_mode (mp_rnd_t rnd_mode)
@@ -35,7 +34,7 @@ mpfr_print_rnd_mode (mp_rnd_t rnd_mode)
       return "GMP_RNDN";
     case GMP_RNDZ:
       return "GMP_RNDZ";
+    default:
+      return (const char*) 0;
     }
-
-  return (char *) 0;
 }

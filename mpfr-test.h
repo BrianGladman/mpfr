@@ -22,9 +22,6 @@ MA 02111-1307, USA. */
 #ifndef __MPFR_TEST_H__
 #define __MPFR_TEST_H__
 
-#include "gmp.h"
-#include "gmp-impl.h"
-#include "mpfr.h"
 #include "mpfr-impl.h"
 
 #if HAVE_CONFIG_H
@@ -39,7 +36,7 @@ MA 02111-1307, USA. */
 #define MAXNORM 1.7976931348623157081e308 /* 2^(1023)*(2-2^(-52)) */
 
 /* Generates a random rounding mode */
-#define RND_RAND() (randlimb() % 4)
+#define RND_RAND() (randlimb() % GMP_RND_MAX)
 
 /* Generates a random sign */
 #define SIGN_RAND() ( (randlimb()%2) ? MPFR_SIGN_POS : MPFR_SIGN_NEG)

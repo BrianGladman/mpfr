@@ -193,7 +193,7 @@ randlimb (void)
 {
   mp_limb_t limb;
 
-  _gmp_rand (&limb, RANDS, GMP_NUMB_BITS);
+  _gmp_rand (&limb, RANDS, BITS_PER_MP_LIMB);
   return limb;
 }
 
