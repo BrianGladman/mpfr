@@ -23,9 +23,6 @@ MA 02111-1307, USA. */
 #include <limits.h>
 #include <float.h>
 #include <math.h>
-#ifdef __mips
-#include <sys/fpu.h>
-#endif
 
 #if HAVE_CONFIG_H
 #include "config.h"

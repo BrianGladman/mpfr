@@ -27,6 +27,10 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 #include "mpfr-test.h"
 
+#if HAVE_SYS_FPU_H
+#include <sys/fpu.h>  /* for mips fpc_csr */
+#endif
+
 
 void
 tests_start_mpfr (void)
