@@ -20,7 +20,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -49,9 +48,7 @@ MA 02111-1307, USA. */
 
 #ifdef _MPFR_FLOOR_OR_CEIL
 static int
-mpn_zero_p (p, n)
-     mp_ptr p;
-     mp_size_t n;
+mpn_zero_p (mp_ptr p, mp_size_t n)
 {
   mp_size_t i;
 
