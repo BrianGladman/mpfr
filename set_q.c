@@ -33,22 +33,36 @@ mpfr_set_q (mpfr_ptr f, mpq_srcptr q, mp_rnd_t rnd)
   mpfr_t n, d;
   int inexact;
 
-  MPFR_CLEAR_FLAGS(f);
+  MPFR_CLEAR_FLAGS (f);
   num = mpq_numref (q);
   if (mpz_cmp_ui (num, 0) == 0)
     {
-      MPFR_SET_ZERO(f);
-      MPFR_SET_POS(f);
-      MPFR_RET(0);
+      MPFR_SET_ZERO (f);
+      MPFR_SET_POS (f);
+      MPFR_RET (0);
     }
 
-  den = mpq_denref(q);
-  mpfr_init2 (n, mpz_sizeinbase(num, 2));
-  mpfr_set_z (n, num, GMP_RNDZ); /* result is exact */
+  den = mpq_denref (q);
+  mpfr_save_emin_emax ();
+  mpfr_init2 (n, mpz_sizeinbase (num, 2));
+  if (mpfr_set_z (n, num, GMP_RNDZ)) /* result is exact unless overflow */
+    {
+      mpfr_clear (n);
+      mpfr_restore_emin_emax ();
+      MPFR_SET_NAN (f);
+      MPFR_RET_NAN;
+    }
   mpfr_init2 (d, mpz_sizeinbase(den, 2));
-  mpfr_set_z (d, den, GMP_RNDZ); /* result is exact */
+  if (mpfr_set_z (d, den, GMP_RNDZ)) /* result is exact unless overflow */
+    {
+      mpfr_clear (d);
+      mpfr_clear (n);
+      mpfr_restore_emin_emax ();
+      MPFR_SET_NAN (f);
+      MPFR_RET_NAN;
+    }
   inexact = mpfr_div (f, n, d, rnd);
   mpfr_clear (n);
   mpfr_clear (d);
-  MPFR_RET(inexact);
+  MPFR_RESTORE_RET (inexact, f, rnd);
 }
