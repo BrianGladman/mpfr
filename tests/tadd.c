@@ -185,6 +185,7 @@ void check64()
   mpfr_t x, t, u;
 
   mpfr_init(x); mpfr_init(t); mpfr_init(u);
+
   mpfr_set_prec(x, 53); mpfr_set_prec(t, 76); mpfr_set_prec(u, 76);
   mpfr_set_str_raw(x, "-0.10010010001001011011110000000000001010011011011110001E-32");
   mpfr_set_str_raw(t, "-0.1011000101110010000101111111011111010001110011110111100110101011110010011111");
@@ -239,6 +240,7 @@ void check64()
   if (mpfr_get_d(u) != 9.4349060620538533806e167) { /* 2^558 */
     printf("Error (1) in mpfr_sub\n"); exit(1);
   }
+
   mpfr_set_prec(x, 64); mpfr_set_prec(t, 64); mpfr_set_prec(u, 64);
   mpfr_set_str_raw(x, "0.1000011110101111011110111111000011101011101111101101101100000100E-220");
   mpfr_set_str_raw(t, "0.1000011110101111011110111111000011101011101111101101010011111101E-220");
@@ -250,6 +252,7 @@ void check64()
     printf("b+c="); mpfr_print_raw(u); putchar('\n');
     exit(1);
   }
+
   mpfr_clear(x); mpfr_clear(t); mpfr_clear(u);
 }
 
@@ -283,6 +286,10 @@ int main(argc,argv) int argc; char *argv[];
     set_fpc_csr(exp.fc_word);
 #endif
 
+  check(293607738, 1.9967571564050541e-5, GMP_RNDU, 64, 53, 53,
+	2.9360773800002003e8);
+  check(880524.0, -2.0769715792901673e-5, GMP_RNDN, 64, 53, 53,
+	8.8052399997923023e5);
   check(1196426492.0, -1.4218093058435347e-3, GMP_RNDN, 64, 53, 53,
 	1.1964264919985781e9);
   check(982013018.0, -8.941829477291838e-7, GMP_RNDN, 64, 53, 53,
