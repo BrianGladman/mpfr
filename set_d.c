@@ -254,6 +254,7 @@ mpfr_set_d(r, d, rnd_mode)
       MPFR_SET_INF(r); 
       if ((d > 0 && (MPFR_SIGN(r) == -1)) || (d < 0 && (MPFR_SIGN(r) == 1)))
 	MPFR_CHANGE_SIGN(r); 
+      return;
     }
 
   /* reset infinity flag if set */
