@@ -494,27 +494,20 @@ integer functions.  The function prefix for floating-point operations is
 @code{mpfr_}.
 
 There is one significant characteristic of floating-point numbers that has
-motivated a difference between this function class and other MPFR function
+motivated a difference between this function class and other GNU MP function
 classes: the inherent inexactness of floating-point arithmetic.  The user has
-to specify the precision of each variable.  A computation that assigns a
+to specify the precision for each variable.  A computation that assigns a
 variable will take place with the precision of the assigned variable; the
 cost of that computation should not depend from the 
-precision of variables used as input on average.
+precision of variables used as input (on average).
 
-@cindex User-defined precision
-The precision of a calculation is defined as follows: Compute the requested
-operation exactly (with ``infinite precision''), and round the result to
-the destination variable precision with the given rounding mode.
-Even if the user has asked for a very
-high precision, MP will not calculate with superfluous digits.  For example,
-if two low-precision numbers of nearly equal magnitude are added, the
-precision of the result will be limited to what is required to represent the
-result accurately.
-
+@cindex Precision
+The semantics of a calculation in MPFR is specified as follows: Compute the
+requested operation exactly (with ``infinite accuracy''), and round the result
+to the precision of the destination variable, with the given rounding mode.
 The MPFR floating-point functions are intended to be a smooth extension
-of the IEEE P754 arithmetic. The results obtained on one
-computer should not differ from the results obtained on a computer with a
-different word size.
+of the IEEE P754 arithmetic. The results obtained on one computer should not
+differ from the results obtained on a computer with a different word size.
 
 @menu
 * Rounding Modes::              
