@@ -227,7 +227,7 @@ cat > tests/Makefile <<EOF
 CC=$defC
 CFLAGS=$special $incflags -I.. $cflags -D$ostype
 LDLIBS=../libmpfr.a $lib -lm
-TESTS=tadd tcmp2 tget_str tmul_ui tset_f tsqrt tagm tcmp_ui tmul tround tset_si tcmp tdiv tmul_2exp tset_d tset_str tpi tset_z tlog2 tcan_round tlog
+TESTS=tadd tcmp2 tget_str tmul_ui tset_f tsqrt tagm tcmp_ui tmul tround tset_si tcmp tdiv tmul_2exp tset_d tset_str tpi tset_z tlog2 tcan_round tlog texp tdiv_ui
 
 tests all: \$(TESTS)
 	for i in \$(TESTS); do \
