@@ -1037,14 +1037,11 @@ it just computes @math{|@var{op1}-@var{op2}|/@var{op1}}, using the
 rounding mode @var{rnd} for all operations and the precision of @var{rop}.
 @end deftypefun
 
-@deftypefn Macro int mpfr_sgn (mpfr_t @var{op})
+@deftypefun int mpfr_sgn (mpfr_t @var{op})
 Return a positive value if @math{@var{op} > 0}, zero if @math{@var{op} = 0},
 and a negative value if @math{@var{op} < 0}.
 Its result is undefined when @var{op} is NaN (Not-a-Number).
-
-This function is actually implemented as a macro.  It may evaluate its
-argument multiple times.
-@end deftypefn
+@end deftypefun
 
 @deftypefun int mpfr_greater_p (mpfr_t @var{op1}, mpfr_t @var{op2})
 Return non-zero if @math{@var{op1} > @var{op2}}, zero otherwise.
