@@ -387,7 +387,7 @@ main (int argc, char *argv[])
   check3("5.16239362447650933063e+02", GMP_RNDZ, "1.5845518406744492105e224");
   check3("6.00812634798592370977e-01", GMP_RNDN, "1.823600119339019443");
   check_exp10 ();
- done:
+
   tests_end_mpfr ();
   return 0;
 }
