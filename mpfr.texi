@@ -3,7 +3,7 @@
 @setfilename mpfr.info
 @documentencoding ISO-8859-1
 @set VERSION 2.0.2
-@set UPDATED-MONTH June 2002
+@set UPDATED-MONTH October 2003
 @settitle MPFR @value{VERSION}
 @synindex tp fn
 @iftex
@@ -224,11 +224,10 @@ See the file COPYING.LIB.@refill
 
 
 MPFR is a portable library written in C for arbitrary precision arithmetic
-on reliable floating-point numbers. It is based on the GNU MP library.
+on floating-point numbers. It is based on the GNU MP library.
 It aims to extend the class of floating-point numbers provided by the
-GNU MP library by @dfn{reliable} floating-point numbers. It may replace
-the GNU MP floating-point numbers in a future release. The main differences
-with the @code{mpf} class are:
+GNU MP library by a precise semantics. The main differences
+with the @code{mpf} class from GNU MP are:
 
 @itemize @bullet
 @item the @code{mpfr} code is portable, i.e.@: the result of any operation
@@ -250,7 +249,7 @@ This version of MPFR is released under the GNU Lesser General Public
 License.
 It is permitted to link MPFR to non-free programs, as long as when
 distributing them the MPFR source code and a means to re-link with a
-modified MPFR is provided.
+modified MPFR library is provided.
 
 @section How to use this Manual
 
@@ -293,7 +292,7 @@ and compile options as for GNU MP (see the @file{INSTALL} file).
 @samp{make}
 
 This will compile MPFR, and create a library archive file @file{libmpfr.a}
-in the working directory.
+in the working directory. No dynamic library is provided yet.
 
 @item
 @samp{make check}
@@ -306,12 +305,12 @@ information on what to include in useful bug reports.)
 @item
 @samp{make install}
 
-This will copy the files @file{mpfr.h} and @file{mpf2mpfr.h},
-and @file{libmpfr.a},
-to the directories @file{/usr/local/include} and @file{/usr/local/lib}
-respectively (or if you passed the @samp{--prefix} option to
-@file{configure}, to the directory given as argument to @samp{--prefix}).
-This will also install @file{mpfr.info} in @file{/usr/local/info}.
+This will copy the files @file{mpfr.h} and @file{mpf2mpfr.h} to the directory
+@file{/usr/local/include}, the file @file{libmpfr.a} to the directory
+@file{/usr/local/lib}, and the file @file{mpfr.info} to the directory
+@file{/usr/local/info} (or if you passed the @samp{--prefix} option to
+@file{configure}, using the prefix directory given as argument to
+@samp{--prefix} instead of @file{/usr/local}).
 @end enumerate
 
 There are some other useful make targets:
@@ -366,7 +365,7 @@ Some bug fixes are available on the MPFR web page
 If you think you have found a bug in the MPFR library, first have a look on the
 MPFR web page @samp{http://www.loria.fr/projets/mpfr/} or
 @samp{http://www.mpfr.org/}: perhaps this bug is already known,
-in which case you will find a workaround for it.
+in which case you may find there a workaround for it.
 Otherwise, please investigate
 and report it. We have made this library available to you, and it is not to ask
 too much from you, to ask you to report the bugs that you find.
@@ -404,23 +403,25 @@ the language needs to be improved, please send a note to the same address.
 All declarations needed to use MPFR are collected in the include file
 @file{mpfr.h}.  It is designed to work with both C and C++ compilers.
 You should include that file in any program using the MPFR library:
-
-@code{#include "mpfr.h"}
+@verbatim
+#include <mpfr.h>
+@end verbatim
 
 @section Nomenclature and Types
 
 @cindex Floating-point number
 @tindex @code{mpfr_t}
 @noindent
-@dfn{Floating-point number} or @dfn{Float} for short, is an arbitrary precision
-mantissa with a limited precision exponent.  The C data type for such objects
-is @code{mpfr_t}.
-A floating-point number can have three special values: Not-a-Number (NaN)
-or plus or minus Infinity. NaN represents a value which cannot be represented
-in the floating-point format, like 0 divided by 0, or Infinity minus Infinity.
-Moreover, like in the IEEE 754-1985 standard, zero is signed, i.e.@: there are
-a +0 and a -0; the behavior is the same as in the IEEE 754-1985 standard and
-it is generalized to the other functions supported by MPFR.
+A @dfn{floating-point number} or @dfn{float} for short, is an arbitrary
+precision mantissa with a limited precision exponent. The C data type
+for such objects is @code{mpfr_t}. A floating-point number can have
+three special values: Not-a-Number (NaN) or plus or minus Infinity. NaN
+represents an uninitialized object, the result of an invalid operation
+(like 0 divided by 0), or a value that cannot be determined (like
++Infinity minus +Infinity). Moreover, like in the IEEE 754-1985
+standard, zero is signed, i.e.@: there are both +0 and -0; the behavior
+is the same as in the IEEE 754-1985 standard and it is generalized to
+the other functions supported by MPFR.
 
 
 @cindex Precision
@@ -431,7 +432,7 @@ of a floating-point number;
 the corresponding C data type is @code{mp_prec_t}.
 The precision can be any integer between @code{MPFR_PREC_MIN} and
 @code{MPFR_PREC_MAX}. In the current implementation, @code{MPFR_PREC_MIN}
-is equal to 2 and @code{MPFR_PREC_MAX} is equal to @code{ULONG_MAX}.
+is equal to 2 and @code{MPFR_PREC_MAX} is equal to @code{ULONG_MAX}/2.
 
 @cindex Rounding Mode
 @tindex @code{mp_rnd_t}
@@ -495,26 +496,26 @@ life.
 
 A header file @file{mpf2mpfr.h} is included in the distribution of MPFR for
 compatibility with the GNU MP class MPF.
-After inserting the following two lines after the @code{#include "gmp.h"}
+After inserting the following two lines after the @code{#include <gmp.h>}
 line,
-
-@code{#include "mpfr.h"}
-
-@code{#include "mpf2mpfr.h"}
-
+@verbatim
+#include <mpfr.h>
+#include <mpf2mpfr.h>
+@end verbatim
+@noindent
 any program written for
-MPF can be linked directly with MPFR without any changes.
+MPF can be compiled directly with MPFR without any changes.
 All operations are then performed with the default MPFR rounding mode,
 which can be reset with @code{mpfr_set_default_rounding_mode}.
 
-@deftypevr {Global Variable} {mp_rnd_t} __gmp_default_rounding_mode
+@deftypevr {Global Variable} {mp_rnd_t} __gmpfr_default_rounding_mode
 The default rounding mode (to nearest initially).
 @end deftypevr
 
 @section Getting the Latest Version of MPFR
 
-The latest version of MPFR is available from
-@samp{http://www.loria.fr/projets/mpfr/} or @samp{http://www.mpfr.org/}.
+The latest version of MPFR is available from @samp{http://www.mpfr.org/}
+or @samp{http://www.loria.fr/projets/mpfr/}.
 
 @node Floating-point Functions, Contributors, MPFR Basics, Top
 @comment  node-name,  next,  previous,  up
