@@ -128,6 +128,7 @@ void mpfr_agm(mpfr_ptr r, mpfr_srcptr a, mpfr_srcptr b, unsigned char rnd_mode)
 	  mpfr_set(u,a,GMP_RNDN);
 	  mpfr_set(v,b,GMP_RNDN);
       }
+      mpfr_clear(res1); mpfr_clear(res2);
     }
   }
   /* End of while */
