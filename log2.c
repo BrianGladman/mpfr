@@ -127,37 +127,37 @@ mpfr_const_aux_log2 (mpfr_ptr mylog, mp_rnd_t rnd_mode)
 void 
 mpfr_const_log2 (mpfr_ptr x, mp_rnd_t rnd_mode)
 {
-  int N, oldN, k, precx; mpz_t s, t, u;
+  int N, k, precx; mpz_t s, t, u;
 
   precx = MPFR_PREC(x);
   MPFR_CLEAR_FLAGS(x); 
 
   /* has stored value enough precision ? */
-  if (precx <= __mpfr_const_log2_prec) {
-    if (rnd_mode==__mpfr_const_log2_rnd || mpfr_can_round(__mpfr_const_log2, 
-	      __mpfr_const_log2_prec, __mpfr_const_log2_rnd, rnd_mode, precx))
-      {
-	mpfr_set(x, __mpfr_const_log2, rnd_mode); return; 
-      }
-  }
-
+  if (precx <= __mpfr_const_log2_prec)
+    {
+      if ((rnd_mode == __mpfr_const_log2_rnd) ||
+          mpfr_can_round (__mpfr_const_log2, __mpfr_const_log2_prec - 1,
+                          __mpfr_const_log2_rnd, rnd_mode, precx))
+        {
+          mpfr_set (x, __mpfr_const_log2, rnd_mode);
+          return;
+        }
+    }
+  
   /* need to recompute */
   if (precx < LOG2_THRESHOLD) /* use nai"ve Taylor series evaluation */
     {
-      N=2;
-      do
-        {
-          oldN = N;
-          N = precx + _mpfr_ceil_log2 ((double) N);
-        }
-      while (N != oldN);
+      /* the following was checked by exhaustive search to give a correct
+         result for all 4 rounding modes up to precx = 13500 */
+      N = precx + 2 * _mpfr_ceil_log2 ((double) precx) + 1;
+
       mpz_init (s); /* set to zero */
       mpz_init (u);
       mpz_init_set_ui (t, 1);
 
       /* use log(2) = sum((6*k-1)/(2*k^2-k)/2^(2*k+1), k=1..infinity) */
       mpz_mul_2exp (t, t, N-1);
-      for (k=1; k<N/2; k++)
+      for (k=1; k<=N/2; k++)
         {
           mpz_div_2exp (t, t, 2);
           mpz_mul_ui (u, t, 6*k-1);
