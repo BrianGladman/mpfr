@@ -7,6 +7,7 @@
 #include "mpfr.h"
 
 
+
 double drand()
 {
   double d; long int *i;
@@ -96,55 +97,43 @@ void check(double a, double b, unsigned char rnd_mode)
   mpfr_clear(ta); mpfr_clear(tb); mpfr_clear(tres); 
   
 }
-/*
-  void main()
-{
-  int i;
-  double a,b,gd,pt;
-
-  check(2,1,GMP_RNDN);
-  check(6,4,GMP_RNDN);
-  check(62,61,GMP_RNDN);
-  check(0.5,1,GMP_RNDN);
-  check(1,2,GMP_RNDN);
-  check(234375765,234375000,GMP_RNDN);
-  check(8,1,GMP_RNDU);
-  check(1,44,GMP_RNDU); 
-  
-  srand(getpid());
-
-  for (i=0;i<100;i++) {
-   a = drand(); 
-   b = drand();
-
-   gd=max(a,b);
-   pt=min(a,b);
-
-   if (((gd-pt)/pt)<2) {
-     printf("check for a=%1.20e, b=%1.20e\n",a,b);
-     check(a, b, rand() % 4);
-     printf("\n");
-     }
-    else {
-     printf("suit pas hypotheses !\n");
-     check(a, b, rand() % 4);
-     } 
-   }
-     printf("fin\n");
-     }
-*/
 
 void main() {
+   int i;
+   double a,b,gd,pt;
+
+   check(2,1,GMP_RNDN);
+   check(6,4,GMP_RNDN); 
+   check(62,61,GMP_RNDN);
+   check(0.5,1,GMP_RNDN);
+   check(1,2,GMP_RNDN); 
+   check(234375765,234375000,GMP_RNDN);
+   check(8,1,GMP_RNDU);
+   check(1,44,GMP_RNDU);  
+   check(1,3.725290298461914062500000e-9,GMP_RNDU); 
+
+   srand48(getpid()); 
+
+   for (i=0;i<40;i++) {
+     a = drand(); 
+     b = drand();
+     check(a, b, rand() % 4);
+   } 
+   printf("fin\n");
+}
+
+
+  /*void main() {
   mpfr_t a,b,res;
   int p,i;
   double op1,op2;
-  p=100;
+  p=100; */
 
   /* srand48(getpid()); */
   
   /*printf("%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n",drand(), drand(), drand(), drand() , drand(), drand(), drand(), drand(), drand(), drand(), drand(), drand()); */ 
 
-  mpfr_init2(a,p);
+  /* mpfr_init2(a,p);
   mpfr_init2(b,p);
   mpfr_init2(res,p);
 
@@ -163,6 +152,6 @@ void main() {
   }
  
  
-}
+  }*/
 
   
