@@ -613,13 +613,18 @@ otherwise the subsequent
 behaviour will be undefined, in the sense of the ISO C standard.
 @end deftypefun
 
-@deftypefun int  mpfr_check_range (mpfr_t @var{x}, mp_rnd_t @var{rnd})
+@deftypefun int mpfr_check_range (mpfr_t @var{x}, int @var{t}, mp_rnd_t @var{rnd})
 Return zero if the exponent of @var{x} is in the current allowed range
 (see @code{mpfr_get_emin} and @code{mpfr_get_emax}),
 otherwise reset @var{x} according to the current floating-point system
 and the rounding mode @var{rnd}, and return a positive value if the
 rounded result is larger than the original one, a negative value otherwise
-(the result cannot be exact in that case).
+(the result cannot be exact in that case). If it is used (i.e., in the
+rounding to the nearest mode, if @var{x} is equal to two to the smallest
+exponent minus two), the argument @var{t} should be negative if @var{x}
+is smaller than the exact value, positive if @var{x} is larger than the
+exact value and zero if @var{x} is exact (before the call); this is
+necessary to avoid the effect of double rounding.
 @end deftypefun
 
 @deftypefun void mpfr_clear_underflow (void)

@@ -153,7 +153,7 @@ typedef union ieee_double_extract Ieee_double_extract;
     { \
       int inex_cr; \
       mpfr_restore_emin_emax(); \
-      inex_cr = mpfr_check_range(x, rnd_mode); \
+      inex_cr = mpfr_check_range(x, inex, rnd_mode); \
       if (inex_cr) \
         return inex_cr; /* underflow or overflow */ \
       MPFR_RET(inex); \

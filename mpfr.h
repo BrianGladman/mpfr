@@ -130,7 +130,7 @@ void mpfr_clear_underflow _PROTO ((void));
 void mpfr_clear_overflow _PROTO ((void));
 void mpfr_clear_nanflag _PROTO ((void));
 void mpfr_clear_inexflag _PROTO ((void));
-int mpfr_check_range _PROTO ((mpfr_ptr, mp_rnd_t));
+int mpfr_check_range _PROTO ((mpfr_ptr, int, mp_rnd_t));
 int mpfr_underflow_p _PROTO ((void));
 int mpfr_overflow_p _PROTO ((void));
 int mpfr_nanflag_p _PROTO ((void));

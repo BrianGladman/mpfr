@@ -55,7 +55,7 @@ mpfr_set_si (mpfr_ptr x, long i, mp_rnd_t rnd_mode)
     MPFR_CHANGE_SIGN(x);
 
   MPFR_EXP(x) = nbits = BITS_PER_MP_LIMB - cnt;
-  inex = mpfr_check_range(x, rnd_mode);
+  inex = mpfr_check_range(x, 0, rnd_mode);
   if (inex)
     return inex; /* underflow or overflow */
 

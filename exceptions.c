@@ -119,19 +119,28 @@ mpfr_clear_inexflag (void)
 
 #undef mpfr_check_range
 
-/* Warning! If there is an underflow in the rounding to the nearest mode,
-   the result may not be the one expected. Either this should be fixed
-   (a 3rd argument giving the current ternary value is necessary) or the
-   caller should do some checks for particular cases before the call. */
-
 int
-mpfr_check_range (mpfr_ptr x, mp_rnd_t rnd_mode)
+mpfr_check_range (mpfr_ptr x, int t, mp_rnd_t rnd_mode)
 {
   if (MPFR_IS_FP(x) && MPFR_NOTZERO(x))
     { /* x is a non-zero FP */
       mp_exp_t exp = MPFR_EXP(x);
       if (exp < __mpfr_emin)
-        return mpfr_set_underflow(x, rnd_mode, MPFR_SIGN(x));
+        {
+          /* The following test is necessary because in the rounding to the
+           * nearest mode, mpfr_set_underflow always rounds away from 0. In
+           * this rounding mode, we need to round to 0 if:
+           *   _ |x| < 2^(emin-2), or
+           *   _ |x| = 2^(emin-2) and the absolute value of the exact
+           *     result is <= 2^(emin-2).
+           */
+          if (rnd_mode == GMP_RNDN &&
+              (exp + 1 < __mpfr_emin ||
+               (mpfr_powerof2_raw(x) &&
+                (MPFR_SIGN(x) < 0 ? t <= 0 : t >= 0))))
+            rnd_mode = GMP_RNDZ;
+          return mpfr_set_underflow(x, rnd_mode, MPFR_SIGN(x));
+        }
       if (exp > __mpfr_emax)
         return mpfr_set_overflow(x, rnd_mode, MPFR_SIGN(x));
     }
