@@ -33,6 +33,7 @@ MA 02111-1307, USA. */
  *   2) the smaller a number is (in absolute value), the smaller its
  *      exponent is. In other words, the f -> exp function is monotonous
  *      on nonnegative numbers.
+ * Note that this is different from the C function frexp().
  */
 
 mp_exp_t

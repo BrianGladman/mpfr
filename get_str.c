@@ -99,7 +99,7 @@ mpfr_get_str (char *str, mp_exp_t *expptr, int base, size_t n,
       for (f=0;f<n;f++)
         *str++ = '0';
       *str++ = '\0';
-      *expptr = __mpfr_emin;
+      *expptr = 0; /* a bit like frexp() in ISO C99 */
       return str0; /* strlen(str0) = neg + n */
     }
 
