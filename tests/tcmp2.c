@@ -12,9 +12,9 @@ extern int isnan();
 
 double drand()
 {
-  double d; long int *i;
+  double d; int *i;
 
-  i = (long int*) &d;
+  i = (int*) &d;
   i[0] = lrand48();
   i[1] = lrand48();
   return d;
