@@ -89,8 +89,6 @@ int mpfr_can_round_raw _PROTO ((mp_limb_t *, mp_prec_t, int, mp_prec_t,
 				mp_rnd_t, mp_rnd_t, mp_prec_t));
 double mpfr_get_d2 _PROTO ((mpfr_srcptr, long)); 
 mp_size_t mpn_sqrtrem_new _PROTO ((mp_limb_t *, mp_limb_t *, mp_limb_t *, mp_size_t));
-void mpfr_set4 _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t, int));
-int mpfr_cmp3 _PROTO ((mpfr_srcptr, mpfr_srcptr, long int));
 int mpfr_cmp2 _PROTO ((mpfr_srcptr, mpfr_srcptr));
 long _mpfr_ceil_log2 _PROTO ((double));
 long _mpfr_floor_log2 _PROTO ((double));

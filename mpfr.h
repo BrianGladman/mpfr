@@ -153,6 +153,8 @@ void mpfr_ceil _PROTO((mpfr_ptr, mpfr_srcptr));
 void mpfr_extract _PROTO((mpz_ptr, mpfr_srcptr, unsigned int));
 void mpfr_swap _PROTO((mpfr_ptr, mpfr_ptr));
 void mpfr_dump _PROTO((mpfr_srcptr, mp_rnd_t));
+void mpfr_set4 _PROTO ((mpfr_ptr, mpfr_srcptr, mp_rnd_t, int));
+int mpfr_cmp3 _PROTO ((mpfr_srcptr, mpfr_srcptr, long int));
 
 #if defined (__cplusplus)
 }
