@@ -36,7 +36,7 @@ mpfr_tan (y, x, rnd_mode)
      mp_rnd_t rnd_mode;
 #endif
 {
-  int precy, m, ok, e;
+  int precy, m, ok, e, inexact;
   mpfr_t c;
 
   if (MPFR_IS_NAN(x) || MPFR_IS_INF(x))
@@ -47,7 +47,7 @@ mpfr_tan (y, x, rnd_mode)
 
   if (!MPFR_NOTZERO(x))
     {
-      mpfr_set_ui(y, 0, GMP_RNDN);
+      mpfr_set_ui (y, 0, GMP_RNDN);
       return 0; /* exact */
     }
 
@@ -81,9 +81,9 @@ mpfr_tan (y, x, rnd_mode)
     }
   while (!ok);
 
-  mpfr_set (y, c, rnd_mode);
+  inexact = mpfr_set (y, c, rnd_mode);
 
   mpfr_clear (c);
 
-  return 1; /* inexact */
+  return inexact;
 }

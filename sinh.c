@@ -1,6 +1,6 @@
-/* mpfr_sinh -- Hyperbolic Sinus of Unsigned Integer Number
+/* mpfr_sinh -- hyperbolic sine
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 2001 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -51,7 +51,7 @@ mpfr_sinh (y, x, rnd_mode)
     mpfr_t te,ti;
 
     int round;
-    int boucle;
+    int boucle = 1, inexact = 0;
 
     mp_prec_t Nx;   /* Precision of input variable */
     mp_prec_t Ny;   /* Precision of output variable */
@@ -72,16 +72,15 @@ mpfr_sinh (y, x, rnd_mode)
       else{
 	if (MPFR_SIGN(y) > 0) MPFR_CHANGE_SIGN(y);
       }
-      return 1;
+      return 0;
     }
     MPFR_CLEAR_INF(y);
   
     if(!MPFR_NOTZERO(x)){
       MPFR_SET_ZERO(y);   /* sinh(0) = 0 */
       if (MPFR_SIGN(y) < 0) MPFR_CHANGE_SIGN(y);
-      return(0);
+      return 0;
     }
-    else{
  
         /* Initialisation of the Precision */
 	Nx=MPFR_PREC(x);
@@ -93,14 +92,13 @@ mpfr_sinh (y, x, rnd_mode)
 	else
 	  Nt=Nx+2*(BITS_PER_CHAR); 
 	  
-	  boucle=1;
-
 	    /* initialise of intermediary	variable */
 	    mpfr_init2(t,Nt);             
 	    mpfr_init2(te,Nt);             
 	    mpfr_init2(ti,Nt);             
 
-	  while(boucle==1){
+	  while (boucle)
+	    {
 
 	    /* compute sinh */
 	    mpfr_exp(te,x,GMP_RNDN);         /* exp(x) */
@@ -113,7 +111,7 @@ mpfr_sinh (y, x, rnd_mode)
 	    round=mpfr_can_round(t,err,GMP_RNDN,rnd_mode,Ny);
 
 	    if(round == 1){
-	      mpfr_set(y,t,rnd_mode);
+	      inexact = mpfr_set (y, t, rnd_mode);
 	      boucle=0;
 	    }
 	    else{
@@ -122,8 +120,6 @@ mpfr_sinh (y, x, rnd_mode)
 	      mpfr_set_prec(t,Nt);             
 	      mpfr_set_prec(te,Nt);             
 	      mpfr_set_prec(ti,Nt);             
-
-	      boucle=1;
 	    }
 	    
 	  }
@@ -132,8 +128,5 @@ mpfr_sinh (y, x, rnd_mode)
 	  mpfr_clear(ti);
 	  mpfr_clear(te);
 
-          return(1);
-      
- 
-    }
+          return inexact;
 }

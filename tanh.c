@@ -1,6 +1,6 @@
-/* mpfr_tanh -- Hyperbolic Tangent of Unsigned Integer Number
+/* mpfr_tanh -- hyperbolic tangent
 
-Copyright (C) 1999 Free Software Foundation.
+Copyright (C) 2001 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -51,7 +51,7 @@ mpfr_tanh (y, x, rnd_mode)
     mpfr_t te,ta,tb;
 
     int round;
-    int boucle;
+    int boucle = 1, inexact = 0;
 
     mp_prec_t Nx;   /* Precision of input variable */
     mp_prec_t Ny;   /* Precision of output variable */
@@ -69,17 +69,15 @@ mpfr_tanh (y, x, rnd_mode)
       else
 	mpfr_set_si(y,-1,GMP_RNDN); /* tanh(inf) = -1 */
 
-      return(0);
+      return 0;
     }
 
     if(!MPFR_NOTZERO(x)){               /* tanh(0) = 0 */
       	MPFR_CLEAR_INF(y);
 	MPFR_SET_ZERO(y);
 	if (MPFR_SIGN(y) < 0) MPFR_CHANGE_SIGN(y);
-      return(0);
+      return 0;
     }
-    else{
- 
 
         /* Initialisation of the Precision */
 	Nx=MPFR_PREC(x);
@@ -99,9 +97,8 @@ mpfr_tanh (y, x, rnd_mode)
 	    mpfr_init2(ta,Nt);             
 	    mpfr_init2(tb,Nt);             
 
-	  while(boucle==1){
-
-
+	  while (boucle)
+	    {
 	    /* compute tanh */
 	    mpfr_mul_2exp(te,x,1,GMP_RNDN); /* 2x */
 	    mpfr_exp(te,te,GMP_RNDN);       /* exp(2x) */
@@ -113,28 +110,26 @@ mpfr_tanh (y, x, rnd_mode)
 
 	    round=mpfr_can_round(t,err,GMP_RNDN,rnd_mode,Ny);
 
-	    if(round == 1){
-	      mpfr_set(y,t,rnd_mode);
-	      boucle=0;
-	    }
-	    else{
-	      Nt=Nt+10;
+	    if(round)
+	      {
+		inexact = mpfr_set (y, t, rnd_mode);
+		boucle=0;
+	      }
+	    else
+	      {
+		Nt=Nt+10;
 	      /* re-initialise of intermediary variable */
-	      mpfr_set_prec(t,Nt);             
-	      mpfr_set_prec(te,Nt);                     
-	      mpfr_set_prec(ta,Nt);             
-	      mpfr_set_prec(tb,Nt);             
-	      boucle=1;
-	    }
+		mpfr_set_prec(t,Nt);             
+		mpfr_set_prec(te,Nt);                     
+		mpfr_set_prec(ta,Nt);             
+		mpfr_set_prec(tb,Nt);             
+	      }
 	    
-	  }
+	    }
     
 	  mpfr_clear(t);
 	  mpfr_clear(te);
 	  mpfr_clear(ta);
 	  mpfr_clear(tb);
-          return(1);
-      
- 
-    }
+          return inexact;
 }
