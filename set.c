@@ -62,11 +62,10 @@ mpfr_set4 (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode, int signb)
 
           carry = mpfr_round_raw(ap, MPFR_MANT(b), MPFR_PREC(b), (signb < 0),
                                  aq, rnd_mode, &inex);
-          MPFR_SET_EXP (a, MPFR_GET_EXP (b));
 
           if (carry)
             {
-              mp_exp_t exp = MPFR_GET_EXP (a);
+              mp_exp_t exp = MPFR_GET_EXP (b);
 
               if (exp == __gmpfr_emax)
                 return mpfr_set_overflow(a, rnd_mode, signb);
@@ -74,6 +73,8 @@ mpfr_set4 (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode, int signb)
               MPFR_SET_EXP(a, exp + 1);
               ap[(MPFR_PREC(a)-1)/BITS_PER_MP_LIMB] = MPFR_LIMB_HIGHBIT;
             }
+          else
+            MPFR_SET_EXP (a, MPFR_GET_EXP (b));
         }
     }
 
