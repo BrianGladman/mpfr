@@ -36,10 +36,12 @@ int
 mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c,
 	   mp_rnd_t rnd_mode, mp_exp_unsigned_t diff_exp)
 {
-  unsigned long cancel, cancel1, sh, k;
-  long int cancel2, an, bn, cn, cn0;
-  mp_limb_t *ap, *bp, *cp, carry, bb, cc, borrow = 0;
-  int inexact = 0, shift_b, shift_c, is_exact = 1, down = 0, add_exp=0;
+  unsigned long cancel, cancel1;
+  mp_size_t cancel2, an, bn, cn, cn0;
+  mp_limb_t *ap, *bp, *cp;
+  mp_limb_t carry, bb, cc, borrow = 0;
+  int inexact = 0, shift_b, shift_c, is_exact = 1, down = 0, add_exp = 0;
+  int sh, k;
   TMP_DECL(marker);
 
 #ifdef DEBUG
@@ -232,10 +234,10 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c,
   cn0 = cn;
   cn -= (long int) an + cancel2;
 #ifdef DEBUG
-  printf("last %u bits from a are %lu, bn=%ld, cn=%ld\n", sh, carry, bn, cn);
+  printf("last %d bits from a are %lu, bn=%ld, cn=%ld\n", sh, carry, bn, cn);
 #endif
 
-  for (k=0; (bn > 0) || (cn > 0); k++)
+  for (k = 0; (bn > 0) || (cn > 0); k = 1)
     {
       bb = (bn > 0) ? bp[--bn] : 0;
       if ((cn > 0) && (cn-- <= cn0))
@@ -243,13 +245,10 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c,
       else
 	cc = 0;
 
-#ifdef DEBUG
-      printf("k=%u bb=%lu cc=%lu down=%d\n", k, bb, cc, down);
-#endif
       if (down == 0)
 	down = (bb < cc);
 
-      if ((rnd_mode == GMP_RNDN) && !k && !sh)
+      if ((rnd_mode == GMP_RNDN) && !k && sh == 0)
 	{
 	  mp_limb_t half = MP_LIMB_T_HIGHBIT;
 
@@ -290,12 +289,12 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c,
 	    }
 	  else /* round to nearest */
 	    {
-	      if (is_exact && !sh)
+	      if (is_exact && sh == 0)
 		{
 		  inexact = 0;
 		  goto truncate;
 		}
-	      else if (down && !sh)
+	      else if (down && sh == 0)
 		goto sub_one_ulp;
 	      else
 		{
