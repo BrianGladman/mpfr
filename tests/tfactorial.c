@@ -96,15 +96,15 @@ test_int (void)
               inex2 = mpfr_set_z (y, f, r);
               if (mpfr_cmp (x, y))
                 {
-                  printf ("Error for n=%u prec=%u rnd=%s\n", n, p,
-                          mpfr_print_rnd_mode (r));
+                  printf ("Error for n=%lu prec=%lu rnd=%s\n",
+                          n, (unsigned long) p, mpfr_print_rnd_mode (r));
                   exit (1);
                 }
               if ((inex1 < 0 && inex2 >= 0) || (inex1 == 0 && inex2 != 0)
                   || (inex1 > 0 && inex2 <= 0))
                 {
-                  printf ("Wrong inexact flag for n=%u prec=%u rnd=%s\n", n, p,
-                          mpfr_print_rnd_mode (r));
+                  printf ("Wrong inexact flag for n=%lu prec=%lu rnd=%s\n",
+                          n, (unsigned long) p, mpfr_print_rnd_mode (r));
                   exit (1);
                 }
             }
