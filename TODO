@@ -23,6 +23,7 @@ Changes in existing functions:
 
 New functions to implement:
 
+- modf
 - those from LIA: missing secant, cosecant, cotangent (trigo/hyperbolic)
 - nextafter/nextforward : X + epsilon if X < Y, X - epsilon if X > Y
 - nextabove/nextbelow ?
