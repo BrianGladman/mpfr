@@ -24,7 +24,7 @@ MA 02111-1307, USA. */
 
 #include "mpfr-test.h"
 
-#define ERROR(s) printf("mpfr_check failed " s " Prec=%lu\n", pr), abort()
+#define ERROR(s) printf("mpfr_check failed " s " Prec=%lu\n", pr), exit(1)
 
 int
 main (void)

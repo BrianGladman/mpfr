@@ -64,7 +64,7 @@ check_round (void)
                   printf  ("\n");
                   d_trace ("   got  ", got);
                   printf  ("   got exp  %ld\n", got_exp);
-                  abort();
+                  exit(1);
                 }
 
               mpfr_neg (f, f, GMP_RNDZ);

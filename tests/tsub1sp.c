@@ -50,7 +50,7 @@ int main(void)
 	       printf("\nReal: "); mpfr_print_binary(x2);\
 	       printf("\nGot : "); mpfr_print_binary(x);\
 	       putchar('\n');\
-               abort();\
+               exit(1);\
             }
 
 #define STD_ERROR2 \
@@ -62,7 +62,7 @@ int main(void)
                printf("\nR="); mpfr_print_binary(x);\
                printf("\nWrong inexact flag. Real: %d. Got: %d\n", \
 		      inexact1, inexact2); \
-               abort();\
+               exit(1);\
             }
 
 void check_random(mpfr_prec_t p)
@@ -118,7 +118,7 @@ void check_special(void)
 	{
 	  printf("Error for x-x with p=%lu. Expected 0. Got:", p);
 	  mpfr_print_binary(x);
-	  abort();
+	  exit(1);
 	}
       
       mpfr_set(z, y, r);
@@ -127,7 +127,7 @@ void check_special(void)
 	{
 	  printf("Error for x-y with y=x and p=%lu. Expected 0. Got:", p);
 	  mpfr_print_binary(x);
-	  abort();
+	  exit(1);
 	}
       /* diff = 0 */
       mpfr_set_str_binary (y,

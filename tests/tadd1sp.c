@@ -50,7 +50,7 @@ int main(void)
     printf("\nadd1  : "); mpfr_print_binary(a1);\
     printf("\nadd1sp: "); mpfr_print_binary(a2);\
     putchar('\n');\
-    abort();\
+    exit(1);\
   }
 
 #define STD_ERROR2 \
@@ -62,7 +62,7 @@ int main(void)
     printf("\nA="); mpfr_print_binary(a1);\
     printf("\nAdd1: %d. Add1sp: %d\n", \
 	   inexact1, inexact2); \
-    abort();\
+    exit(1);\
   }
 
 #define SET_PREC(_p) \

@@ -220,21 +220,21 @@ test_specialz (int (*mpfr_func)(mpfr_ptr, mpfr_srcptr, mpz_srcptr, mp_rnd_t),
   if (res)
     {
       printf("Specialz %s: set_z1 error\n", op);
-      abort();
+      exit(1);
     }
   /* (19!+1) * (20!+1) fits in a 128 bits number */
   res = mpfr_func(x1, x1, z2, GMP_RNDN);
   if (res)
     {
       printf("Specialz %s: wrong inexact flag.\n", op);
-      abort();
+      exit(1);
     }
   mpz_func(z1, z1, z2);
   res = mpfr_set_z (x2, z1, GMP_RNDN);
   if (res)
     {
       printf("Specialz %s: set_z2 error\n", op);
-      abort();
+      exit(1);
     }
   if (mpfr_cmp(x1, x2))
     {
@@ -243,7 +243,7 @@ test_specialz (int (*mpfr_func)(mpfr_ptr, mpfr_srcptr, mpz_srcptr, mp_rnd_t),
       printf("\nx2=");
       mpfr_print_binary(x2);
       putchar('\n');
-      abort();
+      exit(1);
     }
   
   mpz_clear (z1); mpz_clear(z2);
