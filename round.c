@@ -159,7 +159,8 @@ mpfr_can_round_raw(mp_limb_t *bp, unsigned long bn, char neg,
 		   unsigned long err, unsigned char rnd1, unsigned char rnd2, 
 		   unsigned long prec)
 {
-  int k, k1, l, l1; mp_limb_t cc, cc2;
+  int k, k1, l, l1; mp_limb_t cc, cc2, *tmp;
+  TMP_DECL(marker); 
 
   if (err<=prec) return 0;
   neg = (neg > 0 ? 0 : 1); 
@@ -177,43 +178,38 @@ mpfr_can_round_raw(mp_limb_t *bp, unsigned long bn, char neg,
 
   /* in the sequel, RNDU = towards infinity, RNDZ = towards zero */
 
+  TMP_MARK(marker); 
+  tmp = TMP_ALLOC(bn*BYTES_PER_MP_LIMB); 
+  MPN_COPY(tmp, bp, bn); 
+
   switch (rnd1) {
 
   case GMP_RNDZ: /* b <= x <= b+2^(EXP(b)-err) */
-
-    /* first round b */
-
-    /* PAS BIEN SI ON VEUT DECLARER b EN CONST */
-
-    cc = (bp[bn-k1-1]>>l1) & 1;
-    cc ^= mpfr_round_raw2(bp, bn, neg, rnd2, prec);
+    cc = (tmp[bn-k1-1]>>l1) & 1;
+    cc ^= mpfr_round_raw2(tmp, bn, neg, rnd2, prec);
 
     /* now round b+2^(EXP(b)-err) */
-    mpn_add_1(bp+bn-k-1, bp+bn-k-1, k+1, (mp_limb_t)1<<l);
-    cc2 = (bp[bn-k1-1]>>l1) & 1;
-    cc2 ^= mpfr_round_raw2(bp, bn, neg, rnd2, prec);
-
-    /* reset b to original value */
-    mpn_sub_1(bp+bn-k-1, bp+bn-k-1, k+1, (mp_limb_t)1<<l);
+    mpn_add_1(tmp+bn-k-1, tmp+bn-k-1, k+1, (mp_limb_t)1<<l);
+    cc2 = (tmp[bn-k1-1]>>l1) & 1;
+    cc2 ^= mpfr_round_raw2(tmp, bn, neg, rnd2, prec);
 
     /* if parity of cc and cc2 equals, then one is able to round */
+    TMP_FREE(marker); 
     return (cc == cc2);
 
   case GMP_RNDU: /* b-2^(EXP(b)-err) <= x <= b */
     /* first round b */
-    cc = (bp[bn-k1-1]>>l1) & 1;
-    cc ^= mpfr_round_raw2(bp, bn, neg, rnd2, prec);
+    cc = (tmp[bn-k1-1]>>l1) & 1;
+    cc ^= mpfr_round_raw2(tmp, bn, neg, rnd2, prec);
 
     /* now round b-2^(EXP(b)-err) */
-    cc2 = mpn_sub_1(bp+bn-k-1, bp+bn-k-1, k+1, (mp_limb_t)1<<l);
-    if (cc2) return 0;
-    cc2 = (bp[bn-k1-1]>>l1) & 1;
-    cc2 ^= mpfr_round_raw2(bp, bn, neg, rnd2, prec);
-
-    /* reset b to original value */
-    mpn_add_1(bp+bn-k-1, bp+bn-k-1, k+1, (mp_limb_t)1<<l);
+    cc2 = mpn_sub_1(tmp+bn-k-1, tmp+bn-k-1, k+1, (mp_limb_t)1<<l);
+    if (cc2) { TMP_FREE(marker); return 0; }
+    cc2 = (tmp[bn-k1-1]>>l1) & 1;
+    cc2 ^= mpfr_round_raw2(tmp, bn, neg, rnd2, prec);
 
     /* if parity of cc and cc2 equals, then one is able to round */
+    TMP_FREE(marker); 
     return (cc == cc2);
 
   case GMP_RNDN: /* b-2^(EXP(b)-err-1) <= x <= b+2^(EXP(b)-err-1) */
@@ -221,22 +217,20 @@ mpfr_can_round_raw(mp_limb_t *bp, unsigned long bn, char neg,
     if (l) { l--; } else { k++; l=BITS_PER_MP_LIMB-1; }
 
     /* first round b+2^(EXP(b)-err-1)*/    
-    cc = mpn_add_1(bp+bn-k-1, bp+bn-k-1, k+1, (mp_limb_t)1<<l);
-    if (cc) return 0; 
-    cc = (bp[bn-k1-1]>>l1) & 1;
-    cc ^= mpfr_round_raw2(bp, bn, neg, rnd2, prec);
+    cc = mpn_add_1(tmp+bn-k-1, tmp+bn-k-1, k+1, (mp_limb_t)1<<l);
+    if (cc) { TMP_FREE(marker); return 0; }
+    cc = (tmp[bn-k1-1]>>l1) & 1;
+    cc ^= mpfr_round_raw2(tmp, bn, neg, rnd2, prec);
 
-    mpn_add_1(bp+bn-k-1, bp+bn-k-1, k+1, (mp_limb_t)1<<l);
+    MPN_COPY(tmp, bp, bn); 
 
     /* now round b-2^(EXP(b)-err-1) */
-    cc2 = mpn_sub_1(bp+bn-k-1, bp+bn-k-1, k+1, (mp_limb_t)1<<l);
-    if (cc2) return 0;
-    cc2 = (bp[bn-k1-1]>>l1) & 1;
-    cc2 ^= mpfr_round_raw2(bp, bn, neg, rnd2, prec);
+    cc2 = mpn_sub_1(tmp+bn-k-1, tmp+bn-k-1, k+1, (mp_limb_t)1<<l);
+    if (cc2) { TMP_FREE(marker); return 0; }
+    cc2 = (tmp[bn-k1-1]>>l1) & 1;
+    cc2 ^= mpfr_round_raw2(tmp, bn, neg, rnd2, prec);
 
-    /* if parity of cc and cc2 equals, then one is able to round */
-    /* reset b to original value */
-    mpn_add_1(bp+bn-k-1, bp+bn-k-1, k+1, (mp_limb_t)1<<l);
+    TMP_FREE(marker); 
     return (cc == cc2);
 
   default:
