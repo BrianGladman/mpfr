@@ -76,60 +76,46 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
     
     /* The optimal number of bits: see algorithms.ps */
     Nt = Nt + MPFR_INT_CEIL_LOG2 (Nt) + 4;
-    
+    if (MPFR_GET_EXP (x) > 0)
+      Nt += MPFR_GET_EXP (x);
+
     /* initialise of intermediary variable */
     mpfr_init2 (t, Nt); 
     mpfr_init2 (te, Nt);
 
     MPFR_ZIV_INIT (loop, Nt);
-    if (MPFR_GET_EXP (x) > 10)
-      for (;;) {
-	/* tanh(x)=1-2/(exp(2x)+1)  */
-	mpfr_mul_2ui (t, x, 1, GMP_RNDN);   /* 2x:        err = 0*/
-	mpfr_exp (t, t, GMP_RNDN);          /* exp(2x):   err <= ulp(t) */
-	mpfr_add_ui (t, t, 1, GMP_RNDD);    /* exp(2x)+1: err <= 2*ulp(t) */
-	mpfr_ui_div (t, 1, t, GMP_RNDN);    /* 1/(exp(2x)+1): err <= 8*ulp(t)*/
-	mpfr_mul_2ui (t, t, 1, GMP_RNDN);   /* 2/(exp(2x)+1): err <= 8*ulp(t)*/
-	d = MPFR_GET_EXP (t);
-	mpfr_ui_sub (t, 1, t, GMP_RNDZ);    /*1-2/(exp(2x)+1) */
-	
-	/* Calculation of the error */
-	/* err (t) <= (1+8*2^(d-EXP(t)))*ulp(t) */
-	d = d - MPFR_GET_EXP (t);
-	err = Nt - MAX (d + 4, 1);
-	
-	if (mpfr_can_round (t, err, GMP_RNDZ, GMP_RNDZ,
-			    Ny + (rnd_mode == GMP_RNDN)))
-	  break;
-	
-	/* Actualisation of the precision */
-	MPFR_ZIV_NEXT (loop, Nt);
-	mpfr_set_prec (t, Nt);
-	mpfr_set_prec (te, Nt);
+    for (;;) {
+      /* tanh = (exp(2x)-1)/(exp(2x)+1) */
+      mpfr_mul_2ui (te, x, 1, GMP_RNDN);  /* 2x */
+      mpfr_exp (te, te, GMP_RNDN);        /* exp(2x) */
+      d = MPFR_GET_EXP (te);              /* For Error calculation */
+      mpfr_add_ui (t, te, 1, GMP_RNDD);   /* exp(2x) + 1*/
+      mpfr_sub_ui (te, te, 1, GMP_RNDU);  /* exp(2x) - 1*/
+      mpfr_div (t, te, t, GMP_RNDN);      /* (exp(2x)-1)/(exp(2x)+1)*/
+      
+      /* Calculation of the error*/
+      d = d - MPFR_GET_EXP (t);
+      err = Nt - (MAX(d + 1, 3) + 1);
+      
+      if (MPFR_LIKELY (mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
+				       Ny + (rnd_mode == GMP_RNDN))))
+	break;
+
+      /* if t=1, we still can round */
+      if (MPFR_GET_EXP (t) == 1) {
+	if (err > Ny + (rnd_mode == GMP_RNDN))
+	  if ((rnd_mode == GMP_RNDZ) ||
+	      (rnd_mode == GMP_RNDD && MPFR_IS_POS (t)) ||
+	      (rnd_mode == GMP_RNDU && MPFR_IS_NEG (t)))
+	    mpfr_nexttozero (t);
+	break;
       }
-    else
-      for (;;) {
-	/* tanh = (exp(2x)-1)/(exp(2x)+1) */
-	mpfr_mul_2ui (te, x, 1, GMP_RNDN);  /* 2x */
-	mpfr_exp (te, te, GMP_RNDN);        /* exp(2x) */
-	d = MPFR_GET_EXP (te);              /* For Error calculation */
-	mpfr_add_ui (t, te, 1, GMP_RNDD);   /* exp(2x) + 1*/
-	mpfr_sub_ui (te, te, 1, GMP_RNDU);  /* exp(2x) - 1*/
-	mpfr_div (t, te, t, GMP_RNDN);      /* (exp(2x)-1)/(exp(2x)+1)*/
-	
-	/* Calculation of the error*/
-	d = d - MPFR_GET_EXP (t);
-	err = Nt - (MAX(d + 1, 3) + 1);
-	
-	if (mpfr_can_round (t, err, GMP_RNDN, GMP_RNDZ,
-			    Ny + (rnd_mode == GMP_RNDN)))
-	  break;
-	
-	/* Actualisation of the precision */
-	MPFR_ZIV_NEXT (loop, Nt);
-	mpfr_set_prec (t, Nt);
-	mpfr_set_prec (te, Nt);
-      }
+
+      /* Actualisation of the precision */
+      MPFR_ZIV_NEXT (loop, Nt);
+      mpfr_set_prec (t, Nt);
+      mpfr_set_prec (te, Nt);
+    }
     MPFR_ZIV_FREE (loop);
     inexact = mpfr_set4 (y, t, rnd_mode, MPFR_SIGN (xt));
     mpfr_clear (te);
