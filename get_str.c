@@ -19,7 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "gmp.h"
@@ -27,6 +26,8 @@ MA 02111-1307, USA. */
 #include "longlong.h"
 #include "mpfr.h"
 #include "mpfr-impl.h"
+
+#define ERR 5
 
 /*
   Convert op to a string in base 'base' with 'n' digits and writes the 
@@ -39,13 +40,7 @@ char*
 mpfr_get_str (char *str, mp_exp_t *expptr, int base, size_t n,
               mpfr_srcptr op, mp_rnd_t rnd_mode)
 {
-  double d;
-  long e, q, div, p, err, prec, sh;
-  mpfr_t a, b;
-  mpz_t bz;
-  char *str0=NULL;
-  mp_rnd_t rnd1;
-  int f, pow2, ok=0, neg, str_is_null=(str==NULL);
+  int neg;
 
   if (base < 2 || base > 36)
     return NULL;
@@ -73,10 +68,12 @@ mpfr_get_str (char *str, mp_exp_t *expptr, int base, size_t n,
       return str;
     }
 
-  neg = MPFR_SIGN(op) < 0;
+  neg = MPFR_SIGN(op) < 0; /* 0 if positive, 1 if negative */
 
   if (MPFR_IS_INF(op))
     {
+      char *str0;
+
       if (str == NULL)
         str = (*__gmp_allocate_func)(neg + 4);
       str0 = str;
@@ -89,64 +86,104 @@ mpfr_get_str (char *str, mp_exp_t *expptr, int base, size_t n,
       return str0; /* strlen(str0) = neg + 3 */
     }
 
+  /* op is a floating-point number */
+
   if (MPFR_IS_ZERO(op))
     {
+      char *str0;
+
       if (str == NULL)
         str = (*__gmp_allocate_func)(neg + n + 1);
       str0 = str;
       if (neg)
         *str++ = '-';
-      for (f=0;f<n;f++)
-        *str++ = '0';
-      *str++ = '\0';
+      memset(str, '0', n);
+      str[n] = '\0';
       *expptr = 0; /* a bit like frexp() in ISO C99 */
       return str0; /* strlen(str0) = neg + n */
     }
-
-  count_leading_zeros (pow2, (mp_limb_t) base);
-  pow2 = BITS_PER_MP_LIMB - pow2 - 1;
-  if (base != (1<<pow2))
-    pow2=0; 
-  /* if pow2 <> 0, then base = 2^pow2 */
-
-  /* first determines the exponent */
-  e = MPFR_EXP(op);
-  d = ABS(mpfr_get_d2(op, 0));
-  /* the absolute value of op is between 1/2*2^e and 2^e */
-  /* the output exponent f is such that base^(f-1) <= |op| < base^f
-     i.e. f = 1 + floor(log(|op|)/log(base))
-     = 1 + floor((log(|m|)+e*log(2))/log(base)) */
-  /* f = 1 + (int) floor((log(d)/LOG2+(double)e)*LOG2/log((double)base)); */
-  /* when base = 2^pow2, then |op| < 2^(pow2*f)
-     i.e. e <= pow2*f and f = ceil(e/pow2) */
-  if (pow2)
-      f = ((e < 0) ? e : (e + pow2 - 1)) / pow2;
   else
     {
-      d = ((double) e + (double) _mpfr_floor_log2 (d))
-                      * __mp_bases[base].chars_per_bit_exactly;
-      /* warning: (int) d rounds towards 0 */
-      f = (int) d; /* f equals floor(d) if d >= 0 and ceil(d) if d < 0 */
-      if (f <= d)
-        f++;
-    }
+      int str_is_null;
+      int pow2;
+      mp_exp_t e, f;
+      mpfr_t a, b;
+      mpz_t bz;
+      char *str0;
+      size_t len;
 
-  mpfr_init (a);
-  mpfr_init (b);
-  mpz_init (bz);
+      long div, p, sh;
+      mp_rnd_t rnd1;
+      int ok = 0;
 
-  str0 = str;
+      str_is_null = str == NULL;
 
- start_again:
-  /* now the first n digits of the mantissa are obtained from
-     rnd(op*base^(n-f)) */
-  if (pow2)
-    prec = n*pow2;
-  else
-    prec = 1 + (long) ((double) n / __mp_bases[base].chars_per_bit_exactly);
-  err = 5;
-  q = prec + err;
-  /* one has to use at least q bits */
+      if (IS_POW2(base)) /* Is base a power of 2? */
+        {
+          count_leading_zeros (pow2, (mp_limb_t) base);
+          pow2 = BITS_PER_MP_LIMB - pow2 - 1; /* base = 2^pow2 */
+        }
+      else
+        pow2 = 0;
+
+      /* first determines the exponent */
+      e = MPFR_EXP(op);
+
+      /* the absolute value of op is between 1/2*2^e and 2^e */
+      /* the output exponent f is such that base^(f-1) <= |op| < base^f
+         i.e. f = 1 + floor(log(|op|)/log(base))
+         = 1 + floor((log(|m|)+e*log(2))/log(base)) */
+      /* f = 1 + (int)floor((log(d)/LOG2+(double)e)*LOG2/log((double)base)); */
+      /* when base = 2^pow2, then |op| < 2^(pow2*f)
+         i.e. e <= pow2*f and f = ceil(e/pow2) */
+      if (pow2)
+        f = e <= 0 ? e / pow2 : (e - 1) / pow2 + 1; /* int overflow avoided */
+      else
+        {
+          double d;
+
+          d = mpfr_get_d2(op, 0);
+          d = ((double) e + (double) _mpfr_floor_log2 (ABS(d)))
+            * __mp_bases[base].chars_per_bit_exactly;
+          MPFR_ASSERTN(d >= MP_EXP_T_MIN);
+          MPFR_ASSERTN(d <= MP_EXP_T_MAX);
+          /* warning: (mp_exp_t) d rounds towards 0 */
+          f = (mp_exp_t) d; /* f = floor(d) if d >= 0 and ceil(d) if d < 0 */
+          if (f <= d)
+            {
+              MPFR_ASSERTN(f < MP_EXP_T_MAX);
+              f++;
+            }
+        }
+
+      mpfr_init (a);
+      mpfr_init (b);
+      mpz_init (bz);
+
+      str0 = str;
+
+      do
+        {
+          mp_prec_t prec, q;
+
+          /* now the first n digits of the mantissa are obtained from
+             rnd(op*base^(n-f)) */
+          if (pow2)
+            {
+              MPFR_ASSERTN(n <= MPFR_INTPREC_MAX / pow2);
+              prec = (mp_prec_t) n * pow2;
+            }
+          else
+            {
+              double d;
+
+              d = (double) n / __mp_bases[base].chars_per_bit_exactly;
+              MPFR_ASSERTN(d <= MPFR_INTPREC_MAX - 1);
+              prec = (mp_prec_t) d + 1;
+            }
+
+          q = prec + ERR;
+          /* one has to use at least q bits */
   q = (((q-1)/BITS_PER_MP_LIMB)+1) * BITS_PER_MP_LIMB;
   mpfr_set_prec (a, q);
   mpfr_set_prec (b, q);
@@ -208,7 +245,7 @@ mpfr_get_str (char *str, mp_exp_t *expptr, int base, size_t n,
         ok = 1;
         rnd_mode = GMP_RNDN;
       }
-    else ok = pow2 || mpfr_can_round (b, q-err, rnd_mode, rnd_mode, prec);
+    else ok = pow2 || mpfr_can_round (b, q-ERR, rnd_mode, rnd_mode, prec);
 
   } while (ok==0 && (q+=BITS_PER_MP_LIMB) );
 
@@ -239,38 +276,43 @@ mpfr_get_str (char *str, mp_exp_t *expptr, int base, size_t n,
     MPN_COPY(PTR(bz), MPFR_MANT(b) + e, q);
   bz->_mp_size = q;
 
-  /* computes the number of characters needed */
-  q = neg + n + 2; /* n+1 may not be enough for 100000... */
-  if (str0 == NULL)
-    str0 = (*__gmp_allocate_func) (q);
+          /* computes the number of characters needed */
+          /* n+1 may not be enough for 100000... */
+          if (str0 == NULL)
+            str0 = (*__gmp_allocate_func) (neg + n + 2);
 
-  str = str0; /* restore initial value in case we had to restart */
+          str = str0; /* restore initial value in case we had to restart */
 
-  if (neg)
-    *str++ = '-';
+          if (neg)
+            *str++ = '-';
 
-  mpz_get_str (str, base, bz); /* n digits of mantissa */
+          mpz_get_str (str, base, bz); /* n digits of mantissa */
+          len = strlen(str);
+        }
+      while (len > n && (f++, 1));
 
-  if (strlen(str) > n)
-    {
-      f++; /* possible due to rounding */
-      goto start_again;
+      if (len == n - 1)
+        {
+          len++;
+          f--;
+          str[n-1]='0';
+          str[n]='\0';
+        }
+
+      *expptr = f;
+      mpfr_clear (a);
+      mpfr_clear (b);
+      mpz_clear (bz);
+
+      /* if the given string was null, ensure we return a block
+         which is exactly strlen(str0)+1 bytes long (useful for
+         __gmp_free_func and the C++ wrapper) */
+
+      /* NOTE: len != n + 1 is always satisfied; either this condition
+         is useless or there is a bug somewhere */
+      if (str_is_null && len != n + 1)
+        str0 = (*__gmp_reallocate_func) (str0, neg + n + 2, neg + len + 1);
+
+      return str0;
     }
-  else if (strlen(str)==n-1) {
-    f--;
-    str[n-1]='0';
-    str[n]='\0';
-  }
-  *expptr = f;
-  mpfr_clear (a);
-  mpfr_clear (b);
-  mpz_clear (bz);
-
-  /* if the given string was null, ensure we return a block which is exactly
-     strlen(str)+1 bytes long (useful for __gmp_free_func and the C++ wrapper)
-  */
-  if (str_is_null && ((strlen(str0) + 1) != q))
-    str0 = (char*) (*__gmp_reallocate_func) (str0, q, strlen(str0) + 1);
-
-  return str0;
 }
