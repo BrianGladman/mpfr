@@ -54,6 +54,7 @@ int main()
 #endif
 
   srand(getpid());
+  check(6.37983013646045901440e+32, GMP_RNDN);
   check(1.0, GMP_RNDN);
   check(1.0, GMP_RNDZ);
   check(3.725290298461914062500000e-9, GMP_RNDN);
