@@ -37,19 +37,17 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
   if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(x) ))
     {
       /* Nan, or zero or -Inf */
-      if (MPFR_IS_NAN(x) || MPFR_IS_ZERO(x) || MPFR_IS_NEG(x) )
-	{
-	  MPFR_SET_NAN(y); 
-	  MPFR_RET_NAN;
-	}    
-      else if (MPFR_IS_INF(x))
+      if (MPFR_IS_INF(x) && MPFR_IS_POS(x))
 	{ 
 	  MPFR_SET_INF(y);
 	  MPFR_SET_POS(y);
 	  MPFR_RET(0);
 	}
-      else
-	MPFR_ASSERTN(0);
+      else /* Nan, or zero or -Inf */
+	{
+	  MPFR_SET_NAN(y); 
+	  MPFR_RET_NAN;
+	}    
     }
   comp = mpfr_cmp_ui (x, 1);
   if (MPFR_UNLIKELY( comp < 0 ))

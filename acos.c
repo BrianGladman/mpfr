@@ -46,14 +46,14 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	  MPFR_SET_NAN(acos);
 	  MPFR_RET_NAN;
 	}
-      else if (MPFR_IS_ZERO(x))
+      else /* necessarily x=0 */
 	{
+          MPFR_ASSERTD(MPFR_IS_ZERO(x));
 	  /* acos(0)=Pi/2 */
 	  mpfr_const_pi (acos, rnd_mode);
 	  MPFR_SET_EXP (acos, MPFR_GET_EXP (acos) - 1);
 	  return 1; /* inexact */
 	}
-      MPFR_ASSERTN(0);
     }
   MPFR_CLEAR_FLAGS(x);
 
