@@ -78,21 +78,39 @@ test_random (unsigned long nbtests, unsigned long prec, int verbose)
   return;
 }
 
+#define ONE ((mp_limb_t) 1)
+
 void
 test_random2 (unsigned long nbtests, unsigned long prec, int verbose)
 {
-  mpfr_t x; 
-  int *tab, size_tab, k; 
+  mpfr_t x;
+  int *tab, size_tab, k, sh, xn;
   double d, av = 0, var = 0, chi2 = 0, th; 
 
-  mpfr_init2(x, prec); 
+  mpfr_init2 (x, prec);
+  xn = 1 + (prec - 1) / mp_bits_per_limb;
 
   size_tab = (nbtests < 1000 ? nbtests / 50 : 20); 
   tab = (int *) malloc (size_tab * sizeof(int)); 
   for (k = 0; k < size_tab; ++k) tab[k] = 0; 
 
   for (k = 0; k < nbtests; k++) {
-    mpfr_random2 (x, MPFR_ABSSIZE(x), 0); 
+    mpfr_random2 (x, xn, 0);
+    /* check that lower bits are zero */
+    sh = xn * mp_bits_per_limb - prec;
+    /* check that exponent is in correct range */
+    if (MPFR_MANT(x)[xn - 1] & ((ONE << sh) - ONE))
+      {
+        fprintf (stderr, "Error: mpfr_random2() returns invalid numbers:\n");
+        mpfr_print_binary (x); putchar ('\n');
+        exit (1);
+      }
+    if (mpfr_get_exp (x) != 0)
+      {
+        fprintf (stderr, "Error: mpfr_random2 (.., .., 0) does not return a 0 exponent:\n");
+        mpfr_print_binary (x); putchar ('\n');
+        exit (1);
+      }
     d = mpfr_get_d1 (x); av += d; var += d*d; 
     if (d < 1)
       tab[(int)(size_tab * d)]++;     
