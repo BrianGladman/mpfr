@@ -1,6 +1,6 @@
 /* mpfr_cbrt -- cube root function.
 
-Copyright 2002, 2003, 2004 Free Software Foundation.
+Copyright 2002, 2003, 2004, 2005 Free Software Foundation.
 Contributed by the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.
@@ -20,9 +20,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
-#include <stdlib.h>
-
+#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
  /* The computation of y = x^(1/3) is done as follows:
@@ -46,41 +44,41 @@ MA 02111-1307, USA. */
 int
 mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
-
   mpz_t m;
   mp_exp_t e, r, sh;
-  mp_prec_t n, size_m;
+  mp_prec_t n, size_m, tmp;
   int inexact, negative;
+  MPFR_SAVE_EXPO_DECL (expo);
 
   /* special values */
-  if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(x) ))
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
-      if (MPFR_IS_NAN(x))
+      if (MPFR_IS_NAN (x))
 	{
-	  MPFR_SET_NAN(y);
+	  MPFR_SET_NAN (y);
 	  MPFR_RET_NAN;
 	}
-      else if (MPFR_IS_INF(x))
+      else if (MPFR_IS_INF (x))
 	{
-	  MPFR_SET_INF(y);
+	  MPFR_SET_INF (y);
 	  MPFR_SET_SAME_SIGN (y, x);
-	  return 0;
+	  MPFR_RET (0);
 	}
       /* case 0: cbrt(+/- 0) = +/- 0 */
       else /* x is necessaryly 0 */
 	{
-          MPFR_ASSERTD(MPFR_IS_ZERO(x));
-	  MPFR_SET_ZERO(y);
+          MPFR_ASSERTD (MPFR_IS_ZERO (x));
+	  MPFR_SET_ZERO (y);
 	  MPFR_SET_SAME_SIGN (y, x);
-	  return 0;
+	  MPFR_RET (0);
 	}
     }
-  /* Useless due to mpz_init
-     MPFR_CLEAR_FLAGS(y);*/
 
+  /* General case */
+  MPFR_SAVE_EXPO_MARK (expo);
   mpz_init (m);
 
-  e = mpfr_get_z_exp (m, x); /* x = m * 2^e */
+  e = mpfr_get_z_exp (m, x);                /* x = m * 2^e */
   if ((negative = MPFR_IS_NEG(x)))
     mpz_neg (m, m);
   r = e % 3;
@@ -88,10 +86,8 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     r += 3;
   /* x = (m*2^r) * 2^(e-r) = (m*2^r) * 2^(3*q) */
 
-  size_m = mpz_sizeinbase (m, 2);
-  n = MPFR_PREC(y);
-  if (rnd_mode == GMP_RNDN)
-    n ++;
+  MPFR_MPZ_SIZEINBASE2 (size_m, m);
+  n = MPFR_PREC (y) + (rnd_mode == GMP_RNDN);
 
   /* we want 3*n-2 <= size_m + 3*sh + r <= 3*n
      i.e. 3*sh + size_m + r <= 3*n */
@@ -114,7 +110,8 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
      any more: we just need to know if the root is exact */
   inexact = mpz_root (m, m, 3) == 0;
 
-  sh = mpz_sizeinbase (m, 2) - n;
+  MPFR_MPZ_SIZEINBASE2 (tmp, m);
+  sh = tmp - n;
   if (sh > 0) /* we have to flush to 0 the last sh bits from m */
     {
       inexact = inexact || ((mp_exp_t) mpz_scan1 (m, 0) < sh);
@@ -125,10 +122,10 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   if (inexact)
     {
       if (negative)
-        rnd_mode = MPFR_INVERT_RND(rnd_mode);
-      if ((rnd_mode == GMP_RNDU) ||
-          ((rnd_mode == GMP_RNDN) && mpz_tstbit (m, 0)))
-        mpz_add_ui (m, m, inexact = 1);
+        rnd_mode = MPFR_INVERT_RND (rnd_mode);
+      if (rnd_mode == GMP_RNDU 
+	  || (rnd_mode == GMP_RNDN && mpz_tstbit (m, 0)))
+        inexact = 1, mpz_add_ui (m, m, 1);
       else
         inexact = -1;
     }
@@ -141,11 +138,11 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   if (negative)
     {
-      MPFR_CHANGE_SIGN(y);
+      MPFR_CHANGE_SIGN (y);
       inexact = -inexact;
     }
 
   mpz_clear (m);
-
-  return inexact;
+  MPFR_SAVE_EXPO_FREE (expo);
+  return mpfr_check_range (y, inexact, rnd_mode);
 }
