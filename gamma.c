@@ -91,13 +91,11 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
     return mpfr_set_ui (gamma, 1, rnd_mode);
 
   /* if x is an integer that fits into an unsigned long, use mpfr_fac_ui */
-  if (mpfr_integer_p (x))
+  if (mpfr_integer_p (x) && mpfr_fits_ulong_p (x, GMP_RNDN))
     {
       unsigned long int u;
       u = mpfr_get_ui (x, GMP_RNDN);
-      /* u = 0 when x is 0 or x does not fit in an unsigned long */
-      if (u != 0)
-        return mpfr_fac_ui (gamma, u - 1, rnd_mode);
+      return mpfr_fac_ui (gamma, u - 1, rnd_mode);
     }
 
   MPFR_SAVE_EXPO_MARK (expo);
