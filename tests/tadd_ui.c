@@ -32,7 +32,8 @@ MA 02111-1307, USA. */
 #include <sys/fpu.h>
 #endif
 
-extern int getpid();
+void check3 _PROTO((double, unsigned long, unsigned int, double));
+void special _PROTO((void));
 
 #define ABS(x) (((x)>0) ? (x) : (-x))
 
@@ -40,7 +41,8 @@ extern int getpid();
 
 /* checks that x+y gives the same results in double
    and with mpfr with 53 bits of precision */
-void check3(double x, unsigned long y, unsigned int rnd_mode, double z1)
+void
+check3 (double x, unsigned long y, unsigned int rnd_mode, double z1)
 {
   double z2; mpfr_t xx,zz;
 
@@ -60,6 +62,18 @@ void check3(double x, unsigned long y, unsigned int rnd_mode, double z1)
     exit(1);
   }
   mpfr_clear(xx); mpfr_clear(zz);
+}
+
+void special (void)
+{
+  mpfr_t x, y;
+
+  mpfr_init2 (x, 63);
+  mpfr_init2 (y, 63);
+  mpfr_set_str_raw (x, "0.110100000000000001110001110010111111000000000101100011100100011");
+  mpfr_add_ui (y, x, 1, GMP_RNDD);
+  mpfr_clear (x);
+  mpfr_clear (y);
 }
 
 int main(argc,argv) int argc; char *argv[];
@@ -87,6 +101,7 @@ int main(argc,argv) int argc; char *argv[];
     }
   } 
 #endif
+  special ();
   check3(-1.716113812768534e-140, 1271212614, GMP_RNDZ, 1.27121261399999976e9);
   check3(1.22191250737771397120e+20, 948002822, GMP_RNDN, 
 	 122191250738719408128.0);
