@@ -9,6 +9,14 @@ main(int argc, char **argv)
 {
   mpfr_t x; unsigned long k, bd, nc; char *str, *str2; 
 
+  if (argc==2) { /* tset_str <string> */
+    mpfr_init2(x, 53);
+    mpfr_set_str_raw(x, argv[1]);
+    printf("%1.20e\n", mpfr_get_d(x));
+    mpfr_clear(x);
+    return 0;
+  }
+
   srandom(time(NULL)); 
   
   if (argc > 1) { nc = atoi(argv[1]); } else { nc = 53; }
@@ -42,6 +50,11 @@ main(int argc, char **argv)
 
   mpfr_set_prec(x, 53, GMP_RNDN);
   mpfr_set_str_raw(x, "+110101100.01010000101101000000100111001000101011101110E00");
+
+  mpfr_set_str_raw(x, "1.0");
+  if (mpfr_get_d(x) != 1.0) {
+    fprintf(stderr, "Error in mpfr_set_str_raw for s=1.0\n"); exit(1);
+  }
 
   mpfr_clear(x); free(str); 
   return 0; 
