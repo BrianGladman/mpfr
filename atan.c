@@ -43,59 +43,124 @@ MA 02111-1307, USA. */
 #undef NO_FACTORIAL
 #undef GENERIC
 */
-/* This is the code of 'generic.c' optimized for mpfr_atan */   
+/* This is the code of 'generic.c' slighty optimized for mpfr_atan */   
 static void
-mpfr_atan_aux (mpfr_ptr y, mpz_srcptr p, long r, int m, mpz_t *tab)
+mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab, 
+	       unsigned int *itab)
 {
   unsigned long n,i,k,j,l;
   mpz_t *S, *T, *ptoj;
   mp_exp_t diff, expo;
-  
-  S    = tab;
-  ptoj = S + 1*(m+1);
-  T    = S + 2*(m+1);
+  unsigned int *P2tab;
+  unsigned int *S2tab;
+  int neg;
+  mp_limb_t *d;
 
-  mpz_mul_2exp (ptoj[0], p, 1);
-  for (i=1;i<m;i++) 
-    mpz_mul (ptoj[i], ptoj[i-1], ptoj[i-1]);
+  /* Set Tables */
+  S    = tab;           /* S */
+  ptoj = S + 1*(m+1);   /* p^2^j Precomputed table */
+  T    = S + 2*(m+1);   /* Product of Odd integer  table  */
+  P2tab = itab;         /* Real p[l] = ptoj[l]*2^P2tab[l] */
+  S2tab = itab + m + 1; /* Real s[k] = s[k] * 2^S2tab[k] */
 
+  /* Init S[0] and T[0] */
   mpz_set_ui (S[0], 1);
+  S2tab[0] = 0;
   mpz_set_ui (T[0], 1);
 
-  k = 0;
-  n = 1UL << m;
-  for (i = 1 ; i < n ; i++) {
-    k++;
-    mpz_set_ui (T[k], 1 + 2*i);
-    mpz_set_ui (S[k], 1);
+  /* Normalize p */
+  d = PTR (p);
+  for (n = 0 ; MPFR_UNLIKELY (*d == 0) ; d++, n+= BITS_PER_MP_LIMB);
+  MPFR_ASSERTD (*d != 0);
+  count_trailing_zeros (neg, *d);
+  P2tab[0] = n + neg + 1;
+  if (n+neg > 0)
+    mpz_tdiv_q_2exp (p, p, n+neg);
 
-    for (j = i+1, l = 0 ; (j & 1) == 0 ; l++, j>>=1, k--) {
-      if (l == 0)
-	mpz_mul (S[k], ptoj[l], T[k-1]);
-      else {
-	mpz_mul (S[k], S[k], ptoj[l]);
-	mpz_mul (S[k], S[k], T[k-1]);
+  /* Extract sign */
+  neg = mpz_sgn (p) < 0;
+  mpz_abs (p, p);
+
+  /* Check if P==1 (Special case) */
+  if (mpz_cmp_ui (p, 1) != 0) {
+    /* P!= 1: Precomputed ptoj table */
+    mpz_set (ptoj[0], p);
+    for (i = 1 ; i < m ; i++) {
+      mpz_mul (ptoj[i], ptoj[i-1], ptoj[i-1]);
+      P2tab[i] = 2*P2tab[i-1];
+    }
+    /* Main loop */
+    k = 0;
+    n = 1UL << m;
+    for (i = 1 ; i < n ; i++) {
+      k++;
+      mpz_set_ui (T[k], 1 + 2*i);
+      mpz_set_ui (S[k], 1);
+      S2tab[k] = 0;
+ 
+      for (j = i+1, l = 0 ; (j & 1) == 0 ; l++, j>>=1, k--) {
+	if (l == 0) {
+	  mpz_mul (S[k], ptoj[l], T[k-1]);
+	  if (neg)
+	    mpz_neg (S[k], S[k]);
+	} else {
+	  mpz_mul (S[k], S[k], ptoj[l]);
+	  mpz_mul (S[k], S[k], T[k-1]);
+	}
+	mpz_mul (S[k-1], S[k-1], T[k]);
+	S2tab[k] += P2tab[l];
+	S2tab[k-1] += (r+1)*(1<<l);
+	MPFR_ASSERTD (S2tab[k-1] > S2tab[k]);
+	mpz_mul_2exp (S[k-1], S[k-1], S2tab[k-1]-S2tab[k]);
+	S2tab[k-1] = S2tab[k];
+	mpz_add (S[k-1], S[k-1], S[k]);
+	mpz_mul (T[k-1], T[k-1], T[k]);
       }
-      mpz_mul (S[k-1], S[k-1], T[k]);
-      mpz_mul_2exp (S[k-1], S[k-1], (r+1)*(1<<l));
-      mpz_add (S[k-1], S[k-1], S[k]);
-      mpz_mul (T[k-1], T[k-1], T[k]);
+    }
+  } else {
+    for (i = 1 ; i < m ; i++)
+      P2tab[i] = 2*P2tab[i-1];
+    k = 0;
+    n = 1UL << m;
+    for (i = 1 ; i < n ; i++) {
+      k++;
+      mpz_set_ui (T[k], 1 + 2*i);
+      mpz_set_ui (S[k], 1);
+      S2tab[k] = 0;
+      
+      for (j = i+1, l = 0 ; (j & 1) == 0 ; l++, j>>=1, k--) {
+	if (l == 0)
+	  (neg ? mpz_neg : mpz_set) (S[k], T[k-1]);
+	else
+	  mpz_mul (S[k], S[k], T[k-1]);
+	mpz_mul (S[k-1], S[k-1], T[k]);
+	S2tab[k] += P2tab[l];
+	S2tab[k-1] += (r+1)*(1<<l);
+	MPFR_ASSERTD (S2tab[k-1] > S2tab[k]);
+	mpz_mul_2exp (S[k-1], S[k-1], S2tab[k-1]-S2tab[k]);
+	S2tab[k-1] = S2tab[k];
+	mpz_add (S[k-1], S[k-1], S[k]);
+	mpz_mul (T[k-1], T[k-1], T[k]);
+      }
     }
   }
 
+  /* printf ("S2tab[0]=%lu S[0]=", S2tab[0]); mpz_out_str (stdout, 2, S[0]); putchar ('\n');
+     printf ("T[0]="); mpz_out_str (stdout, 2, T[0]); putchar ('\n'); */
+
   MPFR_MPZ_SIZEINBASE2 (diff, S[0]);
   diff -= 2*MPFR_PREC (y);
-  expo = diff;
+  expo = diff + S2tab[0];
   if (diff >=0)
-    mpz_fdiv_q_2exp (S[0],S[0],diff);
+    mpz_tdiv_q_2exp (S[0], S[0], diff);
   else
-    mpz_mul_2exp (S[0],S[0],-diff);
+    mpz_mul_2exp (S[0], S[0], -diff);
 
   MPFR_MPZ_SIZEINBASE2 (diff, T[0]);
   diff -= MPFR_PREC (y);
   expo -= (diff + n -1);
   if (diff >= 0)
-    mpz_fdiv_q_2exp (T[0], T[0],diff);
+    mpz_tdiv_q_2exp (T[0], T[0],diff);
   else
     mpz_mul_2exp (T[0], T[0],-diff);
 
@@ -148,13 +213,14 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_t xp;
   mpfr_t arctgt, sk, tmp, tmp2;
   mpz_t  ukz;
-  int comparaison, sign, inexact, inexact2;
+  int comparaison, inexact, inexact2;
   mp_exp_t estimated_delta;
   mp_prec_t prec, realprec;
   mp_exp_t exptol;
   int i, n0, oldn0;
   unsigned long twopoweri;
   mpz_t *tabz;
+  unsigned int *tabi;
   MPFR_SAVE_EXPO_DECL (expo);
 
   /* Singular cases */
@@ -189,17 +255,15 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
     }
 
   /* Set x_p=|x| */
-  sign = MPFR_SIGN (x);
-  xp[0] = x[0];                 /* Hack to avoid copying X */
-  MPFR_SET_POS (xp);
+  MPFR_TMP_INIT_ABS (xp, x);
 
   /* Other simple case arctang(-+1)=-+pi/4 */
   comparaison = mpfr_cmp_ui (xp, 1);
   if (MPFR_UNLIKELY (comparaison == 0))
     {
-      inexact = mpfr_const_pi (atan, MPFR_IS_POS_SIGN (sign) ? rnd_mode
+      inexact = mpfr_const_pi (atan, MPFR_IS_POS (x) ? rnd_mode
                                : MPFR_INVERT_RND (rnd_mode));
-      if (MPFR_IS_NEG_SIGN (sign))
+      if (MPFR_IS_NEG (x))
         {
           inexact = -inexact;
           MPFR_CHANGE_SIGN (atan);
@@ -229,6 +293,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_init2 (arctgt, prec);
   oldn0 = 0;
   tabz = NULL;
+  tabi = NULL;
 
   for (;;)
     {
@@ -244,11 +309,17 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_set_prec (tmp, prec);
       mpfr_set_prec (arctgt, prec);
       if (oldn0 < 3*n0+1) {
-	if (oldn0 == 0)
+	if (MPFR_LIKELY (oldn0 == 0)) {
 	  tabz = (mpz_t *) (*__gmp_allocate_func) (3*(n0+1)*sizeof (mpz_t));
-	else
+	  tabi = (unsigned int *) (*__gmp_allocate_func) 
+	    (2*(n0+1)*sizeof(unsigned int));
+	} else {
 	  tabz = (mpz_t *) (*__gmp_reallocate_func) 
 	    (tabz, oldn0*sizeof (mpz_t), 3*(n0+1)*sizeof (mpz_t));
+	  tabi = (unsigned int *) (*__gmp_reallocate_func)
+	    (tabi, oldn0/3*2*sizeof (unsigned int),
+	     2*(n0+1)*sizeof(unsigned int));
+	}
 	for (i = oldn0 ; i < 3*(n0+1) ; i++)
 	  mpz_init (tabz[i]);
 	oldn0 = 3*(n0+1);
@@ -284,7 +355,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	      mpfr_div_2ui (tmp, tmp, twopoweri, GMP_RNDN);
 	      mpz_mul (ukz, ukz, ukz);
 	      mpz_neg (ukz, ukz);
-	      mpfr_atan_aux (tmp2, ukz, 2*twopoweri, n0 - i, tabz);
+	      mpfr_atan_aux (tmp2, ukz, 2*twopoweri, n0 - i, tabz, tabi);
 	      mpfr_mul (tmp2, tmp2, tmp, GMP_RNDN);
 	      
 	      /* Addition and iteration */
@@ -315,12 +386,13 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	break;
       realprec += BITS_PER_MP_LIMB;
     }
-  
-  inexact = mpfr_set4 (atan, arctgt, rnd_mode, sign);
+
+  inexact = mpfr_set4 (atan, arctgt, rnd_mode, MPFR_SIGN (x));
 
   for (i = 0 ; i < oldn0 ; i++)
     mpz_clear (tabz[i]);
   (*__gmp_free_func) (tabz, oldn0*sizeof (mpz_t));
+  (*__gmp_free_func) (tabi, oldn0/3*2*sizeof (unsigned int));
 
   mpfr_clear (arctgt);
   mpfr_clear (tmp);
