@@ -57,7 +57,7 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_t xp;
   mpfr_t arctgt;
 
-  int comparaison, signe, supplement;
+  int comparaison, signe, supplement, inexact;
 
   mpfr_t t_arctan;
   int i;
@@ -94,17 +94,18 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
     {
       MPFR_CLEAR_FLAGS(arctangent);
       if (MPFR_SIGN(x) > 0) /* arctan(+inf) = Pi/2 */
-	mpfr_const_pi (arctangent, rnd_mode);
+	inexact = mpfr_const_pi (arctangent, rnd_mode);
       else /* arctan(-inf) = -Pi/2 */
 	{
 	  if (rnd_mode == GMP_RNDU)
 	    rnd_mode = GMP_RNDD;
 	  else if (rnd_mode == GMP_RNDD)
 	    rnd_mode = GMP_RNDU;
-	  mpfr_const_pi (arctangent, rnd_mode);
+	  inexact = -mpfr_const_pi (arctangent, rnd_mode);
+          MPFR_CHANGE_SIGN (arctangent);
 	}
       MPFR_SET_EXP (arctangent, MPFR_GET_EXP (arctangent) - 1);
-      return 1; /* inexact */
+      return inexact;
     }
 
   MPFR_CLEAR_FLAGS(arctangent);
@@ -118,23 +119,26 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
   prec_arctan = MPFR_PREC(arctangent);
 
   /* Set x_p=|x| */
-  mpfr_init2(xp, MPFR_PREC(x));
-  mpfr_set(xp, x, rnd_mode);
+  mpfr_init2 (xp, MPFR_PREC(x));
+  mpfr_set (xp, x, rnd_mode);
   if (signe == -1)
       MPFR_CHANGE_SIGN(xp);
 
   /* Other simple case arctang(-+1)=-+pi/4 */
-  comparaison=mpfr_cmp_ui(xp, 1);
-  if (comparaison == 0) {
-    mpfr_init2(Pisur2, prec_arctan);
-    mpfr_const_pi(Pisur2, rnd_mode);
-    mpfr_div_2ui(arctangent, Pisur2, 2, rnd_mode);
-    if (signe == -1)
-      MPFR_CHANGE_SIGN(arctangent);
-    mpfr_clear(Pisur2);
-    mpfr_clear(xp);
-    return 1; /* inexact result */
-  }
+  comparaison = mpfr_cmp_ui (xp, 1);
+  if (comparaison == 0)
+    {
+      inexact = mpfr_const_pi (arctangent, rnd_mode);
+      MPFR_SET_EXP (arctangent, MPFR_GET_EXP (arctangent) - 2);
+      if (signe == -1)
+        {
+          inexact = -inexact;
+          MPFR_CHANGE_SIGN(arctangent);
+        }
+      mpfr_clear (xp);
+      return inexact;
+    }
+
   if (comparaison > 0)
     supplement = 2;
   else
@@ -144,8 +148,8 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
   logn = __gmpfr_ceil_log2 ((double) prec_x);
   if (logn < 2) logn = 2;
   realprec = prec_arctan + __gmpfr_ceil_log2((double) prec_arctan) + 4;
-  mpz_init(ukz);
-  mpz_init(square);
+  mpz_init (ukz);
+  mpz_init (square);
 
 
   while (!good){
@@ -230,7 +234,7 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
     if (mpfr_can_round(arctgt, realprec, GMP_RNDN, rnd_mode, MPFR_PREC(arctangent)))
       {
-	mpfr_set(arctangent, arctgt, rnd_mode);
+	inexact = mpfr_set(arctangent, arctgt, rnd_mode);
 	good = 1;
 	realprec += 1;
       }
@@ -259,5 +263,5 @@ mpfr_atan (mpfr_ptr arctangent, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpz_clear(ukz);
   mpz_clear(square);
 
-  return 1; /* inexact result */
+  return inexact;
 }
