@@ -366,7 +366,8 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	 We may lost 1 bit due to RNDN, 1 due to final shift. */
       if (MPFR_UNLIKELY (MPFR_PREC (a) > p - 5))
 	{
-	  if (MPFR_UNLIKELY (MPFR_PREC (a) > p - 5 + BITS_PER_MP_LIMB))
+	  if (MPFR_UNLIKELY (MPFR_PREC (a) > p - 5 + BITS_PER_MP_LIMB
+			     || bn <= MPFR_MUL_THRESHOLD+1))
 	    {
 	      /* MulHigh can't produce a roundable result. */
 	      MPFR_LOG_MSG (("mpfr_mulhigh can't be used (%lu VS %lu)\n",
