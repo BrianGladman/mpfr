@@ -23,3 +23,11 @@ int ulp(a,b) double a,b;
   else
     return (int) ceil(b/eps);
 }
+
+/* return double m*2^e */
+double dbl(m,e) double m; int e;
+{
+  if (e>=0) while (e-->0) m *= 2.0;
+  else while (e++<0) m /= 2.0;
+  return m;
+}
