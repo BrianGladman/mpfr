@@ -22,7 +22,6 @@ MA 02111-1307, USA. */
 
 #include <float.h>
 
-
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
@@ -90,7 +89,7 @@ mpfr_scale2 (double d, int exp)
   {
     union ieee_double_extract x;
 
-    if (MPFR_UNLIKELY(d == 1.0))
+    if (MPFR_UNLIKELY (d == 1.0))
       {
         d = 0.5;
         exp ++;
@@ -102,7 +101,7 @@ mpfr_scale2 (double d, int exp)
     MPFR_ASSERTD (-1073 <= exp && exp <= 1025);
 
     x.d = d;
-    if (MPFR_UNLIKELY(exp < -1021)) /* subnormal case */
+    if (MPFR_UNLIKELY (exp < -1021)) /* subnormal case */
       {
         x.s.exp += exp + 52;
         x.d *= DBL_EPSILON;
@@ -113,7 +112,7 @@ mpfr_scale2 (double d, int exp)
       }
     return x.d;
   }
-#else
+#else /* _GMP_IEEE_FLOATS */
   {
     double factor;
 
@@ -151,30 +150,32 @@ mpfr_scale2 (double d, int exp)
    such as NaN must be avoided if not supported). */
 
 double
-mpfr_get_d3 (mpfr_srcptr src, mp_exp_t e, mp_rnd_t rnd_mode)
+mpfr_get_d (mpfr_srcptr src, mp_rnd_t rnd_mode)
 {
   double d;
   int negative;
+  mp_exp_t e;
 
-  if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(src)))
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (src)))
     {
-      if (MPFR_IS_NAN(src))
+      if (MPFR_IS_NAN (src))
 	return MPFR_DBL_NAN;
 
       negative = MPFR_IS_NEG (src);
       
-      if (MPFR_IS_INF(src))
+      if (MPFR_IS_INF (src))
 	return negative ? MPFR_DBL_INFM : MPFR_DBL_INFP;
       
       MPFR_ASSERTD (MPFR_IS_ZERO(src));
       return negative ? -0.0 : 0.0;
     }
-
+  
+  e = MPFR_GET_EXP (src);
   negative = MPFR_IS_NEG (src);
-
+  
   /* the smallest normalized number is 2^(-1022)=0.1e-1021, and the smallest
      subnormal is 2^(-1074)=0.1e-1073 */
-  if (MPFR_UNLIKELY(e < -1073))
+  if (MPFR_UNLIKELY (e < -1073))
     {
       /* Note: Avoid using a constant expression DBL_MIN * DBL_EPSILON
          as this gives 0 instead of the correct result with gcc on some
@@ -190,7 +191,7 @@ mpfr_get_d3 (mpfr_srcptr src, mp_exp_t e, mp_rnd_t rnd_mode)
         d *= DBL_EPSILON;
     }
   /* the largest normalized number is 2^1024*(1-2^(-53))=0.111...111e1024 */
-  else if (MPFR_UNLIKELY(e > 1024))
+  else if (MPFR_UNLIKELY (e > 1024))
     {
       d = negative ?
         (rnd_mode == GMP_RNDZ || rnd_mode == GMP_RNDU ?
@@ -206,7 +207,7 @@ mpfr_get_d3 (mpfr_srcptr src, mp_exp_t e, mp_rnd_t rnd_mode)
       int carry;
 
       nbits = IEEE_DBL_MANT_DIG; /* 53 */
-      if (MPFR_UNLIKELY(e < -1021))
+      if (MPFR_UNLIKELY (e < -1021))
 	/*In the subnormal case, compute the exact number of significant bits*/
         {
           nbits += (1021 + e);
@@ -236,21 +237,11 @@ mpfr_get_d3 (mpfr_srcptr src, mp_exp_t e, mp_rnd_t rnd_mode)
   return d;
 }
 
-/* Note: do not read the exponent if it has no meaning (avoid possible
-   traps on some implementations). */
-
-double
-mpfr_get_d (mpfr_srcptr src, mp_rnd_t rnd_mode)
-{
-  return mpfr_get_d3 (src, MPFR_IS_PURE_FP(src) ?
-                      MPFR_GET_EXP (src) : 0, rnd_mode);
-}
-
+#undef mpfr_get_d1
 double
 mpfr_get_d1 (mpfr_srcptr src)
 {
-  return mpfr_get_d3 (src, MPFR_IS_PURE_FP(src) ? MPFR_GET_EXP (src) : 0,
-		      __gmpfr_default_rounding_mode);
+  return mpfr_get_d (src, __gmpfr_default_rounding_mode);
 }
 
 double
@@ -258,8 +249,24 @@ mpfr_get_d_2exp (long *expptr, mpfr_srcptr src, mp_rnd_t rnd_mode)
 {
   double ret;
   mp_exp_t exp;
+  mpfr_t tmp;
 
-  ret = mpfr_get_d3 (src, 0, rnd_mode);
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (src)))
+    {
+      int negative;
+      *expptr = 0;
+      if (MPFR_IS_NAN (src))
+        return MPFR_DBL_NAN;
+      negative = MPFR_IS_NEG (src);
+      if (MPFR_IS_INF (src))
+        return negative ? MPFR_DBL_INFM : MPFR_DBL_INFP;
+      MPFR_ASSERTD (MPFR_IS_ZERO(src));
+      return negative ? -0.0 : 0.0;
+    }
+
+  tmp[0] = *src;        /* Hack copy mpfr_t */
+  MPFR_SET_EXP (tmp, 0);
+  ret = mpfr_get_d (tmp, rnd_mode);
 
   if (MPFR_IS_PURE_FP(src))
     {
