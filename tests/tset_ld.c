@@ -63,7 +63,8 @@ check_set_get (long double d, mpfr_t x)
 
   for (r = 0; r < 4; r++)
     {
-      if (inex = mpfr_set_ld (x, d, r))
+      inex = mpfr_set_ld (x, d, r);
+      if (inex != 0)
         {
           printf ("Error: mpfr_set_ld should be exact\n");
           printf ("d=%1.30Le inex=%d\n", d, inex);

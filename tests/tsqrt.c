@@ -56,10 +56,10 @@ check4 (const char *as, mp_rnd_t rnd_mode, const char *Qs)
     {
       printf("mpfr_sqrt failed for a=%s, rnd_mode=%s\n",
 	     as, mpfr_print_rnd_mode(rnd_mode));
-      printf("expected "); 
+      printf("expected ");
       mpfr_out_str(stdout, 16, 0, q, GMP_RNDN);
       printf("\ngot      %s\n", Qs);
-      mpfr_clear(q); 
+      mpfr_clear(q);
       exit(1);
   }
   mpfr_clear(q);
@@ -84,7 +84,7 @@ check24 (const char *as, mp_rnd_t rnd_mode, const char *qs)
   mpfr_clear(q);
 }
 
-/* the following examples come from the paper "Number-theoretic Test 
+/* the following examples come from the paper "Number-theoretic Test
    Generation for Directed Rounding" from Michael Parks, Table 3 */
 static void
 check_float (void)
@@ -140,7 +140,6 @@ special (void)
   mpfr_t x, z;
   int inexact;
   mp_prec_t p;
-  mp_rnd_t r;
 
   mpfr_init (x);
   mpfr_init (z);
@@ -258,7 +257,7 @@ special (void)
       MPFR_ASSERTN(mpfr_mul (x, x, x, GMP_RNDN) == 0); /* exact */
       inexact = mpfr_sqrt (z, x, GMP_RNDN);
       /* even rule: z should be 2^(mp_bits_per_limb - 1) */
-      MPFR_ASSERTN(inexact < 0 && 
+      MPFR_ASSERTN(inexact < 0 &&
                    mpfr_cmp_ui_2exp (z, 1, mp_bits_per_limb - 1) == 0);
       mpfr_nextbelow (x);
       /* now x is just below [2^(mp_bits_per_limb - 1) + 1]^2 */
@@ -271,7 +270,7 @@ special (void)
       inexact = mpfr_sqrt (z, x, GMP_RNDN);
       if (inexact <= 0 || mpfr_cmp_ui_2exp (z, 1, mp_bits_per_limb - 1) == 0)
         {
-          printf ("Error in corner case for p=%u\n", p);
+          printf ("Error in corner case for p = %lu\n", (unsigned long) p);
           exit (1);
         }
     }
@@ -377,7 +376,7 @@ main (void)
   special ();
   check_float();
 
-  check3 ("-0.0", GMP_RNDN, "0.0"); 
+  check3 ("-0.0", GMP_RNDN, "0.0");
   check4 ("6.37983013646045901440e+32", GMP_RNDN, "5.9bc5036d09e0c@13");
   check4 ("1.0", GMP_RNDN, "1");
   check4 ("1.0", GMP_RNDZ, "1");
@@ -391,12 +390,12 @@ main (void)
   check4 ("7.86528588050363751914e+31", GMP_RNDZ, "1.f81fc40f32062@13");
   check4 ("0.99999999999999988897", GMP_RNDN, "f.ffffffffffff8@-1");
   check4 ("1.00000000000000022204", GMP_RNDN, "1");
-  /* the following examples come from the paper "Number-theoretic Test 
+  /* the following examples come from the paper "Number-theoretic Test
    Generation for Directed Rounding" from Michael Parks, Table 4 */
 
-  check4 ("78652858805036375191418371571712.0", GMP_RNDN, 
+  check4 ("78652858805036375191418371571712.0", GMP_RNDN,
 	  "1.f81fc40f32063@13");
-  check4 ("38510074998589467860312736661504.0", GMP_RNDN, 
+  check4 ("38510074998589467860312736661504.0", GMP_RNDN,
 	  "1.60c012a92fc65@13");
   check4 ("35318779685413012908190921129984.0", GMP_RNDN,
 	  "1.51d17526c7161@13");
@@ -417,14 +416,14 @@ main (void)
 
   check4 ("78652858805036375191418371571712.0", GMP_RNDZ,
 	  "1.f81fc40f32062@13");
-  check4 ("38510074998589467860312736661504.0", GMP_RNDZ, 
+  check4 ("38510074998589467860312736661504.0", GMP_RNDZ,
 	  "1.60c012a92fc64@13");
   check4 ("35318779685413012908190921129984.0", GMP_RNDZ, "1.51d17526c716@13");
   check4 ("26729022595358440976973142425600.0", GMP_RNDZ, "1.25e19302f7e5@13");
-  check4 ("22696567866564242819241453027328.0", GMP_RNDZ, 
+  check4 ("22696567866564242819241453027328.0", GMP_RNDZ,
 	  "1.0ecea7dd2ec3c@13");
   check4 ("22696888073761729132924856434688.0", GMP_RNDZ, "1.0ecf250e8e92@13");
-  check4 ("36055652513981905145251657416704.0", GMP_RNDZ, 
+  check4 ("36055652513981905145251657416704.0", GMP_RNDZ,
 	  "1.5552f3eedcf32@13");
   check4 ("30189856268896404997497182748672.0", GMP_RNDZ,
 	  "1.3853ee10c9c98@13");
@@ -441,7 +440,7 @@ main (void)
 	  "1.51d17526c7161@13");
   check4 ("26729022595358440976973142425600.0", GMP_RNDU,
 	  "1.25e19302f7e51@13");
-  check4 ("22696567866564242819241453027328.0", GMP_RNDU, 
+  check4 ("22696567866564242819241453027328.0", GMP_RNDU,
 	  "1.0ecea7dd2ec3d@13");
   check4 ("22696888073761729132924856434688.0", GMP_RNDU,
 	  "1.0ecf250e8e921@13");
@@ -469,7 +468,7 @@ main (void)
 	  "1.3853ee10c9c98@13");
   check4 ("36075288240584711210898775080960.0", GMP_RNDD,
 	  "1.556abe212b56e@13");
-  check4 ("72154663483843080704304789585920.0", GMP_RNDD, 
+  check4 ("72154663483843080704304789585920.0", GMP_RNDD,
 	  "1.e2d9a51977e6d@13");
 
   tests_end_mpfr ();
