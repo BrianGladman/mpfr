@@ -1,6 +1,6 @@
 /* generic file for evaluation of hypergeometric series using binary splitting
 
-Copyright 1999, 2000, 2001, 2002, 2003 Free Software Foundation.
+Copyright 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -34,8 +34,8 @@ MA 02111-1307, USA. */
 static int
 GENERIC (mpfr_ptr y, mpz_srcptr p, long r, int m)
 {
-  int n,i,k,j,l;
-  int is_p_one = 0;
+  unsigned long n,i,k,j,l;
+  int is_p_one;
   mpz_t* P,*S;
 #ifdef A
   mpz_t *T;
@@ -45,13 +45,13 @@ GENERIC (mpfr_ptr y, mpz_srcptr p, long r, int m)
   mpz_t* qtoj;
   mpfr_t tmp;
 #endif
-  int diff, expo;
-  int precy = MPFR_PREC(y);
+  mp_exp_t diff, expo;
+  mp_prec_t precy = MPFR_PREC(y);
   TMP_DECL(marker);
 
   TMP_MARK(marker);
   MPFR_CLEAR_FLAGS(y); 
-  n = 1 << m;
+  n = 1UL << m;
   P = (mpz_t*) TMP_ALLOC ((m+1) * sizeof(mpz_t));
   S = (mpz_t*) TMP_ALLOC ((m+1) * sizeof(mpz_t));
   ptoj = (mpz_t*) TMP_ALLOC ((m+1) * sizeof(mpz_t)); /* ptoj[i] = mantissa^(2^i) */
@@ -61,7 +61,7 @@ GENERIC (mpfr_ptr y, mpz_srcptr p, long r, int m)
 #ifdef R_IS_RATIONAL
   qtoj = (mpz_t*) TMP_ALLOC ((m+1) * sizeof(mpz_t));
 #endif
-  for (i=0;i<=m;i++)
+  for (i = 0 ; i <= m ; i++)
     {
       mpz_init (P[i]);
       mpz_init (S[i]);
@@ -76,105 +76,98 @@ GENERIC (mpfr_ptr y, mpz_srcptr p, long r, int m)
   mpz_set (ptoj[0], p);
 #ifdef C
 #  if C2 != 1
-  mpz_mul_ui(ptoj[0], ptoj[0], C2);
+  mpz_mul_ui (ptoj[0], ptoj[0], C2);
 #  endif
 #endif
-  is_p_one = !mpz_cmp_si(ptoj[0], 1);
+  is_p_one = mpz_cmp_ui(ptoj[0], 1) == 0;
 #ifdef A
 #  ifdef B
-  mpz_set_ui(T[0], A1 * B1);
+  mpz_set_ui (T[0], A1 * B1);
 #  else
-  mpz_set_ui(T[0], A1);
+  mpz_set_ui (T[0], A1);
 #  endif
 #endif
   if (!is_p_one) 
-  for (i=1;i<m;i++) mpz_mul(ptoj[i], ptoj[i-1], ptoj[i-1]);
+    for (i = 1 ; i < m ; i++) 
+      mpz_mul (ptoj[i], ptoj[i-1], ptoj[i-1]);
 #ifdef R_IS_RATIONAL
-  mpz_set_si(qtoj[0], r);
-  for (i=1;i<=m;i++) 
-    {
-      mpz_mul(qtoj[i], qtoj[i-1], qtoj[i-1]);
-    }
+  mpz_set_si (qtoj[0], r);
+  for (i = 1 ; i <= m ; i++)
+    mpz_mul(qtoj[i], qtoj[i-1], qtoj[i-1]);
 #endif
+  mpz_set_ui (P[0], 1);
+  mpz_set_ui (S[0], 1);
 
-  mpz_set_ui(P[0], 1);
-  mpz_set_ui(S[0], 1);
   k = 0;
-  for (i=1;(i < n) ;i++) {
+  for (i = 1 ; i < n ; i++) {
     k++;
     
 #ifdef A
 #  ifdef B 
-    mpz_set_ui(T[k], (A1 + A2*i)*(B1+B2*i));
+    mpz_set_ui (T[k], (A1 + A2*i)*(B1+B2*i));
 #  else
-    mpz_set_ui(T[k], A1 + A2*i);
+    mpz_set_ui (T[k], A1 + A2*i);
 #  endif
 #endif
     
 #ifdef C
 #  ifdef NO_FACTORIAL
-    mpz_set_ui(P[k], (C1 + C2 * (i-1)));
-    mpz_set_ui(S[k], 1);
+    mpz_set_ui (P[k], (C1 + C2 * (i-1)));
+    mpz_set_ui (S[k], 1);
 #  else
-    mpz_set_ui(P[k], (i+1) * (C1 + C2 * (i-1)));
-    mpz_set_ui(S[k], i+1);
+    mpz_set_ui (P[k], (i+1) * (C1 + C2 * (i-1)));
+    mpz_set_ui (S[k], i+1);
 #  endif
 #else
 #  ifdef NO_FACTORIAL
-    mpz_set_ui(P[k], 1);
+    mpz_set_ui (P[k], 1);
 #  else
-    mpz_set_ui(P[k], i+1);
+    mpz_set_ui (P[k], i+1);
 #  endif
-    mpz_set(S[k], P[k]);
+    mpz_set (S[k], P[k]);
 #endif
-    j=i+1; l=0; while ((j & 1) == 0) {      
+
+    for (j = i+1, l = 0 ; (j & 1) == 0 ; l++, j>>=1, k--) {
       if (!is_p_one) 
-	mpz_mul(S[k], S[k], ptoj[l]);
+	mpz_mul (S[k], S[k], ptoj[l]);
 #ifdef A
 #  ifdef B
 #    if (A2*B2) != 1
-      mpz_mul_ui(P[k], P[k], A2*B2);
+      mpz_mul_ui (P[k], P[k], A2*B2);
 #    endif
 #  else
 #    if A2 != 1 
-      mpz_mul_ui(P[k], P[k], A2);
+      mpz_mul_ui (P[k], P[k], A2);
 #  endif
 #endif
-      mpz_mul(S[k], S[k], T[k-1]);
+      mpz_mul (S[k], S[k], T[k-1]);
 #endif
-      mpz_mul(S[k-1], S[k-1], P[k]);
+      mpz_mul (S[k-1], S[k-1], P[k]);
 #ifdef R_IS_RATIONAL
-      mpz_mul(S[k-1], S[k-1], qtoj[l]);
+      mpz_mul (S[k-1], S[k-1], qtoj[l]);
 #else
-      mpz_mul_2exp(S[k-1], S[k-1], r*(1<<l));
+      mpz_mul_2exp (S[k-1], S[k-1], r*(1<<l));
 #endif
-      mpz_add(S[k-1], S[k-1], S[k]);
-      mpz_mul(P[k-1], P[k-1], P[k]);
+      mpz_add (S[k-1], S[k-1], S[k]);
+      mpz_mul (P[k-1], P[k-1], P[k]);
 #ifdef A
-      mpz_mul(T[k-1], T[k-1], T[k]);
+      mpz_mul (T[k-1], T[k-1], T[k]);
 #endif
-      l++; j>>=1; k--;
     }
   }
-
+  
   diff = mpz_sizeinbase(S[0],2) - 2*precy;
   expo = diff;
-  if (diff >=0)
-    {
-      mpz_div_2exp(S[0],S[0],diff);
-    } else 
-      {
-	mpz_mul_2exp(S[0],S[0],-diff);
-      }
+  if (diff >= 0)
+    mpz_div_2exp(S[0],S[0],diff);
+  else 
+    mpz_mul_2exp(S[0],S[0],-diff);
   diff = mpz_sizeinbase(P[0],2) - precy;
   expo -= diff;
   if (diff >=0)
-    {
-      mpz_div_2exp(P[0],P[0],diff);
-    } else
-      {
-	mpz_mul_2exp(P[0],P[0],-diff);
-	}
+    mpz_div_2exp(P[0],P[0],diff);
+  else
+    mpz_mul_2exp(P[0],P[0],-diff);
 
   mpz_tdiv_q(S[0], S[0], P[0]);
   mpfr_set_z(y, S[0], GMP_RNDD);
@@ -190,7 +183,7 @@ GENERIC (mpfr_ptr y, mpz_srcptr p, long r, int m)
 #else
   mpfr_div_2ui(y, y, r*(i-1), GMP_RNDN);
 #endif
-  for (i=0;i<=m;i++)
+  for (i = 0 ; i <= m ; i++)
     {
       mpz_clear (P[i]);
       mpz_clear (S[i]);
@@ -202,7 +195,7 @@ GENERIC (mpfr_ptr y, mpz_srcptr p, long r, int m)
       mpz_clear (T[i]);
 #endif
     }
-  TMP_FREE(marker);
+  TMP_FREE (marker);
   return 0;
 }
 
