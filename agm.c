@@ -32,7 +32,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
   TMP_DECL(marker);
 
   /* Deal with special values */
-  if (MPFR_ARE_SINGULAR(op1, op2))
+  if (MPFR_ARE_SINGULAR (op1, op2))
     {
       /* If a or b is NaN, the result is NaN */
       if (MPFR_IS_NAN(op1) || MPFR_IS_NAN(op2))
@@ -59,13 +59,13 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
 	}
       else /* a and b are neither NaN nor Inf, and one is zero */
 	{  /* If a or b is 0, the result is +0 since a sqrt is positive */
-          MPFR_ASSERTD(MPFR_IS_ZERO(op1) || MPFR_IS_ZERO(op2));
-	  MPFR_SET_POS(r);
-	  MPFR_SET_ZERO(r);
-	  MPFR_RET(0); /* exact */
+          MPFR_ASSERTD (MPFR_IS_ZERO (op1) || MPFR_IS_ZERO (op2));
+	  MPFR_SET_POS (r);
+	  MPFR_SET_ZERO (r);
+	  MPFR_RET (0); /* exact */
 	}
     }
-  MPFR_CLEAR_FLAGS(r);
+  MPFR_CLEAR_FLAGS (r);
 
   /* If a or b is negative (excluding -Infinity), the result is NaN */
   if (MPFR_UNLIKELY(MPFR_IS_NEG(op1) || MPFR_IS_NEG(op2)))
@@ -114,13 +114,26 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
       while (mpfr_cmp2 (u, v, &eq) != 0 && eq <= p - 2)
 	{
 	  mpfr_add (tmp, u, v, GMP_RNDN);
-	  /* It seems to work well. Any proof are welcome. */
-	  /*if (2*eq > p)
+	  /* It seems to work well. Any proofs are welcome. */
+#if 0
+	  if (2*eq > p)
 	    {
 	      mpfr_div_2ui (tmp, tmp, 1, GMP_RNDN);
 	      mpfr_swap (v, tmp);
 	      break;                      
-	      }*/
+	      }
+#elif 0
+	  if (4*eq > p)
+	    {
+	      mpfr_div_2ui (tmp, tmp, 1, GMP_RNDN); /* U(k) */
+	      mpfr_sub (u, v, u, GMP_RNDN);         /* e = V(k-1)-U(k-1) */
+	      mpfr_sqr (u, u, GMP_RNDN);            /* e = e^2 */
+	      mpfr_div_2ui (u, u, 4, GMP_RNDN);     /* e*= (1/2)^2*1/4  */
+	      mpfr_div (u, u, tmp, GMP_RNDN);       /* 1/4*e^2/U(k) */
+	      mpfr_sub (v, tmp, u, GMP_RNDN);
+	      break;
+	    }
+#endif
 	  mpfr_mul (u, u, v, GMP_RNDN);
 	  mpfr_sqrt (u, u, GMP_RNDN);
           mpfr_div_2ui (tmp, tmp, 1, GMP_RNDN);
