@@ -3,7 +3,7 @@
 @setfilename mpfr.info
 @documentencoding ISO-8859-1
 @set VERSION 2.1.0
-@set UPDATED-MONTH August 2004
+@set UPDATED-MONTH October 2004
 @settitle MPFR @value{VERSION}
 @synindex tp fn
 @iftex
@@ -593,6 +593,7 @@ precision, then MPFR will still compute the result with full precision.
 * Comparison Functions::
 * Special Functions::
 * Input and Output Functions::
+* Integer Related Functions::
 * Miscellaneous Functions::
 * Rounding Modes::
 * Exceptions::
@@ -818,19 +819,19 @@ using a third auxiliary variable.
 @cindex Combined initialization and assignment functions
 @section Combined Initialization and Assignment Functions
 
-@deftypefun int mpfr_init_set (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
-@deftypefunx int mpfr_init_set_ui (mpfr_t @var{rop}, unsigned long int @var{op}, mp_rnd_t @var{rnd})
-@deftypefunx int mpfr_init_set_si (mpfr_t @var{rop}, signed long int @var{op}, mp_rnd_t @var{rnd})
-@deftypefunx int mpfr_init_set_d (mpfr_t @var{rop}, double @var{op}, mp_rnd_t @var{rnd})
-@deftypefunx int mpfr_init_set_ld (mpfr_t @var{rop}, long double @var{op}, mp_rnd_t @var{rnd})
-@deftypefunx int mpfr_init_set_z (mpfr_t @var{rop}, mpz_t @var{op}, mp_rnd_t @var{rnd})
-@deftypefunx int mpfr_init_set_q (mpfr_t @var{rop}, mpq_t @var{op}, mp_rnd_t @var{rnd})
-@deftypefunx int mpfr_init_set_f (mpfr_t @var{rop}, mpf_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefn Macro int mpfr_init_set (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefnx Macro int mpfr_init_set_ui (mpfr_t @var{rop}, unsigned long int @var{op}, mp_rnd_t @var{rnd})
+@deftypefnx Macro int mpfr_init_set_si (mpfr_t @var{rop}, signed long int @var{op}, mp_rnd_t @var{rnd})
+@deftypefnx Macro int mpfr_init_set_d (mpfr_t @var{rop}, double @var{op}, mp_rnd_t @var{rnd})
+@deftypefnx Macro int mpfr_init_set_ld (mpfr_t @var{rop}, long double @var{op}, mp_rnd_t @var{rnd})
+@deftypefnx Macro int mpfr_init_set_z (mpfr_t @var{rop}, mpz_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefnx Macro int mpfr_init_set_q (mpfr_t @var{rop}, mpq_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefnx Macro int mpfr_init_set_f (mpfr_t @var{rop}, mpf_t @var{op}, mp_rnd_t @var{rnd})
 Initialize @var{rop} and set its value from @var{op}, rounded in the direction
 @var{rnd}.
 The precision of @var{rop} will be taken from the active default precision,
 as set by @code{mpfr_set_default_prec}.
-@end deftypefun
+@end deftypefn
 
 @deftypefun int mpfr_init_set_str (mpfr_t @var{x}, const char *@var{s}, int @var{base}, mp_rnd_t @var{rnd})
 Initialize @var{x} and set its value from
@@ -1063,22 +1064,18 @@ Just changes the sign if @var{rop} and @var{op} are the same variable.
 
 @deftypefun int mpfr_mul_2ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_mul_2si (mpfr_t @var{rop}, mpfr_t @var{op1}, long int @var{op2}, mp_rnd_t @var{rnd})
-@deftypefunx int mpfr_mul_2exp (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
 Set @var{rop} to @m{@var{op1} \times 2^{op2}, @var{op1} times 2 raised
 to @var{op2}}
 rounded in the direction @var{rnd}. Just increases the exponent by @var{op2}
 when @var{rop} and @var{op1} are identical.
-[@code{mpfr_mul_2exp} is kept for upward compatibility.]
 @end deftypefun
 
 @deftypefun int mpfr_div_2ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_div_2si (mpfr_t @var{rop}, mpfr_t @var{op1}, long int @var{op2}, mp_rnd_t @var{rnd})
-@deftypefunx int mpfr_div_2exp (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
 Set @var{rop} to @m{@var{op1}/2^{op2}, @var{op1} divided by 2 raised
 to @var{op2}}
 rounded in the direction @var{rnd}. Just decreases the exponent by @var{op2}
 when @var{rop} and @var{op1} are identical.
-[@code{mpfr_div_2exp} is kept for upward compatibility.]
 @end deftypefun
 
 @node Comparison Functions, Special Functions, Basic Arithmetic Functions, MPFR Interface
@@ -1100,7 +1097,7 @@ Compare @var{op1} and @var{op2}.  Return a positive value if @math{@var{op1} >
 @math{@var{op1} < @var{op2}}.
 Both @var{op1} and @var{op2} are considered to their full own precision,
 which may differ.
-If one of the operands is NaN (Not-a-Number), it returns 0 and set 
+If one of the operands is NaN (Not-a-Number), return zero and set 
 the erange flag.
 @end deftypefun
 
@@ -1295,7 +1292,7 @@ Free the cache used by the functions computing constants if needed
 Set @var{ret} to the sum of all elements of @var{tab} whose size is @var{n}, rounded in the direction @var{rnd}. Warning, @var{tab} is a table of pointer to mpfr_t, not a table of mpfr_t (priliminary interface).
 @end deftypefun
 
-@node Input and Output Functions, Miscellaneous Functions, Special Functions, MPFR Interface
+@node Input and Output Functions, Integer Related Functions, Special Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
 @section Input and Output Functions
 @cindex Float input and output functions
@@ -1354,10 +1351,10 @@ Return the number of bytes read, or if an error occurred, return 0.
 @c @code{mpfr_out_raw}, and put the result in @var{float}.
 @c @end deftypefun
 
-@node Miscellaneous Functions, Rounding Modes, Input and Output Functions, MPFR Interface
+@node Integer Related Functions, Miscellaneous Functions, Input and Output Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
-@section Miscellaneous Functions
-@cindex Miscellaneous float functions
+@section Integer Related Functions
+@cindex Integer Related Functions
 
 @deftypefun int mpfr_rint (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_ceil (mpfr_t @var{rop}, mpfr_t @var{op})
@@ -1412,6 +1409,11 @@ the fractional part is generated).
 @deftypefun int mpfr_integer_p (mpfr_t @var{op})
 Return non-zero iff @var{op} is an integer.
 @end deftypefun
+
+@node Miscellaneous Functions, Rounding Modes, Integer Related Functions, MPFR Interface
+@comment  node-name,  next,  previous,  up
+@section Miscellaneous Functions
+@cindex Miscellaneous float functions
 
 @deftypefun void mpfr_nexttoward (mpfr_t @var{x}, mpfr_t @var{y})
 If @var{x} or @var{y} is NaN, set @var{x} to NaN. Otherwise, if @var{x}
@@ -1548,7 +1550,7 @@ corresponding to the rounding mode @var{rnd} or a null pointer if
 @cindex Exceptions
 
 Note: Overflow handling is still experimental and currently implemented
-very partially. If an overflow occurs internally at the wrong place,
+partially. If an overflow occurs internally at the wrong place,
 anything can happen (crash, wrong results, etc).
 
 @deftypefun mp_exp_t mpfr_get_emin (void)
@@ -1740,6 +1742,13 @@ This function does not guarantee the exact rounding on the relative difference;
 it just computes @math{|@var{op1}-@var{op2}|/@var{op1}}, using the
 rounding mode @var{rnd} for all operations and the precision of @var{rop}.
 @end deftypefun
+
+@deftypefun int mpfr_mul_2exp (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_div_2exp (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
+See @code{mpfr_mul_2ui} and @code{mpfr_div_2ui}. Theses functions are only kept
+for compatibility with MPF.
+@end deftypefun
+
 
 @node Internals,  , Compatibility with MPF, MPFR Interface
 @section Internals
