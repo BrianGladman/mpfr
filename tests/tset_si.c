@@ -7,13 +7,15 @@
 int
 main(int argc, char **argv)
 {
-  mpfr_t x; long k, z, d; unsigned long zl, dl; 
+  mpfr_t x; long k, z, d; unsigned long zl, dl, N; 
   
   mpfr_init2(x, 100);
 
   srandom(time(NULL)); 
 
-  for (k = 1; k <= atoi(argv[1]); k++)
+  N = (argc==1) ? 1000000 : atoi(argv[1]);
+
+  for (k = 1; k <= N; k++)
     {
       z = random() - (1 << 30);      
       mpfr_set_si(x, z, GMP_RNDZ); 
@@ -23,7 +25,7 @@ main(int argc, char **argv)
       
     }
 
-  for (k = 1; k <= atoi(argv[1]); k++)
+  for (k = 1; k <= N; k++)
     {
       zl = random();
       mpfr_set_ui(x, zl, GMP_RNDZ); 
