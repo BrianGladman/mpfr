@@ -22,8 +22,10 @@ mpfr_mul_ui(mpfr_ptr y, mpfr_srcptr x, unsigned long u, unsigned char RND_MODE)
       _mp_free_func(old_my, ysize*BYTES_PER_MP_LIMB); 
       }
   */
-  carry = mpn_mul_1(my, MANT(x), xsize, u); 
-  count_leading_zeros(cnt, carry); 
+  carry = mpn_mul_1(my, MANT(x), xsize, u);
+  /* WARNING: count_leading_zeros is undefined for carry=0 */
+  if (carry) count_leading_zeros(cnt, carry);
+  else cnt=BITS_PER_MP_LIMB;
       
   c = mpfr_round_raw(my, my, RND_MODE, ysize, PREC(y)-BITS_PER_MP_LIMB+cnt);
   
