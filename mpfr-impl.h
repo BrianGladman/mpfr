@@ -99,7 +99,15 @@ typedef unsigned long int  mpfr_uexp_t;
 # define mp_exp_unsigned_t mpfr_uexp_t
 #endif
 
+#if   MPFR_PREC_FORMAT == 1
+#define MPFR_INTPREC_MAX (USHRT_MAX & ~(unsigned int) (BITS_PER_MP_LIMB - 1))
+#elif MPFR_PREC_FORMAT == 2
+#define MPFR_INTPREC_MAX (UINT_MAX & ~(unsigned int) (BITS_PER_MP_LIMB - 1))
+#elif MPFR_PREC_FORMAT == 3
 #define MPFR_INTPREC_MAX (ULONG_MAX & ~(unsigned long) (BITS_PER_MP_LIMB - 1))
+#else
+# error "Invalid MPFR Prec format"
+#endif
 
 /* Assertions */
 
