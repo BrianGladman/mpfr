@@ -31,7 +31,7 @@ mpfr_set_prec_raw (mpfr_ptr x, mp_prec_t p)
 {
   MPFR_ASSERTN(p >= MPFR_PREC_MIN && p <= MPFR_PREC_MAX);
 
-  if (p > MPFR_ABSSIZE(x) * BITS_PER_MP_LIMB)
+  if (p > (mp_prec_t) MPFR_ABSSIZE(x) * BITS_PER_MP_LIMB)
     {
       fprintf (stderr, "*** precision too large for allocated space\n");
       exit (1);
@@ -39,5 +39,3 @@ mpfr_set_prec_raw (mpfr_ptr x, mp_prec_t p)
 
   MPFR_PREC(x) = p;
 }
-
-
