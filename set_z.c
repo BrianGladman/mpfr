@@ -30,8 +30,9 @@ int
 mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
 {
   mp_size_t fn, zn, dif, sh;
-  int k, sign_z;
-  mp_limb_t *fp = MPFR_MANT(f), *zp, cc, c2;
+  int k, sign_z, inex;
+  mp_limb_t *fp, *zp;
+  mp_exp_t exp;
 
   MPFR_CLEAR_FLAGS (f); /* z cannot be NaN nor Inf */
 
@@ -44,91 +45,118 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
       MPFR_RET(0);
     }
 
-  fn = 1 + (MPFR_PREC(f)-1)/BITS_PER_MP_LIMB;
+  fp = MPFR_MANT(f);
+  fn = 1 + (MPFR_PREC(f) - 1) / BITS_PER_MP_LIMB;
   zn = ABS(SIZ(z));
-  dif = zn-fn;
+  dif = zn - fn;
   zp = PTR(z);
   count_leading_zeros(k, zp[zn-1]);
-  MPFR_EXP(f) = zn*BITS_PER_MP_LIMB-k;
-  if (MPFR_SIGN(f)*sign_z<0) MPFR_CHANGE_SIGN(f);
-  if (dif>=0) { /* number has to be truncated */
-    if (k) {
-      mpn_lshift(fp, zp + dif, fn, k);
-      if (dif) *fp += zp[dif-1] >> (BITS_PER_MP_LIMB-k);
-    }
-    else MPN_COPY(fp, zp + dif, fn);
-    sh = fn*BITS_PER_MP_LIMB-MPFR_PREC(f);
-    cc = *fp & ((MP_LIMB_T_ONE << sh) - 1);
-    *fp = *fp & ~cc;
-    if (rnd_mode == GMP_RNDN) {
-      if (sh) c2 = MP_LIMB_T_ONE << (sh - 1);
-      else { /* sh=0 */
-	c2 = MP_LIMB_T_HIGHBIT;
-	dif--;
-	cc = (dif>=0) ? ((zp[dif])<<k) : 0;
-	if (dif>0 && k) cc += zp[dif-1] >> (BITS_PER_MP_LIMB-k);
-      }
-      /* now compares cc to c2 */
-      if (cc > c2)
+
+  exp = (mp_prec_t) zn * BITS_PER_MP_LIMB - k;
+  /* The exponent will be exp or exp + 1 (due to rounding) */
+  if (exp > __mpfr_emax)
+    return mpfr_set_overflow(f, rnd_mode, sign_z);
+  if (exp + 1 < __mpfr_emin)
+    return mpfr_set_underflow(f, rnd_mode, sign_z);
+  MPFR_EXP(f) = exp;
+
+  if (MPFR_SIGN(f) * sign_z < 0)
+    MPFR_CHANGE_SIGN(f);
+
+  if (dif >= 0)
+    {
+      mp_limb_t cc;
+
+      /* number has to be truncated */
+      if (k)
         {
-          mpfr_add_one_ulp(f, rnd_mode);
-          return cc;
+          mpn_lshift(fp, zp + dif, fn, k);
+          if (dif != 0)
+            fp[0] += zp[dif - 1] >> (BITS_PER_MP_LIMB - k);
         }
-      else if (cc < c2)
-        goto towards_zero;
       else
+        MPN_COPY(fp, zp + dif, fn);
+
+      sh = (mp_prec_t) fn * BITS_PER_MP_LIMB - MPFR_PREC(f);
+      cc = fp[0] & ((MP_LIMB_T_ONE << sh) - 1);
+      fp[0] &= ~cc;
+
+      if ((rnd_mode == GMP_RNDU && sign_z < 0) ||
+          (rnd_mode == GMP_RNDD && sign_z > 0))
+        rnd_mode = GMP_RNDZ;
+
+      if (rnd_mode == GMP_RNDN)
         {
-          cc = 0;
-          while (dif > 0 && (cc = zp[dif-1]) == 0)
-            dif--;
-          if (cc)
+          mp_limb_t c2;
+
+          if (sh)
+            c2 = MP_LIMB_T_ONE << (sh - 1);
+          else /* sh = 0 */
+            {
+              c2 = MP_LIMB_T_HIGHBIT;
+              cc = --dif >= 0 ? zp[dif] << k : 0;
+              if (dif > 0 && k)
+                cc += zp[dif-1] >> (BITS_PER_MP_LIMB - k);
+            }
+          /* now compares cc to c2 */
+          if (cc > c2)
             {
               mpfr_add_one_ulp(f, rnd_mode);
-              return cc;
+              inex = sign_z;
             }
-          else /* exactly in middle: inexact in both cases */
-            if (*fp & (MP_LIMB_T_ONE << sh))
-              {
-                mpfr_add_one_ulp(f, rnd_mode);
-                return 1;
-              }
-            else
-              return 1;
+          else if (cc < c2)
+            {
+              inex = -sign_z;
+            }
+          else
+            {
+              cc = 0;
+              while (cc == 0 && dif > 0)
+                cc = zp[--dif];
+              if (cc != 0 || (fp[0] & (MP_LIMB_T_ONE << sh)))
+                {
+                  mpfr_add_one_ulp(f, rnd_mode);
+                  inex = sign_z;
+                }
+              else
+                inex = -sign_z;
+            }
+        }
+      else
+        {
+          /* remaining bits... */
+          if (cc == 0)
+            {
+              if (dif > 0)
+                cc = zp[--dif] << k;
+              while (cc == 0 && dif > 0)
+                cc = zp[--dif];
+            }
+          if (cc == 0)
+            inex = 0;
+          else if (rnd_mode == GMP_RNDZ)
+            inex = -sign_z;
+          else
+            {
+              mpfr_add_one_ulp(f, rnd_mode);
+              inex = sign_z;
+            }
         }
     }
-    else if ((sign_z > 0 && rnd_mode == GMP_RNDU) ||
-             (sign_z < 0 && rnd_mode == GMP_RNDD))
-      {
-        /* round towards infinity */
-        /* result is exact iff all remaining bits are zero */
-        if (dif > 0 && cc == 0)
-          cc = zp[--dif] << k;
-        while (cc == 0 && dif > 0)
-          cc = zp[--dif];
-        if (cc)
-          {
-            mpfr_add_one_ulp(f, rnd_mode);
-            return 1;
-          }
-        else
-          return 0;
-      }
-    else { /* round towards zero */
-      /* result is exact iff all remaining bits are zero */
-    towards_zero:
-      if (cc==0 && dif>0) cc=zp[--dif]<<k;
-      while (cc==0 && dif>0) cc=zp[--dif];
-      return cc;
+  else
+    {
+      if (k)
+        mpn_lshift(fp - dif, zp, zn, k);
+      else
+        MPN_COPY(fp - dif, zp, zn);
+      /* fill with zeroes */
+      MPN_ZERO(fp, -dif);
+      inex = 0; /* result is exact */
     }
-  }
-  else {
-    if (k) mpn_lshift(fp-dif, zp, zn, k);
-    else MPN_COPY(fp-dif, zp, zn);
-    /* fill with zeroes */
-    MPN_ZERO(fp, -dif);
-    return 0; /* result is exact */
-  }
+
+  if (exp > __mpfr_emax)
+    return mpfr_set_overflow(f, rnd_mode, sign_z);
+  if (exp < __mpfr_emin)
+    return mpfr_set_underflow(f, rnd_mode, sign_z);
+  MPFR_RET(inex);
 }
-
-
-
