@@ -37,10 +37,10 @@ void check2(double a, unsigned char rnd_mode, double res1)
   mpfr_t ta, tres;
   double res2;
   int ck=0; /* ck=1 iff res1 is certified correct */
-  printf("mpfr_log working on a=%1.20e, rnd_mode=%d\n",a,rnd_mode);
+
   mpfr_set_machine_rnd_mode(rnd_mode);  
   if (res1==0.0) res1=log(a); else ck=1;
-
+  /* printf("mpfr_log working on a=%1.20e, rnd_mode=%d\n",a,rnd_mode);*/
   mpfr_init2(ta, 53);
   mpfr_init2(tres, 53);
   mpfr_set_d(ta, a, GMP_RNDN);
@@ -49,10 +49,10 @@ void check2(double a, unsigned char rnd_mode, double res1)
 
   if (res1!=res2 && (!isnan(res1) || !isnan(res2))) {
     if (ck) 
-      printf("mpfr_log failed for    a=%1.20e, rnd_mode=%d\n",a,rnd_mode);
+      printf("mpfr_log failed for    a=%1.40e, rnd_mode=%d\n",a,rnd_mode);
     else
-      printf("mpfr_log differs from libm.a for a=%1.20e, rnd_mode=%d\n",a,rnd_mode);
-    printf(" double calculus gives %1.20e\n mpfr_log        gives %1.20e (%d ulp)\n pari            gives \n \n",res1,res2,ulp(res1,res2));
+      printf("mpfr_log differs from libm.a for a=%1.40e, rnd_mode=%d\n",a,rnd_mode);
+    printf(" double calculus gives %1.40e\n mpfr_log        gives %1.40e (%d ulp)\n pari            gives \n \n",res1,res2,ulp(res1,res2));
   }
   /*else {
     printf("GOAL !!! for           a=%1.20e, rnd_mode=%d\n",a,rnd_mode);
@@ -76,15 +76,22 @@ check3(double d, unsigned long prec, unsigned char rnd)
 /* examples from Jean-Michel Muller and Vincent Lefevre 
    Cf http://www.ens-lyon.fr/~jmmuller/Intro-to-TMD.htm
 */
+
 check_worst_cases()
 { /*-2*/
+  double d, pow=1.0;
+  int i;
+  d=(double)4507651597124051;
+  for(i=0;i<52;i++)
+    pow*=2.0;
+  d/=pow;
   check2(1.00089971802309629645, GMP_RNDD, 8.99313519443722736088e-04); 
   check2(1.00089971802309629645, GMP_RNDN, 8.99313519443722844508e-04);
   check2(1.00089971802309629645, GMP_RNDU, 8.99313519443722844508e-04); 
 
-  check2(4507651597124051/(2^52), GMP_RNDD, 8.99313519443722736088e-04); 
-  check2(4507651597124051/(2^52), GMP_RNDN, 8.99313519443722844508e-04);
-  check2(4507651597124051/(2^52), GMP_RNDU, 8.99313519443722844508e-04); 
+  check2(d, GMP_RNDD, 8.99313519443722736088e-04); 
+  check2(d, GMP_RNDN, 8.99313519443722844508e-04);
+  check2(d, GMP_RNDU, 8.99313519443722844508e-04); 
 
   /*+1*/
   check2(1.01979300812244555452, GMP_RNDD, 1.95996734891603630047e-02); 
@@ -123,9 +130,9 @@ check_worst_cases()
   check2(1.72634853551388700588, GMP_RNDN, 5.46008504786553716670e-01);
   check2(1.72634853551388700588, GMP_RNDU, 5.46008504786553716670e-01);
 
-  check2(2.00028876593004323325, GMP_RNDD, 6.93291553102749702475e-01);/*segv*/
+  check2(2.00028876593004323325, GMP_RNDD, 6.93291553102749702475e-01);
   check2(2.00028876593004323325, GMP_RNDN, 6.93291553102749813497e-01);
-  check2(2.00028876593004323325, GMP_RNDU, 6.93291553102749813497e-01);/*segv*/
+  check2(2.00028876593004323325, GMP_RNDU, 6.93291553102749813497e-01);
 
   check2(6.27593230200363105808, GMP_RNDD, 1.83672204800630312072);
   check2(6.27593230200363105808, GMP_RNDN, 1.83672204800630334276);
@@ -139,16 +146,16 @@ check_worst_cases()
   check2(9.34589857718275318632, GMP_RNDN, 2.23493759221664989312);
   check2(9.34589857718275318632, GMP_RNDU, 2.23493759221664989312);
 
-  check2(10.6856587560831854944, GMP_RNDD, 2.36890253928838445674); /* segv */
+  check2(10.6856587560831854944, GMP_RNDD, 2.36890253928838445674);
   check2(10.6856587560831854944, GMP_RNDN, 2.36890253928838445674);
   check2(10.6856587560831854944, GMP_RNDU, 2.36890253928838490083);
 
-  check2(12.4646345033981766903, GMP_RNDD, 2.52289539471636015122); /* segv */
+  check2(12.4646345033981766903, GMP_RNDD, 2.52289539471636015122);
   check2(12.4646345033981766903, GMP_RNDN, 2.52289539471636015122);
   check2(12.4646345033981766903, GMP_RNDU, 2.52289539471636059531);
 
   check2(17.0953275851761752335, GMP_RNDD, 2.83880518553861849185);
-  check2(17.0953275851761752335, GMP_RNDN, 2.83880518553861893594); /* segv */
+  check2(17.0953275851761752335, GMP_RNDN, 2.83880518553861893594); 
   check2(17.0953275851761752335, GMP_RNDU, 2.83880518553861893594);
 
   check2(19.8509496207496916043, GMP_RNDD, 2.98825184582516722998);
@@ -180,9 +187,9 @@ void main(int argc, char *argv[]) {
     printf("GMP_RNDN : %i, GMP_RNDZ : %i,GMP_RNDU : %i,GMP_RNDD : %i\n",GMP_RNDN, GMP_RNDZ,GMP_RNDU, GMP_RNDD); 
   }
   else {
-    /*  check_worst_cases();
+    check_worst_cases();
 
-  check(10,GMP_RNDU);
+   check(10,GMP_RNDU);
   check(6,GMP_RNDU);  
   check(1,GMP_RNDZ);  
   check(62,GMP_RNDU);
@@ -220,16 +227,14 @@ void main(int argc, char *argv[]) {
   check(7.34302197248998461006e+43,GMP_RNDZ);
   check(6.09969788341579732815e+00,GMP_RNDD);
   check(8.94529798779875738679e+82,GMP_RNDD);
-  check(1.68775280934272742250e+00,GMP_RNDZ); */
-
-    check(5.32204288784834943727e+02,GMP_RNDZ);
+  check(1.68775280934272742250e+00,GMP_RNDZ); 
+  check(5.32204288784834943727e+02,GMP_RNDZ);
   } 
 
-  srand48(64);
+  srand48(getpid());
   for(i=0;i<N;i++) {
     d=drand();
     check(d,rand() % 4);
   }
 } 
-
 
