@@ -24,13 +24,8 @@ MA 02111-1307, USA. */
 #include <unistd.h>
 #include "gmp.h"
 #include "mpfr.h"
-#include "gmp-impl.h"
+#include "mpfr-test.h"
 
-extern int ilogb();
-extern int isnan();
-extern double drand48();
-extern void srand48();
-int ulp _PROTO((double, double)); 
 int check3 _PROTO((double, unsigned char, double)); 
 int check_large _PROTO((double, int, char)); 
 int check_worst_case _PROTO((double, double)); 
@@ -39,22 +34,10 @@ void compare_exp2_exp3 _PROTO((int));
 
 int maxu=0;
 
-/* returns the number of ulp's between a and b */
-int ulp(a,b) double a,b;
-{
-  int expa; double ulpa;
-
-  expa = ilogb(a);
-  if (expa==-1022) return 0; /* denormalized */
-  ulpa = pow(2.0, (double)expa-52.0);
-  b = a-b; if (b<0) b=-b;
-  return (int) (b/ulpa+0.5);
-}
-
 #define check(d, r) check3(d, r, 0.0)
 
 /* returns the number of ulp of error */
-int check3(double d, unsigned char rnd, double e)
+int check3 (double d, mp_rnd_t rnd, double e)
 {
   mpfr_t x, y; double f; int u=0, ck=0;
 
@@ -67,9 +50,9 @@ int check3(double d, unsigned char rnd, double e)
   mpfr_exp(y, x, rnd); 
   f = mpfr_get_d(y);
   if (f != e && (!isnan(f) || !isnan(e))) {
-    u = ulp(e,f);
+    u = ulp(e, f);
     if (u<0) {
-      if (u == (mp_limb_t)1<<(BITS_PER_MP_LIMB-1)) u += 1;
+      if (u == (mp_limb_t) 1 << (mp_bits_per_limb-1)) u += 1;
       u=-u;
     }
     if (u!=0) {
@@ -92,7 +75,7 @@ int check3(double d, unsigned char rnd, double e)
 }
 
 /* computes n bits of exp(d) */
-int check_large (double d, int n, char rnd)
+int check_large (double d, int n, mp_rnd_t rnd)
 {
   mpfr_t x; mpfr_t y;
   
@@ -121,7 +104,7 @@ int check_large (double d, int n, char rnd)
 }
 
 /* expx is the value of exp(X) rounded towards -infinity */
-int check_worst_case(double X, double expx)
+int check_worst_case (double X, double expx)
 {
   mpfr_t x, y;
 
@@ -143,7 +126,7 @@ int check_worst_case(double X, double expx)
 }
 
 /* worst cases communicated by Jean-Michel Muller and Vincent Lefevre */
-int check_worst_cases()
+int check_worst_cases ()
 {
   mpfr_t x;
 
@@ -168,7 +151,7 @@ int check_worst_cases()
   return 0;
 }
 
-void compare_exp2_exp3(int n)
+void compare_exp2_exp3 (int n)
 {
   mpfr_t x, y, z; int prec; mp_rnd_t rnd;
 
