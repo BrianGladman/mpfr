@@ -32,9 +32,11 @@ mpfr_init2 (mpfr_ptr x, mp_prec_t p)
   /* Check if we can represent the number of limbs
    * associated to the maximum of mpfr_prec_t*/
   MPFR_ASSERTN( MP_SIZE_T_MAX >= (MPFR_PREC_MAX/BYTES_PER_MP_LIMB) );
+
   /* Check for correct BITS_PER_MP_LIMB and BYTES_PER_MP_LIMB */
   MPFR_ASSERTN( BITS_PER_MP_LIMB == BYTES_PER_MP_LIMB * CHAR_BIT
 		&& sizeof(mp_limb_t) == BYTES_PER_MP_LIMB );
+
   /* Check for correct EXP NAN in both mpfr.h and in mpfr-impl.h */
   MPFR_ASSERTN( __MPFR_EXP_NAN == MPFR_EXP_NAN );
 
@@ -46,11 +48,11 @@ mpfr_init2 (mpfr_ptr x, mp_prec_t p)
   xsize = (mp_size_t) ((p - 1) / BITS_PER_MP_LIMB) + 1;
   tmp   = (mp_ptr) (*__gmp_allocate_func)(MPFR_MALLOC_SIZE(xsize));
 
-  MPFR_PREC(x) = p;
+  MPFR_PREC(x) = p;                /* Set prec */
   MPFR_EXP (x) = MPFR_EXP_INVALID; /* make sure that the exp field has a
                                       valid value in the C point of view */
-  MPFR_SET_POS(x);   /* Set a sign */
-  MPFR_SET_MANT_PTR(x, tmp);
-  MPFR_SET_ALLOC_SIZE(x, xsize);
-  MPFR_SET_NAN(x); /* initializes to NaN */
+  MPFR_SET_POS(x);                 /* Set a sign */
+  MPFR_SET_MANT_PTR(x, tmp);       /* Set Mantissa ptr */
+  MPFR_SET_ALLOC_SIZE(x, xsize);   /* Fix alloc size of Mantissa */
+  MPFR_SET_NAN(x);                 /* initializes to NaN */
 }
