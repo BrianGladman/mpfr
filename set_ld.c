@@ -77,8 +77,8 @@ mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
               shift_exp += 1024;
             }
         }
-      else if (MPFR_IS_ZERO(u) == 0 && (d != 0.0)) /* underflow */
-        { 
+      else if (MPFR_IS_ZERO(u) && (d != (long double) 0.0)) /* underflow */
+        {
           long double div10, div11, div12, div13;
           div10 = (long double) (double) 5.5626846462680034577255e-309; /* 2^(-2^10) */
           div11 = div10 * div10; /* 2^(-2^11) */
