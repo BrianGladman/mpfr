@@ -7,7 +7,7 @@ LDADD = libfrtests.a $(top_builddir)/libmpfr.a  @LDADD@
 INCLUDES = -I$(top_srcdir) @INCLUDES@
 
 check_LIBRARIES = libfrtests.a
-libfrtests_a_SOURCES = memory.c tests.c
+libfrtests_a_SOURCES = memory.c rnd_mode.c tests.c
 
 $(top_builddir)/libmpfr.a:
 	cd $(top_builddir); make libmpfr.a
