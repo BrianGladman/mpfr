@@ -204,7 +204,7 @@ does not depend (or should not) on the machine word size
 @code{mp_bits_per_limb} (32 or 64 on most machines);
 @item the precision in bits can be set exactly to any valid value
 for each variable (including very small precision);
-@item @code{mpfr} provides the four rounding modes from the IEEE 754
+@item @code{mpfr} provides the four rounding modes from the IEEE 754-1985
 standard.
 @end itemize
 
@@ -385,9 +385,9 @@ is @code{mpfr_t}.
 A floating-point number can have three special values: Not-a-Number (NaN)
 or plus or minus Infinity. NaN represents a value which cannot be represented
 in the floating-point format, like 0 divided by 0, or Infinity minus Infinity.
-Moreover, like in the IEEE 754 standard, zero is signed, i.e. there are a +0
-and a -0; the behavior is the same as in the IEEE 754 standard and it is
-generalized to the other functions supported by MPFR.
+Moreover, like in the IEEE 754-1985 standard, zero is signed, i.e. there are
+a +0 and a -0; the behavior is the same as in the IEEE 754-1985 standard and
+it is generalized to the other functions supported by MPFR.
 
 
 @cindex Precision
@@ -509,8 +509,8 @@ The semantics of a calculation in MPFR is specified as follows: Compute the
 requested operation exactly (with ``infinite accuracy''), and round the result
 to the precision of the destination variable, with the given rounding mode.
 The MPFR floating-point functions are intended to be a smooth extension
-of the IEEE P754 arithmetic. The results obtained on one computer should not
-differ from the results obtained on a computer with a different word size.
+of the IEEE 754-1985 arithmetic. The results obtained on one computer should
+not differ from the results obtained on a computer with a different word size.
 
 @cindex Accuracy
 MPFR does not keep track of the accuracy of a computation. This is left
@@ -545,8 +545,8 @@ The following four rounding modes are supported:
 @item @code{GMP_RNDU}: round towards plus infinity
 @item @code{GMP_RNDD}: round towards minus infinity
 @end itemize
-The @samp{round to nearest} mode works as in the IEEE P754 standard: in case
-the number to be rounded lies exactly in the middle of two representable
+The @samp{round to nearest} mode works as in the IEEE 754-1985 standard: in
+case the number to be rounded lies exactly in the middle of two representable
 numbers, it is rounded to the one with the least significant bit set to zero.
 For example, the number 5, which is represented by (101) in binary, is rounded
 to (100)=4 with a precision of two bits, and not to (110)=6.
