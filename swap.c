@@ -23,23 +23,11 @@ MA 02111-1307, USA. */
 
 #include "mpfr-impl.h"
 
-/* (Outdated rem)
- * We now use memcpy instead of copying the structure field by field.
- * Thus we avoid copying values that may have trap representations,
- * and if we change the structure in the future, this will still be
- * valid. Also, there should not be any noticeable speed change in
- * practice.
- */
+/* Using memcpy is a few slower than swapping by hand. */
 
 void
 mpfr_swap (mpfr_ptr u, mpfr_ptr v)
 {
-  /*mpfr_t tmp;
-
-  memcpy (tmp, u, sizeof (mpfr_t));
-  memcpy (u, v, sizeof (mpfr_t));
-  memcpy (v, tmp, sizeof (mpfr_t));*/
-  
   mpfr_prec_t p1, p2;
   mpfr_sign_t s1, s2;
   mp_exp_t e1, e2;
