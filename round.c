@@ -113,10 +113,10 @@ mpfr_round_raw2(xp, xn, neg, rnd, prec)
 */
 int
 #if __STDC__
-mpfr_round_raw(mp_limb_t *y, mp_limb_t *xp, mp_prec_t xprec, int negative,
+mpfr_round_raw (mp_limb_t *y, mp_limb_t *xp, mp_prec_t xprec, int negative,
 	       mp_prec_t yprec, mp_rnd_t rnd_mode)
 #else
-mpfr_round_raw(y, xp, xprec, negative, yprec, rnd_mode)
+mpfr_round_raw (y, xp, xprec, negative, yprec, rnd_mode)
      mp_limb_t *y; 
      mp_limb_t *xp; 
      mp_prec_t xprec; 
@@ -142,7 +142,8 @@ mpfr_round_raw(y, xp, xprec, negative, yprec, rnd_mode)
   /* precision is larger than the size of x. No rounding is necessary. 
      Just add zeroes at the end */
   if (xsize < nw) { 
-    MPN_COPY(y + nw - xsize, xp, xsize);
+    /* if y=xp, maybe an overlap: MPN_COPY_DECR is ok when src <= dst */
+    MPN_COPY_DECR(y + nw - xsize, xp, xsize);
     MPN_ZERO(y, nw - xsize); /* PZ 27 May 99 */
     y[0] &= mask;
     return 0; 
@@ -156,8 +157,8 @@ mpfr_round_raw(y, xp, xprec, negative, yprec, rnd_mode)
       else
 	carry = mpn_add_1(y, xp + xsize - nw, nw, 1); 
     }
-
-  else MPN_COPY(y, xp + xsize - nw, nw);
+  else /* now xsize >= nw */
+    MPN_COPY_INCR(y, xp + xsize - nw, nw);
 
   y[0] &= mask;
   return carry; 
