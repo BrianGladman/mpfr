@@ -6024,6 +6024,15 @@ should work if nowhere else does.}
 % likely, but for now just recognize it.
 \let\documentencoding = \comment
 
+% Added by Vincent Lefevre on 2003-09-24.
+% Support for some top-bit-set characters in the .texi source.
+% See http://www.lysator.liu.se/~nisse/archive/ISO-8859-1.def
+% for full ISO-8859-1 support. This is a hack, until document
+% encoding is fully supported by texinfo...
+\global\catcode177=13  \gdef^^b1{$\pm$}
+\global\catcode232=13  \gdef^^e8{\`e}
+\global\catcode233=13  \gdef^^e9{\'e}
+\global\catcode246=13  \gdef^^f6{\"o}
 
 % Page size parameters.
 %
