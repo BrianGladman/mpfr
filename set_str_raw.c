@@ -45,12 +45,13 @@ mpfr_set_str_raw(x, str)
 #endif
 {
   char *str2, *str0, negative = 0; 
-  unsigned long j, l, k = 0, xsize, cnt; mp_limb_t *xp; 
+  unsigned long j, l, k = 0, xsize, cnt, alloc; mp_limb_t *xp; 
   long expn = 0, e; char *endstr2;
 
   xp = x -> _mp_d; 
   xsize = 1 + (PREC(x)-1)/BITS_PER_MP_LIMB;
-  str0 = str2 = (char *) malloc((strlen(str)+1)*sizeof(char)); 
+  alloc = (strlen(str)+1) * sizeof(char);
+  str0 = str2 = (char *) (*_mp_allocate_func) (alloc);
 
   if (*str == '-') { negative = 1; str++; }
   else if (*str == '+') str++;
@@ -105,7 +106,7 @@ mpfr_set_str_raw(x, str)
   x -> _mp_exp = expn - cnt; 
   x -> _mp_size = xsize; if (negative) CHANGE_SIGN(x);
 
-  free(str0); 
+  (*_mp_free_func) (str0, alloc);
   
   /* May change to take into account : syntax errors, overflow in exponent, 
      string truncated because of size of x */

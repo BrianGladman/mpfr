@@ -56,14 +56,14 @@ int m;
   int diff,expo;
   int precy = PREC(y);
   n = 1 << m;
-  P = (mpz_t*) malloc((m+1) * sizeof(mpz_t));
-  S = (mpz_t*) malloc((m+1) * sizeof(mpz_t));
+  P = (mpz_t*) (*_mp_allocate_func) ((m+1) * sizeof(mpz_t));
+  S = (mpz_t*) (*_mp_allocate_func) ((m+1) * sizeof(mpz_t));
 #ifdef A
-  T = (mpz_t*) malloc((m+1) * sizeof(mpz_t));
+  T = (mpz_t*) (*_mp_allocate_func) ((m+1) * sizeof(mpz_t));
 #endif
-  ptoj = (mpz_t*) malloc((m+1) * sizeof(mpz_t)); /* ptoj[i] = mantissa^(2^i) */
+  ptoj = (mpz_t*) (*_mp_allocate_func) ((m+1) * sizeof(mpz_t)); /* ptoj[i] = mantissa^(2^i) */
 #ifdef R_IS_RATIONAL
-    qtoj = (mpz_t*) malloc((m+1) * sizeof(mpz_t)); 
+    qtoj = (mpz_t*) (*_mp_allocate_func) ((m+1) * sizeof(mpz_t)); 
 #endif
   for (i=0;i<=m;i++) { mpz_init(P[i]); mpz_init(S[i]); mpz_init(ptoj[i]);
 #ifdef R_IS_RATIONAL
@@ -199,14 +199,14 @@ int m;
   mpz_clear(T[i]);
 #endif
   }
-  free(P);
-  free(S);
-  free(ptoj);
+  (*_mp_free_func) (P, (m+1) * sizeof(mpz_t));
+  (*_mp_free_func) (S, (m+1) * sizeof(mpz_t));
+  (*_mp_free_func) (ptoj, (m+1) * sizeof(mpz_t));
 #ifdef R_IS_RATIONAL
-  free(qtoj);
+  (*_mp_free_func) (qtoj, (m+1) * sizeof(mpz_t));
 #endif
 #ifdef A
-  free(T);
+  (*_mp_free_func) (T, (m+1) * sizeof(mpz_t));
 #endif
   return 0;
 }

@@ -30,12 +30,6 @@ MA 02111-1307, USA. */
 
 int mpfr_extract(mpz_ptr , mpfr_srcptr , int );
 
-
-#define MY_INIT_MPZ(x, s) { \
-   (x)->_mp_alloc = (s); \
-   (x)->_mp_d = (mp_ptr) TMP_ALLOC((s)*BYTES_PER_MP_LIMB); \
-   (x)->_mp_size = 0; }
-
 int
 #if __STDC__
 mylog2(int x)
@@ -69,12 +63,15 @@ int m;
   int prec_i_have;
   int *nb_terms;
   int accu;
+  TMP_DECL (marker);
+
+  TMP_MARK (marker);
   n = 1 << m;
-  P = (mpz_t*) malloc((m+1) * sizeof(mpz_t));
-  S = (mpz_t*) malloc((m+1) * sizeof(mpz_t));
-  ptoj = (mpz_t*) malloc((m+1) * sizeof(mpz_t)); /* ptoj[i] = mantissa^(2^i) */
-  mult = (int*) malloc((m+1) * sizeof(int)); 
-  nb_terms = (int*) malloc((m+1) * sizeof(int)); 
+  P = (mpz_t*) TMP_ALLOC((m+1) * sizeof(mpz_t));
+  S = (mpz_t*) TMP_ALLOC((m+1) * sizeof(mpz_t));
+  ptoj = (mpz_t*) TMP_ALLOC((m+1) * sizeof(mpz_t)); /* ptoj[i] = mantissa^(2^i) */
+  mult = (int*) TMP_ALLOC((m+1) * sizeof(int)); 
+  nb_terms = (int*) TMP_ALLOC((m+1) * sizeof(int)); 
   mult[0] = 0;
   for (i=0;i<=m;i++) { mpz_init(P[i]); mpz_init(S[i]); mpz_init(ptoj[i]); }
   mpz_set(ptoj[0], p);
@@ -138,8 +135,7 @@ int m;
 
   mpfr_div_2exp(y, y, r*(i-1),GMP_RNDN); 
   for (i=0;i<=m;i++) { mpz_clear(P[i]); mpz_clear(S[i]); mpz_clear(ptoj[i]); }
-  free(P);  free(S);   free(ptoj);
-  free(mult);  free(nb_terms);  
+  TMP_FREE (marker);
   return 0;
 }
 

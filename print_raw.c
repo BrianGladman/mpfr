@@ -81,11 +81,11 @@ mpfr_print_raw(x)
 	+ 11 for exponent (including sign)
 	= 17 + ABSSIZE(x) * BITS_PER_MP_LIMB
       */
-     str = (char *) malloc((17 + ABSSIZE(x) * BITS_PER_MP_LIMB)*sizeof(char));
+     str = (char *) (*_mp_allocate_func) ((17 + ABSSIZE(x) * BITS_PER_MP_LIMB)*sizeof(char));
      mpfr_get_str_raw(str, x);
 
      printf("%s", str); 
-     free(str); 
+     (*_mp_free_func) (str, (17 + ABSSIZE(x) * BITS_PER_MP_LIMB)*sizeof(char));
   }
 }
 
