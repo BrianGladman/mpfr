@@ -29,9 +29,10 @@ MA 02111-1307, USA. */
 #define random mrand48
 #endif
 
-double drand _PROTO((void)); 
-int ulp _PROTO((double, double)); 
-double dbl _PROTO((double, int)); 
+double drand _PROTO ((void)); 
+int ulp _PROTO ((double, double)); 
+double dbl _PROTO ((double, int)); 
+double Ulp _PROTO ((double));
 
 #define MINNORM 2.2250738585072013831e-308 /* 2^(-1022), smallest normalized */
 #define MAXNORM 1.7976931348623157081e308 /* 2^(1023)*(2-2^(-52)) */
