@@ -46,6 +46,13 @@ void check3(a, rnd_mode, Q) double a; unsigned char rnd_mode; double Q;
   mpfr_set_machine_rnd_mode(rnd_mode);
   mpfr_sqrt(q, q, rnd_mode);
   if (ck==0) Q = sqrt(a);
+  else {
+    if (Q != sqrt(a)) {
+      fprintf(stderr, "you've found a bug in your machine's sqrt for x=%1.20e\n", a);
+      exit(1);
+
+    }
+  }
   Q2 = mpfr_get_d(q);
   if (Q!=Q2 && (!isnan(Q) || !isnan(Q2))) {
     u = ulp(Q2,Q);
@@ -141,6 +148,8 @@ int main()
      Fabrice Rouillier while porting mpfr to Windows */
   check3(9.89438396044940256501e-134, GMP_RNDU, 3.14553397063986684729e-67);
   check3(7.86528588050363751914e+31, GMP_RNDZ, 8.86864469944739400000e+15);
+  check3(0.99999999999999988897, GMP_RNDN, 0.99999999999999988897);
+  check3(1.00000000000000022204, GMP_RNDN, 1.0);
   for (i=0;i<100000;i++) {
     a = drand();
     check(a, rand() % 4);
