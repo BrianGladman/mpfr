@@ -58,7 +58,8 @@ unsigned int py, unsigned int pz, double res)
   if (px==53 && py==53 && pz==53) res=1.0;
   if (res!=0.0 && z1!=z2 && !(isnan(z1) && isnan(z2))) {
     printf("expected sum is %1.20e, got %1.20e\n",z1,z2);
-    printf("mpfr_add failed for x=%1.20e y=%1.20e with rnd_mode=%u\n",x,y,rnd_mode);
+    printf("mpfr_add failed for x=%1.20e y=%1.20e with rnd_mode=%s\n",
+	   x,y,mpfr_print_rnd_mode(rnd_mode));
     exit(1);
   }
   mpfr_clear(xx); mpfr_clear(yy); mpfr_clear(zz);
@@ -261,6 +262,12 @@ int main(argc,argv) int argc; char *argv[];
     set_fpc_csr(exp.fc_word);
 #endif
 
+  check(4.7719471752925262e7, 196089880.0, GMP_RNDN, 53, 64, 53, 
+	2.4380935175292528e8);
+  check(-1.716113812768534e-140, 1271212614.0, GMP_RNDZ, 53, 64, 53,
+	1.2712126139999998e9);
+  check(-1.2927455200185474e-50, 1675676122.0, GMP_RNDD, 53, 64, 53,
+	1.6756761219999998e9);
   check53(1.22191250737771397120e+20, 948002822.0, GMP_RNDN);
   check53(9966027674114492.0, 1780341389094537.0, GMP_RNDN);
   check53(2.99280481918991653800e+272, 5.34637717585790933424e+271, GMP_RNDN);

@@ -37,22 +37,25 @@ extern int getpid();
 
 #define ABS(x) (((x)>0) ? (x) : (-x))
 
+#define check(x,y,r) check3(x,y,r,0.0)
+
 /* checks that x+y gives the same results in double
    and with mpfr with 53 bits of precision */
-void check(double x, unsigned long y, unsigned int rnd_mode)
+void check3(double x, unsigned long y, unsigned int rnd_mode, double z1)
 {
-  double z1,z2; mpfr_t xx,zz;
+  double z2; mpfr_t xx,zz;
 
   mpfr_init2(xx, 53);
   mpfr_init2(zz, 53);
   mpfr_set_d(xx, x, rnd_mode);
   mpfr_add_ui(zz, xx, y, rnd_mode);
   mpfr_set_machine_rnd_mode(rnd_mode);
-  z1 = x+y;
+  if (z1==0.0) z1 = x+y;
   z2 = mpfr_get_d(zz);
   if (z1!=z2 && !(isnan(z1) && isnan(z2))) {
     printf("expected sum is %1.20e, got %1.20e\n",z1,z2);
-    printf("mpfr_add_ui failed for x=%1.20e y=%lu with rnd_mode=%u\n",x,y,rnd_mode);
+    printf("mpfr_add_ui failed for x=%1.20e y=%lu with rnd_mode=%s\n",
+	   x, y, mpfr_print_rnd_mode(rnd_mode));
     exit(1);
   }
   mpfr_clear(xx); mpfr_clear(zz);
@@ -69,6 +72,7 @@ int main(argc,argv) int argc; char *argv[];
     set_fpc_csr(exp.fc_word);
 #endif
 
+  check3(-1.716113812768534e-140, 1271212614, GMP_RNDZ, 1.27121261399999976e9);
   check(1.22191250737771397120e+20, 948002822, GMP_RNDN);
   srand(getpid());
   N = (argc<2) ? 1000000 : atoi(argv[1]);
