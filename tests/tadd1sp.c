@@ -27,6 +27,28 @@ MA 02111-1307, USA. */
 void check_special(void);
 void check_random(mpfr_prec_t p);
 
+static void
+check_overflow (void)
+{
+  mpfr_t x, y, z1, z2;
+
+  mpfr_set_emin (-1021);
+  mpfr_set_emax (1024);
+
+  mpfr_inits (x, y, z1, z2, NULL);
+  
+  mpfr_set_str1 (x, "8.00468257869324898448e+307");
+  mpfr_set_str1 (y, "7.44784712422708645156e+307");
+  mpfr_add1sp (z1, x, y, GMP_RNDN);
+  mpfr_add1   (z2, x, y, GMP_RNDN);
+  if (mpfr_cmp (z1, z2))
+    {
+      printf ("Overflow bug in add1sp.\n");
+      exit (1);
+    }
+  mpfr_clears (x, y, z1, z2, NULL);
+}
+
 int main(void)
 {
   mpfr_prec_t p;
@@ -36,6 +58,7 @@ int main(void)
   check_special ();
   for(p = 2 ; p < 200 ; p++)
     check_random (p);
+  check_overflow ();
 
   tests_end_mpfr ();
   return 0;

@@ -319,7 +319,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   inexact = 1;
   
  set_exponent:
-  if (MPFR_UNLIKELY(bx >= __gmpfr_emax)) /* Check for overflow */
+  if (MPFR_UNLIKELY(bx > __gmpfr_emax)) /* Check for overflow */
     {
       DEBUG( printf("Overflow\n") );
       TMP_FREE(marker);
