@@ -66,7 +66,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c,
   cq = MPFR_PREC(c);
 
   an = (aq-1)/BITS_PER_MP_LIMB + 1; /* number of significant limbs of a */
-  aq2 = an * BITS_PER_MP_LIMB;
+  aq2 = (mp_prec_t) an * BITS_PER_MP_LIMB;
   sh = aq2 - aq;                    /* non-significant bits in low limb */
   bn = (bq-1)/BITS_PER_MP_LIMB + 1; /* number of significant limbs of b */
   cn = (cq-1)/BITS_PER_MP_LIMB + 1; /* number of significant limbs of c */
