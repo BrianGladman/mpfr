@@ -40,7 +40,7 @@ mpfr_sqrt_ui (r, u, rnd_mode)
      mp_rnd_t rnd_mode;
 #endif
 {
-  int exact=1;
+  int error = 0;
   mpfr_t uu;
   mp_limb_t *up;
   unsigned long cnt;
@@ -53,10 +53,13 @@ mpfr_sqrt_ui (r, u, rnd_mode)
     *up = (mp_limb_t) u << cnt;
     MPFR_EXP(uu) = BITS_PER_MP_LIMB-cnt;
 
-    exact = mpfr_sqrt(r, uu, rnd_mode);
+    error = mpfr_sqrt(r, uu, rnd_mode);
 
     TMP_FREE(marker);
   }
-  else MPFR_SET_ZERO(r);
-  return exact;
+  else {
+    MPFR_CLEAR_FLAGS(r);
+    MPFR_SET_ZERO(r);
+  }
+  return error;
 }
