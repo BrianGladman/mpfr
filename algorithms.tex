@@ -1983,6 +1983,265 @@ The terms that are cancelled are $\pi/2$ and $\arcsin\,x$, their order is $2$. T
 \end{verbatim}
 \end{enumerate}
 
+\subsection{The arc-tangent function} % from Mathieu Dutour
+
+\subsubsection{Binary splitting}
+\noindent The Taylor serie for $\arctan$ is suitable for analysis using Binary splitting.
+\par This method is detailed for example in ``Pi and The AGM'' p 334. It is efficient for rational numbers and is non efficient for non rational numbers.
+\par The efficiency of this method is then quite limited. One can then wonder how to use it for non rational numbers.
+\par Using the formulas
+\begin{equation*}
+\arctan\,(-x)=-\arctan\,x\;\;\mbox{and}\;\;\arctan\,x+\arctan\,\frac{1}{x}=\frac{\pi}{2}{\rm sign}(x)
+\end{equation*}
+we can restrict ourself to $0\leq x\leq 1$.
+\par Writing 
+\begin{equation*}
+x=\sum_{i=1}^{\infty} \frac{u_i}{2^i}\;\;\mbox{with}\;\;u_i\in\{0,1\}
+\end{equation*}
+or
+\begin{equation*}
+x=\sum_{i=1}^{\infty} \frac{u_i}{2^{2^i}}\;\;\mbox{with}\;\;u_i\in\{0,1,\dots,2^{2^{i-1}}_1\}\mbox{~if~}i>1\mbox{~and~}u_1\in \{0,1\}
+\end{equation*}
+we can compute $\cos$,  $\sin$ or $\exp$ using the formulas
+\begin{equation*}
+\begin{array}{c}
+\cos\,(a+b)=\cos\,a\cos\,b-\sin\,a\sin\,b\\
+\sin\,(a+b)=\sin\,a\cos\,b+\cos\,a\sin\,b\\
+\exp(a+b)=(\exp\,a)(\exp\,b)
+\end{array}
+\end{equation*}
+Unfortunately for $\arctan$ there is no similar formulas. The only formula known is
+\begin{equation*}
+\arctan\,x+\arctan\,y=\arctan\,\frac{x+y}{1-xy}+k\pi\;\;\mbox{with}\;\;k\in\Z
+\end{equation*}
+we will use 
+\begin{equation*}
+\arctan\,x=\arctan\,y+\arctan\,\frac{x-y}{1+xy}
+\end{equation*}
+with $x,y>0$ and $y<x$.
+\par Sumarizing we have the following facts:
+\begin{enumerate}
+\item We can compute efficiently $\arctan\,\frac{u}{2^{2^k}}$ with $k\geq 0$ and $u\in\{0,1,\dots,2^{2^{k-1}}\}$
+\item We have a sort of addition formula for $\arctan$, the term $k\pi$ being zero.
+\end{enumerate}
+So I propose the following algorithm for $x$ given in $[0,1]$.
+\begin{enumerate}
+\item Write $v_k=2^{2^k}$
+\item Define 
+\begin{equation*}
+s_{k+1}=\frac{s_k-A_k}{1+s_kA_k}\;\;\mbox{and}\;\;s_0=x
+\end{equation*}
+\item $A_k$ is chosen such that
+\begin{equation*}
+0\leq s_k-A_k<\frac{1}{v_k}
+\end{equation*}
+and $A_k$ is of the form $\frac{u_k}{v_k}$ with $u_k\in\N$.
+\item We have the formula
+\begin{equation*}
+\begin{array}{rcl}
+\arctan\,x
+&=&\arctan\,A_0+\arctan\,s_1\\
+&=&\arctan\,A_0+\arctan\,A_1+\arctan\,s_2\\
+&=&\arctan\,A_0+\dots+\arctan\,A_N+\arctan\,s_{N+1}
+\end{array}
+\end{equation*}
+the number $s_N$ is decreasing towards $0$ and we then have
+\begin{equation*}
+\begin{array}{rcl}
+\arctan\,x&=&\sum_{i=0}^{i=\infty}\arctan\,A_i
+\end{array}
+\end{equation*}
+
+\end{enumerate}
+The drawbacks of this algorithm are:
+\begin{enumerate}
+\item Complexity of the process is high, higher than the AGM. Nevertheless there is some hope that this can be more efficient than AGM is the domain where the number of bits is high but not too large.
+\item There is the need for division which is computationally expensive.
+\item We may have to compute $\arctan\,(1/2)$.
+\end{enumerate}
+
+\subsubsection{Estimate of absolute error}
+\noindent By that analysis we mean that $a$ and $b$ have absolute error $D$ if $|a-b|\leq D$.\\
+I give a remind of the algorithm:
+\begin{enumerate}
+\item Write $v_k=2^{2^k}$
+\item Define 
+\begin{equation*}
+s_{k+1}=\frac{s_k-A_k}{1+s_kA_k}\;\;and\;\;s_0=x
+\end{equation*}
+\item $A_k$ is chosen such that
+\begin{equation*}
+0\leq s_k-A_k<\frac{1}{v_k}
+\end{equation*}
+and $A_k$ is of the form $\frac{u_k}{v_k}$ with $u_k\in\N$.
+\item We have the formula
+\begin{equation*}
+\begin{array}{rcl}
+\arctan\,x
+&=&\arctan\,A_0+\arctan\,s_1\\
+&=&\arctan\,A_0+\arctan\,A_1+\arctan\,s_2\\
+&=&\arctan\,A_0+\dots+\arctan\,A_N+\arctan\,s_{N+1}
+\end{array}
+\end{equation*}
+the number $s_N$ is very rapidily decreasing towards $0$ and we then have
+\begin{equation*}
+\begin{array}{rcl}
+\arctan\,x&=&\sum_{i=0}^{i=\infty}\arctan\,A_i
+\end{array}
+\end{equation*}
+\item The approximate arctangent is then
+\begin{equation*}
+\begin{array}{rcl}
+\sum_{i=0}^{i=N_0}\arctan_{m_i}\,A_i
+\end{array}
+\end{equation*}
+with $\arctan_{m_i}$ being the sum of the first $2^{m_i}$ terms of the Taylor Serie for $\arctan$
+\end{enumerate}
+We need to estimate all the quantities involved in the computation.
+\begin{enumerate}
+\item We have the majorization
+\begin{equation*}
+0\leq s_{k+1}=\frac{s_k-A_k}{1+s_kA_k}\leq s_k-A_k\leq \frac{1}{v_k}
+\end{equation*}
+\item The remainder of the serie giving $\arctan\,x$ is
+\begin{equation*}
+\begin{array}{rcl}
+\sum_{i=N_0+1}^{\infty}\arctan\,A_i
+&\leq &\sum_{i=N_0+1}^{\infty}A_i\\
+&\leq &\sum_{i=N_0+1}^{\infty}s_i\\
+&\leq &\sum_{i=N_0+1}^{\infty}\frac{1}{v_{i-1}}\\
+&\leq &\sum_{i=N_0}^{\infty}\frac{1}{v_{i}}\\
+&\leq &\sum_{i=N_0}^{\infty}\frac{1}{2^{2^i}}=\frac{c_{N_0}}{2^{2^{N_0}}}
+\end{array}
+\end{equation*}
+With $c_{N_0}\leq 1.64$. If $N_0\geq 1$ then $c_{N_0}\leq 1.27$. If $N_0\geq 2$ then $c_{N_0}\leq 1.07$.\\
+It remains to determine the good $N_0$.
+\item The partial sum of the Taylor series for arctan have derivative bounded by $1$ and consequently don't increase error.
+\item The error created by using the partial sum of the Taylor Serie of $\arctan$ is bounded by
+\begin{equation*}
+\frac{(A_i)^{2\times 2^{m_i}+1}}{2*2^{m_i}+1}
+\end{equation*}
+and is thus bounded by
+\begin{equation*}
+\begin{array}{rcl}
+\frac{1}{2*2^{m_i}+1}*[\frac{1}{2^{2^{i-1}}}]^{2\times 2^{m_i}+1}
+&=&\frac{1}{2*2^{m_i}+1}*[2^{-2^{i-1}}]^{2\times 2^{m_i}+1}\\
+&\leq &\frac{1}{2*2^{m_i}+1}*[2^{-2^{i-1}}]^{2\times 2^{m_i}}\\
+&\leq &\frac{1}{2*2^{m_i}+1}*2^{-2^{i+m_i}}
+\end{array}
+\end{equation*}
+The calculation of $\frac{\arctan\,A_i}{A_i}$ is done by using integer arithmetic and returning a fraction that is converted to mpfr type so there is no error. But to compute $\arctan\,A_i=A_i[\frac{\arctan\,A_i}{A_i}]$ we need to use real arithmetic (a little drawback of Jeandel procedure generic.c) so there is $1 ulp$ error.\\
+In total this is $(N_0) ulp$.
+\item Addition give $1 ulp$ There are $(N_0-1)$ addition so we need to take $(N_0 -1) ulp$.
+\item The division create errors:
+\begin{enumerate}
+\item Having errors in the computation of $A_i$ is of no consequences: It changes the quantity being arctangented and that's all. Errors concerning the computation of $s_{N+1}$ in contrary adds to the error.
+\item The substract operation $s_i-A_i$ has the effect of substracting very near numbers. But $A_i$ has exactly the same first $1$ and $0$ than $s_i$ so we can expect this operation to be nondestructive.
+\item Extrapolating from the previous result we can expect that the error of the quantity $\frac{s_i-A_i}{1+s_iA_i}$ is $err(s_i)+1 ulp$
+\end{enumerate}
+\item The total sum of errors is then (if no errors are done in the counting of errors)
+\begin{equation*}
+\begin{array}{rcl}
+Err(arctan)
+&=&\sum_{i=0}^{i=N_0}\frac{1}{2*2^{m_i}+1}2^{-2^{i+m_i}}+\frac{2}{2^{2^{N_0}}}+(N_0-1)2^{-Prec}\\
+&+&(N_0 -1)2^{-Prec}+(N_0)2^{-Prec}\;\;\;[m_i=N_0-i]\\
+&=&\sum_{i=0}^{i=N_0}\frac{1}{2*2^{N_0-i}+1}2^{-2^{N_0}}+\frac{2}{2^{2^{N_0}}}+(3*N_0-2)2^{-Prec}\\
+&=&\sum_{i=0}^{i=N_0}\frac{1}{2*2^{i}+1}2^{-2^{N_0}}+\frac{2}{2^{2^{N_0}}}+(3*N_0-2)2^{-Prec}\\
+&\leq &\{\sum_{i=0}^{i=\infty}\frac{1}{2*2^{i}+1}\}2^{-2^{N_0}}+\frac{2}{2^{2^{N_0}}}+(3*N_0-2)2^{-Prec}\\
+&\leq&\{0.77\}2^{-2^{N_0}}+\frac{1.63}{2^{2^{N_0}}}+(3*N_0-2)2^{-Prec}\\
+&=&\frac{2.4}{2^{2^{N_0}}}+(3*N_0-2)2^{-Prec}
+\end{array}
+\end{equation*}
+This is what we wish thus $Err(arctan)< 2^{-prec\_arctan}$ with $prec\_arctan$
+is the requested precision on the arc-tangent.
+We thus want:
+\begin{equation*}
+\begin{array}{c}
+\frac{2.4}{2^{2^{N_0}}}\leq 2^{-prec\_arctan-1}\\
+et\;\;(3*N_0-2)2^{-Prec}\leq 2^{-prec\_arctan-1}
+\end{array}
+\end{equation*}
+i.e. $N_0\geq \frac{\ln\,(prec\_arctan+1+\frac{\ln\,2.4}{\ln\,2})}{\ln\,2}$
+that we approach by (since the logarithm is expensive):
+\begin{equation*}
+N_0=ceil(log(prec\_arctan+2.47)*1.45)
+\end{equation*}
+and we finally have:
+\begin{equation*}
+Prec=prec\_arctan+\{1+ceil(\frac{\ln\,(3N_0-2)}{\ln\,2})\}
+\end{equation*}
+\end{enumerate}
+
+\subsubsection{Estimate of the relative error}
+\noindent we say that $a$ and $b$ have relative error $\delta$ if
+\begin{equation*}
+a=b(1+\Delta)\mbox{~with~}|\Delta|\leq \delta
+\end{equation*}
+This is the error definition used in mpfr. So we need to redo everything in order to have a consistent analysis.
+\begin{enumerate}
+\item We can use freely all previous estimate:
+\begin{enumerate}
+\item Remainder estimate:
+\begin{equation*}
+\sum_{i=N_0+1}^{\infty}\arctan\,A_i\leq \frac{c_{N_0}}{2^{2^{N_0}}}
+\end{equation*}
+so the relative error will be $\frac{1}{\arctan\,x}\frac{c_{N_0}}{2^{2^{N_0}}}$.
+\item The relative error created by using a partial sum of Taylor Serie is bounded by $\frac{1}{\arctan\,A_i}\frac{1}{2*2^{m_i}+1}*2^{-2^{i+m_i}}$.
+\item Multiplication $\arctan\,A_i=A_i[\frac{\arctan\,A_i}{A_i}]$ take 1 ulp of relative error.
+\item Doing the substraction $s_i-A_i$ is a gradual underflow operation: it decrease the precision of $s_i-A_i$.
+\item The multiplication $a_iA_i$ create $1$ ulp of error. This is not much and this relative error is further reduced by adding $1$.
+\end{enumerate}
+\item 
+
+\end{enumerate}
+
+
+
+\begin{enumerate}
+\item We have
+\begin{equation*}
+\begin{array}{rcl}
+\arctan\,b(1+\Delta)
+&=&\arctan(b+b\Delta)\\
+&\sim&\arctan\,b+\frac{1}{1+b^2}(b\Delta)\\
+&=&[\arctan\,b][1+\{\frac{b}{(1+b^2)\arctan\,b}\}\Delta]
+\end{array}
+\end{equation*}
+A rapid analysis gives $0\leq \frac{b}{(1+b^2)\arctan\,b}\leq 1$ and then we can say that the function $arctan$ does not increase the relative error.
+\item So we have two possible solutions:
+\begin{enumerate}
+\item Do a relative analysis of our algorithm.
+\item Use the previous analysis since the absolute error $D$ is obviously equal to $|b|\delta$ ($\delta$ being the relative error)
+\end{enumerate}
+it is not hard to see that second solution is certainly better: The formulas are additive. Our analysis will work without problems.
+\item It then suffices to replace in the previous section $2^{-prec\_arctan}$ by $2^{-prec\_arctan}\arctan\,x$.
+\item If $|x|\leq 1$ then $|\arctan\,x|$ is minorized by $|x|\frac{4}{\pi}\sim |x|1.27$. So it suffices to have an absolute error majorized by
+\begin{equation*}
+2^{-prec\_arctan}\,|x|1.27
+\end{equation*}
+In this case we will add $2-MPFR\_EXP(x)$ to $prec\_arctan$
+\item If $|x|\geq 1$ then $\arctan\,x$ is minorized by $\frac{\pi}{4}$. So it suffices to have an absolute error majorized by
+\begin{equation*}
+2^{-prec\_arctan}\, 1.27
+\end{equation*}
+we will add $1$ to $prec\_arctan$.\\
+In this case we need to take into account the error caused by the substration:
+\begin{equation*}
+\arctan\,x=\pm\frac{\pi}{2}-\arctan\,\frac{1}{x}
+\end{equation*}
+
+
+\end{enumerate}
+
+
+
+
+\subsubsection{Implementation defaults}
+\begin{enumerate}
+\item The computation is quite slow, this should be improved.
+\item The precision should be decreased after the operation $s_i-A_i$. And several other improvement should be done.
+\end{enumerate}
+
 \subsection{The euclidean distance function}
 
 The {\tt mpfr\_hypot} ($\textnormal{hypot}(x,y)$) function implements the euclidean distance function  as :
