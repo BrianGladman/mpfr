@@ -162,12 +162,14 @@ void check5 (double x, mp_rnd_t rnd_mode)
   z1 = (neg) ? x-x : x+x;
   z2 = mpfr_get_d(xx);
   mpfr_set_d (yy, z2, GMP_RNDN);
-  if (!mpfr_cmp (xx, yy) && z1!=z2 && !(isnan(z1) && isnan(z2))) {
-    printf("expected result is %1.20e, got %1.20e\n",z1,z2);
-    printf("mpfr_%s(x,x,x) failed for x=%1.20e with rnd_mode=%s\n",
-	   (neg) ? "sub" : "add", x, mpfr_print_rnd_mode (rnd_mode));
-    exit(1);
-  }
+  /* check NaNs first since mpfr_cmp does not like them */
+  if (!(isnan(z1) && isnan(z2)) && !mpfr_cmp (xx, yy) && z1!=z2)
+    {
+      printf ("expected result is %1.20e, got %1.20e\n",z1,z2);
+      printf ("mpfr_%s(x,x,x) failed for x=%1.20e with rnd_mode=%s\n",
+              (neg) ? "sub" : "add", x, mpfr_print_rnd_mode (rnd_mode));
+      exit (1);
+    }
   mpfr_clear(xx);
   mpfr_clear(yy);
 }
