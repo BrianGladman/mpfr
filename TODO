@@ -18,8 +18,8 @@ Changes in existing functions:
   and @NaN@ instead of the possibly ambiguous Inf and NaN in bases > 10.
   Modify the other functions to make them consistent with this choice.
   Possibly accept other strings, like those accepted by strtod.
-- implement binary flag for mpfr_agm: result is exact when u=v, or u=0, or v=0
-	and ternary flag for directed rounding.
+- implement ternary flag for mpfr_agm: result is exact when u=v, or u=0,
+  or v=0.
 
 New functions to implement:
 
