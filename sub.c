@@ -174,13 +174,19 @@ mpfr_sub1 (a, b, c, rnd_mode, diff_exp)
 	}
 	else cc=0;
 
-        dif += sh; 
-	if (dif>0) {
+        dif += sh;
+	if (dif>0) { /* c overlaps by dif bits with that last unused sh bits
+			from least significant limb of b */
 	  cn--;
 	  c2old = cp[cn]; /* last limb from c considered */
 	  cout -= mpn_sub_1(&cc, &cc, 1, c2old >> (BITS_PER_MP_LIMB-dif));
 	}
-	else c2 = c2old = 0;
+	else c2old = 0;
+
+	/* trailing bits from b - c are -cout*2^BITS_PER_MP_LIMB + cc,
+	   last considered limb of c is c2old, remains to take into account
+	   its BITS_PER_MP_LIMB-dif low bits */
+
 	if (sh && rnd_mode==GMP_RNDN) {
 	  if (cout>=0) {
 	    sign = 1;
@@ -191,8 +197,9 @@ mpfr_sub1 (a, b, c, rnd_mode, diff_exp)
 	    cout += mpn_add_1(&cc, &cc, 1, ONE<<(sh-1));
 	  }
 	}
+
 	if (cout==0) { /* if cout<0, it will remain negative */
-	   dif += BITS_PER_MP_LIMB;
+	   if (dif<0) dif += BITS_PER_MP_LIMB;
 	   while (cout==0 && (k || cn)) {
 	     cout = cc;
 	     cc = (k) ? bp[--k] : 0;
@@ -222,9 +229,12 @@ mpfr_sub1 (a, b, c, rnd_mode, diff_exp)
 	if (cout==0) cout=(cc!=0);
         if (rnd_mode==GMP_RNDU) sign=1; 
 	else if (rnd_mode==GMP_RNDD || rnd_mode==GMP_RNDZ) sign=-1;
-	if (MPFR_ISNEG(b)) sign=-sign;
 	/* even rounding rule: */
-	if (rnd_mode==GMP_RNDN && cout==0 && (*ap & (ONE<<sh))) cout=sign;
+	if (rnd_mode==GMP_RNDN) {
+	  if (cout==0 && (*ap & (ONE<<sh))) cout=sign;
+	}
+	else /* rounding does not depend from sign of b for GMP_RNDN */
+	  if (MPFR_ISNEG(b)) sign=-sign;
 	/* round towards infinity if sign=1, towards zero otherwise */
 	if ((sign==1) && cout>0) goto add_one_ulp;
 	else if ((sign==-1) && cout<0) goto sub_one_ulp;
