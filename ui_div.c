@@ -61,18 +61,18 @@ mpfr_ui_div (mpfr_ptr y, unsigned long int u, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	    }
 	}
     }
-  else if (u)
+  else if (MPFR_LIKELY(u != 0))
     {
       MPFR_TMP_INIT1(up, uu, BITS_PER_MP_LIMB);
       MPFR_ASSERTN(u == (mp_limb_t) u);
       count_leading_zeros(cnt, (mp_limb_t) u);
-      *up = (mp_limb_t) u << cnt;
+      up[0] = (mp_limb_t) u << cnt;
       MPFR_SET_EXP (uu, BITS_PER_MP_LIMB - cnt);
       return mpfr_div (y, uu, x, rnd_mode);
     }
   else /* u = 0, and x != 0 */
     {
-      MPFR_SET_ZERO(y); /* if u=0, then set y to 0 */
+      MPFR_SET_ZERO(y);         /* if u=0, then set y to 0 */
       MPFR_SET_SAME_SIGN(y, x); /* u considered as +0: sign(+0/x) = sign(x) */
       MPFR_RET(0);
     }
