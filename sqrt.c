@@ -30,7 +30,14 @@ MA 02111-1307, USA. */
 /* #define DEBUG */
 
 int
-mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, unsigned char rnd_mode)
+#if __STDC__
+mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
+#else
+mpfr_sqrt (r, u, rnd_mode)
+     mpfr_ptr r;
+     mpfr_srcptr u;
+     mp_rnd_t rnd_mode;
+#endif
 {
   mp_ptr up, rp, tmp, remp;
   mp_size_t usize, rrsize;
@@ -43,7 +50,7 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, unsigned char rnd_mode)
   char can_round = 0; 
   TMP_DECL (marker); TMP_DECL(marker0); 
 
-  if (FLAG_NAN(u) || SIGN(u) == -1) { SET_NAN(r); return 0; }
+  if (FLAG_NAN(u) || MPFR_SIGN(u) == -1) { SET_NAN(r); return 0; }
   
   prec = PREC(r);
 

@@ -27,7 +27,7 @@ MA 02111-1307, USA. */
 /* #define DEBUG */
 
 extern void mpfr_add1 _PROTO((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, 
-			      unsigned char, int));
+			      mp_rnd_t, int));
 
 /* put in ap[0]..ap[an-1] the value of bp[0]..bp[n-1] shifted by sh bits
    to the left minus ap[0]..ap[n-1], with 0 <= sh < mp_bits_per_limb, and
@@ -56,13 +56,13 @@ mpn_sub_lshift_n (ap, bp, n, sh, an) mp_limb_t *ap, *bp; int n,sh,an;
 /* signs of b and c differ, abs(b)>=abs(c), diff_exp>=0 */
 void 
 #if __STDC__
-mpfr_sub1(mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, unsigned char rnd_mode, int diff_exp) 
+mpfr_sub1(mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode, int diff_exp) 
 #else
 mpfr_sub1(a, b, c, rnd_mode, diff_exp) 
      mpfr_ptr a;
      mpfr_srcptr b;
-     mpfr_srcptr c; 
-     unsigned char rnd_mode; 
+     mpfr_srcptr c;
+     mp_rnd_t rnd_mode;
      int diff_exp;
 #endif
 {
@@ -71,9 +71,9 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
   TMP_DECL(marker);
 
 #ifdef DEBUG
-  printf("b=  "); if (SIGN(b)>=0) putchar(' ');
+  printf("b=  "); if (MPFR_SIGN(b)>=0) putchar(' ');
   mpfr_print_raw(b); putchar('\n');
-  printf("c=  "); if (SIGN(c)>=0) putchar(' ');
+  printf("c=  "); if (MPFR_SIGN(c)>=0) putchar(' ');
   for (k=0;k<diff_exp;k++) putchar(' '); mpfr_print_raw(c);
   putchar('\n');
   printf("b=%1.20e c=%1.20e\n",mpfr_get_d(b),mpfr_get_d(c));
@@ -101,7 +101,7 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
   cn = (PREC(c)-1)/mp_bits_per_limb + 1;
   EXP(a) = EXP(b)-cancel;
   /* adjust sign to that of b */
-  if (SIGN(a)*SIGN(b)<0) CHANGE_SIGN(a);
+  if (MPFR_SIGN(a)*MPFR_SIGN(b)<0) CHANGE_SIGN(a);
   /* case 1: diff_exp>=prec(a), i.e. c only affects the last bit
      through rounding */
   dif = PREC(a)-diff_exp;
@@ -422,7 +422,7 @@ mpfr_print_raw(a); putchar('\n');
 
  end_of_sub:
 #ifdef DEBUG
-printf("b-c="); if (SIGN(a)>0) putchar(' '); mpfr_print_raw(a); putchar('\n');
+printf("b-c="); if (MPFR_SIGN(a)>0) putchar(' '); mpfr_print_raw(a); putchar('\n');
 #endif
   TMP_FREE(marker);
   return;
@@ -430,13 +430,13 @@ printf("b-c="); if (SIGN(a)>0) putchar(' '); mpfr_print_raw(a); putchar('\n');
 
 void 
 #if __STDC__
-mpfr_sub(mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, unsigned char rnd_mode)
+mpfr_sub(mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 #else
 mpfr_sub(a, b, c, rnd_mode) 
-     mpfr_ptr a; 
+     mpfr_ptr a;
      mpfr_srcptr b;
-     mpfr_srcptr c; 
-     unsigned char rnd_mode;
+     mpfr_srcptr c;
+     mp_rnd_t rnd_mode;
 #endif
 {
   int diff_exp;
@@ -447,7 +447,8 @@ mpfr_sub(a, b, c, rnd_mode)
   if (!NOTZERO(c)) { mpfr_set(a, b, rnd_mode); return; }
 
   diff_exp = EXP(b)-EXP(c);
-  if (SIGN(b) == SIGN(c)) { /* signs are equal, it's a real subtraction */
+  if (MPFR_SIGN(b) == MPFR_SIGN(c)) {
+    /* signs are equal, it's a real subtraction */
     if (diff_exp<0) {
       /* exchange rounding modes towards +/- infinity */
       if (rnd_mode==GMP_RNDU) rnd_mode=GMP_RNDD;
@@ -460,7 +461,7 @@ mpfr_sub(a, b, c, rnd_mode)
       diff_exp = mpfr_cmp3(b,c,1);
       /* if b>0 and diff_exp>0 or b<0 and diff_exp<0: abs(b) > abs(c) */
       if (diff_exp==0) SET_ZERO(a);
-      else if (diff_exp*SIGN(b)>0) mpfr_sub1(a, b, c, rnd_mode, 0);
+      else if (diff_exp*MPFR_SIGN(b)>0) mpfr_sub1(a, b, c, rnd_mode, 0);
       else { 
 	/* exchange rounding modes towards +/- infinity */
 	if (rnd_mode==GMP_RNDU) rnd_mode=GMP_RNDD;

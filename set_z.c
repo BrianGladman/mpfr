@@ -27,25 +27,28 @@ MA 02111-1307, USA. */
 /* set f to the integer z */
 int 
 #if __STDC__
-mpfr_set_z (mpfr_ptr f, mpz_srcptr z, unsigned char rnd)
+mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd)
 #else
 mpfr_set_z (f, z, rnd) 
-     mpfr_ptr f; 
-     mpz_srcptr z; 
-     unsigned char rnd;
+     mpfr_ptr f;
+     mpz_srcptr z;
+     mp_rnd_t rnd;
 #endif
 {
   int fn, zn, k, dif, sign_z, sh; mp_limb_t *fp = MANT(f), *zp, cc, c2;
 
   sign_z = mpz_cmp_ui(z,0);
-  if (sign_z==0) return (SIZE(f)=0);
+  if (sign_z==0) {
+    SET_ZERO(f);
+    return 0;
+  }
   fn = 1 + (PREC(f)-1)/BITS_PER_MP_LIMB;
   zn = ABS(SIZ(z));
   dif = zn-fn;
   zp = PTR(z);
   count_leading_zeros(k, zp[zn-1]);
   EXP(f) = zn*BITS_PER_MP_LIMB-k;
-  if (SIGN(f)*sign_z<0) CHANGE_SIGN(f);
+  if (MPFR_SIGN(f)*sign_z<0) CHANGE_SIGN(f);
   if (dif>=0) { /* number has to be truncated */
     if (k) {
       mpn_lshift(fp, zp + dif, fn, k);

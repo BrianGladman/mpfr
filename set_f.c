@@ -27,12 +27,12 @@ MA 02111-1307, USA. */
 
 void 
 #if __STDC__
-mpfr_set_f(mpfr_ptr y, mpf_srcptr x, char rnd_mode)
+mpfr_set_f(mpfr_ptr y, mpf_srcptr x, mp_rnd_t rnd_mode)
 #else
 mpfr_set_f(y, x, rnd_mode)
      mpfr_ptr y;
      mpf_srcptr x;
-     char rnd_mode; 
+     mp_rnd_t rnd_mode;
 #endif
 {
   mp_limb_t *my, *mx, *tmp; unsigned long cnt, sx, sy;
@@ -47,7 +47,7 @@ mpfr_set_f(y, x, rnd_mode)
 
   count_leading_zeros(cnt, mx[sx - 1]);  
 
-  if (SIZ(x)*SIGN(y)<0) CHANGE_SIGN(y);
+  if (SIZ(x)*MPFR_SIGN(y)<0) CHANGE_SIGN(y);
 
   if (sy < sx)
     {

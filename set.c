@@ -26,12 +26,12 @@ MA 02111-1307, USA. */
 
 void 
 #if __STDC__
-mpfr_set4(mpfr_ptr a, mpfr_srcptr b, unsigned char rnd_mode, int signb)
+mpfr_set4(mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode, int signb)
 #else
 mpfr_set4(a, b, rnd_mode) 
      mpfr_ptr a; 
      mpfr_srcptr b; 
-     unsigned char rnd_mode;
+     mp_rnd_t rnd_mode;
      int signb;
 #endif
 {
@@ -49,5 +49,5 @@ mpfr_set4(a, b, rnd_mode)
     ap[an-1] |= (mp_limb_t) 1 << (BITS_PER_MP_LIMB-1);
     EXP(a)++;
   }
-  if (SIGN(a) != signb) CHANGE_SIGN(a);
+  if (MPFR_SIGN(a) * signb < 0) CHANGE_SIGN(a);
 }

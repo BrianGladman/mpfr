@@ -236,12 +236,12 @@ __mpfr_scale2 (d, exp)
 
 void
 #if __STDC__
-mpfr_set_d(mpfr_t r, double d, unsigned char rnd_mode)
+mpfr_set_d(mpfr_t r, double d, mp_rnd_t rnd_mode)
 #else
 mpfr_set_d(r, d, rnd_mode)
      mpfr_t r;
      double d;
-     unsigned char rnd_mode;
+     mp_rnd_t rnd_mode;
 #endif
 {
   int signd, sizer; unsigned int cnt;
@@ -266,7 +266,7 @@ mpfr_set_d(r, d, rnd_mode)
   if (cnt) mpn_lshift(MANT(r), MANT(r), sizer, cnt); 
   
   EXP(r) -= cnt; 
-  if (SIZE(r)*signd<0) CHANGE_SIGN(r);
+  if (MPFR_SIGN(r)*signd<0) CHANGE_SIGN(r);
 
   mpfr_round(r, rnd_mode, PREC(r)); 
   return; 
@@ -294,7 +294,7 @@ mpfr_get_d2(src, e)
   if (NOTZERO(src)==0) return 0.0;
   size = 1+(PREC(src)-1)/BITS_PER_MP_LIMB;
   qp = MANT(src);
-  negative = (SIGN(src)==-1);
+  negative = (MPFR_SIGN(src) < 0);
 
   /* Warning: don't compute the abs(res) and set the sign afterwards,
      otherwise the current machine rounding mode will not be taken

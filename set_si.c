@@ -27,12 +27,12 @@ MA 02111-1307, USA. */
 
 void
 #if __STDC__
-mpfr_set_si(mpfr_ptr x, long i, unsigned char rnd_mode)
+mpfr_set_si(mpfr_ptr x, long int i, mp_rnd_t rnd_mode)
 #else
 mpfr_set_si(x, i, rnd_mode)
      mpfr_ptr x;
-     long i;
-     unsigned char rnd_mode;
+     long int i;
+     mp_rnd_t rnd_mode;
 #endif
 {
   unsigned long xn, cnt; mp_limb_t ai;
@@ -48,19 +48,19 @@ mpfr_set_si(x, i, rnd_mode)
   MPN_ZERO(MANT(x), xn);
   x -> _mp_exp = BITS_PER_MP_LIMB - cnt;
   /* warning: don't change the precision of x! */
-  if (i*SIGN(x) < 0) CHANGE_SIGN(x);
+  if (i*MPFR_SIGN(x) < 0) CHANGE_SIGN(x);
 
   return; 
 }
 
 void
 #if __STDC__
-mpfr_set_ui(mpfr_ptr x, unsigned long i, unsigned char rnd_mode)
+mpfr_set_ui(mpfr_ptr x, unsigned long int i, mp_rnd_t rnd_mode)
 #else
 mpfr_set_ui(x, i, rnd_mode)
      mpfr_ptr x;
-     long i;
-     unsigned char rnd_mode;
+     long int i;
+     mp_rnd_t rnd_mode;
 #endif  
 {
   unsigned int xn, cnt;
@@ -74,7 +74,7 @@ mpfr_set_ui(x, i, rnd_mode)
   MPN_ZERO(MANT(x), xn);
   x -> _mp_exp = BITS_PER_MP_LIMB - cnt;
   /* warning: don't change the precision of x! */
-  if (SIGN(x) < 0) CHANGE_SIGN(x);
+  if (MPFR_SIGN(x) < 0) CHANGE_SIGN(x);
 
   return; 
 }
