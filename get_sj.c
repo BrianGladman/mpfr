@@ -77,7 +77,7 @@ mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
             {
               sh -= BITS_PER_MP_LIMB;
               r += sh >= 0 ? (intmax_t) xp[n] << sh
-                           : (intmax_t) xp[n] >> (- sh);
+		: (intmax_t) xp[n] >> (- sh);
             }
         }
       else
@@ -86,7 +86,7 @@ mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
             {
               sh -= BITS_PER_MP_LIMB;
               r -= sh >= 0 ? (intmax_t) xp[n] << sh
-                           : (intmax_t) xp[n] >> (- sh);
+		: (intmax_t) xp[n] >> (- sh);
             }
         }
     }
