@@ -321,10 +321,7 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
       /* test if rounding is possible, and if so exit the loop */
       if (exact || mpfr_can_round_raw (result + n, n, (negative) ? -1 : 1,
 			       n * BITS_PER_MP_LIMB - err - 1, GMP_RNDN, rnd, MPFR_PREC(x)))
-        {
-          TMP_FREE(marker);
-          break;
-        }
+        break;
 
       /* update for next loop */
       if (cboucle == 2)
@@ -349,6 +346,8 @@ mpfr_set_str (mpfr_t x, const char *str, int base, mp_rnd_t rnd)
 	= MPFR_LIMB_HIGHBIT;
       exp_y ++;
     }
+
+  TMP_FREE(marker);
 
   MPFR_CLEAR_FLAGS(x);
   if (negative)
