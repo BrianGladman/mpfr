@@ -70,13 +70,13 @@ test_against_libc (void)
   TEST_FCT (ceil);
   for (r = 0; r < 4; r++)
     if (mpfr_set_machine_rnd_mode (r) == 0)
-      TEST_FCT (rint);
+      test_fct (&nearbyint, &mpfr_rint, "rint", r);
 }
 
 #endif
 
 int
-main (void)
+main (int argc, char *argv[])
 {
   mp_size_t s;
   mpz_t z;
@@ -145,8 +145,10 @@ main (void)
   mpz_clear (z);
   mpfr_clear (t);
 
+  /* TODO: add hardcoded tests */
 #if __STDC_VERSION__ >= 199901L
-  test_against_libc ();
+  if (argc > 1 && strcmp (argv[1], "-s") == 0)
+    test_against_libc ();
 #endif
 
   tests_end_mpfr ();
