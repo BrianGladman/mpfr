@@ -236,6 +236,8 @@ __MPFR_DECLSPEC void mpfr_set_nan _MPFR_PROTO ((mpfr_ptr));
 __MPFR_DECLSPEC void mpfr_set_inf _MPFR_PROTO ((mpfr_ptr, int));
 __MPFR_DECLSPEC int 
   mpfr_set_f _MPFR_PROTO ((mpfr_ptr, mpf_srcptr, mpfr_rnd_t));
+__MPFR_DECLSPEC int
+  mpfr_get_f _MPFR_PROTO ((mpf_ptr, mpfr_srcptr, mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_set_si _MPFR_PROTO ((mpfr_ptr, long, mpfr_rnd_t));
 __MPFR_DECLSPEC int 
   mpfr_set_ui _MPFR_PROTO ((mpfr_ptr, unsigned long, mpfr_rnd_t));
