@@ -7,6 +7,8 @@
 #include "mpfr.h"
 #include "mpfr-impl.h"
 
+FILE *fout;
+
 #define check(d,r,b) check4(d,r,b,53)
 
 void check4(d, rnd, base, prec) double d; unsigned char rnd; int base, prec;
@@ -15,34 +17,41 @@ void check4(d, rnd, base, prec) double d; unsigned char rnd; int base, prec;
 
   mpfr_init2(x, prec);
   mpfr_set_d(x, d, rnd);
-mpfr_print_raw(x); printf("\n");
   mpfr_set_machine_rnd_mode(rnd);
-  printf("%1.19e base %d:\n ", d, base);
-  mpfr_out_str(stdout, base, (base==2) ? prec : 0, x, rnd);
-  putchar('\n');
-  if (base==2) { mpfr_print_raw(x); putchar('\n'); }
+  fprintf(fout, "%1.19e base %d rnd %d:\n ", d, base, rnd);
+  mpfr_out_str(fout, base, (base==2) ? prec : 0, x, rnd);
+  fputc('\n', fout);
   mpfr_clear(x);
 }
 
 int
 main(int argc, char **argv)
 {
-  int i; double d;
+  int i,N=100; double d;
 
-  srand(getpid());
-  /* printf seems to round towards nearest in all cases, at least with gcc */
+  /* with no argument: prints to /dev/null,
+     tout_str N: prints N tests to stdout */
+  if (argc==1) fout=fopen("/dev/null", "w");
+  else { fout=stdout; N=atoi(argv[1]); }
+  check(-1.5674376729569697500e+15, GMP_RNDN, 19);
+  check(-4.5306392613572974756e-308, GMP_RNDN, 8);
+  check(-6.7265890111403371523e-165, GMP_RNDN, 4);
+  check(-1.3242553591261807653e+156, GMP_RNDN, 16);
+  check(-6.606499965302424244461355e233, GMP_RNDN, 10);
   check4(1.0, GMP_RNDN, 10, 120);
   check(1.0, GMP_RNDU, 10);
   check(4.059650008e-83, 0, 10);
-  check(-6.606499965302424244461355e233, 0, 10);
   check(-7.4, 0, 10);
   check(0.997, 0, 10);
   check(-4.53063926135729747564e-308, 0, 10);
   check(2.14478198760196000000e+16, 0, 10);
   check(7.02293374921793516813e-84, 0, 10);
-  for (i=0;i<100;i++) {
+
+  /* random tests */
+  srand(getpid());
+  for (i=0;i<N;i++) {
     do { d = drand(); } while (isnan(d));
-    check(d, 0, 2 + rand()%35);
+    check(d, rand()%4, 2 + rand()%35);
   }
   return 0;
 }
