@@ -70,6 +70,7 @@ int main(argc,argv) int argc; char *argv[];
     set_fpc_csr(exp.fc_word);
 #endif
 
+  check(-1.0880649218158844e9, 1092583421, GMP_RNDN);
   check(1.22191250737771397120e+20, 948002822, GMP_RNDN);
   check(4.68311314939691330000e-215, 832100416, GMP_RNDD);
   srand(getpid());
