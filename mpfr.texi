@@ -354,7 +354,7 @@ MPFR suffers from all bugs from the GNU MP library, plus many many more.
 Please report other problems to @samp{mpfr@@loria.fr}.
 @xref{Reporting Bugs}.
 Some bug fixes are available on the MPFR web page
-@samp{http://www.loria.fr/projets/mpfr/} or @samp{http://www.mpfr.org/}.
+@url{http://www.loria.fr/projets/mpfr/} or @url{http://www.mpfr.org/}.
 
 
 @node Reporting Bugs, MPFR Basics, Installing MPFR, Top
@@ -363,8 +363,8 @@ Some bug fixes are available on the MPFR web page
 @cindex Reporting bugs
 
 If you think you have found a bug in the MPFR library, first have a look on the
-MPFR web page @samp{http://www.loria.fr/projets/mpfr/} or
-@samp{http://www.mpfr.org/}: perhaps this bug is already known,
+MPFR web page @url{http://www.mpfr.org/} or
+@url{http://www.loria.fr/projets/mpfr/}: perhaps this bug is already known,
 in which case you may find there a workaround for it.
 Otherwise, please investigate
 and report it. We have made this library available to you, and it is not to ask
@@ -514,8 +514,8 @@ The default rounding mode (to nearest initially).
 
 @section Getting the Latest Version of MPFR
 
-The latest version of MPFR is available from @samp{http://www.mpfr.org/}
-or @samp{http://www.loria.fr/projets/mpfr/}.
+The latest version of MPFR is available from @url{http://www.mpfr.org/}
+or @url{http://www.loria.fr/projets/mpfr/}.
 
 @node Floating-point Functions, Contributors, MPFR Basics, Top
 @comment  node-name,  next,  previous,  up
