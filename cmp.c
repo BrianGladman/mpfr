@@ -21,21 +21,23 @@ of b and c, i.e. one plus the number of bits shifts to align b and c
 
 /* #define DEBUG */
 
+/* compares b and sign(s)*c */
 int 
 #if __STDC__
-mpfr_cmp ( mpfr_srcptr b, mpfr_srcptr c )
+mpfr_cmp3 ( mpfr_srcptr b, mpfr_srcptr c, long int s)
 #else
-mpfr_cmp(b, c)
+mpfr_cmp3(b, c, s)
      mpfr_srcptr b;
      mpfr_srcptr c; 
+     long int s;
 #endif
 {
-   long int s, diff_exp;
+   long int diff_exp;
    unsigned long bn, cn;
    mp_limb_t *bp, *cp;
 
    if (!NOTZERO(b) && !NOTZERO(c)) { return 0; }
-   s = SIGN(b) * SIGN(c);
+   s = s*SIGN(b)*SIGN(c);
    if (s<0) return(SIGN(b));
 
    /* now signs are equal */
