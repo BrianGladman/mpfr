@@ -1,6 +1,6 @@
 /* mpfr_sqrt -- square root of a floating-point number
 
-Copyright (C) 1999, 2001 Free Software Foundation, Inc.
+Copyright (C) 1999-2002 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -19,8 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "gmp.h"
 #include "gmp-impl.h"
 #include "mpfr.h"
@@ -42,35 +40,40 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
   char can_round = 0; 
   TMP_DECL(marker0);
   {
-  TMP_DECL (marker);
+    TMP_DECL (marker);
 
-  if (MPFR_IS_NAN(u)) {
-    MPFR_SET_NAN(r);
-    return 1; /* NaN is always inexact */
-  }
+    if (MPFR_IS_NAN(u))
+      {
+        MPFR_SET_NAN(r);
+        MPFR_RET_NAN;
+      }
 
-  if (MPFR_SIGN(u) < 0) {
-    if (MPFR_IS_INF(u) || MPFR_NOTZERO(u)) {
-      MPFR_SET_NAN(r);
-      return 1; /* NaN is always inexact */
-    }
-    else { /* sqrt(-0) = -0 */
-      MPFR_SET_ZERO(r);
-      if (MPFR_SIGN(r) > 0) MPFR_CHANGE_SIGN(r);
-      return 0; /* zero is exact */
-    }
-  }
+    if (MPFR_SIGN(u) < 0)
+      {
+        if (MPFR_IS_INF(u) || MPFR_NOTZERO(u))
+          {
+            MPFR_SET_NAN(r);
+            MPFR_RET_NAN;
+          }
+        else
+          { /* sqrt(-0) = -0 */
+            MPFR_CLEAR_INF(r);
+            MPFR_SET_ZERO(r);
+            MPFR_SET_NEG(r);
+            MPFR_RET(0);
+          }
+      }
 
-  MPFR_CLEAR_NAN(r);
+    MPFR_CLEAR_NAN(r);
+    MPFR_SET_POS(r);
 
-  if (MPFR_SIGN(r) < 0) MPFR_CHANGE_SIGN(r);
-  if (MPFR_IS_INF(u)) 
-    { 
-      MPFR_SET_INF(r);
-      return 0; /* infinity is exact */
-    }
+    if (MPFR_IS_INF(u))
+      { 
+        MPFR_SET_INF(r);
+        MPFR_RET(0);
+      }
 
-  MPFR_CLEAR_INF(r);
+    MPFR_CLEAR_INF(r);
 
   prec = MPFR_PREC(r);
 
