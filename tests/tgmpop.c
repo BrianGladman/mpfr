@@ -24,6 +24,17 @@ MA 02111-1307, USA. */
 #include <stdlib.h>
 #include "mpfr-test.h"
 
+#define CHECK_FOR(str, cond) \
+if ((cond) == 0) \
+{\
+  printf ("Special case error " str ". Inexact value=%d\n", res);\
+  printf ("Get "); mpfr_dump (y);\
+  printf ("X=  "); mpfr_dump (x);\
+  printf ("Z=  "); mpz_dump (mpq_numref(z));\
+  printf ("   /"); mpz_dump (mpq_denref(z));\
+  exit (1);\
+}
+
 static void
 special (void)
 {
@@ -42,7 +53,7 @@ special (void)
   mpz_set_str (mpq_denref (z), "5721", 10);
   mpfr_set_str_binary (x, "11111111101001011011100101100011011110010011100010000100001E-44");
   mpfr_add_q (y, x, z, GMP_RNDN);
-  MPFR_ASSERTN(mpfr_cmp_ui_2exp (y, 256783, -64) == 0);
+  CHECK_FOR ("cancelation in add_q", mpfr_cmp_ui_2exp (y, 256783, -64) == 0);
 
   mpfr_set_prec (x, 19);
   mpfr_set_str_binary (x, "0.1011110101110011100E0");
@@ -52,22 +63,24 @@ special (void)
   mpfr_add_q (y, x, z, GMP_RNDD);
   mpfr_set_prec (x, 29);
   mpfr_set_str_binary (x, "11111111101001110011010001001E-14");
-  MPFR_ASSERTN(mpfr_cmp (x, y) == 0);
+  CHECK_FOR ("cancelation in add_q", mpfr_cmp (x,y) == 0);
 
+  /* Inf */
   mpfr_set_inf (x, 1);
   mpz_set_str (mpq_numref (z), "395877315", 10);
   mpz_set_str (mpq_denref (z), "3508975966", 10);
   mpfr_set_prec (y, 118);
   mpfr_add_q (y, x, z, GMP_RNDU);
-  MPFR_ASSERTN(mpfr_inf_p (y) && mpfr_sgn (y) > 0);
+  CHECK_FOR ("inf", mpfr_inf_p (y) && mpfr_sgn (y) > 0);
   mpfr_sub_q (y, x, z, GMP_RNDU);
-  MPFR_ASSERTN(mpfr_inf_p (y) && mpfr_sgn (y) > 0);
+  CHECK_FOR ("inf", mpfr_inf_p (y) && mpfr_sgn (y) > 0);
 
+  /* Nan */
   MPFR_SET_NAN (x);
   mpfr_add_q (y, x, z, GMP_RNDU);
-  MPFR_ASSERTN(mpfr_nan_p (y) );
+  CHECK_FOR ("nan", mpfr_nan_p (y));
   mpfr_sub_q (y, x, z, GMP_RNDU);
-  MPFR_ASSERTN(mpfr_nan_p (y) );
+  CHECK_FOR ("nan", mpfr_nan_p (y));
 
   /* Exact value */
   mpfr_set_prec (x, 60);
@@ -76,9 +89,22 @@ special (void)
   mpz_set_str (mpq_numref (z), "3", 10);
   mpz_set_str (mpq_denref (z), "2", 10);
   res = mpfr_add_q (y, x, z, GMP_RNDU);
-  MPFR_ASSERTN(mpfr_cmp_ui(y, 2)==0 && res==0);
+  CHECK_FOR ("0.5+3/2", mpfr_cmp_ui(y, 2)==0 && res==0);
   res = mpfr_sub_q (y, x, z, GMP_RNDU);
-  MPFR_ASSERTN(mpfr_cmp_si(y, -1)==0 && res==0);
+  CHECK_FOR ("0.5-3/2", mpfr_cmp_si(y, -1)==0 && res==0);
+
+  /* Inf Rationnal */
+  mpq_set_ui (z, 1, 0);
+  mpfr_set_str1 (x, "0.5");
+  res = mpfr_add_q (y, x, z, GMP_RNDN);
+  CHECK_FOR ("0.5+1/0", mpfr_inf_p (y) && mpfr_sgn (y) > 0 && res == 0);
+  res = mpfr_sub_q (y, x, z, GMP_RNDN);
+  CHECK_FOR ("0.5-1/0", mpfr_inf_p (y) && mpfr_sgn (y) < 0 && res == 0);
+  mpq_set_si (z, -1, 0);
+  res = mpfr_add_q (y, x, z, GMP_RNDN);
+  CHECK_FOR ("0.5+ -1/0", mpfr_inf_p (y) && mpfr_sgn (y) < 0 && res == 0);
+  res = mpfr_sub_q (y, x, z, GMP_RNDN);
+  CHECK_FOR ("0.5- -1/0", mpfr_inf_p (y) && mpfr_sgn (y) > 0 && res == 0);
 
   mpq_clear (z);
   mpfr_clear (x);
@@ -352,6 +378,7 @@ test_genericq (mp_prec_t p0, mp_prec_t p1, unsigned int N,
         {
           mpfr_urandomb (arg1, RANDS);
           mpq_set_ui (arg2, randlimb (), randlimb() );
+	  mpq_canonicalize (arg2);
           rnd = RND_RAND ();
           mpfr_set_prec (dst_big, prec+10);
           compare = func(dst_big, arg1, arg2, rnd);
@@ -426,6 +453,8 @@ test_specialq (mp_prec_t p0, mp_prec_t p1, unsigned int N,
 	{
 	  mpq_set_ui(q1, randlimb(), randlimb() );
 	  mpq_set_ui(q2, randlimb(), randlimb() );
+	  mpq_canonicalize (q1);
+	  mpq_canonicalize (q2);
 	  mpq_func (qr, q1, q2);
 	  mpfr_set_q (fra, q1, GMP_RNDD);
 	  mpfr_func (fra, fra, q2, GMP_RNDD);
