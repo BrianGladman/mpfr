@@ -50,9 +50,9 @@ mpfr_mul(a, b, c, rnd_mode)
   if (!NOTZERO(b) || !NOTZERO(c)) { SET_ZERO(a); return; }
 
   sign_product = MPFR_SIGN(b) * MPFR_SIGN(c);
-  bn = (PREC(b)-1)/mp_bits_per_limb+1; /* number of significant limbs of b */
-  cn = (PREC(c)-1)/mp_bits_per_limb+1; /* number of significant limbs of c */
-  tn = (PREC(c)+PREC(b)-1)/mp_bits_per_limb+1; 
+  bn = (PREC(b)-1)/BITS_PER_MP_LIMB+1; /* number of significant limbs of b */
+  cn = (PREC(c)-1)/BITS_PER_MP_LIMB+1; /* number of significant limbs of c */
+  tn = (PREC(c)+PREC(b)-1)/BITS_PER_MP_LIMB+1; 
   k = bn+cn; /* effective nb of limbs used by b*c */
   TMP_MARK(marker); 
   tmp = (mp_limb_t*) TMP_ALLOC(k*BYTES_PER_MP_LIMB);
@@ -61,9 +61,9 @@ mpfr_mul(a, b, c, rnd_mode)
   b1 = (bn>=cn) ? mpn_mul(tmp, bp, bn, cp, cn) : mpn_mul(tmp, cp, cn, bp, bn);
 
   /* now tmp[0]..tmp[k-1] contains the product of both mantissa,
-     with tmp[k-1]>=2^(mp_bits_per_limb-2) */
-  an = (PREC(a)-1)/mp_bits_per_limb+1; /* number of significant limbs of a */
-  b1 >>= mp_bits_per_limb-1; /* msb from the product */
+     with tmp[k-1]>=2^(BITS_PER_MP_LIMB-2) */
+  an = (PREC(a)-1)/BITS_PER_MP_LIMB+1; /* number of significant limbs of a */
+  b1 >>= BITS_PER_MP_LIMB-1; /* msb from the product */
 
   if (b1==0) mpn_lshift(tmp, tmp, k, 1);
   cc = mpfr_round_raw(ap, tmp+bn+cn-tn, 

@@ -217,7 +217,7 @@ int mpfr_exp2_aux2(mpfr_t s, mpfr_t r, mpfr_t t, int q)
   m = (int) sqrt(2.0 * (double) l);
   TMP_MARK(marker);
   R = (mpfr_t*) TMP_ALLOC((m+1)*sizeof(mpfr_t)); /* R[i] stands for r^i */
-  sizer = (PREC(r)+mp_bits_per_limb-1)/mp_bits_per_limb;
+  sizer = (PREC(r)+BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB;
   for (i=0;i<=m;i++) MY_INIT(R[i], PREC(r), sizer);
   mpfr_mul(R[2], r, r, GMP_RNDU);
   for (i=3;i<=m;i++) mpfr_mul(R[i], R[i-1], r, GMP_RNDU);

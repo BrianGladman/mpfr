@@ -58,13 +58,13 @@ main(int argc, char **argv)
 
   mpfr_set_prec(x, 3);
   mpfr_set_si(x, 77617, GMP_RNDD); /* should be 65536 */
-  if (MANT(x)[0] != ((mp_limb_t)1 << (mp_bits_per_limb-1))) {
+  if (MANT(x)[0] != ((mp_limb_t)1 << (BITS_PER_MP_LIMB-1))) {
     fprintf(stderr, "Error in mpfr_set_si(x:3, 77617, GMP_RNDD)\n");
     mpfr_print_raw(x); putchar('\n');
     exit(1);
   }
   mpfr_set_ui(x, 77617, GMP_RNDD); /* should be 65536 */
-  if (MANT(x)[0] != ((mp_limb_t)1 << (mp_bits_per_limb-1))) {
+  if (MANT(x)[0] != ((mp_limb_t)1 << (BITS_PER_MP_LIMB-1))) {
     fprintf(stderr, "Error in mpfr_set_ui(x:3, 77617, GMP_RNDD)\n");
     mpfr_print_raw(x); putchar('\n');
     exit(1);

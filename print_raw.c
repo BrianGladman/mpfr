@@ -43,7 +43,7 @@ mpfr_get_str_raw(digit_ptr, x)
   if (MPFR_SIGN(x) < 0) { *digit_ptr = '-'; digit_ptr++; }
   sprintf(digit_ptr, "0."); digit_ptr += 2; 
 
-  sx = 1+(p-1)/mp_bits_per_limb; /* number of significant limbs */
+  sx = 1+(p-1)/BITS_PER_MP_LIMB; /* number of significant limbs */
   for (k = sx - 1; k >= 0 ; k--)
     { 
       wd = mx[k]; 

@@ -84,7 +84,7 @@ mpfr_div_ui(y, x, u, rnd_mode)
   else /* dif < 0 i.e. xn > yn */
     c = mpn_divrem_1(tmp, 0, xp-dif, yn, c);
 
-  if (tmp[yn]==0) { tmp--; sh=0; EXP(y) -= mp_bits_per_limb; }
+  if (tmp[yn]==0) { tmp--; sh=0; EXP(y) -= BITS_PER_MP_LIMB; }
   /* shift left to normalize */
   count_leading_zeros(sh, tmp[yn]);
   if (sh) {

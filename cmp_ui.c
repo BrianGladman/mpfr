@@ -49,16 +49,16 @@ mpfr_cmp_ui_2exp (b, i, f)
   else if (i==0) return 1;
   else { /* b>0, i>0 */
     e = EXP(b); /* 2^(e-1) <= b < 2^e */
-    if (e>f+mp_bits_per_limb) return 1;
+    if (e>f+BITS_PER_MP_LIMB) return 1;
 
     c = (mp_limb_t) i;
     count_leading_zeros(k, c);
-    k = f+mp_bits_per_limb - k; /* 2^(k-1) <= i*2^f < 2^k */
+    k = f+BITS_PER_MP_LIMB - k; /* 2^(k-1) <= i*2^f < 2^k */
     if (k!=e) return (e-k);
 
     /* now k=e */
-    c <<= (f+mp_bits_per_limb-k);
-    bn = (PREC(b)-1)/mp_bits_per_limb;
+    c <<= (f+BITS_PER_MP_LIMB-k);
+    bn = (PREC(b)-1)/BITS_PER_MP_LIMB;
     bp = MANT(b) + bn;
     if (*bp>c) return 1;
     else if (*bp<c) return -1;
@@ -96,16 +96,16 @@ mpfr_cmp_si_2exp(b, i, f)
   }
   else { /* b and i are of same sign */
     e = EXP(b); /* 2^(e-1) <= b < 2^e */
-    if (e>f+mp_bits_per_limb) return si;
+    if (e>f+BITS_PER_MP_LIMB) return si;
 
     c = (mp_limb_t) ((i<0) ? -i : i);
     count_leading_zeros(k, c);
-    k = f+mp_bits_per_limb - k; /* 2^(k-1) <= i*2^f < 2^k */
+    k = f+BITS_PER_MP_LIMB - k; /* 2^(k-1) <= i*2^f < 2^k */
     if (k!=e) return (si*(e-k));
 
     /* now k=e */
-    c <<= (f+mp_bits_per_limb-k);
-    bn = (PREC(b)-1)/mp_bits_per_limb;
+    c <<= (f+BITS_PER_MP_LIMB-k);
+    bn = (PREC(b)-1)/BITS_PER_MP_LIMB;
     bp = MANT(b) + bn;
     if (*bp>c) return si;
     else if (*bp<c) return -si;

@@ -32,7 +32,7 @@ extern void mpfr_add1 _PROTO((mpfr_ptr, mpfr_srcptr, mpfr_srcptr,
 			      mp_rnd_t, int));
 
 /* put in ap[0]..ap[an-1] the value of bp[0]..bp[n-1] shifted by sh bits
-   to the left minus ap[0]..ap[n-1], with 0 <= sh < mp_bits_per_limb, and
+   to the left minus ap[0]..ap[n-1], with 0 <= sh < BITS_PER_MP_LIMB, and
    returns the borrow.
 */
 mp_limb_t
@@ -50,7 +50,7 @@ mpn_sub_lshift_n (ap, bp, n, sh, an) mp_limb_t *ap, *bp; int n,sh,an;
   /* shift back b to the right */
   if (sh) {
     mpn_rshift(bp, bp, n, sh);
-    bp[n-1] += bh<<(mp_bits_per_limb-sh);
+    bp[n-1] += bh<<(BITS_PER_MP_LIMB-sh);
   }
   return c;
 }
@@ -82,7 +82,7 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
 #endif
   cancel = mpfr_cmp2(b, c);
   /* we have to take into account the first (PREC(a)+cancel) bits from b */
-  cancel1 = cancel/mp_bits_per_limb; cancel2 = cancel%mp_bits_per_limb;
+  cancel1 = cancel/BITS_PER_MP_LIMB; cancel2 = cancel%BITS_PER_MP_LIMB;
   TMP_MARK(marker); 
   ap = MANT(a);
   bp = MANT(b);
@@ -97,10 +97,10 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
       cp = (mp_ptr) TMP_ALLOC (ABSSIZE(c) * BYTES_PER_MP_LIMB);
       MPN_COPY(cp, ap, ABSSIZE(c)); 
     }
-  an = (PREC(a)-1)/mp_bits_per_limb+1; /* number of significant limbs of a */
-  sh = an*mp_bits_per_limb-PREC(a); /* non-significant bits in low limb */
-  bn = (PREC(b)-1)/mp_bits_per_limb+1; /* number of significant limbs of b */
-  cn = (PREC(c)-1)/mp_bits_per_limb + 1;
+  an = (PREC(a)-1)/BITS_PER_MP_LIMB+1; /* number of significant limbs of a */
+  sh = an*BITS_PER_MP_LIMB-PREC(a); /* non-significant bits in low limb */
+  bn = (PREC(b)-1)/BITS_PER_MP_LIMB+1; /* number of significant limbs of b */
+  cn = (PREC(c)-1)/BITS_PER_MP_LIMB + 1;
   EXP(a) = EXP(b)-cancel;
   /* adjust sign to that of b */
   if (MPFR_SIGN(a)*MPFR_SIGN(b)<0) CHANGE_SIGN(a);
@@ -128,9 +128,9 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
 	     even) */
 	  if (NOTZERO(c)) { /* c is not zero */
 	    /* check whether mant(c)=1/2 or not */
-	    cc = *cp - (ONE<<(mp_bits_per_limb-1));
+	    cc = *cp - (ONE<<(BITS_PER_MP_LIMB-1));
 	    if (cc==0) {
-	      bp = cp+(PREC(c)-1)/mp_bits_per_limb;
+	      bp = cp+(PREC(c)-1)/BITS_PER_MP_LIMB;
 	      while (cp<bp && cc==0) cc = *++cp;
 	    }
 	    if (cc || (ap[an-1] & ONE<<sh)) goto sub_one_ulp;
@@ -172,7 +172,7 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
 	if (dif>0) {
 	  cn--;
 	  c2old = cp[cn]; /* last limb from c considered */
-	  cout -= mpn_sub_1(&cc, &cc, 1, c2old >> (mp_bits_per_limb-dif));
+	  cout -= mpn_sub_1(&cc, &cc, 1, c2old >> (BITS_PER_MP_LIMB-dif));
 	}
 	else c2 = c2old = 0;
 	if (sh && rnd_mode==GMP_RNDN) {
@@ -186,18 +186,18 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
 	  }
 	}
 	if (cout==0) { /* if cout<0, it will remain negative */
-	   dif += mp_bits_per_limb;
+	   dif += BITS_PER_MP_LIMB;
 	   while (cout==0 && (k || cn)) {
 	     cout = cc;
 	     cc = (k) ? bp[--k] : 0;
 	     if (sh==0) {
 	       if (cout>=0) {
 		 sign = 1;
-		 cout -= mpn_sub_1(&cc, &cc, 1, ONE << (mp_bits_per_limb-1));
+		 cout -= mpn_sub_1(&cc, &cc, 1, ONE << (BITS_PER_MP_LIMB-1));
 	       }
 	       else {
 		 sign = -1;
-		 cout += mpn_add_1(&cc, &cc, 1, ONE << (mp_bits_per_limb-1));
+		 cout += mpn_add_1(&cc, &cc, 1, ONE << (BITS_PER_MP_LIMB-1));
 	       }
 	       sh = 0;
 	     }
@@ -207,9 +207,9 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
 	     if (cn && (dif>=0)) {
 	       cn--; 
 	       c2old = cp[cn];
-	       c2 += c2old >> (mp_bits_per_limb-dif);
+	       c2 += c2old >> (BITS_PER_MP_LIMB-dif);
 	     }
-	     else dif += mp_bits_per_limb;
+	     else dif += BITS_PER_MP_LIMB;
 	     cout -= mpn_sub_1(&cc, &cc, 1, c2);
 	   }
 	}
@@ -229,7 +229,7 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
     /* first copy upper part of c into a (after shift) */
     int overlap;
     dif += cancel;
-    k = (dif-1)/mp_bits_per_limb + 1; /* only the highest k limbs from c
+    k = (dif-1)/BITS_PER_MP_LIMB + 1; /* only the highest k limbs from c
 					 have to be considered */
     if (k<an) {
       MPN_ZERO(ap+k, an-k); /* do it now otherwise ap[k] may be 
@@ -239,19 +239,19 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
     printf("cancel=%d dif=%d k=%d cn=%d sh=%d\n",cancel,dif,k,cn,sh);
 #endif
     if (dif<=PREC(c)) { /* c has to be truncated */
-      dif = dif % mp_bits_per_limb;
-      dif = (dif) ? mp_bits_per_limb-dif-sh : -sh;
+      dif = dif % BITS_PER_MP_LIMB;
+      dif = (dif) ? BITS_PER_MP_LIMB-dif-sh : -sh;
       /* we have to shift by dif bits to the right */
       if (dif>0) {
 	mpn_rshift(ap, cp+(cn-k), (k<=an) ? k : an, dif);
-        if (k>an) ap[an-1] += cp[cn-k+an]<<(mp_bits_per_limb-dif);
+        if (k>an) ap[an-1] += cp[cn-k+an]<<(BITS_PER_MP_LIMB-dif);
       }
       else if (dif<0) {
 	cc = mpn_lshift(ap, cp+(cn-k), k, -dif);
 	if (k<an) ap[k]=cc;
 	/* put the non-significant bits in low limb for further rounding */
 	if (cn >= k+1)
-	  ap[0] += cp[cn-k-1]>>(mp_bits_per_limb+dif);
+	  ap[0] += cp[cn-k-1]>>(BITS_PER_MP_LIMB+dif);
       }
       else MPN_COPY(ap, cp+(cn-k), k);
       overlap=1;
@@ -264,13 +264,13 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
       printf("overlap=%d\n",overlap);
 #endif
       if (overlap>=0) {
-	cn -= overlap/mp_bits_per_limb;
-	overlap %= mp_bits_per_limb;
+	cn -= overlap/BITS_PER_MP_LIMB;
+	overlap %= BITS_PER_MP_LIMB;
 	/* warning: a shift of zero with mpn_lshift is not allowed */
 	if (overlap) {
 	  if (an<cn) {
 	    mpn_lshift(ap, cp+(cn-an), an, overlap);
-	    ap[0] += cp[cn-an-1]>>(mp_bits_per_limb-overlap);
+	    ap[0] += cp[cn-an-1]>>(BITS_PER_MP_LIMB-overlap);
 	  }
 	  else mpn_lshift(ap+(an-cn), cp, cn, overlap);
 	}
@@ -278,8 +278,8 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
       }
       else { /* shift to the right by -overlap bits */
 	overlap = -overlap;
-	k = overlap/mp_bits_per_limb;
-	overlap = overlap % mp_bits_per_limb;
+	k = overlap/BITS_PER_MP_LIMB;
+	overlap = overlap % BITS_PER_MP_LIMB;
 	if (overlap) cc = mpn_rshift(ap+(an-k-cn), cp, cn, overlap);
 	else {
 	  MPN_COPY(ap+(an-k-cn), cp, cn);
@@ -339,12 +339,12 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
 	    k--; kc--;
 	    if (k>=0) {
 	       if (kc>=0) cc -= mpn_sub_1(&c2, bp+k, 1, (cp[kc]>>dif) +
-					 (cp[kc+1]<<(mp_bits_per_limb-dif)));
+					 (cp[kc+1]<<(BITS_PER_MP_LIMB-dif)));
 	       else /* don't forget last right chunck from c */
-		 cc -= mpn_sub_1(&c2, bp+k, 1, cp[0]<<(mp_bits_per_limb-dif));
+		 cc -= mpn_sub_1(&c2, bp+k, 1, cp[0]<<(BITS_PER_MP_LIMB-dif));
 	    }
 	    else { /* no more limb from b */
-	      if (cp[kc+1]<<(mp_bits_per_limb-dif)) cc=-1;
+	      if (cp[kc+1]<<(BITS_PER_MP_LIMB-dif)) cc=-1;
 	      else while ((cc==0) && (kc>=0)) {
 		if (cp[kc]) cc=-1;
 		kc--;
@@ -379,11 +379,11 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
 	{
         case 1: /* both b and c to round */
 	  k = bn-an; /* remains k limbs from b */
-          dif = diff_exp % mp_bits_per_limb;
+          dif = diff_exp % BITS_PER_MP_LIMB;
 	  while (cc==0 && k!=0 && kc!=0) {
 	    kc--;
 	    cc = bp[--k] - (cp[kc]>>dif);
-	    if (dif) cc -= (cp[kc+1]<<(mp_bits_per_limb-dif));
+	    if (dif) cc -= (cp[kc+1]<<(BITS_PER_MP_LIMB-dif));
 	  }
 	  if (cc) goto add_one_ulp;
 	  else if (kc==0) goto round_b2;
@@ -391,7 +391,7 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
 	case 3: /* only c to round: nothing to do */
 	  /* while (kc) if (cp[--kc]) goto add_one_ulp; */
 	  /* if dif>0 : remains to check last dif bits from c */
-	  /* if (dif>0 && (cp[0]<<(mp_bits_per_limb-dif))) goto add_one_ulp; */
+	  /* if (dif>0 && (cp[0]<<(BITS_PER_MP_LIMB-dif))) goto add_one_ulp; */
 	  break;
 	case 0: /* only b to round */
         round_b2:
@@ -414,11 +414,11 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
 	  break; /* c is not truncated ==> no borrow */
 	case 1: /* both b and c are truncated */
 	  k = bn-an; /* remains k limbs from b */
-          dif = diff_exp % mp_bits_per_limb;
+          dif = diff_exp % BITS_PER_MP_LIMB;
 	  while (k!=0 && kc!=0) {
 	    kc--;
 	    cc = cp[kc]>>dif;
-	    if (dif) cc += cp[kc+1]<<(mp_bits_per_limb-dif);
+	    if (dif) cc += cp[kc+1]<<(BITS_PER_MP_LIMB-dif);
 	    k--;
 	    if (bp[k]>cc) goto end_of_sub;
 	    else if (bp[k]<cc) goto sub_one_ulp;
@@ -427,16 +427,16 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
 	    while (kc!=0) {
 	      kc--;
 	      cc = cp[kc]>>dif;
-	      if (dif) cc += cp[kc+1]<<(mp_bits_per_limb-dif);
+	      if (dif) cc += cp[kc+1]<<(BITS_PER_MP_LIMB-dif);
 	      if (cc) goto sub_one_ulp;
 	    }
-	    if (cp[0]<<(mp_bits_per_limb-dif)) goto sub_one_ulp;
+	    if (cp[0]<<(BITS_PER_MP_LIMB-dif)) goto sub_one_ulp;
 	  }
 	  break;
 	case 3: /* only c is truncated */
 	  cn -= k; /* take into account cp[0]..cp[cn-1] shifted by dif bits
 		      to the right */
-	  cc = (dif>0) ? cp[cn]<<(mp_bits_per_limb-dif) : 0;
+	  cc = (dif>0) ? cp[cn]<<(BITS_PER_MP_LIMB-dif) : 0;
 	  while (cc==0 && cn>0) cc = cp[--cn];
           if (cc) goto sub_one_ulp;
 	  break;
@@ -446,7 +446,7 @@ mpfr_sub1(a, b, c, rnd_mode, diff_exp)
   }
   goto end_of_sub;
     
-  to_nearest: /* 0 <= sh < mp_bits_per_limb : number of bits of a to truncate
+  to_nearest: /* 0 <= sh < BITS_PER_MP_LIMB : number of bits of a to truncate
                  bp[k] : last significant limb from b */
 #ifdef DEBUG
 mpfr_print_raw(a); putchar('\n');
@@ -457,7 +457,7 @@ mpfr_print_raw(a); putchar('\n');
 	  c2 = ONE<<(sh-1);
 	}
 	else /* no bit to truncate */
-	  { if (k) cc = bp[--k]; else cc = 0; c2 = ONE<<(mp_bits_per_limb-1); }
+	  { if (k) cc = bp[--k]; else cc = 0; c2 = ONE<<(BITS_PER_MP_LIMB-1); }
 #ifdef DEBUG
 	printf("cc=%lu c2=%lu k=%u\n",cc,c2,k);
 #endif
@@ -468,7 +468,7 @@ mpfr_print_raw(a); putchar('\n');
 	  printf("cc=%lu\n",cc);
 #endif
 	  /* special case of rouding c shifted to the right */
-	  if (cc==0 && dif>0) cc=bp[0]<<(mp_bits_per_limb-dif);
+	  if (cc==0 && dif>0) cc=bp[0]<<(BITS_PER_MP_LIMB-dif);
 	  /* now if the truncated part of b = 1/2*lsb(a), check whether c=0 */
           if (bp!=cp) { 
 	    if (cc || (*ap & (ONE<<sh))) goto add_one_ulp;

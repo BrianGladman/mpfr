@@ -58,7 +58,3 @@
 #define mpf_sub_ui(x,y,z) mpfr_sub_ui(x,y,z,__gmp_default_rounding_mode) 
 #define mpf_ui_div(x,y,z) mpfr_ui_div(x,y,z,__gmp_default_rounding_mode)
 #define mpf_ui_sub(x,y,z) mpfr_ui_sub(x,y,z,__gmp_default_rounding_mode)
-
-#ifndef BITS_PER_MP_LIMB
-#define BITS_PER_MP_LIMB mp_bits_per_limb
-#endif

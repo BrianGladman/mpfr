@@ -127,7 +127,7 @@ mpfr_sqrt (r, u, rnd_mode)
 #ifdef DEBUG
       printf("Taking the sqrt of : "); 
       for(k = rsize - 1; k >= 0; k--) { 
-	printf("+%lu*2^%lu",tmp[k],k*mp_bits_per_limb); }
+	printf("+%lu*2^%lu",tmp[k],k*BITS_PER_MP_LIMB); }
       printf(".\n"); 
 #endif
 

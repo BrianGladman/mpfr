@@ -42,10 +42,10 @@ top_builddir = ..
 
 ACLOCAL = aclocal
 AUTOCONF = autoconf
-AUTOMAKE = automake
+AUTOMAKE = /users/polka/zimmerma/mpfr/missing automake
 AUTOHEADER = autoheader
 
-INSTALL = /usr/local/gnu/bin/install -c
+INSTALL = /usr/bin/install -c
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_SCRIPT = ${INSTALL_PROGRAM}
@@ -62,15 +62,15 @@ CC = gcc
 CFLAGS = -g -O2 -DTEST
 LDFLAGS = 
 MAKEINFO = makeinfo
-MISCFLAGS = $<
+MISCFLAGS = trunc.c
 PACKAGE = mpfr
 RANLIB = ranlib
 VERSION = 1.0
 
 bin_PROGRAMS = tabs tadd tagm tcan_round tcmp tcmp_ui tdiv tdiv_ui texp  tget_str tlog tlog2 tmul tmul_2exp tmul_ui tout_str tpi tround tset_d tset_f tset_q tset_si tset_str tset_z  tsqrt tsqrt_ui tui_div tui_sub tzeta
 
-LDADD = $(top_srcdir)/libmpfr.a   /users/polka/logiciels/gmp/irix/lib/libgmp.a
-INCLUDES =  -I/users/polka/logiciels/gmp/irix/include -I$(top_srcdir)
+LDADD = $(top_srcdir)/libmpfr.a   /users/polka/logiciels/gmp/solaris/lib/libgmp.a
+INCLUDES =  -I/users/polka/logiciels/gmp/solaris/include -I$(top_srcdir)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_CLEAN_FILES = 
 PROGRAMS =  $(bin_PROGRAMS)

@@ -51,8 +51,8 @@ mpfr_set_si(x, i, rnd_mode)
   EXP(x) = BITS_PER_MP_LIMB - cnt;
 
   /* round if PREC(x) smaller than length of i */
-  if (PREC(x) < mp_bits_per_limb-cnt) {
-    cnt = mpfr_round_raw(xp+xn, xp+xn, mp_bits_per_limb-cnt, (ai<0), PREC(x), 
+  if (PREC(x) < BITS_PER_MP_LIMB-cnt) {
+    cnt = mpfr_round_raw(xp+xn, xp+xn, BITS_PER_MP_LIMB-cnt, (ai<0), PREC(x), 
 		   rnd_mode);
     if (cnt) { /* special case 1.000...000 */
       EXP(x)++;
@@ -90,8 +90,8 @@ mpfr_set_ui(x, i, rnd_mode)
   EXP(x) = BITS_PER_MP_LIMB - cnt;
 
   /* round if PREC(x) smaller than length of i */
-  if (PREC(x) < mp_bits_per_limb-cnt) {
-    cnt = mpfr_round_raw(xp+xn, xp+xn, mp_bits_per_limb-cnt, 0, PREC(x), 
+  if (PREC(x) < BITS_PER_MP_LIMB-cnt) {
+    cnt = mpfr_round_raw(xp+xn, xp+xn, BITS_PER_MP_LIMB-cnt, 0, PREC(x), 
 			 rnd_mode);
     if (cnt) { /* special case 1.000...000 */
       EXP(x)++;
