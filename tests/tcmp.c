@@ -34,7 +34,9 @@ extern int isnan();
 
 int main()
 {
-  double x,y; mpfr_t xx,yy; int i,c;
+  double x, y;
+  mpfr_t xx, yy;
+  int i, c;
 
   mpfr_init2(xx, 65); mpfr_init2(yy, 65);
   mpfr_set_str_raw(xx, "0.10011010101000110101010000000011001001001110001011101011111011101E623");
@@ -98,6 +100,17 @@ int main()
     exit(1);
   }
 
+  mpfr_set_d (xx, 0.0, GMP_RNDN);
+  mpfr_set_d (yy, 1.0, GMP_RNDN);
+  if (i = mpfr_cmp3 (xx, yy, 1) >= 0) {
+    fprintf (stderr, "Error: mpfr_cmp3 (0, 1, 1) gives %d instead of a negative value\n", i);
+    exit (1);
+  }
+  if (i = mpfr_cmp3 (xx, yy, -1) <= 0) {
+    fprintf (stderr, "Error: mpfr_cmp3 (0, 1, -1) gives %d instead of a positive value\n", i);
+    exit (1);
+  }
+
   for (i=0;i<1000000;) {    x=drand(); y=drand();
     if (!isnan(x) && !isnan(y)) {
       i++;
@@ -110,6 +123,7 @@ int main()
       }
     }
   }
+
   mpfr_clear(xx); mpfr_clear(yy);
   return 0;
 }

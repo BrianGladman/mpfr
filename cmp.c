@@ -54,7 +54,7 @@ mpfr_cmp3(b, c, s)
    mp_limb_t *bp, *cp;
 
    if (!MPFR_NOTZERO(b)) {
-     if (!MPFR_NOTZERO(c)) return 0; else return -(MPFR_SIGN(c));
+     if (!MPFR_NOTZERO(c)) return 0; else return -(s*MPFR_SIGN(c));
      /*TODO: bug ou feature ? s pas pris en compte... */
    }
    else if (!MPFR_NOTZERO(c)) return MPFR_SIGN(b);
