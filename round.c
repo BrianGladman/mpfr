@@ -161,7 +161,7 @@ mpfr_round_raw (yp, xp, xprec, neg, yprec, rnd_mode, inexp)
   }
   else
   {
-    mp_limb_t rb = 0, sb;
+    mp_limb_t sb;
 
     if ((rnd_mode == GMP_RNDU && neg) ||
         (rnd_mode == GMP_RNDD && !neg))
@@ -170,7 +170,6 @@ mpfr_round_raw (yp, xp, xprec, neg, yprec, rnd_mode, inexp)
     if (inexp || rnd_mode != GMP_RNDZ)
     {
       mp_size_t k;
-      mp_limb_t rbmask;
 
       k = xsize - nw;
       if (!rw) k--;
@@ -178,15 +177,19 @@ mpfr_round_raw (yp, xp, xprec, neg, yprec, rnd_mode, inexp)
       sb = xp[k] & lomask;  /* First non-significant bits */
       if (rnd_mode == GMP_RNDN)
       {
-        rbmask = ((mp_limb_t)1) << (BITS_PER_MP_LIMB - rw - 1);
-        rb = sb & rbmask;
-        sb &= ~rbmask;
+        mp_limb_t rbmask = ((mp_limb_t)1) << (BITS_PER_MP_LIMB - rw - 1);
+        if (sb & rbmask) /* rounding bit */
+          sb &= ~rbmask; /* it is 1, clear it */
+        else
+          rnd_mode = GMP_RNDZ; /* it is 0, behave like rounding to 0 */
       }
       while (sb == 0 && k > 0)
         sb = xp[--k];
-      if (rnd_mode == GMP_RNDN && (rb != 0 || sb != 0))
+      if (rnd_mode == GMP_RNDN)
       {
-        sb = sb == 0 ? xp[xsize - nw] & (himask ^ (himask << 1)) : rb;
+        /* rounding bit is 1 */
+        if (sb == 0) /* round to even... */
+          sb = xp[xsize - nw] & (himask ^ (himask << 1));
         if (inexp)
           *inexp = ((neg != 0) ^ (sb != 0)) ? 1 : -1;
       }
