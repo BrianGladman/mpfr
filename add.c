@@ -54,7 +54,7 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
   TMP_MARK(marker); 
   ap = MANT(a);
   bp = MANT(b);
-  cp = MANT(c); 
+  cp = MANT(c);
   if (ap == bp) {
     bp = (mp_ptr) TMP_ALLOC(ABSSIZE(b) * BYTES_PER_MP_LIMB); 
     MPN_COPY (bp, ap, ABSSIZE(b));
@@ -319,7 +319,8 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
 	  /* else round c: go through */
 
 	case 3: /* only c to round */
-	  bp=cp; k=cn-k; goto to_nearest;
+	  bp=cp; k=cn-k; bn=cn;
+	  goto to_nearest;
 
 	case 0: /* only b to round */
 	  k=bn-an; dif=0;
@@ -335,7 +336,9 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
   goto end_of_add;
     
   to_nearest: /* 0 <= sh < BITS_PER_MP_LIMB : number of bits of a to truncate
-                 bp[k] : last significant limb from b */
+                 bp[k] : last significant limb from b
+		 bn : number of limbs of b
+	      */
         /* c3=1 whenever b+c gave a carry out in most significant limb 
 	   and the least significant bit (shifted right) was 1.
 	   This can occur only when BITS_PER_MP_LIMB divides PREC(a),
@@ -355,7 +358,7 @@ mpfr_add1(a, b, c, rnd_mode, diff_exp)
 	if (cc>c2) goto add_one_ulp; /* trunc(b)>1/2*lsb(a) -> round up */
 	else if (cc==c2) {
 	  /* special case of rouding c shifted to the right */
-	  if (dif>0) cc=bp[k]<<(BITS_PER_MP_LIMB-dif);
+	  if (dif>0 && k<bn) cc=bp[k]<<(BITS_PER_MP_LIMB-dif);
 	  else cc=0;
 	  while (k && cc==0) cc=bp[--k];
 	  /* now if the truncated part of b = 1/2*lsb(a), check whether c=0 */
