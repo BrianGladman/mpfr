@@ -1,6 +1,6 @@
-/* Test file for mpfr_sqrt_ui.
+/* mpfr_cmp_str -- compare a floating-point number with a string.
 
-Copyright 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -19,37 +19,18 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "mpfr-test.h"
 
-static void
-check (unsigned long a, mp_rnd_t rnd_mode, const char *qs)
+int mpfr_cmp_str(mpfr_srcptr x, const char *s, int base, mp_rnd_t rnd)
 {
-  mpfr_t q;
+  mpfr_t y;
+  int res;
 
-  mpfr_init2 (q, 53);
-  mpfr_sqrt_ui (q, a, rnd_mode);
-  if (mpfr_cmp_str1 (q, qs))
-    {
-      printf ("mpfr_sqrt_ui failed for a=%lu, rnd_mode=%s\n",
-              a, mpfr_print_rnd_mode (rnd_mode));
-      printf ("sqrt gives %s, mpfr_sqrt_ui gives ", qs);
-      mpfr_out_str(stdout, 10, 0, q, GMP_RNDN);
-      exit (1);
-    }
-  mpfr_clear (q);
+  mpfr_init2(y, MPFR_PREC(x) );
+  mpfr_set_str(y, s, base, rnd);
+  res = mpfr_cmp(x,y);
+  mpfr_clear(y);
+  return res;
 }
 
-int
-main (void)
-{
-  tests_start_mpfr ();
 
-  check (0, GMP_RNDN, "0.0");
-  check (2116118, GMP_RNDU, "1.45468828276026215e3");
-
-  tests_end_mpfr ();
-  return 0;
-}

@@ -19,6 +19,12 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+#ifndef __MPFR_TEST_H__
+#define __MPFR_TEST_H__
+
+#include "gmp.h"
+#include "gmp-impl.h"
+#include "mpfr.h"
 #include "mpfr-impl.h"
 
 #if HAVE_CONFIG_H
@@ -71,3 +77,9 @@ double Ulp _MPFR_PROTO ((double));
 int Isnan _MPFR_PROTO ((double));
 void d_trace _MPFR_PROTO ((const char *, double));
 void ld_trace _MPFR_PROTO ((const char *, long double));
+
+int mpfr_cmp_str _MPFR_PROTO ((mpfr_srcptr x, const char *s, int base, mp_rnd_t rnd));
+#define mpfr_cmp_str1(x,s) mpfr_cmp_str(x,s,10,GMP_RNDN)
+#define mpfr_set_str1(x,s) mpfr_set_str(x,s,10,GMP_RNDN)
+
+#endif

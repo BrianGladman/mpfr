@@ -1,6 +1,6 @@
 /* Test file for mpfr_swap.
 
-Copyright 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -34,10 +34,10 @@ main (void)
   mpfr_init2 (u, 24);
   mpfr_init2 (v, 53);
   mpfr_set_ui (u, 16777215, GMP_RNDN); /* 2^24 - 1 */
-  mpfr_set_str (v, "9007199254740991.0", 10, GMP_RNDN); /* 2^53 - 1 */
+  mpfr_set_str1 (v, "9007199254740991.0"); /* 2^53 - 1 */
   mpfr_swap (u, v);
   mpfr_swap (u, v);
-  if (mpfr_cmp_ui (u, 16777215) || (mpfr_get_d1 (v) != 9007199254740991.0))
+  if (mpfr_cmp_ui (u, 16777215) || mpfr_cmp_str1 (v, "9007199254740991.0"))
     {
       printf ("Error in mpfr_swap\n");
       exit (1);

@@ -1,6 +1,6 @@
 /* Test file for mpfr_sub_ui
 
-Copyright 2000, 2001, 2002, 2003 Free Software Foundation.
+Copyright 2000, 2001, 2002, 2003, 2004 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -22,36 +22,27 @@ MA 02111-1307, USA. */
 #include <stdio.h>
 #include <stdlib.h>
 #include <float.h>
-#include <time.h>
 
 #include "mpfr-test.h"
 
-#define check(x,y,r) check3(x,y,r,0.0)
-
-/* checks that x+y gives the same results in double
-   and with mpfr with 53 bits of precision */
+/* checks that x-y gives the right results with 53 bits of precision */
 static void
-check3 (double x, unsigned long y, mp_rnd_t rnd_mode, double z1)
+check3 (const char *xs, unsigned long y, mp_rnd_t rnd_mode, const char *zs)
 {
-  double z2;
   mpfr_t xx,zz;
 
-  mpfr_init (xx);
-  mpfr_init (zz);
-  mpfr_set_prec (xx, 53);
-  mpfr_set_prec (zz, 53);
-  mpfr_set_d (xx, x, rnd_mode);
+  mpfr_inits2 (53, xx, zz, NULL);
+  mpfr_set_str1 (xx, xs);
   mpfr_sub_ui (zz, xx, y, rnd_mode);
-  z2 = mpfr_get_d1 (zz);
-  if (z1!=z2 && !(Isnan(z1) && Isnan(z2)))
+  if (mpfr_cmp_str1(zz, zs))
     {
-      printf ("expected sum is %1.20e, got %1.20e\n",z1,z2);
-      printf ("mpfr_sub_ui failed for x=%1.20e y=%lu with rnd_mode=%s\n",
-              x, y, mpfr_print_rnd_mode (rnd_mode));
+      printf ("expected sum is %s, got ", zs);
+      mpfr_print_binary(zz);
+      printf ("\nmpfr_sub_ui failed for x=%s y=%lu with rnd_mode=%s\n",
+              xs, y, mpfr_print_rnd_mode (rnd_mode));
       exit (1);
     }
-  mpfr_clear (xx);
-  mpfr_clear (zz);
+  mpfr_clears (xx, zz, NULL);
 }
 
 /* FastTwoSum: if EXP(x) >= EXP(y), u = o(x+y), v = o(u-x), w = o(y-v),
@@ -65,21 +56,17 @@ check_two_sum (mp_prec_t p)
   mp_rnd_t rnd;
   int inexact;
 
-  mpfr_init2 (y, p);
-  mpfr_init2 (u, p);
-  mpfr_init2 (v, p);
-  mpfr_init2 (w, p);
+  mpfr_inits2 (p, y, u, v, w, NULL);
   do
     {
       x = randlimb ();
     }
   while (x < 1);
   mpfr_random (y);
-  rnd = randlimb () % 4;
   rnd = GMP_RNDN;
-  inexact = mpfr_sub_ui (u, y, x, GMP_RNDN);
-  mpfr_add_ui (v, u, x, GMP_RNDN);
-  mpfr_sub (w, v, y, GMP_RNDN);
+  inexact = mpfr_sub_ui (u, y, x, rnd);
+  mpfr_add_ui (v, u, x, rnd);
+  mpfr_sub (w, v, y, rnd);
   /* as u - (y-x) = w, we should have inexact and w of same sign */
   if (((inexact == 0) && mpfr_cmp_ui (w, 0)) ||
       ((inexact > 0) && (mpfr_cmp_ui (w, 0) <= 0)) ||
@@ -95,10 +82,7 @@ check_two_sum (mp_prec_t p)
       printf ("inexact = %d\n", inexact);
       exit (1);
     }
-  mpfr_clear (y);
-  mpfr_clear (u);
-  mpfr_clear (v);
-  mpfr_clear (w);
+  mpfr_clears (y, u, v, w, NULL);
 }
 
 static void
@@ -144,7 +128,8 @@ main (int argc, char *argv[])
     for (k=0; k<200; k++)
       check_two_sum (p);
 
-  check3 (0.9999999999, 1, GMP_RNDN, -56295.0 / 562949953421312.0);
+  check3 ("0.9999999999", 1, GMP_RNDN, 
+	  "-10000000827403709990903735160827636718750e-50");
 
   tests_end_mpfr ();
   return 0;

@@ -1,6 +1,6 @@
 /* Test file for mpfr_ui_div.
 
-Copyright 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -21,32 +21,27 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 
 #include "mpfr-test.h"
 
-/* checks that y/x gives the same results in double
-   and with mpfr with 53 bits of precision */
+/* checks that y/x gives the right result with 53 bits of precision */
 static void
-check (unsigned long y, double x, mp_rnd_t rnd_mode, double z1)
+check (unsigned long y, const char *xs, mp_rnd_t rnd_mode, const char *zs)
 {
-  double z2;
   mpfr_t xx, zz;
 
-  mpfr_init2 (xx, 53);
-  mpfr_init2 (zz, 53);
-  mpfr_set_d (xx, x, rnd_mode);
+  mpfr_inits2 (53, xx, zz, NULL);
+  mpfr_set_str1 (xx, xs);
   mpfr_ui_div (zz, y, xx, rnd_mode);
-  z2 = mpfr_get_d1 (zz);
-  if (z1 != z2 && !(Isnan(z1) && Isnan(z2)))
+  if (mpfr_cmp_str1(zz, zs))
     {
-      printf ("expected quotient is %1.20e, got %1.20e\n", z1, z2);
-      printf ("mpfr_ui_div failed for y=%lu x=%1.20e with rnd_mode=%s\n",
-              y, x, mpfr_print_rnd_mode (rnd_mode));
+      printf ("expected quotient is %s, got ", zs);
+      mpfr_out_str (stdout, 10, 0, zz, GMP_RNDN);
+      printf ("mpfr_ui_div failed for y=%lu x=%s with rnd_mode=%s\n",
+              y, xs, mpfr_print_rnd_mode (rnd_mode));
       exit (1);
     }
-  mpfr_clear (xx);
-  mpfr_clear (zz);
+  mpfr_clears (xx, zz, NULL);
 }
 
 static void
@@ -150,16 +145,16 @@ main (int argc, char *argv[])
 
   check_nan ();
   check_inexact ();
-  check(948002822, 1.22191250737771397120e+20, GMP_RNDN,
-	7.758352715731357946e-12);
-  check(1976245324, 1.25296395864546893357e+232, GMP_RNDZ,
-	1.5772563211925444801e-223);
-  check(740454110, 2.11496253355831863313e+183, GMP_RNDZ,
-	3.5010270784996976041e-175);
-  check(1690540942, 1.28278599852446657468e-276, GMP_RNDU,
-	1.3178666932321966062e285);
-  check(1476599377, -2.14191393656148625995e+305, GMP_RNDD,
-	-6.8938315017943889615e-297);
+  check(948002822, "1.22191250737771397120e+20", GMP_RNDN,
+	"7.758352715731357946e-12");
+  check(1976245324, "1.25296395864546893357e+232", GMP_RNDZ,
+	"1.5772563211925444801e-223");
+  check(740454110, "2.11496253355831863313e+183", GMP_RNDZ,
+	"3.5010270784996976041e-175");
+  check(1690540942, "1.28278599852446657468e-276", GMP_RNDU,
+	"1.3178666932321966062e285");
+  check(1476599377, "-2.14191393656148625995e+305", GMP_RNDD,
+	"-6.8938315017943889615e-297");
 
   tests_end_mpfr ();
   return 0;

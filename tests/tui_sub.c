@@ -125,28 +125,24 @@ special (void)
   mpfr_clear (res);
 }
 
-/* checks that y/x gives the same results in double
-   and with mpfr with 53 bits of precision */
+/* checks that (y-x) gives the right results with 53 bits of precision */
 static void
-check (unsigned long y, double x, mp_rnd_t rnd_mode, double z1)
+check (unsigned long y, const char *xs, mp_rnd_t rnd_mode, const char *zs)
 {
-  double z2;
   mpfr_t xx, zz;
 
-  mpfr_init2 (xx, 53);
-  mpfr_init2 (zz, 53);
-  mpfr_set_d (xx, x, rnd_mode);
+  mpfr_inits2 (53, xx, zz, NULL);
+  mpfr_set_str1 (xx, xs);
   mpfr_ui_sub (zz, y, xx, rnd_mode);
-  z2 = mpfr_get_d1 (zz);
-  if (z1 != z2 && !(Isnan(z1) && Isnan(z2)))
+  if (mpfr_cmp_str1 (zz, zs) )
     {
-      printf ("expected difference is %1.20e, got %1.20e\n",z1,z2);
-      printf ("mpfr_ui_sub failed for y=%lu x=%1.20e with rnd_mode=%s\n",
-              y, x, mpfr_print_rnd_mode (rnd_mode));
+      printf ("expected difference is %s, got\n",zs);
+      mpfr_out_str(stdout, 10, 0, zz, GMP_RNDN);
+      printf ("mpfr_ui_sub failed for y=%lu x=%s with rnd_mode=%s\n",
+              y, xs, mpfr_print_rnd_mode (rnd_mode));
       exit (1);
     }
-  mpfr_clear (xx);
-  mpfr_clear (zz);
+  mpfr_clears (xx, zz, NULL);
 }
 
 /* if u = o(x-y), v = o(u-x), w = o(v+y), then x-y = u-w */
@@ -158,21 +154,17 @@ check_two_sum (mp_prec_t p)
   mp_rnd_t rnd;
   int inexact;
 
-  mpfr_init2 (y, p);
-  mpfr_init2 (u, p);
-  mpfr_init2 (v, p);
-  mpfr_init2 (w, p);
+  mpfr_inits2 (p, y, u, v, w, NULL);
   do
     {
       x = randlimb ();
     }
   while (x < 1);
   mpfr_random (y);
-  rnd = randlimb () % 4;
   rnd = GMP_RNDN;
-  inexact = mpfr_ui_sub (u, x, y, GMP_RNDN);
-  mpfr_sub_ui (v, u, x, GMP_RNDN);
-  mpfr_add (w, v, y, GMP_RNDN);
+  inexact = mpfr_ui_sub (u, x, y, rnd);
+  mpfr_sub_ui (v, u, x, rnd);
+  mpfr_add (w, v, y, rnd);
   /* as u = (x-y) + w, we should have inexact and w of same sign */
   if (((inexact == 0) && mpfr_cmp_ui (w, 0)) ||
       ((inexact > 0) && (mpfr_cmp_ui (w, 0) <= 0)) ||
@@ -188,10 +180,7 @@ check_two_sum (mp_prec_t p)
       printf ("inexact = %d\n", inexact);
       exit (1);
     }
-  mpfr_clear (y);
-  mpfr_clear (u);
-  mpfr_clear (v);
-  mpfr_clear (w);
+  mpfr_clears (y, u, v, w, NULL);
 }
 
 static void
@@ -238,18 +227,22 @@ main (int argc, char *argv[])
     for (k=0; k<100; k++)
       check_two_sum (p);
 
-  check(1196426492, 1.4218093058435347e-3, GMP_RNDN, 1.1964264919985781e9);
-  check(1092583421, -1.0880649218158844e9, GMP_RNDN, 2.1806483428158845901e9);
-  check(948002822, 1.22191250737771397120e+20, GMP_RNDN,
-	-1.2219125073682338611e20);
-  check(832100416, 4.68311314939691330000e-215, GMP_RNDD,
-	8.3210041599999988079e8);
-  check(1976245324, 1.25296395864546893357e+232, GMP_RNDZ,
-	-1.2529639586454686577e232);
-  check(2128997392, -1.08496826129284207724e+187, GMP_RNDU,
-	1.0849682612928422704e187);
-  check(293607738, -1.9967571564050541e-5, GMP_RNDU, 2.9360773800002003e8);
-  check(354270183, 2.9469161763489528e3, GMP_RNDN, 3.5426723608382362e8);
+  check(1196426492, "1.4218093058435347e-3", GMP_RNDN, 
+	"1.1964264919985781e9");
+  check(1092583421, "-1.0880649218158844e9", GMP_RNDN, 
+	"2.1806483428158845901e9");
+  check(948002822, "1.22191250737771397120e+20", GMP_RNDN,
+	"-1.2219125073682338611e20");
+  check(832100416, "4.68311314939691330000e-215", GMP_RNDD,
+	"8.3210041599999988079e8");
+  check(1976245324, "1.25296395864546893357e+232", GMP_RNDZ,
+	"-1.2529639586454686577e232");
+  check(2128997392, "-1.08496826129284207724e+187", GMP_RNDU,
+	"1.0849682612928422704e187");
+  check(293607738, "-1.9967571564050541e-5", GMP_RNDU, 
+	"2.9360773800002003e8");
+  check(354270183, "2.9469161763489528e3", GMP_RNDN, 
+	"3.5426723608382362e8");
 
   tests_end_mpfr ();
   return 0;

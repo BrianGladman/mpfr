@@ -1,6 +1,6 @@
 /* Test file for mpfr_check.
 
-Copyright 2003 Free Software Foundation.
+Copyright 2003, 2004 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -24,7 +24,7 @@ MA 02111-1307, USA. */
 
 #include "mpfr-test.h"
 
-#define ERROR(s) fprintf(stderr, "mpfr_check failed " s " Prec=%lu\n", pr), abort()
+#define ERROR(s) printf("mpfr_check failed " s " Prec=%lu\n", pr), abort()
 
 int
 main (void)

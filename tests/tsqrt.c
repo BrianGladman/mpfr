@@ -1,6 +1,6 @@
 /* Test file for mpfr_sqrt.
 
-Copyright 1999, 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright 1999, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -21,74 +21,66 @@ MA 02111-1307, USA. */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 
 #include "mpfr-test.h"
 
-#define check(a,r) check3(a,r,-1.0)
-
-int maxulp=0;
-
 static void
-check3 (double a, mp_rnd_t rnd_mode, double Q)
+check3 (const char *as, mp_rnd_t rnd_mode, const char *qs)
 {
   mpfr_t q;
-  double Q2;
-  int u;
 
   mpfr_init2 (q, 53);
-  mpfr_set_d (q, a, rnd_mode);
+  mpfr_set_str1 (q, as);
   mpfr_sqrt (q, q, rnd_mode);
-  Q2 = mpfr_get_d1 (q);
-  if (Q!=Q2 && !(Isnan(Q) && Isnan(Q2)))
+  if (mpfr_cmp_str1 (q, qs) )
     {
-      u = ulp (Q2,Q);
-      printf ("mpfr_sqrt failed for a=%1.20e, rnd_mode=%s\n",
-              a, mpfr_print_rnd_mode (rnd_mode));
-      printf ("expected sqrt is %1.20e, got %1.20e (%d ulp)\n",Q,Q2,u);
-      mpfr_clear (q); 
+      printf ("mpfr_sqrt failed for a=%s, rnd_mode=%s\n",
+              as, mpfr_print_rnd_mode (rnd_mode));
+      printf ("expected sqrt is %s, got ",qs);
+      mpfr_out_str(stdout, 10, 0, q, GMP_RNDN);
+      putchar('\n');
       exit (1);
     }
   mpfr_clear (q);
 }
 
 static void
-check4 (double a, mp_rnd_t rnd_mode, char *Q)
+check4 (const char *as, mp_rnd_t rnd_mode, const char *Qs)
 {
-  mpfr_t q, res;
+  mpfr_t q;
 
-  mpfr_init2(q, 53); mpfr_init2(res, 53);
-  mpfr_set_d(q, a, rnd_mode);
+  mpfr_init2(q, 53);
+  mpfr_set_str1 (q, as);
   mpfr_sqrt(q, q, rnd_mode);
-  mpfr_set_str(res, Q, 16, GMP_RNDN);
-  if (mpfr_cmp(q, res))
+  if (mpfr_cmp_str (q, Qs, 16, GMP_RNDN))
     {
-      printf("mpfr_sqrt failed for a=%1.20e, rnd_mode=%s\n",
-	     a, mpfr_print_rnd_mode(rnd_mode));
-      printf("expected "); mpfr_print_binary(res); puts ("");
-      printf("got      "); mpfr_print_binary(q); puts ("");
-      mpfr_clear(q); mpfr_clear(res); 
+      printf("mpfr_sqrt failed for a=%s, rnd_mode=%s\n",
+	     as, mpfr_print_rnd_mode(rnd_mode));
+      printf("expected "); 
+      mpfr_out_str(stdout, 16, 0, q, GMP_RNDN);
+      printf("\ngot      %s\n", Qs);
+      mpfr_clear(q); 
       exit(1);
   }
-  mpfr_clear(res); 
   mpfr_clear(q);
 }
 
 static void
-check24 (float a, mp_rnd_t rnd_mode, float Q)
+check24 (const char *as, mp_rnd_t rnd_mode, const char *qs)
 {
-  mpfr_t q; float Q2;
+  mpfr_t q;
 
   mpfr_init2(q, 24);
-  mpfr_set_d(q, a, rnd_mode);
+  mpfr_set_str1(q, as);
   mpfr_sqrt(q, q, rnd_mode);
-  Q2 = mpfr_get_d1 (q);
-  if (Q!=Q2) {
-    printf("mpfr_sqrt failed for a=%1.10e, prec=24, rnd_mode=%s\n",
-	   a, mpfr_print_rnd_mode(rnd_mode));
-    printf("expected sqrt is %1.10e, got %1.10e\n",Q,Q2);
-    exit(1);
-  }
+  if (mpfr_cmp_str1 (q, qs))
+    {
+      printf("mpfr_sqrt failed for a=%s, prec=24, rnd_mode=%s\n",
+	     as, mpfr_print_rnd_mode(rnd_mode));
+      printf("expected sqrt is %s, got ",qs);
+      mpfr_out_str(stdout, 10, 0, q, GMP_RNDN);
+      exit(1);
+    }
   mpfr_clear(q);
 }
 
@@ -97,51 +89,49 @@ check24 (float a, mp_rnd_t rnd_mode, float Q)
 static void
 check_float (void)
 {
-  float b = 8388608.0; /* 2^23 */
+  check24("70368760954880.0", GMP_RNDN, "8.388609e6");
+  check24("281474943156224.0", GMP_RNDN, "1.6777215e7");
+  check24("70368777732096.0", GMP_RNDN, "8.388610e6");
+  check24("281474909601792.0", GMP_RNDN, "1.6777214e7");
+  check24("100216216748032.0", GMP_RNDN, "1.0010805e7");
+  check24("120137273311232.0", GMP_RNDN, "1.0960715e7");
+  check24("229674600890368.0", GMP_RNDN, "1.5155019e7");
+  check24("70368794509312.0", GMP_RNDN, "8.388611e6");
+  check24("281474876047360.0", GMP_RNDN, "1.6777213e7");
+  check24("91214552498176.0", GMP_RNDN, "9.550631e6");
 
-  check24(b*8388610.0, GMP_RNDN, 8.388609e6);
-  check24(b*2.0*16777214.0, GMP_RNDN, 1.6777215e7);
-  check24(b*8388612.0, GMP_RNDN, 8.388610e6);
-  check24(b*2.0*16777212.0, GMP_RNDN, 1.6777214e7);
-  check24(b*11946704.0, GMP_RNDN, 1.0010805e7);
-  check24(b*14321479.0, GMP_RNDN, 1.0960715e7);
-  check24(b*2.0*13689673.0, GMP_RNDN, 1.5155019e7);
-  check24(b*8388614.0, GMP_RNDN, 8.388611e6);
-  check24(b*2.0*16777210.0, GMP_RNDN, 1.6777213e7);
-  check24(b*10873622.0, GMP_RNDN, 9.550631e6);
+  check24("70368760954880.0", GMP_RNDZ, "8.388608e6");
+  check24("281474943156224.0", GMP_RNDZ, "1.6777214e7");
+  check24("70368777732096.0", GMP_RNDZ, "8.388609e6");
+  check24("281474909601792.0", GMP_RNDZ, "1.6777213e7");
+  check24("100216216748032.0", GMP_RNDZ, "1.0010805e7");
+  check24("120137273311232.0", GMP_RNDZ, "1.0960715e7");
+  check24("229674600890368.0", GMP_RNDZ, "1.5155019e7");
+  check24("70368794509312.0", GMP_RNDZ, "8.38861e6");
+  check24("281474876047360.0", GMP_RNDZ, "1.6777212e7");
+  check24("91214552498176.0", GMP_RNDZ, "9.550631e6");
 
-  check24(b*8388610.0, GMP_RNDZ, 8.388608e6);
-  check24(b*2.0*16777214.0, GMP_RNDZ, 1.6777214e7);
-  check24(b*8388612.0, GMP_RNDZ, 8.388609e6);
-  check24(b*2.0*16777212.0, GMP_RNDZ, 1.6777213e7);
-  check24(b*11946704.0, GMP_RNDZ, 1.0010805e7);
-  check24(b*14321479.0, GMP_RNDZ, 1.0960715e7);
-  check24(b*2.0*13689673.0, GMP_RNDZ, 1.5155019e7);
-  check24(b*8388614.0, GMP_RNDZ, 8.38861e6);
-  check24(b*2.0*16777210.0, GMP_RNDZ, 1.6777212e7);
-  check24(b*10873622.0, GMP_RNDZ, 9.550631e6);
+  check24("70368760954880.0", GMP_RNDU, "8.388609e6");
+  check24("281474943156224.0",GMP_RNDU, "1.6777215e7");
+  check24("70368777732096.0", GMP_RNDU, "8.388610e6");
+  check24("281474909601792.0", GMP_RNDU, "1.6777214e7");
+  check24("100216216748032.0", GMP_RNDU, "1.0010806e7");
+  check24("120137273311232.0", GMP_RNDU, "1.0960716e7");
+  check24("229674600890368.0", GMP_RNDU, "1.515502e7");
+  check24("70368794509312.0", GMP_RNDU, "8.388611e6");
+  check24("281474876047360.0", GMP_RNDU, "1.6777213e7");
+  check24("91214552498176.0", GMP_RNDU, "9.550632e6");
 
-  check24(b*8388610.0, GMP_RNDU, 8.388609e6);
-  check24(b*2.0*16777214.0, GMP_RNDU, 1.6777215e7);
-  check24(b*8388612.0, GMP_RNDU, 8.388610e6);
-  check24(b*2.0*16777212.0, GMP_RNDU, 1.6777214e7);
-  check24(b*11946704.0, GMP_RNDU, 1.0010806e7);
-  check24(b*14321479.0, GMP_RNDU, 1.0960716e7);
-  check24(b*2.0*13689673.0, GMP_RNDU, 1.515502e7);
-  check24(b*8388614.0, GMP_RNDU, 8.388611e6);
-  check24(b*2.0*16777210.0, GMP_RNDU, 1.6777213e7);
-  check24(b*10873622.0, GMP_RNDU, 9.550632e6);
-
-  check24(b*8388610.0, GMP_RNDD, 8.388608e6);
-  check24(b*2.0*16777214.0, GMP_RNDD, 1.6777214e7);
-  check24(b*8388612.0, GMP_RNDD, 8.388609e6);
-  check24(b*2.0*16777212.0, GMP_RNDD, 1.6777213e7);
-  check24(b*11946704.0, GMP_RNDD, 1.0010805e7);
-  check24(b*14321479.0, GMP_RNDD, 1.0960715e7);
-  check24(b*2.0*13689673.0, GMP_RNDD, 1.5155019e7);
-  check24(b*8388614.0, GMP_RNDD, 8.38861e6);
-  check24(b*2.0*16777210.0, GMP_RNDD, 1.6777212e7);
-  check24(b*10873622.0, GMP_RNDD, 9.550631e6);
+  check24("70368760954880.0", GMP_RNDD, "8.388608e6");
+  check24("281474943156224.0", GMP_RNDD, "1.6777214e7");
+  check24("70368777732096.0", GMP_RNDD, "8.388609e6");
+  check24("281474909601792.0", GMP_RNDD, "1.6777213e7");
+  check24("100216216748032.0", GMP_RNDD, "1.0010805e7");
+  check24("120137273311232.0", GMP_RNDD, "1.0960715e7");
+  check24("229674600890368.0", GMP_RNDD, "1.5155019e7");
+  check24("70368794509312.0", GMP_RNDD, "8.38861e6");
+  check24("281474876047360.0", GMP_RNDD, "1.6777212e7");
+  check24("91214552498176.0", GMP_RNDD, "9.550631e6");
 }
 
 static void
@@ -196,8 +186,9 @@ special (void)
   mpfr_sqrt (z, x, GMP_RNDN);
   if (mpfr_cmp_ui (z, 0) < 0)
     {
-      printf ("Error: square root of %e gives %e\n",
-              mpfr_get_d1 (x), mpfr_get_d1 (z));
+      printf ("Error: square root of 1 gives ");
+      mpfr_print_binary(z);
+      putchar('\n');
       exit (1);
     }
 
@@ -304,12 +295,9 @@ check_nan (void)
   mpfr_clear (got);
 }
 
-double five = 5.0;
-
 int
 main (void)
 {
-  double a;
   mp_prec_t p;
   int k;
 
@@ -323,68 +311,100 @@ main (void)
   special ();
   check_float();
 
-  check3 (-0.0, GMP_RNDN, 0.0); 
-  check4 (6.37983013646045901440e+32, GMP_RNDN, "5.9bc5036d09e0c@13");
-  check4 (1.0, GMP_RNDN, "1");
-  check4 (1.0, GMP_RNDZ, "1");
-  check4 (3.725290298461914062500000e-9, GMP_RNDN, "4@-4");
-  check4 (3.725290298461914062500000e-9, GMP_RNDZ, "4@-4");
-  a = 1190456976439861.0;
-  check4 (a, GMP_RNDZ, "2.0e7957873529a@6");
-  check4 (1024.0*a, GMP_RNDZ, "4.1cf2af0e6a534@7");
+  check3 ("-0.0", GMP_RNDN, "0.0"); 
+  check4 ("6.37983013646045901440e+32", GMP_RNDN, "5.9bc5036d09e0c@13");
+  check4 ("1.0", GMP_RNDN, "1");
+  check4 ("1.0", GMP_RNDZ, "1");
+  check4 ("3.725290298461914062500000e-9", GMP_RNDN, "4@-4");
+  check4 ("3.725290298461914062500000e-9", GMP_RNDZ, "4@-4");
+  check4 ("1190456976439861.0", GMP_RNDZ, "2.0e7957873529a@6");
+  check4 ("1219027943874417664.0", GMP_RNDZ, "4.1cf2af0e6a534@7");
   /* the following examples are bugs in Cygnus compiler/system, found by
      Fabrice Rouillier while porting mpfr to Windows */
-  check4 (9.89438396044940256501e-134, GMP_RNDU, "8.7af7bf0ebbee@-56");
-  check4 (7.86528588050363751914e+31, GMP_RNDZ, "1.f81fc40f32062@13");
-  check4 (0.99999999999999988897, GMP_RNDN, "f.ffffffffffff8@-1");
-  check4 (1.00000000000000022204, GMP_RNDN, "1");
+  check4 ("9.89438396044940256501e-134", GMP_RNDU, "8.7af7bf0ebbee@-56");
+  check4 ("7.86528588050363751914e+31", GMP_RNDZ, "1.f81fc40f32062@13");
+  check4 ("0.99999999999999988897", GMP_RNDN, "f.ffffffffffff8@-1");
+  check4 ("1.00000000000000022204", GMP_RNDN, "1");
   /* the following examples come from the paper "Number-theoretic Test 
    Generation for Directed Rounding" from Michael Parks, Table 4 */
-  a = 4503599627370496.0; /* 2^52 */
 
-  check4 (a*2.0*8732221479794286.0, GMP_RNDN, "1.f81fc40f32063@13");
-  check4 (a*8550954388695124.0, GMP_RNDN, "1.60c012a92fc65@13");
-  check4 (a*7842344481681754.0, GMP_RNDN, "1.51d17526c7161@13");
-  check4 (a*5935035262218600.0, GMP_RNDN, "1.25e19302f7e51@13");
-  check4 (a*5039650445085418.0, GMP_RNDN, "1.0ecea7dd2ec3d@13");
-  check4 (a*5039721545366078.0, GMP_RNDN, "1.0ecf250e8e921@13");
-  check4 (a*8005963117781324.0, GMP_RNDN, "1.5552f3eedcf33@13");
-  check4 (a*6703494707970582.0, GMP_RNDN, "1.3853ee10c9c99@13");
-  check4 (a*8010323124937260.0, GMP_RNDN, "1.556abe212b56f@13");
-  check4 (a*2.0*8010776873384260.0, GMP_RNDN, "1.e2d9a51977e6e@13");
+  check4 ("78652858805036375191418371571712.0", GMP_RNDN, 
+	  "1.f81fc40f32063@13");
+  check4 ("38510074998589467860312736661504.0", GMP_RNDN, 
+	  "1.60c012a92fc65@13");
+  check4 ("35318779685413012908190921129984.0", GMP_RNDN,
+	  "1.51d17526c7161@13");
+  check4 ("26729022595358440976973142425600.0", GMP_RNDN,
+	  "1.25e19302f7e51@13");
+  check4 ("22696567866564242819241453027328.0", GMP_RNDN,
+	  "1.0ecea7dd2ec3d@13");
+  check4 ("22696888073761729132924856434688.0", GMP_RNDN,
+	  "1.0ecf250e8e921@13");
+  check4 ("36055652513981905145251657416704.0", GMP_RNDN,
+	  "1.5552f3eedcf33@13");
+  check4 ("30189856268896404997497182748672.0", GMP_RNDN,
+	  "1.3853ee10c9c99@13");
+  check4 ("36075288240584711210898775080960.0", GMP_RNDN,
+	  "1.556abe212b56f@13");
+  check4 ("72154663483843080704304789585920.0", GMP_RNDN,
+	  "1.e2d9a51977e6e@13");
 
-  check4 (a*2.0*8732221479794286.0, GMP_RNDZ, "1.f81fc40f32062@13");
-  check4 (a*8550954388695124.0, GMP_RNDZ, "1.60c012a92fc64@13");
-  check4 (a*7842344481681754.0, GMP_RNDZ, "1.51d17526c716@13");
-  check4 (a*5935035262218600.0, GMP_RNDZ, "1.25e19302f7e5@13");
-  check4 (a*5039650445085418.0, GMP_RNDZ, "1.0ecea7dd2ec3c@13");
-  check4 (a*5039721545366078.0, GMP_RNDZ, "1.0ecf250e8e92@13");
-  check4 (a*8005963117781324.0, GMP_RNDZ, "1.5552f3eedcf32@13");
-  check4 (a*6703494707970582.0, GMP_RNDZ, "1.3853ee10c9c98@13");
-  check4 (a*8010323124937260.0, GMP_RNDZ, "1.556abe212b56e@13");
-  check4 (a*2.0*8010776873384260.0, GMP_RNDZ, "1.e2d9a51977e6d@13");
+  check4 ("78652858805036375191418371571712.0", GMP_RNDZ,
+	  "1.f81fc40f32062@13");
+  check4 ("38510074998589467860312736661504.0", GMP_RNDZ, 
+	  "1.60c012a92fc64@13");
+  check4 ("35318779685413012908190921129984.0", GMP_RNDZ, "1.51d17526c716@13");
+  check4 ("26729022595358440976973142425600.0", GMP_RNDZ, "1.25e19302f7e5@13");
+  check4 ("22696567866564242819241453027328.0", GMP_RNDZ, 
+	  "1.0ecea7dd2ec3c@13");
+  check4 ("22696888073761729132924856434688.0", GMP_RNDZ, "1.0ecf250e8e92@13");
+  check4 ("36055652513981905145251657416704.0", GMP_RNDZ, 
+	  "1.5552f3eedcf32@13");
+  check4 ("30189856268896404997497182748672.0", GMP_RNDZ,
+	  "1.3853ee10c9c98@13");
+  check4 ("36075288240584711210898775080960.0", GMP_RNDZ,
+	  "1.556abe212b56e@13");
+  check4 ("72154663483843080704304789585920.0", GMP_RNDZ,
+	  "1.e2d9a51977e6d@13");
 
-  check4 (a*2.0*8732221479794286.0, GMP_RNDU, "1.f81fc40f32063@13");
-  check4 (a*8550954388695124.0, GMP_RNDU, "1.60c012a92fc65@13");
-  check4 (a*7842344481681754.0, GMP_RNDU, "1.51d17526c7161@13");
-  check4 (a*5935035262218600.0, GMP_RNDU, "1.25e19302f7e51@13");
-  check4 (a*5039650445085418.0, GMP_RNDU, "1.0ecea7dd2ec3d@13");
-  check4 (a*5039721545366078.0, GMP_RNDU, "1.0ecf250e8e921@13");
-  check4 (a*8005963117781324.0, GMP_RNDU, "1.5552f3eedcf33@13");
-  check4 (a*6703494707970582.0, GMP_RNDU, "1.3853ee10c9c99@13");
-  check4 (a*8010323124937260.0, GMP_RNDU, "1.556abe212b56f@13");
-  check4 (a*2.0*8010776873384260.0, GMP_RNDU, "1.e2d9a51977e6e@13");
+  check4 ("78652858805036375191418371571712.0", GMP_RNDU,
+	  "1.f81fc40f32063@13");
+  check4 ("38510074998589467860312736661504.0", GMP_RNDU,
+	  "1.60c012a92fc65@13");
+  check4 ("35318779685413012908190921129984.0", GMP_RNDU,
+	  "1.51d17526c7161@13");
+  check4 ("26729022595358440976973142425600.0", GMP_RNDU,
+	  "1.25e19302f7e51@13");
+  check4 ("22696567866564242819241453027328.0", GMP_RNDU, 
+	  "1.0ecea7dd2ec3d@13");
+  check4 ("22696888073761729132924856434688.0", GMP_RNDU,
+	  "1.0ecf250e8e921@13");
+  check4 ("36055652513981905145251657416704.0", GMP_RNDU,
+	  "1.5552f3eedcf33@13");
+  check4 ("30189856268896404997497182748672.0", GMP_RNDU,
+	  "1.3853ee10c9c99@13");
+  check4 ("36075288240584711210898775080960.0", GMP_RNDU,
+	  "1.556abe212b56f@13");
+  check4 ("72154663483843080704304789585920.0", GMP_RNDU,
+	  "1.e2d9a51977e6e@13");
 
-  check4 (a*2.0*8732221479794286.0, GMP_RNDD, "1.f81fc40f32062@13");
-  check4 (a*8550954388695124.0, GMP_RNDD, "1.60c012a92fc64@13");
-  check4 (a*7842344481681754.0, GMP_RNDD, "1.51d17526c716@13");
-  check4 (a*5935035262218600.0, GMP_RNDD, "1.25e19302f7e5@13");
-  check4 (a*5039650445085418.0, GMP_RNDD, "1.0ecea7dd2ec3c@13");
-  check4 (a*5039721545366078.0, GMP_RNDD, "1.0ecf250e8e92@13");
-  check4 (a*8005963117781324.0, GMP_RNDD, "1.5552f3eedcf32@13");
-  check4 (a*6703494707970582.0, GMP_RNDD, "1.3853ee10c9c98@13");
-  check4 (a*8010323124937260.0, GMP_RNDD, "1.556abe212b56e@13");
-  check4 (a*2.0*8010776873384260.0, GMP_RNDD, "1.e2d9a51977e6d@13");
+  check4 ("78652858805036375191418371571712.0", GMP_RNDD,
+	  "1.f81fc40f32062@13");
+  check4 ("38510074998589467860312736661504.0", GMP_RNDD,
+	  "1.60c012a92fc64@13");
+  check4 ("35318779685413012908190921129984.0", GMP_RNDD, "1.51d17526c716@13");
+  check4 ("26729022595358440976973142425600.0", GMP_RNDD, "1.25e19302f7e5@13");
+  check4 ("22696567866564242819241453027328.0", GMP_RNDD,
+	  "1.0ecea7dd2ec3c@13");
+  check4 ("22696888073761729132924856434688.0", GMP_RNDD, "1.0ecf250e8e92@13");
+  check4 ("36055652513981905145251657416704.0", GMP_RNDD,
+	  "1.5552f3eedcf32@13");
+  check4 ("30189856268896404997497182748672.0", GMP_RNDD,
+	  "1.3853ee10c9c98@13");
+  check4 ("36075288240584711210898775080960.0", GMP_RNDD,
+	  "1.556abe212b56e@13");
+  check4 ("72154663483843080704304789585920.0", GMP_RNDD, 
+	  "1.e2d9a51977e6d@13");
 
   tests_end_mpfr ();
   return 0;

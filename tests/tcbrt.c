@@ -1,6 +1,6 @@
 /* Test file for mpfr_cbrt.
 
-Copyright 2002, 2003 Free Software Foundation, Inc.
+Copyright 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -38,7 +38,7 @@ main (void)
   mpfr_set_prec (x, 53);
   mpfr_set_str (x, "8.39005285514734966412e-01", 10, GMP_RNDN);
   mpfr_cbrt (x, x, GMP_RNDN);
-  if (mpfr_get_d1 (x) != 9.43166207799662426048e-01)
+  if (mpfr_cmp_str1(x, "9.43166207799662426048e-01"))
     {
       printf ("Error (1)\n");
       exit (1);

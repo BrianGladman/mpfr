@@ -28,7 +28,6 @@ static void
 check_diverse (void)
 {
   mpfr_t x, y, z;
-  double res, got;
   int inexact;
 
   mpfr_init (x);
@@ -180,15 +179,15 @@ check_diverse (void)
   mpfr_set_prec (x, 53);
   mpfr_set_prec (y, 53);
   mpfr_set_prec (z, 53);
-  mpfr_set_str (x, "1.229318102e+09", 10, GMP_RNDN);
-  mpfr_set_str (y, "2.32221184180698677665e+05", 10, GMP_RNDN);
+  mpfr_set_str1 (x, "1.229318102e+09");
+  mpfr_set_str1 (y, "2.32221184180698677665e+05");
   mpfr_sub (z, x, y, GMP_RNDN);
-  res = 1229085880.815819263458251953125;
-  got = mpfr_get_d1 (z);
-  if (got != res)
+  if (mpfr_cmp_str1 (z, "1229085880.815819263458251953125"))
     {
       printf ("Error in mpfr_sub (1.22e9 - 2.32e5)\n");
-      printf ("expected %1.20e, got %1.20e\n", res, got);
+      printf ("expected 1229085880.815819263458251953125, got ");
+      mpfr_out_str(stdout, 10, 0, z, GMP_RNDN);
+      putchar('\n');
       exit (1);
     }
 

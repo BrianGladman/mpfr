@@ -1,6 +1,6 @@
 /* Test file for mpfr_tan.
 
-Copyright 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -83,7 +83,9 @@ main(int argc, char *argv[])
   if (mpfr_cmp_ui_2exp(x, 1, -1))
     {
       printf ("mpfr_tan(0.5, GMP_RNDD) failed\n"
-              "expected 0.5, got %f\n", mpfr_get_d1 (x));
+              "expected 0.5, got");
+      mpfr_print_binary(x);
+      putchar('\n');
       exit (1);
     }
 

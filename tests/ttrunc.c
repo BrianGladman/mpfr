@@ -1,6 +1,6 @@
 /* Test file for mpfr_trunc, mpfr_ceil, mpfr_floor.
 
-Copyright 1999, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+Copyright 1999, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -29,24 +29,20 @@ MA 02111-1307, USA. */
 int
 main (void)
 {
-  int j, k; mpfr_t x, y, z, t, y2, z2, t2;
+  int j, k;
+  mpfr_t x, y, z, t, y2, z2, t2;
 
   tests_start_mpfr ();
 
-  mpfr_init2(x, SIZEX);
-  mpfr_init2(y, SIZEX);
-  mpfr_init2(z, SIZEX);
-  mpfr_init2(t, SIZEX);
-  mpfr_init2(y2, SIZEX);
-  mpfr_init2(z2, SIZEX);
-  mpfr_init2(t2, SIZEX);
+  mpfr_inits2(SIZEX, x, y, z, t, y2, z2, t2, NULL);
 
-  mpfr_set_str (x, "0.5", 10, GMP_RNDN);
+  mpfr_set_str1 (x, "0.5");
   mpfr_ceil(y, x);
   if (mpfr_cmp_ui (y, 1))
     {
-      printf ("Error in mpfr_ceil for x=0.5: expected 1.0, got %f\n",
-              mpfr_get_d1 (y));
+      printf ("Error in mpfr_ceil for x=0.5: expected 1.0, got ");
+      mpfr_print_binary(y); 
+      putchar('\n');
       exit (1);
     }
 
@@ -54,8 +50,9 @@ main (void)
   mpfr_ceil(y, x);
   if (mpfr_cmp_ui(y,0))
     {
-      printf ("Error in mpfr_ceil for x=0.0: expected 0.0, got %f\n",
-              mpfr_get_d1 (y));
+      printf ("Error in mpfr_ceil for x=0.0: expected 0.0, got ");
+      mpfr_print_binary(y);
+      putchar('\n');
       exit (1);
     }
 
@@ -63,8 +60,9 @@ main (void)
   mpfr_ceil(y, x);
   if (mpfr_cmp_ui(y,1))
     {
-      printf ("Error in mpfr_ceil for x=1.0: expected 1.0, got %f\n",
-              mpfr_get_d1 (y));
+      printf ("Error in mpfr_ceil for x=1.0: expected 1.0, got ");
+      mpfr_print_binary(y);
+      putchar('\n');
       exit (1);
     }
 
@@ -99,13 +97,6 @@ main (void)
               printf("\n");
               printf("round(x, RNDD) = "); mpfr_print_binary(y2);
               printf("\n");
-              mpfr_clear(x);
-              mpfr_clear(y);
-              mpfr_clear(y2);
-              mpfr_clear(z);
-              mpfr_clear(z2);
-              mpfr_clear(t);
-              mpfr_clear(t2);
               exit(-1);
             }
 
@@ -117,13 +108,6 @@ main (void)
               printf("\n");
               printf("round(x, RNDZ) = "); mpfr_print_binary(z2);
               printf("\n");
-              mpfr_clear(x);
-              mpfr_clear(y);
-              mpfr_clear(y2);
-              mpfr_clear(z);
-              mpfr_clear(z2);
-              mpfr_clear(t);
-              mpfr_clear(t2);
               exit(-1);
             }
 
@@ -135,26 +119,13 @@ main (void)
               printf("\n");
               printf("round(x, RNDU) = "); mpfr_print_binary(t2);
               printf("\n");
-              mpfr_clear(x);
-              mpfr_clear(y);
-              mpfr_clear(y2);
-              mpfr_clear(z);
-              mpfr_clear(z2);
-              mpfr_clear(t);
-              mpfr_clear(t2);
               exit(-1);
             }
           MPFR_EXP(x)++;
         }
     }
 
-  mpfr_clear(x);
-  mpfr_clear(y);
-  mpfr_clear(y2);
-  mpfr_clear(z);
-  mpfr_clear(z2);
-  mpfr_clear(t);
-  mpfr_clear(t2);
+  mpfr_clears(x, y, z, t, y2, z2, t2, NULL);
 
   tests_end_mpfr ();
   return 0;

@@ -8,7 +8,7 @@ LDADD = libfrtests.a $(MPFR_LIBM) $(top_builddir)/libmpfr.a  @LDADD@
 INCLUDES = -I$(top_srcdir) @INCLUDES@
 
 check_LIBRARIES = libfrtests.a
-libfrtests_a_SOURCES = memory.c rnd_mode.c tests.c
+libfrtests_a_SOURCES = memory.c rnd_mode.c tests.c cmp_str.c
 EXTRA_libfrtests_a_SOURCES = amd64.asm x86.asm
 libfrtests_a_DEPENDENCIES = $(TESTS_ASM_OBJECTS)
 libfrtests_a_LIBADD = $(libfrtests_a_DEPENDENCIES)
