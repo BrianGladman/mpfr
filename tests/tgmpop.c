@@ -23,6 +23,37 @@ MA 02111-1307, USA. */
 #include <stdlib.h>
 #include "mpfr-test.h"
 
+static void
+special (void)
+{
+  mpfr_t x, y;
+  mpq_t z;
+
+  mpfr_init (x);
+  mpfr_init (y);
+  mpq_init (z);
+
+  mpfr_set_prec (x, 19);
+  mpfr_set_str_binary (x, "0.1011110101110011100E0");
+  mpz_set_str (mpq_numref (z), "187207494", 10);
+  mpz_set_str (mpq_denref (z), "5721", 10);
+  mpfr_set_prec (y, 29);
+  mpfr_add_q (y, x, z, GMP_RNDD);
+  mpfr_set_prec (x, 29);
+  mpfr_set_str_binary (x, "11111111101001110011010001001E-14");
+  MPFR_ASSERTN(mpfr_cmp (x, y) == 0);
+
+  mpfr_set_inf (x, 1);
+  mpz_set_str (mpq_numref (z), "395877315", 10);
+  mpz_set_str (mpq_denref (z), "3508975966", 10);
+  mpfr_set_prec (y, 118);
+  mpfr_add_q (y, x, z, GMP_RNDU);
+  MPFR_ASSERTN(mpfr_inf_p (y) && mpfr_sgn (y) > 0);
+
+  mpq_clear (z);
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
 
 static void
 test_specialz (int (*mpfr_func)(mpfr_ptr, mpfr_srcptr, mpz_srcptr, mp_rnd_t),
@@ -239,7 +270,7 @@ test_specialq (mp_prec_t p0, mp_prec_t p1, unsigned int N,
   unsigned int n;
   mp_prec_t prec;
 
-  for(prec = p0 ; prec < p1 ; prec++)
+  for (prec = p0 ; prec < p1 ; prec++)
     {
       mpfr_inits2 (prec, fra, frb, frq, NULL);
       mpq_init (q1); mpq_init(q2); mpq_init (qr);
@@ -273,11 +304,12 @@ test_specialq (mp_prec_t p0, mp_prec_t p1, unsigned int N,
     }
 }
 
-
 int
 main (int argc, char *argv[])
 {
   tests_start_mpfr ();
+
+  special ();
 
   test_genericz (2, 150, 100, mpfr_add_z, "add");
   test_genericz (2, 150, 100, mpfr_sub_z, "sub");
