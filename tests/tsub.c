@@ -470,21 +470,27 @@ check_inexact (void)
   mpfr_clear (u);
 }
 
+#define TEST_FUNCTION test_sub
+#define TWO_ARGS
+#define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), randlimb () % 100)
+#include "tgeneric.c"
+
 int
-main(void)
+main (void)
 {
   mp_prec_t p;
-  unsigned i;
+  unsigned int i;
 
+  MPFR_TEST_USE_RANDS ();
   tests_start_mpfr ();
 
   check_diverse ();
   check_inexact ();
   bug_ddefour ();
-
   for (p=2; p<200; p++)
     for (i=0; i<50; i++)
       check_two_sum (p);
+  test_generic (2, 800, 100);
 
   tests_end_mpfr ();
   return 0;

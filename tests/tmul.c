@@ -586,9 +586,16 @@ check_regression (void)
   mpfr_clears (x, y, z, NULL);
 }
 
+#define TEST_FUNCTION test_mul
+#define TWO_ARGS
+#define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), randlimb () % 100)
+#include "tgeneric.c"
+
+
 int
 main (int argc, char *argv[])
 {
+  MPFR_TEST_USE_RANDS ();
   tests_start_mpfr ();
 
   check_nans ();
@@ -624,6 +631,7 @@ main (int argc, char *argv[])
   check_min();
 
   check_regression ();
+  test_generic (2, 500, 100);
 
   tests_end_mpfr ();
   return 0;

@@ -730,15 +730,19 @@ check_nan (void)
   mpfr_clear (q);
 }
 
+#define TEST_FUNCTION test_div
+#define TWO_ARGS
+#define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), randlimb () % 100)
+#include "tgeneric.c"
 
 int
 main (int argc, char *argv[])
 {
+  MPFR_TEST_USE_RANDS ();
   tests_start_mpfr ();
 
   check_inexact ();
   check_hard ();
-
   check_nan ();
   check_lowr();
   check_float(); /* checks single precision */
@@ -753,6 +757,8 @@ main (int argc, char *argv[])
   check4("2.44394909079968374564e-150", "2.10263340267725788209e+187",GMP_RNDU,
 	 65, 
   "0.11010011111001101011111001100111110100000001101001111100111000000E-1119");
+
+  test_generic (2, 800, 50);
 
   tests_end_mpfr ();
   return 0;

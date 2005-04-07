@@ -19,7 +19,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#define N 30000
+#define NUM 30000
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -682,7 +682,7 @@ check_1111 (void)
 
   mpfr_init2 (one, MPFR_PREC_MIN);
   mpfr_set_ui (one, 1, GMP_RNDN);
-  for (n = 0; n < N; n++)
+  for (n = 0; n < NUM; n++)
     {
       mp_prec_t prec_a, prec_b, prec_c;
       mp_exp_t tb=0, tc, diff;
@@ -1067,11 +1067,17 @@ tests (void)
   check_1minuseps ();
 }
 
+#define TEST_FUNCTION test_add
+#define TWO_ARGS
+#define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), randlimb () % 100)
+#include "tgeneric.c"
+
 int
 main (int argc, char *argv[])
 {
+  MPFR_TEST_USE_RANDS ();
   tests_start_mpfr ();
-  mpfr_test_init ();
+  /* mpfr_test_init (); */
 
   usesp = 0;
   tests ();
@@ -1080,6 +1086,7 @@ main (int argc, char *argv[])
   usesp = 1;
   tests ();
 #endif
+  test_generic (2, 1000, 100);
 
   tests_end_mpfr ();
   return 0;
