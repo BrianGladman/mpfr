@@ -132,6 +132,9 @@ special (void)
   mpfr_clear (y);
 }
 
+#define TEST_FUNCTION mpfr_cbrt
+#include "tgeneric.c"
+
 int
 main (void)
 {
@@ -139,6 +142,7 @@ main (void)
   int r;
   mp_prec_t p;
 
+  MPFR_TEST_USE_RANDS ();
   tests_start_mpfr ();
 
   special ();
@@ -192,8 +196,9 @@ main (void)
             }
         }
     }
-
   mpfr_clear (x);
+
+  test_generic (2, 200, 10);
 
   tests_end_mpfr ();
   return 0;

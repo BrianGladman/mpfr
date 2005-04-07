@@ -68,6 +68,9 @@ test_generic_ui (mp_prec_t p0, mp_prec_t p1, unsigned int N)
 		  printf ("\nu=%lu", (unsigned long) u);
                   printf (" prec=%lu rnd_mode=%s\n", 
 			  (unsigned long ) prec, mpfr_print_rnd_mode (rnd));
+#ifdef TEST_FUNCTION_NAME
+		  printf ("Function: %s\n", TEST_FUNCTION_NAME);
+#endif
                   printf ("got      ");
                   mpfr_out_str (stdout, 2, prec, z, GMP_RNDN);
                   puts ("");
@@ -111,4 +114,5 @@ test_generic_ui (mp_prec_t p0, mp_prec_t p1, unsigned int N)
 #undef RAND_FUNCTION
 #undef INTEGER_TYPE
 #undef TEST_FUNCTION
+#undef TEST_FUNCTION_NAME
 #undef test_generic_ui

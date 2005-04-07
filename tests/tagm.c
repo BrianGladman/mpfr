@@ -187,26 +187,31 @@ check_nans (void)
   mpfr_clear (m);
 }
 
+#define TEST_FUNCTION mpfr_agm
+#define TWO_ARGS
+#include "tgeneric.c"
+
 int
 main (int argc, char* argv[])
 {
-   tests_start_mpfr ();
+  MPFR_TEST_USE_RANDS ();
+  tests_start_mpfr ();
+  
+  check_nans ();
+  
+  check_large ();
+  check4 ("2.0", "1.0", GMP_RNDN, "1.45679103104690677029");
+  check4 ("6.0", "4.0", GMP_RNDN, "4.94936087247260925182");
+  check4 ("62.0", "61.0", GMP_RNDN, "6.14989837188450749750e+01");
+  check4 ("0.5", "1.0", GMP_RNDN, "7.28395515523453385143e-01");
+  check4 ("1.0", "2.0", GMP_RNDN, "1.45679103104690677029");
+  check4 ("234375765.0", "234375000.0", GMP_RNDN, "2.3437538249984395504e8");
+  check4 ("8.0", "1.0", GMP_RNDU, "3.615756177597362786");
+  check4 ("1.0", "44.0", GMP_RNDU, "1.33658354512981247808e1");
+  check4 ("1.0", "3.7252902984619140625e-9", GMP_RNDU,
+	  "7.55393356971199025907e-02");
+  test_generic (2, 300, 17);
 
-   check_nans ();
-
-   check_large ();
-   check4 ("2.0", "1.0", GMP_RNDN, "1.45679103104690677029");
-   check4 ("6.0", "4.0", GMP_RNDN, "4.94936087247260925182");
-   check4 ("62.0", "61.0", GMP_RNDN, "6.14989837188450749750e+01");
-   check4 ("0.5", "1.0", GMP_RNDN, "7.28395515523453385143e-01");
-   check4 ("1.0", "2.0", GMP_RNDN, "1.45679103104690677029");
-   check4 ("234375765.0", "234375000.0", GMP_RNDN, "2.3437538249984395504e8");
-   check4 ("8.0", "1.0", GMP_RNDU, "3.615756177597362786");
-   check4 ("1.0", "44.0", GMP_RNDU, "1.33658354512981247808e1");
-   check4 ("1.0", "3.7252902984619140625e-9", GMP_RNDU,
-	   "7.55393356971199025907e-02");
-   
-   tests_end_mpfr ();
-   
-   return 0;
+  tests_end_mpfr ();  
+  return 0;
 }

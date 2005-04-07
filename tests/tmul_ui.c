@@ -74,6 +74,11 @@ check_inexact (mp_prec_t p)
   mpfr_clear (z);
 }
 
+#define TEST_FUNCTION mpfr_mul_ui
+#define INTEGER_TYPE  unsigned long
+#define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1)
+#include "tgeneric_ui.c"
+
 int
 main (int argc, char *argv[])
 {
@@ -82,6 +87,7 @@ main (int argc, char *argv[])
   mp_prec_t p;
   mp_exp_t emax;
 
+  MPFR_TEST_USE_RANDS ();
   tests_start_mpfr ();
 
   for (p=2; p<100; p++)
@@ -253,7 +259,10 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-  mpfr_clear(x); mpfr_clear(y);
+  mpfr_clear(x);
+  mpfr_clear(y);
+
+  test_generic_ui (2, 500, 100);
 
   tests_end_mpfr ();
   return 0;

@@ -114,12 +114,18 @@ check_nans (void)
   mpfr_clear (y);
 }
 
+#define TEST_FUNCTION mpfr_sub_ui
+#define INTEGER_TYPE  unsigned long
+#define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1)
+#include "tgeneric_ui.c"
+
 int
 main (int argc, char *argv[])
 {
   mp_prec_t p;
   int k;
 
+  MPFR_TEST_USE_RANDS ();
   tests_start_mpfr ();
 
   check_nans ();
@@ -130,6 +136,8 @@ main (int argc, char *argv[])
 
   check3 ("0.9999999999", 1, GMP_RNDN, 
 	  "-10000000827403709990903735160827636718750e-50");
+
+  test_generic_ui (2, 1000, 100);
 
   tests_end_mpfr ();
   return 0;

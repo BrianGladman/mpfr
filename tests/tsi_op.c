@@ -64,6 +64,35 @@ check_invert ()
   mpfr_clear (x);
 }
 
+#define TEST_FUNCTION mpfr_add_si
+#define TEST_FUNCTION_NAME "mpfr_add_si"
+#define INTEGER_TYPE  long
+#define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1)
+#define test_generic_ui test_generic_add_si
+#include "tgeneric_ui.c"
+
+#define TEST_FUNCTION mpfr_sub_si
+#define TEST_FUNCTION_NAME "mpfr_sub_si"
+#define INTEGER_TYPE  long
+#define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1)
+#define test_generic_ui test_generic_sub_si
+#include "tgeneric_ui.c"
+
+#define TEST_FUNCTION mpfr_mul_si
+#define TEST_FUNCTION_NAME "mpfr_mul_si"
+#define INTEGER_TYPE  long
+#define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1)
+#define test_generic_ui test_generic_mul_si
+#include "tgeneric_ui.c"
+
+#define TEST_FUNCTION mpfr_div_si
+#define TEST_FUNCTION_NAME "mpfr_div_si"
+#define INTEGER_TYPE  long
+#define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1)
+#define test_generic_ui test_generic_div_si
+#include "tgeneric_ui.c"
+
+
 int
 main (int argc, char *argv[])
 {
@@ -105,6 +134,11 @@ main (int argc, char *argv[])
   mpfr_clears (x, z, NULL);
 
   check_invert ();
+
+  test_generic_add_si (2, 200, 17);
+  test_generic_sub_si (2, 200, 17);
+  test_generic_mul_si (2, 200, 17);
+  test_generic_div_si (2, 200, 17);
 
   tests_end_mpfr ();
   return 0;

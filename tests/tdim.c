@@ -24,6 +24,10 @@ MA 02111-1307, USA. */
 
 #include "mpfr-test.h"
 
+#define TEST_FUNCTION mpfr_dim
+#define TWO_ARGS
+#include "tgeneric.c"
+
 int
 main (void)
 {
@@ -98,6 +102,8 @@ main (void)
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);
+
+  test_generic (2, 220, 42);
 
   tests_end_mpfr ();
   return 0;
