@@ -385,10 +385,10 @@ main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
-  /* special_erf (); */
-  /* special_erfc (); */
+  special_erf (); 
+  special_erfc (); 
 
-  /* test_generic_erf (2, 100, 15); */
+  test_generic_erf (2, 100, 15); 
   test_generic_erfc (2, 100, 15);
 
   tests_end_mpfr ();
