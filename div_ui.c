@@ -98,40 +98,75 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
     c = mpn_divrem_1 (tmp, 0, xp - dif, yn + 1, c);
 
   inexact = (c != 0);
+
+  /* First pass in estimating next bit of the quotient, in case of RNDN    * 
+   * In case we just have the right number of bits (postpone this ?),      *
+   * we need to check whether the remainder is more or less than half      *
+   * the divisor. The test must be performed with a subtraction, so as     *
+   * to prevent carries.                                                   */
+
   if (MPFR_LIKELY (rnd_mode == GMP_RNDN))
     {
-      if (2 * c < (mp_limb_t) u)
+      if (c < (mp_limb_t) u - c) /* We have u > c */ 
 	middle = -1;
-      else if (2 * c > (mp_limb_t) u)
+      else if (c > (mp_limb_t) u - c)
 	middle = 1;
       else
 	middle = 0; /* exactly in the middle */
     }
+
+  /* If we believe that we are right in the middle or exact, we should check 
+     that we did not neglect any word of x (division large / 1 -> small). */ 
+
   for (i=0; ((inexact == 0) || (middle == 0)) && (i < -dif); i++)
     if (xp[i])
       inexact = middle = 1; /* larger than middle */
 
-  if (tmp[yn] == 0) /* high limb is zero */
-    {
-      tmp--;
-      sh = 0;
-      exp -= BITS_PER_MP_LIMB;
-    }
+  /* 
+     If the high limb of the result is 0 (xp[xn-1] < u), remove it.     
+     Otherwise, compute the left shift to be performed to normalize. 
+     In the latter case, we discard some low bits computed. They 
+     contain information useful for the rounding, hence the updating
+     of middle and inexact. 
+  */ 
 
-  /* now we have yn limbs starting from tmp[1], with tmp[yn]<>0 */
+  if (tmp[yn] == 0) 
+    {
+      MPN_COPY(yp, tmp, yn); 
+      exp -= BITS_PER_MP_LIMB;
+      sh = 0; 
+    }
+  else 
+    {
+      count_leading_zeros (sh, tmp[yn]);
 
   /* shift left to normalize */
-  count_leading_zeros (sh, tmp[yn]);
-  if (MPFR_LIKELY (sh))
-    {
-      mpn_lshift (yp, tmp + 1, yn, sh);
-      yp[0] += tmp[0] >> (BITS_PER_MP_LIMB - sh);
-      middle = middle || ((tmp[0] << sh) != 0);
-      inexact = inexact || ((tmp[0] << sh) != 0);
-      exp -= sh;
+      if (MPFR_LIKELY (sh))
+	{
+	  mp_limb_t w = tmp[0] << sh; 
+
+	  mpn_lshift (yp, tmp + 1, yn, sh);
+	  yp[0] += tmp[0] >> (BITS_PER_MP_LIMB - sh);
+	  
+	  if (w > (MPFR_LIMB_ONE << (BITS_PER_MP_LIMB - 1)))
+	    { middle = 1; }
+	  else if (w < (MPFR_LIMB_ONE << (BITS_PER_MP_LIMB - 1)))
+	    { middle = -1; }
+	  else
+	    { middle = (c != 0); }
+	  
+	  inexact = inexact || (w != 0);
+	  exp -= sh;
+	}
+      else
+	{ /* this happens only if u == 1 and xp[xn-1] >=
+	     1<<(BITS_PER_MP_LIMB-1). It might be better to handle the
+	     u == 1 case seperately ?
+	  */ 
+
+	     MPN_COPY (yp, tmp + 1, yn);
+	}
     }
-  else
-    MPN_COPY (yp, tmp + 1, yn);
 
   MPFR_UNSIGNED_MINUS_MODULO (sh, MPFR_PREC (y));
   /* it remains sh bits in less significant limb of y */
@@ -162,7 +197,8 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 
     default:
       MPFR_ASSERTD(rnd_mode == GMP_RNDN);
-      if (sh && d < (MPFR_LIMB_ONE << (sh - 1)))
+      /* we have one more significant bit in yn */ 
+      if (sh && d < (MPFR_LIMB_ONE << (sh - 1))) 
 	MPFR_RET(-MPFR_INT_SIGN(x));
       else if (sh && d > (MPFR_LIMB_ONE << (sh - 1)))
 	{
@@ -171,12 +207,14 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 	}
       else /* sh = 0 or d = 1 << (sh-1) */
 	{
-	  /* we are in the middle if:
-	     (a) sh > 0 and inexact == 0
-	     (b) sh=0 and middle=1
-	  */
+	  /* The first case is "false" even rounding (significant bits
+	     indicate even rounding, but the result is inexact, so up) ; 
+	     The second case is the case where middle should be used to 
+	     decide the direction of rounding (no further bit computed) ; 
+	     The third is the true even rounding. 
+	  */ 
 	  if ((sh && inexact) || (!sh && (middle > 0)) ||
-	      (*yp & (MPFR_LIMB_ONE << sh)))
+	      (!inexact && *yp & (MPFR_LIMB_ONE << sh)))
 	    {
 	      mpfr_add_one_ulp (y, rnd_mode);
 	      MPFR_RET(MPFR_INT_SIGN(x));

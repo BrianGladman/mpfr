@@ -100,6 +100,7 @@ main (int argc, char *argv[])
   int y;
   int i;
 
+  MPFR_TEST_USE_RANDS ();
   tests_start_mpfr ();
   mpfr_inits2 (53, x, z, NULL);
   for(i = 0 ; i < numberof (tab) ; i++)
