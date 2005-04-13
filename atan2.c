@@ -22,7 +22,14 @@ MA 02111-1307, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-/* Returns arctan (y/x) */
+/* TODO: 
+   Returns arctan2 (y, x) = atan (y/x) si x > 0
+   = sign(y)*(PI - atan (|y/x|))       si x < 0
+   = 0                                 si x = 0 et y = 0
+   sign(y) * PI/2                      si x = 0 et y != 0
+   How to handle signed zeros?
+*/
+
 int
 mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
