@@ -80,7 +80,7 @@ mpfr_expm1 (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
     /* initialise of intermediary	variable */
     mpfr_init2 (t, Nt);
 
-    /* First computation of cosh */
+    /* First computation of expm1 */
     MPFR_ZIV_INIT (loop, Nt);
     for (;;)
       {
