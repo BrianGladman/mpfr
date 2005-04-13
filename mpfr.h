@@ -535,6 +535,9 @@ __MPFR_DECLSPEC int  mpfr_cache _MPFR_PROTO ((mpfr_ptr, mpfr_cache_t,
 					      mpfr_rnd_t));
 __MPFR_DECLSPEC void mpfr_free_cache _MPFR_PROTO ((void));
 
+__MPFR_DECLSPEC int  mpfr_subnormalize _MPFR_PROTO ((mpfr_ptr, int,
+						     mp_rnd_t));
+
 __MPFR_DECLSPEC int  mpfr_strtofr _MPFR_PROTO ((mpfr_ptr, __gmp_const char *,
 						char **, int, mpfr_rnd_t));
 
