@@ -22,44 +22,13 @@ MA 02111-1307, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-/* TODO: 
-   Returns arctan2 (y, x) = atan (y/x) si x > 0
-   = sign(y)*(PI - atan (|y/x|))       si x < 0
-
-         -- atan2(±0, -0) returns ±pi.313)
-
-       313) atan2(0, 0) does not raise the "invalid" floating-point
-            exception, nor does atan2(y, 0) raise the "divide-by-zero"
-            floating-point exception.
-
-         -- atan2(±0, +0) returns ±0.
-
-         -- atan2(±0, x) returns ±pi, for x < 0.
-
-         -- atan2(±0, x) returns ±0, for x > 0.
-
-         -- atan2(y, ±0) returns -pi/2 for y < 0.
-
-         -- atan2(y, ±0) returns pi/2 for y > 0.
-
-         -- atan2(±y, -oo) returns ±pi, for finite y > 0.
-
-         -- atan2(±y, +oo) returns ±0, for finite y > 0.
-
-         -- atan2(±oo, x) returns ±pi/2, for finite x.
-
-         -- atan2(±oo, -oo) returns ±3pi/4.
-
-         -- atan2(±oo, +oo) returns ±pi/4.
-
-*/
-
 int
 mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
-  mpfr_t tmp;
+  mpfr_t tmp, pi;
   int inexact;
   mp_prec_t prec;
+  mp_exp_t e;
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_ZIV_DECL (loop);
 
@@ -69,10 +38,120 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   /* Special cases */
   if (MPFR_ARE_SINGULAR (x, y))
     {
-      /* Don't want to handle all the cases. 
-	 Just call div and atan is simplier, and still fast */
-      mpfr_div (dest, y, x, rnd_mode);
-      return mpfr_atan (dest, dest, rnd_mode);
+      /* atan2(0, 0) does not raise the "invalid" floating-point
+         exception, nor does atan2(y, 0) raise the "divide-by-zero"
+         floating-point exception.
+         -- atan2(±0, -0) returns ±pi.313)
+         -- atan2(±0, +0) returns ±0.
+         -- atan2(±0, x) returns ±pi, for x < 0.
+         -- atan2(±0, x) returns ±0, for x > 0.
+         -- atan2(y, ±0) returns -pi/2 for y < 0.
+         -- atan2(y, ±0) returns pi/2 for y > 0.
+         -- atan2(±oo, -oo) returns ±3pi/4.
+         -- atan2(±oo, +oo) returns ±pi/4.
+         -- atan2(±oo, x) returns ±pi/2, for finite x.
+         -- atan2(±y, -oo) returns ±pi, for finite y > 0.
+         -- atan2(±y, +oo) returns ±0, for finite y > 0.
+      */
+      if (MPFR_IS_NAN (x) || MPFR_IS_NAN (y))
+	{
+	  MPFR_SET_NAN (dest);
+	  MPFR_RET_NAN;
+	}
+      if (MPFR_IS_ZERO (y))
+	{
+	  if (MPFR_IS_NEG (x)) /* +/- PI */
+	    {
+	    set_pi:
+	      if (MPFR_IS_NEG (y))
+		{
+		  inexact =  mpfr_const_pi (dest, MPFR_INVERT_RND (rnd_mode));
+		  MPFR_CHANGE_SIGN (dest);
+		  return -inexact;
+		}
+	      else
+		return mpfr_const_pi (dest, rnd_mode);
+	    }
+	  else /* +/- 0 */
+	    {
+	    set_zero:
+	      MPFR_SET_ZERO (dest);
+	      MPFR_SET_SAME_SIGN (dest, y);
+	      return 0;
+	    }
+	}
+      if (MPFR_IS_ZERO (x))
+	{
+	set_pi_2:
+	  if (MPFR_IS_NEG (y)) /* -PI/2 */
+	    {
+	      rnd_mode = MPFR_INVERT_RND (rnd_mode);
+	      inexact = mpfr_const_pi (dest, rnd_mode);
+	      MPFR_CHANGE_SIGN (dest);
+	      mpfr_div_2ui (dest, dest, 1, rnd_mode);
+	      return -inexact;
+	    }
+	  else /* PI/2 */
+	    {
+	      inexact = mpfr_const_pi (dest, rnd_mode);
+              mpfr_div_2ui (dest, dest, 1, rnd_mode);
+              return inexact;
+	    }
+	}
+      if (MPFR_IS_INF (y))
+	{
+	  if (!MPFR_IS_INF (x)) /* +/- PI/2 */
+	    goto set_pi_2;
+	  else if (MPFR_IS_POS (x)) /* +/- PI/4 */
+	    { 
+	      if (MPFR_IS_NEG (y)) 
+		{
+		  rnd_mode = MPFR_INVERT_RND (rnd_mode);
+		  inexact = mpfr_const_pi (dest, rnd_mode);
+		  MPFR_CHANGE_SIGN (dest);
+		  mpfr_div_2ui (dest, dest, 2, rnd_mode);
+		  return -inexact;
+		}
+	      else 
+		{
+		  inexact = mpfr_const_pi (dest, rnd_mode);
+		  mpfr_div_2ui (dest, dest, 2, rnd_mode);
+		  return inexact;
+		}
+	    }
+	  else /* +/- 3*PI/4: Ugly since we have to round properly */
+	    { 
+	      mpfr_t tmp;
+	      MPFR_ZIV_DECL (loop);
+	      mp_prec_t prec = MPFR_PREC (dest) + BITS_PER_MP_LIMB;
+
+	      mpfr_init2 (tmp, prec);
+	      MPFR_ZIV_INIT (loop, prec);
+	      for (;;)
+		{
+		  mpfr_const_pi (tmp, GMP_RNDN);
+		  mpfr_mul_ui (tmp, tmp, 3, GMP_RNDN); /* Error <= 2  */
+		  mpfr_div_2ui (tmp, tmp, 2, GMP_RNDN);
+		  if (mpfr_round_p (MPFR_MANT (tmp), MPFR_LIMB_SIZE (tmp),
+				    MPFR_PREC (tmp)-2, 
+				    MPFR_PREC (dest) + (rnd_mode == GMP_RNDN)))
+		    break;
+		  MPFR_ZIV_NEXT (loop, prec);
+		  mpfr_set_prec (tmp, prec);
+		}	      
+	      MPFR_ZIV_FREE (loop);
+	      if (MPFR_IS_NEG (y))
+		MPFR_CHANGE_SIGN (tmp);
+	      inexact = mpfr_set (dest, tmp, rnd_mode);
+	      mpfr_clear (tmp);
+	      return inexact;
+	    }
+	}
+      MPFR_ASSERTD (MPFR_IS_INF (x));
+      if (MPFR_IS_NEG (x))
+	goto set_pi;
+      else 
+	goto set_zero;
     }
   MPFR_SAVE_EXPO_MARK (expo);
 
@@ -80,22 +159,52 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   prec = MPFR_PREC (dest) + 3 + MPFR_INT_CEIL_LOG2 (MPFR_PREC (dest));
   mpfr_init2 (tmp, prec);
 
-  /* use atan2(y,x) = atan(y/x) */
   MPFR_ZIV_INIT (loop, prec);
-  for (;;)
+  if (MPFR_IS_POS (x))
+    /* use atan2(y,x) = atan(y/x) */
+    for (;;)
+      {
+	mpfr_div (tmp, y, x, GMP_RNDN);   /* Error <= ulp (tmp) */
+	mpfr_atan (tmp, tmp, GMP_RNDN);   /* Error <= 2*ulp (tmp) since
+					     abs(D(arctan)) <= 1 */
+	/*FIXME: Error <= ulp(tmp) ? */
+	if (MPFR_LIKELY (MPFR_CAN_ROUND (tmp, prec - 2, MPFR_PREC (dest),
+					 rnd_mode)))
+	  break;
+	MPFR_ZIV_NEXT (loop, prec);
+	mpfr_set_prec (tmp, prec);
+      }
+  else /* x < 0 */
+    /*  Use sign(y)*(PI - atan (|y/x|)) */
     {
-      mpfr_div (tmp, y, x, GMP_RNDN);   /* Error <= ulp (tmp) */
-      mpfr_atan (tmp, tmp, GMP_RNDN);   /* Error <= 2*ulp (tmp) since
-					   abs(D(arctan)) <= 1 */
-      /*FIXME: Error <= ulp(tmp) ? */
-      if (MPFR_LIKELY (MPFR_CAN_ROUND (tmp, prec - 2, MPFR_PREC (dest),
-				       rnd_mode)))
-	break;
-      MPFR_ZIV_NEXT (loop, prec);
-      mpfr_set_prec (tmp, prec);
+      mpfr_init2 (pi, prec);
+      for (;;)
+	{
+	  mpfr_div (tmp, y, x, GMP_RNDN);   /* Error <= ulp (tmp) */
+	  MPFR_SET_POS (tmp);               /* no error */
+	  mpfr_atan (tmp, tmp, GMP_RNDN);   /* Error <= 2*ulp (tmp) since
+					       abs(D(arctan)) <= 1 */
+	  mpfr_const_pi (pi, GMP_RNDN);     /* Error <= ulp(pi) /2 */
+	  e = MPFR_GET_EXP (tmp);
+	  mpfr_sub (tmp, pi, tmp, GMP_RNDN);          /* see above */
+	  if (MPFR_IS_NEG (y))
+	    MPFR_CHANGE_SIGN (tmp);
+	  /* Error(tmp) <= (1/2+2^(EXP(pi)-EXP(tmp)-1)+2^(e-EXP(tmp)+1))*ulp
+	                <= 2^(MAX (MAX (EXP(PI)-EXP(tmp)-1, e-EXP(tmp)+1), 
+		                	-1)+2)*ulp(tmp) */
+	  e = MAX (MAX (MPFR_GET_EXP (pi)-MPFR_GET_EXP (tmp) - 1,
+			e - MPFR_GET_EXP (tmp) + 1), -1) + 2;
+	  if (MPFR_LIKELY (MPFR_CAN_ROUND (tmp, prec - e, MPFR_PREC (dest),
+					   rnd_mode)))
+	    break;
+	  MPFR_ZIV_NEXT (loop, prec);
+	  mpfr_set_prec (tmp, prec);
+	  mpfr_set_prec (pi, prec);
+	}
+      mpfr_clear (pi);
     }
   MPFR_ZIV_FREE (loop);
-
+  
   inexact = mpfr_set (dest, tmp, rnd_mode);
   mpfr_clear (tmp);
   MPFR_SAVE_EXPO_FREE (expo);

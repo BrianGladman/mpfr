@@ -194,6 +194,12 @@ special (void)
 #define test_generic test_generic_atan2
 #include "tgeneric.c"
 
+#define TEST_FUNCTION mpfr_atan2
+#define TWO_ARGS
+#define RAND_FUNCTION(x) (mpfr_random (x), MPFR_SET_NEG (x))
+#define test_generic test_generic_atan2_neg
+#include "tgeneric.c"
+
 static void
 special_overflow (void)
 {
@@ -223,20 +229,106 @@ special_atan2 (void)
 {
   mpfr_t x, y, z;
 
-  mpfr_inits (x, y, z, NULL);
+  mpfr_inits2 (4, x, y, z, NULL);
 
+  /* Anything with NAN should be set to NAN */
   mpfr_set_ui (y, 0, GMP_RNDN);
   mpfr_set_nan (x);
   mpfr_atan2 (z, y, x, GMP_RNDN);
   MPFR_ASSERTN (MPFR_IS_NAN (z));
-
   mpfr_swap (x, y);
   mpfr_atan2 (z, y, x, GMP_RNDN);
   MPFR_ASSERTN (MPFR_IS_NAN (z));
 
+  /* 0+ 0+ --> 0+ */
   mpfr_set_ui (y, 0, GMP_RNDN);
   mpfr_atan2 (z, y, x, GMP_RNDN);
-  MPFR_ASSERTN (MPFR_IS_NAN (z));
+  MPFR_ASSERTN (MPFR_IS_ZERO (z) && MPFR_IS_POS (z)); 
+  /* 0- 0+ --> 0- */
+  MPFR_CHANGE_SIGN (y);
+  mpfr_atan2 (z, y, x, GMP_RNDN);
+  MPFR_ASSERTN (MPFR_IS_ZERO (z) && MPFR_IS_NEG (z));
+  /* 0- 0- --> -PI */
+  MPFR_CHANGE_SIGN (x);
+  mpfr_atan2 (z, y, x, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_str (z, "-3.1415", 10, GMP_RNDN) == 0);
+  /* 0+ 0- --> +PI */
+  MPFR_CHANGE_SIGN (y);
+  mpfr_atan2 (z, y, x, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_str (z, "3.1415", 10, GMP_RNDN) == 0);
+  /* 0+ -1 --> PI */
+  mpfr_set_si (x, -1, GMP_RNDN);
+  mpfr_atan2 (z, y, x, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_str (z, "3.1415", 10, GMP_RNDN) == 0);
+  /* 0- -1 --> -PI */ 
+  MPFR_CHANGE_SIGN (y);
+  mpfr_atan2 (z, y, x, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_str (z, "-3.1415", 10, GMP_RNDN) == 0);
+  /* 0- +1 --> 0- */
+  mpfr_set_ui (x, 1, GMP_RNDN);
+  mpfr_atan2 (z, y, x, GMP_RNDN);
+  MPFR_ASSERTN (MPFR_IS_ZERO (z) && MPFR_IS_NEG (z));
+  /* 0+ +1 --> 0+ */
+  MPFR_CHANGE_SIGN (y);
+  mpfr_atan2 (z, y, x, GMP_RNDN);
+  MPFR_ASSERTN (MPFR_IS_ZERO (z) && MPFR_IS_POS (z));
+  /* +1 0+ --> PI/2 */
+  mpfr_swap (x, y);
+  mpfr_atan2 (z, y, x, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_str (z, "1.57075", 10, GMP_RNDN) == 0);
+  /* +1 0- --> PI/2 */
+  MPFR_CHANGE_SIGN (x);
+  mpfr_atan2 (z, y, x, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_str (z, "1.57075", 10, GMP_RNDN) == 0);
+  /* -1 0- --> -PI/2 */
+  MPFR_CHANGE_SIGN (y);
+  mpfr_atan2 (z, y, x, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_str (z, "-1.57075", 10, GMP_RNDN) == 0);
+  /* -1 0+ --> -PI/2 */
+  MPFR_CHANGE_SIGN (x);
+  mpfr_atan2 (z, y, x, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_str (z, "-1.57075", 10, GMP_RNDN) == 0);
+
+  /* -1 +INF --> -0 */
+  MPFR_SET_INF (x);
+  mpfr_atan2 (z, y, x, GMP_RNDN);
+  MPFR_ASSERTN (MPFR_IS_ZERO (z) && MPFR_IS_NEG (z));
+  /* +1 +INF --> +0 */
+  MPFR_CHANGE_SIGN (y);
+  mpfr_atan2 (z, y, x, GMP_RNDN);
+  MPFR_ASSERTN (MPFR_IS_ZERO (z) && MPFR_IS_POS (z));
+  /* +1 -INF --> +PI */
+  MPFR_CHANGE_SIGN (x);
+  mpfr_atan2 (z, y, x, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_str (z, "3.1415", 10, GMP_RNDN) == 0);
+  /* -1 -INF --> -PI */
+  MPFR_CHANGE_SIGN (y);
+  mpfr_atan2 (z, y, x, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_str (z, "-3.1415", 10, GMP_RNDN) == 0);
+  /* -INF -1 --> -PI/2 */
+  mpfr_swap (x, y);
+  mpfr_atan2 (z, y, x, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_str (z, "-1.57075", 10, GMP_RNDN) == 0);
+  /* +INF -1  --> PI/2 */
+  MPFR_CHANGE_SIGN (y);
+  mpfr_atan2 (z, y, x, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_str (z, "1.57075", 10, GMP_RNDN) == 0);
+  /* +INF -INF --> 3*PI/4 */
+  MPFR_SET_INF (x);
+  mpfr_atan2 (z, y, x, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_str (z, "2.356194490192344928", 10, GMP_RNDN) == 0);
+  /* +INF +INF --> PI/4 */
+  MPFR_CHANGE_SIGN (x);
+  mpfr_atan2 (z, y, x, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_str (z, "0.785375", 10, GMP_RNDN) == 0);
+  /* -INF +INF --> -PI/4 */
+  MPFR_CHANGE_SIGN (y);
+  mpfr_atan2 (z, y, x, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_str (z, "-0.785375", 10, GMP_RNDN) == 0);
+  /* -INF -INF --> -3*PI/4 */
+  MPFR_CHANGE_SIGN (x);
+  mpfr_atan2 (z, y, x, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_str (z, "-2.356194490192344928", 10, GMP_RNDN) == 0);
 
   mpfr_clears (x, y, z, NULL);
 }
@@ -252,6 +344,7 @@ main (int argc, char *argv[])
 
   test_generic_atan  (2, 200, 17);
   test_generic_atan2 (2, 200, 17);
+  test_generic_atan2_neg (2, 200, 17);
 
   tests_end_mpfr ();
   return 0;

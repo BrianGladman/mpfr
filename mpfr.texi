@@ -1221,8 +1221,36 @@ rounded in the direction @var{rnd}.
 @end deftypefun
 
 @deftypefun int mpfr_atan2 (mpfr_t @var{rop}, mpfr_t @var{y}, mpfr_t @var{x}, mp_rnd_t @var{rnd})
-Set @var{rop} to the arc-tangent of @var{y}/@var{x},
-rounded in the direction @var{rnd}.
+Set @var{rop} to the arc-tangent2 of @var{y} and @var{x},
+rounded in the direction @var{rnd}: 
+if @code{x > 0}, @code{atan2(y, x) = atan (y/x)};
+if @code{x < 0}, @code{atan2(y, x) = sign(y)*(PI - atan (@GMPabs{y/x}))}.
+
+@code{atan2(y, 0)} does not raise any floating-point exception.
+Special values are currently handled as described in the ISO C99 standard
+for the @code{atan2} function (note this may change in future versions):
+@itemize @bullet
+@item @code{atan2(+0, -0)} returns @m{+\pi,+Pi}.
+@item @code{atan2(-0, -0)} returns @m{-\pi,-Pi}.
+@item @code{atan2(+0, +0)} returns +0.
+@item @code{atan2(-0, +0)} returns -0.
+@item @code{atan2(+0, x)} returns @m{+\pi,+Pi} for @math{x < 0}.
+@item @code{atan2(-0, x)} returns @m{-\pi,-Pi} for @math{x < 0}.
+@item @code{atan2(+0, x)} returns +0 for @math{x > 0}.
+@item @code{atan2(-0, x)} returns -0 for @math{x > 0}.
+@item @code{atan2(y, 0)} returns @m{-\pi/2,-Pi/2} for @math{y < 0}.
+@item @code{atan2(y, 0)} returns @m{+\pi/2,+Pi/2} for @math{y > 0}.
+@item @code{atan2(+INF, -INF)} returns @m{+3*\pi/4,+3*Pi/4}.
+@item @code{atan2(-INF, -INF)} returns @m{-3*\pi/4,-3*Pi/4}.
+@item @code{atan2(+INF, +INF)} returns @m{+\pi/4,+Pi/4}.
+@item @code{atan2(-INF, +INF)} returns @m{-\pi/4,-Pi/4}
+@item @code{atan2(+INF, x)} returns @m{+\pi/2,+Pi/2} for finite x.
+@item @code{atan2(-INF, x)} returns @m{-\pi/2,-Pi/2} for finite x.
+@item @code{atan2(y, -INF)} returns @m{+\pi,+Pi} for finite @math{y > 0}.
+@item @code{atan2(y, -INF)} returns @m{-\pi,-Pi} for finite @math{y < 0}.
+@item @code{atan2(y, +INF)} returns +0 for finite @math{y > 0}.
+@item @code{atan2(y, +INF)} returns -0 for finite @math{y < 0}.
+@end itemize
 @end deftypefun
 
 @deftypefun int mpfr_cosh (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
