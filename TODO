@@ -92,6 +92,8 @@ Efficiency:
 
 - speed up mpfr_atan for large arguments (to speed up mpc_log)
 	[from Mark Watkins on Fri, 18 Mar 2005]
+- speed up expm1 for small arguments
+        [from Keith Briggs <keith.briggs@bt.com>, Thu, 14 Apr 2005]
 - implement range reduction in sin/cos/tan for large arguments
 	(currently too slow for 2^1024), and/or implement Mark Watkins's
 	algorithm:
