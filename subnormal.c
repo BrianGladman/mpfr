@@ -1,4 +1,5 @@
-/* mpfr_subnormalize -- Subnormalize a floating point number.
+/* mpfr_subnormalize -- Subnormalize a floating point number
+   emulating sub-normal numbers.
 
 Copyright 2005 Free Software Foundation, Inc.
 
@@ -39,30 +40,32 @@ mpfr_subnormalize (mpfr_ptr y, int old_inexact, mp_rnd_t rnd)
 {
   int inexact = 0;
 
+  MPFR_ASSERTD ((mpfr_uexp_t) __gmpfr_emax - __gmpfr_emin >= MPFR_PREC (y));
+
   /* The subnormal exponent range are from:
-      mpfr_emin to mpfr_emin + MPFR_PREC(y) - 1
-  */
+      mpfr_emin to mpfr_emin + MPFR_PREC(y) - 1  */
   if (MPFR_LIKELY (MPFR_IS_SINGULAR (y)
 		   || (MPFR_GET_EXP (y) >=
-		       __gmpfr_emin + (mp_exp_t) MPFR_PREC (y))))
+		       __gmpfr_emin + (mp_exp_t) MPFR_PREC (y) - 1)))
     inexact = old_inexact;
 
-  /* We can't have MPFR_GET_EXP (y) < __gmpfr_emin */
+  /* We have to emulate one bit rounding if EXP(y) = emin */
   else if (MPFR_GET_EXP (y) == __gmpfr_emin)
     {
+      /* If this is a power of 2, we don't need rounding.
+	 It handles cases when rouding away and y=0.1*2^emin */
       if (mpfr_powerof2_raw (y))
 	inexact = old_inexact;
-      /* We keep the same sign for y' */
-      /* Assuming y is the real value and y' the approximation
-	 and y' is not a power of 2:
-	     0.5*2^emin < y < 1*2^emin  
-	 We also know the direction of the error.
-      */
+      /* We keep the same sign for y.
+         Assuming Y is the real value and y the approximation
+	 and since y is not a power of 2:  0.5*2^emin < Y < 1*2^emin  
+         We also know the direction of the error thanks to inexact flag */
       else if (rnd == GMP_RNDN)
 	{
 	  mp_limb_t *mant, rb ,sb;
 	  mp_size_t s;
-	  /* We need to have the rounding bit and the sticky bit */
+	  /* We need the rounding bit and the sticky bit. Read them
+	     and use the previous table to conclude. */
 	  s = MPFR_LIMB_SIZE (y) - 1;
 	  mant = MPFR_MANT (y) + s;
 	  rb = *mant & (MPFR_LIMB_HIGHBIT>>1);
@@ -77,13 +80,12 @@ mpfr_subnormalize (mpfr_ptr y, int old_inexact, mp_rnd_t rnd)
 	     We need to examine old inexact flag to conclude. */
 	  if (old_inexact * MPFR_SIGN (y) < 0)
 	    goto set_min;
-	  else if (old_inexact != 0)
-	    goto set_min_p1;
-	  /* Rounding bit is 1 and sticky bit is 0, and inexact == 0 */
-	  /* So we have 0.1100000000000000000000000*2^emin exactly!!! 
-	     what should we choose between 0.1*2^emin and 0.1*2^emin+1 ?
-	  */
-	  MPFR_ASSERTN (0);
+	  /* If inexact != 0, return 0.1*2^emin+1.
+	     Otherwise, rounding bit = 1, sticky bit = 0 and inexact = 0 
+	     So we have 0.1100000000000000000000000*2^emin exactly!!! 
+	     we choose to return 0.1*2^emin+1 which minimizes the relative 
+	     error. */
+	  goto set_min_p1;
 	}
       else if (MPFR_IS_LIKE_RNDZ (rnd, MPFR_IS_NEG (y)))
 	{
@@ -106,8 +108,9 @@ mpfr_subnormalize (mpfr_ptr y, int old_inexact, mp_rnd_t rnd)
       int sign;
 
       /* Compute the intermediary precision */
-      q = (mpfr_uexp_t) __gmpfr_emin - MPFR_GET_EXP (y) + 1;
+      q = (mpfr_uexp_t) MPFR_GET_EXP (y) - __gmpfr_emin + 1;
       mpfr_init2 (dest, q);
+      /* Round y in dest */
       sign = MPFR_SIGN (y);
       MPFR_SET_EXP (dest, MPFR_GET_EXP (y));
       MPFR_SET_SIGN (dest, sign);
