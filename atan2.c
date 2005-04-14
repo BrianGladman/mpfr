@@ -25,9 +25,33 @@ MA 02111-1307, USA. */
 /* TODO: 
    Returns arctan2 (y, x) = atan (y/x) si x > 0
    = sign(y)*(PI - atan (|y/x|))       si x < 0
-   = 0                                 si x = 0 et y = 0
-   sign(y) * PI/2                      si x = 0 et y != 0
-   How to handle signed zeros?
+
+         -- atan2(±0, -0) returns ±pi.313)
+
+       313) atan2(0, 0) does not raise the "invalid" floating-point
+            exception, nor does atan2(y, 0) raise the "divide-by-zero"
+            floating-point exception.
+
+         -- atan2(±0, +0) returns ±0.
+
+         -- atan2(±0, x) returns ±pi, for x < 0.
+
+         -- atan2(±0, x) returns ±0, for x > 0.
+
+         -- atan2(y, ±0) returns -pi/2 for y < 0.
+
+         -- atan2(y, ±0) returns pi/2 for y > 0.
+
+         -- atan2(±y, -oo) returns ±pi, for finite y > 0.
+
+         -- atan2(±y, +oo) returns ±0, for finite y > 0.
+
+         -- atan2(±oo, x) returns ±pi/2, for finite x.
+
+         -- atan2(±oo, -oo) returns ±3pi/4.
+
+         -- atan2(±oo, +oo) returns ±pi/4.
+
 */
 
 int
