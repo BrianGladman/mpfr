@@ -251,7 +251,7 @@ In particular, with a precision of 53 bits, @code{mpfr} should be able
 to exactly reproduce all computations with double-precision machine
 floating-point
 numbers (@code{double} type in C), except the default exponent range
-is much wider and subnormal numbers are not implemented.
+is much wider and subnormal numbers are not implemented but can be emulated.
 
 This version of MPFR is released under the GNU Lesser General Public
 License.
@@ -1578,10 +1578,6 @@ corresponding to the rounding mode @var{rnd} or a null pointer if
 @section Exceptions
 @cindex Exceptions
 
-Note: Overflow handling is still experimental and currently implemented
-partially. If an overflow occurs internally at the wrong place,
-anything can happen (crash, wrong results, etc).
-
 @deftypefun mp_exp_t mpfr_get_emin (void)
 @deftypefunx mp_exp_t mpfr_get_emax (void)
 Return the (current) smallest and largest exponents allowed for a
@@ -1599,9 +1595,9 @@ implementation (in that case the smallest or largest exponent is not changed),
 and zero otherwise.
 If the user changes the exponent range, it is her/his responsibility to check
 that all current floating-point variables are in the new allowed range
-(for example using @code{mpfr_check_range}),
-otherwise the subsequent
+(for example using @code{mpfr_check_range}), otherwise the subsequent
 behavior will be undefined, in the sense of the ISO C standard.
+@c It is also her/his responsibility to check that @m {emin <= emax}.
 @end deftypefun
 
 @deftypefun mp_exp_t mpfr_get_emin_min (void)
@@ -1631,6 +1627,52 @@ the result is compared to the exact one, not the input value @var{x},
 i.e.@: the ternary value is propagated.
 @end deftypefun
 
+@deftypefun int mpfr_subnormalize (mpfr_t @var{x}, int @var{t}, mp_rnd_t @var{rnd})
+This function rounds @var{x} emulating sub-normal numbers arithemetic:
+if @var{x} is outside the subnormal exponent range, it just propagates the
+ternary value @var{t}; otherwise, it rounds @var{x} to precision 
+@code{EXP(x)-emin+1} according to rouding mode @var{rnd} and previous
+ternary value @var{t}, avoiding double rounding problems.
+@code{PREC(x)} is not modified by this function.
+@var{rnd} and @var{t} must be the used rounding mode for computing @var{x}
+and the returned ternary value when computing @var{x}.
+The subnormal exponent range is from @code{emin} to @code{emin+PREC(x)-1}.
+This functions assumes that @code{emax-emin >= PREC(x)}.
+Note that unlike most functions, the result is compared to the exact one,
+not the input value @var{x}, i.e.@: the ternary value is propagated.
+@end deftypefun
+
+This is an example of how to exactly emulate double IEEE-754 arithmetic
+ using MPFR:
+
+@example
+@{
+  mpfr_t xa, xb;
+  int i;
+  volatile double a, b, c;
+
+  mpfr_set_default_prec (53);
+  mpfr_set_emin (-1073);
+  mpfr_set_emax (1021);
+
+  mpfr_init (xa);
+  mpfr_init (xb);
+  b = 2.0; mpfr_set_d (xb, b, GMP_RNDN);
+  for (c = 3.0 ; c <= 30000 ; c++) @{
+    a = c; mpfr_set_d (xa, c, GMP_RNDN);
+    while (a != 0.0) @{
+      if (mpfr_cmp_d (xa, a)) 
+         abort ();
+      a /= b;
+      i = mpfr_div (xa, xa, xb, GMP_RNDN);
+      i = mpfr_subnormalize (xa, i, GMP_RNDN);
+    @}
+  @}
+  mpfr_clear (xa);
+  mpfr_clear (xb);
+@}
+@end example
+
 @deftypefun void mpfr_clear_underflow (void)
 @deftypefunx void mpfr_clear_overflow (void)
 @deftypefunx void mpfr_clear_nanflag (void)
@@ -1659,15 +1701,6 @@ Clear all global flags (underflow, overflow, inexact, invalid, erange).
 Return the corresponding (underflow, overflow, invalid, inexact, erange)
 flag, which is non-zero iff the flag is set.
 @end deftypefun
-
-@c @deftypefun size_t mpfr_size (mpfr_t @var{op})
-@c Return the size of @var{op} measured in number of limbs.  If @var{op} is
-@c zero, the returned value will be zero.  (@xref{Nomenclature}, for an
-@c explanation of the concept @dfn{limb}.)
-@c
-@c @strong{This function is obsolete.  It will disappear from future MP
-@c releases.}
-@c @end deftypefun
 
 @node Advanced Functions, Compatibility with MPF, Exceptions, MPFR Interface
 @comment  node-name,  next,  previous,  up
