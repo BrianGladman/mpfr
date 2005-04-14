@@ -1628,7 +1628,7 @@ i.e.@: the ternary value is propagated.
 @end deftypefun
 
 @deftypefun int mpfr_subnormalize (mpfr_t @var{x}, int @var{t}, mp_rnd_t @var{rnd})
-This function rounds @var{x} emulating sub-normal numbers arithemetic:
+This function rounds @var{x} emulating subnormal number arithmetic:
 if @var{x} is outside the subnormal exponent range, it just propagates the
 ternary value @var{t}; otherwise, it rounds @var{x} to precision 
 @code{EXP(x)-emin+1} according to rouding mode @var{rnd} and previous
@@ -1640,6 +1640,7 @@ The subnormal exponent range is from @code{emin} to @code{emin+PREC(x)-1}.
 This functions assumes that @code{emax-emin >= PREC(x)}.
 Note that unlike most functions, the result is compared to the exact one,
 not the input value @var{x}, i.e.@: the ternary value is propagated.
+This is a a preliminary interface.
 @end deftypefun
 
 This is an example of how to exactly emulate double IEEE-754 arithmetic
