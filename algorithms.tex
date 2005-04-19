@@ -1094,250 +1094,31 @@ precision.
  
 \subsection{The inverse hyperbolic cosine function}
 
-The {\tt mpfr\_acosh} ($\n{acosh}{x}$) function implements the inverse hyperbolic
-cosine as :
-
-$$
-\n{acosh} = \log \left( \sqrt{x+1} \sqrt{x-1} + x \right) 
-$$
-
-The algorithm used for the calculation of the inverse hyperbolic cosine is as follows
-
-\begin{eqnarray}\nonumber
-q&\leftarrow&o(x+1)\\\nonumber
-r&\leftarrow&o(x-1)\\\nonumber
-s&\leftarrow&o(\sqrt{q})\\\nonumber
-t&\leftarrow&o(\sqrt{r})\\\nonumber
-u&\leftarrow&o(s \times t)\\\nonumber
-v&\leftarrow&o(u+x)\\\nonumber
-w&\leftarrow&o(\log  v)
-\end{eqnarray}
-
-Now, we have to bound the rounding error for each step of this
-algorithm. First, let consider the function field : {\tt mpfr\_acosh} is define for $x \geq 1$.
-
-\begin{center}
-\begin{tabular}{l l l}
-
-\begin{minipage}{2.5cm}
-${\textnormal{error}}(q)$
-
-
-$q \leftarrow \minf(x+1) $
-$(\bullet)$
-\end{minipage} &
-\begin{minipage}{7.5cm}
-
-
-
-\begin{eqnarray}\nonumber
-  &&|q-(x+1)| \\\nonumber
-  &       \leq&  2 \ulp(q)\;\;(\star)\\\nonumber
-\end{eqnarray}
-
-
-\end{minipage} &
-\begin{minipage}{6cm}
-
-($\star$)
-
-see subsection \ref{generic:sous}
-
-
-\end{minipage}\\%\hline
-\begin{minipage}{2.5cm}
-${\textnormal{error}}(r)$
-
-
-$r \leftarrow \minf(x-1) $
-$(\bullet\bullet)$
-\end{minipage} &
-\begin{minipage}{7.5cm}
-
-
-
-\begin{eqnarray}\nonumber
-  &&|r-(x-1)| \\\nonumber
-  &       \leq&  (1+2^{\Exp(x)-\Exp(r)}) \ulp(r)\;\;(\star)\\\nonumber
-\end{eqnarray}
-
-
-\end{minipage} &
-\begin{minipage}{6cm}
-
-($\star$)
-
-see subsection \ref{generic:sous}
-
-
-\end{minipage}\\%\hline
-\begin{minipage}{2.5cm}
-${\textnormal{error}}(s)$
-
-
-$s \leftarrow \pinf(\sqrt{q}) $
-($\bullet\bullet\bullet$)
-
-\end{minipage} &
-\begin{minipage}{7.5cm}
-
-\begin{eqnarray}\nonumber
-  &&|s-\sqrt{x+1}| \\\nonumber
-  &       \leq& \ulp(s) + |\sqrt{q}-\sqrt{x+1}|\\\nonumber
-  &       \leq& \ulp(s) + \frac{1}{\sqrt{q} + \sqrt{x+1}}|q-(x+1)|\\\nonumber
-  &       \leq& \ulp(s) + \frac{1}{\sqrt{q} + \sqrt{x+1}}.2.\ulp(q)  \\\nonumber
-  &       \leq& \ulp(s) + \frac{1}{2\sqrt{q}}.2.\ulp(q) \;\;(\star) \\\nonumber
-  &       \leq& \ulp(s) + 2.\ulp(\sqrt{q}) \;\;(\star\star)\\\nonumber
-  &       \leq& (1 + 2) \ulp(s) \;\;(\star\star\star)
-\end{eqnarray}
-
-
-\end{minipage} &
-\begin{minipage}{6cm}
-
-($\star$)
-
-If $q \leftarrow \minf(x+1) \;(\bullet)$
-
-Then $q \leq x+1$
-
-or
-
-$\frac{1}{\sqrt{x+1}+\sqrt{v}} \leq \frac{1}{2.\sqrt{q}}$
-
-($\star\star$)
-
-$\U{R4}$
-
-($\star\star\star$)
-
-$\U{R8}$
-
-\end{minipage}\\%\hline
-\begin{minipage}{2.5cm}
-${\textnormal{error}}(t)$
-
-
-$t \leftarrow \pinf(\sqrt{r}) $
-($\bullet\bullet\bullet\bullet$)
-
-\end{minipage} &
-\begin{minipage}{7.5cm}
-
-\begin{eqnarray}\nonumber
-  &&|t-\sqrt{x-1}| \\\nonumber
-  &       \leq& \ulp(t) + |\sqrt{r}-\sqrt{x-1}|\\\nonumber
-  &       \leq& \ulp(t) + \frac{1}{\sqrt{r} + \sqrt{x-1}}|r-(x-1)|\\\nonumber
-  &       \leq& \ulp(t) + \frac{1}{\sqrt{r} + \sqrt{x+1}} \\\nonumber
-  &      \cdots & (1+2^{\Exp(x)-\Exp(r)}) \ulp(r)  \\\nonumber
-  &       \leq& \ulp(t) + \frac{1}{2\sqrt{r}} \cdots \;\;(\star) \\\nonumber
-  &\cdots& (1+2^{\Exp(x)-\Exp(r)}) \ulp(r) \;\;(\star) \\\nonumber
-  &       \leq& \ulp(t) + (1+2^{\Exp(x)-\Exp(r)})\ulp(\sqrt{r}) \;\;(\star\star)\\\nonumber
-  &       \leq& (2+2^{\Exp(x)-\Exp(r)}) \ulp(t) \;\;(\star\star\star)
-\end{eqnarray}
-
-
-\end{minipage} &
-\begin{minipage}{6cm}
-
-($\star$)
-
-If $r \leftarrow \minf(x-1) \;(\bullet\bullet)$ 
-
-Then $q \leq x+1$
-
-or
-
-$\frac{1}{\sqrt{x-1}+\sqrt{r}} \leq \frac{1}{2.\sqrt{r}}$
-
-($\star\star$)
-
-$\U{R4}$
-
-($\star\star\star$)
-
-$\U{R8}$
-
-\end{minipage}\\%\hline
-\begin{minipage}{2.5cm}
-${\textnormal{error}}(u)$
-
-
-$u \leftarrow o(t \times s) $
-\end{minipage} &
-\begin{minipage}{7.5cm}
-
-\begin{eqnarray}\nonumber
-  &&|u-(\sqrt{x+1} \sqrt{x-1})| \\\nonumber
-  &       \leq& (1+2 \times 3 +2 \times (2+2^{\Exp{x}-\Exp{r}}))\\\nonumber
-  &       \cdots&  \ulp(w) \;(\star)\\\nonumber
-  &       \leq& (13+2^{\Exp{x}-\Exp{r}+1}) \ulp(u)
-\end{eqnarray}
-
-
-\end{minipage} &
-\begin{minipage}{6cm}
-
-($\star$)
-
-see subsection \ref{generic:mul}
-
-with $(\bullet\bullet\bullet)$ and $(\bullet\bullet\bullet\bullet)$
-\end{minipage}\\%\hline
-\begin{minipage}{2.5cm}
-${\textnormal{error}}(v)$
-
-
-$v \leftarrow o(u+x) $
-\end{minipage} &
-\begin{minipage}{7.5cm}
-
-\begin{eqnarray}\nonumber
-  &&|v-(\sqrt{x+1} \sqrt{x-1} +x)| \\\nonumber
-  &       \leq& (15+2^{\Exp(x)-\Exp(r)+1}) \ulp(v)
-\end{eqnarray}
-
-
-\end{minipage} &
-\begin{minipage}{6cm}
-
-($\star$)
-
-see subsection \ref{generic:sous}
-
-\end{minipage}\\%\hline
-\begin{minipage}{2.5cm}
-${\textnormal{error}}(w)$
-
-
-$w \leftarrow o(\log{v}) $
-\end{minipage} &
-\begin{minipage}{7.5cm}
-
-\begin{eqnarray}\nonumber
-  &&|w-\log(\sqrt{x+1} \sqrt{x-1} +x)| \\\nonumber
-  &       \leq& (1+(15+2^{\Exp(x)-\Exp(r)+1}).2^{1-\Exp(w)} \ulp(w) \\\nonumber
-  &       \leq& (1+15.2^{1-\Exp(w)}+2^{\Exp(x)-\Exp(r)-\Exp(w)+2}) \ulp(w)
-\end{eqnarray}
-
-
-\end{minipage} &
-\begin{minipage}{6cm}
-
-($\star$)
-
-see subsection \ref{generic:log}
-
-\end{minipage}
-\end{tabular}
-\end{center}
-
-That shows the rounding error on the calculation of $\n{acosh} x$ can
-be bound by $ (1+15.2^{1-\Exp(w)}+2^{\Exp(x)-\Exp(r)-\Exp(w)+2})\;\;
-\ulp$ on the result. So, to calculate the size of intermediary
-variables, we have to add, at least, $\lceil \log_2
-(1+15.2^{1-\Exp(w)}+2^{\Exp(x)-\Exp(r)-\Exp(w)+2}) \rceil$ bits the
-wanted precision.
+The {\tt mpfr\_acosh} function implements the inverse hyperbolic
+cosine as $\n{acosh} x = \log ( \sqrt{x^2-1} + x )$, using the following
+algorithm:
+\begin{quote}
+$q \leftarrow \circ(x^2)$ [down] \\
+$r \leftarrow \circ(q-1)$ [down] \\
+$s \leftarrow \circ(\sqrt{r})$ [nearest] \\
+$t \leftarrow \circ(s + x)$ [nearest] \\
+$u \leftarrow \circ(\log t)$ [nearest]
+\end{quote}
+
+The error on $q$ is at most $1$ ulp, thus that on $r$ is at most
+$\ulp(r) + \ulp(q) = (1+2^{\Exp(q)-\Exp(r)}) \ulp(r)$.
+Since $r$ is smaller than $x^2-1$, we can use the simpler formula
+for the error on the square root, which gives as bound
+$(\frac{3}{2} + 2^{\Exp(q)-\Exp(r)}) \ulp(s)$ for the error on $s$,
+and $(2 + 2^{\Exp(q)-\Exp(r)}) \ulp(t)$ for that on $t$.
+This gives a final bound of
+$\frac{1}{2} + (2 + 2^{\Exp(q)-\Exp(r)}) 2^{1-\Exp(u)}$ for the error 
+on $u$.
+
+Since $2 + 2^{\Exp(q)-\Exp(r)} \leq 2^{1 + {\rm max}(1, \Exp(q)-\Exp(r))}$,
+that shows the rounding error on the calculation of $\n{acosh} x$ can
+be bounded by $\frac{1}{2} + 2^{2 + {\rm max}(1, \Exp(q)-\Exp(r)) - \Exp(u)}
+\ulp(u)$. 
  
 \subsection{The hyperbolic sine function}
 
