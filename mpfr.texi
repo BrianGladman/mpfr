@@ -903,8 +903,8 @@ Convert @var{op} to a @code{mpz_t}, after rounding it with respect to
 @var{rnd}. If @var{op} is NaN or Inf, the result is undefined.
 @end deftypefun
 
-@deftypefun {char *} mpfr_get_str (char *@var{str}, mp_exp_t *@var{expptr}, int @var{base}, size_t @var{n}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
-Convert @var{op} to a string of digits in base @var{base}, with rounding in
+@deftypefun {char *} mpfr_get_str (char *@var{str}, mp_exp_t *@var{expptr}, int @var{b}, size_t @var{n}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+Convert @var{op} to a string of digits in base @var{b}, with rounding in
 the direction @var{rnd}. The base may vary from 2 to 36.
 
 The generated string is a fraction, with an implicit radix point immediately
@@ -914,11 +914,17 @@ If @var{rnd} is to nearest, and @var{op} is exactly in the middle of two
 possible outputs, the one with an even last digit is chosen
 (for an odd base, this may not correspond to an even mantissa).
 
-If @var{n} is zero, the number of digits of the mantissa is determined
-automatically from the precision of @var{op} and the value of @var{base}.
-Warning: this functionality may disappear or change in future versions.
-Otherwise generate exactly @var{n} significant digits, which must be at
-least 2.
+If @var{n} is zero, the number of digits of the mantissa is chosen
+large enough so that re-reading the printed value with the same precision,
+assuming both output and input use rounding to nearest, will recover
+the original value of @var{op}.
+More precisely, the chosen precision is
+@ifnottex
+1 + ceil(n*log(2)/log(b)).
+@end ifnottex
+@tex
+$1 + \lceil n \frac{\log 2}{\log b} \rceil$.
+@end tex
 
 If @var{str} is a null pointer, space for the mantissa is allocated using
 the current allocation function, and a pointer to the string is returned.
