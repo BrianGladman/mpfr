@@ -85,8 +85,7 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	set_pi_2:
 	  if (MPFR_IS_NEG (y)) /* -PI/2 */
 	    {
-	      rnd_mode = MPFR_INVERT_RND (rnd_mode);
-	      inexact = mpfr_const_pi (dest, rnd_mode);
+	      inexact = mpfr_const_pi (dest, MPFR_INVERT_RND(rnd_mode));
 	      MPFR_CHANGE_SIGN (dest);
 	      mpfr_div_2ui (dest, dest, 1, rnd_mode);
 	      return -inexact;
