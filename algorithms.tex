@@ -2891,6 +2891,57 @@ Since $T/Q \leq 1$, the total absolute error on $x$ is thus bounded by
 $3 |\theta| + 3 \theta^2 + |\theta|^3 + 2^{-w-2} < 2^{-w+2}$ as long
 as $w \geq 3$.
 
+\subsection{Catalan's constant}
+
+Catalan's constant is defined by
+\[ G = \sum_{k=0}^{\infty} \frac{(-1)^k}{(2k+1)^2}. \]
+We compute it using formula (31) of Victor Adamchik's document
+``33 representations for Catalan's constant''\footnote{
+\url{http://www-2.cs.cmu.edu/~adamchik/articles/catalan/catalan.htm}}:
+\[ G = \frac{\pi}{8} \log(2 + \sqrt{3}) + \frac{3}{8}
+  \sum_{k=0}^{\infty} \frac{(k!)^2}{(2k)! (2k+1)^2}. \]
+Let $f(k) = \frac{(k!)^2}{(2k)! (2k+1)^2}$, and
+$S(0,K) = \sum_{k=0}^{K-1} f(k)$, and $S = S(0, \infty)$.
+We compute $S(0,K)$ 
+exactly by binary splitting.
+Since $f(k)/f(k-1) = \frac{k (2k-1)}{2 (2k+1)^2} \leq 1/4$,
+the truncation error on $S$ is bounded by $4/3 f(K) \leq 4/3 \cdot 4^{-K}$.
+Since $S$ is multiplied by $3/8$, the corresponding contribution to the 
+absolute error on $G$ is $2^{-2K-1}$.
+As long as $2K + 1$ is greater or equal to the working precision $w$, this
+truncation error is less than one ulp of the final result.
+
+\begin{quote}
+$K \leftarrow \lceil \frac{w-1}{2} \rceil$ \\
+$T/Q \leftarrow S(0,K)$ [exact, rational] \\
+$T \leftarrow 3T$ [exact, integer] \\
+$t \leftarrow \circ(T)$ [up] \\
+$q \leftarrow \circ(Q)$ [down] \\
+$s \leftarrow \circ(t/q)$ [nearest] \\
+$x \leftarrow \circ(\sqrt{3})$ [up] \\
+$y \leftarrow \circ(2 + x)$ [up] \\
+$z \leftarrow \circ(\log y)$ [up] \\
+$u \leftarrow \circ(\pi)$  [up] \\
+$v \leftarrow \circ(u z)$ [nearest] \\
+$g \leftarrow \circ(v + s)$ [nearest] \\
+Return $g/8$ [exact].
+\end{quote}
+The error on $t$ and $q$ is less than one ulp;
+using the generic error on the division, since $t \geq T$ and $q \leq Q$,
+the error on $s$ is at most $9/2$ ulps.
+
+The error on $x$ is at most $1$ ulp; since $1 < x < 2$ --- assuming 
+$w \geq 2$ ---, $\ulp(x) = 1/2 \ulp(y)$, thus the error on $y$ is at most
+$3/2 \ulp(y)$.
+The generic error on the logarithm gives an error bound of
+$1 + \frac{3}{2} \cdot 2^{1-\Exp(z)} = \frac{5}{2}$ ulps for $z$
+(since $3 \leq y < 4$, we have $1 \leq z < 2$, so $\Exp(z) = 1$).
+The error on $u$ is at most $1$ ulp; thus using the generic error on the
+multiplication, since both $u$ and $z$ are upper approximations,
+the error on $v$ is at most $8$ ulps.
+Finally that on $g$ is at most $8 + 9/2 = 25/2$ ulps.
+Taking into account the truncation error, this gives $27/2$ ulps.
+
 \nocite{BoBo98,DeHi02}
 
 \bibliographystyle{acm}

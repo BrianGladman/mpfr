@@ -1,6 +1,6 @@
-/* mpfr_free_cache - Free the cache used by MPFR for internal consts.
+/* Test file for mpfr_const_catalan.
 
-Copyright 2004 Free Software Foundation, Inc.
+Copyright 2005 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -19,13 +19,26 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include "mpfr-impl.h"
+#include <stdlib.h>
+#include "mpfr-test.h"
 
-void
-mpfr_free_cache (void)
+int
+main (int argc, char *argv[])
 {
-  mpfr_clear_cache (__gmpfr_cache_const_pi);
-  mpfr_clear_cache (__gmpfr_cache_const_log2);
-  mpfr_clear_cache (__gmpfr_cache_const_euler);
-  mpfr_clear_cache (__gmpfr_cache_const_catalan);
+  mpfr_t x;
+
+  tests_start_mpfr ();
+
+  mpfr_init2 (x, 32);
+  mpfr_const_catalan (x, GMP_RNDN);
+  mpfr_mul_2exp (x, x, 32, GMP_RNDN);
+  if (mpfr_cmp_ui (x, 3934042271UL))
+    {
+      printf ("Error in const_catalan for prec=32\n");
+      exit (1);
+    }
+  mpfr_clear (x);
+  
+  tests_end_mpfr ();
+  return 0;
 }
