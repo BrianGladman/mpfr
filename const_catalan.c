@@ -84,7 +84,7 @@ mpfr_const_catalan_internal (mpfr_ptr g, mp_rnd_t rnd_mode)
 {
   mpfr_t x, y, z;
   mpz_t T, P, Q;
-  mp_prec_t pg, p;
+  mp_prec_t pg, p, t;
   MPFR_ZIV_DECL (loop);
   int inex;
 
@@ -92,7 +92,9 @@ mpfr_const_catalan_internal (mpfr_ptr g, mp_rnd_t rnd_mode)
 
   pg = MPFR_PREC (g);
 
-  p = pg + 14;
+  p = pg + 8;
+  /* add about log2(p) bits */
+  for (t = p; t; t >>= 1, p++);
   
   mpfr_init2 (x, p);
   mpfr_init2 (y, p);

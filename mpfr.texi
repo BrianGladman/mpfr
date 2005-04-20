@@ -923,7 +923,8 @@ More precisely, the chosen precision is
 1 + ceil(n*log(2)/log(b)).
 @end ifnottex
 @tex
-$1 + \lceil n \frac{\log 2}{\log b} \rceil$.
+$1 + 
+\lceil n {\log 2 \over \log b} \rceil$.
 @end tex
 
 If @var{str} is a null pointer, space for the mantissa is allocated using
@@ -1327,8 +1328,10 @@ If any operand is negative, the return value is NaN.
 @deftypefun int mpfr_const_log2 (mpfr_t @var{rop}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_const_pi (mpfr_t @var{rop}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_const_euler (mpfr_t @var{rop}, mp_rnd_t @var{rnd})
-Set @var{rop} to the logarithm of 2, the value of @m{\pi,Pi}, the value
-of Euler's constant 0.577@dots{}, respectively, rounded in the direction
+@deftypefunx int mpfr_const_catalan (mpfr_t @var{rop}, mp_rnd_t @var{rnd})
+Set @var{rop} to the logarithm of 2, the value of @m{\pi,Pi}, 
+of Euler's constant 0.577@dots{}, of Catalan's constant 0.915@dots{},
+respectively, rounded in the direction
 @var{rnd}. These functions cache the computed values to avoid other
 calculations if a lower or equal precision is requested. To free these caches,
 use @code{mpfr_free_cache}.
@@ -1372,8 +1375,8 @@ prototypes for these functions.
 Output @var{op} on stream @var{stream}, as a string of digits in
 base @var{base}, rounded in the direction @var{rnd}.
 The base may vary from 2 to 36.  Print @var{n} significant digits exactly,
-or if @var{n} is 0, the maximum number of digits accurately representable
-by @var{op} (this feature may disappear).
+or if @var{n} is 0, enough digits so that @var{op} can be read back 
+exactly (see @code{mpfr_get_str}).
 
 In addition to the significant digits, a decimal point at the right of the
 first digit and a trailing exponent in base 10, in the form @samp{eNNN},
