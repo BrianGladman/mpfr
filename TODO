@@ -131,7 +131,9 @@ Efficiency:
   4) Having sin or cos, compute the other via the sqrt. This will not cause
      cancellation problems because the computed sin or cos is not near 1.
 - mpfr_asin/acos are too slow for small values (2^(-1021) for example)
+  idem for sin/cos for prec=100, x=10^-1665 [Geoff]
 - idem for mpfr_atanh (2^(-1021) for example)
+- combined mpfr_sinh_cosh() [Geoff Bailey, 20 Apr 2005]
 - improve generic.c to work for number of terms <> 2^k
 - rewrite mpfr_greater_p... as native code.
 - inline mpfr_neg? Problems with NAN flags:
