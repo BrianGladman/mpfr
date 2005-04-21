@@ -24,6 +24,9 @@ MA 02111-1307, USA. */
 #include <float.h>
 #include <time.h>
 #include <limits.h>
+#if WITH_FPU_CONTROL
+#include <fpu_control.h>
+#endif
 
 #include "mpfr-test.h"
 
@@ -133,6 +136,16 @@ main (int argc, char *argv[])
   mpfr_t x;
   int i;
   mp_exp_t emax;
+#if WITH_FPU_CONTROL
+  fpu_control_t cw;
+
+  if (argc > 1)
+    {
+      cw = strtol(argv[1], NULL, 0);
+      printf ("FPU control word: 0x%x\n", (unsigned int) cw);
+      _FPU_SETCW (cw);
+    }
+#endif
 
   check_gcc33_bug ();
 
@@ -182,7 +195,9 @@ main (int argc, char *argv[])
   check_set_get (-d, x);
 
   /* checks the smallest power of two */
-  d = 1.0; while ((e = d / 2.0) != (long double) 0.0) d = e;
+  d = 1.0;
+  while ((e = d / 2.0) != (long double) 0.0 && e != d)
+    d = e;
   check_set_get (d, x);
   check_set_get (-d, x);
 
