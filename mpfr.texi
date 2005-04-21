@@ -926,6 +926,8 @@ More precisely, the chosen precision is
 $1 + 
 \lceil n {\log 2 \over \log b} \rceil$.
 @end tex
+This is the minimal precision depending on @var{n} and @var{b} only that
+satisfies the above property.
 
 If @var{str} is a null pointer, space for the mantissa is allocated using
 the current allocation function, and a pointer to the string is returned.
