@@ -1,6 +1,6 @@
 /* mpfr_cmp -- compare two floating-point numbers
 
-Copyright 1999, 2001, 2003, 2004 Free Software Foundation.
+Copyright 1999, 2001, 2003, 2004, 2005 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -24,7 +24,7 @@ MA 02111-1307, USA. */
 /* returns 0 iff b = sign(s) * c
            a positive value iff b > sign(s) * c
            a negative value iff b < sign(s) * c
-   This function ***does not*** handle NaN as input (undefined behaviour).
+   returns 0 and sets erange flag if b and/or c is NaN.
 */
 
 int
@@ -39,23 +39,23 @@ mpfr_cmp3 (mpfr_srcptr b, mpfr_srcptr c, int s)
   if (MPFR_ARE_SINGULAR(b, c))
     {
       if (MPFR_IS_NAN (b) || MPFR_IS_NAN (c))
-	{
-	  MPFR_SET_ERANGE ();
-	  return 0;
-	}
+        {
+          MPFR_SET_ERANGE ();
+          return 0;
+        }
       else if (MPFR_IS_INF(b))
-	{
-	  if (MPFR_IS_INF(c) && s == MPFR_SIGN(b) )
-	    return 0;
-	  else
-	    return MPFR_SIGN(b);
-	}
+        {
+          if (MPFR_IS_INF(c) && s == MPFR_SIGN(b) )
+            return 0;
+          else
+            return MPFR_SIGN(b);
+        }
       else if (MPFR_IS_INF(c))
-	return -s;
+        return -s;
       else if (MPFR_IS_ZERO(b))
-	return MPFR_IS_ZERO(c) ? 0 : -s;
+        return MPFR_IS_ZERO(c) ? 0 : -s;
       else /* necessarily c=0 */
-	return MPFR_SIGN(b);
+        return MPFR_SIGN(b);
     }
   /* b and c are real numbers */
   if (s != MPFR_SIGN(b))
@@ -81,13 +81,13 @@ mpfr_cmp3 (mpfr_srcptr b, mpfr_srcptr c, int s)
   for ( ; bn >= 0 && cn >= 0; bn--, cn--)
     {
       if (bp[bn] > cp[cn])
-	return s;
+        return s;
       if (bp[bn] < cp[cn])
-	return -s;
+        return -s;
     }
   for ( ; bn >= 0; bn--)
     if (bp[bn])
-      return s;      
+      return s;
   for ( ; cn >= 0; cn--)
     if (cp[cn])
       return -s;
