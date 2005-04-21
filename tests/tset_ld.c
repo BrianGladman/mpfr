@@ -88,6 +88,44 @@ check_set_get (long double d, mpfr_t x)
     }
 }
 
+static void
+test_small (void)
+{
+  mpfr_t x, y, z;
+  long double d;
+
+  mpfr_init2 (x, 64);
+  mpfr_init2 (y, 64);
+  mpfr_init2 (z, 64);
+
+  mpfr_set_str (x, "0.1010010100111100110000001110101101000111010110000001111101110011E-16381", 2, GMP_RNDN);
+  d = mpfr_get_ld (x, GMP_RNDN);  /* infinite loop? */
+  mpfr_set_ld (y, d, GMP_RNDN);
+  mpfr_sub (z, x, y, GMP_RNDN);
+  mpfr_abs (z, z, GMP_RNDN);
+  mpfr_clear_erangeflag ();
+  if (mpfr_cmp_str (z, "1E-16434", 2, GMP_RNDN) > 0 || mpfr_erangeflag_p ())
+    {
+      printf ("Error with x = ");
+      mpfr_out_str (NULL, 10, 20, x, GMP_RNDN);
+      printf (" = ");
+      mpfr_out_str (NULL, 16, 0, x, GMP_RNDN);
+      printf ("\n        -> d = %.20Lg", d);
+      printf ("\n        -> y = ");
+      mpfr_out_str (NULL, 10, 20, y, GMP_RNDN);
+      printf (" = ");
+      mpfr_out_str (NULL, 16, 0, y, GMP_RNDN);
+      printf ("\n        -> |x-y| = ");
+      mpfr_out_str (NULL, 16, 0, z, GMP_RNDN);
+      printf ("\n");
+      exit (1);
+    }
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -133,7 +171,7 @@ main (int argc, char *argv[])
   d = mpfr_get_ld (x, GMP_RNDN);
   check_set_get (d, x);
 
-  /* checks the largest power of two */  
+  /* checks the largest power of two */
   d = 1.0; while (d < LDBL_MAX / 2.0) d += d;
   check_set_get (d, x);
   check_set_get (-d, x);
@@ -182,6 +220,8 @@ main (int argc, char *argv[])
   set_emax (emax);
 
   mpfr_clear (x);
+
+  test_small ();
 
   tests_end_mpfr ();
 
