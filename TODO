@@ -98,6 +98,14 @@ New functions to implement:
   JacobiTheta
   LogIntegral
   ExponentialIntegral, ExponentialIntegralE1
+    E1(z) = int(exp(-t)/t, t=z..infinity), |arg z| < Pi
+    Ei(x) = - int(exp(-t)/t, t=-x..infinity), x > 0
+    mpfr_eint1: implement E1(x) for x > 0, and Ei(-x) for x < 0
+    E1(NaN)  = NaN
+    E1(+Inf) = +0
+    E1(-Inf) = -Inf
+    E1(+0)   = +Inf
+    E1(-0)   = -Inf
   DawsonIntegral
   Psi = LogDerivative
   LogGamma
