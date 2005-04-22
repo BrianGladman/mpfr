@@ -86,7 +86,6 @@ New functions to implement:
   BesselFunction(n,x) = J_n(x) [first kind]
   HypergeometricU(a,b,s) = 1/gamma(a)*int(exp(-su)*u^(a-1)*(1+u)^(b-a-1),
                                     u=0..infinity)
-  Root(x,n) = x^(1/n)
   JacobiThetaNullK
   PolylogP, PolylogD, PolylogDold
   JBessel
@@ -98,6 +97,7 @@ New functions to implement:
     E1(z) = int(exp(-t)/t, t=z..infinity), |arg z| < Pi
     Ei(x) = - int(exp(-t)/t, t=-x..infinity), x > 0
     mpfr_eint1: implement E1(x) for x > 0, and Ei(-x) for x < 0
+    also mpfr_eint(x) = -mpfr_eint1(-x) for x >= 0, NaN for x < 0.
     E1(NaN)  = NaN
     E1(+Inf) = +0
     E1(-Inf) = -Inf
