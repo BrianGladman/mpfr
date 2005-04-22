@@ -690,6 +690,7 @@ extern unsigned char *mpfr_stack;
 #define mpfr_const_pi(_d,_r)    mpfr_cache(_d, __gmpfr_cache_const_pi,_r)
 #define mpfr_const_log2(_d,_r)  mpfr_cache(_d, __gmpfr_cache_const_log2, _r)
 #define mpfr_const_euler(_d,_r) mpfr_cache(_d, __gmpfr_cache_const_euler, _r)
+#define mpfr_const_catalan(_d,_r) mpfr_cache(_d,__gmpfr_cache_const_catalan,_r)
 
 #define MPFR_DECL_INIT_CACHE(_cache,_func) \
  mpfr_cache_t MPFR_THREAD_ATTR _cache = \
