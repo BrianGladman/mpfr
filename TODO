@@ -72,9 +72,6 @@ New functions to implement:
 - modf (to extract integer and fractional parts), suggested by
 	Dmitry Antipov <dmitry.antipov@mail.ru> Thu, 13 Jun 2002
 - those from LIA: missing secant, cosecant, cotangent (trigo/hyperbolic)
-- mpfr_root to compute x^(1/n) for n integer, similar to mpz_root
-	[suggested by Damien Fisher, damien@maths.usyd.edu.au, 20 Jul 2003,
-	and Mark Watkins <watkins@maths.usyd.edu.au>, 23 Jul 2003]
 - mpfr_fmod (mpfr_t, mpfr_srcptr, mpfr_srcptr, mp_rnd_t)
   [suggested by Tomas Zahradnicky <tomas@24uSoftware.com>, 29 Nov 2003]
   Kevin: Might want to be called mpfr_mod, to match mpz_mod.
