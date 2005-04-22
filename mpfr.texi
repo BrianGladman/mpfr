@@ -1037,8 +1037,13 @@ Set @var{rop} to NaN if @var{op} is negative.
 @end deftypefun
 
 @deftypefun int mpfr_cbrt (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
-Set @var{rop} to the cubic root (defined over the real numbers) of @var{op}
-rounded in the direction @var{rnd}.
+@deftypefunx int mpfr_root (mpfr_t @var{rop}, mpfr_t @var{op}, unsigned long int @var{k}, mp_rnd_t @var{rnd})
+Set @var{rop} to the cubic root (resp. the @var{k}th root)
+of @var{op} rounded in the direction @var{rnd}.
+An odd (resp. even) root of a negative number (including -Inf)
+returns a negative number (resp. NaN).
+The @var{k}th root of -0 is defined to be -0,
+whatever the parity of @var{k} (this may change in the future).
 @end deftypefun
 
 @deftypefun int mpfr_pow (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})

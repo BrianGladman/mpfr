@@ -1,6 +1,6 @@
-/* mpfr_cbrt -- cube root function.
+/* mpfr_root -- kth root.
 
-Copyright 2002, 2003, 2004, 2005 Free Software Foundation.
+Copyright 2005 Free Software Foundation.
 Contributed by the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.
@@ -23,26 +23,23 @@ MA 02111-1307, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
- /* The computation of y = x^(1/3) is done as follows:
+ /* The computation of y = x^(1/k) is done as follows:
 
-    Let x = sign * m * 2^(3*e) where m is an integer
+    Let x = sign * m * 2^(k*e) where m is an integer
 
-    with 2^(3n-3) <= m < 2^(3n) where n = PREC(y)
+    with 2^(k*(n-1)) <= m < 2^(k*n) where n = PREC(y)
 
-    and m = s^3 + r where 0 <= r and m < (s+1)^3
+    and m = s^k + r where 0 <= r and m < (s+1)^k
 
-    we want that s has n bits i.e. s >= 2^(n-1), or m >= 2^(3n-3)
-    i.e. m must have at least 3n-2 bits
+    we want that s has n bits i.e. s >= 2^(n-1), or m >= 2^(k*(n-1))
+    i.e. m must have at least k*(n-1)+1 bits
 
-    then x^(1/3) = s * 2^e if r=0
-         x^(1/3) = (s+1) * 2^e if round up
-         x^(1/3) = (s-1) * 2^e if round down
-         x^(1/3) = s * 2^e if nearest and r < 3/2*s^2+3/4*s+1/8
-                   (s+1) * 2^e otherwise
+    then, not taking into account the sign, the result will be
+    x^(1/k) = s * 2^e or (s+1) * 2^e according to the rounding mode.
  */
 
 int
-mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
+mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mp_rnd_t rnd_mode)
 {
   mpz_t m;
   mp_exp_t e, r, sh;
@@ -55,17 +52,24 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     {
       if (MPFR_IS_NAN (x))
 	{
-	  MPFR_SET_NAN (y);
+	  MPFR_SET_NAN (y); /* NaN^(1/k) = NaN */
 	  MPFR_RET_NAN;
 	}
-      else if (MPFR_IS_INF (x))
+      else if (MPFR_IS_INF (x)) /* +Inf^(1/k) = +Inf
+                                   -Inf^(1/k) = -Inf if k odd
+                                   -Inf^(1/k) = NaN if k even */
 	{
+          if (MPFR_IS_NEG(x) && (k % 2 == 0))
+            {
+              MPFR_SET_NAN (y);
+              MPFR_RET_NAN;
+            }
 	  MPFR_SET_INF (y);
 	  MPFR_SET_SAME_SIGN (y, x);
 	  MPFR_RET (0);
 	}
-      /* case 0: cbrt(+/- 0) = +/- 0 */
-      else /* x is necessarily 0 */
+      else /* x is necessarily 0: (+0)^(1/k) = +0
+                                  (-0)^(1/k) = -0 */
 	{
           MPFR_ASSERTD (MPFR_IS_ZERO (x));
 	  MPFR_SET_ZERO (y);
@@ -81,18 +85,23 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   e = mpfr_get_z_exp (m, x);                /* x = m * 2^e */
   if ((negative = MPFR_IS_NEG(x)))
     mpz_neg (m, m);
-  r = e % 3;
+  r = e % (mp_exp_t) k;
   if (r < 0)
-    r += 3;
-  /* x = (m*2^r) * 2^(e-r) = (m*2^r) * 2^(3*q) */
+    r += k; /* now r = e (mod k) with 0 <= e < r */
+  /* x = (m*2^r) * 2^(e-r) where e-r is a multiple of k */
 
   MPFR_MPZ_SIZEINBASE2 (size_m, m);
+  /* for rounding to nearest, we want the round bit to be in the root */
   n = MPFR_PREC (y) + (rnd_mode == GMP_RNDN);
 
-  /* we want 3*n-2 <= size_m + 3*sh + r <= 3*n
-     i.e. 3*sh + size_m + r <= 3*n */
-  sh = (3 * (mp_exp_t) n - (mp_exp_t) size_m - r) / 3;
-  sh = 3 * sh + r;
+  /* we now multiply m by 2^(r+k*sh) so that root(m,k) will give
+     exactly n bits: we want k*(n-1)+1 <= size_m + k*sh + r <= k*n
+     i.e. sh = floor ((kn-size_m-r)/k) */
+  if ((mp_exp_t) size_m + r > k * (mp_exp_t) n)
+    sh = 0; /* we already have too many bits */
+  else
+    sh = (k * (mp_exp_t) n - (mp_exp_t) size_m - r) / k;
+  sh = k * sh + r;
   if (sh >= 0)
     {
       mpz_mul_2exp (m, m, sh);
@@ -104,11 +113,11 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       e = e - r;
     }
 
-  /* invariant: x = m*2^e, with e divisible by 3 */
+  /* invariant: x = m*2^e, with e divisible by k */
 
   /* we reuse the variable m to store the cube root, since it is not needed
      any more: we just need to know if the root is exact */
-  inexact = mpz_root (m, m, 3) == 0;
+  inexact = mpz_root (m, m, k) == 0;
 
   MPFR_MPZ_SIZEINBASE2 (tmp, m);
   sh = tmp - n;
@@ -116,7 +125,7 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     {
       inexact = inexact || ((mp_exp_t) mpz_scan1 (m, 0) < sh);
       mpz_div_2exp (m, m, sh);
-      e += 3 * sh;
+      e += k * sh;
     }
 
   if (inexact)
@@ -134,7 +143,7 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
      is not changed; or inexact=0, and inexact is set only when
      rnd_mode=GMP_RNDN and bit (n+1) from m is 1 */
   inexact += mpfr_set_z (y, m, GMP_RNDN);
-  MPFR_SET_EXP (y, MPFR_GET_EXP (y) + e / 3);
+  MPFR_SET_EXP (y, MPFR_GET_EXP (y) + e / (mp_exp_t) k);
 
   if (negative)
     {
