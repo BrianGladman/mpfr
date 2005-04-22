@@ -83,9 +83,6 @@ New functions to implement:
 - mpfr_printf [Sisyphus <kalinabears@iinet.net.au> Tue, 04 Jan 2005]
   for example mpfr_printf ("%.2Ff\n", x)
 - wanted for Magma [John Cannon <john@maths.usyd.edu.au>, Tue, 19 Apr 2005]:
-  cot(x) = cos(x)/sin(x) = 1/tan(x)
-  sec(x) = 1/cos(x)
-  cosec(x) = 1/sin(x) [or csc]
   BesselFunction(n,x) = J_n(x) [first kind]
   HypergeometricU(a,b,s) = 1/gamma(a)*int(exp(-su)*u^(a-1)*(1+u)^(b-a-1),
                                     u=0..infinity)
