@@ -32,14 +32,7 @@ Documentation:
 
 Installation:
 
-- from Kevin Ryde <user42@zip.com.au>:
-  Determine the exp2/exp3 thresholds using tune/tuneup.c.
-  A start has been made on this, but there's a noticable step-effect
-  in the times making them cross back and forward between which is
-  faster.  Hopefully this will go away with improvements to the exp
-  code.
-
-
+- nothing to do currently :-)
 
 Changes in existing functions:
 
