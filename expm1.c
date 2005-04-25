@@ -66,18 +66,21 @@ mpfr_expm1 (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
     /* Declaration of the intermediary variable */
     mpfr_t t;
     /* Declaration of the size variable */
-    mp_prec_t Nx = MPFR_PREC(x);   /* Precision of input variable */
-    mp_prec_t Ny = MPFR_PREC(y);   /* Precision of input variable */    
-    mp_prec_t Nt;       /* Precision of the intermediary variable */
-    mp_exp_t err, exp_te;                   /* Precision of error */
+    mp_prec_t Ny = MPFR_PREC(y);   /* precision of input variable */
+    mp_prec_t Nt;                  /* working precision */
+    mp_exp_t err, exp_te;          /* error */
     MPFR_ZIV_DECL (loop);
 
     /* compute the precision of intermediary variable */
-    Nt = MAX (Nx, Ny);
-    /* the optimal number of bits : see algorithms.ps */
-    Nt = Nt + 5 + MPFR_INT_CEIL_LOG2 (Nt);
+    /* the optimal number of bits : see algorithms.tex */
+    Nt = Ny + MPFR_INT_CEIL_LOG2 (Nt) + 5;
 
-    /* initialise of intermediary	variable */
+    /* if |x| is smaller than 2^(-e), we will loose about e bits in the
+       subtraction exp(x) - 1 */
+    if (MPFR_EXP(x) < 0)
+      Nt += -MPFR_EXP(x);
+
+    /* initialize auxiliary variable */
     mpfr_init2 (t, Nt);
 
     /* First computation of expm1 */
@@ -96,7 +99,7 @@ mpfr_expm1 (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
 	if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
 	  break;
 
-        /* actualisation of the precision */
+        /* increase the precision */
 	MPFR_ZIV_NEXT (loop, Nt);
         mpfr_set_prec (t, Nt);
       }
