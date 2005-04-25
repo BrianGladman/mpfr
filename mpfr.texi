@@ -721,7 +721,7 @@ Note that the input 0 is converted to +0 by @code{mpfr_set_ui},
 @code{mpfr_set_f}, regardless of the rounding mode.
 If the system doesn't support the IEEE-754 standard, @code{mpfr_set_d} and
 @code{mpfr_set_ld} might not preserve the signed zeros.
-@code{mpfr_set_q} might not be able to work if the numerator (or the 
+@code{mpfr_set_q} might not be able to work if the numerator (or the
 denominator) can not be representable as a @code{mpfr_t}.
 @end deftypefun
 
@@ -735,22 +735,22 @@ Note that the input 0 is converted to +0.
 @end deftypefun
 
 @deftypefun int mpfr_set_str (mpfr_t @var{rop}, const char *@var{s}, int @var{base}, mp_rnd_t @var{rnd})
-Set @var{rop} to the value of the whole string @var{s} in base @var{base}, 
+Set @var{rop} to the value of the whole string @var{s} in base @var{base},
 rounded in the direction @var{rnd}.
 See the documentation of @code{mpfr_strtofr} for a detailed description
-of the valid string formats. 
+of the valid string formats.
 @c Additionally, special values
 @c @code{@@NaN@@}, @code{@@Inf@@}, @code{+@@Inf@@} and @code{-@@Inf@@},
 @c all case insensitive, without leading whitespace and possibly followed by
 @c other characters, are accepted too (it may change).
 This function returns 0 if the entire string up to the final null character
-is a valid number in base @var{base}; otherwise it returns @minus{}1, and 
+is a valid number in base @var{base}; otherwise it returns @minus{}1, and
 @var{rop} may have changed.
 @end deftypefun
 
 @deftypefun int mpfr_strtofr (mpfr_t @var{rop}, const char *@var{nptr}, char **@var{endptr}, int @var{base}, mp_rnd_t @var{rnd})
 
- Read a floating point number from a string @var{nptr} in base @var{base},
+ Read a floating-point number from a string @var{nptr} in base @var{base},
  rounded in the direction @var{rnd}. If successful, the
  result is stored in @var{rop} and @code{*@var{endptr}} points to the
  character just after those parsed. If @var{str} doesn't start with a
@@ -908,8 +908,8 @@ Convert @var{op} to a string of digits in base @var{b}, with rounding in
 the direction @var{rnd}. The base may vary from 2 to 36.
 
 The generated string is a fraction, with an implicit radix point immediately
-to the left of the first digit.  For example, the number -3.1416 would be
-returned as "-31416" in the string and 1 written at @var{expptr}.
+to the left of the first digit.  For example, the number @minus{}3.1416 would
+be returned as "@minus{}31416" in the string and 1 written at @var{expptr}.
 If @var{rnd} is to nearest, and @var{op} is exactly in the middle of two
 possible outputs, the one with an even last digit is chosen
 (for an odd base, this may not correspond to an even mantissa).
@@ -923,7 +923,7 @@ More precisely, the chosen precision is
 1 + ceil(n*log(2)/log(b)).
 @end ifnottex
 @tex
-$1 + 
+$1 +
 \lceil n {\log 2 \over \log b} \rceil$.
 @end tex
 This is the minimal precision depending on @var{n} and @var{b} only that
@@ -997,7 +997,10 @@ Set @var{rop} to @math{@var{op1} + @var{op2}} rounded in the direction @var{rnd}
 @deftypefunx int mpfr_sub_si (mpfr_t @var{rop}, mpfr_t @var{op1}, long int @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_sub_z (mpfr_t @var{rop}, mpfr_t @var{op1}, mpz_t @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_sub_q (mpfr_t @var{rop}, mpfr_t @var{op1}, mpq_t @var{op2}, mp_rnd_t @var{rnd})
-Set @var{rop} to @math{@var{op1} - @var{op2}} rounded in the direction @var{rnd}. For types having no signed zero, it is considered unsigned (i.e. (+0) - 0 = (+0), (-0) - 0 = (-0), 0 - (+0) = (-0) and 0 - (-0) = (+0)).
+Set @var{rop} to @math{@var{op1} - @var{op2}} rounded in the direction
+@var{rnd}. For types having no signed zero, it is considered unsigned
+(i.e. (+0) @minus{} 0 = (+0), (@minus{}0) @minus{} 0 = (@minus{}0),
+0 @minus{} (+0) = (@minus{}0) and 0 @minus{} (@minus{}0) = (+0)).
 @end deftypefun
 
 @deftypefun int mpfr_mul (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
@@ -1040,9 +1043,9 @@ Set @var{rop} to NaN if @var{op} is negative.
 @deftypefunx int mpfr_root (mpfr_t @var{rop}, mpfr_t @var{op}, unsigned long int @var{k}, mp_rnd_t @var{rnd})
 Set @var{rop} to the cubic root (resp. the @var{k}th root)
 of @var{op} rounded in the direction @var{rnd}.
-An odd (resp. even) root of a negative number (including -Inf)
+An odd (resp. even) root of a negative number (including @minus{}Inf)
 returns a negative number (resp. NaN).
-The @var{k}th root of -0 is defined to be -0,
+The @var{k}th root of @minus{}0 is defined to be @minus{}0,
 whatever the parity of @var{k}.
 @end deftypefun
 
@@ -1250,7 +1253,7 @@ rounded in the direction @var{rnd}.
 
 @deftypefun int mpfr_atan2 (mpfr_t @var{rop}, mpfr_t @var{y}, mpfr_t @var{x}, mp_rnd_t @var{rnd})
 Set @var{rop} to the arc-tangent2 of @var{y} and @var{x},
-rounded in the direction @var{rnd}: 
+rounded in the direction @var{rnd}:
 if @code{x > 0}, @code{atan2(y, x) = atan (y/x)};
 if @code{x < 0}, @code{atan2(y, x) = sign(y)*(PI - atan (@GMPabs{y/x}))}.
 
@@ -1261,11 +1264,11 @@ for the @code{atan2} function (note this may change in future versions):
 @item @code{atan2(+0, -0)} returns @m{+\pi,+Pi}.
 @item @code{atan2(-0, -0)} returns @m{-\pi,-Pi}.
 @item @code{atan2(+0, +0)} returns +0.
-@item @code{atan2(-0, +0)} returns -0.
+@item @code{atan2(-0, +0)} returns @minus{}0.
 @item @code{atan2(+0, x)} returns @m{+\pi,+Pi} for @math{x < 0}.
 @item @code{atan2(-0, x)} returns @m{-\pi,-Pi} for @math{x < 0}.
 @item @code{atan2(+0, x)} returns +0 for @math{x > 0}.
-@item @code{atan2(-0, x)} returns -0 for @math{x > 0}.
+@item @code{atan2(-0, x)} returns @minus{}0 for @math{x > 0}.
 @item @code{atan2(y, 0)} returns @m{-\pi/2,-Pi/2} for @math{y < 0}.
 @item @code{atan2(y, 0)} returns @m{+\pi/2,+Pi/2} for @math{y > 0}.
 @item @code{atan2(+INF, -INF)} returns @m{+3*\pi/4,+3*Pi/4}.
@@ -1277,7 +1280,7 @@ for the @code{atan2} function (note this may change in future versions):
 @item @code{atan2(y, -INF)} returns @m{+\pi,+Pi} for finite @math{y > 0}.
 @item @code{atan2(y, -INF)} returns @m{-\pi,-Pi} for finite @math{y < 0}.
 @item @code{atan2(y, +INF)} returns +0 for finite @math{y > 0}.
-@item @code{atan2(y, +INF)} returns -0 for finite @math{y < 0}.
+@item @code{atan2(y, +INF)} returns @minus{}0 for finite @math{y < 0}.
 @end itemize
 @end deftypefun
 
@@ -1350,7 +1353,7 @@ If any operand is negative, the return value is NaN.
 @deftypefunx int mpfr_const_pi (mpfr_t @var{rop}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_const_euler (mpfr_t @var{rop}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_const_catalan (mpfr_t @var{rop}, mp_rnd_t @var{rnd})
-Set @var{rop} to the logarithm of 2, the value of @m{\pi,Pi}, 
+Set @var{rop} to the logarithm of 2, the value of @m{\pi,Pi},
 of Euler's constant 0.577@dots{}, of Catalan's constant 0.915@dots{},
 respectively, rounded in the direction
 @var{rnd}. These functions cache the computed values to avoid other
@@ -1396,7 +1399,7 @@ prototypes for these functions.
 Output @var{op} on stream @var{stream}, as a string of digits in
 base @var{base}, rounded in the direction @var{rnd}.
 The base may vary from 2 to 36.  Print @var{n} significant digits exactly,
-or if @var{n} is 0, enough digits so that @var{op} can be read back 
+or if @var{n} is 0, enough digits so that @var{op} can be read back
 exactly (see @code{mpfr_get_str}).
 
 In addition to the significant digits, a decimal point at the right of the
@@ -1410,7 +1413,7 @@ Return the number of bytes written, or if an error occurred, return 0.
 @deftypefun size_t mpfr_inp_str (mpfr_t @var{rop}, FILE *@var{stream}, int @var{base}, mp_rnd_t @var{rnd})
 Input a string in base @var{base} from stream @var{stream},
 rounded in the direction @var{rnd}, and put the
-read float in @var{rop}. 
+read float in @var{rop}.
 @c The argument @var{base} must be in the range 2 to 36.
 
 @c The string is of the form @samp{M@@N} or, if the
@@ -1688,7 +1691,7 @@ i.e.@: the ternary value is propagated.
 @deftypefun int mpfr_subnormalize (mpfr_t @var{x}, int @var{t}, mp_rnd_t @var{rnd})
 This function rounds @var{x} emulating subnormal number arithmetic:
 if @var{x} is outside the subnormal exponent range, it just propagates the
-ternary value @var{t}; otherwise, it rounds @var{x} to precision 
+ternary value @var{t}; otherwise, it rounds @var{x} to precision
 @code{EXP(x)-emin+1} according to rouding mode @var{rnd} and previous
 ternary value @var{t}, avoiding double rounding problems.
 @code{PREC(x)} is not modified by this function.
@@ -1720,7 +1723,7 @@ This is an example of how to exactly emulate double IEEE-754 arithmetic
   for (c = 3.0 ; c <= 30000 ; c++) @{
     a = c; mpfr_set_d (xa, c, GMP_RNDN);
     while (a != 0.0) @{
-      if (mpfr_cmp_d (xa, a)) 
+      if (mpfr_cmp_d (xa, a))
          abort ();
       a /= b;
       i = mpfr_div (xa, xa, xb, GMP_RNDN);
