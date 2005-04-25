@@ -73,7 +73,7 @@ mpfr_expm1 (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
 
     /* compute the precision of intermediary variable */
     /* the optimal number of bits : see algorithms.tex */
-    Nt = Ny + MPFR_INT_CEIL_LOG2 (Nt) + 5;
+    Nt = Ny + MPFR_INT_CEIL_LOG2 (Ny) + 6;
 
     /* if |x| is smaller than 2^(-e), we will loose about e bits in the
        subtraction exp(x) - 1 */

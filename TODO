@@ -107,8 +107,6 @@ Efficiency:
 	[from Mark Watkins on Fri, 18 Mar 2005]
   Also mpfr_atan(x) seems slower (by a factor of 2) for x near from 1.
   Example on a Athlon for 10^5 bits: x=1.1 takes 3s, whereas 2.1 takes 1.8s.
-- speed up expm1 for small arguments
-        [from Keith Briggs <keith.briggs@bt.com>, Thu, 14 Apr 2005]
 - implement range reduction in sin/cos/tan for large arguments
 	(currently too slow for 2^1024), and/or implement Mark Watkins's
 	algorithm:
