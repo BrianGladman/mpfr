@@ -101,6 +101,7 @@ test_small (void)
   mpfr_init2 (y, 64);
   mpfr_init2 (z, 64);
 
+  /* x = 11906603631607553907/2^(16381+64) */
   mpfr_set_str (x, "0.1010010100111100110000001110101101000111010110000001111101110011E-16381", 2, GMP_RNDN);
   d = mpfr_get_ld (x, GMP_RNDN);  /* infinite loop? */
   mpfr_set_ld (y, d, GMP_RNDN);
@@ -110,12 +111,12 @@ test_small (void)
   if (mpfr_cmp_str (z, "1E-16434", 2, GMP_RNDN) > 0 || mpfr_erangeflag_p ())
     {
       printf ("Error with x = ");
-      mpfr_out_str (NULL, 10, 20, x, GMP_RNDN);
+      mpfr_out_str (NULL, 10, 21, x, GMP_RNDN);
       printf (" = ");
       mpfr_out_str (NULL, 16, 0, x, GMP_RNDN);
-      printf ("\n        -> d = %.20Lg", d);
+      printf ("\n        -> d = %.21Lg", d);
       printf ("\n        -> y = ");
-      mpfr_out_str (NULL, 10, 20, y, GMP_RNDN);
+      mpfr_out_str (NULL, 10, 21, y, GMP_RNDN);
       printf (" = ");
       mpfr_out_str (NULL, 16, 0, y, GMP_RNDN);
       printf ("\n        -> |x-y| = ");

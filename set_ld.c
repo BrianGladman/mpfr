@@ -51,7 +51,7 @@ int
 mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
 {
   mpfr_t t, u;
-  int inexact, shift_exp = 0, inexact2;
+  int inexact, shift_exp;
   MPFR_SAVE_EXPO_DECL (expo);
 
   /* Check for NAN */
@@ -78,6 +78,7 @@ mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
   MPFR_SET_ZERO (t);
   MPFR_SAVE_EXPO_MARK (expo);
 
+  shift_exp = 0; /* invariant: remainder to deal with is d*2^shift_exp */
   while (d != (long double) 0.0)
     {
       /* Check overflow of Double */
@@ -122,9 +123,10 @@ mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
             }
         }
       /* Check underflow of double */
-      else if (d < (long double)DBL_MIN && (-d) < (long double)DBL_MIN)
+      else if (d < (long double) DBL_MIN && (-d) < (long double) DBL_MIN)
         {
 	  long double div10, div11, div12, div13;
+
 	  div10 = (long double) (double) 5.5626846462680034577255e-309; /* 2^(-2^10) */
 	  div11 = div10 * div10; /* 2^(-2^11) */
 	  div12 = div11 * div11; /* 2^(-2^12) */
@@ -149,26 +151,36 @@ mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
 	      d = d / div10; /* exact */
 	      shift_exp -= 1024;
 	    }
+	  /* since DBL_MIN = 2^(-1022) usually, it might be that |d| is still
+	     smaller than DBL_MIN here; in such a case, we normalize it in
+	     a naive way to avoid an infinite loop */
+	  while (d < (long double) DBL_MIN && (-d) < (long double) DBL_MIN)
+	    {
+	      d = 2.0 * d;
+	      shift_exp --;
+	    }
 	}
       else
 	{
+	  double dd;
 	  /* since DBL_MIN < ABS(d) < DBL_MAX, the cast to double should not
 	     overflow here */
 	  MPFR_ASSERTD ((long double) DBL_MIN <= ABS (d));
 	  MPFR_ASSERTD ((long double) DBL_MAX >= ABS (d));
-	  inexact = mpfr_set_d (u, (double) d, GMP_RNDN);
+	  dd = (double) d;
+	  inexact = mpfr_set_d (u, dd, GMP_RNDN);
+	  dd = mpfr_get_d1 (u);
+	  mpfr_mul_2si (u, u, shift_exp, rnd_mode); /* exact, no underflow
+	       or overflow since we use the internal exponent range */
 	  MPFR_ASSERTD (inexact == 0);
 	  MPFR_ASSERTD (!MPFR_IS_ZERO (u));
 	  inexact = mpfr_add (t, t, u, GMP_RNDN); /* exact */
 	  MPFR_ASSERTD (inexact == 0);
-	  d = d - (long double) mpfr_get_d1 (u);
+	  d = d - (long double) dd;
 	}
     }
   /* now t is exactly the input value d */
   inexact = mpfr_set (r, t, rnd_mode);
-  inexact2 = mpfr_mul_2si (r, r, shift_exp, rnd_mode);
-  if (inexact2) /* overflow or underflow */
-    inexact = inexact2;
   mpfr_clear (t);
   mpfr_clear (u);
 
