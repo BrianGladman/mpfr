@@ -28,13 +28,18 @@ Documentation:
 - mpfr_set_prec: add an explanation of how to speed up calculations
   which increase their precision at each step.
 
-
-
 Installation:
 
 - nothing to do currently :-)
 
 Changes in existing functions:
+
+- many functions currently taking into account the precision of the *input*
+  variable to set the initial working precison (acosh, asinh, cosh, ...).
+  This is nonsense since the "average" working precision should only depend
+  on the precision of the *output* variable (and maybe on the *value* of
+  the input in case of cancellation).
+  -> remove those dependencies from the input precision.
 
 - mpfr_get_str should support base up to 62 too.
 
