@@ -1121,6 +1121,13 @@ Both @var{op1} and @var{op2} are considered to their full own precision,
 which may differ.
 If one of the operands is NaN (Not-a-Number), return zero and set
 the erange flag.
+
+Note: These functions may be useful to distinguish the three possible cases.
+If you need to distinguish two cases only, it is recommended to use the
+predicate functions (e.g., @code{mpfr_equal_p} for the equality) described
+below; they behave like the IEEE-754 comparisons, in particular when one
+or both arguments are NaN. But only floating-point numbers can be compared
+(you may need to do a conversion first).
 @end deftypefun
 
 @deftypefun int mpfr_cmp_ui_2exp (mpfr_t @var{op1}, unsigned long int @var{op2}, mp_exp_t @var{e})
