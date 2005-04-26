@@ -152,6 +152,23 @@ Efficiency:
 
 Miscellaneous:
 
+- [suggested by Geoff Bailey] add internal functions to round near 1 or x:
+  int mpfr_round_near_one  (mpfr_ptr y, mpfr_srcptr x, mp_prec_t err,
+                     int dir, mp_rnd_t rnd)
+  int mpfr_round_near_zero (mpfr_ptr y, mpfr_srcptr x, mp_prec_t err,
+                       int dir, mp_rnd_t rnd)
+
+   y is the destination variable
+   x is the input variable
+   err is the error bound, as in mpfr_can_round: the absolute error is
+     bounded by 2^(EXP(x) - err), but unlike in mpfr_can_round it cannot
+     be zero. It is required that this error does not overlap with the
+     result, i.e. err >= PREC(y).
+   dir is the direction of the error term: for example 0 towards zero,
+     and 1 away from 0
+   rnd is the wanted rounding mode
+   the return value would be the ternary flag.
+
 - rename mpf2mpfr.h to gmp-mpf2mpfr.h?
   (will wait until mpfr is fully integrated into gmp :-)
 
