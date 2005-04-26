@@ -242,3 +242,65 @@ Possible future MPF / MPFR integration:
 - mpfr_random will not be wanted since there's no corresponding
   mpf_random and new routines should not use the old style global
   random state.
+
+Low-level interface (agreed by the Magma people, which would like
+	mpfr_mantissa_after_move() to be a macro).
+
+> - ---- Interface 1 ---
+> 
+> /* Return the needed size for the mantissa */
+> size_t mpfr_low_level_get_size (mp_prec_t prec);
+> 
+> /* Init a mpfr_t x using mantissa as the mantissa and prec as the precision. 
+>    mantissa must be of mpfr_low_level_get_size (p) bytes.
+>    It must be suitably aligned for any kind of variable.
+>    x is set to NAN.
+>    It uses mantissa for storing the mantissa in the further computation on x.
+>    the previous value of then mantissa may be lost */
+> void mpfr_low_level_init (mpfr_t x, mp_prec_t prec, void *mantissa);
+> 
+> /* Clear a mpfr_t init by mpfr_low_level_init.
+>    Does nothing in the current implementation but it may change. */
+> void mpfr_low_level_clear (mpfr_t x);
+> 
+> 
+> - ---- Interface 2 ---
+> 
+> /* Return the needed size for the mantissa */
+> size_t mpfr_mantissa_get_size (mp_prec_t prec);
+> 
+> /* Init a mantissa for mpfr.
+>  * `mantissa' must be of `mpfr_low_level_get_size (prec)' bytes.
+>  * It must be suitably aligned for any kind of variable.
+>  */
+> void mpfr_mantissa_init (void *mantissa, mp_prec_t prec);
+> 
+> /* Clear a mantissa for MPFR
+>  */
+> void mpfr_mantissa_clear (void *mantissa, mp_prec_t prec);
+> 
+> /*
+>  * Perform a dummy initialization of a mpfr_t and set it to NAN
+>  * It uses `mantissa' directly for further computing
+>  * involving `x'. It won't alloc anything.
+>  */
+> void mpfr_mantissa_init_fr1 (mpfr_t x, mp_prec_t prec, void *mantissa);
+> 
+> /* Perform a dummy initialization of a mpfr_t and set it to a value.
+>  * if `ABS(s) == 0', `x' is set to NAN.
+>  * if `ABS(s) == 1', `x' is set to INF of sign sign(s)
+>  * if `ABS(s) == 2', `x' is set to ZERO of sign sign(s)
+>  * if `ABS(s) == 3', `x' is set to a regular number: x=sign(s)*mantissa*2^exp
+>  * 
+>  * In all cases, it uses `mantissa' directly for further computing
+>  * involving `x'. It won't alloc anything.
+>  *
+>  */
+> void mpfr_mantissa_init_fr2 (mpfr_t x, int s, mp_exp_t exp, 
+> 			     mp_prec_t prec, void *mantissa);
+> 
+> /* Return the mantissa  */
+> void *mpfr_mantissa_get (mpfr_t x);
+> 
+> /* Inform MPFR that the mantissa has moved and update its position */
+> void mpfr_mantissa_after_move (mpfr_t x, void *new_position);
