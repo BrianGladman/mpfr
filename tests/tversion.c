@@ -39,5 +39,10 @@ main (void)
       printf ("Incorrect version (%s vs %s)\n", buffer, version);
       exit (1);
     }
+  if (strcmp (MPFR_VERSION_STRING, version) != 0)
+    {
+      printf ("Incorrect version (%s vs %s)\n", buffer, version);
+      exit (1);
+    }
   return 0;
 }

@@ -27,6 +27,12 @@ MA 02111-1307, USA. */
 #define MPFR_VERSION_MINOR 2
 #define MPFR_VERSION_PATCHLEVEL 0
 
+/* string variant of the version number, for comparison with mpfr_version() */
+#define MPFR_STRING(m) #m
+#define MPFR_SSTRING(m) MPFR_STRING(m)
+#define MPFR_VERSION_STRING MPFR_SSTRING(MPFR_VERSION_MAJOR) "." MPFR_SSTRING(MPFR_VERSION_MINOR) "." MPFR_SSTRING(MPFR_VERSION_PATCHLEVEL)
+
+
 /* Macros dealing with MPFR VERSION */
 #define MPFR_VERSION_NUM(a,b,c) (((a) << 16L) | ((b) << 8) | (c))
 #define MPFR_VERSION \
