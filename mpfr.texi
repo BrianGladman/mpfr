@@ -723,6 +723,12 @@ If the system doesn't support the IEEE-754 standard, @code{mpfr_set_d} and
 @code{mpfr_set_ld} might not preserve the signed zeros.
 @code{mpfr_set_q} might not be able to work if the numerator (or the
 denominator) can not be representable as a @code{mpfr_t}.
+
+Note: If you want to store a floating-point constant to a @code{mpfr_t},
+you should use @code{mpfr_set_str} instead of @code{mpfr_set_d} or
+@code{mpfr_set_ld}. Otherwise the floating-point constant will be first
+converted into a reduced-precision (e.g., 53-bit) binary number before
+MPFR can work with it.
 @end deftypefun
 
 @deftypefun int mpfr_set_ui_2exp (mpfr_t @var{rop}, unsigned long int @var{op}, mp_exp_t @var{e}, mp_rnd_t @var{rnd})
