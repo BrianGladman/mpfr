@@ -1804,6 +1804,34 @@ The terms that are canceled are $\pi/2$ and $\arcsin\,x$, their order is $2$. Th
 
 \subsection{The arc-tangent function} % from Mathieu Dutour
 
+\subsubsection{Error analysis.}
+
+We analyze here the error for the argument reduction
+$\frac{x}{1+\sqrt{1+x^2}}$.
+
+{Assume} $0 \leq y < 1$, where $y$ is an approximation of some
+real $x$ such that $x = y (1 + \delta)$. We approximate
+$\frac{x}{1+\sqrt{1+x^2}}$ using the following algorithm:
+\begin{quote}
+$s \leftarrow \circ(x^2)$ [nearest] \\
+$t \leftarrow \circ(1+s)$ [nearest] \\
+$u \leftarrow \circ(\sqrt{t})$ [nearest] \\
+$v \leftarrow \circ(1+u))$ [nearest] \\
+$w \leftarrow \circ(\frac{x}{v})$ [nearest]
+\end{quote}
+Using Higham's method, we denote $\theta_i$ variables such that 
+$|\theta_i| \leq 2^{-p}$, where $p$ is the working precision.
+We have $s = y^2 (1 + \delta)^2 (1 + \theta_1)$,
+$t = [1 + y^2 (1 + \delta)^2 (1 + \theta_1)] (1+\theta_2) 
+   = (1+y^2) (1 + \delta)^2 (1+\theta_3)^2$,
+$u = \sqrt{1+y^2} (1 + \delta) (1+\theta_3) (1+\theta_4) 
+   = \sqrt{1+y^2} (1 + \delta) (1+\theta_5)^2$,
+$v = [1 + \sqrt{1+y^2} (1 + \delta) (1+\theta_5)^2] (1+\theta_6)
+   = (1 + \sqrt{1+y^2}) (1 + \delta) (1+\theta_7)^3$,
+\[ w = \frac{y (1 + \delta)}{(1 + \sqrt{1+y^2}) (1 + \delta) (1+\theta_7)^3}
+       (1+\theta_8)
+     = \frac{y}{1 + \sqrt{1+y^2}} (1+\theta_9)^4. \]
+
 \subsubsection{Binary splitting}
 \noindent The Taylor serie for $\arctan$ is suitable for analysis using Binary splitting.
 \par This method is detailed for example in ``Pi and The AGM'' p 334. It is efficient for rational numbers and is non efficient for non rational numbers.

@@ -128,10 +128,97 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	}
     }
 
+  /* Special case when |x| is very small (and x is a good approximation) */
+  e = MPFR_GET_EXP(x);
+  precy = MPFR_PREC(y);
+  if (e < 0)
+  {
+    long v;
+
+    /*
+    Assume WMLOG that x > 0 (we will compensate for negative x later); then
+    x - x^3 < Sin(x) < x.  Let e be the exponent of x, px be the precision
+    of x and p the precision of y.  Let L and U be such that L < x <= U
+    with L and U "adjacent" representable values in precision p.  (It
+    follows that U = x rounded up to precision p.)
+
+    Then a coarse estimate establishes that if Max(p,px) + 2*e - 2 <= 0
+    then L < Sin(x) < U.  If not rounding to nearest then this is sufficient,
+    otherwise we need to know where it stands with respect to (L+U)/2.  A
+    simple approach is to implicitly use one extra bit so that one of L or U
+    is implicitly replaced by (L+U)/2.  In this case, we require that
+    Max(p+1,px) + 2*e - 2 <= 0.
+    */
+    v = (long)MPFR_PREC(y);
+    if (rnd_mode == GMP_RNDN)
+      v++;
+    if (v < (long)MPFR_PREC(x))
+      v = (long)MPFR_PREC(x);
+    v -= 2;
+    v += (long)e;	/* don't use v += 2*e due to overflow paranoia */
+    if (v > 0)
+      v += (long)e;
+
+    if (v <= 0)		/* small case */
+    {
+      /*
+      If rounding to nearest there is a potential problem if x lies exactly
+      halfway between two representable values: the correct end result is
+      obtained by rounding towards zero in this case.  Since this cannot
+      currently be specified to the setting/rounding routines, an explicit
+      check and change of rounding mode is done in this case.
+      */
+      if (rnd_mode == GMP_RNDN && MPFR_PREC(x) > precy)
+      {
+	mp_limb_t *xp, ok, mask;
+	mp_prec_t sh;
+	int k;
+
+	MPFR_UNSIGNED_MINUS_MODULO(sh, precy);
+	k = MPFR_LIMB_SIZE(x) - MPFR_LIMB_SIZE(y);
+	xp = MPFR_MANT(x) + k;
+	if (MPFR_LIKELY(sh != 0))
+	{
+	  mask = MPFR_LIMB_ONE << (sh - 1);
+	}
+	else
+	{
+	  mask = MPFR_LIMB_HIGHBIT;
+	  xp--;
+	  k--;
+	}
+	ok = (xp[0] & mask) ^ mask;
+	if (ok == 0)
+	{
+	  ok = xp[0] & (mask-1);
+	  if (MPFR_UNLIKELY(ok == 0))
+	  {
+	    while (--k >= 0 && ok == 0)
+	      ok = *--xp;
+	  }
+	}
+
+	if (MPFR_UNLIKELY(ok == 0))		/* problem case */
+	  rnd_mode = GMP_RNDZ;
+      }
+
+      sign = MPFR_INT_SIGN(x);
+      inexact = mpfr_set(y, x, rnd_mode);
+      if (inexact == 0)
+      {
+	inexact = sign;
+	if (MPFR_IS_LIKE_RNDZ(rnd_mode, MPFR_IS_NEG_SIGN(sign)))
+	{
+	  inexact = -inexact;
+	  mpfr_nexttozero(y);
+	}
+      }
+      MPFR_RET(inexact);
+    }
+  }
+
   /* Compute initial precision */
-  precy = MPFR_PREC (y);
   m = precy + MPFR_INT_CEIL_LOG2 (precy) + 13;
-  e = MPFR_GET_EXP (x);
   m += (e < 0) ? -2*e : e;  
 
   sign = mpfr_sin_sign (x);
