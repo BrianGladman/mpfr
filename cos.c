@@ -72,7 +72,7 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_t r, s;
   mp_limb_t *rp, *sp;
   mp_size_t sm;
-  mp_exp_t e, exps, cancel = 0;
+  mp_exp_t exps, cancel = 0;
   MPFR_ZIV_DECL (loop);
   MPFR_SAVE_EXPO_DECL (expo);
   TMP_DECL (marker);
@@ -92,39 +92,6 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
           MPFR_ASSERTD(MPFR_IS_ZERO(x));
 	  return mpfr_set_ui (y, 1, GMP_RNDN);
         }
-    }
-
-  /* Special case when |x| is very small (and 1 is a good approximation) */
-  e = MPFR_GET_EXP(x);
-  if (e < 0)
-    {
-      long v;
-
-      /*
-      We have 1 - x^2/2 < cos(x) < 1.  Let e be the exponent of x, p the
-      precision of y, and k = 1 if rounding to nearest, 0 otherwise.
-      Then a simple estimate shows that, if p + 2*e - k <= 0, then the
-      correctly rounded result is 1 for U and N, and 1 - 1ulp for D and Z.
-      */
-      v = (long)MPFR_PREC(y);
-      if (rnd_mode != GMP_RNDN)
-	v--;
-      v += (long)e;	/* don't use v += 2*e due to overflow paranoia */
-      if (v > 0)
-	v += (long)e;
-
-      if (v <= 0)
-	{
-	  inexact = 1;
-	  MPFR_SET_ONE(y);
-	  if (rnd_mode == GMP_RNDZ || rnd_mode == GMP_RNDD)
-	    {
-	      mpfr_nexttozero(y);
-	      inexact = -1;
-	    }
-	  __gmpfr_flags |= MPFR_FLAGS_INEXACT;
-	  return inexact;
-	}
     }
 
   MPFR_SAVE_EXPO_MARK (expo);
