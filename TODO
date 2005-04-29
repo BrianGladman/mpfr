@@ -30,7 +30,8 @@ Documentation:
 
 Installation:
 
-- nothing to do currently :-)
+- Add exact version (date) for CVS version.
+- Add options passed to script configure (mpfr_get_version ?)
 
 Changes in existing functions:
 
@@ -141,7 +142,7 @@ Efficiency:
     (__builtin_constant_p ((_d)==(_x)) && (_d)==(_x) ? \
      ((_d)->_mpfr_sign = -(_d)->_mpfr_sign, 0)       : \
       mpfr_neg ((_d), (_x), (_r)))  */
-
+- inline mpfr_greater_p (comparisons.c) to improve efficiency.
 - mpf_t uses a scheme where the number of limbs actually present can
   be less than the selected precision, thereby allowing low precision
   values (for instance small integers) to be stored and manipulated in
