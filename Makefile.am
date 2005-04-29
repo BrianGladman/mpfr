@@ -1,7 +1,7 @@
 AUTOMAKE_OPTIONS = gnu no-dependencies ansi2knr
 
 SUBDIRS = tests
-EXTRA_DIST = BUGS VERSION generic.c round_raw_generic.c
+EXTRA_DIST = BUGS FAQ.html VERSION generic.c round_raw_generic.c
 
 include_HEADERS = mpfr.h mpf2mpfr.h
 

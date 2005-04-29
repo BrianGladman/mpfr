@@ -1,4 +1,4 @@
-Copyright 2000, 2001, 2002, 2003, 2004 Free Software Foundation.
+Copyright 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation.
 Contributed by the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.
@@ -29,6 +29,7 @@ BUGS        - bugs in MPFR - please read this file!
 COPYING     - the GNU General Public License, version 2
 COPYING.LIB - the GNU Lesser General Public License, version 2.1
 ChangeLog   - the log of changes
+FAQ.html    - frequently asked questions about MPFR
 INSTALL     - how to install MPFR (see also mpfr.texi)
 Makefile*   - files for building the library
 NEWS        - new features with respect to previous versions
