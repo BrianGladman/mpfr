@@ -112,6 +112,9 @@ Efficiency:
 	[from Mark Watkins on Fri, 18 Mar 2005]
   Also mpfr_atan(x) seems slower (by a factor of 2) for x near from 1.
   Example on a Athlon for 10^5 bits: x=1.1 takes 3s, whereas 2.1 takes 1.8s.
+  The current implementation does not give monotonous timing for the following:
+  mpfr_random (x); for (i = 0; i < k; i++) mpfr_atan (y, x, GMP_RNDN);
+  for precision 300 and k=1000, we get 1070ms, and 500ms only for p=400!
 - implement range reduction in sin/cos/tan for large arguments
 	(currently too slow for 2^1024), and/or implement Mark Watkins's
 	algorithm:
