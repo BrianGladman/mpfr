@@ -106,6 +106,8 @@ New functions to implement:
 
 Efficiency:
 
+- speed up const_euler for large precision [for x=1.1, prec=16610, it takes
+	75% of the total time of eint(x)!]
 - speed up mpfr_atan for large arguments (to speed up mpc_log)
 	[from Mark Watkins on Fri, 18 Mar 2005]
   Also mpfr_atan(x) seems slower (by a factor of 2) for x near from 1.
