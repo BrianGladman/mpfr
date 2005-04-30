@@ -250,7 +250,7 @@ error(w)& \leq & c_w \ulp(w) + c_u\frac{k_u}{u^2} \ulp(u)\\\nonumber
 
 
 We want to compute the generic error of the division.
-
+Without loss of generality, we assume all variables are positive.
 \begin{eqnarray}\nonumber
 w&=&o(\frac{u}{v}) \\\nonumber
 \textnormal{Note:}&& error(u) \leq k_u \, \ulp(u), \;\; error(v) \leq k_v \, \ulp(v)
@@ -281,6 +281,16 @@ error(w)& \leq & c_w \ulp(w) + 2.k_u  \ulp(w)+ c_u.c_v.\frac{k_v u}{vv} \ulp(v)\
 \begin{eqnarray}\nonumber
 \textnormal{Note:}&&\textnormal{If}\;\; w=N(\frac{u}{v}) \;\;\textnormal{Then}\;\; c_w =\frac{1}{2} \;\;\textnormal{else}\;\; c_w =1
 \end{eqnarray}
+Note that we can obtain a slightly different result by writing
+$uy-vx = (uy - uv) + (uv - vx)$ instead of $(uy-xy)+(xy-vx)$.
+
+Another result can be obtained using a relative error analysis.
+Assume $x = u (1 + \theta_u)$ and $y = v (1 + \theta_v)$. Then
+$|\frac{u}{v} - \frac{x}{y}| \leq \frac{1}{vy} |uy - uv| 
++ \frac{1}{vy} |uv - xv| 
+= \frac{u}{y} (|\theta_u|+|\theta_v|)$.
+If $v \leq y$ and $\frac{u}{v} \leq w$, 
+this is bounded by $w (|\theta_u|+|\theta_v|)$.
 
 \subsection{Generic error of square root}\label{generic:sqrt}
 
@@ -2621,6 +2631,49 @@ whether $r=0$ or not.
 The even rounding rule is needed only when the input $x$ has at least
 $3n+1$ bits, since the cube of a odd number of $n+1$ bits has at least
 $3n+1$ bits.
+
+\subsection{The exponential integral}
+
+The exponential integral \verb|mpfr_eint| is defined as in
+\cite[formula 5.1.10]{AbSt73}: for $x > 0$,
+\[ {\rm Ei}(x) = \gamma + \log x + \sum_{k=1}^{\infty} \frac{x^k}{k \, k!}, \]
+and for $x < 0$ it gives NaN.
+
+We use the following integer-based algorithm to evaluate
+$\sum_{k=1}^{\infty} \frac{x^k}{k \, k!}$, using working precision $w$.
+For any real $v$, we denote by ${\rm trunc}(v)$ the nearest integer 
+towards zero.
+\begin{quote}
+Decompose $x$ into  $m\cdot2^e$ with $m$ integer [exact] \\
+If necessary, truncate $m$ to $w$ bits and adjust $e$ \\
+$s \leftarrow 0$ \\ % sum
+$t \leftarrow 2^w$ \\ % current term x^k/k!
+for $k := 1$ do \\
+\q $t \leftarrow {\rm trunc}(t m 2^e/k)$ \\
+\q $u \leftarrow {\rm trunc}(t/k)$ \\
+\q $s \leftarrow s + u$ \\
+Return $s \cdot 2^{-w}$.
+\end{quote}
+Note: in $t \leftarrow {\rm trunc}(t m 2^e/k)$,
+we first compute $tm$ exactly, then if $e$ is negative,
+we first divide by $2^{-e}$ and
+truncate, then divide by $k$ and truncate; this gives the same answer than
+dividing once by $k 2^{-e}$, but it is more efficient.
+Let $\epsilon_k$ be the absolute difference between $t$ and 
+$2^w x^k/k!$ at step $k$.
+We have $\epsilon_0=0$, and $\epsilon_k \leq 1 + \epsilon_{k-1} m 2^e/k
++ t_{k-1} m 2^{e+1-w}/k$, since the error when approximating $x$ by
+$m 2^e$ is less than $m 2^{e+1-w}$.
+Similarly, the absolute error on $u$ at step $k$ is at most 
+$\nu_k \leq 1 + \epsilon_k/k$,
+and that on $s$ at most $\tau_k \leq \tau_{k-1} + \nu_k$.
+We compute all these errors dynamically (using MPFR with a small precision),
+and we stop when $|t|$ is smaller than the bound $\tau_k$
+on the error on $s$ made so far.
+
+At that time, the truncation error when neglecting terms of index $k+1$
+to $\infty$ can be bounded by $(|t| + \epsilon_k)/k (|x|/k + |x|^2/k^2 + 
+\cdots) \leq (|t| + \epsilon_k) |x|/k/(k-|x|)$.
 
 \subsection{Summary}
 

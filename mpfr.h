@@ -393,6 +393,7 @@ __MPFR_DECLSPEC int mpfr_exp10 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
 					     mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_expm1 _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
 					     mpfr_rnd_t));
+__MPFR_DECLSPEC int mpfr_eint _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,mpfr_rnd_t));
 
 __MPFR_DECLSPEC int mpfr_cmp  _MPFR_PROTO ((mpfr_srcptr, mpfr_srcptr));
 __MPFR_DECLSPEC int mpfr_cmp3 _MPFR_PROTO ((mpfr_srcptr, mpfr_srcptr, int));

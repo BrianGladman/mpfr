@@ -30,8 +30,7 @@ Documentation:
 
 Installation:
 
-- Add exact version (date) for CVS version.
-- Add options passed to script configure (mpfr_get_version ?)
+- nothing to do currently :-)
 
 Changes in existing functions:
 
@@ -92,11 +91,9 @@ New functions to implement:
   KBessel, KBessel2 [2nd kind]
   JacobiTheta
   LogIntegral
-  ExponentialIntegral, ExponentialIntegralE1
+  ExponentialIntegralE1
     E1(z) = int(exp(-t)/t, t=z..infinity), |arg z| < Pi
-    Ei(x) = - int(exp(-t)/t, t=-x..infinity), x > 0
     mpfr_eint1: implement E1(x) for x > 0, and Ei(-x) for x < 0
-    also mpfr_eint(x) = -mpfr_eint1(-x) for x >= 0, NaN for x < 0.
     E1(NaN)  = NaN
     E1(+Inf) = +0
     E1(-Inf) = -Inf
@@ -142,7 +139,7 @@ Efficiency:
     (__builtin_constant_p ((_d)==(_x)) && (_d)==(_x) ? \
      ((_d)->_mpfr_sign = -(_d)->_mpfr_sign, 0)       : \
       mpfr_neg ((_d), (_x), (_r)))  */
-- inline mpfr_greater_p (comparisons.c) to improve efficiency.
+
 - mpf_t uses a scheme where the number of limbs actually present can
   be less than the selected precision, thereby allowing low precision
   values (for instance small integers) to be stored and manipulated in
