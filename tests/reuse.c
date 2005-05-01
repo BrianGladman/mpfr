@@ -568,27 +568,36 @@ main (void)
     test2 (mpfr_exp2, "mpfr_exp2", p, rnd);
     test2 (mpfr_exp10, "mpfr_exp10", p, rnd);
     test2 (mpfr_expm1, "mpfr_expm1", p, rnd);
+    test2 (mpfr_eint, "mpfr_eint", p, rnd);
 
-    test2 (mpfr_asin, "mpfr_asin", p, rnd);
-    test2 (mpfr_acos, "mpfr_acos", p, rnd);
-    test2 (mpfr_atan, "mpfr_atan", p, rnd);
     test2 (mpfr_sinh, "mpfr_sinh", p, rnd);
     test2 (mpfr_cosh, "mpfr_cosh", p, rnd);
     test2 (mpfr_tanh, "mpfr_tanh", p, rnd);
     test2 (mpfr_asinh, "mpfr_asinh", p, rnd);
     test2 (mpfr_acosh, "mpfr_acosh", p, rnd);
     test2 (mpfr_atanh, "mpfr_atanh", p, rnd);
+
+    test2 (mpfr_asin, "mpfr_asin", p, rnd);
+    test2 (mpfr_acos, "mpfr_acos", p, rnd);
+    test2 (mpfr_atan, "mpfr_atan", p, rnd);
     test2 (mpfr_cos, "mpfr_cos", p, rnd);
     test2 (mpfr_sin, "mpfr_sin", p, rnd);
     test2 (mpfr_tan, "mpfr_tan", p, rnd);
 
+    test2 (mpfr_sec, "mpfr_sec", p, rnd);
+    test2 (mpfr_csc, "mpfr_csc", p, rnd);
+    test2 (mpfr_cot, "mpfr_cot", p, rnd);
+
     test2 (mpfr_erf, "mpfr_erf", p, rnd);
+    test2 (mpfr_erfc, "mpfr_erfc", p, rnd);
+
     test2 (mpfr_zeta, "mpfr_zeta", p, rnd);
     test2 (mpfr_gamma, "mpfr_gamma", p, rnd);
     test2 (mpfr_rint, "mpfr_rint", p, rnd);
     test2 (mpfr_frac, "mpfr_frac", p, rnd);
 
     test3 (mpfr_pow, "mpfr_pow", p, rnd);
+    test3 (mpfr_atan2, "mpfr_atan2", p, rnd);
 
     test4 (mpfr_fma, "mpfr_fma", p, rnd);
   }
