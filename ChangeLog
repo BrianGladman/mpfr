@@ -1,4 +1,139 @@
+2005-05-02  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* BUGS, tests/thypot.c:
+	Added the test_large_small test for mpfr_hypot (disabled by default)
+	and mentioned this bug in BUGS. [2.1 branch]
+
+	* BUGS: Mention the mpfr_hypot bug.
+
+	* tests/thypot.c:
+	Added a test showing a bug, enabled when TEST_LARGE_SMALL is defined
+	(to avoid a freeze with make check).
+
+2005-05-02  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* mpfr.texi: Fix bug.
+
+	* tests/tpow.c: Remove useless function f.
+
+	* subnormal.c: Fix a bug: the test to detect EVEN_rounding was wrong.
+
+	* mpfr.texi: Update example of use of mpfr_subnormalize.
+
+	* mpfr-test.h, tests/cmp_str.c, tests/tcmp.c, tests/tcmpabs.c:
+	mpfr_cmp_str checks for NAN.
+	Add macro mpfr_cmp0 in mpfr-test.
+
+	* tests/tgeneric.c, tests/tgeneric_ui.c, tests/troot.c:
+	Undo previous change for tgeneric.
+	troot uses tgeneric_ui instead.
+
+2005-05-01  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* tests/reuse.c: Add new funcions in reuse test.
+
+2005-04-30  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* TODO: added efficiency item
+
+	* eint.c, mpfr.h, mpfr.texi, tests/Makefile.am, tests/teint.c, Makefile.am, TODO, algorithms.tex:
+	added mpfr_eint
+
+2005-04-29  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* TODO: Add something to do :)
+
+2005-04-29  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* TODO: added comment about efficiency of atan
+
+2005-04-29  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* README, README.dev, faq.xsl, update-faq, FAQ.html, Makefile.am:
+	The FAQ is now distributed with MPFR. Use update-faq to update it
+	from the MPFR web site.
+
+2005-04-29  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* algorithms.tex:
+	commented out argument reduction analysis for arctan (was wrong)
+
+2005-04-28  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* mpfr.texi: Updated mpfr_set* documentation. [2.1 branch]
+
+2005-04-28  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* sin.c: wrong commit, put revision 1.37 back
+
+	* cos.c: wrong commit, put back revision 1.47
+
+	* algorithms.tex, cos.c, sin.c:
+	added error analysis for Geoff's argument reduction for arctan
+
+2005-04-27  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* mpfr.texi: Added a note about mpfr_set_d and mpfr_set_ld.
+
+	* mpfr.h, update-version:
+	Define MPFR_VERSION_STRING using the update-version script
+	(works with any compiler).
+
+2005-04-26  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* TODO: added internal interface
+
+	* TODO: added suggestion from Geoff
+
+	* mpfr.h, mpfr.texi, tests/tversion.c: added MPFR_VERSION_STRING
+
+2005-04-25  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* TODO: added new item
+
+	* TODO, expm1.c, log1p.c: improved expm1/log1p for small argument
+
+	* expm1.c:
+	improved to taken account of case |x| small (reported by Keith Briggs)
+
+2005-04-25  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* mpfr.texi: Added a missing "-" and replaced a few "-" by @minus{}.
+
+	* mpfr.texi: Added a note for mpfr_cmp functions.
+
+2005-04-25  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* set_ld.c, tests/tset_ld.c: fixed bug with tiny number
+
+2005-04-22  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* TODO: removed done item
+
+2005-04-22  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* mpfr-impl.h: Add a macro for mpfr_const_catalan for internal use.
+
+	* mpfr.texi: Fix typos.
+
+2005-04-22  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* TODO: removed Root, updated eint*
+
+	* Makefile.am, TODO, cot.c, csc.c, gen_inverse.h, mpfr.h, mpfr.texi, sec.c, tests/Makefile.am, tests/tcot.c, tests/tcsc.c, tests/tsec.c:
+	added sec, csc, cot
+
+	* TODO: proposal for exponential integral definition
+
+	* Makefile.am, TODO, tests/Makefile.am:
+	added mpfr_root, removed from TODO
+
+	* cbrt.c, mpfr.h, mpfr.texi, root.c, tests/tgeneric.c, tests/troot.c:
+	added mpfr_root
+
 2005-04-21  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* ChangeLog: Update.
 
 	* ChangeLog: Update. (2.1 branch)
 
