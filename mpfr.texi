@@ -1733,7 +1733,7 @@ not the input value @var{x}, i.e.@: the ternary value is propagated.
 This is a a preliminary interface.
 @end deftypefun
 
-This is an example of how to exactly emulate double IEEE-754 arithmetic
+This is an example of how to emulate double IEEE-754 arithmetic
  using MPFR:
 
 @example
@@ -1746,23 +1746,21 @@ This is an example of how to exactly emulate double IEEE-754 arithmetic
   mpfr_set_emin (-1073);
   mpfr_set_emax (1021);
 
-  mpfr_init (xa);
-  mpfr_init (xb);
-  b = 2.0; mpfr_set_d (xb, b, GMP_RNDN);
-  for (c = 3.0 ; c <= 30000 ; c++) @{
-    a = c; mpfr_set_d (xa, c, GMP_RNDN);
-    while (a != 0.0) @{
-      if (mpfr_cmp_d (xa, a))
-         abort ();
-      a /= b;
-      i = mpfr_div (xa, xa, xb, GMP_RNDN);
-      i = mpfr_subnormalize (xa, i, GMP_RNDN);
-    @}
-  @}
-  mpfr_clear (xa);
-  mpfr_clear (xb);
+  mpfr_init (xa); mpfr_init (xb);
+
+  b = 34.3; mpfr_set_d (xb, b, GMP_RNDN);
+  a = 0x1.1235P-1021; mpfr_set_d (xa, c, GMP_RNDN);
+
+  a /= b;
+  i = mpfr_div (xa, xa, xb, GMP_RNDN);
+  i = mpfr_subnormalize (xa, i, GMP_RNDN);
+
+  mpfr_clear (xa); mpfr_clear (xb);
 @}
 @end example
+
+Warning: this emulates a double IEEE-754 arithmetic with exact rounding
+in the subnormal range, which may not be the case.
 
 @deftypefun void mpfr_clear_underflow (void)
 @deftypefunx void mpfr_clear_overflow (void)
