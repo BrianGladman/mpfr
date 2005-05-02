@@ -20,6 +20,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+#include <stdio.h>
 #include "mpfr-impl.h"
 
 /* For GMP_RNDN, we can have a problem of double rounding.
@@ -122,11 +123,14 @@ mpfr_subnormalize (mpfr_ptr y, int old_inexact, mp_rnd_t rnd)
 	  if (MPFR_UNLIKELY(rnd==GMP_RNDN && (inexact == MPFR_EVEN_INEX
 					      || inexact == -MPFR_EVEN_INEX)))
 	    {
-	      if (old_inexact*MPFR_SIGN (y) < 0)
-		mpfr_nexttoinf (dest);
-	      else
-		mpfr_nexttozero (dest);
-	      inexact = -inexact;
+	      if (old_inexact*inexact*MPFR_INT_SIGN (y) > 0)
+		{
+		  if (inexact < 0)
+		    mpfr_nexttoinf (dest);
+		  else
+		    mpfr_nexttozero (dest);
+		  inexact = -inexact;
+		}
 	    }
 	  else if (MPFR_UNLIKELY (inexact == 0))
 	    inexact = old_inexact;
