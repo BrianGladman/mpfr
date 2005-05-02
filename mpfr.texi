@@ -1740,7 +1740,7 @@ This is an example of how to emulate double IEEE-754 arithmetic
 @{
   mpfr_t xa, xb;
   int i;
-  volatile double a, b, c;
+  volatile double a, b;
 
   mpfr_set_default_prec (53);
   mpfr_set_emin (-1073);
@@ -1749,7 +1749,7 @@ This is an example of how to emulate double IEEE-754 arithmetic
   mpfr_init (xa); mpfr_init (xb);
 
   b = 34.3; mpfr_set_d (xb, b, GMP_RNDN);
-  a = 0x1.1235P-1021; mpfr_set_d (xa, c, GMP_RNDN);
+  a = 0x1.1235P-1021; mpfr_set_d (xa, a, GMP_RNDN);
 
   a /= b;
   i = mpfr_div (xa, xa, xb, GMP_RNDN);
