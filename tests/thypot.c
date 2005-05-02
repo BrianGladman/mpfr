@@ -106,6 +106,24 @@ test_large (void)
   mpfr_clear (t);
 }
 
+static void
+test_large_small (void)
+{
+  mpfr_t x, y, z;
+
+  mpfr_init2 (x, 3);
+  mpfr_init2 (y, 2);
+  mpfr_init2 (z, 2);
+
+  mpfr_set_ui_2exp (x, 1, mpfr_get_emax () / 2, GMP_RNDN);
+  mpfr_set_ui_2exp (y, 1, -1, GMP_RNDN);
+  mpfr_hypot (z, x, y, GMP_RNDN);
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -204,6 +222,10 @@ main (int argc, char *argv[])
   mpfr_clear (t);
 
   test_large ();
+
+#ifdef TEST_LARGE_SMALL
+  test_large_small ();
+#endif
 
   tests_end_mpfr ();
   return 0;
