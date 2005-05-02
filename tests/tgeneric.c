@@ -20,14 +20,9 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
 /* define TWO_ARGS for two-argument functions like mpfr_pow */
-/* define TWO_ARGS_UI for two-argument functions like mpfr_root */
 
 static void
-test_generic (mp_prec_t p0, mp_prec_t p1,
-#ifdef TWO_ARGS_UI
-              unsigned long u,
-#endif
-unsigned int N)
+test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
 {
   mp_prec_t prec, yprec;
   mpfr_t x, y, z, t;
@@ -69,7 +64,7 @@ unsigned int N)
 #endif
           rnd = (mp_rnd_t) RND_RAND ();
           mpfr_set_prec (y, yprec);
-#if (defined(TWO_ARGS) || defined(TWO_ARGS_UI))
+#if defined(TWO_ARGS)
 	  compare = TEST_FUNCTION (y, x, u, rnd);
 #else
           compare = TEST_FUNCTION (y, x, rnd);
@@ -77,7 +72,7 @@ unsigned int N)
           if (mpfr_can_round (y, yprec, rnd, rnd, prec))
             {
               mpfr_set (t, y, rnd);
-#if (defined(TWO_ARGS) || defined(TWO_ARGS_UI))
+#if defined(TWO_ARGS)
 	      inexact = TEST_FUNCTION (z, x, u, rnd);
 #else
               inexact = TEST_FUNCTION (z, x, rnd);
@@ -89,9 +84,6 @@ unsigned int N)
 #ifdef TWO_ARGS
 		  printf ("\nu=");
 		  mpfr_out_str (stdout, 2, prec, u, GMP_RNDN);
-#endif
-#ifdef TWO_ARGS
-		  printf ("\nu=%lu", u);
 #endif
                   printf (" prec=%u rnd_mode=%s\n", (unsigned) prec,
                           mpfr_print_rnd_mode (rnd));
@@ -122,9 +114,6 @@ unsigned int N)
                   printf ("x="); mpfr_print_binary (x); puts ("");
 #ifdef TWO_ARGS
 		  printf ("u="); mpfr_print_binary (u); puts ("");
-#endif
-#ifdef TWO_ARGS_UI
-		  printf ("u=%lu\n", u);
 #endif
                   printf ("y="); mpfr_print_binary (y); puts ("");
                   printf ("t="); mpfr_print_binary (t); puts ("");

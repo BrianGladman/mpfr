@@ -144,8 +144,9 @@ special (void)
 }
 
 #define TEST_FUNCTION mpfr_root
-#define TWO_ARGS_UI
-#include "tgeneric.c"
+#define INTEGER_TYPE unsigned long
+#define INT_RAND_FUNCTION() (INTEGER_TYPE) (randlimb () % 3 +2)
+#include "tgeneric_ui.c"
 
 int
 main (void)
@@ -215,9 +216,7 @@ main (void)
     }
   mpfr_clear (x);
 
-  test_generic (2, 200, 3, 10);
-  test_generic (2, 200, 4, 10);
-  test_generic (2, 200, 5, 10);
+  test_generic_ui (2, 200, 30);
 
   tests_end_mpfr ();
   return 0;

@@ -26,6 +26,9 @@ MA 02111-1307, USA. */
 #ifndef RAND_FUNCTION
 # define RAND_FUNCTION mpfr_random
 #endif
+#ifndef INT_RAND_FUNCTION
+# define INT_RAND_FUNCTION() (INTEGER_TYPE) randlimb ()
+#endif
 
 static void
 test_generic_ui (mp_prec_t p0, mp_prec_t p1, unsigned int N)
@@ -53,7 +56,7 @@ test_generic_ui (mp_prec_t p0, mp_prec_t p1, unsigned int N)
       for (n=0; n<N; n++)
         {
           RAND_FUNCTION (x);
-	  u = (INTEGER_TYPE) randlimb ();
+	  u = INT_RAND_FUNCTION ();
           rnd = (mp_rnd_t) RND_RAND ();
           mpfr_set_prec (y, yprec);
 	  compare = TEST_FUNCTION (y, x, u, rnd);
@@ -116,3 +119,4 @@ test_generic_ui (mp_prec_t p0, mp_prec_t p1, unsigned int N)
 #undef TEST_FUNCTION
 #undef TEST_FUNCTION_NAME
 #undef test_generic_ui
+#undef INT_RAND_FUNCTION
