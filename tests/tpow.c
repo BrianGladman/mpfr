@@ -463,8 +463,6 @@ special ()
   mpfr_clear (t);
 }
 
-void f(void);
-
 static void
 particular_cases (void)
 {
@@ -505,9 +503,6 @@ particular_cases (void)
           /* +0.5 */ { 0,   2,   1,  128, 128,  64, 256,  32, 512,  90, 180 },
           /* -0.5 */ { 0,   2,   1,  128, 128, -64,-256,  32, 512,  0,   0  }
         };
-        if (i == 5 && j == 1)
-          f();
-
         test_pow (r, t[i], t[j], GMP_RNDN);
         p = mpfr_nan_p (r) ? 0 : mpfr_inf_p (r) ? 1 :
           mpfr_cmp_ui (r, 0) == 0 ? 2 :
@@ -529,10 +524,6 @@ particular_cases (void)
 
   if (error)
     exit (1);
-}
-
-void f (void)
-{
 }
 
 static void
