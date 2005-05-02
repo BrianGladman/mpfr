@@ -24,6 +24,11 @@ Probably many bugs.
 
 Known bugs:
 
+* mpfr_hypot: infinite loop when x is very large (x^2 yields an
+  overflow), y is small enough, and MPFR_PREC(x) > MPFR_PREC(z).
+  See test_large_small in tests/thypot.c (this test is disabled
+  by default).
+
 * The overflows/underflows are partially implemented in some functions.
   For instance, mpfr_pow (z, x, y, rnd) fails for very small x and some
   values of y.
