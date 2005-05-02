@@ -26,6 +26,7 @@ int mpfr_cmp_str(mpfr_srcptr x, const char *s, int base, mp_rnd_t rnd)
   mpfr_t y;
   int res;
 
+  MPFR_ASSERTN (!MPFR_IS_NAN(x));
   mpfr_init2(y, MPFR_PREC(x) );
   mpfr_set_str(y, s, base, rnd);
   res = mpfr_cmp(x,y);

@@ -109,21 +109,21 @@ main (void)
   /* Check for NAN */
   mpfr_set_nan (xx);
   mpfr_clear_erangeflag ();
-  c = mpfr_cmp (xx, yy);
+  c = (mpfr_cmp) (xx, yy);
   if (c != 0 || !mpfr_erangeflag_p () ) 
     {
       printf ("NAN error (1)\n");
       exit (1);
     }
   mpfr_clear_erangeflag ();
-  c = mpfr_cmp (yy, xx);
+  c = (mpfr_cmp) (yy, xx);
   if (c != 0 || !mpfr_erangeflag_p () ) 
     {
       printf ("NAN error (2)\n");
       exit (1);
     }
   mpfr_clear_erangeflag ();
-  c = mpfr_cmp (xx, xx);
+  c = (mpfr_cmp) (xx, xx);
   if (c != 0 || !mpfr_erangeflag_p () ) 
     {
       printf ("NAN error (3)\n");
