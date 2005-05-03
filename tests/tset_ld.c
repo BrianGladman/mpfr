@@ -108,7 +108,10 @@ test_small (void)
   mpfr_sub (z, x, y, GMP_RNDN);
   mpfr_abs (z, z, GMP_RNDN);
   mpfr_clear_erangeflag ();
-  if (mpfr_cmp_str (z, "1E-16434", 2, GMP_RNDN) > 0 || mpfr_erangeflag_p ())
+  /* If long double = double, d should be equal to 0;
+     in this case, everything is OK. */
+  if (d != 0 && (mpfr_cmp_str (z, "1E-16434", 2, GMP_RNDN) > 0 ||
+                 mpfr_erangeflag_p ()))
     {
       printf ("Error with x = ");
       mpfr_out_str (NULL, 10, 21, x, GMP_RNDN);
