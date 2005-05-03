@@ -185,9 +185,10 @@ dnl AC_CHECK_FUNCS([round trunc floor ceil nearbyint])
 AC_MSG_CHECKING(for math/round)
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #include <math.h>
+int f (double (*func)(double)) { return 0;}
 ]], [[
  double a = 17.42;
- a = round (a);
+ a = f (round);
  return 0;
 ]])], [
    AC_MSG_RESULT(yes) 
@@ -197,9 +198,10 @@ AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 AC_MSG_CHECKING(for math/trunc)
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #include <math.h>
+int f (double (*func)(double)) { return 0;}
 ]], [[
  double a = 17.42;
- a = trunc (a);
+ a = f(trunc);
  return 0;
 ]])], [
    AC_MSG_RESULT(yes) 
@@ -209,9 +211,10 @@ AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 AC_MSG_CHECKING(for math/floor)
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #include <math.h>
+int f (double (*func)(double)) { return 0;}
 ]], [[
  double a = 17.42;
- a = floor (a);
+ a = f(floor);
  return 0;
 ]])], [
    AC_MSG_RESULT(yes) 
@@ -221,9 +224,10 @@ AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 AC_MSG_CHECKING(for math/ceil)
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #include <math.h>
+int f (double (*func)(double)) { return 0;}
 ]], [[
  double a = 17.42;
- a = ceil (a);
+ a = f(ceil);
  return 0;
 ]])], [
    AC_MSG_RESULT(yes) 
@@ -233,9 +237,10 @@ AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 AC_MSG_CHECKING(for math/rint)
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #include <math.h>
+int f (double (*func)(double)) { return 0;}
 ]], [[
  double a = 17.42;
- a = nearbyint (a);
+ a = f(nearbyint);
  return 0;
 ]])], [
    AC_MSG_RESULT(yes) 
