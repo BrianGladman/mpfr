@@ -82,14 +82,18 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode)
      or 2^(2*Ey) <= 2^(2*Ex-1-Nz), i.e. 2*diff_exp > Nz.
      Warning: this is true only for Nx <= Nz, otherwise the trailing bits
      of x may be already very close to 1/2*ulp(x,Nz)!
+     If Nx > Nz, then we can notice that it is possible to round on Nx bits
+     if 2*diff_exp > Nx (see above as if Nz = Nx), therefore on Nz bits.
+     Hence the condition: 2*diff_exp > MAX(Nz,Nx).
   */
-  if (MPFR_PREC (x) <= Nz && diff_exp > Nz / 2) 
+  if (diff_exp > MAX (Nz, MPFR_PREC (x)) / 2)
     /* result is |x| or |x|+ulp(|x|,Nz) */
     {
       if (rnd_mode == GMP_RNDU)
         {
-          /* if z > abs(x), then it was already rounded up */
-          if (mpfr_abs (z, x, rnd_mode) <= 0)
+          /* If z > abs(x), then it was already rounded up; otherwise
+             z = abs(x), and we need to add one ulp due to y. */
+          if (mpfr_abs (z, x, rnd_mode) == 0)
             mpfr_add_one_ulp (z, rnd_mode);
           return 1;
         }
