@@ -176,10 +176,72 @@ AC_C_VOLATILE
 MPFR_CONFIGS
 
 dnl Must be checked with the LIBM
-dnl but we don't to add the LIBM to MPFR dependency.
+dnl but we don't want to add the LIBM to MPFR dependency.
+dnl Can't use AC_CHECK_FUNCS since the function may be in LIBM but
+dnl not exported in math.h
 saved_LIBS="$LIBS"
 LIBS="$LIBS $MPFR_LIBM"
-AC_CHECK_FUNCS([round trunc floor ceil nearbyint])
+dnl AC_CHECK_FUNCS([round trunc floor ceil nearbyint])
+AC_MSG_CHECKING(for math/round)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#include <math.h>
+]], [[
+ double a = 17.42;
+ a = round (a);
+ return 0;
+]])], [
+   AC_MSG_RESULT(yes) 
+   AC_DEFINE(HAVE_ROUND, 1,[Have ISO-C99 round function])
+],[AC_MSG_RESULT(no)])
+
+AC_MSG_CHECKING(for math/trunc)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#include <math.h>
+]], [[
+ double a = 17.42;
+ a = trunc (a);
+ return 0;
+]])], [
+   AC_MSG_RESULT(yes) 
+   AC_DEFINE(HAVE_TRUNC, 1,[Have ISO-C99 trunc function])
+],[AC_MSG_RESULT(no)])
+
+AC_MSG_CHECKING(for math/floor)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#include <math.h>
+]], [[
+ double a = 17.42;
+ a = floor (a);
+ return 0;
+]])], [
+   AC_MSG_RESULT(yes) 
+   AC_DEFINE(HAVE_FLOOR, 1,[Have ISO-C99 floor function])
+],[AC_MSG_RESULT(no)])
+
+AC_MSG_CHECKING(for math/ceil)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#include <math.h>
+]], [[
+ double a = 17.42;
+ a = ceil (a);
+ return 0;
+]])], [
+   AC_MSG_RESULT(yes) 
+   AC_DEFINE(HAVE_CEIL, 1,[Have ISO-C99 ceil function])
+],[AC_MSG_RESULT(no)])
+
+AC_MSG_CHECKING(for math/rint)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#include <math.h>
+]], [[
+ double a = 17.42;
+ a = nearbyint (a);
+ return 0;
+]])], [
+   AC_MSG_RESULT(yes) 
+   AC_DEFINE(HAVE_NEARBYINT, 1,[Have ISO-C99 rint function])
+],[AC_MSG_RESULT(no)])
+
 LIBS="$saved_LIBS"
 
 dnl
