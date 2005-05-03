@@ -175,6 +175,12 @@ AC_C_CONST
 AC_C_VOLATILE
 MPFR_CONFIGS
 
+dnl Must be checked with the LIBM
+dnl but we don't to add the LIBM to MPFR dependency.
+saved_LIBS="$LIBS"
+LIBS="$LIBS $MPFR_LIBM"
+AC_CHECK_FUNCS([round trunc floor ceil nearbyint])
+LIBS="$saved_LIBS"
 
 dnl
 dnl Setup LIBTOOL
@@ -318,7 +324,7 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 )
 
 dnl Remove also many MACROS (AC_DEFINE) which are unused by MPFR
-dnl and polluate the build.
+dnl and polluate (and slow down) the build.
 if test -f confdefs.h; then
   sed '/#define PACKAGE_/d' <confdefs.h >confdefs.tmp
   sed '/#define HAVE_STRING/d' <confdefs.tmp >confdefs.h

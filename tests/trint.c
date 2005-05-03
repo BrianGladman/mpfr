@@ -190,13 +190,23 @@ test_against_libc (void)
 {
   mp_rnd_t r;
 
+#if HAVE_ROUND
   TEST_FCT (round);
+#endif 
+#if HAVE_TRUNC
   TEST_FCT (trunc);
+#endif
+#if HAVE_FLOOR
   TEST_FCT (floor);
+#endif
+#if HAVE_CEIL
   TEST_FCT (ceil);
+#endif
+#if HAVE_NEARBYINT
   for (r = 0; r < GMP_RND_MAX ; r++)
     if (mpfr_set_machine_rnd_mode (r) == 0)
       test_fct (&nearbyint, &mpfr_rint, "rint", r);
+#endif
 }
 
 #endif
