@@ -34,34 +34,24 @@ MA 02111-1307, USA. */
 #define NO_FACTORIAL
 #define GENERIC mpfr_atan_aux
 #include "generic.c"
-#undef C
-#undef C1
-#undef C2
-#undef A
-#undef A1
-#undef A2
-#undef NO_FACTORIAL
-#undef GENERIC
 */
 /* This is the code of 'generic.c' slighty optimized for mpfr_atan */   
 static void
-mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab, 
-	       unsigned int *itab)
+mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m,
+	       mpz_t *tab, unsigned int *S2tab)
 {
-  unsigned long n,i,k,j,l;
   mpz_t *S, *T, *ptoj;
-  mp_exp_t diff, expo;
-  unsigned int *P2tab;
-  unsigned int *S2tab;
-  int neg;
   mp_limb_t *d;
+  unsigned long n, i, k, j, l;
+  mp_exp_t diff, expo;
+  unsigned int P2i;
+  int neg;
 
   /* Set Tables */
   S    = tab;           /* S */
   ptoj = S + 1*(m+1);   /* p^2^j Precomputed table */
   T    = S + 2*(m+1);   /* Product of Odd integer  table  */
-  P2tab = itab;         /* Real p[l] = ptoj[l]*2^P2tab[l] */
-  S2tab = itab + m + 1; /* Real s[k] = s[k] * 2^S2tab[k] */
+                        /* Real s[k] = s[k] * 2^S2tab[k] */
 
   /* Init S[0] and T[0] */
   mpz_set_ui (S[0], 1);
@@ -73,7 +63,7 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab,
   for (n = 0 ; MPFR_UNLIKELY (*d == 0) ; d++, n+= BITS_PER_MP_LIMB);
   MPFR_ASSERTD (*d != 0);
   count_trailing_zeros (neg, *d);
-  P2tab[0] = n + neg + 1;
+  P2i = n + neg + 1;
   if (n+neg > 0)
     mpz_tdiv_q_2exp (p, p, n+neg);
 
@@ -85,10 +75,8 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab,
   if (mpz_cmp_ui (p, 1) != 0) {
     /* P!= 1: Precomputed ptoj table */
     mpz_set (ptoj[0], p);
-    for (i = 1 ; i < m ; i++) {
+    for (i = 1 ; i < m ; i++)
       mpz_mul (ptoj[i], ptoj[i-1], ptoj[i-1]);
-      P2tab[i] = 2*P2tab[i-1];
-    }
     /* Main loop */
     k = 0;
     n = 1UL << m;
@@ -108,8 +96,8 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab,
 	  mpz_mul (S[k], S[k], T[k-1]);
 	}
 	mpz_mul (S[k-1], S[k-1], T[k]);
-	S2tab[k] += P2tab[l];
-	S2tab[k-1] += (r+1)*(1<<l);
+	S2tab[k] += P2i << l;
+	S2tab[k-1] += (r+1) << l;
 	MPFR_ASSERTD (S2tab[k-1] > S2tab[k]);
 	mpz_mul_2exp (S[k-1], S[k-1], S2tab[k-1]-S2tab[k]);
 	S2tab[k-1] = S2tab[k];
@@ -118,8 +106,6 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab,
       }
     }
   } else {
-    for (i = 1 ; i < m ; i++)
-      P2tab[i] = 2*P2tab[i-1];
     k = 0;
     n = 1UL << m;
     for (i = 1 ; i < n ; i++) {
@@ -134,8 +120,8 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab,
 	else
 	  mpz_mul (S[k], S[k], T[k-1]);
 	mpz_mul (S[k-1], S[k-1], T[k]);
-	S2tab[k] += P2tab[l];
-	S2tab[k-1] += (r+1)*(1<<l);
+	S2tab[k] += P2i << l;
+	S2tab[k-1] += (r+1) <<l;
 	MPFR_ASSERTD (S2tab[k-1] > S2tab[k]);
 	mpz_mul_2exp (S[k-1], S[k-1], S2tab[k-1]-S2tab[k]);
 	S2tab[k-1] = S2tab[k];
@@ -144,9 +130,6 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab,
       }
     }
   }
-
-  /* printf ("S2tab[0]=%lu S[0]=", S2tab[0]); mpz_out_str (stdout, 2, S[0]); putchar ('\n');
-     printf ("T[0]="); mpz_out_str (stdout, 2, T[0]); putchar ('\n'); */
 
   MPFR_MPZ_SIZEINBASE2 (diff, S[0]);
   diff -= 2*MPFR_PREC (y);
@@ -269,7 +252,6 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
       n0 = MPFR_INT_CEIL_LOG2 (realprec + sup + 3);
       MPFR_ASSERTD (3*n0 > 2);
       prec = realprec + 1 + sup + MPFR_INT_CEIL_LOG2 (3*n0-2);
-      /* printf ("Prec=%lu realprec=%lu\n", prec, realprec); */
 
       /* Initialisation */
       mpfr_set_prec (sk, prec);
@@ -280,13 +262,13 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	if (MPFR_LIKELY (oldn0 == 0)) {
 	  tabz = (mpz_t *) (*__gmp_allocate_func) (3*(n0+1)*sizeof (mpz_t));
 	  tabi = (unsigned int *) (*__gmp_allocate_func) 
-	    (2*(n0+1)*sizeof(unsigned int));
+	    ((n0+1)*sizeof(unsigned int));
 	} else {
 	  tabz = (mpz_t *) (*__gmp_reallocate_func) 
 	    (tabz, oldn0*sizeof (mpz_t), 3*(n0+1)*sizeof (mpz_t));
 	  tabi = (unsigned int *) (*__gmp_reallocate_func)
-	    (tabi, oldn0/3*2*sizeof (unsigned int),
-	     2*(n0+1)*sizeof(unsigned int));
+	    (tabi, oldn0/3*sizeof (unsigned int),
+	     (n0+1)*sizeof(unsigned int));
 	}
 	for (i = oldn0 ; i < 3*(n0+1) ; i++)
 	  mpz_init (tabz[i]);
@@ -362,7 +344,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
   for (i = 0 ; i < oldn0 ; i++)
     mpz_clear (tabz[i]);
   (*__gmp_free_func) (tabz, oldn0*sizeof (mpz_t));
-  (*__gmp_free_func) (tabi, oldn0/3*2*sizeof (unsigned int));
+  (*__gmp_free_func) (tabi, oldn0/3*sizeof (unsigned int));
 
   mpfr_clear (arctgt);
   mpfr_clear (tmp);
