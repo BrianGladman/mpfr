@@ -247,11 +247,12 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_ZIV_INIT (loop, prec);
   for (;;)
     {
-      /* n0 = ceil(log2(realprec + 2 + 1+ln(2.4)/ln(2))) */
-      mp_prec_t sup = MAX (-MPFR_GET_EXP (xp), 0) + 2; 
-      n0 = MPFR_INT_CEIL_LOG2 (realprec + sup + 3);
+      /* First, if |x| < 1, we need to have more prec to be able to round (sup)
+	 n0 = ceil(log(prec_requested + 2 + 1+ln(2.4)/ln(2))/log(2)) */
+      mp_prec_t sup = MPFR_GET_EXP (xp) < 0 ? 2-MPFR_GET_EXP (xp) : 1; 
+      n0 = MPFR_INT_CEIL_LOG2 ((realprec + sup) + 3);
       MPFR_ASSERTD (3*n0 > 2);
-      prec = realprec + 1 + sup + MPFR_INT_CEIL_LOG2 (3*n0-2);
+      prec = (realprec + sup) + 1 + MPFR_INT_CEIL_LOG2 (3*n0-2);
 
       /* Initialisation */
       mpfr_set_prec (sk, prec);
