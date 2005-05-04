@@ -1,4 +1,4 @@
-/* Test file for mpfr_sec.
+/* Test file for mpfr_csch.
 
 Copyright 2005 Free Software Foundation, Inc.
 
@@ -24,7 +24,7 @@ MA 02111-1307, USA. */
 
 #include "mpfr-test.h"
 
-#define TEST_FUNCTION mpfr_sec
+#define TEST_FUNCTION mpfr_csch
 #include "tgeneric.c"
 
 static void
@@ -36,42 +36,42 @@ check_specials (void)
   mpfr_init2 (y, 123L);
 
   mpfr_set_nan (x);
-  mpfr_sec (y, x, GMP_RNDN);
+  mpfr_csch (y, x, GMP_RNDN);
   if (! mpfr_nan_p (y))
     {
-      printf ("Error: sec(NaN) != NaN\n");
+      printf ("Error: csch(NaN) != NaN\n");
       exit (1);
     }
 
   mpfr_set_inf (x, 1);
-  mpfr_sec (y, x, GMP_RNDN);
-  if (! mpfr_nan_p (y))
+  mpfr_csch (y, x, GMP_RNDN);
+  if (! (mpfr_zero_p (y) && MPFR_SIGN (y) >0))
     {
-      printf ("Error: sec(Inf) != NaN\n");
+      printf ("Error: csch(+Inf) != +0\n");
       exit (1);
     }
 
   mpfr_set_inf (x, -1);
-  mpfr_sec (y, x, GMP_RNDN);
-  if (! mpfr_nan_p (y))
+  mpfr_csch (y, x, GMP_RNDN);
+  if (! (mpfr_zero_p (y) && MPFR_SIGN (y) <0))
     {
-      printf ("Error: sec(-Inf) != NaN\n");
+      printf ("Error: csch(-0) != -0\n");
       exit (1);
     }
 
-  /* sec(+/-0) = 1 */
+  /* csc(+/-0) = +/-Inf */
   mpfr_set_ui (x, 0, GMP_RNDN);
-  mpfr_sec (y, x, GMP_RNDN);
-  if (mpfr_cmp_ui (y, 1))
+  mpfr_csch (y, x, GMP_RNDN);
+  if (! (mpfr_inf_p (y) && mpfr_sgn (y) > 0))
     {
-      printf ("Error: sec(+0) != 1\n");
+      printf ("Error: csch(+0) != +Inf\n");
       exit (1);
     }
   mpfr_neg (x, x, GMP_RNDN);
-  mpfr_sec (y, x, GMP_RNDN);
-  if (mpfr_cmp_ui (y, 1))
+  mpfr_csch (y, x, GMP_RNDN);
+  if (! (mpfr_inf_p (y) && mpfr_sgn (y) < 0))
     {
-      printf ("Error: sec(-0) != 1\n");
+      printf ("Error: csch(-0) != -Inf\n");
       exit (1);
     }
 
@@ -85,7 +85,6 @@ main (int argc, char *argv[])
   tests_start_mpfr ();
 
   check_specials ();
-
   test_generic (2, 200, 10);
 
   tests_end_mpfr ();
