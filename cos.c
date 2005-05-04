@@ -19,6 +19,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
 /* s <- 1 - r/2! + r^2/4! + ... + (-1)^l r^l/(2l)! + ...
@@ -55,7 +56,7 @@ mpfr_cos2_aux (mpfr_ptr s, mpfr_srcptr r)
 	b++;
       /* now 3l <= 2^b, we want 3l*ulp(t) <= 2^(-m)
 	 i.e. b+EXP(t)-PREC(t) <= -m */
-      prec = m + MPFR_GET_EXP (t) + b;
+       prec = m + MPFR_GET_EXP (t) + b;
       if (MPFR_LIKELY(prec >= MPFR_PREC_MIN))
 	mpfr_prec_round (t, prec, GMP_RNDN);
     }
@@ -97,8 +98,10 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_SAVE_EXPO_MARK (expo);
 
   precy = MPFR_PREC(y);
-  K0 = __gmpfr_isqrt(precy / 2); /* Need K + log2(precy/K) extra bits */
-  m = precy + 3 * K0 + 3; 
+  /* We can choose everything we want for K0. 
+     sqrt(p/16) seems better than sqrt(p/2) (30% faster for 5000 bits) */
+  K0 = __gmpfr_isqrt(precy / 16); /* Need K + log2(precy/K) extra bits */
+  m = precy + 3*K0 + 3; 
   if (MPFR_GET_EXP (x) >= 0)
     m += 5*MPFR_GET_EXP (x);
   else
