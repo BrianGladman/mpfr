@@ -19,6 +19,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
+#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
 /* example of use:
@@ -50,14 +51,15 @@ FUNCTION (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       int inexact;     /* inexact flag */
       MPFR_ZIV_DECL (loop);
       MPFR_SAVE_EXPO_DECL (expo);
+
       MPFR_SAVE_EXPO_MARK (expo);
       precy = MPFR_PREC(y);
-      m = precy + __gmpfr_ceil_log2 ((double) precy) + 3;
+      m = precy + MPFR_INT_CEIL_LOG2 (precy) + 3;
+      mpfr_init2 (z, m);
+
       MPFR_ZIV_INIT (loop, m);
-      mpfr_init2 (z, MPFR_PREC_MIN);
       for(;;)
         {
-          mpfr_set_prec (z, m);
           INVERSE (z, x, GMP_RNDZ); /* error k_u < 1 ulp */
           mpfr_ui_div (z, 1, z, GMP_RNDN);
           /* the error is less than c_w + 2*c_u*k_u (see algorithms.tex),
@@ -65,12 +67,14 @@ FUNCTION (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
              thus 1/2 + 2 < 4 */
           if (MPFR_LIKELY (MPFR_CAN_ROUND (z, m - 2, precy, rnd_mode)))
             break;
-
           MPFR_ZIV_NEXT (loop, m);
+          mpfr_set_prec (z, m);
         }
       MPFR_ZIV_FREE (loop);
+
       inexact = mpfr_set (y, z, rnd_mode);
       mpfr_clear (z);
+
       MPFR_SAVE_EXPO_FREE (expo);
       MPFR_RET (mpfr_check_range (y, inexact, rnd_mode));
     }
