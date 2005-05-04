@@ -64,7 +64,6 @@ mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
     mpfr_t t, te;
     
     /* Declaration of the size variable */
-    mp_prec_t Nx = MPFR_PREC(x);   /* Precision of input variable */
     mp_prec_t Ny = MPFR_PREC(y);   /* Precision of output variable */
     
     mp_prec_t Nt;                  /* Precision of the intermediary variable */
@@ -72,9 +71,8 @@ mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
     MPFR_ZIV_DECL (loop);
 
     /* compute the precision of intermediary variable */
-    Nt = MAX (Nx, Ny);
-    /* The optimal number of bits : see algorithms.ps */
-    Nt = Nt + 3 + MPFR_INT_CEIL_LOG2 (Nt);
+    /* The optimal number of bits : see algorithms.tex */
+    Nt = Ny + 3 + MPFR_INT_CEIL_LOG2 (Ny);
         
     /* initialise of intermediary variables */
     mpfr_init2 (t, Nt);

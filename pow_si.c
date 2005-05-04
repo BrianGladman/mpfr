@@ -90,18 +90,16 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd_mode)
         /* Declaration of the intermediary variable */
         mpfr_t t;
         /* Declaration of the size variable */
-        mp_prec_t Nx = MPFR_PREC (x);   /* Precision of input variable */
-        mp_prec_t Ny = MPFR_PREC (y);   /* Precision of output variable */
-        mp_prec_t Nt;         /* Precision of the intermediary variable */
-        mp_exp_t  err;                            /* Precision of error */
+        mp_prec_t Ny = MPFR_PREC (y);               /* target precision */
+        mp_prec_t Nt;                              /* working precision */
+        mp_exp_t  err;                             /* error */
         int inexact;
 	MPFR_SAVE_EXPO_DECL (expo);
 	MPFR_ZIV_DECL (loop);
 
         /* compute the precision of intermediary variable */
-        Nt = MAX (Nx, Ny);
-        /* the optimal number of bits : see algorithms.ps */
-        Nt = Nt + 3 + MPFR_INT_CEIL_LOG2 (Nt);
+        /* the optimal number of bits : see algorithms.tex */
+        Nt = Ny + 3 + MPFR_INT_CEIL_LOG2 (Ny);
 
 	MPFR_SAVE_EXPO_MARK (expo);
 

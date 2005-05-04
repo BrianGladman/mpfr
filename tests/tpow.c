@@ -359,6 +359,19 @@ special ()
       exit (1);
     }
 
+  mpfr_set_prec (x, 2);
+  mpfr_set_str_binary (x, "1.0e-1");
+  mpfr_set_prec (y, 53);
+  mpfr_set_str_binary (y, "0.11010110011100101010110011001010100111000001000101110E-1");
+  mpfr_set_prec (z, 2);
+  test_pow (z, x, y, GMP_RNDZ);
+  mpfr_set_str_binary (x, "1.0e-1");
+  if (mpfr_cmp (x, z))
+    {
+      printf ("Error in mpfr_pow (1)\n");
+      exit (1);
+    }
+
   mpfr_set_prec (x, 64);
   mpfr_set_prec (y, 64);
   mpfr_set_prec (z, 64);

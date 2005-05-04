@@ -65,17 +65,14 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
     mp_exp_t d;
     
     /* Declaration of the size variable */
-    mp_prec_t Nx = MPFR_PREC(x);   /* Precision of input variable */
-    mp_prec_t Ny = MPFR_PREC(y);   /* Precision of output variable */
-    mp_prec_t Nt;                  /* Precision of intermediary variables */
-    long int err;                  /* Precision of error */
+    mp_prec_t Ny = MPFR_PREC(y);   /* target precision */
+    mp_prec_t Nt;                  /* working precision */
+    long int err;                  /* error */
     MPFR_ZIV_DECL (loop);
 
     /* Compute the precision of intermediary variable */
-    Nt = MAX (Nx, Ny);
-    
-    /* The optimal number of bits: see algorithms.ps */
-    Nt = Nt + MPFR_INT_CEIL_LOG2 (Nt) + 4;
+    /* The optimal number of bits: see algorithms.tex */
+    Nt = Ny + MPFR_INT_CEIL_LOG2 (Ny) + 4;
     Nt += ABS (MPFR_GET_EXP (x));
 
     /* initialise of intermediary variable */

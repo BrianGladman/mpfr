@@ -36,7 +36,20 @@ mpfr_pow_is_exact (mpfr_srcptr x, mpfr_srcptr y)
   mp_size_t ysize;
 
   if (mpfr_sgn (y) < 0)
-    return mpfr_cmp_si_2exp (x, MPFR_SIGN(x), MPFR_GET_EXP (x) - 1) == 0;
+    {
+      mp_exp_t b;
+      mpfr_t z;
+      int res;
+      if (mpfr_cmp_si_2exp (x, MPFR_SIGN(x), MPFR_GET_EXP (x) - 1) != 0)
+        return 0; /* x is not a power of two */
+      /* now x = 2^b, so x^y = 2^(b*y) is exact whenever b*y is an integer */
+      b = MPFR_GET_EXP (x) - 1; /* x = 2^b */
+      mpfr_init2 (z, MPFR_PREC(y) + BITS_PER_MP_LIMB);
+      mpfr_mul_si (z, y, b, GMP_RNDN); /* exact */
+      res = mpfr_integer_p (z);
+      mpfr_clear (z);
+      return res;
+    }
 
   /* compute d such that y = c*2^d with c odd integer */
   ysize = 1 + (MPFR_PREC(y) - 1) / BITS_PER_MP_LIMB;
@@ -62,10 +75,18 @@ mpfr_pow_is_exact (mpfr_srcptr x, mpfr_srcptr y)
       /* now a is odd */
       while (d != 0)
         {
+          /* a * 2^b is a square iff (i)  a is a square when b is even
+                                     (ii) 2*a is a square when b is odd */
+          if (b % 2 != 0)
+            {
+              mpz_mul_2exp (a, a, 1); /* 2*a */
+              b --;
+            }
           if (mpz_perfect_square_p (a))
             {
-              d++;
+              d ++;
               mpz_sqrt (a, a);
+              b = b / 2;
             }
           else
             {
@@ -348,18 +369,14 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
     mpfr_t t;
     int loop = 0;
     /* Declaration of the size variable */
-    mp_prec_t Nx = MPFR_PREC(x);   /* Precision of input variable */
-    mp_prec_t Ny = MPFR_PREC(y);   /* Precision of input variable */
-    mp_prec_t Nz = MPFR_PREC(z);   /* Precision of output variable */
-    mp_prec_t Nt;        /* Precision of the intermediary variable */
-    mp_exp_t err, exp_te;                    /* Precision of error */
+    mp_prec_t Nz = MPFR_PREC(z);               /* target precision */
+    mp_prec_t Nt;                              /* working precision */
+    mp_exp_t err, exp_te;                      /* error */
     MPFR_ZIV_DECL (ziv_loop);
 
     /* compute the precision of intermediary variable */
-    Nt = MAX (Nx, Ny);
-    Nt = MAX (Nt, Nz); /* take account of the output precision too! */
-    /* the optimal number of bits : see algorithms.ps */
-    Nt = Nt + 5 + MPFR_INT_CEIL_LOG2 (Nt);
+    /* the optimal number of bits : see algorithms.tex */
+    Nt = Nz + 5 + MPFR_INT_CEIL_LOG2 (Nz);
 
     /* initialise of intermediary variable */
     mpfr_init2 (t, Nt);
@@ -376,8 +393,10 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
         mpfr_exp (t, t, GMP_RNDN);               /* exp(y*ln(x))*/
                                                  /* FIXME: May overflow */
 
-	/* estimate of the error -- see pow function in algorithms.ps */
-        err = Nt - (exp_te + 3);
+	/* estimate of the error -- see pow function in algorithms.tex.
+           The error on t is at most 1/2 + 3*2^(exp_te+1) ulps, which is
+           <= 2^(exp_te+3) for exp_te >= -1, and <= 2 ulps for exp_te <= -2 */
+        err = (exp_te >= -1) ? Nt - (exp_te + 3) : Nt - 1;
         if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, Nz, rnd_mode)))
 	  break;
 

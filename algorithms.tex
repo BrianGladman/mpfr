@@ -41,7 +41,7 @@
 
 \tableofcontents
 
-\section{Ulp calculus}
+\section{Error calculus}
 
 Let $n$ --- the working precision ---
 be a positive integer (considered fixed in the following).
@@ -49,7 +49,7 @@ We write any nonzero real number $x$ in the form $x = m \cdot 2^e$
 with $\frac{1}{2} \le |m| < 1$ and $e := {\rm EXP}(x)$, and
 we define $\ulp(x) := 2^{{\rm EXP}(x) - n}$.
 
-\subsection{Basic rules}
+\subsection{Ulp calculus}
 
 \begin{Rule} \label{R1}
 $2^{-n} |x| < \ulp(x) \le 2^{-n+1} |x|$.
@@ -165,6 +165,41 @@ $\ulp(o(x)) \leq \ulp(x)$.
 &&\n{else}\;\;   c_u^{-}=1-2^{1-p} \n{ and } c_u^{+}=1+2^{1-p}
 \end{eqnarray}
 \end{Rule}
+
+\subsection{Relative error analysis}
+
+Another way to get a bound on the error,
+is to bound the relative error. This is sometimes easier than using the
+``ulp calculus'' especially when performing only multiplications or divisions.
+
+\begin{Rule} \label{R10}
+If $u := \circ_p(x)$, then we can write both:
+\[ u = x (1 + \theta_1), \qquad x = u (1 + \theta_2), \]
+where $|\theta_i| \leq 2^{-p}$ for rounding to nearest, and
+$|\theta_i| < 2^{1-p}$ for directed rounding.
+\end{Rule}
+\begin{proof}
+This is a simple consequence of Rule~\ref{R3}. For rounding to nearest,
+we have $|u-x| \leq \frac{1}{2} \ulp(t)$ for $t=u$ or $t=x$, hence by
+Rule~\ref{R1} $|u-x| \leq 2^{-p}$.
+\end{proof}
+
+\begin{Rule} \label{R11}
+Assume $x_1, \ldots, x_n$ are $n$ floating-point numbers in precision $p$,
+and we compute a approximation of their product with the following sequence
+of operations: $u_1 = x_1, u_2 = \circ(u_1 x_2), \ldots, u_n = \circ(u_{n-1}
+x_n$. If rounding away from zero, the total rounding error is bounded by 
+$2(n-1) \ulp(u_n)$.
+\end{Rule}
+\begin{proof}
+We can write $u_1 x_2 = u_2 (1 - \theta_2), \ldots, u_{n-1} x_n = u_n
+(1 - \theta_n)$, where $0 \leq \theta_i \leq 2^{1-p}$.
+We get $x_1 x_2 \ldots x_n = u_n (1 - \theta_2) \ldots (1 - \theta_n)$,
+which we can write $u_n (1-\theta)^{n-1}$ for some $0 \leq \theta \leq 2^{1-p}$
+by the intermediate value theorem.
+Since $1-nt \leq (1-t)^n \leq 1$, we get $|x_1 x_2 \ldots x_n - u_n| \leq
+(n-1) 2^{1-p} |u_n| \leq 2 (n-1) \ulp(u_n)$ by Rule~\ref{R1}.
+\end{proof}
 
 % \section{Generic error on basic operations}
 
@@ -2008,7 +2043,7 @@ et\;\;(3*N_0-2)2^{-Prec}\leq 2^{-prec\_arctan-1}
 i.e. $N_0\geq \frac{\ln\,(prec\_arctan+1+\frac{\ln\,2.4}{\ln\,2})}{\ln\,2}$
 that we approach by (since the logarithm is expensive):
 \begin{equation*}
-N_0=ceil(log(prec\_arctan+2.47)*1.45)
+N_0=ceil(\log(prec\_arctan+2.47)*1.45)
 \end{equation*}
 and we finally have:
 \begin{equation*}
@@ -2346,13 +2381,13 @@ precision.
 The {\tt mpfr\_log2} or {\tt mpfr\_log10} function implements the log in base 2 or 10 function  as :
 
 \[
-\textnormal{log2} (x) = \frac{log{x}}{log{2}}
+\textnormal{log2} (x) = \frac{\log{x}}{\log{2}}
 \]
 
 or
 
 \[
-\textnormal{log10} (x) = \frac{log{x}}{log{10}}
+\textnormal{log10} (x) = \frac{\log{x}}{\log{10}}
 \]
 
 
@@ -2437,10 +2472,9 @@ log10$ can be bound by $ 5 \ulp$ on the result. So, to calculate the
 size of intermediary variables, we have to add, at least, 3 bits the
 wanted precision.
 
-
 \subsection{The power function}
 
-The {\tt mpfr\_pow} ($\n{pow}(x,y)$) function implements the power function  as :
+The {\tt mpfr\_pow} function implements the power function  as:
 
 \[
 \textnormal{pow} (x,y) = e^{y \log(x)}
@@ -2450,7 +2484,7 @@ The algorithm used for this calculation is as follows:
 
 \begin{eqnarray}\nonumber
 u&\leftarrow&o(\log(x))\\\nonumber
-v&\leftarrow&o(y \times u)\\\nonumber
+v&\leftarrow&o(y u)\\\nonumber
 w&\leftarrow&o(e^v)\\\nonumber
 \end{eqnarray}
 
@@ -2489,7 +2523,7 @@ $v \leftarrow \pinf(y \times u) $
 \begin{minipage}{7.5cm}
 
 \begin{eqnarray}\nonumber
-  |v-(y\log(x))| &\leq& \ulp(v) + |y.u-y.\log(x)|\\\nonumber
+  |v-y\log(x)| &\leq& \ulp(v) + |y u-y \log(x)|\\\nonumber
    &\leq& \ulp(v) + y|u-\log(x)|\\\nonumber
    &\leq& \ulp(v) + y \ulp(u)\\\nonumber
    &\leq& \ulp(v) + 2 \ulp(yu) \;(\star)\\\nonumber
@@ -2517,7 +2551,7 @@ $w \leftarrow o(e^v) $
 \end{minipage} &
 \begin{minipage}{7.5cm}
 \begin{eqnarray}\nonumber
-  |w-e^v| &\leq& (1+3.2^{\Exp(v)+1}) \ulp(w)
+  |w-e^v| &\leq& (1+3 \cdot 2^{\Exp(v)+1}) \ulp(w)
 \end{eqnarray}
 \end{minipage} &
 \begin{minipage}{6cm}
@@ -2531,12 +2565,10 @@ with $c_u^* = 1$ for $(\bullet)$
 
 
 That shows the rounding error on the calculation of $x^y$
-can be bound by $ (1+3.2^{\Exp(v)+1})\;\; \ulp$ on the result. So,
+can be bound by $1 + 3 \cdot 2^{\Exp(v)+1}$ ulps on the result. So,
 to calculate the size of intermediary variables, we have to add, at
-least, $\lceil \log_2 (1+3.2^{\Exp(v)+1}) \rceil$ bits the wanted
+least, $\lceil \log_2 (1+3 \cdot 2^{\Exp(v)+1}) \rceil$ bits to the wanted
 precision.
-
-\medskip
 
 \noindent
 \textsc{Exact results.}
@@ -2557,7 +2589,7 @@ and the answer is NaN (Not a Number).
 Thus we can assume $a$ (and therefore $e$) positive.
 
 If $y$ is negative, then $x^y = a^y 2^{b y}$ can be exact only when
-$a=1$.
+$a=1$, and in that case we also need that $b y$ is an integer.
 
 We have $a^{c 2^d} 2^{b c 2^d} = e 2^f$ with $a, c, e$ odd integers,
 and $a, e > 0$.
@@ -2585,7 +2617,7 @@ Output: \emph{true} if $x^y$ is an exact power $e 2^f$, {\em false} otherwise\\
 {\bf if} $y < 0$ {\bf then} \\
 \q {\bf if} $a=1$ {\bf then} return {\em true} {\bf else} return {\em false}\\
 {\bf if} $d < 0$ {\bf then} \\
-\q {\bf if} $a$ is not a $2^{-d}$ power {\bf then} return {\em false} \\
+\q {\bf if} $a 2^b$ is not a $2^{-d}$ power {\bf then} return {\em false} \\
 return {\em true}
 \end{quote}
 
@@ -2760,6 +2792,8 @@ where:
 This identity is attributed to Sweeney by Brent \cite{Brent78}.
 We have $S(n) = _2 F_2(1,1;2,2;-n)$ and $R(n) = {\rm Ei}(1, n)$.
 
+\medskip
+
 \Paragraph{Evaluation of $S(n)$.}
 As in \cite{Brent78}, let $\alpha \sim 4.319136566$ the positive root
 of $\alpha + 2 = \alpha \log \alpha$, and $N = \lceil \alpha n \rceil$.
@@ -2780,6 +2814,16 @@ Since $k! \ge (k/e)^k$, and $k \ge N+1 \ge \alpha n$, we have:
                   \le 2 e^{-2n} \]
 since $(e/\alpha)^{\alpha} = e^{-2}$.
 
+To approximate $S'(n)$, we use the binary splitting method,
+which computes
+integers $T$ and $Q$ such that $S'(n) = \frac{T}{Q}$ exactly, then we 
+compute $t = \circ(T)$, and $s = \circ(t/Q)$, both with rounding to nearest.
+If the working precision is $w$,
+we have $t = T (1+\theta_1)$ and $s = t/Q(1+\theta_2)$ where
+$|\theta_i| \leq 2^{-w}$.
+If follows $s = T/Q (1+\theta_1)(1+\theta_2)$, thus the error on $s$ 
+is less than $3$ ulps, since $(1+2^{-w})^2 \leq 1 + 3 \cdot 2^{-w}$.
+\begin{comment}
 To approximate $S'(n)$, we use the following algorithm, where $m$ is the
 working precision, and $a, s, t$ are integer variables:
 \begin{quote}
@@ -2800,6 +2844,9 @@ Hence to get a precision of $n$ bits, we need to use
 $m ge n (1 + \frac{1}{\log 2})$.
 In such a case, the value $s/2^m$ converted to a floating-point number
 will have an error of at most $\ulp(x)$.
+\end{comment}
+
+\medskip
 
 \Paragraph{Evaluation of $R(n)$.}
 We estimate $R(n)$ using the terms up to $k=n-2$, again 
@@ -2866,6 +2913,8 @@ $\ulp(r) + (n + 1 + 2/n) \frac{3}{2n} \ulp(r)
 Now since $r \le \frac{e^{-n}}{n} \le \frac{1}{8}$, that error
 is less than $\ulp(1/2)$.
 
+\medskip
+
 \Paragraph{Final computation.} We use the formula
 $\gamma = S(n) - R(n) - \log n$ with $n$ such that $e^{-2n} \le 
 \ulp(1/2) = 2^{-{\rm prec}}$, i.e.~$n \ge {\rm prec} \frac{\log 2}{2}$:
@@ -2877,11 +2926,13 @@ return $(s - l) - r$
 \end{quote}
 Since the final result is in $[\frac{1}{2}, 1]$, and $R'(n) \le 
 \frac{e^{-n}}{n}$, then $S'(n)$ approximates $\log n$.
-If we use $m + \lceil \log_2({\rm prec}) \rceil$ bits to evaluate $s$ and $l$,
+If the target precision is $m$, and 
+we use $m + \lceil \log_2({\rm prec}) \rceil$ bits to evaluate $s$ and $l$,
 then the error on $s-l$ will be at most $3 \ulp(1/2)$,
 so the error on $(s - l) - r$ is at most $5 \ulp(1/2)$,
 and adding the $3 e^{-2n}$ truncation error, we get a bound of
-$8 \ulp(1/2)$.
+$8 \ulp(1/2)$. 
+[\textbf{FIXME: check with new method to compute S}]
 
 \subsubsection{A faster formula}
 

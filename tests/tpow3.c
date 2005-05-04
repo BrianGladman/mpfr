@@ -72,13 +72,13 @@ main (int argc, char *argv[])
           if (mpfr_can_round (y, err, rnd, rnd, prec))
             {
               mpfr_set (t, y, rnd);
-              inexact = mpfr_pow (z,x, s, rnd);
+              inexact = mpfr_pow (z, x, s, rnd);
               if (mpfr_cmp (t, z))
                 {
-                  printf ("results differ for x=");
+                  printf ("results differ for x^y with x=");
                   mpfr_out_str (stdout, 2, prec, x, GMP_RNDN);
-                  printf (" values of the exponential=");
-                  mpfr_out_str (stdout, 2, prec, s, GMP_RNDN);
+                  printf (" y=");
+                  mpfr_out_str (stdout, 2, 0, s, GMP_RNDN);
                   printf (" prec=%u rnd_mode=%s\n", (unsigned int) prec,
                           mpfr_print_rnd_mode (rnd));
                   printf ("got      ");

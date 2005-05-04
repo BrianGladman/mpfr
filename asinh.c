@@ -30,7 +30,7 @@ mpfr_asinh (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
   int inexact;
   int signx, neg;
-  mp_prec_t Nx, Ny, Nt;
+  mp_prec_t Ny, Nt;
   mpfr_t t; /* auxiliary variables */
   mp_exp_t err;
   MPFR_SAVE_EXPO_DECL (expo);
@@ -61,7 +61,6 @@ mpfr_asinh (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	}
     }
 
-  Nx = MPFR_PREC (x);   /* Precision of input variable */
   Ny = MPFR_PREC (y);   /* Precision of output variable */
 
   signx = MPFR_SIGN (x);
@@ -70,10 +69,8 @@ mpfr_asinh (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   /* General case */
     
   /* compute the precision of intermediary variable */
-  Nt = MAX (Nx, Ny);
-
-  /* the optimal number of bits : see algorithms.ps */
-  Nt = Nt + 4 + MPFR_INT_CEIL_LOG2 (Nt);
+  /* the optimal number of bits : see algorithms.tex */
+  Nt = Ny + 4 + MPFR_INT_CEIL_LOG2 (Ny);
 
   MPFR_SAVE_EXPO_MARK (expo);
 

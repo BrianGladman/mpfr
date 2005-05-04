@@ -88,15 +88,13 @@ mpfr_log10 (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
     mpfr_t t, tt;
     MPFR_ZIV_DECL (loop);
     /* Declaration of the size variable */
-    mp_prec_t Nx = MPFR_PREC(a);    /* Precision of input variable */
     mp_prec_t Ny = MPFR_PREC(r);   /* Precision of output variable */
     mp_prec_t Nt;        /* Precision of the intermediary variable */
     mp_exp_t  err;                           /* Precision of error */
 
     /* compute the precision of intermediary variable */
-    Nt = MAX (Nx, Ny);
-    /* the optimal number of bits : see algorithms.ps */
-    Nt = Nt + 4+ MPFR_INT_CEIL_LOG2 (Nt);
+    /* the optimal number of bits : see algorithms.tex */
+    Nt = Ny + 4+ MPFR_INT_CEIL_LOG2 (Ny);
 
     /* initialise of intermediary variables */
     mpfr_init2 (t, Nt);

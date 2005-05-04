@@ -26,7 +26,7 @@ MA 02111-1307, USA. */
  *    hypot(x,y)= sqrt(x^2+y^2) = z                */
 
 int
-mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode)
+mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 {
   int inexact, exact;
   mpfr_t t, te, ti; /* auxiliary variables */
@@ -111,6 +111,8 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x , mpfr_srcptr y , mp_rnd_t rnd_mode)
 
   /* compute the working precision -- see algorithms.ps */
   Nt = MAX (MAX (MAX (Nx, Ny), Nz), 8);
+  /* FIXME: if Nx or Ny are very large with respect to the target precision
+     Nz, this may be overkill! */
   Nt = Nt + MPFR_INT_CEIL_LOG2 (Nt) + 2;
 
   /* initialise the intermediary variables */

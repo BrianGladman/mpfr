@@ -54,6 +54,11 @@ mpfr_eint_aux (mpfr_t y, mpfr_srcptr x)
       e += mpz_sizeinbase (m, 2) - w;
       mpz_tdiv_q_2exp (m, m, mpz_sizeinbase (m, 2) - w);
     }
+  /* remove trailing zeroes from m: this will speed up much cases where
+     x is a small integer divided by a power of 2 */
+  k = mpz_scan1 (m, 0);
+  mpz_tdiv_q_2exp (m, m, k);
+  e += k;
   MPFR_ASSERTN(e < 0 || w >= (mp_prec_t) e);
   w_minus_e = (e < 0) ? w + (-e) : w - (mp_prec_t) e;
   /* initialize t to 2^w */
@@ -103,16 +108,23 @@ mpfr_eint_aux (mpfr_t y, mpfr_srcptr x)
   mpfr_abs (erru, x, GMP_RNDU); /* |x| */
   mpfr_mul (eps, eps, erru, GMP_RNDU);
   mpfr_ui_sub (erru, k, erru, GMP_RNDD);
-  MPFR_ASSERTN(MPFR_SIGN(erru) > 0);
-  mpfr_div (eps, eps, erru, GMP_RNDU);
-  mpfr_add (errs, errs, eps, GMP_RNDU);
-  mpfr_set_z (y, s, GMP_RNDN);
-  mpfr_div_2exp (y, y, w, GMP_RNDN);
-  /* errs was an absolute error bound on s. We must convert it to an error
-     in terms of ulp(y). Since ulp(y) = 2^(EXP(y)-PREC(y)), we must
-     divide the error by 2^(EXP(y)-PREC(y)), but since we divided also
-     y by 2^w = 2^PREC(y), we must simply divide by 2^EXP(y). */
-  e = MPFR_EXP(errs) - MPFR_EXP(y);
+  if (MPFR_SIGN(erru) < 0)
+    {
+      /* the truncated series does not converge, return fail */
+      e = w;
+    }
+  else
+    {
+      mpfr_div (eps, eps, erru, GMP_RNDU);
+      mpfr_add (errs, errs, eps, GMP_RNDU);
+      mpfr_set_z (y, s, GMP_RNDN);
+      mpfr_div_2exp (y, y, w, GMP_RNDN);
+      /* errs was an absolute error bound on s. We must convert it to an error
+         in terms of ulp(y). Since ulp(y) = 2^(EXP(y)-PREC(y)), we must
+         divide the error by 2^(EXP(y)-PREC(y)), but since we divided also
+         y by 2^w = 2^PREC(y), we must simply divide by 2^EXP(y). */
+      e = MPFR_EXP(errs) - MPFR_EXP(y);
+    }
   mpfr_clear (eps);
   mpfr_clear (erru);
   mpfr_clear (errs);

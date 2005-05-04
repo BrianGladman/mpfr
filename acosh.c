@@ -70,16 +70,14 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
     /* Declaration of the intermediary variables */
     mpfr_t t;
     /* Declaration of the size variables */
-    mp_prec_t Nx = MPFR_PREC(x);   /* Precision of input variable */
     mp_prec_t Ny = MPFR_PREC(y);   /* Precision of output variable */
     mp_prec_t Nt;                  /* Precision of the intermediary variable */
     mp_exp_t  err, exp_te, exp_ti; /* Precision of error */
     MPFR_ZIV_DECL (loop);
     
     /* compute the precision of intermediary variable */
-    Nt = MAX (Nx, Ny);
-    /* the optimal number of bits : see algorithms.ps */
-    Nt = Nt + 4 + MPFR_INT_CEIL_LOG2 (Nt);
+    /* the optimal number of bits : see algorithms.tex */
+    Nt = Ny + 4 + MPFR_INT_CEIL_LOG2 (Ny);
 
     /* initialization of intermediary variables */
     mpfr_init2 (t, Nt);
