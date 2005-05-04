@@ -20,11 +20,15 @@ MA 02111-1307, USA.
 
 ##############################################################################
 
-Changes from version 2.1.0 to version 2.2.0:
+Changes from version 2.1.1 to version 2.2.0:
 - Bug fixes.
 - new functions mpfr_set_overflow, mpfr_set_underflow, mpfr_set_inexflag,
-  mpfr_set_erangeflag, mpfr_set_nanflag, mpfr_erfc, mpfr_atan2
-- Remove the exported variables from mpfr.h to mpfr-impl.h.
+  mpfr_set_erangeflag, mpfr_set_nanflag, mpfr_erfc, mpfr_atan2, mpfr_pow_z,
+  mpfr_subnormalize, mpfr_const_catalan, mpfr_sec, mpfr_csc, mpfr_cot,
+  mpfr_root, mpfr_eint, mpfr_get_f, 
+- new macro: MPFR_VERSION_STRING
+- Remove the exported MPFR variables from mpfr.h to mpfr-impl.h.
+  (They were undocumented, so programs which respect the API still work).
 - Grep CC and CFLAGS from GMP Makefile if possible.
 - Math functions are faster (Both average and worst case).
 - Better support for long double.
@@ -32,6 +36,10 @@ Changes from version 2.1.0 to version 2.2.0:
 - Binary compatible with previous versions if you don't use undocumented
   features.
 - Logging facility.
+
+Changes from version 2.1.0 to version 2.1.1:
+- Better way to detect the GMP library.
+- Bug fixes.
 
 Changes from version 2.0.3 to version 2.1.0:
 - Bug fixes.
@@ -76,6 +84,7 @@ Changes from version 2.0.1 to version 2.0.2:
 - return type of some functions changed from void to int, for consistency.
 - return type of mpfr_set_prec changed from int to void.
 - new values for exponent range.
+- rename internal variables.
 
 Changes from version 2001 to version 2.0.1:
 - new mathematical functions: acos, acosh, asin, asinh, atan, atanh, cosh,
