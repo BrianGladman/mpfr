@@ -213,17 +213,16 @@ main (int argc, char **argv)
   check("1.0", 2116118, GMP_RNDN, "4.7256343927890600483e-7");
   check("1.098612288668109782", 5, GMP_RNDN, "0.21972245773362195087");
 
-  mpfr_init2(x, 100);
-  mpfr_set_prec(x, 53);
-  mpfr_set_ui(x, 3, GMP_RNDD);
-  mpfr_log(x, x, GMP_RNDD);
-  mpfr_div_ui(x, x, 5, GMP_RNDD);
+  mpfr_init2 (x, 53);
+  mpfr_set_ui (x, 3, GMP_RNDD);
+  mpfr_log (x, x, GMP_RNDD);
+  mpfr_div_ui (x, x, 5, GMP_RNDD);
   if (mpfr_cmp_str1 (x, "0.21972245773362189536"))
     {
       printf ("Error in mpfr_div_ui for x=ln(3), u=5\n");
       exit (1);
     }
-  mpfr_clear(x);
+  mpfr_clear (x);
 
   test_generic_ui (2, 200, 100);
 
