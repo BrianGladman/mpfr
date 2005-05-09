@@ -187,6 +187,7 @@ special (void)
 
 #define TEST_FUNCTION mpfr_atan
 #define test_generic test_generic_atan
+#define RAND_FUNCTION(x) (mpfr_random (x), mpfr_mul_2si (x, x, (randlimb () %1000-500), GMP_RNDN))
 #include "tgeneric.c"
 
 #define TEST_FUNCTION mpfr_atan2
