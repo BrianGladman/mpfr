@@ -33,10 +33,12 @@ MA 02111-1307, USA. */
 #define use_inexp 0
 #include "round_raw_generic.c"
 
+/* Seems to be unused. Remove comment to implement it.
 #define mpfr_round_raw_generic mpfr_round_raw_3
 #define flag 1
 #define use_inexp 1
 #include "round_raw_generic.c"
+*/
 
 #define mpfr_round_raw_generic mpfr_round_raw_4
 #define flag 0
@@ -116,7 +118,7 @@ mpfr_prec_round (mpfr_ptr x, mp_prec_t prec, mp_rnd_t rnd_mode)
 */
 
 int
-mpfr_can_round (mpfr_ptr b, mp_exp_t err, mp_rnd_t rnd1,
+mpfr_can_round (mpfr_srcptr b, mp_exp_t err, mp_rnd_t rnd1,
 		mp_rnd_t rnd2, mp_prec_t prec)
 {
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(b)))
@@ -127,7 +129,7 @@ mpfr_can_round (mpfr_ptr b, mp_exp_t err, mp_rnd_t rnd1,
 }
 
 int
-mpfr_can_round_raw (mp_limb_t *bp, mp_size_t bn, int neg, mp_exp_t err0,
+mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mp_exp_t err0,
                     mp_rnd_t rnd1, mp_rnd_t rnd2, mp_prec_t prec)
 {
   mp_prec_t err;

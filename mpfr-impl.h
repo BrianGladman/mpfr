@@ -1084,6 +1084,31 @@ typedef struct {
  (!MPFR_IS_SINGULAR (b) && mpfr_round_p (MPFR_MANT (b), MPFR_LIMB_SIZE (b),  \
 					 (err), (prec) + ((rnd)==GMP_RNDN)))
 
+/* Assuming that the function as a taylor expansion which looks like:
+    y=f(x) = x + g(x) with |g(x)| <=2^(EXP(x)-err)
+   we can quickly set y to x if x is small (ie nearly err > prec(y)+1).
+   It assumes that f(x) is not representable exactly as a FP number.  
+   y is the destination, x the value to set, err the error term,
+    dir the direction (=0 => towards 0, =1 => away), rnd the rounding mode.
+   It returns from the function a ternary value in case of success.
+   If you want to free something, you must fill the "extra" field
+   in consequences, otherwise put nothing. */
+/* Note: Use mpfr_round_p (faster but less precise) or mpfr_can_round? */
+#define MPFR_FAST_COMPUTE_IF_SMALL_INPUT(y,x,err,dir,rnd,extra) \
+  do {                                                          \
+   mp_exp_t _err = (err);                                       \
+   mp_prec_t _prec = MPFR_PREC (y) + ((rnd) == GMP_RNDN);       \
+   if (_err > 0 && (mpfr_uexp_t) _err > _prec                   \
+      && (dir == 0                                              \
+          || (mpfr_uexp_t) _err > MPFR_PREC (x)                 \
+          || mpfr_can_round ((x), _err, GMP_RNDZ, (rnd), MPFR_PREC (y)))) \
+    {                                                           \
+      int _inexact = mpfr_round_near_x ((y),(x),(dir),(rnd));   \
+      extra;                                                    \
+      return _inexact;                                          \
+    }                                                           \
+  } while (0)
+
 /******************************************************
  ***************  Ziv Loop Macro  *********************
  ******************************************************/
@@ -1287,8 +1312,8 @@ __MPFR_DECLSPEC int mpfr_add1sp _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
 					      mpfr_srcptr, mp_rnd_t));
 __MPFR_DECLSPEC int mpfr_sub1sp _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, 
 					      mpfr_srcptr, mp_rnd_t));
-__MPFR_DECLSPEC int mpfr_can_round_raw _MPFR_PROTO ((mp_limb_t *, mp_size_t,
-			     int, mp_exp_t, mp_rnd_t, mp_rnd_t, mp_prec_t));
+__MPFR_DECLSPEC int mpfr_can_round_raw _MPFR_PROTO ((const mp_limb_t *, 
+		    mp_size_t, int, mp_exp_t, mp_rnd_t, mp_rnd_t, mp_prec_t));
 
 __MPFR_DECLSPEC int mpfr_cmp2 _MPFR_PROTO ((mpfr_srcptr, mpfr_srcptr,
 					    mp_prec_t *));
@@ -1315,17 +1340,17 @@ __MPFR_DECLSPEC void mpfr_print_mant_binary _MPFR_PROTO ((const char*,
 					  const mp_limb_t*, mp_prec_t));
 __MPFR_DECLSPEC void mpfr_set_str_binary _MPFR_PROTO((mpfr_ptr, const char*));
 
-__MPFR_DECLSPEC int mpfr_round_raw _MPFR_PROTO ((mp_limb_t *, mp_limb_t *,
-			 mp_prec_t, int, mp_prec_t, mp_rnd_t, int *));
-__MPFR_DECLSPEC int mpfr_round_raw_2 _MPFR_PROTO ((mp_limb_t *, mp_limb_t *,
-			   mp_prec_t, int, mp_prec_t, mp_rnd_t));
-__MPFR_DECLSPEC int mpfr_round_raw_3 _MPFR_PROTO ((mp_limb_t *, mp_limb_t *,
-			  mp_prec_t, int, mp_prec_t, mp_rnd_t, int *));
-__MPFR_DECLSPEC int mpfr_round_raw_4 _MPFR_PROTO ((mp_limb_t *, mp_limb_t *,
-				   mp_prec_t, int, mp_prec_t, mp_rnd_t));
+__MPFR_DECLSPEC int mpfr_round_raw _MPFR_PROTO ((mp_limb_t *, 
+       const mp_limb_t *, mp_prec_t, int, mp_prec_t, mp_rnd_t, int *));
+__MPFR_DECLSPEC int mpfr_round_raw_2 _MPFR_PROTO ((const mp_limb_t *, 
+             mp_prec_t, int, mp_prec_t, mp_rnd_t));
+__MPFR_DECLSPEC int mpfr_round_raw_3 _MPFR_PROTO ((const mp_limb_t *,
+             mp_prec_t, int, mp_prec_t, mp_rnd_t, int *));
+__MPFR_DECLSPEC int mpfr_round_raw_4 _MPFR_PROTO ((mp_limb_t *, 
+       const mp_limb_t *, mp_prec_t, int, mp_prec_t, mp_rnd_t));
 
 #define mpfr_round_raw2(xp, xn, neg, r, prec) \
-  mpfr_round_raw_2((mp_limb_t*)0,(xp),(xn)*BITS_PER_MP_LIMB,(neg),(prec),(r))
+  mpfr_round_raw_2((xp),(xn)*BITS_PER_MP_LIMB,(neg),(prec),(r))
 
 __MPFR_DECLSPEC int mpfr_check _MPFR_PROTO ((mpfr_srcptr));
 
@@ -1350,6 +1375,9 @@ __MPFR_DECLSPEC int mpfr_round_p _MPFR_PROTO ((mp_limb_t *, mp_size_t,
 __MPFR_DECLSPEC void mpfr_dump_mant _MPFR_PROTO ((const mp_limb_t *, 
 						  mp_prec_t, mp_prec_t,
 						  mp_prec_t));
+
+__MPFR_DECLSPEC int mpfr_round_near_x _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, 
+						    int, mp_rnd_t));
 #if defined (__cplusplus)
 }
 #endif

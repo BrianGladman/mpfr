@@ -217,7 +217,7 @@ __MPFR_DECLSPEC void
 __MPFR_DECLSPEC int 
   mpfr_prec_round _MPFR_PROTO ((mpfr_ptr, mpfr_prec_t, mpfr_rnd_t));
 __MPFR_DECLSPEC int 
-  mpfr_can_round _MPFR_PROTO ((mpfr_ptr, mp_exp_t, mpfr_rnd_t, mpfr_rnd_t,
+  mpfr_can_round _MPFR_PROTO ((mpfr_srcptr, mp_exp_t, mpfr_rnd_t, mpfr_rnd_t,
 			       mpfr_prec_t));
 
 __MPFR_DECLSPEC mp_exp_t mpfr_get_exp _MPFR_PROTO ((mpfr_srcptr));
