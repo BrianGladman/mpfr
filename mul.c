@@ -30,7 +30,7 @@ MA 02111-1307, USA. */
 /* Check if we have to check the result of mpfr_mul.
    TODO: Find a better (and faster?) check than using old implementation */
 #ifdef WANT_ASSERT
-# if WANT_ASSERT >= 2
+# if WANT_ASSERT >= 3
 
 int mpfr_mul2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode);
 static int
@@ -326,18 +326,19 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       else
 	{
 	  /* 2 limbs * 2 limbs */
-	  /* This isn't a generic 2 limbs*2 limbs code since it assumes
-	     the mantissa are MSB normalized */
-	  mp_limb_t t1, t2, t3, t4;
+	  mp_limb_t t1, t2, t3;
+	  /* First 2 limbs * 1 limb */
 	  umul_ppmm (tmp[1], tmp[0], MPFR_MANT (b)[0], MPFR_MANT (c)[0]);
-	  umul_ppmm (tmp[3], tmp[2], MPFR_MANT (b)[1], MPFR_MANT (c)[1]);
-	  umul_ppmm (t1, t2, MPFR_MANT (b)[1], MPFR_MANT (c)[0]);	  
-	  umul_ppmm (t3, t4, MPFR_MANT (b)[0], MPFR_MANT (c)[1]);
-
-	  add_ssaaaa (tmp[2], tmp[1], tmp[2], tmp[1], 0, t2);
-	  add_ssaaaa (tmp[2], tmp[1], tmp[2], tmp[1], 0, t4);
-	  add_ssaaaa (tmp[3], tmp[2], tmp[3], tmp[2], 0, t1);
-	  add_ssaaaa (tmp[3], tmp[2], tmp[3], tmp[2], 0, t3);
+	  umul_ppmm (tmp[2], t1, MPFR_MANT (b)[1], MPFR_MANT (c)[0]);
+	  add_ssaaaa (tmp[2], tmp[1], tmp[2], tmp[1], 0, t1);
+	  /* Second, the other 2 limbs * 1 limb product */
+	  umul_ppmm (t1, t2, MPFR_MANT (b)[0], MPFR_MANT (c)[1]);
+	  umul_ppmm (tmp[3], t3, MPFR_MANT (b)[1], MPFR_MANT (c)[1]);
+	  add_ssaaaa (tmp[3], t1, tmp[3], t1, 0, t3);
+	  /* Sum those two partial products */
+	  add_ssaaaa (tmp[2], tmp[1], tmp[2], tmp[1], t1, t2);
+	  tmp[3] += (tmp[2] < t1);
+	  
 	  b1 = tmp[3];
 	}
       b1 >>= (BITS_PER_MP_LIMB - 1);

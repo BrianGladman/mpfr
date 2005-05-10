@@ -560,7 +560,6 @@ check_regression (void)
   mpfr_set_prec (x, 908);
   mpfr_set_prec (y, 908);
   mpfr_set_prec (z, 908);
-
   mpfr_set_str (y, "-f.fffffffffffffffffffffffffffffffffffffffffffffffffffffff"
 "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
 "ffffffffffffffffffffffffffffffffffffffffffffffffffffff99be91f83ec6f0ed28a3d42"
@@ -574,7 +573,6 @@ check_regression (void)
 "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
 "fffffffffffffffffffffffffffffffffffffffffffffffffffff337d23f07d8de1da5147a85c"
 "dd3464e46068bd4d@-1", 16, GMP_RNDN);
-
   if (mpfr_cmp (x, y) || i <= 0)
     {
       printf ("Regression test (5) failed! (i=%d - expected 1)\n", i);
@@ -583,6 +581,26 @@ check_regression (void)
       exit (1);
     }
   
+
+  mpfr_set_prec (x, 50);
+  mpfr_set_prec (y, 40);
+  mpfr_set_prec (z, 53);
+  mpfr_set_str (y, "4.1ffffffff8", 16, GMP_RNDN);
+  mpfr_set_str (z, "4.2000000ffe0000@-4", 16, GMP_RNDN);
+  i = mpfr_mul (x, y, z, GMP_RNDN);  
+  if (mpfr_cmp_str (x, "1.104000041d6c0@-3", 16, GMP_RNDN) != 0
+      || i <= 0)
+    {
+      printf ("Regression test (6) failed! (i=%d - expected 1)\nx=", i);
+      mpfr_out_str (stdout, 16, 0, x, GMP_RNDN);
+      printf ("\nMore prec=");
+      mpfr_set_prec (x, 93);
+      mpfr_mul (x, y, z, GMP_RNDN);
+      mpfr_out_str (stdout, 16, 0, x, GMP_RNDN);
+      printf ("\n");
+      exit (1);
+    }
+
   mpfr_clears (x, y, z, NULL);
 }
 
