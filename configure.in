@@ -276,6 +276,7 @@ case $host in
    AC_MSG_CHECKING(for DLL/static GMP)
    if test "$enable_shared" = yes; then
      LDFLAGS="$LDFLAGS -no-undefined"
+     dont_link_with_gmp="yes"
      AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include "gmp.h"
 #if !__GMP_LIBGMP_DLL
@@ -296,10 +297,8 @@ case $host in
   fi
   ;;
 esac
-# Never enable CXX and GCJ in libtool (remove this for libtool >= 2.0)
 dnl Finally set up LibTool
 AC_PROG_LIBTOOL
-
 
 
 dnl 
@@ -359,6 +358,15 @@ You probably need to change some of the GMP or MPFR compile options.])],
        [AC_MSG_RESULT([can't test])])
 fi
 
+
+dnl We really need to link using libtool. But it is impossible with the current
+dnl libtool.
+dnl The practical problems appear only under MS Windows. The best solution
+dnl is to believe it works under MSWin.
+if test "$dont_link_with_gmp" = yes ; then 
+LIBS="-lgmp $LIBS"
+else
+ 
 dnl Check if we can link with GMP
 AC_CHECK_LIB(gmp, __gmp_version, [LIBS="-lgmp $LIBS"], 
  [AC_MSG_ERROR(libgmp not found)])
@@ -389,6 +397,9 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[
     AC_MSG_WARN(['gmp.h' and 'libgmp' seems to have different versions.])],
     AC_MSG_RESULT([can't test])
 )
+
+dnl End of tests which need to link with GMP.
+fi 
 
 dnl Remove also many MACROS (AC_DEFINE) which are unused by MPFR
 dnl and polluate (and slow down) the build.
