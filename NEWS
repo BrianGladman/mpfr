@@ -35,6 +35,7 @@ Changes from version 2.1.1 to version 2.2.0:
 - Shared library of MPFR.
 - Binary compatible with previous versions if you don't use undocumented
   features.
+- Thread safe (if build with --enable-thread-safe).
 - Logging facility.
 
 Changes from version 2.1.0 to version 2.1.1:
