@@ -210,20 +210,44 @@ mpfr_exp_3 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
           MPFR_ASSERTN (twopoweri <= LONG_MAX/2);
           twopoweri *=2;
         }
+
+      mpfr_clear_overflow ();
+      mpfr_clear_underflow ();
       for (loop = 0 ; loop < shift_x; loop++)
 	mpfr_mul (tmp, tmp, tmp, GMP_RNDD);
 
-      if (mpfr_can_round (tmp, realprec, GMP_RNDD, GMP_RNDZ,
+      if (MPFR_UNLIKELY (mpfr_overflow_p ()))
+	{
+	  /* We hack to set a FP number outside the valid range so that
+	     mpfr_check_range properly generates an overflow */
+	  mpfr_setmax (y, __gmpfr_emax);
+	  MPFR_EXP (y) ++; 
+	  inexact = 1;
+	  break;
+	}
+      else if (MPFR_UNLIKELY (mpfr_underflow_p ()))
+	{
+	  /* We hack to set a FP number outside the valid range so that
+             mpfr_check_range properly generates an underflow.
+             Note that the range has been increased to allow a safe
+             detection of underflow (MPFR_EMIN_MIN-3 in exp.c) even for
+             RNDN */
+          mpfr_setmax (y, MPFR_EMIN_MIN-2);
+          inexact = -1;
+          break;
+	}
+      else if (mpfr_can_round (tmp, realprec, GMP_RNDD, GMP_RNDZ,
                           MPFR_PREC(y) + (rnd_mode == GMP_RNDN)))
-	break;
+	{
+	  inexact = mpfr_set (y, tmp, rnd_mode);	  
+	  break;
+	}
       MPFR_ZIV_NEXT (ziv_loop, realprec);
       Prec = realprec + shift + 2 + shift_x;
       mpfr_set_prec (t, Prec);
       mpfr_set_prec (tmp, Prec);
     }
   MPFR_ZIV_FREE (ziv_loop);
-  
-  inexact = mpfr_set (y, tmp, rnd_mode); 
   
   mpz_clear (uk);
   mpfr_clear (tmp);
