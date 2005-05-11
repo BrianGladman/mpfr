@@ -1,4 +1,107 @@
+2005-05-11  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* mul.c, tests/tmul.c: Fix bug due to wrong assertion.
+
+2005-05-10  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* mpfr-impl.h, mpfr.h, round_prec.c, round_raw_generic.c:
+	1. Change the prototype of mpfr_can_round to use const.
+	2. Change the prototype of mpfr_round_raw_2 (remove first argument
+	   since it is useless).
+	3. Change round_raw_generic to use preprocessor if rather than compiler
+	   to detect if flag == 1 or 0
+	4. mpfr_round_raw_xxx use const attribute too.
+	5. Remove mpfr_round_raw_3 since it is unused by MPFR.
+	6. Add first prototype of MPFR_FAST_COMPUTE_IF_SMALL.
+
+	* NEWS: Update.
+
+	* mul.c, tests/tmul.c: Fix a bug in the product of 2limbs per 2 limbs.
+	Add new regression test.
+
+	* configure.in: Fix problem with mingw: if the configure detects
+	MS-Windows, it skips the tests which try to link against GMP
+	within the configure, hoping the Makefile works. The main problem
+	is that we need libtool inside the configure to link against GMP.
+
+2005-05-09  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* tests/tatan.c: Improve random tests.
+
+2005-05-04  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* cos.c: Replace initial estimation of K0 from sqrt (p/2)
+	to sqrt(p/16). It seems to be 30% faster for 5000 bits, and 5% faster
+	for 50 bits.
+
+2005-05-04  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* div_ui.c, tests/tdiv_ui.c:
+	Ported div_ui.c bug fix (1.45) with testcase to the 2.1 branch.
+
+	* div_ui.c: Reformatted the code.
+
+2005-05-04  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* tests/tdiv_ui.c: fixed dummy init2 followed by set_prec
+
+2005-05-04  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* TODO: Added LIA-2 functions to implement.
+
+2005-05-04  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* tests/tcot.c, tests/tcoth.c, tests/tcsch.c, tests/tsec.c, tests/tsech.c, Makefile.am, NEWS, TODO, coth.c, csch.c, mpfr.h, mpfr.texi, sech.c, tests/Makefile.am:
+	Add functions mpfr_sech, mpfr_coth and mpfr_csch.
+
+	* gen_inverse.h: init2 alloc what is needed, not 2 (more efficient).
+
+2005-05-04  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* acosh.c, algorithms.tex, asinh.c, const_euler.c, cosh.c, eint.c, exp2.c, expm1.c, hypot.c, log10.c, log2.c, pow.c, pow_si.c, tanh.c, tests/tpow.c, tests/tpow3.c:
+	improved const_euler and eint
+	removed dependency from input precision in several functions
+	fixed two bugs in pow (detection of exact cases)
+
+2005-05-04  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* NEWS: Update to reflect the current state.
+
+2005-05-03  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* atan.c:
+	Fix computing of `sup` to reflect what is decribed in algorithms.tex.
+
+	* atan.c: Tiny optimization of mpfr_atan.
+	On opteron with p=53, from 9231 / 18049.89 / 81758 to 9004 / 17522.76 /
+	78601.
+
+2005-05-03  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* tests/tset_ld.c:
+	Fixed a problem in test_small (already done in the 2.1 branch)
+	when long double = double.
+
+2005-05-03  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* configure.in: Improve detection again (use callback).
+
+	* configure.in: Improve previous change.
+
+	* configure.in, tests/trint.c: Add detection of function round,
+	rint, ceil, floor and nearbyint at configure time so that spe206
+	which defines itself as C99 compliant can build the trint test.
+
+	* BUGS: Update (Move bugs to potential).
+
+2005-05-03  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* BUGS, hypot.c, tests/thypot.c:
+	Fixed the mpfr_hypot bug, and re-enabled the test_large_small test.
+
 2005-05-02  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* ChangeLog: Update.
 
 	* BUGS, tests/thypot.c:
 	Added the test_large_small test for mpfr_hypot (disabled by default)
