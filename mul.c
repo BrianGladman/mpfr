@@ -395,7 +395,9 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	  /* We will compute with one extra limb */
 	  n++;
 	  p = n*BITS_PER_MP_LIMB - MPFR_INT_CEIL_LOG2 (n + 2);
-	  MPFR_ASSERTD (MPFR_PREC (a) <= p - 5);
+	  /* Due to some nasty reasons we can have only 4 bits */
+	  MPFR_ASSERTD (MPFR_PREC (a) <= p - 4);
+
 	  if (MPFR_LIKELY (k < 2*n))
 	    {
 	      tmp = TMP_ALLOC (2*n*sizeof (mp_limb_t));
