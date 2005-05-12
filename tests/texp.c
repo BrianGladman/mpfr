@@ -190,7 +190,7 @@ compare_exp2_exp3 (int n)
   prec = 203780;
   mpfr_set_prec (x, prec);
   mpfr_set_prec (z, prec);
-  mpfr_set_d (x, 3.0, GMP_RNDN);
+  mpfr_set_ui (x, 3, GMP_RNDN);
   mpfr_sqrt (x, x, GMP_RNDN);
   mpfr_sub_ui (x, x, 1, GMP_RNDN);
   mpfr_exp_3 (z, x, GMP_RNDN);
@@ -290,7 +290,7 @@ check_special ()
       mpfr_dump (x);
       exit (1);
     }
-  /* Check underflow. Corner case of mpfr_exp_2 */
+  /* Check underflow. Corner case of mpfr_exp_3 */
   mpfr_set_str (x,
 "-0.1011000101110010000101111111011111010001110011110111100110101100E30",
                 2, GMP_RNDN);
