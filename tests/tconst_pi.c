@@ -44,8 +44,10 @@ check_large (void)
     }
 
   /* a worst-case to exercise recomputation */
-  mpfr_set_prec (x, 33440);
-  mpfr_const_pi (x, GMP_RNDZ);
+  if (MPFR_PREC_MAX > 33440) {
+    mpfr_set_prec (x, 33440);
+    mpfr_const_pi (x, GMP_RNDZ);
+  }
 
   mpfr_clears (x, y, NULL);
 }

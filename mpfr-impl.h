@@ -665,20 +665,20 @@ extern unsigned char *mpfr_stack;
 /* temporary allocate 1 limb at xp, and initialize mpfr variable x */
 /* The temporary var doesn't have any size field, but it doesn't matter
  * since only functions dealing with the Heap care about it */
-#define MPFR_TMP_INIT1(xp, x, p) \
- ( MPFR_PREC(x) = (p), \
-   MPFR_MANT(x) = (xp), \
-   MPFR_SET_POS(x), \
+#define MPFR_TMP_INIT1(xp, x, p)                                     \
+ ( MPFR_PREC(x) = (p),                                               \
+   MPFR_MANT(x) = (xp),                                              \
+   MPFR_SET_POS(x),                                                  \
    MPFR_SET_INVALID_EXP(x))
 
-#define MPFR_TMP_INIT(xp, x, p, s) \
-  (xp = (mp_ptr) TMP_ALLOC(BYTES_PER_MP_LIMB * ((size_t) s)), \
+#define MPFR_TMP_INIT(xp, x, p, s)                                   \
+  (xp = (mp_ptr) TMP_ALLOC(BYTES_PER_MP_LIMB * ((size_t) s)),        \
    MPFR_TMP_INIT1(xp, x, p))
 
-#define MPFR_TMP_INIT_ABS(d, s) \
- ( MPFR_PREC(d) = MPFR_PREC(s), \
-   MPFR_MANT(d) = MPFR_MANT(s), \
-   MPFR_SET_POS(d), \
+#define MPFR_TMP_INIT_ABS(d, s)                                      \
+ ( MPFR_PREC(d) = MPFR_PREC(s),                                      \
+   MPFR_MANT(d) = MPFR_MANT(s),                                      \
+   MPFR_SET_POS(d),                                                  \
    MPFR_EXP(d)  = MPFR_EXP(s))
 
 
@@ -692,8 +692,8 @@ extern unsigned char *mpfr_stack;
 #define mpfr_const_euler(_d,_r) mpfr_cache(_d, __gmpfr_cache_const_euler, _r)
 #define mpfr_const_catalan(_d,_r) mpfr_cache(_d,__gmpfr_cache_const_catalan,_r)
 
-#define MPFR_DECL_INIT_CACHE(_cache,_func) \
- mpfr_cache_t MPFR_THREAD_ATTR _cache = \
+#define MPFR_DECL_INIT_CACHE(_cache,_func)                           \
+ mpfr_cache_t MPFR_THREAD_ATTR _cache =                              \
     {{{{0,MPFR_SIGN_POS,0,(mp_limb_t*)0}},0,_func}}
 
 
@@ -737,58 +737,58 @@ extern unsigned char *mpfr_stack;
 /* Example: MPFR_SADD_OVERFLOW (c, a, b, long, unsigned long,
  *                              LONG_MIN, LONG_MAX,
  * 	                        goto overflow, goto underflow); */
-#define MPFR_UADD_OVERFLOW(c,a,b,ACTION_IF_OVERFLOW) \
- do { \
-  (c) = (a) + (b); \
-  if ((c) < (a)) ACTION_IF_OVERFLOW; \
+#define MPFR_UADD_OVERFLOW(c,a,b,ACTION_IF_OVERFLOW)                  \
+ do {                                                                 \
+  (c) = (a) + (b);                                                    \
+  if ((c) < (a)) ACTION_IF_OVERFLOW;                                  \
  } while (0)
 
 #define MPFR_SADD_OVERFLOW(c,a,b,STYPE,UTYPE,MIN,MAX,ACTION_IF_POS_OVERFLOW,ACTION_IF_NEG_OVERFLOW) \
-  do { \
-  if ((a) >= 0 && (b) >= 0) { \
-         UTYPE uc,ua,ub; \
-         ua = (UTYPE) a; ub = (UTYPE) b; \
-         MPFR_UADD_OVERFLOW (uc, ua, ub, ACTION_IF_POS_OVERFLOW); \
-         if (uc > (UTYPE)(MAX)) ACTION_IF_POS_OVERFLOW; \
-         else (c) = (STYPE) uc; \
-  } else if ((a) < 0 && (b) < 0) { \
-         UTYPE uc,ua,ub; \
-         ua = -(UTYPE) a; ub = -(UTYPE) b; \
-         MPFR_UADD_OVERFLOW (uc, ua, ub, ACTION_IF_NEG_OVERFLOW); \
-         if (uc >= -(UTYPE)(MIN) || uc > (UTYPE)(MAX)) { \
-           if (uc ==  -(UTYPE)(MIN)) (c) = (MIN); \
-           else  ACTION_IF_NEG_OVERFLOW; } \
-         else (c) = -(STYPE) uc; \
-  } else (c) = (a) + (b); \
+  do {                                                                \
+  if ((a) >= 0 && (b) >= 0) {                                         \
+         UTYPE uc,ua,ub;                                              \
+         ua = (UTYPE) a; ub = (UTYPE) b;                              \
+         MPFR_UADD_OVERFLOW (uc, ua, ub, ACTION_IF_POS_OVERFLOW);     \
+         if (uc > (UTYPE)(MAX)) ACTION_IF_POS_OVERFLOW;               \
+         else (c) = (STYPE) uc;                                       \
+  } else if ((a) < 0 && (b) < 0) {                                    \
+         UTYPE uc,ua,ub;                                              \
+         ua = -(UTYPE) a; ub = -(UTYPE) b;                            \
+         MPFR_UADD_OVERFLOW (uc, ua, ub, ACTION_IF_NEG_OVERFLOW);     \
+         if (uc >= -(UTYPE)(MIN) || uc > (UTYPE)(MAX)) {              \
+           if (uc ==  -(UTYPE)(MIN)) (c) = (MIN);                     \
+           else  ACTION_IF_NEG_OVERFLOW; }                            \
+         else (c) = -(STYPE) uc;                                      \
+  } else (c) = (a) + (b);                                             \
  } while (0)
 
 
-/* Set a number to 1 (Fast) */
-#define MPFR_SET_ONE(x) \
-do { \
-  mp_size_t s = MPFR_LIMB_SIZE(x) - 1;\
-  MPFR_SET_POS(x);\
-  MPFR_EXP(x) = 1;\
-  MPN_ZERO ( MPFR_MANT(x), s);\
-  MPFR_MANT(x)[s] = MPFR_LIMB_HIGHBIT;\
+/* Set a number to 1 (Fast) - It doesn't check if 1 is in the exponent range */
+#define MPFR_SET_ONE(x)                                               \
+do {                                                                  \
+  mp_size_t s = MPFR_LIMB_SIZE(x) - 1;                                \
+  MPFR_SET_POS(x);                                                    \
+  MPFR_EXP(x) = 1;                                                    \
+  MPN_ZERO ( MPFR_MANT(x), s);                                        \
+  MPFR_MANT(x)[s] = MPFR_LIMB_HIGHBIT;                                \
 } while (0)
 
 /* Compute s = (-a) % BITS_PER_MP_LIMB
  * a is unsigned! Check if it works,
  * otherwise tries another way to compute it */
-#define MPFR_UNSIGNED_MINUS_MODULO(s, a)                          \
-  do                                                              \
-    {                                                             \
-      if ((UINT_MAX % BITS_PER_MP_LIMB) == (BITS_PER_MP_LIMB-1))  \
-        (s) = (-(a)) % BITS_PER_MP_LIMB;                          \
-      else                                                        \
-        {                                                         \
-          (s) = (a) % BITS_PER_MP_LIMB;                           \
-          if (s != 0)                                             \
-            (s) = BITS_PER_MP_LIMB - (s);                         \
-        }                                                         \
-      MPFR_ASSERTD ((s) >= 0 && (s) < BITS_PER_MP_LIMB);          \
-    }                                                             \
+#define MPFR_UNSIGNED_MINUS_MODULO(s, a)                              \
+  do                                                                  \
+    {                                                                 \
+      if ((UINT_MAX % BITS_PER_MP_LIMB) == (BITS_PER_MP_LIMB-1))      \
+        (s) = (mpfr_prec_t) (-(a)) % BITS_PER_MP_LIMB;                \
+      else                                                            \
+        {                                                             \
+          (s) = (a) % BITS_PER_MP_LIMB;                               \
+          if (s != 0)                                                 \
+            (s) = BITS_PER_MP_LIMB - (s);                             \
+        }                                                             \
+      MPFR_ASSERTD ((s) >= 0 && (s) < BITS_PER_MP_LIMB);              \
+    }                                                                 \
   while (0)
 
 /* Use it only for debug reasons */
@@ -812,6 +812,7 @@ do { \
 
 #define mpfr_get_d1(x) mpfr_get_d(x,__gmpfr_default_rounding_mode)
 
+/* Store in r the size in bits of the mpz_t z */
 #define MPFR_MPZ_SIZEINBASE2(r, z)              \
   do {                                          \
    int _cnt;                                    \
@@ -827,7 +828,7 @@ do { \
  ******************************************************/
 
 /* See README.dev for details on how to use the macros.
-   They are used to make the exponent range to be maximal
+   They are used to set the exponent range to the maximum
    temporarily */
 
 typedef struct {
@@ -1085,28 +1086,36 @@ typedef struct {
 					 (err), (prec) + ((rnd)==GMP_RNDN)))
 
 /* Assuming that the function as a taylor expansion which looks like:
-    y=f(x) = x + g(x) with |g(x)| <=2^(EXP(x)-err)
-   we can quickly set y to x if x is small (ie nearly err > prec(y)+1).
-   It assumes that f(x) is not representable exactly as a FP number.  
-   y is the destination, x the value to set, err the error term,
-    dir the direction (=0 => towards 0, =1 => away), rnd the rounding mode.
+    y=o(f(x)) = o(x + g(x)) with |g(x)| <=2^(EXP(x)-err)
+   we can quickly set y to x if x is small (ie err > prec(y)+1) in most
+   cases. It assumes that f(x) is not representable exactly as a FP number.
+   x must not be a singular value (NAN, INF or ZERO).
+
+   y is the destination (a mpfr_t), x the value to set (a mpfr_t),
+   err the error term (a mp_exp_t), dir (an int) is the direction of
+   the commited error (if dir = 0, it rounds towards 0, if dir=1,
+   it rounds away from 0), rnd the rounding mode.
+
    It returns from the function a ternary value in case of success.
    If you want to free something, you must fill the "extra" field
-   in consequences, otherwise put nothing. */
-/* Note: Use mpfr_round_p (faster but less precise) or mpfr_can_round? */
-#define MPFR_FAST_COMPUTE_IF_SMALL_INPUT(y,x,err,dir,rnd,extra) \
-  do {                                                          \
-   mp_exp_t _err = (err);                                       \
-   mp_prec_t _prec = MPFR_PREC (y) + ((rnd) == GMP_RNDN);       \
-   if (_err > 0 && (mpfr_uexp_t) _err > _prec                   \
-      && (dir == 0                                              \
-          || (mpfr_uexp_t) _err > MPFR_PREC (x)                 \
-          || mpfr_can_round ((x), _err, GMP_RNDZ, (rnd), MPFR_PREC (y)))) \
-    {                                                           \
-      int _inexact = mpfr_round_near_x ((y),(x),(dir),(rnd));   \
-      extra;                                                    \
-      return _inexact;                                          \
-    }                                                           \
+   in consequences, otherwise put nothing in it.
+
+   The test is less restrictive thant necessary, but the function
+   will finish the check itself.
+*/
+#define MPFR_FAST_COMPUTE_IF_SMALL_INPUT(y,x,err,dir,rnd,extra)     \
+  do {                                                              \
+   mp_exp_t _err = (err);                                           \
+   if (MPFR_UNLIKELY (_err > 0                                      \
+                      && (mpfr_uexp_t) _err > MPFR_PREC (y) + 1))   \
+    {                                                               \
+      int _inexact = mpfr_round_near_x ((y),(x),(err),(dir),(rnd)); \
+      if (_inexact != 0)                                            \
+        {                                                           \
+         extra;                                                     \
+         return _inexact;                                           \
+        }                                                           \
+    }                                                               \
   } while (0)
 
 /******************************************************
@@ -1377,7 +1386,7 @@ __MPFR_DECLSPEC void mpfr_dump_mant _MPFR_PROTO ((const mp_limb_t *,
 						  mp_prec_t));
 
 __MPFR_DECLSPEC int mpfr_round_near_x _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, 
-						    int, mp_rnd_t));
+						    mp_exp_t, int, mp_rnd_t));
 #if defined (__cplusplus)
 }
 #endif

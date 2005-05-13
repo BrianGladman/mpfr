@@ -278,32 +278,34 @@ check_special ()
       exit (1);
     }
   /* Check overflow. Corner case of mpfr_exp_3 */
-  mpfr_set_prec (x, MPFR_EXP_THRESHOLD+10);
-  mpfr_set_str (x, 
-    "0.1011000101110010000101111111010100001100000001110001100111001101E30",
-		2, GMP_RNDN);
-  mpfr_clear_overflow ();
-  mpfr_exp (x, x, GMP_RNDD);
-  if (!mpfr_overflow_p ())
-    {
-      printf ("Wrong overflow detection in mpfr_exp_3\n");
-      mpfr_dump (x);
-      exit (1);
-    }
-  /* Check underflow. Corner case of mpfr_exp_3 */
-  mpfr_set_str (x,
-"-0.1011000101110010000101111111011111010001110011110111100110101100E30",
-                2, GMP_RNDN);
-  mpfr_clear_underflow ();
-  mpfr_exp (x, x, GMP_RNDN);
-  if (!mpfr_underflow_p ())
-    {
-      printf ("Wrong underflow detection in mpfr_exp_3\n");
-      mpfr_dump (x);
-      exit (1);
-    }
-  mpfr_set_prec (x, 53);
-  
+  if (MPFR_PREC_MAX > MPFR_EXP_THRESHOLD+10) {
+    mpfr_set_prec (x, MPFR_EXP_THRESHOLD+10);
+    mpfr_set_str (x, 
+     "0.1011000101110010000101111111010100001100000001110001100111001101E30",
+                  2, GMP_RNDN);
+    mpfr_clear_overflow ();
+    mpfr_exp (x, x, GMP_RNDD);
+    if (!mpfr_overflow_p ())
+      {
+        printf ("Wrong overflow detection in mpfr_exp_3\n");
+        mpfr_dump (x);
+        exit (1);
+      }
+    /* Check underflow. Corner case of mpfr_exp_3 */
+    mpfr_set_str (x,
+    "-0.1011000101110010000101111111011111010001110011110111100110101100E30",
+                  2, GMP_RNDN);
+    mpfr_clear_underflow ();
+    mpfr_exp (x, x, GMP_RNDN);
+    if (!mpfr_underflow_p ())
+      {
+        printf ("Wrong underflow detection in mpfr_exp_3\n");
+        mpfr_dump (x);
+        exit (1);
+      }
+    mpfr_set_prec (x, 53);
+  }
+
   /* check overflow */
   emax = mpfr_get_emax ();
   set_emax (10);
