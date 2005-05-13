@@ -70,12 +70,15 @@ mpfr_atanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
       MPFR_RET_NAN;
     }
 
+  /* atanh(x) = x + x^3/3 + ... so the error is < 2^(3*EXP(x)-1) */
+  MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, -2*MPFR_GET_EXP (x)+1,1,rnd_mode,);
+
   MPFR_SAVE_EXPO_MARK (expo);
 
   /* Compute initial precision */
   Nx = MPFR_PREC (xt);
   MPFR_TMP_INIT_ABS (x, xt);
-  Ny = MPFR_PREC (y);   
+  Ny = MPFR_PREC (y);
   Nt = MAX (Nx, Ny);
   /* the optimal number of bits : see algorithms.ps */
   Nt = Nt + MPFR_INT_CEIL_LOG2 (Nt) + 4;

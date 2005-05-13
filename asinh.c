@@ -61,6 +61,9 @@ mpfr_asinh (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	}
     }
 
+  /* asinh(x) = x - x^3/6 + ... so the error is < 2^(3*EXP(x)-2) */
+  MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, -2*MPFR_GET_EXP (x)+2,0,rnd_mode,);
+
   Ny = MPFR_PREC (y);   /* Precision of output variable */
 
   signx = MPFR_SIGN (x);

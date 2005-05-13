@@ -202,6 +202,11 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
  	}
     }
 
+  /* atan(x) = x - x^3/3 + x^5/5... 
+     so the error is < 2^(3*EXP(x)-1) 
+     so `EXP(x)-(3*EXP(x)-1)` = -2*EXP(x)+1 */
+  MPFR_FAST_COMPUTE_IF_SMALL_INPUT (atan,x, -2*MPFR_GET_EXP (x)+1,0,rnd_mode,);
+
   /* Set x_p=|x| */
   MPFR_TMP_INIT_ABS (xp, x);
 
@@ -222,11 +227,6 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	inexact = inexact2; /* an underflow occurs */
       return inexact;
     }
-
-  /* atan(x) = x - x^3/3 + x^5/5... 
-     so the error is < 2^(3*EXP(x)-1) 
-     so `EXP(x)-(3*EXP(x)-1)` = -2*EXP(x)+1 */
-  MPFR_FAST_COMPUTE_IF_SMALL_INPUT (atan,x, -2*MPFR_GET_EXP (x)+1,0,rnd_mode,);
 
   realprec = MPFR_PREC (atan) + MPFR_INT_CEIL_LOG2 (MPFR_PREC (atan)) + 4;
   /* if (MPFR_PREC (atan) + 5 > MPFR_PREC (x) && MPFR_GET_EXP (x) < 0)
