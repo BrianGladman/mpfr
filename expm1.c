@@ -60,6 +60,9 @@ mpfr_expm1 (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
 	}
     }
 
+  /* exp(x)-1 = x +x^2/2 + ... so the error is < 2^(2*EXP(x)-1) */
+  MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, -MPFR_GET_EXP (x)+1,1,rnd_mode,);
+
   MPFR_SAVE_EXPO_MARK (expo);
   /* General case */
   {
