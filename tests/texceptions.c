@@ -24,7 +24,7 @@ MA 02111-1307, USA. */
 
 #include "mpfr-test.h"
 
-#define ERROR(s) do { printf(s); exit(1); } while(0)
+#define ERROR(s) do { printf(s"\n"); exit(1); } while(0)
 
 /* Test powerof2 */
 static void
@@ -51,14 +51,14 @@ check_default_rnd (void)
       mpfr_set_default_rounding_mode ((mp_rnd_t) r);
       t = (mpfr_get_default_rounding_mode) ();
       if ((mp_rnd_t) r != t)
-	ERROR("ERROR in setting / getting default rounding mode (1)\n");
+	ERROR("ERROR in setting / getting default rounding mode (1)");
     }
   mpfr_set_default_rounding_mode ((mp_rnd_t) 4);
   if (mpfr_get_default_rounding_mode() != GMP_RNDD)
-    ERROR("ERROR in setting / getting default rounding mode (2)\n");
+    ERROR("ERROR in setting / getting default rounding mode (2)");
   mpfr_set_default_rounding_mode((mp_rnd_t) -1);
   if (mpfr_get_default_rounding_mode() != GMP_RNDD)
-    ERROR("ERROR in setting / getting default rounding mode (3)\n");
+    ERROR("ERROR in setting / getting default rounding mode (3)");
 }
 
 static void
