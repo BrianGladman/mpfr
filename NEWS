@@ -31,12 +31,12 @@ Changes from version 2.1.1 to version 2.2.0:
 - Remove the exported MPFR variables from mpfr.h to mpfr-impl.h.
   (They were undocumented, so programs which respect the API still work).
 - Grep CC and CFLAGS from GMP Makefile if possible.
-- Math functions are faster (Both average and worst case).
+- Math functions are faster (both average and worst cases).
 - Better support for long double.
 - Shared library of MPFR.
-- Binary compatible with previous versions if you don't use undocumented
+- Binary compatible with previous versions if you do not use undocumented
   features.
-- Thread safe (if build with --enable-thread-safe).
+- Thread safe (if built with --enable-thread-safe).
 - Logging facility.
 
 Changes from version 2.1.0 to version 2.1.1:
