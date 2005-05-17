@@ -37,7 +37,7 @@ main (int argc, char *argv[])
   mpfr_init (t);
 
   mpfr_set_prec (x, 32);
-  mpfr_const_catalan (x, GMP_RNDN);
+  (mpfr_const_catalan) (x, GMP_RNDN);
   mpfr_mul_2exp (x, x, 32, GMP_RNDN);
   if (mpfr_cmp_ui (x, 3934042271UL))
     {

@@ -51,7 +51,7 @@ main (int argc, char *argv[])
 
   mpfr_set_prec (y, 32);
   mpfr_set_prec (z, 32);
-  mpfr_const_euler (y, GMP_RNDN);
+  (mpfr_const_euler) (y, GMP_RNDN);
   mpfr_set_str_binary (z, "0.10010011110001000110011111100011");
   if (mpfr_cmp (y, z))
     {

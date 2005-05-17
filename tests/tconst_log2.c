@@ -71,8 +71,8 @@ check_large (void)
   mpfr_t x, y;
   mpfr_init2 (x, 25000);
   mpfr_init2 (y, 26000);
-  mpfr_const_log2 (x, GMP_RNDN); /* First one ! */
-  mpfr_const_log2 (y, GMP_RNDN); /* Then the other - cache - */
+  (mpfr_const_log2) (x, GMP_RNDN); /* First one ! */
+  (mpfr_const_log2) (y, GMP_RNDN); /* Then the other - cache - */
   mpfr_prec_round (y, 25000, GMP_RNDN);
   if (mpfr_cmp (x, y))
     {

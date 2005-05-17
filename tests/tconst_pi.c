@@ -34,8 +34,8 @@ check_large (void)
   mpfr_init2 (x, 20000);
   mpfr_init2 (y, 21000);
 
-  mpfr_const_pi (x, GMP_RNDN); /* First one ! */
-  mpfr_const_pi (y, GMP_RNDN); /* Then the other - cache - */
+  (mpfr_const_pi) (x, GMP_RNDN); /* First one ! */
+  (mpfr_const_pi) (y, GMP_RNDN); /* Then the other - cache - */
   mpfr_prec_round (y, 20000, GMP_RNDN);
   if (mpfr_cmp (x,y))
     {

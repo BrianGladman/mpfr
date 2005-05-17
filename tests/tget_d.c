@@ -109,7 +109,7 @@ check_max (void)
   if (mpfr_set_d (u, d, GMP_RNDN) == 0)
     {
       /* If setting is exact */
-      e = mpfr_get_d1 (u);
+      e = (mpfr_get_d1) (u);
       if (e != d)
 	{
 	  printf ("get_d(set_d)(1): %1.20e != %1.20e\n", d, e);

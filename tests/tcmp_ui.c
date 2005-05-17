@@ -83,8 +83,8 @@ main (void)
   MPFR_ASSERTN(mpfr_cmp_ui (x, 0) > 0);
 
   /* tests for cmp_si */
-  mpfr_set_si (x, -3, GMP_RNDZ);
-  if (mpfr_cmp_si (x, s = -3) != 0)
+  (mpfr_set_si) (x, -3, GMP_RNDZ);
+  if ((mpfr_cmp_si) (x, s = -3) != 0)
     {
       printf ("Error in mpfr_cmp_si(-3.0,-3)\n");
       exit (1);
