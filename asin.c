@@ -93,12 +93,6 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
   /* Set up initial prec */
   prec = MPFR_PREC (asin) + 10 + xp_exp;
 
-  /* If x ~ 2^-N, asin(x) ~ x + x^3/6
-     If Prec < 2*N, we can't round since x^3/6 won't be count. */
-  if (MPFR_PREC (asin) >= MPFR_PREC (x) 
-      && prec <= -2*MPFR_GET_EXP (x) + 10)
-    prec = -2*MPFR_GET_EXP (x) + 10;
-
   /* use asin(x) = atan(x/sqrt(1-x^2)) */
   MPFR_ZIV_INIT (loop, prec);
   for (;;)
