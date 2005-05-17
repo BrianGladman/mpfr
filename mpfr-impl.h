@@ -194,6 +194,10 @@ __MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_cache_const_log2;
 __MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_cache_const_euler;
 __MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_cache_const_catalan;
 
+__MPFR_DECLSPEC extern MPFR_THREAD_ATTR const mpfr_t __gmpfr_one;
+__MPFR_DECLSPEC extern MPFR_THREAD_ATTR const mpfr_t __gmpfr_two;
+__MPFR_DECLSPEC extern MPFR_THREAD_ATTR const mpfr_t __gmpfr_four;
+
 #if defined (__cplusplus)
  }
 #endif
@@ -766,11 +770,11 @@ extern unsigned char *mpfr_stack;
 /* Set a number to 1 (Fast) - It doesn't check if 1 is in the exponent range */
 #define MPFR_SET_ONE(x)                                               \
 do {                                                                  \
-  mp_size_t s = MPFR_LIMB_SIZE(x) - 1;                                \
+  mp_size_t _size = MPFR_LIMB_SIZE(x) - 1;                            \
   MPFR_SET_POS(x);                                                    \
   MPFR_EXP(x) = 1;                                                    \
-  MPN_ZERO ( MPFR_MANT(x), s);                                        \
-  MPFR_MANT(x)[s] = MPFR_LIMB_HIGHBIT;                                \
+  MPN_ZERO ( MPFR_MANT(x), _size);                                    \
+  MPFR_MANT(x)[_size] = MPFR_LIMB_HIGHBIT;                            \
 } while (0)
 
 /* Compute s = (-a) % BITS_PER_MP_LIMB
