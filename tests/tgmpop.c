@@ -24,15 +24,14 @@ MA 02111-1307, USA. */
 #include <stdlib.h>
 #include "mpfr-test.h"
 
-#define CHECK_FOR(str, cond) \
-if ((cond) == 0) \
-{\
-  printf ("Special case error " str ". Inexact value=%d\n", res);\
-  printf ("Get "); mpfr_dump (y);\
-  printf ("X=  "); mpfr_dump (x);\
-  printf ("Z=  "); mpz_dump (mpq_numref(z));\
-  printf ("   /"); mpz_dump (mpq_denref(z));\
-  exit (1);\
+#define CHECK_FOR(str, cond)                                      \
+if ((cond) == 0) {                                                \
+  printf ("Special case error " str ". Inexact value=%d\n", res); \
+  printf ("Get "); mpfr_dump (y);                                 \
+  printf ("X=  "); mpfr_dump (x);                                 \
+  printf ("Z=  "); mpz_dump (mpq_numref(z));                      \
+  printf ("   /"); mpz_dump (mpq_denref(z));                      \
+  exit (1);                                                       \
 }
 
 static void
@@ -97,14 +96,29 @@ special (void)
   mpq_set_ui (z, 1, 0);
   mpfr_set_str1 (x, "0.5");
   res = mpfr_add_q (y, x, z, GMP_RNDN);
-  CHECK_FOR ("0.5+1/0", mpfr_inf_p (y) && mpfr_sgn (y) > 0 && res == 0);
+  CHECK_FOR ("0.5+1/0", mpfr_inf_p (y) && MPFR_SIGN (y) > 0 && res == 0);
   res = mpfr_sub_q (y, x, z, GMP_RNDN);
-  CHECK_FOR ("0.5-1/0", mpfr_inf_p (y) && mpfr_sgn (y) < 0 && res == 0);
+  CHECK_FOR ("0.5-1/0", mpfr_inf_p (y) && MPFR_SIGN (y) < 0 && res == 0);
   mpq_set_si (z, -1, 0);
   res = mpfr_add_q (y, x, z, GMP_RNDN);
-  CHECK_FOR ("0.5+ -1/0", mpfr_inf_p (y) && mpfr_sgn (y) < 0 && res == 0);
+  CHECK_FOR ("0.5+ -1/0", mpfr_inf_p (y) && MPFR_SIGN (y) < 0 && res == 0);
   res = mpfr_sub_q (y, x, z, GMP_RNDN);
-  CHECK_FOR ("0.5- -1/0", mpfr_inf_p (y) && mpfr_sgn (y) > 0 && res == 0);
+  CHECK_FOR ("0.5- -1/0", mpfr_inf_p (y) && MPFR_SIGN (y) > 0 && res == 0);
+  res = mpfr_div_q (y, x, z, GMP_RNDN);
+  CHECK_FOR ("0.5 / (-1/0)", mpfr_zero_p (y) && MPFR_SIGN (y) < 0 && res == 0);
+
+  /* 0 */
+  mpq_set_ui (z, 0, 1);
+  mpfr_set_ui (x, 42, GMP_RNDN);
+  res = mpfr_add_q (y, x, z, GMP_RNDN);
+  CHECK_FOR ("42+0/1", mpfr_cmp_ui (y, 42) == 0 && res == 0);
+  res = mpfr_sub_q (y, x, z, GMP_RNDN);
+  CHECK_FOR ("42-0/1", mpfr_cmp_ui (y, 42) == 0 && res == 0);
+  res = mpfr_mul_q (y, x, z, GMP_RNDN);
+  CHECK_FOR ("42*0/1", mpfr_zero_p (y) && MPFR_SIGN (y) > 0 && res == 0);
+  res = mpfr_div_q (y, x, z, GMP_RNDN);
+  CHECK_FOR ("42/(0/1)", mpfr_inf_p (y) && MPFR_SIGN (y) > 0 && res == 0);
+
 
   mpq_clear (z);
   mpfr_clear (x);
@@ -138,7 +152,7 @@ check_for_zero ()
 	  mpfr_add_z (x, x, z, (mp_rnd_t) r);
 	  if (!MPFR_IS_ZERO(x) || MPFR_SIGN(x)!=i)
 	    {
-	      printf("GMP Zero errors for add_z & rnd=%s & s=%d\n", 
+              printf("GMP Zero errors for add_z & rnd=%s & s=%d\n", 
 		     mpfr_print_rnd_mode ((mp_rnd_t) r), i);
 	      mpfr_dump (x);
 	      exit (1);
@@ -213,7 +227,7 @@ test_cmp_z (mp_prec_t pmin, mp_prec_t pmax, int nmax)
 			 res2, res1);
 		  exit (1);
 		}
-	    }      
+	    }
 	}
     }
   mpz_clear (y);
@@ -546,7 +560,7 @@ test_specialq (mp_prec_t p0, mp_prec_t p1, unsigned int N,
     {
       mpfr_inits2 (prec, fra, frb, frq, NULL);
       mpq_init (q1); mpq_init(q2); mpq_init (qr);
-      
+
       for( n = 0 ; n < N ; n++)
 	{
 	  mpq_set_ui(q1, randlimb(), randlimb() );
@@ -572,7 +586,7 @@ test_specialq (mp_prec_t p0, mp_prec_t p1, unsigned int N,
 	      exit (1);
 	    }
 	}
-      
+
       mpq_clear (q1); mpq_clear (q2); mpq_clear (qr);
       mpfr_clears (fra, frb, frq, NULL);
     }
