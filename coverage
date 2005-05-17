@@ -8,7 +8,7 @@ echo "Copying MPFR sources to /tmp/ompfr-gcov"
 cp -r . /tmp/ompfr-gcov
 cd /tmp/ompfr-gcov
 echo "Building MPFR"
-./configure --enable-assert CFLAGS="-fprofile-arcs -ftest-coverage"
+./configure --enable-assert CFLAGS="-fprofile-arcs -ftest-coverage -g"
 make check -j2
 
 # Check version of gcov:
