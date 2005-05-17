@@ -1,0 +1,75 @@
+#!/bin/bash
+
+# First Build MPFR in /tmp/
+echo "Erasing previous /tmp/ompfr-gcov"
+rm -rf /tmp/ompfr-gcov
+mkdir /tmp/ompfr-gcov
+echo "Copying MPFR sources to /tmp/ompfr-gcov"
+cp -r . /tmp/ompfr-gcov
+cd /tmp/ompfr-gcov
+echo "Building MPFR"
+./configure --enable-assert CFLAGS="-fprofile-arcs -ftest-coverage"
+make check -j2
+
+# Check version of gcov:
+# 3.3 outputs like this:
+#  100.00% of 36 lines executed in function mpfr_add
+#  100.00% of 36 lines executed in file add.c
+#  Creating add.c.gcov.
+# It doesn't support gcov *.c
+#
+# gcov (GCC) 3.4 outputs like this:
+#  Function `mpfr_add'
+#  Lines executed:100.00% of 36
+#  
+#  File `add.c'
+#  Lines executed:100.00% of 36
+#  add.c:creating `add.c.gcov'
+# It supports gcov *.c
+
+# Setup the parser depending on gcov
+gcov --version > coverage-tmp
+if grep "gcov (GCC) 3.4" coverage-tmp ; then
+ echo "#!/bin/bash
+while true ; do
+ if read x ; then
+ case \$x in
+   Function*)
+     read y
+     case \$y in
+      *100.00*)
+       ;;
+      *)
+       echo \$x \$y
+       ;;
+     esac
+     ;;
+ esac
+ else
+   exit 0
+ fi
+done
+" > coverage.subscript
+else
+ echo "#!/bin/bash
+while true ; do
+ if read x ; then
+ case \$x in
+   100.00*)
+     ;;
+   *function*)
+     echo \$x
+     ;;
+ esac
+ else
+   exit 0
+ fi
+done
+" > coverage.subscript
+fi
+
+# Do "gcov" for all files and parse the output
+find . -name '*.c' -exec gcov -f '{}' ';' | bash coverage.subscript > coverage.mpfr
+
+rm -f coverage.subscript coverage-tmp
+echo "Coverage summary saved in file /tmp/ompfr-gcov[5~/coverage.mpfr"

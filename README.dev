@@ -75,13 +75,8 @@ To check the coverage of the Test Suite, you can use GCOV.
    find . -name '*.c' -exec gcov '{}' ';' | grep "lines executed" | sort
 
 For each source file, there is a .c.gcov file which contains much more
-information. Building this version in a different directory is usually
-a good idea:
-   mkdir cov
-   cd cov
-   ../configure CFLAGS="-fprofile-arcs -ftest-coverage" --srcdir=..
-   make check
-   find .. -name '*.c' -exec gcov '{}' ';' | grep "lines executed" | sort
+information.
+Another solution is to run the script 'coverage' from MPFR source directory.
 
 ===========================================================================
 
