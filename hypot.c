@@ -40,21 +40,22 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
   /* particular cases */
   if (MPFR_ARE_SINGULAR (x, y))
     {
-      if (MPFR_IS_NAN (x) || MPFR_IS_NAN (y))
-	{
-	  MPFR_SET_NAN (z);
-	  MPFR_RET_NAN;
-	}
-      else if (MPFR_IS_INF (x) || MPFR_IS_INF (y))
-	{
-	  MPFR_SET_INF (z);
-	  MPFR_SET_POS (z);
-	  MPFR_RET (0);
-	}
+      if (MPFR_IS_INF (x) || MPFR_IS_INF (y))
+        {
+          /* Return +inf, even when the other number is NaN. */
+          MPFR_SET_INF (z);
+          MPFR_SET_POS (z);
+          MPFR_RET (0);
+        }
+      else if (MPFR_IS_NAN (x) || MPFR_IS_NAN (y))
+        {
+          MPFR_SET_NAN (z);
+          MPFR_RET_NAN;
+        }
       else if (MPFR_IS_ZERO (x))
-	return mpfr_abs (z, y, rnd_mode);
+        return mpfr_abs (z, y, rnd_mode);
       else /* y is necessarily 0 */
-	return mpfr_abs (z, x, rnd_mode);
+        return mpfr_abs (z, x, rnd_mode);
     }
   MPFR_CLEAR_FLAGS(z);
 
@@ -136,8 +137,8 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
       exact |= mpfr_sqrt (t, t, GMP_RNDZ);        /* sqrt(x^2+y^2)*/
 
       if (MPFR_LIKELY (exact == 0
-		       || MPFR_CAN_ROUND (t, Nt-2, Nz, rnd_mode)))
-	break;
+                       || MPFR_CAN_ROUND (t, Nt-2, Nz, rnd_mode)))
+        break;
 
       /* reactualization of the precision */
       MPFR_ZIV_NEXT (loop, Nt);
@@ -154,7 +155,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
   mpfr_clear (t);
   mpfr_clear (ti);
   mpfr_clear (te);
-  
+
   /*
        exact  inexact
         0         0         result is exact, ternary flag is 0

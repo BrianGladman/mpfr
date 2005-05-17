@@ -46,6 +46,16 @@ special (void)
   mpfr_hypot (z, x, y, GMP_RNDN);
   MPFR_ASSERTN(mpfr_inf_p (z) && mpfr_sgn (z) > 0);
 
+  mpfr_set_inf (x, -1);
+  mpfr_set_nan (y);
+  mpfr_hypot (z, x, y, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_inf_p (z) && mpfr_sgn (z) > 0);
+
+  mpfr_set_nan (x);
+  mpfr_set_inf (y, -1);
+  mpfr_hypot (z, x, y, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_inf_p (z) && mpfr_sgn (z) > 0);
+
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);
