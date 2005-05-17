@@ -72,4 +72,4 @@ fi
 find . -name '*.c' -exec gcov -f '{}' ';' | bash coverage.subscript > coverage.mpfr
 
 rm -f coverage.subscript coverage-tmp
-echo "Coverage summary saved in file /tmp/ompfr-gcov[5~/coverage.mpfr"
+echo "Coverage summary saved in file /tmp/ompfr-gcov/coverage.mpfr"
