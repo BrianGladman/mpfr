@@ -21,7 +21,7 @@ MA 02111-1307, USA. */
 
 #include "mpfr-impl.h"
 
-const mp_limb_t __gmpfr_limb1[1] = {MPFR_LIMB_HIGHBIT};
+static const mp_limb_t __gmpfr_limb1[1] = {MPFR_LIMB_HIGHBIT};
 const mpfr_t __gmpfr_one = {{2, MPFR_SIGN_POS, 1, (mp_limb_t*)__gmpfr_limb1}};
 const mpfr_t __gmpfr_two = {{2, MPFR_SIGN_POS, 2, (mp_limb_t*)__gmpfr_limb1}};
 const mpfr_t __gmpfr_four ={{2, MPFR_SIGN_POS, 3, (mp_limb_t*)__gmpfr_limb1}};
