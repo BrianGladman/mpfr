@@ -261,6 +261,8 @@ main (int argc, char *argv[])
   MPFR_ASSERTN( mpfr_set_ui (x, 7, GMP_RNDU) );
   MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
   set_emax (emax);
+  mpfr_set_ui_2exp (x, 17, -50, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_get_ui (x, GMP_RNDD) == 0);
 
   /* Test for ERANGE flag + correct behaviour if overflow */
   mpfr_set_prec (x, 256); 

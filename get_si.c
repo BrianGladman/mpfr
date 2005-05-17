@@ -29,13 +29,13 @@ mpfr_get_si (mpfr_srcptr f, mp_rnd_t rnd)
   long s;
   mpfr_t x;
 
-  if (!mpfr_fits_slong_p (f, rnd))
+  if (MPFR_UNLIKELY (!mpfr_fits_slong_p (f, rnd)))
     {
       MPFR_SET_ERANGE ();
       return MPFR_IS_NEG (f) ? LONG_MIN : LONG_MAX;
     }
-  
-  if (MPFR_IS_ZERO (f))
+
+  else if (MPFR_UNLIKELY (MPFR_IS_ZERO (f)))
      return (long) 0;
 
   /* determine prec of long */
@@ -46,7 +46,7 @@ mpfr_get_si (mpfr_srcptr f, mp_rnd_t rnd)
   mpfr_rint (x, f, rnd);
 
   /* warning: if x=0, taking its exponent is illegal */
-  if (MPFR_IS_ZERO(x))
+  if (MPFR_UNLIKELY (MPFR_IS_ZERO(x)))
     s = 0;
   else
     {
