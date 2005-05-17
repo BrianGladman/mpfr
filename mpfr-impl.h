@@ -852,6 +852,8 @@ typedef struct {
  (__gmpfr_flags = (x).saved_flags, \
   __gmpfr_emin = (x).saved_emin,   \
   __gmpfr_emax = (x).saved_emax)
+#define MPFR_SAVE_EXPO_UPDATE_FLAGS(x, flags)  \
+  (x).saved_flags |= (flags)
 
 /* Speed up final checking */
 #define mpfr_check_range(x,t,r) \
