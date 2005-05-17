@@ -198,6 +198,7 @@ __MPFR_DECLSPEC extern MPFR_THREAD_ATTR const mpfr_t __gmpfr_one;
 __MPFR_DECLSPEC extern MPFR_THREAD_ATTR const mpfr_t __gmpfr_two;
 __MPFR_DECLSPEC extern MPFR_THREAD_ATTR const mpfr_t __gmpfr_four;
 
+
 #if defined (__cplusplus)
  }
 #endif
