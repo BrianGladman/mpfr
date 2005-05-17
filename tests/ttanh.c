@@ -59,23 +59,58 @@ static void
 special_overflow (void)
 {
   mpfr_t x, y;
+  int i;
 
+  mpfr_clear_overflow ();
   set_emin (-125);
   set_emax (128);
   mpfr_init2 (x, 24);
   mpfr_init2 (y, 24);
+
   mpfr_set_str_binary (x, "0.101100100000000000110100E7");
-  mpfr_tanh (y, x, GMP_RNDN);
-  if (mpfr_cmp_ui (y, 1))
+  i = mpfr_tanh (y, x, GMP_RNDN);
+  if (mpfr_cmp_ui (y, 1) || i != 1)
     {
-      printf("Overflow error.\n");
+      printf("Overflow error (1). i=%d\ny=", i);
       mpfr_dump (y);
       exit (1);
     }
-  mpfr_clear (y);
-  mpfr_clear (x);
+  MPFR_ASSERTN (!mpfr_overflow_p ());
+
+  i = mpfr_tanh (y, x, GMP_RNDZ);
+  if (mpfr_cmp_str (y, "0.111111111111111111111111E0", 2, GMP_RNDN)
+      || i != -1)
+    {
+      printf("Overflow error (2).i=%d\ny=", i);
+      mpfr_dump (y);
+      exit (1);
+    }
+  MPFR_ASSERTN (!mpfr_overflow_p ());
+ 
   set_emin (MPFR_EMIN_MIN);
   set_emax (MPFR_EMAX_MAX);
+
+  mpfr_set_str_binary (x, "0.1E1000000000");
+  i = mpfr_tanh (y, x, GMP_RNDN);
+  if (mpfr_cmp_ui (y, 1) || i != 1)
+    {
+      printf("Overflow error (3). i=%d\ny=", i);
+      mpfr_dump (y);
+      exit (1);
+    }
+  MPFR_ASSERTN (!mpfr_overflow_p ());
+  mpfr_set_str_binary (x, "-0.1E1000000000");
+  i = mpfr_tanh (y, x, GMP_RNDU);
+  if (mpfr_cmp_str (y, "-0.111111111111111111111111E0", 2, GMP_RNDN)
+      || i != 1)
+    {
+      printf("Overflow error (4). i=%d\ny=", i);
+      mpfr_dump (y);
+      exit (1);
+    }
+
+  mpfr_clear (y);
+  mpfr_clear (x);
 }
 
 int

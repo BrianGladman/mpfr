@@ -66,6 +66,7 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
     /* Declaration of the intermediary variable */
     mpfr_t t, te;
     mp_exp_t d;
+    int inexact2 = 0;
 
     /* Declaration of the size variable */
     mp_prec_t Ny = MPFR_PREC(y);   /* target precision */
@@ -86,7 +87,18 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
     for (;;) {
       /* tanh = (exp(2x)-1)/(exp(2x)+1) */
       mpfr_mul_2ui (te, x, 1, GMP_RNDN);  /* 2x */
+      /* since x > 0, we can't have underflow */
       mpfr_exp (te, te, GMP_RNDN);        /* exp(2x) */
+      if (MPFR_UNLIKELY (MPFR_IS_INF (te))) {
+        inexact2 = 1;
+        mpfr_set (t, __gmpfr_one, GMP_RNDN);
+        if (MPFR_IS_LIKE_RNDZ (rnd_mode, MPFR_IS_NEG (xt)))
+          {
+            inexact2 = -1;
+            mpfr_nexttozero (t);
+          }
+        break;
+      }
       d = MPFR_GET_EXP (te);              /* For Error calculation */
       mpfr_add_ui (t, te, 1, GMP_RNDD);   /* exp(2x) + 1*/
       mpfr_sub_ui (te, te, 1, GMP_RNDU);  /* exp(2x) - 1*/
@@ -102,8 +114,12 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
       /* if t=1, we still can round */
       if (MPFR_GET_EXP (t) == 1)
         {
-          if (err > Ny && MPFR_IS_LIKE_RNDZ (rnd_mode, MPFR_IS_NEG (t)))
-            mpfr_nexttozero (t);
+          inexact2 = 1;
+          if (err > Ny && MPFR_IS_LIKE_RNDZ (rnd_mode, MPFR_IS_NEG (xt)))
+            {
+              mpfr_nexttozero (t);
+              inexact2 = -1;
+            }
           break;
         }
 
@@ -114,6 +130,8 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
     }
     MPFR_ZIV_FREE (loop);
     inexact = mpfr_set4 (y, t, rnd_mode, MPFR_SIGN (xt));
+    if (inexact == 0)
+      inexact = inexact2;
     mpfr_clear (te);
     mpfr_clear (t);
   }
