@@ -27,7 +27,7 @@ MA 02111-1307, USA. */
 
 int
 mpfr_sinh (mpfr_ptr y, mpfr_srcptr xt, mp_rnd_t rnd_mode)
-{  
+{
   mpfr_t x;
   int inexact;
 
@@ -38,11 +38,11 @@ mpfr_sinh (mpfr_ptr y, mpfr_srcptr xt, mp_rnd_t rnd_mode)
     {
       if (MPFR_IS_NAN(xt))
 	{
-	  MPFR_SET_NAN(y); 
+	  MPFR_SET_NAN(y);
 	  MPFR_RET_NAN;
 	}
       else if (MPFR_IS_INF(xt))
-	{ 
+	{
 	  MPFR_SET_INF(y);
 	  MPFR_SET_SAME_SIGN(y, xt);
 	  MPFR_RET(0);
@@ -63,7 +63,7 @@ mpfr_sinh (mpfr_ptr y, mpfr_srcptr xt, mp_rnd_t rnd_mode)
 
   {
     mpfr_t t, ti;
-    mp_exp_t d;    
+    mp_exp_t d;
     mp_prec_t Nt;    /* Precision of the intermediary variable */
     long int err;    /* Precision of error */
     MPFR_ZIV_DECL (loop);
@@ -86,28 +86,30 @@ mpfr_sinh (mpfr_ptr y, mpfr_srcptr xt, mp_rnd_t rnd_mode)
     for (;;) {
       /* compute sinh */
       mpfr_clear_overflow ();
+      mpfr_clear_underflow ();
       mpfr_exp (t, x, GMP_RNDD);        /* exp(x) */
       /* exp(x) can overflow or underflow or return ~1 ! */
-      d = MPFR_GET_EXP (t);
-      if (MPFR_UNLIKELY (mpfr_overflow_p ())) {
-	MPFR_SET_INF (t);
+      if (MPFR_UNLIKELY (mpfr_overflow_p () || mpfr_underflow_p ())) {
+        mpfr_overflow (t, rnd_mode,
+                       mpfr_overflow_p () ? MPFR_SIGN_POS : MPFR_SIGN_NEG);
 	break;
       }
+      d = MPFR_GET_EXP (t);
       mpfr_ui_div (ti, 1, t, GMP_RNDU); /* 1/exp(x) */
       mpfr_sub (t, t, ti, GMP_RNDN);    /* exp(x) - 1/exp(x) */
       mpfr_div_2ui (t, t, 1, GMP_RNDN);  /* 1/2(exp(x) - 1/exp(x)) */
-      
+
       /* it may be that t is zero (in fact, it can only occur when te=1,
 	 and thus ti=1 too) */
       err = 0;
       if (!MPFR_IS_ZERO (t))
 	{
 	  /* calculation of the error */
-	  d = d - MPFR_GET_EXP (t) + 2;	  
+	  d = d - MPFR_GET_EXP (t) + 2;
 	  /* error estimate */
 	  /* err = Nt-(__gmpfr_ceil_log2(1+pow(2,d)));*/
 	  err = Nt - (MAX (d, 0) + 1);
-	  
+
 	  if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, MPFR_PREC (y), rnd_mode)))
 	    break;
 	}

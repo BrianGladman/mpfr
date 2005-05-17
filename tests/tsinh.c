@@ -57,6 +57,13 @@ special (void)
   mpfr_sinh (x, x, GMP_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui_2exp (x, 1, -6) == 0);
 
+  mpfr_set_str_binary (x, "1E1000000000");
+  mpfr_sinh (x, x, GMP_RNDN);
+  MPFR_ASSERTN (MPFR_IS_INF (x) && MPFR_SIGN (x) > 0);
+  mpfr_set_str_binary (x, "-1E1000000000");
+  mpfr_sinh (x, x, GMP_RNDN);
+  MPFR_ASSERTN (MPFR_IS_INF (x) && MPFR_SIGN (x) < 0);
+
   mpfr_clear (x);
 }
 
