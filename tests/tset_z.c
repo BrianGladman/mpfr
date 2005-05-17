@@ -118,6 +118,7 @@ check_large (void)
   set_emin (emin);
 
   mpz_clear (z);
+
   mpfr_clear (x);
   mpfr_clear (y);
 }
@@ -130,7 +131,7 @@ main (int argc, char *argv[])
   tests_start_mpfr ();
 
   check_large ();
-  check (0, (mp_rnd_t) 0);
+  check (0, GMP_RNDN);
   for (j = 0; j < 200000; j++)
     check (randlimb () & LONG_MAX, (mp_rnd_t) RND_RAND ());
   check0 ();

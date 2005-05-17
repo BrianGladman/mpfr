@@ -33,7 +33,7 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
   int k, sign_z, inex;
   mp_limb_t *fp, *zp;
   mp_exp_t exp;
-  
+
   sign_z = mpz_sgn (z);
   if (MPFR_UNLIKELY (sign_z == 0))
     {
@@ -43,16 +43,16 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
     }
   MPFR_ASSERTD (sign_z == MPFR_SIGN_POS || sign_z == MPFR_SIGN_NEG);  
 
-  fp = MPFR_MANT(f);
-  fn = MPFR_LIMB_SIZE(f);
   zn = ABS(SIZ(z));
   MPFR_ASSERTD (zn >= 1);
+  if (MPFR_UNLIKELY (zn > MPFR_EMAX_MAX / BITS_PER_MP_LIMB + 1))
+    return mpfr_overflow (f, rnd_mode, sign_z);
+
+  fp = MPFR_MANT (f);
+  fn = MPFR_LIMB_SIZE (f);
   dif = zn - fn;
   zp = PTR(z);
   count_leading_zeros (k, zp[zn-1]);
-
-  if (MPFR_UNLIKELY (zn > MPFR_EMAX_MAX / BITS_PER_MP_LIMB + 1))
-    return mpfr_overflow(f, rnd_mode, sign_z);
   /* because zn >= __gmpfr_emax / BITS_PER_MP_LIMB + 2
      and zn * BITS_PER_MP_LIMB >= __gmpfr_emax + BITS_PER_MP_LIMB + 1
      and exp = zn * BITS_PER_MP_LIMB - k > __gmpfr_emax */

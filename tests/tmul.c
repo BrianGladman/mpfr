@@ -618,6 +618,20 @@ check_regression (void)
       exit (1);
     }
 
+  mpfr_set_prec (x, 1023);
+  mpfr_set_prec (y, 1023);
+  mpfr_set_prec (z, 511);
+  mpfr_set_ui (x, 17, GMP_RNDN);
+  mpfr_set_ui (y, 42, GMP_RNDN);
+  i = mpfr_mul (z, x, y, GMP_RNDN);
+  if (mpfr_cmp_ui (z, 17*42) != 0 || i != 0)
+    {
+      printf ("Regression test (8) failed! (i=%d - expected 0)\nz=", i);
+      mpfr_out_str (stdout, 16, 0, z, GMP_RNDN);
+      printf ("\n");
+      exit (1);
+    }
+
   mpfr_clears (x, y, z, NULL);
 }
 
