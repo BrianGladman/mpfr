@@ -470,6 +470,14 @@ special ()
   test_pow (z, x, y, GMP_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui (z, 1) == 0);
 
+  /* Check (-0)^(17.0001) */
+  mpfr_set_prec (x, 6);
+  mpfr_set_prec (y, 640);
+  MPFR_SET_ZERO (x); MPFR_SET_NEG (x);
+  mpfr_set_ui (y, 17, GMP_RNDN); mpfr_nextabove (y);
+  test_pow (z, x, y, GMP_RNDN);
+  MPFR_ASSERTN (MPFR_IS_ZERO (z) && MPFR_IS_POS (z));
+
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);
