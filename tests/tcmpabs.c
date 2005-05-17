@@ -34,11 +34,17 @@ main (void)
 
   tests_start_mpfr ();
 
-  mpfr_init (xx);
-  mpfr_init (yy);
+  mpfr_init2 (xx, 2);
+  mpfr_init2 (yy, 2);
 
-  mpfr_set_prec (xx, 2);
-  mpfr_set_prec (yy, 2);
+  mpfr_clear_erangeflag ();
+  MPFR_SET_NAN (xx);
+  MPFR_SET_NAN (yy);
+  if (mpfr_cmpabs (xx, yy) != 0)
+    ERROR ("mpfr_cmpabs (NAN,NAN) returns non-zero\n");
+  if (!mpfr_erangeflag_p ())
+    ERROR ("mpfr_cmpabs (NAN,NAN) doesn't set erange flag\n");
+
   mpfr_set_str_binary (xx, "0.10E0");
   mpfr_set_str_binary (yy, "-0.10E0");
   if (mpfr_cmpabs (xx, yy) != 0)
@@ -69,7 +75,7 @@ main (void)
   mpfr_set_ui (yy, 1, (mp_rnd_t) 0);
   if (mpfr_cmpabs(xx, yy) != 0)
     ERROR ("Error in mpfr_cmpabs: 1.0 != 1.0\n");
-    
+
   mpfr_set_prec (yy, 31);
   mpfr_set_str (xx, "-1.0000000002", 10, (mp_rnd_t) 0);
   mpfr_set_ui (yy, 1, (mp_rnd_t) 0);
@@ -100,11 +106,15 @@ main (void)
   mpfr_set_prec (xx, 2);
   mpfr_set_prec (yy, 128);
   mpfr_set_str_binary (xx, "0.1E10");
-  mpfr_set_str_binary (yy, 
+  mpfr_set_str_binary (yy,
 		       "0.100000000000000000000000000000000000000000000000"
 		       "00000000000000000000000000000000000000000000001E10");
   if (mpfr_cmpabs (xx, yy) >= 0)
     ERROR ("Error in mpfr_cmpabs(10.235, 2346.09234)\n");
+  mpfr_swap (xx, yy);
+  if (mpfr_cmpabs(xx, yy) <= 0)
+    ERROR ("Error in mpfr_cmpabs(2346.09234, 10.235)\n");
+  mpfr_swap (xx, yy);
 
   /* Check for NAN */
   mpfr_set_nan (xx);
