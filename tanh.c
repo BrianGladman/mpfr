@@ -36,7 +36,7 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
   /* Special value checking */
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (xt)))
     {
-      if (MPFR_IS_NAN (xt)) 
+      if (MPFR_IS_NAN (xt))
 	{
 	  MPFR_SET_NAN (y);
 	  MPFR_RET_NAN;
@@ -66,7 +66,7 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
     /* Declaration of the intermediary variable */
     mpfr_t t, te;
     mp_exp_t d;
-    
+
     /* Declaration of the size variable */
     mp_prec_t Ny = MPFR_PREC(y);   /* target precision */
     mp_prec_t Nt;                  /* working precision */
@@ -79,7 +79,7 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
     Nt += ABS (MPFR_GET_EXP (x));
 
     /* initialise of intermediary variable */
-    mpfr_init2 (t, Nt); 
+    mpfr_init2 (t, Nt);
     mpfr_init2 (te, Nt);
 
     MPFR_ZIV_INIT (loop, Nt);
@@ -91,23 +91,21 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
       mpfr_add_ui (t, te, 1, GMP_RNDD);   /* exp(2x) + 1*/
       mpfr_sub_ui (te, te, 1, GMP_RNDU);  /* exp(2x) - 1*/
       mpfr_div (t, te, t, GMP_RNDN);      /* (exp(2x)-1)/(exp(2x)+1)*/
-      
+
       /* Calculation of the error*/
       d = d - MPFR_GET_EXP (t);
       err = Nt - (MAX(d + 1, 3) + 1);
-      
+
       if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
 	break;
 
       /* if t=1, we still can round */
-      if (MPFR_GET_EXP (t) == 1) {
-	if (err > Ny + (rnd_mode == GMP_RNDN))
-	  if ((rnd_mode == GMP_RNDZ) ||
-	      (rnd_mode == GMP_RNDD && MPFR_IS_POS (t)) ||
-	      (rnd_mode == GMP_RNDU && MPFR_IS_NEG (t)))
-	    mpfr_nexttozero (t);
-	break;
-      }
+      if (MPFR_GET_EXP (t) == 1)
+        {
+          if (err > Ny && MPFR_IS_LIKE_RNDZ (rnd_mode, MPFR_IS_NEG (t)))
+            mpfr_nexttozero (t);
+          break;
+        }
 
       /* Actualisation of the precision */
       MPFR_ZIV_NEXT (loop, Nt);
