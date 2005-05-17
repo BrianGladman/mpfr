@@ -119,6 +119,21 @@ main (void)
   if (!mpfr_fits_sshort_p(x, GMP_RNDN))
     ERROR2;
 
+  /* Check 17 */
+  mpfr_set_ui (x, 17, GMP_RNDN);
+  if (!mpfr_fits_ulong_p(x, GMP_RNDN))
+    ERROR2;
+  if (!mpfr_fits_slong_p(x, GMP_RNDN))
+    ERROR2;
+  if (!mpfr_fits_uint_p(x, GMP_RNDN))
+    ERROR2;
+  if (!mpfr_fits_sint_p(x, GMP_RNDN))
+    ERROR2;
+  if (!mpfr_fits_ushort_p(x, GMP_RNDN))
+    ERROR2;
+  if (!mpfr_fits_sshort_p(x, GMP_RNDN))
+    ERROR2;
+
   /* Check all other values */
   mpfr_set_ui(x, ULONG_MAX, GMP_RNDN);
   mpfr_mul_2exp(x, x, 1, GMP_RNDN);
@@ -163,6 +178,21 @@ main (void)
   if (!mpfr_fits_sshort_p(x, GMP_RNDN))
     ERROR2;
 
+  /* Check negative value */
+  mpfr_set_si (x, -1, GMP_RNDN);
+  if (!mpfr_fits_sint_p(x, GMP_RNDN))
+    ERROR2;
+  if (!mpfr_fits_sshort_p(x, GMP_RNDN))
+    ERROR2;
+  if (!mpfr_fits_slong_p(x, GMP_RNDN))
+    ERROR2;
+  if (mpfr_fits_uint_p(x, GMP_RNDN))
+    ERROR1;
+  if (mpfr_fits_ushort_p(x, GMP_RNDN))
+    ERROR1;
+  if (mpfr_fits_ulong_p(x, GMP_RNDN))
+    ERROR1;
+
   mpfr_clear (x);
 
   check_intmax ();
@@ -206,6 +236,20 @@ static void check_intmax (void)
   if (!mpfr_fits_intmax_p(x, GMP_RNDN))
     ERROR2;
 
+  /* Check 17 */
+  mpfr_set_ui (x, 17, GMP_RNDN);
+  if (!mpfr_fits_uintmax_p(x, GMP_RNDN))
+    ERROR2;
+  if (!mpfr_fits_intmax_p(x, GMP_RNDN))
+    ERROR2;
+
+  /* Check hugest */
+  mpfr_set_ui_2exp (x, 42, sizeof (uintmax_t) * 32, GMP_RNDN);
+  if (mpfr_fits_uintmax_p (x, GMP_RNDN))
+    ERROR1;
+  if (mpfr_fits_intmax_p (x, GMP_RNDN))
+    ERROR1;
+
   /* Check all other values */
   mpfr_set_uj (x, UINTMAX_MAX, GMP_RNDN);
   mpfr_add_ui (x, x, 1, GMP_RNDN);
@@ -226,6 +270,13 @@ static void check_intmax (void)
     ERROR2;
   mpfr_sub_ui (x, x, 1, GMP_RNDN);
   if (mpfr_fits_intmax_p (x, GMP_RNDN))
+    ERROR1;
+
+  /* Check negative value */
+  mpfr_set_si (x, -1, GMP_RNDN);
+  if (!mpfr_fits_intmax_p (x, GMP_RNDN))
+    ERROR2;
+  if (mpfr_fits_uintmax_p (x, GMP_RNDN))
     ERROR1;
 
   mpfr_clear (x);
