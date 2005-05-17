@@ -34,25 +34,25 @@ mpfr_sinh (mpfr_ptr y, mpfr_srcptr xt, mp_rnd_t rnd_mode)
   MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", xt, xt, rnd_mode),
 		 ("y[%#R]=%R inexact=%d", y, y, inexact));
 
-  if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(xt)))
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (xt)))
     {
-      if (MPFR_IS_NAN(xt))
+      if (MPFR_IS_NAN (xt))
 	{
-	  MPFR_SET_NAN(y);
+	  MPFR_SET_NAN (y);
 	  MPFR_RET_NAN;
 	}
-      else if (MPFR_IS_INF(xt))
+      else if (MPFR_IS_INF (xt))
 	{
-	  MPFR_SET_INF(y);
-	  MPFR_SET_SAME_SIGN(y, xt);
-	  MPFR_RET(0);
+	  MPFR_SET_INF (y);
+	  MPFR_SET_SAME_SIGN (y, xt);
+	  MPFR_RET (0);
 	}
       else /* xt is zero */
 	{
-	  MPFR_ASSERTD(MPFR_IS_ZERO(xt));
-	  MPFR_SET_ZERO(y);   /* sinh(0) = 0 */
-	  MPFR_SET_SAME_SIGN(y, xt);
-	  MPFR_RET(0);
+	  MPFR_ASSERTD (MPFR_IS_ZERO (xt));
+	  MPFR_SET_ZERO (y);   /* sinh(0) = 0 */
+	  MPFR_SET_SAME_SIGN (y, xt);
+	  MPFR_RET (0);
 	}
     }
 
@@ -67,7 +67,7 @@ mpfr_sinh (mpfr_ptr y, mpfr_srcptr xt, mp_rnd_t rnd_mode)
     mp_prec_t Nt;    /* Precision of the intermediary variable */
     long int err;    /* Precision of error */
     MPFR_ZIV_DECL (loop);
-    int overflow_p = mpfr_overflow_p ();
+    MPFR_SAVE_EXPO_DECL (expo);
 
     /* compute the precision of intermediary variable */
     Nt = MAX (MPFR_PREC (x), MPFR_PREC (y));
@@ -81,6 +81,8 @@ mpfr_sinh (mpfr_ptr y, mpfr_srcptr xt, mp_rnd_t rnd_mode)
     mpfr_init2 (t, Nt);
     mpfr_init2 (ti, Nt);
 
+    MPFR_SAVE_EXPO_MARK (expo);
+
     /* First computation of sinh */
     MPFR_ZIV_INIT (loop, Nt);
     for (;;) {
@@ -92,6 +94,7 @@ mpfr_sinh (mpfr_ptr y, mpfr_srcptr xt, mp_rnd_t rnd_mode)
       if (MPFR_UNLIKELY (mpfr_overflow_p () || mpfr_underflow_p ())) {
         mpfr_overflow (t, rnd_mode,
                        mpfr_overflow_p () ? MPFR_SIGN_POS : MPFR_SIGN_NEG);
+        MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, MPFR_FLAGS_OVERFLOW);
 	break;
       }
       d = MPFR_GET_EXP (t);
@@ -101,8 +104,9 @@ mpfr_sinh (mpfr_ptr y, mpfr_srcptr xt, mp_rnd_t rnd_mode)
 
       /* it may be that t is zero (in fact, it can only occur when te=1,
 	 and thus ti=1 too) */
-      err = 0;
-      if (!MPFR_IS_ZERO (t))
+      if (MPFR_IS_ZERO (t))
+        err = Nt; /* double the precision */
+      else
 	{
 	  /* calculation of the error */
 	  d = d - MPFR_GET_EXP (t) + 2;
@@ -121,12 +125,11 @@ mpfr_sinh (mpfr_ptr y, mpfr_srcptr xt, mp_rnd_t rnd_mode)
     }
     MPFR_ZIV_FREE (loop);
     inexact = mpfr_set4 (y, t, rnd_mode, MPFR_SIGN (xt));
-    if (overflow_p != 0)
-      __gmpfr_flags |= MPFR_FLAGS_OVERFLOW;
 
     mpfr_clear (t);
     mpfr_clear (ti);
+    MPFR_SAVE_EXPO_FREE (expo);
   }
 
-  return inexact;
+  MPFR_RET (mpfr_check_range (y, inexact, rnd_mode));
 }
