@@ -66,7 +66,6 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
     /* Declaration of the intermediary variable */
     mpfr_t t, te;
     mp_exp_t d;
-    int inexact2 = 0;
 
     /* Declaration of the size variable */
     mp_prec_t Ny = MPFR_PREC(y);   /* target precision */
@@ -87,15 +86,18 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
     for (;;) {
       /* tanh = (exp(2x)-1)/(exp(2x)+1) */
       mpfr_mul_2ui (te, x, 1, GMP_RNDN);  /* 2x */
-      /* since x > 0, we can't have underflow */
+      /* since x > 0, we can only have an overflow */
       mpfr_exp (te, te, GMP_RNDN);        /* exp(2x) */
       if (MPFR_UNLIKELY (MPFR_IS_INF (te))) {
-        inexact2 = 1;
-        mpfr_set (t, __gmpfr_one, GMP_RNDN);
-        if (MPFR_IS_LIKE_RNDZ (rnd_mode, MPFR_IS_NEG (xt)))
+        int sign;
+      set_one:
+        sign = MPFR_SIGN (xt);
+        inexact = MPFR_FROM_SIGN_TO_INT (sign);
+        mpfr_set4 (y, __gmpfr_one, GMP_RNDN, sign);
+        if (MPFR_IS_LIKE_RNDZ (rnd_mode, MPFR_IS_NEG_SIGN (sign)))
           {
-            inexact2 = -1;
-            mpfr_nexttozero (t);
+            inexact = -inexact;
+            mpfr_nexttozero (y);
           }
         break;
       }
@@ -109,19 +111,14 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
       err = Nt - (MAX(d + 1, 3) + 1);
 
       if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
-	break;
-
-      /* if t=1, we still can round */
-      if (MPFR_GET_EXP (t) == 1)
         {
-          inexact2 = 1;
-          if (err > Ny && MPFR_IS_LIKE_RNDZ (rnd_mode, MPFR_IS_NEG (xt)))
-            {
-              mpfr_nexttozero (t);
-              inexact2 = -1;
-            }
+          inexact = mpfr_set4 (y, t, rnd_mode, MPFR_SIGN (xt));
           break;
         }
+
+      /* if t=1, we still can round since |sinh(x)| < 1 */
+      if (MPFR_GET_EXP (t) == 1)
+        goto set_one;
 
       /* Actualisation of the precision */
       MPFR_ZIV_NEXT (loop, Nt);
@@ -129,9 +126,6 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
       mpfr_set_prec (te, Nt);
     }
     MPFR_ZIV_FREE (loop);
-    inexact = mpfr_set4 (y, t, rnd_mode, MPFR_SIGN (xt));
-    if (inexact == 0)
-      inexact = inexact2;
     mpfr_clear (te);
     mpfr_clear (t);
   }
