@@ -23,85 +23,87 @@ MA 02111-1307, USA. */
 #include "mpfr-impl.h"
 
 /* return non zero iff x^y is exact.
-   Assumes x and y are ordinary numbers (neither NaN nor Inf),
-   and y is not zero.
-   Assumes the case x < 0 and y not an integer does not happen.
+   Assumes x and y are ordinary numbers,
+   y is not an integer, x is not a power of 2 and x is positive
+
+   If x^y is exact, it computes it.
 */
 static int
-mpfr_pow_is_exact (mpfr_srcptr x, mpfr_srcptr y)
+mpfr_pow_is_exact (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
+                   mp_rnd_t rnd_mode, int *inexact)
 {
-  mp_exp_t d;
-  unsigned long i, c;
-  mp_limb_t *yp;
-  mp_size_t ysize;
+  mpz_t a, c;
+  mp_exp_t d, b;
+  unsigned long i;
+  int res;
 
-  /* NAN, INF or ZERO are not allowed */
   MPFR_ASSERTD (!MPFR_IS_SINGULAR (y));
   MPFR_ASSERTD (!MPFR_IS_SINGULAR (x));
+  MPFR_ASSERTD (!mpfr_integer_p (y));
+  MPFR_ASSERTD (mpfr_cmp_si_2exp (x, MPFR_INT_SIGN (x),
+                                  MPFR_GET_EXP (x) - 1) != 0);
+  MPFR_ASSERTD (MPFR_IS_POS (x));
 
   if (MPFR_IS_NEG (y))
-    {
-      mp_exp_t b;
-      mpfr_t z;
-      int res;
-      if (mpfr_cmp_si_2exp (x, MPFR_INT_SIGN (x), MPFR_GET_EXP (x) - 1) != 0)
-        return 0; /* x is not a power of two */
-      /* now x = 2^b, so x^y = 2^(b*y) is exact whenever b*y is an integer */
-      b = MPFR_GET_EXP (x) - 1; /* x = 2^b */
-      mpfr_init2 (z, MPFR_PREC(y) + BITS_PER_MP_LIMB);
-      mpfr_mul_si (z, y, b, GMP_RNDN); /* exact */
-      res = mpfr_integer_p (z);
-      mpfr_clear (z);
-      return res;
-    }
+    return 0; /* x is not a power of two => x^-y is not exact */
 
   /* compute d such that y = c*2^d with c odd integer */
-  ysize = 1 + (MPFR_PREC(y) - 1) / BITS_PER_MP_LIMB;
-  d = MPFR_GET_EXP (y) - ysize * BITS_PER_MP_LIMB;
-  /* since y is not zero, necessarily one of the mantissa limbs is not zero,
-     thus we can simply loop until we find a non zero limb */
-  yp = MPFR_MANT(y);
-  for (i = 0; yp[i] == 0; i++, d += BITS_PER_MP_LIMB);
-  /* now yp[i] is not zero */
-  count_trailing_zeros (c, yp[i]);
-  d += c;
+  mpz_init (c);
+  d = mpfr_get_z_exp (c, y);
+  i = mpz_scan1 (c, 0);
+  mpz_div_2exp (c, c, i);
+  d += i;
+  /* now y=c*2^d with c odd */
+  /* Since y is not an integer, d is necessarily < 0 */
+  MPFR_ASSERTD (d < 0);
 
-  if (d < 0)
+  /* Compute a,b such that x=a*2^b */
+  mpz_init (a);
+  b = mpfr_get_z_exp (a, x);
+  i = mpz_scan1 (a, 0);
+  mpz_div_2exp (a, a, i);
+  b += i;
+  /* now x=a*2^b with a is odd */
+
+  for (res = 1 ; d != 0 ; d++)
     {
-      mpz_t a;
-      mp_exp_t b;
-
-      mpz_init (a);
-      b = mpfr_get_z_exp (a, x); /* x = a * 2^b */
-      c = mpz_scan1 (a, 0);
-      mpz_div_2exp (a, a, c);
-      b += c;
-      /* now a is odd */
-      while (d != 0)
+      /* a*2^b is a square iff
+            (i)  a is a square when b is even
+            (ii) 2*a is a square when b is odd */
+      if (b % 2 != 0)
         {
-          /* a * 2^b is a square iff (i)  a is a square when b is even
-                                     (ii) 2*a is a square when b is odd */
-          if (b % 2 != 0)
-            {
-              mpz_mul_2exp (a, a, 1); /* 2*a */
-              b --;
-            }
-          if (mpz_perfect_square_p (a))
-            {
-              d ++;
-              mpz_sqrt (a, a);
-              b = b / 2;
-            }
-          else
-            {
-              mpz_clear (a);
-              return 0;
-            }
+          mpz_mul_2exp (a, a, 1); /* 2*a */
+          b --;
         }
-      mpz_clear (a);
+      MPFR_ASSERTD ((b % 2) == 0);
+      if (!mpz_perfect_square_p (a))
+        {
+          res = 0;
+          goto end;
+        }
+      mpz_sqrt (a, a);
+      b = b / 2;
     }
-
-    return 1;
+  /* Now x = (a'*2^b')^(2^-d) with d < 0
+     so x^y = ((a'*2^b')^(2^-d))^(c*2^d)
+            = ((a'*2^b')^c with c odd integer */
+  {
+    mpfr_t tmp;
+    mp_prec_t p;
+    MPFR_MPZ_SIZEINBASE2 (p, a);
+    mpfr_init2 (tmp, p); /* prec = 1 should not be possible */
+    res = mpfr_set_z (tmp, a, GMP_RNDN);
+    MPFR_ASSERTD (res == 0);
+    res = mpfr_mul_2si (tmp, tmp, b, GMP_RNDN);
+    MPFR_ASSERTD (res == 0);
+    *inexact = mpfr_pow_z (z, tmp, c, rnd_mode);
+    mpfr_clear (tmp);
+    res = 1;
+  }
+ end:
+  mpz_clear (a);
+  mpz_clear (c);
+  return res;
 }
 
 /* Return 1 if y is an odd integer, 0 otherwise. */
@@ -293,13 +295,28 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
       MPFR_RET_NAN;
     }
 
+  /* Special case (2^b)^Y which could be exact */
+  if (mpfr_cmp_si_2exp (x, 1, MPFR_GET_EXP (x) - 1) == 0)
+    {
+      mpfr_t tmp;
+      mp_exp_t b;
+      /* now x = 2^b, so x^y = 2^(b*y) is exact whenever b*y is an integer */
+      b = MPFR_GET_EXP (x) - 1; /* x = 2^b */
+      mpfr_init2 (tmp, MPFR_PREC (y) + BITS_PER_MP_LIMB);
+      inexact = mpfr_mul_si (tmp, y, b, GMP_RNDN); /* exact */
+      MPFR_ASSERTD (inexact == 0);
+      inexact = mpfr_exp2 (z, tmp, rnd_mode);
+      mpfr_clear (tmp);
+      return inexact;
+    }
+
   MPFR_SAVE_EXPO_MARK (expo);
 
   /* General case */
   {
     /* Declaration of the intermediary variable */
     mpfr_t t;
-    int loop = 0;
+    int check_exact_case = 0;
     /* Declaration of the size variable */
     mp_prec_t Nz = MPFR_PREC(z);               /* target precision */
     mp_prec_t Nt;                              /* working precision */
@@ -316,42 +333,35 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
     MPFR_ZIV_INIT (ziv_loop, Nt);
     for (;;)
       {
-        loop ++;
-
         /* compute exp(y*ln(x)) */
         mpfr_log (t, x, GMP_RNDU);               /* ln(x) */
         mpfr_mul (t, y, t, GMP_RNDU);            /* y*ln(x) */
 	exp_te = MPFR_GET_EXP (t);               /* FIXME: May overflow */
         mpfr_exp (t, t, GMP_RNDN);               /* exp(y*ln(x))*/
                                                  /* FIXME: May overflow */
-
 	/* estimate of the error -- see pow function in algorithms.tex.
            The error on t is at most 1/2 + 3*2^(exp_te+1) ulps, which is
            <= 2^(exp_te+3) for exp_te >= -1, and <= 2 ulps for exp_te <= -2 */
         err = (exp_te >= -1) ? Nt - (exp_te + 3) : Nt - 1;
         if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, Nz, rnd_mode)))
-	  break;
+          {
+            inexact = mpfr_set (z, t, rnd_mode);
+            break;
+          }
 
         /* check exact power */
-        if (loop == 1)
+        if (check_exact_case == 0)
           {
-            if (mpfr_pow_is_exact (x, y))
-	      {
-		inexact = 0;
-		break;
-	      }
-	  }
+            if (mpfr_pow_is_exact (z, x, y, rnd_mode, &inexact))
+              break;
+            check_exact_case = 1;
+          }
 
         /* reactualisation of the precision */
 	MPFR_ZIV_NEXT (ziv_loop, Nt);
         mpfr_set_prec (t, Nt);
       }
     MPFR_ZIV_FREE (ziv_loop);
-
-    if (inexact)
-      inexact = mpfr_set (z, t, rnd_mode);
-    else /* result is exact: round to nearest and return inexact=0 */
-      mpfr_set (z, t, GMP_RNDN);
 
     mpfr_clear (t);
   }
