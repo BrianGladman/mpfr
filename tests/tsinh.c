@@ -32,6 +32,7 @@ static void
 special (void)
 {
   mpfr_t x;
+  int i;
 
   mpfr_init (x);
 
@@ -57,15 +58,33 @@ special (void)
   mpfr_sinh (x, x, GMP_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui_2exp (x, 1, -6) == 0);
 
+  mpfr_clear_flags ();
   mpfr_set_str_binary (x, "1E1000000000");
-  mpfr_sinh (x, x, GMP_RNDN);
+  i = mpfr_sinh (x, x, GMP_RNDN);
   MPFR_ASSERTN (MPFR_IS_INF (x) && MPFR_SIGN (x) > 0);
   MPFR_ASSERTN (mpfr_overflow_p ());
-  mpfr_clear_underflow ();
+  MPFR_ASSERTN (i == 1);
+
+  mpfr_clear_flags ();
   mpfr_set_str_binary (x, "-1E1000000000");
-  mpfr_sinh (x, x, GMP_RNDN);
+  i = mpfr_sinh (x, x, GMP_RNDN);
   MPFR_ASSERTN (MPFR_IS_INF (x) && MPFR_SIGN (x) < 0);
   MPFR_ASSERTN (mpfr_overflow_p () && !mpfr_underflow_p ());
+  MPFR_ASSERTN (i == -1);
+
+  mpfr_clear_flags ();
+  mpfr_set_str_binary (x, "-1E1000000000");
+  i = mpfr_sinh (x, x, GMP_RNDD);
+  MPFR_ASSERTN (MPFR_IS_INF (x) && MPFR_SIGN (x) < 0);
+  MPFR_ASSERTN (mpfr_overflow_p () && !mpfr_underflow_p ());
+  MPFR_ASSERTN (i == -1);
+
+  mpfr_clear_flags ();
+  mpfr_set_str_binary (x, "-1E1000000000");
+  i = mpfr_sinh (x, x, GMP_RNDU);
+  MPFR_ASSERTN (!MPFR_IS_INF (x) && MPFR_SIGN (x) < 0);
+  MPFR_ASSERTN (mpfr_overflow_p () && !mpfr_underflow_p ());
+  MPFR_ASSERTN (i == 1);
 
   mpfr_clear (x);
 }
