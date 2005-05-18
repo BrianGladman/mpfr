@@ -40,7 +40,7 @@ mpfr_pow_is_exact (mpfr_srcptr x, mpfr_srcptr y)
       mp_exp_t b;
       mpfr_t z;
       int res;
-      if (mpfr_cmp_si_2exp (x, MPFR_SIGN(x), MPFR_GET_EXP (x) - 1) != 0)
+      if (mpfr_cmp_si_2exp (x, MPFR_INT_SIGN (x), MPFR_GET_EXP (x) - 1) != 0)
         return 0; /* x is not a power of two */
       /* now x = 2^b, so x^y = 2^(b*y) is exact whenever b*y is an integer */
       b = MPFR_GET_EXP (x) - 1; /* x = 2^b */
@@ -227,7 +227,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
     {
       /* pow(x, 0) returns 1 for any x, even a NaN. */
       if (MPFR_UNLIKELY (MPFR_IS_ZERO (y)))
-	return mpfr_set_ui (z, 1, GMP_RNDN);
+	return mpfr_set (z, __gmpfr_one, rnd_mode);
       else if (MPFR_IS_NAN (x))
 	{
 	  MPFR_SET_NAN (z);
@@ -236,8 +236,8 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
       else if (MPFR_IS_NAN (y))
 	{
 	  /* pow(+1, NaN) returns 1. */
-	  if (mpfr_cmp_ui (x, 1) == 0)
-	    return mpfr_set_ui (z, 1, GMP_RNDN);
+	  if (mpfr_cmp (x, __gmpfr_one) == 0)
+	    return mpfr_set (z, __gmpfr_one, rnd_mode);
 	  MPFR_SET_NAN (z);
 	  MPFR_RET_NAN;
 	}
@@ -272,7 +272,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 	      else
 		{
 		  /* Return 1. */
-		  return mpfr_set_ui (z, 1, GMP_RNDN);
+		  return mpfr_set (z, __gmpfr_one, rnd_mode);
 		}
 	    }
 	}
@@ -309,11 +309,8 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 	}
     }
 
-  if (mpfr_cmp_ui (x, 1) == 0) /* 1^y is always 1 */
-    {
-      mpfr_set_ui (z, 1, GMP_RNDN);
-      MPFR_RET(0);
-    }
+  if (mpfr_cmp (x, __gmpfr_one) == 0) /* 1^y is always 1 */
+    return mpfr_set (z, __gmpfr_one, rnd_mode);
 
   /* detect overflows: |x^y| >= 2^EMAX when (EXP(x)-1) * y >= EMAX for y > 0,
                                        or   EXP(x) * y     >= EMAX for y < 0 */
