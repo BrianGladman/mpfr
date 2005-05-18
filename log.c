@@ -45,7 +45,7 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
   mpfr_t tmp1, tmp2; 
   mp_limb_t *tmp1p, *tmp2p;
   MPFR_ZIV_DECL (loop);
-  TMP_DECL(marker);
+  MPFR_TMP_DECL(marker);
   
   MPFR_LOG_FUNC (("a[%#R]=%R rnd=%d", a, a, rnd_mode),
 		 ("r[%#R]=%R inexact=%d", r, r, inexact));
@@ -106,7 +106,7 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
   /* if (MPFR_LIKELY(p % BITS_PER_MP_LIMB != 0))
       p += BITS_PER_MP_LIMB - (p%BITS_PER_MP_LIMB); */
       
-  TMP_MARK(marker);
+  MPFR_TMP_MARK(marker);
 
   MPFR_ZIV_INIT (loop, p);
   for (;;) 
@@ -151,7 +151,7 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
   MPFR_ZIV_FREE (loop);
   inexact = mpfr_set (r, tmp1, rnd_mode);
   /* We clean */
-  TMP_FREE(marker);
+  MPFR_TMP_FREE(marker);
 
   return inexact; /* result is inexact */
 }

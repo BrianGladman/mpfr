@@ -139,9 +139,9 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   int inexact;
   mp_limb_t bcp,bcp1; /* Cp and C'p+1 */
   mp_limb_t bbcp, bbcp1; /* Cp+1 and C'p+2 */
-  TMP_DECL(marker);
+  MPFR_TMP_DECL(marker);
 
-  TMP_MARK(marker);
+  MPFR_TMP_MARK(marker);
 
   MPFR_ASSERTD(MPFR_PREC(a) == MPFR_PREC(b) && MPFR_PREC(b) == MPFR_PREC(c));
   MPFR_ASSERTD(MPFR_IS_PURE_FP(b) && MPFR_IS_PURE_FP(c));
@@ -258,7 +258,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
           /* Check expo underflow */
           if (MPFR_UNLIKELY(bx < __gmpfr_emin))
             {
-              TMP_FREE(marker);
+              MPFR_TMP_FREE(marker);
               /* inexact=0 */
               DEBUG( printf("(D==0 Underflow)\n") );
               if (rnd_mode == GMP_RNDN &&
@@ -270,7 +270,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
           MPFR_SET_EXP (a, bx);
           /* No rounding is necessary since the result is exact */
           MPFR_ASSERTD(ap[n-1] > ~ap[n-1]);
-          TMP_FREE(marker);
+          MPFR_TMP_FREE(marker);
           return 0;
         }
       else /* if (d == 1) */
@@ -292,7 +292,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
               /* Shift c in the allocated temporary block */
             SubD1NoLose:
               c0 = cp[0] & (MPFR_LIMB_ONE<<sh);
-              cp = (mp_limb_t*) TMP_ALLOC(n * BYTES_PER_MP_LIMB);
+              cp = (mp_limb_t*) MPFR_TMP_ALLOC(n * BYTES_PER_MP_LIMB);
               mpn_rshift(cp, MPFR_MANT(c), n, 1);
               if (MPFR_LIKELY(c0 == 0))
                 {
@@ -303,7 +303,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
                   /* No truncate or normalize is needed */
                   MPFR_ASSERTD(ap[n-1] > ~ap[n-1]);
                   /* No rounding is necessary since the result is exact */
-                  TMP_FREE(marker);
+                  MPFR_TMP_FREE(marker);
                   return 0;
                 }
               ap = MPFR_MANT(a);
@@ -337,7 +337,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
               /* Calcul of 2*b-c (Exact) */
               /* Shift b in the allocated temporary block */
             SubD1Lose:
-              bp = (mp_limb_t*) TMP_ALLOC (n * BYTES_PER_MP_LIMB);
+              bp = (mp_limb_t*) MPFR_TMP_ALLOC (n * BYTES_PER_MP_LIMB);
               mpn_lshift (bp, MPFR_MANT(b), n, 1);
               ap = MPFR_MANT(a);
               mpn_sub_n (ap, bp, cp, n);
@@ -374,7 +374,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
                   MPFR_SET_EXP (a, bx); /* No expo overflow! */
                   /* No Normalize is needed*/
                   /* No Rounding is needed */
-                  TMP_FREE (marker);
+                  MPFR_TMP_FREE (marker);
                   return 0;
                 }
               /* carry = cp[k]/2+(cp[k-1]&1)<<(BITS_PER_MP_LIMB-1) = c'[k]*/
@@ -488,7 +488,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
       /* General case: 2 <= d < p */
       MPFR_UNSIGNED_MINUS_MODULO(sh, p);
-      cp = (mp_limb_t*) TMP_ALLOC(n * BYTES_PER_MP_LIMB);
+      cp = (mp_limb_t*) MPFR_TMP_ALLOC(n * BYTES_PER_MP_LIMB);
 
       /* Shift c in temporary allocated place */
       dm = d % BITS_PER_MP_LIMB;
@@ -780,13 +780,13 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
           (bx < __gmpfr_emin - 1 ||
            (inexact >= 0 && mpfr_powerof2_raw (a))))
         rnd_mode = GMP_RNDZ;
-      TMP_FREE(marker);
+      MPFR_TMP_FREE(marker);
       return mpfr_underflow (a, rnd_mode, MPFR_SIGN(a));
     }
   */
   MPFR_SET_EXP (a, bx);
 
-  TMP_FREE(marker);
+  MPFR_TMP_FREE(marker);
 
   return inexact*MPFR_INT_SIGN(a);
 }

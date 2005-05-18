@@ -48,12 +48,12 @@ mpfr_mpn_exp (mp_limb_t *a, mp_exp_t *exp_r, int b, mp_exp_t e, size_t n)
                                  /* error == t means no error */
   int err_s_a2 = 0;
   int err_s_ab = 0;              /* number of error when shift A^2, AB */
-  TMP_DECL(marker);
+  MPFR_TMP_DECL(marker);
 
   MPFR_ASSERTN(e > 0);
   MPFR_ASSERTN((2 <= b) && (b <= 36));
 
-  TMP_MARK(marker);
+  MPFR_TMP_MARK(marker);
 
   /* initialization of a, b, f, h */
 
@@ -67,7 +67,7 @@ mpfr_mpn_exp (mp_limb_t *a, mp_exp_t *exp_r, int b, mp_exp_t e, size_t n)
   h = - h;
 
   /* allocate space for A and set it to B */
-  c = (mp_limb_t*) TMP_ALLOC(2 * n * BYTES_PER_MP_LIMB);
+  c = (mp_limb_t*) MPFR_TMP_ALLOC(2 * n * BYTES_PER_MP_LIMB);
   a [n - 1] = B;
   MPN_ZERO (a, n - 1);
   /* initial exponent for A: invariant is A = {a, n} * 2^f */
@@ -98,7 +98,7 @@ mpfr_mpn_exp (mp_limb_t *a, mp_exp_t *exp_r, int b, mp_exp_t e, size_t n)
       if (MPFR_UNLIKELY(f < MPFR_EXP_MIN/2 || f > MPFR_EXP_MAX/2))
 	{
 	overflow:
-	  TMP_FREE(marker);
+	  MPFR_TMP_FREE(marker);
 	  return -2;
 	}
       /* FIXME: Could f = 2*f + n * BITS_PER_MP_LIMB be used? */
@@ -145,7 +145,7 @@ mpfr_mpn_exp (mp_limb_t *a, mp_exp_t *exp_r, int b, mp_exp_t e, size_t n)
         }
     }
 
-  TMP_FREE(marker);
+  MPFR_TMP_FREE(marker);
 
   *exp_r = f;
 

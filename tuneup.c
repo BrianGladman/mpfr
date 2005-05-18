@@ -42,11 +42,11 @@ int verbose;
   double    t;                                       \
   mpfr_t    w, x;                                    \
   mp_size_t size;                                    \
-  TMP_DECL (marker);                                 \
+  MPFR_TMP_DECL (marker);                                 \
                                                      \
   SPEED_RESTRICT_COND (s->size >= MPFR_PREC_MIN);    \
   SPEED_RESTRICT_COND (s->size <= MPFR_PREC_MAX);    \
-  TMP_MARK (marker);                                 \
+  MPFR_TMP_MARK (marker);                                 \
                                                      \
   size = (s->size-1)/BITS_PER_MP_LIMB+1;             \
   s->xp[size-1] |= MPFR_LIMB_HIGHBIT;                \
@@ -66,7 +66,7 @@ int verbose;
   while (--i != 0);                                  \
   t = speed_endtime ();                              \
                                                      \
-  TMP_FREE (marker);                                 \
+  MPFR_TMP_FREE (marker);                                 \
   return t;                                          \
 } while (0)
 
@@ -76,11 +76,11 @@ int verbose;
   double    t;                                       \
   mpfr_t    w, x, y;                                 \
   mp_size_t size;                                    \
-  TMP_DECL (marker);                                 \
+  MPFR_TMP_DECL (marker);                                 \
                                                      \
   SPEED_RESTRICT_COND (s->size >= MPFR_PREC_MIN);    \
   SPEED_RESTRICT_COND (s->size <= MPFR_PREC_MAX);    \
-  TMP_MARK (marker);                                 \
+  MPFR_TMP_MARK (marker);                                 \
                                                      \
   size = (s->size-1)/BITS_PER_MP_LIMB+1;             \
   s->xp[size-1] |= MPFR_LIMB_HIGHBIT;                \
@@ -104,7 +104,7 @@ int verbose;
   while (--i != 0);                                  \
   t = speed_endtime ();                              \
                                                      \
-  TMP_FREE (marker);                                 \
+  MPFR_TMP_FREE (marker);                                 \
   return t;                                          \
 } while (0)
 
@@ -333,16 +333,16 @@ tune_mulder_upto (mp_size_t n)
   struct speed_params s;
   mp_size_t k, kbest;
   double t, tbest;
-  TMP_DECL (marker);
+  MPFR_TMP_DECL (marker);
 
   if (n == 0)
     return -1;
 
-  TMP_MARK (marker);
+  MPFR_TMP_MARK (marker);
   s.align_xp = s.align_yp = s.align_wp = 64;
   s.size = n;
-  s.xp   = TMP_ALLOC (n*sizeof (mp_limb_t));
-  s.yp   = TMP_ALLOC (n*sizeof (mp_limb_t));
+  s.xp   = MPFR_TMP_ALLOC (n*sizeof (mp_limb_t));
+  s.yp   = MPFR_TMP_ALLOC (n*sizeof (mp_limb_t));
   mpn_random (s.xp, n);
   mpn_random (s.yp, n);
 
@@ -367,7 +367,7 @@ tune_mulder_upto (mp_size_t n)
 
   mulhigh_ktab[n] = kbest;
 
-  TMP_FREE (marker);
+  MPFR_TMP_FREE (marker);
   return kbest;
 }
 

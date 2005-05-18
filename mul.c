@@ -43,7 +43,7 @@ mpfr_mul3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   mp_limb_t b1;
   mp_prec_t bq, cq;
   mp_size_t bn, cn, tn, k;
-  TMP_DECL(marker);
+  MPFR_TMP_DECL(marker);
 
   /* deal with special cases */
   if (MPFR_ARE_SINGULAR(b,c))
@@ -109,8 +109,8 @@ mpfr_mul3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
   /* Check for no size_t overflow*/
   MPFR_ASSERTD((size_t) k <= ((size_t) ~0) / BYTES_PER_MP_LIMB);
-  TMP_MARK(marker); 
-  tmp = (mp_limb_t *) TMP_ALLOC((size_t) k * BYTES_PER_MP_LIMB);
+  MPFR_TMP_MARK(marker); 
+  tmp = (mp_limb_t *) MPFR_TMP_ALLOC((size_t) k * BYTES_PER_MP_LIMB);
 
   /* multiplies two mantissa in temporary allocated space */
   b1 = (MPFR_LIKELY(bn >= cn)) ? 
@@ -135,7 +135,7 @@ mpfr_mul3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   if (MPFR_UNLIKELY(cc))
     MPFR_MANT(a)[MPFR_LIMB_SIZE(a)-1] = MPFR_LIMB_HIGHBIT;
 
-  TMP_FREE(marker);
+  MPFR_TMP_FREE(marker);
 
   {
     mp_exp_t ax2 = ax + (mp_exp_t) (b1 - 1 + cc);
@@ -209,7 +209,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   mp_limb_t b1;
   mp_prec_t bq, cq;
   mp_size_t bn, cn, tn, k;
-  TMP_DECL (marker);
+  MPFR_TMP_DECL (marker);
 
   MPFR_LOG_FUNC (("b[%#R]=%R c[%#R]=%R rnd=%d", b, b, c, c, rnd_mode),
 		 ("a[%#R]=%R inexact=%d", a, a, inexact));
@@ -290,8 +290,8 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
   /* Check for no size_t overflow*/
   MPFR_ASSERTD ((size_t) k <= ((size_t) ~0) / BYTES_PER_MP_LIMB);
-  TMP_MARK (marker);
-  tmp = (mp_limb_t *) TMP_ALLOC ((size_t) k * BYTES_PER_MP_LIMB);
+  MPFR_TMP_MARK (marker);
+  tmp = (mp_limb_t *) MPFR_TMP_ALLOC ((size_t) k * BYTES_PER_MP_LIMB);
 
   /* multiplies two mantissa in temporary allocated space */
   if (MPFR_UNLIKELY (bn < cn)) 
@@ -380,7 +380,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	    bp --;
 	  else
 	    {
-	      bp = TMP_ALLOC ((n+1)*sizeof (mp_limb_t));
+	      bp = MPFR_TMP_ALLOC ((n+1)*sizeof (mp_limb_t));
 	      bp[0] = 0;
 	      MPN_COPY (bp+1, MPFR_MANT (b)+bn-n, n);	
 	    }
@@ -388,7 +388,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 	    cp --; /* FIXME: Could this happen? */
 	  else
 	    {
-	      cp = TMP_ALLOC ((n+1)*sizeof (mp_limb_t));	      
+	      cp = MPFR_TMP_ALLOC ((n+1)*sizeof (mp_limb_t));	      
 	      cp[0] = 0;
 	      MPN_COPY (cp+1, MPFR_MANT (c)+cn-n, n);
 	    }
@@ -400,7 +400,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
 	  if (MPFR_LIKELY (k < 2*n))
 	    {
-	      tmp = TMP_ALLOC (2*n*sizeof (mp_limb_t));
+	      tmp = MPFR_TMP_ALLOC (2*n*sizeof (mp_limb_t));
 	      tmp += 2*n-k; /* `tmp' still points to an area of `k' limbs */
 	    }
 	}
@@ -446,7 +446,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
   ax2 = ax + (mp_exp_t) (b1 - 1);
   MPFR_RNDRAW (inexact, a, tmp, bq+cq, rnd_mode, sign, ax2++);
-  TMP_FREE (marker);
+  MPFR_TMP_FREE (marker);
   MPFR_EXP  (a) = ax2; /* Can't use MPFR_SET_EXP: Expo may be out of range */
   MPFR_SET_SIGN (a, sign);
   if (MPFR_UNLIKELY (ax2 > __gmpfr_emax))

@@ -77,7 +77,7 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mp_exp_t exps, cancel = 0;
   MPFR_ZIV_DECL (loop);
   MPFR_SAVE_EXPO_DECL (expo);
-  TMP_DECL (marker);
+  MPFR_TMP_DECL (marker);
 
   MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
 		 ("y[%#R]=%R inexact=%d", y, y, inexact));
@@ -115,7 +115,7 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   else
     m += -MPFR_GET_EXP (x);
 
-  TMP_MARK(marker);
+  MPFR_TMP_MARK(marker);
   sm = (m + BITS_PER_MP_LIMB - 1) / BITS_PER_MP_LIMB;
   MPFR_TMP_INIT (rp, r, m, sm);
   MPFR_TMP_INIT (sp, s, m, sm);
@@ -177,7 +177,7 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_ZIV_FREE (loop);
   inexact = mpfr_set (y, s, rnd_mode);
 
-  TMP_FREE (marker);
+  MPFR_TMP_FREE (marker);
  end:
   MPFR_SAVE_EXPO_FREE (expo);
   MPFR_RET (mpfr_check_range (y, inexact, rnd_mode));

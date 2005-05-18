@@ -17,17 +17,17 @@ mpn_dc_divrem_n_new (mp_ptr qp, mp_ptr np, mp_srcptr dp, mp_size_t n)
   mp_size_t l, m;
   mp_limb_t qh, cc, ql;
   mp_ptr tmp;
-  TMP_DECL (marker);
+  MPFR_TMP_DECL (marker);
 
   l = n / 2;
   m = n - l; /* m >= l */
 
-  TMP_MARK (marker);
+  MPFR_TMP_MARK (marker);
 
   qh = DIVREM (qp + l, np + 2 * l, dp + l, m);
   /* partial remainder is in {np, 2l+m} = {np, n+l} */
   /* subtract Q1 * D0, where Q1 = {qp + l, m}, D0 = {d, l} */
-  tmp = TMP_ALLOC_LIMBS (n);
+  tmp = MPFR_TMP_ALLOC_LIMBS (n);
   mpn_mul (tmp, qp + l, m, dp, l);
   cc = mpn_sub_n (np + l, np + l, tmp, n);
   if (qh) cc += mpn_sub_n (np + n, np + n, dp, l);
@@ -43,7 +43,7 @@ mpn_dc_divrem_n_new (mp_ptr qp, mp_ptr np, mp_srcptr dp, mp_size_t n)
   /* subtract Q0 * D0', where Q0 = {qp, l}, D0' = {d, m} */
   mpn_mul (tmp, dp, m, qp, l);
   cc = mpn_sub_n (np, np, tmp, n);
-  TMP_FREE (marker);
+  MPFR_TMP_FREE (marker);
   if (ql) cc += mpn_sub_n (np + l, np + l, dp, m);
   while (cc)
     {
@@ -68,21 +68,21 @@ mpn_dc_divrem_n_high (mp_ptr qp, mp_ptr np, mp_srcptr dp, mp_size_t n)
   mp_size_t l, m;
   mp_limb_t qh, cc, ql;
   mp_ptr tmp;
-  TMP_DECL (marker);
+  MPFR_TMP_DECL (marker);
 
   l = (n-1) / 2 ;
   m = n - l; /* m >= l */
 
-  TMP_MARK (marker);
+  MPFR_TMP_MARK (marker);
 
   qh = DIVREM (qp + l, np + 2 * l, dp + l, m);
   /* partial remainder is in {np, 2l+m} = {np, n+l} */
   /* subtract Q1 * D0, where Q1 = {qp + l, m}, D0 = {d, l} */
-  tmp = TMP_ALLOC_LIMBS (n);
+  tmp = MPFR_TMP_ALLOC_LIMBS (n);
   mpn_mul (tmp, qp + l, m, dp, l); /* FIXME: use a short product */
   /* mpfr_mulhigh_n (tmp+m+l-2*l, qp+l+m-l, dp, l); */
   cc = mpn_sub_n (np + l, np + l, tmp, n);
-  TMP_FREE (marker);
+  MPFR_TMP_FREE (marker);
   if (qh) cc += mpn_sub_n (np + n, np + n, dp, l);
   /* have to subtract cc at np[n+l] */
   while (cc)

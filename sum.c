@@ -35,9 +35,9 @@ void mpfr_count_sort (mpfr_ptr const tab[], unsigned long n,
     unsigned long *account;
     unsigned long exp_num;
     unsigned long target_rank;
-    TMP_DECL(marker);
+    MPFR_TMP_DECL(marker);
     
-    TMP_MARK(marker);
+    MPFR_TMP_MARK(marker);
     min = max = MPFR_GET_EXP(tab[0]);
 
     for (i = 1; i < n; i++)
@@ -55,7 +55,7 @@ void mpfr_count_sort (mpfr_ptr const tab[], unsigned long n,
         heap_sort_exp_clean (tab, n, perm);
         return;
     }
-    account = (unsigned long *) TMP_ALLOC(exp_num * sizeof(*account));
+    account = (unsigned long *) MPFR_TMP_ALLOC(exp_num * sizeof(*account));
     for (i = 0; i < exp_num; i++)
         account[i] = 0;
     for (i = 0; i < n; i++)
@@ -68,7 +68,7 @@ void mpfr_count_sort (mpfr_ptr const tab[], unsigned long n,
         perm[target_rank] = tab[i];
     }
     
-    TMP_FREE(marker);
+    MPFR_TMP_FREE(marker);
 }
 
 /* Performs a heap sort of the entries */
@@ -200,9 +200,9 @@ int mpfr_sum (mpfr_ptr ret, mpfr_ptr const tab[], unsigned long n,
   mpfr_t cur_sum;
   MPFR_ZIV_DECL (loop);
   MPFR_SAVE_EXPO_DECL (expo);
-  TMP_DECL(marker);
+  MPFR_TMP_DECL(marker);
     
-  TMP_MARK(marker);
+  MPFR_TMP_MARK(marker);
   if (MPFR_UNLIKELY (n == 0)) {
     MPFR_SET_ZERO (ret);
     MPFR_SET_POS (ret);
@@ -210,7 +210,7 @@ int mpfr_sum (mpfr_ptr ret, mpfr_ptr const tab[], unsigned long n,
   }
 
   /* Sort */
-  perm = (mpfr_srcptr *) TMP_ALLOC(n * sizeof(mpfr_srcptr)); 
+  perm = (mpfr_srcptr *) MPFR_TMP_ALLOC(n * sizeof(mpfr_srcptr)); 
   mpfr_count_sort (tab, n, perm);
 
   /* Initial precision */
@@ -237,7 +237,7 @@ int mpfr_sum (mpfr_ptr ret, mpfr_ptr const tab[], unsigned long n,
 
   error_trap |= mpfr_set (ret, cur_sum, rnd);
   mpfr_clear (cur_sum);
-  TMP_FREE(marker);
+  MPFR_TMP_FREE(marker);
 
   MPFR_SAVE_EXPO_FREE (expo);
   error_trap |= mpfr_check_range (ret, 0, rnd);

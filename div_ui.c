@@ -34,7 +34,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
   mp_limb_t *xp, *yp, *tmp, c, d;
   mp_exp_t exp;
   int inexact, middle = 1;
-  TMP_DECL(marker);
+  MPFR_TMP_DECL(marker);
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
@@ -76,7 +76,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 
   MPFR_SET_SAME_SIGN (y, x);
 
-  TMP_MARK (marker);
+  MPFR_TMP_MARK (marker);
   xn = MPFR_LIMB_SIZE (x);
   yn = MPFR_LIMB_SIZE (y);
 
@@ -88,7 +88,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 
   /* we need to store yn+1 = xn + dif limbs of the quotient */
   /* don't use tmp=yp since the mpn_lshift call below requires yp >= tmp+1 */
-  tmp = (mp_limb_t*) TMP_ALLOC ((yn + 1) * BYTES_PER_MP_LIMB);
+  tmp = (mp_limb_t*) MPFR_TMP_ALLOC ((yn + 1) * BYTES_PER_MP_LIMB);
 
   c = (mp_limb_t) u;
   MPFR_ASSERTN (u == c);
@@ -176,7 +176,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 
   MPFR_SET_EXP (y, exp);
 
-  TMP_FREE(marker);
+  MPFR_TMP_FREE(marker);
   if (MPFR_UNLIKELY ((d == 0) && (inexact == 0)))
     return 0; /* result is exact */
 

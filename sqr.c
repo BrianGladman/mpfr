@@ -33,7 +33,7 @@ mpfr_sqr (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
   mp_limb_t b1;
   mp_prec_t bq;
   mp_size_t bn, tn;
-  TMP_DECL(marker);
+  MPFR_TMP_DECL(marker);
 
   /* deal with special cases */
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(b)))
@@ -59,8 +59,8 @@ mpfr_sqr (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
   bn = (bq+BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB; /* number of limbs of b */
   tn = (2*bq + BITS_PER_MP_LIMB - 1) / BITS_PER_MP_LIMB;
 
-  TMP_MARK(marker);
-  tmp = (mp_limb_t *) TMP_ALLOC((size_t) 2*bn * BYTES_PER_MP_LIMB);
+  MPFR_TMP_MARK(marker);
+  tmp = (mp_limb_t *) MPFR_TMP_ALLOC((size_t) 2*bn * BYTES_PER_MP_LIMB);
 
   /* Multiplies the mantissa in temporary allocated space */
   mpn_sqr_n (tmp, MPFR_MANT(b), bn);
@@ -83,7 +83,7 @@ mpfr_sqr (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
   if (MPFR_UNLIKELY(cc))
     MPFR_MANT(a)[MPFR_LIMB_SIZE(a)-1] = MPFR_LIMB_HIGHBIT;
 
-  TMP_FREE(marker);
+  MPFR_TMP_FREE(marker);
   {
     mp_exp_t ax2 = ax + (mp_exp_t) (b1 - 1 + cc);
     if (MPFR_UNLIKELY( ax2 > __gmpfr_emax))

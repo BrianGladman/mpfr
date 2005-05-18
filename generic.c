@@ -47,19 +47,19 @@ GENERIC (mpfr_ptr y, mpz_srcptr p, long r, int m)
 #endif
   mp_exp_t diff, expo;
   mp_prec_t precy = MPFR_PREC(y);
-  TMP_DECL(marker);
+  MPFR_TMP_DECL(marker);
 
-  TMP_MARK(marker);
+  MPFR_TMP_MARK(marker);
   MPFR_CLEAR_FLAGS(y); 
   n = 1UL << m;
-  P = (mpz_t*) TMP_ALLOC ((m+1) * sizeof(mpz_t));
-  S = (mpz_t*) TMP_ALLOC ((m+1) * sizeof(mpz_t));
-  ptoj = (mpz_t*) TMP_ALLOC ((m+1) * sizeof(mpz_t)); /* ptoj[i] = mantissa^(2^i) */
+  P = (mpz_t*) MPFR_TMP_ALLOC ((m+1) * sizeof(mpz_t));
+  S = (mpz_t*) MPFR_TMP_ALLOC ((m+1) * sizeof(mpz_t));
+  ptoj = (mpz_t*) MPFR_TMP_ALLOC ((m+1) * sizeof(mpz_t)); /* ptoj[i] = mantissa^(2^i) */
 #ifdef A
-  T = (mpz_t*) TMP_ALLOC ((m+1) * sizeof(mpz_t));
+  T = (mpz_t*) MPFR_TMP_ALLOC ((m+1) * sizeof(mpz_t));
 #endif
 #ifdef R_IS_RATIONAL
-  qtoj = (mpz_t*) TMP_ALLOC ((m+1) * sizeof(mpz_t));
+  qtoj = (mpz_t*) MPFR_TMP_ALLOC ((m+1) * sizeof(mpz_t));
 #endif
   for (i = 0 ; i <= m ; i++)
     {
@@ -195,7 +195,7 @@ GENERIC (mpfr_ptr y, mpz_srcptr p, long r, int m)
       mpz_clear (T[i]);
 #endif
     }
-  TMP_FREE (marker);
+  MPFR_TMP_FREE (marker);
   return 0;
 }
 

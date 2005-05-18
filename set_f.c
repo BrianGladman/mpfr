@@ -28,7 +28,7 @@ mpfr_set_f (mpfr_ptr y, mpf_srcptr x, mp_rnd_t rnd_mode)
   mp_limb_t *my, *mx, *tmp;
   unsigned long cnt, sx, sy;
   int inexact, carry = 0;
-  TMP_DECL(marker);
+  MPFR_TMP_DECL(marker);
 
   sx = ABS(SIZ(x)); /* number of limbs of the mantissa of x */
 
@@ -55,8 +55,8 @@ mpfr_set_f (mpfr_ptr y, mpf_srcptr x, mp_rnd_t rnd_mode)
     {
       unsigned long xprec = sx * BITS_PER_MP_LIMB;
 
-      TMP_MARK(marker);
-      tmp = (mp_limb_t*) TMP_ALLOC(sx * BYTES_PER_MP_LIMB);
+      MPFR_TMP_MARK(marker);
+      tmp = (mp_limb_t*) MPFR_TMP_ALLOC(sx * BYTES_PER_MP_LIMB);
       if (cnt)
 	mpn_lshift (tmp, mx, sx, cnt);
       else
@@ -67,7 +67,7 @@ mpfr_set_f (mpfr_ptr y, mpf_srcptr x, mp_rnd_t rnd_mode)
                               rnd_mode, &inexact);
       if (MPFR_UNLIKELY(carry)) /* result is a power of two */
         my[sy - 1] = MPFR_LIMB_HIGHBIT;
-      TMP_FREE(marker);
+      MPFR_TMP_FREE(marker);
     }
   else
     {

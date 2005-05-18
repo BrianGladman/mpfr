@@ -30,7 +30,7 @@ mpfr_mul_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
   mp_limb_t *yp;
   mp_size_t xn, yn;
   int cnt, inexact;
-  TMP_DECL (marker);
+  MPFR_TMP_DECL (marker);
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
@@ -78,9 +78,9 @@ mpfr_mul_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
   xn = MPFR_LIMB_SIZE (x);
 
   MPFR_ASSERTD (xn < MP_SIZE_T_MAX);
-  TMP_MARK(marker);
+  MPFR_TMP_MARK(marker);
   if (MPFR_LIKELY (yn < xn + 1))
-    yp = (mp_ptr) TMP_ALLOC ((size_t) (xn + 1) * BYTES_PER_MP_LIMB);
+    yp = (mp_ptr) MPFR_TMP_ALLOC ((size_t) (xn + 1) * BYTES_PER_MP_LIMB);
 
   MPFR_ASSERTN (u == (mp_limb_t) u);
   yp[xn] = mpn_mul_1 (yp, MPFR_MANT (x), xn, u);
@@ -105,7 +105,7 @@ mpfr_mul_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
   MPFR_RNDRAW (inexact, y, yp, (mp_prec_t) (xn + 1) * BITS_PER_MP_LIMB, 
 	       rnd_mode, MPFR_SIGN (x), cnt -- );
 
-  TMP_FREE (marker);
+  MPFR_TMP_FREE (marker);
 
   cnt = BITS_PER_MP_LIMB - cnt;
   if (MPFR_UNLIKELY (__gmpfr_emax < MPFR_EMAX_MIN + cnt 

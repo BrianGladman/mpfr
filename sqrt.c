@@ -41,7 +41,7 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
   int sh; /* number of extra bits in rp[0] */
   int inexact; /* return ternary flag */
   mp_exp_t expr;
-  TMP_DECL(marker);
+  MPFR_TMP_DECL(marker);
 
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(u)))
     {
@@ -89,8 +89,8 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
   odd_exp = (unsigned int) MPFR_GET_EXP (u) & 1;
   inexact = -1; /* return ternary flag */
 
-  TMP_MARK (marker);
-  sp = (mp_limb_t *) TMP_ALLOC (rrsize * sizeof (mp_limb_t));
+  MPFR_TMP_MARK (marker);
+  sp = (mp_limb_t *) MPFR_TMP_ALLOC (rrsize * sizeof (mp_limb_t));
 
   /* copy the most significant limbs of u to {sp, rrsize} */
   if (MPFR_LIKELY(usize <= rrsize)) /* in case r and u have the same precision,
@@ -247,7 +247,7 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
 
   MPFR_SET_EXP(r, expr);
 
-  TMP_FREE(marker);
+  MPFR_TMP_FREE(marker);
 
   return inexact;
 }

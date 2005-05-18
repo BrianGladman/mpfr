@@ -39,9 +39,9 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   mp_limb_t carry, bb, cc, borrow = 0;
   int inexact, shift_b, shift_c, is_exact = 1, down = 0, add_exp = 0;
   int sh, k;
-  TMP_DECL(marker);
+  MPFR_TMP_DECL(marker);
 
-  TMP_MARK(marker);
+  MPFR_TMP_MARK(marker);
   ap = MPFR_MANT(a);
   an = MPFR_LIMB_SIZE(a);
 
@@ -156,13 +156,13 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       /* Ensure ap != bp */
       if (MPFR_UNLIKELY (ap == bp))
         {
-          bp = (mp_ptr) TMP_ALLOC(bn * BYTES_PER_MP_LIMB);
+          bp = (mp_ptr) MPFR_TMP_ALLOC(bn * BYTES_PER_MP_LIMB);
           MPN_COPY (bp, ap, bn);
         }
     }
   else
     {
-      bp = (mp_ptr) TMP_ALLOC ((bn + 1) * BYTES_PER_MP_LIMB);
+      bp = (mp_ptr) MPFR_TMP_ALLOC ((bn + 1) * BYTES_PER_MP_LIMB);
       bp[0] = mpn_rshift (bp + 1, MPFR_MANT(b), bn++, shift_b);
     }
 
@@ -185,13 +185,13 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       /* Ensure ap != cp */
       if (ap == cp)
         {
-          cp = (mp_ptr) TMP_ALLOC (cn * BYTES_PER_MP_LIMB);
+          cp = (mp_ptr) MPFR_TMP_ALLOC (cn * BYTES_PER_MP_LIMB);
           MPN_COPY(cp, ap, cn);
         }
     }
  else
     {
-      cp = (mp_ptr) TMP_ALLOC ((cn + 1) * BYTES_PER_MP_LIMB);
+      cp = (mp_ptr) MPFR_TMP_ALLOC ((cn + 1) * BYTES_PER_MP_LIMB);
       cp[0] = mpn_rshift (cp + 1, MPFR_MANT(c), cn++, shift_c);
     }
 
@@ -501,7 +501,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       exp_a = MPFR_GET_EXP (b) - cancel;
       if (MPFR_UNLIKELY(exp_a < __gmpfr_emin))
         {
-          TMP_FREE(marker);
+          MPFR_TMP_FREE(marker);
           if (rnd_mode == GMP_RNDN &&
               (exp_a < __gmpfr_emin - 1 ||
                (inexact >= 0 && mpfr_powerof2_raw (a))))
@@ -520,12 +520,12 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       exp_b = MPFR_GET_EXP (b);
       if (MPFR_UNLIKELY(add_exp && exp_b == __gmpfr_emax))
         {
-          TMP_FREE(marker);
+          MPFR_TMP_FREE(marker);
           return mpfr_overflow (a, rnd_mode, MPFR_SIGN(a));
         }
       MPFR_SET_EXP (a, exp_b + add_exp);
     }
-  TMP_FREE(marker);
+  MPFR_TMP_FREE(marker);
 #ifdef DEBUG
   printf ("result is a="); mpfr_print_binary(a); putchar('\n');
 #endif

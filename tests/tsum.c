@@ -42,15 +42,15 @@ static int mpfr_list_sum (mpfr_ptr ret, mpfr_t *tab, unsigned long n,
     mpfr_ptr *tabtmp;
     unsigned long i;
     int inexact;
-    TMP_DECL(marker);
+    MPFR_TMP_DECL(marker);
     
-    TMP_MARK(marker);
-    tabtmp = (mpfr_ptr *) TMP_ALLOC(n * sizeof(mpfr_srcptr));
+    MPFR_TMP_MARK(marker);
+    tabtmp = (mpfr_ptr *) MPFR_TMP_ALLOC(n * sizeof(mpfr_srcptr));
     for (i = 0; i < n; i++)
         tabtmp[i] = tab[i];
     
     inexact = mpfr_sum (ret, tabtmp, n, rnd);
-    TMP_FREE(marker);
+    MPFR_TMP_FREE(marker);
     return inexact;
 }
 

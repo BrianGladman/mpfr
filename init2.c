@@ -62,7 +62,7 @@ mpfr_init2 (mpfr_ptr x, mp_prec_t p)
   MPFR_SET_NAN(x);                 /* initializes to NaN */
 }
 
-#ifdef MPFR_USE_OWN_TMP_ALLOC
+#ifdef MPFR_USE_OWN_MPFR_TMP_ALLOC
 static unsigned char mpfr_stack_tab[8000000];
 unsigned char *mpfr_stack = mpfr_stack_tab;
 #endif

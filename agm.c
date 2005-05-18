@@ -31,7 +31,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
   mp_limb_t *up, *vp, *tmpp;
   mpfr_t u, v, tmp;
   MPFR_ZIV_DECL (loop);
-  TMP_DECL(marker);
+  MPFR_TMP_DECL(marker);
 
   MPFR_LOG_FUNC (("op2[%#R]=%R op1[%#R]=%R rnd=%d", op2,op2,op1,op1,rnd_mode),
 		 ("r[%#R]=%R inexact=%d", r, r, inexact));
@@ -99,7 +99,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
     }
   /* Now b(=op2) >= a (=op1) */
 
-  TMP_MARK(marker);
+  MPFR_TMP_MARK(marker);
 
   /* Main loop */
   MPFR_ZIV_INIT (loop, p);
@@ -159,7 +159,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
   inexact = mpfr_set (r, v, rnd_mode);
   
   /* Let's clean */
-  TMP_FREE(marker);
+  MPFR_TMP_FREE(marker);
 
   return inexact; /* agm(u,v) can be exact for u, v rational only for u=v.
 		     Proof (due to Nicolas Brisebarre): it suffices to consider

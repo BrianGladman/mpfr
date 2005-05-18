@@ -410,20 +410,20 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mp_rnd_t rnd)
   mp_size_t ysize, real_ysize;
   int res, err;
   MPFR_ZIV_DECL (loop);
-  TMP_DECL (marker);
+  MPFR_TMP_DECL (marker);
 
   /* determine the minimal precision for the computation */
   prec = MPFR_PREC (x) + MPFR_INT_CEIL_LOG2 (MPFR_PREC (x));
 
   /* compute y as long as rounding is not possible */
-  TMP_MARK(marker);
+  MPFR_TMP_MARK(marker);
   MPFR_ZIV_INIT (loop, prec);
   for (;;)
     {
       /* initialize y to the value of 0.mant_s[0]...mant_s[pr-1] */
       ysize = (prec - 1) / BITS_PER_MP_LIMB + 1;
       ysize_bits = ysize * BITS_PER_MP_LIMB;
-      y = (mp_limb_t*) TMP_ALLOC ((2 * ysize + 1) * sizeof (mp_limb_t));
+      y = (mp_limb_t*) MPFR_TMP_ALLOC ((2 * ysize + 1) * sizeof (mp_limb_t));
       y += ysize;
 
       /* required precision for str to have ~ysize limbs
@@ -519,7 +519,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mp_rnd_t rnd)
           mp_limb_t *z;
           mp_exp_t   exp_z;
 
-          result = (mp_limb_t*) TMP_ALLOC ((2*ysize+1)*BYTES_PER_MP_LIMB);
+          result = (mp_limb_t*) MPFR_TMP_ALLOC ((2*ysize+1)*BYTES_PER_MP_LIMB);
 
           /* z = base^(exp_base-sptr_size) using space allocated at y-ysize */
           z = y - ysize;
@@ -569,7 +569,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mp_rnd_t rnd)
           mp_limb_t *z;
           mp_exp_t exp_z;
 
-          result = (mp_limb_t*) TMP_ALLOC ( (3*ysize+1) * BYTES_PER_MP_LIMB);
+          result = (mp_limb_t*) MPFR_TMP_ALLOC ( (3*ysize+1) * BYTES_PER_MP_LIMB);
 
           /* set y to y * K^ysize */
           y = y - ysize;  /* we have allocated ysize limbs at y - ysize */
@@ -674,7 +674,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mp_rnd_t rnd)
   res = mpfr_overflow (x, rnd, (pstr->negative) ? -1 : 1);
 
  end:
-  TMP_FREE (marker);
+  MPFR_TMP_FREE (marker);
   return res;
 }
 

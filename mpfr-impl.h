@@ -654,17 +654,30 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
    ((mp_limb_t*) ((mpfr_size_limb_t*) MPFR_MANT(x) - 1))
 
 /* Temporary memory gestion */
+#ifndef TMP_SALLOC
+/* GMP 4.1.x or below or internals */
+#define MPFR_TMP_DECL TMP_DECL
+#define MPFR_TMP_MARK TMP_MARK
+#define MPFR_TMP_ALLOC TMP_ALLOC
+#define MPFR_TMP_FREE TMP_FREE
+#else
+#define MPFR_TMP_DECL(x) TMP_DECL
+#define MPFR_TMP_MARK(x) TMP_MARK
+#define MPFR_TMP_ALLOC(s) TMP_SALLOC(s)
+#define MPFR_TMP_FREE(x) TMP_FREE
+#endif
+
 /* This code is experimental: don't use it */
-#ifdef MPFR_USE_OWN_TMP_ALLOC
+#ifdef MPFR_USE_OWN_MPFR_TMP_ALLOC
 extern unsigned char *mpfr_stack;
-#undef TMP_DECL
-#undef TMP_MARK
-#undef TMP_ALLOC
-#undef TMP_FREE
-#define TMP_DECL(_x) unsigned char *(_x)
-#define TMP_MARK(_x) ((_x) = mpfr_stack)
-#define TMP_ALLOC(_s) (mpfr_stack += (_s), mpfr_stack - (_s))
-#define TMP_FREE(_x) (mpfr_stack = (_x))
+#undef MPFR_TMP_DECL
+#undef MPFR_TMP_MARK
+#undef MPFR_TMP_ALLOC
+#undef MPFR_TMP_FREE
+#define MPFR_TMP_DECL(_x) unsigned char *(_x)
+#define MPFR_TMP_MARK(_x) ((_x) = mpfr_stack)
+#define MPFR_TMP_ALLOC(_s) (mpfr_stack += (_s), mpfr_stack - (_s))
+#define MPFR_TMP_FREE(_x) (mpfr_stack = (_x))
 #endif
 
 /* temporary allocate 1 limb at xp, and initialize mpfr variable x */
@@ -677,7 +690,7 @@ extern unsigned char *mpfr_stack;
    MPFR_SET_INVALID_EXP(x))
 
 #define MPFR_TMP_INIT(xp, x, p, s)                                   \
-  (xp = (mp_ptr) TMP_ALLOC(BYTES_PER_MP_LIMB * ((size_t) s)),        \
+  (xp = (mp_ptr) MPFR_TMP_ALLOC(BYTES_PER_MP_LIMB * ((size_t) s)),        \
    MPFR_TMP_INIT1(xp, x, p))
 
 #define MPFR_TMP_INIT_ABS(d, s)                                      \

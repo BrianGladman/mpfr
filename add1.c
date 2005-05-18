@@ -32,11 +32,11 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   mp_exp_t difw, exp;
   int sh, rb, fb, inex;
   mp_exp_unsigned_t diff_exp;
-  TMP_DECL(marker);
+  MPFR_TMP_DECL(marker);
 
   MPFR_ASSERTD(MPFR_IS_PURE_FP(b) && MPFR_IS_PURE_FP(c));
 
-  TMP_MARK(marker);
+  MPFR_TMP_MARK(marker);
 
   aq = MPFR_PREC(a);
   bq = MPFR_PREC(b);
@@ -55,14 +55,14 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
   if (MPFR_UNLIKELY(ap == bp))
     {
-      bp = (mp_ptr) TMP_ALLOC (bn * BYTES_PER_MP_LIMB);
+      bp = (mp_ptr) MPFR_TMP_ALLOC (bn * BYTES_PER_MP_LIMB);
       MPN_COPY (bp, ap, bn);
       if (ap == cp)
         { cp = bp; }
     }
   else if (MPFR_UNLIKELY(ap == cp))
     {
-      cp = (mp_ptr) TMP_ALLOC (cn * BYTES_PER_MP_LIMB);
+      cp = (mp_ptr) MPFR_TMP_ALLOC (cn * BYTES_PER_MP_LIMB);
       MPN_COPY(cp, ap, cn);
     }
 
@@ -537,6 +537,6 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   MPFR_SET_EXP (a, exp);
 
  end_of_add:
-  TMP_FREE(marker);
+  MPFR_TMP_FREE(marker);
   return inex;
 }

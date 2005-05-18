@@ -51,7 +51,7 @@ mpfr_prec_round (mpfr_ptr x, mp_prec_t prec, mp_rnd_t rnd_mode)
   mp_limb_t *tmp, *xp;
   int carry, inexact;
   mp_prec_t nw, ow;
-  TMP_DECL(marker);
+  MPFR_TMP_DECL(marker);
 
   MPFR_ASSERTN(prec >= MPFR_PREC_MIN && prec <= MPFR_PREC_MAX);
 
@@ -79,8 +79,8 @@ mpfr_prec_round (mpfr_ptr x, mp_prec_t prec, mp_rnd_t rnd_mode)
 
   /* x is a non-zero real number */
 
-  TMP_MARK(marker); 
-  tmp = (mp_limb_t*) TMP_ALLOC (nw * BYTES_PER_MP_LIMB);
+  MPFR_TMP_MARK(marker); 
+  tmp = (mp_limb_t*) MPFR_TMP_ALLOC (nw * BYTES_PER_MP_LIMB);
   xp = MPFR_MANT(x);
   carry = mpfr_round_raw (tmp, xp, MPFR_PREC(x), MPFR_IS_NEG(x),
                           prec, rnd_mode, &inexact);
@@ -104,7 +104,7 @@ mpfr_prec_round (mpfr_ptr x, mp_prec_t prec, mp_rnd_t rnd_mode)
   else
     MPN_COPY(xp, tmp, nw);
 
-  TMP_FREE(marker);
+  MPFR_TMP_FREE(marker);
   return inexact;
 }
 
@@ -137,7 +137,7 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mp_exp_t err0,
   int s, s1;
   mp_limb_t cc, cc2;
   mp_limb_t *tmp;
-  TMP_DECL(marker);
+  MPFR_TMP_DECL(marker);
 
   if (MPFR_UNLIKELY(err0 < 0 || (mp_exp_unsigned_t) err0 <= prec))
     return 0;  /* can't round */
@@ -173,10 +173,10 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mp_exp_t err0,
   /* if when adding or subtracting (1 << s) in bp[bn-1-k], it does not
      change bp[bn-1] >> s1, then we can round */
 
-  TMP_MARK(marker);
+  MPFR_TMP_MARK(marker);
   tn = bn;
   k++; /* since we work with k+1 everywhere */
-  tmp = (mp_limb_t*) TMP_ALLOC(tn * BYTES_PER_MP_LIMB);
+  tmp = (mp_limb_t*) MPFR_TMP_ALLOC(tn * BYTES_PER_MP_LIMB);
   if (bn > k)
     MPN_COPY (tmp, bp, bn - k);
 
@@ -216,13 +216,13 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mp_exp_t err0,
 
   if (cc2 && cc)
     {
-      TMP_FREE(marker);
+      MPFR_TMP_FREE(marker);
       return 0;
     }
 
   cc2 = (tmp[bn - 1] >> s1) & 1;
   cc2 ^= mpfr_round_raw2 (tmp, bn, neg, rnd2, prec);
 
-  TMP_FREE(marker); 
+  MPFR_TMP_FREE(marker); 
   return cc == cc2;
 }

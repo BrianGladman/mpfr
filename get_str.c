@@ -223,7 +223,7 @@ mpfr_get_str_aux (char *const str, mp_exp_t *const exp, mp_limb_t *const r,
   mp_rnd_t rnd1;
   size_t i;
   int exact = (e < 0);
-  TMP_DECL(marker);
+  MPFR_TMP_DECL(marker);
 
   /* if f > 0, then the maximal error 2^(e+f) is larger than 2 so we can't
      determine the integer Y */
@@ -231,7 +231,7 @@ mpfr_get_str_aux (char *const str, mp_exp_t *const exp, mp_limb_t *const r,
   /* if f is too small, then r*2^f is smaller than 1 */
   MPFR_ASSERTN(f > (-n * BITS_PER_MP_LIMB));
 
-  TMP_MARK(marker);
+  MPFR_TMP_MARK(marker);
 
   /* R = 2^f sum r[i]K^(i)
      r[i] = (r_(i,k-1)...r_(i,0))_2
@@ -282,7 +282,7 @@ mpfr_get_str_aux (char *const str, mp_exp_t *const exp, mp_limb_t *const r,
       /* now the rounded value Y is in {r+i0, n-i0} */
 
       /* convert r+i0 into base b */
-      str1 = (unsigned char*) TMP_ALLOC (m + 3); /* need one extra character for mpn_get_str */
+      str1 = (unsigned char*) MPFR_TMP_ALLOC (m + 3); /* need one extra character for mpn_get_str */
       size_s1 = mpn_get_str (str1, b, r + i0, n - i0);
 
       /* round str1 */
@@ -367,7 +367,7 @@ mpfr_get_str_aux (char *const str, mp_exp_t *const exp, mp_limb_t *const r,
     }
 
  free_and_return:
-  TMP_FREE(marker);
+  MPFR_TMP_FREE(marker);
 
   return dir;
 }
@@ -425,7 +425,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
   int neg;
   int ret; /* return value of mpfr_get_str_aux */
   MPFR_ZIV_DECL (loop);
-  TMP_DECL(marker);
+  MPFR_TMP_DECL(marker);
 
   /* if exact = 1 then err is undefined */
   /* otherwise err is such that |x*b^(m-g)-a*2^exp_a| < 2^(err+exp_a) */
@@ -513,8 +513,8 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
       prec = (m - 1) * pow2 + r; /* total number of bits */
       n = (prec - 1) / BITS_PER_MP_LIMB + 1;
 
-      TMP_MARK (marker);
-      x1 = (mp_limb_t*) TMP_ALLOC((n + 1) * sizeof (mp_limb_t));
+      MPFR_TMP_MARK (marker);
+      x1 = (mp_limb_t*) MPFR_TMP_ALLOC((n + 1) * sizeof (mp_limb_t));
       nb = n * BITS_PER_MP_LIMB - prec;
       /* round xp to the precision prec, and put it into x1
 	 put the carry into x1[n] */
@@ -552,7 +552,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
       /* the exponent of s is f + 1 */
       *e = f + 1;
 
-      TMP_FREE(marker);
+      MPFR_TMP_FREE(marker);
 
       return (s0);
     }
@@ -572,7 +572,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
   MPFR_ZIV_INIT (loop, prec);
   for (;;)
     {
-      TMP_MARK(marker);
+      MPFR_TMP_MARK(marker);
 
       exact = 1;
 
@@ -580,7 +580,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
       n = 1 + (prec - 1) / BITS_PER_MP_LIMB;
 
       /* a will contain the approximation of the mantissa */
-      a = (mp_limb_t*) TMP_ALLOC (n * sizeof (mp_limb_t));
+      a = (mp_limb_t*) MPFR_TMP_ALLOC (n * sizeof (mp_limb_t));
 
       nx = 1 + (MPFR_PREC(x) - 1) / BITS_PER_MP_LIMB;
 
@@ -614,7 +614,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
 	  err = (err <= 0) ? 2 : err + 1;
 
           /* result = a * x */
-	  result = (mp_limb_t*) TMP_ALLOC ((n + nx1) * sizeof (mp_limb_t));
+	  result = (mp_limb_t*) MPFR_TMP_ALLOC ((n + nx1) * sizeof (mp_limb_t));
 	  mpn_mul (result, a, n, x1, nx1);
           exp_a += MPFR_GET_EXP (x);
 	  if (mpn_scan1 (result, 0) < (nx1 * BITS_PER_MP_LIMB))
@@ -637,9 +637,9 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
 	  exact = (err == -1);
 
 	  /* allocate memory for x1, result and reste */
-	  x1 = (mp_limb_t*) TMP_ALLOC (2 * n * sizeof (mp_limb_t));
-	  result = (mp_limb_t*) TMP_ALLOC ((n + 1) * sizeof (mp_limb_t));
-          reste = (mp_limb_t*) TMP_ALLOC (n * sizeof (mp_limb_t));
+	  x1 = (mp_limb_t*) MPFR_TMP_ALLOC (2 * n * sizeof (mp_limb_t));
+	  result = (mp_limb_t*) MPFR_TMP_ALLOC ((n + 1) * sizeof (mp_limb_t));
+          reste = (mp_limb_t*) MPFR_TMP_ALLOC (n * sizeof (mp_limb_t));
 
 	  /* initialize x1 = x */
 	  MPN_COPY2 (x1, 2 * n, xp, nx);
@@ -694,13 +694,13 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
       else 
 	break;
 
-      TMP_FREE(marker);
+      MPFR_TMP_FREE(marker);
     }
   MPFR_ZIV_FREE (loop);
 
   *e += g;
 
-  TMP_FREE(marker);
+  MPFR_TMP_FREE(marker);
 
   return s0;
 
