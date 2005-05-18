@@ -55,6 +55,7 @@ static void
 special (void)
 {
   mpfr_t x, y;
+  int i;
 
   mpfr_init (x);
   mpfr_init (y);
@@ -98,6 +99,55 @@ special (void)
       printf ("Error for expm1(-0)\n");
       exit (1);
     }
+
+  /* Check overflow of expm1(x) */
+  mpfr_clear_flags ();
+  mpfr_set_str_binary (x, "1.1E1000000000");
+  i = test_expm1 (x, x, GMP_RNDN);
+  MPFR_ASSERTN (MPFR_IS_INF (x) && MPFR_SIGN (x) > 0);
+  MPFR_ASSERTN (mpfr_overflow_p ());
+  MPFR_ASSERTN (i == 1);
+
+  mpfr_clear_flags ();
+  mpfr_set_str_binary (x, "1.1E1000000000");
+  i = test_expm1 (x, x, GMP_RNDU);
+  MPFR_ASSERTN (MPFR_IS_INF (x) && MPFR_SIGN (x) > 0);
+  MPFR_ASSERTN (mpfr_overflow_p ());
+  MPFR_ASSERTN (i == 1);
+
+  mpfr_clear_flags ();
+  mpfr_set_str_binary (x, "1.1E1000000000");
+  i = test_expm1 (x, x, GMP_RNDD);
+  MPFR_ASSERTN (!MPFR_IS_INF (x) && MPFR_SIGN (x) > 0);
+  MPFR_ASSERTN (mpfr_overflow_p ());
+  MPFR_ASSERTN (i == -1);
+
+  /* Check internal underflow of expm1 (x) */
+  mpfr_set_prec (x, 2);
+  mpfr_clear_flags ();
+  mpfr_set_str_binary (x, "-1.1E1000000000");
+  i = test_expm1 (x, x, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_si (x, -1) == 0);
+  MPFR_ASSERTN (!mpfr_overflow_p () && !mpfr_underflow_p ());
+  MPFR_ASSERTN (i == -1);
+
+  mpfr_set_str_binary (x, "-1.1E1000000000");
+  i = test_expm1 (x, x, GMP_RNDD);
+  MPFR_ASSERTN (mpfr_cmp_si (x, -1) == 0);
+  MPFR_ASSERTN (!mpfr_overflow_p () && !mpfr_underflow_p ());
+  MPFR_ASSERTN (i == -1);
+
+  mpfr_set_str_binary (x, "-1.1E1000000000");
+  i = test_expm1 (x, x, GMP_RNDZ);
+  MPFR_ASSERTN (mpfr_cmp_str (x, "-0.11", 2, GMP_RNDN) == 0);
+  MPFR_ASSERTN (!mpfr_overflow_p () && !mpfr_underflow_p ());
+  MPFR_ASSERTN (i == 1);
+
+  mpfr_set_str_binary (x, "-1.1E1000000000");
+  i = test_expm1 (x, x, GMP_RNDU);
+  MPFR_ASSERTN (mpfr_cmp_str (x, "-0.11", 2, GMP_RNDN) == 0);
+  MPFR_ASSERTN (!mpfr_overflow_p () && !mpfr_underflow_p ());
+  MPFR_ASSERTN (i == 1);
 
   mpfr_clear (x);
   mpfr_clear (y);

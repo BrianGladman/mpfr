@@ -90,8 +90,28 @@ mpfr_expm1 (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
     MPFR_ZIV_INIT (loop, Nt);
     for (;;)
       {
-        /* compute expm1 */
+        mpfr_clear_flags ();
+        /* exp(x) may overflow and underflow */
         mpfr_exp (t, x, GMP_RNDN);         /* exp(x)*/
+        if (MPFR_UNLIKELY (mpfr_overflow_p ()))
+          {
+            inexact = mpfr_overflow (y, rnd_mode, MPFR_SIGN_POS);
+            MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, MPFR_FLAGS_OVERFLOW);
+            break;
+          }
+        else if (MPFR_UNLIKELY (mpfr_underflow_p ()))
+          {
+            inexact = mpfr_set_si (y, -1, rnd_mode);
+            MPFR_ASSERTD (inexact == 0);
+            inexact = -1;
+            if (MPFR_IS_LIKE_RNDZ (rnd_mode, 1))
+              {
+                inexact = 1;
+                mpfr_nexttozero (y);
+              }
+            break;
+          }
+
 	exp_te = MPFR_GET_EXP (t);         /* FIXME: exp(x) may overflow! */
         mpfr_sub_ui (t, t, 1, GMP_RNDN);   /* exp(x)-1 */
 
@@ -100,15 +120,16 @@ mpfr_expm1 (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
         err = Nt - (MAX (exp_te - MPFR_GET_EXP (t), 0) + 1);
 
 	if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
-	  break;
+          {
+            inexact = mpfr_set (y, t, rnd_mode);
+            break;
+          }
 
         /* increase the precision */
 	MPFR_ZIV_NEXT (loop, Nt);
         mpfr_set_prec (t, Nt);
       }
     MPFR_ZIV_FREE (loop);
-
-    inexact = mpfr_set (y, t, rnd_mode);
 
     mpfr_clear (t);
   }
