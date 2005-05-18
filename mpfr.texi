@@ -548,6 +548,10 @@ result (Not-a-Number) always corresponds to an exact return value.
 The opposite of a returned ternary value is guaranteed to be representable
 in an @code{int}.
 
+Unless documented otherwise, functions returning an @code{1} 
+for special cases (like @code{acos(0)}) should return an overflow or 
+an underflow if @code{1} is not representable in the current exponent range.
+
 @node MPFR Interface, Contributors, MPFR Basics, Top
 @comment  node-name,  next,  previous,  up
 @chapter MPFR Interface
