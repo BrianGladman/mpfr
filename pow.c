@@ -35,7 +35,11 @@ mpfr_pow_is_exact (mpfr_srcptr x, mpfr_srcptr y)
   mp_limb_t *yp;
   mp_size_t ysize;
 
-  if (mpfr_sgn (y) < 0)
+  /* NAN, INF or ZERO are not allowed */
+  MPFR_ASSERTD (!MPFR_IS_SINGULAR (y));
+  MPFR_ASSERTD (!MPFR_IS_SINGULAR (x));
+
+  if (MPFR_IS_NEG (y))
     {
       mp_exp_t b;
       mpfr_t z;
@@ -99,62 +103,6 @@ mpfr_pow_is_exact (mpfr_srcptr x, mpfr_srcptr y)
 
     return 1;
 }
-
-#if 0
-/* Return 1 if y is an odd integer, -1 if an even integer,
-   0 otherwise (not an integer).
-   Assumes y is not zero.
-*/
-static int
-is_odd_even (mpfr_srcptr y)
-{
-  mp_exp_t expo;
-  mp_prec_t prec;
-  mp_size_t yn;
-  mp_limb_t *yp;
-  int res;
-
-  MPFR_ASSERTD(MPFR_IS_FP(y));
-  MPFR_ASSERTD(MPFR_NOTZERO(y));
-
-  expo = MPFR_GET_EXP (y);
-  if (expo <= 0)
-    return 0;  /* |y| < 1 and not 0 */
-
-  prec = MPFR_PREC(y);
-  if ((mpfr_prec_t) expo > prec)
-    return -1;  /* y is a multiple of 2^(expo-prec), thus an even integer */
-
-  /* 0 < expo <= prec */
-
-  yn = (prec - 1) / BITS_PER_MP_LIMB;  /* index of last limb */
-  yn -= (mp_size_t) (expo / BITS_PER_MP_LIMB);
-  MPFR_ASSERTN(yn >= 0);
-  /* now the index of the last limb containing bits of the fractional part */
-
-  yp = MPFR_MANT(y);
-  res = 1; /* default is odd */
-  /* test the bit of weight 0 */
-  if (expo % BITS_PER_MP_LIMB == 0)
-    {
-      if (yp[yn])
-        return 0; /* not an integer */
-      if ((yp[yn+1] & 1) == 0)
-        res = -1; /* maybe an even integer */
-    }
-  else
-    {
-      if (yp[yn] << (expo % BITS_PER_MP_LIMB))
-        return 0; /* not an integer */
-      if (yp[yn] << ((expo % BITS_PER_MP_LIMB) - 1) != MPFR_LIMB_HIGHBIT)
-        res = -1; /* maybe an even integer */
-    }
-  while (--yn >= 0)
-    if (yp[yn] != 0)
-      return 0; /* not an integer */
-  return res;
-}
-#endif
 
 /* Return 1 if y is an odd integer, 0 otherwise. */
 static int
