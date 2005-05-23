@@ -193,7 +193,6 @@ digit_value_in_base (int c, int base)
       0 if special string (like nan),
       1 if the string is ok.
       2 if overflows
-      3 if underflows
    So it doesn't return the ternary value
    BUT if it returns 0 (NAN or INF), the ternary value is also '0'
    (ie NAN and INF are exact) */
@@ -342,6 +341,7 @@ parse_string (mpfr_t x, struct parsed_string *pstr,
 
   /* Valid entry */
   res = 1;
+  MPFR_ASSERTD (pstr->exp_base >= 0);
 
   /* an optional exponent (e or E, p or P, @) */
   if ( (*str == '@' || (base <= 10 && (*str == 'e' || *str == 'E')))
@@ -358,6 +358,9 @@ parse_string (mpfr_t x, struct parsed_string *pstr,
                           mp_exp_t, mp_exp_unsigned_t,
                           MPFR_EXP_MIN, MPFR_EXP_MAX,
                           res = 2, res = 3);
+      /* Since exp_base was positive, read_exp + exp_base can't
+         do a negative overflow. */
+      MPFR_ASSERTD (res != 3);
       pstr->exp_base = sum;
     }
   else if ((base == 2 || base == 16)
@@ -707,6 +710,8 @@ mpfr_strtofr (mpfr_t x, const char *string, char **end, int base,
         }
       else if (res == 2)
         res = mpfr_overflow (x, rnd, (pstr.negative) ? -1 : 1);
+      MPFR_ASSERTD (res != 3);
+#if 0
       else if (res == 3)
         {
           /* This is called when there is a huge overflow
@@ -715,6 +720,7 @@ mpfr_strtofr (mpfr_t x, const char *string, char **end, int base,
             rnd = GMP_RNDZ;
           res = mpfr_underflow (x, rnd, (pstr.negative) ? -1 : 1);
         }
+#endif
     }
   if (end != NULL)
     *end = (char *) string;

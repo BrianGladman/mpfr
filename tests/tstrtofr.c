@@ -788,6 +788,13 @@ check_overflow (void)
       mpfr_dump (x);
       exit (1);
     }   
+  mpfr_strtofr (x, "0123456789ABCDEF@540000000", &s, 16, GMP_RNDN);
+  if (s[0] != 0 || !MPFR_IS_INF (x) || !MPFR_IS_POS (x))
+    {
+      printf ("Check overflow failed (7) with:\n s=%s\n x=", s);
+      mpfr_dump (x);
+      exit (1);
+    }
 
   /* Check underflow */
   mpfr_strtofr (x, "123456789E-2147483646", &s, 0, GMP_RNDN);
@@ -809,6 +816,13 @@ check_overflow (void)
   if (s[0] != 0 || !MPFR_IS_ZERO (x) || !MPFR_IS_NEG (x) )
     {
       printf ("Check underflow failed (3) with:\n s=%s\n x=", s);
+      mpfr_dump (x);
+      exit (1);
+    }
+  mpfr_strtofr (x, "0123456789ABCDEF@-540000000", &s, 16, GMP_RNDN);
+  if (s[0] != 0 || !MPFR_IS_ZERO (x) || !MPFR_IS_POS (x))
+    {
+      printf ("Check overflow failed (7) with:\n s=%s\n x=", s);
       mpfr_dump (x);
       exit (1);
     }
