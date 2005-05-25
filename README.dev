@@ -154,6 +154,16 @@ for some C compiler (Old DOS compiler).
 
    =====================================================================
 
+Quoted from <http://www.gnu.org/software/gcc/codingconventions.html>:
+
+  Avoid the use of identifiers or idioms that would prevent code
+  compiling with a C++ compiler. Identifiers such as new or class,
+  that are reserved words in C++, should not be used as variables
+  or field names. Explicit casts should be used to convert between
+  void* and other pointer types.
+
+   =====================================================================
+
 Try to avoid "LONG_MIN/1" since it produces a SIGNAL on (old) FreeBsd.
 Don't forget that LONG_MIN/-1 is not representable (specially
 with code like MPFR_EXP_MIN/n).
