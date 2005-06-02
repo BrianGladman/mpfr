@@ -37,6 +37,7 @@ int
 mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
   mpfr_t xp, GammaTrial, tmp, tmp2;
+  mpz_t fact;
   mp_prec_t Prec, prec_gamma, prec_nec, realprec;
   mp_prec_t A, N, estimated_cancel;
   unsigned long k;
@@ -110,6 +111,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   MPFR_GROUP_INIT_4 (group, realprec + BITS_PER_MP_LIMB,
                      xp, tmp, tmp2, GammaTrial);
+  mpz_init (fact);
   MPFR_ZIV_INIT (loop, realprec);
   for (;;)
     {
@@ -144,6 +146,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	mpfr_sub (xp, x, __gmpfr_one, GMP_RNDN);
       mpfr_set_ui (GammaTrial, 0, GMP_RNDN);
       sign = 1;
+      mpz_set_ui (fact, 1);
 
       for (k = 1; k <= N; k++)
         {
@@ -153,13 +156,18 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
           mpfr_mul (tmp2, tmp2, tmp, GMP_RNDN);
           mpfr_sqrt_ui (tmp, A - k, GMP_RNDN);
           mpfr_mul (tmp2, tmp2, tmp, GMP_RNDN);
-          mpfr_fac_ui (tmp, k - 1, GMP_RNDN);
-          mpfr_div (tmp2, tmp2, tmp, GMP_RNDN);
+          if (k >= 3)
+            {
+              /* mpfr_fac_ui (tmp, k-1, GMP_RNDN); */
+              mpz_mul_ui (fact, fact, k-1);
+              mpfr_set_z (tmp, fact, GMP_RNDN);
+              mpfr_div (tmp2, tmp2, tmp, GMP_RNDN);
+            }
           mpfr_add_ui (tmp, xp, k, GMP_RNDN);
           mpfr_div (tmp2, tmp2, tmp, GMP_RNDN);
           sign = -sign;
           if (sign == 1)
-            mpfr_neg (tmp2, tmp2, GMP_RNDN);
+            MPFR_CHANGE_SIGN (tmp2);
           mpfr_add (GammaTrial, GammaTrial, tmp2, GMP_RNDN);
         }
 #ifdef DEBUG
@@ -185,7 +193,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
       if (compared < 0)
         {
           mpfr_const_pi (tmp2, GMP_RNDN);
-          mpfr_sub_ui (tmp, x, 1, GMP_RNDN);
+          mpfr_sub (tmp, x, __gmpfr_one, GMP_RNDN);
           mpfr_mul (tmp, tmp2, tmp, GMP_RNDN);
           mpfr_div (GammaTrial, tmp, GammaTrial, GMP_RNDN);
           mpfr_sin (tmp, tmp, GMP_RNDN);
@@ -205,6 +213,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   inex = mpfr_set (gamma, GammaTrial, rnd_mode);
   MPFR_GROUP_CLEAR (group);
+  mpz_clear (fact);
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range(gamma, inex, rnd_mode);
 }
