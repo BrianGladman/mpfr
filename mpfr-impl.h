@@ -165,6 +165,13 @@ mp_limb_t mpfr_sub_nc _MPFR_PROTO ((mp_ptr, mp_srcptr, mp_srcptr, mp_size_t,
 #define mpn_sub_nc mpfr_sub_nc
 #endif
 
+#if __MPFR_GNUC(3,0) || __MPFR_ICC(8,1,0)
+# define MPFR_NORETURN_ATTR __attribute__ ((noreturn))
+# define MPFR_CONST_ATTR    __attribute__ ((const))
+#else
+# define MPFR_NORETURN_ATTR
+# define MPFR_CONST_ATTR
+#endif
 
 /******************************************************
  ************* Global Internal Variables **************
@@ -387,7 +394,7 @@ typedef union ieee_double_extract Ieee_double_extract;
    optimizing anything. */
 #ifdef WANT_LONGDOUBLE_VOLATILE
 # ifdef volatile
-__MPFR_DECLSPEC long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) ATTRIBUTE_CONST;
+__MPFR_DECLSPEC long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long double)) MPFR_CONST_ATTR;
 #  define LONGDOUBLE_VOLATILE(x)  (__gmpfr_longdouble_volatile (x))
 #  define WANT_GMPFR_LONGDOUBLE_VOLATILE 1
 # else
@@ -1277,7 +1284,7 @@ __MPFR_DECLSPEC extern mp_prec_t mpfr_log_prec;
  **************************************************************/
 
 #ifndef MPFR_GROUP_STATIC_SIZE
-# define MPFR_GROUP_STATIC_SIZE 20
+# define MPFR_GROUP_STATIC_SIZE 16
 #endif
 
 struct mpfr_group_t {
@@ -1297,7 +1304,7 @@ struct mpfr_group_t {
  mp_prec_t _prec = (prec);                                       \
  mp_size_t _size;                                                \
  MPFR_ASSERTD (_prec >= MPFR_PREC_MIN);                          \
- MPFR_ASSERTN (_prec <= MPFR_PREC_MAX);                          \
+ if (MPFR_UNLIKELY (_prec > MPFR_PREC_MAX)) mpfr_abort_prec_max(); \
  _size = (mp_prec_t)(_prec +BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB;\
  if (MPFR_UNLIKELY (_size*(num) > MPFR_GROUP_STATIC_SIZE)) {     \
   (g).alloc = (num)*_size*sizeof (mp_limb_t);                    \
@@ -1328,13 +1335,18 @@ struct mpfr_group_t {
    MPFR_GROUP_TINIT(g, 0, x);MPFR_GROUP_TINIT(g, 1, y);          \
    MPFR_GROUP_TINIT(g, 2, z);MPFR_GROUP_TINIT(g, 3, t);          \
    MPFR_GROUP_TINIT(g, 4, a))
+#define MPFR_GROUP_INIT_6(g, prec, x, y, z, t, a, b)             \
+ MPFR_GROUP_INIT_TEMPLATE(g, prec, 6,                            \
+   MPFR_GROUP_TINIT(g, 0, x);MPFR_GROUP_TINIT(g, 1, y);          \
+   MPFR_GROUP_TINIT(g, 2, z);MPFR_GROUP_TINIT(g, 3, t);          \
+   MPFR_GROUP_TINIT(g, 4, a);MPFR_GROUP_TINIT(g, 5, b))
 
 #define MPFR_GROUP_REPREC_TEMPLATE(g, prec, num, handler) do {   \
  mp_prec_t _prec = (prec);                                       \
  size_t    _oalloc = (g).alloc;                                  \
  mp_size_t _size;                                                \
  MPFR_ASSERTD (_prec >= MPFR_PREC_MIN);                          \
- MPFR_ASSERTN (_prec <= MPFR_PREC_MAX);                          \
+ if (MPFR_UNLIKELY (_prec > MPFR_PREC_MAX)) mpfr_abort_prec_max(); \
  _size = (mp_prec_t)(_prec +BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB;\
  (g).alloc = (num)*_size*sizeof(mp_limb_t);                      \
  if (MPFR_LIKELY (_oalloc == 0))                                 \
@@ -1363,6 +1375,11 @@ struct mpfr_group_t {
    MPFR_GROUP_TINIT(g, 0, x);MPFR_GROUP_TINIT(g, 1, y);          \
    MPFR_GROUP_TINIT(g, 2, z);MPFR_GROUP_TINIT(g, 3, t);          \
    MPFR_GROUP_TINIT(g, 4, a))
+#define MPFR_GROUP_REPREC_6(g, prec, x, y, z, t, a, b)           \
+ MPFR_GROUP_REPREC_TEMPLATE(g, prec, 6,                          \
+   MPFR_GROUP_TINIT(g, 0, x);MPFR_GROUP_TINIT(g, 1, y);          \
+   MPFR_GROUP_TINIT(g, 2, z);MPFR_GROUP_TINIT(g, 3, t);          \
+   MPFR_GROUP_TINIT(g, 4, a);MPFR_GROUP_TINIT(g, 5, b))
 
 
 /******************************************************
@@ -1463,6 +1480,9 @@ __MPFR_DECLSPEC void mpfr_dump_mant _MPFR_PROTO ((const mp_limb_t *,
 
 __MPFR_DECLSPEC int mpfr_round_near_x _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, 
 						    mp_exp_t, int, mp_rnd_t));
+__MPFR_DECLSPEC void mpfr_abort_prec_max _MPFR_PROTO ((void))
+       MPFR_NORETURN_ATTR;
+
 #if defined (__cplusplus)
 }
 #endif
