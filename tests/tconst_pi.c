@@ -56,7 +56,7 @@ int
 main (int argc, char *argv[])
 {
   mpfr_t x;
-  int p;
+  mp_prec_t p;
   mp_rnd_t rnd;
 
   tests_start_mpfr ();
@@ -64,8 +64,8 @@ main (int argc, char *argv[])
   p = 53;
   if (argc > 1)
     {
-      int  a = atoi (argv[1]);
-      if (a != 0)
+      long a = atol (argv[1]);
+      if (a >= MPFR_PREC_MIN && a <= MPFR_PREC_MAX)
         p = a;
     }
 
