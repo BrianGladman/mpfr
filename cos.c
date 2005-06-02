@@ -28,6 +28,8 @@ MA 02111-1307, USA. */
    The absolute error on s is at most 2 * l0 * 2^(-m).
 */
 static int
+mpfr_cos2_aux (mpfr_ptr s, mpfr_srcptr r) __attribute__ ((always_inline));
+static int
 mpfr_cos2_aux (mpfr_ptr s, mpfr_srcptr r)
 {
   unsigned int l, b = 2;
@@ -72,12 +74,10 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mp_prec_t K0, K, precy, m, k, l;
   int inexact;
   mpfr_t r, s;
-  mp_limb_t *rp, *sp;
-  mp_size_t sm;
   mp_exp_t exps, cancel = 0;
   MPFR_ZIV_DECL (loop);
   MPFR_SAVE_EXPO_DECL (expo);
-  MPFR_TMP_DECL (marker);
+  MPFR_GROUP_DECL (group);
 
   MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
 		 ("y[%#R]=%R inexact=%d", y, y, inexact));
@@ -115,11 +115,7 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   else
     m += -MPFR_GET_EXP (x);
 
-  MPFR_TMP_MARK(marker);
-  sm = (m + BITS_PER_MP_LIMB - 1) / BITS_PER_MP_LIMB;
-  MPFR_TMP_INIT (rp, r, m, sm);
-  MPFR_TMP_INIT (sp, s, m, sm);
-
+  MPFR_GROUP_INIT_2 (group, m, r, s);
   MPFR_ZIV_INIT (loop, m);
   for (;;)
     {
@@ -170,14 +166,12 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
         }
 
       MPFR_ZIV_NEXT (loop, m);
-      sm = (m + BITS_PER_MP_LIMB - 1) / BITS_PER_MP_LIMB;
-      MPFR_TMP_INIT (rp, r, m, sm);
-      MPFR_TMP_INIT (sp, s, m, sm);
+      MPFR_GROUP_REPREC_2 (group, m, r, s);
     }
   MPFR_ZIV_FREE (loop);
   inexact = mpfr_set (y, s, rnd_mode);
+  MPFR_GROUP_CLEAR (group);
 
-  MPFR_TMP_FREE (marker);
  end:
   MPFR_SAVE_EXPO_FREE (expo);
   MPFR_RET (mpfr_check_range (y, inexact, rnd_mode));

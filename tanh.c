@@ -58,8 +58,9 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
   /* tanh(x) = x - x^3/3 + ... so the error is < 2^(3*EXP(x)-1) */
   MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, xt, -2*MPFR_GET_EXP(xt)+1,0,rnd_mode, );
 
-  MPFR_SAVE_EXPO_MARK (expo);
   MPFR_TMP_INIT_ABS (x, xt);
+
+  MPFR_SAVE_EXPO_MARK (expo);
 
   /* General case */
   {
@@ -71,7 +72,20 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
     mp_prec_t Ny = MPFR_PREC(y);   /* target precision */
     mp_prec_t Nt;                  /* working precision */
     long int err;                  /* error */
+    int sign = MPFR_SIGN (xt);
     MPFR_ZIV_DECL (loop);
+    MPFR_GROUP_DECL (group);
+
+    /* First check for BIG overflow of exp(2*x):
+       For x > 0, exp(2*x) > 2^(2*x)
+       If 2 ^(2*x) > 2^emax or x>emax/2, there is an overflow */
+    if (MPFR_UNLIKELY (mpfr_cmp_si (x, __gmpfr_emax/2) >= 0)) {
+      /* initialise of intermediary variables
+         since 'set_one' label assumes the variables have been 
+         initialize */
+      MPFR_GROUP_INIT_2 (group, MPFR_PREC_MIN, t, te);
+      goto set_one;
+    }
 
     /* Compute the precision of intermediary variable */
     /* The optimal number of bits: see algorithms.tex */
@@ -79,8 +93,7 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
     Nt += ABS (MPFR_GET_EXP (x));
 
     /* initialise of intermediary variable */
-    mpfr_init2 (t, Nt);
-    mpfr_init2 (te, Nt);
+    MPFR_GROUP_INIT_2 (group, Nt, t, te);
 
     MPFR_ZIV_INIT (loop, Nt);
     for (;;) {
@@ -89,9 +102,7 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
       /* since x > 0, we can only have an overflow */
       mpfr_exp (te, te, GMP_RNDN);        /* exp(2x) */
       if (MPFR_UNLIKELY (MPFR_IS_INF (te))) {
-        int sign;
       set_one:
-        sign = MPFR_SIGN (xt);
         inexact = MPFR_FROM_SIGN_TO_INT (sign);
         mpfr_set4 (y, __gmpfr_one, GMP_RNDN, sign);
         if (MPFR_IS_LIKE_RNDZ (rnd_mode, MPFR_IS_NEG_SIGN (sign)))
@@ -112,7 +123,7 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
 
       if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
         {
-          inexact = mpfr_set4 (y, t, rnd_mode, MPFR_SIGN (xt));
+          inexact = mpfr_set4 (y, t, rnd_mode, sign);
           break;
         }
 
@@ -122,12 +133,10 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
 
       /* Actualisation of the precision */
       MPFR_ZIV_NEXT (loop, Nt);
-      mpfr_set_prec (t, Nt);
-      mpfr_set_prec (te, Nt);
+      MPFR_GROUP_REPREC_2 (group, Nt, t, te);
     }
     MPFR_ZIV_FREE (loop);
-    mpfr_clear (te);
-    mpfr_clear (t);
+    MPFR_GROUP_CLEAR (group);
   }
   MPFR_SAVE_EXPO_FREE (expo);
   inexact = mpfr_check_range (y, inexact, rnd_mode);

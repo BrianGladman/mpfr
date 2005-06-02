@@ -31,6 +31,7 @@ mpfr_tan (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_t s, c;
   MPFR_ZIV_DECL (loop);
   MPFR_SAVE_EXPO_DECL (expo);
+  MPFR_GROUP_DECL (group);
 
   MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
 		  ("y[%#R]=%R inexact=%d", y, y, inexact));
@@ -64,9 +65,7 @@ mpfr_tan (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   else
     m += -MPFR_GET_EXP (x);
 
-  mpfr_init2 (s, m);
-  mpfr_init2 (c, m);
-
+  MPFR_GROUP_INIT_2 (group, m, s, c);
   MPFR_ZIV_INIT (loop, m);
   for (;;)
     {
@@ -78,15 +77,11 @@ mpfr_tan (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       if (MPFR_LIKELY (MPFR_CAN_ROUND (c, m-1, precy, rnd_mode)))
 	break;
       MPFR_ZIV_NEXT (loop, m);
-      mpfr_set_prec (s, m);
-      mpfr_set_prec (c, m);
+      MPFR_GROUP_REPREC_2 (group, m, s, c);
     }
   MPFR_ZIV_FREE (loop);
-
   inexact = mpfr_set (y, c, rnd_mode);
-
-  mpfr_clear (s);
-  mpfr_clear (c);
+  MPFR_GROUP_CLEAR (group);
 
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (y, inexact, rnd_mode);

@@ -66,14 +66,14 @@ mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
     mp_prec_t Nt;                  /* Precision of the intermediary variable */
     long int err;                  /* Precision of error */
     MPFR_ZIV_DECL (loop);
+    MPFR_GROUP_DECL (group);
 
     /* compute the precision of intermediary variable */
     /* The optimal number of bits : see algorithms.tex */
     Nt = Ny + 3 + MPFR_INT_CEIL_LOG2 (Ny);
 
     /* initialise of intermediary variables */
-    mpfr_init2 (t, Nt);
-    mpfr_init2 (te, Nt);
+    MPFR_GROUP_INIT_2 (group, Nt, t, te);
 
     /* First computation of cosh */
     MPFR_ZIV_INIT (loop, Nt);
@@ -105,13 +105,10 @@ mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
 
 	/* Actualisation of the precision */
 	MPFR_ZIV_NEXT (loop, Nt);
-        mpfr_set_prec (t, Nt);
-        mpfr_set_prec (te, Nt);
+        MPFR_GROUP_REPREC_2 (group, Nt, t, te);
       }
     MPFR_ZIV_FREE (loop);
-
-    mpfr_clear (te);
-    mpfr_clear (t);
+    MPFR_GROUP_CLEAR (group);
   }
 
   MPFR_SAVE_EXPO_FREE (expo);

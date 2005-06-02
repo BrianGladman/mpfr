@@ -68,6 +68,9 @@ mpfr_sinh (mpfr_ptr y, mpfr_srcptr xt, mp_rnd_t rnd_mode)
     long int err;    /* Precision of error */
     MPFR_ZIV_DECL (loop);
     MPFR_SAVE_EXPO_DECL (expo);
+    MPFR_GROUP_DECL (group);
+
+    MPFR_SAVE_EXPO_MARK (expo);
 
     /* compute the precision of intermediary variable */
     Nt = MAX (MPFR_PREC (x), MPFR_PREC (y));
@@ -77,11 +80,8 @@ mpfr_sinh (mpfr_ptr y, mpfr_srcptr xt, mp_rnd_t rnd_mode)
     if (MPFR_GET_EXP (x) < 0)
       Nt -= 2*MPFR_GET_EXP (x);
 
-    /* initialise of intermediary	variable */
-    mpfr_init2 (t, Nt);
-    mpfr_init2 (ti, Nt);
-
-    MPFR_SAVE_EXPO_MARK (expo);
+    /* initialise of intermediary variables */
+    MPFR_GROUP_INIT_2 (group, Nt, t, ti);
 
     /* First computation of sinh */
     MPFR_ZIV_INIT (loop, Nt);
@@ -120,13 +120,10 @@ mpfr_sinh (mpfr_ptr y, mpfr_srcptr xt, mp_rnd_t rnd_mode)
       /* actualisation of the precision */
       Nt += err;
       MPFR_ZIV_NEXT (loop, Nt);
-      mpfr_set_prec (t, Nt);
-      mpfr_set_prec (ti, Nt);
+      MPFR_GROUP_REPREC_2 (group, Nt, t, ti);
     }
     MPFR_ZIV_FREE (loop);
-
-    mpfr_clear (t);
-    mpfr_clear (ti);
+    MPFR_GROUP_CLEAR (group);
     MPFR_SAVE_EXPO_FREE (expo);
   }
 
