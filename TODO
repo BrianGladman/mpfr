@@ -196,6 +196,12 @@ New functions to implement:
   + Trigamma Function psi'(x).
     and Polygamma Function: psi^{(m)}(x) for m >= 0, x > 0.
 
+- from gnumeric (www.gnome.org/projects/gnumeric/doc/function-reference.html):
+  - beta
+  - betaln
+  - degrees
+  - radians
+  - sqrtpi
 
 ##############################################################################
 Efficiency:
