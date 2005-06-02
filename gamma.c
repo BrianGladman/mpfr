@@ -36,21 +36,15 @@ MA 02111-1307, USA. */
 int
 mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
-  mpfr_t xp;
-  mpfr_t product;
-  mpfr_t the_pi;
-  mpfr_t GammaTrial;
-  mpfr_t tmp, tmp2;
-  mp_prec_t Prec;
-  mp_prec_t prec_gamma;
-  mp_prec_t prec_nec;
+  mpfr_t xp, GammaTrial, tmp, tmp2;
+  mp_prec_t Prec, prec_gamma, prec_nec, realprec;
   mp_prec_t A, N, estimated_cancel;
-  mp_prec_t realprec;
-  int compared;
   unsigned long k;
+  int compared;
   int sign;
   int inex;
   int is_integer;
+  MPFR_GROUP_DECL (group);
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_ZIV_DECL (loop);
 
@@ -96,10 +90,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
       MPFR_RET_NAN;
     }
 
-  MPFR_CLEAR_FLAGS(gamma);
-
   /* Set x_p=x if x> 1 else set x_p=2-x */
-  prec_gamma = MPFR_PREC (gamma);
   compared = mpfr_cmp_ui (x, 1);
   if (compared == 0)
     return mpfr_set_ui (gamma, 1, rnd_mode);
@@ -114,18 +105,14 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   MPFR_SAVE_EXPO_MARK (expo);
 
+  prec_gamma = MPFR_PREC (gamma);
   realprec = prec_gamma + MPFR_INT_CEIL_LOG2 (prec_gamma) + 10;
 
-  mpfr_init2 (xp, realprec + BITS_PER_MP_LIMB);
-  mpfr_init2 (tmp, realprec + BITS_PER_MP_LIMB);
-  mpfr_init2 (tmp2, realprec + BITS_PER_MP_LIMB);
-  mpfr_init2 (the_pi, realprec + BITS_PER_MP_LIMB);
-  mpfr_init2 (product, realprec + BITS_PER_MP_LIMB);
-  mpfr_init2 (GammaTrial, realprec + BITS_PER_MP_LIMB);
-
+  MPFR_GROUP_INIT_4 (group, realprec + BITS_PER_MP_LIMB,
+                     xp, tmp, tmp2, GammaTrial);
   MPFR_ZIV_INIT (loop, realprec);
   for (;;)
-    { 
+    {
       /* Precision stuff */
       prec_nec = compared < 0 ?
         2 + realprec  /* We will use the reflexion formula! */
@@ -149,68 +136,57 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
       MPFR_ASSERTD (Prec > prec_nec);
       MPFR_ASSERTD (Prec > estimated_cancel);
       MPFR_ASSERTD (estimated_cancel > A);
+      MPFR_GROUP_REPREC_4 (group, Prec, xp, tmp, tmp2, GammaTrial);
 
-      mpfr_set_prec (xp, Prec);
       if (compared < 0)
-	mpfr_ui_sub (xp, 1, x, GMP_RNDN);
+	mpfr_sub (xp, __gmpfr_one, x, GMP_RNDN);
       else
-	mpfr_sub_ui (xp, x, 1, GMP_RNDN);
-
-      /* Set prec  */
-      mpfr_set_prec (tmp, Prec);
-      mpfr_set_prec (tmp2, Prec);
-      mpfr_set_prec (the_pi, Prec);
-      mpfr_set_prec (product, Prec);
-      mpfr_set_prec (GammaTrial, Prec);
-
+	mpfr_sub (xp, x, __gmpfr_one, GMP_RNDN);
       mpfr_set_ui (GammaTrial, 0, GMP_RNDN);
       sign = 1;
+
       for (k = 1; k <= N; k++)
         {
           mpfr_set_ui (tmp, A - k, GMP_RNDN);
-          mpfr_exp (product, tmp, GMP_RNDN);
+          mpfr_exp (tmp2, tmp, GMP_RNDN);
           mpfr_ui_pow_ui (tmp, A - k, k - 1, GMP_RNDN);
-          mpfr_mul (product, product, tmp, GMP_RNDN);
+          mpfr_mul (tmp2, tmp2, tmp, GMP_RNDN);
           mpfr_sqrt_ui (tmp, A - k, GMP_RNDN);
-          mpfr_mul (product, product, tmp, GMP_RNDN);
+          mpfr_mul (tmp2, tmp2, tmp, GMP_RNDN);
           mpfr_fac_ui (tmp, k - 1, GMP_RNDN);
-          mpfr_div (product, product, tmp, GMP_RNDN);
+          mpfr_div (tmp2, tmp2, tmp, GMP_RNDN);
           mpfr_add_ui (tmp, xp, k, GMP_RNDN);
-          mpfr_div (product, product, tmp, GMP_RNDN);
+          mpfr_div (tmp2, tmp2, tmp, GMP_RNDN);
           sign = -sign;
           if (sign == 1)
-            {
-              mpfr_neg (product, product, GMP_RNDN);
-#ifdef DEBUG
-              /*    printf(" k=%u", k);
-                    printf("\n");*/
-#endif
-            }
-          mpfr_add(GammaTrial, GammaTrial, product, GMP_RNDN);
+            mpfr_neg (tmp2, tmp2, GMP_RNDN);
+          mpfr_add (GammaTrial, GammaTrial, tmp2, GMP_RNDN);
         }
 #ifdef DEBUG
       printf("GammaTrial =");
       mpfr_out_str (stdout, 10, 0, GammaTrial, GMP_RNDD);
       printf ("\n");
 #endif
-      mpfr_const_pi(the_pi, GMP_RNDN);
-      mpfr_const_pi(tmp, GMP_RNDN);
-      mpfr_mul_2ui(tmp, tmp, 1, GMP_RNDN);
-      mpfr_sqrt(tmp, tmp, GMP_RNDN);
-      mpfr_add(GammaTrial, GammaTrial, tmp, GMP_RNDN);
-      mpfr_add_ui(tmp2, xp, A, GMP_RNDN);
-      mpfr_set_ui(tmp, 1, GMP_RNDN);
-      mpfr_div_2ui(tmp, tmp, 1, GMP_RNDN);
-      mpfr_add(tmp, tmp, xp, GMP_RNDN);
-      mpfr_pow(tmp, tmp2, tmp, GMP_RNDN);
-      mpfr_mul(GammaTrial, GammaTrial, tmp, GMP_RNDN);
-      mpfr_neg(tmp, tmp2, GMP_RNDN);
-      mpfr_exp(tmp, tmp, GMP_RNDN);
-      mpfr_mul(GammaTrial, GammaTrial, tmp, GMP_RNDN);
+      mpfr_const_pi (tmp, GMP_RNDN);
+      mpfr_mul_2ui (tmp, tmp, 1, GMP_RNDN);
+      mpfr_sqrt (tmp, tmp, GMP_RNDN);
+      mpfr_add (GammaTrial, GammaTrial, tmp, GMP_RNDN);
+
+      mpfr_add_ui (tmp2, xp, A, GMP_RNDN);
+      mpfr_set_ui_2exp (tmp, 1, -1, GMP_RNDN); /* tmp= 1/2 */
+      mpfr_add (tmp, tmp, xp, GMP_RNDN);
+      mpfr_pow (tmp, tmp2, tmp, GMP_RNDN);
+      mpfr_mul (GammaTrial, GammaTrial, tmp, GMP_RNDN);
+
+      mpfr_neg (tmp, tmp2, GMP_RNDN);
+      mpfr_exp (tmp, tmp, GMP_RNDN);
+      mpfr_mul (GammaTrial, GammaTrial, tmp, GMP_RNDN);
+
       if (compared < 0)
         {
+          mpfr_const_pi (tmp2, GMP_RNDN);
           mpfr_sub_ui (tmp, x, 1, GMP_RNDN);
-          mpfr_mul (tmp, the_pi, tmp, GMP_RNDN);
+          mpfr_mul (tmp, tmp2, tmp, GMP_RNDN);
           mpfr_div (GammaTrial, tmp, GammaTrial, GMP_RNDN);
           mpfr_sin (tmp, tmp, GMP_RNDN);
           mpfr_div (GammaTrial, GammaTrial, tmp, GMP_RNDN);
@@ -223,22 +199,12 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
       if (mpfr_can_round (GammaTrial, realprec, GMP_RNDD, GMP_RNDZ,
                           MPFR_PREC(gamma) + (rnd_mode == GMP_RNDN)))
         break;
-      
       MPFR_ZIV_NEXT (loop, realprec);
     }
   MPFR_ZIV_FREE (loop);
 
   inex = mpfr_set (gamma, GammaTrial, rnd_mode);
-
-  mpfr_clear(tmp);
-  mpfr_clear(tmp2);
-  mpfr_clear(the_pi);
-  mpfr_clear(product);
-  mpfr_clear(GammaTrial);
-
-  mpfr_clear (xp);
-
+  MPFR_GROUP_CLEAR (group);
   MPFR_SAVE_EXPO_FREE (expo);
-
-  return mpfr_check_range(gamma, inex, rnd_mode); 
+  return mpfr_check_range(gamma, inex, rnd_mode);
 }
