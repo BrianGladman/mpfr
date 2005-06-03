@@ -35,13 +35,20 @@ mpfr_ui_pow_ui (mpfr_ptr x, unsigned long int y, unsigned long int n,
   MPFR_ZIV_DECL (loop);
   MPFR_SAVE_EXPO_DECL (expo);
 
-  if (MPFR_UNLIKELY (n == 0))
-    /* y^0 = 1 for any y */
-    return mpfr_set_ui (x, 1, rnd);
-
-  if (MPFR_UNLIKELY (y == 0))
-    /* 0^n = 0 for any n > 0 */
-    return mpfr_set_ui (x, 0, rnd);
+  if (MPFR_UNLIKELY (n <= 1))
+    {
+      if (n == 1)
+        return mpfr_set_ui (x, y, rnd);     /* y^1 = y */
+      else
+        return mpfr_set_ui (x, 1, rnd);     /* y^0 = 1 for any y */
+    }
+  else if (MPFR_UNLIKELY (y <= 1))
+    {
+      if (y == 1)
+        return mpfr_set_ui (x, 1, rnd);     /* 1^n = 1 for any n > 0 */
+      else
+        return mpfr_set_ui (x, 0, rnd);     /* 0^n = 0 for any n > 0 */
+    }
 
   for (size_n = 0, m = n; m; size_n++, m >>= 1);
 
