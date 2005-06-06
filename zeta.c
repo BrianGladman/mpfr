@@ -161,11 +161,17 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
   precs = MPFR_PREC (s);
 
   /* Zeta(x) = 1+1/2^x+1/3^x+1/4^x+1/5^x+O(1/6^x)
-     so with 2^(EXP(x)-1) <= x < 2^EXP(x) */
+     so with 2^(EXP(x)-1) <= x < 2^EXP(x)
+     So for x > 2^3, k^x > k^8, so 2/k^x < 2/k^8
+     Zeta(x) = 1 + 1/2^x*(1+(2/3)^x+(2/4)^x+...)
+             = 1 + 1/2^x*(1+sum((2/k)^x,k=3..infinity))
+            <= 1 + 1/2^x*(1+sum((2/k)^8,k=3..infinity))
+     And sum((2/k)^8,k=3..infinity) = -257+128*Pi^8/4725 ~= 0.0438035
+     So Zeta(x) <= 1 + 1/2^x*2 for x >= 8
+     The error is < 2^(-x+1) <= 2^(-2^(EXP(x)-1)+1) */
   if (MPFR_GET_EXP (s) > 3)
     {
       mp_exp_t err;
-      /* The error is < 2^(-x+1) <= 2^(-2^(EXP(x)-1)+1) */
       err = MPFR_GET_EXP (s) - 1;
       if (err > (sizeof (mp_exp_t)*CHAR_BIT-2))
         err = MPFR_EMAX_MAX;
