@@ -323,7 +323,7 @@ main (int argc, char *argv[])
       printf ("Error in mpfr_zeta (3,RNDD)\n");
       exit (1);
     }
-  mpfr_sub_one_ulp (y, GMP_RNDZ);
+  mpfr_nexttozero (y);
   mpfr_zeta (z, s, GMP_RNDZ);
   if (mpfr_cmp (z, y) != 0)
     {

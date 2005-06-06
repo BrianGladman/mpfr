@@ -431,7 +431,7 @@ check_lowr (void)
         }
       else if (c == -2)
         {
-          mpfr_sub_one_ulp(z, GMP_RNDN);
+          mpfr_nexttozero (z);
           if (mpfr_cmp(z2, z))
             {
               printf ("Error in mpfr_div [even rnd?] rnd=GMP_RNDN\n");

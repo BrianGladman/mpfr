@@ -57,7 +57,7 @@ check_small (void)
 
   mpfr_set_prec (x, 20);
   mpfr_set_ui (x, 2, GMP_RNDN);
-  mpfr_sub_one_ulp (x, GMP_RNDD);
+  mpfr_nexttozero (x);
   s = mpfr_get_str (NULL, &e, 4, 2, x, GMP_RNDU);
   if (strcmp (s, "20") || (e != 1))
     {
@@ -147,7 +147,7 @@ check_small (void)
       mpfr_free_str (s);
 
       mpfr_set_str (x, "6.5", 10, GMP_RNDN);
-      mpfr_sub_one_ulp (x, GMP_RNDU);
+      mpfr_nexttozero (x);
       s = mpfr_get_str (NULL, &e, 6, 2, x, GMP_RNDN);
       if (strcmp (s, "10") || (e != 2))
         {

@@ -305,8 +305,6 @@ __MPFR_DECLSPEC int mpfr_urandomb _MPFR_PROTO ((mpfr_ptr, gmp_randstate_t));
 __MPFR_DECLSPEC void mpfr_nextabove _MPFR_PROTO ((mpfr_ptr));
 __MPFR_DECLSPEC void mpfr_nextbelow _MPFR_PROTO ((mpfr_ptr));
 __MPFR_DECLSPEC void mpfr_nexttoward _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr));
-__MPFR_DECLSPEC int mpfr_add_one_ulp _MPFR_PROTO ((mpfr_ptr, mpfr_rnd_t));
-__MPFR_DECLSPEC int mpfr_sub_one_ulp _MPFR_PROTO((mpfr_ptr, mpfr_rnd_t));
 
 #ifdef _MPFR_H_HAVE_FILE
 #define mpfr_inp_str __gmpfr_inp_str
@@ -663,5 +661,9 @@ __MPFR_DECLSPEC int  mpfr_strtofr _MPFR_PROTO ((mpfr_ptr, __gmp_const char *,
 #ifndef mpz_set_fr
 # define mpz_set_fr mpfr_get_z
 #endif
+#define mpfr_add_one_ulp(x,r) \
+ (mpfr_sgn (x) > 0 ? mpfr_nextabove (x) : mpfr_nextbelow (x))
+#define mpfr_sub_one_ulp(x,r) \
+ (mpfr_sgn (x) > 0 ? mpfr_nextbelow (x) : mpfr_nextabove (x))
 
 #endif /* __MPFR_H*/
