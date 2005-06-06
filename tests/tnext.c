@@ -72,7 +72,7 @@ generic_abovebelow (void)
       else
         mpfr_nextabove (y);
       mpfr_set_si (t, below ? -5 : 5, GMP_RNDN);
-      mpfr_mul_2si (t, t, mpfr_get_exp (x) - prec - 3, GMP_RNDN);
+      mpfr_mul_2si (t, t, (mpfr_get_exp) (x) - prec - 3, GMP_RNDN);
       /* t = (1/2 + 1/8) ulp(x) */
       mpfr_add (z, x, t, GMP_RNDN);
       if (!mpfr_number_p (y) || mpfr_cmp (y, z) != 0)
