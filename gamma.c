@@ -38,13 +38,8 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
   mpfr_t xp, GammaTrial, tmp, tmp2;
   mpz_t fact;
-  mp_prec_t Prec, prec_gamma, prec_nec, realprec;
-  mp_prec_t A, N, estimated_cancel;
-  unsigned long k;
-  int compared;
-  int sign;
-  int inex;
-  int is_integer;
+  mp_prec_t Prec, realprec, A, k;
+  int compared, inex, is_integer;
   MPFR_GROUP_DECL (group);
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_ZIV_DECL (loop);
@@ -91,7 +86,6 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
       MPFR_RET_NAN;
     }
 
-  /* Set x_p=x if x> 1 else set x_p=2-x */
   compared = mpfr_cmp_ui (x, 1);
   if (compared == 0)
     return mpfr_set_ui (gamma, 1, rnd_mode);
@@ -106,8 +100,8 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   MPFR_SAVE_EXPO_MARK (expo);
 
-  prec_gamma = MPFR_PREC (gamma);
-  realprec = prec_gamma + MPFR_INT_CEIL_LOG2 (prec_gamma) + 10;
+  realprec = MPFR_PREC (gamma);
+  realprec = realprec + MPFR_INT_CEIL_LOG2 (realprec) + 10;
 
   MPFR_GROUP_INIT_4 (group, realprec + BITS_PER_MP_LIMB,
                      xp, tmp, tmp2, GammaTrial);
@@ -115,29 +109,19 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_ZIV_INIT (loop, realprec);
   for (;;)
     {
+      /* If compared < 0, we use the reflexion formula */
       /* Precision stuff */
-      prec_nec = compared < 0 ?
-        2 + realprec  /* We will use the reflexion formula! */
-        : realprec;
+      Prec = realprec + 2 * (compared < 0);
       /* A   = (prec_nec-0.5)*CST
 	 CST = ln(2)/(ln(2*pi))) = 0.38
 	 This strange formula is just to avoid any overflow */
-      A = (prec_nec/100)*38 + ((prec_nec%100)*38+100-38/2)/100 - 1;
-      N = A - 1;
-#ifdef DEBUG
-      printf("A=%d N=%d\n", (int)A, (int)N);
-#endif
-
-      /* Estimated_cancel is the amount of bit that will be flushed */
-      /* estimated_cancel = A + ecCST * A;
-	 ecCST = {1+sup_{x\in [0,1]} x*ln((1-x)/x)}/ln(2) = 1.84 
+      A = (Prec/100)*38 + ((Prec%100)*38+100-38/2)/100 - 1;
+      /* Estimated_cancel is the amount of bit that will be flushed:
+         estimated_cancel = A + ecCST * A;
+	 ecCST = {1+sup_{x\in [0,1]} x*ln((1-x)/x)}/ln(2) = 1.84
 	 This strange formula is just to avoid any overflow */
-      estimated_cancel = A + (A + (A/100)*84 + ((A%100)*84)/100);
-      Prec = prec_nec + estimated_cancel + 16;
+      Prec += 16 + (A + (A + (A/100)*84 + ((A%100)*84)/100));
 
-      MPFR_ASSERTD (Prec > prec_nec);
-      MPFR_ASSERTD (Prec > estimated_cancel);
-      MPFR_ASSERTD (estimated_cancel > A);
       MPFR_GROUP_REPREC_4 (group, Prec, xp, tmp, tmp2, GammaTrial);
 
       if (compared < 0)
@@ -145,10 +129,9 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
       else
 	mpfr_sub (xp, x, __gmpfr_one, GMP_RNDN);
       mpfr_set_ui (GammaTrial, 0, GMP_RNDN);
-      sign = 1;
       mpz_set_ui (fact, 1);
 
-      for (k = 1; k <= N; k++)
+      for (k = 1; k < A; k++)
         {
           mpfr_set_ui (tmp, A - k, GMP_RNDN);
           mpfr_exp (tmp2, tmp, GMP_RNDN);
@@ -165,8 +148,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
             }
           mpfr_add_ui (tmp, xp, k, GMP_RNDN);
           mpfr_div (tmp2, tmp2, tmp, GMP_RNDN);
-          sign = -sign;
-          if (sign == 1)
+          if ((k & 1) == 0)
             MPFR_CHANGE_SIGN (tmp2);
           mpfr_add (GammaTrial, GammaTrial, tmp2, GMP_RNDN);
         }
