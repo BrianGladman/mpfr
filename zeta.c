@@ -23,6 +23,7 @@ MA 02110-1301, USA. */
 /* #define DEBUG */
 
 #include <stdio.h>
+#include <limits.h>
 
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
@@ -40,7 +41,8 @@ static void
 mpfr_zeta_part_b (mpfr_t b, mpfr_srcptr s, int n, int p, mpfr_t *tc)
 {
   mpfr_t s1, d, u;
-  int n2, l, t;
+  unsigned long n2;
+  int l, t;
   MPFR_GROUP_DECL (group);
 
   if (p == 0)
@@ -68,11 +70,11 @@ mpfr_zeta_part_b (mpfr_t b, mpfr_srcptr s, int n, int p, mpfr_t *tc)
       mpfr_add (d, d, tc[p-l], GMP_RNDN);
       /* since s is positive and the tc[i] have alternate signs,
          the following is unlikely */
-      if (MPFR_UNLIKELY(mpfr_cmpabs (d, tc[p-l]) > 0))
+      if (MPFR_UNLIKELY (mpfr_cmpabs (d, tc[p-l]) > 0))
 	mpfr_set (d, tc[p-l], GMP_RNDN);
     }
   mpfr_mul (d, d, s, GMP_RNDN);
-  mpfr_add_ui (s1, s, 1, GMP_RNDN);
+  mpfr_add (s1, s, __gmpfr_one, GMP_RNDN);
   mpfr_neg (s1, s1, GMP_RNDN);
   mpfr_ui_pow (u, n, s1, GMP_RNDN);
   mpfr_mul (b, d, u, GMP_RNDN);
@@ -93,19 +95,18 @@ mpfr_zeta_c (int p, mpfr_t *tc)
   if (p > 0)
     {
       mpfr_init2 (d, MPFR_PREC (tc[1]));
-      mpfr_set_ui (tc[1], 1, GMP_RNDN);
-      mpfr_div_ui (tc[1], tc[1], 12, GMP_RNDN);
+      mpfr_div_ui (tc[1], __gmpfr_one, 12, GMP_RNDN);
       for (k = 2; k <= p; k++)
 	{
 	  mpfr_set_ui (d, k-1, GMP_RNDN);
 	  mpfr_div_ui (d, d, 12*k+6, GMP_RNDN);
-	  for (l=2; l<=k-1; l++)
+	  for (l=2; l < k; l++)
 	    {
 	      mpfr_div_ui (d, d, 4*(2*k-2*l+3)*(2*k-2*l+2), GMP_RNDN);
 	      mpfr_add (d, d, tc[l], GMP_RNDN);
 	    }
 	  mpfr_div_ui (tc[k], d, 24, GMP_RNDN);
-	  mpfr_neg (tc[k], tc[k], GMP_RNDN);
+          MPFR_CHANGE_SIGN (tc[k]);
 	}
       mpfr_clear (d);
     }
@@ -132,7 +133,7 @@ mpfr_zeta_part_a (mpfr_t sum, mpfr_srcptr s, int n)
       mpfr_ui_pow (u, i, s1, GMP_RNDN);
       mpfr_add (sum, sum, u, GMP_RNDN);
     }
-  mpfr_add_ui (sum, sum, 1, GMP_RNDN);
+  mpfr_add (sum, sum, __gmpfr_one, GMP_RNDN);
 
   MPFR_GROUP_CLEAR (group);
 }
@@ -154,13 +155,30 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
   MPFR_GROUP_DECL (group);
   MPFR_ZIV_DECL (loop);
 
+  MPFR_ASSERTD (MPFR_IS_POS (s) && MPFR_GET_EXP (s) >= 0);
+
   precz = MPFR_PREC (z);
   precs = MPFR_PREC (s);
+
+  /* Zeta(x) = 1+1/2^x+1/3^x+1/4^x+1/5^x+O(1/6^x)
+     so with 2^(EXP(x)-1) <= x < 2^EXP(x) */
+  if (MPFR_GET_EXP (s) > 3)
+    {
+      mp_exp_t err;
+      /* The error is < 2^(-x+1) <= 2^(-2^(EXP(x)-1)+1) */
+      err = MPFR_GET_EXP (s) - 1;
+      if (err > (sizeof (mp_exp_t)*CHAR_BIT-2))
+        err = MPFR_EMAX_MAX;
+      else
+        err = ((mp_exp_t)1) << err;
+      err = 1 - (-err+1); /* GET_EXP(one) - (-err+1) = err :) */
+      MPFR_FAST_COMPUTE_IF_SMALL_INPUT (z, __gmpfr_one, err, 1, rnd_mode, );
+    }
 
   d = precz + 11;
 
   /* we want that s1 = s-1 is exact, i.e. we should have PREC(s1) >= EXP(s) */
-  dint = (mpfr_uexp_t) ABS (MPFR_GET_EXP (s));
+  dint = (mpfr_uexp_t) MPFR_GET_EXP (s);
   mpfr_init2 (s1, MAX (precs, dint));
   inex = mpfr_sub (s1, s, __gmpfr_one, GMP_RNDN);
   MPFR_ASSERTD (inex == 0);
@@ -189,7 +207,7 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
 	  dint = MAX (d + 3, precs);
 	  MPFR_TRACE (printf ("branch 1\ninternal precision=%d\n", dint));
           MPFR_GROUP_REPREC_4 (group, dint, b, c, z_pre, f);
-	  mpfr_ui_div (z_pre, 1, s1, GMP_RNDN);
+	  mpfr_div (z_pre, __gmpfr_one, s1, GMP_RNDN);
 	  mpfr_const_euler (f, GMP_RNDN);
 	  mpfr_add (z_pre, z_pre, f, GMP_RNDN);
 	}
@@ -243,7 +261,7 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
           mpfr_zeta_part_a (z_pre, s, n);
           mpfr_zeta_part_b (b, s, n, p, tc1);
           /* s1 = s-1 is already computed above */
-          mpfr_ui_div (c, 1, s1, GMP_RNDN);
+          mpfr_div (c, __gmpfr_one, s1, GMP_RNDN);
           mpfr_ui_pow (f, n, s1, GMP_RNDN);
           mpfr_div (c, c, f, GMP_RNDN);
 	  MPFR_TRACE (MPFR_DUMP (c));
@@ -358,7 +376,7 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
       MPFR_ZIV_INIT (loop, prec1);
       for (;;)
 	{
-          mpfr_ui_sub (s1, 1, s, GMP_RNDN);      /* s1 = 1-s */
+          mpfr_sub (s1, __gmpfr_one, s, GMP_RNDN);/* s1 = 1-s */
           mpfr_zeta_pos (z_pre, s1, GMP_RNDN);   /* zeta(1-s)  */
           mpfr_gamma (y, s1, GMP_RNDN);          /* gamma(1-s) */
           mpfr_mul (z_pre, z_pre, y, GMP_RNDN);  /* gamma(1-s)*zeta(1-s) */
