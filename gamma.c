@@ -24,6 +24,13 @@ MA 02110-1301, USA. */
 #include <stdlib.h>
 #endif
 
+/* The error analysis of gamma has been lost.
+   As a consequence, we can't change the algorithm...
+   But we may compute the exp(A-k) in the inner loop a lot faster
+   but less accurate, so it changes the precsion.
+   All MPFR tests still pass anyway */
+/* #define USE_PRECOMPUTED_EXP */
+
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
@@ -38,6 +45,9 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
   mpfr_t xp, GammaTrial, tmp, tmp2;
   mpz_t fact;
+#ifdef USE_PRECOMPUTED_EXP
+  mpfr_t *tab;
+#endif
   mp_prec_t Prec, realprec, A, k;
   int compared, inex, is_integer;
   MPFR_GROUP_DECL (group);
@@ -131,10 +141,31 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_set_ui (GammaTrial, 0, GMP_RNDN);
       mpz_set_ui (fact, 1);
 
+      /* It is faster to compute exp from k=1 to A, but
+         it changes the order of the sum, which change the error
+         analysis... Don't change it too much until we recompute
+         the error analysis.
+         Another trick is to compute factoriel k in a MPFR rather than a MPZ
+         (Once again it changes the error analysis) */
+#ifdef USE_PRECOMPUTED_EXP
+      tab = (*__gmp_allocate_func) (sizeof (mpfr_t)*(A-1));
+      mpfr_init2 (tab[0], Prec);
+      mpfr_exp (tab[0], __gmpfr_one, GMP_RNDN);
+      for (k = 1; k < A-1; k++)
+        {
+          mpfr_init2 (tab[k], Prec);
+          mpfr_mul (tab[k], tab[k-1], tab[0], GMP_RNDN);
+        }
+#endif
+
       for (k = 1; k < A; k++)
         {
+#ifndef USE_PRECOMPUTED_EXP
           mpfr_set_ui (tmp, A - k, GMP_RNDN);
           mpfr_exp (tmp2, tmp, GMP_RNDN);
+#else
+          mpfr_set (tmp2, tab[A-k-1], GMP_RNDN);
+#endif
           mpfr_ui_pow_ui (tmp, A - k, k - 1, GMP_RNDN);
           mpfr_mul (tmp2, tmp2, tmp, GMP_RNDN);
           mpfr_sqrt_ui (tmp, A - k, GMP_RNDN);
@@ -185,6 +216,11 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
       printf("GammaTrial =");
       mpfr_out_str (stdout, 10, 0, GammaTrial, GMP_RNDD);
       printf ("\n");
+#endif
+#ifdef USE_PRECOMPUTED_EXP
+      for (k = 0 ; k < A-1 ; k++)
+        mpfr_clear (tab[k]);
+      (*__gmp_free_func) (tab, sizeof (mpfr_t) * (A-1) );
 #endif
       if (mpfr_can_round (GammaTrial, realprec, GMP_RNDD, GMP_RNDZ,
                           MPFR_PREC(gamma) + (rnd_mode == GMP_RNDN)))
