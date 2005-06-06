@@ -67,11 +67,16 @@ main (void)
       exit (1);
     }
 
-  mpfr_set_ui (x, 0, GMP_RNDN);
-  mpfr_ui_div (x, 1, x, GMP_RNDU);
-  if (mpfr_cmp_ui (x, 0) == 0)
+  mpfr_set_inf (x, 1);
+  if (mpfr_cmp_ui (x, 1) <= 0)
     {
       printf ("Error in mpfr_cmp_ui (Inf, 0)\n");
+      exit (1);
+    }
+  mpfr_set_inf (x, -1);
+  if (mpfr_cmp_ui (x, 1) >= 0)
+    {
+      printf ("Error in mpfr_cmp_ui (-Inf, 0)\n");
       exit (1);
     }
 
@@ -97,6 +102,19 @@ main (void)
   if (mpfr_cmp_si (x, s = 1) >= 0)
     {
       printf ("Error in mpfr_cmp_si(-3.0,1)\n");
+      exit (1);
+    }
+
+  mpfr_set_inf (x, 1);
+  if (mpfr_cmp_si (x, -1) <= 0)
+    {
+      printf ("Error in mpfr_cmp_si (Inf, 0)\n");
+      exit (1);
+    }
+  mpfr_set_inf (x, -1);
+  if (mpfr_cmp_si (x, -1) >= 0)
+    {
+      printf ("Error in mpfr_cmp_si (-Inf, 0)\n");
       exit (1);
     }
 
