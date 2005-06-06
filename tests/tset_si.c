@@ -181,7 +181,7 @@ main (int argc, char *argv[])
     {
       mpfr_set_si (x, -1, (mp_rnd_t) r);
       mpfr_set_ui (x, 0, (mp_rnd_t) r);
-      if (MPFR_IS_NEG (x) )
+      if (MPFR_IS_NEG (x) || mpfr_get_ui (x, (mp_rnd_t) r) != 0)
 	{
 	  printf ("mpfr_set_ui (x, 0) gives -0 for %s\n", 
 		  mpfr_print_rnd_mode ((mp_rnd_t) r));
@@ -190,7 +190,7 @@ main (int argc, char *argv[])
 
       mpfr_set_si (x, -1, (mp_rnd_t) r);
       mpfr_set_si (x, 0, (mp_rnd_t) r);
-      if (MPFR_IS_NEG (x))
+      if (MPFR_IS_NEG (x) || mpfr_get_si (x, (mp_rnd_t) r) != 0)
 	{
 	  printf ("mpfr_set_si (x, 0) gives -0 for %s\n",
 		  mpfr_print_rnd_mode ((mp_rnd_t) r));
@@ -263,6 +263,7 @@ main (int argc, char *argv[])
   set_emax (emax);
   mpfr_set_ui_2exp (x, 17, -50, GMP_RNDN);
   MPFR_ASSERTN (mpfr_get_ui (x, GMP_RNDD) == 0);
+  MPFR_ASSERTN (mpfr_get_si (x, GMP_RNDD) == 0);
 
   /* Test for ERANGE flag + correct behaviour if overflow */
   mpfr_set_prec (x, 256); 

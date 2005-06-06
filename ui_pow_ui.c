@@ -75,11 +75,11 @@ mpfr_ui_pow_ui (mpfr_ptr x, unsigned long int y, unsigned long int n,
          we have err = 1+floor(log2(n)).
          Since prec >= MPFR_PREC(x) + 4 + floor(log2(n)), prec > err */
       err = prec - err;
-      
+
       if (MPFR_LIKELY (inexact == 0
 		       || MPFR_CAN_ROUND (res, err, MPFR_PREC (x), rnd)))
 	break;
-      
+
       /* Actualisation of the precision */
       MPFR_ZIV_NEXT (loop, prec);
       mpfr_set_prec (res, prec);

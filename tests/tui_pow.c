@@ -55,6 +55,8 @@ test1 (void)
   /* Check for ui_pow_ui */
   mpfr_ui_pow_ui (x, 0, 1, GMP_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_POS (x));
+  mpfr_ui_pow_ui (x, 0, 4, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_POS (x));
   res1 = mpfr_ui_pow_ui (z, 17, 42, GMP_RNDD);
   mpfr_set_ui (x, 17, GMP_RNDN);
   mpfr_set_ui (y, 42, GMP_RNDN);
@@ -65,8 +67,16 @@ test1 (void)
 	      "Inexact1 = %d Inexact2 = %d\n", res1, res2);
       mpfr_dump (z);
       mpfr_dump (a);
+      exit (1);
     }
-
+  mpfr_set_prec (x, 2);
+  mpfr_ui_pow_ui (x, 65537, 65535, GMP_RNDN);
+  if (mpfr_cmp_str (x, "0.11E1048562", 2, GMP_RNDN) != 0)
+    {
+      printf ("Error for ui_pow_ui for 65537 ^65535 with 2 bits of precision\n");
+      mpfr_dump (x);
+      exit (1);
+    }
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);
