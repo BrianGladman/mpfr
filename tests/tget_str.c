@@ -135,7 +135,7 @@ check_small (void)
         }
       mpfr_free_str (s);
   
-      mpfr_add_one_ulp (x, GMP_RNDU);
+      mpfr_nexttoinf (x);
       s = mpfr_get_str (NULL, &e, 6, 2, x, GMP_RNDN);
       if (strcmp (s, "11") || (e != 2))
         {

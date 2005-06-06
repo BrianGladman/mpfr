@@ -86,7 +86,7 @@ check_worst_case (const char *Xs, const char *expxs)
     }
   mpfr_set_str1(x, Xs);
   test_exp(x, x, GMP_RNDU);
-  mpfr_add_one_ulp(y, GMP_RNDN);
+  mpfr_nexttoinf (y);
   if (mpfr_cmp(x,y))
     {
       printf ("exp(x) rounded towards +infinity is wrong\n");

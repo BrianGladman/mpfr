@@ -95,7 +95,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
           /* If z > abs(x), then it was already rounded up; otherwise
              z = abs(x), and we need to add one ulp due to y. */
           if (mpfr_abs (z, x, rnd_mode) == 0)
-            mpfr_add_one_ulp (z, rnd_mode);
+            mpfr_nexttoinf (z);
           return 1;
         }
       else /* GMP_RNDZ, GMP_RNDD, GMP_RNDN */

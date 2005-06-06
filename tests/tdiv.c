@@ -418,7 +418,7 @@ check_lowr (void)
         }
       else if (c == 2)
 	{
-	  mpfr_add_one_ulp(z, GMP_RNDN);
+	  mpfr_nexttoinf (z);
           if (mpfr_cmp(z2, z))
             {
               printf ("Error in mpfr_div [even rnd?] rnd=GMP_RNDN\n");
@@ -465,7 +465,7 @@ check_lowr (void)
       while (mpfr_cmp_ui (tmp, 0) == 0);
       mpfr_mul(x, z, tmp, GMP_RNDN);
       mpfr_set(y, tmp, GMP_RNDD);
-      mpfr_add_one_ulp(x, GMP_RNDN);
+      mpfr_nexttoinf (x);
 
       c = test_div(z2, x, y, GMP_RNDD);
       test_div(z3, x, y, GMP_RNDD);

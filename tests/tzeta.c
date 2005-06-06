@@ -274,7 +274,7 @@ main (int argc, char *argv[])
       exit (1);
     }
   mpfr_zeta (z, s, GMP_RNDD);
-  mpfr_add_one_ulp (y, GMP_RNDD);
+  mpfr_nexttoinf (y);
   if (mpfr_cmp (z, y) != 0)
     {
       printf ("Error in mpfr_zeta (1,RNDD)\n");
@@ -302,7 +302,7 @@ main (int argc, char *argv[])
       exit (1);
     }
   mpfr_zeta (z, s, GMP_RNDD);
-  mpfr_add_one_ulp (y, GMP_RNDD);
+  mpfr_nexttoinf (y);
   if (mpfr_cmp (z, y) != 0)
     {
       printf ("Error in mpfr_zeta (2,RNDD)\n");
