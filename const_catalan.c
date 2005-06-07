@@ -19,6 +19,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin Place, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
+#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
 /* Declare the cache */
@@ -84,29 +85,43 @@ mpfr_const_catalan_internal (mpfr_ptr g, mp_rnd_t rnd_mode)
 {
   mpfr_t x, y, z;
   mpz_t T, P, Q;
-  mp_prec_t pg, p, t;
-  MPFR_ZIV_DECL (loop);
+  mp_prec_t pg, p;
   int inex;
+  MPFR_ZIV_DECL (loop);
+  MPFR_GROUP_DECL (group);
 
   MPFR_LOG_FUNC (("rnd_mode=%d", rnd_mode), ("g[%#R]=%R inex=%d", g, g, inex));
 
+  /* Here are the WC (max prec = 100.000.000)
+     Once we have found a chain of 11, we only look for bigger chain.
+     Found 3 '1' at 0
+     Found 5 '1' at 9
+     Found 6 '0' at 34
+     Found 9 '1' at 176
+     Found 11 '1' at 705
+     Found 12 '0' at 913
+     Found 14 '1' at 12762
+     Found 15 '1' at 152561
+     Found 16 '0' at 171725
+     Found 18 '0' at 525355
+     Found 20 '0' at 529245
+     Found 21 '1' at 6390133
+     Found 22 '0' at 7806417
+     Found 25 '1' at 11936239
+     Found 27 '1' at 51752950
+  */
   pg = MPFR_PREC (g);
-
   p = pg + 8; /* pg + 7 avoids failure up for pg < 912
 		 pg + 8 gives no failure up to pg = 10000 */
+  p += MPFR_INT_CEIL_LOG2 (p);
 
-  /* add about log2(p) bits */
-  for (t = p; t; t >>= 1, p++);
-  
-  mpfr_init2 (x, p);
-  mpfr_init2 (y, p);
-  mpfr_init2 (z, p);
+  MPFR_GROUP_INIT_3 (group, p, x, y, z);
   mpz_init (T);
   mpz_init (P);
   mpz_init (Q);
-  
+
   MPFR_ZIV_INIT (loop, p);
-  for (;;) {    
+  for (;;) {
     mpfr_sqrt_ui (x, 3, GMP_RNDU);
     mpfr_add_ui (x, x, 2, GMP_RNDU);
     mpfr_log (x, x, GMP_RNDU);
@@ -122,18 +137,14 @@ mpfr_const_catalan_internal (mpfr_ptr g, mp_rnd_t rnd_mode)
 
     if (MPFR_LIKELY (MPFR_CAN_ROUND (x, p - 4, pg, rnd_mode)))
       break;
-
+    /* Fixme: Is it possible? */
     MPFR_ZIV_NEXT (loop, p);
-    mpfr_set_prec (x, p);
-    mpfr_set_prec (y, p);
-    mpfr_set_prec (z, p);
+    MPFR_GROUP_REPREC_3 (group, p, x, y, z);
   }
   MPFR_ZIV_FREE (loop);
   inex = mpfr_set (g, x, rnd_mode);
 
-  mpfr_clear (x);
-  mpfr_clear (y);
-  mpfr_clear (z);
+  MPFR_GROUP_CLEAR (group);
   mpz_clear (T);
   mpz_clear (P);
   mpz_clear (Q);
