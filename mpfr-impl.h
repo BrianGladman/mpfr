@@ -484,7 +484,7 @@ typedef unsigned long int  mpfr_uexp_t;
    MPFR_EXP_CHECK by setting -DMPFR_EXP_CHECK in $CFLAGS. */
 
 #ifdef MPFR_EXP_CHECK
-# define MPFR_GET_EXP(x)          mpfr_get_exp (x)
+# define MPFR_GET_EXP(x)          (mpfr_get_exp) (x)
 # define MPFR_SET_EXP(x, exp)     MPFR_ASSERTN (!mpfr_set_exp ((x), (exp)))
 # define MPFR_SET_INVALID_EXP(x)  ((void) (MPFR_EXP (x) = MPFR_EXP_INVALID))
 #else
