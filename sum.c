@@ -172,8 +172,7 @@ static int mpfr_list_sum_once (mpfr_ptr ret, mpfr_srcptr const tab[],
   mpfr_t sum;
   int error_trap;
 
-  if (MPFR_UNLIKELY (n == 1))
-    return mpfr_set (ret, tab[0], GMP_RNDN);
+  MPFR_ASSERTD (n >= 2);
 
   mpfr_init2 (sum, F);
 
@@ -193,24 +192,28 @@ static int mpfr_list_sum_once (mpfr_ptr ret, mpfr_srcptr const tab[],
 int mpfr_sum (mpfr_ptr ret, mpfr_ptr const tab[], unsigned long n, 
               mp_rnd_t rnd)
 {
+  mpfr_t cur_sum;
   mp_prec_t prec;
   unsigned long k;
   mpfr_srcptr *perm;
   int error_trap;
-  mpfr_t cur_sum;
   MPFR_ZIV_DECL (loop);
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_TMP_DECL(marker);
-    
-  MPFR_TMP_MARK(marker);
-  if (MPFR_UNLIKELY (n == 0)) {
-    MPFR_SET_ZERO (ret);
-    MPFR_SET_POS (ret);
-    return 0;
+
+  if (MPFR_UNLIKELY (n <= 1)) {
+    if (n < 1) {
+      MPFR_SET_ZERO (ret);
+      MPFR_SET_POS (ret);
+      return 0;
+    } else
+      return mpfr_set (ret, tab[0], rnd);
   }
 
+  MPFR_TMP_MARK(marker);
+
   /* Sort */
-  perm = (mpfr_srcptr *) MPFR_TMP_ALLOC(n * sizeof(mpfr_srcptr)); 
+  perm = (mpfr_srcptr *) MPFR_TMP_ALLOC (n * sizeof(mpfr_srcptr));
   mpfr_count_sort (tab, n, perm);
 
   /* Initial precision */
