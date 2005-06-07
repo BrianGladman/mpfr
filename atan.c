@@ -155,16 +155,16 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m,
 int
 mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
-  mpfr_t xp;
-  mpfr_t arctgt, sk, tmp, tmp2;
+  mpfr_t xp, arctgt, sk, tmp, tmp2;
   mpz_t  ukz;
-  int comparaison, inexact, inexact2;
-  mp_prec_t prec, realprec;
-  mp_exp_t exptol;
-  int i, n0, oldn0;
-  unsigned long twopoweri;
   mpz_t *tabz;
   unsigned int *tabi;
+  mp_exp_t exptol;
+  mp_prec_t prec, realprec;
+  unsigned long twopoweri;
+  int comparaison, inexact, inexact2;
+  int i, n0, oldn0;
+  MPFR_GROUP_DECL (group);
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_ZIV_DECL (loop);
 
@@ -229,22 +229,13 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
     }
 
   realprec = MPFR_PREC (atan) + MPFR_INT_CEIL_LOG2 (MPFR_PREC (atan)) + 4;
-  /* if (MPFR_PREC (atan) + 5 > MPFR_PREC (x) && MPFR_GET_EXP (x) < 0)
-    {
-      mpfr_uexp_t ue = (mpfr_uexp_t) (-MPFR_GET_EXP (x));
-      if (realprec < 2*ue + 5)
-	realprec = 2*ue + 5;
-	} */
   prec = realprec + BITS_PER_MP_LIMB;
 
   MPFR_SAVE_EXPO_MARK (expo);
 
   /* Initialisation    */
   mpz_init (ukz);
-  mpfr_init2 (sk, prec);
-  mpfr_init2 (tmp2, prec);
-  mpfr_init2 (tmp, prec);
-  mpfr_init2 (arctgt, prec);
+  MPFR_GROUP_INIT_4 (group, prec, sk, tmp, tmp2, arctgt);
   oldn0 = 0;
   tabz = NULL;
   tabi = NULL;
@@ -260,10 +251,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
       prec = (realprec + sup) + 1 + MPFR_INT_CEIL_LOG2 (3*n0-2);
 
       /* Initialisation */
-      mpfr_set_prec (sk, prec);
-      mpfr_set_prec (tmp2, prec);
-      mpfr_set_prec (tmp, prec);
-      mpfr_set_prec (arctgt, prec);
+      MPFR_GROUP_REPREC_4 (group, prec, sk, tmp, tmp2, arctgt);
       if (oldn0 < 3*n0+1) {
 	if (MPFR_LIKELY (oldn0 == 0)) {
 	  tabz = (mpz_t *) (*__gmp_allocate_func) (3*(n0+1)*sizeof (mpz_t));
@@ -349,15 +337,10 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   for (i = 0 ; i < oldn0 ; i++)
     mpz_clear (tabz[i]);
+  mpz_clear (ukz);
   (*__gmp_free_func) (tabz, oldn0*sizeof (mpz_t));
   (*__gmp_free_func) (tabi, oldn0/3*sizeof (unsigned int));
-
-  mpfr_clear (arctgt);
-  mpfr_clear (tmp);
-  mpfr_clear (tmp2);
-  mpfr_clear (sk);
-
-  mpz_clear (ukz);
+  MPFR_GROUP_CLEAR (group);
 
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (arctgt, inexact, rnd_mode);
