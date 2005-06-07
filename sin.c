@@ -74,7 +74,7 @@ mpfr_sin_sign (mpfr_srcptr x)
                                                <= 2^(K+2-m) */
           mpfr_sub (k, x, k, GMP_RNDN);
           /* assuming |k| <= Pi, err <= 2^(1-m)+2^(K+2-m) < 2^(K+3-m) */
-	  MPFR_ASSERTN (MPFR_GET_EXP (k) <= 2); 
+	  MPFR_ASSERTN (MPFR_IS_ZERO (k) || MPFR_GET_EXP (k) <= 2); 
           y = k;
         }
       else
