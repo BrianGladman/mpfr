@@ -1364,7 +1364,7 @@ struct mpfr_group_t {
    MPFR_GROUP_TINIT(g, 0, x);MPFR_GROUP_TINIT(g, 1, y))
 #define MPFR_GROUP_REPREC_3(g, prec, x, y, z)                    \
  MPFR_GROUP_REPREC_TEMPLATE(g, prec, 3,                          \
-   MPFR_GROUP_TINIT(g, 0, x);MPFR_GROUP_TINIT(g, 1, y)           \
+   MPFR_GROUP_TINIT(g, 0, x);MPFR_GROUP_TINIT(g, 1, y);          \
    MPFR_GROUP_TINIT(g, 2, z))
 #define MPFR_GROUP_REPREC_4(g, prec, x, y, z, t)                 \
  MPFR_GROUP_REPREC_TEMPLATE(g, prec, 4,                          \
