@@ -29,19 +29,26 @@ MA 02110-1301, USA. */
 static void
 check_large (void)
 {
-  mpfr_t x, y;
+  mpfr_t x, y, z;
 
   mpfr_init2 (x, 20000);
   mpfr_init2 (y, 21000);
+  mpfr_init2 (z, 11791);
 
-  (mpfr_const_pi) (x, GMP_RNDN); /* First one ! */
-  (mpfr_const_pi) (y, GMP_RNDN); /* Then the other - cache - */
+  /* The algo failed to round for p=11791. */
+  (mpfr_const_pi) (z, GMP_RNDU);
+  mpfr_const_pi (x, GMP_RNDN); /* First one ! */
+  mpfr_const_pi (y, GMP_RNDN); /* Then the other - cache - */
   mpfr_prec_round (y, 20000, GMP_RNDN);
-  if (mpfr_cmp (x,y))
-    {
-      printf ("const_pi: error for large prec\n");
-      exit (1);
-    }
+  if (mpfr_cmp (x, y)) {
+    printf ("const_pi: error for large prec (%d)\n", 1);
+    exit (1);
+  }
+  mpfr_prec_round (y, 11791, GMP_RNDU);
+  if (mpfr_cmp (z, y)) {
+    printf ("const_pi: error for large prec (%d)\n", 2);
+    exit (1);
+  }
 
   /* a worst-case to exercise recomputation */
   if (MPFR_PREC_MAX > 33440) {
@@ -49,7 +56,7 @@ check_large (void)
     mpfr_const_pi (x, GMP_RNDZ);
   }
 
-  mpfr_clears (x, y, NULL);
+  mpfr_clears (x, y, z, NULL);
 }
 
 int
