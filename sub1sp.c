@@ -21,19 +21,8 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin Place, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
-#if defined(DEBUG) || defined(WANT_ASSERT)
-# include <stdio.h>
-#endif
-
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
-
-#ifdef DEBUG
-# undef DEBUG
-# define DEBUG(x) (x)
-#else
-# define DEBUG(x) /**/
-#endif
 
 /* Check if we have to check the result of mpfr_sub1sp with mpfr_sub1 */
 #ifdef WANT_ASSERT
@@ -77,7 +66,13 @@ int mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 # endif
 #endif
 
-
+/* Debugging support */
+#ifdef DEBUG
+# undef DEBUG
+# define DEBUG(x) (x)
+#else
+# define DEBUG(x) /**/
+#endif
 
 /* Rounding Sub */
 

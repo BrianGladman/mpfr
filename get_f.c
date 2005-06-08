@@ -19,7 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin Place, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
-#include <stdio.h>
 #include "mpfr-impl.h"
 
 /* return value is 0 iff no error occurred in the conversion

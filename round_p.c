@@ -21,11 +21,10 @@ MA 02110-1301, USA. */
 
 #include "mpfr-impl.h"
 
+/* Check against mpfr_can_round ? */
 #ifdef WANT_ASSERT
 # if WANT_ASSERT >= 2
-# include <stdio.h>
-int
-mpfr_round_p_2 (mp_limb_t *bp, mp_size_t bn, mp_exp_t err0, mp_prec_t prec);
+int mpfr_round_p_2 (mp_limb_t *, mp_size_t, mp_exp_t, mp_prec_t);
 int
 mpfr_round_p (mp_limb_t *bp, mp_size_t bn, mp_exp_t err0, mp_prec_t prec)
 {

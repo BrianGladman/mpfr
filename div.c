@@ -24,7 +24,7 @@ MA 02110-1301, USA. */
 
 #ifdef DEBUG
 #define mpn_print(ap,n) mpn_print3(ap,n,MPFR_LIMB_ZERO)
-void
+static void
 mpn_print3 (mp_ptr ap, mp_size_t n, mp_limb_t cy)
 {
   mp_size_t i;

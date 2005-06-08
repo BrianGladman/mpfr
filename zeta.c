@@ -20,10 +20,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin Place, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
-/* #define DEBUG */
-
-#include <stdio.h>
-#include <limits.h>
+#include <limits.h>  /* For CHAR_BIT */
 
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"

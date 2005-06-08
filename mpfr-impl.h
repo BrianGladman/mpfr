@@ -23,6 +23,11 @@ MA 02110-1301, USA. */
 #ifndef __MPFR_IMPL_H__
 #define __MPFR_IMPL_H__
 
+/* Include stdio.h iff we are debugging or we want to check */
+#if defined(DEBUG) || defined(WANT_ASSERT)
+# include <stdio.h>
+#endif
+
 /* Check if we are inside a build of MPFR or inside the test suite.
    This is needed in mpfr.h to export or import the functions.
    It matters only for Windows DLL */

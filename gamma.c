@@ -19,11 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin Place, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
-#ifdef DEBUG
-#include <stdio.h>
-#include <stdlib.h>
-#endif
-
 /* The error analysis of gamma has been lost.
    As a consequence, we can't change the algorithm...
    But we may compute the exp(A-k) in the inner loop a lot faster

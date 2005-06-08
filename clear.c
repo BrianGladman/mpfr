@@ -1,6 +1,6 @@
 /* mpfr_clear -- free the memory space allocated for a floating-point number
 
-Copyright 1999, 2000, 2001, 2004 Free Software Foundation.
+Copyright 1999, 2000, 2001, 2004, 2005 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -19,16 +19,12 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin Place, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
-#include <stdio.h>
-
 #include "mpfr-impl.h"
 
 void
 mpfr_clear (mpfr_ptr m)
 {
-  /* be careful to always free an entire number of limbs */
-  (*__gmp_free_func) 
-    (MPFR_GET_REAL_PTR(m), 
-     MPFR_MALLOC_SIZE(MPFR_GET_ALLOC_SIZE(m)));
-  MPFR_MANT(m) = NULL;
+  (*__gmp_free_func) (MPFR_GET_REAL_PTR (m),
+                      MPFR_MALLOC_SIZE (MPFR_GET_ALLOC_SIZE (m)));
+  MPFR_MANT (m) = NULL;
 }
