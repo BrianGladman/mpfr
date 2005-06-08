@@ -1,5 +1,5 @@
 /* Mulder's MulHigh function (short product)
-   
+
 Copyright 2005 Free Software Foundation.
 
 This file is part of the MPFR Library.
@@ -27,7 +27,8 @@ MA 02110-1301, USA. */
 static short mulhigh_ktab[MPFR_MULHIGH_TAB_SIZE];
 #else
 static short mulhigh_ktab[] = {MPFR_MULHIGH_TAB};
-#define MPFR_MULHIGH_TAB_SIZE (sizeof(mulhigh_ktab) / sizeof(mulhigh_ktab[0]))
+#define MPFR_MULHIGH_TAB_SIZE \
+  ((mp_size_t) (sizeof(mulhigh_ktab) / sizeof(mulhigh_ktab[0])))
 #endif
 
 /* Put in  rp[n..2n-1] an approximation of the n high limbs

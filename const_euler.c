@@ -248,7 +248,7 @@ mpfr_const_euler_R (mpfr_t x, unsigned long n)
   /* err(x) <= (n+1)/2^m <= (n+1)*exp(n)/2^PREC(x) */
 
   mpfr_init2 (y, m);
-  mpfr_set_si (y, -n, GMP_RNDD); /* assumed exact */
+  mpfr_set_si (y, -(long)n, GMP_RNDD); /* assumed exact */
   mpfr_exp (y, y, GMP_RNDD); /* err <= ulp(y) <= exp(-n)*2^(1-m) */
   mpfr_mul (x, x, y, GMP_RNDD);
   /* err <= ulp(x) + (n + 1 + 2/n) / 2^prec(x)

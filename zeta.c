@@ -170,7 +170,7 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
     {
       mp_exp_t err;
       err = MPFR_GET_EXP (s) - 1;
-      if (err > (sizeof (mp_exp_t)*CHAR_BIT-2))
+      if (err > (mp_exp_t) (sizeof (mp_exp_t)*CHAR_BIT-2))
         err = MPFR_EMAX_MAX;
       else
         err = ((mp_exp_t)1) << err;
