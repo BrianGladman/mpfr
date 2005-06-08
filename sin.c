@@ -102,9 +102,10 @@ mpfr_sin_sign (mpfr_srcptr x)
 int 
 mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode) 
 {
-  int precy, m, inexact, sign;
   mpfr_t c;
   mp_exp_t e;
+  mp_prec_t precy, m;
+  int inexact, sign;
   MPFR_ZIV_DECL (loop);
   
   MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
