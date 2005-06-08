@@ -201,7 +201,7 @@ static
 void check_special (void)
 {
   mpfr_t tab[3], r;
-  mpfr_ptr *tabp[3];
+  mpfr_ptr tabp[3];
   int i;
 
   mpfr_inits (tab[0], tab[1], tab[2], r, NULL);
@@ -209,7 +209,7 @@ void check_special (void)
   tabp[1] = tab[1];
   tabp[2] = tab[2];
 
-  i = mpfr_sum (r, &tabp, 0, GMP_RNDN);
+  i = mpfr_sum (r, tabp, 0, GMP_RNDN);
   if (!MPFR_IS_ZERO (r) || !MPFR_IS_POS (r) || i != 0)
     {
       printf ("Special case n==0 failed!\n");
@@ -217,7 +217,7 @@ void check_special (void)
     }
 
   mpfr_set_ui (tab[0], 42, GMP_RNDN);
-  i = mpfr_sum (r, &tabp, 1, GMP_RNDN);
+  i = mpfr_sum (r, tabp, 1, GMP_RNDN);
   if (mpfr_cmp_ui (r, 42) || i != 0)
     {
       printf ("Special case n==1 failed!\n");
@@ -226,7 +226,7 @@ void check_special (void)
 
   mpfr_set_ui (tab[1], 17, GMP_RNDN);
   MPFR_SET_NAN (tab[2]);
-  i = mpfr_sum (r, &tabp, 3, GMP_RNDN);
+  i = mpfr_sum (r, tabp, 3, GMP_RNDN);
   if (!MPFR_IS_NAN (r) || i != 0)
     {
       printf ("Special case NAN failed!\n");
@@ -235,7 +235,7 @@ void check_special (void)
 
   MPFR_SET_INF (tab[2]);
   MPFR_SET_POS (tab[2]);
-  i = mpfr_sum (r, &tabp, 3, GMP_RNDN);
+  i = mpfr_sum (r, tabp, 3, GMP_RNDN);
   if (!MPFR_IS_INF (r) || !MPFR_IS_POS (r) || i != 0)
     {
       printf ("Special case +INF failed!\n");
@@ -244,7 +244,7 @@ void check_special (void)
 
   MPFR_SET_INF (tab[2]);
   MPFR_SET_NEG (tab[2]);
-  i = mpfr_sum (r, &tabp, 3, GMP_RNDN);
+  i = mpfr_sum (r, tabp, 3, GMP_RNDN);
   if (!MPFR_IS_INF (r) || !MPFR_IS_NEG (r) || i != 0)
     {
       printf ("Special case -INF failed!\n");
