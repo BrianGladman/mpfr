@@ -235,8 +235,8 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpz_init (ukz);
   MPFR_GROUP_INIT_4 (group, prec, sk, tmp, tmp2, arctgt);
   oldn0 = 0;
-  tabz = NULL;
-  tabi = NULL;
+  tabz = (mpz_t *) 0;
+  tabi = (unsigned int *) 0;
 
   MPFR_ZIV_INIT (loop, prec);
   for (;;)
