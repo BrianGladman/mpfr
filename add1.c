@@ -49,7 +49,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   bn = (bq-1)/BITS_PER_MP_LIMB+1; /* number of limbs of b */
   cn = (cq-1)/BITS_PER_MP_LIMB+1; /* number of limbs of c */
 
-  ap = MPFR_MANT(a); 
+  ap = MPFR_MANT(a);
   bp = MPFR_MANT(b);
   cp = MPFR_MANT(c);
 
@@ -150,7 +150,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       cc = MPFR_UNLIKELY(an > bn)
         ? mpn_add_n(ap + (an - bn), ap + (an - bn), bp, bn)
         : mpn_add_n(ap, ap, bp + (bn - an), an);
-      
+
       if (MPFR_UNLIKELY(cc)) /* carry */
         {
           if (MPFR_UNLIKELY(exp == __gmpfr_emax))
@@ -524,12 +524,12 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   if (MPFR_UNLIKELY(mpn_add_1(ap, ap, an, MPFR_LIMB_ONE << sh)))
     {
       if (MPFR_UNLIKELY(exp == __gmpfr_emax))
-        inex = mpfr_overflow(a, rnd_mode, MPFR_SIGN(a));
-      else
         {
-          exp++;
-          ap[an-1] = MPFR_LIMB_HIGHBIT;
+          inex = mpfr_overflow(a, rnd_mode, MPFR_SIGN(a));
+          goto end_of_add;
         }
+      exp++;
+      ap[an-1] = MPFR_LIMB_HIGHBIT;
     }
 
  set_exponent:
