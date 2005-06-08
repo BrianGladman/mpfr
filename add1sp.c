@@ -21,14 +21,12 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin Place, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
-#include <stdio.h>
+#if defined(DEBUG) || defined(WANT_ASSERT)
+# include <stdio.h>
+#endif
+
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
-
-/* Define some internal MACROS */
-
-/*#define DEBUG*/
-/*#define CHECK_AGAINST_SUB1*/
 
 #ifdef DEBUG
 # undef DEBUG
@@ -37,11 +35,52 @@ MA 02110-1301, USA. */
 # define DEBUG(x) /**/
 #endif
 
-/* compute sign(b) * (|b| + |c|) 
+/* Check if we have to check the result of mpfr_add1sp with mpfr_add1 */
+#ifdef WANT_ASSERT
+# if WANT_ASSERT >= 2
+
+int mpfr_add1sp2 (mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t);
+int mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
+{
+  mpfr_t tmpa, tmpb, tmpc;
+  int inexact, inexact2;
+
+  mpfr_init2 (tmpa, MPFR_PREC (a));
+  mpfr_init2 (tmpb, MPFR_PREC (b));
+  mpfr_init2 (tmpc, MPFR_PREC (c));
+  MPFR_ASSERTN (mpfr_set (tmpb, b, GMP_RNDN) == 0);
+  MPFR_ASSERTN (mpfr_set (tmpc, c, GMP_RNDN) == 0);
+
+  inexact2 = mpfr_add1 (tmpa, tmpb, tmpc, rnd_mode);
+  inexact  = mpfr_add1sp2 (a, b, c, rnd_mode);
+
+  if (mpfr_cmp (tmpa, a) || inexact != inexact2)
+    {
+      printf("add1 & add1sp return different values for %s\n"
+             "Prec_a= %lu Prec_b= %lu Prec_c= %lu\nB=",
+             mpfr_print_rnd_mode (rnd_mode),
+             MPFR_PREC (a), MPFR_PREC (b), MPFR_PREC (c));
+      mpfr_print_binary (tmpb);
+      printf("\nC=");
+      mpfr_print_binary (tmpc);
+      printf("\n\nadd1  : ");
+      mpfr_print_binary (tmpa);
+      printf("\nadd1sp: ");
+      mpfr_print_binary (a);
+      printf("\nInexact sp = %d | Inexact = %d\n", inexact, inexact2);
+      MPFR_ASSERTN (0);
+    }
+  mpfr_clears (tmpa, tmpb, tmpc, NULL);
+  return inexact;
+}
+#  define mpfr_add1sp mpfr_add1sp2
+# endif
+#endif
+
+/* compute sign(b) * (|b| + |c|)
    Returns 0 iff result is exact,
    a negative value when the result is less than the exact value,
-   a positive value otherwise.
-*/
+   a positive value otherwise. */
 int
 mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 {
