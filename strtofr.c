@@ -19,6 +19,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin Place, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
+#include <string.h> /* For strlen */
 #include <stdlib.h> /* For strtol */
 #include <ctype.h>  /* For isdigit */
 

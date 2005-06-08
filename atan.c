@@ -43,7 +43,7 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m,
   unsigned long n, i, k, j, l;
   mp_exp_t diff, expo;
   unsigned int P2i;
-  int neg;
+  int neg, im;
 
   /* Set Tables */
   S    = tab;           /* S */
@@ -73,8 +73,8 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m,
   if (mpz_cmp_ui (p, 1) != 0) {
     /* P!= 1: Precomputed ptoj table */
     mpz_set (ptoj[0], p);
-    for (i = 1 ; i < m ; i++)
-      mpz_mul (ptoj[i], ptoj[i-1], ptoj[i-1]);
+    for (im = 1 ; im < m ; im++)
+      mpz_mul (ptoj[im], ptoj[im-1], ptoj[im-1]);
     /* Main loop */
     k = 0;
     n = 1UL << m;

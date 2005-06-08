@@ -41,10 +41,10 @@ mpfr_extract (mpz_ptr y, mpfr_srcptr p, unsigned int i)
   MPFR_ASSERTD (!MPFR_IS_SINGULAR (p));
 
   _mpz_realloc (y, two_i_2);
-  if (size_p < two_i)
+  if ((mpfr_uexp_t) size_p < two_i)
     {
       MPN_ZERO (PTR(y), two_i_2);
-      if (size_p >= two_i_2)
+      if ((mpfr_uexp_t) size_p >= two_i_2)
         MPN_COPY (PTR(y) + two_i - size_p, MPFR_MANT(p), size_p - two_i_2);
     }
   else
