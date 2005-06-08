@@ -44,7 +44,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
   an = (aq-1)/BITS_PER_MP_LIMB+1; /* number of limbs of a */
   aq2 = (mp_prec_t) an * BITS_PER_MP_LIMB;
-  sh = aq2 - aq;                    /* non-significant bits in low lim */
+  sh = aq2 - aq;                  /* non-significant bits in low limb */
 
   bn = (bq-1)/BITS_PER_MP_LIMB+1; /* number of limbs of b */
   cn = (cq-1)/BITS_PER_MP_LIMB+1; /* number of limbs of c */
@@ -523,7 +523,6 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
  add_one_ulp: /* add one unit in last place to a */
   if (MPFR_UNLIKELY(mpn_add_1(ap, ap, an, MPFR_LIMB_ONE << sh)))
     {
-      /* Case 100000x0 + 1*/
       if (MPFR_UNLIKELY(exp == __gmpfr_emax))
         inex = mpfr_overflow(a, rnd_mode, MPFR_SIGN(a));
       else
