@@ -534,7 +534,7 @@ __MPFR_DECLSPEC int mpfr_cmp_f _MPFR_PROTO ((mpfr_srcptr, mpf_srcptr));
 
 __MPFR_DECLSPEC int mpfr_fma _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr,
 					   mpfr_srcptr, mpfr_rnd_t));
-__MPFR_DECLSPEC int mpfr_sum _MPFR_PROTO ((mpfr_ptr, mpfr_ptr __gmp_const [],
+__MPFR_DECLSPEC int mpfr_sum _MPFR_PROTO ((mpfr_ptr, mpfr_ptr *__gmp_const,
 					   unsigned long, mpfr_rnd_t));
 
 __MPFR_DECLSPEC void mpfr_init_cache _MPFR_PROTO ((mpfr_cache_t,

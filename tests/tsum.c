@@ -23,7 +23,6 @@ MA 02110-1301, USA. */
 #include <stdio.h>
 #include "mpfr-test.h"
 
-
 static int
 check_is_sorted (unsigned long n, mpfr_srcptr *perm)
 {
@@ -36,21 +35,21 @@ check_is_sorted (unsigned long n, mpfr_srcptr *perm)
 }
 
 static int
-mpfr_list_sum (mpfr_ptr ret, mpfr_t *tab, unsigned long n, mp_rnd_t rnd)
+sum_tab (mpfr_ptr ret, mpfr_t *tab, unsigned long n, mp_rnd_t rnd)
 {
-    mpfr_ptr *tabtmp;
-    unsigned long i;
-    int inexact;
-    MPFR_TMP_DECL(marker);
-    
-    MPFR_TMP_MARK(marker);
-    tabtmp = (mpfr_ptr *) MPFR_TMP_ALLOC(n * sizeof(mpfr_srcptr));
-    for (i = 0; i < n; i++)
-        tabtmp[i] = tab[i];
-    
-    inexact = mpfr_sum (ret, tabtmp, n, rnd);
-    MPFR_TMP_FREE(marker);
-    return inexact;
+  mpfr_ptr *tabtmp;
+  unsigned long i;
+  int inexact;
+  MPFR_TMP_DECL(marker);
+
+  MPFR_TMP_MARK(marker);
+  tabtmp = (mpfr_ptr *) MPFR_TMP_ALLOC(n * sizeof(mpfr_srcptr));
+  for (i = 0; i < n; i++)
+    tabtmp[i] = tab[i];
+
+  inexact = mpfr_sum (ret, tabtmp, n, rnd);
+  MPFR_TMP_FREE(marker);
+  return inexact;
 }
 
 
@@ -121,11 +120,11 @@ test_sort (mp_prec_t f, unsigned long n)
       tabtmp[i] = tab[i];
     }
 
-  mpfr_count_sort (tabtmp, n, perm);
+  mpfr_sum_sort ((mpfr_srcptr *)tabtmp, n, perm);
 
   if (check_is_sorted (n, perm) == 0)
     {
-      printf ("mpfr_count_sort incorrect.\n");
+      printf ("mpfr_sum_sort incorrect.\n");
       for (i = 0; i < n; i++)
         mpfr_dump (perm[i]);
       exit (1);
@@ -159,11 +158,11 @@ test_sum (mp_prec_t f, unsigned long n)
   algo_exact (real_non_rounded, tab, n, f);
   for (rnd_mode = 0; rnd_mode < GMP_RND_MAX; rnd_mode++)
     {
-      mpfr_list_sum (sum, tab, n, (mp_rnd_t) rnd_mode);
+      sum_tab (sum, tab, n, (mp_rnd_t) rnd_mode);
       mpfr_set (real_sum, real_non_rounded, (mp_rnd_t) rnd_mode);
       if (mpfr_cmp (real_sum, sum) != 0)
         {
-          printf ("mpfr_list_sum incorrect.\n");
+          printf ("mpfr_sum incorrect.\n");
           mpfr_dump (real_sum);
           mpfr_dump (sum);
           exit (1);
@@ -179,11 +178,11 @@ test_sum (mp_prec_t f, unsigned long n)
   algo_exact (real_non_rounded, tab, n, f);
   for (rnd_mode = 0; rnd_mode < GMP_RND_MAX; rnd_mode++)
     {
-      mpfr_list_sum (sum, tab, n, (mp_rnd_t) rnd_mode);
+      sum_tab (sum, tab, n, (mp_rnd_t) rnd_mode);
       mpfr_set (real_sum, real_non_rounded, (mp_rnd_t) rnd_mode);
       if (mpfr_cmp (real_sum, sum) != 0)
         {
-          printf ("mpfr_list_sum incorrect.\n");
+          printf ("mpfr_sum incorrect.\n");
           mpfr_dump (real_sum);
           mpfr_dump (sum);
           exit (1);
@@ -248,6 +247,22 @@ void check_special (void)
   if (!MPFR_IS_INF (r) || !MPFR_IS_NEG (r) || i != 0)
     {
       printf ("Special case -INF failed!\n");
+      exit (1);
+    }
+
+  MPFR_SET_ZERO (tab[1]);
+  i = mpfr_sum (r, tabp, 2, GMP_RNDN);
+  if (mpfr_cmp_ui (r, 42) || i != 0)
+    {
+      printf ("Special case 42+0 failed!\n");
+      exit (1);
+    }
+
+  MPFR_SET_NAN (tab[0]);
+  i = mpfr_sum (r, tabp, 3, GMP_RNDN);
+  if (!MPFR_IS_NAN (r) || i != 0)
+    {
+      printf ("Special case NAN+0+-INF failed!\n");
       exit (1);
     }
 

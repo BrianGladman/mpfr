@@ -1417,7 +1417,7 @@ Free the cache used by the functions computing constants if needed
 @code{mpfr_const_euler} and @code{mpfr_const_catalan}).
 @end deftypefun
 
-@deftypefun int mpfr_sum (mpfr_t @var{rop}, const mpfr_t* const @var{tab}[], unsigned long @var{n}, mp_rnd_t @var{rnd})
+@deftypefun int mpfr_sum (mpfr_t @var{rop}, mpfr_ptr const @var{tab}[], unsigned long @var{n}, mp_rnd_t @var{rnd})
 Set @var{ret} to the sum of all elements of @var{tab} whose size is @var{n},
 rounded in the direction @var{rnd}. Warning, @var{tab} is a table of pointers
 to mpfr_t, not a table of mpfr_t (preliminary interface). The returned
