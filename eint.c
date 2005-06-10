@@ -217,8 +217,10 @@ mpfr_eint (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
       mpfr_log (ump, x, GMP_RNDN);
       mpfr_add (tmp, tmp, ump, GMP_RNDN);
       /* same formula as above, except now EXP(ump) is not 0 */
-      err = MAX(0, 1 + MAX (MPFR_GET_EXP (ump), te + err + 1)
-                - MPFR_GET_EXP (tmp));
+      err += te + 1;
+      if (MPFR_LIKELY (!MPFR_IS_ZERO (ump)))
+        err = MAX (MPFR_GET_EXP (ump), err);
+      err = MAX(0, err - MPFR_GET_EXP (tmp));
       err = MPFR_PREC (tmp) - err;
       if (MPFR_LIKELY (MPFR_CAN_ROUND (tmp, err, MPFR_PREC (y), rnd)))
 	break;
