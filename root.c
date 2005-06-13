@@ -47,8 +47,37 @@ mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mp_rnd_t rnd_mode)
   int inexact, negative;
   MPFR_SAVE_EXPO_DECL (expo);
 
-  /* special values */
-  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
+  if (MPFR_UNLIKELY (k <= 1))
+    {
+      if (k < 1) /* k==0 => y=x^(1/0)=x^(+Inf) */
+        /* For 0 <= x < 1 => +0.
+           For x = 1      => 1.
+           For x > 1,     => +Inf.
+           For x < 0      => NaN.
+        */
+        {
+          if (MPFR_IS_NEG (x) && !MPFR_IS_ZERO (x))
+            {
+              MPFR_SET_NAN (y);
+              MPFR_RET_NAN;
+            }
+          inexact = mpfr_cmp (x, __gmpfr_one);
+          if (inexact == 0)
+            return mpfr_set_ui (y, 1, rnd_mode); /* 1 may be Out of Range */
+          else if (inexact < 0)
+            return mpfr_set_ui (y, 0, rnd_mode); /* 0+ */
+          else
+            {
+              mpfr_set_inf (y, 1);
+              return 0;
+            }
+        }
+      else /* y =x^(1/1)=x */
+        return mpfr_set (y, x, rnd_mode);
+    }
+
+  /* Singular values */
+  else if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
       if (MPFR_IS_NAN (x))
 	{
