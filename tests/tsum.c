@@ -266,6 +266,16 @@ void check_special (void)
       exit (1);
     }
 
+  mpfr_set_inf (tab[0], 1);
+  mpfr_set_ui  (tab[1], 59, GMP_RNDN);
+  mpfr_set_inf (tab[2], -1);
+  i = mpfr_sum (r, tabp, 3, GMP_RNDN);
+  if (!MPFR_IS_NAN (r) || i != 0)
+    {
+      printf ("Special case +INF + 59 +-INF failed!\n");
+      exit (1);
+    }
+
   mpfr_clears (tab[0], tab[1], tab[2], r, NULL);
 }
 
