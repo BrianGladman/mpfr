@@ -189,6 +189,15 @@ special (void)
       exit (1);
     }
 
+  /* Check for k==2 */
+  mpfr_set_si (x, -17, GMP_RNDD);
+  i = mpfr_root (y, x, 2, GMP_RNDN);
+  if (!MPFR_IS_NAN (y) || i != 0)
+    {
+      printf ("Error in root (-17)^(1/2)\n");
+      exit (1);
+    }
+
   mpfr_clear (x);
   mpfr_clear (y);
 }

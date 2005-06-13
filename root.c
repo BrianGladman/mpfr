@@ -107,6 +107,13 @@ mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mp_rnd_t rnd_mode)
 	}
     }
 
+  /* Returns NAN for x < 0 and k even */
+  else if (MPFR_IS_NEG (x) && (k % 2 == 0))
+    {
+      MPFR_SET_NAN (y);
+      MPFR_RET_NAN;
+    }
+
   /* General case */
   MPFR_SAVE_EXPO_MARK (expo);
   mpz_init (m);
