@@ -149,6 +149,7 @@ special (void)
       exit (1);
     }
 
+#if 0
   /* Check for k == 0:
      For 0 <= x < 1 => +0.
      For x = 1      => 1.
@@ -188,7 +189,14 @@ special (void)
       printf ("Error in root (17/2^5)^(1/0)\n");
       exit (1);
     }
-
+#endif
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  i = mpfr_root (y, x, 0, GMP_RNDN);
+  if (!MPFR_IS_NAN (y) || i != 0)
+    {
+      printf ("Error in root 0+^(1/0)\n");
+      exit (1);
+    }
   /* Check for k==2 */
   mpfr_set_si (x, -17, GMP_RNDD);
   i = mpfr_root (y, x, 2, GMP_RNDN);

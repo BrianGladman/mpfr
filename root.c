@@ -50,6 +50,7 @@ mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mp_rnd_t rnd_mode)
   if (MPFR_UNLIKELY (k <= 1))
     {
       if (k < 1) /* k==0 => y=x^(1/0)=x^(+Inf) */
+#if 0
         /* For 0 <= x < 1 => +0.
            For x = 1      => 1.
            For x > 1,     => +Inf.
@@ -72,6 +73,11 @@ mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mp_rnd_t rnd_mode)
               return 0;
             }
         }
+#endif
+      {
+        MPFR_SET_NAN (y);
+        MPFR_RET_NAN;
+      }
       else /* y =x^(1/1)=x */
         return mpfr_set (y, x, rnd_mode);
     }
