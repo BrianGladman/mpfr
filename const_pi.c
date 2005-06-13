@@ -68,16 +68,18 @@ mpfr_const_pi_internal (mpfr_ptr x, mp_rnd_t rnd_mode)
 #define Bp B
     for (k = 0, cancel = 0; ; k++)
       {
-	mpfr_add (S, A, B, GMP_RNDN);
-	mpfr_div_2exp (S, S, 2, GMP_RNDN); /* exact */
-	mpfr_sqrt (b, B, GMP_RNDN);
-	mpfr_add (ap, a, b, GMP_RNDN);
-	mpfr_div_2exp (ap, ap, 1, GMP_RNDN); /* exact */
-	mpfr_mul (Ap, ap, ap, GMP_RNDN);
-	mpfr_sub (Bp, Ap, S, GMP_RNDN);
-	mpfr_mul_2exp (Bp, Bp, 1, GMP_RNDN);
+        /* invariant: 1/2 <= B <= A <= a < 1 */
+	mpfr_add (S, A, B, GMP_RNDN); /* 1 <= S <= 2 */
+	mpfr_div_2exp (S, S, 2, GMP_RNDN); /* exact, 1/4 <= S <= 1/2 */
+	mpfr_sqrt (b, B, GMP_RNDN); /* 1/2 <= b <= 1 */
+	mpfr_add (ap, a, b, GMP_RNDN); /* 1 <= ap <= 2 */
+	mpfr_div_2exp (ap, ap, 1, GMP_RNDN); /* exact, 1/2 <= ap <= 1 */
+	mpfr_mul (Ap, ap, ap, GMP_RNDN); /* 1/4 <= Ap <= 1 */
+	mpfr_sub (Bp, Ap, S, GMP_RNDN); /* -1/4 <= Bp <= 3/4 */
+	mpfr_mul_2exp (Bp, Bp, 1, GMP_RNDN); /* -1/2 <= Bp <= 3/2 */
 	mpfr_sub (S, Ap, Bp, GMP_RNDN);
-	cancel = mpfr_cmp_ui (S, 0) ? -mpfr_get_exp(S) : p;
+        MPFR_ASSERTN (mpfr_cmp_ui (S, 1) < 0);
+	cancel = mpfr_cmp_ui (S, 0) ? (mpfr_uexp_t) -mpfr_get_exp(S) : p;
 	/* MPFR_ASSERTN (cancel >= px || cancel >= 9 * (1 << k) - 4); */
 	mpfr_mul_2exp (S, S, k, GMP_RNDN);
 	mpfr_sub (D, D, S, GMP_RNDN);
