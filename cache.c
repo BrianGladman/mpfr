@@ -44,18 +44,18 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mp_rnd_t rnd)
   mp_prec_t pold = MPFR_PREC (cache->x);
   int inexact, sign;
   MPFR_SAVE_EXPO_DECL (expo);
-  
+
   MPFR_SAVE_EXPO_MARK (expo);
 
   /* Check if the cache has been already filled */
   if (MPFR_UNLIKELY(pold == 0))
-    mpfr_init2 (cache->x, MPFR_PREC_MIN);
-  
+    mpfr_init2 (cache->x, prec);
+
   /* Check if we can round with the previous result */
   else if (MPFR_LIKELY(prec <= pold))
     goto round;
-  
-  /* Update the cache */ 
+
+  /* Update the cache */
   pold = prec /*MPFR_PREC_MIN + prec + __gmpfr_ceil_exp2 (prec)*/;
   MPFR_ASSERTD (pold >= prec);
   mpfr_prec_round (cache->x, pold, GMP_RNDN);
@@ -65,7 +65,7 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mp_rnd_t rnd)
   /* First check if the cache has the exact value (Unlikely)
      Else the exact value is between (assuming x=cache->x > 0)
      x and x+ulp(x) if cache->inexact < 0
-     x-ulp(x) and x if cache->inexact > 0 
+     x-ulp(x) and x if cache->inexact > 0
      and abs(x-exact) <= ulp(x)/2 */
   MPFR_ASSERTD (MPFR_IS_POS(cache->x)); /* TODO...*/
   /* We must use nextbelow instead of sub_one_ulp, since we know
@@ -74,10 +74,10 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mp_rnd_t rnd)
   sign = MPFR_SIGN (cache->x);
   MPFR_SET_EXP (dest, MPFR_GET_EXP (cache->x));
   MPFR_SET_SIGN (dest, sign);
-  MPFR_RNDRAW_EVEN (inexact, dest, 
-		    MPFR_MANT (cache->x), MPFR_PREC (cache->x), rnd, sign, 
-		    if (MPFR_UNLIKELY ( ++MPFR_EXP (dest) > __gmpfr_emax)) 
-		       mpfr_overflow (dest, rnd, sign) ); 
+  MPFR_RNDRAW_EVEN (inexact, dest,
+		    MPFR_MANT (cache->x), MPFR_PREC (cache->x), rnd, sign,
+		    if (MPFR_UNLIKELY ( ++MPFR_EXP (dest) > __gmpfr_emax))
+		       mpfr_overflow (dest, rnd, sign) );
   /* inexact = mpfr_set (dest, cache->x, rnd); */
   if (MPFR_LIKELY(cache->inexact != 0))
     {
