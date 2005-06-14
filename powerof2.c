@@ -1,6 +1,6 @@
 /* mpfr_powerof2_raw -- test whether a floating-point number is a power of 2
 
-Copyright 2002, 2003, 2004 Free Software Foundation.
+Copyright 2002, 2003, 2004, 2005 Free Software Foundation.
 
 This file is part of the MPFR Library.
 
@@ -35,7 +35,8 @@ mpfr_powerof2_raw (mpfr_srcptr x)
      MPFR_ASSERTN(MPFR_IS_PURE_FP(x)); */
   xp = MPFR_MANT(x);
   xn = (MPFR_PREC(x) - 1) / BITS_PER_MP_LIMB;
-  if (NOT_POW2(xp[xn]))
+  /*if (NOT_POW2(xp[xn]))*/
+  if (xp[xn] != MPFR_LIMB_HIGHBIT)
     return 0;
   while (xn > 0)
     if (xp[--xn] != 0)
