@@ -64,13 +64,20 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
             }
         }
     }
-  else if (MPFR_UNLIKELY (u == 0))
+  else if (MPFR_UNLIKELY (u <= 1))
     {
-      /* x/0 is Inf since x != 0*/
-      MPFR_SET_INF (y);
-      MPFR_SET_SAME_SIGN (y, x);
-      MPFR_RET (0);
+      if (u < 1)
+        {
+          /* x/0 is Inf since x != 0*/
+          MPFR_SET_INF (y);
+          MPFR_SET_SAME_SIGN (y, x);
+          MPFR_RET (0);
+        }
+      else /* y = x/1 = x */
+        return mpfr_set (y, x, rnd_mode);
     }
+  else if (MPFR_UNLIKELY (IS_POW2 (u)))
+    return mpfr_div_2si (y, x, MPFR_INT_CEIL_LOG2 (u)-1, rnd_mode);
 
   MPFR_CLEAR_FLAGS (y);
 
