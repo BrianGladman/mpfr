@@ -28,8 +28,6 @@ MA 02110-1301, USA. */
    The absolute error on s is at most 2 * l0 * 2^(-m).
 */
 static int
-mpfr_cos2_aux (mpfr_ptr s, mpfr_srcptr r) __attribute__ ((always_inline));
-static int
 mpfr_cos2_aux (mpfr_ptr s, mpfr_srcptr r)
 {
   unsigned int l, b = 2;
