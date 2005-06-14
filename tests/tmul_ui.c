@@ -259,6 +259,19 @@ main (int argc, char *argv[])
       exit (1);
     }
 
+  /* Check regression */
+  mpfr_set_prec (x, 32);
+  mpfr_set_prec (y, 96);
+  mpfr_set_ui (x, 1742175942, GMP_RNDN);
+  mpfr_mul_ui (y, x, 59, GMP_RNDN);
+  if (mpfr_cmp_str (y, "0.10111111011101010101000110111101000100000000000000"
+                    "0000000000000000000000000000000000000000000000E37",
+                    2, GMP_RNDN))
+    {
+      printf ("Regression tested failed for x=1742175942 * 59\n");
+      exit (1);
+    }
+
   mpfr_clear(x);
   mpfr_clear(y);
 
