@@ -37,10 +37,15 @@ mpfr_cos2_aux (mpfr_ptr s, mpfr_srcptr r)
   MPFR_ASSERTD (MPFR_GET_EXP (r) <= 0);
 
   mpfr_init2 (t, m);
-  MPFR_SET_ONE (t);
-  MPFR_SET_ONE (s);
 
-  for (l = 1; MPFR_GET_EXP (t) + m >= 0; l++)
+  /* First step for l==1 can be simplified,
+     futhermore multiply by 1 is not efficient since it is an exact
+     multiplication (mulhigh failed and we must do a complete mul) */
+  mpfr_div_2ui (t, r, 1, GMP_RNDN); /* exact */
+  mpfr_sub (s, __gmpfr_one, t, GMP_RNDD);
+  MPFR_ASSERTD (MPFR_GET_EXP (s) == 0);        /* check 1/2 <= s < 1 */
+
+  for (l = 2; MPFR_GET_EXP (t) + m >= 0; l++)
     {
       mpfr_mul (t, t, r, GMP_RNDU);                /* err <= (3l-1) ulp */
       mpfr_div_ui (t, t, (unsigned long) (2*l-1)*(2*l), GMP_RNDU);
