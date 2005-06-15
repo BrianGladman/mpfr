@@ -127,7 +127,8 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       /* we need that |r| < 1 for mpfr_cos2_aux, i.e. up(x^2)/2^(2K) < 1 */
       K = K0 + MAX (MPFR_GET_EXP (r), 0);
 
-      mpfr_div_2ui (r, r, 2 * K, GMP_RNDN); /* r = (x/2^K)^2, err <= 1 ulp */
+      /*mpfr_div_2ui (r, r, 2 * K, GMP_RNDN); r = (x/2^K)^2, err <= 1 ulp */
+      MPFR_SET_EXP (r, MPFR_GET_EXP (r)-2*K); /* Can't overflow! */
 
       /* s <- 1 - r/2! + ... + (-1)^l r^l/(2l)! */
       l = mpfr_cos2_aux (s, r);
