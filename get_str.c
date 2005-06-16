@@ -434,9 +434,16 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
   if (m == 0)
     {
 
-      /* take at least 1 + ceil(m*log(2)/log(b)) digits, to ensure
-	 back conversion from the output gives the same floating-point */
-      m = 1 + mpfr_get_str_compute_g (b, MPFR_PREC(x));
+      /* take at least 1 + ceil(n*log(2)/log(b)) digits, where n is the
+         number of bits of the mantissa, to ensure back conversion from
+         the output gives the same floating-point.
+
+         Warning: if b = 2^k, this may be too large. The worst case is when
+         the first base-b digit contains only one bit, so we get
+         1 + ceil((n-1)/k) = 2 + floor((n-2)/k) instead.
+      */
+      m = 1 + mpfr_get_str_compute_g (b, (IS_POW2(b)) ? MPFR_PREC(x) - 1
+                                      : MPFR_PREC(x));
       if (m < 2)
         m = 2;
     }
