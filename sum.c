@@ -218,10 +218,11 @@ static int sum_once (mpfr_ptr ret, mpfr_srcptr *const tab,
 
   mpfr_init2 (sum, F);
   error_trap = mpfr_set (sum, tab[0], GMP_RNDN);
-  for (i = 1; i < n - 1; i++) {
-    MPFR_ASSERTD (!MPFR_IS_NAN (sum) && !MPFR_IS_INF (sum));
-    error_trap |= mpfr_add (sum, sum, tab[i], GMP_RNDN);
-  }
+  for (i = 1; i < n - 1; i++)
+    {
+      MPFR_ASSERTD (!MPFR_IS_NAN (sum) && !MPFR_IS_INF (sum));
+      error_trap |= mpfr_add (sum, sum, tab[i], GMP_RNDN);
+    }
   error_trap |= mpfr_add (ret, sum, tab[n - 1], GMP_RNDN);
   mpfr_clear (sum);
   return error_trap;
@@ -242,29 +243,34 @@ mpfr_sum (mpfr_ptr ret, mpfr_ptr *const tab_p, unsigned long n, mp_rnd_t rnd)
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_TMP_DECL (marker);
 
-  if (MPFR_UNLIKELY (n <= 1)) {
-    if (n < 1) {
-      MPFR_SET_ZERO (ret);
-      MPFR_SET_POS (ret);
-      return 0;
-    } else
-      return mpfr_set (ret, tab[0], rnd);
-  }
+  if (MPFR_UNLIKELY (n <= 1))
+    {
+      if (n < 1)
+        {
+          MPFR_SET_ZERO (ret);
+          MPFR_SET_POS (ret);
+          return 0;
+        }
+      else
+        return mpfr_set (ret, tab[0], rnd);
+    }
 
   /* Sort and treat special cases */
   MPFR_TMP_MARK (marker);
   perm = (mpfr_srcptr *) MPFR_TMP_ALLOC (n * sizeof * perm);
   error_trap = mpfr_sum_sort (tab, n, perm);
   /* Check if there was a NAN or a INF */
-  if (MPFR_UNLIKELY (error_trap != 0)) {
-    if (error_trap == 2) {
-      MPFR_SET_NAN (ret);
-      MPFR_RET_NAN;
+  if (MPFR_UNLIKELY (error_trap != 0))
+    {
+      if (error_trap == 2)
+        {
+          MPFR_SET_NAN (ret);
+          MPFR_RET_NAN;
+        }
+      MPFR_SET_INF (ret);
+      MPFR_SET_SIGN (ret, error_trap);
+      MPFR_RET (0);
     }
-    MPFR_SET_INF (ret);
-    MPFR_SET_SIGN (ret, error_trap);
-    MPFR_RET (0);
-  }
 
   /* Initial precision */
   prec = MAX (MPFR_PREC (tab[0]), MPFR_PREC (ret));
@@ -275,17 +281,18 @@ mpfr_sum (mpfr_ptr ret, mpfr_ptr *const tab_p, unsigned long n, mp_rnd_t rnd)
   /* Ziv Loop */
   MPFR_SAVE_EXPO_MARK (expo);
   MPFR_ZIV_INIT (loop, prec);
-  for (;;) {
-    error_trap = sum_once (cur_sum, perm, n, prec + k);
-    if (MPFR_LIKELY (error_trap == 0
-		     || (!MPFR_IS_ZERO (cur_sum)
-                         && mpfr_can_round (cur_sum,
-                                            MPFR_GET_EXP (cur_sum) - prec + 2,
-                                            GMP_RNDN, rnd, MPFR_PREC (ret)))))
-      break;
-    MPFR_ZIV_NEXT (loop, prec);
-    mpfr_set_prec (cur_sum, prec);
-  }
+  for (;;)
+    {
+      error_trap = sum_once (cur_sum, perm, n, prec + k);
+      if (MPFR_LIKELY (error_trap == 0 ||
+                       (!MPFR_IS_ZERO (cur_sum) &&
+                        mpfr_can_round (cur_sum,
+                                        MPFR_GET_EXP (cur_sum) - prec + 2,
+                                        GMP_RNDN, rnd, MPFR_PREC (ret)))))
+        break;
+      MPFR_ZIV_NEXT (loop, prec);
+      mpfr_set_prec (cur_sum, prec);
+    }
   MPFR_ZIV_FREE (loop);
   MPFR_TMP_FREE (marker);
 
