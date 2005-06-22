@@ -27,48 +27,21 @@ dnl  The following line allows the autoconf wrapper (when installed)
 dnl  to work as expected.
 AC_PREREQ(2.50)
 
-dnl FIXME: Buggy?
-AC_DEFUN([AC_MY_HEADERS], 
-[
-if  test "$1" 
-then  
-  AC_CHECK_HEADER($1/$2, INCLUDES="$INCLUDES -I$1",AC_MSG_ERROR($2 not found in $1)) 
-else
-  AC_CHECK_HEADER($2,, 	  AC_MSG_ERROR($2 not found))
-fi
-])
-
-AC_DEFUN([AC_CHECK_OS], 
-[
-AC_CACHE_CHECK([OS type], mpfr_cv_os_type, [
-  mpfr_cv_os_type=`uname -s`
-])
-OS_TYPE=$mpfr_cv_os_type
-])
-
-AC_DEFUN([AC_CHECK_MACHTYPE],
-[
-AC_CACHE_CHECK([Mach type], mpfr_cv_mach_type, [
-  mpfr_cv_mach_type=`uname -m`
-])
-MACHTYPE=$mpfr_cv_mach_type
-])
-
 dnl ------------------------------------------------------------
-
+dnl You must put in MPFR_CONFIGS everything which configure MPFR 
+dnl except:
+dnl   -everything dealing with CC and CFLAGS in particular the ABI
+dnl   but the IEEE-754 specific flags must be set here.
+dnl   -GMP's linkage.
+dnl   -Libtool stuff.
+dnl   -Handling of special arguments of MPFR's configure.
 AC_DEFUN([MPFR_CONFIGS],
 [
 AC_REQUIRE([AC_OBJEXT])
 AC_REQUIRE([MPFR_CHECK_LIBM])
 AC_REQUIRE([AC_HEADER_TIME])
+AC_REQUIRE([AC_CANONICAL_HOST])
 
-dnl Check for sizeof size_t
-dnl AC_CHECK_SIZEOF
-dnl AC_TYPE_SIZE_T
-
-dnl
-AC_CHECK_FUNCS([memset])
-AC_CHECK_FUNCS([strtol])
 AC_CHECK_HEADER([limits.h],, AC_MSG_ERROR([limits.h not found]))
 AC_CHECK_HEADER([float.h],,  AC_MSG_ERROR([float.h not found]))
 
@@ -77,12 +50,13 @@ AC_CHECK_HEADER([stdarg.h],[AC_DEFINE([HAVE_STDARG],1,[Define if stdarg])],
 	[AC_CHECK_HEADER([varargs.h],, 
 	AC_MSG_ERROR([stdarg.h or varargs.h not found]))])
 
-AC_CHECK_HEADERS(sys/time.h)
+dnl sys/fpu.h - MIPS specific
+AC_CHECK_HEADERS([sys/time.h sys/fpu.h])
 
-# Reasons for testing:
-#   gettimeofday - not in mingw
-#
-AC_CHECK_FUNCS(gettimeofday)
+dnl FIXME: strtol is really needed. Maybe create another function?
+dnl gettimeofday is not defined for MinGW
+AC_CHECK_FUNCS([memset strtol gettimeofday])
+
 AC_REPLACE_FUNCS(strcasecmp strncasecmp)
 
 dnl Check for IEEE-754 switches on Alpha
@@ -105,11 +79,6 @@ alpha*-*-*)
   fi
 esac
 
-# Reasons for testing:
-#   sys/fpu.h - MIPS specific
-#
-AC_CHECK_HEADERS(sys/fpu.h)
-
 AC_CHECK_TYPE( [union fpc_csr], 
    AC_DEFINE(HAVE_FPC_CSR,1,[Define if union fpc_csr is available]), , 
 [
@@ -130,25 +99,24 @@ if test "$mpfr_cv_have_fesetround" = "yes"; then
   AC_DEFINE(MPFR_HAVE_FESETROUND,1,[Define if you have the `fesetround' function via the <fenv.h> header file.])
 fi
 
+dnl NOTE: It isn't used anymore, so the test is disabled
 dnl Check whether 0/0, 1/0, -1/0, sqrt(-1) are valid expressions
-AC_CACHE_CHECK([for valid NaN], mpfr_cv_valid_nan, [
-saved_LIBS="$LIBS"
-LIBS="$LIBS $MPFR_LIBM"
-AC_TRY_RUN([
-#include <math.h>
-int main()
-{
-  double x = (0.0/0.0) + sqrt(-1.0);
-  return x == 1.0/0.0;
-}
-], mpfr_cv_valid_nan=yes, mpfr_cv_valid_nan=no, mpfr_cv_valid_nan=no)
-])
-
-dnl It isn't used anymore
+dnl AC_CACHE_CHECK([for valid NaN], mpfr_cv_valid_nan, [
+dnl saved_LIBS="$LIBS"
+dnl LIBS="$LIBS $MPFR_LIBM"
+dnl AC_TRY_RUN([
+dnl #include <math.h>
+dnl int main()
+dnl {
+dnl   double x = (0.0/0.0) + sqrt(-1.0);
+dnl   return x == 1.0/0.0;
+dnl }
+dnl ], mpfr_cv_valid_nan=yes, mpfr_cv_valid_nan=no, mpfr_cv_valid_nan=no)
+dnl ])
 dnl if test "$mpfr_cv_valid_nan" = "yes"; then
 dnl   AC_DEFINE(HAVE_INFS,1,[Define if 0/0, 1/0, -1/0 and sqrt(-1) work to generate NaN/infinities.])
 dnl fi
-LIBS="$saved_LIBS"
+dnl LIBS="$saved_LIBS"
 
 dnl Check for gcc float-conversion bug; if need be, -ffloat-store is used to
 dnl force the conversion to the destination type when a value is stored to
@@ -211,8 +179,8 @@ if test "$mpfr_cv_have_denorms" = "yes"; then
   AC_DEFINE(HAVE_DENORMS,1,[Define if denormalized floats work.])
 fi
 
+dnl NOTE: It is unused, so the test is disabled
 dnl Check if HUGE_VAL is supported without the need of a specific library
-dnl FIXME: It seems to be unused, so I disable the test
 dnl AC_CACHE_CHECK([for HUGE_VAL], mpfr_cv_have_huge_val, [
 dnl AC_TRY_LINK([#include <math.h>], [HUGE_VAL;],
 dnl  mpfr_cv_have_huge_val=yes, mpfr_cv_have_huge_val=no)
@@ -222,6 +190,81 @@ dnl  AC_DEFINE(HAVE_HUGE_VAL,1,
 dnl   [Define if HUGE_VAL can be used without the need of a specific library.])
 dnl fi
 
+dnl Must be checked with the LIBM
+dnl but we don't want to add the LIBM to MPFR dependency.
+dnl Can't use AC_CHECK_FUNCS since the function may be in LIBM but
+dnl not exported in math.h
+saved_LIBS="$LIBS"
+LIBS="$LIBS $MPFR_LIBM"
+dnl AC_CHECK_FUNCS([round trunc floor ceil nearbyint])
+AC_MSG_CHECKING(for math/round)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#include <math.h>
+int f (double (*func)(double)) { return 0;}
+]], [[
+ double a = 17.42;
+ a = f (round);
+ return 0;
+]])], [
+   AC_MSG_RESULT(yes) 
+   AC_DEFINE(HAVE_ROUND, 1,[Have ISO-C99 round function])
+],[AC_MSG_RESULT(no)])
+
+AC_MSG_CHECKING(for math/trunc)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#include <math.h>
+int f (double (*func)(double)) { return 0;}
+]], [[
+ double a = 17.42;
+ a = f(trunc);
+ return 0;
+]])], [
+   AC_MSG_RESULT(yes) 
+   AC_DEFINE(HAVE_TRUNC, 1,[Have ISO-C99 trunc function])
+],[AC_MSG_RESULT(no)])
+
+AC_MSG_CHECKING(for math/floor)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#include <math.h>
+int f (double (*func)(double)) { return 0;}
+]], [[
+ double a = 17.42;
+ a = f(floor);
+ return 0;
+]])], [
+   AC_MSG_RESULT(yes) 
+   AC_DEFINE(HAVE_FLOOR, 1,[Have ISO-C99 floor function])
+],[AC_MSG_RESULT(no)])
+
+AC_MSG_CHECKING(for math/ceil)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#include <math.h>
+int f (double (*func)(double)) { return 0;}
+]], [[
+ double a = 17.42;
+ a = f(ceil);
+ return 0;
+]])], [
+   AC_MSG_RESULT(yes) 
+   AC_DEFINE(HAVE_CEIL, 1,[Have ISO-C99 ceil function])
+],[AC_MSG_RESULT(no)])
+
+AC_MSG_CHECKING(for math/rint)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#include <math.h>
+int f (double (*func)(double)) { return 0;}
+]], [[
+ double a = 17.42;
+ a = f(nearbyint);
+ return 0;
+]])], [
+   AC_MSG_RESULT(yes) 
+   AC_DEFINE(HAVE_NEARBYINT, 1,[Have ISO-C99 rint function])
+],[AC_MSG_RESULT(no)])
+
+LIBS="$saved_LIBS"
+
+dnl Now try to check the long double format
 MPFR_C_LONG_DOUBLE_FORMAT
 ])
 

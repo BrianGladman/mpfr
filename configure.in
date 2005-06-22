@@ -28,6 +28,10 @@ AC_INIT(MPFR, 2.2.0)
 AM_INIT_AUTOMAKE([no-define dist-zip dist-bzip2])
 dnl AM_MAINTAINER_MODE
 
+AC_CANONICAL_HOST
+
+dnl To use a separate config header.
+dnl There is still some problem with GMP's HAVE_CONFIG
 dnl AC_CONFIG_HEADERS([mpfrconf.h:mpfrconf.in])
 
 dnl Extra arguments to configure
@@ -151,9 +155,6 @@ if test "$test_CFLAGS" != set && test -n "$GCC"; then
 fi
 
 AM_C_PROTOTYPES
-AC_CANONICAL_HOST
-AC_CHECK_OS
-AC_CHECK_MACHTYPE
 
 dnl Set the OS-dependent flags.
 case $OS_TYPE in
@@ -174,80 +175,6 @@ esac
 AC_C_CONST
 AC_C_VOLATILE
 MPFR_CONFIGS
-
-dnl Must be checked with the LIBM
-dnl but we don't want to add the LIBM to MPFR dependency.
-dnl Can't use AC_CHECK_FUNCS since the function may be in LIBM but
-dnl not exported in math.h
-saved_LIBS="$LIBS"
-LIBS="$LIBS $MPFR_LIBM"
-dnl AC_CHECK_FUNCS([round trunc floor ceil nearbyint])
-AC_MSG_CHECKING(for math/round)
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[
-#include <math.h>
-int f (double (*func)(double)) { return 0;}
-]], [[
- double a = 17.42;
- a = f (round);
- return 0;
-]])], [
-   AC_MSG_RESULT(yes) 
-   AC_DEFINE(HAVE_ROUND, 1,[Have ISO-C99 round function])
-],[AC_MSG_RESULT(no)])
-
-AC_MSG_CHECKING(for math/trunc)
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[
-#include <math.h>
-int f (double (*func)(double)) { return 0;}
-]], [[
- double a = 17.42;
- a = f(trunc);
- return 0;
-]])], [
-   AC_MSG_RESULT(yes) 
-   AC_DEFINE(HAVE_TRUNC, 1,[Have ISO-C99 trunc function])
-],[AC_MSG_RESULT(no)])
-
-AC_MSG_CHECKING(for math/floor)
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[
-#include <math.h>
-int f (double (*func)(double)) { return 0;}
-]], [[
- double a = 17.42;
- a = f(floor);
- return 0;
-]])], [
-   AC_MSG_RESULT(yes) 
-   AC_DEFINE(HAVE_FLOOR, 1,[Have ISO-C99 floor function])
-],[AC_MSG_RESULT(no)])
-
-AC_MSG_CHECKING(for math/ceil)
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[
-#include <math.h>
-int f (double (*func)(double)) { return 0;}
-]], [[
- double a = 17.42;
- a = f(ceil);
- return 0;
-]])], [
-   AC_MSG_RESULT(yes) 
-   AC_DEFINE(HAVE_CEIL, 1,[Have ISO-C99 ceil function])
-],[AC_MSG_RESULT(no)])
-
-AC_MSG_CHECKING(for math/rint)
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[
-#include <math.h>
-int f (double (*func)(double)) { return 0;}
-]], [[
- double a = 17.42;
- a = f(nearbyint);
- return 0;
-]])], [
-   AC_MSG_RESULT(yes) 
-   AC_DEFINE(HAVE_NEARBYINT, 1,[Have ISO-C99 rint function])
-],[AC_MSG_RESULT(no)])
-
-LIBS="$saved_LIBS"
 
 dnl
 dnl Setup LIBTOOL
