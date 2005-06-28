@@ -33,27 +33,24 @@ MA 02110-1301, USA. */
 #define GENERIC mpfr_atan_aux
 #include "generic.c"
 */
-/* This is the code of 'generic.c' slighty optimized for mpfr_atan */   
+/* This is the code of 'generic.c' slighty optimized for mpfr_atan
+   Compute y = atan (p/2^r) using 2^m terms for the series expansion */
 static void
-mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m,
-	       mpz_t *tab, unsigned int *S2tab)
+mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
 {
   mpz_t *S, *T, *ptoj;
   mp_limb_t *d;
   unsigned long n, i, k, j, l;
   mp_exp_t diff, expo;
-  unsigned int P2i;
   int neg, im;
 
   /* Set Tables */
   S    = tab;           /* S */
   ptoj = S + 1*(m+1);   /* p^2^j Precomputed table */
   T    = S + 2*(m+1);   /* Product of Odd integer  table  */
-                        /* Real s[k] = s[k] * 2^S2tab[k] */
 
   /* Init S[0] and T[0] */
   mpz_set_ui (S[0], 1);
-  S2tab[0] = 0;
   mpz_set_ui (T[0], 1);
 
   /* Normalize p */
@@ -61,15 +58,19 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m,
   for (n = 0 ; MPFR_UNLIKELY (*d == 0) ; d++, n+= BITS_PER_MP_LIMB);
   MPFR_ASSERTD (*d != 0);
   count_trailing_zeros (neg, *d);
-  P2i = n + neg + 1;
-  if (n+neg > 0)
+  /* Simplify p/2^r */
+  if (n+neg > 0) {
     mpz_tdiv_q_2exp (p, p, n+neg);
+    MPFR_ASSERTD (r > n+neg);
+    r -= n+neg;
+  }
 
   /* Extract sign */
   neg = mpz_sgn (p) < 0;
   mpz_abs (p, p);
 
   /* Check if P==1 (Special case) */
+  l = 0;
   if (mpz_cmp_ui (p, 1) != 0) {
     /* P!= 1: Precomputed ptoj table */
     mpz_set (ptoj[0], p);
@@ -82,8 +83,7 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m,
       k++;
       mpz_set_ui (T[k], 1 + 2*i);
       mpz_set_ui (S[k], 1);
-      S2tab[k] = 0;
- 
+
       for (j = i+1, l = 0 ; (j & 1) == 0 ; l++, j>>=1, k--) {
 	if (l == 0) {
 	  mpz_mul (S[k], ptoj[l], T[k-1]);
@@ -94,11 +94,7 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m,
 	  mpz_mul (S[k], S[k], T[k-1]);
 	}
 	mpz_mul (S[k-1], S[k-1], T[k]);
-	S2tab[k] += P2i << l;
-	S2tab[k-1] += (r+1) << l;
-	MPFR_ASSERTD (S2tab[k-1] > S2tab[k]);
-	mpz_mul_2exp (S[k-1], S[k-1], S2tab[k-1]-S2tab[k]);
-	S2tab[k-1] = S2tab[k];
+	mpz_mul_2exp (S[k-1], S[k-1], r<<l);
 	mpz_add (S[k-1], S[k-1], S[k]);
 	mpz_mul (T[k-1], T[k-1], T[k]);
       }
@@ -110,19 +106,14 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m,
       k++;
       mpz_set_ui (T[k], 1 + 2*i);
       mpz_set_ui (S[k], 1);
-      S2tab[k] = 0;
-      
+
       for (j = i+1, l = 0 ; (j & 1) == 0 ; l++, j>>=1, k--) {
 	if (l == 0)
 	  (neg ? mpz_neg : mpz_set) (S[k], T[k-1]);
 	else
 	  mpz_mul (S[k], S[k], T[k-1]);
 	mpz_mul (S[k-1], S[k-1], T[k]);
-	S2tab[k] += P2i << l;
-	S2tab[k-1] += (r+1) <<l;
-	MPFR_ASSERTD (S2tab[k-1] > S2tab[k]);
-	mpz_mul_2exp (S[k-1], S[k-1], S2tab[k-1]-S2tab[k]);
-	S2tab[k-1] = S2tab[k];
+	mpz_mul_2exp (S[k-1], S[k-1], r<<l);
 	mpz_add (S[k-1], S[k-1], S[k]);
 	mpz_mul (T[k-1], T[k-1], T[k]);
       }
@@ -131,7 +122,7 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m,
 
   MPFR_MPZ_SIZEINBASE2 (diff, S[0]);
   diff -= 2*MPFR_PREC (y);
-  expo = diff + S2tab[0];
+  expo = diff + ((1<<l) - 1);
   if (diff >=0)
     mpz_tdiv_q_2exp (S[0], S[0], diff);
   else
@@ -156,7 +147,6 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_t xp, arctgt, sk, tmp, tmp2;
   mpz_t  ukz;
   mpz_t *tabz;
-  unsigned int *tabi;
   mp_exp_t exptol;
   mp_prec_t prec, realprec;
   unsigned long twopoweri;
@@ -183,12 +173,12 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	    inexact = mpfr_const_pi (atan, rnd_mode);
 	  else /* arctan(-inf) = -Pi/2 */
 	    {
-	      inexact = -mpfr_const_pi (atan, 
+	      inexact = -mpfr_const_pi (atan,
 					MPFR_INVERT_RND (rnd_mode));
 	      MPFR_CHANGE_SIGN (atan);
 	    }
 	  inexact2 = mpfr_div_2ui (atan, atan, 1, rnd_mode);
-	  if (MPFR_UNLIKELY (inexact2)) 
+	  if (MPFR_UNLIKELY (inexact2))
 	    inexact = inexact2; /* An underflow occurs */
 	  MPFR_RET (inexact);
 	}
@@ -200,8 +190,8 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
  	}
     }
 
-  /* atan(x) = x - x^3/3 + x^5/5... 
-     so the error is < 2^(3*EXP(x)-1) 
+  /* atan(x) = x - x^3/3 + x^5/5...
+     so the error is < 2^(3*EXP(x)-1)
      so `EXP(x)-(3*EXP(x)-1)` = -2*EXP(x)+1 */
   MPFR_FAST_COMPUTE_IF_SMALL_INPUT (atan,x, -2*MPFR_GET_EXP (x)+1,0,rnd_mode,);
 
@@ -236,14 +226,13 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_GROUP_INIT_4 (group, prec, sk, tmp, tmp2, arctgt);
   oldn0 = 0;
   tabz = (mpz_t *) 0;
-  tabi = (unsigned int *) 0;
 
   MPFR_ZIV_INIT (loop, prec);
   for (;;)
     {
       /* First, if |x| < 1, we need to have more prec to be able to round (sup)
 	 n0 = ceil(log(prec_requested + 2 + 1+ln(2.4)/ln(2))/log(2)) */
-      mp_prec_t sup = MPFR_GET_EXP (xp) < 0 ? 2-MPFR_GET_EXP (xp) : 1; 
+      mp_prec_t sup = MPFR_GET_EXP (xp) < 0 ? 2-MPFR_GET_EXP (xp) : 1;
       n0 = MPFR_INT_CEIL_LOG2 ((realprec + sup) + 3);
       MPFR_ASSERTD (3*n0 > 2);
       prec = (realprec + sup) + 1 + MPFR_INT_CEIL_LOG2 (3*n0-2);
@@ -251,22 +240,16 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
       /* Initialisation */
       MPFR_GROUP_REPREC_4 (group, prec, sk, tmp, tmp2, arctgt);
       if (oldn0 < 3*n0+1) {
-	if (MPFR_LIKELY (oldn0 == 0)) {
+	if (MPFR_LIKELY (oldn0 == 0))
 	  tabz = (mpz_t *) (*__gmp_allocate_func) (3*(n0+1)*sizeof (mpz_t));
-	  tabi = (unsigned int *) (*__gmp_allocate_func) 
-	    ((n0+1)*sizeof(unsigned int));
-	} else {
-	  tabz = (mpz_t *) (*__gmp_reallocate_func) 
+        else
+	  tabz = (mpz_t *) (*__gmp_reallocate_func)
 	    (tabz, oldn0*sizeof (mpz_t), 3*(n0+1)*sizeof (mpz_t));
-	  tabi = (unsigned int *) (*__gmp_reallocate_func)
-	    (tabi, oldn0/3*sizeof (unsigned int),
-	     (n0+1)*sizeof(unsigned int));
-	}
-	for (i = oldn0 ; i < 3*(n0+1) ; i++)
+	for (i = oldn0; i < 3*(n0+1); i++)
 	  mpz_init (tabz[i]);
 	oldn0 = 3*(n0+1);
       }
-      
+
       if (comparaison > 0)
 	mpfr_ui_div (sk, 1, xp, GMP_RNDN);
       else
@@ -291,19 +274,15 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
 		 thus exptol < 0 */
 	      MPFR_ASSERTD (exptol < 0);
 	      mpz_tdiv_q_2exp (ukz, ukz, (unsigned long int) (-exptol));
-	      
 	      /* Calculation of arctan(Ak) */
 	      mpfr_set_z (tmp, ukz, GMP_RNDN);
 	      mpfr_div_2ui (tmp, tmp, twopoweri, GMP_RNDN);
 	      mpz_mul (ukz, ukz, ukz);
 	      mpz_neg (ukz, ukz);
-	      mpfr_atan_aux (tmp2, ukz, 2*twopoweri, n0 - i, tabz, tabi);
-
+	      mpfr_atan_aux (tmp2, ukz, 2*twopoweri, n0 - i, tabz);
 	      mpfr_mul (tmp2, tmp2, tmp, GMP_RNDN);
-	      
 	      /* Addition and iteration */
 	      mpfr_add (arctgt, arctgt, tmp2, GMP_RNDN);
-	      
 	      if (MPFR_LIKELY (i < n0))
 		{
 		  mpfr_sub (tmp2, sk, tmp, GMP_RNDN);
@@ -337,7 +316,6 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
     mpz_clear (tabz[i]);
   mpz_clear (ukz);
   (*__gmp_free_func) (tabz, oldn0*sizeof (mpz_t));
-  (*__gmp_free_func) (tabi, oldn0/3*sizeof (unsigned int));
   MPFR_GROUP_CLEAR (group);
 
   MPFR_SAVE_EXPO_FREE (expo);
