@@ -279,6 +279,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	      mpfr_div_2ui (tmp, tmp, twopoweri, GMP_RNDN);
 	      mpz_mul (ukz, ukz, ukz);
 	      mpz_neg (ukz, ukz);
+              MPFR_ASSERTD (2*twopoweri > twopoweri);
 	      mpfr_atan_aux (tmp2, ukz, 2*twopoweri, n0 - i, tabz);
 	      mpfr_mul (tmp2, tmp2, tmp, GMP_RNDN);
 	      /* Addition */
