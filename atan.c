@@ -42,7 +42,7 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
   mp_limb_t *d;
   unsigned long n, i, k, j, l;
   mp_exp_t diff, expo;
-  int neg, im;
+  int im;
 
   /* Set Tables */
   S    = tab;           /* S */
@@ -53,21 +53,22 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
   mpz_set_ui (S[0], 1);
   mpz_set_ui (T[0], 1);
 
+  /* From p to p^2 */
+  mpz_mul (p, p, p);
+
   /* Normalize p */
   d = PTR (p);
   for (n = 0 ; MPFR_UNLIKELY (*d == 0) ; d++, n+= BITS_PER_MP_LIMB);
   MPFR_ASSERTD (*d != 0);
-  count_trailing_zeros (neg, *d);
+  count_trailing_zeros (im, *d);
   /* Simplify p/2^r */
-  if (n+neg > 0) {
-    mpz_tdiv_q_2exp (p, p, n+neg);
-    MPFR_ASSERTD (r > n+neg);
-    r -= n+neg;
+  if (n+im > 0) {
+    mpz_tdiv_q_2exp (p, p, n+im);
+    MPFR_ASSERTD (r > n+im);
+    r -= n+im;
   }
 
-  /* Extract sign */
-  neg = mpz_sgn (p) < 0;
-  mpz_abs (p, p);
+  MPFR_ASSERTD (mpz_sgn (p) > 0);
 
   /* Check if P==1 (Special case) */
   l = 0;
@@ -87,8 +88,7 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
       for (j = i+1, l = 0 ; (j & 1) == 0 ; l++, j>>=1, k--) {
 	if (l == 0) {
 	  mpz_mul (S[k], ptoj[l], T[k-1]);
-	  if (neg)
-	    mpz_neg (S[k], S[k]);
+          mpz_neg (S[k], S[k]);
 	} else {
 	  mpz_mul (S[k], S[k], ptoj[l]);
 	  mpz_mul (S[k], S[k], T[k-1]);
@@ -109,7 +109,7 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
 
       for (j = i+1, l = 0 ; (j & 1) == 0 ; l++, j>>=1, k--) {
 	if (l == 0)
-	  (neg ? mpz_neg : mpz_set) (S[k], T[k-1]);
+	  mpz_neg (S[k], T[k-1]);
 	else
 	  mpz_mul (S[k], S[k], T[k-1]);
 	mpz_mul (S[k-1], S[k-1], T[k]);
@@ -277,8 +277,6 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	      /* Calculation of arctan(Ak) */
 	      mpfr_set_z (tmp, ukz, GMP_RNDN);
 	      mpfr_div_2ui (tmp, tmp, twopoweri, GMP_RNDN);
-	      mpz_mul (ukz, ukz, ukz);
-	      mpz_neg (ukz, ukz);
               MPFR_ASSERTD (2*twopoweri > twopoweri);
 	      mpfr_atan_aux (tmp2, ukz, 2*twopoweri, n0 - i, tabz);
 	      mpfr_mul (tmp2, tmp2, tmp, GMP_RNDN);
