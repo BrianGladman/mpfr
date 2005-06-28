@@ -261,9 +261,9 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
       MPFR_SET_ZERO (arctgt);
       twopoweri = 1<<0;
       MPFR_ASSERTD (n0 >= 4);
-      for (i = 0 ; i <= n0; i++)
+      for (i = 0 ; i < n0; i++)
         {
-          /* Calculation of  trunc(tmp) --> mpz */
+          /* Calculation of trunc(tmp) --> mpz */
           mpfr_mul_2ui (tmp, sk, twopoweri, GMP_RNDN);
           mpfr_trunc (tmp, tmp);
 	  if (!MPFR_IS_ZERO (tmp))
@@ -281,20 +281,18 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	      mpz_neg (ukz, ukz);
 	      mpfr_atan_aux (tmp2, ukz, 2*twopoweri, n0 - i, tabz);
 	      mpfr_mul (tmp2, tmp2, tmp, GMP_RNDN);
-	      /* Addition and iteration */
+	      /* Addition */
 	      mpfr_add (arctgt, arctgt, tmp2, GMP_RNDN);
-	      if (MPFR_LIKELY (i < n0))
-		{
-		  mpfr_sub (tmp2, sk, tmp, GMP_RNDN);
-		  mpfr_mul (sk, sk, tmp, GMP_RNDN);
-		  mpfr_add_ui (sk, sk, 1, GMP_RNDN);
-		  mpfr_div (sk, tmp2, sk, GMP_RNDN);
-		  twopoweri <<= 1;
-		}
+              /* Next iteration */
+              mpfr_sub (tmp2, sk, tmp, GMP_RNDN);
+              mpfr_mul (sk, sk, tmp, GMP_RNDN);
+              mpfr_add_ui (sk, sk, 1, GMP_RNDN);
+              mpfr_div (sk, tmp2, sk, GMP_RNDN);
 	    }
-	  else
-	    twopoweri <<= 1;
+          twopoweri <<= 1;
         }
+      /* Add last step (Arctan(sk) ~= sk */
+      mpfr_add (arctgt, arctgt, sk, GMP_RNDN);
       if (comparaison > 0)
 	{
 	  mpfr_const_pi (tmp, GMP_RNDN);
