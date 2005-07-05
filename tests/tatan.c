@@ -94,15 +94,17 @@ special (void)
 
   /* atan(+/-0) = +/-0 */
   mpfr_set_ui (x, 0, GMP_RNDN);
+  MPFR_SET_NEG (y);
   mpfr_atan (y, x, GMP_RNDN);
-  if (mpfr_cmp_ui (y, 0) || mpfr_sgn (y) < 0)
+  if (mpfr_cmp_ui (y, 0) || MPFR_IS_NEG (y))
     {
       printf ("Error: mpfr_atan (+0) <> +0\n");
       exit (1);
     }
   mpfr_neg (x, x, GMP_RNDN);
+  MPFR_SET_POS (y);
   mpfr_atan (y, x, GMP_RNDN);
-  if (mpfr_cmp_ui (y, 0) || mpfr_sgn (y) > 0)
+  if (mpfr_cmp_ui (y, 0) || MPFR_IS_POS (y))
     {
       printf ("Error: mpfr_atan (-0) <> -0\n");
       exit (1);
