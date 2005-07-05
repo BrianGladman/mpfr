@@ -101,12 +101,24 @@ special (void)
       printf ("Error: mpfr_atan (+0) <> +0\n");
       exit (1);
     }
+  mpfr_atan (x, x, GMP_RNDN);
+  if (mpfr_cmp_ui (x, 0) || MPFR_IS_NEG (x))
+    {
+      printf ("Error: mpfr_atan (+0) <> +0 (in place)\n");
+      exit (1);
+    }
   mpfr_neg (x, x, GMP_RNDN);
   MPFR_SET_POS (y);
   mpfr_atan (y, x, GMP_RNDN);
   if (mpfr_cmp_ui (y, 0) || MPFR_IS_POS (y))
     {
       printf ("Error: mpfr_atan (-0) <> -0\n");
+      exit (1);
+    }
+  mpfr_atan (x, x, GMP_RNDN);
+  if (mpfr_cmp_ui (x, 0) || MPFR_IS_POS (x))
+    {
+      printf ("Error: mpfr_atan (-0) <> -0 (in place)\n");
       exit (1);
     }
 
