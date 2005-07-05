@@ -49,10 +49,6 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
   ptoj = S + 1*(m+1);   /* p^2^j Precomputed table */
   T    = S + 2*(m+1);   /* Product of Odd integer  table  */
 
-  /* Init S[0] and T[0] */
-  mpz_set_ui (S[0], 1);
-  mpz_set_ui (T[0], 1);
-
   /* From p to p^2 */
   mpz_mul (p, p, p);
 
@@ -69,6 +65,7 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
   }
 
   MPFR_ASSERTD (mpz_sgn (p) > 0);
+  MPFR_ASSERTD (m > 0);
 
   /* Check if P==1 (Special case) */
   l = 0;
@@ -78,21 +75,17 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
     for (im = 1 ; im < m ; im++)
       mpz_mul (ptoj[im], ptoj[im-1], ptoj[im-1]);
     /* Main loop */
-    k = 0;
     n = 1UL << m;
-    for (i = 1 ; i < n ; i++) {
-      k++;
-      mpz_set_ui (T[k], 1 + 2*i);
-      mpz_set_ui (S[k], 1);
-
-      for (j = i+1, l = 0 ; (j & 1) == 0 ; l++, j>>=1, k--) {
-	if (l == 0) {
-	  mpz_mul (S[k], ptoj[l], T[k-1]);
-          mpz_neg (S[k], S[k]);
-	} else {
-	  mpz_mul (S[k], S[k], ptoj[l]);
-	  mpz_mul (S[k], S[k], T[k-1]);
-	}
+    for (i = k = 0; i < n; i+=2, k++) {
+      mpz_set_ui (T[k+1], 1+2*i+2);
+      mpz_mul_ui (S[k+1], p, 1+2*i);
+      mpz_mul_2exp (S[k], T[k+1], r);
+      mpz_sub (S[k], S[k], S[k+1]);
+      mpz_mul_ui (T[k], T[k+1], 1+2*i);
+      for (j = (i+2)>>1, l = 1; (j & 1) == 0; l++, j>>=1, k--) {
+        MPFR_ASSERTD (k > 0);
+        mpz_mul (S[k], S[k], ptoj[l]);
+        mpz_mul (S[k], S[k], T[k-1]);
 	mpz_mul (S[k-1], S[k-1], T[k]);
 	mpz_mul_2exp (S[k-1], S[k-1], r<<l);
 	mpz_add (S[k-1], S[k-1], S[k]);
@@ -100,18 +93,15 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
       }
     }
   } else {
-    k = 0;
     n = 1UL << m;
-    for (i = 1 ; i < n ; i++) {
-      k++;
-      mpz_set_ui (T[k], 1 + 2*i);
-      mpz_set_ui (S[k], 1);
-
-      for (j = i+1, l = 0 ; (j & 1) == 0 ; l++, j>>=1, k--) {
-	if (l == 0)
-	  mpz_neg (S[k], T[k-1]);
-	else
-	  mpz_mul (S[k], S[k], T[k-1]);
+    for (i = k = 0; i < n; i+=2, k++) {
+      mpz_set_ui (T[k+1], 1+2*i+2);
+      mpz_mul_2exp (S[k], T[k+1], r);
+      mpz_sub_ui (S[k], S[k], 1+2*i);
+      mpz_mul_ui (T[k], T[k+1], 1+2*i);
+      for (j = (i+2)>>1, l = 1; (j & 1) == 0; l++, j>>=1, k--) {
+        MPFR_ASSERTD (k > 0);
+        mpz_mul (S[k], S[k], T[k-1]);
 	mpz_mul (S[k-1], S[k-1], T[k]);
 	mpz_mul_2exp (S[k-1], S[k-1], r<<l);
 	mpz_add (S[k-1], S[k-1], S[k]);
@@ -120,9 +110,10 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
     }
   }
 
+  MPFR_ASSERTD (l == m && i == n);
   MPFR_MPZ_SIZEINBASE2 (diff, S[0]);
   diff -= 2*MPFR_PREC (y);
-  expo = diff + ((1<<l) - 1);
+  expo = diff + ((1<<m) - 1);
   if (diff >=0)
     mpz_tdiv_q_2exp (S[0], S[0], diff);
   else
@@ -138,7 +129,7 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
 
   mpz_tdiv_q (S[0], S[0], T[0]);
   mpfr_set_z (y, S[0], GMP_RNDD);
-  MPFR_SET_EXP (y, MPFR_EXP (y) + expo - r*(i-1) );
+  MPFR_SET_EXP (y, MPFR_EXP (y) + expo - r*(n-1) );
 }
 
 int
@@ -186,6 +177,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	{
           MPFR_ASSERTD (MPFR_IS_ZERO (x));
 	  MPFR_SET_ZERO (atan);
+          MPFR_SET_SAME_SIGN (atan, x);
 	  MPFR_RET (0);
  	}
     }
@@ -239,16 +231,21 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
       /* Initialisation */
       MPFR_GROUP_REPREC_4 (group, prec, sk, tmp, tmp2, arctgt);
-      if (oldn0 < 3*n0+1) {
-	if (MPFR_LIKELY (oldn0 == 0))
-	  tabz = (mpz_t *) (*__gmp_allocate_func) (3*(n0+1)*sizeof (mpz_t));
-        else
+      if (MPFR_LIKELY (oldn0 == 0))
+        {
+          oldn0 = 3*(n0+1);
+          tabz = (mpz_t *) (*__gmp_allocate_func) (oldn0*sizeof (mpz_t));
+          for (i = 0; i < oldn0; i++)
+            mpz_init (tabz[i]);
+        }
+      else if (MPFR_UNLIKELY (oldn0 < 3*n0+1))
+        {
 	  tabz = (mpz_t *) (*__gmp_reallocate_func)
 	    (tabz, oldn0*sizeof (mpz_t), 3*(n0+1)*sizeof (mpz_t));
-	for (i = oldn0; i < 3*(n0+1); i++)
-	  mpz_init (tabz[i]);
-	oldn0 = 3*(n0+1);
-      }
+          for (i = oldn0; i < 3*(n0+1); i++)
+            mpz_init (tabz[i]);
+          oldn0 = 3*(n0+1);
+        }
 
       if (comparaison > 0)
 	mpfr_ui_div (sk, 1, xp, GMP_RNDN);
@@ -263,6 +260,8 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
       MPFR_ASSERTD (n0 >= 4);
       for (i = 0 ; i < n0; i++)
         {
+          if (MPFR_UNLIKELY (MPFR_IS_ZERO (sk)))
+            break;
           /* Calculation of trunc(tmp) --> mpz */
           mpfr_mul_2ui (tmp, sk, twopoweri, GMP_RNDN);
           mpfr_trunc (tmp, tmp);
