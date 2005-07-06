@@ -85,6 +85,14 @@ In case of problem
 
    Try to build MPFR with/without GMP internal files.
 
+   If the build was ok, but the tests failed to link with GMP, it is usually
+   because /usr/local/lib is used by the static linker but not by the shared
+   linker. There are two solutions:
+   1.  setenv LD_LIBRARY_PATH /usr/lib:/usr/local/lib                 [tcsh]
+    or export LD_LIBRARY_PATH=/usr/lib:/usr/local/lib                 [bash]
+   2. Or run MPFR's configure with "--with-gmp=/usr/local/'
+    so that libtool is able to fix this problem.
+
    If you can't solve your problem, you could contact us at mpfr@loria.fr,
    indicating the machine and operating system used (uname -a), the compiler
    and version used (gcc -v if you use gcc), the compile options used if any,
