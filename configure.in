@@ -321,15 +321,17 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[
   return (strcmp (buffer, gmp_version) != 0) ? 1 : 0;
 ]])], [AC_MSG_RESULT(yes)],
    [AC_MSG_RESULT(no)
-    AC_MSG_WARN(['gmp.h' and 'libgmp' seems to have different versions.])],
-    AC_MSG_RESULT([can't test])
+    AC_MSG_WARN(['gmp.h' and 'libgmp' seems to have different versions.])
+    AC_MSG_WARN([However since we can't use 'libtool' inside the configure,])
+    AC_MSG_WARN([we can't be sure. See 'config.log' for details.])
+    ],AC_MSG_RESULT([can't test])
 )
 
 dnl End of tests which need to link with GMP.
 fi 
 
 dnl Remove also many MACROS (AC_DEFINE) which are unused by MPFR
-dnl and polluate (and slow down) the build.
+dnl and polluate (and slow down because libtool has to parse them) the build.
 if test -f confdefs.h; then
   sed '/#define PACKAGE_/d' <confdefs.h >confdefs.tmp
   sed '/#define HAVE_STRING/d' <confdefs.tmp >confdefs.h
