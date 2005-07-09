@@ -55,7 +55,7 @@ AC_CHECK_HEADERS([sys/time.h sys/fpu.h])
 
 dnl FIXME: strtol is really needed. Maybe create another function?
 dnl gettimeofday is not defined for MinGW
-AC_CHECK_FUNCS([memset strtol gettimeofday])
+AC_CHECK_FUNCS([memset setlocale strtol gettimeofday])
 
 AC_REPLACE_FUNCS(strcasecmp strncasecmp)
 

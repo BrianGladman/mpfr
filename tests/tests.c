@@ -30,6 +30,10 @@ MA 02110-1301, USA. */
 #include <string.h>
 #include <float.h>
 
+#if HAVE_SETLOCALE
+#include <locale.h>
+#endif
+
 #if TIME_WITH_SYS_TIME
 # include <sys/time.h>  /* for struct timeval */
 # include <time.h>
@@ -61,6 +65,13 @@ tests_start_mpfr (void)
 {
   /* don't buffer, so output is not lost if a test causes a segv etc */
   setbuf (stdout, NULL);
+
+#if HAVE_SETLOCALE
+  /* Added on 2005-07-09. This allows to test MPFR under various
+     locales. New bugs will probably be found, in particular with
+     LC_ALL="tr_TR.ISO8859-9" because of the i/I character... */
+  setlocale (LC_ALL, "");
+#endif
 
   tests_memory_start ();
   tests_rand_start ();
