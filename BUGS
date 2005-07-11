@@ -29,9 +29,6 @@ Known bugs:
   exceeds the hardware limit (2^30 for a 32 bits CPU, and 2^62 for a 64 bits 
   CPU).
 
-* The mpfr_strtofr function may fail under some locales, e.g. with
-  LC_ALL="tr_TR.ISO8859-9".
-
 Potential bugs:
 
 * Possible integer overflows on some machines.

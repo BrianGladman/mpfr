@@ -80,14 +80,6 @@ MA 02110-1301, USA. */
 #endif
 #undef MPFR_NEED_LONGLONG_H
 
-/* Define strcasecmp and strncasecmp if needed */
-#ifndef HAVE_STRCASECMP
-# define strcasecmp mpfr_strcasecmp
-#endif
-#ifndef HAVE_STRNCASECMP
-# define strncasecmp mpfr_strncasecmp
-#endif
-
 
 /******************************************************
  ***************** Detection macros *******************
@@ -1393,19 +1385,6 @@ struct mpfr_group_t {
 
 #if defined (__cplusplus)
 extern "C" {
-#endif
-
-#ifdef HAVE_STRCASECMP
-__MPFR_DECLSPEC int strcasecmp _MPFR_PROTO ((const char *, const char *));
-#else
-__MPFR_DECLSPEC int mpfr_strcasecmp _MPFR_PROTO ((const char*, const char*));
-#endif
-
-#ifdef HAVE_STRNCASECMP
-__MPFR_DECLSPEC int strncasecmp _MPFR_PROTO((const char*,const char*,size_t));
-#else
-__MPFR_DECLSPEC int mpfr_strncasecmp _MPFR_PROTO ((const char *, 
-						   const char *, size_t));
 #endif
 
 __MPFR_DECLSPEC int mpfr_underflow _MPFR_PROTO ((mpfr_ptr, mp_rnd_t, int));

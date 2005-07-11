@@ -57,7 +57,7 @@ dnl FIXME: strtol is really needed. Maybe create another function?
 dnl gettimeofday is not defined for MinGW
 AC_CHECK_FUNCS([memset setlocale strtol gettimeofday])
 
-AC_REPLACE_FUNCS(strcasecmp strncasecmp)
+dnl AC_REPLACE_FUNCS(strcasecmp strncasecmp)
 
 dnl Check for IEEE-754 switches on Alpha
 case $host in

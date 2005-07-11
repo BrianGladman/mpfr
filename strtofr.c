@@ -186,6 +186,27 @@ digit_value_in_base (int c, int base)
   return MPFR_LIKELY (digit < base) ? digit : -1;
 }
 
+/* Compatible with any locale, but one still assumes that 'a', 'b', 'c',
+   ..., 'z', and 'A', 'B', 'C', ..., 'Z' are consecutive values (like
+   in any ASCII-based character set). */
+static int
+fast_casecmp (const char *s1, const char *s2)
+{
+  unsigned char c1, c2;
+
+  do
+    {
+      c2 = *(const unsigned char *) s2++;
+      if (c2 == '\0')
+        return 0;
+      c1 = *(const unsigned char *) s1++;
+      if (c1 >= 'A' && c1 <= 'Z')
+        c1 = c1 - 'A' + 'a';
+    }
+  while (c1 == c2);
+  return 1;
+}
+
 /* Parse a string and fill pstr.
    Return the advanced ptr too.
    It returns:
@@ -213,12 +234,12 @@ parse_string (mpfr_t x, struct parsed_string *pstr,
   while (isspace((unsigned char) *str)) str++;
 
   /* Can be case-insensitive NAN */
-  if (strncasecmp (str, "@nan@", 5) == 0)
+  if (fast_casecmp (str, "@nan@") == 0)
     {
       str += 5;
       goto set_nan;
     }
-  if (base <= 16 && strncasecmp (str, "nan", 3) == 0)
+  if (base <= 16 && fast_casecmp (str, "nan") == 0)
     {
       str += 3;
     set_nan:
@@ -248,17 +269,17 @@ parse_string (mpfr_t x, struct parsed_string *pstr,
     str++;
 
   /* Can be case-insensitive INF */
-  if (strncasecmp (str, "@inf@", 5) == 0)
+  if (fast_casecmp (str, "@inf@") == 0)
     {
       str += 5;
       goto set_inf;
     }
-  if (base <= 16 && strncasecmp (str, "infinity", 8) == 0)
+  if (base <= 16 && fast_casecmp (str, "infinity") == 0)
     {
       str += 8;
       goto set_inf;
     }
-  if (base <= 16 && strncasecmp (str, "inf", 3) == 0)
+  if (base <= 16 && fast_casecmp (str, "inf") == 0)
     {
       str += 3;
     set_inf:
