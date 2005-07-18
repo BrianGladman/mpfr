@@ -15,4 +15,7 @@ sed -i "s/\(#define MPFR_VERSION_MAJOR \).*/\1$1/; \
         s/\(#define MPFR_VERSION_PATCHLEVEL \).*/\1$3/; \
         s/\(#define MPFR_VERSION_STRING \).*/\1\"$1.$2.$3\"/" mpfr.h
 sed -i "s/\(return \"\).*\"/\1$vers\"/" version.c
-sed -i "s/\(AC_INIT(MPFR, \).*)/\1$vers)/" configure.in
+sed -i "s/\(AC_INIT\).*/\1([MPFR],[$vers])/" configure.in
+
+echo "MPFR version successfully updated."
+echo "Don't forget to update MPFR libtool version in Makefile.am."
