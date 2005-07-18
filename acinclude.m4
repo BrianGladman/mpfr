@@ -57,8 +57,6 @@ dnl FIXME: strtol is really needed. Maybe create another function?
 dnl gettimeofday is not defined for MinGW
 AC_CHECK_FUNCS([memset setlocale strtol gettimeofday])
 
-dnl AC_REPLACE_FUNCS(strcasecmp strncasecmp)
-
 dnl Check for IEEE-754 switches on Alpha
 case $host in
 alpha*-*-*)
@@ -99,31 +97,11 @@ if test "$mpfr_cv_have_fesetround" = "yes"; then
   AC_DEFINE(MPFR_HAVE_FESETROUND,1,[Define if you have the `fesetround' function via the <fenv.h> header file.])
 fi
 
-dnl NOTE: It isn't used anymore, so the test is disabled
-dnl Check whether 0/0, 1/0, -1/0, sqrt(-1) are valid expressions
-dnl AC_CACHE_CHECK([for valid NaN], mpfr_cv_valid_nan, [
-dnl saved_LIBS="$LIBS"
-dnl LIBS="$LIBS $MPFR_LIBM"
-dnl AC_TRY_RUN([
-dnl #include <math.h>
-dnl int main()
-dnl {
-dnl   double x = (0.0/0.0) + sqrt(-1.0);
-dnl   return x == 1.0/0.0;
-dnl }
-dnl ], mpfr_cv_valid_nan=yes, mpfr_cv_valid_nan=no, mpfr_cv_valid_nan=no)
-dnl ])
-dnl if test "$mpfr_cv_valid_nan" = "yes"; then
-dnl   AC_DEFINE(HAVE_INFS,1,[Define if 0/0, 1/0, -1/0 and sqrt(-1) work to generate NaN/infinities.])
-dnl fi
-dnl LIBS="$saved_LIBS"
-
 dnl Check for gcc float-conversion bug; if need be, -ffloat-store is used to
 dnl force the conversion to the destination type when a value is stored to
 dnl a variable (see ISO C99 standard 5.1.2.3#13, 6.3.1.5#2, 6.3.1.8#2). This
 dnl is important concerning the exponent range. Note that this doesn't solve
-dnl the double-rounding problem (x86 processors still have to be set to the
-dnl IEEE-754 compatible rounding mode).
+dnl the double-rounding problem.
 if test -n "$GCC"; then
   AC_CACHE_CHECK([for gcc float-conversion bug], mpfr_cv_gcc_floatconv_bug, [
   saved_LIBS="$LIBS"
@@ -167,8 +145,7 @@ AC_CACHE_CHECK([for denormalized numbers], mpfr_cv_have_denorms, [
 AC_TRY_RUN([
 #include <math.h>
 #include <stdio.h>
-int main()
-{
+int main() {
   double x = 2.22507385850720138309e-308;
   fprintf (stderr, "%e\n", x / 2.0);
   return 2.0 * (x / 2.0) != x;
@@ -179,16 +156,25 @@ if test "$mpfr_cv_have_denorms" = "yes"; then
   AC_DEFINE(HAVE_DENORMS,1,[Define if denormalized floats work.])
 fi
 
-dnl NOTE: It is unused, so the test is disabled
-dnl Check if HUGE_VAL is supported without the need of a specific library
-dnl AC_CACHE_CHECK([for HUGE_VAL], mpfr_cv_have_huge_val, [
-dnl AC_TRY_LINK([#include <math.h>], [HUGE_VAL;],
-dnl  mpfr_cv_have_huge_val=yes, mpfr_cv_have_huge_val=no)
-dnl ])
-dnl if test "$mpfr_cv_have_huge_val" = "yes"; then
-dnl  AC_DEFINE(HAVE_HUGE_VAL,1,
-dnl   [Define if HUGE_VAL can be used without the need of a specific library.])
-dnl fi
+dnl Check if the chars '0' to '9' are consecutive values
+AC_MSG_CHECKING([if charset has consecutive values])
+AC_RUN_IFELSE(AC_LANG_PROGRAM([[
+char *number = "0123456789";
+char *lower  = "abcdefghijklmnopqrstuvwxyz";
+char *upper  = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+]],[[
+ int i;
+ unsigned char *p;
+ for (p = (unsigned char*) number, i = 0; i < 9; i++)
+   if ( (*p)+1 != *(p+1) ) return 1;
+ for (p = (unsigned char*) lower, i = 0; i < 25; i++)
+   if ( (*p)+1 != *(p+1) ) return 1;
+ for (p = (unsigned char*) upper, i = 0; i < 25; i++)
+   if ( (*p)+1 != *(p+1) ) return 1;
+]]), [AC_MSG_RESULT(yes)],[
+ AC_MSG_RESULT(no)
+ AC_DEFINE(MPFR_NO_CONSECUTIVE_CHARSET,1,[Charset is not consecutive])
+], [AC_MSG_RESULT(can not test)])
 
 dnl Must be checked with the LIBM
 dnl but we don't want to add the LIBM to MPFR dependency.

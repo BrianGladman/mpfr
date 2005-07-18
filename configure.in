@@ -22,9 +22,9 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA.
 ])
 
-dnl If MPFR becomes GNU MPFR, change the MPFR below to GNU MPFR
+dnl If MPFR becomes GNU MPFR, change to GNU MPFR in update-version
 dnl Add check-news when it checks for more than 15 lines
-AC_INIT(MPFR, 2.2.0)
+AC_INIT([MPFR],[2.2.0])
 AM_INIT_AUTOMAKE([no-define dist-zip dist-bzip2])
 dnl AM_MAINTAINER_MODE
 
@@ -111,7 +111,9 @@ if test -n "$GMP_CFLAGS" && test -z "$user_redefine_cc" ; then
  CFLAGS=$GMP_CFLAGS
  CC=$GMP_CC
  AC_MSG_CHECKING(for CC=$GMP_CC and CFLAGS=$GMP_CFLAGS)
- AC_RUN_IFELSE([AC_LANG_PROGRAM([[]],[[]])], [AC_MSG_RESULT(yes)], [
+ AC_RUN_IFELSE(AC_LANG_PROGRAM([[/*hello*/]],[[/*world*/]]), [
+    AC_MSG_RESULT(yes)
+  ], [
     AC_MSG_RESULT(no)
     CFLAGS=$old_cflags
     CC=$old_cc
@@ -140,7 +142,8 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #if !defined(__ICC)
 # error "ICC Not Found"
 #endif
-]], [[]])],[AC_MSG_RESULT(yes)
+]], [[]])],[
+ AC_MSG_RESULT(yes)
  GCC=
  CFLAGS="-fp_port -mp -wd1572 -wd265 -wd186 -wd239 $CFLAGS"
 ],[AC_MSG_RESULT(no)])
@@ -196,6 +199,7 @@ fi
 
 dnl Configs for Windows DLLs.
 dnl libtool requires "-no-undefined" for win32 dll
+dnl It also disables the tests involving the linking with LIBGMP if DLL
 AC_DISABLE_SHARED
 AC_LIBTOOL_WIN32_DLL
 case $host in
@@ -268,7 +272,7 @@ AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
 ])
 
 dnl Check for valid BITS_PER_MP_LIMB and BYTES_PER_MP_LIMB
-dnl This test doesn't need to link with libgmp (at least it should).
+dnl This test doesn't need to link with libgmp (at least it shouldn't).
 if test -n "$gmp_internal_file_check" ; then
   AC_MSG_CHECKING(for valid BITS_PER_MP_LIMB and BYTES_PER_MP_LIMB)
   AC_RUN_IFELSE([AC_LANG_PROGRAM([[
@@ -288,8 +292,9 @@ fi
 
 dnl We really need to link using libtool. But it is impossible with the current
 dnl libtool.
-dnl The practical problems appear only under MS Windows. The best solution
-dnl is to believe it works under MSWin.
+dnl The practical problems appear only under MS Windows since the library name
+dnl is libgmp-3 (due to libtool versionning). The best solution
+dnl is to believe it works under MS-Windows.
 if test "$dont_link_with_gmp" = yes ; then 
 LIBS="-lgmp $LIBS"
 else
@@ -324,7 +329,7 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[
     AC_MSG_WARN(['gmp.h' and 'libgmp' seems to have different versions.])
     AC_MSG_WARN([However since we can't use 'libtool' inside the configure,])
     AC_MSG_WARN([we can't be sure. See 'config.log' for details.])
-    ],AC_MSG_RESULT([can't test])
+    ],AC_MSG_RESULT([can not test])
 )
 
 dnl End of tests which need to link with GMP.
