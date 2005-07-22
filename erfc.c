@@ -52,20 +52,26 @@ mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
     }
 
   /* Init stuff */
-  MPFR_SAVE_EXPO_MARK (expo);  
+  MPFR_SAVE_EXPO_MARK (expo);
   prec = MPFR_PREC (y) + MPFR_INT_CEIL_LOG2 (MPFR_PREC (y)) + 3;
   mpfr_init2 (tmp, prec);
 
   MPFR_ZIV_INIT (loop, prec);            /* Initialize the ZivLoop controler */
   for (;;)                               /* Infinite loop */
     {
-      mpfr_erf (tmp, x, GMP_RNDN);       
+      mpfr_erf (tmp, x, GMP_RNDN);
+      MPFR_ASSERTD (!MPFR_IS_SINGULAR (tmp)); /* FIXME: 0 only for x=0 ? */
       te = MPFR_GET_EXP (tmp);
       mpfr_ui_sub (tmp, 1, tmp, GMP_RNDN);
       /* See error analysis of expm1 for details */
-      err = prec - (MAX (te - MPFR_GET_EXP (tmp), 0) + 1);
-      if (MPFR_LIKELY (MPFR_CAN_ROUND (tmp, err, MPFR_PREC (y), rnd)))
-	break;
+      if (MPFR_IS_ZERO (tmp))
+        prec *=2;
+      else
+        {
+          err = prec - (MAX (te - MPFR_GET_EXP (tmp), 0) + 1);
+          if (MPFR_LIKELY (MPFR_CAN_ROUND (tmp, err, MPFR_PREC (y), rnd)))
+            break;
+        }
       MPFR_ZIV_NEXT (loop, prec);        /* Increase used precision */
       mpfr_set_prec (tmp, prec);
     }
