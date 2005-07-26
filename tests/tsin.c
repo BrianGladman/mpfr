@@ -176,6 +176,31 @@ check_nans (void)
 #define TEST_FUNCTION test_sin
 #include "tgeneric.c"
 
+const char xs[] = "0.111011111110110000111000001100000111110E-1";
+
+static void
+check_regression ()
+{
+  mpfr_t x, y;
+  mp_prec_t p;
+  int i;
+
+  p = strlen (xs) -2 - 3;
+  mpfr_inits2 (p, x, y, NULL);
+
+  mpfr_set_str (x, xs, 2, GMP_RNDN);
+  i = mpfr_sin (y, x, GMP_RNDN);
+  if (i >= 0
+      || mpfr_cmp_str (y, "0.111001110011110011110001010110011101110E-1",
+                       2, GMP_RNDN))
+    {
+      printf ("Regression test failed (1) i=%d\ny=", i);
+      mpfr_dump (y);
+      exit (1);
+    }
+  mpfr_clears (x, y, NULL);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -255,6 +280,7 @@ main (int argc, char *argv[])
 
   test_generic (2, 100, 20);
   test_sign ();
+  check_regression ();
 
   tests_end_mpfr ();
   return 0;
