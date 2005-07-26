@@ -224,7 +224,15 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
     {
       /* First, if |x| < 1, we need to have more prec to be able to round (sup)
 	 n0 = ceil(log(prec_requested + 2 + 1+ln(2.4)/ln(2))/log(2)) */
-      mp_prec_t sup = MPFR_GET_EXP (xp) < 0 ? 2-MPFR_GET_EXP (xp) : 1;
+      mp_prec_t sup;
+#if 0
+      sup = 1;
+      if (MPFR_GET_EXP (xp) < 0
+          && (mpfr_uexp_t) (2-MPFR_GET_EXP (xp)) > realprec)
+        sup = (mpfr_uexp_t) (2-MPFR_GET_EXP (xp)) - realprec;
+#else
+      sup = MPFR_GET_EXP (xp) < 0 ? 2-MPFR_GET_EXP (xp) : 1;
+#endif
       n0 = MPFR_INT_CEIL_LOG2 ((realprec + sup) + 3);
       MPFR_ASSERTD (3*n0 > 2);
       prec = (realprec + sup) + 1 + MPFR_INT_CEIL_LOG2 (3*n0-2);
