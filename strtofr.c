@@ -21,7 +21,7 @@ MA 02110-1301, USA. */
 
 #include <string.h> /* For strlen */
 #include <stdlib.h> /* For strtol */
-#include <ctype.h>  /* For isdigit */
+#include <ctype.h>  /* For isdigit and isspace */
 
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
