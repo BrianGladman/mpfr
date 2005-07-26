@@ -1160,7 +1160,8 @@ typedef struct {
   int _x ## _cpt = 1;                                         \
   static unsigned long  _x ## _loop = 0, _x ## _bad = 0;      \
   static const char *_x ## _fname = __func__;                 \
-  static void __attribute__ ((destructor)) x ## _f  (void) {  \
+  auto void __attribute__ ((destructor)) x ## _f  (void);     \
+  void __attribute__ ((destructor)) x ## _f  (void) {         \
   if (_x ## _loop != 0 && MPFR_LOG_STAT_F&mpfr_log_type)      \
      fprintf (mpfr_log_file,                                  \
     "%s: Ziv failed %2.2f%% (%lu bad cases / %lu calls)\n", _x ## _fname,     \
@@ -1176,7 +1177,7 @@ typedef struct {
   if (MPFR_LOG_BADCASE_F&mpfr_log_type && mpfr_log_current<=mpfr_log_level)  \
    fprintf (mpfr_log_file, "%s:ZIV new prec=%lu\n", __func__,                \
      (unsigned long) (_p))
-  
+
 #define MPFR_ZIV_FREE(_x)                                             \
   if (MPFR_LOG_BADCASE_F&mpfr_log_type && _x##_cpt>1                  \
       && mpfr_log_current<=mpfr_log_level)                            \
@@ -1257,7 +1258,8 @@ __MPFR_DECLSPEC extern mp_prec_t mpfr_log_prec;
 
 #define MPFR_LOG_FUNC(begin,end)                                            \
   static const char *__mpfr_log_fname = __func__;                           \
-  static void __mpfr_log_cleanup (int *time) {                              \
+  auto void __mpfr_log_cleanup (int *time);                                 \
+  void __mpfr_log_cleanup (int *time) {                                     \
     int __gmpfr_log_time = *time;                                           \
     MPFR_LOG_END2 end; }                                                    \
   int __gmpfr_log_time __attribute__ ((cleanup (__mpfr_log_cleanup)));      \
