@@ -126,6 +126,12 @@ struct __gmpfr_cache_s {
 };
 typedef struct __gmpfr_cache_s mpfr_cache_t[1];
 
+/* Stack interface */
+typedef enum {
+  MPFR_NAN_KIND = 0,
+  MPFR_INF_KIND = 1, MPFR_ZERO_KIND = 2, MPFR_REGULAR_KIND = 3,
+} mpfr_kind_t;
+
 /* GMP defines:
     + size_t:                Standard size_t
     + __GMP_ATTRIBUTE_PURE   Attribute for math functions.
@@ -550,6 +556,15 @@ __MPFR_DECLSPEC int  mpfr_subnormalize _MPFR_PROTO ((mpfr_ptr, int,
 __MPFR_DECLSPEC int  mpfr_strtofr _MPFR_PROTO ((mpfr_ptr, __gmp_const char *,
 						char **, int, mpfr_rnd_t));
 
+__MPFR_DECLSPEC size_t mpfr_stack_get_size   _MPFR_PROTO ((mp_prec_t));
+__MPFR_DECLSPEC void   mpfr_stack_init       _MPFR_PROTO ((void *, mp_prec_t));
+__MPFR_DECLSPEC void * mpfr_stack_get_mantissa _MPFR_PROTO ((mpfr_srcptr));
+__MPFR_DECLSPEC mp_exp_t mpfr_stack_get_exp  _MPFR_PROTO ((mpfr_srcptr));
+__MPFR_DECLSPEC void   mpfr_stack_move       _MPFR_PROTO ((mpfr_ptr, void *));
+__MPFR_DECLSPEC void   mpfr_stack_init_set   _MPFR_PROTO ((mpfr_ptr, int,
+                                               mp_exp_t, mp_prec_t, void *));
+__MPFR_DECLSPEC int    mpfr_stack_get_kind   _MPFR_PROTO ((mpfr_srcptr));
+
 #if defined (__cplusplus)
 }
 #endif
@@ -627,6 +642,41 @@ __MPFR_DECLSPEC int  mpfr_strtofr _MPFR_PROTO ((mpfr_ptr, __gmp_const char *,
    mpfr_set_si ((_f), (_s), (_r)))
 #endif
 #endif
+
+/* Macro version of mpfr_stack interface for fast access */
+#define mpfr_stack_get_size(p) ((size_t)                            \
+       (((p)+GMP_NUMB_BITS-1)/GMP_NUMB_BITS*sizeof (mp_limb_t)))
+#define mpfr_stack_init(m,p) do {} while (0)
+#define mpfr_stack_get_mantissa(x) ((void*)((x)->_mpfr_d))
+#define mpfr_stack_get_exp(x) ((x)->_mpfr_exp)
+#define mpfr_stack_move(x,m) do { ((x)->_mpfr_d = (mp_limb_t*)(m)); } while (0)
+#define mpfr_stack_init_set(x,k,e,p,m) do {                    \
+  mpfr_ptr _x = (x);                                           \
+  mp_exp_t _e;                                                 \
+  mpfr_kind_t _t;                                              \
+  int _s, _k;                                                  \
+  _k = (k);                                                    \
+  if (_k >= 0)  {                                              \
+    _t = (mpfr_kind_t) _k;                                     \
+    _s = 1;                                                    \
+  } else {                                                     \
+    _t = (mpfr_kind_t) -k;                                     \
+    _s = -1;                                                   \
+  }                                                            \
+  _e = _t == MPFR_REGULAR_KIND ? (e) :                         \
+    _t == MPFR_NAN_KIND ? __MPFR_EXP_NAN :                     \
+    _t == MPFR_INF_KIND ? __MPFR_EXP_INF : __MPFR_EXP_ZERO;    \
+  _x->_mpfr_prec = (p);                                        \
+  _x->_mpfr_sign = _s;                                         \
+  _x->_mpfr_exp  = _e;                                         \
+  _x->_mpfr_d    = (mp_limb_t*) (m);                           \
+ } while (0)
+#define mpfr_stack_get_kind(x)                                              \
+  ( (x)->_mpfr_exp >  __MPFR_EXP_INF ? (int)MPFR_REGULAR_KIND*MPFR_SIGN (x) \
+  : (x)->_mpfr_exp == __MPFR_EXP_INF ? (int)MPFR_INF_KIND*MPFR_SIGN (x)     \
+  : (x)->_mpfr_exp == __MPFR_EXP_NAN ? (int)MPFR_NAN_KIND                   \
+  : (int) MPFR_ZERO_KIND * MPFR_SIGN (x) )
+
 
 #endif /* MPFR_NO_MACRO */
 
