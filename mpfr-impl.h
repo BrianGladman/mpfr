@@ -1160,8 +1160,7 @@ typedef struct {
   int _x ## _cpt = 1;                                         \
   static unsigned long  _x ## _loop = 0, _x ## _bad = 0;      \
   static const char *_x ## _fname = __func__;                 \
-  static void _x ## _f (void) __attribute__ ((destructor));   \
-  static void _x ## _f (void) {                               \
+  static void __attribute__ ((destructor)) x ## _f  (void) {  \
   if (_x ## _loop != 0 && MPFR_LOG_STAT_F&mpfr_log_type)      \
      fprintf (mpfr_log_file,                                  \
     "%s: Ziv failed %2.2f%% (%lu bad cases / %lu calls)\n", _x ## _fname,     \
