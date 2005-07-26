@@ -46,8 +46,8 @@ int   mpfr_log_current;
 int   mpfr_log_worstcase_limit;
 mp_prec_t mpfr_log_prec;
 
-static int 
-mpfr_printf_mpfr_print (FILE *stream, const struct printf_info *info, 
+static int
+mpfr_printf_mpfr_print (FILE *stream, const struct printf_info *info,
 			const void * const *arg)
 {
   int length;
@@ -80,22 +80,15 @@ mpfr_printf_mpfr_arginfo (const struct printf_info *info, size_t n,
 
 static void mpfr_log_begin (void) __attribute__((constructor));
 
-/* We let the system close the LOG itself 
+/* We let the system close the LOG itself
    (Otherwise functions called by destructor can't use LOG File */
-static void 
-mpfr_log_begin (void) 
+static void
+mpfr_log_begin (void)
 {
   const char *filename;
   time_t tt;
 
-  filename = getenv ("MPFR_LOG_FILE");
-  filename = filename != NULL && *filename != 0 ? filename : "./mpfr.log";
-  mpfr_log_file = fopen (filename, "w");
-  if (mpfr_log_file == NULL) {
-    fprintf (stderr, "MPFR LOG: Can't open '%s' with w.\n", filename);
-    abort ();
-  }
-
+  /* Grab some information */
   filename = getenv ("MPFR_LOG_BASE");
   mpfr_log_base = filename == NULL || *filename == 0 ? 10 : atoi (filename);
 
@@ -106,6 +99,7 @@ mpfr_log_begin (void)
   filename = getenv ("MPFR_LOG_PREC");
   mpfr_log_prec = filename == NULL || *filename == 0 ? 0 : atol (filename);
 
+  /* Get what we need to log */
   mpfr_log_type = 0;
   if (getenv ("MPFR_LOG_INPUT") != NULL)
     mpfr_log_type |= MPFR_LOG_INPUT_F;
@@ -119,13 +113,29 @@ mpfr_log_begin (void)
     mpfr_log_type |= MPFR_LOG_MSG_F;
   if (getenv ("MPFR_LOG_ZIV") != NULL)
     mpfr_log_type |= MPFR_LOG_BADCASE_F;
-
-  time (&tt);
-  fprintf (mpfr_log_file, "MPFR LOG FILE %s\n", ctime (&tt));  
+  if (getenv ("MPFR_LOG_STAT") != NULL)
+    mpfr_log_type |= MPFR_LOG_STAT_F;
+  if (getenv ("MPFR_LOG_ALL") != NULL)
+    mpfr_log_type = MPFR_LOG_INPUT_F|MPFR_LOG_OUTPUT_F|MPFR_LOG_TIME_F
+      |MPFR_LOG_INTERNAL_F|MPFR_LOG_MSG_F|MPFR_LOG_BADCASE_F|MPFR_LOG_STAT_F;
 
   /* Register printf functions */
-  register_printf_function ('R', mpfr_printf_mpfr_print, 
+  register_printf_function ('R', mpfr_printf_mpfr_print,
 			    mpfr_printf_mpfr_arginfo);
+
+  /* Open filename if needed */
+  filename = getenv ("MPFR_LOG_FILE");
+  filename = filename != NULL && *filename != 0 ? filename : "./mpfr.log";
+  if (mpfr_log_type != 0)
+    {
+      mpfr_log_file = fopen (filename, "w");
+      if (mpfr_log_file == NULL) {
+        fprintf (stderr, "MPFR LOG: Can't open '%s' with w.\n", filename);
+        abort ();
+      }
+      time (&tt);
+      fprintf (mpfr_log_file, "MPFR LOG FILE %s\n", ctime (&tt));
+    }
 }
 
 /* Return user CPU time measured in milliseconds. Thanks to Torbjorn. */
