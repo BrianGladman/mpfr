@@ -21,6 +21,7 @@ MA 02110-1301, USA. */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 
 #include "mpfr-test.h"
 
@@ -168,8 +169,12 @@ int
 main (void)
 {
   tests_start_mpfr ();
-  test1 ();
-  test2 ();
+  /* We test iff long = mp_limb_t */
+  if (sizeof (long) == sizeof (mp_limb_t))
+    {
+      test1 ();
+      test2 ();
+    }
   tests_end_mpfr ();
   return 0;
 }
