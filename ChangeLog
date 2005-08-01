@@ -1,3 +1,527 @@
+2005-07-29  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* set_ld.c:
+	Forgot to keep the old value of d when computations need to be redone.
+	[2.1 branch]
+
+	* tests/tset_ld.c: Fixed the tests. [2.1 branch]
+
+	* set_ld.c:
+	Support C implementations giving an incorrect value for the precision
+	of long double or where long doubles are implemented with FP expansions
+	(like under Mac OS X). Not tested yet... [2.1 branch]
+
+2005-07-26  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* Makefile.am, mpfr.h, mpfr.texi, stack_interface.c, tests/Makefile.am, tests/tstckintc.c:
+	Add first version of MPFR stack interface.
+	Need to check if everything is ok, specially the test.
+
+	* mpfr-impl.h: Fix and clean up logging for GCC 4.0.x
+
+	* mpfr-impl.h: Clean up code.
+
+	* README.dev, logging.c, mpfr-impl.h: Improve logging:
+	 + The file is not created if there is nothing to log.
+	 + Add new ENVIRONMENT variables: MPFR_LOG_ALL and MPFR_LOG_STAT.
+
+	* atan.c: Add experimental code (Disabled).
+
+	* strtofr.c: Fix comment
+
+	* tests/tsin.c: Add a new regression test (to fix).
+
+2005-07-22  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* erfc.c: Fix bug for high values of input (assertion failed)
+	because erf(x) ~ 1, so 1-erf(x) ~ 0, and we can't
+	get the EXP of tmp.
+
+2005-07-18  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* update-version: Fix bug (AC_INIT version wasn't updated).
+	Display a note about libtool version before quitting.
+
+	* acinclude.m4, configure.in: Clean up.
+	Add comment.
+	Add a new test: check if the charset has consecutive values.
+
+2005-07-12  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* mpfr.texi: Updated documentation of mpfr_strtofr.
+
+2005-07-12  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* exp3.c: Fix an overflow bug (use of int instead of unsigned long).
+	Optimize code (5% faster).
+
+2005-07-11  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* strtofr.c: Updated copyright line. [2.1 branch]
+
+	* strtofr.c: Fixed locale bug. [2.1 branch]
+
+	* BUGS, acinclude.m4, mpfr-impl.h, strcasecmp.c, strncasecmp.c, strtofr.c:
+	Fixed locale bug. Function strncasecmp is no longer used.
+
+2005-07-09  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* BUGS, acinclude.m4, tests/tests.c:
+	In the tests, set the locale to the current one. This allows to test
+	MPFR under various locales, showing a bug in the parse_string function
+	due to the use of the strncasecmp function ('i' and 'I' don't match
+	with LC_ALL="tr_TR.ISO8859-9").
+
+2005-07-07  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* configure.in: Improve displayed warning if GMP versions differ.
+
+2005-07-06  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* INSTALL: Add a solution for a problem.
+
+2005-07-05  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* tests/tatan.c: Added in-place tests for atan(+/-0).
+
+	* tests/tatan.c, atan.c: Fixed bug for atan(-0). [2.1 branch]
+
+2005-07-05  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* atan.c: Fix bug of signed 0.
+	Optimize code. (20% for 53 bits).
+
+	* tests/tatan.c: Improve test for signed 0.
+
+2005-06-28  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* atan.c: Simplify a condition which was always true.
+	(p is always negative).
+
+	* atan.c: Add assertion.
+
+	* atan.c: Simplify code for final step (when i== n0):
+	since we do n0-i=0 steps, atan(Ak/2^k) ~= Ak/2^k.
+	So we could speed up the final computation (9% faster).
+
+	* atan.c: Optimize: when computing arctan(p/2^r) simplify
+	p/2^r if p is even.
+	Clean up and remove tabi table. It was useless.
+
+2005-06-22  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* acinclude.m4, configure.in: Clean up configure and acinclude:
+	 + Remove useless test in MPFR_CONFIGS (Check for valid NAN).
+	   Its result is not use by MPFR.
+	 + Remove useless macros (AC_CHECK_OS, AC_CHECK_MACH and AC_MY_HEADERS).
+	 + Move detection of math/rint,round,floor,ceil to MPFR_CONFIGS.
+
+2005-06-20  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* sum.c: GNU coding style.
+
+2005-06-16  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* get_str.c: improved m=0 case when b is a power of 2
+
+2005-06-15  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* cos.c: Replace mpfr_div_2ui call by SET_EXP/GET_EXP
+	since it can't overflow.
+
+	* cos.c: Speed up a few (from 10822 to 10600).
+
+	* BUGS: Update
+
+2005-06-14  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* powerof2.c:
+	Replace check for a power of 2 for the high limb by a check
+	for "high bit limb" for the high limb.
+
+	* mul_ui.c:
+	Fix bug in mul_ui (always alloc buffer instead of trying to reuse it).
+
+	* tests/tmul_ui.c: Add new test (failed).
+
+	* div_ui.c, mul_ui.c: Add Fast case for u==1
+	Add Fast case for u a power of 2 (Call mul/div_2si).
+
+	* cos.c: Fix bug (use of GCC specific attribute).
+
+2005-06-13  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* tests/troot.c, root.c: Rechnage the meaning of root for k=0.
+
+	* root.c, tests/troot.c: Fix bug with x<0 and k even
+
+	* root.c, tests/troot.c: Add special case for k==0
+	Add test for special case k==0
+
+2005-06-13  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* const_pi.c: added assertion
+
+2005-06-13  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* cache.c: Improve efficiency of initial call to mpfr_cache.
+
+	* tests/tsum.c: Add new check (+INF -INF --> NAN).
+
+2005-06-10  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* mpfr-impl.h, mpfr.h, mpfr.texi, sum.c, tests/tsum.c:
+	Fix bug of NAN and INF.
+	Fix bug in documentation (mpfr_sum wasn't exactly what is decribed).
+	Improve test.
+	Change internal names.
+	Clean up.
+
+	* eint.c: Fix bug: check if mpfr_log returns 0.
+
+2005-06-08  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* eint.c: Replace MPFR_EXP to MPFR_GET_EXP
+	Use GROUP function
+	Use MPFR_MPZ_SIZEINBASE2
+	Factorize the mpfr_mul_2exp chain.
+
+	* sin.c: Replace int to mp_prec_t for precision...
+
+	* acos.c, const_euler.c, mulders.c, zeta.c:
+	Fix warning due to comparison of unsigned and signed integers.
+
+	* atan.c, extract.c, strtofr.c:
+	Fix warnings due to comparaison between signed and unsigned.
+	Reinclude string.h for strtofr.
+
+2005-06-08  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* add1.c: [2.1 branch]
+	Fixed bug introduced with the new internal format on 2003-10-27.
+
+	* add1.c:
+	Fixed bug introduced with the new internal format on 2003-10-27.
+
+	* add1.c: Updated comments.
+
+2005-06-08  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* atan.c: Fix introduced bug due to missing NULL.
+
+	* clear.c: Fix introduced bug (NULL not defined).
+
+	* add1sp.c, atan.c, clear.c, div.c, gamma.c, get_f.c, get_str.c, mpfr-impl.h, mul.c, round_p.c, set_z.c, sin.c, strtofr.c, sub1sp.c, subnormal.c, zeta.c:
+	Clean up use of stdio.h:
+	 it is now included by mpfr-impl iff DEBUG is defined or WANT_ASSERT is
+	defined.
+
+	* tests/tsum.c: Fix warnings.
+
+	* sub1sp.c: Clean up code.
+
+	* add1sp.c: Improve checking if WANT_ASSERT >= 2
+
+2005-06-07  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* sin.c: Fix wrong assertion.
+
+	* tests/tsum.c: Improve test by adding special cases.
+
+	* mpfr-impl.h:
+	MPFR_GET_EXP was wrongly defined and does nothing due to recursive
+	macro (mpfr_get_exp is also defined to be a fast macro). Fix this
+	by removing the macro call in MPFR_GET_EXP in case of ASSERT >= 1.
+	2 tests failed now!
+
+	* tests/tsum.c: Clean up and improve check.
+
+	* sum.c: Handle case n==0 and n==1 as special cases.
+
+	* const_catalan.c, tests/tconst_catalan.c:
+	Simplify test to use tgeneric.
+	Add note about Worst Case of const_catalan up to 100,000,000
+
+	* atan.c: Use GROUP functions.
+
+	* tests/tconst_pi.c: Improve coverage.
+
+	* mpfr-impl.h: Fix bug in MPFR_GROUP_REPREC_3.
+
+2005-06-06  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* tests/tset_si.c, tests/tui_pow.c, ui_pow_ui.c: Improve coverage
+
+	* tests/tcmp_ui.c: Improve coverage test
+
+	* Makefile.am, mpfr.h, tests/tdiv.c, tests/tget_str.c, tests/tzeta.c:
+	Remove mpfr_sub_one_ulp from MPFR library.
+	Keep the C file until we are sure it not needed anymore.
+
+	* tests/tnext.c: Improve coverage.
+
+	* tests/texp.c, tests/tget_str.c, tests/tsqrt.c, tests/tzeta.c, Makefile.am, div_ui.c, hypot.c, tests/tdiv.c:
+	Remove mpfr_add_one_ulp from MPFR library.
+	The function is still in the CVS.
+
+	* gamma.c: Add experimental code (disabled).
+	For 5000 bits, gamma(12.5) takes 4s instead of 18s.
+	But it changes the error analysis...
+
+	* gamma.c: Reduce use of intermediary variables.
+
+	* zeta.c: Improve comment of previous change.
+
+	* zeta.c: Use FastCompute if x is positive and big, ie it uses
+	Zeta(x)=1+1/2^X+O(1/3^x)
+
+2005-06-03  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* ui_pow_ui.c: Add new and faster trivial case for y <= 1 and n <= 1
+
+2005-06-02  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* COPYING, COPYING.LIB: Forget thoses two. Update from FSF site.
+
+	* BUGS, NEWS, README, TODO: Finish updating files.
+
+	* mul_ui.c, mulders.c, neg.c, next.c, out_str.c, pow.c, pow_si.c, pow_ui.c, pow_z.c, powerof2.c, print_raw.c, print_rnd_mode.c, random.c, random2.c, reldiff.c, rint.c, root.c, round_near_x.c, round_p.c, round_prec.c, round_raw_generic.c, sec.c, sech.c, set.c, set_d.c, set_dfl_prec.c, set_exp.c, set_f.c, set_inf.c, set_ld.c, set_nan.c, set_prc_raw.c, set_prec.c, set_q.c, set_rnd.c, set_si.c, set_si_2exp.c, set_sj.c, set_str.c, set_str_raw.c, set_ui.c, set_ui_2exp.c, set_uj.c, set_z.c, setmax.c, setmin.c, sgn.c, si_op.c, sin.c, sin_cos.c, sinh.c, sqr.c, sqrt.c, sqrt_ui.c, strcasecmp.c, strncasecmp.c, strtofr.c, sub.c, sub1.c, sub1sp.c, sub_one_ulp.c, sub_ui.c, subnormal.c, sum.c, swap.c, tan.c, tanh.c, tests/cmp_str.c, tests/memory.c, tests/mpf_compat.c, tests/mpfr_compat.c, tests/reuse.c, tests/rnd_mode.c, tests/tabs.c, tests/tacos.c, tests/tacosh.c, tests/tadd.c, tests/tadd1sp.c, tests/tadd_ui.c, tests/tagm.c, tests/tasin.c, tests/tasinh.c, tests/tatan.c, tests/tatanh.c, tests/tcan_round.c, tests/tcbrt.c, tests/tcheck.c, tests/tcmp.c, tests/tcmp2.c, tests/tcmp_d.c, tests/tcmp_ld.c, tests/tcmp_ui.c, tests/tcmpabs.c, tests/tcomparisons.c, tests/tconst_catalan.c, tests/tconst_euler.c, tests/tconst_log2.c, tests/tconst_pi.c, tests/tcopysign.c, tests/tcos.c, tests/tcosh.c, tests/tcot.c, tests/tcoth.c, tests/tcsc.c, tests/tcsch.c, tests/tdim.c, tests/tdiv.c, tests/tdiv_ui.c, tests/teint.c, tests/teq.c, tests/terf.c, tests/tests.c, tests/texceptions.c, tests/texp.c, tests/texp2.c, tests/texpm1.c, tests/tfactorial.c, tests/tfits.c, tests/tfma.c, tests/tfrac.c, tests/tgamma.c, tests/tgeneric.c, tests/tgeneric_ui.c, tests/tget_d.c, tests/tget_d_2exp.c, tests/tget_f.c, tests/tget_sj.c, tests/tget_str.c, tests/tget_z.c, tests/tgmpop.c, tests/thyperbolic.c, tests/thypot.c, tests/tinits.c, tests/tinp_str.c, tests/tisnan.c, tests/tlog.c, tests/tlog10.c, tests/tlog1p.c, tests/tlog2.c, tests/tminmax.c, tests/tmul.c, tests/tmul_2exp.c, tests/tmul_ui.c, tests/tnext.c, tests/tout_str.c, tests/toutimpl.c, tests/tpow.c, tests/tpow3.c, tests/tpow_z.c, tests/trandom.c, tests/trint.c, tests/troot.c, tests/tround_prec.c, tests/tsec.c, tests/tsech.c, tests/tset.c, tests/tset_d.c, tests/tset_exp.c, tests/tset_f.c, tests/tset_ld.c, tests/tset_q.c, tests/tset_si.c, tests/tset_sj.c, tests/tset_str.c, tests/tset_z.c, tests/tsgn.c, tests/tsi_op.c, tests/tsin.c, tests/tsin_cos.c, tests/tsinh.c, tests/tsqr.c, tests/tsqrt.c, tests/tsqrt_ui.c, tests/tstrtofr.c, tests/tsub.c, tests/tsub1sp.c, tests/tsub_ui.c, tests/tsum.c, tests/tswap.c, tests/ttan.c, tests/ttanh.c, tests/ttrunc.c, tests/tui_div.c, tests/tui_pow.c, tests/tui_sub.c, tests/tversion.c, tests/tzeta.c, tuneup.c, uceil_exp2.c, uceil_log2.c, ufloor_log2.c, ui_div.c, ui_pow.c, ui_pow_ui.c, ui_sub.c, urandomb.c, version.c, volatile.c, zeta.c, abort_prec_max.c, acos.c, acosh.c, add.c, add1.c, add1sp.c, add_one_ulp.c, add_ui.c, agm.c, asin.c, asinh.c, atan.c, atan2.c, atanh.c, cache.c, cbrt.c, check.c, clear.c, clears.c, cmp.c, cmp2.c, cmp_abs.c, cmp_d.c, cmp_ld.c, cmp_si.c, cmp_ui.c, comparisons.c, const_catalan.c, const_euler.c, const_log2.c, const_pi.c, constant.c, copysign.c, cos.c, cosh.c, cot.c, coth.c, csc.c, csch.c, dim.c, div.c, div_2exp.c, div_2si.c, div_2ui.c, div_ui.c, dump.c, eint.c, eq.c, erf.c, erfc.c, exceptions.c, exp.c, exp10.c, exp2.c, exp3.c, exp_2.c, expm1.c, extract.c, factorial.c, fits_intmax.c, fits_s.h, fits_sint.c, fits_slong.c, fits_sshort.c, fits_u.h, fits_uint.c, fits_uintmax.c, fits_ulong.c, fits_ushort.c, fma.c, frac.c, free_cache.c, gamma.c, gen_inverse.h, generic.c, get_d.c, get_exp.c, get_f.c, get_ld.c, get_si.c, get_sj.c, get_str.c, get_ui.c, get_uj.c, get_z.c, get_z_exp.c, gmp_op.c, hypot.c, init.c, init2.c, inits.c, inits2.c, inp_str.c, int_ceil_log2.c, isinf.c, isinteger.c, isnan.c, isnum.c, isqrt.c, iszero.c, log.c, log10.c, log1p.c, log2.c, logging.c, minmax.c, mp_clz_tab.c, mpf2mpfr.h, mpfr-gmp.c, mpfr-gmp.h, mpfr-impl.h, mpfr-longlong.h, mpfr-test.h, mpfr.h, mpn_exp.c, mul.c, mul_2exp.c, mul_2si.c, mul_2ui.c:
+	Change the address of the FSF.
+
+	* gamma.c:
+	Optimize it a few by avoiding calling fac_ui for each iteration
+	of the main loop.
+
+	* zeta.c: Reduce # of vars inside the main loop.
+	Use GROUP function.
+	Improve overflow problems (Use of int instead of mp_prec_t).
+
+	* gamma.c:
+	Improve efficiency by removing 2 variables (Loop uses only 4 vars).
+	Use GROUP.
+
+	* Makefile.am, abort_prec_max.c, cos.c, cosh.c, sinh.c, tan.c, tanh.c:
+	Add support for MPFR_GROUP functions.
+
+	* mpfr-impl.h:
+	Add attribute const and noreturn for function (via macros).
+	Add new macros GROUP_INIT_6 and GROUP_REPREC_6 for zeta and gamma.
+
+2005-06-02  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* TODO: added missing functions from gnumeric
+
+2005-06-02  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* TODO: Update stack-interface.
+	Remove round_near_x item.
+	Add new functions to implement.
+	Reformat file.
+
+	* tests/tconst_pi.c: Fix input precision of mp_prec_t.
+	May be outside 'int' range. So it uses 'long' instead and
+	a proper check.
+
+2005-05-25  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* README.dev: Added coding recommendations concerning C++ compilers.
+
+2005-05-23  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* mpfr-impl.h: Final version of MPFR_GROUP macros.
+
+	* strtofr.c, tests/tstrtofr.c: Improve coverage test.
+
+2005-05-20  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* exp_2.c: Remove variable t which wasn't used!
+
+2005-05-18  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* mul_ui.c, round_prec.c, set_f.c, sqr.c, sqrt.c, strtofr.c, sub1.c, sub1sp.c, sum.c, tests/tsum.c, tuneup.c, add1.c, add1sp.c, agm.c, cos.c, div-short.c, div.c, div_ui.c, exp_2.c, generic.c, get_str.c, init2.c, log.c, mpfr-impl.h, mpn_exp.c, mul.c:
+	Replace TMP_ALLOC by MPFR_TMP_ALLOC
+	Replace TMP_DECL by MPFR_TMP_DECL
+	Replace TMP_MARK by MPFR_TMP_MARK
+	Replace TMP_FREE by MPFR_TMP_FREE
+	Add support for GMP's TMP_SALLOC.
+
+	* pow.c: New way of handling exact value.
+	Fix bug of wrong rounding and wrong ternary value if the power
+	is exact, but at an upper precision than the working precision.
+	Now it computes the power exactly if it detects it is exact.
+
+	* mpfr.texi: Precise that 1 is not the only value.
+
+2005-05-18  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* mpfr.texi: an 1 -> a 1.
+
+2005-05-18  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* mpfr.texi: Add a note about special case 1
+
+	* pow.c: Add assertions
+	Remove useless function is_odd_even.
+
+	* pow.c:
+	Fix bug: returning 1 didn't take the rounding mode into account.
+	Simplify dependencies of mpfr_pow.
+
+	* expm1.c, tests/texpm1.c: Fix bug of overflow
+	Fix bug of wrong ternary value in case of overflow
+	Add test cases.
+
+	* cosh.c, tests/tcosh.c: Fix bug of overflow.
+	Fix bug of ternary value in case of overflow.
+
+	* tanh.c: Clean up previous patch.
+
+	* sinh.c, tests/tsinh.c: Fix bug of overflow.
+	Fix bug of ternary value in case of overflow.
+	Still some bugs...
+
+2005-05-17  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* tanh.c, tests/ttanh.c: Rewrite the way of handling overflow.
+	Fix bug due to overflow.
+	Fix bug due to wrong ternary value.
+
+	* mpfr-impl.h: Typo.
+
+	* sinh.c, tests/tsinh.c: Fix bug of overflow.
+	Still a problem if exp(x) is near the limit of EMAX_MAX.
+
+	* mpfr-impl.h: Add new macro MPFR_SAVE_DECL_UPDATE_FLAGS
+
+	* sinh.c, tests/tsinh.c:
+	Improve way of handling overflow (still not perfect but far better).
+	Improve coverage test.
+
+	* get_si.c, tests/tset_si.c: Improve coverage test.
+
+2005-05-17  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* hypot.c, mpfr.texi, tests/thypot.c:
+	hypot(±oo, NaN) now returns +oo, as in ISO C99 (wasn't documented).
+
+2005-05-17  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* tests/tasin.c: Improve coverage test.
+
+	* asin.c: Remove useless test.
+
+	* tests/tpow.c: Improve coverage test.
+
+	* set_z.c, tests/tmul.c, tests/tset_z.c: Improve coverage
+
+	* tests/tcmpabs.c: Improve coverage test.
+
+	* coverage: Add CFLAGS -g.
+
+	* pow.c: Clean up
+
+	* tests/tfits.c: Improve coverage tests.
+
+	* tests/tgmpop.c: Improve coverage test.
+
+	* tanh.c: Special a condition by the simplified one.
+
+	* tests/tcmp_ui.c, tests/tconst_catalan.c, tests/tconst_euler.c, tests/tconst_log2.c, tests/tconst_pi.c, tests/tget_d.c:
+	Improve coverage test (Forget to test tiny functions).
+
+	* coverage: Typo
+
+	* README.dev, coverage: Add 'coverage' script.
+
+	* constant.c: Add 'static'
+
+	* cos.c: Reformating code.
+	Fix potential (?) overflow for very large precision.
+	Various tiny optimizations
+	Improve the initial estimation of the needed precision.
+
+	* Makefile.am, constant.c, log.c, mpfr-impl.h:
+	Extract constants (__gmpfr_one, two and four) from log.c to constant.c
+	Fix bug in MPFR_SET_ONE.
+
+	* sin.c: Remove a space.
+
+2005-05-16  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* NEWS: Typography + spelling.
+
+	* NEWS: Note that mpfr_out_str has slightly changed.
+
+2005-05-16  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* TODO: asin, atan, atanh are not slow anymore for small input.
+	Remove it in the TODO.
+
+2005-05-14  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* atanh.c: Fixed a bug due to a typo on a variable name. It produced a
+	segmentation fault in the tests on Linux/ppc (uninitialized data were
+	read), not always reproducible when stepping with gdb.
+
+	* mpfr.texi: Ported description of mpfr_hypot to the 2.1 branch.
+
+2005-05-13  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* expm1.c, log1p.c: Add support for MPFR_FAST_COMPUTE_IS_SMALL_INPUT
+
+	* asin.c, asinh.c, atan.c, atanh.c, sin.c, sinh.c, tan.c, tanh.c:
+	Add support for FAST_COMPUTE_IS_SMALL_INPUT.
+
+	* atan.c: Add round_near_x support for small arguments.
+
+	* Makefile.am, round_near_x.c:
+	Add new internal function mpfr_round_near_x.
+
+2005-05-13  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* mpfr.texi: added missing documentation for mpfr_hypot
+
+2005-05-13  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* tests/texceptions.c: Add a \n for all error strings.
+
+	* version.c: Fix copyright date.
+
+	* mpfr-impl.h, mpfr.h, tests/tconst_pi.c, tests/texp.c:
+	Fix some problems when you define mpfr_prec_t to be an unsigned short.
+	Now all tests passed when mpfr_prec_t is defined to be an unsigned short
+	on a 32 bit CPU!
+
+2005-05-12  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* hypot.c: Replaced -2 by -MPFR_EVEN_INEX. [2.1 branch]
+
+	* hypot.c: Added a comment about the bug fix. [2.1 branch]
+
+	* BUGS, hypot.c, tests/thypot.c:
+	Fixed bug in mpfr_hypot + testcase. [2.1 branch]
+
+	* exp_2.c: Detect/avoid potential integer overflows.
+
+2005-05-12  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* tests/texp.c: Fix typos.
+
+2005-05-11  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* tests/texp.c, exp3.c: Same patch for exp_3.
+
+	* exp.c, exp_2.c, tests/texp.c:
+	Fix bug when exp(x) is near the limit of an overflow or an
+	underflow (mpfr_exp_2 didn't allow an overflow/underflow in its
+	internal loop).
+	Add corresponding test case. exp_3 may need similar patchs.
+
+2005-05-11  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* ChangeLog:
+	Update (with reformatting so that the logs are readable on 80 columns).
+
 2005-05-11  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
 
 	* mul.c, tests/tmul.c: Fix bug due to wrong assertion.
