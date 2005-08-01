@@ -26,16 +26,16 @@ MA 02110-1301, USA. */
    In such a case, this table helps to conclude what to do (y positive):
      Rounding Bit |  Sticky Bit | inexact  | Action    | new inexact
      0            |   ?         | ?        | Trunc     | sticky
-     1            |   0         | -1       | Trunc     | 
-     1            |   0         |  0       | Trunc if even | 
-     1            |   0         |  1       | AddOneUlp |  
-     1            |   1         |  ?       | AddOneUlp |  
+     1            |   0         | -1       | Trunc     |
+     1            |   0         |  0       | Trunc if even |
+     1            |   0         |  1       | AddOneUlp |
+     1            |   1         |  ?       | AddOneUlp |
 
    For other rounding mode, there isn't such a problem.
    Just round it again and merge the inexact flags.
 */
 
-int 
+int
 mpfr_subnormalize (mpfr_ptr y, int old_inexact, mp_rnd_t rnd)
 {
   int inexact = 0;
@@ -58,7 +58,7 @@ mpfr_subnormalize (mpfr_ptr y, int old_inexact, mp_rnd_t rnd)
 	inexact = old_inexact;
       /* We keep the same sign for y.
          Assuming Y is the real value and y the approximation
-	 and since y is not a power of 2:  0.5*2^emin < Y < 1*2^emin  
+	 and since y is not a power of 2:  0.5*2^emin < Y < 1*2^emin
          We also know the direction of the error thanks to inexact flag */
       else if (rnd == GMP_RNDN)
 	{
@@ -81,9 +81,9 @@ mpfr_subnormalize (mpfr_ptr y, int old_inexact, mp_rnd_t rnd)
 	  if (old_inexact * MPFR_SIGN (y) < 0)
 	    goto set_min;
 	  /* If inexact != 0, return 0.1*2^emin+1.
-	     Otherwise, rounding bit = 1, sticky bit = 0 and inexact = 0 
-	     So we have 0.1100000000000000000000000*2^emin exactly!!! 
-	     we choose to return 0.1*2^emin+1 which minimizes the relative 
+	     Otherwise, rounding bit = 1, sticky bit = 0 and inexact = 0
+	     So we have 0.1100000000000000000000000*2^emin exactly!!!
+	     we choose to return 0.1*2^emin+1 which minimizes the relative
 	     error. */
 	  goto set_min_p1;
 	}
@@ -114,9 +114,9 @@ mpfr_subnormalize (mpfr_ptr y, int old_inexact, mp_rnd_t rnd)
       sign = MPFR_SIGN (y);
       MPFR_SET_EXP (dest, MPFR_GET_EXP (y));
       MPFR_SET_SIGN (dest, sign);
-      MPFR_RNDRAW_EVEN (inexact, dest, 
-			MPFR_MANT (y), MPFR_PREC (y), rnd, sign, 
-			MPFR_SET_EXP (dest, MPFR_GET_EXP (dest)+1));      
+      MPFR_RNDRAW_EVEN (inexact, dest,
+			MPFR_MANT (y), MPFR_PREC (y), rnd, sign,
+			MPFR_SET_EXP (dest, MPFR_GET_EXP (dest)+1));
       if (MPFR_LIKELY (old_inexact != 0))
 	{
 	  if (MPFR_UNLIKELY(rnd==GMP_RNDN && (inexact == MPFR_EVEN_INEX
