@@ -293,39 +293,6 @@ Miscellaneous:
       - The rounded value is the same.
   It should be a complement to tgeneric tests.
 
-- Stack interface:
-size_t mpfr_stack_get_size (mp_prec_t prec);
- Return the needed size in bytes to store the mantissa of a FP number
- of precision prec.
-void mpfr_stack_init (void *mantissa, mp_prec_t prec)
- Initialize a mantissa of precision prec.
- `mantissa' must be an area of `mpfr_stack_get_size (prec)' bytes at least
-  and be suitably aligned for any kind of variable (like `malloc').
-void mpfr_stack_init_set (mpfr_t x, int kind, mp_exp_t exp,
-	  	    mp_prec_t prec, void *mantissa)
- Perform a dummy initialization of a mpfr_t and set it to:
-   if `ABS(kind) == 0', `x' is set to NAN.
-   if `ABS(kind) == 1', `x' is set to INF of sign `sign(kind)'.
-   if `ABS(kind) == 2', `x' is set to ZERO of sign `sign(kind)'.
-   if `ABS(kind) == 3', `x' is set to a regular number: 
-         `x = sign(kind)*mantissa*2^exp'
- In all cases, it uses `mantissa' directly for further computing
- involving `x'. It won't allocate anything.
- A FP number initialized with this function can't be resized using
- mpfr_set_prec, or cleared using mpfr_clear!
- Note: we may replace 0,1,2 and 3 with macros.
-int mpfr_stack_get_kind (mpfr_t x);
- Return the current `kind' of a mpfr_t as used by `mpfr_stack_init_set'.
-void *mpfr_stack_get_mantissa (mpfr_t x);
- Return a pointer to the mantissa used by a mpfr_t initialized with 
- mpfr_stack_init_set.
-void mpfr_stack_move (mpfr_t x, void *new_position);
- Inform MPFR that the mantissa has moved due to a garbage collect
- and update its position. The application still has to move 
- the mantissa and the mpfr_t itself. Another solution is to reinitialize
- the FP number using mpfr_stack_init_set.
-
-
 ##############################################################################
 Portability:
 ##############################################################################
