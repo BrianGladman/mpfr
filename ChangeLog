@@ -1,4 +1,22 @@
-2005-07-29  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+2005-08-03  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* NEWS: Update. [2.1 branch]
+
+2005-08-02  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* TODO: Remove "Stack Interface" from TODO.
+
+2005-08-01  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* tests/tsubnormal.c, subnormal.c, tests/Makefile.am:
+	Add test file for mpfr_subnormalize
+
+	* mpfr.texi: Add documentation for MPFR stack interface
+
+	* tests/tstckintc.c:
+	Add a new test to avoid potential problems if mp_limb_t != long.
+
+2005-08-01  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
 
 	* set_ld.c:
 	Forgot to keep the old value of d when computations need to be redone.
