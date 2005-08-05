@@ -556,14 +556,14 @@ __MPFR_DECLSPEC int  mpfr_subnormalize _MPFR_PROTO ((mpfr_ptr, int,
 __MPFR_DECLSPEC int  mpfr_strtofr _MPFR_PROTO ((mpfr_ptr, __gmp_const char *,
 						char **, int, mpfr_rnd_t));
 
-__MPFR_DECLSPEC size_t mpfr_stack_get_size   _MPFR_PROTO ((mp_prec_t));
-__MPFR_DECLSPEC void   mpfr_stack_init       _MPFR_PROTO ((void *, mp_prec_t));
-__MPFR_DECLSPEC void * mpfr_stack_get_mantissa _MPFR_PROTO ((mpfr_srcptr));
-__MPFR_DECLSPEC mp_exp_t mpfr_stack_get_exp  _MPFR_PROTO ((mpfr_srcptr));
-__MPFR_DECLSPEC void   mpfr_stack_move       _MPFR_PROTO ((mpfr_ptr, void *));
-__MPFR_DECLSPEC void   mpfr_stack_init_set   _MPFR_PROTO ((mpfr_ptr, int,
+__MPFR_DECLSPEC size_t mpfr_custom_get_size   _MPFR_PROTO ((mp_prec_t));
+__MPFR_DECLSPEC void   mpfr_custom_init       _MPFR_PROTO ((void *, mp_prec_t));
+__MPFR_DECLSPEC void * mpfr_custom_get_mantissa _MPFR_PROTO ((mpfr_srcptr));
+__MPFR_DECLSPEC mp_exp_t mpfr_custom_get_exp  _MPFR_PROTO ((mpfr_srcptr));
+__MPFR_DECLSPEC void   mpfr_custom_move       _MPFR_PROTO ((mpfr_ptr, void *));
+__MPFR_DECLSPEC void   mpfr_custom_init_set   _MPFR_PROTO ((mpfr_ptr, int,
                                                mp_exp_t, mp_prec_t, void *));
-__MPFR_DECLSPEC int    mpfr_stack_get_kind   _MPFR_PROTO ((mpfr_srcptr));
+__MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
 
 #if defined (__cplusplus)
 }
@@ -644,13 +644,13 @@ __MPFR_DECLSPEC int    mpfr_stack_get_kind   _MPFR_PROTO ((mpfr_srcptr));
 #endif
 
 /* Macro version of mpfr_stack interface for fast access */
-#define mpfr_stack_get_size(p) ((size_t)                            \
+#define mpfr_custom_get_size(p) ((size_t)                            \
        (((p)+GMP_NUMB_BITS-1)/GMP_NUMB_BITS*sizeof (mp_limb_t)))
-#define mpfr_stack_init(m,p) do {} while (0)
-#define mpfr_stack_get_mantissa(x) ((void*)((x)->_mpfr_d))
-#define mpfr_stack_get_exp(x) ((x)->_mpfr_exp)
-#define mpfr_stack_move(x,m) do { ((x)->_mpfr_d = (mp_limb_t*)(m)); } while (0)
-#define mpfr_stack_init_set(x,k,e,p,m) do {                    \
+#define mpfr_custom_init(m,p) do {} while (0)
+#define mpfr_custom_get_mantissa(x) ((void*)((x)->_mpfr_d))
+#define mpfr_custom_get_exp(x) ((x)->_mpfr_exp)
+#define mpfr_custom_move(x,m) do { ((x)->_mpfr_d = (mp_limb_t*)(m)); } while (0)
+#define mpfr_custom_init_set(x,k,e,p,m) do {                    \
   mpfr_ptr _x = (x);                                           \
   mp_exp_t _e;                                                 \
   mpfr_kind_t _t;                                              \
@@ -671,7 +671,7 @@ __MPFR_DECLSPEC int    mpfr_stack_get_kind   _MPFR_PROTO ((mpfr_srcptr));
   _x->_mpfr_exp  = _e;                                         \
   _x->_mpfr_d    = (mp_limb_t*) (m);                           \
  } while (0)
-#define mpfr_stack_get_kind(x)                                              \
+#define mpfr_custom_get_kind(x)                                              \
   ( (x)->_mpfr_exp >  __MPFR_EXP_INF ? (int)MPFR_REGULAR_KIND*MPFR_SIGN (x) \
   : (x)->_mpfr_exp == __MPFR_EXP_INF ? (int)MPFR_INF_KIND*MPFR_SIGN (x)     \
   : (x)->_mpfr_exp == __MPFR_EXP_NAN ? (int)MPFR_NAN_KIND                   \

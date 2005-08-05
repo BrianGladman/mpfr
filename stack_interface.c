@@ -21,44 +21,44 @@ MA 02110-1301, USA. */
 
 #include "mpfr-impl.h"
 
-#undef mpfr_stack_get_size
+#undef mpfr_custom_get_size
 size_t
-mpfr_stack_get_size (mp_prec_t prec)
+mpfr_custom_get_size (mp_prec_t prec)
 {
   return (prec + BITS_PER_MP_LIMB -1) / BITS_PER_MP_LIMB * BYTES_PER_MP_LIMB;
 }
 
-#undef mpfr_stack_init
+#undef mpfr_custom_init
 void
-mpfr_stack_init (void *mantissa, mp_prec_t prec)
+mpfr_custom_init (void *mantissa, mp_prec_t prec)
 {
   return ;
 }
 
-#undef mpfr_stack_get_mantissa
+#undef mpfr_custom_get_mantissa
 void *
-mpfr_stack_get_mantissa (mpfr_srcptr x)
+mpfr_custom_get_mantissa (mpfr_srcptr x)
 {
   return (void*) MPFR_MANT (x);
 }
 
-#undef mpfr_stack_get_exp
+#undef mpfr_custom_get_exp
 mp_exp_t
-mpfr_stack_get_exp (mpfr_srcptr x)
+mpfr_custom_get_exp (mpfr_srcptr x)
 {
   return MPFR_EXP (x);
 }
 
-#undef mpfr_stack_move
+#undef mpfr_custom_move
 void
-mpfr_stack_move (mpfr_ptr x, void *new_position)
+mpfr_custom_move (mpfr_ptr x, void *new_position)
 {
   MPFR_MANT (x) = (mp_limb_t *) new_position;
 }
 
-#undef mpfr_stack_init_set
+#undef mpfr_custom_init_set
 void
-mpfr_stack_init_set (mpfr_ptr x, int kind, mp_exp_t exp,
+mpfr_custom_init_set (mpfr_ptr x, int kind, mp_exp_t exp,
                      mp_prec_t prec, void *mantissa)
 {
   mpfr_kind_t t;
@@ -87,9 +87,9 @@ mpfr_stack_init_set (mpfr_ptr x, int kind, mp_exp_t exp,
   return;
 }
 
-#undef mpfr_stack_get_kind
+#undef mpfr_custom_get_kind
 int
-mpfr_stack_get_kind (mpfr_srcptr x)
+mpfr_custom_get_kind (mpfr_srcptr x)
 {
   if (MPFR_LIKELY (!MPFR_IS_SINGULAR (x)))
     return (int) MPFR_REGULAR_KIND * MPFR_INT_SIGN (x);

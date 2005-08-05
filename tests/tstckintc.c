@@ -1,4 +1,4 @@
-/* Test file for mpfr_stack_*
+/* Test file for mpfr_custom_*
 
 Copyright 2005 Free Software Foundation.
 
@@ -52,9 +52,9 @@ static mpfr_ptr
 new_mpfr (mp_prec_t p)
 {
   mpfr_ptr x = (mpfr_ptr) new (sizeof (mpfr_t));
-  void *mantissa = new (mpfr_stack_get_size (p));
-  mpfr_stack_init (mantissa, p);
-  mpfr_stack_init_set (x, 0, 0, p, mantissa);
+  void *mantissa = new (mpfr_custom_get_size (p));
+  mpfr_custom_init (mantissa, p);
+  mpfr_custom_init_set (x, 0, 0, p, mantissa);
   return x;
 }
 
@@ -62,14 +62,14 @@ new_mpfr (mp_prec_t p)
 static mpfr_ptr
 return_mpfr (mpfr_ptr x, void *old_stack)
 {
-  void *mantissa       = mpfr_stack_get_mantissa (x);
-  size_t size_mantissa = mpfr_stack_get_size (mpfr_get_prec (x));
+  void *mantissa       = mpfr_custom_get_mantissa (x);
+  size_t size_mantissa = mpfr_custom_get_size (mpfr_get_prec (x));
   mpfr_ptr newx;
 
   memmove (old_stack, x, sizeof (mpfr_t));
   memmove (old_stack + ALIGNED (sizeof (mpfr_t)), mantissa, size_mantissa);
   newx = (mpfr_ptr) old_stack;
-  mpfr_stack_move (newx, old_stack + ALIGNED (sizeof (mpfr_t)));
+  mpfr_custom_move (newx, old_stack + ALIGNED (sizeof (mpfr_t)));
   stack = old_stack + ALIGNED (sizeof (mpfr_t)) + ALIGNED (size_mantissa);
   return newx;
 }
@@ -102,9 +102,9 @@ dummy_new (void)
 {
   long *r;
 
-  r = new (ALIGNED (2*sizeof (long)) + ALIGNED (mpfr_stack_get_size (p)));
+  r = new (ALIGNED (2*sizeof (long)) + ALIGNED (mpfr_custom_get_size (p)));
   MPFR_ASSERTN (r != NULL);
-  (mpfr_stack_init) (&r[2], p);
+  (mpfr_custom_init) (&r[2], p);
   r[0] = (int) MPFR_NAN_KIND;
   r[1] = 0;
   return r;
@@ -115,10 +115,10 @@ dummy_set_si (long si)
 {
   mpfr_t x;
   long * r = dummy_new ();
-  (mpfr_stack_init_set) (x, 0, 0, p, &r[2]);
+  (mpfr_custom_init_set) (x, 0, 0, p, &r[2]);
   mpfr_set_si (x, si, GMP_RNDN);
-  r[0] = mpfr_stack_get_kind (x);
-  r[1] = mpfr_stack_get_exp (x);
+  r[0] = mpfr_custom_get_kind (x);
+  r[1] = mpfr_custom_get_exp (x);
   return r;
 }
 
@@ -127,12 +127,12 @@ dummy_add (long *a, long *b)
 {
   mpfr_t x, y, z;
   long *r = dummy_new ();
-  mpfr_stack_init_set (x, 0, 0, p, &r[2]);
-  (mpfr_stack_init_set) (y, a[0], a[1], p, &a[2]);
-  mpfr_stack_init_set (z, b[0], b[1], p, &b[2]);
+  mpfr_custom_init_set (x, 0, 0, p, &r[2]);
+  (mpfr_custom_init_set) (y, a[0], a[1], p, &a[2]);
+  mpfr_custom_init_set (z, b[0], b[1], p, &b[2]);
   mpfr_add (x, y, z, GMP_RNDN);
-  r[0] = (mpfr_stack_get_kind) (x);
-  r[1] = (mpfr_stack_get_exp) (x);
+  r[0] = (mpfr_custom_get_kind) (x);
+  r[1] = (mpfr_custom_get_exp) (x);
   return r;
 }
 
@@ -140,7 +140,7 @@ static long *
 dummy_compact (long *r, void *org_stack)
 {
   memmove (org_stack, r,
-           ALIGNED (2*sizeof (long)) + ALIGNED ((mpfr_stack_get_size) (p)));
+           ALIGNED (2*sizeof (long)) + ALIGNED ((mpfr_custom_get_size) (p)));
   return org_stack;
 }
 
@@ -155,7 +155,7 @@ test2 (void)
   b = dummy_set_si (17);
   c = dummy_add (a, b);
   c = dummy_compact (c, org);
-  (mpfr_stack_init_set) (x, c[0], c[1], p, &c[2]);
+  (mpfr_custom_init_set) (x, c[0], c[1], p, &c[2]);
   if (c != a || mpfr_cmp_ui (x, 59) != 0)
     {
       printf ("Compact (2) failed! c=%p a=%p\n", c, a);
