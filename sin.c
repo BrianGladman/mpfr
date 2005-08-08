@@ -162,7 +162,10 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	{
 	  /* the absolute error on c is at most 2^(3-m-EXP(c)) */
 	  e = 2 * MPFR_GET_EXP (c) + m - 3;
-	  if (mpfr_can_round (c, e, GMP_RNDZ, rnd_mode, precy))
+	  if (mpfr_can_round (c, e, GMP_RNDZ, GMP_RNDZ,
+                              precy + (rnd_mode == GMP_RNDN)))
+            /* WARNING: need one more bit for rounding to nearest,
+               to be able to get the inexact flag correct */
 	    break;
 
 	  /* check for huge cancellation (Near 0) */

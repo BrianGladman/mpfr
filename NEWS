@@ -38,6 +38,7 @@ Changes from version 2.1.1 to version 2.2.0:
   features.
 - Thread safe (if built with --enable-thread-safe).
 - Logging facility.
+- Change in the semantics of mpfr_out_str/mpfr_get_str when n_digits=0.
 
 Changes from version 2.1.0 to version 2.1.1:
 - Better way to detect the GMP library.

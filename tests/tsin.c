@@ -21,6 +21,7 @@ MA 02110-1301, USA. */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h> /* for strlen */
 
 #include "mpfr-test.h"
 
@@ -185,7 +186,7 @@ check_regression ()
   mp_prec_t p;
   int i;
 
-  p = strlen (xs) -2 - 3;
+  p = strlen (xs) - 2 - 3;
   mpfr_inits2 (p, x, y, NULL);
 
   mpfr_set_str (x, xs, 2, GMP_RNDN);
@@ -208,6 +209,7 @@ main (int argc, char *argv[])
 
   tests_start_mpfr ();
 
+  check_regression ();
   check_nans ();
 
   /* worst case from PhD thesis of Vincent Lefe`vre: x=8980155785351021/2^54 */
@@ -280,7 +282,6 @@ main (int argc, char *argv[])
 
   test_generic (2, 100, 20);
   test_sign ();
-  check_regression ();
 
   tests_end_mpfr ();
   return 0;
