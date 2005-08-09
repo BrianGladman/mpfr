@@ -129,7 +129,7 @@ typedef struct __gmpfr_cache_s mpfr_cache_t[1];
 /* Stack interface */
 typedef enum {
   MPFR_NAN_KIND = 0,
-  MPFR_INF_KIND = 1, MPFR_ZERO_KIND = 2, MPFR_REGULAR_KIND = 3,
+  MPFR_INF_KIND = 1, MPFR_ZERO_KIND = 2, MPFR_REGULAR_KIND = 3
 } mpfr_kind_t;
 
 /* GMP defines:

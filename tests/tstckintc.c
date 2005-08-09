@@ -60,7 +60,7 @@ new_mpfr (mp_prec_t p)
 
  /* Garbage the stack by keeping only x  */
 static mpfr_ptr
-return_mpfr (mpfr_ptr x, void *old_stack)
+return_mpfr (mpfr_ptr x, char *old_stack)
 {
   void *mantissa       = mpfr_custom_get_mantissa (x);
   size_t size_mantissa = mpfr_custom_get_size (mpfr_get_prec (x));
@@ -78,7 +78,7 @@ static void
 test1 (void)
 {
   mpfr_ptr x, y;
-  void *org;
+  char *org;
 
   org = stack;
   x = new_mpfr (p);
@@ -137,18 +137,18 @@ dummy_add (long *a, long *b)
 }
 
 static long *
-dummy_compact (long *r, void *org_stack)
+dummy_compact (long *r, char *org_stack)
 {
   memmove (org_stack, r,
            ALIGNED (2*sizeof (long)) + ALIGNED ((mpfr_custom_get_size) (p)));
-  return org_stack;
+  return (long *) org_stack;
 }
 
 static void
 test2 (void)
 {
   mpfr_t x;
-  void *org = stack;
+  char *org = stack;
   long *a, *b, *c;
 
   a = dummy_set_si (42);
