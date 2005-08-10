@@ -762,63 +762,63 @@ is a valid number in base @var{base}; otherwise it returns @minus{}1, and
 
 @deftypefun int mpfr_strtofr (mpfr_t @var{rop}, const char *@var{nptr}, char **@var{endptr}, int @var{base}, mp_rnd_t @var{rnd})
 
- Read a floating-point number from a string @var{nptr} in base @var{base},
- rounded in the direction @var{rnd}. If successful, the
- result is stored in @var{rop} and @code{*@var{endptr}} points to the
- character just after those parsed. If @var{str} doesn't start with a
- valid number then @var{rop} is set to zero and the value of @var{nptr}
- is stored in the location referenced by @var{endptr}.
+Read a floating-point number from a string @var{nptr} in base @var{base},
+rounded in the direction @var{rnd}. If successful, the
+result is stored in @var{rop} and @code{*@var{endptr}} points to the
+character just after those parsed. If @var{str} doesn't start with a
+valid number then @var{rop} is set to zero and the value of @var{nptr}
+is stored in the location referenced by @var{endptr}.
 
- Parsing follows the standard C @code{strtod} function.  This means optional
- leading whitespace, an optional @code{+} or @code{-}, mantissa digits, and an
- optional exponent consisting of an @code{e} or @code{E} (if
- @math{@var{base} @le{} 10}) or @code{@@}, an optional sign, and digits.
- A hex mantissa can be
- given with a leading @code{0x} or @code{0X}, in which case @code{p} or
- @code{P} may introduce an optional binary exponent. A binary
- mantissa can be given with a leading @code{0b} or @code{0B}, in which case
- @code{e}, @code{E}, @code{p}, @code{P} or @code{@@} may introduce the
- binary exponent.
+Parsing follows the standard C @code{strtod} function. This means optional
+leading whitespace, an optional @code{+} or @code{-}, mantissa digits, and an
+optional exponent consisting of an @code{e} or @code{E} (if
+@math{@var{base} @le{} 10}) or @code{@@}, an optional sign, and digits.
+A hex mantissa can be
+given with a leading @code{0x} or @code{0X}, in which case @code{p} or
+@code{P} may introduce an optional binary exponent. A binary
+mantissa can be given with a leading @code{0b} or @code{0B}, in which case
+@code{e}, @code{E}, @code{p}, @code{P} or @code{@@} may introduce the
+binary exponent.
 
- In addition, @code{infinity}, @code{inf} (if @math{@var{base} @le{} 10})
- or @code{@@inf@@} with an optional sign, or @code{nan},
- @code{nan(n-char-sequence)} (if @math{@var{base} @le{} 10}), @code{@@nan@@}
- or @code{@@nan@@(n-char-sequence)} all case insensitive (as Latin letters),
- can be given. A @code{n-char-sequence} is a non-empty string containing
- only digits, Latin letters and the underscore (0, 1, 2, ..., 9, a, b, ...,
- z, A, B, ..., Z, _).
+In addition, @code{infinity}, @code{inf} (if @math{@var{base} @le{} 10})
+or @code{@@inf@@} with an optional sign, or @code{nan},
+@code{nan(n-char-sequence)} (if @math{@var{base} @le{} 10}), @code{@@nan@@}
+or @code{@@nan@@(n-char-sequence)} all case insensitive (as Latin letters),
+can be given. A @code{n-char-sequence} is a non-empty string containing
+only digits, Latin letters and the underscore (0, 1, 2, ..., 9, a, b, ...,
+z, A, B, ..., Z, _).
 
- There must be at least one digit in the mantissa for the number to
- be valid.  If an exponent has no digits it's ignored and parsing
- stops after the mantissa.  If an @code{0x}, @code{0X}, @code{0b} or
- @code{0B} is not followed by hexadecimal/binary digits, parsing stops
- after the first @code{0}:
- the subject sequence  is  defined  as  the  longest  initial
- subsequence  of  the  input  string, starting with the first
- non-white-space character, that is  of  the  expected  form.
- The  subject  sequence  contains  no characters if the input
- string is not of the expected form.
+There must be at least one digit in the mantissa for the number to
+be valid. If an exponent has no digits it's ignored and parsing
+stops after the mantissa. If an @code{0x}, @code{0X}, @code{0b} or
+@code{0B} is not followed by hexadecimal/binary digits, parsing stops
+after the first @code{0}:
+the subject sequence is defined as the longest initial
+subsequence of the input string, starting with the first
+non-white-space character, that is of the expected form.
+The subject sequence contains no characters if the input
+string is not of the expected form.
 
- Note that in the hex format the exponent @code{P} represents a power of 2,
- whereas @code{@@} represents a power of the base (i.e. 16).
+Note that in the hex format the exponent @code{P} represents a power of 2,
+whereas @code{@@} represents a power of the base (i.e. 16).
 
- If the argument @var{base} is different from 0, it must be in the range 2
- to 36.
+If the argument @var{base} is different from 0, it must be in the range 2
+to 36.
 @c For bases up to 36,
- Case is ignored; uppercase and lowercase letters have the same
- value.
+Case is ignored; uppercase and lowercase letters have the same
+value.
 @c ; for bases 37 to 62, uppercase letters represent the usual
 @c  10..35, while lowercase letters represent 36..61.
 
- If @code{base} is 0, then it tries to identify the used base: if the
- mantissa begins with the @code{0x} prefix, it assumes that @var{base} is 16.
- If it begins with @code{0b}, it assumes that @var{base} is 2. Otherwise, it
- assumes it is 10.
+If @code{base} is 0, then it tries to identify the used base: if the
+mantissa begins with the @code{0x} prefix, it assumes that @var{base} is 16.
+If it begins with @code{0b}, it assumes that @var{base} is 2. Otherwise, it
+assumes it is 10.
 
- It returns a usual ternary value.
- If @var{endptr} is not a null pointer, a pointer to the character after
- the last character used in the conversion is stored in the location
- referenced by @var{endptr}.
+It returns a usual ternary value.
+If @var{endptr} is not a null pointer, a pointer to the character after
+the last character used in the conversion is stored in the location
+referenced by @var{endptr}.
 
 @end deftypefun
 
