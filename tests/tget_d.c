@@ -164,8 +164,26 @@ check_min(void)
 int
 main (void)
 {
+  int non_ieee_dbl = 0;
+
   tests_start_mpfr ();
   mpfr_test_init ();
+
+  if (FLT_RADIX != 2 || DBL_MANT_DIG != 53 ||
+      DBL_MIN_EXP != -1021 || DBL_MAX_EXP != 1024)
+    {
+      printf ("The type 'double' of your C implementation does not seem\n"
+              "to be in IEEE-754 double precision. We temporarily issue\n"
+              "this error to detect machines that need special testing.\n"
+              "If you have such a machine, please tell us. This error\n"
+              "should be removed in releases.\n");
+      printf ("FLT_RADIX    = %ld\n", (long) FLT_RADIX);
+      printf ("DBL_MANT_DIG = %ld\n", (long) DBL_MANT_DIG);
+      printf ("DBL_MIN_EXP  = %ld\n", (long) DBL_MIN_EXP);
+      printf ("DBL_MAX_EXP  = %ld\n", (long) DBL_MAX_EXP);
+      non_ieee_dbl = 1;
+      /* Let's do the other tests, to see if they pass or fail... */
+    }
 
   if (check_denorms ())
     exit (1);
@@ -173,6 +191,9 @@ main (void)
   check_inf_nan ();
   check_min();
   check_max();
+
+  if (non_ieee_dbl)
+    exit (1);
 
   tests_end_mpfr ();
   return 0;
