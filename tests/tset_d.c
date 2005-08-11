@@ -36,6 +36,32 @@ main (int argc, char *argv[])
   tests_start_mpfr ();
   mpfr_test_init ();
 
+#ifndef MPFR_DOUBLE_SPEC
+  printf ("Warning! The MPFR_DOUBLE_SPEC macro is not defined. This means\n"
+          "that you do not have a conforming C implementation and problems\n"
+          "may occur with conversions between MPFR numbers and standard\n"
+          "floating-point types. Please contact the MPFR team.\n");
+#elif MPFR_DOUBLE_SPEC == 0
+  /*
+  printf ("The type 'double' of your C implementation does not seem to\n"
+          "correspond to the IEEE-754 double precision. Though code has\n"
+          "been written to support such implementations, tests have been\n"
+          "done only on IEEE-754 double-precision implementations and\n"
+          "conversions between MPFR numbers and standard floating-point\n"
+          "types may be inaccurate. You may wish to contact the MPFR team\n"
+          "for further testing.\n");
+  */
+  printf ("The type 'double' of your C implementation does not seem to\n"
+          "correspond to the IEEE-754 double precision. Such particular\n"
+          "implementations are not supported yet, and conversions between\n"
+          "MPFR numbers and standard floating-point types may be very\n"
+          "inaccurate.\n");
+  printf ("FLT_RADIX    = %ld\n", (long) FLT_RADIX);
+  printf ("DBL_MANT_DIG = %ld\n", (long) DBL_MANT_DIG);
+  printf ("DBL_MIN_EXP  = %ld\n", (long) DBL_MIN_EXP);
+  printf ("DBL_MAX_EXP  = %ld\n", (long) DBL_MAX_EXP);
+#endif
+
   mpfr_init (x);
 
   d = 0.0;
@@ -168,7 +194,3 @@ main (int argc, char *argv[])
   tests_end_mpfr ();
   return 0;
 }
-
-
-
-

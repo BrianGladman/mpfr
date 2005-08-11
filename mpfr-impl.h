@@ -291,6 +291,21 @@ __MPFR_DECLSPEC extern MPFR_THREAD_ATTR const mpfr_t __gmpfr_four;
 #define LOG2 0.69314718055994528622 /* log(2) rounded to zero on 53 bits */
 #define ALPHA 4.3191365662914471407 /* a+2 = a*log(a), rounded to +infinity */
 
+/* MPFR_DOUBLE_SPEC = 1 if the C type 'double' corresponds to IEEE-754
+   double precision, 0 if it doesn't, and undefined if one doesn't know.
+   On all the tested machines, MPFR_DOUBLE_SPEC = 1. To have this macro
+   defined here, #include <float.h> is needed. If need be, other values
+   could be defined for other specs (once they are known). */
+#if !defined(MPFR_DOUBLE_SPEC) && defined(FLT_RADIX) && \
+    defined(DBL_MANT_DIG) && defined(DBL_MIN_EXP) && defined(DBL_MAX_EXP)
+# if FLT_RADIX == 2 && DBL_MANT_DIG == 53 && \
+     DBL_MIN_EXP == -1021 && DBL_MAX_EXP == 1024
+#  define MPFR_DOUBLE_SPEC 1
+# else
+#  define MPFR_DOUBLE_SPEC 0
+# endif
+#endif
+
 /* Debug non IEEE floats */
 #ifdef XDEBUG
 # undef _GMP_IEEE_FLOATS
