@@ -1,4 +1,4 @@
-AUTOMAKE_OPTIONS = gnu no-dependencies ansi2knr
+AUTOMAKE_OPTIONS = gnu ansi2knr
 
 SUBDIRS = tests
 EXTRA_DIST = BUGS FAQ.html VERSION generic.c round_raw_generic.c gen_inverse.h
