@@ -2737,6 +2737,19 @@ necessarily one of $2^{e_u-e_w}$ and $2^{e_v-e_w}$ is less than $1/2$,
 thus $\err(w)/\ulp(w) \le c_w + {\rm max}(k_u + k_v/2, k_u/2 + k_v)
         \le c_w + \frac{3}{2} {\rm max}(k_u, k_v)$.
 
+\subsection{The gamma function}
+
+The gamma function is computed by Spouge's method \cite{Spouge94}:
+\[
+\Gamma(z+1) \approx (z+a)^{z+1/2} e^{-z-a} \left[ \sqrt{2 \pi} +
+ \sum_{k=1}^{\lceil a \rceil - 1} \frac{c_k(a)}{z+k} \right], \]
+which is valid for $\Re(z+a) > 0$, where
+\[ c_k(a) = \frac{(-1)^{k-1}}{(k-1)!} (a-k)^{k-1/2} e^{a-k}. \]
+Here, we choose the free parameter $a$ to be an integer.
+
+According to \cite[Section 2.6]{Pugh04}, the relative error is bounded by
+$a^{-1/2} (2\pi)^{-a-1/2}$ for $a \ge 3$ and $\Re(z) \ge 0$.
+
 \section{Mathematical constants}
 
 \subsection{The constant $\pi$}

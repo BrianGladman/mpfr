@@ -202,15 +202,15 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_sqrt (tmp, tmp, GMP_RNDN); /* sqrt(2*Pi) */
       mpfr_add (GammaTrial, GammaTrial, tmp, GMP_RNDN);
       /* sqrt(2*Pi) +
-         sum((-1)^k*sqrt(A-k)*(A-k)^(k-1)*exp(A-k)/k!/(x+k),k=1..A-1) */
+         sum((-1)^k*sqrt(A-k)*(A-k)^(k-1)*exp(A-k)/k!/(xp+k),k=1..A-1) */
 
       mpfr_add_ui (tmp2, xp, A, GMP_RNDN); /* xp+A */
       mpfr_set_ui_2exp (tmp, 1, -1, GMP_RNDN); /* tmp= 1/2 */
-      mpfr_add (tmp, tmp, xp, GMP_RNDN); /* 1/2+xp+A */
-      mpfr_pow (tmp, tmp2, tmp, GMP_RNDN); /* (xp+A)^(1/2+xp+A) */
+      mpfr_add (tmp, tmp, xp, GMP_RNDN); /* xp+1/2 */
+      mpfr_pow (tmp, tmp2, tmp, GMP_RNDN); /* (xp+A)^(xp+1/2) */
       mpfr_mul (GammaTrial, GammaTrial, tmp, GMP_RNDN);
-      /* (xp+A)^(1/2+xp+A) * [sqrt(2*Pi) +
-           sum((-1)^k*sqrt(A-k)*(A-k)^(k-1)*exp(A-k)/k!/(x+k),k=1..A-1)] */
+      /* (xp+A)^(xp+1/2) * [sqrt(2*Pi) +
+           sum((-1)^k*(A-k)^(k-1/2)*exp(A-k)/k!/(xp+k),k=1..A-1)] */
 
       mpfr_neg (tmp, tmp2, GMP_RNDN); /* -(xp+A) */
       mpfr_exp (tmp, tmp, GMP_RNDN); /* exp(-xp-A) */
