@@ -32,7 +32,7 @@ MA 02110-1301, USA. */
 /* We use the reflection formula 
   Gamma(1+t) Gamma(1-t) = - Pi t / sin(Pi (1 + t))
   in order to treat the case x <= 1,
-  i.e. if x = 1-t, then Gamma(x) = -Pi*(1-x)/sin(Pi*(2-x))/GAMMA(2-x)
+  i.e. with x = 1-t, then Gamma(x) = -Pi*(1-x)/sin(Pi*(2-x))/GAMMA(2-x)
 */
 
 int
@@ -127,6 +127,12 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	 This strange formula is just to avoid any overflow */
       Prec += 16 + (A + (A + (A/100)*84 + ((A%100)*84)/100));
 
+      /* FIXME: for x near 0, we want 1-x to be exact since the error
+         term does not seem to take into account the possible cancellation
+         here. Warning: if x < 0, we need one more bit. */
+      if (MPFR_EXP(x) < 0 && Prec <= MPFR_PREC(x) - MPFR_EXP(x))
+        Prec = MPFR_PREC(x) - MPFR_EXP(x) + 1;
+
       MPFR_GROUP_REPREC_4 (group, Prec, xp, tmp, tmp2, GammaTrial);
 
       if (compared < 0)
@@ -140,7 +146,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
          it changes the order of the sum, which change the error
          analysis... Don't change it too much until we recompute
          the error analysis.
-         Another trick is to compute factoriel k in a MPFR rather than a MPZ
+         Another trick is to compute factorial k in a MPFR rather than a MPZ
          (Once again it changes the error analysis) */
 #ifdef USE_PRECOMPUTED_EXP
       tab = (*__gmp_allocate_func) (sizeof (mpfr_t)*(A-1));
@@ -155,27 +161,35 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
       for (k = 1; k < A; k++)
         {
-#ifndef USE_PRECOMPUTED_EXP
+#ifdef USE_PRECOMPUTED_EXP
+          mpfr_set (tmp2, tab[A-k-1], GMP_RNDN);
+#else
           mpfr_set_ui (tmp, A - k, GMP_RNDN);
           mpfr_exp (tmp2, tmp, GMP_RNDN);
-#else
-          mpfr_set (tmp2, tab[A-k-1], GMP_RNDN);
 #endif
+          /* tmp2 = exp(A-k) */
           mpfr_ui_pow_ui (tmp, A - k, k - 1, GMP_RNDN);
+          /* tmp = (A-k)^(k-1) */
           mpfr_mul (tmp2, tmp2, tmp, GMP_RNDN);
+          /* tmp2 = (A-k)^(k-1) * exp(A-k) */
           mpfr_sqrt_ui (tmp, A - k, GMP_RNDN);
           mpfr_mul (tmp2, tmp2, tmp, GMP_RNDN);
+          /* tmp2 = sqrt(A-k) * (A-k)^(k-1) * exp(A-k) */
           if (k >= 3)
             {
               /* mpfr_fac_ui (tmp, k-1, GMP_RNDN); */
-              mpz_mul_ui (fact, fact, k-1);
+              mpz_mul_ui (fact, fact, k - 1);
+              /* fact = k! */
               mpfr_set_z (tmp, fact, GMP_RNDN);
               mpfr_div (tmp2, tmp2, tmp, GMP_RNDN);
             }
+          /* tmp2 = sqrt(A-k) * (A-k)^(k-1) * exp(A-k) / k! */
           mpfr_add_ui (tmp, xp, k, GMP_RNDN);
           mpfr_div (tmp2, tmp2, tmp, GMP_RNDN);
+          /* tmp2 = sqrt(A-k) * (A-k)^(k-1) * exp(A-k) / k! / (x+k) */
           if ((k & 1) == 0)
             MPFR_CHANGE_SIGN (tmp2);
+          /* (-1)^k * sqrt(A-k) * (A-k)^(k-1) * exp(A-k) / k! / (x+k) */
           mpfr_add (GammaTrial, GammaTrial, tmp2, GMP_RNDN);
         }
 #ifdef DEBUG
@@ -184,18 +198,22 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
       printf ("\n");
 #endif
       mpfr_const_pi (tmp, GMP_RNDN);
-      mpfr_mul_2ui (tmp, tmp, 1, GMP_RNDN);
-      mpfr_sqrt (tmp, tmp, GMP_RNDN);
+      mpfr_mul_2ui (tmp, tmp, 1, GMP_RNDN); /* 2*Pi */
+      mpfr_sqrt (tmp, tmp, GMP_RNDN); /* sqrt(2*Pi) */
       mpfr_add (GammaTrial, GammaTrial, tmp, GMP_RNDN);
+      /* sqrt(2*Pi) +
+         sum((-1)^k*sqrt(A-k)*(A-k)^(k-1)*exp(A-k)/k!/(x+k),k=1..A-1) */
 
-      mpfr_add_ui (tmp2, xp, A, GMP_RNDN);
+      mpfr_add_ui (tmp2, xp, A, GMP_RNDN); /* xp+A */
       mpfr_set_ui_2exp (tmp, 1, -1, GMP_RNDN); /* tmp= 1/2 */
-      mpfr_add (tmp, tmp, xp, GMP_RNDN);
-      mpfr_pow (tmp, tmp2, tmp, GMP_RNDN);
+      mpfr_add (tmp, tmp, xp, GMP_RNDN); /* 1/2+xp+A */
+      mpfr_pow (tmp, tmp2, tmp, GMP_RNDN); /* (xp+A)^(1/2+xp+A) */
       mpfr_mul (GammaTrial, GammaTrial, tmp, GMP_RNDN);
+      /* (xp+A)^(1/2+xp+A) * [sqrt(2*Pi) +
+           sum((-1)^k*sqrt(A-k)*(A-k)^(k-1)*exp(A-k)/k!/(x+k),k=1..A-1)] */
 
-      mpfr_neg (tmp, tmp2, GMP_RNDN);
-      mpfr_exp (tmp, tmp, GMP_RNDN);
+      mpfr_neg (tmp, tmp2, GMP_RNDN); /* -(xp+A) */
+      mpfr_exp (tmp, tmp, GMP_RNDN); /* exp(-xp-A) */
       mpfr_mul (GammaTrial, GammaTrial, tmp, GMP_RNDN);
 
       if (compared < 0)
