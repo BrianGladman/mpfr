@@ -170,6 +170,17 @@ special (void)
   mpfr_const_pi (x, GMP_RNDN);
   mpfr_gamma (y, x, GMP_RNDN);
 
+  mpfr_set_prec (x, 4);
+  mpfr_set_prec (y, 4);
+  mpfr_set_str_binary (x, "-0.1100E-66");
+  mpfr_gamma (y, x, GMP_RNDN);
+  mpfr_set_str_binary (x, "0.11E65");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error for gamma(-0.1100E-66)\n");
+      exit (1);
+    }
+
   mpfr_clear (x);
   mpfr_clear (y);
 }
