@@ -179,17 +179,17 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
             {
               /* mpfr_fac_ui (tmp, k-1, GMP_RNDN); */
               mpz_mul_ui (fact, fact, k - 1);
-              /* fact = k! */
+              /* fact = (k-1)! */
               mpfr_set_z (tmp, fact, GMP_RNDN);
               mpfr_div (tmp2, tmp2, tmp, GMP_RNDN);
             }
-          /* tmp2 = sqrt(A-k) * (A-k)^(k-1) * exp(A-k) / k! */
+          /* tmp2 = sqrt(A-k) * (A-k)^(k-1) * exp(A-k) / (k-1)! */
           mpfr_add_ui (tmp, xp, k, GMP_RNDN);
           mpfr_div (tmp2, tmp2, tmp, GMP_RNDN);
-          /* tmp2 = sqrt(A-k) * (A-k)^(k-1) * exp(A-k) / k! / (x+k) */
+          /* tmp2 = sqrt(A-k) * (A-k)^(k-1) * exp(A-k) / (k-1)! / (x+k) */
           if ((k & 1) == 0)
             MPFR_CHANGE_SIGN (tmp2);
-          /* (-1)^k * sqrt(A-k) * (A-k)^(k-1) * exp(A-k) / k! / (x+k) */
+          /* (-1)^(k-1)*sqrt(A-k) * (A-k)^(k-1) * exp(A-k) / (k-1)! / (x+k) */
           mpfr_add (GammaTrial, GammaTrial, tmp2, GMP_RNDN);
         }
 #ifdef DEBUG
@@ -201,8 +201,8 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_mul_2ui (tmp, tmp, 1, GMP_RNDN); /* 2*Pi */
       mpfr_sqrt (tmp, tmp, GMP_RNDN); /* sqrt(2*Pi) */
       mpfr_add (GammaTrial, GammaTrial, tmp, GMP_RNDN);
-      /* sqrt(2*Pi) +
-         sum((-1)^k*sqrt(A-k)*(A-k)^(k-1)*exp(A-k)/k!/(xp+k),k=1..A-1) */
+      /* sqrt(2*Pi) + sum((-1)^(k-1)*sqrt(A-k)*(A-k)^(k-1)*exp(A-k)
+                          /(k-1)!/(xp+k),k=1..A-1) */
 
       mpfr_add_ui (tmp2, xp, A, GMP_RNDN); /* xp+A */
       mpfr_set_ui_2exp (tmp, 1, -1, GMP_RNDN); /* tmp= 1/2 */
@@ -210,7 +210,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_pow (tmp, tmp2, tmp, GMP_RNDN); /* (xp+A)^(xp+1/2) */
       mpfr_mul (GammaTrial, GammaTrial, tmp, GMP_RNDN);
       /* (xp+A)^(xp+1/2) * [sqrt(2*Pi) +
-           sum((-1)^k*(A-k)^(k-1/2)*exp(A-k)/k!/(xp+k),k=1..A-1)] */
+           sum((-1)^(k-1)*(A-k)^(k-1/2)*exp(A-k)/(k-1)!/(xp+k),k=1..A-1)] */
 
       mpfr_neg (tmp, tmp2, GMP_RNDN); /* -(xp+A) */
       mpfr_exp (tmp, tmp, GMP_RNDN); /* exp(-xp-A) */
