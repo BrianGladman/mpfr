@@ -174,7 +174,7 @@ special (void)
   mpfr_set_prec (y, 4);
   mpfr_set_str_binary (x, "-0.1100E-66");
   mpfr_gamma (y, x, GMP_RNDN);
-  mpfr_set_str_binary (x, "0.11E65");
+  mpfr_set_str_binary (x, "-0.1011E67");
   if (mpfr_cmp (x, y))
     {
       printf ("Error for gamma(-0.1100E-66)\n");
