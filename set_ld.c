@@ -56,7 +56,7 @@ mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
 
   /* Check for NAN */
   LONGDOUBLE_NAN_ACTION (d, goto nan);
-  
+
   /* Check for INF */
   if (d > MPFR_LDBL_MAX)
     {
@@ -207,10 +207,10 @@ mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
 
   /* Check for NAN */
   if (MPFR_UNLIKELY (d != d))
-    { 
+    {
       MPFR_SET_NAN (r);
       MPFR_RET_NAN;
-    }  
+    }
   /* Check for INF */
   else if (MPFR_UNLIKELY (d > MPFR_LDBL_MAX))
     {
@@ -235,20 +235,21 @@ mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
 	MPFR_SET_POS(r);
       return 0;
     }
-  
+
   /* now d is neither 0, nor NaN nor Inf */
   MPFR_SAVE_EXPO_MARK (expo);
-  
+
   MPFR_MANT (tmp) = tmpmant;
   MPFR_PREC (tmp) = 64;
 
   /* Extract sign */
   x.ld = d;
   signd = MPFR_SIGN_POS;
-  if (x.ld < 0.0) {
-    signd = MPFR_SIGN_NEG;
-    x.ld = -x.ld;
-  }
+  if (x.ld < 0.0)
+    {
+      signd = MPFR_SIGN_NEG;
+      x.ld = -x.ld;
+    }
 
   /* Extract mantissa */
 #if BITS_PER_MP_LIMB >= 64
@@ -257,7 +258,7 @@ mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
   tmpmant[0] = (mp_limb_t) x.s.manl;
   tmpmant[1] = (mp_limb_t) x.s.manh;
 #endif
-  
+
   /* Normalize mantissa */
   i = MPFR_LIMBS_PER_LONG_DOUBLE;
   MPN_NORMALIZE_NOT_ZERO (tmpmant, i);
@@ -266,7 +267,7 @@ mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
   if (MPFR_LIKELY (cnt != 0))
     mpn_lshift (tmpmant + k, tmpmant, i, cnt);
   else if (k != 0)
-    MPN_COPY (tmpmant + k, tmpmant, i);  
+    MPN_COPY (tmpmant + k, tmpmant, i);
   if (MPFR_UNLIKELY (k != 0))
     MPN_ZERO (tmpmant, k);
 
