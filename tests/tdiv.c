@@ -62,10 +62,10 @@ inex_cmp (int a, int b)
     return (b == 0) ? 0 : 1;
   else
     return (b < 0) ? 0 : 1;
-}     
+}
 
 static void
-check4 (const char *Ns, const char *Ds, mp_rnd_t rnd_mode, int p, 
+check4 (const char *Ns, const char *Ds, mp_rnd_t rnd_mode, int p,
         const char *Qs)
 {
   mpfr_t q, n, d;
@@ -204,7 +204,7 @@ check_64(void)
     {
       printf("Error for tdiv for GMP_RNDU and p=64\nx=");
       mpfr_print_binary(x);
-      printf("\ny="); 
+      printf("\ny=");
       mpfr_print_binary(y);
       printf("\ngot      ");
       mpfr_print_binary(z);
@@ -750,12 +750,12 @@ main (int argc, char *argv[])
   check_convergence();
   check_64();
 
-  check4("4.0","4.503599627370496e15", GMP_RNDZ, 62, 
+  check4("4.0","4.503599627370496e15", GMP_RNDZ, 62,
    "0.10000000000000000000000000000000000000000000000000000000000000E-49");
-  check4("1.0","2.10263340267725788209e+187", GMP_RNDU, 65, 
+  check4("1.0","2.10263340267725788209e+187", GMP_RNDU, 65,
    "0.11010011111001101011111001100111110100000001101001111100111000000E-622");
   check4("2.44394909079968374564e-150", "2.10263340267725788209e+187",GMP_RNDU,
-         65, 
+         65,
   "0.11010011111001101011111001100111110100000001101001111100111000000E-1119");
 
   test_generic (2, 800, 50);

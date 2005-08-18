@@ -67,7 +67,7 @@ mpfr_round_raw_generic(
   int rw;
 #if flag == 0
   int carry;
-#endif 
+#endif
 #if use_inexp == 0
   int *inexp;
 #endif
@@ -76,7 +76,7 @@ mpfr_round_raw_generic(
     MPFR_ASSERTD(inexp != ((int*) 0));
   MPFR_ASSERTD(neg == 0 || neg == 1);
 
-  if (flag && !use_inexp && 
+  if (flag && !use_inexp &&
       (xprec <= yprec || MPFR_IS_LIKE_RNDZ (rnd_mode, neg)))
     return 0;
 
@@ -90,7 +90,7 @@ mpfr_round_raw_generic(
       if (MPFR_LIKELY(rw))
         nw++;
       MPFR_ASSERTD(nw >= 1);
-      MPFR_ASSERTD(nw >= xsize); 
+      MPFR_ASSERTD(nw >= xsize);
       if (use_inexp)
         *inexp = 0;
 #if flag == 0
@@ -101,7 +101,7 @@ mpfr_round_raw_generic(
     }
 
   if (use_inexp || !MPFR_IS_LIKE_RNDZ(rnd_mode, neg))
-    {      
+    {
       mp_size_t k = xsize - nw - 1;
 
       if (MPFR_LIKELY(rw))
@@ -170,8 +170,8 @@ mpfr_round_raw_generic(
               return 1; /*sb != 0 && rnd_mode != GMP_RNDZ;*/
 #else
               carry = mpn_add_1 (yp, xp + xsize - nw, nw,
-                                 rw ? 
-                                 MPFR_LIMB_ONE << (BITS_PER_MP_LIMB - rw) 
+                                 rw ?
+                                 MPFR_LIMB_ONE << (BITS_PER_MP_LIMB - rw)
                                  : MPFR_LIMB_ONE);
               yp[0] &= himask;
               return carry;
@@ -187,17 +187,17 @@ mpfr_round_raw_generic(
             sb = xp[--k];
           if (use_inexp)
             /* rnd_mode == GMP_RNDZ and neg = 0 or 1 */
-            /* (neg != 0) ^ (rnd_mode != GMP_RNDZ)) ? 1 : -1);*/ 
+            /* (neg != 0) ^ (rnd_mode != GMP_RNDZ)) ? 1 : -1);*/
             *inexp = MPFR_UNLIKELY(sb == 0) ? 0 : (2*neg-1);
 #if flag == 1
           return 0; /*sb != 0 && rnd_mode != GMP_RNDZ;*/
 #else
           MPN_COPY_INCR(yp, xp + xsize - nw, nw);
-          yp[0] &= himask;      
+          yp[0] &= himask;
           return 0;
 #endif
         }
-      else 
+      else
         {
           /* rnd_mode = Away */
           while (MPFR_UNLIKELY(sb == 0) && k > 0)

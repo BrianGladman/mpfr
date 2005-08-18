@@ -28,14 +28,14 @@ MA 02110-1301, USA. */
 static void
 test_random (long nbtests, mp_prec_t prec, int verbose)
 {
-  mpfr_t x; 
-  int *tab, size_tab, k; 
-  double d, av = 0, var = 0, chi2 = 0, th; 
+  mpfr_t x;
+  int *tab, size_tab, k;
+  double d, av = 0, var = 0, chi2 = 0, th;
 
-  mpfr_init2(x, prec); 
+  mpfr_init2(x, prec);
 
-  size_tab = (nbtests >= 1000 ? nbtests / 50 : 20); 
-  tab = (int *) malloc (size_tab * sizeof(int)); 
+  size_tab = (nbtests >= 1000 ? nbtests / 50 : 20);
+  tab = (int *) malloc (size_tab * sizeof(int));
   for (k = 0; k < size_tab; ++k)
     tab[k] = 0;
 
@@ -53,14 +53,14 @@ test_random (long nbtests, mp_prec_t prec, int verbose)
       return;
     }
 
-  av /= nbtests; 
-  var = (var /nbtests) - av*av; 
+  av /= nbtests;
+  var = (var /nbtests) - av*av;
 
   th = (double) nbtests / size_tab;
-  
-  printf("Average = %.5f\nVariance = %.5f\n", av, var); 
-  printf("Repartition for random. Each integer should be close to %d.\n", 
-         (int)th); 
+
+  printf("Average = %.5f\nVariance = %.5f\n", av, var);
+  printf("Repartition for random. Each integer should be close to %d.\n",
+         (int)th);
 
   for (k = 0; k < size_tab; k++)
     {
@@ -90,8 +90,8 @@ test_random2 (long nbtests, mp_prec_t prec, int verbose)
   xn = 1 + (prec - 1) / mp_bits_per_limb;
   sh = xn * mp_bits_per_limb - prec;
 
-  size_tab = (nbtests >= 1000 ? nbtests / 50 : 20); 
-  tab = (int *) malloc (size_tab * sizeof(int)); 
+  size_tab = (nbtests >= 1000 ? nbtests / 50 : 20);
+  tab = (int *) malloc (size_tab * sizeof(int));
   for (k = 0; k < size_tab; ++k)
     tab[k] = 0;
 
@@ -132,7 +132,7 @@ test_random2 (long nbtests, mp_prec_t prec, int verbose)
       free(tab);
       return;
     }
-  
+
   av /= nbtests;
   var = (var /nbtests) - av*av;
 
@@ -158,9 +158,9 @@ test_random2 (long nbtests, mp_prec_t prec, int verbose)
 static void
 test_urandomb (long nbtests, mp_prec_t prec, int verbose)
 {
-  mpfr_t x; 
+  mpfr_t x;
   int *tab, size_tab, k, sh, xn;
-  gmp_randstate_t state; 
+  gmp_randstate_t state;
   double d, av = 0, var = 0, chi2 = 0, th;
   mp_exp_t emin;
 
@@ -168,8 +168,8 @@ test_urandomb (long nbtests, mp_prec_t prec, int verbose)
   xn = 1 + (prec - 1) / mp_bits_per_limb;
   sh = xn * mp_bits_per_limb - prec;
 
-  size_tab = (nbtests >= 1000 ? nbtests / 50 : 20); 
-  tab = (int *) malloc (size_tab * sizeof(int)); 
+  size_tab = (nbtests >= 1000 ? nbtests / 50 : 20);
+  tab = (int *) malloc (size_tab * sizeof(int));
   for (k = 0; k < size_tab; ++k)
     tab[k] = 0;
 
@@ -238,9 +238,9 @@ int
 main (int argc, char *argv[])
 {
   long nbtests;
-  mp_prec_t prec; 
-  int verbose = 0; 
-  
+  mp_prec_t prec;
+  int verbose = 0;
+
   MPFR_TEST_USE_RANDS ();
   tests_start_mpfr ();
 
@@ -261,7 +261,7 @@ main (int argc, char *argv[])
     prec = atol(argv[2]);
 
   test_random (nbtests, prec, verbose);
-  test_random2 (nbtests, prec, verbose); 
+  test_random2 (nbtests, prec, verbose);
   test_urandomb (nbtests, prec, verbose);
 
   if (argc == 1)  /* check also small precision */

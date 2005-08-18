@@ -69,7 +69,7 @@ check_nans (void)
   MPFR_ASSERTN(mpfr_cmp (x, y) == 0);
 
   /* Compute ~Pi/2 to check overflow */
-  /* TOO SLOW! Disable this test. 
+  /* TOO SLOW! Disable this test.
   mpfr_set_prec (x, 20000);
   mpfr_const_pi (x, GMP_RNDD); mpfr_div_2ui (x, x, 1, GMP_RNDN);
   mpfr_set_prec (y, 24);

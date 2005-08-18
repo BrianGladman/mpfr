@@ -244,11 +244,11 @@ check_special ()
   mpfr_set_prec (x, 64);
   mpfr_set_emax (MPFR_EMAX_DEFAULT);
   mpfr_set_emin (MPFR_EMIN_DEFAULT);
-  mpfr_set_str (x, 
+  mpfr_set_str (x,
     "0.1011000101110010000101111111010100001100000001110001100111001101E30",
                 2, GMP_RNDN);
   mpfr_exp (x, x, GMP_RNDD);
-  if (mpfr_cmp_str (x, 
+  if (mpfr_cmp_str (x,
 ".1111111111111111111111111111111111111111111111111111111111111111E1073741823",
                     2, GMP_RNDN) != 0)
     {
@@ -280,7 +280,7 @@ check_special ()
   /* Check overflow. Corner case of mpfr_exp_3 */
   if (MPFR_PREC_MAX > MPFR_EXP_THRESHOLD+10) {
     mpfr_set_prec (x, MPFR_EXP_THRESHOLD+10);
-    mpfr_set_str (x, 
+    mpfr_set_str (x,
      "0.1011000101110010000101111111010100001100000001110001100111001101E30",
                   2, GMP_RNDN);
     mpfr_clear_overflow ();

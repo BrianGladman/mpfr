@@ -65,7 +65,7 @@ main (int argc, char *argv[])
       exit (1);
     }
   fclose (f);
-  
+
   mpfr_clear (x);
 
   tests_end_mpfr ();

@@ -19,7 +19,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin Place, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
-/* the hyperbolic cotangent is defined by coth(x) = 1/tanh(x) 
+/* the hyperbolic cotangent is defined by coth(x) = 1/tanh(x)
    coth (NaN) = NaN.
    coth (+Inf) = 1
    coth (-Inf) = -1

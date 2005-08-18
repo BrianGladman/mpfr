@@ -207,7 +207,7 @@ static void check_intmax (void)
   mpfr_t x;
 
   mpfr_init2 (x, sizeof(uintmax_t)*CHAR_BIT);
-  
+
   /* Check NAN */
   mpfr_set_nan(x);
   if (mpfr_fits_uintmax_p(x, GMP_RNDN))
@@ -221,7 +221,7 @@ static void check_intmax (void)
     ERROR1;
   if (mpfr_fits_intmax_p(x, GMP_RNDN))
     ERROR1;
-  
+
   /* Check Zero */
   MPFR_SET_ZERO(x);
   if (!mpfr_fits_uintmax_p(x, GMP_RNDN))

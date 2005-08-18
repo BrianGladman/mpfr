@@ -57,7 +57,7 @@ check53 (const char *xs, const char *cos_xs, mp_rnd_t rnd_mode)
   test_cos (c, xx, rnd_mode);
   if (mpfr_cmp_str1 (c, cos_xs))
     {
-      printf ("mpfr_cos failed for x=%s, rnd=%s\n", 
+      printf ("mpfr_cos failed for x=%s, rnd=%s\n",
               xs, mpfr_print_rnd_mode (rnd_mode));
       printf ("mpfr_cos gives cos(x)=");
       mpfr_out_str(stdout, 10, 0, c, GMP_RNDN);
@@ -119,14 +119,14 @@ check_nans (void)
     }
 
   /* Compute ~Pi/2 to check */
-  /* FIXME: Too slow! 
+  /* FIXME: Too slow!
   mpfr_set_prec (x, 20000);
   mpfr_const_pi (x, GMP_RNDD); mpfr_div_2ui (x, x, 1, GMP_RNDN);
   mpfr_set_prec (y, 24);
   test_cos (y, x, GMP_RNDN);
   if (mpfr_cmp_str (y, "0.111001010110100011000001E-20000", 2, GMP_RNDN))
     {
-      printf("Error computing cos(~Pi/2)\n"); 
+      printf("Error computing cos(~Pi/2)\n");
       mpfr_dump (y);
       exit (1);
       } */
@@ -150,7 +150,7 @@ special_overflow (void)
   test_cos (y, x, GMP_RNDZ);
   set_emin (MPFR_EMIN_MIN);
   set_emax (MPFR_EMAX_MAX);
-  
+
   mpfr_clear (x);
   mpfr_clear (y);
 }

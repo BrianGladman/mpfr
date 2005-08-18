@@ -29,13 +29,13 @@ MA 02110-1301, USA. */
 
 #define SPECIAL_MAX 12
 
-static void 
+static void
 set_special (mpfr_ptr x, unsigned int select)
 {
   MPFR_ASSERTN (select < SPECIAL_MAX);
-  switch (select) 
+  switch (select)
     {
-    case 0: 
+    case 0:
       MPFR_SET_NAN (x);
       break;
     case 1:
@@ -318,7 +318,7 @@ test2ui (int (*testfunc)(mpfr_ptr, mpfr_srcptr, unsigned long int, mp_rnd_t),
       if (mpfr_compare (res1, ref1))
         {
           printf ("Error for %s(a, a, c) for c=%u\n", foo, ref3);
-          DISP2("a=",ref2); 
+          DISP2("a=",ref2);
           printf ("expected "); mpfr_print_binary (ref1); puts ("");
           printf ("got      "); mpfr_print_binary (res1); puts ("");
           exit (1);

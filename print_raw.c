@@ -74,7 +74,7 @@ mpfr_print_binary (mpfr_srcptr x)
     }
 }
 
-void 
+void
 mpfr_print_mant_binary(const char *str, const mp_limb_t *p, mp_prec_t r)
 {
   int i;
@@ -98,8 +98,8 @@ mpfr_print_mant_binary(const char *str, const mp_limb_t *p, mp_prec_t r)
   putchar('\n');
 }
 
-void 
-mpfr_dump_mant (const mp_limb_t *p, mp_prec_t r, mp_prec_t precx, 
+void
+mpfr_dump_mant (const mp_limb_t *p, mp_prec_t r, mp_prec_t precx,
                 mp_prec_t error)
 {
   int i;

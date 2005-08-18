@@ -67,7 +67,7 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mp_rnd_t rnd_mode)
           MPFR_SET_NAN(acos);
           MPFR_RET_NAN;
         }
-      else 
+      else
         {
           if (MPFR_IS_POS_SIGN (sign)) /* acos(+1) = 0 */
             return mpfr_set_ui (acos, 0, rnd_mode);

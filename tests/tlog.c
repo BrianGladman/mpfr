@@ -58,7 +58,7 @@ check2 (const char *as, mp_rnd_t rnd_mode, const char *res1s)
 
   if (mpfr_cmp_str1 (tres, res1s))
     {
-      printf ("mpfr_log failed for    a=%s, rnd_mode=%s\n", 
+      printf ("mpfr_log failed for    a=%s, rnd_mode=%s\n",
               as, mpfr_print_rnd_mode (rnd_mode));
       printf ("correct result is        %s\n mpfr_log gives          ",
               res1s);
@@ -245,7 +245,7 @@ main (int argc, char *argv[])
   check2("8.0",GMP_RNDZ,"2.07944154167983574765e+00");
   check2("44.0",GMP_RNDU,"3.78418963391826146392e+00");
   check2("1.01979300812244555452", GMP_RNDN, "1.95996734891603664741e-02");
-  
+
   /* bugs found by Vincent Lefe`vre */
   check2("0.99999599881598921769", GMP_RNDN, "-0.0000040011920155404072924737977900999652547398000024259090423583984375");
   check2("9.99995576063808955247e-01",GMP_RNDZ,"-4.42394597667932383816e-06");
@@ -256,17 +256,17 @@ main (int argc, char *argv[])
   check2("9.99985901426543311032e-01",GMP_RNDN,"-1.40986728425098585229e-05");
   check2("9.99986053947420794330e-01",GMP_RNDN, "-0.000013946149826301084938555592540598837558718514628708362579345703125");
   check2("9.99971938247442126979e-01",GMP_RNDN,"-2.80621462962173414790e-05");
-  
+
   /* other bugs found by Vincent Lefe`vre */
   check2("1.18615436389927785905e+77",GMP_RNDN,"1.77469768607706015473e+02");
   check2("9.48868723578399476187e+77",GMP_RNDZ,"1.79549152432275803903e+02");
   check2("2.31822210096938820854e+89",GMP_RNDN,"2.05770873832573869322e+02");
-  
+
   /* further bugs found by Vincent Lefe`vre */
   check2("9.99999989485669482647e-01",GMP_RNDZ,"-1.05143305726283042331e-08");
   check2("9.99999989237970177136e-01",GMP_RNDZ,"-1.07620298807745377934e-08");
   check2("9.99999989239339082125e-01",GMP_RNDN,"-1.07606609757704445430e-08");
-  
+
   check2("7.3890560989306504",GMP_RNDU,"2.0000000000000004"); /* exp(2.0) */
   check2("7.3890560989306495",GMP_RNDU,"2.0"); /* exp(2.0) */
   check2("7.53428236571286402512e+34",GMP_RNDZ,"8.03073567492226345621e+01");
@@ -297,7 +297,7 @@ main (int argc, char *argv[])
   check2("6.09969788341579732815e+00",GMP_RNDD,"1.80823924264386204363e+00");
 
   test_generic (2, 100, 40);
-  
+
  done:
   tests_end_mpfr ();
   return 0;

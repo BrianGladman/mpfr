@@ -48,7 +48,7 @@ static void check0(void)
     }
   mpfr_clear(x);
   mpz_clear(y);
-}  
+}
 
 /* FIXME: It'd be better to examine the actual data in an mpfr_t to see that
    it's as expected.  Comparing mpfr_set_z with mpfr_cmp or against

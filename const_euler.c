@@ -82,7 +82,7 @@ mpfr_const_euler_internal (mpfr_t x, mp_rnd_t rnd)
         break;
       MPFR_ZIV_NEXT (loop, m);
       mpfr_set_prec (y, m);
-      mpfr_set_prec (z, m); 
+      mpfr_set_prec (z, m);
     }
   MPFR_ZIV_FREE (loop);
 

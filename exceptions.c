@@ -50,13 +50,13 @@ mpfr_set_emin (mp_exp_t exponent)
     }
 }
 
-mp_exp_t 
+mp_exp_t
 mpfr_get_emin_min (void)
 {
   return MPFR_EMIN_MIN;
 }
 
-mp_exp_t 
+mp_exp_t
 mpfr_get_emin_max (void)
 {
   return MPFR_EMIN_MAX;

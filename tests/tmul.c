@@ -140,7 +140,7 @@ check24 (const char *xs, const char *ys, mp_rnd_t rnd_mode, const char *zs)
   mpfr_clears(xx, yy, zz, NULL);
 }
 
-/* the following examples come from the paper "Number-theoretic Test 
+/* the following examples come from the paper "Number-theoretic Test
    Generation for Directed Rounding" from Michael Parks, Table 1 */
 static void
 check_float (void)
@@ -332,7 +332,7 @@ check_max(void)
   /* exact result is 0.1E-1, which should round to 0 */
   MPFR_ASSERTN(mpfr_cmp_ui (zz, 0) == 0 && MPFR_IS_POS(zz));
   set_emin (emin);
-  
+
   /* coverage test for mpfr_powerof2_raw */
   emin = mpfr_get_emin ();
   set_emin (0);
@@ -344,7 +344,7 @@ check_max(void)
   /* exact result is just above 0.1E-1, which should round to minfloat */
   MPFR_ASSERTN(mpfr_cmp (zz, yy) == 0);
   set_emin (emin);
-  
+
   mpfr_clear(xx);
   mpfr_clear(yy);
   mpfr_clear(zz);
@@ -447,8 +447,8 @@ check_regression (void)
   int i;
 
   mpfr_inits2 (6177, x, y, z, NULL);
-  
-  mpfr_set_str (y, 
+
+  mpfr_set_str (y,
 "5.17cc1b727220a94fe13abe8fa9a6ee06db14acc9e21c820ff28b1d5ef5de2b0db92371d212"
 "6e9700324977504e8c90e7f0ef58e5894d39f74411afa975da24274ce38135a2fbf209cc8eb1"
 "cc1a99cfa4e422fc5defc941d8ffc4bffef02cc07f79788c5ad05368fb69b3f6793e584dba7a"
@@ -493,7 +493,7 @@ check_regression (void)
 "ffa35db8f011a010fa3d98fd2183b84afcb56c2dd1d35b9a53e479b6f84565d28e49bc4bfb97"
 "90e1ddf2daa4cb7e3362fb1342", 16, GMP_RNDN);
   i = mpfr_mul (x, y, z, GMP_RNDN);
-  if (mpfr_cmp_str (x, 
+  if (mpfr_cmp_str (x,
  "f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
  "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
  "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
@@ -580,14 +580,14 @@ check_regression (void)
       printf ("\n");
       exit (1);
     }
-  
+
 
   mpfr_set_prec (x, 50);
   mpfr_set_prec (y, 40);
   mpfr_set_prec (z, 53);
   mpfr_set_str (y, "4.1ffffffff8", 16, GMP_RNDN);
   mpfr_set_str (z, "4.2000000ffe0000@-4", 16, GMP_RNDN);
-  i = mpfr_mul (x, y, z, GMP_RNDN);  
+  i = mpfr_mul (x, y, z, GMP_RNDN);
   if (mpfr_cmp_str (x, "1.104000041d6c0@-3", 16, GMP_RNDN) != 0
       || i <= 0)
     {
@@ -655,8 +655,8 @@ main (int argc, char *argv[])
   check53("0.0", "6.9314718055994530941514e-1", GMP_RNDZ, "0.0");
   check_sign();
   check53("-4.165000000e4", "-0.00004801920768307322868063274915", GMP_RNDN,
-          "2.0"); 
-  check53("2.71331408349172961467e-08", "-6.72658901114033715233e-165", 
+          "2.0");
+  check53("2.71331408349172961467e-08", "-6.72658901114033715233e-165",
           GMP_RNDZ, "-1.8251348697787782844e-172");
   check53("0.31869277231188065", "0.88642843322303122", GMP_RNDZ,
           "2.8249833483992453642e-1");
@@ -664,12 +664,12 @@ main (int argc, char *argv[])
         28, 45, 2, "0.375");
   check("2.63978122803639081440e-01", "6.8378615379333496093e-1", GMP_RNDN,
         34, 23, 31, "0.180504585267044603");
-  check("1.0", "0.11835170935876249132", GMP_RNDU, 6, 41, 36, 
+  check("1.0", "0.11835170935876249132", GMP_RNDU, 6, 41, 36,
         "0.1183517093595583");
   check53("67108865.0", "134217729.0", GMP_RNDN, "9.007199456067584e15");
   check("1.37399642157394197284e-01", "2.28877275604219221350e-01", GMP_RNDN,
         49, 15, 32, "0.0314472340833162888");
-  check("4.03160720978664954828e-01", "5.854828e-1" 
+  check("4.03160720978664954828e-01", "5.854828e-1"
         /*"5.85483042917246621073e-01"*/, GMP_RNDZ,
         51, 22, 32, "0.2360436821472831");
   check("3.90798504668055102229e-14", "9.85394674650308388664e-04", GMP_RNDN,

@@ -40,8 +40,8 @@ init_set_z (mpfr_ptr t, mpz_srcptr z)
   MPFR_ASSERTD (i == 0);
 }
 
-/* Init, set a mpfr_t with enought precision to store a mpz_t without round, 
-   call the function, and clear the allocated mpfr_t  */ 
+/* Init, set a mpfr_t with enought precision to store a mpz_t without round,
+   call the function, and clear the allocated mpfr_t  */
 static int
 foo (mpfr_ptr x, mpfr_srcptr y, mpz_srcptr z, mp_rnd_t r,
      int (*f)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t))
@@ -94,7 +94,7 @@ mpfr_cmp_z (mpfr_srcptr x, mpz_srcptr z)
   init_set_z (t, z);
   res = mpfr_cmp (x, t);
   mpfr_clear (t);
-  return res;  
+  return res;
 }
 
 int
@@ -175,13 +175,13 @@ mpfr_add_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mp_rnd_t rnd_mode)
   p = MPFR_PREC (y) + 10;
   mpfr_init2 (t, p);
   mpfr_init2 (q, p);
-  
+
   MPFR_ZIV_INIT (loop, p);
   for (;;)
     {
       res = mpfr_set_q (q, z, GMP_RNDN);  /* Error <= 1/2 ulp(q) */
       /* If z if @INF@ (1/0), res = 0, so it quits immediately */
-      if (MPFR_UNLIKELY (res == 0)) 
+      if (MPFR_UNLIKELY (res == 0))
         /* Result is exact so we can add it directly! */
         {
           res = mpfr_add (y, x, q, rnd_mode);
@@ -198,14 +198,14 @@ mpfr_add_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mp_rnd_t rnd_mode)
           err = (mp_exp_t) p - 1 - MAX (MPFR_GET_EXP(q)-MPFR_GET_EXP(t), 0);
           if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, MPFR_PREC (y), rnd_mode)))
             {
-              res = mpfr_set (y, t, rnd_mode);        
+              res = mpfr_set (y, t, rnd_mode);
               break;
             }
         }
       MPFR_ZIV_NEXT (loop, p);
       mpfr_set_prec (t, p);
       mpfr_set_prec (q, p);
-    } 
+    }
   MPFR_ZIV_FREE (loop);
   mpfr_clear (t);
   mpfr_clear (q);
@@ -238,7 +238,7 @@ mpfr_sub_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z,mp_rnd_t rnd_mode)
       else
         {
           MPFR_ASSERTD (MPFR_IS_ZERO (x));
-          
+
           if (MPFR_UNLIKELY (mpq_sgn (z) == 0))
             return mpfr_set (y, x, rnd_mode); /* signed 0 - Unsigned 0 */
           else
@@ -253,7 +253,7 @@ mpfr_sub_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z,mp_rnd_t rnd_mode)
   p = MPFR_PREC (y) + 10;
   mpfr_init2 (t, p);
   mpfr_init2 (q, p);
-  
+
   MPFR_ZIV_INIT (loop, p);
   for(;;)
     {

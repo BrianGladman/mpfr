@@ -102,8 +102,8 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
           if (!MPFR_IS_INF (x)) /* +/- PI/2 */
             goto set_pi_2;
           else if (MPFR_IS_POS (x)) /* +/- PI/4 */
-            { 
-              if (MPFR_IS_NEG (y)) 
+            {
+              if (MPFR_IS_NEG (y))
                 {
                   rnd_mode = MPFR_INVERT_RND (rnd_mode);
                   inexact = mpfr_const_pi (dest, rnd_mode);
@@ -111,7 +111,7 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
                   mpfr_div_2ui (dest, dest, 2, rnd_mode);
                   return -inexact;
                 }
-              else 
+              else
                 {
                   inexact = mpfr_const_pi (dest, rnd_mode);
                   mpfr_div_2ui (dest, dest, 2, rnd_mode);
@@ -119,7 +119,7 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
                 }
             }
           else /* +/- 3*PI/4: Ugly since we have to round properly */
-            { 
+            {
               mpfr_t tmp;
               MPFR_ZIV_DECL (loop);
               mp_prec_t prec = MPFR_PREC (dest) + BITS_PER_MP_LIMB;
@@ -132,12 +132,12 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
                   mpfr_mul_ui (tmp, tmp, 3, GMP_RNDN); /* Error <= 2  */
                   mpfr_div_2ui (tmp, tmp, 2, GMP_RNDN);
                   if (mpfr_round_p (MPFR_MANT (tmp), MPFR_LIMB_SIZE (tmp),
-                                    MPFR_PREC (tmp)-2, 
+                                    MPFR_PREC (tmp)-2,
                                     MPFR_PREC (dest) + (rnd_mode == GMP_RNDN)))
                     break;
                   MPFR_ZIV_NEXT (loop, prec);
                   mpfr_set_prec (tmp, prec);
-                }             
+                }
               MPFR_ZIV_FREE (loop);
               if (MPFR_IS_NEG (y))
                 MPFR_CHANGE_SIGN (tmp);
@@ -149,7 +149,7 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       MPFR_ASSERTD (MPFR_IS_INF (x));
       if (MPFR_IS_NEG (x))
         goto set_pi;
-      else 
+      else
         goto set_zero;
     }
   MPFR_SAVE_EXPO_MARK (expo);
@@ -189,7 +189,7 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
           if (MPFR_IS_NEG (y))
             MPFR_CHANGE_SIGN (tmp);
           /* Error(tmp) <= (1/2+2^(EXP(pi)-EXP(tmp)-1)+2^(e-EXP(tmp)+1))*ulp
-                        <= 2^(MAX (MAX (EXP(PI)-EXP(tmp)-1, e-EXP(tmp)+1), 
+                        <= 2^(MAX (MAX (EXP(PI)-EXP(tmp)-1, e-EXP(tmp)+1),
                                         -1)+2)*ulp(tmp) */
           e = MAX (MAX (MPFR_GET_EXP (pi)-MPFR_GET_EXP (tmp) - 1,
                         e - MPFR_GET_EXP (tmp) + 1), -1) + 2;
@@ -203,7 +203,7 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_clear (pi);
     }
   MPFR_ZIV_FREE (loop);
-  
+
   inexact = mpfr_set (dest, tmp, rnd_mode);
   mpfr_clear (tmp);
   MPFR_SAVE_EXPO_FREE (expo);

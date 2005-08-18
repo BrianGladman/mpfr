@@ -1,6 +1,6 @@
 /* used by mpfr_get_str and mpfr_set_str */
 
-/* for 2 <= b <= 36, log_b2[b-2] + log_b2_low[b-2] is a 76-bit upper 
+/* for 2 <= b <= 36, log_b2[b-2] + log_b2_low[b-2] is a 76-bit upper
    approximation of log(2)/log(b), with log_b2[b-2] having 23 significative
    bits only. These approximations were computed with the following program.
 

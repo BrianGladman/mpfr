@@ -64,7 +64,7 @@ mpfr_erf (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
      otherwise use asymptotic expansion */
   MPFR_SAVE_EXPO_MARK (expo);
 
-  if (MPFR_UNLIKELY (xf > LOG2 * ((double) MPFR_PREC (y)))) 
+  if (MPFR_UNLIKELY (xf > LOG2 * ((double) MPFR_PREC (y))))
     /* |erf x| = 1 or 1- */
     {
       mp_rnd_t rnd2 = MPFR_IS_POS (x) ? rnd_mode : MPFR_INVERT_RND(rnd_mode);
@@ -88,7 +88,7 @@ mpfr_erf (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 }
 
 /* return x*2^e */
-static double 
+static double
 mul_2exp (double x, mp_exp_t e)
 {
   if (e > 0)

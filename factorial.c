@@ -28,21 +28,21 @@ MA 02110-1301, USA. */
  */
 
 int
-mpfr_fac_ui (mpfr_ptr y, unsigned long int x, mp_rnd_t rnd_mode) 
+mpfr_fac_ui (mpfr_ptr y, unsigned long int x, mp_rnd_t rnd_mode)
 {
   mpfr_t t;       /* Variable of Intermediary Calculation*/
   unsigned long i;
   int round, inexact;
-  
+
   mp_prec_t Ny;   /* Precision of output variable */
   mp_prec_t Nt;   /* Precision of Intermediary Calculation variable */
   mp_prec_t err;  /* Precision of error */
-  
+
   mp_rnd_t rnd;
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_ZIV_DECL (loop);
 
-  /***** test x = 0  and x == 1******/  
+  /***** test x = 0  and x == 1******/
   if (MPFR_UNLIKELY (x <=  1))
     return mpfr_set_ui (y, 1, GMP_RNDN); /* 0! = 1 and 1! = 1 */
 
@@ -50,18 +50,18 @@ mpfr_fac_ui (mpfr_ptr y, unsigned long int x, mp_rnd_t rnd_mode)
 
   /* Initialisation of the Precision */
   Ny = MPFR_PREC (y);
-  
+
   /* compute the size of intermediary variable */
   Nt = Ny + 2 * MPFR_INT_CEIL_LOG2 (x) + 7;
-  
+
   mpfr_init2 (t, Nt); /* initialise of intermediary variable */
-  
+
   rnd = GMP_RNDZ;
   MPFR_ZIV_INIT (loop, Nt);
   for (;;)
     {
       /* compute factorial */
-      inexact = mpfr_set_ui (t, 1, rnd);            
+      inexact = mpfr_set_ui (t, 1, rnd);
       for (i = 2 ; i <= x ; i++)
         {
           round = mpfr_mul_ui (t, t, i, rnd);
@@ -70,12 +70,12 @@ mpfr_fac_ui (mpfr_ptr y, unsigned long int x, mp_rnd_t rnd_mode)
           if (inexact == 0)
             inexact = round;
         }
-      
+
       err = Nt - 1 - MPFR_INT_CEIL_LOG2 (Nt);
 
       round = !inexact || mpfr_can_round (t, err, rnd, GMP_RNDZ,
                                           Ny + (rnd_mode == GMP_RNDN));
-      
+
       if (MPFR_LIKELY (round))
         {
           /* If inexact = 0, then t is exactly x!, so round is the
@@ -87,11 +87,11 @@ mpfr_fac_ui (mpfr_ptr y, unsigned long int x, mp_rnd_t rnd_mode)
               inexact = round;
               break;
             }
-          else if ((inexact < 0 && round <= 0) 
+          else if ((inexact < 0 && round <= 0)
                    || (inexact > 0 && round >= 0))
             break;
           else /* inexact and round have opposite signs: we cannot
-                  compute the inexact flag. Restart using the 
+                  compute the inexact flag. Restart using the
                   symmetric rounding. */
             rnd = (rnd == GMP_RNDZ) ? GMP_RNDU : GMP_RNDZ;
         }

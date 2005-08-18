@@ -111,12 +111,12 @@ mpfr_log2 (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
         mpfr_const_log2(t,GMP_RNDD); /* log(2) */
         mpfr_log(tt,a,GMP_RNDN);     /* log(a) */
         mpfr_div(t,tt,t,GMP_RNDN); /* log(a)/log(2) */
-        
+
         /* estimation of the error */
         err = Nt-3;
         if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
           break;
-        
+
         /* actualisation of the precision */
         MPFR_ZIV_NEXT (loop, Nt);
         mpfr_set_prec (t, Nt);

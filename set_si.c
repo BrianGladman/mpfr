@@ -52,7 +52,7 @@ int
     MPFR_SET_NEG(x);
   else
     MPFR_SET_POS(x);
-  
+
   nbits = BITS_PER_MP_LIMB - cnt;
   MPFR_EXP (x) = nbits;  /* may be out-of-range, check range below */
   inex = mpfr_check_range(x, 0, rnd_mode);

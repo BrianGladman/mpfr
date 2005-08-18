@@ -136,7 +136,7 @@ special (void)
 
   /* Bug found by  Mark J Watkins */
   mpfr_set_prec (x, 84);
-  mpfr_set_str_binary (x, 
+  mpfr_set_str_binary (x,
    "0.110011010010001000000111101101001111111100101110010000000000000" \
                        "000000000000000000000E32");
   mpfr_round (x, x);
@@ -192,7 +192,7 @@ test_against_libc (void)
 
 #if HAVE_ROUND
   TEST_FCT (round);
-#endif 
+#endif
 #if HAVE_TRUNC
   TEST_FCT (trunc);
 #endif

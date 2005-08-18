@@ -187,31 +187,31 @@ main (void)
             }
         }
     }
-  
+
   /* Check for NAN */
   mpfr_set_nan (xx);
   mpfr_clear_erangeflag ();
   c = (mpfr_cmp) (xx, yy);
-  if (c != 0 || !mpfr_erangeflag_p () ) 
+  if (c != 0 || !mpfr_erangeflag_p () )
     {
       printf ("NAN error (1)\n");
       exit (1);
     }
   mpfr_clear_erangeflag ();
   c = (mpfr_cmp) (yy, xx);
-  if (c != 0 || !mpfr_erangeflag_p () ) 
+  if (c != 0 || !mpfr_erangeflag_p () )
     {
       printf ("NAN error (2)\n");
       exit (1);
     }
   mpfr_clear_erangeflag ();
   c = (mpfr_cmp) (xx, xx);
-  if (c != 0 || !mpfr_erangeflag_p () ) 
+  if (c != 0 || !mpfr_erangeflag_p () )
     {
       printf ("NAN error (3)\n");
       exit (1);
     }
-  
+
   mpfr_clear (xx);
   mpfr_clear (yy);
 

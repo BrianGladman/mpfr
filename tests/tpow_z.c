@@ -160,8 +160,8 @@ static void check_integer (mp_prec_t begin, mp_prec_t end, unsigned long max) {
         /* printf ("Check pow_z\n"); */
         res2 = mpfr_pow_z  (y2, x, z, rnd);
         if (mpfr_cmp (y1, y2) != 0) {
-          printf ("Error for p=%lu, z=%ld, rnd=%s and x=", p, n, 
-                  mpfr_print_rnd_mode (rnd)); 
+          printf ("Error for p=%lu, z=%ld, rnd=%s and x=", p, n,
+                  mpfr_print_rnd_mode (rnd));
           mpfr_dump (x);
           printf ("Ypowui="); mpfr_dump (y1);
           printf ("Ypowz ="); mpfr_dump (y2);
@@ -182,7 +182,7 @@ static void check_integer (mp_prec_t begin, mp_prec_t end, unsigned long max) {
   mpz_clear (z);
 }
 
-static void check_regression (void) 
+static void check_regression (void)
 {
   mpfr_t x, y;
   mpz_t  z;
@@ -200,7 +200,7 @@ static void check_regression (void)
       printf ("Regression (1) tested failed (%d=?%d)\n",res1, res2);
       printf ("pow_ui: "); mpfr_dump (x);
       printf ("pow_z:  "); mpfr_dump (y);
-      
+
       exit (1);
     }
 
@@ -212,7 +212,7 @@ static void check_regression (void)
 int main () {
   MPFR_TEST_USE_RANDS ();
   tests_start_mpfr ();
-  
+
   check_special ();
   check_integer (2, 163, 100);
   check_regression ();

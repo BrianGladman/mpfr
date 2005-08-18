@@ -29,7 +29,7 @@ MA 02110-1301, USA. */
    b must not be NaN
 */
 
-int 
+int
 mpfr_cmp_ui_2exp (mpfr_srcptr b, unsigned long int i, mp_exp_t f)
 {
   if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(b) ))

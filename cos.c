@@ -108,7 +108,7 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   /* Compute initial precision */
   precy = MPFR_PREC (y);
   /* We can choose everything we want for K0.
-     This formula has been created by trying many things... 
+     This formula has been created by trying many things...
      and is far from perfect */
   K0 = (MPFR_GET_EXP (x) > 0) ? (MPFR_GET_EXP (x)) : 0 ;
   K0 = __gmpfr_isqrt (precy / (2+2*K0+MPFR_INT_CEIL_LOG2 (precy)/4) );
@@ -137,7 +137,7 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
         {
           mpfr_mul (s, s, s, GMP_RNDU);       /* err <= 2*olderr */
           MPFR_SET_EXP (s, MPFR_GET_EXP (s)+1); /* Can't overflow */
-          mpfr_sub (s, s, r, GMP_RNDN);       /* err <= 4*olderr */ 
+          mpfr_sub (s, s, r, GMP_RNDN);       /* err <= 4*olderr */
           MPFR_ASSERTD (MPFR_GET_EXP (s) <= 1);
         }
 

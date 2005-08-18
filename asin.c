@@ -55,7 +55,7 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   /* Set x_p=|x| (x is a normal number) */
   mpfr_init2 (xp, MPFR_PREC (x));
-  inexact = mpfr_abs (xp, x, GMP_RNDN); 
+  inexact = mpfr_abs (xp, x, GMP_RNDN);
   MPFR_ASSERTD (inexact == 0);
 
   compared = mpfr_cmp_ui (xp, 1);
@@ -88,7 +88,7 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_ui_sub (xp, 1, xp, GMP_RNDD);
   MPFR_ASSERTD (MPFR_GET_EXP (xp) <= 0);
   MPFR_ASSERTD (MPFR_GET_EXP (x) <= 0);
-  xp_exp = 2 - MPFR_GET_EXP (xp); 
+  xp_exp = 2 - MPFR_GET_EXP (xp);
 
   /* Set up initial prec */
   prec = MPFR_PREC (asin) + 10 + xp_exp;

@@ -32,7 +32,7 @@ main (void)
   tests_start_mpfr ();
 
   mpfr_init2(x, MPFR_LDBL_MANT_DIG);
-  
+
   mpfr_set_ld (x, 2.34763465, GMP_RNDN);
   if (mpfr_cmp_ld(x, 2.34763465)!=0) {
     printf("Error in mpfr_cmp_ld 2.34763465 and ");

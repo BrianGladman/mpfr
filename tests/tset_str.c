@@ -44,7 +44,7 @@ MA 02110-1301, USA. */
       exit (1); \
     }
 
-static void 
+static void
 check_underflow (void)
 {
   mpfr_t a;
@@ -656,7 +656,7 @@ main (int argc, char *argv[])
   CHECK53(y, "5783893e-128", GMP_RNDU, x,
           "0.10011000111100000110011110000101100111110011101110101E-402",
           38);
-  
+
   CHECK53(y, "87575437e-310", GMP_RNDD, x,
           "0.11000000001011100000110011110011010000000010001010110E-1003",
           39);
@@ -827,7 +827,7 @@ main (int argc, char *argv[])
   mpfr_set_prec (y, 135);
   mpfr_set_str (y, "23833565676460972739462619524519814462546", 10, GMP_RNDN);
   MPFR_ASSERTN (mpfr_cmp (x, y) == 0 && ret == 0);
-  
+
   /* coverage test for set_str_binary */
   mpfr_set_str_binary (x, "NaN");
   MPFR_ASSERTN(mpfr_nan_p (x));

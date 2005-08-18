@@ -1,4 +1,4 @@
-/* mpfr_set_ui_2exp -- set a MPFR number from a machine unsigned integer with 
+/* mpfr_set_ui_2exp -- set a MPFR number from a machine unsigned integer with
    a shift
 
 Copyright 2004 Free Software Foundation.

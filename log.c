@@ -42,11 +42,11 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
 {
   int inexact;
   mp_prec_t p, q;
-  mpfr_t tmp1, tmp2; 
+  mpfr_t tmp1, tmp2;
   mp_limb_t *tmp1p, *tmp2p;
   MPFR_ZIV_DECL (loop);
   MPFR_TMP_DECL(marker);
-  
+
   MPFR_LOG_FUNC (("a[%#R]=%R rnd=%d", a, a, rnd_mode),
                  ("r[%#R]=%R inexact=%d", r, r, inexact));
 
@@ -105,11 +105,11 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
      m=q; while (m) { p++; m >>= 1; }  */
   /* if (MPFR_LIKELY(p % BITS_PER_MP_LIMB != 0))
       p += BITS_PER_MP_LIMB - (p%BITS_PER_MP_LIMB); */
-      
+
   MPFR_TMP_MARK(marker);
 
   MPFR_ZIV_INIT (loop, p);
-  for (;;) 
+  for (;;)
     {
       mp_size_t size;
       long m;
@@ -117,9 +117,9 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
 
       /* Calculus of m (depends on p) */
       m = (p + 1) / 2 - MPFR_GET_EXP (a) + 1;
-      
+
       /* All the mpfr_t needed have a precision of p */
-      size = (p-1)/BITS_PER_MP_LIMB+1; 
+      size = (p-1)/BITS_PER_MP_LIMB+1;
       MPFR_TMP_INIT (tmp1p, tmp1, p, size);
       MPFR_TMP_INIT (tmp2p, tmp2, p, size);
 
@@ -139,7 +139,7 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
 
       if (MPFR_UNLIKELY (cancel < 0))
         cancel = 0;
-      
+
       /* we have 7 ulps of error from the above roundings,
          4 ulps from the 4/s^2 second order term,
          plus the canceled bits */

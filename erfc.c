@@ -24,7 +24,7 @@ MA 02110-1301, USA. */
 
 /* erfc(x) = 1 - erf(x) */
 
-int 
+int
 mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
 {
   int inex;
@@ -47,7 +47,7 @@ mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
       /* erfc(+inf) = 0+, erfc(-inf) = 2 erfc (0) = 1 */
       else if (MPFR_IS_INF (x))
         return mpfr_set_ui (y, MPFR_IS_POS (x) ? 0 : 2, rnd);
-      else 
+      else
         return mpfr_set_ui (y, 1, rnd);
     }
 

@@ -34,7 +34,7 @@ main (void)
   mp_size_t s;
   mpfr_prec_t pr;
   int max;
-  
+
   tests_start_mpfr ();
   for(pr = MPFR_PREC_MIN ; pr < 500 ; pr++)
     {

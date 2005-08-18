@@ -169,12 +169,12 @@ mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
       else
         MPFR_SET_POS(r);
 #else /* _GMP_IEEE_FLOATS */
-      MPFR_SET_ZERO(r); 
+      MPFR_SET_ZERO(r);
       {
         /* This is to get the sign of zero on non-IEEE hardware
            Some systems support +0.0, -0.0 and unsigned zero.
            We can't use d==+0.0 since it should be always true,
-           so we check that the memory representation of d is the 
+           so we check that the memory representation of d is the
            same than +0.0. etc */
         double poszero = +0.0, negzero = -0.0;
         if (memcmp(&d, &poszero, sizeof(double)) == 0)
@@ -188,7 +188,7 @@ mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
       return 0; /* 0 is exact */
     }
   else if (MPFR_UNLIKELY(DOUBLE_ISINF(d)))
-    { 
+    {
       MPFR_SET_INF(r);
       if (d > 0)
         MPFR_SET_POS(r);

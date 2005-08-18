@@ -23,7 +23,7 @@ MA 02110-1301, USA. */
 
 /*
  * Check if x is a valid mpfr_t initializes by mpfr_init
- * Returns 0 if isn't valid 
+ * Returns 0 if isn't valid
  */
 int
 mpfr_check (mpfr_srcptr x)
@@ -45,7 +45,7 @@ mpfr_check (mpfr_srcptr x)
     return 0;
   /* Check size of mantissa */
   s = MPFR_GET_ALLOC_SIZE(x);
-  if (s<=0 || s > MP_SIZE_T_MAX || 
+  if (s<=0 || s > MP_SIZE_T_MAX ||
       MPFR_PREC(x) > ((mp_prec_t)s*BITS_PER_MP_LIMB))
     return 0;
   /* Acces all the mp_limb of the mantissa: may do a seg fault */
@@ -69,7 +69,7 @@ mpfr_check (mpfr_srcptr x)
       if ((MPFR_EXP (x) < __gmpfr_emin) || (MPFR_EXP (x) > __gmpfr_emax))
         return 0;
     }
-  else 
+  else
     {
       /* Singular value is zero, inf or nan */
       MPFR_ASSERTD(MPFR_IS_ZERO(x) || MPFR_IS_NAN(x) || MPFR_IS_INF(x));

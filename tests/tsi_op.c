@@ -1,4 +1,4 @@
-/* Test file for mpfr_add_si, mpfr_sub_si, mpfr_si_sub, mpfr_mul_si, 
+/* Test file for mpfr_add_si, mpfr_sub_si, mpfr_si_sub, mpfr_mul_si,
    mpfr_div_si, mpfr_si_div
 
 Copyright 2004 Free Software Foundation.
@@ -41,7 +41,7 @@ const struct {
   const char * res_sub;
   const char * res_mul;
   const char * res_div;
-} tab[] = { 
+} tab[] = {
   {"10", 0x1, "11", "0F", "10", "10"},
   {"1", -1,  "0",   "2",   "-1",  "-1"},
   {"17.42", -0x17, "0.42", "2E.42", "-216.ee", "-1.02de9bd37a6f4"},
@@ -53,7 +53,7 @@ check_invert ()
 {
   mpfr_t x;
   mpfr_init2 (x, MPFR_PREC_MIN);
-  
+
   mpfr_set_ui (x, 0xC, GMP_RNDN);
   mpfr_si_sub (x, -1, x, GMP_RNDD); /* -0001 - 1100 = - 1101 --> -1 0000 */
   if (mpfr_cmp_si (x, -0x10) )

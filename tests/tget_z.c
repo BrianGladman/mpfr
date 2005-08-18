@@ -59,8 +59,8 @@ check_one (mpz_ptr z)
       for (neg = 0; neg <= 1; neg++)
         {
           mpz_neg (z, z);
-          mpfr_set_z (f, z, GMP_RNDN);  
-          
+          mpfr_set_z (f, z, GMP_RNDN);
+
           if (sh < 0)
             {
               mpz_tdiv_q_2exp (z, z, -sh);
@@ -72,7 +72,7 @@ check_one (mpz_ptr z)
               mpfr_mul_2exp (f, f, sh, GMP_RNDN);
             }
 
-          mpfr_get_z (got, f, GMP_RNDZ); 
+          mpfr_get_z (got, f, GMP_RNDZ);
 
           if (mpz_cmp (got, z) != 0)
             {

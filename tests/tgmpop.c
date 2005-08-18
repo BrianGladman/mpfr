@@ -145,14 +145,14 @@ check_for_zero ()
   MPFR_SET_ZERO (x);
   for(r = 0 ; r < GMP_RND_MAX ; r++)
     {
-      for (i = MPFR_SIGN_NEG ; i <= MPFR_SIGN_POS ; 
+      for (i = MPFR_SIGN_NEG ; i <= MPFR_SIGN_POS ;
            i+=MPFR_SIGN_POS-MPFR_SIGN_NEG)
         {
           MPFR_SET_SIGN(x, i);
           mpfr_add_z (x, x, z, (mp_rnd_t) r);
           if (!MPFR_IS_ZERO(x) || MPFR_SIGN(x)!=i)
             {
-              printf("GMP Zero errors for add_z & rnd=%s & s=%d\n", 
+              printf("GMP Zero errors for add_z & rnd=%s & s=%d\n",
                      mpfr_print_rnd_mode ((mp_rnd_t) r), i);
               mpfr_dump (x);
               exit (1);
@@ -426,7 +426,7 @@ test_genericz (mp_prec_t p0, mp_prec_t p1, unsigned int N,
                           "arg1=",
                           (unsigned) prec, mpfr_print_rnd_mode (rnd), op);
                   mpfr_print_binary (arg1);
-                  printf("\narg2=");  
+                  printf("\narg2=");
                   mpz_out_str (stdout, 2, arg2);
                   printf ("\ngot      ");
                   mpfr_dump (dst_small);
@@ -448,12 +448,12 @@ test_genericz (mp_prec_t p0, mp_prec_t p1, unsigned int N,
                   ((inexact < 0) && (compare >= 0)))
                 {
                   printf ("Wrong inexact flag for rnd=%s and %s_z:\n"
-                          "expected %d, got %d\n", 
+                          "expected %d, got %d\n",
                           mpfr_print_rnd_mode (rnd), op, compare, inexact);
                   printf ("\narg1="); mpfr_print_binary (arg1);
                   printf ("\narg2="); mpz_out_str(stdout, 2, arg2);
-                  printf ("\ndstl="); mpfr_print_binary (dst_big); 
-                  printf ("\ndsts="); mpfr_print_binary (dst_small); 
+                  printf ("\ndstl="); mpfr_print_binary (dst_big);
+                  printf ("\ndsts="); mpfr_print_binary (dst_small);
                   printf ("\ntmp ="); mpfr_dump (tmp);
                   exit (1);
                 }
@@ -527,7 +527,7 @@ test_genericq (mp_prec_t p0, mp_prec_t p1, unsigned int N,
                   ((inexact < 0) && (compare >= 0)))
                 {
                   printf ("Wrong inexact flag for rnd=%s and %s_q:\n"
-                          "expected %d, got %d", 
+                          "expected %d, got %d",
                           mpfr_print_rnd_mode (rnd), op, compare, inexact);
                   printf ("\narg1="); mpfr_print_binary (arg1);
                   printf ("\narg2="); mpq_out_str(stdout, 2, arg2);

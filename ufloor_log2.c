@@ -30,7 +30,7 @@ __gmpfr_floor_log2 (double d)
 
   x.d = d;
   return (long) x.s.exp - 1023;
-#else  
+#else
   long exp;
   double m;
 
@@ -45,7 +45,7 @@ __gmpfr_floor_log2 (double d)
     {
       exp = 0;
       for( m= 1.0 ; m > d ; m *= (1.0/2.0) )
-        exp--;      
+        exp--;
     }
   return exp;
 #endif

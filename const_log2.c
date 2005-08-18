@@ -32,7 +32,7 @@ mpfr_const_log2 (mpfr_ptr x, mp_rnd_t rnd_mode) {
   return mpfr_cache (x, __gmpfr_cache_const_log2, rnd_mode);
 }
 
-/* Auxiliary function: Compute the terms from n1 to n2 (excluded) 
+/* Auxiliary function: Compute the terms from n1 to n2 (excluded)
    3/4*sum((-1)^n*n!^2/2^n/(2*n+1)!, n = n1..n2-1).
    Numerator is T[0], denominator is Q[0],
    Compute P[0] only when need_P is non-zero.
@@ -174,7 +174,7 @@ mpfr_const_log2_internal (mpfr_ptr x, mp_rnd_t rnd_mode)
         }
       (*__gmp_free_func) (T, 3 * lgN * sizeof (mpz_t));
 
-      if (MPFR_LIKELY (ok != 0 
+      if (MPFR_LIKELY (ok != 0
                        || mpfr_can_round (t, w - 2, GMP_RNDN, rnd_mode, n)))
         break;
 

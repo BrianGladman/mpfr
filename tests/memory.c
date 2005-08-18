@@ -5,7 +5,7 @@ Copyright 2001, 2002, 2003 Free Software Foundation, Inc.
 This file is part of the GNU MP Library.
 
 ChangeLog:
- tests_memory_valid has been commented out since it is not used 
+ tests_memory_valid has been commented out since it is not used
  tests_memory_list is declared as static
 
 The GNU MP Library is free software; you can redistribute it and/or modify

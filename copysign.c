@@ -22,7 +22,7 @@ MA 02110-1301, USA. */
 #include "mpfr-impl.h"
 
  /*
-   The computation of z with magnitude of x and sign of y 
+   The computation of z with magnitude of x and sign of y
    z = sign(y) * abs(x)
  */
 

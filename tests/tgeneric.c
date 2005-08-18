@@ -129,7 +129,7 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
   mpfr_clear (t);
 #ifdef TWO_ARGS
   mpfr_clear (u);
-#endif  
+#endif
 }
 
 #undef RAND_FUNCTION

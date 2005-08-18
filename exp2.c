@@ -1,4 +1,4 @@
-/* mpfr_exp2 -- power of 2 function 2^y 
+/* mpfr_exp2 -- power of 2 function 2^y
 
 Copyright 2001, 2002, 2003, 2004, 2005 Free Software Foundation.
 
@@ -28,8 +28,8 @@ MA 02110-1301, USA. */
  *     y = exp(z*log(2)). The result is exact iff z is an integer. */
 
 int
-mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode) 
-{    
+mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
+{
   int inexact;
   MPFR_SAVE_EXPO_DECL (expo);
 
@@ -55,7 +55,7 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
           return mpfr_set_ui (y, 1, rnd_mode);
         }
     }
-  
+
   /* since the smallest representable non-zero float is 1/2*2^__gmpfr_emin,
      if x < __gmpfr_emin - 1, the result is either 1/2*2^__gmpfr_emin or 0 */
   MPFR_ASSERTD (MPFR_EMIN_MIN - 2 >= LONG_MIN);
@@ -73,13 +73,13 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   if (mpfr_integer_p (x)) /* we know that x >= 2^(emin-1) */
     {
       long xd;
-      
+
       MPFR_ASSERTD (MPFR_EMAX_MAX <= LONG_MAX);
       if (mpfr_cmp_si_2exp (x, __gmpfr_emax, 0) > 0)
         return mpfr_overflow (y, rnd_mode, 1);
-      
+
       xd = mpfr_get_si (x, GMP_RNDN);
-      
+
       mpfr_set_ui (y, 1, GMP_RNDZ);
       return mpfr_mul_2si (y, y, xd, rnd_mode);
     }
@@ -90,7 +90,7 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   {
     /* Declaration of the intermediary variable */
     mpfr_t t;
-    
+
     /* Declaration of the size variable */
     mp_prec_t Ny = MPFR_PREC(y);              /* target precision */
     mp_prec_t Nt;                             /* working precision */
@@ -100,10 +100,10 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     /* compute the precision of intermediary variable */
     /* the optimal number of bits : see algorithms.tex */
     Nt = Ny + 5 + MPFR_INT_CEIL_LOG2 (Ny);
-    
+
     /* initialise of intermediary       variable */
     mpfr_init2 (t, Nt);
-    
+
     /* First computation */
     MPFR_ZIV_INIT (loop, Nt);
     for (;;)
@@ -113,10 +113,10 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
         mpfr_mul (t, x, t, GMP_RNDU);        /* x*ln(2) */
         err = Nt - (MPFR_GET_EXP (t) + 2);   /* Estimate of the error */
         mpfr_exp (t, t, GMP_RNDN);           /* exp(x*ln(2))*/
-        
+
         if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
           break;
-        
+
         /* Actualisation of the precision */
         MPFR_ZIV_NEXT (loop, Nt);
         mpfr_set_prec (t, Nt);
@@ -124,7 +124,7 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     MPFR_ZIV_FREE (loop);
 
     inexact = mpfr_set (y, t, rnd_mode);
-    
+
     mpfr_clear (t);
   }
   MPFR_SAVE_EXPO_FREE (expo);

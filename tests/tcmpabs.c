@@ -56,20 +56,20 @@ main (void)
   mpfr_set_str_binary (yy, "0.10011010101000110101010000000011001001001110001011101011111011100E623");
   if (mpfr_cmpabs (xx, yy) <= 0)
     ERROR ("Error (1) in mpfr_cmpabs\n");
-  
+
   mpfr_set_str_binary (xx, "-0.10100010001110110111000010001000010011111101000100011101000011100");
   mpfr_set_str_binary (yy, "-0.10100010001110110111000010001000010011111101000100011101000011011");
   if (mpfr_cmpabs (xx, yy) <= 0)
     ERROR ("Error (2) in mpfr_cmpabs\n");
 
-  mpfr_set_prec (xx, 160); 
+  mpfr_set_prec (xx, 160);
   mpfr_set_prec (yy, 160);
   mpfr_set_str_binary (xx, "0.1E1");
   mpfr_set_str_binary (yy, "-0.1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111100000110001110100");
   if (mpfr_cmpabs (xx, yy) <= 0)
     ERROR ("Error (3) in mpfr_cmpabs\n");
 
-  mpfr_set_prec(xx, 53); 
+  mpfr_set_prec(xx, 53);
   mpfr_set_prec(yy, 200);
   mpfr_set_ui (xx, 1, (mp_rnd_t) 0);
   mpfr_set_ui (yy, 1, (mp_rnd_t) 0);
@@ -120,21 +120,21 @@ main (void)
   mpfr_set_nan (xx);
   mpfr_clear_erangeflag ();
   c = (mpfr_cmp) (xx, yy);
-  if (c != 0 || !mpfr_erangeflag_p () ) 
+  if (c != 0 || !mpfr_erangeflag_p () )
     {
       printf ("NAN error (1)\n");
       exit (1);
     }
   mpfr_clear_erangeflag ();
   c = (mpfr_cmp) (yy, xx);
-  if (c != 0 || !mpfr_erangeflag_p () ) 
+  if (c != 0 || !mpfr_erangeflag_p () )
     {
       printf ("NAN error (2)\n");
       exit (1);
     }
   mpfr_clear_erangeflag ();
   c = (mpfr_cmp) (xx, xx);
-  if (c != 0 || !mpfr_erangeflag_p () ) 
+  if (c != 0 || !mpfr_erangeflag_p () )
     {
       printf ("NAN error (3)\n");
       exit (1);

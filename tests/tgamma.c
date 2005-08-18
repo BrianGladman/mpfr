@@ -37,7 +37,7 @@ special (void)
 
   mpfr_init (x);
   mpfr_init (y);
-  
+
   mpfr_set_nan (x);
   mpfr_gamma (y, x, GMP_RNDN);
   if (!mpfr_nan_p (y))
@@ -45,7 +45,7 @@ special (void)
       printf ("Error for gamma(NaN)\n");
       exit (1);
     }
-  
+
   mpfr_set_inf (x, -1);
   mpfr_gamma (y, x, GMP_RNDN);
   if (!mpfr_nan_p (y))
@@ -53,7 +53,7 @@ special (void)
       printf ("Error for gamma(-Inf)\n");
       exit (1);
     }
-  
+
   mpfr_set_inf (x, 1);
   mpfr_gamma (y, x, GMP_RNDN);
   if (!mpfr_inf_p (y) || mpfr_sgn (y) < 0)

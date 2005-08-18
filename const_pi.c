@@ -48,20 +48,20 @@ mpfr_const_pi_internal (mpfr_ptr x, mp_rnd_t rnd_mode)
   for (kmax = 2; ((px + 2 * kmax + 12) / 9) >> kmax; kmax ++);
 
   p = px + 3 * kmax + 14; /* guarantees no recomputation for px <= 10000 */
-  
+
   mpfr_init2 (a, p);
   mpfr_init2 (A, p);
   mpfr_init2 (B, p);
   mpfr_init2 (D, p);
   mpfr_init2 (S, p);
-  
+
   MPFR_ZIV_INIT (loop, p);
-  for (;;) {    
+  for (;;) {
     mpfr_set_ui (a, 1, GMP_RNDN);          /* a = 1 */
     mpfr_set_ui (A, 1, GMP_RNDN);          /* A = a^2 = 1 */
     mpfr_set_ui_2exp (B, 1, -1, GMP_RNDN); /* B = b^2 = 1/2 */
     mpfr_set_ui_2exp (D, 1, -2, GMP_RNDN); /* D = 1/4 */
-    
+
 #define b B
 #define ap a
 #define Ap A
@@ -97,7 +97,7 @@ mpfr_const_pi_internal (mpfr_ptr x, mp_rnd_t rnd_mode)
       /* MPFR_ASSERTN(p >= 2 * k + 8); */
       if (MPFR_LIKELY (MPFR_CAN_ROUND (A, p - 2 * k - 8, px, rnd_mode)))
         break;
-      
+
       p += kmax;
       MPFR_ZIV_NEXT (loop, p);
       mpfr_set_prec (a, p);
@@ -105,7 +105,7 @@ mpfr_const_pi_internal (mpfr_ptr x, mp_rnd_t rnd_mode)
       mpfr_set_prec (B, p);
       mpfr_set_prec (D, p);
       mpfr_set_prec (S, p);
-  }  
+  }
   MPFR_ZIV_FREE (loop);
   inex = mpfr_set (x, A, rnd_mode);
 

@@ -281,7 +281,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
       sticky_u = sticky_u || mpn_cmpzero (up, k);
     }
   low_u = sticky_u;
-  
+
   /* now sticky_u is non-zero iff the truncated part of u is non-zero */
 
   /* prepare the divisor */
@@ -426,7 +426,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
               printf ("cmp(q*v0,r+u0)=%d\n", cmp_s_r);
 #endif
               /* now cmp_s_r > 0 if {sp, vsize} > {ap, qsize} + low(u)
-                     cmp_s_r = 0 if {sp, vsize} = {ap, qsize} + low(u) 
+                     cmp_s_r = 0 if {sp, vsize} = {ap, qsize} + low(u)
                      cmp_s_r < 0 if {sp, vsize} < {ap, qsize} + low(u) */
               if (cmp_s_r <= 0) /* quotient is in [q1, q1+1) */
                 {
@@ -564,7 +564,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
  case_1: /* quotient is in [q1, q1+1),
             round_bit is the round_bit (0 for directed rounding),
             sticky the sticky bit */
-  if (rnd_mode == GMP_RNDZ || rnd_mode == GMP_RNDD || 
+  if (rnd_mode == GMP_RNDZ || rnd_mode == GMP_RNDD ||
       (round_bit == MPFR_LIMB_ZERO && sticky == MPFR_LIMB_ZERO))
     {
       inex = (round_bit == MPFR_LIMB_ZERO && sticky == MPFR_LIMB_ZERO) ? 0 : -1;
@@ -587,7 +587,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
     goto add_one_ulp; /* with inex=1 */
 
  sub_two_ulp:
-  /* we cannot subtract MPFR_LIMB_MPFR_LIMB_ONE << (sh+1) since this is 
+  /* we cannot subtract MPFR_LIMB_MPFR_LIMB_ONE << (sh+1) since this is
      undefined for sh = BITS_PER_MP_LIMB */
   qh -= mpn_sub_1 (q0p, q0p, q0size, MPFR_LIMB_ONE << sh);
   /* go through */
@@ -617,7 +617,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
       qexp ++;
       q0p[q0size - 1] = MPFR_LIMB_HIGHBIT;
     }
-  
+
  truncate: /* inex already set */
 
   MPFR_TMP_FREE(marker);

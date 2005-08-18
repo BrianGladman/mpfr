@@ -89,7 +89,7 @@ mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
   __gmpfr_emin -= 3;  /* So that we can check for underflow properly */
 
   /* setup initial precision */
-  prec = MPFR_PREC (x) + 3 + BITS_PER_MP_LIMB 
+  prec = MPFR_PREC (x) + 3 + BITS_PER_MP_LIMB
     + MPFR_INT_CEIL_LOG2 (MPFR_PREC (x));
   mpfr_init2 (res, prec);
 

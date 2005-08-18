@@ -321,7 +321,7 @@ mpfr_init_gmp_rand ()
 {
   /* Since we don't use __gmp_rands, but mpfr_rands, we need to init
      __gmp_rands before setting the memory functions so that the tests
-     don't report an error. 
+     don't report an error.
      Only the tests which call mpn_random2 can do that:
      trandom, tset_f and reuse.
      So we just have to call mpn_random before. */
@@ -344,7 +344,7 @@ mpfr_default_allocate (size_t size)
   ret = malloc (size);
   if (ret == NULL)
     {
-      fprintf (stderr, "MPFR: Can't allocate memory (size=%lu)\n", 
+      fprintf (stderr, "MPFR: Can't allocate memory (size=%lu)\n",
                (unsigned long) size);
       abort ();
     }
@@ -358,7 +358,7 @@ mpfr_default_reallocate (void *oldptr, size_t old_size, size_t new_size)
   ret = realloc (oldptr, new_size);
   if (ret == NULL)
     {
-      fprintf (stderr, 
+      fprintf (stderr,
                "MPFR: Can't reallocate memory (old_size=%lu new_size=%lu)\n",
                (unsigned long) old_size, (unsigned long) new_size);
       abort ();
@@ -375,8 +375,8 @@ mpfr_default_free (void *blk_ptr, size_t blk_size)
 #endif /* Have gmp-impl.h */
 
 #ifndef MPFR_HAVE_MPN_SUB_NC
-mp_limb_t 
-mpfr_sub_nc (mp_ptr dest, mp_srcptr op1, mp_srcptr op2, mp_size_t s, 
+mp_limb_t
+mpfr_sub_nc (mp_ptr dest, mp_srcptr op1, mp_srcptr op2, mp_size_t s,
              mp_limb_t c)
 {
   mp_limb_t c2;

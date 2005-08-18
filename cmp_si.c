@@ -29,7 +29,7 @@ MA 02110-1301, USA. */
    b must not be NaN.
 */
 
-int 
+int
 mpfr_cmp_si_2exp (mpfr_srcptr b, long int i, mp_exp_t f)
 {
   int si;

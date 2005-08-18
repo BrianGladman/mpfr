@@ -196,9 +196,9 @@ main (int argc, char* argv[])
 {
   MPFR_TEST_USE_RANDS ();
   tests_start_mpfr ();
-  
+
   check_nans ();
-  
+
   check_large ();
   check4 ("2.0", "1.0", GMP_RNDN, "1.45679103104690677029");
   check4 ("6.0", "4.0", GMP_RNDN, "4.94936087247260925182");
@@ -212,6 +212,6 @@ main (int argc, char* argv[])
           "7.55393356971199025907e-02");
   test_generic (2, 300, 17);
 
-  tests_end_mpfr ();  
+  tests_end_mpfr ();
   return 0;
 }

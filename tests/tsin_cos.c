@@ -35,7 +35,7 @@ large_test (int prec, int N)
   mpfr_init2 (c, prec);
   mpfr_set_ui (x, 3, GMP_RNDN);
   mpfr_sqrt (x, x, GMP_RNDN);
-  for (i=0; i<N; i++) 
+  for (i=0; i<N; i++)
     mpfr_sin_cos (s, c, x, GMP_RNDN);
   mpfr_out_str (stdout, 10, 0, s, GMP_RNDN); puts ("");
   mpfr_clear (x);
@@ -44,7 +44,7 @@ large_test (int prec, int N)
 }
 
 static void
-check53 (const char *xs, const char *sin_xs, const char *cos_xs, 
+check53 (const char *xs, const char *sin_xs, const char *cos_xs,
          mp_rnd_t rnd_mode)
 {
   mpfr_t xx, s, c;
@@ -178,7 +178,7 @@ main(int argc, char *argv[])
     }
 
   /* worst case from PhD thesis of Vincent Lefe`vre: x=8980155785351021/2^54 */
-  check53 ("4.984987858808754279e-1", "4.781075595393330379e-1", 
+  check53 ("4.984987858808754279e-1", "4.781075595393330379e-1",
            "8.783012931285841817e-1", GMP_RNDN);
   check53 ("4.984987858808754279e-1", "4.781075595393329824e-1",
            "8.783012931285840707e-1", GMP_RNDD);

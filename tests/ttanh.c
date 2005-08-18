@@ -86,7 +86,7 @@ special_overflow (void)
       exit (1);
     }
   MPFR_ASSERTN (!mpfr_overflow_p ());
- 
+
   set_emin (MPFR_EMIN_MIN);
   set_emax (MPFR_EMAX_MAX);
 

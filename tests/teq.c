@@ -176,7 +176,7 @@ special (void)
   MPFR_ASSERTN(mpfr_eq (x, y, 2) == 0);
   MPFR_ASSERTN(mpfr_eq (x, y, mp_bits_per_limb) == 0);
   MPFR_ASSERTN(mpfr_eq (x, y, mp_bits_per_limb + 1) == 0);
-  
+
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);

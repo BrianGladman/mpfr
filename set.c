@@ -39,7 +39,7 @@ mpfr_set4 (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode, int signb)
          since MPFR_EXP (a) = MPFR_EXP (b) does the job */
       if (MPFR_IS_NAN (b))
         MPFR_RET_NAN;
-      else 
+      else
         MPFR_RET (0);
     }
   else if (MPFR_LIKELY (MPFR_PREC (b) == MPFR_PREC (a)))
@@ -47,7 +47,7 @@ mpfr_set4 (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode, int signb)
       /* Same precision and b is not singular:
        * just copy the mantissa, and set the exponent and the sign
        * The result is exact. */
-      MPN_COPY (MPFR_MANT (a), MPFR_MANT (b), 
+      MPN_COPY (MPFR_MANT (a), MPFR_MANT (b),
                 (MPFR_PREC (b) + BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB);
       MPFR_RET (0);
     }
@@ -56,8 +56,8 @@ mpfr_set4 (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode, int signb)
       int inex;
 
       /* Else Round B inside a */
-      MPFR_RNDRAW (inex, a, MPFR_MANT (b), MPFR_PREC (b), rnd_mode, signb, 
-                   if (MPFR_UNLIKELY ( ++MPFR_EXP (a) > __gmpfr_emax)) 
+      MPFR_RNDRAW (inex, a, MPFR_MANT (b), MPFR_PREC (b), rnd_mode, signb,
+                   if (MPFR_UNLIKELY ( ++MPFR_EXP (a) > __gmpfr_emax))
                     return mpfr_overflow (a, rnd_mode, signb) );
       MPFR_RET (inex);
     }

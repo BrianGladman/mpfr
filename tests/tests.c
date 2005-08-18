@@ -53,7 +53,7 @@ static void tests_rand_start (void);
 static void tests_rand_end   (void);
 
 /* We want to always import the function mpfr_dump inside the test
-   suite, so that we can use it in GDB. But it doesn't work if we build 
+   suite, so that we can use it in GDB. But it doesn't work if we build
    a Windows DLL (initializer element is not a constant) */
 #if !__GMP_LIBGMP_DLL
 extern void (*dummy_func) (mpfr_srcptr);

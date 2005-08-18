@@ -41,7 +41,7 @@ main (void)
   if (mpfr_cmp_ui (y, 1))
     {
       printf ("Error in mpfr_ceil for x=0.5: expected 1.0, got ");
-      mpfr_print_binary(y); 
+      mpfr_print_binary(y);
       putchar('\n');
       exit (1);
     }

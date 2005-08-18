@@ -22,7 +22,7 @@ MA 02110-1301, USA. */
 
 #include "mpfr-impl.h"
 
-int 
+int
 mpfr_integer_p (mpfr_srcptr x)
 {
   mp_exp_t expo;

@@ -209,7 +209,7 @@ mpfr_ceil_double (double x)
 */
 static int
 mpfr_get_str_aux (char *const str, mp_exp_t *const exp, mp_limb_t *const r,
-                  mp_size_t n, mp_exp_t f, long e, int b, size_t m, 
+                  mp_size_t n, mp_exp_t f, long e, int b, size_t m,
                   mp_rnd_t rnd)
 {
   int dir;                  /* direction of the rounded result */
@@ -257,7 +257,7 @@ mpfr_get_str_aux (char *const str, mp_exp_t *const exp, mp_limb_t *const r,
                             n * BITS_PER_MP_LIMB + f, rnd, &dir);
       MPFR_ASSERTD(dir != MPFR_ROUND_FAILED);
 
-      /* warning: mpfr_round_raw_generic returns MPFR_EVEN_INEX (2) or 
+      /* warning: mpfr_round_raw_generic returns MPFR_EVEN_INEX (2) or
          -MPFR_EVEN_INEX (-2) in case of even rounding */
 
       if (ret) /* Y is a power of 2 */
@@ -695,7 +695,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
               exp ++;
             }
         }
-      else 
+      else
         break;
 
       MPFR_TMP_FREE(marker);

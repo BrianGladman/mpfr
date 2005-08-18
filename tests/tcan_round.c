@@ -68,14 +68,14 @@ main (void)
   /* checks that rounds to nearest sets the last
      bit to zero in case of equal distance */
   mpfr_init2 (x, 59);
-  mpfr_set_str_binary (x, "-0.10010001010111000011110010111010111110000000111101100111111E663"); 
+  mpfr_set_str_binary (x, "-0.10010001010111000011110010111010111110000000111101100111111E663");
   if (mpfr_can_round (x, 54, GMP_RNDZ, GMP_RNDZ, 53) != 0)
     {
       printf ("Error (1) in mpfr_can_round\n");
       exit (1);
     }
 
-  mpfr_set_str_binary (x, "-Inf"); 
+  mpfr_set_str_binary (x, "-Inf");
   if (mpfr_can_round (x, 2000, GMP_RNDZ, GMP_RNDZ, 2000) != 0)
     {
       printf ("Error (2) in mpfr_can_round\n");

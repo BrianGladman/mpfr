@@ -126,7 +126,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
             {
               mpfr_div_2ui (tmp, tmp, 1, GMP_RNDN);
               mpfr_swap (v, tmp);
-              break;                      
+              break;
               }
 #elif 1
           if (4*eq > p)
@@ -148,7 +148,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
       /* Roundability of the result */
       if (MPFR_LIKELY (MPFR_CAN_ROUND (v, p - 4 - 3, q, rnd_mode)))
         break; /* Stop the loop */
-  
+
       /* Next iteration */
       MPFR_ZIV_NEXT (loop, p);
       s = (p - 1) / BITS_PER_MP_LIMB + 1;
@@ -157,7 +157,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
 
   /* Setting of the result */
   inexact = mpfr_set (r, v, rnd_mode);
-  
+
   /* Let's clean */
   MPFR_TMP_FREE(marker);
 

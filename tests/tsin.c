@@ -113,7 +113,7 @@ test_sign (void)
   test_sin (y, x, GMP_RNDN);
   mpfr_set_str_binary (x, "11011010111101011110111100010101010101110000000001011E-106");
   MPFR_ASSERTN(mpfr_cmp (x, y) == 0);
-  
+
   /* Bug on Special cases */
   mpfr_set_str_binary (x, "0.100011011010111101E-32");
   test_sin (y, x, GMP_RNDN);

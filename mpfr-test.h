@@ -41,7 +41,7 @@ MA 02110-1301, USA. */
 
 /* Loop for all rounding modes */
 #define RND_LOOP(_r) for((_r) = 0 ; (_r) < GMP_RND_MAX ; (_r)++)
- 
+
 /* The MAX, MIN and ABS macros may already be defined if gmp-impl.h has
    been included. They have the same semantics as in gmp-impl.h, but the
    expressions may be slightly different. So, it's better to undefine

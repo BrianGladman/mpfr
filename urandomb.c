@@ -61,7 +61,7 @@ mpfr_urandomb (mpfr_ptr rop, gmp_randstate_t rstate)
 
   if (MPFR_LIKELY(nlimbs != 0)) /* otherwise value is zero */
     {
-      count_leading_zeros (cnt, rp[nlimbs - 1]); 
+      count_leading_zeros (cnt, rp[nlimbs - 1]);
       if (mpfr_set_exp (rop, exp - cnt))
         {
           MPFR_SET_NAN (rop);

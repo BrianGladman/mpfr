@@ -47,7 +47,7 @@ check (mp_prec_t p0, mp_prec_t p1)
           rnd = (mp_rnd_t) RND_RAND ();
           mpfr_const_log2 (x, rnd);
           mpfr_set (y, z, rnd);
-          if ((dif = mpfr_cmp (x, y)) 
+          if ((dif = mpfr_cmp (x, y))
               && mpfr_can_round (z, mpfr_get_prec(z), GMP_RNDN,
                                                  rnd, p0))
             {
@@ -80,11 +80,11 @@ check_large (void)
       exit (1);
     }
 
-  /* worst-case with 15 successive ones after last bit, 
+  /* worst-case with 15 successive ones after last bit,
      to exercise can_round loop */
   mpfr_set_prec (x, 26249);
   mpfr_const_log2 (x, GMP_RNDZ);
-  
+
   mpfr_clears (x, y, NULL);
 }
 

@@ -1,4 +1,4 @@
-/* mpfr_get_z_exp -- get a multiple-precision integer from 
+/* mpfr_get_z_exp -- get a multiple-precision integer from
                      a floating-point number
 
 Copyright 2004 Free Software Foundation, Inc.
@@ -27,7 +27,7 @@ mpfr_get_z (mpz_ptr z, mpfr_srcptr f, mp_rnd_t rnd)
 {
   mpfr_t r;
   mp_exp_t exp = MPFR_EXP (f);
-  
+
   /* if exp <= 0, then |f|<1, thus |o(f)|<=1 */
   MPFR_ASSERTD (MPFR_PREC_MIN == 2);
   mpfr_init2 (r, (exp <= 0) ? MPFR_PREC_MIN : exp + 1);

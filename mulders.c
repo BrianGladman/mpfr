@@ -32,7 +32,7 @@ static short mulhigh_ktab[] = {MPFR_MULHIGH_TAB};
 #endif
 
 /* Put in  rp[n..2n-1] an approximation of the n high limbs
-   of {mp, n} * {np, n}. 
+   of {mp, n} * {np, n}.
    The error is at worst of ln(n) for rp[n] and rp[n-1] is totally wrong */
 static void
 mpfr_mulhigh_n_basecase (mp_ptr rp, mp_srcptr up, mp_srcptr vp, mp_size_t n)
@@ -49,7 +49,7 @@ void
 mpfr_mulhigh_n (mp_ptr rp, mp_srcptr np, mp_srcptr mp, mp_size_t n)
 {
   mp_size_t k;
-  
+
   MPFR_ASSERTD (MPFR_MULHIGH_TAB_SIZE > 4);
   k = MPFR_LIKELY (n < MPFR_MULHIGH_TAB_SIZE) ? mulhigh_ktab[n] : 2*n/3;
   MPFR_ASSERTD (k == -1 || k == 0 || (k > n/2 && k < n));
@@ -84,7 +84,7 @@ void
 mpfr_sqrhigh_n (mp_ptr rp, mp_srcptr np, mp_size_t n)
 {
   mp_size_t k;
-  
+
   MPFR_ASSERTD (MPFR_SQRHIGH_TAB_SIZE > 4);
   k = MPFR_LIKELY (n < MPFR_SQRHIGH_TAB_SIZE) ? sqrhigh_ktab[n] : 2*n/3;
   MPFR_ASSERTD (k == -1 || k == 0 || (k > n/2 && k < n));

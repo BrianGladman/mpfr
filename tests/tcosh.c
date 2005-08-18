@@ -142,7 +142,7 @@ special_overflow (void)
 
   set_emin (-125);
   set_emax (128);
-  
+
   mpfr_init2 (x, 24);
   mpfr_init2 (y, 24);
 
@@ -152,7 +152,7 @@ special_overflow (void)
     {
       printf("Special overflow error 1.\n");
       mpfr_dump (y);
-      exit (1); 
+      exit (1);
     }
 
   mpfr_set_str_binary (x, "0.101100100000000000110100E8");
@@ -163,7 +163,7 @@ special_overflow (void)
       mpfr_dump (y);
       exit (1);
     }
-  
+
   set_emin (MPFR_EMIN_MIN);
   set_emax (MPFR_EMAX_MAX);
 

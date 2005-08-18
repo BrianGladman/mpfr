@@ -234,7 +234,7 @@ main (int argc, char *argv[])
 
     mp_prec_t p0=2, p1=200;
     unsigned int N=200;
-    
+
     mpfr_init (t);
     mpfr_init (slong);
 

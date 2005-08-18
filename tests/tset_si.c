@@ -35,7 +35,7 @@ test_2exp (void)
   int res;
 
   mpfr_init2 (x, 32);
-  
+
   mpfr_set_ui_2exp (x, 1, 0, GMP_RNDN);
   if (mpfr_cmp_ui(x, 1))
     ERROR("(1U,0)");
@@ -183,7 +183,7 @@ main (int argc, char *argv[])
       mpfr_set_ui (x, 0, (mp_rnd_t) r);
       if (MPFR_IS_NEG (x) || mpfr_get_ui (x, (mp_rnd_t) r) != 0)
         {
-          printf ("mpfr_set_ui (x, 0) gives -0 for %s\n", 
+          printf ("mpfr_set_ui (x, 0) gives -0 for %s\n",
                   mpfr_print_rnd_mode ((mp_rnd_t) r));
           exit (1);
         }
@@ -197,7 +197,7 @@ main (int argc, char *argv[])
           exit (1);
         }
     }
-  
+
   /* check potential bug in case mp_limb_t is unsigned */
   emax = mpfr_get_emax ();
   set_emax (0);
@@ -266,7 +266,7 @@ main (int argc, char *argv[])
   MPFR_ASSERTN (mpfr_get_si (x, GMP_RNDD) == 0);
 
   /* Test for ERANGE flag + correct behaviour if overflow */
-  mpfr_set_prec (x, 256); 
+  mpfr_set_prec (x, 256);
   mpfr_set_ui (x, ULONG_MAX, GMP_RNDN);
   mpfr_clear_erangeflag ();
   dl = mpfr_get_ui (x, GMP_RNDN);
@@ -320,7 +320,7 @@ main (int argc, char *argv[])
       printf ("ERROR for get_si + ERANGE + LONG_MIN (2)\n");
       exit (1);
     }
- 
+
   mpfr_clear (x);
 
   test_2exp ();

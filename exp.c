@@ -102,7 +102,7 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
             {
               mp_size_t yn;
               int sh;
-              
+
               yn = 1 + (MPFR_PREC(y) - 1) / BITS_PER_MP_LIMB;
               sh = (mp_prec_t) yn * BITS_PER_MP_LIMB - MPFR_PREC(y);
               MPFR_MANT(y)[0] += MPFR_LIMB_ONE << sh;
@@ -114,11 +114,11 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     }
 
   /* General case */
-  else 
+  else
     {
       MPFR_SAVE_EXPO_MARK (expo);
       __gmpfr_emin -= 3;  /* So that we can check for underflow properly */
- 
+
       if (MPFR_UNLIKELY (precy > MPFR_EXP_THRESHOLD))
         inexact = mpfr_exp_3 (y, x, rnd_mode); /* O(M(n) log(n)^2) */
       else

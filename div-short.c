@@ -50,10 +50,10 @@ mpn_dc_divrem_n_new (mp_ptr qp, mp_ptr np, mp_srcptr dp, mp_size_t n)
       ql -= mpn_sub_1 (qp, qp, l, (mp_limb_t) 1);
       cc -= mpn_add_n (np, np, dp, n);
     }
-  
+
   /* propagate ql */
   qh += mpn_add_1 (qp + l, qp + l, m, ql);
-  
+
   return qh;
 }
 
@@ -92,10 +92,10 @@ mpn_dc_divrem_n_high (mp_ptr qp, mp_ptr np, mp_srcptr dp, mp_size_t n)
     }
 
   ql = DIVREM_HIGH (qp, np + m, dp + m, l);
-  
+
   /* propagate ql */
   qh += mpn_add_1 (qp + l, qp + l, m, ql);
-  
+
   return qh;
 }
 
@@ -151,7 +151,7 @@ void bench (int argc, const char *argv[])
 
   if (i >= 0)
     printf ("limbs %d differ: %lu %lu %ld\n", i, qp[i], q2p[i],
-            (long) q2p[i]-qp[i]); 
+            (long) q2p[i]-qp[i]);
 }
 
 void
@@ -238,5 +238,5 @@ main (int argc, const char *argv[])
     check (argc-1, argv+1);
   else
     bench (argc, argv);
-  return 0;    
+  return 0;
 }

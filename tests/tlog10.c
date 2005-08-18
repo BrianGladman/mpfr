@@ -87,7 +87,7 @@ main (int argc, char *argv[])
   mpfr_set_ui (x, 1, GMP_RNDN);
   test_log10 (y, x, GMP_RNDN);
   MPFR_ASSERTN((mpfr_cmp_ui (y, 0) == 0) && (MPFR_IS_POS (y)));
-  
+
   /* check log10(10^n)=n */
   mpfr_set_ui (x, 1, GMP_RNDN);
   for (n = 1; n <= 15; n++)

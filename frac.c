@@ -95,7 +95,7 @@ mpfr_frac (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
   fq = uq - ue;  /* number of bits of the fractional part of u */
 
   /* Temporary fix */
-  t = /* fq > MPFR_PREC(r) */ 
+  t = /* fq > MPFR_PREC(r) */
     (mp_size_t) (MPFR_PREC(r) - 1) / BITS_PER_MP_LIMB < un ?
     (mpfr_init2 (tmp, (un + 1) * BITS_PER_MP_LIMB), tmp) : r;
   /* t has enough precision to contain the fractional part of u */

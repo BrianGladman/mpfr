@@ -48,27 +48,27 @@ struct dbl_bytes {
 #define MPFR_DBL_NAN   (* (const double *) dbl_nan.b)
 
 #if HAVE_DOUBLE_IEEE_LITTLE_ENDIAN
-static const struct dbl_bytes dbl_infp = 
+static const struct dbl_bytes dbl_infp =
   { { 0, 0, 0, 0, 0, 0, 0xF0, 0x7F }, 0.0 };
-static const struct dbl_bytes dbl_infm = 
+static const struct dbl_bytes dbl_infm =
   { { 0, 0, 0, 0, 0, 0, 0xF0, 0xFF }, 0.0 };
-static const struct dbl_bytes dbl_nan  = 
+static const struct dbl_bytes dbl_nan  =
   { { 0, 0, 0, 0, 0, 0, 0xF8, 0x7F }, 0.0 };
 #endif
 #if HAVE_DOUBLE_IEEE_LITTLE_SWAPPED
-static const struct dbl_bytes dbl_infp = 
+static const struct dbl_bytes dbl_infp =
   { { 0, 0, 0xF0, 0x7F, 0, 0, 0, 0 }, 0.0 };
-static const struct dbl_bytes dbl_infm = 
+static const struct dbl_bytes dbl_infm =
   { { 0, 0, 0xF0, 0xFF, 0, 0, 0, 0 }, 0.0 };
-static const struct dbl_bytes dbl_nan  = 
+static const struct dbl_bytes dbl_nan  =
   { { 0, 0, 0xF8, 0x7F, 0, 0, 0, 0 }, 0.0 };
 #endif
 #if HAVE_DOUBLE_IEEE_BIG_ENDIAN
-static const struct dbl_bytes dbl_infp = 
+static const struct dbl_bytes dbl_infp =
   { { 0x7F, 0xF0, 0, 0, 0, 0, 0, 0 }, 0.0 };
-static const struct dbl_bytes dbl_infm = 
+static const struct dbl_bytes dbl_infm =
   { { 0xFF, 0xF0, 0, 0, 0, 0, 0, 0 }, 0.0 };
-static const struct dbl_bytes dbl_nan  = 
+static const struct dbl_bytes dbl_nan  =
   { { 0x7F, 0xF8, 0, 0, 0, 0, 0, 0 }, 0.0 };
 #endif
 
@@ -80,7 +80,7 @@ static const struct dbl_bytes dbl_nan  =
 
 #endif /* _GMP_IEEE_FLOATS */
 
- 
+
 /* multiplies 1/2 <= d <= 1 by 2^exp */
 static double
 mpfr_scale2 (double d, int exp)
@@ -162,17 +162,17 @@ mpfr_get_d (mpfr_srcptr src, mp_rnd_t rnd_mode)
         return MPFR_DBL_NAN;
 
       negative = MPFR_IS_NEG (src);
-      
+
       if (MPFR_IS_INF (src))
         return negative ? MPFR_DBL_INFM : MPFR_DBL_INFP;
-      
+
       MPFR_ASSERTD (MPFR_IS_ZERO(src));
       return negative ? -0.0 : 0.0;
     }
-  
+
   e = MPFR_GET_EXP (src);
   negative = MPFR_IS_NEG (src);
-  
+
   /* the smallest normalized number is 2^(-1022)=0.1e-1021, and the smallest
      subnormal is 2^(-1074)=0.1e-1073 */
   if (MPFR_UNLIKELY (e < -1073))

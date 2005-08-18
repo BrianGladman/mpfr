@@ -152,7 +152,7 @@ main (int argc, char *argv[])
   MPFR_ASSERTN(mpfr_inf_p (x) && MPFR_IS_POS(x));
   set_emax (emax);
 
-  mpfr_set_str (x, /*1.0/3.0*/ 
+  mpfr_set_str (x, /*1.0/3.0*/
                 "0.333333333333333333333333333333333", 10, GMP_RNDZ);
   mpfr_mul_ui (x, x, 3, GMP_RNDU);
   if (mpfr_cmp_ui (x, 1))

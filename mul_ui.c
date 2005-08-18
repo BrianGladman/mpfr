@@ -39,7 +39,7 @@ mpfr_mul_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
           MPFR_SET_NAN (y);
           MPFR_RET_NAN;
         }
-      else if (MPFR_IS_INF (x)) 
+      else if (MPFR_IS_INF (x))
         {
           if (u != 0)
             {
@@ -103,13 +103,13 @@ mpfr_mul_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 
   /* now yp[xn], ..., yp[0] is msb-normalized too, and has at most
      PREC(x) + (BITS_PER_MP_LIMB - cnt) non-zero bits */
-  MPFR_RNDRAW (inexact, y, yp, (mp_prec_t) (xn + 1) * BITS_PER_MP_LIMB, 
+  MPFR_RNDRAW (inexact, y, yp, (mp_prec_t) (xn + 1) * BITS_PER_MP_LIMB,
                rnd_mode, MPFR_SIGN (x), cnt -- );
 
   MPFR_TMP_FREE (marker);
 
   cnt = BITS_PER_MP_LIMB - cnt;
-  if (MPFR_UNLIKELY (__gmpfr_emax < MPFR_EMAX_MIN + cnt 
+  if (MPFR_UNLIKELY (__gmpfr_emax < MPFR_EMAX_MIN + cnt
                      || MPFR_GET_EXP (x) > __gmpfr_emax - cnt))
     return mpfr_overflow (y, rnd_mode, MPFR_SIGN(x));
 

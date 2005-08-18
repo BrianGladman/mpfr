@@ -53,7 +53,7 @@ mpfr_random2 (mpfr_ptr x, mp_size_t size, mp_exp_t exp)
   xp = MPFR_MANT (x);
   if (size > xn)
     size = xn;
-  k = xn - size;                  
+  k = xn - size;
 
   /* k   : # of 0 limbs at the end
      size: # of limbs to fill

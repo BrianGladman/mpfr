@@ -26,7 +26,7 @@ MA 02110-1301, USA. */
        atanh= 1/2*ln(x+1)-1/2*ln(1-x)   */
 
 int
-mpfr_atanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode) 
+mpfr_atanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
 {
   int inexact;
   mpfr_t x, t, te;
@@ -44,7 +44,7 @@ mpfr_atanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
       /* atanh(NaN) = NaN, and atanh(+/-Inf) = NaN since tanh gives a result
          between -1 and 1 */
       if (MPFR_IS_NAN (xt) || MPFR_IS_INF (xt))
-        {  
+        {
           MPFR_SET_NAN (y);
           MPFR_RET_NAN;
         }
@@ -90,31 +90,31 @@ mpfr_atanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
   /* First computation of cosh */
   MPFR_ZIV_INIT (loop, Nt);
   for (;;)
-    {      
+    {
       /* compute atanh */
       mpfr_ui_sub (te, 1, x, GMP_RNDU);   /* (1-xt)*/
       mpfr_add_ui (t,  x, 1, GMP_RNDD);   /* (xt+1)*/
       mpfr_div (t, t, te, GMP_RNDN);      /* (1+xt)/(1-xt)*/
       mpfr_log (t, t, GMP_RNDN);          /* ln((1+xt)/(1-xt))*/
       mpfr_div_2ui (t, t, 1, GMP_RNDN);   /* (1/2)*ln((1+xt)/(1-xt))*/
-      
+
       /* error estimate see- algorithms.ps*/
       /* err=Nt-__gmpfr_ceil_log2(1+5*pow(2,1-MPFR_EXP(t)));*/
       err = Nt - (MAX (4 - MPFR_GET_EXP (t), 0) + 1);
-      
+
       if (MPFR_LIKELY (MPFR_IS_ZERO (t)
                        || MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
         break;
 
       /* reactualisation of the precision */
       MPFR_ZIV_NEXT (loop, Nt);
-      mpfr_set_prec (t, Nt);             
+      mpfr_set_prec (t, Nt);
       mpfr_set_prec (te, Nt);
     }
   MPFR_ZIV_FREE (loop);
 
   inexact = mpfr_set4 (y, t, rnd_mode, MPFR_SIGN (xt));
-  
+
   mpfr_clear(t);
   mpfr_clear(te);
 

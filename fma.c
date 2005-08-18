@@ -50,7 +50,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
           /* cases Inf*0+z, 0*Inf+z, Inf-Inf */
           if ((MPFR_IS_ZERO(y)) ||
               (MPFR_IS_ZERO(x)) ||
-              (MPFR_IS_INF(z) && 
+              (MPFR_IS_INF(z) &&
                ((MPFR_MULT_SIGN(MPFR_SIGN(x), MPFR_SIGN(y))) != MPFR_SIGN(z))))
             {
               MPFR_SET_NAN(s);

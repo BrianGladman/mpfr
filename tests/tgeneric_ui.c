@@ -69,7 +69,7 @@ test_generic_ui (mp_prec_t p0, mp_prec_t p1, unsigned int N)
                   printf ("results differ for x=");
                   mpfr_out_str (stdout, 2, prec, x, GMP_RNDN);
                   printf ("\nu=%lu", (unsigned long) u);
-                  printf (" prec=%lu rnd_mode=%s\n", 
+                  printf (" prec=%lu rnd_mode=%s\n",
                           (unsigned long ) prec, mpfr_print_rnd_mode (rnd));
 #ifdef TEST_FUNCTION_NAME
                   printf ("Function: %s\n", TEST_FUNCTION_NAME);

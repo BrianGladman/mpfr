@@ -351,7 +351,7 @@ special (void)
       MPFR_ASSERTN (mpfr_mul (x, x, x, GMP_RNDN) == 0); /* exact */
       inexact = test_sqrt (z, x, GMP_RNDN);
       /* even rule: z should be 2^(BITS_PER_MP_LIMB - 1) */
-      MPFR_ASSERTN (inexact < 0); 
+      MPFR_ASSERTN (inexact < 0);
       MPFR_ASSERTN (mpfr_cmp_ui_2exp (z, 1, BITS_PER_MP_LIMB - 1) == 0);
       mpfr_nextbelow (x);
       /* now x is just below [2^(BITS_PER_MP_LIMB - 1) + 1]^2 */
@@ -520,7 +520,7 @@ test_property1 (mp_prec_t p, mp_rnd_t r)
       printf ("got "); mpfr_dump (z);
       exit (1);
     }
-  
+
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);

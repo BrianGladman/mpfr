@@ -23,7 +23,7 @@ MA 02110-1301, USA. */
 #include "mpfr-impl.h"
 
 int
-mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode) 
+mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
 {
   /****** Declaration ******/
   mpfr_t x;
@@ -81,7 +81,7 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
        If 2 ^(2*x) > 2^emax or x>emax/2, there is an overflow */
     if (MPFR_UNLIKELY (mpfr_cmp_si (x, __gmpfr_emax/2) >= 0)) {
       /* initialise of intermediary variables
-         since 'set_one' label assumes the variables have been 
+         since 'set_one' label assumes the variables have been
          initialize */
       MPFR_GROUP_INIT_2 (group, MPFR_PREC_MIN, t, te);
       goto set_one;

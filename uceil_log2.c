@@ -54,7 +54,7 @@ __gmpfr_ceil_log2 (double d)
     {
       exp = 1;
       for( m= 1.0 ; m >= d ; m *= (1.0/2.0) )
-        exp--;      
+        exp--;
     }
 #endif
   return exp;

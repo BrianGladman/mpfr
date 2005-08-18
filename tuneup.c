@@ -33,7 +33,7 @@ MA 02110-1301, USA. */
 int verbose;
 
 /* s->size: precision of both input and output
-   s->xp  : Mantissa of first input   
+   s->xp  : Mantissa of first input
    s->yp  : mantissa of second input                    */
 
 #define SPEED_MPFR_FUNC(mean_fun) do {               \
@@ -144,7 +144,7 @@ static double speed_mpfr_mul (struct speed_params *s) {
 /************************************************
  * Common functions (inspired by GMP function)  *
  ************************************************/
-static int 
+static int
 analyze_data (double *dat, int ndat) {
   double  x, min_x;
   int     j, min_j;
@@ -170,7 +170,7 @@ analyze_data (double *dat, int ndat) {
 
 #define THRESHOLD_WINDOW 16
 #define THRESHOLD_FINAL_WINDOW 128
-static double domeasure (mp_prec_t *threshold, 
+static double domeasure (mp_prec_t *threshold,
                          double (*func) (struct speed_params *),
                          mp_prec_t p)
 {
@@ -192,14 +192,14 @@ static double domeasure (mp_prec_t *threshold,
   mpn_random (s.yp, size);
   *threshold = MPFR_PREC_MAX;
   t1 = speed_measure (func, &s);
-  if (t1 == -1.0) 
+  if (t1 == -1.0)
     {
       fprintf (stderr, "Failed to measure function 1!\n");
       abort ();
     }
   *threshold = /*MPFR_PREC_MIN*/0;
   t2 = speed_measure (func, &s);
-  if (t2 == -1.0) 
+  if (t2 == -1.0)
     {
       fprintf (stderr, "Failed to measure function 2!\n");
       abort ();
@@ -215,16 +215,16 @@ static double domeasure (mp_prec_t *threshold,
   return d;
 }
 
-/* Tune a function with a simple THRESHOLD 
+/* Tune a function with a simple THRESHOLD
    The function doesn't depend on another threshold.
    It assumes that it uses algo1 if p < THRESHOLD
    and algo2 otherwise.
    if algo2 is better for low prec, and algo1 better for high prec,
    the behaviour of this function is undefined. */
-static void 
-tune_simple_func (mp_prec_t *threshold, 
+static void
+tune_simple_func (mp_prec_t *threshold,
                   double (*func) (struct speed_params *),
-                  mp_prec_t pstart) 
+                  mp_prec_t pstart)
 {
   double measure[THRESHOLD_FINAL_WINDOW+1];
   double d;
@@ -237,7 +237,7 @@ tune_simple_func (mp_prec_t *threshold,
   d = domeasure (threshold, func, pmin);
   if (d < 0.0) {
     if (verbose)
-      printf ("Oups: even for %lu, algo 2 seems to be faster!\n", 
+      printf ("Oups: even for %lu, algo 2 seems to be faster!\n",
               (unsigned long) pmin);
     *threshold = MPFR_PREC_MIN;
     return;
@@ -266,17 +266,17 @@ tune_simple_func (mp_prec_t *threshold,
       break;
     pmax += pmax/2;
   }
- 
+
   /* The threshold is between pmin and pmax. Affine them */
   try = 0;
-  while ((pmax-pmin) >= THRESHOLD_FINAL_WINDOW) 
+  while ((pmax-pmin) >= THRESHOLD_FINAL_WINDOW)
     {
       pstep = MAX(MIN(BITS_PER_MP_LIMB/2,(pmax-pmin)/(2*THRESHOLD_WINDOW)),1);
       if (verbose)
         printf ("Pmin = %8lu Pmax = %8lu Pstep=%lu\n", pmin, pmax, pstep);
       p = (pmin + pmax) / 2;
       for (i = numpos = numneg = 0 ; i < THRESHOLD_WINDOW + 1 ; i++) {
-        measure[i] = domeasure (threshold, func, 
+        measure[i] = domeasure (threshold, func,
                                 p+(i-THRESHOLD_WINDOW/2)*pstep);
         if (measure[i] > 0)
           numpos ++;
@@ -295,9 +295,9 @@ tune_simple_func (mp_prec_t *threshold,
           if (verbose)
             printf ("Quick find: %lu\n", *threshold);
           return ;
-        }      
+        }
     }
-  
+
   /* Final tune... */
   if (verbose)
     printf ("Finalizing in [%lu, %lu]... ", pmin, pmax);
@@ -400,8 +400,8 @@ tune_mulder (FILE *f)
  *            Tune all the threshold of MPFR           *
  * Warning: tune the function in their dependent order!*
  *******************************************************/
-static void 
-all (const char *filename) 
+static void
+all (const char *filename)
 {
   FILE *f;
   time_t  start_time, end_time;
@@ -412,10 +412,10 @@ all (const char *filename)
     fprintf (stderr, "Can't open file '%s' for writing.\n", filename);
     abort ();
   }
-  
-  speed_time_init ();  
+
+  speed_time_init ();
   if (verbose) {
-    printf ("Using: %s\n", speed_time_string);    
+    printf ("Using: %s\n", speed_time_string);
     printf ("speed_precision %d", speed_precision);
     if (speed_unittime == 1.0)
       printf (", speed_unittime 1 cycle");
@@ -456,26 +456,26 @@ all (const char *filename)
   /* Tune mpfr_mul (Threshold is limb size, but it doesn't matter too much */
   if (verbose)
     printf ("Tuning mpfr_mul...\n");
-  tune_simple_func (&mpfr_mul_threshold, speed_mpfr_mul, 
-                    2*BITS_PER_MP_LIMB+1);  
-  fprintf (f, "#define MPFR_MUL_THRESHOLD %lu\n", 
+  tune_simple_func (&mpfr_mul_threshold, speed_mpfr_mul,
+                    2*BITS_PER_MP_LIMB+1);
+  fprintf (f, "#define MPFR_MUL_THRESHOLD %lu\n",
            (unsigned long) (mpfr_mul_threshold-1)/BITS_PER_MP_LIMB+1);
 
   /* Tune mpfr_exp_2 */
   if (verbose)
     printf ("Tuning mpfr_exp_2...\n");
   tune_simple_func (&mpfr_exp_2_threshold, speed_mpfr_exp_2,
-                    MPFR_PREC_MIN);  
+                    MPFR_PREC_MIN);
   mpfr_exp_2_threshold = MAX (BITS_PER_MP_LIMB, mpfr_exp_2_threshold);
-  fprintf (f, "#define MPFR_EXP_2_THRESHOLD %lu\n", 
+  fprintf (f, "#define MPFR_EXP_2_THRESHOLD %lu\n",
            (unsigned long) mpfr_exp_2_threshold);
 
   /* Tune mpfr_exp */
   if (verbose)
     printf ("Tuning mpfr_exp...\n");
   tune_simple_func (&mpfr_exp_threshold, speed_mpfr_exp,
-                    MPFR_PREC_MIN+3*BITS_PER_MP_LIMB);  
-  fprintf (f, "#define MPFR_EXP_THRESHOLD %lu\n", 
+                    MPFR_PREC_MIN+3*BITS_PER_MP_LIMB);
+  fprintf (f, "#define MPFR_EXP_THRESHOLD %lu\n",
            (unsigned long) mpfr_exp_threshold);
 
   /* End of tuning */

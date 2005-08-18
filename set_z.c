@@ -24,7 +24,7 @@ MA 02110-1301, USA. */
 #include "mpfr-impl.h"
 
 /* set f to the integer z */
-int 
+int
 mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
 {
   mp_size_t fn, zn, dif;
@@ -39,7 +39,7 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
       MPFR_SET_POS(f);
       MPFR_RET(0);
     }
-  MPFR_ASSERTD (sign_z == MPFR_SIGN_POS || sign_z == MPFR_SIGN_NEG);  
+  MPFR_ASSERTD (sign_z == MPFR_SIGN_POS || sign_z == MPFR_SIGN_NEG);
 
   zn = ABS(SIZ(z));
   MPFR_ASSERTD (zn >= 1);
@@ -81,10 +81,10 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
         }
       else
         MPN_COPY (fp, zp + dif, fn);
-      
+
       /* Compute Rounding Bit and Sticky Bit */
       MPFR_UNSIGNED_MINUS_MODULO (sh, MPFR_PREC (f) );
-      if (MPFR_LIKELY (sh != 0)) 
+      if (MPFR_LIKELY (sh != 0))
         {
           mp_limb_t mask = MPFR_LIMB_ONE << (sh-1);
           mp_limb_t limb = fp[0];
@@ -111,7 +111,7 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
           sb = zp[--dif];
           if (MPFR_LIKELY (k != 0))
             sb &= MPFR_LIMB_MASK (BITS_PER_MP_LIMB - k);
-          if (MPFR_UNLIKELY (sb == 0) && MPFR_LIKELY (dif > 0)) 
+          if (MPFR_UNLIKELY (sb == 0) && MPFR_LIKELY (dif > 0))
             do {
               sb = zp[--dif];
             } while (dif > 0 && sb == 0);
@@ -140,8 +140,8 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
 
     addoneulp:
       inex = 1;
-      if (MPFR_UNLIKELY (mpn_add_1 (fp, fp, fn, ulp))) 
-        { 
+      if (MPFR_UNLIKELY (mpn_add_1 (fp, fp, fn, ulp)))
+        {
           /* Pow 2 case */
           if (MPFR_UNLIKELY (exp == __gmpfr_emax))
             return mpfr_overflow (f, rnd_mode, sign_z);

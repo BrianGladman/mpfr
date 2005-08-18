@@ -32,7 +32,7 @@ mpfr_swap (mpfr_ptr u, mpfr_ptr v)
   mpfr_sign_t s1, s2;
   mp_exp_t e1, e2;
   mp_limb_t *m1, *m2;
-   
+
   p1 = MPFR_PREC(u);
   p2 = MPFR_PREC(v);
   MPFR_PREC(v) = p1;

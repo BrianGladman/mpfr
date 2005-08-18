@@ -31,7 +31,7 @@ MA 02110-1301, USA. */
    a*2^exp_r <= b^e <= 2^exp_r (a + 2^f),
    where a represents {a, n}, i.e. the integer
    a[0] + a[1]*B + ... + a[n-1]*B^(n-1) where B=2^BITS_PER_MP_LIMB
-   
+
    Return -2 if an overflow occurred in the computation of exp_r.
 */
 

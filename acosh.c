@@ -26,7 +26,7 @@ MA 02110-1301, USA. */
  *  acosh= ln(x + sqrt(x^2-1))           */
 
 int
-mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode) 
+mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
 {
   MPFR_SAVE_EXPO_DECL (expo);
   int inexact;
@@ -40,23 +40,23 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
     {
       /* Nan, or zero or -Inf */
       if (MPFR_IS_INF (x) && MPFR_IS_POS (x))
-        { 
+        {
           MPFR_SET_INF (y);
           MPFR_SET_POS (y);
           MPFR_RET (0);
         }
       else /* Nan, or zero or -Inf */
         {
-          MPFR_SET_NAN (y); 
+          MPFR_SET_NAN (y);
           MPFR_RET_NAN;
-        }    
+        }
     }
   comp = mpfr_cmp_ui (x, 1);
   if (MPFR_UNLIKELY (comp < 0))
     {
-      MPFR_SET_NAN (y); 
+      MPFR_SET_NAN (y);
       MPFR_RET_NAN;
-    }    
+    }
   else if (MPFR_UNLIKELY (comp == 0))
     {
       MPFR_SET_ZERO (y); /* acosh(1) = 0 */
@@ -64,7 +64,7 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
       MPFR_RET (0);
     }
   MPFR_SAVE_EXPO_MARK (expo);
- 
+
   /* General case */
   {
     /* Declaration of the intermediary variables */
@@ -74,7 +74,7 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
     mp_prec_t Nt;                  /* Precision of the intermediary variable */
     mp_exp_t  err, exp_te, exp_ti; /* Precision of error */
     MPFR_ZIV_DECL (loop);
-    
+
     /* compute the precision of intermediary variable */
     /* the optimal number of bits : see algorithms.tex */
     Nt = Ny + 4 + MPFR_INT_CEIL_LOG2 (Ny);
@@ -107,7 +107,7 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
         mpfr_set_prec (t, Nt);
       }
     MPFR_ZIV_FREE (loop);
- 
+
     inexact = mpfr_set (y, t, rnd_mode);
 
     mpfr_clear (t);

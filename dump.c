@@ -28,6 +28,6 @@ MA 02110-1301, USA. */
 void
 mpfr_dump (mpfr_srcptr u)
 {
-  mpfr_print_binary(u); 
+  mpfr_print_binary(u);
   putchar('\n');
 }

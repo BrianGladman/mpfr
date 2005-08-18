@@ -28,7 +28,7 @@ mpfr_sub_one_ulp(mpfr_ptr x, mp_rnd_t rnd_mode)
   mp_size_t xn;
   int sh;
   mp_limb_t *xp;
-  
+
   if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(x) ))
     {
       if (MPFR_IS_NAN(x))
@@ -37,7 +37,7 @@ mpfr_sub_one_ulp(mpfr_ptr x, mp_rnd_t rnd_mode)
       MPFR_RET (0);
     }
 
-  xn = MPFR_LIMB_SIZE(x); 
+  xn = MPFR_LIMB_SIZE(x);
   MPFR_UNSIGNED_MINUS_MODULO(sh, MPFR_PREC(x) );
   xp = MPFR_MANT(x);
   mpn_sub_1 (xp, xp, xn, MPFR_LIMB_ONE << sh);

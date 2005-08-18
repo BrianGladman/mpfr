@@ -142,10 +142,10 @@ check_cmp(int argc, char *argv[])
       MPFR_SET_POS(x);
       if (mpfr_cmp(x,y))
         {
-          printf ("Mismatch for sign=%d and x=", sign); 
+          printf ("Mismatch for sign=%d and x=", sign);
           mpfr_print_binary(x);
           printf ("\nResults=");
-          mpfr_print_binary(y); 
+          mpfr_print_binary(y);
           putchar ('\n');
           exit (1);
         }

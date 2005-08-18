@@ -42,12 +42,12 @@ mpfr_asinh (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
       if (MPFR_IS_NAN (x))
-        {  
-          MPFR_SET_NAN (y); 
+        {
+          MPFR_SET_NAN (y);
           MPFR_RET_NAN;
         }
       else if (MPFR_IS_INF (x))
-        { 
+        {
           MPFR_SET_INF (y);
           MPFR_SET_SAME_SIGN (y, x);
           MPFR_RET (0);
@@ -70,7 +70,7 @@ mpfr_asinh (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   neg = MPFR_IS_NEG (x);
 
   /* General case */
-    
+
   /* compute the precision of intermediary variable */
   /* the optimal number of bits : see algorithms.tex */
   Nt = Ny + 4 + MPFR_INT_CEIL_LOG2 (Ny);
@@ -94,7 +94,7 @@ mpfr_asinh (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       /* error estimate -- see algorithms.ps */
       err = Nt - (MAX (3 - MPFR_GET_EXP (t), 0) + 1);
 
-      if (MPFR_LIKELY (MPFR_IS_ZERO (t) 
+      if (MPFR_LIKELY (MPFR_IS_ZERO (t)
                        || MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
         break;
 
@@ -103,7 +103,7 @@ mpfr_asinh (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_set_prec (t, Nt);
     }
   MPFR_ZIV_FREE (loop);
-  
+
   inexact = mpfr_set4 (y, t, rnd_mode, signx);
 
   mpfr_clear (t);

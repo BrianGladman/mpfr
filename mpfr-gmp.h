@@ -61,13 +61,13 @@ extern "C" {
 # define GMP_NUMB_BITS BITS_PER_MP_LIMB
 # ifndef GMP_NAIL_BITS
 #  define GMP_NAIL_BITS 0
-# endif 
+# endif
 #else
 # error "Could not detect BITS_PER_MP_LIMB. Try with gmp internal files."
 #endif
 
 /* Define some macros */
-#define BYTES_PER_MP_LIMB (BITS_PER_MP_LIMB/CHAR_BIT) 
+#define BYTES_PER_MP_LIMB (BITS_PER_MP_LIMB/CHAR_BIT)
 
 #define MP_LIMB_T_MAX (~(mp_limb_t)0)
 
@@ -139,7 +139,7 @@ extern "C" {
 #endif
 
 /* ASSERT */
-__MPFR_DECLSPEC void mpfr_assert_fail _MPFR_PROTO((const char *, int, 
+__MPFR_DECLSPEC void mpfr_assert_fail _MPFR_PROTO((const char *, int,
                                                    const char *));
 
 #define ASSERT_FAIL(expr)  mpfr_assert_fail (__FILE__, __LINE__, #expr)
@@ -194,7 +194,7 @@ typedef unsigned int UHWtype;
 
 /* Use (4.0 * ...) instead of (2.0 * ...) to work around buggy compilers
    that don't convert ulong->double correctly (eg. SunOS 4 native cc).  */
-#undef MP_BASE_AS_DOUBLE 
+#undef MP_BASE_AS_DOUBLE
 #define MP_BASE_AS_DOUBLE (4.0 * ((mp_limb_t) 1 << (GMP_NUMB_BITS - 2)))
 
 /* Structure for conversion between internal binary format and
@@ -251,7 +251,7 @@ typedef __gmp_randstate_struct *gmp_randstate_ptr;
 __MPFR_DECLSPEC void mpfr_rand_raw _MPFR_PROTO((mp_ptr, gmp_randstate_t,
                                                 unsigned long));
 
-/* To be called BEFORE tests_start_mpfr () if the tests used 
+/* To be called BEFORE tests_start_mpfr () if the tests used
    mpfr_random, mpfr_random2 or any functions which uses the macro RANDS */
 __MPFR_DECLSPEC void mpfr_init_gmp_rand _MPFR_PROTO((void));
 #define MPFR_TEST_USE_RANDS() mpfr_init_gmp_rand ();
@@ -264,9 +264,9 @@ __MPFR_DECLSPEC void mpfr_init_gmp_rand _MPFR_PROTO((void));
    Just getting the correct value by calling mp_get_memory_functions */
 #ifdef mp_get_memory_functions
 
-#undef __gmp_allocate_func      
-#undef __gmp_reallocate_func    
-#undef __gmp_free_func          
+#undef __gmp_allocate_func
+#undef __gmp_reallocate_func
+#undef __gmp_free_func
 #define MPFR_GET_MEMFUNC mp_get_memory_functions(&mpfr_allocate_func, &mpfr_reallocate_func, &mpfr_free_func)
 #define __gmp_allocate_func   (MPFR_GET_MEMFUNC, mpfr_allocate_func)
 #define __gmp_reallocate_func (MPFR_GET_MEMFUNC, mpfr_reallocate_func)
@@ -286,7 +286,7 @@ __MPFR_DECLSPEC extern void   (*mpfr_free_func)       _MPFR_PROTO ((void *,
 #define __gmp_default_reallocate mpfr_default_reallocate
 #define __gmp_default_free       mpfr_default_free
 __MPFR_DECLSPEC void *__gmp_default_allocate _MPFR_PROTO ((size_t));
-__MPFR_DECLSPEC void *__gmp_default_reallocate _MPFR_PROTO ((void *, size_t, 
+__MPFR_DECLSPEC void *__gmp_default_reallocate _MPFR_PROTO ((void *, size_t,
                                                              size_t));
 __MPFR_DECLSPEC void __gmp_default_free _MPFR_PROTO ((void *, size_t));
 

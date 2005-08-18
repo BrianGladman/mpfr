@@ -1,7 +1,7 @@
 /* mpfr_round_raw_generic, mpfr_round_raw2, mpfr_round_raw, mpfr_prec_round,
    mpfr_can_round, mpfr_can_round_raw -- various rounding functions
 
-Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2005 
+Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2005
   Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
@@ -79,7 +79,7 @@ mpfr_prec_round (mpfr_ptr x, mp_prec_t prec, mp_rnd_t rnd_mode)
 
   /* x is a non-zero real number */
 
-  MPFR_TMP_MARK(marker); 
+  MPFR_TMP_MARK(marker);
   tmp = (mp_limb_t*) MPFR_TMP_ALLOC (nw * BYTES_PER_MP_LIMB);
   xp = MPFR_MANT(x);
   carry = mpfr_round_raw (tmp, xp, MPFR_PREC(x), MPFR_IS_NEG(x),
@@ -122,7 +122,7 @@ mpfr_can_round (mpfr_srcptr b, mp_exp_t err, mp_rnd_t rnd1,
                 mp_rnd_t rnd2, mp_prec_t prec)
 {
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(b)))
-    return 0; /* We cannot round if Zero, Nan or Inf */ 
+    return 0; /* We cannot round if Zero, Nan or Inf */
   else
     return mpfr_can_round_raw(MPFR_MANT(b), MPFR_LIMB_SIZE(b),
                               MPFR_SIGN(b), err, rnd1, rnd2, prec);
@@ -223,6 +223,6 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mp_exp_t err0,
   cc2 = (tmp[bn - 1] >> s1) & 1;
   cc2 ^= mpfr_round_raw2 (tmp, bn, neg, rnd2, prec);
 
-  MPFR_TMP_FREE(marker); 
+  MPFR_TMP_FREE(marker);
   return cc == cc2;
 }

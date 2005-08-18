@@ -25,7 +25,7 @@ MA 02110-1301, USA. */
 
 #include "mpfr-impl.h"
 
-size_t 
+size_t
 mpfr_out_str (FILE *stream, int base, size_t n_digits, mpfr_srcptr op,
               mp_rnd_t rnd_mode)
 {
@@ -43,8 +43,8 @@ mpfr_out_str (FILE *stream, int base, size_t n_digits, mpfr_srcptr op,
       return 3;
     }
 
-  if (MPFR_IS_INF(op)) 
-    { 
+  if (MPFR_IS_INF(op))
+    {
       if (MPFR_SIGN(op) > 0)
         {
           fprintf (stream, "@Inf@");

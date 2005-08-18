@@ -52,7 +52,7 @@ set_z (mpfr_ptr f, mpz_srcptr z, mp_size_t *zs)
     mpn_lshift (MPFR_MANT (f), p, s, c);
   else
     MPN_COPY (MPFR_MANT (f), p, s);
-  
+
   MPFR_SET_SIGN (f, mpz_sgn (z));
   MPFR_SET_EXP (f, 0);
 
@@ -99,7 +99,7 @@ mpfr_set_q (mpfr_ptr f, mpq_srcptr q, mp_rnd_t rnd)
 
   cn = set_z (n, num, &sn);
   cd = set_z (d, den, &sd);
-  
+
   sn -= sd;
   if (MPFR_UNLIKELY (sn > MPFR_EMAX_MAX / BITS_PER_MP_LIMB))
     {

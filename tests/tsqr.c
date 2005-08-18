@@ -41,14 +41,14 @@ int main(void)
   return 0;
 }
 
-static int 
+static int
 inexact_sign (int x)
 {
   return (x < 0) ? -1 : (x > 0);
 }
 
-static void 
-error1 (mp_rnd_t rnd, mpfr_prec_t prec, 
+static void
+error1 (mp_rnd_t rnd, mpfr_prec_t prec,
         mpfr_t in, mpfr_t outmul, mpfr_t outsqr)
 {
   printf("ERROR: for %s and prec=%lu\nINPUT=", mpfr_print_rnd_mode(rnd), prec);
@@ -59,7 +59,7 @@ error1 (mp_rnd_t rnd, mpfr_prec_t prec,
 }
 
 static void
-error2 (mp_rnd_t rnd, mpfr_prec_t prec, mpfr_t in, mpfr_t out, 
+error2 (mp_rnd_t rnd, mpfr_prec_t prec, mpfr_t in, mpfr_t out,
         int inexactmul, int inexactsqr)
 {
   printf("ERROR: for %s and prec=%lu\nINPUT=", mpfr_print_rnd_mode(rnd), prec);
@@ -104,7 +104,7 @@ void check_special(void)
   mpfr_set_nan (x);
   mpfr_sqr (y, x, GMP_RNDN);
   MPFR_ASSERTN (mpfr_nan_p (y));
-  
+
   mpfr_set_inf (x, 1);
   mpfr_sqr (y, x, GMP_RNDN);
   MPFR_ASSERTN (mpfr_inf_p (y) && mpfr_sgn (y) > 0);

@@ -120,7 +120,7 @@ special (void)
   mpfr_out_str (fout, 10, 0, x, GMP_RNDN);
   mpfr_neg (x, x, GMP_RNDN);
   mpfr_out_str (fout, 10, 0, x, GMP_RNDN);
-  
+
   mpfr_clear (x);
 }
 

@@ -33,7 +33,7 @@ MA 02110-1301, USA. */
 
 int mpfr_mul2 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode);
 static int
-mpfr_mul3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode) 
+mpfr_mul3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 {
   /* Old implementation */
   int sign_product, cc, inexact;
@@ -91,28 +91,28 @@ mpfr_mul3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
     }
   MPFR_CLEAR_FLAGS(a);
   sign_product = MPFR_MULT_SIGN( MPFR_SIGN(b) , MPFR_SIGN(c) );
- 
+
   ax = MPFR_GET_EXP (b) + MPFR_GET_EXP (c);
 
   bq = MPFR_PREC(b);
   cq = MPFR_PREC(c);
-  
+
   MPFR_ASSERTD(bq+cq > bq); /* PREC_MAX is /2 so no integer overflow */
- 
+
   bn = (bq+BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB; /* number of limbs of b */
   cn = (cq+BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB; /* number of limbs of c */
   k = bn + cn; /* effective nb of limbs used by b*c (= tn or tn+1) below */
-  tn = (bq + cq + BITS_PER_MP_LIMB - 1) / BITS_PER_MP_LIMB; 
+  tn = (bq + cq + BITS_PER_MP_LIMB - 1) / BITS_PER_MP_LIMB;
   /* <= k, thus no int overflow */
   MPFR_ASSERTD(tn <= k);
 
   /* Check for no size_t overflow*/
   MPFR_ASSERTD((size_t) k <= ((size_t) ~0) / BYTES_PER_MP_LIMB);
-  MPFR_TMP_MARK(marker); 
+  MPFR_TMP_MARK(marker);
   tmp = (mp_limb_t *) MPFR_TMP_ALLOC((size_t) k * BYTES_PER_MP_LIMB);
 
   /* multiplies two mantissa in temporary allocated space */
-  b1 = (MPFR_LIKELY(bn >= cn)) ? 
+  b1 = (MPFR_LIKELY(bn >= cn)) ?
     mpn_mul (tmp, MPFR_MANT(b), bn, MPFR_MANT(c), cn)
     : mpn_mul (tmp, MPFR_MANT(c), cn, MPFR_MANT(b), bn);
 
@@ -126,8 +126,8 @@ mpfr_mul3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   tmp += k - tn;
   if (MPFR_UNLIKELY(b1 == 0))
     mpn_lshift (tmp, tmp, tn, 1); /* tn <= k, so no stack corruption */
-  cc = mpfr_round_raw (MPFR_MANT (a), tmp, bq + cq, 
-                       MPFR_IS_NEG_SIGN(sign_product), 
+  cc = mpfr_round_raw (MPFR_MANT (a), tmp, bq + cq,
+                       MPFR_IS_NEG_SIGN(sign_product),
                        MPFR_PREC (a), rnd_mode, &inexact);
 
   /* cc = 1 ==> result is a power of two */
@@ -172,7 +172,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
   inexact2 = mpfr_mul3 (ta, tb, tc, rnd_mode);
   inexact1  = mpfr_mul2 (a, b, c, rnd_mode);
-  if (mpfr_cmp (ta, a) || inexact1*inexact2 < 0 
+  if (mpfr_cmp (ta, a) || inexact1*inexact2 < 0
       || (inexact1*inexact2 == 0 && (inexact1|inexact2) != 0))
     {
       printf("mpfr_mul return different values for %s\n"
@@ -293,7 +293,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   tmp = (mp_limb_t *) MPFR_TMP_ALLOC ((size_t) k * BYTES_PER_MP_LIMB);
 
   /* multiplies two mantissa in temporary allocated space */
-  if (MPFR_UNLIKELY (bn < cn)) 
+  if (MPFR_UNLIKELY (bn < cn))
     {
       mpfr_srcptr tmp = b;
       mp_size_t tn  = bn;
@@ -337,7 +337,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
           /* Sum those two partial products */
           add_ssaaaa (tmp[2], tmp[1], tmp[2], tmp[1], t1, t2);
           tmp[3] += (tmp[2] < t1);
-          
+
           b1 = tmp[3];
         }
       b1 >>= (BITS_PER_MP_LIMB - 1);
@@ -381,13 +381,13 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
             {
               bp = MPFR_TMP_ALLOC ((n+1)*sizeof (mp_limb_t));
               bp[0] = 0;
-              MPN_COPY (bp+1, MPFR_MANT (b)+bn-n, n);   
+              MPN_COPY (bp+1, MPFR_MANT (b)+bn-n, n);
             }
           if (cn > n)
             cp --; /* FIXME: Could this happen? */
           else
             {
-              cp = MPFR_TMP_ALLOC ((n+1)*sizeof (mp_limb_t));         
+              cp = MPFR_TMP_ALLOC ((n+1)*sizeof (mp_limb_t));
               cp[0] = 0;
               MPN_COPY (cp+1, MPFR_MANT (c)+cn-n, n);
             }
@@ -409,7 +409,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       /* now tmp[0]..tmp[k-1] contains the product of both mantissa,
          with tmp[k-1]>=2^(BITS_PER_MP_LIMB-2) */
       b1 = tmp[k-1] >> (BITS_PER_MP_LIMB - 1); /* msb from the product */
-      
+
       /* If the mantissas of b and c are uniformly distributed in ]1/2, 1],
          then their product is in ]1/4, 1/2] with probability 2*ln(2)-1 ~ 0.386
          and in [1/2, 1] with probability 2-2*ln(2) ~ 0.614 */
@@ -422,19 +422,19 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
                                         MPFR_PREC(a)+(rnd_mode==GMP_RNDN))))
         {
           tmp -= k-tn; /* tmp may have changed, FIX IT!!!!! */
-          goto full_multiply; 
+          goto full_multiply;
         }
       }
   else
     {
     full_multiply:
       MPFR_LOG_MSG (("Use mpn_mul\n", 0));
-      b1 = mpn_mul (tmp, MPFR_MANT (b), bn, MPFR_MANT (c), cn);      
+      b1 = mpn_mul (tmp, MPFR_MANT (b), bn, MPFR_MANT (c), cn);
 
       /* now tmp[0]..tmp[k-1] contains the product of both mantissa,
          with tmp[k-1]>=2^(BITS_PER_MP_LIMB-2) */
       b1 >>= BITS_PER_MP_LIMB - 1; /* msb from the product */
-      
+
       /* if the mantissas of b and c are uniformly distributed in ]1/2, 1],
          then their product is in ]1/4, 1/2] with probability 2*ln(2)-1 ~ 0.386
          and in [1/2, 1] with probability 2-2*ln(2) ~ 0.614 */

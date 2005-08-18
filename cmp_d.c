@@ -21,17 +21,17 @@ MA 02110-1301, USA. */
 
 #include "mpfr-impl.h"
 
-int 
+int
 mpfr_cmp_d (mpfr_srcptr b, double d)
 {
-  mpfr_t tmp; 
-  int res; 
+  mpfr_t tmp;
+  int res;
 
   mpfr_init2 (tmp, IEEE_DBL_MANT_DIG);
   res = mpfr_set_d (tmp, d, GMP_RNDN);
   MPFR_ASSERTD (res == 0);
-  res = mpfr_cmp (b, tmp); 
-  mpfr_clear (tmp); 
+  res = mpfr_cmp (b, tmp);
+  mpfr_clear (tmp);
 
-  return res; 
+  return res;
 }

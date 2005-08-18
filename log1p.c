@@ -33,9 +33,9 @@ mpfr_log1p (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
-      if (MPFR_IS_NAN (x)) 
+      if (MPFR_IS_NAN (x))
         {
-          MPFR_SET_NAN (y); 
+          MPFR_SET_NAN (y);
           MPFR_RET_NAN;
         }
       /* check for inf or -inf (result is not defined) */
@@ -67,7 +67,7 @@ mpfr_log1p (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   comp = mpfr_cmp_si (x, -1);
   /* log1p(x) is undefined for x < -1 */
-  if (MPFR_UNLIKELY(comp <= 0)) 
+  if (MPFR_UNLIKELY(comp <= 0))
     {
       if (comp == 0)
         /* x=0: log1p(-1)=-inf (division by zero) */
@@ -87,7 +87,7 @@ mpfr_log1p (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     /* Declaration of the intermediary variable */
     mpfr_t t;
     /* Declaration of the size variable */
-    mp_prec_t Ny = MPFR_PREC(y);             /* target precision */    
+    mp_prec_t Ny = MPFR_PREC(y);             /* target precision */
     mp_prec_t Nt;                            /* working precision */
     mp_exp_t err;                            /* error */
     MPFR_ZIV_DECL (loop);

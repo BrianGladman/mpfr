@@ -149,7 +149,7 @@ special (void)
     }
 
   mpfr_set_prec (x, 9);
-  mpfr_set_prec (y, 19); 
+  mpfr_set_prec (y, 19);
   mpfr_set_str_binary (x, "0.110000000E-6");
   mpfr_asin (y, x, GMP_RNDD);
   mpfr_set_prec (x, 19);

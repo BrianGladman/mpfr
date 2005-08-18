@@ -142,8 +142,8 @@ check_erange (void)
   intmax_t d;
 
   /* Test for ERANGE flag + correct behaviour if overflow */
-  
-  mpfr_init2 (x, 256); 
+
+  mpfr_init2 (x, 256);
   mpfr_set_uj (x, UINTMAX_MAX, GMP_RNDN);
   mpfr_clear_erangeflag ();
   dl = mpfr_get_uj (x, GMP_RNDN);
@@ -197,7 +197,7 @@ check_erange (void)
       printf ("ERROR for get_sj + ERANGE + INTMAX_MIN (2)\n");
       exit (1);
     }
-  
+
   mpfr_clear (x);
 }
 

@@ -22,10 +22,10 @@ MA 02110-1301, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-/* (y, z) <- (sin(x), cos(x)), return value is 0 iff both results are exact 
+/* (y, z) <- (sin(x), cos(x)), return value is 0 iff both results are exact
    ie, iff x = 0 */
-int 
-mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode) 
+int
+mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
   mp_prec_t prec, m;
   int neg;
@@ -54,7 +54,7 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
                   ("sin[%#R]=%R cos[%#R]=%R", y, y, z, z));
 
-  prec = MAX (MPFR_PREC (y), MPFR_PREC (z)); 
+  prec = MAX (MPFR_PREC (y), MPFR_PREC (z));
   m = prec + MPFR_INT_CEIL_LOG2 (prec) + 13;
   e = MPFR_GET_EXP (x);
   m += (e < 0) ? -2*e : e;
@@ -62,7 +62,7 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_init2 (c, m);
 
   /* first determine sign of sinus */
-  if (MPFR_GET_EXP (x) > 0) 
+  if (MPFR_GET_EXP (x) > 0)
     {
       mpfr_init2 (k, m);
       mpfr_const_pi (c, GMP_RNDN);

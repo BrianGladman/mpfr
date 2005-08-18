@@ -60,7 +60,7 @@ mpfr_sin_sign (mpfr_srcptr x)
           /* determine parity of k for sign */
           if (MPFR_GET_EXP (k) <= 0 || (mpfr_uexp_t) MPFR_GET_EXP (k) <= m)
             {
-              mp_size_t j = BITS_PER_MP_LIMB * MPFR_LIMB_SIZE(k) 
+              mp_size_t j = BITS_PER_MP_LIMB * MPFR_LIMB_SIZE(k)
                 - MPFR_GET_EXP(k);
               mp_size_t l = j / BITS_PER_MP_LIMB;
               /* parity bit is j-th bit starting from least significant bits */
@@ -72,7 +72,7 @@ mpfr_sin_sign (mpfr_srcptr x)
                                                <= 2^(K+2-m) */
           mpfr_sub (k, x, k, GMP_RNDN);
           /* assuming |k| <= Pi, err <= 2^(1-m)+2^(K+2-m) < 2^(K+3-m) */
-          MPFR_ASSERTN (MPFR_IS_ZERO (k) || MPFR_GET_EXP (k) <= 2); 
+          MPFR_ASSERTN (MPFR_IS_ZERO (k) || MPFR_GET_EXP (k) <= 2);
           y = k;
         }
       else
@@ -82,7 +82,7 @@ mpfr_sin_sign (mpfr_srcptr x)
         }
       /* sign of sign(y) is uncertain if |y| <= err < 2^(K+3-m),
          thus EXP(y) < K+4-m */
-      if (MPFR_LIKELY (!MPFR_IS_ZERO (y) 
+      if (MPFR_LIKELY (!MPFR_IS_ZERO (y)
                        && MPFR_GET_EXP (y) >= K + 4 - (mp_exp_t) m))
         break;
       MPFR_ZIV_NEXT (loop, m);
@@ -95,19 +95,19 @@ mpfr_sin_sign (mpfr_srcptr x)
 
   mpfr_clear (k);
   mpfr_clear (c);
-  
+
   return sign;
 }
 
-int 
-mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode) 
+int
+mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
   mpfr_t c;
   mp_exp_t e;
   mp_prec_t precy, m;
   int inexact, sign;
   MPFR_ZIV_DECL (loop);
-  
+
   MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
                   ("y[%#R]=%R inexact=%d", y, y, inexact));
 
@@ -175,7 +175,7 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
           if (MPFR_GET_EXP (c) == 1)
             m += m;
         }
-      
+
       /* Else generic increase */
       MPFR_ZIV_NEXT (loop, m);
       mpfr_set_prec (c, m);

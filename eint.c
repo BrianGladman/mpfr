@@ -142,7 +142,7 @@ mpfr_eint_aux (mpfr_t y, mpfr_srcptr x)
   return e;
 }
 
-int 
+int
 mpfr_eint (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
 {
   int inex;
@@ -186,7 +186,7 @@ mpfr_eint (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
     }
 
   /* Init stuff */
-  MPFR_SAVE_EXPO_MARK (expo);  
+  MPFR_SAVE_EXPO_MARK (expo);
   prec = MPFR_PREC (y) + 2 * MPFR_INT_CEIL_LOG2 (MPFR_PREC (y)) + 6;
   mpfr_init2 (tmp, prec);
   mpfr_init2 (ump, prec);

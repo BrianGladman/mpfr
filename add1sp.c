@@ -102,7 +102,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   MPFR_UNSIGNED_MINUS_MODULO(sh, p);
   bx = MPFR_GET_EXP(b);
   d = (mpfr_uexp_t) (bx - MPFR_GET_EXP(c));
-  
+
   DEBUG( printf("New add1sp with diff=%lu\n", d) );
 
   if (MPFR_UNLIKELY(d == 0))
@@ -151,8 +151,8 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
             copy_set_exponent:
               ap = MPFR_MANT (a);
               MPN_COPY (ap, MPFR_MANT(b), n);
-              inexact = -1; 
-              goto set_exponent; 
+              inexact = -1;
+              goto set_exponent;
             }
           else
             {
@@ -166,7 +166,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
         {
           /* d==p : Copy B in A */
           /* Away:    Add 1
-             Nearest: Even Rule if C is a power of 2, else Add 1 
+             Nearest: Even Rule if C is a power of 2, else Add 1
              Zero:    Trunc */
           if (MPFR_LIKELY(rnd_mode==GMP_RNDN))
             {
@@ -199,7 +199,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
       /* General case: 1 <= d < p */
       cp = (mp_limb_t*) MPFR_TMP_ALLOC(n * BYTES_PER_MP_LIMB);
-      
+
       /* Shift c in temporary allocated place */
       {
         mp_exp_unsigned_t dm;
@@ -227,7 +227,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
             MPN_ZERO(cp+n-m, m);
           }
       }
-      
+
       DEBUG( mpfr_print_mant_binary("Before", MPFR_MANT(c), p) );
       DEBUG( mpfr_print_mant_binary("B=    ", MPFR_MANT(b), p) );
       DEBUG( mpfr_print_mant_binary("After ", cp, p) );
@@ -291,16 +291,16 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
             }
         }
       DEBUG( printf("sh=%lu Cp=%lu C'p+1=%lu\n", sh, bcp, bcp1) );
-      
+
       /* Clean shifted C' */
       mask = ~MPFR_LIMB_MASK(sh);
       cp[0] &= mask;
-      
+
       /* Add the mantissa c from b in a */
       ap = MPFR_MANT(a);
       limb = mpn_add_n (ap, MPFR_MANT(b), cp, n);
       DEBUG( mpfr_print_mant_binary("Add=  ", ap, p) );
-      
+
       /* Check for overflow */
       if (MPFR_UNLIKELY (limb))
         {
@@ -314,7 +314,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
           DEBUG( printf("(Overflow) Cp=%lu C'p+1=%lu\n", bcp, bcp1) );
           DEBUG( mpfr_print_mant_binary("Add=  ", ap, p) );
         }
-      
+
       /* Round:
           Zero: Truncate but could be exact.
           Away: Add 1 if Cp or C'p+1 !=0
@@ -345,8 +345,8 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
         }
     }
   MPFR_ASSERTN(0);
-  
- add_one_ulp: 
+
+ add_one_ulp:
   /* add one unit in last place to a */
   DEBUG( printf("AddOneUlp\n") );
   if (MPFR_UNLIKELY( mpn_add_1(ap, ap, n, MPFR_LIMB_ONE<<sh) ))
@@ -357,7 +357,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       ap[n-1] = MPFR_LIMB_HIGHBIT;
     }
   inexact = 1;
-  
+
  set_exponent:
   if (MPFR_UNLIKELY(bx > __gmpfr_emax)) /* Check for overflow */
     {
@@ -368,7 +368,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
     }
   MPFR_SET_EXP (a, bx);
   MPFR_SET_SAME_SIGN(a,b);
-  
+
   MPFR_TMP_FREE(marker);
   return inexact*MPFR_INT_SIGN(a);
 }

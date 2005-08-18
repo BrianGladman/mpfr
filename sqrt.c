@@ -183,7 +183,7 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
           else /* tsize = rsize */
             {
               int cmp;
-              
+
               cmp = mpn_cmp (tp, rp, rsize);
               if (cmp > 0)
                 inexact = 1;

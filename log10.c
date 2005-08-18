@@ -117,7 +117,7 @@ mpfr_log10 (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
       /* log10(10^n) is exact:
          FIXME: Can we have 10^n exactly representable as a mpfr_t
          but n can't fit an unsigned long? */
-      if (MPFR_IS_POS (t) 
+      if (MPFR_IS_POS (t)
           && mpfr_integer_p (t) && mpfr_fits_ulong_p (t, GMP_RNDN)
           && !mpfr_ui_pow_ui (tt, 10, mpfr_get_ui (t, GMP_RNDN), GMP_RNDN)
           && mpfr_cmp (a, tt) == 0)

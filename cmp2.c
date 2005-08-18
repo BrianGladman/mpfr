@@ -46,7 +46,7 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mp_prec_t *cancel)
      sub1sp would be called instead */
   MPFR_ASSERTD (b != c);
 
-  /* the cases b=0 or c=0 are also treated apart in agm and sub 
+  /* the cases b=0 or c=0 are also treated apart in agm and sub
      (which calls sub1) */
   MPFR_ASSERTD (MPFR_IS_PURE_FP(b));
   MPFR_ASSERTD (MPFR_IS_PURE_FP(c));
@@ -144,7 +144,7 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mp_prec_t *cancel)
 
   dif = bp[bn--] - cc; /* necessarily dif >= 1 */
 
-  while (MPFR_UNLIKELY ((cn >= 0 || lastc != 0) 
+  while (MPFR_UNLIKELY ((cn >= 0 || lastc != 0)
                         && (high_dif == 0) && (dif == 1)))
     { /* dif=1 implies diff_exp = 0 or 1 */
       bb = (bn >= 0) ? bp[bn] : 0;

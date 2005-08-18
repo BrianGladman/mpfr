@@ -325,7 +325,7 @@ special_erf (void)
       printf ("Error: erf for prec=43,64 (13)\n");
       exit (1);
     }
-  
+
 
   mpfr_clear (x);
   mpfr_clear (y);
@@ -385,10 +385,10 @@ main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
-  special_erf (); 
-  special_erfc (); 
+  special_erf ();
+  special_erfc ();
 
-  test_generic_erf (2, 100, 15); 
+  test_generic_erf (2, 100, 15);
   test_generic_erfc (2, 100, 15);
 
   tests_end_mpfr ();

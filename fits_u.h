@@ -37,7 +37,7 @@ FUNCTION (mpfr_srcptr f, mp_rnd_t rnd)
   else if (MPFR_IS_NEG (f))
     /* Negative numbers doesn't fit */
     return 0;
-  /* now it fits if 
+  /* now it fits if
      (a) f <= MAXIMUM
      (b) round(f, prec(slong), rnd) <= MAXIMUM */
 

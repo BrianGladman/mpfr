@@ -20,7 +20,7 @@ the Free Software Foundation, Inc., 51 Franklin Place, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
 #ifndef GENERIC
- # error You should specify a name 
+ # error You should specify a name
 #endif
 
 #ifdef B
@@ -50,7 +50,7 @@ GENERIC (mpfr_ptr y, mpz_srcptr p, long r, int m)
   MPFR_TMP_DECL(marker);
 
   MPFR_TMP_MARK(marker);
-  MPFR_CLEAR_FLAGS(y); 
+  MPFR_CLEAR_FLAGS(y);
   n = 1UL << m;
   P = (mpz_t*) MPFR_TMP_ALLOC ((m+1) * sizeof(mpz_t));
   S = (mpz_t*) MPFR_TMP_ALLOC ((m+1) * sizeof(mpz_t));
@@ -87,8 +87,8 @@ GENERIC (mpfr_ptr y, mpz_srcptr p, long r, int m)
   mpz_set_ui (T[0], A1);
 #  endif
 #endif
-  if (!is_p_one) 
-    for (i = 1 ; i < m ; i++) 
+  if (!is_p_one)
+    for (i = 1 ; i < m ; i++)
       mpz_mul (ptoj[i], ptoj[i-1], ptoj[i-1]);
 #ifdef R_IS_RATIONAL
   mpz_set_si (qtoj[0], r);
@@ -101,15 +101,15 @@ GENERIC (mpfr_ptr y, mpz_srcptr p, long r, int m)
   k = 0;
   for (i = 1 ; i < n ; i++) {
     k++;
-    
+
 #ifdef A
-#  ifdef B 
+#  ifdef B
     mpz_set_ui (T[k], (A1 + A2*i)*(B1+B2*i));
 #  else
     mpz_set_ui (T[k], A1 + A2*i);
 #  endif
 #endif
-    
+
 #ifdef C
 #  ifdef NO_FACTORIAL
     mpz_set_ui (P[k], (C1 + C2 * (i-1)));
@@ -128,7 +128,7 @@ GENERIC (mpfr_ptr y, mpz_srcptr p, long r, int m)
 #endif
 
     for (j = i+1, l = 0 ; (j & 1) == 0 ; l++, j>>=1, k--) {
-      if (!is_p_one) 
+      if (!is_p_one)
         mpz_mul (S[k], S[k], ptoj[l]);
 #ifdef A
 #  ifdef B
@@ -136,7 +136,7 @@ GENERIC (mpfr_ptr y, mpz_srcptr p, long r, int m)
       mpz_mul_ui (P[k], P[k], A2*B2);
 #    endif
 #  else
-#    if A2 != 1 
+#    if A2 != 1
       mpz_mul_ui (P[k], P[k], A2);
 #  endif
 #endif
@@ -155,12 +155,12 @@ GENERIC (mpfr_ptr y, mpz_srcptr p, long r, int m)
 #endif
     }
   }
-  
+
   diff = mpz_sizeinbase(S[0],2) - 2*precy;
   expo = diff;
   if (diff >= 0)
     mpz_div_2exp(S[0],S[0],diff);
-  else 
+  else
     mpz_mul_2exp(S[0],S[0],-diff);
   diff = mpz_sizeinbase(P[0],2) - precy;
   expo -= diff;
@@ -187,7 +187,7 @@ GENERIC (mpfr_ptr y, mpz_srcptr p, long r, int m)
     {
       mpz_clear (P[i]);
       mpz_clear (S[i]);
-      mpz_clear (ptoj[i]); 
+      mpz_clear (ptoj[i]);
 #ifdef R_IS_RATIONAL
       mpz_clear (qtoj[i]);
 #endif

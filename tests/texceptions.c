@@ -77,7 +77,7 @@ check_emin_emax (void)
   if ((mpfr_get_emax)() != MPFR_EMAX_MAX)
     ERROR("get_emax FAILED!");
   if ((mpfr_set_emax)(MPFR_EMAX_MAX+1) == 0)
-    ERROR("set_emax failed! (2)");  
+    ERROR("set_emax failed! (2)");
 
   if ((mpfr_get_emin_min) () != MPFR_EMIN_MIN)
     ERROR ("get_emin_min");
@@ -162,7 +162,7 @@ check_flags (void)
 
   (mpfr_clear_erangeflag) ();
   mpfr_set_ui (x, 1, GMP_RNDN);
-  mpfr_mul_2exp (x, x, 1024, GMP_RNDN); 
+  mpfr_mul_2exp (x, x, 1024, GMP_RNDN);
   mpfr_get_ui (x, GMP_RNDN);
   if (!(mpfr_erangeflag_p)())
     ERROR ("ERROR: No erange flag!\n");
@@ -259,7 +259,7 @@ test_set_overflow (void)
 static void
 check_set () {
   mpfr_clear_flags ();
-  
+
   mpfr_set_overflow ();
   MPFR_ASSERTN ((mpfr_overflow_p) ());
   mpfr_set_underflow ();

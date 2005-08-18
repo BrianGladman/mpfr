@@ -30,8 +30,8 @@ mpfr_reldiff (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   if (MPFR_ARE_SINGULAR (b, c))
     {
       if (MPFR_IS_NAN(b) || MPFR_IS_NAN(c))
-        { 
-          MPFR_SET_NAN(a); 
+        {
+          MPFR_SET_NAN(a);
           return;
         }
       else if (MPFR_IS_INF(b))
@@ -61,12 +61,12 @@ mpfr_reldiff (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       mpfr_init2 (b_copy, MPFR_PREC(b));
       mpfr_set (b_copy, b, GMP_RNDN);
     }
-  
+
   mpfr_sub (a, b, c, rnd_mode);
   mpfr_abs (a, a, rnd_mode); /* for compatibility with MPF */
   mpfr_div (a, a, (a == b) ? b_copy : b, rnd_mode);
-  
+
   if (a == b)
     mpfr_clear (b_copy);
-  
+
 }

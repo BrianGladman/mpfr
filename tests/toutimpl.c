@@ -30,7 +30,7 @@ MA 02110-1301, USA. */
    We can't use tmpname since it is insecure */
 #define FILE_NAME "dummy.tmp"
 
-static const char Buffer[] = 
+static const char Buffer[] =
 "@NaN@\n"
 "-@Inf@\n"
 "-0\n"
@@ -72,7 +72,7 @@ int main()
       exit (1);
     }
 
-  /* Reopen stdout to a file. All errors will be put to stderr 
+  /* Reopen stdout to a file. All errors will be put to stderr
      Can't use tmpname since it is unsecure */
   if (freopen (FILE_NAME, "w", stdout) == NULL)
     {
@@ -89,7 +89,7 @@ int main()
   mpfr_set_str_binary (x, "0.101010101010111110010001100011000100001E32");
   mpfr_dump (x);
   mpfr_print_mant_binary ("x=",MPFR_MANT(x), MPFR_PREC(x));
-  
+
 
   mpfr_clear (x);
   fclose (stdout);
@@ -112,7 +112,7 @@ int main()
           fprintf (stderr, "Character mismatch for i=%d / %lu\n",
                   i, (unsigned long) sizeof(Buffer));
           exit (1);
-        }      
+        }
     }
   fclose (f);
 

@@ -164,10 +164,10 @@ special (void)
   /* Test regression */
   mpfr_set_prec (x, 51);
   mpfr_set_prec (y, 51);
-  mpfr_set_str_binary (x, 
+  mpfr_set_str_binary (x,
            "0.101100100000101111111010001111111000001000000000000E-11");
   i = mpfr_atan (y, x, GMP_RNDN);
-  if (mpfr_cmp_str (y, 
+  if (mpfr_cmp_str (y,
    "1.01100100000101111111001110011001010110100100000000e-12", 2, GMP_RNDN)
       || i >= 0)
     {
@@ -175,7 +175,7 @@ special (void)
       mpfr_dump (y);
       exit (1);
     }
-  
+
   mpfr_set_si (x, -1, GMP_RNDN);
   mpfr_atan (x, x, GMP_RNDN);
   MPFR_ASSERTN (MPFR_IS_NEG (x));
@@ -190,7 +190,7 @@ special (void)
       printf ("Error in mpfr_atan (4)\n");
       printf ("Input    1.11001110010000011111100000010000000000000000000e-19 [prec=48]\n");
       printf ("Expected 0.111001110010000011111100000001111111110000010011E-18\n");
-      printf ("Got      "); mpfr_dump (y); 
+      printf ("Got      "); mpfr_dump (y);
       exit (1);
     }
 
@@ -258,7 +258,7 @@ special_atan2 (void)
   /* 0+ 0+ --> 0+ */
   mpfr_set_ui (y, 0, GMP_RNDN);
   mpfr_atan2 (z, y, x, GMP_RNDN);
-  MPFR_ASSERTN (MPFR_IS_ZERO (z) && MPFR_IS_POS (z)); 
+  MPFR_ASSERTN (MPFR_IS_ZERO (z) && MPFR_IS_POS (z));
   /* 0- 0+ --> 0- */
   MPFR_CHANGE_SIGN (y);
   mpfr_atan2 (z, y, x, GMP_RNDN);
@@ -275,7 +275,7 @@ special_atan2 (void)
   mpfr_set_si (x, -1, GMP_RNDN);
   mpfr_atan2 (z, y, x, GMP_RNDN);
   MPFR_ASSERTN (mpfr_cmp_str (z, "3.1415", 10, GMP_RNDN) == 0);
-  /* 0- -1 --> -PI */ 
+  /* 0- -1 --> -PI */
   MPFR_CHANGE_SIGN (y);
   mpfr_atan2 (z, y, x, GMP_RNDN);
   MPFR_ASSERTN (mpfr_cmp_str (z, "-3.1415", 10, GMP_RNDN) == 0);

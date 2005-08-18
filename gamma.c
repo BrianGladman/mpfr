@@ -29,7 +29,7 @@ MA 02110-1301, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-/* We use the reflection formula 
+/* We use the reflection formula
   Gamma(1+t) Gamma(1-t) = - Pi t / sin(Pi (1 + t))
   in order to treat the case x <= 1,
   i.e. with x = 1-t, then Gamma(x) = -Pi*(1-x)/sin(Pi*(2-x))/GAMMA(2-x)

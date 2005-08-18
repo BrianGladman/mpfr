@@ -92,7 +92,7 @@ mpfr_eq (mpfr_srcptr u, mpfr_srcptr v, unsigned long int n_bits)
           /* now either k < 0: all low bits from u are zero
                  or remains < BITS_PER_MP_LIMB: check high bits from up[k]
                  or up[k] <> 0: different */
-          if (k >= 0 && (((remains < BITS_PER_MP_LIMB) && 
+          if (k >= 0 && (((remains < BITS_PER_MP_LIMB) &&
                           (up[k] >> (BITS_PER_MP_LIMB - remains))) ||
                          (remains >= BITS_PER_MP_LIMB && up[k])))
             return 0;           /* surely too different */
@@ -109,7 +109,7 @@ mpfr_eq (mpfr_srcptr u, mpfr_srcptr v, unsigned long int n_bits)
   /* If size is too large wrt n_bits, reduce it to look only at the
      high n_bits bits.
      Otherwise, if n_bits > size * BITS_PER_MP_LIMB, reduce n_bits to
-     size * BITS_PER_MP_LIMB, since the extra low bits of one of the 
+     size * BITS_PER_MP_LIMB, since the extra low bits of one of the
      operands have already been check above. */
   if ((unsigned long) size > 1 + (n_bits - 1) / BITS_PER_MP_LIMB)
     size = 1 + (n_bits - 1) / BITS_PER_MP_LIMB;

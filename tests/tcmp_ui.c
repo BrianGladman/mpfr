@@ -27,8 +27,8 @@ MA 02110-1301, USA. */
 int
 main (void)
 {
-  mpfr_t x; 
-  unsigned long i; 
+  mpfr_t x;
+  unsigned long i;
   long s;
   int c;
 
@@ -154,14 +154,14 @@ main (void)
   mpfr_set_nan (x);
   mpfr_clear_erangeflag ();
   c = mpfr_cmp_ui (x, 12);
-  if (c != 0 || !mpfr_erangeflag_p () ) 
+  if (c != 0 || !mpfr_erangeflag_p () )
     {
       printf ("NAN error (1)\n");
       exit (1);
     }
   mpfr_clear_erangeflag ();
   c = mpfr_cmp_si (x, -12);
-  if (c != 0 || !mpfr_erangeflag_p () ) 
+  if (c != 0 || !mpfr_erangeflag_p () )
     {
       printf ("NAN error (2)\n");
       exit (1);

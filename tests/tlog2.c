@@ -34,7 +34,7 @@ special (void)
   mpfr_t x;
 
   mpfr_init (x);
-  
+
   mpfr_set_nan (x);
   mpfr_log2 (x, x, GMP_RNDN);
   MPFR_ASSERTN(mpfr_nan_p (x));

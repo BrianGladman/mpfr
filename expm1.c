@@ -27,7 +27,7 @@ MA 02110-1301, USA. */
  */
 
 int
-mpfr_expm1 (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode) 
+mpfr_expm1 (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
 {
   int inexact;
   MPFR_SAVE_EXPO_DECL (expo);
@@ -41,7 +41,7 @@ mpfr_expm1 (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
         }
       /* check for inf or -inf (expm1(-inf)=-1) */
       else if (MPFR_IS_INF (x))
-        { 
+        {
           if (MPFR_IS_POS (x))
             {
               MPFR_SET_INF (y);
