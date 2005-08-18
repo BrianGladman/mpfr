@@ -211,7 +211,7 @@ main (int argc, char *argv[])
 
   /* checks that 2^i, 2^i+1 and 2^i-1 are correctly converted */
   d = 1.0;
-  for (i = 1; i <= 113; i++)
+  for (i = 1; i < MPFR_LDBL_MANT_DIG; i++)
     {
       d = 2.0 * d; /* d = 2^i */
       check_set_get (d, x);
