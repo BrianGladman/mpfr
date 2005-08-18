@@ -116,17 +116,17 @@ special (void)
       mpfr_set_prec (x, xprec);
       mpfr_set_str_binary (x, "0.1100100100001111110011111000000011011100001100110111E2");
       for (yprec = 53; yprec <= 128; yprec++)
-	{
-	  mpfr_set_prec (y, yprec);
-	  mpfr_div_ui (y, x, 1, GMP_RNDN);
-	  if (mpfr_cmp(x,y))
-	    {
-	      printf ("division by 1.0 fails for xprec=%u, yprec=%u\n", xprec, yprec);
-	      printf ("expected "); mpfr_print_binary (x); puts ("");
-	      printf ("got      "); mpfr_print_binary (y); puts ("");
-	      exit (1);
-	    }
-	}
+        {
+          mpfr_set_prec (y, yprec);
+          mpfr_div_ui (y, x, 1, GMP_RNDN);
+          if (mpfr_cmp(x,y))
+            {
+              printf ("division by 1.0 fails for xprec=%u, yprec=%u\n", xprec, yprec);
+              printf ("expected "); mpfr_print_binary (x); puts ("");
+              printf ("got      "); mpfr_print_binary (y); puts ("");
+              exit (1);
+            }
+        }
     }
 
   mpfr_clear (x);

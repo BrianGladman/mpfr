@@ -34,22 +34,22 @@ mpfr_tan (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_GROUP_DECL (group);
 
   MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
-		  ("y[%#R]=%R inexact=%d", y, y, inexact));
+                  ("y[%#R]=%R inexact=%d", y, y, inexact));
 
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(x)))
     {
       if (MPFR_IS_NAN(x) || MPFR_IS_INF(x))
-	{
-	  MPFR_SET_NAN(y);
-	  MPFR_RET_NAN;
-	}
+        {
+          MPFR_SET_NAN(y);
+          MPFR_RET_NAN;
+        }
       else /* x is zero */
-	{
+        {
           MPFR_ASSERTD(MPFR_IS_ZERO(x));
-	  MPFR_SET_ZERO(y);
-	  MPFR_SET_SAME_SIGN(y, x);
-	  MPFR_RET(0);
-	}
+          MPFR_SET_ZERO(y);
+          MPFR_SET_SAME_SIGN(y, x);
+          MPFR_RET(0);
+        }
     }
 
   /* tan(x) = x + x^3/3 + ... so the error is < 2^(3*EXP(x)-1) */
@@ -70,12 +70,12 @@ mpfr_tan (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   for (;;)
     {
       /* The only way to get an overflow is to get ~ Pi/2
-	 But the result will be ~ 2^Prec(y). */
+         But the result will be ~ 2^Prec(y). */
       mpfr_sin_cos (s, c, x, GMP_RNDN); /* err <= 1/2 ulp on s and c */
       mpfr_div (c, s, c, GMP_RNDN);     /* err <= 2 ulps */
       MPFR_ASSERTD (!MPFR_IS_SINGULAR (c));
       if (MPFR_LIKELY (MPFR_CAN_ROUND (c, m-1, precy, rnd_mode)))
-	break;
+        break;
       MPFR_ZIV_NEXT (loop, m);
       MPFR_GROUP_REPREC_2 (group, m, s, c);
     }

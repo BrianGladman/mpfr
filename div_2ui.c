@@ -49,7 +49,7 @@ mpfr_div_2ui (mpfr_ptr y, mpfr_srcptr x, unsigned long n, mp_rnd_t rnd_mode)
       {
         mp_exp_t exp = MPFR_GET_EXP (y);
         if (MPFR_UNLIKELY( __gmpfr_emin > MPFR_EMAX_MAX - (long) n ||
-			   exp < __gmpfr_emin + (long) n) )
+                           exp < __gmpfr_emin + (long) n) )
           {
             if (rnd_mode == GMP_RNDN &&
                 (__gmpfr_emin > MPFR_EMAX_MAX - (long) (n - 1) ||

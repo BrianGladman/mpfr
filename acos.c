@@ -32,24 +32,24 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_ZIV_DECL (loop);
 
   MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
-		 ("acos[%#R]=%R inexact=%d", acos, acos, inexact));
+                 ("acos[%#R]=%R inexact=%d", acos, acos, inexact));
 
   /* Singular cases */
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
       if (MPFR_IS_NAN (x) || MPFR_IS_INF (x))
-	{
-	  MPFR_SET_NAN (acos);
-	  MPFR_RET_NAN;
-	}
+        {
+          MPFR_SET_NAN (acos);
+          MPFR_RET_NAN;
+        }
       else /* necessarily x=0 */
-	{
+        {
           MPFR_ASSERTD(MPFR_IS_ZERO(x));
-	  /* acos(0)=Pi/2 */
-	  inexact = mpfr_const_pi (acos, rnd_mode);
-	  mpfr_div_2ui (acos, acos, 1, rnd_mode); /* exact */
-	  MPFR_RET (inexact);
-	}
+          /* acos(0)=Pi/2 */
+          inexact = mpfr_const_pi (acos, rnd_mode);
+          mpfr_div_2ui (acos, acos, 1, rnd_mode); /* exact */
+          MPFR_RET (inexact);
+        }
     }
 
   /* Set x_p=|x| */
@@ -63,17 +63,17 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mp_rnd_t rnd_mode)
     {
       mpfr_clear (xp);
       if (compared > 0) /* acos(x) = NaN for x > 1 */
-	{
-	  MPFR_SET_NAN(acos);
-	  MPFR_RET_NAN;
-	}
+        {
+          MPFR_SET_NAN(acos);
+          MPFR_RET_NAN;
+        }
       else 
-	{
-	  if (MPFR_IS_POS_SIGN (sign)) /* acos(+1) = 0 */
-	    return mpfr_set_ui (acos, 0, rnd_mode);
-	  else /* acos(-1) = Pi */
-	    return mpfr_const_pi (acos, rnd_mode);
-	}
+        {
+          if (MPFR_IS_POS_SIGN (sign)) /* acos(+1) = 0 */
+            return mpfr_set_ui (acos, 0, rnd_mode);
+          else /* acos(-1) = Pi */
+            return mpfr_const_pi (acos, rnd_mode);
+        }
     }
 
   MPFR_SAVE_EXPO_MARK (expo);
@@ -111,7 +111,7 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_sub (arcc, tmp, arcc, GMP_RNDN);
 
       if (MPFR_LIKELY (MPFR_CAN_ROUND (arcc, prec-supplement,
-				       MPFR_PREC (acos), rnd_mode)))
+                                       MPFR_PREC (acos), rnd_mode)))
         break;
       MPFR_ZIV_NEXT (loop, prec);
       mpfr_set_prec (tmp, prec);

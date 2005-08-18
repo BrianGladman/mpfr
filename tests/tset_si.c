@@ -182,20 +182,20 @@ main (int argc, char *argv[])
       mpfr_set_si (x, -1, (mp_rnd_t) r);
       mpfr_set_ui (x, 0, (mp_rnd_t) r);
       if (MPFR_IS_NEG (x) || mpfr_get_ui (x, (mp_rnd_t) r) != 0)
-	{
-	  printf ("mpfr_set_ui (x, 0) gives -0 for %s\n", 
-		  mpfr_print_rnd_mode ((mp_rnd_t) r));
-	  exit (1);
-	}
+        {
+          printf ("mpfr_set_ui (x, 0) gives -0 for %s\n", 
+                  mpfr_print_rnd_mode ((mp_rnd_t) r));
+          exit (1);
+        }
 
       mpfr_set_si (x, -1, (mp_rnd_t) r);
       mpfr_set_si (x, 0, (mp_rnd_t) r);
       if (MPFR_IS_NEG (x) || mpfr_get_si (x, (mp_rnd_t) r) != 0)
-	{
-	  printf ("mpfr_set_si (x, 0) gives -0 for %s\n",
-		  mpfr_print_rnd_mode ((mp_rnd_t) r));
-	  exit (1);
-	}
+        {
+          printf ("mpfr_set_si (x, 0) gives -0 for %s\n",
+                  mpfr_print_rnd_mode ((mp_rnd_t) r));
+          exit (1);
+        }
     }
   
   /* check potential bug in case mp_limb_t is unsigned */

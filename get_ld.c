@@ -55,10 +55,10 @@ mpfr_get_ld (mpfr_srcptr x, mp_rnd_t rnd_mode)
 
       r = 0.0;
       do {
-	s = mpfr_get_d (y, GMP_RNDN); /* high part of y */
-	r += (long double) s;
-	mpfr_set_d (z, s, GMP_RNDN);  /* exact */
-	mpfr_sub (y, y, z, GMP_RNDN); /* exact */
+        s = mpfr_get_d (y, GMP_RNDN); /* high part of y */
+        r += (long double) s;
+        mpfr_set_d (z, s, GMP_RNDN);  /* exact */
+        mpfr_sub (y, y, z, GMP_RNDN); /* exact */
       } while (!MPFR_IS_ZERO (y));
 
       mpfr_clear (z);
@@ -94,7 +94,7 @@ mpfr_get_ld (mpfr_srcptr x, mp_rnd_t rnd_mode)
             }
         }
       if (sign < 0)
-	r = -r;
+        r = -r;
       return r;
     }
 }

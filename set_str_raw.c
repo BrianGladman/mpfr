@@ -62,11 +62,11 @@ mpfr_set_str_binary (mpfr_ptr x, const char *str)
     {
       MPFR_SET_INF(x);
       if (negative)
-	MPFR_SET_NEG(x);
+        MPFR_SET_NEG(x);
       else
-	MPFR_SET_POS(x);
+        MPFR_SET_POS(x);
       /*if (MPFR_IS_STRICTNEG(x) != negative)
-	MPFR_CHANGE_SIGN(x);*/
+        MPFR_CHANGE_SIGN(x);*/
       return;
     }
 
@@ -139,9 +139,9 @@ mpfr_set_str_binary (mpfr_ptr x, const char *str)
 
       MPFR_SET_EXP (x, expn - cnt);
       if (negative)
-	MPFR_SET_NEG(x);
+        MPFR_SET_NEG(x);
       else
-	MPFR_SET_POS(x);
+        MPFR_SET_POS(x);
     }
 
   (*__gmp_free_func) (str0, alloc);

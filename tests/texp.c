@@ -61,7 +61,7 @@ check3 (const char *op, mp_rnd_t rnd, const char *res)
   if (mpfr_cmp_str1 (y, res) )
     {
       printf ("mpfr_exp failed for x=%s, rnd=%s\n",
-	      op, mpfr_print_rnd_mode (rnd));
+              op, mpfr_print_rnd_mode (rnd));
       printf ("expected result is %s, got ", res);
       mpfr_out_str (stdout, 10, 0, y, GMP_RNDN);
       putchar('\n');
@@ -246,11 +246,11 @@ check_special ()
   mpfr_set_emin (MPFR_EMIN_DEFAULT);
   mpfr_set_str (x, 
     "0.1011000101110010000101111111010100001100000001110001100111001101E30",
-		2, GMP_RNDN);
+                2, GMP_RNDN);
   mpfr_exp (x, x, GMP_RNDD);
   if (mpfr_cmp_str (x, 
 ".1111111111111111111111111111111111111111111111111111111111111111E1073741823",
-		    2, GMP_RNDN) != 0)
+                    2, GMP_RNDN) != 0)
     {
       printf ("Wrong overflow detection in mpfr_exp\n");
       mpfr_dump (x);
@@ -391,12 +391,12 @@ check_special ()
   mpfr_set_prec (x, 107);
   mpfr_set_prec (y, 107);
   mpfr_set_str_binary (x, "0.11110000000000000000000000000000000000000000000"
-		       "0000000000000000000000000000000000000000000000000000"
-		       "00000000E4");
+                       "0000000000000000000000000000000000000000000000000000"
+                       "00000000E4");
   test_exp (y, x, GMP_RNDN);
   if (mpfr_cmp_str (y, "0.11000111100001100110010101111101011010010101010000"
-		    "1101110111100010111001011111111000110111001011001101010"
-		    "01E22", 2, GMP_RNDN))
+                    "1101110111100010111001011111111000110111001011001101010"
+                    "01E22", 2, GMP_RNDN))
     {
       printf ("Special overflow error (1)\n");
       mpfr_dump (y);
@@ -415,10 +415,10 @@ check_special ()
   mpfr_set_prec (x, 163);
 
   mpfr_set_str (x, "-4.28ac8fceeadcda06bb56359017b1c81b85b392e7", 16,
-		GMP_RNDN);
+                GMP_RNDN);
   mpfr_exp (x, x, GMP_RNDN);
   if (mpfr_cmp_str (x, "3.fffffffffffffffffffffffffffffffffffffffe8@-2",
-		    16, GMP_RNDN))
+                    16, GMP_RNDN))
     {
       printf ("Error for x= -4.28ac8fceeadcda06bb56359017b1c81b85b392e7");
       printf ("expected  3.fffffffffffffffffffffffffffffffffffffffe8@-2");
@@ -442,7 +442,7 @@ check_inexact (void)
   mpfr_init2 (y, 53);
 
   mpfr_set_str_binary (x,
-	"1.0000000000001001000110100100101000001101101011100101e2");
+        "1.0000000000001001000110100100101000001101101011100101e2");
   inexact = test_exp (y, x, GMP_RNDN);
   if (inexact <= 0)
     {

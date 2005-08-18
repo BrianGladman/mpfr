@@ -56,23 +56,23 @@ test_generic_ui (mp_prec_t p0, mp_prec_t p1, unsigned int N)
       for (n=0; n<N; n++)
         {
           RAND_FUNCTION (x);
-	  u = INT_RAND_FUNCTION ();
+          u = INT_RAND_FUNCTION ();
           rnd = (mp_rnd_t) RND_RAND ();
           mpfr_set_prec (y, yprec);
-	  compare = TEST_FUNCTION (y, x, u, rnd);
+          compare = TEST_FUNCTION (y, x, u, rnd);
           if (mpfr_can_round (y, yprec, rnd, rnd, prec))
             {
               mpfr_set (t, y, rnd);
-	      inexact = TEST_FUNCTION (z, x, u, rnd);
+              inexact = TEST_FUNCTION (z, x, u, rnd);
               if (mpfr_cmp (t, z))
                 {
                   printf ("results differ for x=");
                   mpfr_out_str (stdout, 2, prec, x, GMP_RNDN);
-		  printf ("\nu=%lu", (unsigned long) u);
+                  printf ("\nu=%lu", (unsigned long) u);
                   printf (" prec=%lu rnd_mode=%s\n", 
-			  (unsigned long ) prec, mpfr_print_rnd_mode (rnd));
+                          (unsigned long ) prec, mpfr_print_rnd_mode (rnd));
 #ifdef TEST_FUNCTION_NAME
-		  printf ("Function: %s\n", TEST_FUNCTION_NAME);
+                  printf ("Function: %s\n", TEST_FUNCTION_NAME);
 #endif
                   printf ("got      ");
                   mpfr_out_str (stdout, 2, prec, z, GMP_RNDN);
@@ -99,7 +99,7 @@ test_generic_ui (mp_prec_t p0, mp_prec_t p1, unsigned int N)
                   printf ("Wrong inexact flag for rnd=%s: expected %d, got %d"
                           "\n", mpfr_print_rnd_mode (rnd), compare, inexact);
                   printf ("x="); mpfr_print_binary (x); puts ("");
-		  printf ("u=%lu", (unsigned long) u);
+                  printf ("u=%lu", (unsigned long) u);
                   printf ("y="); mpfr_print_binary (y); puts ("");
                   printf ("t="); mpfr_print_binary (t); puts ("");
                   exit (1);

@@ -24,7 +24,7 @@ MA 02110-1301, USA. */
 /* Uses MPFR_FAST_COMPUTE_IF_SMALL_INPUT instead (a simple wrapper) */
 
 /* int mpfr_round_near_x (mpfr_ptr y, mpfr_srcptr x, mp_exp_t err, int dir,
-	                  mp_rnd_t rnd)
+                          mp_rnd_t rnd)
 
    Assuming y = o(f(x)) = o(x + g(x)) with |g(x)| < 2^(EXP(x)-error)
    If x is small enought, y ~= x. This function checks and does this.
@@ -151,7 +151,7 @@ MA 02110-1301, USA. */
 
 int
 mpfr_round_near_x (mpfr_ptr y, mpfr_srcptr x, mp_exp_t err, int dir,
-		   mp_rnd_t rnd)
+                   mp_rnd_t rnd)
 {
   int inexact, sign;
   unsigned int old_flags = __gmpfr_flags;
@@ -162,9 +162,9 @@ mpfr_round_near_x (mpfr_ptr y, mpfr_srcptr x, mp_exp_t err, int dir,
   /* First check if we can round. The test is more restrictive than
      necessary. */
   if (!(err > 0 && (mpfr_uexp_t) err > MPFR_PREC (y) + 1
-	&& ((mpfr_uexp_t) err > MPFR_PREC (x)
-	    || mpfr_round_p (MPFR_MANT (x), MPFR_LIMB_SIZE (x),
-			     err, MPFR_PREC (y) + (rnd==GMP_RNDN)))))
+        && ((mpfr_uexp_t) err > MPFR_PREC (x)
+            || mpfr_round_p (MPFR_MANT (x), MPFR_LIMB_SIZE (x),
+                             err, MPFR_PREC (y) + (rnd==GMP_RNDN)))))
     /* If we assume we can not round, return 0 */
     return 0;
 
@@ -173,8 +173,8 @@ mpfr_round_near_x (mpfr_ptr y, mpfr_srcptr x, mp_exp_t err, int dir,
   MPFR_SET_EXP (y, MPFR_GET_EXP (x));
   MPFR_SET_SIGN (y, sign);
   MPFR_RNDRAW_EVEN (inexact, y, MPFR_MANT (x), MPFR_PREC (x), rnd, sign,
-		    if (MPFR_UNLIKELY ( ++MPFR_EXP (y) > __gmpfr_emax))
-		    mpfr_overflow (y, rnd, sign) );
+                    if (MPFR_UNLIKELY ( ++MPFR_EXP (y) > __gmpfr_emax))
+                    mpfr_overflow (y, rnd, sign) );
 
   /* Fix it in some cases */
   MPFR_ASSERTD (!MPFR_IS_NAN (y) && !MPFR_IS_ZERO (y));
@@ -183,43 +183,43 @@ mpfr_round_near_x (mpfr_ptr y, mpfr_srcptr x, mp_exp_t err, int dir,
   if (inexact == 0)
     {
       if (dir == 0) /* The error term is negative for x positive */
-	{
-	  inexact = sign;
-	  if (MPFR_IS_LIKE_RNDZ (rnd, MPFR_IS_NEG_SIGN (sign)))
-	    {
-	    nexttozero:
-	      /* The underflow flag should be set if the result is zero */
-	      __gmpfr_flags = old_flags;
-	      inexact = -sign;
-	      mpfr_nexttozero (y);
-	      if (MPFR_UNLIKELY (MPFR_IS_ZERO (y)))
-		mpfr_set_underflow ();
-	    }
-	}
+        {
+          inexact = sign;
+          if (MPFR_IS_LIKE_RNDZ (rnd, MPFR_IS_NEG_SIGN (sign)))
+            {
+            nexttozero:
+              /* The underflow flag should be set if the result is zero */
+              __gmpfr_flags = old_flags;
+              inexact = -sign;
+              mpfr_nexttozero (y);
+              if (MPFR_UNLIKELY (MPFR_IS_ZERO (y)))
+                mpfr_set_underflow ();
+            }
+        }
       else /* The error term is positive for x positive */
-	{
-	  inexact = -sign;
-	  /* Round Away */
-	  if (rnd != GMP_RNDN && rnd != GMP_RNDZ
-	      && MPFR_IS_RNDUTEST_OR_RNDDNOTTEST (rnd, MPFR_IS_POS_SIGN(sign)))
-	    {
-	    nexttoinf:
-	      /* The overflow flag should be set if the result is infinity */
-	      inexact = sign;
-	      mpfr_nexttoinf (y);
-	      if (MPFR_UNLIKELY (MPFR_IS_INF (y)))
-		mpfr_set_overflow ();
-	    }
-	}
+        {
+          inexact = -sign;
+          /* Round Away */
+          if (rnd != GMP_RNDN && rnd != GMP_RNDZ
+              && MPFR_IS_RNDUTEST_OR_RNDDNOTTEST (rnd, MPFR_IS_POS_SIGN(sign)))
+            {
+            nexttoinf:
+              /* The overflow flag should be set if the result is infinity */
+              inexact = sign;
+              mpfr_nexttoinf (y);
+              if (MPFR_UNLIKELY (MPFR_IS_INF (y)))
+                mpfr_set_overflow ();
+            }
+        }
     }
   /* The even rule has been used. But due to error term, we should never
      use this rule. That's why we have to fix some wrong rounding */
   else if (inexact == MPFR_EVEN_INEX || inexact == -MPFR_EVEN_INEX)
     {
       if (inexact*sign > 0 && dir == 0)
-	goto nexttozero;
+        goto nexttozero;
       else if (inexact*sign < 0 && dir == 1)
-	goto nexttoinf;
+        goto nexttoinf;
     }
 
   MPFR_RET (inexact);

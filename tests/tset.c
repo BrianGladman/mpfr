@@ -113,7 +113,7 @@ main (void)
       mpfr_set_prec (x, p);
       mpfr_random (x);
       if (randlimb () % 2)
-	mpfr_neg (x, x, GMP_RNDN);
+        mpfr_neg (x, x, GMP_RNDN);
       for (q=2; q<2*p; q++)
         {
           mpfr_set_prec (y, q);

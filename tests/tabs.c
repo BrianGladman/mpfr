@@ -43,12 +43,12 @@ check_inexact (void)
       mpfr_set_prec (absx, p);
       mpfr_random (x);
       if (randlimb () % 2)
-	{
-	  mpfr_set (absx, x, GMP_RNDN);
-	  mpfr_neg (x, x, GMP_RNDN);
-	}
+        {
+          mpfr_set (absx, x, GMP_RNDN);
+          mpfr_neg (x, x, GMP_RNDN);
+        }
       else
-	mpfr_set (absx, x, GMP_RNDN);
+        mpfr_set (absx, x, GMP_RNDN);
       for (q=2; q<2*p; q++)
         {
           mpfr_set_prec (y, q);
@@ -143,10 +143,10 @@ check_cmp(int argc, char *argv[])
       if (mpfr_cmp(x,y))
         {
           printf ("Mismatch for sign=%d and x=", sign); 
-	  mpfr_print_binary(x);
+          mpfr_print_binary(x);
           printf ("\nResults=");
           mpfr_print_binary(y); 
-	  putchar ('\n');
+          putchar ('\n');
           exit (1);
         }
     }

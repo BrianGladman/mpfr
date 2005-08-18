@@ -96,7 +96,7 @@ worst_cases (void)
           b = randlimb () % 2;
           set_bit (x, i + j + 2, b);
           set_bit (y, i + j + 2, b);
-	  for (k=0; k<64; k++)
+          for (k=0; k<64; k++)
             {
               if (k)
                 set_bit (x, i + j + k + 1, 0);

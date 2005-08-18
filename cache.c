@@ -25,7 +25,7 @@ void
 mpfr_init_cache (mpfr_cache_t cache, int (*func)(mpfr_ptr, mp_rnd_t))
 {
   MPFR_PREC (cache->x) = 0; /* Invalid prec to detect that the cache is not
-			       valid. Maybe add a flag? */
+                               valid. Maybe add a flag? */
   cache->func = func;
 }
 
@@ -75,24 +75,24 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mp_rnd_t rnd)
   MPFR_SET_EXP (dest, MPFR_GET_EXP (cache->x));
   MPFR_SET_SIGN (dest, sign);
   MPFR_RNDRAW_EVEN (inexact, dest,
-		    MPFR_MANT (cache->x), MPFR_PREC (cache->x), rnd, sign,
-		    if (MPFR_UNLIKELY ( ++MPFR_EXP (dest) > __gmpfr_emax))
-		       mpfr_overflow (dest, rnd, sign) );
+                    MPFR_MANT (cache->x), MPFR_PREC (cache->x), rnd, sign,
+                    if (MPFR_UNLIKELY ( ++MPFR_EXP (dest) > __gmpfr_emax))
+                       mpfr_overflow (dest, rnd, sign) );
   /* inexact = mpfr_set (dest, cache->x, rnd); */
   if (MPFR_LIKELY(cache->inexact != 0))
     {
       switch (rnd)
-	{
-	case GMP_RNDZ:
-	case GMP_RNDD:
-	  if (MPFR_UNLIKELY(inexact == 0))
-	    {
+        {
+        case GMP_RNDZ:
+        case GMP_RNDD:
+          if (MPFR_UNLIKELY(inexact == 0))
+            {
               inexact = cache->inexact;
-	      if (inexact > 0)
-		mpfr_nextbelow (dest);
-	    }
-	  break;
-	case GMP_RNDU:
+              if (inexact > 0)
+                mpfr_nextbelow (dest);
+            }
+          break;
+        case GMP_RNDU:
           if (MPFR_UNLIKELY(inexact == 0))
             {
               inexact = cache->inexact;
@@ -100,20 +100,20 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mp_rnd_t rnd)
                 mpfr_nextabove (dest);
             }
           break;
-	default: /* GMP_RNDN */
-	  if (MPFR_UNLIKELY(inexact == MPFR_EVEN_INEX ||
-			    inexact == -MPFR_EVEN_INEX))
-	    {
-	      if (cache->inexact < 0)
-		mpfr_nextabove (dest);
-	      else
-		mpfr_nextbelow (dest);
-	      inexact = -inexact;
-	    }
-	  else if (MPFR_UNLIKELY(inexact == 0))
-	    inexact = cache->inexact;
-	  break;
-	}
+        default: /* GMP_RNDN */
+          if (MPFR_UNLIKELY(inexact == MPFR_EVEN_INEX ||
+                            inexact == -MPFR_EVEN_INEX))
+            {
+              if (cache->inexact < 0)
+                mpfr_nextabove (dest);
+              else
+                mpfr_nextbelow (dest);
+              inexact = -inexact;
+            }
+          else if (MPFR_UNLIKELY(inexact == 0))
+            inexact = cache->inexact;
+          break;
+        }
     }
 
   MPFR_SAVE_EXPO_FREE (expo);

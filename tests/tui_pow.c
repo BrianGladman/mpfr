@@ -64,7 +64,7 @@ test1 (void)
   if (mpfr_cmp (z, a) || res1 != res2)
     {
       printf ("Error for ui_pow_ui for 17^42\n"
-	      "Inexact1 = %d Inexact2 = %d\n", res1, res2);
+              "Inexact1 = %d Inexact2 = %d\n", res1, res2);
       mpfr_dump (z);
       mpfr_dump (a);
       exit (1);
@@ -244,13 +244,13 @@ main (int argc, char *argv[])
     {
       mpfr_set_prec (x, prec);
       for (n=0; n<N; n++)
-	{
+        {
           int nt;
           nt = randlimb () & INT_MAX;
-	  mpfr_random (x);
-	  rnd = (mp_rnd_t) RND_RAND ();
+          mpfr_random (x);
+          rnd = (mp_rnd_t) RND_RAND ();
           check1 (x, prec, nt, rnd);
-	}
+        }
     }
   }
 

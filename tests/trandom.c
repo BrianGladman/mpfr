@@ -60,7 +60,7 @@ test_random (long nbtests, mp_prec_t prec, int verbose)
   
   printf("Average = %.5f\nVariance = %.5f\n", av, var); 
   printf("Repartition for random. Each integer should be close to %d.\n", 
-	 (int)th); 
+         (int)th); 
 
   for (k = 0; k < size_tab; k++)
     {
@@ -71,7 +71,7 @@ test_random (long nbtests, mp_prec_t prec, int verbose)
     }
 
   printf("\nChi2 statistics value (with %d degrees of freedom) : %.5f\n\n",
-	 size_tab - 1, chi2);
+         size_tab - 1, chi2);
 
   printf("\n");
 
@@ -149,7 +149,7 @@ test_random2 (long nbtests, mp_prec_t prec, int verbose)
     }
 
   printf("\nChi2 statistics value (with %d degrees of freedom) : %.5f\n\n",
-	 size_tab - 1, chi2);
+         size_tab - 1, chi2);
 
   free(tab);
   return;
@@ -217,7 +217,7 @@ test_urandomb (long nbtests, mp_prec_t prec, int verbose)
   th = (double)nbtests / size_tab;
   printf("Average = %.5f\nVariance = %.5f\n", av, var);
   printf("Repartition for urandomb. Each integer should be close to %d.\n",
-	 (int)th);
+         (int)th);
 
   for (k = 0; k < size_tab; k++)
     {
@@ -228,7 +228,7 @@ test_urandomb (long nbtests, mp_prec_t prec, int verbose)
     }
 
   printf("\nChi2 statistics value (with %d degrees of freedom) : %.5f\n\n",
-	 size_tab - 1, chi2);
+         size_tab - 1, chi2);
 
   free(tab);
   return;

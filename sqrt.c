@@ -182,9 +182,9 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
             inexact = 1;
           else /* tsize = rsize */
             {
-	      int cmp;
-	      
-	      cmp = mpn_cmp (tp, rp, rsize);
+              int cmp;
+              
+              cmp = mpn_cmp (tp, rp, rsize);
               if (cmp > 0)
                 inexact = 1;
               else if (cmp < 0 || sticky0 == MPFR_LIMB_ZERO)

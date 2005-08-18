@@ -37,17 +37,17 @@ mpfr_erf (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_SAVE_EXPO_DECL (expo);
 
   MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
-		 ("y[%#R]=%R inexact=%d", y, y, inex));
+                 ("y[%#R]=%R inexact=%d", y, y, inex));
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
       if (MPFR_IS_NAN (x))
-	{
-	  MPFR_SET_NAN (y);
-	  MPFR_RET_NAN;
-	}
+        {
+          MPFR_SET_NAN (y);
+          MPFR_RET_NAN;
+        }
       else if (MPFR_IS_INF (x)) /* erf(+inf) = +1, erf(-inf) = -1 */
-	return mpfr_set_si (y, MPFR_INT_SIGN (x), GMP_RNDN);
+        return mpfr_set_si (y, MPFR_INT_SIGN (x), GMP_RNDN);
       else /* erf(+0) = +0, erf(-0) = -0 */
         {
           MPFR_ASSERTD (MPFR_IS_ZERO (x));
@@ -70,8 +70,8 @@ mpfr_erf (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mp_rnd_t rnd2 = MPFR_IS_POS (x) ? rnd_mode : MPFR_INVERT_RND(rnd_mode);
       if (rnd2 == GMP_RNDN || rnd2 == GMP_RNDU)
         {
-	  inex = MPFR_INT_SIGN (x);
-	  mpfr_set_si (y, inex, rnd2);
+          inex = MPFR_INT_SIGN (x);
+          mpfr_set_si (y, inex, rnd2);
         }
       else /* round to zero */
         {
@@ -173,7 +173,7 @@ mpfr_erf_0 (mpfr_ptr res, mpfr_srcptr x, double xf2, mp_rnd_t rnd_mode)
       log2tauk = __gmpfr_ceil_log2 (tauk);
 
       if (MPFR_LIKELY (MPFR_CAN_ROUND (s, m - log2tauk, n, rnd_mode)))
-	break;
+        break;
 
       /* Actualisation of the precision */
       MPFR_ZIV_NEXT (loop, m);

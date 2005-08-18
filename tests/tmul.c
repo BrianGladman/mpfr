@@ -55,7 +55,7 @@ test_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 /* checks that x*y gives the right result */
 static void
 pcheck (const char *xs, const char *ys, const char *res, mp_rnd_t rnd_mode,
-	unsigned int px, unsigned int py, unsigned int pz)
+        unsigned int px, unsigned int py, unsigned int pz)
 {
   mpfr_t xx, yy, zz;
 
@@ -72,16 +72,16 @@ pcheck (const char *xs, const char *ys, const char *res, mp_rnd_t rnd_mode,
       printf ("correct is %s, mpfr_mul gives ", res);
       mpfr_out_str(stdout, 10, 0, zz, GMP_RNDN);
       /*
-	printf("\nBinary forms:\nxx=");
-	mpfr_print_binary (xx);
-	printf("\nyy=");
-	mpfr_print_binary (yy);
-	printf("\nzz=");
-	mpfr_print_binary(zz);
-	printf("\nre=");
-	mpfr_set_str1 (zz, res);
-	mpfr_print_binary(zz);
-	putchar('\n');*/
+        printf("\nBinary forms:\nxx=");
+        mpfr_print_binary (xx);
+        printf("\nyy=");
+        mpfr_print_binary (yy);
+        printf("\nzz=");
+        mpfr_print_binary(zz);
+        printf("\nre=");
+        mpfr_set_str1 (zz, res);
+        mpfr_print_binary(zz);
+        putchar('\n');*/
       exit (1);
     }
   mpfr_clear(xx); mpfr_clear(yy); mpfr_clear(zz);
@@ -103,16 +103,16 @@ check53 (const char *xs, const char *ys, mp_rnd_t rnd_mode, const char *zs)
       printf ("correct result is %s,\n mpfr_mul gives ", zs);
       mpfr_out_str(stdout, 10, 0, zz, GMP_RNDN);
       /*
-	printf("\nBinary forms:\nxx=");
-	mpfr_print_binary (xx);
-	printf("\nyy=");
-	mpfr_print_binary (yy);
-	printf("\nzz=");
-	mpfr_print_binary(zz);
-	printf("\nre=");
-	mpfr_set_str1 (zz, zs);
-	mpfr_print_binary(zz);
-	putchar('\n'); */
+        printf("\nBinary forms:\nxx=");
+        mpfr_print_binary (xx);
+        printf("\nyy=");
+        mpfr_print_binary (yy);
+        printf("\nzz=");
+        mpfr_print_binary(zz);
+        printf("\nre=");
+        mpfr_set_str1 (zz, zs);
+        mpfr_print_binary(zz);
+        putchar('\n'); */
       exit (1);
     }
   mpfr_clears (xx, yy, zz, NULL);
@@ -131,7 +131,7 @@ check24 (const char *xs, const char *ys, mp_rnd_t rnd_mode, const char *zs)
   if (mpfr_cmp_str1 (zz, zs) )
     {
       printf ("(3) mpfr_mul failed for x=%s y=%s with "
-	      "rnd=%s\n", xs, ys, mpfr_print_rnd_mode(rnd_mode));
+              "rnd=%s\n", xs, ys, mpfr_print_rnd_mode(rnd_mode));
       printf ("correct result is gives %s, mpfr_mul gives ", zs);
       mpfr_out_str(stdout, 10, 0, zz, GMP_RNDN);
       putchar('\n');
@@ -546,12 +546,12 @@ check_regression (void)
   i = mpfr_mul (x, y, z, GMP_RNDU);
   mpfr_set_prec (y, 184);
   mpfr_set_str (y, "3.0080038f2ac5054e3e71ccbb95f76aaab2221715025a28@255",
-		16, GMP_RNDN);
+                16, GMP_RNDN);
   if (mpfr_cmp (x, y) || i <= 0)
     {
       printf ("Regression test (4) failed! (i=%d - expected 1)\n", i);
       printf ("Ref: 3.0080038f2ac5054e3e71ccbb95f76aaab2221715025a28@255\n"
-	      "Got: ");
+              "Got: ");
       mpfr_out_str (stdout, 16, 0, x, GMP_RNDN);
       printf ("\n");
       exit (1);
@@ -567,7 +567,7 @@ check_regression (void)
   mpfr_set_str (z, "-f.fffffffffffffffffffffffffffffffffffffffffffffffffffffff"
 "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
 "ffffffffffffffffffffffffffffffffffffffffffffffffffffff99be91f83ec6f0ed28a3d42"
-		"e6e9a327230345ea6@-1", 16, GMP_RNDN);
+                "e6e9a327230345ea6@-1", 16, GMP_RNDN);
   i = mpfr_mul (x, y, z, GMP_RNDU);
   mpfr_set_str (y, "f.ffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
 "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
@@ -604,12 +604,12 @@ check_regression (void)
   mpfr_set_prec (x, 439);
   mpfr_set_prec (y, 393);
   mpfr_set_str (y, "-1.921fb54442d18469898cc51701b839a252049c1114cf98e804177d"
-		"4c76273644a29410f31c6809bbdf2a33679a748636600",
-		16, GMP_RNDN);
+                "4c76273644a29410f31c6809bbdf2a33679a748636600",
+                16, GMP_RNDN);
   i = mpfr_mul (x, y, y, GMP_RNDU);
   if (mpfr_cmp_str (x, "2.77a79937c8bbcb495b89b36602306b1c2159a8ff834288a19a08"
     "84094f1cda3dc426da61174c4544a173de83c2500f8bfea2e0569e3698",
-		    16, GMP_RNDN) != 0
+                    16, GMP_RNDN) != 0
       || i <= 0)
     {
       printf ("Regression test (7) failed! (i=%d - expected 1)\nx=", i);
@@ -655,27 +655,27 @@ main (int argc, char *argv[])
   check53("0.0", "6.9314718055994530941514e-1", GMP_RNDZ, "0.0");
   check_sign();
   check53("-4.165000000e4", "-0.00004801920768307322868063274915", GMP_RNDN,
-	  "2.0"); 
+          "2.0"); 
   check53("2.71331408349172961467e-08", "-6.72658901114033715233e-165", 
-	  GMP_RNDZ, "-1.8251348697787782844e-172");
+          GMP_RNDZ, "-1.8251348697787782844e-172");
   check53("0.31869277231188065", "0.88642843322303122", GMP_RNDZ,
-	  "2.8249833483992453642e-1");
+          "2.8249833483992453642e-1");
   check("8.47622108205396074254e-01", "3.24039313247872939883e-01", GMP_RNDU,
-	28, 45, 2, "0.375");
+        28, 45, 2, "0.375");
   check("2.63978122803639081440e-01", "6.8378615379333496093e-1", GMP_RNDN,
-	34, 23, 31, "0.180504585267044603");
+        34, 23, 31, "0.180504585267044603");
   check("1.0", "0.11835170935876249132", GMP_RNDU, 6, 41, 36, 
-	"0.1183517093595583");
+        "0.1183517093595583");
   check53("67108865.0", "134217729.0", GMP_RNDN, "9.007199456067584e15");
   check("1.37399642157394197284e-01", "2.28877275604219221350e-01", GMP_RNDN,
-	49, 15, 32, "0.0314472340833162888");
+        49, 15, 32, "0.0314472340833162888");
   check("4.03160720978664954828e-01", "5.854828e-1" 
-	/*"5.85483042917246621073e-01"*/, GMP_RNDZ,
-	51, 22, 32, "0.2360436821472831");
+        /*"5.85483042917246621073e-01"*/, GMP_RNDZ,
+        51, 22, 32, "0.2360436821472831");
   check("3.90798504668055102229e-14", "9.85394674650308388664e-04", GMP_RNDN,
-	46, 22, 12, "0.385027296503914762e-16");
+        46, 22, 12, "0.385027296503914762e-16");
   check("4.58687081072827851358e-01", "2.20543551472118792844e-01", GMP_RNDN,
-	49, 3, 2, "0.09375");
+        49, 3, 2, "0.09375");
   check_max();
   check_min();
 

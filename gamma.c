@@ -50,37 +50,37 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_ZIV_DECL (loop);
 
   MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
-		 ("gamma[%#R]=%R inexact=%d", gamma, gamma, inex));
+                 ("gamma[%#R]=%R inexact=%d", gamma, gamma, inex));
 
   /* Trivial cases */
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
       if (MPFR_IS_NAN (x))
-	{
-	  MPFR_SET_NAN (gamma);
-	  MPFR_RET_NAN;
-	}
+        {
+          MPFR_SET_NAN (gamma);
+          MPFR_RET_NAN;
+        }
       else if (MPFR_IS_INF (x))
-	{
-	  if (MPFR_IS_NEG (x))
-	    {
-	      MPFR_SET_NAN (gamma);
-	      MPFR_RET_NAN;
-	    }
-	  else
-	    {
-	      MPFR_SET_INF (gamma);
-	      MPFR_SET_POS (gamma);
-	      MPFR_RET (0);  /* exact */
-	    }
-	}
+        {
+          if (MPFR_IS_NEG (x))
+            {
+              MPFR_SET_NAN (gamma);
+              MPFR_RET_NAN;
+            }
+          else
+            {
+              MPFR_SET_INF (gamma);
+              MPFR_SET_POS (gamma);
+              MPFR_RET (0);  /* exact */
+            }
+        }
       else /* x is zero */
-	{
+        {
           MPFR_ASSERTD(MPFR_IS_ZERO(x));
-	  MPFR_SET_INF(gamma);
-	  MPFR_SET_SAME_SIGN(gamma, x);
-	  MPFR_RET (0);  /* exact */
-	}
+          MPFR_SET_INF(gamma);
+          MPFR_SET_SAME_SIGN(gamma, x);
+          MPFR_RET (0);  /* exact */
+        }
     }
 
   is_integer = mpfr_integer_p (x);
@@ -118,13 +118,13 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
       /* Precision stuff */
       Prec = realprec + 2 * (compared < 0);
       /* A   = (prec_nec-0.5)*CST
-	 CST = ln(2)/(ln(2*pi))) = 0.38
-	 This strange formula is just to avoid any overflow */
+         CST = ln(2)/(ln(2*pi))) = 0.38
+         This strange formula is just to avoid any overflow */
       A = (Prec/100)*38 + ((Prec%100)*38+100-38/2)/100 - 1;
       /* Estimated_cancel is the amount of bit that will be flushed:
          estimated_cancel = A + ecCST * A;
-	 ecCST = {1+sup_{x\in [0,1]} x*ln((1-x)/x)}/ln(2) = 1.84
-	 This strange formula is just to avoid any overflow */
+         ecCST = {1+sup_{x\in [0,1]} x*ln((1-x)/x)}/ln(2) = 1.84
+         This strange formula is just to avoid any overflow */
       Prec += 16 + (A + (A + (A/100)*84 + ((A%100)*84)/100));
 
       /* FIXME: for x near 0, we want 1-x to be exact since the error
@@ -136,9 +136,9 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
       MPFR_GROUP_REPREC_4 (group, Prec, xp, tmp, tmp2, GammaTrial);
 
       if (compared < 0)
-	mpfr_sub (xp, __gmpfr_one, x, GMP_RNDN);
+        mpfr_sub (xp, __gmpfr_one, x, GMP_RNDN);
       else
-	mpfr_sub (xp, x, __gmpfr_one, GMP_RNDN);
+        mpfr_sub (xp, x, __gmpfr_one, GMP_RNDN);
       mpfr_set_ui (GammaTrial, 0, GMP_RNDN);
       mpz_set_ui (fact, 1);
 

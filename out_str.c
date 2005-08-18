@@ -27,7 +27,7 @@ MA 02110-1301, USA. */
 
 size_t 
 mpfr_out_str (FILE *stream, int base, size_t n_digits, mpfr_srcptr op,
-	      mp_rnd_t rnd_mode)
+              mp_rnd_t rnd_mode)
 {
   char *s, *s0;
   size_t l;
@@ -46,15 +46,15 @@ mpfr_out_str (FILE *stream, int base, size_t n_digits, mpfr_srcptr op,
   if (MPFR_IS_INF(op)) 
     { 
       if (MPFR_SIGN(op) > 0)
-	{
-	  fprintf (stream, "@Inf@");
-	  return 3;
-	}
+        {
+          fprintf (stream, "@Inf@");
+          return 3;
+        }
       else
-	{
-	  fprintf (stream, "-@Inf@");
-	  return 4;
-	}
+        {
+          fprintf (stream, "-@Inf@");
+          return 4;
+        }
     }
 
   if (MPFR_IS_ZERO(op))

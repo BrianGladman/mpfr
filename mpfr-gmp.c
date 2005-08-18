@@ -293,7 +293,7 @@ const struct bases mpfr_bases[257] =
 
 void
 mpfr_assert_fail (const char *filename, int linenum,
-		     const char *expr)
+                     const char *expr)
 {
   if (filename != NULL && filename[0] != '\0')
     {
@@ -345,7 +345,7 @@ mpfr_default_allocate (size_t size)
   if (ret == NULL)
     {
       fprintf (stderr, "MPFR: Can't allocate memory (size=%lu)\n", 
-	       (unsigned long) size);
+               (unsigned long) size);
       abort ();
     }
   return ret;
@@ -359,8 +359,8 @@ mpfr_default_reallocate (void *oldptr, size_t old_size, size_t new_size)
   if (ret == NULL)
     {
       fprintf (stderr, 
-	       "MPFR: Can't reallocate memory (old_size=%lu new_size=%lu)\n",
-	       (unsigned long) old_size, (unsigned long) new_size);
+               "MPFR: Can't reallocate memory (old_size=%lu new_size=%lu)\n",
+               (unsigned long) old_size, (unsigned long) new_size);
       abort ();
     }
   return ret;
@@ -377,7 +377,7 @@ mpfr_default_free (void *blk_ptr, size_t blk_size)
 #ifndef MPFR_HAVE_MPN_SUB_NC
 mp_limb_t 
 mpfr_sub_nc (mp_ptr dest, mp_srcptr op1, mp_srcptr op2, mp_size_t s, 
-	     mp_limb_t c)
+             mp_limb_t c)
 {
   mp_limb_t c2;
   c2 = mpn_sub_n (dest, op1, op2, s);

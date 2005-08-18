@@ -100,7 +100,7 @@ mpfr_set_uj_2exp (mpfr_t x, uintmax_t j, intmax_t e, mp_rnd_t rnd)
        *   _ |x| = 2^(emin-2) and the absolute value of the exact
        *     result is <= 2^(emin-2). */
       if (rnd == GMP_RNDN && (e+1 < __gmpfr_emin || mpfr_powerof2_raw(y)))
-	rnd = GMP_RNDZ;
+        rnd = GMP_RNDZ;
       return mpfr_underflow (x, rnd, MPFR_SIGN_POS);
     }
   if (MPFR_UNLIKELY(e > __gmpfr_emax))

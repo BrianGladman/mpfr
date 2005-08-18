@@ -38,9 +38,9 @@ mpfr_cmp_si_2exp (mpfr_srcptr b, long int i, mp_exp_t f)
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (b)))
     {
       if (MPFR_IS_INF(b))
-	return MPFR_INT_SIGN(b);
+        return MPFR_INT_SIGN(b);
       else if (MPFR_IS_ZERO(b))
-	return i != 0 ? -si : 0;
+        return i != 0 ? -si : 0;
       /* NAN */
       MPFR_SET_ERANGE ();
       return 0;

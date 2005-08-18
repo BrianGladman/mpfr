@@ -64,7 +64,7 @@ check_special (void)
   if (mpfr_cmp (x, y))
     {
       printf ("Results differ between strtofr and set_str.\n"
-	      " set_str gives: ");
+              " set_str gives: ");
       mpfr_dump (y);
       printf (" strtofr gives: ");
       mpfr_dump (x);
@@ -199,11 +199,11 @@ int main()
   
   mpfr_init (x);
   printf ("struct dymmy_test { \n" 
-	  " mp_prec_t prec; \n"
-	  " int base; \n"
-	  " const char *str; \n"
-	  " const char *binstr; \n"
-	  " } RefTable[] = { \n");
+          " mp_prec_t prec; \n"
+          " int base; \n"
+          " const char *str; \n"
+          " const char *binstr; \n"
+          " } RefTable[] = { \n");
   for (i = 0 ; i < MAX_NUM ; i++)
     {
       p = randomab(2, 180);
@@ -551,27 +551,27 @@ check_reftable ()
       mpfr_set_str_binary (x, RefTable[i].binstr);
       mpfr_strtofr (y, RefTable[i].str, &s, base, GMP_RNDN);
       if (s == NULL || *s != 0)
-	{
-	  printf ("strtofr didn't parse entire input for i=%d:\n"
-		  " Str=%s", i, RefTable[i].str);
-	  exit (1);
-	}
+        {
+          printf ("strtofr didn't parse entire input for i=%d:\n"
+                  " Str=%s", i, RefTable[i].str);
+          exit (1);
+        }
       if (mpfr_cmp (x, y))
-	{
-	  printf ("Results differ between strtofr and set_binary for i=%d:\n"
-		  " Set binary gives: ", i);
-	  mpfr_dump (x);
-	  printf (" strtofr    gives: ");
-	  mpfr_dump (y);
-	  printf (" setstr     gives: ");
-	  mpfr_set_str (x, RefTable[i].str, base, GMP_RNDN);
-	  mpfr_dump (x);
-	  mpfr_set_prec (x, 2*p);
-	  mpfr_set_str (x, RefTable[i].str, base, GMP_RNDN);
-	  printf (" setstr ++  gives: ");
-	  mpfr_dump (x);
-	  exit (1);
-	}
+        {
+          printf ("Results differ between strtofr and set_binary for i=%d:\n"
+                  " Set binary gives: ", i);
+          mpfr_dump (x);
+          printf (" strtofr    gives: ");
+          mpfr_dump (y);
+          printf (" setstr     gives: ");
+          mpfr_set_str (x, RefTable[i].str, base, GMP_RNDN);
+          mpfr_dump (x);
+          mpfr_set_prec (x, 2*p);
+          mpfr_set_str (x, RefTable[i].str, base, GMP_RNDN);
+          printf (" setstr ++  gives: ");
+          mpfr_dump (x);
+          exit (1);
+        }
     }
   mpfr_clear (y);
   mpfr_clear (x);
@@ -758,7 +758,7 @@ check_overflow (void)
       exit (1);
     }
   mpfr_strtofr (x, "123456789E170141183460469231731687303715884105728",
-		&s, 0, GMP_RNDN);
+                &s, 0, GMP_RNDN);
   if (s[0] != 0 || !MPFR_IS_INF (x) || !MPFR_IS_POS (x) )
     {
       printf ("Check overflow failed (3) with:\n s=%s\n x=", s);
@@ -812,7 +812,7 @@ check_overflow (void)
       exit (1);
     }
   mpfr_strtofr (x, "-123456789E-170141183460469231731687303715884105728",
-		&s, 0, GMP_RNDN);
+                &s, 0, GMP_RNDN);
   if (s[0] != 0 || !MPFR_IS_ZERO (x) || !MPFR_IS_NEG (x) )
     {
       printf ("Check underflow failed (3) with:\n s=%s\n x=", s);

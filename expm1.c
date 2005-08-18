@@ -35,29 +35,29 @@ mpfr_expm1 (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
       if (MPFR_IS_NAN (x))
-	{
-	  MPFR_SET_NAN (y);
-	  MPFR_RET_NAN;
-	}
+        {
+          MPFR_SET_NAN (y);
+          MPFR_RET_NAN;
+        }
       /* check for inf or -inf (expm1(-inf)=-1) */
       else if (MPFR_IS_INF (x))
-	{ 
-	  if (MPFR_IS_POS (x))
-	    {
-	      MPFR_SET_INF (y);
-	      MPFR_SET_POS (y);
-	      MPFR_RET (0);
-	    }
-	  else
-	    return mpfr_set_si (y, -1, rnd_mode);
-	}
+        { 
+          if (MPFR_IS_POS (x))
+            {
+              MPFR_SET_INF (y);
+              MPFR_SET_POS (y);
+              MPFR_RET (0);
+            }
+          else
+            return mpfr_set_si (y, -1, rnd_mode);
+        }
       else
-	{
+        {
           MPFR_ASSERTD (MPFR_IS_ZERO (x));
-	  MPFR_SET_ZERO (y);   /* expm1(+/- 0) = +/- 0 */
-	  MPFR_SET_SAME_SIGN (y, x);
-	  MPFR_RET (0);
-	}
+          MPFR_SET_ZERO (y);   /* expm1(+/- 0) = +/- 0 */
+          MPFR_SET_SAME_SIGN (y, x);
+          MPFR_RET (0);
+        }
     }
 
   /* exp(x)-1 = x +x^2/2 + ... so the error is < 2^(2*EXP(x)-1) */
@@ -112,21 +112,21 @@ mpfr_expm1 (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
             break;
           }
 
-	exp_te = MPFR_GET_EXP (t);         /* FIXME: exp(x) may overflow! */
+        exp_te = MPFR_GET_EXP (t);         /* FIXME: exp(x) may overflow! */
         mpfr_sub_ui (t, t, 1, GMP_RNDN);   /* exp(x)-1 */
 
         /* error estimate */
         /*err=Nt-(__gmpfr_ceil_log2(1+pow(2,MPFR_EXP(te)-MPFR_EXP(t))));*/
         err = Nt - (MAX (exp_te - MPFR_GET_EXP (t), 0) + 1);
 
-	if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
+        if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
           {
             inexact = mpfr_set (y, t, rnd_mode);
             break;
           }
 
         /* increase the precision */
-	MPFR_ZIV_NEXT (loop, Nt);
+        MPFR_ZIV_NEXT (loop, Nt);
         mpfr_set_prec (t, Nt);
       }
     MPFR_ZIV_FREE (loop);

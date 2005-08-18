@@ -49,7 +49,7 @@ inexact_sign (int x)
 
 static void 
 error1 (mp_rnd_t rnd, mpfr_prec_t prec, 
-	mpfr_t in, mpfr_t outmul, mpfr_t outsqr)
+        mpfr_t in, mpfr_t outmul, mpfr_t outsqr)
 {
   printf("ERROR: for %s and prec=%lu\nINPUT=", mpfr_print_rnd_mode(rnd), prec);
   mpfr_dump(in);
@@ -60,7 +60,7 @@ error1 (mp_rnd_t rnd, mpfr_prec_t prec,
 
 static void
 error2 (mp_rnd_t rnd, mpfr_prec_t prec, mpfr_t in, mpfr_t out, 
-	int inexactmul, int inexactsqr)
+        int inexactmul, int inexactsqr)
 {
   printf("ERROR: for %s and prec=%lu\nINPUT=", mpfr_print_rnd_mode(rnd), prec);
   mpfr_dump(in);

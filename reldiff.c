@@ -30,29 +30,29 @@ mpfr_reldiff (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   if (MPFR_ARE_SINGULAR (b, c))
     {
       if (MPFR_IS_NAN(b) || MPFR_IS_NAN(c))
-	{ 
-	  MPFR_SET_NAN(a); 
-	  return;
-	}
+        { 
+          MPFR_SET_NAN(a); 
+          return;
+        }
       else if (MPFR_IS_INF(b))
-	{
-	  if (MPFR_IS_INF (c) && (MPFR_SIGN (c) == MPFR_SIGN (b)))
-	    MPFR_SET_ZERO(a);
-	  else
-	    MPFR_SET_NAN(a);
-	  return;
-	}
+        {
+          if (MPFR_IS_INF (c) && (MPFR_SIGN (c) == MPFR_SIGN (b)))
+            MPFR_SET_ZERO(a);
+          else
+            MPFR_SET_NAN(a);
+          return;
+        }
       else if (MPFR_IS_INF(c))
-	{
-	  MPFR_SET_SAME_SIGN (a, b);
-	  MPFR_SET_INF (a);
-	  return;
-	}
+        {
+          MPFR_SET_SAME_SIGN (a, b);
+          MPFR_SET_INF (a);
+          return;
+        }
       else if (MPFR_IS_ZERO(b)) /* reldiff = abs(c)/c = sign(c) */
-	{
-	  mpfr_set_si (a, MPFR_INT_SIGN (c), rnd_mode);
-	  return;
-	}
+        {
+          mpfr_set_si (a, MPFR_INT_SIGN (c), rnd_mode);
+          return;
+        }
       /* Fall throught */
     }
 

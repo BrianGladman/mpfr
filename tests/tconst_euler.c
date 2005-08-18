@@ -66,31 +66,31 @@ main (int argc, char *argv[])
       yprec = prec + 10;
 
       for (rnd = 0; rnd < GMP_RND_MAX; rnd++)
-	{
-	  mpfr_set_prec (y, yprec);
-	  mpfr_const_euler (y, (mp_rnd_t) rnd);
-	  err = (rnd == GMP_RNDN) ? yprec + 1 : yprec;
-	  if (mpfr_can_round (y, err, (mp_rnd_t) rnd, (mp_rnd_t) rnd, prec))
-	    {
-	      mpfr_set (t, y, (mp_rnd_t) rnd);
-	      mpfr_const_euler (z, (mp_rnd_t) rnd);
-	      if (mpfr_cmp (t, z))
-		{
-		  printf ("results differ for prec=%u rnd_mode=%s\n", prec,
-			  mpfr_print_rnd_mode ((mp_rnd_t) rnd));
-		  printf ("   got      ");
-		  mpfr_out_str (stdout, 2, prec, z, GMP_RNDN);
-		  puts ("");
-		  printf ("   expected ");
-		  mpfr_out_str (stdout, 2, prec, t, GMP_RNDN);
-		  puts ("");
-		  printf ("   approximation was ");
-		  mpfr_print_binary (y);
-		  puts ("");
-		  exit (1);
-		}
-	    }
-	}
+        {
+          mpfr_set_prec (y, yprec);
+          mpfr_const_euler (y, (mp_rnd_t) rnd);
+          err = (rnd == GMP_RNDN) ? yprec + 1 : yprec;
+          if (mpfr_can_round (y, err, (mp_rnd_t) rnd, (mp_rnd_t) rnd, prec))
+            {
+              mpfr_set (t, y, (mp_rnd_t) rnd);
+              mpfr_const_euler (z, (mp_rnd_t) rnd);
+              if (mpfr_cmp (t, z))
+                {
+                  printf ("results differ for prec=%u rnd_mode=%s\n", prec,
+                          mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                  printf ("   got      ");
+                  mpfr_out_str (stdout, 2, prec, z, GMP_RNDN);
+                  puts ("");
+                  printf ("   expected ");
+                  mpfr_out_str (stdout, 2, prec, t, GMP_RNDN);
+                  puts ("");
+                  printf ("   approximation was ");
+                  mpfr_print_binary (y);
+                  puts ("");
+                  exit (1);
+                }
+            }
+        }
     }
 
   mpfr_clear (y);

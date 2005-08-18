@@ -36,23 +36,23 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
       if (MPFR_IS_NAN(x) || MPFR_IS_INF(x))
-	{
-	  MPFR_SET_NAN (y);
-	  MPFR_SET_NAN (z);
-	  MPFR_RET_NAN;
-	}
+        {
+          MPFR_SET_NAN (y);
+          MPFR_SET_NAN (z);
+          MPFR_RET_NAN;
+        }
       else /* x is zero */
-	{
+        {
           MPFR_ASSERTD (MPFR_IS_ZERO (x));
-	  MPFR_SET_ZERO (y);
-	  MPFR_SET_SAME_SIGN (y, x);
-	  mpfr_set_ui (z, 1, GMP_RNDN);
-	  MPFR_RET (0);
-	}
+          MPFR_SET_ZERO (y);
+          MPFR_SET_SAME_SIGN (y, x);
+          mpfr_set_ui (z, 1, GMP_RNDN);
+          MPFR_RET (0);
+        }
     }
 
   MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
-		  ("sin[%#R]=%R cos[%#R]=%R", y, y, z, z));
+                  ("sin[%#R]=%R cos[%#R]=%R", y, y, z, z));
 
   prec = MAX (MPFR_PREC (y), MPFR_PREC (z)); 
   m = prec + MPFR_INT_CEIL_LOG2 (prec) + 13;
@@ -90,19 +90,19 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
       e = 2 + (- MPFR_GET_EXP (c)) / 2;
       mpfr_sqrt (c, c, GMP_RNDN);
       if (neg)
-	MPFR_CHANGE_SIGN (c);
+        MPFR_CHANGE_SIGN (c);
 
       /* the absolute error on c is at most 2^(e-m) = 2^(EXP(c)-err) */
       e = MPFR_GET_EXP (c) + m - e;
       if (mpfr_can_round (c, e, GMP_RNDN, rnd_mode, MPFR_PREC (y)))
-	break;
+        break;
       /* check for huge cancellation */
       if (e < (mp_exp_t) MPFR_PREC (y))
         m += MPFR_PREC (y) - e;
       /* Check if near 1 */
       if (MPFR_GET_EXP (c) == 1
-	  && MPFR_MANT (c)[MPFR_LIMB_SIZE (c)-1] == MPFR_LIMB_HIGHBIT)
-	m = 2*m;
+          && MPFR_MANT (c)[MPFR_LIMB_SIZE (c)-1] == MPFR_LIMB_HIGHBIT)
+        m = 2*m;
 
     next_step:
       MPFR_ZIV_NEXT (loop, m);

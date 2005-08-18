@@ -59,7 +59,7 @@ check2 (const char *as, mp_rnd_t rnd_mode, const char *res1s)
   if (mpfr_cmp_str1 (tres, res1s))
     {
       printf ("mpfr_log failed for    a=%s, rnd_mode=%s\n", 
-	      as, mpfr_print_rnd_mode (rnd_mode));
+              as, mpfr_print_rnd_mode (rnd_mode));
       printf ("correct result is        %s\n mpfr_log gives          ",
               res1s);
       mpfr_out_str(stdout, 10, 0, tres, GMP_RNDN);

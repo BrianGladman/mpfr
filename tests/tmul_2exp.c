@@ -125,10 +125,10 @@ main (int argc, char *argv[])
       mpfr_div_2ui (w, w, lmp1, GMP_RNDZ);
       mpfr_mul_2ui (w, w, lmp1 - LONG_MAX/2, GMP_RNDZ);
       if (!mpfr_cmp_ui (w, 1))
-	{
-	  printf ("Underflow LONG_MAX error!\n");
-	  exit (1);
-	}
+        {
+          printf ("Underflow LONG_MAX error!\n");
+          exit (1);
+        }
     }
 
   mpfr_clears (w, z, NULL);

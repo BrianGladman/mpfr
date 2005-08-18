@@ -46,18 +46,18 @@ __gmpfr_ceil_exp2 (double d)
   if (exp >= 0)
     {
       while (exp != 0)
-	{
-	  x.d *= 2.0;
-	  exp--;
-	}
+        {
+          x.d *= 2.0;
+          exp--;
+        }
     }
   else
     {
       while (exp != 0)
-	{
-	x.d *= (1.0 / 2.0);
-	exp++;
-	}
+        {
+        x.d *= (1.0 / 2.0);
+        exp++;
+        }
     }
 #endif
   return x.d;

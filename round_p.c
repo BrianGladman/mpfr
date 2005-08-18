@@ -32,14 +32,14 @@ mpfr_round_p (mp_limb_t *bp, mp_size_t bn, mp_exp_t err0, mp_prec_t prec)
 
   i1 = mpfr_round_p_2 (bp, bn, err0, prec);
   i2 = mpfr_can_round_raw (bp, bn, MPFR_SIGN_POS, err0,
-			   GMP_RNDN, GMP_RNDZ, prec);
+                           GMP_RNDN, GMP_RNDZ, prec);
   if (i1 != i2)
     {
       printf ("mpfr_round_p(%d) != mpfr_can_round(%d)!\n"
-	      "bn=%ld err0=%ld prec=%ld\nbp=",
-	      i1, i2, bn, err0, prec);
+              "bn=%ld err0=%ld prec=%ld\nbp=",
+              i1, i2, bn, err0, prec);
       while (bn--)
-	printf ("%08lX ", bp[bn]);
+        printf ("%08lX ", bp[bn]);
       putchar ('\n');
       MPFR_ASSERTN (0);
     }
@@ -93,12 +93,12 @@ mpfr_round_p (mp_limb_t *bp, mp_size_t bn, mp_exp_t err0, mp_prec_t prec)
     {
       /* Check if all (n-1) limbs are 0 */
       while (--n)
-	if (*bp-- != 0)
-	  return 1;
+        if (*bp-- != 0)
+          return 1;
       /* Check if final error limb is 0 */
       s = BITS_PER_MP_LIMB - err % BITS_PER_MP_LIMB;
       if (s == BITS_PER_MP_LIMB)
-	return 0;
+        return 0;
       tmp = *bp >> s;
       return tmp != 0;
     }
@@ -106,12 +106,12 @@ mpfr_round_p (mp_limb_t *bp, mp_size_t bn, mp_exp_t err0, mp_prec_t prec)
     {
       /* Check if all (n-1) limbs are 11111111111111111 */
       while (--n)
-	if (*bp-- != MP_LIMB_T_MAX)
-	  return 1;
+        if (*bp-- != MP_LIMB_T_MAX)
+          return 1;
       /* Check if final error limb is 0 */
       s = BITS_PER_MP_LIMB - err % BITS_PER_MP_LIMB;
       if (s == BITS_PER_MP_LIMB)
-	return 0;
+        return 0;
       tmp = *bp >> s;
       return tmp != (MP_LIMB_T_MAX >> s);
     }

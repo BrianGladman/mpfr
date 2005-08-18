@@ -36,32 +36,32 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd_mode)
   else
     {
       if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
-	{
-	  if (MPFR_IS_NAN (x))
-	    {
-	      MPFR_SET_NAN (y);
-	      MPFR_RET_NAN;
-	    }
-	  else if (MPFR_IS_INF (x))
-	    {
-	      MPFR_SET_ZERO (y);
-	      if (MPFR_IS_POS (x) || ((unsigned) n & 1) == 0)
-		MPFR_SET_POS (y);
-	      else
-		MPFR_SET_NEG (y);
-	      MPFR_RET (0);
-	    }
-	  else /* x is zero */
-	    {
+        {
+          if (MPFR_IS_NAN (x))
+            {
+              MPFR_SET_NAN (y);
+              MPFR_RET_NAN;
+            }
+          else if (MPFR_IS_INF (x))
+            {
+              MPFR_SET_ZERO (y);
+              if (MPFR_IS_POS (x) || ((unsigned) n & 1) == 0)
+                MPFR_SET_POS (y);
+              else
+                MPFR_SET_NEG (y);
+              MPFR_RET (0);
+            }
+          else /* x is zero */
+            {
               MPFR_ASSERTD (MPFR_IS_ZERO (x));
-	      MPFR_SET_INF(y);
-	      if (MPFR_IS_POS (x) || ((unsigned) n & 1) == 0)
-		MPFR_SET_POS (y);
-	      else
-		MPFR_SET_NEG (y);
-	      MPFR_RET(0);
-	    }
-	}
+              MPFR_SET_INF(y);
+              if (MPFR_IS_POS (x) || ((unsigned) n & 1) == 0)
+                MPFR_SET_POS (y);
+              else
+                MPFR_SET_NEG (y);
+              MPFR_RET(0);
+            }
+        }
       MPFR_CLEAR_FLAGS (y);
 
       /* detect exact powers: x^(-n) is exact iff x is a power of 2 */
@@ -70,16 +70,16 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd_mode)
           mp_exp_t expx = MPFR_EXP (x); /* warning: x and y may be the same
                                             variable */
           mpfr_set_si (y, (n % 2) ? MPFR_INT_SIGN(x) : 1, rnd_mode);
-	  expx --;
-	  MPFR_ASSERTD (n < 0);
-	  /* Warning n*expx may overflow! 
-	     Some systems abort with LONG_MIN / 1 or LONG_MIN/-1*/
-	  if (n != -1 && expx > 0 && -expx < MPFR_EXP_MIN / (-n))
-	    MPFR_EXP (y) = MPFR_EMIN_MIN - 1; /* Underflow */
-	  else if (n != -1 && expx < 0 && -expx > MPFR_EXP_MAX / (-n))
-	    MPFR_EXP (y) = MPFR_EMAX_MAX + 1; /* Overflow */
+          expx --;
+          MPFR_ASSERTD (n < 0);
+          /* Warning n*expx may overflow! 
+             Some systems abort with LONG_MIN / 1 or LONG_MIN/-1*/
+          if (n != -1 && expx > 0 && -expx < MPFR_EXP_MIN / (-n))
+            MPFR_EXP (y) = MPFR_EMIN_MIN - 1; /* Underflow */
+          else if (n != -1 && expx < 0 && -expx > MPFR_EXP_MAX / (-n))
+            MPFR_EXP (y) = MPFR_EMAX_MAX + 1; /* Overflow */
           else
-	    MPFR_EXP (y) += n * expx;
+            MPFR_EXP (y) += n * expx;
           return mpfr_check_range (y, 0, rnd_mode);
         }
 
@@ -94,42 +94,42 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd_mode)
         mp_prec_t Nt;                              /* working precision */
         mp_exp_t  err;                             /* error */
         int inexact;
-	MPFR_SAVE_EXPO_DECL (expo);
-	MPFR_ZIV_DECL (loop);
+        MPFR_SAVE_EXPO_DECL (expo);
+        MPFR_ZIV_DECL (loop);
 
         /* compute the precision of intermediary variable */
         /* the optimal number of bits : see algorithms.tex */
         Nt = Ny + 3 + MPFR_INT_CEIL_LOG2 (Ny);
 
-	MPFR_SAVE_EXPO_MARK (expo);
+        MPFR_SAVE_EXPO_MARK (expo);
 
-        /* initialise of intermediary	variable */
+        /* initialise of intermediary   variable */
         mpfr_init2 (t, Nt);
-	
-	MPFR_ZIV_INIT (loop, Nt);
+        
+        MPFR_ZIV_INIT (loop, Nt);
         for (;;)
-	  {
-	    /* compute 1/(x^n) n>0*/
-	    mpfr_pow_ui (t, x, (unsigned long int) n, GMP_RNDN);
-	    inexact = MPFR_IS_ZERO (t) || MPFR_IS_INF (t);
-	    mpfr_ui_div (t, 1, t, GMP_RNDN);
-	    inexact = inexact || MPFR_IS_ZERO (t) || MPFR_IS_INF (t);
+          {
+            /* compute 1/(x^n) n>0*/
+            mpfr_pow_ui (t, x, (unsigned long int) n, GMP_RNDN);
+            inexact = MPFR_IS_ZERO (t) || MPFR_IS_INF (t);
+            mpfr_ui_div (t, 1, t, GMP_RNDN);
+            inexact = inexact || MPFR_IS_ZERO (t) || MPFR_IS_INF (t);
 
-	    /* error estimate -- see pow function in algorithms.ps */
-	    err = Nt - 3;
-	    if (MPFR_LIKELY (inexact != 0
-			     || MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
-	      break;
+            /* error estimate -- see pow function in algorithms.ps */
+            err = Nt - 3;
+            if (MPFR_LIKELY (inexact != 0
+                             || MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
+              break;
 
-	    /* actualisation of the precision */
-	    Nt += BITS_PER_MP_LIMB;
-	    mpfr_set_prec (t, Nt);
-	  }
-	MPFR_ZIV_FREE (loop);
+            /* actualisation of the precision */
+            Nt += BITS_PER_MP_LIMB;
+            mpfr_set_prec (t, Nt);
+          }
+        MPFR_ZIV_FREE (loop);
 
         inexact = mpfr_set (y, t, rnd_mode);
         mpfr_clear (t);
-	MPFR_SAVE_EXPO_FREE (expo);
+        MPFR_SAVE_EXPO_FREE (expo);
         return mpfr_check_range (y, inexact, rnd_mode);
       }
     }

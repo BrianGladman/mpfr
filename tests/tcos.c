@@ -58,7 +58,7 @@ check53 (const char *xs, const char *cos_xs, mp_rnd_t rnd_mode)
   if (mpfr_cmp_str1 (c, cos_xs))
     {
       printf ("mpfr_cos failed for x=%s, rnd=%s\n", 
-	      xs, mpfr_print_rnd_mode (rnd_mode));
+              xs, mpfr_print_rnd_mode (rnd_mode));
       printf ("mpfr_cos gives cos(x)=");
       mpfr_out_str(stdout, 10, 0, c, GMP_RNDN);
       printf(", expected %s\n", cos_xs);

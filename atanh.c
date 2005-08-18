@@ -36,7 +36,7 @@ mpfr_atanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
   MPFR_SAVE_EXPO_DECL (expo);
 
   MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", xt, xt, rnd_mode),
-		 ("y[%#R]=%R inexact=%d", y, y, inexact));
+                 ("y[%#R]=%R inexact=%d", y, y, inexact));
 
   /* Special cases */
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (xt)))
@@ -44,17 +44,17 @@ mpfr_atanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
       /* atanh(NaN) = NaN, and atanh(+/-Inf) = NaN since tanh gives a result
          between -1 and 1 */
       if (MPFR_IS_NAN (xt) || MPFR_IS_INF (xt))
-	{  
-	  MPFR_SET_NAN (y);
-	  MPFR_RET_NAN;
-	}
+        {  
+          MPFR_SET_NAN (y);
+          MPFR_RET_NAN;
+        }
       else /* necessarily xt is 0 */
-	{
+        {
           MPFR_ASSERTD (MPFR_IS_ZERO (xt));
-	  MPFR_SET_ZERO (y);   /* atanh(0) = 0 */
-	  MPFR_SET_SAME_SIGN (y,xt);
-	  MPFR_RET (0);
-	}
+          MPFR_SET_ZERO (y);   /* atanh(0) = 0 */
+          MPFR_SET_SAME_SIGN (y,xt);
+          MPFR_RET (0);
+        }
     }
 
   /* atanh (x) = NaN as soon as |x| > 1, and arctanh(+/-1) = +/-Inf */
@@ -83,7 +83,7 @@ mpfr_atanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
   /* the optimal number of bits : see algorithms.ps */
   Nt = Nt + MPFR_INT_CEIL_LOG2 (Nt) + 4;
 
-  /* initialise of intermediary	variable */
+  /* initialise of intermediary variable */
   mpfr_init2 (t, Nt);
   mpfr_init2 (te, Nt);
 
@@ -103,8 +103,8 @@ mpfr_atanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
       err = Nt - (MAX (4 - MPFR_GET_EXP (t), 0) + 1);
       
       if (MPFR_LIKELY (MPFR_IS_ZERO (t)
-		       || MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
-	break;
+                       || MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
+        break;
 
       /* reactualisation of the precision */
       MPFR_ZIV_NEXT (loop, Nt);

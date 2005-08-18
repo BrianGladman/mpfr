@@ -33,26 +33,26 @@ mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
   MPFR_SAVE_EXPO_DECL (expo);
 
   MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", xt, xt, rnd_mode),
-		 ("y[%#R]=%R inexact=%d", y, y, inexact));
+                 ("y[%#R]=%R inexact=%d", y, y, inexact));
 
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(xt)))
     {
       if (MPFR_IS_NAN(xt))
-	{
-	  MPFR_SET_NAN(y);
-	  MPFR_RET_NAN;
-	}
+        {
+          MPFR_SET_NAN(y);
+          MPFR_RET_NAN;
+        }
       else if (MPFR_IS_INF(xt))
-	{
-	  MPFR_SET_INF(y);
-	  MPFR_SET_POS(y);
-	  MPFR_RET(0);
-	}
+        {
+          MPFR_SET_INF(y);
+          MPFR_SET_POS(y);
+          MPFR_RET(0);
+        }
       else
-	{
-	  MPFR_ASSERTD(MPFR_IS_ZERO(xt));
-	  return mpfr_set_ui (y, 1, rnd_mode); /* cosh(0) = 1 */
-	}
+        {
+          MPFR_ASSERTD(MPFR_IS_ZERO(xt));
+          return mpfr_set_ui (y, 1, rnd_mode); /* cosh(0) = 1 */
+        }
     }
 
   MPFR_SAVE_EXPO_MARK (expo);
@@ -79,9 +79,9 @@ mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
     MPFR_ZIV_INIT (loop, Nt);
     for (;;)
       {
-	/* Compute cosh */
+        /* Compute cosh */
         mpfr_clear_flags ();
-	mpfr_exp (te, x, GMP_RNDD);         /* exp(x) */
+        mpfr_exp (te, x, GMP_RNDD);         /* exp(x) */
         /* exp can overflow (but not underflow since x>0) */
         /* BUG/TODO/FIXME: exp can overflow but cosh may be representable! */
         if (MPFR_UNLIKELY (mpfr_overflow_p ()))
@@ -90,21 +90,21 @@ mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
             MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, MPFR_FLAGS_OVERFLOW);
             break;
           }
-	mpfr_ui_div (t, 1, te, GMP_RNDU);   /* 1/exp(x) */
-	mpfr_add (t, te, t, GMP_RNDU);      /* exp(x) + 1/exp(x)*/
-	mpfr_div_2ui (t, t, 1, GMP_RNDN);   /* 1/2(exp(x) + 1/exp(x))*/
+        mpfr_ui_div (t, 1, te, GMP_RNDU);   /* 1/exp(x) */
+        mpfr_add (t, te, t, GMP_RNDU);      /* exp(x) + 1/exp(x)*/
+        mpfr_div_2ui (t, t, 1, GMP_RNDN);   /* 1/2(exp(x) + 1/exp(x))*/
 
         /* Estimation of the error */
-	err = Nt - 3;
-	/* Check if we can round */
-	if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
+        err = Nt - 3;
+        /* Check if we can round */
+        if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
           {
             inexact = mpfr_set (y, t, rnd_mode);
             break;
           }
 
-	/* Actualisation of the precision */
-	MPFR_ZIV_NEXT (loop, Nt);
+        /* Actualisation of the precision */
+        MPFR_ZIV_NEXT (loop, Nt);
         MPFR_GROUP_REPREC_2 (group, Nt, t, te);
       }
     MPFR_ZIV_FREE (loop);

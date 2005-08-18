@@ -78,7 +78,7 @@ check4 (const char *as, mp_rnd_t rnd_mode, const char *Qs)
   if (mpfr_cmp_str (q, Qs, 16, GMP_RNDN))
     {
       printf ("mpfr_sqrt failed for a=%s, rnd_mode=%s\n",
-	      as, mpfr_print_rnd_mode(rnd_mode));
+              as, mpfr_print_rnd_mode(rnd_mode));
       printf ("expected ");
       mpfr_out_str (stdout, 16, 0, q, GMP_RNDN);
       printf ("\ngot      %s\n", Qs);
@@ -99,7 +99,7 @@ check24 (const char *as, mp_rnd_t rnd_mode, const char *qs)
   if (mpfr_cmp_str1 (q, qs))
     {
       printf ("mpfr_sqrt failed for a=%s, prec=24, rnd_mode=%s\n",
-	      as, mpfr_print_rnd_mode(rnd_mode));
+              as, mpfr_print_rnd_mode(rnd_mode));
       printf ("expected sqrt is %s, got ",qs);
       mpfr_out_str (stdout, 10, 0, q, GMP_RNDN);
       printf ("\n");
@@ -119,7 +119,7 @@ check_diverse (const char *as, mp_prec_t p, const char *qs)
   if (mpfr_cmp_str1 (q, qs))
     {
       printf ("mpfr_sqrt failed for a=%s, prec=%lu, rnd_mode=%s\n",
-	      as, p, mpfr_print_rnd_mode (GMP_RNDN));
+              as, p, mpfr_print_rnd_mode (GMP_RNDN));
       printf ("expected sqrt is %s, got ", qs);
       mpfr_out_str (stdout, 10, 0, q, GMP_RNDN);
       printf ("\n");
@@ -248,12 +248,12 @@ special (void)
       mpfr_nexttoinf (z);
       test_sqrt (x, z, GMP_RNDU);
       if (mpfr_cmp_ui_2exp(x, 3, -1))
-	{
-	  printf ("Error: sqrt(1+ulp(1), up) should give 1.5 (prec=%u)\n",
+        {
+          printf ("Error: sqrt(1+ulp(1), up) should give 1.5 (prec=%u)\n",
                   (unsigned int) p);
-	  printf ("got "); mpfr_print_binary (x); puts ("");
-	  exit (1);
-	}
+          printf ("got "); mpfr_print_binary (x); puts ("");
+          exit (1);
+        }
     }
 
   /* check inexact flag */
@@ -594,82 +594,82 @@ main (void)
    Generation for Directed Rounding" from Michael Parks, Table 4 */
 
   check4 ("78652858805036375191418371571712.0", GMP_RNDN,
-	  "1.f81fc40f32063@13");
+          "1.f81fc40f32063@13");
   check4 ("38510074998589467860312736661504.0", GMP_RNDN,
-	  "1.60c012a92fc65@13");
+          "1.60c012a92fc65@13");
   check4 ("35318779685413012908190921129984.0", GMP_RNDN,
-	  "1.51d17526c7161@13");
+          "1.51d17526c7161@13");
   check4 ("26729022595358440976973142425600.0", GMP_RNDN,
-	  "1.25e19302f7e51@13");
+          "1.25e19302f7e51@13");
   check4 ("22696567866564242819241453027328.0", GMP_RNDN,
-	  "1.0ecea7dd2ec3d@13");
+          "1.0ecea7dd2ec3d@13");
   check4 ("22696888073761729132924856434688.0", GMP_RNDN,
-	  "1.0ecf250e8e921@13");
+          "1.0ecf250e8e921@13");
   check4 ("36055652513981905145251657416704.0", GMP_RNDN,
-	  "1.5552f3eedcf33@13");
+          "1.5552f3eedcf33@13");
   check4 ("30189856268896404997497182748672.0", GMP_RNDN,
-	  "1.3853ee10c9c99@13");
+          "1.3853ee10c9c99@13");
   check4 ("36075288240584711210898775080960.0", GMP_RNDN,
-	  "1.556abe212b56f@13");
+          "1.556abe212b56f@13");
   check4 ("72154663483843080704304789585920.0", GMP_RNDN,
-	  "1.e2d9a51977e6e@13");
+          "1.e2d9a51977e6e@13");
 
   check4 ("78652858805036375191418371571712.0", GMP_RNDZ,
-	  "1.f81fc40f32062@13");
+          "1.f81fc40f32062@13");
   check4 ("38510074998589467860312736661504.0", GMP_RNDZ,
-	  "1.60c012a92fc64@13");
+          "1.60c012a92fc64@13");
   check4 ("35318779685413012908190921129984.0", GMP_RNDZ, "1.51d17526c716@13");
   check4 ("26729022595358440976973142425600.0", GMP_RNDZ, "1.25e19302f7e5@13");
   check4 ("22696567866564242819241453027328.0", GMP_RNDZ,
-	  "1.0ecea7dd2ec3c@13");
+          "1.0ecea7dd2ec3c@13");
   check4 ("22696888073761729132924856434688.0", GMP_RNDZ, "1.0ecf250e8e92@13");
   check4 ("36055652513981905145251657416704.0", GMP_RNDZ,
-	  "1.5552f3eedcf32@13");
+          "1.5552f3eedcf32@13");
   check4 ("30189856268896404997497182748672.0", GMP_RNDZ,
-	  "1.3853ee10c9c98@13");
+          "1.3853ee10c9c98@13");
   check4 ("36075288240584711210898775080960.0", GMP_RNDZ,
-	  "1.556abe212b56e@13");
+          "1.556abe212b56e@13");
   check4 ("72154663483843080704304789585920.0", GMP_RNDZ,
-	  "1.e2d9a51977e6d@13");
+          "1.e2d9a51977e6d@13");
 
   check4 ("78652858805036375191418371571712.0", GMP_RNDU,
-	  "1.f81fc40f32063@13");
+          "1.f81fc40f32063@13");
   check4 ("38510074998589467860312736661504.0", GMP_RNDU,
-	  "1.60c012a92fc65@13");
+          "1.60c012a92fc65@13");
   check4 ("35318779685413012908190921129984.0", GMP_RNDU,
-	  "1.51d17526c7161@13");
+          "1.51d17526c7161@13");
   check4 ("26729022595358440976973142425600.0", GMP_RNDU,
-	  "1.25e19302f7e51@13");
+          "1.25e19302f7e51@13");
   check4 ("22696567866564242819241453027328.0", GMP_RNDU,
-	  "1.0ecea7dd2ec3d@13");
+          "1.0ecea7dd2ec3d@13");
   check4 ("22696888073761729132924856434688.0", GMP_RNDU,
-	  "1.0ecf250e8e921@13");
+          "1.0ecf250e8e921@13");
   check4 ("36055652513981905145251657416704.0", GMP_RNDU,
-	  "1.5552f3eedcf33@13");
+          "1.5552f3eedcf33@13");
   check4 ("30189856268896404997497182748672.0", GMP_RNDU,
-	  "1.3853ee10c9c99@13");
+          "1.3853ee10c9c99@13");
   check4 ("36075288240584711210898775080960.0", GMP_RNDU,
-	  "1.556abe212b56f@13");
+          "1.556abe212b56f@13");
   check4 ("72154663483843080704304789585920.0", GMP_RNDU,
-	  "1.e2d9a51977e6e@13");
+          "1.e2d9a51977e6e@13");
 
   check4 ("78652858805036375191418371571712.0", GMP_RNDD,
-	  "1.f81fc40f32062@13");
+          "1.f81fc40f32062@13");
   check4 ("38510074998589467860312736661504.0", GMP_RNDD,
-	  "1.60c012a92fc64@13");
+          "1.60c012a92fc64@13");
   check4 ("35318779685413012908190921129984.0", GMP_RNDD, "1.51d17526c716@13");
   check4 ("26729022595358440976973142425600.0", GMP_RNDD, "1.25e19302f7e5@13");
   check4 ("22696567866564242819241453027328.0", GMP_RNDD,
-	  "1.0ecea7dd2ec3c@13");
+          "1.0ecea7dd2ec3c@13");
   check4 ("22696888073761729132924856434688.0", GMP_RNDD, "1.0ecf250e8e92@13");
   check4 ("36055652513981905145251657416704.0", GMP_RNDD,
-	  "1.5552f3eedcf32@13");
+          "1.5552f3eedcf32@13");
   check4 ("30189856268896404997497182748672.0", GMP_RNDD,
-	  "1.3853ee10c9c98@13");
+          "1.3853ee10c9c98@13");
   check4 ("36075288240584711210898775080960.0", GMP_RNDD,
-	  "1.556abe212b56e@13");
+          "1.556abe212b56e@13");
   check4 ("72154663483843080704304789585920.0", GMP_RNDD,
-	  "1.e2d9a51977e6d@13");
+          "1.e2d9a51977e6d@13");
 
   tests_end_mpfr ();
   return 0;

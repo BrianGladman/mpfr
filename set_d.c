@@ -59,21 +59,21 @@ __gmpfr_extract_double (mp_ptr rp, double d)
     if (exp)
       {
 #if BITS_PER_MP_LIMB >= 64
-	manl = ((MPFR_LIMB_ONE << 63)
-		| ((mp_limb_t) x.s.manh << 43) | ((mp_limb_t) x.s.manl << 11));
+        manl = ((MPFR_LIMB_ONE << 63)
+                | ((mp_limb_t) x.s.manh << 43) | ((mp_limb_t) x.s.manl << 11));
 #else
-	manh = (MPFR_LIMB_ONE << 31) | (x.s.manh << 11) | (x.s.manl >> 21);
-	manl = x.s.manl << 11;
+        manh = (MPFR_LIMB_ONE << 31) | (x.s.manh << 11) | (x.s.manl >> 21);
+        manl = x.s.manl << 11;
 #endif
       }
     else /* denormalized number */
       {
 #if BITS_PER_MP_LIMB >= 64
-	manl = ((mp_limb_t) x.s.manh << 43) | ((mp_limb_t) x.s.manl << 11);
+        manl = ((mp_limb_t) x.s.manh << 43) | ((mp_limb_t) x.s.manl << 11);
 #else
         manh = (x.s.manh << 11) /* high 21 bits */
           | (x.s.manl >> 21); /* middle 11 bits */
-	manl = x.s.manl << 11; /* low 21 bits */
+        manl = x.s.manl << 11; /* low 21 bits */
 #endif
       }
 
@@ -165,24 +165,24 @@ mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
       /* set correct sign */
       x.d = d;
       if (x.s.sig == 1)
-	MPFR_SET_NEG(r);
+        MPFR_SET_NEG(r);
       else
-	MPFR_SET_POS(r);
+        MPFR_SET_POS(r);
 #else /* _GMP_IEEE_FLOATS */
       MPFR_SET_ZERO(r); 
       {
-	/* This is to get the sign of zero on non-IEEE hardware
-	   Some systems support +0.0, -0.0 and unsigned zero.
-	   We can't use d==+0.0 since it should be always true,
-	   so we check that the memory representation of d is the 
-	   same than +0.0. etc */
-	double poszero = +0.0, negzero = -0.0;
-	if (memcmp(&d, &poszero, sizeof(double)) == 0)
-	  MPFR_SET_POS(r);
-	else if (memcmp(&d, &negzero, sizeof(double)) == 0)
-	  MPFR_SET_NEG(r);
-	else
-	  MPFR_SET_POS(r);
+        /* This is to get the sign of zero on non-IEEE hardware
+           Some systems support +0.0, -0.0 and unsigned zero.
+           We can't use d==+0.0 since it should be always true,
+           so we check that the memory representation of d is the 
+           same than +0.0. etc */
+        double poszero = +0.0, negzero = -0.0;
+        if (memcmp(&d, &poszero, sizeof(double)) == 0)
+          MPFR_SET_POS(r);
+        else if (memcmp(&d, &negzero, sizeof(double)) == 0)
+          MPFR_SET_NEG(r);
+        else
+          MPFR_SET_POS(r);
       }
 #endif
       return 0; /* 0 is exact */
@@ -191,9 +191,9 @@ mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
     { 
       MPFR_SET_INF(r);
       if (d > 0)
-	MPFR_SET_POS(r);
+        MPFR_SET_POS(r);
       else
-	MPFR_SET_NEG(r);
+        MPFR_SET_NEG(r);
       return 0; /* infinity is exact */
     }
 

@@ -129,7 +129,7 @@ GENERIC (mpfr_ptr y, mpz_srcptr p, long r, int m)
 
     for (j = i+1, l = 0 ; (j & 1) == 0 ; l++, j>>=1, k--) {
       if (!is_p_one) 
-	mpz_mul (S[k], S[k], ptoj[l]);
+        mpz_mul (S[k], S[k], ptoj[l]);
 #ifdef A
 #  ifdef B
 #    if (A2*B2) != 1

@@ -45,9 +45,9 @@ mpfr_sqr (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
         }
       MPFR_SET_POS (a);
       if (MPFR_IS_INF(b))
-	MPFR_SET_INF(a);
+        MPFR_SET_INF(a);
       else
-	( MPFR_ASSERTD(MPFR_IS_ZERO(b)), MPFR_SET_ZERO(a) );
+        ( MPFR_ASSERTD(MPFR_IS_ZERO(b)), MPFR_SET_ZERO(a) );
       MPFR_RET(0);
     }
   MPFR_CLEAR_FLAGS(a);

@@ -32,28 +32,28 @@ mpfr_sinh (mpfr_ptr y, mpfr_srcptr xt, mp_rnd_t rnd_mode)
   int inexact;
 
   MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", xt, xt, rnd_mode),
-		 ("y[%#R]=%R inexact=%d", y, y, inexact));
+                 ("y[%#R]=%R inexact=%d", y, y, inexact));
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (xt)))
     {
       if (MPFR_IS_NAN (xt))
-	{
-	  MPFR_SET_NAN (y);
-	  MPFR_RET_NAN;
-	}
+        {
+          MPFR_SET_NAN (y);
+          MPFR_RET_NAN;
+        }
       else if (MPFR_IS_INF (xt))
-	{
-	  MPFR_SET_INF (y);
-	  MPFR_SET_SAME_SIGN (y, xt);
-	  MPFR_RET (0);
-	}
+        {
+          MPFR_SET_INF (y);
+          MPFR_SET_SAME_SIGN (y, xt);
+          MPFR_RET (0);
+        }
       else /* xt is zero */
-	{
-	  MPFR_ASSERTD (MPFR_IS_ZERO (xt));
-	  MPFR_SET_ZERO (y);   /* sinh(0) = 0 */
-	  MPFR_SET_SAME_SIGN (y, xt);
-	  MPFR_RET (0);
-	}
+        {
+          MPFR_ASSERTD (MPFR_IS_ZERO (xt));
+          MPFR_SET_ZERO (y);   /* sinh(0) = 0 */
+          MPFR_SET_SAME_SIGN (y, xt);
+          MPFR_RET (0);
+        }
     }
 
   /* sinh(x) = x + x^3/6 + ... so the error is < 2^(3*EXP(x)-2) */
@@ -94,7 +94,7 @@ mpfr_sinh (mpfr_ptr y, mpfr_srcptr xt, mp_rnd_t rnd_mode)
       if (MPFR_UNLIKELY (mpfr_overflow_p ())) {
         inexact = mpfr_overflow (y, rnd_mode, MPFR_SIGN (xt));
         MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, MPFR_FLAGS_OVERFLOW);
-	break;
+        break;
       }
       d = MPFR_GET_EXP (t);
       mpfr_ui_div (ti, 1, t, GMP_RNDU); /* 1/exp(x) */
@@ -102,21 +102,21 @@ mpfr_sinh (mpfr_ptr y, mpfr_srcptr xt, mp_rnd_t rnd_mode)
       mpfr_div_2ui (t, t, 1, GMP_RNDN);  /* 1/2(exp(x) - 1/exp(x)) */
 
       /* it may be that t is zero (in fact, it can only occur when te=1,
-	 and thus ti=1 too) */
+         and thus ti=1 too) */
       if (MPFR_IS_ZERO (t))
         err = Nt; /* double the precision */
       else
-	{
-	  /* calculation of the error */
-	  d = d - MPFR_GET_EXP (t) + 2;
-	  /* error estimate: err = Nt-(__gmpfr_ceil_log2(1+pow(2,d)));*/
-	  err = Nt - (MAX (d, 0) + 1);
-	  if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, MPFR_PREC (y), rnd_mode)))
+        {
+          /* calculation of the error */
+          d = d - MPFR_GET_EXP (t) + 2;
+          /* error estimate: err = Nt-(__gmpfr_ceil_log2(1+pow(2,d)));*/
+          err = Nt - (MAX (d, 0) + 1);
+          if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, MPFR_PREC (y), rnd_mode)))
             {
               inexact = mpfr_set4 (y, t, rnd_mode, MPFR_SIGN (xt));
               break;
             }
-	}
+        }
       /* actualisation of the precision */
       Nt += err;
       MPFR_ZIV_NEXT (loop, Nt);

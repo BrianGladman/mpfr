@@ -31,28 +31,28 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
   MPFR_SAVE_EXPO_DECL (expo);
 
   MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", xt, xt, rnd_mode),
-		 ("y[%#R]=%R inexact=%d", y, y, inexact));
+                 ("y[%#R]=%R inexact=%d", y, y, inexact));
 
   /* Special value checking */
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (xt)))
     {
       if (MPFR_IS_NAN (xt))
-	{
-	  MPFR_SET_NAN (y);
-	  MPFR_RET_NAN;
-	}
+        {
+          MPFR_SET_NAN (y);
+          MPFR_RET_NAN;
+        }
       else if (MPFR_IS_INF (xt))
-	{
-	  /* tanh(inf) = 1 && tanh(-inf) = -1 */
-	  return mpfr_set_si (y, MPFR_INT_SIGN (xt), rnd_mode);
-	}
+        {
+          /* tanh(inf) = 1 && tanh(-inf) = -1 */
+          return mpfr_set_si (y, MPFR_INT_SIGN (xt), rnd_mode);
+        }
       else /* tanh (0) = 0 and xt is zero */
-	{
-	  MPFR_ASSERTD (MPFR_IS_ZERO(xt));
-	  MPFR_SET_ZERO (y);
-	  MPFR_SET_SAME_SIGN (y, xt);
-	  MPFR_RET (0);
-	}
+        {
+          MPFR_ASSERTD (MPFR_IS_ZERO(xt));
+          MPFR_SET_ZERO (y);
+          MPFR_SET_SAME_SIGN (y, xt);
+          MPFR_RET (0);
+        }
     }
 
   /* tanh(x) = x - x^3/3 + ... so the error is < 2^(3*EXP(x)-1) */

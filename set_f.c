@@ -58,11 +58,11 @@ mpfr_set_f (mpfr_ptr y, mpf_srcptr x, mp_rnd_t rnd_mode)
       MPFR_TMP_MARK(marker);
       tmp = (mp_limb_t*) MPFR_TMP_ALLOC(sx * BYTES_PER_MP_LIMB);
       if (cnt)
-	mpn_lshift (tmp, mx, sx, cnt);
+        mpn_lshift (tmp, mx, sx, cnt);
       else
         /* FIXME: we may avoid the copy here, and directly call mpfr_round_raw
            on mx instead of tmp */
-	MPN_COPY (tmp, mx, sx);
+        MPN_COPY (tmp, mx, sx);
       carry = mpfr_round_raw (my, tmp, xprec, (SIZ(x) < 0), MPFR_PREC(y),
                               rnd_mode, &inexact);
       if (MPFR_UNLIKELY(carry)) /* result is a power of two */
@@ -72,9 +72,9 @@ mpfr_set_f (mpfr_ptr y, mpf_srcptr x, mp_rnd_t rnd_mode)
   else
     {
       if (cnt)
-	mpn_lshift (my + sy - sx, mx, sx, cnt);
+        mpn_lshift (my + sy - sx, mx, sx, cnt);
       else
-	MPN_COPY (my + sy - sx, mx, sx);
+        MPN_COPY (my + sy - sx, mx, sx);
       MPN_ZERO(my, sy - sx);
       /* no rounding necessary, since y has a larger mantissa */
       inexact = 0;

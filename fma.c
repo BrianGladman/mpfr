@@ -36,63 +36,63 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
 
   /* particular cases */
   if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(x) ||
-		     MPFR_IS_SINGULAR(y) ||
-		     MPFR_IS_SINGULAR(z) ))
+                     MPFR_IS_SINGULAR(y) ||
+                     MPFR_IS_SINGULAR(z) ))
     {
       if (MPFR_IS_NAN(x) || MPFR_IS_NAN(y) || MPFR_IS_NAN(z))
-	{
-	  MPFR_SET_NAN(s);
-	  MPFR_RET_NAN;
-	}
+        {
+          MPFR_SET_NAN(s);
+          MPFR_RET_NAN;
+        }
       /* now neither x, y or z is NaN */
       else if (MPFR_IS_INF(x) || MPFR_IS_INF(y))
-	{
-	  /* cases Inf*0+z, 0*Inf+z, Inf-Inf */
-	  if ((MPFR_IS_ZERO(y)) ||
-	      (MPFR_IS_ZERO(x)) ||
-	      (MPFR_IS_INF(z) && 
-	       ((MPFR_MULT_SIGN(MPFR_SIGN(x), MPFR_SIGN(y))) != MPFR_SIGN(z))))
-	    {
-	      MPFR_SET_NAN(s);
-	      MPFR_RET_NAN;
-	    }
-	  else if (MPFR_IS_INF(z)) /* case Inf-Inf already checked above */
-	    {
-	      MPFR_SET_INF(s);
-	      MPFR_SET_SAME_SIGN(s, z);
-	      MPFR_RET(0);
-	    }
-	  else /* z is finite */
-	    {
-	      MPFR_SET_INF(s);
-	      MPFR_SET_SIGN(s, MPFR_MULT_SIGN(MPFR_SIGN(x) , MPFR_SIGN(y)));
-	      MPFR_RET(0);
-	    }
-	}
+        {
+          /* cases Inf*0+z, 0*Inf+z, Inf-Inf */
+          if ((MPFR_IS_ZERO(y)) ||
+              (MPFR_IS_ZERO(x)) ||
+              (MPFR_IS_INF(z) && 
+               ((MPFR_MULT_SIGN(MPFR_SIGN(x), MPFR_SIGN(y))) != MPFR_SIGN(z))))
+            {
+              MPFR_SET_NAN(s);
+              MPFR_RET_NAN;
+            }
+          else if (MPFR_IS_INF(z)) /* case Inf-Inf already checked above */
+            {
+              MPFR_SET_INF(s);
+              MPFR_SET_SAME_SIGN(s, z);
+              MPFR_RET(0);
+            }
+          else /* z is finite */
+            {
+              MPFR_SET_INF(s);
+              MPFR_SET_SIGN(s, MPFR_MULT_SIGN(MPFR_SIGN(x) , MPFR_SIGN(y)));
+              MPFR_RET(0);
+            }
+        }
       /* now x and y are finite */
       else if (MPFR_IS_INF(z))
-	{
-	  MPFR_SET_INF(s);
-	  MPFR_SET_SAME_SIGN(s, z);
-	  MPFR_RET(0);
-	}
+        {
+          MPFR_SET_INF(s);
+          MPFR_SET_SAME_SIGN(s, z);
+          MPFR_RET(0);
+        }
       else if (MPFR_IS_ZERO(x) || MPFR_IS_ZERO(y))
-	{
-	  if (MPFR_IS_ZERO(z))
-	    {
-	      int sign_p;
-	      sign_p = MPFR_MULT_SIGN( MPFR_SIGN(x) , MPFR_SIGN(y) );
-	      MPFR_SET_SIGN(s,(rnd_mode != GMP_RNDD ?
-			       ((MPFR_IS_NEG_SIGN(sign_p) && MPFR_IS_NEG(z))
-				? -1 : 1) :
-			       ((MPFR_IS_POS_SIGN(sign_p) && MPFR_IS_POS(z))
-				? 1 : -1)));
-	      MPFR_SET_ZERO(s);
-	      MPFR_RET(0);
-	    }
-	  else
-	    return mpfr_set (s, z, rnd_mode);
-	}
+        {
+          if (MPFR_IS_ZERO(z))
+            {
+              int sign_p;
+              sign_p = MPFR_MULT_SIGN( MPFR_SIGN(x) , MPFR_SIGN(y) );
+              MPFR_SET_SIGN(s,(rnd_mode != GMP_RNDD ?
+                               ((MPFR_IS_NEG_SIGN(sign_p) && MPFR_IS_NEG(z))
+                                ? -1 : 1) :
+                               ((MPFR_IS_POS_SIGN(sign_p) && MPFR_IS_POS(z))
+                                ? 1 : -1)));
+              MPFR_SET_ZERO(s);
+              MPFR_RET(0);
+            }
+          else
+            return mpfr_set (s, z, rnd_mode);
+        }
       else /* necessarily z is zero here */
         {
           MPFR_ASSERTD(MPFR_IS_ZERO(z));

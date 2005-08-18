@@ -131,14 +131,14 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       MPFR_LOG_MSG (("n=%d K=%d l=%d q=%d\n",n,K,l,q) );
 
       /* if n<0, we have to get an upper bound of log(2)
-	 in order to get an upper bound of r = x-n*log(2) */
+         in order to get an upper bound of r = x-n*log(2) */
       mpfr_const_log2 (s, (n >= 0) ? GMP_RNDZ : GMP_RNDU);
       /* s is within 1 ulp of log(2) */
 
       mpfr_mul_ui (r, s, (n < 0) ? -n : n, (n >= 0) ? GMP_RNDZ : GMP_RNDU);
       /* r is within 3 ulps of n*log(2) */
       if (n < 0)
-	MPFR_CHANGE_SIGN (r);
+        MPFR_CHANGE_SIGN (r);
       /* r = floor(n*log(2)), within 3 ulps */
 
       MPFR_LOG_VAR (x);
@@ -146,12 +146,12 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
       mpfr_sub (r, x, r, GMP_RNDU);
       /* possible cancellation here: the error on r is at most
-	 3*2^(EXP(old_r)-EXP(new_r)) */
+         3*2^(EXP(old_r)-EXP(new_r)) */
       while (MPFR_IS_NEG (r))
-	{ /* initial approximation n was too large */
-	  n--;
-	  mpfr_add (r, r, s, GMP_RNDU);
-	}
+        { /* initial approximation n was too large */
+          n--;
+          mpfr_add (r, r, s, GMP_RNDU);
+        }
       mpfr_prec_round (r, q, GMP_RNDU);
       MPFR_LOG_VAR (r);
       MPFR_ASSERTD (MPFR_IS_POS (r));
@@ -162,17 +162,17 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       exps = mpfr_get_z_exp (ss, s);
       /* s <- 1 + r/1! + r^2/2! + ... + r^l/l! */
       l = (precy < MPFR_EXP_2_THRESHOLD)
-	? mpfr_exp2_aux (ss, r, q, &exps)      /* naive method */
-	: mpfr_exp2_aux2 (ss, r, q, &exps);    /* Brent/Kung method */
+        ? mpfr_exp2_aux (ss, r, q, &exps)      /* naive method */
+        : mpfr_exp2_aux2 (ss, r, q, &exps);    /* Brent/Kung method */
 
       MPFR_LOG_MSG (("l=%d q=%d (K+l)*q^2=%1.3e\n", l, q, (K+l)*(double)q*q));
 
       for (k = 0; k < K; k++)
-	{
-	  mpz_mul (ss, ss, ss);
-	  exps <<= 1;
-	  exps += mpz_normalize (ss, ss, q);
-	}
+        {
+          mpz_mul (ss, ss, ss);
+          exps <<= 1;
+          exps += mpz_normalize (ss, ss, q);
+        }
       mpfr_set_z (s, ss, GMP_RNDN);
 
       MPFR_SET_EXP(s, MPFR_GET_EXP (s) + exps);
@@ -182,26 +182,26 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_mul_2si (s, s, n, GMP_RNDU);
       /* Check if an overflow occurs */
       if (MPFR_UNLIKELY (MPFR_IS_INF (s)))
-	{
-	  /* We hack to set a FP number outside the valid range so that
-	     mpfr_check_range properly generates an overflow */
-	  mpfr_setmax (y, __gmpfr_emax);
-	  MPFR_EXP (y) ++;
-	  inexact = 1;
-	  break;
-	}
+        {
+          /* We hack to set a FP number outside the valid range so that
+             mpfr_check_range properly generates an overflow */
+          mpfr_setmax (y, __gmpfr_emax);
+          MPFR_EXP (y) ++;
+          inexact = 1;
+          break;
+        }
       /* Check if an underflow occurs */
       else if (MPFR_UNLIKELY (mpfr_underflow_p ()))
-	{
-	  /* We hack to set a FP number outside the valid range so that
+        {
+          /* We hack to set a FP number outside the valid range so that
              mpfr_check_range properly generates an underflow.
-	     Note that the range has been increased to allow a safe
-	     detection of underflow (MPFR_EMIN_MIN-3 in exp.c) even for
-	     RNDN */
-	  mpfr_setmax (y, MPFR_EMIN_MIN-2);
+             Note that the range has been increased to allow a safe
+             detection of underflow (MPFR_EMIN_MIN-3 in exp.c) even for
+             RNDN */
+          mpfr_setmax (y, MPFR_EMIN_MIN-2);
           inexact = -1;
-	  break;
-	}
+          break;
+        }
 
       /* error is at most 2^K*l */
       K += MPFR_INT_CEIL_LOG2 (l);
@@ -211,10 +211,10 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       MPFR_LOG_MSG (("err=%d bits\n", K));
 
       if (MPFR_LIKELY (MPFR_CAN_ROUND (s, q-K, precy, rnd_mode)))
-	{
-	  inexact = mpfr_set (y, s, rnd_mode);
-	  break;
-	}
+        {
+          inexact = mpfr_set (y, s, rnd_mode);
+          break;
+        }
       MPFR_ZIV_NEXT (loop, q);
       mpfr_set_prec (r, q);
       mpfr_set_prec (s, q);
@@ -346,7 +346,7 @@ mpfr_exp2_aux2 (mpz_t s, mpfr_srcptr r, mp_prec_t q, mp_exp_t *exps)
     /* all R[i] must have exponent 1-ql */
     if (l != 0)
       for (i = 0 ; i < m ; i++)
-	expR[i] = mpz_normalize2 (R[i], R[i], expR[i], 1-ql);
+        expR[i] = mpz_normalize2 (R[i], R[i], expR[i], 1-ql);
     /* the absolute error on R[i]*rr is still 2*i-1 ulps */
     expt = mpz_normalize2 (t, R[m-1], expR[m-1], 1-ql);
     /* err(t) <= 2*m-1 ulps */
@@ -354,8 +354,8 @@ mpfr_exp2_aux2 (mpz_t s, mpfr_srcptr r, mp_prec_t q, mp_exp_t *exps)
        using Horner's scheme */
     for (i = m-1 ; i-- != 0 ; )
       {
-	mpz_div_ui(t, t, l+i+1); /* err(t) += 1 ulp */
-	mpz_add(t, t, R[i]);
+        mpz_div_ui(t, t, l+i+1); /* err(t) += 1 ulp */
+        mpz_add(t, t, R[i]);
       }
     /* now err(t) <= (3m-2) ulps */
 

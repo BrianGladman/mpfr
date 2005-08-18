@@ -85,54 +85,54 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
       /* Compute Rounding Bit and Sticky Bit */
       MPFR_UNSIGNED_MINUS_MODULO (sh, MPFR_PREC (f) );
       if (MPFR_LIKELY (sh != 0)) 
-	{
-	  mp_limb_t mask = MPFR_LIMB_ONE << (sh-1);
-	  mp_limb_t limb = fp[0];
-	  rb = limb & mask;
-	  sb = limb & (mask-1);
-	  ulp = 2*mask;
-	  fp[0] = limb & ~(ulp-1);
-	}
+        {
+          mp_limb_t mask = MPFR_LIMB_ONE << (sh-1);
+          mp_limb_t limb = fp[0];
+          rb = limb & mask;
+          sb = limb & (mask-1);
+          ulp = 2*mask;
+          fp[0] = limb & ~(ulp-1);
+        }
       else /* sh == 0 */
-	{
-	  mp_limb_t mask = MPFR_LIMB_ONE << (BITS_PER_MP_LIMB - 1 - k);
-	  if (MPFR_LIKELY (dif > 0))
-	    {
-	      rb = zp[--dif] & mask;
-	      sb = zp[dif] & (mask-1);
-	    }
-	  else
-	    rb = sb = 0;
-	  k = 0;
-	  ulp = MPFR_LIMB_ONE;
-	}
+        {
+          mp_limb_t mask = MPFR_LIMB_ONE << (BITS_PER_MP_LIMB - 1 - k);
+          if (MPFR_LIKELY (dif > 0))
+            {
+              rb = zp[--dif] & mask;
+              sb = zp[dif] & (mask-1);
+            }
+          else
+            rb = sb = 0;
+          k = 0;
+          ulp = MPFR_LIMB_ONE;
+        }
       if (MPFR_UNLIKELY (sb == 0) && MPFR_LIKELY (dif > 0))
-	{
-	  sb = zp[--dif];
-	  if (MPFR_LIKELY (k != 0))
-	    sb &= MPFR_LIMB_MASK (BITS_PER_MP_LIMB - k);
-	  if (MPFR_UNLIKELY (sb == 0) && MPFR_LIKELY (dif > 0)) 
-	    do {
-	      sb = zp[--dif];
-	    } while (dif > 0 && sb == 0);
-	}
+        {
+          sb = zp[--dif];
+          if (MPFR_LIKELY (k != 0))
+            sb &= MPFR_LIMB_MASK (BITS_PER_MP_LIMB - k);
+          if (MPFR_UNLIKELY (sb == 0) && MPFR_LIKELY (dif > 0)) 
+            do {
+              sb = zp[--dif];
+            } while (dif > 0 && sb == 0);
+        }
 
       /* Rounding */
       if (MPFR_LIKELY (rnd_mode == GMP_RNDN))
         {
-	  if (rb == 0 || MPFR_UNLIKELY (sb == 0 && (fp[0] & ulp) == 0))
-	    goto trunc;
-	  else
-	    goto addoneulp;
-	}
+          if (rb == 0 || MPFR_UNLIKELY (sb == 0 && (fp[0] & ulp) == 0))
+            goto trunc;
+          else
+            goto addoneulp;
+        }
       else /* Not Nearest */
-	{
-	  if (MPFR_LIKELY (MPFR_IS_LIKE_RNDZ (rnd_mode, sign_z < 0))
-	      || MPFR_UNLIKELY ( (sb|rb) == 0 ))
-	    goto trunc;
-	  else
-	    goto addoneulp;
-	}
+        {
+          if (MPFR_LIKELY (MPFR_IS_LIKE_RNDZ (rnd_mode, sign_z < 0))
+              || MPFR_UNLIKELY ( (sb|rb) == 0 ))
+            goto trunc;
+          else
+            goto addoneulp;
+        }
 
     trunc:
       inex = MPFR_LIKELY ((sb | rb) != 0) ? -1 : 0;
@@ -141,13 +141,13 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
     addoneulp:
       inex = 1;
       if (MPFR_UNLIKELY (mpn_add_1 (fp, fp, fn, ulp))) 
-	{ 
-	  /* Pow 2 case */
-	  if (MPFR_UNLIKELY (exp == __gmpfr_emax))
-	    return mpfr_overflow (f, rnd_mode, sign_z);
-	  exp ++;
-	  fp[fn-1] = MPFR_LIMB_HIGHBIT;
-	}
+        { 
+          /* Pow 2 case */
+          if (MPFR_UNLIKELY (exp == __gmpfr_emax))
+            return mpfr_overflow (f, rnd_mode, sign_z);
+          exp ++;
+          fp[fn-1] = MPFR_LIMB_HIGHBIT;
+        }
     end:
       (void) 0;
     }

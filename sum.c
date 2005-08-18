@@ -140,18 +140,18 @@ static void heap_sort (mpfr_srcptr *const tab, unsigned long n,
     {
       i = dernier_traite;
       while (i > 0)
-	{
-	  pere = (i - 1) / 2;
-	  if (GET_EXP2 (perm[pere]) > GET_EXP2 (perm[i]))
-	    {
-	      tmp = perm[pere];
-	      perm[pere] = perm[i];
-	      perm[i] = tmp;
-	      i = pere;
-	    }
-	  else
-	    break;
-	}
+        {
+          pere = (i - 1) / 2;
+          if (GET_EXP2 (perm[pere]) > GET_EXP2 (perm[i]))
+            {
+              tmp = perm[pere];
+              perm[pere] = perm[i];
+              perm[i] = tmp;
+              i = pere;
+            }
+          else
+            break;
+        }
     }
 
   /* extraction phase */
@@ -163,42 +163,42 @@ static void heap_sort (mpfr_srcptr *const tab, unsigned long n,
 
       i = 0;
       while (1)
-	{
-	  fils_gauche = 2 * i + 1;
-	  fils_droit = fils_gauche + 1;
-	  if (fils_gauche < dernier_traite)
-	    {
-	      if (fils_droit < dernier_traite)
-		{
-		  if (GET_EXP2(perm[fils_droit]) < GET_EXP2(perm[fils_gauche]))
-		    fils_indigne = fils_droit;
-		  else
-		    fils_indigne = fils_gauche;
+        {
+          fils_gauche = 2 * i + 1;
+          fils_droit = fils_gauche + 1;
+          if (fils_gauche < dernier_traite)
+            {
+              if (fils_droit < dernier_traite)
+                {
+                  if (GET_EXP2(perm[fils_droit]) < GET_EXP2(perm[fils_gauche]))
+                    fils_indigne = fils_droit;
+                  else
+                    fils_indigne = fils_gauche;
 
-		  if (GET_EXP2 (perm[i]) > GET_EXP2 (perm[fils_indigne]))
-		    {
-		      tmp = perm[i];
-		      perm[i] = perm[fils_indigne];
-		      perm[fils_indigne] = tmp;
-		      i = fils_indigne;
-		    }
-		  else
-		    break;
-		}
-	      else /* on a un fils gauche, pas de fils droit */
-		{
-		  if (GET_EXP2 (perm[i]) > GET_EXP2 (perm[fils_gauche]))
-		    {
-		      tmp = perm[i];
-		      perm[i] = perm[fils_gauche];
-		      perm[fils_gauche] = tmp;
-		    }
-		  break;
-		}
-	    }
-	  else /* on n'a pas de fils */
-	    break;
-	}
+                  if (GET_EXP2 (perm[i]) > GET_EXP2 (perm[fils_indigne]))
+                    {
+                      tmp = perm[i];
+                      perm[i] = perm[fils_indigne];
+                      perm[fils_indigne] = tmp;
+                      i = fils_indigne;
+                    }
+                  else
+                    break;
+                }
+              else /* on a un fils gauche, pas de fils droit */
+                {
+                  if (GET_EXP2 (perm[i]) > GET_EXP2 (perm[fils_gauche]))
+                    {
+                      tmp = perm[i];
+                      perm[i] = perm[fils_gauche];
+                      perm[fils_gauche] = tmp;
+                    }
+                  break;
+                }
+            }
+          else /* on n'a pas de fils */
+            break;
+        }
     }
 }
 

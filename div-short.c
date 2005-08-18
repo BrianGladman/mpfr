@@ -151,7 +151,7 @@ void bench (int argc, const char *argv[])
 
   if (i >= 0)
     printf ("limbs %d differ: %lu %lu %ld\n", i, qp[i], q2p[i],
-	    (long) q2p[i]-qp[i]); 
+            (long) q2p[i]-qp[i]); 
 }
 
 void
@@ -169,7 +169,7 @@ check (int argc, const char *argv[])
   count_leading_zeros (max_error, n);
   max_error = 2*(BITS_PER_MP_LIMB-max_error);
   printf ("For N=%lu estimated max_error=%lu ulps\n",
-	  (unsigned long) n, (unsigned long) max_error);
+          (unsigned long) n, (unsigned long) max_error);
   n0p = malloc (2 * n * sizeof (mp_limb_t));
   np = malloc (2 * n * sizeof (mp_limb_t));
   n2p = malloc (2 * n * sizeof (mp_limb_t));
@@ -191,41 +191,41 @@ check (int argc, const char *argv[])
       qqh2 = mpn_dc_divrem_n_high (q2p, n2p, dp, n);
 
       if (mpn_cmp (qp, q2p, n) > 0)
-	{
-	  printf ("QP > QP_high\n");
-	  if (n <= 10)
-	    {
-	      printf ("dp=");
-	      for (i = n-1 ; i >= 0 ; i--)
-		printf (" %016Lx", (unsigned long) dp[i]);
-	      printf ("\nn0p=");
-	      for (i = 2*n-1 ; i >= 0 ; i--)
+        {
+          printf ("QP > QP_high\n");
+          if (n <= 10)
+            {
+              printf ("dp=");
+              for (i = n-1 ; i >= 0 ; i--)
+                printf (" %016Lx", (unsigned long) dp[i]);
+              printf ("\nn0p=");
+              for (i = 2*n-1 ; i >= 0 ; i--)
                 printf (" %016Lx", (unsigned long) n0p[i]);
-	      printf ("\nqp=");
-	      for (i = n-1 ; i >= 0 ; i--)
+              printf ("\nqp=");
+              for (i = n-1 ; i >= 0 ; i--)
                 printf (" %016Lx", (unsigned long) qp[i]);
               printf ("\nq2p=");
               for (i = n-1 ; i >= 0 ; i--)
                 printf (" %016Lx", (unsigned long) q2p[i]);
-	      printf ("\nQcarry=%lu\n", qqh2);
-	    }
-	  return;
-	}
+              printf ("\nQcarry=%lu\n", qqh2);
+            }
+          return;
+        }
       mpn_sub_n (q2p, q2p, qp, n);
       for (i = n-1 ; i >= 0 && q2p[i] == 0 ; i--);
       if (i > 0)
-	{
-	  printf ("Error for i=%d\n", i);
-	  return;
-	}
+        {
+          printf ("Error for i=%d\n", i);
+          return;
+        }
       if (q2p[0] >= max_error)
-	{
-	  printf ("Too many wrong ulps: %lu\n",
-		  (unsigned long) q2p[0]);
-	  return;
-	}
+        {
+          printf ("Too many wrong ulps: %lu\n",
+                  (unsigned long) q2p[0]);
+          return;
+        }
       if (max < q2p[0])
-	max = q2p[0];
+        max = q2p[0];
     }
   printf ("Done. Max error=%lu ulps\n", max);
   return;

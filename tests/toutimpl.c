@@ -103,16 +103,16 @@ int main()
   for(i = 0 ; i < sizeof(Buffer)-1 ; i++)
     {
       if (feof (f))
-	{
-	  fprintf (stderr, "Error EOF\n");
-	  exit (1);
-	}
-      if (Buffer[i] != fgetc (f))
-	{
-	  fprintf (stderr, "Character mismatch for i=%d / %lu\n",
-		  i, (unsigned long) sizeof(Buffer));
+        {
+          fprintf (stderr, "Error EOF\n");
           exit (1);
-	}      
+        }
+      if (Buffer[i] != fgetc (f))
+        {
+          fprintf (stderr, "Character mismatch for i=%d / %lu\n",
+                  i, (unsigned long) sizeof(Buffer));
+          exit (1);
+        }      
     }
   fclose (f);
 

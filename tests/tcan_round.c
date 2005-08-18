@@ -42,17 +42,17 @@ check_round_p (void)
       err = p + randlimb () % BITS_PER_MP_LIMB;
       r1 = mpfr_round_p (buf, n, err, p);
       r2 = mpfr_can_round_raw (buf, n, MPFR_SIGN_POS, err,
-			       GMP_RNDN, GMP_RNDZ, p);
+                               GMP_RNDN, GMP_RNDZ, p);
       if (r1 != r2)
-	{
-	  printf ("mpfr_round_p(%d) != mpfr_can_round(%d)!\n"
-		  "bn=%ld err0=%ld prec=%ld\nbp=",
-		  r1, r2, n, err, p);
-	  while (n--)
-	    printf ("%08lX ", buf[n]);
-	  putchar ('\n');
-	  exit (1);
-	}
+        {
+          printf ("mpfr_round_p(%d) != mpfr_can_round(%d)!\n"
+                  "bn=%ld err0=%ld prec=%ld\nbp=",
+                  r1, r2, n, err, p);
+          while (n--)
+            printf ("%08lX ", buf[n]);
+          putchar ('\n');
+          exit (1);
+        }
     }
 }
 

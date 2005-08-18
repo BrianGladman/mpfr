@@ -44,21 +44,21 @@ S (mpz_t *T, mpz_t *P, mpz_t *Q, unsigned long n1, unsigned long n2, int need_P)
   if (n2 == n1 + 1)
     {
       if (n1 == 0)
-	mpz_set_ui (P[0], 3);
+        mpz_set_ui (P[0], 3);
       else
-	{
-	  mpz_set_ui (P[0], n1);
-	  mpz_neg (P[0], P[0]);
-	}
+        {
+          mpz_set_ui (P[0], n1);
+          mpz_neg (P[0], P[0]);
+        }
       if (n1 <= (ULONG_MAX / 4 - 1) / 2)
-	mpz_set_ui (Q[0], 4 * (2 * n1 + 1));
+        mpz_set_ui (Q[0], 4 * (2 * n1 + 1));
       else /* to avoid overflow in 4 * (2 * n1 + 1) */
-	{
-	  mpz_set_ui (Q[0], n1);
-	  mpz_mul_2exp (Q[0], Q[0], 1);
-	  mpz_add_ui (Q[0], Q[0], 1);
-	  mpz_mul_2exp (Q[0], Q[0], 2);
-	}
+        {
+          mpz_set_ui (Q[0], n1);
+          mpz_mul_2exp (Q[0], Q[0], 1);
+          mpz_add_ui (Q[0], Q[0], 1);
+          mpz_mul_2exp (Q[0], Q[0], 2);
+        }
       mpz_set (T[0], P[0]);
     }
   else
@@ -72,31 +72,31 @@ S (mpz_t *T, mpz_t *P, mpz_t *Q, unsigned long n1, unsigned long n2, int need_P)
       mpz_mul (T[1], T[1], P[0]);
       mpz_add (T[0], T[0], T[1]);
       if (need_P)
-	mpz_mul (P[0], P[0], P[1]);
+        mpz_mul (P[0], P[0], P[1]);
       mpz_mul (Q[0], Q[0], Q[1]);
 
       /* remove common trailing zeroes if any */
       v = mpz_scan1 (T[0], 0);
       if (v > 0)
-	{
-	  w = mpz_scan1 (Q[0], 0);
-	  if (w < v)
-	    v = w;
-	  if (need_P)
-	    {
-	      w = mpz_scan1 (P[0], 0);
-	      if (w < v)
-		v = w;
-	    }
-	  /* now v = min(val(T), val(Q), val(P)) */
-	  if (v > 0)
-	    {
-	      mpz_div_2exp (T[0], T[0], v);
-	      mpz_div_2exp (Q[0], Q[0], v);
-	      if (need_P)
-		mpz_div_2exp (P[0], P[0], v);
-	    }
-	}
+        {
+          w = mpz_scan1 (Q[0], 0);
+          if (w < v)
+            v = w;
+          if (need_P)
+            {
+              w = mpz_scan1 (P[0], 0);
+              if (w < v)
+                v = w;
+            }
+          /* now v = min(val(T), val(Q), val(P)) */
+          if (v > 0)
+            {
+              mpz_div_2exp (T[0], T[0], v);
+              mpz_div_2exp (Q[0], Q[0], v);
+              if (need_P)
+                mpz_div_2exp (P[0], P[0], v);
+            }
+        }
     }
 }
 
@@ -121,7 +121,7 @@ mpfr_const_log2_internal (mpfr_ptr x, mp_rnd_t rnd_mode)
 
   if (n < 1253)
     w = n + 10; /* ensures correct rounding for the four rounding modes,
-		   together with N = w / 3 + 1 (see below). */
+                   together with N = w / 3 + 1 (see below). */
   else if (n < 2571)
     w = n + 11; /* idem */
   else if (n < 3983)
@@ -140,8 +140,8 @@ mpfr_const_log2_internal (mpfr_ptr x, mp_rnd_t rnd_mode)
   for (;;)
     {
       N = w / 3 + 1; /* Warning: do not change that (even increasing N!)
-			without checking correct rounding in the above
-			ranges for n. */
+                        without checking correct rounding in the above
+                        ranges for n. */
 
       /* the following are needed for error analysis (see algorithms.tex) */
       MPFR_ASSERTD(w >= 3 && N >= 2);
@@ -175,8 +175,8 @@ mpfr_const_log2_internal (mpfr_ptr x, mp_rnd_t rnd_mode)
       (*__gmp_free_func) (T, 3 * lgN * sizeof (mpz_t));
 
       if (MPFR_LIKELY (ok != 0 
-		       || mpfr_can_round (t, w - 2, GMP_RNDN, rnd_mode, n)))
-	break;
+                       || mpfr_can_round (t, w - 2, GMP_RNDN, rnd_mode, n)))
+        break;
 
       MPFR_ZIV_NEXT (loop, w);
     }

@@ -103,20 +103,20 @@ main (void)
       RR::SetPrecision(pa);
       cos (d, b
 #ifdef TWO_ARGS
-	   , c
+           , c
 #endif
-	   );
+           );
       if (d != a)
         {
           cerr << "error at line " << line << endl;
-	  cerr << "b="; Output(b, pb);
+          cerr << "b="; Output(b, pb);
 #ifdef TWO_ARGS
           cerr << " c="; Output(c, pc);
 #endif
           cerr << "expected "; Output(a, pa);
           cerr << "got      "; Output(d, pa);
-	  cerr << "difference is " << ulp (a, d, pa) << " ulps" << endl;
-	  cerr << ++errors << " errors" << endl;
+          cerr << "difference is " << ulp (a, d, pa) << " ulps" << endl;
+          cerr << ++errors << " errors" << endl;
         }
     }
 }

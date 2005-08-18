@@ -57,32 +57,32 @@ check_one (mpz_ptr z)
   for (sh = -2*BITS_PER_MP_LIMB ; sh < 2*BITS_PER_MP_LIMB ; sh++)
     {
       for (neg = 0; neg <= 1; neg++)
-	{
-	  mpz_neg (z, z);
-	  mpfr_set_z (f, z, GMP_RNDN);  
-	  
-	  if (sh < 0)
-	    {
-	      mpz_tdiv_q_2exp (z, z, -sh);
-	      mpfr_div_2exp (f, f, -sh, GMP_RNDN);
-	    }
-	  else
-	    {
-	      mpz_mul_2exp (z, z, sh);
-	      mpfr_mul_2exp (f, f, sh, GMP_RNDN);
-	    }
+        {
+          mpz_neg (z, z);
+          mpfr_set_z (f, z, GMP_RNDN);  
+          
+          if (sh < 0)
+            {
+              mpz_tdiv_q_2exp (z, z, -sh);
+              mpfr_div_2exp (f, f, -sh, GMP_RNDN);
+            }
+          else
+            {
+              mpz_mul_2exp (z, z, sh);
+              mpfr_mul_2exp (f, f, sh, GMP_RNDN);
+            }
 
-	  mpfr_get_z (got, f, GMP_RNDZ); 
+          mpfr_get_z (got, f, GMP_RNDZ); 
 
-	  if (mpz_cmp (got, z) != 0)
-	    {
-	      printf ("Wrong result for shift=%d\n", sh);
-	      printf ("     f "); mpfr_dump (f);
-	      printf ("   got "); mpz_dump (got);
-	      printf ("  want "); mpz_dump (z);
-	      exit (1);
-	    }
-	}
+          if (mpz_cmp (got, z) != 0)
+            {
+              printf ("Wrong result for shift=%d\n", sh);
+              printf ("     f "); mpfr_dump (f);
+              printf ("   got "); mpz_dump (got);
+              printf ("  want "); mpz_dump (z);
+              exit (1);
+            }
+        }
     }
 
   mpfr_clear (f);

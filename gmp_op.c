@@ -151,25 +151,25 @@ mpfr_add_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mp_rnd_t rnd_mode)
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
       if (MPFR_IS_NAN (x))
-	{
-	  MPFR_SET_NAN (y);
-	  MPFR_RET_NAN;
-	}
+        {
+          MPFR_SET_NAN (y);
+          MPFR_RET_NAN;
+        }
       else if (MPFR_IS_INF (x))
-	{
+        {
           MPFR_ASSERTD (mpz_sgn (mpq_denref (z)) != 0);
-	  MPFR_SET_INF (y);
-	  MPFR_SET_SAME_SIGN (y, x);
-	  MPFR_RET (0);
-	}
+          MPFR_SET_INF (y);
+          MPFR_SET_SAME_SIGN (y, x);
+          MPFR_RET (0);
+        }
       else
-	{
-	  MPFR_ASSERTD (MPFR_IS_ZERO (x));
-	  if (MPFR_UNLIKELY (mpq_sgn (z) == 0))
-	    return mpfr_set (y, x, rnd_mode); /* signed 0 - Unsigned 0 */
-	  else
-	    return mpfr_set_q (y, z, rnd_mode);
-	}
+        {
+          MPFR_ASSERTD (MPFR_IS_ZERO (x));
+          if (MPFR_UNLIKELY (mpq_sgn (z) == 0))
+            return mpfr_set (y, x, rnd_mode); /* signed 0 - Unsigned 0 */
+          else
+            return mpfr_set_q (y, z, rnd_mode);
+        }
     }
 
   p = MPFR_PREC (y) + 10;
@@ -182,26 +182,26 @@ mpfr_add_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mp_rnd_t rnd_mode)
       res = mpfr_set_q (q, z, GMP_RNDN);  /* Error <= 1/2 ulp(q) */
       /* If z if @INF@ (1/0), res = 0, so it quits immediately */
       if (MPFR_UNLIKELY (res == 0)) 
-	/* Result is exact so we can add it directly! */
-	{
-	  res = mpfr_add (y, x, q, rnd_mode);
-	  break;
-	}
+        /* Result is exact so we can add it directly! */
+        {
+          res = mpfr_add (y, x, q, rnd_mode);
+          break;
+        }
       mpfr_add (t, x, q, GMP_RNDN);       /* Error <= 1/2 ulp(t) */
       /* Error / ulp(t)      <= 1/2 + 1/2 * 2^(EXP(q)-EXP(t))
-	 If EXP(q)-EXP(t)>0, <= 2^(EXP(q)-EXP(t)-1)*(1+2^-(EXP(q)-EXP(t)))
-	                     <= 2^(EXP(q)-EXP(t))
-	 If EXP(q)-EXP(t)<0, <= 2^0 */
+         If EXP(q)-EXP(t)>0, <= 2^(EXP(q)-EXP(t)-1)*(1+2^-(EXP(q)-EXP(t)))
+                             <= 2^(EXP(q)-EXP(t))
+         If EXP(q)-EXP(t)<0, <= 2^0 */
       /* We can get 0, but we can't round since q is inexact */
       if (MPFR_LIKELY (!MPFR_IS_ZERO (t)))
-	{
-	  err = (mp_exp_t) p - 1 - MAX (MPFR_GET_EXP(q)-MPFR_GET_EXP(t), 0);
-	  if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, MPFR_PREC (y), rnd_mode)))
-	    {
-	      res = mpfr_set (y, t, rnd_mode);	      
-	      break;
-	    }
-	}
+        {
+          err = (mp_exp_t) p - 1 - MAX (MPFR_GET_EXP(q)-MPFR_GET_EXP(t), 0);
+          if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, MPFR_PREC (y), rnd_mode)))
+            {
+              res = mpfr_set (y, t, rnd_mode);        
+              break;
+            }
+        }
       MPFR_ZIV_NEXT (loop, p);
       mpfr_set_prec (t, p);
       mpfr_set_prec (q, p);
@@ -230,7 +230,7 @@ mpfr_sub_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z,mp_rnd_t rnd_mode)
         }
       else if (MPFR_IS_INF (x))
         {
-	  MPFR_ASSERTD (mpz_sgn (mpq_denref (z)) != 0);
+          MPFR_ASSERTD (mpz_sgn (mpq_denref (z)) != 0);
           MPFR_SET_INF (y);
           MPFR_SET_SAME_SIGN (y, x);
           MPFR_RET (0);
@@ -238,15 +238,15 @@ mpfr_sub_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z,mp_rnd_t rnd_mode)
       else
         {
           MPFR_ASSERTD (MPFR_IS_ZERO (x));
-	  
+          
           if (MPFR_UNLIKELY (mpq_sgn (z) == 0))
             return mpfr_set (y, x, rnd_mode); /* signed 0 - Unsigned 0 */
           else
-	    {
-	      res =  mpfr_set_q (y, z, MPFR_INVERT_RND (rnd_mode));
-	      MPFR_CHANGE_SIGN (y);
-	      return -res;
-	    }
+            {
+              res =  mpfr_set_q (y, z, MPFR_INVERT_RND (rnd_mode));
+              MPFR_CHANGE_SIGN (y);
+              return -res;
+            }
         }
     }
 
@@ -260,7 +260,7 @@ mpfr_sub_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z,mp_rnd_t rnd_mode)
       res = mpfr_set_q(q, z, GMP_RNDN);  /* Error <= 1/2 ulp(q) */
       /* If z if @INF@ (1/0), res = 0, so it quits immediately */
       if (MPFR_UNLIKELY (res == 0))
-	/* Result is exact so we can add it directly!*/
+        /* Result is exact so we can add it directly!*/
         {
           res = mpfr_sub (y, x, q, rnd_mode);
           break;
@@ -269,18 +269,18 @@ mpfr_sub_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z,mp_rnd_t rnd_mode)
       /* Error / ulp(t)      <= 1/2 + 1/2 * 2^(EXP(q)-EXP(t))
          If EXP(q)-EXP(t)>0, <= 2^(EXP(q)-EXP(t)-1)*(1+2^-(EXP(q)-EXP(t)))
                              <= 2^(EXP(q)-EXP(t))
-			     If EXP(q)-EXP(t)<0, <= 2^0 */
+                             If EXP(q)-EXP(t)<0, <= 2^0 */
       /* We can get 0, but we can't round since q is inexact */
       if (MPFR_LIKELY (!MPFR_IS_ZERO (t)))
-	{
-	  err = (mp_exp_t) p - 1 - MAX (MPFR_GET_EXP(q)-MPFR_GET_EXP(t), 0);
-	  res = MPFR_CAN_ROUND (t, err, MPFR_PREC (y), rnd_mode);
-	  if (MPFR_LIKELY (res != 0))  /* We can round! */
-	    {
-	      res = mpfr_set (y, t, rnd_mode);
-	      break;
-	    }
-	}
+        {
+          err = (mp_exp_t) p - 1 - MAX (MPFR_GET_EXP(q)-MPFR_GET_EXP(t), 0);
+          res = MPFR_CAN_ROUND (t, err, MPFR_PREC (y), rnd_mode);
+          if (MPFR_LIKELY (res != 0))  /* We can round! */
+            {
+              res = mpfr_set (y, t, rnd_mode);
+              break;
+            }
+        }
       MPFR_ZIV_NEXT (loop, p);
       mpfr_set_prec (t, p);
       mpfr_set_prec (q, p);

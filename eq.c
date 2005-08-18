@@ -36,13 +36,13 @@ mpfr_eq (mpfr_srcptr u, mpfr_srcptr v, unsigned long int n_bits)
   if (MPFR_ARE_SINGULAR(u, v))
     {
       if (MPFR_IS_NAN(u) || MPFR_IS_NAN(v))
-	return 0; /* non equal */
+        return 0; /* non equal */
       else if (MPFR_IS_INF(u) && MPFR_IS_INF(v))
-	return (MPFR_SIGN(u) == MPFR_SIGN(v));
+        return (MPFR_SIGN(u) == MPFR_SIGN(v));
       else if (MPFR_IS_ZERO(u) && MPFR_IS_ZERO(v))
-	return 1;
+        return 1;
       else
-	return 0;
+        return 0;
     }
 
   /* 1. Are the signs different?  */
@@ -79,12 +79,12 @@ mpfr_eq (mpfr_srcptr u, mpfr_srcptr v, unsigned long int n_bits)
   if (usize > vsize)
     {
       if ((unsigned long) vsize * BITS_PER_MP_LIMB < n_bits)
-	{
+        {
           /* check if low min(PREC(u), n_bits) - (vsize * BITS_PER_MP_LIMB)
              bits from u are non-zero */
           unsigned long remains = n_bits - (vsize * BITS_PER_MP_LIMB);
-	  k = usize - vsize - 1;
-	  while (k >= 0 && remains >= BITS_PER_MP_LIMB && !up[k])
+          k = usize - vsize - 1;
+          while (k >= 0 && remains >= BITS_PER_MP_LIMB && !up[k])
             {
               k--;
               remains -= BITS_PER_MP_LIMB;
@@ -92,11 +92,11 @@ mpfr_eq (mpfr_srcptr u, mpfr_srcptr v, unsigned long int n_bits)
           /* now either k < 0: all low bits from u are zero
                  or remains < BITS_PER_MP_LIMB: check high bits from up[k]
                  or up[k] <> 0: different */
-	  if (k >= 0 && (((remains < BITS_PER_MP_LIMB) && 
+          if (k >= 0 && (((remains < BITS_PER_MP_LIMB) && 
                           (up[k] >> (BITS_PER_MP_LIMB - remains))) ||
                          (remains >= BITS_PER_MP_LIMB && up[k])))
-	    return 0;		/* surely too different */
-	}
+            return 0;           /* surely too different */
+        }
       size = vsize;
     }
   else
@@ -122,7 +122,7 @@ mpfr_eq (mpfr_srcptr u, mpfr_srcptr v, unsigned long int n_bits)
   for (i = size - 1; i > 0 && n_bits >= BITS_PER_MP_LIMB; i--)
     {
       if (up[i] != vp[i])
-	return 0;
+        return 0;
       n_bits -= BITS_PER_MP_LIMB;
     }
 
@@ -135,7 +135,7 @@ mpfr_eq (mpfr_srcptr u, mpfr_srcptr v, unsigned long int n_bits)
 
   if (n_bits & (BITS_PER_MP_LIMB - 1))
     return (up[i] >> (BITS_PER_MP_LIMB - (n_bits & (BITS_PER_MP_LIMB - 1))) ==
-	    vp[i] >> (BITS_PER_MP_LIMB - (n_bits & (BITS_PER_MP_LIMB - 1))));
+            vp[i] >> (BITS_PER_MP_LIMB - (n_bits & (BITS_PER_MP_LIMB - 1))));
   else
     return (up[i] == vp[i]);
 }

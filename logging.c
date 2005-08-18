@@ -48,7 +48,7 @@ mp_prec_t mpfr_log_prec;
 
 static int
 mpfr_printf_mpfr_print (FILE *stream, const struct printf_info *info,
-			const void * const *arg)
+                        const void * const *arg)
 {
   int length;
   int org_type_logging;
@@ -71,7 +71,7 @@ mpfr_printf_mpfr_print (FILE *stream, const struct printf_info *info,
 
 static int
 mpfr_printf_mpfr_arginfo (const struct printf_info *info, size_t n,
-			  int *argtypes)
+                          int *argtypes)
 {
   if (n > 0)
     argtypes[0] = PA_POINTER;
@@ -121,7 +121,7 @@ mpfr_log_begin (void)
 
   /* Register printf functions */
   register_printf_function ('R', mpfr_printf_mpfr_print,
-			    mpfr_printf_mpfr_arginfo);
+                            mpfr_printf_mpfr_arginfo);
 
   /* Open filename if needed */
   filename = getenv ("MPFR_LOG_FILE");

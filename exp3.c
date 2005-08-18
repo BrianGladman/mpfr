@@ -86,8 +86,8 @@ mpfr_exp_rational (mpfr_ptr y, mpz_ptr p, long r, int m,
           mpz_add (S[k-1], S[k-1], S[k]);
           mpz_mul (P[k-1], P[k-1], P[k]);
           nb_terms[k-1] += nb_terms[k];
-	  MPFR_MPZ_SIZEINBASE2 (prec_i_have, P[k]);
-	  mult[k] = mult[k-1] + ((r >> 2) << l )+ prec_i_have - 1;
+          MPFR_MPZ_SIZEINBASE2 (prec_i_have, P[k]);
+          mult[k] = mult[k-1] + ((r >> 2) << l )+ prec_i_have - 1;
           prec_i_have = mult[k];
           /* since mult[k] >= mult[k-1] + nbits(P[k]),
              we have P[0]*...*P[k] <= 2^mult[k] = 2^prec_i_have */
@@ -201,7 +201,7 @@ mpfr_exp_3 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       MPFR_ASSERTD (mpz_cmp_ui (uk, 0) != 0);
       mpfr_exp_rational (tmp, uk, shift + twopoweri - ttt, k + 1, P, mult);
       for (loop = 0; loop < shift; loop++)
-	mpfr_mul (tmp, tmp, tmp, GMP_RNDD);
+        mpfr_mul (tmp, tmp, tmp, GMP_RNDD);
       twopoweri *=2;
 
       /* General case */
@@ -226,20 +226,20 @@ mpfr_exp_3 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
       mpfr_clear_flags ();
       for (loop = 0; loop < shift_x; loop++)
-	mpfr_mul (tmp, tmp, tmp, GMP_RNDD);
+        mpfr_mul (tmp, tmp, tmp, GMP_RNDD);
 
       if (MPFR_UNLIKELY (mpfr_overflow_p ()))
-	{
-	  /* We hack to set a FP number outside the valid range so that
-	     mpfr_check_range properly generates an overflow */
-	  mpfr_setmax (y, __gmpfr_emax);
-	  MPFR_EXP (y) ++;
-	  inexact = 1;
-	  break;
-	}
+        {
+          /* We hack to set a FP number outside the valid range so that
+             mpfr_check_range properly generates an overflow */
+          mpfr_setmax (y, __gmpfr_emax);
+          MPFR_EXP (y) ++;
+          inexact = 1;
+          break;
+        }
       else if (MPFR_UNLIKELY (mpfr_underflow_p ()))
-	{
-	  /* We hack to set a FP number outside the valid range so that
+        {
+          /* We hack to set a FP number outside the valid range so that
              mpfr_check_range properly generates an underflow.
              Note that the range has been increased to allow a safe
              detection of underflow (MPFR_EMIN_MIN-3 in exp.c) even for
@@ -247,13 +247,13 @@ mpfr_exp_3 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
           mpfr_setmax (y, MPFR_EMIN_MIN-2);
           inexact = -1;
           break;
-	}
+        }
       else if (mpfr_can_round (tmp, realprec, GMP_RNDD, GMP_RNDZ,
                                MPFR_PREC(y) + (rnd_mode == GMP_RNDN)))
-	{
-	  inexact = mpfr_set (y, tmp, rnd_mode);
-	  break;
-	}
+        {
+          inexact = mpfr_set (y, tmp, rnd_mode);
+          break;
+        }
       MPFR_ZIV_NEXT (ziv_loop, realprec);
       Prec = realprec + shift + 2 + shift_x;
       mpfr_set_prec (t, Prec);

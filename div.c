@@ -61,21 +61,21 @@ mpn_cmp_aux (mp_ptr ap, mp_size_t an, mp_ptr bp, mp_size_t bn, int extra)
     {
       k = an - bn;
       while (cmp == 0 && bn > 0)
-	{
-	  bn --;
-	  bb = (extra) ? ((bp[bn+1] << (BITS_PER_MP_LIMB - 1)) | (bp[bn] >> 1))
-	    : bp[bn];
-	  cmp = (ap[k + bn] > bb) ? 1 : ((ap[k + bn] < bb) ? -1 : 0);
-	}
+        {
+          bn --;
+          bb = (extra) ? ((bp[bn+1] << (BITS_PER_MP_LIMB - 1)) | (bp[bn] >> 1))
+            : bp[bn];
+          cmp = (ap[k + bn] > bb) ? 1 : ((ap[k + bn] < bb) ? -1 : 0);
+        }
       bb = (extra) ? bp[0] << (BITS_PER_MP_LIMB - 1) : MPFR_LIMB_ZERO;
       while (cmp == 0 && k > 0)
-	{
-	  k--;
-	  cmp = (ap[k] > bb) ? 1 : ((ap[k] < bb) ? -1 : 0);
-	  bb = MPFR_LIMB_ZERO; /* ensure we consider only once bp[0] & 1 */
-	}
+        {
+          k--;
+          cmp = (ap[k] > bb) ? 1 : ((ap[k] < bb) ? -1 : 0);
+          bb = MPFR_LIMB_ZERO; /* ensure we consider only once bp[0] & 1 */
+        }
       if (cmp == 0 && bb != MPFR_LIMB_ZERO)
-	cmp = -1;
+        cmp = -1;
     }
   else /* an < bn */
     {
@@ -83,7 +83,7 @@ mpn_cmp_aux (mp_ptr ap, mp_size_t an, mp_ptr bp, mp_size_t bn, int extra)
       while (cmp == 0 && an > 0)
         {
           an --;
-	  bb = (extra) ? ((bp[k+an+1] << (BITS_PER_MP_LIMB - 1)) | (bp[k+an] >> 1))
+          bb = (extra) ? ((bp[k+an+1] << (BITS_PER_MP_LIMB - 1)) | (bp[k+an] >> 1))
             : bp[k+an];
           if (ap[an] > bb)
             cmp = 1;
@@ -91,14 +91,14 @@ mpn_cmp_aux (mp_ptr ap, mp_size_t an, mp_ptr bp, mp_size_t bn, int extra)
             cmp = -1;
         }
       while (cmp == 0 && k > 0)
-	{
-	  k--;
-	  bb = (extra) ? ((bp[k+1] << (BITS_PER_MP_LIMB - 1)) | (bp[k] >> 1))
+        {
+          k--;
+          bb = (extra) ? ((bp[k+1] << (BITS_PER_MP_LIMB - 1)) | (bp[k] >> 1))
             : bp[k];
-	  cmp = (bb != MPFR_LIMB_ZERO) ? -1 : 0;
-	}
+          cmp = (bb != MPFR_LIMB_ZERO) ? -1 : 0;
+        }
       if (cmp == 0 && extra && (bp[0] & MPFR_LIMB_ONE))
-	cmp = -1;
+        cmp = -1;
     }
   return cmp;
 }
@@ -157,49 +157,49 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
   if (MPFR_UNLIKELY(MPFR_ARE_SINGULAR(u,v)))
     {
       if (MPFR_IS_NAN(u) || MPFR_IS_NAN(v))
-	{
-	  MPFR_SET_NAN(q);
-	  MPFR_RET_NAN;
-	}
+        {
+          MPFR_SET_NAN(q);
+          MPFR_RET_NAN;
+        }
       sign_quotient = MPFR_MULT_SIGN( MPFR_SIGN(u) , MPFR_SIGN(v) );
       MPFR_SET_SIGN(q, sign_quotient);
       if (MPFR_IS_INF(u))
-	{
-	  if (MPFR_IS_INF(v))
-	    {
-	      MPFR_SET_NAN(q);
-	      MPFR_RET_NAN;
-	    }
-	  else
-	    {
-	      MPFR_SET_INF(q);
-	      MPFR_RET(0);
-	    }
-	}
+        {
+          if (MPFR_IS_INF(v))
+            {
+              MPFR_SET_NAN(q);
+              MPFR_RET_NAN;
+            }
+          else
+            {
+              MPFR_SET_INF(q);
+              MPFR_RET(0);
+            }
+        }
       else if (MPFR_IS_INF(v))
-	{
-	  MPFR_SET_ZERO (q);
-	  MPFR_RET (0);
-	}
+        {
+          MPFR_SET_ZERO (q);
+          MPFR_RET (0);
+        }
       else if (MPFR_IS_ZERO (v))
-	{
-	  if (MPFR_IS_ZERO (u))
-	    {
-	      MPFR_SET_NAN(q);
-	      MPFR_RET_NAN;
-	    }
-	  else
-	    {
-	      MPFR_SET_INF(q);
-	      MPFR_RET(0);
-	    }
-	}
+        {
+          if (MPFR_IS_ZERO (u))
+            {
+              MPFR_SET_NAN(q);
+              MPFR_RET_NAN;
+            }
+          else
+            {
+              MPFR_SET_INF(q);
+              MPFR_RET(0);
+            }
+        }
       else
-	{
-	  MPFR_ASSERTD (MPFR_IS_ZERO (u));
-	  MPFR_SET_ZERO (q);
-	  MPFR_RET (0);
-	}
+        {
+          MPFR_ASSERTD (MPFR_IS_ZERO (u));
+          MPFR_SET_ZERO (q);
+          MPFR_RET (0);
+        }
     }
   MPFR_CLEAR_FLAGS (q);
 
@@ -227,12 +227,12 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
       while (k != 0 && l != 0 && up[--k] == vp[--l]);
       /* now k=0 or l=0 or up[k] != vp[l] */
       if (up[k] > vp[l])
-	extra_bit = 1;
+        extra_bit = 1;
       else if (up[k] < vp[l])
-	extra_bit = 0;
+        extra_bit = 0;
       /* now up[k] = vp[l], thus either k=0 or l=0 */
       else if (l == 0) /* no more divisor limb */
-	extra_bit = 1;
+        extra_bit = 1;
       else /* k=0: no more dividend limb */
         extra_bit = mpn_cmpzero (vp, l) == 0;
     }
@@ -247,8 +247,8 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
 
   if (MPFR_UNLIKELY(rnd_mode == GMP_RNDN && sh == 0))
     { /* we compute the quotient with one more limb, in order to get
-	 the round bit in the quotient, and the remainder only contains
-	 sticky bits */
+         the round bit in the quotient, and the remainder only contains
+         sticky bits */
       qsize = q0size + 1;
       /* need to allocate memory for the quotient */
       qp = (mp_ptr) MPFR_TMP_ALLOC (qsize*sizeof(mp_limb_t));
@@ -267,17 +267,17 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
       k = qqsize - usize; /* k > 0 */
       MPN_ZERO(ap, k);
       if (extra_bit)
-	ap[k - 1] = mpn_rshift (ap + k, up, usize, 1);
+        ap[k - 1] = mpn_rshift (ap + k, up, usize, 1);
       else
-	MPN_COPY(ap + k, up, usize);
+        MPN_COPY(ap + k, up, usize);
     }
   else /* truncate the dividend */
     {
       k = usize - qqsize;
       if (extra_bit)
-	sticky_u = mpn_rshift (ap, up + k, qqsize, 1);
+        sticky_u = mpn_rshift (ap, up + k, qqsize, 1);
       else
-	MPN_COPY(ap, up + k, qqsize);
+        MPN_COPY(ap, up + k, qqsize);
       sticky_u = sticky_u || mpn_cmpzero (up, k);
     }
   low_u = sticky_u;
@@ -289,14 +289,14 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
     {
       k = vsize - qsize;
       if (qp != vp)
-	bp = vp + k; /* avoid copying the divisor */
+        bp = vp + k; /* avoid copying the divisor */
       else /* need to copy, since mpn_divrem doesn't allow overlap
-	      between quotient and divisor, necessarily k = 0
-	      since quotient and divisor are the same mpfr variable */
-	{
-	  bp = (mp_ptr) MPFR_TMP_ALLOC (qsize * sizeof(mp_limb_t));
-	  MPN_COPY(bp, vp, vsize);
-	}
+              between quotient and divisor, necessarily k = 0
+              since quotient and divisor are the same mpfr variable */
+        {
+          bp = (mp_ptr) MPFR_TMP_ALLOC (qsize * sizeof(mp_limb_t));
+          MPN_COPY(bp, vp, vsize);
+        }
       sticky_v = sticky_v || mpn_cmpzero (vp, k);
     }
   else /* vsize < qsize */
@@ -359,64 +359,64 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
   if (MPFR_LIKELY(vsize <= qsize)) /* use the full divisor */
     {
       if (MPFR_LIKELY(rnd_mode == GMP_RNDN))
-	{
-	  round_bit = sticky3 & (MPFR_LIMB_ONE << (sh2 - 1));
-	  sticky = (sticky3 ^ round_bit) | sticky_u;
-	}
+        {
+          round_bit = sticky3 & (MPFR_LIMB_ONE << (sh2 - 1));
+          sticky = (sticky3 ^ round_bit) | sticky_u;
+        }
       else if (rnd_mode == GMP_RNDZ || rnd_mode == GMP_RNDD || inex == MPFR_LIMB_ZERO)
-	sticky = (inex == 0) ? MPFR_LIMB_ZERO : MPFR_LIMB_ONE;
+        sticky = (inex == 0) ? MPFR_LIMB_ZERO : MPFR_LIMB_ONE;
       else /* rnd_mode = GMP_RNDU */
-	sticky = MPFR_LIMB_ONE;
+        sticky = MPFR_LIMB_ONE;
       goto case_1;
     }
   else /* vsize > qsize: need to truncate the divisor */
     {
       if (inex == MPFR_LIMB_ZERO)
-	goto truncate;
+        goto truncate;
       else
-	{
-	  /* we can round except when sticky3 is 000...000 or 000...001
-	     for directed rounding, and 100...000 or 100...001 for rounding
-	     to nearest. (For rounding to nearest, we cannot determine the
-	     inexact flag for 000...000 or 000...001.)
-	  */
-	  mp_limb_t sticky3orig = sticky3;
-	  if (rnd_mode == GMP_RNDN)
-	    {
-	      round_bit = sticky3 & (MPFR_LIMB_ONE << (sh2 - 1));
-	      sticky3   = sticky3 ^ round_bit;
+        {
+          /* we can round except when sticky3 is 000...000 or 000...001
+             for directed rounding, and 100...000 or 100...001 for rounding
+             to nearest. (For rounding to nearest, we cannot determine the
+             inexact flag for 000...000 or 000...001.)
+          */
+          mp_limb_t sticky3orig = sticky3;
+          if (rnd_mode == GMP_RNDN)
+            {
+              round_bit = sticky3 & (MPFR_LIMB_ONE << (sh2 - 1));
+              sticky3   = sticky3 ^ round_bit;
 #ifdef DEBUG
               printf ("rb=%lu sb=%lu\n", round_bit, sticky3);
 #endif
-	    }
-	  if (sticky3 != MPFR_LIMB_ZERO && sticky3 != MPFR_LIMB_ONE)
-	    {
-	      sticky = sticky3;
-	      goto case_1;
-	    }
-	  else /* hard case: we have to compare q1 * v0 and r + low(u),
-		 where q1 * v0 has qsize + (vsize-qsize) = vsize limbs, and
-		 r + low(u) has qsize + (usize-2*qsize) = usize-qsize limbs */
-	    {
-	      mp_size_t l;
-	      mp_ptr sp;
-	      int cmp_s_r;
+            }
+          if (sticky3 != MPFR_LIMB_ZERO && sticky3 != MPFR_LIMB_ONE)
+            {
+              sticky = sticky3;
+              goto case_1;
+            }
+          else /* hard case: we have to compare q1 * v0 and r + low(u),
+                 where q1 * v0 has qsize + (vsize-qsize) = vsize limbs, and
+                 r + low(u) has qsize + (usize-2*qsize) = usize-qsize limbs */
+            {
+              mp_size_t l;
+              mp_ptr sp;
+              int cmp_s_r;
 
-	      sp = (mp_ptr) MPFR_TMP_ALLOC (vsize*sizeof(mp_limb_t));
-	      k = vsize - qsize;
-	      /* sp <- {qp, qsize} * {vp, vsize-qsize} */
-	      qp[0] ^= sticky3orig; /* restore original quotient */
-	      if (qsize >= k)
-		mpn_mul (sp, qp, qsize, vp, k);
-	      else
-		mpn_mul (sp, vp, k, qp, qsize);
+              sp = (mp_ptr) MPFR_TMP_ALLOC (vsize*sizeof(mp_limb_t));
+              k = vsize - qsize;
+              /* sp <- {qp, qsize} * {vp, vsize-qsize} */
+              qp[0] ^= sticky3orig; /* restore original quotient */
+              if (qsize >= k)
+                mpn_mul (sp, qp, qsize, vp, k);
+              else
+                mpn_mul (sp, vp, k, qp, qsize);
               if (qh)
                 mpn_add_n (sp + qsize, sp + qsize, vp, k);
-	      qp[0] ^= sticky3orig; /* restore truncated quotient */
+              qp[0] ^= sticky3orig; /* restore truncated quotient */
 
-	      /* compare {sp, vsize = k + qsize} to {ap, qsize} + low(u) */
-	      cmp_s_r = mpn_cmp (sp + k, ap, qsize);
-	      if (cmp_s_r == 0) /* compare {sp, k} and low(u) */
+              /* compare {sp, vsize = k + qsize} to {ap, qsize} + low(u) */
+              cmp_s_r = mpn_cmp (sp + k, ap, qsize);
+              if (cmp_s_r == 0) /* compare {sp, k} and low(u) */
                 {
                   cmp_s_r = (usize >= qqsize)
                              ? mpn_cmp_aux (sp, k, up, usize-qqsize, extra_bit)
@@ -425,145 +425,145 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
 #ifdef DEBUG
               printf ("cmp(q*v0,r+u0)=%d\n", cmp_s_r);
 #endif
-	      /* now cmp_s_r > 0 if {sp, vsize} > {ap, qsize} + low(u)
-		     cmp_s_r = 0 if {sp, vsize} = {ap, qsize} + low(u) 
-		     cmp_s_r < 0 if {sp, vsize} < {ap, qsize} + low(u) */
-	      if (cmp_s_r <= 0) /* quotient is in [q1, q1+1) */
-		{
-		  sticky = (cmp_s_r == 0) ? sticky3 : MPFR_LIMB_ONE;
-		  goto case_1;
-		}
-	      else /* cmp_s_r > 0, quotient is < q1 */
-		{
-		  mp_limb_t cy = MPFR_LIMB_ZERO;
-		  /* subtract low(u)>>extra_bit if non-zero */
-		  if (low_u != MPFR_LIMB_ZERO)
-		    {
-		      mp_size_t m;
-		      l = usize - qqsize; /* number of low limbs in u */
-		      m = (l > k) ? l - k : 0;
-		      cy = (extra_bit) ? (up[m] & MPFR_LIMB_ONE) : MPFR_LIMB_ZERO;
-		      if (l >= k) /* u0 has more limbs */
-			{
+              /* now cmp_s_r > 0 if {sp, vsize} > {ap, qsize} + low(u)
+                     cmp_s_r = 0 if {sp, vsize} = {ap, qsize} + low(u) 
+                     cmp_s_r < 0 if {sp, vsize} < {ap, qsize} + low(u) */
+              if (cmp_s_r <= 0) /* quotient is in [q1, q1+1) */
+                {
+                  sticky = (cmp_s_r == 0) ? sticky3 : MPFR_LIMB_ONE;
+                  goto case_1;
+                }
+              else /* cmp_s_r > 0, quotient is < q1 */
+                {
+                  mp_limb_t cy = MPFR_LIMB_ZERO;
+                  /* subtract low(u)>>extra_bit if non-zero */
+                  if (low_u != MPFR_LIMB_ZERO)
+                    {
+                      mp_size_t m;
+                      l = usize - qqsize; /* number of low limbs in u */
+                      m = (l > k) ? l - k : 0;
+                      cy = (extra_bit) ? (up[m] & MPFR_LIMB_ONE) : MPFR_LIMB_ZERO;
+                      if (l >= k) /* u0 has more limbs */
+                        {
                           cy = cy || mpn_cmpzero (up, m);
-			  low_u = cy;
-			  cy = mpn_sub_aux (sp, up + l - k, k,
-					    (cy) ? MPFR_LIMB_ONE : MPFR_LIMB_ZERO, extra_bit);
-			}
-		      else /* l < k: s has more limbs than u0 */
-			{
-			  low_u = MPFR_LIMB_ZERO;
-			  if (cy != MPFR_LIMB_ZERO)
-			    cy = mpn_sub_1 (sp + k - l - 1, sp + k - l - 1, 1, MPFR_LIMB_HIGHBIT);
-			  cy = mpn_sub_aux (sp + k - l, up, l, cy, extra_bit);
-			}
-		    }
-		  cy = mpn_sub_1 (sp + k, sp + k, qsize, cy);
-		  /* subtract r */
-		  cy = mpn_sub_nc (sp + k, sp + k, ap, qsize, cy);
-		  /* now compare {sp, ssize} to v */
-		  cmp_s_r = mpn_cmp (sp, vp, vsize);
-		  if (cmp_s_r == 0 && low_u != MPFR_LIMB_ZERO)
-		    cmp_s_r = 1; /* since in fact we subtracted less than 1 */
+                          low_u = cy;
+                          cy = mpn_sub_aux (sp, up + l - k, k,
+                                            (cy) ? MPFR_LIMB_ONE : MPFR_LIMB_ZERO, extra_bit);
+                        }
+                      else /* l < k: s has more limbs than u0 */
+                        {
+                          low_u = MPFR_LIMB_ZERO;
+                          if (cy != MPFR_LIMB_ZERO)
+                            cy = mpn_sub_1 (sp + k - l - 1, sp + k - l - 1, 1, MPFR_LIMB_HIGHBIT);
+                          cy = mpn_sub_aux (sp + k - l, up, l, cy, extra_bit);
+                        }
+                    }
+                  cy = mpn_sub_1 (sp + k, sp + k, qsize, cy);
+                  /* subtract r */
+                  cy = mpn_sub_nc (sp + k, sp + k, ap, qsize, cy);
+                  /* now compare {sp, ssize} to v */
+                  cmp_s_r = mpn_cmp (sp, vp, vsize);
+                  if (cmp_s_r == 0 && low_u != MPFR_LIMB_ZERO)
+                    cmp_s_r = 1; /* since in fact we subtracted less than 1 */
 #ifdef DEBUG
                   printf ("cmp(q*v0-(r+u0),v)=%d\n", cmp_s_r);
 #endif
-		  if (cmp_s_r <= 0) /* q1-1 <= u/v < q1 */
-		    {
-		      if (sticky3 == MPFR_LIMB_ONE)
-			{ /* q1-1 is either representable (directed rounding),
+                  if (cmp_s_r <= 0) /* q1-1 <= u/v < q1 */
+                    {
+                      if (sticky3 == MPFR_LIMB_ONE)
+                        { /* q1-1 is either representable (directed rounding),
                              or the middle of two numbers (nearest) */
                           sticky = (cmp_s_r) ? MPFR_LIMB_ONE : MPFR_LIMB_ZERO;
                           goto case_1;
-			}
+                        }
                       /* now necessarily sticky3=0 */
-		      else if (round_bit == MPFR_LIMB_ZERO)
-			{ /* round_bit=0, sticky3=0: q1-1 is exact only
+                      else if (round_bit == MPFR_LIMB_ZERO)
+                        { /* round_bit=0, sticky3=0: q1-1 is exact only
                              when sh=0 */
-			  inex = (cmp_s_r || sh) ? -1 : 0;
-			  if ((rnd_mode == GMP_RNDU && inex != 0)
-			      || rnd_mode == GMP_RNDN)
+                          inex = (cmp_s_r || sh) ? -1 : 0;
+                          if ((rnd_mode == GMP_RNDU && inex != 0)
+                              || rnd_mode == GMP_RNDN)
                             {
                               inex = 1;
                               goto truncate_check_qh;
                             }
-			  else /* round down */
+                          else /* round down */
                             goto sub_one_ulp;
-			}
-		      else /* sticky3=0, round_bit=1 ==> rounding to nearest */
-			{
-			  inex = cmp_s_r;
-			  goto truncate;
-			}
-		    }
-		  else /* q1-2 < u/v < q1-1 */
-		    {
-		      /* if rnd=GMP_RNDU, the result is up(q1-1),
-			 which is q1 unless sh = 0, where it is q1-1 */
-		      if (rnd_mode == GMP_RNDU)
-			{
-			  inex = 1;
-			  if (sh > 0)
-			    goto truncate_check_qh;
-			  else /* sh = 0 */
-			    goto sub_one_ulp;
-			}
-		      /* if rnd=GMP_RNDN, the result is q1 when
-			 q1-2 >= q1-2^(sh-1), i.e. sh >= 2,
-			 otherwise (sh=1) it is q1-2 */
-		      else if (rnd_mode == GMP_RNDN) /* sh > 0 */
-			{
-			  /* Case sh=1: sb=0 always, and q1-rb is exactly
-			     representable, like q1-rb-2.
-			     rb action
-			     0  subtract two ulps, inex=-1
+                        }
+                      else /* sticky3=0, round_bit=1 ==> rounding to nearest */
+                        {
+                          inex = cmp_s_r;
+                          goto truncate;
+                        }
+                    }
+                  else /* q1-2 < u/v < q1-1 */
+                    {
+                      /* if rnd=GMP_RNDU, the result is up(q1-1),
+                         which is q1 unless sh = 0, where it is q1-1 */
+                      if (rnd_mode == GMP_RNDU)
+                        {
+                          inex = 1;
+                          if (sh > 0)
+                            goto truncate_check_qh;
+                          else /* sh = 0 */
+                            goto sub_one_ulp;
+                        }
+                      /* if rnd=GMP_RNDN, the result is q1 when
+                         q1-2 >= q1-2^(sh-1), i.e. sh >= 2,
+                         otherwise (sh=1) it is q1-2 */
+                      else if (rnd_mode == GMP_RNDN) /* sh > 0 */
+                        {
+                          /* Case sh=1: sb=0 always, and q1-rb is exactly
+                             representable, like q1-rb-2.
+                             rb action
+                             0  subtract two ulps, inex=-1
                              1  truncate, inex=1
 
-			     Case sh>1: one ulp is 2^(sh-1) >= 2
-			     rb sb action
+                             Case sh>1: one ulp is 2^(sh-1) >= 2
+                             rb sb action
                              0  0  truncate, inex=1
                              0  1  truncate, inex=1
                              1  x  truncate, inex=-1
-			   */
-			  if (sh == 1)
-			    {
-			      if (round_bit == MPFR_LIMB_ZERO)
-				{
-				  inex = -1;
-				  sh = 0;
-				  goto sub_two_ulp;
-				}
-			      else
-				{
-				  inex = 1;
-				  goto truncate_check_qh;
-				}
-			    }
-			  else /* sh > 1 */
-			    {
+                           */
+                          if (sh == 1)
+                            {
+                              if (round_bit == MPFR_LIMB_ZERO)
+                                {
+                                  inex = -1;
+                                  sh = 0;
+                                  goto sub_two_ulp;
+                                }
+                              else
+                                {
+                                  inex = 1;
+                                  goto truncate_check_qh;
+                                }
+                            }
+                          else /* sh > 1 */
+                            {
                               inex = (round_bit == MPFR_LIMB_ZERO) ? 1 : -1;
                               goto truncate_check_qh;
-			    }
-			}
-		      else /* round down */
-			{
-			  /* the result is down(q1-2), i.e. subtract one
-			     ulp if sh > 0, and two ulps if sh=0 */
-			  inex = -1;
-			  if (sh > 0)
-			    goto sub_one_ulp;
-			  else
-			    goto sub_two_ulp;
-			}
-		    }
-		}
-	    }
-	}
+                            }
+                        }
+                      else /* round down */
+                        {
+                          /* the result is down(q1-2), i.e. subtract one
+                             ulp if sh > 0, and two ulps if sh=0 */
+                          inex = -1;
+                          if (sh > 0)
+                            goto sub_one_ulp;
+                          else
+                            goto sub_two_ulp;
+                        }
+                    }
+                }
+            }
+        }
     }
 
  case_1: /* quotient is in [q1, q1+1),
-	    round_bit is the round_bit (0 for directed rounding),
-	    sticky the sticky bit */
+            round_bit is the round_bit (0 for directed rounding),
+            sticky the sticky bit */
   if (rnd_mode == GMP_RNDZ || rnd_mode == GMP_RNDD || 
       (round_bit == MPFR_LIMB_ZERO && sticky == MPFR_LIMB_ZERO))
     {
@@ -573,15 +573,15 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
   else if (rnd_mode == GMP_RNDN) /* sticky <> 0 or round <> 0 */
     {
       if (round_bit == MPFR_LIMB_ZERO) /* necessarily sticky <> 0 */
-	{
-	  inex = -1;
-	  goto truncate;
-	}
+        {
+          inex = -1;
+          goto truncate;
+        }
       /* round_bit = 1 */
       else if (sticky != MPFR_LIMB_ZERO)
-	goto add_one_ulp; /* inex=1 */
+        goto add_one_ulp; /* inex=1 */
       else /* round_bit=1, sticky=0 */
-	goto even_rule;
+        goto even_rule;
     }
   else /* rnd_mode = GMP_RNDU, sticky <> 0 */
     goto add_one_ulp; /* with inex=1 */

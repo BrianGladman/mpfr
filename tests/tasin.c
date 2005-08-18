@@ -178,7 +178,7 @@ special_overflow (void)
   mpfr_set_str_binary (x, "0.101100100000000000110100E0");
   mpfr_asin (y, x, GMP_RNDN);
   if (mpfr_cmp_str (y, "0.110001001101001111110000010110001000111011001000E0",
-		    2, GMP_RNDN))
+                    2, GMP_RNDN))
     {
       printf("Special Overflow error.\n");
       mpfr_dump (y);

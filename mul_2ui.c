@@ -48,7 +48,7 @@ mpfr_mul_2ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int n, mp_rnd_t rnd_mode)
       {
         mp_exp_t exp = MPFR_GET_EXP (y);
         if (MPFR_UNLIKELY( __gmpfr_emax < MPFR_EMIN_MIN + (long) n ||
-			   exp > __gmpfr_emax - (long) n))
+                           exp > __gmpfr_emax - (long) n))
           return mpfr_overflow (y, rnd_mode, MPFR_SIGN(y));
 
         MPFR_SET_EXP (y, exp + (long) n);

@@ -54,24 +54,24 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
       if (MPFR_IS_NAN (x))
-	{
-	  MPFR_SET_NAN (y);
-	  MPFR_RET_NAN;
-	}
+        {
+          MPFR_SET_NAN (y);
+          MPFR_RET_NAN;
+        }
       else if (MPFR_IS_INF (x))
-	{
-	  MPFR_SET_INF (y);
-	  MPFR_SET_SAME_SIGN (y, x);
-	  MPFR_RET (0);
-	}
+        {
+          MPFR_SET_INF (y);
+          MPFR_SET_SAME_SIGN (y, x);
+          MPFR_RET (0);
+        }
       /* case 0: cbrt(+/- 0) = +/- 0 */
       else /* x is necessarily 0 */
-	{
+        {
           MPFR_ASSERTD (MPFR_IS_ZERO (x));
-	  MPFR_SET_ZERO (y);
-	  MPFR_SET_SAME_SIGN (y, x);
-	  MPFR_RET (0);
-	}
+          MPFR_SET_ZERO (y);
+          MPFR_SET_SAME_SIGN (y, x);
+          MPFR_RET (0);
+        }
     }
 
   /* General case */
@@ -124,7 +124,7 @@ mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       if (negative)
         rnd_mode = MPFR_INVERT_RND (rnd_mode);
       if (rnd_mode == GMP_RNDU 
-	  || (rnd_mode == GMP_RNDN && mpz_tstbit (m, 0)))
+          || (rnd_mode == GMP_RNDN && mpz_tstbit (m, 0)))
         inexact = 1, mpz_add_ui (m, m, 1);
       else
         inexact = -1;

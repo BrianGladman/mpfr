@@ -26,8 +26,8 @@ MA 02110-1301, USA. */
 /* The computation of log(a) is done using the formula :
      if we want p bits of the result,
                        pi
-	  log(a) ~ ------------  -   m log 2
-		    2 AG(1,4/s)
+          log(a) ~ ------------  -   m log 2
+                    2 AG(1,4/s)
 
      where s = x 2^m > 2^(p/2)
 
@@ -48,40 +48,40 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
   MPFR_TMP_DECL(marker);
   
   MPFR_LOG_FUNC (("a[%#R]=%R rnd=%d", a, a, rnd_mode),
-		 ("r[%#R]=%R inexact=%d", r, r, inexact));
+                 ("r[%#R]=%R inexact=%d", r, r, inexact));
 
   /* Special cases */
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (a)))
     {
       /* If a is NaN, the result is NaN */
       if (MPFR_IS_NAN (a))
-	{
-	  MPFR_SET_NAN (r);
-	  MPFR_RET_NAN;
-	}
+        {
+          MPFR_SET_NAN (r);
+          MPFR_RET_NAN;
+        }
       /* check for infinity before zero */
       else if (MPFR_IS_INF (a))
-	{
-	  if (MPFR_IS_NEG (a))
-	    /* log(-Inf) = NaN */
-	    {
-	      MPFR_SET_NAN (r);
-	      MPFR_RET_NAN;
-	    }
-	  else /* log(+Inf) = +Inf */
-	    {
-	      MPFR_SET_INF (r);
-	      MPFR_SET_POS (r);
-	      MPFR_RET (0);
-	    }
-	}
+        {
+          if (MPFR_IS_NEG (a))
+            /* log(-Inf) = NaN */
+            {
+              MPFR_SET_NAN (r);
+              MPFR_RET_NAN;
+            }
+          else /* log(+Inf) = +Inf */
+            {
+              MPFR_SET_INF (r);
+              MPFR_SET_POS (r);
+              MPFR_RET (0);
+            }
+        }
       else /* a is zero */
-	{
+        {
           MPFR_ASSERTD (MPFR_IS_ZERO (a));
-	  MPFR_SET_INF (r);
-	  MPFR_SET_NEG (r);
-	  MPFR_RET (0); /* log(0) is an exact -infinity */
-	}
+          MPFR_SET_INF (r);
+          MPFR_SET_NEG (r);
+          MPFR_RET (0); /* log(0) is an exact -infinity */
+        }
     }
   /* If a is negative, the result is NaN */
   else if (MPFR_UNLIKELY (MPFR_IS_NEG (a)))
@@ -138,13 +138,13 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
       MPFR_LOG_VAR (tmp1);
 
       if (MPFR_UNLIKELY (cancel < 0))
-	cancel = 0;
+        cancel = 0;
       
       /* we have 7 ulps of error from the above roundings,
-	 4 ulps from the 4/s^2 second order term,
-	 plus the canceled bits */
+         4 ulps from the 4/s^2 second order term,
+         plus the canceled bits */
       if (MPFR_LIKELY (MPFR_CAN_ROUND (tmp1, p-cancel-4, q, rnd_mode)))
-	break;
+        break;
       p += cancel;
       MPFR_ZIV_NEXT (loop, p);
     }

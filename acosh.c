@@ -33,23 +33,23 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
   int comp;
 
   MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
-		 ("y[%#R]=%R inexact=%d", y, y, inexact));
+                 ("y[%#R]=%R inexact=%d", y, y, inexact));
 
   /* Deal with special cases */
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
       /* Nan, or zero or -Inf */
       if (MPFR_IS_INF (x) && MPFR_IS_POS (x))
-	{ 
-	  MPFR_SET_INF (y);
-	  MPFR_SET_POS (y);
-	  MPFR_RET (0);
-	}
+        { 
+          MPFR_SET_INF (y);
+          MPFR_SET_POS (y);
+          MPFR_RET (0);
+        }
       else /* Nan, or zero or -Inf */
-	{
-	  MPFR_SET_NAN (y); 
-	  MPFR_RET_NAN;
-	}    
+        {
+          MPFR_SET_NAN (y); 
+          MPFR_RET_NAN;
+        }    
     }
   comp = mpfr_cmp_ui (x, 1);
   if (MPFR_UNLIKELY (comp < 0))
@@ -88,22 +88,22 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
       {
         /* compute acosh */
         mpfr_mul (t, x, x, GMP_RNDD);      /* x^2 */
-	exp_te = MPFR_GET_EXP (t);
+        exp_te = MPFR_GET_EXP (t);
         mpfr_sub_ui (t, t, 1, GMP_RNDD);   /* x^2-1 */
-	exp_ti = MPFR_GET_EXP (t);
+        exp_ti = MPFR_GET_EXP (t);
         mpfr_sqrt (t, t, GMP_RNDN);        /* sqrt(x^2-1) */
         mpfr_add (t, t, x, GMP_RNDN);      /* sqrt(x^2-1)+x */
         mpfr_log (t, t, GMP_RNDN);         /* ln(sqrt(x^2-1)+x)*/
 
         /* error estimate -- see algorithms.tex */
-	err = 2 + MAX (1, exp_te - exp_ti) - MPFR_GET_EXP(t);
-	/* error is bounded by 1/2 + 2^err <= 2^(1+max(-1,err)) */
-	err = 1 + MAX (-1, err);
-	if (MPFR_LIKELY (MPFR_CAN_ROUND (t, Nt - err, Ny, rnd_mode)))
-	  break;
+        err = 2 + MAX (1, exp_te - exp_ti) - MPFR_GET_EXP(t);
+        /* error is bounded by 1/2 + 2^err <= 2^(1+max(-1,err)) */
+        err = 1 + MAX (-1, err);
+        if (MPFR_LIKELY (MPFR_CAN_ROUND (t, Nt - err, Ny, rnd_mode)))
+          break;
 
         /* reactualisation of the precision */
-	MPFR_ZIV_NEXT (loop, Nt);
+        MPFR_ZIV_NEXT (loop, Nt);
         mpfr_set_prec (t, Nt);
       }
     MPFR_ZIV_FREE (loop);

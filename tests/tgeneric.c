@@ -54,18 +54,18 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
 #if defined(RAND_FUNCTION)
           RAND_FUNCTION (x);
 #ifdef TWO_ARGS
-	  RAND_FUNCTION (u);
+          RAND_FUNCTION (u);
 #endif
 #else
           mpfr_random (x);
 #ifdef TWO_ARGS
-	  mpfr_random (u);
+          mpfr_random (u);
 #endif
 #endif
           rnd = (mp_rnd_t) RND_RAND ();
           mpfr_set_prec (y, yprec);
 #if defined(TWO_ARGS)
-	  compare = TEST_FUNCTION (y, x, u, rnd);
+          compare = TEST_FUNCTION (y, x, u, rnd);
 #else
           compare = TEST_FUNCTION (y, x, rnd);
 #endif
@@ -73,7 +73,7 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
             {
               mpfr_set (t, y, rnd);
 #if defined(TWO_ARGS)
-	      inexact = TEST_FUNCTION (z, x, u, rnd);
+              inexact = TEST_FUNCTION (z, x, u, rnd);
 #else
               inexact = TEST_FUNCTION (z, x, rnd);
 #endif
@@ -82,8 +82,8 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
                   printf ("results differ for x=");
                   mpfr_out_str (stdout, 2, prec, x, GMP_RNDN);
 #ifdef TWO_ARGS
-		  printf ("\nu=");
-		  mpfr_out_str (stdout, 2, prec, u, GMP_RNDN);
+                  printf ("\nu=");
+                  mpfr_out_str (stdout, 2, prec, u, GMP_RNDN);
 #endif
                   printf (" prec=%u rnd_mode=%s\n", (unsigned) prec,
                           mpfr_print_rnd_mode (rnd));
@@ -113,7 +113,7 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
                           "\n", mpfr_print_rnd_mode (rnd), compare, inexact);
                   printf ("x="); mpfr_print_binary (x); puts ("");
 #ifdef TWO_ARGS
-		  printf ("u="); mpfr_print_binary (u); puts ("");
+                  printf ("u="); mpfr_print_binary (u); puts ("");
 #endif
                   printf ("y="); mpfr_print_binary (y); puts ("");
                   printf ("t="); mpfr_print_binary (t); puts ("");

@@ -56,18 +56,18 @@ mpfr_check (mpfr_srcptr x)
     {
       /* Check first mp_limb of mantissa (Must start with a 1 bit) */
       if ( ((xm[MPFR_LIMB_SIZE(x)-1])>>(BITS_PER_MP_LIMB-1)) == 0)
-	return 0;
+        return 0;
       /* Check last mp_limb of mantissa */
       rw = (MPFR_PREC(x) % BITS_PER_MP_LIMB);
       if (rw != 0)
-	{
-	  tmp = MPFR_LIMB_MASK (BITS_PER_MP_LIMB - rw);
-	  if ((xm[0] & tmp) != 0)
-	    return 0;
-	}
+        {
+          tmp = MPFR_LIMB_MASK (BITS_PER_MP_LIMB - rw);
+          if ((xm[0] & tmp) != 0)
+            return 0;
+        }
       /* Check exponent range */
       if ((MPFR_EXP (x) < __gmpfr_emin) || (MPFR_EXP (x) > __gmpfr_emax))
-	return 0;
+        return 0;
     }
   else 
     {

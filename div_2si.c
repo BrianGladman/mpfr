@@ -32,7 +32,7 @@ mpfr_div_2si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd_mode)
     {
       mp_exp_t exp = MPFR_GET_EXP (y);
       if (MPFR_UNLIKELY( n > 0 && (__gmpfr_emin > MPFR_EMAX_MAX - n ||
-				   exp < __gmpfr_emin + n)) )
+                                   exp < __gmpfr_emin + n)) )
         {
           if (rnd_mode == GMP_RNDN &&
               (__gmpfr_emin > MPFR_EMAX_MAX - (n - 1) ||
@@ -42,7 +42,7 @@ mpfr_div_2si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd_mode)
         }
 
       if (MPFR_UNLIKELY(n < 0 && (__gmpfr_emax < MPFR_EMIN_MIN - n ||
-				  exp > __gmpfr_emax + n)) )
+                                  exp > __gmpfr_emax + n)) )
         return mpfr_overflow (y, rnd_mode, MPFR_SIGN(y));
 
       MPFR_SET_EXP (y, exp - n);

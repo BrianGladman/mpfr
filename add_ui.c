@@ -39,7 +39,7 @@ mpfr_add_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
       up[0] = (mp_limb_t) u << cnt;
 
       /* Optimization note: Exponent save/restore operations may be
-	 removed if mpfr_add works even when uu is out-of-range. */
+         removed if mpfr_add works even when uu is out-of-range. */
       MPFR_SAVE_EXPO_MARK (expo);
       MPFR_SET_EXP (uu, BITS_PER_MP_LIMB - cnt);
       inex = mpfr_add(y, x, uu, rnd_mode);

@@ -153,7 +153,7 @@ main (int argc, char *argv[])
   set_emax (emax);
 
   mpfr_set_str (x, /*1.0/3.0*/ 
-		"0.333333333333333333333333333333333", 10, GMP_RNDZ);
+                "0.333333333333333333333333333333333", 10, GMP_RNDZ);
   mpfr_mul_ui (x, x, 3, GMP_RNDU);
   if (mpfr_cmp_ui (x, 1))
     {

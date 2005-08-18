@@ -51,7 +51,7 @@ check_default_rnd (void)
       mpfr_set_default_rounding_mode ((mp_rnd_t) r);
       t = (mpfr_get_default_rounding_mode) ();
       if ((mp_rnd_t) r != t)
-	ERROR("ERROR in setting / getting default rounding mode (1)");
+        ERROR("ERROR in setting / getting default rounding mode (1)");
     }
   mpfr_set_default_rounding_mode ((mp_rnd_t) 4);
   if (mpfr_get_default_rounding_mode() != GMP_RNDD)

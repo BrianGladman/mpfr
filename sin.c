@@ -61,7 +61,7 @@ mpfr_sin_sign (mpfr_srcptr x)
           if (MPFR_GET_EXP (k) <= 0 || (mpfr_uexp_t) MPFR_GET_EXP (k) <= m)
             {
               mp_size_t j = BITS_PER_MP_LIMB * MPFR_LIMB_SIZE(k) 
-		- MPFR_GET_EXP(k);
+                - MPFR_GET_EXP(k);
               mp_size_t l = j / BITS_PER_MP_LIMB;
               /* parity bit is j-th bit starting from least significant bits */
               if ((MPFR_MANT(k)[l] >> (j % BITS_PER_MP_LIMB)) & 1)
@@ -72,7 +72,7 @@ mpfr_sin_sign (mpfr_srcptr x)
                                                <= 2^(K+2-m) */
           mpfr_sub (k, x, k, GMP_RNDN);
           /* assuming |k| <= Pi, err <= 2^(1-m)+2^(K+2-m) < 2^(K+3-m) */
-	  MPFR_ASSERTN (MPFR_IS_ZERO (k) || MPFR_GET_EXP (k) <= 2); 
+          MPFR_ASSERTN (MPFR_IS_ZERO (k) || MPFR_GET_EXP (k) <= 2); 
           y = k;
         }
       else
@@ -83,8 +83,8 @@ mpfr_sin_sign (mpfr_srcptr x)
       /* sign of sign(y) is uncertain if |y| <= err < 2^(K+3-m),
          thus EXP(y) < K+4-m */
       if (MPFR_LIKELY (!MPFR_IS_ZERO (y) 
-		       && MPFR_GET_EXP (y) >= K + 4 - (mp_exp_t) m))
-	break;
+                       && MPFR_GET_EXP (y) >= K + 4 - (mp_exp_t) m))
+        break;
       MPFR_ZIV_NEXT (loop, m);
       mpfr_set_prec (c, m);
       mpfr_set_prec (k, m);
@@ -109,23 +109,23 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_ZIV_DECL (loop);
   
   MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
-		  ("y[%#R]=%R inexact=%d", y, y, inexact));
+                  ("y[%#R]=%R inexact=%d", y, y, inexact));
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
       if (MPFR_IS_NAN (x) || MPFR_IS_INF (x))
-	{
-	  MPFR_SET_NAN (y);
-	  MPFR_RET_NAN;
+        {
+          MPFR_SET_NAN (y);
+          MPFR_RET_NAN;
 
-	}
+        }
       else /* x is zero */
-	{
+        {
           MPFR_ASSERTD (MPFR_IS_ZERO (x));
-	  MPFR_SET_ZERO (y);
-	  MPFR_SET_SAME_SIGN (y, x);
-	  MPFR_RET (0);
-	}
+          MPFR_SET_ZERO (y);
+          MPFR_SET_SAME_SIGN (y, x);
+          MPFR_RET (0);
+        }
     }
 
   /* sin(x) = x - x^3/6 + ... so the error is < 2^(3*EXP(x)-2) */
@@ -149,32 +149,32 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_ui_sub (c, 1, c, GMP_RNDZ);
       mpfr_sqrt (c, c, GMP_RNDZ);
       if (MPFR_IS_NEG_SIGN(sign))
-	MPFR_CHANGE_SIGN(c);
+        MPFR_CHANGE_SIGN(c);
 
       /* Warning c may be 0 ! */
       if (MPFR_UNLIKELY (MPFR_IS_ZERO (c)))
-	{
-	  /* Huge cancellation: increase prec a lot! */
-	  m = MAX (m, MPFR_PREC (x));
-	  m = 2*m;
-	}
+        {
+          /* Huge cancellation: increase prec a lot! */
+          m = MAX (m, MPFR_PREC (x));
+          m = 2*m;
+        }
       else
-	{
-	  /* the absolute error on c is at most 2^(3-m-EXP(c)) */
-	  e = 2 * MPFR_GET_EXP (c) + m - 3;
-	  if (mpfr_can_round (c, e, GMP_RNDZ, GMP_RNDZ,
+        {
+          /* the absolute error on c is at most 2^(3-m-EXP(c)) */
+          e = 2 * MPFR_GET_EXP (c) + m - 3;
+          if (mpfr_can_round (c, e, GMP_RNDZ, GMP_RNDZ,
                               precy + (rnd_mode == GMP_RNDN)))
             /* WARNING: need one more bit for rounding to nearest,
                to be able to get the inexact flag correct */
-	    break;
+            break;
 
-	  /* check for huge cancellation (Near 0) */
-	  if (e < (mp_exp_t) MPFR_PREC (y))
-	    m += MPFR_PREC (y) - e;
-	  /* Check if near 1 */
-	  if (MPFR_GET_EXP (c) == 1)
-	    m += m;
-	}
+          /* check for huge cancellation (Near 0) */
+          if (e < (mp_exp_t) MPFR_PREC (y))
+            m += MPFR_PREC (y) - e;
+          /* Check if near 1 */
+          if (MPFR_GET_EXP (c) == 1)
+            m += m;
+        }
       
       /* Else generic increase */
       MPFR_ZIV_NEXT (loop, m);

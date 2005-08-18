@@ -53,18 +53,18 @@ mpfr_cos2_aux (mpfr_ptr s, mpfr_srcptr r)
       MPFR_ASSERTD (MPFR_IS_POS (t));
       MPFR_ASSERTD (MPFR_IS_POS (s));
       if (l % 2 == 0)
-	mpfr_add (s, s, t, GMP_RNDD);
+        mpfr_add (s, s, t, GMP_RNDD);
       else
-	mpfr_sub (s, s, t, GMP_RNDD);
+        mpfr_sub (s, s, t, GMP_RNDD);
       MPFR_ASSERTD (MPFR_GET_EXP (s) == 0);        /* check 1/2 <= s < 1 */
       /* err(s) <= l * 2^(-m) */
       if (MPFR_UNLIKELY (3 * l > (1U << b)))
-	b++;
+        b++;
       /* now 3l <= 2^b, we want 3l*ulp(t) <= 2^(-m)
-	 i.e. b+EXP(t)-PREC(t) <= -m */
+         i.e. b+EXP(t)-PREC(t) <= -m */
       prec = m + MPFR_GET_EXP (t) + b;
       if (MPFR_LIKELY (prec >= MPFR_PREC_MIN))
-	mpfr_prec_round (t, prec, GMP_RNDN);
+        mpfr_prec_round (t, prec, GMP_RNDN);
     }
   mpfr_clear (t);
 
@@ -83,19 +83,19 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_GROUP_DECL (group);
 
   MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
-		 ("y[%#R]=%R inexact=%d", y, y, inexact));
+                 ("y[%#R]=%R inexact=%d", y, y, inexact));
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
       if (MPFR_IS_NAN (x) || MPFR_IS_INF (x))
-	{
-	  MPFR_SET_NAN (y);
-	  MPFR_RET_NAN;
-	}
+        {
+          MPFR_SET_NAN (y);
+          MPFR_RET_NAN;
+        }
       else
         {
           MPFR_ASSERTD (MPFR_IS_ZERO (x));
-	  return mpfr_set_ui (y, 1, GMP_RNDN);
+          return mpfr_set_ui (y, 1, GMP_RNDN);
         }
     }
 
@@ -134,12 +134,12 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       l = mpfr_cos2_aux (s, r);
       MPFR_SET_ONE (r);
       for (k = 0; k < K; k++)
-	{
-	  mpfr_mul (s, s, s, GMP_RNDU);       /* err <= 2*olderr */
+        {
+          mpfr_mul (s, s, s, GMP_RNDU);       /* err <= 2*olderr */
           MPFR_SET_EXP (s, MPFR_GET_EXP (s)+1); /* Can't overflow */
-	  mpfr_sub (s, s, r, GMP_RNDN);       /* err <= 4*olderr */ 
+          mpfr_sub (s, s, r, GMP_RNDN);       /* err <= 4*olderr */ 
           MPFR_ASSERTD (MPFR_GET_EXP (s) <= 1);
-	}
+        }
 
       /* absolute error on s is bounded by (2l+1/3)*2^(2K-m)
          2l+1/3 <= 2l+1 */
@@ -148,12 +148,12 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
       exps = MPFR_GET_EXP (s);
       if (MPFR_LIKELY (MPFR_CAN_ROUND (s, exps + m - k, precy, rnd_mode)))
-	break;
+        break;
 
       if (MPFR_UNLIKELY (exps == 1))
-	/* s = 1 or -1, and except x=0 which was
-	   already checked above, cos(x) cannot
-	   be 1 or -1, so we can round */
+        /* s = 1 or -1, and except x=0 which was
+           already checked above, cos(x) cannot
+           be 1 or -1, so we can round */
         {
           if (exps + m - k > precy
               /* if round to nearest or away, result is s,

@@ -34,33 +34,33 @@ mpfr_ui_div (mpfr_ptr y, unsigned long int u, mpfr_srcptr x, mp_rnd_t rnd_mode)
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(x)))
     {
       if (MPFR_IS_NAN(x))
-	{
-	  MPFR_SET_NAN(y);
-	  MPFR_RET_NAN;
-	}
+        {
+          MPFR_SET_NAN(y);
+          MPFR_RET_NAN;
+        }
       else if (MPFR_IS_INF(x)) /* u/Inf = 0 */
-	{
-	  MPFR_SET_ZERO(y);
-	  MPFR_SET_SAME_SIGN(y,x);
-	  MPFR_RET(0);
-	}
+        {
+          MPFR_SET_ZERO(y);
+          MPFR_SET_SAME_SIGN(y,x);
+          MPFR_RET(0);
+        }
       else /* u / 0 */
-	{
+        {
           MPFR_ASSERTD(MPFR_IS_ZERO(x));
-	  if (u)
-	    {
-	      /* u > 0, so y = sign(x) * Inf */
-	      MPFR_SET_SAME_SIGN(y, x);
-	      MPFR_SET_INF(y);
-	      MPFR_RET(0);
-	    }
-	  else
-	    {
-	      /* 0 / 0 */
-	      MPFR_SET_NAN(y);
-	      MPFR_RET_NAN;
-	    }
-	}
+          if (u)
+            {
+              /* u > 0, so y = sign(x) * Inf */
+              MPFR_SET_SAME_SIGN(y, x);
+              MPFR_SET_INF(y);
+              MPFR_RET(0);
+            }
+          else
+            {
+              /* 0 / 0 */
+              MPFR_SET_NAN(y);
+              MPFR_RET_NAN;
+            }
+        }
     }
   else if (MPFR_LIKELY(u != 0))
     {

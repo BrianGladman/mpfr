@@ -37,28 +37,28 @@ mpfr_asinh (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_ZIV_DECL (loop);
 
   MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
-		 ("y[%#R]=%R inexact=%d", y, y, inexact));
+                 ("y[%#R]=%R inexact=%d", y, y, inexact));
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
       if (MPFR_IS_NAN (x))
-	{  
-	  MPFR_SET_NAN (y); 
-	  MPFR_RET_NAN;
-	}
+        {  
+          MPFR_SET_NAN (y); 
+          MPFR_RET_NAN;
+        }
       else if (MPFR_IS_INF (x))
-	{ 
-	  MPFR_SET_INF (y);
-	  MPFR_SET_SAME_SIGN (y, x);
-	  MPFR_RET (0);
-	}
+        { 
+          MPFR_SET_INF (y);
+          MPFR_SET_SAME_SIGN (y, x);
+          MPFR_RET (0);
+        }
       else /* x is necessarily 0 */
-	{
+        {
           MPFR_ASSERTD (MPFR_IS_ZERO (x));
-	  MPFR_SET_ZERO (y);   /* asinh(0) = 0 */
-	  MPFR_SET_SAME_SIGN (y, x);
-	  MPFR_RET (0);
-	}
+          MPFR_SET_ZERO (y);   /* asinh(0) = 0 */
+          MPFR_SET_SAME_SIGN (y, x);
+          MPFR_RET (0);
+        }
     }
 
   /* asinh(x) = x - x^3/6 + ... so the error is < 2^(3*EXP(x)-2) */
@@ -95,8 +95,8 @@ mpfr_asinh (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       err = Nt - (MAX (3 - MPFR_GET_EXP (t), 0) + 1);
 
       if (MPFR_LIKELY (MPFR_IS_ZERO (t) 
-		       || MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
-	break;
+                       || MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
+        break;
 
       /* actualisation of the precision */
       MPFR_ZIV_NEXT (loop, Nt);

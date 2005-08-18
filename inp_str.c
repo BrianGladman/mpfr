@@ -57,13 +57,13 @@ mpfr_inp_str (mpfr_ptr rop, FILE *stream, int base, mp_rnd_t rnd_mode)
   for (;;)
     {
       if (str_size >= alloc_size)
-	{
-	  size_t old_alloc_size = alloc_size;
-	  alloc_size = alloc_size * 3 / 2;
-	  str = (char *) (*__gmp_reallocate_func) (str, old_alloc_size, alloc_size);
-	}
+        {
+          size_t old_alloc_size = alloc_size;
+          alloc_size = alloc_size * 3 / 2;
+          str = (char *) (*__gmp_reallocate_func) (str, old_alloc_size, alloc_size);
+        }
       if (c == EOF || isspace (c))
-	break;
+        break;
       str[str_size++] = c;
       c = getc (stream);
     }
@@ -81,7 +81,7 @@ mpfr_inp_str (mpfr_ptr rop, FILE *stream, int base, mp_rnd_t rnd_mode)
   (*__gmp_free_func) (str, alloc_size);
 
   if (retval == -1)
-    return 0;			/* error */
+    return 0;                   /* error */
 
  return str_size + nread - 1;
 }

@@ -54,11 +54,11 @@ main (void)
       mpfr_clear_overflow();
       max = 1000; /* Allows max 2^1000 bits for the exponent */
       while ((!mpfr_overflow_p()) && (max>0))
-	{
-	  mpfr_mul(a, a, a, GMP_RNDN);
-	  if (!mpfr_check(a)) ERROR("for mul");
-	  max--;
-	}
+        {
+          mpfr_mul(a, a, a, GMP_RNDN);
+          if (!mpfr_check(a)) ERROR("for mul");
+          max--;
+        }
       if (max==0) ERROR("can't reach overflow");
       mpfr_set_ui(a, 2137, GMP_RNDN);
       /* Corrupt a and check for it */
@@ -96,10 +96,10 @@ main (void)
       /* Check normal form */
       tmp = MPFR_MANT(a)[0];
       if ((pr % BITS_PER_MP_LIMB) != 0)
-	{
-	  MPFR_MANT(a)[0] = ~0;
-	  if (mpfr_check(a))  ERROR("last bits non 0");
-	}
+        {
+          MPFR_MANT(a)[0] = ~0;
+          if (mpfr_check(a))  ERROR("last bits non 0");
+        }
       MPFR_MANT(a)[0] = tmp;
       MPFR_MANT(a)[MPFR_LIMB_SIZE(a)-1] &= MPFR_LIMB_MASK (BITS_PER_MP_LIMB-1);
       if (mpfr_check(a))  ERROR("last bits non 0");

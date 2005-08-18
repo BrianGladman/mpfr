@@ -91,10 +91,10 @@ algo_exact (mpfr_t somme, mpfr_t *tab, unsigned long n, mp_prec_t f)
   for (i = 0; i < n; i++)
     {
       if (mpfr_add(somme, somme, tab[i], GMP_RNDN))
-	{
+        {
           printf ("FIXME: algo_exact is buggy.\n");
           exit (1);
-	}
+        }
     }
 }
 

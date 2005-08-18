@@ -38,24 +38,24 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_SAVE_EXPO_DECL (expo);
 
   MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
-		 ("y[%#R]=%R inexact=%d", y, y, inexact));
+                 ("y[%#R]=%R inexact=%d", y, y, inexact));
 
   if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(x) ))
     {
       if (MPFR_IS_NAN(x))
-	{
-	  MPFR_SET_NAN(y);
-	  MPFR_RET_NAN;
-	}
+        {
+          MPFR_SET_NAN(y);
+          MPFR_RET_NAN;
+        }
       else if (MPFR_IS_INF(x))
-	{
-	  if (MPFR_IS_POS(x))
-	    MPFR_SET_INF(y);
-	  else
-	    MPFR_SET_ZERO(y);
-	  MPFR_SET_POS(y);
-	  MPFR_RET(0);
-	}
+        {
+          if (MPFR_IS_POS(x))
+            MPFR_SET_INF(y);
+          else
+            MPFR_SET_ZERO(y);
+          MPFR_SET_POS(y);
+          MPFR_RET(0);
+        }
       else
         {
           MPFR_ASSERTD(MPFR_IS_ZERO(x));
@@ -96,21 +96,21 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
           inexact = -1;
         }
       else
-	{
-	  mpfr_setmin (y, 1);  /* y = 1 */
-	  if (MPFR_IS_POS_SIGN (signx) && rnd_mode == GMP_RNDU)
-	    {
-	      mp_size_t yn;
-	      int sh;
-	      
-	      yn = 1 + (MPFR_PREC(y) - 1) / BITS_PER_MP_LIMB;
-	      sh = (mp_prec_t) yn * BITS_PER_MP_LIMB - MPFR_PREC(y);
-	      MPFR_MANT(y)[0] += MPFR_LIMB_ONE << sh;
-	      inexact = 1;
-	    }
-	  else
-	    inexact = -MPFR_FROM_SIGN_TO_INT(signx);
-	}
+        {
+          mpfr_setmin (y, 1);  /* y = 1 */
+          if (MPFR_IS_POS_SIGN (signx) && rnd_mode == GMP_RNDU)
+            {
+              mp_size_t yn;
+              int sh;
+              
+              yn = 1 + (MPFR_PREC(y) - 1) / BITS_PER_MP_LIMB;
+              sh = (mp_prec_t) yn * BITS_PER_MP_LIMB - MPFR_PREC(y);
+              MPFR_MANT(y)[0] += MPFR_LIMB_ONE << sh;
+              inexact = 1;
+            }
+          else
+            inexact = -MPFR_FROM_SIGN_TO_INT(signx);
+        }
     }
 
   /* General case */
@@ -120,9 +120,9 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       __gmpfr_emin -= 3;  /* So that we can check for underflow properly */
  
       if (MPFR_UNLIKELY (precy > MPFR_EXP_THRESHOLD))
-	inexact = mpfr_exp_3 (y, x, rnd_mode); /* O(M(n) log(n)^2) */
+        inexact = mpfr_exp_3 (y, x, rnd_mode); /* O(M(n) log(n)^2) */
       else
-	inexact = mpfr_exp_2 (y, x, rnd_mode); /* O(n^(1/3) M(n)) */
+        inexact = mpfr_exp_2 (y, x, rnd_mode); /* O(n^(1/3) M(n)) */
       MPFR_SAVE_EXPO_FREE (expo);
       inexact = mpfr_check_range (y, inexact, rnd_mode);
     }

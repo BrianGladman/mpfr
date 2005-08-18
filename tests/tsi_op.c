@@ -109,7 +109,7 @@ main (int argc, char *argv[])
       y = tab[i].op2;
       mpfr_add_si (z, x, y, GMP_RNDZ);
       if (mpfr_cmp_str (z, tab[i].res_add, 16, GMP_RNDN))
-	ERROR1("add_si", i, z, tab[i].res_add);
+        ERROR1("add_si", i, z, tab[i].res_add);
       mpfr_sub_si (z, x, y, GMP_RNDZ);
       if (mpfr_cmp_str (z, tab[i].res_sub, 16, GMP_RNDN))
         ERROR1("sub_si", i, z, tab[i].res_sub);

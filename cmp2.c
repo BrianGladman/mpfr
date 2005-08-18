@@ -83,7 +83,7 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mp_prec_t *cancel)
             }
 
           if (MPFR_UNLIKELY (cn < 0))
-	    /* c discards exactly the upper part of b */
+            /* c discards exactly the upper part of b */
             {
               unsigned int z;
 
@@ -145,12 +145,12 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mp_prec_t *cancel)
   dif = bp[bn--] - cc; /* necessarily dif >= 1 */
 
   while (MPFR_UNLIKELY ((cn >= 0 || lastc != 0) 
-			&& (high_dif == 0) && (dif == 1)))
+                        && (high_dif == 0) && (dif == 1)))
     { /* dif=1 implies diff_exp = 0 or 1 */
       bb = (bn >= 0) ? bp[bn] : 0;
       cc = lastc;
       if (cn >= 0)
-	{
+        {
           if (diff_exp == 0)
             {
               cc += cp[cn];
@@ -160,9 +160,9 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mp_prec_t *cancel)
               cc += cp[cn] >> 1;
               lastc = cp[cn] << (BITS_PER_MP_LIMB - 1);
             }
-	}
+        }
       else
-	lastc = 0;
+        lastc = 0;
       high_dif = 1 - mpn_sub_n (&dif, &bb, &cc, 1);
       bn--;
       cn--;
@@ -197,20 +197,20 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mp_prec_t *cancel)
   while (MPFR_UNLIKELY (bn >= 0 && (cn >= 0 || lastc != 0)))
     {
       if (diff_exp >= BITS_PER_MP_LIMB)
-	diff_exp -= BITS_PER_MP_LIMB;
+        diff_exp -= BITS_PER_MP_LIMB;
       else
-	{
-	  cc = lastc;
-	  if (cn >= 0)
-	    {
-	      cc += cp[cn] >> diff_exp;
-	      if (diff_exp != 0)
+        {
+          cc = lastc;
+          if (cn >= 0)
+            {
+              cc += cp[cn] >> diff_exp;
+              if (diff_exp != 0)
                 lastc = cp[cn] << (BITS_PER_MP_LIMB - diff_exp);
-	    }
-	  else
+            }
+          else
             lastc = 0;
-	  cn--;
-	}
+          cn--;
+        }
       if (bp[bn] != cc)
         {
           *cancel = res + (bp[bn] < cc);

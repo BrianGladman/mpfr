@@ -86,31 +86,31 @@ mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mp_rnd_t rnd_mode)
   else if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
       if (MPFR_IS_NAN (x))
-	{
-	  MPFR_SET_NAN (y); /* NaN^(1/k) = NaN */
-	  MPFR_RET_NAN;
-	}
+        {
+          MPFR_SET_NAN (y); /* NaN^(1/k) = NaN */
+          MPFR_RET_NAN;
+        }
       else if (MPFR_IS_INF (x)) /* +Inf^(1/k) = +Inf
                                    -Inf^(1/k) = -Inf if k odd
                                    -Inf^(1/k) = NaN if k even */
-	{
+        {
           if (MPFR_IS_NEG(x) && (k % 2 == 0))
             {
               MPFR_SET_NAN (y);
               MPFR_RET_NAN;
             }
-	  MPFR_SET_INF (y);
-	  MPFR_SET_SAME_SIGN (y, x);
-	  MPFR_RET (0);
-	}
+          MPFR_SET_INF (y);
+          MPFR_SET_SAME_SIGN (y, x);
+          MPFR_RET (0);
+        }
       else /* x is necessarily 0: (+0)^(1/k) = +0
                                   (-0)^(1/k) = -0 */
-	{
+        {
           MPFR_ASSERTD (MPFR_IS_ZERO (x));
-	  MPFR_SET_ZERO (y);
-	  MPFR_SET_SAME_SIGN (y, x);
-	  MPFR_RET (0);
-	}
+          MPFR_SET_ZERO (y);
+          MPFR_SET_SAME_SIGN (y, x);
+          MPFR_RET (0);
+        }
     }
 
   /* Returns NAN for x < 0 and k even */
@@ -175,7 +175,7 @@ mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mp_rnd_t rnd_mode)
       if (negative)
         rnd_mode = MPFR_INVERT_RND (rnd_mode);
       if (rnd_mode == GMP_RNDU 
-	  || (rnd_mode == GMP_RNDN && mpz_tstbit (m, 0)))
+          || (rnd_mode == GMP_RNDN && mpz_tstbit (m, 0)))
         inexact = 1, mpz_add_ui (m, m, 1);
       else
         inexact = -1;

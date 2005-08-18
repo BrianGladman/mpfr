@@ -119,8 +119,8 @@ mpfr_scale2 (double d, int exp)
     /* An overflow may occurs (example: 0.5*2^1024) */
     if (d < 1.0)
       {
-	d += d;
-	exp--;
+        d += d;
+        exp--;
       }
     /* Now 1.0 <= d < 2.0 */
 
@@ -159,12 +159,12 @@ mpfr_get_d (mpfr_srcptr src, mp_rnd_t rnd_mode)
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (src)))
     {
       if (MPFR_IS_NAN (src))
-	return MPFR_DBL_NAN;
+        return MPFR_DBL_NAN;
 
       negative = MPFR_IS_NEG (src);
       
       if (MPFR_IS_INF (src))
-	return negative ? MPFR_DBL_INFM : MPFR_DBL_INFP;
+        return negative ? MPFR_DBL_INFM : MPFR_DBL_INFP;
       
       MPFR_ASSERTD (MPFR_IS_ZERO(src));
       return negative ? -0.0 : 0.0;
@@ -208,7 +208,7 @@ mpfr_get_d (mpfr_srcptr src, mp_rnd_t rnd_mode)
 
       nbits = IEEE_DBL_MANT_DIG; /* 53 */
       if (MPFR_UNLIKELY (e < -1021))
-	/*In the subnormal case, compute the exact number of significant bits*/
+        /*In the subnormal case, compute the exact number of significant bits*/
         {
           nbits += (1021 + e);
           MPFR_ASSERTD (nbits >= 1);
@@ -216,7 +216,7 @@ mpfr_get_d (mpfr_srcptr src, mp_rnd_t rnd_mode)
       np = (nbits + BITS_PER_MP_LIMB - 1) / BITS_PER_MP_LIMB;
       MPFR_ASSERTD ( np <= MPFR_LIMBS_PER_DOUBLE );
       carry = mpfr_round_raw_4 (tp, MPFR_MANT(src), MPFR_PREC(src), negative,
-				nbits, rnd_mode);
+                                nbits, rnd_mode);
       if (MPFR_UNLIKELY(carry))
         d = 1.0;
       else

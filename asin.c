@@ -32,22 +32,22 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_ZIV_DECL (loop);
 
   MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
-		 ("asin[%#R]=%R inexact=%d", asin, asin, inexact));
+                 ("asin[%#R]=%R inexact=%d", asin, asin, inexact));
 
   /* Special cases */
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
       if (MPFR_IS_NAN (x) || MPFR_IS_INF (x))
-	{
-	  MPFR_SET_NAN (asin);
-	  MPFR_RET_NAN;
-	}
+        {
+          MPFR_SET_NAN (asin);
+          MPFR_RET_NAN;
+        }
       else /* x = 0 */
-	{
+        {
           MPFR_ASSERTD (MPFR_IS_ZERO (x));
-	  MPFR_SET_ZERO (asin);
-	  MPFR_RET (0); /* exact result */
-	}
+          MPFR_SET_ZERO (asin);
+          MPFR_RET (0); /* exact result */
+        }
     }
 
   /* asin(x) = x + x^3/6 + ... so the error is < 2^(3*EXP(x)-2) */
@@ -64,22 +64,22 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
     {
       mpfr_clear (xp);
       if (compared > 0)                  /* asin(x) = NaN for |x| > 1 */
-	{
-	  MPFR_SET_NAN (asin);
-	  MPFR_RET_NAN;
-	}
+        {
+          MPFR_SET_NAN (asin);
+          MPFR_RET_NAN;
+        }
       else                              /* x = 1 or x = -1 */
-	{
-	  if (MPFR_IS_POS (x)) /* asin(+1) = Pi/2 */
-	    inexact = mpfr_const_pi (asin, rnd_mode);
-	  else /* asin(-1) = -Pi/2 */
-	    {
-	      inexact = -mpfr_const_pi (asin, MPFR_INVERT_RND(rnd_mode));
-	      MPFR_CHANGE_SIGN (asin);
-	    }
-	  mpfr_div_2ui (asin, asin, 1, rnd_mode); /* May underflow */
-	  return inexact;
-	}
+        {
+          if (MPFR_IS_POS (x)) /* asin(+1) = Pi/2 */
+            inexact = mpfr_const_pi (asin, rnd_mode);
+          else /* asin(-1) = -Pi/2 */
+            {
+              inexact = -mpfr_const_pi (asin, MPFR_INVERT_RND(rnd_mode));
+              MPFR_CHANGE_SIGN (asin);
+            }
+          mpfr_div_2ui (asin, asin, 1, rnd_mode); /* May underflow */
+          return inexact;
+        }
     }
 
   MPFR_SAVE_EXPO_MARK (expo);
@@ -104,8 +104,8 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_div (xp, x, xp, GMP_RNDN);
       mpfr_atan (xp, xp, GMP_RNDN);
       if (MPFR_LIKELY (MPFR_CAN_ROUND (xp, prec - xp_exp,
-				       MPFR_PREC (asin), rnd_mode)))
-	break;
+                                       MPFR_PREC (asin), rnd_mode)))
+        break;
       MPFR_ZIV_NEXT (loop, prec);
     }
   MPFR_ZIV_FREE (loop);

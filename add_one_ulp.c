@@ -32,7 +32,7 @@ mpfr_add_one_ulp (mpfr_ptr x, mp_rnd_t rnd_mode)
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
       if (MPFR_IS_NAN (x))
-	MPFR_RET_NAN;
+        MPFR_RET_NAN;
       MPFR_ASSERTD (MPFR_IS_INF (x) || MPFR_IS_ZERO (x));
       MPFR_RET (0);
     }
@@ -49,7 +49,7 @@ mpfr_add_one_ulp (mpfr_ptr x, mp_rnd_t rnd_mode)
         {
           MPFR_ASSERTD (exp < __gmpfr_emax);
           MPFR_SET_EXP (x, exp + 1);
-	  /* The mantissa is already filled with 0 */
+          /* The mantissa is already filled with 0 */
           xp[xn-1] = MPFR_LIMB_HIGHBIT;
         }
     }

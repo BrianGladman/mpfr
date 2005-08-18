@@ -33,22 +33,22 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(u) ))
     {
       if (MPFR_IS_NAN(u))
-	{
-	  MPFR_SET_NAN(r);
-	  MPFR_RET_NAN;
-	}
+        {
+          MPFR_SET_NAN(r);
+          MPFR_RET_NAN;
+        }
       MPFR_SET_SAME_SIGN(r, u);
       if (MPFR_IS_INF(u))
-	{
-	  MPFR_SET_INF(r);
-	  MPFR_RET(0);  /* infinity is exact */
-	}
+        {
+          MPFR_SET_INF(r);
+          MPFR_RET(0);  /* infinity is exact */
+        }
       else /* now u is zero */
-	{
+        {
           MPFR_ASSERTD(MPFR_IS_ZERO(u));
-	  MPFR_SET_ZERO(r);
-	  MPFR_RET(0);  /* zero is exact */
-	}
+          MPFR_SET_ZERO(r);
+          MPFR_RET(0);  /* zero is exact */
+        }
     }
   MPFR_SET_SAME_SIGN (r, u); /* Does nothing if r==u */
 
@@ -268,8 +268,8 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
                    (sh == 0 && (MPFR_ASSERTD (uj >= 1),
                                 up[uj - 1] & MPFR_LIMB_HIGHBIT) != 0));
             }
-	  /* Now we can make the low rj limbs to 0 */
-	  MPN_ZERO (rp-rj, rj);
+          /* Now we can make the low rj limbs to 0 */
+          MPN_ZERO (rp-rj, rj);
         }
 
       if (sh != 0)

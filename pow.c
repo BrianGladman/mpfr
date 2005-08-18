@@ -171,92 +171,92 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
   MPFR_SAVE_EXPO_DECL (expo);
 
   MPFR_LOG_FUNC (("x[%#R]=%R y[%#R]=%R rnd=%d", x, x, y, y, rnd_mode),
-		 ("z[%#R]=%R inexact=%d", z, z, inexact));
+                 ("z[%#R]=%R inexact=%d", z, z, inexact));
 
   if (MPFR_ARE_SINGULAR (x, y))
     {
       /* pow(x, 0) returns 1 for any x, even a NaN. */
       if (MPFR_UNLIKELY (MPFR_IS_ZERO (y)))
-	return mpfr_set (z, __gmpfr_one, rnd_mode);
+        return mpfr_set (z, __gmpfr_one, rnd_mode);
       else if (MPFR_IS_NAN (x))
-	{
-	  MPFR_SET_NAN (z);
-	  MPFR_RET_NAN;
-	}
+        {
+          MPFR_SET_NAN (z);
+          MPFR_RET_NAN;
+        }
       else if (MPFR_IS_NAN (y))
-	{
-	  /* pow(+1, NaN) returns 1. */
-	  if (mpfr_cmp (x, __gmpfr_one) == 0)
-	    return mpfr_set (z, __gmpfr_one, rnd_mode);
-	  MPFR_SET_NAN (z);
-	  MPFR_RET_NAN;
-	}
+        {
+          /* pow(+1, NaN) returns 1. */
+          if (mpfr_cmp (x, __gmpfr_one) == 0)
+            return mpfr_set (z, __gmpfr_one, rnd_mode);
+          MPFR_SET_NAN (z);
+          MPFR_RET_NAN;
+        }
       else if (MPFR_IS_INF (y))
-	{
-	  if (MPFR_IS_INF (x))
-	    {
-	      if (MPFR_IS_POS (y))
-		MPFR_SET_INF (z);
-	      else
-		MPFR_SET_ZERO (z);
-	      MPFR_SET_POS (z);
-	      MPFR_RET (0);
-	    }
-	  else
-	    {
-	      int cmp;
-	      cmp = mpfr_cmpabs (x, __gmpfr_one) * MPFR_INT_SIGN (y);
-	      MPFR_SET_POS (z);
-	      if (cmp > 0)
-		{
-		  /* Return +inf. */
-		  MPFR_SET_INF (z);
-		  MPFR_RET (0);
-		}
-	      else if (cmp < 0)
-		{
-		  /* Return +0. */
-		  MPFR_SET_ZERO (z);
-		  MPFR_RET (0);
-		}
-	      else
-		{
-		  /* Return 1. */
-		  return mpfr_set (z, __gmpfr_one, rnd_mode);
-		}
-	    }
-	}
+        {
+          if (MPFR_IS_INF (x))
+            {
+              if (MPFR_IS_POS (y))
+                MPFR_SET_INF (z);
+              else
+                MPFR_SET_ZERO (z);
+              MPFR_SET_POS (z);
+              MPFR_RET (0);
+            }
+          else
+            {
+              int cmp;
+              cmp = mpfr_cmpabs (x, __gmpfr_one) * MPFR_INT_SIGN (y);
+              MPFR_SET_POS (z);
+              if (cmp > 0)
+                {
+                  /* Return +inf. */
+                  MPFR_SET_INF (z);
+                  MPFR_RET (0);
+                }
+              else if (cmp < 0)
+                {
+                  /* Return +0. */
+                  MPFR_SET_ZERO (z);
+                  MPFR_RET (0);
+                }
+              else
+                {
+                  /* Return 1. */
+                  return mpfr_set (z, __gmpfr_one, rnd_mode);
+                }
+            }
+        }
       else if (MPFR_IS_INF (x))
-	{
-	  int negative;
-	  /* Determine the sign now, in case y and z are the same object */
-	  negative = MPFR_IS_NEG (x) && is_odd (y);
-	  if (MPFR_IS_POS (y))
-	    MPFR_SET_INF (z);
-	  else
-	    MPFR_SET_ZERO (z);
-	  if (negative)
-	    MPFR_SET_NEG (z);
-	  else
-	    MPFR_SET_POS (z);
-	  MPFR_RET (0);
-	}
+        {
+          int negative;
+          /* Determine the sign now, in case y and z are the same object */
+          negative = MPFR_IS_NEG (x) && is_odd (y);
+          if (MPFR_IS_POS (y))
+            MPFR_SET_INF (z);
+          else
+            MPFR_SET_ZERO (z);
+          if (negative)
+            MPFR_SET_NEG (z);
+          else
+            MPFR_SET_POS (z);
+          MPFR_RET (0);
+        }
       else
-	{
-	  int negative;
+        {
+          int negative;
           MPFR_ASSERTD (MPFR_IS_ZERO (x));
-	  /* Determine the sign now, in case y and z are the same object */
-	  negative = MPFR_IS_NEG(x) && is_odd (y);
-	  if (MPFR_IS_NEG (y))
-	    MPFR_SET_INF (z);
-	  else
-	    MPFR_SET_ZERO (z);
-	  if (negative)
-	    MPFR_SET_NEG (z);
-	  else
-	    MPFR_SET_POS (z);
-	  MPFR_RET (0);
-	}
+          /* Determine the sign now, in case y and z are the same object */
+          negative = MPFR_IS_NEG(x) && is_odd (y);
+          if (MPFR_IS_NEG (y))
+            MPFR_SET_INF (z);
+          else
+            MPFR_SET_ZERO (z);
+          if (negative)
+            MPFR_SET_NEG (z);
+          else
+            MPFR_SET_POS (z);
+          MPFR_RET (0);
+        }
     }
 
   if (mpfr_cmp (x, __gmpfr_one) == 0) /* 1^y is always 1 */
@@ -336,10 +336,10 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
         /* compute exp(y*ln(x)) */
         mpfr_log (t, x, GMP_RNDU);               /* ln(x) */
         mpfr_mul (t, y, t, GMP_RNDU);            /* y*ln(x) */
-	exp_te = MPFR_GET_EXP (t);               /* FIXME: May overflow */
+        exp_te = MPFR_GET_EXP (t);               /* FIXME: May overflow */
         mpfr_exp (t, t, GMP_RNDN);               /* exp(y*ln(x))*/
                                                  /* FIXME: May overflow */
-	/* estimate of the error -- see pow function in algorithms.tex.
+        /* estimate of the error -- see pow function in algorithms.tex.
            The error on t is at most 1/2 + 3*2^(exp_te+1) ulps, which is
            <= 2^(exp_te+3) for exp_te >= -1, and <= 2 ulps for exp_te <= -2 */
         err = (exp_te >= -1) ? Nt - (exp_te + 3) : Nt - 1;
@@ -358,7 +358,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
           }
 
         /* reactualisation of the precision */
-	MPFR_ZIV_NEXT (ziv_loop, Nt);
+        MPFR_ZIV_NEXT (ziv_loop, Nt);
         mpfr_set_prec (t, Nt);
       }
     MPFR_ZIV_FREE (ziv_loop);

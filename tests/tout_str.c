@@ -139,7 +139,7 @@ main (int argc, char *argv[])
       fout = fopen ("/dev/null", "w");
       /* If we failed to open this device, try with a dummy file */
       if (fout == NULL)
-	fout = fopen ("mpfrtest.txt", "w");
+        fout = fopen ("mpfrtest.txt", "w");
     }
   else
     {

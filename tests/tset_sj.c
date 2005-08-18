@@ -71,27 +71,27 @@ check_set_uj (mp_prec_t pmin, mp_prec_t pmax, int N)
       mpfr_set_prec (x, p);
       mpfr_set_prec (y, p);
       for (n = 0 ; n < N ; n++)
-	{
-	  /* mp_limb_t may be unsigned long long */
-	  limb = (unsigned long) randlimb ();
-	  inex1 = mpfr_set_uj (x, limb, GMP_RNDN);
-	  inex2 = mpfr_set_ui (y, limb, GMP_RNDN);
-	  if (mpfr_cmp (x, y))
-	    {
-	      printf ("ERROR for mpfr_set_uj and j=%lu and p=%lu\n", 
-		      (unsigned long) limb, p);
-	      printf ("X="); mpfr_dump (x);
-	      printf ("Y="); mpfr_dump (y);
-	      exit (1);
-	    }
-	  if (inexact_sign (inex1) != inexact_sign (inex2))
-	    {
-	      printf ("ERROR for inexact(set_uj): j=%lu p=%lu\n"
-		      "Inexact1= %d Inexact2= %d\n",
-		      (unsigned long) limb, p, inex1, inex2);	      
+        {
+          /* mp_limb_t may be unsigned long long */
+          limb = (unsigned long) randlimb ();
+          inex1 = mpfr_set_uj (x, limb, GMP_RNDN);
+          inex2 = mpfr_set_ui (y, limb, GMP_RNDN);
+          if (mpfr_cmp (x, y))
+            {
+              printf ("ERROR for mpfr_set_uj and j=%lu and p=%lu\n", 
+                      (unsigned long) limb, p);
+              printf ("X="); mpfr_dump (x);
+              printf ("Y="); mpfr_dump (y);
               exit (1);
-	    }
-	}
+            }
+          if (inexact_sign (inex1) != inexact_sign (inex2))
+            {
+              printf ("ERROR for inexact(set_uj): j=%lu p=%lu\n"
+                      "Inexact1= %d Inexact2= %d\n",
+                      (unsigned long) limb, p, inex1, inex2);         
+              exit (1);
+            }
+        }
     }
   /* Special case */
   mpfr_set_prec (x, sizeof(uintmax_t)*CHAR_BIT);

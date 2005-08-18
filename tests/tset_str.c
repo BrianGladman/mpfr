@@ -60,8 +60,8 @@ check_underflow (void)
   if (!MPFR_IS_ZERO (a))
     {
       printf("ERROR for mpfr_set_str (a, \"0.00000000001\", 10, GMP_RNDN)\n"
-	     " with emin=-20\n"
-	     "res=%d\n", res);
+             " with emin=-20\n"
+             "res=%d\n", res);
       mpfr_dump (a);
       exit (1);
     }
@@ -116,7 +116,7 @@ main (int argc, char *argv[])
   if (bd)
     {
       for(k = 1; k <= bd; k++)
-	*(str2++) = (randlimb () & 1) + '0';
+        *(str2++) = (randlimb () & 1) + '0';
     }
   else
     *(str2++) = '0';
@@ -204,13 +204,13 @@ main (int argc, char *argv[])
       logbase = (randlimb () % 5) + 1;
       base = 1 << logbase;
       /* Warning: the number of bits needed to print exactly a number of
-	 'prec' bits in base 2^logbase may be greater than ceil(prec/logbase),
-	 for example 0.11E-1 in base 2 cannot be written exactly with only
-	 one digit in base 4 */
+         'prec' bits in base 2^logbase may be greater than ceil(prec/logbase),
+         for example 0.11E-1 in base 2 cannot be written exactly with only
+         one digit in base 4 */
       if (base == 2)
-	baseprec = prec;
+        baseprec = prec;
       else
-	baseprec = 1 + (prec - 2 + logbase) / logbase;
+        baseprec = 1 + (prec - 2 + logbase) / logbase;
       str = mpfr_get_str (NULL, &e, base, baseprec, x, (mp_rnd_t) k);
       mpfr_set_str (y, str, base, (mp_rnd_t) k);
       MPFR_EXP(y) += logbase * (e - strlen (str));
@@ -780,7 +780,7 @@ main (int argc, char *argv[])
                   printf ("return    : ");
                   mpfr_print_binary (y);
                   puts ("");
-		  exit (1);
+                  exit (1);
                 }
             }
 

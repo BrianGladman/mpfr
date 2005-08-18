@@ -111,10 +111,10 @@ check_max (void)
       /* If setting is exact */
       e = (mpfr_get_d1) (u);
       if (e != d)
-	{
-	  printf ("get_d(set_d)(1): %1.20e != %1.20e\n", d, e);
-	  exit (1);
-	}
+        {
+          printf ("get_d(set_d)(1): %1.20e != %1.20e\n", d, e);
+          exit (1);
+        }
     }
 
   mpfr_set_str_binary (u, "-1E1024");

@@ -36,11 +36,11 @@ mpfr_set4 (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode, int signb)
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (b)))
     {
       /* MPFR_SET_NAN, MPFR_SET_ZERO and MPFR_SET_INF are useless
-	 since MPFR_EXP (a) = MPFR_EXP (b) does the job */
+         since MPFR_EXP (a) = MPFR_EXP (b) does the job */
       if (MPFR_IS_NAN (b))
-	MPFR_RET_NAN;
+        MPFR_RET_NAN;
       else 
-	MPFR_RET (0);
+        MPFR_RET (0);
     }
   else if (MPFR_LIKELY (MPFR_PREC (b) == MPFR_PREC (a)))
     {
@@ -48,7 +48,7 @@ mpfr_set4 (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode, int signb)
        * just copy the mantissa, and set the exponent and the sign
        * The result is exact. */
       MPN_COPY (MPFR_MANT (a), MPFR_MANT (b), 
-		(MPFR_PREC (b) + BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB);
+                (MPFR_PREC (b) + BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB);
       MPFR_RET (0);
     }
   else
@@ -57,8 +57,8 @@ mpfr_set4 (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode, int signb)
 
       /* Else Round B inside a */
       MPFR_RNDRAW (inex, a, MPFR_MANT (b), MPFR_PREC (b), rnd_mode, signb, 
-		   if (MPFR_UNLIKELY ( ++MPFR_EXP (a) > __gmpfr_emax)) 
-		    return mpfr_overflow (a, rnd_mode, signb) );
+                   if (MPFR_UNLIKELY ( ++MPFR_EXP (a) > __gmpfr_emax)) 
+                    return mpfr_overflow (a, rnd_mode, signb) );
       MPFR_RET (inex);
     }
 }

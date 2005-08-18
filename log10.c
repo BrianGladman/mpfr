@@ -37,33 +37,33 @@ mpfr_log10 (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (a)))
     {
       if (MPFR_IS_NAN (a))
-	{
-	  MPFR_SET_NAN (r);
-	  MPFR_RET_NAN;
-	}
+        {
+          MPFR_SET_NAN (r);
+          MPFR_RET_NAN;
+        }
       /* check for infinity before zero */
       else if (MPFR_IS_INF (a))
-	{
-	  if (MPFR_IS_NEG (a))
-	    /* log10(-Inf) = NaN */
-	    {
-	      MPFR_SET_NAN (r);
-	      MPFR_RET_NAN;
-	    }
-	  else /* log10(+Inf) = +Inf */
-	    {
-	      MPFR_SET_INF (r);
-	      MPFR_SET_POS (r);
-	      MPFR_RET (0); /* exact */
-	    }
-	}
+        {
+          if (MPFR_IS_NEG (a))
+            /* log10(-Inf) = NaN */
+            {
+              MPFR_SET_NAN (r);
+              MPFR_RET_NAN;
+            }
+          else /* log10(+Inf) = +Inf */
+            {
+              MPFR_SET_INF (r);
+              MPFR_SET_POS (r);
+              MPFR_RET (0); /* exact */
+            }
+        }
       else /* a = 0 */
-	{
+        {
           MPFR_ASSERTD (MPFR_IS_ZERO (a));
-	  MPFR_SET_INF (r);
-	  MPFR_SET_NEG (r);
-	  MPFR_RET (0); /* log10(0) is an exact -infinity */
-	}
+          MPFR_SET_INF (r);
+          MPFR_SET_NEG (r);
+          MPFR_RET (0); /* log10(0) is an exact -infinity */
+        }
     }
 
   /* If a is negative, the result is NaN */
@@ -112,16 +112,16 @@ mpfr_log10 (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
       /* estimation of the error */
       err = Nt - 4;
       if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
-	break;
+        break;
 
       /* log10(10^n) is exact:
-	 FIXME: Can we have 10^n exactly representable as a mpfr_t
-	 but n can't fit an unsigned long? */
+         FIXME: Can we have 10^n exactly representable as a mpfr_t
+         but n can't fit an unsigned long? */
       if (MPFR_IS_POS (t) 
-	  && mpfr_integer_p (t) && mpfr_fits_ulong_p (t, GMP_RNDN)
-	  && !mpfr_ui_pow_ui (tt, 10, mpfr_get_ui (t, GMP_RNDN), GMP_RNDN)
+          && mpfr_integer_p (t) && mpfr_fits_ulong_p (t, GMP_RNDN)
+          && !mpfr_ui_pow_ui (tt, 10, mpfr_get_ui (t, GMP_RNDN), GMP_RNDN)
           && mpfr_cmp (a, tt) == 0)
-	break;
+        break;
 
       /* actualisation of the precision */
       MPFR_ZIV_NEXT (loop, Nt);

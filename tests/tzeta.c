@@ -169,20 +169,20 @@ test2(void)
       mpfr_set_str1 (x, val[i]);
       mpfr_zeta(y, x, GMP_RNDZ);
       if (mpfr_cmp_str (y, val[i+1] , 2, GMP_RNDZ))
-	{
-	  printf("Wrong result for zeta(%s=", val[i]);
+        {
+          printf("Wrong result for zeta(%s=", val[i]);
           mpfr_print_binary (x);
           printf (").\nGot     : ");
-	  mpfr_print_binary(y); putchar('\n');
-	  printf("Expected: ");
-	  mpfr_set_str (y, val[i+1], 2, GMP_RNDZ);
-	  mpfr_print_binary(y); putchar('\n');
+          mpfr_print_binary(y); putchar('\n');
+          printf("Expected: ");
+          mpfr_set_str (y, val[i+1], 2, GMP_RNDZ);
+          mpfr_print_binary(y); putchar('\n');
           mpfr_set_prec(y, 65);
-	  mpfr_zeta(y, x, GMP_RNDZ);
-	  printf("+ Prec  : ");
-	  mpfr_print_binary(y); putchar('\n');
+          mpfr_zeta(y, x, GMP_RNDZ);
+          printf("+ Prec  : ");
+          mpfr_print_binary(y); putchar('\n');
           exit(1);
-	}
+        }
     }
   mpfr_clears(x, y, NULL);
 }

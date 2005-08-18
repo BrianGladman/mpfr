@@ -77,16 +77,16 @@ mpfr_set_q (mpfr_ptr f, mpq_srcptr q, mp_rnd_t rnd)
   if (MPFR_UNLIKELY (mpz_sgn (num) == 0))
     {
       if (MPFR_UNLIKELY (mpz_sgn (den) == 0))
-	{
-	  MPFR_SET_NAN (f);
-	  MPFR_RET_NAN;
-	}
+        {
+          MPFR_SET_NAN (f);
+          MPFR_RET_NAN;
+        }
       else
-	{
-	  MPFR_SET_ZERO (f);
-	  MPFR_SET_POS (f);
-	  MPFR_RET (0);
-	}
+        {
+          MPFR_SET_ZERO (f);
+          MPFR_SET_POS (f);
+          MPFR_RET (0);
+        }
     }
   if (MPFR_UNLIKELY (mpz_sgn (den) == 0))
     {
@@ -109,7 +109,7 @@ mpfr_set_q (mpfr_ptr f, mpq_srcptr q, mp_rnd_t rnd)
   if (MPFR_UNLIKELY (sn < MPFR_EMIN_MIN / BITS_PER_MP_LIMB -1))
     {
       if (rnd == GMP_RNDN)
-	rnd = GMP_RNDZ;
+        rnd = GMP_RNDZ;
       inexact = mpfr_underflow (f, rnd, MPFR_SIGN (f));
       goto end;
     }

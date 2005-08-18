@@ -48,7 +48,7 @@ check (mp_prec_t p0, mp_prec_t p1)
           mpfr_const_log2 (x, rnd);
           mpfr_set (y, z, rnd);
           if ((dif = mpfr_cmp (x, y)) 
-	      && mpfr_can_round (z, mpfr_get_prec(z), GMP_RNDN,
+              && mpfr_can_round (z, mpfr_get_prec(z), GMP_RNDN,
                                                  rnd, p0))
             {
               printf ("mpfr_const_log2 fails for prec=%u, rnd=%s Diff=%d\n",

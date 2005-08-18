@@ -68,7 +68,7 @@ mpfr_zeta_part_b (mpfr_t b, mpfr_srcptr s, int n, int p, mpfr_t *tc)
       /* since s is positive and the tc[i] have alternate signs,
          the following is unlikely */
       if (MPFR_UNLIKELY (mpfr_cmpabs (d, tc[p-l]) > 0))
-	mpfr_set (d, tc[p-l], GMP_RNDN);
+        mpfr_set (d, tc[p-l], GMP_RNDN);
     }
   mpfr_mul (d, d, s, GMP_RNDN);
   mpfr_add (s1, s, __gmpfr_one, GMP_RNDN);
@@ -94,17 +94,17 @@ mpfr_zeta_c (int p, mpfr_t *tc)
       mpfr_init2 (d, MPFR_PREC (tc[1]));
       mpfr_div_ui (tc[1], __gmpfr_one, 12, GMP_RNDN);
       for (k = 2; k <= p; k++)
-	{
-	  mpfr_set_ui (d, k-1, GMP_RNDN);
-	  mpfr_div_ui (d, d, 12*k+6, GMP_RNDN);
-	  for (l=2; l < k; l++)
-	    {
-	      mpfr_div_ui (d, d, 4*(2*k-2*l+3)*(2*k-2*l+2), GMP_RNDN);
-	      mpfr_add (d, d, tc[l], GMP_RNDN);
-	    }
-	  mpfr_div_ui (tc[k], d, 24, GMP_RNDN);
+        {
+          mpfr_set_ui (d, k-1, GMP_RNDN);
+          mpfr_div_ui (d, d, 12*k+6, GMP_RNDN);
+          for (l=2; l < k; l++)
+            {
+              mpfr_div_ui (d, d, 4*(2*k-2*l+3)*(2*k-2*l+2), GMP_RNDN);
+              mpfr_add (d, d, tc[l], GMP_RNDN);
+            }
+          mpfr_div_ui (tc[k], d, 24, GMP_RNDN);
           MPFR_CHANGE_SIGN (tc[k]);
-	}
+        }
       mpfr_clear (d);
     }
 }
@@ -201,19 +201,19 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
   for (;;)
     {
       /* Principal loop: we compute, in z_pre,
-	 an approximation of Zeta(s), that we send to can_round */
+         an approximation of Zeta(s), that we send to can_round */
       if (MPFR_GET_EXP (s1) <= -(mp_exp_t) ((mpfr_prec_t) (d-3)/2))
-	/* Branch 1: when s-1 is very small, one
+        /* Branch 1: when s-1 is very small, one
            uses the approximation Zeta(s)=1/(s-1)+gamma,
            where gamma is Euler's constant */
-	{
-	  dint = MAX (d + 3, precs);
-	  MPFR_TRACE (printf ("branch 1\ninternal precision=%d\n", dint));
+        {
+          dint = MAX (d + 3, precs);
+          MPFR_TRACE (printf ("branch 1\ninternal precision=%d\n", dint));
           MPFR_GROUP_REPREC_4 (group, dint, b, c, z_pre, f);
-	  mpfr_div (z_pre, __gmpfr_one, s1, GMP_RNDN);
-	  mpfr_const_euler (f, GMP_RNDN);
-	  mpfr_add (z_pre, z_pre, f, GMP_RNDN);
-	}
+          mpfr_div (z_pre, __gmpfr_one, s1, GMP_RNDN);
+          mpfr_const_euler (f, GMP_RNDN);
+          mpfr_add (z_pre, z_pre, f, GMP_RNDN);
+        }
       else /* Branch 2 */
         {
           size_t size;
@@ -267,7 +267,7 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
           mpfr_div (c, __gmpfr_one, s1, GMP_RNDN);
           mpfr_ui_pow (f, n, s1, GMP_RNDN);
           mpfr_div (c, c, f, GMP_RNDN);
-	  MPFR_TRACE (MPFR_DUMP (c));
+          MPFR_TRACE (MPFR_DUMP (c));
           mpfr_add (z_pre, z_pre, c, GMP_RNDN);
           mpfr_add (z_pre, z_pre, b, GMP_RNDN);
           for (l=1; l<=p; l++)
@@ -278,7 +278,7 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
 
       MPFR_TRACE (MPFR_DUMP (z_pre));
       if (MPFR_LIKELY (MPFR_CAN_ROUND (z_pre, d-3, precz, rnd_mode)))
-	break;
+        break;
       MPFR_ZIV_NEXT (loop, d);
     }
   MPFR_ZIV_FREE (loop);
@@ -305,31 +305,31 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
   MPFR_SAVE_EXPO_DECL (expo);
 
   MPFR_LOG_FUNC (("s[%#R]=%R rnd=%d", s, s, rnd_mode),
-		 ("z[%#R]=%R inexact=%d", z, z, inex));
+                 ("z[%#R]=%R inexact=%d", z, z, inex));
 
   /* Zero, Nan or Inf ? */
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (s)))
     {
       if (MPFR_IS_NAN (s))
-	{
-	  MPFR_SET_NAN (z);
-	  MPFR_RET_NAN;
-	}
+        {
+          MPFR_SET_NAN (z);
+          MPFR_RET_NAN;
+        }
       else if (MPFR_IS_INF (s))
-	{
-	  if (MPFR_IS_POS (s))
-	    return mpfr_set_ui (z, 1, GMP_RNDN); /* Zeta(+Inf) = 1 */
-	  MPFR_SET_NAN (z); /* Zeta(-Inf) = NaN */
-	  MPFR_RET_NAN;
-	}
+        {
+          if (MPFR_IS_POS (s))
+            return mpfr_set_ui (z, 1, GMP_RNDN); /* Zeta(+Inf) = 1 */
+          MPFR_SET_NAN (z); /* Zeta(-Inf) = NaN */
+          MPFR_RET_NAN;
+        }
       else /* s iz zero */
-	{
+        {
           MPFR_ASSERTD (MPFR_IS_ZERO (s));
-	  mpfr_set_ui (z, 1, rnd_mode);
-	  mpfr_div_2ui (z, z, 1, rnd_mode);
-	  MPFR_CHANGE_SIGN (z);
-	  MPFR_RET (0);
-	}
+          mpfr_set_ui (z, 1, rnd_mode);
+          mpfr_div_2ui (z, z, 1, rnd_mode);
+          MPFR_CHANGE_SIGN (z);
+          MPFR_RET (0);
+        }
     }
   /* s is neither Nan, nor Inf, nor Zero */
 
@@ -359,13 +359,13 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
       precs = MPFR_PREC (s);
 
       /* Precision precs1 needed to represent 1 - s, and s + 2,
-	 without any truncation */
+         without any truncation */
       precs1 = precs + 2 + MAX (0, - MPFR_GET_EXP (s));
       sd = mpfr_get_d (s, GMP_RNDN) - 1.0;
       if (sd < 0.0)
-	sd = -sd; /* now sd = abs(s-1.0) */
+        sd = -sd; /* now sd = abs(s-1.0) */
       /* Precision prec1 is the precision on elementary computations;
-	 it ensures a final precision prec1 - add for zeta(s) */
+         it ensures a final precision prec1 - add for zeta(s) */
       /* eps = pow (2.0, - (double) precz - 14.0); */
       eps = __gmpfr_ceil_exp2 (- (double) precz - 14.0);
       m1 = 1.0 + MAX(1.0 / eps,  2.0 * sd) * (1.0 + eps);
@@ -378,7 +378,7 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
       MPFR_GROUP_INIT_4 (group, prec1, z_pre, s1, y, p);
       MPFR_ZIV_INIT (loop, prec1);
       for (;;)
-	{
+        {
           mpfr_sub (s1, __gmpfr_one, s, GMP_RNDN);/* s1 = 1-s */
           mpfr_zeta_pos (z_pre, s1, GMP_RNDN);   /* zeta(1-s)  */
           mpfr_gamma (y, s1, GMP_RNDN);          /* gamma(1-s) */
@@ -395,10 +395,10 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
           mpfr_mul_2ui (z_pre, z_pre, 1, GMP_RNDN);
 
           if (MPFR_LIKELY (MPFR_CAN_ROUND (z_pre, prec1 - add, precz,
-					   rnd_mode)))
-	    break;
+                                           rnd_mode)))
+            break;
 
-	  MPFR_ZIV_NEXT (loop, prec1);
+          MPFR_ZIV_NEXT (loop, prec1);
           MPFR_GROUP_REPREC_4 (group, prec1, z_pre, s1, y, p);
         }
       MPFR_ZIV_FREE (loop);

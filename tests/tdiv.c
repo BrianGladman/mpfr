@@ -66,7 +66,7 @@ inex_cmp (int a, int b)
 
 static void
 check4 (const char *Ns, const char *Ds, mp_rnd_t rnd_mode, int p, 
-	const char *Qs)
+        const char *Qs)
 {
   mpfr_t q, n, d;
 
@@ -166,21 +166,21 @@ check_double(void)
 {
   check53("0.0", "1.0", GMP_RNDZ, "0.0");
   check53("-7.4988969224688591e63", "4.8816866450288732e306", GMP_RNDD,
-	  "-1.5361282826510687291e-243");
+          "-1.5361282826510687291e-243");
   check53("-1.33225773037748601769e+199", "3.63449540676937123913e+79",
-	  GMP_RNDZ, "-3.6655920045905428978e119");
+          GMP_RNDZ, "-3.6655920045905428978e119");
   check53("9.89438396044940256501e-134", "5.93472984109987421717e-67",GMP_RNDU,
-	  "1.6672003992376663654e-67");
+          "1.6672003992376663654e-67");
   check53("9.89438396044940256501e-134", "-5.93472984109987421717e-67",
-	  GMP_RNDU, "-1.6672003992376663654e-67");
+          GMP_RNDU, "-1.6672003992376663654e-67");
   check53("-4.53063926135729747564e-308", "7.02293374921793516813e-84",
-	  GMP_RNDD, "-6.4512060388748850857e-225");
+          GMP_RNDD, "-6.4512060388748850857e-225");
   check53("6.25089225176473806123e-01","-2.35527154824420243364e-230",
-	  GMP_RNDD, "-2.6540006635008291192e229");
+          GMP_RNDD, "-2.6540006635008291192e229");
   check53("6.52308934689126e15", "-1.62063546601505417497e273", GMP_RNDN,
-	  "-4.0250194961676020848e-258");
+          "-4.0250194961676020848e-258");
   check53("1.04636807108079349236e-189", "3.72295730823253012954e-292",
-	  GMP_RNDZ, "2.810583051186143125e102");
+          GMP_RNDZ, "2.810583051186143125e102");
   /* problems found by Kevin under HP-PA */
   check53 ("2.861044553323177e-136", "-1.1120354257068143e+45", GMP_RNDZ,
            "-2.5727998292003016e-181");
@@ -309,41 +309,41 @@ check_hard (void)
           else /* use q2=1 */
             mpfr_set_ui (q2, 1, GMP_RNDN);
       for (precv = precq; precv <= 10 * precq; precv += precq)
-	{
-	  mpfr_set_prec (v, precv);
-	  do
-	    {
-	      mpfr_random (v);
-	    }
-	  while (mpfr_cmp_ui (v, 0) == 0);
-	  for (precu = precq; precu <= 10 * precq; precu += precq)
-	    {
-	      mpfr_set_prec (u, precu);
-	      mpfr_mul (u, v, q2, GMP_RNDN);
-	      mpfr_nextbelow (u);
-	      for (i = 0; i <= 2; i++)
-		{
-		  for (rnd = 0; rnd < GMP_RND_MAX; rnd++)
-		    {
-		      inex = test_div (q, u, v, (mp_rnd_t) rnd);
-		      inex2 = get_inexact (q, u, v);
-		      if (inex_cmp (inex, inex2))
-			{
-			  printf ("Wrong inexact flag for rnd=%s: expected %d, got %d\n",
-				  mpfr_print_rnd_mode ((mp_rnd_t) rnd), inex2, inex);
-			  printf ("u=  "); mpfr_dump (u);
-			  printf ("v=  "); mpfr_dump (v);
-			  printf ("q=  "); mpfr_dump (q);
-			  mpfr_set_prec (q2, precq + precv);
-			  mpfr_mul (q2, q, v, GMP_RNDN);
-			  printf ("q*v="); mpfr_dump (q2);
-			  exit (1);
-			}
-		    }
-		  mpfr_nextabove (u);
-		}
-	    }
-	}
+        {
+          mpfr_set_prec (v, precv);
+          do
+            {
+              mpfr_random (v);
+            }
+          while (mpfr_cmp_ui (v, 0) == 0);
+          for (precu = precq; precu <= 10 * precq; precu += precq)
+            {
+              mpfr_set_prec (u, precu);
+              mpfr_mul (u, v, q2, GMP_RNDN);
+              mpfr_nextbelow (u);
+              for (i = 0; i <= 2; i++)
+                {
+                  for (rnd = 0; rnd < GMP_RND_MAX; rnd++)
+                    {
+                      inex = test_div (q, u, v, (mp_rnd_t) rnd);
+                      inex2 = get_inexact (q, u, v);
+                      if (inex_cmp (inex, inex2))
+                        {
+                          printf ("Wrong inexact flag for rnd=%s: expected %d, got %d\n",
+                                  mpfr_print_rnd_mode ((mp_rnd_t) rnd), inex2, inex);
+                          printf ("u=  "); mpfr_dump (u);
+                          printf ("v=  "); mpfr_dump (v);
+                          printf ("q=  "); mpfr_dump (q);
+                          mpfr_set_prec (q2, precq + precv);
+                          mpfr_mul (q2, q, v, GMP_RNDN);
+                          printf ("q*v="); mpfr_dump (q2);
+                          exit (1);
+                        }
+                    }
+                  mpfr_nextabove (u);
+                }
+            }
+        }
         }
     }
 
@@ -405,7 +405,7 @@ check_lowr (void)
       mpfr_mul (x, z, tmp, GMP_RNDN); /* exact */
       c = test_div (z2, x, tmp, GMP_RNDN);
       /* since z2 has one less bit that z, either the division is exact
-	 if z is representable on 9 bits, or we have an even round case */
+         if z is representable on 9 bits, or we have an even round case */
 
       c2 = get_inexact (z2, x, tmp);
       if ((mpfr_cmp (z2, z) == 0 && c) || inex_cmp (c, c2))
@@ -417,8 +417,8 @@ check_lowr (void)
           exit (1);
         }
       else if (c == 2)
-	{
-	  mpfr_nexttoinf (z);
+        {
+          mpfr_nexttoinf (z);
           if (mpfr_cmp(z2, z))
             {
               printf ("Error in mpfr_div [even rnd?] rnd=GMP_RNDN\n");
@@ -487,8 +487,8 @@ check_lowr (void)
       if (c != 1 || mpfr_cmp (z2, z))
         {
           printf ("Error in mpfr_div rnd=GMP_RNDU\n");
-	  printf ("u="); mpfr_dump (x);
-	  printf ("v="); mpfr_dump (y);
+          printf ("u="); mpfr_dump (x);
+          printf ("v="); mpfr_dump (y);
           printf ("got        "); mpfr_print_binary (z2); puts ("");
           printf ("instead of "); mpfr_print_binary (z); puts ("");
           printf ("inex flag = %d\n", c);
@@ -581,38 +581,38 @@ check_inexact (void)
       mpfr_set_prec (x, px);
       mpfr_random (x);
       for (pu=2; pu<=MAX_PREC; pu++)
-	{
-	  mpfr_set_prec (u, pu);
-	  do { mpfr_random (u); } while (mpfr_cmp_ui (u, 0) == 0);
-	    {
+        {
+          mpfr_set_prec (u, pu);
+          do { mpfr_random (u); } while (mpfr_cmp_ui (u, 0) == 0);
+            {
               py = MPFR_PREC_MIN + (randlimb () % (MAX_PREC - MPFR_PREC_MIN));
-	      mpfr_set_prec (y, py);
-	      mpfr_set_prec (z, py + pu);
-		{
+              mpfr_set_prec (y, py);
+              mpfr_set_prec (z, py + pu);
+                {
                   rnd = (mp_rnd_t) RND_RAND ();
-		  inexact = test_div (y, x, u, rnd);
-		  if (mpfr_mul (z, y, u, rnd))
-		    {
-		      printf ("z <- y * u should be exact\n");
-		      exit (1);
-		    }
-		  cmp = mpfr_cmp (z, x);
-		  if (((inexact == 0) && (cmp != 0)) ||
-		      ((inexact > 0) && (cmp <= 0)) ||
-		      ((inexact < 0) && (cmp >= 0)))
-		    {
-		      printf ("Wrong inexact flag for rnd=%s\n",
+                  inexact = test_div (y, x, u, rnd);
+                  if (mpfr_mul (z, y, u, rnd))
+                    {
+                      printf ("z <- y * u should be exact\n");
+                      exit (1);
+                    }
+                  cmp = mpfr_cmp (z, x);
+                  if (((inexact == 0) && (cmp != 0)) ||
+                      ((inexact > 0) && (cmp <= 0)) ||
+                      ((inexact < 0) && (cmp >= 0)))
+                    {
+                      printf ("Wrong inexact flag for rnd=%s\n",
                               mpfr_print_rnd_mode(rnd));
-		      printf ("expected %d, got %d\n", cmp, inexact);
-		      printf ("x="); mpfr_print_binary (x); puts ("");
-		      printf ("u="); mpfr_print_binary (u); puts ("");
-		      printf ("y="); mpfr_print_binary (y); puts ("");
-		      printf ("y*u="); mpfr_print_binary (z); puts ("");
-		      exit (1);
-		    }
-		}
-	    }
-	}
+                      printf ("expected %d, got %d\n", cmp, inexact);
+                      printf ("x="); mpfr_print_binary (x); puts ("");
+                      printf ("u="); mpfr_print_binary (u); puts ("");
+                      printf ("y="); mpfr_print_binary (y); puts ("");
+                      printf ("y*u="); mpfr_print_binary (z); puts ("");
+                      exit (1);
+                    }
+                }
+            }
+        }
     }
 
   mpfr_clear (x);
@@ -755,7 +755,7 @@ main (int argc, char *argv[])
   check4("1.0","2.10263340267725788209e+187", GMP_RNDU, 65, 
    "0.11010011111001101011111001100111110100000001101001111100111000000E-622");
   check4("2.44394909079968374564e-150", "2.10263340267725788209e+187",GMP_RNDU,
-	 65, 
+         65, 
   "0.11010011111001101011111001100111110100000001101001111100111000000E-1119");
 
   test_generic (2, 800, 50);

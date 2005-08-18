@@ -112,7 +112,7 @@ mpfr_const_catalan_internal (mpfr_ptr g, mp_rnd_t rnd_mode)
   */
   pg = MPFR_PREC (g);
   p = pg + 8; /* pg + 7 avoids failure up for pg < 912
-		 pg + 8 gives no failure up to pg = 10000 */
+                 pg + 8 gives no failure up to pg = 10000 */
   p += MPFR_INT_CEIL_LOG2 (p);
 
   MPFR_GROUP_INIT_3 (group, p, x, y, z);

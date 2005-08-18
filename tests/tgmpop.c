@@ -146,32 +146,32 @@ check_for_zero ()
   for(r = 0 ; r < GMP_RND_MAX ; r++)
     {
       for (i = MPFR_SIGN_NEG ; i <= MPFR_SIGN_POS ; 
-	   i+=MPFR_SIGN_POS-MPFR_SIGN_NEG)
-	{
-	  MPFR_SET_SIGN(x, i);
-	  mpfr_add_z (x, x, z, (mp_rnd_t) r);
-	  if (!MPFR_IS_ZERO(x) || MPFR_SIGN(x)!=i)
-	    {
+           i+=MPFR_SIGN_POS-MPFR_SIGN_NEG)
+        {
+          MPFR_SET_SIGN(x, i);
+          mpfr_add_z (x, x, z, (mp_rnd_t) r);
+          if (!MPFR_IS_ZERO(x) || MPFR_SIGN(x)!=i)
+            {
               printf("GMP Zero errors for add_z & rnd=%s & s=%d\n", 
-		     mpfr_print_rnd_mode ((mp_rnd_t) r), i);
-	      mpfr_dump (x);
-	      exit (1);
-	    }
-	  mpfr_sub_z (x, x, z, (mp_rnd_t) r);
-	  if (!MPFR_IS_ZERO(x) || MPFR_SIGN(x)!=i)
-	    {
-	      printf("GMP Zero errors for sub_z & rnd=%s & s=%d\n",
-		     mpfr_print_rnd_mode ((mp_rnd_t) r), i);
-	      mpfr_dump (x);
-	      exit (1);
-	    }
-	  mpfr_mul_z (x, x, z, (mp_rnd_t) r);
+                     mpfr_print_rnd_mode ((mp_rnd_t) r), i);
+              mpfr_dump (x);
+              exit (1);
+            }
+          mpfr_sub_z (x, x, z, (mp_rnd_t) r);
+          if (!MPFR_IS_ZERO(x) || MPFR_SIGN(x)!=i)
+            {
+              printf("GMP Zero errors for sub_z & rnd=%s & s=%d\n",
+                     mpfr_print_rnd_mode ((mp_rnd_t) r), i);
+              mpfr_dump (x);
+              exit (1);
+            }
+          mpfr_mul_z (x, x, z, (mp_rnd_t) r);
           if (!MPFR_IS_ZERO(x) || MPFR_SIGN(x)!=i)
             {
               printf("GMP Zero errors for mul_z & rnd=%s & s=%d\n",
                      mpfr_print_rnd_mode ((mp_rnd_t) r), i);
               mpfr_dump (x);
-	      exit (1);
+              exit (1);
             }
           mpfr_add_q (x, x, q, (mp_rnd_t) r);
           if (!MPFR_IS_ZERO(x) || MPFR_SIGN(x)!=i)
@@ -189,7 +189,7 @@ check_for_zero ()
               mpfr_dump (x);
               exit (1);
              }
-	}
+        }
     }
 
   mpq_clear (q);
@@ -213,22 +213,22 @@ test_cmp_z (mp_prec_t pmin, mp_prec_t pmax, int nmax)
     {
       mpfr_set_prec (x, p);
       for ( n = 0; n < nmax ; n++)
-	{
-	  mpfr_urandomb (x, RANDS);
-	  mpz_urandomb  (y, RANDS, 1024);
-	  if (!MPFR_IS_SINGULAR (x))
-	    {
-	      mpfr_sub_z (z, x, y, GMP_RNDN);
-	      res1 = mpfr_sgn (z);
-	      res2 = mpfr_cmp_z (x, y);
-	      if (res1 != res2)
-		{
-		  printf("Error for mpfr_cmp_z: res=%d sub_z gives %d\n",
-			 res2, res1);
-		  exit (1);
-		}
-	    }
-	}
+        {
+          mpfr_urandomb (x, RANDS);
+          mpz_urandomb  (y, RANDS, 1024);
+          if (!MPFR_IS_SINGULAR (x))
+            {
+              mpfr_sub_z (z, x, y, GMP_RNDN);
+              res1 = mpfr_sgn (z);
+              res2 = mpfr_cmp_z (x, y);
+              if (res1 != res2)
+                {
+                  printf("Error for mpfr_cmp_z: res=%d sub_z gives %d\n",
+                         res2, res1);
+                  exit (1);
+                }
+            }
+        }
     }
   mpz_clear (y);
   mpfr_clear (x);
@@ -251,22 +251,22 @@ test_cmp_q (mp_prec_t pmin, mp_prec_t pmax, int nmax)
     {
       mpfr_set_prec (x, p);
       for (n = 0 ; n < nmax ; n++)
-	{
-	  mpfr_urandomb (x, RANDS);
+        {
+          mpfr_urandomb (x, RANDS);
           mpq_set_ui (y, randlimb (), randlimb() );
-	  if (!MPFR_IS_SINGULAR (x))
-	    {
-	      mpfr_sub_q (z, x, y, GMP_RNDN);
-	      res1 = mpfr_sgn (z);
-	      res2 = mpfr_cmp_q (x, y);
-	      if (res1 != res2)
-		{
-		  printf("Error for mpfr_cmp_q: res=%d sub_z gives %d\n",
-			 res2, res1);
-		  exit (1);
-		}
-	    }
-	}
+          if (!MPFR_IS_SINGULAR (x))
+            {
+              mpfr_sub_q (z, x, y, GMP_RNDN);
+              res1 = mpfr_sgn (z);
+              res2 = mpfr_cmp_q (x, y);
+              if (res1 != res2)
+                {
+                  printf("Error for mpfr_cmp_q: res=%d sub_z gives %d\n",
+                         res2, res1);
+                  exit (1);
+                }
+            }
+        }
     }
   mpq_clear (y);
   mpfr_clear (x);
@@ -295,8 +295,8 @@ test_cmp_f (mp_prec_t pmin, mp_prec_t pmax, int nmax)
           mpf_urandomb  (y, RANDS, p);
           if (!MPFR_IS_SINGULAR (x))
             {
-	      mpfr_set_f (z, y, GMP_RNDN);
-	      mpfr_sub   (z, x, z, GMP_RNDN);
+              mpfr_set_f (z, y, GMP_RNDN);
+              mpfr_sub   (z, x, z, GMP_RNDN);
               res1 = mpfr_sgn (z);
               res2 = mpfr_cmp_f (x, y);
               if (res1 != res2)
@@ -315,8 +315,8 @@ test_cmp_f (mp_prec_t pmin, mp_prec_t pmax, int nmax)
 
 static void
 test_specialz (int (*mpfr_func)(mpfr_ptr, mpfr_srcptr, mpz_srcptr, mp_rnd_t),
-	       void (*mpz_func)(mpz_ptr, mpz_srcptr, mpz_srcptr),
-	       const char *op)
+               void (*mpz_func)(mpz_ptr, mpz_srcptr, mpz_srcptr),
+               const char *op)
 {
   mpfr_t x1, x2;
   mpz_t  z1, z2;
@@ -390,8 +390,8 @@ test_specialz (int (*mpfr_func)(mpfr_ptr, mpfr_srcptr, mpz_srcptr, mp_rnd_t),
 
 static void
 test_genericz (mp_prec_t p0, mp_prec_t p1, unsigned int N,
-	       int (*func)(mpfr_ptr, mpfr_srcptr, mpz_srcptr, mp_rnd_t),
-	       const char *op)
+               int (*func)(mpfr_ptr, mpfr_srcptr, mpz_srcptr, mp_rnd_t),
+               const char *op)
 {
   mp_prec_t prec;
   mpfr_t arg1, dst_big, dst_small, tmp;
@@ -412,7 +412,7 @@ test_genericz (mp_prec_t p0, mp_prec_t p1, unsigned int N,
       for (n=0; n<N; n++)
         {
           mpfr_urandomb (arg1, RANDS);
-	  mpz_urandomb (arg2, RANDS, 1024);
+          mpz_urandomb (arg2, RANDS, 1024);
           rnd = (mp_rnd_t) RND_RAND ();
           mpfr_set_prec (dst_big, 2*prec);
           compare = func(dst_big, arg1, arg2, rnd);
@@ -422,43 +422,43 @@ test_genericz (mp_prec_t p0, mp_prec_t p1, unsigned int N,
               inexact = func(dst_small, arg1, arg2, rnd);
               if (mpfr_cmp (tmp, dst_small))
                 {
-		  printf ("Results differ for prec=%u rnd_mode=%s and %s_z:\n"
-			  "arg1=",
+                  printf ("Results differ for prec=%u rnd_mode=%s and %s_z:\n"
+                          "arg1=",
                           (unsigned) prec, mpfr_print_rnd_mode (rnd), op);
-		  mpfr_print_binary (arg1);
-		  printf("\narg2=");  
-		  mpz_out_str (stdout, 2, arg2);
-		  printf ("\ngot      ");
-		  mpfr_dump (dst_small);
-		  printf ("expected ");
-		  mpfr_dump (tmp);
-		  printf ("approx   ");
-		  mpfr_dump (dst_big);
-		  exit (1);
-		}
-	      compare2 = mpfr_cmp (tmp, dst_big);
-	      /* if rounding to nearest, cannot know the sign of t - f(x)
-		 because of composed rounding: y = o(f(x)) and t = o(y) */
-	      if (compare * compare2 >= 0)
-		compare = compare + compare2;
-	      else
-		compare = inexact; /* cannot determine sign(t-f(x)) */
-	      if (((inexact == 0) && (compare != 0)) ||
-		  ((inexact > 0) && (compare <= 0)) ||
-		  ((inexact < 0) && (compare >= 0)))
-		{
-		  printf ("Wrong inexact flag for rnd=%s and %s_z:\n"
-			  "expected %d, got %d\n", 
-			  mpfr_print_rnd_mode (rnd), op, compare, inexact);
-		  printf ("\narg1="); mpfr_print_binary (arg1);
-		  printf ("\narg2="); mpz_out_str(stdout, 2, arg2);
-		  printf ("\ndstl="); mpfr_print_binary (dst_big); 
-		  printf ("\ndsts="); mpfr_print_binary (dst_small); 
+                  mpfr_print_binary (arg1);
+                  printf("\narg2=");  
+                  mpz_out_str (stdout, 2, arg2);
+                  printf ("\ngot      ");
+                  mpfr_dump (dst_small);
+                  printf ("expected ");
+                  mpfr_dump (tmp);
+                  printf ("approx   ");
+                  mpfr_dump (dst_big);
+                  exit (1);
+                }
+              compare2 = mpfr_cmp (tmp, dst_big);
+              /* if rounding to nearest, cannot know the sign of t - f(x)
+                 because of composed rounding: y = o(f(x)) and t = o(y) */
+              if (compare * compare2 >= 0)
+                compare = compare + compare2;
+              else
+                compare = inexact; /* cannot determine sign(t-f(x)) */
+              if (((inexact == 0) && (compare != 0)) ||
+                  ((inexact > 0) && (compare <= 0)) ||
+                  ((inexact < 0) && (compare >= 0)))
+                {
+                  printf ("Wrong inexact flag for rnd=%s and %s_z:\n"
+                          "expected %d, got %d\n", 
+                          mpfr_print_rnd_mode (rnd), op, compare, inexact);
+                  printf ("\narg1="); mpfr_print_binary (arg1);
+                  printf ("\narg2="); mpz_out_str(stdout, 2, arg2);
+                  printf ("\ndstl="); mpfr_print_binary (dst_big); 
+                  printf ("\ndsts="); mpfr_print_binary (dst_small); 
                   printf ("\ntmp ="); mpfr_dump (tmp);
-		  exit (1);
-		}
-	    }
-	}
+                  exit (1);
+                }
+            }
+        }
     }
 
   mpz_clear (arg2);
@@ -468,7 +468,7 @@ test_genericz (mp_prec_t p0, mp_prec_t p1, unsigned int N,
 static void
 test_genericq (mp_prec_t p0, mp_prec_t p1, unsigned int N,
                int (*func)(mpfr_ptr, mpfr_srcptr, mpq_srcptr, mp_rnd_t),
-	       const char *op)
+               const char *op)
 {
   mp_prec_t prec;
   mpfr_t arg1, dst_big, dst_small, tmp;
@@ -490,7 +490,7 @@ test_genericq (mp_prec_t p0, mp_prec_t p1, unsigned int N,
         {
           mpfr_urandomb (arg1, RANDS);
           mpq_set_ui (arg2, randlimb (), randlimb() );
-	  mpq_canonicalize (arg2);
+          mpq_canonicalize (arg2);
           rnd = (mp_rnd_t) RND_RAND ();
           mpfr_set_prec (dst_big, prec+10);
           compare = func(dst_big, arg1, arg2, rnd);
@@ -501,7 +501,7 @@ test_genericq (mp_prec_t p0, mp_prec_t p1, unsigned int N,
               if (mpfr_cmp (tmp, dst_small))
                 {
                   printf ("Results differ for prec=%u rnd_mode=%s and %s_q:\n"
-			  "arg1=",
+                          "arg1=",
                           (unsigned) prec, mpfr_print_rnd_mode (rnd), op);
                   mpfr_print_binary (arg1);
                   printf("\narg2=");
@@ -512,7 +512,7 @@ test_genericq (mp_prec_t p0, mp_prec_t p1, unsigned int N,
                   mpfr_print_binary (tmp);
                   printf ("\napprox  ");
                   mpfr_print_binary (dst_big);
-		  putchar('\n');
+                  putchar('\n');
                   exit (1);
                 }
               compare2 = mpfr_cmp (tmp, dst_big);
@@ -527,14 +527,14 @@ test_genericq (mp_prec_t p0, mp_prec_t p1, unsigned int N,
                   ((inexact < 0) && (compare >= 0)))
                 {
                   printf ("Wrong inexact flag for rnd=%s and %s_q:\n"
-			  "expected %d, got %d", 
-			  mpfr_print_rnd_mode (rnd), op, compare, inexact);
+                          "expected %d, got %d", 
+                          mpfr_print_rnd_mode (rnd), op, compare, inexact);
                   printf ("\narg1="); mpfr_print_binary (arg1);
                   printf ("\narg2="); mpq_out_str(stdout, 2, arg2);
                   printf ("\ndstl="); mpfr_print_binary (dst_big);
                   printf ("\ndsts="); mpfr_print_binary (dst_small);
                   printf ("\ntmp ="); mpfr_print_binary (tmp);
-		  putchar('\n');
+                  putchar('\n');
                   exit (1);
                 }
             }
@@ -547,9 +547,9 @@ test_genericq (mp_prec_t p0, mp_prec_t p1, unsigned int N,
 
 static void
 test_specialq (mp_prec_t p0, mp_prec_t p1, unsigned int N,
-	       int (*mpfr_func)(mpfr_ptr, mpfr_srcptr, mpq_srcptr, mp_rnd_t),
+               int (*mpfr_func)(mpfr_ptr, mpfr_srcptr, mpq_srcptr, mp_rnd_t),
                void (*mpq_func)(mpq_ptr, mpq_srcptr, mpq_srcptr),
-	       const char *op)
+               const char *op)
 {
   mpfr_t fra, frb, frq;
   mpq_t  q1, q2, qr;
@@ -562,30 +562,30 @@ test_specialq (mp_prec_t p0, mp_prec_t p1, unsigned int N,
       mpq_init (q1); mpq_init(q2); mpq_init (qr);
 
       for( n = 0 ; n < N ; n++)
-	{
-	  mpq_set_ui(q1, randlimb(), randlimb() );
-	  mpq_set_ui(q2, randlimb(), randlimb() );
-	  mpq_canonicalize (q1);
-	  mpq_canonicalize (q2);
-	  mpq_func (qr, q1, q2);
-	  mpfr_set_q (fra, q1, GMP_RNDD);
-	  mpfr_func (fra, fra, q2, GMP_RNDD);
-	  mpfr_set_q (frb, q1, GMP_RNDU);
-	  mpfr_func (frb, frb, q2, GMP_RNDU);
-	  mpfr_set_q (frq, qr, GMP_RNDN);
-	  /* We should have fra <= qr <= frb */
-	  if ( (mpfr_cmp(fra, frq) > 0) || (mpfr_cmp (frq, frb) > 0))
-	    {
-	      printf("Range error for prec=%lu and %s", prec, op);
-	      printf ("\nq1="); mpq_out_str(stdout, 2, q1);
-	      printf ("\nq2="); mpq_out_str(stdout, 2, q2);
-	      printf ("\nfr_dn="); mpfr_print_binary (fra);
-	      printf ("\nfr_q ="); mpfr_print_binary (frq);
-	      printf ("\nfr_up="); mpfr_print_binary (frb);
-	      putchar('\n');
-	      exit (1);
-	    }
-	}
+        {
+          mpq_set_ui(q1, randlimb(), randlimb() );
+          mpq_set_ui(q2, randlimb(), randlimb() );
+          mpq_canonicalize (q1);
+          mpq_canonicalize (q2);
+          mpq_func (qr, q1, q2);
+          mpfr_set_q (fra, q1, GMP_RNDD);
+          mpfr_func (fra, fra, q2, GMP_RNDD);
+          mpfr_set_q (frb, q1, GMP_RNDU);
+          mpfr_func (frb, frb, q2, GMP_RNDU);
+          mpfr_set_q (frq, qr, GMP_RNDN);
+          /* We should have fra <= qr <= frb */
+          if ( (mpfr_cmp(fra, frq) > 0) || (mpfr_cmp (frq, frb) > 0))
+            {
+              printf("Range error for prec=%lu and %s", prec, op);
+              printf ("\nq1="); mpq_out_str(stdout, 2, q1);
+              printf ("\nq2="); mpq_out_str(stdout, 2, q2);
+              printf ("\nfr_dn="); mpfr_print_binary (fra);
+              printf ("\nfr_q ="); mpfr_print_binary (frq);
+              printf ("\nfr_up="); mpfr_print_binary (frb);
+              putchar('\n');
+              exit (1);
+            }
+        }
 
       mpq_clear (q1); mpq_clear (q2); mpq_clear (qr);
       mpfr_clears (fra, frb, frq, NULL);

@@ -154,27 +154,27 @@ static void check_integer (mp_prec_t begin, mp_prec_t end, unsigned long max) {
       mpfr_mul_2ui (x, x, 1, GMP_RNDN); /* 0 <= x < 2 */
       rnd = (mp_rnd_t) RND_RAND ();
       if (mpz_fits_slong_p (z)) {
-	n = mpz_get_si (z);
-	/* printf ("New test for x=%ld\nCheck Pow_si\n", n); */
-	res1 = mpfr_pow_si (y1, x, n, rnd);
-	/* printf ("Check pow_z\n"); */
-	res2 = mpfr_pow_z  (y2, x, z, rnd);
-	if (mpfr_cmp (y1, y2) != 0) {
-	  printf ("Error for p=%lu, z=%ld, rnd=%s and x=", p, n, 
-		  mpfr_print_rnd_mode (rnd)); 
-	  mpfr_dump (x);
-	  printf ("Ypowui="); mpfr_dump (y1);
-	  printf ("Ypowz ="); mpfr_dump (y2);
-	  exit (1);
-	}
-	if (res1 != res2) {
-	  printf ("Wrong inexact flags for p=%lu, z=%ld, rnd=%s and x=", p, n,
+        n = mpz_get_si (z);
+        /* printf ("New test for x=%ld\nCheck Pow_si\n", n); */
+        res1 = mpfr_pow_si (y1, x, n, rnd);
+        /* printf ("Check pow_z\n"); */
+        res2 = mpfr_pow_z  (y2, x, z, rnd);
+        if (mpfr_cmp (y1, y2) != 0) {
+          printf ("Error for p=%lu, z=%ld, rnd=%s and x=", p, n, 
+                  mpfr_print_rnd_mode (rnd)); 
+          mpfr_dump (x);
+          printf ("Ypowui="); mpfr_dump (y1);
+          printf ("Ypowz ="); mpfr_dump (y2);
+          exit (1);
+        }
+        if (res1 != res2) {
+          printf ("Wrong inexact flags for p=%lu, z=%ld, rnd=%s and x=", p, n,
                   mpfr_print_rnd_mode (rnd));
-	  mpfr_dump (x);
+          mpfr_dump (x);
           printf ("Ypowui(%d)=", res1); mpfr_dump (y1);
           printf ("Ypowz (%d)=", res2); mpfr_dump (y2);
-	  exit (1);
-	}
+          exit (1);
+        }
       }
     } /* for i */
   } /* for p */

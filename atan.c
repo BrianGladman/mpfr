@@ -86,10 +86,10 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
         MPFR_ASSERTD (k > 0);
         mpz_mul (S[k], S[k], ptoj[l]);
         mpz_mul (S[k], S[k], T[k-1]);
-	mpz_mul (S[k-1], S[k-1], T[k]);
-	mpz_mul_2exp (S[k-1], S[k-1], r<<l);
-	mpz_add (S[k-1], S[k-1], S[k]);
-	mpz_mul (T[k-1], T[k-1], T[k]);
+        mpz_mul (S[k-1], S[k-1], T[k]);
+        mpz_mul_2exp (S[k-1], S[k-1], r<<l);
+        mpz_add (S[k-1], S[k-1], S[k]);
+        mpz_mul (T[k-1], T[k-1], T[k]);
       }
     }
   } else {
@@ -102,10 +102,10 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
       for (j = (i+2)>>1, l = 1; (j & 1) == 0; l++, j>>=1, k--) {
         MPFR_ASSERTD (k > 0);
         mpz_mul (S[k], S[k], T[k-1]);
-	mpz_mul (S[k-1], S[k-1], T[k]);
-	mpz_mul_2exp (S[k-1], S[k-1], r<<l);
-	mpz_add (S[k-1], S[k-1], S[k]);
-	mpz_mul (T[k-1], T[k-1], T[k]);
+        mpz_mul (S[k-1], S[k-1], T[k]);
+        mpz_mul_2exp (S[k-1], S[k-1], r<<l);
+        mpz_add (S[k-1], S[k-1], S[k]);
+        mpz_mul (T[k-1], T[k-1], T[k]);
       }
     }
   }
@@ -148,38 +148,38 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_ZIV_DECL (loop);
 
   MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
-		 ("atan[%#R]=%R inexact=%d", atan, atan, inexact));
+                 ("atan[%#R]=%R inexact=%d", atan, atan, inexact));
 
   /* Singular cases */
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
       if (MPFR_IS_NAN (x))
-	{
-	  MPFR_SET_NAN (atan);
-	  MPFR_RET_NAN;
-	}
+        {
+          MPFR_SET_NAN (atan);
+          MPFR_RET_NAN;
+        }
       else if (MPFR_IS_INF (x))
-	{
-	  if (MPFR_IS_POS (x))  /* arctan(+inf) = Pi/2 */
-	    inexact = mpfr_const_pi (atan, rnd_mode);
-	  else /* arctan(-inf) = -Pi/2 */
-	    {
-	      inexact = -mpfr_const_pi (atan,
-					MPFR_INVERT_RND (rnd_mode));
-	      MPFR_CHANGE_SIGN (atan);
-	    }
-	  inexact2 = mpfr_div_2ui (atan, atan, 1, rnd_mode);
-	  if (MPFR_UNLIKELY (inexact2))
-	    inexact = inexact2; /* An underflow occurs */
-	  MPFR_RET (inexact);
-	}
+        {
+          if (MPFR_IS_POS (x))  /* arctan(+inf) = Pi/2 */
+            inexact = mpfr_const_pi (atan, rnd_mode);
+          else /* arctan(-inf) = -Pi/2 */
+            {
+              inexact = -mpfr_const_pi (atan,
+                                        MPFR_INVERT_RND (rnd_mode));
+              MPFR_CHANGE_SIGN (atan);
+            }
+          inexact2 = mpfr_div_2ui (atan, atan, 1, rnd_mode);
+          if (MPFR_UNLIKELY (inexact2))
+            inexact = inexact2; /* An underflow occurs */
+          MPFR_RET (inexact);
+        }
       else /* x is necessarily 0 */
-	{
+        {
           MPFR_ASSERTD (MPFR_IS_ZERO (x));
-	  MPFR_SET_ZERO (atan);
+          MPFR_SET_ZERO (atan);
           MPFR_SET_SAME_SIGN (atan, x);
-	  MPFR_RET (0);
- 	}
+          MPFR_RET (0);
+        }
     }
 
   /* atan(x) = x - x^3/3 + x^5/5...
@@ -204,7 +204,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
         }
       inexact2 = mpfr_div_2ui (atan, atan, 2, rnd_mode);
       if (MPFR_UNLIKELY (inexact2))
-	inexact = inexact2; /* an underflow occurs */
+        inexact = inexact2; /* an underflow occurs */
       return inexact;
     }
 
@@ -223,7 +223,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
   for (;;)
     {
       /* First, if |x| < 1, we need to have more prec to be able to round (sup)
-	 n0 = ceil(log(prec_requested + 2 + 1+ln(2.4)/ln(2))/log(2)) */
+         n0 = ceil(log(prec_requested + 2 + 1+ln(2.4)/ln(2))/log(2)) */
       mp_prec_t sup;
 #if 0
       sup = 1;
@@ -248,17 +248,17 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
         }
       else if (MPFR_UNLIKELY (oldn0 < 3*n0+1))
         {
-	  tabz = (mpz_t *) (*__gmp_reallocate_func)
-	    (tabz, oldn0*sizeof (mpz_t), 3*(n0+1)*sizeof (mpz_t));
+          tabz = (mpz_t *) (*__gmp_reallocate_func)
+            (tabz, oldn0*sizeof (mpz_t), 3*(n0+1)*sizeof (mpz_t));
           for (i = oldn0; i < 3*(n0+1); i++)
             mpz_init (tabz[i]);
           oldn0 = 3*(n0+1);
         }
 
       if (comparaison > 0)
-	mpfr_ui_div (sk, 1, xp, GMP_RNDN);
+        mpfr_ui_div (sk, 1, xp, GMP_RNDN);
       else
-	mpfr_set (sk, xp, GMP_RNDN);
+        mpfr_set (sk, xp, GMP_RNDN);
 
       /* sk is 1/|x| if |x| > 1, and |x| otherwise, i.e. min(|x|, 1/|x|) */
 
@@ -273,43 +273,43 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
           /* Calculation of trunc(tmp) --> mpz */
           mpfr_mul_2ui (tmp, sk, twopoweri, GMP_RNDN);
           mpfr_trunc (tmp, tmp);
-	  if (!MPFR_IS_ZERO (tmp))
-	    {
-	      exptol = mpfr_get_z_exp (ukz, tmp);
-	      /* since the s_k are decreasing (see algorithms.tex),
-		 and s_0 = min(|x|, 1/|x|) < 1, we have sk < 1,
-		 thus exptol < 0 */
-	      MPFR_ASSERTD (exptol < 0);
-	      mpz_tdiv_q_2exp (ukz, ukz, (unsigned long int) (-exptol));
-	      /* Calculation of arctan(Ak) */
-	      mpfr_set_z (tmp, ukz, GMP_RNDN);
-	      mpfr_div_2ui (tmp, tmp, twopoweri, GMP_RNDN);
+          if (!MPFR_IS_ZERO (tmp))
+            {
+              exptol = mpfr_get_z_exp (ukz, tmp);
+              /* since the s_k are decreasing (see algorithms.tex),
+                 and s_0 = min(|x|, 1/|x|) < 1, we have sk < 1,
+                 thus exptol < 0 */
+              MPFR_ASSERTD (exptol < 0);
+              mpz_tdiv_q_2exp (ukz, ukz, (unsigned long int) (-exptol));
+              /* Calculation of arctan(Ak) */
+              mpfr_set_z (tmp, ukz, GMP_RNDN);
+              mpfr_div_2ui (tmp, tmp, twopoweri, GMP_RNDN);
               MPFR_ASSERTD (2*twopoweri > twopoweri);
-	      mpfr_atan_aux (tmp2, ukz, 2*twopoweri, n0 - i, tabz);
-	      mpfr_mul (tmp2, tmp2, tmp, GMP_RNDN);
-	      /* Addition */
-	      mpfr_add (arctgt, arctgt, tmp2, GMP_RNDN);
+              mpfr_atan_aux (tmp2, ukz, 2*twopoweri, n0 - i, tabz);
+              mpfr_mul (tmp2, tmp2, tmp, GMP_RNDN);
+              /* Addition */
+              mpfr_add (arctgt, arctgt, tmp2, GMP_RNDN);
               /* Next iteration */
               mpfr_sub (tmp2, sk, tmp, GMP_RNDN);
               mpfr_mul (sk, sk, tmp, GMP_RNDN);
               mpfr_add_ui (sk, sk, 1, GMP_RNDN);
               mpfr_div (sk, tmp2, sk, GMP_RNDN);
-	    }
+            }
           twopoweri <<= 1;
         }
       /* Add last step (Arctan(sk) ~= sk */
       mpfr_add (arctgt, arctgt, sk, GMP_RNDN);
       if (comparaison > 0)
-	{
-	  mpfr_const_pi (tmp, GMP_RNDN);
-	  mpfr_div_2ui (tmp, tmp, 1, GMP_RNDN);
-	  mpfr_sub (arctgt, tmp, arctgt, GMP_RNDN);
-	}
+        {
+          mpfr_const_pi (tmp, GMP_RNDN);
+          mpfr_div_2ui (tmp, tmp, 1, GMP_RNDN);
+          mpfr_sub (arctgt, tmp, arctgt, GMP_RNDN);
+        }
       MPFR_SET_POS (arctgt);
 
       if (MPFR_LIKELY (MPFR_CAN_ROUND (arctgt, realprec, MPFR_PREC (atan),
-				       rnd_mode)))
-	break;
+                                       rnd_mode)))
+        break;
       MPFR_ZIV_NEXT (loop, realprec);
     }
   MPFR_ZIV_FREE (loop);

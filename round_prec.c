@@ -72,7 +72,7 @@ mpfr_prec_round (mpfr_ptr x, mp_prec_t prec, mp_rnd_t rnd_mode)
     {
       MPFR_PREC(x) = prec; /* Special value: need to set prec */
       if (MPFR_IS_NAN(x))
-	MPFR_RET_NAN;
+        MPFR_RET_NAN;
       MPFR_ASSERTD(MPFR_IS_INF(x) || MPFR_IS_ZERO(x));
       return 0; /* infinity and zero are exact */
     }
@@ -119,13 +119,13 @@ mpfr_prec_round (mpfr_ptr x, mp_prec_t prec, mp_rnd_t rnd_mode)
 
 int
 mpfr_can_round (mpfr_srcptr b, mp_exp_t err, mp_rnd_t rnd1,
-		mp_rnd_t rnd2, mp_prec_t prec)
+                mp_rnd_t rnd2, mp_prec_t prec)
 {
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(b)))
     return 0; /* We cannot round if Zero, Nan or Inf */ 
   else
     return mpfr_can_round_raw(MPFR_MANT(b), MPFR_LIMB_SIZE(b),
-			      MPFR_SIGN(b), err, rnd1, rnd2, prec);
+                              MPFR_SIGN(b), err, rnd1, rnd2, prec);
 }
 
 int

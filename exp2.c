@@ -36,24 +36,24 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
       if (MPFR_IS_NAN (x))
-	{
-	  MPFR_SET_NAN (y);
-	  MPFR_RET_NAN;
-	}
+        {
+          MPFR_SET_NAN (y);
+          MPFR_RET_NAN;
+        }
       else if (MPFR_IS_INF (x))
-	{
-	  if (MPFR_IS_POS (x))
-	    MPFR_SET_INF (y);
-	  else
-	    MPFR_SET_ZERO (y);
-	  MPFR_SET_POS (y);
-	  MPFR_RET (0);
-	}
+        {
+          if (MPFR_IS_POS (x))
+            MPFR_SET_INF (y);
+          else
+            MPFR_SET_ZERO (y);
+          MPFR_SET_POS (y);
+          MPFR_RET (0);
+        }
       else /* 2^0 = 1 */
-	{
-	  MPFR_ASSERTD (MPFR_IS_ZERO(x));
-	  return mpfr_set_ui (y, 1, rnd_mode);
-	}
+        {
+          MPFR_ASSERTD (MPFR_IS_ZERO(x));
+          return mpfr_set_ui (y, 1, rnd_mode);
+        }
     }
   
   /* since the smallest representable non-zero float is 1/2*2^__gmpfr_emin,
@@ -65,8 +65,8 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mp_rnd_t rnd2 = rnd_mode;
       /* in round to nearest mode, round to zero when x <= __gmpfr_emin-2 */
       if (rnd_mode == GMP_RNDN &&
-	  mpfr_cmp_si_2exp (x, __gmpfr_emin - 2, 0) <= 0)
-	rnd2 = GMP_RNDZ;
+          mpfr_cmp_si_2exp (x, __gmpfr_emin - 2, 0) <= 0)
+        rnd2 = GMP_RNDZ;
       return mpfr_underflow (y, rnd2, 1);
     }
 
@@ -76,7 +76,7 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       
       MPFR_ASSERTD (MPFR_EMAX_MAX <= LONG_MAX);
       if (mpfr_cmp_si_2exp (x, __gmpfr_emax, 0) > 0)
-	return mpfr_overflow (y, rnd_mode, 1);
+        return mpfr_overflow (y, rnd_mode, 1);
       
       xd = mpfr_get_si (x, GMP_RNDN);
       
@@ -101,25 +101,25 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     /* the optimal number of bits : see algorithms.tex */
     Nt = Ny + 5 + MPFR_INT_CEIL_LOG2 (Ny);
     
-    /* initialise of intermediary	variable */
+    /* initialise of intermediary       variable */
     mpfr_init2 (t, Nt);
     
     /* First computation */
     MPFR_ZIV_INIT (loop, Nt);
     for (;;)
       {
-	/* compute   exp(x*ln(2))*/
-	mpfr_const_log2 (t, GMP_RNDU);       /* ln(2) */
-	mpfr_mul (t, x, t, GMP_RNDU);        /* x*ln(2) */
-	err = Nt - (MPFR_GET_EXP (t) + 2);   /* Estimate of the error */
-	mpfr_exp (t, t, GMP_RNDN);           /* exp(x*ln(2))*/
-	
-	if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
-	  break;
-	
-	/* Actualisation of the precision */
-	MPFR_ZIV_NEXT (loop, Nt);
-	mpfr_set_prec (t, Nt);
+        /* compute   exp(x*ln(2))*/
+        mpfr_const_log2 (t, GMP_RNDU);       /* ln(2) */
+        mpfr_mul (t, x, t, GMP_RNDU);        /* x*ln(2) */
+        err = Nt - (MPFR_GET_EXP (t) + 2);   /* Estimate of the error */
+        mpfr_exp (t, t, GMP_RNDN);           /* exp(x*ln(2))*/
+        
+        if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
+          break;
+        
+        /* Actualisation of the precision */
+        MPFR_ZIV_NEXT (loop, Nt);
+        mpfr_set_prec (t, Nt);
       }
     MPFR_ZIV_FREE (loop);
 

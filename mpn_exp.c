@@ -96,11 +96,11 @@ mpfr_mpn_exp (mp_limb_t *a, mp_exp_t *exp_r, int b, mp_exp_t e, size_t n)
 
       /* check overflow on f */
       if (MPFR_UNLIKELY(f < MPFR_EXP_MIN/2 || f > MPFR_EXP_MAX/2))
-	{
-	overflow:
-	  MPFR_TMP_FREE(marker);
-	  return -2;
-	}
+        {
+        overflow:
+          MPFR_TMP_FREE(marker);
+          return -2;
+        }
       /* FIXME: Could f = 2*f + n * BITS_PER_MP_LIMB be used? */
       f = 2*f;
       MPFR_SADD_OVERFLOW (f, f, n * BITS_PER_MP_LIMB,

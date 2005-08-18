@@ -223,7 +223,7 @@ mpfr_eint (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
       err = MAX(0, err - MPFR_GET_EXP (tmp));
       err = MPFR_PREC (tmp) - err;
       if (MPFR_LIKELY (MPFR_CAN_ROUND (tmp, err, MPFR_PREC (y), rnd)))
-	break;
+        break;
       MPFR_ZIV_NEXT (loop, prec);        /* Increase used precision */
       mpfr_set_prec (tmp, prec);
       mpfr_set_prec (ump, prec);

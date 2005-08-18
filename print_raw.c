@@ -100,7 +100,7 @@ mpfr_print_mant_binary(const char *str, const mp_limb_t *p, mp_prec_t r)
 
 void 
 mpfr_dump_mant (const mp_limb_t *p, mp_prec_t r, mp_prec_t precx, 
-		mp_prec_t error)
+                mp_prec_t error)
 {
   int i;
   mp_prec_t count = 0;
@@ -114,8 +114,8 @@ mpfr_dump_mant (const mp_limb_t *p, mp_prec_t r, mp_prec_t precx,
           c = (p[n] & (((mp_limb_t)1L)<<i)) ? '1' : '0';
           putchar(c);
           count++;
-	  if (count == precx)
-	    putchar (',');
+          if (count == precx)
+            putchar (',');
           if (count == error)
             putchar('[');
         }

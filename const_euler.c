@@ -79,7 +79,7 @@ mpfr_const_euler_internal (mpfr_t x, mp_rnd_t rnd)
       err = err + exp_S - MPFR_EXP(y);
       err = (err >= 1) ? err + 1 : 2;
       if (MPFR_LIKELY (MPFR_CAN_ROUND (y, m - err, prec, rnd)))
-	break;
+        break;
       MPFR_ZIV_NEXT (loop, m);
       mpfr_set_prec (y, m);
       mpfr_set_prec (z, m); 
@@ -191,9 +191,9 @@ mpfr_const_euler_S (mpfr_t x, unsigned long n)
       mpz_div_ui (a, a, k);
       mpz_div_ui (t, a, k);
       if (k % 2)
-	mpz_add (s, s, t);
+        mpz_add (s, s, t);
       else
-	mpz_sub (s, s, t);
+        mpz_sub (s, s, t);
     }
 
   /* the error on s is at most N (e^n + 1),
@@ -233,11 +233,11 @@ mpfr_const_euler_R (mpfr_t x, unsigned long n)
       mpz_mul_ui (a, a, k);
       mpz_div_ui (a, a, n);
       /* the error e(k) on a is e(k) <= 1 + k/n*e(k-1) with e(0)=0,
-	 i.e. e(k) <= k */
+         i.e. e(k) <= k */
       if (k % 2)
-	mpz_sub (s, s, a);
+        mpz_sub (s, s, a);
       else
-	mpz_add (s, s, a);
+        mpz_add (s, s, a);
     }
   /* the error on s is at most 1+2+...+n = n*(n+1)/2 */
   mpz_div_ui (s, s, n); /* err <= 1 + (n+1)/2 */

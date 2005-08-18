@@ -109,7 +109,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
               mpfr_nexttozero (a);
               return -MPFR_INT_SIGN (a);
             }
-	  return MPFR_INT_SIGN (a);
+          return MPFR_INT_SIGN (a);
         }
       else
         {
@@ -256,7 +256,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       mp_limb_t *ap2;
 
       if (cancel2 >= 0)
-	{
+        {
           if (an + cancel2 <= cn)
             /* a: <----------------------------->
                c: <-----------------------------------------> */

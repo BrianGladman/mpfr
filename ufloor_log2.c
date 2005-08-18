@@ -39,7 +39,7 @@ __gmpfr_floor_log2 (double d)
     {
       exp = -1;
       for( m= 1.0 ; m <= d ; m *=2.0 )
-	exp++;
+        exp++;
     }
   else
     {

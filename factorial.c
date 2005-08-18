@@ -63,38 +63,38 @@ mpfr_fac_ui (mpfr_ptr y, unsigned long int x, mp_rnd_t rnd_mode)
       /* compute factorial */
       inexact = mpfr_set_ui (t, 1, rnd);            
       for (i = 2 ; i <= x ; i++)
-	{
-	  round = mpfr_mul_ui (t, t, i, rnd);
-	  /* assume the first inexact product gives the sign
-	     of difference: is that always correct? */
-	  if (inexact == 0)
-	    inexact = round;
-	}
+        {
+          round = mpfr_mul_ui (t, t, i, rnd);
+          /* assume the first inexact product gives the sign
+             of difference: is that always correct? */
+          if (inexact == 0)
+            inexact = round;
+        }
       
       err = Nt - 1 - MPFR_INT_CEIL_LOG2 (Nt);
 
       round = !inexact || mpfr_can_round (t, err, rnd, GMP_RNDZ,
-					  Ny + (rnd_mode == GMP_RNDN));
+                                          Ny + (rnd_mode == GMP_RNDN));
       
       if (MPFR_LIKELY (round))
-	{
-	  /* If inexact = 0, then t is exactly x!, so round is the
-	     correct inexact flag.
-	     Otherwise, t != x! since we rounded to zero or away. */
-	  round = mpfr_set (y, t, rnd_mode);
-	  if (inexact == 0)
-	    {
-	      inexact = round;
-	      break;
-	    }
-	  else if ((inexact < 0 && round <= 0) 
-		   || (inexact > 0 && round >= 0))
-	    break;
-	  else /* inexact and round have opposite signs: we cannot
-		  compute the inexact flag. Restart using the 
-		  symmetric rounding. */
-	    rnd = (rnd == GMP_RNDZ) ? GMP_RNDU : GMP_RNDZ;
-	}
+        {
+          /* If inexact = 0, then t is exactly x!, so round is the
+             correct inexact flag.
+             Otherwise, t != x! since we rounded to zero or away. */
+          round = mpfr_set (y, t, rnd_mode);
+          if (inexact == 0)
+            {
+              inexact = round;
+              break;
+            }
+          else if ((inexact < 0 && round <= 0) 
+                   || (inexact > 0 && round >= 0))
+            break;
+          else /* inexact and round have opposite signs: we cannot
+                  compute the inexact flag. Restart using the 
+                  symmetric rounding. */
+            rnd = (rnd == GMP_RNDZ) ? GMP_RNDU : GMP_RNDZ;
+        }
       MPFR_ZIV_NEXT (loop, Nt);
       mpfr_set_prec (t, Nt);
     }
