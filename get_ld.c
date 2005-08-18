@@ -156,6 +156,7 @@ mpfr_get_ld (mpfr_srcptr x, mp_rnd_t rnd_mode)
 	}
       else
 	{
+          MPFR_ASSERTN (denorm <= 32);
 	  ld.s.manl = (tmpmant[0] >> denorm) | (tmpmant[1] << (32-denorm));
 	  ld.s.manh = tmpmant[1] >> denorm;
 	}
