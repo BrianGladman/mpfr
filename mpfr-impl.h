@@ -354,10 +354,25 @@ typedef union ieee_double_extract Ieee_double_extract;
  *************** Long double macros *******************
  ******************************************************/
 
-/* we only require that LDBL_MANT_DIG is a bound on the mantissa length
-   of the "long double" type */
-#define MPFR_LDBL_MANT_DIG   \
+/* We try to get the exact value of the precision of long double
+   (provided by the implementation) in order to provide correct
+   rounding in this case (not guaranteed if the C implementation
+   does not have an adequate long double arithmetic). Note that
+   it may be lower than the precision of some numbers that can
+   be represented in a long double; e.g. on FreeBSD/x86, it is
+   53 because the processor is configured to round in double
+   precision (even when using the long double type -- this is a
+   limitation of the x87 arithmetic), and on Mac OS X, it is 106
+   because the implementation is a double-double arithmetic.
+   Otherwise (e.g. in base 10), we get an upper bound of the
+   precision, and correct rounding isn't currently provided.
+*/
+#if LDBL_MANT_DIG && FLT_RADIX == 2
+# define MPFR_LDBL_MANT_DIG LDBL_MANT_DIG
+#else
+# define MPFR_LDBL_MANT_DIG \
   (sizeof(long double)*BITS_PER_MP_LIMB/sizeof(mp_limb_t))
+#endif
 #define MPFR_LIMBS_PER_LONG_DOUBLE \
   ((sizeof(long double)-1)/sizeof(mp_limb_t)+1)
 
@@ -368,7 +383,7 @@ typedef union ieee_double_extract Ieee_double_extract;
    happen only after other comparisons, not sure what's really going on.  In
    any case we can pick apart the bytes to identify a NaN.  */
 #ifdef HAVE_LDOUBLE_IEEE_QUAD_BIG
-# define LONGDOUBLE_NAN_ACTION(x, action)                        \
+# define LONGDOUBLE_NAN_ACTION(x, action)                       \
   do {                                                          \
     union {                                                     \
       long double    ld;                                        \
@@ -392,7 +407,7 @@ typedef union ieee_double_extract Ieee_double_extract;
    "volatile" here stops "cc" on mips64-sgi-irix6.5 from optimizing away
    x!=x. */
 #ifndef LONGDOUBLE_NAN_ACTION
-# define LONGDOUBLE_NAN_ACTION(x, action)                \
+# define LONGDOUBLE_NAN_ACTION(x, action)               \
   do {                                                  \
     volatile long double __x = LONGDOUBLE_VOLATILE (x); \
     if ((x) != __x)                                     \
@@ -428,9 +443,9 @@ typedef union {
   } s;
 } mpfr_long_double_t;
 
-#undef MPFR_LDBL_MANT_DIG
+/* #undef MPFR_LDBL_MANT_DIG */
 #undef MPFR_LIMBS_PER_LONG_DOUBLE
-#define MPFR_LDBL_MANT_DIG   64
+/* #define MPFR_LDBL_MANT_DIG   64 */
 #define MPFR_LIMBS_PER_LONG_DOUBLE ((64-1)/BITS_PER_MP_LIMB+1)
 
 #endif

@@ -46,7 +46,7 @@ mpfr_get_ld (mpfr_srcptr x, mp_rnd_t rnd_mode)
          problems) */
       mpfr_init2 (y, MPFR_LDBL_MANT_DIG);
       mpfr_init2 (z, IEEE_DBL_MANT_DIG);
- 
+
       mpfr_set (y, x, rnd_mode);
       sh = MPFR_GET_EXP (y);
       sign = MPFR_SIGN (y);
@@ -116,60 +116,60 @@ long double
 mpfr_get_ld (mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
   mpfr_long_double_t ld;
-  mp_exp_t e, denorm;
   mpfr_t tmp;
-  mp_limb_t tmpmant[MPFR_LIMBS_PER_LONG_DOUBLE];
   MPFR_SAVE_EXPO_DECL (expo);
 
   MPFR_SAVE_EXPO_MARK (expo);
   mpfr_set_emin (-16382-63);
   mpfr_set_emax (16383);
-  
-  MPFR_MANT (tmp) = tmpmant;
-  MPFR_PREC (tmp) = 64;
-  denorm = 0;
-  if (MPFR_UNLIKELY (!MPFR_IS_SINGULAR (x) && MPFR_GET_EXP (x) < -16382))
-    {
-      MPFR_PREC (tmp) += MPFR_GET_EXP (x) + 16382;
-      if (MPFR_PREC (tmp) < MPFR_PREC_MIN)
-	MPFR_PREC (tmp) = MPFR_PREC_MIN;
-    }
-  MPN_ZERO (tmpmant, MPFR_LIMBS_PER_LONG_DOUBLE);
-  mpfr_set (tmp, x, rnd_mode);
+
+  mpfr_init2 (tmp, MPFR_LDBL_MANT_DIG);
+  mpfr_subnormalize(tmp, mpfr_set (tmp, x, rnd_mode), rnd_mode);
+  mpfr_prec_round (tmp, 64, GMP_RNDZ); /* exact */
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (tmp)))
     ld.ld = (long double) mpfr_get_d (tmp, rnd_mode);
   else
     {
+      mp_limb_t *tmpmant;
+      mp_exp_t e, denorm;
+
+      tmpmant = MPFR_MANT (tmp);
       e = MPFR_GET_EXP (tmp);
-      if (MPFR_UNLIKELY (e < -16382))
-	denorm = -e - 16382 + 1;
-      else
-	denorm = 0;
+      denorm = MPFR_UNLIKELY (e < -16382) ? - e - 16382 + 1 : 0;
 #if BITS_PER_MP_LIMB >= 64
       ld.s.manl = (tmpmant[0] >> denorm);
       ld.s.manh = (tmpmant[0] >> denorm) >> 32;
-#else
+#elif BITS_PER_MP_LIMB == 32
       if (MPFR_LIKELY (denorm == 0))
-	{
-	  ld.s.manl = tmpmant[0];
-	  ld.s.manh = tmpmant[1];
-	}
-      else
-	{
-          MPFR_ASSERTN (denorm <= 32);
-	  ld.s.manl = (tmpmant[0] >> denorm) | (tmpmant[1] << (32-denorm));
-	  ld.s.manh = tmpmant[1] >> denorm;
-	}
+        {
+          ld.s.manl = tmpmant[0];
+          ld.s.manh = tmpmant[1];
+        }
+      else if (denorm < 32)
+        {
+          ld.s.manl = (tmpmant[0] >> denorm) | (tmpmant[1] << (32 - denorm));
+          ld.s.manh = tmpmant[1] >> denorm;
+        }
+      else /* 32 <= denorm <= 64 */
+        {
+          ld.s.manl = tmpmant[1] >> (denorm - 32);
+          ld.s.manh = 0;
+        }
+#else
+# error "BITS_PER_MP_LIMB must be 32 or >= 64"
+      /* Other values have never been supported anyway. */
 #endif
       if (MPFR_LIKELY (denorm == 0))
-	{
-	  ld.s.exph = (e + 0x3FFE) >> 8;
-	  ld.s.expl = (e + 0x3FFE);
-	}
+        {
+          ld.s.exph = (e + 0x3FFE) >> 8;
+          ld.s.expl = (e + 0x3FFE);
+        }
       else
-	ld.s.exph = ld.s.expl = 0;
+        ld.s.exph = ld.s.expl = 0;
       ld.s.sign = MPFR_IS_NEG (x);
     }
+
+  mpfr_clear (tmp);
   MPFR_SAVE_EXPO_FREE (expo);
   return ld.ld;
 }
