@@ -1,6 +1,6 @@
 /* Test file for mpfr_cosh.
 
-Copyright 2001, 2002, 2004 Free Software Foundation.
+Copyright 2001, 2002, 2004, 2005 Free Software Foundation.
 Adapted from tatan.c.
 
 This file is part of the MPFR Library.
