@@ -297,7 +297,7 @@ and compile options as for GNU MP (see the @file{INSTALL} file).
 @samp{make}
 
 This will compile MPFR, and create a library archive file @file{libmpfr.a}.
-A dynamic library may be produced too (See configure).
+A dynamic library may be produced too (see configure).
 
 @item
 @samp{make check}
@@ -548,9 +548,9 @@ result (Not-a-Number) always corresponds to an exact return value.
 The opposite of a returned ternary value is guaranteed to be representable
 in an @code{int}.
 
-Unless documented otherwise, functions returning a @code{1} 
+Unless documented otherwise, functions returning a @code{1}
 (or any other value specified in this manual)
-for special cases (like @code{acos(0)}) should return an overflow or 
+for special cases (like @code{acos(0)}) should return an overflow or
 an underflow if @code{1} is not representable in the current exponent range.
 
 @node MPFR Interface, Contributors, MPFR Basics, Top
@@ -1616,7 +1616,7 @@ Put +0 in @var{rop} when size if zero.
 
 @deftypefun mp_exp_t mpfr_get_exp (mpfr_t @var{x})
 Get the exponent of @var{x}, assuming that @var{x} is a non-zero ordinary
-number. The behavior for Nan, Infinity or Zero is undefined.
+number. The behavior for NaN, Infinity or Zero is undefined.
 @end deftypefun
 
 @deftypefun int mpfr_set_exp (mpfr_t @var{x}, mp_exp_t @var{e})
@@ -1751,7 +1751,7 @@ i.e.@: the ternary value is propagated.
 This function rounds @var{x} emulating subnormal number arithmetic:
 if @var{x} is outside the subnormal exponent range, it just propagates the
 ternary value @var{t}; otherwise, it rounds @var{x} to precision
-@code{EXP(x)-emin+1} according to rouding mode @var{rnd} and previous
+@code{EXP(x)-emin+1} according to rounding mode @var{rnd} and previous
 ternary value @var{t}, avoiding double rounding problems.
 @code{PREC(x)} is not modified by this function.
 @var{rnd} and @var{t} must be the used rounding mode for computing @var{x}
@@ -1760,11 +1760,11 @@ The subnormal exponent range is from @code{emin} to @code{emin+PREC(x)-1}.
 This functions assumes that @code{emax-emin >= PREC(x)}.
 Note that unlike most functions, the result is compared to the exact one,
 not the input value @var{x}, i.e.@: the ternary value is propagated.
-This is a a preliminary interface.
+This is a preliminary interface.
 @end deftypefun
 
 This is an example of how to emulate double IEEE-754 arithmetic
- using MPFR:
+using MPFR:
 
 @example
 @{
@@ -1944,88 +1944,93 @@ for compatibility with MPF.
 @section Custom interface
 @cindex Custom interface
 
-Some applications use a stack to handle the memory and their objects. 
-However, MPFR memory designs is not well suited for such a thing. So that
-such applications are able to use MPFR, an auxilliary memory interface has
+Some applications use a stack to handle the memory and their objects.
+However, the MPFR memory design is not well suited for such a thing. So that
+such applications are able to use MPFR, an auxiliary memory interface has
 been created: the Custom Interface.
- 
+
 The following interface allows them to use MPFR in two ways:
 @itemize
-@item Either they store directly the MPFR FP number as a @code{mpfr_t} on the stack.
-@item Either they store their own representation of a FP number on the stack and construct a new temporary @code{mpfr_t} each time it is needed.
+@item Either they directly store the MPFR FP number as a @code{mpfr_t}
+on the stack.
+@item Either they store their own representation of a FP number on the
+stack and construct a new temporary @code{mpfr_t} each time it is needed.
 @end itemize
 Nothing has to be done to destroy the FP numbers except garbaging the used
-memory: all the memory stuff (allocating, destroying, garbaging) is kept to 
+memory: all the memory stuff (allocating, destroying, garbaging) is kept to
 the application.
 
- Each function is this interface is also implemented as a macro for
- efficiency reasons.
+Each function is this interface is also implemented as a macro for
+efficiency reasons.
 
 Note 1: MPFR functions may still initialize temporary FP numbers
- using standard mpfr_init. See Custom Allocation (GNU MP).
+using standard mpfr_init. See Custom Allocation (GNU MP).
 
 Note 2: MPFR functions may use the cached functions (mpfr_const_pi for
- example), even if they are not explicitly called. You have to call
- @code{mpfr_free_cache} each time you garbage the memory iff mpfr_init, through
- GMP Custom Allocation, allocates its memory on the application stack. 
+example), even if they are not explicitly called. You have to call
+@code{mpfr_free_cache} each time you garbage the memory iff mpfr_init, through
+GMP Custom Allocation, allocates its memory on the application stack.
 
 Note 3: This interface is preliminary.
 
 @deftypefun size_t mpfr_custom_get_size (mp_prec_t @var{prec})
- Return the needed size in bytes to store the mantissa of a FP number
- of precision @var{prec}.
+Return the needed size in bytes to store the mantissa of a FP number
+of precision @var{prec}.
 @end deftypefun
 
 @deftypefun void mpfr_custom_init (void *@var{mantissa}, mp_prec_t @var{prec})
- Initialize a mantissa of precision @var{prec}.
- @var{mantissa} must be an area of @code{mpfr_custom_get_size (prec)} bytes 
- at least and be suitably aligned for an array of @code{mp_limb_t}.
+Initialize a mantissa of precision @var{prec}.
+@var{mantissa} must be an area of @code{mpfr_custom_get_size (prec)} bytes
+at least and be suitably aligned for an array of @code{mp_limb_t}.
 @end deftypefun
 
 @deftypefun void mpfr_custom_init_set (mpfr_t @var{x}, int @var{kind}, mp_exp_t @var{exp}, mp_prec_t @var{prec}, void *@var{mantissa})
- Perform a dummy initialization of a @code{mpfr_t} and set it to:
-@itemize 
-@item if @code{ABS(kind) == MPFR_NAN_LIND}, @var{x} is set to NAN.
-@item if @code{ABS(kind) == MPFR_INF_KIND}, @var{x} is set to infinity of sign @code{sign(kind)}.
-@item if @code{ABS(kind) == MPFR_ZERO_KIND}, @var{x} is set to zero of sign @code{sign(kind)}.
-@item if @code{ABS(kind) == MPFR_REGULAR_KIND}, @var{x} is set to a regular number: @code{x = sign(kind)*mantissa*2^exp}
+Perform a dummy initialization of a @code{mpfr_t} and set it to:
+@itemize
+@item if @code{ABS(kind) == MPFR_NAN_LIND}, @var{x} is set to NaN;
+@item if @code{ABS(kind) == MPFR_INF_KIND}, @var{x} is set to the infinity
+of sign @code{sign(kind)};
+@item if @code{ABS(kind) == MPFR_ZERO_KIND}, @var{x} is set to the zero of
+sign @code{sign(kind)};
+@item if @code{ABS(kind) == MPFR_REGULAR_KIND}, @var{x} is set to a regular
+number: @code{x = sign(kind)*mantissa*2^exp}
 @end itemize
- In all cases, it uses @var{mantissa} directly for further computing
- involving @var{x}. It won't allocate anything.
- A FP number initialized with this function can't be resized using
- @code{mpfr_set_prec}, or cleared using @code{mpfr_clear}!
- @var{mantissa} must have been initialized with @code{mpfr_custom_init}
- using the same precision @var{prec}.
+In all cases, it uses @var{mantissa} directly for further computing
+involving @var{x}. It will not allocate anything.
+A FP number initialized with this function cannot be resized using
+@code{mpfr_set_prec}, or cleared using @code{mpfr_clear}!
+@var{mantissa} must have been initialized with @code{mpfr_custom_init}
+using the same precision @var{prec}.
 @end deftypefun
 
 @deftypefun int mpfr_custom_get_kind (mpfr_t @var{x})
- Return the current kind of a @code{mpfr_t} as used by 
- @code{mpfr_custom_init_set}.
- The behavior of this function for any @code{mpfr_t} not initialized 
- with @code{mpfr_custom_init_set} is undefined.
+Return the current kind of a @code{mpfr_t} as used by
+@code{mpfr_custom_init_set}.
+The behavior of this function for any @code{mpfr_t} not initialized
+with @code{mpfr_custom_init_set} is undefined.
 @end deftypefun
- 
+
 @deftypefun void *mpfr_custom_get_mantissa (mpfr_t @var{x})
- Return a pointer to the mantissa used by a @code{mpfr_t} initialized with 
- @code{mpfr_custom_init_set}.
- The behavior of this function for any @code{mpfr_t} not initialized 
- with @code{mpfr_custom_init_set} is undefined.
+Return a pointer to the mantissa used by a @code{mpfr_t} initialized with
+@code{mpfr_custom_init_set}.
+The behavior of this function for any @code{mpfr_t} not initialized
+with @code{mpfr_custom_init_set} is undefined.
 @end deftypefun
-  
+
 @deftypefun mp_exp_t mpfr_custom_get_exp (mpfr_t @var{x})
- Return the exponent of @var{x}, assuming that @var{x} is a non-zero ordinary
-number. The return value for Nan, Infinity or Zero is undefined but doesn't
-produced any traps.
- The behavior of this function for any @code{mpfr_t} not initialized 
- with @code{mpfr_custom_init_set} is undefined.
+Return the exponent of @var{x}, assuming that @var{x} is a non-zero ordinary
+number. The return value for NaN, Infinity or Zero is unspecified but doesn't
+produced any trap.
+The behavior of this function for any @code{mpfr_t} not initialized
+with @code{mpfr_custom_init_set} is undefined.
 @end deftypefun
 
 @deftypefun void mpfr_custom_move (mpfr_t @var{x}, void *@var{new_position})
- Inform MPFR that the mantissa has moved due to a garbage collect
- and update its new position to @code{new_position}. 
- However the application has to move the mantissa and the @code{mpfr_t} itself.
- The behavior of this function for any @code{mpfr_t} not initialized 
- with @code{mpfr_custom_init_set} is undefined.
+Inform MPFR that the mantissa has moved due to a garbage collect
+and update its new position to @code{new_position}.
+However the application has to move the mantissa and the @code{mpfr_t} itself.
+The behavior of this function for any @code{mpfr_t} not initialized
+with @code{mpfr_custom_init_set} is undefined.
 @end deftypefun
 
 See the test suite for examples.
