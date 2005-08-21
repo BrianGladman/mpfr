@@ -875,6 +875,9 @@ do {                                                                  \
    (r) = _size * BITS_PER_MP_LIMB - _cnt;       \
   } while (0)
 
+/* Needs <locale.h> */
+#define MPFR_DECIMAL_POINT ((unsigned char) localeconv()->decimal_point[0])
+
 /******************************************************
  **************  Save exponent macros  ****************
  ******************************************************/

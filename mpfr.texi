@@ -770,9 +770,15 @@ valid number then @var{rop} is set to zero and the value of @var{nptr}
 is stored in the location referenced by @var{endptr}.
 
 Parsing follows the standard C @code{strtod} function. This means optional
-leading whitespace, an optional @code{+} or @code{-}, mantissa digits, and an
+leading whitespace, an optional @code{+} or @code{-}, mantissa digits with
+an optional decimal point, and an
 optional exponent consisting of an @code{e} or @code{E} (if
 @math{@var{base} @le{} 10}) or @code{@@}, an optional sign, and digits.
+The decimal point can be either the one defined by the current locale or
+the period (the first one is accepted for consistency with the C standard
+and the practice, the second one is accepted to allow the programmer to
+provide MPFR numbers from strings in a way that does not depend on the
+current locale).
 A hexadecimal mantissa can be given with a leading @code{0x} or @code{0X}, in
 which case @code{p} or @code{P} may introduce an optional binary exponent,
 indicating the power of 2 by which the mantissa is to be scaled. A binary
@@ -1453,7 +1459,8 @@ The base may vary from 2 to 36.  Print @var{n} significant digits exactly,
 or if @var{n} is 0, enough digits so that @var{op} can be read back
 exactly (see @code{mpfr_get_str}).
 
-In addition to the significant digits, a decimal point at the right of the
+In addition to the significant digits, a decimal point (defined by the
+current locale) at the right of the
 first digit and a trailing exponent in base 10, in the form @samp{eNNN},
 are printed. If @var{base} is greater than 10, @samp{@@} will be used
 instead of @samp{e} as exponent delimiter.

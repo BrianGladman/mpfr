@@ -22,6 +22,7 @@ MA 02110-1301, USA. */
 #include <string.h> /* For strlen */
 #include <stdlib.h> /* For strtol */
 #include <ctype.h>  /* For isdigit and isspace */
+#include <locale.h> /* For MPFR_DECIMAL_POINT */
 
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
@@ -226,6 +227,9 @@ parse_string (mpfr_t x, struct parsed_string *pstr,
   int point;
   int res = -1;  /* Invalid input return value */
   const char *prefix_str;
+  int decimal_point;
+
+  decimal_point = MPFR_DECIMAL_POINT;
 
   /* Init variable */
   pstr->mantissa = NULL;
@@ -325,7 +329,7 @@ parse_string (mpfr_t x, struct parsed_string *pstr,
   for (;;) /* Loop until an invalid character is read */
     {
       int c = *str++;
-      if (c == '.')
+      if (c == '.' || c == decimal_point)
         {
           if (MPFR_UNLIKELY(point)) /* Second '.': stop parsing */
             break;
