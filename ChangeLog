@@ -1,5 +1,7 @@
 2005-08-23  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
 
+	* set_ld.c: This was wrong. Let's do it even more like the 2.1 branch.
+
 	* set_ld.c: Patch 1.25 didn't work under OSF1 with cc. Let's do it like
 	the 2.1 branch (it now does work under OSF1 with cc).
 
