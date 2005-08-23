@@ -1,3 +1,14 @@
+2005-08-23  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* set_ld.c: Patch 1.25 didn't work under OSF1 with cc. Let's do it like
+	the 2.1 branch (it now does work under OSF1 with cc).
+
+2005-08-21  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* NEWS, mpfr-impl.h, mpfr.texi, out_str.c, strtofr.c:
+	Better locale support (for the decimal point in string conversions
+	and input/output).
+
 2005-08-18  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
 
 	* mpfr.texi: Misc changes (spelling, typography...).
