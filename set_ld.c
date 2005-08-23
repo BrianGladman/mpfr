@@ -128,40 +128,49 @@ mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
       /* Check underflow of double */
       else if (x < (long double) DBL_MIN && (-x) < (long double) DBL_MIN)
         {
-          long double div10, div11, div12, div13;
+          long double div9, div10, div11;
 
-          div10 = (long double)
-            (double) 5.5626846462680034577255e-309; /* 2^(-2^10) */
-          div11 = div10 * div10; /* 2^(-2^11) */
-          div12 = div11 * div11; /* 2^(-2^12) */
-          div13 = div12 * div12; /* 2^(-2^13) */
-          if (ABS (x) <= div13)
+          div9 = (long double) (double) 7.4583407312002067432909653e-155;
+          /* div9 = 2^(-2^9) */
+          div10 = div9  * div9;  /* 2^(-2^10) */
+          div11 = div10 * div10; /* 2^(-2^11) if extended precision */
+          /* since -DBL_MAX <= x <= DBL_MAX, the cast to double should not
+             overflow here */
+          if (x != (long double) 0.0 &&
+              ABS(x) < div10 &&
+              div11 != (long double) 0.0 &&
+              div11 / div10 == div10) /* possible underflow */
             {
-              x /= div13; /* exact */
-              shift_exp -= 8192;
-            }
-          if (ABS (x) <= div12)
-            {
-              x /= div12; /* exact */
-              shift_exp -= 4096;
-            }
-          if (ABS (x) <= div11)
-            {
-              x /= div11; /* exact */
-              shift_exp -= 2048;
-            }
-          if (ABS (x) <= div10)
-            {
-              x /= div10; /* exact */
-              shift_exp -= 1024;
-            }
-          /* since DBL_MIN = 2^(-1022) usually, it might be that |d| is still
-             smaller than DBL_MIN here; in such a case, we normalize it in
-             a naive way to avoid an infinite loop */
-          while (x < (long double) DBL_MIN && (-x) < (long double) DBL_MIN)
-            {
-              x *= 2.0;
-              shift_exp --;
+              long double div12, div13;
+              /* After the divisions, any bit of x must be >= div10,
+                 hence the possible division by div9. */
+              div12 = div11 * div11; /* 2^(-2^12) */
+              div13 = div12 * div12; /* 2^(-2^13) */
+              if (ABS (x) <= div13)
+                {
+                  x /= div13; /* exact */
+                  shift_exp -= 8192;
+                }
+              if (ABS (x) <= div12)
+                {
+                  x /= div12; /* exact */
+                  shift_exp -= 4096;
+                }
+              if (ABS (x) <= div11)
+                {
+                  x /= div11; /* exact */
+                  shift_exp -= 2048;
+                }
+              if (ABS (x) <= div10)
+                {
+                  x /= div10; /* exact */
+                  shift_exp -= 1024;
+                }
+              if (ABS(x) <= div9)
+                {
+                  x /= div9;  /* exact */
+                  shift_exp -= 512;
+                }
             }
         }
       else
