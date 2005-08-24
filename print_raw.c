@@ -26,21 +26,21 @@ MA 02110-1301, USA. */
 #include "mpfr-impl.h"
 
 void
-mpfr_print_binary (mpfr_srcptr x)
+mpfr_fprint_binary (FILE *stream, mpfr_srcptr x)
 {
   if (MPFR_IS_NAN (x))
     {
-      printf ("@NaN@");
+      fprintf (stream, "@NaN@");
       return;
     }
 
   if (MPFR_SIGN (x) < 0)
-    printf ("-");
+    fprintf (stream, "-");
 
   if (MPFR_IS_INF (x))
-    printf ("@Inf@");
+    fprintf (stream, "@Inf@");
   else if (MPFR_IS_ZERO (x))
-    printf ("0");
+    fprintf (stream, "0");
   else
     {
       mp_limb_t *mx;
@@ -50,7 +50,7 @@ mpfr_print_binary (mpfr_srcptr x)
       mx = MPFR_MANT (x);
       px = MPFR_PREC (x);
 
-      printf ("0.");
+      fprintf (stream, "0.");
       for (n = (px - 1) / BITS_PER_MP_LIMB; ; n--)
         {
           mp_limb_t wd, t;
@@ -59,19 +59,25 @@ mpfr_print_binary (mpfr_srcptr x)
           wd = mx[n];
           for (t = MPFR_LIMB_HIGHBIT; t != 0; t >>= 1)
             {
-              printf ((wd & t) == 0 ? "0" : "1");
+              putc ((wd & t) == 0 ? '0' : '1', stream);
               if (--px == 0)
                 {
                   mp_exp_t ex;
 
                   ex = MPFR_GET_EXP (x);
                   MPFR_ASSERTN (ex >= LONG_MIN && ex <= LONG_MAX);
-                  printf ("E%ld", (long) ex);
+                  fprintf (stream, "E%ld", (long) ex);
                   return;
                 }
             }
         }
     }
+}
+
+void
+mpfr_print_binary (mpfr_srcptr x)
+{
+  mpfr_fprint_binary (stdout, x);
 }
 
 void

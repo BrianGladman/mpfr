@@ -175,15 +175,19 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   if (mpfr_cmp (ta, a) || inexact1*inexact2 < 0
       || (inexact1*inexact2 == 0 && (inexact1|inexact2) != 0))
     {
-      printf("mpfr_mul return different values for %s\n"
-             "Prec_a= %lu Prec_b= %lu Prec_c= %lu\nB=",
-             mpfr_print_rnd_mode (rnd_mode),
-             MPFR_PREC (a), MPFR_PREC (b), MPFR_PREC (c));
-      mpfr_out_str (stdout, 16, 0, tb, GMP_RNDN);
-      printf("\nC="); mpfr_out_str (stdout, 16, 0, tc, GMP_RNDN);
-      printf("\nOldMul: "); mpfr_out_str (stdout, 16, 0, ta, GMP_RNDN);
-      printf("\nNewMul: "); mpfr_out_str (stdout, 16, 0, a, GMP_RNDN);
-      printf("\nNewInexact = %d | OldInexact = %d\n", inexact1, inexact2);
+      fprintf (stderr, "mpfr_mul return different values for %s\n"
+               "Prec_a = %lu, Prec_b = %lu, Prec_c = %lu\nB = ",
+               mpfr_print_rnd_mode (rnd_mode),
+               MPFR_PREC (a), MPFR_PREC (b), MPFR_PREC (c));
+      mpfr_out_str (stderr, 16, 0, tb, GMP_RNDN);
+      fprintf (stderr, "\nC = ");
+      mpfr_out_str (stderr, 16, 0, tc, GMP_RNDN);
+      fprintf (stderr, "\nOldMul: ");
+      mpfr_out_str (stderr, 16, 0, ta, GMP_RNDN);
+      fprintf (stderr, "\nNewMul: ");
+      mpfr_out_str (stderr, 16, 0, a, GMP_RNDN);
+      fprintf (stderr, "\nNewInexact = %d | OldInexact = %d\n",
+               inexact1, inexact2);
       MPFR_ASSERTN(0);
     }
 
