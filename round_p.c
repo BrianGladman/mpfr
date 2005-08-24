@@ -35,12 +35,10 @@ mpfr_round_p (mp_limb_t *bp, mp_size_t bn, mp_exp_t err0, mp_prec_t prec)
                            GMP_RNDN, GMP_RNDZ, prec);
   if (i1 != i2)
     {
-      printf ("mpfr_round_p(%d) != mpfr_can_round(%d)!\n"
-              "bn=%ld err0=%ld prec=%ld\nbp=",
+      fprintf (stderr, "mpfr_round_p(%d) != mpfr_can_round(%d)!\n"
+              "bn = %ld, err0 = %ld, prec = %ld\nbp = ",
               i1, i2, bn, err0, prec);
-      while (bn--)
-        printf ("%08lX ", bp[bn]);
-      putchar ('\n');
+      gmp_fprintf (stderr, "%NX\n", bp, bn);
       MPFR_ASSERTN (0);
     }
   return i1;
