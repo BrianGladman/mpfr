@@ -1,3 +1,15 @@
+2005-08-24  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* set_uj.c:
+	Improved C compliance when mp_limb_t and uintmax_t have the same size
+	(concerning >> BITS_PER_MP_LIMB); some other small improvements.
+
+	* round_p.c, tests/tcan_round.c:
+	No longer assume that a mp_limb_t fits in an unsigned long (this
+	is not true under IRIX, where a mp_limb_t has 64 bits and a long
+	has 32 bits by default). In round_p.c, error messages are output
+	to stderr instead of stdout.
+
 2005-08-23  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
 
 	* set_ld.c: This was wrong. Let's do it even more like the 2.1 branch.
