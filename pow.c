@@ -277,6 +277,23 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
       }
   }
 
+  /* detect underflows: for x > 0, y < 0, |x^y| = |(1/x)^(-y)|
+                        <= 2^((1-EXP(x))*(-y)) */
+  if (MPFR_IS_NEG(y) && MPFR_EXP(x) > 1)
+  {
+    mpfr_t tmp;
+    int underflow;
+
+    mpfr_init2 (tmp, 53);
+    mpfr_neg (tmp, y, GMP_RNDZ);
+    mpfr_mul_si (tmp, tmp, 1 - MPFR_EXP(x), GMP_RNDZ);
+    underflow = mpfr_cmp_si (tmp, __gmpfr_emin - 2) <= 0;
+    mpfr_clear (tmp);
+    if (underflow)
+      /* warning: mpfr_underflow rounds away from 0 for GMP_RNDN */
+      return mpfr_underflow (z, (rnd_mode == GMP_RNDN) ? GMP_RNDZ : rnd_mode, 1);
+  }
+
   if (mpfr_integer_p (y))
     {
       mpz_t zi;

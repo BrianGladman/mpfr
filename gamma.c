@@ -103,7 +103,82 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
       return mpfr_fac_ui (gamma, u - 1, rnd_mode);
     }
 
+  /* check for overflow: according to (6.1.37) in Abramowitz & Stegun,
+     gamma(x) >= exp(-x) * x^(x-1/2) * sqrt(2*Pi)
+              >= 2 * (x/e)^x / x for x >= 1 */
+  if (compared > 0)
+    {
+      int overflow;
+
+      mpfr_init2 (xp, 53);
+      mpfr_set_d (xp, EXPM1, GMP_RNDZ); /* 1/e rounded down */
+      mpfr_mul (xp, x, xp, GMP_RNDZ);
+      mpfr_pow (xp, xp, x, GMP_RNDZ);
+      mpfr_mul_2exp (xp, xp, 1, GMP_RNDZ);
+      overflow = MPFR_EXP(xp) > __gmpfr_emax;
+      mpfr_clear (xp);
+      if (overflow)
+        return mpfr_overflow (gamma, rnd_mode, 1);
+    }
+
   MPFR_SAVE_EXPO_MARK (expo);
+
+  /* check for underflow: for x < 1,
+     gamma(x) = -Pi*(1-x)/sin(Pi*(2-x))/gamma(2-x).
+     Since gamma(2-x) >= 2 * ((2-x)/e)^(2-x) / (2-x), we have
+     |gamma(x)| <= Pi*(1-x)*(2-x)/2/((2-x)/e)^(2-x) / |sin(Pi*(2-x))|
+                <= 12 * ((2-x)/e)^x / |sin(Pi*(2-x))| */
+  if (MPFR_IS_NEG(x))
+    {
+      int underflow = 0, sgn;
+
+      mpfr_init2 (xp, 53);
+      mpfr_init2 (tmp, 53);
+      mpfr_init2 (tmp2, 53);
+      /* we want an upper bound for 12 * ((2-x)/e)^x;
+         since x < 0, y -> y^x is decreasing, thus we need
+         a lower bound on (2-x)/e */
+      mpfr_ui_sub (xp, 2, x, GMP_RNDZ);
+      mpfr_set_d (tmp, EXPM1, GMP_RNDZ); /* 1/e rounded down */
+      mpfr_mul (xp, xp, tmp, GMP_RNDZ);
+      mpfr_pow (xp, xp, x, GMP_RNDU);
+      mpfr_mul_ui (xp, xp, 12, GMP_RNDU);
+
+      /* we need an upper bound on 1/|sin(Pi*(2-x))|,
+         thus a lower bound on |sin(Pi*(2-x))|.
+         If 2-x is exact, then the error of Pi*(2-x) is (1+u)^2 with u = 2^(-p)
+         thus the error on sin(Pi*(2-x)) is less than 1/2ulp + 3Pi(2-x)u,
+         assuming u <= 1, thus <= u + 3Pi(2-x)u */
+      while (mpfr_ui_sub (tmp, 2, x, GMP_RNDN) != 0)
+        {
+          mpfr_set_prec (tmp, mpfr_get_prec (tmp) * 3 / 2);
+          mpfr_set_prec (tmp2, mpfr_get_prec (tmp));
+        }
+      mpfr_const_pi (tmp2, GMP_RNDN);
+      mpfr_mul (tmp2, tmp2, tmp, GMP_RNDN); /* Pi*(2-x) */
+      mpfr_sin (tmp, tmp2, GMP_RNDN); /* sin(Pi*(2-x)) */
+      mpfr_mul_ui (tmp2, tmp2, 3, GMP_RNDU); /* 3Pi(2-x) */
+      mpfr_add_ui (tmp2, tmp2, 1, GMP_RNDU); /* 3Pi(2-x)+1 */
+      mpfr_div_2exp (tmp2, tmp2, mpfr_get_prec (tmp), GMP_RNDU);
+      /* if tmp2<|tmp|, we get a lower bound */
+      sgn = mpfr_sgn (tmp);
+      mpfr_abs (tmp, tmp, GMP_RNDN);
+      if (mpfr_cmp (tmp2, tmp) < 0)
+        {
+          mpfr_sub (tmp, tmp, tmp2, GMP_RNDZ);
+          mpfr_div (xp, xp, tmp, GMP_RNDU);
+          underflow = MPFR_EXP(xp) <= expo.saved_emin - 2;
+        }
+
+      mpfr_clear (xp);
+      mpfr_clear (tmp);
+      mpfr_clear (tmp2);
+      if (underflow) /* the sign is the opposite of that of sin(Pi*(2-x)) */
+        {
+          MPFR_SAVE_EXPO_FREE (expo);
+          return mpfr_underflow (gamma, (rnd_mode == GMP_RNDN) ? GMP_RNDZ : rnd_mode, -sgn);
+        }
+    }
 
   realprec = MPFR_PREC (gamma);
   realprec = realprec + MPFR_INT_CEIL_LOG2 (realprec) + 10;
@@ -114,7 +189,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_ZIV_INIT (loop, realprec);
   for (;;)
     {
-      /* If compared < 0, we use the reflexion formula */
+      /* If compared < 0, we use the reflection formula */
       /* Precision stuff */
       Prec = realprec + 2 * (compared < 0);
       /* A   = (prec_nec-0.5)*CST
@@ -245,6 +320,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
   inex = mpfr_set (gamma, GammaTrial, rnd_mode);
   MPFR_GROUP_CLEAR (group);
   mpz_clear (fact);
+
   MPFR_SAVE_EXPO_FREE (expo);
-  return mpfr_check_range(gamma, inex, rnd_mode);
+  return mpfr_check_range (gamma, inex, rnd_mode);
 }

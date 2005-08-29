@@ -199,7 +199,19 @@ special_overflow (void)
   mpfr_gamma (y, x, GMP_RNDN);
   if (!mpfr_inf_p (y))
     {
-      printf("Overflow error.\n");
+      printf ("Overflow error.\n");
+      mpfr_dump (y);
+      exit (1);
+    }
+
+  /* problem mentioned by Kenneth Wilder, 18 Aug 2005 */
+  mpfr_set_prec (x, 29);
+  mpfr_set_prec (y, 29);
+  mpfr_set_d (x, -200000000.5, GMP_RNDN); /* exact */
+  mpfr_gamma (y, x, GMP_RNDN);
+  if (!(mpfr_zero_p (y) && MPFR_SIGN (y) < 0))
+    {
+      printf ("Error for gamma(-200000000.5)\n");
       mpfr_dump (y);
       exit (1);
     }

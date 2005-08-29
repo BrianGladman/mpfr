@@ -840,6 +840,64 @@ $u'=1 - \cos^2 x$.)
 Therefore, if $2^{e-1} \leq |s| < 2^e$, the absolute error on $s$
 is bounded by $2^{-m} (\frac{5}{2} 2^{1-e}+1) \leq 2^{3-m-e}$.
 
+\subsubsection{An asymptotically fast algorithm for sin and cos.}
+We extend here the algorithm proposed by Brent for the exponential function
+to the simultaneous computation of sin and cos. The idea is the following.
+We first reduce the input $x$ to the range $0 < x < 1/2$.
+Then we decompose $x$ as follows:
+\[ x = \sum_{i=1}^{k} \frac{r_i}{2^{2^i}}, \]
+where $r_i$ is an integer, $0 \leq r_i < 2^{2^{i-1}}$.
+
+We define $x_j = \sum_{i=j}^{k} \frac{r_i}{2^{2^i}}$; then $x = x_1$,
+and we can write $x_j = \frac{r_j}{2^{2^j}} + x_{j+1}$. Thus with
+$S_j := \sin \frac{r_j}{2^{2^j}}$ and $C_j := \cos \frac{r_j}{2^{2^j}}$:
+\[ \sin x_j = S_j \cos x_{j+1} + C_j \sin x_{j+1}, \quad
+   \cos x_j = C_j \cos x_{j+1} - S_j \sin x_{j+1}. \]
+The $2k$ values $S_j$ and $C_j$ can be computed by a binary splitting
+algorithm, each one in $O(M(n) \log n)$.
+Then each pair $(\sin x_j, \cos x_j)$ can be computed from
+$(\sin x_{j+1}, \sin x_{j+1})$ with four multiplies and two additions or
+subtractions.
+
+\paragraph{Error analysis.}
+We use here Higham's method. We assume that the values of $S_j$
+and $C_j$ are approximated up to a multiplicative factor of the form
+$(1+u)^3$, where $|u| \leq 2^{-p}$, $p \geq 4$ being the working precision.
+We also assume that $\cos x_{j+1}$ and $\sin x_{j+1}$ are
+approximated with a factor of the form $(1+u)^{k_j}$.
+With rounding to nearest, the values of $S_j \cos x_{j+1}$,
+$C_j \sin x_{j+1}$, $C_j \cos x_{j+1}$ and $S_j \sin x_{j+1}$ are thus
+approximated with a factor $(1+u)^{k_j+4}$.
+The value of $\sin x_j$ is approximated with a factor $(1+u)^{k_j+5}$ since
+there all terms are nonnegative.
+
+We now analyze the effect of the cancellation in 
+$C_j \cos x_{j+1} - S_j \sin x_{j+1}$.
+We have $\frac{r_j}{2^{2^j}} < 2^{-2^{j-1}}$, and for simplicity we define
+$l := 2^{j-1}$;
+thus $0 \leq S_j \leq 2^{-l}$, and $1-2^{-2l-1} \leq C_j \leq 1$.
+Similarly we have $x_{j+1} < 2^{-2l}$, thus
+$0 \leq \sin x_{j+1} \leq 2^{-2l}$, and $1-2^{-4l-1} \leq \cos x_{j+1} \leq 1$.
+The error is multiplied by a maximal ratio of
+\[ \frac{C_j \cos x_{j+1} + S_j \sin x_{j+1}}
+{C_j \cos x_{j+1} - S_j \sin x_{j+1}} \leq
+\frac{1+2^{-l} \cdot 2^{-2l}}{(1-2^{-2l-1})(1-2^{-4l-1})-2^{-l} \cdot 2^{-2l}},
+\]
+which we can bound by
+\[ \frac{1+2^{-3l}}{1-2^{-2l}} \leq \frac{1}{(1-2^{-2l})(1-2^{-3l})}
+\leq \frac{1}{1-2^{-2l+1}}. \]
+The product of all those factors for $j \geq 1$ is bounded by $3$
+(remember $l := 2^{j-1}$).
+
+In summary, the maximal error is of the form $3 [(1+u)^{5k}-1]$, where
+$2^{2^{k-1} < p \leq 2^{2^k}$.
+For $p \geq 4$, $5k \cdot 2^{-p}$ is bounded by $5/16$, and
+$(1+2^{-p})^{5k} - 1 \leq e^{5k \cdot 2^{-p}} - 1 \leq \frac{6}{5}
+\cdot 5k \cdot 2^{-p} = 6k \cdot 2^{-p}$.
+Thus the final relative error bound is $18k \cdot 2^{-p}$.
+Since $k \leq 6$ for $p \leq 2^{64}$, this gives a uniform relative error
+bound of $2^{-p+7}$.
+
 \subsection{The tangent function}
 
 The tangent function is computed from the cosine, 
