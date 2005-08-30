@@ -276,8 +276,8 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   if (MPFR_UNLIKELY (ax > __gmpfr_emax + 1))
     return mpfr_overflow (a, rnd_mode, sign);
   if (MPFR_UNLIKELY (ax < __gmpfr_emin - 2))
-  return mpfr_underflow (a, rnd_mode == GMP_RNDN ? GMP_RNDZ : rnd_mode,
-                             sign);
+    return mpfr_underflow (a, rnd_mode == GMP_RNDN ? GMP_RNDZ : rnd_mode,
+                           sign);
 #endif
 
   bq = MPFR_PREC (b);
@@ -402,86 +402,87 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
         p = n * BITS_PER_MP_LIMB - MPFR_INT_CEIL_LOG2 (n + 2);
         bp += bn - n;
         cp += cn - n;
-      /* Check if MulHigh can produce a roundable result.
-         We may lost 1 bit due to RNDN, 1 due to final shift. */
-      if (MPFR_UNLIKELY (MPFR_PREC (a) > p - 5))
-        {
-          if (MPFR_UNLIKELY (MPFR_PREC (a) > p - 5 + BITS_PER_MP_LIMB
-                             || bn <= MPFR_MUL_THRESHOLD+1))
-            {
-              /* MulHigh can't produce a roundable result. */
-              MPFR_LOG_MSG (("mpfr_mulhigh can't be used (%lu VS %lu)\n",
-                             MPFR_PREC (a), p));
-              goto full_multiply;
-            }
-          /* Add one extra limb to mantissa of b and c. */
-          if (bn > n)
-            bp --;
-          else
-            {
-              bp = MPFR_TMP_ALLOC ((n+1)*sizeof (mp_limb_t));
-              bp[0] = 0;
-              MPN_COPY (bp+1, MPFR_MANT (b)+bn-n, n);
-            }
-          if (cn > n)
-            cp --; /* FIXME: Could this happen? */
-          else
-            {
-              cp = MPFR_TMP_ALLOC ((n+1)*sizeof (mp_limb_t));
-              cp[0] = 0;
-              MPN_COPY (cp+1, MPFR_MANT (c)+cn-n, n);
-            }
-          /* We will compute with one extra limb */
-          n++;
-          p = n*BITS_PER_MP_LIMB - MPFR_INT_CEIL_LOG2 (n + 2);
-          /* Due to some nasty reasons we can have only 4 bits */
-          MPFR_ASSERTD (MPFR_PREC (a) <= p - 4);
 
-          if (MPFR_LIKELY (k < 2*n))
-            {
-              tmp = MPFR_TMP_ALLOC (2*n*sizeof (mp_limb_t));
-              tmp += 2*n-k; /* `tmp' still points to an area of `k' limbs */
-            }
-        }
-      MPFR_LOG_MSG (("Use mpfr_mulhigh (%lu VS %lu)\n", MPFR_PREC (a), p));
-      /* Compute an approximation of the product of b and c */
-      mpfr_mulhigh_n (tmp+k-2*n, bp, cp, n);
-      /* now tmp[0]..tmp[k-1] contains the product of both mantissa,
-         with tmp[k-1]>=2^(BITS_PER_MP_LIMB-2) */
-      b1 = tmp[k-1] >> (BITS_PER_MP_LIMB - 1); /* msb from the product */
+        /* Check if MulHigh can produce a roundable result.
+           We may lost 1 bit due to RNDN, 1 due to final shift. */
+        if (MPFR_UNLIKELY (MPFR_PREC (a) > p - 5))
+          {
+            if (MPFR_UNLIKELY (MPFR_PREC (a) > p - 5 + BITS_PER_MP_LIMB
+                               || bn <= MPFR_MUL_THRESHOLD+1))
+              {
+                /* MulHigh can't produce a roundable result. */
+                MPFR_LOG_MSG (("mpfr_mulhigh can't be used (%lu VS %lu)\n",
+                               MPFR_PREC (a), p));
+                goto full_multiply;
+              }
+            /* Add one extra limb to mantissa of b and c. */
+            if (bn > n)
+              bp --;
+            else
+              {
+                bp = MPFR_TMP_ALLOC ((n+1) * sizeof (mp_limb_t));
+                bp[0] = 0;
+                MPN_COPY (bp + 1, MPFR_MANT (b) + bn - n, n);
+              }
+            if (cn > n)
+              cp --; /* FIXME: Could this happen? */
+            else
+              {
+                cp = MPFR_TMP_ALLOC ((n+1) * sizeof (mp_limb_t));
+                cp[0] = 0;
+                MPN_COPY (cp + 1, MPFR_MANT (c) + cn - n, n);
+              }
+            /* We will compute with one extra limb */
+            n++;
+            p = n * BITS_PER_MP_LIMB - MPFR_INT_CEIL_LOG2 (n + 2);
+            /* Due to some nasty reasons we can have only 4 bits */
+            MPFR_ASSERTD (MPFR_PREC (a) <= p - 4);
 
-      /* If the mantissas of b and c are uniformly distributed in ]1/2, 1],
-         then their product is in ]1/4, 1/2] with probability 2*ln(2)-1 ~ 0.386
-         and in [1/2, 1] with probability 2-2*ln(2) ~ 0.614 */
-      tmp += k - tn;
-      if (MPFR_UNLIKELY (b1 == 0))
-        mpn_lshift (tmp, tmp, tn, 1);
-      MPFR_ASSERTD (MPFR_LIMB_MSB (tmp[tn-1]) != 0);
+            if (MPFR_LIKELY (k < 2*n))
+              {
+                tmp = MPFR_TMP_ALLOC (2 * n * sizeof (mp_limb_t));
+                tmp += 2*n-k; /* `tmp' still points to an area of `k' limbs */
+              }
+          }
+        MPFR_LOG_MSG (("Use mpfr_mulhigh (%lu VS %lu)\n", MPFR_PREC (a), p));
+        /* Compute an approximation of the product of b and c */
+        mpfr_mulhigh_n (tmp+k-2*n, bp, cp, n);
+        /* now tmp[0]..tmp[k-1] contains the product of both mantissa,
+           with tmp[k-1]>=2^(BITS_PER_MP_LIMB-2) */
+        b1 = tmp[k-1] >> (BITS_PER_MP_LIMB - 1); /* msb from the product */
 
-      if (MPFR_UNLIKELY (!mpfr_round_p (tmp, tn, p+b1-1,
-                                        MPFR_PREC(a)+(rnd_mode==GMP_RNDN))))
-        {
-          tmp -= k-tn; /* tmp may have changed, FIX IT!!!!! */
-          goto full_multiply;
-        }
+        /* If the mantissas of b and c are uniformly distributed in (1/2, 1],
+           then their product is in (1/4, 1/2] with probability 2*ln(2)-1
+           ~ 0.386 and in [1/2, 1] with probability 2-2*ln(2) ~ 0.614 */
+        tmp += k - tn;
+        if (MPFR_UNLIKELY (b1 == 0))
+          mpn_lshift (tmp, tmp, tn, 1);
+        MPFR_ASSERTD (MPFR_LIMB_MSB (tmp[tn-1]) != 0);
+
+        if (MPFR_UNLIKELY (!mpfr_round_p (tmp, tn, p+b1-1, MPFR_PREC(a)
+                                          + (rnd_mode == GMP_RNDN))))
+          {
+            tmp -= k - tn; /* tmp may have changed, FIX IT!!!!! */
+            goto full_multiply;
+          }
       }
-  else
-    {
-    full_multiply:
-      MPFR_LOG_MSG (("Use mpn_mul\n", 0));
-      b1 = mpn_mul (tmp, MPFR_MANT (b), bn, MPFR_MANT (c), cn);
+    else
+      {
+      full_multiply:
+        MPFR_LOG_MSG (("Use mpn_mul\n", 0));
+        b1 = mpn_mul (tmp, MPFR_MANT (b), bn, MPFR_MANT (c), cn);
 
-      /* now tmp[0]..tmp[k-1] contains the product of both mantissa,
-         with tmp[k-1]>=2^(BITS_PER_MP_LIMB-2) */
-      b1 >>= BITS_PER_MP_LIMB - 1; /* msb from the product */
+        /* now tmp[0]..tmp[k-1] contains the product of both mantissa,
+           with tmp[k-1]>=2^(BITS_PER_MP_LIMB-2) */
+        b1 >>= BITS_PER_MP_LIMB - 1; /* msb from the product */
 
-      /* if the mantissas of b and c are uniformly distributed in ]1/2, 1],
-         then their product is in ]1/4, 1/2] with probability 2*ln(2)-1 ~ 0.386
-         and in [1/2, 1] with probability 2-2*ln(2) ~ 0.614 */
-      tmp += k - tn;
-      if (MPFR_UNLIKELY (b1 == 0))
-        mpn_lshift (tmp, tmp, tn, 1); /* tn <= k, so no stack corruption */
-    }
+        /* if the mantissas of b and c are uniformly distributed in (1/2, 1],
+           then their product is in (1/4, 1/2] with probability 2*ln(2)-1
+           ~ 0.386 and in [1/2, 1] with probability 2-2*ln(2) ~ 0.614 */
+        tmp += k - tn;
+        if (MPFR_UNLIKELY (b1 == 0))
+          mpn_lshift (tmp, tmp, tn, 1); /* tn <= k, so no stack corruption */
+      }
 
   ax2 = ax + (mp_exp_t) (b1 - 1);
   MPFR_RNDRAW (inexact, a, tmp, bq+cq, rnd_mode, sign, ax2++);
