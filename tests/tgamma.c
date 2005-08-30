@@ -212,7 +212,37 @@ special_overflow (void)
   if (!(mpfr_zero_p (y) && MPFR_SIGN (y) < 0))
     {
       printf ("Error for gamma(-200000000.5)\n");
+      printf ("expected -0");
+      printf ("got      ");
       mpfr_dump (y);
+      exit (1);
+    }
+
+  mpfr_set_prec (x, 53);
+  mpfr_set_prec (y, 53);
+  mpfr_set_str (x, "-200000000.1", 10, GMP_RNDN);
+  mpfr_gamma (y, x, GMP_RNDN);
+  if (!(mpfr_zero_p (y) && MPFR_SIGN (y) < 0))
+    {
+      printf ("Error for gamma(-200000000.5)\n");
+      printf ("expected -0");
+      printf ("got      ");
+      mpfr_dump (y);
+      exit (1);
+    }
+
+  /* another problem mentioned by Kenneth Wilder, 29 Aug 2005 */
+  mpfr_set_prec (x, 333);
+  mpfr_set_prec (y, 14);
+  mpfr_set_str (x, "-2.0000000000000000000000005", 10, GMP_RNDN);
+  mpfr_gamma (y, x, GMP_RNDN);
+  mpfr_set_prec (x, 14);
+  mpfr_set_str_binary (x, "-11010011110001E66");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error for gamma(-2.0000000000000000000000005)\n");
+      printf ("expected "); mpfr_dump (x);
+      printf ("got      "); mpfr_dump (y);
       exit (1);
     }
 
