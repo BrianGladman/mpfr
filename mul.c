@@ -107,7 +107,7 @@ mpfr_mul3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   MPFR_ASSERTD(tn <= k);
 
   /* Check for no size_t overflow*/
-  MPFR_ASSERTD((size_t) k <= ((size_t) ~0) / BYTES_PER_MP_LIMB);
+  MPFR_ASSERTD((size_t) k <= ((size_t) -1) / BYTES_PER_MP_LIMB);
   MPFR_TMP_MARK(marker);
   tmp = (mp_limb_t *) MPFR_TMP_ALLOC((size_t) k * BYTES_PER_MP_LIMB);
 
@@ -292,7 +292,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   MPFR_ASSERTD (tn <= k); /* tn <= k, thus no int overflow */
 
   /* Check for no size_t overflow*/
-  MPFR_ASSERTD ((size_t) k <= ((size_t) ~0) / BYTES_PER_MP_LIMB);
+  MPFR_ASSERTD ((size_t) k <= ((size_t) -1) / BYTES_PER_MP_LIMB);
   MPFR_TMP_MARK (marker);
   tmp = (mp_limb_t *) MPFR_TMP_ALLOC ((size_t) k * BYTES_PER_MP_LIMB);
 
