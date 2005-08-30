@@ -341,7 +341,6 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
           /* Sum those two partial products */
           add_ssaaaa (tmp[2], tmp[1], tmp[2], tmp[1], t1, t2);
           tmp[3] += (tmp[2] < t1);
-
           b1 = tmp[3];
         }
       b1 >>= (BITS_PER_MP_LIMB - 1);
@@ -352,20 +351,57 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   else
 #endif
     if (MPFR_UNLIKELY (bn > MPFR_MUL_THRESHOLD))
-    {
-      mp_limb_t *bp, *cp;
-      mp_size_t n;
-      mp_prec_t p;
+      {
+        mp_limb_t *bp, *cp;
+        mp_size_t n;
+        mp_prec_t p;
 
-      /* Compute estimated precision of mulhigh.
-         We could use `+ (n < cn) + (n < bn)' instead of `+ 2',
-         but does it worth it? */
-      n = MPFR_LIMB_SIZE (a) + 1;
-      n = MIN (n, cn);
-      MPFR_ASSERTD (n >= 1 && 2*n <= k && n <= cn && n <= bn);
-      p = n*BITS_PER_MP_LIMB - MPFR_INT_CEIL_LOG2 (n + 2);
-      bp = MPFR_MANT (b) + bn - n;
-      cp = MPFR_MANT (c) + cn - n;
+        /* Fist check if we can reduce the precision of b or c:
+           exact values are a nightmare for the short product trick */
+        bp = MPFR_MANT (b);
+        cp = MPFR_MANT (c);
+        MPFR_ASSERTN (MPFR_MUL_THRESHOLD >= 1);
+        if (MPFR_UNLIKELY ((bp[0] == 0 && bp[1] == 0) ||
+                           (cp[0] == 0 && cp[1] == 0)))
+          {
+            mpfr_t b_tmp, c_tmp;
+            /* Check for b */
+            while (*bp == 0)
+              {
+                bp++;
+                bn--;
+                MPFR_ASSERTD (bn > 0);
+              } /* This must end since the MSL is != 0 */
+            /* Check for c too */
+            while (*cp == 0)
+              {
+                cp++;
+                cn--;
+                MPFR_ASSERTD (cn > 0);
+              } /* This must end since the MSL is != 0 */
+            /* It is not the faster way, but it is safer */
+            MPFR_SET_SAME_SIGN (b_tmp, b);
+            MPFR_SET_EXP (b_tmp, MPFR_GET_EXP (b));
+            MPFR_PREC (b_tmp) = bn * BITS_PER_MP_LIMB;
+            MPFR_MANT (b_tmp) = bp;
+
+            MPFR_SET_SAME_SIGN (c_tmp, c);
+            MPFR_SET_EXP (c_tmp, MPFR_GET_EXP (c));
+            MPFR_PREC (c_tmp) = cn * BITS_PER_MP_LIMB;
+            MPFR_MANT (c_tmp) = cp;
+            /* Recall again mpfr_mul with the fixed arguments */
+            return mpfr_mul (a, b_tmp, c_tmp, rnd_mode);
+          }
+
+        /* Compute estimated precision of mulhigh.
+           We could use `+ (n < cn) + (n < bn)' instead of `+ 2',
+           but does it worth it? */
+        n = MPFR_LIMB_SIZE (a) + 1;
+        n = MIN (n, cn);
+        MPFR_ASSERTD (n >= 1 && 2*n <= k && n <= cn && n <= bn);
+        p = n * BITS_PER_MP_LIMB - MPFR_INT_CEIL_LOG2 (n + 2);
+        bp += bn - n;
+        cp += cn - n;
       /* Check if MulHigh can produce a roundable result.
          We may lost 1 bit due to RNDN, 1 due to final shift. */
       if (MPFR_UNLIKELY (MPFR_PREC (a) > p - 5))
@@ -468,4 +504,3 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
     }
   return inexact;
 }
-
