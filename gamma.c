@@ -29,6 +29,10 @@ MA 02110-1301, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+#define IS_GAMMA
+#include "lngamma.c"
+#undef IS_GAMMA
+
 /* We use the reflection formula
   Gamma(1+t) Gamma(1-t) = - Pi t / sin(Pi (1 + t))
   in order to treat the case x <= 1,
@@ -121,10 +125,13 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
         return mpfr_overflow (gamma, rnd_mode, 1);
     }
 
+  if (compared > 0)
+    return mpfr_gamma_aux (gamma, x, rnd_mode);
+
   MPFR_SAVE_EXPO_MARK (expo);
 
   /* check for underflow: for x < 1,
-     gamma(x) = -Pi*(1-x)/sin(Pi*(2-x))/gamma(2-x).
+     gamma(x) = Pi*(x-1)/sin(Pi*(2-x))/gamma(2-x).
      Since gamma(2-x) >= 2 * ((2-x)/e)^(2-x) / (2-x), we have
      |gamma(x)| <= Pi*(1-x)*(2-x)/2/((2-x)/e)^(2-x) / |sin(Pi*(2-x))|
                 <= 12 * ((2-x)/e)^x / |sin(Pi*(2-x))| */
