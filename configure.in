@@ -127,6 +127,7 @@ if test -n "$GMP_CFLAGS" && test -z "$user_redefine_cc" ; then
   AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #ifndef __GNUC__
 # error "GCC Not Found"
+error
 #endif
   ]])], [
   GCC=yes
@@ -141,6 +142,7 @@ AC_MSG_CHECKING(for ICC)
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #if !defined(__ICC)
 # error "ICC Not Found"
+error
 #endif
 ]], [[]])],[
  AC_MSG_RESULT(yes)
@@ -212,6 +214,7 @@ case $host in
 #include "gmp.h"
 #if !__GMP_LIBGMP_DLL
 # error "Dead man"
+error
 #endif
      ]], [[]])],[AC_MSG_RESULT(DLL)],[ 
   AC_MSG_RESULT(static)
@@ -221,6 +224,7 @@ case $host in
 #include "gmp.h"
 #if __GMP_LIBGMP_DLL
 # error "Dead man"
+error
 #endif
      ]], [[]])],[AC_MSG_RESULT(static)],[
   AC_MSG_RESULT(DLL) 
@@ -250,6 +254,7 @@ AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
 #include "gmp.h"
 #if (__GNU_MP_VERSION*100+__GNU_MP_VERSION_MINOR*10 < 410)
 # error "min GMP version is 4.1.0"
+error
 #endif
 ]])],[AC_MSG_RESULT(yes)],[
  AC_MSG_RESULT(no)
