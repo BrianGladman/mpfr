@@ -49,11 +49,12 @@ To make a release (for the MPFR team):
   4) Fix the file permissions that have been broken by CVS.
   5) Generate the release version with "make dist".
   6) Test the release version on different machines, with and without
-     the --disable-alloca configure option (or compile gmp with
-     --enable-alloca=debug), with and without -DXDEBUG in $CFLAGS,
-     with and without gmp internal files, with and without gmp built
-     as a shared library, with and without srcdir equals to objdir
-     (../mpfr/configure --srcdir=/users/spaces/pelissip/mpfr/),
+     the --disable-alloca configure option (or compile GMP with
+     --enable-alloca=debug and MPFR with --with-gmp-build to be able
+     to get the memory leak errors), with and without -DXDEBUG in
+     $CFLAGS, with and without gmp internal files, with and without
+     GMP built as a shared library, with and without srcdir equal to
+     objdir (../mpfr/configure --srcdir=/users/spaces/pelissip/mpfr/),
      with and without "--std=c99 -O3 -D_XOPEN_SOURCE=500", with and
      without "-ansi" (which allows to turn off features that are
      incompatible with ISO C90).
