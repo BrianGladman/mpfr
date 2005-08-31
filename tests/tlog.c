@@ -177,6 +177,7 @@ static void
 special (void)
 {
   mpfr_t x, y;
+  mp_exp_t emax = mpfr_get_emax ();
 
   mpfr_init2 (x, 53);
   mpfr_init2 (y, 53);
@@ -212,6 +213,16 @@ special (void)
   mpfr_set_si (x, -1, GMP_RNDN);
   test_log (y, x, GMP_RNDN);
   MPFR_ASSERTN(mpfr_nan_p (y));
+
+  /* infinite loop when  */
+  set_emax (128);
+  mpfr_set_prec (x, 251);
+  mpfr_set_prec (y, 251);
+  mpfr_set_str_binary (x, "0.10010111000000000001101E8");
+  /* x = 4947981/32768, log(x) ~ 5.017282... */
+  test_log (y, x, GMP_RNDN);
+
+  set_emax (emax);
 
   mpfr_clear (x);
   mpfr_clear (y);
