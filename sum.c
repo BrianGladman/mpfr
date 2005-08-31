@@ -258,11 +258,12 @@ mpfr_sum (mpfr_ptr ret, mpfr_ptr *const tab_p, unsigned long n, mp_rnd_t rnd)
 
   /* Sort and treat special cases */
   MPFR_TMP_MARK (marker);
-  perm = (mpfr_srcptr *) MPFR_TMP_ALLOC (n * sizeof * perm);
+  perm = (mpfr_srcptr *) MPFR_TMP_ALLOC (n * sizeof *perm);
   error_trap = mpfr_sum_sort (tab, n, perm);
   /* Check if there was a NAN or a INF */
   if (MPFR_UNLIKELY (error_trap != 0))
     {
+      MPFR_TMP_FREE (marker);
       if (error_trap == 2)
         {
           MPFR_SET_NAN (ret);
