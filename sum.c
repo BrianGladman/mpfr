@@ -39,88 +39,89 @@ static void count_sort (mpfr_srcptr *const, unsigned long, mpfr_srcptr *,
 
 /* Either sort the tab in perm and returns 0
    Or returns 1 for +INF, -1 for -INF and 2 for NAN */
-int mpfr_sum_sort (mpfr_srcptr *const tab, unsigned long n,
-                   mpfr_srcptr *perm)
+int
+mpfr_sum_sort (mpfr_srcptr *const tab, unsigned long n, mpfr_srcptr *perm)
 {
-    mp_exp_t min, max;
-    mpfr_uexp_t exp_num;
-    unsigned long i;
-    int sign_inf;
+  mp_exp_t min, max;
+  mpfr_uexp_t exp_num;
+  unsigned long i;
+  int sign_inf;
 
-    sign_inf = 0;
-    min = MPFR_EMIN_MAX;
-    max = MPFR_EMAX_MIN;
-    for (i = 0; i < n; i++)
-      {
-        if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (tab[i])))
-          {
-            if (MPFR_IS_NAN (tab[i]))
-              return 2; /* Return NAN code */
-            else if (MPFR_IS_INF (tab[i]))
-              {
-                if (sign_inf == 0) /* No previous INF */
-                  sign_inf = MPFR_SIGN (tab[i]);
-                else if (sign_inf != MPFR_SIGN (tab[i]))
-                  return 2; /* Return NAN */
-              }
-          }
-        else
-          {
-            if (MPFR_GET_EXP (tab[i]) < min)
-              min = MPFR_GET_EXP(tab[i]);
-            if (MPFR_GET_EXP (tab[i]) > max)
-              max = MPFR_GET_EXP(tab[i]);
-          }
-      }
-    if (MPFR_UNLIKELY (sign_inf != 0))
-      return sign_inf;
+  sign_inf = 0;
+  min = MPFR_EMIN_MAX;
+  max = MPFR_EMAX_MIN;
+  for (i = 0; i < n; i++)
+    {
+      if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (tab[i])))
+        {
+          if (MPFR_IS_NAN (tab[i]))
+            return 2; /* Return NAN code */
+          else if (MPFR_IS_INF (tab[i]))
+            {
+              if (sign_inf == 0) /* No previous INF */
+                sign_inf = MPFR_SIGN (tab[i]);
+              else if (sign_inf != MPFR_SIGN (tab[i]))
+                return 2; /* Return NAN */
+            }
+        }
+      else
+        {
+          if (MPFR_GET_EXP (tab[i]) < min)
+            min = MPFR_GET_EXP(tab[i]);
+          if (MPFR_GET_EXP (tab[i]) > max)
+            max = MPFR_GET_EXP(tab[i]);
+        }
+    }
+  if (MPFR_UNLIKELY (sign_inf != 0))
+    return sign_inf;
 
-    exp_num = max - min + 1;
-    /* FIXME : better test */
-    if (exp_num > n * MPFR_INT_CEIL_LOG2 (n))
-      heap_sort (tab, n, perm);
-    else
-      count_sort (tab, n, perm, min, exp_num);
-    return 0;
+  exp_num = max - min + 1;
+  /* FIXME : better test */
+  if (exp_num > n * MPFR_INT_CEIL_LOG2 (n))
+    heap_sort (tab, n, perm);
+  else
+    count_sort (tab, n, perm, min, exp_num);
+  return 0;
 }
 
 #define GET_EXP1(x) (MPFR_IS_ZERO (x) ? min : MPFR_GET_EXP (x))
 /* Performs a count sort of the entries */
-static void count_sort (mpfr_srcptr *const tab, unsigned long n,
-                        mpfr_srcptr *perm, mp_exp_t min, mpfr_uexp_t exp_num)
+static void
+count_sort (mpfr_srcptr *const tab, unsigned long n,
+            mpfr_srcptr *perm, mp_exp_t min, mpfr_uexp_t exp_num)
 {
-    unsigned long *account;
-    unsigned long target_rank, i;
-    MPFR_TMP_DECL(marker);
+  unsigned long *account;
+  unsigned long target_rank, i;
+  MPFR_TMP_DECL(marker);
 
-    /* Reserve a place for potential 0 (with EXP min-1)
-       If there is no zero, we only lose one unused entry */
-    min--;
-    exp_num++;
+  /* Reserve a place for potential 0 (with EXP min-1)
+     If there is no zero, we only lose one unused entry */
+  min--;
+  exp_num++;
 
-    /* Performs a counting sort of the entries */
-    MPFR_TMP_MARK (marker);
-    account = (unsigned long *) MPFR_TMP_ALLOC (exp_num * sizeof * account);
-    for (i = 0; i < exp_num; i++)
-      account[i] = 0;
-    for (i = 0; i < n; i++)
-      account[GET_EXP1 (tab[i]) - min]++;
-    for (i = exp_num - 1; i >= 1; i--)
-      account[i - 1] += account[i];
-    for (i = 0; i < n; i++)
-      {
-        target_rank = --account[GET_EXP1 (tab[i]) - min];
-        perm[target_rank] = tab[i];
-      }
-    MPFR_TMP_FREE (marker);
+  /* Performs a counting sort of the entries */
+  MPFR_TMP_MARK (marker);
+  account = (unsigned long *) MPFR_TMP_ALLOC (exp_num * sizeof * account);
+  for (i = 0; i < exp_num; i++)
+    account[i] = 0;
+  for (i = 0; i < n; i++)
+    account[GET_EXP1 (tab[i]) - min]++;
+  for (i = exp_num - 1; i >= 1; i--)
+    account[i - 1] += account[i];
+  for (i = 0; i < n; i++)
+    {
+      target_rank = --account[GET_EXP1 (tab[i]) - min];
+      perm[target_rank] = tab[i];
+    }
+  MPFR_TMP_FREE (marker);
 }
 
 
 #define GET_EXP2(x) (MPFR_IS_ZERO (x) ? MPFR_EMIN_MIN : MPFR_GET_EXP (x))
 
 /* Performs a heap sort of the entries */
-static void heap_sort (mpfr_srcptr *const tab, unsigned long n,
-                       mpfr_srcptr *perm)
+static void
+heap_sort (mpfr_srcptr *const tab, unsigned long n, mpfr_srcptr *perm)
 {
   unsigned long dernier_traite;
   unsigned long i, pere;
@@ -207,8 +208,8 @@ static void heap_sort (mpfr_srcptr *const tab, unsigned long n,
  * intermediate size set to F.
  * Internal use function.
  */
-static int sum_once (mpfr_ptr ret, mpfr_srcptr *const tab,
-                     unsigned long n, mp_prec_t F)
+static int
+sum_once (mpfr_ptr ret, mpfr_srcptr *const tab, unsigned long n, mp_prec_t F)
 {
   mpfr_t sum;
   unsigned long i;
@@ -230,7 +231,7 @@ static int sum_once (mpfr_ptr ret, mpfr_srcptr *const tab,
 
 /* Sum a list of floating-point numbers.
  * FIXME : add reference to Demmel-Hida's paper.
-*/
+ */
 
 int
 mpfr_sum (mpfr_ptr ret, mpfr_ptr *const tab_p, unsigned long n, mp_rnd_t rnd)
