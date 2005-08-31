@@ -27,6 +27,7 @@ MA 02110-1301, USA. */
 int mpfr_gamma (mpfr_ptr, mpfr_srcptr, mp_rnd_t);
 
 #define TEST_FUNCTION mpfr_gamma
+#define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1)
 #include "tgeneric.c"
 
 static void
