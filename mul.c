@@ -365,6 +365,8 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
                            (cp[0] == 0 && cp[1] == 0)))
           {
             mpfr_t b_tmp, c_tmp;
+
+            MPFR_TMP_FREE (marker);
             /* Check for b */
             while (*bp == 0)
               {
@@ -372,6 +374,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
                 bn--;
                 MPFR_ASSERTD (bn > 0);
               } /* This must end since the MSL is != 0 */
+
             /* Check for c too */
             while (*cp == 0)
               {
@@ -379,6 +382,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
                 cn--;
                 MPFR_ASSERTD (cn > 0);
               } /* This must end since the MSL is != 0 */
+
             /* It is not the faster way, but it is safer */
             MPFR_SET_SAME_SIGN (b_tmp, b);
             MPFR_SET_EXP (b_tmp, MPFR_GET_EXP (b));
@@ -389,7 +393,8 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
             MPFR_SET_EXP (c_tmp, MPFR_GET_EXP (c));
             MPFR_PREC (c_tmp) = cn * BITS_PER_MP_LIMB;
             MPFR_MANT (c_tmp) = cp;
-            /* Recall again mpfr_mul with the fixed arguments */
+
+            /* Call again mpfr_mul with the fixed arguments */
             return mpfr_mul (a, b_tmp, c_tmp, rnd_mode);
           }
 
