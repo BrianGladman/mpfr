@@ -44,6 +44,7 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
   mp_prec_t p, q;
   mpfr_t tmp1, tmp2;
   mp_limb_t *tmp1p, *tmp2p;
+  MPFR_SAVE_EXPO_DECL (expo);
   MPFR_ZIV_DECL (loop);
   MPFR_TMP_DECL(marker);
 
@@ -107,6 +108,7 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
       p += BITS_PER_MP_LIMB - (p%BITS_PER_MP_LIMB); */
 
   MPFR_TMP_MARK(marker);
+  MPFR_SAVE_EXPO_MARK (expo);
 
   MPFR_ZIV_INIT (loop, p);
   for (;;)
@@ -153,5 +155,6 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
   /* We clean */
   MPFR_TMP_FREE(marker);
 
-  return inexact; /* result is inexact */
+  MPFR_SAVE_EXPO_FREE (expo);
+  return mpfr_check_range (r, inexact, rnd_mode);
 }
