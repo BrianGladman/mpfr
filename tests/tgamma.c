@@ -188,6 +188,7 @@ static void
 special_overflow (void)
 {
   mpfr_t x, y;
+  mp_exp_t emin = mpfr_get_emin ();
 
   set_emin (-125);
   set_emax (128);
@@ -260,7 +261,90 @@ special_overflow (void)
       printf ("got      "); mpfr_dump (y);
       exit (1);
     }
-  
+
+  set_emax (1000);
+  mpfr_set_prec (x, 38);
+  mpfr_set_prec (y, 71);
+  mpfr_set_str_binary (x, "10101011011100001111111000010111110010E-1034");
+  /* 184083777010*2^(-1034) */
+  mpfr_gamma (y, x, GMP_RNDN);
+  mpfr_set_prec (x, 71);
+  mpfr_set_str_binary (x, "10111111001000011110010001000000000000110011110000000011101011111111100E926");
+  /* 1762885132679550982140*2^926 */
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error for gamma (test 2)\n");
+      printf ("expected "); mpfr_dump (x);
+      printf ("got      "); mpfr_dump (y);
+      exit (1);
+    }
+
+  mpfr_set_prec (x, 38);
+  mpfr_set_prec (y, 88);
+  mpfr_set_str_binary (x, "10111100111001010000100001100100100101E-104");
+  /* 202824096037*2^(-104) */
+  mpfr_gamma (y, x, GMP_RNDN);
+  mpfr_set_prec (x, 88);
+  mpfr_set_str_binary (x, "1010110101111000111010111100010110101010100110111000001011000111000011101100001101110010E-21");
+  /* 209715199999500283894743922*2^(-21) */
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error for gamma (test 3)\n");
+      printf ("expected "); mpfr_dump (x);
+      printf ("got      "); mpfr_dump (y);
+      exit (1);
+    }
+
+  mpfr_set_prec (x, 171);
+  mpfr_set_prec (y, 38);
+  mpfr_set_str (x, "-2993155353253689176481146537402947624254601559176535", 10,
+		GMP_RNDN);
+  mpfr_div_2exp (x, x, 170, GMP_RNDN);
+  mpfr_gamma (y, x, GMP_RNDN);
+  mpfr_set_prec (x, 38);
+  mpfr_set_str (x, "201948391737", 10, GMP_RNDN);
+  mpfr_mul_2exp (x, x, 92, GMP_RNDN);
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error for gamma (test 5)\n");
+      printf ("expected "); mpfr_dump (x);
+      printf ("got      "); mpfr_dump (y);
+      exit (1);
+    }
+
+  set_emin (-500000);
+  mpfr_set_prec (x, 337);
+  mpfr_set_prec (y, 38);
+  mpfr_set_str (x, "-30000.000000000000000000000000000000000000000000001", 10,
+		GMP_RNDN);
+  mpfr_gamma (y, x, GMP_RNDN);
+  mpfr_set_prec (x, 38);
+  mpfr_set_str (x, "-3.623795987425E-121243", 10, GMP_RNDN);
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error for gamma (test 7)\n");
+      printf ("expected "); mpfr_dump (x);
+      printf ("got      "); mpfr_dump (y);
+      exit (1);
+    }
+
+#if 0 /* infinite loop? */
+  set_emin (emin);
+  mpfr_set_prec (x, 71);
+  mpfr_set_prec (y, 71);
+  mpfr_set_str (x, "-200000000.1", 10, GMP_RNDN);
+  mpfr_gamma (y, x, GMP_RNDN);
+  mpfr_out_str (stdout, 10, 23, y, GMP_RNDN); printf ("\n");
+  mpfr_set_prec (x, 71);
+  mpfr_set_str (x, "-3.623795987425E-121243", 10, GMP_RNDN);
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error for gamma (test 8)\n");
+      printf ("expected "); mpfr_dump (x);
+      printf ("got      "); mpfr_dump (y);
+      exit (1);
+    }
+#endif
 
   mpfr_clear (y);
   mpfr_clear (x);
