@@ -244,6 +244,23 @@ special_overflow (void)
       printf ("got      "); mpfr_dump (y);
       exit (1);
     }
+  
+  /* another tests from Kenneth Wilder, 31 Aug 2005 */
+  set_emax (200);
+  mpfr_set_prec (x, 38);
+  mpfr_set_prec (y, 54);
+  mpfr_set_str_binary (x, "0.11101111011100111101001001010110101001E-166");
+  mpfr_gamma (y, x, GMP_RNDN);
+  mpfr_set_prec (x, 54);
+  mpfr_set_str_binary (x, "0.100010001101100001110110001010111111010000100101011E167");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error for gamma (test 1)\n");
+      printf ("expected "); mpfr_dump (x);
+      printf ("got      "); mpfr_dump (y);
+      exit (1);
+    }
+  
 
   mpfr_clear (y);
   mpfr_clear (x);
