@@ -2,19 +2,19 @@ dnl  MPFR specific autoconf macros
 
 dnl  Copyright 2000, 2002, 2003, 2004, 2005 Free Software Foundation.
 dnl  Contributed by the Spaces project, INRIA Lorraine.
-dnl  
+dnl
 dnl  This file is part of the MPFR Library.
-dnl  
+dnl
 dnl  The MPFR Library is free software; you can redistribute it and/or modify
 dnl  it under the terms of the GNU Lesser General Public License as published
 dnl  by the Free Software Foundation; either version 2.1 of the License, or (at
 dnl  your option) any later version.
-dnl  
+dnl
 dnl  The MPFR Library is distributed in the hope that it will be useful, but
 dnl  WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 dnl  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
 dnl  License for more details.
-dnl  
+dnl
 dnl  You should have received a copy of the GNU Lesser General Public License
 dnl  along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 dnl  the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
@@ -28,7 +28,7 @@ dnl  to work as expected.
 AC_PREREQ(2.50)
 
 dnl ------------------------------------------------------------
-dnl You must put in MPFR_CONFIGS everything which configure MPFR 
+dnl You must put in MPFR_CONFIGS everything which configure MPFR
 dnl except:
 dnl   -everything dealing with CC and CFLAGS in particular the ABI
 dnl   but the IEEE-754 specific flags must be set here.
@@ -47,8 +47,8 @@ AC_CHECK_HEADER([float.h],,  AC_MSG_ERROR([float.h not found]))
 
 dnl Check for stdargs
 AC_CHECK_HEADER([stdarg.h],[AC_DEFINE([HAVE_STDARG],1,[Define if stdarg])],
-	[AC_CHECK_HEADER([varargs.h],, 
-	AC_MSG_ERROR([stdarg.h or varargs.h not found]))])
+  [AC_CHECK_HEADER([varargs.h],,
+    AC_MSG_ERROR([stdarg.h or varargs.h not found]))])
 
 dnl sys/fpu.h - MIPS specific
 AC_CHECK_HEADERS([sys/time.h sys/fpu.h])
@@ -77,8 +77,8 @@ alpha*-*-*)
   fi
 esac
 
-AC_CHECK_TYPE( [union fpc_csr], 
-   AC_DEFINE(HAVE_FPC_CSR,1,[Define if union fpc_csr is available]), , 
+AC_CHECK_TYPE( [union fpc_csr],
+   AC_DEFINE(HAVE_FPC_CSR,1,[Define if union fpc_csr is available]), ,
 [
 #if HAVE_SYS_FPU_H
 #  include <sys/fpu.h>
@@ -192,7 +192,7 @@ int f (double (*func)(double)) { return 0;}
  a = f (round);
  return 0;
 ]])], [
-   AC_MSG_RESULT(yes) 
+   AC_MSG_RESULT(yes)
    AC_DEFINE(HAVE_ROUND, 1,[Have ISO-C99 round function])
 ],[AC_MSG_RESULT(no)])
 
@@ -205,7 +205,7 @@ int f (double (*func)(double)) { return 0;}
  a = f(trunc);
  return 0;
 ]])], [
-   AC_MSG_RESULT(yes) 
+   AC_MSG_RESULT(yes)
    AC_DEFINE(HAVE_TRUNC, 1,[Have ISO-C99 trunc function])
 ],[AC_MSG_RESULT(no)])
 
@@ -218,7 +218,7 @@ int f (double (*func)(double)) { return 0;}
  a = f(floor);
  return 0;
 ]])], [
-   AC_MSG_RESULT(yes) 
+   AC_MSG_RESULT(yes)
    AC_DEFINE(HAVE_FLOOR, 1,[Have ISO-C99 floor function])
 ],[AC_MSG_RESULT(no)])
 
@@ -231,7 +231,7 @@ int f (double (*func)(double)) { return 0;}
  a = f(ceil);
  return 0;
 ]])], [
-   AC_MSG_RESULT(yes) 
+   AC_MSG_RESULT(yes)
    AC_DEFINE(HAVE_CEIL, 1,[Have ISO-C99 ceil function])
 ],[AC_MSG_RESULT(no)])
 
@@ -244,7 +244,7 @@ int f (double (*func)(double)) { return 0;}
  a = f(nearbyint);
  return 0;
 ]])], [
-   AC_MSG_RESULT(yes) 
+   AC_MSG_RESULT(yes)
    AC_DEFINE(HAVE_NEARBYINT, 1,[Have ISO-C99 rint function])
 ],[AC_MSG_RESULT(no)])
 
@@ -426,21 +426,21 @@ BEGIN {
             }
 
           if (got[23] == "300" && \
-	      got[22] == "031" && \
-	      got[21] == "326" && \
-	      got[20] == "363" && \
-	      got[19] == "105" && \
-	      got[18] == "100" && \
-	      got[17] == "000" && \
-	      got[16] == "000" && \
-	      got[15] == "000" && \
-	      got[14] == "000" && \
-	      got[13] == "000" && \
-	      got[12] == "000" && \
-	      got[11] == "000" && \
-	      got[10] == "000" && \
-	      got[9]  == "000" && \
-	      got[8]  == "000")
+              got[22] == "031" && \
+              got[21] == "326" && \
+              got[20] == "363" && \
+              got[19] == "105" && \
+              got[18] == "100" && \
+              got[17] == "000" && \
+              got[16] == "000" && \
+              got[15] == "000" && \
+              got[14] == "000" && \
+              got[13] == "000" && \
+              got[12] == "000" && \
+              got[11] == "000" && \
+              got[10] == "000" && \
+              got[9]  == "000" && \
+              got[8]  == "000")
             {
               print "IEEE quad, big endian"
               found = 1
@@ -489,7 +489,7 @@ case $mpfr_cv_c_long_double_format in
     ;;
   unknown* | "not available")
     ;;
-  *) 
+  *)
     AC_MSG_WARN([oops, unrecognised float format: $mpfr_cv_c_long_double_format])
     ;;
 esac
