@@ -224,7 +224,7 @@ special_overflow (void)
   mpfr_gamma (y, x, GMP_RNDN);
   if (!(mpfr_zero_p (y) && MPFR_SIGN (y) < 0))
     {
-      printf ("Error for gamma(-200000000.5)\n");
+      printf ("Error for gamma(-200000000.1), prec=53\n");
       printf ("expected -0");
       printf ("got      ");
       mpfr_dump (y);
@@ -328,23 +328,19 @@ special_overflow (void)
       exit (1);
     }
 
-#if 0 /* infinite loop? */
+  /* was producing infinite loop */
   set_emin (emin);
   mpfr_set_prec (x, 71);
   mpfr_set_prec (y, 71);
   mpfr_set_str (x, "-200000000.1", 10, GMP_RNDN);
   mpfr_gamma (y, x, GMP_RNDN);
-  mpfr_out_str (stdout, 10, 23, y, GMP_RNDN); printf ("\n");
-  mpfr_set_prec (x, 71);
-  mpfr_set_str (x, "-3.623795987425E-121243", 10, GMP_RNDN);
-  if (mpfr_cmp (x, y))
+  if (!(mpfr_zero_p (y) && MPFR_SIGN (y) < 0))
     {
       printf ("Error for gamma (test 8)\n");
       printf ("expected "); mpfr_dump (x);
       printf ("got      "); mpfr_dump (y);
       exit (1);
     }
-#endif
 
   mpfr_clear (y);
   mpfr_clear (x);

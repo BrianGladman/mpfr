@@ -110,7 +110,6 @@ New functions to implement:
     E1(-0)   = -Inf
   DawsonIntegral
   Psi = LogDerivative
-  LogGamma
   GammaD(x) = Gamma(x+1/2)
 - functions defined in the LIA-2 standard
   + minimum and maximum (5.2.2): max, min, max_seq, min_seq, mmax_seq

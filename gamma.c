@@ -149,8 +149,9 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_set_d (xp, EXPM1, GMP_RNDZ); /* 1/e rounded down */
       mpfr_mul (xp, x, xp, GMP_RNDZ);
       mpfr_pow (xp, xp, x, GMP_RNDZ);
+      mpfr_clear_overflow ();
       mpfr_mul_2exp (xp, xp, 1, GMP_RNDZ);
-      overflow = MPFR_EXP(xp) > __gmpfr_emax;
+      overflow = mpfr_overflow_p ();
       mpfr_clear (xp);
       return (overflow) ? mpfr_overflow (gamma, rnd_mode, 1)
         : mpfr_gamma_aux (gamma, x, rnd_mode);
@@ -164,7 +165,9 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
      gamma(x) = Pi*(x-1)/sin(Pi*(2-x))/gamma(2-x).
      Since gamma(2-x) >= 2 * ((2-x)/e)^(2-x) / (2-x), we have
      |gamma(x)| <= Pi*(1-x)*(2-x)/2/((2-x)/e)^(2-x) / |sin(Pi*(2-x))|
-                <= 12 * ((2-x)/e)^x / |sin(Pi*(2-x))| */
+                <= 12 * ((2-x)/e)^x / |sin(Pi*(2-x))|.
+     To avoid an underflow in ((2-x)/e)^x, we compute the logarithm.
+  */
   if (MPFR_IS_NEG(x))
     {
       int underflow = 0, sgn;
@@ -173,14 +176,12 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_init2 (xp, 53);
       mpfr_init2 (tmp, 53);
       mpfr_init2 (tmp2, 53);
-      /* we want an upper bound for 12 * ((2-x)/e)^x;
-         since x < 0, y -> y^x is decreasing, thus we need
-         a lower bound on (2-x)/e */
-      mpfr_ui_sub (xp, 2, x, GMP_RNDZ);
-      mpfr_set_d (tmp, EXPM1, GMP_RNDZ); /* 1/e rounded down */
-      mpfr_mul (xp, xp, tmp, GMP_RNDZ);
-      mpfr_pow (xp, xp, x, GMP_RNDU);
-      mpfr_mul_ui (xp, xp, 12, GMP_RNDU);
+      /* we want an upper bound for x * [log(2-x)-1].
+         since x < 0, we need a lower bound on log(2-x) */
+      mpfr_ui_sub (xp, 2, x, GMP_RNDD);
+      mpfr_log (xp, xp, GMP_RNDD);
+      mpfr_sub_ui (xp, xp, 1, GMP_RNDD);
+      mpfr_mul (xp, xp, x, GMP_RNDU);
 
       /* we need an upper bound on 1/|sin(Pi*(2-x))|,
          thus a lower bound on |sin(Pi*(2-x))|.
@@ -196,17 +197,19 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_const_pi (tmp2, GMP_RNDN);
       mpfr_mul (tmp2, tmp2, tmp, GMP_RNDN); /* Pi*(2-x) */
       mpfr_sin (tmp, tmp2, GMP_RNDN); /* sin(Pi*(2-x)) */
+      mpfr_abs (tmp, tmp, GMP_RNDN);
       mpfr_mul_ui (tmp2, tmp2, 3, GMP_RNDU); /* 3Pi(2-x) */
       mpfr_add_ui (tmp2, tmp2, 1, GMP_RNDU); /* 3Pi(2-x)+1 */
       mpfr_div_2exp (tmp2, tmp2, mpfr_get_prec (tmp), GMP_RNDU);
       /* if tmp2<|tmp|, we get a lower bound */
       sgn = mpfr_sgn (tmp);
-      mpfr_abs (tmp, tmp, GMP_RNDN);
       if (mpfr_cmp (tmp2, tmp) < 0)
         {
-          mpfr_sub (tmp, tmp, tmp2, GMP_RNDZ);
-          mpfr_div (xp, xp, tmp, GMP_RNDU);
-          underflow = MPFR_EXP(xp) <= expo.saved_emin - 2;
+          mpfr_sub (tmp, tmp, tmp2, GMP_RNDZ); /* low bnd on |sin(Pi*(2-x))| */
+          mpfr_ui_div (tmp, 12, tmp, GMP_RNDU); /* upper bound */
+          mpfr_log (tmp, tmp, GMP_RNDU);
+          mpfr_add (tmp, tmp, xp, GMP_RNDU);
+          underflow = mpfr_cmp_si (xp, expo.saved_emin - 2) <= 0;
         }
 
       mpfr_clear (xp);
