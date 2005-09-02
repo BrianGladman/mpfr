@@ -130,12 +130,19 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
   if (compared == 0)
     return mpfr_set_ui (gamma, 1, rnd_mode);
 
-  /* if x is an integer that fits into an unsigned long, use mpfr_fac_ui */
+  /* if x is an integer that fits into an unsigned long, use mpfr_fac_ui
+     if argument is not too large.
+     If precision is p, fac_ui costs O(u*p), whereas gamma costs O(p*M(p)),
+     so for u <= M(p), fac_ui should be faster.
+     We approximate here M(p) by p*log(p)^2, which is not a bad guess.
+  */
   if (is_integer && mpfr_fits_ulong_p (x, GMP_RNDN))
     {
       unsigned long int u;
+      mp_prec_t p = MPFR_PREC(gamma);
       u = mpfr_get_ui (x, GMP_RNDN);
-      return mpfr_fac_ui (gamma, u - 1, rnd_mode);
+      if (u / (MPFR_INT_CEIL_LOG2 (p) * MPFR_INT_CEIL_LOG2 (p)) <= p)
+        return mpfr_fac_ui (gamma, u - 1, rnd_mode);
     }
 
   /* check for overflow: according to (6.1.37) in Abramowitz & Stegun,

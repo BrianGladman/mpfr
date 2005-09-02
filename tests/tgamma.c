@@ -189,6 +189,7 @@ special_overflow (void)
 {
   mpfr_t x, y;
   mp_exp_t emin = mpfr_get_emin ();
+  mp_exp_t emax = mpfr_get_emax ();
 
   set_emin (-125);
   set_emax (128);
@@ -339,6 +340,17 @@ special_overflow (void)
       printf ("Error for gamma (test 8)\n");
       printf ("expected "); mpfr_dump (x);
       printf ("got      "); mpfr_dump (y);
+      exit (1);
+    }
+
+  set_emax (1073741823);
+  mpfr_set_prec (x, 29);
+  mpfr_set_prec (y, 29);
+  mpfr_set_str (x, "423786866", 10, GMP_RNDN);
+  mpfr_gamma (y, x, GMP_RNDN);
+  if (!mpfr_inf_p (y) || mpfr_sgn (y) < 0)
+    {
+      printf ("Error for gamma(423786866)\n");
       exit (1);
     }
 
