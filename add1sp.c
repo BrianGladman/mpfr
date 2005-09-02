@@ -32,13 +32,17 @@ int mpfr_add1sp2 (mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t);
 int mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 {
   mpfr_t tmpa, tmpb, tmpc;
-  int inexact, inexact2;
+  int inexb, inexc, inexact, inexact2;
 
   mpfr_init2 (tmpa, MPFR_PREC (a));
   mpfr_init2 (tmpb, MPFR_PREC (b));
   mpfr_init2 (tmpc, MPFR_PREC (c));
-  MPFR_ASSERTN (mpfr_set (tmpb, b, GMP_RNDN) == 0);
-  MPFR_ASSERTN (mpfr_set (tmpc, c, GMP_RNDN) == 0);
+
+  inexb = mpfr_set (tmpb, b, GMP_RNDN);
+  MPFR_ASSERTN (inexb == 0);
+
+  inexc = mpfr_set (tmpc, c, GMP_RNDN);
+  MPFR_ASSERTN (inexc == 0);
 
   inexact2 = mpfr_add1 (tmpa, tmpb, tmpc, rnd_mode);
   inexact  = mpfr_add1sp2 (a, b, c, rnd_mode);
