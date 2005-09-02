@@ -346,7 +346,11 @@ typedef union ieee_double_extract Ieee_double_extract;
                          (((Ieee_double_extract *)&(x))->s.manh != 0)))
 #else
 # define DOUBLE_ISINF(x) ((x) > DBL_MAX || (x) < -DBL_MAX)
-# define DOUBLE_ISNAN(x) ((x) != (x))
+# if MPFR_NANISNAN
+#  define DOUBLE_ISNAN(x) (!((x) >= 0.0 || (x) <= 0.0))
+# else
+#  define DOUBLE_ISNAN(x) ((x) != (x))
+# endif
 #endif
 
 

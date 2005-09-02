@@ -156,6 +156,29 @@ if test "$mpfr_cv_have_denorms" = "yes"; then
   AC_DEFINE(HAVE_DENORMS,1,[Define if denormalized floats work.])
 fi
 
+dnl Check whether NAN != NAN (as required by the IEEE-754 standard,
+dnl but not by the ISO C standard). For instance, this is false with
+dnl MIPSpro 7.3.1.3m under IRIX64. By default, assume this is true.
+AC_CACHE_CHECK([if NAN == NAN], mpfr_cv_nanisnan, [
+AC_TRY_RUN([
+#include <stdio.h>
+#include <math.h>
+#ifndef NAN
+# define NAN (0.0/0.0)
+#endif
+int main() {
+  double d;
+  d = NAN;
+  return d != d;
+}
+], [mpfr_cv_nanisnan="yes"],
+   [mpfr_cv_nanisnan="no"],
+   [mpfr_cv_nanisnan="cannot test, assume no"])
+])
+if test "$mpfr_cv_nanisnan" = "yes"; then
+  AC_DEFINE(MPFR_NANISNAN,1,[Define if NAN == NAN.])
+fi
+
 dnl Check if the chars '0' to '9' are consecutive values
 AC_MSG_CHECKING([if charset has consecutive values])
 AC_RUN_IFELSE(AC_LANG_PROGRAM([[
