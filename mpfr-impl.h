@@ -347,7 +347,9 @@ typedef union ieee_double_extract Ieee_double_extract;
 #else
 # define DOUBLE_ISINF(x) ((x) > DBL_MAX || (x) < -DBL_MAX)
 # if MPFR_NANISNAN
-#  define DOUBLE_ISNAN(x) (!((x) >= 0.0 || (x) <= 0.0))
+/* Avoid MIPSpro / IRIX64 (incorrect) optimizations.
+   The + must not be replaced by a ||. */
+#  define DOUBLE_ISNAN(x) (!(((x) >= 0.0) + ((x) <= 0.0)))
 # else
 #  define DOUBLE_ISNAN(x) ((x) != (x))
 # endif
