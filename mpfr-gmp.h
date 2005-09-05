@@ -94,7 +94,19 @@ extern "C" {
 #define MPN_ZERO(dst, n) memset((dst), 0, (n)*BYTES_PER_MP_LIMB)
 #define MPN_COPY_DECR(dst,src,n) memmove((dst),(src),(n)*BYTES_PER_MP_LIMB)
 #define MPN_COPY_INCR(dst,src,n) memmove((dst),(src),(n)*BYTES_PER_MP_LIMB)
-#define MPN_COPY(dst,src,n) memcpy((dst),(src),(n)*BYTES_PER_MP_LIMB)
+#define MPN_COPY(dst,src,n) \
+  do                                                                  \
+    {                                                                 \
+      if ((dst) != (src))                                             \
+        {                                                             \
+          MPFR_ASSERTD ((char *) (dst) >= (char *) (src) +            \
+                                          (n) * BYTES_PER_MP_LIMB ||  \
+                        (char *) (src) >= (char *) (dst) +            \
+                                          (n) * BYTES_PER_MP_LIMB);   \
+          memcpy ((dst), (src), (n) * BYTES_PER_MP_LIMB);             \
+        }                                                             \
+    }                                                                 \
+  while (0)
 
 /* MPN macros taken from gmp-impl.h */
 #define MPN_NORMALIZE(DST, NLIMBS) \
