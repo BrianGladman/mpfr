@@ -131,6 +131,7 @@ int mpfr_lngamma
   int inexact, compared;
   mp_exp_t err_s, err_t;
   unsigned long Bm = 0; /* number of allocated B[] */
+  unsigned long oldBm;
   double d;
   MPFR_SAVE_EXPO_DECL (expo);
 
@@ -253,6 +254,8 @@ int mpfr_lngamma
     }
 
   /* now z0 > 1 */
+
+  MPFR_ASSERTN (compared > 0);
 
   /* since k is O(w), the value of log(z0*...*(z0+k-1)) is about w*log(w),
      so there is a cancellation of ~log(w) in the argument reconstruction */
@@ -436,16 +439,14 @@ int mpfr_lngamma
   while (!mpfr_can_round (s, w - err_s, GMP_RNDN, GMP_RNDZ, precy
                           + (rnd == GMP_RNDN)));
 
+  oldBm = Bm;
+  while (Bm--)
+    mpz_clear (B[Bm]);
+  (*__gmp_free_func) (B, oldBm * sizeof (mpz_t));
+
  end:
   inexact = mpfr_set (y, s, rnd);
 
-  if (compared > 0)
-    {
-      unsigned long oldBm = Bm;
-      while (Bm--)
-        mpz_clear (B[Bm]);
-      (*__gmp_free_func) (B, oldBm * sizeof (mpz_t));
-    }
   mpfr_clear (s);
   mpfr_clear (t);
   mpfr_clear (u);
