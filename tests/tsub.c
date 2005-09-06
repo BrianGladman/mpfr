@@ -288,7 +288,7 @@ check_diverse (void)
   mpfr_set_prec (y, 10);
   mpfr_set_prec (z, 10);
   mpfr_set_ui (y, 0, GMP_RNDN);
-  mpfr_set_str_binary (z, "0.100000000000000000000100E15");
+  mpfr_set_str_binary (z, "0.10001");
   if (test_sub (x, y, z, GMP_RNDN) <= 0)
     {
       printf ("Wrong inexact flag in x=mpfr_sub(0,z) for prec(z)>prec(x)\n");
