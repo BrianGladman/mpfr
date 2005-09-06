@@ -36,12 +36,12 @@ main (void)
   version = mpfr_get_version ();
   if (strcmp (buffer, version) != 0)
     {
-      printf ("Incorrect version (%s vs %s)\n", buffer, version);
+      printf ("Incorrect version [1] (%s vs %s)\n", buffer, version);
       exit (1);
     }
   if (strcmp (MPFR_VERSION_STRING, version) != 0)
     {
-      printf ("Incorrect version (%s vs %s)\n", buffer, version);
+      printf ("Incorrect version [2] (%s vs %s)\n", buffer, version);
       exit (1);
     }
   return 0;
