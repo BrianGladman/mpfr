@@ -118,11 +118,13 @@ mpfr_gamma_alpha (mp_prec_t p)
    For z real, |K(z)| <= 1 thus R_n(z) is bounded by the first neglected term.
  */
 #ifdef IS_GAMMA
-static int mpfr_gamma_aux
+static int
+#define GAMMA_FUNC mpfr_gamma_aux
 #else
-int mpfr_lngamma
+int
+#define GAMMA_FUNC mpfr_lngamma
 #endif
-(mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
+GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
 {
   mp_prec_t precy, w; /* working precision */
   mpfr_t s, t, u, v, z;
