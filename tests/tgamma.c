@@ -264,6 +264,7 @@ special_overflow (void)
     }
 
   set_emax (1000);
+  set_emin (-2000);
   mpfr_set_prec (x, 38);
   mpfr_set_prec (y, 71);
   mpfr_set_str_binary (x, "10101011011100001111111000010111110010E-1034");
