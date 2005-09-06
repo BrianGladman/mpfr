@@ -395,12 +395,12 @@ typedef union ieee_double_extract Ieee_double_extract;
     union {                                                     \
       long double    ld;                                        \
       struct {                                                  \
-        unsigned long  sign : 1;                                \
-        unsigned long  exp  : 15;                               \
-        unsigned long  man3 : 16;                               \
-        unsigned long  man2 : 32;                               \
-        unsigned long  man1 : 32;                               \
-        unsigned long  man0 : 32;                               \
+        unsigned int sign : 1;                                  \
+        unsigned int exp  : 15;                                 \
+        unsigned int man3 : 16;                                 \
+        unsigned int man2 : 32;                                 \
+        unsigned int man1 : 32;                                 \
+        unsigned int man0 : 32;                                 \
       } s;                                                      \
     } u;                                                        \
     u.ld = (x);                                                 \
@@ -442,11 +442,11 @@ __MPFR_DECLSPEC long double __gmpfr_longdouble_volatile _MPFR_PROTO ((long doubl
 typedef union {
   long double    ld;
   struct {
-    unsigned long manl : 32;
-    unsigned long manh : 32;
-    unsigned long expl : 8 ;
-    unsigned long exph : 7;
-    unsigned long sign : 1;
+    unsigned int manl : 32;
+    unsigned int manh : 32;
+    unsigned int expl : 8 ;
+    unsigned int exph : 7;
+    unsigned int sign : 1;
   } s;
 } mpfr_long_double_t;
 
