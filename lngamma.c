@@ -31,7 +31,7 @@ MA 02111-1307, USA. */
    0 = sum(1/(n+1-k)!*B[k]/k!, k=0..n)
    which gives:
    B[n] = -sum(binomial(n+1,k)*B[k], k=0..n-1)/(n+1).
-   
+
    Let C[n] = B[n]*(n+1)!.
    Then C[n] = -sum(binomial(n+1,k)*C[k]*n!/(k+1)!,  k=0..n-1),
    which proves that the C[n] are integers.
@@ -227,27 +227,27 @@ int mpfr_lngamma
           /* log(v*(1+e)) = log(v)+log(1+e) where |e| <= 2^(err_s-w).
              Since |log(1+e)| <= 2*e for |e| <= 1/4, the error on v is
              bounded by ulp(v)/2 + 2^(err_s+1-w). */
-	  if (err_s + 2 > w)
-	    {
-	      w += err_s + 2;
-	      ok = 0;
-	    }
-	  else
-	    {
-	      err_s += 1 - MPFR_EXP(v);
-	      err_s = (err_s >= 0) ? err_s + 1 : 0;
-	      /* the error on v is bounded by 2^err_s ulps */
-	      err_u += MPFR_EXP(u); /* absolute error on u */
-	      err_s += MPFR_EXP(v); /* absolute error on v */
-	      mpfr_sub (s, v, u, GMP_RNDN);
-	      /* the total error on s is bounded by ulp(s)/2 + 2^(err_u-w)
-		 + 2^(err_s-w) <= ulp(s)/2 + 2^(max(err_u,err_s)+1-w) */
-	      err_s = (err_s >= err_u) ? err_s : err_u;
-	      err_s += 1 - MPFR_EXP(s); /* error is 2^err_s ulp(s) */
-	      err_s = (err_s >= 0) ? err_s + 1 : 0;
-	      ok = mpfr_can_round (s, w - err_s, GMP_RNDN, GMP_RNDZ, precy
-				   + (rnd == GMP_RNDN));
-	    }
+          if (err_s + 2 > w)
+            {
+              w += err_s + 2;
+              ok = 0;
+            }
+          else
+            {
+              err_s += 1 - MPFR_EXP(v);
+              err_s = (err_s >= 0) ? err_s + 1 : 0;
+              /* the error on v is bounded by 2^err_s ulps */
+              err_u += MPFR_EXP(u); /* absolute error on u */
+              err_s += MPFR_EXP(v); /* absolute error on v */
+              mpfr_sub (s, v, u, GMP_RNDN);
+              /* the total error on s is bounded by ulp(s)/2 + 2^(err_u-w)
+                 + 2^(err_s-w) <= ulp(s)/2 + 2^(max(err_u,err_s)+1-w) */
+              err_s = (err_s >= err_u) ? err_s : err_u;
+              err_s += 1 - MPFR_EXP(s); /* error is 2^err_s ulp(s) */
+              err_s = (err_s >= 0) ? err_s + 1 : 0;
+              ok = mpfr_can_round (s, w - err_s, GMP_RNDN, GMP_RNDZ, precy
+                                   + (rnd == GMP_RNDN));
+            }
         }
       while (ok == 0);
       goto end;
@@ -324,7 +324,7 @@ int mpfr_lngamma
   maxm = 1UL << (BITS_PER_MP_LIMB / 2 - 1);
 
   /* s:(1+u)^15, t:(1+u)^2, t <= 3/128 */
-  
+
   for (m = 2; MPFR_EXP(v) + (mp_exp_t) w >= MPFR_EXP(s); m++)
     {
       mpfr_mul (t, t, u, GMP_RNDN); /* (1+u)^(10m-14) */
@@ -346,10 +346,10 @@ int mpfr_lngamma
       /* (1+u)^(10m-8) */
       /* invariant: t=1/(2m)/(2m-1)/z^(2m-1)/(2m+1)! */
       if (Bm <= m)
-	{
-	  B = bernoulli (B, m); /* B[2m]*(2m+1)!, exact */
-	  Bm ++;
-	}
+        {
+          B = bernoulli (B, m); /* B[2m]*(2m+1)!, exact */
+          Bm ++;
+        }
       mpfr_mul_z (v, t, B[m], GMP_RNDN); /* (1+u)^(10m-7) */
       MPFR_ASSERTN(MPFR_EXP(v) <= - (2 * m + 3));
       mpfr_add (s, s, v, GMP_RNDN);
@@ -361,7 +361,7 @@ int mpfr_lngamma
      <= 1.46*u for u <= 2^(-3).
      We have 0 < lngamma(z) - [(z - 1/2) ln(z) - z + 1/2 ln(2 Pi)] < 0.021
      for z >= 4, thus since the initial s >= 0.85, the different values of
-     s differ by at most one binade, and the total rounding error on s 
+     s differ by at most one binade, and the total rounding error on s
      in the for-loop is bounded by 2*(m-1)*ulp(final_s).
      The error coming from the v's is bounded by 1.46*2^(-w) <= 2*ulp(final_s).
      Thus the total error so far is bounded by [(1+u)^15-1]*s+2m*ulp(s)
@@ -378,10 +378,10 @@ int mpfr_lngamma
       unsigned long l;
       mpfr_set (t, z0, GMP_RNDN); /* t = z0*(1+u) */
       for (l = 1; l < k; l++)
-	{
-	  mpfr_add_ui (u, z0, l, GMP_RNDN); /* u = (z0+l)*(1+u) */
-	  mpfr_mul (t, t, u, GMP_RNDN);     /* (1+u)^(2l+1) */
-	}
+        {
+          mpfr_add_ui (u, z0, l, GMP_RNDN); /* u = (z0+l)*(1+u) */
+          mpfr_mul (t, t, u, GMP_RNDN);     /* (1+u)^(2l+1) */
+        }
       /* now t: (1+u)^(2k-1) */
       /* instead of computing log(sqrt(2*Pi)/t), we compute
          1/2*log(2*Pi/t^2), which trades a square root for a square */
@@ -411,7 +411,7 @@ int mpfr_lngamma
   mpfr_log (t, v, GMP_RNDN);
   /* let v0 be the exact value of v. We have v = v0*(1+u)^(4k+1),
      thus log(v) = log(v0) + (4k+1)*log(1+u). Since |log(1+u)/u| <= 1.07
-     for |u| <= 2^(-3), the absolute error on log(v) is bounded by 
+     for |u| <= 2^(-3), the absolute error on log(v) is bounded by
      1.07*(4k+1)*u, and the rounding error by ulp(t). */
   mpfr_div_2exp (t, t, 1, GMP_RNDN);
   /* the error on t is now bounded by ulp(t) + 0.54*(4k+1)*2^(-w).
@@ -439,7 +439,7 @@ int mpfr_lngamma
   if (compared > 0)
     {
       while (Bm--)
-	mpz_clear (B[Bm]);
+        mpz_clear (B[Bm]);
       free (B);
     }
   mpfr_clear (s);
