@@ -189,7 +189,6 @@ special_overflow (void)
 {
   mpfr_t x, y;
   mp_exp_t emin = mpfr_get_emin ();
-  mp_exp_t emax = mpfr_get_emax ();
 
   set_emin (-125);
   set_emax (128);
@@ -249,6 +248,7 @@ special_overflow (void)
   
   /* another tests from Kenneth Wilder, 31 Aug 2005 */
   set_emax (200);
+  set_emin (-200);
   mpfr_set_prec (x, 38);
   mpfr_set_prec (y, 54);
   mpfr_set_str_binary (x, "0.11101111011100111101001001010110101001E-166");
@@ -363,6 +363,7 @@ special_overflow (void)
 int
 main (void)
 {
+  MPFR_TEST_USE_RANDS ();
   tests_start_mpfr ();
 
   special ();
