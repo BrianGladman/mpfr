@@ -1,4 +1,203 @@
+2005-09-08  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* tests/Makefile.am: Fix: readded dependencies. [2.2 branch]
+
+	* tests/Makefile.am: Fix: readded dependencies.
+
+2005-09-06  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* Makefile.am, NEWS, TODO, gamma.c, mpfr-impl.h, mpfr.h, tests/Makefile.am, tests/tgamma.c, tests/tversion.c:
+	Patches from the trunk: added mpfr_lngamma, fixed mpfr_gamma,
+	more detailed error message in tversion. [2.2 branch]
+
+	* tests/tversion.c: More detailed error message.
+
+	* lngamma.c: Change for ansi2knr.
+
+	* lngamma.c: Code clean-up (again).
+
+	* lngamma.c:
+	Use GMP's allocate functions instead of C's. Code clean-up.
+
+	* lngamma.c: Reformat.
+
+2005-09-06  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* tests/tgamma.c: missing set_emin
+
+	* tests/tgamma.c:
+	added missing call to MPFR_TEST_USE_RANDS() [3 blocks non-freed]
+
+2005-09-06  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* set_str_raw.c, tests/tsub.c:
+	Ported patches from the trunk to the 2.2 branch.
+
+	* tests/tsub.c:
+	Fixed a bug (detected after mpfr_set_str_binary has been fixed)
+	in tests/tsub.c introduced in 1.6 (2001-10-19).
+
+	* set_str_raw.c:
+	mpfr_set_str_binary was buggy and inefficient. Let's use mpfr_strtofr.
+
+	* mpfr-impl.h:
+	Replaced unsigned long bit-fields (GCC extension) by insigned int
+	bit-fields. [2.2 branch]
+
+	* mpfr-impl.h:
+	Replaced unsigned long bit-fields (GCC extension) by insigned int
+	bit-fields.
+
+2005-09-05  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* mpfr-gmp.h:
+	MPN_COPY now calls memcpy only if dst != src (otherwise this is an
+	undefined behavior), and if WANT_ASSERT is defined, it checks that
+	there is no overlap. [2.2 branch]
+
+	* mpfr-gmp.h:
+	MPN_COPY now calls memcpy only if dst != src (otherwise this is an
+	undefined behavior), and if WANT_ASSERT is defined, it checks that
+	there is no overlap.
+
+2005-09-02  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* acinclude.m4, mpfr-impl.h:
+	Avoid MIPSpro / IRIX64 (incorrect) optimizations for DOUBLE_ISNAN.
+	[2.2 branch]
+
+	* add1sp.c, sub1sp.c:
+	Do not put expressions with side effects in MPFR_ASSERTN. [2.2 branch]
+
+	* mpfr-impl.h:
+	Avoid MIPSpro / IRIX64 (incorrect) optimizations for DOUBLE_ISNAN.
+
+	* acinclude.m4, mpfr-impl.h:
+	More portable DOUBLE_ISNAN (useful for MIPSpro under IRIX64).
+
+2005-09-02  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* gamma.c, tests/tgamma.c:
+	improved trade-off between fac_ui and gamma when argument is integer
+
+2005-09-02  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* acinclude.m4: Reformat.
+
+2005-09-02  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* TODO, gamma.c, tests/tgamma.c: fixed remaining problem in gamma
+	removed LogGamma from TODO
+
+2005-09-02  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* add1sp.c, sub1sp.c:
+	Do not put expressions with side effects in MPFR_ASSERTN.
+
+2005-09-01  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* gamma.c, tests/tgamma.c: now uses lngamma code for x < 1 too
+	added new tests from Kenneth Wilder
+
+	* tests/tgamma.c: added another test
+
+	* tests/tgamma.c: removed useless prototype
+
+2005-09-01  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* mpfr.texi: Updated month. [2.2 branch]
+
+	* log.c, tests/tlog.c: Ported fix to the 2.2 branch.
+
+2005-08-31  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* sum.c:
+	Fixed memory leak (missing MPFR_TMP_FREE in a particular case).
+	[2.2 branch, patch ported from the trunk]
+
+	* sum.c:
+	Fixed memory leak (missing MPFR_TMP_FREE in a particular case).
+
+	* sum.c: Fixed the code formatting.
+
+	* README.dev: Updated Point 6 of "To make a release".
+
+	* mul.c:
+	Fixed memory leak (missing MPFR_TMP_FREE in a particular case).
+
+	* mul.c:
+	Fixed memory leak (missing MPFR_TMP_FREE in a particular case).
+	[2.2 branch]
+
+2005-08-31  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* mpfr.texi: added lngamma
+
+	* tests/tlog.c: added new test (emax)
+
+	* tests/tgamma.c: now random tests also use x >= 1
+
+	* log.c: added SAVE_EXPO stuff
+
+	* lngamma.c, mpfr.h, tests/Makefile.am, tests/tlngamma.c:
+	new function lngamma
+
+	* gamma.c: now uses lngamma code for x > 1
+
+	* Makefile.am: added lngamma
+
+2005-08-31  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* configure.in:
+	Fix for the following problem: #error is not sufficient with cc
+	on IRIX64, and autoconf 2.59 doesn't cope with that. [2.2 branch]
+
+	* VERSION, configure.in, mpfr.h, mpfr.texi, version.c:
+	Updated version to 2.3.0.
+
+	* configure.in:
+	Fix for the following problem: #error is not sufficient with cc
+	on IRIX64, and autoconf 2.59 doesn't cope with that.
+
+2005-08-30  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* ChangeLog: Update. [2.2 branch]
+
+	* mul.c:
+	Patch from Patrick to solve efficiency problem when one operand is
+	sparse (e.g. from ui_pow_ui) + other minor changes. [2.2 branch]
+
+	* .cvsignore, tests/.cvsignore: Added .cvsignore files.
+
+	* mul.c: Unobfuscated 2 assertions.
+
+	* mul.c: Fixed indentation and some comments.
+
+	* mul.c:
+	Recommitted the patch (without discarding previous modifications).
+
+	* mul.c:
+	Reverted to the previous version, as the patch discarded previous
+	modifications.
+
+2005-08-30  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* tests/tgamma.c: added two new tests
+
+	* mul.c:
+	patch from Patrick to solve efficiency problem when one operand is
+	sparse (e.g. from ui_pow_ui)
+
+2005-08-29  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* algorithms.tex, gamma.c, mpfr-impl.h, pow.c, tests/tgamma.c:
+	check for overflow/underflow in pow and gamma
+
 2005-08-24  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* add1sp.c, mpfr-impl.h, mul.c, print_raw.c, sub1sp.c:
+	When WANT_ASSERT >= 2: the corresponding messages are now output
+	to stderr instead of stdout.
 
 	* set_uj.c:
 	Improved C compliance when mp_limb_t and uintmax_t have the same size
