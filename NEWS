@@ -26,6 +26,7 @@ Changes from version 2.1.1 to version 2.2.0:
   mpfr_set_erangeflag, mpfr_set_nanflag, mpfr_erfc, mpfr_atan2, mpfr_pow_z,
   mpfr_subnormalize, mpfr_const_catalan, mpfr_sec, mpfr_csc, mpfr_cot,
   mpfr_root, mpfr_eint, mpfr_get_f, mpfr_sech, mpfr_csch, mpfr_coth,
+  mpfr_lngamma.
 - new macro: MPFR_VERSION_STRING
 - Remove the exported MPFR variables from mpfr.h to mpfr-impl.h.
   (They were undocumented, so programs which respect the API still work).
