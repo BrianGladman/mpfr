@@ -1,5 +1,27 @@
 2005-09-08  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
 
+	* README.dev, fixperm:
+	Added fixperm script to fix the file permissions broken by CVS.
+
+	* fixperm:
+	file fixperm was added on branch mpfr-2-2-branch on 2005-09-08 09:05:58 +0000
+
+	* NEWS: Update.
+
+	* tests/tlngamma.c: Forgot to add tlngamma.c. [2.2 branch]
+
+	* mpfr.texi: Update (mpfr_lngamma).
+
+	* lngamma.c: Forgot to add lngamma.c. [2.2 branch]
+
+	* ChangeLog: Update. [2.2 branch]
+
+2005-09-08  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* TODO: added one item
+
+2005-09-08  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
 	* tests/Makefile.am: Fix: readded dependencies. [2.2 branch]
 
 	* tests/Makefile.am: Fix: readded dependencies.
