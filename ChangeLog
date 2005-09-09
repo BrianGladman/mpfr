@@ -1,3 +1,26 @@
+2005-09-09  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* README.dev: Updated "To make a release".
+
+	* lngamma.c:
+	Use (mpz_t *) 0 instead of NULL (this is not less clear and this
+	works with the native SunOS 4 C compiler).
+
+2005-09-09  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* tests/tset_f.c: avoid . in mpf_set_str (locale-sensitive)
+
+	* tests/tgamma.c, tests/tlngamma.c, gamma.c, lngamma.c, mpfr.texi:
+	cleanup of gamma and lngamma
+
+2005-09-08  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* mul.c:
+	MUL_THRESHOLD -> MUL_THRESHOLD+1 (to allow MUL_THRESHOLD=0, needed for
+	tuneup.c)
+
+	* algorithms.tex: fixed LaTeX error
+
 2005-09-08  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
 
 	* README.dev, fixperm:
@@ -14,8 +37,6 @@
 	* mpfr.texi: Update (mpfr_lngamma). [2.2 branch]
 
 	* lngamma.c: Forgot to add lngamma.c. [2.2 branch]
-
-	* ChangeLog: Update. [2.2 branch]
 
 2005-09-08  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
 
