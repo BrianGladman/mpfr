@@ -56,19 +56,21 @@ main (void)
   mpfr_set_str (u,
      "7.f10872b020c49ba5e353f7ced916872b020c49ba5e353f7ced916872b020c498@2",
      16, GMP_RNDN);
-  mpf_set_str (y, "2033.033", 10);
+  mpf_set_str (y, "2033033E-3", 10); /* avoid 2033.033 which is
+                                        locale-sensitive */
   mpfr_set_f (x, y, GMP_RNDN);
   if (mpfr_cmp (x, u))
     {
-      printf ("mpfr_set_f failed for y=2033.033\n");
+      printf ("mpfr_set_f failed for y=2033033E-3\n");
       exit (1);
     }
-  mpf_set_str (y, "-2033.033", 10);
+  mpf_set_str (y, "-2033033E-3", 10); /* avoid -2033.033 which is
+                                         locale-sensitive */
   mpfr_set_f (x, y, GMP_RNDN);
   mpfr_neg (u, u, GMP_RNDN);
   if (mpfr_cmp (x, u))
     {
-      printf ("mpfr_set_f failed for y=-2033.033\n");
+      printf ("mpfr_set_f failed for y=-2033033E-3\n");
       exit (1);
     }
 
