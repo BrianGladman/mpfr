@@ -2,7 +2,7 @@
 
 Copyright 2001, 2002, 2003, 2004, 2005 Free Software Foundation.
 
-This file is part of the MPFR Library, and was contributed by Mathieu Dutour.
+This file is part of the MPFR Library.
 
 The MPFR Library is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -18,13 +18,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin Place, Fifth Floor, Boston,
 MA 02110-1301, USA. */
-
-/* The error analysis of gamma has been lost.
-   As a consequence, we can't change the algorithm...
-   But we may compute the exp(A-k) in the inner loop a lot faster
-   but less accurate, so it changes the precsion.
-   All MPFR tests still pass anyway */
-/* #define USE_PRECOMPUTED_EXP */
 
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
@@ -45,9 +38,9 @@ mpfr_gamma_2_minus_x_exact (mpfr_srcptr x)
      (a) if EXP(y) <= 1, w = PREC(y) + 2 - EXP(y)
      (b) if EXP(y) > 1 and EXP(y)-PREC(y) <= 1, w = PREC(y) + 1
      (c) if EXP(y) > 1 and EXP(y)-PREC(y) > 1, w = EXP(y) - 1 */
-  return (MPFR_EXP(x) <= 1) ? MPFR_PREC(x) + 2 - MPFR_EXP(x)
-    : ((MPFR_EXP(x) <= MPFR_PREC(x) + 1) ? MPFR_PREC(x) + 1
-       : MPFR_EXP(x) - 1);
+  return (MPFR_GET_EXP(x) <= 1) ? MPFR_PREC(x) + 2 - MPFR_GET_EXP(x)
+    : ((MPFR_GET_EXP(x) <= MPFR_PREC(x) + 1) ? MPFR_PREC(x) + 1
+       : MPFR_GET_EXP(x) - 1);
 }
 
 /* return a sufficient precision such that 1-x is exact, assuming x < 1 */
@@ -55,13 +48,13 @@ static mp_prec_t
 mpfr_gamma_1_minus_x_exact (mpfr_srcptr x)
 {
   if (MPFR_IS_POS(x))
-    return MPFR_PREC(x) - MPFR_EXP(x);
-  else if (MPFR_EXP(x) <= 0)
-    return MPFR_PREC(x) + 1 - MPFR_EXP(x);
-  else if (MPFR_PREC(x) >= MPFR_EXP(x))
+    return MPFR_PREC(x) - MPFR_GET_EXP(x);
+  else if (MPFR_GET_EXP(x) <= 0)
+    return MPFR_PREC(x) + 1 - MPFR_GET_EXP(x);
+  else if (MPFR_PREC(x) >= MPFR_GET_EXP(x))
     return MPFR_PREC(x) + 1;
   else
-    return MPFR_EXP(x);
+    return MPFR_GET_EXP(x);
 }
 
 /* We use the reflection formula
@@ -75,9 +68,6 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
   mpfr_t xp, GammaTrial, tmp, tmp2;
   mpz_t fact;
-#ifdef USE_PRECOMPUTED_EXP
-  mpfr_t *tab;
-#endif
   mp_prec_t realprec;
   int compared, inex, is_integer;
   MPFR_GROUP_DECL (group);
@@ -177,7 +167,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
   */
   if (MPFR_IS_NEG(x))
     {
-      int underflow = 0, sgn;
+      int underflow = 0, sgn, ck;
       mp_prec_t w;
 
       mpfr_init2 (xp, 53);
@@ -200,7 +190,8 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
       w += 17; /* to get tmp2 small enough */
       mpfr_set_prec (tmp, w);
       mpfr_set_prec (tmp2, w);
-      MPFR_ASSERTN (mpfr_ui_sub (tmp, 2, x, GMP_RNDN) == 0);
+      ck = mpfr_ui_sub (tmp, 2, x, GMP_RNDN);
+      MPFR_ASSERTD (ck == 0);
       mpfr_const_pi (tmp2, GMP_RNDN);
       mpfr_mul (tmp2, tmp2, tmp, GMP_RNDN); /* Pi*(2-x) */
       mpfr_sin (tmp, tmp2, GMP_RNDN); /* sin(Pi*(2-x)) */
@@ -250,24 +241,27 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
   for (;;)
     {
       mp_exp_t err_g;
+      int ck;
       MPFR_GROUP_REPREC_4 (group, realprec, xp, tmp, tmp2, GammaTrial);
 
       /* reflection formula: gamma(x) = Pi*(x-1)/sin(Pi*(2-x))/gamma(2-x) */
 
-      MPFR_ASSERTN(mpfr_ui_sub (xp, 2, x, GMP_RNDN) == 0); /* 2-x, exact */
+      ck = mpfr_ui_sub (xp, 2, x, GMP_RNDN);
+      MPFR_ASSERTD(ck == 0); /* 2-x, exact */
       mpfr_gamma (tmp, xp, GMP_RNDN);   /* gamma(2-x), error (1+u) */
       mpfr_const_pi (tmp2, GMP_RNDN);   /* Pi, error (1+u) */
       mpfr_mul (GammaTrial, tmp2, xp, GMP_RNDN); /* Pi*(2-x), error (1+u)^2 */
-      err_g = MPFR_EXP(GammaTrial);
+      err_g = MPFR_GET_EXP(GammaTrial);
       mpfr_sin (GammaTrial, GammaTrial, GMP_RNDN); /* sin(Pi*(2-x)) */
-      err_g = err_g + 1 - MPFR_EXP(GammaTrial);
+      err_g = err_g + 1 - MPFR_GET_EXP(GammaTrial);
       /* let g0 the true value of Pi*(2-x), g the computed value.
 	 We have g = g0 + h with |h| <= |(1+u^2)-1|*g.
 	 Thus sin(g) = sin(g0) + h' with |h'| <= |(1+u^2)-1|*g.
 	 The relative error is thus bounded by |(1+u^2)-1|*g/sin(g)
 	 <= |(1+u^2)-1|*2^err_g. <= 2.25*u*2^err_g for |u|<=1/4.
 	 With the rounding error, this gives (0.5 + 2.25*2^err_g)*u. */
-      MPFR_ASSERTN(mpfr_sub_ui (xp, x, 1, GMP_RNDN) == 0); /* x-1, exact */
+      ck = mpfr_sub_ui (xp, x, 1, GMP_RNDN);
+      MPFR_ASSERTD(ck == 0); /* x-1, exact */
       mpfr_mul (xp, tmp2, xp, GMP_RNDN); /* Pi*(x-1), error (1+u)^2 */
       mpfr_mul (GammaTrial, GammaTrial, tmp, GMP_RNDN);
       /* [1 + (0.5 + 2.25*2^err_g)*u]*(1+u)^2 = 1 + (2.5 + 2.25*2^err_g)*u
@@ -290,8 +284,8 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	 which is <= 2^6 for err_g<=2, and <= 2^(err_g+4) for err_g >= 2. */
       err_g = (err_g <= 2) ? 6 : err_g + 4;
 
-      if (mpfr_can_round (GammaTrial, realprec - err_g, GMP_RNDN, GMP_RNDZ,
-                          MPFR_PREC(gamma) + (rnd_mode == GMP_RNDN)))
+      if (MPFR_LIKELY (MPFR_CAN_ROUND (GammaTrial, realprec - err_g,
+                                       MPFR_PREC(gamma), rnd_mode)))
         break;
       MPFR_ZIV_NEXT (loop, realprec);
     }

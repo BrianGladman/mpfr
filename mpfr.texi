@@ -2152,6 +2152,7 @@ a first implementation of the sine and cosine,
 and improved versions of
 @code{mpfr_const_log2} and @code{mpfr_const_pi}.
 Mathieu Dutour contributed the functions @code{mpfr_atan} and @code{mpfr_asin},
+and a previous version of @code{mpfr_gamma};
 David Daney contributed the hyperbolic and inverse hyperbolic functions,
 the base-2 exponential, and the factorial function. Fabrice Rouillier
 contributed the original version of @file{mul_ui.c}, the @file{gmp_op.c}

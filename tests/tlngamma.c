@@ -97,25 +97,27 @@ special (void)
   mpfr_set_prec (y, 53);
 
 #define CHECK_X1 "1.0762904832837976166"
-#define CHECK_Y1 -0.039418362817587634939
+#define CHECK_Y1 "-0.039418362817587634939"
 
   mpfr_set_str (x, CHECK_X1, 10, GMP_RNDN);
   mpfr_lngamma (y, x, GMP_RNDN);
-  if (mpfr_get_d (y, GMP_RNDN) != CHECK_Y1 )
+  mpfr_set_str (x, CHECK_Y1, 10, GMP_RNDN);
+  if (mpfr_cmp (y, x))
     {
       printf ("mpfr_lngamma("CHECK_X1") is wrong: expected %1.20e, got %1.20e\n",
-              CHECK_Y1, mpfr_get_d (y, GMP_RNDN));
+              mpfr_get_d (x, GMP_RNDN), mpfr_get_d (y, GMP_RNDN));
       exit (1);
     }
 
 #define CHECK_X2 "9.23709516716202383435e-01"
-#define CHECK_Y2 0.049010669407893718563
+#define CHECK_Y2 "0.049010669407893718563"
   mpfr_set_str (x, CHECK_X2, 10, GMP_RNDN);
   mpfr_lngamma (y, x, GMP_RNDN);
-  if (mpfr_get_d (y, GMP_RNDN) != CHECK_Y2)
+  mpfr_set_str (x, CHECK_Y2, 10, GMP_RNDN);
+  if (mpfr_cmp (y, x))
     {
       printf ("mpfr_lngamma("CHECK_X2") is wrong: expected %1.20e, got %1.20e\n",
-              CHECK_Y2, mpfr_get_d (y, GMP_RNDN));
+              mpfr_get_d (x, GMP_RNDN), mpfr_get_d (y, GMP_RNDN));
       exit (1);
     }
 
