@@ -19,8 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
 MA 02111-1307, USA. */
 
-#include <stdlib.h> /* for NULL */
-
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
@@ -321,7 +319,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
 
       if (Bm == 0)
         {
-          B = bernoulli (NULL, 0);
+          B = bernoulli ((mpz_t *) 0, 0);
           B = bernoulli (B, 1);
           Bm = 2;
         }
