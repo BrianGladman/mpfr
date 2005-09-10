@@ -201,6 +201,10 @@ use:
   MPFR_SAVE_EXPO_DECL (expo);                 mpfr_save_expo_t expo;
   TMP_DECL (maker);                           ;
 
+   ====================================================================
+
+Do not use TMP_DECL / TMP_ALLOC, ... but MPFR_TMP_DECL, MPFR_TMP_ALLOC, ...
+
 ===========================================================================
 
 If wou want to use the logging of MPFR, you need to enable it:
@@ -262,8 +266,8 @@ Example:
 the same job as MPFR_LOG_BEGIN and MPFR_LOG_END but it is smatter
 since it intercepts the return itself to put the end statement.
 Example
- MPFR_LOG_BEGIN (("op[%#R]=%R rnd=%d", op, op"),
-                 ("x[%#R]=%R inexact=%d", x, x, i));
+ MPFR_LOG_FUNC (("op[%#R]=%R rnd=%d", op, op"),
+                ("x[%#R]=%R inexact=%d", x, x, i));
 
 
 The double brackets "((" and "))" are needed since MPFR must still
