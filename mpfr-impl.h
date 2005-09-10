@@ -1027,7 +1027,7 @@ typedef struct {
 /*
  * Round Mantissa (`srcp`, `sprec`) to mpfr_t `dest` using rounding mode `rnd`
  * assuming dest's sign is `sign`.
- * Execute OVERFLOW_HANDLE in case of overflow when rounding (Power 2 case)
+ * Execute OVERFLOW_HANDLER in case of overflow when rounding (Power 2 case)
  * Return MPFR_EVEN_INEX in case of EVEN rounding
  */
 #define MPFR_RNDRAW_EVEN(inexact, dest, srcp, sprec, rnd, sign, OVERFLOW_HANDLER)\
