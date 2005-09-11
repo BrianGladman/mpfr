@@ -785,7 +785,7 @@ extern unsigned char *mpfr_stack;
 #if __MPFR_GNUC(2,95) || __MPFR_ICC(8,1,0)
 # define MPFR_INT_CEIL_LOG2(x)                            \
     (__extension__ ({int _b; mp_limb_t _limb = (x);       \
-      MPFR_ASSERTD (_limb == (x));                        \
+      MPFR_ASSERTN (_limb == (x));                        \
       count_leading_zeros (_b, _limb);                    \
       (BITS_PER_MP_LIMB - _b); }))
 #else

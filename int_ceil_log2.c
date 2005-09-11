@@ -28,7 +28,7 @@ __gmpfr_int_ceil_log2 (unsigned long n)
   int b;
   mp_limb_t limb = n;
 
-  MPFR_ASSERTD (limb == n);
+  MPFR_ASSERTN (limb == n);
 
   count_leading_zeros (b, limb);
   return BITS_PER_MP_LIMB-b;
