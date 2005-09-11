@@ -1,4 +1,29 @@
+2005-09-11  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* int_ceil_log2.c, mpfr-impl.h:
+	Changed the MPFR_ASSERTD into a MPFR_ASSERTN for MPFR_INT_CEIL_LOG2
+	since the assertion cannot be guaranteed for every C implementation.
+
+2005-09-10  Patrick Pelissier  <Patrick.Pelissier@loria.fr>
+
+	* mpfr-impl.h: Fix spelling mistake.
+
+	* README.dev: Add new note about MPFR_TMP_DECL
+
 2005-09-09  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* tests/tset_f.c, algorithms.tex, gamma.c, lngamma.c, mparam_h.in, mul.c, tests/tgamma.c, tests/tlngamma.c:
+	Ported patches from the trunk to the 2.2 branch.
+
+2005-09-09  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* mparam_h.in:
+	reduced default of MPFR_MUL_THRESHOLD by 1, since now
+	MPFR_MUL_THRESHOLD+1 is considered in mul.c
+
+2005-09-09  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* algorithms.tex: Fixed another LaTeX error.
 
 	* README.dev: Updated "To make a release".
 
