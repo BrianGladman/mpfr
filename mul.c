@@ -350,7 +350,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
     }
   else
 #endif
-    if (MPFR_UNLIKELY (bn > MPFR_MUL_THRESHOLD + 1))
+    if (MPFR_UNLIKELY (bn > MPFR_MUL_THRESHOLD))
       {
         mp_limb_t *bp, *cp;
         mp_size_t n;
@@ -360,7 +360,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
            exact values are a nightmare for the short product trick */
         bp = MPFR_MANT (b);
         cp = MPFR_MANT (c);
-        MPFR_ASSERTN (MPFR_MUL_THRESHOLD >= 0);
+        MPFR_ASSERTN (MPFR_MUL_THRESHOLD >= 1);
         if (MPFR_UNLIKELY ((bp[0] == 0 && bp[1] == 0) ||
                            (cp[0] == 0 && cp[1] == 0)))
           {
@@ -413,7 +413,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
         if (MPFR_UNLIKELY (MPFR_PREC (a) > p - 5))
           {
             if (MPFR_UNLIKELY (MPFR_PREC (a) > p - 5 + BITS_PER_MP_LIMB
-                               || bn <= MPFR_MUL_THRESHOLD + 2))
+                               || bn <= MPFR_MUL_THRESHOLD+1))
               {
                 /* MulHigh can't produce a roundable result. */
                 MPFR_LOG_MSG (("mpfr_mulhigh can't be used (%lu VS %lu)\n",

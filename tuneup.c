@@ -197,7 +197,7 @@ static double domeasure (mp_prec_t *threshold,
       fprintf (stderr, "Failed to measure function 1!\n");
       abort ();
     }
-  *threshold = /*MPFR_PREC_MIN*/0;
+  *threshold = 1;
   t2 = speed_measure (func, &s);
   if (t2 == -1.0)
     {
