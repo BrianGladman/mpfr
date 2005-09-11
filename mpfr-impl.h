@@ -1464,7 +1464,7 @@ __MPFR_DECLSPEC void mpfr_setmin _MPFR_PROTO ((mpfr_ptr, mp_exp_t));
 __MPFR_DECLSPEC long mpfr_mpn_exp _MPFR_PROTO ((mp_limb_t *, mp_exp_t *, int,
                            mp_exp_t, size_t));
 
-#ifdef WANT_ASSERT
+#ifdef _MPFR_H_HAVE_FILE
 __MPFR_DECLSPEC void mpfr_fprint_binary _MPFR_PROTO ((FILE *, mpfr_srcptr));
 #endif
 __MPFR_DECLSPEC void mpfr_print_binary _MPFR_PROTO ((mpfr_srcptr));
