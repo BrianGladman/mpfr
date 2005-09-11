@@ -22,6 +22,7 @@ MA 02110-1301, USA. */
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <limits.h>
 
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
