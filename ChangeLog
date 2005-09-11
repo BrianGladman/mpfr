@@ -1,5 +1,25 @@
 2005-09-11  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
 
+	* README.dev, mpfr-impl.h, tests/trint.c, tests/tstckintc.c:
+	[2.2 branch]
+	Fixed a #ifdef in mpfr-impl.h (when --enable-assert isn't used).
+	Fixed uninitialized variable in trint.c (with gcc -std=c99).
+	Added #include <string.h> for memmove in tstckintc.c (see ISO C99).
+
+	* tests/tstckintc.c:
+	Added #include <string.h> for memmove (see ISO C99 standard).
+
+	* README.dev: Minor change.
+
+	* tests/trint.c: Fixed uninitialized variable (with gcc -std=c99).
+
+	* mpfr-impl.h: Fixed a #ifdef (when --enable-assert isn't used).
+
+	* ChangeLog: Update. [2.2 branch]
+
+	* README.dev, int_ceil_log2.c, mpfr-impl.h:
+	Minor patches from the trunk. [2.2 branch]
+
 	* int_ceil_log2.c, mpfr-impl.h:
 	Changed the MPFR_ASSERTD into a MPFR_ASSERTN for MPFR_INT_CEIL_LOG2
 	since the assertion cannot be guaranteed for every C implementation.
