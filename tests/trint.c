@@ -188,7 +188,7 @@ test_fct (double (*f)(double), int (*g)(), char *s, mp_rnd_t r)
 static void
 test_against_libc (void)
 {
-  mp_rnd_t r;
+  mp_rnd_t r = GMP_RNDN;
 
 #if HAVE_ROUND
   TEST_FCT (round);
