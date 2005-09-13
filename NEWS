@@ -20,7 +20,7 @@ MA 02110-1301, USA.
 
 ##############################################################################
 
-Changes from version 2.1.1 to version 2.2.0:
+Changes from versions 2.1.* to version 2.2.0:
 - Bug fixes.
 - new functions mpfr_set_overflow, mpfr_set_underflow, mpfr_set_inexflag,
   mpfr_set_erangeflag, mpfr_set_nanflag, mpfr_erfc, mpfr_atan2, mpfr_pow_z,
