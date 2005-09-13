@@ -339,12 +339,16 @@ check_special ()
   if (mpfr_cmp_ui_2exp (y, 3, -2))
     {
       printf ("Error for exp(-1/16), prec=2, RNDD\n");
+      printf ("expected 0.11, got ");
+      mpfr_dump (y);
       exit (1);
     }
   test_exp (y, x, GMP_RNDZ);
-  if (mpfr_cmp_ui (y, 1))
+  if (mpfr_cmp_ui_2exp (y, 3, -2))
     {
       printf ("Error for exp(-1/16), prec=2, RNDZ\n");
+      printf ("expected 0.11, got ");
+      mpfr_dump (y);
       exit (1);
     }
   mpfr_set_str_binary (x, "0.1E-3");
@@ -424,6 +428,16 @@ check_special ()
       printf ("expected  3.fffffffffffffffffffffffffffffffffffffffe8@-2");
       printf ("Got       ");
       mpfr_out_str (stdout, 16, 0, x, GMP_RNDN); putchar ('\n');
+    }
+
+  /* bug found by Guillaume Melquiond, 13 Sep 2005 */
+  mpfr_set_prec (x, 53);
+  mpfr_set_str_binary (x, "-1E-400");
+  mpfr_exp (x, x, GMP_RNDZ);
+  if (mpfr_cmp_ui (x, 1) == 0)
+    {
+      printf ("Error for exp(-2^(-400))\n");
+      exit (1);
     }
 
   mpfr_clear (x);

@@ -90,7 +90,8 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       int signx = MPFR_SIGN (x);
 
       MPFR_SET_POS (y);
-      if (MPFR_IS_NEG_SIGN (signx) && rnd_mode == GMP_RNDD)
+      if (MPFR_IS_NEG_SIGN (signx) && (rnd_mode == GMP_RNDD ||
+                                       rnd_mode == GMP_RNDZ))
         {
           mpfr_setmax (y, 0);  /* y = 1 - epsilon */
           inexact = -1;
