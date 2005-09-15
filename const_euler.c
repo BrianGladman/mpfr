@@ -58,7 +58,6 @@ mpfr_const_euler_internal (mpfr_t x, mp_rnd_t rnd)
       /* since prec >= 1, we have m >= 24 here, which ensures n >= 9 below */
       n = 1 + (unsigned long) ((double) m * LOG2 / 2.0);
       MPFR_ASSERTD (n >= 9);
-      /* fprintf (stderr, "n=%u\n", n); */
       mpfr_const_euler_S2 (y, n); /* error <= 3 ulps */
       exp_S = MPFR_EXP(y);
       mpfr_set_ui (z, n, GMP_RNDN);
@@ -100,9 +99,12 @@ mpfr_const_euler_S2_aux (mpz_t P, mpz_t Q, mpz_t T, unsigned long n,
 {
   if (a + 1 == b)
     {
-      mpz_set_si (P, (a == 1) ? n : - n * (a - 1));
+      mpz_set_ui (P, n);
+      if (a > 1)
+	mpz_mul_si (P, P, 1 - (long) a);
       mpz_set (T, P);
-      mpz_set_ui (Q, a * a);
+      mpz_set_ui (Q, a);
+      mpz_mul_ui (Q, Q, a);
     }
   else
     {
@@ -142,7 +144,8 @@ mpfr_const_euler_S2_aux (mpz_t P, mpz_t Q, mpz_t T, unsigned long n,
     }
 }
 
-/* idem than mpfr_const_euler_S, using binary splitting.
+/* computes S(n) = sum(n^k*(-1)^(k-1)/k!/k, k=1..ceil(4.319136566 * n))
+   using binary splitting.
    We have S(n) = sum(f(k), k=1..N) with N=ceil(4.319136566 * n)
    and f(k) = n^k*(-1)*(k-1)/k!/k,
    thus f(k)/f(k-1) = -n*(k-1)/k^2
@@ -162,51 +165,6 @@ mpfr_const_euler_S2 (mpfr_t x, unsigned long n)
   mpz_clear (Q);
   mpz_clear (T);
 }
-
-#if 0
-/* computes S(n) = sum(n^k*(-1)^(k-1)/k!/k, k=1..ceil(4.319136566 * n))
-   with an error of at most ulp(x).
-   [S(n) >= 2 for n >= 5]
- */
-static void
-mpfr_const_euler_S (mpfr_t x, unsigned long n)
-{
-  unsigned long N, k, m;
-  mpz_t a, s, t;
-
-  N = (long) (ALPHA * (double) n + 1.0); /* ceil(alpha * n) */
-
-  m = MPFR_PREC(x) + (unsigned long) ((double) n / LOG2)
-    + MPFR_INT_CEIL_LOG2 (N) + 1;
-
-  mpz_init_set_ui (a, 1);
-  mpz_mul_2exp (a, a, m); /* a=-2^m where m is the precision of x */
-  mpz_init_set_ui (s, 0);
-  mpz_init (t);
-
-  /* here, a and s are exact */
-  for (k = 1; k <= N; k++)
-    {
-      mpz_mul_ui (a, a, n);
-      mpz_div_ui (a, a, k);
-      mpz_div_ui (t, a, k);
-      if (k % 2)
-        mpz_add (s, s, t);
-      else
-        mpz_sub (s, s, t);
-    }
-
-  /* the error on s is at most N (e^n + 1),
-     thus that the error on x is at most one ulp */
-
-  mpfr_set_z (x, s, GMP_RNDD);
-  mpfr_div_2ui (x, x, m, GMP_RNDD);
-
-  mpz_clear (a);
-  mpz_clear (s);
-  mpz_clear (t);
-}
-#endif
 
 /* computes R(n) = exp(-n)/n * sum(k!/(-n)^k, k=0..n-2)
    with error at most 4*ulp(x). Assumes n>=2.
