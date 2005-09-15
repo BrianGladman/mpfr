@@ -178,7 +178,7 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
       MPFR_FAST_COMPUTE_IF_SMALL_INPUT (z, __gmpfr_one, err, 1, rnd_mode, );
     }
 
-  d = precz + 11;
+  d = precz + MPFR_INT_CEIL_LOG2(precz) + 10;
 
   /* we want that s1 = s-1 is exact, i.e. we should have PREC(s1) >= EXP(s) */
   dint = (mpfr_uexp_t) MPFR_GET_EXP (s);
