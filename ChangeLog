@@ -1,4 +1,78 @@
+2005-09-16  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* tests/tcoth.c, coth.c:
+	Fixed stupid bug (coth was computing 1/tan instead of 1/tanh).
+	[2.2 branch]
+
+	* gamma.c: Untabify.
+
+	* mpfr.texi: Propagated the changes from the trunk to the 2.2 branch:
+	- documented the mpfr_get_f and mpfr_pow_z functions;
+	- fixed typos found by Tomonori Kouya in mpfr_atan2 description;
+	- updated Contributors section.
+
+2005-09-16  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* mpfr.texi: added missing documentation for mpfr_get_f and mpfr_pow_z
+
+2005-09-16  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* mpfr.texi: Fixed typos found by Tomonori Kouya.
+
+2005-09-16  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* coth.c, tests/tcoth.c:
+	fixed stupid bug (coth was computing 1/tan instead of 1/tanh)
+
+2005-09-15  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* const_euler.c: fixed overflow problem for large precision
+
+	* zeta.c: added log(precz) in initial precision
+
+2005-09-13  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* exp.c, tests/texp.c:
+	Fixed bug in exp(-eps) for rounding toward zero (test was also wrong).
+	[2.1 branch]
+
+	* ChangeLog: Update. [2.2 branch]
+
+	* exp.c, tests/texp.c:
+	Fixed bug in exp(-eps) for rounding toward zero (test was also wrong).
+	[2.2 branch]
+
+2005-09-13  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* exp.c, tests/texp.c:
+	fixed bug in exp(-eps) for rounding toward zero (test was also
+	wrong...)
+
+2005-09-13  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* README.dev: Updated "To make a release".
+
+	* ChangeLog: Update. [2.2 branch]
+
+	* constant.c: Added missing MPFR_THREAD_ATTR. [2.2 branch]
+
+	* NEWS: Minor update. [2.2 branch]
+
+	* NEWS: Minor update.
+
+	* constant.c: Added missing MPFR_THREAD_ATTR.
+
 2005-09-11  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* ChangeLog: Update. [2.2 branch]
+
+	* mparam_h.in, mul.c, tuneup.c: Fixed tuneup. [2.2 branch]
+
+	* tuneup.c: Avoid a conflict with GMP.
+
+	* mparam_h.in, mul.c, tuneup.c:
+	Reverted to previous mparam_h.in and mul.c, and applied Patrick's
+	patch instead.
 
 	* README.dev, mpfr-impl.h, tests/trint.c, tests/tstckintc.c:
 	[2.2 branch]
