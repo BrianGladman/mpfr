@@ -32,7 +32,7 @@ mpfr_gamma_2_minus_x_exact (mpfr_srcptr x)
 {
   /* Since x < 0, 2-x = 2+y with y := -x.
      If y < 2, a precision w >= PREC(y) + EXP(2)-EXP(y) = PREC(y) + 2 - EXP(y)
-     is enough, since no overlap occurs in 2+y, so no carry happens. 
+     is enough, since no overlap occurs in 2+y, so no carry happens.
      If y >= 2, either ULP(y) <= 2, and we need w >= PREC(y)+1 since a
      carry can occur, or ULP(y) > 2, and we need w >= EXP(y)-1:
      (a) if EXP(y) <= 1, w = PREC(y) + 2 - EXP(y)
@@ -255,33 +255,33 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_sin (GammaTrial, GammaTrial, GMP_RNDN); /* sin(Pi*(2-x)) */
       err_g = err_g + 1 - MPFR_GET_EXP(GammaTrial);
       /* let g0 the true value of Pi*(2-x), g the computed value.
-	 We have g = g0 + h with |h| <= |(1+u^2)-1|*g.
-	 Thus sin(g) = sin(g0) + h' with |h'| <= |(1+u^2)-1|*g.
-	 The relative error is thus bounded by |(1+u^2)-1|*g/sin(g)
-	 <= |(1+u^2)-1|*2^err_g. <= 2.25*u*2^err_g for |u|<=1/4.
-	 With the rounding error, this gives (0.5 + 2.25*2^err_g)*u. */
+         We have g = g0 + h with |h| <= |(1+u^2)-1|*g.
+         Thus sin(g) = sin(g0) + h' with |h'| <= |(1+u^2)-1|*g.
+         The relative error is thus bounded by |(1+u^2)-1|*g/sin(g)
+         <= |(1+u^2)-1|*2^err_g. <= 2.25*u*2^err_g for |u|<=1/4.
+         With the rounding error, this gives (0.5 + 2.25*2^err_g)*u. */
       ck = mpfr_sub_ui (xp, x, 1, GMP_RNDN);
       MPFR_ASSERTD(ck == 0); /* x-1, exact */
       mpfr_mul (xp, tmp2, xp, GMP_RNDN); /* Pi*(x-1), error (1+u)^2 */
       mpfr_mul (GammaTrial, GammaTrial, tmp, GMP_RNDN);
       /* [1 + (0.5 + 2.25*2^err_g)*u]*(1+u)^2 = 1 + (2.5 + 2.25*2^err_g)*u
-	 + (0.5 + 2.25*2^err_g)*u*(2u+u^2) + u^2.
-	 For err_g <= realprec-2, we have (0.5 + 2.25*2^err_g)*u <=
-	 0.5*u + 2.25/4 <= 0.6875 and u^2 <= u/4, thus
-	 (0.5 + 2.25*2^err_g)*u*(2u+u^2) + u^2 <= 0.6875*(2u+u/4) + u/4
-	 <= 1.8*u, thus the rel. error is bounded by (4.5 + 2.25*2^err_g)*u. */
+         + (0.5 + 2.25*2^err_g)*u*(2u+u^2) + u^2.
+         For err_g <= realprec-2, we have (0.5 + 2.25*2^err_g)*u <=
+         0.5*u + 2.25/4 <= 0.6875 and u^2 <= u/4, thus
+         (0.5 + 2.25*2^err_g)*u*(2u+u^2) + u^2 <= 0.6875*(2u+u/4) + u/4
+         <= 1.8*u, thus the rel. error is bounded by (4.5 + 2.25*2^err_g)*u. */
       mpfr_div (GammaTrial, xp, GammaTrial, GMP_RNDN);
       /* the error is of the form (1+u)^3/[1 + (4.5 + 2.25*2^err_g)*u].
-	 For realprec >= 5 and err_g <= realprec-2, [(4.5 + 2.25*2^err_g)*u]^2
-	 <= 0.71, and for |y|<=0.71, 1/(1-y) can be written 1+a*y with a<=4.
-	 (1+u)^3 * (1+4*(4.5 + 2.25*2^err_g)*u)
-	 = 1 + (21 + 9*2^err_g)*u + (57+27*2^err_g)*u^2 + (55+27*2^err_g)*u^3
-	     + (18+9*2^err_g)*u^4
+         For realprec >= 5 and err_g <= realprec-2, [(4.5 + 2.25*2^err_g)*u]^2
+         <= 0.71, and for |y|<=0.71, 1/(1-y) can be written 1+a*y with a<=4.
+         (1+u)^3 * (1+4*(4.5 + 2.25*2^err_g)*u)
+         = 1 + (21 + 9*2^err_g)*u + (57+27*2^err_g)*u^2 + (55+27*2^err_g)*u^3
+             + (18+9*2^err_g)*u^4
          <= 1 + (21 + 9*2^err_g)*u + (57+27*2^err_g)*u^2 + (56+28*2^err_g)*u^3
-	 <= 1 + (21 + 9*2^err_g)*u + (59+28*2^err_g)*u^2
-	 <= 1 + (23 + 10*2^err_g)*u.
-	 The final error is thus bounded by (23 + 10*2^err_g) ulps,
-	 which is <= 2^6 for err_g<=2, and <= 2^(err_g+4) for err_g >= 2. */
+         <= 1 + (21 + 9*2^err_g)*u + (59+28*2^err_g)*u^2
+         <= 1 + (23 + 10*2^err_g)*u.
+         The final error is thus bounded by (23 + 10*2^err_g) ulps,
+         which is <= 2^6 for err_g<=2, and <= 2^(err_g+4) for err_g >= 2. */
       err_g = (err_g <= 2) ? 6 : err_g + 4;
 
       if (MPFR_LIKELY (MPFR_CAN_ROUND (GammaTrial, realprec - err_g,
