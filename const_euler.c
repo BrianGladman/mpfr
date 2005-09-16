@@ -101,7 +101,7 @@ mpfr_const_euler_S2_aux (mpz_t P, mpz_t Q, mpz_t T, unsigned long n,
     {
       mpz_set_ui (P, n);
       if (a > 1)
-	mpz_mul_si (P, P, 1 - (long) a);
+        mpz_mul_si (P, P, 1 - (long) a);
       mpz_set (T, P);
       mpz_set_ui (Q, a);
       mpz_mul_ui (Q, Q, a);
