@@ -79,12 +79,36 @@ check_specials (void)
   mpfr_clear (y);
 }
 
+static void
+check_bugs (void)
+{
+  mpfr_t x, y;
+  
+  mpfr_init (x);
+  mpfr_init (y);
+
+  /* bug found by Rob (Sisyphus) on 16 Sep 2005 */
+  mpfr_set_ui (x, 2, GMP_RNDN);
+  mpfr_set_prec (y, 2);
+  mpfr_coth (y, x, GMP_RNDN);
+  if (mpfr_cmp_ui (y, 1))
+    {
+      printf ("Error for coth(2), expected 1, got ");
+      mpfr_dump (y);
+      exit (1);
+    }
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
 int
 main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
   check_specials ();
+  check_bugs ();
   test_generic (2, 200, 10);
 
   tests_end_mpfr ();
