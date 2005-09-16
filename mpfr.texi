@@ -922,6 +922,13 @@ Convert @var{op} to a @code{mpz_t}, after rounding it with respect to
 @var{rnd}. If @var{op} is NaN or Inf, the result is undefined.
 @end deftypefun
 
+@deftypefun int mpfr_get_f (mpf_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+Convert @var{op} to a @code{mpf_t}, after rounding it with respect to
+@var{rnd}. Return zero iff no error occurred,
+in particular a non-zero value is returned if
+@var{op} is NaN or Inf, which do not exist in @code{mpf}.
+@end deftypefun
+
 @deftypefun {char *} mpfr_get_str (char *@var{str}, mp_exp_t *@var{expptr}, int @var{b}, size_t @var{n}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Convert @var{op} to a string of digits in base @var{b}, with rounding in
 the direction @var{rnd}. The base may vary from 2 to 36.
@@ -1071,6 +1078,7 @@ whatever the parity of @var{k}.
 @deftypefun int mpfr_pow (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_pow_ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_pow_si (mpfr_t @var{rop}, mpfr_t @var{op1}, long int @var{op2}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_pow_z (mpfr_t @var{rop}, mpfr_t @var{op1}, mpz_t @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_ui_pow_ui (mpfr_t @var{rop}, unsigned long int @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_ui_pow (mpfr_t @var{rop}, unsigned long int @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
 Set @var{rop} to @m{@var{op1}^{op2}, @var{op1} raised to @var{op2}},
