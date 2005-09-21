@@ -35,6 +35,7 @@
 
 \newtheorem{Rule}{Rule}
 \newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
 
 \begin{document}
 \maketitle
@@ -2809,6 +2810,45 @@ Here, we choose the free parameter $a$ to be an integer.
 
 According to \cite[Section 2.6]{Pugh04}, the relative error is bounded by
 $a^{-1/2} (2\pi)^{-a-1/2}$ for $a \ge 3$ and $\Re(z) \ge 0$.
+
+\subsection{The Riemann Zeta function}
+
+The algorithm for the Riemann Zeta function is due to Jean-Luc R\'emy
+and Sapphorain Petermann. For $s < 1/2$ we use the
+functional equation
+\[ \zeta(s) = 2^s \pi^{s-1} \sin\left(\frac{\pi s}{2}\right) \Gamma(1-s)
+   \zeta(1-s). \]
+For $s \geq 1/2$ we use the Euler-MacLaurin summation formula, applied
+to the real function $f(x) = x^{-s}$ for $s > 1$:
+\[ \zeta(s) = \sum_{k=1}^{N-1} \frac{1}{k^s} + \frac{1}{2N^s}
++ \frac{1}{(s-1)N^{s-1}} + \sum_{k=1}^p \frac{B_{2k}}{2k}
+{s+2k-2 \choose 2k-1} \frac{1}{N^{s+2k-1}} + R_{N,p}(s), \]
+with $|R_{N,p}(s)| < 2^{-d}$, where $B_k$ denotes the $k$th Bernoulli
+number, 
+\[ p = {\rm max}\left( 0, \lceil \frac{d \log 2 + 0.61 + s \log(2\pi/s)}{2}
+\rceil \right), \]
+and $N = \lceil 2^{(d-1)/s} \rceil$ if $p=0$,
+$N = \lceil \frac{s+2p-1}{2\pi} \rceil$ if $p > 0$.
+
+This computation is split into three parts:
+\[ A = \sum_{k=1}^{N-1} k^{-s} + \frac{1}{2} N^{-s}, \]
+\[ B = \sum_{k=1}^p T_k = N^{-1-s} s \sum_{k=1}^p C_k \Pi_k N^{-2k+2}, \]
+\[ C = \frac{N^{-s+1}}{s-1}, \]
+where $C_k = \frac{B_{2k}}{(2k)!}$, $\Pi_k = \prod_{j=1}^{2k-2} (s+j)$,
+and $T_k = N^{1-2k-s} C_k \Pi_k$.
+
+R\'emy and Petermann proved the following result:
+\begin{theorem}
+Let $d$ be the target precision so that $|R_{N,p}(s)| < 2^{-d}$.
+Assume $\Pi = d - 2 \geq 11$, i.e.~$d \geq 13$. If the internal precisions
+for computing $A$, $B$, $C$ satisfy respectively
+\[ D_A \geq \Pi + \lceil \frac{3}{2} \frac{\log N}{\log 2} \rceil + 5, \quad
+   D_B \geq \Pi + 14, \quad
+   D_C \geq \Pi + \lceil \frac{1}{2} \frac{\log N}{\log 2} \rceil + 7, \]
+then the relative roundoff error is bounded by $2^{-\Pi}$, i.e.~if $z$ is
+the approximation computed, we have
+\[ |\zeta(s) - z| \leq 2^{-\Pi} |\zeta(s)|. \]
+\end{theorem}
 
 \section{Mathematical constants}
 
