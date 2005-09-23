@@ -2850,6 +2850,68 @@ the approximation computed, we have
 \[ |\zeta(s) - z| \leq 2^{-\Pi} |\zeta(s)|. \]
 \end{theorem}
 
+\subsubsection{The integer argument case.}
+In case of an integer argument $s \geq 2$,
+the \texttt{mpfr\_zeta\_ui} function computes
+$\zeta(s)$ using the following formula from \cite{Borwein95}:
+\[ \zeta(s) = \frac{1}{d_n (1-2^{1-s})} \sum_{k=0}^{n-1} \frac{(-1)^k
+  (d_n - d_k)}{(k+1)^s} + \gamma_n(s), \]
+where 
+\[ |\gamma_n(s)| \leq \frac{3}{(3+\sqrt{8})^n} \frac{1}{1-2^{1-s}}
+\quad \mbox{and} \quad
+   d_k = n \sum_{i=0}^k \frac{(n+i-1)! 4^i}{(n-i)! (2i)!}. \]
+
+It can be checked that the $d_k$ are integers, and we compute them exactly,
+\begin{comment}
+d(n,k) = 
+{ n * sum(i=0,k,(n+i-1)!*4^i/(n-i)!/(2*i)!) }
+a=log(2)/log(3+sqrt(8))
+for (p=2,1000,n=ceil(a*p);if(d(n,n)<2^(p-1),error(p)))
+\end{comment}
+like the denominators $(k+1)^s$.
+We compute the integer
+\[ S =
+\sum_{k=0}^{n-1} (-1)^k \lfloor \frac{d_n - d_k}{(k+1)^s}
+\rfloor. \]
+The absolute error on $S$ is at most $n$. We then perform the following
+iteration (still with integers):
+\begin{quote}
+$T \leftarrow S$ \\
+\textbf{do} \\
+\q $T \leftarrow \lfloor T 2^{1-s} \rfloor$ \\
+\q $S = S + T$ \\
+\textbf{while} $T \neq 0$.
+\end{quote}
+Since $\frac{1}{1-2^{1-s}} = 1 + 2^{1-s} + 2^{2(1-s)} + \cdots$, and 
+at iteration $i$ we have $T = \lfloor S 2^{i(1-s)} \rfloor$,
+the error on $S$ after this loop is bounded by $n+l+1$,
+where $l$ is the number of loops.
+
+Finally we compute $q = \lfloor \frac{2^p S}{d_n} \rfloor$,
+where $p$ is the working precision,
+and we convert $q$ to a $p$-bit floating-point value,
+with rounding to nearest, and divide by $2^p$ (this last operation is
+exact).
+The final error in ulps is bounded by $1 + 2^{\mu} (n+l+2)$.
+Since $S/d_n$ approximates $\zeta(s)$, it is larger than one, thus
+$q \geq 2^p$, and the error on the division is less that 
+$\frac{1}{2}\ulp_p(q)$. The error on $S$ itself is bounded by $(n+l+1)/d_n
+\leq (n+l+1) 2^{1-p}$ --- see the conjecture below.
+Since $2^{1-p} \leq \ulp_p(q)$, and taking into account the error when
+converting the integer $q$ (which may have more than $p$ bits),
+and the mathematical error which is bounded by $\frac{3}{(3+\sqrt{8})^n}
+\leq \frac{3}{2^p}$, the total error is bounded by $n+l+4$ ulps.
+
+\paragraph{Analysis of the sizes.} 
+To get an accurary of around $p$ bits, since $\zeta(s) \geq 1$, it suffices
+to have $|\gamma_n(s)| \leq 2^{-p}$, i.e.~$(3+\sqrt{8})^n \ge 2^p$,
+thus $n \ge \alpha p$ with $\alpha = \frac{\log 2}{\log ((3+\sqrt{8})} 
+\approx 0.393$.
+It can be easily seen that $d_n \geq 4^n$, thus when $n \ge \alpha p$,
+$d_n$ has at least $0.786 p$ bits.
+In fact, we conjecture $d_n \geq 2^{p-1}$ when $n \geq \alpha p$;
+this conjecture was experimentally verified up to $p=1000$.
+
 \section{Mathematical constants}
 
 \subsection{The constant $\pi$}
