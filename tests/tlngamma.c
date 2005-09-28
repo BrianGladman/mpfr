@@ -79,7 +79,7 @@ special (void)
 
   mpfr_set_ui (x, 1, GMP_RNDN);
   mpfr_lngamma (y, x, GMP_RNDN);
-  if (mpfr_cmp_ui (y, 0))
+  if (mpfr_cmp_ui (y, 0) || MPFR_IS_NEG (y))
     {
       printf ("Error for lngamma(1)\n");
       exit (1);
@@ -95,7 +95,7 @@ special (void)
 
   mpfr_set_ui (x, 2, GMP_RNDN);
   mpfr_lngamma (y, x, GMP_RNDN);
-  if (mpfr_cmp_ui (y, 0))
+  if (mpfr_cmp_ui (y, 0) || MPFR_IS_NEG (y))
     {
       printf ("Error for lngamma(2)\n");
       exit (1);
