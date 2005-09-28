@@ -93,6 +93,14 @@ special (void)
       exit (1);
     }
 
+  mpfr_set_ui (x, 2, GMP_RNDN);
+  mpfr_lngamma (y, x, GMP_RNDN);
+  if (mpfr_cmp_ui (y, 0))
+    {
+      printf ("Error for lngamma(2)\n");
+      exit (1);
+    }
+
   mpfr_set_prec (x, 53);
   mpfr_set_prec (y, 53);
 

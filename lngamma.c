@@ -167,7 +167,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
   compared = mpfr_cmp_ui (z0, 1);
 
 #ifndef IS_GAMMA
-  if (compared == 0) /* lngamma(1) = +0 */
+  if (compared == 0 || mpfr_cmp_ui (z0, 2) == 0) /* lngamma(1 or 2) = +0 */
     return mpfr_set_ui (y, 0, GMP_RNDN);
 #endif
 
