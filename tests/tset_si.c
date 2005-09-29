@@ -72,6 +72,35 @@ test_2exp (void)
   mpfr_clear (x);
 }
 
+static void
+test_macros (void)
+{
+  mpfr_t x[3];
+  mpfr_ptr p;
+  mpfr_rnd_t r;
+
+  mpfr_inits (x[0], x[1], x[2], NULL);
+  p = x[0];
+  r = 0;
+  mpfr_set_ui (p++, 0, r++);
+  if (p != x[1] || r != 1)
+    {
+      printf ("Error in mpfr_set_ui macro: p - x[0] = %d (expecting 1), "
+              "r = %d (expecting 1)\n", (int) (p - x[0]), r);
+      exit (1);
+    }
+  p = x[0];
+  r = 0;
+  mpfr_set_si (p++, 0, r++);
+  if (p != x[1] || r != 1)
+    {
+      printf ("Error in mpfr_set_si macro: p - x[0] = %d (expecting 1), "
+              "r = %d (expecting 1)\n", (int) (p - x[0]), r);
+      exit (1);
+    }
+  mpfr_clears (x[0], x[1], x[2], NULL);
+}
+
 /* FIXME: Comparing against mpfr_get_si/ui is not ideal, it'd be better to
    have all tests examine the bits in mpfr_t for what should come out.  */
 
@@ -324,6 +353,7 @@ main (int argc, char *argv[])
   mpfr_clear (x);
 
   test_2exp ();
+  test_macros ();
   tests_end_mpfr ();
   return 0;
 }

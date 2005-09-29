@@ -631,12 +631,17 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
  (__builtin_constant_p (_s) && (_s) >= 0 ? \
    mpfr_cmp_ui ((_f), (_s)) :              \
    mpfr_cmp_si_2exp ((_f), (_s), 0))
+#if __GNUC__ > 2 || __GNUC_MINOR__ >= 95
 #undef mpfr_set_ui
 #define mpfr_set_ui(_f,_u,_r)              \
  (__builtin_constant_p (_u) && (_u) == 0 ? \
-   ((_f)->_mpfr_sign = 1,                  \
-    (_f)->_mpfr_exp = __MPFR_EXP_ZERO, 0): \
-    mpfr_set_ui (_f,_u,_r))
+   __extension__ ({                        \
+     mpfr_ptr _p = (_f);                   \
+     _p->_mpfr_sign = 1;                   \
+     _p->_mpfr_exp = __MPFR_EXP_ZERO;      \
+     (void) (_r); 0; }) :                  \
+   mpfr_set_ui (_f,_u,_r))
+#endif
 #undef mpfr_set_si
 #define mpfr_set_si(_f,_s,_r)              \
  (__builtin_constant_p (_s) && (_s) >= 0 ? \
