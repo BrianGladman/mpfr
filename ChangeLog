@@ -1,4 +1,73 @@
+2005-09-29  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* mpfr.h, tests/tset_si.c:
+	Fixed bug in mpfr_set_ui macro when parameters are expressions
+	with side effects.
+
+2005-09-29  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* algorithms.tex: fixed missing accent
+
+2005-09-28  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* lngamma.c: Small optimization.
+
+	* tests/tlngamma.c: Test the sign of 0.
+
+2005-09-28  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* lngamma.c, tests/tlngamma.c: fixed infinite loop for lngamma(2)
+
+2005-09-28  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* Makefile.am:
+	Updated libmpfr_la_LDFLAGS (note: it shouldn't be incremented again
+	before the 2.3.0 release).
+
+2005-09-26  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* zeta_ui.c: new function: Zeta with integer argument
+
+2005-09-23  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* Makefile.am, algorithms.bib, algorithms.tex, mpfr.h, mpfr.texi, tests/Makefile.am, tests/tzeta_ui.c:
+	new function mpfr_zeta_ui for integer argument
+
+2005-09-21  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* algorithms.tex: added brief description of algorithm for mpfr_zeta
+
+2005-09-18  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* INSTALL:
+	Mentioned problems with the Tru64 make and other minor changes.
+	[2.2 branch]
+
+	* INSTALL:
+	Mentioned problems with the Tru64 make and other minor changes.
+
+2005-09-17  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* configure.in: [2.2 branch]
+	Fixed the GMP linking test: replaced __gmp_version, which corresponds
+	to a variable, by __gmpz_init (suggested by the GMP documentation),
+	which corresponds to a function, as the auto tools assume the symbol
+	corresponds to a function. It was failing with the AIX linker.
+
+	* configure.in:
+	Fixed the GMP linking test: replaced __gmp_version, which corresponds
+	to a variable, by __gmpz_init (suggested by the GMP documentation),
+	which corresponds to a function, as the auto tools assume the symbol
+	corresponds to a function. It was failing with the AIX linker.
+
 2005-09-16  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* zeta.c: Better initial precision.
+
+	* const_euler.c:
+	Fixed overflow problem for large precisions. [2.2 branch]
+
+	* const_euler.c: Untabify.
 
 	* tests/tcoth.c, coth.c:
 	Fixed stupid bug (coth was computing 1/tan instead of 1/tanh).
