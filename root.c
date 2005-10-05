@@ -23,6 +23,14 @@ MA 02110-1301, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+#if !__MPFR_GMP(4,1,5) /* replace rootrem/mpz_root code by faster one */
+#include "rootrem.c"
+#include "mpzroot.c"
+#define MPZ_ROOT mpfr_mpz_root
+#else
+#define MPZ_ROOT mpz_root
+#endif
+
  /* The computation of y = x^(1/k) is done as follows:
 
     Let x = sign * m * 2^(k*e) where m is an integer
@@ -159,7 +167,7 @@ mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mp_rnd_t rnd_mode)
 
   /* we reuse the variable m to store the cube root, since it is not needed
      any more: we just need to know if the root is exact */
-  inexact = mpz_root (m, m, k) == 0;
+  inexact = MPZ_ROOT (m, m, k) == 0;
 
   MPFR_MPZ_SIZEINBASE2 (tmp, m);
   sh = tmp - n;
