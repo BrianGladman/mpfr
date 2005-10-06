@@ -509,6 +509,7 @@ particular_cases (void)
   for (i = 0; i < 11; i++)
     for (j = 0; j < 11; j++)
       {
+        double d;
         int p;
         static int q[11][11] = {
           /*          NaN +inf -inf  +0   -0   +1   -1   +2   -2  +0.5 -0.5 */
@@ -527,7 +528,7 @@ particular_cases (void)
         test_pow (r, t[i], t[j], GMP_RNDN);
         p = mpfr_nan_p (r) ? 0 : mpfr_inf_p (r) ? 1 :
           mpfr_cmp_ui (r, 0) == 0 ? 2 :
-          (int) (fabs (mpfr_get_d (r, GMP_RNDN)) * 128.0);
+          (d = mpfr_get_d (r, GMP_RNDN), (int) (ABS(d) * 128.0));
         if (p != 0 && MPFR_SIGN(r) < 0)
           p = -p;
         if (p != q[i][j])
