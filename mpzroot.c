@@ -31,8 +31,23 @@ MA 02111-1307, USA. */
 #include <stdio.h>  /* for NULL */
 #include <stdlib.h> /* for abort */
 #include "gmp.h"
-#include "gmp-impl.h"
-#include "longlong.h"
+
+/* replacement for gmp internal macros/functions */
+void __gmp_divide_by_zero (void);
+void __gmp_sqrt_of_negative (void);
+#ifndef __GMP_ALLOCATE_FUNC_TYPE
+#define __GMP_ALLOCATE_FUNC_TYPE(n,type) \
+  ((type *) (*__gmp_allocate_func) ((n) * sizeof (type)))
+#endif
+#ifndef __GMP_ALLOCATE_FUNC_LIMBS
+#define __GMP_ALLOCATE_FUNC_LIMBS(n)   __GMP_ALLOCATE_FUNC_TYPE (n, mp_limb_t)
+#endif
+#ifndef __GMP_FREE_FUNC_TYPE
+#define __GMP_FREE_FUNC_TYPE(p,n,type) (*__gmp_free_func) (p, (n) * sizeof (type))
+#endif
+#ifndef __GMP_FREE_FUNC_LIMBS
+#define __GMP_FREE_FUNC_LIMBS(p,n)     __GMP_FREE_FUNC_TYPE (p, n, mp_limb_t)
+#endif
 
 static int
 mpfr_mpz_root (mpz_ptr r, mpz_srcptr u, unsigned long int nth)
@@ -48,12 +63,12 @@ mpfr_mpz_root (mpz_ptr r, mpz_srcptr u, unsigned long int nth)
 
   /* even roots of negatives provoke an exception */
   if (us < 0 && (nth & 1) == 0)
-    SQRT_OF_NEGATIVE;
+    __gmp_sqrt_of_negative ();
 
   /* root extraction interpreted as c^(1/nth) means a zeroth root should
      provoke a divide by zero, do this even if c==0 */
   if (nth == 0)
-    DIVIDE_BY_ZERO;
+    __gmp_divide_by_zero ();
 
   if (us == 0)
     {

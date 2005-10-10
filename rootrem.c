@@ -7,8 +7,34 @@
 #include <stdlib.h>		/* for exit, strtoul. */
 
 #include "gmp.h"
-#include "gmp-impl.h"
-#include "longlong.h"
+
+/* replacement for internal gmp macros/functions */
+#define ASSERT_ALWAYS(x)
+#ifndef TMP_ALLOC_LIMBS
+#define TMP_ALLOC_LIMBS(x) TMP_ALLOC(x * BYTES_PER_MP_LIMB)
+#endif
+#ifndef mpn_incr_u
+#define mpn_incr_u(p,incr)           \
+  do {                               \
+    mp_limb_t cy = incr;             \
+    mp_ptr q = p;                    \
+    do {                             \
+       cy = mpn_add_1 (q, q, 1, cy); \
+       q ++;                         \
+    } while (cy != 0);                 \
+  } while (0)
+#endif
+#ifndef mpn_decr_u
+#define mpn_decr_u(p,incr)           \
+  do {                               \
+    mp_limb_t cy = incr;             \
+    mp_ptr q = p;                    \
+    do {                             \
+       cy = mpn_sub_1 (q, q, 1, cy); \
+       q ++;                         \
+    } while (cy != 0);                 \
+  } while (0)
+#endif
 
 /* #define DEBUG */
 

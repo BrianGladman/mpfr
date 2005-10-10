@@ -23,7 +23,7 @@ MA 02110-1301, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-#if 0 && !__MPFR_GMP(4,1,5) /* replace rootrem/mpz_root code by faster one */
+#if !__MPFR_GMP(4,2,0) /* replace rootrem/mpz_root code by faster one */
 #include "rootrem.c"
 #include "mpzroot.c"
 #define MPZ_ROOT mpfr_mpz_root
