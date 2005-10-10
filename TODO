@@ -209,6 +209,7 @@ New functions to implement:
 Efficiency:
 ##############################################################################
 
+- implement Mulders algorithm for squaring and division
 - for sparse input (say x=1 with 2 bits), mpfr_exp is not faster than for
 	full precision when precision <= MPFR_EXP_THRESHOLD. The reason is
 	that argument reduction kills sparsity. Maybe avoid argument reduction
