@@ -2766,36 +2766,6 @@ At that time, the truncation error when neglecting terms of index $k+1$
 to $\infty$ can be bounded by $(|t| + \epsilon_k)/k (|x|/k + |x|^2/k^2 + 
 \cdots) \leq (|t| + \epsilon_k) |x|/k/(k-|x|)$.
 
-\subsection{Summary}
-
-\begin{table}
-\begin{center}
-\begin{tabular}{|c|c|c|} \hline
-   $w$        & $\err(w)/\ulp(w) \le c_w + \ldots$ &special case\\ \hline\hline
-$o(u+v)$ & $k_u 2^{e_u-e_w} + k_v 2^{e_v-e_w}$ & $k_u + k_v$ if $u v \ge 0$\\
-$o(u \cdot v)$ & $(1+c^{+}_u)k_u + (1+c^{+}_v)k_v$ & $2k_u + 2k_v$ if $u \ge x$, $v \ge y$\\
-$o(1/v)$ & $4 k_v$ & $2 k_v$ if $v \le y$ \\
-$o(u/v)$ & $4 k_u + 4 k_v$ & $2 k_u + 2 k_v$ if $v \le y$ \\
-$o(\sqrt{u})$ & $2 k_u/(1+\sqrt{c^{-}_u})$ & $k_u$ if $u \le x$ \\
-$o(e^u)$ & $e^{k_u 2^{e_u-p}} 2^{e_u+1} k_u$ & $2^{e_u+1} k_u$ if $u \ge x$ \\
-$o(\log u)$ & $k_u 2^{1-e_w}$ & \\
-\hline
-\end{tabular}
-\end{center}
-\caption{Generic error for several operations, assuming all variables have a
-mantissa of $p$ bits, and no overflow/underflow occurs.
-The inputs $u$ and $v$ are
-approximations of $x$ and $y$ with $|u-x| \le k_u \ulp(u)$ and 
-$|v-y| \le k_v \ulp(v)$. The additional rounding error $c_w$ is $1/2$ for
-rounding to nearest, and $1$ otherwise.
-The value $c^{\pm}_u$ equals $1 \pm k_u 2^{1-p}$.
-}
-\end{table}
-Remark 1: in the addition case, when $u v > 0$,
-necessarily one of $2^{e_u-e_w}$ and $2^{e_v-e_w}$ is less than $1/2$,
-thus $\err(w)/\ulp(w) \le c_w + {\rm max}(k_u + k_v/2, k_u/2 + k_v)
-        \le c_w + \frac{3}{2} {\rm max}(k_u, k_v)$.
-
 \subsection{The gamma function}
 
 % See http://oldmill.uchicago.edu/~wilder/Code/gamma
@@ -2911,6 +2881,215 @@ It can be easily seen that $d_n \geq 4^n$, thus when $n \ge \alpha p$,
 $d_n$ has at least $0.786 p$ bits.
 In fact, we conjecture $d_n \geq 2^{p-1}$ when $n \geq \alpha p$;
 this conjecture was experimentally verified up to $p=1000$.
+
+\subsection{The arithmetic-geometric mean}
+
+The arithmetic-geometric mean (AGM for short) of two positive numbers 
+$a \leq b$ is defined to be the common limits of the sequences
+$(a_n)$ and $(b_n)$ defined by $a_0 = a$, $b_0 = b$, and for $n \geq 0$:
+\[ a_{n+1} = \sqrt{a_n b_n}, \quad b_{n+1} = \frac{a_n + b_n}{2}. \]
+
+We approximate ${\rm AGM}(a,b)$ as follows, with working precision $p$:
+\begin{quote}
+$s_1 = \circ(a b)$ \\
+$u_1 = \circ(\sqrt{s_1})$ \\
+$v_1 = \circ(a + b)/2$ [division by $2$ is exact] \\
+% mpfr_cmp2(b,c) returns EXP(max(|b|,|c|)) - EXP(|b| - |c|)
+{\bf for} $n:=1$ {\bf while} $\Exp(v_n) - \Exp(v_n-u_n) \leq p-2$ {\bf do} \\
+\q $v_{n+1} = \circ(u_n + v_n)/2$ [division by $2$ is exact] \\
+\q {\bf if} $\Exp(v_n) - \Exp(v_n-u_n) \leq p/4$ {\bf then} \\
+\q \q $s = \circ(u_n v_n)$ \\
+\q \q $u_{n+1} = \circ(\sqrt{s})$ \\
+\q {\bf else} \\
+\q \q $s = \circ(v_n - u_n)$ \\
+\q \q $t = \circ(s^2)/16$ [division by $16$ is exact] \\
+\q \q $w = \circ(t/v_{n+1})$ \\
+\q \q return $r = \circ(v_{n+1}-w)$ \\
+\q {\bf endif} \\
+\end{quote}
+The rationale behind the \textbf{if}-test is the following.
+When the relative error between $a_n$ and $b_n$ is less than $2^{-p/4}$,
+we can write $a_n = b_n (1+\epsilon)$ with $|\epsilon| \leq 2^{-p/4}$.
+The next iteration will compute
+$a_{n+1} = \sqrt{a_n b_n} = b_n \sqrt{1+\epsilon}$,
+and $b_{n+1} = (a_n+b_n)/2 = b_n (1+\epsilon/2)$.
+The second iteration will compute $a_{n+2} = \sqrt{a_{n+1} b_{n+1}}
+= b_n \sqrt{\sqrt{1+\epsilon} (1+\epsilon/2)}$,
+and $b_{n+2} = (a_{n+1}+b_{n+1})/2
+= b_n (\sqrt{1+\epsilon}/2 + 1/2 + \epsilon/4)$.
+When $\epsilon$ goes to zero, the following expansions hold:
+\begin{eqnarray*}
+\sqrt{\sqrt{1+\epsilon} (1+\epsilon/2)} & = & 1 + \frac{1}{2} \epsilon
+  - \frac{1}{16} \epsilon^2 + \frac{1}{32} \epsilon^3 - \frac{11}{512}
+  \epsilon^4 + O(\epsilon^5) \\
+\sqrt{1+\epsilon}/2 + 1/2 + \epsilon/4 & = & 1 + \frac{1}{2} \epsilon
+  - \frac{1}{16} \epsilon^2 + \frac{1}{32} \epsilon^3 - \frac{5}{256}
+  \epsilon^4 + O(\epsilon^5),
+\end{eqnarray*}
+which shows that $a_{n+2}$ and $b_{n+2}$ agree to $p$ bits.
+In the algorithm above, we have $v_{n+1} \approx b_n (1+\epsilon/2)$,
+$s = -b_n \epsilon$ [exact thanks to Sterbenz theorem],
+then $t \approx \epsilon^2 b_n^2/16$,
+and $w \approx (b_n/16) \epsilon^2/(1+\epsilon/2) \approx
+b_n (\epsilon^2/16 - \epsilon^3/32)$,
+thus $v_{n+1}-w$ gives us an approximation to order $\epsilon^4$.
+[Note that $w$ --- and therefore $s, t$ ---
+need to be computed to precision $p/2$ only.]
+
+\begin{lemma}
+Assuming $u \leq v$ are two $p$-bit floating-point numbers,
+then $u' = \circ(\sqrt{\circ(uv)})$ and $v' = \circ(u+v)/2$ satisfy:
+\[ u \leq u',v' \leq v. \]
+\end{lemma}
+\begin{proof}
+It is clear that $2u \leq u+v \leq 2v$, and since $2u$ and $2v$ are
+representable numbers, $2u \leq \circ(u+v) \leq 2v$, thus
+$u \leq v' \leq v$.
+
+The result for $u'$ is more difficult to obtain.
+We use the following result: if $x$ is a $p$-bit number,
+$s = \circ(x^2)$, and $t = \circ(\sqrt{s})$ are computed with precision $p$
+and rounding to nearest, then $t = x$.
+
+Apply this result to $x=u$, and let $s' = \circ(u v)$.
+Then $s = \circ(u^2) \leq s'$, thus $u = \circ(\sqrt{s}) \leq \circ(\sqrt{s'})
+= u'$. We prove similarly that $u' \leq v$.
+\end{proof}
+\noindent
+\textsl{Remark.} We cannot assume that $u' \leq v'$. Take for example
+$u = 9$, $v = 12$, with precision $p=4$.
+Then $(u+v)/2$ rounds to $10$, whereas $\sqrt{uv}$ rounds to $112$,
+and $\sqrt{112}$ rounds to $11$.
+
+\medskip
+
+We use Higham error analysis method, where $\theta$ denotes a generic value
+such that $|\theta| \leq 2^{-p}$.
+We note $a_n$ and $b_n$ the exact values we would obtain for $u_n$ and $v_n$
+respectively, without roundoff errors.
+We have $s_1 = ab (1+\theta)$, $u_1 = a_1 (1+\theta)^{3/2}$,
+$v_1 = b_1 (1+\theta)$.
+Assume we can write $u_n = a_n (1+\theta)^{\alpha}$ and 
+$v_n = (1+\theta)^{\beta}$ with $\alpha, \beta \leq e_n$.
+We thus can take $e_1 = 3/2$.
+Then as long as the \textbf{if}-condition is not satisfied,
+$v_{n+1} = b_{n+1} (1+\theta)^{e_n+1}$,
+and $u_{n+1} = a_{n+1} (1+\theta)^{e_n + 3/2}$,
+which proves that $e_n \leq 3n/2$.
+
+When the \textbf{if}-condition is satisfied,
+we have $\Exp(v_n-u_n) < \Exp(v_n) - p/4$,
+and since exponents are integers,
+thus $\Exp(v_n-u_n) \leq \Exp(v_n) - (p+1)/4$,
+% 2^{Exp(x)-1} <= x < 2^Exp(x) thus x < 2^Exp(x) <= 2*x
+i.e.~$|v_n-u_n|/v_n < 2^{(3-p)/4}$.
+
+Assume $n \leq 2^{p/4}$, which implies 
+$3n|\theta|/2 \leq 1$, which since $n \geq 1$ implies in turn $|\theta| \leq
+2/3$. Under that hypothesis, $(1+\theta)^{3n/2}$ can be written
+$1 + 3n\theta$ (possibly with a different $|\theta| \leq 2^{-p}$ as usual).
+Then $|b_n-a_n| = |v_n (1+3n\theta) - u_n (1+3n\theta')|
+\leq |v_n-u_n| + 3n |\theta| v_n$.
+
+For $p \geq 4$, $3n |\theta| \leq 3/8$, and $1/(1+x)$ for $|x| \leq 3/8$
+can be written $1+5x'/3$ for $x'$ in the same interval. This yields:
+\begin{eqnarray*}
+ \frac{|b_n-a_n|}{b_n} 
+   &=& \frac{|v_n-u_n| + 3n |\theta| v_n}{v_n (1+3n\theta)}
+   \leq \frac{|v_n-u_n|}{v_n} + 5n|\theta| \frac{|v_n-u_n|}{v_n} 
+      + \frac{8}{5} (6n\theta) \\
+   &\leq& \frac{13}{8} \cdot 2^{(3-p)/4} + \frac{48}{5} \cdot 2^{-3p/4}
+   \leq 5.2 \cdot 2^{-p/4}.
+\end{eqnarray*}
+Write $a_n = b_n (1+\epsilon)$ with $|\epsilon| \leq 5.2 \cdot 2^{-p/4}$.
+We have $a_{n+1} = b_n \sqrt{1+\epsilon}$ and $b_{n+1} = b_n (1+\epsilon/2)$.
+Since $\sqrt{1+\epsilon} = 1 + \epsilon/2 - \frac{1}{8} \nu^2$ with
+$|\nu| \leq |\epsilon|$, we deduce that
+$|b_{n+1} - a_{n+1}| \leq \frac{1}{8} \nu^2 |b_n| \leq 3.38 \cdot 2^{-p/2}b_n$.
+After one second iteration, we get similarly
+$|b_{n+2} - a_{n+2}| \leq \frac{1}{8} (3.38 \cdot 2^{-p/2})^2 b_n
+\leq \frac{3}{2} 2^{-p} b_n$.
+
+Let $q$ be the precision used to evaluate $s$, $t$ and $w$ in the
+{\bf else} case.
+Since $|v_n - u_n| \leq 2^{(3-p)/4} v_n$, it follows
+$|s| \leq 1.8 \cdot 2^{-p/4} v_n$ for $q \geq 4$.
+Then $t \leq 0.22 \cdot 2^{-p/2} v_n$.
+Finally due to the above Lemma, the difference between $v_{n+1}$ and $v_n$
+is less than that between $u_n$ and $v_n$, 
+i.e.~$\frac{v_n}{v_{n+1}} \leq \frac{1}{1-2^{(3-p)/4}} \leq 2$ for $p \geq 7$.
+We deduce $w \leq 0.22 \cdot 2^{-p/2} \frac{v_n^2}{v_{n+1}} (1+2^{-q})
+\leq 0.47 \cdot 2^{-p/2} v_n \leq 0.94 \cdot 2^{-p/2} v_{n+1}$.
+
+The total error is bounded by the sum of four terms:
+\begin{itemize}
+\item the difference between $a_{n+2}$ and $b_{n+2}$, bounded by
+      $\frac{3}{2} 2^{-p} b_n$;
+\item the difference between $b_{n+2}$ and $v_{n+2}$, if $v_{n+2}$
+      was computed directly without the final optimization;
+      since $v_{n+2} = b_{n+2} (1+\theta)^{3(n+2)/2}$,
+      if $n+2 \leq 2^{p/4}$, similarly as above, $(1+\theta)^{3(n+2)/2}$
+      can be written $1 + 3(n+2)\theta$, thus this difference is bounded
+      by $3(n+2) \cdot 2^{-p} b_{n+2} \leq 3(n+2) \cdot 2^{-p} b_n$;
+\item the difference between $v_{n+2}$ computed directly, and with
+      the final optimization. We can assume $v_{n+2}$ is computed
+      directly in infinite precision, since we already took into account
+      the rounding errors above. Thus we want to compute the difference
+      between
+\[ \frac{\sqrt{u_n v_n} + \frac{u_n+v_n}{2}}{2} \quad \mbox{and} \quad
+  \frac{u_n+v_n}{2} - \frac{(v_n-u_n)^2}{8 (u_n+v_n)}. \]
+      Writing $u_n = v_n (1+\epsilon)$, this simplifies to:
+\[ \frac{\sqrt{1+\epsilon} + 1 + \epsilon/2}{2} - \left(
+      \frac{1+\epsilon/2}{2} - \frac{\epsilon^2}{18 + 8 \epsilon}\right)
+      = \frac{-1}{256} \epsilon^4 + O(\epsilon^5). \]
+      For $|\epsilon| \leq 1/2$, the difference is bounded by $\frac{1}{100}
+      \epsilon^4 v_n \leq \frac{1}{100} 2^{3-p} v_n$.
+\item the roundoff error on $w$, assuming $u_n$ and $v_n$ are exact;
+      we can write $s = (v_n - u_n) (1+\theta)$, $t = \frac{1}{16}
+      (v_n - u_n)^2 (1+\theta)^2$, $w = \frac{(v_n - u_n)^2}{16v_{n+1}}
+      (1+\theta)^4$. For $q \geq 4$, $(1+\theta)^4$ can be written
+      $1+5\theta$, thus the roundoff error on $w$ is bounded by
+      $5 \theta w \leq 4.7 \cdot 2^{-p/2-q} v_{n+1}$. For $q \geq p/2$,
+      this gives a bound of $4.7 \cdot 2^{-p} v_{n+1}$.
+\end{itemize}
+Since $b_n = v_n (1+3n \theta)$, and we assumed $3n|\theta|/2 \leq 1$,
+we have $b_n \leq 3v_n$, thus
+the first two errors are less than $(9n+45/2) 2^{-p} v_n$;
+together with the third one, this gives a bound of $(9n + 23) 2^{-p} v_n$;
+finally since we proved above that $v_n \leq 2v_{n+1}$,
+this gives a total bound of $(18n+51) 2^{-p} v_{n+1}$, which is less
+than $(18n+51) \ulp(r)$, or twice this in the unprobable case where there
+is an exponent loss in the final subtraction $r = \circ(v_{n+1}-w)$.
+
+\subsection{Summary}
+
+\begin{table}
+\begin{center}
+\begin{tabular}{|c|c|c|} \hline
+   $w$        & $\err(w)/\ulp(w) \le c_w + \ldots$ &special case\\ \hline\hline
+$o(u+v)$ & $k_u 2^{e_u-e_w} + k_v 2^{e_v-e_w}$ & $k_u + k_v$ if $u v \ge 0$\\
+$o(u \cdot v)$ & $(1+c^{+}_u)k_u + (1+c^{+}_v)k_v$ & $2k_u + 2k_v$ if $u \ge x$, $v \ge y$\\
+$o(1/v)$ & $4 k_v$ & $2 k_v$ if $v \le y$ \\
+$o(u/v)$ & $4 k_u + 4 k_v$ & $2 k_u + 2 k_v$ if $v \le y$ \\
+$o(\sqrt{u})$ & $2 k_u/(1+\sqrt{c^{-}_u})$ & $k_u$ if $u \le x$ \\
+$o(e^u)$ & $e^{k_u 2^{e_u-p}} 2^{e_u+1} k_u$ & $2^{e_u+1} k_u$ if $u \ge x$ \\
+$o(\log u)$ & $k_u 2^{1-e_w}$ & \\
+\hline
+\end{tabular}
+\end{center}
+\caption{Generic error for several operations, assuming all variables have a
+mantissa of $p$ bits, and no overflow/underflow occurs.
+The inputs $u$ and $v$ are
+approximations of $x$ and $y$ with $|u-x| \le k_u \ulp(u)$ and 
+$|v-y| \le k_v \ulp(v)$. The additional rounding error $c_w$ is $1/2$ for
+rounding to nearest, and $1$ otherwise.
+The value $c^{\pm}_u$ equals $1 \pm k_u 2^{1-p}$.
+}
+\end{table}
+Remark 1: in the addition case, when $u v > 0$,
+necessarily one of $2^{e_u-e_w}$ and $2^{e_v-e_w}$ is less than $1/2$,
+thus $\err(w)/\ulp(w) \le c_w + {\rm max}(k_u + k_v/2, k_u/2 + k_v)
+        \le c_w + \frac{3}{2} {\rm max}(k_u, k_v)$.
 
 \section{Mathematical constants}
 

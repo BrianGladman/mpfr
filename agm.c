@@ -19,6 +19,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin Place, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
+#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
 /* agm(x,y) is between x and y, so we don't need to save exponent range */
@@ -30,6 +31,8 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
   mp_prec_t p, q;
   mp_limb_t *up, *vp, *tmpp;
   mpfr_t u, v, tmp;
+  unsigned long n; /* number of iterations */
+  unsigned long err;
   MPFR_ZIV_DECL (loop);
   MPFR_TMP_DECL(marker);
 
@@ -82,6 +85,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
   /* Precision of the following calculus */
   q = MPFR_PREC(r);
   p = q + 15;
+  MPFR_ASSERTD (p >= 7); /* see algorithms.tex */
   s = (p - 1) / BITS_PER_MP_LIMB + 1;
 
   /* b (op2) and a (op1) are the 2 operands but we want b >= a */
@@ -117,36 +121,38 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
       mpfr_sqrt (u, u, GMP_RNDN);
       mpfr_add (v, op1, op2, GMP_RNDN); /* add with !=prec is still good*/
       mpfr_div_2ui (v, v, 1, GMP_RNDN);
+      n = 1;
       while (mpfr_cmp2 (u, v, &eq) != 0 && eq <= p - 2)
         {
           mpfr_add (tmp, u, v, GMP_RNDN);
-          /* It seems to work well. Any proofs are welcome. */
-#if 0
-          if (2*eq > p)
-            {
-              mpfr_div_2ui (tmp, tmp, 1, GMP_RNDN);
-              mpfr_swap (v, tmp);
-              break;
-              }
-#elif 1
+	  mpfr_div_2ui (tmp, tmp, 1, GMP_RNDN);
+          /* See proof in algorithms.tex */
           if (4*eq > p)
             {
-              mpfr_div_2ui (tmp, tmp, 1, GMP_RNDN); /* U(k) */
-              mpfr_sub (u, v, u, GMP_RNDN);         /* e = V(k-1)-U(k-1) */
-              mpfr_sqr (u, u, GMP_RNDN);            /* e = e^2 */
-              mpfr_div_2ui (u, u, 4, GMP_RNDN);     /* e*= (1/2)^2*1/4  */
-              mpfr_div (u, u, tmp, GMP_RNDN);       /* 1/4*e^2/U(k) */
-              mpfr_sub (v, tmp, u, GMP_RNDN);
+	      mpfr_t w;
+	      /* tmp = U(k) */
+	      mpfr_init2 (w, (p + 1) / 2);
+              mpfr_sub (w, v, u, GMP_RNDN);         /* e = V(k-1)-U(k-1) */
+              mpfr_sqr (w, w, GMP_RNDN);            /* e = e^2 */
+              mpfr_div_2ui (w, w, 4, GMP_RNDN);     /* e*= (1/2)^2*1/4  */
+              mpfr_div (w, w, tmp, GMP_RNDN);       /* 1/4*e^2/U(k) */
+              mpfr_sub (v, tmp, w, GMP_RNDN);
+	      err = MPFR_GET_EXP (tmp) - MPFR_GET_EXP (v); /* 0 or 1 */
+	      mpfr_clear (w);
               break;
             }
-#endif
           mpfr_mul (u, u, v, GMP_RNDN);
           mpfr_sqrt (u, u, GMP_RNDN);
-          mpfr_div_2ui (tmp, tmp, 1, GMP_RNDN);
           mpfr_swap (v, tmp);
+	  n ++;
         }
-      /* Roundability of the result */
-      if (MPFR_LIKELY (MPFR_CAN_ROUND (v, p - 4 - 3, q, rnd_mode)))
+      /* the error on v is bounded by (18n+51) ulps, or twice if there
+	 was an exponent loss in the final subtraction */
+      err += MPFR_INT_CEIL_LOG2(18 * n + 51); /* 18n+51 should not overflow
+						 since n is about log(p) */
+      /* we should have n+2 <= 2^(p/4) [see algorithms.tex] */
+      if (MPFR_LIKELY (MPFR_INT_CEIL_LOG2(n + 2) <= p / 4 &&
+		       MPFR_CAN_ROUND (v, p - err, q, rnd_mode)))
         break; /* Stop the loop */
 
       /* Next iteration */
