@@ -1,4 +1,49 @@
+2005-10-19  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* agm.c, algorithms.tex:
+	documented algorithm used in mpfr_agm and fixed code accordingly
+
+2005-10-10  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* TODO: added efficiency item
+
+	* mpzroot.c, root.c, rootrem.c:
+	now mpzroot/rootrem compile without gmp internal headers
+
+2005-10-07  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* root.c:
+	Disabled new rootrem/mpz_root as compilation fails (headers can't
+	be found).
+
+	* mul.c: Temporary optimization (patch from Patrick Pelissier).
+
+2005-10-06  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* tests/tpow.c:
+	One of the tests was using the fabs function, but -lm isn't given when
+	generating the executable, making the linking fail under HP-UX. Fixed
+	by not using this fabs function.
+
+	* tests/tpow.c:
+	One of the tests was using the fabs function, but -lm isn't given when
+	generating the executable, making the linking fail under HP-UX. Fixed
+	by not using this fabs function. [2.2 branch]
+
+2005-10-05  Paul Zimmermann  <Paul.Zimmermann@loria.fr>
+
+	* sin_cos.c: small improvement in sign detection
+
+	* Makefile.am, mpzroot.c, root.c, rootrem.c:
+	improved mpfr_root, using the new mpn_rootrem code written with Torbjo"rn
+
 2005-09-29  Vincent Lefevre  <Vincent.Lefevre@loria.fr>
+
+	* mpfr.h, tests/tset_si.c:
+	Applied the mpfr_set_ui macro patch to the 2.2 branch.
+
+	* lngamma.c, tests/tlngamma.c:
+	Applied the lngamma(2) patches to the 2.2 branch.
 
 	* mpfr.h, tests/tset_si.c:
 	Fixed bug in mpfr_set_ui macro when parameters are expressions
