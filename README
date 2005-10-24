@@ -52,9 +52,22 @@ tests/      - test directory
 texinfo.tex - TeX macros to handle mpfr.texi
 
 
-You can get the latest source code by CVS:
+You can get the latest source code by Subversion at InriaGforge:
 
-  cvs -d :pserver:cvs@cvs-sop.inria.fr:/CVS/spaces login
-  cvs -d :pserver:cvs@cvs-sop.inria.fr:/CVS/spaces -z3 checkout -P mpfr
+  svn co svn://scm.gforge.inria.fr/svn/mpfr/trunk mpfr
 
-(empty password). CVS users should read the file "README.dev".
+(the last argument can be any name). You can use
+
+  svn ls svn://scm.gforge.inria.fr/svn/mpfr/branches
+  svn ls svn://scm.gforge.inria.fr/svn/mpfr/tags
+
+to get the list of branches or tags (releases). More information
+about Subversion:
+
+  * http://svnbook.red-bean.com/ (the official SVN book)
+  * http://gcc.gnu.org/wiki/SvnHelp (written for GCC developers,
+    but interesting general information can be found there)
+
+Subversion users should read the file "README.dev".
+
+Note: the CVS repository at cvs-sop.inria.fr is now closed.

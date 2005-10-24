@@ -1,8 +1,0 @@
-#!/bin/sh
-
-# Fix the permissions (this can't be done with CVS).
-
-for i in mpfr.texi *.c tests/*.c
-do
-  chmod a-x "$i"
-done
