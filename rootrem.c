@@ -9,7 +9,9 @@
 #include "gmp.h"
 
 /* replacement for internal gmp macros/functions */
+#ifndef ASSERT_ALWAYS
 #define ASSERT_ALWAYS(x)
+#endif
 #ifndef TMP_ALLOC_LIMBS
 #define TMP_ALLOC_LIMBS(x) TMP_ALLOC(x * BYTES_PER_MP_LIMB)
 #endif
