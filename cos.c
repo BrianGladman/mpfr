@@ -22,10 +22,97 @@ MA 02110-1301, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+#if 1 /* new code, using mpz */
+
+/* f <- 1 - r/2! + r^2/4! + ... + (-1)^l r^l/(2l)! + ...
+   Assumes |r| < 1/2, and f, r have the same precision.
+   Returns e such that the error on f is bounded by 2^e ulps.
+*/
+static int
+mpfr_cos2_aux (mpfr_ptr f, mpfr_srcptr r)
+{
+  mpz_t x, t, s;
+  mp_exp_t ex, l, m;
+  mp_prec_t p, q;
+  unsigned long i, maxi, imax;
+
+  /* compute maximal i such that i*(i+1) fits in an unsigned long */
+  maxi = 1 << (4 * sizeof(unsigned long));
+
+  mpz_init (x);
+  mpz_init (s);
+  mpz_init (t);
+  ex = mpfr_get_z_exp (x, r); /* r = x*2^ex */
+
+  /* remove trailing zeroes */
+  l = mpz_scan1 (x, 0);
+  ex += l;
+  mpz_div_2exp (x, x, l);
+
+  /* since |r| < 1, r = x*2^ex, and x is an integer, necessarily ex < 0 */
+
+  p = mpfr_get_prec (f); /* same than r */
+  /* bound for number of iterations */
+  imax = p / (-mpfr_get_exp (r));
+  q = 2 * MPFR_INT_CEIL_LOG2(imax) + 4; /* bound for (3l)^2 */
+
+  mpz_set_ui (s, 1); /* initialize sum with 1 */
+  mpz_mul_2exp (s, s, p + q); /* scale all values by 2^(p+q) */
+  mpz_set (t, s); /* invariant: t is previous term */
+  for (i = 1; (m = mpz_sizeinbase (t, 2)) >= q; i += 2)
+    {
+      /* adjust precision of x to that of t */
+      l = mpz_sizeinbase (x, 2);
+      if (l > m)
+	{
+	  l -= m;
+	  mpz_div_2exp (x, x, l);
+	  ex += l;
+	}
+      /* multiply t by r */
+      mpz_mul (t, t, x);
+      mpz_div_2exp (t, t, -ex);
+      /* divide t by i*(i+1) */
+      if (i < maxi)
+        mpz_div_ui (t, t, i * (i + 1));
+      else
+        {
+          mpz_div_ui (t, t, i);
+          mpz_div_ui (t, t, i + 1);
+        }
+      /* if m is the (current) number of bits of t, we can consider that
+	 all operations on t so far had precision >= m, so we can prove
+	 by induction that the relative error on t is of the form
+	 (1+u)^(3l)-1, where |u| <= 2^(-m), and l=(i+1)/2 is the # of loops.
+	 Since |(1+x^2)^(1/x) - 1| <= 4x/3 for |x| <= 1/2,
+	 for |u| <= 1/(3l)^2, the absolute error is bounded by
+	 4/3*(3l)*2^(-m)*t <= 4*l since |t| < 2^m.
+	 Therefore the error on s is bounded by 2*l*(l+1). */
+      /* add or subtract to s */
+      if (i % 4 == 1)
+        mpz_sub (s, s, t);
+      else
+        mpz_add (s, s, t);
+    }
+
+  mpfr_set_z (f, s, GMP_RNDN);
+  mpfr_div_2exp (f, f, p + q, GMP_RNDN);
+  
+  mpz_clear (x);
+  mpz_clear (s);
+  mpz_clear (t);
+
+  l = (i - 1) / 2; /* number of iterations */
+  return 2 * MPFR_INT_CEIL_LOG2 (l + 1) + 1; /* bound is 2l(l+1) */
+}
+
+#else /* previous code, using mpf */
+
 /* s <- 1 - r/2! + r^2/4! + ... + (-1)^l r^l/(2l)! + ...
    Assumes |r| < 1.
-   Returns the index l0 of the last term (-1)^l r^l/(2l)!.
-   The absolute error on s is at most 2 * l0 * 2^(-m).
+   Returns e such that the error is bounded by 2^e ulps.
+   (Let the index l0 of the last term (-1)^l r^l/(2l)!,
+    the absolute error on s is at most 2 * l0 * 2^(-m).)
 */
 static int
 mpfr_cos2_aux (mpfr_ptr s, mpfr_srcptr r)
@@ -64,17 +151,19 @@ mpfr_cos2_aux (mpfr_ptr s, mpfr_srcptr r)
          i.e. b+EXP(t)-PREC(t) <= -m */
       prec = m + MPFR_GET_EXP (t) + b;
       if (MPFR_LIKELY (prec >= MPFR_PREC_MIN))
-        mpfr_prec_round (t, prec, GMP_RNDN);
+	mpfr_prec_round (t, prec, GMP_RNDN);
     }
   mpfr_clear (t);
 
-  return l;
+  return 1 + MPFR_INT_CEIL_LOG2 (l); /* bound is 2l ulps */
 }
+
+#endif
 
 int
 mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
-  mp_prec_t K0, K, precy, m, k, l;
+  mp_prec_t K0, K, precy, m, k, l, precx;
   int inexact;
   mpfr_t r, s;
   mp_exp_t exps, cancel = 0;
@@ -111,10 +200,14 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
      This formula has been created by trying many things...
      and is far from perfect */
   K0 = (MPFR_GET_EXP (x) > 0) ? (MPFR_GET_EXP (x)) : 0 ;
-  K0 = __gmpfr_isqrt (precy / (2+2*K0+MPFR_INT_CEIL_LOG2 (precy)/4) );
-  m = precy + 3*K0 + 4;
+  precx = MPFR_PREC (x);
+  if (precx > precy)
+    precx = precy;
+  precx = __gmpfr_isqrt (precx) * __gmpfr_isqrt (precy);
+  K0 = __gmpfr_isqrt (precx / (1 + K0 + MPFR_INT_CEIL_LOG2 (precy) / 8) );
+  m = precy + 3 * K0 + 4;
   if (MPFR_GET_EXP (x) >= 0)
-    m += 5*MPFR_GET_EXP (x);
+    m += 5 * MPFR_GET_EXP (x);
   else
     m += -MPFR_GET_EXP (x);
 
@@ -132,12 +225,13 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
       /* s <- 1 - r/2! + ... + (-1)^l r^l/(2l)! */
       l = mpfr_cos2_aux (s, r);
+      /* l is the error bound in ulps on s */
       MPFR_SET_ONE (r);
       for (k = 0; k < K; k++)
         {
-          mpfr_mul (s, s, s, GMP_RNDU);       /* err <= 2*olderr */
+          mpfr_sqr (s, s, GMP_RNDU);            /* err <= 2*olderr */
           MPFR_SET_EXP (s, MPFR_GET_EXP (s)+1); /* Can't overflow */
-          mpfr_sub (s, s, r, GMP_RNDN);       /* err <= 4*olderr */
+          mpfr_sub (s, s, r, GMP_RNDN);         /* err <= 4*olderr */
           MPFR_ASSERTD (MPFR_GET_EXP (s) <= 1);
         }
 

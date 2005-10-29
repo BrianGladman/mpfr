@@ -51,33 +51,34 @@ mpfr_sqr (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
       MPFR_RET(0);
     }
   MPFR_CLEAR_FLAGS(a);
-  ax = 2*MPFR_GET_EXP (b);
+  ax = 2 * MPFR_GET_EXP (b);
   bq = MPFR_PREC(b);
 
-  MPFR_ASSERTD (2*bq > bq); /* PREC_MAX is /2 so no integer overflow */
+  MPFR_ASSERTD (2 * bq > bq); /* PREC_MAX is /2 so no integer overflow */
 
-  bn = (bq+BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB; /* number of limbs of b */
-  tn = (2*bq + BITS_PER_MP_LIMB - 1) / BITS_PER_MP_LIMB;
+  bn = MPFR_LIMB_SIZE(b); /* number of limbs of b */
+  tn = 1 + (2 * bq - 1) / BITS_PER_MP_LIMB; /* number of limbs of square,
+					       2*bn or 2*bn-1 */
 
   MPFR_TMP_MARK(marker);
-  tmp = (mp_limb_t *) MPFR_TMP_ALLOC((size_t) 2*bn * BYTES_PER_MP_LIMB);
+  tmp = (mp_limb_t *) MPFR_TMP_ALLOC((size_t) 2 * bn * BYTES_PER_MP_LIMB);
 
   /* Multiplies the mantissa in temporary allocated space */
   mpn_sqr_n (tmp, MPFR_MANT(b), bn);
   b1 = tmp[2 * bn - 1];
 
-  /* now tmp[0]..tmp[k-1] contains the product of both mantissa,
-     with tmp[k-1]>=2^(BITS_PER_MP_LIMB-2) */
+  /* now tmp[0]..tmp[2*bn-1] contains the product of both mantissa,
+     with tmp[2*bn-1]>=2^(BITS_PER_MP_LIMB-2) */
   b1 >>= BITS_PER_MP_LIMB - 1; /* msb from the product */
 
   /* if the mantissas of b and c are uniformly distributed in ]1/2, 1],
      then their product is in ]1/4, 1/2] with probability 2*ln(2)-1 ~ 0.386
      and in [1/2, 1] with probability 2-2*ln(2) ~ 0.614 */
-  tmp += 2*bn - tn;
+  tmp += 2 * bn - tn; /* +0 or +1 */
   if (MPFR_UNLIKELY(b1 == 0))
     mpn_lshift (tmp, tmp, tn, 1); /* tn <= k, so no stack corruption */
 
-  cc = mpfr_round_raw (MPFR_MANT (a), tmp, 2*bq, 0,
+  cc = mpfr_round_raw (MPFR_MANT (a), tmp, 2 * bq, 0,
                        MPFR_PREC (a), rnd_mode, &inexact);
   /* cc = 1 ==> result is a power of two */
   if (MPFR_UNLIKELY(cc))

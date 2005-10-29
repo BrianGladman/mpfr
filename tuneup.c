@@ -233,12 +233,12 @@ tune_simple_func (mp_prec_t *threshold,
   int i, numpos, numneg, try;
   mp_prec_t pmin, pmax, p;
 
-  /* First Look for a lower bound within 10% */
+  /* first look for a lower bound within 10% */
   pmin = p = pstart;
   d = domeasure (threshold, func, pmin);
   if (d < 0.0) {
     if (verbose)
-      printf ("Oups: even for %lu, algo 2 seems to be faster!\n",
+      printf ("Oops: even for %lu, algo 2 seems to be faster!\n",
               (unsigned long) pmin);
     *threshold = MPFR_PREC_MIN;
     return;
@@ -259,13 +259,13 @@ tune_simple_func (mp_prec_t *threshold,
     pmin += BITS_PER_MP_LIMB;
   }
 
-  /* Then Look for a upper bound within 20%  */
+  /* then look for a upper bound within 20% */
   pmax = pmin * 2;
   for (;;) {
     d = domeasure (threshold, func, pmax);
     if (d < -0.20)
       break;
-    pmax += pmax/2;
+    pmax += pmin / 2; /* don't increase too rapidly */
   }
 
   /* The threshold is between pmin and pmax. Affine them */
@@ -314,25 +314,34 @@ tune_simple_func (mp_prec_t *threshold,
 
 
 /************************************
- * Tune Mulder's mulhigh function   *
+ * Tune Mulders' mulhigh function   *
  ************************************/
 #define TOLERANCE 1.02
 #ifndef MPFR_MULHIGH_SIZE
 # define MPFR_MULHIGH_SIZE 1024
 #endif
+#ifndef MPFR_SQRHIGH_SIZE
+# define MPFR_SQRHIGH_SIZE 1024
+#endif
 #define MPFR_MULHIGH_TAB_SIZE MPFR_MULHIGH_SIZE
+#define MPFR_SQRHIGH_TAB_SIZE MPFR_SQRHIGH_SIZE
 #include "mulders.c"
 
 static double speed_mpfr_mulhigh (struct speed_params *s) {
   SPEED_ROUTINE_MPN_MUL_N (mpfr_mulhigh_n);
 }
+static double speed_mpfr_sqrhigh (struct speed_params *s) {
+  SPEED_ROUTINE_MPN_SQR (mpfr_sqrhigh_n);
+}
+
+#define MAX_STEPS 32 /* maximum number of values of k tried for a given n */
 
 /* Tune size N */
 static mp_size_t
-tune_mulder_upto (mp_size_t n)
+tune_mulders_upto (mp_size_t n)
 {
   struct speed_params s;
-  mp_size_t k, kbest;
+  mp_size_t k, kbest, step;
   double t, tbest;
   MPFR_TMP_DECL (marker);
 
@@ -347,24 +356,26 @@ tune_mulder_upto (mp_size_t n)
   mpn_random (s.xp, n);
   mpn_random (s.yp, n);
 
-  /* Check k == -1, mpn_mul_base_basecase */
+  /* Check k == -1, mpn_mul_basecase */
   mulhigh_ktab[n] = -1;
   kbest = -1;
   tbest =  speed_measure (speed_mpfr_mulhigh, &s);
 
-  /* Check k == 0, mpn_mulhigh_basecase */
+  /* Check k == 0, mpn_mulhigh_n_basecase */
   mulhigh_ktab[n] = 0;
   t = speed_measure (speed_mpfr_mulhigh, &s);
   if (t * TOLERANCE < tbest)
     kbest = 0, tbest = t;
 
-  /* Check Mulder */
-  for (k = n/2+1 ; k < n ; k++) {
-    mulhigh_ktab[n] = k;
-    t =  speed_measure (speed_mpfr_mulhigh, &s);
-    if (t * TOLERANCE < tbest)
-      kbest = k, tbest = t;
-  }
+  /* Check Mulders with cutoff point k */
+  step = 1 + n / (2 * MAX_STEPS);
+  for (k = n / 2 + 1 ; k < n ; k += step)
+    {
+      mulhigh_ktab[n] = k;
+      t =  speed_measure (speed_mpfr_mulhigh, &s);
+      if (t * TOLERANCE < tbest)
+	kbest = k, tbest = t;
+    }
 
   mulhigh_ktab[n] = kbest;
 
@@ -372,8 +383,53 @@ tune_mulder_upto (mp_size_t n)
   return kbest;
 }
 
+/* Tune size N */
+static mp_size_t
+tune_sqr_mulders_upto (mp_size_t n)
+{
+  struct speed_params s;
+  mp_size_t k, kbest, step;
+  double t, tbest;
+  MPFR_TMP_DECL (marker);
+
+  if (n == 0)
+    return -1;
+
+  MPFR_TMP_MARK (marker);
+  s.align_xp = s.align_wp = 64;
+  s.size = n;
+  s.xp   = MPFR_TMP_ALLOC (n*sizeof (mp_limb_t));
+  mpn_random (s.xp, n);
+
+  /* Check k == -1, mpn_sqr_basecase */
+  sqrhigh_ktab[n] = -1;
+  kbest = -1;
+  tbest =  speed_measure (speed_mpfr_sqrhigh, &s);
+
+  /* Check k == 0, mpfr_mulhigh_n_basecase */
+  sqrhigh_ktab[n] = 0;
+  t = speed_measure (speed_mpfr_sqrhigh, &s);
+  if (t * TOLERANCE < tbest)
+    kbest = 0, tbest = t;
+
+  /* Check Mulders */
+  step = 1 + n / (2 * MAX_STEPS);
+  for (k = n / 2 + 1 ; k < n ; k += step)
+    {
+      sqrhigh_ktab[n] = k;
+      t =  speed_measure (speed_mpfr_sqrhigh, &s);
+      if (t * TOLERANCE < tbest)
+	kbest = k, tbest = t;
+    }
+
+  sqrhigh_ktab[n] = kbest;
+
+  MPFR_TMP_FREE (marker);
+  return kbest;
+}
+
 static void
-tune_mulder (FILE *f)
+tune_mulders (FILE *f)
 {
   mp_size_t k;
 
@@ -382,7 +438,7 @@ tune_mulder (FILE *f)
   fprintf (f, "#define MPFR_MULHIGH_TAB  \\\n ");
   for (k = 0 ; k < MPFR_MULHIGH_TAB_SIZE ; k++)
     {
-      fprintf (f, "%d", (int) tune_mulder_upto (k));
+      fprintf (f, "%d", (int) tune_mulders_upto (k));
       if (k != MPFR_MULHIGH_TAB_SIZE-1)
         fputc (',', f);
       if ((k+1) % 16 == 0)
@@ -395,7 +451,28 @@ tune_mulder (FILE *f)
     putchar ('\n');
 }
 
+static void
+tune_sqr_mulders (FILE *f)
+{
+  mp_size_t k;
 
+  if (verbose)
+    printf ("Tuning mpfr_sqrhigh_n[%d]", (int) MPFR_SQRHIGH_TAB_SIZE);
+  fprintf (f, "#define MPFR_SQRHIGH_TAB  \\\n ");
+  for (k = 0 ; k < MPFR_SQRHIGH_TAB_SIZE ; k++)
+    {
+      fprintf (f, "%d", (int) tune_sqr_mulders_upto (k));
+      if (k != MPFR_SQRHIGH_TAB_SIZE-1)
+        fputc (',', f);
+      if ((k+1) % 16 == 0)
+        fprintf (f, " \\\n ");
+      if (verbose)
+        putchar ('.');
+    }
+  fprintf (f, " \n");
+  if (verbose)
+    putchar ('\n');
+}
 
 /*******************************************************
  *            Tune all the threshold of MPFR           *
@@ -452,15 +529,18 @@ all (const char *filename)
   fprintf (f, "\n");
 
   /* Tune mulhigh */
-  tune_mulder (f);
+  tune_mulders (f);
 
-  /* Tune mpfr_mul (Threshold is limb size, but it doesn't matter too much */
+  /* Tune sqrhigh */
+  tune_sqr_mulders (f);
+
+  /* Tune mpfr_mul (threshold is in limbs, but it doesn't matter too much) */
   if (verbose)
     printf ("Tuning mpfr_mul...\n");
   tune_simple_func (&mpfr_mul_threshold, speed_mpfr_mul,
                     2*BITS_PER_MP_LIMB+1);
-  fprintf (f, "#define MPFR_MUL_THRESHOLD %lu\n",
-           (unsigned long) (mpfr_mul_threshold-1)/BITS_PER_MP_LIMB+1);
+  fprintf (f, "#define MPFR_MUL_THRESHOLD %lu /* limbs */\n",
+           (unsigned long) (mpfr_mul_threshold - 1) / BITS_PER_MP_LIMB + 1);
 
   /* Tune mpfr_exp_2 */
   if (verbose)
@@ -468,7 +548,7 @@ all (const char *filename)
   tune_simple_func (&mpfr_exp_2_threshold, speed_mpfr_exp_2,
                     MPFR_PREC_MIN);
   mpfr_exp_2_threshold = MAX (BITS_PER_MP_LIMB, mpfr_exp_2_threshold);
-  fprintf (f, "#define MPFR_EXP_2_THRESHOLD %lu\n",
+  fprintf (f, "#define MPFR_EXP_2_THRESHOLD %lu /* bits */\n",
            (unsigned long) mpfr_exp_2_threshold);
 
   /* Tune mpfr_exp */
@@ -476,7 +556,7 @@ all (const char *filename)
     printf ("Tuning mpfr_exp...\n");
   tune_simple_func (&mpfr_exp_threshold, speed_mpfr_exp,
                     MPFR_PREC_MIN+3*BITS_PER_MP_LIMB);
-  fprintf (f, "#define MPFR_EXP_THRESHOLD %lu\n",
+  fprintf (f, "#define MPFR_EXP_THRESHOLD %lu /* bits */\n",
            (unsigned long) mpfr_exp_threshold);
 
   /* End of tuning */
