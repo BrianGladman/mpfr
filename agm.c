@@ -84,7 +84,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
 
   /* Precision of the following calculus */
   q = MPFR_PREC(r);
-  p = q + 15;
+  p = q + MPFR_INT_CEIL_LOG2(q) + 15;
   MPFR_ASSERTD (p >= 7); /* see algorithms.tex */
   s = (p - 1) / BITS_PER_MP_LIMB + 1;
 

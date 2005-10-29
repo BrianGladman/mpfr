@@ -24,6 +24,7 @@ MA 02110-1301, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+/* y <- exp(p/2^r), using 2^m terms from the series */
 static void
 mpfr_exp_rational (mpfr_ptr y, mpz_ptr p, long r, int m,
                    mpz_t *P, mp_prec_t *mult)
@@ -34,7 +35,7 @@ mpfr_exp_rational (mpfr_ptr y, mpz_ptr p, long r, int m,
   mp_exp_t diff, expo;
   mp_prec_t precy = MPFR_PREC(y), prec_i_have, accu;
   int k, l;
-
+  
   MPFR_ASSERTN ((size_t) m < sizeof (long) * CHAR_BIT - 1);
 
   S    = P + (m+1);
@@ -82,12 +83,12 @@ mpfr_exp_rational (mpfr_ptr y, mpz_ptr p, long r, int m,
         {
           mpz_mul (S[k], S[k], ptoj[l]);
           mpz_mul (S[k-1], S[k-1], P[k]);
-          mpz_mul_2exp (S[k-1], S[k-1], r <<l);
+          mpz_mul_2exp (S[k-1], S[k-1], r << l);
           mpz_add (S[k-1], S[k-1], S[k]);
           mpz_mul (P[k-1], P[k-1], P[k]);
           nb_terms[k-1] += nb_terms[k];
           MPFR_MPZ_SIZEINBASE2 (prec_i_have, P[k]);
-          mult[k] = mult[k-1] + ((r >> 2) << l )+ prec_i_have - 1;
+          mult[k] = mult[k-1] + ((r >> 2) << l ) + prec_i_have - 1;
           prec_i_have = mult[k];
           /* since mult[k] >= mult[k-1] + nbits(P[k]),
              we have P[0]*...*P[k] <= 2^mult[k] = 2^prec_i_have */
@@ -151,7 +152,7 @@ mpfr_exp_3 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   int iter;
   int inexact = 0;
   MPFR_ZIV_DECL (ziv_loop);
-
+  
   /* decompose x */
   /* we first write x = 1.xxxxxxxxxxxxx
      ----- k bits -- */
@@ -201,8 +202,8 @@ mpfr_exp_3 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       MPFR_ASSERTD (mpz_cmp_ui (uk, 0) != 0);
       mpfr_exp_rational (tmp, uk, shift + twopoweri - ttt, k + 1, P, mult);
       for (loop = 0; loop < shift; loop++)
-        mpfr_mul (tmp, tmp, tmp, GMP_RNDD);
-      twopoweri *=2;
+        mpfr_sqr (tmp, tmp, GMP_RNDD);
+      twopoweri *= 2;
 
       /* General case */
       iter = (k <= prec_x) ? k : prec_x;
