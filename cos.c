@@ -41,12 +41,13 @@ mpfr_cos2_aux (mpfr_ptr f, mpfr_srcptr r)
   /* compute minimal i such that i*(i+1) does not fit in an unsigned long,
      assuming that there are no padding bits. */
   maxi = 1UL << (CHAR_BIT * sizeof(unsigned long) / 2);
-  if (maxi * (maxi-1) == 0) /* test checked at compile time */
+  if (maxi * (maxi / 2) == 0) /* test checked at compile time */
     {
       /* can occur only when there are padding bits. */
+      /* maxi * (maxi-1) is representable iff maxi * (maxi / 2) != 0 */
       do
         maxi /= 2;
-      while (maxi * (maxi-1) == 0);
+      while (maxi * (maxi / 2) == 0);
     }
 
   mpz_init (x);
