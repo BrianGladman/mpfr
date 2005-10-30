@@ -935,11 +935,11 @@ The final error on $s$ is $\le \ulp(s) + (1+11 \cdot 2^e) \ulp(u)/2/\sqrt{u}
 The {\tt mpfr\_exp} function implements three different algorithms.
 For very large precision, it uses a $\O(M(n) \log^2 n)$ algorithm
 based on binary splitting, based on the generic implementation for
-hypergeometric functions in the file {\tt generic.c} (see \cite{Jeandel00}).
-Currently this third algorithm is used only for precision greater
-than $13000$ bits.
+hypergeometric functions in the file \texttt{generic.c} (see \cite{Jeandel00}).
+This algorithm is used only for precision greater
+than for example $10000$ bits on an Athlon.
 
-For smaller precisions, it uses Brent's method~;
+For smaller precisions, it uses Brent's method;
 if $r = (x - n \log 2)/2^k$ where $0 \le r < \log 2$, then 
 \[ \exp(x) = 2^n \cdot \exp(r)^{2^k} \]
 and $\exp(r)$ is computed using the Taylor expansion:

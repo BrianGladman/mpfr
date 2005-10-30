@@ -19,101 +19,116 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin Place, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
-#include <limits.h>
+#include <limits.h> /* for CHAR_BIT */
 
-#define MPFR_NEED_LONGLONG_H
+#define MPFR_NEED_LONGLONG_H /* for MPFR_MPZ_SIZEINBASE2 */
 #include "mpfr-impl.h"
 
-/* y <- exp(p/2^r), using 2^m terms from the series */
+/* y <- exp(p/2^r) within 1 ulp, using 2^m terms from the series
+   Assume |p/2^r| < 1.
+   We use the following binary splitting formula:
+   P(a,b) = p if a+1=b, P(a,c)*P(c,b) otherwise
+   Q(a,b) = a*2^r if a+1=b [except Q(0,1)=1], Q(a,c)*Q(c,b) otherwise
+   T(a,b) = P(a,b) if a+1=b, Q(c,b)*T(a,c)+P(a,c)*T(c,b) otherwise
+   Then exp(p/2^r) ~ T(0,i)/Q(0,i) for i so that (p/2^r)^i/i! is small enough.
+
+   Since P(a,b) = p^(b-a), and we consider only values of b-a of the form 2^j,
+   we don't need to compute P(), we only precompute p^(2^j) in the ptoj[] array
+   below.
+
+   Since Q(a,b) is divisible by 2^(r*(b-a-1)), we don't compute the power of
+   two part.
+*/
 static void
 mpfr_exp_rational (mpfr_ptr y, mpz_ptr p, long r, int m,
-                   mpz_t *P, mp_prec_t *mult)
+                   mpz_t *Q, mp_prec_t *mult)
 {
   unsigned long n, i, j;
   mpz_t *S, *ptoj;
-  mp_prec_t *nb_terms;
+  mp_prec_t *log2_nb_terms;
   mp_exp_t diff, expo;
-  mp_prec_t precy = MPFR_PREC(y), prec_i_have, accu;
+  mp_prec_t precy = MPFR_PREC(y), prec_i_have, accu, prec_ptoj;
   int k, l;
-  
+
   MPFR_ASSERTN ((size_t) m < sizeof (long) * CHAR_BIT - 1);
 
-  S    = P + (m+1);
-  ptoj = P + 2*(m+1);                     /* ptoj[i] = mantissa^(2^i) */
-  nb_terms = mult + (m+1);
+  S    = Q + (m+1);
+  ptoj = Q + 2*(m+1);                     /* ptoj[i] = mantissa^(2^i) */
+  log2_nb_terms = mult + (m+1);
 
   /* Normalize p */
-  {
-    mp_limb_t *d = PTR (p);
-    MPFR_ASSERTD (mpz_cmp_ui (p, 0) != 0);
-    for (n = 0 ; MPFR_UNLIKELY (*d == 0) ; d++, n+= BITS_PER_MP_LIMB);
-    MPFR_ASSERTD (*d != 0);
-    count_trailing_zeros (k, *d);
-    /* Simplify p/2^r */
-    if (n+k > 0) {
-      mpz_tdiv_q_2exp (p, p, n+k);
-      MPFR_ASSERTD (r > n+k);
-      r -= n+k;
-    }
-  }
+  MPFR_ASSERTD (mpz_cmp_ui (p, 0) != 0);
+  n = mpz_scan1 (p, 0); /* number of trailing zeros in p */
+  mpz_tdiv_q_2exp (p, p, n);
+  r -= n; /* since |p/2^r| < 1 and p >= 1, r >= 1 */
 
   /* Set initial var */
   mpz_set (ptoj[0], p);
   for (k = 1; k < m; k++)
-    mpz_mul (ptoj[k], ptoj[k-1], ptoj[k-1]);
-  mpz_set_ui (P[0], 1);
+    mpz_mul (ptoj[k], ptoj[k-1], ptoj[k-1]); /* ptoj[k] = p^(2^k) */
+  mpz_set_ui (Q[0], 1);
   mpz_set_ui (S[0], 1);
   k = 0;
-  mult[0] = 0;
-  nb_terms[0] = 1;
+  mult[0] = 0; /* the multiplier P[k]/Q[k] for the remaining terms
+		  satisfies P[k]/Q[k] <= 2^(-mult[k]) */
+  log2_nb_terms[0] = 0; /* log2(#terms) [exact in 1st loop where 2^k] */
   prec_i_have = 0;
 
   /* Main Loop */
   n = 1UL << m;
   for (i = 1; (prec_i_have < precy) && (i < n); i++)
     {
-      /* invariant: P[0]*P[1]*...*P[k] equals i! */
+      /* invariant: Q[0]*Q[1]*...*Q[k] equals i! */
       k++;
-      nb_terms[k] = 1;
-      mpz_set_ui (P[k], i + 1);
+      log2_nb_terms[k] = 0; /* 1 term */
+      mpz_set_ui (Q[k], i + 1);
       mpz_set_ui (S[k], i + 1);
-      j = i + 1;
+      j = i + 1; /* we have computed j = i+1 terms so far */
       l = 0;
-      while ((j & 1) == 0)
+      while ((j & 1) == 0) /* combine and reduce */
         {
+	  /* invariant: S[k] corresponds to 2^l consecutive terms */
           mpz_mul (S[k], S[k], ptoj[l]);
-          mpz_mul (S[k-1], S[k-1], P[k]);
+          mpz_mul (S[k-1], S[k-1], Q[k]);
+	  /* Q[k] corresponds to 2^l consecutive terms too.
+	     Since it does not contains the factor 2^(r*2^l),
+	     when going from l to l+1 we need to multiply
+	     by 2^(r*2^(l+1))/2^(r*2^l) = 2^(r*2^l) */
           mpz_mul_2exp (S[k-1], S[k-1], r << l);
           mpz_add (S[k-1], S[k-1], S[k]);
-          mpz_mul (P[k-1], P[k-1], P[k]);
-          nb_terms[k-1] += nb_terms[k];
-          MPFR_MPZ_SIZEINBASE2 (prec_i_have, P[k]);
-          mult[k] = mult[k-1] + ((r >> 2) << l ) + prec_i_have - 1;
-          prec_i_have = mult[k];
-          /* since mult[k] >= mult[k-1] + nbits(P[k]),
-             we have P[0]*...*P[k] <= 2^mult[k] = 2^prec_i_have */
-          l++;
+          mpz_mul (Q[k-1], Q[k-1], Q[k]);
+          log2_nb_terms[k-1] ++; /* number of terms in S[k-1]
+				    is a power of 2 by construction */
+          MPFR_MPZ_SIZEINBASE2 (prec_i_have, Q[k]);
+	  MPFR_MPZ_SIZEINBASE2 (prec_ptoj, ptoj[l]);
+	  mult[k-1] += prec_i_have + (r << l) - prec_ptoj - 1;
+	  prec_i_have = mult[k] = mult[k-1];
+          /* since mult[k] >= mult[k-1] + nbits(Q[k]),
+             we have Q[0]*...*Q[k] <= 2^mult[k] = 2^prec_i_have */
+          l ++;
           j >>= 1;
-          k--;
+          k --;
         }
     }
 
-  /* accumulate all products in P[0] */
+  /* accumulate all products in S[0] and Q[0]. Warning: contrary to above,
+     here we do not have log2_nb_terms[k-1] = log2_nb_terms[k]+1. */
   l = 0;
   accu = 0;
   while (k > 0)
     {
-      mpz_mul (S[k], S[k], ptoj[MPFR_INT_CEIL_LOG2 (nb_terms[k])]);
-      mpz_mul (S[k-1], S[k-1], P[k]);
-      accu += nb_terms[k];
+      j = log2_nb_terms[k-1];
+      mpz_mul (S[k], S[k], ptoj[j]);
+      mpz_mul (S[k-1], S[k-1], Q[k]);
+      accu += 1 << log2_nb_terms[k];
       mpz_mul_2exp (S[k-1], S[k-1], r * accu);
       mpz_add (S[k-1], S[k-1], S[k]);
-      mpz_mul (P[k-1], P[k-1], P[k]);
+      mpz_mul (Q[k-1], Q[k-1], Q[k]);
       l++;
       k--;
     }
 
-  /* P[0] now equals i! */
+  /* Q[0] now equals i! */
   MPFR_MPZ_SIZEINBASE2 (prec_i_have, S[0]);
   diff = (mp_exp_t) prec_i_have - 2 * (mp_exp_t) precy;
   expo = diff;
@@ -122,15 +137,15 @@ mpfr_exp_rational (mpfr_ptr y, mpz_ptr p, long r, int m,
   else
     mpz_mul_2exp (S[0], S[0], -diff);
 
-  MPFR_MPZ_SIZEINBASE2 (prec_i_have, P[0]);
+  MPFR_MPZ_SIZEINBASE2 (prec_i_have, Q[0]);
   diff = (mp_exp_t) prec_i_have - (mp_prec_t) precy;
   expo -= diff;
   if (diff > 0)
-    mpz_div_2exp (P[0], P[0], diff);
+    mpz_div_2exp (Q[0], Q[0], diff);
   else
-    mpz_mul_2exp (P[0], P[0], -diff);
+    mpz_mul_2exp (Q[0], Q[0], -diff);
 
-  mpz_tdiv_q (S[0], S[0], P[0]);
+  mpz_tdiv_q (S[0], S[0], Q[0]);
   mpfr_set_z (y, S[0], GMP_RNDD);
   MPFR_SET_EXP (y, MPFR_GET_EXP (y) + expo - r * (i - 1) );
 }
@@ -152,7 +167,7 @@ mpfr_exp_3 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   int iter;
   int inexact = 0;
   MPFR_ZIV_DECL (ziv_loop);
-  
+
   /* decompose x */
   /* we first write x = 1.xxxxxxxxxxxxx
      ----- k bits -- */
