@@ -19,6 +19,8 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin Place, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
+#include <limits.h>
+
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
@@ -36,8 +38,16 @@ mpfr_cos2_aux (mpfr_ptr f, mpfr_srcptr r)
   mp_prec_t p, q;
   unsigned long i, maxi, imax;
 
-  /* compute maximal i such that i*(i+1) fits in an unsigned long */
-  maxi = 1 << (4 * sizeof(unsigned long));
+  /* compute minimal i such that i*(i+1) does not fit in an unsigned long,
+     assuming that there are no padding bits. */
+  maxi = 1UL << (CHAR_BIT * sizeof(unsigned long) / 2);
+  if (maxi * (maxi-1) == 0) /* test checked at compile time */
+    {
+      /* can occur only when there are padding bits. */
+      do
+        maxi /= 2;
+      while (maxi * (maxi-1) == 0);
+    }
 
   mpz_init (x);
   mpz_init (s);
