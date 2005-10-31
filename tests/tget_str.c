@@ -1071,6 +1071,7 @@ main (int argc, char *argv[])
 
   check_small ();
 
+  check_special (2, 2);
   for (i = 0; i < ITER; i++)
     {
       p = 2 + (randlimb () % (MAX_DIGITS - 1));
