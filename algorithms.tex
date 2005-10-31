@@ -1544,170 +1544,56 @@ precision.
  
 \subsection{The hyperbolic tangent function}
 
-The {\tt mpfr\_tanh} ($\tanh{x}$) function implements the hyperbolic
-tangent as :
+The hyperbolic tangent (\texttt{mpfr\_tanh}) is computed from the exponential:
+\[ \tanh x = \frac{ e^{2 x} -1 }{ e^{2 x} +1}. \]
 
-$$
-\tanh x = \frac{ e^{2 \cdot x} -1 }{ e^{2 \cdot x} +1} 
-$$
-
-The algorithm used for the calculation of the hyperbolic tangent is as follows\footnote{$o()$ represent the arrondi error and $error(u)$ the
-  error associate with the calcualtion of $u$}:
-
-\begin{eqnarray}\nonumber
-u&\leftarrow&o(2 \cdot x)\\\nonumber
-v&\leftarrow&o(e^u)\\\nonumber
-w&\leftarrow&o(v+1)\\\nonumber
-r&\leftarrow&o(v-1)\\\nonumber
-s&\leftarrow&o(\frac{r}{w})
-\end{eqnarray}
-
+The algorithm used is as follows, with working
+precision $p$ and rounding to nearest:
+\begin{quote}
+$u \leftarrow \circ(2 x)$ \\
+$v \leftarrow \circ(e^u)$ \\
+$w \leftarrow \circ(v+1)$ \\
+$r \leftarrow \circ(v-1)$ \\
+$s \leftarrow \circ(r/w)$
+\end{quote}
 Now, we have to bound the rounding error for each step of this
-algorithm.  First, let consider the parity of hyperbolic tangent
-($\tanh(-x)=-\tanh(x)$) : the problem is reduced to calculate $\tanh x$ with $x \geq 0$. We can deduce $e^x \geq 1$.
+algorithm.  First, thanks to the parity of hyperbolic tangent
+--- $\tanh(-x)=-\tanh(x)$ --- we can consider without loss of generality
+that $x \geq 0$.
 
+We use Higham's notation, with $\theta_i$ denoting variables such that
+$|\theta_i| \leq 2^{-p}$.
+Firstly, $u$ is exact. Then $v = e^{2x} (1+\theta_1)$ and
+$w = (e^{2x}+1) (1+\theta_2)^2$.
+The error on $r$ is bounded by $\frac{1}{2} \ulp(v) + \frac{1}{2} \ulp(r)$.
+Assume $\ulp(v) = 2^e \ulp(r)$, with $e \geq 0$;
+then the error on $r$ is bounded by $\frac{1}{2} (2^e+1) \ulp(r)$.
+We can thus write $r = (e^{2x}-1) (1+\theta_3)^{2^e+1}$,
+and then $s = \tanh(x) (1+\theta_4)^{2^e+4}$.
 
-\begin{center}
-\begin{tabular}{l l l}
+\begin{lemma}
+For $|x| \leq 1/2$, and $|y| \leq |x|^{-1/2}$, we have:
+\[ |(1+x)^y-1| \leq 2 |y| x. \]
+\end{lemma}
+\begin{proof}
+We have $(1+x)^y = e^{y \log (1+x)}$,
+with $|y \log (1+x)| \leq |x|^{-1/2} |\log (1+x)|$.
+The function $|x|^{-1/2} \log (1+x)$ is increasing on $[-1/2,1/2]$, and
+takes as values $\approx -0.490$ in $x=-1/2$ and $\approx 0.286$ in $x=1/2$,
+thus is bounded in absolute value by $1/2$.
+This yields $|y \log (1+x)| \leq 1/2$.
+Now it is easy to see that for $|t| \leq 1/2$, we have
+$|e^t-1| \leq 1.3 |t|$.
+Thus $|(1+x)^y-1| \leq 1.3 |y| |\log (1+x)|$.
+The result follows from $|\log (1+x)| \leq 1.4 |x|$ for $|x| \leq 1/2$,
+and $1.3 \times 1.4 \leq 2$.
+\end{proof}
 
-\begin{minipage}{2.5cm}
-
-
-${\textnormal{error}}(u)$
-
-
-$u \leftarrow o(2 \cdot x)$
-
-
-\end{minipage} &
-\begin{minipage}{7.5cm}
-
-
-exact
-
-\end{minipage} &
-\begin{minipage}{6cm}
-{\hspace{7cm}}
-\end{minipage}\\%\hline
-\begin{minipage}{2.5cm}
-${\textnormal{error}}(v)$
-
-
-$v \leftarrow o(e^{u}) $
-
-\end{minipage} &
-\begin{minipage}{7.5cm}
-
-
-
-\begin{eqnarray}\nonumber
-  &&|v-e^{2 \cdot x}| \\\nonumber
-  &       \leq&  |v - e^{u}| +  |e^{u}  - e^{2 \cdot x}|\\\nonumber
-  &       \leq& \ulp(v)
-\end{eqnarray}
-
-
-\end{minipage} &
-\begin{minipage}{6cm}
-
-
-\end{minipage}\\%\hline
-\begin{minipage}{2.5cm}
-${\textnormal{error}}(w)$
-
-
-$w \leftarrow \minf(v+1) $
-
-$(\bullet)$
-\end{minipage} &
-\begin{minipage}{7.5cm}
-
-
-
-\begin{eqnarray}\nonumber
-  &&|w-(e^{2 \cdot x}+1)| \\\nonumber
-  &\leq&  |w - (v+1)|+|(v+1) - (e^{2 \cdot x}+1)|\\\nonumber
-  &\leq&  \ulp(w) + \ulp(v)\\\nonumber
-  &\leq&  2 \cdot \ulp(w)\;(\star)\\\nonumber
-\end{eqnarray}
-
-\end{minipage} &
-\begin{minipage}{6cm}
-$(\star)$
-
-With $v \leq w$ then $\ulp(v) \leq \ulp(w)$ 
-
-\end{minipage}\\%\hline
-\begin{minipage}{2.5cm}
-${\textnormal{error}}(r)$
-
-
-$r \leftarrow \pinf(v-1) $
-
-$(\bullet\bullet)$
-\end{minipage} &
-\begin{minipage}{7.5cm}
-
-
-
-\begin{eqnarray}\nonumber
-  &&|r-(e^{2 \cdot x}-1)| \\\nonumber
-  &\leq&  |r - (v-1)|+|(v-1) - (e^{2 \cdot x}-1)|\\\nonumber
-  &\leq&  \ulp(r) + \ulp(v)\\\nonumber
-  &\leq&  (1+2^{\Exp(v)-\Exp(r)}) \ulp(r)\;(\star)\\\nonumber
-\end{eqnarray}
-
-\end{minipage} &
-\begin{minipage}{6cm}
-$(\star)$
-
-
-see subsection \ref{generic:sous}
-
-\end{minipage}\\%\hline
-\begin{minipage}{2.5cm}
-${\textnormal{error}}(s)$
-
-
-$s \leftarrow o(\frac{r}{w}) $
-\end{minipage} &
-\begin{minipage}{7.5cm}
-
-
-
-\begin{eqnarray}\nonumber
-  &&|s-\frac{e^{2x}-1}{e^{2x}+1}| \\\nonumber
-  &\leq& (1+2 \times 2+ \hdots\\\nonumber
-  &\hdots& 2(1+2^{\Exp(v)-\Exp(r)})) \ulp(s) \;\;(\star)\\\nonumber
-\end{eqnarray}
-
-\end{minipage} &
-\begin{minipage}{6cm}
-$(\star)$
-
-
-see subsection \ref{generic:div}
-
-
-with $(\bullet)$ and $(\bullet\bullet)$
-
-\end{minipage}
-\end{tabular}
-\end{center}
-
-
-That show the rounding error on the calculation of $\tanh x$ can be
-bound by $(1+2 \times 2+2(1+2^{\Exp(v)-\Exp(r)})) \ulp(s)$, then the
-number of bits need to add to the want accuracy to define intermediary
-variable is :
-
-\[
-N_t=\lceil \log_2(7+2^{\Exp(v)-\Exp(r)+1}) \rceil
-\]
-
-
-
-
+Applying the above lemma for $x=\theta_4$ and $y=2^e+4$,
+assuming $2^e+4 \leq 2^{p/2}$,
+we get $s = \tanh(x) [1 + 2(2^e+4)\theta_5]$.
+Since $2^e+4 \leq 2^{{\rm max}(3,e+1)}$,
+the relative error on $s$ is thus bounded by $2^{{\rm max}(4,e+2)-p}$.
 
 \subsection{The inverse hyperbolic tangent function}
 

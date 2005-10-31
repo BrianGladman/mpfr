@@ -90,7 +90,9 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
     /* Compute the precision of intermediary variable */
     /* The optimal number of bits: see algorithms.tex */
     Nt = Ny + MPFR_INT_CEIL_LOG2 (Ny) + 4;
-    Nt += ABS (MPFR_GET_EXP (x));
+    /* if x is small, there will be a cancellation in exp(2x)-1 */
+    if (MPFR_GET_EXP (x) < 0)
+      Nt += -MPFR_GET_EXP (x);
 
     /* initialise of intermediary variable */
     MPFR_GROUP_INIT_2 (group, Nt, t, te);
@@ -115,13 +117,14 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
       d = MPFR_GET_EXP (te);              /* For Error calculation */
       mpfr_add_ui (t, te, 1, GMP_RNDD);   /* exp(2x) + 1*/
       mpfr_sub_ui (te, te, 1, GMP_RNDU);  /* exp(2x) - 1*/
+      d = d - MPFR_GET_EXP (te);
       mpfr_div (t, te, t, GMP_RNDN);      /* (exp(2x)-1)/(exp(2x)+1)*/
 
-      /* Calculation of the error*/
-      d = d - MPFR_GET_EXP (t);
-      err = Nt - (MAX(d + 1, 3) + 1);
+      /* Calculation of the error */
+      d = MAX(3, d + 1);
+      err = Nt - (d + 1);
 
-      if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
+      if (MPFR_LIKELY ((d <= Nt / 2) && MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
         {
           inexact = mpfr_set4 (y, t, rnd_mode, sign);
           break;
