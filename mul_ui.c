@@ -73,7 +73,7 @@ mpfr_mul_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
         return mpfr_set (y, x, rnd_mode);
     }
   else if (MPFR_UNLIKELY (IS_POW2 (u)))
-    return mpfr_mul_2si (y, x, MPFR_INT_CEIL_LOG2 (u)-1, rnd_mode);
+    return mpfr_mul_2si (y, x, MPFR_INT_CEIL_LOG2 (u), rnd_mode);
 
   yp = MPFR_MANT (y);
   yn = MPFR_LIMB_SIZE (y);

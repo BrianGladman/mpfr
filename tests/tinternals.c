@@ -1,6 +1,7 @@
-/* __gmpfr_int_ceil_log2 -- Integer ceil of log2(x)
+/* tinternals -- Test for internals.
 
-Copyright 2004, 2005 Free Software Foundation, Inc.
+Copyright 2005 Free Software Foundation.
+Contributed by the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.
 
@@ -19,21 +20,25 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin Place, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
-#define MPFR_NEED_LONGLONG_H /* for count_leading_zeros */
-#include "mpfr-impl.h"
+#include <stdio.h>
+
+#define MPFR_NEED_LONGLONG_H
+#include "mpfr-test.h"
 
 int
-__gmpfr_int_ceil_log2 (unsigned long n)
+main (void)
 {
-  if (n == 1)
-    return 0;
-  else
-    {
-      int b;
-      mp_limb_t limb = n - 1;
+  int i;
+  int val[16] = { 0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4 };
 
-      MPFR_ASSERTN (limb == n - 1);
-      count_leading_zeros (b, limb);
-      return BITS_PER_MP_LIMB - b;
+  tests_start_mpfr ();
+
+  for (i = 1; i < 17; i++)
+    {
+      MPFR_ASSERTN (MPFR_INT_CEIL_LOG2 (i) == val[i-1]);
+      MPFR_ASSERTN (MPFR_INT_CEIL_LOG2 (i) == __gmpfr_int_ceil_log2 (i));
     }
+
+  tests_end_mpfr ();
+  return 0;
 }
