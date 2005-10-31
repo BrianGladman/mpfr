@@ -80,6 +80,7 @@ mpfr_log10 (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
       MPFR_SET_POS (r);
       MPFR_RET (0); /* result is exact */
     }
+
   MPFR_SAVE_EXPO_MARK (expo);
 
   /* General case */
@@ -94,7 +95,7 @@ mpfr_log10 (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
 
     /* compute the precision of intermediary variable */
     /* the optimal number of bits : see algorithms.tex */
-    Nt = Ny + 4+ MPFR_INT_CEIL_LOG2 (Ny);
+    Nt = Ny + 4 + MPFR_INT_CEIL_LOG2 (Ny);
 
     /* initialise of intermediary variables */
     mpfr_init2 (t, Nt);
@@ -102,32 +103,33 @@ mpfr_log10 (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
 
     /* First computation of log10 */
     MPFR_ZIV_INIT (loop, Nt);
-    for(;;) {
-      /* compute log10 */
-      mpfr_set_ui (t, 10, GMP_RNDN);   /* 10 */
-      mpfr_log (t, t, GMP_RNDD);       /* log(10) */
-      mpfr_log (tt, a, GMP_RNDN);      /* log(a) */
-      mpfr_div (t, tt, t, GMP_RNDN);   /* log(a)/log(10) */
+    for (;;)
+      {
+        /* compute log10 */
+        mpfr_set_ui (t, 10, GMP_RNDN);   /* 10 */
+        mpfr_log (t, t, GMP_RNDD);       /* log(10) */
+        mpfr_log (tt, a, GMP_RNDN);      /* log(a) */
+        mpfr_div (t, tt, t, GMP_RNDN);   /* log(a)/log(10) */
 
-      /* estimation of the error */
-      err = Nt - 4;
-      if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
-        break;
+        /* estimation of the error */
+        err = Nt - 4;
+        if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
+          break;
 
-      /* log10(10^n) is exact:
-         FIXME: Can we have 10^n exactly representable as a mpfr_t
-         but n can't fit an unsigned long? */
-      if (MPFR_IS_POS (t)
-          && mpfr_integer_p (t) && mpfr_fits_ulong_p (t, GMP_RNDN)
-          && !mpfr_ui_pow_ui (tt, 10, mpfr_get_ui (t, GMP_RNDN), GMP_RNDN)
-          && mpfr_cmp (a, tt) == 0)
-        break;
+        /* log10(10^n) is exact:
+           FIXME: Can we have 10^n exactly representable as a mpfr_t
+           but n can't fit an unsigned long? */
+        if (MPFR_IS_POS (t)
+            && mpfr_integer_p (t) && mpfr_fits_ulong_p (t, GMP_RNDN)
+            && !mpfr_ui_pow_ui (tt, 10, mpfr_get_ui (t, GMP_RNDN), GMP_RNDN)
+            && mpfr_cmp (a, tt) == 0)
+          break;
 
-      /* actualisation of the precision */
-      MPFR_ZIV_NEXT (loop, Nt);
-      mpfr_set_prec (t, Nt);
-      mpfr_set_prec (tt, Nt);
-    }
+        /* actualisation of the precision */
+        MPFR_ZIV_NEXT (loop, Nt);
+        mpfr_set_prec (t, Nt);
+        mpfr_set_prec (tt, Nt);
+      }
     MPFR_ZIV_FREE (loop);
 
     inexact = mpfr_set (r, t, rnd_mode);
