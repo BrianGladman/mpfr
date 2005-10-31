@@ -25,13 +25,15 @@ MA 02110-1301, USA. */
 int
 __gmpfr_int_ceil_log2 (unsigned long n)
 {
-  if (n == 1)
+  if (MPFR_UNLIKELY (n == 1))
     return 0;
   else
     {
       int b;
-      mp_limb_t limb = n - 1;
+      mp_limb_t limb;
 
+      MPFR_ASSERTN (n > 1);
+      limb = n - 1;
       MPFR_ASSERTN (limb == n - 1);
       count_leading_zeros (b, limb);
       return BITS_PER_MP_LIMB - b;
