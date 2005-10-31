@@ -47,7 +47,7 @@ mpfr_exp_rational (mpfr_ptr y, mpz_ptr p, long r, int m,
   mpz_t *S, *ptoj;
   mp_prec_t *log2_nb_terms;
   mp_exp_t diff, expo;
-  mp_prec_t precy = MPFR_PREC(y), prec_i_have, accu, prec_ptoj;
+  mp_prec_t precy = MPFR_PREC(y), prec_i_have, prec_ptoj;
   int k, l;
 
   MPFR_ASSERTN ((size_t) m < sizeof (long) * CHAR_BIT - 1);
@@ -113,18 +113,16 @@ mpfr_exp_rational (mpfr_ptr y, mpz_ptr p, long r, int m,
 
   /* accumulate all products in S[0] and Q[0]. Warning: contrary to above,
      here we do not have log2_nb_terms[k-1] = log2_nb_terms[k]+1. */
-  l = 0;
-  accu = 0;
+  l = 0; /* number of accumulated terms in the right part S[k]/Q[k] */
   while (k > 0)
     {
       j = log2_nb_terms[k-1];
       mpz_mul (S[k], S[k], ptoj[j]);
       mpz_mul (S[k-1], S[k-1], Q[k]);
-      accu += 1 << log2_nb_terms[k];
-      mpz_mul_2exp (S[k-1], S[k-1], r * accu);
+      l += 1 << log2_nb_terms[k];
+      mpz_mul_2exp (S[k-1], S[k-1], r * l);
       mpz_add (S[k-1], S[k-1], S[k]);
       mpz_mul (Q[k-1], Q[k-1], Q[k]);
-      l++;
       k--;
     }
 

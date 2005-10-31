@@ -49,9 +49,9 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
   int im, *mult, *log2_nb_terms, *accu, done;
   mp_prec_t precy = MPFR_PREC(y);
 
-  mult = (int*) (*__gmp_allocate_func) ((m + 1) * sizeof (int));
-  accu = (int*) (*__gmp_allocate_func) ((m + 1) * sizeof (int));
-  log2_nb_terms = (int*) (*__gmp_allocate_func) ((m + 1) * sizeof (int));
+  mult = (int*) (*__gmp_allocate_func) ((3 * m + 3) * sizeof (int));
+  accu = mult + m + 1;
+  log2_nb_terms = accu + m + 1;
 
   /* Set Tables */
   S    = tab;           /* S */
@@ -165,9 +165,7 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
       mpz_add (S[k-1], S[k-1], S[k]);
       mpz_mul (Q[k-1], Q[k-1], Q[k]);
     }
-  (*__gmp_free_func) (mult, (m + 1) * sizeof (int));
-  (*__gmp_free_func) (accu, (m + 1) * sizeof (int));
-  (*__gmp_free_func) (log2_nb_terms, (m + 1) * sizeof (int));
+  (*__gmp_free_func) (mult, (3 * m + 3) * sizeof (int));
 
   MPFR_MPZ_SIZEINBASE2 (diff, S[0]);
   diff -= 2 * precy;
