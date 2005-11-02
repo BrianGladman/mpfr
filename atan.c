@@ -46,11 +46,11 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
   mpz_t *S, *Q, *ptoj;
   unsigned long n, i, k, j, l;
   mp_exp_t diff, expo;
-  int im, *mult, *log2_nb_terms, *accu, done;
+  int im, done;
+  mp_prec_t mult, *accu, *log2_nb_terms;
   mp_prec_t precy = MPFR_PREC(y);
 
-  mult = (int*) (*__gmp_allocate_func) ((3 * m + 3) * sizeof (int));
-  accu = mult + m + 1;
+  accu = (mp_prec_t*) (*__gmp_allocate_func) ((2 * m + 2) * sizeof (mp_prec_t));
   log2_nb_terms = accu + m + 1;
 
   /* Set Tables */
@@ -84,8 +84,8 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
     The factor 2^(r*(b-a)) in Q(a,b) is implicit, thus we have to take it
     into account when we compute with Q.
   */
-  mult[0] = 0; /* number of bits of X^(-i) */
-  accu[0] = 0; /* accu[k] = mult[0] + ... + mult[k] */
+  accu[0] = 0; /* accu[k] = mult[0] + ... + mult[k], where mult[j] is the
+                  number of bits of the corresponding term S[j]/Q[j] */
   if (mpz_cmp_ui (p, 1) != 0)
     {
       /* p <> 1: precompute ptoj table */
@@ -118,8 +118,10 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
 	      mpz_mul (Q[k-1], Q[k-1], Q[k]);
               log2_nb_terms[k-1] = l + 1;
               /* now S[k-1]/Q[k-1] corresponds to 2^(l+1) terms */
-              mult[k-1] = (r << (l + 1)) - mpz_sizeinbase (ptoj[l+1], 2) - 1;
-              accu[k-1] = (k == 1) ? mult[k-1] : accu[k-2] + mult[k-1];
+              MPFR_MPZ_SIZEINBASE2(mult, ptoj[l+1]);
+              /* FIXME: precompute bits(ptoj[l+1]) outside the loop? */
+              mult = (r << (l + 1)) - mult - 1;
+              accu[k-1] = (k == 1) ? mult : accu[k-2] + mult;
               if (accu[k-1] > precy)
                 done = 1;
 	    }
@@ -165,7 +167,7 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
       mpz_add (S[k-1], S[k-1], S[k]);
       mpz_mul (Q[k-1], Q[k-1], Q[k]);
     }
-  (*__gmp_free_func) (mult, (3 * m + 3) * sizeof (int));
+  (*__gmp_free_func) (accu, (2 * m + 2) * sizeof (mp_prec_t));
 
   MPFR_MPZ_SIZEINBASE2 (diff, S[0]);
   diff -= 2 * precy;
