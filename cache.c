@@ -32,9 +32,9 @@ mpfr_init_cache (mpfr_cache_t cache, int (*func)(mpfr_ptr, mp_rnd_t))
 void
 mpfr_clear_cache (mpfr_cache_t cache)
 {
-  if (MPFR_PREC(cache->x) != 0)
+  if (MPFR_PREC (cache->x) != 0)
     mpfr_clear (cache->x);
-  MPFR_PREC(cache->x) = 0;
+  MPFR_PREC (cache->x) = 0;
 }
 
 int
@@ -47,45 +47,58 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mp_rnd_t rnd)
 
   MPFR_SAVE_EXPO_MARK (expo);
 
-  /* Check if the cache has been already filled */
-  if (MPFR_UNLIKELY(pold == 0))
-    mpfr_init2 (cache->x, prec);
+  if (prec > pold)
+    {
+      /* No previous result in the cache or the precision of the
+         previous result is not sufficient. */
 
-  /* Check if we can round with the previous result */
-  else if (MPFR_LIKELY(prec <= pold))
-    goto round;
+      if (MPFR_UNLIKELY (pold == 0))  /* No previous result. */
+        mpfr_init2 (cache->x, prec);
 
-  /* Update the cache */
-  pold = prec /*MPFR_PREC_MIN + prec + __gmpfr_ceil_exp2 (prec)*/;
-  MPFR_ASSERTD (pold >= prec);
-  mpfr_prec_round (cache->x, pold, GMP_RNDN);
-  cache->inexact = (*cache->func) (cache->x, GMP_RNDN);
+      /* Update the cache. */
+      pold = prec;
+      mpfr_prec_round (cache->x, pold, GMP_RNDN);
+      cache->inexact = (*cache->func) (cache->x, GMP_RNDN);
+    }
 
- round:
-  /* First check if the cache has the exact value (Unlikely)
-     Else the exact value is between (assuming x=cache->x > 0)
-     x and x+ulp(x) if cache->inexact < 0
-     x-ulp(x) and x if cache->inexact > 0
-     and abs(x-exact) <= ulp(x)/2 */
-  MPFR_ASSERTD (MPFR_IS_POS(cache->x)); /* TODO...*/
-  /* We must use nextbelow instead of sub_one_ulp, since we know
-     that the exact value is < 1/2ulp(x) (We want sub_demi_ulp(x)).
-     Can't use mpfr_set since we need the even flag. */
+  /* First, check if the cache has the exact value (unlikely).
+     Else the exact value is between (assuming x=cache->x > 0):
+       x and x+ulp(x) if cache->inexact < 0,
+       x-ulp(x) and x if cache->inexact > 0,
+     and abs(x-exact) <= ulp(x)/2. */
+  MPFR_ASSERTN (MPFR_IS_POS (cache->x)); /* TODO... */
   sign = MPFR_SIGN (cache->x);
   MPFR_SET_EXP (dest, MPFR_GET_EXP (cache->x));
   MPFR_SET_SIGN (dest, sign);
-  MPFR_RNDRAW_EVEN (inexact, dest,
-                    MPFR_MANT (cache->x), MPFR_PREC (cache->x), rnd, sign,
-                    if (MPFR_UNLIKELY ( ++MPFR_EXP (dest) > __gmpfr_emax))
-                       mpfr_overflow (dest, rnd, sign) );
-  /* inexact = mpfr_set (dest, cache->x, rnd); */
-  if (MPFR_LIKELY(cache->inexact != 0))
+  MPFR_RNDRAW_GEN (inexact, dest,
+                   MPFR_MANT (cache->x), MPFR_PREC (cache->x), rnd, sign,
+                   if (MPFR_UNLIKELY (cache->inexact == 0))
+                     {
+                       if ((sp[0] & ulp) == 0)
+                         {
+                           inexact = -sign;
+                           goto trunc_doit;
+                         }
+                       else
+                         goto addoneulp;
+                     }
+                   else if (cache->inexact < 0)
+                     goto addoneulp;
+                   else
+                     {
+                       inexact = -sign;
+                       goto trunc_doit;
+                     },
+                   if (MPFR_UNLIKELY (++MPFR_EXP (dest) > __gmpfr_emax))
+                     mpfr_overflow (dest, rnd, sign);
+                  );
+  if (MPFR_LIKELY (cache->inexact != 0))
     {
       switch (rnd)
         {
         case GMP_RNDZ:
         case GMP_RNDD:
-          if (MPFR_UNLIKELY(inexact == 0))
+          if (MPFR_UNLIKELY (inexact == 0))
             {
               inexact = cache->inexact;
               if (inexact > 0)
@@ -93,7 +106,7 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mp_rnd_t rnd)
             }
           break;
         case GMP_RNDU:
-          if (MPFR_UNLIKELY(inexact == 0))
+          if (MPFR_UNLIKELY (inexact == 0))
             {
               inexact = cache->inexact;
               if (inexact < 0)
@@ -101,16 +114,7 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mp_rnd_t rnd)
             }
           break;
         default: /* GMP_RNDN */
-          if (MPFR_UNLIKELY(inexact == MPFR_EVEN_INEX ||
-                            inexact == -MPFR_EVEN_INEX))
-            {
-              if (cache->inexact < 0)
-                mpfr_nextabove (dest);
-              else
-                mpfr_nextbelow (dest);
-              inexact = -inexact;
-            }
-          else if (MPFR_UNLIKELY(inexact == 0))
+          if (MPFR_UNLIKELY(inexact == 0))
             inexact = cache->inexact;
           break;
         }

@@ -73,6 +73,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
   Ey = MPFR_GET_EXP (y);
   diff_exp = (mp_exp_unsigned_t) Ex - Ey;
 
+  Nx = MPFR_PREC (x);   /* Precision of input variable */
   Nz = MPFR_PREC (z);   /* Precision of output variable */
 
   /* we have x < 2^Ex thus x^2 < 2^(2*Ex),
@@ -87,10 +88,10 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
      if 2*diff_exp > Nx (see above as if Nz = Nx), therefore on Nz bits.
      Hence the condition: 2*diff_exp > MAX(Nz,Nx).
   */
-  if (diff_exp > MAX (Nz, MPFR_PREC (x)) / 2)
+  if (diff_exp > MAX (Nz, Nx) / 2)
     /* result is |x| or |x|+ulp(|x|,Nz) */
     {
-      if (rnd_mode == GMP_RNDU)
+      if (MPFR_UNLIKELY (rnd_mode == GMP_RNDU))
         {
           /* If z > abs(x), then it was already rounded up; otherwise
              z = abs(x), and we need to add one ulp due to y. */
@@ -100,14 +101,27 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
         }
       else /* GMP_RNDZ, GMP_RNDD, GMP_RNDN */
         {
-          inexact = mpfr_abs (z, x, rnd_mode);
-          return (inexact) ? inexact : -1;
+          if (MPFR_LIKELY (Nz >= Nx))
+            {
+              mpfr_abs (z, x, rnd_mode);  /* exact */
+              return -1;
+            }
+          else
+            {
+              MPFR_SET_EXP (z, Ex);
+              MPFR_SET_SIGN (z, 1);
+              MPFR_RNDRAW_GEN (inexact, z, MPFR_MANT (x), Nx, rnd_mode, 1,
+                               goto addoneulp,
+                  if (MPFR_UNLIKELY (++MPFR_EXP (z) > __gmpfr_emax))
+                    return mpfr_overflow (z, rnd_mode, 1);
+                              );
+              return inexact ? inexact : -1;
+            }
         }
     }
 
   /* General case */
 
-  Nx = MPFR_PREC(x);   /* Precision of input variable */
   Ny = MPFR_PREC(y);   /* Precision of input variable */
 
   /* compute the working precision -- see algorithms.ps */

@@ -131,7 +131,26 @@ test_large_small (void)
   inexact = mpfr_hypot (z, x, y, GMP_RNDN);
   if (inexact >= 0 || mpfr_cmp (x, z))
     {
-      printf ("Error in test_large_small\n");
+      printf ("Error 1 in test_large_small\n");
+      exit (1);
+    }
+
+  mpfr_mul_ui (x, x, 5, GMP_RNDN);
+  inexact = mpfr_hypot (z, x, y, GMP_RNDN);
+  if (mpfr_cmp (x, z) >= 0)
+    {
+      printf ("Error 2 in test_large_small\n");
+      printf ("x = ");
+      mpfr_out_str (stdout, 2, 0, x, GMP_RNDN);
+      printf ("\n");
+      printf ("y = ");
+      mpfr_out_str (stdout, 2, 0, y, GMP_RNDN);
+      printf ("\n");
+      printf ("z = ");
+      mpfr_out_str (stdout, 2, 0, z, GMP_RNDN);
+      printf (" (in precision 2) instead of\n    ");
+      mpfr_out_str (stdout, 2, 2, x, GMP_RNDU);
+      printf ("\n");
       exit (1);
     }
 
