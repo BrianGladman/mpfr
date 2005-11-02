@@ -50,6 +50,12 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
   mp_prec_t mult, *accu, *log2_nb_terms;
   mp_prec_t precy = MPFR_PREC(y);
 
+  if (mpz_cmp_ui (p, 0) == 0)
+    {
+      mpfr_set_ui (y, 1, GMP_RNDN); /* limit(atan(x)/x, x=0) */
+      return;
+    }
+
   accu = (mp_prec_t*) (*__gmp_allocate_func) ((2 * m + 2) * sizeof (mp_prec_t));
   log2_nb_terms = accu + m + 1;
 
@@ -84,13 +90,13 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
     The factor 2^(r*(b-a)) in Q(a,b) is implicit, thus we have to take it
     into account when we compute with Q.
   */
-  accu[0] = 0; /* accu[k] = mult[0] + ... + mult[k], where mult[j] is the
+  accu[0] = 0; /* accu[k] = Mult[0] + ... + Mult[k], where Mult[j] is the
                   number of bits of the corresponding term S[j]/Q[j] */
   if (mpz_cmp_ui (p, 1) != 0)
     {
       /* p <> 1: precompute ptoj table */
       mpz_set (ptoj[0], p);
-      for (im = 1 ; im < m ; im ++)
+      for (im = 1 ; im <= m ; im ++)
 	mpz_mul (ptoj[im], ptoj[im - 1], ptoj[im - 1]);
       /* main loop */
       n = 1UL << m;
