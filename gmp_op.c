@@ -24,7 +24,7 @@ MA 02110-1301, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-/* Init and set a mpfr_t with enought precision to store a mpz */
+/* Init and set a mpfr_t with enough precision to store a mpz */
 static void
 init_set_z (mpfr_ptr t, mpz_srcptr z)
 {
@@ -40,7 +40,7 @@ init_set_z (mpfr_ptr t, mpz_srcptr z)
   MPFR_ASSERTD (i == 0);
 }
 
-/* Init, set a mpfr_t with enought precision to store a mpz_t without round,
+/* Init, set a mpfr_t with enough precision to store a mpz_t without round,
    call the function, and clear the allocated mpfr_t  */
 static int
 foo (mpfr_ptr x, mpfr_srcptr y, mpz_srcptr z, mp_rnd_t r,

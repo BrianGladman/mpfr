@@ -352,7 +352,7 @@ parse_string (mpfr_t x, struct parsed_string *pstr,
     {
       /* Check if there was a prefix (in such a case, we have to read
          again the mantissa without skipping the prefix)
-         The allocated mantissa is still enought big since we will
+         The allocated mantissa is still big enough since we will
          read only 0, and we alloc one more char than needed.
          FIXME: Not really friendly. Maybe cleaner code? */
       if (prefix_str != NULL)
