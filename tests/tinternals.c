@@ -62,8 +62,13 @@ test_round_near_x (void)
             for (r = 0; r < GMP_RND_MAX; r++)
               {
                 inex = mpfr_round_near_x (y, x, err, dir, r);
-                if (err == 2 && inex == 0)
-                  continue; /* err = 2 is always too large */
+
+                if (inex == 0 && err < 6)
+                  {
+                    /* The test is more restrictive than necessary.
+                       So, no failure in this case. */
+                    continue;
+                  }
 
                 /* TODO: add other tests here */
 
@@ -82,6 +87,8 @@ test_round_near_x (void)
                     mpfr_out_str (stdout, 2, 3, y, GMP_RNDZ);
                   }
                 printf ("\n");
+                if (inex == 0)
+                  printf ("Rounding was possible!\n");
                 /* exit (1); */
               }
     }
