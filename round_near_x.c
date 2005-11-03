@@ -21,13 +21,13 @@ MA 02110-1301, USA. */
 
 #include "mpfr-impl.h"
 
-/* Uses MPFR_FAST_COMPUTE_IF_SMALL_INPUT instead (a simple wrapper) */
+/* Use MPFR_FAST_COMPUTE_IF_SMALL_INPUT instead (a simple wrapper) */
 
 /* int mpfr_round_near_x (mpfr_ptr y, mpfr_srcptr x, mp_exp_t err, int dir,
                           mp_rnd_t rnd)
 
    Assuming y = o(f(x)) = o(x + g(x)) with |g(x)| < 2^(EXP(x)-error)
-   If x is small enought, y ~= x. This function checks and does this.
+   If x is small enough, y ~= x. This function checks and does this.
 
    It assumes that f(x) is not representable exactly as a FP number.
    x must not be a singular value (NAN, INF or ZERO).
@@ -42,7 +42,7 @@ MA 02110-1301, USA. */
    Otherwise it returns the ternary flag (It can't return an exact value).
 */
 
-/* What "small enought" means?
+/* What "small enough" means?
 
    We work with the positive values.
    Assuming err > Prec (y)+1
@@ -50,7 +50,7 @@ MA 02110-1301, USA. */
    i = [ y = o(x)]   // i = inexact flag
    If i == 0
        Setting x in y is exact. We have:
-       y = [XXXXXXXXX[...]]0[...] + error where [..] are optionnal zeros
+       y = [XXXXXXXXX[...]]0[...] + error where [..] are optional zeros
       if dirError = ToInf,
         x < f(x) < x + 2^(EXP(x)-err)
         since x=y, and ulp (y)/2 > 2^(EXP(x)-err), we have:
