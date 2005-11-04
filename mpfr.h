@@ -118,14 +118,6 @@ typedef __gmp_const __mpfr_struct *mpfr_srcptr;
 /* For those who needs a direct access and fast access to the sign field */
 #define MPFR_SIGN(x) ((x)->_mpfr_sign)
 
-/* Cache struct */
-struct __gmpfr_cache_s {
-  mpfr_t x;
-  int inexact;
-  int (*func)(mpfr_ptr, mpfr_rnd_t);
-};
-typedef struct __gmpfr_cache_s mpfr_cache_t[1];
-
 /* Stack interface */
 typedef enum {
   MPFR_NAN_KIND = 0,
@@ -545,11 +537,6 @@ __MPFR_DECLSPEC int mpfr_fma _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr,
 __MPFR_DECLSPEC int mpfr_sum _MPFR_PROTO ((mpfr_ptr, mpfr_ptr *__gmp_const,
                                            unsigned long, mpfr_rnd_t));
 
-__MPFR_DECLSPEC void mpfr_init_cache _MPFR_PROTO ((mpfr_cache_t,
-                                           int(*)(mpfr_ptr,mpfr_rnd_t)));
-__MPFR_DECLSPEC void mpfr_clear_cache _MPFR_PROTO ((mpfr_cache_t));
-__MPFR_DECLSPEC int  mpfr_cache _MPFR_PROTO ((mpfr_ptr, mpfr_cache_t,
-                                              mpfr_rnd_t));
 __MPFR_DECLSPEC void mpfr_free_cache _MPFR_PROTO ((void));
 
 __MPFR_DECLSPEC int  mpfr_subnormalize _MPFR_PROTO ((mpfr_ptr, int,
