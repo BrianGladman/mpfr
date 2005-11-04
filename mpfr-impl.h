@@ -935,6 +935,11 @@ typedef struct {
  ******************************************************/
 
 /*
+ * Note: due to the labels, one cannot use a macro MPFR_RNDRAW* more than
+ * once in a function (otherwise these labels would not be unique).
+ */
+
+/*
  * Round mantissa (srcp, sprec) to mpfr_t dest using rounding mode rnd
  * assuming dest's sign is sign.
  * In rounding to nearest mode, execute MIDDLE_HANDLER when the value
