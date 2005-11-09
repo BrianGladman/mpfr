@@ -128,6 +128,18 @@ special (void)
       exit (1);
     }
 
+  /* Bug (in the compiler?) found on Linux/m68k with gcc 4.0.2 */
+  mpfr_set_prec (x, 5);
+  mpfr_set_prec (y, 5);
+  mpfr_set_str_binary (x, "1.1000E-2");
+  mpfr_cbrt (y, x, GMP_RNDN);
+  mpfr_set_str_binary (x, "1.0111E-1");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error in cbrt (6)\n");
+      exit (1);
+    }
+
   mpfr_clear (x);
   mpfr_clear (y);
 }
