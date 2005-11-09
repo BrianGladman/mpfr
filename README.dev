@@ -185,6 +185,21 @@ result will depend on the floating-point arithmetic of the system;
 this has shown many problems in the past and problems may still occur
 with new systems. Use `mpfr_set_si` or `mpfr_set_str` instead.
 
+Also, make sure that the tests run against previous MPFR versions,
+possibly by disabling some tests with code like
+
+  #if MPFR_VERSION >= MPFR_VERSION_NUM(2,3,0)
+
+Indeed one can now easily run the trunk tests in a branch by executing
+
+  svn switch .../svn/mpfr/trunk/tests tests
+
+from the working copy. One can know when the tests directory has been
+switched, thanks to
+
+  $ svn status
+      S  tests
+
    ====================================================================
 
 If you have to mix TMP_DECL and MPFR_SAVE_EXPO_DECL in the declaring
