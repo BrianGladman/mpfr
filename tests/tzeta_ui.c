@@ -29,6 +29,7 @@ MA 02110-1301, USA. */
 int
 main (int argc, char *argv[])
 {
+#if MPFR_VERSION >= MPFR_VERSION_NUM(2,3,0)
   unsigned int prec, yprec;
   int rnd;
   mpfr_t x, y, z, t;
@@ -104,5 +105,6 @@ main (int argc, char *argv[])
   mpfr_clear (t);
 
   tests_end_mpfr ();
+#endif
   return 0;
 }
