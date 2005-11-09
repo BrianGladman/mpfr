@@ -1,6 +1,0 @@
-*.la
-*.lo
-.cvsignore
-.libs
-Makefile
-Makefile.in
