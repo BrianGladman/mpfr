@@ -172,9 +172,17 @@ mpfr_round_near_x (mpfr_ptr y, mpfr_srcptr x, mp_exp_t err, int dir,
   sign = MPFR_SIGN (x);
   MPFR_SET_EXP (y, MPFR_GET_EXP (x));
   MPFR_SET_SIGN (y, sign);
-  MPFR_RNDRAW_EVEN (inexact, y, MPFR_MANT (x), MPFR_PREC (x), rnd, sign,
-                    if (MPFR_UNLIKELY ( ++MPFR_EXP (y) > __gmpfr_emax))
-                    mpfr_overflow (y, rnd, sign) );
+  MPFR_RNDRAW_GEN (inexact, y, MPFR_MANT (x), MPFR_PREC (x), rnd, sign,
+                   if (dir == 0)
+                     {
+                       inexact = -sign;
+                       goto trunc_doit;
+                     }
+                   else
+                     goto addoneulp;
+                   , if (MPFR_UNLIKELY (++MPFR_EXP (y) > __gmpfr_emax))
+                       mpfr_overflow (y, rnd, sign)
+                  );
 
   /* Fix it in some cases */
   MPFR_ASSERTD (!MPFR_IS_NAN (y) && !MPFR_IS_ZERO (y));
@@ -211,15 +219,6 @@ mpfr_round_near_x (mpfr_ptr y, mpfr_srcptr x, mp_exp_t err, int dir,
                 mpfr_set_overflow ();
             }
         }
-    }
-  /* The even rule has been used. But due to error term, we should never
-     use this rule. That's why we have to fix some wrong rounding */
-  else if (inexact == MPFR_EVEN_INEX || inexact == -MPFR_EVEN_INEX)
-    {
-      if (inexact*sign > 0 && dir == 0)
-        goto nexttozero;
-      else if (inexact*sign < 0 && dir == 1)
-        goto nexttoinf;
     }
 
   MPFR_RET (inexact);
