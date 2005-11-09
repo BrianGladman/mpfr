@@ -47,7 +47,7 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mp_rnd_t rnd)
 
   MPFR_SAVE_EXPO_MARK (expo);
 
-  if (prec > pold)
+  if (MPFR_UNLIKELY (prec > pold))
     {
       /* No previous result in the cache or the precision of the
          previous result is not sufficient. */
