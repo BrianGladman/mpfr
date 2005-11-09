@@ -42,14 +42,17 @@ test_int_ceil_log2 (void)
 static void
 test_round_near_x (void)
 {
-  mpfr_t x, y;
+  mpfr_t x, y, z, eps;
   mp_exp_t e;
-  int mx, neg, err, dir, r, inex;
+  int failures = 0, mx, neg, err, dir, r, inex, inex2;
   char buffer[7], *p;
 
-  mpfr_inits (x, y, (void *) 0);
+  mpfr_inits (x, y, z, eps, (void *) 0);
   mpfr_set_prec (x, 5);
   mpfr_set_prec (y, 3);
+  mpfr_set_prec (z, 3);
+  mpfr_set_prec (eps, 2);
+  mpfr_set_ui_2exp (eps, 1, -32, GMP_RNDN);
 
   for (mx = 16; mx < 32; mx++)
     {
@@ -70,7 +73,18 @@ test_round_near_x (void)
                     continue;
                   }
 
-                /* TODO: add other tests here */
+                inex2 = ((dir ^ neg) ? mpfr_add : mpfr_sub) (z, x, eps, r);
+                if (inex * inex2 <= 0)
+                  printf ("Bad return value (%d instead of %d) for:\n",
+                          inex, inex2);
+                else if (mpfr_equal_p (y, z))
+                  continue;  /* correct inex and y */
+                else
+                  {
+                    printf ("Bad MPFR value (should have got ");
+                    mpfr_out_str (stdout, 2, 3, z, GMP_RNDZ);
+                    printf (") for:\n");
+                  }
 
                 if (!mpfr_get_str (buffer, &e, 2, 5, x, GMP_RNDZ) || e != 3)
                   {
@@ -89,11 +103,15 @@ test_round_near_x (void)
                 printf ("\n");
                 if (inex == 0)
                   printf ("Rounding was possible!\n");
-                /* exit (1); */
+                if (++failures == 10)  /* show at most 10 failures */
+                  exit (1);
               }
     }
 
-  mpfr_clears (x, y, (void *) 0);
+  if (failures)
+    exit (1);
+
+  mpfr_clears (x, y, z, eps, (void *) 0);
 }
 
 int
@@ -102,9 +120,7 @@ main (int argc, char **argv)
   tests_start_mpfr ();
 
   test_int_ceil_log2 ();
-
-  if (argc > 1)  /* test due to unfinished code */
-    test_round_near_x ();
+  test_round_near_x ();
 
   tests_end_mpfr ();
   return 0;
