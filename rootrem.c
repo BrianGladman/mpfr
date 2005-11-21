@@ -272,7 +272,12 @@ mpfr_mpn_rootrem (mp_ptr rootp, mp_ptr remp,
   MPN_COPY (rootp, sp, sn);
   if (remp != NULL)
     MPN_COPY (remp, rp, rn);
+
+#if !__MPFR_GMP(4,1,90)
+      TMP_FREE (marker);
+#else
+      TMP_FREE;
+#endif
+
   return rn;
 }
-
-
