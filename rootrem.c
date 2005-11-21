@@ -79,21 +79,13 @@ mpfr_mpn_rootrem (mp_ptr rootp, mp_ptr remp,
   int ni, i;
   int c;
   long B;
-#if !__MPFR_GMP(4,1,90)
-  TMP_DECL (marker);
-#else
-  TMP_DECL;
-#endif
+  MPFR_TMP_DECL (marker);
 
   ASSERT_ALWAYS (un > 0);
   ASSERT_ALWAYS (up[un - 1] != 0);
   ASSERT_ALWAYS (k > 1);
 
-#if !__MPFR_GMP(4,1,90)
-  TMP_MARK (marker);
-#else
-  TMP_MARK;
-#endif
+  MPFR_TMP_MARK (marker);
 
 #define PP_ALLOC (2 + (mp_size_t) (un*1.585))
   pp = TMP_ALLOC_LIMBS (PP_ALLOC);
@@ -118,11 +110,7 @@ mpfr_mpn_rootrem (mp_ptr rootp, mp_ptr remp,
       MPN_NORMALIZE (remp, un);	/* There should be at most one zero limb,
 				   if we demand u to be normalized  */
       rootp[0] = 1;
-#if !__MPFR_GMP(4,1,90)
-      TMP_FREE (marker);
-#else
-      TMP_FREE;
-#endif
+      MPFR_TMP_FREE (marker);
       return un;
     }
 
@@ -273,11 +261,6 @@ mpfr_mpn_rootrem (mp_ptr rootp, mp_ptr remp,
   if (remp != NULL)
     MPN_COPY (remp, rp, rn);
 
-#if !__MPFR_GMP(4,1,90)
-      TMP_FREE (marker);
-#else
-      TMP_FREE;
-#endif
-
+  MPFR_TMP_FREE (marker);
   return rn;
 }
