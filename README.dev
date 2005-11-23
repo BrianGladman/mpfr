@@ -8,7 +8,9 @@ are not part of the Subversion repository, you first need to run
 "autoreconf -i"; if you have both autoconf 2.13 and 2.50 installed and
 use a wrapper, you may need to run "autoreconf" a second time (as with
 old Debian packages, due to a bug in the wrapper). Then you can run
-"configure" in the usual way (see the INSTALL file).
+"configure" in the usual way (see the INSTALL file, but note that
+there are no patches to apply, and the URLs are not valid since the
+corresponding version has not been released yet).
 
 If for some reason, this doesn't work, there's still the old way: run
 the "prepare" script to generate these files; as the "prepare" script

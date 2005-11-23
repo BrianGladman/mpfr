@@ -4,16 +4,25 @@
 0. You first need to install GMP. See <http://www.swox.com/gmp/>.
    MPFR requires GMP version 4.1 or later.
 
-1. In the MPFR build directory, to detect your system, type:
+1. Extract the files from the archive.
+
+2. It is strongly advised to apply the latest patches (if this has
+   not been done yet), e.g.
+     wget http://www.mpfr.org/mpfr-2.3.0/patches
+     patch -N -Z -p1 < patches
+   or
+     curl http://www.mpfr.org/mpfr-2.3.0/patches | patch -N -Z -p1
+
+3. In the MPFR directory, to detect your system, type:
      ./configure
 
-2. To build the library, type:
+4. To build the library, type:
      make
 
-3. To check the built library (runs the test files), type:
+5. To check the built library (runs the test files), type:
      make check
 
-4. To install it (default "/usr/local" | see "--prefix" option), type:
+6. To install it (default "/usr/local" | see "--prefix" option), type:
      make install
 
 
@@ -67,6 +76,11 @@ Run "./configure --help" to see the other options (autoconf default options).
 In case of problem
 ==================
 
+   If you can, go to the MPFR page for this version, where you could
+   find something to solve the problem, or to see if it has already
+   been reported:
+     http://www.mpfr.org/mpfr-2.3.0/
+
    If the "configure" fails, please check that the C compiler and its
    options are the same as those for the GMP build (specially the ABI).
    You can see the latter with the following:
@@ -100,7 +114,7 @@ In case of problem
    the version of GMP and MPFR used and a description of the problem
    encountered. Please send us also a log of the installation (config.log).
 
-   Note that even if you can build MPFR with a C++ compiler you can't run
+   Note that even if you can build MPFR with a C++ compiler, you can't run
    the test suite: C and C++ are not the same language!
    You should use a C compiler instead.
 

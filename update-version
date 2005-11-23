@@ -16,6 +16,7 @@ perl -pi -e "s/(?<=#define MPFR_VERSION_MAJOR ).*/$1/; \
              s/(?<=#define MPFR_VERSION_STRING ).*/\"$1.$2.$3\"/" mpfr.h
 perl -pi -e "s/(?<=return \").*\"/$vers\"/" version.c
 perl -pi -e "s/(?<=AC_INIT).*/([MPFR],[$vers])/" configure.in
+perl -pi -e "s,(?<=http://www.mpfr.org/mpfr-).*?/,$vers/," INSTALL
 
 echo "MPFR version successfully updated."
 echo "Don't forget to update MPFR libtool version in Makefile.am."
