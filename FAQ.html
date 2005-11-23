@@ -102,9 +102,27 @@ See <samp>ld</samp> manual for more details.</dd>
 
 <dt>My program crashes with high precisions.</dt>
 
-<dd>Your stack size limit may be too small. You can increase it with the
+<dd>Your stack size limit may be too small; indeed, by default,
+<cite><acronym>GMP</acronym></cite> currently allocates all
+temporary results on the stack, and in very high precisions,
+this limit may be reached. You can increase it with the
 <samp>limit</samp>, <samp>unlimit</samp> or <samp>ulimit</samp> command,
-depending on your shell.</dd>
+depending on your shell. Alternatively, <abbr>e.g.</abbr> if your
+system does not allow you to increase it further, you can rebuild
+<cite><acronym>GMP</acronym></cite> and <cite><acronym>MPFR</acronym></cite>
+to use another allocation method.</dd>
+
+<dt>Though I have increased the precision, the results are not more
+accurate.</dt>
+
+<dd>The reason may be the use of C floating-point numbers. If you want to
+store a floating-point constant to a <code>mpfr_t</code>, you should use
+<code>mpfr_set_str</code> (or one of the <cite><acronym>MPFR</acronym></cite>
+constant functions, such as <code>mpfr_const_pi</code> for &#960;) instead
+of <code>mpfr_set_d</code> or <code>mpfr_set_ld</code>. Otherwise the
+floating-point constant will be first converted into a reduced-precision
+(<abbr>e.g.</abbr>, 53-bit) binary number before
+<cite><acronym>MPFR</acronym></cite> can work with it.</dd>
 
 </dl>
 
