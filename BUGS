@@ -29,13 +29,6 @@ Known bugs:
   exceeds the hardware limit (2^30 for a 32 bits CPU, and 2^62 for a 64 bits 
   CPU).
 
-* mpfr_div is slow when the precision of the divisor is small compared
-  to the precision of the target. For q = rnd(u / v), in the case where
-  vprec <= qprec, an integer division with (about) qprec + vprec bits
-  for the dividend and the full divisor (i.e. vprec bits exactly) could
-  be used. This was the case in the past and was changed (due to a full
-  rewrite) on 2004-12-24 in rev 3161.
-
 Potential bugs:
 
 * Possible integer overflows on some machines.
