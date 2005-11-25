@@ -730,6 +730,53 @@ check_nan (void)
   mpfr_clear (q);
 }
 
+static void
+consistency (void)
+{
+  mpfr_t x, y, z1, z2;
+  int i;
+
+  mpfr_inits (x, y, z1, z2, (void *) 0);
+
+  for (i = 0; i < 10000; i++)
+    {
+      mp_rnd_t rnd;
+      mp_prec_t px, py, pz, p;
+      int inex1, inex2;
+
+      rnd = (mp_rnd_t) RND_RAND ();
+      px = (randlimb () % 256) + 2;
+      py = (randlimb () % 128) + 2;
+      pz = (randlimb () % 256) + 2;
+      mpfr_set_prec (x, px);
+      mpfr_set_prec (y, py);
+      mpfr_set_prec (z1, pz);
+      mpfr_set_prec (z2, pz);
+      mpfr_random (x);
+      do
+        mpfr_random (y);
+      while (mpfr_zero_p (y));
+      inex1 = mpfr_div (z1, x, y, rnd);
+      MPFR_ASSERTN (!MPFR_IS_NAN (z1));
+      p = MAX (MAX (px, py), pz);
+      if (mpfr_prec_round (x, p, GMP_RNDN) != 0 ||
+          mpfr_prec_round (y, p, GMP_RNDN) != 0)
+        {
+          printf ("mpfr_prec_round error for i = %d\n", i);
+          exit (1);
+        }
+      inex2 = mpfr_div (z2, x, y, rnd);
+      MPFR_ASSERTN (!MPFR_IS_NAN (z2));
+      if (inex1 != inex2 || mpfr_cmp (z1, z2) != 0)
+        {
+          printf ("Consistency error for i = %d\n", i);
+          exit (1);
+        }
+    }
+
+  mpfr_clears (x, y, z1, z2, (void *) 0);
+}
+
 #define TEST_FUNCTION test_div
 #define TWO_ARGS
 #define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), randlimb () % 100)
@@ -758,6 +805,7 @@ main (int argc, char *argv[])
          65,
   "0.11010011111001101011111001100111110100000001101001111100111000000E-1119");
 
+  consistency ();
   test_generic (2, 800, 50);
 
   tests_end_mpfr ();
