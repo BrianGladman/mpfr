@@ -446,6 +446,34 @@ each with rounding away from zero, and precision $n$, then the final
 error is bounded by $2k$ ulps.
 \end{lemma}
 
+If the rounding are not away from zero, the following lemma is still useful
+\cite{Graillat05}:
+\begin{lemma}
+Let $\delta_1, \ldots, \delta_n$ be $n$ real values such that
+$|\delta_i| \leq \epsilon$, for $n \epsilon < 1$.
+Then we can write $\prod_{i=1}^n (1+\delta_i)
+= 1 + \theta$ with
+\[ |\theta| \leq \frac{n \epsilon}{1 - n \epsilon}. \]
+\end{lemma}
+\begin{proof}
+The maximum values of $\theta$ are obtained when all the $\delta_i$ are
+$\epsilon$, or all are $-\epsilon$, thus it suffices to prove
+\[ (1+\epsilon)^n \leq 1 + \frac{n \epsilon}{1 - n \epsilon} 
+   = \frac{1}{1 - n \epsilon}
+   \quad \mbox{and} \quad
+   (1-\epsilon)^n \geq 1 - \frac{n \epsilon}{1 - n \epsilon}
+   = \frac{1 - 2 n \epsilon}{1 - n \epsilon}. \]
+For the first inequality, we have $(1+\epsilon)^n = e^{n \log(1+\epsilon)}$,
+and since $\log(1+x) \leq x$, it follows $(1+\epsilon)^n \leq e^{n \epsilon}
+= \sum_{k \geq 0} \frac{(n \epsilon)^k}{k!} \leq \sum_{k \geq 0}
+ (n \epsilon)^k = \frac{1}{1 - n \epsilon}$.
+
+For the second inequality, we first prove by induction that $(1-\epsilon)^n
+\geq 1 - n \epsilon$ for integer $n \geq 0$.
+It follows $(1-\epsilon)^n (1 - n \epsilon) \geq (1 - n \epsilon)^2 \geq
+1 - 2 n \epsilon$, which concludes the proof.
+\end{proof}
+
 \section{Low level functions}
 
 \subsection{The {\tt mpfr\_add} function}
