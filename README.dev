@@ -60,6 +60,7 @@ To make a release (for the MPFR team):
      without "-ansi" (which allows to turn off features that are
      incompatible with ISO C90), with and without --enable-thread-safe
      and in various locales (LC_ALL=tr_TR in particular, if installed).
+     Test with both "make check" and the worst cases.
   6) If there are no problems, add a tag. [To be completed]
   7) Update the version with the update-version script to indicate the
      next version.
