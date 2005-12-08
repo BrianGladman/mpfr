@@ -62,9 +62,31 @@ check53 (const char *xs, const char *sin_xs, mp_rnd_t rnd_mode)
       printf ("mpfr_sin failed for x=%s, rnd=%s\n",
               xs, mpfr_print_rnd_mode (rnd_mode));
       printf ("mpfr_sin gives sin(x)=");
-      mpfr_out_str(stdout, 10, 0, s, GMP_RNDN);
-      printf(", expected %s\n", sin_xs);
-      exit(1);
+      mpfr_out_str (stdout, 10, 0, s, GMP_RNDN);
+      printf (", expected %s\n", sin_xs);
+      exit (1);
+    }
+  mpfr_clear (xx);
+  mpfr_clear (s);
+}
+
+static void
+check53b (const char *xs, const char *sin_xs, mp_rnd_t rnd_mode)
+{
+  mpfr_t xx, s;
+
+  mpfr_init2 (xx, 53);
+  mpfr_init2 (s, 53);
+  mpfr_set_str (xx, xs, 2, GMP_RNDN); /* should be exact */
+  test_sin (s, xx, rnd_mode);
+  if (mpfr_cmp_str (s, sin_xs, 2, GMP_RNDN))
+    {
+      printf ("mpfr_sin failed in rounding mode %s for\n     x = %s\n",
+              mpfr_print_rnd_mode (rnd_mode), xs);
+      printf ("     got ");
+      mpfr_out_str (stdout, 2, 0, s, GMP_RNDN);
+      printf ("\nexpected %s\n", sin_xs);
+      exit (1);
     }
   mpfr_clear (xx);
   mpfr_clear (s);
@@ -222,7 +244,13 @@ main (int argc, char *argv[])
   check53 ("1.00288304857059840103",  "8.430252033025980029e-1", GMP_RNDZ);
   check53 ("1.00591265847407274059",  "8.446508805292128885e-1", GMP_RNDN);
 
-  check53 ("1.00591265847407274059",  "8.446508805292128885e-1", GMP_RNDN);
+  /* Bug introduced on 2005-01-29 in rev 3248 */
+  check53b ("1.0111001111010111010111111000010011010001110001111011e-21",
+            "1.0111001111010111010111111000010011010001101001110001e-21",
+            GMP_RNDU);
+  check53b ("1.1011101111111010000001010111000010000111100100101101",
+            "1.1111100100101100001111100000110011110011010001010101e-1",
+            GMP_RNDU);
 
   mpfr_init2 (x, 2);
 
