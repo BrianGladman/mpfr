@@ -68,7 +68,7 @@ MA 02110-1301, USA. */
 #undef mpf_set_prec
 #define mpf_set_prec mpfr_set_prec
 #undef mpf_set_prec_raw
-#define mpf_set_prec_raw mpfr_set_prec_raw
+#define mpf_set_prec_raw(x,p) mpfr_prec_round(x,p,MPFR_DEFAULT_RND)
 #undef mpf_trunc
 #define mpf_trunc mpfr_trunc
 #undef mpf_sgn
