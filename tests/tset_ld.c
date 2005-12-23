@@ -161,11 +161,19 @@ main (int argc, char *argv[])
   /* check +0.0 and -0.0 */
   d = 0.0;
   check_set_get (d, x);
+#ifdef _MSC_VER
+  d = _chgsign(0);
+#else
   d = -0.0;
+#endif
   check_set_get (d, x);
 
   /* checks that sign of -0.0 is set */
+#ifdef _MSC_VER
+  mpfr_set_ld (x, _chgsign(0), GMP_RNDN);
+#else
   mpfr_set_ld (x, -0.0, GMP_RNDN);
+#endif
   if (MPFR_SIGN(x) > 0)
     {
       printf ("Error: sign of -0.0 is not set correctly\n");
