@@ -162,7 +162,7 @@ main (int argc, char *argv[])
   d = 0.0;
   check_set_get (d, x);
 #ifdef _MSC_VER
-  d = _chgsign(0);
+  d = _chgsign (0.0);
 #else
   d = -0.0;
 #endif
@@ -170,7 +170,7 @@ main (int argc, char *argv[])
 
   /* checks that sign of -0.0 is set */
 #ifdef _MSC_VER
-  mpfr_set_ld (x, _chgsign(0), GMP_RNDN);
+  mpfr_set_ld (x, _chgsign (0.0), GMP_RNDN);
 #else
   mpfr_set_ld (x, -0.0, GMP_RNDN);
 #endif
