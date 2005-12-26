@@ -63,7 +63,7 @@ mpfr_get_f (mpf_ptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
         MPN_COPY (PTR(x) + sx - sy, MPFR_MANT(y), sy);
       if (sx > sy)
         MPN_ZERO (PTR(x), sx - sy);
-      EXP(x) = (MPFR_GET_EXP(y) + sh) / BITS_PER_MP_LIMB;
+      EXP(x) = (MPFR_GET_EXP(y) + (mp_exp_t) sh) / BITS_PER_MP_LIMB;
     }
   else /* we have to round to precx - sh bits */
     {
@@ -84,7 +84,7 @@ mpfr_get_f (mpf_ptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
         MPN_COPY (PTR(x) + sx - sz, MPFR_MANT(z), sz);
       if (sx > sz)
         MPN_ZERO (PTR(x), sx - sz);
-      EXP(x) = (MPFR_GET_EXP(z) + sh) / BITS_PER_MP_LIMB;
+      EXP(x) = (MPFR_GET_EXP(z) + (mp_exp_t) sh) / BITS_PER_MP_LIMB;
       mpfr_clear (z);
     }
 
