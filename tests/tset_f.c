@@ -22,6 +22,7 @@ MA 02110-1301, USA. */
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <limits.h> /* for ULONG_MAX */
 
 #include "mpfr-test.h"
 
@@ -129,6 +130,33 @@ main (void)
       inexact = mpfr_set_f (x, y, GMP_RNDN);
       MPFR_ASSERTN(inexact == 0 && mpfr_cmp_ui_2exp (x, 1, r) == 0);
       mpf_mul_2exp (y, y, 1);
+    }
+
+  mpf_set_ui (y, 1);
+  mpf_mul_2exp (y, y, ULONG_MAX);
+  mpfr_set_f (x, y, GMP_RNDN);
+  if (mpfr_inf_p (x) == 0 || mpfr_cmp_ui (x, 0) < 0)
+    {
+      printf ("Error: mpfr_set_f (x, y, GMP_RNDN) for y=2^ULONG_MAX\n");
+      exit (1);
+    }
+
+  mpf_set_ui (y, 1);
+  mpf_mul_2exp (y, y, __mpfr_emax);
+  mpfr_set_f (x, y, GMP_RNDN);
+  if (mpfr_inf_p (x) == 0 || mpfr_cmp_ui (x, 0) < 0)
+    {
+      printf ("Error: mpfr_set_f (x, y, GMP_RNDN) for y=2^__mpfr_emax\n");
+      exit (1);
+    }
+
+  mpf_set_ui (y, 1);
+  mpf_mul_2exp (y, y, __mpfr_emax - 1);
+  mpfr_set_f (x, y, GMP_RNDN);
+  if (mpfr_cmp_ui_2exp (x, 1, __mpfr_emax - 1) != 0)
+    {
+      printf ("Error: mpfr_set_f (x, y, GMP_RNDN) for y=2^(__mpfr_emax-1)\n");
+      exit (1);
     }
 
   mpfr_clear (x);
