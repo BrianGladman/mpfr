@@ -89,7 +89,7 @@ mpfr_set_f (mpfr_ptr y, mpf_srcptr x, mp_rnd_t rnd_mode)
          EXP(x) * BITS_PER_MP_LIMB >= __mpfr_emax + BITS_PER_MP_LIMB
 	 Since 0 <= cnt <= BITS_PER_MP_LIMB-1, and 0 <= carry <= 1,
 	 we have then EXP(x) * BITS_PER_MP_LIMB - cnt + carry > __mpfr_emax */
-      MPFR_SET_EXP(y, __mpfr_emax + 1);
+      return mpfr_overflow (y, rnd_mode, MPFR_SIGN (y));
     }
   else
     MPFR_SET_EXP(y, EXP(x) * BITS_PER_MP_LIMB - (mp_exp_t) cnt + carry);
