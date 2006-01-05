@@ -1,6 +1,6 @@
 /* Test file for mpfr_set_exp.
 
-Copyright 2004, 2006 Free Software Foundation.
+Copyright 2004, 2006 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 

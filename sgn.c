@@ -1,6 +1,6 @@
 /* mpfr_sgn -- Sign of a floating point number.
 
-Copyright 2003, 2004, 2006 Free Software Foundation.
+Copyright 2003, 2004, 2006 Free Software Foundation, Inc.
 Contributed by the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.

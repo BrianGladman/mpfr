@@ -1,6 +1,6 @@
 /* Mulder's MulHigh function (short product)
 
-Copyright 2005, 2006 Free Software Foundation.
+Copyright 2005, 2006 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 

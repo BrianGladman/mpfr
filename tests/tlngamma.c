@@ -1,6 +1,6 @@
 /* mpfr_tlngamma -- test file for lngamma function
 
-Copyright 2005, 2006 Free Software Foundation.
+Copyright 2005, 2006 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 

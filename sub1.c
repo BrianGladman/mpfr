@@ -1,6 +1,6 @@
 /* mpfr_sub1 -- internal function to perform a "real" subtraction
 
-Copyright 2001, 2002, 2003, 2004, 2005, 2006 Free Software Foundation.
+Copyright 2001, 2002, 2003, 2004, 2005, 2006 Free Software Foundation, Inc.
 Contributed by the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.

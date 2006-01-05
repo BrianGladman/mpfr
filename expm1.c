@@ -1,6 +1,6 @@
 /* mpfr_expm1 -- Compute exp(x)-1
 
-Copyright 2001, 2002, 2003, 2004, 2005, 2006 Free Software Foundation.
+Copyright 2001, 2002, 2003, 2004, 2005, 2006 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 

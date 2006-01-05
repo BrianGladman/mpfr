@@ -1,6 +1,6 @@
 /* MPFR internal constant FP numbers
 
-Copyright 2005, 2006 Free Software Foundation.
+Copyright 2005, 2006 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 

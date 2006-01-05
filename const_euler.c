@@ -1,6 +1,6 @@
 /* mpfr_const_euler -- Euler's constant
 
-Copyright 2001, 2002, 2003, 2004, 2005, 2006 Free Software Foundation.
+Copyright 2001, 2002, 2003, 2004, 2005, 2006 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 

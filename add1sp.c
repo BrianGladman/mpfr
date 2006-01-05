@@ -1,7 +1,7 @@
 /* mpfr_add1sp -- internal function to perform a "real" addition
    All the op must have the same precision
 
-Copyright 2004, 2005, 2006 Free Software Foundation.
+Copyright 2004, 2005, 2006 Free Software Foundation, Inc.
 Contributed by the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.

@@ -1,7 +1,7 @@
 /* mpfr_nextabove, mpfr_nextbelow, mpfr_nexttoward -- next representable
 floating-point number
 
-Copyright 1999, 2001, 2002, 2003, 2004, 2005, 2006 Free Software Foundation.
+Copyright 1999, 2001, 2002, 2003, 2004, 2005, 2006 Free Software Foundation, Inc.
 Contributed by the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.

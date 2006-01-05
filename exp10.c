@@ -1,6 +1,6 @@
 /* mpfr_exp10 -- power of 10 function 10^y
 
-Copyright 2003, 2004, 2006 Free Software Foundation.
+Copyright 2003, 2004, 2006 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 

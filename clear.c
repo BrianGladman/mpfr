@@ -1,6 +1,6 @@
 /* mpfr_clear -- free the memory space allocated for a floating-point number
 
-Copyright 1999, 2000, 2001, 2004, 2005, 2006 Free Software Foundation.
+Copyright 1999, 2000, 2001, 2004, 2005, 2006 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 

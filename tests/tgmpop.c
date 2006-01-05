@@ -1,7 +1,7 @@
 /* Test file for mpfr_add_[q,z], mpfr_sub_[q,z], mpfr_div_[q,z], mpfr_mul_[q,z]
    and mpfr_cmp_[q,z]
 
-Copyright 2004, 2005, 2006 Free Software Foundation.
+Copyright 2004, 2005, 2006 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 

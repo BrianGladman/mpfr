@@ -1,6 +1,6 @@
 /* Test file for mpfr_version.
 
-Copyright 2004, 2005, 2006 Free Software Foundation.
+Copyright 2004, 2005, 2006 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 

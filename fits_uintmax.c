@@ -1,6 +1,6 @@
 /* mpfr_fits_uintmax_p -- test whether an mpfr fits an uintmax_t.
 
-Copyright 2004, 2006 Free Software Foundation.
+Copyright 2004, 2006 Free Software Foundation, Inc.
 Contributed by the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.
