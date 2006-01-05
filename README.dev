@@ -38,6 +38,17 @@ a smaller set of changes. See diff(1) for more information.
 
 ===========================================================================
 
+Copyright Notices: For easier maintainability, make sure that the
+copyright notices match the regexp "Copyright.* yyyy Free Software"
+where yyyy is the year of the latest modification in the branch
+(and nothing else should match it).
+
+The latest rules for GNU software can be found here:
+
+  http://www.gnu.org/prep/maintain/maintain.html#Copyright-Notices
+
+===========================================================================
+
 To make a release (for the MPFR team):
 
   0) Generate the default thresholds on different architectures
