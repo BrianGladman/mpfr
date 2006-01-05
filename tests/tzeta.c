@@ -1,6 +1,6 @@
 /* tzeta -- test file for the Riemann Zeta function
 
-Copyright 2003, 2004, 2005 Free Software Foundation.
+Copyright 2003, 2004, 2005, 2006 Free Software Foundation.
 Contributed by Jean-Luc Re'my and the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.

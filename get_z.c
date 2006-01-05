@@ -1,7 +1,7 @@
 /* mpfr_get_z_exp -- get a multiple-precision integer from
                      a floating-point number
 
-Copyright 2004 Free Software Foundation, Inc.
+Copyright 2004, 2006 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 

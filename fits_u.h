@@ -1,6 +1,6 @@
 /* mpfr_fits_*_p -- test whether an mpfr fits a C unsigned type.
 
-Copyright 2003, 2004, 2005 Free Software Foundation.
+Copyright 2003, 2004, 2005, 2006 Free Software Foundation.
 Contributed by the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.

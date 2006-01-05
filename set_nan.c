@@ -1,6 +1,6 @@
 /* mpfr_set_nan -- set a number to NaN.
 
-Copyright 2002 Free Software Foundation.
+Copyright 2002, 2006 Free Software Foundation.
 
 This file is part of the MPFR Library.
 

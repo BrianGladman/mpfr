@@ -1,6 +1,6 @@
 /* This file is a new (faster) implementation of mpn_rootrem.
 
-   Copyright 2005 Torbjo"rn Granlund, Paul Zimmermann.
+   Copyright 2005, 2006 Torbjo"rn Granlund, Paul Zimmermann.
 */
 
 #include <stdio.h>		/* for printf */

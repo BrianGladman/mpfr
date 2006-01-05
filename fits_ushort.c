@@ -1,6 +1,6 @@
 /* mpfr_fits_ushort_p -- test whether an mpfr fits an unsigned short.
 
-Copyright 2003 Free Software Foundation.
+Copyright 2003, 2006 Free Software Foundation.
 Contributed by the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.

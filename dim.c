@@ -1,6 +1,6 @@
 /* mpfr_dim -- positive difference
 
-Copyright 2001, 2002, 2004 Free Software Foundation.
+Copyright 2001, 2002, 2004, 2006 Free Software Foundation.
 
 This file is part of the MPFR Library.
 

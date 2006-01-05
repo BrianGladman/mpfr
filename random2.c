@@ -2,7 +2,7 @@
    long runs of consecutive ones and zeros in the binary representation.
    Intended for testing.
 
-Copyright 1999, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+Copyright 1999, 2001, 2002, 2003, 2004, 2006 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 

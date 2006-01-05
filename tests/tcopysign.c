@@ -1,6 +1,6 @@
 /* Test file for mpfr_copysign.
 
-Copyright 2004 Free Software Foundation, Inc.
+Copyright 2004, 2006 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 

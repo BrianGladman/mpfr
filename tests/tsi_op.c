@@ -1,7 +1,7 @@
 /* Test file for mpfr_add_si, mpfr_sub_si, mpfr_si_sub, mpfr_mul_si,
    mpfr_div_si, mpfr_si_div
 
-Copyright 2004 Free Software Foundation.
+Copyright 2004, 2006 Free Software Foundation.
 
 This file is part of the MPFR Library.
 

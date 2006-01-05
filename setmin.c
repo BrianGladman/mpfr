@@ -1,6 +1,6 @@
 /* mpfr_setmin -- minimum representable floating-point number (raw version)
 
-Copyright 2002, 2003, 2004 Free Software Foundation.
+Copyright 2002, 2003, 2004, 2006 Free Software Foundation.
 Contributed by the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.

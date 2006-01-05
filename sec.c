@@ -1,6 +1,6 @@
 /* mpfr_sec - secant function = 1/cos.
 
-Copyright 2005 Free Software Foundation, Inc.
+Copyright 2005, 2006 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 

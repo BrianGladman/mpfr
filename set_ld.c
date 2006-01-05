@@ -1,7 +1,7 @@
 /* mpfr_set_ld -- convert a machine long double to
                   a multiple precision floating-point number
 
-Copyright 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
+Copyright 2002, 2003, 2004, 2005, 2006 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 

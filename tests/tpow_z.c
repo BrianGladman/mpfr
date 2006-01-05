@@ -1,6 +1,6 @@
 /* Test file for mpfr_pow_z -- power function x^z with z a MPZ
 
-Copyright 2005 Free Software Foundation, Inc.
+Copyright 2005, 2006 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 

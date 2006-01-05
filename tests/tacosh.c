@@ -1,6 +1,6 @@
 /* Test file for mpfr_acosh.
 
-Copyright 2001, 2002, 2003, 2004 Free Software Foundation.
+Copyright 2001, 2002, 2003, 2004, 2006 Free Software Foundation.
 Adapted from tarctan.c.
 
 This file is part of the MPFR Library.

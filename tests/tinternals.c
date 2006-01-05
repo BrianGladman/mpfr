@@ -1,6 +1,6 @@
 /* tinternals -- Test for internals.
 
-Copyright 2005 Free Software Foundation.
+Copyright 2005, 2006 Free Software Foundation.
 Contributed by the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.
