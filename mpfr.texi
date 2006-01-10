@@ -532,9 +532,9 @@ an infinite precision, then rounded it to the precision of this variable.
 The input variables are regarded as exact (in particular, their precision
 does not affect the result).
 
-As a consequence, in case of a non-zero real rounded result, the error on
-the result is less or equal to 1/2 ulp (units in the last place) of the
-target in the rounding to nearest mode, and less or equal to 1 ulp of the
+As a consequence, in case of a non-zero real rounded result, the error
+on the result is less or equal to 1/2 ulp (unit in the last place) of
+the target in the rounding to nearest mode, and less than 1 ulp of the
 target in the directed rounding modes (a ulp is the weight of the least
 significant represented bit of the target after rounding).
 @c Since subnormals are not supported, we must take into account the ulp of
