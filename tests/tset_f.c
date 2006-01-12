@@ -142,20 +142,20 @@ main (void)
     }
 
   mpf_set_ui (y, 1);
-  mpf_mul_2exp (y, y, __mpfr_emax);
+  mpf_mul_2exp (y, y, mpfr_get_emax ());
   mpfr_set_f (x, y, GMP_RNDN);
   if (mpfr_inf_p (x) == 0 || mpfr_cmp_ui (x, 0) < 0)
     {
-      printf ("Error: mpfr_set_f (x, y, GMP_RNDN) for y=2^__mpfr_emax\n");
+      printf ("Error: mpfr_set_f (x, y, GMP_RNDN) for y=2^emax\n");
       exit (1);
     }
 
   mpf_set_ui (y, 1);
-  mpf_mul_2exp (y, y, __mpfr_emax - 1);
+  mpf_mul_2exp (y, y, mpfr_get_emax () - 1);
   mpfr_set_f (x, y, GMP_RNDN);
-  if (mpfr_cmp_ui_2exp (x, 1, __mpfr_emax - 1) != 0)
+  if (mpfr_cmp_ui_2exp (x, 1, mpfr_get_emax () - 1) != 0)
     {
-      printf ("Error: mpfr_set_f (x, y, GMP_RNDN) for y=2^(__mpfr_emax-1)\n");
+      printf ("Error: mpfr_set_f (x, y, GMP_RNDN) for y=2^(emax-1)\n");
       exit (1);
     }
 
