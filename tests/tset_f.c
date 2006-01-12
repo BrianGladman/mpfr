@@ -88,8 +88,6 @@ main (void)
     }
   MPFR_ASSERTN(mpfr_cmp_ui_2exp (x, 1, 901) == 0);
 
-  mpfr_clear (u);
-
   for (k = 1; k <= 100000; k++)
     {
       pr = 2 + (randlimb () & 255);
@@ -135,7 +133,9 @@ main (void)
   mpf_set_ui (y, 1);
   mpf_mul_2exp (y, y, ULONG_MAX);
   mpfr_set_f (x, y, GMP_RNDN);
-  if (mpfr_inf_p (x) == 0 || mpfr_cmp_ui (x, 0) < 0)
+  mpfr_set_ui (u, 1, GMP_RNDN);
+  mpfr_mul_2ui (u, u, ULONG_MAX, GMP_RNDN);
+  if (!mpfr_equal_p (x, u))
     {
       printf ("Error: mpfr_set_f (x, y, GMP_RNDN) for y=2^ULONG_MAX\n");
       exit (1);
@@ -160,6 +160,7 @@ main (void)
     }
 
   mpfr_clear (x);
+  mpfr_clear (u);
   mpf_clear (y);
   mpf_clear (z);
 
