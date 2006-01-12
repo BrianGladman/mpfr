@@ -81,14 +81,14 @@ mpfr_set_f (mpfr_ptr y, mpf_srcptr x, mp_rnd_t rnd_mode)
     }
 
   /* warning: EXP(x) * BITS_PER_MP_LIMB may exceed the maximal exponent */
-  if (EXP(x) > 1 + (__mpfr_emax - 1) / BITS_PER_MP_LIMB)
+  if (EXP(x) > 1 + (__gmpfr_emax - 1) / BITS_PER_MP_LIMB)
     {
-      /* EXP(x) >= 2 + floor((__mpfr_emax-1)/BITS_PER_MP_LIMB)
-	 EXP(x) >= 2 + (__mpfr_emax - BITS_PER_MP_LIMB) / BITS_PER_MP_LIMB
-	        >= 1 + __mpfr_emax / BITS_PER_MP_LIMB
-         EXP(x) * BITS_PER_MP_LIMB >= __mpfr_emax + BITS_PER_MP_LIMB
+      /* EXP(x) >= 2 + floor((__gmpfr_emax-1)/BITS_PER_MP_LIMB)
+	 EXP(x) >= 2 + (__gmpfr_emax - BITS_PER_MP_LIMB) / BITS_PER_MP_LIMB
+	        >= 1 + __gmpfr_emax / BITS_PER_MP_LIMB
+         EXP(x) * BITS_PER_MP_LIMB >= __gmpfr_emax + BITS_PER_MP_LIMB
 	 Since 0 <= cnt <= BITS_PER_MP_LIMB-1, and 0 <= carry <= 1,
-	 we have then EXP(x) * BITS_PER_MP_LIMB - cnt + carry > __mpfr_emax */
+	 we have then EXP(x) * BITS_PER_MP_LIMB - cnt + carry > __gmpfr_emax */
       return mpfr_overflow (y, rnd_mode, MPFR_SIGN (y));
     }
   else
