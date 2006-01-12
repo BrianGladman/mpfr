@@ -31,6 +31,7 @@ main (void)
 {
   mpfr_t x, u;
   mpf_t y, z;
+  mp_exp_t emax;
   unsigned long k, pr;
   int r, inexact;
 
@@ -137,26 +138,38 @@ main (void)
   mpfr_mul_2ui (u, u, ULONG_MAX, GMP_RNDN);
   if (!mpfr_equal_p (x, u))
     {
-      printf ("Error: mpfr_set_f (x, y, GMP_RNDN) for y=2^ULONG_MAX\n");
+      printf ("Error: mpfr_set_f (x, y, GMP_RNDN) for y = 2^ULONG_MAX\n");
       exit (1);
     }
 
-  mpf_set_ui (y, 1);
-  mpf_mul_2exp (y, y, mpfr_get_emax ());
-  mpfr_set_f (x, y, GMP_RNDN);
-  if (mpfr_inf_p (x) == 0 || mpfr_cmp_ui (x, 0) < 0)
+  emax = mpfr_get_emax ();
+
+  /* For mpf_mul_2exp, emax must fit in an unsigned long! */
+  if (emax >= 0 && emax <= ULONG_MAX)
     {
-      printf ("Error: mpfr_set_f (x, y, GMP_RNDN) for y=2^emax\n");
-      exit (1);
+      mpf_set_ui (y, 1);
+      mpf_mul_2exp (y, y, emax);
+      mpfr_set_f (x, y, GMP_RNDN);
+      mpfr_set_ui_2exp (u, 1, emax, GMP_RNDN);
+      if (!mpfr_equal_p (x, u))
+        {
+          printf ("Error: mpfr_set_f (x, y, GMP_RNDN) for y = 2^emax\n");
+          exit (1);
+        }
     }
 
-  mpf_set_ui (y, 1);
-  mpf_mul_2exp (y, y, mpfr_get_emax () - 1);
-  mpfr_set_f (x, y, GMP_RNDN);
-  if (mpfr_cmp_ui_2exp (x, 1, mpfr_get_emax () - 1) != 0)
+  /* For mpf_mul_2exp, emax - 1 must fit in an unsigned long! */
+  if (emax >= 1 && emax - 1 <= ULONG_MAX)
     {
-      printf ("Error: mpfr_set_f (x, y, GMP_RNDN) for y=2^(emax-1)\n");
-      exit (1);
+      mpf_set_ui (y, 1);
+      mpf_mul_2exp (y, y, emax - 1);
+      mpfr_set_f (x, y, GMP_RNDN);
+      mpfr_set_ui_2exp (u, 1, emax - 1, GMP_RNDN);
+      if (!mpfr_equal_p (x, u))
+        {
+          printf ("Error: mpfr_set_f (x, y, GMP_RNDN) for y = 2^(emax-1)\n");
+          exit (1);
+        }
     }
 
   mpfr_clear (x);
