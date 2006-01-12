@@ -92,7 +92,10 @@ mpfr_set_f (mpfr_ptr y, mpf_srcptr x, mp_rnd_t rnd_mode)
       return mpfr_overflow (y, rnd_mode, MPFR_SIGN (y));
     }
   else
-    MPFR_SET_EXP(y, EXP(x) * BITS_PER_MP_LIMB - (mp_exp_t) cnt + carry);
+    {
+      /* Do not use MPFR_SET_EXP as the exponent may be out of range. */
+      MPFR_EXP (y) = EXP (x) * BITS_PER_MP_LIMB - (mp_exp_t) cnt + carry;
+    }
 
   return mpfr_check_range (y, inexact, rnd_mode);
 }
