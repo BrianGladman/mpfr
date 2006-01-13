@@ -27,8 +27,9 @@ MA 02110-1301, USA. */
 int
 mpfr_get_f (mpf_ptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 {
-  unsigned long sx, sy, precx, precy, sh;
-  mp_exp_t ey;
+  mp_size_t sx, sy;
+  mp_prec_t precx, precy;
+  int sh;
 
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(y)))
     {
@@ -44,47 +45,45 @@ mpfr_get_f (mpf_ptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
   sx = PREC(x); /* number of limbs of the mantissa of x */
 
   precy = MPFR_PREC(y);
-  precx = sx * BITS_PER_MP_LIMB;
-  sy = 1 + (MPFR_PREC(y) - 1) / BITS_PER_MP_LIMB;
+  precx = (mp_prec_t) sx * BITS_PER_MP_LIMB;
+  sy = MPFR_LIMB_SIZE (y);
 
   /* since mpf numbers are represented in base 2^BITS_PER_MP_LIMB,
      we loose -EXP(y) % BITS_PER_MP_LIMB bits in the most significant limb */
-  ey = MPFR_GET_EXP(y) % BITS_PER_MP_LIMB;
-  if (ey <= 0)
-    sh = (unsigned long) (-ey);
-  else /* 0 < ey < BITS_PER_MP_LIMB */
-    sh = BITS_PER_MP_LIMB - (unsigned long) ey;
+  sh = MPFR_GET_EXP(y) % BITS_PER_MP_LIMB;
+  sh = sh <= 0 ? - sh : BITS_PER_MP_LIMB - sh;
+  MPFR_ASSERTD (sh >= 0);
   if (precy + sh <= precx) /* we can copy directly */
     {
-      /* necessarily sy <= sx */
-      if (sh)
+      MPFR_ASSERTN (sx >= sy);
+      if (sh != 0)
         mpn_rshift (PTR(x) + sx - sy, MPFR_MANT(y), sy, sh);
       else
         MPN_COPY (PTR(x) + sx - sy, MPFR_MANT(y), sy);
       if (sx > sy)
         MPN_ZERO (PTR(x), sx - sy);
-      EXP(x) = (MPFR_GET_EXP(y) + (mp_exp_t) sh) / BITS_PER_MP_LIMB;
+      EXP(x) = (MPFR_GET_EXP(y) + sh) / BITS_PER_MP_LIMB;
     }
   else /* we have to round to precx - sh bits */
     {
       mpfr_t z;
-      unsigned long sz;
+      mp_size_t sz;
 
       mpfr_init2 (z, precx - sh);
-      sz = 1 + (MPFR_PREC(z) - 1) / BITS_PER_MP_LIMB;
+      sz = MPFR_LIMB_SIZE (z);
       mpfr_set (z, y, rnd_mode);
       /* warning, sh may change due to rounding, but then z is a power of two,
          thus we can safely ignore its last bit which is 0 */
-      ey = MPFR_GET_EXP(z) % BITS_PER_MP_LIMB;
-      sh = (ey <= 0) ? (unsigned long) (-ey)
-        : BITS_PER_MP_LIMB - (unsigned long) ey;
-      if (sh)
+      sh = MPFR_GET_EXP(z) % BITS_PER_MP_LIMB;
+      sh = sh <= 0 ? - sh : BITS_PER_MP_LIMB - sh;
+      MPFR_ASSERTD (sh >= 0);
+      if (sh != 0)
         mpn_rshift (PTR(x) + sx - sz, MPFR_MANT(z), sz, sh);
       else
         MPN_COPY (PTR(x) + sx - sz, MPFR_MANT(z), sz);
       if (sx > sz)
         MPN_ZERO (PTR(x), sx - sz);
-      EXP(x) = (MPFR_GET_EXP(z) + (mp_exp_t) sh) / BITS_PER_MP_LIMB;
+      EXP(x) = (MPFR_GET_EXP(z) + sh) / BITS_PER_MP_LIMB;
       mpfr_clear (z);
     }
 
