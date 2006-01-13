@@ -84,8 +84,8 @@ main (void)
           printf ("Error: mpfr_get_f(%lu) fails\n", i);
           exit (1);
         }
-      mpfr_set_si (y, (signed long) -i, GMP_RNDN);
-      if (mpfr_get_f (x, y, GMP_RNDN) || mpf_cmp_si (x, (signed long) -i))
+      mpfr_set_si (y, - (long) i, GMP_RNDN);
+      if (mpfr_get_f (x, y, GMP_RNDN) || mpf_cmp_si (x, - (long) i))
         {
           printf ("Error: mpfr_get_f(-%lu) fails\n", i);
           exit (1);
