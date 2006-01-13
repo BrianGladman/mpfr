@@ -123,15 +123,15 @@ main (void)
       mpfr_get_f (x, y, GMP_RNDN);
       mpf_mul_2exp (x, x, e);
       if (mpf_cmp_ui (x, 1) != 0)
-	{
-	  printf ("Error: mpfr_get_f(x,y,GMP_RNDN) fails\n");
-	  printf ("y=");
-	  mpfr_dump (y);
-	  printf ("x=");
-	  mpf_div_2exp (x, x, e);
-	  mpf_dump (x);
-	  exit (1);
-	}
+        {
+          printf ("Error: mpfr_get_f(x,y,GMP_RNDN) fails\n");
+          printf ("y=");
+          mpfr_dump (y);
+          printf ("x=");
+          mpf_div_2exp (x, x, e);
+          mpf_dump (x);
+          exit (1);
+        }
 
       /* test with 2^(e) */
       mpfr_set_ui (y, 1, GMP_RNDN);
@@ -139,15 +139,15 @@ main (void)
       mpfr_get_f (x, y, GMP_RNDN);
       mpf_div_2exp (x, x, e);
       if (mpf_cmp_ui (x, 1) != 0)
-	{
-	  printf ("Error: mpfr_get_f(x,y,GMP_RNDN) fails\n");
-	  printf ("y=");
-	  mpfr_dump (y);
-	  printf ("x=");
-	  mpf_mul_2exp (x, x, e);
-	  mpf_dump (x);
-	  exit (1);
-	}
+        {
+          printf ("Error: mpfr_get_f(x,y,GMP_RNDN) fails\n");
+          printf ("y=");
+          mpfr_dump (y);
+          printf ("x=");
+          mpf_mul_2exp (x, x, e);
+          mpf_dump (x);
+          exit (1);
+        }
     }
 
   mpfr_clear (y);
