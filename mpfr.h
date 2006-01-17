@@ -558,7 +558,7 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
 }
 #endif
 
-/* DON'T USE THIS! */
+/* DON'T USE THIS! (For MPFR-public macros only, see below.) */
 #if __GMP_MP_SIZE_T_INT
 #define __MPFR_EXP_NAN  ((mp_exp_t)((~((~(unsigned int)0)>>1))+2))
 #define __MPFR_EXP_ZERO ((mp_exp_t)((~((~(unsigned int)0)>>1))+1))
@@ -569,6 +569,8 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
 #define __MPFR_EXP_INF  ((mp_exp_t)((~((~(unsigned long)0)>>1))+3))
 #endif
 
+/* Warning! This macro doesn't work with K&R C and shouldn't be used
+   internally. For public use only, but see the MPFR manual. */
 #define MPFR_DECL_INIT(_x, _p)                                        \
   mp_limb_t __gmpfr_local_tab_##_x[((_p)-1)/GMP_NUMB_BITS+1];         \
   mpfr_t    _x = {{(_p),1,__MPFR_EXP_NAN,__gmpfr_local_tab_##_x}}
