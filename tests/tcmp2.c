@@ -322,9 +322,9 @@ main (void)
           x = y;
           y = z;
         }
-      if (y != 0.0 && y != -0.0)
+      if (y != 0.0)
         tcmp2 (x, y, -1);
-  }
+    }
 
   tests_end_mpfr ();
 

@@ -334,10 +334,12 @@ static double double_zero = 0.0;
 # define DBL_NAN (double_zero/double_zero)
 # define DBL_POS_INF ((double) 1.0/double_zero)
 # define DBL_NEG_INF ((double)-1.0/double_zero)
+# define DBL_NEG_ZERO (-double_zero)
 #else
 # define DBL_POS_INF ((double) 1.0/0.0)
 # define DBL_NEG_INF ((double)-1.0/0.0)
 # define DBL_NAN     ((double) 0.0/0.0)
+# define DBL_NEG_ZERO (-0.0)
 #endif
 
 /* for x of type ieee_double_extract */

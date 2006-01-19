@@ -176,11 +176,9 @@ mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
            We can't use d==+0.0 since it should be always true,
            so we check that the memory representation of d is the
            same than +0.0. etc */
-#ifdef _MSC_VER
-	double poszero = +0.0, negzero = _chgsign (0.0);
-#else
-        double poszero = +0.0, negzero = -0.0;
-#endif
+        /* FIXME: consider the case where +0.0 or -0.0 may have several
+           representations. */
+        double poszero = +0.0, negzero = DBL_NEG_ZERO;
         if (memcmp(&d, &poszero, sizeof(double)) == 0)
           MPFR_SET_POS(r);
         else if (memcmp(&d, &negzero, sizeof(double)) == 0)
