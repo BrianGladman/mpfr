@@ -892,8 +892,12 @@ If the system doesn't support IEEE 754 standard, this function
 Return @var{d} and set @var{exp} such that @math{0.5@le{}@GMPabs{@var{d}}<1}
 and @m{@var{d}\times 2^{exp}, @var{d} times 2 raised to @var{exp}} equals
 @var{op} rounded to double precision, using the given rounding mode.
-If @var{op} is NaN, Infinity or zero, the corresponding double-precision
-value is returned, and @var{exp} is set to zero.
+@comment See ISO C standard, frexp function.
+If @var{op} is zero, then a zero of the same sign (or an unsigned zero,
+if the implementation does not have signed zeros) is returned, and
+@var{exp} is set to 0.
+If @var{op} is NaN or an infinity, then the corresponding double-precision
+value is returned, and @var{exp} is undefined.
 @end deftypefun
 
 @deftypefun long mpfr_get_si (mpfr_t @var{op}, mp_rnd_t @var{rnd})
