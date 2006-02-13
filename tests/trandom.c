@@ -108,7 +108,7 @@ test_random2 (long nbtests, mp_prec_t prec, int verbose)
 
       /* check that the number is normalized */
       if (! (MPFR_MANT(x)[MPFR_LIMB_SIZE(x) - 1] >> (BITS_PER_MP_LIMB - 1)))
-	{
+        {
           printf ("Error: mpfr_random2() returns unnormalized numbers:\n");
           mpfr_print_binary (x); puts ("");
           exit (1);
@@ -221,7 +221,7 @@ test_urandomb (long nbtests, mp_prec_t prec, int verbose)
     }
 
   av /= nbtests;
-  var = (var /nbtests) - av*av;
+  var = (var / nbtests) - av * av;
 
   th = (double)nbtests / size_tab;
   printf("Average = %.5f\nVariance = %.5f\n", av, var);

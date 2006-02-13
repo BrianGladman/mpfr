@@ -32,14 +32,14 @@ MA 02110-1301, USA. */
 #endif
 
 void
-mpfr_random2_raw (mpfr_ptr x, mp_size_t size, mp_exp_t exp, 
-gmp_randstate_t rstate)
+mpfr_random2_raw (mpfr_ptr x, mp_size_t size, mp_exp_t exp,
+                  gmp_randstate_t rstate)
 {
   mp_size_t xn, k, ri;
   unsigned long sh;
   mp_ptr xp;
   mp_limb_t elimb, ran, acc;
-  int ran_nbits, bit_pos, nb; 
+  int ran_nbits, bit_pos, nb;
 
   MPFR_CLEAR_FLAGS (x);
 
@@ -65,16 +65,17 @@ gmp_randstate_t rstate)
   k = xn - size;
 
   /* Generate random mantissa.  */
-  if (!rstate) rstate = RANDS; 
+  if (!rstate)
+    rstate = RANDS;
 
-  /* Code extracted from GMP, function mpn_random2, to avoid the use 
-     of GMP's internal random state in MPFR */ 
-     
+  /* Code extracted from GMP, function mpn_random2, to avoid the use
+     of GMP's internal random state in MPFR */
+
   _gmp_rand (&elimb, rstate, BITS_PER_RANDCALL);
   ran = elimb;
 
   /* Start off at a random bit position in the most significant limb.  */
-  bit_pos = GMP_NUMB_BITS - 1; 
+  bit_pos = GMP_NUMB_BITS - 1;
   ran >>= 6;                            /* Ideally   log2(GMP_NUMB_BITS) */
   ran_nbits = BITS_PER_RANDCALL - 6;    /* Ideally - log2(GMP_NUMB_BITS) */
 
@@ -126,7 +127,7 @@ gmp_randstate_t rstate)
     }
 
   /* Set mandatory most significant bit.  */
-  // xp[xn - 1] |= MPFR_LIMB_HIGHBIT;
+  /* xp[xn - 1] |= MPFR_LIMB_HIGHBIT; */
 
   if (k != 0)
     {
@@ -149,7 +150,7 @@ gmp_randstate_t rstate)
 }
 
 void
-mpfr_random2(mpfr_ptr x, mp_size_t size, mp_exp_t exp)
+mpfr_random2 (mpfr_ptr x, mp_size_t size, mp_exp_t exp)
 {
-  mpfr_random2_raw(x, size, exp, NULL); 
+  mpfr_random2_raw (x, size, exp, NULL);
 }
