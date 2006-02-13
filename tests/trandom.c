@@ -105,6 +105,15 @@ test_random2 (long nbtests, mp_prec_t prec, int verbose)
           mpfr_print_binary (x); puts ("");
           exit (1);
         }
+
+      /* check that the number is normalized */
+      if (! (MPFR_MANT(x)[MPFR_LIMB_SIZE(x) - 1] >> (BITS_PER_MP_LIMB - 1)))
+	{
+          printf ("Error: mpfr_random2() returns unnormalized numbers:\n");
+          mpfr_print_binary (x); puts ("");
+          exit (1);
+        }
+
       /* check that exponent is in correct range */
       if (mpfr_get_exp (x) != 0)
         {

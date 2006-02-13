@@ -24,13 +24,22 @@ MA 02110-1301, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+#define LOGBITS_PER_BLOCK 4
+#if GMP_NUMB_BITS < 32
+#define BITS_PER_RANDCALL GMP_NUMB_BITS
+#else
+#define BITS_PER_RANDCALL 32
+#endif
+
 void
-mpfr_random2 (mpfr_ptr x, mp_size_t size, mp_exp_t exp)
+mpfr_random2_raw (mpfr_ptr x, mp_size_t size, mp_exp_t exp, 
+gmp_randstate_t rstate)
 {
-  mp_size_t xn, k;
+  mp_size_t xn, k, ri;
   unsigned long sh;
   mp_ptr xp;
-  mp_limb_t elimb;
+  mp_limb_t elimb, ran, acc;
+  int ran_nbits, bit_pos, nb; 
 
   MPFR_CLEAR_FLAGS (x);
 
@@ -55,15 +64,69 @@ mpfr_random2 (mpfr_ptr x, mp_size_t size, mp_exp_t exp)
     size = xn;
   k = xn - size;
 
-  /* k   : # of 0 limbs at the end
-     size: # of limbs to fill
-     xn  : Size of mantissa */
-
   /* Generate random mantissa.  */
-  mpn_random2 (xp+k, size);
+  if (!rstate) rstate = RANDS; 
+
+  /* Code extracted from GMP, function mpn_random2, to avoid the use 
+     of GMP's internal random state in MPFR */ 
+     
+  _gmp_rand (&elimb, rstate, BITS_PER_RANDCALL);
+  ran = elimb;
+
+  /* Start off at a random bit position in the most significant limb.  */
+  bit_pos = GMP_NUMB_BITS - 1; 
+  ran >>= 6;                            /* Ideally   log2(GMP_NUMB_BITS) */
+  ran_nbits = BITS_PER_RANDCALL - 6;    /* Ideally - log2(GMP_NUMB_BITS) */
+
+  /* Bit 0 of ran chooses string of ones/string of zeroes.
+     Make most significant limb be non-zero by setting bit 0 of RAN.  */
+  ran |= 1;
+  ri = xn - 1;
+
+  acc = 0;
+  while (ri >= k)
+    {
+      if (ran_nbits < LOGBITS_PER_BLOCK + 1)
+        {
+          _gmp_rand (&elimb, rstate, BITS_PER_RANDCALL);
+          ran = elimb;
+          ran_nbits = BITS_PER_RANDCALL;
+        }
+
+      nb = (ran >> 1) % (1 << LOGBITS_PER_BLOCK) + 1;
+      if ((ran & 1) != 0)
+        {
+          /* Generate a string of nb ones.  */
+          if (nb > bit_pos)
+            {
+              xp[ri--] = acc | (((mp_limb_t) 2 << bit_pos) - 1);
+              bit_pos += GMP_NUMB_BITS;
+              bit_pos -= nb;
+              acc = ((~(mp_limb_t) 1) << bit_pos) & GMP_NUMB_MASK;
+            }
+          else
+            {
+              bit_pos -= nb;
+              acc |= (((mp_limb_t) 2 << nb) - 2) << bit_pos;
+            }
+        }
+      else
+        {
+          /* Generate a string of nb zeroes.  */
+          if (nb > bit_pos)
+            {
+              xp[ri--] = acc;
+              acc = 0;
+              bit_pos += GMP_NUMB_BITS;
+            }
+          bit_pos -= nb;
+        }
+      ran_nbits -= LOGBITS_PER_BLOCK + 1;
+      ran >>= LOGBITS_PER_BLOCK + 1;
+    }
 
   /* Set mandatory most significant bit.  */
-  xp[xn - 1] |= MPFR_LIMB_HIGHBIT;
+  // xp[xn - 1] |= MPFR_LIMB_HIGHBIT;
 
   if (k != 0)
     {
@@ -83,4 +146,10 @@ mpfr_random2 (mpfr_ptr x, mp_size_t size, mp_exp_t exp)
   MPFR_SET_EXP (x, elimb % (2 * exp + 1) - exp);
 
   return ;
+}
+
+void
+mpfr_random2(mpfr_ptr x, mp_size_t size, mp_exp_t exp)
+{
+  mpfr_random2_raw(x, size, exp, NULL); 
 }
