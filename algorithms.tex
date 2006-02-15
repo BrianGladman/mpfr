@@ -39,6 +39,7 @@ Algorithms and Proofs}
 
 \begin{document}
 \maketitle
+\sloppy
 
 \tableofcontents
 
@@ -628,14 +629,16 @@ $1/2 \leq b < 1$ and $1/2 \leq c < 1$, $b = bh+bl$ and $c = ch+c$
 The error comes from:
 \begin {itemize}
 \item Truncation: $ \leq bl.ch + bh.cl + bl.cl \leq bl + cl \leq 2 B^{-m}$
-\item Mulder: Assuming $error(Mulder(n)) \leq error(mulhigh\_basecase(n))$
-  $error(mulhigh(n) \leq (n-1) (B-1)^2 B^{-n-2} + ... + 1 (B-1)^2 B^{-2 n}$
-  $ = \sum_{i=1}^{n-1}{(n-i) (B-1)^2 B^{-n-1-i}}$
-  $ = (B-1)^2 B^{-n-1} \sum_{i=1}^{n-1}{B^{-i}}$
-  $ = (b-1)^2 B^{-n-1} \frac{B^{1-n}-n+n B-B}{(1-B)^2}$
-  $ \leq n B^{-n}$
+\item Mulder: Assuming $error(Mulder(n)) \leq error(mulhigh\_basecase(n))$,
+\begin{eqnarray*}
+error(mulhigh(n)
+  & \leq & (n-1) (B-1)^2 B^{-n-2} + \cdots + 1 (B-1)^2 B^{-2n} \\
+  & = & \sum_{i=1}^{n-1}{(n-i) (B-1)^2 B^{-n-1-i}}
+    =   (B-1)^2 B^{-n-1} \sum_{i=1}^{n-1}{B^{-i}} \\
+  & = & (b-1)^2 B^{-n-1} \frac{B^{1-n}-n+n B-B}{(1-B)^2} \leq n B^{-n}.
+\end{eqnarray*}
 \end {itemize}
-Total error: $\leq (m+2) B^{-m}$
+Total error: $\leq (m+2) B^{-m}$.
 
 \subsection{The {\tt mpfr\_div} function}
 
@@ -1063,9 +1066,7 @@ rounding mode.
 The {\tt mpfr\_cosh} ($\cosh{x}$) function implements the hyperbolic
 cosine as :
 
-$$
-\cosh x = \frac{1}{2} \left( e^{x} + \frac{1}{e^x} \right) 
-$$
+\[\cosh x = \frac{1}{2} \left( e^{x} + \frac{1}{e^x} \right).\]
 
 The algorithm used for the calculation of the hyperbolic cosine is as follows\footnote{$o()$ represent the arrondi error and $error(u)$ the
   error associate with the calcualtion of $u$}:
@@ -1257,9 +1258,7 @@ be bounded by $\frac{1}{2} + 2^{2 + {\rm max}(1, \Exp(q)-\Exp(r)) - \Exp(u)}
 The {\tt mpfr\_sinh} ($\sinh{x}$) function implements the hyperbolic
 sine as :
 
-$$
-\sinh x = \frac{1}{2} \left( e^{x} - \frac{1}{e^x} \right) 
-$$
+\[\sinh x = \frac{1}{2} \left( e^{x} - \frac{1}{e^x} \right).\]
 
 The algorithm used for the calculation of the hyperbolic sine is as follows\footnote{$o()$ represent the arrondi error and $error(u)$ the
   error associate with the calcualtion of $u$}:
@@ -1421,9 +1420,7 @@ N_t=\lceil \log_2(1+ 4 \cdot 2^{\Exp(u)-\Exp(w)}) \rceil
 
 The {\tt mpfr\_asinh} ($\n{acosh}{x}$) function implements the inverse hyperbolic sine as :
 
-$$
-\n{asinh} = \log \left( \sqrt{x^2+1} + x \right) 
-$$
+\[\n{asinh} = \log \left( \sqrt{x^2+1} + x \right).\]
 
 The algorithm used for the calculation of the inverse hyperbolic sine is as follows
 
@@ -1627,9 +1624,7 @@ the relative error on $s$ is thus bounded by $2^{{\rm max}(4,e+2)-p}$.
 
 The {\tt mpfr\_atanh} ($\n{acosh}{x}$) function implements the inverse hyperbolic tangent as :
 
-$$
-\n{atanh} = \frac{1}{2} \log \frac{1+x}{1-x} 
-$$
+\[\n{atanh} = \frac{1}{2} \log \frac{1+x}{1-x}.\]
 
 The algorithm used for the calculation of the inverse hyperbolic tangent is as follows
 
@@ -2120,7 +2115,7 @@ $|s-\sqrt{x^2+y^2}| \leq 4 \ulp(s)$.
 The {\tt mpfr\_fma} ($\n{fma}(x,y,z)$) function implements the floating multiply-add function  as :
 
 \[
-\textnormal{fma} (x,y,z) = z + x \times y
+\textnormal{fma} (x,y,z) = z + x \times y.
 \]
 
 The algorithm used for this calculation is as follows:
@@ -2194,7 +2189,7 @@ intermediary variables, we have to add, at least, $\lceil \log_2 (1+2^{e_u-e_v})
 The {\tt mpfr\_expm1} ($\n{expm1}(x)$) function implements the expm1 function  as :
 
 \[
-\textnormal{expm1} (x) = e^x -1
+\textnormal{expm1} (x) = e^x -1.
 \]
 
 The algorithm used for this calculation is as follows:
@@ -2266,7 +2261,7 @@ intermediary variables, we have to add, at least, $\lceil \log_2 (1+2^{e_u-e_v})
 The {\tt mpfr\_log1p} ($\n{log1p}(x)$) function implements the log1p function  as :
 
 \[
-\textnormal{log1p} (x) = \log(1+x)
+\textnormal{log1p} (x) = \log(1+x).
 \]
 
 The algorithm used for this calculation is as follows:
@@ -2360,7 +2355,7 @@ The {\tt mpfr\_log2} or {\tt mpfr\_log10} function implements the log in base 2 
 or
 
 \[
-\textnormal{log10} (x) = \frac{\log{x}}{\log{10}}
+\textnormal{log10} (x) = \frac{\log{x}}{\log{10}}.
 \]
 
 
@@ -2450,7 +2445,7 @@ wanted precision.
 The {\tt mpfr\_pow} function implements the power function  as:
 
 \[
-\textnormal{pow} (x,y) = e^{y \log(x)}
+\textnormal{pow} (x,y) = e^{y \log(x)}.
 \]
 
 The algorithm used for this calculation is as follows:
@@ -3225,7 +3220,7 @@ $\frac{K_0}{I_0} \le \pi e^{-4n}$ as in formula (5) of \cite{BrMc80}.
 Let $I'_0 = \sum_{k=0}^{K-1} \frac{n^{2k}}{(k!)^2}$ with
 $K = \lceil \beta n \rceil$, and $\beta$ is the root of
 $\beta (\log \beta - 1) = 3$
-($\beta \sim 4.971...$) then
+($\beta \sim 4.971\ldots$) then
 \[ |I_0 - I'_0| \le \frac{\beta}{2 \pi (\beta^2-1)} \frac{e^{-6n}}{n}. \]
 Let $K'_0 = \sqrt{\frac{\pi}{4n}} e^{-2n} \sum_{k=0}^{4n-1} (-1)^k
         \frac{[(2k)!]^2}{(k!)^3 (64n)^k}$, then bounding by the next term:
