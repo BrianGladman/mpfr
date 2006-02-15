@@ -700,7 +700,7 @@ or $\underbrace{0001}_{n-p}$.
 We even can decide if rounding is correct, since when $q_1$ ends with $0010$,
 the exact value cannot end with $0000$, and similarly
 when $q_1$ ends with $1111$.
-Hence if $n=p+k$, i.e.~if we use $k$ extra bits with respect to the target
+Hence if $n=p+k$, i.e.\ if we use $k$ extra bits with respect to the target
 precision $p$, the failure probability is $2^{1-k}$.
 
 \subsubsection{Avoiding Ziv's strategy.}
@@ -797,10 +797,10 @@ For rounding to nearest, the simplest way is to ask $p+1$ bits for the
 integer square root --- thus $m$ has now $2p+1$ or $2p+2$ bits.
 In such a way, we directly get the rounding bit, which is the parity bit
 of $s$, and the sticky bit is determined as above.
-Otherwise, we have to compare the value of the whole remainder, i.e.~$r$ plus
+Otherwise, we have to compare the value of the whole remainder, i.e.\ $r$ plus
 the possible truncated input, with $s + 1/4$, since $(s+1/2)^2 = 
 s^2 + s + 1/4$.
-Note that equality can occur --- i.e.~the ``nearest even rounding rule'' ---
+Note that equality can occur --- i.e.\ the ``nearest even rounding rule'' ---
 only when the input has at least $2p+1$ bits; in particular it can not
 happen in the common case when input and output have the same precision.
 
@@ -979,7 +979,7 @@ As $r < 2^{-k}$, if the target precision is $n$ bits, then only
 about $l = n/k$ terms of the Taylor expansion are needed.
 This method thus requires the evaluation of the Taylor series to
 order $n/k$, and $k$ squares to compute $\exp(r)^{2^k}$.
-If the Taylor series is evaluated using a na\"{\i}ve way, the optimal
+If the Taylor series is evaluated using a naive way, the optimal
 value of $k$ is about $n^{1/2}$, giving a complexity of $\O(n^{1/2} M(n))$.
 This is what is implemented in {\tt mpfr\_exp2\_aux}.
 
@@ -1068,8 +1068,8 @@ cosine as :
 
 \[\cosh x = \frac{1}{2} \left( e^{x} + \frac{1}{e^x} \right).\]
 
-The algorithm used for the calculation of the hyperbolic cosine is as follows\footnote{$o()$ represent the arrondi error and $error(u)$ the
-  error associate with the calcualtion of $u$}:
+The algorithm used for the calculation of the hyperbolic cosine is as follows\footnote{$o()$ represent the rounding error and $error(u)$ the
+  error associate with the calculation of $u$}:
 
 \begin{eqnarray}\nonumber
 u&\leftarrow&o(e^x)\\\label{coshalgo1}
@@ -1260,8 +1260,8 @@ sine as :
 
 \[\sinh x = \frac{1}{2} \left( e^{x} - \frac{1}{e^x} \right).\]
 
-The algorithm used for the calculation of the hyperbolic sine is as follows\footnote{$o()$ represent the arrondi error and $error(u)$ the
-  error associate with the calcualtion of $u$}:
+The algorithm used for the calculation of the hyperbolic sine is as follows\footnote{$o()$ represent the rounding error and $error(u)$ the
+  error associate with the calculation of $u$}:
 
 \begin{eqnarray}\nonumber
 u&\leftarrow&o(e^x)\\\nonumber
@@ -1434,7 +1434,7 @@ w&\leftarrow&o(\log  v)
 
 
 Now, we have to bound the rounding error for each step of this
-algorithm.  First, let consider the parity of hyperbolic arcsine
+algorithm.  First, let consider the parity of hyperbolic arc sine
 ($\n{asinh}(-x)=-\n{asinh}(x)$) : the problem is reduced to calculate $\n{asinh} x$
 with $x \geq 0$.
 
@@ -1638,7 +1638,7 @@ w&\leftarrow&o(\frac{1}{2} v)
 
 
 Now, we have to bound the rounding error for each step of this
-algorithm. First, let consider the parity of hyperbolic arctan
+algorithm. First, let consider the parity of hyperbolic arc tangent
 ($\n{atanh}(-x)=-\n{atanh}(x)$) : the problem is reduced to calculate
 $\n{atanh} x$ with $x \geq 0$.
 
@@ -1782,13 +1782,13 @@ least, $\lceil \log_2 (1+7 \times 2^{1-\Exp(v)} +
 \subsection{The arc-sine function}
 
 \begin{enumerate}
-\item We use the formula $arcsin\,x=\arctan\,\frac{x}{\sqrt{1-x^2}}$
+\item We use the formula $\arcsin\,x=\arctan\,\frac{x}{\sqrt{1-x^2}}$
 \item We will have the when $x$ is near $1$ we will experience uncertainty problems:
 \item If $x=a(1+\delta)$ with $\delta$ being the relative error then we will have
 \begin{equation*}
 1-x=1-a-a\delta=(1-a)[1-\frac{a}{1-a}\delta]
 \end{equation*}
-Ans so when using the arctangent programs we need to take into account that decrease in precision.
+Ans so when using the arc tangent programs we need to take into account that decrease in precision.
 \item We will have 
 \end{enumerate}
 
@@ -1833,14 +1833,14 @@ $w \leftarrow \circ(\frac{x}{v})$ [nearest]
 \end{comment}
 
 \subsubsection{Binary splitting}
-\noindent The Taylor serie for $\arctan$ is suitable for analysis using Binary splitting.
+\noindent The Taylor series for $\arctan$ is suitable for analysis using Binary splitting.
 \par This method is detailed for example in ``Pi and The AGM'' p 334. It is efficient for rational numbers and is non efficient for non rational numbers.
 \par The efficiency of this method is then quite limited. One can then wonder how to use it for non rational numbers.
 \par Using the formulas
 \begin{equation*}
 \arctan\,(-x)=-\arctan\,x\;\;\mbox{and}\;\;\arctan\,x+\arctan\,\frac{1}{x}=\frac{\pi}{2}{\rm sign}(x)
 \end{equation*}
-we can restrict ourself to $0\leq x\leq 1$.
+we can restrict ourselves to $0\leq x\leq 1$.
 \par Writing 
 \begin{equation*}
 x=\sum_{i=1}^{\infty} \frac{u_i}{2^i}\;\;\mbox{with}\;\;u_i\in\{0,1\}
@@ -1866,7 +1866,7 @@ we will use
 \arctan\,x=\arctan\,y+\arctan\,\frac{x-y}{1+xy}
 \end{equation*}
 with $x,y>0$ and $y<x$.
-\par Sumarizing we have the following facts:
+\par Summarizing we have the following facts:
 \begin{enumerate}
 \item We can compute efficiently $\arctan\,\frac{u}{2^{2^k}}$ with $k\geq 0$ and $u\in\{0,1,\dots,2^{2^{k-1}}\}$
 \item We have a sort of addition formula for $\arctan$, the term $k\pi$ being zero.
@@ -1930,27 +1930,27 @@ and $A_k$ is of the form $\frac{u_k}{v_k}$ with $u_k\in\N$.
 &=&\arctan\,A_0+\dots+\arctan\,A_N+\arctan\,s_{N+1}
 \end{array}
 \end{equation*}
-the number $s_N$ is very rapidily decreasing towards $0$ and we then have
+the number $s_N$ is very rapidly decreasing towards $0$ and we then have
 \begin{equation*}
 \begin{array}{rcl}
 \arctan\,x&=&\sum_{i=0}^{i=\infty}\arctan\,A_i
 \end{array}
 \end{equation*}
-\item The approximate arctangent is then
+\item The approximate arc tangent is then
 \begin{equation*}
 \begin{array}{rcl}
 \sum_{i=0}^{i=N_0}\arctan_{m_i}\,A_i
 \end{array}
 \end{equation*}
-with $\arctan_{m_i}$ being the sum of the first $2^{m_i}$ terms of the Taylor Serie for $\arctan$
+with $\arctan_{m_i}$ being the sum of the first $2^{m_i}$ terms of the Taylor series for $\arctan$
 \end{enumerate}
 We need to estimate all the quantities involved in the computation.
 \begin{enumerate}
-\item We have the majorization
+\item We have the upper bound
 \begin{equation*}
 0\leq s_{k+1}=\frac{s_k-A_k}{1+s_kA_k}\leq s_k-A_k\leq \frac{1}{v_k}
 \end{equation*}
-\item The remainder of the serie giving $\arctan\,x$ is
+\item The remainder of the series giving $\arctan\,x$ is
 \begin{equation*}
 \begin{array}{rcl}
 \sum_{i=N_0+1}^{\infty}\arctan\,A_i
@@ -1963,8 +1963,8 @@ We need to estimate all the quantities involved in the computation.
 \end{equation*}
 With $c_{N_0}\leq 1.64$. If $N_0\geq 1$ then $c_{N_0}\leq 1.27$. If $N_0\geq 2$ then $c_{N_0}\leq 1.07$.\\
 It remains to determine the good $N_0$.
-\item The partial sum of the Taylor series for arctan have derivative bounded by $1$ and consequently don't increase error.
-\item The error created by using the partial sum of the Taylor Serie of $\arctan$ is bounded by
+\item The partial sum of the Taylor series for $\arctan$ have derivative bounded by $1$ and consequently don't increase error.
+\item The error created by using the partial sum of the Taylor series of $\arctan$ is bounded by
 \begin{equation*}
 \frac{(A_i)^{2\times 2^{m_i}+1}}{2*2^{m_i}+1}
 \end{equation*}
@@ -1982,14 +1982,14 @@ In total this is $(N_0) ulp$.
 \item Addition give $1 ulp$ There are $(N_0-1)$ addition so we need to take $(N_0 -1) ulp$.
 \item The division create errors:
 \begin{enumerate}
-\item Having errors in the computation of $A_i$ is of no consequences: It changes the quantity being arctangented and that's all. Errors concerning the computation of $s_{N+1}$ in contrary adds to the error.
-\item The substract operation $s_i-A_i$ has the effect of substracting very near numbers. But $A_i$ has exactly the same first $1$ and $0$ than $s_i$ so we can expect this operation to be nondestructive.
+\item Having errors in the computation of $A_i$ is of no consequences: It changes the quantity being arc-tangented and that's all. Errors concerning the computation of $s_{N+1}$ in contrary adds to the error.
+\item The subtract operation $s_i-A_i$ has the effect of subtracting very near numbers. But $A_i$ has exactly the same first $1$ and $0$ than $s_i$ so we can expect this operation to be nondestructive.
 \item Extrapolating from the previous result we can expect that the error of the quantity $\frac{s_i-A_i}{1+s_iA_i}$ is $err(s_i)+1 ulp$
 \end{enumerate}
 \item The total sum of errors is then (if no errors are done in the counting of errors)
 \begin{equation*}
 \begin{array}{rcl}
-Err(arctan)
+Err(\arctan)
 &=&\sum_{i=0}^{i=N_0}\frac{1}{2*2^{m_i}+1}2^{-2^{i+m_i}}+\frac{2}{2^{2^{N_0}}}+(N_0-1)2^{-Prec}\\
 &+&(N_0 -1)2^{-Prec}+(N_0)2^{-Prec}\;\;\;[m_i=N_0-i]\\
 &=&\sum_{i=0}^{i=N_0}\frac{1}{2*2^{N_0-i}+1}2^{-2^{N_0}}+\frac{2}{2^{2^{N_0}}}+(3*N_0-2)2^{-Prec}\\
@@ -1999,7 +1999,7 @@ Err(arctan)
 &=&\frac{2.4}{2^{2^{N_0}}}+(3*N_0-2)2^{-Prec}
 \end{array}
 \end{equation*}
-This is what we wish thus $Err(arctan)< 2^{-prec\_arctan}$ with $prec\_arctan$
+This is what we wish thus $Err(\arctan)< 2^{-prec\_arctan}$ with $prec\_arctan$
 is the requested precision on the arc-tangent.
 We thus want:
 \begin{equation*}
@@ -2033,9 +2033,9 @@ This is the error definition used in mpfr. So we need to redo everything in orde
 \sum_{i=N_0+1}^{\infty}\arctan\,A_i\leq \frac{c_{N_0}}{2^{2^{N_0}}}
 \end{equation*}
 so the relative error will be $\frac{1}{\arctan\,x}\frac{c_{N_0}}{2^{2^{N_0}}}$.
-\item The relative error created by using a partial sum of Taylor Serie is bounded by $\frac{1}{\arctan\,A_i}\frac{1}{2*2^{m_i}+1}*2^{-2^{i+m_i}}$.
+\item The relative error created by using a partial sum of Taylor series is bounded by $\frac{1}{\arctan\,A_i}\frac{1}{2*2^{m_i}+1}*2^{-2^{i+m_i}}$.
 \item Multiplication $\arctan\,A_i=A_i[\frac{\arctan\,A_i}{A_i}]$ take 1 ulp of relative error.
-\item Doing the substraction $s_i-A_i$ is a gradual underflow operation: it decrease the precision of $s_i-A_i$.
+\item Doing the subtraction $s_i-A_i$ is a gradual underflow operation: it decrease the precision of $s_i-A_i$.
 \item The multiplication $a_iA_i$ create $1$ ulp of error. This is not much and this relative error is further reduced by adding $1$.
 \end{enumerate}
 \item 
@@ -2054,7 +2054,7 @@ so the relative error will be $\frac{1}{\arctan\,x}\frac{c_{N_0}}{2^{2^{N_0}}}$.
 &=&[\arctan\,b][1+\{\frac{b}{(1+b^2)\arctan\,b}\}\Delta]
 \end{array}
 \end{equation*}
-A rapid analysis gives $0\leq \frac{b}{(1+b^2)\arctan\,b}\leq 1$ and then we can say that the function $arctan$ does not increase the relative error.
+A rapid analysis gives $0\leq \frac{b}{(1+b^2)\arctan\,b}\leq 1$ and then we can say that the function $\arctan$ does not increase the relative error.
 \item So we have two possible solutions:
 \begin{enumerate}
 \item Do a relative analysis of our algorithm.
@@ -2062,17 +2062,17 @@ A rapid analysis gives $0\leq \frac{b}{(1+b^2)\arctan\,b}\leq 1$ and then we can
 \end{enumerate}
 it is not hard to see that second solution is certainly better: The formulas are additive. Our analysis will work without problems.
 \item It then suffices to replace in the previous section $2^{-prec\_arctan}$ by $2^{-prec\_arctan}\arctan\,x$.
-\item If $|x|\leq 1$ then $|\arctan\,x|$ is minorized by $|x|\frac{4}{\pi}\sim |x|1.27$. So it suffices to have an absolute error majorized by
+\item If $|x|\leq 1$ then $|\arctan\,x|$ is bounded below by $|x|\frac{4}{\pi}\sim |x|1.27$. So it suffices to have an absolute error bounded above by
 \begin{equation*}
 2^{-prec\_arctan}\,|x|1.27
 \end{equation*}
 In this case we will add $2-MPFR\_EXP(x)$ to $prec\_arctan$
-\item If $|x|\geq 1$ then $\arctan\,x$ is minorized by $\frac{\pi}{4}$. So it suffices to have an absolute error majorized by
+\item If $|x|\geq 1$ then $\arctan\,x$ is bounded below by $\frac{\pi}{4}$. So it suffices to have an absolute error bounded above by
 \begin{equation*}
 2^{-prec\_arctan}\, 1.27
 \end{equation*}
 we will add $1$ to $prec\_arctan$.\\
-In this case we need to take into account the error caused by the substration:
+In this case we need to take into account the error caused by the subtraction:
 \begin{equation*}
 \arctan\,x=\pm\frac{\pi}{2}-\arctan\,\frac{1}{x}
 \end{equation*}
@@ -2360,7 +2360,7 @@ or
 
 
 The algorithm used for this calculation is the same for $\n{log2}$ or
-$\n{log10}$ and is descibed as follows for $t=2 \n{ or } 10$:
+$\n{log10}$ and is described as follows for $t=2 \n{ or } 10$:
 
 \begin{eqnarray}\nonumber
 u&\leftarrow&o(\log(x))\\\nonumber
@@ -2551,7 +2551,7 @@ Let $x = a 2^b$, $y = c 2^d$, and assume $x^y = e 2^f$, where
 $a, b, c, d, e, f$ are integers.
 Without loss of generality, we can assume $a, c, e$ odd integers.
 
-If $x$ is negative: either $y$ is integer, then $x^y$ is exact iff
+If $x$ is negative: either $y$ is integer, then $x^y$ is exact if and only if
 $(-x)^y$ is exact; or $y$ is rational, then $x^y$ is a complex number,
 and the answer is NaN (Not a Number).
 Thus we can assume $a$ (and therefore $e$) positive.
@@ -2593,7 +2593,7 @@ Detecting if the result is exactly representable is not enough, since it
 may be exact, but with a precision larger than the target precision.
 Thus we propose the following: modify Algorithm CheckExactPower so that
 it returns an upper bound $p$ for the number of significant bits
-of $x^y$ when it is exactly representable, i.e.~$x^y = m \cdot 2^e$
+of $x^y$ when it is exactly representable, i.e.\ $x^y = m \cdot 2^e$
 with $|m| < 2^p$. Then if the relative error on the approximation of
 $x^y$ is less than $\frac{1}{2}$ ulp, then rounding it to nearest will give
 $x^y$.
@@ -2624,7 +2624,7 @@ s 2^e && \mbox{if $r=0$ or round down or round nearest and
 \end{eqnarray*}
 
 Note: for rounding to nearest, one may consider $m \geq 2^{3n}$ instead of
-$m \geq 2^{3n-3}$, i.e.~taking $n+1$ instead of $n$.
+$m \geq 2^{3n-3}$, i.e.\ taking $n+1$ instead of $n$.
 In that case, there is no need to compare the remainder $r$ to
 $\frac{3}{2} s^2 +\frac{3}{4}s+ \frac{1}{8}$: we just need to know
 whether $r=0$ or not.
@@ -2719,12 +2719,12 @@ and $T_k = N^{1-2k-s} C_k \Pi_k$.
 R\'emy and P\'etermann proved the following result:
 \begin{theorem}
 Let $d$ be the target precision so that $|R_{N,p}(s)| < 2^{-d}$.
-Assume $\Pi = d - 2 \geq 11$, i.e.~$d \geq 13$. If the internal precisions
+Assume $\Pi = d - 2 \geq 11$, i.e.\ $d \geq 13$. If the internal precisions
 for computing $A$, $B$, $C$ satisfy respectively
 \[ D_A \geq \Pi + \lceil \frac{3}{2} \frac{\log N}{\log 2} \rceil + 5, \quad
    D_B \geq \Pi + 14, \quad
    D_C \geq \Pi + \lceil \frac{1}{2} \frac{\log N}{\log 2} \rceil + 7, \]
-then the relative roundoff error is bounded by $2^{-\Pi}$, i.e.~if $z$ is
+then the relative round-off error is bounded by $2^{-\Pi}$, i.e.\ if $z$ is
 the approximation computed, we have
 \[ |\zeta(s) - z| \leq 2^{-\Pi} |\zeta(s)|. \]
 \end{theorem}
@@ -2782,8 +2782,8 @@ and the mathematical error which is bounded by $\frac{3}{(3+\sqrt{8})^n}
 \leq \frac{3}{2^p}$, the total error is bounded by $n+l+4$ ulps.
 
 \paragraph{Analysis of the sizes.} 
-To get an accurary of around $p$ bits, since $\zeta(s) \geq 1$, it suffices
-to have $|\gamma_n(s)| \leq 2^{-p}$, i.e.~$(3+\sqrt{8})^n \ge 2^p$,
+To get an accuracy of around $p$ bits, since $\zeta(s) \geq 1$, it suffices
+to have $|\gamma_n(s)| \leq 2^{-p}$, i.e.\ $(3+\sqrt{8})^n \ge 2^p$,
 thus $n \ge \alpha p$ with $\alpha = \frac{\log 2}{\log ((3+\sqrt{8})} 
 \approx 0.393$.
 It can be easily seen that $d_n \geq 4^n$, thus when $n \ge \alpha p$,
@@ -2875,7 +2875,7 @@ and $\sqrt{112}$ rounds to $11$.
 We use Higham error analysis method, where $\theta$ denotes a generic value
 such that $|\theta| \leq 2^{-p}$.
 We note $a_n$ and $b_n$ the exact values we would obtain for $u_n$ and $v_n$
-respectively, without roundoff errors.
+respectively, without round-off errors.
 We have $s_1 = ab (1+\theta)$, $u_1 = a_1 (1+\theta)^{3/2}$,
 $v_1 = b_1 (1+\theta)$.
 Assume we can write $u_n = a_n (1+\theta)^{\alpha}$ and 
@@ -2891,7 +2891,7 @@ we have $\Exp(v_n-u_n) < \Exp(v_n) - p/4$,
 and since exponents are integers,
 thus $\Exp(v_n-u_n) \leq \Exp(v_n) - (p+1)/4$,
 % 2^{Exp(x)-1} <= x < 2^Exp(x) thus x < 2^Exp(x) <= 2*x
-i.e.~$|v_n-u_n|/v_n < 2^{(3-p)/4}$.
+i.e.\ $|v_n-u_n|/v_n < 2^{(3-p)/4}$.
 
 Assume $n \leq 2^{p/4}$, which implies 
 $3n|\theta|/2 \leq 1$, which since $n \geq 1$ implies in turn $|\theta| \leq
@@ -2926,7 +2926,7 @@ $|s| \leq 1.8 \cdot 2^{-p/4} v_n$ for $q \geq 4$.
 Then $t \leq 0.22 \cdot 2^{-p/2} v_n$.
 Finally due to the above Lemma, the difference between $v_{n+1}$ and $v_n$
 is less than that between $u_n$ and $v_n$, 
-i.e.~$\frac{v_n}{v_{n+1}} \leq \frac{1}{1-2^{(3-p)/4}} \leq 2$ for $p \geq 7$.
+i.e.\ $\frac{v_n}{v_{n+1}} \leq \frac{1}{1-2^{(3-p)/4}} \leq 2$ for $p \geq 7$.
 We deduce $w \leq 0.22 \cdot 2^{-p/2} \frac{v_n^2}{v_{n+1}} (1+2^{-q})
 \leq 0.47 \cdot 2^{-p/2} v_n \leq 0.94 \cdot 2^{-p/2} v_{n+1}$.
 
@@ -2953,11 +2953,11 @@ The total error is bounded by the sum of four terms:
       = \frac{-1}{256} \epsilon^4 + O(\epsilon^5). \]
       For $|\epsilon| \leq 1/2$, the difference is bounded by $\frac{1}{100}
       \epsilon^4 v_n \leq \frac{1}{100} 2^{3-p} v_n$.
-\item the roundoff error on $w$, assuming $u_n$ and $v_n$ are exact;
+\item the round-off error on $w$, assuming $u_n$ and $v_n$ are exact;
       we can write $s = (v_n - u_n) (1+\theta)$, $t = \frac{1}{16}
       (v_n - u_n)^2 (1+\theta)^2$, $w = \frac{(v_n - u_n)^2}{16v_{n+1}}
       (1+\theta)^4$. For $q \geq 4$, $(1+\theta)^4$ can be written
-      $1+5\theta$, thus the roundoff error on $w$ is bounded by
+      $1+5\theta$, thus the round-off error on $w$ is bounded by
       $5 \theta w \leq 4.7 \cdot 2^{-p/2-q} v_{n+1}$. For $q \geq p/2$,
       this gives a bound of $4.7 \cdot 2^{-p} v_{n+1}$.
 \end{itemize}
@@ -2967,7 +2967,7 @@ the first two errors are less than $(9n+45/2) 2^{-p} v_n$;
 together with the third one, this gives a bound of $(9n + 23) 2^{-p} v_n$;
 finally since we proved above that $v_n \leq 2v_{n+1}$,
 this gives a total bound of $(18n+51) 2^{-p} v_{n+1}$, which is less
-than $(18n+51) \ulp(r)$, or twice this in the unprobable case where there
+than $(18n+51) \ulp(r)$, or twice this in the improbable case where there
 is an exponent loss in the final subtraction $r = \circ(v_{n+1}-w)$.
 
 \subsection{Summary}
@@ -3023,7 +3023,7 @@ $D_{k+1} \leftarrow D_k - 2^k (A_{k+1} - B_{k+1})$
 \end{quote}
 For each variable $x$ approximation a true value $\tilde{x}$,
 denote by $\epsilon(x)$ the exponent of the maximal error,
-i.e.~$x = \tilde{x} (1\pm\delta)^e$ with $|e| \leq \epsilon(x)$,
+i.e.\ $x = \tilde{x} (1\pm\delta)^e$ with $|e| \leq \epsilon(x)$,
 and $\delta = 2^{-p}$ for precision $p$ (we assume all roundings to
 nearest).
 We can prove by an easy induction that $\epsilon(a_k) = 3 \cdot 2^{k-1} - 1$,
@@ -3104,7 +3104,7 @@ The maximum error is $\epsilon_n \le \frac{n^n}{n!} \le e^n$.
 Thus the error on $t$ at step $k$ is less than $1 + e^n/k$,
 and the total error on $s$ is bounded by $N (e^n + 1)$.
 Hence to get a precision of $n$ bits, we need to use
-$m ge n (1 + \frac{1}{\log 2})$.
+$m \ge n (1 + \frac{1}{\log 2})$.
 In such a case, the value $s/2^m$ converted to a floating-point number
 will have an error of at most $\ulp(x)$.
 \end{comment}
@@ -3180,7 +3180,7 @@ is less than $\ulp(1/2)$.
 
 \Paragraph{Final computation.} We use the formula
 $\gamma = S(n) - R(n) - \log n$ with $n$ such that $e^{-2n} \le 
-\ulp(1/2) = 2^{-{\rm prec}}$, i.e.~$n \ge {\rm prec} \frac{\log 2}{2}$:
+\ulp(1/2) = 2^{-{\rm prec}}$, i.e.\ $n \ge {\rm prec} \frac{\log 2}{2}$:
 \begin{quote}
 $s \leftarrow S'(n)$ \\
 $l \leftarrow \log(n)$ \\
