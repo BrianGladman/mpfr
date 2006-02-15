@@ -2578,15 +2578,15 @@ We therefore propose the following algorithm:
 \begin{quote}
 Algorithm CheckExactPower. \\
 Input: $x=a 2^b$, $y=c 2^d$, $a, c$ odd integers \\
-Output: \emph{true} if $x^y$ is an exact power $e 2^f$, {\em false} otherwise\\
+Output: \emph{true} if $x^y$ is an exact power $e 2^f$, \emph{false} otherwise\\
 {\bf if} $x < 0$ {\bf then} \\
 \q {\bf if} $y$ is an integer {\bf then} return ${\rm CheckExactPower}(-x,y)$\\
-\q {\bf else} return {\em false} \\
+\q {\bf else} return \emph{false} \\
 {\bf if} $y < 0$ {\bf then} \\
-\q {\bf if} $a=1$ {\bf then} return {\em true} {\bf else} return {\em false}\\
+\q {\bf if} $a=1$ {\bf then} return \emph{true} {\bf else} return \emph{false}\\
 {\bf if} $d < 0$ {\bf then} \\
-\q {\bf if} $a 2^b$ is not a $2^{-d}$ power {\bf then} return {\em false} \\
-return {\em true}
+\q {\bf if} $a 2^b$ is not a $2^{-d}$ power {\bf then} return \emph{false} \\
+return \emph{true}
 \end{quote}
 
 Detecting if the result is exactly representable is not enough, since it
