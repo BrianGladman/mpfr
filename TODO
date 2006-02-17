@@ -86,6 +86,8 @@ New functions to implement:
   [suggested by Tomas Zahradnicky <tomas@24uSoftware.com>, 29 Nov 2003]
   Kevin: Might want to be called mpfr_mod, to match mpz_mod.
   -> we probably want to allow both mpfr_fmod and mpfr_mod.
+- mpfr_remainder (mpfr_t, mpfr_srcptr, mpfr_srcptr, mp_rnd_t)
+  as in ISO C99: "centered" remainder.
 - mpfr_fms for a-b*c
   [suggested by Tomas Zahradnicky <tomas@24uSoftware.com>, 29 Nov 2003]
 - 1/sqrt(x) [Regis Dupont <dupont@lix.polytechnique.fr>, 15 Sep 2004]
