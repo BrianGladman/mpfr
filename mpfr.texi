@@ -1626,7 +1626,7 @@ Generate a uniformly distributed random float in the interval
 Return 0, unless the exponent is not in the current exponent range, in
 which case @var{rop} is set to NaN and a non-zero value is returned. The
 second argument is a @code{gmp_randstate_t} structure which should be
-created using the GMP @code{gmp_randinit} function, see the GMP manual. 
+created using the GMP @code{gmp_randinit} function, see the GMP manual.
 @end deftypefun
 
 @deftypefun void mpfr_random (mpfr_t @var{rop})
@@ -1643,10 +1643,9 @@ This function is useful for
 testing functions and algorithms, since this kind of random numbers have
 proven to be more likely to trigger corner-case bugs.
 Negative random numbers are generated when @var{size} is negative.
-Put +0 in @var{rop} when size if zero. The GMP @code{mpn_random2} function 
-is used to generate the numbers, so that the internal state of the 
-default GMP pseudorandom number generator is modified by a call to 
-this function. 
+Put +0 in @var{rop} when size if zero. The internal state of the default
+pseudorandom number generator is modified by a call to this function (the
+same one as GMP if MPFR was built using @samp{--with-gmp-build}).
 @end deftypefun
 
 @deftypefun mp_exp_t mpfr_get_exp (mpfr_t @var{x})
