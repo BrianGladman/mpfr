@@ -45,7 +45,8 @@ mpfr_random2_raw (mpfr_ptr x, mp_size_t size, mp_exp_t exp,
 
   if (MPFR_UNLIKELY(size == 0))
     {
-      MPFR_SET_ZERO(x);
+      MPFR_SET_ZERO (x);
+      MPFR_SET_POS (x);
       return ;
     }
   else if (size > 0)

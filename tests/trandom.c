@@ -135,7 +135,10 @@ test_random2 (long nbtests, mp_prec_t prec, int verbose)
 
   /* test size=0 */
   mpfr_random2 (x, 0, 0);
-  MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_POS(x));
+  MPFR_ASSERTN (mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_POS (x));
+  mpfr_set_si (x, -1, GMP_RNDN); /* x is negative */
+  mpfr_random2 (x, 0, 0);
+  MPFR_ASSERTN (mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_POS (x));
 
   /* test size < 0 */
   mpfr_random2 (x, -1, 0);
