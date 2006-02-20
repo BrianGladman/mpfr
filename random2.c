@@ -31,7 +31,7 @@ MA 02110-1301, USA. */
 #define BITS_PER_RANDCALL 32
 #endif
 
-void
+static void
 mpfr_random2_raw (mpfr_ptr x, mp_size_t size, mp_exp_t exp,
                   gmp_randstate_t rstate)
 {
