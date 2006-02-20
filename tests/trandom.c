@@ -57,7 +57,7 @@ test_random (long nbtests, mp_prec_t prec, int verbose)
     }
 
   av /= nbtests;
-  var = (var /nbtests) - av*av;
+  var = (var / nbtests) - av*av;
 
   th = (double) nbtests / size_tab;
 
@@ -149,7 +149,7 @@ test_random2 (long nbtests, mp_prec_t prec, int verbose)
     }
 
   av /= nbtests;
-  var = (var /nbtests) - av*av;
+  var = (var / nbtests) - av*av;
 
   th = (double)nbtests / size_tab;
   printf("Average = %.5f\nVariance = %.5f\n", av, var);
