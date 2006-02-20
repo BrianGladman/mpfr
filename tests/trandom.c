@@ -32,12 +32,15 @@ test_random (long nbtests, mp_prec_t prec, int verbose)
   int *tab, size_tab, k;
   double d, av = 0, var = 0, chi2 = 0, th;
 
-  mpfr_init2(x, prec);
-
   size_tab = (nbtests >= 1000 ? nbtests / 50 : 20);
-  tab = (int *) malloc (size_tab * sizeof(int));
-  for (k = 0; k < size_tab; ++k)
-    tab[k] = 0;
+  tab = (int *) calloc (size_tab, sizeof(int));
+  if (tab == NULL)
+    {
+      fprintf (stderr, "trandom: can't allocate memory in test_random\n");
+      exit (1);
+    }
+
+  mpfr_init2(x, prec);
 
   for (k = 0; k < nbtests; k++)
     {
@@ -86,14 +89,17 @@ test_random2 (long nbtests, mp_prec_t prec, int verbose)
   int *tab, size_tab, k, sh, xn;
   double d, av = 0, var = 0, chi2 = 0, th;
 
+  size_tab = (nbtests >= 1000 ? nbtests / 50 : 20);
+  tab = (int *) calloc (size_tab, sizeof(int));
+  if (tab == NULL)
+    {
+      fprintf (stderr, "trandom: can't allocate memory in test_random2\n");
+      exit (1);
+    }
+
   mpfr_init2 (x, prec);
   xn = 1 + (prec - 1) / mp_bits_per_limb;
   sh = xn * mp_bits_per_limb - prec;
-
-  size_tab = (nbtests >= 1000 ? nbtests / 50 : 20);
-  tab = (int *) malloc (size_tab * sizeof(int));
-  for (k = 0; k < size_tab; ++k)
-    tab[k] = 0;
 
   for (k = 0; k < nbtests; k++)
     {
@@ -173,14 +179,17 @@ test_urandomb (long nbtests, mp_prec_t prec, int verbose)
   double d, av = 0, var = 0, chi2 = 0, th;
   mp_exp_t emin;
 
+  size_tab = (nbtests >= 1000 ? nbtests / 50 : 20);
+  tab = (int *) calloc (size_tab, sizeof(int));
+  if (tab == NULL)
+    {
+      fprintf (stderr, "trandom: can't allocate memory in test_urandomb\n");
+      exit (1);
+    }
+
   mpfr_init2 (x, prec);
   xn = 1 + (prec - 1) / mp_bits_per_limb;
   sh = xn * mp_bits_per_limb - prec;
-
-  size_tab = (nbtests >= 1000 ? nbtests / 50 : 20);
-  tab = (int *) malloc (size_tab * sizeof(int));
-  for (k = 0; k < size_tab; ++k)
-    tab[k] = 0;
 
   gmp_randinit (state, GMP_RAND_ALG_LC, 128);
   gmp_randseed_ui (state, time(NULL));
