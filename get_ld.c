@@ -1,5 +1,5 @@
-/* mpfr_get_ld -- convert a multiple precision floating-point number
-                  to a machine long double
+/* mpfr_get_ld, mpfr_get_ld_2exp -- convert a multiple precision floating-point
+                                    number to a machine long double
 
 Copyright 2002, 2003, 2004, 2005, 2006 Free Software Foundation, Inc.
 
@@ -175,3 +175,45 @@ mpfr_get_ld (mpfr_srcptr x, mp_rnd_t rnd_mode)
 }
 
 #endif
+
+/* contributed by Damien Stehle */
+long double
+mpfr_get_ld_2exp (long *expptr, mpfr_srcptr src, mp_rnd_t rnd_mode)
+{
+  long double ret;
+  mp_exp_t exp;
+  mpfr_t tmp;
+
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (src)))
+    return (long double) mpfr_get_d_2exp (expptr, src, rnd_mode);
+
+  tmp[0] = *src;        /* Hack copy mpfr_t */
+  MPFR_SET_EXP (tmp, 0);
+  ret = mpfr_get_ld (tmp, rnd_mode);
+
+  if (MPFR_IS_PURE_FP(src))
+    {
+      exp = MPFR_GET_EXP (src);
+
+      /* rounding can give 1.0, adjust back to 0.5 <= abs(ret) < 1.0 */
+      if (ret == 1.0)
+        {
+          ret = 0.5;
+          exp ++;
+        }
+      else if (ret ==  -1.0)
+        {
+          ret = -0.5;
+          exp ++;
+        }
+
+      MPFR_ASSERTN ((ret >= 0.5 && ret < 1.0)
+                    || (ret <= -0.5 && ret > -1.0));
+      MPFR_ASSERTN (exp >= LONG_MIN && exp <= LONG_MAX);
+    }
+  else
+    exp = 0;
+
+  *expptr = exp;
+  return ret;
+}

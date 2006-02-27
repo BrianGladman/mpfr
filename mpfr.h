@@ -285,6 +285,8 @@ __MPFR_DECLSPEC long double mpfr_get_ld _MPFR_PROTO ((mpfr_srcptr,
 __MPFR_DECLSPEC double mpfr_get_d1 _MPFR_PROTO ((mpfr_srcptr));
 __MPFR_DECLSPEC double mpfr_get_d_2exp _MPFR_PROTO ((long*, mpfr_srcptr,
                                                      mpfr_rnd_t));
+__MPFR_DECLSPEC long double mpfr_get_ld_2exp _MPFR_PROTO ((long*, mpfr_srcptr,
+                                                           mpfr_rnd_t));
 __MPFR_DECLSPEC long mpfr_get_si _MPFR_PROTO ((mpfr_srcptr, mpfr_rnd_t));
 __MPFR_DECLSPEC unsigned long mpfr_get_ui _MPFR_PROTO ((mpfr_srcptr,
                                                         mpfr_rnd_t));

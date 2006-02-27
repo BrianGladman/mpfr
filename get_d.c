@@ -1,5 +1,5 @@
-/* mpfr_get_d -- convert a multiple precision floating-point number
-                 to a machine double precision float
+/* mpfr_get_d, mpfr_get_d_2exp -- convert a multiple precision floating-point
+                                  number to a machine double precision float
 
 Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006 Free Software Foundation, Inc.
 
