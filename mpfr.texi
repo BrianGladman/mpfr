@@ -1958,8 +1958,7 @@ space for @var{x}. Otherwise the behavior is undefined.
 Return non-zero if @var{op1} and @var{op2} are both non-zero ordinary
 numbers with the same exponent and the same first @var{op3} bits, both
 zero, or both infinities of the same sign. Return zero otherwise. This
-function is defined for compatibility with @code{mpf}, but does not
-make much sense.
+function is defined for compatibility with @code{mpf}.
 @end deftypefun
 
 @deftypefun void mpfr_reldiff (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
