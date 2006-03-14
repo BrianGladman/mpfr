@@ -430,6 +430,35 @@ special ()
       exit (1);
     }
 
+  /* From http://www.terra.es/personal9/ismaeljc/hall.htm */
+  mpfr_set_prec (x, 113);
+  mpfr_set_prec (y, 2);
+  mpfr_set_prec (z, 169);
+  mpfr_set_str1 (x, "6078673043126084065007902175846955");
+  mpfr_set_ui_2exp (y, 3, -1, GMP_RNDN);
+  test_pow (z, x, y, GMP_RNDZ);
+  if (mpfr_cmp_str1 (z, "473928882491000966028828671876527456070714790264144"))
+    {
+      printf ("Error in mpfr_pow for 6078673043126084065007902175846955");
+      printf ("^(3/2), GMP_RNDZ\nExpected ");
+      printf ("4.73928882491000966028828671876527456070714790264144e50");
+      printf ("\nGot      ");
+      mpfr_out_str (stdout, 10, 0, z, GMP_RNDN);
+      printf ("\n");
+      exit (1);
+    }
+  test_pow (z, x, y, GMP_RNDU);
+  if (mpfr_cmp_str1 (z, "473928882491000966028828671876527456070714790264145"))
+    {
+      printf ("Error in mpfr_pow for 6078673043126084065007902175846955");
+      printf ("^(3/2), GMP_RNDU\nExpected ");
+      printf ("4.73928882491000966028828671876527456070714790264145e50");
+      printf ("\nGot      ");
+      mpfr_out_str (stdout, 10, 0, z, GMP_RNDN);
+      printf ("\n");
+      exit (1);
+    }
+
   mpfr_set_inf (x, 1);
   mpfr_set_prec (y, 2);
   mpfr_set_str_binary (y, "1E10");
