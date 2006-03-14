@@ -21,8 +21,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin Place, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
-#include <stdio.h>  /* for NULL */
-
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
@@ -155,5 +153,5 @@ mpfr_random2_raw (mpfr_ptr x, mp_size_t size, mp_exp_t exp,
 void
 mpfr_random2 (mpfr_ptr x, mp_size_t size, mp_exp_t exp)
 {
-  mpfr_random2_raw (x, size, exp, NULL);
+  mpfr_random2_raw (x, size, exp, 0);
 }
