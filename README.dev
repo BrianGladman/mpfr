@@ -233,6 +233,11 @@ use:
 
 Do not use TMP_DECL / TMP_ALLOC, ... but MPFR_TMP_DECL, MPFR_TMP_ALLOC, ...
 
+   ====================================================================
+
+Do not use C99-only features, such as empty macro arguments or C++-style
+comments.
+
 ===========================================================================
 
 If wou want to use the logging of MPFR, you need to enable it:
