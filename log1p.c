@@ -63,7 +63,7 @@ mpfr_log1p (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     }
 
   /* log(1+x) = x-x^2/2 + ... so the error is < 2^(2*EXP(x)-1) */
-  MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, -MPFR_GET_EXP (x)+1,0,rnd_mode,);
+  MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, -MPFR_GET_EXP (x)+1,0,rnd_mode,{});
 
   comp = mpfr_cmp_si (x, -1);
   /* log1p(x) is undefined for x < -1 */

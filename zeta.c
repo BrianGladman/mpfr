@@ -175,7 +175,7 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
       else
         err = ((mp_exp_t)1) << err;
       err = 1 - (-err+1); /* GET_EXP(one) - (-err+1) = err :) */
-      MPFR_FAST_COMPUTE_IF_SMALL_INPUT (z, __gmpfr_one, err, 1, rnd_mode, );
+      MPFR_FAST_COMPUTE_IF_SMALL_INPUT (z, __gmpfr_one, err, 1, rnd_mode,{});
     }
 
   d = precz + MPFR_INT_CEIL_LOG2(precz) + 10;
