@@ -65,10 +65,6 @@ mpfr_random2_raw (mpfr_ptr x, mp_size_t size, mp_exp_t exp,
     size = xn;
   k = xn - size;
 
-  /* Generate random mantissa.  */
-  if (!rstate)
-    rstate = RANDS;
-
   /* Code extracted from GMP, function mpn_random2, to avoid the use
      of GMP's internal random state in MPFR */
 
@@ -153,5 +149,5 @@ mpfr_random2_raw (mpfr_ptr x, mp_size_t size, mp_exp_t exp,
 void
 mpfr_random2 (mpfr_ptr x, mp_size_t size, mp_exp_t exp)
 {
-  mpfr_random2_raw (x, size, exp, 0);
+  mpfr_random2_raw (x, size, exp, RANDS);
 }
