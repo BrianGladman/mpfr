@@ -69,7 +69,6 @@ Building MPFR with internal GMP header files
 
 --enable-assert         build MPFR with assertions.
 --enable-thread-safe    build MPFR as thread safe.
---enable-shared         build shared libraries.
 --with-irix64           Irix64 support.
 
 Run "./configure --help" to see the other options (autoconf default options).
