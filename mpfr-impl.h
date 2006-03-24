@@ -152,15 +152,6 @@ MA 02110-1301, USA. */
 # error "Can't compute log2(BITS_PER_MP_LIMB)"
 #endif
 
-/* mpn_sub_nc is internal but may be defined in the header
-   but not in the library! That's why we may need to overide it.*/
-#ifndef MPFR_HAVE_MPN_SUB_NC
-mp_limb_t mpfr_sub_nc _MPFR_PROTO ((mp_ptr, mp_srcptr, mp_srcptr, mp_size_t,
-                                    mp_limb_t ));
-#undef mpn_sub_nc
-#define mpn_sub_nc mpfr_sub_nc
-#endif
-
 #if __MPFR_GNUC(3,0) || __MPFR_ICC(8,1,0)
 # define MPFR_NORETURN_ATTR __attribute__ ((noreturn))
 # define MPFR_CONST_ATTR    __attribute__ ((const))

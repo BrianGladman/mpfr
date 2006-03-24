@@ -306,12 +306,6 @@ dnl Check if we can link with GMP
 AC_CHECK_LIB(gmp, __gmpz_init, [LIBS="-lgmp $LIBS"], 
  [AC_MSG_ERROR(libgmp not found)])
 
-dnl Check if we can use mpn_sub_nc
-if test -n "$gmp_internal_file_check" ; then
- AC_CHECK_FUNC([__gmpn_sub_nc], 
-  [AC_DEFINE([MPFR_HAVE_MPN_SUB_NC],1,[Function mpn_sub_nc is available])])
-fi
-
 dnl Check for corresponding 'gmp.h' and libgmp.a
 AC_MSG_CHECKING(if gmp.h version and libgmp version are the same)
 AC_RUN_IFELSE([AC_LANG_PROGRAM([[
