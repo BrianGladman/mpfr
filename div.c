@@ -466,7 +466,8 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
                   MPFR_ASSERTD (cy <= 1);
                   cy = mpn_sub_1 (sp + k, sp + k, qsize, cy);
                   /* subtract r */
-                  cy = mpn_sub_nc (sp + k, sp + k, ap, qsize, cy);
+                  cy += mpn_sub_n (sp + k, sp + k, ap, qsize);
+                  MPFR_ASSERTD (cy <= 1);
                   /* now compare {sp, ssize} to v */
                   cmp_s_r = mpn_cmp (sp, vp, vsize);
                   if (cmp_s_r == 0 && low_u != MPFR_LIMB_ZERO)
