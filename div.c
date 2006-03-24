@@ -23,9 +23,9 @@ MA 02110-1301, USA. */
 #include "mpfr-impl.h"
 
 #ifdef DEBUG
-#define mpn_print(ap,n) mpn_print3(ap,n,MPFR_LIMB_ZERO)
+#define mpfr_mpn_print(ap,n) mpfr_mpn_print3 (ap,n,MPFR_LIMB_ZERO)
 static void
-mpn_print3 (mp_ptr ap, mp_size_t n, mp_limb_t cy)
+mpfr_mpn_print3 (mp_ptr ap, mp_size_t n, mp_limb_t cy)
 {
   mp_size_t i;
   for (i = 0; i < n; i++)
@@ -38,7 +38,7 @@ mpn_print3 (mp_ptr ap, mp_size_t n, mp_limb_t cy)
 
 /* check if {ap, an} is zero */
 static int
-mpn_cmpzero (mp_ptr ap, mp_size_t an)
+mpfr_mpn_cmpzero (mp_ptr ap, mp_size_t an)
 {
   while (an > 0)
     if (MPFR_LIKELY(ap[--an] != MPFR_LIMB_ZERO))
@@ -51,7 +51,7 @@ mpn_cmpzero (mp_ptr ap, mp_size_t an)
    Takes into account bp[0] for extra=1.
 */
 static int
-mpn_cmp_aux (mp_ptr ap, mp_size_t an, mp_ptr bp, mp_size_t bn, int extra)
+mpfr_mpn_cmp_aux (mp_ptr ap, mp_size_t an, mp_ptr bp, mp_size_t bn, int extra)
 {
   int cmp = 0;
   mp_size_t k;
@@ -103,20 +103,23 @@ mpn_cmp_aux (mp_ptr ap, mp_size_t an, mp_ptr bp, mp_size_t bn, int extra)
   return cmp;
 }
 
-/* {ap, n} <- {ap, n} - {bp, n} >> extra - cy, with cy=0 or 1 */
+/* {ap, n} <- {ap, n} - {bp, n} >> extra - cy, with cy = 0 or 1 */
 static mp_limb_t
-mpn_sub_aux (mp_ptr ap, mp_ptr bp, mp_size_t n, mp_limb_t cy, int extra)
+mpfr_mpn_sub_aux (mp_ptr ap, mp_ptr bp, mp_size_t n, mp_limb_t cy, int extra)
 {
   mp_limb_t bb, rp;
+  MPFR_ASSERTD (cy <= 1);
   while (n--)
     {
       bb = (extra) ? ((bp[1] << (BITS_PER_MP_LIMB-1)) | (bp[0] >> 1)) : bp[0];
       rp = ap[0] - bb - cy;
-      cy = ((ap[0] < bb) || (cy && ~rp == MPFR_LIMB_ZERO)) ? MPFR_LIMB_ONE : MPFR_LIMB_ZERO;
+      cy = (ap[0] < bb) || (cy && ~rp == MPFR_LIMB_ZERO) ?
+        MPFR_LIMB_ONE : MPFR_LIMB_ZERO;
       ap[0] = rp;
       ap ++;
       bp ++;
     }
+  MPFR_ASSERTD (cy <= 1);
   return cy;
 }
 
@@ -234,7 +237,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
       else if (l == 0) /* no more divisor limb */
         extra_bit = 1;
       else /* k=0: no more dividend limb */
-        extra_bit = mpn_cmpzero (vp, l) == 0;
+        extra_bit = mpfr_mpn_cmpzero (vp, l) == 0;
     }
 #ifdef DEBUG
   printf ("extra_bit=%u\n", extra_bit);
@@ -278,7 +281,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
         sticky_u = mpn_rshift (ap, up + k, qqsize, 1);
       else
         MPN_COPY(ap, up + k, qqsize);
-      sticky_u = sticky_u || mpn_cmpzero (up, k);
+      sticky_u = sticky_u || mpfr_mpn_cmpzero (up, k);
     }
   low_u = sticky_u;
 
@@ -297,7 +300,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
           bp = (mp_ptr) MPFR_TMP_ALLOC (qsize * sizeof(mp_limb_t));
           MPN_COPY(bp, vp, vsize);
         }
-      sticky_v = sticky_v || mpn_cmpzero (vp, k);
+      sticky_v = sticky_v || mpfr_mpn_cmpzero (vp, k);
       k = 0;
     }
   else /* vsize < qsize: small divisor case */
@@ -310,12 +313,12 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
   qh = mpn_divrem (qp, 0, ap + k, qqsize - k, bp, qsize - k);
   /* warning: qh may be 1 if u1 == v1, but u < v */
 #ifdef DEBUG2
-  printf ("q="); mpn_print (qp, qsize);
-  printf ("r="); mpn_print (ap, qsize);
+  printf ("q="); mpfr_mpn_print (qp, qsize);
+  printf ("r="); mpfr_mpn_print (ap, qsize);
 #endif
 
   k = qsize;
-  sticky_u = sticky_u || mpn_cmpzero (ap, k);
+  sticky_u = sticky_u || mpfr_mpn_cmpzero (ap, k);
 
   sticky = sticky_u | sticky_v;
 
@@ -417,9 +420,9 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
               cmp_s_r = mpn_cmp (sp + k, ap, qsize);
               if (cmp_s_r == 0) /* compare {sp, k} and low(u) */
                 {
-                  cmp_s_r = (usize >= qqsize)
-                             ? mpn_cmp_aux (sp, k, up, usize-qqsize, extra_bit)
-                             : mpn_cmpzero (sp, k);
+                  cmp_s_r = (usize >= qqsize) ?
+                    mpfr_mpn_cmp_aux (sp, k, up, usize-qqsize, extra_bit) :
+                    mpfr_mpn_cmpzero (sp, k);
                 }
 #ifdef DEBUG
               printf ("cmp(q*v0,r+u0)=%d\n", cmp_s_r);
@@ -441,22 +444,26 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
                       mp_size_t m;
                       l = usize - qqsize; /* number of low limbs in u */
                       m = (l > k) ? l - k : 0;
-                      cy = (extra_bit) ? (up[m] & MPFR_LIMB_ONE) : MPFR_LIMB_ZERO;
+                      cy = (extra_bit) ?
+                        (up[m] & MPFR_LIMB_ONE) : MPFR_LIMB_ZERO;
                       if (l >= k) /* u0 has more limbs */
                         {
-                          cy = cy || mpn_cmpzero (up, m);
+                          cy = cy || mpfr_mpn_cmpzero (up, m);
                           low_u = cy;
-                          cy = mpn_sub_aux (sp, up + l - k, k,
-                                            (cy) ? MPFR_LIMB_ONE : MPFR_LIMB_ZERO, extra_bit);
+                          cy = mpfr_mpn_sub_aux (sp, up + l - k, k,
+                                                 cy, extra_bit);
                         }
                       else /* l < k: s has more limbs than u0 */
                         {
                           low_u = MPFR_LIMB_ZERO;
                           if (cy != MPFR_LIMB_ZERO)
-                            cy = mpn_sub_1 (sp + k - l - 1, sp + k - l - 1, 1, MPFR_LIMB_HIGHBIT);
-                          cy = mpn_sub_aux (sp + k - l, up, l, cy, extra_bit);
+                            cy = mpn_sub_1 (sp + k - l - 1, sp + k - l - 1,
+                                            1, MPFR_LIMB_HIGHBIT);
+                          cy = mpfr_mpn_sub_aux (sp + k - l, up, l,
+                                                 cy, extra_bit);
                         }
                     }
+                  MPFR_ASSERTD (cy <= 1);
                   cy = mpn_sub_1 (sp + k, sp + k, qsize, cy);
                   /* subtract r */
                   cy = mpn_sub_nc (sp + k, sp + k, ap, qsize, cy);
