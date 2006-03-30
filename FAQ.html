@@ -103,14 +103,20 @@ See <samp>ld</samp> manual for more details.</dd>
 <dt>My program crashes with high precisions.</dt>
 
 <dd>Your stack size limit may be too small; indeed, by default,
-<cite><acronym>GMP</acronym></cite> currently allocates all
-temporary results on the stack, and in very high precisions,
-this limit may be reached. You can increase it with the
-<samp>limit</samp>, <samp>unlimit</samp> or <samp>ulimit</samp> command,
-depending on your shell. Alternatively, <abbr>e.g.</abbr> if your
-system does not allow you to increase it further, you can rebuild
-<cite><acronym>GMP</acronym></cite> and <cite><acronym>MPFR</acronym></cite>
-to use another allocation method.</dd>
+<cite><acronym>GMP</acronym></cite> 4.1.4 and below allocates all
+temporary results on the stack, and in very high precisions, this
+limit may be reached. You can solve this problem in different ways:
+<ul>
+<li>You can upgrade to <cite><acronym>GMP</acronym></cite> 4.2 (or above),
+which now makes temporary allocations on the stack only when they are
+small.</li>
+<li>You can increase the stack size limit with the <samp>limit</samp>,
+<samp>unlimit</samp> or <samp>ulimit</samp> command, depending on your
+shell. This may fail on some systems, where the maximum stack size cannot
+be increased above some value.</li>
+<li>You can rebuild both <cite><acronym>GMP</acronym></cite> and
+<cite><acronym>MPFR</acronym></cite> to use another allocation method.</li>
+</ul></dd>
 
 <dt>Though I have increased the precision, the results are not more
 accurate.</dt>
