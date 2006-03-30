@@ -115,14 +115,22 @@ to use another allocation method.</dd>
 <dt>Though I have increased the precision, the results are not more
 accurate.</dt>
 
-<dd>The reason may be the use of C floating-point numbers. If you want to
-store a floating-point constant to a <code>mpfr_t</code>, you should use
+<dd><p>The reason may be the use of C floating-point numbers. If you want
+to store a floating-point constant to a <code>mpfr_t</code>, you should use
 <code>mpfr_set_str</code> (or one of the <cite><acronym>MPFR</acronym></cite>
 constant functions, such as <code>mpfr_const_pi</code> for &#960;) instead
 of <code>mpfr_set_d</code> or <code>mpfr_set_ld</code>. Otherwise the
 floating-point constant will be first converted into a reduced-precision
 (<abbr>e.g.</abbr>, 53-bit) binary number before
-<cite><acronym>MPFR</acronym></cite> can work with it.</dd>
+<cite><acronym>MPFR</acronym></cite> can work with it. This is the case
+in particular for most exact decimal numbers, such as 0.17, which are
+not exactly representable in binary.</p>
+<p>Also remember that <cite><acronym>MPFR</acronym></cite> does not track
+the accuracy of the results: copying a value <var>x</var> to <var>y</var>
+with <code>mpfr_set (y, x, GMP_RNDN)</code> where the variable <var>y</var>
+is more precise than the variable <var>x</var> will not make it more
+accurate; the (binary) value will remain unchanged.</p>
+</dd>
 
 </dl>
 
