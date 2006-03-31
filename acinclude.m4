@@ -17,8 +17,8 @@ dnl  License for more details.
 dnl
 dnl  You should have received a copy of the GNU Lesser General Public License
 dnl  along with the MPFR Library; see the file COPYING.LIB.  If not, write to
-dnl  the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
-dnl  MA 02111-1307, USA.
+dnl  the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+dnl  MA 02110-1301, USA.
 
 dnl  autoconf 2.50 is necessary because of the use of AH_VERBATIM,
 dnl  but it would be better to make the config file compatible with
