@@ -55,13 +55,22 @@ mpfr_get_f (mpf_ptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
   MPFR_ASSERTD (sh >= 0);
   if (precy + sh <= precx) /* we can copy directly */
     {
+      mp_limb_t *xp = PTR (x);
+      mp_size_t ds;
+
       MPFR_ASSERTN (sx >= sy);
+      ds = sx - sy;
+
       if (sh != 0)
-        mpn_rshift (PTR(x) + sx - sy, MPFR_MANT(y), sy, sh);
+        {
+          MPFR_ASSERTN (ds > 0);
+          xp[ds - 1] = mpn_rshift (xp + ds, MPFR_MANT(y), sy, sh);
+          ds--;
+        }
       else
-        MPN_COPY (PTR(x) + sx - sy, MPFR_MANT(y), sy);
-      if (sx > sy)
-        MPN_ZERO (PTR(x), sx - sy);
+        MPN_COPY (xp + ds, MPFR_MANT (y), sy);
+      if (ds > 0)
+        MPN_ZERO (xp, ds);
       EXP(x) = (MPFR_GET_EXP(y) + sh) / BITS_PER_MP_LIMB;
     }
   else /* we have to round to precx - sh bits */

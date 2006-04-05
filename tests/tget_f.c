@@ -30,14 +30,16 @@ int
 main (void)
 {
   mpf_t x;
-  mpfr_t y;
+  mpfr_t y, z;
   unsigned long i;
   mp_exp_t e;
+  int inex;
 
   MPFR_TEST_USE_RANDS ();
   tests_start_mpfr ();
 
   mpfr_init (y);
+  mpfr_init (z);
   mpf_init (x);
 
   mpfr_set_nan (y);
@@ -154,7 +156,24 @@ main (void)
         }
     }
 
+  /* Bug reported by Yury Lukach on 2006-04-05 */
+  mpfr_set_prec (y, 32);
+  mpfr_set_prec (z, 32);
+  mpf_set_prec (x, 32);
+  mpfr_set_ui_2exp (y, 0xc1234567, -30, GMP_RNDN);
+  mpfr_get_f (x, y, GMP_RNDN);
+  inex = mpfr_set_f (z, x, GMP_RNDN);
+  if (inex || ! mpfr_equal_p (y, z))
+    {
+      printf ("Error in mpfr_get_f:\n  inex = %d, y = ", inex);
+      mpfr_dump (z);
+      printf ("Expected:\n  inex = 0, y = ");
+      mpfr_dump (y);
+      exit (1);
+    }
+
   mpfr_clear (y);
+  mpfr_clear (z);
   mpf_clear (x);
 
   tests_end_mpfr ();
