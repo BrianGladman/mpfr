@@ -63,9 +63,11 @@ mpfr_get_f (mpf_ptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 
       if (sh != 0)
         {
-          MPFR_ASSERTN (ds > 0);
-          xp[ds - 1] = mpn_rshift (xp + ds, MPFR_MANT(y), sy, sh);
-          ds--;
+          mp_limb_t out;
+          out = mpn_rshift (xp + ds, MPFR_MANT(y), sy, sh);
+          MPFR_ASSERTN (ds > 0 || out == 0);
+          if (ds > 0)
+            xp[--ds] = out;
         }
       else
         MPN_COPY (xp + ds, MPFR_MANT (y), sy);
