@@ -365,7 +365,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
           round_bit = sticky3 & (MPFR_LIMB_ONE << (sh2 - 1));
           sticky = (sticky3 ^ round_bit) | sticky_u;
         }
-      else if (rnd_mode == GMP_RNDZ || rnd_mode == GMP_RNDD || inex == MPFR_LIMB_ZERO)
+      else if (rnd_mode == GMP_RNDZ || rnd_mode == GMP_RNDD || inex == 0)
         sticky = (inex == 0) ? MPFR_LIMB_ZERO : MPFR_LIMB_ONE;
       else /* rnd_mode = GMP_RNDU */
         sticky = MPFR_LIMB_ONE;
@@ -373,7 +373,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
     }
   else /* vsize > qsize: need to truncate the divisor */
     {
-      if (inex == MPFR_LIMB_ZERO)
+      if (inex == 0)
         goto truncate;
       else
         {
