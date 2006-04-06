@@ -29,6 +29,7 @@ mpfr_get_f (mpf_ptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 {
   mp_size_t sx, sy;
   mp_prec_t precx, precy;
+  mp_limb_t *xp;
   int sh;
 
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(y)))
@@ -48,6 +49,8 @@ mpfr_get_f (mpf_ptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
   precx = (mp_prec_t) sx * BITS_PER_MP_LIMB;
   sy = MPFR_LIMB_SIZE (y);
 
+  xp = PTR (x);
+
   /* since mpf numbers are represented in base 2^BITS_PER_MP_LIMB,
      we loose -EXP(y) % BITS_PER_MP_LIMB bits in the most significant limb */
   sh = MPFR_GET_EXP(y) % BITS_PER_MP_LIMB;
@@ -55,7 +58,6 @@ mpfr_get_f (mpf_ptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
   MPFR_ASSERTD (sh >= 0);
   if (precy + sh <= precx) /* we can copy directly */
     {
-      mp_limb_t *xp = PTR (x);
       mp_size_t ds;
 
       MPFR_ASSERTN (sx >= sy);
@@ -78,8 +80,9 @@ mpfr_get_f (mpf_ptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
   else /* we have to round to precx - sh bits */
     {
       mpfr_t z;
-      mp_size_t sz;
+      mp_size_t sz, ds;
 
+      /* Recall that precx = (mp_prec_t) sx * BITS_PER_MP_LIMB */
       mpfr_init2 (z, precx - sh);
       sz = MPFR_LIMB_SIZE (z);
       mpfr_set (z, y, rnd_mode);
@@ -87,13 +90,21 @@ mpfr_get_f (mpf_ptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
          thus we can safely ignore its last bit which is 0 */
       sh = MPFR_GET_EXP(z) % BITS_PER_MP_LIMB;
       sh = sh <= 0 ? - sh : BITS_PER_MP_LIMB - sh;
-      MPFR_ASSERTD (sh >= 0);
+      MPFR_ASSERTD (sx >= sz);
+      ds = sx - sz;
+      MPFR_ASSERTD (sh >= 0 && ds <= 1);
       if (sh != 0)
-        mpn_rshift (PTR(x) + sx - sz, MPFR_MANT(z), sz, sh);
+        {
+          mp_limb_t out;
+          out = mpn_rshift (xp + ds, MPFR_MANT(z), sz, sh);
+          /* If sh hasn't changed, it is the number of the non-significant
+             bits in the lowest limb of z. Therefore out == 0. */
+          MPFR_ASSERTD (out == 0);
+        }
       else
-        MPN_COPY (PTR(x) + sx - sz, MPFR_MANT(z), sz);
-      if (sx > sz)
-        MPN_ZERO (PTR(x), sx - sz);
+        MPN_COPY (xp + ds, MPFR_MANT(z), sz);
+      if (ds != 0)
+        xp[0] = 0;
       EXP(x) = (MPFR_GET_EXP(z) + sh) / BITS_PER_MP_LIMB;
       mpfr_clear (z);
     }
