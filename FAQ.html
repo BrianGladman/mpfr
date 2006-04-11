@@ -55,17 +55,27 @@ bugs page.</strong></p>
 from <cite><acronym>GMP</acronym></cite> and
 <cite><acronym>MPFR</acronym></cite>?</dt>
 
-<dd>Unlike <cite><acronym>MPF</acronym></cite>, the precision of a
-<cite><acronym>MPFR</acronym></cite> variable is the <em>exact</em>
-number of bits used for its mantissa. This implies that
-<cite><acronym>MPFR</acronym></cite> results do not depend on the
-number of bits (16, 32, 64 or more) of the underlying architecture.
-Also, <cite><acronym>MPFR</acronym></cite> provides an additional
-rounding mode argument to its functions; furthermore, it is guaranteed
-that the result of any operation is the nearest possible
-floating-point value from the exact result (considering the input
-variables as exact values), taking into account the precision of the
-destination variable and the rounding mode.</dd>
+<dd><p>The main differences are:</p>
+<ul>
+<li>The precision of a <cite><acronym>MPFR</acronym></cite> variable
+is the <em>exact</em> number of bits used for its mantissa, whereas in
+<cite><acronym>MPF</acronym></cite>, the precision requested by the user
+is a minimum value (<cite><acronym>MPF</acronym></cite> generally uses a
+higher precision). With the additional difference below, this implies that
+the <cite><acronym>MPFR</acronym></cite> results do not depend on the
+number of bits (16, 32, 64 or more) of the underlying architecture.</li>
+<li><cite><acronym>MPFR</acronym></cite> provides an additional rounding
+mode argument to its functions; furthermore, it is guaranteed that the
+result of any operation is the nearest possible floating-point value from
+the exact result (considering the input variables as exact values), taking
+into account the precision of the destination variable and the rounding
+mode. <cite><acronym>MPFR</acronym></cite> also says whether the rounded
+result is above or below the exact result.</li>
+<li><cite><acronym>MPFR</acronym></cite> supports much more functions
+(in particular transcendental functions such as exponentials, logarithms,
+trigonometric functions and so on) and special values: signed zeros,
+infinities, not-a-number (NaN).</li>
+</ul></dd>
 
 <dt>How to convert my program written using
 <cite><acronym>MPF</acronym></cite> to
