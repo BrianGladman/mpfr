@@ -51,16 +51,18 @@ The latest rules for GNU software can be found here:
 
 To make a release (for the MPFR team):
 
-  0) Generate the default thresholds on different architectures
+  0) Make sure that the mpfr-longlong.h file (from GMP's longlong.h)
+     is up-to-date.
+  1) Generate the default thresholds on different architectures
      with "make tune" and put them in mparam_h.in (make sure to
      use the latest release of GMP).
-  1) Check the version and update the date in mpfr.texi.
+  2) Check the version and update the date in mpfr.texi.
      Update the libtool version too (see Makefile.am).
-  2) Update the NEWS file.
+  3) Update the NEWS file.
      Update the FAQ.html file with update-faq (and check it).
-  3) Update the ChangeLog file. [To be completed]
-  4) Generate the release version with "make dist".
-  5) Test the release version on different machines, with and without
+  4) Update the ChangeLog file. [To be completed]
+  5) Generate the release version with "make dist".
+  6) Test the release version on different machines, with and without
      the --disable-alloca configure option (or compile GMP with
      --enable-alloca=debug and MPFR with --with-gmp-build to be able
      to get the memory leak errors), with and without -DXDEBUG in
@@ -72,8 +74,8 @@ To make a release (for the MPFR team):
      incompatible with ISO C90), with and without --enable-thread-safe
      and in various locales (LC_ALL=tr_TR in particular, if installed).
      Test with both "make check" and the worst cases.
-  6) If there are no problems, add a tag. [To be completed]
-  7) Update the version with the update-version script to indicate the
+  7) If there are no problems, add a tag. [To be completed]
+  8) Update the version with the update-version script to indicate the
      next version.
 
 For major or minor releases (but not patchlevels), a branch may be
