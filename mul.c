@@ -306,8 +306,6 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       cn = tn;
     }
   MPFR_ASSERTD (bn >= cn);
-  /* longlong's umul_ppmm seems to be buggy on HP-UX. */
-#ifndef __hpux
   if (MPFR_LIKELY (bn <= 2))
     {
       if (bn == 1)
@@ -348,7 +346,6 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
         mpn_lshift (tmp, tmp, tn, 1); /* tn <= k, so no stack corruption */
     }
   else
-#endif
     /* Mulder mulhigh. Disable if squaring, since it is not tuned for
        such a case */
     if (MPFR_UNLIKELY (bn > MPFR_MUL_THRESHOLD && b != c))
