@@ -504,7 +504,7 @@ Hence unless you change its precision, or clear and reinitialize it,
 a floating-point variable will have the same allocated space during all its
 life.
 
-@section Rounding modes.
+@section Rounding modes
 
 The following four rounding modes are supported:
 
