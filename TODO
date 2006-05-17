@@ -313,6 +313,11 @@ Miscellaneous:
     division by zero exception shall be signaled if the divisor is
     zero and the dividend is a finite nonzero number."
 
+- in div.c, try to find a case for which cy != 0 after the line
+        cy = mpn_sub_1 (sp + k, sp + k, qsize, cy);
+  (which should be added to the tests) or prove that this cannot
+  happen.
+
 ##############################################################################
 Portability:
 ##############################################################################
