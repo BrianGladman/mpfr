@@ -610,7 +610,7 @@ precision, then MPFR will still compute the result with full precision.
 * Exceptions::
 * Advanced Functions::
 * Compatibility with MPF::
-* Custom interface::
+* Custom Interface::
 * Internals::
 @end menu
 
@@ -1924,7 +1924,7 @@ Here is an example of how to use multiple initialization functions:
 @end example
 
 
-@node Compatibility with MPF, Custom interface, Advanced Functions, MPFR Interface
+@node Compatibility with MPF, Custom Interface, Advanced Functions, MPFR Interface
 @section Compatibility with MPF
 @cindex Compatibility with MPF
 
@@ -1979,9 +1979,9 @@ for compatibility with MPF.
 @end deftypefun
 
 
-@node Custom interface, Internals, Compatibility with MPF, MPFR Interface
-@section Custom interface
-@cindex Custom interface
+@node Custom Interface, Internals, Compatibility with MPF, MPFR Interface
+@section Custom Interface
+@cindex Custom Interface
 
 Some applications use a stack to handle the memory and their objects.
 However, the MPFR memory design is not well suited for such a thing. So that
@@ -2074,7 +2074,7 @@ with @code{mpfr_custom_init_set} is undefined.
 
 See the test suite for examples.
 
-@node Internals,  , Custom interface, MPFR Interface
+@node Internals,  , Custom Interface, MPFR Interface
 @section Internals
 @cindex Internals
 
