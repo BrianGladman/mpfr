@@ -34,13 +34,13 @@ dnl There is still some problem with GMP's HAVE_CONFIG
 dnl AC_CONFIG_HEADERS([mpfrconf.h:mpfrconf.in])
 
 dnl Extra arguments to configure
-AC_ARG_WITH(gmp_include, 
-   [  --with-gmp-include=DIR  GMP include directory ], 
+AC_ARG_WITH(gmp_include,
+   [  --with-gmp-include=DIR  GMP include directory ],
    CPPFLAGS="$CPPFLAGS -I$withval")
-AC_ARG_WITH(gmp_lib, 
-   [  --with-gmp-lib=DIR      GMP lib directory ], 
+AC_ARG_WITH(gmp_lib,
+   [  --with-gmp-lib=DIR      GMP lib directory ],
    LDFLAGS="$LDFLAGS -L$withval")
-AC_ARG_WITH(gmp_build, 
+AC_ARG_WITH(gmp_build,
    [  --with-gmp-build=DIR    GMP build directory], [
     CPPFLAGS="$CPPFLAGS -I$withval -I$withval/tune"
     LDFLAGS="$LDFLAGS -L$withval -L$withval/.libs -L$withval/tune/"
@@ -49,18 +49,18 @@ AC_ARG_WITH(gmp_build,
      GMP_CC=`grep -w "CC =" $withval/Makefile | sed 's/CC = //'`
     fi
    ])
-AC_ARG_WITH(gmp, 
+AC_ARG_WITH(gmp,
    [  --with-gmp=DIR          GMP install directory ], [
    CPPFLAGS="$CPPFLAGS -I$withval/include"
    LDFLAGS="$LDFLAGS -L$withval/lib" ])
 
-AC_ARG_WITH(irix64, 
-   [  --with-irix64=on/off    Irix 32/64 bits support ], 
+AC_ARG_WITH(irix64,
+   [  --with-irix64=on/off    Irix 32/64 bits support ],
    with_irix64=$withval, with_irix64=off)
 
 AC_ARG_WITH(mulhigh_size,
    [  --with-mulhigh-size=NUM internal threshold table for mulhigh],
-   AC_DEFINE_UNQUOTED([MPFR_MULHIGH_SIZE],$withval, [Mulhigh size])) 
+   AC_DEFINE_UNQUOTED([MPFR_MULHIGH_SIZE],$withval, [Mulhigh size]))
 
 AC_ARG_ENABLE(assert,
    [  --enable-assert         enable ASSERT checking [[default=no]]],
@@ -90,7 +90,7 @@ test_CFLAGS=${CFLAGS+set}
 
 
 dnl
-dnl Setup CC and CFLAGS 
+dnl Setup CC and CFLAGS
 dnl
 
 dnl Check if user request its CC and CFLAGS
@@ -214,7 +214,7 @@ case $host in
 # error "Dead man"
 error
 #endif
-     ]], [[]])],[AC_MSG_RESULT(DLL)],[ 
+     ]], [[]])],[AC_MSG_RESULT(DLL)],[
   AC_MSG_RESULT(static)
   AC_MSG_ERROR([gmp.h isn't a DLL: use --enable-static --disable-shared]) ])
    else
@@ -225,7 +225,7 @@ error
 error
 #endif
      ]], [[]])],[AC_MSG_RESULT(static)],[
-  AC_MSG_RESULT(DLL) 
+  AC_MSG_RESULT(DLL)
   AC_MSG_ERROR([gmp.h is a DLL: use --disable-static --enable-shared]) ])
   fi
   ;;
@@ -234,9 +234,16 @@ dnl Finally set up LibTool
 AC_PROG_LIBTOOL
 
 
-dnl 
+dnl
+dnl For mpfr-longlong.h - TODO: should be replaced (see acinclude.m4).
+dnl
+
+GMP_C_ATTRIBUTE_MODE
+
+
+dnl
 dnl Setup GMP detection
-dnl 
+dnl
 
 dnl Check GMP Header
 AC_MSG_CHECKING(for gmp.h)
@@ -270,7 +277,7 @@ AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
   AC_DEFINE([MPFR_HAVE_GMP_IMPL],1,[Use GMP Internal Files])
   gmp_internal_file_check=yes
 ],[
-  AC_MSG_RESULT(no) 
+  AC_MSG_RESULT(no)
   AC_FUNC_ALLOCA
 ])
 
@@ -298,12 +305,12 @@ dnl libtool.
 dnl The practical problems appear only under MS Windows since the library name
 dnl is libgmp-3 (due to libtool versionning). The best solution
 dnl is to believe it works under MS-Windows.
-if test "$dont_link_with_gmp" = yes ; then 
+if test "$dont_link_with_gmp" = yes ; then
 LIBS="-lgmp $LIBS"
 else
- 
+
 dnl Check if we can link with GMP
-AC_CHECK_LIB(gmp, __gmpz_init, [LIBS="-lgmp $LIBS"], 
+AC_CHECK_LIB(gmp, __gmpz_init, [LIBS="-lgmp $LIBS"],
  [AC_MSG_ERROR(libgmp not found)])
 
 dnl Check for corresponding 'gmp.h' and libgmp.a
@@ -332,7 +339,7 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 )
 
 dnl End of tests which need to link with GMP.
-fi 
+fi
 
 dnl Remove also many MACROS (AC_DEFINE) which are unused by MPFR
 dnl and polluate (and slow down because libtool has to parse them) the build.

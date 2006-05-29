@@ -551,3 +551,25 @@ case $host in
     ;;
 esac
 ])
+
+dnl  GMP_C_ATTRIBUTE_MODE
+dnl  --------------------
+dnl  Introduced in gcc 2.2, but perhaps not in all Apple derived versions.
+dnl  Needed for mpfr-longlong.h; this is currently necessary for s390.
+dnl
+dnl  TODO: Replace this with a cleaner type size detection, as this
+dnl  solution only works with gcc and assumes CHAR_BIT == 8. Probably use
+dnl  <stdint.h>, and <http://gcc.gnu.org/viewcvs/trunk/config/stdint.m4>
+dnl  as a fallback.
+
+AC_DEFUN([GMP_C_ATTRIBUTE_MODE],
+[AC_CACHE_CHECK([whether gcc __attribute__ ((mode (XX))) works],
+               gmp_cv_c_attribute_mode,
+[AC_TRY_COMPILE([typedef int SItype __attribute__ ((mode (SI)));], ,
+ gmp_cv_c_attribute_mode=yes, gmp_cv_c_attribute_mode=no)
+])
+if test $gmp_cv_c_attribute_mode = yes; then
+ AC_DEFINE(HAVE_ATTRIBUTE_MODE, 1,
+ [Define to 1 if the compiler accepts gcc style __attribute__ ((mode (XX)))])
+fi
+])
