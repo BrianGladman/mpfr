@@ -2,6 +2,7 @@
 
 \usepackage{fullpage}
 \usepackage{amssymb}
+\usepackage{amsmath}
 \usepackage{url}
 \usepackage{comment}
 
@@ -32,6 +33,8 @@ Algorithms and Proofs}
 \def\err{{\rm err}}
 
 \newcommand{\U}[1]{\quad \mbox{[Rule~\ref{#1}]}}
+
+\DeclareMathOperator{\error}{error}
 
 \newtheorem{Rule}{Rule}
 \newtheorem{lemma}{Lemma}
@@ -162,7 +165,7 @@ $\ulp(\circ(x)) \leq \ulp(x)$.
 
 \begin{Rule} \label{R9}
 \begin{eqnarray}\nonumber
-&&\n{For}\;\;  error(u) \leq k_u \ulp(u),\;\; u.c_u^- \leq x \leq u.c_u^+\\\nonumber
+&&\n{For}\;\;  \error(u) \leq k_u \ulp(u),\;\; u.c_u^- \leq x \leq u.c_u^+\\\nonumber
 &&\n{with}\;\;   c_u^{-}=1- k_u 2^{1-p} \n{ and } c_u^{+}=1+ k_u 2^{1-p}
 \end{eqnarray}
 
@@ -219,7 +222,7 @@ We want to compute the generic error of the subtraction, the following rules
 apply to addition too.
 
 \begin{eqnarray}\nonumber
-\textnormal{Note:}&& error(u) \leq k_u \, \ulp(u), \;\; error(v) \leq k_v \, \ulp(v)
+\textnormal{Note:}&& \error(u) \leq k_u \, \ulp(u), \;\; \error(v) \leq k_v \, \ulp(v)
 \end{eqnarray}
 
 \begin{eqnarray}\nonumber
@@ -227,14 +230,14 @@ apply to addition too.
 && \ulp(u)=2^{d+e_w-p}, \;\; \ulp(v)=2^{d^{'}+e_w-p},\;\;\textnormal{with} \;\;d=e_u-e_w \;\; d^{'}=e_v-e_w 
 \end{eqnarray}
 \begin{eqnarray}\nonumber
-error(w)& \leq &c_w \ulp(w) + k_u \ulp(u) + k_v \ulp(v) \\\nonumber
+\error(w)& \leq &c_w \ulp(w) + k_u \ulp(u) + k_v \ulp(v) \\\nonumber
 &\leq&(c_w+k_u 2^d+ k_v 2^{d^{'}}) \ulp(w)
 \end{eqnarray}
 \begin{eqnarray}\nonumber
 &&\textnormal{If} \;\; ( u \geq 0  \;\;\textnormal{and}\;\;  v \geq 0) \;\;\textnormal{or}\;\; (u \leq 0 \;\;\textnormal{and}\;\; v \leq 0)
 \end{eqnarray}
 \begin{eqnarray}\nonumber
-error(w)& \leq&(c_w + k_u + k_v) \, \ulp(w)
+\error(w)& \leq&(c_w + k_u + k_v) \, \ulp(w)
 \end{eqnarray}
 \begin{eqnarray}\nonumber
 \textnormal{Note:}&&\textnormal{If}\;\; w=\N(u+v) \;\;\textnormal{Then}\;\; c_w =\frac{1}{2} \;\;\textnormal{else}\;\; c_w =1\\\nonumber
@@ -248,10 +251,10 @@ We assume here $u, v > 0$.
 
 \begin{eqnarray}\nonumber
 w&=&\circ(u.v) \\\nonumber
-\textnormal{Note:}&& error(u) \leq k_u \, \ulp(u), \;\; error(v) \leq k_v \, \ulp(v)
+\textnormal{Note:}&& \error(u) \leq k_u \, \ulp(u), \;\; \error(v) \leq k_v \, \ulp(v)
 \end{eqnarray}
 \begin{eqnarray}\nonumber
-error(w)& = &|w - x.y| \\\nonumber
+\error(w)& = &|w - x.y| \\\nonumber
 & \leq &|w - u v| +|u v - x y| \\\nonumber
 & \leq & c_w \ulp(w) +  \frac{1}{2} [|u v-u y|+|u y-x y|+|u v-x v|+|x v-x y|]\\\nonumber
 & \leq & c_w \ulp(w) +  \frac{u+x}{2} k_v \ulp(v) + \frac{v+y}{2} k_u \ulp(u)\\\nonumber
@@ -270,10 +273,10 @@ We assume $u > 0$.
 
 \begin{eqnarray}\nonumber
 w&=&\circ(\frac{1}{u}) \\\nonumber
-\textnormal{Note:}&& error(u) \leq k_u \, \ulp(u)
+\textnormal{Note:}&& \error(u) \leq k_u \, \ulp(u)
 \end{eqnarray}
 \begin{eqnarray}\nonumber
-error(w)& = &|w - \frac{1}{x}| \\\nonumber
+\error(w)& = &|w - \frac{1}{x}| \\\nonumber
 & \leq &|w - \frac{1}{u}| +|\frac{1}{u} - \frac{1}{x}| \\\nonumber
 & \leq & c_w \ulp(w) + \frac{1}{ux}|u-x| \\\nonumber
 & \leq & c_w \ulp(w) + \frac{k_u}{ux} \ulp(u)
@@ -284,7 +287,7 @@ error(w)& = &|w - \frac{1}{x}| \\\nonumber
 && \n{then: } \frac{1}{x} \leq c_u \frac{1}{u} 
 \end{eqnarray}
 \begin{eqnarray}\nonumber
-error(w)& \leq & c_w \ulp(w) + c_u\frac{k_u}{u^2} \ulp(u)\\\nonumber
+\error(w)& \leq & c_w \ulp(w) + c_u\frac{k_u}{u^2} \ulp(u)\\\nonumber
 & \leq & c_w \ulp(w) + 2.c_u.k_u \ulp(\frac{u}{u^2}) \U{R4}\\\nonumber
 & \leq & [c_w + 2.c_u.k_u].\ulp(w) \U{R8}
 \end{eqnarray}
@@ -298,10 +301,10 @@ We want to compute the generic error of the division.
 Without loss of generality, we assume all variables are positive.
 \begin{eqnarray}\nonumber
 w&=&\circ(\frac{u}{v}) \\\nonumber
-\textnormal{Note:}&& error(u) \leq k_u \, \ulp(u), \;\; error(v) \leq k_v \, \ulp(v)
+\textnormal{Note:}&& \error(u) \leq k_u \, \ulp(u), \;\; \error(v) \leq k_v \, \ulp(v)
 \end{eqnarray}
 \begin{eqnarray}\nonumber
-error(w)& = &|w - \frac{x}{y}| \\\nonumber
+\error(w)& = &|w - \frac{x}{y}| \\\nonumber
 & \leq &|w - \frac{u}{v}| +|\frac{u}{v} - \frac{x}{y}| \\\nonumber
 & \leq & c_w \ulp(w) + \frac{1}{vy}|uy-vx| \\\nonumber
 & \leq & c_w \ulp(w) + \frac{1}{vy}[|uy-xy|+|xy-vx| ]\\\nonumber
@@ -319,7 +322,7 @@ error(w)& = &|w - \frac{x}{y}| \\\nonumber
 && \n{then: } \frac{x}{y} \leq c_u c_v  \frac{u}{v} 
 \end{eqnarray}
 \begin{eqnarray}\nonumber
-error(w)& \leq & c_w \ulp(w) + 2.k_u  \ulp(w)+ c_u.c_v.\frac{k_v u}{vv} \ulp(v)\\\nonumber
+\error(w)& \leq & c_w \ulp(w) + 2.k_u  \ulp(w)+ c_u.c_v.\frac{k_v u}{vv} \ulp(v)\\\nonumber
 & \leq & c_w \ulp(w) + 2.k_u  \ulp(w)+ 2.c_u.c_v.k_v \ulp(\frac{u.v}{v.v}) \U{R4}\\\nonumber
 & \leq & [c_w  + 2.k_u+ 2.c_u.c_v.k_v].\ulp(w) \U{R8}
 \end{eqnarray}
@@ -345,7 +348,7 @@ number $u$, itself an approximation to a real $x$,
 with $|u - x| \leq k_u \ulp(u)$.
 If $v = \circ(\sqrt{u})$, then:
 \begin{eqnarray}\nonumber
-error(v) := |v - \sqrt{x}| 
+\error(v) := |v - \sqrt{x}| 
 & \leq &|v - \sqrt{u}| +|\sqrt{u} - \sqrt{x}| \\\nonumber
 & \leq & c_v \ulp(v) + \frac{1}{\sqrt{u} + \sqrt{x}}|u-x| \\\nonumber
 & \leq & c_v \ulp(v) + \frac{1}{\sqrt{u} + \sqrt{x}} k_u \ulp(u) \\\nonumber
@@ -354,7 +357,7 @@ Since by Rule~\ref{R9} we have $u.c_u^- \leq x$,
 it follows $\frac{1}{\sqrt{x}+\sqrt{u}} \leq
         \frac{1}{\sqrt{u}.(1+\sqrt{c_u^-})}$:
 \begin{eqnarray}\nonumber
-error(v)& \leq & c_v \ulp(v) + 
+\error(v)& \leq & c_v \ulp(v) + 
                  \frac{1}{\sqrt{u}.(1+\sqrt{c_u^-})}  k_u \ulp(u) \\\nonumber 
 & \leq & c_v \ulp(v) + \frac{2}{1+\sqrt{c_u^-}}  
        k_u \ulp(\sqrt{u}) \;\; \U{R4}\\\nonumber 
@@ -371,15 +374,15 @@ We want to compute the generic error of the exponential.
 
 \begin{eqnarray}\nonumber
 v&=&\circ(e^{u}) \\\nonumber
-\textnormal{Note:}&& error(u) \leq k_u \, \ulp(u)\\\nonumber
+\textnormal{Note:}&& \error(u) \leq k_u \, \ulp(u)\\\nonumber
 \end{eqnarray}
 \begin{eqnarray}\nonumber
-error(v)& = &|v - e^{x}| \\\nonumber
+\error(v)& = &|v - e^{x}| \\\nonumber
 & \leq &|v - e^{u}| +|e^{u} - e^{x}| \\\nonumber
 & \leq & c_v \ulp(v) +  e^t |u-x| \n{ with Rolle's theorem, for } t\in[x,u]\n{ or }t\in[u,x]
 \end{eqnarray}
 \begin{eqnarray}\nonumber
-error(v)& \leq & c_v \ulp(v) +  c_u^* e^u k_u \ulp(u) \\\nonumber
+\error(v)& \leq & c_v \ulp(v) +  c_u^* e^u k_u \ulp(u) \\\nonumber
 & \leq & c_v \ulp(v) +  2 c_u^* u k_u \ulp(e^u) \;\U{R4}\\\nonumber
 & \leq & (c_v +  2 c_u^* u k_u )\ulp(v) \;\U{R8}\\\nonumber
 & \leq & (c_v +  c_u^* 2^{\Exp(u)+1} k_u )\ulp(v)
@@ -401,10 +404,10 @@ We want to compute the generic error of the logarithm.
 
 \begin{eqnarray}\nonumber
 v&=&\circ(\log{u}) \\\nonumber
-\textnormal{Note:}&& error(u) \leq k_u \, \ulp(u)\\\nonumber
+\textnormal{Note:}&& \error(u) \leq k_u \, \ulp(u)\\\nonumber
 \end{eqnarray}
 \begin{eqnarray}\nonumber
-error(v)& = &|v - \log{x}| \\\nonumber
+\error(v)& = &|v - \log{x}| \\\nonumber
 & \leq &|v - \log{u}| +|\log{u} - \log{x}| \\\nonumber
 & \leq & c_v \ulp(v) + \log{|\frac{x}{u}|} \\\nonumber
 & \leq & c_v \ulp(v) + \frac{|x-u|}{u} \\\nonumber
@@ -416,7 +419,7 @@ error(v)& = &|v - \log{x}| \\\nonumber
 && \ulp(1)= 2^{1-e_v+e_v-p}=2^{1-e_v} \ulp(v)
 \end{eqnarray}
 \begin{eqnarray}\nonumber
-error(v)& \leq & c_v \ulp(v) + k_u 2^{1-e_v} \ulp(v)\\\nonumber
+\error(v)& \leq & c_v \ulp(v) + k_u 2^{1-e_v} \ulp(v)\\\nonumber
 & \leq & (c_v + k_u 2^{1-e_v} )\ulp(v)\\\nonumber
 \end{eqnarray}
 
@@ -637,9 +640,9 @@ $1/2 \leq b < 1$ and $1/2 \leq c < 1$, $b = bh+bl$ and $c = ch+c$
 The error comes from:
 \begin {itemize}
 \item Truncation: $ \leq bl.ch + bh.cl + bl.cl \leq bl + cl \leq 2 B^{-m}$
-\item Mulder: Assuming $error(Mulder(n)) \leq error(mulhigh\_basecase(n))$,
+\item Mulder: Assuming $\error(Mulder(n)) \leq \error(mulhigh\_basecase(n))$,
 \begin{eqnarray*}
-error(mulhigh(n)
+\error(mulhigh(n)
   & \leq & (n-1) (B-1)^2 B^{-n-2} + \cdots + 1 (B-1)^2 B^{-2n} \\
   & = & \sum_{i=1}^{n-1}{(n-i) (B-1)^2 B^{-n-1-i}}
     =   (B-1)^2 B^{-n-1} \sum_{i=1}^{n-1}{B^{-i}} \\
@@ -1076,7 +1079,7 @@ cosine as :
 
 \[\cosh x = \frac{1}{2} \left( e^{x} + \frac{1}{e^x} \right).\]
 
-The algorithm used for the calculation of the hyperbolic cosine is as follows\footnote{$\circ()$ represent the rounding error and $error(u)$ the
+The algorithm used for the calculation of the hyperbolic cosine is as follows\footnote{$\circ()$ represent the rounding error and $\error(u)$ the
   error associate with the calculation of $u$}:
 
 \begin{eqnarray}\nonumber
@@ -1268,7 +1271,7 @@ sine as :
 
 \[\sinh x = \frac{1}{2} \left( e^{x} - \frac{1}{e^x} \right).\]
 
-The algorithm used for the calculation of the hyperbolic sine is as follows\footnote{$\circ()$ represent the rounding error and $error(u)$ the
+The algorithm used for the calculation of the hyperbolic sine is as follows\footnote{$\circ()$ represent the rounding error and $\error(u)$ the
   error associate with the calculation of $u$}:
 
 \begin{eqnarray}\nonumber
@@ -2753,7 +2756,7 @@ It can be checked that the $d_k$ are integers, and we compute them exactly,
 d(n,k) = 
 { n * sum(i=0,k,(n+i-1)!*4^i/(n-i)!/(2*i)!) }
 a=log(2)/log(3+sqrt(8))
-for (p=2,1000,n=ceil(a*p);if(d(n,n)<2^(p-1),error(p)))
+for (p=2,1000,n=ceil(a*p);if(d(n,n)<2^(p-1),\error(p)))
 \end{comment}
 like the denominators $(k+1)^s$.
 We compute the integer
