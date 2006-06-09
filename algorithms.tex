@@ -1090,7 +1090,7 @@ s&\leftarrow&\frac{1}{2} w\\\label{coshalgo4}
 \end{eqnarray}
 
 Now, we have to bound the rounding error for each step of this
-algorithm.  First, let consider the parity of hyperbolic cosine
+algorithm.  First, let us consider the parity of hyperbolic cosine
 ($\cosh(-x)=\cosh(x)$) : the problem is reduced to calculate $\cosh x$
 with $x \geq 0$. We can deduce $e^x \geq 1$ and $0 \leq e^{-x} \leq
 1$.
@@ -1925,7 +1925,7 @@ I give a remind of the algorithm:
 \item Write $v_k=2^{2^k}$
 \item Define 
 \begin{equation*}
-s_{k+1}=\frac{s_k-A_k}{1+s_kA_k}\;\;and\;\;s_0=x
+s_{k+1}=\frac{s_k-A_k}{1+s_kA_k}\;\;\mbox{and}\;\;s_0=x
 \end{equation*}
 \item $A_k$ is chosen such that
 \begin{equation*}
@@ -1942,18 +1942,11 @@ and $A_k$ is of the form $\frac{u_k}{v_k}$ with $u_k\in\N$.
 \end{array}
 \end{equation*}
 the number $s_N$ is very rapidly decreasing towards $0$ and we then have
-\begin{equation*}
-\begin{array}{rcl}
-\arctan\,x&=&\sum_{i=0}^{i=\infty}\arctan\,A_i
-\end{array}
-\end{equation*}
+\[\arctan\,x = \sum_{i=0}^{i=\infty}\arctan\,A_i\]
 \item The approximate arc tangent is then
-\begin{equation*}
-\begin{array}{rcl}
-\sum_{i=0}^{i=N_0}\arctan_{m_i}\,A_i
-\end{array}
-\end{equation*}
-with $\arctan_{m_i}$ being the sum of the first $2^{m_i}$ terms of the Taylor series for $\arctan$
+\[\sum_{i=0}^{i=N_0}\arctan_{m_i}\,A_i\]
+with $\arctan_{m_i}$ being the sum of the first $2^{m_i}$ terms of the
+Taylor series for $\arctan$.
 \end{enumerate}
 We need to estimate all the quantities involved in the computation.
 \begin{enumerate}
@@ -1962,16 +1955,14 @@ We need to estimate all the quantities involved in the computation.
 0\leq s_{k+1}=\frac{s_k-A_k}{1+s_kA_k}\leq s_k-A_k\leq \frac{1}{v_k}
 \end{equation*}
 \item The remainder of the series giving $\arctan\,x$ is
-\begin{equation*}
-\begin{array}{rcl}
+\begin{eqnarray*}
 \sum_{i=N_0+1}^{\infty}\arctan\,A_i
 &\leq &\sum_{i=N_0+1}^{\infty}A_i\\
 &\leq &\sum_{i=N_0+1}^{\infty}s_i\\
 &\leq &\sum_{i=N_0+1}^{\infty}\frac{1}{v_{i-1}}\\
 &\leq &\sum_{i=N_0}^{\infty}\frac{1}{v_{i}}\\
 &\leq &\sum_{i=N_0}^{\infty}\frac{1}{2^{2^i}}=\frac{c_{N_0}}{2^{2^{N_0}}}
-\end{array}
-\end{equation*}
+\end{eqnarray*}
 With $c_{N_0}\leq 1.64$. If $N_0\geq 1$ then $c_{N_0}\leq 1.27$. If $N_0\geq 2$ then $c_{N_0}\leq 1.07$.\\
 It remains to determine the good $N_0$.
 \item The partial sum of the Taylor series for $\arctan$ have derivative bounded by $1$ and consequently don't increase error.
@@ -1980,26 +1971,23 @@ It remains to determine the good $N_0$.
 \frac{(A_i)^{2\times 2^{m_i}+1}}{2*2^{m_i}+1}
 \end{equation*}
 and is thus bounded by
-\begin{equation*}
-\begin{array}{rcl}
-\frac{1}{2*2^{m_i}+1}*[\frac{1}{2^{2^{i-1}}}]^{2\times 2^{m_i}+1}
-&=&\frac{1}{2*2^{m_i}+1}*[2^{-2^{i-1}}]^{2\times 2^{m_i}+1}\\
-&\leq &\frac{1}{2*2^{m_i}+1}*[2^{-2^{i-1}}]^{2\times 2^{m_i}}\\
-&\leq &\frac{1}{2*2^{m_i}+1}*2^{-2^{i+m_i}}
-\end{array}
-\end{equation*}
+\begin{eqnarray*}
+\frac{1}{2 \times 2^{m_i}+1} [\frac{1}{2^{2^{i-1}}}]^{2\times 2^{m_i}+1}
+&=&\frac{1}{2 \times 2^{m_i}+1} [2^{-2^{i-1}}]^{2\times 2^{m_i}+1}\\
+&\leq &\frac{1}{2 \times 2^{m_i}+1} [2^{-2^{i-1}}]^{2\times 2^{m_i}}\\
+&\leq &\frac{1}{2 \times 2^{m_i}+1} 2^{-2^{i+m_i}}
+\end{eqnarray*}
 The calculation of $\frac{\arctan\,A_i}{A_i}$ is done by using integer arithmetic and returning a fraction that is converted to mpfr type so there is no error. But to compute $\arctan\,A_i=A_i[\frac{\arctan\,A_i}{A_i}]$ we need to use real arithmetic (a little drawback of Jeandel procedure generic.c) so there is $1 ulp$ error.\\
 In total this is $(N_0) ulp$.
 \item Addition give $1 ulp$ There are $(N_0-1)$ addition so we need to take $(N_0 -1) ulp$.
-\item The division create errors:
+\item The division yields errors:
 \begin{enumerate}
 \item Having errors in the computation of $A_i$ is of no consequences: It changes the quantity being arc-tangented and that's all. Errors concerning the computation of $s_{N+1}$ in contrary adds to the error.
 \item The subtract operation $s_i-A_i$ has the effect of subtracting very near numbers. But $A_i$ has exactly the same first $1$ and $0$ than $s_i$ so we can expect this operation to be nondestructive.
 \item Extrapolating from the previous result we can expect that the error of the quantity $\frac{s_i-A_i}{1+s_iA_i}$ is $err(s_i)+1 ulp$
 \end{enumerate}
 \item The total sum of errors is then (if no errors are done in the counting of errors)
-\begin{equation*}
-\begin{array}{rcl}
+\begin{eqnarray*}
 Err(\arctan)
 &=&\sum_{i=0}^{i=N_0}\frac{1}{2*2^{m_i}+1}2^{-2^{i+m_i}}+\frac{2}{2^{2^{N_0}}}+(N_0-1)2^{-Prec}\\
 &+&(N_0 -1)2^{-Prec}+(N_0)2^{-Prec}\;\;\;[m_i=N_0-i]\\
@@ -2008,18 +1996,15 @@ Err(\arctan)
 &\leq &\{\sum_{i=0}^{i=\infty}\frac{1}{2*2^{i}+1}\}2^{-2^{N_0}}+\frac{2}{2^{2^{N_0}}}+(3*N_0-2)2^{-Prec}\\
 &\leq&\{0.77\}2^{-2^{N_0}}+\frac{1.63}{2^{2^{N_0}}}+(3*N_0-2)2^{-Prec}\\
 &=&\frac{2.4}{2^{2^{N_0}}}+(3*N_0-2)2^{-Prec}
-\end{array}
-\end{equation*}
+\end{eqnarray*}
 This is what we wish thus $Err(\arctan)< 2^{-prec\_arctan}$ with $prec\_arctan$
 is the requested precision on the arc-tangent.
 We thus want:
-\begin{equation*}
-\begin{array}{c}
-\frac{2.4}{2^{2^{N_0}}}\leq 2^{-prec\_arctan-1}\\
-et\;\;(3*N_0-2)2^{-Prec}\leq 2^{-prec\_arctan-1}
-\end{array}
-\end{equation*}
-i.e. $N_0\geq \frac{\ln\,(prec\_arctan+1+\frac{\ln\,2.4}{\ln\,2})}{\ln\,2}$
+\[\frac{2.4}{2^{2^{N_0}}}\leq 2^{-prec\_arctan-1}\]
+and
+\[(3 \times N_0-2)2^{-Prec}\leq 2^{-prec\_arctan-1}\]
+i.e.
+\[N_0\geq \frac{\ln\,(prec\_arctan+1+\frac{\ln\,2.4}{\ln\,2})}{\ln\,2}\]
 that we approach by (since the logarithm is expensive):
 \begin{equation*}
 N_0=ceil(\log(prec\_arctan+2.47)*1.45)
@@ -2037,20 +2022,22 @@ a=b(1+\Delta)\mbox{~with~}|\Delta|\leq \delta
 \end{equation*}
 This is the error definition used in mpfr. So we need to redo everything in order to have a consistent analysis.
 \begin{enumerate}
-\item We can use freely all previous estimate:
+\item We can use all previous estimates:
 \begin{enumerate}
 \item Remainder estimate:
 \begin{equation*}
 \sum_{i=N_0+1}^{\infty}\arctan\,A_i\leq \frac{c_{N_0}}{2^{2^{N_0}}}
 \end{equation*}
 so the relative error will be $\frac{1}{\arctan\,x}\frac{c_{N_0}}{2^{2^{N_0}}}$.
-\item The relative error created by using a partial sum of Taylor series is bounded by $\frac{1}{\arctan\,A_i}\frac{1}{2*2^{m_i}+1}*2^{-2^{i+m_i}}$.
-\item Multiplication $\arctan\,A_i=A_i[\frac{\arctan\,A_i}{A_i}]$ take 1 ulp of relative error.
-\item Doing the subtraction $s_i-A_i$ is a gradual underflow operation: it decrease the precision of $s_i-A_i$.
-\item The multiplication $a_iA_i$ create $1$ ulp of error. This is not much and this relative error is further reduced by adding $1$.
+\item The relative error created by using a partial sum of Taylor series is
+bounded by $\frac{1}{\arctan\,A_i}\frac{1}{2 \times 2^{m_i}+1} 2^{-2^{i+m_i}}$.
+\item The multiplication $\arctan\,A_i=A_i[\frac{\arctan\,A_i}{A_i}]$ takes
+1 ulp of relative error.
+\item Doing the subtraction $s_i-A_i$ is a gradual underflow operation:
+it decreases the precision of $s_i-A_i$.
+\item The multiplication $a_iA_i$ creates $1$ ulp of error. This is not
+much and this relative error is further reduced by adding $1$.
 \end{enumerate}
-\item 
-
 \end{enumerate}
 
 
