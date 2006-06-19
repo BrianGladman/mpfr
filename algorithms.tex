@@ -46,13 +46,16 @@ Algorithms and Proofs}
 
 \tableofcontents
 
-\section{Notations}
+\section{Notations and Assumptions}
 
 In the whole document, $\N()$ denotes rounding to nearest,
 $\Z()$ rounding towards zero,
 $\pinf()$ rounding towards plus infinity,
 $\minf()$ rounding towards minus infinity,
 and $\circ()$ any of those four rounding modes.
+
+In the whole document, except special notice, all variables are assumed
+to have the same precision, usually denoted $p$.
 
 \section{Error calculus}
 
@@ -199,7 +202,7 @@ Rule~\ref{R1} $|u-x| \leq 2^{-p}$.
 
 \begin{Rule} \label{R11}
 Assume $x_1, \ldots, x_n$ are $n$ floating-point numbers in precision $p$,
-and we compute a approximation of their product with the following sequence
+and we compute an approximation of their product with the following sequence
 of operations: $u_1 = x_1, u_2 = \circ(u_1 x_2), \ldots, u_n = \circ(u_{n-1}
 x_n)$. If rounding away from zero, the total rounding error is bounded by 
 $2(n-1) \ulp(u_n)$.
@@ -226,7 +229,7 @@ apply to addition too.
 \end{eqnarray}
 
 \begin{eqnarray}\nonumber
-\textnormal{Note:}&& \ulp(w)=2^{e_w-p}, \;\; \ulp(u)=2^{e_u-p},\;\; \ulp(v)=2^{e_v-p}\;\;\textnormal{with} \; p \; \textnormal{the accuracy} \\\nonumber
+\textnormal{Note:}&& \ulp(w)=2^{e_w-p}, \;\; \ulp(u)=2^{e_u-p},\;\; \ulp(v)=2^{e_v-p}\;\;\textnormal{with} \; p \; \textnormal{the precision} \\\nonumber
 && \ulp(u)=2^{d+e_w-p}, \;\; \ulp(v)=2^{d^{'}+e_w-p},\;\;\textnormal{with} \;\;d=e_u-e_w \;\; d^{'}=e_v-e_w 
 \end{eqnarray}
 \begin{eqnarray}\nonumber
@@ -245,21 +248,21 @@ apply to addition too.
 
 \subsection{Generic error of multiplication}\label{generic:mul}
 
-
 We want to compute the generic error of the multiplication.
-We assume here $u, v > 0$.
+We assume here $u, v > 0$ are approximations of exact values respectively $x$
+and $y$, with $|u - x| \leq k_u \, \ulp(u)$ and $|v - y| \leq k_v \, \ulp(v)$.
 
 \begin{eqnarray}\nonumber
-w&=&\circ(u.v) \\\nonumber
-\textnormal{Note:}&& \error(u) \leq k_u \, \ulp(u), \;\; \error(v) \leq k_v \, \ulp(v)
+w&=&\circ(uv) \\\nonumber
+% \textnormal{Note:}&& \error(u) \leq k_u \, \ulp(u), \;\; \error(v) \leq k_v \, \ulp(v)
 \end{eqnarray}
 \begin{eqnarray}\nonumber
-\error(w)& = &|w - x.y| \\\nonumber
+\error(w)& = &|w - xy| \\\nonumber
 & \leq &|w - u v| +|u v - x y| \\\nonumber
 & \leq & c_w \ulp(w) +  \frac{1}{2} [|u v-u y|+|u y-x y|+|u v-x v|+|x v-x y|]\\\nonumber
 & \leq & c_w \ulp(w) +  \frac{u+x}{2} k_v \ulp(v) + \frac{v+y}{2} k_u \ulp(u)\\\nonumber
 & \leq & c_w \ulp(w) +  \frac{u(1+c_u^+)}{2} k_v \ulp(v) + \frac{v(1+c_v^+)}{2} k_u \ulp(u) \U{R9}\\\nonumber
-& \leq & c_w \ulp(w) +  (1+c_u^+) k_v \ulp(u.v) + (1+c_v^+) k_u \ulp(u.v) \U{R4}\\\nonumber
+& \leq & c_w \ulp(w) +  (1+c_u^+) k_v \ulp(uv) + (1+c_v^+) k_u \ulp(uv) \U{R4}\\\nonumber
 & \leq & [ c_w +  (1+c_u^+) k_v + (1+c_v^+) k_u ] \ulp(w)\U{R8}\\\nonumber
 \end{eqnarray}
 \begin{eqnarray}\nonumber
@@ -388,7 +391,7 @@ v&=&\circ(e^{u}) \\\nonumber
 & \leq & (c_v +  c_u^* 2^{\Exp(u)+1} k_u )\ulp(v)
 \end{eqnarray}
 \begin{eqnarray}\nonumber
-\textnormal{Note:}&& u= m_u 2^{e_u} \n{ and }\ulp(u)=2^{e_u-p} \n{ with } p \n{ the accuracy} \\\nonumber
+\textnormal{Note:}&& u= m_u 2^{e_u} \n{ and }\ulp(u)=2^{e_u-p} \n{ with } p \n{ the precision} \\\nonumber
 \n{ Case }&x \leq u&  c_u^* =1 \\\nonumber
 \n{ Case }&u \leq x& \\\nonumber
 &&  x \leq u + k_u \ulp(u)\\\nonumber
@@ -415,7 +418,7 @@ v&=&\circ(\log{u}) \\\nonumber
 & \leq & c_v \ulp(v) + k_u \, \ulp(1)\;\; \U{R7}\\\nonumber
 \end{eqnarray}
 \begin{eqnarray}\nonumber
-\textnormal{Note:}&& \ulp(1)=2^{1-p}, \n{ and } \ulp(v)=2^{e_v-p} \n{ with } p \n{ the accuracy} \\\nonumber
+\textnormal{Note:}&& \ulp(1)=2^{1-p}, \n{ and } \ulp(v)=2^{e_v-p} \n{ with } p \n{ the precision} \\\nonumber
 && \ulp(1)= 2^{1-e_v+e_v-p}=2^{1-e_v} \ulp(v)
 \end{eqnarray}
 \begin{eqnarray}\nonumber
