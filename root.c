@@ -166,7 +166,7 @@ mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mp_rnd_t rnd_mode)
 
   /* invariant: x = m*2^e, with e divisible by k */
 
-  /* we reuse the variable m to store the cube root, since it is not needed
+  /* we reuse the variable m to store the kth root, since it is not needed
      any more: we just need to know if the root is exact */
   inexact = MPZ_ROOT (m, m, k) == 0;
 
