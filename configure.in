@@ -24,7 +24,7 @@ MA 02110-1301, USA.
 dnl If MPFR becomes GNU MPFR, change to GNU MPFR in update-version
 dnl Add check-news when it checks for more than 15 lines
 AC_INIT([MPFR],[2.3.0])
-AM_INIT_AUTOMAKE([no-define dist-zip dist-bzip2])
+AM_INIT_AUTOMAKE([1.6 no-define dist-zip dist-bzip2])
 dnl AM_MAINTAINER_MODE
 
 AC_CANONICAL_HOST
