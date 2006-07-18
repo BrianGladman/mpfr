@@ -176,6 +176,21 @@ case $OS_TYPE in
 	;;
 esac
 
+dnl $OS_TYPE is not defined on darwin, so we use $host
+case $host in
+  *-apple-darwin*)
+dnl This allows to take the first GMP library in the library paths,
+dnl whether it is dynamic or static. This behavior is more sensible,
+dnl in particular because it is the only way to link with a version
+dnl only available in static form when another version is available
+dnl in dynamic, and also for consistency, because the compiler will
+dnl take the first gmp.h found in the include paths (so, we need to
+dnl take a library that corresponds to this header file). This is a
+dnl common problem with darwin.
+	LDFLAGS="-Wl,-search_paths_first $LDFLAGS"
+	;;
+esac
+
 AC_C_CONST
 AC_C_VOLATILE
 MPFR_CONFIGS
