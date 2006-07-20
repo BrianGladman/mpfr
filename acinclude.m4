@@ -552,6 +552,25 @@ case $host in
 esac
 ])
 
+
+dnl  MPFR_LD_SEARCH_PATHS_FIRST
+dnl  --------------------------
+
+AC_DEFUN([MPFR_LD_SEARCH_PATHS_FIRST],
+[case "$LD $LDFLAGS" in
+  *-Wl,-search_paths_first*) ;;
+  *) AC_MSG_CHECKING([if the compiler understands -Wl,-search_paths_first])
+     saved_LDFLAGS="$LDFLAGS"
+     LDFLAGS="-Wl,-search_paths_first $LDFLAGS"
+     AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[]])],
+       [AC_MSG_RESULT(yes)],
+       [AC_MSG_RESULT(no)]
+        LDFLAGS="$saved_LDFLAGS")
+     ;;
+ esac
+])
+
+
 dnl  GMP_C_ATTRIBUTE_MODE
 dnl  --------------------
 dnl  Introduced in gcc 2.2, but perhaps not in all Apple derived versions.

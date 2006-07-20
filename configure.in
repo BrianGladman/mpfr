@@ -187,8 +187,7 @@ dnl in dynamic, and also for consistency, because the compiler will
 dnl take the first gmp.h found in the include paths (so, we need to
 dnl take a library that corresponds to this header file). This is a
 dnl common problem with darwin.
-	LDFLAGS="-Wl,-search_paths_first $LDFLAGS"
-	;;
+    MPFR_LD_SEARCH_PATHS_FIRST ;;
 esac
 
 AC_C_CONST
