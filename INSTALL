@@ -25,6 +25,25 @@
 6. To install it (default "/usr/local" | see "--prefix" option), type:
      make install
 
+If you installed MPFR (header and library) in directories that are
+not searched by default by the compiler and/or linking tools, then,
+like with other libraries, you may need to set up some environment
+variables such as C_INCLUDE_PATH (to find the header mpfr.h),
+LIBRARY_PATH (to find the library), and if the shared library has
+been installed, LD_LIBRARY_PATH (before execution) or LD_RUN_PATH
+(before linking); this list is not exhaustive and some environment
+variables may be specific to your system. "make install" gives some
+instructions; please read them. You can also find more information
+in the manuals of your compiler and linker.
+
+Under Mac OS X, if the shared library was not installed and you use
+Apple's linker (this is the default), you will also need to provide
+the -search_paths_first linker flag ("-Wl,-search_paths_first" when
+you link via gcc) to make sure that the right library is selected,
+as by default, Apple's linker selects a shared library preferably,
+even when it is farther in the library paths. If a wrong library is
+selected due to this behavior, unexpected result may occur.
+
 
 Building the documentation
 ==========================
