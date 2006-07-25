@@ -36,13 +36,20 @@ variables may be specific to your system. "make install" gives some
 instructions; please read them. You can also find more information
 in the manuals of your compiler and linker.
 
+Remember that if you have several MPFR (or GMP) versions installed
+(e.g., one with the system, and one, newer, by you), you will not
+necessarily get a compilation/linking error if a wrong library is
+used (e.g., because LD_LIBRARY_PATH has not been set correctly).
+But unexpected results may occur.
+
 Under Mac OS X, if the shared library was not installed and you use
 Apple's linker (this is the default), you will also need to provide
 the -search_paths_first linker flag ("-Wl,-search_paths_first" when
 you link via gcc) to make sure that the right library is selected,
 as by default, Apple's linker selects a shared library preferably,
-even when it is farther in the library paths. If a wrong library is
-selected due to this behavior, unexpected result may occur.
+even when it is farther in the library paths. We recall that if a
+wrong library is selected due to this behavior, unexpected results
+may occur.
 
 
 Building the documentation
