@@ -85,6 +85,13 @@ Building MPFR with internal GMP header files
 --with-gmp=DIR          assumes that DIR is where you have installed GMP.
                         same as --with-gmp-lib=DIR/lib
                         and     --with-gmp-include=DIR/include
+                        Warning! Do not use these options if you have
+                        CPPFLAGS and/or LDFLAGS containing a -I or -L
+                        option with a directory that contains a GMP
+                        header or library file, as these options just
+                        add -I and -L options to CPPFLAGS and LDFLAGS
+                        *after* the ones that are currently declared,
+                        so that DIR will have a lower precedence.
 
 --enable-assert         build MPFR with assertions.
 --enable-thread-safe    build MPFR as thread safe.
@@ -121,11 +128,12 @@ In case of problem
    Try to build MPFR with/without GMP internal files.
 
    If the build was ok, but the tests failed to link with GMP, it is usually
-   because /usr/local/lib is used by the static linker but not by the shared
-   linker. There are two solutions:
-   1.  setenv LD_LIBRARY_PATH /usr/lib:/usr/local/lib                 [tcsh]
-    or export LD_LIBRARY_PATH=/usr/lib:/usr/local/lib                 [bash]
-   2. Or run MPFR's configure with "--with-gmp=/usr/local/"
+   because PREFIXDIR/lib is used by the static linker but not by the shared
+   linker (where PREFIXDIR is the directory given in --prefix, or /usr/local
+   if --prefix wasn't used). There are two solutions:
+   1.  setenv LD_LIBRARY_PATH /usr/lib:PREFIXDIR/lib              [csh/tcsh]
+    or export LD_LIBRARY_PATH=/usr/lib:PREFIXDIR/lib          [bash/zsh/...]
+   2. Or run MPFR's configure with "--with-gmp=/usr/local"
     so that libtool is able to fix this problem.
 
    If you can't solve your problem, you could contact us at <mpfr@loria.fr>,
