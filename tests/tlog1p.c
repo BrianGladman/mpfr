@@ -88,12 +88,40 @@ special (void)
   mpfr_clear (x);
 }
 
+static void
+other (void)
+{
+  mpfr_t x, y;
+
+  /* Bug reported by Guillaume Melquiond on 2006-08-14. */
+  mpfr_init2 (x, 53);
+  mpfr_set_str (x, "-1.5e4f72873ed9a@-100", 16, GMP_RNDN);
+  mpfr_init2 (y, 57);
+  mpfr_log1p (y, x, GMP_RNDU);
+  if (mpfr_cmp (x, y) != 0)
+    {
+      printf ("Error in tlog1p for x = ");
+      mpfr_out_str (stdout, 16, 0, x, GMP_RNDN);
+      printf (", rnd = GMP_RNDU\nExpected ");
+      mpfr_out_str (stdout, 16, 15, x, GMP_RNDN);
+      printf ("\nGot      ");
+      mpfr_out_str (stdout, 16, 15, y, GMP_RNDN);
+      printf ("\n");
+      exit (1);
+    }
+
+  mpfr_clear (y);
+  mpfr_clear (x);
+  return;
+}
+
 int
 main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
   special ();
+  other ();
 
   test_generic (2, 100, 50);
 

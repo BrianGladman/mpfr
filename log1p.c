@@ -29,6 +29,7 @@ int
 mpfr_log1p (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
   int comp, inexact;
+  mp_exp_t ex;
   MPFR_SAVE_EXPO_DECL (expo);
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
@@ -62,8 +63,16 @@ mpfr_log1p (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
         }
     }
 
-  /* log(1+x) = x-x^2/2 + ... so the error is < 2^(2*EXP(x)-1) */
-  MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, -MPFR_GET_EXP (x)+1,0,rnd_mode,{});
+  ex = MPFR_GET_EXP (x);
+  if (ex < 0)  /* -0.5 < x < 0.5 */
+    {
+      /* For x > 0,    abs(log(1+x)-x) < x^2/2.
+         For x > -0.5, abs(log(1+x)-x) < x^2. */
+      if (MPFR_IS_POS (x))
+        MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, - ex - 1, 0, rnd_mode, {});
+      else
+        MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, - ex, 1, rnd_mode, {});
+    }
 
   comp = mpfr_cmp_si (x, -1);
   /* log1p(x) is undefined for x < -1 */
