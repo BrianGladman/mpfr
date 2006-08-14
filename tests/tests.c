@@ -289,7 +289,8 @@ ld_trace (const char *name, long double ld)
 }
 
 /* Open a file in the src directory - can't use fopen directly */
-FILE *src_fopen (const char *filename, const char *mode)
+FILE *
+src_fopen (const char *filename, const char *mode)
 {
   const char *srcdir = getenv ("srcdir");
   char *buffer;
@@ -309,7 +310,8 @@ FILE *src_fopen (const char *filename, const char *mode)
   return f;
 }
 
-void set_emin (mp_exp_t exponent)
+void
+set_emin (mp_exp_t exponent)
 {
   if (mpfr_set_emin (exponent))
     {
@@ -318,7 +320,8 @@ void set_emin (mp_exp_t exponent)
     }
 }
 
-void set_emax (mp_exp_t exponent)
+void
+set_emax (mp_exp_t exponent)
 {
   if (mpfr_set_emax (exponent))
     {
