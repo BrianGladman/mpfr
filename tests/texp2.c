@@ -54,6 +54,27 @@ special_overflow (void)
   set_emax (MPFR_EMAX_MAX);
 }
 
+static void
+exp_range (void)
+{
+  mpfr_t x;
+
+  set_emin (3);
+  mpfr_init2 (x, 8);
+  mpfr_set_ui (x, 5, GMP_RNDN);
+  mpfr_exp2 (x, x, GMP_RNDN);
+  set_emin (MPFR_EMIN_MIN);
+  if (mpfr_nan_p (x) || mpfr_cmp_ui (x, 32) != 0)
+    {
+      printf ("Error in mpfr_exp2 for x = 5, with emin = 3\n");
+      printf ("Expected 32, got ");
+      mpfr_out_str (stdout, 2, 0, x, GMP_RNDN);
+      printf ("\n");
+      exit (1);
+    }
+  mpfr_clear (x);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -63,6 +84,7 @@ main (int argc, char *argv[])
   tests_start_mpfr ();
 
   special_overflow ();
+  exp_range ();
 
   mpfr_init (x);
   mpfr_init (y);

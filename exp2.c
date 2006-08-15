@@ -70,6 +70,8 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       return mpfr_underflow (y, rnd2, 1);
     }
 
+  MPFR_SAVE_EXPO_MARK (expo);
+
   if (mpfr_integer_p (x)) /* we know that x >= 2^(emin-1) */
     {
       long xd;
@@ -78,13 +80,16 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       if (mpfr_cmp_si_2exp (x, __gmpfr_emax, 0) > 0)
         return mpfr_overflow (y, rnd_mode, 1);
 
+      /* x <= __gmpfr_emax */
+      MPFR_ASSERTN (__gmpfr_emax <= LONG_MAX);
       xd = mpfr_get_si (x, GMP_RNDN);
 
       mpfr_set_ui (y, 1, GMP_RNDZ);
-      return mpfr_mul_2si (y, y, xd, rnd_mode);
-    }
+      inexact = mpfr_mul_2si (y, y, xd, rnd_mode);
 
-  MPFR_SAVE_EXPO_MARK (expo);
+      MPFR_SAVE_EXPO_FREE (expo);
+      return mpfr_check_range (y, inexact, rnd_mode);
+    }
 
   /* General case */
   {
