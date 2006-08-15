@@ -86,53 +86,49 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
       mpfr_set_ui (y, 1, GMP_RNDZ);
       inexact = mpfr_mul_2si (y, y, xd, rnd_mode);
+    }
+  else /* General case */
+    {
+      /* Declaration of the intermediary variable */
+      mpfr_t t;
 
-      MPFR_SAVE_EXPO_FREE (expo);
-      return mpfr_check_range (y, inexact, rnd_mode);
+      /* Declaration of the size variable */
+      mp_prec_t Ny = MPFR_PREC(y);              /* target precision */
+      mp_prec_t Nt;                             /* working precision */
+      mp_exp_t err;                             /* error */
+      MPFR_ZIV_DECL (loop);
+
+      /* compute the precision of intermediary variable */
+      /* the optimal number of bits : see algorithms.tex */
+      Nt = Ny + 5 + MPFR_INT_CEIL_LOG2 (Ny);
+
+      /* initialise of intermediary variable */
+      mpfr_init2 (t, Nt);
+
+      /* First computation */
+      MPFR_ZIV_INIT (loop, Nt);
+      for (;;)
+        {
+          /* compute exp(x*ln(2))*/
+          mpfr_const_log2 (t, GMP_RNDU);       /* ln(2) */
+          mpfr_mul (t, x, t, GMP_RNDU);        /* x*ln(2) */
+          err = Nt - (MPFR_GET_EXP (t) + 2);   /* Estimate of the error */
+          mpfr_exp (t, t, GMP_RNDN);           /* exp(x*ln(2))*/
+
+          if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
+            break;
+
+          /* Actualisation of the precision */
+          MPFR_ZIV_NEXT (loop, Nt);
+          mpfr_set_prec (t, Nt);
+        }
+      MPFR_ZIV_FREE (loop);
+
+      inexact = mpfr_set (y, t, rnd_mode);
+
+      mpfr_clear (t);
     }
 
-  /* General case */
-  {
-    /* Declaration of the intermediary variable */
-    mpfr_t t;
-
-    /* Declaration of the size variable */
-    mp_prec_t Ny = MPFR_PREC(y);              /* target precision */
-    mp_prec_t Nt;                             /* working precision */
-    mp_exp_t err;                             /* error */
-    MPFR_ZIV_DECL (loop);
-
-    /* compute the precision of intermediary variable */
-    /* the optimal number of bits : see algorithms.tex */
-    Nt = Ny + 5 + MPFR_INT_CEIL_LOG2 (Ny);
-
-    /* initialise of intermediary       variable */
-    mpfr_init2 (t, Nt);
-
-    /* First computation */
-    MPFR_ZIV_INIT (loop, Nt);
-    for (;;)
-      {
-        /* compute   exp(x*ln(2))*/
-        mpfr_const_log2 (t, GMP_RNDU);       /* ln(2) */
-        mpfr_mul (t, x, t, GMP_RNDU);        /* x*ln(2) */
-        err = Nt - (MPFR_GET_EXP (t) + 2);   /* Estimate of the error */
-        mpfr_exp (t, t, GMP_RNDN);           /* exp(x*ln(2))*/
-
-        if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
-          break;
-
-        /* Actualisation of the precision */
-        MPFR_ZIV_NEXT (loop, Nt);
-        mpfr_set_prec (t, Nt);
-      }
-    MPFR_ZIV_FREE (loop);
-
-    inexact = mpfr_set (y, t, rnd_mode);
-
-    mpfr_clear (t);
-  }
   MPFR_SAVE_EXPO_FREE (expo);
-
   return mpfr_check_range (y, inexact, rnd_mode);
 }
