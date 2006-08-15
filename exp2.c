@@ -31,6 +31,8 @@ int
 mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
   int inexact;
+  long xint;
+  mpfr_t xfrac;
   MPFR_SAVE_EXPO_DECL (expo);
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
@@ -58,9 +60,8 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   /* since the smallest representable non-zero float is 1/2*2^__gmpfr_emin,
      if x < __gmpfr_emin - 1, the result is either 1/2*2^__gmpfr_emin or 0 */
-  MPFR_ASSERTD (MPFR_EMIN_MIN - 2 >= LONG_MIN);
-
-  if (mpfr_cmp_si_2exp (x, __gmpfr_emin - 1, 0) < 0)
+  MPFR_ASSERTN (MPFR_EMIN_MIN >= LONG_MIN + 2);
+  if (MPFR_UNLIKELY (mpfr_cmp_si (x, __gmpfr_emin - 1) < 0))
     {
       mp_rnd_t rnd2 = rnd_mode;
       /* in round to nearest mode, round to zero when x <= __gmpfr_emin-2 */
@@ -70,24 +71,24 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       return mpfr_underflow (y, rnd2, 1);
     }
 
+  MPFR_ASSERTN (MPFR_EMAX_MAX <= LONG_MAX);
+  if (MPFR_UNLIKELY (mpfr_cmp_si (x, __gmpfr_emax) >= 0))
+    return mpfr_overflow (y, rnd_mode, 1);
+
+  /* We now know that emin - 1 <= x < emax. */
+
   MPFR_SAVE_EXPO_MARK (expo);
 
-  if (mpfr_integer_p (x)) /* we know that x >= 2^(emin-1) */
+  xint = mpfr_get_si (x, GMP_RNDZ);
+  mpfr_init2 (xfrac, MPFR_PREC (x));
+  mpfr_sub_si (xfrac, x, xint, GMP_RNDN); /* exact */
+
+  if (MPFR_IS_ZERO (xfrac))
     {
-      long xd;
-
-      MPFR_ASSERTD (MPFR_EMAX_MAX <= LONG_MAX);
-      if (mpfr_cmp_si_2exp (x, __gmpfr_emax, 0) > 0)
-        return mpfr_overflow (y, rnd_mode, 1);
-
-      /* x <= __gmpfr_emax */
-      MPFR_ASSERTN (__gmpfr_emax <= LONG_MAX);
-      xd = mpfr_get_si (x, GMP_RNDN);
-
-      mpfr_set_ui (y, 1, GMP_RNDZ);
-      inexact = mpfr_mul_2si (y, y, xd, rnd_mode);
+      mpfr_set_ui (y, 1, GMP_RNDN);
+      inexact = 0;
     }
-  else /* General case */
+  else
     {
       /* Declaration of the intermediary variable */
       mpfr_t t;
@@ -111,9 +112,9 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
         {
           /* compute exp(x*ln(2))*/
           mpfr_const_log2 (t, GMP_RNDU);       /* ln(2) */
-          mpfr_mul (t, x, t, GMP_RNDU);        /* x*ln(2) */
+          mpfr_mul (t, xfrac, t, GMP_RNDU);    /* xfrac * ln(2) */
           err = Nt - (MPFR_GET_EXP (t) + 2);   /* Estimate of the error */
-          mpfr_exp (t, t, GMP_RNDN);           /* exp(x*ln(2))*/
+          mpfr_exp (t, t, GMP_RNDN);           /* exp(xfrac * ln(2)) */
 
           if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
             break;
@@ -129,6 +130,8 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_clear (t);
     }
 
+  mpfr_clear (xfrac);
+  mpfr_mul_2si (y, y, xint, GMP_RNDN); /* exact */
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (y, inexact, rnd_mode);
 }

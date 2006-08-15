@@ -176,6 +176,17 @@ main (int argc, char *argv[])
       exit (1);
     }
 
+  mpfr_set_prec (x, 40);
+  mpfr_set_prec (y, 40);
+  mpfr_set_str (x, "10000000000.5", 10, GMP_RNDN);
+  mpfr_clear_flags ();
+  mpfr_exp2 (y, x, GMP_RNDN);
+  if (!(MPFR_IS_INF (y) && MPFR_IS_POS (y) && mpfr_overflow_p ()))
+    {
+      printf ("exp2(10000000000.5) should overflow.\n");
+      exit (1);
+    }
+
   test_generic (2, 100, 100);
 
   mpfr_clear (x);
