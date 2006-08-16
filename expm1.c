@@ -30,6 +30,7 @@ int
 mpfr_expm1 (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
 {
   int inexact;
+  mp_exp_t ex;
   MPFR_SAVE_EXPO_DECL (expo);
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
@@ -60,8 +61,16 @@ mpfr_expm1 (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
         }
     }
 
-  /* exp(x)-1 = x +x^2/2 + ... so the error is < 2^(2*EXP(x)-1) */
-  MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, -MPFR_GET_EXP (x)+1,1,rnd_mode,{});
+  ex = MPFR_GET_EXP (x);
+  if (ex < 0)
+    {
+      /* For -1 < x < 0, abs(expm1(x)-x) < x^2/2.
+         For 0 < x < 1,  abs(expm1(x)-x) < x^2. */
+      if (MPFR_IS_POS (x))
+        MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, - ex, 1, rnd_mode, {});
+      else
+        MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, 1 - ex, 0, rnd_mode, {});
+    }
 
   MPFR_SAVE_EXPO_MARK (expo);
   /* General case */
