@@ -131,7 +131,9 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     }
 
   mpfr_clear (xfrac);
-  mpfr_mul_2si (y, y, xint, GMP_RNDN); /* exact */
+  mpfr_clear_flags ();
+  mpfr_mul_2si (y, y, xint, GMP_RNDN); /* exact or overflow */
+  MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (y, inexact, rnd_mode);
 }

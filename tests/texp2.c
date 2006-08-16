@@ -22,6 +22,7 @@ MA 02110-1301, USA. */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 
 #include "mpfr-test.h"
 
@@ -32,6 +33,7 @@ static void
 special_overflow (void)
 {
   mpfr_t x, y;
+  int inex;
 
   set_emin (-125);
   set_emax (128);
@@ -40,11 +42,12 @@ special_overflow (void)
   mpfr_init2 (y, 24);
 
   mpfr_set_str_binary (x, "0.101100100000000000110100E15");
-  mpfr_exp2 (y, x, GMP_RNDN);
-  if (!mpfr_inf_p(y))
+  inex = mpfr_exp2 (y, x, GMP_RNDN);
+  if (!mpfr_inf_p (y) || inex <= 0)
     {
-      printf("Overflow error.\n");
+      printf ("Overflow error.\n");
       mpfr_dump (y);
+      printf ("inex = %d\n", inex);
       exit (1);
     }
 
@@ -52,6 +55,47 @@ special_overflow (void)
   mpfr_clear (x);
   set_emin (MPFR_EMIN_MIN);
   set_emax (MPFR_EMAX_MAX);
+}
+
+static void
+emax_m_eps (void)
+{
+  if (mpfr_get_emax () <= LONG_MAX)
+    {
+      mpfr_t x, y;
+      int inex, ov;
+
+      mpfr_init2 (x, 64);
+      mpfr_init2 (y, 8);
+      mpfr_set_si (x, mpfr_get_emax (), GMP_RNDN);
+      mpfr_nextbelow (x);
+
+      mpfr_clear_flags ();
+      inex = mpfr_exp2 (y, x, GMP_RNDN);
+      ov = mpfr_overflow_p ();
+      if (!ov || !mpfr_inf_p (y) || inex <= 0)
+        {
+          printf ("Overflow error for x = emax - eps, GMP_RNDN.\n");
+          mpfr_dump (y);
+          printf ("inex = %d, %soverflow\n", inex, ov ? "" : "no ");
+          exit (1);
+        }
+
+      mpfr_clear_flags ();
+      inex = mpfr_exp2 (y, x, GMP_RNDD);
+      ov = mpfr_overflow_p ();
+      if (ov || mpfr_inf_p (y) || inex >= 0 ||
+          (mpfr_nextabove (y), !mpfr_inf_p (y)))
+        {
+          printf ("Overflow error for x = emax - eps, GMP_RNDD.\n");
+          mpfr_dump (y);
+          printf ("inex = %d, %soverflow\n", inex, ov ? "" : "no ");
+          exit (1);
+        }
+
+      mpfr_clear (x);
+      mpfr_clear (y);
+    }
 }
 
 static void
@@ -84,6 +128,7 @@ main (int argc, char *argv[])
   tests_start_mpfr ();
 
   special_overflow ();
+  emax_m_eps ();
   exp_range ();
 
   mpfr_init (x);
