@@ -19,6 +19,8 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
+#include <limits.h>
+
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
@@ -72,6 +74,29 @@ mpfr_expm1 (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
         MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, 1 - ex, 0, rnd_mode, {});
     }
 
+  if (MPFR_IS_NEG (x) && ex > 5)  /* x <= -32 */
+    {
+      mpfr_t minus_one, t;
+      mp_exp_t err;
+
+      mpfr_init2 (minus_one, 2);
+      mpfr_init2 (t, 64);
+      mpfr_set_si (minus_one, -1, GMP_RNDN);
+      mpfr_const_log2 (t, GMP_RNDU); /* round upward since x is negative */
+      mpfr_div (t, x, t, GMP_RNDU); /* > x / ln(2) */
+      err = mpfr_cmp_si (t, MPFR_EMIN_MIN >= -LONG_MAX ?
+                         MPFR_EMIN_MIN : -LONG_MAX) <= 0 ?
+        - (MPFR_EMIN_MIN >= -LONG_MAX ? MPFR_EMIN_MIN : -LONG_MAX) :
+        - mpfr_get_si (t, GMP_RNDU);
+      /* exp(x) = 2^(x/ln(2))
+               <= 2^max(MPFR_EMIN_MIN,-LONG_MAX,ceil(x/ln(2)+epsilon))
+         with epsilon > 0 */
+      mpfr_clear (t);
+      MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, minus_one, err, 0, rnd_mode,
+                                        { mpfr_clear (minus_one); });
+      mpfr_clear (minus_one);
+    }
+
   MPFR_SAVE_EXPO_MARK (expo);
   /* General case */
   {
@@ -89,8 +114,8 @@ mpfr_expm1 (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
 
     /* if |x| is smaller than 2^(-e), we will loose about e bits in the
        subtraction exp(x) - 1 */
-    if (MPFR_EXP(x) < 0)
-      Nt += -MPFR_EXP(x);
+    if (ex < 0)
+      Nt += - ex;
 
     /* initialize auxiliary variable */
     mpfr_init2 (t, Nt);
