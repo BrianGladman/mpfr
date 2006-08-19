@@ -68,6 +68,18 @@ emax_m_eps (void)
       mpfr_init2 (x, 64);
       mpfr_init2 (y, 8);
       mpfr_set_si (x, mpfr_get_emax (), GMP_RNDN);
+
+      mpfr_clear_flags ();
+      inex = mpfr_exp2 (y, x, GMP_RNDN);
+      ov = mpfr_overflow_p ();
+      if (!ov || !mpfr_inf_p (y) || inex <= 0)
+        {
+          printf ("Overflow error for x = emax, GMP_RNDN.\n");
+          mpfr_dump (y);
+          printf ("inex = %d, %soverflow\n", inex, ov ? "" : "no ");
+          exit (1);
+        }
+
       mpfr_nextbelow (x);
 
       mpfr_clear_flags ();

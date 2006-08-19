@@ -133,6 +133,8 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_clear (xfrac);
   mpfr_clear_flags ();
   mpfr_mul_2si (y, y, xint, GMP_RNDN); /* exact or overflow */
+  /* Note: We can have an overflow only when t was rounded up to 2. */
+  MPFR_ASSERTD (!mpfr_overflow_p () || inexact > 0);
   MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (y, inexact, rnd_mode);
