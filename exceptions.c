@@ -214,7 +214,7 @@ mpfr_check_range (mpfr_ptr x, int t, mp_rnd_t rnd_mode)
       if (MPFR_UNLIKELY( exp > __gmpfr_emax) )
         return mpfr_overflow(x, rnd_mode, MPFR_SIGN(x));
     }
-  return t;  /* propagate inexact ternary value, unlike most functions */
+  MPFR_RET (t);  /* propagate inexact ternary value, unlike most functions */
 }
 
 #undef mpfr_underflow_p

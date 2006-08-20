@@ -107,9 +107,9 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
           if (MPFR_IS_LIKE_RNDZ (rnd_mode, MPFR_IS_NEG (a)))
             {
               mpfr_nexttozero (a);
-              return -MPFR_INT_SIGN (a);
+              MPFR_RET (- MPFR_INT_SIGN (a));
             }
-          return MPFR_INT_SIGN (a);
+          MPFR_RET (MPFR_INT_SIGN (a));
         }
       else
         {
@@ -137,7 +137,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
               mpfr_nexttozero (a);
               inexact = -MPFR_INT_SIGN (a);
             }
-          return inexact;
+          MPFR_RET (inexact);
         }
     }
 
@@ -531,5 +531,5 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 #endif
   /* check that result is msb-normalized */
   MPFR_ASSERTD(ap[an-1] > ~ap[an-1]);
-  return inexact * MPFR_INT_SIGN(a);
+  MPFR_RET (inexact * MPFR_INT_SIGN (a));
 }

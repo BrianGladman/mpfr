@@ -919,7 +919,8 @@ typedef struct {
 /* Speed up final checking */
 #define mpfr_check_range(x,t,r) \
  (MPFR_LIKELY (MPFR_EXP (x) >= __gmpfr_emin && MPFR_EXP (x) <= __gmpfr_emax) \
-               ? (t) : mpfr_check_range(x,t,r))
+  ? ((t) ? (__gmpfr_flags |= MPFR_FLAGS_INEXACT, (t)) : 0)                   \
+  : mpfr_check_range(x,t,r))
 
 
 /******************************************************

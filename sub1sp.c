@@ -791,7 +791,5 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   MPFR_SET_EXP (a, bx);
 
   MPFR_TMP_FREE(marker);
-
-  return inexact*MPFR_INT_SIGN(a);
+  MPFR_RET (inexact * MPFR_INT_SIGN (a));
 }
-

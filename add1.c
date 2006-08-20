@@ -537,5 +537,5 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
  end_of_add:
   MPFR_TMP_FREE(marker);
-  return inex;
+  MPFR_RET (inex);
 }

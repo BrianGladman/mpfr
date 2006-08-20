@@ -154,7 +154,7 @@ mpfr_mul3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
     MPFR_SET_EXP (a, ax2);
     MPFR_SET_SIGN(a, sign_product);
   }
-  return inexact;
+  MPFR_RET (inexact);
 }
 
 int
@@ -506,5 +506,5 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
         rnd_mode = GMP_RNDZ;
       return mpfr_underflow (a, rnd_mode, sign);
     }
-  return inexact;
+  MPFR_RET (inexact);
 }

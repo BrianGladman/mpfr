@@ -375,5 +375,5 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   MPFR_SET_SAME_SIGN(a,b);
 
   MPFR_TMP_FREE(marker);
-  return inexact*MPFR_INT_SIGN(a);
+  MPFR_RET (inexact * MPFR_INT_SIGN (a));
 }

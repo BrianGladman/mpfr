@@ -128,5 +128,5 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       inexact = mpfr_check_range (y, inexact, rnd_mode);
     }
 
-  return inexact;
+  MPFR_RET (inexact);
 }
