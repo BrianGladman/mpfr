@@ -580,7 +580,9 @@ particular_cases (void)
 static void
 underflows (void)
 {
-  mpfr_t x, y;
+  mpfr_t x, y, z;
+  int err = 0;
+  int inexact;
   int i;
 
   mpfr_init2 (x, 64);
@@ -605,8 +607,55 @@ underflows (void)
         }
     }
 
-  mpfr_clear (x);
-  mpfr_clear (y);
+  mpfr_init2 (z, 55);
+  mpfr_set_str (x, "0.110011010011101001110001110100010000110111101E0",
+                2, GMP_RNDN);
+  mpfr_set_str (y, "0.101110010011111001011010100011011100111110011E40",
+                2, GMP_RNDN);
+  mpfr_clear_flags ();
+  inexact = mpfr_pow (z, x, y, GMP_RNDU);
+  if (!mpfr_underflow_p ())
+    {
+      printf ("Underflow flag is not set for special underflow test.\n");
+      err = 1;
+    }
+  if (inexact <= 0)
+    {
+      printf ("Ternary value is wrong for special underflow test.\n");
+      err = 1;
+    }
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_nextabove (x);
+  if (mpfr_cmp (x, z) != 0)
+    {
+      printf ("Wrong value for special underflow test.\nGot ");
+      mpfr_out_str (stdout, 2, 0, z, GMP_RNDN);
+      printf ("\ninstead of ");
+      mpfr_out_str (stdout, 2, 2, x, GMP_RNDN);
+      printf ("\n");
+      err = 1;
+    }
+  if (err)
+    exit (1);
+
+  /* MPFR currently (2006-08-19) segfaults on the following code (and
+     possibly makes other programs crash due to the lack of memory),
+     because y is converted into an mpz_t, and the required precision
+     is too high. */
+  mpfr_set_prec (x, 2);
+  mpfr_set_prec (y, 2);
+  mpfr_set_prec (z, 12);
+  mpfr_set_ui_2exp (x, 3, -2, GMP_RNDN);
+  mpfr_set_ui_2exp (y, 1, mpfr_get_emax () - 1, GMP_RNDN);
+  mpfr_clear_flags ();
+  mpfr_pow (z, x, y, GMP_RNDN);
+  if (!mpfr_underflow_p () || MPFR_NOTZERO (z))
+    {
+      printf ("Underflow test with large y fails.\n");
+      exit (1);
+    }
+
+  mpfr_clears (x, y, z, (void *) 0);
 }
 
 static void
