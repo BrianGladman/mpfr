@@ -22,6 +22,14 @@
 /Makefile
 /Makefile.in
 /aclocal.m4
+/algorithms.aux
+/algorithms.bbl
+/algorithms.blg
+/algorithms.dvi
+/algorithms.log
+/algorithms.pdf
+/algorithms.ps
+/algorithms.toc
 /ansi2knr.1
 /ansi2knr.c
 /autom4te.cache
