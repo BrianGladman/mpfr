@@ -154,11 +154,16 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
     }
 
   /* if x < 0 and -2k-1 <= x <= -2k, then lngamma(x) = NaN */
-  if (MPFR_IS_NEG(z0) && ((mpfr_get_si (z0, GMP_RNDZ) % 2) == 0
-                          || mpfr_integer_p (z0)))
+  if (MPFR_IS_NEG (z0))
     {
-      MPFR_SET_NAN (y);
-      MPFR_RET_NAN;
+      MPFR_SAVE_EXPO_MARK (expo);
+      if (mpfr_get_si (z0, GMP_RNDZ) % 2 == 0 || mpfr_integer_p (z0))
+        {
+          MPFR_SAVE_EXPO_FREE (expo);
+          MPFR_SET_NAN (y);
+          MPFR_RET_NAN;
+        }
+      MPFR_SAVE_EXPO_FREE (expo);
     }
 #endif
 
