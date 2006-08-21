@@ -25,9 +25,19 @@ Probably many bugs.
 Known bugs:
 
 * The overflow/underflow exceptions may be badly handled in some functions;
-  specially when the intermediary internal results have exponent which 
-  exceeds the hardware limit (2^30 for a 32 bits CPU, and 2^62 for a 64 bits 
+  specially when the intermediary internal results have exponent which
+  exceeds the hardware limit (2^30 for a 32 bits CPU, and 2^62 for a 64 bits
   CPU).
+
+* In mpfr_pow_z (thus mpfr_pow too, when mpfr_pow_z is called), the
+  underflow flag is not always set. Example: x = 0.11 in base 2,
+  y = 1.0e38, GMP_RNDN.
+
+* On very large positive and negative values, mpfr_coth is very slow,
+  takes a lot of memory (possibly several hundreds of megabytes), and
+  sometimes even segfaults.
+
+* On very large values, mpfr_csch, tsech, mpfr_eint and mpfr_erfc segfault.
 
 Potential bugs:
 
