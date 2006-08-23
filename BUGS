@@ -35,9 +35,12 @@ Known bugs:
 
 * On very large positive and negative values, mpfr_coth is very slow,
   takes a lot of memory (possibly several hundreds of megabytes), and
-  sometimes even segfaults.
+  sometimes even crashes (segmentation fault, probably due to lack of
+  memory).
 
-* On very large values, mpfr_csch, tsech, mpfr_eint and mpfr_erfc segfault.
+* On very large values, mpfr_csch, mpfr_sech, mpfr_eint and mpfr_erfc
+  crash (segmentation fault, probably due to lack of memory or integer
+  overflow).
 
 Potential bugs:
 
