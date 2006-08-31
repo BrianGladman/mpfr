@@ -136,7 +136,7 @@ tests_rand_end (void)
 }
 
 /* initialization function for tests using the hardware floats
-   Not very usefull now. */
+   Not very useful now. */
 void
 mpfr_test_init ()
 {
