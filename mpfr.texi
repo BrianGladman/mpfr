@@ -595,6 +595,9 @@ As a consequence, if two variables are used to store
 only a few significant bits, and their product is stored in a variable with large
 precision, then MPFR will still compute the result with full precision.
 
+The value of errno may be set to non-zero by any MPFR function or macro,
+whether or not there is an error.
+
 @menu
 * Initialization Functions::
 * Assignment Functions::
