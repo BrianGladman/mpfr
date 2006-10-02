@@ -1814,7 +1814,7 @@ using MPFR:
 
   mpfr_set_default_prec (53);
   mpfr_set_emin (-1073);
-  mpfr_set_emax (1021);
+  mpfr_set_emax (1024);
 
   mpfr_init (xa); mpfr_init (xb);
 
