@@ -273,6 +273,9 @@ Efficiency:
 Miscellaneous:
 ##############################################################################
 
+- check the constants mpfr_set_emin (-16382-63) and mpfr_set_emax (16383) in
+  get_ld.c
+
 - rename mpf2mpfr.h to gmp-mpf2mpfr.h?
   (will wait until mpfr is fully integrated into gmp :-)
 
