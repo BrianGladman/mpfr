@@ -273,6 +273,27 @@ Efficiency:
 Miscellaneous:
 ##############################################################################
 
+- In addition to major/minor/patchlevel version information, add a macro
+  and/or function to the MPFR interface, that would tell what patches
+  have been applied and other possible information (e.g., Subversion
+  branch and revision, beta releases, and so on). For instance, see
+  what Mutt and Subversion do concerning their CVS/Subversion builds.
+  Of course, patches must include some tag (one should not rely on a
+  wrapper to apply them), that could be added to a PATCHES file. Mutt's
+  doc/patch-notes.txt file mentions an interesting scheme: the following
+  chunk should be included in the patch, after replacing <your-id-here>
+  by the patch id.
+  ------------------------------snip------------------------------
+  --- PATCHES~    Tue Nov  6 19:59:33 2001
+  +++ PATCHES     Tue Nov  6 19:59:42 2001
+  @@ -1,0 +1 @@
+  +<your-id-here>
+  ------------------------------snip------------------------------
+  References:
+    http://sympa.loria.fr/wwsympa/arc/mpfr/2005-12/msg00049.html
+    http://gcc.gnu.org/bugzilla/show_bug.cgi?id=29405
+    http://svn.collab.net/repos/svn/trunk/subversion/include/svn_version.h
+
 - check the constants mpfr_set_emin (-16382-63) and mpfr_set_emax (16383) in
   get_ld.c and the other constants, and provide a testcase for large and
   small numbers.
