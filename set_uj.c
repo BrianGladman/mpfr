@@ -75,6 +75,10 @@ mpfr_set_uj_2exp (mpfr_t x, uintmax_t j, intmax_t e, mp_rnd_t rnd)
     limb = yp[0] = j;
   else
     {
+      /* Note: Possible warning "right shift count >= width of type" on
+         64-bit machines with gcc. This is not a bug, as the right shift
+         is never performed in this case. FIXME: Avoid this warning, if
+         possible (in a clean way). */
       for (i = 0; i < k; i++, j >>= BITS_PER_MP_LIMB)
         yp[i] = j; /* Only the low bits are copied */
 
