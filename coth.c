@@ -34,4 +34,18 @@ MA 02110-1301, USA. */
 #define ACTION_ZERO(y,x) do { MPFR_SET_SAME_SIGN(y,x); MPFR_SET_ZERO(y); \
                               MPFR_RET(0); } while (1)
 
+/* We know |coth(x)| > 1, thus if the approximation z is such that
+   1 <= z <= 1 + 2^(-p) where p is the target precision, then the
+   result is either 1 or nextabove(1) = 1 + 2^(1-p). */
+#define ACTION_SPECIAL                                                  \
+  if (MPFR_GET_EXP(z) == 1) /* 1 <= |z| < 2 */				\
+    {									\
+      mpfr_sub_ui (z, z, MPFR_SIGN(z) > 0 ? 1 : -1, GMP_RNDN);		\
+      if (MPFR_IS_ZERO(z) || MPFR_GET_EXP(z) <= - (mp_exp_t) precy)	\
+	{								\
+	  mpfr_add_ui (z, z, MPFR_SIGN(z) > 0 ? 1 : -1, GMP_RNDN);	\
+	  break;							\
+	}								\
+    }
+
 #include "gen_inverse.h"

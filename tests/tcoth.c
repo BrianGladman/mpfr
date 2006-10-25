@@ -98,6 +98,34 @@ check_bugs (void)
       exit (1);
     }
 
+  mpfr_set_prec (x, 53);
+  mpfr_set_prec (y, 53);
+
+  mpfr_set_str (x, "18.368400284838550", 10, GMP_RNDN);
+  mpfr_set_str (y, "1.0000000000000002", 10, GMP_RNDN);
+  mpfr_coth (x, x, GMP_RNDN);
+  if (mpfr_cmp (x, y) != 0)
+    {
+      printf ("Error for coth(18.368400284838550)\n");
+      exit (1);
+    }
+
+  mpfr_set_str (x, "18.714973875118520", 10, GMP_RNDN);
+  mpfr_coth (x, x, GMP_RNDN);
+  if (mpfr_cmp (x, y) != 0)
+    {
+      printf ("Error for coth(18.714973875118520)\n");
+      exit (1);
+    }
+
+  mpfr_set_str (x, "18.714973875118524", 10, GMP_RNDN);
+  mpfr_coth (x, x, GMP_RNDN);
+  if (mpfr_cmp_ui (x, 1) != 0)
+    {
+      printf ("Error for coth(18.714973875118524)\n");
+      exit (1);
+    }
+
   mpfr_clear (x);
   mpfr_clear (y);
 }

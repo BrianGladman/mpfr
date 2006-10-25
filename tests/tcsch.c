@@ -75,6 +75,22 @@ check_specials (void)
       exit (1);
     }
 
+  /* check huge x */
+  mpfr_set_str (x, "8e8", 10, GMP_RNDN);
+  mpfr_csch (y, x, GMP_RNDN);
+  if (! (mpfr_zero_p (y) && MPFR_SIGN (y) > 0))
+    {
+      printf ("Error: csch(8e8) != +0\n");
+      exit (1);
+    }
+  mpfr_set_str (x, "-8e8", 10, GMP_RNDN);
+  mpfr_csch (y, x, GMP_RNDN);
+  if (! (mpfr_zero_p (y) && MPFR_SIGN (y) < 0))
+    {
+      printf ("Error: csch(-8e8) != -0\n");
+      exit (1);
+    }
+
   mpfr_clear (x);
   mpfr_clear (y);
 }

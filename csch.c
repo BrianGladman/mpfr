@@ -20,11 +20,11 @@ the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
 /* the hyperbolic cosecant is defined by csch(x) = 1/sinh(x).
-   csc (NaN) = NaN.
-   csc (+Inf) = 0+.
-   csc (-Inf) = 0-.
-   csc (+0) = +Inf.
-   csc (-0) = -Inf.
+   csch (NaN) = NaN.
+   csch (+Inf) = +0.
+   csch (-Inf) = -0.
+   csch (+0) = +Inf.
+   csch (-0) = -Inf.
 */
 
 #define FUNCTION mpfr_csch

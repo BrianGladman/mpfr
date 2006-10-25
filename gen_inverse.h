@@ -22,6 +22,10 @@ MA 02110-1301, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+#ifndef ACTION_SPECIAL
+#define ACTION_SPECIAL
+#endif
+
 /* example of use:
    #define FUNCTION mpfr_sec
    #define INVERSE  mpfr_cos
@@ -60,13 +64,26 @@ FUNCTION (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       MPFR_ZIV_INIT (loop, m);
       for(;;)
         {
-          INVERSE (z, x, GMP_RNDZ); /* error k_u < 1 ulp */
+	  INVERSE (z, x, GMP_RNDZ); /* error k_u < 1 ulp */
+	  /* the following assumes that if an overflow happens with
+	     MPFR_EMAX_MAX, then necessarily an underflow happens with
+	     __gmpfr_emin */
+	  if (mpfr_overflow_p ())
+	    {
+	      int s = MPFR_SIGN(z);
+	      MPFR_ZIV_FREE (loop);
+	      mpfr_clear (z);
+	      MPFR_SAVE_EXPO_FREE (expo);
+	      return mpfr_underflow (y, (rnd_mode == GMP_RNDN) ?
+				     GMP_RNDZ : rnd_mode, s);
+	    }
           mpfr_ui_div (z, 1, z, GMP_RNDN);
           /* the error is less than c_w + 2*c_u*k_u (see algorithms.tex),
              where c_w = 1/2, c_u = 1 since z was rounded towards zero,
              thus 1/2 + 2 < 4 */
           if (MPFR_LIKELY (MPFR_CAN_ROUND (z, m - 2, precy, rnd_mode)))
             break;
+	  ACTION_SPECIAL;
           MPFR_ZIV_NEXT (loop, m);
           mpfr_set_prec (z, m);
         }
