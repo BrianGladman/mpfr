@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 
 <!DOCTYPE stylesheet [
+<!ENTITY styles SYSTEM "http://www.mpfr.org/styles/visual.css">
 <!ENTITY filter "h:div[@class = 'logo' or @class = 'end']">
 ]>
 
@@ -56,14 +57,8 @@ MA 02110-1301, USA.
     <xsl:text>&#10;</xsl:text>
     <xsl:copy-of select="h:title"/>
     <xsl:text>&#10;</xsl:text>
-    <h:style type="text/css"><![CDATA[
-dt
-{
-  margin-top: 2ex;
-  margin-bottom: 1ex;
-  font-weight: bolder;
-}
-]]></h:style>
+    <h:style type="text/css"><xsl:text disable-output-escaping="yes">
+&styles;</xsl:text></h:style>
     <xsl:text>&#10;</xsl:text>
   </xsl:copy>
 </xsl:template>
