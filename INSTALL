@@ -34,7 +34,8 @@ been installed, LD_LIBRARY_PATH (before execution) or LD_RUN_PATH
 (before linking); this list is not exhaustive and some environment
 variables may be specific to your system. "make install" gives some
 instructions; please read them. You can also find more information
-in the manuals of your compiler and linker.
+in the manuals of your compiler and linker. The MPFR FAQ may also
+give some information.
 
 Remember that if you have several MPFR (or GMP) versions installed
 (e.g., one with the system, and one, newer, by you), you will not
