@@ -97,6 +97,19 @@ check_specials (void)
       exit (1);
     }
 
+  mpfr_set_prec (x, 53);
+  mpfr_set_prec (y, 53);
+  mpfr_set_str_binary (x, "0.10E4");
+  mpfr_eint (x, x, GMP_RNDN);
+  mpfr_set_str (y, "440.37989953483827", 10, GMP_RNDN);
+  if (mpfr_cmp (x, y) != 0)
+    {
+      printf ("Error for x=0.10E4, GMP_RNDZ\n");
+      printf ("expected "); mpfr_dump (y);
+      printf ("got      "); mpfr_dump (x);
+      exit (1);
+    }
+
   mpfr_clear (x);
   mpfr_clear (y);
 }

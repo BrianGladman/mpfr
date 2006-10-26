@@ -19,6 +19,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
+#include <stdlib.h>
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
@@ -38,7 +39,7 @@ mpfr_eint_aux (mpfr_t y, mpfr_srcptr x)
   mpfr_t erru, errs;
   mpz_t m, s, t, u;
   mp_exp_t e, sizeinbase;
-  mp_prec_t w = MPFR_PREC(y), w_minus_e;
+  mp_prec_t w = MPFR_PREC(y);
   unsigned long k;
   MPFR_GROUP_DECL (group);
 
@@ -59,8 +60,6 @@ mpfr_eint_aux (mpfr_t y, mpfr_srcptr x)
   k = mpz_scan1 (m, 0);
   mpz_tdiv_q_2exp (m, m, k);
   e += k;
-  MPFR_ASSERTN(e < 0 || w >= (mp_prec_t) e);
-  w_minus_e = (e < 0) ? w + (-e) : w - (mp_prec_t) e;
   /* initialize t to 2^w */
   mpz_set_ui (t, 1);
   mpz_mul_2exp (t, t, w);
@@ -75,17 +74,8 @@ mpfr_eint_aux (mpfr_t y, mpfr_srcptr x)
                   = 1 + (eps[k-1]*2^(w-1) + t[k-1])*2^(1-w)*m*2^e/k */
       mpfr_mul_2exp (eps, eps, w - 1, GMP_RNDU);
       mpfr_add_z (eps, eps, t, GMP_RNDU);
-#if 0
-      mpfr_div_2exp (eps, eps, w - 1, GMP_RNDU);
-      mpfr_mul_2exp (eps, eps, mpz_sizeinbase (m, 2), GMP_RNDU);
-      if (e < 0)
-        mpfr_div_2exp (eps, eps, -e, GMP_RNDU);
-      else
-        mpfr_mul_2exp (eps, eps, e, GMP_RNDU);
-#else
       MPFR_MPZ_SIZEINBASE2 (sizeinbase, m);
       mpfr_mul_2si (eps, eps, sizeinbase - (w - 1) + e, GMP_RNDU);
-#endif
       mpfr_div_ui (eps, eps, k, GMP_RNDU);
       mpfr_add_ui (eps, eps, 1, GMP_RNDU);
       mpz_mul (t, t, m);
@@ -205,6 +195,11 @@ mpfr_eint (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
   for (;;)                               /* Infinite loop */
     {
       err = mpfr_eint_aux (tmp, x); /* error <= 2^err ulp(tmp) */
+      if (err == MPFR_PREC(tmp))
+        {
+          fprintf (stderr, "Error, too large input in mpfr_eint\n");
+          exit (1);
+        }
       te = MPFR_GET_EXP(tmp);
       mpfr_const_euler (ump, GMP_RNDN); /* 0.577 -> EXP(ump)=0 */
       mpfr_add (tmp, tmp, ump, GMP_RNDN);
