@@ -40,10 +40,11 @@ MA 02110-1301, USA. */
 #define ACTION_SPECIAL                                                  \
   if (MPFR_GET_EXP(z) == 1) /* 1 <= |z| < 2 */                          \
     {                                                                   \
-      mpfr_sub_ui (z, z, MPFR_SIGN(z) > 0 ? 1 : -1, GMP_RNDN);          \
+      /* the following is exact by Sterbenz theorem */                  \
+      mpfr_sub_si (z, z, MPFR_SIGN(z) > 0 ? 1 : -1, GMP_RNDN);          \
       if (MPFR_IS_ZERO(z) || MPFR_GET_EXP(z) <= - (mp_exp_t) precy)     \
         {                                                               \
-          mpfr_add_ui (z, z, MPFR_SIGN(z) > 0 ? 1 : -1, GMP_RNDN);      \
+          mpfr_add_si (z, z, MPFR_SIGN(z) > 0 ? 1 : -1, GMP_RNDN);      \
           break;                                                        \
         }                                                               \
     }
