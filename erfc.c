@@ -19,6 +19,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
+#include <stdlib.h>
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
@@ -49,6 +50,37 @@ mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
         return mpfr_set_ui (y, MPFR_IS_POS (x) ? 0 : 2, rnd);
       else
         return mpfr_set_ui (y, 1, rnd);
+    }
+
+  if (MPFR_SIGN (x) > 0)
+    {
+      /* for x >= 38582, erfc(x) < 2^(-2^31) */
+      if (mpfr_cmp_ui (x, 38582) >= 0)
+        return mpfr_underflow (y, (rnd == GMP_RNDN) ? GMP_RNDZ : rnd, 1);
+      if (MPFR_GET_EXP (x) >= 12)
+        {
+          fprintf (stderr, "MPFR: Error, too large input in mpfr_erfc\n");
+          abort ();
+        }
+    }
+
+  /* for x < 0, erfc(x) tends to 2 by below */
+  if (MPFR_SIGN (x) < 0)
+    {
+      if ((MPFR_PREC(y) <= 8 && mpfr_cmp_si (x, -2)) ||
+          (MPFR_PREC(y) <= 26 && mpfr_cmp_si (x, -4)) ||
+          (MPFR_PREC(y) <= 97 && mpfr_cmp_si (x, -9)))
+        {
+          mpfr_set_ui (y, 2, GMP_RNDN);
+          mpfr_set_inexflag ();
+          if (rnd == GMP_RNDZ || rnd == GMP_RNDD)
+            {
+              mpfr_nextbelow (y);
+              return -1;
+            }
+          else
+            return 1;
+        }
     }
 
   /* Init stuff */

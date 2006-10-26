@@ -43,6 +43,17 @@ mpfr_eint_aux (mpfr_t y, mpfr_srcptr x)
   unsigned long k;
   MPFR_GROUP_DECL (group);
 
+  /* for |x| <= 1, we have S := sum(x^k/k/k!, k=1..infinity) = x + R(x)
+     where |R(x)| <= (x/2)^2/(1-x/2) <= 2*(x/2)^2
+     thus |R(x)/x| <= |x|/2
+     thus if |x| <= 2^(-PREC(y)) we have |S - o(x)| <= ulp(y) */
+
+  if (MPFR_GET_EXP(x) <= - (mp_exp_t) w)
+    {
+      mpfr_set (y, x, GMP_RNDN);
+      return 0;
+    }
+
   mpz_init (s); /* initializes to 0 */
   mpz_init (t);
   mpz_init (u);
@@ -190,6 +201,10 @@ mpfr_eint (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
       d = (d == 0.0) ? -53 : __gmpfr_ceil_log2 (d);
       prec += -d;
     }
+
+  /* for x >= 1488522258, eint(x) > 2^(2^31) */
+  if (mpfr_cmp_ui (x, 1488522258) >= 0)
+    return mpfr_overflow (y, rnd, 1);
 
   MPFR_ZIV_INIT (loop, prec);            /* Initialize the ZivLoop controler */
   for (;;)                               /* Infinite loop */

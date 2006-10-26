@@ -23,8 +23,6 @@ MA 02110-1301, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-/* #define DEBUG */
-
 #define EXP1 2.71828182845904523536 /* exp(1) */
 
 static int mpfr_erf_0 (mpfr_ptr, mpfr_srcptr, double, mp_rnd_t);
