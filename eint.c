@@ -197,8 +197,10 @@ mpfr_eint (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
       err = mpfr_eint_aux (tmp, x); /* error <= 2^err ulp(tmp) */
       if (err == MPFR_PREC(tmp))
         {
-          fprintf (stderr, "Error, too large input in mpfr_eint\n");
-          exit (1);
+          fprintf (stderr, "MPFR: Error, too large input in mpfr_eint\n");
+          /* Return NaN instead of aborting so that the user can catch
+             the error more easily? */
+          abort ();
         }
       te = MPFR_GET_EXP(tmp);
       mpfr_const_euler (ump, GMP_RNDN); /* 0.577 -> EXP(ump)=0 */
