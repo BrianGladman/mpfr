@@ -382,6 +382,18 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
           mpfr_sub (s1, __gmpfr_one, s, GMP_RNDN);/* s1 = 1-s */
           mpfr_zeta_pos (z_pre, s1, GMP_RNDN);   /* zeta(1-s)  */
           mpfr_gamma (y, s1, GMP_RNDN);          /* gamma(1-s) */
+          if (MPFR_IS_INF (y)) /* Zeta(s) < 0 for -4k-2 < s < -4k,
+                                  Zeta(s) > 0 for -4k < s < -4k+2 */
+            {
+              MPFR_SET_INF (z_pre);
+              mpfr_div_2exp (s1, s, 2, GMP_RNDN); /* s/4, exact */
+              mpfr_frac (s1, s1, GMP_RNDN); /* exact, -1 < s1 < 0 */
+              if (mpfr_cmp_si_2exp (s1, -1, -1) > 0)
+                MPFR_SET_NEG (z_pre);
+              else
+                MPFR_SET_POS (z_pre);
+              break;
+            }
           mpfr_mul (z_pre, z_pre, y, GMP_RNDN);  /* gamma(1-s)*zeta(1-s) */
           mpfr_const_pi (p, GMP_RNDD);
           mpfr_mul (y, s, p, GMP_RNDN);
