@@ -20,6 +20,7 @@ the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
 #include <stdio.h>
+#include <limits.h>
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
@@ -205,10 +206,10 @@ mpfr_eint (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
   /* since eint(x) >= exp(x)/x, we have log2(eint(x)) >= x*log2(e) - log2(x).
      This gives eint(x) > 2^(2^30-1) for x >= 744261138
                 eint(x) > 2^(2^62-1) for x >= 3196577161300663957 */
-#if (BITS_PER_MP_LIMB == 32)
+#if (sizeof(mp_exp_t) * CHAR_BIT == 32)
   if (mpfr_cmp_ui (x, 744261138) >= 0)
     return mpfr_overflow (y, rnd, 1);
-#elif (BITS_PER_MP_LIMB == 64)
+#elif (sizeof(mp_exp_t) * CHAR_BIT == 64)
   if (mpfr_cmp_ui (x, 3196577161300663957) >= 0)
     return mpfr_overflow (y, rnd, 1);
 #endif
