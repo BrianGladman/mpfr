@@ -337,6 +337,21 @@ main (int argc, char *argv[])
       exit (1);
     }
 
+  mpfr_set_str (s, "-400000001", 10, GMP_RNDZ);
+  mpfr_zeta (z, s, GMP_RNDN);
+  if (!(mpfr_inf_p (z) && MPFR_SIGN(z) < 0))
+    {
+      printf ("Error in mpfr_zeta (-400000001)\n");
+      exit (1);
+    }
+  mpfr_set_str (s, "-400000003", 10, GMP_RNDZ);
+  mpfr_zeta (z, s, GMP_RNDN);
+  if (!(mpfr_inf_p (z) && MPFR_SIGN(z) > 0))
+    {
+      printf ("Error in mpfr_zeta (-400000003)\n");
+      exit (1);
+    }
+
   mpfr_clear (s);
   mpfr_clear (y);
   mpfr_clear (z);
