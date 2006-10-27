@@ -19,7 +19,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
-#include <stdlib.h>
+#include <stdio.h>
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
@@ -212,10 +212,15 @@ mpfr_eint (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
       err = mpfr_eint_aux (tmp, x); /* error <= 2^err ulp(tmp) */
       if (err == MPFR_PREC(tmp))
         {
+          /* FIXME: Improve the algorithm to be able to compute the actual
+             value. For the time being, we regard this as a range error,
+             so that the caller can cleanly deal with the problem. */
           fprintf (stderr, "MPFR: Error, too large input in mpfr_eint\n");
-          /* Return NaN instead of aborting so that the user can catch
-             the error more easily? */
-          abort ();
+          MPFR_ZIV_FREE (loop);
+          MPFR_SAVE_EXPO_FREE (expo);
+          MPFR_SET_ERANGE ();
+          MPFR_SET_NAN (y);
+          MPFR_RET_NAN;
         }
       te = MPFR_GET_EXP(tmp);
       mpfr_const_euler (ump, GMP_RNDN); /* 0.577 -> EXP(ump)=0 */

@@ -1378,6 +1378,9 @@ of @var{x}, and of the sum for k from 1 to infinity of
 @tex
 $x^k/k/k!$.
 @end tex
+Note: the current implementation cannot compute the result for large inputs;
+in this case, NaN is returned and the erange flag is set to indicate that
+the input is in an unsupported domain.
 For negative @var{x}, the returned value is NaN.
 @end deftypefun
 
