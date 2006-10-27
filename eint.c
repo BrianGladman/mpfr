@@ -228,6 +228,8 @@ mpfr_eint (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
              so that the caller can cleanly deal with the problem. */
           fprintf (stderr, "MPFR: Error, too large input in mpfr_eint\n");
           MPFR_ZIV_FREE (loop);
+          mpfr_clear (tmp);
+          mpfr_clear (ump);
           MPFR_SAVE_EXPO_FREE (expo);
           MPFR_SET_ERANGE ();
           MPFR_SET_NAN (y);
