@@ -187,11 +187,31 @@ mpfr_eint (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
       MPFR_RET_NAN;
     }
 
-  /* Init stuff */
   MPFR_SAVE_EXPO_MARK (expo);
+
+  /* Since eint(x) >= exp(x)/x, we have log2(eint(x)) >= (x-log(x))/log(2).
+     Let's compute k <= (x-log(x))/log(2) in a low precision. If k >= emax,
+     then log2(eint(x)) >= emax, and eint(x) >= 2^emax, i.e. it overflows. */
+  mpfr_init2 (tmp, 64);
+  mpfr_init2 (ump, 64);
+  mpfr_log (tmp, x, GMP_RNDU);
+  mpfr_sub (ump, x, tmp, GMP_RNDD);
+  mpfr_const_log2 (tmp, GMP_RNDU);
+  mpfr_div (ump, ump, tmp, GMP_RNDD);
+  /* FIXME: We really need mpfr_set_exp_t and mpfr_cmp_exp_t functions. */
+  MPFR_ASSERTN (MPFR_EMAX_MAX <= LONG_MAX);
+  if (mpfr_cmp_ui (ump, __gmpfr_emax) >= 0)
+    {
+      mpfr_clear (tmp);
+      mpfr_clear (ump);
+      MPFR_SAVE_EXPO_FREE (expo);
+      return mpfr_overflow (y, rnd, 1);
+    }
+
+  /* Init stuff */
   prec = MPFR_PREC (y) + 2 * MPFR_INT_CEIL_LOG2 (MPFR_PREC (y)) + 6;
-  mpfr_init2 (tmp, prec);
-  mpfr_init2 (ump, prec);
+  mpfr_set_prec (tmp, prec);
+  mpfr_set_prec (ump, prec);
 
   /* eint() has a root 0.37250741078136663446..., so if x is near,
      already take more bits */
@@ -201,20 +221,6 @@ mpfr_eint (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
       d = mpfr_get_d (x, GMP_RNDN) - 0.37250741078136663;
       d = (d == 0.0) ? -53 : __gmpfr_ceil_log2 (d);
       prec += -d;
-    }
-
-  /* since eint(x) >= exp(x)/x, we have log2(eint(x)) >= x*log2(e) - log2(x).
-     This gives eint(x) > 2^(2^30-1) for x >= 744261138
-                eint(x) > 2^(2^62-1) for x >= 3196577161300663957 */
-  if (sizeof(mp_exp_t) * CHAR_BIT == 32)
-    {
-      if (mpfr_cmp_ui (x, 744261138) >= 0)
-        return mpfr_overflow (y, rnd, 1);
-    }
-  else if (sizeof(mp_exp_t) * CHAR_BIT == 64)
-    {
-      if (mpfr_cmp_ui (x, 3196577161300663957) >= 0)
-        return mpfr_overflow (y, rnd, 1);
     }
 
   MPFR_ZIV_INIT (loop, prec);            /* Initialize the ZivLoop controler */
