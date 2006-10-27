@@ -59,8 +59,13 @@ mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
         return mpfr_underflow (y, (rnd == GMP_RNDN) ? GMP_RNDZ : rnd, 1);
       if (MPFR_GET_EXP (x) >= 12)
         {
+          /* FIXME: Improve the algorithm to be able to compute the actual
+             value. For the time being, we regard this as a range error,
+             so that the caller can cleanly deal with the problem. */
           fprintf (stderr, "MPFR: Error, too large input in mpfr_erfc\n");
-          abort ();
+          MPFR_SET_ERANGE ();
+          MPFR_SET_NAN (y);
+          MPFR_RET_NAN;
         }
     }
 
