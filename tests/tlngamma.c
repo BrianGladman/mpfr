@@ -112,8 +112,11 @@ special (void)
   mpfr_set_str (x, CHECK_Y1, 10, GMP_RNDN);
   if (mpfr_cmp (y, x))
     {
-      printf ("mpfr_lngamma("CHECK_X1") is wrong: expected %1.20e, got %1.20e\n",
-              mpfr_get_d (x, GMP_RNDN), mpfr_get_d (y, GMP_RNDN));
+      printf ("mpfr_lngamma("CHECK_X1") is wrong:\n"
+              "expected ");
+      mpfr_print_binary (x); putchar ('\n');
+      printf ("got      ");
+      mpfr_print_binary (y); putchar ('\n');
       exit (1);
     }
 
@@ -124,8 +127,11 @@ special (void)
   mpfr_set_str (x, CHECK_Y2, 10, GMP_RNDN);
   if (mpfr_cmp (y, x))
     {
-      printf ("mpfr_lngamma("CHECK_X2") is wrong: expected %1.20e, got %1.20e\n",
-              mpfr_get_d (x, GMP_RNDN), mpfr_get_d (y, GMP_RNDN));
+      printf ("mpfr_lngamma("CHECK_X2") is wrong:\n"
+              "expected ");
+      mpfr_print_binary (x); putchar ('\n');
+      printf ("got      ");
+      mpfr_print_binary (y); putchar ('\n');
       exit (1);
     }
 
