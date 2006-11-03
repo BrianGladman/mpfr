@@ -393,7 +393,7 @@ special ()
   mpfr_set_str (x, "5.68824667828621954868e-01", 10, GMP_RNDN);
   mpfr_set_str (y, "9.03327850535952658895e-01", 10, GMP_RNDN);
   test_pow (z, x, y, GMP_RNDZ);
-  if (mpfr_cmp_d(z, 0.60071044650456473235))
+  if (mpfr_cmp_str1 (z, "0.60071044650456473235"))
     {
       printf ("Error in mpfr_pow for prec=53, rnd=GMP_RNDZ\n");
       exit (1);
