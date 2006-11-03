@@ -275,6 +275,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
       mpfr_set_prec (s, 53);
       /* we need z >= w*log(2)/(2*Pi) to get an absolute error less than 2^(-w)
          but the optimal value is about 0.155665*w */
+      /* FIXME: replace double by mpfr_t types. */
       mpfr_set_d (s, mpfr_gamma_alpha (precy) * (double) w, GMP_RNDU);
       if (mpfr_cmp (z0, s) < 0)
         {
