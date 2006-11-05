@@ -448,9 +448,8 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
         m = 2;
     }
 
-  /* Do not use MPFR_PREC_MIN as this applies to base 2 only. Perhaps we
-     should allow n == 1 for directed rounding modes and odd bases. */
-  MPFR_ASSERTN (m >= 2);
+  /* the code below for non-power-of-two bases works for m=1 */
+  MPFR_ASSERTN (m >= 2 || (IS_POW2(b) == 0 && m >= 1));
 
   if (MPFR_IS_NAN(x))
     {
