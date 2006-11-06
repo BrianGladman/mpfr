@@ -61,7 +61,7 @@ mpfr_printf_mpfr_print (FILE *stream, const struct printf_info *info,
   org_type_logging = mpfr_log_type;
   mpfr_log_type = 0; /* We disable the logging during this print! */
   if (info->alt)
-    length = fprintf (stream, "%lu", MPFR_PREC (w));
+    length = fprintf (stream, "%lu", (unsigned long) MPFR_PREC (w));
   else
     length = mpfr_out_str (stream, mpfr_log_base, prec, w, GMP_RNDN);
   mpfr_log_type = org_type_logging;
@@ -85,19 +85,19 @@ static void mpfr_log_begin (void) __attribute__((constructor));
 static void
 mpfr_log_begin (void)
 {
-  const char *filename;
+  const char *var;
   time_t tt;
 
   /* Grab some information */
-  filename = getenv ("MPFR_LOG_BASE");
-  mpfr_log_base = filename == NULL || *filename == 0 ? 10 : atoi (filename);
+  var = getenv ("MPFR_LOG_BASE");
+  mpfr_log_base = var == NULL || *var == 0 ? 10 : atoi (var);
 
-  filename = getenv ("MPFR_LOG_LEVEL");
-  mpfr_log_level = filename == NULL || *filename == 0 ? 7 : atoi (filename);
+  var = getenv ("MPFR_LOG_LEVEL");
+  mpfr_log_level = var == NULL || *var == 0 ? 7 : atoi (var);
   mpfr_log_current = 0;
 
-  filename = getenv ("MPFR_LOG_PREC");
-  mpfr_log_prec = filename == NULL || *filename == 0 ? 0 : atol (filename);
+  var = getenv ("MPFR_LOG_PREC");
+  mpfr_log_prec = var == NULL || *var == 0 ? 0 : atol (var);
 
   /* Get what we need to log */
   mpfr_log_type = 0;
@@ -124,15 +124,17 @@ mpfr_log_begin (void)
                             mpfr_printf_mpfr_arginfo);
 
   /* Open filename if needed */
-  filename = getenv ("MPFR_LOG_FILE");
-  filename = filename != NULL && *filename != 0 ? filename : "./mpfr.log";
+  var = getenv ("MPFR_LOG_FILE");
+  if (var == NULL || *var == 0)
+    var = "mpfr.log";
   if (mpfr_log_type != 0)
     {
-      mpfr_log_file = fopen (filename, "w");
-      if (mpfr_log_file == NULL) {
-        fprintf (stderr, "MPFR LOG: Can't open '%s' with w.\n", filename);
-        abort ();
-      }
+      mpfr_log_file = fopen (var, "w");
+      if (mpfr_log_file == NULL)
+        {
+          fprintf (stderr, "MPFR LOG: Can't open '%s' with w.\n", var);
+          abort ();
+        }
       time (&tt);
       fprintf (mpfr_log_file, "MPFR LOG FILE %s\n", ctime (&tt));
     }
@@ -143,7 +145,9 @@ mpfr_log_begin (void)
 #if defined (ANSIONLY) || defined (USG) || defined (__SVR4) \
  || defined (_UNICOS) || defined(__hpux)
 
-int mpfr_get_cputime (void) {
+int
+mpfr_get_cputime (void)
+{
   return (int) ((unsigned long long) clock () * 1000 / CLOCKS_PER_SEC);
 }
 
@@ -152,7 +156,9 @@ int mpfr_get_cputime (void) {
 #include <sys/types.h>
 #include <sys/resource.h>
 
-int mpfr_get_cputime (void) {
+int
+mpfr_get_cputime (void)
+{
   struct rusage rus;
   getrusage (0, &rus);
   return rus.ru_utime.tv_sec * 1000 + rus.ru_utime.tv_usec / 1000;
