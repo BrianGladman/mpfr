@@ -22,7 +22,7 @@ MA 02110-1301, USA. */
 #include <stdlib.h> /* for exit */
 #include "mpfr-test.h"
 
-#if _GMP_IEEE_FLOATS
+#if WANT_DECIMAL64
 static void
 print_decimal64 (decimal64 d)
 {
@@ -197,7 +197,7 @@ check_random (void)
   mpfr_clear (x);
   mpfr_clear (y);
 }
-#endif /* _GMP_IEEE_FLOATS */
+#endif /* WANT_DECIMAL64 */
 
 int
 main (void)
@@ -205,7 +205,7 @@ main (void)
   tests_start_mpfr ();
   mpfr_test_init ();
 
-#if _GMP_IEEE_FLOATS
+#if WANT_DECIMAL64
   check_inf_nan ();
   check_random ();
 #endif

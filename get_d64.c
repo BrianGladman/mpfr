@@ -27,8 +27,7 @@ MA 02110-1301, USA. */
 #include <string.h> /* for strlen */
 #include "mpfr-impl.h"
 
-#if _GMP_IEEE_FLOATS
-/* mpfr_get_decimal64 is built only when _GMP_IEEE_FLOATS is defined */
+#if WANT_DECIMAL64
 
 /* construct a decimal64 NaN */
 static decimal64
@@ -229,4 +228,4 @@ mpfr_get_decimal64 (mpfr_srcptr src, mp_rnd_t rnd_mode)
     }
 }
 
-#endif /* _GMP_IEEE_FLOATS */
+#endif /* WANT_DECIMAL64 */
