@@ -27,43 +27,126 @@ MA 02110-1301, USA. */
 #include <string.h> /* for strlen */
 #include "mpfr-impl.h"
 
-#if WANT_DECIMAL64
+#if MPFR_WANT_DECIMAL_FLOATS
+
+#ifdef DPD_FORMAT
+static _Decimal64
+bid_to_dpd (_Decimal64 d)
+{
+  union ieee_double_extract x;
+  union ieee_double_decimal64 y;
+  mp_limb_t h, l;
+  unsigned long d0, d1, d2, d3, d4, d5; /* declets: 0 <= d0..d5 < 999 */
+
+  y.d64 = d;
+  x.d = y.d;
+  G = x.s.exp << 2; /* x.s.exp is the biased exponent, in [0, 2048) */
+#if BITS_PER_MP_LIMB == 32
+  G |= x.s.manh >> 18; /* manh has 20 bits */
+#elif BITS_PER_MP_LIMB == 64
+  G |= x.s.manl >> 50; /* manl has 52 bits */
+#else
+#error "wrong value of BITS_PER_MP_LIMB"
+#endif
+  /* now G has 13 bits: 0 <= G < 8192 */
+  Gh = G >> 8;
+  if (Gh >= 30) /* NaN or Inf have the same encoding in DPD or BID */
+    return d;
+
+  if (Gh >= 24)
+    {
+      h = 8 | (G & 1); /* 8 + G[w+4] */
+      exp = (G >> 1) & 1023;
+    }
+  else /* 0 <= Gh < 24 */
+    {
+      h = G & 7;
+      exp = G >> 3;
+    }
+  /* now significand is h*2^50 plus the remaining 50 bits */
+#if BITS_PER_MP_LIMB == 32
+  h = h << 18 | (x.s.manh & 262143);
+  l = x.s.manl;
+  /* 2^32*h+l < 10^16 i.e. h <= 2328306 */
+  d5 = (296 * h + l) % 1000; /* 2^32 = 296 mod 1000 */
+  sub_ddmmss (h, l, h, l, 0, d5);
+  /* now h*2^32 + l is an exact multiple of 1000 */
+  /* first divide by 8 */
+  l = ((h & 7) << 29) | (l >> 3);
+  h = h >> 3;
+  /* now divide exactly by 125 */
+  l = l * 652835029; /* 1/125 mod 2^32 */
+  h = h / 125;
+  /* now 2^32*h+l < 10^13 i.e. h <= 2328 */
+  d4 = (296 * h + l) % 1000;
+  sub_ddmmss (h, l, h, l, 0, d4);
+  l = ((h & 7) << 29) | (l >> 3);
+  h = h >> 3;
+  l = l * 652835029;
+  h = h / 125;
+  /* now 2^32*h+l < 10^10 i.e. h <= 2 */
+  d3 = (296 * h + l) % 1000;
+  sub_ddmmss (h, l, h, l, 0, d4);
+  l = (h << 29) | (l >> 3);
+  l = l * 652835029;
+  /* now l < 10^7 */
+#else
+  l = h << 50 | (x.s.manl & 1125899906842623);
+  /* l < 10*2^50 theoretically, but l < 10^16 in practice */
+  d5 = l % 1000;
+  l = l / 1000; /* l < 10^13 */
+  d4 = l % 1000;
+  l = l / 1000; /* l < 10^10 */
+  d3 = l % 1000;
+  l = l / 1000; /* l < 10^7 */
+#endif
+  d2 = l % 1000;
+  l = l / 1000;
+  d1 = l % 1000;
+  d0 = l / 10;
+  
+  /* now encode the declets */
+}
+#endif /* DPD_FORMAT */
 
 /* construct a decimal64 NaN */
-static decimal64
+static _Decimal64
 get_decimal64_nan (void)
 {
   union ieee_double_extract x;
+  union ieee_double_decimal64 y;
 
   x.s.exp = 1984; /* G[0]..G[4] = 11111: quiet NaN */
-  return x.d;
+  y.d = x.d;
+  return y.d64;
 }
 
 /* construct the decimal64 Inf with given sign */
-static decimal64
+static _Decimal64
 get_decimal64_inf (int negative)
 {
   union ieee_double_extract x;
+  union ieee_double_decimal64 y;
 
   x.s.sig = (negative) ? 1 : 0;
   x.s.exp = 1920; /* G[0]..G[4] = 11110: Inf */
-  return x.d;
+  y.d = x.d;
+  return y.d64;
 }
 
 /* construct the decimal64 zero with given sign */
-static decimal64
+static _Decimal64
 get_decimal64_zero (int negative)
 {
-  union ieee_double_extract x;
+  union ieee_double_decimal64 y;
 
-  /* we assume here that +0 and -0 have the same encoding in
-     binary64 and decimal64 */
-  x.d = negative ? DBL_NEG_ZERO : 0.0;
-  return x.d;
+  /* zero has the same representation in binary64 and decimal64 */
+  y.d = negative ? DBL_NEG_ZERO : 0.0;
+  return y.d64;
 }
 
 /* construct the decimal64 smallest non-zero with given sign */
-static decimal64
+static _Decimal64
 get_decimal64_min (int negative)
 {
   union ieee_double_extract x;
@@ -78,7 +161,7 @@ get_decimal64_min (int negative)
 }
 
 /* construct the decimal64 largest finite number with given sign */
-static decimal64
+static _Decimal64
 get_decimal64_max (int negative)
 {
   union ieee_double_extract x;
@@ -94,10 +177,11 @@ get_decimal64_max (int negative)
 
 /* for BID format, the exponent exp is meant with a significand of the
    form [0.]sss...sss */
-static decimal64
+static _Decimal64
 fill_decimal64 (int negative, mp_exp_t exp, char *s)
 {
   union ieee_double_extract x;
+  union ieee_double_decimal64 y;
   unsigned int i, l;
   mp_limb_t rp[2];
   mp_size_t rn;
@@ -135,15 +219,17 @@ fill_decimal64 (int negative, mp_exp_t exp, char *s)
       x.s.manl = (rp[0] ^ 9007199254740992) | ((exp & 1) << 51);
 #endif
     }
-  return x.d;
+  y.d = x.d;
+  return y.d64;
 }
 
-decimal64
+_Decimal64
 mpfr_get_decimal64 (mpfr_srcptr src, mp_rnd_t rnd_mode)
 {
   int negative;
   mp_exp_t e;
 
+  /* the encoding of NaN, Inf, zero is the same under DPD or BID */
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (src)))
     {
       if (MPFR_IS_NAN (src))
@@ -228,4 +314,4 @@ mpfr_get_decimal64 (mpfr_srcptr src, mp_rnd_t rnd_mode)
     }
 }
 
-#endif /* WANT_DECIMAL64 */
+#endif /* MPFR_WANT_DECIMAL_FLOATS */

@@ -28,11 +28,11 @@ MA 02110-1301, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-#if WANT_DECIMAL64
+#if MPFR_WANT_DECIMAL_FLOATS
 
 #ifdef DPD_FORMAT
-static decimal64
-dpd_to_bid (decimal64 d)
+static _Decimal64
+dpd_to_bid (_Decimal64 d)
 {
   union ieee_double_extract x;
   unsigned int exp;
@@ -125,7 +125,7 @@ dpd_to_bid (decimal64 d)
   
   if (Gh >= 24)
     {
-      d0 = 8 | (Gh & 2);   /* 8 or 9 */
+      d0 = 8 | (Gh & 1);   /* 8 or 9 */
       exp = (Gh >> 1) & 3; /* 0, 1, or 2 */
       exp = (exp << 8) | (G & 255); /* 0 <= exp < 768 */
       /* now convert exp, d0 to BID: the biased exponent is formed from
@@ -175,10 +175,41 @@ dpd_to_bid (decimal64 d)
 }
 #endif /* DPD_FORMAT */
 
-int
-mpfr_set_decimal64 (mpfr_ptr r, decimal64 d, mp_rnd_t rnd_mode)
+#ifdef DEBUG
+static void
+print_decimal64 (_Decimal64 d)
 {
   union ieee_double_extract x;
+  union ieee_double_decimal64 y;
+  unsigned int Gh, i;
+
+  y.d64 = d;
+  x.d = y.d;
+  Gh = x.s.exp >> 6;
+  printf ("|%d|%d%d%d%d%d|", x.s.sig, Gh >> 4, (Gh >> 3) & 1,
+	  (Gh >> 2) & 1, (Gh >> 1) & 1, Gh & 1);
+  printf ("%d%d%d%d%d%d|", (x.s.exp >> 5) & 1, (x.s.exp >> 4) & 1,
+	  (x.s.exp >> 3) & 1, (x.s.exp >> 2) & 1, (x.s.exp >> 1) & 1,
+	  x.s.exp & 1);
+#if BITS_PER_MP_LIMB == 32
+  for (i = 20; i > 0; i--)
+    printf ("%d", (x.s.manh >> (i - 1)) & 1);
+  printf ("|");
+  for (i = 32; i > 0; i--)
+    printf ("%d", (x.s.manl >> (i - 1)) & 1);
+#else
+  for (i = 52; i > 0; i--)
+    printf ("%d", (x.s.manl >> (i - 1)) & 1);
+#endif
+  printf ("|\n");
+}
+#endif
+
+int
+mpfr_set_decimal64 (mpfr_ptr r, _Decimal64 d, mp_rnd_t rnd_mode)
+{
+  union ieee_double_extract x;
+  union ieee_double_decimal64 y;
   char s[23], *t;
   unsigned int Gh; /* most 5 significant bits from combination field */
   int exp; /* exponent */
@@ -192,8 +223,9 @@ mpfr_set_decimal64 (mpfr_ptr r, decimal64 d, mp_rnd_t rnd_mode)
      16 characters for mantissa,
      1 character for E,
      4 characters for exponent (including sign) */
-  
-  x.d = d;
+
+  y.d64 = d;
+  x.d = y.d;
   Gh = x.s.exp >> 6;
   if (Gh == 31)
     {
@@ -266,4 +298,4 @@ mpfr_set_decimal64 (mpfr_ptr r, decimal64 d, mp_rnd_t rnd_mode)
   return mpfr_set_str (r, s, 10, rnd_mode);
 }
 
-#endif /* WANT_DECIMAL64 */
+#endif /* MPFR_WANT_DECIMAL_FLOATS */

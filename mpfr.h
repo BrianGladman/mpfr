@@ -124,14 +124,6 @@ typedef enum {
   MPFR_INF_KIND = 1, MPFR_ZERO_KIND = 2, MPFR_REGULAR_KIND = 3
 } mpfr_kind_t;
 
-/* the decimal64 conversion routines depend on _GMP_IEEE_FLOATS */
-#define WANT_DECIMAL64 (MPFR_WANT_DECIMAL_FLOATS && _GMP_IEEE_FLOATS)
-
-#if WANT_DECIMAL64
-/* FIXME: remove/replaced when decimal64 is a standard C type */
-typedef double decimal64;
-#endif
-
 /* GMP defines:
     + size_t:                Standard size_t
     + __GMP_ATTRIBUTE_PURE   Attribute for math functions.
@@ -235,8 +227,8 @@ __MPFR_DECLSPEC void mpfr_set_default_prec _MPFR_PROTO((mpfr_prec_t));
 __MPFR_DECLSPEC mp_prec_t mpfr_get_default_prec _MPFR_PROTO((void));
 
 __MPFR_DECLSPEC int mpfr_set_d _MPFR_PROTO ((mpfr_ptr, double, mpfr_rnd_t));
-#if WANT_DECIMAL64
-__MPFR_DECLSPEC int mpfr_set_decimal64 _MPFR_PROTO ((mpfr_ptr, decimal64,
+#if MPFR_WANT_DECIMAL_FLOATS
+__MPFR_DECLSPEC int mpfr_set_decimal64 _MPFR_PROTO ((mpfr_ptr, _Decimal64,
 						     mp_rnd_t));
 #endif
 __MPFR_DECLSPEC int
@@ -292,8 +284,8 @@ __MPFR_DECLSPEC uintmax_t mpfr_get_uj _MPFR_PROTO ((mpfr_srcptr, mpfr_rnd_t));
 
 __MPFR_DECLSPEC mp_exp_t mpfr_get_z_exp _MPFR_PROTO ((mpz_ptr, mpfr_srcptr));
 __MPFR_DECLSPEC double mpfr_get_d _MPFR_PROTO ((mpfr_srcptr, mpfr_rnd_t));
-#if WANT_DECIMAL64
-__MPFR_DECLSPEC decimal64 mpfr_get_decimal64 _MPFR_PROTO ((mpfr_srcptr,
+#if MPFR_WANT_DECIMAL_FLOATS
+__MPFR_DECLSPEC _Decimal64 mpfr_get_decimal64 _MPFR_PROTO ((mpfr_srcptr,
 							   mp_rnd_t));
 #endif
 __MPFR_DECLSPEC long double mpfr_get_ld _MPFR_PROTO ((mpfr_srcptr,

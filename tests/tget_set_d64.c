@@ -22,14 +22,16 @@ MA 02110-1301, USA. */
 #include <stdlib.h> /* for exit */
 #include "mpfr-test.h"
 
-#if WANT_DECIMAL64
+#if MPFR_WANT_DECIMAL_FLOATS
 static void
-print_decimal64 (decimal64 d)
+print_decimal64 (_Decimal64 d)
 {
   union ieee_double_extract x;
+  union ieee_double_decimal64 y;
   unsigned int Gh, i;
 
-  x.d = d;
+  y.d64 = d;
+  x.d = y.d;
   Gh = x.s.exp >> 6;
   printf ("|%d|%d%d%d%d%d|", x.s.sig, Gh >> 4, (Gh >> 3) & 1,
 	  (Gh >> 2) & 1, (Gh >> 1) & 1, Gh & 1);
@@ -53,8 +55,8 @@ static void
 check_inf_nan ()
 {
   mpfr_t  x, y;
-  decimal64 d;
-  
+  _Decimal64 d;
+
   mpfr_init2 (x, 123);
   mpfr_init2 (y, 123);
 
@@ -170,7 +172,7 @@ static void
 check_random (void)
 {
   mpfr_t  x, y;
-  decimal64 d;
+  _Decimal64 d;
   int i;
   
   mpfr_init2 (x, 49);
@@ -197,7 +199,7 @@ check_random (void)
   mpfr_clear (x);
   mpfr_clear (y);
 }
-#endif /* WANT_DECIMAL64 */
+#endif /* MPFR_WANT_DECIMAL_FLOATS */
 
 int
 main (void)
@@ -205,7 +207,7 @@ main (void)
   tests_start_mpfr ();
   mpfr_test_init ();
 
-#if WANT_DECIMAL64
+#if MPFR_WANT_DECIMAL_FLOATS
   check_inf_nan ();
   check_random ();
 #endif

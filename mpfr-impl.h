@@ -355,7 +355,8 @@ typedef union ieee_double_extract Ieee_double_extract;
 # endif
 #endif
 
-
+/* to cast between binary64 and decimal64 */
+union ieee_double_decimal64 { double d; _Decimal64 d64; };
 
 /******************************************************
  *************** Long double macros *******************
