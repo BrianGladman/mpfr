@@ -355,9 +355,6 @@ typedef union ieee_double_extract Ieee_double_extract;
 # endif
 #endif
 
-/* to cast between binary64 and decimal64 */
-union ieee_double_decimal64 { double d; _Decimal64 d64; };
-
 /******************************************************
  *************** Long double macros *******************
  ******************************************************/
@@ -456,6 +453,15 @@ typedef union {
 /* #define MPFR_LDBL_MANT_DIG   64 */
 #define MPFR_LIMBS_PER_LONG_DOUBLE ((64-1)/BITS_PER_MP_LIMB+1)
 
+#endif
+
+/******************************************************
+ *************** _Decimal64 support *******************
+ ******************************************************/
+
+#if MPFR_WANT_DECIMAL_FLOATS
+/* to cast between binary64 and decimal64 */
+union ieee_double_decimal64 { double d; _Decimal64 d64; };
 #endif
 
 /******************************************************
