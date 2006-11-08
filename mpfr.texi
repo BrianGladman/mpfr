@@ -724,6 +724,7 @@ these functions.
 @deftypefunx int mpfr_set_uj (mpfr_t @var{rop}, uintmax_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_sj (mpfr_t @var{rop}, intmax_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_d (mpfr_t @var{rop}, double @var{op}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_set_decimal64 (mpfr_t @var{rop}, _Decimal64 @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_ld (mpfr_t @var{rop}, long double @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_z (mpfr_t @var{rop}, mpz_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_q (mpfr_t @var{rop}, mpq_t @var{op}, mp_rnd_t @var{rnd})
@@ -734,14 +735,19 @@ Note that the input 0 is converted to +0 by @code{mpfr_set_ui},
 @code{mpfr_set_si}, @code{mpfr_set_sj}, @code{mpfr_set_uj},
 @code{mpfr_set_z}, @code{mpfr_set_q} and
 @code{mpfr_set_f}, regardless of the rounding mode.
-If the system doesn't support the IEEE-754 standard, @code{mpfr_set_d} and
+If the system doesn't support the IEEE-754 standard, @code{mpfr_set_d},
+@code{mpfr_set_decimal64} and
 @code{mpfr_set_ld} might not preserve the signed zeros.
+The @code{mpfr_set_decimal64} function is built only with the configure
+option @code{--enable-decimal-float}, and when the compiler or
+system provides the @code{_Decimal64} data type.
 @code{mpfr_set_q} might not be able to work if the numerator (or the
 denominator) can not be representable as a @code{mpfr_t}.
 
 Note: If you want to store a floating-point constant to a @code{mpfr_t},
 you should use @code{mpfr_set_str} (or one of the MPFR constant functions,
-such as @code{mpfr_const_pi} for @m{\pi,Pi}) instead of @code{mpfr_set_d}
+such as @code{mpfr_const_pi} for @m{\pi,Pi}) instead of @code{mpfr_set_d},
+@code{mpfr_set_decimal64} 
 or @code{mpfr_set_ld}. Otherwise the floating-point constant will be first
 converted into a reduced-precision (e.g., 53-bit) binary number before
 MPFR can work with it.
@@ -884,11 +890,15 @@ See @code{mpfr_set_str}.
 @section Conversion Functions
 
 @deftypefun double mpfr_get_d (mpfr_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefunx _Decimal64 mpfr_get_decimal64 (mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx {long double} mpfr_get_ld (mpfr_t @var{op}, mp_rnd_t @var{rnd})
-Convert @var{op} to a @code{double} (respectively @code{long double}),
-using the rounding mode @var{rnd}.
-If the system doesn't support IEEE 754 standard, this function
- might not preserve the signed zeros.
+Convert @var{op} to a @code{double} (respectively @code{_Decimal64} or
+@code{long double}), using the rounding mode @var{rnd}.
+If the system doesn't support IEEE 754 standard, these functions
+might not preserve the signed zeros.
+The @code{mpfr_get_decimal64} function is built only with the configure
+option @code{--enable-decimal-float}, and when the compiler or
+system provides the @code{_Decimal64} data type.
 @end deftypefun
 
 @deftypefun double mpfr_get_d_2exp (long *@var{exp}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
