@@ -33,15 +33,14 @@ print_decimal64 (_Decimal64 d)
   y.d64 = d;
   x.d = y.d;
   Gh = x.s.exp >> 6;
-  printf ("|%d|%d%d%d%d%d|", x.s.sig, Gh >> 4, (Gh >> 3) & 1,
+  printf ("|%d%d%d%d%d%d", x.s.sig, Gh >> 4, (Gh >> 3) & 1,
 	  (Gh >> 2) & 1, (Gh >> 1) & 1, Gh & 1);
-  printf ("%d%d%d%d%d%d|", (x.s.exp >> 5) & 1, (x.s.exp >> 4) & 1,
+  printf ("%d%d%d%d%d%d", (x.s.exp >> 5) & 1, (x.s.exp >> 4) & 1,
 	  (x.s.exp >> 3) & 1, (x.s.exp >> 2) & 1, (x.s.exp >> 1) & 1,
 	  x.s.exp & 1);
 #if BITS_PER_MP_LIMB == 32
   for (i = 20; i > 0; i--)
     printf ("%d", (x.s.manh >> (i - 1)) & 1);
-  printf ("|");
   for (i = 32; i > 0; i--)
     printf ("%d", (x.s.manl >> (i - 1)) & 1);
 #else

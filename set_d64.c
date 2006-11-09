@@ -31,14 +31,6 @@ MA 02110-1301, USA. */
 #if MPFR_WANT_DECIMAL_FLOATS
 
 #ifdef DPD_FORMAT
-static _Decimal64
-dpd_to_bid (_Decimal64 d)
-{
-  union ieee_double_extract x;
-  unsigned int exp;
-  unsigned int G; /* combination field */
-  unsigned int Gh; /* most 5 significant bits from G */
-  unsigned long d0, d1, d2, d3, d4, d5; /* declets: 0 <= d0 <= 2,  0 <= d1..d5 < 999 */
   /* conversion 10-bits to 3 digits */
   static int T[1024] = {
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 80, 81, 800, 801, 880, 881, 10, 11, 12, 13,
@@ -108,146 +100,50 @@ dpd_to_bid (_Decimal64 d)
     756, 757, 758, 759, 794, 795, 956, 957, 798, 799, 760, 761, 762, 763, 764,
     765, 766, 767, 768, 769, 786, 787, 966, 967, 988, 989, 770, 771, 772, 773,
     774, 775, 776, 777, 778, 779, 796, 797, 976, 977, 998, 999};
-
-  x.d = d;
-  G = x.s.exp << 2; /* x.s.exp is the biased exponent, in [0, 2048) */
-#if BITS_PER_MP_LIMB == 32
-  G |= x.s.manh >> 18; /* manh has 20 bits */
-#elif BITS_PER_MP_LIMB == 64
-  G |= x.s.manl >> 50; /* manl has 52 bits */
-#else
-#error "wrong value of BITS_PER_MP_LIMB"
 #endif
-  /* now G has 13 bits: 0 <= G < 8192 */
-  Gh = G >> 8;
-  if (Gh >= 30) /* NaN or Inf have the same encoding in DPD or BID */
-    return d;
-  
-  if (Gh >= 24)
-    {
-      d0 = 8 | (Gh & 1);   /* 8 or 9 */
-      exp = (Gh >> 1) & 3; /* 0, 1, or 2 */
-      exp = (exp << 8) | (G & 255); /* 0 <= exp < 768 */
-      /* now convert exp, d0 to BID: the biased exponent is formed from
-	 G[2] to G[11] and d0 is 8+G[12] */
-      G = 6144 | (exp << 1) | (d0 & 1);
-    }
-  else /* 0 <= Gh < 24 */
-    {
-      d0 = Gh & 7;         /* 0, ..., 7 */
-      exp = Gh >> 3;       /* 0, 1, or 2 */
-      exp = (exp << 8) | (G & 255); /* 0 <= exp < 768 */
-      /* now convert exp, d0 to BID: the biased exponent is formed from
-	 G[0] to G[9] and d0 is formed from G[10] to G[12] */
-      G = (exp << 3) | d0;
-    }
 
-  /* now convert the trailing significant T (50 bits = 5 declets) */
-#if BITS_PER_MP_LIMB == 32 /* manh has 20 bits, manl has 32 bits */
-  d1 = T[(x.s.manh >> 8) & 1023];
-  d2 = T[((x.s.manh & 255) << 2) | (x.s.manl >> 30)];
-#else /* BITS_PER_MP_LIMB == 64 */
-  d1 = T[(x.s.manl >> 40) & 1023];
-  d2 = T[(x.s.manl >> 30) & 1023];
-#endif
-  d3 = T[(x.s.manl >> 20) & 1023];
-  d4 = T[(x.s.manl >> 10) & 1023];
-  d5 = T[x.s.manl & 1023];
-
-  /* convert to BID */
-  x.s.exp = G >> 2;
-#if BITS_PER_MP_LIMB == 32
-  {
-    mp_limb_t t;
-    x.s.manl = (d1 * 1000 + d2) * 1000 + d3; /* 0 <=  < 10^9: no overflow */
-    umul_ppmm (x.s.manh, x.s.manl, x.s.manl, 1000);
-    add_ssaaaa(x.s.manh, x.s.manl, x.s.manh, x.s.manl, 0, d4);
-    umul_ppmm (t, x.s.manl, x.s.manl, 1000);
-    x.s.manh = 1000 * x.s.manh + t;
-    add_ssaaaa(x.s.manh, x.s.manl, x.s.manh, x.s.manl, 0, d5);
-    x.s.manh |= (G & 3) << 18;
-  }
-#else /* BITS_PER_MP_LIMB == 64 */
-  x.s.manh = (G & 3) << 50 |
-    (((d1 * 1000 + d2) * 1000 + d3) * 1000 + d4) * 1000 + d5;
-#endif
-  return x.d;
-}
-#endif /* DPD_FORMAT */
-
-#ifdef DEBUG
+/* Convert d to a decimal string (one-to-one correspondence, no rounding).
+   The string s needs to have at least 23 characters.
+ */
 static void
-print_decimal64 (_Decimal64 d)
+decimal64_to_string (char *s, _Decimal64 d)
 {
   union ieee_double_extract x;
   union ieee_double_decimal64 y;
-  unsigned int Gh, i;
-
-  y.d64 = d;
-  x.d = y.d;
-  Gh = x.s.exp >> 6;
-  printf ("|%d|%d%d%d%d%d|", x.s.sig, Gh >> 4, (Gh >> 3) & 1,
-	  (Gh >> 2) & 1, (Gh >> 1) & 1, Gh & 1);
-  printf ("%d%d%d%d%d%d|", (x.s.exp >> 5) & 1, (x.s.exp >> 4) & 1,
-	  (x.s.exp >> 3) & 1, (x.s.exp >> 2) & 1, (x.s.exp >> 1) & 1,
-	  x.s.exp & 1);
-#if BITS_PER_MP_LIMB == 32
-  for (i = 20; i > 0; i--)
-    printf ("%d", (x.s.manh >> (i - 1)) & 1);
-  printf ("|");
-  for (i = 32; i > 0; i--)
-    printf ("%d", (x.s.manl >> (i - 1)) & 1);
-#else
-  for (i = 52; i > 0; i--)
-    printf ("%d", (x.s.manl >> (i - 1)) & 1);
-#endif
-  printf ("|\n");
-}
-#endif
-
-int
-mpfr_set_decimal64 (mpfr_ptr r, _Decimal64 d, mp_rnd_t rnd_mode)
-{
-  union ieee_double_extract x;
-  union ieee_double_decimal64 y;
-  char s[23], *t;
+  char *t;
   unsigned int Gh; /* most 5 significant bits from combination field */
   int exp; /* exponent */
   mp_limb_t h, l;
+  unsigned int d0, d1, d2, d3, d4, d5;
 
-#ifdef DPD_FORMAT
-  d = dpd_to_bid (d); /* convert to BID format */
-#endif
-  /* convert BID to character string:
-     1 character for sign
-     16 characters for mantissa,
-     1 character for E,
-     4 characters for exponent (including sign) */
-
+  /* now convert BID or DPD to string */
   y.d64 = d;
   x.d = y.d;
   Gh = x.s.exp >> 6;
   if (Gh == 31)
     {
-      MPFR_SET_NAN(r);
-      MPFR_RET_NAN;
+      sprintf (s, "NaN");
+      return;
     }
   else if (Gh == 30)
     {
-      MPFR_SET_INF(r);
       if (x.s.sig == 0)
-	MPFR_SET_POS(r);
+	sprintf (s, "Inf");
       else
-	MPFR_SET_NEG(r);
-      return 0; /* infinity is exact */
+	sprintf (s, "-Inf");
+      return;
     }
   t = s;
   if (x.s.sig)
     *t++ = '-';
   if (Gh < 24)
     {
-      /* the biased exponent E is formed from G[0] to G[9] and the significand
-	 is formed from bits G[10] through the end of the decoding */
+#ifdef DPD_FORMAT
+      exp = (x.s.exp >> 1) & 768;
+      d0 = Gh & 7;
+#else /* BID */
+      /* BID: the biased exponent E is formed from G[0] to G[9] and the
+	 significand from bits G[10] through the end of the decoding */
       exp = x.s.exp >> 1;
 #if BITS_PER_MP_LIMB == 32 /* manh has 20 bits, manl has 32 bits */
       h = ((x.s.exp & 1) << 20) | x.s.manh;
@@ -255,9 +151,14 @@ mpfr_set_decimal64 (mpfr_ptr r, _Decimal64 d, mp_rnd_t rnd_mode)
 #else /* BITS_PER_MP_LIMB == 64 */
       l = ((x.s.exp & 1) << 52) | x.s.manl;
 #endif
+#endif
     }
   else /* Gh >= 24 */
     {
+#ifdef DPD_FORMAT
+      exp = (x.s.exp & 384) << 1;
+      d0 = 8 | (Gh & 1);
+#else /* BID */
       /* the biased exponent is formed from G[2] to G[11] */
       exp = (x.s.exp & 511) << 1;
 #if BITS_PER_MP_LIMB == 32
@@ -272,7 +173,29 @@ mpfr_set_decimal64 (mpfr_ptr r, _Decimal64 d, mp_rnd_t rnd_mode)
       l = l & 2251799813685247; /* 2^51-1: cancel G[11] */
       l = l | 9007199254740992; /* add 2^53 */
 #endif
+#endif
     }
+#ifdef DPD_FORMAT
+  exp |= (x.s.exp & 63) << 2;
+#if BITS_PER_MP_LIMB == 32
+  exp |= x.s.manh >> 18;
+  d1 = (x.s.manh >> 8) & 1023;
+  d2 = ((x.s.manh << 2) | (x.s.manl >> 30)) & 1023;
+#else
+  exp |= x.s.manl >> 50;
+  d1 = (x.s.manl >> 40) & 1023;
+  d2 = (x.s.manl >> 30) & 1023;
+#endif
+  d3 = (x.s.manl >> 20) & 1023;
+  d4 = (x.s.manl >> 10) & 1023;
+  d5 = x.s.manl & 1023;
+  sprintf (t, "%1u%3u%3u%3u%3u%3u", d0, T[d1], T[d2], T[d3], T[d4], T[d5]);
+  /* Warning: some characters may be blank */
+  for (h = 0; h < 16; h++)
+    if (t[h] == ' ')
+      t[h] = '0';
+  t += 16;
+#else /* BID */
 #if BITS_PER_MP_LIMB == 32
  #if (UDIV_NEEDS_NORMALIZATION == 1)
   /* if n=q*d+r, then 4n=q*(4d)+4*r */
@@ -292,9 +215,22 @@ mpfr_set_decimal64 (mpfr_ptr r, _Decimal64 d, mp_rnd_t rnd_mode)
 #else
   t += sprintf (t, "%lu", l);
 #endif
+#endif /* DPD_FORMAT */
+
   exp -= 398; /* unbiased exponent */
   t += sprintf (t, "E%d", exp);
-  *t = '\0';
+}
+
+int
+mpfr_set_decimal64 (mpfr_ptr r, _Decimal64 d, mp_rnd_t rnd_mode)
+{
+  char s[23]; /* need 1 character for sign,
+		     16 characters for mantissa,
+		      1 character for exponent,
+		      4 characters for exponent (including sign),
+		      1 character for terminating \0. */
+
+  decimal64_to_string (s, d);
   return mpfr_set_str (r, s, 10, rnd_mode);
 }
 
