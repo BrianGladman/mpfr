@@ -177,7 +177,7 @@ string_to_Decimal64 (char *s)
 {
   long int exp = 0;
   char m[17];
-  unsigned long n = 0; /* mantissa length */
+  long n = 0; /* mantissa length */
   char *endptr[1];
   union ieee_double_extract x;
   union ieee_double_decimal64 y;
@@ -192,13 +192,13 @@ string_to_Decimal64 (char *s)
   else
     x.s.sig = 0;
   /* read mantissa */
-  while (isdigit (*s))
+  while (isdigit ((unsigned char) *s))
     m[n++] = *s++;
   exp = n;
   if (*s == '.')
     {
       s ++;
-      while (isdigit (*s))
+      while (isdigit ((unsigned char) *s))
 	m[n++] = *s++;
     }
   /* we have exp digits before decimal point, and a total of n digits */
