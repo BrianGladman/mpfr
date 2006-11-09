@@ -21,7 +21,7 @@ MA 02110-1301, USA. */
 
 #include <string.h> /* For strlen */
 #include <stdlib.h> /* For strtol */
-#include <ctype.h>  /* For isdigit and isspace */
+#include <ctype.h>  /* For isspace */
 #include <locale.h> /* For MPFR_DECIMAL_POINT */
 
 #define MPFR_NEED_LONGLONG_H
@@ -175,7 +175,7 @@ digit_value_in_base (int c, int base)
 
   MPFR_ASSERTD (base > 0 && base <= MPFR_MAX_BASE);
 
-  if (isdigit (c))
+  if (c >= '0' && c <= '9')
     digit = c - '0';
   else if (c >= 'a' && c <= 'z')
     digit = (base >= 37) ? c - 'a' + 36 : c - 'a' + 10;
