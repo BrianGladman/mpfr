@@ -329,9 +329,9 @@ parse_string (mpfr_t x, struct parsed_string *pstr,
   for (;;) /* Loop until an invalid character is read */
     {
       int c = (unsigned char) *str++;
-      /* The cast to unsigned char is needed because of digit_value_in_base,
-         which uses isdigit; decimal_point uses this convention too. */
-      if (c == (unsigned char) '.' || c == decimal_point)
+      /* The cast to unsigned char is needed because of digit_value_in_base;
+         decimal_point uses this convention too. */
+      if (c == '.' || c == decimal_point)
         {
           if (MPFR_UNLIKELY(point)) /* Second '.': stop parsing */
             break;
