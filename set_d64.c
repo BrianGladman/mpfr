@@ -113,8 +113,9 @@ decimal64_to_string (char *s, _Decimal64 d)
   char *t;
   unsigned int Gh; /* most 5 significant bits from combination field */
   int exp; /* exponent */
-  mp_limb_t h, l;
-  unsigned int d0, d1, d2, d3, d4, d5;
+  mp_limb_t rp[2];
+  mp_size_t rn = 2;
+  unsigned int d0, d1, d2, d3, d4, d5, i;
 
   /* now convert BID or DPD to string */
   y.d64 = d;
@@ -136,86 +137,70 @@ decimal64_to_string (char *s, _Decimal64 d)
   t = s;
   if (x.s.sig)
     *t++ = '-';
+
+#ifdef DPD_FORMAT
   if (Gh < 24)
     {
-#ifdef DPD_FORMAT
       exp = (x.s.exp >> 1) & 768;
       d0 = Gh & 7;
-#else /* BID */
-      /* BID: the biased exponent E is formed from G[0] to G[9] and the
-	 significand from bits G[10] through the end of the decoding */
-      exp = x.s.exp >> 1;
-#if BITS_PER_MP_LIMB == 32 /* manh has 20 bits, manl has 32 bits */
-      h = ((x.s.exp & 1) << 20) | x.s.manh;
-      l = x.s.manl;
-#else /* BITS_PER_MP_LIMB == 64 */
-      l = ((x.s.exp & 1) << 52) | x.s.manl;
-#endif
-#endif
     }
-  else /* Gh >= 24 */
+  else
     {
-#ifdef DPD_FORMAT
       exp = (x.s.exp & 384) << 1;
       d0 = 8 | (Gh & 1);
-#else /* BID */
-      /* the biased exponent is formed from G[2] to G[11] */
-      exp = (x.s.exp & 511) << 1;
-#if BITS_PER_MP_LIMB == 32
-      h = x.s.manh;
-      l = x.s.manl;
-      exp |= h >> 19;
-      h = h & 524287; /* 2^19-1: cancel G[11] */
-      h = h | 2097152; /* add 2^21 */
-#else /* BITS_PER_MP_LIMB == 64 */
-      l = x.s.manl;
-      exp |= l >> 51;
-      l = l & 2251799813685247; /* 2^51-1: cancel G[11] */
-      l = l | 9007199254740992; /* add 2^53 */
-#endif
-#endif
     }
-#ifdef DPD_FORMAT
   exp |= (x.s.exp & 63) << 2;
-#if BITS_PER_MP_LIMB == 32
   exp |= x.s.manh >> 18;
   d1 = (x.s.manh >> 8) & 1023;
   d2 = ((x.s.manh << 2) | (x.s.manl >> 30)) & 1023;
-#else
-  exp |= x.s.manl >> 50;
-  d1 = (x.s.manl >> 40) & 1023;
-  d2 = (x.s.manl >> 30) & 1023;
-#endif
   d3 = (x.s.manl >> 20) & 1023;
   d4 = (x.s.manl >> 10) & 1023;
   d5 = x.s.manl & 1023;
   sprintf (t, "%1u%3u%3u%3u%3u%3u", d0, T[d1], T[d2], T[d3], T[d4], T[d5]);
   /* Warning: some characters may be blank */
-  for (h = 0; h < 16; h++)
-    if (t[h] == ' ')
-      t[h] = '0';
+  for (i = 0; i < 16; i++)
+    if (t[i] == ' ')
+      t[i] = '0';
   t += 16;
 #else /* BID */
-#if BITS_PER_MP_LIMB == 32
- #if (UDIV_NEEDS_NORMALIZATION == 1)
-  /* if n=q*d+r, then 4n=q*(4d)+4*r */
-  h = (h << 2) | (l >> 30);
-  l = l << 2;
-  udiv_qrnnd(h, l, h, l, 4000000000);
-  l = l >> 2;
- #else
-  udiv_qrnnd(h, l, h, l, 1000000000);
- #endif
-  t += sprintf (t, "%lu", h);
-  /* Warning: l may have less than 9 characters */
-  sprintf (t, "%9lu", l);
-  for (h = 0; h < 9; h++, t++)
-    if (*t == ' ')
-      *t = '0';
-#else
-  t += sprintf (t, "%lu", l);
-#endif
-#endif /* DPD_FORMAT */
+  if (Gh < 24)
+    {
+      /* the biased exponent E is formed from G[0] to G[9] and the
+	 significand from bits G[10] through the end of the decoding */
+      exp = x.s.exp >> 1;
+      /* manh has 20 bits, manl has 32 bits */
+      rp[1] = ((x.s.exp & 1) << 20) | x.s.manh;
+      rp[0] = x.s.manl;
+    }
+  else
+    {
+      /* the biased exponent is formed from G[2] to G[11] */
+      exp = (x.s.exp & 511) << 1;
+      rp[1] = x.s.manh;
+      rp[0] = x.s.manl;
+      exp |= rp[1] >> 19;
+      rp[1] &= 524287; /* 2^19-1: cancel G[11] */
+      rp[1] |= 2097152; /* add 2^21 */
+    }
+  if (mp_bits_per_limb >= 54)
+    {
+      rp[0] |= rp[1] << 32;
+      rn = 1;
+    }
+  while (rn > 0 && rp[rn - 1] == 0)
+    rn --;
+  if (rn == 0)
+    {
+      *t = 0;
+      i = 1;
+    }
+  else
+    {
+      i = mpn_get_str (t, 10, rp, rn);
+    }
+  while (i-- > 0)
+    *t++ += '0';
+#endif /* DPD or BID */
 
   exp -= 398; /* unbiased exponent */
   t += sprintf (t, "E%d", exp);

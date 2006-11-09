@@ -25,8 +25,9 @@ MA 02110-1301, USA. */
 
 #include <stdio.h>  /* DEBUG */
 #include <string.h> /* for strlen */
-#include <ctype.h>  /* for isdigit */
 #include "mpfr-impl.h"
+
+#define ISDIGIT(c) ('0' <= c && c <= '9')
 
 #if MPFR_WANT_DECIMAL_FLOATS
 
@@ -142,9 +143,7 @@ get_decimal64_min (int negative)
 
   x.s.sig = (negative) ? 1 : 0;
   x.s.exp = 0;
-#if BITS_PER_MP_LIMB == 32
   x.s.manh = 0;
-#endif
   x.s.manl = 1;
   return x.d;
 }
@@ -157,9 +156,7 @@ get_decimal64_max (int negative)
 
   x.s.sig = (negative) ? 1 : 0;
   x.s.exp = 1919;
-#if BITS_PER_MP_LIMB == 32
   x.s.manh = 1048575; /* 2^20-1 */
-#endif
   x.s.manl = ~0;
   return x.d;
 }
@@ -192,13 +189,13 @@ string_to_Decimal64 (char *s)
   else
     x.s.sig = 0;
   /* read mantissa */
-  while (isdigit ((unsigned char) *s))
+  while (ISDIGIT (*s))
     m[n++] = *s++;
   exp = n;
   if (*s == '.')
     {
       s ++;
-      while (isdigit ((unsigned char) *s))
+      while (ISDIGIT (*s))
 	m[n++] = *s++;
     }
   /* we have exp digits before decimal point, and a total of n digits */
@@ -222,7 +219,7 @@ string_to_Decimal64 (char *s)
   exp += 398;
 
   MPFR_ASSERTN(exp >= -15);
-  if (exp < (long) 0)
+  if (exp < 0)
     {
       int i;
       n = -exp;
@@ -253,12 +250,8 @@ string_to_Decimal64 (char *s)
   d4 = T[100 * CH(m[10]) + 10 * CH(m[11]) + CH(m[12])]; /* 10-bit encoding */
   d5 = T[100 * CH(m[13]) + 10 * CH(m[14]) + CH(m[15])]; /* 10-bit encoding */
   x.s.exp = G >> 2;
-#if BITS_PER_MP_LIMB == 32
   x.s.manh = ((G & 3) << 18) | (d1 << 8) | (d2 >> 2);
   x.s.manl = (d2 & 3) << 30;
-#elif BITS_PER_MP_LIMB == 64
-  x.s.manl = ((G & 3) << 50) | (d1 << 40) | (d2 << 30);
-#endif
   x.s.manl |= (d3 << 20) | (d4 << 10) | d5;
 #else /* BID format */
   {
@@ -271,27 +264,23 @@ string_to_Decimal64 (char *s)
     rn = mpn_set_str (rp, (unsigned char *) m, 16, 10);
     if (rn == 1)
       rp[1] = 0;
+#if GMP_BITS_PER_LIMB > 32
+    rp[1] = rp[1] << (GMP_BITS_PER_LIMB - 32);
+    rp[1] |= rp[0] >> 32;
+    rp[0] &= 4294967295UL;
+#endif
     if (case_i)
       {  /* s < 2^53: case i) */
 	x.s.exp = exp << 1;
-#if BITS_PER_MP_LIMB == 32
 	x.s.manl = rp[0];           /* 32 bits */
 	x.s.manh = rp[1] & 1048575; /* 20 low bits */
 	x.s.exp |= rp[1] >> 20;     /* 1 bit */
-#else
-	x.s.manl = rp[0] & 4503599627370495; /* 52 bits */
-	x.s.exp |= rp[0] >> 52;
-#endif
       }
     else /* s >= 2^53: case ii) */
       {
 	x.s.exp = 1536 | (exp >> 1);
-#if BITS_PER_MP_LIMB == 32
 	x.s.manl = rp[0];
 	x.s.manh = (rp[1] ^ 2097152) | ((exp & 1) << 19);
-#else
-	x.s.manl = (rp[0] ^ 9007199254740992) | ((exp & 1) << 51);
-#endif
       }
   }
 #endif /* DPD_FORMAT */

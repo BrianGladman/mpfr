@@ -38,15 +38,10 @@ print_decimal64 (_Decimal64 d)
   printf ("%d%d%d%d%d%d", (x.s.exp >> 5) & 1, (x.s.exp >> 4) & 1,
 	  (x.s.exp >> 3) & 1, (x.s.exp >> 2) & 1, (x.s.exp >> 1) & 1,
 	  x.s.exp & 1);
-#if BITS_PER_MP_LIMB == 32
   for (i = 20; i > 0; i--)
     printf ("%d", (x.s.manh >> (i - 1)) & 1);
   for (i = 32; i > 0; i--)
     printf ("%d", (x.s.manl >> (i - 1)) & 1);
-#else
-  for (i = 52; i > 0; i--)
-    printf ("%d", (x.s.manl >> (i - 1)) & 1);
-#endif
   printf ("|\n");
 }
 
