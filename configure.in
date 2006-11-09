@@ -108,6 +108,22 @@ AC_ARG_ENABLE(decimal-float,
               ],
               [AC_MSG_ERROR([Compiler doesn't know _Decimal64; try GCC >= 4.2]
            )])
+           AC_MSG_CHECKING(decimal float format)
+           AC_RUN_IFELSE([AC_LANG_PROGRAM([[
+#include <stdlib.h>
+]], [[
+union { double d; _Decimal64 d64; } y;
+y.d64 = 1234567890123456.0dd;
+return y.d == 0.14894469406741037E-123 ? 0 :
+       y.d == 0.59075095508629822E-68  ? 1 : 2;
+]])], [AC_MSG_RESULT(DPD)
+       AC_DEFINE([DPD_FORMAT],1,[])],
+      [if test "$?" != 1 ; then
+          AC_MSG_FAILURE(neither DPD nor BID)
+       fi
+       AC_MSG_RESULT(BID)],
+      [AC_MSG_RESULT(assuming DPD)
+       AC_DEFINE([DPD_FORMAT],1,[])])
            ;;
       no)  ;;
       *)   AC_MSG_ERROR([bad value for --enable-decimal-float: yes or no]) ;;

@@ -22,6 +22,8 @@ MA 02110-1301, USA. */
 #include <stdlib.h> /* for exit */
 #include "mpfr-test.h"
 
+/* #define DEBUG */
+
 #if MPFR_WANT_DECIMAL_FLOATS
 static void
 print_decimal64 (_Decimal64 d)
@@ -202,6 +204,13 @@ main (void)
   mpfr_test_init ();
 
 #if MPFR_WANT_DECIMAL_FLOATS
+#ifdef DEBUG
+#ifdef DPD_FORMAT
+  printf ("Using DPD format\n");
+#else
+  printf ("Using BID format\n");
+#endif
+#endif
   check_inf_nan ();
   check_random ();
 #endif
@@ -209,4 +218,3 @@ main (void)
   tests_end_mpfr ();
   return 0;
 }
-
