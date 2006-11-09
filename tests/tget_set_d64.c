@@ -195,6 +195,33 @@ check_random (void)
   mpfr_clear (x);
   mpfr_clear (y);
 }
+
+/* check with native decimal formats */
+static void
+check_native (void)
+{
+  mpfr_t x;
+  _Decimal64 d;
+
+  mpfr_init2 (x, 53);
+
+  /* check important constants are correctly converted */
+  mpfr_set_ui (x, 17, GMP_RNDN);
+  d = mpfr_get_decimal64 (x, GMP_RNDN);
+  MPFR_ASSERTN(d == 17.0dd);
+
+  mpfr_set_ui (x, 42, GMP_RNDN);
+  d = mpfr_get_decimal64 (x, GMP_RNDN);
+  MPFR_ASSERTN(d == 42.0dd);
+
+  mpfr_set_decimal64 (x, 17.0dd, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (x, 17) == 0);
+
+  mpfr_set_decimal64 (x, 42.0dd, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (x, 42) == 0);
+
+  mpfr_clear (x);
+}
 #endif /* MPFR_WANT_DECIMAL_FLOATS */
 
 int
@@ -213,6 +240,7 @@ main (void)
 #endif
   check_inf_nan ();
   check_random ();
+  check_native ();
 #endif
 
   tests_end_mpfr ();
