@@ -55,10 +55,6 @@ AC_ARG_WITH(gmp,
    CPPFLAGS="$CPPFLAGS -I$withval/include"
    LDFLAGS="$LDFLAGS -L$withval/lib" ])
 
-AC_ARG_WITH(irix64,
-   [  --with-irix64=on/off    Irix 32/64 bits support ],
-   with_irix64=$withval, with_irix64=off)
-
 AC_ARG_WITH(mulhigh_size,
    [  --with-mulhigh-size=NUM internal threshold table for mulhigh],
    AC_DEFINE_UNQUOTED([MPFR_MULHIGH_SIZE],$withval, [Mulhigh size]))
@@ -203,23 +199,6 @@ fi
 
 AM_C_PROTOTYPES
 
-dnl Set the OS-dependent flags.
-case $OS_TYPE in
-  HP-UX*)
-	if test -n "$GCC"; then
-	  LDFLAGS="$LDFLAGS -Xlinker +allowunsats"
-	fi
-	;;
-  IRIX64)
-	if [[ "$irix64" = "on" ]]; then
-	  CFLAGS ="-mabi=64 $CFLAGS"
-	else
-	  CFLAGS ="-mabi=n32 $CFLAGS"
-	fi
-	;;
-esac
-
-dnl $OS_TYPE is not defined on darwin, so we use $host
 case $host in
   *-apple-darwin*)
 dnl This allows to take the first GMP library in the library paths,
