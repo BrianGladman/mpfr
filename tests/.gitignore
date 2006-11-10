@@ -59,6 +59,7 @@
 /tget_d_2exp
 /tget_f
 /tget_ld_2exp
+/tget_set_d64
 /tget_sj
 /tget_str
 /tget_z
