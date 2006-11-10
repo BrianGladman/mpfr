@@ -1142,6 +1142,15 @@ typedef struct {
 #define MPFR_ZIV_FREE(x)
 
 #else
+
+/* The following test on glibc is there mainly for Darwin (Mac OS X), to
+   obtain a better error message. The real test should have been a test
+   concerning nested functions in gcc, which are disabled by default on
+   Darwin; but it is not possible to do that without a configure test. */
+# if !(__MPFR_GNUC(3,0) && __MPFR_GLIBC(2,0))
+#  error "Logging not supported (needs GCC >= 3.0 and GNU C Library >= 2.0)."
+# endif
+
 /* Use LOGGING */
 #define MPFR_ZIV_DECL(_x)                                     \
   mp_prec_t _x;                                               \
