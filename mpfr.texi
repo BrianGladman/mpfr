@@ -1388,9 +1388,11 @@ of @var{x}, and of the sum for k from 1 to infinity of
 @tex
 $x^k/k/k!$.
 @end tex
-Note: the current implementation cannot compute the result for large inputs;
-in this case, NaN is returned and the erange flag is set to indicate that
-the input is in an unsupported domain.
+Note: the current implementation cannot compute the result for some large
+inputs; in this case, NaN is returned and the erange flag is set to indicate
+that the input is in an unsupported domain. If MPFR has been built with
+@samp{--enable-warnings} and the environment variable @env{MPFR_QUIET} is
+null, a warning is output to the standard error stream.
 For negative @var{x}, the returned value is NaN.
 @end deftypefun
 
@@ -1415,9 +1417,11 @@ rounded in the direction @var{rnd}.
 @deftypefun int mpfr_erfc (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Set @var{rop} to the value of the complementary error function on @var{op},
 rounded in the direction @var{rnd}.
-Note: the current implementation cannot compute the result for large inputs;
-in this case, NaN is returned and the erange flag is set to indicate that
-the input is in an unsupported domain.
+Note: the current implementation cannot compute the result for some large
+inputs; in this case, NaN is returned and the erange flag is set to indicate
+that the input is in an unsupported domain. If MPFR has been built with
+@samp{--enable-warnings} and the environment variable @env{MPFR_QUIET} is
+null, a warning is output to the standard error stream.
 @end deftypefun
 
 @deftypefun int mpfr_fma (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_t @var{op3}, mp_rnd_t @var{rnd})
