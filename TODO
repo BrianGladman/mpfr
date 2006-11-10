@@ -348,6 +348,10 @@ Miscellaneous:
   (which should be added to the tests) or prove that this cannot
   happen.
 
+- add a configure test for --enable-logging to ignore the option if
+  it cannot be supported. Modify the "configure --help" description
+  to say "on systems that support it".
+
 ##############################################################################
 Portability:
 ##############################################################################
