@@ -83,6 +83,13 @@ AC_ARG_ENABLE(thread-safe,
       no)  ;;
       *)   AC_MSG_ERROR([bad value for --enable-thread-safe: yes or no]) ;;
      esac])
+AC_ARG_ENABLE(warnings,
+   [  --enable-warnings       allow MPFR to output warnings to stderr [[default=no]]],
+   [ case $enableval in
+      yes) AC_DEFINE([MPFR_USE_WARNINGS],1,[Allow MPFR to output warnings to stderr]) ;;
+      no)  ;;
+      *)   AC_MSG_ERROR([bad value for --enable-warnings: yes or no]) ;;
+     esac])
 AC_ARG_ENABLE(decimal-float,
    [  --enable-decimal-float    build conversion functions from/to decimal floats [[default=no]]],
    [ case $enableval in

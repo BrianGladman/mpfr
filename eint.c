@@ -19,7 +19,8 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
-#include <stdio.h>
+#include <stdio.h>   /* for MPFR_WARNING */
+#include <stdlib.h>  /* for MPFR_WARNING */
 #include <limits.h>
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
@@ -232,7 +233,7 @@ mpfr_eint (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
           /* FIXME: Improve the algorithm to be able to compute the actual
              value. For the time being, we regard this as a range error,
              so that the caller can cleanly deal with the problem. */
-          fprintf (stderr, "MPFR: Error, too large input in mpfr_eint\n");
+          MPFR_WARNING ("Too large input in mpfr_eint, returning NaN");
           MPFR_ZIV_FREE (loop);
           mpfr_clear (tmp);
           mpfr_clear (ump);

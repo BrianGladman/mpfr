@@ -280,6 +280,24 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
 #define MPFR_RET_NEVER_GO_HERE()  {MPFR_ASSERTN(0); return 0;}
 
 
+/******************************************************
+ ******************** Warnings ************************
+ ******************************************************/
+
+#ifdef MPFR_USE_WARNINGS
+/* Note: needs <stdio.h> and <stdlib.h> */
+# define MPFR_WARNING(W)                    \
+  do                                        \
+    {                                       \
+      char *q = getenv ("MPFR_QUIET");      \
+      if (q == NULL || *q == 0)             \
+        fprintf (stderr, "MPFR: %s\n", W);  \
+    }                                       \
+  while (0)
+#else
+# define MPFR_WARNING(W)  ((void) 0)
+#endif
+
 
 /******************************************************
  ****************** double macros *********************
