@@ -1397,10 +1397,19 @@ For negative @var{x}, the returned value is NaN.
 @end deftypefun
 
 @deftypefun int mpfr_gamma (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
-@deftypefunx int mpfr_lngamma (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
-Set @var{rop} to the value of the Gamma function on @var{op},
-and its logarithm respectively, rounded in the direction @var{rnd}.
-When @var{op} is a negative integer, NaN is returned.
+Set @var{rop} to the value of the Gamma function on @var{op}, rounded in the
+direction @var{rnd}. When @var{op} is a negative integer, NaN is returned.
+@end deftypefun
+
+@deftypefun int mpfr_lngamma (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+Set @var{rop} to the value of the logarithm of the Gamma function on @var{op},
+rounded in the direction @var{rnd}.
+When @math{@minus{}2@var{k}@minus{}1 @le{} @var{x} @le{} @minus{}2@var{k}},
+@var{k} being a non-negative integer, NaN is returned.
+Note that on these negative values, this function is different from the
+corresponding function defined in some languages, such as @code{lgamma}
+in ISO C99; a new function @code{mpfr_lgamma} will be added in a future
+MPFR version to match this alternative definition.
 @end deftypefun
 
 @deftypefun int mpfr_zeta (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
