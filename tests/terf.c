@@ -380,6 +380,19 @@ special_erfc (void)
   mpfr_clears (x, y, NULL);
 }
 
+static void
+large_arg (void)
+{
+  mpfr_t x, y;
+
+  mpfr_init2 (x, 88);
+  mpfr_init2 (y, 98);
+  mpfr_set_si_2exp (x, -1, 173, GMP_RNDN);
+  mpfr_erfc (y, x, GMP_RNDN);
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -387,6 +400,9 @@ main (int argc, char *argv[])
 
   special_erf ();
   special_erfc ();
+
+  if (argc > 1)
+    large_arg ();
 
   test_generic_erf (2, 100, 15);
   test_generic_erfc (2, 100, 15);
