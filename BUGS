@@ -33,14 +33,18 @@ Known bugs:
   underflow flag is not always set. Example: x = 0.11 in base 2,
   y = 1.0e38, GMP_RNDN.
 
-* On very large positive and negative values, mpfr_coth is very slow,
-  takes a lot of memory (possibly several hundreds of megabytes), and
-  sometimes even crashes (segmentation fault, probably due to lack of
-  memory).
+* On some very large values, mpfr_erfc crashes (segmentation fault,
+  probably due to lack of memory or integer overflow).
 
-* On very large values, mpfr_csch, mpfr_sech, mpfr_eint and mpfr_erfc
-  crash (segmentation fault, probably due to lack of memory or integer
-  overflow).
+* Some large input values for mpfr_eint and mpfr_erfc are currently not
+  supported. However they should be detected, so that one can have the
+  following documented behavior: NaN is returned and the erange flag is
+  set to indicate that the input is in an unsupported domain. If MPFR
+  has been built with --enable-warnings and the environment variable
+  MPFR_QUIET is null, a warning is output to the standard error stream.
+  Reference concerning the warnings:
+    http://sympa.loria.fr/wwsympa/arc/mpfr/2006-11/msg00010.html
+  and follow-ups.
 
 Potential bugs:
 
