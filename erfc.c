@@ -70,12 +70,12 @@ mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
         }
     }
 
-  /* for x < 0, erfc(x) tends to 2 by below */
   if (MPFR_SIGN (x) < 0)
     {
-      if ((MPFR_PREC(y) <= 8 && mpfr_cmp_si (x, -2)) ||
-          (MPFR_PREC(y) <= 26 && mpfr_cmp_si (x, -4)) ||
-          (MPFR_PREC(y) <= 97 && mpfr_cmp_si (x, -9)))
+      /* for x < 0 going to -infinity, erfc(x) tends to 2 by below */
+      if ((MPFR_PREC(y) <= 7 && mpfr_cmp_si (x, -2) <= 0) ||
+          (MPFR_PREC(y) <= 25 && mpfr_cmp_si (x, -4) <= 0) ||
+          (MPFR_PREC(y) <= 120 && mpfr_cmp_si (x, -9)))
         {
           mpfr_set_ui (y, 2, GMP_RNDN);
           mpfr_set_inexflag ();
@@ -91,6 +91,12 @@ mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
 
   /* Init stuff */
   MPFR_SAVE_EXPO_MARK (expo);
+
+  /* erfc(x) ~ 1, with error < 2^(EXP(x)+1) */
+  MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, __gmpfr_one, 0-MPFR_GET_EXP (x)-1,
+				    MPFR_SIGN(x) < 0,
+                                    rnd, inex = _inexact; goto end);
+
   prec = MPFR_PREC (y) + MPFR_INT_CEIL_LOG2 (MPFR_PREC (y)) + 3;
   mpfr_init2 (tmp, prec);
 
@@ -118,6 +124,7 @@ mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
   inex = mpfr_set (y, tmp, rnd);    /* Set y to the computed value */
   mpfr_clear (tmp);
 
+ end:
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (y, inex, rnd);
 }

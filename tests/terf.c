@@ -400,9 +400,7 @@ main (int argc, char *argv[])
 
   special_erf ();
   special_erfc ();
-
-  if (argc > 1)
-    large_arg ();
+  large_arg ();
 
   test_generic_erf (2, 100, 15);
   test_generic_erfc (2, 100, 15);
