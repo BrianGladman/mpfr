@@ -78,7 +78,7 @@ New functions to implement:
 ##############################################################################
 
 - function mpfr_lgamma, with the prototype
-    int mpfr_lgamma (mpfr_ptr, mpfr_srcptr, int *, mpfr_rnd_t)
+    int mpfr_lgamma (mpfr_ptr, int *, mpfr_srcptr, mpfr_rnd_t)
   that also returns the value of signgam; see thread
     http://sympa.loria.fr/wwsympa/arc/mpfr/2006-10/msg00029.html
 - functions operating on mpfr_t and double: mpfr_add_d, mpfr_sub_d,
