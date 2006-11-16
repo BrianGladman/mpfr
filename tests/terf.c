@@ -387,8 +387,15 @@ large_arg (void)
 
   mpfr_init2 (x, 88);
   mpfr_init2 (y, 98);
+
   mpfr_set_si_2exp (x, -1, 173, GMP_RNDN);
   mpfr_erfc (y, x, GMP_RNDN);
+
+  mpfr_set_prec (x, 33);
+  mpfr_set_prec (y, 43);
+  mpfr_set_str_binary (x, "1.11000101010111011000111100101001e6");
+  mpfr_erfc (y, x, GMP_RNDD);
+
   mpfr_clear (x);
   mpfr_clear (y);
 }
