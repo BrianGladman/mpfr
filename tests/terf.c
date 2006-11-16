@@ -390,11 +390,34 @@ large_arg (void)
 
   mpfr_set_si_2exp (x, -1, 173, GMP_RNDN);
   mpfr_erfc (y, x, GMP_RNDN);
+  if (mpfr_cmp_ui (y, 2) != 0)
+    {
+      printf ("mpfr_erfc failed for large x (1)\n");
+      exit (1);
+    }
+
 
   mpfr_set_prec (x, 33);
   mpfr_set_prec (y, 43);
   mpfr_set_str_binary (x, "1.11000101010111011000111100101001e6");
   mpfr_erfc (y, x, GMP_RNDD);
+  mpfr_set_prec (x, 43);
+  mpfr_set_str_binary (x, "100010011100101100001101100101011101101E-18579");
+  if (mpfr_cmp (x, y) != 0)
+    {
+      printf ("mpfr_erfc failed for large x (2)\n");
+      exit (1);
+    }
+
+  mpfr_set_prec (y, 43);
+  mpfr_set_si_2exp (x, 1, 11, GMP_RNDN);
+  mpfr_erfc (y, x, GMP_RNDN);
+  mpfr_set_str_binary (x, "0.1100000100100010101111001111010010001000110E-6051113");
+  if (mpfr_cmp (x, y) != 0)
+    {
+      printf ("mpfr_erfc failed for large x (3)\n");
+      exit (1);
+    }
 
   mpfr_clear (x);
   mpfr_clear (y);

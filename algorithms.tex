@@ -1075,6 +1075,12 @@ that ${\rm erfc} \, x \leq 2^{-n}$, thus
 ${\rm erf} \, x = 1$ or ${\rm erf} \, x = 1 - 2^{-n}$ according to the
 rounding mode.
 
+More precisely, \cite[formul{\ae} 7.1.23 and 7.1.24]{AbSt73} give:
+\[ \sqrt{\pi} x e^{x^2} {\rm erfc} x \approx
+   1 + \sum_{k=1}^n (-1)^k \frac{1 \times 3 \times \cdots \times (2k-1)}
+   {(2x^2)^k}, \]
+with the error bounded in absolute value by the next term and of the same sign.
+
 \subsection{The hyperbolic cosine function}
 
 The {\tt mpfr\_cosh} ($\cosh{x}$) function implements the hyperbolic

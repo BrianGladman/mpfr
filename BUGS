@@ -33,12 +33,9 @@ Known bugs:
   underflow flag is not always set. Example: x = 0.11 in base 2,
   y = 1.0e38, GMP_RNDN.
 
-* On some very large values, mpfr_erfc crashes (segmentation fault,
-  probably due to lack of memory or integer overflow).
-
-* Some large input values for mpfr_eint and mpfr_erfc are currently not
-  supported. However they should be detected, so that one can have the
-  following documented behavior: NaN is returned and the erange flag is
+* Some large input values for mpfr_eint are currently not supported.
+  However they should be detected, so that one can have the following
+  documented behavior: NaN is returned and the erange flag is
   set to indicate that the input is in an unsupported domain. If MPFR
   has been built with --enable-warnings and the environment variable
   MPFR_QUIET is null, a warning is output to the standard error stream.
@@ -57,7 +54,9 @@ Potential bugs:
 
 * Possible infinite loop in some functions for particular cases: when
   the exact result is an exactly representable number or the middle of
-  consecutive two such numbers (for example, erf).
+  consecutive two such numbers. However for non-algebraic functions, it is
+  believed that no such case exists, except the well-known cases like cos(0)=1,
+  exp(0)=1, and so on, and the x^y function when y is an integer or y=1/2^k.
 
 * The mpfr_set_ld function may be quite slow if the long double type has an
   exponent of more than 15 bits.

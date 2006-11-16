@@ -19,12 +19,81 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
-#include <stdio.h>   /* for MPFR_WARNING */
-#include <stdlib.h>  /* for MPFR_WARNING */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
 /* erfc(x) = 1 - erf(x) */
+
+/* Put in y an approximation of erfc(x) for large x, using formulae 7.1.23 and
+   7.1.24 from Abramowitz and Stegun.
+   Returns e such that the error is bounded by 2^e ulp(y). */
+static mp_exp_t
+mpfr_erfc_asympt (mpfr_ptr y, mpfr_srcptr x)
+{
+  mpfr_t t, xx, err;
+  unsigned long k;
+  mp_prec_t prec = MPFR_PREC(y);
+  mp_exp_t exp_err;
+
+  mpfr_init2 (t, prec);
+  mpfr_init2 (xx, prec);
+  mpfr_init2 (err, 31);
+  /* let u = 2^(1-p), and let us represent the error as (1+u)^err
+     with a bound for err */
+  mpfr_mul (xx, x, x, GMP_RNDD); /* err <= 1 */
+  mpfr_ui_div (xx, 1, xx, GMP_RNDU); /* upper bound for 1/(2x^2), err <= 2 */
+  mpfr_div_2exp (xx, xx, 1, GMP_RNDU); /* exact */
+  mpfr_set_ui (t, 1, GMP_RNDN); /* current term, exact */
+  mpfr_set (y, t, GMP_RNDN);    /* current sum  */
+  mpfr_set_ui (err, 0, GMP_RNDN);
+  for (k = 1; ; k++)
+    {
+      mpfr_mul_ui (t, t, 2 * k - 1, GMP_RNDU); /* err <= 4k-3 */
+      mpfr_mul (t, t, xx, GMP_RNDU);           /* err <= 4k */
+      /* for -1 < x < 1, and |nx| < 1, we have |(1+x)^n| <= 1+7/4|nx|.
+         Indeed, for x>=0: log((1+x)^n) = n*log(1+x) <= n*x. Let y=n*x < 1,
+         then exp(y) <= 1+7/4*y.
+         For x<=0, let x=-x, we can prove by induction that (1-x)^n >= 1-n*x.*/
+      mpfr_mul_2si (err, err, MPFR_GET_EXP (y) - MPFR_GET_EXP (t), GMP_RNDU);
+      mpfr_add_ui (err, err, 14 * k, GMP_RNDU); /* 2^(1-p) * t <= 2 ulp(t) */
+      mpfr_div_2si (err, err, MPFR_GET_EXP (y) - MPFR_GET_EXP (t), GMP_RNDU);
+      if (MPFR_GET_EXP (t) + (mp_exp_t) prec <= MPFR_GET_EXP (y))
+        {
+          /* the truncation error is bounded by |t| < ulp(y) */
+          mpfr_add_ui (err, err, 1, GMP_RNDU);
+          break;
+        }
+      if (k & 2 != 0)
+        mpfr_sub (y, y, t, GMP_RNDN);
+      else
+        mpfr_add (y, y, t, GMP_RNDN);
+    }
+  /* the error on y is bounded by err*ulp(y) */
+  mpfr_mul (t, x, x, GMP_RNDU); /* rel. err <= 2^(1-p) */
+  mpfr_div_2exp (err, err, 3, GMP_RNDU); /* err/8 */
+  mpfr_add (err, err, t, GMP_RNDU);      /* err/8 + xx */
+  mpfr_mul_2exp (err, err, 3, GMP_RNDU); /* err + 8*xx */
+  mpfr_exp (t, t, GMP_RNDU); /* err <= 1/2*ulp(t) + err(x*x)*t
+                                <= 1/2*ulp(t)+2*|x*x|*ulp(t)
+                                <= (2*|x*x|+1/2)*ulp(t) */
+  mpfr_mul (t, t, x, GMP_RNDN); /* err <= 1/2*ulp(t) + (4*|x*x|+1)*ulp(t)
+                                   <= (4*|x*x|+3/2)*ulp(t) */
+  mpfr_const_pi (xx, GMP_RNDZ); /* err <= ulp(Pi) */
+  mpfr_sqrt (xx, xx, GMP_RNDN); /* err <= 1/2*ulp(xx) + ulp(Pi)/2/sqrt(Pi)
+                                   <= 3/2*ulp(xx) */
+  mpfr_mul (t, t, xx, GMP_RNDN); /* err <= (8 |xx| + 13/2) * ulp(t) */
+  mpfr_div (y, y, t, GMP_RNDN); /* the relative error on input y is bounded
+                                   by (1+u)^err with u = 2^(1-p), that on
+                                   t is bounded by (1+u)^(8 |xx| + 13/2),
+                                   thus that on output y is bounded by
+                                   8 |xx| + 7 + err. */
+  mpfr_add_ui (err, err, 7, GMP_RNDU);
+  exp_err = MPFR_GET_EXP (err);
+  mpfr_clear (t);
+  mpfr_clear (xx);
+  mpfr_clear (err);
+  return exp_err;
+}
 
 int
 mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
@@ -58,16 +127,6 @@ mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
       /* for x >= 38582, erfc(x) < 2^(-2^31) */
       if (mpfr_cmp_ui (x, 38582) >= 0)
         return mpfr_underflow (y, (rnd == GMP_RNDN) ? GMP_RNDZ : rnd, 1);
-      if (MPFR_GET_EXP (x) >= 12)
-        {
-          /* FIXME: Improve the algorithm to be able to compute the actual
-             value. For the time being, we regard this as a range error,
-             so that the caller can cleanly deal with the problem. */
-          MPFR_WARNING ("Too large input in mpfr_erfc, returning NaN");
-          MPFR_SET_ERANGE ();
-          MPFR_SET_NAN (y);
-          MPFR_RET_NAN;
-        }
     }
 
   if (MPFR_SIGN (x) < 0)
@@ -98,24 +157,36 @@ mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
                                     rnd, inex = _inexact; goto end);
 
   prec = MPFR_PREC (y) + MPFR_INT_CEIL_LOG2 (MPFR_PREC (y)) + 3;
+  if (MPFR_GET_EXP (x) > 0)
+    prec += 2 * MPFR_GET_EXP(x);
+
   mpfr_init2 (tmp, prec);
 
   MPFR_ZIV_INIT (loop, prec);            /* Initialize the ZivLoop controler */
   for (;;)                               /* Infinite loop */
     {
-      mpfr_erf (tmp, x, GMP_RNDN);
-      MPFR_ASSERTD (!MPFR_IS_SINGULAR (tmp)); /* FIXME: 0 only for x=0 ? */
-      te = MPFR_GET_EXP (tmp);
-      mpfr_ui_sub (tmp, 1, tmp, GMP_RNDN);
-      /* See error analysis of expm1 for details */
-      if (MPFR_IS_ZERO (tmp))
-        prec *=2;
+      /* use asymptotic formula only whenever x^2 >= p*log(2),
+         otherwise it will not converge */
+      if (2 * MPFR_GET_EXP (x) - 2 >= MPFR_INT_CEIL_LOG2 (prec))
+        /* we have x^2 >= p in that case */
+        err = mpfr_erfc_asympt (tmp, x);
       else
         {
-          err = prec - (MAX (te - MPFR_GET_EXP (tmp), 0) + 1);
-          if (MPFR_LIKELY (MPFR_CAN_ROUND (tmp, err, MPFR_PREC (y), rnd)))
-            break;
+          mpfr_erf (tmp, x, GMP_RNDN);
+          MPFR_ASSERTD (!MPFR_IS_SINGULAR (tmp)); /* FIXME: 0 only for x=0 ? */
+          te = MPFR_GET_EXP (tmp);
+          mpfr_ui_sub (tmp, 1, tmp, GMP_RNDN);
+          /* See error analysis in algorithms.tex for details */
+          if (MPFR_IS_ZERO (tmp))
+            {
+              prec *= 2;
+              err = prec; /* ensures MPFR_CAN_ROUND fails */
+            }
+          else
+            err = MAX (te - MPFR_GET_EXP (tmp), 0) + 1;
         }
+      if (MPFR_LIKELY (MPFR_CAN_ROUND (tmp, prec - err, MPFR_PREC (y), rnd)))
+        break;
       MPFR_ZIV_NEXT (loop, prec);        /* Increase used precision */
       mpfr_set_prec (tmp, prec);
     }
