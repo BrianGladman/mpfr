@@ -217,12 +217,27 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
         {
           /* compute 1/(x^n) n>0 */
           mpfr_pow_pos_z (t, x, z, GMP_RNDN);
-          inexact = MPFR_IS_ZERO (t) || MPFR_IS_INF (t);
           mpfr_ui_div (t, 1, t, GMP_RNDN);
-          inexact = inexact || MPFR_IS_ZERO (t) || MPFR_IS_INF (t);
-
-          if (MPFR_LIKELY (inexact != 0
-                           || MPFR_CAN_ROUND (t, Nt-3, MPFR_PREC (y), rnd)))
+          /* FIXME: old code improved, but I think this is still incorrect. */
+          if (MPFR_UNLIKELY (MPFR_IS_ZERO (t)))
+            {
+              MPFR_ZIV_FREE (loop);
+              mpfr_clear (t);
+              MPFR_SAVE_EXPO_FREE (expo);
+              return mpfr_underflow (y, rnd == GMP_RNDN ? GMP_RNDZ : rnd,
+                                     mpz_odd_p (z) ? MPFR_SIGN (x) :
+                                     MPFR_SIGN_POS);
+            }
+          if (MPFR_UNLIKELY (MPFR_IS_INF (t)))
+            {
+              MPFR_ZIV_FREE (loop);
+              mpfr_clear (t);
+              MPFR_SAVE_EXPO_FREE (expo);
+              return mpfr_overflow (y, rnd,
+                                    mpz_odd_p (z) ? MPFR_SIGN (x) :
+                                    MPFR_SIGN_POS);
+            }
+          if (MPFR_LIKELY (MPFR_CAN_ROUND (t, Nt-3, MPFR_PREC (y), rnd)))
             break;
           /* actualisation of the precision */
           MPFR_ZIV_NEXT (loop, Nt);

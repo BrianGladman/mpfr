@@ -677,6 +677,40 @@ underflows (void)
     }
   mpfr_set_emin (emin);
 
+  emin = mpfr_get_emin ();
+  mpfr_set_emin (-256);
+  mpfr_set_prec (x, 2);
+  mpfr_set_prec (y, 40);
+  mpfr_set_prec (z, 12);
+  mpfr_set_ui_2exp (x, 3, -1, GMP_RNDN);
+  mpfr_set_si_2exp (y, -1, 38, GMP_RNDN);
+  for (i = 0; i < 4; i++)
+    {
+      if (i == 2)
+        mpfr_neg (x, x, GMP_RNDN);
+      mpfr_clear_flags ();
+      inexact = mpfr_pow (z, x, y, GMP_RNDN);
+      if (!mpfr_underflow_p () || MPFR_NOTZERO (z) ||
+          (i == 3 ? (inexact <= 0) : (inexact >= 0)))
+        {
+          printf ("Bad underflow detection for (");
+          mpfr_out_str (stdout, 10, 0, x, GMP_RNDN);
+          printf (")^(-2^38-%d). Obtained:\n"
+                  "Overflow flag.... %-3s (should be 'no')\n"
+                  "Underflow flag... %-3s (should be 'yes')\n"
+                  "Zero result...... %-3s (should be 'yes')\n"
+                  "Inexact value.... %-3d (should be %s)\n", i,
+                  mpfr_overflow_p () ? "yes" : "no",
+                  mpfr_underflow_p () ? "yes" : "no",
+                  MPFR_IS_ZERO (z) ? "yes" : "no", inexact,
+                  i == 3 ? "positive" : "negative");
+          exit (1);
+        }
+      inexact = mpfr_sub_ui (y, y, 1, GMP_RNDN);
+      MPFR_ASSERTN (inexact == 0);
+    }
+  mpfr_set_emin (emin);
+
   mpfr_clears (x, y, z, (void *) 0);
 }
 
