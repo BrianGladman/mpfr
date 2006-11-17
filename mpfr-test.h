@@ -77,6 +77,7 @@ void ld_trace _MPFR_PROTO ((const char *, long double));
 FILE *src_fopen _MPFR_PROTO ((const char *, const char *));
 void set_emin _MPFR_PROTO ((mp_exp_t));
 void set_emax _MPFR_PROTO ((mp_exp_t));
+void tests_default_random _MPFR_PROTO ((mpfr_ptr));
 
 int mpfr_cmp_str _MPFR_PROTO ((mpfr_srcptr x, const char *, int, mp_rnd_t));
 #define mpfr_cmp_str1(x,s) mpfr_cmp_str(x,s,10,GMP_RNDN)

@@ -329,3 +329,13 @@ set_emax (mp_exp_t exponent)
       exit (1);
     }
 }
+
+void
+tests_default_random (mpfr_ptr x)
+{
+  mpfr_random (x);
+  if (randlimb () & 1)
+    mpfr_mul_2si (x, x, (int) (randlimb () % 512) - 256, GMP_RNDN);
+  if (randlimb () & 1)
+    mpfr_neg (x, x, GMP_RNDN);
+}

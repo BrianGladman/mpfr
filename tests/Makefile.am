@@ -15,3 +15,4 @@ $(top_builddir)/libmpfr.la:
 	cd $(top_builddir); make libmpfr.la
 
 TESTS = $(check_PROGRAMS)
+TESTS_ENVIRONMENT = MPFR_QUIET=1
