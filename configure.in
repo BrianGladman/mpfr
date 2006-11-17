@@ -34,16 +34,20 @@ dnl There is still some problem with GMP's HAVE_CONFIG
 dnl AC_CONFIG_HEADERS([mpfrconf.h:mpfrconf.in])
 
 dnl Extra arguments to configure
+unset gmp_lib_path
 AC_ARG_WITH(gmp_include,
    [  --with-gmp-include=DIR  GMP include directory ],
    CPPFLAGS="$CPPFLAGS -I$withval")
 AC_ARG_WITH(gmp_lib,
-   [  --with-gmp-lib=DIR      GMP lib directory ],
-   LDFLAGS="$LDFLAGS -L$withval")
+   [  --with-gmp-lib=DIR      GMP lib directory ], [
+   LDFLAGS="$LDFLAGS -L$withval"
+   gmp_lib_path="$withval"
+  ])
 AC_ARG_WITH(gmp_build,
    [  --with-gmp-build=DIR    GMP build directory], [
     CPPFLAGS="$CPPFLAGS -I$withval -I$withval/tune"
     LDFLAGS="$LDFLAGS -L$withval -L$withval/.libs -L$withval/tune/"
+    gmp_lib_path="$withval$PATH_SEPARATOR$withval/.libs$PATH_SEPARATOR$withval/tune"
     if test -r $withval/Makefile ; then
      GMP_CFLAGS=`grep -w "CFLAGS =" $withval/Makefile | sed 's/CFLAGS = //'`
      GMP_CC=`grep -w "CC =" $withval/Makefile | sed 's/CC = //'`
@@ -53,7 +57,9 @@ AC_ARG_WITH(gmp_build,
 AC_ARG_WITH(gmp,
    [  --with-gmp=DIR          GMP install directory ], [
    CPPFLAGS="$CPPFLAGS -I$withval/include"
-   LDFLAGS="$LDFLAGS -L$withval/lib" ])
+   LDFLAGS="$LDFLAGS -L$withval/lib"
+   gmp_lib_path="$withval/lib"
+  ])
 
 AC_ARG_WITH(mulhigh_size,
    [  --with-mulhigh-size=NUM internal threshold table for mulhigh],
@@ -359,6 +365,9 @@ AC_CHECK_LIB(gmp, __gmpz_init, [LIBS="-lgmp $LIBS"],
 
 dnl Check for corresponding 'gmp.h' and libgmp.a
 AC_MSG_CHECKING(if gmp.h version and libgmp version are the same)
+saved_LD_RUN_PATH="$LD_RUN_PATH"
+LD_RUN_PATH="${LD_RUN_PATH:+$LD_RUN_PATH$PATH_SEPARATOR}$gmp_lib_path"
+export LD_RUN_PATH
 AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 #include <stdio.h>
 #include <string.h>
@@ -381,6 +390,7 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[
     AC_MSG_WARN([we can't be sure. See 'config.log' for details.])
     ],AC_MSG_RESULT([can not test])
 )
+LD_RUN_PATH="$saved_LD_RUN_PATH"
 
 dnl End of tests which need to link with GMP.
 fi
