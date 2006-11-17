@@ -27,7 +27,9 @@ MA 02110-1301, USA. */
 
 #define ERROR(str) do { printf("Error for "str"\n"); exit (1); } while (0)
 
-static void check_special (void) {
+static void
+check_special (void)
+{
   mpfr_t x, y;
   mpz_t  z;
   int res;
@@ -134,7 +136,9 @@ static void check_special (void) {
   mpfr_clear (x);
 }
 
-static void check_integer (mp_prec_t begin, mp_prec_t end, unsigned long max) {
+static void
+check_integer (mp_prec_t begin, mp_prec_t end, unsigned long max)
+{
   mpfr_t x, y1, y2;
   mpz_t z;
   unsigned long i, n;
@@ -144,45 +148,51 @@ static void check_integer (mp_prec_t begin, mp_prec_t end, unsigned long max) {
 
   mpfr_inits2 (begin, x, y1, y2, NULL);
   mpz_init (z);
-  for (p = begin ; p < end ; p+=4) {
-    mpfr_set_prec (x, p);
-    mpfr_set_prec (y1, p);
-    mpfr_set_prec (y2, p);
-    for (i = 0 ; i < max ; i++) {
-      mpz_random (z, (i&1) == 0 ? -1 : 1);
-      mpfr_random (x);
-      mpfr_mul_2ui (x, x, 1, GMP_RNDN); /* 0 <= x < 2 */
-      rnd = (mp_rnd_t) RND_RAND ();
-      if (mpz_fits_slong_p (z)) {
-        n = mpz_get_si (z);
-        /* printf ("New test for x=%ld\nCheck Pow_si\n", n); */
-        res1 = mpfr_pow_si (y1, x, n, rnd);
-        /* printf ("Check pow_z\n"); */
-        res2 = mpfr_pow_z  (y2, x, z, rnd);
-        if (mpfr_cmp (y1, y2) != 0) {
-          printf ("Error for p=%lu, z=%ld, rnd=%s and x=", p, n,
-                  mpfr_print_rnd_mode (rnd));
-          mpfr_dump (x);
-          printf ("Ypowui="); mpfr_dump (y1);
-          printf ("Ypowz ="); mpfr_dump (y2);
-          exit (1);
-        }
-        if (res1 != res2) {
-          printf ("Wrong inexact flags for p=%lu, z=%ld, rnd=%s and x=", p, n,
-                  mpfr_print_rnd_mode (rnd));
-          mpfr_dump (x);
-          printf ("Ypowui(%d)=", res1); mpfr_dump (y1);
-          printf ("Ypowz (%d)=", res2); mpfr_dump (y2);
-          exit (1);
-        }
-      }
-    } /* for i */
-  } /* for p */
+  for (p = begin ; p < end ; p+=4)
+    {
+      mpfr_set_prec (x, p);
+      mpfr_set_prec (y1, p);
+      mpfr_set_prec (y2, p);
+      for (i = 0 ; i < max ; i++)
+        {
+          mpz_random (z, (i&1) == 0 ? -1 : 1);
+          mpfr_random (x);
+          mpfr_mul_2ui (x, x, 1, GMP_RNDN); /* 0 <= x < 2 */
+          rnd = (mp_rnd_t) RND_RAND ();
+          if (mpz_fits_slong_p (z))
+            {
+              n = mpz_get_si (z);
+              /* printf ("New test for x=%ld\nCheck Pow_si\n", n); */
+              res1 = mpfr_pow_si (y1, x, n, rnd);
+              /* printf ("Check pow_z\n"); */
+              res2 = mpfr_pow_z  (y2, x, z, rnd);
+              if (mpfr_cmp (y1, y2) != 0)
+                {
+                  printf ("Error for p = %lu, z = %ld, rnd = %s and x = ",
+                          p, n, mpfr_print_rnd_mode (rnd));
+                  mpfr_dump (x);
+                  printf ("Ypowsi = "); mpfr_dump (y1);
+                  printf ("Ypowz  = "); mpfr_dump (y2);
+                  exit (1);
+                }
+              if (res1 != res2)
+                {
+                  printf ("Wrong inexact flags for p = %lu, z = %ld, rnd = %s"
+                          " and x = ", p, n, mpfr_print_rnd_mode (rnd));
+                  mpfr_dump (x);
+                  printf ("Ypowsi(inex = %2d) = ", res1); mpfr_dump (y1);
+                  printf ("Ypowz (inex = %2d) = ", res2); mpfr_dump (y2);
+                  exit (1);
+                }
+            }
+        } /* for i */
+    } /* for p */
   mpfr_clears (x, y1, y2, NULL);
   mpz_clear (z);
 }
 
-static void check_regression (void)
+static void
+check_regression (void)
 {
   mpfr_t x, y;
   mpz_t  z;
@@ -209,7 +219,9 @@ static void check_regression (void)
   mpz_clear (z);
 }
 
-int main () {
+int
+main (void)
+{
   MPFR_TEST_USE_RANDS ();
   tests_start_mpfr ();
 
