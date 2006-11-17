@@ -29,10 +29,6 @@ Known bugs:
   exceeds the hardware limit (2^30 for a 32 bits CPU, and 2^62 for a 64 bits
   CPU).
 
-* In mpfr_pow_z (thus mpfr_pow too, when mpfr_pow_z is called), the
-  underflow flag is not always set. Example: x = 0.11 in base 2,
-  y = 1.0e38, GMP_RNDN.
-
 * Some large input values for mpfr_eint are currently not supported.
   However they should be detected, so that one can have the following
   documented behavior: NaN is returned and the erange flag is
