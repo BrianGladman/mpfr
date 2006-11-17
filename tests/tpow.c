@@ -584,6 +584,7 @@ underflows (void)
   int err = 0;
   int inexact;
   int i;
+  mp_exp_t emin;
 
   mpfr_init2 (x, 64);
   mpfr_init2 (y, 64);
@@ -654,6 +655,27 @@ underflows (void)
       printf ("Underflow test with large y fails.\n");
       exit (1);
     }
+
+  emin = mpfr_get_emin ();
+  mpfr_set_emin (-256);
+  mpfr_set_prec (x, 2);
+  mpfr_set_prec (y, 2);
+  mpfr_set_prec (z, 12);
+  mpfr_set_ui_2exp (x, 3, -2, GMP_RNDN);
+  mpfr_set_ui_2exp (y, 1, 38, GMP_RNDN);
+  mpfr_clear_flags ();
+  inexact = mpfr_pow (z, x, y, GMP_RNDN);
+  if (!mpfr_underflow_p () || MPFR_NOTZERO (z) || inexact >= 0)
+    {
+      printf ("Bad underflow detection for 0.75^(2^38). Obtained:\n"
+              "Underflow flag... %-3s (should be 'yes')\n"
+              "Zero result...... %-3s (should be 'yes')\n"
+              "Inexact value.... %-3d (should be negative)\n",
+              mpfr_underflow_p () ? "yes" : "no",
+              MPFR_IS_ZERO (z) ? "yes" : "no", inexact);
+      exit (1);
+    }
+  mpfr_set_emin (emin);
 
   mpfr_clears (x, y, z, (void *) 0);
 }
