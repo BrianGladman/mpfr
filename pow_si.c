@@ -29,10 +29,10 @@ MA 02110-1301, USA. */
  */
 
 int
-mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd_mode)
+mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd)
 {
   if (n >= 0)
-    return mpfr_pow_ui (y, x, n, rnd_mode);
+    return mpfr_pow_ui (y, x, n, rnd);
   else
     {
       if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
@@ -69,7 +69,7 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd_mode)
         {
           mp_exp_t expx = MPFR_EXP (x); /* warning: x and y may be the same
                                             variable */
-          mpfr_set_si (y, (n % 2) ? MPFR_INT_SIGN(x) : 1, rnd_mode);
+          mpfr_set_si (y, (n % 2) ? MPFR_INT_SIGN(x) : 1, rnd);
           expx --;
           MPFR_ASSERTD (n < 0);
           /* Warning n*expx may overflow!
@@ -80,7 +80,7 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd_mode)
             MPFR_EXP (y) = MPFR_EMAX_MAX + 1; /* Overflow */
           else
             MPFR_EXP (y) += n * expx;
-          return mpfr_check_range (y, 0, rnd_mode);
+          return mpfr_check_range (y, 0, rnd);
         }
 
       n = -n;
@@ -111,14 +111,29 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd_mode)
           {
             /* compute 1/(x^n) n>0*/
             mpfr_pow_ui (t, x, (unsigned long int) n, GMP_RNDN);
-            inexact = MPFR_IS_ZERO (t) || MPFR_IS_INF (t);
             mpfr_ui_div (t, 1, t, GMP_RNDN);
-            inexact = inexact || MPFR_IS_ZERO (t) || MPFR_IS_INF (t);
-
+          /* FIXME: old code improved, but I think this is still incorrect. */
+            if (MPFR_UNLIKELY (MPFR_IS_ZERO (t)))
+              {
+                MPFR_ZIV_FREE (loop);
+                mpfr_clear (t);
+                MPFR_SAVE_EXPO_FREE (expo);
+                return mpfr_underflow (y, rnd == GMP_RNDN ? GMP_RNDZ : rnd,
+                                       (unsigned) n & 1 ? MPFR_SIGN (x) :
+                                       MPFR_SIGN_POS);
+              }
+            if (MPFR_UNLIKELY (MPFR_IS_INF (t)))
+              {
+                MPFR_ZIV_FREE (loop);
+                mpfr_clear (t);
+                MPFR_SAVE_EXPO_FREE (expo);
+                return mpfr_overflow (y, rnd,
+                                      (unsigned) n & 1 ? MPFR_SIGN (x) :
+                                      MPFR_SIGN_POS);
+              }
             /* error estimate -- see pow function in algorithms.ps */
             err = Nt - 3;
-            if (MPFR_LIKELY (inexact != 0
-                             || MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
+            if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, Ny, rnd)))
               break;
 
             /* actualisation of the precision */
@@ -127,14 +142,10 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd_mode)
           }
         MPFR_ZIV_FREE (loop);
 
-        inexact = mpfr_set (y, t, rnd_mode);
+        inexact = mpfr_set (y, t, rnd);
         mpfr_clear (t);
         MPFR_SAVE_EXPO_FREE (expo);
-        return mpfr_check_range (y, inexact, rnd_mode);
+        return mpfr_check_range (y, inexact, rnd);
       }
     }
 }
-
-
-
-
