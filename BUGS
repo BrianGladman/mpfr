@@ -24,6 +24,8 @@ Probably many bugs.
 
 Known bugs:
 
+* The mpfr_erfc function is buggy (its test currently fails).
+
 * The overflow/underflow exceptions may be badly handled in some functions;
   specially when the intermediary internal results have exponent which
   exceeds the hardware limit (2^30 for a 32 bits CPU, and 2^62 for a 64 bits

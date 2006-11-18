@@ -423,6 +423,30 @@ large_arg (void)
   mpfr_clear (y);
 }
 
+static void
+test_erfc (void)
+{
+  mpfr_t x, y, z;
+
+  mpfr_inits2 (40, x, y, z, (void *) 0);
+
+  mpfr_set_si_2exp (x, -1, -10, GMP_RNDN);
+  mpfr_set_str_binary (z, "0.1000000000100100000110111010110111100000E1");
+  mpfr_erfc (y, x, GMP_RNDN);
+  if (mpfr_cmp (y, z) != 0)
+    {
+      printf ("mpfr_erfc failed for x = ");
+      mpfr_dump (x);
+      printf ("got        ");
+      mpfr_dump (y);
+      printf ("instead of ");
+      mpfr_dump (z);
+      exit (1);
+    }
+
+  mpfr_clears (x, y, z, (void *) 0);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -431,6 +455,7 @@ main (int argc, char *argv[])
   special_erf ();
   special_erfc ();
   large_arg ();
+  test_erfc ();
 
   test_generic_erf (2, 100, 15);
   test_generic_erfc (2, 100, 15);
