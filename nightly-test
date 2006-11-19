@@ -1,0 +1,17 @@
+#!/bin/csh
+# Usage: nightly-test <GMPDIR>
+set DIR=mpfr-nightly
+set GMP=$1
+cd /tmp
+/bin/rm -fr $DIR
+mkdir $DIR
+cd $DIR
+svn checkout svn://scm.gforge.inria.fr/svn/mpfr/trunk mpfr
+cd mpfr
+autoreconf -i
+./configure --enable-assert --with-gmp=$GMP --disable-shared
+make
+make check
+cd /tmp
+/bin/rm -fr $DIR
+
