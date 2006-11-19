@@ -326,6 +326,34 @@ special_erf (void)
       exit (1);
     }
 
+  /* worst cases */
+  mpfr_set_prec (x, 53);
+  mpfr_set_prec (y, 53);
+  mpfr_set_str_binary (x, "1.0000000000000000000000000000000000000110000000101101");
+  mpfr_erf (y, x, GMP_RNDN);
+  mpfr_set_str_binary (x, "0.110101111011101100111101001110100000101011000011001");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error: erf for worst case (1)\n");
+      exit (1);
+    }
+
+  mpfr_set_str_binary (x, "1.0000000000000000000000000000011000111010101101011010");
+  mpfr_erf (y, x, GMP_RNDU);
+  mpfr_set_str_binary (x, "0.11010111101110110011110100111100100111100011111000110");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error: erf for worst case (2a)\n");
+      exit (1);
+    }
+  mpfr_set_str_binary (x, "1.0000000000000000000000000000011000111010101101011010");
+  mpfr_erf (y, x, GMP_RNDD);
+  mpfr_set_str_binary (x, "0.11010111101110110011110100111100100111100011111000101");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error: erf for worst case (2b)\n");
+      exit (1);
+    }
 
   mpfr_clear (x);
   mpfr_clear (y);
@@ -416,6 +444,16 @@ large_arg (void)
   if (mpfr_cmp (x, y) != 0)
     {
       printf ("mpfr_erfc failed for large x (3)\n");
+      exit (1);
+    }
+
+  mpfr_set_prec (x, 75);
+  mpfr_set_prec (y, 85);
+  mpfr_set_str_binary (x, "0.111110111111010011101011001100001010011110101010011111010010111101010001011E15");
+  mpfr_erfc (y, x, GMP_RNDN);
+  if (mpfr_cmp_ui (y, 0) || mpfr_sgn (y) < 0)
+    {
+      printf ("mpfr_erfc failed for large x (3b)\n");
       exit (1);
     }
 
