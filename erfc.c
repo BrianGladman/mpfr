@@ -153,7 +153,7 @@ mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
 
   /* erfc(x) ~ 1, with error < 2^(EXP(x)+1) */
   MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, __gmpfr_one, 0-MPFR_GET_EXP (x)-1,
-				    MPFR_SIGN(x) < 0,
+                                    MPFR_SIGN(x) < 0,
                                     rnd, inex = _inexact; goto end);
 
   prec = MPFR_PREC (y) + MPFR_INT_CEIL_LOG2 (MPFR_PREC (y)) + 3;
@@ -168,8 +168,8 @@ mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
       /* use asymptotic formula only whenever x^2 >= p*log(2),
          otherwise it will not converge */
       if (2 * MPFR_GET_EXP (x) - 2 >= MPFR_INT_CEIL_LOG2 (prec))
-	/* we have x^2 >= p in that case */
-	err = mpfr_erfc_asympt (tmp, x);
+        /* we have x^2 >= p in that case */
+        err = mpfr_erfc_asympt (tmp, x);
       else
         {
           mpfr_erf (tmp, x, GMP_RNDN);

@@ -147,7 +147,7 @@ mpfr_eint_aux (mpfr_t y, mpfr_srcptr x)
    Ei(x) = exp(x)/x * (1 + 1/x + 2/x^2 + ... + k!/x^k + ...)
    Assumes x >= PREC(y) * log(2).
    Returns the error bound in terms of ulp(y).
-*/   
+*/
 static mp_exp_t
 mpfr_eint_asympt (mpfr_ptr y, mpfr_srcptr x)
 {
@@ -167,9 +167,9 @@ mpfr_eint_asympt (mpfr_ptr y, mpfr_srcptr x)
     {
       mpfr_mul (t, t, invx, GMP_RNDN); /* 2 more roundings */
       mpfr_mul_ui (t, t, k, GMP_RNDN); /* 1 more rounding: t = k!/x^k*(1+u)^e
-					  with u=2^{-p} and |e| <= 3*k */
+                                          with u=2^{-p} and |e| <= 3*k */
       /* we use the fact that |(1+u)^n-1| <= 2*|n*u| for |n*u| <= 1, thus
-	 the error on t is less than 6*k*2^{-p}*t <= 6*k*ulp(t) */
+         the error on t is less than 6*k*2^{-p}*t <= 6*k*ulp(t) */
       /* err is in terms of ulp(y): transform it in terms of ulp(t) */
       mpfr_mul_2si (err, err, MPFR_GET_EXP(y) - MPFR_GET_EXP(t), GMP_RNDU);
       mpfr_add_ui (err, err, 6 * k, GMP_RNDU);
@@ -274,31 +274,31 @@ mpfr_eint (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
   for (;;)                               /* Infinite loop */
     {
       /* We need that the smallest value of k!/x^k is smaller than 2^(-p).
-	 The minimum is obtained for x=k, and it is smaller than e*sqrt(x)/e^x
-	 for x>=1. */
+         The minimum is obtained for x=k, and it is smaller than e*sqrt(x)/e^x
+         for x>=1. */
       if (MPFR_GET_EXP (x) > 0 && mpfr_cmp_d (x, ((double) prec +
-			    0.5 * (double) MPFR_GET_EXP (x)) * LOG2 + 1.0) > 0)
-	err = mpfr_eint_asympt (tmp, x);
+                            0.5 * (double) MPFR_GET_EXP (x)) * LOG2 + 1.0) > 0)
+        err = mpfr_eint_asympt (tmp, x);
       else
-	{
-	  err = mpfr_eint_aux (tmp, x); /* error <= 2^err ulp(tmp) */
-	  te = MPFR_GET_EXP(tmp);
-	  mpfr_const_euler (ump, GMP_RNDN); /* 0.577 -> EXP(ump)=0 */
-	  mpfr_add (tmp, tmp, ump, GMP_RNDN);
-	  /* error <= 1/2 + 1/2*2^(EXP(ump)-EXP(tmp)) + 2^(te-EXP(tmp)+err)
-	     <= 1/2 + 2^(MAX(EXP(ump), te+err+1) - EXP(tmp))
-	     <= 2^(MAX(0, 1 + MAX(EXP(ump), te+err+1) - EXP(tmp))) */
-	  err = MAX(1, te + err + 2) - MPFR_GET_EXP(tmp);
-	  err = MAX(0, err);
-	  te = MPFR_GET_EXP(tmp);
-	  mpfr_log (ump, x, GMP_RNDN);
-	  mpfr_add (tmp, tmp, ump, GMP_RNDN);
-	  /* same formula as above, except now EXP(ump) is not 0 */
-	  err += te + 1;
-	  if (MPFR_LIKELY (!MPFR_IS_ZERO (ump)))
-	    err = MAX (MPFR_GET_EXP (ump), err);
-	  err = MAX(0, err - MPFR_GET_EXP (tmp));
-	}
+        {
+          err = mpfr_eint_aux (tmp, x); /* error <= 2^err ulp(tmp) */
+          te = MPFR_GET_EXP(tmp);
+          mpfr_const_euler (ump, GMP_RNDN); /* 0.577 -> EXP(ump)=0 */
+          mpfr_add (tmp, tmp, ump, GMP_RNDN);
+          /* error <= 1/2 + 1/2*2^(EXP(ump)-EXP(tmp)) + 2^(te-EXP(tmp)+err)
+             <= 1/2 + 2^(MAX(EXP(ump), te+err+1) - EXP(tmp))
+             <= 2^(MAX(0, 1 + MAX(EXP(ump), te+err+1) - EXP(tmp))) */
+          err = MAX(1, te + err + 2) - MPFR_GET_EXP(tmp);
+          err = MAX(0, err);
+          te = MPFR_GET_EXP(tmp);
+          mpfr_log (ump, x, GMP_RNDN);
+          mpfr_add (tmp, tmp, ump, GMP_RNDN);
+          /* same formula as above, except now EXP(ump) is not 0 */
+          err += te + 1;
+          if (MPFR_LIKELY (!MPFR_IS_ZERO (ump)))
+            err = MAX (MPFR_GET_EXP (ump), err);
+          err = MAX(0, err - MPFR_GET_EXP (tmp));
+        }
       if (MPFR_LIKELY (MPFR_CAN_ROUND (tmp, prec - err, MPFR_PREC (y), rnd)))
         break;
       MPFR_ZIV_NEXT (loop, prec);        /* Increase used precision */
