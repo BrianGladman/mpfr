@@ -419,6 +419,32 @@ large_arg (void)
       exit (1);
     }
 
+  mpfr_set_prec (x, 2);
+  mpfr_set_prec (y, 21);
+  mpfr_set_str_binary (x, "-1.0e3");
+  mpfr_erfc (y, x, GMP_RNDZ);
+  mpfr_set_prec (x, 21);
+  mpfr_set_str_binary (x, "1.11111111111111111111");
+  if (mpfr_cmp (x, y) != 0)
+    {
+      printf ("mpfr_erfc failed for large x (4)\n");
+      exit (1);
+    }
+
+  mpfr_set_prec (x, 2);
+  mpfr_set_prec (y, 31);
+  mpfr_set_str_binary (x, "-1.0e3");
+  mpfr_erfc (y, x, GMP_RNDZ);
+  mpfr_set_prec (x, 31);
+  mpfr_set_str_binary (x, "1.111111111111111111111111111111");
+  if (mpfr_cmp (x, y) != 0)
+    {
+      printf ("mpfr_erfc failed for x=-8, prec=31 (5)\n");
+      printf ("expected "); mpfr_dump (x);
+      printf ("got      "); mpfr_dump (y);
+      exit (1);
+    }
+
   mpfr_clear (x);
   mpfr_clear (y);
 }

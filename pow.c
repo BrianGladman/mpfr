@@ -128,15 +128,25 @@ is_odd (mpfr_srcptr y)
   if ((mpfr_prec_t) expo > prec)
     return 0;  /* y is a multiple of 2^(expo-prec), thus not odd */
 
-  /* 0 < expo <= prec */
+  /* 0 < expo <= prec:
+     y = 1xxxxxxxxxt.zzzzzzzzzzzzzzzzzz[000]
+          expo bits   (prec-expo) bits
 
-  yn = (prec - 1) / BITS_PER_MP_LIMB;  /* index of last limb */
-  yn -= (mp_size_t) (expo / BITS_PER_MP_LIMB);
+     We have to check that:
+     (a) the bit 't' is set
+     (b) all the 'z' bits are zero
+  */
+
+  prec = ((prec - 1) / BITS_PER_MP_LIMB + 1) * BITS_PER_MP_LIMB - expo;
+  /* number of z+0 bits */
+
+  yn = prec / BITS_PER_MP_LIMB;
   MPFR_ASSERTN(yn >= 0);
-  /* now the index of the last limb containing bits of the fractional part */
+  /* yn is the index of limb containing the 't' bit */
 
   yp = MPFR_MANT(y);
-  if (expo % BITS_PER_MP_LIMB == 0 ? (yp[yn+1] & 1) == 0 || yp[yn] != 0
+  /* if expo is a multiple of BITS_PER_MP_LIMB, t is bit 0 */
+  if (expo % BITS_PER_MP_LIMB == 0 ? (yp[yn] & 1) == 0
       : yp[yn] << ((expo % BITS_PER_MP_LIMB) - 1) != MPFR_LIMB_HIGHBIT)
     return 0;
   while (--yn >= 0)

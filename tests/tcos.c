@@ -254,7 +254,7 @@ main (int argc, char *argv[])
 
   check53 ("1.00591265847407274059", "0.53531755997839769456",  GMP_RNDN);
 
-  test_generic (2, 100, 100);
+  test_generic (2, 100, 15);
 
   mpfr_clear (x);
   mpfr_clear (y);

@@ -86,7 +86,7 @@ check_nans (void)
 }
 
 int
-main(int argc, char *argv[])
+main (int argc, char *argv[])
 {
   mpfr_t x;
   unsigned int i;
@@ -143,7 +143,7 @@ main(int argc, char *argv[])
 
   mpfr_clear (x);
 
-  test_generic (2, 100, 100);
+  test_generic (2, 100, 10);
 
   tests_end_mpfr ();
   return 0;

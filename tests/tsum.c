@@ -290,8 +290,8 @@ main (void)
 
   check_special ();
   test_sort (1764, 1026);
-  for (p = 2 ; p < 1764 ; p+=17)
-    for (n = 2 ; n < 1026 ; n+=42+p)
+  for (p = 2 ; p < 444 ; p += 17)
+    for (n = 2 ; n < 1026 ; n += 42 + p)
       test_sum (p, n);
 
   tests_end_mpfr ();

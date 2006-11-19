@@ -308,7 +308,7 @@ main (int argc, char *argv[])
   mpfr_clear (c);
   mpfr_clear (x);
 
-  test_generic (2, 100, 20);
+  test_generic (2, 100, 15);
   test_sign ();
 
   tests_end_mpfr ();

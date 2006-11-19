@@ -154,14 +154,16 @@ check_worst_cases (void)
 }
 
 static void
-compare_exp2_exp3 (int n)
+compare_exp2_exp3 (mp_prec_t p0, mp_prec_t p1)
 {
-  mpfr_t x, y, z; int prec; mp_rnd_t rnd;
+  mpfr_t x, y, z;
+  mp_prec_t prec;
+  mp_rnd_t rnd;
 
   mpfr_init (x);
   mpfr_init (y);
   mpfr_init (z);
-  for (prec = 20; prec <= n; prec++)
+  for (prec = p0; prec <= p1; prec ++)
     {
       mpfr_set_prec (x, prec);
       mpfr_set_prec (y, prec);
@@ -186,17 +188,26 @@ compare_exp2_exp3 (int n)
         }
   }
 
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+}
+
+static void
+check_large (void)
+{
+  mpfr_t x, z;
+  mp_prec_t prec;
+
   /* bug found by Patrick Pe'lissier on 7 Jun 2004 */
   prec = 203780;
-  mpfr_set_prec (x, prec);
-  mpfr_set_prec (z, prec);
+  mpfr_init2 (x, prec);
+  mpfr_init2 (z, prec);
   mpfr_set_ui (x, 3, GMP_RNDN);
   mpfr_sqrt (x, x, GMP_RNDN);
   mpfr_sub_ui (x, x, 1, GMP_RNDN);
   mpfr_exp_3 (z, x, GMP_RNDN);
-
   mpfr_clear (x);
-  mpfr_clear (y);
   mpfr_clear (z);
 }
 
@@ -497,12 +508,15 @@ main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
+  if (argc > 1)
+    check_large ();
+
   check_inexact ();
   check_special ();
 
   test_generic (2, 100, 100);
 
-  compare_exp2_exp3(500);
+  compare_exp2_exp3 (20, 1000);
   check_worst_cases();
   check3("0.0", GMP_RNDU, "1.0");
   check3("-1e-170", GMP_RNDU, "1.0");

@@ -86,7 +86,7 @@ main (int argc, char *argv[])
 
   check_specials ();
 
-  test_generic (2, 100, 100);
+  test_generic (2, 100, 10);
 
   tests_end_mpfr ();
   return 0;
