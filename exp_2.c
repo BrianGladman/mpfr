@@ -82,7 +82,6 @@ mpz_normalize2 (mpz_t rop, mpz_t z, mp_exp_t expz, mp_exp_t target)
 int
 mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
-  double d;
   long n;
   unsigned long K, k, l, err; /* FIXME: Which type ? */
   int error_r;
@@ -96,10 +95,15 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   precy = MPFR_PREC(y);
 
-  d = mpfr_get_d1 (x) / LOG2;
-  /* FIXME: d may be too large if one decides to change mp_exp_t */
-  MPFR_ASSERTN (d >= LONG_MIN && d <= LONG_MAX);
-  n = (long) d;
+  /* Warning: we cannot use the 'double' type here, since on 64-bit machines
+     x may be as large as 2^62*log(2) without overflow, and then x/log(2)
+     is about 2^62: not every integer of that size can be represented as a
+     'double', thus the argument reduction would fail. */
+  mpfr_init2 (r, sizeof (long) * CHAR_BIT);
+  mpfr_const_log2 (r, GMP_RNDZ);
+  mpfr_div (r, x, r, GMP_RNDN);
+  n = mpfr_get_si (r, GMP_RNDN);
+  mpfr_clear (r);
   MPFR_LOG_MSG (("d(x)=%1.30e n=%ld\n", mpfr_get_d1(x), n));
 
   /* error bounds the cancelled bits in x - n*log(2) */
