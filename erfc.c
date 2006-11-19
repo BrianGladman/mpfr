@@ -134,7 +134,7 @@ mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
       /* for x < 0 going to -infinity, erfc(x) tends to 2 by below */
       if ((MPFR_PREC(y) <= 7 && mpfr_cmp_si (x, -2) <= 0) ||
           (MPFR_PREC(y) <= 25 && mpfr_cmp_si (x, -4) <= 0) ||
-          (MPFR_PREC(y) <= 120 && mpfr_cmp_si (x, -9)))
+          (MPFR_PREC(y) <= 120 && mpfr_cmp_si (x, -9) <= 0))
         {
           mpfr_set_ui (y, 2, GMP_RNDN);
           mpfr_set_inexflag ();
@@ -168,8 +168,8 @@ mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
       /* use asymptotic formula only whenever x^2 >= p*log(2),
          otherwise it will not converge */
       if (2 * MPFR_GET_EXP (x) - 2 >= MPFR_INT_CEIL_LOG2 (prec))
-        /* we have x^2 >= p in that case */
-        err = mpfr_erfc_asympt (tmp, x);
+	/* we have x^2 >= p in that case */
+	err = mpfr_erfc_asympt (tmp, x);
       else
         {
           mpfr_erf (tmp, x, GMP_RNDN);

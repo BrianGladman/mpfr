@@ -273,7 +273,11 @@ mpfr_eint (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
   MPFR_ZIV_INIT (loop, prec);            /* Initialize the ZivLoop controler */
   for (;;)                               /* Infinite loop */
     {
-      if (mpfr_cmp_d (x, (double) prec * LOG2) > 0)
+      /* We need that the smallest value of k!/x^k is smaller than 2^(-p).
+	 The minimum is obtained for x=k, and it is smaller than e*sqrt(x)/e^x
+	 for x>=1. */
+      if (MPFR_GET_EXP (x) > 0 && mpfr_cmp_d (x, ((double) prec +
+			    0.5 * (double) MPFR_GET_EXP (x)) * LOG2 + 1.0) > 0)
 	err = mpfr_eint_asympt (tmp, x);
       else
 	{
