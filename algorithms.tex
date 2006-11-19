@@ -2682,6 +2682,18 @@ At that time, the truncation error when neglecting terms of index $k+1$
 to $\infty$ can be bounded by $(|t| + \epsilon_k)/k (|x|/k + |x|^2/k^2 + 
 \cdots) \leq (|t| + \epsilon_k) |x|/k/(k-|x|)$.
 
+\paragraph{Asymptotic Expansion}
+
+For $x \rightarrow \infty$ we have the following non-converging
+expansion \cite[formula 5.1.51]{AbSt73}:
+\[ {\rm Ei}(x) \sim e^x (\frac{1}{x} + \frac{1}{x^2} + \frac{2}{x^3}
+    + \frac{6}{x^4} + \frac{24}{x^5} + \cdots). \]
+The $k$th is of the form $k! x^{-k-1}$. The smallest value is obtained for
+$k \approx x$, and is of the order of $e^{-x}$. Thus assuming the error
+term is bounded by the first neglected term, we can use that expansion
+as long as $e^{-x} \leq 2^{-p}$ where $p$ is the target precision,
+i.e.~when $x \geq p \log 2$.
+
 \subsection{The gamma function}
 
 % See http://oldmill.uchicago.edu/~wilder/Code/gamma

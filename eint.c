@@ -19,8 +19,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
-#include <stdio.h>   /* for MPFR_WARNING */
-#include <stdlib.h>  /* for MPFR_WARNING */
 #include <limits.h>
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
@@ -145,6 +143,53 @@ mpfr_eint_aux (mpfr_t y, mpfr_srcptr x)
   return e;
 }
 
+/* Return in y an approximation of Ei(x) using the asymptotic expansion:
+   Ei(x) = exp(x)/x * (1 + 1/x + 2/x^2 + ... + k!/x^k + ...)
+   Assumes x >= PREC(y) * log(2).
+   Returns the error bound in terms of ulp(y).
+*/   
+static mp_exp_t
+mpfr_eint_asympt (mpfr_ptr y, mpfr_srcptr x)
+{
+  mp_prec_t p = MPFR_PREC(y);
+  mpfr_t invx, t, err;
+  unsigned long k;
+  mp_exp_t err_exp;
+
+  mpfr_init2 (t, p);
+  mpfr_init2 (invx, p);
+  mpfr_init2 (err, 31); /* error in ulps on y */
+  mpfr_ui_div (invx, 1, x, GMP_RNDN); /* invx = 1/x*(1+u) with |u|<=2^(1-p) */
+  mpfr_set_ui (t, 1, GMP_RNDN); /* exact */
+  mpfr_set (y, t, GMP_RNDN);
+  mpfr_set_ui (err, 0, GMP_RNDN);
+  for (k = 1; MPFR_GET_EXP(t) + (mp_exp_t) p > MPFR_GET_EXP(y); k++)
+    {
+      mpfr_mul (t, t, invx, GMP_RNDN); /* 2 more roundings */
+      mpfr_mul_ui (t, t, k, GMP_RNDN); /* 1 more rounding: t = k!/x^k*(1+u)^e
+					  with u=2^{-p} and |e| <= 3*k */
+      /* we use the fact that |(1+u)^n-1| <= 2*|n*u| for |n*u| <= 1, thus
+	 the error on t is less than 6*k*2^{-p}*t <= 6*k*ulp(t) */
+      /* err is in terms of ulp(y): transform it in terms of ulp(t) */
+      mpfr_mul_2si (err, err, MPFR_GET_EXP(y) - MPFR_GET_EXP(t), GMP_RNDU);
+      mpfr_add_ui (err, err, 6 * k, GMP_RNDU);
+      /* transform back in terms of ulp(y) */
+      mpfr_div_2si (err, err, MPFR_GET_EXP(y) - MPFR_GET_EXP(t), GMP_RNDU);
+      mpfr_add (y, y, t, GMP_RNDN);
+    }
+  /* add the truncation error bounded by ulp(y): 1 ulp */
+  mpfr_mul (y, y, invx, GMP_RNDN); /* err <= 2*err + 3/2 */
+  mpfr_exp (t, x, GMP_RNDN); /* err(t) <= 1/2*ulp(t) */
+  mpfr_mul (y, y, t, GMP_RNDN); /* again: err <= 2*err + 3/2 */
+  mpfr_mul_2exp (err, err, 2, GMP_RNDU);
+  mpfr_add_ui (err, err, 8, GMP_RNDU);
+  err_exp = MPFR_GET_EXP(err);
+  mpfr_clear (t);
+  mpfr_clear (invx);
+  mpfr_clear (err);
+  return err_exp;
+}
+
 int
 mpfr_eint (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
 {
@@ -211,8 +256,6 @@ mpfr_eint (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
 
   /* Init stuff */
   prec = MPFR_PREC (y) + 2 * MPFR_INT_CEIL_LOG2 (MPFR_PREC (y)) + 6;
-  mpfr_set_prec (tmp, prec);
-  mpfr_set_prec (ump, prec);
 
   /* eint() has a root 0.37250741078136663446..., so if x is near,
      already take more bits */
@@ -224,42 +267,35 @@ mpfr_eint (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
       prec += -d;
     }
 
+  mpfr_set_prec (tmp, prec);
+  mpfr_set_prec (ump, prec);
+
   MPFR_ZIV_INIT (loop, prec);            /* Initialize the ZivLoop controler */
   for (;;)                               /* Infinite loop */
     {
-      err = mpfr_eint_aux (tmp, x); /* error <= 2^err ulp(tmp) */
-      if (err == MPFR_PREC(tmp))
-        {
-          /* FIXME: Improve the algorithm to be able to compute the actual
-             value. For the time being, we regard this as a range error,
-             so that the caller can cleanly deal with the problem. */
-          MPFR_WARNING ("Too large input in mpfr_eint, returning NaN");
-          MPFR_ZIV_FREE (loop);
-          mpfr_clear (tmp);
-          mpfr_clear (ump);
-          MPFR_SAVE_EXPO_FREE (expo);
-          MPFR_SET_ERANGE ();
-          MPFR_SET_NAN (y);
-          MPFR_RET_NAN;
-        }
-      te = MPFR_GET_EXP(tmp);
-      mpfr_const_euler (ump, GMP_RNDN); /* 0.577 -> EXP(ump)=0 */
-      mpfr_add (tmp, tmp, ump, GMP_RNDN);
-      /* error <= 1/2 + 1/2*2^(EXP(ump)-EXP(tmp)) + 2^(te-EXP(tmp)+err)
-               <= 1/2 + 2^(MAX(EXP(ump), te+err+1) - EXP(tmp))
-               <= 2^(MAX(0, 1 + MAX(EXP(ump), te+err+1) - EXP(tmp))) */
-      err = MAX(1, te + err + 2) - MPFR_GET_EXP(tmp);
-      err = MAX(0, err);
-      te = MPFR_GET_EXP(tmp);
-      mpfr_log (ump, x, GMP_RNDN);
-      mpfr_add (tmp, tmp, ump, GMP_RNDN);
-      /* same formula as above, except now EXP(ump) is not 0 */
-      err += te + 1;
-      if (MPFR_LIKELY (!MPFR_IS_ZERO (ump)))
-        err = MAX (MPFR_GET_EXP (ump), err);
-      err = MAX(0, err - MPFR_GET_EXP (tmp));
-      err = MPFR_PREC (tmp) - err;
-      if (MPFR_LIKELY (MPFR_CAN_ROUND (tmp, err, MPFR_PREC (y), rnd)))
+      if (mpfr_cmp_d (x, (double) prec * LOG2) > 0)
+	err = mpfr_eint_asympt (tmp, x);
+      else
+	{
+	  err = mpfr_eint_aux (tmp, x); /* error <= 2^err ulp(tmp) */
+	  te = MPFR_GET_EXP(tmp);
+	  mpfr_const_euler (ump, GMP_RNDN); /* 0.577 -> EXP(ump)=0 */
+	  mpfr_add (tmp, tmp, ump, GMP_RNDN);
+	  /* error <= 1/2 + 1/2*2^(EXP(ump)-EXP(tmp)) + 2^(te-EXP(tmp)+err)
+	     <= 1/2 + 2^(MAX(EXP(ump), te+err+1) - EXP(tmp))
+	     <= 2^(MAX(0, 1 + MAX(EXP(ump), te+err+1) - EXP(tmp))) */
+	  err = MAX(1, te + err + 2) - MPFR_GET_EXP(tmp);
+	  err = MAX(0, err);
+	  te = MPFR_GET_EXP(tmp);
+	  mpfr_log (ump, x, GMP_RNDN);
+	  mpfr_add (tmp, tmp, ump, GMP_RNDN);
+	  /* same formula as above, except now EXP(ump) is not 0 */
+	  err += te + 1;
+	  if (MPFR_LIKELY (!MPFR_IS_ZERO (ump)))
+	    err = MAX (MPFR_GET_EXP (ump), err);
+	  err = MAX(0, err - MPFR_GET_EXP (tmp));
+	}
+      if (MPFR_LIKELY (MPFR_CAN_ROUND (tmp, prec - err, MPFR_PREC (y), rnd)))
         break;
       MPFR_ZIV_NEXT (loop, prec);        /* Increase used precision */
       mpfr_set_prec (tmp, prec);

@@ -110,6 +110,73 @@ check_specials (void)
       exit (1);
     }
 
+  mpfr_set_prec (x, 63);
+  mpfr_set_prec (y, 63);
+  mpfr_set_str_binary (x, "1.01111101011100111000011010001000101101011000011001111101011010e-2");
+  mpfr_eint (x, x, GMP_RNDZ);
+  mpfr_set_str_binary (y, "1.11010110001101000001010010000100001111001000100100000001011100e-17");
+  if (mpfr_cmp (x, y) != 0)
+    {
+      printf ("Error (1) for GMP_RNDZ\n");
+      printf ("expected "); mpfr_dump (y);
+      printf ("got      "); mpfr_dump (x);
+      exit (1);
+    }
+
+  /* check large x */
+  mpfr_set_prec (x, 53);
+  mpfr_set_prec (y, 53);
+  mpfr_set_str_binary (x, "1E6");
+  mpfr_eint (x, x, GMP_RNDN);
+  mpfr_set_str_binary (y, "10100011110001101001110000110010111000100111010001E37");
+  if (mpfr_cmp (x, y) != 0)
+    {
+      printf ("Error for x=2^6, GMP_RNDN\n");
+      printf ("expected "); mpfr_dump (y);
+      printf ("got      "); mpfr_dump (x);
+      exit (1);
+    }
+  mpfr_set_str_binary (x, "1E7");
+  mpfr_eint (x, x, GMP_RNDN);
+  mpfr_set_str_binary (y, "11001100100011110000101001011010110111111011110011E128");
+  if (mpfr_cmp (x, y) != 0)
+    {
+      printf ("Error for x=2^7, GMP_RNDN\n");
+      printf ("expected "); mpfr_dump (y);
+      printf ("got      "); mpfr_dump (x);
+      exit (1);
+    }
+  mpfr_set_str_binary (x, "1E8");
+  mpfr_eint (x, x, GMP_RNDN);
+  mpfr_set_str_binary (y, "1010000110000101111111011011000101001000101011101001E310");
+  if (mpfr_cmp (x, y) != 0)
+    {
+      printf ("Error for x=2^8, GMP_RNDN\n");
+      printf ("expected "); mpfr_dump (y);
+      printf ("got      "); mpfr_dump (x);
+      exit (1);
+    }
+  mpfr_set_str_binary (x, "1E9");
+  mpfr_eint (x, x, GMP_RNDN);
+  mpfr_set_str_binary (y, "11001010101000001010101101110000010110011101110010101E677");
+  if (mpfr_cmp (x, y) != 0)
+    {
+      printf ("Error for x=2^9, GMP_RNDN\n");
+      printf ("expected "); mpfr_dump (y);
+      printf ("got      "); mpfr_dump (x);
+      exit (1);
+    }
+  mpfr_set_str_binary (x, "1E10");
+  mpfr_eint (x, x, GMP_RNDN);
+  mpfr_set_str_binary (y, "10011111111010010110110101101000101100101010101101101E1415");
+  if (mpfr_cmp (x, y) != 0)
+    {
+      printf ("Error for x=2^10, GMP_RNDN\n");
+      printf ("expected "); mpfr_dump (y);
+      printf ("got      "); mpfr_dump (x);
+      exit (1);
+    }
+
   mpfr_clear (x);
   mpfr_clear (y);
 }
