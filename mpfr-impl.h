@@ -284,6 +284,9 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
  ******************** Warnings ************************
  ******************************************************/
 
+/* MPFR_WARNING is no longer useful, but let's keep the macro in case
+   it needs to be used again in the future. */
+
 #ifdef MPFR_USE_WARNINGS
 /* Note: needs <stdio.h> and <stdlib.h> */
 # define MPFR_WARNING(W)                    \
