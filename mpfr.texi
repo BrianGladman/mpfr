@@ -1388,11 +1388,6 @@ of @var{x}, and of the sum for k from 1 to infinity of
 @tex
 $x^k/k/k!$.
 @end tex
-Note: the current implementation cannot compute the result for some large
-inputs; in this case, NaN is returned and the erange flag is set to indicate
-that the input is in an unsupported domain. If MPFR has been built with
-@samp{--enable-warnings} and the environment variable @env{MPFR_QUIET} is
-null, a warning is output to the standard error stream.
 For negative @var{x}, the returned value is NaN.
 @end deftypefun
 
