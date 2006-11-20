@@ -1,12 +1,15 @@
 #!/bin/csh
-# Usage: nightly-test <GMPDIR>
+# Usage: nightly-test <GMPDIR> <BRANCH>
 set GMP=$1
+set BRANCH=$2
 set DIR=mpfr-nightly
+echo BRANCH=$BRANCH
+echo GMP=$GMP
 cd /tmp
 /bin/rm -fr $DIR
 mkdir $DIR
 cd $DIR
-svn checkout svn://scm.gforge.inria.fr/svn/mpfr/trunk mpfr
+svn checkout svn://scm.gforge.inria.fr/svn/mpfr/$BRANCH mpfr
 cd mpfr
 autoreconf -i
 ./configure --disable-alloca --enable-assert --with-gmp=$GMP --disable-shared --enable-thread-safe
