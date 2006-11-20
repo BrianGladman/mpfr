@@ -34,7 +34,7 @@ dnl There is still some problem with GMP's HAVE_CONFIG
 dnl AC_CONFIG_HEADERS([mpfrconf.h:mpfrconf.in])
 
 dnl Extra arguments to configure
-unset gmp_lib_path
+unset gmp_lib_path GMP_CFLAGS GMP_CC
 AC_ARG_WITH(gmp_include,
    [  --with-gmp-include=DIR  GMP include directory ],
    CPPFLAGS="$CPPFLAGS -I$withval")
