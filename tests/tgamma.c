@@ -374,6 +374,20 @@ special_overflow (void)
       exit (1);
     }
 
+  mpfr_set_emax (1024);
+  mpfr_set_prec (x, 53);
+  mpfr_set_prec (y, 53);
+  mpfr_set_str_binary (x, "101010110100110011111010000110001000111100000110101E-43");
+  mpfr_gamma (x, x, GMP_RNDU);
+  mpfr_set_str_binary (y, "110000011110001000111110110101011110000100001111111E971");
+  if (mpfr_cmp (x, y) != 0)
+    {
+      printf ("Error for gamma(4)\n");
+      printf ("expected "); mpfr_dump (y);
+      printf ("got      "); mpfr_dump (x);
+      exit (1);
+    }
+
   mpfr_clear (y);
   mpfr_clear (x);
   set_emin (MPFR_EMIN_MIN);
