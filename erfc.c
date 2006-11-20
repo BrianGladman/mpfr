@@ -63,7 +63,7 @@ mpfr_erfc_asympt (mpfr_ptr y, mpfr_srcptr x)
           mpfr_add_ui (err, err, 1, GMP_RNDU);
           break;
         }
-      if (k & 2 != 0)
+      if (k & 1)
         mpfr_sub (y, y, t, GMP_RNDN);
       else
         mpfr_add (y, y, t, GMP_RNDN);
