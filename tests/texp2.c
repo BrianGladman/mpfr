@@ -237,8 +237,10 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-  if (mpfr_get_emax () <= 10000000000)
+  if ((mp_exp_unsigned_t) 8 << 31 != 0 ||
+      mpfr_get_emax () <= (mp_exp_unsigned_t) 100000 * 100000)
     {
+      /* emax <= 10000000000 */
       mpfr_set_prec (x, 40);
       mpfr_set_prec (y, 40);
       mpfr_set_str (x, "10000000000.5", 10, GMP_RNDN);
