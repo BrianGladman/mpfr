@@ -72,6 +72,8 @@ Changes in existing functions:
        aa = q*b+r      --> q has exaclty n bits.
   If RNDN, takes nq+1 bits. (See also the new division function).
 
+- random functions: get rid of _gmp_rand.
+
 
 ##############################################################################
 New functions to implement:
@@ -85,7 +87,7 @@ New functions to implement:
   mpfr_d_sub, mpfr_mul_d, mpfr_div_d, mpfr_d_div
   [suggested by Keith Briggs, 3 Jan 2006]
 - modf (to extract integer and fractional parts), suggested by
-	Dmitry Antipov <dmitry.antipov@mail.ru> Thu, 13 Jun 2002
+        Dmitry Antipov <dmitry.antipov@mail.ru> Thu, 13 Jun 2002
 - mpfr_fmod (mpfr_t, mpfr_srcptr, mpfr_srcptr, mp_rnd_t)
   [suggested by Tomas Zahradnicky <tomas@24uSoftware.com>, 29 Nov 2003]
   Kevin: Might want to be called mpfr_mod, to match mpz_mod.
@@ -144,12 +146,12 @@ New functions to implement:
    * Ai(x) = (1/\pi) \int_0^\infty \cos((1/3) t^3 + xt) dt
    * Bi(x) = (1/\pi) \int_0^\infty (e^(-(1/3) t^3) + \sin((1/3) t^3 + xt)) dt
    * Derivatives of Airy Functions
-  + The Bessel functions for n integer and n fractionnal: 
+  + The Bessel functions for n integer and n fractionnal:
    * Regular Cylindrical Bessel Functions J_n
    * Irregular Cylindrical Bessel Functions Y_n
    * Regular Modified Cylindrical Bessel Functions I_n
    * Irregular Modified Cylindrical Bessel Functions K_n
-   * Regular Spherical Bessel Functions j_n: j_0(x) = \sin(x)/x, 
+   * Regular Spherical Bessel Functions j_n: j_0(x) = \sin(x)/x,
   j_1(x)= (\sin(x)/x-\cos(x))/x & j_2(x)= ((3/x^2-1)\sin(x)-3\cos(x)/x)/x
    *Irregular Spherical Bessel Functions y_n: y_0(x) = -\cos(x)/x,
   y_1(x)= -(\cos(x)/x+\sin(x))/x & y_2(x)= (-3/x^3+1/x)\cos(x)-(3/x^2)\sin(x)
@@ -160,28 +162,28 @@ New functions to implement:
   + Clausen Function:
      Cl_2(x) = - \int_0^x dt \log(2 \sin(t/2))
      Cl_2(\theta) = \Im Li_2(\exp(i \theta)) (dilogarithm).
-  + Dawson Function: \exp(-x^2) \int_0^x dt \exp(t^2).     
+  + Dawson Function: \exp(-x^2) \int_0^x dt \exp(t^2).
   + Debye Functions: D_n(x) = n/x^n \int_0^x dt (t^n/(e^t - 1))
   + Elliptic Integrals:
    * Definition of Legendre Forms:
     F(\phi,k) = \int_0^\phi dt 1/\sqrt((1 - k^2 \sin^2(t)))
     E(\phi,k) = \int_0^\phi dt   \sqrt((1 - k^2 \sin^2(t)))
     P(\phi,k,n) = \int_0^\phi dt 1/((1 + n \sin^2(t))\sqrt(1 - k^2 \sin^2(t)))
-   * Complete Legendre forms are denoted by 
-    K(k) = F(\pi/2, k) 
+   * Complete Legendre forms are denoted by
+    K(k) = F(\pi/2, k)
     E(k) = E(\pi/2, k)
    * Definition of Carlson Forms
     RC(x,y) = 1/2 \int_0^\infty dt (t+x)^(-1/2) (t+y)^(-1)
     RD(x,y,z) = 3/2 \int_0^\infty dt (t+x)^(-1/2) (t+y)^(-1/2) (t+z)^(-3/2)
     RF(x,y,z) = 1/2 \int_0^\infty dt (t+x)^(-1/2) (t+y)^(-1/2) (t+z)^(-1/2)
-    RJ(x,y,z,p) = 3/2 \int_0^\infty dt 
+    RJ(x,y,z,p) = 3/2 \int_0^\infty dt
                           (t+x)^(-1/2) (t+y)^(-1/2) (t+z)^(-1/2) (t+p)^(-1)
   + Elliptic Functions (Jacobi)
   + N-relative exponential:
      exprel_N(x) = N!/x^N (\exp(x) - \sum_{k=0}^{N-1} x^k/k!)
   + exponential integral:
      E_2(x) := \Re \int_1^\infty dt \exp(-xt)/t^2.
-     Ei_3(x) = \int_0^x dt \exp(-t^3) for x >= 0. 
+     Ei_3(x) = \int_0^x dt \exp(-t^3) for x >= 0.
      Ei(x) := - PV(\int_{-x}^\infty dt \exp(-t)/t)
   + Hyperbolic/Trigonometric Integrals
      Shi(x) = \int_0^x dt \sinh(t)/t
@@ -199,7 +201,7 @@ New functions to implement:
   + Eta Function: \eta(s) = (1-2^{1-s}) \zeta(s)
     Hurwitz zeta function: \zeta(s,q) = \sum_0^\infty (k+q)^{-s}.
   + Lambert W Functions, W(x) are defined to be solutions of the equation:
-     W(x) \exp(W(x)) = x. 
+     W(x) \exp(W(x)) = x.
     This function has multiple branches for x < 0 (2 funcs W0(x) and Wm1(x))
   + Trigamma Function psi'(x).
     and Polygamma Function: psi^{(m)}(x) for m >= 0, x > 0.
@@ -214,6 +216,7 @@ New functions to implement:
 - mpfr_frexp(mpfr_t rop, mp_exp_t *n, mpfr_t op, mp_rnd_t rnd) suggested by
   Steve Kargl <sgk@troutmask.apl.washington.edu> Sun, 7 Aug 2005
 
+
 ##############################################################################
 Efficiency:
 ##############################################################################
@@ -225,21 +228,21 @@ Efficiency:
    mpfr_mpz_root 0.004 0.004 0.036 12.20
 - implement Mulders algorithm for squaring and division
 - for sparse input (say x=1 with 2 bits), mpfr_exp is not faster than for
-	full precision when precision <= MPFR_EXP_THRESHOLD. The reason is
-	that argument reduction kills sparsity. Maybe avoid argument reduction
-	for sparse input?
+        full precision when precision <= MPFR_EXP_THRESHOLD. The reason is
+        that argument reduction kills sparsity. Maybe avoid argument reduction
+        for sparse input?
 - speed up const_euler for large precision [for x=1.1, prec=16610, it takes
-	75% of the total time of eint(x)!]
+        75% of the total time of eint(x)!]
 - speed up mpfr_atan for large arguments (to speed up mpc_log)
-	[from Mark Watkins on Fri, 18 Mar 2005]
+        [from Mark Watkins on Fri, 18 Mar 2005]
   Also mpfr_atan(x) seems slower (by a factor of 2) for x near from 1.
   Example on a Athlon for 10^5 bits: x=1.1 takes 3s, whereas 2.1 takes 1.8s.
   The current implementation does not give monotonous timing for the following:
   mpfr_random (x); for (i = 0; i < k; i++) mpfr_atan (y, x, GMP_RNDN);
   for precision 300 and k=1000, we get 1070ms, and 500ms only for p=400!
 - implement range reduction in sin/cos/tan for large arguments
-	(currently too slow for 2^1024), and/or implement Mark Watkins's
-	algorithm:
+        (currently too slow for 2^1024), and/or implement Mark Watkins's
+        algorithm:
   My suggestion for a long-term fix to these sin/cos problems when one
   of them is close to zero is the following:
   Give input inp:
@@ -313,13 +316,13 @@ Miscellaneous:
 
 - add a new rounding mode: rounding away from 0. This can be easily
   implemented as follows: round to zero, and if the result is inexact,
-	add one ulp to the mantissa.
+        add one ulp to the mantissa.
 - add a new rounding mode: round to nearest, with ties away from zero
   (will be in 754r, could be used by mpfr_round)
 - add a new roundind mode: round to odd. If the result is not exactly
-	representable, then round to the odd mantissa. This rounding
-	has the nice property that for k > 1, if:
-	y = round(x, p+k, TO_ODD)
+        representable, then round to the odd mantissa. This rounding
+        has the nice property that for k > 1, if:
+        y = round(x, p+k, TO_ODD)
         z = round(y, p, TO_NEAREST_EVEN), then
         z = round(x, p, TO_NEAREST_EVEN)
   so it avoids the double-rounding problem.
@@ -329,10 +332,10 @@ Miscellaneous:
 - add tests of the ternary value for constants
 
 - When doing Extensive Check (--enable-assert=full), since all the
-  functions use a similar use of MACROS (ZivLoop, ROUND_P), it should 
+  functions use a similar use of MACROS (ZivLoop, ROUND_P), it should
   be possible to do such a scheme:
     For the first call to ROUND_P when we can round.
-    Mark it as such and save the approximated rounding value in 
+    Mark it as such and save the approximated rounding value in
     a temporary variable.
     Then after, if the mark is set, check if:
       - we still can round.
@@ -349,12 +352,13 @@ Miscellaneous:
 
 - in div.c, try to find a case for which cy != 0 after the line
         cy = mpn_sub_1 (sp + k, sp + k, qsize, cy);
-  (which should be added to the tests) or prove that this cannot
-  happen.
+  (which should be added to the tests), e.g. by having {vp, k} = 0, or
+  prove that this cannot happen.
 
 - add a configure test for --enable-logging to ignore the option if
   it cannot be supported. Modify the "configure --help" description
   to say "on systems that support it".
+
 
 ##############################################################################
 Portability:
@@ -366,6 +370,7 @@ Portability:
   strings into newly allocated memory.  I thought I'd done that in a
   couple of places already.  Arrays of chars are not much fun.
 
+- use http://gcc.gnu.org/viewcvs/trunk/config/stdint.m4 for mpfr-gmp.h
 
 
 ##############################################################################
