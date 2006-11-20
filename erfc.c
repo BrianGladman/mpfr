@@ -168,7 +168,7 @@ mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
       /* use asymptotic formula only whenever x^2 >= p*log(2),
          otherwise it will not converge */
       if (MPFR_SIGN (x) > 0 &&
-	  2 * MPFR_GET_EXP (x) - 2 >= MPFR_INT_CEIL_LOG2 (prec))
+          2 * MPFR_GET_EXP (x) - 2 >= MPFR_INT_CEIL_LOG2 (prec))
         /* we have x^2 >= p in that case */
         err = mpfr_erfc_asympt (tmp, x);
       else
