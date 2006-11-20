@@ -196,8 +196,11 @@ static void
 special_overflow (void)
 {
   mpfr_t x, y;
-  mp_exp_t emin = mpfr_get_emin ();
+  mp_exp_t emin, emax;
   int inex;
+
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
 
   set_emin (-125);
   set_emax (128);
@@ -254,7 +257,7 @@ special_overflow (void)
       printf ("got      "); mpfr_dump (y);
       exit (1);
     }
-  
+
   /* another tests from Kenneth Wilder, 31 Aug 2005 */
   set_emax (200);
   set_emin (-200);
@@ -309,7 +312,7 @@ special_overflow (void)
   mpfr_set_prec (x, 171);
   mpfr_set_prec (y, 38);
   mpfr_set_str (x, "-2993155353253689176481146537402947624254601559176535", 10,
-		GMP_RNDN);
+                GMP_RNDN);
   mpfr_div_2exp (x, x, 170, GMP_RNDN);
   mpfr_gamma (y, x, GMP_RNDN);
   mpfr_set_prec (x, 38);
@@ -327,7 +330,7 @@ special_overflow (void)
   mpfr_set_prec (x, 337);
   mpfr_set_prec (y, 38);
   mpfr_set_str (x, "-30000.000000000000000000000000000000000000000000001", 10,
-		GMP_RNDN);
+                GMP_RNDN);
   mpfr_gamma (y, x, GMP_RNDN);
   mpfr_set_prec (x, 38);
   mpfr_set_str (x, "-3.623795987425E-121243", 10, GMP_RNDN);
@@ -390,8 +393,8 @@ special_overflow (void)
 
   mpfr_clear (y);
   mpfr_clear (x);
-  set_emin (MPFR_EMIN_MIN);
-  set_emax (MPFR_EMAX_MAX);
+  set_emin (emin);
+  set_emax (emax);
 }
 
 int
