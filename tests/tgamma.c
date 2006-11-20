@@ -197,6 +197,7 @@ special_overflow (void)
 {
   mpfr_t x, y;
   mp_exp_t emin = mpfr_get_emin ();
+  int inex;
 
   set_emin (-125);
   set_emax (128);
@@ -360,6 +361,16 @@ special_overflow (void)
   if (!mpfr_inf_p (y) || mpfr_sgn (y) < 0)
     {
       printf ("Error for gamma(423786866)\n");
+      exit (1);
+    }
+
+  /* check exact result */
+  mpfr_set_prec (x, 2);
+  mpfr_set_ui (x, 3, GMP_RNDN);
+  inex = mpfr_gamma (x, x, GMP_RNDN);
+  if (inex != 0 || mpfr_cmp_ui (x, 2) != 0)
+    {
+      printf ("Error for gamma(3)\n");
       exit (1);
     }
 

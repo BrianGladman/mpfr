@@ -57,12 +57,42 @@ mpfr_gamma_1_minus_x_exact (mpfr_srcptr x)
     return MPFR_GET_EXP(x);
 }
 
+/* returns a lower bound of the number of significant bits of n!
+   (not counting the low zero bits).
+   We know n! >= (n/e)^n*sqrt(2*Pi*n) for n >= 1, and the number of zero bits
+   is floor(n/2) + floor(n/4) + floor(n/8) + ...
+   This approximation is exact for n <= 500000, except for n = 219536, 235928,
+   298981, 355854, 464848, 493725, 498992 where it returns a value 1 too small.
+*/
+static unsigned long
+bits_fac (unsigned long n)
+{
+  mpfr_t x, y;
+  unsigned long r, k;
+  mpfr_init2 (x, 38);
+  mpfr_init2 (y, 38);
+  mpfr_set_ui (x, n, GMP_RNDZ);
+  mpfr_set_str_binary (y, "10.101101111110000101010001011000101001"); /* upper bound of e */
+  mpfr_div (x, x, y, GMP_RNDZ);
+  mpfr_pow_ui (x, x, n, GMP_RNDZ);
+  mpfr_const_pi (y, GMP_RNDZ);
+  mpfr_mul_ui (y, y, 2 * n, GMP_RNDZ);
+  mpfr_sqrt (y, y, GMP_RNDZ);
+  mpfr_mul (x, x, y, GMP_RNDZ);
+  mpfr_log2 (x, x, GMP_RNDZ);
+  r = mpfr_get_ui (x, GMP_RNDU);
+  for (k = 2; k <= n; k *= 2)
+    r -= n / k;
+  mpfr_clear (x);
+  mpfr_clear (y);
+  return r;
+}
+
 /* We use the reflection formula
   Gamma(1+t) Gamma(1-t) = - Pi t / sin(Pi (1 + t))
   in order to treat the case x <= 1,
   i.e. with x = 1-t, then Gamma(x) = -Pi*(1-x)/sin(Pi*(2-x))/GAMMA(2-x)
 */
-
 int
 mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
@@ -125,13 +155,15 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
      If precision is p, fac_ui costs O(u*p), whereas gamma costs O(p*M(p)),
      so for u <= M(p), fac_ui should be faster.
      We approximate here M(p) by p*log(p)^2, which is not a bad guess.
+     Warning: since the generic code does not handle exact cases,
+     we want all cases where gamma(x) is exact to be treated here.
   */
   if (is_integer && mpfr_fits_ulong_p (x, GMP_RNDN))
     {
       unsigned long int u;
       mp_prec_t p = MPFR_PREC(gamma);
       u = mpfr_get_ui (x, GMP_RNDN);
-      if (u / (MPFR_INT_CEIL_LOG2 (p) * MPFR_INT_CEIL_LOG2 (p)) <= p)
+      if (bits_fac (u - 1) <= p)
         return mpfr_fac_ui (gamma, u - 1, rnd_mode);
     }
 
