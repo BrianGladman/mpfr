@@ -42,11 +42,16 @@ main (void)
   char buffer[256];
   const char *version;
 
+  version = mpfr_get_version ();
+
+  /* This test is disabled when a suffix (e.g. -dev) has been defined. */
+#if 0
   sprintf (buffer, "%d.%d.%d", MPFR_VERSION_MAJOR, MPFR_VERSION_MINOR,
            MPFR_VERSION_PATCHLEVEL);
-  version = mpfr_get_version ();
   if (strcmp (buffer, version) != 0)
     err (1, buffer, version);
+#endif
+
   if (strcmp (MPFR_VERSION_STRING, version) != 0)
     err (2, MPFR_VERSION_STRING, version);
 

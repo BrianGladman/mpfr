@@ -2,21 +2,29 @@
 
 set -e
 
-if [ $# -ne 3 ]; then
-  echo "Usage: $0 <major> <minor> <patchlevel>"
+if [ $# -ne 3 -a $# -ne 4 ]; then
+  echo "Usage: $0 <major> <minor> <patchlevel> [ <suffix> ]"
   exit 1
 fi
 
 vers="$1.$2.$3"
-echo $vers > VERSION
-perl -pi -e "s/(?<=\@set VERSION ).*/$vers/" mpfr.texi
+full="$vers${4:+-$4}"
+echo $full > VERSION
+perl -pi -e "s/(?<=\@set VERSION ).*/$full/" mpfr.texi
 perl -pi -e "s/(?<=#define MPFR_VERSION_MAJOR ).*/$1/; \
              s/(?<=#define MPFR_VERSION_MINOR ).*/$2/; \
              s/(?<=#define MPFR_VERSION_PATCHLEVEL ).*/$3/; \
-             s/(?<=#define MPFR_VERSION_STRING ).*/\"$1.$2.$3\"/" mpfr.h
-perl -pi -e "s/(?<=return \").*\"/$vers\"/" version.c
-perl -pi -e "s/(?<=AC_INIT).*/([MPFR],[$vers])/" configure.in
+             s/(?<=#define MPFR_VERSION_STRING ).*/\"$full\"/" mpfr.h
+perl -pi -e "s/(?<=return \").*\"/$full\"/" version.c
+perl -pi -e "s/(?<=AC_INIT).*/([MPFR],[$full])/" configure.in
 perl -pi -e "s,(?<=http://www.mpfr.org/mpfr-).*?/,$vers/," INSTALL
+
+if [ $# -eq 4 ]; then
+  tvers=0
+else
+  tvers=1
+fi
+perl -pi -e "s/(?<=#if ).*/$tvers/" tests/tversion.c
 
 echo "MPFR version successfully updated."
 echo "Don't forget to update MPFR libtool version in Makefile.am."
