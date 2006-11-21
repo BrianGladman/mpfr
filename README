@@ -37,6 +37,7 @@ README      - this file
 TODO        - what remains to do (any help is welcome!)
 VERSION     - version of MPFR (next release version if taken from CVS)
 ac*.m4      - automatic configuration files
+ansi2knr.*  - convert ANSI C to Kernighan & Ritchie C (source and man page)
 *.c         - source files
 *.h         - header files
 config.*    - auxiliary installation files
@@ -44,30 +45,38 @@ configure*  - configuration files
 depcomp     - auxiliary installation file
 fdl.texi    - the GNU Free Documentation License
 install-sh  - installation file
+ltmain.sh   - auxiliary installation file
 missing     - auxiliary installation file
-mkinst*     - auxiliary installation file
+mparam_h.in - header file template
 mpfr.info   - info file for MPFR
-mpfr.texi   - texinfo documentation for MPFR
+mpfr.texi   - texinfo documentation for MPFR (source)
 tests/      - test directory
 texinfo.tex - TeX macros to handle mpfr.texi
 
 
 You can get the latest source code by Subversion at InriaGforge:
 
-  svn co svn://scm.gforge.inria.fr/svn/mpfr/trunk mpfr
+  svn checkout svn://scm.gforge.inria.fr/svn/mpfr/trunk mpfr
 
-(the last argument can be any name). You can use
+or
+
+  svn checkout https://scm.gforge.inria.fr/svn/mpfr/trunk mpfr
+
+(the last argument can be any directory name). You can use
 
   svn ls svn://scm.gforge.inria.fr/svn/mpfr/branches
   svn ls svn://scm.gforge.inria.fr/svn/mpfr/tags
 
-to get the list of branches or tags (releases). More information
-about Subversion:
+to get the list of branches or tags (releases), then checkout a
+particular branch or tag instead of the trunk. Alternatively, you
+can now use the "https:" scheme (a.k.a. DAV) instead of "svn:".
+For more information about Subversion, please see:
 
-  * http://svnbook.red-bean.com/ (the official SVN book)
+  * http://svnbook.red-bean.com/ (the official Subversion book);
   * http://gcc.gnu.org/wiki/SvnHelp (written for GCC developers,
-    but interesting general information can be found there)
+    but interesting general information can be found there);
+  * http://subversion.tigris.org/faq.html (the Subversion FAQ).
 
 Subversion users should read the file "README.dev".
 
-Note: the CVS repository at cvs-sop.inria.fr is now closed.
+Note: the old CVS repository at cvs-sop.inria.fr is now closed.
