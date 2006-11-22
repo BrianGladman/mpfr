@@ -79,6 +79,14 @@ li > p, dd > p
   padding: 0.5ex 0;
   margin-left: 2em;
 }
+
+dl.faq { counter-reset: faq }
+
+dl.faq dt:before
+{
+  counter-increment: faq;
+  content: counter(faq) ". ";
+}
 /*]]>*/</style>
 </head>
 
@@ -94,7 +102,7 @@ bugs page.</strong></p>
 <a href="http://www.mpfr.org/faq.html">http://www.mpfr.org/faq.html</a>.
 Please look at this version if possible.</p>
 
-<dl>
+<dl class="faq">
 
 <dt id="mpfr_vs_mpf">What are the differences between
 <cite><acronym>MPF</acronym></cite> from <cite><acronym>GMP</acronym></cite>
