@@ -17,6 +17,7 @@ autoreconf -i
 ./configure --with-gmp="$GMP" --disable-alloca --enable-assert=full \
   --disable-shared --enable-thread-safe
 make
+export GMP_CHECK_RANDOMIZE=1
 make check
 cd /tmp
 /bin/rm -fr "$DIR"
