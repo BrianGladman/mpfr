@@ -282,9 +282,12 @@ Miscellaneous:
 
 - In addition to major/minor/patchlevel version information, add a macro
   and/or function to the MPFR interface, that would tell what patches
-  have been applied and other possible information (e.g., Subversion
-  branch and revision, beta releases, and so on). For instance, see
-  what Mutt and Subversion do concerning their CVS/Subversion builds.
+  have been applied and other possible information (some information is
+  already available as a suffix in the MPFR_VERSION_STRING macro, but it
+  should be short, thus it is not suitable if one wishes to mention all
+  the individual patches that have been applied); this can include the
+  features that have been enabled or disabled in configure. For instance,
+  see what Mutt and Subversion do concerning their CVS/Subversion builds.
   Of course, patches must include some tag (one should not rely on a
   wrapper to apply them), that could be added to a PATCHES file. Mutt's
   doc/patch-notes.txt file mentions an interesting scheme: the following
