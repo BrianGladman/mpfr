@@ -1,4 +1,8 @@
 #!/bin/sh
 
+# Contains a workaround for the libxslt bug 377440
+#   http://bugzilla.gnome.org/show_bug.cgi?id=377440
+
 wget -q -O - http://www.mpfr.org/faq.html | xsltproc --nodtdattr faq.xsl - | \
-  perl -pe 's,(<style.*),\1/*<![CDATA[*/,; s,(</style>),/*]]>*/\1,' > FAQ.html
+  perl -pe 's,(<(h:)?style.*),<style type="text/css">/*<![CDATA[*/,;
+            s,(</(h:)?style>),/*]]>*/</style>,' > FAQ.html
