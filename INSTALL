@@ -15,6 +15,7 @@
 
 3. In the MPFR directory, to detect your system, type:
      ./configure
+   possibly with options (see below).
 
 4. To build the library, type:
      make
