@@ -175,14 +175,16 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
       int overflow;
       mpfr_t yp;
 
+      /* 1/e rounded down to 53 bits */
+#define EXPM1_STR "0.010111100010110101011000110110001011001110111100111"
       mpfr_clear_overflow ();
       mpfr_init2 (xp, 53);
       mpfr_init2 (yp, 53);
-      mpfr_set_d (xp, EXPM1, GMP_RNDZ); /* 1/e rounded down */
+      mpfr_set_str_binary (xp, EXPM1_STR);
       mpfr_mul (xp, x, xp, GMP_RNDZ);
       mpfr_sub_ui (yp, x, 2, GMP_RNDZ);
       mpfr_pow (xp, xp, yp, GMP_RNDZ); /* (x/e)^(x-2) */
-      mpfr_set_d (yp, EXPM1, GMP_RNDZ);
+      mpfr_set_str_binary (yp, EXPM1_STR);
       mpfr_mul (xp, xp, yp, GMP_RNDZ); /* x^(x-2) / e^(x-1) */
       mpfr_mul (xp, xp, yp, GMP_RNDZ); /* x^(x-2) / e^x */
       mpfr_mul (xp, xp, x, GMP_RNDZ); /* x^(x-1) / e^x */
