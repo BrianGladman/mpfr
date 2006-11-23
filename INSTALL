@@ -1,6 +1,10 @@
                         Installing MPFR
                         ===============
 
+Note: In case of problem, please read this INSTALL file completely
+before reporting a bug. Some problems are due to bad configuration
+on the user side (not specific to MPFR).
+
 0. You first need to install GMP. See <http://www.swox.com/gmp/>.
    MPFR requires GMP version 4.1 or later.
 
@@ -15,7 +19,8 @@
 
 3. In the MPFR directory, to detect your system, type:
      ./configure
-   possibly with options (see below).
+   possibly with options (see below, in particular if this step or
+   one of the following fails).
 
 4. To build the library, type:
      make
@@ -43,6 +48,21 @@ Remember that if you have several MPFR (or GMP) versions installed
 necessarily get a compilation/linking error if a wrong library is
 used (e.g., because LD_LIBRARY_PATH has not been set correctly).
 But unexpected results may occur.
+
+Under GNU/Linux machines, default header and library paths may be
+inconsistent: gcc is configured to search /usr/local/include by
+default, while /usr/local/lib is not in the default search paths.
+If you have a GMP version installed in /usr (provided by the OS)
+and a new one installed in /usr/local, then the header of the new
+GMP version and the library of the old GMP version will be used!
+Typical errors are:
+  undefined reference to `__gmp_get_memory_functions'
+in "make check". The solution is to add /usr/local/include to your
+C_INCLUDE_PATH and to add /usr/local/lib to your LIBRARY_PATH and
+LD_LIBRARY_PATH (and/or LD_RUN_PATH), as said above. Alternatively
+you can use --with-gmp* configure options (see below), but other
+software that uses GMP and/or MPFR will need correct paths too,
+and environment variables allow to set them in a global way.
 
 Under Mac OS X, if the shared library was not installed and you use
 Apple's linker (this is the default), you will also need to provide
@@ -78,6 +98,7 @@ Building MPFR with internal GMP header files
    where GMPBUILD is the GMP build directory.
    The needed header files are:
      gmp-impl.h, longlong.h and all the necessary headers to use them.
+
 
 ./configure options
 ===================
@@ -154,6 +175,16 @@ In case of problem
    the test suite: C and C++ are not the same language!
    You should use a C compiler instead.
 
+
+Notes on FreeBSD 4.3
+====================
+
+FreeBSD 4.3 is provided with an incorrect <float.h> header file, and
+MPFR tests related to long double's may fail. If you cannot upgrade
+the system, you can still use MPFR with FreeBSD 4.3, but you should
+not use conversions with the long double type.
+
+
 Notes on Windows 32
 ===================
 
@@ -180,6 +211,7 @@ Notes on Windows 32
     to your project: it contains all the extra-functions needed by a program
     compiled by gcc (division of 64 bits integer, bcopy, alloca...).
     Of course, include it if and only if your compiler is not gcc.
+
 
 Notes on Windows 64
 ===================
