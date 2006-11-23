@@ -139,6 +139,10 @@ return y.d == 0.14894469406741037E-123 ? 0 :
       *)   AC_MSG_ERROR([bad value for --enable-decimal-float: yes or no]) ;;
      esac])
 
+AC_ARG_WITH(tests-timeout,
+   [  --with-tests-timeout=NUM limit in seconds for test programs],
+   AC_DEFINE_UNQUOTED([MPFR_TEST_TIMEOUT],$withval, [timeout limit]))
+
 test_CFLAGS=${CFLAGS+set}
 
 
