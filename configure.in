@@ -252,6 +252,19 @@ if test "${with_tags+set}" != set; then
   with_tags=
 fi
 
+dnl
+dnl Setup GMP detection
+dnl
+
+dnl Check GMP Header
+AC_MSG_CHECKING(for gmp.h)
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+#include "gmp.h"
+]])],[AC_MSG_RESULT(yes)],[
+ AC_MSG_RESULT(no)
+ AC_MSG_ERROR([gmp.h can't be found, or is unusable.])
+])
+
 dnl Configs for Windows DLLs.
 dnl libtool requires "-no-undefined" for win32 dll
 dnl It also disables the tests involving the linking with LIBGMP if DLL
@@ -296,17 +309,8 @@ GMP_C_ATTRIBUTE_MODE
 
 
 dnl
-dnl Setup GMP detection
+dnl Setup GMP detection (continued)
 dnl
-
-dnl Check GMP Header
-AC_MSG_CHECKING(for gmp.h)
-AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
-#include "gmp.h"
-]])],[AC_MSG_RESULT(yes)],[
- AC_MSG_RESULT(no)
- AC_MSG_ERROR([gmp.h can't be found, or is unusable.])
-])
 
 AC_MSG_CHECKING(for recent GMP)
 AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
