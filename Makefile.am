@@ -11,7 +11,7 @@ libmpfr_la_SOURCES = mpfr.h mpf2mpfr.h mpfr-gmp.h mpfr-impl.h mpfr-longlong.h mp
 
 libmpfr_la_LIBADD = @LIBOBJS@
 
-# Libtool -version-info CURRENT.AGE.REVISION for libmpfr.la
+# Libtool -version-info CURRENT[:REVISION[:AGE]] for libmpfr.la
 #
 # 1. No interfaces changed, only implementations (good):
 #    ==> Increment REVISION.
@@ -23,7 +23,7 @@ libmpfr_la_LIBADD = @LIBOBJS@
 #	  MPFR	   -version-info
 #        2.1.x      -
 #        2.2.x    1:0:0
-libmpfr_la_LDFLAGS = -version-info 2:1:0
+libmpfr_la_LDFLAGS = -version-info 2:0:1
 
 info_TEXINFOS = mpfr.texi
 
