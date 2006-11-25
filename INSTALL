@@ -1,9 +1,10 @@
                         Installing MPFR
                         ===============
 
-Note: In case of problem, please read this INSTALL file completely
-before reporting a bug. Some problems are due to bad configuration
-on the user side (not specific to MPFR).
+Note: In case of problem, please read this INSTALL file carefully before
+reporting a bug, in particular Section "In case of problem" below. Some
+problems are due to bad configuration on the user side (not specific to
+MPFR).
 
 0. You first need to install GMP. See <http://www.swox.com/gmp/>.
    MPFR requires GMP version 4.1 or later.
@@ -49,21 +50,6 @@ necessarily get a compilation/linking error if a wrong library is
 used (e.g., because LD_LIBRARY_PATH has not been set correctly).
 But unexpected results may occur.
 
-Under GNU/Linux machines, default header and library paths may be
-inconsistent: gcc is configured to search /usr/local/include by
-default, while /usr/local/lib is not in the default search paths.
-If you have a GMP version installed in /usr (provided by the OS)
-and a new one installed in /usr/local, then the header of the new
-GMP version and the library of the old GMP version will be used!
-Typical errors are:
-  undefined reference to `__gmp_get_memory_functions'
-in "make check". The solution is to add /usr/local/include to your
-C_INCLUDE_PATH and to add /usr/local/lib to your LIBRARY_PATH and
-LD_LIBRARY_PATH (and/or LD_RUN_PATH), as said above. Alternatively
-you can use --with-gmp* configure options (see below), but other
-software that uses GMP and/or MPFR will need correct paths too,
-and environment variables allow to set them in a global way.
-
 Under Mac OS X, if the shared library was not installed and you use
 Apple's linker (this is the default), you will also need to provide
 the -search_paths_first linker flag ("-Wl,-search_paths_first" when
@@ -90,14 +76,13 @@ install recent versions of some utilities such as texinfo.
 Building MPFR with internal GMP header files
 ============================================
 
-   MPFR built with internal GMP header files is a bit faster,
-   so you may want to build it with them. Just do this in step 1:
+MPFR built with internal GMP header files is a bit faster, so you may want
+to build it with them. Just do this in step 1:
 
-     ./configure --with-gmp-build=GMPBUILD
+  ./configure --with-gmp-build=GMPBUILD
 
-   where GMPBUILD is the GMP build directory.
-   The needed header files are:
-     gmp-impl.h, longlong.h and all the necessary headers to use them.
+where GMPBUILD is the GMP build directory. The needed header files are:
+gmp-impl.h, longlong.h and all the necessary headers to use them.
 
 
 ./configure options
@@ -132,48 +117,78 @@ Run "./configure --help" to see the other options (autoconf default options).
 In case of problem
 ==================
 
-   If you can, go to the MPFR page for this version, where you could
-   find something to solve the problem, or to see if it has already
-   been reported:
-     http://www.mpfr.org/mpfr-2.3.0/
+Several documents may help you to solve the problem:
+  * this INSTALL file, in particular information given below;
+  * the FAQ (either the FAQ.html file distributed with MPFR, or the
+    on-line version <http://www.mpfr.org/faq.html>, which may be more
+    up-to-date);
+  * the MPFR web page for this version <http://www.mpfr.org/mpfr-2.3.0/>,
+    which lists bugs found in this version and provides some patches.
 
-   If the "configure" fails, please check that the C compiler and its
-   options are the same as those for the GMP build (specially the ABI).
-   You can see the latter with the following:
-     grep "^CC\|^CFLAGS" GMPBUILD/Makefile
+If the "configure" fails, please check that the C compiler and its
+options are the same as those for the GMP build (specially the ABI).
+You can see the latter with the following command:
 
-   Then type (for example, under a sh-compatible shell):
-    ./configure --with-gmp-include=GMPBUILD --with-gmp-lib=GMPINSTALL/lib \
-      CC=<C compiler> CFLAGS=<compiler options>
-   And continue the install.
+  grep "^CC\|^CFLAGS" GMPBUILD/Makefile
 
-   On some architectures, you should provide further options to match
-   those used by GMP, for example, on powerpc-aix:
-     make AR="ar -X64"
+if the GMP build directory is available. Then type:
 
-   On some architectures, try with "gmake" (GNU make) instead of "make".
-   Problems have been reported with the Tru64 make.
+  ./configure <configure options> CC=<C compiler> CFLAGS=<compiler options>
 
-   Try to build MPFR with/without GMP internal files.
+and continue the install. On some platforms, you should provide further
+options to match those used by GMP, for example, on powerpc-aix:
 
-   If the build was ok, but the tests failed to link with GMP, it is usually
-   because PREFIXDIR/lib is used by the static linker but not by the shared
-   linker (where PREFIXDIR is the directory given in --prefix, or /usr/local
-   if --prefix wasn't used). There are two solutions:
-   1.  setenv LD_LIBRARY_PATH /usr/lib:PREFIXDIR/lib              [csh/tcsh]
-    or export LD_LIBRARY_PATH=/usr/lib:PREFIXDIR/lib          [bash/zsh/...]
-   2. Or run MPFR's configure with "--with-gmp=/usr/local"
-    so that libtool is able to fix this problem.
+  make AR="ar -X64"
 
-   If you can't solve your problem, you could contact us at <mpfr@loria.fr>,
-   indicating the machine and operating system used (uname -a), the compiler
-   and version used (gcc -v if you use gcc), the compile options used if any,
-   the version of GMP and MPFR used and a description of the problem
-   encountered. Please send us also a log of the installation (config.log).
+On some platforms, try with "gmake" (GNU make) instead of "make".
+Problems have been reported with the Tru64 make.
 
-   Note that even if you can build MPFR with a C++ compiler, you can't run
-   the test suite: C and C++ are not the same language!
-   You should use a C compiler instead.
+If the build was OK, but the tests failed to link with GMP or gave an
+error like
+
+  undefined reference to `__gmp_get_memory_functions'
+
+meaning that the GMP library was not found or a wrong GMP library was
+selected by the linker, then your library search paths are probably
+not correctly set (some paths are missing or they are specified in an
+incorrect order).
+
+Such problems commonly occur under GNU/Linux machines, where default
+header and library paths may be inconsistent: gcc is configured to
+search /usr/local/include by default, while /usr/local/lib is not in
+the default search paths. If you have a GMP version installed in /usr
+(provided by the OS) and a new one installed in /usr/local, then the
+header of the new GMP version and the library of the old GMP version
+will be used! A typical error is the above one in "make check". The
+solution is to add /usr/local/include to your C_INCLUDE_PATH and to
+add /usr/local/lib to your LIBRARY_PATH and LD_LIBRARY_PATH (and/or
+LD_RUN_PATH), as said above. Alternatively, you can use --with-gmp*
+configure options (described above), e.g. --with-gmp=/usr/local, but
+other software that uses GMP and/or MPFR will need correct paths too,
+and environment variables allow to set them in a global way.
+
+For instance, under Unix, where paths are separated by a colon:
+
+  * With POSIX sh-compatible shells (e.g. sh, ksh, bash, zsh):
+    export C_INCLUDE_PATH="/usr/local/include:/other/path/include"
+    export LIBRARY_PATH="/usr/local/lib:/other/path/lib"
+    export LD_LIBRARY_PATH="$LIBRARY_PATH"
+
+  * With csh or tcsh:
+    setenv C_INCLUDE_PATH "/usr/local/include:/other/path/include"
+    setenv LIBRARY_PATH "/usr/local/lib:/other/path/lib"
+    setenv LD_LIBRARY_PATH "$LIBRARY_PATH"
+
+If you can't solve your problem, you should contact us at <mpfr@loria.fr>,
+indicating the machine and operating system used (uname -a), the compiler
+and version used (gcc -v if you use gcc), the configure options used if
+any (including variables such as CC and CFLAGS), the version of GMP and
+MPFR used, and a description of the problem encountered. Please send us
+also the log of the "configure" (config.log).
+
+Note that even if you can build MPFR with a C++ compiler, you can't run
+the test suite: C and C++ are not the same language! You should use a C
+compiler instead.
 
 
 Notes on FreeBSD 4.3
