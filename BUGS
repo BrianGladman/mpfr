@@ -51,25 +51,3 @@ Potential bugs:
 
 * Error analysis for some functions may be incorrect (out-of-date due
   to modifications in the code?).
-
-
-Problems due to compiler bugs:
-
-* on some architectures (for example alpha-dec-osf), gcc 3.3 wrongly
-  compares "long double" floating-point numbers, with optimization level
-  1 or higher. This bug can be detected by the following program:
-
-  #include <stdio.h>
-  #include <stdlib.h>
-  #include <float.h>
-  int
-  main ()
-  {
-    long double d;
-    d = 1.0; while (d < LDBL_MAX / 2.0) d += d;
-    if (d == (long double) 0.0)
-      printf ("d equals 0.0\n");
-  }
-
-  This results in a problem in the mpfr_set_ld function. A workaround is
-  to compile set_ld.c with -O0 (no optimization).
