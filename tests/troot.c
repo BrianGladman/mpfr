@@ -156,6 +156,33 @@ special (void)
       mpfr_dump (y);
       exit (1);
     }
+  /* Worst cases found on 2006-11-26 */
+  mpfr_set_str_binary (x, "1.1111010011101110001111010110000101110000110110101100E17");
+  mpfr_root (y, x, 36, GMP_RNDD);
+  mpfr_set_str_binary (x, "1.0110100111010001101001010111001110010100111111000010E0");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error in mpfr_root (y, x, 36, GMP_RNDD) for\n"
+              "x = 1.1111010011101110001111010110000101110000110110101100E17\n"
+              "Expected ");
+      mpfr_dump (x);
+      printf ("Got      ");
+      mpfr_dump (y);
+      exit (1);
+    }
+  mpfr_set_str_binary (x, "1.1100011101101101100010110001000001110001111110010000E23");
+  mpfr_root (y, x, 36, GMP_RNDU);
+  mpfr_set_str_binary (x, "1.1001010100001110000110111111100011011101110011000100E0");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error in mpfr_root (y, x, 36, GMP_RNDU) for\n"
+              "x = 1.1100011101101101100010110001000001110001111110010000E23\n"
+              "Expected ");
+      mpfr_dump (x);
+      printf ("Got      ");
+      mpfr_dump (y);
+      exit (1);
+    }
 
   /* Check for k = 1 */
   mpfr_set_ui (x, 17, GMP_RNDN);
