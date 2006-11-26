@@ -206,6 +206,33 @@ check_pow_ui (void)
       printf ("\n");
       exit (1);
     }
+  /* worst cases found on 2006-11-26 */
+  mpfr_set_str_binary (a, "1.0110100111010001101001010111001110010100111111000011");
+  mpfr_set_str_binary (b, "1.1111010011101110001111010110000101110000110110101100E17");
+  mpfr_pow_ui (a, a, 36, GMP_RNDD);
+  if (mpfr_cmp (a, b) != 0)
+    {
+      printf ("Error in mpfr_pow_ui for worst case (2)\n");
+      printf ("Expected ");
+      mpfr_out_str (stdout, 2, 0, b, GMP_RNDN);
+      printf ("\nGot      ");
+      mpfr_out_str (stdout, 2, 0, a, GMP_RNDN);
+      printf ("\n");
+      exit (1);
+    }
+  mpfr_set_str_binary (a, "1.1001010100001110000110111111100011011101110011000100");
+  mpfr_set_str_binary (b, "1.1100011101101101100010110001000001110001111110010001E23");
+  mpfr_pow_ui (a, a, 36, GMP_RNDU);
+  if (mpfr_cmp (a, b) != 0)
+    {
+      printf ("Error in mpfr_pow_ui for worst case (3)\n");
+      printf ("Expected ");
+      mpfr_out_str (stdout, 2, 0, b, GMP_RNDN);
+      printf ("\nGot      ");
+      mpfr_out_str (stdout, 2, 0, a, GMP_RNDN);
+      printf ("\n");
+      exit (1);
+    }
 
   mpfr_clear (a);
   mpfr_clear (b);
