@@ -77,6 +77,9 @@ mpfr_set_uj_2exp (mpfr_t x, uintmax_t j, intmax_t e, mp_rnd_t rnd)
     limb = yp[0] = j;
   else
     {
+      /* Note: either BITS_PER_MP_LIMB = uintmax_bit_size, then k = 1 the
+         shift j >>= bpml is never done, or BITS_PER_MP_LIMB < uintmax_bit_size
+         and bpml = BITS_PER_MP_LIMB. */
       for (i = 0; i < k; i++, j >>= bpml)
         yp[i] = j; /* Only the low bits are copied */
 
