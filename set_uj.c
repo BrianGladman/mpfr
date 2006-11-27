@@ -55,8 +55,10 @@ mpfr_set_uj_2exp (mpfr_t x, uintmax_t j, intmax_t e, mp_rnd_t rnd)
   unsigned int cnt, i;
   mp_size_t k, len;
   mp_limb_t limb;
-  mp_limb_t yp[sizeof(uintmax_t)/sizeof(mp_limb_t)];
+  mp_limb_t yp[sizeof(uintmax_t) / sizeof(mp_limb_t)];
   mpfr_t y;
+  unsigned long uintmax_bit_size = sizeof(uintmax_t) * CHAR_BIT;
+  unsigned long bpml = BITS_PER_MP_LIMB % uintmax_bit_size;
 
   /* Special case */
   if (j == 0)
@@ -69,17 +71,13 @@ mpfr_set_uj_2exp (mpfr_t x, uintmax_t j, intmax_t e, mp_rnd_t rnd)
   MPFR_ASSERTN (sizeof(uintmax_t) % sizeof(mp_limb_t) == 0);
 
   /* Create an auxillary var */
-  MPFR_TMP_INIT1 (yp, y, sizeof(uintmax_t) * CHAR_BIT);
+  MPFR_TMP_INIT1 (yp, y, uintmax_bit_size);
   k = numberof (yp);
   if (k == 1)
     limb = yp[0] = j;
   else
     {
-      /* Note: Possible warning "right shift count >= width of type" on
-         64-bit machines with gcc. This is not a bug, as the right shift
-         is never performed in this case. FIXME: Avoid this warning, if
-         possible (in a clean way). */
-      for (i = 0; i < k; i++, j >>= BITS_PER_MP_LIMB)
+      for (i = 0; i < k; i++, j >>= bpml)
         yp[i] = j; /* Only the low bits are copied */
 
       /* Find the first limb not equal to zero. */
