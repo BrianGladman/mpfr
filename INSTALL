@@ -205,7 +205,7 @@ Notes on Windows 32
 
 1 - We advise to use mingw (http://www.mingw.org/), which is simpler and
     less demanding than Cygwin. Contrary to Cygwin, it also provides native
-    windows code. The binaries compiled with Cygwin require a dynamic
+    Windows code. The binaries compiled with Cygwin require a dynamic
     library (cygwin.dll) to work; there is a Cygwin option -mno-cygwin to
     build native code, but it may require some non-portable tricks.
 
@@ -224,8 +224,11 @@ Notes on Windows 32
     Or you could add the library
      "$MINGWIN$/lib/gcc-lib/mingw32/$VERSION$/libgcc.a"
     to your project: it contains all the extra-functions needed by a program
-    compiled by gcc (division of 64 bits integer, bcopy, alloca...).
+    compiled by gcc (division of 64-bit integer, bcopy, alloca...).
     Of course, include it if and only if your compiler is not gcc.
+
+4 - On Windows32 / MinGW, if all the tests fail, try to run the test suite
+    with "make check EXEEXT=".
 
 
 Notes on Windows 64
