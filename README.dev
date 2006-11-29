@@ -63,7 +63,7 @@ To make a release (for the MPFR team):
      Update the date in mpfr.texi.
   3) Update the NEWS file.
      Update the FAQ.html file with update-faq (and check it).
-  4) Update the ChangeLog file. [To be completed]
+  4) Update the ChangeLog file with "TZ=UTC svn log -rHEAD:0 -v".
   5) Generate the release version with "make dist".
   6) Test the release version on different machines, with and without
      --enable-assert (--enable-assert, though doing more checks, may
@@ -79,7 +79,9 @@ To make a release (for the MPFR team):
      incompatible with ISO C90), with and without --enable-thread-safe
      and in various locales (LC_ALL=tr_TR in particular, if installed).
      Test with both "make check" and the worst cases.
-  7) If there are no problems, add a tag. [To be completed]
+  7) For the release itself (not the release candidates), if there are
+     no problems, create a tag with:
+       svn cp .../mpfr/branches/x.y .../mpfr/tags/x.y.z
   8) Update the version with the update-version script to indicate the
      next version (use the "dev" suffix).
 
