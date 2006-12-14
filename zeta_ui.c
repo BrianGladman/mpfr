@@ -25,6 +25,8 @@ MA 02110-1301, USA. */
 int
 mpfr_zeta_ui (mpfr_ptr z, unsigned long m, mp_rnd_t r)
 {
+  MPFR_ZIV_DECL (loop);
+
   if (m == 0)
     {
       mpfr_set_ui (z, 1, r);
@@ -80,9 +82,11 @@ mpfr_zeta_ui (mpfr_ptr z, unsigned long m, mp_rnd_t r)
 
       p += MPFR_INT_CEIL_LOG2(p); /* account of the n term in the error */
 
-      do
+      p += MPFR_INT_CEIL_LOG2(p) + 15; /* initial value */
+
+      MPFR_ZIV_INIT (loop, p);
+      for(;;)
 	{
-	  p += MPFR_INT_CEIL_LOG2(p) + 15;
 	  /* 0.39321985067869744 = log(2)/log(3+sqrt(8)) */
 	  n = 1 + (unsigned long) (0.39321985067869744 * (double) p);
 	  err = n + 4;
@@ -178,8 +182,13 @@ mpfr_zeta_ui (mpfr_ptr z, unsigned long m, mp_rnd_t r)
 
 	  err = MPFR_INT_CEIL_LOG2 (err);
 
+          if (MPFR_LIKELY(MPFR_CAN_ROUND (y, p - err, MPFR_PREC(z), r)))
+            break;
+
+          MPFR_ZIV_NEXT (loop, p);
 	}
-      while (MPFR_CAN_ROUND (y, p - err, MPFR_PREC(z), r) == 0);
+      MPFR_ZIV_FREE (loop);
+
       mpz_clear (d);
       mpz_clear (t);
       mpz_clear (q);
