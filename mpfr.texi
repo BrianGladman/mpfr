@@ -1892,7 +1892,8 @@ future revisions.
 This macro declares @var{name} as an automatic variable of type @code{mpfr_t},
 initializes it and sets its precision to be @strong{exactly} @var{prec} bits
 and its value to NaN. @var{name} must be a valid identifier.
-You must use this macro in the declaration section. This macro is much faster than using @code{mpfr_init2} but has some
+You must use this macro in the declaration section.
+This macro is much faster than using @code{mpfr_init2} but has some
 drawbacks:
 
 @itemize @bullet
@@ -1905,7 +1906,9 @@ and deallocated when the brace-level is exited.).
 in C++ and ISO C99) and @samp{Token Pasting}
 (standard in ISO C89). If @var{prec} is not a compiler constant, your compiler
 must support @samp{Variable-length automatic arrays} (standard in ISO C99).
-@samp{GCC 2.95.3} supports all these features.
+@samp{GCC 2.95.3} supports all these features. If you compile your program
+with gcc in c89 mode, you may want to define the @code{MPFR_USE_EXTENSION}
+macro to avoid warnings due to the @code{MPFR_DECL_INIT} implementation.
 @end itemize
 @end defmac
 

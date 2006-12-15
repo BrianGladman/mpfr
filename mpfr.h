@@ -579,11 +579,20 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
 #define __MPFR_EXP_INF  ((mp_exp_t)((~((~(unsigned long)0)>>1))+3))
 #endif
 
+/* Define MPFR_USE_EXTENSION to avoid "gcc -pedantic" warnings. */
+#ifndef MPFR_EXTENSION
+# if defined(MPFR_USE_EXTENSION)
+#  define MPFR_EXTENSION __extension__
+# else
+#  define MPFR_EXTENSION
+# endif
+#endif
+
 /* Warning! This macro doesn't work with K&R C and shouldn't be used
    internally. For public use only, but see the MPFR manual. */
 #define MPFR_DECL_INIT(_x, _p)                                        \
-  mp_limb_t __gmpfr_local_tab_##_x[((_p)-1)/GMP_NUMB_BITS+1];         \
-  mpfr_t    _x = {{(_p),1,__MPFR_EXP_NAN,__gmpfr_local_tab_##_x}}
+  MPFR_EXTENSION mp_limb_t __gmpfr_local_tab_##_x[((_p)-1)/GMP_NUMB_BITS+1]; \
+  MPFR_EXTENSION mpfr_t _x = {{(_p),1,__MPFR_EXP_NAN,__gmpfr_local_tab_##_x}}
 
 /* Fast access macros to replace function interface.
    If the USER don't want to use the macro interface, let him make happy

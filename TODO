@@ -362,9 +362,6 @@ Miscellaneous:
   it cannot be supported. Modify the "configure --help" description
   to say "on systems that support it".
 
-- add a macro MPFR_USE_EXTENSION to be able to use MPFR_DECL_INIT in
-  C89 mode, without warnings.
-
 
 ##############################################################################
 Portability:
