@@ -47,7 +47,6 @@ mpfr_zeta_ui (mpfr_ptr z, unsigned long m, mp_rnd_t r)
       mpz_t d, t, s, q;
       mpfr_t y;
       int inex;
-      int st = 0;
 
       if (m >= p) /* 2^(-m) < ulp(1) = 2^(1-p). This means that
 		     2^(-m) <= 1/2*ulp(1). We have 3^(-m)+4^(-m)+... < 2^(-m)
@@ -98,16 +97,24 @@ mpfr_zeta_ui (mpfr_ptr z, unsigned long m, mp_rnd_t r)
 	  mpz_set_ui (t, 1);
 	  mpz_mul_2exp (t, t, 2 * n - 1); /* t[n] */
 	  mpz_set (d, t);
-	  st = 0;
 	  for (k = n; k > 0; k--)
 	    {
 	      count_leading_zeros (kbits, k);
-	      kbits = m * (BITS_PER_MP_LIMB - kbits);
+              kbits = BITS_PER_MP_LIMB - kbits;
 	      /* if k^m is too large, use mpz_tdiv_q */
-	      if (kbits > 2 * BITS_PER_MP_LIMB)
+	      if (m * kbits > 2 * BITS_PER_MP_LIMB)
 		{
-		  mpz_ui_pow_ui (q, k, m);
-		  mpz_tdiv_q (q, d, q);
+                  /* if we know in advance that k^m > d, then floor(d/k^m) will
+                     be zero below, so there is no need to compute k^m */
+                  kbits = (kbits - 1) * m + 1;
+                  /* k^m has at least kbits bits */
+                  if (kbits > mpz_sizeinbase (d, 2))
+                    mpz_set_ui (q, 0);
+                  else
+                    {
+                      mpz_ui_pow_ui (q, k, m);
+                      mpz_tdiv_q (q, d, q);
+                    }
 		}
 	      else /* use several mpz_tdiv_q_ui calls */
 		{
@@ -137,7 +144,7 @@ mpfr_zeta_ui (mpfr_ptr z, unsigned long m, mp_rnd_t r)
 
 	      /* we have d[k] = sum(t[i], i=k+1..n)
 		 with t[i] = n*(n+i-1)!*4^i/(n-i)!/(2i)!
-		 t[k-1]/t[k] = (2k)*(2k-1)/(n-k+1)/(n+k-1)/4 */
+		 t[k-1]/t[k] = k*(2k-1)/(n-k+1)/(n+k-1)/2 */
 #if (BITS_PER_MP_LIMB == 32)
 #define KMAX 46341 /* max k such that k*(2k-1) < 2^32 */
 #elif (BITS_PER_MP_LIMB == 64)
