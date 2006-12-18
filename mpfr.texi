@@ -1907,8 +1907,9 @@ in C++ and ISO C99) and @samp{Token Pasting}
 (standard in ISO C89). If @var{prec} is not a compiler constant, your compiler
 must support @samp{Variable-length automatic arrays} (standard in ISO C99).
 @samp{GCC 2.95.3} supports all these features. If you compile your program
-with gcc in c89 mode, you may want to define the @code{MPFR_USE_EXTENSION}
-macro to avoid warnings due to the @code{MPFR_DECL_INIT} implementation.
+with gcc in c89 mode and with @samp{-pedantic}, you may want to define the
+@code{MPFR_USE_EXTENSION} macro to avoid warnings due to the
+@code{MPFR_DECL_INIT} implementation.
 @end itemize
 @end defmac
 
