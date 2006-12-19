@@ -305,12 +305,12 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
          Since w >= 2 and z0+k >= 4, we can write log((z0+k)*(1+t1))
          = log(z0+k) * (1+t3) with |t3| <= 2^(-w), thus we have
          s = log(z0+k) * (1+t4)^2 with |t4| <= 2^(-w) */
-      mpfr_mul_2exp (t, z, 1, GMP_RNDN); /* t = 2z * (1+t5) */
+      mpfr_mul_2ui (t, z, 1, GMP_RNDN); /* t = 2z * (1+t5) */
       mpfr_sub_ui (t, t, 1, GMP_RNDN); /* t = 2z-1 * (1+t6)^3 */
       /* since we can write 2z*(1+t5) = (2z-1)*(1+t5') with
          t5' = 2z/(2z-1) * t5, thus |t5'| <= 8/7 * t5 */
       mpfr_mul (s, s, t, GMP_RNDN); /* (2z-1)*log(z) * (1+t7)^6 */
-      mpfr_div_2exp (s, s, 1, GMP_RNDN); /* (z-1/2)*log(z) * (1+t7)^6 */
+      mpfr_div_2ui (s, s, 1, GMP_RNDN); /* (z-1/2)*log(z) * (1+t7)^6 */
       mpfr_sub (s, s, z, GMP_RNDN); /* (z-1/2)*log(z)-z */
       /* s = [(z-1/2)*log(z)-z]*(1+u)^14, s >= 1/2 */
 
@@ -383,7 +383,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
 
       /* add 1/2*log(2*Pi) and subtract log(z0*(z0+1)*...*(z0+k-1)) */
       mpfr_const_pi (v, GMP_RNDN); /* v = Pi*(1+u) */
-      mpfr_mul_2exp (v, v, 1, GMP_RNDN); /* v = 2*Pi * (1+u) */
+      mpfr_mul_2ui (v, v, 1, GMP_RNDN); /* v = 2*Pi * (1+u) */
       if (k)
         {
           unsigned long l;
@@ -425,7 +425,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
          thus log(v) = log(v0) + (4k+1)*log(1+u). Since |log(1+u)/u| <= 1.07
          for |u| <= 2^(-3), the absolute error on log(v) is bounded by
          1.07*(4k+1)*u, and the rounding error by ulp(t). */
-      mpfr_div_2exp (t, t, 1, GMP_RNDN);
+      mpfr_div_2ui (t, t, 1, GMP_RNDN);
       /* the error on t is now bounded by ulp(t) + 0.54*(4k+1)*2^(-w).
          We have sqrt(2*Pi)/(z0*(z0+1)*...*(z0+k-1)) <= sqrt(2*Pi)/k! <= 0.5
          since k>=3, thus t <= -0.5 and ulp(t) >= 2^(-w).

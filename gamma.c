@@ -188,7 +188,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_mul (xp, xp, yp, GMP_RNDZ); /* x^(x-2) / e^(x-1) */
       mpfr_mul (xp, xp, yp, GMP_RNDZ); /* x^(x-2) / e^x */
       mpfr_mul (xp, xp, x, GMP_RNDZ); /* x^(x-1) / e^x */
-      mpfr_mul_2exp (xp, xp, 1, GMP_RNDZ);
+      mpfr_mul_2ui (xp, xp, 1, GMP_RNDZ);
       overflow = mpfr_overflow_p ();
       mpfr_clear (xp);
       mpfr_clear (yp);
@@ -240,7 +240,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_abs (tmp, tmp, GMP_RNDN);
       mpfr_mul_ui (tmp2, tmp2, 3, GMP_RNDU); /* 3Pi(2-x) */
       mpfr_add_ui (tmp2, tmp2, 1, GMP_RNDU); /* 3Pi(2-x)+1 */
-      mpfr_div_2exp (tmp2, tmp2, mpfr_get_prec (tmp), GMP_RNDU);
+      mpfr_div_2ui (tmp2, tmp2, mpfr_get_prec (tmp), GMP_RNDU);
       /* if tmp2<|tmp|, we get a lower bound */
       sgn = mpfr_sgn (tmp);
       if (mpfr_cmp (tmp2, tmp) < 0)

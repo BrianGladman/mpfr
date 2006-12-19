@@ -123,7 +123,7 @@ mpfr_zeta_part_a (mpfr_t sum, mpfr_srcptr s, int n)
 
   mpfr_neg (s1, s, GMP_RNDN);
   mpfr_ui_pow (u, n, s1, GMP_RNDN);
-  mpfr_div_2exp (u, u, 1, GMP_RNDN);
+  mpfr_div_2ui (u, u, 1, GMP_RNDN);
   mpfr_set (sum, u, GMP_RNDN);
   for (i=n-1; i>1; i--)
     {
@@ -386,7 +386,7 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
                                   Zeta(s) > 0 for -4k < s < -4k+2 */
             {
               MPFR_SET_INF (z_pre);
-              mpfr_div_2exp (s1, s, 2, GMP_RNDN); /* s/4, exact */
+              mpfr_div_2ui (s1, s, 2, GMP_RNDN); /* s/4, exact */
               mpfr_frac (s1, s1, GMP_RNDN); /* exact, -1 < s1 < 0 */
               if (mpfr_cmp_si_2exp (s1, -1, -1) > 0)
                 MPFR_SET_NEG (z_pre);

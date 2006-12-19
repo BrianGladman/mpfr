@@ -107,7 +107,7 @@ mpfr_cos2_aux (mpfr_ptr f, mpfr_srcptr r)
     }
 
   mpfr_set_z (f, s, GMP_RNDN);
-  mpfr_div_2exp (f, f, p + q, GMP_RNDN);
+  mpfr_div_2ui (f, f, p + q, GMP_RNDN);
   
   mpz_clear (x);
   mpz_clear (s);

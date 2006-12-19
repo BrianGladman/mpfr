@@ -42,7 +42,7 @@ mpfr_erfc_asympt (mpfr_ptr y, mpfr_srcptr x)
      with a bound for err */
   mpfr_mul (xx, x, x, GMP_RNDD); /* err <= 1 */
   mpfr_ui_div (xx, 1, xx, GMP_RNDU); /* upper bound for 1/(2x^2), err <= 2 */
-  mpfr_div_2exp (xx, xx, 1, GMP_RNDU); /* exact */
+  mpfr_div_2ui (xx, xx, 1, GMP_RNDU); /* exact */
   mpfr_set_ui (t, 1, GMP_RNDN); /* current term, exact */
   mpfr_set (y, t, GMP_RNDN);    /* current sum  */
   mpfr_set_ui (err, 0, GMP_RNDN);
@@ -70,9 +70,9 @@ mpfr_erfc_asympt (mpfr_ptr y, mpfr_srcptr x)
     }
   /* the error on y is bounded by err*ulp(y) */
   mpfr_mul (t, x, x, GMP_RNDU); /* rel. err <= 2^(1-p) */
-  mpfr_div_2exp (err, err, 3, GMP_RNDU); /* err/8 */
+  mpfr_div_2ui (err, err, 3, GMP_RNDU);  /* err/8 */
   mpfr_add (err, err, t, GMP_RNDU);      /* err/8 + xx */
-  mpfr_mul_2exp (err, err, 3, GMP_RNDU); /* err + 8*xx */
+  mpfr_mul_2ui (err, err, 3, GMP_RNDU);  /* err + 8*xx */
   mpfr_exp (t, t, GMP_RNDU); /* err <= 1/2*ulp(t) + err(x*x)*t
                                 <= 1/2*ulp(t)+2*|x*x|*ulp(t)
                                 <= (2*|x*x|+1/2)*ulp(t) */

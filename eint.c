@@ -83,7 +83,7 @@ mpfr_eint_aux (mpfr_t y, mpfr_srcptr x)
          eps[k+1] <= 1 + eps[k-1]*m*2^e/k + t[k-1]*m*2^(1-w)*2^e/k
                   =  1 + (eps[k-1] + t[k-1]*2^(1-w))*m*2^e/k
                   = 1 + (eps[k-1]*2^(w-1) + t[k-1])*2^(1-w)*m*2^e/k */
-      mpfr_mul_2exp (eps, eps, w - 1, GMP_RNDU);
+      mpfr_mul_2ui (eps, eps, w - 1, GMP_RNDU);
       mpfr_add_z (eps, eps, t, GMP_RNDU);
       MPFR_MPZ_SIZEINBASE2 (sizeinbase, m);
       mpfr_mul_2si (eps, eps, sizeinbase - (w - 1) + e, GMP_RNDU);
@@ -128,7 +128,7 @@ mpfr_eint_aux (mpfr_t y, mpfr_srcptr x)
       mpfr_div (eps, eps, erru, GMP_RNDU);
       mpfr_add (errs, errs, eps, GMP_RNDU);
       mpfr_set_z (y, s, GMP_RNDN);
-      mpfr_div_2exp (y, y, w, GMP_RNDN);
+      mpfr_div_2ui (y, y, w, GMP_RNDN);
       /* errs was an absolute error bound on s. We must convert it to an error
          in terms of ulp(y). Since ulp(y) = 2^(EXP(y)-PREC(y)), we must
          divide the error by 2^(EXP(y)-PREC(y)), but since we divided also
@@ -181,7 +181,7 @@ mpfr_eint_asympt (mpfr_ptr y, mpfr_srcptr x)
   mpfr_mul (y, y, invx, GMP_RNDN); /* err <= 2*err + 3/2 */
   mpfr_exp (t, x, GMP_RNDN); /* err(t) <= 1/2*ulp(t) */
   mpfr_mul (y, y, t, GMP_RNDN); /* again: err <= 2*err + 3/2 */
-  mpfr_mul_2exp (err, err, 2, GMP_RNDU);
+  mpfr_mul_2ui (err, err, 2, GMP_RNDU);
   mpfr_add_ui (err, err, 8, GMP_RNDU);
   err_exp = MPFR_GET_EXP(err);
   mpfr_clear (t);

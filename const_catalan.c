@@ -133,7 +133,7 @@ mpfr_const_catalan_internal (mpfr_ptr g, mp_rnd_t rnd_mode)
     mpfr_set_z (z, Q, GMP_RNDD);
     mpfr_div (y, y, z, GMP_RNDN);
     mpfr_add (x, x, y, GMP_RNDN);
-    mpfr_div_2exp (x, x, 3, GMP_RNDN);
+    mpfr_div_2ui (x, x, 3, GMP_RNDN);
 
     if (MPFR_LIKELY (MPFR_CAN_ROUND (x, p - 4, pg, rnd_mode)))
       break;
