@@ -2810,6 +2810,17 @@ $d_n$ has at least $0.786 p$ bits.
 In fact, we conjecture $d_n \geq 2^{p-1}$ when $n \geq \alpha p$;
 this conjecture was experimentally verified up to $p=1000$.
 
+\paragraph{Large argument case.} When $3^{-s} < 2^{-p}$, then $\zeta(s)
+\approx 1 + 2^{-s}$ to a precision of $p$ bits. More precisely, let
+$r(s) := \zeta(s) - (1 + 2^{-s}) = 3^{-s} + 4^{-s} + \cdots$.
+The function $3^s r(s) = 1 + (3/4)^s + (3/5)^s + \cdots$ decreases with $s$,
+thus for $s \geq 2$, $3^s r(s) \leq 3^2 \cdot r(2) < 4$. This yields:
+\[ |\zeta(s) - (1 + 2^{-s})| < 4 \cdot 3^{-s}. \]
+If the upper bound $4 \cdot 3^{-s}$ is less than $\frac{1}{2} \ulp(1)
+= 2^{-p}$, the correct rounding of $\zeta(s)$ is either $1 + 2^{-s}$ for
+rounding to zero, $-\infty$ or nearest,
+and $1 + 2^{-s} + 2^{1-p}$ for rounding to $+\infty$.
+
 \subsection{The arithmetic-geometric mean}
 
 The arithmetic-geometric mean (AGM for short) of two positive numbers 

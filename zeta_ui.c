@@ -68,16 +68,32 @@ mpfr_zeta_ui (mpfr_ptr z, unsigned long m, mp_rnd_t r)
 	    }
 	}
 
-      /* FIXME: treat also the case where zeta(m) - (1+1/2^m) < ulp(1).
-	 For m >= 6, we have zeta(m) - (1+1/2^m) < 2^(-1.5*m),
-	 thus if p <= 1.5*m, then zeta(m) - (1+1/2^m) < 2^(-p)
-	 and the result is either 1 or 1+. */
+      /* now treat also the case where zeta(m) - (1+1/2^m) < 1/2*ulp(1),
+	 and the result is either 1+2^(-m) or 1+2^(-m)+2^(1-p). */
+      mpfr_init2 (y, 31);
+
+      if (m >= p / 2) /* otherwise 4^(-m) > 2^(-p) */
+	{
+	  /* the following is a lower bound for log(3)/log(2) */
+	  mpfr_set_str_binary (y, "1.100101011100000000011010001110");
+	  mpfr_mul_ui (y, y, m, GMP_RNDZ); /* lower bound for log2(3^m) */
+	  if (mpfr_cmp_ui (y, p + 2) >= 0)
+	    {
+	      mpfr_clear (y);
+	      mpfr_set_ui (z, 1, GMP_RNDZ);
+	      mpfr_div_2exp (z, z, m, GMP_RNDZ);
+	      mpfr_add_ui (z, z, 1, GMP_RNDZ);
+	      if (r != GMP_RNDU)
+		return -1;
+	      mpfr_nextabove (z);
+	      return 1;
+	    }
+	}
 
       mpz_init (s);
       mpz_init (d);
       mpz_init (t);
       mpz_init (q);
-      mpfr_init2 (y, MPFR_PREC_MIN);
 
       p += MPFR_INT_CEIL_LOG2(p); /* account of the n term in the error */
 
