@@ -81,7 +81,7 @@ mpfr_zeta_ui (mpfr_ptr z, unsigned long m, mp_rnd_t r)
 	    {
 	      mpfr_clear (y);
 	      mpfr_set_ui (z, 1, GMP_RNDZ);
-	      mpfr_div_2exp (z, z, m, GMP_RNDZ);
+	      mpfr_div_2ui (z, z, m, GMP_RNDZ);
 	      mpfr_add_ui (z, z, 1, GMP_RNDZ);
 	      if (r != GMP_RNDU)
 		return -1;
@@ -201,7 +201,7 @@ mpfr_zeta_ui (mpfr_ptr z, unsigned long m, mp_rnd_t r)
 	  mpz_mul_2exp (s, s, p);
 	  mpz_tdiv_q (s, s, d);
 	  mpfr_set_z (y, s, GMP_RNDN);
-	  mpfr_div_2exp (y, y, p, GMP_RNDN);
+	  mpfr_div_2ui (y, y, p, GMP_RNDN);
 
 	  err = MPFR_INT_CEIL_LOG2 (err);
 
