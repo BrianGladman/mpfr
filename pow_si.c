@@ -1,6 +1,6 @@
 /* mpfr_pow_si -- power function x^y with y a signed int
 
-Copyright 2001, 2002, 2003, 2004, 2005, 2006 Free Software Foundation, Inc.
+Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -67,13 +67,13 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd)
       /* detect exact powers: x^(-n) is exact iff x is a power of 2 */
       if (mpfr_cmp_si_2exp (x, MPFR_SIGN(x), MPFR_EXP(x) - 1) == 0)
         {
-          mp_exp_t expx = MPFR_EXP (x); /* warning: x and y may be the same
-                                            variable */
-          mpfr_set_si (y, (n % 2) ? MPFR_INT_SIGN(x) : 1, rnd);
-          expx --;
+          mp_exp_t expx = MPFR_EXP (x) - 1; /* Warning: x and y may be
+                                               the same variable */
+          mpfr_set_si (y, (n % 2) ? MPFR_INT_SIGN (x) : 1, rnd);
           MPFR_ASSERTD (n < 0);
-          /* Warning n*expx may overflow!
-             Some systems abort with LONG_MIN / 1 or LONG_MIN/-1*/
+          /* Warning: n * expx may overflow!
+             Some systems abort with LONG_MIN / 1, and LONG_MIN / -1
+             is undefined. */
           if (n != -1 && expx > 0 && -expx < MPFR_EXP_MIN / (-n))
             MPFR_EXP (y) = MPFR_EMIN_MIN - 1; /* Underflow */
           else if (n != -1 && expx < 0 && -expx > MPFR_EXP_MAX / (-n))
