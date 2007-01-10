@@ -1,6 +1,6 @@
 /* Test file for mpfr_log2.
 
-Copyright 2001, 2002, 2004, 2006 Free Software Foundation, Inc.
+Copyright 2001, 2002, 2004, 2006, 2007 Free Software Foundation, Inc.
 Adapted from tsinh.c.
 
 This file is part of the MPFR Library.

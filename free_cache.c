@@ -1,6 +1,6 @@
 /* mpfr_free_cache - Free the cache used by MPFR for internal consts.
 
-Copyright 2004, 2005, 2006 Free Software Foundation, Inc.
+Copyright 2004, 2005, 2006, 2007 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 

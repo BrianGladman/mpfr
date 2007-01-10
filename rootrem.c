@@ -1,7 +1,7 @@
 /* This file is a new (faster) implementation of mpn_rootrem.
    (Will be removed once this new implementation is released in GMP.)
 
-   Copyright 2005, 2006 Free Software Foundation, Inc.
+   Copyright 2005, 2006, 2007 Free Software Foundation, Inc.
    This file was written by Torbjo"rn Granlund and Paul Zimmermann.
 
 This file is part of the MPFR Library.

@@ -1,6 +1,6 @@
 /* tsum -- test file for the list summation function
 
-Copyright 2004, 2005, 2006 Free Software Foundation, Inc.
+Copyright 2004, 2005, 2006, 2007 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 

@@ -1,6 +1,6 @@
 /* mpfr_round_near_x -- Round a floating point number nears another one.
 
-Copyright 2005, 2006 Free Software Foundation, Inc.
+Copyright 2005, 2006, 2007 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library, and was contributed by Mathieu Dutour.
 

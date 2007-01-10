@@ -1,6 +1,6 @@
 /* mpfr_get_uj -- convert a MPFR number to a huge machine unsigned integer
 
-Copyright 2004, 2006 Free Software Foundation, Inc.
+Copyright 2004, 2006, 2007 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 

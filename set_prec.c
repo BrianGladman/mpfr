@@ -1,6 +1,6 @@
 /* mpfr_set_prec -- reset the precision of a floating-point number
 
-Copyright 1999, 2001, 2002, 2004, 2006 Free Software Foundation, Inc.
+Copyright 1999, 2001, 2002, 2004, 2006, 2007 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 

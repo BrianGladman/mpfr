@@ -1,6 +1,6 @@
 /* mpfr_root -- kth root.
 
-Copyright 2005, 2006 Free Software Foundation, Inc.
+Copyright 2005, 2006, 2007 Free Software Foundation, Inc.
 Contributed by the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.

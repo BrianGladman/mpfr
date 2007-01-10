@@ -1,6 +1,6 @@
 /* mpfr_dump -- Dump a float to stdout.
 
-Copyright 1999, 2001, 2004, 2006 Free Software Foundation, Inc.
+Copyright 1999, 2001, 2004, 2006, 2007 Free Software Foundation, Inc.
 (Copied from the GNU MP Library.)
 
 This file is part of the MPFR Library.

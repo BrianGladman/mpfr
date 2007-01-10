@@ -1,6 +1,6 @@
 /* mpfr_exp2 -- power of 2 function 2^y
 
-Copyright 2001, 2002, 2003, 2004, 2005, 2006 Free Software Foundation, Inc.
+Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 

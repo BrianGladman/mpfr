@@ -1,6 +1,6 @@
 /* Test file for mpfr_inits, mpfr_inits2 and mpfr_clears.
 
-Copyright 2003, 2006 Free Software Foundation, Inc.
+Copyright 2003, 2006, 2007 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 

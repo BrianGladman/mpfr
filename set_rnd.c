@@ -1,7 +1,7 @@
 /* mpfr_set_default_rounding_mode -- set the default rounding mode
    mpfr_get_default_rounding_mode -- get the default rounding mode
 
-Copyright 1999, 2001, 2004, 2005, 2006 Free Software Foundation, Inc.
+Copyright 1999, 2001, 2004, 2005, 2006, 2007 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
