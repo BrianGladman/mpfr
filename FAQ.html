@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <!--
-Copyright 2000, 2001, 2002, 2003, 2004, 2005, 2006 Free Software Foundation, Inc.
+Copyright 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007 Free Software Foundation, Inc.
 Contributed by the Spaces project, INRIA Lorraine.
 
 This file is part of the MPFR Library.
@@ -47,7 +47,6 @@ dt
   margin-top: 2ex;
   margin-bottom: 1ex;
   font-weight: bolder;
-  background: #dddddd;
 }
 
 /* For testing: dd { background: #ddddff } */
@@ -81,6 +80,8 @@ li > p, dd > p
 }
 
 dl.faq { counter-reset: faq }
+
+dl.faq dt { background: #dddddd }
 
 dl.faq dt:before
 {
@@ -117,6 +118,13 @@ is a minimum value (<cite><acronym>MPF</acronym></cite> generally uses a
 higher precision). With the additional difference below, this implies that
 the <cite><acronym>MPFR</acronym></cite> results do not depend on the
 number of bits (16, 32, 64 or more) of the underlying architecture.</p></li>
+<li><p>As a consequence, <cite><acronym>MPFR</acronym></cite> uses a
+base-2 exponent, whereas in <cite><acronym>MPF</acronym></cite>, this
+is a base-2<sup>32</sup> or base-2<sup>64</sup> exponent, depending on
+the limb size. For this reason (and other internal ones), the maximum
+exponent range in <cite><acronym>MPFR</acronym></cite> is different
+(and smaller, if the exponent is represented by the same type as in
+<cite><acronym>MPF</acronym></cite>).</p></li>
 <li><p><cite><acronym>MPFR</acronym></cite> provides an additional rounding
 mode argument to its functions; furthermore, it is guaranteed that the
 result of any operation is the nearest possible floating-point value from
@@ -148,7 +156,9 @@ mode. Thus you simply need to add the following line in all your files
 using <cite><acronym>MPF</acronym></cite> functions:
 <code class="block-code">#include &lt;mpf2mpfr.h&gt;</code>
 just after the <samp>gmp.h</samp> and <samp>mpfr.h</samp>
-header files.</p></dd>
+header files. If the program uses <cite><acronym>MPF</acronym></cite>
+internals (such as direct access to <code>__mpf_struct</code> members),
+additional changes will be needed.</p></dd>
 
 <dt id="undef_ref">When I link my program with
 <cite><acronym>MPFR</acronym></cite>, I get undefined reference
