@@ -76,9 +76,11 @@ To make a release (for the MPFR team):
      objdir (../mpfr/configure --srcdir=/users/spaces/pelissip/mpfr/),
      with and without "-std=c99 -O3 -D_XOPEN_SOURCE=500", with and
      without "-ansi" (which allows to turn off features that are
-     incompatible with ISO C90), with and without --enable-thread-safe
-     and in various locales (LC_ALL=tr_TR in particular, if installed).
-     Test with both "make check" and the worst cases.
+     incompatible with ISO C90), with and without --enable-thread-safe,
+     in various FPU precisions (double, double extended and single) if
+     the platform supports that (e.g. under Linux/x86), and in various
+     locales (LC_ALL=tr_TR in particular, if installed). Test with both
+     "make check" and the worst cases.
   7) For the release itself (not the release candidates), if there are
      no problems, create a tag with:
        svn cp .../mpfr/branches/x.y .../mpfr/tags/x.y.z

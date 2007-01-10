@@ -1,6 +1,6 @@
 /* Miscellaneous support for test programs.
 
-Copyright 2001, 2002, 2003, 2004, 2005, 2006 Free Software Foundation, Inc.
+Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007 Free Software Foundation, Inc.
 
 This file is part of the MPFR Library.
 
@@ -53,6 +53,36 @@ MA 02110-1301, USA. */
 
 #include "mpfr-test.h"
 
+#ifdef MPFR_FPU_PREC
+/* This option allows to test MPFR on x86 processors when the FPU
+ * rounding precision has been changed. As MPFR is a library, this can
+ * occur in practice, either by the calling software or by some other
+ * library or plug-in used by the calling software. This option is
+ * mainly for developers. If it is used, then the <fpu_control.h>
+ * header is assumed to exist and work like under Linux/x86. MPFR does
+ * not need to be recompiled. So, a possible usage is the following:
+ *
+ *   cd tests
+ *   make clean
+ *   make check CFLAGS="-g -O2 -ffloat-store -DMPFR_FPU_PREC=_FPU_SINGLE"
+ *
+ * i.e. just add -DMPFR_FPU_PREC=... to the CFLAGS found in Makefile.
+ */
+
+#include <fpu_control.h>
+
+static void set_fpu_prec (void)
+{
+  fpu_control_t cw;
+
+  _FPU_GETCW(cw);
+  cw &= ~(_FPU_EXTENDED|_FPU_DOUBLE|_FPU_SINGLE);
+  cw |= (MPFR_FPU_PREC);
+  _FPU_SETCW(cw);
+}
+
+#endif
+
 static void tests_rand_start (void);
 static void tests_rand_end   (void);
 static void tests_limit_start (void);
@@ -76,6 +106,10 @@ tests_start_mpfr (void)
      locales. New bugs will probably be found, in particular with
      LC_ALL="tr_TR.ISO8859-9" because of the i/I character... */
   setlocale (LC_ALL, "");
+#endif
+
+#ifdef MPFR_FPU_PREC
+  set_fpu_prec ();
 #endif
 
   tests_memory_start ();
