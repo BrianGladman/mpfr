@@ -72,8 +72,8 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd)
           mpfr_set_si (y, (n % 2) ? MPFR_INT_SIGN (x) : 1, rnd);
           MPFR_ASSERTD (n < 0);
           /* Warning: n * expx may overflow!
-             Some systems abort with LONG_MIN / 1, and LONG_MIN / -1
-             is undefined. */
+             Some systems (apparently alpha-freebsd) abort with
+             LONG_MIN / 1, and LONG_MIN / -1 is undefined. */
           if (n != -1 && expx > 0 && -expx < MPFR_EXP_MIN / (-n))
             MPFR_EXP (y) = MPFR_EMIN_MIN - 1; /* Underflow */
           else if (n != -1 && expx < 0 && -expx > MPFR_EXP_MAX / (-n))
