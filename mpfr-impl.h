@@ -196,6 +196,9 @@ __MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_cache_const_log2;
 __MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_cache_const_euler;
 __MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_cache_const_catalan;
 
+#define BASE_MAX 36
+__MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_ptr mpfr_l2b[BASE_MAX-1][2];
+
 __MPFR_DECLSPEC extern const mpfr_t __gmpfr_one;
 __MPFR_DECLSPEC extern const mpfr_t __gmpfr_two;
 __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
@@ -510,7 +513,10 @@ union ieee_double_decimal64 { double d; _Decimal64 d64; };
  ***************** exponent limits ********************
  ******************************************************/
 
-/* Defined limits and unsigned type of exponent */
+/* Define limits and unsigned type of exponent. The following definitions
+ * depend on mp_exp_t; if this type changes in GMP, these definitions will
+ * need to be modified (alternatively, a mpfr_exp_t type could be defined).
+ */
 #if __GMP_MP_SIZE_T_INT == 1
 typedef unsigned int            mpfr_uexp_t;
 # define MPFR_EXP_MAX (INT_MAX)
@@ -523,6 +529,8 @@ typedef unsigned long int  mpfr_uexp_t;
 #ifndef mp_exp_unsigned_t
 # define mp_exp_unsigned_t mpfr_uexp_t
 #endif
+#define mpfr_get_exp_t(x,r) mpfr_get_si((x),(r))
+#define mpfr_set_exp_t(x,e,r) mpfr_set_si((x),(e),(r))
 
 /* Invalid exponent value (to track bugs...) */
 #define MPFR_EXP_INVALID \
