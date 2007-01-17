@@ -79,6 +79,7 @@ Changes in existing functions:
 New functions to implement:
 ##############################################################################
 
+- mpfr_sinh_cosh (from Kaveh R. Ghazi ghazi@caip.rutgers.edu 17 Jan 2007)
 - document MPFR_SIGN and/or provide mpfr_get_sign / mpfr_set_sign.
 - function mpfr_lgamma, with the prototype
     int mpfr_lgamma (mpfr_ptr, int *, mpfr_srcptr, mpfr_rnd_t)
