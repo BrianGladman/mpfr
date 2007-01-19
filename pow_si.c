@@ -67,21 +67,18 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd)
       /* detect exact powers: x^(-n) is exact iff x is a power of 2 */
       if (mpfr_cmp_si_2exp (x, MPFR_SIGN(x), MPFR_EXP(x) - 1) == 0)
         {
-          mp_exp_t expx = MPFR_EXP (x) - 1; /* Warning: x and y may be
-                                               the same variable */
-          mpfr_set_si (y, (n % 2) ? MPFR_INT_SIGN (x) : 1, rnd);
-          MPFR_ASSERTD (MPFR_EXP (y) == 1);
+          mp_exp_t expx = MPFR_EXP (x) - 1, expy;
           MPFR_ASSERTD (n < 0);
           /* Warning: n * expx may overflow!
              Some systems (apparently alpha-freebsd) abort with
              LONG_MIN / 1, and LONG_MIN / -1 is undefined. */
-          if (n != -1 && expx > 0 && expx > MPFR_EXP_MIN / n)
-            MPFR_EXP (y) = MPFR_EMIN_MIN - 1; /* Underflow */
-          else if (n != -1 && expx < 0 && expx < MPFR_EXP_MAX / n)
-            MPFR_EXP (y) = MPFR_EMAX_MAX + 1; /* Overflow */
-          else
-            MPFR_EXP (y) += n * expx;
-          return mpfr_check_range (y, 0, rnd);
+          expy =
+            n != -1 && expx > 0 && expx > (__gmpfr_emin - 1) / n ?
+            MPFR_EMIN_MIN - 2 /* Underflow */ :
+            n != -1 && expx < 0 && expx < (__gmpfr_emax - 1) / n ?
+            MPFR_EMAX_MAX /* Overflow */ : n * expx;
+          return mpfr_set_si_2exp (y, n % 2 ? MPFR_INT_SIGN (x) : 1,
+                                   expy, rnd);
         }
 
       n = -n;
