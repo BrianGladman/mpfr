@@ -275,6 +275,28 @@ check_pow_si (void)
   mpfr_pow_si (x, x, -2, GMP_RNDN);
   MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
 
+  mpfr_set_si (x, 2, GMP_RNDN);
+  mpfr_pow_si (x, x, LONG_MAX, GMP_RNDN);
+  if (LONG_MAX > mpfr_get_emax () - 1)
+    {
+      MPFR_ASSERTN (mpfr_inf_p (x));
+    }
+  else
+    {
+      MPFR_ASSERTN (mpfr_cmp_si_2exp (x, 2, LONG_MAX));
+    }
+
+  mpfr_set_si (x, 2, GMP_RNDN);
+  mpfr_pow_si (x, x, LONG_MIN, GMP_RNDN);
+  if (LONG_MIN + 1 < mpfr_get_emin ())
+    {
+      MPFR_ASSERTN (mpfr_zero_p (x));
+    }
+  else
+    {
+      MPFR_ASSERTN (mpfr_cmp_si_2exp (x, 2, LONG_MIN));
+    }
+
   mpfr_clear (x);
 }
 
