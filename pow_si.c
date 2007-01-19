@@ -70,6 +70,7 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd)
           mp_exp_t expx = MPFR_EXP (x) - 1; /* Warning: x and y may be
                                                the same variable */
           mpfr_set_si (y, (n % 2) ? MPFR_INT_SIGN (x) : 1, rnd);
+          MPFR_ASSERTD (MPFR_EXP (y) == 1);
           MPFR_ASSERTD (n < 0);
           /* Warning: n * expx may overflow!
              Some systems (apparently alpha-freebsd) abort with
