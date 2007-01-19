@@ -299,7 +299,7 @@ check_pow_si (void)
 
   mpfr_set_si_2exp (x, 1, -1, GMP_RNDN);  /* 0.5 */
   mpfr_pow_si (x, x, LONG_MIN, GMP_RNDN);  /* 2^(-LONG_MIN) */
-  if (LONG_MIN < mpfr_get_emax () + 1)  /* 1 - LONG_MIN > emax */
+  if (LONG_MIN < 1 - mpfr_get_emax ())  /* 1 - LONG_MIN > emax */
     {
       MPFR_ASSERTN (mpfr_inf_p (x));
     }
