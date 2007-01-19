@@ -153,8 +153,9 @@ main (void)
         }
       if (i <= - (unsigned long) LONG_MIN)
         {
-          mpfr_set_si (y, - (long) i, GMP_RNDN);
-          if (mpfr_get_f (x, y, GMP_RNDN) || mpf_cmp_si (x, - (long) i))
+          long j = i < - (unsigned long) LONG_MIN ? - (long) i : LONG_MIN;
+          mpfr_set_si (y, j, GMP_RNDN);
+          if (mpfr_get_f (x, y, GMP_RNDN) || mpf_cmp_si (x, j))
             {
               printf ("Error: mpfr_get_f(-%lu) fails\n", i);
               exit (1);
