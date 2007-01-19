@@ -297,6 +297,22 @@ check_pow_si (void)
       MPFR_ASSERTN (mpfr_cmp_si_2exp (x, 1, LONG_MIN));
     }
 
+  mpfr_set_si (x, 2, GMP_RNDN);
+  mpfr_pow_si (x, x, LONG_MIN + 1, GMP_RNDN);  /* 2^(LONG_MIN+1) */
+  if (mpfr_nan_p (x))
+    {
+      printf ("Error in pow_si(2, LONG_MIN+1): got NaN\n");
+      exit (1);
+    }
+  if (LONG_MIN + 2 < mpfr_get_emin ())
+    {
+      MPFR_ASSERTN (mpfr_zero_p (x));
+    }
+  else
+    {
+      MPFR_ASSERTN (mpfr_cmp_si_2exp (x, 1, LONG_MIN + 1));
+    }
+
   mpfr_set_si_2exp (x, 1, -1, GMP_RNDN);  /* 0.5 */
   mpfr_pow_si (x, x, LONG_MIN, GMP_RNDN);  /* 2^(-LONG_MIN) */
   if (LONG_MIN < 1 - mpfr_get_emax ())  /* 1 - LONG_MIN > emax */
