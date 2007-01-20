@@ -20,17 +20,25 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
+#include <limits.h>
 #include "mpfr-impl.h"
 
 int
 mpfr_set_si_2exp (mpfr_ptr x, long i, mp_exp_t e, mp_rnd_t rnd_mode)
 {
+  mpfr_t ii;
   int res;
   MPFR_SAVE_EXPO_DECL (expo);
 
   MPFR_SAVE_EXPO_MARK (expo);
-  res = mpfr_set_si (x, i, rnd_mode);
-  mpfr_mul_2si (x, x, e, rnd_mode); /* Should be exact */
+  mpfr_init2 (ii, sizeof (long) * CHAR_BIT);
+  res = mpfr_set_si (ii, i, rnd_mode);  /* exact, no exceptions */
+  MPFR_ASSERTN (res == 0);
+  MPFR_ASSERTN (e >= LONG_MIN && e <= LONG_MAX);
+  /* FIXME: this may no longer be the case in the future. */
+  res = mpfr_mul_2si (x, ii, e, rnd_mode);
+  mpfr_clear (ii);
+  MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
   MPFR_SAVE_EXPO_FREE (expo);
   res = mpfr_check_range(x, res, rnd_mode);
   return res;
