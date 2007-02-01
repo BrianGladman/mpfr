@@ -702,6 +702,8 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
  ( mpfr_init(x), mpfr_set_ui((x), (i), (rnd)) )
 #define mpfr_init_set_d(x, d, rnd) \
  ( mpfr_init(x), mpfr_set_d((x), (d), (rnd)) )
+#define mpfr_init_set_ld(x, d, rnd) \
+ ( mpfr_init(x), mpfr_set_ld((x), (d), (rnd)) )
 #define mpfr_init_set_z(x, i, rnd) \
  ( mpfr_init(x), mpfr_set_z((x), (i), (rnd)) )
 #define mpfr_init_set_q(x, i, rnd) \
