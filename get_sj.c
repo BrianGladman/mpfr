@@ -1,6 +1,7 @@
 /* mpfr_get_sj -- convert a MPFR number to a huge machine signed integer
 
 Copyright 2004, 2006, 2007 Free Software Foundation, Inc.
+Contributed by the Arenaire and Cacao projects, INRIA.
 
 This file is part of the MPFR Library.
 

@@ -1,6 +1,7 @@
 /* mpfr_div_2exp -- divide a floating-point number by a power of two
 
 Copyright 1999, 2001, 2004, 2006, 2007 Free Software Foundation, Inc.
+Contributed by the Arenaire and Cacao projects, INRIA.
 
 This file is part of the MPFR Library.
 

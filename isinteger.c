@@ -1,6 +1,7 @@
 /* mpfr_integer_p -- test if a mpfr variable is integer.
 
 Copyright 2001, 2002, 2003, 2004, 2006, 2007 Free Software Foundation, Inc.
+Contributed by the Arenaire and Cacao projects, INRIA.
 
 This file is part of the MPFR Library.
 

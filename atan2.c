@@ -1,6 +1,7 @@
 /* mpfr_atan2 -- arc-tan 2 of a floating-point number
 
 Copyright 2005, 2006, 2007 Free Software Foundation, Inc.
+Contributed by the Arenaire and Cacao projects, INRIA.
 
 This file is part of the MPFR Library, and was contributed by Mathieu Dutour.
 

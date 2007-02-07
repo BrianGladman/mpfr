@@ -1,7 +1,7 @@
 /* Test file for mpfr_log10.
 
 Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007 Free Software Foundation, Inc.
-Adapted from tsinh.c.
+Contributed by the Arenaire and Cacao projects, INRIA.
 
 This file is part of the MPFR Library.
 

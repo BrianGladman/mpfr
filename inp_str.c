@@ -2,6 +2,7 @@
    BASE from stdio stream STREAM and store the result in DEST_FLOAT.
 
 Copyright 1999, 2001, 2002, 2004, 2006, 2007 Free Software Foundation, Inc.
+Contributed by the Arenaire and Cacao projects, INRIA.
 (Copied from GMP, file mpf/inp_str.c)
 
 This file is part of the MPFR Library.

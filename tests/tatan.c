@@ -1,7 +1,7 @@
 /* Test file for mpfr_atan.
 
 Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007 Free Software Foundation, Inc.
-Written by Paul Zimmermann, INRIA Lorraine.
+Contributed by the Arenaire and Cacao projects, INRIA.
 
 This file is part of the MPFR Library.
 

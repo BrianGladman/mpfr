@@ -1,6 +1,7 @@
 /* Test file for mpfr_check.
 
 Copyright 2003, 2004, 2006, 2007 Free Software Foundation, Inc.
+Contributed by the Arenaire and Cacao projects, INRIA.
 
 This file is part of the MPFR Library.
 

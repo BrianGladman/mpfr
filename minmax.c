@@ -1,6 +1,7 @@
 /* mpfr_min -- min and max of x, y
 
 Copyright 2001, 2003, 2004, 2006, 2007 Free Software Foundation, Inc.
+Contributed by the Arenaire and Cacao projects, INRIA.
 
 This file is part of the MPFR Library.
 

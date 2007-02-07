@@ -1,6 +1,7 @@
 /* mpfr_cmp_d -- compare a floating-point number with a long double
 
 Copyright 2004, 2006, 2007 Free Software Foundation, Inc.
+Contributed by the Arenaire and Cacao projects, INRIA.
 
 This file is part of the MPFR Library.
 

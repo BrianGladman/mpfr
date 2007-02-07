@@ -1,8 +1,9 @@
 /* Memory allocation used during tests.
 
 Copyright 2001, 2002, 2003, 2006, 2007 Free Software Foundation, Inc.
+Contributed by the Arenaire and Cacao projects, INRIA.
 
-This file is part of the GNU MP Library.
+This file is part of the MPFR Library.
 
 ChangeLog:
  tests_memory_valid has been commented out since it is not used

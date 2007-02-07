@@ -2,6 +2,7 @@
    mpfr_dump, mpfr_print_binary, mpfr_print_rnd_mode.
 
 Copyright 2004, 2005, 2006, 2007 Free Software Foundation, Inc.
+Contributed by the Arenaire and Cacao projects, INRIA.
 
 This file is part of the MPFR Library.
 
