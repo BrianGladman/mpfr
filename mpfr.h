@@ -649,13 +649,13 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
      _p->_mpfr_sign = 1;                   \
      _p->_mpfr_exp = __MPFR_EXP_ZERO;      \
      (void) (_r); 0; }) :                  \
-   mpfr_set_ui (_f,_u,_r))
+   mpfr_set_ui_2exp ((_f), (_u), 0, (_r)))
 #endif
 #undef mpfr_set_si
 #define mpfr_set_si(_f,_s,_r)              \
  (__builtin_constant_p (_s) && (_s) >= 0 ? \
    mpfr_set_ui ((_f), (_s), (_r)) :        \
-   mpfr_set_si ((_f), (_s), (_r)))
+   mpfr_set_si_2exp ((_f), (_s), 0, (_r)))
 #endif
 #endif
 

@@ -21,26 +21,54 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
-#include <limits.h>
+#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
 int
 mpfr_set_si_2exp (mpfr_ptr x, long i, mp_exp_t e, mp_rnd_t rnd_mode)
 {
-  mpfr_t ii;
-  int res;
-  MPFR_SAVE_EXPO_DECL (expo);
+  if (i == 0)
+    {
+      MPFR_SET_ZERO (x);
+      MPFR_SET_POS (x);
+      MPFR_RET (0);
+    }
+  else
+    {
+      mp_size_t xn;
+      unsigned int cnt, nbits;
+      mp_limb_t ai, *xp;
+      int inex = 0;
 
-  MPFR_SAVE_EXPO_MARK (expo);
-  mpfr_init2 (ii, sizeof (long) * CHAR_BIT);
-  res = mpfr_set_si (ii, i, rnd_mode);  /* exact, no exceptions */
-  MPFR_ASSERTN (res == 0);
-  MPFR_ASSERTN (e >= LONG_MIN && e <= LONG_MAX);
-  /* FIXME: this may no longer be the case in the future. */
-  res = mpfr_mul_2si (x, ii, e, rnd_mode);
-  mpfr_clear (ii);
-  MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
-  MPFR_SAVE_EXPO_FREE (expo);
-  res = mpfr_check_range(x, res, rnd_mode);
-  return res;
+      /* FIXME: support int limbs (e.g. 16-bit limbs on 16-bit proc) */
+      ai = SAFE_ABS (unsigned long, i);
+      MPFR_ASSERTN (SAFE_ABS (unsigned long, i) == ai);
+
+      /* Position of the highest limb */
+      xn = (MPFR_PREC (x) - 1) / BITS_PER_MP_LIMB;
+      count_leading_zeros (cnt, ai);
+      MPFR_ASSERTD (cnt < BITS_PER_MP_LIMB);  /* OK since i != 0 */
+
+      xp = MPFR_MANT(x);
+      xp[xn] = ai << cnt;
+      /* Zero the xn lower limbs. */
+      MPN_ZERO(xp, xn);
+      MPFR_SET_SIGN (x, i < 0 ? MPFR_SIGN_NEG : MPFR_SIGN_POS);
+
+      nbits = BITS_PER_MP_LIMB - cnt;
+      e += nbits;  /* exponent _before_ the rounding */
+
+      /* round if MPFR_PREC(x) smaller than length of i */
+      if (MPFR_UNLIKELY (MPFR_PREC (x) < nbits) &&
+          MPFR_UNLIKELY (mpfr_round_raw (xp + xn, xp + xn, nbits, i < 0,
+                                         MPFR_PREC (x), rnd_mode, &inex)))
+        {
+          e++;
+          xp[xn] = MPFR_LIMB_HIGHBIT;
+        }
+
+      MPFR_CLEAR_FLAGS (x);
+      MPFR_EXP (x) = e;
+      return mpfr_check_range (x, inex, rnd_mode);
+    }
 }

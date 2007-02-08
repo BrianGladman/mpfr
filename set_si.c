@@ -20,62 +20,11 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
-#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+#undef mpfr_set_si
 int
-(mpfr_set_si) (mpfr_ptr x, long i, mp_rnd_t rnd_mode)
+mpfr_set_si (mpfr_ptr x, long i, mp_rnd_t rnd_mode)
 {
-  int inex;
-  mp_size_t xn;
-  unsigned int cnt, nbits;
-  mp_limb_t ai, *xp;
-
-  MPFR_CLEAR_FLAGS(x);
-  if (i == 0)
-    {
-      MPFR_SET_ZERO(x);
-      MPFR_SET_POS(x);
-      MPFR_RET(0);
-    }
-
-  xn = (MPFR_PREC(x)-1)/BITS_PER_MP_LIMB;
-  ai = SAFE_ABS(unsigned long, i);
-  MPFR_ASSERTN(SAFE_ABS(unsigned long, i) == ai);
-  count_leading_zeros(cnt, ai);
-
-  xp = MPFR_MANT(x);
-  xp[xn] = ai << cnt;
-  /* don't forget to put zero in lower limbs */
-  MPN_ZERO(xp, xn);
-  /* set sign */
-  if (i < 0)
-    MPFR_SET_NEG(x);
-  else
-    MPFR_SET_POS(x);
-
-  nbits = BITS_PER_MP_LIMB - cnt;
-  MPFR_EXP (x) = nbits;  /* may be out-of-range, check range below */
-  inex = mpfr_check_range(x, 0, rnd_mode);
-  if (inex)
-    return inex; /* underflow or overflow */
-
-  /* round if MPFR_PREC(x) smaller than length of i */
-  if (MPFR_UNLIKELY(MPFR_PREC(x) < nbits))
-    {
-      int carry;
-
-      carry = mpfr_round_raw(xp+xn, xp+xn, nbits, (i < 0), MPFR_PREC(x),
-                             rnd_mode, &inex);
-      if (MPFR_UNLIKELY(carry))
-        {
-          /* nbits is the current exponent */
-          if (MPFR_UNLIKELY((mp_exp_t) nbits == __gmpfr_emax))
-            return mpfr_overflow(x, rnd_mode, (i < 0 ? -1 : 1));
-          MPFR_SET_EXP (x, nbits + 1);
-          xp[xn] = MPFR_LIMB_HIGHBIT;
-        }
-    }
-
-  MPFR_RET(inex);
+  return mpfr_set_si_2exp (x, i, 0, rnd_mode);
 }

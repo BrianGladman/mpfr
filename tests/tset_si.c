@@ -70,6 +70,27 @@ test_2exp (void)
   if (mpfr_cmp_ui (x, 1<<13) || res <= 0)
     ERROR ("Prec 2 + ui_2exp");
 
+  mpfr_clear_flags ();
+  mpfr_set_ui_2exp (x, 17, MPFR_EMAX_MAX, GMP_RNDN);
+  if (!mpfr_inf_p (x) || MPFR_IS_NEG (x))
+    ERROR ("mpfr_set_ui_2exp and overflow (bad result)");
+  if (!mpfr_overflow_p ())
+    ERROR ("mpfr_set_ui_2exp and overflow (overflow flag not set)");
+
+  mpfr_clear_flags ();
+  mpfr_set_si_2exp (x, 17, MPFR_EMAX_MAX, GMP_RNDN);
+  if (!mpfr_inf_p (x) || MPFR_IS_NEG (x))
+    ERROR ("mpfr_set_si_2exp (pos) and overflow (bad result)");
+  if (!mpfr_overflow_p ())
+    ERROR ("mpfr_set_si_2exp (pos) and overflow (overflow flag not set)");
+
+  mpfr_clear_flags ();
+  mpfr_set_si_2exp (x, -17, MPFR_EMAX_MAX, GMP_RNDN);
+  if (!mpfr_inf_p (x) || MPFR_IS_POS (x))
+    ERROR ("mpfr_set_si_2exp (neg) and overflow (bad result)");
+  if (!mpfr_overflow_p ())
+    ERROR ("mpfr_set_si_2exp (neg) and overflow (overflow flag not set)");
+
   mpfr_clear (x);
 }
 
@@ -113,7 +134,8 @@ main (int argc, char *argv[])
   unsigned long zl, dl;
   int inex;
   int r;
-  mp_exp_t emax;
+  mp_exp_t emin, emax;
+  int flag;
 
   tests_start_mpfr ();
 
@@ -348,6 +370,43 @@ main (int argc, char *argv[])
   if (d != LONG_MIN || !mpfr_erangeflag_p ())
     {
       printf ("ERROR for get_si + ERANGE + LONG_MIN (2)\n");
+      exit (1);
+    }
+
+  emin = mpfr_get_emin ();
+  mpfr_set_prec (x, 2);
+
+  mpfr_set_emin (4);
+  mpfr_clear_flags ();
+  mpfr_set_ui (x, 7, GMP_RNDU);
+  flag = mpfr_underflow_p ();
+  mpfr_set_emin (emin);
+  if (mpfr_cmp_ui (x, 8) != 0)
+    {
+      printf ("Error for mpfr_set_ui (x, 7, GMP_RNDU), prec = 2, emin = 4\n");
+      exit (1);
+    }
+  if (flag)
+    {
+      printf ("mpfr_set_ui (x, 7, GMP_RNDU) should not underflow "
+              "with prec = 2, emin = 4\n");
+      exit (1);
+    }
+
+  mpfr_set_emin (4);
+  mpfr_clear_flags ();
+  mpfr_set_si (x, -7, GMP_RNDD);
+  flag = mpfr_underflow_p ();
+  mpfr_set_emin (emin);
+  if (mpfr_cmp_si (x, -8) != 0)
+    {
+      printf ("Error for mpfr_set_si (x, -7, GMP_RNDD), prec = 2, emin = 4\n");
+      exit (1);
+    }
+  if (flag)
+    {
+      printf ("mpfr_set_si (x, -7, GMP_RNDD) should not underflow "
+              "with prec = 2, emin = 4\n");
       exit (1);
     }
 
