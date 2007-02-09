@@ -537,7 +537,11 @@ typedef unsigned long int  mpfr_uexp_t;
 #define MPFR_EXP_INVALID \
  ((mp_exp_t) 1 << (BITS_PER_MP_LIMB*sizeof(mp_exp_t)/sizeof(mp_limb_t)-2))
 
-/* Definition of the intervals of the exponent limits */
+/* Definition of the exponent limits for MPFR numbers.
+ * These limits are chosen so that if e is such an exponent, then 2e-1 and
+ * 2e+1 are representable. This is useful for intermediate computations,
+ * in particular the multiplication.
+ */
 #undef MPFR_EMIN_MIN
 #undef MPFR_EMIN_MAX
 #undef MPFR_EMAX_MIN
