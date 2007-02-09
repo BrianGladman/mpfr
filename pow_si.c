@@ -112,6 +112,11 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd)
            *     overflow since 0 > expx >= (__gmpfr_emax - 1) / n and
            *           0 < n * expx <= n * ((__gmpfr_emax - 1) / n)
            *                        <= __gmpfr_emax - 1.
+           * Note: one could use expx bounds based on MPFR_EXP_MIN and
+           * MPFR_EXP_MAX instead of __gmpfr_emin and __gmpfr_emax. The
+           * current bounds do not lead to noticeably slower code and
+           * allow us to avoid a bug in Sun's compiler for Solaris/x86
+           * (when optimizations are enabled).
            */
           expy =
             n != -1 && expx > 0 && expx > (__gmpfr_emin - 1) / n ?
