@@ -364,6 +364,35 @@ check_special_pow_si ()
 }
 
 static void
+pow_si_long_min (void)
+{
+  mpfr_t x, y, z;
+  int inex;
+
+  mpfr_inits2 (sizeof(long) * CHAR_BIT + 32, x, y, z, (void *) 0);
+  mpfr_set_si_2exp (x, 3, -1, GMP_RNDN);  /* 1.5 */
+
+  inex = mpfr_set_si (y, LONG_MIN, GMP_RNDN);
+  MPFR_ASSERTN (inex == 0);
+  mpfr_nextbelow (y);
+  mpfr_pow (y, x, y, GMP_RNDD);
+
+  inex = mpfr_set_si (z, LONG_MIN, GMP_RNDN);
+  MPFR_ASSERTN (inex == 0);
+  mpfr_nextabove (z);
+  mpfr_pow (z, x, z, GMP_RNDU);
+
+  mpfr_pow_si (x, x, LONG_MIN, GMP_RNDN);  /* 1.5^LONG_MIN */
+  if (mpfr_cmp (x, y) < 0 || mpfr_cmp (x, z) > 0)
+    {
+      printf ("Error in pow_si_long_min\n");
+      exit (1);
+    }
+
+  mpfr_clears (x, y, z, (void *) 0);
+}
+
+static void
 check_inexact (mp_prec_t p)
 {
   mpfr_t x, y, z, t;
@@ -845,6 +874,7 @@ main (void)
   check_pow_ui ();
   check_pow_si ();
   check_special_pow_si ();
+  pow_si_long_min ();
   for (p = 2; p < 100; p++)
     check_inexact (p);
   underflows ();

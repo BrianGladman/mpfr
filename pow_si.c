@@ -127,8 +127,6 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd)
                                    expy, rnd);
         }
 
-      n = -n;
-
       /* General case */
       {
         /* Declaration of the intermediary variable */
@@ -138,8 +136,11 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd)
         mp_prec_t Nt;                              /* working precision */
         mp_exp_t  err;                             /* error */
         int inexact;
+        unsigned long abs_n;
         MPFR_SAVE_EXPO_DECL (expo);
         MPFR_ZIV_DECL (loop);
+
+        abs_n = - (unsigned long) n;
 
         /* compute the precision of intermediary variable */
         /* the optimal number of bits : see algorithms.tex */
@@ -153,17 +154,17 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd)
         MPFR_ZIV_INIT (loop, Nt);
         for (;;)
           {
-            /* compute 1/(x^n) n>0*/
-            mpfr_pow_ui (t, x, (unsigned long int) n, GMP_RNDN);
+            /* compute 1/(x^n), with n > 0 */
+            mpfr_pow_ui (t, x, abs_n, GMP_RNDN);
             mpfr_ui_div (t, 1, t, GMP_RNDN);
-          /* FIXME: old code improved, but I think this is still incorrect. */
+            /* FIXME: old code improved, but I think this is still incorrect. */
             if (MPFR_UNLIKELY (MPFR_IS_ZERO (t)))
               {
                 MPFR_ZIV_FREE (loop);
                 mpfr_clear (t);
                 MPFR_SAVE_EXPO_FREE (expo);
                 return mpfr_underflow (y, rnd == GMP_RNDN ? GMP_RNDZ : rnd,
-                                       (unsigned) n & 1 ? MPFR_SIGN (x) :
+                                       abs_n & 1 ? MPFR_SIGN (x) :
                                        MPFR_SIGN_POS);
               }
             if (MPFR_UNLIKELY (MPFR_IS_INF (t)))
@@ -171,8 +172,7 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd)
                 MPFR_ZIV_FREE (loop);
                 mpfr_clear (t);
                 MPFR_SAVE_EXPO_FREE (expo);
-                return mpfr_overflow (y, rnd,
-                                      (unsigned) n & 1 ? MPFR_SIGN (x) :
+                return mpfr_overflow (y, rnd, abs_n & 1 ? MPFR_SIGN (x) :
                                       MPFR_SIGN_POS);
               }
             /* error estimate -- see pow function in algorithms.ps */
