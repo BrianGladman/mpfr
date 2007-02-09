@@ -71,8 +71,48 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd)
           mp_exp_t expx = MPFR_EXP (x) - 1, expy;
           MPFR_ASSERTD (n < 0);
           /* Warning: n * expx may overflow!
-             Some systems (apparently alpha-freebsd) abort with
-             LONG_MIN / 1, and LONG_MIN / -1 is undefined. */
+           * Some systems (apparently alpha-freebsd) abort with
+           * LONG_MIN / 1, and LONG_MIN / -1 is undefined.
+           * Proof of the overflow checking. The expressions below are
+           * assumed to be on the rational numbers, but the word "overflow"
+           * still has its own meaning in the C context. / still denotes
+           * the integer (truncated) division, and // denotes the exact
+           * division.
+           * - First, (__gmpfr_emin - 1) / n and (__gmpfr_emax - 1) / n
+           *   cannot overflow due to the constraints on the exponents of
+           *   MPFR numbers.
+           * - If n = -1, then n * expx = - expx, which is representable
+           *   because of the constraints on the exponents of MPFR numbers.
+           * - If expx = 0, then n * expx = 0, which is representable.
+           * - If n < -1 and expx > 0:
+           *   + If expx > (__gmpfr_emin - 1) / n, then
+           *           expx >= (__gmpfr_emin - 1) / n + 1
+           *                > (__gmpfr_emin - 1) // n,
+           *     and
+           *           n * expx < __gmpfr_emin - 1,
+           *     i.e.
+           *           n * expx <= __gmpfr_emin - 2.
+           *     This corresponds to an underflow, with a null result in
+           *     the rounding-to-nearest mode.
+           *   + If expx <= (__gmpfr_emin - 1) / n, then n * expx cannot
+           *     overflow since 0 < expx <= (__gmpfr_emin - 1) / n and
+           *           0 > n * expx >= n * ((__gmpfr_emin - 1) / n)
+           *                        >= __gmpfr_emin - 1.
+           * - If n < -1 and expx < 0:
+           *   + If expx < (__gmpfr_emax - 1) / n, then
+           *           expx <= (__gmpfr_emax - 1) / n - 1
+           *                < (__gmpfr_emax - 1) // n,
+           *     and
+           *           n * expx > __gmpfr_emax - 1,
+           *     i.e.
+           *           n * expx >= __gmpfr_emax.
+           *     This corresponds to an overflow (2^(n * expx) has an
+           *     exponent > __gmpfr_emax).
+           *   + If expx >= (__gmpfr_emax - 1) / n, then n * expx cannot
+           *     overflow since 0 > expx >= (__gmpfr_emax - 1) / n and
+           *           0 < n * expx <= n * ((__gmpfr_emax - 1) / n)
+           *                        <= __gmpfr_emax - 1.
+           */
           expy =
             n != -1 && expx > 0 && expx > (__gmpfr_emin - 1) / n ?
             MPFR_EMIN_MIN - 2 /* Underflow */ :
