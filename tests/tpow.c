@@ -24,7 +24,7 @@ MA 02110-1301, USA. */
 #include <stdlib.h>
 #include <float.h>
 #include <math.h>
-#include <limits.h> /* for CHAR_BIT */
+#include <limits.h>
 
 #include "mpfr-test.h"
 
