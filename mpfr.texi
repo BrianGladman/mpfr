@@ -559,6 +559,60 @@ Unless documented otherwise, functions returning a @code{1}
 for special cases (like @code{acos(0)}) should return an overflow or
 an underflow if @code{1} is not representable in the current exponent range.
 
+@section Exceptions
+
+MPFR supports 5 exception types:
+
+@itemize @bullet
+
+@item Underflow:
+An underflow occurs when the exact result of a function is a non-zero
+real number and the result obtained after the rounding, assuming an
+unbounded exponent range (for the rounding), has an exponent smaller
+than the minimum exponent of the current range. In the round-to-nearest
+mode, the halfway case is rounded toward zero.
+
+Note: This is not the single definition of the underflow. MPFR chooses
+to consider the underflow after rounding. The underflow before rounding
+can also be defined. For instance, consider a function that has the
+exact result @m{7 \times 2^{e-4}, 7 multiplied by two to the power
+@var{e}@minus{}4}, where @var{e} is the smallest exponent in the current
+range, with a 2-bit target precision and rounding towards plus infinity.
+The exact result has the exponent @var{e}@minus{}1. With the underflow
+before rounding, such a function call would yield an underflow, as
+@var{e}@minus{}1 is outside the current exponent range. However, MPFR
+first considers the rounded result assuming an unbounded exponent range.
+The exact result cannot be represented exactly in precision 2, and here,
+it is rounded to @m{0.5 @times 2^e, 0.5 times 2 to @var{e}}, which is
+representable in the current exponent range. As a consequence, this will
+not yield an underflow in MPFR.
+
+@item Overflow:
+An overflow occurs when the exact result of a function is a non-zero
+real number and the result obtained after the rounding, assuming an
+unbounded exponent range (for the rounding), has an exponent larger
+than the maximum exponent of the current range. In the round-to-nearest
+mode, the result is infinite.
+
+@item Invalid (NaN):
+An invalid (or NaN) exception occurs when the result of a function is
+a NaN.
+@c NaN is defined above. So, we don't say anything more.
+
+@item Inexact:
+An inexact exception occurs when the result of a function cannot be
+represented exactly and must be rounded.
+
+@item Range error:
+A range exception occurs when a function that does not return a MPFR
+number (such as comparisons and conversions to an integer) has an
+invalid result.
+
+@end itemize
+
+MPFR has a global flag for each exception, which can be cleared, set
+or tested by functions described in @ref{Exceptions}.
+
 @node MPFR Interface, Contributors, MPFR Basics, Top
 @comment  node-name,  next,  previous,  up
 @chapter MPFR Interface
