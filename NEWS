@@ -20,6 +20,12 @@ MA 02110-1301, USA.
 
 ##############################################################################
 
+Changes from versions 2.2.* to version 2.3.0:
+- The mpfr.info file is now installed in the share subdirectory
+  (as required by the Filesystem Hierarchy Standard); see output
+  of "./configure --help".
+TO BE COMPLETED BEFORE VERSION 2.2.2 IS RELEASED
+
 Changes from versions 2.1.* to version 2.2.0:
 - Bug fixes.
 - new functions mpfr_set_overflow, mpfr_set_underflow, mpfr_set_inexflag,
