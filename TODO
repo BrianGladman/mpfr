@@ -106,7 +106,8 @@ New functions to implement:
   HypergeometricU(a,b,s) = 1/gamma(a)*int(exp(-su)*u^(a-1)*(1+u)^(b-a-1),
                                     u=0..infinity)
   JacobiThetaNullK
-  PolylogP, PolylogD, PolylogDold
+  PolylogP, PolylogD, PolylogDold: see http://arxiv.org/abs/math.CA/0702243
+	and the references herein.
   JBessel
   IncompleteGamma
   KBessel, KBessel2 [2nd kind]
