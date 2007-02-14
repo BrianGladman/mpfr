@@ -576,7 +576,8 @@ Note: This is not the single definition of the underflow. MPFR chooses
 to consider the underflow after rounding. The underflow before rounding
 can also be defined. For instance, consider a function that has the
 exact result @m{7 \times 2^{e-4}, 7 multiplied by two to the power
-@var{e}@minus{}4}, where @var{e} is the smallest exponent in the current
+@var{e}@minus{}4}, where @var{e} is the smallest exponent (for a
+mantissa between 1/2 and 1) in the current
 range, with a 2-bit target precision and rounding towards plus infinity.
 The exact result has the exponent @var{e}@minus{}1. With the underflow
 before rounding, such a function call would yield an underflow, as
