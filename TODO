@@ -95,6 +95,9 @@ New functions to implement:
   -> we probably want to allow both mpfr_fmod and mpfr_mod.
 - mpfr_remainder (mpfr_t, mpfr_srcptr, mpfr_srcptr, mp_rnd_t)
   as in ISO C99: "centered" remainder.
+- mpfr_remquo (mpfr_t, mpfr_t, mpfr_srcptr, mpfr_srcptr, mp_rnd_t)
+  as in ISO C99: remainder and quotient
+  [suggested by Kaveh Ghazi, 18 Feb 2007]
 - mpfr_fms for a-b*c
   [suggested by Tomas Zahradnicky <tomas@24uSoftware.com>, 29 Nov 2003]
 - 1/sqrt(x) [Regis Dupont <dupont@lix.polytechnique.fr>, 15 Sep 2004]
