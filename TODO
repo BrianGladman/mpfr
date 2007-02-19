@@ -253,7 +253,7 @@ Efficiency:
   for precision 300 and k=1000, we get 1070ms, and 500ms only for p=400!
 - implement range reduction in sin/cos/tan for large arguments
         (currently too slow for 2^1024), and/or implement Mark Watkins's
-        algorithm:
+        algorithm (see also remquo):
   My suggestion for a long-term fix to these sin/cos problems when one
   of them is close to zero is the following:
   Give input inp:
