@@ -123,8 +123,8 @@ mpfr_log1p (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
         mpfr_log (t, t, GMP_RNDN);        /* log(1+x)*/
 
         /* estimation of the error */
-        /*err=Nt-(__gmpfr_ceil_log2(1+pow(2,1-MPFR_GET_EXP(t))));*/
-        err = Nt - (MAX (1 - MPFR_GET_EXP (t), 0) + 1);
+        /*err=Nt-(__gmpfr_ceil_log2(1+pow(2,2-MPFR_GET_EXP(t))));*/
+        err = Nt - (MAX (2 - MPFR_GET_EXP (t), 0) + 1);
 
         if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
           break;

@@ -99,7 +99,8 @@ mpfr_atanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
       mpfr_log (t, t, GMP_RNDN);          /* ln((1+xt)/(1-xt))*/
       mpfr_div_2ui (t, t, 1, GMP_RNDN);   /* (1/2)*ln((1+xt)/(1-xt))*/
 
-      /* error estimate see- algorithms.ps*/
+      /* error estimate: see algorithms.tex */
+      /* FIXME: this does not correspond to the value in algorithms.tex!!! */
       /* err=Nt-__gmpfr_ceil_log2(1+5*pow(2,1-MPFR_EXP(t)));*/
       err = Nt - (MAX (4 - MPFR_GET_EXP (t), 0) + 1);
 

@@ -400,31 +400,24 @@ v&=&\circ(e^{u}) \\\nonumber
 &\n{then}& c_u^* = e^{k_u 2^{\Exp(u)-p}}\\\nonumber
 \end{eqnarray}
 
-\subsection{Generic error of the logarithm }\label{generic:log}
-
-
-We want to compute the generic error of the logarithm.
-
+\subsection{Generic error of the logarithm}\label{generic:log}
+Assume $x$ and $u$ are positive values,
+with $|u - x| \leq k_u \ulp(u)$.
+We additionally assume $u \leq 4x$. Let $v = \circ(\log u)$.
 \begin{eqnarray}\nonumber
-v&=&\circ(\log{u}) \\\nonumber
-\textnormal{Note:}&& \error(u) \leq k_u \, \ulp(u)\\\nonumber
+\error(v)& = &|v - \log x|
+  \leq |v - \log u| +|\log u - \log x| \\\nonumber
+& \leq & c_v \ulp(v) + |\log\frac{x}{u}|
+  \leq   c_v \ulp(v) + 2 \frac{|x-u|}{u} \\\nonumber
+& \leq & c_v \ulp(v) + \frac{2 k_u \, \ulp(u)}{u}
+  \leq   c_v \ulp(v) + 2 k_u \, \ulp(1)\;\; \U{R7}\\\nonumber
+& \leq & c_v \ulp(v) + 2 k_u \, 2^{1-e_v} \ulp(v)
+  \leq   (c_v + k_u 2^{2-e_v}) \ulp(v).
 \end{eqnarray}
-\begin{eqnarray}\nonumber
-\error(v)& = &|v - \log{x}| \\\nonumber
-& \leq &|v - \log{u}| +|\log{u} - \log{x}| \\\nonumber
-& \leq & c_v \ulp(v) + \log{|\frac{x}{u}|} \\\nonumber
-& \leq & c_v \ulp(v) + \frac{|x-u|}{u} \\\nonumber
-& \leq & c_v \ulp(v) + \frac{k_u \, \ulp(u)}{u}\\\nonumber
-& \leq & c_v \ulp(v) + k_u \, \ulp(1)\;\; \U{R7}\\\nonumber
-\end{eqnarray}
-\begin{eqnarray}\nonumber
-\textnormal{Note:}&& \ulp(1)=2^{1-p}, \n{ and } \ulp(v)=2^{e_v-p} \n{ with } p \n{ the precision} \\\nonumber
-&& \ulp(1)= 2^{1-e_v+e_v-p}=2^{1-e_v} \ulp(v)
-\end{eqnarray}
-\begin{eqnarray}\nonumber
-\error(v)& \leq & c_v \ulp(v) + k_u 2^{1-e_v} \ulp(v)\\\nonumber
-& \leq & (c_v + k_u 2^{1-e_v} )\ulp(v)\\\nonumber
-\end{eqnarray}
+We used at line 2 the inequality $|\log t| \leq 2 |t-1|$ which holds
+for $t \geq \rho$, where $\rho \approx 0.203$ satisfies $\log \rho =2(\rho-1)$.
+At line 4, $e_v$ stands for the exponent of $v$, i.e, 
+$v = m \cdot 2^{e_v}$ with $1/2 \leq |m| < 1$.
 
 \subsection{Ulp calculus vs relative error}
 
@@ -1265,12 +1258,12 @@ for the error on the square root, which gives as bound
 $(\frac{3}{2} + 2^{\Exp(q)-\Exp(r)}) \ulp(s)$ for the error on $s$,
 and $(2 + 2^{\Exp(q)-\Exp(r)}) \ulp(t)$ for that on $t$.
 This gives a final bound of
-$\frac{1}{2} + (2 + 2^{\Exp(q)-\Exp(r)}) 2^{1-\Exp(u)}$ for the error 
-on $u$.
+$\frac{1}{2} + (2 + 2^{\Exp(q)-\Exp(r)}) 2^{2-\Exp(u)}$ for the error 
+on $u$ (\textsection\ref{generic:log}).
 
 Since $2 + 2^{\Exp(q)-\Exp(r)} \leq 2^{1 + {\rm max}(1, \Exp(q)-\Exp(r))}$,
 that shows the rounding error on the calculation of $\n{acosh} x$ can
-be bounded by $\frac{1}{2} + 2^{2 + {\rm max}(1, \Exp(q)-\Exp(r)) - \Exp(u)}
+be bounded by $\frac{1}{2} + 2^{3 + {\rm max}(1, \Exp(q)-\Exp(r)) - \Exp(u)}
 \ulp(u)$. 
  
 \subsection{The hyperbolic sine function}
@@ -1566,7 +1559,7 @@ $w \leftarrow \circ(\log v) $
 
 \begin{eqnarray}\nonumber
   &&|w-\log(\sqrt{x^2+1}+x)| \\\nonumber
-  &       \leq& (1+5.2^{1-\Exp(w)}) \ulp(w) \;\star
+  &       \leq& (1+5.2^{2-\Exp(w)}) \ulp(w) \;\star
 \end{eqnarray}
 
 
@@ -1582,9 +1575,9 @@ see subsection \ref{generic:log}
 \end{center}
 
 That shows the rounding error on the calculation of $\n{asinh} x$ can
-be bound by $ (1+5.2^{1-\Exp(w)})\;\; \ulp$ on the result. So, to
+be bound by $ (1+5.2^{2-\Exp(w)})\;\; \ulp$ on the result. So, to
 calculate the size of intermediary variables, we have to add, at
-least, $\lceil \log_2 (1+5.2^{1-\Exp(w)}) \rceil$ bits the wanted
+least, $\lceil \log_2 (1+5.2^{2-\Exp(w)}) \rceil$ bits the wanted
 precision.
  
 \subsection{The hyperbolic tangent function}
@@ -1642,11 +1635,13 @@ the relative error on $s$ is thus bounded by $2^{{\rm max}(4,e+2)-p}$.
 
 \subsection{The inverse hyperbolic tangent function}
 
-The {\tt mpfr\_atanh} ($\n{acosh}{x}$) function implements the inverse hyperbolic tangent as :
+The {\tt mpfr\_atanh} ($\n{atanh}{x}$) function implements the inverse 
+hyperbolic tangent as :
 
 \[\n{atanh} = \frac{1}{2} \log \frac{1+x}{1-x}.\]
 
-The algorithm used for the calculation of the inverse hyperbolic tangent is as follows
+The algorithm used for the calculation of the inverse hyperbolic tangent is
+as follows:
 
 \begin{eqnarray}\nonumber
 s&\leftarrow&\circ(1+x)\\\nonumber
@@ -1753,9 +1748,9 @@ $v \leftarrow \circ(\log(u)) $
 \begin{eqnarray}\nonumber
   &&|v-(\log{\frac{1+x}{1-x}})| \\\nonumber
   &       \leq& (1+(7+2^{\Exp(x)-\Exp(t)+1}) \\\nonumber
-  &       \cdots&  \times 2^{1-\Exp(v)}) \ulp(v)\;(\star)\\\nonumber
-  &       \leq& (1+7 \times 2^{1-\Exp(v)} +\\\nonumber
-  &       \cdots&  2^{\Exp(x)-\Exp(t)-\Exp(v)+2}) \ulp(v) 
+  &       \cdots&  \times 2^{2-\Exp(v)}) \ulp(v)\;(\star)\\\nonumber
+  &       \leq& (1+7 \times 2^{2-\Exp(v)} +\\\nonumber
+  &       \cdots&  2^{\Exp(x)-\Exp(t)-\Exp(v)+3}) \ulp(v) 
 \end{eqnarray}
 
 
@@ -1777,8 +1772,8 @@ $w \leftarrow \circ(\frac{1}{2} v) $
 
 \begin{eqnarray}\nonumber
   &&|w-\frac{1}{2}\log{\frac{1+x}{1-x}}| \\\nonumber
-  &       \leq& (1+7 \times 2^{1-\Exp(v)} + \\\nonumber
-  &       \cdots&  2^{\Exp(x)-\Exp(t)-\Exp(v)+2}) \ulp(w) \;\star
+  &       \leq& (1+7 \times 2^{2-\Exp(v)} + \\\nonumber
+  &       \cdots&  2^{\Exp(x)-\Exp(t)-\Exp(v)+3}) \ulp(w) \;\star
 \end{eqnarray}
 
 
@@ -1793,11 +1788,11 @@ $w \leftarrow \circ(\frac{1}{2} v) $
 \end{center}
 
 That shows the rounding error on the calculation of $\n{atanh} x$ can
-be bound by $ (1+7 \times 2^{1-\Exp(v)} +
-2^{\Exp(x)-\Exp(t)-\Exp(v)+2})\;\; \ulp$ on the result. So, to
+be bound by $ (1+7 \times 2^{2-\Exp(v)} +
+2^{\Exp(x)-\Exp(t)-\Exp(v)+3}) \; \ulp$ on the result. So, to
 calculate the size of intermediary variables, we have to add, at
-least, $\lceil \log_2 (1+7 \times 2^{1-\Exp(v)} +
-2^{\Exp(x)-\Exp(t)-\Exp(v)+2}) \rceil$ bits the wanted precision.
+least, $\lceil \log_2 (1+7 \times 2^{2-\Exp(v)} +
+2^{\Exp(x)-\Exp(t)-\Exp(v)+3}) \rceil$ bits the wanted precision.
  
 \subsection{The arc-sine function}
 
@@ -2332,7 +2327,7 @@ $w \leftarrow \circ(\log(v)) $
 \end{minipage} &
 \begin{minipage}{7.5cm}
 \begin{eqnarray}\nonumber
-  |v-\log{v}| &\leq& (1+(1+2^{e_u-e_v})2^{1-e_w})\\\nonumber
+  |v-\log{v}| &\leq& (1+(1+2^{e_u-e_v})2^{2-e_w})\\\nonumber
  &\hdots& \ulp(w)
 \end{eqnarray}
 \end{minipage} &
@@ -2345,9 +2340,9 @@ see subsection \ref{generic:log}
 
 
 That shows the rounding error on the calculation of $\log\n{1p}(x)$
-can be bound by $(1+(1+2^{e_u-e_v})2^{1-e_w}) \ulp$ on the result. So,
+can be bound by $(1+(1+2^{e_u-e_v})2^{2-e_w}) \ulp$ on the result. So,
 to calculate the size of intermediary variables, we have to add, at
-least, $\lceil \log_2 (1+(1+2^{e_u-e_v})2^{1-e_w}) \rceil$ bits the wanted
+least, $\lceil \log_2 (1+(1+2^{e_u-e_v})2^{2-e_w}) \rceil$ bits the wanted
 precision.
 
 
@@ -2442,8 +2437,8 @@ see subsection \ref{generic:div}
 \end{center}
 
 
-That shows the rounding error on the calculation of $log2 \n{ or }
-log10$ can be bound by $ 5 \ulp$ on the result. So, to calculate the
+That shows the rounding error on the calculation of log2 or
+log10 can be bound by $5 \ulp$ on the result. So, to calculate the
 size of intermediary variables, we have to add, at least, 3 bits the
 wanted precision.
 
@@ -3345,14 +3340,14 @@ the error on $s$ is at most $9/2$ ulps.
 The error on $x$ is at most $1$ ulp; since $1 < x < 2$ --- assuming 
 $w \geq 2$ ---, $\ulp(x) = 1/2 \ulp(y)$, thus the error on $y$ is at most
 $3/2 \ulp(y)$.
-The generic error on the logarithm gives an error bound of
-$1 + \frac{3}{2} \cdot 2^{1-\Exp(z)} = \frac{5}{2}$ ulps for $z$
+The generic error on the logarithm (\textsection\ref{generic:log})
+gives an error bound of $1 + \frac{3}{2} \cdot 2^{2-\Exp(z)} = 4$ ulps for $z$
 (since $3 \leq y < 4$, we have $1 \leq z < 2$, so $\Exp(z) = 1$).
 The error on $u$ is at most $1$ ulp; thus using the generic error on the
 multiplication, since both $u$ and $z$ are upper approximations,
-the error on $v$ is at most $8$ ulps.
-Finally that on $g$ is at most $8 + 9/2 = 25/2$ ulps.
-Taking into account the truncation error, this gives $27/2$ ulps.
+the error on $v$ is at most $11$ ulps.
+Finally that on $g$ is at most $11 + 9/2 = 31/2$ ulps.
+Taking into account the truncation error, this gives $33/2$ ulps.
 
 \nocite{BoBo98,DeHi02,HuAb86,Jones84}
 

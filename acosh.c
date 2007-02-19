@@ -97,7 +97,7 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
         mpfr_log (t, t, GMP_RNDN);         /* ln(sqrt(x^2-1)+x)*/
 
         /* error estimate -- see algorithms.tex */
-        err = 2 + MAX (1, exp_te - exp_ti) - MPFR_GET_EXP(t);
+        err = 3 + MAX (1, exp_te - exp_ti) - MPFR_GET_EXP(t);
         /* error is bounded by 1/2 + 2^err <= 2^(1+max(-1,err)) */
         err = 1 + MAX (-1, err);
         if (MPFR_LIKELY (MPFR_CAN_ROUND (t, Nt - err, Ny, rnd_mode)))

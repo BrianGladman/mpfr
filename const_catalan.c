@@ -112,8 +112,7 @@ mpfr_const_catalan_internal (mpfr_ptr g, mp_rnd_t rnd_mode)
      Found 27 '1' at 51752950
   */
   pg = MPFR_PREC (g);
-  p = pg + 8; /* pg + 7 avoids failure up for pg < 912
-                 pg + 8 gives no failure up to pg = 10000 */
+  p = pg + 9;
   p += MPFR_INT_CEIL_LOG2 (p);
 
   MPFR_GROUP_INIT_3 (group, p, x, y, z);
@@ -136,7 +135,7 @@ mpfr_const_catalan_internal (mpfr_ptr g, mp_rnd_t rnd_mode)
     mpfr_add (x, x, y, GMP_RNDN);
     mpfr_div_2ui (x, x, 3, GMP_RNDN);
 
-    if (MPFR_LIKELY (MPFR_CAN_ROUND (x, p - 4, pg, rnd_mode)))
+    if (MPFR_LIKELY (MPFR_CAN_ROUND (x, p - 5, pg, rnd_mode)))
       break;
     /* Fixme: Is it possible? */
     MPFR_ZIV_NEXT (loop, p);

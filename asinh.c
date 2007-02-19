@@ -92,8 +92,8 @@ mpfr_asinh (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       (neg ? mpfr_sub : mpfr_add) (t, t, x, GMP_RNDN); /* sqrt(x^2+1)+x */
       mpfr_log (t, t, GMP_RNDN);                       /* ln(sqrt(x^2+1)+x)*/
 
-      /* error estimate -- see algorithms.ps */
-      err = Nt - (MAX (3 - MPFR_GET_EXP (t), 0) + 1);
+      /* error estimate -- see algorithms.tex */
+      err = Nt - (MAX (4 - MPFR_GET_EXP (t), 0) + 1);
 
       if (MPFR_LIKELY (MPFR_IS_ZERO (t)
                        || MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
