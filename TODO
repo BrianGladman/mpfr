@@ -99,6 +99,8 @@ New functions to implement:
   as in ISO C99: remainder and quotient [suggested by Kaveh Ghazi, 18 Feb 2007]
   Question: compute the full quotient (mpfr or mpz?) or only its low
   significant bits as in C99 (see rationale below)?
+  Vincent suggests to store the low bits of the quotient in an mpfr_t,
+  whose precision would be chosen by the user.
     "New feature for C99. The remquo functions are intended for
     implementing argument reductions which can exploit a few low-order
     bits of the quotient. Note that x may be so large in magnitude
