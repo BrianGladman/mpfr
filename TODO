@@ -93,6 +93,23 @@ New functions to implement:
   [suggested by Tomas Zahradnicky <tomas@24uSoftware.com>, 29 Nov 2003]
   Kevin: Might want to be called mpfr_mod, to match mpz_mod.
   -> we probably want to allow both mpfr_fmod and mpfr_mod.
+  Proposed implementation (apart from special cases):
+  int mpfr_fmod (mpfr_t r, mpfr_t x, mpfr_t y, mpfr_rnd_t r)
+  {
+     mpfr_t q;
+     int inexact;
+
+     /* if 2^(ex-1) <= |x| < 2^ex, and 2^(ey-1) <= |y| < 2^ey, then
+	|x/y| < 2^(ex-ey+1) */
+     mpfr_init2 (q, MAX(MPFR_PREC_MIN, mpfr_get_exp (x)-mpfr_get_exp (y) + 1));
+     mpfr_div (q, x, y, GMP_RNDZ);
+     mpfr_trunc (q, q);
+     mpfr_prec_round (q, mpfr_get_prec (q) + mpfr_get_prec (y), GMP_RNDZ);
+     mpfr_mul (q, q, y, GMP_RNDZ); /* exact */
+     inexact = mpfr_sub (r, x, q, r);
+     mpfr_clear (q);
+     return inexact;
+  }
 - mpfr_remainder (mpfr_t, mpfr_srcptr, mpfr_srcptr, mp_rnd_t)
   as in ISO C99: "centered" remainder.
 - mpfr_remquo (mpfr_t, mpfr_t, mpfr_srcptr, mpfr_srcptr, mp_rnd_t)
