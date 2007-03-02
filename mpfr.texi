@@ -1028,16 +1028,16 @@ If @var{n} is zero, the number of digits of the mantissa is chosen
 large enough so that re-reading the printed value with the same precision,
 assuming both output and input use rounding to nearest, will recover
 the original value of @var{op}.
-More precisely, the chosen precision is
+More precisely, the chosen precision of @var{str} is
+the minimal precision depending on @var{n} and @var{b} only that
+satisfies the above property, i.e.,
 @ifnottex
-1 + ceil(n*log(2)/log(b)).
+m = 1 + ceil(@var{n}*log(2)/log(@var{b})).
 @end ifnottex
 @tex
-$1 +
-\lceil n {\log 2 \over \log b} \rceil$.
+$m = 1 + \lceil @var{n} {\log 2 \over \log @var{b}} \rceil$.
 @end tex
-This is the minimal precision depending on @var{n} and @var{b} only that
-satisfies the above property.
+(In some rare cases it might be @math{m+1}.)
 
 If @var{str} is a null pointer, space for the mantissa is allocated using
 the current allocation function, and a pointer to the string is returned.
@@ -1047,11 +1047,6 @@ If @var{str} is not a null pointer, it should point to a block of storage
 large enough for the mantissa, i.e., at least @code{max(@var{n} + 2, 7)}.
 The extra two bytes are for a possible minus sign, and for the terminating null
 character.
-
-If @var{n} is 0, note that the space requirements for @var{str}
-in this case will be impossible for the user to predetermine. Therefore,
-one needs to pass a null pointer for the string argument whenever
-@var{n} is 0.
 
 If the input number is an ordinary number, the exponent is written through
 the pointer @var{expptr} (the current minimal exponent for 0).
