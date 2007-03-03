@@ -81,7 +81,8 @@ To make a release (for the MPFR team):
      the platform supports that (e.g. under Linux/x86), and in various
      locales (LC_ALL=tr_TR in particular, if installed). On x86, test
      with -m96bit-long-double and -m128bit-long-double. Test with both
-     "make check" and the worst cases.
+     "make check" and the worst cases. Try also with gcc's -fno-common
+     option.
   7) For the release itself (not the release candidates), if there are
      no problems, create a tag with:
        svn cp .../mpfr/branches/x.y .../mpfr/tags/x.y.z
