@@ -96,7 +96,10 @@ gmp-impl.h, longlong.h and all the necessary headers to use them.
 --with-gmp-build=DIR    assumes that DIR contains the source of GMP.
                         same as --with-gmp-lib=DIR/.libs
                         and     --with-gmp-include=DIR
-                        Try to set CFLAGS to GMP's one.
+                        Try to set CC/CFLAGS to GMP's ones. This is not
+                        guaranteed to work as the configure script does
+                        some compiler tests earlier, and the change may
+                        be too late.
 --with-gmp=DIR          assumes that DIR is where you have installed GMP.
                         same as --with-gmp-lib=DIR/lib
                         and     --with-gmp-include=DIR/include
@@ -136,9 +139,8 @@ if the GMP build directory is available. Then type:
   ./configure <configure options> CC=<C compiler> CFLAGS=<compiler options>
 
 and continue the install. On some platforms, you should provide further
-options to match those used by GMP, for example, on powerpc-aix:
-
-  make AR="ar -X64"
+options to match those used by GMP, or set some environment variables.
+For instance, see the "Notes on AIX/PowerPC" section below.
 
 On some platforms, try with "gmake" (GNU make) instead of "make".
 Problems have been reported with the Tru64 make.
@@ -198,6 +200,24 @@ FreeBSD 4.3 is provided with an incorrect <float.h> header file, and
 MPFR tests related to long double's may fail. If you cannot upgrade
 the system, you can still use MPFR with FreeBSD 4.3, but you should
 not use conversions with the long double type.
+
+
+Notes on AIX/PowerPC
+====================
+
+The following has been tested on AIX 5.3 (powerpc-ibm-aix5.3.0.0) with
+gcc 3.3.2 and GMP 4.2.1.
+
+Before building and testing MPFR, you should set the OBJECT_MODE
+environment variable to 64 (as GMP selects the 64-bit ABI by default),
+e.g. with:
+
+  export OBJECT_MODE=64
+
+(in a sh-compatible shell). But you should also provide a correct CFLAGS
+value to the "configure" script: using --with-gmp-build is not sufficient
+due to the early compiler tests, as gcc will not compile any program if
+OBJECT_MODE is 64 and the -maix64 option is not provided.
 
 
 Notes on Windows 32
