@@ -1014,10 +1014,10 @@ in particular a non-zero value is returned if
 @end deftypefun
 
 @deftypefun {char *} mpfr_get_str (char *@var{str}, mp_exp_t *@var{expptr}, int @var{b}, size_t @var{n}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
-Convert @var{op} to a string of @var{n} significant
-digits in base @var{b}, with rounding
-in the direction @var{rnd}. The base may vary from 2 to 36; @var{n} must be
-greater or equal to 2.
+Convert @var{op} to a string of digits in base @var{b}, with rounding in
+the direction @var{rnd}, where @var{n} is either zero (see below) or the
+number of significant digits; in the latter case, @var{n} must be greater
+or equal to 2. The base may vary from 2 to 36.
 
 The generated string is a fraction, with an implicit radix point immediately
 to the left of the first digit.  For example, the number @minus{}3.1416 would
