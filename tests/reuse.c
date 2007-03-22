@@ -590,8 +590,10 @@ main (void)
       test2 (mpfr_csc, "mpfr_csc", p, rnd);
       test2 (mpfr_cot, "mpfr_cot", p, rnd);
 
-      test2 (mpfr_erf, "mpfr_erf", p, rnd);
+      test2 (mpfr_erf,  "mpfr_erf",  p, rnd);
       test2 (mpfr_erfc, "mpfr_erfc", p, rnd);
+      test2 (mpfr_j0,   "mpfr_j0",   p, rnd);
+      test2 (mpfr_j1,   "mpfr_j1",   p, rnd);
 
       test2 (mpfr_zeta, "mpfr_zeta", p, rnd);
       test2 (mpfr_gamma, "mpfr_gamma", p, rnd);

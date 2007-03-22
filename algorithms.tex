@@ -456,7 +456,7 @@ error is bounded by $2k$ ulps.
 
 If the rounding are not away from zero, the following lemma is still useful
 \cite{Graillat05}:
-\begin{lemma}
+\begin{lemma} \label{lemma_graillat}
 Let $\delta_1, \ldots, \delta_n$ be $n$ real values such that
 $|\delta_i| \leq \epsilon$, for $n \epsilon < 1$.
 Then we can write $\prod_{i=1}^n (1+\delta_i)
@@ -2994,6 +2994,50 @@ finally since we proved above that $v_n \leq 2v_{n+1}$,
 this gives a total bound of $(18n+51) 2^{-p} v_{n+1}$, which is less
 than $(18n+51) \ulp(r)$, or twice this in the improbable case where there
 is an exponent loss in the final subtraction $r = \circ(v_{n+1}-w)$.
+
+\subsection{The Bessel function}
+
+The Bessel function $J_n(z)$ of first kind and integer order $n$
+is defined as follows \cite[Eq.~(9.1.10)]{AbSt73}:
+\[ J_n(z) = (z/2)^n \sum_{k=0}^{\infty} \frac{(-z^2/4)^k}{k! (k+n)!}. \]
+We use the following algorithm, with working precision $w$, and rounding
+to nearest:
+\begin{quote}
+$x \leftarrow \circ(z^n)$ \\
+$y \leftarrow \circ(z^2)/4$ [division by $4$ is exact] \\
+$u \leftarrow \circ(n!)$ \\
+$t \leftarrow \circ(x/u)/2^n$ [division by $2^n$ is exact] \\
+$s \leftarrow t$ \\
+for $k$ from $1$ do \\
+\q $t \leftarrow -\circ(ty)$ \\
+\q $t \leftarrow \circ(t/k)$ \\
+\q $t \leftarrow \circ(t/(k+n))$ \\
+\q $s \leftarrow \circ(s+t)$ \\
+\q if $|t| < \ulp(s)$ and $z^2 \leq 2k(k+n)$ then return $s$. \\
+\end{quote}
+The condition $z^2 \leq 2k(k+n)$ ensures that the next term of the
+expansion is smaller than $|t|/2$, thus the sum of the remaining terms
+is smaller than $|t| < \ulp(s)$.
+Using Higham's method, with $\theta$ denoting a random variable of value
+$|\theta| \leq 2^{-w}$ --- different instances of $\theta$ denoting
+different values --- we can write $x = z^n (1+\theta)$,
+$y = z^2/4 (1+\theta)$, 
+and before the for-loop $s = t = (z/2)^n/n! (1+\theta)^3$.
+Now write $t = (z/2)^n (-z^2/4)^k / (k! (k+n)!) (1+\theta)^{e_k}$ at the end of
+the for-loop with index $k$; each loop involves a factor $(1+\theta)^4$,
+thus we have $e_k = 4k+3$.
+Now let $T$ be an upper bound on the values of $|t|$ and $|s|$ during the
+for-loop, and assume we exit at $k=K$.
+The roundoff error in the additions
+$\circ(s+t)$, including the error in the series
+truncation, is bounded by $(K/2+1) \ulp(T)$.
+The error in the value of $t$ at step $k$ is bounded by $\epsilon_k :=
+T |(1+\theta)^{4k+3}
+-1|$; if we assume $(4k+3) 2^{-w} \leq 1/2$, Lemma~\ref{lemma_graillat}
+yields $\epsilon_k \leq 2 T (4k+3) 2^{-w}$. Summing from $k=0$ to $K$,
+this gives an absolute error bound on $s$ at the end of the for-loop of:
+\[ (K/2+1) \ulp(T) + 2 (2K^2+5K+3) 2^{-w} T \leq (4K^2+21/2K+7) \ulp(T), \]
+where we used $2^{-w} T \leq \ulp(T)$.
 
 \subsection{Summary}
 

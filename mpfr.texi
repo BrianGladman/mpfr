@@ -1482,6 +1482,17 @@ Set @var{rop} to the value of the complementary error function on @var{op},
 rounded in the direction @var{rnd}.
 @end deftypefun
 
+@deftypefun int mpfr_j0 (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_j1 (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_jn (mpfr_t @var{rop}, mpfr_t @var{op}, int @var{n}, mp_rnd_t @var{rnd})
+Set @var{rop} to the value of the first order Bessel function of order 0, 1
+and @var{n} on @var{op}, rounded in the direction @var{rnd}. When @var{op} is
+NaN, @var{rop} is always set to NaN. When @var{op} is plus or minus Infinity,
+@var{rop} is set to +0. When @var{op} is zero, and @var{n} is not zero, 
+@var{rop} is +0 or -0 depending on the parity and sign of @var{n}, and the 
+sign of @var{op}.
+@end deftypefun
+
 @deftypefun int mpfr_fma (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_t @var{op3}, mp_rnd_t @var{rnd})
 Set @var{rop} to @math{@var{op1} @GMPtimes{} @var{op2} + @var{op3}},
 rounded in the direction @var{rnd}.
