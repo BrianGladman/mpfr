@@ -78,12 +78,42 @@ mpfr_jn_si (mpfr_ptr res, mpfr_srcptr z, long n, mp_rnd_t r)
             return mpfr_set_ui (res, 0, r);
         }
     }
-  
-  prec = MPFR_PREC (res) + MPFR_INT_CEIL_LOG2 (MPFR_PREC (res)) + 3;
 
-  mpfr_init2 (y, prec);
-  mpfr_init2 (s, prec);
-  mpfr_init2 (t, prec);
+  mpfr_init2 (y, 32);
+
+  /* check underflow case: |j(n,z)| <= 1/sqrt(2 Pi n) (ze/2n)^n
+     (see algorithms.tex) */
+  if (absn > 0)
+    {
+      /* the following is an upper 32-bit approximation of exp(1)/2 */
+      mpfr_set_str_binary (y, "1.0101101111110000101010001011001");
+      if (MPFR_SIGN(z) > 0)
+	mpfr_mul (y, y, z, GMP_RNDU);
+      else
+	{
+	  mpfr_mul (y, y, z, GMP_RNDD);
+	  mpfr_neg (y, y, GMP_RNDU);
+	}
+      mpfr_div_ui (y, y, absn, GMP_RNDU);
+      /* now y is an upper approximation of |ze/2n|: y < 2^EXP(y),
+	 thus |j(n,z)| < 1/2*y^n < 2^(n*EXP(y)-1).
+	 If n*EXP(y) < __gmpfr_emin then we have an underflow.
+	 Warning: absn is an unsigned long. */
+      if ((MPFR_EXP(y) < 0 && absn > (unsigned long) (-__gmpfr_emin))
+	  || (absn <= (unsigned long) (-MPFR_EMIN_MIN) &&
+	      MPFR_EXP(y) < __gmpfr_emin / (mp_exp_t) absn))
+	{
+	  mpfr_clear (y);
+	  return mpfr_underflow (res, (r == GMP_RNDN) ? GMP_RNDZ : r,
+			 (n % 2) ? ((n > 0) ? MPFR_SIGN(z) : -MPFR_SIGN(z))
+				 : MPFR_SIGN_POS);
+	}
+    }
+  
+  mpfr_init (s);
+  mpfr_init (t);
+
+  prec = MPFR_PREC (res) + MPFR_INT_CEIL_LOG2 (MPFR_PREC (res)) + 3;
 
   MPFR_ZIV_INIT (loop, prec);
   for (;;)
@@ -91,12 +121,12 @@ mpfr_jn_si (mpfr_ptr res, mpfr_srcptr z, long n, mp_rnd_t r)
       mpfr_set_prec (y, prec);
       mpfr_set_prec (s, prec);
       mpfr_set_prec (t, prec);
-      mpfr_pow_ui (t, z, absn, GMP_RNDN);
-      mpfr_mul (y, z, z, GMP_RNDN);
+      mpfr_pow_ui (t, z, absn, GMP_RNDN); /* z^|n| */
+      mpfr_mul (y, z, z, GMP_RNDN);       /* z^2 */
       zz = mpfr_get_ui (y, GMP_RNDU);
       MPFR_ASSERTN (zz < ULONG_MAX);
-      mpfr_div_2ui (y, y, 2, GMP_RNDN);
-      mpfr_fac_ui (s, absn, GMP_RNDN);
+      mpfr_div_2ui (y, y, 2, GMP_RNDN);   /* z^2/4 */
+      mpfr_fac_ui (s, absn, GMP_RNDN);    /* |n|! */
       mpfr_div (t, t, s, GMP_RNDN);
       if (absn > 0)
         mpfr_div_2ui (t, t, absn, GMP_RNDN);

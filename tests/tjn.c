@@ -22,6 +22,7 @@ MA 02110-1301, USA. */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h> /* for LONG_MAX */
 
 #include "mpfr-test.h"
 
@@ -29,6 +30,7 @@ int
 main (int argc, char *argv[])
 {
   mpfr_t x, y;
+  long n;
 
   tests_start_mpfr ();
 
@@ -166,6 +168,87 @@ main (int argc, char *argv[])
   if (mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_jn_si for n=65536, x=17, rnd=GMP_RNDN\n");
+      printf ("Expected "); mpfr_dump (x);
+      printf ("Got      "); mpfr_dump (y);
+      exit (1);
+    }
+
+  mpfr_set_ui (x, 17, GMP_RNDN);
+  mpfr_jn_si (y, x, 131072, GMP_RNDN);
+  mpfr_set_str_binary (x, "1000001001110011111001110110000010011010000001001101E-1634508");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error in mpfr_jn_si for n=131072, x=17, rnd=GMP_RNDN\n");
+      printf ("Expected "); mpfr_dump (x);
+      printf ("Got      "); mpfr_dump (y);
+      exit (1);
+    }
+
+  mpfr_set_ui (x, 17, GMP_RNDN);
+  mpfr_jn_si (y, x, 262144, GMP_RNDN);
+  mpfr_set_str_binary (x, "1010011011000100111011001011110001000010000010111111E-3531100");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error in mpfr_jn_si for n=262144, x=17, rnd=GMP_RNDN\n");
+      printf ("Expected "); mpfr_dump (x);
+      printf ("Got      "); mpfr_dump (y);
+      exit (1);
+    }
+
+  mpfr_set_ui (x, 17, GMP_RNDN);
+  mpfr_jn_si (y, x, 524288, GMP_RNDN);
+  mpfr_set_str_binary (x, "110000001010001111011011000011001011010100010001011E-7586426");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error in mpfr_jn_si for n=524288, x=17, rnd=GMP_RNDN\n");
+      printf ("Expected "); mpfr_dump (x);
+      printf ("Got      "); mpfr_dump (y);
+      exit (1);
+    }
+
+  n = LONG_MAX;
+  /* ensures n is odd */
+  if (n % 2 == 0)
+    n --;
+  mpfr_set_ui (x, 17, GMP_RNDN);
+  mpfr_jn_si (y, x, n, GMP_RNDN);
+  mpfr_set_str_binary (x, "0.0");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error in mpfr_jn_si for n=%ld, x=17, rnd=GMP_RNDN\n", n);
+      printf ("Expected "); mpfr_dump (x);
+      printf ("Got      "); mpfr_dump (y);
+      exit (1);
+    }
+
+  mpfr_set_si (x, -17, GMP_RNDN);
+  mpfr_jn_si (y, x, n, GMP_RNDN);
+  mpfr_set_str_binary (x, "-0.0");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error in mpfr_jn_si for n=%ld, x=-17, rnd=GMP_RNDN\n", n);
+      printf ("Expected "); mpfr_dump (x);
+      printf ("Got      "); mpfr_dump (y);
+      exit (1);
+    }
+
+  mpfr_set_ui (x, 17, GMP_RNDN);
+  mpfr_jn_si (y, x, -n, GMP_RNDN);
+  mpfr_set_str_binary (x, "-0.0");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error in mpfr_jn_si for n=%ld, x=17, rnd=GMP_RNDN\n", -n);
+      printf ("Expected "); mpfr_dump (x);
+      printf ("Got      "); mpfr_dump (y);
+      exit (1);
+    }
+
+  mpfr_set_si (x, -17, GMP_RNDN);
+  mpfr_jn_si (y, x, -n, GMP_RNDN);
+  mpfr_set_str_binary (x, "0.0");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error in mpfr_jn_si for n=%ld, x=-17, rnd=GMP_RNDN\n", -n);
       printf ("Expected "); mpfr_dump (x);
       printf ("Got      "); mpfr_dump (y);
       exit (1);

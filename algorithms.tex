@@ -3039,6 +3039,13 @@ this gives an absolute error bound on $s$ at the end of the for-loop of:
 \[ (K/2+1) \ulp(T) + 2 (2K^2+5K+3) 2^{-w} T \leq (4K^2+21/2K+7) \ulp(T), \]
 where we used $2^{-w} T \leq \ulp(T)$.
 
+\paragraph{Large index $n$.}
+For large index $n$, formula 9.1.62 from \cite{AbSt73} gives
+$|J_n(z)| \leq |z/2|^n/n!$.
+Together with $n! \geq \sqrt{2 \pi n} (n/e)^n$, which follows from example
+from \cite[Eq.~6.1.38]{AbSt73}, this gives:
+\[ |J_n(z)| \leq \frac{1}{\sqrt{2 \pi n}} \left( \frac{ze}{2n} \right)^n. \]
+
 \subsection{Summary}
 
 \begin{table}
