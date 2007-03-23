@@ -112,7 +112,7 @@ mpfr_jn_si (mpfr_ptr res, mpfr_srcptr z, long n, mp_rnd_t r)
           else
             {
               mpfr_div_ui (t, t, k, GMP_RNDN);
-              mpfr_div_ui (t, t, absn, GMP_RNDN);
+              mpfr_div_ui (t, t, k + absn, GMP_RNDN);
             }
           exps = MPFR_EXP (t);
           if (exps > expT)
