@@ -37,91 +37,91 @@ main (int argc, char *argv[])
 
   /* special values */
   mpfr_set_nan (x);
-  mpfr_jn (y, x, 17, GMP_RNDN);
+  mpfr_jn_si (y, x, 17, GMP_RNDN);
   MPFR_ASSERTN(mpfr_nan_p (y));
 
   mpfr_set_inf (x, 1); /* +Inf */
-  mpfr_jn (y, x, 17, GMP_RNDN);
+  mpfr_jn_si (y, x, 17, GMP_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui (y, 0) == 0 && MPFR_IS_POS (y));
 
   mpfr_set_inf (x, -1); /* -Inf */
-  mpfr_jn (y, x, 17, GMP_RNDN);
+  mpfr_jn_si (y, x, 17, GMP_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui (y, 0) == 0 && MPFR_IS_POS (y));
 
   mpfr_set_ui (x, 0, GMP_RNDN); /* +0 */
-  mpfr_jn (y, x, 0, GMP_RNDN);
+  mpfr_jn_si (y, x, 0, GMP_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui (y, 1) == 0); /* j0(+0)=1 */
-  mpfr_jn (y, x, 17, GMP_RNDN);
+  mpfr_jn_si (y, x, 17, GMP_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui (y, 0) == 0 && MPFR_IS_POS (y)); /* j17(+0)=+0 */
-  mpfr_jn (y, x, -17, GMP_RNDN);
+  mpfr_jn_si (y, x, -17, GMP_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui (y, 0) == 0 && MPFR_IS_NEG (y)); /* j-17(+0)=-0 */
-  mpfr_jn (y, x, 42, GMP_RNDN);
+  mpfr_jn_si (y, x, 42, GMP_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui (y, 0) == 0 && MPFR_IS_POS (y)); /* j42(+0)=+0 */
 
   mpfr_set_ui (x, 0, GMP_RNDN);
   mpfr_neg (x, x, GMP_RNDN); /* -0 */
-  mpfr_jn (y, x, 0, GMP_RNDN);
+  mpfr_jn_si (y, x, 0, GMP_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui (y, 1) == 0); /* j0(-0)=1 */
-  mpfr_jn (y, x, 17, GMP_RNDN);
+  mpfr_jn_si (y, x, 17, GMP_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui (y, 0) == 0 && MPFR_IS_NEG (y)); /* j17(-0)=-0 */
-  mpfr_jn (y, x, -17, GMP_RNDN);
+  mpfr_jn_si (y, x, -17, GMP_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui (y, 0) == 0 && MPFR_IS_POS (y)); /* j-17(-0)=+0 */
-  mpfr_jn (y, x, 42, GMP_RNDN);
+  mpfr_jn_si (y, x, 42, GMP_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui (y, 0) == 0 && MPFR_IS_POS (y)); /* j42(-0)=+0 */
 
   mpfr_set_prec (x, 53);
   mpfr_set_prec (y, 53);
 
   mpfr_set_ui (x, 1, GMP_RNDN);
-  mpfr_jn (y, x, 0, GMP_RNDN);
+  mpfr_jn_si (y, x, 0, GMP_RNDN);
   mpfr_set_str_binary (x, "0.1100001111100011111111101101111010111101110001111");
   if (mpfr_cmp (x, y))
     {
-      printf ("Error in mpfr_jn for n=0, x=1, rnd=GMP_RNDN\n");
+      printf ("Error in mpfr_jn_si for n=0, x=1, rnd=GMP_RNDN\n");
       printf ("Expected "); mpfr_dump (x);
       printf ("Got      "); mpfr_dump (y);
       exit (1);
     }
 
   mpfr_set_si (x, -1, GMP_RNDN);
-  mpfr_jn (y, x, 0, GMP_RNDN);
+  mpfr_jn_si (y, x, 0, GMP_RNDN);
   mpfr_set_str_binary (x, "0.1100001111100011111111101101111010111101110001111");
   if (mpfr_cmp (x, y))
     {
-      printf ("Error in mpfr_jn for n=0, x=-1, rnd=GMP_RNDN\n");
+      printf ("Error in mpfr_jn_si for n=0, x=-1, rnd=GMP_RNDN\n");
       printf ("Expected "); mpfr_dump (x);
       printf ("Got      "); mpfr_dump (y);
       exit (1);
     }
 
   mpfr_set_ui (x, 1, GMP_RNDN);
-  mpfr_jn (y, x, 1, GMP_RNDN);
+  mpfr_jn_si (y, x, 1, GMP_RNDN);
   mpfr_set_str_binary (x, "0.0111000010100111001001111011101001011100001100011011");
   if (mpfr_cmp (x, y))
     {
-      printf ("Error in mpfr_jn for n=1, x=1, rnd=GMP_RNDN\n");
+      printf ("Error in mpfr_jn_si for n=1, x=1, rnd=GMP_RNDN\n");
       printf ("Expected "); mpfr_dump (x);
       printf ("Got      "); mpfr_dump (y);
       exit (1);
     }
 
   mpfr_set_ui (x, 1, GMP_RNDN);
-  mpfr_jn (y, x, 17, GMP_RNDN);
+  mpfr_jn_si (y, x, 17, GMP_RNDN);
   mpfr_set_str_binary (x, "0.1100011111001010101001001001000110110000010001011E-65");
   if (mpfr_cmp (x, y))
     {
-      printf ("Error in mpfr_jn for n=17, x=1, rnd=GMP_RNDN\n");
+      printf ("Error in mpfr_jn_si for n=17, x=1, rnd=GMP_RNDN\n");
       printf ("Expected "); mpfr_dump (x);
       printf ("Got      "); mpfr_dump (y);
       exit (1);
     }
 
   mpfr_set_ui (x, 1, GMP_RNDN);
-  mpfr_jn (y, x, 42, GMP_RNDN);
+  mpfr_jn_si (y, x, 42, GMP_RNDN);
   mpfr_set_str_binary (x, "0.10000111100011010100111011100111101101000100000001001E-211");
   if (mpfr_cmp (x, y))
     {
-      printf ("Error in mpfr_jn for n=42, x=1, rnd=GMP_RNDN\n");
+      printf ("Error in mpfr_jn_si for n=42, x=1, rnd=GMP_RNDN\n");
       printf ("Expected "); mpfr_dump (x);
       printf ("Got      "); mpfr_dump (y);
       exit (1);

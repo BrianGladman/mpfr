@@ -29,19 +29,20 @@ MA 02110-1301, USA. */
 int
 mpfr_j0 (mpfr_ptr res, mpfr_srcptr z, mp_rnd_t r)
 {
-  return mpfr_jn (res, z, 0, r);
+  return mpfr_jn_si (res, z, 0, r);
 }
 
 int
 mpfr_j1 (mpfr_ptr res, mpfr_srcptr z, mp_rnd_t r)
 {
-  return mpfr_jn (res, z, 1, r);
+  return mpfr_jn_si (res, z, 1, r);
 }
 
 int
-mpfr_jn (mpfr_ptr res, mpfr_srcptr z, int n, mp_rnd_t r)
+mpfr_jn_si (mpfr_ptr res, mpfr_srcptr z, long n, mp_rnd_t r)
 {
-  int inex, absn;
+  int inex;
+  unsigned long absn;
   mp_prec_t prec, err;
   mp_exp_t exps, expT;
   mpfr_t y, s, t;
@@ -51,7 +52,7 @@ mpfr_jn (mpfr_ptr res, mpfr_srcptr z, int n, mp_rnd_t r)
   MPFR_LOG_FUNC (("x[%#R]=%R n=%d rnd=%d", z, z, n, r),
                  ("y[%#R]=%R inexact=%d", res, res, inex));
 
-  absn = (n >= 0) ? n : -n;
+  absn = SAFE_ABS (unsigned long, n);
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (z)))
     {
@@ -87,6 +88,9 @@ mpfr_jn (mpfr_ptr res, mpfr_srcptr z, int n, mp_rnd_t r)
   MPFR_ZIV_INIT (loop, prec);
   for (;;)
     {
+      mpfr_set_prec (y, prec);
+      mpfr_set_prec (s, prec);
+      mpfr_set_prec (t, prec);
       mpfr_pow_ui (t, z, absn, GMP_RNDN);
       mpfr_mul (y, z, z, GMP_RNDN);
       zz = mpfr_get_ui (y, GMP_RNDU);

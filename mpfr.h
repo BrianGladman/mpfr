@@ -515,7 +515,7 @@ __MPFR_DECLSPEC int mpfr_fac_ui _MPFR_PROTO ((mpfr_ptr, unsigned long int,
                                               mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_j0    _MPFR_PROTO ((mpfr_ptr,mpfr_srcptr,mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_j1    _MPFR_PROTO ((mpfr_ptr,mpfr_srcptr,mpfr_rnd_t));
-__MPFR_DECLSPEC int mpfr_jn    _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, int,
+__MPFR_DECLSPEC int mpfr_jn_si _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, long,
                                               mpfr_rnd_t));
 
 __MPFR_DECLSPEC int mpfr_min _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr,
