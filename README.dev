@@ -259,6 +259,11 @@ If wou want to use the logging of MPFR, you need to enable it:
  make
 Then link your program with this new build of MPFR.
 
+Warning! The logging code for functions sometimes output an "inexact"
+value, but in case of exception, this value may be meaningless. In
+fact, the output value is the value of some variable; please check
+the source code of the function to understand its real meaning.
+
 You can control what is logged using the environment variables:
 
 MPFR_LOG_FILE:  Name of the LOG file (default: mpfr.log).
