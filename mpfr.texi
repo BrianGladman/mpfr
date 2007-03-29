@@ -1094,7 +1094,9 @@ rounded to an integer in the direction @var{rnd}.
 @deftypefunx int mpfr_add_si (mpfr_t @var{rop}, mpfr_t @var{op1}, long int @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_add_z (mpfr_t @var{rop}, mpfr_t @var{op1}, mpz_t @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_add_q (mpfr_t @var{rop}, mpfr_t @var{op1}, mpq_t @var{op2}, mp_rnd_t @var{rnd})
-Set @var{rop} to @math{@var{op1} + @var{op2}} rounded in the direction @var{rnd}. For types having no signed zero, it is considered unsigned (i.e. (+0) + 0 = (+0) and (-0) + 0 = (-0)).
+Set @var{rop} to @math{@var{op1} + @var{op2}} rounded in the direction
+@var{rnd}. For types having no signed zero, it is considered unsigned
+(i.e. (+0) + 0 = (+0) and (@minus{}0) + 0 = (@minus{}0)).
 @end deftypefun
 
 @deftypefun int mpfr_sub (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
@@ -1488,9 +1490,9 @@ rounded in the direction @var{rnd}.
 Set @var{rop} to the value of the first order Bessel function of order 0, 1
 and @var{n} on @var{op}, rounded in the direction @var{rnd}. When @var{op} is
 NaN, @var{rop} is always set to NaN. When @var{op} is plus or minus Infinity,
-@var{rop} is set to +0. When @var{op} is zero, and @var{n} is not zero, 
-@var{rop} is +0 or -0 depending on the parity and sign of @var{n}, and the 
-sign of @var{op}.
+@var{rop} is set to +0. When @var{op} is zero, and @var{n} is not zero,
+@var{rop} is +0 or @minus{}0 depending on the parity and sign of @var{n},
+and the sign of @var{op}.
 @end deftypefun
 
 @deftypefun int mpfr_fma (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_t @var{op3}, mp_rnd_t @var{rnd})
