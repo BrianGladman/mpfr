@@ -1037,7 +1037,7 @@ satisfies the above property, i.e.,
 m = 1 + ceil(@var{n}*log(2)/log(@var{b})),
 @end ifnottex
 @tex
-$m = 1 + \lceil @var{n} {\log 2 \over \log @var{b}} \rceil$,
+$m = 1 + \lceil n {\log 2 \over \log b} \rceil$,
 @end tex
 but in some very rare cases, it might be @math{m+1}.
 
