@@ -1372,7 +1372,7 @@ rounded in the direction @var{rnd}.
 Set @var{rop} to the arc-tangent2 of @var{y} and @var{x},
 rounded in the direction @var{rnd}:
 if @code{x > 0}, @code{atan2(y, x) = atan (y/x)};
-if @code{x < 0}, @code{atan2(y, x) = sign(y)*(PI - atan (@GMPabs{y/x}))}.
+if @code{x < 0}, @code{atan2(y, x) = sign(y)*(Pi - atan (@GMPabs{y/x}))}.
 
 @code{atan2(y, 0)} does not raise any floating-point exception.
 Special values are currently handled as described in the ISO C99 standard
