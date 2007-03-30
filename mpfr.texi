@@ -1388,16 +1388,16 @@ for the @code{atan2} function (note this may change in future versions):
 @item @code{atan2(-0, x)} returns @minus{}0 for @math{x > 0}.
 @item @code{atan2(y, 0)} returns @m{-\pi/2,-Pi/2} for @math{y < 0}.
 @item @code{atan2(y, 0)} returns @m{+\pi/2,+Pi/2} for @math{y > 0}.
-@item @code{atan2(+INF, -INF)} returns @m{+3*\pi/4,+3*Pi/4}.
-@item @code{atan2(-INF, -INF)} returns @m{-3*\pi/4,-3*Pi/4}.
-@item @code{atan2(+INF, +INF)} returns @m{+\pi/4,+Pi/4}.
-@item @code{atan2(-INF, +INF)} returns @m{-\pi/4,-Pi/4}.
-@item @code{atan2(+INF, x)} returns @m{+\pi/2,+Pi/2} for finite @math{x}.
-@item @code{atan2(-INF, x)} returns @m{-\pi/2,-Pi/2} for finite @math{x}.
-@item @code{atan2(y, -INF)} returns @m{+\pi,+Pi} for finite @math{y > 0}.
-@item @code{atan2(y, -INF)} returns @m{-\pi,-Pi} for finite @math{y < 0}.
-@item @code{atan2(y, +INF)} returns +0 for finite @math{y > 0}.
-@item @code{atan2(y, +INF)} returns @minus{}0 for finite @math{y < 0}.
+@item @code{atan2(+Inf, -Inf)} returns @m{+3*\pi/4,+3*Pi/4}.
+@item @code{atan2(-Inf, -Inf)} returns @m{-3*\pi/4,-3*Pi/4}.
+@item @code{atan2(+Inf, +Inf)} returns @m{+\pi/4,+Pi/4}.
+@item @code{atan2(-Inf, +Inf)} returns @m{-\pi/4,-Pi/4}.
+@item @code{atan2(+Inf, x)} returns @m{+\pi/2,+Pi/2} for finite @math{x}.
+@item @code{atan2(-Inf, x)} returns @m{-\pi/2,-Pi/2} for finite @math{x}.
+@item @code{atan2(y, -Inf)} returns @m{+\pi,+Pi} for finite @math{y > 0}.
+@item @code{atan2(y, -Inf)} returns @m{-\pi,-Pi} for finite @math{y < 0}.
+@item @code{atan2(y, +Inf)} returns +0 for finite @math{y > 0}.
+@item @code{atan2(y, +Inf)} returns @minus{}0 for finite @math{y < 0}.
 @end itemize
 @end deftypefun
 
