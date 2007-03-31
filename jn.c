@@ -50,7 +50,7 @@ mpfr_jn_si (mpfr_ptr res, mpfr_srcptr z, long n, mp_rnd_t r)
   MPFR_ZIV_DECL (loop);
 
   MPFR_LOG_FUNC (("x[%#R]=%R n=%d rnd=%d", z, z, n, r),
-                 ("y[%#R]=%R inexact=%d", res, res, inex));
+                 ("y[%#R]=%R", res, res));
 
   absn = SAFE_ABS (unsigned long, n);
 
