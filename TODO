@@ -171,6 +171,7 @@ New functions to implement:
   + arcu (5.3.10.15): arctan2(y,x) u / (2 pi);
   + rad_to_cycle, cycle_to_rad, cycle_to_cycle (5.3.11.{1..3}).
 - From GSL, missing special functions (if useful in MPFR):
+  (cf http://www.gnu.org/software/gsl/manual/gsl-ref.html#Special-Functions)
   + The Airy functions Ai(x) and Bi(x) defined by the integral representations:
    * Ai(x) = (1/\pi) \int_0^\infty \cos((1/3) t^3 + xt) dt
    * Bi(x) = (1/\pi) \int_0^\infty (e^(-(1/3) t^3) + \sin((1/3) t^3 + xt)) dt
