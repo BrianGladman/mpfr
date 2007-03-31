@@ -25,7 +25,8 @@ MA 02110-1301, USA. */
 
 #include "mpfr-test.h"
 
-#define TEST_FUNCTION mpfr_zeta
+#define TEST_FUNCTION mpfr_j1
+#define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 8)
 #include "tgeneric.c"
 
 int
@@ -76,7 +77,7 @@ main (int argc, char *argv[])
   mpfr_clear (x);
   mpfr_clear (y);
 
-  test_generic (2, 100, 1);
+  test_generic (2, 100, 10);
 
   tests_end_mpfr ();
 
