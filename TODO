@@ -178,12 +178,17 @@ New functions to implement:
   + The Bessel functions for n integer and n fractional:
    * Regular Modified Cylindrical Bessel Functions I_n
    * Irregular Modified Cylindrical Bessel Functions K_n
-   * Regular Spherical Bessel Functions j_n: j_0(x) = \sin(x)/x, [*]
-  j_1(x)= (\sin(x)/x-\cos(x))/x & j_2(x)= ((3/x^2-1)\sin(x)-3\cos(x)/x)/x
+   * Regular Spherical Bessel Functions j_n: j_0(x) = \sin(x)/x,
+     j_1(x)= (\sin(x)/x-\cos(x))/x & j_2(x)= ((3/x^2-1)\sin(x)-3\cos(x)/x)/x
+     Note: the "spherical" Bessel functions are solutions of
+     x^2 y'' + 2 x y' + [x^2 - n (n+1)] y = 0 and satisfy 
+     j_n(x) = sqrt(Pi/(2x)) J_{n+1/2}(x). They should not be mixed with the
+     classical Bessel Functions, also noted j0, j1, jn, y0, y1, yn in C99
+     and mpfr.
+     Cf http://en.wikipedia.org/wiki/Bessel_function#Spherical_Bessel_functions
    *Irregular Spherical Bessel Functions y_n: y_0(x) = -\cos(x)/x,
-    y_1(x)= -(\cos(x)/x+\sin(x))/x 
-  & y_2(x)= (-3/x^3+1/x)\cos(x)-(3/x^2)\sin(x) [*]
-    [*] are those definitions correct?
+     y_1(x)= -(\cos(x)/x+\sin(x))/x &
+     y_2(x)= (-3/x^3+1/x)\cos(x)-(3/x^2)\sin(x)
    * Regular Modified Spherical Bessel Functions i_n:
      i_l(x) = \sqrt{\pi/(2x)} I_{l+1/2}(x)
    * Irregular Modified Spherical Bessel Functions:
