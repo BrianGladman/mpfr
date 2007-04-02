@@ -1,4 +1,4 @@
-/* mpfr_y0, mpfr_y1, mpfr_yn_si -- Bessel functions of 2nd kind, integer order.
+/* mpfr_y0, mpfr_y1, mpfr_yn -- Bessel functions of 2nd kind, integer order.
    http://www.opengroup.org/onlinepubs/009695399/functions/y0.html
 
 Copyright 2007 Free Software Foundation, Inc.
@@ -27,13 +27,13 @@ MA 02110-1301, USA. */
 int
 mpfr_y0 (mpfr_ptr res, mpfr_srcptr z, mp_rnd_t r)
 {
-  return mpfr_yn_si (res, z, 0, r);
+  return mpfr_yn (res, 0, z, r);
 }
 
 int
 mpfr_y1 (mpfr_ptr res, mpfr_srcptr z, mp_rnd_t r)
 {
-  return mpfr_yn_si (res, z, 1, r);
+  return mpfr_yn (res, 1, z, r);
 }
 
 /* compute in s an approximation of S1 = sum((n-k)!/k!*y^k,k=0..n)
@@ -46,7 +46,7 @@ mpfr_yn_s1 (mpfr_ptr s, mpfr_srcptr y, unsigned long n)
   unsigned long k;
   mpz_t f;
   mp_exp_t e, emax;
-  
+
   mpz_init_set_ui (f, 1);
   /* we compute n!*S1 = sum(a[k]*y^k,k=0..n) where a[k] = n!*(n-k)!/k!,
      a[0] = (n!)^2, a[1] = n!*(n-1)!, ..., a[n-1] = n, a[n] = 1 */
@@ -139,13 +139,13 @@ mpfr_yn_s3 (mpfr_ptr s, mpfr_srcptr y, mpfr_srcptr c, unsigned long n)
   mpz_clear (p);
   mpz_clear (q);
   exps = expU - MPFR_EXP (s);
-  /* the error is bounded by (6k^2+33/2k+11) 2^exps ulps 
+  /* the error is bounded by (6k^2+33/2k+11) 2^exps ulps
      <= 8*(k+2)^2 2^exps ulps */
   return 3 + 2 * MPFR_INT_CEIL_LOG2(k + 2) + exps;
 }
 
 int
-mpfr_yn_si (mpfr_ptr res, mpfr_srcptr z, long n, mp_rnd_t r)
+mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mp_rnd_t r)
 {
   int inex;
   unsigned long absn;
@@ -259,7 +259,7 @@ mpfr_yn_si (mpfr_ptr res, mpfr_srcptr z, long n, mp_rnd_t r)
       mpfr_add (s2, s2, s3, GMP_RNDN); /* log(z/2) + gamma */
       err2 -= MPFR_EXP(s2);
       mpfr_mul_2ui (s2, s2, 1, GMP_RNDN); /* 2*(log(z/2) + gamma) */
-      mpfr_jn_si (s3, z, absn, GMP_RNDN); /* Jn(z) */
+      mpfr_jn (s3, absn, z, GMP_RNDN); /* Jn(z) */
       mpfr_mul (s2, s2, s3, GMP_RNDN); /* 2*(log(z/2) + gamma)*Jn(z) */
       err2 += 4; /* the error on s2 is bounded by 2^err2 ulps, see
 		    algorithms.tex */

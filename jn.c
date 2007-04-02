@@ -1,4 +1,4 @@
-/* mpfr_j0, mpfr_j1, mpfr_jn_si -- Bessel functions of 1st kind, integer order.
+/* mpfr_j0, mpfr_j1, mpfr_jn -- Bessel functions of 1st kind, integer order.
    http://www.opengroup.org/onlinepubs/009695399/functions/j0.html
 
 Copyright 2007 Free Software Foundation, Inc.
@@ -29,17 +29,17 @@ MA 02110-1301, USA. */
 int
 mpfr_j0 (mpfr_ptr res, mpfr_srcptr z, mp_rnd_t r)
 {
-  return mpfr_jn_si (res, z, 0, r);
+  return mpfr_jn (res, 0, z, r);
 }
 
 int
 mpfr_j1 (mpfr_ptr res, mpfr_srcptr z, mp_rnd_t r)
 {
-  return mpfr_jn_si (res, z, 1, r);
+  return mpfr_jn (res, 1, z, r);
 }
 
 int
-mpfr_jn_si (mpfr_ptr res, mpfr_srcptr z, long n, mp_rnd_t r)
+mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mp_rnd_t r)
 {
   int inex;
   unsigned long absn;
@@ -109,7 +109,7 @@ mpfr_jn_si (mpfr_ptr res, mpfr_srcptr z, long n, mp_rnd_t r)
 				 : MPFR_SIGN_POS);
 	}
     }
-  
+
   mpfr_init (s);
   mpfr_init (t);
 
