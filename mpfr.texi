@@ -426,7 +426,9 @@ You should include that file in any program using the MPFR library:
 @noindent
 A @dfn{floating-point number} or @dfn{float} for short, is an arbitrary
 precision mantissa with a limited precision exponent. The C data type
-for such objects is @code{mpfr_t}. A floating-point number can have
+for such objects is @code{mpfr_t} (internally defined as a one-element
+array of a structure, and @code{mpfr_ptr} is the C data type representing
+a pointer to this structure). A floating-point number can have
 three special values: Not-a-Number (NaN) or plus or minus Infinity. NaN
 represents an uninitialized object, the result of an invalid operation
 (like 0 divided by 0), or a value that cannot be determined (like
