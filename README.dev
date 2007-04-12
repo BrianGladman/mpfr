@@ -442,3 +442,8 @@ and write the new THRESHOLD in the file `mparam.h':
            (unsigned long) mpfr_exp_threshold);
 
 More complex tune are possible but needs special attention.
+
+===========================================================================
+
+Bit Twiddling Hacks - Sean Eron Anderson maintain a list of tricks to get
+efficient code on <http://graphics.stanford.edu/~seander/bithacks.html>.
