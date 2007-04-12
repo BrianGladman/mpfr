@@ -447,3 +447,5 @@ More complex tune are possible but needs special attention.
 
 Bit Twiddling Hacks - Sean Eron Anderson maintain a list of tricks to get
 efficient code on <http://graphics.stanford.edu/~seander/bithacks.html>.
+WARNING: some of those tricks may not take into account possible overflows,
+and may not be portable.
