@@ -164,7 +164,8 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mp_rnd_t r)
     }
   MPFR_ZIV_FREE (loop);
 
-  inex = (n >= 0) ? mpfr_set (res, s, r) : mpfr_neg (res, s, r);
+  inex = ((n >= 0) || ((n & 1) == 0)) ? mpfr_set (res, s, r)
+                                      : mpfr_neg (res, s, r);
 
   mpfr_clear (y);
   mpfr_clear (s);
