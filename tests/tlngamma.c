@@ -80,7 +80,7 @@ special (void)
 
   mpfr_set_ui (x, 1, GMP_RNDN);
   mpfr_lngamma (y, x, GMP_RNDN);
-  if (mpfr_cmp_ui (y, 0) || MPFR_IS_NEG (y))
+  if (MPFR_IS_NAN (y) || mpfr_cmp_ui (y, 0) || MPFR_IS_NEG (y))
     {
       printf ("Error for lngamma(1)\n");
       exit (1);
@@ -96,7 +96,7 @@ special (void)
 
   mpfr_set_ui (x, 2, GMP_RNDN);
   mpfr_lngamma (y, x, GMP_RNDN);
-  if (mpfr_cmp_ui (y, 0) || MPFR_IS_NEG (y))
+  if (MPFR_IS_NAN (y) || mpfr_cmp_ui (y, 0) || MPFR_IS_NEG (y))
     {
       printf ("Error for lngamma(2)\n");
       exit (1);
@@ -111,7 +111,7 @@ special (void)
   mpfr_set_str (x, CHECK_X1, 10, GMP_RNDN);
   mpfr_lngamma (y, x, GMP_RNDN);
   mpfr_set_str (x, CHECK_Y1, 10, GMP_RNDN);
-  if (mpfr_cmp (y, x))
+  if (MPFR_IS_NAN (y) || mpfr_cmp (y, x))
     {
       printf ("mpfr_lngamma("CHECK_X1") is wrong:\n"
               "expected ");
@@ -126,7 +126,7 @@ special (void)
   mpfr_set_str (x, CHECK_X2, 10, GMP_RNDN);
   mpfr_lngamma (y, x, GMP_RNDN);
   mpfr_set_str (x, CHECK_Y2, 10, GMP_RNDN);
-  if (mpfr_cmp (y, x))
+  if (MPFR_IS_NAN (y) || mpfr_cmp (y, x))
     {
       printf ("mpfr_lngamma("CHECK_X2") is wrong:\n"
               "expected ");
@@ -142,7 +142,7 @@ special (void)
   mpfr_lngamma (y, x, GMP_RNDU);
   mpfr_set_prec (x, 175);
   mpfr_set_str_binary (x, "0.1010001100011101101011001101110010100001000001000001110011000001101100001111001001000101011011100100010101011110100111110101010100010011010010000101010111001100011000101111E7");
-  if (mpfr_cmp (x, y))
+  if (MPFR_IS_NAN (y) || mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_lngamma (1)\n");
       exit (1);
@@ -154,7 +154,7 @@ special (void)
   mpfr_lngamma (x, y, GMP_RNDZ);
   mpfr_set_prec (y, 21);
   mpfr_set_str_binary (y, "0.111000101000001100101E9");
-  if (mpfr_cmp (x, y))
+  if (MPFR_IS_NAN (x) || mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_lngamma (120)\n");
       printf ("Expected "); mpfr_print_binary (y); puts ("");
@@ -168,7 +168,7 @@ special (void)
   inex = mpfr_lngamma (y, x, GMP_RNDN);
   mpfr_set_prec (x, 206);
   mpfr_set_str_binary (x, "0.10000111011000000011100010101001100110001110000111100011000100100110110010001011011110101001111011110110000001010100111011010000000011100110110101100111000111010011110010000100010111101010001101000110101001E13");
-  if (mpfr_cmp (x, y))
+  if (MPFR_IS_NAN (y) || mpfr_cmp (x, y))
     {
       printf ("Error in mpfr_lngamma (768)\n");
       exit (1);
@@ -184,9 +184,27 @@ special (void)
   mpfr_set_str_binary (x, "0.1100E-66");
   mpfr_lngamma (y, x, GMP_RNDN);
   mpfr_set_str_binary (x, "0.1100E6");
-  if (mpfr_cmp (x, y))
+  if (MPFR_IS_NAN (y) || mpfr_cmp (x, y))
     {
       printf ("Error for lngamma(0.1100E-66)\n");
+      exit (1);
+    }
+
+  mpfr_set_prec (x, 256);
+  mpfr_set_prec (y, 32);
+  mpfr_set_si_2exp (x, -1, 200, GMP_RNDN);
+  mpfr_add_ui (x, x, 1, GMP_RNDN);
+  mpfr_div_2ui (x, x, 1, GMP_RNDN);
+  mpfr_lngamma (y, x, GMP_RNDN);
+  mpfr_set_prec (x, 32);
+  mpfr_set_str_binary (x, "-0.10001000111011111011000010100010E207");
+  if (MPFR_IS_NAN (y) || mpfr_cmp (x, y))
+    {
+      printf ("Error for lngamma(-2^199+0.5)\n");
+      printf ("Got        ");
+      mpfr_dump (y);
+      printf ("instead of ");
+      mpfr_dump (x);
       exit (1);
     }
 
