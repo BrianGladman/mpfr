@@ -146,12 +146,12 @@ unit_bit (mpfr_srcptr (x))
    For z real, |K(z)| <= 1 thus R_n(z) is bounded by the first neglected term.
  */
 #ifdef IS_GAMMA
-static int
 #define GAMMA_FUNC mpfr_gamma_aux
 #else
-int
-#define GAMMA_FUNC mpfr_lngamma
+#define GAMMA_FUNC mpfr_lngamma_aux
 #endif
+
+static int
 GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
 {
   mp_prec_t precy, w; /* working precision */
@@ -164,31 +164,6 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
   unsigned long oldBm;
   double d;
   MPFR_SAVE_EXPO_DECL (expo);
-
-#ifndef IS_GAMMA
-  /* special cases */
-  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (z0)))
-    {
-      if (MPFR_IS_NAN (z0) || MPFR_IS_NEG (z0))
-        {
-          MPFR_SET_NAN (y);
-          MPFR_RET_NAN;
-        }
-      else /* lngamma(+Inf) = lngamma(+0) = +Inf */
-        {
-          MPFR_SET_INF (y);
-          MPFR_SET_POS (y);
-          MPFR_RET (0);  /* exact */
-        }
-    }
-
-  /* if x < 0 and -2k-1 <= x <= -2k, then lngamma(x) = NaN */
-  if (MPFR_IS_NEG (z0) && (unit_bit (z0) == 0 || mpfr_integer_p (z0)))
-    {
-      MPFR_SET_NAN (y);
-      MPFR_RET_NAN;
-    }
-#endif
 
   precy = MPFR_PREC(y);
 
@@ -251,8 +226,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
           mpfr_sub_ui (v, z0, 1, GMP_RNDN); /* v = (x-1) * (1+u) */
           mpfr_mul (v, v, t, GMP_RNDN); /* v = Pi*(x-1) * (1+u)^3 */
           mpfr_div (v, v, s, GMP_RNDN); /* Pi*(x-1)/sin(Pi*(2-x)) */
-          if (MPFR_IS_NEG (v))  /* can be explained by a too large error? */
-            continue;  /* so, start again with a larger precision */
+          mpfr_abs (v, v, GMP_RNDN);
           /* (1+u)^(4+2^err_s+1) */
           err_s = (err_s <= 2) ? 3 + (err_s / 2) : err_s + 1;
           mpfr_log (v, v, GMP_RNDN);
@@ -486,3 +460,88 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (y, inexact, rnd);
 }
+
+#ifndef IS_GAMMA
+
+int
+mpfr_lngamma (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
+{
+  int inex;
+
+  MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd),
+                 ("lngamma[%#R]=%R inexact=%d", y, y, inex));
+
+  /* special cases */
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
+    {
+      if (MPFR_IS_NAN (x) || MPFR_IS_NEG (x))
+        {
+          MPFR_SET_NAN (y);
+          MPFR_RET_NAN;
+        }
+      else /* lngamma(+Inf) = lngamma(+0) = +Inf */
+        {
+          MPFR_SET_INF (y);
+          MPFR_SET_POS (y);
+          MPFR_RET (0);  /* exact */
+        }
+    }
+
+  /* if x < 0 and -2k-1 <= x <= -2k, then lngamma(x) = NaN */
+  if (MPFR_IS_NEG (x) && (unit_bit (x) == 0 || mpfr_integer_p (x)))
+    {
+      MPFR_SET_NAN (y);
+      MPFR_RET_NAN;
+    }
+
+  inex = mpfr_lngamma_aux (y, x, rnd);
+  return inex;
+}
+
+int
+mpfr_lgamma (mpfr_ptr y, int *signp, mpfr_srcptr x, mp_rnd_t rnd)
+{
+  int inex;
+
+  MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd),
+                 ("lgamma[%#R]=%R inexact=%d", y, y, inex));
+
+  *signp = 1;  /* most common case */
+
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
+    {
+      if (MPFR_IS_NAN (x))
+        {
+          MPFR_SET_NAN (y);
+          MPFR_RET_NAN;
+        }
+      else
+        {
+          *signp = MPFR_INT_SIGN (x);
+          MPFR_SET_INF (y);
+          MPFR_SET_POS (y);
+          MPFR_RET (0);
+        }
+    }
+
+  if (MPFR_IS_NEG (x))
+    {
+      if (mpfr_integer_p (x))
+        {
+          MPFR_SET_INF (y);
+          MPFR_SET_POS (y);
+          MPFR_RET (0);
+        }
+
+      if (unit_bit (x) == 0)
+        *signp = -1;
+    }
+
+  /* TODO: add support for negative numbers with small exponent.
+     Re-enable the generic tests when this is done. */
+
+  inex = mpfr_lngamma_aux (y, x, rnd);
+  return inex;
+}
+
+#endif
