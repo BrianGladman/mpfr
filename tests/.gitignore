@@ -73,6 +73,7 @@
 /tj0
 /tj1
 /tjn
+/tlgamma
 /tlngamma
 /tlog
 /tlog1p
@@ -127,5 +128,8 @@
 /tui_pow
 /tui_sub
 /tversion
+/ty0
+/ty1
+/tyn
 /tzeta
 /tzeta_ui
