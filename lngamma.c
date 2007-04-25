@@ -108,6 +108,34 @@ mpfr_gamma_alpha (mp_prec_t p)
     return 0.26 * (double) MPFR_INT_CEIL_LOG2 ((unsigned long) p);
 }
 
+#ifndef IS_GAMMA
+static int
+unit_bit (mpfr_srcptr (x))
+{
+  mp_exp_t expo;
+  mp_prec_t prec;
+  mp_limb_t x0;
+
+  expo = MPFR_GET_EXP (x);
+  if (expo <= 0)
+    return 0;  /* |x| < 1 */
+
+  prec = MPFR_PREC (x);
+  if (expo > prec)
+    return 0;  /* y is a multiple of 2^(expo-prec), thus an even integer */
+
+  /* Now, the unit bit is represented. */
+
+  prec = ((prec - 1) / BITS_PER_MP_LIMB + 1) * BITS_PER_MP_LIMB - expo;
+  /* number of represented fractional bits (including the trailing 0's) */
+
+  x0 = *(MPFR_MANT (x) + prec / BITS_PER_MP_LIMB);
+  /* limb containing the unit bit */
+
+  return (x0 >> (prec % BITS_PER_MP_LIMB)) & 1;
+}
+#endif
+
 /* lngamma(x) = log(gamma(x)).
    We use formula [6.1.40] from Abramowitz&Stegun:
    lngamma(z) = (z-1/2)*log(z) - z + 1/2*log(2*Pi)
@@ -155,16 +183,10 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
     }
 
   /* if x < 0 and -2k-1 <= x <= -2k, then lngamma(x) = NaN */
-  if (MPFR_IS_NEG (z0))
+  if (MPFR_IS_NEG (z0) && (unit_bit (z0) == 0 || mpfr_integer_p (z0)))
     {
-      MPFR_SAVE_EXPO_MARK (expo);
-      if (mpfr_get_si (z0, GMP_RNDZ) % 2 == 0 || mpfr_integer_p (z0))
-        {
-          MPFR_SAVE_EXPO_FREE (expo);
-          MPFR_SET_NAN (y);
-          MPFR_RET_NAN;
-        }
-      MPFR_SAVE_EXPO_FREE (expo);
+      MPFR_SET_NAN (y);
+      MPFR_RET_NAN;
     }
 #endif
 
