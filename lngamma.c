@@ -199,10 +199,13 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
           mpfr_set_prec (t, w);
           mpfr_set_prec (u, w);
           mpfr_set_prec (v, w);
-          mpfr_ui_sub (s, 2, z0, GMP_RNDD); /* s = (2-z0) * (1+2u) */
-          mpfr_const_pi (t, GMP_RNDN);      /* t = Pi * (1+u) */
+          /* In the following, we write r for a real of absolute value
+             at most 2^{-w}. Different instances of r may represent different
+             values. */
+          mpfr_ui_sub (s, 2, z0, GMP_RNDD); /* s = (2-z0) * (1+2r) */
+          mpfr_const_pi (t, GMP_RNDN);      /* t = Pi * (1+r) */
           mpfr_lngamma (u, s, GMP_RNDN); /* lngamma(2-x) */
-          /* Let s = (2-z0) + h. By construction, -(2-z0)*(2u) <= h <= 0.
+          /* Let s = (2-z0) + h. By construction, -(2-z0)*(2r) <= h <= 0.
              We have lngamma(s) = lngamma(2-z0) + h*Psi(z), z in [2-z0+h,2-z0].
              Since 2-z0+h >= 1 and |Psi(x)| <= max(1,log(x)) for x >= 1,
              the error on u is bounded by
@@ -212,10 +215,10 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
           err_u = (err_u >= 0) ? err_u + 1 : 0;
           /* now the error on u is bounded by 2^err_u ulps */
 
-          mpfr_mul (s, s, t, GMP_RNDN); /* Pi*(2-x), (1+u)^4 */
+          mpfr_mul (s, s, t, GMP_RNDN); /* Pi*(2-x), (1+r)^4 */
           err_s = MPFR_GET_EXP(s); /* 2-x <= 2^err_s */
           mpfr_sin (s, s, GMP_RNDN); /* sin(Pi*(2-x)) */
-          /* the error on s is bounded by 1/2*ulp(s) + [(1+u)^4-1]*(2-x)
+          /* the error on s is bounded by 1/2*ulp(s) + [(1+r)^4-1]*(2-x)
              <= 1/2*ulp(s) + 5*2^(-w)*(2-x) for w >= 3 */
           err_s += 3 - MPFR_GET_EXP(s);
           err_s = (err_s >= 0) ? err_s + 1 : 0;
@@ -223,11 +226,11 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
              error is bounded by 2^(err_s+1) */
           err_s ++; /* relative error */
 
-          mpfr_sub_ui (v, z0, 1, GMP_RNDN); /* v = (x-1) * (1+u) */
-          mpfr_mul (v, v, t, GMP_RNDN); /* v = Pi*(x-1) * (1+u)^3 */
+          mpfr_sub_ui (v, z0, 1, GMP_RNDN); /* v = (x-1) * (1+r) */
+          mpfr_mul (v, v, t, GMP_RNDN); /* v = Pi*(x-1) * (1+r)^3 */
           mpfr_div (v, v, s, GMP_RNDN); /* Pi*(x-1)/sin(Pi*(2-x)) */
           mpfr_abs (v, v, GMP_RNDN);
-          /* (1+u)^(4+2^err_s+1) */
+          /* (1+r)^(4+2^err_s+1) */
           err_s = (err_s <= 2) ? 3 + (err_s / 2) : err_s + 1;
           mpfr_log (v, v, GMP_RNDN);
           /* log(v*(1+e)) = log(v)+log(1+e) where |e| <= 2^(err_s-w).
