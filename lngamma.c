@@ -209,17 +209,19 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
              We have lngamma(s) = lngamma(2-z0) + h*Psi(z), z in [2-z0+h,2-z0].
              Since 2-z0+h = s >= 1 and |Psi(x)| <= max(1,log(x)) for x >= 1,
              the error on u is bounded by
-             ulp(u)/2 + (2-z0)*max(1,log(2-z0))*2^(1-w). */
+             ulp(u)/2 + (2-z0)*max(1,log(2-z0))*2^(1-w)
+             = (1/2 + (2-z0)*max(1,log(2-z0))*2^(1-E(u))) ulp(u) */
           d = (double) MPFR_GET_EXP(s) * 0.694; /* upper bound for log(2-z0) */
           err_u = MPFR_GET_EXP(s) + __gmpfr_ceil_log2 (d) + 1 - MPFR_GET_EXP(u);
           err_u = (err_u >= 0) ? err_u + 1 : 0;
           /* now the error on u is bounded by 2^err_u ulps */
 
-          mpfr_mul (s, s, t, GMP_RNDN); /* Pi*(2-x), (1+r)^4 */
+          mpfr_mul (s, s, t, GMP_RNDN); /* Pi*(2-x) * (1+r)^4 */
           err_s = MPFR_GET_EXP(s); /* 2-x <= 2^err_s */
           mpfr_sin (s, s, GMP_RNDN); /* sin(Pi*(2-x)) */
-          /* the error on s is bounded by 1/2*ulp(s) + [(1+r)^4-1]*(2-x)
-             <= 1/2*ulp(s) + 5*2^(-w)*(2-x) for w >= 3 */
+          /* the error on s is bounded by 1/2*ulp(s) + [(1+2^(-w))^4-1]*(2-x)
+             <= 1/2*ulp(s) + 5*2^(-w)*(2-x) for w >= 3
+             <= (1/2 + 5 * 2^(-E(s)) * (2-x)) ulp(s) */
           err_s += 3 - MPFR_GET_EXP(s);
           err_s = (err_s >= 0) ? err_s + 1 : 0;
           /* the error on s is bounded by 2^err_s ulps, thus the relative
