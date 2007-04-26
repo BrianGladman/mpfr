@@ -200,14 +200,14 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
           mpfr_set_prec (u, w);
           mpfr_set_prec (v, w);
           /* In the following, we write r for a real of absolute value
-             at most 2^{-w}. Different instances of r may represent different
+             at most 2^(-w). Different instances of r may represent different
              values. */
-          mpfr_ui_sub (s, 2, z0, GMP_RNDD); /* s = (2-z0) * (1+2r) */
+          mpfr_ui_sub (s, 2, z0, GMP_RNDD); /* s = (2-z0) * (1+2r) >= 1 */
           mpfr_const_pi (t, GMP_RNDN);      /* t = Pi * (1+r) */
           mpfr_lngamma (u, s, GMP_RNDN); /* lngamma(2-x) */
-          /* Let s = (2-z0) + h. By construction, -(2-z0)*(2r) <= h <= 0.
+          /* Let s = (2-z0) + h. By construction, -(2-z0)*2^(1-w) <= h <= 0.
              We have lngamma(s) = lngamma(2-z0) + h*Psi(z), z in [2-z0+h,2-z0].
-             Since 2-z0+h >= 1 and |Psi(x)| <= max(1,log(x)) for x >= 1,
+             Since 2-z0+h = s >= 1 and |Psi(x)| <= max(1,log(x)) for x >= 1,
              the error on u is bounded by
              ulp(u)/2 + (2-z0)*max(1,log(2-z0))*2^(1-w). */
           d = (double) MPFR_GET_EXP(s) * 0.694; /* upper bound for log(2-z0) */
