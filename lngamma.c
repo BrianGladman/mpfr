@@ -232,8 +232,9 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
           mpfr_mul (v, v, t, GMP_RNDN); /* v = Pi*(x-1) * (1+r)^3 */
           mpfr_div (v, v, s, GMP_RNDN); /* Pi*(x-1)/sin(Pi*(2-x)) */
           mpfr_abs (v, v, GMP_RNDN);
-          /* (1+r)^(4+2^err_s+1) */
-          err_s = (err_s <= 2) ? 3 + (err_s / 2) : err_s + 1;
+          /* (1+r)^(3+2^err_s+1) */
+          err_s = (err_s <= 1) ? 3 : err_s + 1;
+          /* now (1+r)^M with M <= 2^err_s */
           mpfr_log (v, v, GMP_RNDN);
           /* log(v*(1+e)) = log(v)+log(1+e) where |e| <= 2^(err_s-w).
              Since |log(1+e)| <= 2*e for |e| <= 1/4, the error on v is
