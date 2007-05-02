@@ -151,7 +151,7 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mp_rnd_t r)
   unsigned long absn;
   mp_prec_t prec;
   mp_exp_t err1, err2, err3;
-  mpfr_t y, s1, s2, s3, zn;
+  mpfr_t y, s1, s2, s3;
   MPFR_ZIV_DECL (loop);
 
   MPFR_LOG_FUNC (("x[%#R]=%R n=%d rnd=%d", z, z, n, r),

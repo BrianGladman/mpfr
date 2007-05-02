@@ -119,7 +119,7 @@ int
 mpfr_remquo (mpfr_ptr rem, long *quo,
              mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd)
 {
-  mpfr_t q, qy;
+  mpfr_t q;
   int inex, compare;
   mp_exp_t ex, ey;
   mp_prec_t prec_q;
