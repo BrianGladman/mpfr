@@ -127,7 +127,7 @@ mpfr_remquo (int *quo, mpfr_ptr rem,
   mp_exp_t ex, ey;
   mp_prec_t prec_q;
 
-  MPFR_LOG_FUNC (("x[%#R]=%R y[%#R]=%R rnd=%d", x, x, y, y, r),
+  MPFR_LOG_FUNC (("x[%#R]=%R y[%#R]=%R rnd=%d", x, x, y, y, rnd),
                  ("quo=%d rem[%#R]=%R", *quo, rem, rem));
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x) || MPFR_IS_SINGULAR (y)))
@@ -148,7 +148,7 @@ mpfr_remquo (int *quo, mpfr_ptr rem,
     }
 
   /* now neither x nor y is NaN, Inf or zero */
-  
+
   /* first deal with the easy case where x is already reduced mod y,
      i.e., |x| <= |y|/2 */
   ex = MPFR_EXP (x);
