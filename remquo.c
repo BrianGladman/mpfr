@@ -27,8 +27,8 @@ MA 02110-1301, USA. */
   Let q = x/y rounded to the nearest integer (to the nearest even number
   in case x/y = n + 1/2 with n integer).
   Put x - q*y in rem, rounded according to rnd.
-  The value stored in *quo has the sign of q, and agrees with q with (at least)
-  the 3 low order bits. In other words, *quo = q (mod 8) and *quo q >= 0.
+  The value stored in *quo has the sign of q, and agrees with q with
+  the 2^n low order bits. In other words, *quo = q (mod 2^n) and *quo q >= 0.
   If rem is zero, then it has the sign of x.
   The returned 'int' is the inexact flag giving the place of rem wrt x - q*y.
 
@@ -79,28 +79,22 @@ mpfr_cmp_significand (mpfr_srcptr x, mpfr_srcptr y)
     }
 }
 
-#define WANTED_BITS 3
-
-#if (WANTED_BITS < 3)
-#error "WANTED_BITS must be at least 3 to conform to C99"
-#endif
-
-/* the following test is for the implementation of get_low_bits() */
-#if (WANTED_BITS > BITS_PER_MP_LIMB)
-#error "WANTED_BITS must be less or equal to BITS_PER_MP_LIMB"
-#endif
+/* we return as many bits as we can, keeping just one bit for the sign */
+#define WANTED_BITS (sizeof(long) * CHAR_BIT - 1)
 
 /* assuming q is an integer, with in addition EXP(q) <= PREC(q),
    returns |q| mod 2^WANTED_BITS */
-static int
+static long
 get_low_bits (mpfr_srcptr q)
 {
   mp_ptr qp = MPFR_MANT(q);
   mp_size_t qn = MPFR_LIMB_SIZE(q);
   mp_size_t w = qn * BITS_PER_MP_LIMB - MPFR_EXP(q);
-  mp_limb_t res;
+  long res;
 
-  MPFR_ASSERTN(WANTED_BITS < sizeof(int) * CHAR_BIT);
+  MPFR_ASSERTD(WANTED_BITS >= 3); /* to conform to C99 */
+  MPFR_ASSERTN(WANTED_BITS < BITS_PER_MP_LIMB); /* required for this code
+                                                   to work properly */
   /* weight of bit 0 of q is -w, with -w <= 0 since EXP(q) <= PREC(q),
      thus bit of weight 0 is w. */
   /* normally this loop should not be used, since in normal cases we have
@@ -122,7 +116,7 @@ get_low_bits (mpfr_srcptr q)
 }
 
 int
-mpfr_remquo (mpfr_ptr rem, int *quo,
+mpfr_remquo (mpfr_ptr rem, long *quo,
              mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd)
 {
   mpfr_t q, qy;
@@ -205,7 +199,7 @@ mpfr_remquo (mpfr_ptr rem, int *quo,
 int
 mpfr_remainder (mpfr_ptr rem, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd)
 {
-  int quo;
+  long quo;
 
   return mpfr_remquo (rem, &quo, x, y, rnd);
 }
