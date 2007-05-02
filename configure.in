@@ -27,6 +27,11 @@ AC_INIT([MPFR],[2.3.0-dev])
 AM_INIT_AUTOMAKE([1.6 no-define dist-zip dist-bzip2])
 dnl AM_MAINTAINER_MODE
 
+dnl FIXME: AC_ARG_ENABLE(decimal-float...) part do things too early,
+dnl even when this option is not used. In particular, it must be used
+dnl after AC_PROG_CC, and the GMP CFLAGS and CC check may modify the
+dnl compiler.
+
 test_CFLAGS=${CFLAGS+set}
 
 AC_CANONICAL_HOST
