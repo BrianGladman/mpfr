@@ -27,7 +27,6 @@ MA 02110-1301, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-static double mpfr_ceil_double (double);
 static int mpfr_get_str_aux (char *const, mp_exp_t *const, mp_limb_t *const,
                        mp_size_t, mp_exp_t, long, int, size_t, mp_rnd_t);
 
@@ -237,7 +236,7 @@ mpfr_get_str_aux (char *const str, mp_exp_t *const exp, mp_limb_t *const r,
 /* mpfr_l2b[b-2][0] is a 23-bit upper approximation to log(b)/log(2),
    mpfr_l2b[b-2][1] is a 76-bit upper approximation to log(2)/log(b),
    if not null. The array is initialized with null pointers. */
-mpfr_ptr MPFR_THREAD_ATTR mpfr_l2b[BASE_MAX-1][2] = { NULL };
+mpfr_ptr MPFR_THREAD_ATTR mpfr_l2b[BASE_MAX-1][2] = { { NULL } };
 
 /* returns ceil(e * log2(b)^((-1)^i)), or ... + 1 */
 static mp_exp_t
