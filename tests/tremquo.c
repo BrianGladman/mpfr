@@ -159,7 +159,7 @@ main (int argc, char *argv[])
   /* quotient is 2^65 */
   mpfr_remquo (r, q, x, y, GMP_RNDN);
   MPFR_ASSERTN (mpfr_cmp_si (r, 0) == 0);
-  MPFR_ASSERTN (q[0] % 2147483648L == 0L);
+  MPFR_ASSERTN (q[0] % 1073741824L == 0L);
 
   /* another large quotient */
   mpfr_set_prec (x, 65);
@@ -171,7 +171,7 @@ main (int argc, char *argv[])
   mpfr_remquo (r, q, x, y, GMP_RNDN);
   /* q should be 41803643793084085130, r should be 605/2048 */
   MPFR_ASSERTN (mpfr_cmp_ui_2exp (r, 605, -11) == 0);
-  MPFR_ASSERTN (q[0] % 2147483648L == 1807577994L);
+  MPFR_ASSERTN ((q[0] > 0) && ((q[0] % 1073741824L) == 733836170L));
 
   /* check cases where quotient is 1.5 +/- eps */
   mpfr_set_prec (x, 65);
