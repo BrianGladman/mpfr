@@ -27,6 +27,8 @@ AC_INIT([MPFR],[2.3.0-dev])
 AM_INIT_AUTOMAKE([1.6 no-define dist-zip dist-bzip2])
 dnl AM_MAINTAINER_MODE
 
+test_CFLAGS=${CFLAGS+set}
+
 AC_CANONICAL_HOST
 
 dnl To use a separate config header.
@@ -142,8 +144,6 @@ return y.d == 0.14894469406741037E-123 ? 0 :
 AC_ARG_WITH(tests-timeout,
    [  --with-tests-timeout=NUM limit in seconds for test programs],
    AC_DEFINE_UNQUOTED([MPFR_TEST_TIMEOUT],$withval, [timeout limit]))
-
-test_CFLAGS=${CFLAGS+set}
 
 
 dnl
