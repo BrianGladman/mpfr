@@ -20,6 +20,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
+#include <limits.h>  /* For CHAR_BIT */
 #include "mpfr-impl.h"
 
 /*
@@ -84,6 +85,7 @@ mpfr_cmp_significand (mpfr_srcptr x, mpfr_srcptr y)
 #error "WANTED_BITS must be at least 3 to conform to C99"
 #endif
 
+/* the following test is for the implementation of get_low_bits() */
 #if (WANTED_BITS > BITS_PER_MP_LIMB)
 #error "WANTED_BITS must be less or equal to BITS_PER_MP_LIMB"
 #endif
@@ -98,6 +100,7 @@ get_low_bits (mpfr_srcptr q)
   mp_size_t w = qn * BITS_PER_MP_LIMB - MPFR_EXP(q);
   mp_limb_t res;
 
+  MPFR_ASSERTN(WANTED_BITS < sizeof(int) * CHAR_BIT);
   /* weight of bit 0 of q is -w, with -w <= 0 since EXP(q) <= PREC(q),
      thus bit of weight 0 is w. */
   /* normally this loop should not be used, since in normal cases we have
@@ -119,7 +122,7 @@ get_low_bits (mpfr_srcptr q)
 }
 
 int
-mpfr_remquo (int *quo, mpfr_ptr rem,
+mpfr_remquo (mpfr_ptr rem, int *quo,
              mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd)
 {
   mpfr_t q, qy;
@@ -202,7 +205,7 @@ mpfr_remquo (int *quo, mpfr_ptr rem,
 int
 mpfr_remainder (mpfr_ptr rem, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd)
 {
-  int quo[1];
+  int quo;
 
-  return mpfr_remquo (quo, rem, x, y, rnd);
+  return mpfr_remquo (rem, &quo, x, y, rnd);
 }
