@@ -1687,6 +1687,19 @@ Set @var{rop} to the fractional part of @var{op}, having the same sign as
 the fractional part is generated).
 @end deftypefun
 
+@deftypefun int mpfr_remainder (mpfr_t @var{r}, mpfr_t @var{x}, mpfr_t @var{y}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_remquo (int* @var{q}, mpfr_t @var{r}, mpfr_t @var{x}, mpfr_t @var{y}, mp_rnd_t @var{rnd})
+Set @var{r} to the remainder of the division of @var{x} by @var{y}, with 
+quotient rounded to the nearest integer (ties rounded to even), and
+@var{r} rounded according to the direction @var{rnd}.
+The return value is the inexact flag corresponding to @var{r}.
+Additionally, @code{mpfr_remquo} stores
+the 3 low significant bits from the quotient in @var{q[0]}.
+Note that @var{x} may be so large in magnitude relative to @var{y} that an
+exact representation of the quotient is not practical.
+These functions are useful for additive argument reduction.
+@end deftypefun
+
 @deftypefun int mpfr_integer_p (mpfr_t @var{op})
 Return non-zero iff @var{op} is an integer.
 @end deftypefun
