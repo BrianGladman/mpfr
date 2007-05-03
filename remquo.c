@@ -167,16 +167,19 @@ mpfr_remquo (mpfr_ptr rem, long *quo,
   inex = mpfr_div (q, x, y, GMP_RNDN);
   if (prec_q < MPFR_PREC_MIN)
     {
-      int inex2;
+      int is_half_int, inex2;
       /* we might have a double-rounding problem in case q = n + 1/2 here,
          which can be obtained either from x/y = n + 1/2 + eps, or
          x/y = n + 1/2 - eps */
+      mpfr_mul_2ui (q, q, 1, GMP_RNDN);
+      is_half_int = mpfr_integer_p (q);
+      mpfr_div_2ui (q, q, 1, GMP_RNDN);
       inex2 = mpfr_rint (q, q, GMP_RNDN);
-      if (inex2 == MPFR_EVEN_INEX && inex > 0)
+      if (is_half_int && inex2 > 0 && inex > 0)
         /* mpfr_div rounded n + 1/2 - eps to n + 1/2, and mpfr_rint
            rounded n + 1/2 to n + 1 */
         mpfr_sub_ui (q, q, 1, GMP_RNDN);
-      else if (inex2 == -MPFR_EVEN_INEX && inex < 0)
+      else if (is_half_int && inex2 < 0 && inex < 0)
         mpfr_add_ui (q, q, 1, GMP_RNDN);
     }
 
@@ -190,6 +193,9 @@ mpfr_remquo (mpfr_ptr rem, long *quo,
      x + (-q)*y with an FMA */
   mpfr_neg (q, q, GMP_RNDN); /* exact */
   inex = mpfr_fma (rem, q, y, x, rnd);
+  /* if rem is zero, it should have the sign of x */
+  if (MPFR_IS_ZERO (rem))
+      MPFR_SET_SAME_SIGN(rem, x);
 
   mpfr_clear (q);
 

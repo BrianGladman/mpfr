@@ -1699,6 +1699,7 @@ the fractional part is generated).
 Set @var{r} to the remainder of the division of @var{x} by @var{y}, with 
 quotient rounded to the nearest integer (ties rounded to even), and
 @var{r} rounded according to the direction @var{rnd}.
+If @var{r} is zero, it has the sign of @var{x}.
 The return value is the inexact flag corresponding to @var{r}.
 Additionally, @code{mpfr_remquo} stores
 the low significant bits from the quotient in @var{*q}

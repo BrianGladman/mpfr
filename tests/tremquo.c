@@ -217,6 +217,17 @@ main (int argc, char *argv[])
   MPFR_ASSERTN (mpfr_cmp_si_2exp (r, -1, -63) == 0);
   MPFR_ASSERTN (q[0] = 1L);
 
+  /* bug founds by Kaveh Ghazi, 3 May 2007 */
+  mpfr_set_ui (x, 2, GMP_RNDN);
+  mpfr_set_ui (y, 3, GMP_RNDN);
+  mpfr_remainder (r, x, y, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_si (r, -1) == 0);
+
+  mpfr_set_si (x, -1, GMP_RNDN);
+  mpfr_set_ui (y, 1, GMP_RNDN);
+  mpfr_remainder (r, x, y, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_si (r, 0) == 0 && MPFR_SIGN (r) < 0);
+
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (r);
