@@ -1464,10 +1464,17 @@ Set @var{rop} to the value of the logarithm of the Gamma function on @var{op},
 rounded in the direction @var{rnd}.
 When @math{@minus{}2@var{k}@minus{}1 @le{} @var{x} @le{} @minus{}2@var{k}},
 @var{k} being a non-negative integer, NaN is returned.
-Note that on these negative values, this function is different from the
-corresponding function defined in some languages, such as @code{lgamma}
-in ISO C99; a new function @code{mpfr_lgamma} will be added in a future
-MPFR version to match this alternative definition.
+See also @code{mpfr_lgamma}.
+@end deftypefun
+
+@deftypefun int mpfr_lgamma (mpfr_t @var{rop}, int *@var{signp}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+Set @var{rop} to the value of the logarithm of the absolute value of the
+Gamma function on @var{op}, rounded in the direction @var{rnd}. The sign
+(1 or @minus{}1) of Gamma(@var{op}) is returned in the object pointed to
+by @var{signp}. When @var{op} is an infinity or a non-positive integer,
++Inf is returned. When @var{op} is NaN, @minus{}Inf or a negative integer,
+*@var{signp} is undefined, and when @var{op} is @pom{}0, *@var{signp} is
+the sign of the zero.
 @end deftypefun
 
 @deftypefun int mpfr_zeta (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
