@@ -224,8 +224,11 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
              <= (1/2 + 5 * 2^(-E(s)) * (2-x)) ulp(s) */
           err_s += 3 - MPFR_GET_EXP(s);
           err_s = (err_s >= 0) ? err_s + 1 : 0;
-          /* the error on s is bounded by 2^err_s ulps, thus the relative
-             error is bounded by 2^(err_s+1) */
+          /* the error on s is bounded by 2^err_s ulp(s), thus by
+             2^(err_s+1)*2^(-w)*|s| since ulp(s) <= 2^(1-w)*|s|.
+             Now n*2^(-w) can always be written |(1+r)^n-1| for some
+             |r|<=2^(-w), thus taking n=2^(err_s+1) we see that
+             the relative error is bounded by |(1+r)^(2^(err_s+1))-1| */
           err_s ++; /* relative error */
 
           mpfr_sub_ui (v, z0, 1, GMP_RNDN); /* v = (x-1) * (1+r) */
