@@ -7,6 +7,7 @@
 /core
 /mpf_compat
 /mpfr_compat
+/mpfr.log
 /reuse
 /tabs
 /tacos
@@ -90,6 +91,7 @@
 /tpow3
 /tpow_z
 /trandom
+/tremquo
 /trint
 /troot
 /tround_prec
