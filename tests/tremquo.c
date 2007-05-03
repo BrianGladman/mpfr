@@ -31,6 +31,23 @@ main (int argc, char *argv[])
   mpfr_t x, y, r;
   long q[1];
 
+  if (argc == 3) /* usage: tremquo x y (rnd=GMP_RNDN implicit) */
+    {
+      mpfr_init2 (x, 53);
+      mpfr_init2 (y, 53);
+      mpfr_init2 (r, 53);
+      mpfr_set_str (x, argv[1], 10, GMP_RNDN);
+      mpfr_set_str (y, argv[2], 10, GMP_RNDN);
+      mpfr_remquo (r, q, x, y, GMP_RNDN);
+      printf ("r=");
+      mpfr_out_str (stdout, 10, 0, r, GMP_RNDN);
+      printf (" q=%ld\n", q[0]);
+      mpfr_clear (x);
+      mpfr_clear (y);
+      mpfr_clear (r);
+      return 0;
+    }
+
   tests_start_mpfr ();
 
   mpfr_init (x);
