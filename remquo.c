@@ -31,9 +31,8 @@ MA 02110-1301, USA. */
    much larger than y and the precision of x is not very large. Scale
    the formula by a power of 2 such that one can write 2^k X = q Y + R,
    where all values are integers and Y is odd. The simplest way to find
-   R is probably to reduce 2^k X modulo Y with a conventional algorithm
-   for 2^k. Another solution could be to work modulo 2^m where m is
-   such that 2^m >= Y.
+   R is probably to reduce 2^k X modulo Y; 2^k modulo Y can be computed
+   efficiently with mpz_powm.
 */
 
 #include <limits.h>  /* For CHAR_BIT */
