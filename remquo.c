@@ -20,6 +20,14 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
+/* Implement a native algorithm, like in files s_remquo.c and
+   e_fmod.c of glibc-2.5/sysdeps/ieee754/dbl-64:
+   (a) first reduce x mod (2^n*y)
+   (b) then perform the final division, which yields rem and the n low bits
+       from the quotient.
+   (cvs -d :pserver:anoncvs@sources.redhat.com:/cvs/glibc co libc)
+*/
+
 #include <limits.h>  /* For CHAR_BIT */
 #include "mpfr-impl.h"
 
@@ -165,6 +173,7 @@ mpfr_remquo (mpfr_ptr rem, long *quo,
   prec_q = ex - ey + (compare >= 0);
   mpfr_init2 (q, (prec_q < MPFR_PREC_MIN) ? MPFR_PREC_MIN : prec_q);
   inex = mpfr_div (q, x, y, GMP_RNDN);
+  MPFR_ASSERTN (MPFR_IS_FP (q));
   if (prec_q < MPFR_PREC_MIN)
     {
       int is_half_int, inex2;
