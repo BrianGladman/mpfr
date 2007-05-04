@@ -120,7 +120,7 @@ mpfr_remquo (mpfr_ptr rem, long *quo,
              mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd)
 {
   mpfr_t q;
-  int inex, compare;
+  int inex, compare, signx;
   mp_exp_t ex, ey;
   mp_prec_t prec_q;
 
@@ -192,10 +192,11 @@ mpfr_remquo (mpfr_ptr rem, long *quo,
   /* since we have no fused-multiply-and-subtract yet, we compute
      x + (-q)*y with an FMA */
   mpfr_neg (q, q, GMP_RNDN); /* exact */
+  signx = MPFR_SIGN(x);
   inex = mpfr_fma (rem, q, y, x, rnd);
   /* if rem is zero, it should have the sign of x */
   if (MPFR_IS_ZERO (rem))
-      MPFR_SET_SAME_SIGN(rem, x);
+    MPFR_SET_SIGN(rem, signx); /* rem and x may be the same variable */
 
   mpfr_clear (q);
 
