@@ -228,6 +228,12 @@ main (int argc, char *argv[])
   mpfr_remainder (r, x, y, GMP_RNDN);
   MPFR_ASSERTN (mpfr_cmp_si (r, 0) == 0 && MPFR_SIGN (r) < 0);
 
+  mpfr_set_ui_2exp (x, 1, mpfr_get_emax () - 1, GMP_RNDN);
+  mpfr_set_ui_2exp (y, 1, mpfr_get_emin (), GMP_RNDN);
+  mpfr_remquo (r, q, x, y, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_zero_p (r) && MPFR_SIGN (r) > 0);
+  MPFR_ASSERTN (q[0] == 0);
+
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (r);
