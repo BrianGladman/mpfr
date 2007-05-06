@@ -815,14 +815,22 @@ happen in the common case when input and output have the same precision.
 
 \subsection{The \texttt{mpfr\_remainder} and \texttt{mpfr\_remquo} functions}
 
-The \texttt{mpfr\_remainder} and \texttt{mpfr\_remquo} are two useful
+The \texttt{mpfr\_remainder} and \texttt{mpfr\_remquo} are useful
 functions for argument reduction. Given two floating-point numbers $x$ and
-$y$, \texttt{mpfr\_remainder} computes the correct rounding of $x - q y$, where
+$y$, \texttt{mpfr\_remainder} computes the correct rounding of 
+$x \cmod y := x - q y$, where
 $q = \lfloor x/y \rceil$, with ties rounded to the nearest even integer,
 as in the rounding to nearest mode.
-Additionally, \texttt{mpfr\_remquo} returns $q \bmod 2^n$, where $n$
-is one less the machine word size ($n=31$ on a 32-bit machine, $n=63$ on a
-$64$-bit machine).
+
+Additionally, \texttt{mpfr\_remquo} returns a value equal to $q$ 
+modulo $2^n$, where $n$ is a small integer (say $n \leq 64$, see the
+documentation).
+This can be efficiently implemented by calling \texttt{mpfr\_remainder} on
+$x$ and $2^n y$. Indeed, if $x = r' \cmod (2^n y)$, and
+$r' = q' y + r$ with $|r| \leq y/2$, then 
+$q \equiv q' \mod 2^n$. No double-rounding problem can occur, since if 
+$x/(2^n y) \in {\mathbb Z} + 1/2$,
+then $r'=\pm 2^{n-1} y$, thus $q'=\pm 2^{n-1}$ and $r=0$.
 
 Whatever the input $x$ and $y$, it should be noted that if $\ulp(x) \geq
 \ulp(y)$, then $x - q y$ is always
@@ -840,8 +848,6 @@ $x - q y$ is $2^{-k} R$.
 
 We assume without loss of generality that $x, y > 0$, and that 
 $\ulp(y) = 1$, i.e., $y$ is an integer. 
-If $a$ and $b$ are two integers, we denote $a \cmod b$ the centered
-remainder of $a$ divided by $b$, with ties rounded to even quotient.
 \begin{quote}
 Algorithm Remainder. \\
 Input: $x$, $y$ with $\ulp(y)=1$, a rounding mode $\circ$ \\
@@ -856,8 +862,8 @@ Output: $x \cmod y$, rounded according to $\circ$ \\
 4. Return $\circ(mz \cmod y)$.
 \end{quote}
 Note: at step (1a) the auxiliary variable $r$ has the precision of $y$;
-since $x_h$ and $y$ are integers, so it $r$ and the result is exact by the
-above reasoning.
+since $x_h$ and $y$ are integers, so is $r$ and the result is exact by the
+above reasoning. At step (1c) we have $r=y/2$, thus $r-y$ simplifies to $-r$.
 
 \section{High level functions}
 
