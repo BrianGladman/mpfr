@@ -826,7 +826,7 @@ $64$-bit machine).
 
 Whatever the input $x$ and $y$, it should be noted that if $\ulp(x) \geq
 \ulp(y)$, then $x - q y$ is always
-exactly representable in the precision of $y$ if its exponent is larger
+exactly representable in the precision of $y$ unless its exponent is smaller
 than the minimum exponent. To see this, 
 let $\ulp(y) = 2^{-k}$; 
 multiplying $x$ and $y$ by $2^k$ we get $X = 2^k x$ and 
