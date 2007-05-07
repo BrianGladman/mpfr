@@ -822,9 +822,9 @@ $x \cmod y := x - q y$, where
 $q = \lfloor x/y \rceil$, with ties rounded to the nearest even integer,
 as in the rounding to nearest mode.
 
-Additionally, \texttt{mpfr\_remquo} returns a value equal to $q$ 
+Additionally, \texttt{mpfr\_remquo} returns a value congruent to $q$ 
 modulo $2^n$, where $n$ is a small integer (say $n \leq 64$, see the
-documentation).
+documentation), and having the same sign as $q$ or being zero.
 This can be efficiently implemented by calling \texttt{mpfr\_remainder} on
 $x$ and $2^n y$. Indeed, if $x = r' \cmod (2^n y)$, and
 $r' = q' y + r$ with $|r| \leq y/2$, then 
