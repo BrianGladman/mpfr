@@ -193,7 +193,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
       w = precy + MPFR_INT_CEIL_LOG2 (precy);
       while (1)
         {
-          w += MPFR_INT_CEIL_LOG2 (w) + 13;
+          w += MPFR_INT_CEIL_LOG2 (w) + 14;
           MPFR_ASSERTD(w >= 3);
           mpfr_set_prec (s, w);
           mpfr_set_prec (t, w);
@@ -228,8 +228,19 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
              2^(err_s+1)*2^(-w)*|s| since ulp(s) <= 2^(1-w)*|s|.
              Now n*2^(-w) can always be written |(1+r)^n-1| for some
              |r|<=2^(-w), thus taking n=2^(err_s+1) we see that
-             the relative error is bounded by |(1+r)^(2^(err_s+1))-1| */
-          err_s ++; /* relative error */
+             |S - s| <= |(1+r)^(2^(err_s+1))-1| * |s|, where S is the
+             true value.
+             In fact if ulp(s) <= ulp(S) the same inequality holds for
+             |S| instead of |s| in the right hand side, i.e., we can
+             write s = (1+r)^(2^(err_s+1)) * S.
+             But if ulp(S) < ulp(s), we need to add one ``bit'' to the error,
+             to get s = (1+r)^(2^(err_s+2)) * S. This is true since with
+             E = n*2^(-w) we have |s - S| <= E * |s|, thus
+             |s - S| <= E/(1-E) * |S|.
+             Now E/(1-E) is bounded by 2E as long as E<=1/2,
+             and 2E can be written (1+r)^(2n)-1 as above.
+          */
+          err_s += 2; /* exponent of relative error */
 
           mpfr_sub_ui (v, z0, 1, GMP_RNDN); /* v = (x-1) * (1+r) */
           mpfr_mul (v, v, t, GMP_RNDN); /* v = Pi*(x-1) * (1+r)^3 */
