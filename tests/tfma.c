@@ -84,7 +84,7 @@ test_exact (void)
 int
 main (int argc, char *argv[])
 {
-  mpfr_t x, y,z,s;
+  mpfr_t x, y, z, s;
 
   tests_start_mpfr ();
 
