@@ -81,6 +81,36 @@ test_exact (void)
   mpfr_clears (a, b, c, r1, r2, (void *) 0);
 }
 
+static void
+test_overflow (void)
+{
+  mpfr_t x, y, z, r;
+  int inex;
+
+  mpfr_inits2 (8, x, y, z, r, (void *) 0);
+  mpfr_setmax (x, mpfr_get_emax ());
+  mpfr_set_ui (y, 2, GMP_RNDN);
+  mpfr_neg (z, x, GMP_RNDN);
+  mpfr_clear_flags ();
+  inex = mpfr_fma (r, x, y, z, GMP_RNDN);
+  if (inex || !mpfr_equal_p (r, x))
+    {
+      printf ("Error in test_overflow\nexpected ");
+      mpfr_out_str (stdout, 2, 0, x, GMP_RNDN);
+      printf (" with inex = 0\n     got ");
+      mpfr_out_str (stdout, 2, 0, r, GMP_RNDN);
+      printf (" with inex = %d\n", inex);
+      exit (1);
+    }
+  if (mpfr_overflow_p ())
+    {
+      printf ("Error in test_overflow: overflow flag set\n");
+      exit (1);
+    }
+
+  mpfr_clears (x, y, z, r, (void *) 0);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -371,6 +401,7 @@ main (int argc, char *argv[])
   mpfr_clear (s);
 
   test_exact ();
+  test_overflow ();
 
   tests_end_mpfr ();
   return 0;
