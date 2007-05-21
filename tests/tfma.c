@@ -25,6 +25,62 @@ MA 02110-1301, USA. */
 
 #include "mpfr-test.h"
 
+/* When a * b is exact, the FMA is equivalent to the separate operations. */
+static void
+test_exact (void)
+{
+  char *val[] =
+    { "@NaN@", "-@Inf@", "-2", "-1", "-0", "0", "1", "2", "@Inf@" };
+  int sv = sizeof (val) / sizeof (*val);
+  int i, j, k;
+  int rnd;
+  mpfr_t a, b, c, r1, r2;
+
+  mpfr_inits2 (8, a, b, c, r1, r2, (void *) 0);
+
+  for (i = 0; i < sv; i++)
+    for (j = 0; j < sv; j++)
+      for (k = 0; k < sv; k++)
+        RND_LOOP (rnd)
+          {
+            if (mpfr_set_str (a, val[i], 10, GMP_RNDN) ||
+                mpfr_set_str (b, val[j], 10, GMP_RNDN) ||
+                mpfr_set_str (c, val[k], 10, GMP_RNDN) ||
+                mpfr_mul (r1, a, b, rnd) ||
+                mpfr_add (r1, r1, c, rnd))
+              {
+                printf ("test_exact internal error for (%d,%d,%d,%d)\n",
+                        i, j, k, rnd);
+                exit (1);
+              }
+            if (mpfr_fma (r2, a, b, c, rnd))
+              {
+                printf ("test_exact(%d,%d,%d,%d): mpfr_fma should be exact\n",
+                        i, j, k, rnd);
+                exit (1);
+              }
+            if (MPFR_IS_NAN (r1))
+              {
+                if (MPFR_IS_NAN (r2))
+                  continue;
+                printf ("test_exact(%d,%d,%d,%d): mpfr_fma should be NaN\n",
+                        i, j, k, rnd);
+                exit (1);
+              }
+            if (mpfr_cmp (r1, r2) || MPFR_SIGN (r1) != MPFR_SIGN (r2))
+              {
+                printf ("test_exact(%d,%d,%d,%d):\nexpected ", i, j, k, rnd);
+                mpfr_out_str (stdout, 10, 0, r1, GMP_RNDN);
+                printf ("\n     got ");
+                mpfr_out_str (stdout, 10, 0, r2, GMP_RNDN);
+                printf ("\n");
+                exit (1);
+              }
+          }
+
+  mpfr_clears (a, b, c, r1, r2, (void *) 0);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -313,6 +369,8 @@ main (int argc, char *argv[])
   mpfr_clear (y);
   mpfr_clear (z);
   mpfr_clear (s);
+
+  test_exact ();
 
   tests_end_mpfr ();
   return 0;
