@@ -34,6 +34,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
 {
   int inexact;
   mpfr_t u;
+  MPFR_SAVE_EXPO_DECL (expo);
 
   /* particular cases */
   if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(x) ||
@@ -103,12 +104,106 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
   /* Useless since it is done by mpfr_add
    * MPFR_CLEAR_FLAGS(s); */
 
-  /* if we take prec(u) >= prec(x) + prec(y), the product
-     u <- x*y is always exact */
+  /* If we take prec(u) >= prec(x) + prec(y), the product u <- x*y
+     is exact, except in case of overflow or underflow. */
+  MPFR_SAVE_EXPO_MARK (expo);
   mpfr_init2 (u, MPFR_PREC(x) + MPFR_PREC(y));
-  mpfr_mul (u, x, y, GMP_RNDN); /* always exact */
-  inexact = mpfr_add (s, z, u, rnd_mode);
-  mpfr_clear(u);
 
-  return inexact;
+  if (MPFR_UNLIKELY (mpfr_mul (u, x, y, GMP_RNDN)))
+    {
+      /* overflow or underflow - this case is regarded as rare, thus
+         does not need to be very efficient (even if some tests below
+         could have been done earlier).
+         It is an overflow iff u is an infinity (since GMP_RNDN was used).
+         Alternatively, we could test the overflow flag, but in this case,
+         mpfr_clear_flags would have been necessary. */
+      if (MPFR_IS_INF (u))  /* overflow */
+        {
+          /* Let's eliminate the obvious case where x*y and z have the
+             same sign. No possible cancellation -> real overflow.
+             Also, we know that |z| < 2^emax. If E(x) + E(y) >= emax+3,
+             then |x*y| >= 2^(emax+1), and |x*y + z| >= 2^emax. This case
+             is also an overflow. */
+          if (MPFR_SIGN (u) == MPFR_SIGN (z) ||
+              MPFR_GET_EXP (x) + MPFR_GET_EXP (y) >= __gmpfr_emax + 3)
+            {
+              mpfr_clear (u);
+              MPFR_SAVE_EXPO_FREE (expo);
+              return mpfr_overflow (s, rnd_mode, MPFR_SIGN (z));
+            }
+
+          /* E(x) + E(y) <= emax+2, therefore |x*y| < 2^(emax+2), and
+             (x/4)*y does not overflow (let's recall that the result
+             is exact with an unbounded exponent range). It does not
+             underflow either because x*y overflows and the exponent
+             range is large enough. */
+          inexact = mpfr_div_2ui (u, x, 2, GMP_RNDN);
+          MPFR_ASSERTN (inexact == 0);
+          inexact = mpfr_mul (u, u, y, GMP_RNDN);
+          MPFR_ASSERTN (inexact == 0);
+
+          /* Now, we need to add z/4... But it may underflow! */
+          {
+            mpfr_t zo4;
+
+            mpfr_init2 (zo4, MPFR_PREC (z) + 2);
+            if (mpfr_div_2ui (zo4, z, 2, GMP_RNDZ))  /* underflow! */
+              {
+                /* This probably means that |z/4| < ulp(u), but this is not
+                   guaranteed by the current MPFR_PREC_MAX (and internal
+                   computations can significantly increase the precision).
+                   Let z2 = sign(z) * 2^(E(z)-1), and z4 = z2 + z/4, which
+                   is representable if one takes 2 more precision bits.
+                   Then we compute u + z4 with the provided rounding mode. */
+                MPFR_ASSERTN (0); /* TODO... */
+              }
+            else
+              {
+                mpfr_clear_flags ();
+                inexact = mpfr_add (s, u, zo4, rnd_mode);
+                /* u and zo4 have different signs, so that an overflow
+                   is not possible. But an underflow is theoretically
+                   possible! */
+                if (mpfr_underflow_p ())
+                  {
+                    MPFR_ASSERTN (0); /* TODO... */
+                  }
+                else
+                  {
+                    mpfr_clears (zo4, u, (void *) 0);
+                    if (MPFR_IS_ZERO (s))
+                      {
+                        /* This is an exact zero (no underflow). */
+                        MPFR_SAVE_EXPO_FREE (expo);
+                        MPFR_RET (0);
+                      }
+                    else
+                      {
+                        int inex2;
+
+                        inex2 = mpfr_mul_2ui (s, s, 2, rnd_mode);
+                        if (inex2)  /* overflow */
+                          {
+                            inexact = inex2;
+                            MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
+                          }
+                        MPFR_SAVE_EXPO_FREE (expo);
+                        return mpfr_check_range (s, inexact, rnd_mode);
+                      }
+                  }
+              }
+            mpfr_clear (zo4);
+          }
+        }
+      else  /* underflow */
+        {
+          MPFR_ASSERTN (0); /* TODO... */
+        }
+    }
+
+  inexact = mpfr_add (s, z, u, rnd_mode);
+  mpfr_clear (u);
+  MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
+  MPFR_SAVE_EXPO_FREE (expo);
+  return mpfr_check_range (s, inexact, rnd_mode);
 }
