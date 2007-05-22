@@ -398,8 +398,39 @@ special_overflow (void)
   set_emax (emax);
 }
 
+/* test gamma on some integral values (from Christopher Creutzig). */
+static void
+gamma_integer (void)
+{
+  mpz_t n;
+  mpfr_t x, y;
+  unsigned int i;
+
+  mpz_init (n);
+  mpfr_init2 (x, 149);
+  mpfr_init2 (y, 149);
+
+  for (i = 0; i < 100; i++)
+    {
+      mpz_fac_ui (n, i);
+      mpfr_set_ui (x, i+1, GMP_RNDN);
+      mpfr_gamma (y, x, GMP_RNDN);
+      mpfr_set_z (x, n, GMP_RNDN);
+      if (!mpfr_equal_p (x, y))
+        {
+          printf ("Error for gamma(%d)\n", i+1);
+          printf ("expected "); mpfr_dump (x);
+          printf ("got      "); mpfr_dump (y);
+          exit (1);
+        }
+    }
+  mpfr_clear (y);
+  mpfr_clear (x);
+  mpz_clear (n);
+}
+
 int
-main (void)
+main (int argc, char *argv[])
 {
   MPFR_TEST_USE_RANDS ();
   tests_start_mpfr ();
@@ -407,6 +438,12 @@ main (void)
   special ();
   special_overflow ();
   test_generic (2, 100, 2);
+
+  /* The following test currently causes an infinite loop. To allow
+     "make check" to terminate, this test is enabled only when an
+     argument is provided. */
+  if (argc > 1)
+    gamma_integer ();
 
   tests_end_mpfr ();
   return 0;
