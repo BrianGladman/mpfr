@@ -45,6 +45,8 @@ Known bugs:
   or underflows. The overflow case has been fixed except in some corner
   cases.
 
+* Infinite loop in mpfr_gamma on some integers.
+
 Potential bugs:
 
 * Possible integer overflows on some machines.
