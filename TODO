@@ -80,10 +80,6 @@ New functions to implement:
 ##############################################################################
 
 - document MPFR_SIGN and/or provide mpfr_get_sign / mpfr_set_sign.
-- function mpfr_lgamma, with the prototype
-    int mpfr_lgamma (mpfr_ptr, int *, mpfr_srcptr, mpfr_rnd_t)
-  that also returns the value of signgam; see thread
-    http://sympa.loria.fr/wwsympa/arc/mpfr/2006-10/msg00029.html
 - functions operating on mpfr_t and double: mpfr_add_d, mpfr_sub_d,
   mpfr_d_sub, mpfr_mul_d, mpfr_div_d, mpfr_d_div
   [suggested by Keith Briggs, 3 Jan 2006]
@@ -354,8 +350,6 @@ Miscellaneous:
         z = round(y, p, TO_NEAREST_EVEN), then
         z = round(x, p, TO_NEAREST_EVEN)
   so it avoids the double-rounding problem.
-
-- check/define the sign of infinity for gamma(-integer)
 
 - add tests of the ternary value for constants
 
