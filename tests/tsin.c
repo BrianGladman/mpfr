@@ -225,6 +225,52 @@ check_regression ()
   mpfr_clears (x, y, NULL);
 }
 
+/* Test provided by Christopher Creutzig, 2007-05-21. */
+static void
+check_tiny (void)
+{
+  mpfr_t x, y;
+
+  mpfr_init2 (x, 53);
+  mpfr_init2 (y, 53);
+
+  mpfr_set_ui (x, 1, GMP_RNDN);
+  mpfr_set_exp (x, mpfr_get_emin ());
+  mpfr_sin (y, x, GMP_RNDD);
+  if (mpfr_cmp (x, y) < 0)
+    {
+      printf ("Error in check_tiny: got sin(x) > x for x = 2^(emin-1)\n");
+      exit (1);
+    }
+
+  mpfr_sin (y, x, GMP_RNDU);
+  mpfr_mul_2ui (y, y, 1, GMP_RNDU);
+  if (mpfr_cmp (x, y) > 0)
+    {
+      printf ("Error in check_tiny: got sin(x) < x/2 for x = 2^(emin-1)\n");
+      exit (1);
+    }
+
+  mpfr_neg (x, x, GMP_RNDN);
+  mpfr_sin (y, x, GMP_RNDU);
+  if (mpfr_cmp (x, y) > 0)
+    {
+      printf ("Error in check_tiny: got sin(x) < x for x = -2^(emin-1)\n");
+      exit (1);
+    }
+
+  mpfr_sin (y, x, GMP_RNDD);
+  mpfr_mul_2ui (y, y, 1, GMP_RNDD);
+  if (mpfr_cmp (x, y) < 0)
+    {
+      printf ("Error in check_tiny: got sin(x) > x/2 for x = -2^(emin-1)\n");
+      exit (1);
+    }
+
+  mpfr_clear (y);
+  mpfr_clear (x);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -311,6 +357,7 @@ main (int argc, char *argv[])
 
   test_generic (2, 100, 15);
   test_sign ();
+  check_tiny ();
 
   tests_end_mpfr ();
   return 0;
