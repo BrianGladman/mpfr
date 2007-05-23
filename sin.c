@@ -130,7 +130,12 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     }
 
   /* sin(x) = x - x^3/6 + ... so the error is < 2^(3*EXP(x)-2) */
-  MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, -2*MPFR_GET_EXP (x)+2,0,rnd_mode,{});
+  /* FIXME: we replaced -2*MPFR_GET_EXP (x)+2 by -2*MPFR_GET_EXP (x)+1,
+     which is still a valid bound, but looses one bit, to overcome the
+     problem when MPFR_GET_EXP(x)=-2^(w-2)+1 on a w-bit machine: then
+     -2*MPFR_GET_EXP (x)+2 = 2^(w-1) overflows. When this problem is
+     fixed in MPFR_FAST_COMPUTE_IF_SMALL_INPUT, replace 1 by 2. */
+  MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, -2*MPFR_GET_EXP (x)+1,0,rnd_mode,{});
 
   /* Compute initial precision */
   precy = MPFR_PREC (y);
