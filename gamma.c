@@ -161,11 +161,15 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
   */
   if (is_integer && mpfr_fits_ulong_p (x, GMP_RNDN))
     {
-      unsigned long int u;
+      unsigned long int u, b;
       mp_prec_t p = MPFR_PREC(gamma);
       u = mpfr_get_ui (x, GMP_RNDN);
-      if (bits_fac (u - 1) <= p)
+      b = bits_fac (u - 1); /* lower bound on the number of bits of m,
+			       where gamma(x) = (u-1)! = m*2^e with m odd. */
+      if (b <= p + (rnd_mode == GMP_RNDN))
         return mpfr_fac_ui (gamma, u - 1, rnd_mode);
+      /* if b > p (resp. p+1 for rounding to nearest), then gamma(x) cannot be
+	 exact in precision p (resp. p+1) */
     }
 
   /* check for overflow: according to (6.1.37) in Abramowitz & Stegun,

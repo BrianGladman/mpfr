@@ -438,12 +438,7 @@ main (int argc, char *argv[])
   special ();
   special_overflow ();
   test_generic (2, 100, 2);
-
-  /* The following test currently causes an infinite loop. To allow
-     "make check" to terminate, this test is enabled only when an
-     argument is provided. */
-  if (argc > 1)
-    gamma_integer ();
+  gamma_integer ();
 
   tests_end_mpfr ();
   return 0;
