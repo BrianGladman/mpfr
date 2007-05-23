@@ -25,8 +25,9 @@ MA 02110-1301, USA. */
 
 #include "mpfr-impl.h"
 
-/* The computation of fma of x y and u is done by
-    fma(s,x,y,z)= z + x*y = s                       */
+/* The fused-multiply-add (fma) of x, y and z is defined by:
+   fma(x,y,z)= x*y + z
+*/
 
 int
 mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
