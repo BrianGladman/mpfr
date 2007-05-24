@@ -222,7 +222,78 @@ mpfr_remquo (mpfr_ptr rem, long *quo,
 int
 mpfr_remainder (mpfr_ptr rem, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd)
 {
-  long quo;
+  mp_exp_t ex, ey;
+  int compare, inex, q_is_odd;
+  mpz_t mx, my, r;
 
-  return mpfr_remquo (rem, &quo, x, y, rnd);
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x) || MPFR_IS_SINGULAR (y)))
+    {
+      long quo;
+      return mpfr_remquo (rem, &quo, x, y, rnd);
+    }
+
+  /* now neither x nor y is NaN, Inf or zero */
+
+  mpz_init (mx);
+  mpz_init (my);
+  mpz_init (r);
+
+  ex = mpfr_get_z_exp (mx, x); /* x = mx*2^ex */
+  ey = mpfr_get_z_exp (my, y); /* y = my*2^ey */
+
+  if (ex <= ey)
+    {
+      /* q = x/y = mx/(my*2^(ey-ex)) */
+      mpz_mul_2exp (my, my, ey - ex); /* divide mx by my*2^(ey-ex) */
+      mpz_fdiv_qr (mx, r, mx, my); /* 0 <= |r| <= |my|, r has the same
+				      sign as my */
+      q_is_odd = mpz_tstbit (mx, 0);
+    }
+  else /* ex > ey */
+    {
+      /* Let X = mx*2^(ex-ey) and Y = my. Then both X and Y are integers.
+	 Assume X = R mod Y, then x = X*2^ey = R*2^ey mod (Y*2^ey=y).
+	 To be able to perform the rounding, we need the least significant
+	 bit of the quotient, i.e., one more bit in the remainder, which is
+	 obtained by dividing by 2Y.
+      */
+      mpz_mul_2exp (my, my, 1); /* 2Y */
+      mpz_set_ui (r, 2);
+      mpz_powm_ui (r, r, ex - ey, my); /* 2^(ex-ey) mod my */
+      mpz_mul (r, r, mx);
+      mpz_mod (r, r, my);
+      mpz_div_2exp (my, my, 1); /* Y */
+      q_is_odd = mpz_cmpabs (r, my) >= 0; /* least significant bit of q */
+      if (q_is_odd)
+	mpz_sub (r, r, my);
+      /* now 0 <= |r| < |my|, and compare is the least significant bit of q */
+    }
+
+  if (mpz_cmp_ui (r, 0) == 0)
+    {
+      int signx = MPFR_SIGN(x);
+      inex = mpfr_set_ui (rem, 0, GMP_RNDN);
+      MPFR_SET_SIGN(rem, signx);
+    }
+  else
+    {
+      /* FIXME: the comparison 2*r < my could be done more efficiently
+	 at the mpn level */
+      mpz_mul_2exp (r, r, 1);
+      compare = mpz_cmpabs (r, my);
+      mpz_div_2exp (r, r, 1);
+      compare = (compare > 0) || ((compare == 0) && q_is_odd);
+      /* if compare != 0, we need to subtract my to r */
+      if (compare)
+	mpz_sub (r, r, my);
+      inex = mpfr_set_z (rem, r, rnd);
+      /* if ex > ey, rem should be multiplied by 2^ey, else by 2^ex */
+      MPFR_EXP(rem) += (ex > ey) ? ey : ex;
+    }
+
+  mpz_clear (mx);
+  mpz_clear (my);
+  mpz_clear (r);
+
+  return inex;
 }
