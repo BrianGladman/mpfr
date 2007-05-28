@@ -1255,8 +1255,7 @@ Compare @var{op1} and @var{op2}.  Return a positive value if @math{@var{op1} >
 @math{@var{op1} < @var{op2}}.
 Both @var{op1} and @var{op2} are considered to their full own precision,
 which may differ.
-If one of the operands is NaN (Not-a-Number), return zero and set
-the erange flag.
+If one of the operands is NaN, return zero and set the erange flag.
 
 Note: These functions may be useful to distinguish the three possible cases.
 If you need to distinguish two cases only, it is recommended to use the
@@ -1276,23 +1275,21 @@ the power @var{e}}. Similar as above.
 Compare @math{|@var{op1}|} and @math{|@var{op2}|}.  Return a positive value if
 @math{|@var{op1}| > |@var{op2}|}, zero if @math{|@var{op1}| = |@var{op2}|}, and
 a negative value if @math{|@var{op1}| < |@var{op2}|}.
-If one of the operands is NaN (Not-a-Number), return zero and set
-the erange flag.
+If one of the operands is NaN, return zero and set the erange flag.
 @end deftypefun
 
 @deftypefun int mpfr_nan_p (mpfr_t @var{op})
 @deftypefunx int mpfr_inf_p (mpfr_t @var{op})
 @deftypefunx int mpfr_number_p (mpfr_t @var{op})
 @deftypefunx int mpfr_zero_p (mpfr_t @var{op})
-Return non-zero if @var{op} is respectively Not-a-Number (NaN),
-an infinity, an ordinary number (i.e.@: neither Not-a-Number nor
-an infinity) or zero. Return zero otherwise.
+Return non-zero if @var{op} is respectively NaN, an infinity, an ordinary
+number (i.e.@: neither NaN nor an infinity) or zero. Return zero otherwise.
 @end deftypefun
 
 @deftypefn Macro int mpfr_sgn (mpfr_t @var{op})
 Return a positive value if @math{@var{op} > 0}, zero if @math{@var{op} = 0},
 and a negative value if @math{@var{op} < 0}.
-Its result is undefined when @var{op} is NaN (Not-a-Number).
+Its result is undefined when @var{op} is NaN.
 @end deftypefn
 
 @deftypefun int mpfr_greater_p (mpfr_t @var{op1}, mpfr_t @var{op2})
@@ -2246,7 +2243,7 @@ the variable (in bits); this is not less than @code{MPFR_PREC_MIN}.
 An exponent of 0 means a radix point just above the most significant
 limb.  Non-zero values @math{n} are a multiplier @math{2^n} relative to that
 point.
-A NaN, an Infinity and a Zero are indicated by a special value of the exponent.
+A NaN, an infinity and a zero are indicated by a special value of the exponent.
 
 @item Finally, the @code{_mpfr_d} is a pointer to the limbs, least
 significant limbs stored first.
