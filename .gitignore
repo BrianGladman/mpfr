@@ -43,6 +43,7 @@
 /libtool
 /ltmain.sh
 /missing
+/mkinstalldirs
 /mparam.h
 /mpfr.aux
 /mpfr.cp
