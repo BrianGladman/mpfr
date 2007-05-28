@@ -1131,15 +1131,16 @@ typedef struct {
  (!MPFR_IS_SINGULAR (b) && mpfr_round_p (MPFR_MANT (b), MPFR_LIMB_SIZE (b),  \
                                          (err), (prec) + ((rnd)==GMP_RNDN)))
 
-/* Assuming that the function as a taylor expansion which looks like:
-    y=o(f(x)) = o(x + g(x)) with |g(x)| <=2^(EXP(x)-err)
-   we can quickly set y to x if x is small (ie err > prec(y)+1) in most
+/* Assuming that the function has a Taylor expansion which looks like:
+    y=o(f(x)) = o(x + g(x)) with |g(x)| <=2^(EXP(v)-err)
+   we can quickly set y to v if x is small (ie err > prec(y)+1) in most
    cases. It assumes that f(x) is not representable exactly as a FP number.
-   x must not be a singular value (NAN, INF or ZERO).
+   v must not be a singular value (NAN, INF or ZERO); usual values are
+   v=1 or v=x.
 
-   y is the destination (a mpfr_t), x the value to set (a mpfr_t),
+   y is the destination (a mpfr_t), v the value to set (a mpfr_t),
    err1+err2 with err2 <= 3 the error term (mp_exp_t's), dir (an int) is
-   the direction of the commited error (if dir = 0, it rounds towards 0,
+   the direction of the committed error (if dir = 0, it rounds towards 0,
    if dir=1, it rounds away from 0), rnd the rounding mode.
 
    It returns from the function a ternary value in case of success.
@@ -1152,7 +1153,7 @@ typedef struct {
    Note: err1 + err2 is allowed to overflow as mp_exp_t, but it must give
    its real value as mpfr_uexp_t.
 */
-#define MPFR_FAST_COMPUTE_IF_SMALL_INPUT(y,x,err1,err2,dir,rnd,extra)   \
+#define MPFR_FAST_COMPUTE_IF_SMALL_INPUT(y,v,err1,err2,dir,rnd,extra)   \
   do {                                                                  \
     mpfr_ptr _y = (y);                                                  \
     mp_exp_t _err1 = (err1);                                            \
@@ -1162,7 +1163,7 @@ typedef struct {
         mpfr_uexp_t _err = (mpfr_uexp_t) _err1 + _err2;                 \
         if (MPFR_UNLIKELY (_err > MPFR_PREC (_y) + 1))                  \
           {                                                             \
-            int _inexact = mpfr_round_near_x (_y,(x),_err,(dir),(rnd)); \
+            int _inexact = mpfr_round_near_x (_y,(v),_err,(dir),(rnd)); \
             if (_inexact != 0)                                          \
               {                                                         \
                 extra;                                                  \
