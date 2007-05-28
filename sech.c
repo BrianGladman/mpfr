@@ -31,5 +31,10 @@ MA 02110-1301, USA. */
 #define ACTION_NAN(y) do { MPFR_SET_NAN(y); MPFR_RET_NAN; } while (1)
 #define ACTION_INF(y) return mpfr_set_ui (y, 0, GMP_RNDN)
 #define ACTION_ZERO(y,x) return mpfr_set_ui (y, 1, GMP_RNDN)
+/* for x near 0, sech(x) = 1 - x^2/2 + ..., more precisely |sech(x)-1| <= x^2/2
+   for |x| <= 1. The tiny action is the same as for cos(x). */
+#define ACTION_TINY(y,x,r) \
+  MPFR_FAST_COMPUTE_IF_SMALL_INPUT(y, __gmpfr_one, -2 * MPFR_GET_EXP (x), 1, \
+                                   0, r, inexact = _inexact; goto end)
 
 #include "gen_inverse.h"
