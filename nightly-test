@@ -15,9 +15,11 @@ svn checkout "svn://scm.gforge.inria.fr/svn/mpfr/${BRANCH:-trunk}" "$DIR"
 cd "$DIR"
 autoreconf -i
 ./configure --with-gmp="$GMP" --disable-alloca --enable-assert=full \
-  --disable-shared --enable-thread-safe --with-tests-timeout=60
+  --disable-shared --enable-thread-safe --enable-tests-timeout=60
 make
 export GMP_CHECK_RANDOMIZE=1
+# disabled because --enable-tests-timeout does not seem to work
+# export MPFR_CHECK_TINY=1
 make check
 cd /tmp
 /bin/rm -fr "$DIR"
