@@ -1138,9 +1138,9 @@ typedef struct {
    x must not be a singular value (NAN, INF or ZERO).
 
    y is the destination (a mpfr_t), x the value to set (a mpfr_t),
-   err the error term (a mp_exp_t), dir (an int) is the direction of
-   the commited error (if dir = 0, it rounds towards 0, if dir=1,
-   it rounds away from 0), rnd the rounding mode.
+   err1+err2 with err2 <= 3 the error term (mp_exp_t's), dir (an int) is
+   the direction of the commited error (if dir = 0, it rounds towards 0,
+   if dir=1, it rounds away from 0), rnd the rounding mode.
 
    It returns from the function a ternary value in case of success.
    If you want to free something, you must fill the "extra" field
@@ -1148,20 +1148,28 @@ typedef struct {
 
    The test is less restrictive thant necessary, but the function
    will finish the check itself.
+
+   Note: err1 + err2 is allowed to overflow as mp_exp_t, but it must give
+   its real value as mpfr_uexp_t.
 */
-#define MPFR_FAST_COMPUTE_IF_SMALL_INPUT(y,x,err,dir,rnd,extra)     \
-  do {                                                              \
-   mp_exp_t _err = (err);                                           \
-   if (MPFR_UNLIKELY (_err > 0                                      \
-                      && (mpfr_uexp_t) _err > MPFR_PREC (y) + 1))   \
-    {                                                               \
-      int _inexact = mpfr_round_near_x ((y),(x),(err),(dir),(rnd)); \
-      if (_inexact != 0)                                            \
-        {                                                           \
-         extra;                                                     \
-         return _inexact;                                           \
-        }                                                           \
-    }                                                               \
+#define MPFR_FAST_COMPUTE_IF_SMALL_INPUT(y,x,err1,err2,dir,rnd,extra)   \
+  do {                                                                  \
+    mpfr_ptr _y = (y);                                                  \
+    mp_exp_t _err1 = (err1);                                            \
+    mp_exp_t _err2 = (err2);                                            \
+    if (_err1 > 0)                                                      \
+      {                                                                 \
+        mpfr_uexp_t _err = (mpfr_uexp_t) _err1 + _err2;                 \
+        if (MPFR_UNLIKELY (_err > MPFR_PREC (_y) + 1))                  \
+          {                                                             \
+            int _inexact = mpfr_round_near_x (_y,(x),_err,(dir),(rnd)); \
+            if (_inexact != 0)                                          \
+              {                                                         \
+                extra;                                                  \
+                return _inexact;                                        \
+              }                                                         \
+          }                                                             \
+      }                                                                 \
   } while (0)
 
 /******************************************************
@@ -1508,7 +1516,8 @@ __MPFR_DECLSPEC void mpfr_dump_mant _MPFR_PROTO ((const mp_limb_t *,
                                                   mp_prec_t));
 
 __MPFR_DECLSPEC int mpfr_round_near_x _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
-                                                    mp_exp_t, int, mp_rnd_t));
+                                                    mpfr_uexp_t, int,
+                                                    mp_rnd_t));
 __MPFR_DECLSPEC void mpfr_abort_prec_max _MPFR_PROTO ((void))
        MPFR_NORETURN_ATTR;
 

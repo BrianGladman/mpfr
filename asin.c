@@ -52,7 +52,8 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
     }
 
   /* asin(x) = x + x^3/6 + ... so the error is < 2^(3*EXP(x)-2) */
-  MPFR_FAST_COMPUTE_IF_SMALL_INPUT (asin,x, -2*MPFR_GET_EXP (x)+2,1,rnd_mode,{});
+  MPFR_FAST_COMPUTE_IF_SMALL_INPUT (asin, x, -2 * MPFR_GET_EXP (x), 2, 1,
+                                    rnd_mode, {});
 
   /* Set x_p=|x| (x is a normal number) */
   mpfr_init2 (xp, MPFR_PREC (x));

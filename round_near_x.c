@@ -24,7 +24,7 @@ MA 02110-1301, USA. */
 
 /* Use MPFR_FAST_COMPUTE_IF_SMALL_INPUT instead (a simple wrapper) */
 
-/* int mpfr_round_near_x (mpfr_ptr y, mpfr_srcptr x, mp_exp_t err, int dir,
+/* int mpfr_round_near_x (mpfr_ptr y, mpfr_srcptr x, mpfr_uexp_t err, int dir,
                           mp_rnd_t rnd)
 
    Assuming y = o(f(x)) = o(x + g(x)) with |g(x)| < 2^(EXP(x)-error)
@@ -34,7 +34,7 @@ MA 02110-1301, USA. */
    x must not be a singular value (NAN, INF or ZERO).
 
    y is the destination (a mpfr_t), x the value to set (a mpfr_t),
-   err the error term (a mp_exp_t) such that |g(x)| < 2^(EXP(x)-err),
+   err the error term (a mpfr_uexp_t) such that |g(x)| < 2^(EXP(x)-err),
    dir (an int) is the direction of the error (if dir = 0,
    it rounds towards 0, if dir=1, it rounds away from 0),
    rnd the rounding mode.
@@ -151,7 +151,7 @@ MA 02110-1301, USA. */
  */
 
 int
-mpfr_round_near_x (mpfr_ptr y, mpfr_srcptr x, mp_exp_t err, int dir,
+mpfr_round_near_x (mpfr_ptr y, mpfr_srcptr x, mpfr_uexp_t err, int dir,
                    mp_rnd_t rnd)
 {
   int inexact, sign;
@@ -161,11 +161,14 @@ mpfr_round_near_x (mpfr_ptr y, mpfr_srcptr x, mp_exp_t err, int dir,
   MPFR_ASSERTD (dir == 0 || dir == 1);
 
   /* First check if we can round. The test is more restrictive than
-     necessary. */
-  if (!(err > 0 && (mpfr_uexp_t) err > MPFR_PREC (y) + 1
-        && ((mpfr_uexp_t) err > MPFR_PREC (x)
+     necessary. Note that if err is not representable in an mp_exp_t,
+     then err > MPFR_PREC (x) and the conversion to mp_exp_t will not
+     occur. */
+  if (!(err > MPFR_PREC (y) + 1
+        && (err > MPFR_PREC (x)
             || mpfr_round_p (MPFR_MANT (x), MPFR_LIMB_SIZE (x),
-                             err, MPFR_PREC (y) + (rnd==GMP_RNDN)))))
+                             (mp_exp_t) err,
+                             MPFR_PREC (y) + (rnd == GMP_RNDN)))))
     /* If we assume we can not round, return 0 */
     return 0;
 

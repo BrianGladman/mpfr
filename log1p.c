@@ -70,9 +70,9 @@ mpfr_log1p (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       /* For x > 0,    abs(log(1+x)-x) < x^2/2.
          For x > -0.5, abs(log(1+x)-x) < x^2. */
       if (MPFR_IS_POS (x))
-        MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, - ex - 1, 0, rnd_mode, {});
+        MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, - ex - 1, 0, 0, rnd_mode, {});
       else
-        MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, - ex, 1, rnd_mode, {});
+        MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, - ex, 0, 1, rnd_mode, {});
     }
 
   comp = mpfr_cmp_si (x, -1);

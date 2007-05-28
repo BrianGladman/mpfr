@@ -70,9 +70,9 @@ mpfr_expm1 (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
       /* For -1 < x < 0, abs(expm1(x)-x) < x^2/2.
          For 0 < x < 1,  abs(expm1(x)-x) < x^2. */
       if (MPFR_IS_POS (x))
-        MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, - ex, 1, rnd_mode, {});
+        MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, - ex, 0, 1, rnd_mode, {});
       else
-        MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, 1 - ex, 0, rnd_mode, {});
+        MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, - ex, 1, 0, rnd_mode, {});
     }
 
   if (MPFR_IS_NEG (x) && ex > 5)  /* x <= -32 */
@@ -93,7 +93,7 @@ mpfr_expm1 (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
                <= 2^max(MPFR_EMIN_MIN,-LONG_MAX,ceil(x/ln(2)+epsilon))
          with epsilon > 0 */
       mpfr_clear (t);
-      MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, minus_one, err, 0, rnd_mode,
+      MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, minus_one, err, 0, 0, rnd_mode,
                                         { mpfr_clear (minus_one); });
       mpfr_clear (minus_one);
     }

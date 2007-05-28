@@ -58,7 +58,8 @@ mpfr_sinh (mpfr_ptr y, mpfr_srcptr xt, mp_rnd_t rnd_mode)
     }
 
   /* sinh(x) = x + x^3/6 + ... so the error is < 2^(3*EXP(x)-2) */
-  MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, xt, -2*MPFR_GET_EXP(xt)+2,1,rnd_mode,{});
+  MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, xt, -2 * MPFR_GET_EXP(xt), 2, 1,
+                                    rnd_mode, {});
 
   MPFR_TMP_INIT_ABS (x, xt);
 

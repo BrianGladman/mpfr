@@ -153,8 +153,8 @@ mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
   MPFR_SAVE_EXPO_MARK (expo);
 
   /* erfc(x) ~ 1, with error < 2^(EXP(x)+1) */
-  MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, __gmpfr_one, 0-MPFR_GET_EXP (x)-1,
-                                    MPFR_SIGN(x) < 0,
+  MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, __gmpfr_one, - MPFR_GET_EXP (x) - 1,
+                                    0, MPFR_SIGN(x) < 0,
                                     rnd, inex = _inexact; goto end);
 
   prec = MPFR_PREC (y) + MPFR_INT_CEIL_LOG2 (MPFR_PREC (y)) + 3;
