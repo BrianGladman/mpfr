@@ -48,7 +48,7 @@ MA 02110-1301, USA. */
 # include <sys/fpu.h>
 #endif
 
-#ifdef MPFR_TEST_TIMEOUT
+#ifdef MPFR_TESTS_TIMEOUT
 #include <sys/resource.h>
 #endif
 
@@ -147,11 +147,18 @@ tests_end_mpfr (void)
 static void
 tests_limit_start (void)
 {
-#ifdef MPFR_TEST_TIMEOUT
+#ifdef MPFR_TESTS_TIMEOUT
   struct rlimit rlim[1];
+  char *timeoutp;
+  int timeout;
 
-  rlim->rlim_cur = MPFR_TEST_TIMEOUT;
-  setrlimit (RLIMIT_CPU, rlim);
+  timeoutp = getenv ("MPFR_TESTS_TIMEOUT");
+  timeout = timeoutp != NULL ? atoi (timeoutp) : MPFR_TESTS_TIMEOUT;
+  if (timeout > 0)
+    {
+      rlim->rlim_cur = MPFR_TESTS_TIMEOUT;
+      setrlimit (RLIMIT_CPU, rlim);
+    }
 #endif
 }
 
