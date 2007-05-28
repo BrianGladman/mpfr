@@ -893,7 +893,7 @@ The subject sequence contains no characters if the input
 string is not of the expected form.
 
 Note that in the hex format the exponent @code{P} represents a power of 2,
-whereas @code{@@} represents a power of the base (i.e. 16).
+whereas @code{@@} represents a power of the base (i.e.@: 16).
 
 If the argument @var{base} is different from 0, it must be in the range 2
 to 36.
@@ -1112,7 +1112,7 @@ rounded to an integer in the direction @var{rnd}.
 @deftypefunx int mpfr_add_q (mpfr_t @var{rop}, mpfr_t @var{op1}, mpq_t @var{op2}, mp_rnd_t @var{rnd})
 Set @var{rop} to @math{@var{op1} + @var{op2}} rounded in the direction
 @var{rnd}. For types having no signed zero, it is considered unsigned
-(i.e. (+0) + 0 = (+0) and (@minus{}0) + 0 = (@minus{}0)).
+(i.e.@: (+0) + 0 = (+0) and (@minus{}0) + 0 = (@minus{}0)).
 @end deftypefun
 
 @deftypefun int mpfr_sub (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
@@ -1124,7 +1124,7 @@ Set @var{rop} to @math{@var{op1} + @var{op2}} rounded in the direction
 @deftypefunx int mpfr_sub_q (mpfr_t @var{rop}, mpfr_t @var{op1}, mpq_t @var{op2}, mp_rnd_t @var{rnd})
 Set @var{rop} to @math{@var{op1} - @var{op2}} rounded in the direction
 @var{rnd}. For types having no signed zero, it is considered unsigned
-(i.e. (+0) @minus{} 0 = (+0), (@minus{}0) @minus{} 0 = (@minus{}0),
+(i.e.@: (+0) @minus{} 0 = (+0), (@minus{}0) @minus{} 0 = (@minus{}0),
 0 @minus{} (+0) = (@minus{}0) and 0 @minus{} (@minus{}0) = (+0)).
 @end deftypefun
 
@@ -1543,12 +1543,11 @@ If any operand is negative, the return value is NaN.
 
 @deftypefun int mpfr_hypot (mpfr_t @var{rop}, mpfr_t @var{x}, mpfr_t @var{y}, mp_rnd_t @var{rnd})
 Set @var{rop} to the Euclidean norm of @var{x} and @var{y},
-i.e.
 @ifnottex
-the square root of the sum of the squares of @var{x} and @var{y},
+i.e.@: the square root of the sum of the squares of @var{x} and @var{y},
 @end ifnottex
 @tex
-$\sqrt{x^2+y^2}$,
+i.e.@: $\sqrt{x^2+y^2}$,
 @end tex
 rounded in the direction @var{rnd}.
 Special values are currently handled as described in Section F.9.4.3 of
