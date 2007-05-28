@@ -332,7 +332,38 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
           MPFR_RET (0);
         }
     }
+
   /* s is neither Nan, nor Inf, nor Zero */
+
+  /* check tiny s: we have zeta(s) = -1/2 - 1/2 log(2 Pi) s + ... around s=0,
+     and for |s| <= 0.074, we have |zeta(s) + 1/2| <= |s|.
+     Thus if |s| <= ulp(1/2), we can deduce the correct rounding.
+     A sufficient condition is that EXP(s) <= -PREC(z). */
+  if (MPFR_EXP(s) <= - (mp_exp_t) MPFR_PREC(z))
+    {
+      int signs = MPFR_SIGN(s);
+      mpfr_set_si_2exp (z, -1, -1, rnd_mode); /* -1/2 */
+      if ((rnd_mode == GMP_RNDU || rnd_mode == GMP_RNDZ) && signs < 0)
+        {
+          mpfr_nextabove (z); /* z = -1/2 + epsilon */
+          inex = 1;
+        }
+      else if (rnd_mode == GMP_RNDD && signs > 0)
+        {
+          mpfr_nextbelow (z); /* z = -1/2 - epsilon */
+          inex = -1;
+        }
+      else
+        {
+          if (rnd_mode == GMP_RNDU) /* s > 0: z = -1/2 */
+            inex = 1;
+          else if (rnd_mode == GMP_RNDD)
+            inex = -1;              /* s < 0: z = -1/2 */
+          else /* (GMP_RNDZ and s > 0) or GMP_RNDN: z = -1/2 */
+            inex = (signs > 0) ? 1 : -1;
+        }
+      return mpfr_check_range (z, inex, rnd_mode);
+    }
 
   /* Check for case s= -2n */
   if (MPFR_IS_NEG (s))
