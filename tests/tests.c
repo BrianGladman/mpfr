@@ -156,8 +156,22 @@ tests_limit_start (void)
   timeout = timeoutp != NULL ? atoi (timeoutp) : MPFR_TESTS_TIMEOUT;
   if (timeout > 0)
     {
-      rlim->rlim_cur = MPFR_TESTS_TIMEOUT;
-      setrlimit (RLIMIT_CPU, rlim);
+      /* We need to call getrlimit first to initialize rlim_max to
+         an acceptable value for setrlimit. When enabled, timeouts
+         are regarded as important: we don't want to take too much
+         CPU time on machines shared with other users. So, if we
+         can't set the timeout, we exit immediately. */
+      if (getrlimit (RLIMIT_CPU, rlim))
+        {
+          fprintf (stderr, "getrlimit failed\n");
+          exit (1);
+        }
+      rlim->rlim_cur = timeout;
+      if (setrlimit (RLIMIT_CPU, rlim))
+        {
+          fprintf (stderr, "setrlimit failed\n");
+          exit (1);
+        }
     }
 #endif
 }
