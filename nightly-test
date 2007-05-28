@@ -18,8 +18,7 @@ autoreconf -i
   --disable-shared --enable-thread-safe --enable-tests-timeout=60
 make
 export GMP_CHECK_RANDOMIZE=1
-# disabled because --enable-tests-timeout does not seem to work
-# export MPFR_CHECK_TINY=1
+export MPFR_CHECK_TINY=1
 make check
 cd /tmp
 /bin/rm -fr "$DIR"
