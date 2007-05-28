@@ -129,5 +129,5 @@ mpfr_sinh (mpfr_ptr y, mpfr_srcptr xt, mp_rnd_t rnd_mode)
     MPFR_SAVE_EXPO_FREE (expo);
   }
 
-  MPFR_RET (mpfr_check_range (y, inexact, rnd_mode));
+  return mpfr_check_range (y, inexact, rnd_mode);
 }

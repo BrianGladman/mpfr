@@ -108,44 +108,44 @@ Another solution is to run the script 'coverage' from MPFR source directory.
 
 List of the used macros for building MPFR:
 
-+ HAVE_STRCASECMP: 	Define if the system supports 'strcasecmp' function.
-+ HAVE_STRNCASECMP:	Define if the system supports 'strncasecmp' function.
++ HAVE_STRCASECMP:      Define if the system supports 'strcasecmp' function.
++ HAVE_STRNCASECMP:     Define if the system supports 'strncasecmp' function.
 
 + HAVE_CONFIG_H:        Define if we have to include 'config.h' first.
-+ MPFR_HAVE_GMP_IMPL:	Define if we have the gmp internal files.
-			 ('gmp-impl.h', 'gmp-maparam.h', ...).
++ MPFR_HAVE_GMP_IMPL:   Define if we have the gmp internal files.
+                         ('gmp-impl.h', 'gmp-maparam.h', ...).
 
-+ HAVE_ALLOCA_H:	Define if the function 'alloca' is in alloca.h.
-+ HAVE_LONG_LONG:	Define if the system supports 'long long'
++ HAVE_ALLOCA_H:        Define if the function 'alloca' is in alloca.h.
++ HAVE_LONG_LONG:       Define if the system supports 'long long'
 
-+ HAVE_STDARG:		Define if the system supports 'stdarg.h'.
-			 Otherwise it is assumed it is 'vararg.h'.
-+ HAVE_STDINT_H:	Define if 'intmax_t' is supported (ISO C99).
++ HAVE_STDARG:          Define if the system supports 'stdarg.h'.
+                         Otherwise it is assumed it is 'vararg.h'.
++ HAVE_STDINT_H:        Define if 'intmax_t' is supported (ISO C99).
 
  Define format of long double.
 + HAVE_LDOUBLE_IEEE_EXT_LITTLE:         IEEE extended, little endian.
 + HAVE_LDOUBLE_IEEE_QUAD_BIG:           IEEE quad, big endian.
 
-+ XDEBUG:		Use generic 'double' code instead of IEEE specific one.
-			The IEEE code for double needs GMP internal files.
-+ WANT_ASSERT:		Define if we want to turn on the assertions.
-+ MPFR_EXP_CHECK:	Define if we want to check the exp field.
++ XDEBUG:               Use generic 'double' code instead of IEEE specific one.
+                        The IEEE code for double needs GMP internal files.
++ WANT_ASSERT:          Define if we want to turn on the assertions.
++ MPFR_EXP_CHECK:       Define if we want to check the exp field.
 
-+ MPFR_PREC_FORMAT:	Define the internal format of prec field
-			 (For experimented users).
++ MPFR_PREC_FORMAT:     Define the internal format of prec field
+                         (For experimented users).
 
-+ IEEE_DBL_MANT_DIG:	Number of bits in the mantissa of a double.
-			(Default: 53).
-+ LDBL_MANT_DIG:	Number of bits in the mantissa of a long double
++ IEEE_DBL_MANT_DIG:    Number of bits in the mantissa of a double.
+                        (Default: 53).
++ LDBL_MANT_DIG:        Number of bits in the mantissa of a long double
 
 List of the used macros for checking MPFR:
 
-+ MPFR_HAVE_FESETROUND:	Define if the fesetround function is defined
-			 (and in header fenv.h).
-+ HAVE_DENORMS:		Define if denormalized floats work.
-+ HAVE_SYS_TIME_H:	Define if the header sys/time.h is usable.
-+ HAVE_GETTIMEOFDAY:	Define if the function gettimeofday is present.
-+ MPFR_HAVE_TESTS_x86:	Define if we are on x86.
++ MPFR_HAVE_FESETROUND: Define if the fesetround function is defined
+                         (and in header fenv.h).
++ HAVE_DENORMS:         Define if denormalized floats work.
++ HAVE_SYS_TIME_H:      Define if the header sys/time.h is usable.
++ HAVE_GETTIMEOFDAY:    Define if the function gettimeofday is present.
++ MPFR_HAVE_TESTS_x86:  Define if we are on x86.
 
 ===========================================================================
 
@@ -405,13 +405,13 @@ mpfr_toto (mpfr_ptr rop, mpfr_srcptr op, mp_rnd_t rnd)
   [Clear all intermediate variables]
 
   MPFR_SAVE_EXPO_FREE (expo);            /* Restore exponent range */
-  MPFR_RET (mpfr_check_range (rop, inexact, rnd));  /* Check range and quit */
+  return mpfr_check_range (rop, inexact, rnd);  /* Check range and quit */
 }
 
 
 ===========================================================================
 
-If you plan to add a new threshold in MPFR which could be tune, 
+If you plan to add a new threshold in MPFR which could be tune,
 you should add its default value in the file `mparam_h.in'. When the
 script configure finishes, it creates the file `mparam.h' from `mparam_h.in'.
 

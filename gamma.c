@@ -166,7 +166,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
       inex = mpfr_ui_div (gamma, 1, x, rnd_mode);
       if (inex == 0) /* x is a power of two */
         {
-          if (positive) 
+          if (positive)
             {
               if (rnd_mode == GMP_RNDU || rnd_mode == GMP_RNDN)
                 inex = 1;
@@ -216,11 +216,11 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mp_prec_t p = MPFR_PREC(gamma);
       u = mpfr_get_ui (x, GMP_RNDN);
       b = bits_fac (u - 1); /* lower bound on the number of bits of m,
-			       where gamma(x) = (u-1)! = m*2^e with m odd. */
+                               where gamma(x) = (u-1)! = m*2^e with m odd. */
       if (b <= p + (rnd_mode == GMP_RNDN))
         return mpfr_fac_ui (gamma, u - 1, rnd_mode);
       /* if b > p (resp. p+1 for rounding to nearest), then gamma(x) cannot be
-	 exact in precision p (resp. p+1) */
+         exact in precision p (resp. p+1) */
     }
 
   /* check for overflow: according to (6.1.37) in Abramowitz & Stegun,

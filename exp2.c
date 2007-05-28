@@ -63,7 +63,7 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
      |2^x - 1| <= x < 2^EXP(x). If x > 0 we must round away from 0 (dir=1);
      if x < 0 we must round towards 0 (dir=0). */
   MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, __gmpfr_one, -MPFR_GET_EXP(x), 0,
-				    MPFR_SIGN(x) > 0, 
+                                    MPFR_SIGN(x) > 0,
                                     rnd_mode, inexact = _inexact; goto end);
 
   /* since the smallest representable non-zero float is 1/2*2^__gmpfr_emin,
@@ -147,5 +147,5 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_SAVE_EXPO_FREE (expo);
 
  end:
-  MPFR_RET (mpfr_check_range (y, inexact, rnd_mode));
+  return mpfr_check_range (y, inexact, rnd_mode);
 }

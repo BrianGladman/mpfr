@@ -284,6 +284,5 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
  end:
   MPFR_SAVE_EXPO_FREE (expo);
-  MPFR_RET (mpfr_check_range (y, inexact, rnd_mode));
+  return mpfr_check_range (y, inexact, rnd_mode);
 }
-
