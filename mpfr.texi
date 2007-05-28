@@ -3,7 +3,7 @@
 @setfilename mpfr.info
 @documentencoding ISO-8859-1
 @set VERSION 2.3.0-dev
-@set UPDATED-MONTH February 2007
+@set UPDATED-MONTH May 2007
 @settitle MPFR @value{VERSION}
 @synindex tp fn
 @iftex
@@ -597,9 +597,8 @@ unbounded exponent range (for the rounding), has an exponent larger
 than the maximum exponent of the current range. In the round-to-nearest
 mode, the result is infinite.
 
-@item Invalid (NaN):
-An invalid (or NaN) exception occurs when the result of a function is
-a NaN.
+@item NaN:
+A NaN exception occurs when the result of a function is a NaN.
 @c NaN is defined above. So, we don't say anything more.
 
 @item Inexact:
@@ -609,12 +608,27 @@ represented exactly and must be rounded.
 @item Range error:
 A range exception occurs when a function that does not return a MPFR
 number (such as comparisons and conversions to an integer) has an
-invalid result.
+invalid result (e.g. an argument is NaN in @code{mpfr_cmp} or in a
+conversion to an integer).
 
 @end itemize
 
 MPFR has a global flag for each exception, which can be cleared, set
 or tested by functions described in @ref{Exceptions}.
+
+Differences with the ISO C99 standard:
+
+@itemize @bullet
+
+@item In C, only quiet NaNs are specified, and a NaN propagation does not
+raise an invalid exception. Unless explicitly stated otherwise, MPFR sets
+the NaN flag whenever a NaN is generated, even when a NaN is propagated
+(e.g. in NaN + NaN), as if all NaNs were signaling.
+
+@item An invalid exception in C corresponds to either a NaN exception or
+a range error in MPFR.
+
+@end itemize
 
 @node MPFR Interface, Contributors, MPFR Basics, Top
 @comment  node-name,  next,  previous,  up
