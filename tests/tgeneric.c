@@ -104,7 +104,7 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
       yprec = prec + 10;
       mpfr_set_prec (y, yprec);
 
-      for (n = 0; n < N; n++)
+      for (n = 0; n <= N; n++)
         {
           xprec = prec;
           if (randlimb () & 1)
@@ -117,17 +117,32 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
 #ifdef TWO_ARGS
           mpfr_set_prec (u, xprec);
 #endif
+
+          if (n > 1 || prec < p1 || getenv ("MPFR_CHECK_TINY") == NULL)
+            {
 #if defined(RAND_FUNCTION)
-          RAND_FUNCTION (x);
+              RAND_FUNCTION (x);
 #ifdef TWO_ARGS
-          RAND_FUNCTION (u);
+              RAND_FUNCTION (u);
 #endif
 #else
-          tests_default_random (x);
+              tests_default_random (x);
 #ifdef TWO_ARGS
-          tests_default_random (u);
+              tests_default_random (u);
 #endif
 #endif
+            }
+          else
+            {
+              /* Special cases tested in precision p1 if n <= 1. */
+              mpfr_set_si (x, n == 0 ? 1 : -1, GMP_RNDN);
+              mpfr_set_exp (x, mpfr_get_emin ());
+#ifdef TWO_ARGS
+              mpfr_set_si (u, randlimb () % 2 == 0 ? 1 : -1, GMP_RNDN);
+              mpfr_set_exp (u, mpfr_get_emin ());
+#endif
+            }
+
           rnd = (mp_rnd_t) RND_RAND ();
           mpfr_clear_flags ();
 #ifdef DEBUG_TGENERIC
