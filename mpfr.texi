@@ -810,8 +810,11 @@ If the system doesn't support the IEEE-754 standard, @code{mpfr_set_d},
 @code{mpfr_set_ld} and 
 @code{mpfr_set_decimal64} might not preserve the signed zeros.
 The @code{mpfr_set_decimal64} function is built only with the configure
-option @samp{--enable-decimal-float}, and when the compiler or
-system provides the @code{_Decimal64} data type.
+option @samp{--enable-decimal-float}, which also requires
+@samp{--with-gmp-build}, and when the compiler or
+system provides the @samp{_Decimal64} data type
+(GCC version 4.2.0 is known to support this data type,
+but only when configured with @samp{--enable-decimal-float} too).
 @code{mpfr_set_q} might not be able to work if the numerator (or the
 denominator) can not be representable as a @code{mpfr_t}.
 
@@ -967,9 +970,8 @@ Convert @var{op} to a @code{double} (respectively @code{_Decimal64} or
 @code{long double}), using the rounding mode @var{rnd}.
 If the system doesn't support IEEE 754 standard, these functions
 might not preserve the signed zeros.
-The @code{mpfr_get_decimal64} function is built only with the configure
-option @samp{--enable-decimal-float}, and when the compiler or
-system provides the @code{_Decimal64} data type.
+The @code{mpfr_get_decimal64} function is built only under some conditions:
+see the documentation of @code{mpfr_set_decimal64}.
 @end deftypefun
 
 @deftypefun double mpfr_get_d_2exp (long *@var{exp}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
