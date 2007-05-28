@@ -211,7 +211,6 @@ main (int argc, char *argv[])
   /* restore emax */
   set_emax (emax);
 
-
   MPFR_SET_INF(x);
   MPFR_SET_POS(x);
   mpfr_exp2 (y, x, GMP_RNDN);
@@ -251,6 +250,17 @@ main (int argc, char *argv[])
           printf ("exp2(10000000000.5) should overflow.\n");
           exit (1);
         }
+    }
+
+  mpfr_set_prec (x, 2);
+  mpfr_set_prec (y, 2);
+  mpfr_set_str_binary (x, "-1.0E-26");
+  mpfr_exp2 (y, x, GMP_RNDD);
+  mpfr_set_str_binary (x, "1.1E-1");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error for exp(-2^(-26)) for prec=2\n");
+      exit (1);
     }
 
   test_generic (2, 100, 100);
