@@ -57,6 +57,13 @@ mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
     }
 
   MPFR_SAVE_EXPO_MARK (expo);
+
+  /* cosh(x) = 1+x^2/2 + ... <= 1+x^2 for x <= 2.9828...,
+     thus the error < 2^(2*EXP(x)). If x >= 1, then EXP(x) >= 1,
+     thus the following will always fail. */
+  MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, __gmpfr_one, -2 * MPFR_GET_EXP (xt), 0,
+                                    1, rnd_mode, inexact = _inexact; goto end);
+
   MPFR_TMP_INIT_ABS(x, xt);
   /* General case */
   {
@@ -112,7 +119,7 @@ mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
     MPFR_GROUP_CLEAR (group);
   }
 
+ end:
   MPFR_SAVE_EXPO_FREE (expo);
-  inexact = mpfr_check_range (y, inexact, rnd_mode);
-  return inexact;
+  return mpfr_check_range (y, inexact, rnd_mode);
 }
