@@ -1146,7 +1146,7 @@ typedef struct {
    If you want to free something, you must fill the "extra" field
    in consequences, otherwise put nothing in it.
 
-   The test is less restrictive thant necessary, but the function
+   The test is less restrictive than necessary, but the function
    will finish the check itself.
 
    Note: err1 + err2 is allowed to overflow as mp_exp_t, but it must give
