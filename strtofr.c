@@ -486,7 +486,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mp_rnd_t rnd)
       MPFR_ASSERTD (y[real_ysize - 1] != 0);
       count_leading_zeros (count, y[real_ysize - 1]);
       exact = (real_ysize <= ysize);
-      if (exact != 0) /* shift y to the left in that case y shoud be exact */
+      if (exact != 0) /* shift y to the left in that case y should be exact */
         {
           /* shift {y, num_limb} for count bits to the left */
           if (count != 0)
