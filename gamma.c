@@ -139,6 +139,57 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
         }
     }
 
+  /* Check for tiny arguments, where gamma(x) ~ 1/x - euler + ....
+     We know from "Bound on Runs of Zeros and Ones for Algebraic Functions",
+     Proceedings of Arith15, T. Lang and J.-M. Muller, 2001, that the maximal
+     number of consecutive zeroes or ones after the round bit is n-1 for an
+     input of n bits. But we need a more precise lower bound. Assume x has
+     n bits, and 1/x is near a floating-point number y of n+1 bits. We can
+     write x = X*2^e, y = Y/2^f with X, Y integers of n and n+1 bits.
+     Thus X*Y^2^(e-f) is near from 1, i.e., X*Y is near from 2^(f-e).
+     Two cases can happen:
+     (i) either X*Y is exactly 2^(f-e), but this can happen only if X and Y
+         are themselves powers of two, i.e., x is a power of two;
+     (ii) or X*Y is at distance at least one from 2^(f-e), thus
+          |xy-1| >= 2^(e-f), or |y-1/x| >= 2^(e-f)/x = 2^(-f)/X >= 2^(-f-n).
+          Since ufp(y) = 2^(n-f) [ufp = unit in first place], this means
+          that the distance |y-1/x| >= 2^(-2n) ufp(y).
+          Now assuming |gamma(x)-1/x| <= 1, which is true for x <= 1,
+          if 2^(-2n) ufp(y) >= 2, the error is at most 2^(-2n-1) ufp(y),
+          and round(1/x) with precision >= 2n+2 gives the correct result.
+          If x < 2^E, then y > 2^(-E), thus ufp(y) > 2^(-E-1).
+          A sufficient condition is thus EXP(x) + 2 <= -2 MAX(PREC(x),PREC(Y)).
+  */
+  if (MPFR_EXP(x) + 2 <= -2 * (mp_exp_t) MAX(MPFR_PREC(x), MPFR_PREC(gamma)))
+    {
+      int positive = MPFR_IS_POS (x);
+      inex = mpfr_ui_div (gamma, 1, x, rnd_mode);
+      if (inex == 0) /* x is a power of two */
+        {
+          if (positive) 
+            {
+              if (rnd_mode == GMP_RNDU || rnd_mode == GMP_RNDN)
+                inex = 1;
+              else /* round to zero or to -Inf */
+                {
+                  mpfr_nextbelow (gamma); /* 2^k - epsilon */
+                  inex = -1;
+                }
+            }
+          else /* negative */
+            {
+              if (rnd_mode == GMP_RNDU || rnd_mode == GMP_RNDZ)
+                {
+                  mpfr_nextabove (gamma); /* -2^k + epsilon */
+                  inex = 1;
+                }
+              else /* round to nearest and to -Inf */
+                inex = -1;
+            }
+        }
+      return inex;
+    }
+
   is_integer = mpfr_integer_p (x);
   /* gamma(x) for x a negative integer gives NaN */
   if (is_integer && MPFR_IS_NEG(x))
