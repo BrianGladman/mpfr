@@ -352,6 +352,18 @@ main (int argc, char *argv[])
       exit (1);
     }
 
+  mpfr_set_prec (s, 34);
+  mpfr_set_prec (z, 34);
+  mpfr_set_str_binary (s, "-1.111111100001011110000010001010000e-35");
+  mpfr_zeta (z, s, GMP_RNDD);
+  mpfr_set_str_binary (s, "-1.111111111111111111111111111111111e-2");
+  if (mpfr_cmp (s, z))
+    {
+      printf ("Error in mpfr_zeta, prec=34, GMP_RNDD\n");
+      mpfr_dump (z);
+      exit (1);
+    }
+
   mpfr_clear (s);
   mpfr_clear (y);
   mpfr_clear (z);
