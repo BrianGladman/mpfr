@@ -582,7 +582,9 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
 }
 #endif
 
-/* DON'T USE THIS! (For MPFR-public macros only, see below.) */
+/* DON'T USE THIS! (For MPFR-public macros only, see below.)
+   The mpfr_sgn macro uses the fact that __MPFR_EXP_NAN and __MPFR_EXP_ZERO
+   are the smallest values. */
 #if __GMP_MP_SIZE_T_INT
 #define __MPFR_EXP_NAN  ((mp_exp_t)((~((~(unsigned int)0)>>1))+2))
 #define __MPFR_EXP_ZERO ((mp_exp_t)((~((~(unsigned int)0)>>1))+1))
@@ -617,7 +619,10 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
 #define mpfr_nan_p(_x)    ((_x)->_mpfr_exp == __MPFR_EXP_NAN)
 #define mpfr_inf_p(_x)    ((_x)->_mpfr_exp == __MPFR_EXP_INF)
 #define mpfr_zero_p(_x)   ((_x)->_mpfr_exp == __MPFR_EXP_ZERO)
-#define mpfr_sgn(_x)      (mpfr_zero_p(_x) ? 0 : MPFR_SIGN(_x))
+#define mpfr_sgn(_x)                                          \
+  ((_x)->_mpfr_exp < __MPFR_EXP_INF ?                         \
+   (mpfr_nan_p (_x) ? mpfr_set_erangeflag () : (void) 0), 0 : \
+   MPFR_SIGN (_x))
 
 /* Prevent them from using as lvalues */
 #define mpfr_get_prec(_x) ((_x)->_mpfr_prec + 0)
@@ -644,6 +649,7 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
 #if defined (__GNUC__) && !defined(__ICC) && !defined(__cplusplus)
 #if (__GNUC__ >= 2)
 #undef mpfr_cmp_ui
+/* We use the fact that mpfr_sgn on NaN sets the erange flag and returns 0. */
 #define mpfr_cmp_ui(_f,_u)                 \
  (__builtin_constant_p (_u) && (_u) == 0 ? \
    mpfr_sgn (_f) :                         \

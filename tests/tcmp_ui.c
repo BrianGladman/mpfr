@@ -20,10 +20,73 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
+#ifdef TCMP_UI_CHECK_NAN
+
+mpfr_clear_erangeflag ();
+c = mpfr_cmp_si (x, TCMP_UI_CHECK_NAN);
+if (c != 0 || !mpfr_erangeflag_p ())
+  {
+    printf ("NaN error on %d (1)\n", TCMP_UI_CHECK_NAN);
+    exit (1);
+  }
+mpfr_clear_erangeflag ();
+c = (mpfr_cmp_si) (x, TCMP_UI_CHECK_NAN);
+if (c != 0 || !mpfr_erangeflag_p ())
+  {
+    printf ("NaN error on %d (2)\n", TCMP_UI_CHECK_NAN);
+    exit (1);
+  }
+if (TCMP_UI_CHECK_NAN >= 0)
+  {
+    mpfr_clear_erangeflag ();
+    c = mpfr_cmp_ui (x, TCMP_UI_CHECK_NAN);
+    if (c != 0 || !mpfr_erangeflag_p ())
+      {
+        printf ("NaN error on %d (3)\n", TCMP_UI_CHECK_NAN);
+        exit (1);
+      }
+    mpfr_clear_erangeflag ();
+    c = (mpfr_cmp_ui) (x, TCMP_UI_CHECK_NAN);
+    if (c != 0 || !mpfr_erangeflag_p ())
+      {
+        printf ("NaN error on %d (4)\n", TCMP_UI_CHECK_NAN);
+        exit (1);
+      }
+  }
+
+#else
+
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "mpfr-test.h"
+
+static void
+check_nan (void)
+{
+  mpfr_t x;
+  int c, i;
+
+  mpfr_init (x);
+  mpfr_set_nan (x);
+  /* We need constants to completely test the macros. */
+#undef TCMP_UI_CHECK_NAN
+#define TCMP_UI_CHECK_NAN -17
+#include "tcmp_ui.c"
+#undef TCMP_UI_CHECK_NAN
+#define TCMP_UI_CHECK_NAN 0
+#include "tcmp_ui.c"
+#undef TCMP_UI_CHECK_NAN
+#define TCMP_UI_CHECK_NAN 17
+#include "tcmp_ui.c"
+  for (i = -17; i <= 17; i += 17)
+    {
+#undef TCMP_UI_CHECK_NAN
+#define TCMP_UI_CHECK_NAN i
+#include "tcmp_ui.c"
+    }
+  mpfr_clear (x);
+}
 
 int
 main (void)
@@ -31,7 +94,6 @@ main (void)
   mpfr_t x;
   unsigned long i;
   long s;
-  int c;
 
   tests_start_mpfr ();
 
@@ -151,25 +213,12 @@ main (void)
   /* now EXP(x)=BITS_PER_MP_LIMB */
   MPFR_ASSERTN(mpfr_cmp_si (x, 1) > 0);
 
-  /* Check NAN */
-  mpfr_set_nan (x);
-  mpfr_clear_erangeflag ();
-  c = mpfr_cmp_ui (x, 12);
-  if (c != 0 || !mpfr_erangeflag_p () )
-    {
-      printf ("NAN error (1)\n");
-      exit (1);
-    }
-  mpfr_clear_erangeflag ();
-  c = mpfr_cmp_si (x, -12);
-  if (c != 0 || !mpfr_erangeflag_p () )
-    {
-      printf ("NAN error (2)\n");
-      exit (1);
-    }
-
   mpfr_clear (x);
+
+  check_nan ();
 
   tests_end_mpfr ();
   return 0;
 }
+
+#endif

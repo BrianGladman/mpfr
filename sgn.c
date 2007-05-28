@@ -25,5 +25,16 @@ MA 02110-1301, USA. */
 int
 (mpfr_sgn) (mpfr_srcptr a)
 {
-  return MPFR_UNLIKELY ( MPFR_IS_ZERO (a) ) ? 0 : MPFR_INT_SIGN (a);
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (a)))
+    {
+      if (MPFR_LIKELY (MPFR_IS_ZERO (a)))
+        return 0;
+      if (MPFR_UNLIKELY (MPFR_IS_NAN (a)))
+        {
+          MPFR_SET_ERANGE ();
+          return 0;
+        }
+      /* Remains infinity, handled by the return below. */
+    }
+  return MPFR_INT_SIGN (a);
 }
