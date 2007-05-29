@@ -200,6 +200,70 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mp_rnd_t r)
 
   /* now z is not singular, and z > 0 */
 
+  /* Deal with tiny arguments. We have:
+     y0(z) = 2 log(z)/Pi + 2 (euler - log(2))/Pi + O(log(z)*z^2), more
+     precisely for 0 <= z <= 1/2, with g(z) = 2/Pi + 2(euler-log(2))/Pi/log(z),
+                g(z) - 0.41*z^2 < y0(z)/log(z) < g(z)
+     thus since log(z) is negative:
+             g(z)*log(z) < y0(z) < (g(z) - z^2/2)*log(z)
+     and since |g(z)| >= 0.63 for 0 <= z <= 1/2, the relative error on
+     y0(z)/log(z) is bounded by 0.41*z^2/0.63 <= 0.66*z^2.
+     Note: we use both the main term in log(z) and the constant term, because
+     otherwise the relative error would be only in 1/log(|log(z)|).
+  */
+  if (n == 0 && MPFR_EXP(z) < - (mp_exp_t) (MPFR_PREC(res) / 2))
+    {
+      mpfr_t l, h, t, logz;
+      int ok, inex2;
+
+      prec = MPFR_PREC(res) + 10;
+      mpfr_init2 (l, prec);
+      mpfr_init2 (h, prec);
+      mpfr_init2 (t, prec);
+      mpfr_init2 (logz, prec);
+      /* first enclose log(z) + euler - log(2) */
+      mpfr_log (logz, z, GMP_RNDD);    /* lower bound of log(z) */
+      mpfr_set (h, logz, GMP_RNDU);    /* exact */
+      mpfr_nextabove (h);              /* upper bound of log(z) */
+      mpfr_const_euler (t, GMP_RNDD);  /* lower bound of euler */
+      mpfr_sub (l, logz, t, GMP_RNDD); /* lower bound of log(z) + euler */
+      mpfr_nextabove (t);              /* upper bound of euler */
+      mpfr_sub (h, h, t, GMP_RNDU);    /* upper bound of log(z) + euler */
+      mpfr_const_log2 (t, GMP_RNDU);   /* upper bound of log(2) */
+      mpfr_sub (l, l, t, GMP_RNDD);    /* lower bound of log(z/2) + euler */
+      mpfr_nextbelow (t);              /* lower bound of log(2) */
+      mpfr_sub (h, h, t, GMP_RNDU);    /* upper bound of log(z/2) + euler */
+      mpfr_const_pi (t, GMP_RNDU);     /* upper bound of Pi */
+      mpfr_div (l, l, t, GMP_RNDD);    /* lower bound of (log(z/2)+euler)/Pi */
+      mpfr_nextbelow (t);              /* lower bound of Pi */
+      mpfr_div (h, h, t, GMP_RNDD);    /* upper bound of (log(z/2)+euler)/Pi */
+      mpfr_mul_2ui (l, l, 1, GMP_RNDD); /* lower bound on g(z)*log(z) */
+      mpfr_mul_2ui (h, h, 1, GMP_RNDU); /* upper bound on g(z)*log(z) */
+      /* we now have l <= g(z)*log(z) <= h, and we need to add -z^2/2*log(z)
+	 to h */
+      mpfr_mul (t, z, z, GMP_RNDU);     /* upper bound on z^2 */
+      /* since logz is negative, a lower bound corresponds to an upper bound
+	 for its absolute value */
+      mpfr_neg (t, t, GMP_RNDD);
+      mpfr_div_2ui (t, t, 1, GMP_RNDD);
+      mpfr_mul (t, t, logz, GMP_RNDU); /* upper bound on z^2/2*log(z) */
+      /* an underflow may happen in the above instructions, clear flag */
+      mpfr_clear_underflow ();
+      mpfr_add (h, h, t, GMP_RNDU);
+      inex = mpfr_prec_round (l, MPFR_PREC(res), r);
+      inex2 = mpfr_prec_round (h, MPFR_PREC(res), r);
+      /* we need h=l and inex=inex2 */
+      ok = (inex == inex2) && (mpfr_cmp (l, h) == 0);
+      if (ok)
+	mpfr_set (res, h, r); /* exact */
+      mpfr_clear (l);
+      mpfr_clear (h);
+      mpfr_clear (t);
+      mpfr_clear (logz);
+      if (ok)
+        return inex;
+    }
+
   mpfr_init (y);
   mpfr_init (s1);
   mpfr_init (s2);
