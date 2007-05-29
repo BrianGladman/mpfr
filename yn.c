@@ -62,7 +62,7 @@ mpfr_yn_s1 (mpfr_ptr s, mpfr_srcptr y, unsigned long n)
       mpfr_add_z (s, s, f, GMP_RNDN);
       e = MPFR_EXP(s);
       if (e > emax)
-	emax = e;
+        emax = e;
     }
   /* now we have f = (n!)^2 */
   mpz_sqrt (f, f);
@@ -115,7 +115,7 @@ mpfr_yn_s3 (mpfr_ptr s, mpfr_srcptr y, mpfr_srcptr c, unsigned long n)
       mpfr_div_ui (t, t, k, GMP_RNDN);
       mpfr_div_ui (t, t, n + k, GMP_RNDN);
       /* update p/q:
-	 p/q + 1/k + 1/(n+k) = [p*k*(n+k) + q*(n+k) + q*k]/(q*k*(n+k)) */
+         p/q + 1/k + 1/(n+k) = [p*k*(n+k) + q*(n+k) + q*k]/(q*k*(n+k)) */
       mpz_mul_ui (p, p, k);
       mpz_mul_ui (p, p, n + k);
       mpz_addmul_ui (p, q, n + 2 * k);
@@ -125,14 +125,14 @@ mpfr_yn_s3 (mpfr_ptr s, mpfr_srcptr y, mpfr_srcptr c, unsigned long n)
       mpfr_div_z (u, u, q, GMP_RNDN);
       exps = MPFR_EXP (u);
       if (exps > expU)
-	expU = exps;
+        expU = exps;
       mpfr_add (s, s, u, GMP_RNDN);
       exps = MPFR_EXP (s);
       if (exps > expU)
-	expU = exps;
+        expU = exps;
       if (MPFR_EXP (u) + (mp_exp_t) MPFR_PREC (u) < MPFR_EXP (s) &&
-	  zz / (2 * k) < k + n)
-	break;
+          zz / (2 * k) < k + n)
+        break;
     }
   mpfr_clear (t);
   mpfr_clear (u);
@@ -169,24 +169,24 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mp_rnd_t r)
       /* y(n,z) tends to zero when z goes to +Inf, oscillating around
          0. We choose to return +0 in that case. */
       else if (MPFR_IS_INF (z))
-	{
-	  if (MPFR_SIGN(z) > 0)
-	    return mpfr_set_ui (res, 0, r);
-	  else /* y(n,-Inf) = NaN */
-	    {
-	      MPFR_SET_NAN (res);
-	      MPFR_RET_NAN;
-	    }
-	}
-      else /* y(n,z) tends to -Inf for n >= 0 or n even, to +Inf otherwise,
-	      when z goes to zero */
         {
-	  MPFR_SET_INF(res);
-	  if (n >= 0 || (n & 1) == 0)
-	    MPFR_SET_NEG(res);
-	  else
-	    MPFR_SET_POS(res);
-	  MPFR_RET(0);
+          if (MPFR_SIGN(z) > 0)
+            return mpfr_set_ui (res, 0, r);
+          else /* y(n,-Inf) = NaN */
+            {
+              MPFR_SET_NAN (res);
+              MPFR_RET_NAN;
+            }
+        }
+      else /* y(n,z) tends to -Inf for n >= 0 or n even, to +Inf otherwise,
+              when z goes to zero */
+        {
+          MPFR_SET_INF(res);
+          if (n >= 0 || (n & 1) == 0)
+            MPFR_SET_NEG(res);
+          else
+            MPFR_SET_POS(res);
+          MPFR_RET(0);
         }
     }
 
@@ -240,10 +240,10 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mp_rnd_t r)
       mpfr_mul_2ui (l, l, 1, GMP_RNDD); /* lower bound on g(z)*log(z) */
       mpfr_mul_2ui (h, h, 1, GMP_RNDU); /* upper bound on g(z)*log(z) */
       /* we now have l <= g(z)*log(z) <= h, and we need to add -z^2/2*log(z)
-	 to h */
+         to h */
       mpfr_mul (t, z, z, GMP_RNDU);     /* upper bound on z^2 */
       /* since logz is negative, a lower bound corresponds to an upper bound
-	 for its absolute value */
+         for its absolute value */
       mpfr_neg (t, t, GMP_RNDD);
       mpfr_div_2ui (t, t, 1, GMP_RNDD);
       mpfr_mul (t, t, logz, GMP_RNDU); /* upper bound on z^2/2*log(z) */
@@ -255,7 +255,7 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mp_rnd_t r)
       /* we need h=l and inex=inex2 */
       ok = (inex == inex2) && (mpfr_cmp (l, h) == 0);
       if (ok)
-	mpfr_set (res, h, r); /* exact */
+        mpfr_set (res, h, r); /* exact */
       mpfr_clear (l);
       mpfr_clear (h);
       mpfr_clear (t);
@@ -272,33 +272,33 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mp_rnd_t r)
       int ok;
 
       /* since 2/Pi > 0.5, and |y1(z)| >= |2/Pi/z|, if z <= 2^(-emax-1),
-	 then |y1(z)| > 2^emax */
+         then |y1(z)| > 2^emax */
       prec = MPFR_PREC(res) + 10;
       mpfr_init2 (y, prec);
       mpfr_const_pi (y, GMP_RNDU); /* Pi*(1+u)^2, where here and below u
-				      represents a quantity <= 1/2^prec */
+                                      represents a quantity <= 1/2^prec */
       mpfr_mul (y, y, z, GMP_RNDU); /* Pi*z * (1+u)^4, upper bound */
       mpfr_ui_div (y, 2, y, GMP_RNDZ); /* 2/Pi/z * (1+u)^6, lower bound */
       mpfr_neg (y, y, GMP_RNDN);
       if (mpfr_overflow_p ())
-	{
-	  mpfr_clear (y);
-	  return mpfr_overflow (res, r, -1);
-	}
+        {
+          mpfr_clear (y);
+          return mpfr_overflow (res, r, -1);
+        }
       /* (1+u)^6 can be written 1+7u [for another value of u], thus the
-	 error on 2/Pi/z is less than 7ulp(y). The truncation error is less
-	 than 1/4, thus if ulp(y)>=1/4, the total error is less than 8ulp(y),
-	 otherwise it is less than 1/4+7/8 <= 2. */
+         error on 2/Pi/z is less than 7ulp(y). The truncation error is less
+         than 1/4, thus if ulp(y)>=1/4, the total error is less than 8ulp(y),
+         otherwise it is less than 1/4+7/8 <= 2. */
       if (MPFR_EXP(y) + 2 >= MPFR_PREC(y)) /* ulp(y) >= 1/4 */
-	err1 = 3;
+        err1 = 3;
       else /* ulp(y) <= 1/8 */
-	err1 = (mp_exp_t) MPFR_PREC(y) - MPFR_EXP(y) + 1;
+        err1 = (mp_exp_t) MPFR_PREC(y) - MPFR_EXP(y) + 1;
       ok = MPFR_CAN_ROUND (y, prec - err1, MPFR_PREC(res), r);
       if (ok)
-	inex = mpfr_set (res, y, r);
+        inex = mpfr_set (res, y, r);
       mpfr_clear (y);
       if (ok)
-	return inex;
+        return inex;
     }
 
   mpfr_init (y);
@@ -324,15 +324,15 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mp_rnd_t r)
 
       /* compute S1 * (z/2)^(-n) */
       if (n == 0)
-	{
-	  mpfr_set_ui (s1, 0, GMP_RNDN);
-	  err1 = 0;
-	}
+        {
+          mpfr_set_ui (s1, 0, GMP_RNDN);
+          err1 = 0;
+        }
       else
-	err1 = mpfr_yn_s1 (s1, y, absn - 1);
+        err1 = mpfr_yn_s1 (s1, y, absn - 1);
       mpfr_div (s1, s1, s2, GMP_RNDN); /* (z/2)^(-n) * S1 */
       /* See algorithms.tex: the relative error on s1 is bounded by
-	 (3n+3)*2^(e+1-prec). */
+         (3n+3)*2^(e+1-prec). */
       err1 = MPFR_INT_CEIL_LOG2 (3 * absn + 3) + err1 + 1;
       /* rel_err(s1) <= 2^(err1-prec), thus err(s1) <= 2^err1 ulps */
 
@@ -345,7 +345,7 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mp_rnd_t r)
       err1 += MPFR_EXP(s1);
       mpfr_add (s1, s1, s3, GMP_RNDN);
       /* the error is bounded by 1/2 + 2^err1*2^(- EXP(s1))
-	 + 2^err3*2^(EXP(s3) - EXP(s1)) */
+         + 2^err3*2^(EXP(s3) - EXP(s1)) */
       err3 += MPFR_EXP(s3);
       err1 = (err3 > err1) ? err3 + 1 : err1 + 1;
       err1 -= MPFR_EXP(s1);
@@ -363,7 +363,7 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mp_rnd_t r)
       mpfr_jn (s3, absn, z, GMP_RNDN); /* Jn(z) */
       mpfr_mul (s2, s2, s3, GMP_RNDN); /* 2*(log(z/2) + gamma)*Jn(z) */
       err2 += 4; /* the error on s2 is bounded by 2^err2 ulps, see
-		    algorithms.tex */
+                    algorithms.tex */
 
       /* add all three sums */
       err1 += MPFR_EXP(s1); /* the error on s1 is bounded by 2^err1 */
@@ -378,7 +378,7 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mp_rnd_t r)
       err2 ++;
 
       if (MPFR_LIKELY (MPFR_CAN_ROUND (s2, prec - err2, MPFR_PREC(res), r)))
-	break;
+        break;
       MPFR_ZIV_NEXT (loop, prec);
     }
   MPFR_ZIV_FREE (loop);
