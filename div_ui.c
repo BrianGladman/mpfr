@@ -33,7 +33,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
   mp_size_t xn, yn, dif;
   mp_limb_t *xp, *yp, *tmp, c, d;
   mp_exp_t exp;
-  int inexact, middle = 1;
+  int inexact, middle = 1, nexttoinf;
   MPFR_TMP_DECL(marker);
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
@@ -141,19 +141,20 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
     {
       MPN_COPY(yp, tmp, yn);
       exp -= BITS_PER_MP_LIMB;
-      sh = 0;
     }
   else
     {
-      count_leading_zeros (sh, tmp[yn]);
+      int shlz;
+
+      count_leading_zeros (shlz, tmp[yn]);
 
       /* shift left to normalize */
-      if (MPFR_LIKELY (sh))
+      if (MPFR_LIKELY (shlz != 0))
         {
-          mp_limb_t w = tmp[0] << sh;
+          mp_limb_t w = tmp[0] << shlz;
 
-          mpn_lshift (yp, tmp + 1, yn, sh);
-          yp[0] += tmp[0] >> (BITS_PER_MP_LIMB - sh);
+          mpn_lshift (yp, tmp + 1, yn, shlz);
+          yp[0] += tmp[0] >> (BITS_PER_MP_LIMB - shlz);
 
           if (w > (MPFR_LIMB_ONE << (BITS_PER_MP_LIMB - 1)))
             { middle = 1; }
@@ -163,7 +164,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
             { middle = (c != 0); }
 
           inexact = inexact || (w != 0);
-          exp -= sh;
+          exp -= shlz;
         }
       else
         { /* this happens only if u == 1 and xp[xn-1] >=
@@ -181,56 +182,78 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
   d = *yp & MPFR_LIMB_MASK (sh);
   *yp ^= d; /* set to zero lowest sh bits */
 
-  MPFR_SET_EXP (y, exp);
+  MPFR_TMP_FREE (marker);
 
-  MPFR_TMP_FREE(marker);
-  if (MPFR_UNLIKELY ((d == 0) && (inexact == 0)))
-    return 0; /* result is exact */
+  if (exp < __gmpfr_emin - 1)
+    return mpfr_underflow (y, rnd_mode == GMP_RNDN ? GMP_RNDZ : rnd_mode,
+                           MPFR_SIGN (y));
 
-  switch (rnd_mode)
+  if (MPFR_UNLIKELY (d == 0 && inexact == 0))
+    nexttoinf = 0;  /* result is exact */
+  else
+    switch (rnd_mode)
+      {
+      case GMP_RNDZ:
+        inexact = - MPFR_INT_SIGN (y);  /* result is inexact */
+        nexttoinf = 0;
+        break;
+
+      case GMP_RNDU:
+        inexact = 1;
+        nexttoinf = MPFR_IS_POS (y);
+        break;
+
+      case GMP_RNDD:
+        inexact = -1;
+        nexttoinf = MPFR_IS_NEG (y);
+        break;
+
+      default:
+        MPFR_ASSERTD (rnd_mode == GMP_RNDN);
+        /* We have one more significant bit in yn. */
+        if (sh && d < (MPFR_LIMB_ONE << (sh - 1)))
+          {
+            inexact = - MPFR_INT_SIGN (y);
+            nexttoinf = 0;
+          }
+        else if (sh && d > (MPFR_LIMB_ONE << (sh - 1)))
+          {
+            inexact = MPFR_INT_SIGN (y);
+            nexttoinf = 1;
+          }
+        else /* sh = 0 or d = 1 << (sh-1) */
+          {
+            /* The first case is "false" even rounding (significant bits
+               indicate even rounding, but the result is inexact, so up) ;
+               The second case is the case where middle should be used to
+               decide the direction of rounding (no further bit computed) ;
+               The third is the true even rounding.
+            */
+            if ((sh && inexact) || (!sh && middle > 0) ||
+                (!inexact && *yp & (MPFR_LIMB_ONE << sh)))
+              {
+                inexact = MPFR_INT_SIGN (y);
+                nexttoinf = 1;
+              }
+            else
+              {
+                inexact = - MPFR_INT_SIGN (y);
+                nexttoinf = 0;
+              }
+          }
+      }
+
+  if (nexttoinf &&
+      MPFR_UNLIKELY (mpn_add_1 (yp, yp, yn, MPFR_LIMB_ONE << sh)))
     {
-    case GMP_RNDZ:
-      MPFR_RET(-MPFR_INT_SIGN(x)); /* result is inexact */
-
-    case GMP_RNDU:
-      if (MPFR_IS_POS(y))
-        mpfr_nexttoinf (y);
-      MPFR_RET(1); /* result is inexact */
-
-    case GMP_RNDD:
-      if (MPFR_IS_NEG(y))
-        mpfr_nexttoinf (y);
-      MPFR_RET(-1); /* result is inexact */
-
-    default:
-      MPFR_ASSERTD(rnd_mode == GMP_RNDN);
-      /* we have one more significant bit in yn */
-      if (sh && d < (MPFR_LIMB_ONE << (sh - 1)))
-        MPFR_RET(-MPFR_INT_SIGN(x));
-      else if (sh && d > (MPFR_LIMB_ONE << (sh - 1)))
-        {
-          mpfr_nexttoinf (y);
-          MPFR_RET(MPFR_INT_SIGN(x));
-        }
-      else /* sh = 0 or d = 1 << (sh-1) */
-        {
-          /* The first case is "false" even rounding (significant bits
-             indicate even rounding, but the result is inexact, so up) ;
-             The second case is the case where middle should be used to
-             decide the direction of rounding (no further bit computed) ;
-             The third is the true even rounding.
-          */
-          if ((sh && inexact) || (!sh && (middle > 0)) ||
-              (!inexact && *yp & (MPFR_LIMB_ONE << sh)))
-            {
-              mpfr_nexttoinf (y);
-              MPFR_RET(MPFR_INT_SIGN(x));
-            }
-          else
-            MPFR_RET(-MPFR_INT_SIGN(x));
-        }
+      exp++;
+      yp[yn-1] = MPFR_LIMB_HIGHBIT;
     }
-  return 0; /* To avoid warning*/
+
+  /* Set the exponent. Warning! One may still have an underflow. */
+  MPFR_EXP (y) = exp;
+
+  return mpfr_check_range (y, inexact, rnd_mode);
 }
 
 int mpfr_div_si (mpfr_ptr y, mpfr_srcptr x, long int u, mp_rnd_t rnd_mode)
