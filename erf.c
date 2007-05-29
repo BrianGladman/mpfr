@@ -79,10 +79,7 @@ mpfr_erf (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_init2 (h, MPFR_PREC(y) + 13);
       /* first compute l */
       mpfr_mul (l, x, x, GMP_RNDU);
-      /* FIXME: workaround on mpfr_div_ui bug: if EXP(l) = emin, then
-         division by 3 with rounding up should leave l unchanged. */
-      if (MPFR_EXP(l) != __gmpfr_emin)
-        mpfr_div_ui (l, l, 3, GMP_RNDU); /* upper bound on x^2/3 */
+      mpfr_div_ui (l, l, 3, GMP_RNDU); /* upper bound on x^2/3 */
       mpfr_ui_sub (l, 1, l, GMP_RNDZ); /* lower bound on 1 - x^2/3 */
       mpfr_const_pi (h, GMP_RNDU); /* upper bound of Pi */
       mpfr_sqrt (h, h, GMP_RNDU); /* upper bound on sqrt(Pi) */
