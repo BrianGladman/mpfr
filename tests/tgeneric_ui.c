@@ -56,7 +56,7 @@ test_generic_ui (mp_prec_t p0, mp_prec_t p1, unsigned int N)
 
       for (n = 0; n <= N; n++)
         {
-          if (n > 1 || prec < p1 || getenv ("MPFR_CHECK_TINY") == NULL)
+          if (n > 1 || prec < p1)
             RAND_FUNCTION (x);
           else
             {
