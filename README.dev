@@ -411,7 +411,7 @@ mpfr_toto (mpfr_ptr rop, mpfr_srcptr op, mp_rnd_t rnd)
 
 ===========================================================================
 
-If you plan to add a new threshold in MPFR which could be tune,
+If you plan to add a new threshold in MPFR which could be tuned,
 you should add its default value in the file `mparam_h.in'. When the
 script configure finishes, it creates the file `mparam.h' from `mparam_h.in'.
 
