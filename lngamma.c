@@ -543,7 +543,7 @@ mpfr_lngamma (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
 	 Indeed, one of the inexact flags might be zero. In that case if we
 	 assume lngamma(x) cannot be exact, the other flag should be correct.
 	 We are conservative here and request that both inexact flags agree. */
-      ok = (inex == inex2) && (mpfr_cmp (l, h) == 0);
+      ok = SAME_SIGN (inex, inex2) && mpfr_cmp (l, h) == 0;
       if (ok)
 	mpfr_set (y, h, rnd); /* exact */
       mpfr_clear (l);

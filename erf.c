@@ -97,7 +97,7 @@ mpfr_erf (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       inex = mpfr_prec_round (l, MPFR_PREC(y), rnd_mode);
       inex2 = mpfr_prec_round (h, MPFR_PREC(y), rnd_mode);
       /* Caution: we also need inex=inex2 (inex might be 0). */
-      ok = mpfr_cmp (l, h) == 0 && inex == inex2;
+      ok = SAME_SIGN (inex, inex2) && mpfr_cmp (l, h) == 0;
       if (ok)
         mpfr_set (y, h, rnd_mode);
       mpfr_clear (l);
@@ -118,7 +118,7 @@ mpfr_erf (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_clear (xf);
 
   /* when x goes to infinity, we have erf(x) = 1 - 1/sqrt(Pi)/exp(x^2)/x + ...
-     and |erf(x) - 1| <= exp(-x^2) is true for any x >= 0, thus if 
+     and |erf(x) - 1| <= exp(-x^2) is true for any x >= 0, thus if
      exp(-x^2) < 2^(-PREC(y)-1) the result is 1 or 1-epsilon.
      This rewrites as x^2/log(2) > p+1. */
   if (MPFR_UNLIKELY (large))

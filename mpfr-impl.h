@@ -658,6 +658,9 @@ typedef unsigned long int  mpfr_uexp_t;
 
 #define MPFR_SET_ERANGE() (__gmpfr_flags |= MPFR_FLAGS_ERANGE)
 
+#define SIGN(I) ((I) < 0 ? -1 : (I) > 0)
+#define SAME_SIGN(I1,I2) (SIGN (I1) == SIGN (I2))
+
 
 
 /******************************************************
