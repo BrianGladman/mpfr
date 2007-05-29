@@ -264,6 +264,43 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mp_rnd_t r)
         return inex;
     }
 
+  /* small argument check for y1(z) = -2/Pi/z + O(log(z)):
+     for 0 <= z <= 1, |y1(z) + 2/Pi/z| <= 0.25 */
+  if (n == 1 && MPFR_EXP(z) + 1 < - (mp_exp_t) MPFR_PREC(res))
+    {
+      mpfr_t y;
+      int ok;
+
+      /* since 2/Pi > 0.5, and |y1(z)| >= |2/Pi/z|, if z <= 2^(-emax-1),
+	 then |y1(z)| > 2^emax */
+      prec = MPFR_PREC(res) + 10;
+      mpfr_init2 (y, prec);
+      mpfr_const_pi (y, GMP_RNDU); /* Pi*(1+u)^2, where here and below u
+				      represents a quantity <= 1/2^prec */
+      mpfr_mul (y, y, z, GMP_RNDU); /* Pi*z * (1+u)^4, upper bound */
+      mpfr_ui_div (y, 2, y, GMP_RNDZ); /* 2/Pi/z * (1+u)^6, lower bound */
+      mpfr_neg (y, y, GMP_RNDN);
+      if (mpfr_overflow_p ())
+	{
+	  mpfr_clear (y);
+	  return mpfr_overflow (res, r, -1);
+	}
+      /* (1+u)^6 can be written 1+7u [for another value of u], thus the
+	 error on 2/Pi/z is less than 7ulp(y). The truncation error is less
+	 than 1/4, thus if ulp(y)>=1/4, the total error is less than 8ulp(y),
+	 otherwise it is less than 1/4+7/8 <= 2. */
+      if (MPFR_EXP(y) + 2 >= MPFR_PREC(y)) /* ulp(y) >= 1/4 */
+	err1 = 3;
+      else /* ulp(y) <= 1/8 */
+	err1 = (mp_exp_t) MPFR_PREC(y) - MPFR_EXP(y) + 1;
+      ok = MPFR_CAN_ROUND (y, prec - err1, MPFR_PREC(res), r);
+      if (ok)
+	inex = mpfr_set (res, y, r);
+      mpfr_clear (y);
+      if (ok)
+	return inex;
+    }
+
   mpfr_init (y);
   mpfr_init (s1);
   mpfr_init (s2);
