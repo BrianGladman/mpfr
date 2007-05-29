@@ -79,6 +79,21 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mp_rnd_t r)
         }
     }
 
+  /* check for tiny input for j0: j0(z) = 1 - z^2/4 + ..., more precisely
+     |j0(z) - 1| <= z^2/4 for -1 <= z <= 1. */
+  if (n == 0)
+    MPFR_FAST_COMPUTE_IF_SMALL_INPUT (res, __gmpfr_one, -2 * MPFR_GET_EXP (z),
+                                      2, 0, r, return _inexact);
+
+  /* idem for j1: j1(z) = z/2 - z^3/16 + ..., more precisely
+     |j1(z) - z/2| <= |z^3|/16 for -1 <= z <= 1, with the sign of j1(z) - z/2
+     being the opposite of that of z. */
+  if (n == 1)
+    /* we first compute 2j1(z) = z - z^3/8 + ..., then divide by 2 using
+       the "extra" argument of MPFR_FAST_COMPUTE_IF_SMALL_INPUT. */
+    MPFR_FAST_COMPUTE_IF_SMALL_INPUT (res, z, -2 * MPFR_GET_EXP (z), 3,
+                                      0, r, mpfr_div_2ui (res, res, 1, r));
+
   mpfr_init2 (y, 32);
 
   /* check underflow case: |j(n,z)| <= 1/sqrt(2 Pi n) (ze/2n)^n
