@@ -73,10 +73,10 @@ mpfr_erf (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
          and |2x/sqrt(Pi)| <= h. If l and h round to the same value to
          precision PREC(y) and rounding rnd_mode, then we are done. */
       mpfr_t l, h; /* lower and upper bounds for erf(x) */
-      int ok;
+      int ok, inex2;
 
-      mpfr_init2 (l, MPFR_PREC(y) + 13);
-      mpfr_init2 (h, MPFR_PREC(y) + 13);
+      mpfr_init2 (l, MPFR_PREC(y) + 17);
+      mpfr_init2 (h, MPFR_PREC(y) + 17);
       /* first compute l */
       mpfr_mul (l, x, x, GMP_RNDU);
       mpfr_div_ui (l, l, 3, GMP_RNDU); /* upper bound on x^2/3 */
@@ -94,9 +94,10 @@ mpfr_erf (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       /* since sqrt(Pi)/2 < 1, the following should not underflow */
       mpfr_div (h, x, h, MPFR_IS_POS(x) ? GMP_RNDU : GMP_RNDD);
       /* round l and h to precision PREC(y) */
-      mpfr_prec_round (l, MPFR_PREC(y), rnd_mode);
-      inex = mpfr_prec_round (h, MPFR_PREC(y), rnd_mode);
-      ok = mpfr_cmp (l, h) == 0;
+      inex = mpfr_prec_round (l, MPFR_PREC(y), rnd_mode);
+      inex2 = mpfr_prec_round (h, MPFR_PREC(y), rnd_mode);
+      /* Caution: we also need inex=inex2 (inex might be 0). */
+      ok = mpfr_cmp (l, h) == 0 && inex == inex2;
       if (ok)
         mpfr_set (y, h, rnd_mode);
       mpfr_clear (l);
