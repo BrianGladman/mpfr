@@ -54,9 +54,16 @@ test_generic_ui (mp_prec_t p0, mp_prec_t p1, unsigned int N)
       mpfr_set_prec (t, prec);
       yprec = prec + 10;
 
-      for (n=0; n<N; n++)
+      for (n = 0; n <= N; n++)
         {
-          RAND_FUNCTION (x);
+          if (n > 1 || prec < p1 || getenv ("MPFR_CHECK_TINY") == NULL)
+            RAND_FUNCTION (x);
+          else
+            {
+              /* Special cases tested in precision p1 if n <= 1. */
+              mpfr_set_si (x, n == 0 ? 1 : -1, GMP_RNDN);
+              mpfr_set_exp (x, mpfr_get_emin ());
+            }
           u = INT_RAND_FUNCTION ();
           rnd = (mp_rnd_t) RND_RAND ();
           mpfr_set_prec (y, yprec);
