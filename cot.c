@@ -34,4 +34,41 @@ MA 02110-1301, USA. */
 #define ACTION_ZERO(y,x) do { MPFR_SET_SAME_SIGN(y,x); MPFR_SET_INF(y); \
                               MPFR_RET(0); } while (1)
 
+/* (This analysis is adapted from that for mpfr_coth.)
+   Near x=0, cot(x) = 1/x - x/3 + ..., more precisely we have
+   |cot(x) - 1/x| <= 0.36 for |x| <= 1. The error term has
+   the opposite sign as 1/x, thus |cot(x)| <= |1/x|. Then:
+   (i) either x is a power of two, then 1/x is exactly representable, and
+       as long as 1/2*ulp(1/x) > 0.36, we can conclude;
+   (ii) otherwise assume x has <= n bits, and y has <= n+1 bits, then
+   |y - 1/x| >= 2^(-2n) ufp(y), where ufp means unit in first place.
+   Since |cot(x) - 1/x| <= 0.36, if 2^(-2n) ufp(y) >= 0.72, then
+   |y - cot(x)| >= 2^(-2n-1) ufp(y), and rounding 1/x gives the correct
+   result. If x < 2^E, then y > 2^(-E), thus ufp(y) > 2^(-E-1).
+   A sufficient condition is thus EXP(x) + 1 <= -2 MAX(PREC(x),PREC(Y)). */
+#define ACTION_TINY(y,x,r) \
+  if (MPFR_EXP(x) + 1 <= -2 * (mp_exp_t) MAX(MPFR_PREC(x), MPFR_PREC(y))) \
+    {                                                                   \
+      int signx = MPFR_SIGN(x);                                         \
+      inexact = mpfr_ui_div (y, 1, x, r);                               \
+      if (inexact == 0) /* x is a power of two */                       \
+        { /* result always 1/x, except when rounding to zero */         \
+          if (rnd_mode == GMP_RNDU || (rnd_mode == GMP_RNDZ && signx < 0)) \
+            {                                                           \
+              if (signx < 0)                                            \
+                mpfr_nextabove (y); /* -2^k + epsilon */                \
+              inexact = 1;                                              \
+            }                                                           \
+          else if (rnd_mode == GMP_RNDD || rnd_mode == GMP_RNDZ)        \
+            {                                                           \
+              if (signx > 0)                                            \
+                mpfr_nextbelow (y); /* 2^k - epsilon */                 \
+              inexact = -1;                                             \
+            }                                                           \
+          else /* round to nearest */                                   \
+            inexact = signx;                                            \
+        }                                                               \
+      goto end;                                                         \
+    }
+
 #include "gen_inverse.h"
