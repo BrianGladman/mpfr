@@ -118,7 +118,7 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
           mpfr_set_prec (u, xprec);
 #endif
 
-          if (n > 1 || prec < p1 || getenv ("MPFR_CHECK_TINY") == NULL)
+          if (n > 1 || prec < p1)
             {
 #if defined(RAND_FUNCTION)
               RAND_FUNCTION (x);
