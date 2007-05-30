@@ -22,6 +22,8 @@ MPFR).
      ./configure
    possibly with options (see below, in particular if this step or
    one of the following fails).
+   Note: paths provided in configure options must always be absolute
+   (relative paths are not supported).
 
 4. To build the library, type:
      make
