@@ -1291,7 +1291,7 @@ number (i.e.@: neither NaN nor an infinity) or zero. Return zero otherwise.
 @deftypefn Macro int mpfr_sgn (mpfr_t @var{op})
 Return a positive value if @math{@var{op} > 0}, zero if @math{@var{op} = 0},
 and a negative value if @math{@var{op} < 0}.
-Its result is undefined when @var{op} is NaN.
+If the operand is NaN, set the erange flag and return zero.
 @end deftypefn
 
 @deftypefun int mpfr_greater_p (mpfr_t @var{op1}, mpfr_t @var{op2})

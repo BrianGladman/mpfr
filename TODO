@@ -41,13 +41,6 @@ Installation:
 Changes in existing functions:
 ##############################################################################
 
-- TODO before the 2.3.0 release: decide whether the new behavior
-  of mpfr_sgn on NaN should be documented. This new behavior is
-  compatible with the old one since the old behavior on NaN was
-  undefined (with the same meaning as in the C standard). The
-  rationale is that it is better to avoid undefined behavior when
-  one can replace it by something that makes sense.
-
 - many functions currently taking into account the precision of the *input*
   variable to set the initial working precison (acosh, asinh, cosh, ...).
   This is nonsense since the "average" working precision should only depend
