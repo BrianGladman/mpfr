@@ -666,8 +666,8 @@ As a consequence, if two variables are used to store
 only a few significant bits, and their product is stored in a variable with large
 precision, then MPFR will still compute the result with full precision.
 
-The value of errno may be set to non-zero by any MPFR function or macro,
-whether or not there is an error.
+The value of the standard C macro @code{errno} may be set to non-zero by
+any MPFR function or macro, whether or not there is an error.
 
 @menu
 * Initialization Functions::
@@ -2173,7 +2173,7 @@ at least and be suitably aligned for an array of @code{mp_limb_t}.
 @deftypefun void mpfr_custom_init_set (mpfr_t @var{x}, int @var{kind}, mp_exp_t @var{exp}, mp_prec_t @var{prec}, void *@var{mantissa})
 Perform a dummy initialization of a @code{mpfr_t} and set it to:
 @itemize
-@item if @code{ABS(kind) == MPFR_NAN_LIND}, @var{x} is set to NaN;
+@item if @code{ABS(kind) == MPFR_NAN_KIND}, @var{x} is set to NaN;
 @item if @code{ABS(kind) == MPFR_INF_KIND}, @var{x} is set to the infinity
 of sign @code{sign(kind)};
 @item if @code{ABS(kind) == MPFR_ZERO_KIND}, @var{x} is set to the zero of
@@ -2206,7 +2206,7 @@ with @code{mpfr_custom_init_set} is undefined.
 @deftypefun mp_exp_t mpfr_custom_get_exp (mpfr_t @var{x})
 Return the exponent of @var{x}, assuming that @var{x} is a non-zero ordinary
 number. The return value for NaN, Infinity or Zero is unspecified but doesn't
-produced any trap.
+produce any trap.
 The behavior of this function for any @code{mpfr_t} not initialized
 with @code{mpfr_custom_init_set} is undefined.
 @end deftypefun
