@@ -37,14 +37,9 @@ Known bugs:
 * The implementation of mpfr_lgamma is incomplete (case x negative with
   small exponent).
 
-* Incorrect behavior (possible infinite loop, e.g. in mpfr_exp2) in some
-  functions on tiny arguments, e.g. +/- 2^(emin-1).
-
 * The mpfr_fma function behaves incorrectly if the multiplication overflows
   or underflows. The overflow case has been fixed except in some corner
   cases.
-
-* Infinite loop in mpfr_gamma on some integers.
 
 Potential bugs:
 
