@@ -169,7 +169,7 @@ MA 02110-1301, USA. */
 # if __MPFR_GNUC(3,3) || __MPFR_ICC(8,1,0)
 #  define MPFR_THREAD_ATTR __thread
 # else
-#  error "Can't build MPFR as thread safe"
+#  error "Can't build MPFR as thread safe (you need gcc >= 3.3 or icc >= 8.1)."
 # endif
 #else
 # define MPFR_THREAD_ATTR
