@@ -186,11 +186,10 @@ decimal64_to_string (char *s, _Decimal64 d)
       rp[1] &= 524287; /* 2^19-1: cancel G[11] */
       rp[1] |= 2097152; /* add 2^21 */
     }
-  if (BITS_PER_MP_LIMB >= 54)
-    {
-      rp[0] |= rp[1] << 32;
-      rn = 1;
-    }
+#if BITS_PER_MP_LIMB >= 54
+  rp[0] |= rp[1] << 32;
+  rn = 1;
+#endif
   while (rn > 0 && rp[rn - 1] == 0)
     rn --;
   if (rn == 0)
