@@ -561,6 +561,33 @@ Unless documented otherwise, functions returning a @code{1}
 for special cases (like @code{acos(0)}) should return an overflow or
 an underflow if @code{1} is not representable in the current exponent range.
 
+@section Floating-Point Values on Special Numbers
+
+This section specifies the floating-point values (of type @code{mpfr_t})
+returned by MPFR functions. For functions returning several values (like
+@code{mpfr_sin_cos}), the rules apply to each returned value separately.
+
+When the value of a function is defined by its mathematical definition,
+it is rounded as described above. Otherwise the value is either given in
+the description of the MPFR function (@ref{MPFR Interface}) or determined
+using the general rules below.
+
+When an argument is NaN, the value is NaN, possibly except when a partial
+function is constant on the finite floating-point numbers; such a case is
+always explicitly specified in @ref{MPFR Interface}.
+@c Said otherwise, if such a case is not specified, this is a bug, thus
+@c we may change the returned value after documenting it without having
+@c to change the libtool interface number (this would have more drawbacks
+@c that advantages in practice), like for any bug fix.
+
+@c TODO: describe how a value can be defined by continuity on the
+@c topological space R U { -Inf, +Inf }, taking into account the
+@c signed zero (in input or output). Values obtained by other forms
+@c of continuity must be specified in @ref{MPFR Interface}.
+
+When the input point is not in the closure of the domain of the function,
+the value is NaN.
+
 @section Exceptions
 
 MPFR supports 5 exception types:
