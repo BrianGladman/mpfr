@@ -116,7 +116,10 @@ decimal64_to_string (char *s, _Decimal64 d)
   int exp; /* exponent */
   mp_limb_t rp[2];
   mp_size_t rn = 2;
-  unsigned int d0, d1, d2, d3, d4, d5, i;
+  unsigned int i;
+#ifdef DPD_FORMAT
+  unsigned int d0, d1, d2, d3, d4, d5;
+#endif
 
   /* now convert BID or DPD to string */
   y.d64 = d;

@@ -33,7 +33,8 @@ MA 02110-1301, USA. */
 
 #if MPFR_WANT_DECIMAL_FLOATS
 
-static T[1000] = {
+#ifdef DPD_FORMAT
+static int T[1000] = {
   0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 32,
   33, 34, 35, 36, 37, 38, 39, 40, 41, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
   64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 80, 81, 82, 83, 84, 85, 86, 87, 88,
@@ -100,6 +101,7 @@ static T[1000] = {
   492, 493, 748, 749, 1004, 1005, 942, 943, 252, 253, 508, 509, 764, 765,
   1020, 1021, 958, 959, 142, 143, 398, 399, 654, 655, 910, 911, 238, 239, 158,
   159, 414, 415, 670, 671, 926, 927, 254, 255};
+#endif
 
 /* construct a decimal64 NaN */
 static _Decimal64
@@ -171,7 +173,7 @@ get_decimal64_max (int negative)
    (b2) or -398 <= e <= 369 with m integer, |m| < 10^16.
    Assumes s is neither NaN nor +Inf nor -Inf.
 */
-_Decimal64
+static _Decimal64
 string_to_Decimal64 (char *s)
 {
   long int exp = 0;
@@ -180,7 +182,9 @@ string_to_Decimal64 (char *s)
   char *endptr[1];
   union ieee_double_extract x;
   union ieee_double_decimal64 y;
+#ifdef DPD_FORMAT
   unsigned int G, d1, d2, d3, d4, d5;
+#endif
 
   /* read sign */
   if (*s == '-')
