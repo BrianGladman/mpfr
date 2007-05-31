@@ -39,7 +39,7 @@ static T[1000] = {
   64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 80, 81, 82, 83, 84, 85, 86, 87, 88,
   89, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 112, 113, 114, 115, 116,
   117, 118, 119, 120, 121, 10, 11, 42, 43, 74, 75, 106, 107, 78, 79, 26, 27,
-  58, 59, 90, 91, 122, 123, 94, 95, 128, 129, 130, 131, 132, 133, 134, 135, 
+  58, 59, 90, 91, 122, 123, 94, 95, 128, 129, 130, 131, 132, 133, 134, 135,
   136, 137, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 160, 161, 162,
   163, 164, 165, 166, 167, 168, 169, 176, 177, 178, 179, 180, 181, 182, 183,
   184, 185, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 208, 209, 210,
@@ -85,19 +85,19 @@ static T[1000] = {
   952, 953, 960, 961, 962, 963, 964, 965, 966, 967, 968, 969, 976, 977, 978,
   979, 980, 981, 982, 983, 984, 985, 992, 993, 994, 995, 996, 997, 998, 999,
   1000, 1001, 1008, 1009, 1010, 1011, 1012, 1013, 1014, 1015, 1016, 1017, 906,
-  907, 938, 939, 970, 971, 1002, 1003, 974, 975, 922, 923, 954, 955, 986, 
+  907, 938, 939, 970, 971, 1002, 1003, 974, 975, 922, 923, 954, 955, 986,
   987, 1018, 1019, 990, 991, 12, 13, 268, 269, 524, 525, 780, 781, 46, 47, 28,
   29, 284, 285, 540, 541, 796, 797, 62, 63, 44, 45, 300, 301, 556, 557, 812,
-  813, 302, 303, 60, 61, 316, 317, 572, 573, 828, 829, 318, 319, 76, 77, 
-  332, 333, 588, 589, 844, 845, 558, 559, 92, 93, 348, 349, 604, 605, 860, 
+  813, 302, 303, 60, 61, 316, 317, 572, 573, 828, 829, 318, 319, 76, 77,
+  332, 333, 588, 589, 844, 845, 558, 559, 92, 93, 348, 349, 604, 605, 860,
   861, 574, 575, 108, 109, 364, 365, 620, 621, 876, 877, 814, 815, 124, 125,
-  380, 381, 636, 637, 892, 893, 830, 831, 14, 15, 270, 271, 526, 527, 782, 
-  783, 110, 111, 30, 31, 286, 287, 542, 543, 798, 799, 126, 127, 140, 141, 
+  380, 381, 636, 637, 892, 893, 830, 831, 14, 15, 270, 271, 526, 527, 782,
+  783, 110, 111, 30, 31, 286, 287, 542, 543, 798, 799, 126, 127, 140, 141,
   396, 397, 652, 653, 908, 909, 174, 175, 156, 157, 412, 413, 668, 669, 924,
   925, 190, 191, 172, 173, 428, 429, 684, 685, 940, 941, 430, 431, 188, 189,
   444, 445, 700, 701, 956, 957, 446, 447, 204, 205, 460, 461, 716, 717, 972,
   973, 686, 687, 220, 221, 476, 477, 732, 733, 988, 989, 702, 703, 236, 237,
-  492, 493, 748, 749, 1004, 1005, 942, 943, 252, 253, 508, 509, 764, 765, 
+  492, 493, 748, 749, 1004, 1005, 942, 943, 252, 253, 508, 509, 764, 765,
   1020, 1021, 958, 959, 142, 143, 398, 399, 654, 655, 910, 911, 238, 239, 158,
   159, 414, 415, 670, 671, 926, 927, 254, 255};
 
@@ -165,7 +165,7 @@ get_decimal64_max (int negative)
 
 /* one-to-one conversion:
    s is a decimal string representing a number x = m * 10^e which must be
-   exactly representable in the decimal64 format, i.e. 
+   exactly representable in the decimal64 format, i.e.
    (a) the mantissa m has at most 16 decimal digits
    (b1) -383 <= e <= 384 with m integer multiple of 10^(-15), |m| < 10
    (b2) or -398 <= e <= 369 with m integer, |m| < 10^16.
@@ -198,7 +198,7 @@ string_to_Decimal64 (char *s)
     {
       s ++;
       while (ISDIGIT (*s))
-	m[n++] = *s++;
+        m[n++] = *s++;
     }
   /* we have exp digits before decimal point, and a total of n digits */
   exp -= n; /* we will consider an integer mantissa */
@@ -227,13 +227,13 @@ string_to_Decimal64 (char *s)
       n = -exp;
       /* check the last n digits of the mantissa are zero */
       for (i = 1; i <= n; i++)
-	MPFR_ASSERTN(m[16 - n] == '0');
+        MPFR_ASSERTN(m[16 - n] == '0');
       /* shift the first (16-n) digits to the right */
       for (i = 16 - n - 1; i >= 0; i--)
-	m[i + n] = m[i];
+        m[i + n] = m[i];
       /* zero the first n digits */
       for (i = 0; i < n; i ++)
-	m[i] = '0';
+        m[i] = '0';
       exp = 0;
     }
 
@@ -273,16 +273,16 @@ string_to_Decimal64 (char *s)
 #endif
     if (case_i)
       {  /* s < 2^53: case i) */
-	x.s.exp = exp << 1;
-	x.s.manl = rp[0];           /* 32 bits */
-	x.s.manh = rp[1] & 1048575; /* 20 low bits */
-	x.s.exp |= rp[1] >> 20;     /* 1 bit */
+        x.s.exp = exp << 1;
+        x.s.manl = rp[0];           /* 32 bits */
+        x.s.manh = rp[1] & 1048575; /* 20 low bits */
+        x.s.exp |= rp[1] >> 20;     /* 1 bit */
       }
     else /* s >= 2^53: case ii) */
       {
-	x.s.exp = 1536 | (exp >> 1);
-	x.s.manl = rp[0];
-	x.s.manh = (rp[1] ^ 2097152) | ((exp & 1) << 19);
+        x.s.exp = 1536 | (exp >> 1);
+        x.s.manl = rp[0];
+        x.s.manh = (rp[1] ^ 2097152) | ((exp & 1) << 19);
       }
   }
 #endif /* DPD_FORMAT */
@@ -300,12 +300,12 @@ mpfr_get_decimal64 (mpfr_srcptr src, mp_rnd_t rnd_mode)
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (src)))
     {
       if (MPFR_IS_NAN (src))
-	return get_decimal64_nan ();
+        return get_decimal64_nan ();
 
       negative = MPFR_IS_NEG (src);
 
       if (MPFR_IS_INF (src))
-	return get_decimal64_inf (negative);
+        return get_decimal64_inf (negative);
 
       MPFR_ASSERTD (MPFR_IS_ZERO(src));
       return get_decimal64_zero (negative);
@@ -319,71 +319,71 @@ mpfr_get_decimal64 (mpfr_srcptr src, mp_rnd_t rnd_mode)
   if (MPFR_UNLIKELY (e < -1323)) /* src <= 2^(-1324) < 1/2*10^(-398) */
     {
       if (rnd_mode == GMP_RNDZ || rnd_mode == GMP_RNDN
-	  || (rnd_mode == GMP_RNDD && negative == 0)
-	  || (rnd_mode == GMP_RNDU && negative != 0))
-	return get_decimal64_zero (negative);
+          || (rnd_mode == GMP_RNDD && negative == 0)
+          || (rnd_mode == GMP_RNDU && negative != 0))
+        return get_decimal64_zero (negative);
       else /* return the smallest non-zero number */
-	return get_decimal64_min (negative);
+        return get_decimal64_min (negative);
     }
   /* the largest decimal64 number is just below 10^(385) < 2^1279 */
   else if (MPFR_UNLIKELY (e > 1279)) /* then src >= 2^1279 */
     {
       if (GMP_RNDZ || (rnd_mode == GMP_RNDU && negative != 0)
-	  || (rnd_mode == GMP_RNDD && negative == 0))
-	return get_decimal64_max (negative);
+          || (rnd_mode == GMP_RNDD && negative == 0))
+        return get_decimal64_max (negative);
       else
-	return get_decimal64_inf (negative);
+        return get_decimal64_inf (negative);
     }
   else
     {
       /* we need to store the sign (1), the mantissa (16), and the terminating
-	 character, thus we need at least 18 characters in s */
+         character, thus we need at least 18 characters in s */
       char s[23];
       mpfr_get_str (s, &e, 10, 16, src, rnd_mode);
       /* the smallest normal number is 1.000...000E-383,
-	 which corresponds to s=[0.]1000...000 and e=-382 */
+         which corresponds to s=[0.]1000...000 and e=-382 */
       if (e < -382)
-	{
-	  /* the smallest subnormal number is 0.000...001E-383 = 1E-398,
-	     which corresponds to s=[0.]1000...000 and e=-397 */
-	  if (e < -397)
-	    {
-	      if (rnd_mode == GMP_RNDZ || rnd_mode == GMP_RNDN
-		  || (rnd_mode == GMP_RNDD && negative == 0)
-		  || (rnd_mode == GMP_RNDU && negative != 0))
-		return get_decimal64_zero (negative);
-	      else /* return the smallest non-zero number */
-		return get_decimal64_min (negative);
-	    }
-	  else
-	    {
-	      mp_exp_t e2;
-	      long digits = 16 - (-382 - e);
-	      /* if e = -397 then 16 - (-382 - e) = 1 */
-	      mpfr_get_str (s, &e2, 10, digits, src, rnd_mode);
-	      /* Warning: we can have e2 = e + 1 here, when rounding to
-		 nearest or away from zero. */
-	      s[negative + digits] = 'E';
-	      sprintf (s + negative + digits + 1, "%d", e2 - digits);
-	      return string_to_Decimal64 (s);
-	    }
-	}
+        {
+          /* the smallest subnormal number is 0.000...001E-383 = 1E-398,
+             which corresponds to s=[0.]1000...000 and e=-397 */
+          if (e < -397)
+            {
+              if (rnd_mode == GMP_RNDZ || rnd_mode == GMP_RNDN
+                  || (rnd_mode == GMP_RNDD && negative == 0)
+                  || (rnd_mode == GMP_RNDU && negative != 0))
+                return get_decimal64_zero (negative);
+              else /* return the smallest non-zero number */
+                return get_decimal64_min (negative);
+            }
+          else
+            {
+              mp_exp_t e2;
+              long digits = 16 - (-382 - e);
+              /* if e = -397 then 16 - (-382 - e) = 1 */
+              mpfr_get_str (s, &e2, 10, digits, src, rnd_mode);
+              /* Warning: we can have e2 = e + 1 here, when rounding to
+                 nearest or away from zero. */
+              s[negative + digits] = 'E';
+              sprintf (s + negative + digits + 1, "%d", e2 - digits);
+              return string_to_Decimal64 (s);
+            }
+        }
       /* the largest number is 9.999...999E+384,
-	 which corresponds to s=[0.]9999...999 and e=385 */
+         which corresponds to s=[0.]9999...999 and e=385 */
       else if (e > 385)
-	{
-	  if (GMP_RNDZ || (rnd_mode == GMP_RNDU && negative != 0)
-	      || (rnd_mode == GMP_RNDD && negative == 0))
-	    return get_decimal64_max (negative);
-	  else
-	    return get_decimal64_inf (negative);
-	}
+        {
+          if (GMP_RNDZ || (rnd_mode == GMP_RNDU && negative != 0)
+              || (rnd_mode == GMP_RNDD && negative == 0))
+            return get_decimal64_max (negative);
+          else
+            return get_decimal64_inf (negative);
+        }
       else /* -382 <= e <= 385 */
-	{
-	  s[16 + negative] = 'E';
-	  sprintf (s + 17 + negative, "%d", e - 16);
-	  return string_to_Decimal64 (s);
-	}
+        {
+          s[16 + negative] = 'E';
+          sprintf (s + 17 + negative, "%d", e - 16);
+          return string_to_Decimal64 (s);
+        }
     }
 }
 

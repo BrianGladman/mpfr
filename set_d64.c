@@ -130,9 +130,9 @@ decimal64_to_string (char *s, _Decimal64 d)
   else if (Gh == 30)
     {
       if (x.s.sig == 0)
-	sprintf (s, "Inf");
+        sprintf (s, "Inf");
       else
-	sprintf (s, "-Inf");
+        sprintf (s, "-Inf");
       return;
     }
   t = s;
@@ -167,7 +167,7 @@ decimal64_to_string (char *s, _Decimal64 d)
   if (Gh < 24)
     {
       /* the biased exponent E is formed from G[0] to G[9] and the
-	 significand from bits G[10] through the end of the decoding */
+         significand from bits G[10] through the end of the decoding */
       exp = x.s.exp >> 1;
       /* manh has 20 bits, manl has 32 bits */
       rp[1] = ((x.s.exp & 1) << 20) | x.s.manh;
@@ -211,10 +211,10 @@ int
 mpfr_set_decimal64 (mpfr_ptr r, _Decimal64 d, mp_rnd_t rnd_mode)
 {
   char s[23]; /* need 1 character for sign,
-		     16 characters for mantissa,
-		      1 character for exponent,
-		      4 characters for exponent (including sign),
-		      1 character for terminating \0. */
+                     16 characters for mantissa,
+                      1 character for exponent,
+                      4 characters for exponent (including sign),
+                      1 character for terminating \0. */
 
   decimal64_to_string (s, d);
   return mpfr_set_str (r, s, 10, rnd_mode);
