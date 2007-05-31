@@ -258,7 +258,7 @@ It is permitted to link MPFR to non-free programs, as long as when
 distributing them the MPFR source code and a means to re-link with a
 modified MPFR library is provided.
 
-@section How to use this Manual
+@section How to Use This Manual
 
 Everyone should read @ref{MPFR Basics}.  If you need to install the library
 yourself, you need to read @ref{Installing MPFR}, too.
@@ -271,7 +271,7 @@ probably a good idea to glance through it.
 @chapter Installing MPFR
 @cindex Installation
 
-@section How to install
+@section How to Install
 
 Here are the steps needed to install the library on Unix systems
 (more details are provided in the @file{INSTALL} file):
@@ -317,7 +317,7 @@ This will copy the files @file{mpfr.h} and @file{mpf2mpfr.h} to the directory
 @samp{--prefix} instead of @file{/usr/local}).
 @end enumerate
 
-@section Other make targets
+@section Other `make' Targets
 
 There are some other useful make targets:
 
@@ -506,7 +506,7 @@ Hence unless you change its precision, or clear and reinitialize it,
 a floating-point variable will have the same allocated space during all its
 life.
 
-@section Rounding modes
+@section Rounding Modes
 
 The following four rounding modes are supported:
 
@@ -614,7 +614,7 @@ conversion to an integer).
 @end itemize
 
 MPFR has a global flag for each exception, which can be cleared, set
-or tested by functions described in @ref{Exceptions}.
+or tested by functions described in @ref{Exception Related Functions}.
 
 Differences with the ISO C99 standard:
 
@@ -680,8 +680,8 @@ any MPFR function or macro, whether or not there is an error.
 * Input and Output Functions::
 * Integer Related Functions::
 * Miscellaneous Functions::
-* Rounding Modes::
-* Exceptions::
+* Rounding Mode Related Functions::
+* Exception Related Functions::
 * Advanced Functions::
 * Compatibility with MPF::
 * Custom Interface::
@@ -1102,10 +1102,10 @@ rounded to an integer in the direction @var{rnd}.
 
 @node Basic Arithmetic Functions, Comparison Functions, Conversion Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
-@section Basic Arithmetic Functions
 @cindex Basic arithmetic functions
 @cindex Float arithmetic functions
 @cindex Arithmetic functions
+@section Basic Arithmetic Functions
 
 @deftypefun int mpfr_add (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_add_ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
@@ -1240,9 +1240,9 @@ when @var{rop} and @var{op1} are identical.
 
 @node Comparison Functions, Special Functions, Basic Arithmetic Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
-@section Comparison Functions
 @cindex Float comparisons functions
 @cindex Comparison functions
+@section Comparison Functions
 
 @deftypefun int mpfr_cmp (mpfr_t @var{op1}, mpfr_t @var{op2})
 @deftypefunx int mpfr_cmp_ui (mpfr_t @var{op1}, unsigned long int @var{op2})
@@ -1329,8 +1329,8 @@ compared), zero otherwise.
 @end deftypefun
 
 @node Special Functions, Input and Output Functions, Comparison Functions, MPFR Interface
-@section Special Functions
 @cindex Special functions
+@section Special Functions
 
 All those functions, except explicitly stated, return zero for an
 exact return value, a positive value for a return value larger than the
@@ -1588,11 +1588,11 @@ direction of the error as the other functions do.
 
 @node Input and Output Functions, Integer Related Functions, Special Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
-@section Input and Output Functions
 @cindex Float input and output functions
 @cindex Input functions
 @cindex Output functions
 @cindex I/O functions
+@section Input and Output Functions
 
 This section describes functions that perform input from an input/output
 stream, and functions that output to an input/output stream.
@@ -1653,8 +1653,8 @@ Return the number of bytes read, or if an error occurred, return 0.
 
 @node Integer Related Functions, Miscellaneous Functions, Input and Output Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
+@cindex Integer related functions
 @section Integer Related Functions
-@cindex Integer Related Functions
 
 @deftypefun int mpfr_rint (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_ceil (mpfr_t @var{rop}, mpfr_t @var{op})
@@ -1727,10 +1727,10 @@ These functions are useful for additive argument reduction.
 Return non-zero iff @var{op} is an integer.
 @end deftypefun
 
-@node Miscellaneous Functions, Rounding Modes, Integer Related Functions, MPFR Interface
+@node Miscellaneous Functions, Rounding Mode Related Functions, Integer Related Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
-@section Miscellaneous Functions
 @cindex Miscellaneous float functions
+@section Miscellaneous Functions
 
 @deftypefun void mpfr_nexttoward (mpfr_t @var{x}, mpfr_t @var{y})
 If @var{x} or @var{y} is NaN, set @var{x} to NaN. Otherwise, if @var{x}
@@ -1839,9 +1839,9 @@ Here is an example of how to check the MPFR version at compile time:
 @end example
 @end deftypefn
 
-@node Rounding Modes, Exceptions, Miscellaneous Functions, MPFR Interface
-@section Rounding Modes
-@cindex Rounding Modes
+@node Rounding Mode Related Functions, Exception Related Functions, Miscellaneous Functions, MPFR Interface
+@cindex Rounding mode related functions
+@section Rounding Mode Related Functions
 
 @deftypefun void mpfr_set_default_rounding_mode (mp_rnd_t @var{rnd})
 Set the default rounding mode to @var{rnd}.
@@ -1873,10 +1873,10 @@ corresponding to the rounding mode @var{rnd} or a null pointer if
 @end deftypefun
 
 
-@node Exceptions, Advanced Functions, Rounding Modes, MPFR Interface
+@node Exception Related Functions, Advanced Functions, Rounding Mode Related Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
-@section Exceptions
-@cindex Exceptions
+@cindex Exception related functions
+@section Exception Related Functions
 
 @deftypefun mp_exp_t mpfr_get_emin (void)
 @deftypefunx mp_exp_t mpfr_get_emax (void)
@@ -2001,10 +2001,10 @@ Return the corresponding (underflow, overflow, invalid, inexact, erange)
 flag, which is non-zero iff the flag is set.
 @end deftypefun
 
-@node Advanced Functions, Compatibility with MPF, Exceptions, MPFR Interface
+@node Advanced Functions, Compatibility with MPF, Exception Related Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
+@cindex Advanced functions
 @section Advanced Functions
-@cindex Advanced Functions
 
 All the given interfaces are preliminary. They might change incompatibly in
 future revisions.
@@ -2072,8 +2072,8 @@ Here is an example of how to use multiple initialization functions:
 
 
 @node Compatibility with MPF, Custom Interface, Advanced Functions, MPFR Interface
-@section Compatibility with MPF
 @cindex Compatibility with MPF
+@section Compatibility With MPF
 
 A header file @file{mpf2mpfr.h} is included in the distribution of MPFR for
 compatibility with the GNU MP class MPF.
@@ -2127,8 +2127,8 @@ for compatibility with MPF.
 
 
 @node Custom Interface, Internals, Compatibility with MPF, MPFR Interface
+@cindex Custom interface
 @section Custom Interface
-@cindex Custom Interface
 
 Some applications use a stack to handle the memory and their objects.
 However, the MPFR memory design is not well suited for such a thing. So that
@@ -2222,8 +2222,8 @@ with @code{mpfr_custom_init_set} is undefined.
 See the test suite for examples.
 
 @node Internals,  , Custom Interface, MPFR Interface
-@section Internals
 @cindex Internals
+@section Internals
 
 The following types and
 functions were mainly designed for the implementation of @code{mpfr},
