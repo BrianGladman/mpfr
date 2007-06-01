@@ -587,9 +587,10 @@ limit is not defined (e.g., @code{mpfr_log} on @minus{}0), the behavior
 must be specified in the description of the MPFR function.
 
 When the result is equal to 0, its sign is determined by considering the
-limit as if the input point were not in the domain: if one approaches 0
-from above (resp.@: below), the result is +0 (resp.@: @minus{}0).
-Example: @code{mpfr_sin} on +0 gives +0.
+limit as if the input point were not in the domain: If one approaches 0
+from above (resp.@: below), the result is +0 (resp.@: @minus{}0). In the
+other cases, the sign must be specified in the description of the MPFR
+function. Example: @code{mpfr_sin} on +0 gives +0.
 
 When the input point is not in the closure of the domain of the function,
 the result is NaN. Example: @code{mpfr_sqrt} on @minus{}17 gives NaN.
