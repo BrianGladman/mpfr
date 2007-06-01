@@ -563,30 +563,48 @@ an underflow if @code{1} is not representable in the current exponent range.
 
 @section Floating-Point Values on Special Numbers
 
+TODO: This section is new. Please comment and suggest corrections before
+the MPFR 2.3.0 release.
+
 This section specifies the floating-point values (of type @code{mpfr_t})
 returned by MPFR functions. For functions returning several values (like
-@code{mpfr_sin_cos}), the rules apply to each returned value separately.
+@code{mpfr_sin_cos}), the rules apply to each result separately.
 
-When the value of a function is defined by its mathematical definition,
-it is rounded as described above. Otherwise the value is either given in
-the description of the MPFR function (@ref{MPFR Interface}) or determined
-using the general rules below.
+When the input point is in the domain of the mathematical function, the
+result is rounded as described above. Otherwise the result is either
+given in the description of the MPFR function (@ref{MPFR Interface})
+or determined using the general rules below.
 
-When an argument is NaN, the value is NaN, possibly except when a partial
-function is constant on the finite floating-point numbers; such a case is
-always explicitly specified in @ref{MPFR Interface}.
+When the input point is not in the domain of the function but is in its
+closure in the extended real numbers (R with the infinities) and the
+function can be extended by continuity, the result is the obtained limit.
+Example: @code{mpfr_hypot} on (+Inf,0) gives +Inf.
+
+When the input point is in the closure of the domain of the function
+and contains +0 (resp.@: @minus{}0), one considers the limit when the
+corresponding argument approaches 0 from above (resp.@: below). If the
+limit is not defined (e.g., @code{mpfr_log} on @minus{}0), the behavior
+must be specified in the description of the MPFR function.
+
+When the result is equal to 0, its sign is determined by considering the
+limit as if the input point were not in the domain: if one approaches 0
+from above (resp.@: below), the result is +0 (resp.@: @minus{}0).
+Example: @code{mpfr_sin} on +0 gives +0.
+
+When the input point is not in the closure of the domain of the function,
+the result is NaN. Example: @code{mpfr_sqrt} on @minus{}17 gives NaN.
+
+When the input point contains a NaN, the result is NaN, possibly except
+when a partial function is constant on the finite floating-point numbers;
+such a case is always explicitly specified in @ref{MPFR Interface}.
 @c Said otherwise, if such a case is not specified, this is a bug, thus
 @c we may change the returned value after documenting it without having
 @c to change the libtool interface number (this would have more drawbacks
 @c that advantages in practice), like for any bug fix.
-
-@c TODO: describe how a value can be defined by continuity on the
-@c topological space R U { -Inf, +Inf }, taking into account the
-@c signed zero (in input or output). Values obtained by other forms
-@c of continuity must be specified in @ref{MPFR Interface}.
-
-When the input point is not in the closure of the domain of the function,
-the value is NaN.
+Example: @code{mpfr_hypot} on (NaN,0) gives NaN, but @code{mpfr_hypot}
+on (NaN,+Inf) gives +Inf (as specified in @ref{Special Functions}),
+since for any finite input @var{x}, @code{mpfr_hypot} on (@var{x},+Inf)
+gives +Inf.
 
 @section Exceptions
 
@@ -1370,6 +1388,8 @@ Set @var{rop} to the natural logarithm of @var{op},
 @m{\log_2 @var{op}, log2(@var{op})} or
 @m{\log_{10} @var{op}, log10(@var{op})}, respectively,
 rounded in the direction @var{rnd}.
+@c TODO: Specify the case where @var{op} is @minus{}0. Warning! IEEE754R
+@c currently disagrees with ISO C99.
 @end deftypefun
 
 @deftypefun int mpfr_exp (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
