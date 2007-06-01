@@ -1005,14 +1005,14 @@ see the documentation of @code{mpfr_set_decimal64}.
 @deftypefunx {long double} mpfr_get_ld_2exp (long *@var{exp}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Return @var{d} and set @var{exp} such that @math{0.5@le{}@GMPabs{@var{d}}<1}
 and @m{@var{d}\times 2^{exp}, @var{d} times 2 raised to @var{exp}} equals
-@var{op} rounded to double (resp. long double)
+@var{op} rounded to double (resp.@: long double)
 precision, using the given rounding mode.
 @comment See ISO C standard, frexp function.
 If @var{op} is zero, then a zero of the same sign (or an unsigned zero,
 if the implementation does not have signed zeros) is returned, and
 @var{exp} is set to 0.
 If @var{op} is NaN or an infinity, then the corresponding double precision
-(resp. long-double precision)
+(resp.@: long-double precision)
 value is returned, and @var{exp} is undefined.
 @end deftypefun
 
@@ -1195,10 +1195,10 @@ Set @var{rop} to NaN if @var{op} is negative.
 
 @deftypefun int mpfr_cbrt (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_root (mpfr_t @var{rop}, mpfr_t @var{op}, unsigned long int @var{k}, mp_rnd_t @var{rnd})
-Set @var{rop} to the cubic root (resp. the @var{k}th root)
+Set @var{rop} to the cubic root (resp.@: the @var{k}th root)
 of @var{op} rounded in the direction @var{rnd}.
-An odd (resp. even) root of a negative number (including @minus{}Inf)
-returns a negative number (resp. NaN).
+An odd (resp.@: even) root of a negative number (including @minus{}Inf)
+returns a negative number (resp.@: NaN).
 The @var{k}th root of @minus{}0 is defined to be @minus{}0,
 whatever the parity of @var{k}.
 @end deftypefun
