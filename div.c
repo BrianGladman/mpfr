@@ -455,42 +455,45 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
                   if (qh2 != 0) /* whatever the value of {up, m + k}, it
                                    will be smaller than qh2 + {sp, k} */
                     cmp_s_r = 1;
-                  else {
-                  if (low_u != MPFR_LIMB_ZERO)
+                  else
                     {
-                      mp_size_t m;
-                      l = usize - qqsize; /* number of low limbs in u */
-                      m = (l > k) ? l - k : 0;
-                      cy = (extra_bit) ?
-                        (up[m] & MPFR_LIMB_ONE) : MPFR_LIMB_ZERO;
-                      if (l >= k) /* u0 has more limbs than s:
-                                     first look if {up, m} is not zero,
-                                     and compare {sp, k} and {up + m, k} */
+                      if (low_u != MPFR_LIMB_ZERO)
                         {
-                          cy = cy || mpfr_mpn_cmpzero (up, m);
-                          low_u = cy;
-                          cy = mpfr_mpn_sub_aux (sp, up + m, k, cy, extra_bit);
+                          mp_size_t m;
+                          l = usize - qqsize; /* number of low limbs in u */
+                          m = (l > k) ? l - k : 0;
+                          cy = (extra_bit) ?
+                            (up[m] & MPFR_LIMB_ONE) : MPFR_LIMB_ZERO;
+                          if (l >= k) /* u0 has more limbs than s:
+                                         first look if {up, m} is not zero,
+                                         and compare {sp, k} and {up + m, k} */
+                            {
+                              cy = cy || mpfr_mpn_cmpzero (up, m);
+                              low_u = cy;
+                              cy = mpfr_mpn_sub_aux (sp, up + m, k,
+                                                     cy, extra_bit);
+                            }
+                          else /* l < k: s has more limbs than u0 */
+                            {
+                              low_u = MPFR_LIMB_ZERO;
+                              if (cy != MPFR_LIMB_ZERO)
+                                cy = mpn_sub_1 (sp + k - l - 1, sp + k - l - 1,
+                                                1, MPFR_LIMB_HIGHBIT);
+                              cy = mpfr_mpn_sub_aux (sp + k - l, up, l,
+                                                     cy, extra_bit);
+                            }
                         }
-                      else /* l < k: s has more limbs than u0 */
-                        {
-                          low_u = MPFR_LIMB_ZERO;
-                          if (cy != MPFR_LIMB_ZERO)
-                            cy = mpn_sub_1 (sp + k - l - 1, sp + k - l - 1,
-                                            1, MPFR_LIMB_HIGHBIT);
-                          cy = mpfr_mpn_sub_aux (sp + k - l, up, l,
-                                                 cy, extra_bit);
-                        }
+                      MPFR_ASSERTD (cy <= 1);
+                      cy = mpn_sub_1 (sp + k, sp + k, qsize, cy);
+                      /* subtract r */
+                      cy += mpn_sub_n (sp + k, sp + k, ap, qsize);
+                      MPFR_ASSERTD (cy <= 1);
+                      /* now compare {sp, ssize} to v */
+                      cmp_s_r = mpn_cmp (sp, vp, vsize);
+                      if (cmp_s_r == 0 && low_u != MPFR_LIMB_ZERO)
+                        cmp_s_r = 1; /* since in fact we subtracted
+                                        less than 1 */
                     }
-                  MPFR_ASSERTD (cy <= 1);
-                  cy = mpn_sub_1 (sp + k, sp + k, qsize, cy);
-                  /* subtract r */
-                  cy += mpn_sub_n (sp + k, sp + k, ap, qsize);
-                  MPFR_ASSERTD (cy <= 1);
-                  /* now compare {sp, ssize} to v */
-                  cmp_s_r = mpn_cmp (sp, vp, vsize);
-                  if (cmp_s_r == 0 && low_u != MPFR_LIMB_ZERO)
-                    cmp_s_r = 1; /* since in fact we subtracted less than 1 */
-                  }
 #ifdef DEBUG
                   printf ("cmp(q*v0-(r+u0),v)=%d\n", cmp_s_r);
 #endif
