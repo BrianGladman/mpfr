@@ -803,6 +803,22 @@ test_20070603 (void)
       exit (1);
     }
 
+  /* same for 64-bit machines */
+  mpfr_set_prec (n, 256);
+  mpfr_set_prec (d, 256);
+  mpfr_set_prec (q, 63);
+  mpfr_set_str (n, "822752278660603021077484591278675252491367930877209729029898240", 10, GMP_RNDN);
+  mpfr_set_str (d, "822752278660603021077484591278675252491367930877212507873738752", 10, GMP_RNDN);
+  mpfr_div (q, n, d, GMP_RNDU);
+  if (mpfr_cmp (q, c) != 0)
+    {
+      printf ("Error in test_20070603\nGot        ");
+      mpfr_dump (q);
+      printf ("instead of ");
+      mpfr_dump (c);
+      exit (1);
+    }
+
   mpfr_clear (n);
   mpfr_clear (d);
   mpfr_clear (q);
