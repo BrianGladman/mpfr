@@ -802,6 +802,11 @@ test_20070603 (void)
       mpfr_dump (c);
       exit (1);
     }
+
+  mpfr_clear (n);
+  mpfr_clear (d);
+  mpfr_clear (q);
+  mpfr_clear (c);
 }
 
 #define TEST_FUNCTION test_div
@@ -818,11 +823,11 @@ main (int argc, char *argv[])
   check_inexact ();
   check_hard ();
   check_nan ();
-  check_lowr();
-  check_float(); /* checks single precision */
-  check_double();
-  check_convergence();
-  check_64();
+  check_lowr ();
+  check_float (); /* checks single precision */
+  check_double ();
+  check_convergence ();
+  check_64 ();
 
   check4("4.0","4.503599627370496e15", GMP_RNDZ, 62,
    "0.10000000000000000000000000000000000000000000000000000000000000E-49");

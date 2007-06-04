@@ -30,9 +30,9 @@ mpfr_mpn_print3 (mp_ptr ap, mp_size_t n, mp_limb_t cy)
 {
   mp_size_t i;
   for (i = 0; i < n; i++)
-    printf ("+%lu*2^%u", ap[i], BITS_PER_MP_LIMB * i);
+    printf ("+%lu*2^%lu", ap[i], BITS_PER_MP_LIMB * i);
   if (cy)
-    printf ("+2^%u", BITS_PER_MP_LIMB * n);
+    printf ("+2^%lu", BITS_PER_MP_LIMB * n);
   printf ("\n");
 }
 #endif
@@ -104,11 +104,14 @@ mpfr_mpn_cmp_aux (mp_ptr ap, mp_size_t an, mp_ptr bp, mp_size_t bn, int extra)
   return cmp;
 }
 
-/* {ap, n} <- {ap, n} - {bp, n} >> extra - cy, with cy = 0 or 1 */
+/* {ap, n} <- {ap, n} - {bp, n} >> extra - cy, with cy = 0 or 1.
+   Return borrow out.
+*/
 static mp_limb_t
 mpfr_mpn_sub_aux (mp_ptr ap, mp_ptr bp, mp_size_t n, mp_limb_t cy, int extra)
 {
   mp_limb_t bb, rp;
+
   MPFR_ASSERTD (cy <= 1);
   while (n--)
     {
@@ -357,7 +360,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
   */
 
 #ifdef DEBUG
-  printf ("vsize=%u qsize=%u\n", vsize, qsize);
+  printf ("vsize=%lu qsize=%lu\n", vsize, qsize);
 #endif
   if (MPFR_LIKELY(vsize <= qsize)) /* use the full divisor */
     {
@@ -378,7 +381,10 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
         goto truncate;
       else
         {
-          /* we can round except when sticky3 is 000...000 or 000...001
+          /* We know the estimated quotient is an upper bound of the exact
+             quotient (with rounding towards zero), with a difference of at
+             most 2 in qp[0].
+             Thus we can round except when sticky3 is 000...000 or 000...001
              for directed rounding, and 100...000 or 100...001 for rounding
              to nearest. (For rounding to nearest, we cannot determine the
              inexact flag for 000...000 or 000...001.)
@@ -404,6 +410,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
               mp_size_t l;
               mp_ptr sp;
               int cmp_s_r;
+              mp_limb_t qh2;
 
               sp = (mp_ptr) MPFR_TMP_ALLOC (vsize * sizeof(mp_limb_t));
               k = vsize - qsize;
@@ -414,15 +421,17 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
               else
                 mpn_mul (sp, vp, k, qp, qsize);
               if (qh)
-                mpn_add_n (sp + qsize, sp + qsize, vp, k);
+                qh2 = mpn_add_n (sp + qsize, sp + qsize, vp, k);
+              else
+                qh2 = (mp_limb_t) 0;
               qp[0] ^= sticky3orig; /* restore truncated quotient */
 
-              /* compare {sp, vsize = k + qsize} to {ap, qsize} + low(u) */
-              cmp_s_r = mpn_cmp (sp + k, ap, qsize);
+              /* compare qh2 + {sp, k + qsize} to {ap, qsize} + low(u) */
+              cmp_s_r = (qh2 != 0) ? 1 : mpn_cmp (sp + k, ap, qsize);
               if (cmp_s_r == 0) /* compare {sp, k} and low(u) */
                 {
                   cmp_s_r = (usize >= qqsize) ?
-                    mpfr_mpn_cmp_aux (sp, k, up, usize-qqsize, extra_bit) :
+                    mpfr_mpn_cmp_aux (sp, k, up, usize - qqsize, extra_bit) :
                     mpfr_mpn_cmpzero (sp, k);
                 }
 #ifdef DEBUG
@@ -436,10 +445,17 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
                   sticky = (cmp_s_r == 0) ? sticky3 : MPFR_LIMB_ONE;
                   goto case_1;
                 }
-              else /* cmp_s_r > 0, quotient is < q1 */
+              else /* cmp_s_r > 0, quotient is < q1: to determine if it is
+                      in [q1-2,q1-1] or in [q1-1,q1], we need to subtract
+                      the low part u0 of the dividend u0 from q*v0 */
                 {
                   mp_limb_t cy = MPFR_LIMB_ZERO;
+
                   /* subtract low(u)>>extra_bit if non-zero */
+                  if (qh2 != 0) /* whatever the value of {up, m + k}, it
+                                   will be smaller than qh2 + {sp, k} */
+                    cmp_s_r = 1;
+                  else {
                   if (low_u != MPFR_LIMB_ZERO)
                     {
                       mp_size_t m;
@@ -447,12 +463,13 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
                       m = (l > k) ? l - k : 0;
                       cy = (extra_bit) ?
                         (up[m] & MPFR_LIMB_ONE) : MPFR_LIMB_ZERO;
-                      if (l >= k) /* u0 has more limbs */
+                      if (l >= k) /* u0 has more limbs than s:
+                                     first look if {up, m} is not zero,
+                                     and compare {sp, k} and {up + m, k} */
                         {
                           cy = cy || mpfr_mpn_cmpzero (up, m);
                           low_u = cy;
-                          cy = mpfr_mpn_sub_aux (sp, up + l - k, k,
-                                                 cy, extra_bit);
+                          cy = mpfr_mpn_sub_aux (sp, up + m, k, cy, extra_bit);
                         }
                       else /* l < k: s has more limbs than u0 */
                         {
@@ -473,6 +490,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
                   cmp_s_r = mpn_cmp (sp, vp, vsize);
                   if (cmp_s_r == 0 && low_u != MPFR_LIMB_ZERO)
                     cmp_s_r = 1; /* since in fact we subtracted less than 1 */
+                  }
 #ifdef DEBUG
                   printf ("cmp(q*v0-(r+u0),v)=%d\n", cmp_s_r);
 #endif
