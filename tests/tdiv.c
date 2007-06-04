@@ -794,7 +794,6 @@ test_20070603 (void)
   mpfr_div (q, n, d, GMP_RNDU);
 
   mpfr_set_ui (c, 1, GMP_RNDN);
-  mpfr_nextabove (c);
   if (mpfr_cmp (q, c) != 0)
     {
       printf ("Error in test_20070603\nGot        ");
