@@ -778,6 +778,33 @@ consistency (void)
   mpfr_clears (x, y, z1, z2, (void *) 0);
 }
 
+/* Reported by Carl Witty on 2007-06-03 */
+static void
+test_20070603 (void)
+{
+  mpfr_t n, d, q, c;
+
+  mpfr_init2 (n, 128);
+  mpfr_init2 (d, 128);
+  mpfr_init2 (q, 31);
+  mpfr_init2 (c, 31);
+
+  mpfr_set_str (n, "10384593717069655257060992206846485", 10, GMP_RNDN);
+  mpfr_set_str (d, "10384593717069655257060992206847132", 10, GMP_RNDN);
+  mpfr_div (q, n, d, GMP_RNDU);
+
+  mpfr_set_ui (c, 1, GMP_RNDN);
+  mpfr_nextabove (c);
+  if (mpfr_cmp (q, c) != 0)
+    {
+      printf ("Error in test_20070603\nGot        ");
+      mpfr_dump (q);
+      printf ("instead of ");
+      mpfr_dump (c);
+      exit (1);
+    }
+}
+
 #define TEST_FUNCTION test_div
 #define TWO_ARGS
 #define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), randlimb () % 100)
@@ -807,6 +834,7 @@ main (int argc, char *argv[])
   "0.11010011111001101011111001100111110100000001101001111100111000000E-1119");
 
   consistency ();
+  test_20070603 ();
   test_generic (2, 800, 50);
 
   tests_end_mpfr ();
