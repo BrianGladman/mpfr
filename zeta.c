@@ -337,10 +337,10 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
 
   /* check tiny s: we have zeta(s) = -1/2 - 1/2 log(2 Pi) s + ... around s=0,
      and for |s| <= 0.074, we have |zeta(s) + 1/2| <= |s|.
-     Thus if |s| <= 1/2*ulp(1/2), we can deduce the correct rounding
-     (warning: the 1/2 covers the case where |zeta(s)| < 1/2).
-     A sufficient condition is that EXP(s) < -PREC(z). */
-  if (MPFR_EXP(s) < - (mp_exp_t) MPFR_PREC(z))
+     Thus if |s| <= 1/4*ulp(1/2), we can deduce the correct rounding
+     (the 1/4 covers the case where |zeta(s)| < 1/2 and rounding to nearest).
+     A sufficient condition is that EXP(s) + 1 < -PREC(z). */
+  if (MPFR_EXP(s) + 1 < - (mp_exp_t) MPFR_PREC(z))
     {
       int signs = MPFR_SIGN(s);
       mpfr_set_si_2exp (z, -1, -1, rnd_mode); /* -1/2 */

@@ -364,6 +364,22 @@ main (int argc, char *argv[])
       exit (1);
     }
 
+  /* bug found by nightly tests on June 7, 2007 */
+  mpfr_set_prec (s, 23);
+  mpfr_set_prec (z, 25);
+  mpfr_set_str_binary (s, "-1.0110110110001000000000e-27");
+  mpfr_zeta (z, s, GMP_RNDN);
+  mpfr_set_prec (s, 25);
+  mpfr_set_str_binary (s, "-1.111111111111111111111111e-2");
+  if (mpfr_cmp (s, z))
+    {
+      printf ("Error in mpfr_zeta, prec=25, GMP_RNDN\n");
+      printf ("expected "); mpfr_dump (s);
+      printf ("got      "); mpfr_dump (z);
+      exit (1);
+    }
+
+
   mpfr_clear (s);
   mpfr_clear (y);
   mpfr_clear (z);
