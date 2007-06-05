@@ -571,9 +571,9 @@ returned by MPFR functions. For functions returning several values (like
 @code{mpfr_sin_cos}), the rules apply to each result separately.
 
 When the input point is in the domain of the mathematical function, the
-result is rounded as described above. Otherwise the result is either
-given in the description of the MPFR function (@ref{MPFR Interface})
-or determined using the general rules below.
+result is rounded as described in Section ``Rounding Modes''. Otherwise
+the result is either given in the description of the MPFR function
+(@ref{MPFR Interface}) or determined using the general rules below.
 
 When the input point is not in the domain of the function but is in its
 closure in the extended real numbers (R with the infinities) and the
