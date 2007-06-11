@@ -32,12 +32,7 @@ mpfr_lgamma_nosign (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
 
   inex = mpfr_lgamma (y, &sign, x, rnd);
   if (!MPFR_IS_SINGULAR (y))
-    {
-      MPFR_ASSERTN (sign == 1 || sign == -1);
-      if (sign == -1 && (rnd == GMP_RNDN || rnd == GMP_RNDZ))
-        mpfr_neg (y, y, GMP_RNDN);
-      /* This is a way to check that the sign is consistent. */
-    }
+    MPFR_ASSERTN (sign == 1 || sign == -1);
 
   return inex;
 }
@@ -216,6 +211,10 @@ special (void)
   if (MPFR_IS_NAN (y) || mpfr_cmp (x, y) || sign != 1)
     {
       printf ("Error for lgamma(0.1100E-66)\n");
+      printf ("Expected ");
+      mpfr_dump (x);
+      printf ("Got      ");
+      mpfr_dump (y);
       exit (1);
     }
 
@@ -255,6 +254,22 @@ special (void)
       printf ("with sign %d instead of ", sign);
       mpfr_dump (x);
       printf ("with sign -1.\n");
+      exit (1);
+    }
+
+  mpfr_set_prec (x, 10);
+  mpfr_set_prec (y, 10);
+  mpfr_set_str_binary (x, "-0.1101111000E-3");
+  inex = mpfr_lgamma (y, &sign, x, GMP_RNDN);
+  mpfr_set_str_binary (x, "10.01001011");
+  if (MPFR_IS_NAN (y) || mpfr_cmp (x, y) || sign != -1 || inex >= 0)
+    {
+      printf ("Error for lgamma(-0.1101111000E-3)\n");
+      printf ("Got        ");
+      mpfr_dump (y);
+      printf ("instead of ");
+      mpfr_dump (x);
+      printf ("with sign %d instead of -1 (inex=%d).\n", sign, inex);
       exit (1);
     }
 

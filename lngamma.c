@@ -165,14 +165,52 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
   double d;
   MPFR_SAVE_EXPO_DECL (expo);
 
-  precy = MPFR_PREC(y);
-
   compared = mpfr_cmp_ui (z0, 1);
 
-#ifndef IS_GAMMA
+#ifndef IS_GAMMA /* lngamma or lgamma */
   if (compared == 0 || (compared > 0 && mpfr_cmp_ui (z0, 2) == 0))
     return mpfr_set_ui (y, 0, GMP_RNDN);  /* lngamma(1 or 2) = +0 */
+
+  /* Deal here with tiny positive inputs (tiny negative inputs are treated
+     separately by lngamma and lgamma). The expansion at x=0 is:
+     lngamma(x) = -log(x) - euler*x + O(x^2), where euler is Euler's constant.
+     More precisely we have for 0 < x <= 1:
+                -log(x) - x <= lngamma(x) <= -log(x).
+     Since log(x) is not representable, we may have an instance of the Table
+     Maker Dilemma. The only way to ensure correct rounding is to compute an
+     interval [l,h] such that l <= log(x) - x and log(x) <= h, and check
+     whether l and h round to the same number for the target precision and
+     rounding modes. */
+  if (MPFR_EXP(z0) <= - (mp_exp_t) MPFR_PREC(y))
+    {
+      mpfr_t l, h;
+      int ok, inex2;
+
+      mpfr_init2 (l, MPFR_PREC(y) + 14);
+      mpfr_init2 (h, MPFR_PREC(y) + 14);
+      mpfr_log (l, z0, GMP_RNDU); /* upper bound for log(z0) */
+      mpfr_neg (l, l, GMP_RNDD); /* lower bound for -log(z0) */
+      mpfr_set (h, l, GMP_RNDD); /* exact */
+      mpfr_nextabove (h); /* upper bound for -log(z0), avoids two calls to
+			      mpfr_log */
+      mpfr_sub (l, l, z0, GMP_RNDD);
+      inexact = mpfr_prec_round (l, MPFR_PREC(y), rnd);
+      inex2 = mpfr_prec_round (h, MPFR_PREC(y), rnd);
+      /* Caution: we not only need l = h, but both inexact flags should agree.
+	 Indeed, one of the inexact flags might be zero. In that case if we
+	 assume lngamma(z0) cannot be exact, the other flag should be correct.
+	 We are conservative here and request that both inexact flags agree. */
+      ok = SAME_SIGN (inexact, inex2) && mpfr_cmp (l, h) == 0;
+      if (ok)
+	mpfr_set (y, h, rnd); /* exact */
+      mpfr_clear (l);
+      mpfr_clear (h);
+      if (ok)
+	return inexact;
+    }
 #endif
+
+  precy = MPFR_PREC(y);
 
   mpfr_init2 (s, MPFR_PREC_MIN);
   mpfr_init2 (t, MPFR_PREC_MIN);
@@ -514,44 +552,6 @@ mpfr_lngamma (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
       MPFR_RET_NAN;
     }
 
-  /* Deal here with tiny inputs: for -1 < x < 0, the above code returns 0.
-     It thus suffices to consider 0 < x < 1. The expansion at x=0 is:
-     lngamma(x) = -log(x) - euler*x + O(x^2), where euler is Euler's constant.
-     More precisely we have for 0 < x <= 1:
-                -log(x) - x <= lngamma(x) <= -log(x).
-     Since log(x) is not representable, we may have an instance of the Table
-     Maker Dilemma. The only way to ensure correct rounding is to compute an
-     interval [l,h] such that l <= log(x) - x and log(x) <= h, and check
-     whether l and h round to the same number for the target precision and
-     rounding modes. */
-  if (MPFR_EXP(x) <= - (mp_exp_t) MPFR_PREC(y))
-    {
-      mpfr_t l, h;
-      int ok, inex2;
-
-      mpfr_init2 (l, MPFR_PREC(y) + 14);
-      mpfr_init2 (h, MPFR_PREC(y) + 14);
-      mpfr_log (l, x, GMP_RNDU); /* upper bound for log(x) */
-      mpfr_neg (l, l, GMP_RNDD); /* lower bound for -log(x) */
-      mpfr_set (h, l, GMP_RNDD); /* exact */
-      mpfr_nextabove (h); /* upper bound for -log(x), avoids two calls to
-			      mpfr_log */
-      mpfr_sub (l, l, x, GMP_RNDD);
-      inex = mpfr_prec_round (l, MPFR_PREC(y), rnd);
-      inex2 = mpfr_prec_round (h, MPFR_PREC(y), rnd);
-      /* Caution: we not only need l = h, but both inexact flags should agree.
-	 Indeed, one of the inexact flags might be zero. In that case if we
-	 assume lngamma(x) cannot be exact, the other flag should be correct.
-	 We are conservative here and request that both inexact flags agree. */
-      ok = SAME_SIGN (inex, inex2) && mpfr_cmp (l, h) == 0;
-      if (ok)
-	mpfr_set (y, h, rnd); /* exact */
-      mpfr_clear (l);
-      mpfr_clear (h);
-      if (ok)
-	return inex;
-    }
-
   inex = mpfr_lngamma_aux (y, x, rnd);
   return inex;
 }
@@ -593,10 +593,51 @@ mpfr_lgamma (mpfr_ptr y, int *signp, mpfr_srcptr x, mp_rnd_t rnd)
 
       if (unit_bit (x) == 0)
         *signp = -1;
-    }
 
-  /* TODO: add support for negative numbers with small exponent.
-     Re-enable the generic tests when this is done. */
+      /* For tiny negative x, we have gamma(x) = 1/x - euler + O(x),
+         thus |gamma(x)| = -1/x + euler + O(x), and
+         log |gamma(x)| = -log(-x) - euler*x + O(x^2).
+         More precisely we have for -0.4 <= x < 0:
+         -log(-x) <= log |gamma(x)| <= -log(-x) - x.
+         Since log(x) is not representable, we may have an instance of the
+         Table Maker Dilemma. The only way to ensure correct rounding is to
+         compute an interval [l,h] such that l <= -log(-x) and
+         -log(-x) - x <= h, and check whether l and h round to the same number
+         for the target precision and rounding modes. */
+      if (MPFR_EXP(x) + 1 <= - (mp_exp_t) MPFR_PREC(y))
+        /* since PREC(y) >= 1, this ensures EXP(x) <= -2,
+           thus |x| <= 0.25 < 0.4 */
+        {
+          mpfr_t l, h;
+          int ok, inex2;
+
+          mpfr_init2 (l, MPFR_PREC(y) + 14);
+          mpfr_init2 (h, MPFR_PREC(y) + 14);
+          /* we want a lower bound on -log(-x), thus an upper bound on log(-x),
+             thus an upper bound on -x. */
+          mpfr_neg (l, x, GMP_RNDU); /* upper bound on -x */
+          mpfr_log (l, l, GMP_RNDU); /* upper bound for log(-x) */
+          mpfr_neg (l, l, GMP_RNDD); /* lower bound for -log(-x) */
+          mpfr_neg (h, x, GMP_RNDD); /* lower bound on -x */
+          mpfr_log (h, h, GMP_RNDD); /* lower bound on log(-x) */
+          mpfr_neg (h, h, GMP_RNDU); /* upper bound for -log(-x) */
+          mpfr_sub (h, h, x, GMP_RNDU); /* upper bound for -log(-x) - x */
+          inex = mpfr_prec_round (l, MPFR_PREC(y), rnd);
+          inex2 = mpfr_prec_round (h, MPFR_PREC(y), rnd);
+          /* Caution: we not only need l = h, but both inexact flags should
+             agree. Indeed, one of the inexact flags might be zero. In that
+             case if we assume ln|gamma(x)| cannot be exact, the other flag
+             should be correct. We are conservative here and request that both
+             inexact flags agree. */
+          ok = SAME_SIGN (inex, inex2) && mpfr_cmp (l, h) == 0;
+          if (ok)
+            mpfr_set (y, h, rnd); /* exact */
+          mpfr_clear (l);
+          mpfr_clear (h);
+          if (ok)
+            return inex;
+        }
+    }
 
   inex = mpfr_lngamma_aux (y, x, rnd);
   return inex;
