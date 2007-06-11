@@ -32,7 +32,19 @@ mpfr_lgamma_nosign (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
 
   inex = mpfr_lgamma (y, &sign, x, rnd);
   if (!MPFR_IS_SINGULAR (y))
-    MPFR_ASSERTN (sign == 1 || sign == -1);
+    {
+      MPFR_ASSERTN (sign == 1 || sign == -1);
+      if (sign == -1 && (rnd == GMP_RNDN || rnd == GMP_RNDZ))
+        {
+          mpfr_neg (y, y, GMP_RNDN);
+          inex = -inex;
+          /* This is a way to check with the generic tests, that the value
+             returned in the sign variable is consistent, but warning! The
+             tested function depends on the rounding mode: it is
+               * lgamma(x) = log(|Gamma(x)|) in GMP_RNDD and GMP_RNDU;
+               * lgamma(x) * sign(Gamma(x)) in GMP_RNDN and GMP_RNDZ. */
+        }
+    }
 
   return inex;
 }
