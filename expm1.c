@@ -64,15 +64,19 @@ mpfr_expm1 (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
         }
     }
 
+  MPFR_SAVE_EXPO_MARK (expo);
+
   ex = MPFR_GET_EXP (x);
   if (ex < 0)
     {
       /* For -1 < x < 0, abs(expm1(x)-x) < x^2/2.
          For 0 < x < 1,  abs(expm1(x)-x) < x^2. */
       if (MPFR_IS_POS (x))
-        MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, - ex, 0, 1, rnd_mode, {});
+        MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, - ex, 0, 1, rnd_mode,
+                                          { inexact = _inexact; goto end; });
       else
-        MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, - ex, 1, 0, rnd_mode, {});
+        MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, - ex, 1, 0, rnd_mode,
+                                          { inexact = _inexact; goto end; });
     }
 
   if (MPFR_IS_NEG (x) && ex > 5)  /* x <= -32 */
@@ -94,11 +98,12 @@ mpfr_expm1 (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
          with epsilon > 0 */
       mpfr_clear (t);
       MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, minus_one, err, 0, 0, rnd_mode,
-                                        { mpfr_clear (minus_one); });
+                                        { mpfr_clear (minus_one);
+                                          inexact = _inexact;
+                                          goto end; });
       mpfr_clear (minus_one);
     }
 
-  MPFR_SAVE_EXPO_MARK (expo);
   /* General case */
   {
     /* Declaration of the intermediary variable */
@@ -169,6 +174,7 @@ mpfr_expm1 (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
     mpfr_clear (t);
   }
 
+ end:
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (y, inexact, rnd_mode);
 }
