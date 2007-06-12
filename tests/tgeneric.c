@@ -104,7 +104,8 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
       yprec = prec + 10;
       mpfr_set_prec (y, yprec);
 
-      for (n = 0; n <= N; n++)
+      /* Note: in precision p1, we test 4 special cases. */
+      for (n = 0; n < (prec == p1 ? N + 4 : N); n++)
         {
           xprec = prec;
           if (randlimb () & 1)
@@ -118,7 +119,7 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
           mpfr_set_prec (u, xprec);
 #endif
 
-          if (n > 1 || prec < p1)
+          if (n > 3 || prec < p1)
             {
 #if defined(RAND_FUNCTION)
               RAND_FUNCTION (x);
@@ -132,7 +133,7 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
 #endif
 #endif
             }
-          else
+          else if (n <= 1)
             {
               /* Special cases tested in precision p1 if n <= 1. */
               mpfr_set_si (x, n == 0 ? 1 : -1, GMP_RNDN);
@@ -140,6 +141,18 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
 #ifdef TWO_ARGS
               mpfr_set_si (u, randlimb () % 2 == 0 ? 1 : -1, GMP_RNDN);
               mpfr_set_exp (u, mpfr_get_emin ());
+#endif
+            }
+          else  /* 2 <= n <= 3 */
+            {
+              /* Special cases tested in precision p1 if 2 <= n <= 3. */
+              if (getenv ("MPFR_CHECK_MAX") == NULL)
+                continue;
+              mpfr_set_si (x, n == 0 ? 1 : -1, GMP_RNDN);
+              mpfr_setmax (x, mpfr_get_emax ());
+#ifdef TWO_ARGS
+              mpfr_set_si (u, randlimb () % 2 == 0 ? 1 : -1, GMP_RNDN);
+              mpfr_setmax (u, mpfr_get_emax ());
 #endif
             }
 
