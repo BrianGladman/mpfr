@@ -383,6 +383,8 @@ Miscellaneous:
   it cannot be supported. Modify the "configure --help" description
   to say "on systems that support it".
 
+- allow generic tests to run with a restricted exponent range.
+
 
 ##############################################################################
 Portability:
