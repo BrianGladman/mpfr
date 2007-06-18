@@ -563,28 +563,38 @@ an underflow if @code{1} is not representable in the current exponent range.
 
 @section Floating-Point Values on Special Numbers
 
-TODO: This section is new. Please comment and suggest corrections before
-the MPFR 2.3.0 release.
-
 This section specifies the floating-point values (of type @code{mpfr_t})
 returned by MPFR functions. For functions returning several values (like
 @code{mpfr_sin_cos}), the rules apply to each result separately.
 
+Functions can have one or several input arguments. An input point is
+a mapping from these input arguments to the set of the MPFR numbers.
+When none of its components are NaN, an input point can also be seen
+as a tuple in the extended real numbers (the set of the real numbers
+with both infinities).
+
 When the input point is in the domain of the mathematical function, the
-result is rounded as described in Section ``Rounding Modes''. Otherwise
-the result is either given in the description of the MPFR function
-(@ref{MPFR Interface}) or determined using the general rules below.
+result is rounded as described in Section ``Rounding Modes'' (but see
+below for the specification of the sign of an exact zero). Otherwise
+the general rules from this section apply unless stated otherwise in
+the description of the MPFR function (@ref{MPFR Interface}).
 
-When the input point is not in the domain of the function but is in its
-closure in the extended real numbers (R with the infinities) and the
-function can be extended by continuity, the result is the obtained limit.
-Example: @code{mpfr_hypot} on (+Inf,0) gives +Inf.
+When the input point is not in the domain of the mathematical function
+but is in its closure in the extended real numbers and the function can
+be extended by continuity, the result is the obtained limit.
+Examples: @code{mpfr_hypot} on (+Inf,0) gives +Inf. But @code{mpfr_pow}
+cannot be defined on (1,+Inf) using this rule, as one can find
+sequences (@m{x_n,@var{x}_@var{n}},@m{y_n,@var{y}_@var{n}}) such that
+@m{x_n,@var{x}_@var{n}} goes to 1, @m{y_n,@var{y}_@var{n}} goes to +Inf
+and @m{(x_n)^{y_n},@var{x}_@var{n} to the @var{y}_@var{n}} goes to any
+positive value when @var{n} goes to the infinity.
 
-When the input point is in the closure of the domain of the function
-and contains +0 (resp.@: @minus{}0), one considers the limit when the
-corresponding argument approaches 0 from above (resp.@: below). If the
-limit is not defined (e.g., @code{mpfr_log} on @minus{}0), the behavior
-must be specified in the description of the MPFR function.
+When the input point is in the closure of the domain of the mathematical
+function and an input argument is +0 (resp.@: @minus{}0), one considers
+the limit when the corresponding argument approaches 0 from above
+(resp.@: below). If the limit is not defined (e.g., @code{mpfr_log} on
+@minus{}0), the behavior must be specified in the description of the
+MPFR function.
 
 When the result is equal to 0, its sign is determined by considering the
 limit as if the input point were not in the domain: If one approaches 0
@@ -595,8 +605,8 @@ function. Example: @code{mpfr_sin} on +0 gives +0.
 When the input point is not in the closure of the domain of the function,
 the result is NaN. Example: @code{mpfr_sqrt} on @minus{}17 gives NaN.
 
-When the input point contains a NaN, the result is NaN, possibly except
-when a partial function is constant on the finite floating-point numbers;
+When an input argument is NaN, the result is NaN, possibly except when
+a partial function is constant on the finite floating-point numbers;
 such a case is always explicitly specified in @ref{MPFR Interface}.
 @c Said otherwise, if such a case is not specified, this is a bug, thus
 @c we may change the returned value after documenting it without having
