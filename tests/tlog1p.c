@@ -55,35 +55,36 @@ static void
 special (void)
 {
   mpfr_t x;
+  int inex;
 
   mpfr_init (x);
 
   mpfr_set_nan (x);
-  test_log1p (x, x, GMP_RNDN);
-  MPFR_ASSERTN(mpfr_nan_p (x));
+  inex = test_log1p (x, x, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_nan_p (x) && inex == 0);
 
   mpfr_set_inf (x, -1);
-  test_log1p (x, x, GMP_RNDN);
-  MPFR_ASSERTN(mpfr_nan_p (x));
+  inex = test_log1p (x, x, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_nan_p (x) && inex == 0);
 
   mpfr_set_inf (x, 1);
-  test_log1p (x, x, GMP_RNDN);
-  MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
+  inex = test_log1p (x, x, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_inf_p (x) && mpfr_sgn (x) > 0 && inex == 0);
 
   mpfr_set_ui (x, 0, GMP_RNDN);
-  test_log1p (x, x, GMP_RNDN);
-  MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_POS (x));
+  inex = test_log1p (x, x, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_POS (x) && inex == 0);
   mpfr_neg (x, x, GMP_RNDN);
-  test_log1p (x, x, GMP_RNDN);
-  MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_NEG (x));
+  inex = test_log1p (x, x, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_NEG (x) && inex == 0);
 
   mpfr_set_si (x, -1, GMP_RNDN);
-  test_log1p (x, x, GMP_RNDN);
-  MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) < 0);
+  inex = test_log1p (x, x, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_inf_p (x) && mpfr_sgn (x) < 0 && inex == 0);
 
   mpfr_set_si (x, -2, GMP_RNDN);
-  test_log1p (x, x, GMP_RNDN);
-  MPFR_ASSERTN(mpfr_nan_p (x));
+  inex = test_log1p (x, x, GMP_RNDN);
+  MPFR_ASSERTN (mpfr_nan_p (x) && inex == 0);
 
   mpfr_clear (x);
 }

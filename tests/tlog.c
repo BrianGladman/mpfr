@@ -179,6 +179,7 @@ special (void)
 {
   mpfr_t x, y;
   mp_exp_t emax = mpfr_get_emax ();
+  int inex;
 
   mpfr_init2 (x, 53);
   mpfr_init2 (y, 53);
@@ -224,6 +225,19 @@ special (void)
   test_log (y, x, GMP_RNDN);
 
   set_emax (emax);
+
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  inex = test_log (y, x, GMP_RNDN);
+  MPFR_ASSERTN (inex == 0);
+  MPFR_ASSERTN (mpfr_inf_p (y));
+  MPFR_ASSERTN (mpfr_sgn (y) < 0);
+
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_neg (x, x, GMP_RNDN);
+  inex = test_log (y, x, GMP_RNDN);
+  MPFR_ASSERTN (inex == 0);
+  MPFR_ASSERTN (mpfr_inf_p (y));
+  MPFR_ASSERTN (mpfr_sgn (y) < 0);
 
   mpfr_clear (x);
   mpfr_clear (y);
