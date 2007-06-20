@@ -23,19 +23,19 @@ MA 02110-1301, USA. */
 /* the following is a hack to avoid duplicating the code with a single file */
 #ifndef _INSIDE_REMQUO
 
-   #define _INSIDE_REMQUO
+# define _INSIDE_REMQUO
 
-   #include <limits.h>  /* For CHAR_BIT */
-   #include "mpfr-impl.h"
+# include <limits.h>  /* For CHAR_BIT */
+# include "mpfr-impl.h"
 
-   /* first define mpfr_remainder */
-   #include "remquo.c"
+  /* first define mpfr_remainder */
+# include "remquo.c"
 
-   /* now define mpfr_remquo */
-   /* we return as many bits as we can, keeping just one bit for the sign */
-   #define WANTED_BITS (sizeof(long) * CHAR_BIT - 1)
-   #define REMQUO
-   #include "remquo.c"
+  /* now define mpfr_remquo */
+  /* we return as many bits as we can, keeping just one bit for the sign */
+# define WANTED_BITS (sizeof(long) * CHAR_BIT - 1)
+# define REMQUO
+# include "remquo.c"
 
 #else
 
