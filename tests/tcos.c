@@ -160,69 +160,75 @@ static void
 overflowed_cos0 (void)
 {
   mpfr_t x, y;
-  int i, inex, rnd, err = 0;
+  int emax, i, inex, rnd, err = 0;
 
   mpfr_init2 (x, 8);
   mpfr_init2 (y, 8);
-  mpfr_set_str (y, "0.11111111E0", 2, GMP_RNDN);
-  set_emax (0);  /* 1 is not representable. */
 
-  for (i = -1; i <= 1; i++)
-    RND_LOOP (rnd)
-      {
-        mpfr_set_si_2exp (x, i, -512 * ABS (i), GMP_RNDN);
-        mpfr_clear_flags ();
-        inex = mpfr_cos (x, x, rnd);
-        if (!mpfr_overflow_p ())
-          {
-            printf ("Error in overflowed_cos0 (i = %d, rnd = %s):\n"
-                    "  The overflow flag is not set.\n",
-                    i, mpfr_print_rnd_mode (rnd));
-            err = 1;
-          }
-        if (rnd == GMP_RNDZ || rnd == GMP_RNDD)
-          {
-            if (inex > 0)
-              {
-                printf ("Error in overflowed_cos0 (i = %d, rnd = %s):\n"
-                        "  The inexact value must be negative.\n",
-                        i, mpfr_print_rnd_mode (rnd));
-                err = 1;
-              }
-            if (! mpfr_equal_p (x, y))
-              {
-                printf ("Error in overflowed_cos0 (i = %d, rnd = %s):\n"
-                        "  Got ", i, mpfr_print_rnd_mode (rnd));
-                /* Do not use mpfr_out_str in base 16 (bug in r4545). */
-                mpfr_print_binary (x);
-                printf (" instead of 0.11111111E0.\n");
-                err = 1;
-              }
-          }
-        else
-          {
-            if (inex < 0)
-              {
-                printf ("Error in overflowed_cos0 (i = %d, rnd = %s):\n"
-                        "  The inexact value must be positive.\n",
-                        i, mpfr_print_rnd_mode (rnd));
-                err = 1;
-              }
-            if (! (mpfr_inf_p (x) && MPFR_SIGN (x) > 0))
-              {
-                printf ("Error in overflowed_cos0 (i = %d, rnd = %s):\n"
-                        "  Got ", i, mpfr_print_rnd_mode (rnd));
-                /* Do not use mpfr_out_str in base 16 (bug in r4545). */
-                mpfr_print_binary (x);
-                printf (" instead of +Inf.\n");
-                err = 1;
-              }
-          }
-      }
+  for (emax = -1; emax <= 0; emax++)
+    {
+      mpfr_set_ui_2exp (y, 1, emax, GMP_RNDN);
+      mpfr_nextbelow (y);
+      set_emax (emax);  /* 1 is not representable. */
+      /* and if emax < 0, 1 - eps is not representable either. */
+      for (i = -1; i <= 1; i++)
+        RND_LOOP (rnd)
+        {
+          mpfr_set_si_2exp (x, i, -512 * ABS (i), GMP_RNDN);
+          mpfr_clear_flags ();
+          inex = mpfr_cos (x, x, rnd);
+          if ((i == 0 || emax < 0 || rnd == GMP_RNDN || rnd == GMP_RNDU) &&
+              ! mpfr_overflow_p ())
+            {
+              printf ("Error in overflowed_cos0 (i = %d, rnd = %s):\n"
+                      "  The overflow flag is not set.\n",
+                      i, mpfr_print_rnd_mode (rnd));
+              err = 1;
+            }
+          if (rnd == GMP_RNDZ || rnd == GMP_RNDD)
+            {
+              if (inex > 0)
+                {
+                  printf ("Error in overflowed_cos0 (i = %d, rnd = %s):\n"
+                          "  The inexact value must be negative.\n",
+                          i, mpfr_print_rnd_mode (rnd));
+                  err = 1;
+                }
+              if (! mpfr_equal_p (x, y))
+                {
+                  printf ("Error in overflowed_cos0 (i = %d, rnd = %s):\n"
+                          "  Got ", i, mpfr_print_rnd_mode (rnd));
+                  /* Do not use mpfr_out_str in base 16 (bug in r4545). */
+                  mpfr_print_binary (x);
+                  printf (" instead of 0.11111111E0.\n");
+                  err = 1;
+                }
+            }
+          else
+            {
+              if (inex < 0)
+                {
+                  printf ("Error in overflowed_cos0 (i = %d, rnd = %s):\n"
+                          "  The inexact value must be positive.\n",
+                          i, mpfr_print_rnd_mode (rnd));
+                  err = 1;
+                }
+              if (! (mpfr_inf_p (x) && MPFR_SIGN (x) > 0))
+                {
+                  printf ("Error in overflowed_cos0 (i = %d, rnd = %s):\n"
+                          "  Got ", i, mpfr_print_rnd_mode (rnd));
+                  /* Do not use mpfr_out_str in base 16 (bug in r4545). */
+                  mpfr_print_binary (x);
+                  printf (" instead of +Inf.\n");
+                  err = 1;
+                }
+            }
+        }
+      set_emax (MPFR_EMAX_MAX);
+    }
 
   if (err)
     exit (1);
-  set_emax (MPFR_EMAX_MAX);
   mpfr_clear (x);
   mpfr_clear (y);
 }
