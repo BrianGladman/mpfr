@@ -43,7 +43,7 @@ MA 02110-1301, USA. */
 # elif defined (HAVE_ALLOCA_H)
 #  include <alloca.h>
 # elif defined (_AIX) || defined (_IBMR2)
- #pragma alloca
+#  pragma alloca
 # else
 char *alloca ();
 # endif

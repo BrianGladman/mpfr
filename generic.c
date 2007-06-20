@@ -21,12 +21,12 @@ the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
 #ifndef GENERIC
- # error You should specify a name
+# error You should specify a name
 #endif
 
 #ifdef B
 #  ifndef A
- #   error B cannot be used without A
+#   error B cannot be used without A
 #  endif
 #endif
 
