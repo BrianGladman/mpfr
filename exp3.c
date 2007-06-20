@@ -71,7 +71,7 @@ mpfr_exp_rational (mpfr_ptr y, mpz_ptr p, long r, int m,
   mpz_set_ui (S[0], 1);
   k = 0;
   mult[0] = 0; /* the multiplier P[k]/Q[k] for the remaining terms
-		  satisfies P[k]/Q[k] <= 2^(-mult[k]) */
+                  satisfies P[k]/Q[k] <= 2^(-mult[k]) */
   log2_nb_terms[0] = 0; /* log2(#terms) [exact in 1st loop where 2^k] */
   prec_i_have = 0;
 
@@ -88,22 +88,22 @@ mpfr_exp_rational (mpfr_ptr y, mpz_ptr p, long r, int m,
       l = 0;
       while ((j & 1) == 0) /* combine and reduce */
         {
-	  /* invariant: S[k] corresponds to 2^l consecutive terms */
+          /* invariant: S[k] corresponds to 2^l consecutive terms */
           mpz_mul (S[k], S[k], ptoj[l]);
           mpz_mul (S[k-1], S[k-1], Q[k]);
-	  /* Q[k] corresponds to 2^l consecutive terms too.
-	     Since it does not contains the factor 2^(r*2^l),
-	     when going from l to l+1 we need to multiply
-	     by 2^(r*2^(l+1))/2^(r*2^l) = 2^(r*2^l) */
+          /* Q[k] corresponds to 2^l consecutive terms too.
+             Since it does not contains the factor 2^(r*2^l),
+             when going from l to l+1 we need to multiply
+             by 2^(r*2^(l+1))/2^(r*2^l) = 2^(r*2^l) */
           mpz_mul_2exp (S[k-1], S[k-1], r << l);
           mpz_add (S[k-1], S[k-1], S[k]);
           mpz_mul (Q[k-1], Q[k-1], Q[k]);
           log2_nb_terms[k-1] ++; /* number of terms in S[k-1]
-				    is a power of 2 by construction */
+                                    is a power of 2 by construction */
           MPFR_MPZ_SIZEINBASE2 (prec_i_have, Q[k]);
-	  MPFR_MPZ_SIZEINBASE2 (prec_ptoj, ptoj[l]);
-	  mult[k-1] += prec_i_have + (r << l) - prec_ptoj - 1;
-	  prec_i_have = mult[k] = mult[k-1];
+          MPFR_MPZ_SIZEINBASE2 (prec_ptoj, ptoj[l]);
+          mult[k-1] += prec_i_have + (r << l) - prec_ptoj - 1;
+          prec_i_have = mult[k] = mult[k-1];
           /* since mult[k] >= mult[k-1] + nbits(Q[k]),
              we have Q[0]*...*Q[k] <= 2^mult[k] = 2^prec_i_have */
           l ++;

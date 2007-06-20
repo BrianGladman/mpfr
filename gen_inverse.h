@@ -32,12 +32,12 @@ MA 02110-1301, USA. */
 #endif
 
 /* example of use:
-   #define FUNCTION mpfr_sec
-   #define INVERSE  mpfr_cos
-   #define ACTION_NAN(y) do { MPFR_SET_NAN(y); MPFR_RET_NAN; } while (1)
-   #define ACTION_INF(y) do { MPFR_SET_NAN(y); MPFR_RET_NAN; } while (1)
-   #define ACTION_ZERO(y) return mpfr_set_ui (y, 1, GMP_RNDN)
-   #include "gen_inverse.h"
+#define FUNCTION mpfr_sec
+#define INVERSE  mpfr_cos
+#define ACTION_NAN(y) do { MPFR_SET_NAN(y); MPFR_RET_NAN; } while (1)
+#define ACTION_INF(y) do { MPFR_SET_NAN(y); MPFR_RET_NAN; } while (1)
+#define ACTION_ZERO(y) return mpfr_set_ui (y, 1, GMP_RNDN)
+#include "gen_inverse.h"
 */
 
 int

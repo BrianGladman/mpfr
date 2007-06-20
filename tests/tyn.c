@@ -40,10 +40,10 @@ main (int argc, char *argv[])
   if (argc != 1)
     {
       if (argc != 4)
-	{
-	  printf ("Usage: tyn n x prec\n");
-	  exit (1);
-	}
+        {
+          printf ("Usage: tyn n x prec\n");
+          exit (1);
+        }
       n = atoi (argv[1]);
       prec = atoi (argv[3]);
       mpfr_set_prec (x, prec);

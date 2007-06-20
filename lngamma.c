@@ -192,21 +192,21 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
       mpfr_neg (l, l, GMP_RNDD); /* lower bound for -log(z0) */
       mpfr_set (h, l, GMP_RNDD); /* exact */
       mpfr_nextabove (h); /* upper bound for -log(z0), avoids two calls to
-			      mpfr_log */
+                             mpfr_log */
       mpfr_sub (l, l, z0, GMP_RNDD);
       inexact = mpfr_prec_round (l, MPFR_PREC(y), rnd);
       inex2 = mpfr_prec_round (h, MPFR_PREC(y), rnd);
       /* Caution: we not only need l = h, but both inexact flags should agree.
-	 Indeed, one of the inexact flags might be zero. In that case if we
-	 assume lngamma(z0) cannot be exact, the other flag should be correct.
-	 We are conservative here and request that both inexact flags agree. */
+         Indeed, one of the inexact flags might be zero. In that case if we
+         assume lngamma(z0) cannot be exact, the other flag should be correct.
+         We are conservative here and request that both inexact flags agree. */
       ok = SAME_SIGN (inexact, inex2) && mpfr_cmp (l, h) == 0;
       if (ok)
-	mpfr_set (y, h, rnd); /* exact */
+        mpfr_set (y, h, rnd); /* exact */
       mpfr_clear (l);
       mpfr_clear (h);
       if (ok)
-	return inexact;
+        return inexact;
     }
 #endif
 

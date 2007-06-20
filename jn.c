@@ -103,26 +103,26 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mp_rnd_t r)
       /* the following is an upper 32-bit approximation of exp(1)/2 */
       mpfr_set_str_binary (y, "1.0101101111110000101010001011001");
       if (MPFR_SIGN(z) > 0)
-	mpfr_mul (y, y, z, GMP_RNDU);
+        mpfr_mul (y, y, z, GMP_RNDU);
       else
-	{
-	  mpfr_mul (y, y, z, GMP_RNDD);
-	  mpfr_neg (y, y, GMP_RNDU);
-	}
+        {
+          mpfr_mul (y, y, z, GMP_RNDD);
+          mpfr_neg (y, y, GMP_RNDU);
+        }
       mpfr_div_ui (y, y, absn, GMP_RNDU);
       /* now y is an upper approximation of |ze/2n|: y < 2^EXP(y),
-	 thus |j(n,z)| < 1/2*y^n < 2^(n*EXP(y)-1).
-	 If n*EXP(y) < __gmpfr_emin then we have an underflow.
-	 Warning: absn is an unsigned long. */
+         thus |j(n,z)| < 1/2*y^n < 2^(n*EXP(y)-1).
+         If n*EXP(y) < __gmpfr_emin then we have an underflow.
+         Warning: absn is an unsigned long. */
       if ((MPFR_EXP(y) < 0 && absn > (unsigned long) (-__gmpfr_emin))
-	  || (absn <= (unsigned long) (-MPFR_EMIN_MIN) &&
-	      MPFR_EXP(y) < __gmpfr_emin / (mp_exp_t) absn))
-	{
-	  mpfr_clear (y);
-	  return mpfr_underflow (res, (r == GMP_RNDN) ? GMP_RNDZ : r,
-			 (n % 2) ? ((n > 0) ? MPFR_SIGN(z) : -MPFR_SIGN(z))
-				 : MPFR_SIGN_POS);
-	}
+          || (absn <= (unsigned long) (-MPFR_EMIN_MIN) &&
+              MPFR_EXP(y) < __gmpfr_emin / (mp_exp_t) absn))
+        {
+          mpfr_clear (y);
+          return mpfr_underflow (res, (r == GMP_RNDN) ? GMP_RNDZ : r,
+                         (n % 2) ? ((n > 0) ? MPFR_SIGN(z) : -MPFR_SIGN(z))
+                                 : MPFR_SIGN_POS);
+        }
     }
 
   mpfr_init (s);

@@ -67,7 +67,7 @@ mpfr_remquo    (mpfr_ptr rem, long *quo,
 #else
 mpfr_remainder (mpfr_ptr rem,
 #endif
-		mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd)
+                mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd)
 {
   mp_exp_t ex, ey;
   int compare, inex, q_is_odd, sign, signx = MPFR_SIGN(x);
@@ -78,7 +78,7 @@ mpfr_remainder (mpfr_ptr rem,
       if (MPFR_IS_NAN (x) || MPFR_IS_NAN (y) || MPFR_IS_INF (x)
           || MPFR_IS_ZERO (y))
         {
-	  /* for remquo, quo is undefined */
+          /* for remquo, quo is undefined */
           MPFR_SET_NAN (rem);
           MPFR_RET_NAN;
         }
@@ -122,7 +122,7 @@ mpfr_remainder (mpfr_ptr rem,
       /* q = x/y = mx/(my*2^(ey-ex)) */
       mpz_mul_2exp (my, my, ey - ex); /* divide mx by my*2^(ey-ex) */
       mpz_fdiv_qr (mx, r, mx, my); /* 0 <= |r| <= |my|, r has the same
-				      sign as my */
+                                      sign as my */
       q_is_odd = mpz_tstbit (mx, 0);
 #ifdef REMQUO /* mx is the quotient */
       mpz_tdiv_r_2exp (mx, mx, WANTED_BITS);
@@ -133,16 +133,16 @@ mpfr_remainder (mpfr_ptr rem,
     {
 #ifdef REMQUO
       /* for remquo, to get the low WANTED_BITS more bits of the quotient,
-	 we first compute R =  X mod Y*2^WANTED_BITS, where X and Y are
-	 defined below. Then the low WANTED_BITS of the quotient are
-	 floor(R/Y). */
+         we first compute R =  X mod Y*2^WANTED_BITS, where X and Y are
+         defined below. Then the low WANTED_BITS of the quotient are
+         floor(R/Y). */
       mpz_mul_2exp (my, my, WANTED_BITS); /* 2^WANTED_BITS*Y */
 #else
       /* Let X = mx*2^(ex-ey) and Y = my. Then both X and Y are integers.
-	 Assume X = R mod Y, then x = X*2^ey = R*2^ey mod (Y*2^ey=y).
-	 To be able to perform the rounding, we need the least significant
-	 bit of the quotient, i.e., one more bit in the remainder, which is
-	 obtained by dividing by 2Y.
+         Assume X = R mod Y, then x = X*2^ey = R*2^ey mod (Y*2^ey=y).
+         To be able to perform the rounding, we need the least significant
+         bit of the quotient, i.e., one more bit in the remainder, which is
+         obtained by dividing by 2Y.
       */
       mpz_mul_2exp (my, my, 1); /* 2Y */
 #endif
@@ -162,7 +162,7 @@ mpfr_remainder (mpfr_ptr rem,
       mpz_div_2exp (my, my, 1); /* back to Y */
       q_is_odd = mpz_cmpabs (r, my) >= 0; /* least significant bit of q */
       if (q_is_odd)
-	mpz_sub (r, r, my);
+        mpz_sub (r, r, my);
 #endif
       /* now 0 <= |r| < |my|, and q_is_odd is the least significant bit of q */
     }
@@ -172,19 +172,19 @@ mpfr_remainder (mpfr_ptr rem,
   else
     {
       /* FIXME: the comparison 2*r < my could be done more efficiently
-	 at the mpn level */
+         at the mpn level */
       mpz_mul_2exp (r, r, 1);
       compare = mpz_cmpabs (r, my);
       mpz_div_2exp (r, r, 1);
       compare = (compare > 0) || ((compare == 0) && q_is_odd);
       /* if compare != 0, we need to subtract my to r, and add 1 to quo */
       if (compare)
-	{
-	  mpz_sub (r, r, my);
+        {
+          mpz_sub (r, r, my);
 #ifdef REMQUO
-	  *quo += 1;
+          *quo += 1;
 #endif
-	}
+        }
       inex = mpfr_set_z (rem, r, rnd);
       /* if ex > ey, rem should be multiplied by 2^ey, else by 2^ex */
       MPFR_EXP(rem) += (ex > ey) ? ey : ex;

@@ -37,10 +37,10 @@ print_decimal64 (_Decimal64 d)
   x.d = y.d;
   Gh = x.s.exp >> 6;
   printf ("|%d%d%d%d%d%d", x.s.sig, Gh >> 4, (Gh >> 3) & 1,
-	  (Gh >> 2) & 1, (Gh >> 1) & 1, Gh & 1);
+          (Gh >> 2) & 1, (Gh >> 1) & 1, Gh & 1);
   printf ("%d%d%d%d%d%d", (x.s.exp >> 5) & 1, (x.s.exp >> 4) & 1,
-	  (x.s.exp >> 3) & 1, (x.s.exp >> 2) & 1, (x.s.exp >> 1) & 1,
-	  x.s.exp & 1);
+          (x.s.exp >> 3) & 1, (x.s.exp >> 2) & 1, (x.s.exp >> 1) & 1,
+          x.s.exp & 1);
   for (i = 20; i > 0; i--)
     printf ("%d", (x.s.manh >> (i - 1)) & 1);
   for (i = 32; i > 0; i--)
@@ -171,7 +171,7 @@ check_random (void)
   mpfr_t  x, y;
   _Decimal64 d;
   int i;
-  
+
   mpfr_init2 (x, 49);
   mpfr_init2 (y, 49);
 
@@ -181,16 +181,16 @@ check_random (void)
       /* the normal decimal64 range contains [2^(-1272), 2^1278] */
       mpfr_mul_2si (x, x, (i % 2550) - 1272, GMP_RNDN);
       if (mpfr_get_exp (x) <= -1272)
-	mpfr_mul_2exp (x, x, -1271 - mpfr_get_exp (x), GMP_RNDN);
+        mpfr_mul_2exp (x, x, -1271 - mpfr_get_exp (x), GMP_RNDN);
       d = mpfr_get_decimal64 (x, GMP_RNDN);
       mpfr_set_decimal64 (y, d, GMP_RNDN);
       if (mpfr_cmp (x, y) != 0)
-	{
-	  printf ("x="); mpfr_dump (x);
-	  printf ("d="); print_decimal64 (d);
-	  printf ("y="); mpfr_dump (y);
-	  exit (1);
-	}
+        {
+          printf ("x="); mpfr_dump (x);
+          printf ("d="); print_decimal64 (d);
+          printf ("y="); mpfr_dump (y);
+          exit (1);
+        }
     }
 
   mpfr_clear (x);

@@ -78,7 +78,7 @@ main (int argc, char *argv[])
           {
             inexact = mpfr_zeta_ui (y, n, GMP_RNDN);
             if (mpfr_can_round (y, yprec, GMP_RNDN, GMP_RNDZ, prec
-				+ (rnd == GMP_RNDN)))
+                                + (rnd == GMP_RNDN)))
               {
                 mpfr_set (t, y, (mp_rnd_t) rnd);
                 inexact = mpfr_zeta_ui (z, n, (mp_rnd_t) rnd);
@@ -88,11 +88,11 @@ main (int argc, char *argv[])
                     printf (" prec=%u rnd_mode=%s\n", prec,
                             mpfr_print_rnd_mode ((mp_rnd_t) rnd));
                     printf ("   got      ");
-		    mpfr_dump (z);
+                    mpfr_dump (z);
                     printf ("   expected ");
-		    mpfr_dump (t);
+                    mpfr_dump (t);
                     printf ("   approx   ");
-		    mpfr_dump (y);
+                    mpfr_dump (y);
                     exit (1);
                   }
               }

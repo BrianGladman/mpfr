@@ -119,7 +119,7 @@ main (int argc, char *argv[])
 
   mpfr_set_prec (x, 53);
   mpfr_set_prec (y, 53);
-  
+
   /* check four possible sign combinations */
   mpfr_set_ui (x, 42, GMP_RNDN);
   mpfr_set_ui (y, 17, GMP_RNDN);

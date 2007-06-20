@@ -375,7 +375,7 @@ tune_mulders_upto (mp_size_t n)
       mulhigh_ktab[n] = k;
       t =  speed_measure (speed_mpfr_mulhigh, &s);
       if (t * TOLERANCE < tbest)
-	kbest = k, tbest = t;
+        kbest = k, tbest = t;
     }
 
   mulhigh_ktab[n] = kbest;
@@ -420,7 +420,7 @@ tune_sqr_mulders_upto (mp_size_t n)
       sqrhigh_ktab[n] = k;
       t =  speed_measure (speed_mpfr_sqrhigh, &s);
       if (t * TOLERANCE < tbest)
-	kbest = k, tbest = t;
+        kbest = k, tbest = t;
     }
 
   sqrhigh_ktab[n] = kbest;

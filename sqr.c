@@ -59,7 +59,7 @@ mpfr_sqr (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
 
   bn = MPFR_LIMB_SIZE(b); /* number of limbs of b */
   tn = 1 + (2 * bq - 1) / BITS_PER_MP_LIMB; /* number of limbs of square,
-					       2*bn or 2*bn-1 */
+                                               2*bn or 2*bn-1 */
 
   MPFR_TMP_MARK(marker);
   tmp = (mp_limb_t *) MPFR_TMP_ALLOC((size_t) 2 * bn * BYTES_PER_MP_LIMB);

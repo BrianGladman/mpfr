@@ -66,7 +66,7 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
   if (MPFR_GET_EXP (x) > 1) /* |x| >= 2 */
     {
       /* FIXME: we can start with a small precision,
-	 and increase until we can decide the sign. */
+         and increase until we can decide the sign. */
       mpfr_init2 (k, m);
       mpfr_const_pi (c, GMP_RNDN);
       mpfr_mul_2ui (c, c, 1, GMP_RNDN);    /* 2*Pi */
@@ -86,7 +86,7 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
     {
       mpfr_cos (c, x, GMP_RNDZ);
       if (!mpfr_can_round (c, m, GMP_RNDZ, rnd_mode, MPFR_PREC (z)))
-	goto next_step;
+        goto next_step;
       mpfr_set (z, c, rnd_mode);
       mpfr_sqr (c, c, GMP_RNDU);
       mpfr_ui_sub (c, 1, c, GMP_RNDN);

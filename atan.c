@@ -98,31 +98,31 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
       /* p <> 1: precompute ptoj table */
       mpz_set (ptoj[0], p);
       for (im = 1 ; im <= m ; im ++)
-	mpz_mul (ptoj[im], ptoj[im - 1], ptoj[im - 1]);
+        mpz_mul (ptoj[im], ptoj[im - 1], ptoj[im - 1]);
       /* main loop */
       n = 1UL << m;
       /* the ith term being X^i/(2i+1) with X=p/2^r, we can stop when
          p^i/2^(r*i) < 2^(-precy), i.e. r*i > precy + log2(p^i) */
       for (i = k = done = 0; (i < n) && (done == 0); i += 2, k ++)
-	{
+        {
           /* initialize both S[k],Q[k] and S[k+1],Q[k+1] */
-	  mpz_set_ui (Q[k+1], 2 * i + 3); /* Q(i+1,i+2) */
-	  mpz_mul_ui (S[k+1], p, 2 * i + 1); /* S(i+1,i+2) */
-	  mpz_mul_2exp (S[k], Q[k+1], r);
-	  mpz_sub (S[k], S[k], S[k+1]); /* S(i,i+2) */
-	  mpz_mul_ui (Q[k], Q[k+1], 2 * i + 1); /* Q(i,i+2) */
+          mpz_set_ui (Q[k+1], 2 * i + 3); /* Q(i+1,i+2) */
+          mpz_mul_ui (S[k+1], p, 2 * i + 1); /* S(i+1,i+2) */
+          mpz_mul_2exp (S[k], Q[k+1], r);
+          mpz_sub (S[k], S[k], S[k+1]); /* S(i,i+2) */
+          mpz_mul_ui (Q[k], Q[k+1], 2 * i + 1); /* Q(i,i+2) */
           log2_nb_terms[k] = 1; /* S[k]/Q[k] corresponds to 2 terms */
-	  for (j = (i + 2) >> 1, l = 1; (j & 1) == 0; l ++, j >>= 1, k --)
-	    {
+          for (j = (i + 2) >> 1, l = 1; (j & 1) == 0; l ++, j >>= 1, k --)
+            {
               /* invariant: S[k-1]/Q[k-1] and S[k]/Q[k] correspond
                  to 2^l terms each. We combine them into S[k-1]/Q[k-1] */
-	      MPFR_ASSERTD (k > 0);
-	      mpz_mul (S[k], S[k], Q[k-1]);
-	      mpz_mul (S[k], S[k], ptoj[l]);
-	      mpz_mul (S[k-1], S[k-1], Q[k]);
-	      mpz_mul_2exp (S[k-1], S[k-1], r << l);
-	      mpz_add (S[k-1], S[k-1], S[k]);
-	      mpz_mul (Q[k-1], Q[k-1], Q[k]);
+              MPFR_ASSERTD (k > 0);
+              mpz_mul (S[k], S[k], Q[k-1]);
+              mpz_mul (S[k], S[k], ptoj[l]);
+              mpz_mul (S[k-1], S[k-1], Q[k]);
+              mpz_mul_2exp (S[k-1], S[k-1], r << l);
+              mpz_add (S[k-1], S[k-1], S[k]);
+              mpz_mul (Q[k-1], Q[k-1], Q[k]);
               log2_nb_terms[k-1] = l + 1;
               /* now S[k-1]/Q[k-1] corresponds to 2^(l+1) terms */
               MPFR_MPZ_SIZEINBASE2(mult, ptoj[l+1]);
@@ -131,31 +131,31 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
               accu[k-1] = (k == 1) ? mult : accu[k-2] + mult;
               if (accu[k-1] > precy)
                 done = 1;
-	    }
-	}
+            }
+        }
     }
   else /* special case p=1: the ith term being X^i/(2i+1) with X=1/2^r,
           we can stop when r*i > precy i.e. i > precy/r */
     {
       n = 1UL << m;
       for (i = k = 0; (i < n) && (i <= precy / r); i += 2, k ++)
-	{
-	  mpz_set_ui (Q[k + 1], 2 * i + 3);
-	  mpz_mul_2exp (S[k], Q[k+1], r);
-	  mpz_sub_ui (S[k], S[k], 1 + 2 * i);
-	  mpz_mul_ui (Q[k], Q[k + 1], 1 + 2 * i);
+        {
+          mpz_set_ui (Q[k + 1], 2 * i + 3);
+          mpz_mul_2exp (S[k], Q[k+1], r);
+          mpz_sub_ui (S[k], S[k], 1 + 2 * i);
+          mpz_mul_ui (Q[k], Q[k + 1], 1 + 2 * i);
           log2_nb_terms[k] = 1; /* S[k]/Q[k] corresponds to 2 terms */
-	  for (j = (i + 2) >> 1, l = 1; (j & 1) == 0; l++, j >>= 1, k --)
-	    {
-	      MPFR_ASSERTD (k > 0);
-	      mpz_mul (S[k], S[k], Q[k-1]);
-	      mpz_mul (S[k-1], S[k-1], Q[k]);
-	      mpz_mul_2exp (S[k-1], S[k-1], r << l);
-	      mpz_add (S[k-1], S[k-1], S[k]);
-	      mpz_mul (Q[k-1], Q[k-1], Q[k]);
+          for (j = (i + 2) >> 1, l = 1; (j & 1) == 0; l++, j >>= 1, k --)
+            {
+              MPFR_ASSERTD (k > 0);
+              mpz_mul (S[k], S[k], Q[k-1]);
+              mpz_mul (S[k-1], S[k-1], Q[k]);
+              mpz_mul_2exp (S[k-1], S[k-1], r << l);
+              mpz_add (S[k-1], S[k-1], S[k]);
+              mpz_mul (Q[k-1], Q[k-1], Q[k]);
               log2_nb_terms[k-1] = l + 1;
-	    }
-	}
+            }
+        }
     }
 
   /* we need to combine S[0]/Q[0]...S[k-1]/Q[k-1] */
