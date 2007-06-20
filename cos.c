@@ -203,8 +203,8 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_SAVE_EXPO_MARK (expo);
 
   /* cos(x) = 1-x^2/2 + ..., so error < 2^(2*EXP(x)-1) */
-  MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, __gmpfr_one, -2 * MPFR_GET_EXP (x), 1,
-                                    0, rnd_mode, inexact = _inexact; goto end);
+  MPFR_SMALL_INPUT_AFTER_SAVE_EXPO (y, __gmpfr_one, -2 * MPFR_GET_EXP (x),
+                                    1, 0, rnd_mode, expo, {});
 
   /* Compute initial precision */
   precy = MPFR_PREC (y);
@@ -282,7 +282,6 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   inexact = mpfr_set (y, s, rnd_mode);
   MPFR_GROUP_CLEAR (group);
 
- end:
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (y, inexact, rnd_mode);
 }
