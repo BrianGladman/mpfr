@@ -76,11 +76,11 @@ mpfr_cos2_aux (mpfr_ptr f, mpfr_srcptr r)
       /* adjust precision of x to that of t */
       l = mpz_sizeinbase (x, 2);
       if (l > m)
-	{
-	  l -= m;
-	  mpz_div_2exp (x, x, l);
-	  ex += l;
-	}
+        {
+          l -= m;
+          mpz_div_2exp (x, x, l);
+          ex += l;
+        }
       /* multiply t by r */
       mpz_mul (t, t, x);
       mpz_div_2exp (t, t, -ex);
@@ -93,13 +93,13 @@ mpfr_cos2_aux (mpfr_ptr f, mpfr_srcptr r)
           mpz_div_ui (t, t, i + 1);
         }
       /* if m is the (current) number of bits of t, we can consider that
-	 all operations on t so far had precision >= m, so we can prove
-	 by induction that the relative error on t is of the form
-	 (1+u)^(3l)-1, where |u| <= 2^(-m), and l=(i+1)/2 is the # of loops.
-	 Since |(1+x^2)^(1/x) - 1| <= 4x/3 for |x| <= 1/2,
-	 for |u| <= 1/(3l)^2, the absolute error is bounded by
-	 4/3*(3l)*2^(-m)*t <= 4*l since |t| < 2^m.
-	 Therefore the error on s is bounded by 2*l*(l+1). */
+         all operations on t so far had precision >= m, so we can prove
+         by induction that the relative error on t is of the form
+         (1+u)^(3l)-1, where |u| <= 2^(-m), and l=(i+1)/2 is the # of loops.
+         Since |(1+x^2)^(1/x) - 1| <= 4x/3 for |x| <= 1/2,
+         for |u| <= 1/(3l)^2, the absolute error is bounded by
+         4/3*(3l)*2^(-m)*t <= 4*l since |t| < 2^m.
+         Therefore the error on s is bounded by 2*l*(l+1). */
       /* add or subtract to s */
       if (i % 4 == 1)
         mpz_sub (s, s, t);
@@ -109,7 +109,7 @@ mpfr_cos2_aux (mpfr_ptr f, mpfr_srcptr r)
 
   mpfr_set_z (f, s, GMP_RNDN);
   mpfr_div_2ui (f, f, p + q, GMP_RNDN);
-  
+
   mpz_clear (x);
   mpz_clear (s);
   mpz_clear (t);
@@ -163,7 +163,7 @@ mpfr_cos2_aux (mpfr_ptr s, mpfr_srcptr r)
          i.e. b+EXP(t)-PREC(t) <= -m */
       prec = m + MPFR_GET_EXP (t) + b;
       if (MPFR_LIKELY (prec >= MPFR_PREC_MIN))
-	mpfr_prec_round (t, prec, GMP_RNDN);
+        mpfr_prec_round (t, prec, GMP_RNDN);
     }
   mpfr_clear (t);
 
