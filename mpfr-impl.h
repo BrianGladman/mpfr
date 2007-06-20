@@ -1176,6 +1176,31 @@ typedef struct {
       }                                                                 \
   } while (0)
 
+/* Variant, to be called somewhere after MPFR_SAVE_EXPO_MARK. */
+#define MPFR_SMALL_INPUT_AFTER_SAVE_EXPO(y,v,err1,err2,dir,rnd,expo,extra) \
+  do {                                                                  \
+    mpfr_ptr _y = (y);                                                  \
+    mp_exp_t _err1 = (err1);                                            \
+    mp_exp_t _err2 = (err2);                                            \
+    if (_err1 > 0)                                                      \
+      {                                                                 \
+        mpfr_uexp_t _err = (mpfr_uexp_t) _err1 + _err2;                 \
+        if (MPFR_UNLIKELY (_err > MPFR_PREC (_y) + 1))                  \
+          {                                                             \
+            int _inexact;                                               \
+            mpfr_clear_flags ();                                        \
+            _inexact = mpfr_round_near_x (_y,(v),_err,(dir),(rnd));     \
+            if (_inexact != 0)                                          \
+              {                                                         \
+                extra;                                                  \
+                MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);      \
+                MPFR_SAVE_EXPO_FREE (expo);                             \
+                return mpfr_check_range (_y, _inexact, (rnd));          \
+              }                                                         \
+          }                                                             \
+      }                                                                 \
+  } while (0)
+
 /******************************************************
  ***************  Ziv Loop Macro  *********************
  ******************************************************/
