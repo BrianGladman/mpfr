@@ -1176,7 +1176,9 @@ typedef struct {
       }                                                                 \
   } while (0)
 
-/* Variant, to be called somewhere after MPFR_SAVE_EXPO_MARK. */
+/* Variant, to be called somewhere after MPFR_SAVE_EXPO_MARK. This variant
+   is needed when there are some computations before or when some non-zero
+   real constant is used, such as __gmpfr_one for mpfr_cos. */
 #define MPFR_SMALL_INPUT_AFTER_SAVE_EXPO(y,v,err1,err2,dir,rnd,expo,extra) \
   do {                                                                  \
     mpfr_ptr _y = (y);                                                  \
