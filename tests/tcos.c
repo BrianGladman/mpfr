@@ -205,7 +205,6 @@ overflowed_cos0 (void)
                 {
                   printf ("Error in overflowed_cos0 (i = %d, rnd = %s):\n"
                           "  Got ", i, mpfr_print_rnd_mode (rnd));
-                  /* Do not use mpfr_out_str in base 16 (bug in r4545). */
                   mpfr_print_binary (x);
                   printf (" instead of 0.11111111E0.\n");
                   err = 1;
@@ -224,7 +223,6 @@ overflowed_cos0 (void)
                 {
                   printf ("Error in overflowed_cos0 (i = %d, rnd = %s):\n"
                           "  Got ", i, mpfr_print_rnd_mode (rnd));
-                  /* Do not use mpfr_out_str in base 16 (bug in r4545). */
                   mpfr_print_binary (x);
                   printf (" instead of +Inf.\n");
                   err = 1;
