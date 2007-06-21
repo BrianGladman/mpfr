@@ -206,7 +206,7 @@ overflowed_cos0 (void)
                   printf ("Error in overflowed_cos0 (i = %d, rnd = %s):\n"
                           "  Got ", i, mpfr_print_rnd_mode (rnd));
                   mpfr_print_binary (x);
-                  printf (" instead of 0.11111111E0.\n");
+                  printf (" instead of 0.11111111E%d.\n", emax);
                   err = 1;
                 }
             }
