@@ -44,8 +44,8 @@ mpfr_fac_ui (mpfr_ptr y, unsigned long int x, mp_rnd_t rnd_mode)
   MPFR_ZIV_DECL (loop);
 
   /***** test x = 0  and x == 1******/
-  if (MPFR_UNLIKELY (x <=  1))
-    return mpfr_set_ui (y, 1, GMP_RNDN); /* 0! = 1 and 1! = 1 */
+  if (MPFR_UNLIKELY (x <= 1))
+    return mpfr_set_ui (y, 1, rnd_mode); /* 0! = 1 and 1! = 1 */
 
   MPFR_SAVE_EXPO_MARK (expo);
 
