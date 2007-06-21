@@ -194,7 +194,7 @@ overflowed_cos0 (void)
             }
           if (rnd == GMP_RNDZ || rnd == GMP_RNDD)
             {
-              if (inex > 0)
+              if (inex >= 0)
                 {
                   printf ("Error in overflowed_cos0 (i = %d, rnd = %s):\n"
                           "  The inexact value must be negative.\n",
@@ -213,7 +213,7 @@ overflowed_cos0 (void)
             }
           else
             {
-              if (inex < 0)
+              if (inex <= 0)
                 {
                   printf ("Error in overflowed_cos0 (i = %d, rnd = %s):\n"
                           "  The inexact value must be positive.\n",
