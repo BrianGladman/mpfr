@@ -72,32 +72,38 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   /* TODO: Don't convert to double! */
   d = mpfr_get_d1 (x);
   if (MPFR_UNLIKELY (d >= (double) __gmpfr_emax * LOG2))
-    inexact = mpfr_overflow (y, rnd_mode, 1);
+    return mpfr_overflow (y, rnd_mode, 1);
 
   /* result is 0 when exp(x) < 1/2*2^(__gmpfr_emin), i.e.
      x < (__gmpfr_emin-1) * LOG2 */
-  else if (MPFR_UNLIKELY(d < ((double) __gmpfr_emin - 1.0) * LOG2))
+  if (MPFR_UNLIKELY(d < ((double) __gmpfr_emin - 1.0) * LOG2))
     {
       /* warning: mpfr_underflow rounds away for RNDN */
       if (rnd_mode == GMP_RNDN && d < ((double) __gmpfr_emin - 2.0) * LOG2)
         rnd_mode = GMP_RNDZ;
-      inexact = mpfr_underflow (y, rnd_mode, 1);
+      return mpfr_underflow (y, rnd_mode, 1);
     }
 
   /* if x < 2^(-precy), then exp(x) i.e. gives 1 +/- 1 ulp(1) */
-  else if (MPFR_UNLIKELY (expx < 0 && (mpfr_uexp_t) (-expx) > precy))
+  if (MPFR_UNLIKELY (expx < 0 && (mpfr_uexp_t) (-expx) > precy))
     {
+      mp_exp_t emin = __gmpfr_emin;
+      mp_exp_t emax = __gmpfr_emax;
       int signx = MPFR_SIGN (x);
 
       MPFR_SET_POS (y);
       if (MPFR_IS_NEG_SIGN (signx) && (rnd_mode == GMP_RNDD ||
                                        rnd_mode == GMP_RNDZ))
         {
+          __gmpfr_emin = 0;
+          __gmpfr_emax = 0;
           mpfr_setmax (y, 0);  /* y = 1 - epsilon */
           inexact = -1;
         }
       else
         {
+          __gmpfr_emin = 1;
+          __gmpfr_emax = 1;
           mpfr_setmin (y, 1);  /* y = 1 */
           if (MPFR_IS_POS_SIGN (signx) && rnd_mode == GMP_RNDU)
             {
@@ -112,10 +118,11 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
           else
             inexact = -MPFR_FROM_SIGN_TO_INT(signx);
         }
-    }
 
-  /* General case */
-  else
+      __gmpfr_emin = emin;
+      __gmpfr_emax = emax;
+    }
+  else  /* General case */
     {
       MPFR_SAVE_EXPO_MARK (expo);
       __gmpfr_emin -= 3;  /* So that we can check for underflow properly */
@@ -125,8 +132,7 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       else
         inexact = mpfr_exp_2 (y, x, rnd_mode); /* O(n^(1/3) M(n)) */
       MPFR_SAVE_EXPO_FREE (expo);
-      inexact = mpfr_check_range (y, inexact, rnd_mode);
     }
 
-  MPFR_RET (inexact);
+  return mpfr_check_range (y, inexact, rnd_mode);
 }
