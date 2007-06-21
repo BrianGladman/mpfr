@@ -47,8 +47,9 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
           MPFR_ASSERTD (MPFR_IS_ZERO (x));
           MPFR_SET_ZERO (y);
           MPFR_SET_SAME_SIGN (y, x);
-          mpfr_set_ui (z, 1, GMP_RNDN);
-          MPFR_RET (0);
+          /* y = 0, thus exact, but z is inexact in case of underflow
+             or overflow */
+          return mpfr_set_ui (z, 1, rnd_mode);
         }
     }
 

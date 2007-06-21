@@ -165,6 +165,93 @@ check_nans (void)
   mpfr_clear (c);
 }
 
+static void
+overflowed_sin_cos0 (void)
+{
+  mpfr_t x, y, z;
+  int emax, inex, rnd, err = 0;
+  mp_exp_t old_emax;
+
+  old_emax = mpfr_get_emax ();
+
+  mpfr_init2 (x, 8);
+  mpfr_init2 (y, 8);
+  mpfr_init2 (z, 8);
+
+  for (emax = -1; emax <= 0; emax++)
+    {
+      mpfr_set_ui_2exp (z, 1, emax, GMP_RNDN);
+      mpfr_nextbelow (z);
+      set_emax (emax);  /* 1 is not representable. */
+      /* and if emax < 0, 1 - eps is not representable either. */
+      RND_LOOP (rnd)
+        {
+          mpfr_set_si (x, 0, GMP_RNDN);
+          mpfr_neg (x, x, GMP_RNDN);
+          mpfr_clear_flags ();
+          inex = mpfr_sin_cos (x, y, x, rnd);
+          if (! mpfr_overflow_p ())
+            {
+              printf ("Error in overflowed_sin_cos0 (rnd = %s):\n"
+                      "  The overflow flag is not set.\n",
+                      mpfr_print_rnd_mode (rnd));
+              err = 1;
+            }
+          if (! (mpfr_zero_p (x) && MPFR_SIGN (x) < 0))
+            {
+              printf ("Error in overflowed_sin_cos0 (rnd = %s):\n"
+                      "  Got sin = ", mpfr_print_rnd_mode (rnd));
+              mpfr_print_binary (x);
+              printf (" instead of -0.\n");
+              err = 1;
+            }
+          if (rnd == GMP_RNDZ || rnd == GMP_RNDD)
+            {
+              if (inex == 0)
+                {
+                  printf ("Error in overflowed_sin_cos0 (rnd = %s):\n"
+                          "  The inexact value must be non-zero.\n",
+                          mpfr_print_rnd_mode (rnd));
+                  err = 1;
+                }
+              if (! mpfr_equal_p (y, z))
+                {
+                  printf ("Error in overflowed_sin_cos0 (rnd = %s):\n"
+                          "  Got cos = ", mpfr_print_rnd_mode (rnd));
+                  mpfr_print_binary (y);
+                  printf (" instead of 0.11111111E%d.\n", emax);
+                  err = 1;
+                }
+            }
+          else
+            {
+              if (inex == 0)
+                {
+                  printf ("Error in overflowed_sin_cos0 (rnd = %s):\n"
+                          "  The inexact value must be non-zero.\n",
+                          mpfr_print_rnd_mode (rnd));
+                  err = 1;
+                }
+              if (! (mpfr_inf_p (y) && MPFR_SIGN (y) > 0))
+                {
+                  printf ("Error in overflowed_sin_cos0 (rnd = %s):\n"
+                          "  Got cos = ", mpfr_print_rnd_mode (rnd));
+                  mpfr_print_binary (y);
+                  printf (" instead of +Inf.\n");
+                  err = 1;
+                }
+            }
+        }
+      set_emax (old_emax);
+    }
+
+  if (err)
+    exit (1);
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+}
+
 /* tsin_cos prec [N] performs N tests with prec bits */
 int
 main(int argc, char *argv[])
@@ -199,6 +286,8 @@ main(int argc, char *argv[])
   /* check one argument only */
   check53sin ("1.00591265847407274059", "8.446508805292128885e-1", GMP_RNDN);
   check53cos ("1.00591265847407274059", "0.53531755997839769456",  GMP_RNDN);
+
+  overflowed_sin_cos0 ();
 
   tests_end_mpfr ();
   return 0;
