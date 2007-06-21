@@ -59,13 +59,6 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
         }
     }
 
-  /* 2^x = 1 + x*log(2) + O(x^2) for x near zero, and for |x| <= 1 we have
-     |2^x - 1| <= x < 2^EXP(x). If x > 0 we must round away from 0 (dir=1);
-     if x < 0 we must round towards 0 (dir=0). */
-  MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, __gmpfr_one, -MPFR_GET_EXP(x), 0,
-                                    MPFR_SIGN(x) > 0,
-                                    rnd_mode, inexact = _inexact; goto end);
-
   /* since the smallest representable non-zero float is 1/2*2^__gmpfr_emin,
      if x < __gmpfr_emin - 1, the result is either 1/2*2^__gmpfr_emin or 0 */
   MPFR_ASSERTN (MPFR_EMIN_MIN >= LONG_MIN + 2);
@@ -86,6 +79,12 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   /* We now know that emin - 1 <= x < emax. */
 
   MPFR_SAVE_EXPO_MARK (expo);
+
+  /* 2^x = 1 + x*log(2) + O(x^2) for x near zero, and for |x| <= 1 we have
+     |2^x - 1| <= x < 2^EXP(x). If x > 0 we must round away from 0 (dir=1);
+     if x < 0 we must round towards 0 (dir=0). */
+  MPFR_SMALL_INPUT_AFTER_SAVE_EXPO (y, __gmpfr_one, - MPFR_GET_EXP (x), 0,
+                                    MPFR_SIGN(x) > 0, rnd_mode, expo, {});
 
   xint = mpfr_get_si (x, GMP_RNDZ);
   mpfr_init2 (xfrac, MPFR_PREC (x));
@@ -145,7 +144,5 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_ASSERTD (!mpfr_overflow_p () || inexact > 0);
   MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
   MPFR_SAVE_EXPO_FREE (expo);
-
- end:
   return mpfr_check_range (y, inexact, rnd_mode);
 }
