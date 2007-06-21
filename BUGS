@@ -38,6 +38,9 @@ Known bugs:
   or underflows. The overflow case has been fixed except in some corner
   cases.
 
+* Some functions do not use MPFR_SAVE_EXPO_* macros, thus do not behave
+  correctly in a reduced exponent range.
+
 Potential bugs:
 
 * Possible integer overflows on some machines.
