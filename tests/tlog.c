@@ -178,8 +178,11 @@ static void
 special (void)
 {
   mpfr_t x, y;
-  mp_exp_t emax = mpfr_get_emax ();
   int inex;
+  mp_exp_t emin, emax;
+
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
 
   mpfr_init2 (x, 53);
   mpfr_init2 (y, 53);
@@ -191,8 +194,8 @@ special (void)
   mpfr_set_prec (x, 24);
   mpfr_set_str_binary (x, "0.111110101010101011110101E0");
   test_log (y, x, GMP_RNDN);
-  set_emin (MPFR_EMIN_MIN);
-  set_emax (MPFR_EMAX_MAX);
+  set_emin (emin);
+  set_emax (emax);
 
   mpfr_set_prec (y, 53);
   mpfr_set_prec (x, 53);

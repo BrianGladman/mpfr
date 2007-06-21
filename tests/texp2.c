@@ -118,12 +118,14 @@ static void
 exp_range (void)
 {
   mpfr_t x;
+  mp_exp_t emin;
 
+  emin = mpfr_get_emin ();
   set_emin (3);
   mpfr_init2 (x, 8);
   mpfr_set_ui (x, 5, GMP_RNDN);
   mpfr_exp2 (x, x, GMP_RNDN);
-  set_emin (MPFR_EMIN_MIN);
+  set_emin (emin);
   if (mpfr_nan_p (x) || mpfr_cmp_ui (x, 32) != 0)
     {
       printf ("Error in mpfr_exp2 for x = 5, with emin = 3\n");

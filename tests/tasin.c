@@ -170,6 +170,10 @@ static void
 special_overflow (void)
 {
   mpfr_t x, y;
+  mp_exp_t emin, emax;
+
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
 
   set_emin (-125);
   set_emax (128);
@@ -186,8 +190,8 @@ special_overflow (void)
     }
   mpfr_clear (y);
   mpfr_clear (x);
-  set_emin (MPFR_EMIN_MIN);
-  set_emax (MPFR_EMAX_MAX);
+  set_emin (emin);
+  set_emax (emax);
 }
 
 int

@@ -60,6 +60,10 @@ special_overflow (void)
 {
   mpfr_t x, y;
   int i;
+  mp_exp_t emin, emax;
+
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
 
   mpfr_clear_overflow ();
   set_emin (-125);
@@ -87,8 +91,8 @@ special_overflow (void)
     }
   MPFR_ASSERTN (!mpfr_overflow_p ());
 
-  set_emin (MPFR_EMIN_MIN);
-  set_emax (MPFR_EMAX_MAX);
+  set_emin (emin);
+  set_emax (emax);
 
   mpfr_set_str_binary (x, "0.1E1000000000");
   i = mpfr_tanh (y, x, GMP_RNDN);

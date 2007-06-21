@@ -140,6 +140,10 @@ static void
 special_overflow (void)
 {
   mpfr_t x, y;
+  mp_exp_t emin, emax;
+
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
 
   mpfr_init2 (x, 24);
   mpfr_init2 (y, 73);
@@ -149,8 +153,8 @@ special_overflow (void)
   set_emax (128);
   mpfr_set_str_binary (x, "0.111101010110110011101101E6");
   test_cos (y, x, GMP_RNDZ);
-  set_emin (MPFR_EMIN_MIN);
-  set_emax (MPFR_EMAX_MAX);
+  set_emin (emin);
+  set_emax (emax);
 
   mpfr_clear (x);
   mpfr_clear (y);
@@ -161,6 +165,9 @@ overflowed_cos0 (void)
 {
   mpfr_t x, y;
   int emax, i, inex, rnd, err = 0;
+  mp_exp_t old_emax;
+
+  old_emax = mpfr_get_emax ();
 
   mpfr_init2 (x, 8);
   mpfr_init2 (y, 8);
@@ -224,7 +231,7 @@ overflowed_cos0 (void)
                 }
             }
         }
-      set_emax (MPFR_EMAX_MAX);
+      set_emax (old_emax);
     }
 
   if (err)

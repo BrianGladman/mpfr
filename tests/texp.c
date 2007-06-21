@@ -221,6 +221,9 @@ check_special ()
   mpfr_t x, y, z;
   mp_exp_t emin, emax;
 
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
+
   mpfr_init (x);
   mpfr_init (y);
   mpfr_init (z);
@@ -319,7 +322,6 @@ check_special ()
   }
 
   /* check overflow */
-  emax = mpfr_get_emax ();
   set_emax (10);
   mpfr_set_ui (x, 7, GMP_RNDN);
   test_exp (y, x, GMP_RNDN);
@@ -331,7 +333,6 @@ check_special ()
   set_emax (emax);
 
   /* check underflow */
-  emin = mpfr_get_emin ();
   set_emin (-10);
   mpfr_set_si (x, -9, GMP_RNDN);
   test_exp (y, x, GMP_RNDN);
@@ -419,8 +420,8 @@ check_special ()
       exit (1);
     }
 
-  set_emin (MPFR_EMIN_MIN);
-  set_emax (MPFR_EMAX_MAX);
+  set_emin (emin);
+  set_emax (emax);
 
   /* Check for overflow producing a segfault with HUGE exponent */
   mpfr_set_ui  (x, 3, GMP_RNDN);

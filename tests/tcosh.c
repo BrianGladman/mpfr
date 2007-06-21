@@ -139,6 +139,10 @@ special_overflow (void)
      2. cosh(x) is not representable in the selected range of exp.
      3. cosh(x) exp overflow even with the largest range of exp */
   mpfr_t x, y;
+  mp_exp_t emin, emax;
+
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
 
   set_emin (-125);
   set_emax (128);
@@ -164,8 +168,8 @@ special_overflow (void)
       exit (1);
     }
 
-  set_emin (MPFR_EMIN_MIN);
-  set_emax (MPFR_EMAX_MAX);
+  set_emin (emin);
+  set_emax (emax);
 
   mpfr_set_str_binary (x, "0.101100100000000000110100E1000000");
   mpfr_cosh (y, x, GMP_RNDN);
