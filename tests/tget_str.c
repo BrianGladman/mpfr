@@ -1054,6 +1054,29 @@ check_bug_base2k (void)
   mpfr_clears (xx, yy, zz, (void *) 0);
 }
 
+static void
+check_reduced_exprange (void)
+{
+  mpfr_t x;
+  char *s;
+  mp_exp_t emax, e;
+
+  emax = mpfr_get_emax ();
+  mpfr_init2 (x, 8);
+  mpfr_set_str (x, "0.11111111E0", 2, GMP_RNDN);
+  set_emax (0);
+  s = mpfr_get_str (NULL, &e, 16, 0, x, GMP_RNDN);
+  set_emax (emax);
+  if (strcmp (s, "ff0"))
+    {
+      printf ("Error for mpfr_get_str on 0.11111111E0 in base 16:\n"
+              "Got \"%s\" instead of \"ff0\".\n", s);
+      exit (1);
+    }
+  mpfr_free_str (s);
+  mpfr_clear (x);
+}
+
 #define ITER 1000
 
 int
@@ -1114,6 +1137,12 @@ main (int argc, char *argv[])
   check3 (6.7274500420134077e-87, GMP_RNDD, "67274");
 
   check_bug_base2k ();
+
+  /* The following test is disabled by default (enabled only when tget_str
+     is executed with an argument) because it takes 2 GB memory. */
+  if (argc > 1)
+    check_reduced_exprange ();
+
   tests_end_mpfr ();
   return 0;
 }
