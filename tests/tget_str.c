@@ -1137,11 +1137,7 @@ main (int argc, char *argv[])
   check3 (6.7274500420134077e-87, GMP_RNDD, "67274");
 
   check_bug_base2k ();
-
-  /* The following test is disabled by default (enabled only when tget_str
-     is executed with an argument) because it takes 2 GB memory. */
-  if (argc > 1)
-    check_reduced_exprange ();
+  check_reduced_exprange ();
 
   tests_end_mpfr ();
   return 0;

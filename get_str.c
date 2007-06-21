@@ -304,6 +304,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
   int neg;
   int ret; /* return value of mpfr_get_str_aux */
   MPFR_ZIV_DECL (loop);
+  MPFR_SAVE_EXPO_DECL (expo);
   MPFR_TMP_DECL(marker);
 
   /* if exact = 1 then err is undefined */
@@ -312,6 +313,26 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
   /* is the base valid? */
   if (b < 2 || b > 36)
     return NULL;
+
+  if (MPFR_UNLIKELY (MPFR_IS_NAN (x)))
+    {
+      if (s == NULL)
+        s = (char *) (*__gmp_allocate_func) (6);
+      strcpy (s, "@NaN@");
+      return s;
+    }
+
+  neg = MPFR_SIGN(x) < 0; /* 0 if positive, 1 if negative */
+
+  if (MPFR_UNLIKELY (MPFR_IS_INF (x)))
+    {
+      if (s == NULL)
+        s = (char *) (*__gmp_allocate_func) (neg + 6);
+      strcpy (s, (neg) ? "-@Inf@" : "@Inf@");
+      return s;
+    }
+
+  MPFR_SAVE_EXPO_MARK (expo);  /* needed for ceil_mul (at least) */
 
   if (m == 0)
     {
@@ -332,24 +353,6 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
   /* the code below for non-power-of-two bases works for m=1 */
   MPFR_ASSERTN (m >= 2 || (IS_POW2(b) == 0 && m >= 1));
 
-  if (MPFR_IS_NAN(x))
-    {
-      if (s == NULL)
-        s = (char*) (*__gmp_allocate_func) (6);
-      strcpy (s, "@NaN@");
-      return s;
-    }
-
-  neg = MPFR_SIGN(x) < 0; /* 0 if positive, 1 if negative */
-
-  if (MPFR_IS_INF(x))
-    {
-      if (s == NULL)
-        s = (char*) (*__gmp_allocate_func) (neg + 6);
-      strcpy (s, (neg) ? "-@Inf@" : "@Inf@");
-      return s;
-    }
-
   /* x is a floating-point number */
 
   if (MPFR_IS_ZERO(x))
@@ -362,6 +365,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
       memset (s, '0', m);
       s[m] = '\0';
       *e = 0; /* a bit like frexp() in ISO C99 */
+      MPFR_SAVE_EXPO_FREE (expo);
       return s0; /* strlen(s0) = neg + m */
     }
 
@@ -437,7 +441,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
       *e = f + 1;
 
       MPFR_TMP_FREE(marker);
-
+      MPFR_SAVE_EXPO_FREE (expo);
       return (s0);
     }
 
@@ -585,9 +589,8 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
   *e += g;
 
   MPFR_TMP_FREE(marker);
-
+  MPFR_SAVE_EXPO_FREE (expo);
   return s0;
-
 }
 
 void mpfr_free_str (char *str)
