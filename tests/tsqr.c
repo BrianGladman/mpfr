@@ -76,7 +76,7 @@ void check_random(mpfr_prec_t p)
   int r;
   int i, inexact1, inexact2;
 
-  mpfr_inits2(p, x, y, z, NULL);
+  mpfr_inits2 (p, x, y, z, (void *) 0);
   for(i = 0 ; i < 500 ; i++)
     {
       mpfr_random (x);
@@ -91,7 +91,7 @@ void check_random(mpfr_prec_t p)
               error2 ((mp_rnd_t) r,p,x,y,inexact1,inexact2);
           }
     }
-  mpfr_clears(x,y,z,NULL);
+  mpfr_clears (x, y, z, (void *) 0);
 }
 
 void check_special(void)

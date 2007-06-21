@@ -57,7 +57,7 @@ check_large (void)
     mpfr_const_pi (x, GMP_RNDZ);
   }
 
-  mpfr_clears (x, y, z, NULL);
+  mpfr_clears (x, y, z, (void *) 0);
 }
 
 int

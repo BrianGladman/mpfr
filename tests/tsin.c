@@ -210,7 +210,7 @@ check_regression ()
   int i;
 
   p = strlen (xs) - 2 - 3;
-  mpfr_inits2 (p, x, y, NULL);
+  mpfr_inits2 (p, x, y, (void *) 0);
 
   mpfr_set_str (x, xs, 2, GMP_RNDN);
   i = mpfr_sin (y, x, GMP_RNDN);
@@ -222,7 +222,7 @@ check_regression ()
       mpfr_dump (y);
       exit (1);
     }
-  mpfr_clears (x, y, NULL);
+  mpfr_clears (x, y, (void *) 0);
 }
 
 /* Test provided by Christopher Creutzig, 2007-05-21. */

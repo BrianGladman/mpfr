@@ -248,7 +248,7 @@ special_atan2 (void)
 {
   mpfr_t x, y, z;
 
-  mpfr_inits2 (4, x, y, z, NULL);
+  mpfr_inits2 (4, x, y, z, (void *) 0);
 
   /* Anything with NAN should be set to NAN */
   mpfr_set_ui (y, 0, GMP_RNDN);
@@ -349,7 +349,7 @@ special_atan2 (void)
   mpfr_atan2 (z, y, x, GMP_RNDN);
   MPFR_ASSERTN (mpfr_cmp_str (z, "-2.356194490192344928", 10, GMP_RNDN) == 0);
 
-  mpfr_clears (x, y, z, NULL);
+  mpfr_clears (x, y, z, (void *) 0);
 }
 
 int

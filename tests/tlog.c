@@ -53,7 +53,7 @@ check2 (const char *as, mp_rnd_t rnd_mode, const char *res1s)
 {
   mpfr_t ta, tres;
 
-  mpfr_inits2 (53, ta, tres, NULL);
+  mpfr_inits2 (53, ta, tres, (void *) 0);
   mpfr_set_str1 (ta, as);
   test_log (tres, ta, rnd_mode);
 
@@ -66,7 +66,7 @@ check2 (const char *as, mp_rnd_t rnd_mode, const char *res1s)
       mpfr_out_str(stdout, 10, 0, tres, GMP_RNDN);
       exit (1);
     }
-  mpfr_clears (ta, tres, NULL);
+  mpfr_clears (ta, tres, (void *) 0);
 }
 
 static void

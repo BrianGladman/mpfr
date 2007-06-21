@@ -65,7 +65,7 @@ check_set_uj (mp_prec_t pmin, mp_prec_t pmax, int N)
   int inex1, inex2, n;
   mp_limb_t limb;
 
-  mpfr_inits2 (pmax, x, y, NULL);
+  mpfr_inits2 (pmax, x, y, (void *) 0);
 
   for ( p = pmin ; p < pmax ; p++)
     {
@@ -107,7 +107,7 @@ check_set_uj (mp_prec_t pmin, mp_prec_t pmax, int N)
   if (!MPFR_IS_ZERO (x))
     ERROR ("Setting 0");
 
-  mpfr_clears (x, y, NULL);
+  mpfr_clears (x, y, (void *) 0);
 }
 
 static void

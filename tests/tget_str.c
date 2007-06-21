@@ -1051,7 +1051,7 @@ check_bug_base2k (void)
       exit (1);
     }
   mpfr_free_str (s);
-  mpfr_clears (xx, yy, zz, (void *) NULL);
+  mpfr_clears (xx, yy, zz, (void *) 0);
 }
 
 #define ITER 1000

@@ -71,7 +71,7 @@ check4 (const char *Ns, const char *Ds, mp_rnd_t rnd_mode, int p,
 {
   mpfr_t q, n, d;
 
-  mpfr_inits2 (p, q, n, d, NULL);
+  mpfr_inits2 (p, q, n, d, (void *) 0);
   mpfr_set_str1 (n, Ns);
   mpfr_set_str1 (d, Ds);
   test_div(q, n, d, rnd_mode);
@@ -85,7 +85,7 @@ check4 (const char *Ns, const char *Ds, mp_rnd_t rnd_mode, int p,
       putchar('\n');
       exit (1);
     }
-  mpfr_clears (q, n, d, NULL);
+  mpfr_clears (q, n, d, (void *) 0);
 }
 
 static void
@@ -93,7 +93,7 @@ check24 (const char *Ns, const char *Ds, mp_rnd_t rnd_mode, const char *Qs)
 {
   mpfr_t q, n, d;
 
-  mpfr_inits2(24, q, n, d, NULL);
+  mpfr_inits2 (24, q, n, d, (void *) 0);
 
   mpfr_set_str1 (n, Ns);
   mpfr_set_str1 (d, Ds);
@@ -106,7 +106,7 @@ check24 (const char *Ns, const char *Ds, mp_rnd_t rnd_mode, const char *Qs)
       mpfr_out_str(stdout,10,0,q, GMP_RNDN); putchar('\n');
       exit (1);
     }
-  mpfr_clears(q,n,d,NULL);
+  mpfr_clears (q, n, d, (void *) 0);
 }
 
 /* the following examples come from the paper "Number-theoretic Test
@@ -196,7 +196,7 @@ check_64(void)
 {
   mpfr_t x,y,z;
 
-  mpfr_inits2 (64, x, y, z, NULL);
+  mpfr_inits2 (64, x, y, z, (void *) 0);
 
   mpfr_set_str_binary(x, "1.00100100110110101001010010101111000001011100100101010000000000E54");
   mpfr_set_str_binary(y, "1.00000000000000000000000000000000000000000000000000000000000000E584");
@@ -213,7 +213,7 @@ check_64(void)
       exit(1);
     }
 
-  mpfr_clears(x, y, z, NULL);
+  mpfr_clears (x, y, z, (void *) 0);
 }
 
 static void

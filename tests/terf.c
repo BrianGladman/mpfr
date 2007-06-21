@@ -364,7 +364,7 @@ special_erfc (void)
 {
   mpfr_t x, y;
 
-  mpfr_inits (x, y, NULL);
+  mpfr_inits (x, y, (void *) 0);
 
   /* erfc (NaN) = NaN */
   mpfr_set_nan (x);
@@ -405,7 +405,7 @@ special_erfc (void)
       exit (1);
     }
 
-  mpfr_clears (x, y, NULL);
+  mpfr_clears (x, y, (void *) 0);
 }
 
 static void

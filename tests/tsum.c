@@ -151,7 +151,7 @@ test_sum (mp_prec_t f, unsigned long n)
   tab = (mpfr_t *) malloc (n * sizeof(mpfr_t));
   for (i = 0; i < n; i++)
     mpfr_init2 (tab[i], f);
-  mpfr_inits2 (f, sum, real_sum, real_non_rounded, NULL);
+  mpfr_inits2 (f, sum, real_sum, real_non_rounded, (void *) 0);
 
   /* First Uniform */
   for (i = 0; i < n; i++)
@@ -193,7 +193,7 @@ test_sum (mp_prec_t f, unsigned long n)
   /* Clear stuff */
   for (i = 0; i < n; i++)
     mpfr_clear (tab[i]);
-  mpfr_clears (sum, real_sum, real_non_rounded, NULL);
+  mpfr_clears (sum, real_sum, real_non_rounded, (void *) 0);
   free (tab);
 }
 
@@ -204,7 +204,7 @@ void check_special (void)
   mpfr_ptr tabp[3];
   int i;
 
-  mpfr_inits (tab[0], tab[1], tab[2], r, NULL);
+  mpfr_inits (tab[0], tab[1], tab[2], r, (void *) 0);
   tabp[0] = tab[0];
   tabp[1] = tab[1];
   tabp[2] = tab[2];
@@ -277,7 +277,7 @@ void check_special (void)
       exit (1);
     }
 
-  mpfr_clears (tab[0], tab[1], tab[2], r, NULL);
+  mpfr_clears (tab[0], tab[1], tab[2], r, (void *) 0);
 }
 
 

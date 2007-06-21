@@ -147,7 +147,7 @@ check_integer (mp_prec_t begin, mp_prec_t end, unsigned long max)
   int res1, res2;
   mp_rnd_t rnd;
 
-  mpfr_inits2 (begin, x, y1, y2, NULL);
+  mpfr_inits2 (begin, x, y1, y2, (void *) 0);
   mpz_init (z);
   for (p = begin ; p < end ; p+=4)
     {
@@ -188,7 +188,7 @@ check_integer (mp_prec_t begin, mp_prec_t end, unsigned long max)
             }
         } /* for i */
     } /* for p */
-  mpfr_clears (x, y1, y2, NULL);
+  mpfr_clears (x, y1, y2, (void *) 0);
   mpz_clear (z);
 }
 
