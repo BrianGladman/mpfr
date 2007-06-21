@@ -34,9 +34,6 @@ Known bugs:
   bad practice and should be useless, but one never knows what other
   software will do).
 
-* The implementation of mpfr_lgamma is incomplete (case x negative with
-  small exponent).
-
 * The mpfr_fma function behaves incorrectly if the multiplication overflows
   or underflows. The overflow case has been fixed except in some corner
   cases.
