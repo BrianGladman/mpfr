@@ -24,7 +24,7 @@ MA 02110-1301, USA. */
 #define INVERSE  mpfr_cos
 #define ACTION_NAN(y) do { MPFR_SET_NAN(y); MPFR_RET_NAN; } while (1)
 #define ACTION_INF(y) do { MPFR_SET_NAN(y); MPFR_RET_NAN; } while (1)
-#define ACTION_ZERO(y,x) return mpfr_set_ui (y, 1, GMP_RNDN)
+#define ACTION_ZERO(y,x) return mpfr_set_ui (y, 1, rnd_mode)
 /* for x near 0, sec(x) = 1 + x^2/2 + ..., more precisely |sec(x)-1| < x^2
    for |x| <= 1. */
 #define ACTION_TINY(y,x,r) \

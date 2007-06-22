@@ -67,6 +67,7 @@ MA 02110-1301, USA. */
           else /* round to zero, or nearest */                          \
             inexact = -signx;                                           \
         }                                                               \
+      MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);                \
       goto end;                                                         \
     }
 

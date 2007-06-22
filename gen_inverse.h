@@ -60,10 +60,9 @@ FUNCTION (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
         ACTION_ZERO(y,x);
     }
 
-  ACTION_TINY(y,x,rnd_mode); /* special case for very small input x */
-
   /* x is neither NaN, Inf nor zero */
   MPFR_SAVE_EXPO_MARK (expo);
+  ACTION_TINY (y, x, rnd_mode); /* special case for very small input x */
   precy = MPFR_PREC(y);
   m = precy + MPFR_INT_CEIL_LOG2 (precy) + 3;
   mpfr_init2 (z, m);
@@ -99,8 +98,7 @@ FUNCTION (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   inexact = mpfr_set (y, z, rnd_mode);
   mpfr_clear (z);
 
-  MPFR_SAVE_EXPO_FREE (expo);
-
  end:
+  MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (y, inexact, rnd_mode);
 }
