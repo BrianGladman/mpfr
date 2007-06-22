@@ -131,6 +131,72 @@ check_bugs (void)
   mpfr_clear (y);
 }
 
+static void
+underflowed_cothinf (void)
+{
+  mpfr_t x, y;
+  int i, inex, rnd, err = 0;
+  mp_exp_t old_emin;
+
+  old_emin = mpfr_get_emin ();
+
+  mpfr_init2 (x, 8);
+  mpfr_init2 (y, 8);
+
+  for (i = -1; i <= 1; i += 2)
+    RND_LOOP (rnd)
+      {
+        mpfr_set_inf (x, i);
+        mpfr_clear_flags ();
+        set_emin (2);  /* 1 is not representable. */
+        inex = mpfr_coth (x, x, rnd);
+        set_emin (old_emin);
+        if (! mpfr_underflow_p ())
+          {
+            printf ("Error in underflowed_cothinf (i = %d, rnd = %s):\n"
+                    "  The underflow flag is not set.\n",
+                    i, mpfr_print_rnd_mode (rnd));
+            err = 1;
+          }
+        mpfr_set_si (y, (i < 0 && rnd == GMP_RNDD) ||
+                        (i > 0 && rnd == GMP_RNDU) ? 2 : 0, GMP_RNDN);
+        if (i < 0)
+          mpfr_neg (y, y, GMP_RNDN);
+        if (! (mpfr_equal_p (x, y) &&
+               MPFR_MULT_SIGN (MPFR_SIGN (x), MPFR_SIGN (y)) > 0))
+          {
+            printf ("Error in underflowed_cothinf (i = %d, rnd = %s):\n"
+                    "  Got ", i, mpfr_print_rnd_mode (rnd));
+            mpfr_print_binary (x);
+            printf (" instead of ");
+            mpfr_print_binary (y);
+            printf (".\n");
+            err = 1;
+          }
+        if ((rnd == GMP_RNDD ||
+             (i > 0 && (rnd == GMP_RNDN || rnd == GMP_RNDZ))) && inex >= 0)
+          {
+            printf ("Error in underflowed_cothinf (i = %d, rnd = %s):\n"
+                    "  The inexact value must be negative.\n",
+                    i, mpfr_print_rnd_mode (rnd));
+            err = 1;
+          }
+        if ((rnd == GMP_RNDU ||
+             (i < 0 && (rnd == GMP_RNDN || rnd == GMP_RNDZ))) && inex <= 0)
+          {
+            printf ("Error in underflowed_cothinf (i = %d, rnd = %s):\n"
+                    "  The inexact value must be positive.\n",
+                    i, mpfr_print_rnd_mode (rnd));
+            err = 1;
+          }
+      }
+
+  if (err)
+    exit (1);
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -139,6 +205,7 @@ main (int argc, char *argv[])
   check_specials ();
   check_bugs ();
   test_generic (2, 200, 10);
+  underflowed_cothinf ();
 
   tests_end_mpfr ();
   return 0;
