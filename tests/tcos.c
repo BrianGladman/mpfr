@@ -243,6 +243,7 @@ int
 main (int argc, char *argv[])
 {
   mpfr_t x, y;
+  int inex;
 
   tests_start_mpfr ();
 
@@ -325,6 +326,12 @@ main (int argc, char *argv[])
       printf ("Error for prec=32 (3)\n");
       exit (1);
     }
+
+  mpfr_set_prec (x, 3);
+  mpfr_set_prec (y, 3);
+  mpfr_set_str_binary (x, "0.110E60");
+  inex = mpfr_cos (y, x, GMP_RNDD);
+  MPFR_ASSERTN(inex < 0);
 
   /* worst case from PhD thesis of Vincent Lefe`vre: x=8980155785351021/2^54 */
   check53 ("4.984987858808754279e-1", "8.783012931285841817e-1", GMP_RNDN);

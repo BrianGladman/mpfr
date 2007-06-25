@@ -229,7 +229,7 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 	   than 2^(-precy) for directed rounding, or 2^(-precy-1) for rounding
 	   to nearest. */
         {
-          if (m - k >= precy + (rnd_mode == GMP_RNDN))
+          if (m > k && (m - k >= precy + (rnd_mode == GMP_RNDN)))
 	    {
               /* if round to nearest or away, result is s,
                  otherwise it is round(nexttoward (s, 0)) */
