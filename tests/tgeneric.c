@@ -76,6 +76,13 @@ MA 02110-1301, USA. */
 #endif
 #endif
 
+/* For some functions (for example cos), the argument reduction is too
+   expensive when using mpfr_get_emax(). Then simply define REDUCE_EMAX
+   to some reasonable value before including tgeneric.c. */
+#ifndef REDUCE_EMAX
+#define REDUCE_EMAX mpfr_get_emax ()
+#endif
+
 static void
 test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
 {
@@ -149,7 +156,7 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
               if (getenv ("MPFR_CHECK_MAX") == NULL)
                 continue;
               mpfr_set_si (x, n == 0 ? 1 : -1, GMP_RNDN);
-              mpfr_setmax (x, mpfr_get_emax ());
+              mpfr_setmax (x, REDUCE_EMAX);
 #ifdef TWO_ARGS
               mpfr_set_si (u, randlimb () % 2 == 0 ? 1 : -1, GMP_RNDN);
               mpfr_setmax (u, mpfr_get_emax ());
