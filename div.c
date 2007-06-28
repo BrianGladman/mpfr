@@ -153,6 +153,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
   int extra_bit;
   int sh, sh2;
   int inex;
+  int like_rndz;
   MPFR_TMP_DECL(marker);
 
   /**************************************************************************
@@ -351,8 +352,8 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
   printf ("sticky=%lu sticky3=%lu inex=%d\n", sticky, sticky3, inex);
 #endif
 
-  if (sign_quotient < 0)
-    rnd_mode = MPFR_INVERT_RND(rnd_mode);
+  like_rndz = rnd_mode == GMP_RNDZ ||
+    rnd_mode == (sign_quotient < 0 ? GMP_RNDU : GMP_RNDD);
 
   /* to round, we distinguish two cases:
      (a) vsize <= qsize: we used the full divisor
@@ -369,9 +370,9 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
           round_bit = sticky3 & (MPFR_LIMB_ONE << (sh2 - 1));
           sticky = (sticky3 ^ round_bit) | sticky_u;
         }
-      else if (rnd_mode == GMP_RNDZ || rnd_mode == GMP_RNDD || inex == 0)
+      else if (like_rndz || inex == 0)
         sticky = (inex == 0) ? MPFR_LIMB_ZERO : MPFR_LIMB_ONE;
-      else /* rnd_mode = GMP_RNDU */
+      else  /* round away from zero */
         sticky = MPFR_LIMB_ONE;
       goto case_1;
     }
@@ -510,8 +511,8 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
                         { /* round_bit=0, sticky3=0: q1-1 is exact only
                              when sh=0 */
                           inex = (cmp_s_r || sh) ? -1 : 0;
-                          if ((rnd_mode == GMP_RNDU && inex != 0)
-                              || rnd_mode == GMP_RNDN)
+                          if (rnd_mode == GMP_RNDN ||
+                              (! like_rndz && inex != 0))
                             {
                               inex = 1;
                               goto truncate_check_qh;
@@ -527,20 +528,10 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
                     }
                   else /* q1-2 < u/v < q1-1 */
                     {
-                      /* if rnd=GMP_RNDU, the result is up(q1-1),
-                         which is q1 unless sh = 0, where it is q1-1 */
-                      if (rnd_mode == GMP_RNDU)
-                        {
-                          inex = 1;
-                          if (sh > 0)
-                            goto truncate_check_qh;
-                          else /* sh = 0 */
-                            goto sub_one_ulp;
-                        }
                       /* if rnd=GMP_RNDN, the result is q1 when
                          q1-2 >= q1-2^(sh-1), i.e. sh >= 2,
                          otherwise (sh=1) it is q1-2 */
-                      else if (rnd_mode == GMP_RNDN) /* sh > 0 */
+                      if (rnd_mode == GMP_RNDN) /* sh > 0 */
                         {
                           /* Case sh=1: sb=0 always, and q1-rb is exactly
                              representable, like q1-rb-2.
@@ -574,7 +565,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
                               goto truncate_check_qh;
                             }
                         }
-                      else /* round down */
+                      else if (like_rndz)
                         {
                           /* the result is down(q1-2), i.e. subtract one
                              ulp if sh > 0, and two ulps if sh=0 */
@@ -583,6 +574,16 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
                             goto sub_one_ulp;
                           else
                             goto sub_two_ulp;
+                        }
+                      /* if round away from zero, the result is up(q1-1),
+                         which is q1 unless sh = 0, where it is q1-1 */
+                      else
+                        {
+                          inex = 1;
+                          if (sh > 0)
+                            goto truncate_check_qh;
+                          else /* sh = 0 */
+                            goto sub_one_ulp;
                         }
                     }
                 }
@@ -593,10 +594,9 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
  case_1: /* quotient is in [q1, q1+1),
             round_bit is the round_bit (0 for directed rounding),
             sticky the sticky bit */
-  if (rnd_mode == GMP_RNDZ || rnd_mode == GMP_RNDD ||
-      (round_bit == MPFR_LIMB_ZERO && sticky == MPFR_LIMB_ZERO))
+  if (like_rndz || (round_bit == MPFR_LIMB_ZERO && sticky == MPFR_LIMB_ZERO))
     {
-      inex = (round_bit == MPFR_LIMB_ZERO && sticky == MPFR_LIMB_ZERO) ? 0 : -1;
+      inex = round_bit == MPFR_LIMB_ZERO && sticky == MPFR_LIMB_ZERO ? 0 : -1;
       goto truncate;
     }
   else if (rnd_mode == GMP_RNDN) /* sticky <> 0 or round <> 0 */
@@ -612,7 +612,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
       else /* round_bit=1, sticky=0 */
         goto even_rule;
     }
-  else /* rnd_mode = GMP_RNDU, sticky <> 0 */
+  else /* round away from zero, sticky <> 0 */
     goto add_one_ulp; /* with inex=1 */
 
  sub_two_ulp:
