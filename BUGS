@@ -41,8 +41,8 @@ Known bugs:
 * Some functions do not use MPFR_SAVE_EXPO_* macros, thus do not behave
   correctly in a reduced exponent range.
 
-* On x86_64, tacos segfaults (because of lack of memory?) or loops
-  for acos(1e-1073741823).
+* The mpfr_acos function fails or is very inefficient (very slow and
+  takes a lot of memory) on tiny arguments.
 
 Potential bugs:
 
