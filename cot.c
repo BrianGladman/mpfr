@@ -45,11 +45,20 @@ MA 02110-1301, USA. */
    Since |cot(x) - 1/x| <= 0.36, if 2^(-2n) ufp(y) >= 0.72, then
    |y - cot(x)| >= 2^(-2n-1) ufp(y), and rounding 1/x gives the correct
    result. If x < 2^E, then y > 2^(-E), thus ufp(y) > 2^(-E-1).
-   A sufficient condition is thus EXP(x) + 1 <= -2 MAX(PREC(x),PREC(Y)). */
+   A sufficient condition is thus EXP(x) + 1 <= -2 MAX(PREC(x),PREC(Y)).
+   The division can be inexact in case of underflow or overflow; but
+   an underflow is not possible as emin = - emax. The overflow is a
+   real overflow possibly except when |x| = 2^emin. */
 #define ACTION_TINY(y,x,r) \
   if (MPFR_EXP(x) + 1 <= -2 * (mp_exp_t) MAX(MPFR_PREC(x), MPFR_PREC(y))) \
     {                                                                   \
       int signx = MPFR_SIGN(x);                                         \
+      if (mpfr_get_exp (x) == __gmpfr_emin+1 &&                         \
+          mpfr_powerof2_raw (x))                                        \
+        {                                                               \
+          /* Case |x| = 2^emin. */                                      \
+          MPFR_ASSERTN (0);  /* TODO (and add test) */                  \
+        }                                                               \
       inexact = mpfr_ui_div (y, 1, x, r);                               \
       if (inexact == 0) /* x is a power of two */                       \
         { /* result always 1/x, except when rounding to zero */         \
@@ -68,6 +77,10 @@ MA 02110-1301, USA. */
           else /* round to nearest */                                   \
             inexact = signx;                                            \
         }                                                               \
+      MPFR_ASSERTN (MPFR_EMIN_MIN + MPFR_EMAX_MAX == 0);                \
+      /* Underflow is not possible with emin = - emax. */               \
+      MPFR_ASSERTN (! mpfr_underflow_p ());                             \
+      MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);                \
       goto end;                                                         \
     }
 
