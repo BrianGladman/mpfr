@@ -89,8 +89,14 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   prec = MPFR_PREC (acos) + 10 + supplement;
 
+  /* VL: The following change concerning prec comes from r3145
+     "Optimize mpfr_acos by choosing a better initial precision."
+     but it doesn't seem to be correct and leads to problems (assertion
+     failure or very important inefficiency) with tiny arguments.
+     Therefore, I've disabled it. */
   /* If x ~ 2^-N, acos(x) ~ PI/2 - x - x^3/6
      If Prec < 2*N, we can't round since x^3/6 won't be counted. */
+#if 0
   if (MPFR_PREC (acos) >= MPFR_PREC (x) && MPFR_GET_EXP (x) < 0)
     {
       mpfr_uexp_t pmin = (mpfr_uexp_t) (-2 * MPFR_GET_EXP (x)) + 5;
@@ -98,6 +104,7 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mp_rnd_t rnd_mode)
       if (prec < pmin)
         prec = pmin;
     }
+#endif
 
   mpfr_init2 (tmp, prec);
   mpfr_init2 (arcc, prec);

@@ -41,10 +41,6 @@ Known bugs:
 * Some functions do not use MPFR_SAVE_EXPO_* macros, thus do not behave
   correctly in a reduced exponent range.
 
-* The mpfr_acos function fails or is very inefficient (very slow and
-  takes a lot of memory) on tiny arguments. The way the intermediate
-  precision is neither documented nor proved and looks strange.
-
 Potential bugs:
 
 * Possible integer overflows on some machines.
