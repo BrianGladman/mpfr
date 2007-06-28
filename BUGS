@@ -41,8 +41,6 @@ Known bugs:
 * Some functions do not use MPFR_SAVE_EXPO_* macros, thus do not behave
   correctly in a reduced exponent range.
 
-* mpfr_cot fails on +/- 2^emin (not implemented yet). TODO: add a test.
-
 * On x86_64, tacos segfaults (because of lack of memory?) or loops
   for acos(1e-1073741823).
 
