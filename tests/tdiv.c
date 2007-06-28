@@ -825,6 +825,47 @@ test_20070603 (void)
   mpfr_clear (c);
 }
 
+/* Bug found while adding tests for mpfr_cot */
+static void
+test_20070628 (void)
+{
+  mp_exp_t old_emax;
+  mpfr_t x, y;
+  int inex, err = 0;
+
+  old_emax = mpfr_get_emax ();
+
+  if (mpfr_set_emax (256))
+    {
+      printf ("Can't change exponent range\n");
+      exit (1);
+    }
+
+  mpfr_inits2 (53, x, y, (void *) 0);
+  mpfr_set_si (x, -1, GMP_RNDN);
+  mpfr_set_si_2exp (y, 1, -256, GMP_RNDN);
+  mpfr_clear_flags ();
+  inex = mpfr_div (x, x, y, GMP_RNDD);
+  if (MPFR_SIGN (x) >= 0 || ! mpfr_inf_p (x))
+    {
+      printf ("Error in test_20070628: expected -Inf, got\n");
+      mpfr_dump (x);
+      err++;
+    }
+  if (inex >= 0)
+    {
+      printf ("Error in test_20070628: expected inex < 0, got %d\n", inex);
+      err++;
+    }
+  if (! mpfr_overflow_p ())
+    {
+      printf ("Error in test_20070628: overflow flag is not set\n");
+      err++;
+    }
+  mpfr_clears (x, y, (void *) 0);
+  mpfr_set_emax (old_emax);
+}
+
 #define TEST_FUNCTION test_div
 #define TWO_ARGS
 #define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), randlimb () % 100)
@@ -855,6 +896,7 @@ main (int argc, char *argv[])
 
   consistency ();
   test_20070603 ();
+  test_20070628 ();
   test_generic (2, 800, 50);
 
   tests_end_mpfr ();
