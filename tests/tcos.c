@@ -69,7 +69,7 @@ check53 (const char *xs, const char *cos_xs, mp_rnd_t rnd_mode)
 }
 
 #define TEST_FUNCTION test_cos
-#define REDUCE_EMAX 1048575 /* otherwise arg. reduction is too expensive */
+#define REDUCE_EMAX 262143 /* otherwise arg. reduction is too expensive */
 #include "tgeneric.c"
 
 static void

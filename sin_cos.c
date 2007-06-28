@@ -29,9 +29,10 @@ int
 mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
   mp_prec_t prec, m;
-  int neg;
-  mpfr_t c, k;
-  mp_exp_t e;
+  int neg, reduce;
+  mpfr_t c, xr;
+  mpfr_srcptr xx;
+  mp_exp_t err, expx;
   MPFR_ZIV_DECL (loop);
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
@@ -58,55 +59,72 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   prec = MAX (MPFR_PREC (y), MPFR_PREC (z));
   m = prec + MPFR_INT_CEIL_LOG2 (prec) + 13;
-  e = MPFR_GET_EXP (x);
-  m += (e < 0) ? -2*e : e;
+  expx = MPFR_GET_EXP (x);
 
-  mpfr_init2 (c, m);
-
-  /* first determine sign of sinus */
-  if (MPFR_GET_EXP (x) > 1) /* |x| >= 2 */
-    {
-      /* FIXME: we can start with a small precision,
-         and increase until we can decide the sign. */
-      mpfr_init2 (k, m);
-      mpfr_const_pi (c, GMP_RNDN);
-      mpfr_mul_2ui (c, c, 1, GMP_RNDN);    /* 2*Pi */
-      mpfr_div (k, x, c, GMP_RNDN);        /* x/(2*Pi) */
-      mpfr_floor (k, k);                   /* floor(x/(2*Pi)) */
-      mpfr_mul (c, k, c, GMP_RNDN);
-      mpfr_sub (k, x, c, GMP_RNDN);        /* 0 <= k < 2*Pi */
-      mpfr_const_pi (c, GMP_RNDN);         /* PI is cached */
-      neg = mpfr_cmp (k, c) > 0;
-      mpfr_clear (k);
-    }
-  else /* if EXP(x) <= 1, then |x| < 2, thus sign(sin(x)) = sign(x) */
-    neg = MPFR_IS_NEG (x);
+  mpfr_init (c);
+  mpfr_init (xr);
 
   MPFR_ZIV_INIT (loop, m);
   for (;;)
     {
-      mpfr_cos (c, x, GMP_RNDZ);
-      if (!mpfr_can_round (c, m, GMP_RNDZ, rnd_mode, MPFR_PREC (z)))
+      /* the following is copied from sin.c */
+      if (expx >= 2) /* reduce the argument */
+	{
+	  reduce = 1;
+	  mpfr_set_prec (c, expx + m - 1);
+	  mpfr_set_prec (xr, m);
+	  mpfr_const_pi (c, GMP_RNDN);
+	  mpfr_mul_2ui (c, c, 1, GMP_RNDN);
+	  mpfr_remainder (xr, x, c, GMP_RNDN);
+	  mpfr_div_2ui (c, c, 1, GMP_RNDN);
+	  if (MPFR_SIGN (xr) > 0)
+	    mpfr_sub (c, c, xr, GMP_RNDZ);
+	  else
+	    mpfr_add (c, c, xr, GMP_RNDZ);
+	  if (MPFR_IS_ZERO(xr) || MPFR_EXP(xr) < (mp_exp_t) 3 - (mp_exp_t) m
+	      || MPFR_EXP(c) < (mp_exp_t) 3 - (mp_exp_t) m)
+	    goto next_step;
+	  xx = xr;
+	}
+      else /* the input argument is already reduced */
+	{
+	  reduce = 0;
+	  xx = x;
+	}
+      
+      neg = MPFR_IS_NEG (xx); /* gives sign of sin(x) */
+      mpfr_set_prec (c, m);
+      mpfr_cos (c, xx, GMP_RNDZ);
+      /* If no argument reduction was performed, the error is at most ulp(c),
+	 otherwise it is at most ulp(c) + 2^(2-m). Since |c| < 1, we have
+	 ulp(c) <= 2^(-m), thus the error is bounded by 2^(3-m). */
+      err = (reduce == 0) ? m : m - 3;
+      if (!mpfr_can_round (c, m, GMP_RNDN, rnd_mode,
+			   MPFR_PREC (z) + (rnd_mode == GMP_RNDN)))
         goto next_step;
       mpfr_set (z, c, rnd_mode);
       mpfr_sqr (c, c, GMP_RNDU);
       mpfr_ui_sub (c, 1, c, GMP_RNDN);
-      e = 2 + (- MPFR_GET_EXP (c)) / 2;
+      err = 2 + (- MPFR_GET_EXP (c)) / 2;
       mpfr_sqrt (c, c, GMP_RNDN);
       if (neg)
         MPFR_CHANGE_SIGN (c);
 
-      /* the absolute error on c is at most 2^(e-m) = 2^(EXP(c)-err) */
-      e = MPFR_GET_EXP (c) + m - e;
-      if (mpfr_can_round (c, e, GMP_RNDN, rnd_mode, MPFR_PREC (y)))
+      /* the absolute error on c is at most 2^(err-m), which we must put
+	 in the form 2^(EXP(c)-err). If there was an argument reduction,
+	 we need to add 2^(2-m); since err >= 2, the error is bounded by
+	 2^(err+1-m) in that case. */
+      err = MPFR_GET_EXP (c) + (mp_exp_t) m - (err + reduce);
+      if (mpfr_can_round (c, err, GMP_RNDN, rnd_mode,
+			  MPFR_PREC (y) + (rnd_mode == GMP_RNDN)))
         break;
       /* check for huge cancellation */
-      if (e < (mp_exp_t) MPFR_PREC (y))
-        m += MPFR_PREC (y) - e;
+      if (err < (mp_exp_t) MPFR_PREC (y))
+        m += MPFR_PREC (y) - err;
       /* Check if near 1 */
       if (MPFR_GET_EXP (c) == 1
           && MPFR_MANT (c)[MPFR_LIMB_SIZE (c)-1] == MPFR_LIMB_HIGHBIT)
-        m = 2*m;
+        m += m;
 
     next_step:
       MPFR_ZIV_NEXT (loop, m);
@@ -117,6 +135,7 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_set (y, c, rnd_mode);
 
   mpfr_clear (c);
+  mpfr_clear (xr);
 
   MPFR_RET (1); /* Always inexact */
 }

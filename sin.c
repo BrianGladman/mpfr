@@ -23,90 +23,14 @@ MA 02110-1301, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-/* determine the sign of sin(x) using argument reduction.
-   Assumes x is not an exact multiple of Pi (this excludes x=0). */
-static int
-mpfr_sin_sign (mpfr_srcptr x)
-{
-  mpfr_t c, k;
-  mp_exp_t K;
-  int sign;
-  mp_prec_t m;
-  mpfr_srcptr y;
-  MPFR_ZIV_DECL (loop);
-
-  K = MPFR_GET_EXP(x);
-  if (K < 0)  /* Trivial case if ABS(x) < 1 */
-    return MPFR_SIGN (x);
-
-  m = K + BITS_PER_MP_LIMB;
-  mpfr_init2 (c, m);
-  mpfr_init2 (k, m);
-
-  MPFR_ZIV_INIT (loop, m);
-  for (;;)
-    {
-      /* first determine round(x/Pi): does not have to be exact since
-         the result is an integer */
-      mpfr_const_pi (c, GMP_RNDN); /* err <= 1/2*ulp(c) = 2^(1-m) */
-      /* we need that k is not-to-badly rounded to an integer,
-         i.e. ulp(k) <= 1, so m >= EXP(k). */
-      mpfr_div (k, x, c, GMP_RNDN);
-      mpfr_round (k, k);
-
-      sign = 1;
-
-      if (!MPFR_IS_ZERO (k)) /* subtract k*approx(Pi) */
-        {
-          /* determine parity of k for sign */
-          if (MPFR_GET_EXP (k) <= 0 || (mpfr_uexp_t) MPFR_GET_EXP (k) <= m)
-            {
-              mp_size_t j = BITS_PER_MP_LIMB * MPFR_LIMB_SIZE(k)
-                - MPFR_GET_EXP(k);
-              mp_size_t l = j / BITS_PER_MP_LIMB;
-              /* parity bit is j-th bit starting from least significant bits */
-              if ((MPFR_MANT(k)[l] >> (j % BITS_PER_MP_LIMB)) & 1)
-                sign = -1; /* k is odd */
-            }
-          K = MPFR_GET_EXP (k); /* k is an integer, thus K >= 1, k < 2^K */
-          mpfr_mul (k, k, c, GMP_RNDN); /* err <= oldk*err(c) + 1/2*ulp(k)
-                                               <= 2^(K+2-m) */
-          mpfr_sub (k, x, k, GMP_RNDN);
-          /* assuming |k| <= Pi, err <= 2^(1-m)+2^(K+2-m) < 2^(K+3-m) */
-          MPFR_ASSERTN (MPFR_IS_ZERO (k) || MPFR_GET_EXP (k) <= 2);
-          y = k;
-        }
-      else
-        {
-          K = 1;
-          y = x;
-        }
-      /* sign of sign(y) is uncertain if |y| <= err < 2^(K+3-m),
-         thus EXP(y) < K+4-m */
-      if (MPFR_LIKELY (!MPFR_IS_ZERO (y)
-                       && MPFR_GET_EXP (y) >= K + 4 - (mp_exp_t) m))
-        break;
-      MPFR_ZIV_NEXT (loop, m);
-      mpfr_set_prec (c, m);
-      mpfr_set_prec (k, m);
-    }
-
-  if (MPFR_IS_NEG (y))
-    sign = -sign;
-
-  mpfr_clear (k);
-  mpfr_clear (c);
-
-  return sign;
-}
-
 int
 mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
-  mpfr_t c;
-  mp_exp_t e;
+  mpfr_t c, xr;
+  mpfr_srcptr xx;
+  mp_exp_t expx, err;
   mp_prec_t precy, m;
-  int inexact, sign;
+  int inexact, sign, reduce;
   MPFR_ZIV_DECL (loop);
 
   MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
@@ -136,16 +60,54 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   /* Compute initial precision */
   precy = MPFR_PREC (y);
   m = precy + MPFR_INT_CEIL_LOG2 (precy) + 13;
-  e = MPFR_GET_EXP (x);
-  m += (e < 0) ? -2 * e : e;
+  expx = MPFR_GET_EXP (x);
 
-  sign = mpfr_sin_sign (x);
-  mpfr_init2 (c, m);
+  mpfr_init (c);
+  mpfr_init (xr);
 
   MPFR_ZIV_INIT (loop, m);
   for (;;)
     {
-      mpfr_cos (c, x, GMP_RNDZ);    /* can't be exact */
+      /* first perform argument reduction modulo 2*Pi (if needed),
+	 also helps to determine the sign of sin(x) */
+      if (expx >= 2) /* If Pi < x < 4, we need to reduce too, to determine
+			the sign of sin(x). For 2 <= |x| < Pi, we could avoid
+			the reduction. */
+	{
+	  reduce = 1;
+	  mpfr_set_prec (c, expx + m - 1);
+	  mpfr_set_prec (xr, m);
+	  mpfr_const_pi (c, GMP_RNDN);
+	  mpfr_mul_2ui (c, c, 1, GMP_RNDN);
+	  mpfr_remainder (xr, x, c, GMP_RNDN);
+	  /* The analysis is similar to that of cos.c:
+	     |xr - x - 2kPi| <= 2^(2-m). Thus we can decide the sign
+	     of sin(x) if xr is at distance at least 2^(2-m) of both
+	     0 and +/-Pi. */
+	  mpfr_div_2ui (c, c, 1, GMP_RNDN);
+	  /* Since c approximates Pi with an error <= 2^(2-expx-m) <= 2^(-m),
+	     it suffices to check that c - |xr| >= 2^(2-m). */
+	  if (MPFR_SIGN (xr) > 0)
+	    mpfr_sub (c, c, xr, GMP_RNDZ);
+	  else
+	    mpfr_add (c, c, xr, GMP_RNDZ);
+	  if (MPFR_IS_ZERO(xr) || MPFR_EXP(xr) < (mp_exp_t) 3 - (mp_exp_t) m
+	      || MPFR_EXP(c) < (mp_exp_t) 3 - (mp_exp_t) m)
+	    goto ziv_next;
+
+	  /* |xr - x - 2kPi| <= 2^(2-m), thus |sin(xr) - sin(x)| <= 2^(2-m) */
+	  xx = xr;
+	}
+      else /* the input argument is already reduced */
+	{
+	  reduce = 0;
+	  xx = x;
+	}
+
+      sign = MPFR_SIGN(xx);
+      /* now that the argument is reduced, precision m is enough */
+      mpfr_set_prec (c, m);
+      mpfr_cos (c, xx, GMP_RNDZ);    /* can't be exact */
       mpfr_nexttoinf (c);           /* now c = cos(x) rounded away */
       mpfr_mul (c, c, c, GMP_RNDU); /* away */
       mpfr_ui_sub (c, 1, c, GMP_RNDZ);
@@ -162,9 +124,12 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
         }
       else
         {
-          /* the absolute error on c is at most 2^(3-m-EXP(c)) */
-          e = 2 * MPFR_GET_EXP (c) + m - 3;
-          if (mpfr_can_round (c, e, GMP_RNDN, GMP_RNDZ,
+          /* the absolute error on c is at most 2^(3-m-EXP(c)),
+	     plus 2^(2-m) if there was an argument reduction.
+	     Since EXP(c) <= 1, 3-m-EXP(c) >= 2-m, thus the error
+	     is at most 2^(3-m-EXP(c)) in case of argument reduction. */
+          err = 2 * MPFR_GET_EXP (c) + (mp_exp_t) m - 3 - (reduce != 0);
+          if (mpfr_can_round (c, err, GMP_RNDN, GMP_RNDZ,
                               precy + (rnd_mode == GMP_RNDN)))
             /* WARNING: even if we know c <= sin(x), don't give GMP_RNDZ
                as 3rd argument to mpfr_can_round, since if c is exactly
@@ -173,16 +138,16 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
             break;
 
           /* check for huge cancellation (Near 0) */
-          if (e < (mp_exp_t) MPFR_PREC (y))
-            m += MPFR_PREC (y) - e;
+          if (err < (mp_exp_t) MPFR_PREC (y))
+            m += MPFR_PREC (y) - err;
           /* Check if near 1 */
           if (MPFR_GET_EXP (c) == 1)
             m += m;
         }
 
+    ziv_next:
       /* Else generic increase */
       MPFR_ZIV_NEXT (loop, m);
-      mpfr_set_prec (c, m);
     }
   MPFR_ZIV_FREE (loop);
 
@@ -191,6 +156,7 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
      within the target precision, but in that case mpfr_can_round will fail */
 
   mpfr_clear (c);
+  mpfr_clear (xr);
 
   return inexact; /* inexact */
 }

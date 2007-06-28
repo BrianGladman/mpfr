@@ -26,6 +26,7 @@ MA 02110-1301, USA. */
 #include "mpfr-test.h"
 
 #define TEST_FUNCTION mpfr_sec
+#define REDUCE_EMAX 262143 /* otherwise arg. reduction is too expensive */
 #include "tgeneric.c"
 
 static void

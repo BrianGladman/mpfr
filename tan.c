@@ -62,10 +62,6 @@ mpfr_tan (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   /* Compute initial precision */
   precy = MPFR_PREC (y);
   m = precy + MPFR_INT_CEIL_LOG2 (precy) + 13;
-  if (MPFR_GET_EXP (x) > 0)
-    m += MPFR_GET_EXP (x) / 3;
-  else
-    m += -MPFR_GET_EXP (x);
 
   MPFR_GROUP_INIT_2 (group, m, s, c);
   MPFR_ZIV_INIT (loop, m);

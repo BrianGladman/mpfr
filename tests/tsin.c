@@ -198,6 +198,7 @@ check_nans (void)
 }
 
 #define TEST_FUNCTION test_sin
+#define REDUCE_EMAX 262143 /* otherwise arg. reduction is too expensive */
 #include "tgeneric.c"
 
 const char xs[] = "0.111011111110110000111000001100000111110E-1";
