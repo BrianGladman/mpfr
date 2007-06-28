@@ -91,9 +91,13 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   /* If x ~ 2^-N, acos(x) ~ PI/2 - x - x^3/6
      If Prec < 2*N, we can't round since x^3/6 won't be counted. */
-  if (MPFR_PREC (acos) >= MPFR_PREC (x)
-      && (mp_exp_t) prec <= -2*MPFR_GET_EXP (x) + 5)
-    prec = (mpfr_uexp_t) (-2*MPFR_GET_EXP (x)) + 5;
+  if (MPFR_PREC (acos) >= MPFR_PREC (x) && MPFR_GET_EXP (x) < 0)
+    {
+      mpfr_uexp_t pmin = (mpfr_uexp_t) (-2 * MPFR_GET_EXP (x)) + 5;
+      MPFR_ASSERTN (pmin <= MPFR_PREC_MAX);
+      if (prec < pmin)
+        prec = pmin;
+    }
 
   mpfr_init2 (tmp, prec);
   mpfr_init2 (arcc, prec);
