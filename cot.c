@@ -52,14 +52,19 @@ MA 02110-1301, USA. */
 #define ACTION_TINY(y,x,r) \
   if (MPFR_EXP(x) + 1 <= -2 * (mp_exp_t) MAX(MPFR_PREC(x), MPFR_PREC(y))) \
     {                                                                   \
+      int two2emin;                                                     \
       int signx = MPFR_SIGN(x);                                         \
-      if (mpfr_get_exp (x) == __gmpfr_emin+1 &&                         \
-          mpfr_powerof2_raw (x))                                        \
+      MPFR_ASSERTN (MPFR_EMIN_MIN + MPFR_EMAX_MAX == 0);                \
+      if ((two2emin = mpfr_get_exp (x) == __gmpfr_emin + 1 &&           \
+           mpfr_powerof2_raw (x)))                                      \
         {                                                               \
-          /* Case |x| = 2^emin. */                                      \
-          MPFR_ASSERTN (0);  /* TODO (and add test) */                  \
+          /* Case |x| = 2^emin. 1/x is not representable; so, compute   \
+             1/(2x) instead (exact), and correct the result later. */   \
+          mpfr_set_si_2exp (y, signx, __gmpfr_emax, GMP_RNDN);          \
+          inexact = 0;                                                  \
         }                                                               \
-      inexact = mpfr_ui_div (y, 1, x, r);                               \
+      else                                                              \
+        inexact = mpfr_ui_div (y, 1, x, r);                             \
       if (inexact == 0) /* x is a power of two */                       \
         { /* result always 1/x, except when rounding to zero */         \
           if (rnd_mode == GMP_RNDU || (rnd_mode == GMP_RNDZ && signx < 0)) \
@@ -76,8 +81,9 @@ MA 02110-1301, USA. */
             }                                                           \
           else /* round to nearest */                                   \
             inexact = signx;                                            \
+          if (two2emin)                                                 \
+            mpfr_mul_2ui (y, y, 1, r);  /* overflow in GMP_RNDN */      \
         }                                                               \
-      MPFR_ASSERTN (MPFR_EMIN_MIN + MPFR_EMAX_MAX == 0);                \
       /* Underflow is not possible with emin = - emax. */               \
       MPFR_ASSERTN (! mpfr_underflow_p ());                             \
       MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);                \
