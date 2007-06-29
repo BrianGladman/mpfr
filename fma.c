@@ -146,50 +146,54 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
           /* Now, we need to add z/4... But it may underflow! */
           {
             mpfr_t zo4;
+            mpfr_srcptr zz;
 
-            mpfr_init2 (zo4, MPFR_PREC (z) + 2);
-            if (mpfr_div_2ui (zo4, z, 2, GMP_RNDZ))
+            if (MPFR_GET_EXP (u) > MPFR_GET_EXP (z) &&
+                MPFR_GET_EXP (u) - MPFR_GET_EXP (z) > MPFR_PREC (u))
               {
-                /* The division by 4 underflowed! This probably means that
-                   |z/4| < ulp(u), but this is not guaranteed by the current
-                   MPFR_PREC_MAX definition (and internal computations can
-                   significantly increase the precision).
-                   Let z2 = sign(z) * 2^(E(z)-1), and z4 = z2 + z/4, which
-                   is representable if one takes 2 more precision bits (see
-                   the + 2 above). Then we compute u + z4 with the provided
-                   rounding mode. */
+                /* |z| < ulp(u)/2, therefore one can use z instead of z/4. */
+                zz = z;
+              }
+            else
+              {
+                mpfr_init2 (zo4, MPFR_PREC (z));
+                if (mpfr_div_2ui (zo4, z, 2, GMP_RNDZ))
+                  {
+                    /* The division by 4 underflowed! */
+                    MPFR_ASSERTN (0); /* TODO... */
+                  }
+                zz = zo4;
+              }
+
+            mpfr_clear_flags ();
+            /* Let's recall that u = x*y/4 and zz = z/4 (or z if the
+               following addition would give the same result). */
+            inexact = mpfr_add (s, u, zz, rnd_mode);
+            /* u and zz have different signs, so that an overflow
+               is not possible. But an underflow is theoretically
+               possible! */
+            if (mpfr_underflow_p ())
+              {
+                MPFR_ASSERTN (zz != z);
                 MPFR_ASSERTN (0); /* TODO... */
                 mpfr_clears (zo4, u, (void *) 0);
               }
             else
               {
-                /* The division by 4 didn't overflow (and was exact). */
-                mpfr_clear_flags ();
-                /* Let's recall that u = x*y/4 and zo4 = z/4 exactly. */
-                inexact = mpfr_add (s, u, zo4, rnd_mode);
-                /* u and zo4 have different signs, so that an overflow
-                   is not possible. But an underflow is theoretically
-                   possible! */
-                if (mpfr_underflow_p ())
-                  {
-                    MPFR_ASSERTN (0); /* TODO... */
-                    mpfr_clears (zo4, u, (void *) 0);
-                  }
-                else
-                  {
-                    int inex2;
+                int inex2;
 
-                    mpfr_clears (zo4, u, (void *) 0);
-                    MPFR_ASSERTN (! mpfr_overflow_p ());
-                    inex2 = mpfr_mul_2ui (s, s, 2, rnd_mode);
-                    if (inex2)  /* overflow */
-                      {
-                        inexact = inex2;
-                        MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
-                      }
-                    MPFR_SAVE_EXPO_FREE (expo);
-                    return mpfr_check_range (s, inexact, rnd_mode);
+                if (zz != z)
+                  mpfr_clear (zo4);
+                mpfr_clear (u);
+                MPFR_ASSERTN (! mpfr_overflow_p ());
+                inex2 = mpfr_mul_2ui (s, s, 2, rnd_mode);
+                if (inex2)  /* overflow */
+                  {
+                    inexact = inex2;
+                    MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
                   }
+                MPFR_SAVE_EXPO_FREE (expo);
+                return mpfr_check_range (s, inexact, rnd_mode);
               }
           }
         }
