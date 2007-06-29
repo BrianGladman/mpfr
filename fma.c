@@ -180,6 +180,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
                     int inex2;
 
                     mpfr_clears (zo4, u, (void *) 0);
+                    MPFR_ASSERTN (! mpfr_overflow_p ());
                     inex2 = mpfr_mul_2ui (s, s, 2, rnd_mode);
                     if (inex2)  /* overflow */
                       {
