@@ -82,20 +82,22 @@ test_exact (void)
 }
 
 static void
-test_overflow (void)
+test_overflow1 (void)
 {
   mpfr_t x, y, z, r;
   int inex;
 
   mpfr_inits2 (8, x, y, z, r, (void *) 0);
-  mpfr_setmax (x, mpfr_get_emax ());
-  mpfr_set_ui (y, 2, GMP_RNDN);
-  mpfr_neg (z, x, GMP_RNDN);
+  mpfr_setmax (x, mpfr_get_emax ());  /* x = 0.1@emax */
+  mpfr_set_ui (y, 2, GMP_RNDN);       /* y = 2 */
+  mpfr_neg (z, x, GMP_RNDN);          /* z = -x = -0.1@emax */
   mpfr_clear_flags ();
+  /* The intermediate multiplication x * y overflows, but x * y + z = x
+     is representable. */
   inex = mpfr_fma (r, x, y, z, GMP_RNDN);
-  if (inex || !mpfr_equal_p (r, x))
+  if (inex || ! mpfr_equal_p (r, x))
     {
-      printf ("Error in test_overflow\nexpected ");
+      printf ("Error in test_overflow1\nexpected ");
       mpfr_out_str (stdout, 2, 0, x, GMP_RNDN);
       printf (" with inex = 0\n     got ");
       mpfr_out_str (stdout, 2, 0, r, GMP_RNDN);
@@ -104,10 +106,77 @@ test_overflow (void)
     }
   if (mpfr_overflow_p ())
     {
-      printf ("Error in test_overflow: overflow flag set\n");
+      printf ("Error in test_overflow1: overflow flag set\n");
       exit (1);
     }
+  mpfr_clears (x, y, z, r, (void *) 0);
+}
 
+static void
+test_overflow2 (void)
+{
+  mpfr_t x, y, z, r;
+  int i, inex, rnd, err = 0;
+
+  mpfr_inits2 (8, x, y, z, r, (void *) 0);
+
+  mpfr_setmax (x, mpfr_get_emax ());  /* x = 0.1@emax */
+  mpfr_set_si (y, -2, GMP_RNDN);      /* y = -2 */
+  /* The intermediate multiplication x * y will overflow. */
+
+  for (i = -1; i <= 1; i++)
+    RND_LOOP (rnd)
+      {
+        int inf, overflow;
+
+        inf = rnd == GMP_RNDN || rnd == GMP_RNDD;
+        overflow = inf || i <= 0;
+
+        inex = mpfr_set_si_2exp (z, i, mpfr_get_emin (), GMP_RNDN);
+        MPFR_ASSERTN (inex == 0);
+
+        mpfr_clear_flags ();
+        /* One has: x * y = -1@emax exactly (but not representable). */
+        inex = mpfr_fma (r, x, y, z, rnd);
+        if (overflow ^ (mpfr_overflow_p () != 0))
+          {
+            printf ("Error in test_overflow2 (i = %d, %s): wrong overflow"
+                    " flag (should be %d)\n", i, mpfr_print_rnd_mode (rnd),
+                    overflow);
+            err = 1;
+          }
+        if (MPFR_SIGN (r) >= 0)
+          {
+            printf ("Error in test_overflow2 (i = %d, %s): wrong sign ",
+                    "(+ instead of -)\n", i, mpfr_print_rnd_mode (rnd));
+            err = 1;
+          }
+        else if (inf && ! mpfr_inf_p (r))
+          {
+            printf ("Error in test_overflow2 (i = %d, %s): expected -Inf,"
+                    " got\n", i, mpfr_print_rnd_mode (rnd));
+            mpfr_dump (r);
+            err = 1;
+          }
+        else if (!inf && (mpfr_inf_p (r) ||
+                          (mpfr_nextbelow (r), ! mpfr_inf_p (r))))
+          {
+            printf ("Error in test_overflow2 (i = %d, %s): expected -MAX,"
+                    " got\n", i, mpfr_print_rnd_mode (rnd));
+            mpfr_dump (r);
+            err = 1;
+          }
+        if (inf ? inex >= 0 : inex <= 0)
+          {
+            printf ("Error in test_overflow2 (i = %d, %s): wrong inexact"
+                    " flag (got %d)\n", i, mpfr_print_rnd_mode (rnd), inex);
+            err = 1;
+          }
+
+      }
+
+  if (err)
+    exit (1);
   mpfr_clears (x, y, z, r, (void *) 0);
 }
 
@@ -401,7 +470,8 @@ main (int argc, char *argv[])
   mpfr_clear (s);
 
   test_exact ();
-  test_overflow ();
+  test_overflow1 ();
+  test_overflow2 ();
 
   tests_end_mpfr ();
   return 0;
