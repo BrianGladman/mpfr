@@ -145,7 +145,19 @@ test_overflow2 (void)
                     overflow);
             err = 1;
           }
-        if (MPFR_SIGN (r) >= 0)
+        if (mpfr_nanflag_p ())
+          {
+            printf ("Error in test_overflow2 (i = %d, %s): NaN flag should"
+                    " not be set\n", i, mpfr_print_rnd_mode (rnd));
+            err = 1;
+          }
+        if (mpfr_nan_p (r))
+          {
+            printf ("Error in test_overflow2 (i = %d, %s): got NaN\n",
+                    i, mpfr_print_rnd_mode (rnd));
+            err = 1;
+          }
+        else if (MPFR_SIGN (r) >= 0)
           {
             printf ("Error in test_overflow2 (i = %d, %s): wrong sign ",
                     "(+ instead of -)\n", i, mpfr_print_rnd_mode (rnd));
