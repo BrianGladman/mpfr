@@ -159,7 +159,7 @@ test_overflow2 (void)
           }
         else if (MPFR_SIGN (r) >= 0)
           {
-            printf ("Error in test_overflow2 (i = %d, %s): wrong sign ",
+            printf ("Error in test_overflow2 (i = %d, %s): wrong sign "
                     "(+ instead of -)\n", i, mpfr_print_rnd_mode (rnd));
             err = 1;
           }
