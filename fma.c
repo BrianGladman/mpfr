@@ -136,7 +136,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
           /* E(x) + E(y) <= emax+2, therefore |x*y| < 2^(emax+2), and
              (x/4)*y does not overflow (let's recall that the result
              is exact with an unbounded exponent range). It does not
-             underflow either because x*y overflows and the exponent
+             underflow either, because x*y overflows and the exponent
              range is large enough. */
           inexact = mpfr_div_2ui (u, x, 2, GMP_RNDN);
           MPFR_ASSERTN (inexact == 0);
