@@ -36,7 +36,7 @@ Known bugs:
 
 * The mpfr_fma function behaves incorrectly if the multiplication overflows
   or underflows. The overflow case has been fixed except in some corner
-  cases.
+  cases, where huge precisions are involved.
 
 * Some functions do not use MPFR_SAVE_EXPO_* macros, thus do not behave
   correctly in a reduced exponent range.
