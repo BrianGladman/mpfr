@@ -88,9 +88,9 @@ test_overflow1 (void)
   int inex;
 
   mpfr_inits2 (8, x, y, z, r, (void *) 0);
-  mpfr_setmax (x, mpfr_get_emax ());  /* x = 0.1@emax */
+  mpfr_setmax (x, mpfr_get_emax ());  /* x = 2^emax - ulp */
   mpfr_set_ui (y, 2, GMP_RNDN);       /* y = 2 */
-  mpfr_neg (z, x, GMP_RNDN);          /* z = -x = -0.1@emax */
+  mpfr_neg (z, x, GMP_RNDN);          /* z = -x = -(2^emax - ulp) */
   mpfr_clear_flags ();
   /* The intermediate multiplication x * y overflows, but x * y + z = x
      is representable. */
@@ -120,7 +120,7 @@ test_overflow2 (void)
 
   mpfr_inits2 (8, x, y, z, r, (void *) 0);
 
-  mpfr_setmax (x, mpfr_get_emax ());  /* x = 0.1@emax */
+  mpfr_setmin (x, mpfr_get_emax ());  /* x = 0.1@emax */
   mpfr_set_si (y, -2, GMP_RNDN);      /* y = -2 */
   /* The intermediate multiplication x * y will overflow. */
 
