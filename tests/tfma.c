@@ -124,7 +124,7 @@ test_overflow2 (void)
   mpfr_set_si (y, -2, GMP_RNDN);      /* y = -2 */
   /* The intermediate multiplication x * y will overflow. */
 
-  for (i = -1; i <= 1; i++)
+  for (i = -9; i <= 9; i++)
     RND_LOOP (rnd)
       {
         int inf, overflow;
