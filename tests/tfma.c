@@ -208,11 +208,14 @@ test_underflow (void)
   for (signy = -1; signy <= 1; signy += 2)
     {
       mpfr_set_si_2exp (y, signy, -1, GMP_RNDN);  /* |y| = 1/2 */
-      for (signz = -1; signz <= 1; signz += 2)
+      for (signz = -3; signz <= 3; signz += 2)
         {
-          mpfr_set_si (z, signz, GMP_RNDN);  /* |z| = 1 */
           RND_LOOP (rnd)
             {
+              mpfr_set_si (z, signz, GMP_RNDN);
+              if (ABS (signz) != 1)
+                mpfr_setmax (z, mpfr_get_emax ());
+              /* |z| = 1 or 2^emax - ulp */
               mpfr_clear_flags ();
               inex = mpfr_fma (r, x, y, z, rnd);
 #define ERRTU "Error in test_underflow (signy = %d, signz = %d, %s)\n  "
@@ -222,9 +225,15 @@ test_underflow (void)
                           mpfr_print_rnd_mode (rnd));
                   err = 1;
                 }
-              if (mpfr_overflow_p ())
+              if (signy < 0 && (rnd == GMP_RNDD ||
+                                (rnd == GMP_RNDZ && signz > 0)))
+                mpfr_nextbelow (z);
+              if (signy > 0 && (rnd == GMP_RNDU ||
+                                (rnd == GMP_RNDZ && signz < 0)))
+                mpfr_nextabove (z);
+              if ((mpfr_overflow_p () != 0) ^ (mpfr_inf_p (z) != 0))
                 {
-                  printf (ERRTU "overflow flag is set\n", signy, signz,
+                  printf (ERRTU "wrong overflow flag\n", signy, signz,
                           mpfr_print_rnd_mode (rnd));
                   err = 1;
                 }
@@ -234,12 +243,6 @@ test_underflow (void)
                           mpfr_print_rnd_mode (rnd));
                   err = 1;
                 }
-              if (signy < 0 && (rnd == GMP_RNDD ||
-                                (rnd == GMP_RNDZ && signz > 0)))
-                mpfr_nextbelow (z);
-              if (signy > 0 && (rnd == GMP_RNDU ||
-                                (rnd == GMP_RNDZ && signz < 0)))
-                mpfr_nextabove (z);
               if (! mpfr_equal_p (r, z))
                 {
                   printf (ERRTU "got ", signy, signz,
