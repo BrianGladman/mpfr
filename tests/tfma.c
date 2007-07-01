@@ -296,8 +296,8 @@ test_underflow2 (void)
           mpfr_set_si_2exp (y, i, -4 - MPFR_PREC (z), GMP_RNDN);
           /*  z = 1.000...00b
            * xy =            01111
-           *   ou            10000
-           *   ou            10001
+           *   or            10000
+           *   or            10001
            */
           mpfr_clear_flags ();
           inex = mpfr_fma (r, x, y, z, GMP_RNDN);
