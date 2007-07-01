@@ -195,7 +195,7 @@ test_overflow2 (void)
 }
 
 static void
-test_underflow (void)
+test_underflow1 (void)
 {
   mpfr_t x, y, z, r;
   int inex, signy, signz, rnd, err = 0;
@@ -218,10 +218,10 @@ test_underflow (void)
               /* |z| = 1 or 2^emax - ulp */
               mpfr_clear_flags ();
               inex = mpfr_fma (r, x, y, z, rnd);
-#define ERRTU "Error in test_underflow (signy = %d, signz = %d, %s)\n  "
+#define ERRTU1 "Error in test_underflow1 (signy = %d, signz = %d, %s)\n  "
               if (mpfr_nanflag_p ())
                 {
-                  printf (ERRTU "NaN flag is set\n", signy, signz,
+                  printf (ERRTU1 "NaN flag is set\n", signy, signz,
                           mpfr_print_rnd_mode (rnd));
                   err = 1;
                 }
@@ -233,19 +233,19 @@ test_underflow (void)
                 mpfr_nextabove (z);
               if ((mpfr_overflow_p () != 0) ^ (mpfr_inf_p (z) != 0))
                 {
-                  printf (ERRTU "wrong overflow flag\n", signy, signz,
+                  printf (ERRTU1 "wrong overflow flag\n", signy, signz,
                           mpfr_print_rnd_mode (rnd));
                   err = 1;
                 }
               if (mpfr_underflow_p ())
                 {
-                  printf (ERRTU "underflow flag is set\n", signy, signz,
+                  printf (ERRTU1 "underflow flag is set\n", signy, signz,
                           mpfr_print_rnd_mode (rnd));
                   err = 1;
                 }
               if (! mpfr_equal_p (r, z))
                 {
-                  printf (ERRTU "got ", signy, signz,
+                  printf (ERRTU1 "got ", signy, signz,
                           mpfr_print_rnd_mode (rnd));
                   mpfr_print_binary (r);
                   printf (" instead of ");
@@ -257,7 +257,7 @@ test_underflow (void)
                                 (rnd == GMP_RNDZ && signz > 0) ||
                                 (rnd == GMP_RNDN && signy > 0)))
                 {
-                  printf (ERRTU "ternary value = %d instead of < 0\n",
+                  printf (ERRTU1 "ternary value = %d instead of < 0\n",
                           signy, signz, mpfr_print_rnd_mode (rnd), inex);
                   err = 1;
                 }
@@ -265,12 +265,69 @@ test_underflow (void)
                                 (rnd == GMP_RNDZ && signz < 0) ||
                                 (rnd == GMP_RNDN && signy < 0)))
                 {
-                  printf (ERRTU "ternary value = %d instead of > 0\n",
+                  printf (ERRTU1 "ternary value = %d instead of > 0\n",
                           signy, signz, mpfr_print_rnd_mode (rnd), inex);
                   err = 1;
                 }
             }
         }
+    }
+
+  if (err)
+    exit (1);
+  mpfr_clears (x, y, z, r, (void *) 0);
+}
+
+static void
+test_underflow2 (void)
+{
+  mpfr_t x, y, z, r;
+  int b, i, inex, same, err = 0;
+
+  mpfr_inits2 (32, x, y, z, r, (void *) 0);
+
+  mpfr_set_si_2exp (z, 1, mpfr_get_emin (), GMP_RNDN);   /* z = 2^emin */
+  mpfr_set_si_2exp (x, 1, mpfr_get_emin (), GMP_RNDN);   /* x = 2^emin */
+
+  for (b = 0; b <= 1; b++)
+    {
+      for (i = 15; i <= 17; i++)
+        {
+          mpfr_set_si_2exp (y, i, -4 - MPFR_PREC (z), GMP_RNDN);
+          /*  z = 1.000...00b
+           * xy =            01111
+           *   ou            10000
+           *   ou            10001
+           */
+          mpfr_clear_flags ();
+          inex = mpfr_fma (r, x, y, z, GMP_RNDN);
+#define ERRTU2 "Error in test_underflow2 (b = %d, i = %d)\n  "
+          if (__gmpfr_flags != MPFR_FLAGS_INEXACT)
+            {
+              printf (ERRTU2 "flags = %u instead of %u\n", b, i,
+                      __gmpfr_flags, (unsigned int) MPFR_FLAGS_INEXACT);
+              err = 1;
+            }
+          same = i == 15 || (i == 16 && b == 0);
+          if (same ? (inex >= 0) : (inex <= 0))
+            {
+              printf (ERRTU2 "incorrect ternary value (%d instead of %c 0)\n",
+                      b, i, inex, same ? '<' : '>');
+              err = 1;
+            }
+          mpfr_set (y, z, GMP_RNDN);
+          if (!same)
+            mpfr_nextabove (y);
+          if (! mpfr_equal_p (r, y))
+            {
+              printf (ERRTU2 "expected ", b, i);
+              mpfr_dump (y);
+              printf ("  got      ");
+              mpfr_dump (r);
+              err = 1;
+            }
+        }
+      mpfr_nextabove (z);
     }
 
   if (err)
@@ -570,7 +627,8 @@ main (int argc, char *argv[])
   test_exact ();
   test_overflow1 ();
   test_overflow2 ();
-  test_underflow ();
+  test_underflow1 ();
+  test_underflow2 ();
 
   tests_end_mpfr ();
   return 0;

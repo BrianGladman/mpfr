@@ -23,6 +23,7 @@ the file COPYING.LIB.  If not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
+#include <limits.h>
 #include "mpfr-impl.h"
 
 /* The fused-multiply-add (fma) of x, y and z is defined by:
@@ -196,30 +197,87 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
               }
           }
         }
-      else  /* underflow */
+      else  /* underflow: one has |xy| < 2^(emin-1). */
         {
-          /* One has: |xy| < 2^(emin-1). */
-          if (MPFR_GET_EXP (z) - __gmpfr_emin
-              > MAX (MPFR_PREC (z), MPFR_PREC (s) + 1))
+          unsigned long scale = 0;
+          mpfr_t scaled_z;
+          mpfr_srcptr new_z;
+          mp_exp_t diffexp;
+          mp_prec_t pzs;
+          int xy_underflows;
+
+          /* Let's scale z so that ulp(z) > 2^emin and ulp(s) > 2^emin
+             (the + 1 on MPFR_PREC (s) is necessary because the exponent
+             of the result can be EXP(z) - 1). */
+          diffexp = MPFR_GET_EXP (z) - __gmpfr_emin;
+          pzs = MAX (MPFR_PREC (z), MPFR_PREC (s) + 1);
+          if (diffexp <= pzs)
             {
-              /* One has: ulp(z) > 2^emin and ulp(s) > 2^emin (the + 1
-                 above is necessary because the exponent of the result
-                 can be EXP(z) - 1).
-                 Let's replace xy by sign(xy) * 2^(emin-1). */
+              mp_exp_unsigned_t uscale;
+              mpfr_t scaled_v;
+
+              uscale = (mp_exp_unsigned_t) pzs - diffexp + 1;
+              MPFR_ASSERTN (uscale > 0);
+              MPFR_ASSERTN (uscale <= ULONG_MAX);
+              scale = uscale;
+              mpfr_init2 (scaled_z, MPFR_PREC (z));
+              inexact = mpfr_mul_2ui (scaled_z, z, scale, GMP_RNDN);
+              MPFR_ASSERTN (inexact == 0);  /* TODO: overflow case */
+              new_z = scaled_z;
+              /* Now we need to recompute u = xy * 2^scale. */
+              mpfr_clear_flags ();
+              if (MPFR_GET_EXP (x) < MPFR_GET_EXP (y))
+                {
+                  mpfr_init2 (scaled_v, MPFR_PREC (x));
+                  mpfr_mul_2ui (scaled_v, x, scale, GMP_RNDN);
+                  mpfr_mul (u, scaled_v, y, GMP_RNDN);
+                }
+              else
+                {
+                  mpfr_init2 (scaled_v, MPFR_PREC (y));
+                  mpfr_mul_2ui (scaled_v, y, scale, GMP_RNDN);
+                  mpfr_mul (u, x, scaled_v, GMP_RNDN);
+                }
+              mpfr_clear (scaled_v);
+              MPFR_ASSERTN (! mpfr_overflow_p ());
+              xy_underflows = mpfr_underflow_p ();
+            }
+          else
+            {
+              new_z = z;
+              xy_underflows = 1;
+            }
+
+          if (xy_underflows)
+            {
+              /* Let's replace xy by sign(xy) * 2^(emin-1). */
               mpfr_set_prec (u, MPFR_PREC_MIN);
               mpfr_setmin (u, __gmpfr_emin);
               MPFR_SET_SIGN (u, MPFR_MULT_SIGN (MPFR_SIGN (x),
                                                 MPFR_SIGN (y)));
-              mpfr_clear_flags ();
-              inexact = mpfr_add (s, z, u, rnd_mode);
-              mpfr_clear (u);
-              /* As an overflow is possible... */
-              MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
-              goto end;
             }
 
-          MPFR_ASSERTN (0); /* TODO... */
+          mpfr_clear_flags ();
+          inexact = mpfr_add (s, new_z, u, rnd_mode);
           mpfr_clear (u);
+
+          if (scale != 0)
+            {
+              int inex2;
+
+              mpfr_clear (scaled_z);
+              /* Here an overflow is theoretically possible, in which case
+                 the result may be wrong, hence the assert. An underflow
+                 is not possible, but let's check that anyway. */
+              MPFR_ASSERTN (! mpfr_overflow_p ());  /* TODO... */
+              MPFR_ASSERTN (! mpfr_underflow_p ());  /* not possible */
+              inex2 = mpfr_div_2ui (s, s, scale, GMP_RNDN);
+              if (inex2)  /* underflow */
+                inexact = inex2;
+            }
+
+          MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
+          goto end;
         }
     }
 
