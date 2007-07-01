@@ -192,13 +192,32 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
                     inexact = inex2;
                     MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
                   }
-                MPFR_SAVE_EXPO_FREE (expo);
-                return mpfr_check_range (s, inexact, rnd_mode);
+                goto end;
               }
           }
         }
       else  /* underflow */
         {
+          /* One has: |xy| < 2^(emin-1). */
+          if (MPFR_GET_EXP (z) - __gmpfr_emin
+              > MAX (MPFR_PREC (z), MPFR_PREC (s) + 1))
+            {
+              /* One has: ulp(z) > 2^emin and ulp(s) > 2^emin (the + 1
+                 above is necessary because the exponent of the result
+                 can be EXP(z) - 1).
+                 Let's replace xy by sign(xy) * 2^(emin-1). */
+              mpfr_set_prec (u, MPFR_PREC_MIN);
+              mpfr_setmin (u, __gmpfr_emin);
+              MPFR_SET_SIGN (u, MPFR_MULT_SIGN (MPFR_SIGN (x),
+                                                MPFR_SIGN (y)));
+              mpfr_clear_flags ();
+              inexact = mpfr_add (s, z, u, rnd_mode);
+              mpfr_clear (u);
+              /* As an overflow is possible... */
+              MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
+              goto end;
+            }
+
           MPFR_ASSERTN (0); /* TODO... */
           mpfr_clear (u);
         }
@@ -207,6 +226,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
   inexact = mpfr_add (s, z, u, rnd_mode);
   mpfr_clear (u);
   MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
+ end:
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (s, inexact, rnd_mode);
 }
