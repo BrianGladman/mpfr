@@ -379,7 +379,7 @@ main (int argc, char *argv[])
   mpfr_random (y);
   mpfr_random (z);
   mpfr_fma (s, x, y, z, GMP_RNDN);
-  if(!mpfr_nan_p (s))
+  if (!mpfr_nan_p (s))
     {
       printf ("evaluation of function in x=NAN does not return NAN");
       exit (1);
@@ -449,7 +449,7 @@ main (int argc, char *argv[])
   mpfr_set_ui (y, 0, GMP_RNDN);
   mpfr_random (z);
   mpfr_fma (s, x, y, z, GMP_RNDN);
-  if(!mpfr_nan_p (s))
+  if (!mpfr_nan_p (s))
     {
       printf ("evaluation of function in x=INF y=0  does not return NAN");
       exit (1);
@@ -459,7 +459,7 @@ main (int argc, char *argv[])
   mpfr_set_ui (x, 0, GMP_RNDN);
   mpfr_random (z);
   mpfr_fma (s, x, y, z, GMP_RNDN);
-  if(!mpfr_nan_p (s))
+  if (!mpfr_nan_p (s))
     {
       printf ("evaluation of function in x=0 y=INF does not return NAN");
       exit (1);
@@ -469,7 +469,7 @@ main (int argc, char *argv[])
   mpfr_random (y); /* always positive */
   mpfr_set_inf (z, -1);
   mpfr_fma (s, x, y, z, GMP_RNDN);
-  if(!mpfr_nan_p (s))
+  if (!mpfr_nan_p (s))
     {
       printf ("evaluation of function in x=INF y>0 z=-INF does not return NAN");
       exit (1);
@@ -479,7 +479,7 @@ main (int argc, char *argv[])
   mpfr_random (x);
   mpfr_set_inf (z, -1);
   mpfr_fma (s, x, y, z, GMP_RNDN);
-  if(!mpfr_nan_p (s))
+  if (!mpfr_nan_p (s))
     {
       printf ("evaluation of function in x>0 y=INF z=-INF does not return NAN");
       exit (1);
@@ -489,7 +489,7 @@ main (int argc, char *argv[])
   mpfr_random (y);
   mpfr_random (z);
   mpfr_fma (s, x, y, z, GMP_RNDN);
-  if(!mpfr_inf_p (s) || mpfr_sgn (s) < 0)
+  if (!mpfr_inf_p (s) || mpfr_sgn (s) < 0)
     {
       printf ("evaluation of function in x=INF does not return INF");
       exit (1);
@@ -499,7 +499,7 @@ main (int argc, char *argv[])
   mpfr_random (x);
   mpfr_random (z);
   mpfr_fma (s, x, y, z, GMP_RNDN);
-  if(!mpfr_inf_p (s) || mpfr_sgn (s) < 0)
+  if (!mpfr_inf_p (s) || mpfr_sgn (s) < 0)
     {
       printf ("evaluation of function in y=INF does not return INF");
       exit (1);
@@ -509,7 +509,7 @@ main (int argc, char *argv[])
   mpfr_random (x);
   mpfr_random (y);
   mpfr_fma (s, x, y, z, GMP_RNDN);
-  if(!mpfr_inf_p (s) || mpfr_sgn (s) < 0)
+  if (!mpfr_inf_p (s) || mpfr_sgn (s) < 0)
     {
       printf ("evaluation of function in z=INF does not return INF");
       exit (1);
@@ -519,7 +519,7 @@ main (int argc, char *argv[])
   mpfr_random (y);
   mpfr_random (z);
   mpfr_fma (s, x, y, z, GMP_RNDN);
-  if(mpfr_cmp (s, z))
+  if (mpfr_cmp (s, z))
     {
       printf ("evaluation of function in x=0 does not return z\n");
       exit (1);
@@ -529,7 +529,7 @@ main (int argc, char *argv[])
   mpfr_random (x);
   mpfr_random (z);
   mpfr_fma (s, x, y, z, GMP_RNDN);
-  if(mpfr_cmp (s, z))
+  if (mpfr_cmp (s, z))
     {
       printf ("evaluation of function in y=0 does not return z\n");
       exit (1);
