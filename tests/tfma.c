@@ -606,7 +606,7 @@ main (int argc, char *argv[])
             {
               printf ("Wrong inexact flag for rnd=%s: expected %d, got %d\n",
                       mpfr_print_rnd_mode (rnd), compare, inexact);
-              printf ("x="); mpfr_out_str (stdout, 2, 0, x, GMP_RNDN);
+              printf (" x="); mpfr_out_str (stdout, 2, 0, x, GMP_RNDN);
               printf (" y="); mpfr_out_str (stdout, 2, 0, y, GMP_RNDN);
               printf (" z="); mpfr_out_str (stdout, 2, 0, z, GMP_RNDN);
               printf (" s="); mpfr_out_str (stdout, 2, 0, s, GMP_RNDN);
