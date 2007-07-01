@@ -20,9 +20,10 @@ libmpfr_la_LIBADD = @LIBOBJS@
 # 3. Interfaces removed or changed (BAD, breaks upward compatibility):
 #    ==> Increment CURRENT, set AGE and REVISION to 0.
 #
-#	  MPFR	   -version-info
+#         MPFR     -version-info
 #        2.1.x      -
-#        2.2.x    1:0:0
+#        2.2.x    1:x:0
+#        2.3.x    2:x:1
 libmpfr_la_LDFLAGS = -version-info 2:0:1
 
 info_TEXINFOS = mpfr.texi
