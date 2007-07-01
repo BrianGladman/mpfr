@@ -69,38 +69,38 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
     {
       /* the following is copied from sin.c */
       if (expx >= 2) /* reduce the argument */
-	{
-	  reduce = 1;
-	  mpfr_set_prec (c, expx + m - 1);
-	  mpfr_set_prec (xr, m);
-	  mpfr_const_pi (c, GMP_RNDN);
-	  mpfr_mul_2ui (c, c, 1, GMP_RNDN);
-	  mpfr_remainder (xr, x, c, GMP_RNDN);
-	  mpfr_div_2ui (c, c, 1, GMP_RNDN);
-	  if (MPFR_SIGN (xr) > 0)
-	    mpfr_sub (c, c, xr, GMP_RNDZ);
-	  else
-	    mpfr_add (c, c, xr, GMP_RNDZ);
-	  if (MPFR_IS_ZERO(xr) || MPFR_EXP(xr) < (mp_exp_t) 3 - (mp_exp_t) m
-	      || MPFR_EXP(c) < (mp_exp_t) 3 - (mp_exp_t) m)
-	    goto next_step;
-	  xx = xr;
-	}
+        {
+          reduce = 1;
+          mpfr_set_prec (c, expx + m - 1);
+          mpfr_set_prec (xr, m);
+          mpfr_const_pi (c, GMP_RNDN);
+          mpfr_mul_2ui (c, c, 1, GMP_RNDN);
+          mpfr_remainder (xr, x, c, GMP_RNDN);
+          mpfr_div_2ui (c, c, 1, GMP_RNDN);
+          if (MPFR_SIGN (xr) > 0)
+            mpfr_sub (c, c, xr, GMP_RNDZ);
+          else
+            mpfr_add (c, c, xr, GMP_RNDZ);
+          if (MPFR_IS_ZERO(xr) || MPFR_EXP(xr) < (mp_exp_t) 3 - (mp_exp_t) m
+              || MPFR_EXP(c) < (mp_exp_t) 3 - (mp_exp_t) m)
+            goto next_step;
+          xx = xr;
+        }
       else /* the input argument is already reduced */
-	{
-	  reduce = 0;
-	  xx = x;
-	}
-      
+        {
+          reduce = 0;
+          xx = x;
+        }
+
       neg = MPFR_IS_NEG (xx); /* gives sign of sin(x) */
       mpfr_set_prec (c, m);
       mpfr_cos (c, xx, GMP_RNDZ);
       /* If no argument reduction was performed, the error is at most ulp(c),
-	 otherwise it is at most ulp(c) + 2^(2-m). Since |c| < 1, we have
-	 ulp(c) <= 2^(-m), thus the error is bounded by 2^(3-m). */
+         otherwise it is at most ulp(c) + 2^(2-m). Since |c| < 1, we have
+         ulp(c) <= 2^(-m), thus the error is bounded by 2^(3-m). */
       err = (reduce == 0) ? m : m - 3;
       if (!mpfr_can_round (c, m, GMP_RNDN, rnd_mode,
-			   MPFR_PREC (z) + (rnd_mode == GMP_RNDN)))
+                           MPFR_PREC (z) + (rnd_mode == GMP_RNDN)))
         goto next_step;
       mpfr_set (z, c, rnd_mode);
       mpfr_sqr (c, c, GMP_RNDU);
@@ -111,12 +111,12 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
         MPFR_CHANGE_SIGN (c);
 
       /* the absolute error on c is at most 2^(err-m), which we must put
-	 in the form 2^(EXP(c)-err). If there was an argument reduction,
-	 we need to add 2^(2-m); since err >= 2, the error is bounded by
-	 2^(err+1-m) in that case. */
+         in the form 2^(EXP(c)-err). If there was an argument reduction,
+         we need to add 2^(2-m); since err >= 2, the error is bounded by
+         2^(err+1-m) in that case. */
       err = MPFR_GET_EXP (c) + (mp_exp_t) m - (err + reduce);
       if (mpfr_can_round (c, err, GMP_RNDN, rnd_mode,
-			  MPFR_PREC (y) + (rnd_mode == GMP_RNDN)))
+                          MPFR_PREC (y) + (rnd_mode == GMP_RNDN)))
         break;
       /* check for huge cancellation */
       if (err < (mp_exp_t) MPFR_PREC (y))

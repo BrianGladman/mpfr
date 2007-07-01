@@ -69,40 +69,40 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   for (;;)
     {
       /* first perform argument reduction modulo 2*Pi (if needed),
-	 also helps to determine the sign of sin(x) */
+         also helps to determine the sign of sin(x) */
       if (expx >= 2) /* If Pi < x < 4, we need to reduce too, to determine
-			the sign of sin(x). For 2 <= |x| < Pi, we could avoid
-			the reduction. */
-	{
-	  reduce = 1;
-	  mpfr_set_prec (c, expx + m - 1);
-	  mpfr_set_prec (xr, m);
-	  mpfr_const_pi (c, GMP_RNDN);
-	  mpfr_mul_2ui (c, c, 1, GMP_RNDN);
-	  mpfr_remainder (xr, x, c, GMP_RNDN);
-	  /* The analysis is similar to that of cos.c:
-	     |xr - x - 2kPi| <= 2^(2-m). Thus we can decide the sign
-	     of sin(x) if xr is at distance at least 2^(2-m) of both
-	     0 and +/-Pi. */
-	  mpfr_div_2ui (c, c, 1, GMP_RNDN);
-	  /* Since c approximates Pi with an error <= 2^(2-expx-m) <= 2^(-m),
-	     it suffices to check that c - |xr| >= 2^(2-m). */
-	  if (MPFR_SIGN (xr) > 0)
-	    mpfr_sub (c, c, xr, GMP_RNDZ);
-	  else
-	    mpfr_add (c, c, xr, GMP_RNDZ);
-	  if (MPFR_IS_ZERO(xr) || MPFR_EXP(xr) < (mp_exp_t) 3 - (mp_exp_t) m
-	      || MPFR_EXP(c) < (mp_exp_t) 3 - (mp_exp_t) m)
-	    goto ziv_next;
+                        the sign of sin(x). For 2 <= |x| < Pi, we could avoid
+                        the reduction. */
+        {
+          reduce = 1;
+          mpfr_set_prec (c, expx + m - 1);
+          mpfr_set_prec (xr, m);
+          mpfr_const_pi (c, GMP_RNDN);
+          mpfr_mul_2ui (c, c, 1, GMP_RNDN);
+          mpfr_remainder (xr, x, c, GMP_RNDN);
+          /* The analysis is similar to that of cos.c:
+             |xr - x - 2kPi| <= 2^(2-m). Thus we can decide the sign
+             of sin(x) if xr is at distance at least 2^(2-m) of both
+             0 and +/-Pi. */
+          mpfr_div_2ui (c, c, 1, GMP_RNDN);
+          /* Since c approximates Pi with an error <= 2^(2-expx-m) <= 2^(-m),
+             it suffices to check that c - |xr| >= 2^(2-m). */
+          if (MPFR_SIGN (xr) > 0)
+            mpfr_sub (c, c, xr, GMP_RNDZ);
+          else
+            mpfr_add (c, c, xr, GMP_RNDZ);
+          if (MPFR_IS_ZERO(xr) || MPFR_EXP(xr) < (mp_exp_t) 3 - (mp_exp_t) m
+              || MPFR_EXP(c) < (mp_exp_t) 3 - (mp_exp_t) m)
+            goto ziv_next;
 
-	  /* |xr - x - 2kPi| <= 2^(2-m), thus |sin(xr) - sin(x)| <= 2^(2-m) */
-	  xx = xr;
-	}
+          /* |xr - x - 2kPi| <= 2^(2-m), thus |sin(xr) - sin(x)| <= 2^(2-m) */
+          xx = xr;
+        }
       else /* the input argument is already reduced */
-	{
-	  reduce = 0;
-	  xx = x;
-	}
+        {
+          reduce = 0;
+          xx = x;
+        }
 
       sign = MPFR_SIGN(xx);
       /* now that the argument is reduced, precision m is enough */
@@ -125,9 +125,9 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       else
         {
           /* the absolute error on c is at most 2^(3-m-EXP(c)),
-	     plus 2^(2-m) if there was an argument reduction.
-	     Since EXP(c) <= 1, 3-m-EXP(c) >= 2-m, thus the error
-	     is at most 2^(3-m-EXP(c)) in case of argument reduction. */
+             plus 2^(2-m) if there was an argument reduction.
+             Since EXP(c) <= 1, 3-m-EXP(c) >= 2-m, thus the error
+             is at most 2^(3-m-EXP(c)) in case of argument reduction. */
           err = 2 * MPFR_GET_EXP (c) + (mp_exp_t) m - 3 - (reduce != 0);
           if (mpfr_can_round (c, err, GMP_RNDN, GMP_RNDZ,
                               precy + (rnd_mode == GMP_RNDN)))

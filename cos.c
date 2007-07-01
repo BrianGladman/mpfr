@@ -171,24 +171,24 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   for (;;)
     {
       /* If |x| >= 4, first reduce x cmod (2*Pi) into xr, using mpfr_remainder:
-	 let e = EXP(x) >= 3, and m the target precision:
-	 (1) c <- 2*Pi              [precision e+m-1, nearest]
-	 (2) xr <- remainder (x, c) [precision m, nearest]
-	 We have |c - 2*Pi| <= 1/2ulp(c) = 2^(3-e-m)
-	         |xr - x - k c| <= 1/2ulp(xr) <= 2^(1-m)
-		 |k| <= |x|/(2*Pi) <= 2^(e-2)
+         let e = EXP(x) >= 3, and m the target precision:
+         (1) c <- 2*Pi              [precision e+m-1, nearest]
+         (2) xr <- remainder (x, c) [precision m, nearest]
+         We have |c - 2*Pi| <= 1/2ulp(c) = 2^(3-e-m)
+                 |xr - x - k c| <= 1/2ulp(xr) <= 2^(1-m)
+                 |k| <= |x|/(2*Pi) <= 2^(e-2)
          Thus |xr - x - 2kPi| <= |k| |c - 2Pi| + 2^(1-m) <= 2^(2-m).
-	 It follows |cos(xr) - cos(x)| <= 2^(2-m). */
+         It follows |cos(xr) - cos(x)| <= 2^(2-m). */
       if (reduce)
-	{
-	  mpfr_const_pi (c, GMP_RNDN);
-	  mpfr_mul_2ui (c, c, 1, GMP_RNDN); /* 2Pi */
-	  mpfr_remainder (xr, x, c, GMP_RNDN);
-	  /* now |xr| <= 4, thus r <= 16 below */
-	  mpfr_mul (r, xr, xr, GMP_RNDU); /* err <= 1 ulp */
-	}
+        {
+          mpfr_const_pi (c, GMP_RNDN);
+          mpfr_mul_2ui (c, c, 1, GMP_RNDN); /* 2Pi */
+          mpfr_remainder (xr, x, c, GMP_RNDN);
+          /* now |xr| <= 4, thus r <= 16 below */
+          mpfr_mul (r, xr, xr, GMP_RNDU); /* err <= 1 ulp */
+        }
       else
-	mpfr_mul (r, x, x, GMP_RNDU); /* err <= 1 ulp */
+        mpfr_mul (r, x, x, GMP_RNDU); /* err <= 1 ulp */
 
       /* we need |r| < 1/2 for mpfr_cos2_aux, i.e., EXP(r) - 2K <= -1 */
       K = MAX (MPFR_GET_EXP (r) + 1, 0);
@@ -210,12 +210,12 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
       /* The absolute error on s is bounded by (2l+1/3)*2^(2K-m)
          2l+1/3 <= 2l+1.
-	 If |x| >= 4, we need to add 2^(2-m) for the argument reduction
-	 by 2Pi: if K = 0, this amounts to add 4 to 2l+1/3, i.e., to add
-	 2 to l; if K >= 1, this amounts to add 1 to 2*l+1/3. */
+         If |x| >= 4, we need to add 2^(2-m) for the argument reduction
+         by 2Pi: if K = 0, this amounts to add 4 to 2l+1/3, i.e., to add
+         2 to l; if K >= 1, this amounts to add 1 to 2*l+1/3. */
       l = 2 * l + 1;
       if (reduce)
-	l += (K == 0) ? 4 : 1;
+        l += (K == 0) ? 4 : 1;
       k = MPFR_INT_CEIL_LOG2 (l) + 2*K;
       /* now the error is bounded by 2^(k-m) = 2^(EXP(s)-err) */
 
@@ -225,18 +225,18 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
       if (MPFR_UNLIKELY (exps == 1))
         /* s = 1 or -1, and except x=0 which was already checked above,
-	   cos(x) cannot be 1 or -1, so we can round if the error is less
-	   than 2^(-precy) for directed rounding, or 2^(-precy-1) for rounding
-	   to nearest. */
+           cos(x) cannot be 1 or -1, so we can round if the error is less
+           than 2^(-precy) for directed rounding, or 2^(-precy-1) for rounding
+           to nearest. */
         {
           if (m > k && (m - k >= precy + (rnd_mode == GMP_RNDN)))
-	    {
+            {
               /* if round to nearest or away, result is s,
                  otherwise it is round(nexttoward (s, 0)) */
-	      if (MPFR_IS_LIKE_RNDZ (rnd_mode, MPFR_IS_NEG (s)))
-		mpfr_nexttozero (s);
-	      break;
-	    }
+              if (MPFR_IS_LIKE_RNDZ (rnd_mode, MPFR_IS_NEG (s)))
+                mpfr_nexttozero (s);
+              break;
+            }
         }
 
       if (exps < cancel)
@@ -248,10 +248,10 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       MPFR_ZIV_NEXT (loop, m);
       MPFR_GROUP_REPREC_2 (group, m, r, s);
       if (reduce)
-	{
-	  mpfr_set_prec (xr, m);
-	  mpfr_set_prec (c, expx + m - 1);
-	}
+        {
+          mpfr_set_prec (xr, m);
+          mpfr_set_prec (c, expx + m - 1);
+        }
     }
   MPFR_ZIV_FREE (loop);
   inexact = mpfr_set (y, s, rnd_mode);
