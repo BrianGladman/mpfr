@@ -103,8 +103,6 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
           return mpfr_mul (s, x, y, rnd_mode);
         }
     }
-  /* Useless since it is done by mpfr_add
-   * MPFR_CLEAR_FLAGS(s); */
 
   /* If we take prec(u) >= prec(x) + prec(y), the product u <- x*y
      is exact, except in case of overflow or underflow. */
@@ -258,7 +256,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
             }
 
           mpfr_clear_flags ();
-          inexact = mpfr_add (s, new_z, u, rnd_mode);
+          inexact = mpfr_add (s, u, new_z, rnd_mode);
           mpfr_clear (u);
 
           if (scale != 0)
@@ -281,7 +279,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
         }
     }
 
-  inexact = mpfr_add (s, z, u, rnd_mode);
+  inexact = mpfr_add (s, u, z, rnd_mode);
   mpfr_clear (u);
   MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
  end:
