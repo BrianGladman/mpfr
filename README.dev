@@ -65,7 +65,7 @@ To make a release (for the MPFR team):
   3) Update the NEWS file.
      Update the FAQ.html file with update-faq (and check it).
   4) Update the ChangeLog file with "TZ=UTC svn log -rHEAD:0 -v".
-  5) Generate the release version with "make dist".
+  5) Generate the release version with "make dist", but see below.
   6) Test the release version on different machines, with and without
      --enable-assert (--enable-assert, though doing more checks, may
      hide bugs due to the fact that <stdio.h> is always included) with
@@ -92,6 +92,13 @@ To make a release (for the MPFR team):
 
 For major or minor releases (but not patchlevels), a branch may be
 created first to allow new features to be committed to the trunk.
+
+If the libtool has not been fixed yet for old Solaris versions, the
+patch patch-libtool needs to be applied, e.g.:
+  1. patch aclocal.m4 patch-libtool
+  2. autoconf
+  3. ./configure
+  4. make dist
 
 ===========================================================================
 
