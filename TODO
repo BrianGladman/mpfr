@@ -96,7 +96,7 @@ New functions to implement:
      int inexact;
 
      /* if 2^(ex-1) <= |x| < 2^ex, and 2^(ey-1) <= |y| < 2^ey, then
-	|x/y| < 2^(ex-ey+1) */
+        |x/y| < 2^(ex-ey+1) */
      mpfr_init2 (q, MAX(MPFR_PREC_MIN, mpfr_get_exp (x)-mpfr_get_exp (y) + 1));
      mpfr_div (q, x, y, GMP_RNDZ);
      mpfr_trunc (q, q);
@@ -115,7 +115,7 @@ New functions to implement:
                                     u=0..infinity)
   JacobiThetaNullK
   PolylogP, PolylogD, PolylogDold: see http://arxiv.org/abs/math.CA/0702243
-	and the references herein.
+    and the references herein.
   JBessel(n, x) = BesselJ(n+1/2, x)
   IncompleteGamma
   KBessel, KBessel2 [2nd kind]
@@ -163,7 +163,7 @@ New functions to implement:
    * Regular Spherical Bessel Functions j_n: j_0(x) = \sin(x)/x,
      j_1(x)= (\sin(x)/x-\cos(x))/x & j_2(x)= ((3/x^2-1)\sin(x)-3\cos(x)/x)/x
      Note: the "spherical" Bessel functions are solutions of
-     x^2 y'' + 2 x y' + [x^2 - n (n+1)] y = 0 and satisfy 
+     x^2 y'' + 2 x y' + [x^2 - n (n+1)] y = 0 and satisfy
      j_n(x) = sqrt(Pi/(2x)) J_{n+1/2}(x). They should not be mixed with the
      classical Bessel Functions, also noted j0, j1, jn, y0, y1, yn in C99
      and mpfr.
@@ -232,7 +232,7 @@ New functions to implement:
 - mpfr_frexp(mpfr_t rop, mp_exp_t *n, mpfr_t op, mp_rnd_t rnd) suggested by
   Steve Kargl <sgk@troutmask.apl.washington.edu> Sun, 7 Aug 2005
 - mpfr_inp_raw, mpfr_out_raw (cf mail "Serialization of mpfr_t" from Alexey
-	and answer from Granlund on mpfr list, May 2007)
+  and answer from Granlund on mpfr list, May 2007)
 
 
 ##############################################################################

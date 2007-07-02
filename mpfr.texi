@@ -801,8 +801,8 @@ Here is an example on how to initialize floating-point variables:
 @example
 @{
   mpfr_t x, y;
-  mpfr_init (x);			/* use default precision */
-  mpfr_init2 (y, 256);		/* precision @emph{exactly} 256 bits */
+  mpfr_init (x);                /* use default precision */
+  mpfr_init2 (y, 256);          /* precision @emph{exactly} 256 bits */
   @dots{}
   /* When the program is about to exit, do ... */
   mpfr_clear (x);
@@ -863,7 +863,7 @@ Note that the input 0 is converted to +0 by @code{mpfr_set_ui},
 @code{mpfr_set_z}, @code{mpfr_set_q} and
 @code{mpfr_set_f}, regardless of the rounding mode.
 If the system doesn't support the IEEE-754 standard, @code{mpfr_set_d},
-@code{mpfr_set_ld} and 
+@code{mpfr_set_ld} and
 @code{mpfr_set_decimal64} might not preserve the signed zeros.
 The @code{mpfr_set_decimal64} function is built only with the configure
 option @samp{--enable-decimal-float}, which also requires
@@ -1771,7 +1771,7 @@ the fractional part is generated).
 
 @deftypefun int mpfr_remainder (mpfr_t @var{r}, mpfr_t @var{x}, mpfr_t @var{y}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_remquo (mpfr_t @var{r}, long* @var{q}, mpfr_t @var{x}, mpfr_t @var{y}, mp_rnd_t @var{rnd})
-Set @var{r} to the remainder of the division of @var{x} by @var{y}, with 
+Set @var{r} to the remainder of the division of @var{x} by @var{y}, with
 quotient rounded to the nearest integer (ties rounded to even), and
 @var{r} rounded according to the direction @var{rnd}.
 If @var{r} is zero, it has the sign of @var{x}.
