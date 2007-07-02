@@ -57,8 +57,9 @@ To make a release (for the MPFR team):
   1) Generate the default thresholds on different architectures
      with "make tune" and put them in mparam_h.in (make sure to
      use the latest release of GMP).
-  2) Check the version and change the suffix to "rc1", "rc2", etc. for
-     the release candidates; remove the suffix for the final release.
+  2) Check the version and change the suffix to "rc1", "rc2", etc. with
+     update-version for the release candidates; remove the suffix for
+     the final release.
      Update the libtool version too (see Makefile.am).
      Update the date in mpfr.texi.
   3) Update the NEWS file.
