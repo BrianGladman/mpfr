@@ -22,6 +22,23 @@ MA 02110-1301, USA. */
 
 #include "mpfr-impl.h"
 
+static void
+free_l2b (void)
+{
+  int i, b;
+
+  for (b = 2; b <= BASE_MAX; b++)
+    for (i = 0; i < 2; i++)
+      {
+        mpfr_ptr p = mpfr_l2b[b-2][i];
+        if (p != NULL)
+          {
+            mpfr_clear (p);
+            (*__gmp_free_func) (p, sizeof (mpfr_t));
+          }
+      }
+}
+
 void
 mpfr_free_cache (void)
 {
@@ -29,4 +46,5 @@ mpfr_free_cache (void)
   mpfr_clear_cache (__gmpfr_cache_const_log2);
   mpfr_clear_cache (__gmpfr_cache_const_euler);
   mpfr_clear_cache (__gmpfr_cache_const_catalan);
+  free_l2b ();
 }

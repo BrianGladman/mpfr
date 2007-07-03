@@ -96,23 +96,6 @@ extern void (*dummy_func) (mpfr_srcptr);
 void (*dummy_func)(mpfr_srcptr) = mpfr_dump;
 #endif
 
-static void
-free_l2b (void)
-{
-  int i, b;
-
-  for (b = 2; b <= BASE_MAX; b++)
-    for (i = 0; i < 2; i++)
-      {
-        mpfr_ptr p = mpfr_l2b[b-2][i];
-        if (p != NULL)
-          {
-            mpfr_clear (p);
-            (*__gmp_free_func) (p, sizeof (mpfr_t));
-          }
-      }
-}
-
 void
 tests_start_mpfr (void)
 {
@@ -138,7 +121,6 @@ tests_start_mpfr (void)
 void
 tests_end_mpfr (void)
 {
-  free_l2b ();
   mpfr_free_cache ();
   tests_rand_end ();
   tests_memory_end ();

@@ -1634,10 +1634,11 @@ use @code{mpfr_free_cache}.
 @end deftypefun
 
 @deftypefun void mpfr_free_cache (void)
-Free the cache used by the functions computing constants if needed
-(currently
+Free various caches used by MPFR internally, in particular the
+caches used by the functions computing constants (currently
 @code{mpfr_const_log2}, @code{mpfr_const_pi},
 @code{mpfr_const_euler} and @code{mpfr_const_catalan}).
+You should call this function when terminating a thread.
 @end deftypefun
 
 @deftypefun int mpfr_sum (mpfr_t @var{rop}, mpfr_ptr const @var{tab}[], unsigned long @var{n}, mp_rnd_t @var{rnd})
