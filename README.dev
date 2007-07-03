@@ -84,6 +84,13 @@ To make a release (for the MPFR team):
      with -m96bit-long-double and -m128bit-long-double. Test with both
      "make check" and the worst cases. Try also with gcc's -fno-common
      option.
+     Test the library interface compatibility by running the test suite
+     compiled against an old library version and dynamically linked with
+     the new library version: for instance, build the shared library of
+     old and new MPFR versions with the same configure options, and from
+     the build directory of the old version, do something like:
+     (cd .libs && ln -nsf ../../mpfr-new/.libs/libmpfr.so.1.* libmpfr.so.1)
+     then "make check".
   7) For the release itself (not the release candidates), if there are
      no problems, create a tag with:
        svn cp .../mpfr/branches/x.y .../mpfr/tags/x.y.z
