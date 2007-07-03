@@ -285,6 +285,14 @@ special (void)
       exit (1);
     }
 
+  mpfr_set_prec (x, 18);
+  mpfr_set_prec (y, 28);
+  mpfr_set_str_binary (x, "-1.10001101010001101e-196");
+  inex = mpfr_lgamma (y, &sign, x, GMP_RNDN);
+  mpfr_set_prec (x, 28);
+  mpfr_set_str_binary (x, "0.100001110110101011011010011E8");
+  MPFR_ASSERTN (mpfr_cmp (x, y) == 0 && inex < 0);
+
   mpfr_clear (x);
   mpfr_clear (y);
 }

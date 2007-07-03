@@ -610,9 +610,12 @@ mpfr_lgamma (mpfr_ptr y, int *signp, mpfr_srcptr x, mp_rnd_t rnd)
         {
           mpfr_t l, h;
           int ok, inex2;
-
-          mpfr_init2 (l, MPFR_PREC(y) + 14);
-          mpfr_init2 (h, MPFR_PREC(y) + 14);
+	  mp_prec_t w = MPFR_PREC(y) + 14;
+	  
+	  while (1)
+	    {
+          mpfr_init2 (l, w);
+          mpfr_init2 (h, w);
           /* we want a lower bound on -log(-x), thus an upper bound on log(-x),
              thus an upper bound on -x. */
           mpfr_neg (l, x, GMP_RNDU); /* upper bound on -x */
@@ -636,6 +639,8 @@ mpfr_lgamma (mpfr_ptr y, int *signp, mpfr_srcptr x, mp_rnd_t rnd)
           mpfr_clear (h);
           if (ok)
             return inex;
+	  w += MPFR_INT_CEIL_LOG2 (w) + 3;
+	    }
         }
     }
 
