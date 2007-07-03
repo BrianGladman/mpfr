@@ -610,37 +610,37 @@ mpfr_lgamma (mpfr_ptr y, int *signp, mpfr_srcptr x, mp_rnd_t rnd)
         {
           mpfr_t l, h;
           int ok, inex2;
-	  mp_prec_t w = MPFR_PREC(y) + 14;
-	  
-	  while (1)
-	    {
-          mpfr_init2 (l, w);
-          mpfr_init2 (h, w);
-          /* we want a lower bound on -log(-x), thus an upper bound on log(-x),
-             thus an upper bound on -x. */
-          mpfr_neg (l, x, GMP_RNDU); /* upper bound on -x */
-          mpfr_log (l, l, GMP_RNDU); /* upper bound for log(-x) */
-          mpfr_neg (l, l, GMP_RNDD); /* lower bound for -log(-x) */
-          mpfr_neg (h, x, GMP_RNDD); /* lower bound on -x */
-          mpfr_log (h, h, GMP_RNDD); /* lower bound on log(-x) */
-          mpfr_neg (h, h, GMP_RNDU); /* upper bound for -log(-x) */
-          mpfr_sub (h, h, x, GMP_RNDU); /* upper bound for -log(-x) - x */
-          inex = mpfr_prec_round (l, MPFR_PREC(y), rnd);
-          inex2 = mpfr_prec_round (h, MPFR_PREC(y), rnd);
-          /* Caution: we not only need l = h, but both inexact flags should
-             agree. Indeed, one of the inexact flags might be zero. In that
-             case if we assume ln|gamma(x)| cannot be exact, the other flag
-             should be correct. We are conservative here and request that both
-             inexact flags agree. */
-          ok = SAME_SIGN (inex, inex2) && mpfr_cmp (l, h) == 0;
-          if (ok)
-            mpfr_set (y, h, rnd); /* exact */
-          mpfr_clear (l);
-          mpfr_clear (h);
-          if (ok)
-            return inex;
-	  w += MPFR_INT_CEIL_LOG2 (w) + 3;
-	    }
+          mp_prec_t w = MPFR_PREC (y) + 14;
+
+          while (1)
+            {
+              mpfr_init2 (l, w);
+              mpfr_init2 (h, w);
+              /* we want a lower bound on -log(-x), thus an upper bound
+                 on log(-x), thus an upper bound on -x. */
+              mpfr_neg (l, x, GMP_RNDU); /* upper bound on -x */
+              mpfr_log (l, l, GMP_RNDU); /* upper bound for log(-x) */
+              mpfr_neg (l, l, GMP_RNDD); /* lower bound for -log(-x) */
+              mpfr_neg (h, x, GMP_RNDD); /* lower bound on -x */
+              mpfr_log (h, h, GMP_RNDD); /* lower bound on log(-x) */
+              mpfr_neg (h, h, GMP_RNDU); /* upper bound for -log(-x) */
+              mpfr_sub (h, h, x, GMP_RNDU); /* upper bound for -log(-x) - x */
+              inex = mpfr_prec_round (l, MPFR_PREC (y), rnd);
+              inex2 = mpfr_prec_round (h, MPFR_PREC (y), rnd);
+              /* Caution: we not only need l = h, but both inexact flags
+                 should agree. Indeed, one of the inexact flags might be
+                 zero. In that case if we assume ln|gamma(x)| cannot be
+                 exact, the other flag should be correct. We are conservative
+                 here and request that both inexact flags agree. */
+              ok = SAME_SIGN (inex, inex2) && mpfr_equal_p (l, h);
+              if (ok)
+                mpfr_set (y, h, rnd); /* exact */
+              mpfr_clear (l);
+              mpfr_clear (h);
+              if (ok)
+                return inex;
+              w += MPFR_INT_CEIL_LOG2 (w) + 3;
+            }
         }
     }
 
