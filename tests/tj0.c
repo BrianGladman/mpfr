@@ -86,6 +86,10 @@ main (int argc, char *argv[])
       exit (1);
     }
 
+  /* Bug reported on 2007-07-03 by Sisyphus (assertion failed in r4619) */
+  mpfr_set_si (x, 70000, GMP_RNDN);
+  mpfr_j0 (y, x, GMP_RNDN);
+
   mpfr_clear (x);
   mpfr_clear (y);
 
