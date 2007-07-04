@@ -870,7 +870,9 @@ above reasoning. At step (1c) we have $r=y/2$, thus $r-y$ simplifies to $-r$.
 \subsection{The cosine function}
 
 To evaluate $\cos x$ with a target precision of $n$ bits, we use the following
-algorithm with working precision $m$:
+algorithm with working precision $m$, after an additive argument reduction
+which reduces $x$ in the interval $[-\pi, \pi]$, using the
+\texttt{mpfr\_remainder} function:
 \begin{quote}
 $k \leftarrow \lfloor \sqrt{n/2} \rfloor$ \\
 $r \leftarrow x^2$ rounded up \\ % err <= ulp(r)
@@ -907,7 +909,7 @@ giving $\epsilon_k \le (2 l_0+1/3) 2^{2k-m}$.
 \subsection{The sine function}
 
 The sine function is computed from the cosine, with a working precision of
-$m$ bits:
+$m$ bits, after an additive argument reduction in $[-\pi, \pi]$:
 \begin{quote}
 $c \leftarrow \cos x$ rounded away \\
 $t \leftarrow c^2$ rounded away \\
@@ -993,34 +995,20 @@ bound of $2^{-p+7}$.
 
 \subsection{The tangent function}
 
-The tangent function is computed from the cosine, 
-using $\tan x = {\rm sign}(x) \sqrt{\frac{1}{\cos^2 x} - 1}$,
+The tangent function is computed from the \texttt{mpfr\_sin\_cos} function,
+which computes simultaneously $\sin x$ and $\cos x$
 with a working precision of $m$ bits:
 \begin{quote}
-$c \leftarrow \cos x$ rounded down \\ % c <= cos(x) <= 1
-$t \leftarrow c^2$ rounded down \\    % t <= cos(x)^2 <= 1
-$v \leftarrow 1/t$ rounded up \\      % v >= 1/cos(x)^2 >= 1
-$u \leftarrow v - 1$ rounded up \\    % u >= 1/cos(x)^2 - 1
-$s \leftarrow {\rm sign}(x) \sqrt{u}$ rounded away from $0$ \\
+$s, c \leftarrow \circ(\sin x), \circ(\cos x)$ \quad [to nearest] \\
+$t \leftarrow \circ(s/c)$ \quad [to nearest] \\
 \end{quote}
-The absolute error on $c$ is at most $\ulp(c)$.
-Hence the error on
-$t$ is at most $\ulp(t) + 2 c \ulp(c) \le 5 \ulp(t)$,
-% err(t) <= ulp(t) + |c^2-c'^2| <= ulp(t) + |c-c'|*|c+c'|
-%        <= ulp(t) + 2*ulp(c)*c <= 5*ulp(t)
-that on $v$ is at most $\ulp(v) + 5 \ulp(t)/t^2
-        \le \ulp(v) + 10 \ulp(1/t) \le 11 \ulp(v)$,
-% err(v) <= ulp(v) + |1/t-1/t'| <= ulp(v) + |t-t'|/t/t'
-%        <= ulp(v) + 5*ulp(t)/t^2 <= ulp(v) + 10*ulp(1/t) <= 11*ulp(v)
-that on $u$ is at most $\ulp(u) + 11 \ulp(v) \le (1 + 11 \cdot 2^e) \ulp(u)$
-where $e$ is the exponent difference between $v$ and $u$.
-% err(u) <= ulp(u) + err(v) <= ulp(v) + 11*ulp(v) <= (1+11*2^e)*ulp(u)
-The final error on $s$ is $\le \ulp(s) + (1+11 \cdot 2^e) \ulp(u)/2/\sqrt{u}
-        \le \ulp(s) + (1+11 \cdot 2^e) \ulp(u/\sqrt{u})
-        \le (2 + 11 \cdot 2^e) \ulp(s)$.
-% err(s) <= ulp(s) + |u-u'|/2/sqrt(u) <= ulp(s) + (1+11*2^e)*ulp(u)/2/sqrt(u)
-%        <= ulp(s) + (1+11*2^e)*ulp(u/sqrt(u))
-%        <= (2+11*2^e)*ulp(s) 
+We have $s = \sin(x) (1 + \theta_1)$ and $c = \cos(x) (1 + \theta_2)$
+with $|\theta_1|, |\theta_2| \leq 2^{-m}$, thus
+$t = (\tan x) (1 + \theta)^3$ with $|\theta| \leq 2^{-m}$.
+For $m \geq 2$, $|\theta| \leq 1/4$,
+$|(1 + \theta)^3 - 1| \leq 4 |\theta|$, thus we can write
+$t = (\tan x) (1 + 4 \theta)$, thus
+$|t - \tan x| \leq 4 \ulp(t)$.
 
 \subsection{The exponential function}
 

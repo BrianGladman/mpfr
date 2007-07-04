@@ -62,6 +62,7 @@ mpfr_tan (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   /* Compute initial precision */
   precy = MPFR_PREC (y);
   m = precy + MPFR_INT_CEIL_LOG2 (precy) + 13;
+  MPFR_ASSERTD (m >= 2); /* needed for the error analysis in algorithms.tex */
 
   MPFR_GROUP_INIT_2 (group, m, s, c);
   MPFR_ZIV_INIT (loop, m);
@@ -70,9 +71,9 @@ mpfr_tan (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       /* The only way to get an overflow is to get ~ Pi/2
          But the result will be ~ 2^Prec(y). */
       mpfr_sin_cos (s, c, x, GMP_RNDN); /* err <= 1/2 ulp on s and c */
-      mpfr_div (c, s, c, GMP_RNDN);     /* err <= 2 ulps */
+      mpfr_div (c, s, c, GMP_RNDN);     /* err <= 4 ulps */
       MPFR_ASSERTD (!MPFR_IS_SINGULAR (c));
-      if (MPFR_LIKELY (MPFR_CAN_ROUND (c, m-1, precy, rnd_mode)))
+      if (MPFR_LIKELY (MPFR_CAN_ROUND (c, m - 2, precy, rnd_mode)))
         break;
       MPFR_ZIV_NEXT (loop, m);
       MPFR_GROUP_REPREC_2 (group, m, s, c);
