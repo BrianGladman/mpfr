@@ -231,10 +231,11 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
         {
           if (m > k && (m - k >= precy + (rnd_mode == GMP_RNDN)))
             {
-              /* if round to nearest or away, result is s,
-                 otherwise it is round(nexttoward (s, 0)) */
-              if (MPFR_IS_LIKE_RNDZ (rnd_mode, MPFR_IS_NEG (s)))
-                mpfr_nexttozero (s);
+              /* If round to nearest or away, result is s = 1 or -1,
+                 otherwise it is round(nexttoward (s, 0)). However in order to
+                 have the inexact flag correctly set below, we set |s| to
+                 1 - 2^(-m) in all cases. */
+              mpfr_nexttozero (s);
               break;
             }
         }
