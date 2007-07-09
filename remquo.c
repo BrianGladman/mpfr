@@ -25,7 +25,6 @@ MA 02110-1301, USA. */
 
 # define _INSIDE_REMQUO
 
-# include <limits.h>  /* For CHAR_BIT */
 # include "mpfr-impl.h"
 
   /* first define mpfr_remainder */

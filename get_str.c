@@ -22,7 +22,6 @@ the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
 #include <string.h> /* For strlen */
-#include <limits.h> /* For CHAR_BIT, LONG_MAX and LONG_MIN */
 
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"

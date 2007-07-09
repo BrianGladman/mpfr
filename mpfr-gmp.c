@@ -22,7 +22,6 @@ the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
 #include <stdlib.h> /* For malloc, free, realloc and abort*/
-#include <stdio.h>  /* For fprintf and stderr */
 
 #include "mpfr-impl.h"
 

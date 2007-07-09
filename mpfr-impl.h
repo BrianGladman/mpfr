@@ -23,10 +23,16 @@ MA 02110-1301, USA. */
 #ifndef __MPFR_IMPL_H__
 #define __MPFR_IMPL_H__
 
-/* Include stdio.h iff we are debugging or we want to check */
-#if defined(DEBUG) || defined(WANT_ASSERT)
-# include <stdio.h>
-#endif
+/* Let's include some standard headers unconditionally as they are
+   already needed by several source files or when some options are
+   enabled/disabled, and it is easy to forget them (some configure
+   options may hide the error).
+   Note: If some source file must not have such a header included
+   (which is very unlikely and probably means something broken in
+   this source file), we should do that with some macro (that would
+   also force to disable incompatible features). */
+#include <stdio.h>
+#include <limits.h>
 
 /* Check if we are inside a build of MPFR or inside the test suite.
    This is needed in mpfr.h to export or import the functions.
@@ -292,7 +298,7 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
    it needs to be used again in the future. */
 
 #ifdef MPFR_USE_WARNINGS
-/* Note: needs <stdio.h> and <stdlib.h> */
+# include <stdlib.h>
 # define MPFR_WARNING(W)                    \
   do                                        \
     {                                       \
@@ -901,7 +907,6 @@ do {                                                                  \
 /*   MPFR_TRACE (operation) : execute operation iff DEBUG flag is set */
 /*   MPFR_DUMP (x) : print x (a mpfr_t) on stdout */
 #ifdef DEBUG
-# include <stdio.h>
 # define MPFR_TRACE(x) x
 #else
 # define MPFR_TRACE(x) (void) 0
@@ -1270,8 +1275,6 @@ typedef struct {
 #define MPFR_LOG_STAT_F     64
 
 #ifdef MPFR_USE_LOGGING
-
-# include <stdio.h>
 
 /* Check if we can support this feature */
 # ifdef MPFR_USE_THREAD_SAFE

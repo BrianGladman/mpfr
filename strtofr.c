@@ -102,10 +102,6 @@ static const unsigned long RedInvLog2Table[MPFR_MAX_BASE-1][2] = {
   {231UL, 1370UL},
   {3515UL, 20929UL} };
 #if 0
-#include <stdio.h>
-#include <limits.h>
-#include "gmp.h"
-#include "mpfr.h"
 #define N 8
 int main ()
 {

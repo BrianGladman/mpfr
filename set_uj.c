@@ -37,7 +37,6 @@ MA 02110-1301, USA. */
 #ifdef HAVE_INTTYPES_H
 # include <inttypes.h>
 #endif
-#include <limits.h> /* For CHAR_BIT */
 
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"

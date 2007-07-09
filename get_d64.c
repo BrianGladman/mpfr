@@ -24,7 +24,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
-#include <stdio.h>  /* DEBUG */
 #include <stdlib.h> /* for strtol */
 #include <string.h> /* for strlen */
 #include "mpfr-impl.h"
