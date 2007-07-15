@@ -71,9 +71,9 @@ check_nans (void)
   MPFR_ASSERTN(mpfr_cmp (x, y) == 0);
 
   /* Compute ~Pi/2 to check overflow */
-  /* TOO SLOW! Disable this test.
   mpfr_set_prec (x, 20000);
-  mpfr_const_pi (x, GMP_RNDD); mpfr_div_2ui (x, x, 1, GMP_RNDN);
+  mpfr_const_pi (x, GMP_RNDD);
+  mpfr_div_2ui (x, x, 1, GMP_RNDN);
   mpfr_set_prec (y, 24);
   mpfr_tan (y, x, GMP_RNDN);
   if (mpfr_cmp_str (y, "0.100011101101011000100011E20001", 2, GMP_RNDN))
@@ -81,7 +81,15 @@ check_nans (void)
       printf("Error computing tan(~Pi/2)\n");
       mpfr_dump (y);
       exit (1);
-      } */
+    }
+
+  /* bug found by Kaveh Ghazi on 13 Jul 2007 */
+  mpfr_set_prec (x, 53);
+  mpfr_set_prec (y, 53);
+  mpfr_set_str_binary (x, "0.10011100110111000001000010110100101000000000000000000E34");
+  mpfr_tan (y, x, GMP_RNDN);
+  mpfr_set_str_binary (x, "0.10000100110010100010000101000001101001110000110101E41");
+  MPFR_ASSERTN(mpfr_cmp (x, y) == 0);
 
   mpfr_clear (x);
   mpfr_clear (y);
