@@ -293,6 +293,54 @@ special (void)
   mpfr_set_str_binary (x, "0.100001110110101011011010011E8");
   MPFR_ASSERTN (mpfr_cmp (x, y) == 0 && inex < 0);
 
+  /* values reported by Kaveh Ghazi on 14 Jul 2007, where mpfr_lgamma()
+     takes forever */
+#define VAL1 "-0.11100001001010110111001010001001001011110100110000110E-55"
+#define OUT1 "100110.01000000010111001110110101110101001001100110111"
+#define VAL2 "-0.11100001001010110111001010001001001011110011111111100E-55"
+#define OUT2 "100110.0100000001011100111011010111010100100110011111"
+#define VAL3 "-0.11100001001010110111001010001001001001110101101010100E-55"
+#define OUT3 "100110.01000000010111001110110101110101001011110111011"
+#define VAL4 "-0.10001111110110110100100100000000001111110001001001011E-57"
+#define OUT4 "101000.0001010111110011101101000101111111010001100011"
+#define VAL5 "-0.10001111110110110100100100000000001111011111100001000E-57"
+#define OUT5 "101000.00010101111100111011010001011111110100111000001"
+#define VAL6 "-0.10001111110110110100100100000000001111011101100011001E-57"
+#define OUT6 "101000.0001010111110011101101000101111111010011101111"
+
+  mpfr_set_prec (x, 53);
+  mpfr_set_prec (y, 53);
+
+  mpfr_set_str_binary (x, VAL1);
+  mpfr_lgamma (y, &sign, x, GMP_RNDN);
+  mpfr_set_str_binary (x, OUT1);
+  MPFR_ASSERTN(sign == -1 && mpfr_cmp (x, y) == 0);
+
+  mpfr_set_str_binary (x, VAL2);
+  mpfr_lgamma (y, &sign, x, GMP_RNDN);
+  mpfr_set_str_binary (x, OUT2);
+  MPFR_ASSERTN(sign == -1 && mpfr_cmp (x, y) == 0);
+
+  mpfr_set_str_binary (x, VAL3);
+  mpfr_lgamma (y, &sign, x, GMP_RNDN);
+  mpfr_set_str_binary (x, OUT3);
+  MPFR_ASSERTN(sign == -1 && mpfr_cmp (x, y) == 0);
+
+  mpfr_set_str_binary (x, VAL4);
+  mpfr_lgamma (y, &sign, x, GMP_RNDN);
+  mpfr_set_str_binary (x, OUT4);
+  MPFR_ASSERTN(sign == -1 && mpfr_cmp (x, y) == 0);
+
+  mpfr_set_str_binary (x, VAL5);
+  mpfr_lgamma (y, &sign, x, GMP_RNDN);
+  mpfr_set_str_binary (x, OUT5);
+  MPFR_ASSERTN(sign == -1 && mpfr_cmp (x, y) == 0);
+
+  mpfr_set_str_binary (x, VAL6);
+  mpfr_lgamma (y, &sign, x, GMP_RNDN);
+  mpfr_set_str_binary (x, OUT6);
+  MPFR_ASSERTN(sign == -1 && mpfr_cmp (x, y) == 0);
+
   mpfr_clear (x);
   mpfr_clear (y);
 }

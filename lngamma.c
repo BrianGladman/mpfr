@@ -639,7 +639,11 @@ mpfr_lgamma (mpfr_ptr y, int *signp, mpfr_srcptr x, mp_rnd_t rnd)
               mpfr_clear (h);
               if (ok)
                 return inex;
-              w += MPFR_INT_CEIL_LOG2 (w) + 3;
+              /* if ulp(log(-x)) <= |x| there is no reason to loop,
+                 since the width of [l, h] will be at least |x| */
+              if (MPFR_EXP(l) < MPFR_EXP(x) + (mp_exp_t) w)
+                break;
+              w += MPFR_INT_CEIL_LOG2(w) + 3;
             }
         }
     }
