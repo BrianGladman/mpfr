@@ -88,7 +88,7 @@ check_nans (void)
   mpfr_set_prec (y, 53);
   mpfr_set_str_binary (x, "0.10011100110111000001000010110100101000000000000000000E34");
   mpfr_tan (y, x, GMP_RNDN);
-  mpfr_set_str_binary (x, "0.10000100110010100010000101000001101001110000110101E41");
+  mpfr_set_str_binary (x, "0.1000010011001010001000010100000110100111000011010101E41");
   MPFR_ASSERTN(mpfr_cmp (x, y) == 0);
 
   mpfr_clear (x);

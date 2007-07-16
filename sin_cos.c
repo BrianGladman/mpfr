@@ -97,11 +97,16 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_cos (c, xx, GMP_RNDZ);
       /* If no argument reduction was performed, the error is at most ulp(c),
          otherwise it is at most ulp(c) + 2^(2-m). Since |c| < 1, we have
-         ulp(c) <= 2^(-m), thus the error is bounded by 2^(3-m). */
-      err = (reduce == 0) ? m : m - 3;
-      if (!mpfr_can_round (c, m, GMP_RNDN, rnd_mode,
+         ulp(c) <= 2^(-m), thus the error is bounded by 2^(3-m) in that later
+         case. */
+      if (reduce == 0)
+        err = m;
+      else
+        err = MPFR_GET_EXP (c) + (mp_exp_t) (m - 3);
+      if (!mpfr_can_round (c, err, GMP_RNDN, rnd_mode,
                            MPFR_PREC (z) + (rnd_mode == GMP_RNDN)))
         goto next_step;
+
       mpfr_set (z, c, rnd_mode);
       mpfr_sqr (c, c, GMP_RNDU);
       mpfr_ui_sub (c, 1, c, GMP_RNDN);
