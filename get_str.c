@@ -214,10 +214,11 @@ mpfr_get_str_aux (char *const str, mp_exp_t *const exp, mp_limb_t *const r,
             dir = -1;
         }
 
-      /* copy str1 into str and convert to ASCII */
+      /* copy str1 into str and convert to characters (digits and
+         lowercase letters from the source character set) */
       for (i = 0; i < m; i++)
-        str[i] = num_to_text[(int) str1[i]];
-        str[m] = 0;
+        str[i] = num_to_text[(int) str1[i]]; /* str1[i] is an unsigned char */
+      str[m] = 0;
     }
   /* mpfr_can_round_raw failed: rounding is not possible */
   else

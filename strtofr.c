@@ -187,6 +187,7 @@ digit_value_in_base (int c, int base)
 /* Compatible with any locale, but one still assumes that 'a', 'b', 'c',
    ..., 'z', and 'A', 'B', 'C', ..., 'Z' are consecutive values (like
    in any ASCII-based character set). */
+/* TODO: support EBCDIC. */
 static int
 fast_casecmp (const char *s1, const char *s2)
 {
