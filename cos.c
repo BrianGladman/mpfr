@@ -201,8 +201,10 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       for (k = 0; k < K; k++)
         {
           mpfr_sqr (s, s, GMP_RNDU);            /* err <= 2*olderr */
-          MPFR_SET_EXP (s, MPFR_GET_EXP (s)+1); /* Can't overflow */
+          MPFR_SET_EXP (s, MPFR_GET_EXP (s) + 1); /* Can't overflow */
           mpfr_sub (s, s, r, GMP_RNDN);         /* err <= 4*olderr */
+          if (MPFR_IS_ZERO(s))
+            goto ziv_next;
           MPFR_ASSERTD (MPFR_GET_EXP (s) <= 1);
         }
 
@@ -244,6 +246,7 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
           cancel = exps;
         }
 
+    ziv_next:
       MPFR_ZIV_NEXT (loop, m);
       MPFR_GROUP_REPREC_2 (group, m, r, s);
       if (reduce)
