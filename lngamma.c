@@ -167,33 +167,47 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
 
   compared = mpfr_cmp_ui (z0, 1);
 
+  MPFR_SAVE_EXPO_MARK (expo);
+
 #ifndef IS_GAMMA /* lngamma or lgamma */
   if (compared == 0 || (compared > 0 && mpfr_cmp_ui (z0, 2) == 0))
     return mpfr_set_ui (y, 0, GMP_RNDN);  /* lngamma(1 or 2) = +0 */
 
-  /* Deal here with tiny positive inputs (tiny negative inputs are treated
-     separately by lngamma and lgamma). The expansion at x=0 is:
-     lngamma(x) = -log(x) - euler*x + O(x^2), where euler is Euler's constant.
-     More precisely we have for 0 < x <= 1:
-                -log(x) - x <= lngamma(x) <= -log(x).
-     Since log(x) is not representable, we may have an instance of the Table
-     Maker Dilemma. The only way to ensure correct rounding is to compute an
-     interval [l,h] such that l <= log(x) - x and log(x) <= h, and check
-     whether l and h round to the same number for the target precision and
-     rounding modes. */
+  /* Deal here with tiny inputs. We have for -0.3 <= x <= 0.3:
+     - log|x| - gamma*x <= log|gamma(x)| <= - log|x| - gamma*x + x^2 */
   if (MPFR_EXP(z0) <= - (mp_exp_t) MPFR_PREC(y))
     {
-      mpfr_t l, h;
+      mpfr_t l, h, g;
       int ok, inex2;
 
       mpfr_init2 (l, MPFR_PREC(y) + 14);
-      mpfr_init2 (h, MPFR_PREC(y) + 14);
-      mpfr_log (l, z0, GMP_RNDU); /* upper bound for log(z0) */
-      mpfr_neg (l, l, GMP_RNDD); /* lower bound for -log(z0) */
+      if (MPFR_IS_POS(z0))
+        {
+          mpfr_log (l, z0, GMP_RNDU); /* upper bound for log(z0) */
+          mpfr_init2 (h, MPFR_PREC(l));
+        }
+      else
+        {
+          mpfr_init2 (h, MPFR_PREC(z0));
+          mpfr_neg (h, z0, GMP_RNDN); /* exact */
+          mpfr_log (l, h, GMP_RNDU); /* upper bound for log(-z0) */
+          mpfr_set_prec (h, MPFR_PREC(l));
+        }
+      mpfr_neg (l, l, GMP_RNDD); /* lower bound for -log(|z0|) */
       mpfr_set (h, l, GMP_RNDD); /* exact */
-      mpfr_nextabove (h); /* upper bound for -log(z0), avoids two calls to
+      mpfr_nextabove (h); /* upper bound for -log(|z0|), avoids two calls to
                              mpfr_log */
-      mpfr_sub (l, l, z0, GMP_RNDD);
+      mpfr_init2 (g, MPFR_PREC(l));
+      /* if z0>0, we need an upper approximation of Euler's constant
+         for the left bound */
+      mpfr_const_euler (g, MPFR_IS_POS(z0) ? GMP_RNDU : GMP_RNDD);
+      mpfr_mul (g, g, z0, GMP_RNDD);
+      mpfr_sub (l, l, g, GMP_RNDD);
+      mpfr_const_euler (g, MPFR_IS_POS(z0) ? GMP_RNDD : GMP_RNDU); /* cached */
+      mpfr_mul (g, g, z0, GMP_RNDU);
+      mpfr_sub (h, h, g, GMP_RNDD);
+      mpfr_mul (g, z0, z0, GMP_RNDU);
+      mpfr_add (h, h, g, GMP_RNDU);
       inexact = mpfr_prec_round (l, MPFR_PREC(y), rnd);
       inex2 = mpfr_prec_round (h, MPFR_PREC(y), rnd);
       /* Caution: we not only need l = h, but both inexact flags should agree.
@@ -205,8 +219,12 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
         mpfr_set (y, h, rnd); /* exact */
       mpfr_clear (l);
       mpfr_clear (h);
+      mpfr_clear (g);
       if (ok)
-        return inexact;
+        {
+          MPFR_SAVE_EXPO_FREE (expo);
+          return mpfr_check_range (y, inexact, rnd);
+        }
     }
 #endif
 
@@ -217,8 +235,6 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
   mpfr_init2 (u, MPFR_PREC_MIN);
   mpfr_init2 (v, MPFR_PREC_MIN);
   mpfr_init2 (z, MPFR_PREC_MIN);
-
-  MPFR_SAVE_EXPO_MARK (expo);
 
   if (compared < 0)
     {
