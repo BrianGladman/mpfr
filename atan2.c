@@ -153,6 +153,12 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       else
         goto set_zero;
     }
+
+  /* When x=1, atan2(y,x) = atan(y). FIXME: more generally, if x is a power
+     of two, we could call directly atan(y/x) since y/x is exact. */
+  if (mpfr_cmp_ui (x, 1) == 0)
+    return mpfr_atan (dest, y, rnd_mode);
+
   MPFR_SAVE_EXPO_MARK (expo);
 
   /* Set up initial prec */
