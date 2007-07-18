@@ -483,17 +483,28 @@ large_arg (void)
       exit (1);
     }
 
-  /* Reported by Christopher Creutzig on 2007-07-10.
-     I took the result from Maple. -- VL. */
+  /* Reported by Christopher Creutzig on 2007-07-10. */
   mpfr_set_prec (x, 53);
   mpfr_set_prec (y, 53);
   mpfr_set_si_2exp (x, 54563, -1, GMP_RNDN);
   mpfr_erfc (y, x, GMP_RNDZ);
-  mpfr_set_str_binary (x,
-    "0.11110001000000001010111000101011001010011101000111101E-1073769430");
-  if (! mpfr_equal_p (x, y))
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  if (! mpfr_equal_p (y, x))
     {
       printf ("mpfr_erfc failed for x=27281.5, prec=53 (6)\n");
+      printf ("expected "); mpfr_dump (x);
+      printf ("got      "); mpfr_dump (y);
+      exit (1);
+    }
+
+  /* same test with rounding away from zero */
+  mpfr_set_si_2exp (x, 54563, -1, GMP_RNDN);
+  mpfr_erfc (y, x, GMP_RNDU);
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_nextabove (x);
+  if (! mpfr_equal_p (y, x))
+    {
+      printf ("mpfr_erfc failed for x=27281.5, prec=53 (7)\n");
       printf ("expected "); mpfr_dump (x);
       printf ("got      "); mpfr_dump (y);
       exit (1);
