@@ -93,11 +93,12 @@ main (int argc, char *argv[])
 
   tests_start_mpfr ();
 
-  if (argc>=2) /* tset_str <string> <prec> */
+  if (argc >= 2) /* tset_str <string> [<prec>] [<base>] */
     {
-      prec = (argc>=3) ? atoi(argv[2]) : 53;
+      prec = (argc >= 3) ? atoi (argv[2]) : 53;
+      base = (argc >= 4) ? atoi (argv[3]) : 2;
       mpfr_init2 (x, prec);
-      mpfr_set_str_binary (x, argv[1]);
+      mpfr_set_str (x, argv[1], base, GMP_RNDN);
       mpfr_out_str (stdout, 10, 0, x, GMP_RNDN);
       puts ("");
       mpfr_clear (x);
