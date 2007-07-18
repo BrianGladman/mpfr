@@ -171,6 +171,14 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     for (;;)
       {
         mpfr_div (tmp, y, x, GMP_RNDN);   /* Error <= ulp (tmp) */
+        /* If tmp is 0, this means that |y/x| <= 2^(-emin-2),
+           and since atan(z)/z < 1, we have underflow. */
+        if (MPFR_IS_ZERO (tmp))
+          {
+            mpfr_clear (tmp);
+            return mpfr_underflow (dest, (rnd_mode == GMP_RNDN) ? GMP_RNDZ
+                                   : rnd_mode, MPFR_SIGN(tmp));
+          }
         mpfr_atan (tmp, tmp, GMP_RNDN);   /* Error <= 2*ulp (tmp) since
                                              abs(D(arctan)) <= 1 */
         /*FIXME: Error <= ulp(tmp) ? */
@@ -187,11 +195,13 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       for (;;)
         {
           mpfr_div (tmp, y, x, GMP_RNDN);   /* Error <= ulp (tmp) */
+          /* If tmp is 0, we have |y/x| <= 2^(-emin-2), thus
+             atan|y/x| < 2^(-emin-2). */
           MPFR_SET_POS (tmp);               /* no error */
           mpfr_atan (tmp, tmp, GMP_RNDN);   /* Error <= 2*ulp (tmp) since
                                                abs(D(arctan)) <= 1 */
           mpfr_const_pi (pi, GMP_RNDN);     /* Error <= ulp(pi) /2 */
-          e = MPFR_GET_EXP (tmp);
+          e = MPFR_NOTZERO(tmp) ? MPFR_GET_EXP (tmp) : __gmpfr_emin - 1;
           mpfr_sub (tmp, pi, tmp, GMP_RNDN);          /* see above */
           if (MPFR_IS_NEG (y))
             MPFR_CHANGE_SIGN (tmp);
