@@ -90,6 +90,7 @@ mpfr_erfc_asympt (mpfr_ptr y, mpfr_srcptr x)
                                    t is bounded by (1+u)^(8 |xx| + 13/2),
                                    thus that on output y is bounded by
                                    8 |xx| + 7 + err. */
+
   if (MPFR_IS_ZERO(y))
     {
       /* If y is zero, most probably we have underflow. We check it directly
@@ -106,12 +107,13 @@ mpfr_erfc_asympt (mpfr_ptr y, mpfr_srcptr x)
                                         is nearer from 0 than from 2^(-emin-1),
                                         thus we have underflow. */
       exp_err = 0;
-      goto end_asympt;
     }
-  mpfr_add_ui (err, err, 7, GMP_RNDU);
-  exp_err = MPFR_GET_EXP (err);
+  else
+    {
+      mpfr_add_ui (err, err, 7, GMP_RNDU);
+      exp_err = MPFR_GET_EXP (err);
+    }
 
- end_asympt:
   mpfr_clear (t);
   mpfr_clear (xx);
   mpfr_clear (err);
@@ -198,6 +200,7 @@ mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
           if (err == 0) /* underflow case */
             {
               mpfr_clear (tmp);
+              MPFR_SAVE_EXPO_FREE (expo);
               return mpfr_underflow (y, (rnd == GMP_RNDN) ? GMP_RNDZ : rnd, 1);
             }
         }

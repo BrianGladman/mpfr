@@ -176,6 +176,7 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
         if (MPFR_IS_ZERO (tmp))
           {
             mpfr_clear (tmp);
+            MPFR_SAVE_EXPO_FREE (expo);
             return mpfr_underflow (dest, (rnd_mode == GMP_RNDN) ? GMP_RNDZ
                                    : rnd_mode, MPFR_SIGN(tmp));
           }
