@@ -33,7 +33,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
   mp_limb_t *up, *vp, *tmpp;
   mpfr_t u, v, tmp;
   unsigned long n; /* number of iterations */
-  unsigned long err;
+  unsigned long err = 0;
   MPFR_ZIV_DECL (loop);
   MPFR_TMP_DECL(marker);
 
