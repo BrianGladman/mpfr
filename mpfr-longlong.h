@@ -1822,7 +1822,11 @@ extern UWtype mpn_udiv_qrnnd_r _PROTO ((UWtype, UWtype, UWtype, UWtype *));
 #endif
 
 #ifdef COUNT_LEADING_ZEROS_NEED_CLZ_TAB
-extern const unsigned char __GMP_DECLSPEC __clz_tab[128];
+# ifdef MPFR_HAVE_GMP_IMPL
+    extern const unsigned char __GMP_DECLSPEC __clz_tab[128];
+# else
+    extern const unsigned char __clz_tab[128];
+# endif
 #endif
 
 #if !defined (count_trailing_zeros)
