@@ -448,58 +448,71 @@ data_check (char *f, int (*foo) (), char *name)
 
   while (!feof (fp))
     {
-      if (fscanf (fp, "%lu %lu %c", &xprec, &yprec, &c) != 3)
+      c = getc (fp);
+      if (c == '#') /* comment: read entire line */
         {
-          printf ("Error, corrupted line in file %s\n", f);
-          exit (1);
+          do
+            {
+              c = getc (fp);
+            }
+          while (!feof (fp) && c != '\n');
         }
-      switch (c)
+      else
         {
-        case 'n': 
-          rnd = GMP_RNDN;
-          break;
-        case 'z':
-          rnd = GMP_RNDZ;
-          break;
-        case 'u':
-          rnd = GMP_RNDU;
-          break;
-        case 'd':
-          rnd = GMP_RNDD;
-          break;
-        default:
-          printf ("Error, unexpected rounding mode in file %s: %c\n", f, c);
-          exit (1);
-        }
-      mpfr_set_prec (x, xprec);
-      mpfr_set_prec (y, yprec);
-      mpfr_set_prec (z, yprec);
-      fscanf (fp, " ");
-      if (mpfr_inp_str (x, fp, 0, GMP_RNDN) == 0)
-        {
-          printf ("Error, corrupted input in file %s\n", f);
-          exit (1);
-        }
-      fscanf (fp, " ");
-      if (mpfr_inp_str (y, fp, 0, GMP_RNDN) == 0)
-        {
-          printf ("Error, corrupted output in file %s\n", f);
-          exit (1);
-        }
-      fscanf (fp, "\n");
+          ungetc (c, fp);
+          if (fscanf (fp, "%lu %lu %c", &xprec, &yprec, &c) != 3)
+            {
+              printf ("Error, corrupted line in file %s\n", f);
+              exit (1);
+            }
+          switch (c)
+            {
+            case 'n': 
+              rnd = GMP_RNDN;
+              break;
+            case 'z':
+              rnd = GMP_RNDZ;
+              break;
+            case 'u':
+              rnd = GMP_RNDU;
+              break;
+            case 'd':
+              rnd = GMP_RNDD;
+              break;
+            default:
+              printf ("Error, unexpected rounding mode in file %s: %c\n", f, c);
+              exit (1);
+            }
+          mpfr_set_prec (x, xprec);
+          mpfr_set_prec (y, yprec);
+          mpfr_set_prec (z, yprec);
+          fscanf (fp, " ");
+          if (mpfr_inp_str (x, fp, 0, GMP_RNDN) == 0)
+            {
+              printf ("Error, corrupted input in file %s\n", f);
+              exit (1);
+            }
+          fscanf (fp, " ");
+          if (mpfr_inp_str (y, fp, 0, GMP_RNDN) == 0)
+            {
+              printf ("Error, corrupted output in file %s\n", f);
+              exit (1);
+            }
+          fscanf (fp, "\n");
 
-      foo (z, x, rnd);
-      if (! mpfr_equal_p (y, z))
-        {
-          printf ("Error for %s with rnd=%s\nx=", name, 
-                  mpfr_print_rnd_mode (rnd));
-          mpfr_out_str (stdout, 16, 0, x, GMP_RNDN);
-          printf ("\nexpected ");
-          mpfr_out_str (stdout, 16, 0, y, GMP_RNDN);
-          printf ("\ngot      ");
-          mpfr_out_str (stdout, 16, 0, z, GMP_RNDN);
-          printf ("\n");
-          exit (1);
+          foo (z, x, rnd);
+          if (! mpfr_equal_p (y, z))
+            {
+              printf ("Error for %s with rnd=%s\nx=", name, 
+                      mpfr_print_rnd_mode (rnd));
+              mpfr_out_str (stdout, 16, 0, x, GMP_RNDN);
+              printf ("\nexpected ");
+              mpfr_out_str (stdout, 16, 0, y, GMP_RNDN);
+              printf ("\ngot      ");
+              mpfr_out_str (stdout, 16, 0, z, GMP_RNDN);
+              printf ("\n");
+              exit (1);
+            }
         }
     }
 
