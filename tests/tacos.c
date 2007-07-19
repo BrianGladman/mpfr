@@ -176,6 +176,8 @@ main (void)
 
   test_generic (2, 100, 7);
 
+  data_check ("data/acos", mpfr_acos, "mpfr_acos");
+
   mpfr_clear (x);
   mpfr_clear (y);
 

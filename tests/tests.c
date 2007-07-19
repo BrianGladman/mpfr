@@ -412,3 +412,100 @@ tests_default_random (mpfr_ptr x)
   if (randlimb () & 1)
     mpfr_neg (x, x, GMP_RNDN);
 }
+
+/* Check data in file f for function foo, with name 'name'.
+   Each line consists of the file f one:
+
+   xprec yprec rnd x y
+
+   where:
+
+   xprec is the input precision
+   yprec is the output precision
+   rnd is the rounding mode (n, z, u, d)
+   x is the input (hexadecimal format)
+   y is the expected output (hexadecimal format) for foo(x) with rounding rnd
+ */
+void
+data_check (char *f, int (*foo) (), char *name)
+{
+  FILE *fp;
+  mp_prec_t xprec, yprec;
+  mpfr_t x, y, z;
+  mp_rnd_t rnd;
+  char c;
+
+  fp = fopen (f, "r");
+  if (fp == NULL)
+    {
+      printf ("Error, unable to open file %s\n", f);
+      exit (1);
+    }
+
+  mpfr_init (x);
+  mpfr_init (y);
+  mpfr_init (z);
+
+  while (!feof (fp))
+    {
+      if (fscanf (fp, "%lu %lu %c", &xprec, &yprec, &c) != 3)
+        {
+          printf ("Error, corrupted line in file %s\n", f);
+          exit (1);
+        }
+      switch (c)
+        {
+        case 'n': 
+          rnd = GMP_RNDN;
+          break;
+        case 'z':
+          rnd = GMP_RNDZ;
+          break;
+        case 'u':
+          rnd = GMP_RNDU;
+          break;
+        case 'd':
+          rnd = GMP_RNDD;
+          break;
+        default:
+          printf ("Error, unexpected rounding mode in file %s: %c\n", f, c);
+          exit (1);
+        }
+      mpfr_set_prec (x, xprec);
+      mpfr_set_prec (y, yprec);
+      mpfr_set_prec (z, yprec);
+      fscanf (fp, " ");
+      if (mpfr_inp_str (x, fp, 0, GMP_RNDN) == 0)
+        {
+          printf ("Error, corrupted input in file %s\n", f);
+          exit (1);
+        }
+      fscanf (fp, " ");
+      if (mpfr_inp_str (y, fp, 0, GMP_RNDN) == 0)
+        {
+          printf ("Error, corrupted output in file %s\n", f);
+          exit (1);
+        }
+      fscanf (fp, "\n");
+
+      foo (z, x, rnd);
+      if (! mpfr_equal_p (y, z))
+        {
+          printf ("Error for %s with rnd=%s\nx=", name, 
+                  mpfr_print_rnd_mode (rnd));
+          mpfr_out_str (stdout, 16, 0, x, GMP_RNDN);
+          printf ("\nexpected ");
+          mpfr_out_str (stdout, 16, 0, y, GMP_RNDN);
+          printf ("\ngot      ");
+          mpfr_out_str (stdout, 16, 0, z, GMP_RNDN);
+          printf ("\n");
+          exit (1);
+        }
+    }
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+
+  fclose (fp);
+}
