@@ -348,6 +348,15 @@ main (int argc, char *argv[])
   overflowed_cos0 ();
   test_generic (2, 100, 15);
 
+  /* check inexact flag */
+  mpfr_set_prec (x, 3);
+  mpfr_set_prec (y, 13);
+  mpfr_set_str_binary (x, "-0.100E196");
+  inex = mpfr_cos (y, x, GMP_RNDU);
+  mpfr_set_prec (x, 13);
+  mpfr_set_str_binary (x, "0.1111111100101");
+  MPFR_ASSERTN (inex > 0 && mpfr_equal_p (x, y));
+
   mpfr_clear (x);
   mpfr_clear (y);
 
