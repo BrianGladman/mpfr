@@ -30,7 +30,7 @@ free_l2b (void)
   for (b = 2; b <= BASE_MAX; b++)
     for (i = 0; i < 2; i++)
       {
-        mpfr_ptr p = mpfr_l2b[b-2][i];
+        mpfr_ptr p = __gmpfr_l2b[b-2][i];
         if (p != NULL)
           {
             mpfr_clear (p);

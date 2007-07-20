@@ -204,7 +204,7 @@ __MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_cache_const_euler;
 __MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_cache_const_catalan;
 
 #define BASE_MAX 36
-__MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_ptr mpfr_l2b[BASE_MAX-1][2];
+__MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_ptr __gmpfr_l2b[BASE_MAX-1][2];
 
 __MPFR_DECLSPEC extern const mpfr_t __gmpfr_one;
 __MPFR_DECLSPEC extern const mpfr_t __gmpfr_two;
