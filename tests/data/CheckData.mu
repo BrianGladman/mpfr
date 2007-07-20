@@ -1,7 +1,9 @@
-file := "acos":  // data file to be tested
-f := arccos:     // corresponding MuPAD function
+file := "acosh":  // data file to be tested
+f := arccosh:     // corresponding MuPAD function
 
 // ------------------------ do not edit below this line -----------------------
+
+print (Unquoted, _concat ("Checking file ", file, " with MuPAD function ", f));
 
 prec := 20: // default working precision
 
@@ -159,9 +161,9 @@ while type(l) <> DOM_NULL do
    end_if;
    l := ftextinput (foo); // read next line
 end_while;
-print ("checked lines: ", checked);
-print ("minimal precision: ", minprec);
-print ("maximal precision: ", maxprec);
-print ("total time: ", time ());
+print (Unquoted, _concat ("checked lines: ", checked));
+print (Unquoted, _concat ("minimal precision: ", minprec));
+print (Unquoted, _concat ("maximal precision: ", maxprec));
+print (Unquoted, _concat ("total time: ", time ()));
 fclose (foo);
 quit;
