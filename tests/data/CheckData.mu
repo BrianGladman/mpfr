@@ -1,7 +1,51 @@
-file := "acosh":  // data file to be tested
-f := arccosh:     // corresponding MuPAD function
+file := "acos":  // data file to be tested
+f := arccos:     // corresponding MuPAD function
 
 // ------------------------ do not edit below this line -----------------------
+
+// auxiliary function for file log10
+log10 := proc(x)
+begin
+   if testtype(x, Type::Numeric) then return (ln(x)/ln(10))
+   else return (procname (x))
+   end_if
+end_proc:
+log10 := funcenv(log10):
+log10::type := "log10":
+log10::print := "log10":
+
+// auxiliary function for file mulpi
+mulpi := proc(x)
+begin
+   if testtype(x, Type::Numeric) then return (x * 884279719003555/2^48)
+   else return (procname (x))
+   end_if
+end_proc:
+mulpi := funcenv(mulpi):
+mulpi::type := "mulpi":
+mulpi::print := "mulpi":
+
+// auxiliary function for file exp2
+exp2 := proc(x)
+begin
+   if testtype(x, Type::Numeric) then return(2^x)
+   else return (procname (x))
+   end_if
+end_proc:
+exp2 := funcenv(exp2):
+exp2::type := "exp2":
+exp2::print := "exp2":
+
+// auxiliary function for file pow275
+pow275 := proc(x)
+begin
+   if testtype(x, Type::Numeric) then return(x^(11/4))
+   else return (procname (x))
+   end_if
+end_proc:
+pow275 := funcenv(pow275):
+pow275::type := "pow275":
+pow275::print := "pow275":
 
 print (Unquoted, _concat ("Checking file ", file, " with MuPAD function ", f));
 
@@ -89,6 +133,7 @@ end_proc:
 Round := proc (z, r, p)
 local e, s, m;
 begin
+   if iszero(z) then return(0) end_if;
    // first compute exponent
    if z < 0 then s := -1; m := -z else s := 1; m := z end_if;
    e := ceil (log(2, m));
@@ -105,8 +150,7 @@ end_proc:
 foo := fopen (file, Read, Text):
 l := ftextinput (foo):
 checked := 0: // number of checked lines
-minprec := infinity:
-maxprec := 0:
+maxprec := 0: // maximal precision used
 while type(l) <> DOM_NULL do
    if l[1] <> "#" then
       i := 1; // current index in l
@@ -144,17 +188,20 @@ while type(l) <> DOM_NULL do
       if y = FAIL then
          error ("cannot read output number")
       end_if;
-      DIGITS := prec - 1;
-      if x = 0 then x := 0.0 end_if; // to force interval evaluation
+      DIGITS := prec;
+      exact := bool(type(f(x)) <> type(f(xxx)));
       repeat
-         DIGITS := DIGITS + 1;
-         z := f(x...x);
+         if exact then z := f(x)...f(x) else z := f(x...x) end_if;
          z1 := Round (op(z, 1), rnd, yprec);
          z2 := Round (op(z, 2), rnd, yprec);
+         if z1 = z2 then break end_if;
+         DIGITS := DIGITS + iquo (DIGITS, 2);
       until z1 = z2 end_repeat;
-      if DIGITS < minprec then minprec := DIGITS end_if;
       if DIGITS > maxprec then maxprec := DIGITS end_if;
       if y <> z1 then
+         print (Unquoted, _concat ("x=", x));
+         print (Unquoted, _concat ("file contains ", y));
+         print (Unquoted, _concat ("MuPAD claims ", z1));
          error (_concat("wrong data line: ", l))
       end_if;
       checked := checked + 1;
@@ -162,7 +209,6 @@ while type(l) <> DOM_NULL do
    l := ftextinput (foo); // read next line
 end_while;
 print (Unquoted, _concat ("checked lines: ", checked));
-print (Unquoted, _concat ("minimal precision: ", minprec));
 print (Unquoted, _concat ("maximal precision: ", maxprec));
 print (Unquoted, _concat ("total time: ", time ()));
 fclose (foo);
