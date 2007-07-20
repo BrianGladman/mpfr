@@ -16,6 +16,7 @@ foo := proc(arg_m, val_m, arg_e, val_e, fp)
    fprintf (fp, "53 53 n ", 53);
    to_hex(arg_m, arg_e, fp);
    fprintf (fp, " ");
+   # warning: Gonnet stores -val_e
    to_hex(val_m, -val_e, fp);
    fprintf (fp, "\n");
 end:
