@@ -194,6 +194,9 @@ main (int argc, char *argv[])
 
   test_generic (2, 100, 100);
 
+  if (getenv ("MPFR_CHECK_ALL") != NULL)
+    data_check ("data/cosh", mpfr_cosh, "mpfr_cosh");
+
   tests_end_mpfr ();
   return 0;
 }

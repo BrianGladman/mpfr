@@ -360,6 +360,9 @@ main (int argc, char *argv[])
   mpfr_clear (x);
   mpfr_clear (y);
 
+  if (getenv ("MPFR_CHECK_ALL") != NULL)
+    data_check ("data/cos", mpfr_cos, "mpfr_cos");
+
   tests_end_mpfr ();
   return 0;
 }

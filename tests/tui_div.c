@@ -160,6 +160,12 @@ check_nan (void)
   mpfr_clear (q);
 }
 
+static int
+mpfr_inv (mpfr_t y, mpfr_t x, mp_rnd_t r)
+{
+  return mpfr_ui_div (y, 1, x, r);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -177,6 +183,10 @@ main (int argc, char *argv[])
         "1.3178666932321966062e285");
   check(1476599377, "-2.14191393656148625995e+305", GMP_RNDD,
         "-6.8938315017943889615e-297");
+
+  /* inv is for 1/x */
+  if (getenv ("MPFR_CHECK_ALL") != NULL)
+    data_check ("data/inv", mpfr_inv, "mpfr_ui_div(1,x)");
 
   tests_end_mpfr ();
   return 0;

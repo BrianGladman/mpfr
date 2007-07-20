@@ -95,6 +95,9 @@ main (int argc, char *argv[])
 
   test_generic (2, 100, 10);
 
+  if (getenv ("MPFR_CHECK_ALL") != NULL)
+    data_check ("data/j0", mpfr_j0, "mpfr_j0");
+
   tests_end_mpfr ();
 
   return 0;

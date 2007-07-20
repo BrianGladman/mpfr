@@ -351,6 +351,14 @@ special (void)
   mpfr_clear (y);
 }
 
+static int
+mpfr_lgamma1 (mpfr_t y, mpfr_t x, mp_rnd_t r)
+{
+  int sign;
+
+  return mpfr_lgamma (y, &sign, x, r);
+}
+
 int
 main (void)
 {
@@ -358,6 +366,9 @@ main (void)
 
   special ();
   test_generic (2, 100, 2);
+
+  if (getenv ("MPFR_CHECK_ALL") != NULL)
+    data_check ("data/lgamma", mpfr_lgamma1, "mpfr_lgamma");
 
   tests_end_mpfr ();
   return 0;

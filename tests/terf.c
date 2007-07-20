@@ -551,6 +551,12 @@ main (int argc, char *argv[])
   test_generic_erf (2, 100, 15);
   test_generic_erfc (2, 100, 15);
 
+  if (getenv ("MPFR_CHECK_ALL") != NULL)
+    {
+      data_check ("data/erf",  mpfr_erf,  "mpfr_erf");
+      data_check ("data/erfc", mpfr_erfc, "mpfr_erfc");
+    }
+
   tests_end_mpfr ();
   return 0;
 }

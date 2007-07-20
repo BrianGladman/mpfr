@@ -672,6 +672,9 @@ main (void)
   check4 ("72154663483843080704304789585920.0", GMP_RNDD,
           "1.e2d9a51977e6d@13");
 
+  if (getenv ("MPFR_CHECK_ALL") != NULL)
+    data_check ("data/sqrt", mpfr_sqrt, "mpfr_sqrt");
+
   tests_end_mpfr ();
   return 0;
 }

@@ -206,5 +206,8 @@ main (void)
 
   tests_end_mpfr ();
 
+  if (getenv ("MPFR_CHECK_ALL") != NULL)
+    data_check ("data/asin", mpfr_asin, "mpfr_asin");
+
   return 0;
 }

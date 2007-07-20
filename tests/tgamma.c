@@ -440,6 +440,9 @@ main (int argc, char *argv[])
   test_generic (2, 100, 2);
   gamma_integer ();
 
+  if (getenv ("MPFR_CHECK_ALL") != NULL)
+    data_check ("data/gamma", mpfr_gamma, "mpfr_gamma");
+
   tests_end_mpfr ();
   return 0;
 }

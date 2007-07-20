@@ -862,6 +862,19 @@ overflows (void)
   mpfr_clear(b);
 }
 
+static int
+mpfr_pow275 (mpfr_t y, mpfr_t x, mp_rnd_t r)
+{
+  mpfr_t z;
+  int inex;
+
+  mpfr_init2 (z, 4);
+  mpfr_set_ui_2exp (z, 11, -2, GMP_RNDN);
+  inex = mpfr_pow (y, x, z, GMP_RNDN);
+  mpfr_clear (z);
+  return inex;
+}
+
 int
 main (void)
 {
@@ -884,6 +897,9 @@ main (void)
   test_generic (2, 100, 100);
   test_generic_ui (2, 100, 100);
   test_generic_si (2, 100, 100);
+
+  if (getenv ("MPFR_CHECK_ALL") != NULL)
+    data_check ("data/pow275", mpfr_pow275, "mpfr_pow275");
 
   tests_end_mpfr ();
   return 0;

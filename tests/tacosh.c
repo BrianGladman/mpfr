@@ -132,6 +132,9 @@ main (int argc, char *argv[])
 
   test_generic (2, 100, 25);
 
+  if (getenv ("MPFR_CHECK_ALL") != NULL)
+    data_check ("data/acosh", mpfr_acosh, "mpfr_acosh");
+
   tests_end_mpfr ();
   return 0;
 }

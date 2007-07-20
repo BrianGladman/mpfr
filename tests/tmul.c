@@ -641,6 +641,19 @@ check_regression (void)
 #define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), randlimb () % 100)
 #include "tgeneric.c"
 
+/* multiplies x by 53-bit approximation of Pi */
+static int
+mpfr_mulpi (mpfr_t y, mpfr_t x, mp_rnd_t r)
+{
+  mpfr_t z;
+  int inex;
+
+  mpfr_init2 (z, 53);
+  mpfr_set_str_binary (z, "11.001001000011111101101010100010001000010110100011");
+  inex = mpfr_mul (y, x, z, r);
+  mpfr_clear (z);
+  return inex;
+}
 
 int
 main (int argc, char *argv[])
@@ -682,6 +695,9 @@ main (int argc, char *argv[])
 
   check_regression ();
   test_generic (2, 500, 100);
+
+  if (getenv ("MPFR_CHECK_ALL") != NULL)
+    data_check ("data/mulpi", mpfr_mulpi, "mpfr_mulpi");
 
   tests_end_mpfr ();
   return 0;
