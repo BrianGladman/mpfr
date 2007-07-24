@@ -274,13 +274,13 @@ mpfr_jn_asympt (mpfr_ptr res, long n, mpfr_srcptr z, mp_rnd_t r)
           mpfr_add (err_u, err_u, err_t, GMP_RNDU); /* max|t| * 2^w */
           if (stop >= 2)
             {
-              /* take into account the neglected terms: t * 2^(-w) */
-              mpfr_mul_2ui (err_s, err_s, w, GMP_RNDU);
+              /* take into account the neglected terms: t * 2^w */
+              mpfr_div_2ui (err_s, err_s, w, GMP_RNDU);
               if (MPFR_IS_POS(t))
                 mpfr_add (err_s, err_s, t, GMP_RNDU);
               else
                 mpfr_sub (err_s, err_s, t, GMP_RNDU);
-              mpfr_div_2ui (err_s, err_s, w, GMP_RNDU);
+              mpfr_mul_2ui (err_s, err_s, w, GMP_RNDU);
               stop ++;
             }
           /* if k is odd, add to Q, otherwise to P */
