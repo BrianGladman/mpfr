@@ -3043,7 +3043,9 @@ is an exponent loss in the final subtraction $r = \circ(v_{n+1}-w)$.
 
 The Bessel function $J_n(z)$ of first kind and integer order $n$
 is defined as follows \cite[Eq.~(9.1.10)]{AbSt73}:
-\[ J_n(z) = (z/2)^n \sum_{k=0}^{\infty} \frac{(-z^2/4)^k}{k! (k+n)!}. \]
+\begin{equation} \label{Jn_0}
+J_n(z) = (z/2)^n \sum_{k=0}^{\infty} \frac{(-z^2/4)^k}{k! (k+n)!}.
+\end{equation}
 It is real for all real $z$, tends to $0$ by oscillating around $0$ when
 $z \rightarrow \pm\infty$, and tends to $0$ when $z \rightarrow 0$, except
 $J_0$ which tends to $1$.
@@ -3093,6 +3095,52 @@ $|J_n(z)| \leq |z/2|^n/n!$.
 Together with $n! \geq \sqrt{2 \pi n} (n/e)^n$, which follows from example
 from \cite[Eq.~6.1.38]{AbSt73}, this gives:
 \[ |J_n(z)| \leq \frac{1}{\sqrt{2 \pi n}} \left( \frac{ze}{2n} \right)^n. \]
+
+\paragraph{Large argument.}
+
+For large argument $z$, formula (\ref{Jn_0}) requires at least 
+$k \approx z/2$ terms before starting to converge. If $k \leq z/2$, it is
+better to use formula 9.2.5 from \cite{AbSt73}, which
+provides at least $2$ bits per term:
+\[ J_n(z) = \sqrt{\frac{2}{\pi z}} [P(n,z) \cos \chi - Q(n,z) \sin \chi], \]
+where $\chi = z - (n/2 + 1/4) \pi$, and $P(n,z)$ and $Q(n,z)$ are two
+diverging series:
+\begin{small}
+\[ P(n,z) \approx \sum_{k=0}^{\infty} (-1)^k \frac{\Gamma(1/2+n+2k) (2z)^{-2k}}
+   {(2k)! \Gamma(1/2+n-2k)}, \quad
+   Q(n,z) \approx \sum_{k=0}^{\infty} (-1)^k \frac{\Gamma(1/2+n+2k+1) (2z)^{-2k-1}}
+   {(2k+1)! \Gamma(1/2+n-2k-1)}. \]
+\end{small}
+% P:=proc(n,z) add((-1)^k*GAMMA(1/2+n+2*k)/(2*k)!/GAMMA(1/2+n-2*k)/
+% (2*z)^(2*k),k=0..4) end:
+% Q:=proc(n,z) add((-1)^k*GAMMA(1/2+n+2*k+1)/(2*k+1)!/GAMMA(1/2+n-2*k-1)/
+% (2*z)^(2*k+1),k=0..4) end:
+% J:=proc(n,z) sqrt(2/Pi/z)*(P(n,z)*cos(z-(n/2+1/4)*Pi)-Q(n,z)*
+% sin(z-(n/2+1/4)*Pi)) end:
+If $n$ is real and non-negative --- which is the case here ---,
+the remainder of $P(n,z)$ after $k$ terms does not exceed the $(k+1)$th term
+and is of the same sign, provided $k > n/2 - 1/4$; the same holds for
+$Q(n,z)$ as long as $k > n/2 - 3/4$ \cite[9.2.10]{AbSt73}.
+
+If we first approximate $\chi = z - (n/2 + 1/4) \pi$ with working precision 
+$w$, and then approximate $\cos \chi$ and $\sin \chi$, there will be a huge
+relative error if $z > 2^w$. Instead, we use the fact that for $n$ even,
+\[ P(n,z) \cos \chi - Q(n,z) \sin \chi = \frac{1}{\sqrt{2}} (-1)^{n/2}
+   [P (\sin z + \cos z) + Q (\cos z - \sin z)], \]
+and for $n$ odd,
+\[ P(n,z) \cos \chi - Q(n,z) \sin \chi = \frac{1}{\sqrt{2}} (-1)^{(n-1)/2}
+   [P (\sin z - \cos z) + Q (\cos z + \sin z)], \]
+where $\cos z$ and $\sin z$ are computed accurately with 
+\texttt{mpfr\_sin\_cos}, which uses in turn \texttt{mpfr\_remainder}.
+
+If we consider $P(n,z)$ and $Q(n,z)$ together as one single series,
+its term of index $k$
+behaves like $\Gamma(1/2+n+k)/k!/\Gamma(1/2+n-k)/(2z)^k$.
+The ratio between the
+term of index $k+1$ and that of index $k$ is about $k/(2z)$, thus starts
+to diverge when $k \approx 2z$. At that point, the $k$th term is
+$\approx e^{-2z}$, thus if $z > p/2 \log 2$, we can use the asymptotic
+expansion.
 
 \subsubsection{Bessel function $Y_n(z)$ of second kind}
 
