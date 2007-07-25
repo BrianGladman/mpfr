@@ -145,13 +145,13 @@ tests_limit_start (void)
          can't set the timeout, we exit immediately. */
       if (getrlimit (RLIMIT_CPU, rlim))
         {
-          fprintf (stderr, "getrlimit failed\n");
+          printf ("Error: getrlimit failed\n");
           exit (1);
         }
       rlim->rlim_cur = timeout;
       if (setrlimit (RLIMIT_CPU, rlim))
         {
-          fprintf (stderr, "setrlimit failed\n");
+          printf ("Error: setrlimit failed\n");
           exit (1);
         }
     }
@@ -167,9 +167,10 @@ tests_rand_start (void)
 
   if (__gmp_rands_initialized)
     {
-      printf ("Please let tests_start() initialize the global __gmp_rands.\n");
-      printf ("ie. ensure that function is called before the first use of RANDS.\n");
-      abort ();
+      printf (
+        "Please let tests_start() initialize the global __gmp_rands, i.e.\n"
+        "ensure that function is called before the first use of RANDS.\n");
+      exit (1);
     }
 
   gmp_randinit_default (__gmp_rands);
@@ -197,7 +198,8 @@ tests_rand_start (void)
           seed = tv;
 #endif
           gmp_randseed_ui (rands, seed);
-          printf ("Seed GMP_CHECK_RANDOMIZE=%lu (include this in bug reports)\n", seed);
+          printf ("Seed GMP_CHECK_RANDOMIZE=%lu "
+                  "(include this in bug reports)\n", seed);
         }
     }
 }
@@ -226,7 +228,7 @@ mpfr_test_init ()
   d = DBL_MIN;
   if (2.0 * (d / 2.0) != d)
     {
-      printf ("Warning: no denormalized numbers\n");
+      printf ("Error: HAVE_DENORMS defined, but no subnormals.\n");
       exit (1);
     }
 #endif
@@ -438,7 +440,7 @@ data_check (char *f, int (*foo) (), char *name)
   fp = fopen (f, "r");
   if (fp == NULL)
     {
-      printf ("Error, unable to open file %s\n", f);
+      printf ("Error: unable to open file '%s'\n", f);
       exit (1);
     }
 
@@ -462,7 +464,7 @@ data_check (char *f, int (*foo) (), char *name)
           ungetc (c, fp);
           if (fscanf (fp, "%lu %lu %c", &xprec, &yprec, &c) != 3)
             {
-              printf ("Error, corrupted line in file %s\n", f);
+              printf ("Error: corrupted line in file '%s'\n", f);
               exit (1);
             }
           switch (c)
@@ -480,7 +482,8 @@ data_check (char *f, int (*foo) (), char *name)
               rnd = GMP_RNDD;
               break;
             default:
-              printf ("Error, unexpected rounding mode in file %s: %c\n", f, c);
+              printf ("Error: unexpected rounding mode"
+                      " in file '%s': %c\n", f, c);
               exit (1);
             }
           mpfr_set_prec (x, xprec);
@@ -489,13 +492,13 @@ data_check (char *f, int (*foo) (), char *name)
           fscanf (fp, " ");
           if (mpfr_inp_str (x, fp, 0, GMP_RNDN) == 0)
             {
-              printf ("Error, corrupted input in file %s\n", f);
+              printf ("Error: corrupted argument in file '%s'\n", f);
               exit (1);
             }
           fscanf (fp, " ");
           if (mpfr_inp_str (y, fp, 0, GMP_RNDN) == 0)
             {
-              printf ("Error, corrupted output in file %s\n", f);
+              printf ("Error: corrupted result in file '%s'\n", f);
               exit (1);
             }
           fscanf (fp, "\n");
