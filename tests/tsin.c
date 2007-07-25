@@ -360,8 +360,7 @@ main (int argc, char *argv[])
   test_sign ();
   check_tiny ();
 
-  if (getenv ("MPFR_CHECK_ALL") != NULL)
-    data_check ("data/sin", mpfr_sin, "mpfr_sin");
+  data_check ("data/sin", mpfr_sin, "mpfr_sin");
 
   tests_end_mpfr ();
   return 0;

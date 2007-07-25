@@ -179,8 +179,7 @@ main (int argc, char *argv[])
 
   test_generic (2, 100, 25);
 
-  if (getenv ("MPFR_CHECK_ALL") != NULL)
-    data_check ("data/atanh", mpfr_atanh, "mpfr_atanh");
+  data_check ("data/atanh", mpfr_atanh, "mpfr_atanh");
 
   tests_end_mpfr ();
   return 0;

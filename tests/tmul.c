@@ -696,8 +696,7 @@ main (int argc, char *argv[])
   check_regression ();
   test_generic (2, 500, 100);
 
-  if (getenv ("MPFR_CHECK_ALL") != NULL)
-    data_check ("data/mulpi", mpfr_mulpi, "mpfr_mulpi");
+  data_check ("data/mulpi", mpfr_mulpi, "mpfr_mulpi");
 
   tests_end_mpfr ();
   return 0;

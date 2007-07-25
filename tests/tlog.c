@@ -327,8 +327,7 @@ main (int argc, char *argv[])
 
   test_generic (2, 100, 40);
 
-  if (getenv ("MPFR_CHECK_ALL") != NULL)
-    data_check ("data/log", mpfr_log, "mpfr_log");
+  data_check ("data/log", mpfr_log, "mpfr_log");
 
  done:
   tests_end_mpfr ();

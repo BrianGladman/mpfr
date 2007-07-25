@@ -441,8 +441,20 @@ data_check (char *f, int (*foo) (), char *name)
   fp = fopen (f, "r");
   if (fp == NULL)
     {
-      printf ("Error: unable to open file '%s'\n", f);
-      exit (1);
+      char *v = MPFR_VERSION_STRING;
+
+      /* In the '-dev' versions, assume that the data file exists and
+         return an error if the file cannot be opened to make sure
+         that such failures are detected. */
+      while (*v != '\0')
+        v++;
+      if (v[-4] == '-' && v[-3] == 'd' && v[-2] == 'e' && v[-1] == 'v')
+        {
+          printf ("Error: unable to open file '%s'\n", f);
+          exit (1);
+        }
+      else
+        return;
     }
 
   mpfr_init (x);

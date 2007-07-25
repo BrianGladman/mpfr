@@ -367,8 +367,7 @@ main (void)
   special ();
   test_generic (2, 100, 2);
 
-  if (getenv ("MPFR_CHECK_ALL") != NULL)
-    data_check ("data/lgamma", mpfr_lgamma1, "mpfr_lgamma");
+  data_check ("data/lgamma", mpfr_lgamma1, "mpfr_lgamma");
 
   tests_end_mpfr ();
   return 0;

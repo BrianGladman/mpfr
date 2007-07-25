@@ -185,8 +185,7 @@ main (int argc, char *argv[])
         "-6.8938315017943889615e-297");
 
   /* inv is for 1/x */
-  if (getenv ("MPFR_CHECK_ALL") != NULL)
-    data_check ("data/inv", mpfr_inv, "mpfr_ui_div(1,x)");
+  data_check ("data/inv", mpfr_inv, "mpfr_ui_div(1,x)");
 
   tests_end_mpfr ();
   return 0;

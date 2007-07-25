@@ -350,8 +350,7 @@ main (int argc, char *argv[])
 
   overflowed_exp2_0 ();
 
-  if (getenv ("MPFR_CHECK_ALL") != NULL)
-    data_check ("data/exp2", mpfr_exp2, "mpfr_exp2");
+  data_check ("data/exp2", mpfr_exp2, "mpfr_exp2");
 
   tests_end_mpfr ();
   return 0;

@@ -90,8 +90,7 @@ main (int argc, char *argv[])
 
   test_generic (2, 100, 1);
 
-  if (getenv ("MPFR_CHECK_ALL") != NULL)
-    data_check ("data/y0", mpfr_y0, "mpfr_y0");
+  data_check ("data/y0", mpfr_y0, "mpfr_y0");
 
   tests_end_mpfr ();
 

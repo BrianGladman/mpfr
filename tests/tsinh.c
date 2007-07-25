@@ -98,8 +98,7 @@ main (int argc, char *argv[])
 
   test_generic (2, 100, 100);
 
-  if (getenv ("MPFR_CHECK_ALL") != NULL)
-    data_check ("data/sinh", mpfr_sinh, "mpfr_sinh");
+  data_check ("data/sinh", mpfr_sinh, "mpfr_sinh");
 
   tests_end_mpfr ();
   return 0;

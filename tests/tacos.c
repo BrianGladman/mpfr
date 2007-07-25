@@ -179,8 +179,7 @@ main (void)
   mpfr_clear (x);
   mpfr_clear (y);
 
-  if (getenv ("MPFR_CHECK_ALL") != NULL)
-    data_check ("data/acos", mpfr_acos, "mpfr_acos");
+  data_check ("data/acos", mpfr_acos, "mpfr_acos");
 
   tests_end_mpfr ();
   return 0;

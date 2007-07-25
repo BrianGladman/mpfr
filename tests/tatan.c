@@ -387,8 +387,7 @@ main (int argc, char *argv[])
   test_generic_atan2 (2, 200, 17);
   test_generic_atan2_neg (2, 200, 17);
 
-  if (getenv ("MPFR_CHECK_ALL") != NULL)
-    data_check ("data/atan", mpfr_atan, "mpfr_atan");
+  data_check ("data/atan", mpfr_atan, "mpfr_atan");
 
   tests_end_mpfr ();
   return 0;

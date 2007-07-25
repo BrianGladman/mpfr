@@ -898,8 +898,7 @@ main (void)
   test_generic_ui (2, 100, 100);
   test_generic_si (2, 100, 100);
 
-  if (getenv ("MPFR_CHECK_ALL") != NULL)
-    data_check ("data/pow275", mpfr_pow275, "mpfr_pow275");
+  data_check ("data/pow275", mpfr_pow275, "mpfr_pow275");
 
   tests_end_mpfr ();
   return 0;
