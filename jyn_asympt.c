@@ -64,7 +64,7 @@ FUNCTION (mpfr_ptr res, long n, mpfr_srcptr z, mp_rnd_t r)
       mpfr_init2 (err_u, 31);
 
       /* Approximate sin(z) and cos(z). In the following, err <= k means that
-         the approximate value y and the true value x are related by 
+         the approximate value y and the true value x are related by
          y = x * (1 + u)^k with |u| <= 2^(-w), following Higham's method. */
       mpfr_sin_cos (s, c, z, GMP_RNDN);
       if (MPFR_IS_NEG(z))
@@ -215,7 +215,7 @@ FUNCTION (mpfr_ptr res, long n, mpfr_srcptr z, mp_rnd_t r)
       /* err_s * 2^(1-w) + 2^old_err * 2^(1-w) <= 2^err * 2^(-w) */
       err2 = (err >= err2) ? err + 1 : err2 + 1;
       /* now the absolute error on s is bounded by 2^(err2 - w) */
-      
+
       /* multiply by sqrt(1/(Pi*z)) */
       mpfr_const_pi (c, GMP_RNDN);     /* Pi, err <= 1 */
       mpfr_mul (c, c, z, GMP_RNDN);    /* err <= 2 */

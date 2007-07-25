@@ -467,7 +467,7 @@ data_check (char *f, int (*foo) (), char *name)
             }
           switch (c)
             {
-            case 'n': 
+            case 'n':
               rnd = GMP_RNDN;
               break;
             case 'z':
