@@ -120,7 +120,7 @@ mpfr_cos2_aux (mpfr_ptr f, mpfr_srcptr r)
 int
 mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
-  mp_prec_t K, precy, m, k, l, precx;
+  mp_prec_t K0, K, precy, m, k, l, precx;
   int inexact, reduce = 0;
   mpfr_t r, s, xr, c;
   mp_exp_t exps, cancel = 0, expx;
@@ -155,7 +155,8 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   /* Compute initial precision */
   precy = MPFR_PREC (y);
   precx = MPFR_PREC (x);
-  m = precy + 2 * MPFR_INT_CEIL_LOG2 (precy);
+  K0 = __gmpfr_isqrt (precy / 3);
+  m = precy + 2 * MPFR_INT_CEIL_LOG2 (precy) + 2 * K0;
 
   if (expx >= 3)
     {
@@ -188,9 +189,13 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       else
         mpfr_mul (r, x, x, GMP_RNDU); /* err <= 1 ulp */
 
+      /* now |x| < 4 (or xr if reduce = 1), thus |r| <= 16 */
+
       /* we need |r| < 1/2 for mpfr_cos2_aux, i.e., EXP(r) - 2K <= -1 */
-      K = MAX (MPFR_GET_EXP (r) + 1, 0);
-      K = (K + 1) >> 1; /* ceil(K/2) */
+      K = K0 + 1 + MAX(0, MPFR_EXP(r)) / 2;
+      /* since K0 >= 0, if EXP(r) < 0, then K >= 1, thus EXP(r) - 2K <= -3;
+         otherwise if EXP(r) >= 0, then K >= 1/2 + EXP(r)/2, thus
+         EXP(r) - 2K <= -1 */
 
       MPFR_SET_EXP (r, MPFR_GET_EXP (r) - 2 * K); /* Can't overflow! */
 
