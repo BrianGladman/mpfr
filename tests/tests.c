@@ -451,7 +451,10 @@ data_check (char *f, int (*foo) (), char *name)
 
   while (!feof (fp))
     {
+      fscanf (fp, " ");  /* skip whitespace, for consistency */
       c = getc (fp);
+      if (c == EOF)
+        break;
       if (c == '#') /* comment: read entire line */
         {
           do
@@ -490,19 +493,23 @@ data_check (char *f, int (*foo) (), char *name)
           mpfr_set_prec (x, xprec);
           mpfr_set_prec (y, yprec);
           mpfr_set_prec (z, yprec);
-          fscanf (fp, " ");
           if (mpfr_inp_str (x, fp, 0, GMP_RNDN) == 0)
             {
               printf ("Error: corrupted argument in file '%s'\n", f);
               exit (1);
             }
-          fscanf (fp, " ");
           if (mpfr_inp_str (y, fp, 0, GMP_RNDN) == 0)
             {
               printf ("Error: corrupted result in file '%s'\n", f);
               exit (1);
             }
-          fscanf (fp, "\n");
+          if (getc (fp) != '\n')
+            {
+              printf ("Error: result not followed by \\n in file '%s'\n", f);
+              exit (1);
+            }
+          /* Skip whitespace, in particular at the end of the file. */
+          fscanf (fp, " ");
 
           foo (z, x, rnd);
           if (! mpfr_equal_p (y, z))
