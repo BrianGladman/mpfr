@@ -503,8 +503,8 @@ data_check (char *f, int (*foo) (), char *name)
           foo (z, x, rnd);
           if (! mpfr_equal_p (y, z))
             {
-              printf ("Error for %s with rnd=%s\nx=", name, 
-                      mpfr_print_rnd_mode (rnd));
+              printf ("Error for %s with xprec=%ld, yprec=%ld, rnd=%s\nx=",
+                      name, xprec, yprec, mpfr_print_rnd_mode (rnd));
               mpfr_out_str (stdout, 16, 0, x, GMP_RNDN);
               printf ("\nexpected ");
               mpfr_out_str (stdout, 16, 0, y, GMP_RNDN);

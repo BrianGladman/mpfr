@@ -24,6 +24,8 @@ MA 02110-1301, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+static int mpfr_yn_asympt (mpfr_ptr, long, mpfr_srcptr, mp_rnd_t);
+
 int
 mpfr_y0 (mpfr_ptr res, mpfr_srcptr z, mp_rnd_t r)
 {
@@ -221,14 +223,14 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mp_rnd_t r)
       mpfr_init2 (h, prec);
       mpfr_init2 (t, prec);
       mpfr_init2 (logz, prec);
-      /* first enclose log(z) + euler - log(2) */
+      /* first enclose log(z) + euler - log(2) = log(z/2) + euler */
       mpfr_log (logz, z, GMP_RNDD);    /* lower bound of log(z) */
       mpfr_set (h, logz, GMP_RNDU);    /* exact */
       mpfr_nextabove (h);              /* upper bound of log(z) */
       mpfr_const_euler (t, GMP_RNDD);  /* lower bound of euler */
-      mpfr_sub (l, logz, t, GMP_RNDD); /* lower bound of log(z) + euler */
+      mpfr_add (l, logz, t, GMP_RNDD); /* lower bound of log(z) + euler */
       mpfr_nextabove (t);              /* upper bound of euler */
-      mpfr_sub (h, h, t, GMP_RNDU);    /* upper bound of log(z) + euler */
+      mpfr_add (h, h, t, GMP_RNDU);    /* upper bound of log(z) + euler */
       mpfr_const_log2 (t, GMP_RNDU);   /* upper bound of log(2) */
       mpfr_sub (l, l, t, GMP_RNDD);    /* lower bound of log(z/2) + euler */
       mpfr_nextbelow (t);              /* lower bound of log(2) */
@@ -298,6 +300,15 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mp_rnd_t r)
         inex = mpfr_set (res, y, r);
       mpfr_clear (y);
       if (ok)
+        return inex;
+    }
+
+  /* we can use the asymptotic expansion as soon as z > p log(2)/2,
+     but to get some margin we use it for z > p/2 */
+  if (mpfr_cmp_ui (z, MPFR_PREC(res) / 2 + 3) > 0)
+    {
+      inex = mpfr_yn_asympt (res, n, z, r);
+      if (inex != 0)
         return inex;
     }
 
@@ -394,3 +405,6 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mp_rnd_t r)
 
   return inex;
 }
+
+#define MPFR_YN
+#include "jyn_asympt.c"
