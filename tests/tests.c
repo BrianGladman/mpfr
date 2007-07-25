@@ -435,7 +435,8 @@ data_check (char *f, int (*foo) (), char *name)
   mp_prec_t xprec, yprec;
   mpfr_t x, y, z;
   mp_rnd_t rnd;
-  char c;
+  char r;
+  int c;
 
   fp = fopen (f, "r");
   if (fp == NULL)
@@ -462,12 +463,12 @@ data_check (char *f, int (*foo) (), char *name)
       else
         {
           ungetc (c, fp);
-          if (fscanf (fp, "%lu %lu %c", &xprec, &yprec, &c) != 3)
+          if (fscanf (fp, "%lu %lu %c", &xprec, &yprec, &r) != 3)
             {
               printf ("Error: corrupted line in file '%s'\n", f);
               exit (1);
             }
-          switch (c)
+          switch (r)
             {
             case 'n':
               rnd = GMP_RNDN;
@@ -483,7 +484,7 @@ data_check (char *f, int (*foo) (), char *name)
               break;
             default:
               printf ("Error: unexpected rounding mode"
-                      " in file '%s': %c\n", f, c);
+                      " in file '%s': %c\n", f, (int) r);
               exit (1);
             }
           mpfr_set_prec (x, xprec);
