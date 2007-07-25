@@ -12,8 +12,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-53 53 n -0x10000000000001p-1074 0x145F306DC9C881p969
-53 53 n -0x10000000000000p-1074 0x145F306DC9C883p969
+# the following two entries, extracted from Gonnet's test suite, are wrong
+# indeed, for x < 0, y(n,x) is NaN. This is due to a bug in Maple, which
+# gives a real value for BesselY(1,2.0^(-1022)) [version 6 to 11]
+# 53 53 n -0x10000000000001p-1074 0x145F306DC9C881p969
+# 53 53 n -0x10000000000000p-1074 0x145F306DC9C883p969
+# end of wrong entries from Gonnet's test suite
 53 53 n 0x10000000000000p-1074 -0x145F306DC9C883p969
 53 53 n 0x10000000000001p-1074 -0x145F306DC9C881p969
 53 53 n 0x15A4D3EA905D62p-57 -0x1E3894FA9E38C0p-49
@@ -1185,4 +1189,7 @@
 53 53 n 0x1ED2C16601E0B3p-1 0x19214007EDB3E8p-83
 53 53 n 0x1ED2C16601E3E5p-1 0x1FA08F73442BECp-80
 53 53 n 0x1ED2C16602759Ep-1 -0x19FA8308D0019Fp-79
-53 53 n 0x1FFFFFFFFFFFFEp971 0x1D2CE9697A4DE0p-568
+# the output value of the following entry was wrong in Gonnet's testsuite
+# (not enough precision in Maple)
+53 53 n 0x1FFFFFFFFFFFFEp971 -0x1781BB057A4DD7p-565
+
