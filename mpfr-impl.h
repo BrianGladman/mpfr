@@ -1429,9 +1429,10 @@ struct mpfr_group_t {
  _size = (mp_prec_t) (_prec + BITS_PER_MP_LIMB - 1) / BITS_PER_MP_LIMB; \
  (g).alloc = (num) * _size * sizeof (mp_limb_t);                        \
  if (MPFR_LIKELY (_oalloc == 0))                                        \
-   (g).mant = (*__gmp_allocate_func) ((g).alloc);                       \
+   (g).mant = (mp_limb_t *) (*__gmp_allocate_func) ((g).alloc);         \
  else                                                                   \
-   (g).mant = (*__gmp_reallocate_func) ((g).mant, _oalloc, (g).alloc);  \
+   (g).mant = (mp_limb_t *)                                             \
+     (*__gmp_reallocate_func) ((g).mant, _oalloc, (g).alloc);           \
  handler;                                                               \
  } while (0)
 
