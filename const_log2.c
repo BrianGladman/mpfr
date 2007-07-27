@@ -148,7 +148,7 @@ mpfr_const_log2_internal (mpfr_ptr x, mp_rnd_t rnd_mode)
       MPFR_ASSERTD(w >= 3 && N >= 2);
 
       lgN = MPFR_INT_CEIL_LOG2 (N) + 1;
-      T  = (*__gmp_allocate_func) (3 * lgN * sizeof (mpz_t));
+      T  = (mpz_t *) (*__gmp_allocate_func) (3 * lgN * sizeof (mpz_t));
       P  = T + lgN;
       Q  = T + 2*lgN;
       for (i = 0; i < lgN; i++)

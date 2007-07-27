@@ -424,7 +424,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
               bp --;
             else
               {
-                bp = MPFR_TMP_ALLOC ((n+1) * sizeof (mp_limb_t));
+                bp = (mp_limb_t*) MPFR_TMP_ALLOC ((n+1) * sizeof (mp_limb_t));
                 bp[0] = 0;
                 MPN_COPY (bp + 1, MPFR_MANT (b) + bn - n, n);
               }
@@ -432,7 +432,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
               cp --; /* FIXME: Could this happen? */
             else
               {
-                cp = MPFR_TMP_ALLOC ((n+1) * sizeof (mp_limb_t));
+                cp = (mp_limb_t*) MPFR_TMP_ALLOC ((n+1) * sizeof (mp_limb_t));
                 cp[0] = 0;
                 MPN_COPY (cp + 1, MPFR_MANT (c) + cn - n, n);
               }
@@ -444,7 +444,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
             if (MPFR_LIKELY (k < 2*n))
               {
-                tmp = MPFR_TMP_ALLOC (2 * n * sizeof (mp_limb_t));
+                tmp = (mp_limb_t*) MPFR_TMP_ALLOC (2 * n * sizeof (mp_limb_t));
                 tmp += 2*n-k; /* `tmp' still points to an area of `k' limbs */
               }
           }

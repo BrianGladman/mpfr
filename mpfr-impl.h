@@ -1381,7 +1381,7 @@ struct mpfr_group_t {
  _size = (mp_prec_t)(_prec +BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB;\
  if (MPFR_UNLIKELY (_size*(num) > MPFR_GROUP_STATIC_SIZE)) {     \
   (g).alloc = (num)*_size*sizeof (mp_limb_t);                    \
-  (g).mant = (*__gmp_allocate_func) ((g).alloc);                 \
+  (g).mant = (mp_limb_t*)(*__gmp_allocate_func) ((g).alloc);     \
  } else {                                                        \
   (g).alloc = 0;                                                 \
   (g).mant = (g).tab;                                            \
