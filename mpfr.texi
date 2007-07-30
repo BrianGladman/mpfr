@@ -1869,7 +1869,10 @@ and return 0 (even if @var{x} is not a non-zero ordinary number);
 otherwise, return a non-zero value.
 @end deftypefun
 
-
+@c By definition, a C string is always null-terminated, so that we
+@c could just say "string" or "null-terminated character array",
+@c but "null-terminated string" is not an error and probably better
+@c for most users.
 @deftypefun {const char *} mpfr_get_version (void)
 Return the MPFR version, as a null-terminated string.
 @end deftypefun
@@ -1907,6 +1910,15 @@ Here is an example of how to check the MPFR version at compile time:
 #endif
 @end example
 @end deftypefn
+
+@deftypefun {const char *} mpfr_get_patches (void)
+Return a null-terminated string containing the ids of the patches applied to
+the MPFR library (contents of the @file{PATCHES} file), separated by spaces.
+Note: If the program has been compiled with an older MPFR version and is
+dynamically linked with a new MPFR library version, the ids of the patches
+applied to the old (compile-time) MPFR version are not available (however
+this information should not have much interest in general).
+@end deftypefun
 
 @node Rounding Mode Related Functions, Exception Related Functions, Miscellaneous Functions, MPFR Interface
 @cindex Rounding mode related functions
