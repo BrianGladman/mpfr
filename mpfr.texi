@@ -1024,8 +1024,10 @@ See @code{mpfr_set_str}.
 @deftypefunx _Decimal64 mpfr_get_decimal64 (mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Convert @var{op} to a @code{double} (respectively @code{_Decimal64} or
 @code{long double}), using the rounding mode @var{rnd}.
-If the system doesn't support IEEE 754 standard, these functions
-might not preserve the signed zeros.
+If @var{op} is NaN, some fixed NaN (either quiet or signaling) or the result
+of 0.0/0.0 is returned. If @var{op} is @pom{}Inf, an infinity of the same
+sign or the result of @pom{}1.0/0.0 is returned. If @var{op} is zero, these
+functions return a zero, trying to preserve its sign, if possible.
 The @code{mpfr_get_decimal64} function is built only under some conditions:
 see the documentation of @code{mpfr_set_decimal64}.
 @end deftypefun
