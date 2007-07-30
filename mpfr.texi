@@ -1889,7 +1889,7 @@ be compared to the result of @code{mpfr_get_version} to check at run time
 the header file and library used match:
 @example
 if (strcmp (mpfr_get_version (), MPFR_VERSION_STRING))
-   fprintf (stderr, "Error, header and library files do not match\n");
+  fprintf (stderr, "Warning: header and library do not match\n");
 @end example
 Note: Obtaining different strings is not necessarily an error, as
 in general, a program compiled with some old MPFR version can be
