@@ -26,9 +26,28 @@ To generate mpfr.info, you need texinfo version 4.2 (or higher).
 ===========================================================================
 
 The VERSION file contains the number of the next release version, i.e.
-the version currently developed. If nightly snapshots are built, the
-date in the yyyymmdd format must be added to the version number, for
-instance: "2.0.1-20020319".
+the version currently being developed. A suffix can be attached for the
+development versions (in general, "-dev") or pre-release versions (e.g.
+"-rc1"). It must be updated with the update-version script.
+
+If nightly snapshots are built, the date in the yyyymmdd format and/or
+the Subversion revision number (giving more accurate information) must
+be added to the version as a suffix, for instance: "2.3.0-20070621" or
+"2.3.0-dev-r4553".
+
+Patches can be tracked by adding a chunk of the form
+
+--- PATCHES~    Tue Nov  6 19:59:33 2001
++++ PATCHES     Tue Nov  6 19:59:42 2001
+@@ -1,0 +1 @@
++<your-id-here>
+
+to the patch file[*]. After such patches have been applied, the file
+get_patches.c providing the mpfr_get_patches() function will be rebuilt
+by "make". MPFR distributors can still modify the version suffix from
+the applied patches according to their version naming scheme.
+
+[*] This idea comes from Thomas Roessler, who implemented it in Mutt.
 
 ===========================================================================
 

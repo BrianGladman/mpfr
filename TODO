@@ -300,39 +300,16 @@ Efficiency:
 Miscellaneous:
 ##############################################################################
 
-- check again coverage: on July 27, Patrick Pelissier reports that the 
+- check again coverage: on July 27, Patrick Pelissier reports that the
   following files are not tested at 100%: add1.c, atan.c, atan2.c,
   cache.c, cmp2.c, const_catalan.c, const_euler.c, const_log2.c, cos.c,
   gen_inverse.h, div_ui.c, eint.c, exp3.c, exp_2.c, expm1.c, fma.c, fms.c,
-  lngamma.c, gamma.c, get_d.c, get_f.c, get_ld.c, get_str.c, get_z.c, 
-  inp_str.c, jn.c, jyn_asympt.c, lngamma.c, mpfr-gmp.c, mul.c, mul_ui.c, 
+  lngamma.c, gamma.c, get_d.c, get_f.c, get_ld.c, get_str.c, get_z.c,
+  inp_str.c, jn.c, jyn_asympt.c, lngamma.c, mpfr-gmp.c, mul.c, mul_ui.c,
   mulders.c, out_str.c, pow.c, print_raw.c, rint.c, root.c, round_near_x.c,
   round_raw_generic.c, set_d.c, set_ld.c, set_q.c, set_uj.c, set_z.c, sin.c,
   sin_cos.c, sinh.c, sqr.c, stack_interface.c, sub1.c, sub1sp.c, subnormal.c,
   uceil_exp2.c, uceil_log2.c, ui_pow_ui.c, urandomb.c, yn.c, zeta.c, zeta_ui.c.
-- In addition to major/minor/patchlevel version information, add a macro
-  and/or function to the MPFR interface, that would tell what patches
-  have been applied and other possible information (some information is
-  already available as a suffix in the MPFR_VERSION_STRING macro, but it
-  should be short, thus it is not suitable if one wishes to mention all
-  the individual patches that have been applied); this can include the
-  features that have been enabled or disabled in configure. For instance,
-  see what Mutt and Subversion do concerning their CVS/Subversion builds.
-  Of course, patches must include some tag (one should not rely on a
-  wrapper to apply them), that could be added to a PATCHES file. Mutt's
-  doc/patch-notes.txt file mentions an interesting scheme: the following
-  chunk should be included in the patch, after replacing <your-id-here>
-  by the patch id.
-  ------------------------------snip------------------------------
-  --- PATCHES~    Tue Nov  6 19:59:33 2001
-  +++ PATCHES     Tue Nov  6 19:59:42 2001
-  @@ -1,0 +1 @@
-  +<your-id-here>
-  ------------------------------snip------------------------------
-  References:
-    http://sympa.loria.fr/wwsympa/arc/mpfr/2005-12/msg00049.html
-    http://gcc.gnu.org/bugzilla/show_bug.cgi?id=29405
-    http://svn.collab.net/repos/svn/trunk/subversion/include/svn_version.h
 
 - check the constants mpfr_set_emin (-16382-63) and mpfr_set_emax (16383) in
   get_ld.c and the other constants, and provide a testcase for large and
