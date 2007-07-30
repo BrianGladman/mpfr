@@ -1892,8 +1892,9 @@ if (strcmp (mpfr_get_version (), MPFR_VERSION_STRING))
    fprintf (stderr, "Error, header and library files do not match\n");
 @end example
 Note: Obtaining different strings is not necessarily an error, as
-dynamically linking a program compiled with some older MPFR version
-can be allowed by the library versioning system.
+in general, a program compiled with some old MPFR version can be
+dynamically linked with a newer MPFR library version (if allowed
+by the library versioning system).
 @end defmac
 
 @deftypefn Macro long MPFR_VERSION_NUM (@var{major}, @var{minor}, @var{patchlevel})
