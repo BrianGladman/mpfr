@@ -1883,13 +1883,17 @@ Return the MPFR version, as a null-terminated string.
 @code{MPFR_VERSION_MAJOR}, @code{MPFR_VERSION_MINOR} and
 @code{MPFR_VERSION_PATCHLEVEL} are respectively the major, minor and patch
 level of MPFR version, as preprocessing constants.
-@code{MPFR_VERSION_STRING} is the version as a string constant, which can
+@code{MPFR_VERSION_STRING} is the version (with an optional suffix, used
+in development and pre-release versions) as a string constant, which can
 be compared to the result of @code{mpfr_get_version} to check at run time
 the header file and library used match:
 @example
 if (strcmp (mpfr_get_version (), MPFR_VERSION_STRING))
    fprintf (stderr, "Error, header and library files do not match\n");
 @end example
+Note: Obtaining different strings is not necessarily an error, as
+dynamically linking a program compiled with some older MPFR version
+can be allowed by the library versioning system.
 @end defmac
 
 @deftypefn Macro long MPFR_VERSION_NUM (@var{major}, @var{minor}, @var{patchlevel})
