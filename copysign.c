@@ -23,18 +23,19 @@ MA 02110-1301, USA. */
 #include "mpfr-impl.h"
 
  /*
-   The computation of z with magnitude of x and sign of y
-   z = sign(y) * abs(x)
+   The computation of z with magnitude of x and sign of y:
+   z = sign(y) * abs(x), or NaN if y is NaN.
+   Note: this is not the same as copysign from the IEEE-754 standard.
  */
 
 int
-mpfr_copysign (mpfr_ptr z, mpfr_srcptr x ,mpfr_srcptr y , mp_rnd_t rnd_mode)
+mpfr_copysign (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 {
-  if (MPFR_UNLIKELY( MPFR_IS_NAN(y)))
+  if (MPFR_UNLIKELY (MPFR_IS_NAN (y)))
     {
-      MPFR_SET_NAN(z);
+      MPFR_SET_NAN (z);
       MPFR_RET_NAN;
     }
   else
-    return mpfr_set4(z, x, rnd_mode, MPFR_SIGN(y));
+    return mpfr_set4 (z, x, rnd_mode, MPFR_SIGN (y));
 }
