@@ -83,6 +83,7 @@ compute_l2b (int output)
   mpfr_srcptr t;
   int beta, i;
   int error = 0;
+  char buffer[30];
 
   for (beta = 2; beta <= BASE_MAX; beta++)
     {
@@ -107,16 +108,15 @@ compute_l2b (int output)
               mpfr_ui_div (p, 1, p, GMP_RNDU);
             }
 
+          sprintf (buffer, "mpfr_l2b_%d_%d", beta, i);
+          if (output)
+            print_mpfr (p, buffer);
+
           /* Check the value */
           t = &__gmpfr_l2b[beta-2][i];
           if (t == NULL || MPFR_PREC (t) == 0 || !mpfr_equal_p (p, t))
             {
-              char buffer[30];
-
-              sprintf (buffer, "mpfr_l2b_%d_%d", beta, i);
-              if (output)
-                print_mpfr (p, buffer);
-              else
+              if (!output)
                 {
                   error = 1;
                   printf ("Error for constant %s\n", buffer);
@@ -145,6 +145,7 @@ compute_l2b (int output)
                           i == 0 ? "," : beta < BASE_MAX ? " }," : " } };")
                   < 0)
                 { fprintf (stderr, "Error in printf\n"); exit (1); }
+              mpfr_clear (p);
             }
         }
     }
