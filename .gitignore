@@ -39,6 +39,7 @@
 /config.sub
 /configure
 /depcomp
+/get_patches.c
 /install-sh
 /libtool
 /ltmain.sh
