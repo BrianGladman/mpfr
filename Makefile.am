@@ -35,7 +35,7 @@ MAKEINFOFLAGS = --enable-encoding
 get_patches.c: PATCHES get_patches.sh
 	./get_patches.sh > $@ || rm -f $@
 
-CLEANFILES = get_patches.c
+#CLEANFILES = get_patches.c
 
 # Tune program
 EXTRA_PROGRAMS = tuneup
