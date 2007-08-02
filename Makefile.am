@@ -35,6 +35,11 @@ MAKEINFOFLAGS = --enable-encoding
 get_patches.c: PATCHES get_patches.sh
 	./get_patches.sh > $@ || rm -f $@
 
+# Do not add get_patches.c to CLEANFILES so that this file doesn't
+# need to be (re)built as long as no patches are applied. Anyway the
+# update of this file should be regarded as part of the patch process,
+# and "make clean" shouldn't remove it, just like it doesn't remove
+# what has been changed by "patch".
 #CLEANFILES = get_patches.c
 
 # Tune program
