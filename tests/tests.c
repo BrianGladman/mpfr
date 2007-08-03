@@ -425,9 +425,15 @@ tests_default_random (mpfr_ptr x)
 
    xprec is the input precision
    yprec is the output precision
-   rnd is the rounding mode (n, z, u, d)
+   rnd is the rounding mode (n, z, u, d, Z)
    x is the input (hexadecimal format)
    y is the expected output (hexadecimal format) for foo(x) with rounding rnd
+
+   If rnd is Z, y is the expected output in round-towards-zero, and the
+   three directed rounding modes are tested, then the round-to-nearest
+   mode is tested in precision yprec-1. This is useful for worst cases,
+   where yprec is the minimum value such that one has a worst case in a
+   directed rounding mode.
  */
 void
 data_check (char *f, int (*foo) (), char *name)
@@ -435,7 +441,7 @@ data_check (char *f, int (*foo) (), char *name)
   FILE *fp;
   mp_prec_t xprec, yprec;
   mpfr_t x, y, z;
-  mp_rnd_t rnd;
+  mp_rnd_t rnd, rndnext;
   char r;
   int c;
 
@@ -489,7 +495,7 @@ data_check (char *f, int (*foo) (), char *name)
             case 'n':
               rnd = GMP_RNDN;
               break;
-            case 'z':
+            case 'z': case 'Z':
               rnd = GMP_RNDZ;
               break;
             case 'u':
@@ -524,18 +530,50 @@ data_check (char *f, int (*foo) (), char *name)
           /* Skip whitespace, in particular at the end of the file. */
           fscanf (fp, " ");
 
-          foo (z, x, rnd);
-          if (! mpfr_equal_p (y, z))
+          while (1)
             {
-              printf ("Error for %s with xprec=%ld, yprec=%ld, rnd=%s\nx=",
-                      name, xprec, yprec, mpfr_print_rnd_mode (rnd));
-              mpfr_out_str (stdout, 16, 0, x, GMP_RNDN);
-              printf ("\nexpected ");
-              mpfr_out_str (stdout, 16, 0, y, GMP_RNDN);
-              printf ("\ngot      ");
-              mpfr_out_str (stdout, 16, 0, z, GMP_RNDN);
-              printf ("\n");
-              exit (1);
+              foo (z, x, rnd);
+              if (! mpfr_equal_p (y, z))
+                {
+                  printf ("Error for %s with xprec=%ld, yprec=%ld, rnd=%s\nx=",
+                          name, xprec, yprec, mpfr_print_rnd_mode (rnd));
+                  mpfr_out_str (stdout, 16, 0, x, GMP_RNDN);
+                  printf ("\nexpected ");
+                  mpfr_out_str (stdout, 16, 0, y, GMP_RNDN);
+                  printf ("\ngot      ");
+                  mpfr_out_str (stdout, 16, 0, z, GMP_RNDN);
+                  printf ("\n");
+                  exit (1);
+                }
+              if (r != 'Z' || rnd == GMP_RNDN)
+                break;
+              if (rnd == GMP_RNDZ)
+                {
+                  if (MPFR_IS_NEG (y))
+                    {
+                      rnd = GMP_RNDU;
+                      rndnext = GMP_RNDD;
+                    }
+                  else
+                    {
+                      rnd = GMP_RNDD;
+                      rndnext = GMP_RNDU;
+                    }
+                }
+              else
+                {
+                  rnd = rndnext;
+                  if (rndnext != GMP_RNDN)
+                    {
+                      rndnext = GMP_RNDN;
+                      mpfr_nexttoinf (y);
+                    }
+                  else
+                    {
+                      mpfr_prec_round (y, --yprec, GMP_RNDZ);
+                      mpfr_set_prec (z, yprec);
+                    }
+                }
             }
         }
     }
