@@ -72,7 +72,8 @@ MA 02110-1301, USA. */
 
 #include <fpu_control.h>
 
-static void set_fpu_prec (void)
+static void
+set_fpu_prec (void)
 {
   fpu_control_t cw;
 
