@@ -259,21 +259,8 @@ Efficiency:
   The current implementation does not give monotonous timing for the following:
   mpfr_random (x); for (i = 0; i < k; i++) mpfr_atan (y, x, GMP_RNDN);
   for precision 300 and k=1000, we get 1070ms, and 500ms only for p=400!
-- implement range reduction in sin/cos/tan for large arguments
-        (currently too slow for 2^1024), and/or implement Mark Watkins's
-        algorithm (see also remquo):
-  My suggestion for a long-term fix to these sin/cos problems when one
-  of them is close to zero is the following:
-  Give input inp:
-  1) Reduce inp to the interval 0 to Pi/2
-  2) If inp is less than Pi/4, compute sin(inp) via a power series around 0.
-  3) If inp is more than Pi/4, compute s=Pi/2-inp to the working precision
-     (most of the possible cancellation will occur here --- or in step 1)
-     and calculate cos(inp) as a power series (in s) around Pi/2 --- thus
-     the output is near zero precisely when the s-input is near zero,
-     avoiding most cancellation problems.
-  4) Having sin or cos, compute the other via the sqrt. This will not cause
-     cancellation problems because the computed sin or cos is not near 1.
+- improve mpfr_sin on values like ~pi (do not compute sin from cos, because
+  of the cancellation).
 - combined mpfr_sinh_cosh() [Geoff Bailey, 20 Apr 2005,
   and Kaveh R. Ghazi, 17 Jan 2007]
 - improve generic.c to work for number of terms <> 2^k
