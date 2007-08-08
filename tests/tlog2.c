@@ -76,6 +76,8 @@ main (int argc, char *argv[])
 
   test_generic (2, 100, 30);
 
+  data_check ("data/log2", mpfr_log2, "mpfr_log2");
+
   tests_end_mpfr ();
   return 0;
 }

@@ -162,6 +162,8 @@ main (int argc, char *argv[])
 
   test_generic (2, 100, 100);
 
+  data_check ("data/expm1", mpfr_expm1, "mpfr_expm1");
+
   tests_end_mpfr ();
   return 0;
 }

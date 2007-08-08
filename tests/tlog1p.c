@@ -126,6 +126,8 @@ main (int argc, char *argv[])
 
   test_generic (2, 100, 50);
 
+  data_check ("data/log1p", mpfr_log1p, "mpfr_log1p");
+
   tests_end_mpfr ();
   return 0;
 }
