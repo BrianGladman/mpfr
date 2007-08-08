@@ -570,6 +570,8 @@ data_check (char *f, int (*foo) (), char *name)
                     }
                   else
                     {
+                      if (yprec == MPFR_PREC_MIN)
+                        break;
                       mpfr_prec_round (y, --yprec, GMP_RNDZ);
                       mpfr_set_prec (z, yprec);
                     }
