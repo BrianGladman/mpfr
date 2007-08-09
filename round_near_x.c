@@ -27,6 +27,7 @@ MA 02110-1301, USA. */
 /* int mpfr_round_near_x (mpfr_ptr y, mpfr_srcptr v, mpfr_uexp_t err, int dir,
                           mp_rnd_t rnd)
 
+   TODO: fix this description.
    Assuming y = o(f(x)) = o(x + g(x)) with |g(x)| < 2^(EXP(v)-error)
    If x is small enough, y ~= v. This function checks and does this.
 

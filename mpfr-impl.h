@@ -1139,8 +1139,9 @@ typedef struct {
  (!MPFR_IS_SINGULAR (b) && mpfr_round_p (MPFR_MANT (b), MPFR_LIMB_SIZE (b),  \
                                          (err), (prec) + ((rnd)==GMP_RNDN)))
 
+/* TODO: fix this description (see round_near_x.c). */
 /* Assuming that the function has a Taylor expansion which looks like:
-    y=o(f(x)) = o(x + g(x)) with |g(x)| <=2^(EXP(v)-err)
+    y=o(f(x)) = o(x + g(x)) with |g(x)| <= 2^(EXP(v)-err)
    we can quickly set y to v if x is small (ie err > prec(y)+1) in most
    cases. It assumes that f(x) is not representable exactly as a FP number.
    v must not be a singular value (NAN, INF or ZERO); usual values are
