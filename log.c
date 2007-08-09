@@ -102,7 +102,7 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
   q = MPFR_PREC (r);
 
   /* use initial precision about q+lg(q)+5 */
-  p = q + 5 + 2*MPFR_INT_CEIL_LOG2 (q);
+  p = q + 5 + 2 * MPFR_INT_CEIL_LOG2 (q);
   /* % ~(mp_prec_t)BITS_PER_MP_LIMB  ;
      m=q; while (m) { p++; m >>= 1; }  */
   /* if (MPFR_LIKELY(p % BITS_PER_MP_LIMB != 0))
@@ -135,20 +135,33 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
       mpfr_const_log2 (tmp1, GMP_RNDN);      /* compute log(2),  err<=1ulp   */
       mpfr_mul_si (tmp1, tmp1, m, GMP_RNDN); /* compute m*log(2),err<=2ulps  */
       mpfr_sub (tmp1, tmp2, tmp1, GMP_RNDN); /* log(a),    err<=7ulps+cancel */
-      cancel = MPFR_GET_EXP (tmp2) - MPFR_GET_EXP (tmp1);
 
-      MPFR_LOG_MSG (("canceled bits=%ld\n", cancel));
-      MPFR_LOG_VAR (tmp1);
+      if (MPFR_LIKELY (MPFR_IS_PURE_FP (tmp1) && MPFR_IS_PURE_FP (tmp2)))
+        {
+          cancel = MPFR_GET_EXP (tmp2) - MPFR_GET_EXP (tmp1);
+          MPFR_LOG_MSG (("canceled bits=%ld\n", cancel));
+          MPFR_LOG_VAR (tmp1);
+          if (MPFR_UNLIKELY (cancel < 0))
+            cancel = 0;
 
-      if (MPFR_UNLIKELY (cancel < 0))
-        cancel = 0;
+          /* we have 7 ulps of error from the above roundings,
+             4 ulps from the 4/s^2 second order term,
+             plus the canceled bits */
+          if (MPFR_LIKELY (MPFR_CAN_ROUND (tmp1, p-cancel-4, q, rnd_mode)))
+            break;
 
-      /* we have 7 ulps of error from the above roundings,
-         4 ulps from the 4/s^2 second order term,
-         plus the canceled bits */
-      if (MPFR_LIKELY (MPFR_CAN_ROUND (tmp1, p-cancel-4, q, rnd_mode)))
-        break;
-      p += cancel;
+          /* VL: I think it is better to have an increment that it isn't
+             too low; in particular, the increment must be positive even
+             if cancel = 0 (can this occur?). */
+          p += cancel >= 8 ? cancel : 8;
+        }
+      else
+        {
+          /* TODO: find why this case can occur and what is best to do
+             with it. */
+          p += 32;
+        }
+
       MPFR_ZIV_NEXT (loop, p);
     }
   MPFR_ZIV_FREE (loop);
