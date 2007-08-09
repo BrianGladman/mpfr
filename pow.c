@@ -179,6 +179,7 @@ int
 mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 {
   int inexact;
+  int cmp_x_1;
   MPFR_SAVE_EXPO_DECL (expo);
 
   MPFR_LOG_FUNC (("x[%#R]=%R y[%#R]=%R rnd=%d", x, x, y, y, rnd_mode),
@@ -270,7 +271,8 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
         }
     }
 
-  if (mpfr_cmp (x, __gmpfr_one) == 0) /* 1^y is always 1 */
+  cmp_x_1 = mpfr_cmp (x, __gmpfr_one);
+  if (cmp_x_1 == 0) /* 1^y is always 1 */
     return mpfr_set (z, __gmpfr_one, rnd_mode);
 
   /* detect overflows: |x^y| >= 2^EMAX when (EXP(x)-1) * y >= EMAX for y > 0,
@@ -347,6 +349,23 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
     }
 
   MPFR_SAVE_EXPO_MARK (expo);
+
+  /* Case where |y * log(x)| is very small. */
+  {
+    mpfr_t t;
+    mp_exp_t err;
+
+    /* We need an upper bound on the exponent of y * log(x). */
+    mpfr_init2 (t, 16);
+    mpfr_log (t, x, cmp_x_1 < 0 ? GMP_RNDD : GMP_RNDU); /* round away from 0 */
+    MPFR_ASSERTN (MPFR_IS_PURE_FP (t));
+    err = MPFR_GET_EXP (y) + MPFR_GET_EXP (t);
+    mpfr_clear (t);
+    mpfr_clear_flags ();
+    MPFR_SMALL_INPUT_AFTER_SAVE_EXPO (z, __gmpfr_one, - err, 0,
+                                      (MPFR_SIGN (y) > 0) ^ (cmp_x_1 < 0),
+                                      rnd_mode, expo, {});
+  }
 
   /* General case */
   {
