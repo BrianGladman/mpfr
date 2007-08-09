@@ -213,6 +213,8 @@ main (void)
 
   test_generic (2, 200, 10);
 
+  data_check ("data/cbrt", mpfr_cbrt, "mpfr_cbrt");
+
   tests_end_mpfr ();
   return 0;
 }
