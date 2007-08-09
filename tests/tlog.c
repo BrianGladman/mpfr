@@ -246,6 +246,28 @@ special (void)
   mpfr_clear (y);
 }
 
+static void
+x_near_one (void)
+{
+  mpfr_t x, y;
+  int inex;
+
+  mpfr_init2 (x, 32);
+  mpfr_init2 (y, 16);
+
+  mpfr_set_ui (x, 1, GMP_RNDN);
+  mpfr_nextbelow (x);
+  inex = mpfr_log (y, x, GMP_RNDD);
+  if (mpfr_cmp_str (y, "-0.1000000000000001E-31", 2, GMP_RNDN)
+      || inex >= 0)
+    {
+      printf ("Failure in x_near_one, got inex = %d and\ny = ", inex);
+      mpfr_dump (y);
+    }
+
+  mpfr_clears (x, y, (void *) 0);
+}
+
 #define TEST_FUNCTION test_log
 #include "tgeneric.c"
 
@@ -324,6 +346,8 @@ main (int argc, char *argv[])
   check2("6.58057413965851156767e-01",GMP_RNDZ,"-4.18463096196088235600e-01");
   check2 ("7.34302197248998461006e+43",GMP_RNDZ,"101.0049094695131799426235374994575977325439453125");
   check2("6.09969788341579732815e+00",GMP_RNDD,"1.80823924264386204363e+00");
+
+  x_near_one ();
 
   test_generic (2, 100, 40);
 
