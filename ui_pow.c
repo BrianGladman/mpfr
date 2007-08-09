@@ -35,6 +35,7 @@ mpfr_ui_pow (mpfr_ptr y, unsigned long int n, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_ASSERTN (!inexact);
   inexact = mpfr_pow (y, t, x, rnd_mode);
   mpfr_clear (t);
+  MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (y, inexact, rnd_mode);
 }
