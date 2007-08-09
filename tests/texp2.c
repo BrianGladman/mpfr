@@ -157,55 +157,55 @@ overflowed_exp2_0 (void)
       /* and if emax < 0, 1 - eps is not representable either. */
       for (i = -1; i <= 1; i++)
         RND_LOOP (rnd)
-        {
-          mpfr_set_si_2exp (x, i, -512 * ABS (i), GMP_RNDN);
-          mpfr_clear_flags ();
-          inex = mpfr_exp2 (x, x, rnd);
-          if ((i >= 0 || emax < 0 || rnd == GMP_RNDN || rnd == GMP_RNDU) &&
-              ! mpfr_overflow_p ())
-            {
-              printf ("Error in overflowed_exp2_0 (i = %d, rnd = %s):\n"
-                      "  The overflow flag is not set.\n",
-                      i, mpfr_print_rnd_mode (rnd));
-              err = 1;
-            }
-          if (rnd == GMP_RNDZ || rnd == GMP_RNDD)
-            {
-              if (inex >= 0)
-                {
-                  printf ("Error in overflowed_exp2_0 (i = %d, rnd = %s):\n"
-                          "  The inexact value must be negative.\n",
-                          i, mpfr_print_rnd_mode (rnd));
-                  err = 1;
-                }
-              if (! mpfr_equal_p (x, y))
-                {
-                  printf ("Error in overflowed_exp2_0 (i = %d, rnd = %s):\n"
-                          "  Got ", i, mpfr_print_rnd_mode (rnd));
-                  mpfr_print_binary (x);
-                  printf (" instead of 0.11111111E%d.\n", emax);
-                  err = 1;
-                }
-            }
-          else
-            {
-              if (inex <= 0)
-                {
-                  printf ("Error in overflowed_exp2_0 (i = %d, rnd = %s):\n"
-                          "  The inexact value must be positive.\n",
-                          i, mpfr_print_rnd_mode (rnd));
-                  err = 1;
-                }
-              if (! (mpfr_inf_p (x) && MPFR_SIGN (x) > 0))
-                {
-                  printf ("Error in overflowed_exp2_0 (i = %d, rnd = %s):\n"
-                          "  Got ", i, mpfr_print_rnd_mode (rnd));
-                  mpfr_print_binary (x);
-                  printf (" instead of +Inf.\n");
-                  err = 1;
-                }
-            }
-        }
+          {
+            mpfr_set_si_2exp (x, i, -512 * ABS (i), GMP_RNDN);
+            mpfr_clear_flags ();
+            inex = mpfr_exp2 (x, x, rnd);
+            if ((i >= 0 || emax < 0 || rnd == GMP_RNDN || rnd == GMP_RNDU) &&
+                ! mpfr_overflow_p ())
+              {
+                printf ("Error in overflowed_exp2_0 (i = %d, rnd = %s):\n"
+                        "  The overflow flag is not set.\n",
+                        i, mpfr_print_rnd_mode (rnd));
+                err = 1;
+              }
+            if (rnd == GMP_RNDZ || rnd == GMP_RNDD)
+              {
+                if (inex >= 0)
+                  {
+                    printf ("Error in overflowed_exp2_0 (i = %d, rnd = %s):\n"
+                            "  The inexact value must be negative.\n",
+                            i, mpfr_print_rnd_mode (rnd));
+                    err = 1;
+                  }
+                if (! mpfr_equal_p (x, y))
+                  {
+                    printf ("Error in overflowed_exp2_0 (i = %d, rnd = %s):\n"
+                            "  Got ", i, mpfr_print_rnd_mode (rnd));
+                    mpfr_print_binary (x);
+                    printf (" instead of 0.11111111E%d.\n", emax);
+                    err = 1;
+                  }
+              }
+            else
+              {
+                if (inex <= 0)
+                  {
+                    printf ("Error in overflowed_exp2_0 (i = %d, rnd = %s):\n"
+                            "  The inexact value must be positive.\n",
+                            i, mpfr_print_rnd_mode (rnd));
+                    err = 1;
+                  }
+                if (! (mpfr_inf_p (x) && MPFR_SIGN (x) > 0))
+                  {
+                    printf ("Error in overflowed_exp2_0 (i = %d, rnd = %s):\n"
+                            "  Got ", i, mpfr_print_rnd_mode (rnd));
+                    mpfr_print_binary (x);
+                    printf (" instead of +Inf.\n");
+                    err = 1;
+                  }
+              }
+          }
       set_emax (old_emax);
     }
 
@@ -232,28 +232,48 @@ main (int argc, char *argv[])
 
   mpfr_set_ui (x, 4, GMP_RNDN);
   mpfr_exp2 (y, x, GMP_RNDN);
+  if (mpfr_cmp_ui (y, 16) != 0)
+    {
+      printf ("Error for 2^4, GMP_RNDN\n");
+      exit (1);
+    }
   mpfr_exp2 (y, x, GMP_RNDD);
+  if (mpfr_cmp_ui (y, 16) != 0)
+    {
+      printf ("Error for 2^4, GMP_RNDD\n");
+      exit (1);
+    }
   mpfr_exp2 (y, x, GMP_RNDU);
   if (mpfr_cmp_ui (y, 16) != 0)
     {
-      printf ("Error for 2^4\n");
+      printf ("Error for 2^4, GMP_RNDU\n");
       exit (1);
     }
 
   mpfr_set_si (x, -4, GMP_RNDN);
   mpfr_exp2 (y, x, GMP_RNDN);
+  if (mpfr_cmp_ui_2exp (y, 1, -4) != 0)
+    {
+      printf ("Error for 2^(-4), GMP_RNDN\n");
+      exit (1);
+    }
   mpfr_exp2 (y, x, GMP_RNDD);
+  if (mpfr_cmp_ui_2exp (y, 1, -4) != 0)
+    {
+      printf ("Error for 2^(-4), GMP_RNDD\n");
+      exit (1);
+    }
   mpfr_exp2 (y, x, GMP_RNDU);
   if (mpfr_cmp_ui_2exp (y, 1, -4) != 0)
     {
-      printf ("Error for 2^(-4)\n");
+      printf ("Error for 2^(-4), GMP_RNDU\n");
       exit (1);
     }
 
   mpfr_set_prec (x, 53);
   mpfr_set_prec (y, 53);
   mpfr_set_str (x, /*-1683977482443233.0 / 2199023255552.0*/
-                "-7.6578429909351734750089235603809357e2", 10,GMP_RNDN);
+                "-7.6578429909351734750089235603809357e2", 10, GMP_RNDN);
   mpfr_exp2 (y, x, GMP_RNDN);
   if (mpfr_cmp_str1 (y, "2.991959870867646566478e-231"))
     {
