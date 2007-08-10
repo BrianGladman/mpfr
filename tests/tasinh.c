@@ -99,7 +99,7 @@ special (void)
   mpfr_set_str_binary (x, "0.1010100100111011001111100101E-1");
   mpfr_asinh (x, x, GMP_RNDN);
   mpfr_set_str_binary (y, "0.10100110010010101101010011011101E-1");
-  if (mpfr_cmp (x, y))
+  if (!mpfr_equal_p (x, y))
     {
       printf ("Error: mpfr_asinh (1)\n");
       exit (1);
@@ -108,7 +108,7 @@ special (void)
   mpfr_set_str_binary (x, "-.10110011011010111110010001100001");
   mpfr_asinh (x, x, GMP_RNDN);
   mpfr_set_str_binary (y, "-.10100111010000111001011100110011");
-  if (mpfr_cmp (x, y))
+  if (!mpfr_equal_p (x, y))
     {
       printf ("Error: mpfr_asinh (2)\n");
       exit (1);
@@ -120,9 +120,21 @@ special (void)
   mpfr_asinh (y, x, GMP_RNDZ);
   mpfr_init2 (z, 43);
   mpfr_set_str_binary (z, "0.1100111101010101101010101110000001000111001");
-  if (mpfr_cmp (y, z))
+  if (!mpfr_equal_p (y, z))
     {
       printf ("Error: mpfr_asinh (3)\n");
+      exit (1);
+    }
+
+  mpfr_set_prec (x, 53);
+  mpfr_set_prec (y, 2);
+  mpfr_set_str (x, "1.8000000000009@-6", 16, GMP_RNDN);
+  mpfr_asinh (y, x, GMP_RNDZ);
+  mpfr_init2 (z, 2);
+  mpfr_set_str (z, "1.0@-6", 16, GMP_RNDN);
+  if (!mpfr_equal_p (y, z))
+    {
+      printf ("Error: mpfr_asinh (4)\n");
       exit (1);
     }
 
