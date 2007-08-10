@@ -32,6 +32,7 @@ Changes from versions 2.2.* to version 2.3.0:
 - Functions mpfr_sin, mpfr_cos and mpfr_sin_cos improved (argument
   reduction).
 - More detailed MPFR manual.
+- Improved tests (make check).
 - Bug fixes.
 
 Changes from versions 2.1.* to version 2.2.0:
