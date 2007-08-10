@@ -1,4 +1,1088 @@
 ------------------------------------------------------------------------
+r4742 | vlefevre | 2007-08-10 01:41:01 +0000 (Fri, 10 Aug 2007) | 3 lines
+Changed paths:
+   M /trunk/asinh.c
+
+asinh.c: fixed assertion failure (see test 4 in tasinh.c, added
+in r4740), that was due to an exception.
+
+------------------------------------------------------------------------
+r4741 | vlefevre | 2007-08-10 01:38:25 +0000 (Fri, 10 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/tests/tasinh.c
+
+tasinh.c: fixed test.
+
+------------------------------------------------------------------------
+r4740 | vlefevre | 2007-08-10 01:18:46 +0000 (Fri, 10 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/tests/tasinh.c
+
+tasinh.c: added worst case that yields an assertion failure.
+
+------------------------------------------------------------------------
+r4739 | vlefevre | 2007-08-09 17:21:32 +0000 (Thu, 09 Aug 2007) | 2 lines
+Changed paths:
+   A /trunk/tests/data/cbrt
+   M /trunk/tests/tcbrt.c
+
+Added data_check support to cbrt.
+
+------------------------------------------------------------------------
+r4738 | vlefevre | 2007-08-09 15:45:47 +0000 (Thu, 09 Aug 2007) | 3 lines
+Changed paths:
+   M /trunk/log.c
+
+log.c: fixed assertion failure (see test x_near_one in tlog.c, added
+in r4736), that was due to an exception.
+
+------------------------------------------------------------------------
+r4737 | vlefevre | 2007-08-09 12:12:56 +0000 (Thu, 09 Aug 2007) | 6 lines
+Changed paths:
+   M /trunk/pow.c
+
+pow.c: added MPFR_SMALL_INPUT_AFTER_SAVE_EXPO for the case where
+|y * log(x)| is very small (I can't really test because this code
+currently fails due to a bug in mpfr_log: see test x_near_one
+added to tlog.c as changeset 4736; this bug is also present in
+the 2.2 branch).
+
+------------------------------------------------------------------------
+r4736 | vlefevre | 2007-08-09 11:58:59 +0000 (Thu, 09 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/tests/tlog.c
+
+tlog.c: added a test leading to an assertion failure in mpfr_log.
+
+------------------------------------------------------------------------
+r4735 | vlefevre | 2007-08-09 11:45:19 +0000 (Thu, 09 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/tests/tpow.c
+
+tpow.c: added a test where x is close to 1.
+
+------------------------------------------------------------------------
+r4734 | vlefevre | 2007-08-09 11:02:28 +0000 (Thu, 09 Aug 2007) | 2 lines
+Changed paths:
+   A /trunk/tests/data/exp10
+
+Added empty file tests/data/exp10 to avoid an error with -dev versions.
+
+------------------------------------------------------------------------
+r4733 | vlefevre | 2007-08-09 10:18:50 +0000 (Thu, 09 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/mpfr-impl.h
+   M /trunk/round_near_x.c
+
+Added a TODO concerning the description of mpfr_round_near_x.
+
+------------------------------------------------------------------------
+r4732 | vlefevre | 2007-08-09 09:48:59 +0000 (Thu, 09 Aug 2007) | 2 lines
+Changed paths:
+   A /trunk/tests/data/expm1
+   A /trunk/tests/data/log1p
+   A /trunk/tests/data/log2
+
+Added empty files in tests/data to avoid errors with -dev versions.
+
+------------------------------------------------------------------------
+r4731 | vlefevre | 2007-08-09 09:39:43 +0000 (Thu, 09 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/ui_pow.c
+
+mpfr_ui_pow fix: added a MPFR_SAVE_EXPO_UPDATE_FLAGS.
+
+------------------------------------------------------------------------
+r4730 | vlefevre | 2007-08-09 02:52:27 +0000 (Thu, 09 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/tests
+   M /trunk/tests/Makefile.am
+   A /trunk/tests/texp10.c
+
+Added texp10.c (texp10 currently fails).
+
+------------------------------------------------------------------------
+r4729 | vlefevre | 2007-08-09 02:26:33 +0000 (Thu, 09 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/tests/texp2.c
+
+texp2.c: reformat and added some tests which were missing.
+
+------------------------------------------------------------------------
+r4728 | vlefevre | 2007-08-08 15:12:56 +0000 (Wed, 08 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/tests/tl2b.c
+   M /trunk/tests/tremquo.c
+
+Updated svn:keywords and svn:eol-style properties in tests.
+
+------------------------------------------------------------------------
+r4727 | vlefevre | 2007-08-08 15:11:15 +0000 (Wed, 08 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/tests/texpm1.c
+   M /trunk/tests/tlog1p.c
+   M /trunk/tests/tlog2.c
+
+Added data_check calls to texpm1, tlog1p and tlog2.
+
+------------------------------------------------------------------------
+r4726 | vlefevre | 2007-08-08 14:37:28 +0000 (Wed, 08 Aug 2007) | 3 lines
+Changed paths:
+   M /trunk/tests/tests.c
+
+tests/tests.c: in data_check(), mode 'Z', do not test GMP_RNDN if
+the precision for the directed rounding modes is MPFR_PREC_MIN.
+
+------------------------------------------------------------------------
+r4725 | vlefevre | 2007-08-04 23:13:52 +0000 (Sat, 04 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/TODO
+
+TODO: more on mpfr_sin (and mpfr_cos).
+
+------------------------------------------------------------------------
+r4724 | vlefevre | 2007-08-04 22:58:01 +0000 (Sat, 04 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/TODO
+
+TODO: update concerning sin/cos/tan.
+
+------------------------------------------------------------------------
+r4723 | vlefevre | 2007-08-03 02:45:32 +0000 (Fri, 03 Aug 2007) | 3 lines
+Changed paths:
+   M /trunk/tests/tests.c
+
+tests/tests.c: in data_check(), check the 4 rounding modes if rnd is 'Z'
+(in order to test the worst cases).
+
+------------------------------------------------------------------------
+r4722 | vlefevre | 2007-08-03 01:30:20 +0000 (Fri, 03 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/tests/tests.c
+
+Fixed coding style (for ansi2knr in particular).
+
+------------------------------------------------------------------------
+r4721 | vlefevre | 2007-08-02 10:19:44 +0000 (Thu, 02 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/Makefile.am
+
+Makefile.am: added a comment about "get_patches.c".
+
+------------------------------------------------------------------------
+r4720 | vlefevre | 2007-08-02 10:07:48 +0000 (Thu, 02 Aug 2007) | 8 lines
+Changed paths:
+   M /trunk/Makefile.am
+
+No longer set "CLEANFILES = get_patches.c" in Makefile.am so that a
+"make clean" doesn't remove the get_patches.c file, as rebuilding it
+needs a Unix shell (and some standard utilities). Anyway the update
+of this file should be regarded as part of the patch process, then
+this file is just like any other .c files. Note: "make dist" includes
+this file in the archives, so that concerning the build, everything
+is like before as long as no patches are applied.
+
+------------------------------------------------------------------------
+r4719 | zimmerma | 2007-08-01 18:07:32 +0000 (Wed, 01 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/TODO
+
+added item about sNaN/qNaN
+
+------------------------------------------------------------------------
+r4718 | vlefevre | 2007-07-31 14:28:20 +0000 (Tue, 31 Jul 2007) | 3 lines
+Changed paths:
+   M /trunk/copysign.c
+
+copysign.c: reformat, updated comment (but this function is still not
+documented in mpfr.texi).
+
+------------------------------------------------------------------------
+r4717 | vlefevre | 2007-07-31 14:12:15 +0000 (Tue, 31 Jul 2007) | 3 lines
+Changed paths:
+   M /trunk/INSTALL
+   M /trunk/VERSION
+   M /trunk/configure.in
+   M /trunk/mpfr.h
+   M /trunk/mpfr.texi
+   M /trunk/version.c
+
+Updated version back to 2.3.0-dev since the 2.3 branch will be recreated
+from the trunk (too many changes!).
+
+------------------------------------------------------------------------
+r4716 | vlefevre | 2007-07-31 13:34:37 +0000 (Tue, 31 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/tests/tl2b.c
+
+tl2b.c: enable output even when the constants are correct.
+
+------------------------------------------------------------------------
+r4715 | vlefevre | 2007-07-31 13:25:24 +0000 (Tue, 31 Jul 2007) | 3 lines
+Changed paths:
+   M /trunk
+
+Added get_patches.c to the svn:ignore property, as this file is
+generated.
+
+------------------------------------------------------------------------
+r4714 | vlefevre | 2007-07-31 13:23:37 +0000 (Tue, 31 Jul 2007) | 13 lines
+Changed paths:
+   M /trunk/free_cache.c
+   M /trunk/get_str.c
+   M /trunk/mpfr-impl.h
+   M /trunk/tests
+   M /trunk/tests/Makefile.am
+   A /trunk/tests/tl2b.c
+
+Replaced l2b cache by constants, as suggested by Patrick Pelissier,
+to avoid efficiency problems with the stack interface and heavily
+threaded applications.
+  * Added tests/tl2b.c to generate / check the constants.
+  * tests/Makefile.am: added tl2b to check_PROGRAMS.
+  * tests directory: added tl2b to the svn:ignore property.
+  * mpfr-impl.h: updated the __gmpfr_l2b declaration.
+  * free_cache.c: disabled free_l2b (since there's no longer a cache).
+  * get_str.c: added the code generated by tl2b; for the bootstrap, one
+    can just write:
+      const __mpfr_struct __gmpfr_l2b[BASE_MAX-1][2] = { { { 0 } } };
+    Removed the code (in ceil_mul) that computed these constants.
+
+------------------------------------------------------------------------
+r4713 | vlefevre | 2007-07-30 22:37:30 +0000 (Mon, 30 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/mpfr.texi
+
+mpfr.texi: updated the documentation of the mpfr_get_d function family.
+
+------------------------------------------------------------------------
+r4712 | vlefevre | 2007-07-30 11:12:45 +0000 (Mon, 30 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/README.dev
+   M /trunk/TODO
+
+Patch tracking: updated README.dev and TODO files.
+
+------------------------------------------------------------------------
+r4711 | vlefevre | 2007-07-30 10:45:01 +0000 (Mon, 30 Jul 2007) | 3 lines
+Changed paths:
+   M /trunk/Makefile.am
+   M /trunk/NEWS
+   A /trunk/PATCHES
+   A /trunk/get_patches.sh
+   M /trunk/mpfr.h
+   M /trunk/mpfr.texi
+
+Added support for tracking applied patches with new function
+mpfr_get_patches().
+
+------------------------------------------------------------------------
+r4710 | vlefevre | 2007-07-30 09:41:55 +0000 (Mon, 30 Jul 2007) | 4 lines
+Changed paths:
+   M /trunk/mpfr.texi
+
+mpfr.texi: updated the example concerning mpfr_get_version() vs
+MPFR_VERSION_STRING ("Warning" instead of "Error", make sure that
+the example fits on 80 columns in the info file).
+
+------------------------------------------------------------------------
+r4709 | vlefevre | 2007-07-30 09:37:06 +0000 (Mon, 30 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/mpfr.texi
+
+mpfr.texi: updated description of mpfr_get_version().
+
+------------------------------------------------------------------------
+r4708 | vlefevre | 2007-07-30 09:31:58 +0000 (Mon, 30 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/mpfr.texi
+
+mpfr.texi: updated description of mpfr_get_version().
+
+------------------------------------------------------------------------
+r4707 | zimmerma | 2007-07-28 15:03:05 +0000 (Sat, 28 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/TODO
+
+added files that are not 100% covered by tests
+
+------------------------------------------------------------------------
+r4706 | vlefevre | 2007-07-27 22:04:24 +0000 (Fri, 27 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/coverage
+
+coverage: added --disable-shared --enable-static to configure.
+
+------------------------------------------------------------------------
+r4705 | vlefevre | 2007-07-27 21:59:04 +0000 (Fri, 27 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/mpfr-impl.h
+
+mpfr-impl.h: added more casts for g++.
+
+------------------------------------------------------------------------
+r4704 | vlefevre | 2007-07-27 21:54:22 +0000 (Fri, 27 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/mpfr-impl.h
+
+Reformat.
+
+------------------------------------------------------------------------
+r4703 | vlefevre | 2007-07-27 21:48:03 +0000 (Fri, 27 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/const_log2.c
+   M /trunk/mpfr-impl.h
+   M /trunk/mul.c
+
+Applied patch from Patrick to be able to build MPFR with g++.
+
+------------------------------------------------------------------------
+r4702 | zimmerma | 2007-07-26 12:02:24 +0000 (Thu, 26 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/mparam_h.in
+
+added default thresholds for Core 2
+
+------------------------------------------------------------------------
+r4701 | vlefevre | 2007-07-25 15:34:52 +0000 (Wed, 25 Jul 2007) | 5 lines
+Changed paths:
+   M /trunk/tests/tacos.c
+   M /trunk/tests/tacosh.c
+   M /trunk/tests/tasin.c
+   M /trunk/tests/tasinh.c
+   M /trunk/tests/tatan.c
+   M /trunk/tests/tatanh.c
+   M /trunk/tests/tcos.c
+   M /trunk/tests/tcosh.c
+   M /trunk/tests/terf.c
+   M /trunk/tests/tests.c
+   M /trunk/tests/texp.c
+   M /trunk/tests/texp2.c
+   M /trunk/tests/tgamma.c
+   M /trunk/tests/tj0.c
+   M /trunk/tests/tj1.c
+   M /trunk/tests/tlgamma.c
+   M /trunk/tests/tlog.c
+   M /trunk/tests/tlog10.c
+   M /trunk/tests/tmul.c
+   M /trunk/tests/tpow.c
+   M /trunk/tests/tsin.c
+   M /trunk/tests/tsinh.c
+   M /trunk/tests/tsqrt.c
+   M /trunk/tests/ttan.c
+   M /trunk/tests/ttanh.c
+   M /trunk/tests/tui_div.c
+   M /trunk/tests/ty0.c
+   M /trunk/tests/ty1.c
+
+No longer use MPFR_CHECK_ALL in tests. In '-dev' versions, assume
+that the data files exist and return an error whenever a file cannot
+be opened. In the other versions, return silently if the file cannot
+be opened.
+
+------------------------------------------------------------------------
+r4700 | vlefevre | 2007-07-25 15:18:45 +0000 (Wed, 25 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/Makefile.am
+   D /trunk/mpfr-test.h
+   M /trunk/tests/Makefile.am
+   A /trunk/tests/mpfr-test.h (from /trunk/mpfr-test.h:4698)
+
+Moved mpfr-test.h into the tests directory.
+
+------------------------------------------------------------------------
+r4699 | zimmerma | 2007-07-25 15:15:55 +0000 (Wed, 25 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/cos.c
+
+fixed "efficiency bug" (argument reduction was broken)
+
+------------------------------------------------------------------------
+r4698 | vlefevre | 2007-07-25 14:45:13 +0000 (Wed, 25 Jul 2007) | 3 lines
+Changed paths:
+   M /trunk/tests/tests.c
+
+tests.c: in data_check(), made whitespace skipping consistent and
+check that the result value is immediately followed by a \n.
+
+------------------------------------------------------------------------
+r4697 | vlefevre | 2007-07-25 14:02:23 +0000 (Wed, 25 Jul 2007) | 3 lines
+Changed paths:
+   M /trunk/tests/tests.c
+
+[tests.c] Fixed some types (the result of getc() is not necessarily
+representable in a char).
+
+------------------------------------------------------------------------
+r4696 | vlefevre | 2007-07-25 13:45:10 +0000 (Wed, 25 Jul 2007) | 5 lines
+Changed paths:
+   M /trunk/tests/tests.c
+
+tests.c: changes in the error messages (BTW, we decided to output
+everything to stdout for consistency, even though messages for
+assertion failure are written to stderr) and replaced an abort ()
+by an exit (1).
+
+------------------------------------------------------------------------
+r4695 | vlefevre | 2007-07-25 10:58:54 +0000 (Wed, 25 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/jyn_asympt.c
+   M /trunk/tests/tests.c
+
+Delete trailing spaces.
+
+------------------------------------------------------------------------
+r4694 | zimmerma | 2007-07-25 10:01:45 +0000 (Wed, 25 Jul 2007) | 5 lines
+Changed paths:
+   M /trunk/Makefile.am
+   M /trunk/jn.c
+   A /trunk/jyn_asympt.c
+   M /trunk/tests/tests.c
+   M /trunk/yn.c
+
+jyn_asympt.c: new common file for asymptotic expansion in jn/yn
+tests/tests.c: print precisions in case of failure
+jn.c: now use jyn_asympt.c
+yn.c: now implement asymptotic expansion (jyn_asympt.c)
+
+------------------------------------------------------------------------
+r4693 | zimmerma | 2007-07-25 09:58:31 +0000 (Wed, 25 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/tests/data/y0
+   M /trunk/tests/data/y1
+
+fixed more wrong entries in Gonnet's test suite
+
+------------------------------------------------------------------------
+r4692 | zimmerma | 2007-07-24 15:12:39 +0000 (Tue, 24 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/jn.c
+
+contribution of first neglected term to error was wrong
+
+------------------------------------------------------------------------
+r4691 | zimmerma | 2007-07-24 15:08:51 +0000 (Tue, 24 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/tests/data/y0
+
+fixed wrong entry (not enough precision was used in Maple)
+
+------------------------------------------------------------------------
+r4690 | zimmerma | 2007-07-24 13:42:35 +0000 (Tue, 24 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/algorithms.tex
+   M /trunk/jn.c
+   M /trunk/tests/data/j0
+   M /trunk/tests/tj0.c
+   M /trunk/tests/tj1.c
+
+implemented asymptotic expansion for large argument in j0/j1/jn
+
+------------------------------------------------------------------------
+r4689 | zimmerma | 2007-07-20 16:12:03 +0000 (Fri, 20 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/nightly-test
+
+define MPFR_CHECK_ALL for nightly tests
+
+------------------------------------------------------------------------
+r4688 | zimmerma | 2007-07-20 16:11:15 +0000 (Fri, 20 Jul 2007) | 3 lines
+Changed paths:
+   M /trunk/tests/tacos.c
+   M /trunk/tests/tacosh.c
+   M /trunk/tests/tasin.c
+   M /trunk/tests/tasinh.c
+   M /trunk/tests/tatan.c
+   M /trunk/tests/tatanh.c
+   M /trunk/tests/tcos.c
+   M /trunk/tests/tcosh.c
+   M /trunk/tests/terf.c
+   M /trunk/tests/texp.c
+   M /trunk/tests/texp2.c
+   M /trunk/tests/tgamma.c
+   M /trunk/tests/tj0.c
+   M /trunk/tests/tj1.c
+   M /trunk/tests/tlgamma.c
+   M /trunk/tests/tlog.c
+   M /trunk/tests/tlog10.c
+   M /trunk/tests/tmul.c
+   M /trunk/tests/tpow.c
+   M /trunk/tests/tsin.c
+   M /trunk/tests/tsinh.c
+   M /trunk/tests/tsqrt.c
+   M /trunk/tests/ttan.c
+   M /trunk/tests/ttanh.c
+   M /trunk/tests/tui_div.c
+   M /trunk/tests/ty0.c
+   M /trunk/tests/ty1.c
+
+Added code to check mpfr against Gonnet's tables when the environment variable
+MPFR_CHECK_ALL is defined (some table entries were checked by MuPAD)
+
+------------------------------------------------------------------------
+r4687 | zimmerma | 2007-07-20 16:04:38 +0000 (Fri, 20 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/tests/data/gonnet.mpl
+
+added comment
+
+------------------------------------------------------------------------
+r4686 | zimmerma | 2007-07-20 15:58:20 +0000 (Fri, 20 Jul 2007) | 2 lines
+Changed paths:
+   A /trunk/tests/data/y0
+   A /trunk/tests/data/y1
+
+test data files mpfr mpfr_y0 and mpfr_y1, ***not*** checked with MuPAD
+
+------------------------------------------------------------------------
+r4685 | zimmerma | 2007-07-20 15:55:03 +0000 (Fri, 20 Jul 2007) | 3 lines
+Changed paths:
+   M /trunk/tests/data/CheckData.mu
+
+added auxiliary MuPAD functions
+improved Ziv's strategy: add half of DIGITS each time
+
+------------------------------------------------------------------------
+r4684 | zimmerma | 2007-07-20 15:52:52 +0000 (Fri, 20 Jul 2007) | 2 lines
+Changed paths:
+   A /trunk/tests/data/tanh
+
+test data file for mpfr_tanh, checked by MuPAD
+
+------------------------------------------------------------------------
+r4683 | zimmerma | 2007-07-20 15:51:28 +0000 (Fri, 20 Jul 2007) | 2 lines
+Changed paths:
+   A /trunk/tests/data/tan
+
+test data file for mpfr_tan, checked with MuPAD (except 3 indicated entries)
+
+------------------------------------------------------------------------
+r4682 | zimmerma | 2007-07-20 15:39:23 +0000 (Fri, 20 Jul 2007) | 2 lines
+Changed paths:
+   A /trunk/tests/data/sqrt
+
+test data file for mpfr_sqrt, checked with MuPAD
+
+------------------------------------------------------------------------
+r4681 | zimmerma | 2007-07-20 15:28:32 +0000 (Fri, 20 Jul 2007) | 2 lines
+Changed paths:
+   A /trunk/tests/data/sinh
+
+test data file for mpfr_sinh, checked by MuPAD (except indicated lines)
+
+------------------------------------------------------------------------
+r4680 | zimmerma | 2007-07-20 15:17:58 +0000 (Fri, 20 Jul 2007) | 3 lines
+Changed paths:
+   A /trunk/tests/data/sin
+
+test data file for mpfr_sin, checked by MuPAD (except tiny inputs indicated
+in file)
+
+------------------------------------------------------------------------
+r4679 | zimmerma | 2007-07-20 13:45:40 +0000 (Fri, 20 Jul 2007) | 2 lines
+Changed paths:
+   A /trunk/tests/data/pow275
+
+test data file for x^(11/4), checked with MuPAD
+
+------------------------------------------------------------------------
+r4678 | zimmerma | 2007-07-20 13:41:01 +0000 (Fri, 20 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/tests/data/log10
+
+finally, I was able to check it with MuPAD
+
+------------------------------------------------------------------------
+r4677 | zimmerma | 2007-07-20 13:36:16 +0000 (Fri, 20 Jul 2007) | 2 lines
+Changed paths:
+   A /trunk/tests/data/exp2
+
+test data file for 2^x, checked with MuPAD
+
+------------------------------------------------------------------------
+r4676 | zimmerma | 2007-07-20 13:28:30 +0000 (Fri, 20 Jul 2007) | 2 lines
+Changed paths:
+   A /trunk/tests/data/mulpi
+
+test data file for Pi*x, checked with MuPAD
+
+------------------------------------------------------------------------
+r4675 | zimmerma | 2007-07-20 12:56:27 +0000 (Fri, 20 Jul 2007) | 2 lines
+Changed paths:
+   A /trunk/tests/data/log
+
+test data file for mpfr_log, checked with MuPAD
+
+------------------------------------------------------------------------
+r4674 | zimmerma | 2007-07-20 12:54:43 +0000 (Fri, 20 Jul 2007) | 3 lines
+Changed paths:
+   A /trunk/tests/data/j0
+   A /trunk/tests/data/j1
+   A /trunk/tests/data/lgamma
+   A /trunk/tests/data/log10
+
+test data files for mpfr_j0, mpfr_j1, mpfr_lgamma, mpfr_log10,
+***not*** tested with MuPAD (not Dom::Interval interface)
+
+------------------------------------------------------------------------
+r4673 | zimmerma | 2007-07-20 12:52:25 +0000 (Fri, 20 Jul 2007) | 2 lines
+Changed paths:
+   A /trunk/tests/data/inv
+
+test data file for 1/x, i.e., mpfr_ui_div(1,x), checked with MuPAD
+
+------------------------------------------------------------------------
+r4672 | zimmerma | 2007-07-20 12:45:10 +0000 (Fri, 20 Jul 2007) | 2 lines
+Changed paths:
+   A /trunk/tests/data/gamma
+
+test data file for mpfr_gamma, ***not*** checked by MuPAD
+
+------------------------------------------------------------------------
+r4671 | zimmerma | 2007-07-20 12:44:09 +0000 (Fri, 20 Jul 2007) | 2 lines
+Changed paths:
+   A /trunk/tests/data/exp
+
+test data file for mpfr_exp, checked with MuPAD
+
+------------------------------------------------------------------------
+r4670 | zimmerma | 2007-07-20 12:43:34 +0000 (Fri, 20 Jul 2007) | 3 lines
+Changed paths:
+   A /trunk/tests/data/erf
+   A /trunk/tests/data/erfc
+
+test data files for erf and erfc (not checked by MuPAD, since Dom::Interval
+does not have an interface for those functions in MuPAD 3.2.0)
+
+------------------------------------------------------------------------
+r4669 | zimmerma | 2007-07-20 12:35:54 +0000 (Fri, 20 Jul 2007) | 2 lines
+Changed paths:
+   A /trunk/tests/data/cosh
+
+test data file for mpfr_cosh, checked with MuPAD
+
+------------------------------------------------------------------------
+r4668 | zimmerma | 2007-07-20 12:33:31 +0000 (Fri, 20 Jul 2007) | 2 lines
+Changed paths:
+   A /trunk/tests/data/cos
+
+test data file for mpfr_cos, checked by MuPAD
+
+------------------------------------------------------------------------
+r4667 | zimmerma | 2007-07-20 12:02:36 +0000 (Fri, 20 Jul 2007) | 2 lines
+Changed paths:
+   A /trunk/tests/data/atanh
+
+test data file for mpfr_atanh, checked with MuPAD
+
+------------------------------------------------------------------------
+r4666 | zimmerma | 2007-07-20 11:42:54 +0000 (Fri, 20 Jul 2007) | 2 lines
+Changed paths:
+   A /trunk/tests/data/atan
+
+test data file for atan, checked with MuPAD
+
+------------------------------------------------------------------------
+r4665 | zimmerma | 2007-07-20 11:06:48 +0000 (Fri, 20 Jul 2007) | 2 lines
+Changed paths:
+   A /trunk/tests/data/asinh
+
+test file for mpfr_asinh, checked with MuPAD
+
+------------------------------------------------------------------------
+r4664 | zimmerma | 2007-07-20 11:04:14 +0000 (Fri, 20 Jul 2007) | 2 lines
+Changed paths:
+   A /trunk/tests/data/asin
+
+data file for mpfr_asin, checked with MuPAD using CheckData.mu
+
+------------------------------------------------------------------------
+r4663 | zimmerma | 2007-07-20 10:13:10 +0000 (Fri, 20 Jul 2007) | 2 lines
+Changed paths:
+   A /trunk/tests/data/acosh
+
+data file for mpfr_acosh, checked with MuPAD using CheckData.mu
+
+------------------------------------------------------------------------
+r4662 | zimmerma | 2007-07-20 10:12:37 +0000 (Fri, 20 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/tests/data/CheckData.mu
+
+improved output
+
+------------------------------------------------------------------------
+r4661 | zimmerma | 2007-07-20 10:05:11 +0000 (Fri, 20 Jul 2007) | 2 lines
+Changed paths:
+   A /trunk/tests/data/CheckData.mu
+
+MuPAD file to check a data file
+
+------------------------------------------------------------------------
+r4658 | vlefevre | 2007-07-20 00:18:14 +0000 (Fri, 20 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/free_cache.c
+   M /trunk/get_str.c
+   M /trunk/mpfr-impl.h
+
+Renamed mpfr_l2b as __gmpfr_l2b for consistency.
+
+------------------------------------------------------------------------
+r4657 | zimmerma | 2007-07-19 19:49:15 +0000 (Thu, 19 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/mpfr-longlong.h
+
+patch from Brian Gladman to build mpfr.dll
+
+------------------------------------------------------------------------
+r4656 | zimmerma | 2007-07-19 16:07:58 +0000 (Thu, 19 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/tests/data/acos
+   M /trunk/tests/data/gonnet.mpl
+
+added copyright information about Gonnet's package
+
+------------------------------------------------------------------------
+r4655 | zimmerma | 2007-07-19 16:03:38 +0000 (Thu, 19 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/tests/tests.c
+
+modified data_check() to allow comment lines starting with #
+
+------------------------------------------------------------------------
+r4654 | zimmerma | 2007-07-19 14:55:47 +0000 (Thu, 19 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/mpfr-test.h
+   M /trunk/tests/tacos.c
+   M /trunk/tests/tests.c
+
+new (experimental) mechanism to check data files (see example in tacos.c)
+
+------------------------------------------------------------------------
+r4653 | zimmerma | 2007-07-19 14:54:49 +0000 (Thu, 19 Jul 2007) | 2 lines
+Changed paths:
+   A /trunk/tests/data
+   A /trunk/tests/data/acos
+   A /trunk/tests/data/gonnet.mpl
+
+new directory for test data
+
+------------------------------------------------------------------------
+r4652 | zimmerma | 2007-07-19 10:52:00 +0000 (Thu, 19 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/tests/tcos.c
+
+added test for inexact flag (bug fixed in r4630)
+
+------------------------------------------------------------------------
+r4651 | vlefevre | 2007-07-18 23:09:35 +0000 (Wed, 18 Jul 2007) | 4 lines
+Changed paths:
+   M /trunk/atan2.c
+   M /trunk/erfc.c
+
+erfc.c, atan2.c: added missing "MPFR_SAVE_EXPO_FREE (expo);" before
+  "return mpfr_underflow (...);".
+erfc.c: replaced a goto by an else.
+
+------------------------------------------------------------------------
+r4650 | zimmerma | 2007-07-18 16:24:08 +0000 (Wed, 18 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/atan2.c
+
+now deal with underflow in y/x (remains to deal with overflow)
+
+------------------------------------------------------------------------
+r4649 | zimmerma | 2007-07-18 16:19:31 +0000 (Wed, 18 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/tests/tset_str.c
+
+now can specify output base when argc > 1
+
+------------------------------------------------------------------------
+r4648 | zimmerma | 2007-07-18 16:18:14 +0000 (Wed, 18 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/tests/tlgamma.c
+
+MPFR_EQUAL -> mpfr_equal_p
+
+------------------------------------------------------------------------
+r4647 | zimmerma | 2007-07-18 15:48:57 +0000 (Wed, 18 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/erfc.c
+   M /trunk/tests/terf.c
+
+fixed problem with erfc() near underflow region
+
+------------------------------------------------------------------------
+r4646 | zimmerma | 2007-07-18 13:51:07 +0000 (Wed, 18 Jul 2007) | 3 lines
+Changed paths:
+   M /trunk/atan2.c
+   M /trunk/tests/tatan.c
+
+atan2.c: quick-and-dirty fix for atan2(y,1)
+tests/tatan.c: fix tests from Christopher [x and y were interchanged]
+
+------------------------------------------------------------------------
+r4645 | zimmerma | 2007-07-18 12:19:22 +0000 (Wed, 18 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/tests/tatan.c
+
+added test from Ch. Creutzig
+
+------------------------------------------------------------------------
+r4644 | zimmerma | 2007-07-18 08:23:30 +0000 (Wed, 18 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/agm.c
+
+apply patch suggested in bug #3604
+
+------------------------------------------------------------------------
+r4643 | zimmerma | 2007-07-17 14:30:00 +0000 (Tue, 17 Jul 2007) | 4 lines
+Changed paths:
+   M /trunk/lngamma.c
+   M /trunk/tests/tlgamma.c
+
+previous bug fix for tiny negative inputs in mpfr_lgamma was incorrect:
+result was NaN, but this was not detected by the tests since mpfr_cmp (y, NaN)
+is always true!
+
+------------------------------------------------------------------------
+r4642 | vlefevre | 2007-07-17 13:14:21 +0000 (Tue, 17 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/get_str.c
+   M /trunk/strtofr.c
+
+Added comments and fixed an indentation bug.
+
+------------------------------------------------------------------------
+r4641 | zimmerma | 2007-07-17 06:26:24 +0000 (Tue, 17 Jul 2007) | 4 lines
+Changed paths:
+   M /trunk/cos.c
+
+in reconstruction after computation of cos(x/2^k) for reduced argument,
+it may be that cos(x) is zero to the working precision. Then restart Ziv's
+algorithm with a larger precision.
+
+------------------------------------------------------------------------
+r4640 | zimmerma | 2007-07-16 12:51:17 +0000 (Mon, 16 Jul 2007) | 4 lines
+Changed paths:
+   M /trunk/lngamma.c
+   M /trunk/tests/tlgamma.c
+
+lngamma.c: fix for small inputs
+tlgamma.c: added more tests from Kaveh Ghazi
+
+
+------------------------------------------------------------------------
+r4639 | zimmerma | 2007-07-16 11:22:13 +0000 (Mon, 16 Jul 2007) | 3 lines
+Changed paths:
+   M /trunk/sin_cos.c
+   M /trunk/tests/ttan.c
+
+sin_cos.c: 2nd arg of 1st mpfr_can_round call was wrong
+ttan.c: fixed wrong reference value
+
+------------------------------------------------------------------------
+r4638 | zimmerma | 2007-07-16 06:58:08 +0000 (Mon, 16 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/TODO
+
+added comment about sinpi, etc.
+
+------------------------------------------------------------------------
+r4637 | zimmerma | 2007-07-15 09:09:10 +0000 (Sun, 15 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/tests/ttan.c
+
+added new test, and re-enabled test that was too slow
+
+------------------------------------------------------------------------
+r4636 | zimmerma | 2007-07-14 07:30:37 +0000 (Sat, 14 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/nightly-test
+
+removed MPFR_CHECK_TINY, added MPFR_CHECK_MAX
+
+------------------------------------------------------------------------
+r4635 | vlefevre | 2007-07-10 08:52:50 +0000 (Tue, 10 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/tests/terf.c
+
+terf.c: added testcase for bug reported by Christopher Creutzig.
+
+------------------------------------------------------------------------
+r4633 | vlefevre | 2007-07-09 11:41:04 +0000 (Mon, 09 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/init2.c
+
+Removed a #include that was probably added by mistake in r2590.
+
+------------------------------------------------------------------------
+r4632 | vlefevre | 2007-07-09 11:39:29 +0000 (Mon, 09 Jul 2007) | 3 lines
+Changed paths:
+   M /trunk/abort_prec_max.c
+   M /trunk/cos.c
+   M /trunk/dump.c
+   M /trunk/eint.c
+   M /trunk/exp2.c
+   M /trunk/exp3.c
+   M /trunk/exp_2.c
+   M /trunk/expm1.c
+   M /trunk/fma.c
+   M /trunk/fms.c
+   M /trunk/free_cache.c
+   M /trunk/get_d64.c
+   M /trunk/get_si.c
+   M /trunk/get_str.c
+   M /trunk/get_ui.c
+   M /trunk/init2.c
+   M /trunk/inp_str.c
+   M /trunk/logging.c
+   M /trunk/mpfr-gmp.c
+   M /trunk/mpfr-impl.h
+   M /trunk/out_str.c
+   M /trunk/pow.c
+   M /trunk/print_raw.c
+   M /trunk/remquo.c
+   M /trunk/set_d64.c
+   M /trunk/set_uj.c
+   M /trunk/strtofr.c
+   M /trunk/tuneup.c
+   M /trunk/ui_pow.c
+   M /trunk/zeta.c
+
+<stdio.h> and <limits.h> are now included unconditionally in mpfr-impl.h
+(removed their inclusion from the C files for consistency).
+
+------------------------------------------------------------------------
+r4630 | zimmerma | 2007-07-04 10:07:31 +0000 (Wed, 04 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/cos.c
+
+ternary flag was wrong in case s=1 or -1 and rounding up/nearest
+
+------------------------------------------------------------------------
+r4629 | zimmerma | 2007-07-04 09:32:23 +0000 (Wed, 04 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/algorithms.tex
+   M /trunk/tan.c
+
+updated algorithms.tex with new additive argument reduction for sin/cos/tan
+
+------------------------------------------------------------------------
+r4628 | vlefevre | 2007-07-03 23:35:05 +0000 (Tue, 03 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/lngamma.c
+
+lngamma.c: reformat and replaced mpfr_cmp(...) == 0 by mpfr_equal_p.
+
+------------------------------------------------------------------------
+r4626 | zimmerma | 2007-07-03 19:12:40 +0000 (Tue, 03 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/free_cache.c
+
+changed stdlib to stdio for NULL (see README.dev)
+
+------------------------------------------------------------------------
+r4625 | zimmerma | 2007-07-03 19:10:33 +0000 (Tue, 03 Jul 2007) | 3 lines
+Changed paths:
+   M /trunk/lngamma.c
+   M /trunk/tests/tlgamma.c
+
+fixed bug in tlgamma and added test (need to implement Ziv's strategy in
+tiny case)
+
+------------------------------------------------------------------------
+r4624 | zimmerma | 2007-07-03 18:45:28 +0000 (Tue, 03 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/free_cache.c
+
+added missing include
+
+------------------------------------------------------------------------
+r4622 | vlefevre | 2007-07-03 16:11:39 +0000 (Tue, 03 Jul 2007) | 7 lines
+Changed paths:
+   M /trunk/free_cache.c
+   M /trunk/mpfr.texi
+   M /trunk/tests/tests.c
+
+Fixed the bug reported by David Billinghurst to the MPFR mailing-list
+on 2007-07-03 (memory leaks under some conditions):
+  * moved the free_l2b() function from tests/tests.c to free_cache.c;
+  * mpfr_free_cache() (from free_cache.c) now calls free_l2b();
+  * as a consequence, no longer call free_l2b() in tests_end_mpfr();
+  * documented the behavior in mpfr.texi (under mpfr_free_cache).
+
+------------------------------------------------------------------------
+r4620 | vlefevre | 2007-07-03 15:05:01 +0000 (Tue, 03 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/tests/tj0.c
+
+tj0.c: added testcase from Sisyphus (assertion failed).
+
+------------------------------------------------------------------------
+r4618 | vlefevre | 2007-07-03 13:03:22 +0000 (Tue, 03 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/README.dev
+
+README.dev: explain how to test the library interface compatibility.
+
+------------------------------------------------------------------------
+r4616 | vlefevre | 2007-07-02 23:30:52 +0000 (Mon, 02 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/README.dev
+
+README.dev: mentions patch-libtool and how to apply it.
+
+------------------------------------------------------------------------
+r4615 | vlefevre | 2007-07-02 23:26:01 +0000 (Mon, 02 Jul 2007) | 3 lines
+Changed paths:
+   A /trunk/patch-libtool
+
+Added patch-libtool (patch for aclocal.m4 and configure that comes from
+<http://thread.gmane.org/gmane.comp.gnu.libtool.bugs/5771/focus=5776>).
+
+------------------------------------------------------------------------
+r4614 | vlefevre | 2007-07-02 12:17:08 +0000 (Mon, 02 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+
+NEWS: mention that the shared library is now enabled by default on 2.3.
+
+------------------------------------------------------------------------
+r4610 | vlefevre | 2007-07-02 10:44:17 +0000 (Mon, 02 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/README.dev
+
+README.dev: updated item 2 of "To make a release".
+
+------------------------------------------------------------------------
+r4608 | vlefevre | 2007-07-02 10:39:46 +0000 (Mon, 02 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/TODO
+   M /trunk/mpfr.texi
+
+Reformat.
+
+------------------------------------------------------------------------
+r4607 | vlefevre | 2007-07-02 00:41:32 +0000 (Mon, 02 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/INSTALL
+   M /trunk/VERSION
+   M /trunk/configure.in
+   M /trunk/mpfr.h
+   M /trunk/mpfr.texi
+   M /trunk/version.c
+
+Updated version to 2.4.0-dev.
+
+------------------------------------------------------------------------
+r4605 | vlefevre | 2007-07-02 00:32:27 +0000 (Mon, 02 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/ChangeLog
+
+ChangeLog update.
+
+------------------------------------------------------------------------
 r4604 | vlefevre | 2007-07-02 00:31:13 +0000 (Mon, 02 Jul 2007) | 2 lines
 Changed paths:
    M /trunk/NEWS
