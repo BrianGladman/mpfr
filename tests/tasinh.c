@@ -130,7 +130,7 @@ special (void)
   mpfr_set_prec (y, 2);
   mpfr_set_str (x, "1.8000000000009@-6", 16, GMP_RNDN);
   mpfr_asinh (y, x, GMP_RNDZ);
-  mpfr_init2 (z, 2);
+  mpfr_set_prec (z, 2);
   mpfr_set_str (z, "1.0@-6", 16, GMP_RNDN);
   if (!mpfr_equal_p (y, z))
     {
