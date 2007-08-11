@@ -358,7 +358,7 @@ smallvals_atan2 (void)
 {
   mpfr_t a, x, y;
 
-  mpfr_inits (a, x, y, NULL);
+  mpfr_inits (a, x, y, (void *) 0);
   mpfr_set_ui (y, 0, GMP_RNDN);
   mpfr_nextbelow (y);
   mpfr_set_ui (x, 1, GMP_RNDN);
@@ -370,7 +370,7 @@ smallvals_atan2 (void)
   mpfr_atan2 (a, y, x, GMP_RNDU);
   MPFR_ASSERTN (mpfr_zero_p (a) && MPFR_IS_NEG(a));
 
-  mpfr_clears (a, x, y, NULL);
+  mpfr_clears (a, x, y, (void *) 0);
 }
 
 int
