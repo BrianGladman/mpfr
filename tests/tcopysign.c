@@ -1,4 +1,4 @@
-/* Test file for mpfr_copysign.
+/* Test file for mpfr_copysign, mpfr_setsign and mpfr_signbit.
 
 Copyright 2004, 2006, 2007 Free Software Foundation, Inc.
 Contributed by the Arenaire and Cacao projects, INRIA.
@@ -25,10 +25,39 @@ MA 02110-1301, USA. */
 
 #include "mpfr-test.h"
 
+static void
+copysign_variant (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
+                  mp_rnd_t rnd_mode, int k)
+{
+  mpfr_clear_flags ();
+  switch (k)
+    {
+    case 0:
+      mpfr_copysign (z, x, y, GMP_RNDN);
+      return;
+    case 1:
+      (mpfr_copysign) (z, x, y, GMP_RNDN);
+      return;
+    case 2:
+      mpfr_setsign (z, x, mpfr_signbit (y), GMP_RNDN);
+      return;
+    case 3:
+      mpfr_setsign (z, x, (mpfr_signbit) (y), GMP_RNDN);
+      return;
+    case 4:
+      (mpfr_setsign) (z, x, mpfr_signbit (y), GMP_RNDN);
+      return;
+    case 5:
+      (mpfr_setsign) (z, x, (mpfr_signbit) (y), GMP_RNDN);
+      return;
+    }
+}
+
 int
 main (void)
 {
   mpfr_t x, y, z;
+  int i, j, k;
 
   tests_start_mpfr ();
 
@@ -36,32 +65,47 @@ main (void)
   mpfr_init (y);
   mpfr_init (z);
 
-  /* case y=NaN */
-  mpfr_set_nan (y);
-  mpfr_set_ui (x, 1250, GMP_RNDN);
-  mpfr_copysign (z, x, y, GMP_RNDN);
-  if (!mpfr_nan_p (z))
-    {
-      printf ("Error in mpfr_copysign (NaN)\n");
-      exit (1);
-    }
-  /* case y!=NaN */
-  mpfr_set_ui (y, 123, GMP_RNDN);
-  mpfr_set_ui (x, 1250, GMP_RNDN);
-  mpfr_copysign (z, x, y, GMP_RNDN);
-  if (mpfr_cmp_ui (z, 1250))
-    {
-      printf ("Error in mpfr_copysign (1250)\n");
-      exit (1);
-    }
-  mpfr_set_si (y, -17, GMP_RNDN);
-  mpfr_set_ui (x, 42, GMP_RNDN);
-  mpfr_copysign (z, x, y, GMP_RNDN);
-  if (mpfr_cmp_si (z, -42))
-    {
-      printf ("Error in mpfr_copysign (-42)\n");
-      exit (1);
-    }
+  for (i = 0; i <= 1; i++)
+    for (j = 0; j <= 1; j++)
+      for (k = 0; k <= 5; k++)
+        {
+          mpfr_set_nan (x);
+          i ? MPFR_SET_NEG (x) : MPFR_SET_POS (x);
+          mpfr_set_nan (y);
+          j ? MPFR_SET_NEG (y) : MPFR_SET_POS (y);
+          copysign_variant (z, x, y, GMP_RNDN, k);
+          if (MPFR_SIGN (z) != MPFR_SIGN (y) || !mpfr_nanflag_p ())
+            {
+              printf ("Error in mpfr_copysign (%cNaN, %cNaN)\n",
+                      i ? '-' : '+', j ? '-' : '+');
+              exit (1);
+            }
+
+          mpfr_set_si (x, i ? -1250 : 1250, GMP_RNDN);
+          mpfr_set_nan (y);
+          j ? MPFR_SET_NEG (y) : MPFR_SET_POS (y);
+          copysign_variant (z, x, y, GMP_RNDN, k);
+          if (i != j)
+            mpfr_neg (x, x, GMP_RNDN);
+          if (! mpfr_equal_p (z, x) || mpfr_nanflag_p ())
+            {
+              printf ("Error in mpfr_copysign (%c1250, %cNaN)\n",
+                      i ? '-' : '+', j ? '-' : '+');
+              exit (1);
+            }
+
+          mpfr_set_si (x, i ? -1250 : 1250, GMP_RNDN);
+          mpfr_set_si (y, j ? -1717 : 1717, GMP_RNDN);
+          copysign_variant (z, x, y, GMP_RNDN, k);
+          if (i != j)
+            mpfr_neg (x, x, GMP_RNDN);
+          if (! mpfr_equal_p (z, x) || mpfr_nanflag_p ())
+            {
+              printf ("Error in mpfr_copysign (%c1250, %c1717)\n",
+                      i ? '-' : '+', j ? '-' : '+');
+              exit (1);
+            }
+        }
 
   mpfr_clear (x);
   mpfr_clear (y);

@@ -79,7 +79,6 @@ Changes in existing functions:
 New functions to implement:
 ##############################################################################
 
-- document MPFR_SIGN and/or provide mpfr_get_sign / mpfr_set_sign.
 - functions operating on mpfr_t and double: mpfr_add_d, mpfr_sub_d,
   mpfr_d_sub, mpfr_mul_d, mpfr_div_d, mpfr_d_div
   [suggested by Keith Briggs, 3 Jan 2006]

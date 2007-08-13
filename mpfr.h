@@ -263,9 +263,12 @@ __MPFR_DECLSPEC int
   mpfr_abs _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t));
 __MPFR_DECLSPEC int
   mpfr_set _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t));
+__MPFR_DECLSPEC int mpfr_neg _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_rnd_t));
+__MPFR_DECLSPEC int mpfr_signbit _MPFR_PROTO ((mpfr_srcptr));
 __MPFR_DECLSPEC int
-  mpfr_copysign _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr,mpfr_rnd_t));
-__MPFR_DECLSPEC int mpfr_neg _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,mpfr_rnd_t));
+  mpfr_setsign _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, int, mpfr_rnd_t));
+__MPFR_DECLSPEC int
+  mpfr_copysign _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t));
 
 #ifdef _MPFR_H_HAVE_INTMAX_T
 #define mpfr_set_sj __gmpfr_set_sj
@@ -640,6 +643,9 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
 #define mpfr_cmp_si(b,i) mpfr_cmp_si_2exp((b),(i),0)
 #define mpfr_set(a,b,r)  mpfr_set4(a,b,r,MPFR_SIGN(b))
 #define mpfr_abs(a,b,r)  mpfr_set4(a,b,r,1)
+#define mpfr_copysign(a,b,c,r) mpfr_set4(a,b,r,MPFR_SIGN(c))
+#define mpfr_setsign(a,b,s,r) mpfr_set4(a,b,r,(s) ? -1 : 1)
+#define mpfr_signbit(x)  (MPFR_SIGN(x) < 0)
 #define mpfr_cmp(b, c)   mpfr_cmp3(b, c, 1)
 #define mpfr_mul_2exp(y,x,n,r) mpfr_mul_2ui((y),(x),(n),(r))
 #define mpfr_div_2exp(y,x,n,r) mpfr_div_2ui((y),(x),(n),(r))

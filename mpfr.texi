@@ -3,7 +3,7 @@
 @setfilename mpfr.info
 @documentencoding ISO-8859-1
 @set VERSION 2.4.0-dev
-@set UPDATED-MONTH July 2007
+@set UPDATED-MONTH August 2007
 @settitle MPFR @value{VERSION}
 @synindex tp fn
 @iftex
@@ -1869,6 +1869,24 @@ number. The behavior for NaN, Infinity or Zero is undefined.
 Set the exponent of @var{x} if @var{e} is in the current exponent range,
 and return 0 (even if @var{x} is not a non-zero ordinary number);
 otherwise, return a non-zero value.
+@end deftypefun
+
+@deftypefun int mpfr_signbit (mpfr_t @var{op})
+Return a non-zero value iff @var{op} has its sign bit set (i.e.@: if it is
+negative, @minus{}0, or a NaN whose representation has its sign bit set).
+@end deftypefun
+
+@deftypefun int mpfr_setsign (mpfr_t @var{rop}, mpfr_t @var{op}, int @var{s}, mp_rnd_t @var{rnd})
+Set the value of @var{rop} from @var{op}, rounded towards the given
+direction @var{rnd}, then set its sign bit to @var{s} (even when @var{op}
+is a NaN).
+@end deftypefun
+
+@deftypefun int mpfr_copysign (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
+Set the value of @var{rop} from @var{op1}, rounded towards the given
+direction @var{rnd}, then set its sign bit to that of @var{op2} (even
+when @var{op1} or @var{op2} is a NaN). This function is equivalent to
+@code{mpfr_setsign (@var{rop}, @var{op1}, mpfr_signbit (@var{op2}), @var{rnd})}.
 @end deftypefun
 
 @c By definition, a C string is always null-terminated, so that we
