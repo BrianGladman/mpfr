@@ -27,21 +27,21 @@ MA 02110-1301, USA. */
 
 #include "mpfr-test.h"
 
-#define BUFFER_SIZE 1000
+#define BUFFER_SIZE 250
 #define PREC_TESTED 200
 
-char Buffer[BUFFER_SIZE];
-char *stack = Buffer;
+long Buffer[BUFFER_SIZE];
+char *stack = (char *) Buffer;
 mp_prec_t p = PREC_TESTED;
 
-#define ALIGNED(s) ( ((s)+sizeof (long)-1) / sizeof (long) * sizeof (long))
+#define ALIGNED(s) (((s) + sizeof (long) - 1) / sizeof (long) * sizeof (long))
 
 static void *
 new (size_t s)
 {
-  void *p = (void*) stack;
+  void *p = (void *) stack;
   stack += ALIGNED (s);
-  if (MPFR_UNLIKELY (stack > &Buffer[BUFFER_SIZE]))
+  if (MPFR_UNLIKELY (stack > (char *) &Buffer[BUFFER_SIZE]))
     {
       printf ("Stack overflow.\n");
       exit (1);
