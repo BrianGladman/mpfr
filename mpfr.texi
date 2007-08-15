@@ -1878,8 +1878,8 @@ negative, @minus{}0, or a NaN whose representation has its sign bit set).
 
 @deftypefun int mpfr_setsign (mpfr_t @var{rop}, mpfr_t @var{op}, int @var{s}, mp_rnd_t @var{rnd})
 Set the value of @var{rop} from @var{op}, rounded towards the given
-direction @var{rnd}, then set its sign bit to @var{s} (even when @var{op}
-is a NaN).
+direction @var{rnd}, then set (resp.@: clear) its sign bit if @var{s}
+is non-zero (resp.@: zero), even when @var{op} is a NaN.
 @end deftypefun
 
 @deftypefun int mpfr_copysign (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
