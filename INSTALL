@@ -111,7 +111,8 @@ gmp-impl.h, longlong.h and all the necessary headers to use them.
                         header or library file, as these options just
                         add -I and -L options to CPPFLAGS and LDFLAGS
                         *after* the ones that are currently declared,
-                        so that DIR will have a lower precedence.
+                        so that DIR will have a lower precedence. Also,
+                        this may not work if DIR is a system directory.
 
 --enable-assert         build MPFR with assertions.
 --enable-thread-safe    build MPFR as thread safe.
