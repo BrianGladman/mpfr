@@ -17,6 +17,7 @@
 # Simulated Subversion default ignores end here
 /*.la
 /*.lo
+/*.orig
 /.deps
 /.libs
 /Makefile
@@ -57,6 +58,7 @@
 /mpfr.log
 /mpfr.pdf
 /mpfr.pg
+/mpfr.ps
 /mpfr.toc
 /mpfr.tp
 /mpfr.vr
