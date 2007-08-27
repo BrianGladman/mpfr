@@ -5,6 +5,15 @@
 <!ENTITY filter "h:div[@class = 'logo' or @class = 'end']">
 ]>
 
+<!--
+XSLT stylesheet to generate the FAQ.html file distributed in MPFR from
+the faq.html file on the MPFR web site. Use the following command:
+wget -q -O - http://www.mpfr.org/faq.html | \
+  xsltproc -''-nodtdattr faq.xsl - | \
+  perl -pe 's,(<(h:)?style.*),<style type="text/css">/*<![CDATA[*/,;
+            s,(</(h:)?style>),/*]]>*/</style>,' > FAQ.html
+-->
+
 <xsl:stylesheet version="1.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:h="http://www.w3.org/1999/xhtml"
