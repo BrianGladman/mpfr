@@ -81,14 +81,29 @@ li > p, dd > p
 
 .nowrap { white-space: nowrap }
 
+/*
 dl.faq { counter-reset: faq }
-
-dl.faq dt { background: #dddddd }
 
 dl.faq dt:before
 {
   counter-increment: faq;
   content: counter(faq) ". ";
+}
+*/
+
+dl.faq dt { background: #dddddd }
+
+dl.faq dd
+{
+  border-left: 4px solid;
+  border-color: transparent;
+  margin-left: 0em;
+  padding-left: 1.5em;
+}
+
+dl.faq dt:target + dd
+{
+  border-left-color: #aaaaaa;
 }
 
 var.env { font-style: normal }
@@ -107,9 +122,27 @@ bugs page.</strong></p>
 <a href="http://www.mpfr.org/faq.html">http://www.mpfr.org/faq.html</a>.
 Please look at this version if possible.</p>
 
+<ol>
+<li><a href="#mpfr_vs_mpf">What are the differences between
+<cite><acronym>MPF</acronym></cite> from <cite><acronym>GMP</acronym></cite>
+and <cite><acronym>MPFR</acronym></cite>?</a></li>
+<li><a href="#mpf2mpfr">How to convert my program written using
+<cite><acronym>MPF</acronym></cite> to
+<cite><acronym>MPFR</acronym></cite>?</a></li>
+<li><a href="#undef_ref1">I get undefined reference to <code>__gmp_get_memory_functions</code>.</a></li>
+<li><a href="#undef_ref2">When I link my program with
+<cite><acronym>MPFR</acronym></cite>, I get undefined reference
+to <code>__gmpXXXX</code>.</a></li>
+<li><a href="#crash_high_prec">My program crashes with high precisions.</a></li>
+<li><a href="#accuracy">Though I have increased the precision, the results
+are not more accurate.</a></li>
+<li><a href="#detect_mpfr">How can I detect <cite><acronym>MPFR</acronym></cite>
+installation using <cite>autoconf</cite> or <cite>pkg-config</cite>?</a></li>
+</ol>
+
 <dl class="faq">
 
-<dt id="mpfr_vs_mpf">What are the differences between
+<dt id="mpfr_vs_mpf">1. What are the differences between
 <cite><acronym>MPF</acronym></cite> from <cite><acronym>GMP</acronym></cite>
 and <cite><acronym>MPFR</acronym></cite>?</dt>
 
@@ -142,7 +175,7 @@ trigonometric functions and so on) and special values: signed zeros,
 infinities, not-a-number (NaN).</p></li>
 </ul></dd>
 
-<dt id="mpf2mpfr">How to convert my program written using
+<dt id="mpf2mpfr">2. How to convert my program written using
 <cite><acronym>MPF</acronym></cite> to
 <cite><acronym>MPFR</acronym></cite>?</dt>
 
@@ -164,7 +197,7 @@ header files. If the program uses <cite><acronym>MPF</acronym></cite>
 internals (such as direct access to <code>__mpf_struct</code> members),
 additional changes will be needed.</p></dd>
 
-<dt id="undef_ref1">I get undefined reference to <code>__gmp_get_memory_functions</code>.</dt>
+<dt id="undef_ref1">3. I get undefined reference to <code>__gmp_get_memory_functions</code>.</dt>
 
 <dd><p>If you get such an error, in particular when running
 <samp>make check</samp>, then this probably means that you are using
@@ -194,7 +227,7 @@ environment variables allow you to set them in a global way.</p>
 <samp>ld</samp> manual. Please look at them for more details. See also
 the next question.</p></dd>
 
-<dt id="undef_ref2">When I link my program with
+<dt id="undef_ref2">4. When I link my program with
 <cite><acronym>MPFR</acronym></cite>, I get undefined reference
 to <code>__gmpXXXX</code>.</dt>
 
@@ -212,7 +245,7 @@ details.</p>
 that your include and library search paths are inconsistent. Please see the
 previous question.</p></dd>
 
-<dt id="crash_high_prec">My program crashes with high precisions.</dt>
+<dt id="crash_high_prec">5. My program crashes with high precisions.</dt>
 
 <dd><p>Your stack size limit may be too small; indeed, by default,
 <cite><acronym>GMP</acronym></cite> 4.1.4 and below allocates all
@@ -230,7 +263,7 @@ be increased above some value.</p></li>
 <cite><acronym>MPFR</acronym></cite> to use another allocation method.</p></li>
 </ul></dd>
 
-<dt id="accuracy">Though I have increased the precision, the results
+<dt id="accuracy">6. Though I have increased the precision, the results
 are not more accurate.</dt>
 
 <dd><p>The reason may be the use of C floating-point numbers. If you want
@@ -249,7 +282,7 @@ with <code>mpfr_set (y, x, GMP_RNDN)</code> where the variable <var>y</var>
 is more precise than the variable <var>x</var> will not make it more
 accurate; the (binary) value will remain unchanged.</p></dd>
 
-<dt id="detect_mpfr">How can I detect <cite><acronym>MPFR</acronym></cite>
+<dt id="detect_mpfr">7. How can I detect <cite><acronym>MPFR</acronym></cite>
 installation using <cite>autoconf</cite> or <cite>pkg-config</cite>?</dt>
 
 <dd><p>The <cite><acronym>MPFR</acronym></cite> team does not currently
