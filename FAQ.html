@@ -79,6 +79,8 @@ li > p, dd > p
   margin-left: 2em;
 }
 
+.nowrap { white-space: nowrap }
+
 dl.faq { counter-reset: faq }
 
 dl.faq dt { background: #dddddd }
@@ -88,6 +90,8 @@ dl.faq dt:before
   counter-increment: faq;
   content: counter(faq) ". ";
 }
+
+var.env { font-style: normal }
 /*]]>*/</style>
 </head>
 
@@ -160,7 +164,37 @@ header files. If the program uses <cite><acronym>MPF</acronym></cite>
 internals (such as direct access to <code>__mpf_struct</code> members),
 additional changes will be needed.</p></dd>
 
-<dt id="undef_ref">When I link my program with
+<dt id="undef_ref1">I get undefined reference to <code>__gmp_get_memory_functions</code>.</dt>
+
+<dd><p>If you get such an error, in particular when running
+<samp>make check</samp>, then this probably means that you are using
+the header file from <cite><acronym>GMP</acronym></cite> 4.2.x but the
+<cite><acronym>GMP</acronym></cite> 4.1.4 library. This can happen if
+several <cite><acronym>GMP</acronym></cite> versions are installed on
+your machine (<abbr>e.g.</abbr>, one provided by the system in
+<samp>/usr/{include,lib}</samp> and a new one installed by the owner or
+administrator of the machine in <samp>/usr/local/{include,lib}</samp>)
+and your include and library search paths are inconsistent. On various
+<acronym>GNU</acronym>/Linux machines, this is unfortunately the case
+by default (<samp>/usr/local/include</samp> is in the default include
+search path, but <samp>/usr/local/lib</samp> is <em>not</em> in the
+default library search path). Typical errors are:
+<samp class="block-code">undefined reference to `__gmp_get_memory_functions'</samp>
+in <samp>make check</samp>. The best solution is to add
+<samp>/usr/local/include</samp> to your <var class="env">C_INCLUDE_PATH</var>
+environment variable and to add <samp>/usr/local/lib</samp> to your
+<var class="env">LIBRARY_PATH</var> and <var class="env">LD_LIBRARY_PATH</var>
+environment variables (and/or <var class="env">LD_RUN_PATH</var>).
+Alternatively, you can use <samp>--with-gmp*</samp> configure options,
+<abbr>e.g.</abbr> <samp>--with-gmp=/usr/local</samp>, but other software
+that uses <cite><acronym>GMP</acronym></cite> and/or
+<cite><acronym>MPFR</acronym></cite> will need correct paths too, and
+environment variables allow you to set them in a global way.</p>
+<p>Other information can be given in the <samp>INSTALL</samp> file and
+<samp>ld</samp> manual. Please look at them for more details. See also
+the next question.</p></dd>
+
+<dt id="undef_ref2">When I link my program with
 <cite><acronym>MPFR</acronym></cite>, I get undefined reference
 to <code>__gmpXXXX</code>.</dt>
 
@@ -174,18 +208,9 @@ should be before <cite><acronym>GMP</acronym></cite>'s one
 <samp class="block-code">gcc link.c -Wl,--start-group libgmp.a libmpfr.a -Wl,--end-group</samp>
 See <samp>INSTALL</samp> file and <samp>ld</samp> manual for more
 details.</p>
-<p>Moreover, if several <cite><acronym>GMP</acronym></cite> versions
-are installed (<abbr>e.g.</abbr>, one provided by the system and a
-new one installed by some user), you must make sure that the include
-and library search paths are consistent. Unfortunately, on various
-<acronym>GNU</acronym>/Linux machines, they aren't by default.
-Typical errors are:
-<samp class="block-code">undefined reference to `__gmp_get_memory_functions'</samp>
-in <samp>make check</samp> when <cite><acronym>GMP</acronym></cite> 4.1.4
-is installed in <samp>/usr/{include,lib}</samp> (provided by the system)
-and <cite><acronym>GMP</acronym></cite> 4.2.1 is installed in
-<samp>/usr/local/{include,lib}</samp> (installed by the user with
-<samp>configure</samp>, <samp>make</samp>, <samp>make install</samp>).</p></dd>
+<p>If you used correct link options, but still get an error, this may mean
+that your include and library search paths are inconsistent. Please see the
+previous question.</p></dd>
 
 <dt id="crash_high_prec">My program crashes with high precisions.</dt>
 
