@@ -370,6 +370,16 @@ smallvals_atan2 (void)
   mpfr_atan2 (a, y, x, GMP_RNDU);
   MPFR_ASSERTN (mpfr_zero_p (a) && MPFR_IS_NEG(a));
 
+  /* From a bug reported by Christopher Creutzig on 2007-08-28.
+     Segmentation fault on 32-bit machines due to an infinite Ziv loop. */
+  mpfr_set_prec (x, 8);
+  mpfr_set_prec (y, 8);
+  mpfr_set_prec (a, 8);
+  mpfr_set_str_binary (y, "0.1E-1073741823");
+  mpfr_set_str_binary (x, "1.01");
+  mpfr_atan2 (a, y, x, GMP_RNDU);
+  MPFR_ASSERTN (mpfr_equal_p (a, y));
+
   mpfr_clears (a, x, y, (void *) 0);
 }
 
