@@ -197,6 +197,8 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
                (this is what mpfr_underflow always does on GMP_RNDN).
                In the case GMP_RNDN with |y/x| <= 2^(emin-2), we round
                towards zero, as |atan(z)/z| < 1. */
+            MPFR_ASSERTN (MPFR_PREC_MAX <=
+                          2 * (mpfr_uexp_t) - MPFR_EMIN_MIN + 5);
             if (rnd_mode == GMP_RNDN && MPFR_IS_ZERO (tmp))
               rnd_mode = GMP_RNDZ;
             sign = MPFR_SIGN (tmp);
