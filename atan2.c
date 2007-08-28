@@ -183,17 +183,23 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
            an underflow. */
         if (MPFR_UNLIKELY (mpfr_underflow_p ()))
           {
-            if (rnd_mode != GMP_RNDN || MPFR_IS_ZERO (tmp))
-              {
-                mpfr_clear (tmp);
-                MPFR_SAVE_EXPO_FREE (expo);
-                return mpfr_underflow (dest, rnd_mode == GMP_RNDN ? GMP_RNDZ
-                                       : rnd_mode, MPFR_SIGN (tmp));
-              }
-            /* TODO: case GMP_RNDN with 2^(-emin-2) < |y/x| < 2^(-emin-1).
-               We still have an underflow, but the value must still be
-               determined... */
-            MPFR_ASSERTN (0);  /* Not implemented. */
+            int sign;
+
+            /* In the case GMP_RNDN with 2^(emin-2) < |y/x| < 2^(emin-1):
+               The smallest significand value S > 1 of |y/x| is:
+                 * 1 / (1 - 2^(-px))                        if py <= px,
+                 * (1 - 2^(-px) + 2^(-py)) / (1 - 2^(-px))  if py >= px.
+               Therefore S - 1 > 2^(-pz), where pz = max(px,py). We have:
+               atan(|y/x|) > atan(z), where z = 2^(emin-2) * (1 + 2^(-pz)).
+                           > z - z^3 / 3.
+                           > 2^(emin-2) * (1 + 2^(-pz) - 2^(2 emin - 5))
+               Assuming pz <= -2 emin + 5, we can round away from zero. */
+            if (rnd_mode == GMP_RNDN && MPFR_IS_ZERO (tmp))
+              rnd_mode = GMP_RNDZ;
+            sign = MPFR_SIGN (tmp);
+            mpfr_clear (tmp);
+            MPFR_SAVE_EXPO_FREE (expo);
+            return mpfr_underflow (dest, rnd_mode, sign);
           }
 
         mpfr_atan (tmp, tmp, GMP_RNDN);   /* Error <= 2*ulp (tmp) since
