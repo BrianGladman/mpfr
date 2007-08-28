@@ -170,9 +170,16 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     /* use atan2(y,x) = atan(y/x) */
     for (;;)
       {
-        mpfr_div (tmp, y, x, GMP_RNDN);   /* Error <= ulp (tmp) */
+        if (mpfr_div (tmp, y, x, GMP_RNDN) == 0)
+          {
+            /* Result is exact. */
+            inexact = mpfr_atan (dest, tmp, rnd_mode);
+            goto end;
+          }
+
+        /* Error <= ulp (tmp) */
         /* If tmp is 0, this means that |y/x| <= 2^(-emin-2),
-           and since atan(z)/z < 1, we have underflow. */
+           and since |atan(z)/z| < 1, we have underflow. */
         if (MPFR_IS_ZERO (tmp))
           {
             mpfr_clear (tmp);
@@ -220,9 +227,10 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
         }
       mpfr_clear (pi);
     }
-  MPFR_ZIV_FREE (loop);
-
   inexact = mpfr_set (dest, tmp, rnd_mode);
+
+ end:
+  MPFR_ZIV_FREE (loop);
   mpfr_clear (tmp);
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (dest, inexact, rnd_mode);
