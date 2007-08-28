@@ -193,7 +193,10 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
                atan(|y/x|) > atan(z), where z = 2^(emin-2) * (1 + 2^(-pz)).
                            > z - z^3 / 3.
                            > 2^(emin-2) * (1 + 2^(-pz) - 2^(2 emin - 5))
-               Assuming pz <= -2 emin + 5, we can round away from zero. */
+               Assuming pz <= -2 emin + 5, we can round away from zero
+               (this is what mpfr_underflow always does on GMP_RNDN).
+               In the case GMP_RNDN with |y/x| <= 2^(emin-2), we round
+               towards zero, as |atan(z)/z| < 1. */
             if (rnd_mode == GMP_RNDN && MPFR_IS_ZERO (tmp))
               rnd_mode = GMP_RNDZ;
             sign = MPFR_SIGN (tmp);
