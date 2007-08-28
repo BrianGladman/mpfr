@@ -376,7 +376,8 @@ smallvals_atan2 (void)
   mpfr_set_prec (x, 8);
   mpfr_set_prec (y, 8);
   mpfr_set_prec (a, 8);
-  old_emin = mpfr_set_emin (MPFR_EMIN_MIN);
+  old_emin = mpfr_get_emin ();
+  mpfr_set_emin (MPFR_EMIN_MIN);
   mpfr_set_si (y, 1, GMP_RNDN);
   mpfr_set_exp (y, mpfr_get_emin ());
   mpfr_set_str_binary (x, "1.01");
