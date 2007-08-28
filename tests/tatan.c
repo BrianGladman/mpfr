@@ -386,11 +386,18 @@ smallvals_atan2 (void)
   MPFR_ASSERTN (mpfr_equal_p (a, y));
 
   /* From a bug reported by Christopher Creutzig on 2007-08-28.
+     Added test in each rounding mode.
      Segmentation fault or assertion failure due to an infinite Ziv loop. */
   mpfr_set_si (y, 1, GMP_RNDN);
   mpfr_set_exp (y, mpfr_get_emin ());
   mpfr_set_str_binary (x, "1.01");
+  mpfr_atan2 (a, y, x, GMP_RNDZ);
+  MPFR_ASSERTN (mpfr_zero_p (a));
+  mpfr_atan2 (a, y, x, GMP_RNDD);
+  MPFR_ASSERTN (mpfr_zero_p (a));
   mpfr_atan2 (a, y, x, GMP_RNDU);
+  MPFR_ASSERTN (mpfr_equal_p (a, y));
+  mpfr_atan2 (a, y, x, GMP_RNDN);
   MPFR_ASSERTN (mpfr_equal_p (a, y));
 
   mpfr_set_emin (old_emin);
