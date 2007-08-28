@@ -442,6 +442,10 @@ mpfr_toto (mpfr_ptr rop, mpfr_srcptr op, mp_rnd_t rnd)
   return mpfr_check_range (rop, inexact, rnd);  /* Check range and quit */
 }
 
+Make sure that Ziv loops cannot increase the precision forever because of
+internal exception. Otherwise one gets either a segmentation fault (with
+limited stack size) or an assertion failure (with unlimited stack size,
+e.g. with "make check").
 
 ===========================================================================
 
