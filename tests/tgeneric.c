@@ -94,6 +94,7 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
   mp_rnd_t rnd;
   int inexact, compare, compare2;
   unsigned int n;
+  unsigned long ctrt = 0, ctrn = 0;
 
   mpfr_init (x);
   mpfr_init (y);
@@ -175,6 +176,7 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
 #endif
           TGENERIC_CHECK ("Bad inexact flag",
                           (compare != 0) ^ (mpfr_inexflag_p () == 0));
+          ctrt++;
           if (MPFR_IS_SINGULAR (y))
             {
               if (MPFR_IS_NAN (y) || mpfr_nanflag_p ())
@@ -203,6 +205,7 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
             }
           else if (mpfr_can_round (y, yprec, rnd, rnd, prec))
             {
+              ctrn++;
               mpfr_set (t, y, rnd);
 #ifdef DEBUG_TGENERIC
               TGENERIC_INFO (TEST_FUNCTION, MPFR_PREC (z));
@@ -259,6 +262,10 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
             }
         }
     }
+
+  if (3 * ctrn < 2 * ctrt)
+    printf ("Warning! Too few normal cases in generic tests (%lu / %lu)\n",
+            ctrn, ctrt);
 
   mpfr_clear (x);
   mpfr_clear (y);
