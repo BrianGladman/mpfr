@@ -79,7 +79,7 @@ FILE *src_fopen _MPFR_PROTO ((const char *, const char *));
 void set_emin _MPFR_PROTO ((mp_exp_t));
 void set_emax _MPFR_PROTO ((mp_exp_t));
 void tests_default_random _MPFR_PROTO ((mpfr_ptr));
-void data_check (char *, int (*) (), char *);
+void data_check _MPFR_PROTO ((char *, int (*) (), char *));
 
 int mpfr_cmp_str _MPFR_PROTO ((mpfr_srcptr x, const char *, int, mp_rnd_t));
 #define mpfr_cmp_str1(x,s) mpfr_cmp_str(x,s,10,GMP_RNDN)
