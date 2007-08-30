@@ -406,13 +406,14 @@ set_emax (mp_exp_t exponent)
     }
 }
 
+/* pos is 512 times the proportion of negative numbers */
 void
-tests_default_random (mpfr_ptr x)
+tests_default_random (mpfr_ptr x, int pos)
 {
   mpfr_random (x);
   if (randlimb () & 1)
     mpfr_mul_2si (x, x, (int) (randlimb () % 512) - 256, GMP_RNDN);
-  if (randlimb () & 1)
+  if (randlimb () % 512 < pos)
     mpfr_neg (x, x, GMP_RNDN);
 }
 

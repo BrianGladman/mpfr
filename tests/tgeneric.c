@@ -22,6 +22,16 @@ MA 02110-1301, USA. */
 
 /* define TWO_ARGS for two-argument functions like mpfr_pow */
 
+#ifndef TEST_RANDOM_POS
+/* For the random function: one number on two is negative. */
+#define TEST_RANDOM_POS 256
+#endif
+
+#ifndef TEST_RANDOM_POS2
+/* For the random function: one number on two is negative. */
+#define TEST_RANDOM_POS2 256
+#endif
+
 #define TGENERIC_FAIL(S, X, U)                                          \
   do                                                                    \
     {                                                                   \
@@ -135,9 +145,9 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
               RAND_FUNCTION (u);
 #endif
 #else
-              tests_default_random (x);
+              tests_default_random (x, TEST_RANDOM_POS);
 #ifdef TWO_ARGS
-              tests_default_random (u);
+              tests_default_random (u, TEST_RANDOM_POS2);
 #endif
 #endif
             }

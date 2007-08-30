@@ -56,6 +56,7 @@ test_pow (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
 #define TEST_FUNCTION test_pow
 #define TWO_ARGS
+#define TEST_RANDOM_POS 16
 #include "tgeneric.c"
 
 #define TEST_FUNCTION mpfr_pow_ui

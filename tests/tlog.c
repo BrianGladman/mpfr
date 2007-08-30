@@ -269,6 +269,7 @@ x_near_one (void)
 }
 
 #define TEST_FUNCTION test_log
+#define TEST_RANDOM_POS 8
 #include "tgeneric.c"
 
 int

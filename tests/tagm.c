@@ -190,6 +190,8 @@ check_nans (void)
 
 #define TEST_FUNCTION mpfr_agm
 #define TWO_ARGS
+#define TEST_RANDOM_POS 4
+#define TEST_RANDOM_POS2 4
 #include "tgeneric.c"
 
 int
