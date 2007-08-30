@@ -1,4 +1,4 @@
-/* Generic test file for functions with one mpfr_t argument.
+/* Generic test file for functions with one or two mpfr_t arguments.
 
 Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007 Free Software Foundation, Inc.
 Contributed by the Arenaire and Cacao projects, INRIA.
