@@ -416,6 +416,63 @@ tests_default_random (mpfr_ptr x)
     mpfr_neg (x, x, GMP_RNDN);
 }
 
+static void
+test4rm (int (*fct) (), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
+         mp_rnd_t rnd, int test_one, char *name)
+{
+  mp_prec_t yprec = MPFR_PREC (y);
+  mp_rnd_t rndnext;
+
+  mpfr_set_prec (z, yprec);
+  while (1)
+    {
+      fct (z, x, rnd);
+      if (! mpfr_equal_p (y, z))
+        {
+          printf ("Error for %s with xprec=%ld, yprec=%ld, rnd=%s\nx = ",
+                  name, MPFR_PREC (x), yprec, mpfr_print_rnd_mode (rnd));
+          mpfr_out_str (stdout, 16, 0, x, GMP_RNDN);
+          printf ("\nexpected ");
+          mpfr_out_str (stdout, 16, 0, y, GMP_RNDN);
+          printf ("\ngot      ");
+          mpfr_out_str (stdout, 16, 0, z, GMP_RNDN);
+          printf ("\n");
+          exit (1);
+        }
+      if (test_one || rnd == GMP_RNDN)
+        break;
+      if (rnd == GMP_RNDZ)
+        {
+          if (MPFR_IS_NEG (y))
+            {
+              rnd = GMP_RNDU;
+              rndnext = GMP_RNDD;
+            }
+          else
+            {
+              rnd = GMP_RNDD;
+              rndnext = GMP_RNDU;
+            }
+        }
+      else
+        {
+          rnd = rndnext;
+          if (rndnext != GMP_RNDN)
+            {
+              rndnext = GMP_RNDN;
+              mpfr_nexttoinf (y);
+            }
+          else
+            {
+              if (yprec == MPFR_PREC_MIN)
+                break;
+              mpfr_prec_round (y, --yprec, GMP_RNDZ);
+              mpfr_set_prec (z, yprec);
+            }
+        }
+    }
+}
+
 /* Check data in file f for function foo, with name 'name'.
    Each line consists of the file f one:
 
@@ -441,7 +498,7 @@ data_check (char *f, int (*foo) (), char *name)
   FILE *fp;
   mp_prec_t xprec, yprec;
   mpfr_t x, y, z;
-  mp_rnd_t rnd, rndnext;
+  mp_rnd_t rnd;
   char r;
   int c;
 
@@ -511,7 +568,6 @@ data_check (char *f, int (*foo) (), char *name)
             }
           mpfr_set_prec (x, xprec);
           mpfr_set_prec (y, yprec);
-          mpfr_set_prec (z, yprec);
           if (mpfr_inp_str (x, fp, 0, GMP_RNDN) == 0)
             {
               printf ("Error: corrupted argument in file '%s'\n", f);
@@ -529,54 +585,7 @@ data_check (char *f, int (*foo) (), char *name)
             }
           /* Skip whitespace, in particular at the end of the file. */
           fscanf (fp, " ");
-
-          while (1)
-            {
-              foo (z, x, rnd);
-              if (! mpfr_equal_p (y, z))
-                {
-                  printf ("Error for %s with xprec=%ld, yprec=%ld, rnd=%s\nx=",
-                          name, xprec, yprec, mpfr_print_rnd_mode (rnd));
-                  mpfr_out_str (stdout, 16, 0, x, GMP_RNDN);
-                  printf ("\nexpected ");
-                  mpfr_out_str (stdout, 16, 0, y, GMP_RNDN);
-                  printf ("\ngot      ");
-                  mpfr_out_str (stdout, 16, 0, z, GMP_RNDN);
-                  printf ("\n");
-                  exit (1);
-                }
-              if (r != 'Z' || rnd == GMP_RNDN)
-                break;
-              if (rnd == GMP_RNDZ)
-                {
-                  if (MPFR_IS_NEG (y))
-                    {
-                      rnd = GMP_RNDU;
-                      rndnext = GMP_RNDD;
-                    }
-                  else
-                    {
-                      rnd = GMP_RNDD;
-                      rndnext = GMP_RNDU;
-                    }
-                }
-              else
-                {
-                  rnd = rndnext;
-                  if (rndnext != GMP_RNDN)
-                    {
-                      rndnext = GMP_RNDN;
-                      mpfr_nexttoinf (y);
-                    }
-                  else
-                    {
-                      if (yprec == MPFR_PREC_MIN)
-                        break;
-                      mpfr_prec_round (y, --yprec, GMP_RNDZ);
-                      mpfr_set_prec (z, yprec);
-                    }
-                }
-            }
+          test4rm (foo, x, y, z, rnd, r != 'Z', name);
         }
     }
 
