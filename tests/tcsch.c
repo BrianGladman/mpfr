@@ -26,6 +26,7 @@ MA 02110-1301, USA. */
 #include "mpfr-test.h"
 
 #define TEST_FUNCTION mpfr_csch
+#define TEST_RANDOM_EMAX 63
 #include "tgeneric.c"
 
 static void

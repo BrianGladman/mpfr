@@ -213,6 +213,8 @@ check_large (void)
 }
 
 #define TEST_FUNCTION test_exp
+#define TEST_RANDOM_EMIN -36
+#define TEST_RANDOM_EMAX 36
 #include "tgeneric.c"
 
 static void

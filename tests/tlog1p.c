@@ -49,6 +49,7 @@ test_log1p (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
 #endif
 
 #define TEST_FUNCTION test_log1p
+#define TEST_RANDOM_EMAX 80
 #include "tgeneric.c"
 
 static void

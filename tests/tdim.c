@@ -27,6 +27,9 @@ MA 02110-1301, USA. */
 
 #define TEST_FUNCTION mpfr_dim
 #define TWO_ARGS
+#define TEST_RANDOM_EMIN -20
+#define TEST_RANDOM_EMAX 20
+#define TGENERIC_NOWARNING 1
 #include "tgeneric.c"
 
 int

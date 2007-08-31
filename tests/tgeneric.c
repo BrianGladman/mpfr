@@ -32,6 +32,14 @@ MA 02110-1301, USA. */
 #define TEST_RANDOM_POS2 256
 #endif
 
+#ifndef TEST_RANDOM_EMIN
+#define TEST_RANDOM_EMIN -256
+#endif
+
+#ifndef TEST_RANDOM_EMAX
+#define TEST_RANDOM_EMAX 255
+#endif
+
 #define TGENERIC_FAIL(S, X, U)                                          \
   do                                                                    \
     {                                                                   \
@@ -145,9 +153,11 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
               RAND_FUNCTION (u);
 #endif
 #else
-              tests_default_random (x, TEST_RANDOM_POS);
+              tests_default_random (x, TEST_RANDOM_POS,
+                                    TEST_RANDOM_EMIN, TEST_RANDOM_EMAX);
 #ifdef TWO_ARGS
-              tests_default_random (u, TEST_RANDOM_POS2);
+              tests_default_random (u, TEST_RANDOM_POS2,
+                                    TEST_RANDOM_EMIN, TEST_RANDOM_EMAX);
 #endif
 #endif
             }
@@ -273,9 +283,11 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
         }
     }
 
+#ifndef TGENERIC_NOWARNING
   if (3 * ctrn < 2 * ctrt)
     printf ("Warning! Too few normal cases in generic tests (%lu / %lu)\n",
             ctrn, ctrt);
+#endif
 
   mpfr_clear (x);
   mpfr_clear (y);
