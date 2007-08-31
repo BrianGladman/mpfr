@@ -127,16 +127,27 @@ special (void)
 static void
 bug20070831 (void)
 {
-  mpfr_t x, y;
+  mpfr_t x, y, z;
   int inex;
 
   mpfr_init2 (x, 256);
   mpfr_init2 (y, 32);
+  mpfr_init2 (z, 32);
   mpfr_set_ui (x, 1, GMP_RNDN);
   mpfr_nextabove (x);
   inex = mpfr_acosh (y, x, GMP_RNDZ);
-  MPFR_ASSERTN (mpfr_zero_p (y) && inex < 0);
-  mpfr_clears (x, y, (void *) 0);
+  mpfr_set_ui_2exp (z, 1, -127, GMP_RNDN);
+  mpfr_nextbelow (z);
+  MPFR_ASSERTN (inex < 0);
+  if (!mpfr_equal_p (y, z))
+    {
+      printf ("Error in bug20070831:\nexpected ");
+      mpfr_dump (z);
+      printf ("got      ");
+      mpfr_dump (y);
+      exit (1);
+    }
+  mpfr_clears (x, y, z, (void *) 0);
 }
 
 int

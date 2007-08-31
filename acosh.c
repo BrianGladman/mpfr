@@ -73,7 +73,7 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
     /* Declaration of the size variables */
     mp_prec_t Ny = MPFR_PREC(y);   /* Precision of output variable */
     mp_prec_t Nt;                  /* Precision of the intermediary variable */
-    mp_exp_t  err, exp_te, exp_ti; /* Precision of error */
+    mp_exp_t  err, exp_te, d;      /* Precision of error */
     MPFR_ZIV_DECL (loop);
 
     /* compute the precision of intermediary variable */
@@ -91,13 +91,35 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
         mpfr_mul (t, x, x, GMP_RNDD);      /* x^2 */
         exp_te = MPFR_GET_EXP (t);
         mpfr_sub_ui (t, t, 1, GMP_RNDD);   /* x^2-1 */
-        exp_ti = MPFR_GET_EXP (t);
-        mpfr_sqrt (t, t, GMP_RNDN);        /* sqrt(x^2-1) */
-        mpfr_add (t, t, x, GMP_RNDN);      /* sqrt(x^2-1)+x */
-        mpfr_log (t, t, GMP_RNDN);         /* ln(sqrt(x^2-1)+x)*/
+        if (MPFR_IS_ZERO (t))
+          {
+            mpfr_t z;
+
+            /* This means that x is very close to 1: x = 1 + z with
+               z < 2^(-Nt). Instead of increasing the precision, let's
+               compute x^2-1 by (x+1)(x-1) with an accuracy of about
+               Nt bits. */
+            mpfr_init2 (z, Nt);
+            mpfr_add_ui (t, x, 1, GMP_RNDD);
+            mpfr_sub_ui (z, x, 1, GMP_RNDD);
+            mpfr_mul (t, t, z, GMP_RNDD);
+            d = 2;
+            mpfr_sqrt (t, t, GMP_RNDN);        /* sqrt(x^2-1) */
+            mpfr_add (t, t, z, GMP_RNDN);      /* sqrt(x^2-1)+z */
+            mpfr_clear (z);
+            mpfr_log1p (t, t, GMP_RNDN);       /* log1p(sqrt(x^2-1)+z) */
+          }
+        else
+          {
+            d = exp_te - MPFR_GET_EXP (t);
+            d = MAX (1, d);
+            mpfr_sqrt (t, t, GMP_RNDN);        /* sqrt(x^2-1) */
+            mpfr_add (t, t, x, GMP_RNDN);      /* sqrt(x^2-1)+x */
+            mpfr_log (t, t, GMP_RNDN);         /* ln(sqrt(x^2-1)+x) */
+          }
 
         /* error estimate -- see algorithms.tex */
-        err = 3 + MAX (1, exp_te - exp_ti) - MPFR_GET_EXP(t);
+        err = 3 + d - MPFR_GET_EXP (t);
         /* error is bounded by 1/2 + 2^err <= 2^(1+max(-1,err)) */
         err = 1 + MAX (-1, err);
         if (MPFR_LIKELY (MPFR_CAN_ROUND (t, Nt - err, Ny, rnd_mode)))
@@ -117,9 +139,3 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (y, inexact, rnd_mode);
 }
-
-
-
-
-
-
