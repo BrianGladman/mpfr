@@ -361,6 +361,7 @@ main (int argc, char *argv[])
   mpfr_clear (y);
 
   data_check ("data/cos", mpfr_cos, "mpfr_cos");
+  bad_cases (mpfr_cos, mpfr_acos, "mpfr_cos", 256, -40, 0, 4, 128, 800, 50);
 
   tests_end_mpfr ();
   return 0;

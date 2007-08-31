@@ -208,6 +208,7 @@ main (void)
   tests_end_mpfr ();
 
   data_check ("data/asin", mpfr_asin, "mpfr_asin");
+  bad_cases (mpfr_asin, mpfr_sin, "mpfr_asin", 256, -40, 1, 4, 128, 800, 30);
 
   return 0;
 }

@@ -156,6 +156,7 @@ main (int argc, char *argv[])
   test_generic (2, 100, 10);
 
   data_check ("data/tan", mpfr_tan, "mpfr_tan");
+  bad_cases (mpfr_tan, mpfr_atan, "mpfr_tan", 256, -256, 255, 4, 128, 800, 40);
 
   tests_end_mpfr ();
   return 0;

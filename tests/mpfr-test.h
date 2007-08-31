@@ -80,6 +80,8 @@ void set_emin _MPFR_PROTO ((mp_exp_t));
 void set_emax _MPFR_PROTO ((mp_exp_t));
 void tests_default_random _MPFR_PROTO ((mpfr_ptr, int, mp_exp_t, mp_exp_t));
 void data_check _MPFR_PROTO ((char *, int (*) (), char *));
+void bad_cases _MPFR_PROTO ((int (*)(), int (*)(), char *, int, mp_exp_t,
+                             mp_exp_t, mp_prec_t, mp_prec_t, mp_prec_t, int));
 
 int mpfr_cmp_str _MPFR_PROTO ((mpfr_srcptr x, const char *, int, mp_rnd_t));
 #define mpfr_cmp_str1(x,s) mpfr_cmp_str(x,s,10,GMP_RNDN)

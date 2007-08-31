@@ -645,6 +645,7 @@ main (int argc, char *argv[])
   overflowed_exp0 ();
 
   data_check ("data/exp", mpfr_exp, "mpfr_exp");
+  bad_cases (mpfr_exp, mpfr_log, "mpfr_exp", 0, -256, 255, 4, 128, 800, 50);
 
   tests_end_mpfr ();
   return 0;

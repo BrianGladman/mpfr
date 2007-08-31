@@ -153,6 +153,8 @@ main (int argc, char *argv[])
   test_generic (2, 100, 25);
 
   data_check ("data/asinh", mpfr_asinh, "mpfr_asinh");
+  bad_cases (mpfr_asinh, mpfr_sinh, "mpfr_asinh", 256, -128, 29,
+             4, 128, 800, 40);
 
   tests_end_mpfr ();
   return 0;

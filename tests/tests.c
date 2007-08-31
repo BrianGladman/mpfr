@@ -597,3 +597,124 @@ data_check (char *f, int (*foo) (), char *name)
 
   fclose (fp);
 }
+
+/* Test n random bad cases. A precision py in [pymin,pymax] and
+ * a number y of precision py are chosen randomly. One computes
+ * x = inv(y) in precision px = py + psup (rounded to nearest).
+ * Then (in general), y is a bad case for fct in precision py (in
+ * the directed rounding modes, but also in the rounding-to-nearest
+ * mode for some lower precision: see data_check).
+ * fct, inv, name: data related to the function.
+ * pos, emin, emax: arguments for tests_default_random.
+ */
+void
+bad_cases (int (*fct)(), int (*inv)(), char *name,
+           int pos, mp_exp_t emin, mp_exp_t emax,
+           mp_prec_t pymin, mp_prec_t pymax, mp_prec_t psup,
+           int n)
+{
+  mpfr_t x, y, z;
+  char *dbgenv;
+  int i, dbg;
+
+  dbgenv = getenv ("MPFR_DEBUG_BADCASES");
+  dbg = dbgenv != 0 ? atoi (dbgenv) : 0;  /* debug level */
+  mpfr_inits (x, y, z, (void *) 0);
+  for (i = 0; i < n; i++)
+    {
+      mp_prec_t px, py, pz;
+      int inex;
+
+      if (dbg)
+        printf ("bad_cases: i = %d\n", i);
+      py = pymin + (randlimb () % (pymax - pymin + 1));
+      mpfr_set_prec (y, py);
+      tests_default_random (y, pos, emin, emax);
+      if (dbg)
+        {
+          printf ("bad_cases: yprec =%4ld, y = ", (long) py);
+          mpfr_out_str (stdout, 16, 0, y, GMP_RNDN);
+          printf ("\n");
+        }
+      px = py + psup;
+      mpfr_set_prec (x, px);
+      mpfr_clear_flags ();
+      inv (x, y, GMP_RNDN);
+      if (mpfr_nanflag_p () || mpfr_overflow_p () || mpfr_underflow_p ())
+        {
+          if (dbg)
+            printf ("bad_cases: no normal inverse\n");
+          goto next_i;
+        }
+      if (dbg > 1)
+        {
+          printf ("bad_cases: x = ");
+          mpfr_out_str (stdout, 16, 0, x, GMP_RNDN);
+          printf ("\n");
+        }
+      pz = px;
+      do
+        {
+          pz += 32;
+          mpfr_set_prec (z, pz);
+          if (fct (z, x, GMP_RNDN) == 0)
+            {
+              if (dbg)
+                printf ("bad_cases: exact case\n");
+              goto next_i;
+            }
+          if (dbg)
+            {
+              if (dbg > 1)
+                {
+                  printf ("bad_cases: %s(x) ~= ", name);
+                  mpfr_out_str (stdout, 16, 0, z, GMP_RNDN);
+                }
+              else
+                {
+                  printf ("bad_cases:   [GMP_RNDZ]  ~= ");
+                  mpfr_out_str (stdout, 16, 40, z, GMP_RNDZ);
+                }
+              printf ("\n");
+            }
+          inex = mpfr_prec_round (z, py, GMP_RNDN);
+          if (mpfr_nanflag_p () || mpfr_overflow_p () || mpfr_underflow_p ()
+              || ! mpfr_equal_p (z, y))
+            {
+              if (dbg)
+                printf ("bad_cases: inverse doesn't match\n");
+              goto next_i;
+            }
+        }
+      while (inex == 0);
+      /* We really have a bad case. */
+      do
+        py--;
+      while (py >= MPFR_PREC_MIN && mpfr_prec_round (z, py, GMP_RNDZ) == 0);
+      py++;
+      /* py is now the smallest output precision such that we have
+         a bad case in the directed rounding modes. */
+      if (mpfr_prec_round (y, py, GMP_RNDZ) != 0)
+        {
+          printf ("Internal error for i = %d\n", i);
+          exit (1);
+        }
+      if ((inex > 0 && MPFR_IS_POS (z)) ||
+          (inex < 0 && MPFR_IS_NEG (z)))
+        {
+          mpfr_nexttozero (y);
+          if (mpfr_zero_p (y))
+            goto next_i;
+        }
+      if (dbg)
+        {
+          printf ("bad_cases: yprec =%4ld, y = ", (long) py);
+          mpfr_out_str (stdout, 16, 0, y, GMP_RNDN);
+          printf ("\n");
+        }
+      /* Note: y is now the expected result rounded towards zero. */
+      test4rm (fct, x, y, z, GMP_RNDZ, 0, name);
+    next_i: ;
+    }
+  mpfr_clears (x, y, z, (void *) 0);
+}

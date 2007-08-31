@@ -180,6 +180,7 @@ main (void)
   mpfr_clear (y);
 
   data_check ("data/acos", mpfr_acos, "mpfr_acos");
+  bad_cases (mpfr_acos, mpfr_cos, "mpfr_acos", 0, -40, 2, 4, 128, 800, 30);
 
   tests_end_mpfr ();
   return 0;

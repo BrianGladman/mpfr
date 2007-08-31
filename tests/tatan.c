@@ -420,6 +420,7 @@ main (int argc, char *argv[])
   test_generic_atan2_neg (2, 200, 17);
 
   data_check ("data/atan", mpfr_atan, "mpfr_atan");
+  bad_cases (mpfr_atan, mpfr_tan, "mpfr_atan", 256, -40, 1, 4, 128, 800, 40);
 
   tests_end_mpfr ();
   return 0;

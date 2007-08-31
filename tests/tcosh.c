@@ -197,6 +197,7 @@ main (int argc, char *argv[])
   test_generic (2, 100, 100);
 
   data_check ("data/cosh", mpfr_cosh, "mpfr_cosh");
+  bad_cases (mpfr_cosh, mpfr_acosh, "mpfr_cosh", 0, 1, 255, 4, 128, 800, 100);
 
   tests_end_mpfr ();
   return 0;

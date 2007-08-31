@@ -128,6 +128,8 @@ main (int argc, char *argv[])
   test_generic (2, 100, 50);
 
   data_check ("data/log1p", mpfr_log1p, "mpfr_log1p");
+  bad_cases (mpfr_log1p, mpfr_expm1, "mpfr_log1p", 256, -64, 40,
+             4, 128, 800, 40);
 
   tests_end_mpfr ();
   return 0;
