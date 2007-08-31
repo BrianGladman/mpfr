@@ -91,7 +91,7 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
         mpfr_mul (t, x, x, GMP_RNDD);      /* x^2 */
         exp_te = MPFR_GET_EXP (t);
         mpfr_sub_ui (t, t, 1, GMP_RNDD);   /* x^2-1 */
-        if (MPFR_IS_ZERO (t))
+        if (MPFR_UNLIKELY (MPFR_IS_ZERO (t)))
           {
             mpfr_t z;
 
