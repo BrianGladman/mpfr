@@ -123,12 +123,29 @@ special (void)
   mpfr_clear (y);
 }
 
+/* With MPFR 2.3.0, this yields an assertion failure in mpfr_acosh. */
+static void
+bug20070831 (void)
+{
+  mpfr_t x, y;
+  int inex;
+
+  mpfr_init2 (x, 256);
+  mpfr_init2 (y, 32);
+  mpfr_set_ui (x, 1, GMP_RNDN);
+  mpfr_nextabove (x);
+  inex = mpfr_acosh (y, x, GMP_RNDZ);
+  MPFR_ASSERTN (mpfr_zero_p (y) && inex < 0);
+  mpfr_clears (x, y, (void *) 0);
+}
+
 int
 main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
   special ();
+  bug20070831 ();
 
   test_generic (2, 100, 25);
 
