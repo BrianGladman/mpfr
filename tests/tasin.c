@@ -203,7 +203,7 @@ main (void)
   special ();
   special_overflow ();
 
-  test_generic (2, 100, 7);
+  test_generic (2, 100, 15);
 
   tests_end_mpfr ();
 
