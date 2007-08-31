@@ -99,7 +99,7 @@ First consider rounding to nearest.
 By definition, we have $|x-y| \leq \frac{1}{2} \ulp(y)$.
 If $\ulp(y) \leq \ulp(x)$, then $|x-y| \leq \frac{1}{2} \ulp(y)
 \leq \frac{1}{2} \ulp(x)$.
-The only difficult case is when $\ulp(x) < \ulp(y)$, but then 
+The only difficult case is when $\ulp(x) < \ulp(y)$, but then
 necessarily $y$ is a power of two;
 since in that case $y - \frac{1}{2} \ulp(y)$ is exactly representable,
 the maximal possible difference between $x$ and $y$
@@ -142,7 +142,7 @@ Let $x > 0$, $\circ(\cdot)$ be any rounding, and $u := \circ(x)$,
 then $\frac{1}{2} u < x < 2 u$.
 \end{Rule}
 \begin{proof}
-Assume $x \geq 2 u$, then $2u$ is another representable number which is closer 
+Assume $x \geq 2 u$, then $2u$ is another representable number which is closer
 from $x$ than $u$, which leads to a contradiction. The same argument proves
 $\frac{1}{2} u < x$.
 \end{proof}
@@ -208,7 +208,7 @@ Rule~\ref{R1} $|u-x| \leq 2^{-p}$.
 Assume $x_1, \ldots, x_n$ are $n$ floating-point numbers in precision $p$,
 and we compute an approximation of their product with the following sequence
 of operations: $u_1 = x_1, u_2 = \circ(u_1 x_2), \ldots, u_n = \circ(u_{n-1}
-x_n)$. If rounding away from zero, the total rounding error is bounded by 
+x_n)$. If rounding away from zero, the total rounding error is bounded by
 $2(n-1) \ulp(u_n)$.
 \end{Rule}
 \begin{proof}
@@ -234,7 +234,7 @@ apply to addition too.
 
 \begin{eqnarray}\nonumber
 \textnormal{Note:}&& \ulp(w)=2^{e_w-p}, \;\; \ulp(u)=2^{e_u-p},\;\; \ulp(v)=2^{e_v-p}\;\;\textnormal{with} \; p \; \textnormal{the precision} \\\nonumber
-&& \ulp(u)=2^{d+e_w-p}, \;\; \ulp(v)=2^{d^{'}+e_w-p},\;\;\textnormal{with} \;\;d=e_u-e_w \;\; d^{'}=e_v-e_w 
+&& \ulp(u)=2^{d+e_w-p}, \;\; \ulp(v)=2^{d^{'}+e_w-p},\;\;\textnormal{with} \;\;d=e_u-e_w \;\; d^{'}=e_v-e_w
 \end{eqnarray}
 \begin{eqnarray}\nonumber
 \error(w)& \leq &c_w \ulp(w) + k_u \ulp(u) + k_v \ulp(v) \\\nonumber
@@ -291,7 +291,7 @@ w&=&\circ(\frac{1}{u}) \\\nonumber
 \begin{eqnarray}\nonumber
 \textnormal{Note:}&& \frac{u}{c_u} \leq x\;\; \U{R6}\\\nonumber
 &&\n{for } u=\minf(x),\;c_u=1 \n{ else } c_u=2\\\nonumber
-&& \n{then: } \frac{1}{x} \leq c_u \frac{1}{u} 
+&& \n{then: } \frac{1}{x} \leq c_u \frac{1}{u}
 \end{eqnarray}
 \begin{eqnarray}\nonumber
 \error(w)& \leq & c_w \ulp(w) + c_u\frac{k_u}{u^2} \ulp(u)\\\nonumber
@@ -326,7 +326,7 @@ w&=&\circ(\frac{u}{v}) \\\nonumber
 \textnormal{Note:}&& x \leq c_u u \textnormal{ and } \frac{v}{c_v} \leq y\;\; \U{R6}\\\nonumber
 &&\n{with } \n{for } u=\pinf(x),\;c_u=1 \n{ else } c_u=2\\\nonumber
 &&\n{ and }\n{for } v=\minf(y),\;c_v=1 \n{ else } c_v=2\\\nonumber
-&& \n{then: } \frac{x}{y} \leq c_u c_v  \frac{u}{v} 
+&& \n{then: } \frac{x}{y} \leq c_u c_v  \frac{u}{v}
 \end{eqnarray}
 \begin{eqnarray}\nonumber
 \error(w)& \leq & c_w \ulp(w) + 2.k_u  \ulp(w)+ c_u.c_v.\frac{k_v u}{vv} \ulp(v)\\\nonumber
@@ -341,10 +341,10 @@ $uy-vx = (uy - uv) + (uv - vx)$ instead of $(uy-xy)+(xy-vx)$.
 
 Another result can be obtained using a relative error analysis.
 Assume $x = u (1 + \theta_u)$ and $y = v (1 + \theta_v)$. Then
-$|\frac{u}{v} - \frac{x}{y}| \leq \frac{1}{vy} |uy - uv| 
-+ \frac{1}{vy} |uv - xv| 
+$|\frac{u}{v} - \frac{x}{y}| \leq \frac{1}{vy} |uy - uv|
++ \frac{1}{vy} |uv - xv|
 = \frac{u}{y} (|\theta_u|+|\theta_v|)$.
-If $v \leq y$ and $\frac{u}{v} \leq w$, 
+If $v \leq y$ and $\frac{u}{v} \leq w$,
 this is bounded by $w (|\theta_u|+|\theta_v|)$.
 
 \subsection{Generic error of square root}\label{generic:sqrt}
@@ -355,7 +355,7 @@ number $u$, itself an approximation to a real $x$,
 with $|u - x| \leq k_u \ulp(u)$.
 If $v = \circ(\sqrt{u})$, then:
 \begin{eqnarray}\nonumber
-\error(v) := |v - \sqrt{x}| 
+\error(v) := |v - \sqrt{x}|
 & \leq &|v - \sqrt{u}| +|\sqrt{u} - \sqrt{x}| \\\nonumber
 & \leq & c_v \ulp(v) + \frac{1}{\sqrt{u} + \sqrt{x}}|u-x| \\\nonumber
 & \leq & c_v \ulp(v) + \frac{1}{\sqrt{u} + \sqrt{x}} k_u \ulp(u) \\\nonumber
@@ -364,11 +364,11 @@ Since by Rule~\ref{R9} we have $u.c_u^- \leq x$,
 it follows $\frac{1}{\sqrt{x}+\sqrt{u}} \leq
         \frac{1}{\sqrt{u}.(1+\sqrt{c_u^-})}$:
 \begin{eqnarray}\nonumber
-\error(v)& \leq & c_v \ulp(v) + 
-                 \frac{1}{\sqrt{u}.(1+\sqrt{c_u^-})}  k_u \ulp(u) \\\nonumber 
-& \leq & c_v \ulp(v) + \frac{2}{1+\sqrt{c_u^-}}  
-       k_u \ulp(\sqrt{u}) \;\; \U{R4}\\\nonumber 
-& \leq & (c_v + \frac{2k_u}{1+\sqrt{c_u^-}})  \ulp(v). \;\; \U{R8}\\\nonumber 
+\error(v)& \leq & c_v \ulp(v) +
+                 \frac{1}{\sqrt{u}.(1+\sqrt{c_u^-})}  k_u \ulp(u) \\\nonumber
+& \leq & c_v \ulp(v) + \frac{2}{1+\sqrt{c_u^-}}
+       k_u \ulp(\sqrt{u}) \;\; \U{R4}\\\nonumber
+& \leq & (c_v + \frac{2k_u}{1+\sqrt{c_u^-}})  \ulp(v). \;\; \U{R8}\\\nonumber
 \end{eqnarray}
 If $u$ is less than $x$, we have $c_u^-=1$ and
 we get the simpler formula
@@ -420,7 +420,7 @@ We additionally assume $u \leq 4x$. Let $v = \circ(\log u)$.
 \end{eqnarray}
 We used at line 2 the inequality $|\log t| \leq 2 |t-1|$ which holds
 for $t \geq \rho$, where $\rho \approx 0.203$ satisfies $\log \rho =2(\rho-1)$.
-At line 4, $e_v$ stands for the exponent of $v$, i.e, 
+At line 4, $e_v$ stands for the exponent of $v$, i.e,
 $v = m \cdot 2^{e_v}$ with $1/2 \leq |m| < 1$.
 
 \subsection{Ulp calculus vs relative error}
@@ -454,7 +454,7 @@ at most $k \varepsilon = k \cdot 2^{1-n}$, thus at most $2k$ ulps.
 
 \begin{lemma} \label{rel_ulp}
 If a value if computed by $k$ successive multiplications or divisions,
-each with rounding away from zero, and precision $n$, then the final 
+each with rounding away from zero, and precision $n$, then the final
 error is bounded by $2k$ ulps.
 \end{lemma}
 
@@ -470,7 +470,7 @@ Then we can write $\prod_{i=1}^n (1+\delta_i)
 \begin{proof}
 The maximum values of $\theta$ are obtained when all the $\delta_i$ are
 $\epsilon$, or all are $-\epsilon$, thus it suffices to prove
-\[ (1+\epsilon)^n \leq 1 + \frac{n \epsilon}{1 - n \epsilon} 
+\[ (1+\epsilon)^n \leq 1 + \frac{n \epsilon}{1 - n \epsilon}
    = \frac{1}{1 - n \epsilon}
    \quad \mbox{and} \quad
    (1-\epsilon)^n \geq 1 - \frac{n \epsilon}{1 - n \epsilon}
@@ -511,7 +511,7 @@ It follows $(1-\epsilon)^n (1 - n \epsilon) \geq (1 - n \epsilon)^2 \geq
 \subsection{The {\tt mpfr\_cmp2} function}
 
 This function computes the exponent shift when subtracting $c > 0$ from
-$b \ge c$. In other terms, if ${\rm EXP}(x) := 
+$b \ge c$. In other terms, if ${\rm EXP}(x) :=
 \lfloor \frac{\log x}{\log 2} \rfloor$,
 it returns ${\rm EXP}(b) - {\rm EXP}(b-c)$.
 
@@ -565,13 +565,13 @@ that the rounding mode is either $\N$ (nearest),
 $\Z$ (towards zero), or $\infty$ (away from zero).
 \begin{quote}
 Algorithm {\tt mpfr\_sub}. \\
-Input: $b$, $c$ of opposite sign with $b > c > 0$, a rounding mode 
+Input: $b$, $c$ of opposite sign with $b > c > 0$, a rounding mode
 $\circ \in \{ \N, \Z, \infty \}$ \\
 Side effect: store in $a$ the value of $\circ(b - c)$ \\
 Output: $0$ if $\circ(b - c) = b-c$, $1$ if $\circ(b - c) > b-c$,
         and $-1$ if $\circ(b - c) < b-c$ \\
-${\tt an} \leftarrow \lceil \frac{\prec(a)}{w} \rceil$, 
-${\tt bn} \leftarrow \lceil \frac{\prec(b)}{w} \rceil$, 
+${\tt an} \leftarrow \lceil \frac{\prec(a)}{w} \rceil$,
+${\tt bn} \leftarrow \lceil \frac{\prec(b)}{w} \rceil$,
 ${\tt cn} \leftarrow \lceil \frac{\prec(c)}{w} \rceil$ \\
 ${\tt cancel} \leftarrow {\tt mpfr\_cmp2}(b, c)$; \quad
         ${\tt diff\_exp} \leftarrow \Exp(b)-\Exp(c)$ \\
@@ -610,7 +610,7 @@ ${\tt cl} \leftarrow {\tt cn} - {\tt an} - {\tt cancel_c}$ \\
 \q ${\tt cl} \leftarrow {\tt cl} - 1$; ${\tt cp} \leftarrow c[{\tt cl}]$ \\
 \q \If\ $\circ = \N$ and $k=0$ and ${\tt sh}=0$ \then \\
 \q \q \If\ ${\tt cp} \ge 2^{w-1}$ \then\ return $-1$ \\
-\q \q $r \leftarrow {\tt bp} - {\tt cp}$; \quad 
+\q \q $r \leftarrow {\tt bp} - {\tt cp}$; \quad
         ${\tt cp} \leftarrow {\tt cp} + 2^{w-1}$ \\
 \q \If\ ${\tt bp} < {\tt cp}$ \then \\
 \q \q \If\ $\circ = \Z$ \then\ $a \leftarrow a - \ulp(a)$; \quad
@@ -632,9 +632,9 @@ and $c[i]$ is meant as $0$ for $i \ge {\tt cn}$
 {\tt mpfr\_mul} uses two algorithms: if the precision of the operands
 is small enough, a plain multiplication using {\tt mpn\_mul} is used
 (there is no error, except in the final rounding);
-otherwise it uses {\tt mpfr\_mulhigh\_n}. 
+otherwise it uses {\tt mpfr\_mulhigh\_n}.
 
-In this case, it trunks the two operands to $m$ limbs: 
+In this case, it trunks the two operands to $m$ limbs:
 $1/2 \leq b < 1$ and $1/2 \leq c < 1$, $b = bh+bl$ and $c = ch+c$
 ($B=2^{32} or 2^{64}$).
 The error comes from:
@@ -662,8 +662,8 @@ Let $u$ be the dividend, $v$ the divisor, and $p$ the target precision
 for the quotient. We denote by $q$ the real quotient $u/v$, with infinite
 precision, and $n \geq p$ the working precision.
 The idea --- as in the square root algorithm below --- is to use GMP's
-integer division: divide the most $2n$ or $2n-1$ significant bits from $u$ by 
-the most $n$ significant bits from $v$ will give a good approximation of 
+integer division: divide the most $2n$ or $2n-1$ significant bits from $u$ by
+the most $n$ significant bits from $v$ will give a good approximation of
 the quotient's integer significand.
 The main difficulties arise when $u$ and $v$ have a larger precision than
 $2n$ and $n$ respectively, since we have to truncate them.
@@ -671,15 +671,15 @@ We distinguish two cases: whether the divisor is truncated or not.
 
 \subsubsection{Full divisor.}
 This is the easy case. Write $u = u_1 + u_0$ where $u_0$ is the truncated
-part, and $v = v_1$. Without loss of generality we can assume that 
-$\ulp(u_1)=\ulp(v_1)=1$, thus $u_1$ and $v_1$ are integers, and 
+part, and $v = v_1$. Without loss of generality we can assume that
+$\ulp(u_1)=\ulp(v_1)=1$, thus $u_1$ and $v_1$ are integers, and
 $0 \leq u_0 < 1$.
 Since $v_1$ has $n$ significant bits, we have $2^{n-1} \leq v_1 < 2^n$.
 (We normalize $u$ so that the integer quotient gives exactly $n$ bits;
 this is easy by comparing the most significant bits of $u$ and $v$,
 thus $2^{2n-2} \leq u_1 < 2^{2n}$.)
 The integer division of $u_1$ by $v_1$ yields $q_1$ and $r$
-such that $u_1 = q_1 v_1 + r$, with $0 \leq r < v_1$, and 
+such that $u_1 = q_1 v_1 + r$, with $0 \leq r < v_1$, and
 $q_1$ having exactly $n$ bits.
 In that case we have
 \[ q_1 \leq q=\frac{u}{v} < q_1 + 1. \]
@@ -738,40 +738,40 @@ $s \leftarrow q_1 v_0$ \\
 
 \begin{comment}
 Let $u = u_n 2^{u_e}$, $v = v_n
-2^{v_e}$, where $u_n$ and $v_n$ are in $[1/2, 1[$. Let $q_p$ be the 
-precision required on $q$. Put 
-$b_p = \min(v_p, q_p + \varepsilon_p)$, 
+2^{v_e}$, where $u_n$ and $v_n$ are in $[1/2, 1[$. Let $q_p$ be the
+precision required on $q$. Put
+$b_p = \min(v_p, q_p + \varepsilon_p)$,
 $a_p = b_p + q_p + \varepsilon_p$, where $\varepsilon_p$ is a small value
 to be chosen.
 
-First, a integer division of $u_{hi} = \lfloor 
-u_n 2^{a_p} \rfloor$ by 
-$v_{hi} = \lfloor v_n 2^{b_p} \rfloor$ 
-is performed. Write $u_{hi} = \tilde{q} v_{hi} + \tilde{r}$. 
+First, a integer division of $u_{hi} = \lfloor
+u_n 2^{a_p} \rfloor$ by
+$v_{hi} = \lfloor v_n 2^{b_p} \rfloor$
+is performed. Write $u_{hi} = \tilde{q} v_{hi} + \tilde{r}$.
 
-If this division is not a full one, to obtain the real value 
-of the quotient, if $\delta = max(u_p, v_p)$, we have to 
-divide $u_n 2^{q_p + \varepsilon_p + \delta}$ by 
-$v_n 2^{\delta}$. 
+If this division is not a full one, to obtain the real value
+of the quotient, if $\delta = max(u_p, v_p)$, we have to
+divide $u_n 2^{q_p + \varepsilon_p + \delta}$ by
+$v_n 2^{\delta}$.
 
 In that case, $2^{q_p + \varepsilon_p + \delta} u_n = \tilde{q}v_n
 2^{\delta} + \tilde{r} 2^{\delta - q_p - \varepsilon_p} + u_{lo} -
 \tilde{q}v_{lo}$, with obvious notations.
 
-A positive correction on $q$ has to come from the contribution of 
+A positive correction on $q$ has to come from the contribution of
 $\tilde{r} 2^{\delta - q_p - \varepsilon_p} + u_{lo}$. The
 first term is at most $v_{hi} 2^{\delta - q_p - \varepsilon_p}$.
-As for $u_{lo}$, we have $u_{lo} < 2^{\delta-q_p-\varepsilon_p}$. Hence, 
-the sum $u_{lo} + \tilde{r} 2^{\delta - q_p - \varepsilon_p} < 2v$, 
-and the positive correction is at most 1. 
+As for $u_{lo}$, we have $u_{lo} < 2^{\delta-q_p-\varepsilon_p}$. Hence,
+the sum $u_{lo} + \tilde{r} 2^{\delta - q_p - \varepsilon_p} < 2v$,
+and the positive correction is at most 1.
 
-We now have to estimate $\tilde{q}v_{lo}$. It is easily seen that 
+We now have to estimate $\tilde{q}v_{lo}$. It is easily seen that
 $\tilde{q} < 2^{q_p + \varepsilon_p + 1}$. As for $v_{lo}$, we have
-$v_{lo} < 2^{\delta - q_p - \varepsilon_p}$, so that 
-$\tilde{q} v_{lo} < 2^{\delta + 1}$, to be compared with $v_n 2^{\delta}$, 
+$v_{lo} < 2^{\delta - q_p - \varepsilon_p}$, so that
+$\tilde{q} v_{lo} < 2^{\delta + 1}$, to be compared with $v_n 2^{\delta}$,
 so that a negative correction is at most 3. As a consequence, to be able
-to decide rounding after the first stage, one should choose 
-$\varepsilon_p \geq 3$ (to include the round-to-nearest case). 
+to decide rounding after the first stage, one should choose
+$\varepsilon_p \geq 3$ (to include the round-to-nearest case).
 \end{comment}
 
 \subsection{The {\tt mpfr\_sqrt} function}
@@ -809,7 +809,7 @@ integer square root --- thus $m$ has now $2p+1$ or $2p+2$ bits.
 In such a way, we directly get the rounding bit, which is the parity bit
 of $s$, and the sticky bit is determined as above.
 Otherwise, we have to compare the value of the whole remainder, i.e.\ $r$ plus
-the possible truncated input, with $s + 1/4$, since $(s+1/2)^2 = 
+the possible truncated input, with $s + 1/4$, since $(s+1/2)^2 =
 s^2 + s + 1/4$.
 Note that equality can occur --- i.e.\ the ``nearest even rounding rule'' ---
 only when the input has at least $2p+1$ bits; in particular it can not
@@ -819,27 +819,27 @@ happen in the common case when input and output have the same precision.
 
 The \texttt{mpfr\_remainder} and \texttt{mpfr\_remquo} are useful
 functions for argument reduction. Given two floating-point numbers $x$ and
-$y$, \texttt{mpfr\_remainder} computes the correct rounding of 
+$y$, \texttt{mpfr\_remainder} computes the correct rounding of
 $x \cmod y := x - q y$, where
 $q = \lfloor x/y \rceil$, with ties rounded to the nearest even integer,
 as in the rounding to nearest mode.
 
-Additionally, \texttt{mpfr\_remquo} returns a value congruent to $q$ 
+Additionally, \texttt{mpfr\_remquo} returns a value congruent to $q$
 modulo $2^n$, where $n$ is a small integer (say $n \leq 64$, see the
 documentation), and having the same sign as $q$ or being zero.
 This can be efficiently implemented by calling \texttt{mpfr\_remainder} on
 $x$ and $2^n y$. Indeed, if $x = r' \cmod (2^n y)$, and
-$r' = q' y + r$ with $|r| \leq y/2$, then 
-$q \equiv q' \mod 2^n$. No double-rounding problem can occur, since if 
+$r' = q' y + r$ with $|r| \leq y/2$, then
+$q \equiv q' \mod 2^n$. No double-rounding problem can occur, since if
 $x/(2^n y) \in {\mathbb Z} + 1/2$,
 then $r'=\pm 2^{n-1} y$, thus $q'=\pm 2^{n-1}$ and $r=0$.
 
 Whatever the input $x$ and $y$, it should be noted that if $\ulp(x) \geq
 \ulp(y)$, then $x - q y$ is always
 exactly representable in the precision of $y$ unless its exponent is smaller
-than the minimum exponent. To see this, 
-let $\ulp(y) = 2^{-k}$; 
-multiplying $x$ and $y$ by $2^k$ we get $X = 2^k x$ and 
+than the minimum exponent. To see this,
+let $\ulp(y) = 2^{-k}$;
+multiplying $x$ and $y$ by $2^k$ we get $X = 2^k x$ and
 $Y = 2^k y$ such that $\ulp(Y)=1$,
 and $\ulp(X) \geq \ulp(Y)$, thus both $X$ and $Y$ are integers.
 Now perform the division of $X$ by $Y$, with quotient rounded to nearest:
@@ -848,8 +848,8 @@ necessarily representable with the precision of $Y$, and thus of $y$.
 The quotient $q$ of $x/y$ is the same as that of $X/Y$, the remainder
 $x - q y$ is $2^{-k} R$.
 
-We assume without loss of generality that $x, y > 0$, and that 
-$\ulp(y) = 1$, i.e., $y$ is an integer. 
+We assume without loss of generality that $x, y > 0$, and that
+$\ulp(y) = 1$, i.e., $y$ is an integer.
 \begin{quote}
 Algorithm Remainder. \\
 Input: $x$, $y$ with $\ulp(y)=1$, a rounding mode $\circ$ \\
@@ -926,12 +926,12 @@ We denote by $\epsilon_i$ a generic error with $0 \leq \epsilon_i < 2^{-m}$.
 We have $c = \cos x + \epsilon_1$;
 $t = c^2 + \epsilon_2 = \cos^2 x + 4 \epsilon_3$;
 $u = 1 - t - \epsilon_4 = 1 - \cos^2 x - 5 \epsilon_5$;
-$|s| = \sqrt{u} - \epsilon_6 = 
+$|s| = \sqrt{u} - \epsilon_6 =
 \sqrt{1 - \cos^2 x - 5 \epsilon_5} - \epsilon_6
 \geq |\sin x| - \frac{5 \epsilon_5}{2 |s|} + \epsilon_6$
 (by Rolle's theorem,
 $|\sqrt{u} - \sqrt{u'}| \le \frac{1}{2 \sqrt{v}} |u-u'|$ for
-$v \in [u, u']$, we apply it here with $u=1 - \cos^2 x - 5 \epsilon_5$, 
+$v \in [u, u']$, we apply it here with $u=1 - \cos^2 x - 5 \epsilon_5$,
 $u'=1 - \cos^2 x$.)
 
 Therefore, if $2^{e-1} \leq |s| < 2^e$, the absolute error on $s$
@@ -968,7 +968,7 @@ approximated with a factor $(1+u)^{k_j+4}$.
 The value of $\sin x_j$ is approximated with a factor $(1+u)^{k_j+5}$ since
 there all terms are nonnegative.
 
-We now analyze the effect of the cancellation in 
+We now analyze the effect of the cancellation in
 $C_j \cos x_{j+1} - S_j \sin x_{j+1}$.
 We have $\frac{r_j}{2^{2^j}} < 2^{-2^{j-1}}$, and for simplicity we define
 $l := 2^{j-1}$;
@@ -1022,7 +1022,7 @@ This algorithm is used only for precision greater
 than for example $10000$ bits on an Athlon.
 
 For smaller precisions, it uses Brent's method;
-if $r = (x - n \log 2)/2^k$ where $0 \le r < \log 2$, then 
+if $r = (x - n \log 2)/2^k$ where $0 \le r < \log 2$, then
 \[ \exp(x) = 2^n \cdot \exp(r)^{2^k} \]
 and $\exp(r)$ is computed using the Taylor expansion:
 \[ \exp(r) =  1 + r + \frac{r^2}{2!} + \frac{r^3}{3!} + \cdots \]
@@ -1035,7 +1035,7 @@ value of $k$ is about $n^{1/2}$, giving a complexity of $\O(n^{1/2} M(n))$.
 This is what is implemented in {\tt mpfr\_exp2\_aux}.
 
 If we use a baby step/giant step approach, the Taylor series
-can be evaluated in $\O(l^{1/2})$ operations, 
+can be evaluated in $\O(l^{1/2})$ operations,
 thus the evaluation requires $(n/k)^{1/2} + k$ multiplications,
 and the optimal $k$ is now about $n^{1/3}$,
 giving a total complexity of $\O(n^{1/3} M(n))$.
@@ -1064,7 +1064,7 @@ $t \leftarrow 1$ \\
 \q $t \leftarrow \circ (t/k)$ [rounded up] \\
 \q $u \leftarrow \circ (\frac{t}{2k+1})$ [rounded up] \\
 \q $s \leftarrow \circ (s + (-1)^k u)$ [nearest] \\
-\q {\bf if} ${\rm EXP}(u) < {\rm EXP}(s) - m$ and $k \geq z^2$ 
+\q {\bf if} ${\rm EXP}(u) < {\rm EXP}(s) - m$ and $k \geq z^2$
         {\bf then} break \\
 $r \leftarrow 2 \circ (z s)$ [rounded up] \\
 $p \leftarrow \circ (\pi)$ [rounded down] \\
@@ -1091,7 +1091,7 @@ $\tau_k \leq \frac{1}{2} + \tau_{k-1} 2^{\sigma_k} + (1+8k) 2^{\nu_k}$.
 The halting condition $k \geq z^2$ ensures that $u_j \leq u_{j-1}$ for
 $j \geq k$, thus the series $\sum_{j=k}^{\infty} u_j$ is an alternating series,
 and the truncated part is bounded by its first term $|u_k| < {\rm ulp}(s_k)$.
-So the ulp-error between $s_k$ and $\sum_{k=0}^{\infty} \frac{(-1)^k z^2}{k! 
+So the ulp-error between $s_k$ and $\sum_{k=0}^{\infty} \frac{(-1)^k z^2}{k!
 (2k+1)}$ is bounded by $1+\tau_k$.
 
 Now the error after $r \leftarrow 2 \circ (z s)$ is bounded by
@@ -1171,7 +1171,7 @@ ${\textnormal{error}}(v)$
 
 
 $v \leftarrow \circ({u}^{-1}) $\\
-$+\infty \;\; (\bullet\bullet)$ 
+$+\infty \;\; (\bullet\bullet)$
 \end{minipage} &
 \begin{minipage}{7.5cm}
 
@@ -1192,16 +1192,16 @@ $+\infty \;\; (\bullet\bullet)$
 
 $(\star)$
 
-With $\frac{1}{e^x} \leq \frac{1}{u}$,\\ 
+With $\frac{1}{e^x} \leq \frac{1}{u}$,\\
 for that we must have $u \leq e^x$,\\
 it is possible with a rounding of\\
 $u$ to $-\infty \;\; (\bullet)$
 
 $(\star\star)$
 
-From inequation \U{R4}, 
+From inequation \U{R4},
 \[   a \cdot \ulp(b) \leq 2 \cdot \ulp(a \cdot b)\]
-if $a =\frac{1}{u^2},\;b = u$ then  
+if $a =\frac{1}{u^2},\;b = u$ then
 \[ \frac{1}{u^2} \ulp(u)  \leq 2 \ulp(\frac{1}{u})\]
 
 $(\star\star\star)$
@@ -1237,13 +1237,13 @@ $w \leftarrow \circ(u+v) $
 
 $(\star)$
 
-With $v \leq 1\leq u$ 
+With $v \leq 1\leq u$
 
 then $\ulp(v) \leq \ulp(u)$
 
 $(\star\star)$
 
-With $u \leq w$ 
+With $u \leq w$
 
 then $\ulp(u) \leq \ulp(w)$
 
@@ -1281,7 +1281,7 @@ That shows the rounding error on the calculation of $\cosh x$ can be
 bound by $5 \;\; \ulp$ on the result. So, to calculate the size of
 intermediary variables, we have to add, at least, $\lceil \log_2 5 \rceil=3$ bits the wanted
 precision.
- 
+
 \subsection{The inverse hyperbolic cosine function}
 
 The {\tt mpfr\_acosh} function implements the inverse hyperbolic
@@ -1374,7 +1374,7 @@ ${\textnormal{error}}(v)$
 
 
 $v \leftarrow \pinf({u}^{-1}) $\\
-$(\bullet\bullet)$ 
+$(\bullet\bullet)$
 \end{minipage} &
 \begin{minipage}{7.5cm}
 
@@ -1395,15 +1395,15 @@ $(\bullet\bullet)$
 
 $(\star)$
 
-With $\frac{1}{u} \leq \frac{1}{e^x}$,\\ 
+With $\frac{1}{u} \leq \frac{1}{e^x}$,\\
 for that we must have $e^x \leq u$,\\
 it is possible with $u=\minf(e^x)$ $(\bullet)$
 
 $(\star\star)$
 
-From inequation \U{R4}, 
+From inequation \U{R4},
 \[   a \cdot \ulp(b) \leq 2 \cdot \ulp(a \cdot b)\]
-if $a =\frac{1}{u^2},\;b = u$ then  
+if $a =\frac{1}{u^2},\;b = u$ then
 \[ \frac{1}{u^2} \ulp(u)  \leq 2 \ulp(\frac{1}{u})\]
 
 $(\star\star\star)$
@@ -1438,7 +1438,7 @@ $w \leftarrow \circ(u+v) $
 
 $(\star)$
 
-With $v \leq 1\leq u$ 
+With $v \leq 1\leq u$
 
 then $\ulp(v) \leq \ulp(u)$
 
@@ -1634,7 +1634,7 @@ be bound by $ (1+5.2^{2-\Exp(w)})\;\; \ulp$ on the result. So, to
 calculate the size of intermediary variables, we have to add, at
 least, $\lceil \log_2 (1+5.2^{2-\Exp(w)}) \rceil$ bits the wanted
 precision.
- 
+
 \subsection{The hyperbolic tangent function}
 
 The hyperbolic tangent (\texttt{mpfr\_tanh}) is computed from the exponential:
@@ -1690,7 +1690,7 @@ the relative error on $s$ is thus bounded by $2^{{\rm max}(4,e+2)-p}$.
 
 \subsection{The inverse hyperbolic tangent function}
 
-The {\tt mpfr\_atanh} ($\n{atanh}{x}$) function implements the inverse 
+The {\tt mpfr\_atanh} ($\n{atanh}{x}$) function implements the inverse
 hyperbolic tangent as :
 
 \[\n{atanh} = \frac{1}{2} \log \frac{1+x}{1-x}.\]
@@ -1805,7 +1805,7 @@ $v \leftarrow \circ(\log(u)) $
   &       \leq& (1+(7+2^{\Exp(x)-\Exp(t)+1}) \\\nonumber
   &       \cdots&  \times 2^{2-\Exp(v)}) \ulp(v)\;(\star)\\\nonumber
   &       \leq& (1+7 \times 2^{2-\Exp(v)} +\\\nonumber
-  &       \cdots&  2^{\Exp(x)-\Exp(t)-\Exp(v)+3}) \ulp(v) 
+  &       \cdots&  2^{\Exp(x)-\Exp(t)-\Exp(v)+3}) \ulp(v)
 \end{eqnarray}
 
 
@@ -1848,7 +1848,7 @@ be bound by $ (1+7 \times 2^{2-\Exp(v)} +
 calculate the size of intermediary variables, we have to add, at
 least, $\lceil \log_2 (1+7 \times 2^{2-\Exp(v)} +
 2^{\Exp(x)-\Exp(t)-\Exp(v)+3}) \rceil$ bits the wanted precision.
- 
+
 \subsection{The arc-sine function}
 
 \begin{enumerate}
@@ -1859,13 +1859,13 @@ least, $\lceil \log_2 (1+7 \times 2^{2-\Exp(v)} +
 1-x=1-a-a\delta=(1-a)[1-\frac{a}{1-a}\delta]
 \end{equation*}
 Ans so when using the arc tangent programs we need to take into account that decrease in precision.
-\item We will have 
+\item We will have
 \end{enumerate}
 
 \subsection{The arc-cosine function} % from Mathieu Dutour
 
 \begin{enumerate}
-\item Obviously, we used the formula 
+\item Obviously, we used the formula
 \begin{equation*}
 \arccos\,x=\frac{\pi}{2}-\arcsin\,x
 \end{equation*}
@@ -1911,7 +1911,7 @@ $w \leftarrow \circ(\frac{x}{v})$ [nearest]
 \arctan\,(-x)=-\arctan\,x\;\;\mbox{and}\;\;\arctan\,x+\arctan\,\frac{1}{x}=\frac{\pi}{2}{\rm sign}(x)
 \end{equation*}
 we can restrict ourselves to $0\leq x\leq 1$.
-\par Writing 
+\par Writing
 \begin{equation*}
 x=\sum_{i=1}^{\infty} \frac{u_i}{2^i}\;\;\mbox{with}\;\;u_i\in\{0,1\}
 \end{equation*}
@@ -1931,7 +1931,7 @@ Unfortunately for $\arctan$ there is no similar formulas. The only formula known
 \begin{equation*}
 \arctan\,x+\arctan\,y=\arctan\,\frac{x+y}{1-xy}+k\pi\;\;\mbox{with}\;\;k\in\Z
 \end{equation*}
-we will use 
+we will use
 \begin{equation*}
 \arctan\,x=\arctan\,y+\arctan\,\frac{x-y}{1+xy}
 \end{equation*}
@@ -1944,7 +1944,7 @@ with $x,y>0$ and $y<x$.
 So I propose the following algorithm for $x$ given in $[0,1]$.
 \begin{enumerate}
 \item Write $v_k=2^{2^k}$
-\item Define 
+\item Define
 \begin{equation*}
 s_{k+1}=\frac{s_k-A_k}{1+s_kA_k}\;\;\mbox{and}\;\;s_0=x
 \end{equation*}
@@ -1982,7 +1982,7 @@ The drawbacks of this algorithm are:
 I give a remind of the algorithm:
 \begin{enumerate}
 \item Write $v_k=2^{2^k}$
-\item Define 
+\item Define
 \begin{equation*}
 s_{k+1}=\frac{s_k-A_k}{1+s_kA_k}\;\;\mbox{and}\;\;s_0=x
 \end{equation*}
@@ -2183,7 +2183,7 @@ v&\leftarrow&\circ(z + u)\\\nonumber
 \end{eqnarray}
 
 Now, we have to bound the rounding error for each step of this
-algorithm.  
+algorithm.
 
 
 
@@ -2257,7 +2257,7 @@ v&\leftarrow&\circ(u-1)\\\nonumber
 \end{eqnarray}
 
 Now, we have to bound the rounding error for each step of this
-algorithm.  
+algorithm.
 
 
 \begin{center}
@@ -2330,7 +2330,7 @@ w&\leftarrow&\circ(\log(v))\\\nonumber
 \end{eqnarray}
 
 Now, we have to bound the rounding error for each step of this
-algorithm.  
+algorithm.
 
 \begin{center}
 \begin{tabular}{l l l}
@@ -2604,7 +2604,7 @@ $\beta$ are algebraic numbers with $\alpha \neq 0$, $\alpha \neq 1$,
 and $\beta \notin \Q$, then $\alpha^{\beta}$ is transcendental.
 This is of little help for us since $\beta$ will always be a rational
 number.
-Let $x = a 2^b$, $y = c 2^d$, and assume $x^y = e 2^f$, where 
+Let $x = a 2^b$, $y = c 2^d$, and assume $x^y = e 2^f$, where
 $a, b, c, d, e, f$ are integers.
 Without loss of generality, we can assume $a, c, e$ odd integers.
 
@@ -2625,7 +2625,7 @@ If $d \geq 0$, then $a^c$ must be an integer: this is true if $c \geq 0$,
 and false for $c < 0$ since $a^{c 2^d} = \frac{1}{a^{-c 2^d}} < 1$ cannot be an
 integer. In addition $a^{c 2^d}$ must be representable in the given precision.
 
-Assume now $d < 0$, 
+Assume now $d < 0$,
 then $a^{c 2^d} = {a^c}^{1/2^{d'}}$ with $d'=-d$, thus
 we have $a^c = e^{2^{d'}}$, thus $a^c$ must be a $2^{d'}$-th power
 of an integer.
@@ -2658,11 +2658,11 @@ $x^y$.
 \subsection{The real cube root}
 
 The \texttt{mpfr\_cbrt} function computes the real cube root of $x$.
-Since for $x<0$, we have $\sqrt[3]{x} = - \sqrt[3]{-x}$, we can focus 
+Since for $x<0$, we have $\sqrt[3]{x} = - \sqrt[3]{-x}$, we can focus
 on $x > 0$.
 
 Let $n$ be the number of wanted bits of the result.
-We write $x = m \cdot 2^{3e}$ where $m$ is a positive integer 
+We write $x = m \cdot 2^{3e}$ where $m$ is a positive integer
 with $m \geq 2^{3n-3}$.
 Then we compute the integer cubic root of $m$: let $m=s^3+r$ with
 $0 \leq r$ and $m < (s+1)^3$.
@@ -2698,7 +2698,7 @@ and for $x < 0$ it gives NaN.
 
 We use the following integer-based algorithm to evaluate
 $\sum_{k=1}^{\infty} \frac{x^k}{k \, k!}$, using working precision $w$.
-For any real $v$, we denote by ${\rm trunc}(v)$ the nearest integer 
+For any real $v$, we denote by ${\rm trunc}(v)$ the nearest integer
 towards zero.
 \begin{quote}
 Decompose $x$ into  $m\cdot2^e$ with $m$ integer [exact] \\
@@ -2716,12 +2716,12 @@ we first compute $tm$ exactly, then if $e$ is negative,
 we first divide by $2^{-e}$ and
 truncate, then divide by $k$ and truncate; this gives the same answer than
 dividing once by $k 2^{-e}$, but it is more efficient.
-Let $\epsilon_k$ be the absolute difference between $t$ and 
+Let $\epsilon_k$ be the absolute difference between $t$ and
 $2^w x^k/k!$ at step $k$.
 We have $\epsilon_0=0$, and $\epsilon_k \leq 1 + \epsilon_{k-1} m 2^e/k
 + t_{k-1} m 2^{e+1-w}/k$, since the error when approximating $x$ by
 $m 2^e$ is less than $m 2^{e+1-w}$.
-Similarly, the absolute error on $u$ at step $k$ is at most 
+Similarly, the absolute error on $u$ at step $k$ is at most
 $\nu_k \leq 1 + \epsilon_k/k$,
 and that on $s$ at most $\tau_k \leq \tau_{k-1} + \nu_k$.
 We compute all these errors dynamically (using MPFR with a small precision),
@@ -2729,7 +2729,7 @@ and we stop when $|t|$ is smaller than the bound $\tau_k$
 on the error on $s$ made so far.
 
 At that time, the truncation error when neglecting terms of index $k+1$
-to $\infty$ can be bounded by $(|t| + \epsilon_k)/k (|x|/k + |x|^2/k^2 + 
+to $\infty$ can be bounded by $(|t| + \epsilon_k)/k (|x|/k + |x|^2/k^2 +
 \cdots) \leq (|t| + \epsilon_k) |x|/k/(k-|x|)$.
 
 \paragraph{Asymptotic Expansion}
@@ -2772,7 +2772,7 @@ to the real function $f(x) = x^{-s}$ for $s > 1$:
 + \frac{1}{(s-1)N^{s-1}} + \sum_{k=1}^p \frac{B_{2k}}{2k}
 {s+2k-2 \choose 2k-1} \frac{1}{N^{s+2k-1}} + R_{N,p}(s), \]
 with $|R_{N,p}(s)| < 2^{-d}$, where $B_k$ denotes the $k$th Bernoulli
-number, 
+number,
 \[ p = {\rm max}\left( 0, \lceil \frac{d \log 2 + 0.61 + s \log(2\pi/s)}{2}
 \rceil \right), \]
 and $N = \lceil 2^{(d-1)/s} \rceil$ if $p=0$,
@@ -2804,14 +2804,14 @@ the \texttt{mpfr\_zeta\_ui} function computes
 $\zeta(s)$ using the following formula from \cite{Borwein95}:
 \[ \zeta(s) = \frac{1}{d_n (1-2^{1-s})} \sum_{k=0}^{n-1} \frac{(-1)^k
   (d_n - d_k)}{(k+1)^s} + \gamma_n(s), \]
-where 
+where
 \[ |\gamma_n(s)| \leq \frac{3}{(3+\sqrt{8})^n} \frac{1}{1-2^{1-s}}
 \quad \mbox{and} \quad
    d_k = n \sum_{i=0}^k \frac{(n+i-1)! 4^i}{(n-i)! (2i)!}. \]
 
 It can be checked that the $d_k$ are integers, and we compute them exactly,
 \begin{comment}
-d(n,k) = 
+d(n,k) =
 { n * sum(i=0,k,(n+i-1)!*4^i/(n-i)!/(2*i)!) }
 a=log(2)/log(3+sqrt(8))
 for (p=2,1000,n=ceil(a*p);if(d(n,n)<2^(p-1),\error(p)))
@@ -2830,7 +2830,7 @@ $T \leftarrow S$ \\
 \q $S = S + T$ \\
 \textbf{while} $T \neq 0$.
 \end{quote}
-Since $\frac{1}{1-2^{1-s}} = 1 + 2^{1-s} + 2^{2(1-s)} + \cdots$, and 
+Since $\frac{1}{1-2^{1-s}} = 1 + 2^{1-s} + 2^{2(1-s)} + \cdots$, and
 at iteration $i$ we have $T = \lfloor S 2^{i(1-s)} \rfloor$,
 the error on $S$ after this loop is bounded by $n+l+1$,
 where $l$ is the number of loops.
@@ -2842,7 +2842,7 @@ with rounding to nearest, and divide by $2^p$ (this last operation is
 exact).
 The final error in ulps is bounded by $1 + 2^{\mu} (n+l+2)$.
 Since $S/d_n$ approximates $\zeta(s)$, it is larger than one, thus
-$q \geq 2^p$, and the error on the division is less that 
+$q \geq 2^p$, and the error on the division is less that
 $\frac{1}{2}\ulp_p(q)$. The error on $S$ itself is bounded by $(n+l+1)/d_n
 \leq (n+l+1) 2^{1-p}$ --- see the conjecture below.
 Since $2^{1-p} \leq \ulp_p(q)$, and taking into account the error when
@@ -2850,10 +2850,10 @@ converting the integer $q$ (which may have more than $p$ bits),
 and the mathematical error which is bounded by $\frac{3}{(3+\sqrt{8})^n}
 \leq \frac{3}{2^p}$, the total error is bounded by $n+l+4$ ulps.
 
-\paragraph{Analysis of the sizes.} 
+\paragraph{Analysis of the sizes.}
 To get an accuracy of around $p$ bits, since $\zeta(s) \geq 1$, it suffices
 to have $|\gamma_n(s)| \leq 2^{-p}$, i.e.\ $(3+\sqrt{8})^n \ge 2^p$,
-thus $n \ge \alpha p$ with $\alpha = \frac{\log 2}{\log ((3+\sqrt{8})} 
+thus $n \ge \alpha p$ with $\alpha = \frac{\log 2}{\log ((3+\sqrt{8})}
 \approx 0.393$.
 It can be easily seen that $d_n \geq 4^n$, thus when $n \ge \alpha p$,
 $d_n$ has at least $0.786 p$ bits.
@@ -2873,7 +2873,7 @@ and $1 + 2^{-s} + 2^{1-p}$ for rounding to $+\infty$.
 
 \subsection{The arithmetic-geometric mean}
 
-The arithmetic-geometric mean (AGM for short) of two positive numbers 
+The arithmetic-geometric mean (AGM for short) of two positive numbers
 $a \leq b$ is defined to be the common limits of the sequences
 $(a_n)$ and $(b_n)$ defined by $a_0 = a$, $b_0 = b$, and for $n \geq 0$:
 \[ a_{n+1} = \sqrt{a_n b_n}, \quad b_{n+1} = \frac{a_n + b_n}{2}. \]
@@ -2958,7 +2958,7 @@ We note $a_n$ and $b_n$ the exact values we would obtain for $u_n$ and $v_n$
 respectively, without round-off errors.
 We have $s_1 = ab (1+\theta)$, $u_1 = a_1 (1+\theta)^{3/2}$,
 $v_1 = b_1 (1+\theta)$.
-Assume we can write $u_n = a_n (1+\theta)^{\alpha}$ and 
+Assume we can write $u_n = a_n (1+\theta)^{\alpha}$ and
 $v_n = b_n(1+\theta)^{\beta}$ with $\alpha, \beta \leq e_n$.
 We thus can take $e_1 = 3/2$.
 Then as long as the \textbf{if}-condition is not satisfied,
@@ -2973,7 +2973,7 @@ thus $\Exp(v_n-u_n) \leq \Exp(v_n) - (p+1)/4$,
 % 2^{Exp(x)-1} <= x < 2^Exp(x) thus x < 2^Exp(x) <= 2*x
 i.e.\ $|v_n-u_n|/v_n < 2^{(3-p)/4}$.
 
-Assume $n \leq 2^{p/4}$, which implies 
+Assume $n \leq 2^{p/4}$, which implies
 $3n|\theta|/2 \leq 1$, which since $n \geq 1$ implies in turn $|\theta| \leq
 2/3$. Under that hypothesis, $(1+\theta)^{3n/2}$ can be written
 $1 + 3n\theta$ (possibly with a different $|\theta| \leq 2^{-p}$ as usual).
@@ -2983,9 +2983,9 @@ Then $|b_n-a_n| = |v_n (1+3n\theta) - u_n (1+3n\theta')|
 For $p \geq 4$, $3n |\theta| \leq 3/8$, and $1/(1+x)$ for $|x| \leq 3/8$
 can be written $1+5x'/3$ for $x'$ in the same interval. This yields:
 \begin{eqnarray*}
- \frac{|b_n-a_n|}{b_n} 
+ \frac{|b_n-a_n|}{b_n}
    &=& \frac{|v_n-u_n| + 3n |\theta| v_n}{v_n (1+3n\theta)}
-   \leq \frac{|v_n-u_n|}{v_n} + 5n|\theta| \frac{|v_n-u_n|}{v_n} 
+   \leq \frac{|v_n-u_n|}{v_n} + 5n|\theta| \frac{|v_n-u_n|}{v_n}
       + \frac{8}{5} (6n\theta) \\
    &\leq& \frac{13}{8} \cdot 2^{(3-p)/4} + \frac{48}{5} \cdot 2^{-3p/4}
    \leq 5.2 \cdot 2^{-p/4}.
@@ -3005,7 +3005,7 @@ Since $|v_n - u_n| \leq 2^{(3-p)/4} v_n$, it follows
 $|s| \leq 1.8 \cdot 2^{-p/4} v_n$ for $q \geq 4$.
 Then $t \leq 0.22 \cdot 2^{-p/2} v_n$.
 Finally due to the above Lemma, the difference between $v_{n+1}$ and $v_n$
-is less than that between $u_n$ and $v_n$, 
+is less than that between $u_n$ and $v_n$,
 i.e.\ $\frac{v_n}{v_{n+1}} \leq \frac{1}{1-2^{(3-p)/4}} \leq 2$ for $p \geq 7$.
 We deduce $w \leq 0.22 \cdot 2^{-p/2} \frac{v_n^2}{v_{n+1}} (1+2^{-q})
 \leq 0.47 \cdot 2^{-p/2} v_n \leq 0.94 \cdot 2^{-p/2} v_{n+1}$.
@@ -3084,7 +3084,7 @@ is smaller than $|t| < \ulp(s)$.
 Using Higham's method, with $\theta$ denoting a random variable of value
 $|\theta| \leq 2^{-w}$ --- different instances of $\theta$ denoting
 different values --- we can write $x = z^n (1+\theta)$,
-$y = z^2/4 (1+\theta)$, 
+$y = z^2/4 (1+\theta)$,
 and before the for-loop $s = t = (z/2)^n/n! (1+\theta)^3$.
 Now write $t = (z/2)^n (-z^2/4)^k / (k! (k+n)!) (1+\theta)^{e_k}$ at the end of
 the for-loop with index $k$; each loop involves a factor $(1+\theta)^4$,
@@ -3111,7 +3111,7 @@ from \cite[Eq.~6.1.38]{AbSt73}, this gives:
 
 \paragraph{Large argument.}
 
-For large argument $z$, formula (\ref{Jn_0}) requires at least 
+For large argument $z$, formula (\ref{Jn_0}) requires at least
 $k \approx z/2$ terms before starting to converge. If $k \leq z/2$, it is
 better to use formula 9.2.5 from \cite{AbSt73}, which
 provides at least $2$ bits per term:
@@ -3135,7 +3135,7 @@ the remainder of $P(n,z)$ after $k$ terms does not exceed the $(k+1)$th term
 and is of the same sign, provided $k > n/2 - 1/4$; the same holds for
 $Q(n,z)$ as long as $k > n/2 - 3/4$ \cite[9.2.10]{AbSt73}.
 
-If we first approximate $\chi = z - (n/2 + 1/4) \pi$ with working precision 
+If we first approximate $\chi = z - (n/2 + 1/4) \pi$ with working precision
 $w$, and then approximate $\cos \chi$ and $\sin \chi$, there will be a huge
 relative error if $z > 2^w$. Instead, we use the fact that for $n$ even,
 \[ P(n,z) \cos \chi - Q(n,z) \sin \chi = \frac{1}{\sqrt{2}} (-1)^{n/2}
@@ -3143,7 +3143,7 @@ relative error if $z > 2^w$. Instead, we use the fact that for $n$ even,
 and for $n$ odd,
 \[ P(n,z) \cos \chi - Q(n,z) \sin \chi = \frac{1}{\sqrt{2}} (-1)^{(n-1)/2}
    [P (\sin z - \cos z) + Q (\cos z + \sin z)], \]
-where $\cos z$ and $\sin z$ are computed accurately with 
+where $\cos z$ and $\sin z$ are computed accurately with
 \texttt{mpfr\_sin\_cos}, which uses in turn \texttt{mpfr\_remainder}.
 
 If we consider $P(n,z)$ and $Q(n,z)$ together as one single series,
@@ -3175,7 +3175,7 @@ Y_n(z) &=& -\frac{(z/2)^{-n}}{\pi} \sum_{k=0}^{n-1} \frac{(n-k-1)!}{k!}
    (z^2/4)^k + \frac{2}{\pi} \log(z/2) J_n(z) \\ &-& \frac{(z/2)^n}{\pi}
   \sum_{k=0}^{\infty} (\psi(k+1) + \psi(n+k+1)) \frac{(-z^2/4)^k}{k! (n+k)!},
 \end{eqnarray*}
-where $\psi(1)=-\gamma$, $\gamma$ being Euler's constant (see 
+where $\psi(1)=-\gamma$, $\gamma$ being Euler's constant (see
 \textsection\ref{gamma}), and $\psi(n+1) = \psi(n) + 1/n$ for $n \geq 1$.
 
 Rewriting the above equation, we get
@@ -3187,7 +3187,7 @@ $S_3 = \sum_{k=0}^{\infty} (h_k + h_{n+k}) \frac{(-z^2/4)^k}{k! (n+k)!}$,
 where $h_k = 1 + 1/2 + \cdots + 1/k$ is the $k$th harmonic number.
 Once we have estimated $-(z/2)^{-n} S_1 + S_2$, we know to which relative
 precision we need to estimate the infinite sum $S_3$. For example, if
-$(z/2)^n$ is small, typically a small relative precision on $S_3$ will be 
+$(z/2)^n$ is small, typically a small relative precision on $S_3$ will be
 enough.
 
 We use the following algorithm to estimate $S_1$, with working precision $w$
@@ -3224,7 +3224,7 @@ Let $e$ be the exponent difference between the maximum value of $|s|$ during
 the for-loop and the final value of $s$, then the relative error on the final
 $s$ is bounded by
 \[ (3n+1) 2^{e+1-w}. \]
-Assuming we compute $(z/2)^n$ with correct rounding --- using for example the 
+Assuming we compute $(z/2)^n$ with correct rounding --- using for example the
 \texttt{mpfr\_pow\_ui} function --- and divide $S_1$ by this approximation,
 the relative error on $(z/2)^{-n} S_1$ will be at most
 $(3n+3) 2^{e+1-w}$.
@@ -3238,13 +3238,13 @@ $v \leftarrow 2 \circ(t + u)$ \qquad [multiplication by $2$ is exact] \\
 $x \leftarrow \circ(J_n(z))$ \\
 $s \leftarrow \circ(v x)$
 \end{quote}
-Since $z/2$ is exact, the error on $t$ and $u$ is at most one ulp, 
-thus from \textsection\ref{generic:sous} the ulp-error on $v$ is at most 
+Since $z/2$ is exact, the error on $t$ and $u$ is at most one ulp,
+thus from \textsection\ref{generic:sous} the ulp-error on $v$ is at most
 $1/2 + 2^{\Exp(t)-\Exp(v)} + 2^{\Exp(u)-\Exp(v)} \leq 1/2 + 2^{e+1}$, where
 $e = {\rm max}(\Exp(t), \Exp(u)) - \Exp(v)$. Assuming $e+2 < w$, then
 $1/2 + 2^{e+1} \leq 2^{w-1}$, thus the total error on $v$ is bounded by $|v|$,
 thus we can take $c^+ = 2$ for $v$ in the product $s \leftarrow \circ(v x)$
-(cf \textsection\ref{generic:mul}); similarly $c^+ = 2$ applies to 
+(cf \textsection\ref{generic:mul}); similarly $c^+ = 2$ applies to
 $x \leftarrow \circ(J_n(z))$, thus \textsection\ref{generic:mul} yields the
 following bound for the ulp-error on $s$:
 \[ 1/2 + 3 (1/2 + 2^{e+1}) + 3 (1/2) = 7/2 + 3 \cdot 2^{e+1} \leq 2^{e+4}. \]
@@ -3309,7 +3309,7 @@ $\circ(\log u)$ & $k_u 2^{1-e_w}$ & \\
 \caption{Generic error for several operations, assuming all variables have a
 mantissa of $p$ bits, and no overflow/underflow occurs.
 The inputs $u$ and $v$ are
-approximations of $x$ and $y$ with $|u-x| \le k_u \ulp(u)$ and 
+approximations of $x$ and $y$ with $|u-x| \le k_u \ulp(u)$ and
 $|v-y| \le k_v \ulp(v)$. The additional rounding error $c_w$ is $1/2$ for
 rounding to nearest, and $1$ otherwise.
 The value $c^{\pm}_u$ equals $1 \pm k_u 2^{1-p}$.
@@ -3327,11 +3327,11 @@ thus $\err(w)/\ulp(w) \le c_w + {\rm max}(k_u + k_v/2, k_u/2 + k_v)
 The computation of $\pi$ uses the AGM formula
 \[ \pi = \frac{\mu^2}{D}, \]
 where $\mu = {\rm AGM}(\frac{1}{\sqrt{2}}, 1)$ is the common limit
-of the sequences $a_0=1, b_0 = \frac{1}{\sqrt{2}}, 
+of the sequences $a_0=1, b_0 = \frac{1}{\sqrt{2}},
 a_{k+1} = (a_k+b_k)/2, b_{k+1} = \sqrt{a_k b_k}$,
 $D=\frac{1}{4} - \sum_{k=1}^{\infty} 2^{k-1} (a_k^2-b_k^2)$.
 This formula can be evaluated efficiently as shown in \cite{ScGrVe94},
-starting from $a_0 = A_0 = 1, B_0 = 1/2, D_0 = 1/4$, where $A_k$ and 
+starting from $a_0 = A_0 = 1, B_0 = 1/2, D_0 = 1/4$, where $A_k$ and
 $B_k$ represent respectively $a_k^2$ and $b_k^2$:
 \begin{quote}
 $S_{k+1} \leftarrow (A_k + B_k)/4$ \\
@@ -3355,7 +3355,7 @@ which is at most $12 \cdot 2^k \ulp(B_k)$, since $1/2 \leq B_k$.
 
 If we stop when $|A_k-B_k| \leq 2^{k-p}$ where $p$ is the working precision,
 then $|\mu^2 - B_k| \leq 13 \cdot 2^{k-p}$.
-The error on $D$ is bounded by $\sum_{j=0}^k 2^{j} (6 \cdot 2^{k-p} + 
+The error on $D$ is bounded by $\sum_{j=0}^k 2^{j} (6 \cdot 2^{k-p} +
 12 \cdot 2^{k-p}) \leq 6 \cdot 2^{2k-p+2}$, which gives a relative error less
 than $2^{2k-p+7}$ since $D_k \geq 3/16$.
 
@@ -3382,7 +3382,7 @@ As in \cite{Brent78}, let $\alpha \sim 4.319136566$ the positive root
 of $\alpha + 2 = \alpha \log \alpha$, and $N = \lceil \alpha n \rceil$.
 We approximate $S(n)$ by
 \[ S'(n) = \sum_{k=1}^{N} \frac{n^k (-1)^{k-1}}{k! k}. \]
-%         = \frac{1}{N!} \sum_{k=1}^N \frac{a_k}{k}, 
+%         = \frac{1}{N!} \sum_{k=1}^N \frac{a_k}{k},
 % where $a_k = n^k (-1)^{k-1} N!/k!$ is an integer.
 % Therefore $a_k$ is exactly computed, and when dividing it by $k$
 % (integer division)
@@ -3399,12 +3399,12 @@ since $(e/\alpha)^{\alpha} = e^{-2}$.
 
 To approximate $S'(n)$, we use the binary splitting method,
 which computes
-integers $T$ and $Q$ such that $S'(n) = \frac{T}{Q}$ exactly, then we 
+integers $T$ and $Q$ such that $S'(n) = \frac{T}{Q}$ exactly, then we
 compute $t = \circ(T)$, and $s = \circ(t/Q)$, both with rounding to nearest.
 If the working precision is $w$,
 we have $t = T (1+\theta_1)$ and $s = t/Q(1+\theta_2)$ where
 $|\theta_i| \leq 2^{-w}$.
-If follows $s = T/Q (1+\theta_1)(1+\theta_2)$, thus the error on $s$ 
+If follows $s = T/Q (1+\theta_1)(1+\theta_2)$, thus the error on $s$
 is less than $3$ ulps, since $(1+2^{-w})^2 \leq 1 + 3 \cdot 2^{-w}$.
 \begin{comment}
 To approximate $S'(n)$, we use the following algorithm, where $m$ is the
@@ -3432,11 +3432,11 @@ will have an error of at most $\ulp(x)$.
 \medskip
 
 \Paragraph{Evaluation of $R(n)$.}
-We estimate $R(n)$ using the terms up to $k=n-2$, again 
+We estimate $R(n)$ using the terms up to $k=n-2$, again
 as in \cite{Brent78}:
 \[ R'(n) = \frac{e^{-n}}{n} \sum_{k=0}^{n-2} \frac{k!}{(-n)^k}. \]
 % = \frac{\exp(-n)}{n^{n-1}} \sum_{k=0}^{n-2} (-1)^k \frac{k!} {n^{n-2-k}}.
-% Here again, the integer sum is computed exactly, converting it to a 
+% Here again, the integer sum is computed exactly, converting it to a
 % floating-point number introduces at most one ulp of error,
 % $\exp(-n)$ is computed within one ulp,
 % and $n^{n-1}$ within at most $n-2$ ulps.
@@ -3452,12 +3452,12 @@ Formula 6.1.38 from \cite{AbSt73} gives
 $x! = \sqrt{2\pi} x^{x+1/2} e^{-x+\frac{\theta}{12x}}$ for $x>0$ and
 $0 < \theta < 1$.
 Using it for $x \ge 1$, we have $0 < \frac{\theta}{6x} < 1$, and
-$e^t < 1+2t$ for $0 < t < 1$, thus 
+$e^t < 1+2t$ for $0 < t < 1$, thus
 $(x!)^2 \le 2\pi x^{2x} e^{-2x} (x+\frac{1}{3})$.}
 for $n \ge 1$, we have:
-\[ |R(n) - R'(n)| = (n-1)! I_n 
+\[ |R(n) - R'(n)| = (n-1)! I_n
         \le \frac{n!}{n} \int_n^{\infty} \frac{e^{-n}}{u^n} du
-        \le \frac{n^{n-1}}{e^n} \sqrt{2 \pi (n+1)} \frac{e^{-n}}{(n-1) 
+        \le \frac{n^{n-1}}{e^n} \sqrt{2 \pi (n+1)} \frac{e^{-n}}{(n-1)
         n^{n-1}} \]
 and since $\sqrt{2 \pi (n+1)}/(n-1) \le 1$ for $n \ge 9$:
 \[ |R(n) - R'(n)| \le e^{-2n} \quad \mbox{for $n \ge 9$}. \]
@@ -3481,7 +3481,7 @@ return $r = e^{-n} x$
 The absolute error $\epsilon_k$ on $a$ at step $k$ satisfies
 $\epsilon_k \le 1 + k/n \epsilon_{k-1}$ with $\epsilon_0=0$.
 As $k/n \le 1$, we have $\epsilon_k \le k$, whence the error
-on $s$ is bounded by $n(n+1)/2$, and that on $t$ by 
+on $s$ is bounded by $n(n+1)/2$, and that on $t$ by
 $1 + (n+1)/2 \le n+1$ since $n \ge 1$.
 The operation $x \leftarrow t/2^m$ is exact as soon as ${\rm prec}(x)$ is large
 enough, thus the error on $x$ is at most $(n+1) \frac{e^n}{2^{{\rm prec}(x)}}$.
@@ -3490,7 +3490,7 @@ the error on it is at most $e^{-n} 2^{1-m}$.
 The error on $r$ is then $(n + 1 + 2/n) 2^{-{\rm prec}(x)} +
 \ulp(r)$.
 Since $x \ge \frac{2}{3} n$ for $n \ge 2$, and $x 2^{-{\rm prec}(x)}
-< \ulp(x)$, this gives an error bounded by 
+< \ulp(x)$, this gives an error bounded by
 $\ulp(r) + (n + 1 + 2/n) \frac{3}{2n} \ulp(r)
 \le 4 \ulp(r)$ for $n \ge 2$ --- if ${\rm prec}(x) = {\rm prec}(r)$.
 Now since $r \le \frac{e^{-n}}{n} \le \frac{1}{8}$, that error
@@ -3499,7 +3499,7 @@ is less than $\ulp(1/2)$.
 \medskip
 
 \Paragraph{Final computation.} We use the formula
-$\gamma = S(n) - R(n) - \log n$ with $n$ such that $e^{-2n} \le 
+$\gamma = S(n) - R(n) - \log n$ with $n$ such that $e^{-2n} \le
 \ulp(1/2) = 2^{-{\rm prec}}$, i.e.\ $n \ge {\rm prec} \frac{\log 2}{2}$:
 \begin{quote}
 $s \leftarrow S'(n)$ \\
@@ -3507,14 +3507,14 @@ $l \leftarrow \log(n)$ \\
 $r \leftarrow R'(n)$ \\
 return $(s - l) - r$
 \end{quote}
-Since the final result is in $[\frac{1}{2}, 1]$, and $R'(n) \le 
+Since the final result is in $[\frac{1}{2}, 1]$, and $R'(n) \le
 \frac{e^{-n}}{n}$, then $S'(n)$ approximates $\log n$.
-If the target precision is $m$, and 
+If the target precision is $m$, and
 we use $m + \lceil \log_2({\rm prec}) \rceil$ bits to evaluate $s$ and $l$,
 then the error on $s-l$ will be at most $3 \ulp(1/2)$,
 so the error on $(s - l) - r$ is at most $5 \ulp(1/2)$,
 and adding the $3 e^{-2n}$ truncation error, we get a bound of
-$8 \ulp(1/2)$. 
+$8 \ulp(1/2)$.
 [\textbf{FIXME: check with new method to compute S}]
 
 \subsubsection{A faster formula}
@@ -3547,7 +3547,7 @@ Let $K'_0 = \sqrt{\frac{\pi}{4n}} e^{-2n} \sum_{k=0}^{4n-1} (-1)^k
 \[ |K_0 - K'_0| \le \frac{(8n+1)}{16 \sqrt{2} n} \frac{e^{-6n}}{n}
         \le \frac{1}{2} \frac{e^{-6n}}{n}. \]
 We get from this
-\[ \left| \frac{K_0}{I_0} - \frac{K'_0}{I'_0} \right| 
+\[ \left| \frac{K_0}{I_0} - \frac{K'_0}{I'_0} \right|
         \le \frac{1}{2 I_0} \frac{e^{-6n}}{n} \le \sqrt{\frac{\pi}{n}}
         e^{-8n}. \]
 Let $S'_0 = \sum_{k=1}^{K-1} \frac{n^{2k}}{(k!)^2} H_k$,
@@ -3560,7 +3560,7 @@ We deduce:
         \frac{\beta}{n} \le e^{-8n}. \]
 Hence we have
 \[ \left| \gamma - \left( \frac{S'_0 - K'_0}{I'_0} - \log n \right) \right|
-        \le (1 + \sqrt{\frac{\pi}{n}}) e^{-8n} 
+        \le (1 + \sqrt{\frac{\pi}{n}}) e^{-8n}
         \le 3 e^{-8n}. \]
 
 \subsection{The $\log 2$ constant}
@@ -3586,10 +3586,10 @@ $t \leftarrow \circ(T)$ [rounded to nearest] \\
 $q \leftarrow \circ(Q)$ [rounded to nearest] \\
 $x \leftarrow \circ(t/q)$ [rounded to nearest]
 \end{quote}
-Using Higham's notation, we write $t = T (1+\theta_1)$, 
+Using Higham's notation, we write $t = T (1+\theta_1)$,
 $q = Q (1+\theta_2)$, $x = t/q (1+\theta_3)$ with $|\theta_i| \leq 2^{-w}$.
 We thus have $x = T/Q (1+\theta)^3$ with $|\theta| \leq 2^{-w}$.
-Since $T/Q \leq 1$, the total absolute error on $x$ is thus bounded by 
+Since $T/Q \leq 1$, the total absolute error on $x$ is thus bounded by
 $3 |\theta| + 3 \theta^2 + |\theta|^3 + 2^{-w-2} < 2^{-w+2}$ as long
 as $w \geq 3$.
 
@@ -3604,11 +3604,11 @@ We compute it using formula (31) of Victor Adamchik's document
   \sum_{k=0}^{\infty} \frac{(k!)^2}{(2k)! (2k+1)^2}. \]
 Let $f(k) = \frac{(k!)^2}{(2k)! (2k+1)^2}$, and
 $S(0,K) = \sum_{k=0}^{K-1} f(k)$, and $S = S(0, \infty)$.
-We compute $S(0,K)$ 
+We compute $S(0,K)$
 exactly by binary splitting.
 Since $f(k)/f(k-1) = \frac{k (2k-1)}{2 (2k+1)^2} \leq 1/4$,
 the truncation error on $S$ is bounded by $4/3 f(K) \leq 4/3 \cdot 4^{-K}$.
-Since $S$ is multiplied by $3/8$, the corresponding contribution to the 
+Since $S$ is multiplied by $3/8$, the corresponding contribution to the
 absolute error on $G$ is $2^{-2K-1}$.
 As long as $2K + 1$ is greater or equal to the working precision $w$, this
 truncation error is less than one ulp of the final result.
@@ -3632,7 +3632,7 @@ The error on $t$ and $q$ is less than one ulp;
 using the generic error on the division, since $t \geq T$ and $q \leq Q$,
 the error on $s$ is at most $9/2$ ulps.
 
-The error on $x$ is at most $1$ ulp; since $1 < x < 2$ --- assuming 
+The error on $x$ is at most $1$ ulp; since $1 < x < 2$ --- assuming
 $w \geq 2$ ---, $\ulp(x) = 1/2 \ulp(y)$, thus the error on $y$ is at most
 $3/2 \ulp(y)$.
 The generic error on the logarithm (\textsection\ref{generic:log})
