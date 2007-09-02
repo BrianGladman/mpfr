@@ -37,7 +37,7 @@ MAKEINFOFLAGS = --enable-encoding
 # (with "make get_patches.c") just after patching the MPFR source. This
 # should not be a problem in practice, in particular because "make dist"
 # automatically rebuilds get_patches.c before generating the archives.
-get_patches.c: PATCHES get_patches.sh
+$(srcdir)/get_patches.c: PATCHES get_patches.sh
 	(cd $(srcdir) && ./get_patches.sh) > $@ || rm -f $@
 
 # Do not add get_patches.c to CLEANFILES so that this file doesn't
