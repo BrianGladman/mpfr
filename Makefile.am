@@ -32,8 +32,13 @@ mpfr_TEXINFOS = fdl.texi
 
 MAKEINFOFLAGS = --enable-encoding
 
+# Important note: If for some reason, srcdir is read-only at build time
+# (and you use objdir != srcdir), then you need to rebuild get_patches.c
+# (with "make get_patches.c") just after patching the MPFR source. This
+# should not be a problem in practice, in particular because "make dist"
+# automatically rebuilds get_patches.c before generating the archives.
 get_patches.c: PATCHES get_patches.sh
-	./get_patches.sh > $@ || rm -f $@
+	(cd $(srcdir) && ./get_patches.sh) > $@ || rm -f $@
 
 # Do not add get_patches.c to CLEANFILES so that this file doesn't
 # need to be (re)built as long as no patches are applied. Anyway the
