@@ -151,6 +151,30 @@ bug20070831 (void)
   mpfr_clears (x, y, z, (void *) 0);
 }
 
+static void
+huge (void)
+{
+  mpfr_t x, y, z;
+  int inex;
+
+  /* TODO: extend the exponent range and use mpfr_get_emax (). */
+  mpfr_inits2 (32, x, y, z, (void *) 0);
+  mpfr_set_ui_2exp (x, 1, 1073741822, GMP_RNDN);
+  inex = mpfr_acosh (y, x, GMP_RNDN);
+  mpfr_set_str_binary (z, "0.10110001011100100001011111110101E30");
+  if (!mpfr_equal_p (y, z))
+    {
+      printf ("Error in huge:\nexpected ");
+      mpfr_dump (z);
+      printf ("got      ");
+      mpfr_dump (y);
+      exit (1);
+    }
+  MPFR_ASSERTN (inex < 0);
+
+  mpfr_clears (x, y, z, (void *) 0);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -158,6 +182,7 @@ main (int argc, char *argv[])
 
   special ();
   bug20070831 ();
+  huge ();
 
   test_generic (2, 100, 25);
 

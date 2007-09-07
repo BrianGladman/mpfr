@@ -88,6 +88,8 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
     for (;;)
       {
         /* compute acosh */
+        /* FIXME: mpfr_mul can overflow, leading to an incorrect result.
+           Use ln(2x) in this case? */
         mpfr_mul (t, x, x, GMP_RNDD);      /* x^2 */
         exp_te = MPFR_GET_EXP (t);
         mpfr_sub_ui (t, t, 1, GMP_RNDD);   /* x^2-1 */
