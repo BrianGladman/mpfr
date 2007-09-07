@@ -1,4 +1,5 @@
-/* Generic test file for functions with one or two mpfr_t arguments.
+/* Generic test file for functions with one or two arguments (the second being 
+   either mpfr_t or double).
 
 Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007 Free Software Foundation, Inc.
 Contributed by the Arenaire and Cacao projects, INRIA.
@@ -20,7 +21,9 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
-/* define TWO_ARGS for two-argument functions like mpfr_pow */
+/* define TWO_ARGS for two-argument functions like mpfr_pow 
+   define DOUBLE_ARG1 or DOUBLE_ARG2 for function with a double operand in
+   first or second place like sub_d or d_sub */
 
 #ifndef TEST_RANDOM_POS
 /* For the random function: one number on two is negative. */
@@ -60,7 +63,7 @@ MA 02110-1301, USA. */
   while (0)
 
 #undef TGENERIC_CHECK
-#if defined(TWO_ARGS)
+#if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
 #define TGENERIC_CHECK(S, EXPR) \
   do if (!(EXPR)) TGENERIC_FAIL (S, x, u); while (0)
 #else
@@ -87,7 +90,7 @@ MA 02110-1301, USA. */
     }                                                                   \
   while (0)
 #undef TGENERIC_INFO
-#if defined(TWO_ARGS)
+#if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
 #define TGENERIC_INFO(F,P) TGENERIC_IAUX(F,P,x,u)
 #else
 #define TGENERIC_INFO(F,P) TGENERIC_IAUX(F,P,x,0)
@@ -108,6 +111,9 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
   mpfr_t x, y, z, t;
 #ifdef TWO_ARGS
   mpfr_t u;
+#elif defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
+  mpfr_t u;
+  double d;
 #endif
   mp_rnd_t rnd;
   int inexact, compare, compare2;
@@ -118,7 +124,7 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
   mpfr_init (y);
   mpfr_init (z);
   mpfr_init (t);
-#ifdef TWO_ARGS
+#if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
   mpfr_init (u);
 #endif
 
@@ -143,19 +149,21 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
           mpfr_set_prec (x, xprec);
 #ifdef TWO_ARGS
           mpfr_set_prec (u, xprec);
+#elif defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
+	  mpfr_set_prec (u, IEEE_DBL_MANT_DIG);
 #endif
 
           if (n > 3 || prec < p1)
             {
 #if defined(RAND_FUNCTION)
               RAND_FUNCTION (x);
-#ifdef TWO_ARGS
+#if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
               RAND_FUNCTION (u);
 #endif
 #else
               tests_default_random (x, TEST_RANDOM_POS,
                                     TEST_RANDOM_EMIN, TEST_RANDOM_EMAX);
-#ifdef TWO_ARGS
+#if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
               tests_default_random (u, TEST_RANDOM_POS2,
                                     TEST_RANDOM_EMIN, TEST_RANDOM_EMAX);
 #endif
@@ -166,7 +174,7 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
               /* Special cases tested in precision p1 if n <= 1. */
               mpfr_set_si (x, n == 0 ? 1 : -1, GMP_RNDN);
               mpfr_set_exp (x, mpfr_get_emin ());
-#ifdef TWO_ARGS
+#if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
               mpfr_set_si (u, randlimb () % 2 == 0 ? 1 : -1, GMP_RNDN);
               mpfr_set_exp (u, mpfr_get_emin ());
 #endif
@@ -178,7 +186,7 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
                 continue;
               mpfr_set_si (x, n == 0 ? 1 : -1, GMP_RNDN);
               mpfr_setmax (x, REDUCE_EMAX);
-#ifdef TWO_ARGS
+#if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
               mpfr_set_si (u, randlimb () % 2 == 0 ? 1 : -1, GMP_RNDN);
               mpfr_setmax (u, mpfr_get_emax ());
 #endif
@@ -191,6 +199,12 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
 #endif
 #if defined(TWO_ARGS)
           compare = TEST_FUNCTION (y, x, u, rnd);
+#elif defined(DOUBLE_ARG1)
+	  d = mpfr_get_d (u, rnd); 
+	  compare = TEST_FUNCTION (y, d, x, rnd);
+#elif defined(DOUBLE_ARG2)
+	  d = mpfr_get_d (u, rnd);
+	  compare = TEST_FUNCTION (y, x, d, rnd);
 #else
           compare = TEST_FUNCTION (y, x, rnd);
 #endif
@@ -232,6 +246,10 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
 #endif
 #if defined(TWO_ARGS)
               inexact = TEST_FUNCTION (z, x, u, rnd);
+#elif defined(DOUBLE_ARG1) 
+	      inexact = TEST_FUNCTION (z, d, x, rnd);
+#elif defined(DOUBLE_ARG2)
+	      inexact = TEST_FUNCTION (z, x, d, rnd);
 #else
               inexact = TEST_FUNCTION (z, x, rnd);
 #endif
@@ -244,6 +262,9 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
 #ifdef TWO_ARGS
                   printf ("\nu=");
                   mpfr_out_str (stdout, 2, xprec, u, GMP_RNDN);
+#elif defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
+		  printf ("\nu=");
+		  mpfr_out_str (stdout, 2, IEEE_DBL_MANT_DIG, u, GMP_RNDN);
 #endif
                   printf (" prec=%u rnd_mode=%s\n", (unsigned) prec,
                           mpfr_print_rnd_mode (rnd));
@@ -272,7 +293,7 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
                   printf ("Wrong inexact flag for rnd=%s: expected %d, got %d"
                           "\n", mpfr_print_rnd_mode (rnd), compare, inexact);
                   printf ("x="); mpfr_print_binary (x); puts ("");
-#ifdef TWO_ARGS
+#if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
                   printf ("u="); mpfr_print_binary (u); puts ("");
 #endif
                   printf ("y="); mpfr_print_binary (y); puts ("");
@@ -293,7 +314,7 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
   mpfr_clear (y);
   mpfr_clear (z);
   mpfr_clear (t);
-#ifdef TWO_ARGS
+#if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
   mpfr_clear (u);
 #endif
 }

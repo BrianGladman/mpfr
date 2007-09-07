@@ -1168,6 +1168,7 @@ rounded to an integer in the direction @var{rnd}.
 @deftypefun int mpfr_add (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_add_ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_add_si (mpfr_t @var{rop}, mpfr_t @var{op1}, long int @var{op2}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_add_d (mpfr_t @var{rop}, mpfr_t @var{op1}, double @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_add_z (mpfr_t @var{rop}, mpfr_t @var{op1}, mpz_t @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_add_q (mpfr_t @var{rop}, mpfr_t @var{op1}, mpq_t @var{op2}, mp_rnd_t @var{rnd})
 Set @var{rop} to @math{@var{op1} + @var{op2}} rounded in the direction
@@ -1180,6 +1181,8 @@ Set @var{rop} to @math{@var{op1} + @var{op2}} rounded in the direction
 @deftypefunx int mpfr_sub_ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_si_sub (mpfr_t @var{rop}, long int @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_sub_si (mpfr_t @var{rop}, mpfr_t @var{op1}, long int @var{op2}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_d_sub (mpfr_t @var{rop}, double @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_sub_d (mpfr_t @var{rop}, mpfr_t @var{op1}, double @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_sub_z (mpfr_t @var{rop}, mpfr_t @var{op1}, mpz_t @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_sub_q (mpfr_t @var{rop}, mpfr_t @var{op1}, mpq_t @var{op2}, mp_rnd_t @var{rnd})
 Set @var{rop} to @math{@var{op1} - @var{op2}} rounded in the direction
@@ -1191,6 +1194,7 @@ Set @var{rop} to @math{@var{op1} - @var{op2}} rounded in the direction
 @deftypefun int mpfr_mul (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_mul_ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_mul_si (mpfr_t @var{rop}, mpfr_t @var{op1}, long int @var{op2}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_mul_d (mpfr_t @var{rop}, mpfr_t @var{op1}, double @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_mul_z (mpfr_t @var{rop}, mpfr_t @var{op1}, mpz_t @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_mul_q (mpfr_t @var{rop}, mpfr_t @var{op1}, mpq_t @var{op2}, mp_rnd_t @var{rnd})
 Set @var{rop} to @math{@var{op1} @GMPtimes{} @var{op2}} rounded in the
@@ -1209,6 +1213,8 @@ rounded in the direction @var{rnd}.
 @deftypefunx int mpfr_div_ui (mpfr_t @var{rop}, mpfr_t @var{op1}, unsigned long int @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_si_div (mpfr_t @var{rop}, long int @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_div_si (mpfr_t @var{rop}, mpfr_t @var{op1}, long int @var{op2}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_d_div (mpfr_t @var{rop}, double @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_div_d (mpfr_t @var{rop}, mpfr_t @var{op1}, double @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_div_z (mpfr_t @var{rop}, mpfr_t @var{op1}, mpz_t @var{op2}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_div_q (mpfr_t @var{rop}, mpfr_t @var{op1}, mpq_t @var{op2}, mp_rnd_t @var{rnd})
 Set @var{rop} to @math{@var{op1}/@var{op2}} rounded in the direction @var{rnd}.

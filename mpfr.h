@@ -381,6 +381,19 @@ __MPFR_DECLSPEC int mpfr_div_si _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
 __MPFR_DECLSPEC int mpfr_si_div _MPFR_PROTO ((mpfr_ptr, long int,
                                               mpfr_srcptr, mpfr_rnd_t));
 
+__MPFR_DECLSPEC int mpfr_add_d _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
+                                              double, mpfr_rnd_t));
+__MPFR_DECLSPEC int mpfr_sub_d _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
+                                              double, mpfr_rnd_t));
+__MPFR_DECLSPEC int mpfr_d_sub _MPFR_PROTO ((mpfr_ptr, double,
+                                              mpfr_srcptr, mpfr_rnd_t));
+__MPFR_DECLSPEC int mpfr_mul_d _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
+                                              double, mpfr_rnd_t));
+__MPFR_DECLSPEC int mpfr_div_d _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
+                                              double, mpfr_rnd_t));
+__MPFR_DECLSPEC int mpfr_d_div _MPFR_PROTO ((mpfr_ptr, double,
+                                              mpfr_srcptr, mpfr_rnd_t));
+
 __MPFR_DECLSPEC int mpfr_sqr _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,mpfr_rnd_t));
 
 __MPFR_DECLSPEC int mpfr_const_pi _MPFR_PROTO ((mpfr_ptr, mpfr_rnd_t));
