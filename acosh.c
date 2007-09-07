@@ -88,42 +88,60 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
     for (;;)
       {
         /* compute acosh */
-        /* FIXME: mpfr_mul can overflow, leading to an incorrect result.
-           Use ln(2x) in this case? */
+        mpfr_clear_flags ();
         mpfr_mul (t, x, x, GMP_RNDD);      /* x^2 */
-        exp_te = MPFR_GET_EXP (t);
-        mpfr_sub_ui (t, t, 1, GMP_RNDD);   /* x^2-1 */
-        if (MPFR_UNLIKELY (MPFR_IS_ZERO (t)))
+        if (mpfr_overflow_p ())
           {
-            mpfr_t z;
+            mpfr_t ln2;
 
-            /* This means that x is very close to 1: x = 1 + z with
-               z < 2^(-Nt). Instead of increasing the precision, let's
-               compute x^2-1 by (x+1)(x-1) with an accuracy of about
-               Nt bits. */
-            mpfr_init2 (z, Nt);
-            mpfr_add_ui (t, x, 1, GMP_RNDD);
-            mpfr_sub_ui (z, x, 1, GMP_RNDD);
-            mpfr_mul (t, t, z, GMP_RNDD);
-            d = 2;
-            mpfr_sqrt (t, t, GMP_RNDN);        /* sqrt(x^2-1) */
-            mpfr_add (t, t, z, GMP_RNDN);      /* sqrt(x^2-1)+z */
-            mpfr_clear (z);
-            mpfr_log1p (t, t, GMP_RNDN);       /* log1p(sqrt(x^2-1)+z) */
+            /* As x is very large and the precision is not too large, we
+               assume that we obtain the same result by evaluating ln(2x).
+               We need to compute ln(x) + ln(2) as 2x can overflow. TODO:
+               write a proof and add an MPFR_ASSERTN. */
+            mpfr_init2 (ln2, Nt);
+            mpfr_log (t, x, GMP_RNDN);
+            mpfr_const_log2 (ln2, GMP_RNDN);
+            mpfr_add (t, t, ln2, GMP_RNDN);
+            mpfr_clear (ln2);
+            err = 2;
           }
         else
           {
-            d = exp_te - MPFR_GET_EXP (t);
-            d = MAX (1, d);
-            mpfr_sqrt (t, t, GMP_RNDN);        /* sqrt(x^2-1) */
-            mpfr_add (t, t, x, GMP_RNDN);      /* sqrt(x^2-1)+x */
-            mpfr_log (t, t, GMP_RNDN);         /* ln(sqrt(x^2-1)+x) */
+            exp_te = MPFR_GET_EXP (t);
+            mpfr_sub_ui (t, t, 1, GMP_RNDD);   /* x^2-1 */
+            if (MPFR_UNLIKELY (MPFR_IS_ZERO (t)))
+              {
+                mpfr_t z;
+
+                /* This means that x is very close to 1: x = 1 + z with
+                   z < 2^(-Nt). Instead of increasing the precision, let's
+                   compute x^2-1 by (x+1)(x-1) with an accuracy of about
+                   Nt bits. */
+                mpfr_init2 (z, Nt);
+                mpfr_add_ui (t, x, 1, GMP_RNDD);
+                mpfr_sub_ui (z, x, 1, GMP_RNDD);
+                mpfr_mul (t, t, z, GMP_RNDD);
+                d = 2;
+                mpfr_sqrt (t, t, GMP_RNDN);        /* sqrt(x^2-1) */
+                mpfr_add (t, t, z, GMP_RNDN);      /* sqrt(x^2-1)+z */
+                mpfr_clear (z);
+                mpfr_log1p (t, t, GMP_RNDN);       /* log1p(sqrt(x^2-1)+z) */
+              }
+            else
+              {
+                d = exp_te - MPFR_GET_EXP (t);
+                d = MAX (1, d);
+                mpfr_sqrt (t, t, GMP_RNDN);        /* sqrt(x^2-1) */
+                mpfr_add (t, t, x, GMP_RNDN);      /* sqrt(x^2-1)+x */
+                mpfr_log (t, t, GMP_RNDN);         /* ln(sqrt(x^2-1)+x) */
+              }
+
+            /* error estimate -- see algorithms.tex */
+            err = 3 + d - MPFR_GET_EXP (t);
+            /* error is bounded by 1/2 + 2^err <= 2^(1+max(-1,err)) */
+            err = 1 + MAX (-1, err);
           }
 
-        /* error estimate -- see algorithms.tex */
-        err = 3 + d - MPFR_GET_EXP (t);
-        /* error is bounded by 1/2 + 2^err <= 2^(1+max(-1,err)) */
-        err = 1 + MAX (-1, err);
         if (MPFR_LIKELY (MPFR_CAN_ROUND (t, Nt - err, Ny, rnd_mode)))
           break;
 
