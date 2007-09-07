@@ -298,6 +298,10 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
 #endif
 }
 
+#undef TEST_RANDOM_POS
+#undef TEST_RANDOM_POS2
+#undef TEST_RANDOM_EMIN
+#undef TEST_RANDOM_EMAX
 #undef RAND_FUNCTION
 #undef TWO_ARGS
 #undef TWO_ARGS_UI
