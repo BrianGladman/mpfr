@@ -411,7 +411,7 @@ void
 tests_default_random (mpfr_ptr x, int pos, mp_exp_t emin, mp_exp_t emax)
 {
   mpfr_random (x);
-  if (randlimb () & 1)
+  if (emin >= 1 || (randlimb () & 1))
     mpfr_mul_2si (x, x, emin + (long) (randlimb () % (emax - emin + 1)),
                   GMP_RNDN);
   if (randlimb () % 512 < pos)
