@@ -93,17 +93,20 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
         if (mpfr_overflow_p ())
           {
             mpfr_t ln2;
+            mp_prec_t pln2;
 
             /* As x is very large and the precision is not too large, we
                assume that we obtain the same result by evaluating ln(2x).
                We need to compute ln(x) + ln(2) as 2x can overflow. TODO:
                write a proof and add an MPFR_ASSERTN. */
-            mpfr_init2 (ln2, Nt);
-            mpfr_log (t, x, GMP_RNDN);
-            mpfr_const_log2 (ln2, GMP_RNDN);
-            mpfr_add (t, t, ln2, GMP_RNDN);
+            mpfr_log (t, x, GMP_RNDN);  /* err(log) < 1/2 ulp(t) */
+            pln2 = Nt - MPFR_PREC_MIN < MPFR_GET_EXP (t) ?
+              MPFR_PREC_MIN : Nt - MPFR_GET_EXP (t);
+            mpfr_init2 (ln2, pln2);
+            mpfr_const_log2 (ln2, GMP_RNDN);  /* err(ln2) < 1/2 ulp(t) */
+            mpfr_add (t, t, ln2, GMP_RNDN);  /* err <= 3/2 ulp(t) */
             mpfr_clear (ln2);
-            err = 2;
+            err = 1;
           }
         else
           {
