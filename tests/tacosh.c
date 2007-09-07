@@ -30,6 +30,13 @@ MA 02110-1301, USA. */
 #define TEST_RANDOM_EMIN 1
 #include "tgeneric.c"
 
+#define TEST_FUNCTION mpfr_acosh
+#define TEST_RANDOM_POS 1
+#define TEST_RANDOM_EMIN 1073741822
+#define TEST_RANDOM_EMAX 1073741822
+#define test_generic test_generic_huge
+#include "tgeneric.c"
+
 static void
 special (void)
 {
@@ -185,6 +192,7 @@ main (int argc, char *argv[])
   huge ();
 
   test_generic (2, 100, 25);
+  test_generic_huge (2, 100, 5);
 
   data_check ("data/acosh", mpfr_acosh, "mpfr_acosh");
   bad_cases (mpfr_acosh, mpfr_cosh, "mpfr_acosh", 0, -128, 29,
