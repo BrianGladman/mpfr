@@ -79,9 +79,6 @@ Changes in existing functions:
 New functions to implement:
 ##############################################################################
 
-- functions operating on mpfr_t and double: mpfr_add_d, mpfr_sub_d,
-  mpfr_d_sub, mpfr_mul_d, mpfr_div_d, mpfr_d_div
-  [suggested by Keith Briggs, 3 Jan 2006]
 - modf (to extract integer and fractional parts), suggested by
         Dmitry Antipov <dmitry.antipov@mail.ru> Thu, 13 Jun 2002
 - mpfr_fmod (mpfr_t, mpfr_srcptr, mpfr_srcptr, mp_rnd_t)
