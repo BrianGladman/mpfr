@@ -1174,6 +1174,9 @@ rounded to an integer in the direction @var{rnd}.
 Set @var{rop} to @math{@var{op1} + @var{op2}} rounded in the direction
 @var{rnd}. For types having no signed zero, it is considered unsigned
 (i.e.@: (+0) + 0 = (+0) and (@minus{}0) + 0 = (@minus{}0)).
+The @code{mpfr_add_d} function assumes that the radix of the @code{double} type
+is a power of 2, with a precision at most that declared by the C implementation
+(macro @code{IEEE_DBL_MANT_DIG}, and if not defined 53 bits).
 @end deftypefun
 
 @deftypefun int mpfr_sub (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
@@ -1189,6 +1192,8 @@ Set @var{rop} to @math{@var{op1} - @var{op2}} rounded in the direction
 @var{rnd}. For types having no signed zero, it is considered unsigned
 (i.e.@: (+0) @minus{} 0 = (+0), (@minus{}0) @minus{} 0 = (@minus{}0),
 0 @minus{} (+0) = (@minus{}0) and 0 @minus{} (@minus{}0) = (+0)).
+The same restrictions than for @code{mpfr_add_d} apply to @code{mpfr_d_sub}
+and @code{mpfr_sub_d}.
 @end deftypefun
 
 @deftypefun int mpfr_mul (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
@@ -1201,6 +1206,7 @@ Set @var{rop} to @math{@var{op1} @GMPtimes{} @var{op2}} rounded in the
 direction @var{rnd}.
 When a result is zero, its sign is the product of the signs of the operands
 (for types having no signed zero, it is considered positive).
+The same restrictions than for @code{mpfr_add_d} apply to @code{mpfr_mul_d}.
 @end deftypefun
 
 @deftypefun int mpfr_sqr (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
@@ -1220,6 +1226,8 @@ rounded in the direction @var{rnd}.
 Set @var{rop} to @math{@var{op1}/@var{op2}} rounded in the direction @var{rnd}.
 When a result is zero, its sign is the product of the signs of the operands
 (for types having no signed zero, it is considered positive).
+The same restrictions than for @code{mpfr_add_d} apply to @code{mpfr_d_div}
+and @code{mpfr_div_d}.
 @end deftypefun
 
 @deftypefun int mpfr_sqrt (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
