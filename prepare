@@ -1,6 +1,13 @@
 #!/bin/sh --
 
-# This script is inspired by the prepare script distributed with Mutt.
+cat <<EOF
+********************************************************************
+Warning! This script is obsolete; you should use autoreconf instead.
+Please, see the README.dev file for more information."
+********************************************************************
+EOF
+
+# This script is inspired by the old prepare script distributed with Mutt.
 
 if test x"$1" = x"-dev" ; then
   include_deps=
