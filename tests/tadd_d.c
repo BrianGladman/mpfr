@@ -27,6 +27,67 @@ MA 02110-1301, USA. */
 #include "mpfr-test.h"
 
 static void
+check_regulars (void)
+{
+  mpfr_t x, y, z;
+  double d;
+  int inexact;
+
+  /* (1) check with enough precision */
+  mpfr_init2 (x, IEEE_DBL_MANT_DIG);
+  mpfr_init2 (y, IEEE_DBL_MANT_DIG);
+  mpfr_init2 (z, IEEE_DBL_MANT_DIG);
+  
+  mpfr_set_str (y, "4096", 10, GMP_RNDN);
+  d = 0.125;
+  mpfr_clear_flags ();
+  inexact = mpfr_add_d (x, y, d, GMP_RNDN);
+  if (inexact != 0)
+    {
+      printf ("Inexact flag error in mpfr_add_d (1)\n");
+      exit (1);
+    }
+  mpfr_set_str (z, "4096.125", 10, GMP_RNDN);
+  if (mpfr_cmp (z, x))
+    {
+      printf ("Error in mpfr_add_d (");
+      mpfr_out_str (stdout, 10, 7, y, GMP_RNDN);
+      printf (" + %.20g)\nexpected ", d);
+      mpfr_out_str (stdout, 10, 0, z, GMP_RNDN);
+      printf ("\ngot     ");
+      mpfr_out_str (stdout, 10, 0, x, GMP_RNDN);
+      printf ("\n");
+      exit (1);
+    }
+  
+  /* (2) check inexact flag */
+  mpfr_set_prec (x, 2);
+  mpfr_set_prec (z, 2);
+  
+  mpfr_clear_flags ();
+  inexact = mpfr_add_d (x, y, d, GMP_RNDN);
+  if (inexact == 0)
+    {
+      printf ("Inexact flag error in mpfr_add_d (2)\n");
+      exit (1);
+    }
+  mpfr_set_str (z, "4096.125", 10, GMP_RNDN);
+  if (mpfr_cmp (z, x))
+    {
+      printf ("Error in mpfr_add_d (");
+      mpfr_out_str (stdout, 10, 0, y, GMP_RNDN);
+      printf (" + %.20g)\nexpected ", d);
+      mpfr_out_str (stdout, 10, 0, z, GMP_RNDN);
+      printf ("\ngot     ");
+      mpfr_out_str (stdout, 10, 0, x, GMP_RNDN);
+      printf ("\n");
+      exit (1);
+    }
+
+  mpfr_clears (x, y, z, (void *) 0);
+}
+
+static void
 check_nans (void)
 {
   mpfr_t  x, y;
@@ -67,6 +128,7 @@ main (int argc, char *argv[])
   tests_start_mpfr ();
 
   check_nans ();
+  check_regulars ();
 
   test_generic (2, 1000, 100);
 

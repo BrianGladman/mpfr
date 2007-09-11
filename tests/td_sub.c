@@ -63,8 +63,40 @@ check_nans (void)
 int
 main (int argc, char *argv[])
 {
+  mpfr_t x, y, z;
+  double d;
+  int inexact;
+
   MPFR_TEST_USE_RANDS ();
   tests_start_mpfr ();
+
+  /* check with enough precision */
+  mpfr_init2 (x, IEEE_DBL_MANT_DIG);
+  mpfr_init2 (y, IEEE_DBL_MANT_DIG);
+  mpfr_init2 (z, IEEE_DBL_MANT_DIG);
+  
+  mpfr_set_str (y, "4096", 10, GMP_RNDN);
+  d = 0.125;
+  mpfr_clear_flags ();
+  inexact = mpfr_d_sub (x, d, y, GMP_RNDN);
+  if (inexact != 0)
+    {
+      printf ("Inexact flag error in mpfr_d_sub\n");
+      exit (1);
+    }
+  mpfr_set_str (z, "-4095.875", 10, GMP_RNDN);
+  if (mpfr_cmp (z, x))
+    {
+      printf ("Error in mpfr_d_sub (");
+      mpfr_out_str (stdout, 10, 7, y, GMP_RNDN);
+      printf (" + %.20g)\nexpected ", d);
+      mpfr_out_str (stdout, 10, 0, z, GMP_RNDN);
+      printf ("\ngot     ");
+      mpfr_out_str (stdout, 10, 0, x, GMP_RNDN);
+      printf ("\n");
+      exit (1);
+    }
+  mpfr_clears (x, y, z, (void *)0);
 
   check_nans ();
 
