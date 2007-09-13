@@ -451,11 +451,10 @@ test2a (int (*testfunc)(mpfr_ptr, mpfr_srcptr),
   mpfr_clear (res1);
 }
 
-#if 0
-
 /* one operand, two results */
 static void
-test3a (char *foo, mp_prec_t prec, mp_rnd_t rnd)
+test3a (int (*testfunc)(mpfr_ptr, mpfr_ptr, mpfr_srcptr, mp_rnd_t),
+	char *foo, mp_prec_t prec, mp_rnd_t rnd)
 {
   mpfr_t ref1, ref2, ref3;
   mpfr_t res1, res2;
@@ -508,8 +507,6 @@ test3a (char *foo, mp_prec_t prec, mp_rnd_t rnd)
   mpfr_clear (res1);
   mpfr_clear (res2);
 }
-
-#endif
 
 static int
 reldiff_wrapper (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
@@ -604,6 +601,8 @@ main (void)
       test3 (mpfr_atan2, "mpfr_atan2", p, rnd);
 
       test4 (mpfr_fma, "mpfr_fma", p, rnd);
+
+      test3a (mpfr_modf, "mpfr_modf", p, rnd);
     }
 
   tests_end_mpfr ();

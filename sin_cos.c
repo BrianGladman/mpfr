@@ -35,6 +35,8 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mp_exp_t err, expx;
   MPFR_ZIV_DECL (loop);
 
+  MPFR_ASSERTN (x != z && y != z); 
+
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
       if (MPFR_IS_NAN(x) || MPFR_IS_INF(x))

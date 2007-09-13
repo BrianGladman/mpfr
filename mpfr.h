@@ -463,6 +463,8 @@ __MPFR_DECLSPEC int mpfr_rint_ceil _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
 __MPFR_DECLSPEC int mpfr_rint_floor _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
                                                   mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_frac _MPFR_PROTO ((mpfr_ptr,mpfr_srcptr,mpfr_rnd_t));
+__MPFR_DECLSPEC int mpfr_modf _MPFR_PROTO ((mpfr_ptr, mpfr_ptr, mpfr_srcptr,
+                                                  mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_remquo _MPFR_PROTO ((mpfr_ptr, long*, mpfr_srcptr,
                                               mpfr_srcptr, mp_rnd_t));
 __MPFR_DECLSPEC int mpfr_remainder _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,

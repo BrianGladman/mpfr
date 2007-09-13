@@ -79,8 +79,6 @@ Changes in existing functions:
 New functions to implement:
 ##############################################################################
 
-- modf (to extract integer and fractional parts), suggested by
-        Dmitry Antipov <dmitry.antipov@mail.ru> Thu, 13 Jun 2002
 - mpfr_fmod (mpfr_t, mpfr_srcptr, mpfr_srcptr, mp_rnd_t)
   [suggested by Tomas Zahradnicky <tomas@24uSoftware.com>, 29 Nov 2003]
   Kevin: Might want to be called mpfr_mod, to match mpz_mod.

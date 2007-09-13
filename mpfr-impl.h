@@ -723,7 +723,7 @@ typedef unsigned long int  mpfr_uexp_t;
 # error "Neither GMP_LIMB_HIGHBIT nor MP_LIMB_T_HIGHBIT defined in GMP"
 #endif
 
-/* Mask to get the Most Significent Bit of a limb */
+/* Mask to get the Most Significant Bit of a limb */
 #define MPFR_LIMB_MSB(l) ((l)&MPFR_LIMB_HIGHBIT)
 
 /* Definition of MPFR_LIMB_ONE & MPFR_LIMB_ZERO*/

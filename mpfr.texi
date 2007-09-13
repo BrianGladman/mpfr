@@ -1446,8 +1446,8 @@ cotangent of @var{op}, rounded in the direction @var{rnd}.
 Set simultaneously @var{sop} to the sine of @var{op} and
                    @var{cop} to the cosine of @var{op},
 rounded in the direction @var{rnd} with the corresponding precisions of
-@var{sop} and @var{cop}.
-Return 0 iff both results are exact.
+@var{sop} and @var{cop}. The variable @var{cop} must be neither @var{sop} 
+nor @var{op}. Return 0 iff both results are exact.
 @end deftypefun
 
 @deftypefun int mpfr_acos (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
@@ -1784,6 +1784,15 @@ Set @var{rop} to the fractional part of @var{op}, having the same sign as
 @var{op}, rounded in the direction @var{rnd} (unlike in @code{mpfr_rint},
 @var{rnd} affects only how the exact fractional part is rounded, not how
 the fractional part is generated).
+@end deftypefun
+
+@deftypefun int mpfr_modf (mpfr_t @var{iop}, mpfr_t @var{fop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+Set simultaneously @var{iop} to the integral part of @var{op} and @var{fop} to 
+the fractional part of @var{op}, rounded in the direction @var{rnd} with the 
+corresponding precision of @var{iop} and @var{fop} (equivalent to 
+@code{mpfr_trunc(@var{iop}, @var{op}, @var{rnd})} and 
+@code{mpfr_frac(@var{fop}, @var{op}, @var{rnd})}). The variables @var{iop} and 
+@var{fop} must be different. Return 0 iff both results are exact.
 @end deftypefun
 
 @deftypefun int mpfr_remainder (mpfr_t @var{r}, mpfr_t @var{x}, mpfr_t @var{y}, mp_rnd_t @var{rnd})
