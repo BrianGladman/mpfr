@@ -1446,8 +1446,8 @@ cotangent of @var{op}, rounded in the direction @var{rnd}.
 Set simultaneously @var{sop} to the sine of @var{op} and
                    @var{cop} to the cosine of @var{op},
 rounded in the direction @var{rnd} with the corresponding precisions of
-@var{sop} and @var{cop}. The variable @var{cop} must be neither @var{sop} 
-nor @var{op}. Return 0 iff both results are exact.
+@var{sop} and @var{cop}, which must be different variables.
+Return 0 iff both results are exact.
 @end deftypefun
 
 @deftypefun int mpfr_acos (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})

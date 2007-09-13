@@ -603,6 +603,7 @@ main (void)
       test4 (mpfr_fma, "mpfr_fma", p, rnd);
 
       test3a (mpfr_modf, "mpfr_modf", p, rnd);
+      test3a (mpfr_sin_cos, "mpfr_sin_cos", p, rnd);
     }
 
   tests_end_mpfr ();

@@ -35,7 +35,7 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mp_exp_t err, expx;
   MPFR_ZIV_DECL (loop);
 
-  MPFR_ASSERTN (x != z && y != z); 
+  MPFR_ASSERTN (y != z);
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
@@ -109,8 +109,11 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
                            MPFR_PREC (z) + (rnd_mode == GMP_RNDN)))
         goto next_step;
 
-      mpfr_set (z, c, rnd_mode);
-      mpfr_sqr (c, c, GMP_RNDU);
+      /* we can't set z now, because in case z = x, and the mpfr_can_round()
+	 call below fails, we will have clobbered the input */
+      mpfr_set_prec (xr, MPFR_PREC(c));
+      mpfr_swap (xr, c); /* save the approximation of the cosine in xr */
+      mpfr_sqr (c, xr, GMP_RNDU);
       mpfr_ui_sub (c, 1, c, GMP_RNDN);
       err = 2 + (- MPFR_GET_EXP (c)) / 2;
       mpfr_sqrt (c, c, GMP_RNDN);
@@ -140,6 +143,7 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_ZIV_FREE (loop);
 
   mpfr_set (y, c, rnd_mode);
+  mpfr_set (z, xr, rnd_mode);
 
   mpfr_clear (c);
   mpfr_clear (xr);
