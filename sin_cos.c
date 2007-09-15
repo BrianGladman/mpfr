@@ -63,6 +63,12 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
   m = prec + MPFR_INT_CEIL_LOG2 (prec) + 13;
   expx = MPFR_GET_EXP (x);
 
+  /* When x is close to 0, say 2^(-k), then there is a cancellation of about
+     2k bits in 1-cos(x)^2. FIXME: in that case, it would be more efficient
+     to compute sin(x) directly. */
+  if (MPFR_EXP(x) < 0)
+    m += 2 * (-MPFR_EXP(x));
+
   mpfr_init (c);
   mpfr_init (xr);
 
