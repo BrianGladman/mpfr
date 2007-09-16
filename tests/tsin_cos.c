@@ -252,6 +252,27 @@ overflowed_sin_cos0 (void)
   mpfr_clear (z);
 }
 
+static void
+tiny (void)
+{
+  mpfr_t x, s, c;
+  int i, inex;
+
+  mpfr_inits2 (64, x, s, c, (void *) 0);
+
+  for (i = -1; i <= 1; i += 2)
+    {
+      mpfr_set_si (x, i, GMP_RNDN);
+      mpfr_set_exp (x, mpfr_get_emin ());
+      inex = mpfr_sin_cos (s, c, x, GMP_RNDN);
+      MPFR_ASSERTN (inex != 0);
+      MPFR_ASSERTN (mpfr_zero_p (s) && SAME_SIGN (MPFR_SIGN (s), i));
+      MPFR_ASSERTN (!mpfr_nan_p (c) && mpfr_cmp_ui (c, 1) == 0);
+    }
+
+  mpfr_clears (x, s, c, (void *) 0);
+}
+
 /* tsin_cos prec [N] performs N tests with prec bits */
 int
 main(int argc, char *argv[])
@@ -288,6 +309,7 @@ main(int argc, char *argv[])
   check53cos ("1.00591265847407274059", "0.53531755997839769456",  GMP_RNDN);
 
   overflowed_sin_cos0 ();
+  tiny ();
 
   tests_end_mpfr ();
   return 0;
