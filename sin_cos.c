@@ -67,11 +67,23 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
      2k bits in 1-cos(x)^2. FIXME: in that case, it would be more efficient
      to compute sin(x) directly. Note (VL): this is very inefficient if
      expx is very small due to the mpfr_set_prec below, and this can lead
-     to a segmentation fault -> commented out. */
-  /*
+     to a segmentation fault -> commented out. Note2: put back with overflow
+     check, so that no segmentation fault can occur any more. In the case
+     where m+2t does not overflow, we will need anyway at least this precision
+     in Ziv's loop, thus it will be more efficient than the previous code,
+     until we have a separate code to compute sin(x) in the case x small. */
   if (expx < 0)
-    m -= 2 * expx;
-  */
+    {
+      mp_prec_t t = -expx; /* t > 0, no overflow here */
+      /* the exponent limits are chosen so that if e is an exponent, then 
+	 2e-1 and 2e+1 are representable, thus 2e too (see mpfr-impl.h).
+	 Since those limits are symmetric, this also applies to -e, thus
+	 2t here is representable, and we only have to check overflow for
+	 m + (2t). */
+      if (m + 2 * t > m)
+	m += 2 * t;
+      /* otherwise we do nothing, i.e., keep the previous bahaviour */
+    }
 
   mpfr_init (c);
   mpfr_init (xr);
