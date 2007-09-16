@@ -33,7 +33,9 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_t c, xr;
   mpfr_srcptr xx;
   mp_exp_t err, expx;
+  int inexy, inexz;
   MPFR_ZIV_DECL (loop);
+  MPFR_SAVE_EXPO_DECL (expo);
 
   MPFR_ASSERTN (y != z);
 
@@ -59,30 +61,31 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
                   ("sin[%#R]=%R cos[%#R]=%R", y, y, z, z));
 
+  MPFR_SAVE_EXPO_MARK (expo);
+
   prec = MAX (MPFR_PREC (y), MPFR_PREC (z));
   m = prec + MPFR_INT_CEIL_LOG2 (prec) + 13;
   expx = MPFR_GET_EXP (x);
 
   /* When x is close to 0, say 2^(-k), then there is a cancellation of about
      2k bits in 1-cos(x)^2. FIXME: in that case, it would be more efficient
-     to compute sin(x) directly. Note (VL): this is very inefficient if
-     expx is very small due to the mpfr_set_prec below, and this can lead
-     to a segmentation fault -> commented out. Note2: put back with overflow
-     check, so that no segmentation fault can occur any more. In the case
-     where m+2t does not overflow, we will need anyway at least this precision
-     in Ziv's loop, thus it will be more efficient than the previous code,
-     until we have a separate code to compute sin(x) in the case x small. */
+     to compute sin(x) directly. VL: This is partly done by using
+     MPFR_FAST_COMPUTE_IF_SMALL_INPUT from the mpfr_sin and mpfr_cos
+     functions. Moreover, any overflow on m is avoided. */
   if (expx < 0)
     {
-      mp_prec_t t = -expx; /* t > 0, no overflow here */
-      /* the exponent limits are chosen so that if e is an exponent, then 
-	 2e-1 and 2e+1 are representable, thus 2e too (see mpfr-impl.h).
-	 Since those limits are symmetric, this also applies to -e, thus
-	 2t here is representable, and we only have to check overflow for
-	 m + (2t). */
-      if (m + 2 * t > m)
-	m += 2 * t;
-      /* otherwise we do nothing, i.e., keep the previous bahaviour */
+      MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, -2 * expx, 2, 0, rnd_mode,
+                                        { inexy = _inexact;
+                                          goto small_input; });
+      if (0)
+        {
+        small_input:
+          MPFR_FAST_COMPUTE_IF_SMALL_INPUT (z, __gmpfr_one, -2 * expx,
+                                            1, 0, rnd_mode,
+                                            { inexz = _inexact; goto end; });
+        }
+
+      m += 2 * (-expx);
     }
 
   mpfr_init (c);
@@ -164,11 +167,16 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
     }
   MPFR_ZIV_FREE (loop);
 
-  mpfr_set (y, c, rnd_mode);
-  mpfr_set (z, xr, rnd_mode);
+  inexy = mpfr_set (y, c, rnd_mode);
+  inexz = mpfr_set (z, xr, rnd_mode);
 
   mpfr_clear (c);
   mpfr_clear (xr);
 
+ end:
+  /* FIXME: update the underflow flag if need be. */
+  MPFR_SAVE_EXPO_FREE (expo);
+  mpfr_check_range (y, inexy, rnd_mode);
+  mpfr_check_range (z, inexz, rnd_mode);
   MPFR_RET (1); /* Always inexact */
 }
