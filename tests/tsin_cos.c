@@ -266,7 +266,7 @@ tiny (void)
       mpfr_set_exp (x, mpfr_get_emin ());
       inex = mpfr_sin_cos (s, c, x, GMP_RNDN);
       MPFR_ASSERTN (inex != 0);
-      MPFR_ASSERTN (mpfr_zero_p (s) && SAME_SIGN (MPFR_SIGN (s), i));
+      MPFR_ASSERTN (mpfr_equal_p (s, x));
       MPFR_ASSERTN (!mpfr_nan_p (c) && mpfr_cmp_ui (c, 1) == 0);
     }
 
