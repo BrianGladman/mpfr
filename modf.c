@@ -22,86 +22,95 @@ MA 02110-1301, USA. */
 
 #include "mpfr-impl.h"
 
-/* Set iop to the integral part of u and fop to its fractional part */
+/* Set iop to the integral part of op and fop to its fractional part */
 int
-mpfr_modf (mpfr_ptr iop, mpfr_ptr fop, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
+mpfr_modf (mpfr_ptr iop, mpfr_ptr fop, mpfr_srcptr op, mpfr_rnd_t rnd_mode)
 {
-  mp_exp_t ue;
-  mp_prec_t uq;
+  mp_exp_t ope;
+  mp_prec_t opq;
+  int inexact;
+  MPFR_SAVE_EXPO_DECL (expo);
+
+  MPFR_LOG_FUNC (("op[%#R]=%R rnd=%d", op, op, rnd_mode),
+		 ("iop[%#R]=%R fop[%#R]=%R", iop, iop, fop, fop));
 
   MPFR_ASSERTN (iop != fop);
 
-  if ( MPFR_UNLIKELY (MPFR_IS_SINGULAR (u)) )
+  if ( MPFR_UNLIKELY (MPFR_IS_SINGULAR (op)) )
     {
-      if (MPFR_IS_NAN (u))
+      if (MPFR_IS_NAN (op))
 	{
 	  MPFR_SET_NAN (iop);
 	  MPFR_SET_NAN (fop);
 	  MPFR_RET_NAN;
 	}
-      MPFR_SET_SAME_SIGN (iop, u);
-      MPFR_SET_SAME_SIGN (fop, u);
-      if (MPFR_IS_INF (u))
+      MPFR_SET_SAME_SIGN (iop, op);
+      MPFR_SET_SAME_SIGN (fop, op);
+      if (MPFR_IS_INF (op))
 	{
 	  MPFR_SET_INF (iop);
 	  MPFR_SET_ZERO (fop);
 	  MPFR_RET (0);
 	}
-      else /* u is zero */
+      else /* op is zero */
 	{
-	  MPFR_ASSERTD (MPFR_IS_ZERO (u));
+	  MPFR_ASSERTD (MPFR_IS_ZERO (op));
 	  MPFR_SET_ZERO (iop);
 	  MPFR_SET_ZERO (fop);
 	  MPFR_RET (0);
 	}
     }
 
-  ue = MPFR_GET_EXP (u);
-  uq = MPFR_PREC (u);
+  MPFR_SAVE_EXPO_MARK (expo);
 
-  if (ue <=0)   /* 0 < |u| < 1 */
+  ope = MPFR_GET_EXP (op);
+  opq = MPFR_PREC (op);
+
+  if (ope <=0)   /* 0 < |op| < 1 */
     {
-      if (fop != u)      
-	mpfr_set (fop, u, rnd_mode);
-      MPFR_SET_SAME_SIGN (iop, u);
+      inexact = (fop != op) ? mpfr_set (fop, op, rnd_mode) : 0;
+      MPFR_SET_SAME_SIGN (iop, op);
       MPFR_SET_ZERO (iop);
-      MPFR_RET (MPFR_INT_SIGN (u) > 0 ? -2 : +2);
+      MPFR_SAVE_EXPO_FREE (expo);
+      mpfr_check_range (fop, inexact, rnd_mode); /* set the underflow flag if needed */
+      MPFR_RET (MPFR_INT_SIGN (op) > 0 ? -2 : +2);
     }
-  else if (ue >= uq) /* u has no fractional part */
+  else if (ope >= opq) /* op has no fractional part */
     {
-      int inexact;
-      inexact = (iop != u)? mpfr_set (iop, u, rnd_mode) : 0;
-      MPFR_SET_SAME_SIGN (fop, u);
+      inexact = (iop != op)? mpfr_set (iop, op, rnd_mode) : 0;
+      MPFR_SET_SAME_SIGN (fop, op);
       MPFR_SET_ZERO (fop);
-      MPFR_RET (inexact);
+      MPFR_SAVE_EXPO_FREE (expo);
+      return mpfr_check_range (iop, inexact, rnd_mode); /* set the overflow flag if needed */
     }
-  else /* u has both integral and fractional parts */
+  else /* op has both integral and fractional parts */
     {
-      int inexact, inexi, inexf;
-      mpfr_t uf, ui;
+      int inexi, inexf;
+      mpfr_t opf, opi;
 
-      /* ui and uf are set with minimal but sufficient precision */    
-      mpfr_init2 (ui, ue <= MPFR_PREC_MIN ? MPFR_PREC_MIN : ue);
-      inexi = mpfr_trunc (ui, u);
-      mpfr_init2 (uf, uq - ue <= MPFR_PREC_MIN ? MPFR_PREC_MIN : uq - ue); 
-      inexf = mpfr_frac (uf, u, GMP_RNDZ);
+      /* opi and opf are set with minimal but sufficient precision */    
+      mpfr_init2 (opi, ope <= MPFR_PREC_MIN ? MPFR_PREC_MIN : ope);
+      inexi = mpfr_trunc (opi, op);
+      mpfr_init2 (opf, opq - ope <= MPFR_PREC_MIN ? MPFR_PREC_MIN : opq - ope); 
+      inexf = mpfr_frac (opf, op, GMP_RNDZ);
       MPFR_ASSERTD (inexf == 0);
 
-      /* note: while the exponent of the fractional part may be out of range, */
-      /*       the int-part exponent can't since it is the same as u */
-      inexf = mpfr_set (fop, uf, rnd_mode);
+      inexf = mpfr_set (fop, opf, rnd_mode);
+      inexi = mpfr_set (iop, opi, rnd_mode);
+      mpfr_clear (opi);
+      mpfr_clear (opf);
+
+      MPFR_SAVE_EXPO_FREE (expo);
       inexf = mpfr_check_range (fop, inexf, rnd_mode);
-      inexi = mpfr_set (iop, ui, rnd_mode);
-      mpfr_clear (ui);
-      mpfr_clear (uf);
+      inexi = mpfr_check_range (iop, inexi, rnd_mode);
 
       /* return value like mpfr_trunc():   */
       /* 0 iff iop and fop are exact       */
-      /* -1 if u is an integer, u > iop    */
-      /* +1 if u is an integer, u < iop    */
-      /* -2 if u is not an integer, u > 0  */
-      /* +2 if u is not an integer, u < 0  */
-      inexact = inexf ? (inexi ? 2 * inexi : -2 * MPFR_INT_SIGN (u)) : (mpfr_zero_p (fop) ? inexi : 2 * inexi);
+      /* -1 if op is an integer, op > iop    */
+      /* +1 if op is an integer, op < iop    */
+      /* -2 if op is not an integer, op > 0  */
+      /* +2 if op is not an integer, op < 0  */
+      inexact = inexf ? (inexi ? 2 * inexi : -2 * MPFR_INT_SIGN (op)) : (mpfr_zero_p (fop) ? inexi : 2 * inexi);
       MPFR_RET (inexact);
     }
 }
