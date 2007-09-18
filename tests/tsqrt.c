@@ -553,6 +553,10 @@ test_property2 (mp_prec_t p, mp_rnd_t r)
   mpfr_clear (y);
 }
 
+#define TEST_FUNCTION test_sqrt
+#define TEST_RANDOM_POS 8
+#include "tgeneric.c"
+
 int
 main (void)
 {
@@ -672,6 +676,7 @@ main (void)
   check4 ("72154663483843080704304789585920.0", GMP_RNDD,
           "1.e2d9a51977e6d@13");
 
+  test_generic (2, 300, 15);
   data_check ("data/sqrt", mpfr_sqrt, "mpfr_sqrt");
 
   tests_end_mpfr ();
