@@ -15,6 +15,7 @@
 /tacosh
 /tadd
 /tadd1sp
+/tadd_d
 /tadd_ui
 /tagm
 /tasin
@@ -42,8 +43,11 @@
 /tcoth
 /tcsc
 /tcsch
+/td_div
+/td_sub
 /tdim
 /tdiv
+/tdiv_d
 /tdiv_ui
 /teint
 /teq
@@ -74,6 +78,7 @@
 /tinp_str
 /tinternals
 /tisnan
+/tisqrt
 /tj0
 /tj1
 /tjn
@@ -85,8 +90,10 @@
 /tlog2
 /tlog10
 /tminmax
+/tmodf
 /tmul
 /tmul_2exp
+/tmul_d
 /tmul_ui
 /tnext
 /tout_str
@@ -123,6 +130,7 @@
 /tstrtofr
 /tsub
 /tsub1sp
+/tsub_d
 /tsub_ui
 /tsubnormal
 /tsum
