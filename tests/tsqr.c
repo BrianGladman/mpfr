@@ -28,6 +28,9 @@ MA 02110-1301, USA. */
 void check_special (void);
 void check_random (mpfr_prec_t p);
 
+#define TEST_FUNCTION mpfr_sqr
+#include "tgeneric.c"
+
 int main(void)
 {
   mpfr_prec_t p;
@@ -37,6 +40,8 @@ int main(void)
   check_special ();
   for(p = 2 ; p < 200 ; p++)
     check_random (p);
+
+  test_generic (2, 200, 15);
 
   tests_end_mpfr ();
   return 0;
