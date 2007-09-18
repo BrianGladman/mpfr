@@ -42,7 +42,6 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
   int sh; /* number of extra bits in rp[0] */
   int inexact; /* return ternary flag */
   mp_exp_t expr;
-  MPFR_SAVE_EXPO_DECL (expo);
   MPFR_TMP_DECL(marker);
 
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(u)))
@@ -80,8 +79,6 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
     }
   MPFR_CLEAR_FLAGS(r);
   MPFR_SET_POS(r);
-
-  MPFR_SAVE_EXPO_MARK (expo);
 
   rsize = MPFR_LIMB_SIZE(r); /* number of limbs of r */
   rrsize = rsize + rsize;
@@ -249,9 +246,9 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
 
  truncate: /* inexact = 0 or -1 */
 
-  MPFR_SET_EXP(r, expr);
+  MPFR_ASSERTN (expr >= MPFR_EMIN_MIN && expr <= MPFR_EMAX_MAX);
+  MPFR_EXP (r) = expr;
 
   MPFR_TMP_FREE(marker);
-  MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (r, inexact, rnd_mode);
 }
