@@ -38,6 +38,10 @@ __gmpfr_isqrt (unsigned long n)
 }
 
 /* returns floor(n^(1/3)) */
+/* FIXME: this code doesn't work if the processor is configured in
+   single precision. Use "unsigned long" only and
+     s = (2*s + n / (s * s)) / 3;
+   ? */
 unsigned long
 __gmpfr_cuberoot (unsigned long n)
 {
@@ -47,7 +51,7 @@ __gmpfr_cuberoot (unsigned long n)
   do
     {
       s = (2*s*s*s + (double) n) / (3*s*s);
-      is = (double) ((int) s);
+      is = (double) (unsigned long) s;
     }
   while (!(is*is*is <= (double) n && (double) n < (is+1)*(is+1)*(is+1)));
   return (unsigned long) is;
