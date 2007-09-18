@@ -29,9 +29,11 @@ __gmpfr_isqrt (unsigned long n)
   unsigned long s;
 
   s = 1;
-  do {
-    s = (s + n / s) / 2;
-  } while (!(s*s <= n && n <= s*(s+2)));
+  do
+    {
+      s = (s + n / s) / 2;
+    }
+  while (!(s*s <= n && n <= s*(s+2)));
   return s;
 }
 
@@ -42,10 +44,11 @@ __gmpfr_cuberoot (unsigned long n)
   double s, is;
 
   s = 1.0;
-  do {
-    s = (2*s*s*s + (double) n) / (3*s*s);
-    is = (double) ((int) s);
-  } while (!(is*is*is <= (double) n && (double) n < (is+1)*(is+1)*(is+1)));
+  do
+    {
+      s = (2*s*s*s + (double) n) / (3*s*s);
+      is = (double) ((int) s);
+    }
+  while (!(is*is*is <= (double) n && (double) n < (is+1)*(is+1)*(is+1)));
   return (unsigned long) is;
 }
-
