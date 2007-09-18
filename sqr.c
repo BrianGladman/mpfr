@@ -104,5 +104,5 @@ mpfr_sqr (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
     MPFR_SET_EXP (a, ax2);
     MPFR_SET_POS (a);
   }
-  return inexact;
+  MPFR_RET (inexact);
 }
