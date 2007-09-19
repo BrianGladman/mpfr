@@ -26,14 +26,27 @@ MA 02110-1301, USA. */
 unsigned long
 __gmpfr_isqrt (unsigned long n)
 {
-  unsigned long s;
+  unsigned long i, s;
 
+  /* First find an approximation to floor(sqrt(n)) of the form 2^k. */
+  i = n;
   s = 1;
+  while (i >= 2)
+    {
+      i >>= 2;
+      s <<= 1;
+    }
+
   do
     {
       s = (s + n / s) / 2;
     }
-  while (!(s*s <= n && n <= s*(s+2)));
+  while (!(s*s <= n && (s*s > s*(s+2) || n <= s*(s+2))));
+  /* Short explanation: As mathematically s*(s+2) < 2*ULONG_MAX,
+     the condition s*s > s*(s+2) is evaluated as true when s*(s+2)
+     overflows but not s*s. This implies that mathematically, one
+     has s*s <= n <= s*(s+2). If s*s overflows, this means that n
+     is "large" and the inequality s*s <= n cannot be satisfied. */
   return s;
 }
 
