@@ -44,9 +44,9 @@ __gmpfr_isqrt (unsigned long n)
   while (!(s*s <= n && (s*s > s*(s+2) || n <= s*(s+2))));
   /* Short explanation: As mathematically s*(s+2) < 2*ULONG_MAX,
      the condition s*s > s*(s+2) is evaluated as true when s*(s+2)
-     overflows but not s*s. This implies that mathematically, one
-     has s*s <= n <= s*(s+2). If s*s overflows, this means that n
-     is "large" and the inequality s*s <= n cannot be satisfied. */
+     "overflows" but not s*s. This implies that mathematically, one
+     has s*s <= n <= s*(s+2). If s*s "overflows", this means that n
+     is "large" and the inequality n <= s*(s+2) cannot be satisfied. */
   return s;
 }
 
