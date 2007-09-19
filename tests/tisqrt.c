@@ -96,12 +96,18 @@ main (void)
   tst_icbrt (26, 2);
   tst_icbrt (27, 3);
   tst_icbrt (28, 3);
-  for (i = 1620; i <= 1625; i++)
+  for (i = 1200; i <= 1625; i++)
     {
       c = i * i * i;
+      tst_icbrt (c - 4, i - 1);
+      tst_icbrt (c - 3, i - 1);
+      tst_icbrt (c - 2, i - 1);
       tst_icbrt (c - 1, i - 1);
       tst_icbrt (c, i);
       tst_icbrt (c + 1, i);
+      tst_icbrt (c + 2, i);
+      tst_icbrt (c + 3, i);
+      tst_icbrt (c + 4, i);
     }
   tst_icbrt (4294967295UL, 1625);
 

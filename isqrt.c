@@ -51,21 +51,34 @@ __gmpfr_isqrt (unsigned long n)
 }
 
 /* returns floor(n^(1/3)) */
-/* FIXME: this code doesn't work if the processor is configured in
-   single precision. Use "unsigned long" only and
-     s = (2*s + n / (s * s)) / 3;
-   ? */
 unsigned long
 __gmpfr_cuberoot (unsigned long n)
 {
-  double s, is;
+  unsigned long i, s;
 
-  s = 1.0;
+  /* First find an approximation to floor(cbrt(n)) of the form 2^k. */
+  i = n;
+  s = 1;
+  while (i >= 4)
+    {
+      i >>= 3;
+      s <<= 1;
+    }
+
+  /* Improve the approximation (this is necessary if n is large, so that
+     mathematically (s+1)*(s+1)*(s+1) isn't much larger than ULONG_MAX). */
+  if (n >= 256)
+    {
+      s = (2 * s + n / (s * s)) / 3;
+      s = (2 * s + n / (s * s)) / 3;
+      s = (2 * s + n / (s * s)) / 3;
+    }
+
   do
     {
-      s = (2*s*s*s + (double) n) / (3*s*s);
-      is = (double) (unsigned long) s;
+      s = (2 * s + n / (s * s)) / 3;
     }
-  while (!(is*is*is <= (double) n && (double) n < (is+1)*(is+1)*(is+1)));
-  return (unsigned long) is;
+  while (!(s*s*s <= n && (s*s*s > (s+1)*(s+1)*(s+1) ||
+                          n < (s+1)*(s+1)*(s+1))));
+  return s;
 }
