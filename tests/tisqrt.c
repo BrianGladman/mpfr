@@ -1,4 +1,4 @@
-/* Test file for __gmpfr_isqrt internal function.
+/* Test file for __gmpfr_isqrt and __gmpfr_cuberoot internal functions.
 
 Copyright 2007 Free Software Foundation, Inc.
 Contributed by the Arenaire and Cacao projects, INRIA.
@@ -39,6 +39,20 @@ tst_isqrt (unsigned long n, unsigned long r)
     }
 }
 
+static void
+tst_icbrt (unsigned long n, unsigned long r)
+{
+  unsigned long i;
+
+  i = __gmpfr_cuberoot (n);
+  if (i != r)
+    {
+      printf ("Error in __gmpfr_cuberoot (%lu): got %lu instead of %lu\n",
+              n, i, r);
+      exit (1);
+    }
+}
+
 int
 main (void)
 {
@@ -64,6 +78,24 @@ main (void)
   tst_isqrt (16777215, 4095);
   tst_isqrt (16777216, 4096);
   tst_isqrt (4294967295UL, 65535);
+
+  tst_icbrt (0, 0);
+  tst_icbrt (1, 1);
+  tst_icbrt (2, 1);
+  tst_icbrt (3, 1);
+  tst_icbrt (4, 1);
+  tst_icbrt (5, 1);
+  tst_icbrt (6, 1);
+  tst_icbrt (7, 1);
+  tst_icbrt (8, 2);
+  tst_icbrt (9, 2);
+  tst_icbrt (26, 2);
+  tst_icbrt (27, 3);
+  tst_icbrt (28, 3);
+  tst_icbrt (4291015624UL, 1624);
+  tst_icbrt (4291015625UL, 1625);
+  tst_icbrt (4291015626UL, 1625);
+  tst_icbrt (4294967295UL, 1625);
 
   return 0;
 }
