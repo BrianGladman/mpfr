@@ -56,6 +56,10 @@ tst_icbrt (unsigned long n, unsigned long r)
 int
 main (void)
 {
+  unsigned long c, i;
+
+  tests_start_mpfr ();
+
   tst_isqrt (0, 0);
   tst_isqrt (1, 1);
   tst_isqrt (2, 1);
@@ -92,10 +96,15 @@ main (void)
   tst_icbrt (26, 2);
   tst_icbrt (27, 3);
   tst_icbrt (28, 3);
-  tst_icbrt (4291015624UL, 1624);
-  tst_icbrt (4291015625UL, 1625);
-  tst_icbrt (4291015626UL, 1625);
+  for (i = 1620; i <= 1625; i++)
+    {
+      c = i * i * i;
+      tst_icbrt (c - 1, i - 1);
+      tst_icbrt (c, i);
+      tst_icbrt (c + 1, i);
+    }
   tst_icbrt (4294967295UL, 1625);
 
+  tests_end_mpfr ();
   return 0;
 }
