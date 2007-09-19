@@ -37,9 +37,6 @@ Known bugs:
 * Some functions do not use MPFR_SAVE_EXPO_* macros, thus do not behave
   correctly in a reduced exponent range.
 
-* The __gmpfr_isqrt internal function returns an incorrect result on
-  some values due to "overflow", e.g. 16777216 with 32-bit long's.
-
 Potential bugs:
 
 * Possible integer overflows on some machines.
