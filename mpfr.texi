@@ -1497,6 +1497,14 @@ Set @var{rop} to the hyperbolic cosine, sine or tangent of @var{op},
 rounded in the direction @var{rnd}.
 @end deftypefun
 
+@deftypefun int mpfr_sinh_cosh (mpfr_t @var{sop}, mpfr_t @var{cop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+Set simultaneously @var{sop} to the hyperbolic sine of @var{op} and 
+                   @var{cop} to the hyperbolic cosine of @var{op},
+rounded in the direction @var{rnd} with the corresponding precision of
+@var{sop} and @var{cop} which must be different variables.
+Return 0 iff both results are exact.
+@end deftypefun
+
 @deftypefun int mpfr_sech (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_csch (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_coth (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
