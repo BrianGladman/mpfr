@@ -98,7 +98,7 @@ main (void)
               printf("\n");
               printf("round(x, RNDD) = "); mpfr_print_binary(y2);
               printf("\n");
-              exit(-1);
+              exit(1);
             }
 
           if (!mpfr_eq(z, z2, k))
@@ -109,7 +109,7 @@ main (void)
               printf("\n");
               printf("round(x, RNDZ) = "); mpfr_print_binary(z2);
               printf("\n");
-              exit(-1);
+              exit(1);
             }
 
           if (!mpfr_eq(y, y2, k))
@@ -120,7 +120,7 @@ main (void)
               printf("\n");
               printf("round(x, RNDU) = "); mpfr_print_binary(t2);
               printf("\n");
-              exit(-1);
+              exit(1);
             }
           MPFR_EXP(x)++;
         }

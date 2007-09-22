@@ -34,7 +34,7 @@ mpfr_add_d (mpfr_ptr a, mpfr_srcptr b, double c, mp_rnd_t rnd_mode)
                  ("a[%#R]=%R", a, a));
 
   MPFR_SAVE_EXPO_MARK (expo);
-  
+
   mpfr_init2 (d, IEEE_DBL_MANT_DIG);
   inexact = mpfr_set_d (d, c, rnd_mode);
   MPFR_ASSERTN (inexact == 0);

@@ -37,7 +37,7 @@ check_regulars (void)
   mpfr_init2 (x, IEEE_DBL_MANT_DIG);
   mpfr_init2 (y, IEEE_DBL_MANT_DIG);
   mpfr_init2 (z, IEEE_DBL_MANT_DIG);
-  
+
   mpfr_set_str (y, "4096", 10, GMP_RNDN);
   d = 0.125;
   mpfr_clear_flags ();
@@ -59,11 +59,11 @@ check_regulars (void)
       printf ("\n");
       exit (1);
     }
-  
+
   /* (2) check inexact flag */
   mpfr_set_prec (x, 2);
   mpfr_set_prec (z, 2);
-  
+
   mpfr_clear_flags ();
   inexact = mpfr_add_d (x, y, d, GMP_RNDN);
   if (inexact == 0)

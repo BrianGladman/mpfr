@@ -454,7 +454,7 @@ test2a (int (*testfunc)(mpfr_ptr, mpfr_srcptr),
 /* one operand, two results */
 static void
 test3a (int (*testfunc)(mpfr_ptr, mpfr_ptr, mpfr_srcptr, mp_rnd_t),
-	char *foo, mp_prec_t prec, mp_rnd_t rnd)
+        char *foo, mp_prec_t prec, mp_rnd_t rnd)
 {
   mpfr_t ref1, ref2, ref3;
   mpfr_t res1, res2;

@@ -89,56 +89,61 @@ mpfr_sinh_cosh (mpfr_ptr sh, mpfr_ptr ch, mpfr_srcptr xt, mp_rnd_t rnd_mode)
 
     /* First computation of sinh_cosh */
     MPFR_ZIV_INIT (loop, N);
-    for (;;) {
-      /* compute sinh_cosh */
-      mpfr_clear_flags ();
-      mpfr_exp (s, x, GMP_RNDD);        /* exp(x) */
-      /* exp(x) can overflow! */
-      /* BUG/TODO/FIXME: exp can overflow but sinh or cosh may be 
-	 representable! */
-      if (MPFR_UNLIKELY (mpfr_overflow_p ())) {
-        inexact_ch = mpfr_overflow (ch, rnd_mode, MPFR_SIGN_POS);
-        inexact_sh = mpfr_overflow (sh, rnd_mode, MPFR_SIGN (xt));
-        MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, MPFR_FLAGS_OVERFLOW);
-        break;
-      }
-      d = MPFR_GET_EXP (s);
-      mpfr_ui_div (ti, 1, s, GMP_RNDU);  /* 1/exp(x) */
-      mpfr_add (c, s, ti, GMP_RNDU);     /* exp(x) + 1/exp(x) */
-      mpfr_sub (s, s, ti, GMP_RNDN);     /* exp(x) - 1/exp(x) */
-      mpfr_div_2ui (c, c, 1, GMP_RNDN);  /* 1/2(exp(x) + 1/exp(x)) */
-      mpfr_div_2ui (s, s, 1, GMP_RNDN);  /* 1/2(exp(x) - 1/exp(x)) */
+    for (;;)
+      {
+        /* compute sinh_cosh */
+        mpfr_clear_flags ();
+        mpfr_exp (s, x, GMP_RNDD);        /* exp(x) */
+        /* exp(x) can overflow! */
+        /* BUG/TODO/FIXME: exp can overflow but sinh or cosh may be
+           representable! */
+        if (MPFR_UNLIKELY (mpfr_overflow_p ()))
+          {
+            inexact_ch = mpfr_overflow (ch, rnd_mode, MPFR_SIGN_POS);
+            inexact_sh = mpfr_overflow (sh, rnd_mode, MPFR_SIGN (xt));
+            MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, MPFR_FLAGS_OVERFLOW);
+            break;
+          }
+        d = MPFR_GET_EXP (s);
+        mpfr_ui_div (ti, 1, s, GMP_RNDU);  /* 1/exp(x) */
+        mpfr_add (c, s, ti, GMP_RNDU);     /* exp(x) + 1/exp(x) */
+        mpfr_sub (s, s, ti, GMP_RNDN);     /* exp(x) - 1/exp(x) */
+        mpfr_div_2ui (c, c, 1, GMP_RNDN);  /* 1/2(exp(x) + 1/exp(x)) */
+        mpfr_div_2ui (s, s, 1, GMP_RNDN);  /* 1/2(exp(x) - 1/exp(x)) */
 
-      /* it may be that s is zero (in fact, it can only occur when exp(x)=1,
-         and thus ti=1 too) */
-      if (MPFR_IS_ZERO (s))
-        err = N; /* double the precision */
-      else
-        {
-          /* calculation of the error */
-          d = d - MPFR_GET_EXP (s) + 2;
-          /* error estimate: err = N-(__gmpfr_ceil_log2(1+pow(2,d)));*/
-          err = N - (MAX (d, 0) + 1);
-          if (MPFR_LIKELY (MPFR_CAN_ROUND (s, err, MPFR_PREC (sh), rnd_mode) \
-		       && (MPFR_CAN_ROUND (c, err, MPFR_PREC (ch), rnd_mode))))
-            {
-              inexact_sh = mpfr_set4 (sh, s, rnd_mode, MPFR_SIGN (xt));
-	      inexact_ch = mpfr_set (ch, c, rnd_mode);
-              break;
-            }
-        }
-      /* actualisation of the precision */
-      N += err;
-      MPFR_ZIV_NEXT (loop, N);
-      MPFR_GROUP_REPREC_3 (group, N, s, c, ti);
-    }
+        /* it may be that s is zero (in fact, it can only occur when exp(x)=1,
+           and thus ti=1 too) */
+        if (MPFR_IS_ZERO (s))
+          err = N; /* double the precision */
+        else
+          {
+            /* calculation of the error */
+            d = d - MPFR_GET_EXP (s) + 2;
+            /* error estimate: err = N-(__gmpfr_ceil_log2(1+pow(2,d)));*/
+            err = N - (MAX (d, 0) + 1);
+            if (MPFR_LIKELY (MPFR_CAN_ROUND (s, err, MPFR_PREC (sh),
+                                             rnd_mode) &&               \
+                             MPFR_CAN_ROUND (c, err, MPFR_PREC (ch),
+                                             rnd_mode)))
+              {
+                inexact_sh = mpfr_set4 (sh, s, rnd_mode, MPFR_SIGN (xt));
+                inexact_ch = mpfr_set (ch, c, rnd_mode);
+                break;
+              }
+          }
+        /* actualisation of the precision */
+        N += err;
+        MPFR_ZIV_NEXT (loop, N);
+        MPFR_GROUP_REPREC_3 (group, N, s, c, ti);
+      }
     MPFR_ZIV_FREE (loop);
     MPFR_GROUP_CLEAR (group);
     MPFR_SAVE_EXPO_FREE (expo);
   }
-    /* now, let's raise the flags if needed */
-    inexact = mpfr_check_range (sh, inexact_sh, rnd_mode);
-    inexact = mpfr_check_range (ch, inexact_ch, rnd_mode) || inexact;
 
-    return inexact;
+  /* now, let's raise the flags if needed */
+  inexact = mpfr_check_range (sh, inexact_sh, rnd_mode);
+  inexact = mpfr_check_range (ch, inexact_ch, rnd_mode) || inexact;
+
+  return inexact;
 }

@@ -32,33 +32,33 @@ mpfr_modf (mpfr_ptr iop, mpfr_ptr fop, mpfr_srcptr op, mpfr_rnd_t rnd_mode)
   MPFR_SAVE_EXPO_DECL (expo);
 
   MPFR_LOG_FUNC (("op[%#R]=%R rnd=%d", op, op, rnd_mode),
-		 ("iop[%#R]=%R fop[%#R]=%R", iop, iop, fop, fop));
+                 ("iop[%#R]=%R fop[%#R]=%R", iop, iop, fop, fop));
 
   MPFR_ASSERTN (iop != fop);
 
   if ( MPFR_UNLIKELY (MPFR_IS_SINGULAR (op)) )
     {
       if (MPFR_IS_NAN (op))
-	{
-	  MPFR_SET_NAN (iop);
-	  MPFR_SET_NAN (fop);
-	  MPFR_RET_NAN;
-	}
+        {
+          MPFR_SET_NAN (iop);
+          MPFR_SET_NAN (fop);
+          MPFR_RET_NAN;
+        }
       MPFR_SET_SAME_SIGN (iop, op);
       MPFR_SET_SAME_SIGN (fop, op);
       if (MPFR_IS_INF (op))
-	{
-	  MPFR_SET_INF (iop);
-	  MPFR_SET_ZERO (fop);
-	  MPFR_RET (0);
-	}
+        {
+          MPFR_SET_INF (iop);
+          MPFR_SET_ZERO (fop);
+          MPFR_RET (0);
+        }
       else /* op is zero */
-	{
-	  MPFR_ASSERTD (MPFR_IS_ZERO (op));
-	  MPFR_SET_ZERO (iop);
-	  MPFR_SET_ZERO (fop);
-	  MPFR_RET (0);
-	}
+        {
+          MPFR_ASSERTD (MPFR_IS_ZERO (op));
+          MPFR_SET_ZERO (iop);
+          MPFR_SET_ZERO (fop);
+          MPFR_RET (0);
+        }
     }
 
   MPFR_SAVE_EXPO_MARK (expo);
@@ -88,10 +88,10 @@ mpfr_modf (mpfr_ptr iop, mpfr_ptr fop, mpfr_srcptr op, mpfr_rnd_t rnd_mode)
       int inexi, inexf;
       mpfr_t opf, opi;
 
-      /* opi and opf are set with minimal but sufficient precision */    
+      /* opi and opf are set with minimal but sufficient precision */
       mpfr_init2 (opi, ope <= MPFR_PREC_MIN ? MPFR_PREC_MIN : ope);
       inexi = mpfr_trunc (opi, op);
-      mpfr_init2 (opf, opq - ope <= MPFR_PREC_MIN ? MPFR_PREC_MIN : opq - ope); 
+      mpfr_init2 (opf, opq - ope <= MPFR_PREC_MIN ? MPFR_PREC_MIN : opq - ope);
       inexf = mpfr_frac (opf, op, GMP_RNDZ);
       MPFR_ASSERTD (inexf == 0);
 
@@ -110,7 +110,8 @@ mpfr_modf (mpfr_ptr iop, mpfr_ptr fop, mpfr_srcptr op, mpfr_rnd_t rnd_mode)
       /* +1 if op is an integer, op < iop    */
       /* -2 if op is not an integer, op > 0  */
       /* +2 if op is not an integer, op < 0  */
-      inexact = inexf ? (inexi ? 2 * inexi : -2 * MPFR_INT_SIGN (op)) : (mpfr_zero_p (fop) ? inexi : 2 * inexi);
+      inexact = inexf ? (inexi ? 2 * inexi : -2 * MPFR_INT_SIGN (op)) :
+        (mpfr_zero_p (fop) ? inexi : 2 * inexi);
       MPFR_RET (inexact);
     }
 }

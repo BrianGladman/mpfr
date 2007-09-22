@@ -1498,7 +1498,7 @@ rounded in the direction @var{rnd}.
 @end deftypefun
 
 @deftypefun int mpfr_sinh_cosh (mpfr_t @var{sop}, mpfr_t @var{cop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
-Set simultaneously @var{sop} to the hyperbolic sine of @var{op} and 
+Set simultaneously @var{sop} to the hyperbolic sine of @var{op} and
                    @var{cop} to the hyperbolic cosine of @var{op},
 rounded in the direction @var{rnd} with the corresponding precision of
 @var{sop} and @var{cop} which must be different variables.
@@ -1795,11 +1795,11 @@ the fractional part is generated).
 @end deftypefun
 
 @deftypefun int mpfr_modf (mpfr_t @var{iop}, mpfr_t @var{fop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
-Set simultaneously @var{iop} to the integral part of @var{op} and @var{fop} to 
-the fractional part of @var{op}, rounded in the direction @var{rnd} with the 
-corresponding precision of @var{iop} and @var{fop} (equivalent to 
-@code{mpfr_trunc(@var{iop}, @var{op}, @var{rnd})} and 
-@code{mpfr_frac(@var{fop}, @var{op}, @var{rnd})}). The variables @var{iop} and 
+Set simultaneously @var{iop} to the integral part of @var{op} and @var{fop} to
+the fractional part of @var{op}, rounded in the direction @var{rnd} with the
+corresponding precision of @var{iop} and @var{fop} (equivalent to
+@code{mpfr_trunc(@var{iop}, @var{op}, @var{rnd})} and
+@code{mpfr_frac(@var{fop}, @var{op}, @var{rnd})}). The variables @var{iop} and
 @var{fop} must be different. Return 0 iff both results are exact.
 @end deftypefun
 

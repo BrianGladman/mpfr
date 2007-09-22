@@ -135,7 +135,7 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
         goto next_step;
 
       /* we can't set z now, because in case z = x, and the mpfr_can_round()
-	 call below fails, we will have clobbered the input */
+         call below fails, we will have clobbered the input */
       mpfr_set_prec (xr, MPFR_PREC(c));
       mpfr_swap (xr, c); /* save the approximation of the cosine in xr */
       mpfr_sqr (c, xr, GMP_RNDU);

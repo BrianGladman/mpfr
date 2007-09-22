@@ -1,4 +1,4 @@
-/* Generic test file for functions with one or two arguments (the second being 
+/* Generic test file for functions with one or two arguments (the second being
    either mpfr_t or double).
 
 Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007 Free Software Foundation, Inc.
@@ -21,7 +21,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
-/* define TWO_ARGS for two-argument functions like mpfr_pow 
+/* define TWO_ARGS for two-argument functions like mpfr_pow
    define DOUBLE_ARG1 or DOUBLE_ARG2 for function with a double operand in
    first or second place like sub_d or d_sub */
 
@@ -150,7 +150,7 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
 #ifdef TWO_ARGS
           mpfr_set_prec (u, xprec);
 #elif defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
-	  mpfr_set_prec (u, IEEE_DBL_MANT_DIG);
+          mpfr_set_prec (u, IEEE_DBL_MANT_DIG);
 #endif
 
           if (n > 3 || prec < p1)
@@ -200,11 +200,11 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
 #if defined(TWO_ARGS)
           compare = TEST_FUNCTION (y, x, u, rnd);
 #elif defined(DOUBLE_ARG1)
-	  d = mpfr_get_d (u, rnd); 
-	  compare = TEST_FUNCTION (y, d, x, rnd);
+          d = mpfr_get_d (u, rnd);
+          compare = TEST_FUNCTION (y, d, x, rnd);
 #elif defined(DOUBLE_ARG2)
-	  d = mpfr_get_d (u, rnd);
-	  compare = TEST_FUNCTION (y, x, d, rnd);
+          d = mpfr_get_d (u, rnd);
+          compare = TEST_FUNCTION (y, x, d, rnd);
 #else
           compare = TEST_FUNCTION (y, x, rnd);
 #endif
@@ -246,10 +246,10 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
 #endif
 #if defined(TWO_ARGS)
               inexact = TEST_FUNCTION (z, x, u, rnd);
-#elif defined(DOUBLE_ARG1) 
-	      inexact = TEST_FUNCTION (z, d, x, rnd);
+#elif defined(DOUBLE_ARG1)
+              inexact = TEST_FUNCTION (z, d, x, rnd);
 #elif defined(DOUBLE_ARG2)
-	      inexact = TEST_FUNCTION (z, x, d, rnd);
+              inexact = TEST_FUNCTION (z, x, d, rnd);
 #else
               inexact = TEST_FUNCTION (z, x, rnd);
 #endif
@@ -263,8 +263,8 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
                   printf ("\nu=");
                   mpfr_out_str (stdout, 2, xprec, u, GMP_RNDN);
 #elif defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
-		  printf ("\nu=");
-		  mpfr_out_str (stdout, 2, IEEE_DBL_MANT_DIG, u, GMP_RNDN);
+                  printf ("\nu=");
+                  mpfr_out_str (stdout, 2, IEEE_DBL_MANT_DIG, u, GMP_RNDN);
 #endif
                   printf (" prec=%u rnd_mode=%s\n", (unsigned) prec,
                           mpfr_print_rnd_mode (rnd));

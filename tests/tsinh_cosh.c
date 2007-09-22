@@ -40,8 +40,8 @@ failed (mpfr_t x, mpfr_t esh, mpfr_t gsh, mpfr_t ech, mpfr_t gch)
   mpfr_out_str (stderr, 10, 0, gch, GMP_RNDD);
   fprintf (stderr, "\n");
 
-  mpfr_clears (x, esh, gsh, ech, gch, (void*)0);
-  exit (-1);
+  mpfr_clears (x, esh, gsh, ech, gch, (void *) 0);
+  exit (1);
 }
 
 /* check against sinh, cosh */
@@ -57,11 +57,11 @@ check (mpfr_t x, mp_rnd_t rnd)
   is = mpfr_sinh (s, x, rnd);
   ic = mpfr_cosh (c, x, rnd);
 
-  if (!mpfr_equal_p (s, sx) || !mpfr_equal_p (c, cx)) 
+  if (!mpfr_equal_p (s, sx) || !mpfr_equal_p (c, cx))
     failed (x, s, sx, c, cx);
   MPFR_ASSERTN (isc = is || ic);
 
-  mpfr_clears (s, c, sx, cx, (void *)0);
+  mpfr_clears (s, c, sx, cx, (void *) 0);
 }
 
 static void
@@ -100,11 +100,12 @@ check_nans (void)
   mpfr_clear (ch);
 }
 
-int 
+int
 main (int argc, char *argv[])
 {
   int i;
   mpfr_t x;
+
   tests_start_mpfr ();
 
   check_nans ();
@@ -117,7 +118,7 @@ main (int argc, char *argv[])
       /* x = i - x / 2 : boggle sign and bits */
       mpfr_ui_sub (x, i, x, GMP_RNDD);
       mpfr_div_2ui (x, x, 2, GMP_RNDD);
-      
+
       check (x, GMP_RNDN);
       check (x, GMP_RNDU);
       check (x, GMP_RNDD);

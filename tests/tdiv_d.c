@@ -44,7 +44,7 @@ check_nans (void)
   mpfr_div_d (y, x, 1.0, GMP_RNDN);
   MPFR_ASSERTN (mpfr_inf_p (y));
   MPFR_ASSERTN (mpfr_sgn (y) > 0);
- 
+
   /* -inf / 1.0 == -inf */
   mpfr_set_inf (x, -1);
   mpfr_div_d (y, x, 1.0, GMP_RNDN);
@@ -78,7 +78,7 @@ main (int argc, char *argv[])
   mpfr_init2 (x, IEEE_DBL_MANT_DIG);
   mpfr_init2 (y, IEEE_DBL_MANT_DIG);
   mpfr_init2 (z, IEEE_DBL_MANT_DIG);
-  
+
   mpfr_set_str (y, "4096", 10, GMP_RNDN);
   d = 0.125;
   mpfr_clear_flags ();

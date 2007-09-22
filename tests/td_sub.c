@@ -74,7 +74,7 @@ main (int argc, char *argv[])
   mpfr_init2 (x, IEEE_DBL_MANT_DIG);
   mpfr_init2 (y, IEEE_DBL_MANT_DIG);
   mpfr_init2 (z, IEEE_DBL_MANT_DIG);
-  
+
   mpfr_set_str (y, "4096", 10, GMP_RNDN);
   d = 0.125;
   mpfr_clear_flags ();
