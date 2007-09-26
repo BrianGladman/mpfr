@@ -32,7 +32,7 @@ MA 02110-1301, USA. */
 /* compute remainder as in definition:
    r = x - n * y, where n = trunc(x/y).
    warning: may change flags. */
-int
+static int
 slow_fmod (mpfr_ptr r, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd)
 {
   mpfr_t q;
