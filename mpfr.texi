@@ -1742,7 +1742,7 @@ Return the number of bytes read, or if an error occurred, return 0.
 @node Integer Related Functions, Miscellaneous Functions, Input and Output Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
 @cindex Integer related functions
-@section Integer Related Functions
+@section Integer and Remainder Related Functions
 
 @deftypefun int mpfr_rint (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_ceil (mpfr_t @var{rop}, mpfr_t @var{op})
@@ -1803,13 +1803,23 @@ corresponding precision of @var{iop} and @var{fop} (equivalent to
 @var{fop} must be different. Return 0 iff both results are exact.
 @end deftypefun
 
-@deftypefun int mpfr_remainder (mpfr_t @var{r}, mpfr_t @var{x}, mpfr_t @var{y}, mp_rnd_t @var{rnd})
+@deftypefun int mpfr_fmod (mpfr_t @var{r}, mpfr_t @var{x}, mpfr_t @var{y}, mp_rnd_t @var{rnd})
+@deftypefunx int mpfr_remainder (mpfr_t @var{r}, mpfr_t @var{x}, mpfr_t @var{y}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_remquo (mpfr_t @var{r}, long* @var{q}, mpfr_t @var{x}, mpfr_t @var{y}, mp_rnd_t @var{rnd})
-Set @var{r} to the remainder of the division of @var{x} by @var{y}, with
-quotient rounded to the nearest integer (ties rounded to even), and
-@var{r} rounded according to the direction @var{rnd}.
-If @var{r} is zero, it has the sign of @var{x}.
-The return value is the inexact flag corresponding to @var{r}.
+Set @var{r} to the value of @math{x - n y}, rounded according to the direction
+@var{rnd}, where @math{n} is the integer quotient of @var{x} divided 
+by @var{y}, defined as follows: @math{n} is rounded towards zero for
+@code{mpfr_fmod}, and to the nearest integer (ties rounded to even)
+for @code{mpfr_remainder} and @code{mpfr_remquo}.
+
+Special values are handled as described in Section F.9.7.1 of
+the ISO C99 standard:
+If @var{x} is infinite or @var{y} is zero, @var{r} is NaN.
+If @var{y} is infinite and @var{x} is finite, @var{r} is @var{x} rounded
+to the precision of @var{r}.
+If @var{r} is not NaN, it has the sign of @var{x}.
+The return value is the ternary value corresponding to @var{r}.
+
 Additionally, @code{mpfr_remquo} stores
 the low significant bits from the quotient in @var{*q}
 (more precisely the number of bits in a @code{long} minus one),
@@ -1817,7 +1827,8 @@ with the sign of @var{x} divided by @var{y}
 (except if those low bits are all zero, in which case zero is returned).
 Note that @var{x} may be so large in magnitude relative to @var{y} that an
 exact representation of the quotient is not practical.
-These functions are useful for additive argument reduction.
+@code{mpfr_remainder} and @code{mpfr_remquo} functions are useful for additive
+argument reduction.
 @end deftypefun
 
 @deftypefun int mpfr_integer_p (mpfr_t @var{op})

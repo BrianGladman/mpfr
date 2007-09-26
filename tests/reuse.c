@@ -597,6 +597,8 @@ main (void)
       test2 (mpfr_rint, "mpfr_rint", p, rnd);
       test2 (mpfr_frac, "mpfr_frac", p, rnd);
 
+      test3 (mpfr_remainder, "mpfr_remainder", p, rnd);
+      test3 (mpfr_fmod, "mpfr_fmod", p, rnd);
       test3 (mpfr_pow, "mpfr_pow", p, rnd);
       test3 (mpfr_atan2, "mpfr_atan2", p, rnd);
 
