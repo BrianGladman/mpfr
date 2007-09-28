@@ -102,6 +102,10 @@ New functions to implement:
   }
 - 1/sqrt(x) [Regis Dupont <dupont@lix.polytechnique.fr>, 15 Sep 2004]
 - dilog() [the dilogarithm: dilog(x) =  int(ln(t)/(1-t), t=1..x)]
+  See Numerical evaluation of multiple polylogarithms
+  Jens Vollinga and Stefan Weinzierl, Computer Physics Communications,
+  Volume 167, Issue 3, 1 May 2005, Pages 177-194 	       
+  Cf also http://calgo.acm.org/ (490.gz)
 - mpfr_printf [Sisyphus <kalinabears@iinet.net.au> Tue, 04 Jan 2005]
   for example mpfr_printf ("%.2Ff\n", x)
 - wanted for Magma [John Cannon <john@maths.usyd.edu.au>, Tue, 19 Apr 2005]:
