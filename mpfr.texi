@@ -1817,7 +1817,7 @@ the ISO C99 standard:
 If @var{x} is infinite or @var{y} is zero, @var{r} is NaN.
 If @var{y} is infinite and @var{x} is finite, @var{r} is @var{x} rounded
 to the precision of @var{r}.
-If @var{r} is not NaN, it has the sign of @var{x}.
+If @var{r} is zero, it has the sign of @var{x}.
 The return value is the ternary value corresponding to @var{r}.
 
 Additionally, @code{mpfr_remquo} stores

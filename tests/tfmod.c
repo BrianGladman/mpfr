@@ -71,7 +71,7 @@ test_failed (mpfr_t erem, mpfr_t grem, mpfr_t x, mpfr_t y, mp_rnd_t rnd)
   mpfr_out_str (stderr, 10, 0, x, GMP_RNDD);
   fprintf (stderr, "\n  y = ");
   mpfr_out_str (stderr, 10, 0, y, GMP_RNDD);
-  fprintf (stderr, "rnd = %s\n", mpfr_print_rnd_mode (rnd));
+  fprintf (stderr, "\nrnd = %s\n", mpfr_print_rnd_mode (rnd));
   fprintf (stderr, "\n  expected r = ");
   mpfr_out_str (stderr, 10, 0, erem, GMP_RNDD);
   fprintf (stderr, "\n  got      r = ");
@@ -180,13 +180,18 @@ main (int argc, char *argv[])
   mpfr_mul_d (x, y, .12345, GMP_RNDN);
   check (r, x, y, GMP_RNDN);
 
-  /* huge differences between precisions */
-  mpfr_set_prec (x, 2048);
+  /* sign(x) = sign (r) */
+  mpfr_set_str (x, "123798", 10, GMP_RNDN);
+  mpfr_set_str (y, "10", 10, GMP_RNDN);
+  check (r, x, y, GMP_RNDN);
+
+  /* huge difference between precisions */
+  mpfr_set_prec (x, 314);
   mpfr_const_pi (x, GMP_RNDD); /* x = pi */
   mpfr_set_prec (y, 8);
   mpfr_set_ui (y, 1, GMP_RNDD);
   mpfr_div_2ui (y, y, 3, GMP_RNDD); /* y = 1/8 */
-  mpfr_set_prec (r, 250); 
+  mpfr_set_prec (r, 123); 
   check (r, x, y, GMP_RNDD);
   mpfr_clears (x, y, r, (void *)0);
 
