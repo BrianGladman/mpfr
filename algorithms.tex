@@ -270,7 +270,7 @@ w&=&\circ(uv) \\\nonumber
 & \leq & [ c_w +  (1+c_u^+) k_v + (1+c_v^+) k_u ] \ulp(w)\U{R8}\\\nonumber
 \end{eqnarray}
 \begin{eqnarray}\nonumber
-\textnormal{Note:}&&\textnormal{If}\;\; w=\N(u+v) \;\;\textnormal{Then}\;\; c_w =\frac{1}{2} \;\;\textnormal{else}\;\; c_w =1
+\textnormal{Note:}&&\textnormal{If}\;\; w=\N(uv) \;\;\textnormal{Then}\;\; c_w =\frac{1}{2} \;\;\textnormal{else}\;\; c_w =1
 \end{eqnarray}
 
 \subsection{Generic error of inverse}\label{generic:inv}
@@ -453,7 +453,7 @@ In particular, if all roundings are away, the final relative error is
 at most $k \varepsilon = k \cdot 2^{1-n}$, thus at most $2k$ ulps.
 
 \begin{lemma} \label{rel_ulp}
-If a value if computed by $k$ successive multiplications or divisions,
+If a value is computed by $k$ successive multiplications or divisions,
 each with rounding away from zero, and precision $n$, then the final
 error is bounded by $2k$ ulps.
 \end{lemma}
@@ -565,7 +565,7 @@ that the rounding mode is either $\N$ (nearest),
 $\Z$ (towards zero), or $\infty$ (away from zero).
 \begin{quote}
 Algorithm {\tt mpfr\_sub}. \\
-Input: $b$, $c$ of opposite sign with $b > c > 0$, a rounding mode
+Input: $b$, $c$ of same sign with $b > c > 0$, a rounding mode
 $\circ \in \{ \N, \Z, \infty \}$ \\
 Side effect: store in $a$ the value of $\circ(b - c)$ \\
 Output: $0$ if $\circ(b - c) = b-c$, $1$ if $\circ(b - c) > b-c$,
@@ -635,14 +635,14 @@ is small enough, a plain multiplication using {\tt mpn\_mul} is used
 otherwise it uses {\tt mpfr\_mulhigh\_n}.
 
 In this case, it trunks the two operands to $m$ limbs:
-$1/2 \leq b < 1$ and $1/2 \leq c < 1$, $b = bh+bl$ and $c = ch+c$
+$1/2 \leq b < 1$ and $1/2 \leq c < 1$, $b = bh+bl$ and $c = ch+cl$
 ($B=2^{32} or 2^{64}$).
 The error comes from:
 \begin {itemize}
 \item Truncation: $ \leq bl.ch + bh.cl + bl.cl \leq bl + cl \leq 2 B^{-m}$
 \item Mulders: Assuming $\error(Mulders(n)) \leq \error(mulhigh\_basecase(n))$,
 \begin{eqnarray*}
-\error(mulhigh(n)
+\error(mulhigh(n))
   & \leq & (n-1) (B-1)^2 B^{-n-2} + \cdots + 1 (B-1)^2 B^{-2n} \\
   & = & \sum_{i=1}^{n-1}{(n-i) (B-1)^2 B^{-n-1-i}}
     =   (B-1)^2 B^{-n-1} \sum_{i=1}^{n-1}{B^{-i}} \\
@@ -1418,7 +1418,7 @@ it is possible with $v=\pinf(u^{-1})$ $(\bullet\bullet)$
 ${\textnormal{error}}(w)$
 
 
-$w \leftarrow \circ(u+v) $
+$w \leftarrow \circ(u-v) $
 \end{minipage} &
 \begin{minipage}{7.8cm}
 
@@ -1853,13 +1853,12 @@ least, $\lceil \log_2 (1+7 \times 2^{2-\Exp(v)} +
 
 \begin{enumerate}
 \item We use the formula $\arcsin\,x=\arctan\,\frac{x}{\sqrt{1-x^2}}$
-\item We will have the when $x$ is near $1$ we will experience uncertainty problems:
+\item When $x$ is near $1$ we will experience uncertainty problems:
 \item If $x=a(1+\delta)$ with $\delta$ being the relative error then we will have
 \begin{equation*}
 1-x=1-a-a\delta=(1-a)[1-\frac{a}{1-a}\delta]
 \end{equation*}
-Ans so when using the arc tangent programs we need to take into account that decrease in precision.
-\item We will have
+So when using the arc tangent programs we need to take into account that decrease in precision.
 \end{enumerate}
 
 \subsection{The arc-cosine function} % from Mathieu Dutour
@@ -2214,23 +2213,17 @@ ${\textnormal{error}}(v)$
 
 
 $v \leftarrow \circ(z+u) $
-
 \end{minipage} &
-\begin{minipage}{7.5cm}
-
+\begin{minipage}{8.5cm}
 \begin{eqnarray}\nonumber
   |v-(z+xy)| &\leq& \ulp(v) + |(z+u) - (z+xy)|\\\nonumber
 &\leq& (1+2^{e_u-e_v})\ulp(v)\;\;(\star)\\\nonumber
 \end{eqnarray}
-
-
 \end{minipage} &
 \begin{minipage}{6cm}
-($\star$)
+$(\star)$
 
 see subsection \ref{generic:sous}
-
-
 \end{minipage}
 \end{tabular}
 \end{center}
@@ -3292,7 +3285,15 @@ where we used $2^{-w} U \leq \ulp(U)$.
 
 \subsection{Summary}
 
-\begin{table}
+Table ~\ref{table:genericError} presents the generic error for several operations, assuming all variables have a
+mantissa of $p$ bits, and no overflow/underflow occurs.
+The inputs $u$ and $v$ are
+approximations of $x$ and $y$ with $|u-x| \le k_u \ulp(u)$ and
+$|v-y| \le k_v \ulp(v)$. The additional rounding error $c_w$ is $1/2$ for
+rounding to nearest, and $1$ otherwise.
+The value $c^{\pm}_u$ equals $1 \pm k_u 2^{1-p}$.
+
+\begin{table}[h]
 \begin{center}
 \begin{tabular}{|c|c|c|} \hline
    $w$        & $\err(w)/\ulp(w) \le c_w + \ldots$ &special case\\ \hline\hline
@@ -3306,14 +3307,8 @@ $\circ(\log u)$ & $k_u 2^{1-e_w}$ & \\
 \hline
 \end{tabular}
 \end{center}
-\caption{Generic error for several operations, assuming all variables have a
-mantissa of $p$ bits, and no overflow/underflow occurs.
-The inputs $u$ and $v$ are
-approximations of $x$ and $y$ with $|u-x| \le k_u \ulp(u)$ and
-$|v-y| \le k_v \ulp(v)$. The additional rounding error $c_w$ is $1/2$ for
-rounding to nearest, and $1$ otherwise.
-The value $c^{\pm}_u$ equals $1 \pm k_u 2^{1-p}$.
-}
+\caption{Generic error}
+\label{table:genericError}
 \end{table}
 Remark 1: in the addition case, when $u v > 0$,
 necessarily one of $2^{e_u-e_w}$ and $2^{e_v-e_w}$ is less than $1/2$,
