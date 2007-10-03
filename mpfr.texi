@@ -3,7 +3,7 @@
 @setfilename mpfr.info
 @documentencoding ISO-8859-1
 @set VERSION 2.4.0-dev
-@set UPDATED-MONTH August 2007
+@set UPDATED-MONTH October 2007
 @settitle MPFR @value{VERSION}
 @synindex tp fn
 @iftex
@@ -425,7 +425,8 @@ You should include that file in any program using the MPFR library:
 @tindex @code{mpfr_t}
 @noindent
 A @dfn{floating-point number} or @dfn{float} for short, is an arbitrary
-precision mantissa with a limited precision exponent. The C data type
+precision significand (also called mantissa) with a limited precision
+exponent. The C data type
 for such objects is @code{mpfr_t} (internally defined as a one-element
 array of a structure, and @code{mpfr_ptr} is the C data type representing
 a pointer to this structure). A floating-point number can have
@@ -441,7 +442,7 @@ the other functions supported by MPFR.
 @cindex Precision
 @tindex @code{mp_prec_t}
 @noindent
-The @dfn{precision} is the number of bits used to represent the mantissa
+The @dfn{precision} is the number of bits used to represent the significand
 of a floating-point number;
 the corresponding C data type is @code{mp_prec_t}.
 The precision can be any integer between @code{MPFR_PREC_MIN} and
@@ -453,7 +454,7 @@ is equal to 2.
 @noindent
 The @dfn{rounding mode} specifies the way to round the result of a
 floating-point operation, in case the exact result can not be represented
-exactly in the destination mantissa;
+exactly in the destination significand;
 the corresponding C data type is @code{mp_rnd_t}.
 
 @cindex Limb
@@ -501,7 +502,7 @@ Instead, initialize it before entering the loop, and clear it out after the
 loop has exited.
 
 You don't need to be concerned about allocating additional space for MPFR
-variables, since any variable has a mantissa of fixed size.
+variables, since any variable has a significand of fixed size.
 Hence unless you change its precision, or clear and reinitialize it,
 a floating-point variable will have the same allocated space during all its
 life.
@@ -635,7 +636,7 @@ to consider the underflow after rounding. The underflow before rounding
 can also be defined. For instance, consider a function that has the
 exact result @m{7 \times 2^{e-4}, 7 multiplied by two to the power
 @var{e}@minus{}4}, where @var{e} is the smallest exponent (for a
-mantissa between 1/2 and 1) in the current
+significand between 1/2 and 1) in the current
 range, with a 2-bit target precision and rounding towards plus infinity.
 The exact result has the exponent @var{e}@minus{}1. With the underflow
 before rounding, such a function call would yield an underflow, as
@@ -782,7 +783,7 @@ by a call to @code{mpfr_set_default_prec}.
 
 @deftypefun void mpfr_set_default_prec (mp_prec_t @var{prec})
 Set the default precision to be @strong{exactly} @var{prec} bits.  The
-precision of a variable means the number of bits used to store its mantissa.
+precision of a variable means the number of bits used to store its significand.
 All
 subsequent calls to @code{mpfr_init} will use this precision, but previously
 initialized variables are unaffected.
@@ -821,7 +822,7 @@ and set its value to NaN.
 The previous value stored in @var{x} is lost. It is equivalent to
 a call to @code{mpfr_clear(x)} followed by a call to
 @code{mpfr_init2(x, prec)}, but more efficient as no allocation is done in
-case the current allocated space for the mantissa of @var{x} is enough.
+case the current allocated space for the significand of @var{x} is enough.
 The precision @var{prec} can be any integer between @code{MPFR_PREC_MIN} and
 @code{MPFR_PREC_MAX}.
 
@@ -831,7 +832,7 @@ use @code{mpfr_prec_round} instead.
 
 @deftypefun mp_prec_t mpfr_get_prec (mpfr_t @var{x})
 Return the precision actually used for assignments of @var{x}, i.e.@: the
-number of bits used to store its mantissa.
+number of bits used to store its significand.
 @end deftypefun
 
 @node Assignment Functions, Combined Initialization and Assignment Functions, Initialization Functions, MPFR Interface
@@ -916,7 +917,7 @@ valid number then @var{rop} is set to zero and the value of @var{nptr}
 is stored in the location referenced by @var{endptr}.
 
 Parsing follows the standard C @code{strtod} function. This means optional
-leading whitespace, an optional @code{+} or @code{-}, mantissa digits with
+leading whitespace, an optional @code{+} or @code{-}, significand digits with
 an optional decimal point, and an
 optional exponent consisting of an @code{e} or @code{E} (if
 @math{@var{base} @le{} 10}) or @code{@@}, an optional sign, and digits.
@@ -925,10 +926,10 @@ the period (the first one is accepted for consistency with the C standard
 and the practice, the second one is accepted to allow the programmer to
 provide MPFR numbers from strings in a way that does not depend on the
 current locale).
-A hexadecimal mantissa can be given with a leading @code{0x} or @code{0X}, in
-which case @code{p} or @code{P} may introduce an optional binary exponent,
-indicating the power of 2 by which the mantissa is to be scaled. A binary
-mantissa can be given with a leading @code{0b} or @code{0B}, in which case
+A hexadecimal significand can be given with a leading @code{0x} or @code{0X},
+in which case @code{p} or @code{P} may introduce an optional binary exponent,
+indicating the power of 2 by which the significand is to be scaled. A binary
+significand can be given with a leading @code{0b} or @code{0B}, in which case
 @code{e}, @code{E}, @code{p}, @code{P} or @code{@@} may introduce the
 binary exponent. The exponent is always written in base 10.
 
@@ -940,9 +941,9 @@ can be given. A @code{n-char-sequence} is a non-empty string containing
 only digits, Latin letters and the underscore (0, 1, 2, ..., 9, a, b, ...,
 z, A, B, ..., Z, _).
 
-There must be at least one digit in the mantissa for the number to
+There must be at least one digit in the significand for the number to
 be valid. If an exponent has no digits it's ignored and parsing
-stops after the mantissa. If an @code{0x}, @code{0X}, @code{0b} or
+stops after the significand. If an @code{0x}, @code{0X}, @code{0b} or
 @code{0B} is not followed by hexadecimal/binary digits, parsing stops
 after the first @code{0}:
 the subject sequence is defined as the longest initial
@@ -963,7 +964,7 @@ value.
 @c  10..35, while lowercase letters represent 36..61.
 
 If @code{base} is 0, then it tries to identify the used base: if the
-mantissa begins with the @code{0x} prefix, it assumes that @var{base} is 16.
+significand begins with the @code{0x} prefix, it assumes that @var{base} is 16.
 If it begins with @code{0b}, it assumes that @var{base} is 2. Otherwise, it
 assumes it is 10.
 
@@ -1063,7 +1064,7 @@ See also @code{mpfr_fits_slong_p}, @code{mpfr_fits_ulong_p},
 @end deftypefun
 
 @deftypefun mp_exp_t mpfr_get_z_exp (mpz_t @var{rop}, mpfr_t @var{op})
-Put the scaled mantissa of @var{op} (regarded as an integer, with the
+Put the scaled significand of @var{op} (regarded as an integer, with the
 precision of @var{op}) into @var{rop}, and return the exponent @var{exp}
 (which may be outside the current exponent range) such that @var{op}
 exactly equals
@@ -1100,9 +1101,9 @@ to the left of the first digit.  For example, the number @minus{}3.1416 would
 be returned as "@minus{}31416" in the string and 1 written at @var{expptr}.
 If @var{rnd} is to nearest, and @var{op} is exactly in the middle of two
 possible outputs, the one with an even last digit is chosen
-(for an odd base, this may not correspond to an even mantissa).
+(for an odd base, this may not correspond to an even significand).
 
-If @var{n} is zero, the number of digits of the mantissa is chosen
+If @var{n} is zero, the number of digits of the significand is chosen
 large enough so that re-reading the printed value with the same precision,
 assuming both output and input use rounding to nearest, will recover
 the original value of @var{op}.
@@ -1117,12 +1118,12 @@ $m = 1 + \lceil n {\log 2 \over \log b} \rceil$,
 @end tex
 but in some very rare cases, it might be @math{m+1}.
 
-If @var{str} is a null pointer, space for the mantissa is allocated using
+If @var{str} is a null pointer, space for the significand is allocated using
 the current allocation function, and a pointer to the string is returned.
 To free the returned string, you must use @code{mpfr_free_str}.
 
 If @var{str} is not a null pointer, it should point to a block of storage
-large enough for the mantissa, i.e., at least @code{max(@var{n} + 2, 7)}.
+large enough for the significand, i.e., at least @code{max(@var{n} + 2, 7)}.
 The extra two bytes are for a possible minus sign, and for the terminating null
 character.
 
@@ -1717,10 +1718,10 @@ read float in @var{rop}.
 @c The string is of the form @samp{M@@N} or, if the
 @c base is 10 or less, alternatively @samp{MeN} or @samp{MEN}, or, if the base
 @c is 16, alternatively @samp{MpB} or @samp{MPB}.
-@c @samp{M} is the mantissa in the specified base, @samp{N} is the exponent
+@c @samp{M} is the significand in the specified base, @samp{N} is the exponent
 @c written in decimal for the specified base, and in base 16, @samp{B} is the
 @c binary exponent written in decimal (i.e.@: it indicates the power of 2 by
-@c which the mantissa is to be scaled).
+@c which the significand is to be scaled).
 This function reads a word (defined as a sequence of characters between
 whitespace) and parses it using @code{mpfr_set_str} (it may change).
 See the documentation of @code{mpfr_strtofr} for a detailed description
@@ -1766,7 +1767,7 @@ not an integer.
 
 Note that @code{mpfr_round} is different from @code{mpfr_rint} called with
 the rounding to the nearest mode (where halfway cases are rounded to an even
-integer or mantissa). Note also that no double rounding is performed; for
+integer or significand). Note also that no double rounding is performed; for
 instance, 4.5 (100.1 in binary) is rounded by @code{mpfr_round} to 4 (100
 in binary) in 2-bit precision, though @code{round(4.5)} is equal to 5 and
 5 (101 in binary) is rounded to 6 (110 in binary) in 2-bit precision.
@@ -2000,8 +2001,8 @@ Round @var{x} according to @var{rnd} with precision @var{prec}, which
 must be an integer between @code{MPFR_PREC_MIN} and @code{MPFR_PREC_MAX}
 (otherwise the behavior is undefined).
 If @var{prec} is greater or equal to the precision of @var{x}, then new
-space is allocated for the mantissa, and it is filled with zeros.
-Otherwise, the mantissa is rounded to precision @var{prec} with the given
+space is allocated for the significand, and it is filled with zeros.
+Otherwise, the significand is rounded to precision @var{prec} with the given
 direction. In both cases, the precision of @var{x} is changed to @var{prec}.
 @end deftypefun
 
@@ -2240,7 +2241,7 @@ with @code{mpf}.
 @deftypefun void mpfr_set_prec_raw (mpfr_t @var{x}, mp_prec_t @var{prec})
 Reset the precision of @var{x} to be @strong{exactly} @var{prec} bits.
 The only difference with @code{mpfr_set_prec} is that @var{prec} is assumed to
-be small enough so that the mantissa fits into the current allocated memory
+be small enough so that the significand fits into the current allocated memory
 space for @var{x}. Otherwise the behavior is undefined.
 @end deftypefun
 
@@ -2303,17 +2304,17 @@ GMP Custom Allocation, allocates its memory on the application stack.
 Note 3: This interface is preliminary.
 
 @deftypefun size_t mpfr_custom_get_size (mp_prec_t @var{prec})
-Return the needed size in bytes to store the mantissa of a FP number
+Return the needed size in bytes to store the significand of a FP number
 of precision @var{prec}.
 @end deftypefun
 
-@deftypefun void mpfr_custom_init (void *@var{mantissa}, mp_prec_t @var{prec})
-Initialize a mantissa of precision @var{prec}.
-@var{mantissa} must be an area of @code{mpfr_custom_get_size (prec)} bytes
+@deftypefun void mpfr_custom_init (void *@var{significand}, mp_prec_t @var{prec})
+Initialize a significand of precision @var{prec}.
+@var{significand} must be an area of @code{mpfr_custom_get_size (prec)} bytes
 at least and be suitably aligned for an array of @code{mp_limb_t}.
 @end deftypefun
 
-@deftypefun void mpfr_custom_init_set (mpfr_t @var{x}, int @var{kind}, mp_exp_t @var{exp}, mp_prec_t @var{prec}, void *@var{mantissa})
+@deftypefun void mpfr_custom_init_set (mpfr_t @var{x}, int @var{kind}, mp_exp_t @var{exp}, mp_prec_t @var{prec}, void *@var{significand})
 Perform a dummy initialization of a @code{mpfr_t} and set it to:
 @itemize
 @item if @code{ABS(kind) == MPFR_NAN_KIND}, @var{x} is set to NaN;
@@ -2322,13 +2323,13 @@ of sign @code{sign(kind)};
 @item if @code{ABS(kind) == MPFR_ZERO_KIND}, @var{x} is set to the zero of
 sign @code{sign(kind)};
 @item if @code{ABS(kind) == MPFR_REGULAR_KIND}, @var{x} is set to a regular
-number: @code{x = sign(kind)*mantissa*2^exp}
+number: @code{x = sign(kind)*significand*2^exp}
 @end itemize
-In all cases, it uses @var{mantissa} directly for further computing
+In all cases, it uses @var{significand} directly for further computing
 involving @var{x}. It will not allocate anything.
 A FP number initialized with this function cannot be resized using
 @code{mpfr_set_prec}, or cleared using @code{mpfr_clear}!
-@var{mantissa} must have been initialized with @code{mpfr_custom_init}
+@var{significand} must have been initialized with @code{mpfr_custom_init}
 using the same precision @var{prec}.
 @end deftypefun
 
@@ -2340,7 +2341,7 @@ with @code{mpfr_custom_init_set} is undefined.
 @end deftypefun
 
 @deftypefun {void *} mpfr_custom_get_mantissa (mpfr_t @var{x})
-Return a pointer to the mantissa used by a @code{mpfr_t} initialized with
+Return a pointer to the significand used by a @code{mpfr_t} initialized with
 @code{mpfr_custom_init_set}.
 The behavior of this function for any @code{mpfr_t} not initialized
 with @code{mpfr_custom_init_set} is undefined.
@@ -2355,9 +2356,10 @@ with @code{mpfr_custom_init_set} is undefined.
 @end deftypefun
 
 @deftypefun void mpfr_custom_move (mpfr_t @var{x}, void *@var{new_position})
-Inform MPFR that the mantissa has moved due to a garbage collect
+Inform MPFR that the significand has moved due to a garbage collect
 and update its new position to @code{new_position}.
-However the application has to move the mantissa and the @code{mpfr_t} itself.
+However the application has to move the significand and the @code{mpfr_t}
+itself.
 The behavior of this function for any @code{mpfr_t} not initialized
 with @code{mpfr_custom_init_set} is undefined.
 @end deftypefun
@@ -2435,9 +2437,9 @@ obsolete.
 @c Set @var{x} to the value of the binary number in string @var{s}, which has to
 @c be of the
 @c form +/-xxxx.xxxxxxEyy. The exponent is read in decimal, but is interpreted
-@c as the power of two to be multiplied by the mantissa.
-@c The mantissa length of @var{s} has to be less or equal to the precision of
-@c @var{x}, otherwise an error occurs.
+@c as the power of two to be multiplied by the significand.
+@c The significand length of @var{s} has to be less or equal to the precision
+@c of @var{x}, otherwise an error occurs.
 @c If @var{s} starts with @code{N}, it is interpreted as NaN (Not-a-Number);
 @c if it starts with @code{I} after the sign, it is interpreted as infinity,
 @c with the corresponding sign.
