@@ -1913,6 +1913,7 @@ infinity or zero is undefined.
 Set the exponent of @var{x} if @var{e} is in the current exponent range,
 and return 0 (even if @var{x} is not a non-zero ordinary number);
 otherwise, return a non-zero value.
+The significand is assumed to be in [1/2,1).
 @end deftypefun
 
 @deftypefun int mpfr_signbit (mpfr_t @var{op})
