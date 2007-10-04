@@ -170,6 +170,7 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     /* use atan2(y,x) = atan(y/x) */
     for (;;)
       {
+        mpfr_clear_flags ();
         if (mpfr_div (tmp, y, x, GMP_RNDN) == 0)
           {
             /* Result is exact. */

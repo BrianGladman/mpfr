@@ -405,6 +405,40 @@ smallvals_atan2 (void)
   mpfr_clears (a, x, y, (void *) 0);
 }
 
+/* Bug found by Robert Bajema (regression in MPFR 2.3.0).
+   The cause is the underflow flag set before the mpfr_atan2 call. */
+static void
+atan2_bug_20071003 (void)
+{
+  mpfr_t a, x, y, z;
+
+  mpfr_inits (a, x, y, z, (void *) 0);
+
+  mpfr_set_underflow ();
+  mpfr_set_str_binary (y,
+    "-0.10100110110100110111010110111111100110100010001110110E2");
+  mpfr_set_str_binary (x,
+    "0.10100101010110010100010010111000110110011110001011110E3");
+  mpfr_set_str_binary (z,
+    "-0.11101111001101101100111011001101000010010111101110110E-1");
+  mpfr_atan2 (a, y, x, GMP_RNDN);
+  if (! mpfr_equal_p (a, z))
+    {
+      printf ("mpfr_atan2 fails on:\n");
+      printf ("  y = ");
+      mpfr_dump (y);
+      printf ("  x = ");
+      mpfr_dump (x);
+      printf ("Expected ");
+      mpfr_dump (z);
+      printf ("Got      ");
+      mpfr_dump (a);
+      exit (1);
+    }
+
+  mpfr_clears (a, x, y, z, (void *) 0);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -414,6 +448,7 @@ main (int argc, char *argv[])
   special ();
   special_atan2 ();
   smallvals_atan2 ();
+  atan2_bug_20071003 ();
 
   test_generic_atan  (2, 200, 17);
   test_generic_atan2 (2, 200, 17);
