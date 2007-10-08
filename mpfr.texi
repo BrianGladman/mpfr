@@ -2426,6 +2426,19 @@ value if one is able to round correctly @var{x} to precision
 @var{prec} with the direction @var{rnd2},
 and 0 otherwise (including for NaN and Inf).
 This function @strong{does not modify} its arguments.
+
+Note: if one wants to also determine the correct ternary value when rounding
+@var{b} to precision @var{prec}, a useful trick is the following:
+@verbatim
+   if (mpfr_can_round (b, err, rnd1, GMP_RNDZ, prec + (rnd2 == GMP_RNDN)))
+      ...
+@end verbatim
+Indeed, if @var{rnd2} is @code{GMP_RNDN}, this will check if one can
+round to @var{prec}+1 bits with a directed rounding:
+if so, one can surely round to nearest to @var{prec} bits,
+and in addition one can determine the correct ternary value, which would not
+be the case when @var{b} is near from a value exactly representable on
+@var{prec} bits.
 @end deftypefun
 
 @deftypefun double mpfr_get_d1 (mpfr_t @var{op})
