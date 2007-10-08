@@ -132,12 +132,7 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
              Since EXP(c) <= 1, 3-m-EXP(c) >= 2-m, thus the error
              is at most 2^(3-m-EXP(c)) in case of argument reduction. */
           err = 2 * MPFR_GET_EXP (c) + (mp_exp_t) m - 3 - (reduce != 0);
-          if (mpfr_can_round (c, err, GMP_RNDN, GMP_RNDZ,
-                              precy + (rnd_mode == GMP_RNDN)))
-            /* WARNING: even if we know c <= sin(x), don't give GMP_RNDZ
-               as 3rd argument to mpfr_can_round, since if c is exactly
-               representable to the target precision (inexact = 0 below),
-               we would have to add one ulp when rounding away from 0. */
+          if (MPFR_CAN_ROUND (c, err, precy, rnd_mode))
             break;
 
           /* check for huge cancellation (Near 0) */
