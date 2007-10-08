@@ -736,8 +736,8 @@ any MPFR function or macro, whether or not there is an error.
 * Special Functions::
 * Input and Output Functions::
 * Integer Related Functions::
+* Rounding Related Functions::
 * Miscellaneous Functions::
-* Rounding Mode Related Functions::
 * Exception Related Functions::
 * Advanced Functions::
 * Compatibility with MPF::
@@ -1740,7 +1740,7 @@ Return the number of bytes read, or if an error occurred, return 0.
 @c @code{mpfr_out_raw}, and put the result in @var{float}.
 @c @end deftypefun
 
-@node Integer Related Functions, Miscellaneous Functions, Input and Output Functions, MPFR Interface
+@node Integer Related Functions, Rounding Related Functions, Input and Output Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
 @cindex Integer related functions
 @section Integer and Remainder Related Functions
@@ -1836,7 +1836,63 @@ argument reduction.
 Return non-zero iff @var{op} is an integer.
 @end deftypefun
 
-@node Miscellaneous Functions, Rounding Mode Related Functions, Integer Related Functions, MPFR Interface
+@node Rounding Related Functions, Miscellaneous Functions, Integer Related Functions, MPFR Interface
+@cindex Rounding mode related functions
+@section Rounding Related Functions
+
+@deftypefun void mpfr_set_default_rounding_mode (mp_rnd_t @var{rnd})
+Set the default rounding mode to @var{rnd}.
+The default rounding mode is to nearest initially.
+@end deftypefun
+
+@deftypefun mp_rnd_t mpfr_get_default_rounding_mode (void)
+Get the default rounding mode.
+@end deftypefun
+
+@deftypefun int mpfr_prec_round (mpfr_t @var{x}, mp_prec_t @var{prec}, mp_rnd_t @var{rnd})
+Round @var{x} according to @var{rnd} with precision @var{prec}, which
+must be an integer between @code{MPFR_PREC_MIN} and @code{MPFR_PREC_MAX}
+(otherwise the behavior is undefined).
+If @var{prec} is greater or equal to the precision of @var{x}, then new
+space is allocated for the significand, and it is filled with zeros.
+Otherwise, the significand is rounded to precision @var{prec} with the given
+direction. In both cases, the precision of @var{x} is changed to @var{prec}.
+@end deftypefun
+
+@deftypefun int mpfr_round_prec (mpfr_t @var{x}, mp_rnd_t @var{rnd}, mp_prec_t @var{prec})
+[This function is obsolete. Please use @code{mpfr_prec_round} instead.]
+@end deftypefun
+
+@deftypefun int mpfr_can_round (mpfr_t @var{b}, mp_exp_t @var{err}, mp_rnd_t @var{rnd1}, mp_rnd_t @var{rnd2}, mp_prec_t @var{prec})
+Assuming @var{b} is an approximation of an unknown number
+@var{x} in the direction @var{rnd1} with error at most two to the power
+E(b)-@var{err} where E(b) is the exponent of @var{b}, return a non-zero
+value if one is able to round correctly @var{x} to precision
+@var{prec} with the direction @var{rnd2},
+and 0 otherwise (including for NaN and Inf).
+This function @strong{does not modify} its arguments.
+
+Note: if one wants to also determine the correct ternary value when rounding
+@var{b} to precision @var{prec}, a useful trick is the following:
+@verbatim
+   if (mpfr_can_round (b, err, rnd1, GMP_RNDZ, prec + (rnd2 == GMP_RNDN)))
+      ...
+@end verbatim
+Indeed, if @var{rnd2} is @code{GMP_RNDN}, this will check if one can
+round to @var{prec}+1 bits with a directed rounding:
+if so, one can surely round to nearest to @var{prec} bits,
+and in addition one can determine the correct ternary value, which would not
+be the case when @var{b} is near from a value exactly representable on
+@var{prec} bits.
+@end deftypefun
+
+@deftypefun {const char *} mpfr_print_rnd_mode (mp_rnd_t @var{rnd})
+Return the input string (GMP_RNDD, GMP_RNDU, GMP_RNDN, GMP_RNDZ)
+corresponding to the rounding mode @var{rnd} or a null pointer if
+@var{rnd} is an invalid rounding mode.
+@end deftypefun
+
+@node Miscellaneous Functions, Exception Related Functions, Rounding Related Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
 @cindex Miscellaneous float functions
 @section Miscellaneous Functions
@@ -1985,41 +2041,7 @@ applied to the old (compile-time) MPFR version are not available (however
 this information should not have much interest in general).
 @end deftypefun
 
-@node Rounding Mode Related Functions, Exception Related Functions, Miscellaneous Functions, MPFR Interface
-@cindex Rounding mode related functions
-@section Rounding Mode Related Functions
-
-@deftypefun void mpfr_set_default_rounding_mode (mp_rnd_t @var{rnd})
-Set the default rounding mode to @var{rnd}.
-The default rounding mode is to nearest initially.
-@end deftypefun
-
-@deftypefun mp_rnd_t mpfr_get_default_rounding_mode (void)
-Get the default rounding mode.
-@end deftypefun
-
-@deftypefun int mpfr_prec_round (mpfr_t @var{x}, mp_prec_t @var{prec}, mp_rnd_t @var{rnd})
-Round @var{x} according to @var{rnd} with precision @var{prec}, which
-must be an integer between @code{MPFR_PREC_MIN} and @code{MPFR_PREC_MAX}
-(otherwise the behavior is undefined).
-If @var{prec} is greater or equal to the precision of @var{x}, then new
-space is allocated for the significand, and it is filled with zeros.
-Otherwise, the significand is rounded to precision @var{prec} with the given
-direction. In both cases, the precision of @var{x} is changed to @var{prec}.
-@end deftypefun
-
-@deftypefun int mpfr_round_prec (mpfr_t @var{x}, mp_rnd_t @var{rnd}, mp_prec_t @var{prec})
-[This function is obsolete. Please use @code{mpfr_prec_round} instead.]
-@end deftypefun
-
-@deftypefun {const char *} mpfr_print_rnd_mode (mp_rnd_t @var{rnd})
-Return the input string (GMP_RNDD, GMP_RNDU, GMP_RNDN, GMP_RNDZ)
-corresponding to the rounding mode @var{rnd} or a null pointer if
-@var{rnd} is an invalid rounding mode.
-@end deftypefun
-
-
-@node Exception Related Functions, Advanced Functions, Rounding Mode Related Functions, MPFR Interface
+@node Exception Related Functions, Advanced Functions, Miscellaneous Functions:, MPFR Interface
 @comment  node-name,  next,  previous,  up
 @cindex Exception related functions
 @section Exception Related Functions
@@ -2417,29 +2439,6 @@ whole number of limbs, the excess bits at the low end of the data are zero.
 @c The return value is zero unless an underflow occurs, in which case the
 @c @code{mpfr_sub_one_ulp} function behaves like a conventional subtraction.
 @c @end deftypefun
-
-@deftypefun int mpfr_can_round (mpfr_t @var{b}, mp_exp_t @var{err}, mp_rnd_t @var{rnd1}, mp_rnd_t @var{rnd2}, mp_prec_t @var{prec})
-Assuming @var{b} is an approximation of an unknown number
-@var{x} in the direction @var{rnd1} with error at most two to the power
-E(b)-@var{err} where E(b) is the exponent of @var{b}, return a non-zero
-value if one is able to round correctly @var{x} to precision
-@var{prec} with the direction @var{rnd2},
-and 0 otherwise (including for NaN and Inf).
-This function @strong{does not modify} its arguments.
-
-Note: if one wants to also determine the correct ternary value when rounding
-@var{b} to precision @var{prec}, a useful trick is the following:
-@verbatim
-   if (mpfr_can_round (b, err, rnd1, GMP_RNDZ, prec + (rnd2 == GMP_RNDN)))
-      ...
-@end verbatim
-Indeed, if @var{rnd2} is @code{GMP_RNDN}, this will check if one can
-round to @var{prec}+1 bits with a directed rounding:
-if so, one can surely round to nearest to @var{prec} bits,
-and in addition one can determine the correct ternary value, which would not
-be the case when @var{b} is near from a value exactly representable on
-@var{prec} bits.
-@end deftypefun
 
 @deftypefun double mpfr_get_d1 (mpfr_t @var{op})
 Convert @var{op} to a @code{double}, using the default MPFR rounding mode
