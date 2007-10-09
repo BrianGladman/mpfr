@@ -243,6 +243,7 @@ Efficiency:
    prec=50000    k=2   k=3   k=10  k=100
    mpz_root      0.036 0.072 0.476 7.628
    mpfr_mpz_root 0.004 0.004 0.036 12.20
+   See also mail from Carl Witty on mpfr list, 09 Oct 2007.
 - implement Mulders algorithm for squaring and division
 - for sparse input (say x=1 with 2 bits), mpfr_exp is not faster than for
         full precision when precision <= MPFR_EXP_THRESHOLD. The reason is
