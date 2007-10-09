@@ -2469,6 +2469,8 @@ continuous support of INRIA, and of the LORIA and LIP laboratories.
 In particular the main authors were or are members of the
 PolKA, Spaces, Cacao project-teams at LORIA (Nancy, France)
 and of the Arenaire project-team at LIP (Lyon, France).
+This project was started during the Fiable (reliable in French) action
+supported by INRIA, and continued during the AOC action.
 The development of MPFR was also supported by a grant
 (202F0659 00 MPN 121) from the Conseil R@'egional de Lorraine in 2002,
 and from INRIA by an "associate engineer" grant (2003-2005)
