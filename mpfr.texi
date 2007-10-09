@@ -2452,7 +2452,7 @@ and a previous version of @code{mpfr_gamma};
 David Daney contributed the hyperbolic and inverse hyperbolic functions,
 the base-2 exponential, and the factorial function. Fabrice Rouillier
 contributed the original version of @file{mul_ui.c}, the @file{gmp_op.c}
-file, and helped to the Windows porting.
+file, and helped to the Microsoft Windows porting.
 Jean-Luc R@'emy contributed the @code{mpfr_zeta} code.
 Ludovic Meunier helped in the design of the @code{mpfr_erf} code.
 Damien Stehl@'e contributed the @code{mpfr_get_ld_2exp} function.
