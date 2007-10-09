@@ -2041,7 +2041,7 @@ applied to the old (compile-time) MPFR version are not available (however
 this information should not have much interest in general).
 @end deftypefun
 
-@node Exception Related Functions, Advanced Functions, Miscellaneous Functions:, MPFR Interface
+@node Exception Related Functions, Advanced Functions, Miscellaneous Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
 @cindex Exception related functions
 @section Exception Related Functions
