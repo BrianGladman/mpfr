@@ -120,6 +120,11 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
                    z < 2^(-Nt). Instead of increasing the precision, let's
                    compute x^2-1 by (x+1)(x-1) with an accuracy of about
                    Nt bits. */
+                /* FIXME (VL): I'm not sure that the error analysis is
+                   correct, as one needs to take into account the fact
+                   that z isn't necessarily x-1 exactly in the +z below.
+                   Anyway this method is stupid. As we know that
+                   z < 2^(-Nt), using sqrt(2z) would be much simpler. */
                 mpfr_init2 (z, Nt);
                 mpfr_add_ui (t, x, 1, GMP_RNDD);
                 mpfr_sub_ui (z, x, 1, GMP_RNDD);
