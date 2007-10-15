@@ -141,20 +141,36 @@ bug20070831 (void)
   mpfr_init2 (x, 256);
   mpfr_init2 (y, 32);
   mpfr_init2 (z, 32);
+
   mpfr_set_ui (x, 1, GMP_RNDN);
   mpfr_nextabove (x);
   inex = mpfr_acosh (y, x, GMP_RNDZ);
   mpfr_set_ui_2exp (z, 1, -127, GMP_RNDN);
   mpfr_nextbelow (z);
-  MPFR_ASSERTN (inex < 0);
   if (!mpfr_equal_p (y, z))
     {
-      printf ("Error in bug20070831:\nexpected ");
+      printf ("Error in bug20070831 (1):\nexpected ");
       mpfr_dump (z);
       printf ("got      ");
       mpfr_dump (y);
       exit (1);
     }
+  MPFR_ASSERTN (inex < 0);
+
+  mpfr_nextabove (x);
+  mpfr_set_prec (y, 29);
+  inex = mpfr_acosh (y, x, GMP_RNDN);
+  mpfr_set_str_binary (z, "1.011010100000100111100110011E-127");
+  if (!mpfr_equal_p (y, z))
+    {
+      printf ("Error in bug20070831 (2):\nexpected ");
+      mpfr_dump (z);
+      printf ("got      ");
+      mpfr_dump (y);
+      exit (1);
+    }
+  MPFR_ASSERTN (inex < 0);
+
   mpfr_clears (x, y, z, (void *) 0);
 }
 
