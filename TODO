@@ -19,9 +19,17 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 02110-1301, USA.
 
+Table of contents:
+1. Documentation
+2. Installation
+3. Changes in existing functions
+4. New functions to implement
+5. Efficiency
+6. Miscellaneous
+7. Portability
 
 ##############################################################################
-Documentation:
+1. Documentation
 ##############################################################################
 
 - add a description of the algorithms used + proof of correctness
@@ -31,14 +39,14 @@ Documentation:
 
 
 ##############################################################################
-Installation:
+2. Installation
 ##############################################################################
 
 - nothing to do currently :-)
 
 
 ##############################################################################
-Changes in existing functions:
+3. Changes in existing functions
 ##############################################################################
 
 - many functions currently taking into account the precision of the *input*
@@ -76,7 +84,7 @@ Changes in existing functions:
 
 
 ##############################################################################
-New functions to implement:
+4. New functions to implement
 ##############################################################################
 
 - mpfr_fmod (mpfr_t, mpfr_srcptr, mpfr_srcptr, mp_rnd_t)
@@ -235,7 +243,7 @@ New functions to implement:
 
 
 ##############################################################################
-Efficiency:
+5. Efficiency
 ##############################################################################
 
 - fix regression with mpfr_mpz_root (from Keith Briggs, 5 July 2006), for
@@ -286,7 +294,7 @@ Efficiency:
 
 
 ##############################################################################
-Miscellaneous:
+6. Miscellaneous
 ##############################################################################
 
 - [suggested by Tobias Burnus <burnus(at)net-b.de> and
@@ -367,7 +375,7 @@ Miscellaneous:
 
 
 ##############################################################################
-Portability:
+7. Portability
 ##############################################################################
 
 - [Kevin about texp.c long strings]
@@ -377,33 +385,3 @@ Portability:
   couple of places already.  Arrays of chars are not much fun.
 
 - use http://gcc.gnu.org/viewcvs/trunk/config/stdint.m4 for mpfr-gmp.h
-
-
-##############################################################################
-Possible future MPF / MPFR integration:
-##############################################################################
-
-- mpf routines can become "extern inline"s calling mpfr equivalents,
-  probably just with GMP_RNDZ hard coded, since that's what mpf has
-  always done.
-
-- Want to preserve the mpf_t structure size, for binary compatibility.
-  Breaking compatibility would cause lots of pain and potential subtle
-  breakage for users.  If the fields in mpf_t are not enough then
-  extra space under _mp_d can be used.
-
-- mpf_sgn has been a macro directly accessing the _mp_size field, so a
-  compatible representation would be required.  At worst that field
-  could be maintained for mpf_sgn, but not otherwise used internally.
-
-  mpf_sgn should probably throw an exception if called with NaN, since
-  there's no useful value it can return, so it might want to become a
-  function.  Inlined copies in existing binaries would hopefully never
-  see a NaN, if they only do old-style mpf things.
-
-- mpfr routines replacing mpf routines must be reentrant and thread
-  safe, since of course that's what has been documented for mpf.
-
-- mpfr_random will not be wanted since there's no corresponding
-  mpf_random and new routines should not use the old style global
-  random state.
