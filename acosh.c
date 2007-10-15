@@ -114,40 +114,26 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
             mpfr_sub_ui (t, t, 1, GMP_RNDD);   /* x^2-1 */
             if (MPFR_UNLIKELY (MPFR_IS_ZERO (t)))
               {
-                mpfr_t z;
-
-                /* This means that x is very close to 1: x = 1 + z with
-                   z < 2^(-Nt). Instead of increasing the precision, let's
-                   compute x^2-1 by (x+1)(x-1) with an accuracy of about
-                   Nt bits. */
-                /* FIXME (VL): I'm not sure that the error analysis is
-                   correct, as one needs to take into account the fact
-                   that z isn't necessarily x-1 exactly in the +z below.
-                   Anyway this method is stupid. As we know that
-                   z < 2^(-Nt), using sqrt(2z) would be much simpler. */
-                mpfr_init2 (z, Nt);
-                mpfr_add_ui (t, x, 1, GMP_RNDD);
-                mpfr_sub_ui (z, x, 1, GMP_RNDD);
-                mpfr_mul (t, t, z, GMP_RNDD);
-                d = 2;
-                mpfr_sqrt (t, t, GMP_RNDN);        /* sqrt(x^2-1) */
-                mpfr_add (t, t, z, GMP_RNDN);      /* sqrt(x^2-1)+z */
-                mpfr_clear (z);
-                mpfr_log1p (t, t, GMP_RNDN);       /* log1p(sqrt(x^2-1)+z) */
+                /* This means that x is very close to 1: x = 1 + t with
+                   t < 2^(-Nt). We have: acosh(x) = sqrt(2t) (1 - eps(t))
+                   with 0 < eps(t) < t / 12. */
+                mpfr_sub_ui (t, x, 1, GMP_RNDD);   /* t = x - 1 */
+                mpfr_mul_2ui (t, t, 1, GMP_RNDN);  /* 2t */
+                mpfr_sqrt (t, t, GMP_RNDN);        /* sqrt(2t) */
+                err = 1;
               }
             else
               {
                 d = exp_te - MPFR_GET_EXP (t);
-                d = MAX (1, d);
                 mpfr_sqrt (t, t, GMP_RNDN);        /* sqrt(x^2-1) */
                 mpfr_add (t, t, x, GMP_RNDN);      /* sqrt(x^2-1)+x */
                 mpfr_log (t, t, GMP_RNDN);         /* ln(sqrt(x^2-1)+x) */
-              }
 
-            /* error estimate -- see algorithms.tex */
-            err = 3 + d - MPFR_GET_EXP (t);
-            /* error is bounded by 1/2 + 2^err <= 2^(1+max(-1,err)) */
-            err = 1 + MAX (-1, err);
+                /* error estimate -- see algorithms.tex */
+                err = 3 + MAX (1, d) - MPFR_GET_EXP (t);
+                /* error is bounded by 1/2 + 2^err <= 2^(max(0,1+err)) */
+                err = MAX (0, 1 + err);
+              }
           }
 
         if (MPFR_LIKELY (MPFR_CAN_ROUND (t, Nt - err, Ny, rnd_mode)))

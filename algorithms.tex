@@ -1295,31 +1295,44 @@ $t \leftarrow \circ(s + x)$ [nearest] \\
 $u \leftarrow \circ(\log t)$ [nearest]
 \end{quote}
 
-The error on $q$ is at most $1\,\ulp(q)$, thus, if $r \ne 0$,
-that on $r$ is at most $\ulp(r) + \ulp(q) = (1+E)\,\ulp(r)$
-with $d = \Exp(q) - \Exp(r)$ and $E = 2^d$.
-
-If $r = 0$, we recompute it with:
-\begin{quote}
-$q \leftarrow \circ(x+1)$ [down] \\
-$q' \leftarrow \circ(x-1)$ [down] \\
-$r \leftarrow \circ(q \cdot q')$ [down]
-\end{quote}
-This means that $x = 1 + z$, with $z < 2^{-p}$, where $p$ is the
-intermediate precision (which may be smaller than the precision of $x$).
-The errors on $q$ and $q'$ are respectively at most $1\,\ulp(q)$ and
-$1\,\ulp(q')$, thus that on $r$ is at most $(1+E)\,\ulp(r)$ with $E = 5$.
-
+Let us assume that $r \ne 0$. The error on $q$ is at most $1\,\ulp(q)$,
+thus that on $r$ is at most $\ulp(r) + \ulp(q) = (1+E)\,\ulp(r)$ with
+$d = \Exp(q) - \Exp(r)$ and $E = 2^d$.
 Since $r$ is smaller than $x^2-1$, we can use the simpler formula for the
-error on the square root, which gives as bound $(\frac{3}{2} + E)\,\ulp(s)$
+error on the square root, which gives a bound $(\frac{3}{2} + E)\,\ulp(s)$
 for the error on $s$, and $(2 + E)\,\ulp(t)$ for that on $t$. This gives
 a final bound of $(\frac{1}{2} + (2 + E) 2^{2-\Exp(u)})\,\ulp(u)$ for the
 error on $u$ (\textsection\ref{generic:log}).
-
-If $r$ is recomputed, let $d = 2$ so that we have in any case:
-$2 + E \leq 2^{1 + \mathrm{max}(1,d)}$. Thus the rounding error
+We have: $2 + E \leq 2^{1 + \mathrm{max}(1,d)}$. Thus the rounding error
 on the calculation of $\acosh x$ can be bounded by
 $(\frac{1}{2} + 2^{3 + \mathrm{max}(1,d) - \Exp(u)})\,\ulp(u)$.
+
+If we obtain $r = 0$, the error is too large and we need another algorithm.
+One has $x = 1 + z$, with $0 < z < 2^{-p}$, where $p$ is the intermediate
+precision (which may be smaller than the precision of $x$). The formula
+can be rewritten:
+$\acosh x = \log (1 + \sqrt{z(2+z)} + z) = \sqrt{2z} (1 - \varepsilon(z))$
+where $0 < \varepsilon(z) < z / 12$.
+% > series(log(1+z+sqrt(z*(2+z)))/sqrt(2*z),z=0);
+%                             2      3       4       5
+%                    z     3 z    5 z    35 z    63 z       (11/2)
+%               1 - ---- + ---- - ---- + ----- - ----- + O(z      )
+%                    12    160    896    18432   90112
+We use the following algorithm:
+\begin{quote}
+$q \leftarrow \circ(x - 1)$ [down] \\
+$r \leftarrow 2q$ \\
+$s \leftarrow \circ(\sqrt{r})$ [nearest]
+\end{quote}
+
+The error on $q$ is at most $1\,\ulp(q)$, thus the error on $r$ is at most
+$1\,\ulp(r)$. Since $r$ is smaller than $2z$, we can use the simpler formula
+for the error on the square root, which gives a bound $\frac{3}{2}\,\ulp(s)$
+for the error on $s$. The error on $\acosh x$ is bounded by the sum of the
+error bound on $\sqrt{2z}$ and $\varepsilon(z) \sqrt{2z} <
+\frac{2^{-p}}{12} 2^{1+\Exp(s)} = \frac{1}{6}\,\ulp(s)$.
+Thus the rounding error on the calculation of $\acosh x$ can be bounded by
+$\left(\frac{3}{2} + \frac{1}{6}\right)\,\ulp(s) < 2\,\ulp(s)$.
 
 \subsection{The hyperbolic sine function}
 
