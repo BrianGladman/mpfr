@@ -292,6 +292,12 @@ Table of contents:
   possible through stripping low zero bits or limbs could check for
   that (this would be less efficient but easier).
 
+- try the idea of the paper "Reduced Cancellation in the Evaluation of Entire
+  Functions and Applications to the Error Function" by W. Gawronski, J. Mueller
+  and M. Reinhard, to be published in SIAM Journal on Numerical Analysis: to
+  avoid cancellation in say erfc(x) for x large, they compute the Taylor
+  expansion of erfc(x)*exp(x^2/2) instead (which has less cancellation),
+  and then divide by exp(x^2/2) (which is simpler to compute).
 
 ##############################################################################
 6. Miscellaneous
