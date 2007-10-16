@@ -591,6 +591,7 @@ main (void)
       test2 (mpfr_erfc, "mpfr_erfc", p, rnd);
       test2 (mpfr_j0,   "mpfr_j0",   p, rnd);
       test2 (mpfr_j1,   "mpfr_j1",   p, rnd);
+      test2 (mpfr_li2,  "mpfr_li2",  p, rnd);
 
       test2 (mpfr_zeta, "mpfr_zeta", p, rnd);
       test2 (mpfr_gamma, "mpfr_gamma", p, rnd);

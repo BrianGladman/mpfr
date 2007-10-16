@@ -1550,6 +1550,12 @@ $x^k/k/k!$.
 For negative @var{x}, the returned value is NaN.
 @end deftypefun
 
+@deftypefun int mpfr_li2 (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd_mode})
+Set @var{rop} to real part of the dilogarithm of @var{op}, rounded in the
+direction @var{rnd_mode}. The dilogarithm function is defined here as 
+@m{-\int_{t=0}^x log(1-t)/t dt,the integral of -log(1-t)/t from 0 to x}.
+@end deftypefun
+
 @deftypefun int mpfr_gamma (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Set @var{rop} to the value of the Gamma function on @var{op}, rounded in the
 direction @var{rnd}. When @var{op} is a negative integer, NaN is returned.
