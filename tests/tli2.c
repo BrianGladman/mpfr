@@ -1,6 +1,6 @@
 /* mpfr_tli2 -- test file for dilogarithm function
 
-Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007 Free Software Foundation, Inc.
+Copyright 2007 Free Software Foundation, Inc.
 Contributed by the Arenaire and Cacao projects, INRIA.
 
 This file is part of the MPFR Library, and was contributed by Mathieu Dutour.
@@ -26,7 +26,6 @@ MA 02110-1301, USA. */
 #include "mpfr-test.h"
 
 #define TEST_FUNCTION mpfr_li2
-#define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1)
 #include "tgeneric.c"
 
 static void

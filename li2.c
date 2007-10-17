@@ -1,6 +1,6 @@
 /* mpfr_li2 -- Dilogarithm.
 
-Copyright 2005, 2006, 2007 Free Software Foundation, Inc.
+Copyright 2007 Free Software Foundation, Inc.
 Contributed by the Arenaire and Cacao projects, INRIA.
 
 This file is part of the MPFR Library.
@@ -21,7 +21,6 @@ the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
 #define MPFR_NEED_LONGLONG_H
-#include <stdio.h>
 #include "mpfr-impl.h"
 
 /* assuming B[0]...B[2(n-1)] are computed, computes and stores B[2n]*(2n+1)!
@@ -99,8 +98,8 @@ li2_series (mpfr_t s, mpfr_srcptr z, mpfr_rnd_t rnd_mode)
   /* The series converges for |z| < 2 pi, but in mpfr_li2 the argument is 
      reduced so that 0 < z <= log(2). Here is additionnal check that z is
      (nearly) correct */
-  MPFR_ASSERTD (MPFR_IS_STRICT_POS (z));
-  MPFR_ASSERTD (mpfr_cmp_d (z, 0.625) <= 0);
+  MPFR_ASSERTD (MPFR_IS_STRICTPOS (z));
+  MPFR_ASSERTD (mpfr_cmp_d (z, 0.6953125) <= 0);
 
   sp = MPFR_PREC (s);
 
@@ -144,7 +143,7 @@ li2_series (mpfr_t s, mpfr_srcptr z, mpfr_rnd_t rnd_mode)
      sign as the next term w_{K+2} which is positive iff K%4 == 0.
      Assume that error(z) <= (1+t) z', where z' is the actual value, then
      error(s) <= 2 * (K+1) * t (see algorithm.tex).
-   */
+  */
   return k - 2;
 }
 
@@ -183,9 +182,13 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         }
     }
 
-  /* Li2(x) = x + x^2/4 + ...  so the error is < 2^(2*EXP(x)) */
-  MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, -MPFR_GET_EXP (x), 0, 1, rnd_mode,
-                                    {});
+  /* Li2(x) = x + x^2/4 + x^3/9 + ... */ 
+  if (MPFR_IS_POS (x))
+    MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x,  -MPFR_GET_EXP (x), 0, 1,
+				      rnd_mode, {});
+  else
+    MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x,  -MPFR_GET_EXP (x), 2, 0,
+				      rnd_mode, {});
 
   MPFR_SAVE_EXPO_MARK (expo);
   yp = MPFR_PREC (y);
@@ -340,7 +343,6 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           mpfr_sub_ui (xx, x, 1, GMP_RNDN);
           mpfr_log (u, xx, GMP_RNDU);
           mpfr_mul (u, v, u, GMP_RNDN); /* u = log(x) * log(x-1) */
-          /* error(u) < 1 ulp(u) because ?? */
           mpfr_sub (s, s, u, GMP_RNDN);
           d += 2;               /* 0.5 > (-u), s*(-u) > 0 */
 
