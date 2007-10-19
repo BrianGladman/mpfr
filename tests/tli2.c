@@ -80,6 +80,28 @@ special (void)
   mpfr_clear (y);
 }
 
+static void
+normal (void)
+{
+  mpfr_t x, y;
+  mpfr_init (x);
+  mpfr_init (y);
+
+  /* x1 = 2^-3 */
+  mpfr_set_str (x, "1e-2", 2, GMP_RNDD);
+  mpfr_set_str (y, "1.0000100001111010011110101001111001000010000101000001e-3",
+		2, GMP_RNDD);
+  mpfr_li2 (x, x, GMP_RNDN);
+  if (!mpfr_equal_p (x, y))
+    {
+      printf ("Error for li2(x1)\n");
+      exit (1);
+    }
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
 int
 main (int argc, char *argv[])
 {

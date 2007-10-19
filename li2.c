@@ -85,15 +85,18 @@ bernoulli (mpz_t * b, unsigned long n)
    with 0 < z <= log(2) to the precision of s rounded in the direction
    rnd_mode. 
    Return the maximum index of the truncature which is useful 
-   for determinating the inexact flag and the relative error.
+   for determinating the relative error.
 */
 static int
-li2_series (mpfr_t s, mpfr_srcptr z, mpfr_rnd_t rnd_mode)
+li2_series (mpfr_t sum, mpfr_srcptr z, mpfr_rnd_t rnd_mode)
 {
-  int k, Bm, oldBm;
-  mpfr_t u, v, w;
-  mpfr_prec_t sp;
+  int inexact;
+  unsigned int i, Bm, Bmax;
+  mpfr_t s, u, v, w;
+  mpfr_prec_t sump, p;
+  mp_exp_t se, err;
   mpz_t *B;
+  MPFR_ZIV_DECL (loop);
 
   /* The series converges for |z| < 2 pi, but in mpfr_li2 the argument is 
      reduced so that 0 < z <= log(2). Here is additionnal check that z is
@@ -101,42 +104,71 @@ li2_series (mpfr_t s, mpfr_srcptr z, mpfr_rnd_t rnd_mode)
   MPFR_ASSERTD (MPFR_IS_STRICTPOS (z));
   MPFR_ASSERTD (mpfr_cmp_d (z, 0.6953125) <= 0);
 
-  sp = MPFR_PREC (s);
-
-  mpfr_init2 (u, MPFR_PREC (z) + 1);
-  mpfr_init2 (v, sp + 4);
-  mpfr_init2 (w, sp + 4);
-
-  mpfr_set (v, z, GMP_RNDU);
-  mpfr_sqr (u, z, GMP_RNDU);
-  mpfr_set (s, z, GMP_RNDU);
+  sump = MPFR_PREC (sum);  /* target precision */
+  p = sump + MPFR_INT_CEIL_LOG2 (sump) + 4; /* the working precision */
+  mpfr_init2 (s, p);
+  mpfr_init2 (u, p);
+  mpfr_init2 (v, p);
+  mpfr_init2 (w, p);
 
   B = bernoulli ((mpz_t *) 0, 0);
-  Bm = 1;
+  Bm = Bmax = 1;
 
-  k = 2;
-  do
+  MPFR_ZIV_INIT (loop, p);
+  for (;;)
     {
-      /* for comments, let define i so that 2i = k in the begining of each
-         loop */
-      B = bernoulli (B, Bm++);  /* B_{2i}*(2i+1)!, exact */
-      mpfr_mul (v, u, v, GMP_RNDU);
-      mpfr_div_ui (v, v, k, GMP_RNDU);
-      mpfr_div_ui (v, v, k, GMP_RNDU);
-      k++;
-      mpfr_div_ui (v, v, k, GMP_RNDU);
-      mpfr_div_ui (v, v, k, GMP_RNDU);  /* v_{2i} = v_{2i-2} / (2i (2i+1))^2 */
-      k++;
-      mpfr_mul_z (w, v, B[Bm - 1], GMP_RNDN);   /*w_{2i}=v_{2i}*B_{2i}*(2i+1)! */
-      mpfr_add (s, s, w, GMP_RNDN);
-    }
-  while ((MPFR_GET_EXP (w) > MPFR_GET_EXP (s) - (mp_exp_t) sp + 1));
+      mpfr_sqr (u, z, GMP_RNDU);
+      mpfr_set (v, z, GMP_RNDU);
+      mpfr_set (s, z, GMP_RNDU);
+      se = MPFR_GET_EXP (s);
+      err = 0;
 
-  oldBm = Bm;
+      for (i = 1;; i++)
+	{
+	  if (i >= Bmax)
+	    B = bernoulli (B, Bmax++);  /* B_2i * (2i+1)!, exact */
+
+	  mpfr_mul (v, u, v, GMP_RNDU);
+	  mpfr_div_ui (v, v, 2 * i, GMP_RNDU);
+	  mpfr_div_ui (v, v, 2 * i, GMP_RNDU);
+	  mpfr_div_ui (v, v, 2 * i + 1, GMP_RNDU);
+	  mpfr_div_ui (v, v, 2 * i + 1, GMP_RNDU);  
+	  /* here, v_2i = v_{2i-2} / (2i * (2i+1))^2 */
+
+	  mpfr_mul_z (w, v, B[i], GMP_RNDN);  
+	  /* here, w_2i = v_2i * B_2i * (2i+1)! with
+	     error(w_2i) < 2^(5 * i + 8) ulp(w_2i) (see algorithm.tex) */ 
+
+	  mpfr_add (s, s, w, GMP_RNDN);
+	  
+	  err = MAX (err + se, 5 * i + 8 + MPFR_GET_EXP (w)) 
+	    - MPFR_GET_EXP (s) + 1;
+	  se = MPFR_GET_EXP (s);
+	  if (MPFR_GET_EXP (w) <= se - (mp_exp_t)p)
+	    break;
+	}
+      
+      /* the previous value of err is the rounding error, 
+	 the truncation error is less than EXP(z) - 4 * i - 4 
+	 (see algorithm.tex)*/
+      err = MAX (err, MPFR_GET_EXP (z) - 4 * i - 4) + 1;
+      if (MPFR_CAN_ROUND (s, p - err, sump, rnd_mode))
+	break;
+
+      MPFR_ZIV_NEXT (loop, p);
+      mpfr_set_prec (s, p);
+      mpfr_set_prec (u, p);
+      mpfr_set_prec (v, p);
+      mpfr_set_prec (w, p);
+    }
+  MPFR_ZIV_FREE (loop);
+  inexact = mpfr_set (sum, s, rnd_mode);
+
+  Bm = Bmax;
   while (Bm--)
     mpz_clear (B[Bm]);
-  (*__gmp_free_func) (B, oldBm * sizeof (mpz_t));
-  mpfr_clears (u, v, w, (void *) 0);
+  (*__gmp_free_func) (B, Bmax * sizeof (mpz_t));
+  mpfr_clears (s, u, v, w, (void *) 0);
 
   /* Let K be the returned value.
      As we compute an alternating series, the truncation error has the same
@@ -144,7 +176,7 @@ li2_series (mpfr_t s, mpfr_srcptr z, mpfr_rnd_t rnd_mode)
      Assume that error(z) <= (1+t) z', where z' is the actual value, then
      error(s) <= 2 * (K+1) * t (see algorithm.tex).
   */
-  return k - 2;
+  return 2*i;
 }
 
 /* Compute the real part of the dilogarithm defined by
