@@ -179,6 +179,96 @@ li2_series (mpfr_t sum, mpfr_srcptr z, mpfr_rnd_t rnd_mode)
   return 2*i;
 }
 
+/* try asymptotic expansion when x is large and positive:
+   Li2(x) = -log(x)^2/2 + Pi^2/3 - 1/x + O(1/x^2).
+   More precisely for x >= 2 we have for g(x) = -log(x)^2/2 + Pi^2/3:
+   -2 <= x * (Li2(x) - g(x)) <= -1
+   thus |Li2(x) - g(x)| <= -2/x.
+   Assumes x >= 38, which ensures log(x)^2/2 >= 2*Pi^2/3, and g(x) <= -3.3.
+   Return 0 if asymptotic expansion failed (unable to round), otherwise
+   returns correct ternary value.
+*/
+static int
+mpfr_li2_asympt_pos (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
+{
+  mpfr_t g, h;
+  mp_prec_t w = MPFR_PREC(y) + 20;
+  int inex = 0;
+
+  MPFR_ASSERTN (mpfr_cmp_ui (x, 38) >= 0);
+
+  mpfr_init2 (g, w);
+  mpfr_init2 (h, w);
+  mpfr_log (g, x, GMP_RNDN); /* rel. error <= |(1 + theta) - 1| */
+  mpfr_sqr (g, g, GMP_RNDN); /* rel. error <= |(1 + theta)^3 - 1| <= 2^(2-w) */
+  mpfr_div_2ui (g, g, 1, GMP_RNDN); /* rel. error <= 2^(2-w) */
+  mpfr_const_pi (h, GMP_RNDN); /* error <= 2^(1-w) */
+  mpfr_sqr (h, h, GMP_RNDN); /* rel. error <= 2^(2-w) */
+  mpfr_div_ui (h, h, 3, GMP_RNDN); /* rel. error <= |(1 + theta)^4 - 1|
+				      <= 5 * 2^(-w) */
+  /* since x is chosen such that log(x)^2/2 >= 2 * (Pi^2/3), we should have
+     g >= 2*h, thus |g-h| >= |h|, and the relative error on g is at most
+     multiplied by 2 in the difference, and that by h is unchanged. */
+  MPFR_ASSERTN (MPFR_EXP(g) > MPFR_EXP(h));
+  mpfr_sub (g, h, g, GMP_RNDN); /* err <= ulp(g)/2 + g*2^(3-w) + g*5*2^(-w)
+				   <= ulp(g) * (1/2 + 8 + 5) < 14 ulp(g).
+				   
+				   If in addition |2/x| <= 2 ulp(g), i.e.,
+				   |1/x| <= ulp(g), then the total error is
+				   bounded by 16 ulp(g). */
+  if ((MPFR_EXP(x) >= w - MPFR_EXP(g)) &&
+      MPFR_CAN_ROUND (g, w - 4, MPFR_PREC(y), rnd_mode))
+    inex = mpfr_set (y, g, rnd_mode);
+    
+  mpfr_clear (g);
+  mpfr_clear (h);
+
+  return inex;
+}
+
+/* try asymptotic expansion when x is large and negative:
+   Li2(x) = -log(-x)^2/2 - Pi^2/6 - 1/x + O(1/x^2).
+   More precisely for x <= -2 we have for g(x) = -log(-x)^2/2 - Pi^2/6:
+   |Li2(x) - g(x)| <= 1/|x|.
+   Assumes x <= -7, which ensures |log(-x)^2/2| >= Pi^2/6, and g(x) <= -3.5.
+   Return 0 if asymptotic expansion failed (unable to round), otherwise
+   returns correct ternary value.
+*/
+static int
+mpfr_li2_asympt_neg (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
+{
+  mpfr_t g, h;
+  mp_prec_t w = MPFR_PREC(y) + 20;
+  int inex = 0;
+
+  MPFR_ASSERTN (mpfr_cmp_si (x, -7) <= 0);
+
+  mpfr_init2 (g, w);
+  mpfr_init2 (h, w);
+  mpfr_neg (g, x, GMP_RNDN);
+  mpfr_log (g, g, GMP_RNDN); /* rel. error <= |(1 + theta) - 1| */
+  mpfr_sqr (g, g, GMP_RNDN); /* rel. error <= |(1 + theta)^3 - 1| <= 2^(2-w) */
+  mpfr_div_2ui (g, g, 1, GMP_RNDN); /* rel. error <= 2^(2-w) */
+  mpfr_const_pi (h, GMP_RNDN); /* error <= 2^(1-w) */
+  mpfr_sqr (h, h, GMP_RNDN); /* rel. error <= 2^(2-w) */
+  mpfr_div_ui (h, h, 6, GMP_RNDN); /* rel. error <= |(1 + theta)^4 - 1|
+				      <= 5 * 2^(-w) */
+  MPFR_ASSERTN (MPFR_EXP(g) >= MPFR_EXP(h));
+  mpfr_add (g, g, h, GMP_RNDN); /* err <= ulp(g)/2 + g*2^(2-w) + g*5*2^(-w)
+				   <= ulp(g) * (1/2 + 4 + 5) < 10 ulp(g).
+				   
+				   If in addition |1/x| <= 4 ulp(g), then the
+				   total error is bounded by 16 ulp(g). */
+  if ((MPFR_EXP(x) >= (w - 2) - MPFR_EXP(g)) &&
+      MPFR_CAN_ROUND (g, w - 4, MPFR_PREC(y), rnd_mode))
+    inex = mpfr_neg (y, g, rnd_mode);
+    
+  mpfr_clear (g);
+  mpfr_clear (h);
+
+  return inex;
+}
+
 /* Compute the real part of the dilogarithm defined by
    Li2(x) = -\Int_{t=0}^x log(1-t)/t dt */
 int
@@ -300,6 +390,14 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       int k;
       mp_exp_t d, expo_l;
       mpfr_t s, u, xx;
+
+      if (mpfr_cmp_ui (x, 38) >= 0)
+	{
+	  inexact = mpfr_li2_asympt_pos (y, x, rnd_mode);
+	  if (inexact != 0)
+	    goto end_of_case_gt2;
+	}
+
       mpfr_init2 (u, m);
       mpfr_init2 (s, m);
       mpfr_init2 (xx, m);
@@ -344,8 +442,9 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         }
       MPFR_ZIV_FREE (loop);
       inexact = mpfr_set (y, s, rnd_mode);
-
       mpfr_clears (s, u, xx, (void *) 0);
+
+    end_of_case_gt2:
       MPFR_SAVE_EXPO_FREE (expo);
       return mpfr_check_range (y, inexact, rnd_mode);
     }
@@ -501,6 +600,14 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       int k;
       mp_exp_t d, expo_l;
       mpfr_t s, u, v, w, xx;
+
+      if (mpfr_cmp_si (x, -7) <= 0)
+	{
+	  inexact = mpfr_li2_asympt_neg (y, x, rnd_mode);
+	  if (inexact != 0)
+	    goto end_of_case_ltm1;
+	}
+      
       mpfr_init2 (s, m);
       mpfr_init2 (u, m);
       mpfr_init2 (v, m);
@@ -554,8 +661,9 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 	}
       MPFR_ZIV_FREE (loop);
       inexact = mpfr_set (y, s, rnd_mode);
-
       mpfr_clears (s, u, v, w, xx, (void *) 0);
+
+    end_of_case_ltm1:
       MPFR_SAVE_EXPO_FREE (expo);
       return mpfr_check_range (y, inexact, rnd_mode);
     }
