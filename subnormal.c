@@ -81,11 +81,11 @@ mpfr_subnormalize (mpfr_ptr y, int old_inexact, mp_rnd_t rnd)
              We need to examine old inexact flag to conclude. */
           if (old_inexact * MPFR_SIGN (y) < 0)
             goto set_min;
-          /* If inexact != 0, return 0.1*2^emin+1.
+          /* If inexact != 0, return 0.1*2^(emin+1).
              Otherwise, rounding bit = 1, sticky bit = 0 and inexact = 0
-             So we have 0.1100000000000000000000000*2^emin exactly!!!
-             we choose to return 0.1*2^emin+1 which minimizes the relative
-             error. */
+             So we have 0.1100000000000000000000000*2^emin exactly.
+             We return 0.1*2^(emin+1) according to the even-rounding
+             rule on subnormals. */
           goto set_min_p1;
         }
       else if (MPFR_IS_LIKE_RNDZ (rnd, MPFR_IS_NEG (y)))
