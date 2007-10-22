@@ -73,6 +73,84 @@ check1 (void)
   mpfr_clear (x);
 }
 
+/* bug found by Kevin P. Rauch on 22 Oct 2007 */
+static void
+check2 (void)
+{
+  mpfr_t x, y, z;
+  int tern;
+
+  mpfr_init2 (x, 32);
+  mpfr_init2 (y, 32);
+  mpfr_init2 (z, 32);
+
+  mpfr_set_ui (x, 0xC0000000U, GMP_RNDN);
+  mpfr_neg (x, x, GMP_RNDN);
+  mpfr_set_ui (y, 0xFFFFFFFEU, GMP_RNDN);
+  mpfr_set_exp (x, 0);
+  mpfr_set_exp (y, 0);
+  mpfr_set_emin (-29);
+
+  tern = mpfr_mul (z, x, y, GMP_RNDN);
+  /* z = -0.BFFFFFFE, tern > 0 */
+
+  tern = mpfr_subnormalize (z, tern, GMP_RNDN);
+  /* z should be -0.75 */
+  MPFR_ASSERTN (tern < 0 && mpfr_cmp_si_2exp (z, -3, -2) == 0);
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+}
+
+/* bug found by Kevin P. Rauch on 22 Oct 2007 */
+static void
+check3 (void)
+{
+  mpfr_t x, y, z;
+  int tern;
+
+  mpfr_init2 (x, 32);
+  mpfr_init2 (y, 32);
+  mpfr_init2 (z, 32);
+
+  mpfr_set_ui (x, 0xBFFFFFFFU, GMP_RNDN); /* 3221225471/2^32 */
+  mpfr_set_ui (y, 0x80000001U, GMP_RNDN); /* 2147483649/2^32 */
+  mpfr_set_exp (x, 0);
+  mpfr_set_exp (y, 0);
+  mpfr_set_emin (-1);
+
+  /* the exact product is 6917529028714823679/2^64, which is rounded to
+     3/8 = 0.375, which is smaller, thus tern < 0 */
+  tern = mpfr_mul (z, x, y, GMP_RNDN);
+  MPFR_ASSERTN (tern < 0 && mpfr_cmp_ui_2exp (z, 3, -3) == 0);
+
+  tern = mpfr_subnormalize (z, tern, GMP_RNDN);
+  /* since emin = -1, and EXP(z)=-1, z should be rounded to precision
+     EXP(z)-emin+1 = 1, i.e., z should be a multiple of the smallest possible
+     positive representable value with emin=-1, which is 1/4. The two
+     possible values are 1/4 and 2/4, which are at equal distance of z.
+     But since tern < 0, we should choose the largest value, i.e., 2/4. */
+  MPFR_ASSERTN (tern > 0 && mpfr_cmp_ui_2exp (z, 1, -1) == 0);
+
+  /* here is another test for the alternate case, where z was rounded up
+     first, thus we have to round down */
+  mpfr_set_str_binary (x, "0.11111111111010110101011011011011");
+  mpfr_set_str_binary (y, "0.01100000000001111100000000001110");
+  tern = mpfr_mul (z, x, y, GMP_RNDN);
+  MPFR_ASSERTN (tern > 0 && mpfr_cmp_ui_2exp (z, 3, -3) == 0);
+  tern = mpfr_subnormalize (z, tern, GMP_RNDN);
+  MPFR_ASSERTN (tern < 0 && mpfr_cmp_ui_2exp (z, 1, -2) == 0);
+
+  /* finally the case where z was exact, which we simulate here */
+  mpfr_set_ui_2exp (z, 3, -3, GMP_RNDN);
+  tern = mpfr_subnormalize (z, 0, GMP_RNDN);
+  MPFR_ASSERTN (tern > 0 && mpfr_cmp_ui_2exp (z, 1, -1) == 0);
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+}
 
 int
 main (int argc, char *argv[])
@@ -80,6 +158,8 @@ main (int argc, char *argv[])
   tests_start_mpfr ();
 
   check1 ();
+  check2 ();
+  check3 ();
 
   tests_end_mpfr ();
   return 0;

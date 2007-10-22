@@ -69,17 +69,17 @@ mpfr_subnormalize (mpfr_ptr y, int old_inexact, mp_rnd_t rnd)
              and use the previous table to conclude. */
           s = MPFR_LIMB_SIZE (y) - 1;
           mant = MPFR_MANT (y) + s;
-          rb = *mant & (MPFR_LIMB_HIGHBIT>>1);
+          rb = *mant & (MPFR_LIMB_HIGHBIT >> 1);
           if (rb == 0)
             goto set_min;
-          sb = *mant & ((MPFR_LIMB_HIGHBIT>>1)-1);
+          sb = *mant & ((MPFR_LIMB_HIGHBIT >> 1) - 1);
           while (sb == 0 && s-- != 0)
             sb = *--mant;
           if (sb != 0)
             goto set_min_p1;
           /* Rounding bit is 1 and sticky bit is 0.
              We need to examine old inexact flag to conclude. */
-          if (old_inexact * MPFR_SIGN (y) < 0)
+          if (old_inexact * MPFR_SIGN (y) > 0)
             goto set_min;
           /* If inexact != 0, return 0.1*2^(emin+1).
              Otherwise, rounding bit = 1, sticky bit = 0 and inexact = 0
@@ -97,7 +97,7 @@ mpfr_subnormalize (mpfr_ptr y, int old_inexact, mp_rnd_t rnd)
       else
         {
         set_min_p1:
-          mpfr_setmin (y, __gmpfr_emin+1);
+          mpfr_setmin (y, __gmpfr_emin + 1);
           inexact = MPFR_SIGN (y);
         }
     }
@@ -120,12 +120,14 @@ mpfr_subnormalize (mpfr_ptr y, int old_inexact, mp_rnd_t rnd)
                         MPFR_SET_EXP (dest, MPFR_GET_EXP (dest)+1));
       if (MPFR_LIKELY (old_inexact != 0))
         {
-          if (MPFR_UNLIKELY(rnd==GMP_RNDN && (inexact == MPFR_EVEN_INEX
-                                              || inexact == -MPFR_EVEN_INEX)))
+          if (MPFR_UNLIKELY(rnd == GMP_RNDN && (inexact == MPFR_EVEN_INEX
+                                               || inexact == -MPFR_EVEN_INEX)))
             {
-              if (old_inexact*inexact*MPFR_INT_SIGN (y) > 0)
+              /* if both roundings are in the same direction, we have to go 
+                 back in the other direction */
+              if (old_inexact * inexact > 0)
                 {
-                  if (inexact < 0)
+                  if (inexact * MPFR_INT_SIGN (y) < 0)
                     mpfr_nexttoinf (dest);
                   else
                     mpfr_nexttozero (dest);
