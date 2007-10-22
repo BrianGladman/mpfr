@@ -60,6 +60,7 @@
 /tfactorial
 /tfits
 /tfma
+/tfmod
 /tfms
 /tfrac
 /tgamma
@@ -84,6 +85,7 @@
 /tjn
 /tl2b
 /tlgamma
+/tli2
 /tlngamma
 /tlog
 /tlog1p
