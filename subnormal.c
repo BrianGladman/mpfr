@@ -77,7 +77,8 @@ mpfr_subnormalize (mpfr_ptr y, int old_inexact, mp_rnd_t rnd)
             goto set_min_p1;
           /* Rounding bit is 1 and sticky bit is 0.
              We need to examine old inexact flag to conclude. */
-          if (old_inexact * MPFR_SIGN (y) > 0)
+          if ((old_inexact > 0 && MPFR_SIGN (y) > 0) ||
+              (old_inexact < 0 && MPFR_SIGN (y) < 0))
             goto set_min;
           /* If inexact != 0, return 0.1*2^(emin+1).
              Otherwise, rounding bit = 1, sticky bit = 0 and inexact = 0
@@ -122,14 +123,14 @@ mpfr_subnormalize (mpfr_ptr y, int old_inexact, mp_rnd_t rnd)
           if (MPFR_UNLIKELY(rnd == GMP_RNDN && (inexact == MPFR_EVEN_INEX
                                                || inexact == -MPFR_EVEN_INEX)))
             {
-              /* if both roundings are in the same direction, we have to go 
+              /* if both roundings are in the same direction, we have to go
                  back in the other direction */
-              if (old_inexact * inexact > 0)
+              if (SAME_SIGN (inexact, old_inexact))
                 {
-                  if (inexact * MPFR_INT_SIGN (y) < 0)
-                    mpfr_nexttoinf (dest);
-                  else
+                  if (SAME_SIGN (inexact, MPFR_INT_SIGN (y)))
                     mpfr_nexttozero (dest);
+                  else
+                    mpfr_nexttoinf (dest);
                   inexact = -inexact;
                 }
             }
