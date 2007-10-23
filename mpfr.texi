@@ -2107,6 +2107,13 @@ if @var{x} is outside the subnormal exponent range, it just propagates the
 ternary value @var{t}; otherwise, it rounds @var{x} to precision
 @code{EXP(x)-emin+1} according to rounding mode @var{rnd} and previous
 ternary value @var{t}, avoiding double rounding problems.
+More precisely in the subnormal domain, denoting by @var{e} the value of
+@code{emin}, @var{x} is rounded in fixed-point
+arithmetic to an integer multiple of @m{2^{e-1}, two to the power
+@var{e}@minus{}1}; as a consequence, @m{1.5 \times 2^{e-1},
+3 multiplied by two to the power @var{e}@minus{}2} when @var{t} is zero
+is rounded to @m{2^e, two to the power @var{e}} with rounding to nearest.
+
 @code{PREC(x)} is not modified by this function.
 @var{rnd} and @var{t} must be the used rounding mode for computing @var{x}
 and the returned ternary value when computing @var{x}.
