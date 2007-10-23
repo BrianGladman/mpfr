@@ -41,8 +41,6 @@ mpfr_subnormalize (mpfr_ptr y, int old_inexact, mp_rnd_t rnd)
 {
   int inexact = 0;
 
-  MPFR_ASSERTD ((mpfr_uexp_t) __gmpfr_emax - __gmpfr_emin >= MPFR_PREC (y));
-
   /* The subnormal exponent range are from:
       mpfr_emin to mpfr_emin + MPFR_PREC(y) - 1  */
   if (MPFR_LIKELY (MPFR_IS_SINGULAR (y)
@@ -97,6 +95,7 @@ mpfr_subnormalize (mpfr_ptr y, int old_inexact, mp_rnd_t rnd)
       else
         {
         set_min_p1:
+          /* Note: mpfr_setmin will abort if __gmpfr_emax == __gmpfr_emin. */
           mpfr_setmin (y, __gmpfr_emin + 1);
           inexact = MPFR_SIGN (y);
         }
@@ -138,7 +137,8 @@ mpfr_subnormalize (mpfr_ptr y, int old_inexact, mp_rnd_t rnd)
             inexact = old_inexact;
         }
       old_inexact = mpfr_set (y, dest, rnd);
-      MPFR_ASSERTD (old_inexact == 0);
+      MPFR_ASSERTN (old_inexact == 0);
+      MPFR_ASSERTN (MPFR_IS_PURE_FP (y));
       mpfr_clear (dest);
     }
   return inexact;

@@ -2111,7 +2111,8 @@ ternary value @var{t}, avoiding double rounding problems.
 @var{rnd} and @var{t} must be the used rounding mode for computing @var{x}
 and the returned ternary value when computing @var{x}.
 The subnormal exponent range is from @code{emin} to @code{emin+PREC(x)-1}.
-This functions assumes that @code{emax-emin >= PREC(x)}.
+If the result cannot be represented in the current exponent range
+(due to a too small @code{emax}), the behavior is undefined.
 Note that unlike most functions, the result is compared to the exact one,
 not the input value @var{x}, i.e.@: the ternary value is propagated.
 This is a preliminary interface.
