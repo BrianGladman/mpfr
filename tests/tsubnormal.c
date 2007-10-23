@@ -22,6 +22,7 @@ MA 02110-1301, USA. */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 
 #include "mpfr-test.h"
 
@@ -41,6 +42,8 @@ static const struct {
   {"0.11001E-10", 0, GMP_RNDZ, "0.1E-10"},
   {"0.11001E-10", 0, GMP_RNDU, "0.1E-9"},
   {"0.11000E-10", 0, GMP_RNDN, "0.1E-9"},
+  {"0.11000E-10", -1, GMP_RNDN, "0.1E-9"},
+  {"0.11000E-10", 1, GMP_RNDN, "0.1E-10"},
   {"0.11111E-8", 0, GMP_RNDN, "0.10E-7"},
   {"0.10111E-8", 0, GMP_RNDN, "0.11E-8"},
   {"0.11110E-8", -1, GMP_RNDN, "0.10E-7"},
@@ -51,7 +54,7 @@ static void
 check1 (void)
 {
   mpfr_t x;
-  int i, j;
+  int i, j, k, s, old_inex;
 
   mpfr_set_default_prec (9);
   mpfr_set_emin (-10);
@@ -59,17 +62,34 @@ check1 (void)
 
   mpfr_init (x);
   for (i = 0; i < (sizeof (tab) / sizeof (tab[0])); i++)
-    {
-      mpfr_set_str (x, tab[i].in, 2, GMP_RNDN);
-      j = mpfr_subnormalize (x, tab[i].i, tab[i].rnd);
-      if (mpfr_cmp_str (x, tab[i].out, 2, GMP_RNDN) != 0)
+    for (s = 0; s <= (tab[i].rnd == GMP_RNDN); s++)
+      for (k = 0; k <= 1; k++)
         {
-          printf ("Error for i=%d\nFor:%s\nExpected:%s\nGot:",
-                  i, tab[i].in, tab[i].out);
-          mpfr_dump (x);
-          exit (1);
+          mpfr_set_str (x, tab[i].in, 2, GMP_RNDN);
+          old_inex = tab[i].i;
+          if (s)
+            {
+              mpfr_neg (x, x, GMP_RNDN);
+              old_inex = - old_inex;
+            }
+          if (k && old_inex)
+            old_inex = old_inex < 0 ? INT_MIN : INT_MAX;
+          j = mpfr_subnormalize (x, old_inex, tab[i].rnd);
+          /* TODO: test j. */
+          if (s)
+            mpfr_neg (x, x, GMP_RNDN);
+          if (mpfr_cmp_str (x, tab[i].out, 2, GMP_RNDN) != 0)
+            {
+              char *sgn = s ? "-" : "";
+              printf ("Error for i = %d (old_inex = %d), k = %d, x = %s%s\n"
+                      "Expected: %s%s\nGot:      ", i, old_inex, k,
+                      sgn, tab[i].in, sgn, tab[i].out);
+              if (s)
+                mpfr_neg (x, x, GMP_RNDN);
+              mpfr_dump (x);
+              exit (1);
+            }
         }
-    }
   mpfr_clear (x);
 }
 
