@@ -26,10 +26,10 @@ MA 02110-1301, USA. */
 /* For GMP_RNDN, we can have a problem of double rounding.
    In such a case, this table helps to conclude what to do (y positive):
      Rounding Bit |  Sticky Bit | inexact  | Action    | new inexact
-     0            |   ?         | ?        | Trunc     | sticky
-     1            |   0         | -1       | Trunc     |
+     0            |   ?         |  ?       | Trunc     | sticky
+     1            |   0         |  1       | Trunc     |
      1            |   0         |  0       | Trunc if even |
-     1            |   0         |  1       | AddOneUlp |
+     1            |   0         | -1       | AddOneUlp |
      1            |   1         |  ?       | AddOneUlp |
 
    For other rounding mode, there isn't such a problem.
