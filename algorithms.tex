@@ -3296,6 +3296,490 @@ gives an absolute error bound on $s$ at the end of the for-loop bounded by:
 \[ (K/2+1) \ulp(U) + 2 (3K^2+8K+5) 2^{-w} U \leq (6K^2+33/2K+11) \ulp(U), \]
 where we used $2^{-w} U \leq \ulp(U)$.
 
+\subsection{The Dilogarithm function}
+
+The \texttt{mpfr\_Li2} function computes the real part of the dilogarithm 
+function defined by:
+\[
+\Li2(x) = - \int_0^x \frac{\log(1-t)}{t} dt.
+\]
+
+
+When $x \in ]0, \frac{1}{2}]$, we use the series 
+(see \cite[p178]{Vollinga}):
+\[
+\Li2(x) = \sum_{n=0}^\infty \frac{B_n}{(n+1)!} (-\log(1-x))^{n+1}
+\]
+where $B_n$ is the $n$-th Bernoulli number.
+
+Otherwise, we perform an argument reduction using the following identities 
+(see \cite[p200]{Ginsberg}):
+
+\begin{tabular}{l r c l}
+$x \in [2, +\infty[ $&$ \Re(\Li2(x)) $&$=$&$ \frac{\pi^2}{3}
+- \frac{1}{2}\log^2(x) - \Li2\left(\frac{1}{x}\right) $\\
+$x \in ]1, 2[ $&$ \Re(\Li2(x)) $&$=$&$ \frac{\pi^2}{6}-\log(x)\left[\log(x-1)
+- \frac{1}{2} \log(x)\right] + \Li2\left(1 - \frac{1}{x}\right)  $\\
+ &$ \Li2(1) $&$=$&$ \frac{\pi^2}{6} $\\
+$x \in \left]\frac{1}{2}, 1\right[ $&$ \Li2(x) $&$=$&$ \frac{\pi^2}{6}
+- \log(x) \log(1 - x) - \Li2(1 - x) $\\
+ &$ \Li2(0) $&$=$&$ 0 $\\
+$x \in [-1, 0[ $&$
+\Li2(x) $&$=$&$ -\frac{1}{2} \log^2(1-x) - \Li2\left(\frac{x}{x - 1}\right)$\\
+$x \in ]-\infty, -1[ $&$ \Li2(x) $&$=$&$ -\frac{\pi^2}{6} 
+- \frac{1}{2} \log(1 -x) [2 \log(-x) - \log(1 - x)]
++ \Li2\left(\frac{1}{1 - x}\right)$
+\end{tabular}
+
+
+Assume first $0 < x \leq \frac{1}{2}$, the odd Bernoulli numbers being zero
+(except $B_1 = -\frac{1}{2}$), we can rewrite $\Li2(x)$ in the form:
+\[
+\Li2(x) = - \frac{\log^2(1-x)}{4} + S(-\log(1-x))
+\]
+
+where  
+\[
+S(z) = \sum_{k=0}^\infty \frac{B_{2k}}{(2k+1)!} z^{2k+1}.
+\]
+Let $S_N(z)$ the $N$-th partial sum, and $R_N(z)$ the truncation error.
+The even Bernoulli numbers verify the following inequality 
+from \cite[p805]{AbSt73}:
+\[
+(-1)^{n+1}B_{2n} < \frac{2(2n)!}{(2\pi)^{2n}}
+\left(\frac{1}{1 - 2^{1-2n}}\right)
+\]
+for all $n \geq 1$, so we have 
+\[
+\frac{|B_{2N+2}|}{(2N+3)!}|z|^{2N+3} <
+\frac{2|z|}{(1-2^{-2N-1})(2N+3)} \left|\frac{z}{2 \pi}\right|^{2N+2},
+\]
+showing that $S(z)$ converges for $|z| < 2 \pi$.
+As the series is alternating, we can bound the truncature error $|R_N(z)|$ for
+$0 < z \leq \log 2$:
+\[
+|R_N(z)| < 2^{\Exp(z)-4N-4}.
+\]
+
+
+The partial sum $S_N(z)$ computation is implemented as follows: 
+\begin{quote}
+Algorithm {\tt li2\_series}\\
+Input: $z$ with $z \in ]0, \log2]$, the output precision $n$, and a rounding
+  mode $\circ_n$ \\
+Output: $\circ_n(S(z))$ \\
+$u \leftarrow \pinf(z^2)$ \\
+$v \leftarrow \pinf(z)$ \\
+$s \leftarrow \pinf(z)$ \\
+\for\ $k$ {\bf from} $1$ {\bf do}\\
+\q $v \leftarrow \pinf(u v)$ \\
+\q $v \leftarrow \pinf(v / (2k))$\\
+\q $v \leftarrow \pinf(v / (2k))$\\
+\q $v \leftarrow \pinf(v / (2k+1))$\\
+\q $v \leftarrow \pinf(v / (2k+1))$\\
+\q $w \leftarrow \N(v B'_k)$\\
+\q $s \leftarrow \N(s + w)$\\
+\while\ $|w| > \ulp(s)$\\
+\If\ $s$ cannot be exactly rounded according to the given mode $\circ_n$\\
+\then\ increase the working precision and restart calculation\\
+\Else\ return $\circ_n(s)$
+\end{quote}
+where $B'_k = B_{2k} (2k+1)!$ is an exact representation in \texttt{mpn}
+numbers.
+
+
+Let $v_i$, $w_i$, and $s_i$ be the value of $v$, $w$, and $s$ respectively
+after the $i$-th loop (before entering the loop if $i=0$); let $k_{v_i}$,
+$k_{w_i}$, and $\kappa_{s_i}$ so that $\n{error}(v_i) \leq k_{v_i} \ulp(v_i)$,
+$\n{error}(w_i) \leq k_{w_i} \ulp(w_i)$, and $\n{error}(s_i) \leq
+2^{\kappa_{s_i}} \ulp(s_i)$. We have 
+
+\begin{tabular}{l r c l}
+$k_{v_0} = 1$, & $k_{v_i}$ & = & $63 + 32 k_{v_i}$,\\
+& $k_{w_i}$ & = & $\frac{1}{2} + 126 + 128 k_{v_{i-1}}$,\\
+$2^{\kappa_{s_0}} = 1$, & $2^{\kappa_{s_i}}$ & = & $\frac{1}{2}
++ k_{w_i} 2^{\Exp(w_i) - \Exp(s_i)} + 2^{\kappa_{s_{i-1}}+\Exp(s_{i-1})-\Exp(s_i)}$.
+\end{tabular}
+
+So $k_{v_i} = \frac{94 \times 2^{5i}-63}{31}$, $k_w < 2^{5i+8}$, and 
+$\kappa_{s_i} = 2 + {\rm max}(-1, 5i + 8 + \Exp(w) - \Exp(s_i),
+\kappa_{s_{i-1}} + \Exp(s_{i-1}) - \Exp(s_i))$.
+This is useful for determining whether $s_i$ can be exactly rounding to the
+given precision in the given direction, but we will also need an relative
+error estimation.
+
+
+[FIXME:not convincing at all]
+If $z = (1+\theta) \tilde{z}$ where $\tilde{z} = f(x)$ is the exact value and
+if $|\theta| \leq \frac{1}{2k+1}$, then $S_k(z) = S_k(\tilde{z})(1+\theta')$
+with $|\theta'| \leq \frac{(2k+1)|\theta|}{1-(2k+1)|\theta|}$ using the 
+Lemma~\ref{lemma_graillat}.
+Assuming $|\theta| \leq \frac{1}{2(2k+1)}$, we have 
+$|\theta'| \leq 2(2k+1)|\theta|$.
+[FIXME:$|R_N|$?]
+
+
+
+When $x \in ]0, \frac{1}{2}]$, $\Li2(x)$ calculation is implemented as follows
+\begin{quote}
+Algorithm {\tt li2\_0..+$\frac{1}{2}$}\\
+Input: $x$ with $x \in \left]0, \frac{1}{2}\right]$, the output precision
+$n$, and a rounding mode $\circ_n$ \\
+Output: $\circ_n(\Li2(x))$ \\
+\begin{tabular}{l c r c l}
+$u \leftarrow \N(1-x)$ & &
+$\n{error}(u) $ & $ \leq $ & $ \frac{1}{2} \ulp(u)$\\
+$u \leftarrow \pinf(-\log(u))$ & &
+$\n{error}(u) $ & $ \leq $ & $ (1 + 2^{-\Exp(u)}) \ulp(u)$\\
+$t \leftarrow \pinf(S(u))$ & &
+$\n{error}(t) $ & $ \leq $ & $ (k+1) 2^{1-\Exp(t)} \ulp(t)$\\
+$v \leftarrow \pinf(u^2)$\\
+$v \leftarrow \pinf(v / 4)$ & &
+$\n{error}(v) $ & $ \leq $ & $ (5 + 2^{2-\Exp(u)}) \ulp(v)$\\
+$s \leftarrow \N(t - v)$ & & $error(s) \leq 2^{\kappa_s} \ulp(s)$\\
+\end{tabular}\\
+\If\ $s$ cannot be exactly rounded according to the given mode $\circ_n$\\
+\then\ increase the working precision and restart calculation\\
+\Else\ return $\circ_n(s)$
+\end{quote}
+where $\kappa_s ={\rm max}(-1, \lceil\log_2(k+1)\rceil + 1 - \Exp(s),
+MAX(1, -\Exp(u)) -1 - \Exp(s))$
+
+
+When $x$ is large and positive, we can use an asymptotic expansion near
+$+\infty$ using the fact that 
+$\Li2\left(\frac{1}{x}\right) = \frac{1}{x} + O\left(\frac{1}{x^2}\right)$
+(see below):
+\[
+\left|\Li2(x) + \frac{\log^2x}{2} - \frac{\pi^2}{3}\right| \leq \frac{2}{x}
+\]
+which gives the following algorithm:
+\begin{quote}
+Algorithm {\tt li2\_asympt\_pos}\\
+Input: $x$ with $x \geq 38$, the output precision $n$, and a rounding mode
+$\circ_n$ \\
+Output: $\circ_n(\Re(\Li2(x)))$ if it can round exactly, a failure indicator
+if not\\
+$u \leftarrow \N(\log x)$\\
+$v \leftarrow \N(u^2)$\\
+$g \leftarrow \N(v/2)$\\
+$p \leftarrow \N(\pi)$\\
+$q \leftarrow \N(p^2)$\\
+$h \leftarrow \N(q/3)$\\
+$s \leftarrow \N(g-h)$\\
+\If\ $s$ cannot be exactly rounded according to the given mode $\circ_n$\\
+\then\ return {\em failed}\\
+\Else\ return $\circ_p(n)$
+\end{quote} 
+
+
+Else, if $x \in [2, 38[$ or if $x \geq 38$ but the above calculation cannot 
+give exact rounding, we use the relation
+\[
+\Li2(x) = -S\left(-\log(1-\frac{1}{x})\right)
++ \frac{\log^2\left(1-\frac{1}{x}\right)}{4}
+- \frac{\log^2x}{2} + \frac{\pi^2}{3},
+\]
+which is computed as follows:
+\begin{quote}
+Algorithm {\tt li2\_2..+$\infty$}\\
+Input: $x$ with $x \in \left[2, +\infty\right[$, the output precision $n$,
+and a rounding mode $\circ_n$ \\
+Output: $\circ_n(\Re(\Li2(x)))$ \\
+\begin{tabular}{l c r c l}
+$y \leftarrow \N(-1/x)$ & &
+$\n{error}(y) $ & $ \leq $ & $\frac{1}{2} \ulp(y)$\\
+$u \leftarrow \pinf(-\log(1+y))$ &&
+$\n{error}(u) $ & $ \leq $ & $(1 + 2^{1-\Exp(u)}) \ulp(u)$\\
+$q \leftarrow \N(-S(u))$ &&
+$\n{error}(q) $ & $ \leq $ & $2 (k+1) 2^{-\Exp(q)} \ulp(q)$\\
+
+$v \leftarrow \pinf(u^2)$ \\
+$v \leftarrow \pinf(v / 4)$ & &
+$\n{error}(v) $ & $ \leq $ & $(5 + 2^{3-\Exp(u)}) \ulp(v)$\\
+$r \leftarrow \N(q + v)$ & &
+$\n{error}(r) $ & $ \leq $ & $2^{\kappa_r} \ulp(r)$\\
+
+$w \leftarrow \pinf(\log x)$\\
+$w \leftarrow \N(w^2)$\\
+$w \leftarrow \N(w/2)$ & & $\n{error}(w) $ & $ \leq $ & $\frac{9}{2} \ulp(w)$\\
+$s \leftarrow \N(r - w)$ & &
+$\n{error}(s) $ & $ \leq $ & $2^{\kappa_s} \ulp(s)$\\
+
+$p \leftarrow \pinf(\pi)$ \\
+$p \leftarrow \N(p^2)$ \\
+$p \leftarrow \N(p/3)$ & &
+$\n{error}(p) $ & $ \leq $ & $\frac{19}{2}\ulp(p) \leq 2^{2-\Exp(p)}\ulp(p)$\\
+$t \leftarrow \N(s + p)$ & &
+$\n{error}(t) $ & $ \leq $ & $2^{\kappa_t} \ulp(t)$
+\end{tabular}\\
+\If\ $t$ can be exactly rounded according to $\circ_n$\\
+\then\ return $\circ_n(t)$\\
+\Else\ increase working precision and restart calculation
+\end{quote}
+with
+\begin{eqnarray*}
+\kappa_r & = & 2 + {\rm max}(-1, \lceil\log_2(k+1)\rceil + 1 - \Exp(r),
+3 + {\rm max}(1, -\Exp(u)) + \Exp(v) - \Exp(r))\\
+\kappa_s & = & 2 + {\rm max}(-1, \kappa_r + \Exp(r) - \Exp(s),
+3 + \Exp(w) - \Exp(s))\\
+\kappa_t & = & 2 + {\rm max}(-1, \kappa_s + \Exp(s) - \Exp(t),
+2 - \Exp(t))
+\end{eqnarray*}
+
+
+When $x \in ]1, 2[$, we use the relation
+\[
+\Li2(x) = S(\log x) + \frac{\log^2 x}{4} - \log x \log(x - 1) + \frac{\pi^2}{6}
+\]
+which is implemented as follows
+\begin{quote}
+Algorithm {\tt li2\_1..2}\\
+Input: $x$ with $x \in ]1, 2[$, the output precision $n$, and a rounding mode
+    $\circ_n$ \\
+Output: $\circ_n(\Re(\Li2(x)))$ \\
+\begin{tabular}{l c r c l}
+$l \leftarrow \pinf(\log x)$ & & $\n{error}(l) $ & $ \leq $ & $ \ulp(l)$\\
+$q \leftarrow \N(S(l))$ & &
+$\n{error}(q) $ & $ \leq $ & $ (k+1)2^{1-\Exp(q)} \ulp(q)$\\
+
+$u \leftarrow \N(l^2)$\\
+$u \leftarrow \N(u/4)$ & &
+$\n{error}(u) $ & $ \leq $ & $ \frac{5}{2} \ulp(u)$\\
+$r \leftarrow \N(q + u)$ & &
+$\n{error}(r) $ & $ \leq $ & $ (3+(k+1)2^{1-\Exp(q)})\ulp(r)$\\
+
+$y \leftarrow \N(x - 1)$ & &
+$\n{error}(y) $ & $ \leq $ & $ \frac{1}{2}\ulp(y)$ \\
+$v \leftarrow \pinf(\log y)$ & &
+$\n{error}(v) $ & $ \leq $ & $(1 + 2^{-\Exp(v)}) \ulp(v)$\\
+$w \leftarrow \N(ul)$ & &
+$\n{error}(w) $ & $ \leq $ & $(\frac{15}{2} + 2^{1-\Exp(v)}) \ulp(w)$\\
+$s \leftarrow \N(r - w)$ & &
+$\n{error}(s) $ & $ \leq $ &
+$ (11 + (k+1) 2^{1-\Exp(q)} + 2^{1-\Exp(v)})\ulp(s)$ \\
+
+$p \leftarrow \pinf(\pi)$ \\
+$p \leftarrow \N(p^2)$ \\
+$p \leftarrow \N(p/6)$ & &
+$\n{error}(p) $ & $ \leq $ & $ \frac{19}{2}\ulp(p)$\\
+$t \leftarrow \N(s + p)$ & &
+$\n{error}(t) $ & $ \leq $ &
+$ (31 + (k+1) 2^{1-\Exp(q)} + 2^{1-\Exp(v)}) \ulp(t)$
+\end{tabular}\\
+\If\ $t$ can be exactly rounded according to $\circ_n$\\
+\then\ return $\circ_n(t)$\\
+\Else\ increase working precision and restart calculation
+\end{quote}
+
+we use the fact that $S(\log x) \geq 0$ and $u \geq 0$ for error($r$),
+that $r \geq 0$ and $-\log x \log(x-1) \geq 0$ for error($s$),
+and that $s \geq 0$ for error($t$).
+
+
+When $x=1$, we have a simpler value $\Li2(1) = \frac{\pi^2}{6}$ whose
+computation is implemented as follows
+
+\begin{quote}
+Algorithm {\tt li2\_1}\\
+Input: the output precision $p$, and a rounding mode $\circ_p$ \\
+Output: $\circ_p(\frac{\pi^2}{6})$ \\
+\begin{tabular}{l c r c l}
+$u \leftarrow \pinf(\pi)$ \\
+$u \leftarrow \N(u^2)$ \\
+$u \leftarrow \N(u/6)$ & &
+$\n{error}(u) $ & $ \leq $ & $ \frac{19}{2}\ulp(u)$\\
+\end{tabular}\\
+\If\ $u$ can be exactly rounded according to $\circ_p$\\
+\then\ return $\circ_p(u)$\\
+\Else\ increase working precision and restart calculation
+\end{quote}
+
+
+When $x \in \left]\frac{1}{2}, 1\right[$, we use the relation
+\[
+\Li2(x) = - S(-\log x) - \log x \log(1 - x) + \frac{\log^2 x}{4}
++ \frac{\pi^2}{6}
+\]
+which is implemented as follows
+\begin{quote}
+Algorithm {\tt li2\_0.5..1}\\
+Input: $x$ with $x \in \left]\frac{1}{2}, 1\right[$, the output precision $n$,
+    and a rounding mode $\circ_n$ \\
+Output: $\circ_n(Li2(x))$ \\
+\begin{tabular}{l c r c l}
+$l \leftarrow \pinf(-\log x)$ & & $\n{error}(l) $ & $ \leq $ & $ \ulp(l)$\\
+$q \leftarrow \N(-S(l))$ & &
+$\n{error}(q) $ & $ \leq $ & $ (k+1)2^{1-\Exp(q)} \ulp(q)$\\
+
+$y \leftarrow \N(1 - x)$ & &
+$\n{error}(y) $ & $ \leq $ & $ \frac{1}{2}\ulp(y)$ \\
+$u \leftarrow \pinf(\log y)$ & &
+$\n{error}(u) $ & $ \leq $ & $(1 + 2^{-\Exp(v)}) \ulp(u)$\\
+$v \leftarrow \N(ul)$ & &
+$\n{error}(v) $ & $ \leq $ & $(\frac{9}{2} + 2^{1-\Exp(v)}) \ulp(v)$\\
+$r \leftarrow \N(q + v)$ & &
+$\n{error}(r) $ & $ \leq $ & $2^{\kappa_r}\ulp(r)$\\
+
+$w \leftarrow \N(l^2)$\\
+$w \leftarrow \N(u/4)$ & &
+$\n{error}(w) $ & $ \leq $ & $ \frac{5}{2} \ulp(w)$\\
+$s \leftarrow \N(r + w)$ & &
+$\n{error}(s) $ & $ \leq $ & $2^{\kappa_s} \ulp(s)$ \\
+
+$p \leftarrow \pinf(\pi)$ \\
+$p \leftarrow \N(p^2)$ \\
+$p \leftarrow \N(p/6)$ & &
+$\n{error}(p) $ & $ \leq $ & $\frac{19}{2}\ulp(p) \leq 2^{3-\Exp(p)}\ulp(p)$\\
+$t \leftarrow \N(s + p)$ & &
+$\n{error}(t) $ & $ \leq $ & $2^{\kappa_t} \ulp(t)$
+\end{tabular}\\
+\If\ $t$ can be exactly rounded according to $\circ_n$\\
+\then\ return $\circ_n(t)$\\
+\Else\ increase working precision and restart calculation
+\end{quote}
+where 
+\begin{eqnarray*}
+\kappa_r & = & 2 + {\rm max}(3, \lceil\log_2(k+1)\rceil + 1 - \Exp(q),
+1 - \Exp(u))\\
+\kappa_s & = & 2 + {\rm max}(-1, \kappa_r + \Exp(r) - \Exp(s),
+2 + \Exp(w) - \Exp(s))\\
+\kappa_t & = & 2 + {\rm max}(-1, \kappa_s + \Exp(s) - \Exp(t),
+3 - \Exp(t))
+\end{eqnarray*}
+
+
+Near 0, we can use the relation
+\[
+\Li2(x) = \sum_{n=0}^{\infty}\frac{x^k}{k^2}
+\]
+which is true for $|x| \leq 1$ [FIXME: ref].
+If $x \leq 0$, we have $0 \leq \Li2(x) - x \leq \frac{x^2}{4}$ 
+and if $x$ is positive, 
+$0 \leq \Li2(x) - x \leq (\frac{\pi^2}{6}-1)x^2 \leq x^2 
+\leq 2^{2\Exp(x)+1}\ulp(x)$.
+
+ 
+When $x \in [-1, 0[$, we use the relation
+\[
+\Li2(x) = - S(-\log(1-x)) - \frac{\log^2(1-x)}{4}
+\]
+which is implemented as follows
+\begin{quote}
+Algorithm {\tt li2\_-1..0}\\
+Input: $x$ with $x \in ]-1, 0[$, the output precision $n$, and a rounding mode
+    $\circ_n$ \\
+Output: $\circ_n(Li2(x))$ \\
+\begin{tabular}{l c r c l}
+$y \leftarrow \N(1 - x)$ & &
+$\n{error}(y) $ & $ \leq $ & $ \frac{1}{2}\ulp(y)$ \\
+$l \leftarrow \pinf(\log y)$ & &
+$\n{error}(l) $ & $ \leq $ & $ (1+2^{-\Exp(l)})\ulp(l)$\\
+$r \leftarrow \N(-S(l))$ & &
+$\n{error}(r) $ & $ \leq $ & $ (k+1)2^{1-\Exp(r)} \ulp(r)$\\
+
+$u \leftarrow \N(-l^2)$ \\
+$u \leftarrow \N(u/4)$ & &
+$\n{error}(u) $ & $ \leq $ & $(\frac{9}{2} + 2^{-\Exp(l)}) \ulp(u)$\\
+$s \leftarrow \N(r + u)$ & &
+$\n{error}(s) $ & $ \leq $ & $2^{\kappa_s}\ulp(s)$\\
+\end{tabular}\\
+\If\ $s$ can be exactly rounded according to $\circ_n$\\
+\then\ return $\circ_n(s)$\\
+\Else\ increase working precision and restart calculation
+\end{quote}
+with 
+\[
+\kappa_s = 2 + {\rm max}(3, \lceil\log_2(k+1)\rceil + 1 - \Exp(r), - \Exp(l))
+\]
+
+When $x$ is large and negative, we can use an asymptotic expansion near 
+$-\infty$:
+\[
+\left|\Li2(x) + \frac{\log^2(-x)}{2} + \frac{\pi^2}{3}\right| \leq 
+\frac{1}{|x|}
+\]
+which gives the following algorithm:
+\begin{quote}
+  Algorithm {\tt li2\_asympt\_neg}\\
+  Input: $x$ with $x \leq -7$, the output precision $n$, and a rounding mode
+  $\circ_n$ \\
+  Output: $\circ_n(\Li2(x))$ if it can round exactly, a failure indicator
+  if not\\
+  $l \leftarrow \N(\log(-x))$ \\
+  $f \leftarrow \N(l^2)$\\
+  $g \leftarrow \N(f/2)$\\
+  $p \leftarrow \N(\pi)$\\
+  $q \leftarrow \N(p^2)$\\
+  $h \leftarrow \N(q/3)$\\
+  $s \leftarrow \N(g-h)$\\
+  \If\ $s$ cannot be exactly rounded according to the given mode $\circ_n$\\
+  \then\ return {\em failed}\\
+  \Else\ return $\circ_n(s)$
+\end{quote}
+
+
+When $x \in ]-7, -1[$ or if the above computation cannot give exact rounding,
+we use the relation
+\[
+\Li2(x) = S\left(\log\left(1-\frac{1}{x}\right)\right) - \frac{\log^2(-x)}{4}
+- \frac{\log(-x) \log(1 - x)}{2} + \frac{\log^2(1-x)}{4} + \frac{\pi^2}{6}
+\]
+which is implemented as follows
+\begin{quote}
+Algorithm {\tt li2\_-$\infty$..-1}\\
+Input: $x$ with $x \in ]-\infty, -1[$, the output precision $n$,
+    and a rounding mode $\circ_n$ \\
+Output: $\circ_n(\Li2(x))$ \\
+\begin{tabular}{l c r c l}
+$y \leftarrow \N(-1/x)$\\
+$z \leftarrow \N(1+y)$\\
+$z \leftarrow \N(\log z)$\\
+$o \leftarrow \N(S(z))$ & & 
+$\n{error}(o)$ & $\leq$ & $(k+1)2^{1-\Exp(o)}\ulp(o)$\\
+
+$y \leftarrow \N(1-x)$\\
+$u \leftarrow \pinf(\log y)$ & &
+$\n{error}(u)$ & $\leq$ & $(1+2^{-\Exp(u)})\ulp(u)$\\
+$v \leftarrow \pinf(\log(-x))$ & & $\n{error}(v)$ & $\leq$ & $\ulp(v)$\\
+$w \leftarrow \N(uv)$\\
+$w \leftarrow \N(w/2)$ & &
+$\n{error}(w)$ & $\leq$ & $(\frac{9}{2}+1)\ulp(w)$\\
+$q \leftarrow \N(o-w)$ & & $\n{error}(q)$ & $\leq$ & $2^{\kappa_q}\ulp(q)$\\
+
+$v \leftarrow \N(v^2)$\\
+$v \leftarrow \N(v/4)$ & & $\n{error}(v)$ & $\leq$ & $\frac{9}{2}\ulp(v)$\\
+$r \leftarrow \N(q-v)$ & & $\n{error}(r)$ & $\leq$ & $2^{\kappa_r}\ulp(r)$\\
+
+$w \leftarrow \N(u^2)$\\
+$w \leftarrow \N(w/4)$ & &
+$\n{error}(w)$ & $\leq$ & $\frac{17}{2}\ulp(w)$\\
+$s \leftarrow \N(r+w)$ & &
+$\n{error}(s)$ & $\leq$ & $2^{\kappa_s}\ulp(s)$\\
+
+$p \leftarrow \pinf(\pi)$ \\
+$p \leftarrow \N(p^2)$ \\
+$p \leftarrow \N(p/6)$ & &
+$\n{error}(p) $ & $ \leq $ & $\frac{19}{2}\ulp(p) \leq 2^{3-\Exp(p)}\ulp(p)$\\
+$t \leftarrow \N(s - p)$ & &
+$\n{error}(t) $ & $ \leq $ & $2^{\kappa_t} \ulp(t)$
+\end{tabular}\\
+\If\ $t$ can be exactly rounded according to $\circ_n$\\
+\then\ return $\circ_n(t)$\\
+\Else\ increase working precision and restart calculation
+\end{quote}
+where 
+\begin{eqnarray*}
+\kappa_q & = & 1 + {\rm max}(3, \lceil\log_2(k+1)\rceil + 1 - \Exp(q))\\
+\kappa_r & = & 2 + {\rm max}(-1, \kappa_q + \Exp(q) - \Exp(r),
+3 + \Exp(v) - \Exp(r))\\
+\kappa_s & = & 2 + {\rm max}(-1, \kappa_r + \Exp(r) - \Exp(s),
+3 + \Exp(w) - \Exp(s))\\
+\kappa_t & = & 2 + {\rm max}(-1, \kappa_s + \Exp(s) - \Exp(t),
+3 - \Exp(t))
+\end{eqnarray*}
+
+
 \subsection{Summary}
 
 Table ~\ref{table:genericError} presents the generic error for several operations, assuming all variables have a
@@ -3323,7 +3807,7 @@ $\circ(\log u)$ & $k_u 2^{1-e_w}$ & \\
 \caption{Generic error}
 \label{table:genericError}
 \end{table}
-Remark 1: in the addition case, when $u v > 0$,
+Remark : in the addition case, when $u v > 0$,
 necessarily one of $2^{e_u-e_w}$ and $2^{e_v-e_w}$ is less than $1/2$,
 thus $\err(w)/\ulp(w) \le c_w + {\rm max}(k_u + k_v/2, k_u/2 + k_v)
         \le c_w + \frac{3}{2} {\rm max}(k_u, k_v)$.

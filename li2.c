@@ -104,8 +104,8 @@ li2_series (mpfr_t sum, mpfr_srcptr z, mpfr_rnd_t rnd_mode)
   MPFR_ASSERTD (MPFR_IS_STRICTPOS (z));
   MPFR_ASSERTD (mpfr_cmp_d (z, 0.6953125) <= 0);
 
-  sump = MPFR_PREC (sum);  /* target precision */
-  p = sump + MPFR_INT_CEIL_LOG2 (sump) + 4; /* the working precision */
+  sump = MPFR_PREC (sum);       /* target precision */
+  p = sump + MPFR_INT_CEIL_LOG2 (sump) + 4;     /* the working precision */
   mpfr_init2 (s, p);
   mpfr_init2 (u, p);
   mpfr_init2 (v, p);
@@ -124,36 +124,37 @@ li2_series (mpfr_t sum, mpfr_srcptr z, mpfr_rnd_t rnd_mode)
       err = 0;
 
       for (i = 1;; i++)
-	{
-	  if (i >= Bmax)
-	    B = bernoulli (B, Bmax++);  /* B_2i * (2i+1)!, exact */
+        {
+          if (i >= Bmax)
+            B = bernoulli (B, Bmax++);  /* B_2i * (2i+1)!, exact */
 
-	  mpfr_mul (v, u, v, GMP_RNDU);
-	  mpfr_div_ui (v, v, 2 * i, GMP_RNDU);
-	  mpfr_div_ui (v, v, 2 * i, GMP_RNDU);
-	  mpfr_div_ui (v, v, 2 * i + 1, GMP_RNDU);
-	  mpfr_div_ui (v, v, 2 * i + 1, GMP_RNDU);  
-	  /* here, v_2i = v_{2i-2} / (2i * (2i+1))^2 */
+          mpfr_mul (v, u, v, GMP_RNDU);
+          mpfr_div_ui (v, v, 2 * i, GMP_RNDU);
+          mpfr_div_ui (v, v, 2 * i, GMP_RNDU);
+          mpfr_div_ui (v, v, 2 * i + 1, GMP_RNDU);
+          mpfr_div_ui (v, v, 2 * i + 1, GMP_RNDU);
+          /* here, v_2i = v_{2i-2} / (2i * (2i+1))^2 */
 
-	  mpfr_mul_z (w, v, B[i], GMP_RNDN);  
-	  /* here, w_2i = v_2i * B_2i * (2i+1)! with
-	     error(w_2i) < 2^(5 * i + 8) ulp(w_2i) (see algorithm.tex) */ 
+          mpfr_mul_z (w, v, B[i], GMP_RNDN);
+          /* here, w_2i = v_2i * B_2i * (2i+1)! with
+             error(w_2i) < 2^(5 * i + 8) ulp(w_2i) (see algorithms.tex) */
 
-	  mpfr_add (s, s, w, GMP_RNDN);
-	  
-	  err = MAX (err + se, 5 * i + 8 + MPFR_GET_EXP (w)) 
-	    - MPFR_GET_EXP (s) + 1;
-	  se = MPFR_GET_EXP (s);
-	  if (MPFR_GET_EXP (w) <= se - (mp_exp_t)p)
-	    break;
-	}
-      
+          mpfr_add (s, s, w, GMP_RNDN);
+
+          err = MAX (err + se, 5 * i + 8 + MPFR_GET_EXP (w))
+	    - MPFR_GET_EXP (s);
+	  err = 2 + MAX (-1, err);
+          se = MPFR_GET_EXP (s);
+          if (MPFR_GET_EXP (w) <= se - (mp_exp_t) p)
+            break;
+        }
+
       /* the previous value of err is the rounding error, 
-	 the truncation error is less than EXP(z) - 4 * i - 4 
-	 (see algorithm.tex)*/
+         the truncation error is less than EXP(z) - 4 * i - 4 
+         (see algorithms.tex) */
       err = MAX (err, MPFR_GET_EXP (z) - 4 * i - 4) + 1;
       if (MPFR_CAN_ROUND (s, p - err, sump, rnd_mode))
-	break;
+        break;
 
       MPFR_ZIV_NEXT (loop, p);
       mpfr_set_prec (s, p);
@@ -171,19 +172,19 @@ li2_series (mpfr_t sum, mpfr_srcptr z, mpfr_rnd_t rnd_mode)
   mpfr_clears (s, u, v, w, (void *) 0);
 
   /* Let K be the returned value.
-     As we compute an alternating series, the truncation error has the same
+     1. As we compute an alternating series, the truncation error has the same
      sign as the next term w_{K+2} which is positive iff K%4 == 0.
-     Assume that error(z) <= (1+t) z', where z' is the actual value, then
-     error(s) <= 2 * (K+1) * t (see algorithm.tex).
-  */
-  return 2*i;
+     2. Assume that error(z) <= (1+t) z', where z' is the actual value, then
+     error(s) <= 2 * (K+1) * t (see algorithms.tex).
+   */
+  return 2 * i;
 }
 
 /* try asymptotic expansion when x is large and positive:
    Li2(x) = -log(x)^2/2 + Pi^2/3 - 1/x + O(1/x^2).
    More precisely for x >= 2 we have for g(x) = -log(x)^2/2 + Pi^2/3:
    -2 <= x * (Li2(x) - g(x)) <= -1
-   thus |Li2(x) - g(x)| <= -2/x.
+   thus |Li2(x) - g(x)| <= 2/x.
    Assumes x >= 38, which ensures log(x)^2/2 >= 2*Pi^2/3, and g(x) <= -3.3.
    Return 0 if asymptotic expansion failed (unable to round), otherwise
    returns correct ternary value.
@@ -192,34 +193,34 @@ static int
 mpfr_li2_asympt_pos (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   mpfr_t g, h;
-  mp_prec_t w = MPFR_PREC(y) + 20;
+  mp_prec_t w = MPFR_PREC (y) + 20;
   int inex = 0;
 
   MPFR_ASSERTN (mpfr_cmp_ui (x, 38) >= 0);
 
   mpfr_init2 (g, w);
   mpfr_init2 (h, w);
-  mpfr_log (g, x, GMP_RNDN); /* rel. error <= |(1 + theta) - 1| */
-  mpfr_sqr (g, g, GMP_RNDN); /* rel. error <= |(1 + theta)^3 - 1| <= 2^(2-w) */
-  mpfr_div_2ui (g, g, 1, GMP_RNDN); /* rel. error <= 2^(2-w) */
-  mpfr_const_pi (h, GMP_RNDN); /* error <= 2^(1-w) */
-  mpfr_sqr (h, h, GMP_RNDN); /* rel. error <= 2^(2-w) */
-  mpfr_div_ui (h, h, 3, GMP_RNDN); /* rel. error <= |(1 + theta)^4 - 1|
-				      <= 5 * 2^(-w) */
+  mpfr_log (g, x, GMP_RNDN);    /* rel. error <= |(1 + theta) - 1| */
+  mpfr_sqr (g, g, GMP_RNDN);    /* rel. error <= |(1 + theta)^3 - 1| <= 2^(2-w) */
+  mpfr_div_2ui (g, g, 1, GMP_RNDN);     /* rel. error <= 2^(2-w) */
+  mpfr_const_pi (h, GMP_RNDN);  /* error <= 2^(1-w) */
+  mpfr_sqr (h, h, GMP_RNDN);    /* rel. error <= 2^(2-w) */
+  mpfr_div_ui (h, h, 3, GMP_RNDN);      /* rel. error <= |(1 + theta)^4 - 1|
+                                           <= 5 * 2^(-w) */
   /* since x is chosen such that log(x)^2/2 >= 2 * (Pi^2/3), we should have
      g >= 2*h, thus |g-h| >= |h|, and the relative error on g is at most
      multiplied by 2 in the difference, and that by h is unchanged. */
-  MPFR_ASSERTN (MPFR_EXP(g) > MPFR_EXP(h));
+  MPFR_ASSERTN (MPFR_EXP (g) > MPFR_EXP (h));
   mpfr_sub (g, h, g, GMP_RNDN); /* err <= ulp(g)/2 + g*2^(3-w) + g*5*2^(-w)
-				   <= ulp(g) * (1/2 + 8 + 5) < 14 ulp(g).
-				   
-				   If in addition |2/x| <= 2 ulp(g), i.e.,
-				   |1/x| <= ulp(g), then the total error is
-				   bounded by 16 ulp(g). */
-  if ((MPFR_EXP(x) >= w - MPFR_EXP(g)) &&
-      MPFR_CAN_ROUND (g, w - 4, MPFR_PREC(y), rnd_mode))
+                                   <= ulp(g) * (1/2 + 8 + 5) < 14 ulp(g).
+
+                                   If in addition 2/x <= 2 ulp(g), i.e.,
+                                   1/x <= ulp(g), then the total error is
+                                   bounded by 16 ulp(g). */
+  if ((MPFR_EXP (x) >= w - MPFR_EXP (g)) &&
+      MPFR_CAN_ROUND (g, w - 4, MPFR_PREC (y), rnd_mode))
     inex = mpfr_set (y, g, rnd_mode);
-    
+
   mpfr_clear (g);
   mpfr_clear (h);
 
@@ -238,7 +239,7 @@ static int
 mpfr_li2_asympt_neg (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   mpfr_t g, h;
-  mp_prec_t w = MPFR_PREC(y) + 20;
+  mp_prec_t w = MPFR_PREC (y) + 20;
   int inex = 0;
 
   MPFR_ASSERTN (mpfr_cmp_si (x, -7) <= 0);
@@ -246,23 +247,23 @@ mpfr_li2_asympt_neg (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   mpfr_init2 (g, w);
   mpfr_init2 (h, w);
   mpfr_neg (g, x, GMP_RNDN);
-  mpfr_log (g, g, GMP_RNDN); /* rel. error <= |(1 + theta) - 1| */
-  mpfr_sqr (g, g, GMP_RNDN); /* rel. error <= |(1 + theta)^3 - 1| <= 2^(2-w) */
-  mpfr_div_2ui (g, g, 1, GMP_RNDN); /* rel. error <= 2^(2-w) */
-  mpfr_const_pi (h, GMP_RNDN); /* error <= 2^(1-w) */
-  mpfr_sqr (h, h, GMP_RNDN); /* rel. error <= 2^(2-w) */
-  mpfr_div_ui (h, h, 6, GMP_RNDN); /* rel. error <= |(1 + theta)^4 - 1|
-				      <= 5 * 2^(-w) */
-  MPFR_ASSERTN (MPFR_EXP(g) >= MPFR_EXP(h));
+  mpfr_log (g, g, GMP_RNDN);    /* rel. error <= |(1 + theta) - 1| */
+  mpfr_sqr (g, g, GMP_RNDN);    /* rel. error <= |(1 + theta)^3 - 1| <= 2^(2-w) */
+  mpfr_div_2ui (g, g, 1, GMP_RNDN);     /* rel. error <= 2^(2-w) */
+  mpfr_const_pi (h, GMP_RNDN);  /* error <= 2^(1-w) */
+  mpfr_sqr (h, h, GMP_RNDN);    /* rel. error <= 2^(2-w) */
+  mpfr_div_ui (h, h, 6, GMP_RNDN);      /* rel. error <= |(1 + theta)^4 - 1|
+                                           <= 5 * 2^(-w) */
+  MPFR_ASSERTN (MPFR_EXP (g) >= MPFR_EXP (h));
   mpfr_add (g, g, h, GMP_RNDN); /* err <= ulp(g)/2 + g*2^(2-w) + g*5*2^(-w)
-				   <= ulp(g) * (1/2 + 4 + 5) < 10 ulp(g).
-				   
-				   If in addition |1/x| <= 4 ulp(g), then the
-				   total error is bounded by 16 ulp(g). */
-  if ((MPFR_EXP(x) >= (w - 2) - MPFR_EXP(g)) &&
-      MPFR_CAN_ROUND (g, w - 4, MPFR_PREC(y), rnd_mode))
+                                   <= ulp(g) * (1/2 + 4 + 5) < 10 ulp(g).
+
+                                   If in addition |1/x| <= 4 ulp(g), then the
+                                   total error is bounded by 16 ulp(g). */
+  if ((MPFR_EXP (x) >= (w - 2) - MPFR_EXP (g)) &&
+      MPFR_CAN_ROUND (g, w - 4, MPFR_PREC (y), rnd_mode))
     inex = mpfr_neg (y, g, rnd_mode);
-    
+
   mpfr_clear (g);
   mpfr_clear (h);
 
@@ -304,13 +305,13 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         }
     }
 
-  /* Li2(x) = x + x^2/4 + x^3/9 + ... */ 
+  /* Li2(x) = x + x^2/4 + x^3/9 + ... */
   if (MPFR_IS_POS (x))
-    MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x,  -MPFR_GET_EXP (x), 0, 1,
-				      rnd_mode, {});
+    MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, -MPFR_GET_EXP (x), 0, 1, rnd_mode,
+                                      {});
   else
-    MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x,  -MPFR_GET_EXP (x), 2, 0,
-				      rnd_mode, {});
+    MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, -MPFR_GET_EXP (x), 2, 0, rnd_mode,
+				      {});
 
   MPFR_SAVE_EXPO_MARK (expo);
   yp = MPFR_PREC (y);
@@ -320,7 +321,7 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     /* 0 < x <= 1/2: Li2(x) = S(-log(1-x))-log^2(1-x)/4 */
     {
       mpfr_t s, u;
-      mp_exp_t d, expo_l;
+      mp_exp_t expo_l;
       int k;
 
       mpfr_init2 (u, m);
@@ -334,14 +335,16 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           mpfr_neg (u, u, GMP_RNDN);    /* u = -log(1-x) */
           expo_l = MPFR_GET_EXP (u);
           k = li2_series (s, u, GMP_RNDU);
-          d = 2 - expo_l + MPFR_INT_CEIL_LOG2 (k + 1) + MPFR_GET_EXP (s);
+          err = 1 + MPFR_INT_CEIL_LOG2 (k + 1);
 
           mpfr_sqr (u, u, GMP_RNDU);
           mpfr_div_2ui (u, u, 2, GMP_RNDU);     /* u = log^2(1-x) / 4 */
           mpfr_sub (s, s, u, GMP_RNDN);
 
-          /* error(s) <= (0.5 + 2^(d-EXP(s)) + 2^(6+expo_l-EXP(s))) ulp(s) */
-          err = (mp_exp_t) MAX (d, 6 + expo_l) - MPFR_GET_EXP (s) + 1;
+          /* error(s) <= (0.5 + 2^(d-EXP(s))
+             + 2^(3 + MAX(1, - expo_l) - EXP(s))) ulp(s) */
+	  err = MAX (err, MAX (1, - expo_l) - 1) - MPFR_GET_EXP (s);
+	  err = 2 + MAX (-1, err); 
           if (MPFR_CAN_ROUND (s, m - err, yp, rnd_mode))
             break;
 
@@ -385,18 +388,18 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       return mpfr_check_range (y, inexact, rnd_mode);
     }
   else if (mpfr_cmp_ui (x, 2) >= 0)
-    /* x >= 2: Li2(x) = -S(-log(1-1/x))-log^2(x)/2+log^2(1-1/x)/4-pi^2/3 */
+    /* x >= 2: Li2(x) = -S(-log(1-1/x))-log^2(x)/2+log^2(1-1/x)/4+pi^2/3 */
     {
       int k;
-      mp_exp_t d, expo_l;
+      mp_exp_t expo_l;
       mpfr_t s, u, xx;
 
       if (mpfr_cmp_ui (x, 38) >= 0)
-	{
-	  inexact = mpfr_li2_asympt_pos (y, x, rnd_mode);
-	  if (inexact != 0)
-	    goto end_of_case_gt2;
-	}
+        {
+          inexact = mpfr_li2_asympt_pos (y, x, rnd_mode);
+          if (inexact != 0)
+            goto end_of_case_gt2;
+        }
 
       mpfr_init2 (u, m);
       mpfr_init2 (s, m);
@@ -407,31 +410,36 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         {
           mpfr_ui_div (xx, 1, x, GMP_RNDN);
           mpfr_neg (xx, xx, GMP_RNDN);
-          mpfr_log1p (u, xx, GMP_RNDN);
+          mpfr_log1p (u, xx, GMP_RNDD);
           mpfr_neg (u, u, GMP_RNDU);    /* u = -log(1-1/x) */
           expo_l = MPFR_GET_EXP (u);
           k = li2_series (s, u, GMP_RNDN);
-          d = 2 - expo_l + MPFR_INT_CEIL_LOG2 (k + 1) + MPFR_GET_EXP (s);
-
           mpfr_neg (s, s, GMP_RNDN);
+          err = MPFR_INT_CEIL_LOG2 (k + 1) + 1; /* error(s) <= 2^err ulp(s) */
+
           mpfr_sqr (u, u, GMP_RNDN);
           mpfr_div_2ui (u, u, 2, GMP_RNDN);     /* u= log^2(1-1/x)/4 */
           mpfr_add (s, s, u, GMP_RNDN);
-          d = MAX (d, 4 + expo_l) - MPFR_GET_EXP (s) + 1;
+          err =
+            MAX (err,
+                 3 + MAX (1, -expo_l) + MPFR_GET_EXP (u)) - MPFR_GET_EXP (s);
+          err = 2 + MAX (-1, err);      /* error(s) <= 2^err ulp(s) */
+          err += MPFR_GET_EXP (s);
 
           mpfr_log (u, x, GMP_RNDU);
           mpfr_sqr (u, u, GMP_RNDN);
           mpfr_div_2ui (u, u, 1, GMP_RNDN);     /* u = log^2(x)/2 */
           mpfr_sub (s, s, u, GMP_RNDN);
-          d = MAX (d, 3 + MPFR_GET_EXP (u)) - MPFR_GET_EXP (s) + 1;
+          err = MAX (err, 3 + MPFR_GET_EXP (u)) - MPFR_GET_EXP (s);
+          err = 2 + MAX (-1, err);      /* error(s) <= 2^err ulp(s) */
+          err += MPFR_GET_EXP (s);
 
           mpfr_const_pi (u, GMP_RNDU);
           mpfr_sqr (u, u, GMP_RNDN);
           mpfr_div_ui (u, u, 3, GMP_RNDN);      /* u = pi^2/3 */
           mpfr_add (s, s, u, GMP_RNDN);
-
-          err =
-            (mp_exp_t) MAX (d, 3 + MPFR_GET_EXP (u)) - MPFR_GET_EXP (s) + 1;
+          err = MAX (err, 2) - MPFR_GET_EXP (s);
+          err = 2 + MAX (-1, err);      /* error(s) <= 2^err ulp(s) */
           if (MPFR_CAN_ROUND (s, m - err, yp, rnd_mode))
             break;
 
@@ -452,7 +460,7 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     /* 2 > x > 1: Li2(x) = S(log(x))+log^2(x)/4-log(x)log(x-1)+pi^2/6 */
     {
       int k;
-      long d;
+      mp_exp_t e1, e2;
       mpfr_t s, u, v, xx;
       mpfr_init2 (s, m);
       mpfr_init2 (u, m);
@@ -463,25 +471,27 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       for (;;)
         {
           mpfr_log (v, x, GMP_RNDU);
-          k = li2_series (s, v, rnd_mode);
-          d = 4 * (k + 1);      /* s > 0, error(s)<= d ulp(s) */
+          k = li2_series (s, v, GMP_RNDN);
+          e1 = MPFR_GET_EXP (s);
 
           mpfr_sqr (u, v, GMP_RNDN);
           mpfr_div_2ui (u, u, 2, GMP_RNDN);     /* u = log^2(x)/4 */
           mpfr_add (s, s, u, GMP_RNDN);
-          d += 9;               /* s*u > 0 */
 
           mpfr_sub_ui (xx, x, 1, GMP_RNDN);
           mpfr_log (u, xx, GMP_RNDU);
+          e2 = MPFR_GET_EXP (u);
           mpfr_mul (u, v, u, GMP_RNDN); /* u = log(x) * log(x-1) */
           mpfr_sub (s, s, u, GMP_RNDN);
-          d += 2;               /* 0.5 > (-u), s*(-u) > 0 */
 
-          mpfr_const_pi (u, GMP_RNDN);
+          mpfr_const_pi (u, GMP_RNDU);
           mpfr_sqr (u, u, GMP_RNDN);
           mpfr_div_ui (u, u, 6, GMP_RNDN);      /* u = pi^2/6 */
           mpfr_add (s, s, u, GMP_RNDN);
-          err = (mp_exp_t) MPFR_INT_CEIL_LOG2 (d + 9);
+          /* error(s) <= (31 + (k+1) * 2^(1-e1) + 2^(1-e2)) ulp(s) 
+	     see algorithms.tex */
+          err = MAX (MPFR_INT_CEIL_LOG2 (k + 1) + 1 - e1, 1 - e2);
+          err = 2 + MAX (5, err);
           if (MPFR_CAN_ROUND (s, m - err, yp, rnd_mode))
             break;
 
@@ -502,7 +512,6 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     /* 1 > x > 1/2: Li2(x) = -S(-log(x))+log^2(x)/4-log(x)log(1-x)+pi^2/6 */
     {
       int k;
-      mp_exp_t d, expo_l;
       mpfr_t s, u, v, xx;
       mpfr_init2 (s, m);
       mpfr_init2 (u, m);
@@ -513,30 +522,32 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       MPFR_ZIV_INIT (loop, m);
       for (;;)
         {
-          mpfr_log (u, x, GMP_RNDN);
+          mpfr_log (u, x, GMP_RNDD);
           mpfr_neg (u, u, GMP_RNDN);
           k = li2_series (s, u, GMP_RNDN);
           mpfr_neg (s, s, GMP_RNDN);
-          expo_l = MPFR_GET_EXP (u);
-          d = 2 - expo_l + MPFR_INT_CEIL_LOG2 (k + 1) + MPFR_GET_EXP (s);
+          err = 1 + MPFR_INT_CEIL_LOG2 (k + 1) - MPFR_GET_EXP (s);
 
           mpfr_ui_sub (xx, 1, x, GMP_RNDN);
-          mpfr_log (v, xx, GMP_RNDN);
+          mpfr_log (v, xx, GMP_RNDU);
           mpfr_mul (v, v, u, GMP_RNDN); /* v = - log(x) * log(1-x) */
           mpfr_add (s, s, v, GMP_RNDN);
-          d = MAX (d, MPFR_GET_EXP (v)) - MPFR_GET_EXP (s) + 1;
+          err = MAX (err, 1 - MPFR_GET_EXP (v));
+	  err = 2 + MAX (3, err) - MPFR_GET_EXP (s);
 
           mpfr_sqr (u, u, GMP_RNDN);
           mpfr_div_2ui (u, u, 2, GMP_RNDN);     /* u = log^2(x)/4 */
           mpfr_add (s, s, u, GMP_RNDN);
-          d = MAX (d - MPFR_GET_EXP (s), 2 + expo_l - MPFR_GET_EXP (s)) + 1;
+          err = MAX (err, 2 + MPFR_GET_EXP (u)) - MPFR_GET_EXP (s);
+	  err = 2 + MAX (-1, err) + MPFR_GET_EXP (s);
 
-          mpfr_const_pi (u, GMP_RNDN);
+          mpfr_const_pi (u, GMP_RNDU);
           mpfr_sqr (u, u, GMP_RNDN);
           mpfr_div_ui (u, u, 6, GMP_RNDN);      /* u = pi^2/6 */
           mpfr_add (s, s, u, GMP_RNDN);
-          err =
-            (mp_exp_t) MAX (d, 3 + MPFR_GET_EXP (u)) - MPFR_GET_EXP (s) + 1;
+          err = MAX (err, 3) - MPFR_GET_EXP (s);
+	  err = 2 + MAX (-1, err);
+
           if (MPFR_CAN_ROUND (s, m - err, yp, rnd_mode))
             break;
 
@@ -557,7 +568,7 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     /* 0> x >= -1: Li2(x) = -S(log(1-x))-log^2(1-x)/4 */
     {
       int k;
-      mp_exp_t d, expo_l;
+      mp_exp_t expo_l;
       mpfr_t s, u, xx;
       mpfr_init2 (s, m);
       mpfr_init2 (u, m);
@@ -566,18 +577,18 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       MPFR_ZIV_INIT (loop, m);
       for (;;)
         {
-	  mpfr_neg (xx, x, GMP_RNDN);
-	  mpfr_log1p (u, xx, GMP_RNDN);
-	  k = li2_series (s, u, GMP_RNDN);
-	  mpfr_neg (s, s, GMP_RNDN);
+          mpfr_neg (xx, x, GMP_RNDN);
+          mpfr_log1p (u, xx, GMP_RNDN);
+          k = li2_series (s, u, GMP_RNDN);
+          mpfr_neg (s, s, GMP_RNDN);
           expo_l = MPFR_GET_EXP (u);
-          d = 2 - expo_l + MPFR_INT_CEIL_LOG2 (k + 1) + MPFR_GET_EXP (s);
+          err = 1 + MPFR_INT_CEIL_LOG2 (k + 1) - MPFR_GET_EXP (s);
 
-	  mpfr_sqr (u, u, GMP_RNDN);
-	  mpfr_div_2ui (u, u, 2, GMP_RNDN); /* u = log^2(1-x)/4 */
-	  mpfr_sub (s, s, u, GMP_RNDN);
-          err =
-            (mp_exp_t) MAX (d, 2 + MPFR_GET_EXP (u)) - MPFR_GET_EXP (s) + 1;
+          mpfr_sqr (u, u, GMP_RNDN);
+          mpfr_div_2ui (u, u, 2, GMP_RNDN);     /* u = log^2(1-x)/4 */
+          mpfr_sub (s, s, u, GMP_RNDN);
+          err = MAX (err, - expo_l);
+	  err = 2 + MAX (err, 3);
           if (MPFR_CAN_ROUND (s, m - err, yp, rnd_mode))
             break;
 
@@ -595,19 +606,18 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     }
   else
     /* x < -1: Li2(x) 
-       = S(log(1-1/x))-ln^2(-x)/4-log(1-x)log(-x)/2+log^2(1-x)/4-pi^2/6 */
+       = S(log(1-1/x))-log^2(-x)/4-log(1-x)log(-x)/2+log^2(1-x)/4-pi^2/6 */
     {
       int k;
-      mp_exp_t d, expo_l;
       mpfr_t s, u, v, w, xx;
 
       if (mpfr_cmp_si (x, -7) <= 0)
-	{
-	  inexact = mpfr_li2_asympt_neg (y, x, rnd_mode);
-	  if (inexact != 0)
-	    goto end_of_case_ltm1;
-	}
-      
+        {
+          inexact = mpfr_li2_asympt_neg (y, x, rnd_mode);
+          if (inexact != 0)
+            goto end_of_case_ltm1;
+        }
+
       mpfr_init2 (s, m);
       mpfr_init2 (u, m);
       mpfr_init2 (v, m);
@@ -617,48 +627,50 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       MPFR_ZIV_INIT (loop, m);
       for (;;)
         {
-	  mpfr_ui_div (xx, 1, x, GMP_RNDN);
-	  mpfr_neg (xx, xx, GMP_RNDN);
-	  mpfr_log1p (u, xx, GMP_RNDU);
-	  expo_l = MPFR_GET_EXP (u);
-	  k = li2_series (s, u, GMP_RNDN);
-	  d = 2 - expo_l + MPFR_INT_CEIL_LOG2 (k + 1) + MPFR_GET_EXP (s);
+          mpfr_ui_div (xx, 1, x, GMP_RNDN);
+          mpfr_neg (xx, xx, GMP_RNDN);
+          mpfr_log1p (u, xx, GMP_RNDN);
+          k = li2_series (s, u, GMP_RNDN);
 
-	  mpfr_ui_sub (xx, 1, x, GMP_RNDN);
-	  mpfr_log (u, xx, GMP_RNDU);
-	  mpfr_neg (xx, x, GMP_RNDN);
-	  mpfr_log (v, xx, GMP_RNDU);
-	  mpfr_mul (w, v, u, GMP_RNDN);
-	  mpfr_div_2ui (w, w, 1, GMP_RNDN); /* w = log(-x) * log(1-x) / 2 */
-	  mpfr_sub (s, s, w, GMP_RNDN);
-	  d = MAX (d, 3 + MPFR_GET_EXP (w)) - MPFR_GET_EXP (s) + 1;
+          mpfr_ui_sub (xx, 1, x, GMP_RNDN);
+          mpfr_log (u, xx, GMP_RNDU);
+          mpfr_neg (xx, x, GMP_RNDN);
+          mpfr_log (v, xx, GMP_RNDU);
+          mpfr_mul (w, v, u, GMP_RNDN);
+          mpfr_div_2ui (w, w, 1, GMP_RNDN);  /* w = log(-x) * log(1-x) / 2 */
+          mpfr_sub (s, s, w, GMP_RNDN);
+	  err = 1 + MAX (3, MPFR_INT_CEIL_LOG2 (k+1) + 1  - MPFR_GET_EXP (s)) 
+	    + MPFR_GET_EXP (s);
 
-	  mpfr_sqr (w, v, GMP_RNDN);
-	  mpfr_div_2ui (w, w, 2, GMP_RNDN); /* w = log^2(-x) / 4 */
-	  mpfr_sub (s, s, w, GMP_RNDN);
-	  d = MAX (d, 3) - MPFR_GET_EXP (s) + 1;
+          mpfr_sqr (w, v, GMP_RNDN);
+          mpfr_div_2ui (w, w, 2, GMP_RNDN);  /* w = log^2(-x) / 4 */
+          mpfr_sub (s, s, w, GMP_RNDN);
+	  err = MAX (err, 3 + MPFR_GET_EXP(w)) - MPFR_GET_EXP (s);
+	  err = 2 + MAX (-1, err) + MPFR_GET_EXP (s);
 
-	  mpfr_sqr (w, u, GMP_RNDN);
-	  mpfr_div_2ui (w, w, 2, GMP_RNDN); /* w = log^2(1-x) / 4 */
-	  mpfr_add (s, s, w, GMP_RNDN);
-	  d = MAX (d, 4) - MPFR_GET_EXP (s) + 1;
+          mpfr_sqr (w, u, GMP_RNDN);
+          mpfr_div_2ui (w, w, 2, GMP_RNDN);     /* w = log^2(1-x) / 4 */
+          mpfr_add (s, s, w, GMP_RNDN);
+	  err = MAX (err, 3 + MPFR_GET_EXP (w)) - MPFR_GET_EXP (s);
+	  err = 2 + MAX (-1, err) + MPFR_GET_EXP (s);
 
-	  mpfr_const_pi (w, GMP_RNDN);
-	  mpfr_sqr (w, w, GMP_RNDN);
-	  mpfr_div_ui (w, w, 6, GMP_RNDN);  /* w = pi^2 / 6 */
-	  mpfr_sub (s, s, w, GMP_RNDN);
-	  err = 
-	    (mp_exp_t)MAX (d, 3 + MPFR_GET_EXP (u)) - MPFR_GET_EXP (s) + 1;
-	  if (MPFR_CAN_ROUND (s, m - err, yp, rnd_mode))
-	    break;
+          mpfr_const_pi (w, GMP_RNDU);
+          mpfr_sqr (w, w, GMP_RNDN);
+          mpfr_div_ui (w, w, 6, GMP_RNDN);      /* w = pi^2 / 6 */
+          mpfr_sub (s, s, w, GMP_RNDN);
+          err = MAX (err, 3) - MPFR_GET_EXP (s);
+	  err = 2 + MAX (-1, err) + MPFR_GET_EXP (s);
 
-	  MPFR_ZIV_NEXT (loop, m);
-	  mpfr_set_prec (s, m);
-	  mpfr_set_prec (u, m);
-	  mpfr_set_prec (v, m);
-	  mpfr_set_prec (w, m);
-	  mpfr_set_prec (xx, m);
-	}
+          if (MPFR_CAN_ROUND (s, m - err, yp, rnd_mode))
+            break;
+
+          MPFR_ZIV_NEXT (loop, m);
+          mpfr_set_prec (s, m);
+          mpfr_set_prec (u, m);
+          mpfr_set_prec (v, m);
+          mpfr_set_prec (w, m);
+          mpfr_set_prec (xx, m);
+        }
       MPFR_ZIV_FREE (loop);
       inexact = mpfr_set (y, s, rnd_mode);
       mpfr_clears (s, u, v, w, xx, (void *) 0);
