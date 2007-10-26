@@ -215,6 +215,8 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
       unsigned long int u, b;
       mp_prec_t p = MPFR_PREC(gamma);
       u = mpfr_get_ui (x, GMP_RNDN);
+      if (u >= 44787929UL) /* GAMMA(44787929) > 2^(2^30) */
+        return mpfr_overflow (gamma, rnd_mode, 1);
       b = bits_fac (u - 1); /* lower bound on the number of bits of m,
                                where gamma(x) = (u-1)! = m*2^e with m odd. */
       if (b <= p + (rnd_mode == GMP_RNDN))
