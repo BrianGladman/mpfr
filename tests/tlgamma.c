@@ -58,6 +58,7 @@ special (void)
   mpfr_t x, y;
   int inex;
   int sign;
+  mp_exp_t emin, emax;
 
   mpfr_init (x);
   mpfr_init (y);
@@ -346,6 +347,19 @@ special (void)
   mpfr_lgamma (y, &sign, x, GMP_RNDN);
   mpfr_set_str_binary (x, "100101.00111101101010000000101010111010001111001101111");
   MPFR_ASSERTN(sign == -1 && mpfr_equal_p (x, y));
+
+  /* bug found by Kevin Rauch on 26 Oct 2007 */
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
+  mpfr_set_emin (-1000000000);
+  mpfr_set_emax (1000000000);
+  mpfr_set_ui (x, 1, GMP_RNDN);
+  mpfr_lgamma (x, &sign, x, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_get_emin () == -1000000000);
+  MPFR_ASSERTN(mpfr_get_emax () == 1000000000);
+  mpfr_set_emin (emin);
+  mpfr_set_emax (emax);
+  
 
   mpfr_clear (x);
   mpfr_clear (y);

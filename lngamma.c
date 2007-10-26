@@ -171,7 +171,10 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
 
 #ifndef IS_GAMMA /* lngamma or lgamma */
   if (compared == 0 || (compared > 0 && mpfr_cmp_ui (z0, 2) == 0))
-    return mpfr_set_ui (y, 0, GMP_RNDN);  /* lngamma(1 or 2) = +0 */
+    {
+      MPFR_SAVE_EXPO_FREE (expo);
+      return mpfr_set_ui (y, 0, GMP_RNDN);  /* lngamma(1 or 2) = +0 */
+    }
 
   /* Deal here with tiny inputs. We have for -0.3 <= x <= 0.3:
      - log|x| - gamma*x <= log|gamma(x)| <= - log|x| - gamma*x + x^2 */
