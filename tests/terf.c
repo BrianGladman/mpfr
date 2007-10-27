@@ -1,4 +1,4 @@
-/* Test file for mpfr_erf.
+/* Test file for mpfr_erf and mpfr_erfc.
 
 Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007 Free Software Foundation, Inc.
 Contributed by Ludovic Meunier and Paul Zimmermann.
@@ -520,6 +520,7 @@ static void
 test_erfc (void)
 {
   mpfr_t x, y, z;
+  int inex;
 
   mpfr_inits2 (40, x, y, z, (void *) 0);
 
@@ -536,6 +537,12 @@ test_erfc (void)
       mpfr_dump (z);
       exit (1);
     }
+
+  /* slowness detected by Kevin Rauch on 26 Oct 2007 */
+  mpfr_set_prec (x, 128);
+  mpfr_set_si (x, -256, GMP_RNDN);
+  inex = mpfr_erfc (x, x, GMP_RNDN);
+  MPFR_ASSERTN(inex > 0 && mpfr_cmp_ui (x, 2) == 0);
 
   mpfr_clears (x, y, z, (void *) 0);
 }
