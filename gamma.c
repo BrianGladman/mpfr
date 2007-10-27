@@ -212,17 +212,17 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
   */
   if (is_integer && mpfr_fits_ulong_p (x, GMP_RNDN))
     {
-      unsigned long int u, b;
+      unsigned long int u;
       mp_prec_t p = MPFR_PREC(gamma);
       u = mpfr_get_ui (x, GMP_RNDN);
-      if (u >= 44787929UL) /* GAMMA(44787929) > 2^(2^30) */
-        return mpfr_overflow (gamma, rnd_mode, 1);
-      b = bits_fac (u - 1); /* lower bound on the number of bits of m,
-                               where gamma(x) = (u-1)! = m*2^e with m odd. */
-      if (b <= p + (rnd_mode == GMP_RNDN))
+      if (u < 44787929UL && bits_fac (u - 1) <= p + (rnd_mode == GMP_RNDN))
+        /* bits_fac: lower bound on the number of bits of m,
+           where gamma(x) = (u-1)! = m*2^e with m odd. */
         return mpfr_fac_ui (gamma, u - 1, rnd_mode);
-      /* if b > p (resp. p+1 for rounding to nearest), then gamma(x) cannot be
-         exact in precision p (resp. p+1) */
+      /* if bits_fac(...) > p (resp. p+1 for rounding to nearest),
+         then gamma(x) cannot be exact in precision p (resp. p+1).
+         FIXME: remove the test u < 44787929UL after changing bits_fac
+         to return a mpz_t or mpfr_t. */
     }
 
   /* check for overflow: according to (6.1.37) in Abramowitz & Stegun,
