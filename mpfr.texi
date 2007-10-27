@@ -1409,6 +1409,10 @@ All those functions, except explicitly stated, return zero for an
 exact return value, a positive value for a return value larger than the
 exact result, and a negative value otherwise.
 
+Important note: in some domains, computing special functions (either with
+correct or incorrect rounding) is expensive, even for small precision,
+for example the trigonometric and Bessel functions for large argument.
+
 @deftypefun int mpfr_log (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_log2 (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_log10 (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
@@ -2328,7 +2332,7 @@ Nothing has to be done to destroy the FP numbers except garbaging the used
 memory: all the memory stuff (allocating, destroying, garbaging) is kept to
 the application.
 
-Each function is this interface is also implemented as a macro for
+Each function in this interface is also implemented as a macro for
 efficiency reasons.
 
 Note 1: MPFR functions may still initialize temporary FP numbers
