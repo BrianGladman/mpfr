@@ -28,6 +28,8 @@ MA 02110-1301, USA. */
     n!=prod^{n}_{i=1}i
  */
 
+/* FIXME: efficient problems with large arguments; see comments in gamma.c. */
+
 int
 mpfr_fac_ui (mpfr_ptr y, unsigned long int x, mp_rnd_t rnd_mode)
 {
