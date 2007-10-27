@@ -157,7 +157,7 @@ static const char *const val[] = {
 };
 
 static void
-test2(void)
+test2 (void)
 {
   mpfr_t x, y;
   int i, n = numberof(val);
@@ -201,6 +201,7 @@ main (int argc, char *argv[])
   mpfr_t s, y, z;
   mp_prec_t prec;
   mp_rnd_t rnd_mode;
+  int inex;
 
   tests_start_mpfr ();
 
@@ -380,7 +381,13 @@ main (int argc, char *argv[])
       printf ("got      "); mpfr_dump (z);
       exit (1);
     }
-
+  
+  /* bug reported by Kevin Rauch on 26 Oct 2007 */
+  mpfr_set_prec (s, 128);
+  mpfr_set_prec (z, 128);
+  mpfr_set_str_binary (s, "-0.1000000000000000000000000000000000000000000000000000000000000001E64");
+  inex = mpfr_zeta (z, s, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_inf_p (z) && MPFR_SIGN(z) < 0 && inex < 0);
 
   mpfr_clear (s);
   mpfr_clear (y);
