@@ -32,6 +32,17 @@ main (int argc, char *argv[])
   mpfr_t x, y;
   long n;
 
+  if (argc > 1)
+    {
+      mpfr_init2 (x, atoi (argv[1]));
+      mpfr_set_str (x, argv[3], 10, GMP_RNDN);
+      mpfr_jn (x, atoi (argv[2]), x, GMP_RNDN);
+      mpfr_out_str (stdout, 10, 10, x, GMP_RNDN);
+      printf ("\n");
+      mpfr_clear (x);
+      return 0;
+    }
+
   tests_start_mpfr ();
 
   mpfr_init (x);
