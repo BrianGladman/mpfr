@@ -24,7 +24,9 @@ MA 02110-1301, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-/* Relations: j(-n,z) = (-1)^n j(n,z) */
+/* Relations: j(-n,z) = (-1)^n j(n,z)
+              j(n,-z) = (-1)^n j(n,z)
+*/
 
 static int mpfr_jn_asympt (mpfr_ptr, long, mpfr_srcptr, mp_rnd_t);
 
