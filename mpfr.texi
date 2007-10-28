@@ -2333,7 +2333,8 @@ memory: all the memory stuff (allocating, destroying, garbaging) is kept to
 the application.
 
 Each function in this interface is also implemented as a macro for
-efficiency reasons.
+efficiency reasons: for example @code{mpfr_custom_init (s, p)}
+uses the macro, while @code{(mpfr_custom_init) (s, p)} uses the function.
 
 Note 1: MPFR functions may still initialize temporary FP numbers
 using standard mpfr_init. See Custom Allocation (GNU MP).
