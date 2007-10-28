@@ -267,12 +267,14 @@ Table of contents:
   mpfr_random (x); for (i = 0; i < k; i++) mpfr_atan (y, x, GMP_RNDN);
   for precision 300 and k=1000, we get 1070ms, and 500ms only for p=400!
 - improve mpfr_sin on values like ~pi (do not compute sin from cos, because
-  of the cancellation). For instance, reduce the input to [0,pi/4], and
-  define auxiliary functions for which the argument is assumed to be already
-  reduced (so that the sin function can avoid unnecessary computations by
-  calling the auxiliary cos function instead of the full cos function).
-- combined mpfr_sinh_cosh() [Geoff Bailey, 20 Apr 2005,
-  and Kaveh R. Ghazi, 17 Jan 2007]
+  of the cancellation). For instance, reduce the input modulo pi/2 in
+  [-pi/4,pi/4], and define auxiliary functions for which the argument is
+  assumed to be already reduced (so that the sin function can avoid
+  unnecessary computations by calling the auxiliary cos function instead of
+  the full cos function). This will require a native code for sin, for
+  example using the reduction sin(3x)=3sin(x)-4sin(x)^3.
+  See http://websympa.loria.fr/wwsympa/arc/mpfr/2007-08/msg00001.html and
+  the following messages.
 - improve generic.c to work for number of terms <> 2^k
 - rewrite mpfr_greater_p... as native code.
 - inline mpfr_neg? Problems with NAN flags:
