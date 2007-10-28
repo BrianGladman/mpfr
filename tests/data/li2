@@ -17,6 +17,7 @@
 # along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 # the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA 02110-1301, USA.
+# the following are random values
 53 53 n 0x169CC8C8584CBp-54 0xB5E879F75E6D7p-57
 53 53 n 0xCFA1FB8D79745p-53 0x74D43E001DE59p-52
 53 53 n 0x2DF410638DDE5p-51 0x32E8E4AA30453p-51
@@ -117,3 +118,24 @@
 53 53 n 0x455ECE9E22C09p-54 0x11A53F480DE137p-56
 53 53 n 0x2243EFAEB6839p-52 0x11BE2ED1E238E5p-55
 53 53 n 0x14C5DD4FD8F263p-54 0x16C20DDF41A957p-54
+53 53 n 0x130CCCCCCCCCCDp-47 -0x1AE5A5E95181CFp-51
+# hard cases in the interval -Inf < x < -1:
+53 53 n -0x3.e6666665770c2 -0x2.5456b99bfbeea
+53 53 z -0x3.e66666609ee1e -0x2.5456b99a0291a
+# hard cases in the interval -1 <= x < 0:
+53 53 z -0x266666664917Bp-50 -0x10E641041E4685p-53
+53 53 n -0x133333331C8413p-53 -0x10E6410417FC29p-53
+# hard cases in the interval 0 < x <= 1/2:
+53 53 n 0x1333333335818Dp-54 0x14DF4E4F04F5F3p-54
+53 53 z 0x4.ccccccd50ace0@-1 0x5.37d393ca5aa2c@-1
+# hard cases in the interval 1/2 < x < 1:
+53 53 n 0xB33333337ABADp-52 0x1C75C81052AA53p-53
+53 53 z 0xb.33333344aebf0@-1 0xe.3ae4083fb6788@-1
+# case Li2(1)=Pi^2/6:
+53 53 n 0x1 0x1A51A6625307D3p-52
+# hard cases in the interval 1 < x < 2:
+53 53 z 0x2CCCCCCCF2E05p-49 0x128D762A061D0Dp-51
+53 53 n 0x1.66666668bba38 0x2.51aec5418327a
+# hard cases in the interval 2 <= x:
+53 53 z 0x86666666825F1p-50 0x13B87050D7E0AFp-51
+53 53 n 0x130CCCCCE301A3p-47 -0xD72D2F4B99A5Bp-50

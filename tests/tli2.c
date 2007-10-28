@@ -88,15 +88,25 @@ normal (void)
   mpfr_init (y);
 
   /* x1 = 2^-3 */
-  mpfr_set_str (x, "1e-2", 2, GMP_RNDD);
-  mpfr_set_str (y, "1.0000100001111010011110101001111001000010000101000001e-3",
-		2, GMP_RNDD);
+  mpfr_set_str (x, "1e-3", 2, GMP_RNDD);
+  mpfr_set_str_binary (y, "1.0000100001111010011110101001111001000010000101000001e-3");
   mpfr_li2 (x, x, GMP_RNDN);
   if (!mpfr_equal_p (x, y))
     {
       printf ("Error for li2(x1)\n");
       exit (1);
     }
+
+  /* check MPFR_FAST_COMPUTE_IF_SMALL_INPUT */
+  mpfr_set_prec (x, 2);
+  mpfr_set_prec (y, 20);
+  mpfr_set_ui_2exp (x, 1, -21, GMP_RNDN);
+  mpfr_li2 (y, x, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_cmp (y, x) == 0);
+
+  mpfr_set_si_2exp (x, -1, -21, GMP_RNDN);
+  mpfr_li2 (y, x, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_cmp (y, x) == 0);
 
   mpfr_clear (x);
   mpfr_clear (y);
@@ -109,6 +119,8 @@ main (int argc, char *argv[])
   tests_start_mpfr ();
 
   special ();
+
+  normal ();
 
   test_generic (2, 100, 2);
 

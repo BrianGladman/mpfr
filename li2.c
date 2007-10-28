@@ -305,9 +305,11 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         }
     }
 
-  /* Li2(x) = x + x^2/4 + x^3/9 + ... */
+  /* Li2(x) = x + x^2/4 + x^3/9 + ..., more precisely for 0 < x <= 1/2
+     we have |Li2(x) - x| < x^2/2 <= 2^(2EXP(x)-1) and for -1/2 <= x < 0
+     we have |Li2(x) - x| < x^2/4 <= 2^(2EXP(x)-2) */
   if (MPFR_IS_POS (x))
-    MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, -MPFR_GET_EXP (x), 0, 1, rnd_mode,
+    MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, -MPFR_GET_EXP (x), 1, 1, rnd_mode,
                                       {});
   else
     MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, -MPFR_GET_EXP (x), 2, 0, rnd_mode,
@@ -508,7 +510,7 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       MPFR_SAVE_EXPO_FREE (expo);
       return mpfr_check_range (y, inexact, rnd_mode);
     }
-  else if (mpfr_cmp_d (x, .5) > 0)
+  else if (mpfr_cmp_ui_2exp (x, 1, -1) > 0) /*  1/2 < x < 1 */
     /* 1 > x > 1/2: Li2(x) = -S(-log(x))+log^2(x)/4-log(x)log(1-x)+pi^2/6 */
     {
       int k;
@@ -565,7 +567,7 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       return mpfr_check_range (y, inexact, rnd_mode);
     }
   else if (mpfr_cmp_si (x, -1) >= 0)
-    /* 0> x >= -1: Li2(x) = -S(log(1-x))-log^2(1-x)/4 */
+    /* 0 > x >= -1: Li2(x) = -S(log(1-x))-log^2(1-x)/4 */
     {
       int k;
       mp_exp_t expo_l;
