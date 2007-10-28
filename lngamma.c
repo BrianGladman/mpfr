@@ -182,52 +182,68 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
     {
       mpfr_t l, h, g;
       int ok, inex2;
-
-      mpfr_init2 (l, MPFR_PREC(y) + 14);
-      if (MPFR_IS_POS(z0))
+      mp_prec_t prec = MPFR_PREC(y) + 14;
+      MPFR_ZIV_DECL (loop);
+      
+      MPFR_ZIV_INIT (loop, prec);
+      do
         {
-          mpfr_log (l, z0, GMP_RNDU); /* upper bound for log(z0) */
-          mpfr_init2 (h, MPFR_PREC(l));
+          mpfr_init2 (l, prec);
+          if (MPFR_IS_POS(z0))
+            {
+              mpfr_log (l, z0, GMP_RNDU); /* upper bound for log(z0) */
+              mpfr_init2 (h, MPFR_PREC(l));
+            }
+          else
+            {
+              mpfr_init2 (h, MPFR_PREC(z0));
+              mpfr_neg (h, z0, GMP_RNDN); /* exact */
+              mpfr_log (l, h, GMP_RNDU); /* upper bound for log(-z0) */
+              mpfr_set_prec (h, MPFR_PREC(l));
+            }
+          mpfr_neg (l, l, GMP_RNDD); /* lower bound for -log(|z0|) */
+          mpfr_set (h, l, GMP_RNDD); /* exact */
+          mpfr_nextabove (h); /* upper bound for -log(|z0|), avoids two calls
+                                 to mpfr_log */
+          mpfr_init2 (g, MPFR_PREC(l));
+          /* if z0>0, we need an upper approximation of Euler's constant
+             for the left bound */
+          mpfr_const_euler (g, MPFR_IS_POS(z0) ? GMP_RNDU : GMP_RNDD);
+          mpfr_mul (g, g, z0, GMP_RNDD);
+          mpfr_sub (l, l, g, GMP_RNDD);
+          mpfr_const_euler (g, MPFR_IS_POS(z0) ? GMP_RNDD : GMP_RNDU); /* cached */
+          mpfr_mul (g, g, z0, GMP_RNDU);
+          mpfr_sub (h, h, g, GMP_RNDD);
+          mpfr_mul (g, z0, z0, GMP_RNDU);
+          mpfr_add (h, h, g, GMP_RNDU);
+          inexact = mpfr_prec_round (l, MPFR_PREC(y), rnd);
+          inex2 = mpfr_prec_round (h, MPFR_PREC(y), rnd);
+          /* Caution: we not only need l = h, but both inexact flags should
+             agree. Indeed, one of the inexact flags might be zero. In that
+             case if we assume lngamma(z0) cannot be exact, the other flag
+             should be correct. We are conservative here and request that both
+             inexact flags agree. */
+          ok = SAME_SIGN (inexact, inex2) && mpfr_cmp (l, h) == 0;
+          if (ok)
+            mpfr_set (y, h, rnd); /* exact */
+          mpfr_clear (l);
+          mpfr_clear (h);
+          mpfr_clear (g);
+          if (ok)
+            {
+              MPFR_SAVE_EXPO_FREE (expo);
+              return mpfr_check_range (y, inexact, rnd);
+            }
+          /* since we have log|gamma(x)| = - log|x| - gamma*x + O(x^2),
+             if x ~ 2^(-n), then we have a n-bit approximation, thus
+             we can try again with a working precision of n bits,
+             especially when n >> PREC(y).
+             Otherwise we would use the reflection formula evaluating x-1,
+             which would need precision n. */
+          MPFR_ZIV_NEXT (loop, prec);
         }
-      else
-        {
-          mpfr_init2 (h, MPFR_PREC(z0));
-          mpfr_neg (h, z0, GMP_RNDN); /* exact */
-          mpfr_log (l, h, GMP_RNDU); /* upper bound for log(-z0) */
-          mpfr_set_prec (h, MPFR_PREC(l));
-        }
-      mpfr_neg (l, l, GMP_RNDD); /* lower bound for -log(|z0|) */
-      mpfr_set (h, l, GMP_RNDD); /* exact */
-      mpfr_nextabove (h); /* upper bound for -log(|z0|), avoids two calls to
-                             mpfr_log */
-      mpfr_init2 (g, MPFR_PREC(l));
-      /* if z0>0, we need an upper approximation of Euler's constant
-         for the left bound */
-      mpfr_const_euler (g, MPFR_IS_POS(z0) ? GMP_RNDU : GMP_RNDD);
-      mpfr_mul (g, g, z0, GMP_RNDD);
-      mpfr_sub (l, l, g, GMP_RNDD);
-      mpfr_const_euler (g, MPFR_IS_POS(z0) ? GMP_RNDD : GMP_RNDU); /* cached */
-      mpfr_mul (g, g, z0, GMP_RNDU);
-      mpfr_sub (h, h, g, GMP_RNDD);
-      mpfr_mul (g, z0, z0, GMP_RNDU);
-      mpfr_add (h, h, g, GMP_RNDU);
-      inexact = mpfr_prec_round (l, MPFR_PREC(y), rnd);
-      inex2 = mpfr_prec_round (h, MPFR_PREC(y), rnd);
-      /* Caution: we not only need l = h, but both inexact flags should agree.
-         Indeed, one of the inexact flags might be zero. In that case if we
-         assume lngamma(z0) cannot be exact, the other flag should be correct.
-         We are conservative here and request that both inexact flags agree. */
-      ok = SAME_SIGN (inexact, inex2) && mpfr_cmp (l, h) == 0;
-      if (ok)
-        mpfr_set (y, h, rnd); /* exact */
-      mpfr_clear (l);
-      mpfr_clear (h);
-      mpfr_clear (g);
-      if (ok)
-        {
-          MPFR_SAVE_EXPO_FREE (expo);
-          return mpfr_check_range (y, inexact, rnd);
-        }
+      while (prec <= -MPFR_EXP(z0));
+      MPFR_ZIV_FREE (loop);
     }
 #endif
 

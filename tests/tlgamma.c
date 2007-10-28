@@ -359,7 +359,22 @@ special (void)
   MPFR_ASSERTN(mpfr_get_emax () == 1000000000);
   mpfr_set_emin (emin);
   mpfr_set_emax (emax);
-  
+
+  /* two other bugs reported by Kevin Rauch on 27 Oct 2007 */
+  mpfr_set_prec (x, 128);
+  mpfr_set_prec (y, 128);
+  mpfr_set_str_binary (x, "0.11000110011110111111110010100110000000000000000000000000000000000000000000000000000000000000000001000011000110100100110111101010E-765689");
+  inex = mpfr_lgamma (y, &sign, x, GMP_RNDN);
+  mpfr_set_str_binary (x, "10000001100100101111011011010000111010001001110000111010011000101001011111011111110011011010110100101111110111001001010100011101E-108");
+  MPFR_ASSERTN(inex < 0 && mpfr_cmp (y, x) == 0 && sign > 0);
+
+  mpfr_set_prec (x, 128);
+  mpfr_set_prec (y, 256);
+  mpfr_set_str_binary (x, "0.1011111111111111100000111011111E-31871");
+  inex = mpfr_lgamma (y, &sign, x, GMP_RNDN);
+  mpfr_set_prec (x, 256);
+  mpfr_set_str (x, "AC9729B83707E6797612D0D76DAF42B1240A677FF1B6E3783FD4E53037143B1P-237", 16, GMP_RNDN);
+  MPFR_ASSERTN(inex < 0 && mpfr_cmp (y, x) == 0 && sign > 0);
 
   mpfr_clear (x);
   mpfr_clear (y);
