@@ -180,6 +180,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 {
   int inexact;
   int cmp_x_1;
+  int y_is_integer;
   MPFR_SAVE_EXPO_DECL (expo);
 
   MPFR_LOG_FUNC (("x[%#R]=%R y[%#R]=%R rnd=%d", x, x, y, y, rnd_mode),
@@ -271,24 +272,75 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
         }
     }
 
-  cmp_x_1 = mpfr_cmp (x, __gmpfr_one);
-  if (cmp_x_1 == 0) /* 1^y is always 1 */
-    return mpfr_set (z, __gmpfr_one, rnd_mode);
+  /* x^y for x<0 and y not an integer is not defined */
+  y_is_integer = mpfr_integer_p (y);
+  if (MPFR_IS_NEG (x) && (y_is_integer == 0))
+    {
+      MPFR_SET_NAN (z);
+      MPFR_RET_NAN;
+    }
 
-  /* detect overflows: |x^y| >= 2^EMAX when (EXP(x)-1) * y >= EMAX for y > 0,
-                                       or   EXP(x) * y     >= EMAX for y < 0 */
-  {
-    double exy;
-    int negative;
+  /* now the result cannot be NaN:
+     (1) either x > 0
+     (2) or x < 0 and y is an integer */
 
-    exy = (double) (mpfr_sgn (y) > 0) ? MPFR_EXP(x) - 1 : MPFR_EXP(x);
-    exy *= mpfr_get_d (y, GMP_RNDZ);
-    if (exy >= (double) __gmpfr_emax)
-      {
-        negative = MPFR_SIGN(x) < 0 && is_odd (y);
-        return mpfr_overflow (z, rnd_mode, negative ? -1 : 1);
-      }
-  }
+  cmp_x_1 = mpfr_cmpabs (x, __gmpfr_one);
+  if (cmp_x_1 == 0)
+    {
+      if (MPFR_IS_POS(x) || is_odd (y) == 0) /* 1^y = 1, (-1)^(2n) = 1 */
+        return mpfr_set (z, __gmpfr_one, rnd_mode);
+      else
+        return mpfr_set_si (z, -1, rnd_mode);
+    }
+
+  /* now we have:
+     (1) either x > 0
+     (2) or x < 0 and y is an integer 
+     and in addition |x| <> 1.
+  */
+
+  /* detect overflow: an overflow is possible if
+     (a) |x| > 1 and y > 0
+     (b) |x| < 1 and y < 0.
+     FIXME: this assumes 1 is always representable.
+
+     FIXME2: maybe we can test overflow and underflow simultaneously.
+     The idea is the following: first compute an approximation of
+     y * log2|x|, using rounding to nearest. If |x| is not too near from 1,
+     this approximation should be accurate enough, and in most cases enable
+     one to prove that there is no underflow nor overflow.
+     Otherwise, it should enable one to check only underflow or overflow,
+     instead of both cases as in the present case.
+  */
+  if (cmp_x_1 * MPFR_SIGN (y) > 0)
+    {
+      mpfr_t t;
+      int negative, overflow;
+
+      MPFR_SAVE_EXPO_MARK (expo);
+      mpfr_init2 (t, 53);
+      /* we want a lower bound on y*log2|x|:
+         (i) if x > 0, it suffices to round log2(x) towards zero, and
+             to round y*o(log2(x)) towards zero too;
+         (ii) if x < 0, we first compute t = o(-x), with rounding towards 1,
+              and then follow as in case (1). */
+      if (MPFR_SIGN (x) > 0)
+        mpfr_log2 (t, x, GMP_RNDZ);
+      else
+        {
+          mpfr_neg (t, x, (cmp_x_1 > 0) ? GMP_RNDZ : GMP_RNDU);
+          mpfr_log2 (t, t, GMP_RNDZ);
+        }
+      mpfr_mul (t, t, y, GMP_RNDZ);
+      overflow = mpfr_cmp_si (t, __gmpfr_emax) > 0;
+      mpfr_clear (t);
+      MPFR_SAVE_EXPO_FREE (expo);
+      if (overflow)
+        {
+          negative = MPFR_SIGN(x) < 0 && is_odd (y);
+          return mpfr_overflow (z, rnd_mode, negative ? -1 : 1);
+        }
+    }
 
   /* detect underflows: for x > 0, y < 0, |x^y| = |(1/x)^(-y)|
                         <= 2^((1-EXP(x))*(-y)) */
@@ -315,7 +367,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
      we shouldn't use it, as it can be very slow and take a lot of memory
      (and even crash or make other programs crash, as several hundred of
      MBs may be necessary). */
-  if (mpfr_integer_p (y) && MPFR_GET_EXP (y) <= 256)
+  if (y_is_integer && (MPFR_GET_EXP (y) <= 256))
     {
       mpz_t zi;
 
@@ -326,38 +378,48 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
       return inexact;
     }
 
-  /* x^y for x<0 and y not an integer is not defined */
-  if (MPFR_IS_NEG (x))
-    {
-      MPFR_SET_NAN (z);
-      MPFR_RET_NAN;
-    }
-
-  /* Special case (2^b)^Y which could be exact */
-  if (mpfr_cmp_si_2exp (x, 1, MPFR_GET_EXP (x) - 1) == 0)
+  /* Special case (+/-2^b)^Y which could be exact. If x is negative, then 
+     necessarily y is a large integer. */
+  if (mpfr_cmp_si_2exp (x, MPFR_SIGN(x), MPFR_GET_EXP (x) - 1) == 0)
     {
       mpfr_t tmp;
       mp_exp_t b;
-      /* now x = 2^b, so x^y = 2^(b*y) is exact whenever b*y is an integer */
-      b = MPFR_GET_EXP (x) - 1; /* x = 2^b */
+      int sgnx = MPFR_SIGN(x);
+
+      /* now x = +/-2^b, so x^y = (+/-)^y*2^(b*y) is exact whenever b*y is 
+         an integer */
+      b = MPFR_GET_EXP (x) - 1; /* x = +/-2^b */
       mpfr_init2 (tmp, MPFR_PREC (y) + BITS_PER_MP_LIMB);
       inexact = mpfr_mul_si (tmp, y, b, GMP_RNDN); /* exact */
       MPFR_ASSERTD (inexact == 0);
       inexact = mpfr_exp2 (z, tmp, rnd_mode);
+      if (sgnx < 0 && is_odd (y))
+        {
+          mpfr_neg (z, z, rnd_mode);
+          inexact = -inexact;
+        }
       mpfr_clear (tmp);
       return inexact;
     }
 
   MPFR_SAVE_EXPO_MARK (expo);
 
-  /* Case where |y * log(x)| is very small. */
+  /* Case where |y * log(x)| is very small. Warning: x can be negative, in
+     that case y is a large integer. */
   {
     mpfr_t t;
     mp_exp_t err;
 
     /* We need an upper bound on the exponent of y * log(x). */
     mpfr_init2 (t, 16);
-    mpfr_log (t, x, cmp_x_1 < 0 ? GMP_RNDD : GMP_RNDU); /* round away from 0 */
+    if (MPFR_IS_POS(x))
+      mpfr_log (t, x, cmp_x_1 < 0 ? GMP_RNDD : GMP_RNDU); /* away from 0 */
+    else
+      {
+        /* if x < -1, round to +Inf, else round to zero */
+        mpfr_neg (t, x, (mpfr_cmp_si (x, -1) < 0) ? GMP_RNDU : GMP_RNDD);
+        mpfr_log (t, t, (mpfr_cmp_ui (t, 1) < 0) ? GMP_RNDD : GMP_RNDU);
+      }
     MPFR_ASSERTN (MPFR_IS_PURE_FP (t));
     err = MPFR_GET_EXP (y) + MPFR_GET_EXP (t);
     mpfr_clear (t);

@@ -463,6 +463,8 @@ static void
 special ()
 {
   mpfr_t x, y, z, t;
+  mp_exp_t emin, emax;
+  int inex;
 
   mpfr_init2 (x, 53);
   mpfr_init2 (y, 53);
@@ -633,6 +635,52 @@ special ()
   test_pow (z, x, y, GMP_RNDN);
   MPFR_ASSERTN (MPFR_IS_ZERO (z) && MPFR_IS_POS (z));
 
+  /* Bugs reported by Kevin Rauch on 29 Oct 2007 */
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
+  mpfr_set_emin (-1000000);
+  mpfr_set_emax ( 1000000);
+  mpfr_set_prec (x, 64);
+  mpfr_set_prec (y, 64);
+  mpfr_set_prec (z, 64);
+  mpfr_set_str (x, "-0.5", 10, GMP_RNDN);
+  mpfr_set_str (y, "-0.ffffffffffffffff", 16, GMP_RNDN);
+  mpfr_set_exp (y, mpfr_get_emax ());
+  inex = mpfr_pow (z, x, y, GMP_RNDN);
+  /* (-0.5)^(-n) = 1/2^n for n even */
+  MPFR_ASSERTN(mpfr_inf_p (z) && MPFR_IS_POS (z) && inex > 0);
+
+  /* (-1)^(-n) = 1 for n even */
+  mpfr_set_str (x, "-1", 10, GMP_RNDN);
+  inex = mpfr_pow (z, x, y, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (z, 1) == 0 && inex == 0);
+
+  /* (-1)^n = 1 for n even */
+  mpfr_set_str (x, "-1", 10, GMP_RNDN);
+  mpfr_neg (y, y, GMP_RNDN);
+  inex = mpfr_pow (z, x, y, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui (z, 1) == 0 && inex == 0);
+
+  /* (-1.5)^n = +Inf for n even */
+  mpfr_set_str (x, "-1.5", 10, GMP_RNDN);
+  inex = mpfr_pow (z, x, y, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_inf_p (z) && MPFR_IS_POS (z) && inex > 0);
+  
+  /* (-n)^1.5 = NaN for n even */
+  mpfr_neg (y, y, GMP_RNDN);
+  mpfr_set_str (x, "1.5", 10, GMP_RNDN);
+  inex = mpfr_pow (z, y, x, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_nan_p (z));
+
+  /* x^(-1.5) = NaN for x small < 0 */
+  mpfr_set_str (x, "-0.8", 16, GMP_RNDN);
+  mpfr_set_exp (x, mpfr_get_emin ());
+  mpfr_set_str (y, "-1.5", 10, GMP_RNDN);
+  inex = mpfr_pow (z, x, y, GMP_RNDN);
+  MPFR_ASSERTN(mpfr_nan_p (z));
+  
+  mpfr_set_emin (emin);
+  mpfr_set_emax (emax);
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);
