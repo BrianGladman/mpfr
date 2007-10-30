@@ -1286,8 +1286,9 @@ precision.
 \subsection{The inverse hyperbolic cosine function}
 
 The {\tt mpfr\_acosh} function implements the inverse hyperbolic
-cosine as $\acosh x = \log ( \sqrt{x^2-1} + x )$, using the following
-algorithm:
+cosine. For $x < 1$, it returns NaN; for $x=1$, $\acosh x = 0$;
+for $x > 1$, the formula $\acosh x = \log ( \sqrt{x^2-1} + x )$
+is implemented using the following algorithm:
 \begin{quote}
 $q \leftarrow \circ(x^2)$ [down] \\
 $r \leftarrow \circ(q-1)$ [down] \\
@@ -1296,7 +1297,7 @@ $t \leftarrow \circ(s + x)$ [nearest] \\
 $u \leftarrow \circ(\log t)$ [nearest]
 \end{quote}
 
-Let us assume that $r \ne 0$. The error on $q$ is at most $1\,\ulp(q)$,
+Let us first assume that $r \ne 0$. The error on $q$ is at most $1\,\ulp(q)$,
 thus that on $r$ is at most $\ulp(r) + \ulp(q) = (1+E)\,\ulp(r)$ with
 $d = \Exp(q) - \Exp(r)$ and $E = 2^d$.
 Since $r$ is smaller than $x^2-1$, we can use the simpler formula for the
@@ -1308,7 +1309,8 @@ We have: $2 + E \leq 2^{1 + \mathrm{max}(1,d)}$. Thus the rounding error
 on the calculation of $\acosh x$ can be bounded by
 $(\frac{1}{2} + 2^{3 + \mathrm{max}(1,d) - \Exp(u)})\,\ulp(u)$.
 
-If we obtain $r = 0$, the error is too large and we need another algorithm.
+If we obtain $r = 0$, which means that $x$ is near from $1$,
+we need another algorithm.
 One has $x = 1 + z$, with $0 < z < 2^{-p}$, where $p$ is the intermediate
 precision (which may be smaller than the precision of $x$). The formula
 can be rewritten:
@@ -1343,7 +1345,7 @@ sine as :
 \[\sinh x = \frac{1}{2} \left( e^{x} - \frac{1}{e^x} \right).\]
 
 The algorithm used for the calculation of the hyperbolic sine is as follows\footnote{$\circ()$ represent the rounding error and $\error(u)$ the
-  error associate with the calculation of $u$}:
+  error associated with the calculation of $u$}:
 
 \begin{eqnarray}\nonumber
 u&\leftarrow&\circ(e^x)\\\nonumber
