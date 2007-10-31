@@ -160,7 +160,7 @@ mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
       /* For x < 0 going to -infinity, erfc(x) tends to 2 by below.
          More precisely, we have 2 + 1/sqrt(Pi)/x/exp(x^2) < erfc(x) < 2.
          Thus log2 |2 - erfc(x)| <= -log2|x| - x^2 / log(2).
-         If |2 - erfc(x)| < 2^(-PREC(y)) then the result is either 2 or 
+         If |2 - erfc(x)| < 2^(-PREC(y)) then the result is either 2 or
          nextbelow(2).
          For x <= -27282, -log2|x| - x^2 / log(2) <= -2^30.
       */

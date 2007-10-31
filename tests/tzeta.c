@@ -381,7 +381,7 @@ main (int argc, char *argv[])
       printf ("got      "); mpfr_dump (z);
       exit (1);
     }
-  
+
   /* bug reported by Kevin Rauch on 26 Oct 2007 */
   mpfr_set_prec (s, 128);
   mpfr_set_prec (z, 128);

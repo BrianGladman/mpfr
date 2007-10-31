@@ -184,7 +184,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
       int ok, inex2;
       mp_prec_t prec = MPFR_PREC(y) + 14;
       MPFR_ZIV_DECL (loop);
-      
+
       MPFR_ZIV_INIT (loop, prec);
       do
         {

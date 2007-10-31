@@ -295,7 +295,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 
   /* now we have:
      (1) either x > 0
-     (2) or x < 0 and y is an integer 
+     (2) or x < 0 and y is an integer
      and in addition |x| <> 1.
   */
 
@@ -378,7 +378,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
       return inexact;
     }
 
-  /* Special case (+/-2^b)^Y which could be exact. If x is negative, then 
+  /* Special case (+/-2^b)^Y which could be exact. If x is negative, then
      necessarily y is a large integer. */
   if (mpfr_cmp_si_2exp (x, MPFR_SIGN(x), MPFR_GET_EXP (x) - 1) == 0)
     {
@@ -386,7 +386,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
       mp_exp_t b;
       int sgnx = MPFR_SIGN(x);
 
-      /* now x = +/-2^b, so x^y = (+/-)^y*2^(b*y) is exact whenever b*y is 
+      /* now x = +/-2^b, so x^y = (+/-)^y*2^(b*y) is exact whenever b*y is
          an integer */
       b = MPFR_GET_EXP (x) - 1; /* x = +/-2^b */
       mpfr_init2 (tmp, MPFR_PREC (y) + BITS_PER_MP_LIMB);

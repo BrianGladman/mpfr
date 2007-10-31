@@ -29,13 +29,13 @@ MA 02110-1301, USA. */
 
 /*
   rem1 works as follows:
-  The first rounding mode rnd_q indicate if we are actually computing 
+  The first rounding mode rnd_q indicate if we are actually computing
   a fmod (GMP_RNDZ) or a remainder/remquo (GMP_RNDN).
-  
+
   Let q = x/y rounded to an integer in the direction rnd_q.
   Put x - q*y in rem, rounded according to rnd.
   If quo is not null, the value stored in *quo has the sign of q,
-  and agrees with q with the 2^n low order bits. 
+  and agrees with q with the 2^n low order bits.
   In other words, *quo = q (mod 2^n) and *quo q >= 0.
   If rem is zero, then it has the sign of x.
   The returned 'int' is the inexact flag giving the place of rem wrt x - q*y.
@@ -111,12 +111,12 @@ mpfr_rem1 (mpfr_ptr rem, long *quo, mp_rnd_t rnd_q,
       /* q = x/y = mx/(my*2^(ey-ex)) */
       mpz_mul_2exp (my, my, ey - ex);   /* divide mx by my*2^(ey-ex) */
       if (rnd_q == GMP_RNDZ)
-	/* 0 <= |r| <= |my|, r has the same sign as mx */
-	mpz_tdiv_qr (mx, r, mx, my);
+        /* 0 <= |r| <= |my|, r has the same sign as mx */
+        mpz_tdiv_qr (mx, r, mx, my);
       else
-	/* 0 <= |r| <= |my|, r has the same sign as my */
-	mpz_fdiv_qr (mx, r, mx, my);
-					 
+        /* 0 <= |r| <= |my|, r has the same sign as my */
+        mpz_fdiv_qr (mx, r, mx, my);
+
       if (rnd_q == GMP_RNDN)
         q_is_odd = mpz_tstbit (mx, 0);
       if (quo)                  /* mx is the quotient */
@@ -137,7 +137,7 @@ mpfr_rem1 (mpfr_ptr rem, long *quo, mp_rnd_t rnd_q,
         /* Let X = mx*2^(ex-ey) and Y = my. Then both X and Y are integers.
            Assume X = R mod Y, then x = X*2^ey = R*2^ey mod (Y*2^ey=y).
            To be able to perform the rounding, we need the least significant
-           bit of the quotient, i.e., one more bit in the remainder, 
+           bit of the quotient, i.e., one more bit in the remainder,
            which is obtained by dividing by 2Y. */
         mpz_mul_2exp (my, my, 1);       /* 2Y */
 
@@ -165,31 +165,31 @@ mpfr_rem1 (mpfr_ptr rem, long *quo, mp_rnd_t rnd_q,
                 mpz_sub (r, r, my);
             }
         }
-      /* now 0 <= |r| < |my|, and if needed, 
+      /* now 0 <= |r| < |my|, and if needed,
          q_is_odd is the least significant bit of q */
     }
 
   if (mpz_cmp_ui (r, 0) == 0)
     inex = mpfr_set_ui (rem, 0, GMP_RNDN);
-  else 
+  else
     {
       if (rnd_q == GMP_RNDN)
-	{
-	  /* FIXME: the comparison 2*r < my could be done more efficiently
-	     at the mpn level */
-	  mpz_mul_2exp (r, r, 1);
-	  compare = mpz_cmpabs (r, my);
-	  mpz_div_2exp (r, r, 1);
-	  compare = ((compare > 0) ||
-		     ((rnd_q == GMP_RNDN) && (compare == 0) && q_is_odd));
-	  /* if compare != 0, we need to subtract my to r, and add 1 to quo */
-	  if (compare)
-	    {
-	      mpz_sub (r, r, my);
-	      if (quo && (rnd_q == GMP_RNDN))
-		*quo += 1;
-	    }
-	}   
+        {
+          /* FIXME: the comparison 2*r < my could be done more efficiently
+             at the mpn level */
+          mpz_mul_2exp (r, r, 1);
+          compare = mpz_cmpabs (r, my);
+          mpz_div_2exp (r, r, 1);
+          compare = ((compare > 0) ||
+                     ((rnd_q == GMP_RNDN) && (compare == 0) && q_is_odd));
+          /* if compare != 0, we need to subtract my to r, and add 1 to quo */
+          if (compare)
+            {
+              mpz_sub (r, r, my);
+              if (quo && (rnd_q == GMP_RNDN))
+                *quo += 1;
+            }
+        }
       inex = mpfr_set_z (rem, r, rnd);
       /* if ex > ey, rem should be multiplied by 2^ey, else by 2^ex */
       MPFR_EXP (rem) += (ex > ey) ? ey : ex;

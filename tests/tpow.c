@@ -665,7 +665,7 @@ special ()
   mpfr_set_str (x, "-1.5", 10, GMP_RNDN);
   inex = mpfr_pow (z, x, y, GMP_RNDN);
   MPFR_ASSERTN(mpfr_inf_p (z) && MPFR_IS_POS (z) && inex > 0);
-  
+
   /* (-n)^1.5 = NaN for n even */
   mpfr_neg (y, y, GMP_RNDN);
   mpfr_set_str (x, "1.5", 10, GMP_RNDN);
@@ -678,7 +678,7 @@ special ()
   mpfr_set_str (y, "-1.5", 10, GMP_RNDN);
   inex = mpfr_pow (z, x, y, GMP_RNDN);
   MPFR_ASSERTN(mpfr_nan_p (z));
-  
+
   mpfr_set_emin (emin);
   mpfr_set_emax (emax);
   mpfr_clear (x);

@@ -40,25 +40,25 @@ slow_fmod (mpfr_ptr r, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd)
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x) || MPFR_IS_SINGULAR (y)))
     {
       if (MPFR_IS_NAN (x) || MPFR_IS_NAN (y) || MPFR_IS_INF (x)
-	  || MPFR_IS_ZERO (y))
-	{
-	  MPFR_SET_NAN (r);
-	  MPFR_RET_NAN;
-	}
-      else			/* either y is Inf and x is 0 or non-special,
-				   or x is 0 and y is non-special,
-				   in both cases the quotient is zero. */
-	return mpfr_set (r, x, rnd);
+          || MPFR_IS_ZERO (y))
+        {
+          MPFR_SET_NAN (r);
+          MPFR_RET_NAN;
+        }
+      else                      /* either y is Inf and x is 0 or non-special,
+                                   or x is 0 and y is non-special,
+                                   in both cases the quotient is zero. */
+        return mpfr_set (r, x, rnd);
     }
   /* regular cases */
   /* if 2^(ex-1) <= |x| < 2^ex, and 2^(ey-1) <= |y| < 2^ey,
      then |x/y| < 2^(ex-ey+1) */
   mpfr_init2 (q,
-	      MAX (MPFR_PREC_MIN, mpfr_get_exp (x) - mpfr_get_exp (y) + 1));
+              MAX (MPFR_PREC_MIN, mpfr_get_exp (x) - mpfr_get_exp (y) + 1));
   mpfr_div (q, x, y, GMP_RNDZ);
   mpfr_trunc (q, q);                            /* may change inexact flag */
   mpfr_prec_round (q, mpfr_get_prec (q) + mpfr_get_prec (y), GMP_RNDZ);
-  inexact = mpfr_mul (q, q, y, GMP_RNDZ);	/* exact */
+  inexact = mpfr_mul (q, q, y, GMP_RNDZ);       /* exact */
   inexact = mpfr_sub (r, x, q, rnd);
   mpfr_clear (q);
   return inexact;
@@ -97,7 +97,7 @@ check (mpfr_t r0, mpfr_t x, mpfr_t y, mp_rnd_t rnd)
   mpfr_clear (r1);
 }
 
-static void 
+static void
 special (void)
 {
   int inexact;
@@ -114,7 +114,7 @@ special (void)
     {
       fprintf (stderr, "error : mpfr_fmod (NaN, NaN) should be exact\n");
       goto error;
-    } 
+    }
 
   /* NaN mod +0 is NaN */
   mpfr_set_ui (y, 0, GMP_RNDN);
@@ -125,8 +125,8 @@ special (void)
     {
       fprintf (stderr, "error : mpfr_fmod (NaN, +0) should be exact\n");
       goto error;
-    } 
-  
+    }
+
   /* 3.1415 mod +0 is NaN */
   mpfr_set_d (x, 3.1415, GMP_RNDN);
   inexact = mpfr_fmod (r, x, y, GMP_RNDN);
@@ -136,7 +136,7 @@ special (void)
     {
       fprintf (stderr, "error : mpfr_fmod (3.1415, NaN) should be exact\n");
       goto error;
-    } 
+    }
 
   /* 3.1415 mod +Inf is 3.1415 */
   mpfr_set_inf (y, 1);
@@ -147,16 +147,16 @@ special (void)
     {
       fprintf (stderr, "error : mpfr_fmod (3.1415, +Inf) should be exact\n");
       goto error;
-    } 
-  
+    }
+
   mpfr_clears (x, y, r, (void *)0);
   return;
 
  error:
   mpfr_clears (x, y, r, (void *)0);
   exit (1);
-  
-  
+
+
 }
 
 int
@@ -191,7 +191,7 @@ main (int argc, char *argv[])
   mpfr_set_prec (y, 8);
   mpfr_set_ui (y, 1, GMP_RNDD);
   mpfr_div_2ui (y, y, 3, GMP_RNDD); /* y = 1/8 */
-  mpfr_set_prec (r, 123); 
+  mpfr_set_prec (r, 123);
   check (r, x, y, GMP_RNDD);
   mpfr_clears (x, y, r, (void *)0);
 

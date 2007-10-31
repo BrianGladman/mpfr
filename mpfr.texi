@@ -1556,7 +1556,7 @@ For negative @var{x}, the returned value is NaN.
 
 @deftypefun int mpfr_li2 (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd_mode})
 Set @var{rop} to real part of the dilogarithm of @var{op}, rounded in the
-direction @var{rnd_mode}. The dilogarithm function is defined here as 
+direction @var{rnd_mode}. The dilogarithm function is defined here as
 @m{-\int_{t=0}^x log(1-t)/t dt,the integral of -log(1-t)/t from 0 to x}.
 @end deftypefun
 
@@ -1818,7 +1818,7 @@ corresponding precision of @var{iop} and @var{fop} (equivalent to
 @deftypefunx int mpfr_remainder (mpfr_t @var{r}, mpfr_t @var{x}, mpfr_t @var{y}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_remquo (mpfr_t @var{r}, long* @var{q}, mpfr_t @var{x}, mpfr_t @var{y}, mp_rnd_t @var{rnd})
 Set @var{r} to the value of @math{x - n y}, rounded according to the direction
-@var{rnd}, where @math{n} is the integer quotient of @var{x} divided 
+@var{rnd}, where @math{n} is the integer quotient of @var{x} divided
 by @var{y}, defined as follows: @math{n} is rounded towards zero for
 @code{mpfr_fmod}, and to the nearest integer (ties rounded to even)
 for @code{mpfr_remainder} and @code{mpfr_remquo}.

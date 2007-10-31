@@ -81,10 +81,10 @@ bernoulli (mpz_t * b, unsigned long n)
 }
 
 /* Compute the alternating series
-   s = S(z) = \sum_{k=0}^infty B_{2k} (z))^{2k+1} / (2k+1)! 
+   s = S(z) = \sum_{k=0}^infty B_{2k} (z))^{2k+1} / (2k+1)!
    with 0 < z <= log(2) to the precision of s rounded in the direction
-   rnd_mode. 
-   Return the maximum index of the truncature which is useful 
+   rnd_mode.
+   Return the maximum index of the truncature which is useful
    for determinating the relative error.
 */
 static int
@@ -98,7 +98,7 @@ li2_series (mpfr_t sum, mpfr_srcptr z, mpfr_rnd_t rnd_mode)
   mpz_t *B;
   MPFR_ZIV_DECL (loop);
 
-  /* The series converges for |z| < 2 pi, but in mpfr_li2 the argument is 
+  /* The series converges for |z| < 2 pi, but in mpfr_li2 the argument is
      reduced so that 0 < z <= log(2). Here is additionnal check that z is
      (nearly) correct */
   MPFR_ASSERTD (MPFR_IS_STRICTPOS (z));
@@ -142,15 +142,15 @@ li2_series (mpfr_t sum, mpfr_srcptr z, mpfr_rnd_t rnd_mode)
           mpfr_add (s, s, w, GMP_RNDN);
 
           err = MAX (err + se, 5 * i + 8 + MPFR_GET_EXP (w))
-	    - MPFR_GET_EXP (s);
-	  err = 2 + MAX (-1, err);
+            - MPFR_GET_EXP (s);
+          err = 2 + MAX (-1, err);
           se = MPFR_GET_EXP (s);
           if (MPFR_GET_EXP (w) <= se - (mp_exp_t) p)
             break;
         }
 
-      /* the previous value of err is the rounding error, 
-         the truncation error is less than EXP(z) - 4 * i - 4 
+      /* the previous value of err is the rounding error,
+         the truncation error is less than EXP(z) - 4 * i - 4
          (see algorithms.tex) */
       err = MAX (err, MPFR_GET_EXP (z) - 4 * i - 4) + 1;
       if (MPFR_CAN_ROUND (s, p - err, sump, rnd_mode))
@@ -313,7 +313,7 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
                                       {});
   else
     MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, -MPFR_GET_EXP (x), 2, 0, rnd_mode,
-				      {});
+                                      {});
 
   MPFR_SAVE_EXPO_MARK (expo);
   yp = MPFR_PREC (y);
@@ -345,8 +345,8 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
           /* error(s) <= (0.5 + 2^(d-EXP(s))
              + 2^(3 + MAX(1, - expo_l) - EXP(s))) ulp(s) */
-	  err = MAX (err, MAX (1, - expo_l) - 1) - MPFR_GET_EXP (s);
-	  err = 2 + MAX (-1, err); 
+          err = MAX (err, MAX (1, - expo_l) - 1) - MPFR_GET_EXP (s);
+          err = 2 + MAX (-1, err);
           if (MPFR_CAN_ROUND (s, m - err, yp, rnd_mode))
             break;
 
@@ -490,8 +490,8 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           mpfr_sqr (u, u, GMP_RNDN);
           mpfr_div_ui (u, u, 6, GMP_RNDN);      /* u = pi^2/6 */
           mpfr_add (s, s, u, GMP_RNDN);
-          /* error(s) <= (31 + (k+1) * 2^(1-e1) + 2^(1-e2)) ulp(s) 
-	     see algorithms.tex */
+          /* error(s) <= (31 + (k+1) * 2^(1-e1) + 2^(1-e2)) ulp(s)
+             see algorithms.tex */
           err = MAX (MPFR_INT_CEIL_LOG2 (k + 1) + 1 - e1, 1 - e2);
           err = 2 + MAX (5, err);
           if (MPFR_CAN_ROUND (s, m - err, yp, rnd_mode))
@@ -535,20 +535,20 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           mpfr_mul (v, v, u, GMP_RNDN); /* v = - log(x) * log(1-x) */
           mpfr_add (s, s, v, GMP_RNDN);
           err = MAX (err, 1 - MPFR_GET_EXP (v));
-	  err = 2 + MAX (3, err) - MPFR_GET_EXP (s);
+          err = 2 + MAX (3, err) - MPFR_GET_EXP (s);
 
           mpfr_sqr (u, u, GMP_RNDN);
           mpfr_div_2ui (u, u, 2, GMP_RNDN);     /* u = log^2(x)/4 */
           mpfr_add (s, s, u, GMP_RNDN);
           err = MAX (err, 2 + MPFR_GET_EXP (u)) - MPFR_GET_EXP (s);
-	  err = 2 + MAX (-1, err) + MPFR_GET_EXP (s);
+          err = 2 + MAX (-1, err) + MPFR_GET_EXP (s);
 
           mpfr_const_pi (u, GMP_RNDU);
           mpfr_sqr (u, u, GMP_RNDN);
           mpfr_div_ui (u, u, 6, GMP_RNDN);      /* u = pi^2/6 */
           mpfr_add (s, s, u, GMP_RNDN);
           err = MAX (err, 3) - MPFR_GET_EXP (s);
-	  err = 2 + MAX (-1, err);
+          err = 2 + MAX (-1, err);
 
           if (MPFR_CAN_ROUND (s, m - err, yp, rnd_mode))
             break;
@@ -590,7 +590,7 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           mpfr_div_2ui (u, u, 2, GMP_RNDN);     /* u = log^2(1-x)/4 */
           mpfr_sub (s, s, u, GMP_RNDN);
           err = MAX (err, - expo_l);
-	  err = 2 + MAX (err, 3);
+          err = 2 + MAX (err, 3);
           if (MPFR_CAN_ROUND (s, m - err, yp, rnd_mode))
             break;
 
@@ -607,7 +607,7 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       return mpfr_check_range (y, inexact, rnd_mode);
     }
   else
-    /* x < -1: Li2(x) 
+    /* x < -1: Li2(x)
        = S(log(1-1/x))-log^2(-x)/4-log(1-x)log(-x)/2+log^2(1-x)/4-pi^2/6 */
     {
       int k;
@@ -641,27 +641,27 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           mpfr_mul (w, v, u, GMP_RNDN);
           mpfr_div_2ui (w, w, 1, GMP_RNDN);  /* w = log(-x) * log(1-x) / 2 */
           mpfr_sub (s, s, w, GMP_RNDN);
-	  err = 1 + MAX (3, MPFR_INT_CEIL_LOG2 (k+1) + 1  - MPFR_GET_EXP (s)) 
-	    + MPFR_GET_EXP (s);
+          err = 1 + MAX (3, MPFR_INT_CEIL_LOG2 (k+1) + 1  - MPFR_GET_EXP (s))
+            + MPFR_GET_EXP (s);
 
           mpfr_sqr (w, v, GMP_RNDN);
           mpfr_div_2ui (w, w, 2, GMP_RNDN);  /* w = log^2(-x) / 4 */
           mpfr_sub (s, s, w, GMP_RNDN);
-	  err = MAX (err, 3 + MPFR_GET_EXP(w)) - MPFR_GET_EXP (s);
-	  err = 2 + MAX (-1, err) + MPFR_GET_EXP (s);
+          err = MAX (err, 3 + MPFR_GET_EXP(w)) - MPFR_GET_EXP (s);
+          err = 2 + MAX (-1, err) + MPFR_GET_EXP (s);
 
           mpfr_sqr (w, u, GMP_RNDN);
           mpfr_div_2ui (w, w, 2, GMP_RNDN);     /* w = log^2(1-x) / 4 */
           mpfr_add (s, s, w, GMP_RNDN);
-	  err = MAX (err, 3 + MPFR_GET_EXP (w)) - MPFR_GET_EXP (s);
-	  err = 2 + MAX (-1, err) + MPFR_GET_EXP (s);
+          err = MAX (err, 3 + MPFR_GET_EXP (w)) - MPFR_GET_EXP (s);
+          err = 2 + MAX (-1, err) + MPFR_GET_EXP (s);
 
           mpfr_const_pi (w, GMP_RNDU);
           mpfr_sqr (w, w, GMP_RNDN);
           mpfr_div_ui (w, w, 6, GMP_RNDN);      /* w = pi^2 / 6 */
           mpfr_sub (s, s, w, GMP_RNDN);
           err = MAX (err, 3) - MPFR_GET_EXP (s);
-	  err = 2 + MAX (-1, err) + MPFR_GET_EXP (s);
+          err = 2 + MAX (-1, err) + MPFR_GET_EXP (s);
 
           if (MPFR_CAN_ROUND (s, m - err, yp, rnd_mode))
             break;

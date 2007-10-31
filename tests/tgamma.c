@@ -398,7 +398,7 @@ special_overflow (void)
   /* bug found by Kevin Rauch, 26 Oct 2007 */
   mpfr_set_str (x, "1e19", 10, GMP_RNDN);
   inex = mpfr_gamma (x, x, GMP_RNDN);
-  MPFR_ASSERTN(mpfr_inf_p (x) && inex > 0); 
+  MPFR_ASSERTN(mpfr_inf_p (x) && inex > 0);
 
   mpfr_clear (y);
   mpfr_clear (x);
