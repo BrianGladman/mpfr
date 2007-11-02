@@ -219,6 +219,10 @@ __MPFR_DECLSPEC extern MPFR_THREAD_ATTR mpfr_cache_t __gmpfr_cache_const_catalan
 #define BASE_MAX 36
 __MPFR_DECLSPEC extern const __mpfr_struct __gmpfr_l2b[BASE_MAX-1][2];
 
+/* Note: do not use the following values when they can be outside the
+   current exponent range, e.g. when the exponent range has not been
+   extended yet; under such a condition, they can be used only in
+   mpfr_cmpabs. */
 __MPFR_DECLSPEC extern const mpfr_t __gmpfr_one;
 __MPFR_DECLSPEC extern const mpfr_t __gmpfr_two;
 __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
