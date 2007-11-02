@@ -956,6 +956,48 @@ overflows2 (void)
 }
 
 static void
+overflows3 (void)
+{
+  /* x^y where x = 2^b, y is not an integer (so that mpfr_pow_z is not used)
+     and b * y = emax in the extended exponent range. If emax is divisible
+     by 3, we choose x = 2^(-2*emax/3) and y = -3/2. */
+
+  if (MPFR_EMAX_MAX % 3 == 0)
+    {
+      mpfr_t x, y, z;
+      mp_exp_t emin, emax;
+
+      emin = mpfr_get_emin ();
+      emax = mpfr_get_emax ();
+      set_emin (MPFR_EMIN_MIN);
+      set_emax (MPFR_EMAX_MAX);
+
+      mpfr_inits2 (16, x, y, z, (void *) 0);
+
+      mpfr_set_si_2exp (x, 1, -2 * (MPFR_EMAX_MAX / 3), GMP_RNDN);
+      mpfr_set_si_2exp (y, -3, -1, GMP_RNDN);
+      mpfr_clear_flags ();
+      mpfr_pow (z, x, y, GMP_RNDN);
+      if (MPFR_IS_NEG (z) || ! mpfr_inf_p (z))
+        {
+          printf ("Error in overflows3: expected +Inf, got ");
+          mpfr_dump (z);
+          exit (1);
+        }
+      if (__gmpfr_flags != (MPFR_FLAGS_OVERFLOW | MPFR_FLAGS_INEXACT))
+        {
+          printf ("Error in overflows3: bad flags (%u)\n", __gmpfr_flags);
+          exit (1);
+        }
+
+      mpfr_clears (x, y, z, (void *) 0);
+
+      set_emin (emin);
+      set_emax (emax);
+    }
+}
+
+static void
 x_near_one (void)
 {
   mpfr_t x, y, z;
@@ -1011,6 +1053,7 @@ main (void)
   underflows ();
   overflows ();
   overflows2 ();
+  overflows3 ();
   x_near_one ();
 
   test_generic (2, 100, 100);

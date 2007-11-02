@@ -190,7 +190,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
     {
       /* pow(x, 0) returns 1 for any x, even a NaN. */
       if (MPFR_UNLIKELY (MPFR_IS_ZERO (y)))
-        return mpfr_set (z, __gmpfr_one, rnd_mode);
+        return mpfr_set_ui (z, 1, rnd_mode);
       else if (MPFR_IS_NAN (x))
         {
           MPFR_SET_NAN (z);
@@ -199,8 +199,8 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
       else if (MPFR_IS_NAN (y))
         {
           /* pow(+1, NaN) returns 1. */
-          if (mpfr_cmp (x, __gmpfr_one) == 0)
-            return mpfr_set (z, __gmpfr_one, rnd_mode);
+          if (mpfr_cmp_ui (x, 1) == 0)
+            return mpfr_set_ui (z, 1, rnd_mode);
           MPFR_SET_NAN (z);
           MPFR_RET_NAN;
         }
@@ -235,7 +235,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
               else
                 {
                   /* Return 1. */
-                  return mpfr_set (z, __gmpfr_one, rnd_mode);
+                  return mpfr_set_ui (z, 1, rnd_mode);
                 }
             }
         }
@@ -272,9 +272,9 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
         }
     }
 
-  /* x^y for x<0 and y not an integer is not defined */
+  /* x^y for x < 0 and y not an integer is not defined */
   y_is_integer = mpfr_integer_p (y);
-  if (MPFR_IS_NEG (x) && (y_is_integer == 0))
+  if (MPFR_IS_NEG (x) && ! y_is_integer)
     {
       MPFR_SET_NAN (z);
       MPFR_RET_NAN;
@@ -286,12 +286,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 
   cmp_x_1 = mpfr_cmpabs (x, __gmpfr_one);
   if (cmp_x_1 == 0)
-    {
-      if (MPFR_IS_POS(x) || is_odd (y) == 0) /* 1^y = 1, (-1)^(2n) = 1 */
-        return mpfr_set (z, __gmpfr_one, rnd_mode);
-      else
-        return mpfr_set_si (z, -1, rnd_mode);
-    }
+    return mpfr_set_si (z, MPFR_IS_NEG (x) && is_odd (y) ? -1 : 1, rnd_mode);
 
   /* now we have:
      (1) either x > 0
@@ -305,7 +300,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
      FIXME: this assumes 1 is always representable.
 
      FIXME2: maybe we can test overflow and underflow simultaneously.
-     The idea is the following: first compute an approximation of
+     The idea is the following: first compute an approximation to
      y * log2|x|, using rounding to nearest. If |x| is not too near from 1,
      this approximation should be accurate enough, and in most cases enable
      one to prove that there is no underflow nor overflow.
@@ -380,27 +375,39 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 
   /* Special case (+/-2^b)^Y which could be exact. If x is negative, then
      necessarily y is a large integer. */
-  if (mpfr_cmp_si_2exp (x, MPFR_SIGN(x), MPFR_GET_EXP (x) - 1) == 0)
-    {
-      mpfr_t tmp;
-      mp_exp_t b;
-      int sgnx = MPFR_SIGN(x);
+  {
+    mp_exp_t b = MPFR_GET_EXP (x) - 1;
 
-      /* now x = +/-2^b, so x^y = (+/-)^y*2^(b*y) is exact whenever b*y is
-         an integer */
-      b = MPFR_GET_EXP (x) - 1; /* x = +/-2^b */
-      mpfr_init2 (tmp, MPFR_PREC (y) + BITS_PER_MP_LIMB);
-      inexact = mpfr_mul_si (tmp, y, b, GMP_RNDN); /* exact */
-      MPFR_ASSERTD (inexact == 0);
-      inexact = mpfr_exp2 (z, tmp, rnd_mode);
-      if (sgnx < 0 && is_odd (y))
-        {
-          mpfr_neg (z, z, rnd_mode);
-          inexact = -inexact;
-        }
-      mpfr_clear (tmp);
-      return inexact;
-    }
+    MPFR_ASSERTN (b >= LONG_MIN && b <= LONG_MAX);  /* FIXME... */
+    if (mpfr_cmp_si_2exp (x, MPFR_SIGN(x), b) == 0)
+      {
+        mpfr_t tmp;
+        int sgnx = MPFR_SIGN (x);
+
+        /* now x = +/-2^b, so x^y = (+/-1)^y*2^(b*y) is exact whenever b*y is
+           an integer */
+        MPFR_SAVE_EXPO_MARK (expo);
+        mpfr_init2 (tmp, MPFR_PREC (y) + sizeof (long) * CHAR_BIT);
+        inexact = mpfr_mul_si (tmp, y, b, GMP_RNDN); /* exact */
+        MPFR_ASSERTN (inexact == 0);
+        /* Note: as the exponent range has been extended, an overflow is not
+           possible (due to basic overflow checking above, as the result is
+           ~ 2^tmp), and an underflow is not possible either because b is an
+           integer (thus either 0 or >= 1). */
+        mpfr_clear_flags ();
+        inexact = mpfr_exp2 (z, tmp, rnd_mode);
+        mpfr_clear (tmp);
+        if (sgnx < 0 && is_odd (y))
+          {
+            mpfr_neg (z, z, rnd_mode);
+            inexact = -inexact;
+          }
+        /* Without the following, the overflows3 test in tpow.c fails. */
+        MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
+        MPFR_SAVE_EXPO_FREE (expo);
+        return mpfr_check_range (z, inexact, rnd_mode);
+      }
+  }
 
   MPFR_SAVE_EXPO_MARK (expo);
 
