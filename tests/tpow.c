@@ -913,6 +913,49 @@ overflows (void)
 }
 
 static void
+overflows2 (void)
+{
+  mpfr_t x, y, z;
+  mp_exp_t emin, emax;
+  int e;
+
+  /* x^y in reduced exponent range, where x = 2^b and y is not an integer
+     (so that mpfr_pow_z is not used). */
+
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
+  set_emin (-128);
+
+  mpfr_inits2 (16, x, y, z, (void *) 0);
+
+  mpfr_set_si_2exp (x, 1, -64, GMP_RNDN);  /* 2^(-64) */
+  mpfr_set_si_2exp (y, -1, -1, GMP_RNDN);  /* -0.5 */
+  for (e = 2; e <= 32; e += 17)
+    {
+      set_emax (e);
+      mpfr_clear_flags ();
+      mpfr_pow (z, x, y, GMP_RNDN);
+      if (MPFR_IS_NEG (z) || ! mpfr_inf_p (z))
+        {
+          printf ("Error in overflows2 (e = %d): expected +Inf, got ", e);
+          mpfr_dump (z);
+          exit (1);
+        }
+      if (__gmpfr_flags != (MPFR_FLAGS_OVERFLOW | MPFR_FLAGS_INEXACT))
+        {
+          printf ("Error in overflows2 (e = %d): bad flags (%u)\n",
+                  e, __gmpfr_flags);
+          exit (1);
+        }
+    }
+
+  mpfr_clears (x, y, z, (void *) 0);
+
+  set_emin (emin);
+  set_emax (emax);
+}
+
+static void
 x_near_one (void)
 {
   mpfr_t x, y, z;
@@ -967,6 +1010,7 @@ main (void)
     check_inexact (p);
   underflows ();
   overflows ();
+  overflows2 ();
   x_near_one ();
 
   test_generic (2, 100, 100);
