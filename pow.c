@@ -437,10 +437,6 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
   }
 
   /* General case */
-  /* FIXME: handle the case where x is negative (which implies that y is
-     a very large integer). One needs to take the absolute value of x and
-     update the error analysis because one can have Nt < PREC(x). The sign
-     of the result is obtained from MPFR_IS_NEG (x) && is_odd (y). */
   {
     /* Declaration of the intermediary variable */
     mpfr_t t, u, k, absx;
