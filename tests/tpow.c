@@ -1034,6 +1034,33 @@ mpfr_pow275 (mpfr_t y, mpfr_t x, mp_rnd_t r)
   return inex;
 }
 
+/* Bug found by Kevin P. Rauch */
+static void
+bug20071103 (void)
+{
+  mpfr_t x, y, z;
+  mp_exp_t emin, emax;
+
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
+  mpfr_set_emin (-1000000);
+  mpfr_set_emax ( 1000000);
+
+  mpfr_inits2 (64, x, y, z, (void *) 0);
+  mpfr_set_si_2exp (x, -3, -1, GMP_RNDN);  /* x = -1.5 */
+  mpfr_set_str (y, "-0.ffffffffffffffff", 16, GMP_RNDN);
+  mpfr_set_exp (y, mpfr_get_emax ());
+  mpfr_clear_flags ();
+  mpfr_pow (z, x, y, GMP_RNDN);
+  mpfr_dump (z);
+  MPFR_ASSERTN (mpfr_zero_p (z) && MPFR_SIGN (z) > 0 &&
+                __gmpfr_flags == (MPFR_FLAGS_UNDERFLOW | MPFR_FLAGS_INEXACT));
+  mpfr_clears (x, y, z, (void *) 0);
+
+  set_emin (emin);
+  set_emax (emax);
+}
+
 int
 main (void)
 {
@@ -1055,6 +1082,7 @@ main (void)
   overflows2 ();
   overflows3 ();
   x_near_one ();
+  bug20071103 ();
 
   test_generic (2, 100, 100);
   test_generic_ui (2, 100, 100);
