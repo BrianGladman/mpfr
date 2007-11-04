@@ -220,6 +220,41 @@ check_regression (void)
   mpz_clear (z);
 }
 
+/* Bug found by Kevin P. Rauch */
+static void
+bug20071104 (void)
+{
+  mpfr_t x, y;
+  mpz_t z;
+  int inex;
+
+  mpz_init_set_si (z, -2);
+  mpfr_inits2 (20, x, y, (void *) 0);
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_nextbelow (x);  /* x = -2^(emin-1) */
+  mpfr_clear_flags ();
+  inex = mpfr_pow_z (y, x, z, GMP_RNDN);
+  printf ("inex = %d\n", inex);
+  if (! mpfr_inf_p (y) || MPFR_SIGN (y) < 0)
+    {
+      printf ("Error in bug20071104: expected +Inf, got ");
+      mpfr_dump (y);
+      exit (1);
+    }
+  if (inex <= 0)
+    {
+      printf ("Error in bug20071104: bad ternary value (%d)\n", inex);
+      exit (1);
+    }
+  if (__gmpfr_flags != (MPFR_FLAGS_OVERFLOW | MPFR_FLAGS_INEXACT))
+    {
+      printf ("Error in bug20071104: bad flags (%u)\n", __gmpfr_flags);
+      exit (1);
+    }
+  mpfr_clears (x, y, (void *) 0);
+  mpz_clear (z);
+}
+
 int
 main (void)
 {
@@ -229,6 +264,7 @@ main (void)
   check_special ();
   check_integer (2, 163, 100);
   check_regression ();
+  bug20071104 ();
 
   tests_end_mpfr ();
   return 0;
