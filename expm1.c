@@ -168,7 +168,6 @@ mpfr_expm1 (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
     mpfr_clear (t);
   }
 
- end:
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (y, inexact, rnd_mode);
 }
