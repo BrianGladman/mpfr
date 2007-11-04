@@ -185,7 +185,7 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
           inexact = mpfr_underflow (y, rnd, MPFR_SIGN (y));
         }
       else if (MPFR_UNLIKELY (mpz_cmp_si (tmp, __gmpfr_emax) > 0))
-        inexact = mpfr_overflow (y, rnd, MPFR_SIGN(x));
+        inexact = mpfr_overflow (y, rnd, MPFR_SIGN (y));
       else
         MPFR_SET_EXP (y, mpz_get_si (tmp));
       mpz_clear (tmp);
