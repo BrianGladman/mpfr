@@ -234,7 +234,6 @@ bug20071104 (void)
   mpfr_nextbelow (x);  /* x = -2^(emin-1) */
   mpfr_clear_flags ();
   inex = mpfr_pow_z (y, x, z, GMP_RNDN);
-  printf ("inex = %d\n", inex);
   if (! mpfr_inf_p (y) || MPFR_SIGN (y) < 0)
     {
       printf ("Error in bug20071104: expected +Inf, got ");

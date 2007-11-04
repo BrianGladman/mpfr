@@ -1079,7 +1079,6 @@ bug20071104 (void)
   mpfr_set_si (y, -2, GMP_RNDN);  /* y = -2 */
   mpfr_clear_flags ();
   inex = mpfr_pow (z, x, y, GMP_RNDN);
-  printf ("inex = %d\n", inex);
   if (! mpfr_inf_p (z) || MPFR_SIGN (z) < 0)
     {
       printf ("Error in bug20071104: expected +Inf, got ");
