@@ -450,10 +450,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 
     /* We put the absolute value of x in absx, pointing to the significand
        of x to avoid allocating memory for the significand of absx. */
-    MPFR_PREC(absx) = MPFR_PREC(x);
-    MPFR_SIGN(absx) = 1;
-    MPFR_EXP(absx) = MPFR_EXP(x);
-    MPFR_MANT(absx) = MPFR_MANT(x);
+    MPFR_ALIAS(absx, x, /*sign=*/ 1, /*EXP=*/ MPFR_EXP(x));
 
     /* compute the precision of intermediary variable */
     /* the optimal number of bits : see algorithms.tex */
