@@ -956,7 +956,7 @@ do {                                                                  \
 
 /* Set y to s*significand(x)*2^e, for example MPFR_ALIAS(y,x,1,MPFR_EXP(x))
    sets y to |x|, and MPFR_ALIAS(y,x,MPFR_SIGN(x),0) sets y to x*2^f such
-   that 1/2 <= |y| < 1. Does not check y is in the valid exponent range. 
+   that 1/2 <= |y| < 1. Does not check y is in the valid exponent range.
    WARNING! x and y share the same mantissa. So, some operations are
    not valid if x has been provided via an argument, e.g., trying to
    modify the mantissa of y, even temporarily, or calling mpfr_clear on y.
@@ -968,7 +968,7 @@ do {                                                                  \
       MPFR_SIGN(y) = (s);                       \
       MPFR_EXP(y) = (e);                        \
       MPFR_MANT(y) = MPFR_MANT(x);              \
-    } while (0)  
+    } while (0)
 
 
 /******************************************************
