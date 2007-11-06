@@ -130,6 +130,12 @@ special (void)
         }
     }
 
+  /* Bug reported by Mark Dickinson, 6 Nov 2007 */
+  mpfr_set_si (x, 0, GMP_RNDN);
+  mpfr_set_si (y, -1, GMP_RNDN);
+  mpfr_div_ui (y, x, 4, GMP_RNDN);
+  MPFR_ASSERTN(MPFR_IS_ZERO(y) && MPFR_IS_POS(y));
+
   mpfr_clear (x);
   mpfr_clear (y);
 }
