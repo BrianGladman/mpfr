@@ -40,6 +40,8 @@ main (int argc, char *argv[])
   if (f == NULL)
     {
       printf ("Error, can't open inp_str.data\n");
+      mpfr_clear (x);
+      tests_end_mpfr ();
       exit (1);
     }
   i = mpfr_inp_str (x, f, 10, GMP_RNDN);
@@ -47,6 +49,8 @@ main (int argc, char *argv[])
     {
       printf ("Error in reading 1st line from file inp_str.data (%d)\n", i);
       mpfr_dump (x);
+      mpfr_clear (x);
+      tests_end_mpfr ();
       exit (1);
     }
   getc (f);
@@ -55,6 +59,8 @@ main (int argc, char *argv[])
     {
       printf ("Error in reading 2nd line from file inp_str.data (%d)\n", i);
       mpfr_dump (x);
+      mpfr_clear (x);
+      tests_end_mpfr ();
       exit (1);
     }
   getc (f);
@@ -63,6 +69,8 @@ main (int argc, char *argv[])
     {
       printf ("Error in reading 3rd line from file inp_str.data (%d)\n", i);
       mpfr_dump (x);
+      mpfr_clear (x);
+      tests_end_mpfr ();
       exit (1);
     }
   fclose (f);
