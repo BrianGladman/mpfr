@@ -115,7 +115,6 @@ normal (void)
 int
 main (int argc, char *argv[])
 {
-  MPFR_TEST_USE_RANDS ();
   tests_start_mpfr ();
 
   special ();

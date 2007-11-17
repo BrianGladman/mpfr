@@ -268,7 +268,6 @@ main (void)
   mp_prec_t p;
   unsigned long k;
 
-  MPFR_TEST_USE_RANDS ();
   tests_start_mpfr ();
 
   special ();

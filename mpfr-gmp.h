@@ -264,12 +264,6 @@ typedef __gmp_randstate_struct *gmp_randstate_ptr;
 __MPFR_DECLSPEC void mpfr_rand_raw _MPFR_PROTO((mp_ptr, gmp_randstate_t,
                                                 unsigned long));
 
-/* To be called BEFORE tests_start_mpfr () if the tests used
-   mpfr_random, mpfr_random2 or any functions which uses the macro RANDS */
-__MPFR_DECLSPEC void mpfr_init_gmp_rand _MPFR_PROTO((void));
-#define MPFR_TEST_USE_RANDS() mpfr_init_gmp_rand ();
-
-
 /* Allocate func are defined in gmp-impl.h */
 
 /* In newer GMP, there aren't anymore __gmp_allocate_func,

@@ -22,6 +22,7 @@ MA 02110-1301, USA. */
 
 #include <stdlib.h>
 #include <float.h>
+#include <time.h>
 #include <math.h>
 
 #include "mpfr-test.h"
@@ -146,6 +147,10 @@ check_integer (mp_prec_t begin, mp_prec_t end, unsigned long max)
   mp_prec_t p;
   int res1, res2;
   mp_rnd_t rnd;
+  gmp_randstate_t state;
+
+  gmp_randinit (state, GMP_RAND_ALG_LC, 128);
+  gmp_randseed_ui (state, time(NULL));
 
   mpfr_inits2 (begin, x, y1, y2, (void *) 0);
   mpz_init (z);
@@ -156,7 +161,9 @@ check_integer (mp_prec_t begin, mp_prec_t end, unsigned long max)
       mpfr_set_prec (y2, p);
       for (i = 0 ; i < max ; i++)
         {
-          mpz_random (z, (i&1) == 0 ? -1 : 1);
+	  mpz_urandomb (z, state, GMP_NUMB_BITS);
+	  if ((i & 1) != 0)
+	    mpz_neg (z, z);
           mpfr_random (x);
           mpfr_mul_2ui (x, x, 1, GMP_RNDN); /* 0 <= x < 2 */
           rnd = (mp_rnd_t) RND_RAND ();
@@ -189,6 +196,7 @@ check_integer (mp_prec_t begin, mp_prec_t end, unsigned long max)
         } /* for i */
     } /* for p */
   mpfr_clears (x, y1, y2, (void *) 0);
+  gmp_randclear (state);
   mpz_clear (z);
 }
 
@@ -257,7 +265,6 @@ bug20071104 (void)
 int
 main (void)
 {
-  MPFR_TEST_USE_RANDS ();
   tests_start_mpfr ();
 
   check_special ();

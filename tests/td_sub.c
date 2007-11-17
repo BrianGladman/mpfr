@@ -67,7 +67,6 @@ main (int argc, char *argv[])
   double d;
   int inexact;
 
-  MPFR_TEST_USE_RANDS ();
   tests_start_mpfr ();
 
   /* check with enough precision */

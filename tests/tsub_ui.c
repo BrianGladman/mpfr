@@ -126,7 +126,6 @@ main (int argc, char *argv[])
   mp_prec_t p;
   int k;
 
-  MPFR_TEST_USE_RANDS ();
   tests_start_mpfr ();
 
   check_nans ();

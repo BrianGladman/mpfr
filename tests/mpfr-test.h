@@ -89,10 +89,6 @@ int mpfr_cmp_str _MPFR_PROTO ((mpfr_srcptr x, const char *, int, mp_rnd_t));
 
 #define mpfr_cmp0(x,y) (MPFR_ASSERTN (!MPFR_IS_NAN (x) && !MPFR_IS_NAN (y)), mpfr_cmp (x,y))
 
-#ifndef MPFR_TEST_USE_RANDS
-# define MPFR_TEST_USE_RANDS() ((void)0)
-#endif
-
 #if defined (__cplusplus)
 }
 #endif

@@ -316,19 +316,6 @@ mpfr_rand_raw (mp_ptr mp, gmp_randstate_t rstate, unsigned long int nbits)
   mpz_urandomb(z, rstate, nbits);
 }
 
-void
-mpfr_init_gmp_rand ()
-{
-  /* Since we don't use __gmp_rands, but mpfr_rands, we need to init
-     __gmp_rands before setting the memory functions so that the tests
-     don't report an error.
-     Only the tests which call mpn_random2 can do that:
-     trandom, tset_f and reuse.
-     So we just have to call mpn_random before. */
-  mp_limb_t dummy;
-  mpn_random (&dummy, 1);
-}
-
 #ifdef mp_get_memory_functions
 
 void * (*mpfr_allocate_func) (size_t);

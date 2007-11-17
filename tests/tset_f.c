@@ -35,8 +35,8 @@ main (void)
   mp_exp_t emax;
   unsigned long k, pr;
   int r, inexact;
+  gmp_randstate_t state;
 
-  MPFR_TEST_USE_RANDS ();
   tests_start_mpfr ();
 
   mpf_init (y);
@@ -49,7 +49,9 @@ main (void)
   mpfr_set_prec (x, 100);
   mpfr_set_f (x, y, GMP_RNDN);
 
-  mpf_random2 (y, 10, 0);
+  gmp_randinit (state, GMP_RAND_ALG_LC, 128);
+  gmp_randseed_ui (state, time(NULL));
+  mpf_urandomb (y, state, 10 * GMP_NUMB_BITS);
   mpfr_set_f (x, y, (mp_rnd_t) RND_RAND());
 
   /* bug found by Jean-Pierre Merlet */
@@ -94,7 +96,7 @@ main (void)
     {
       pr = 2 + (randlimb () & 255);
       mpf_set_prec (z, pr);
-      mpf_random2 (z, z->_mp_prec, 0);
+      mpf_urandomb (z, state, z->_mp_prec);
       mpfr_set_prec (x, pr);
       mpfr_set_f (x, z, (mp_rnd_t) 0);
     }
@@ -177,6 +179,7 @@ main (void)
   mpfr_clear (u);
   mpf_clear (y);
   mpf_clear (z);
+  gmp_randclear (state);
 
   tests_end_mpfr ();
   return 0;

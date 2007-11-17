@@ -72,7 +72,7 @@ main (int argc, char *argv[])
   mpfr_t x, y, z;
   double d;
   int inexact;
-  MPFR_TEST_USE_RANDS ();
+
   tests_start_mpfr ();
 
   /* check with enough precision */

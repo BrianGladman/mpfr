@@ -520,7 +520,6 @@ main (void)
 {
   mp_rnd_t rnd;
   mp_prec_t p;
-  MPFR_TEST_USE_RANDS ();
   tests_start_mpfr ();
 
   p = (randlimb () % 200)+ MPFR_PREC_MIN;

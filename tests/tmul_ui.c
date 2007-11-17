@@ -88,7 +88,6 @@ main (int argc, char *argv[])
   mp_prec_t p;
   mp_exp_t emax;
 
-  MPFR_TEST_USE_RANDS ();
   tests_start_mpfr ();
 
   for (p=2; p<100; p++)

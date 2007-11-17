@@ -155,7 +155,6 @@ main (void)
   int r;
   mp_prec_t p;
 
-  MPFR_TEST_USE_RANDS ();
   tests_start_mpfr ();
 
   special ();

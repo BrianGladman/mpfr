@@ -658,7 +658,6 @@ mpfr_mulpi (mpfr_t y, mpfr_t x, mp_rnd_t r)
 int
 main (int argc, char *argv[])
 {
-  MPFR_TEST_USE_RANDS ();
   tests_start_mpfr ();
 
   check_nans ();

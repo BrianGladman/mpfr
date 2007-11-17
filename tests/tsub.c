@@ -482,7 +482,6 @@ main (void)
   mp_prec_t p;
   unsigned int i;
 
-  MPFR_TEST_USE_RANDS ();
   tests_start_mpfr ();
 
   check_diverse ();
