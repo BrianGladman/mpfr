@@ -25,6 +25,15 @@ MA 02110-1301, USA. */
 #include <time.h>
 #include <math.h>
 
+#if TIME_WITH_SYS_TIME
+# include <sys/time.h>  /* for struct timeval */
+# include <time.h>
+#elif HAVE_SYS_TIME_H
+#  include <sys/time.h>
+#else
+#  include <time.h>
+#endif
+
 #include "mpfr-test.h"
 
 #define ERROR(str) do { printf("Error for "str"\n"); exit (1); } while (0)
@@ -147,10 +156,6 @@ check_integer (mp_prec_t begin, mp_prec_t end, unsigned long max)
   mp_prec_t p;
   int res1, res2;
   mp_rnd_t rnd;
-  gmp_randstate_t state;
-
-  gmp_randinit (state, GMP_RAND_ALG_LC, 128);
-  gmp_randseed_ui (state, time(NULL));
 
   mpfr_inits2 (begin, x, y1, y2, (void *) 0);
   mpz_init (z);
@@ -161,7 +166,7 @@ check_integer (mp_prec_t begin, mp_prec_t end, unsigned long max)
       mpfr_set_prec (y2, p);
       for (i = 0 ; i < max ; i++)
         {
-	  mpz_urandomb (z, state, GMP_NUMB_BITS);
+	  mpz_urandomb (z, __gmp_rands, GMP_NUMB_BITS);
 	  if ((i & 1) != 0)
 	    mpz_neg (z, z);
           mpfr_random (x);
@@ -196,7 +201,6 @@ check_integer (mp_prec_t begin, mp_prec_t end, unsigned long max)
         } /* for i */
     } /* for p */
   mpfr_clears (x, y1, y2, (void *) 0);
-  gmp_randclear (state);
   mpz_clear (z);
 }
 

@@ -203,6 +203,8 @@ tests_rand_start (void)
                   "(include this in bug reports)\n", seed);
         }
     }
+  else
+      gmp_randseed_ui (rands, 0x2143FEDC);
 }
 
 static void
