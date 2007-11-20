@@ -22,7 +22,6 @@ MA 02110-1301, USA. */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 
 #include "mpfr-test.h"
 
@@ -196,7 +195,7 @@ test_urandomb (long nbtests, mp_prec_t prec, int verbose)
 
   for (k = 0; k < nbtests; k++)
     {
-      mpfr_urandomb (x, __gmp_rands);
+      mpfr_urandomb (x, RANDS);
       /* check that lower bits are zero */
       if (MPFR_MANT(x)[0] & MPFR_LIMB_MASK(sh))
         {
@@ -212,7 +211,7 @@ test_urandomb (long nbtests, mp_prec_t prec, int verbose)
   emin = mpfr_get_emin ();
   set_emin (1); /* the generated number in [0,1[ is not in the exponent
                         range, except if it is zero */
-  k = mpfr_urandomb (x, __gmp_rands);
+  k = mpfr_urandomb (x, RANDS);
   if (MPFR_IS_ZERO(x) == 0 && (k == 0 || mpfr_nan_p (x) == 0))
     {
       printf ("Error in mpfr_urandomb, expected NaN, got ");

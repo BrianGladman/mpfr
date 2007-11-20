@@ -22,7 +22,6 @@ MA 02110-1301, USA. */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <limits.h> /* for ULONG_MAX */
 
 #include "mpfr-test.h"
@@ -48,7 +47,7 @@ main (void)
   mpfr_set_prec (x, 100);
   mpfr_set_f (x, y, GMP_RNDN);
 
-  mpf_urandomb (y, __gmp_rands, 10 * GMP_NUMB_BITS);
+  mpf_urandomb (y, RANDS, 10 * GMP_NUMB_BITS);
   mpfr_set_f (x, y, (mp_rnd_t) RND_RAND());
 
   /* bug found by Jean-Pierre Merlet */
@@ -56,8 +55,8 @@ main (void)
   mpf_set_prec (y, 256);
   mpfr_init2 (u, 256);
   mpfr_set_str (u,
-     "7.f10872b020c49ba5e353f7ced916872b020c49ba5e353f7ced916872b020c498@2",
-     16, GMP_RNDN);
+		"7.f10872b020c49ba5e353f7ced916872b020c49ba5e353f7ced916872b020c498@2",
+		16, GMP_RNDN);
   mpf_set_str (y, "2033033E-3", 10); /* avoid 2033.033 which is
                                         locale-sensitive */
   mpfr_set_f (x, y, GMP_RNDN);
@@ -89,13 +88,39 @@ main (void)
     }
   MPFR_ASSERTN(mpfr_cmp_ui_2exp (x, 1, 901) == 0);
 
-  for (k = 1; k <= 100000; k++)
+  /* random values */
+  for (k = 1; k <= 1000; k++)
     {
       pr = 2 + (randlimb () & 255);
       mpf_set_prec (z, pr);
-      mpf_urandomb (z, __gmp_rands, z->_mp_prec);
+      mpf_urandomb (z, RANDS, z->_mp_prec);
+      mpfr_set_prec (u, ((pr / BITS_PER_MP_LIMB + 1) * BITS_PER_MP_LIMB));
+      mpfr_set_f (u, z, GMP_RNDN);
+      if (mpfr_cmp_f (u , z) != 0)
+	{
+	  printf ("Error in mpfr_set_f:\n");
+	  printf ("mpf (precision=%lu)=", pr);
+	  mpf_out_str (stdout, 16, 0, z);
+	  printf ("\nmpfr(precision=%lu)=",
+		  ((pr / BITS_PER_MP_LIMB + 1) * BITS_PER_MP_LIMB));
+	  mpfr_out_str (stdout, 16, 0, u, GMP_RNDN);
+	  putchar ('\n');
+	  exit (1);
+	}
       mpfr_set_prec (x, pr);
-      mpfr_set_f (x, z, (mp_rnd_t) 0);
+      mpfr_set_f (x, z, GMP_RNDN);
+      mpfr_sub (u, u, x, GMP_RNDN);
+      mpfr_abs (u, u, GMP_RNDN);
+      if (mpfr_cmp_ui_2exp (u, 1, -pr - 1) > 0)
+	{
+	  printf ("Error in mpfr_set_f: precision=%lu\n", pr);
+	  printf ("mpf =");
+	  mpf_out_str (stdout, 16, 0, z);
+	  printf ("\nmpfr=");
+	  mpfr_out_str (stdout, 16, 0, x, GMP_RNDN);
+	  putchar ('\n');
+	  exit (1);
+	}
     }
 
   /* Check for +0 */
