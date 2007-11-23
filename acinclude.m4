@@ -53,9 +53,10 @@ AC_CHECK_HEADER([stdarg.h],[AC_DEFINE([HAVE_STDARG],1,[Define if stdarg])],
 dnl sys/fpu.h - MIPS specific
 AC_CHECK_HEADERS([sys/time.h sys/fpu.h])
 
-dnl FIXME: the functions memset and strtol are really needed by MPFR, but
-dnl if they are implemented as macros, this is also OK (in our case). So,
-dnl we do not return an error, but their test is currently useless.
+dnl FIXME: The functions memmove, memset and strtol are really needed by
+dnl MPFR, but if they are implemented as macros, this is also OK (in our
+dnl case).  So, we do not return an error, but their tests are currently
+dnl useless.
 dnl gettimeofday is not defined for MinGW
 AC_CHECK_FUNCS([memmove memset setlocale strtol gettimeofday])
 
