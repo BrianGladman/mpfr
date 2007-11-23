@@ -95,8 +95,8 @@ main (int argc, char *argv[])
   mpfr_set_prec (x, 7);
   mpfr_set_prec (y, 7);
   mpfr_set_si (x, -100, GMP_RNDN);
-  mpfr_j0 (x, x, GMP_RNDN);
-  MPFR_ASSERTN(mpfr_cmp_ui_2exp (y, 41, -11) == 0);
+  mpfr_j0 (y, x, GMP_RNDN);
+  MPFR_ASSERTN (! mpfr_nan_p (y) && mpfr_cmp_ui_2exp (y, 41, -11) == 0);
 
   mpfr_clear (x);
   mpfr_clear (y);
