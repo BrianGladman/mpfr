@@ -20,8 +20,6 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
-#include <stddef.h>
-
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
