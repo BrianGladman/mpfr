@@ -57,7 +57,7 @@ dnl FIXME: the functions memset and strtol are really needed by MPFR, but
 dnl if they are implemented as macros, this is also OK (in our case). So,
 dnl we do not return an error, but their test is currently useless.
 dnl gettimeofday is not defined for MinGW
-AC_CHECK_FUNCS([memset setlocale strtol gettimeofday])
+AC_CHECK_FUNCS([memmove memset setlocale strtol gettimeofday])
 
 dnl Check for IEEE-754 switches on Alpha
 case $host in
