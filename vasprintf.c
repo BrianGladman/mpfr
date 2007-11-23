@@ -33,10 +33,8 @@ MA 02110-1301, USA. */
 #include <stdlib.h>  /* for abs */
 #include <ctype.h>   /* for toupper */
 #include <stddef.h>
-#include <math.h>
 
 #include "mpfr-impl.h"
-/* #include "mpfr-gmp.h" */
 
 #if   _MPFR_PREC_FORMAT == 1
 #define _MPFR_PREC_FORMAT_SPEC "hu"
@@ -482,6 +480,20 @@ sprnt_int (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
   mpz_clear (z);
 }
 
+/* return ceil(log(x)/log(10)), assumes x >= 1 */
+static unsigned long
+uceil_log10 (unsigned long x)
+{
+  unsigned long l = 0;
+
+  while (x > 1)
+    {
+      l ++;
+      x = (x + 9) / 10;
+    }
+  return l;
+}
+
 /* sprnt_fp is an internal function printing the mpfr_t P into the buffer BUF
    according to specification described by SPEC.
    note: SPEC must be a floating point conversion specification. */
@@ -594,7 +606,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
       else
 	{
 	  exp = (mp_exp_t) abs (MPFR_GET_EXP (p));
-	  nbc.exp_part = ceil (log10 (exp)) + 2;
+	  nbc.exp_part = uceil_log10 (exp) + 2;
 	  if (nbc.exp_part < 3)
 	    /* the exponent always contains at least on digit in hexadecimal */
 	    nbc.exp_part = 3;
@@ -624,7 +636,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
       else
 	{
 	  exp = (mp_exp_t) abs (MPFR_GET_EXP (p));
-	  nbc.exp_part = ceil (log10 (exp)) + 2;
+	  nbc.exp_part = uceil_log10 (exp) + 2;
 	  if (nbc.exp_part < 3)
 	    /* the exponent always contains at least one digit in base 2 */
 	    nbc.exp_part = 3;
@@ -683,7 +695,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
       else
 	{
 	  exp = (mp_exp_t) abs (MPFR_GET_EXP (p));
-	  nbc.exp_part = ceil (log10 (exp)) + 2;
+	  nbc.exp_part = uceil_log10 (exp) + 2;
 	  if (nbc.exp_part < 4)
 	    /* the exponent always contains at least two digits in base ten */
 	    nbc.exp_part = 4;
