@@ -103,7 +103,7 @@ tests_start_mpfr (void)
   /* don't buffer, so output is not lost if a test causes a segv etc */
   setbuf (stdout, NULL);
 
-#if HAVE_SETLOCALE
+#if HAVE_LOCALE_H && HAVE_SETLOCALE
   /* Added on 2005-07-09. This allows to test MPFR under various
      locales. New bugs will probably be found, in particular with
      LC_ALL="tr_TR.ISO8859-9" because of the i/I character... */
