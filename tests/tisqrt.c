@@ -63,24 +63,11 @@ main (void)
   tst_isqrt (0, 0);
   tst_isqrt (1, 1);
   tst_isqrt (2, 1);
-  tst_isqrt (3, 1);
-  tst_isqrt (4, 2);
-  tst_isqrt (8, 2);
-  tst_isqrt (9, 3);
-  tst_isqrt (15, 3);
-  tst_isqrt (16, 4);
-  tst_isqrt (255, 15);
-  tst_isqrt (256, 16);
-  tst_isqrt (288, 16);
-  tst_isqrt (289, 17);
-  tst_isqrt (4095, 63);
-  tst_isqrt (4096, 64);
-  tst_isqrt (65535, 255);
-  tst_isqrt (65536, 256);
-  tst_isqrt (262143, 511);
-  tst_isqrt (262144, 512);
-  tst_isqrt (16777215, 4095);
-  tst_isqrt (16777216, 4096);
+  for (i = 2; i <= 65535; i++)
+    {
+      tst_isqrt (i * i - 1, i - 1);
+      tst_isqrt (i * i, i);
+    }
   tst_isqrt (4294967295UL, 65535);
 
   tst_icbrt (0, 0);
