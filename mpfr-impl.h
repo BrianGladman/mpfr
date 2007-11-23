@@ -952,7 +952,13 @@ do {                                                                  \
   } while (0)
 
 /* Needs <locale.h> */
+#ifdef HAVE_LOCALE_H
+#include <locale.h>
 #define MPFR_DECIMAL_POINT ((unsigned char) localeconv()->decimal_point[0])
+#else
+#define MPFR_DECIMAL_POINT '.'
+#endif
+
 
 /* Set y to s*significand(x)*2^e, for example MPFR_ALIAS(y,x,1,MPFR_EXP(x))
    sets y to |x|, and MPFR_ALIAS(y,x,MPFR_SIGN(x),0) sets y to x*2^f such

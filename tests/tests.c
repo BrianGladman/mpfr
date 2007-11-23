@@ -31,7 +31,7 @@ MA 02110-1301, USA. */
 #include <string.h>
 #include <float.h>
 
-#if HAVE_SETLOCALE
+#if HAVE_LOCALE_H
 #include <locale.h>
 #endif
 

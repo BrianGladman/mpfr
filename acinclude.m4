@@ -44,8 +44,10 @@ AC_REQUIRE([AC_CANONICAL_HOST])
 
 AC_CHECK_HEADER([limits.h],, AC_MSG_ERROR([limits.h not found]))
 AC_CHECK_HEADER([float.h],,  AC_MSG_ERROR([float.h not found]))
-AC_CHECK_HEADER([locale.h],, AC_MSG_ERROR([locale.h not found]))
 AC_CHECK_HEADER([string.h],, AC_MSG_ERROR([string.h not found]))
+
+dnl Check for locales
+AC_CHECK_HEADERS([locale.h])
 
 dnl Check for stdargs
 AC_CHECK_HEADER([stdarg.h],[AC_DEFINE([HAVE_STDARG],1,[Define if stdarg])],
