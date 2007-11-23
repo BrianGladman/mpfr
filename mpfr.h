@@ -39,14 +39,13 @@ MPFR_VERSION_NUM(MPFR_VERSION_MAJOR,MPFR_VERSION_MINOR,MPFR_VERSION_PATCHLEVEL)
 # include <gmp.h>
 #endif
 
-/* Try to include stdarg.h */
-#ifdef HAVE_STDARG
-# include <stdarg.h>
-#endif
-
 /* Check if stdio.h is included or if the user wants FILE */
 #if defined (_GMP_H_HAVE_FILE) || defined (MPFR_USE_FILE)
 # define _MPFR_H_HAVE_FILE 1
+#endif
+
+#if defined (_GMP_H_HAVE_VA_LIST)
+# define _MPFR_H_HAVE_VA_LIST 1
 #endif
 
 /* Check if stdint.h/inttypes.h is included or if the user wants intmax_t */
@@ -333,7 +332,7 @@ __MPFR_DECLSPEC size_t mpfr_out_str _MPFR_PROTO ((FILE*, int, size_t,
                                                   mpfr_srcptr, mpfr_rnd_t));
 #endif
 
-#ifdef HAVE_STDARG
+#ifdef _MPFR_H_HAVE_VA_LIST
 #ifdef _MPFR_H_HAVE_FILE
 __MPFR_DECLSPEC int mpfr_printf _MPFR_PROTO ((__gmp_const char*, ...));
 __MPFR_DECLSPEC int mpfr_fprintf _MPFR_PROTO ((FILE*, __gmp_const char*, 
@@ -354,7 +353,7 @@ __MPFR_DECLSPEC int mpfr_snprintf _MPFR_PROTO ((char*, size_t,
 						__gmp_const char*, ...));
 __MPFR_DECLSPEC int mpfr_vsnprintf _MPFR_PROTO ((char*, size_t,
 						__gmp_const char*, va_list));
-#endif /* HAVE_STDARG */
+#endif /* _MPFR_H_HAVE_VA_LIST */
 
 __MPFR_DECLSPEC int mpfr_pow _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
                                            mpfr_srcptr, mpfr_rnd_t));

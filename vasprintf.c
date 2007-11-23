@@ -1,4 +1,4 @@
-/* mpfr_vasprintf -- main function for the printf functions family 
+/* mpfr_vasprintf -- main function for the printf functions family
    plus helper macros & functions.
 
 Copyright 2007 Free Software Foundation, Inc.
@@ -23,6 +23,8 @@ MA 02110-1301, USA. */
 
 /* The mpfr_printf-like functions are defined only if stdarg.h exist */
 #ifdef HAVE_STDARG
+
+#include <stdarg.h>
 
 #ifdef HAVE_STDINT_H
 #include <stdint.h>
@@ -56,7 +58,7 @@ MA 02110-1301, USA. */
 
 
 /* We assume that a single conversion specifier produces at most 4095 chars
-   (Rationale for International Standard —Programming Languages— C 
+   (Rationale for International Standard -Programming Languages- C
    Revision 5.10 April-2003, 7.19.6.1 p152). */
 #define MAX_CHAR_PRODUCED_BY_SPEC 4096
 
@@ -90,7 +92,7 @@ MA 02110-1301, USA. */
       }							\
   } while (0)
 
-/* __arg_type contains all the types described by the 'type' field of the 
+/* __arg_type contains all the types described by the 'type' field of the
    format string */
 enum __arg_type
 {
@@ -277,7 +279,7 @@ parse_arg_type (__gmp_const char *format, struct printf_spec *specinfo)
 #define CASE_INTMAX_ARG							\
       case INTMAX_ARG:							\
 	(void) va_arg ((ap), intmax_t);					\
-	break;								
+	break;
 #endif
 
 #define CONSUME_VA_ARG(specinfo, ap)					\
@@ -495,7 +497,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
   char *str;
   char *str_curr = NULL;
 
-  /* char_fp details how much characters are needed in each part of a float 
+  /* char_fp details how much characters are needed in each part of a float
      print. */
   struct char_fp
   {
@@ -862,7 +864,7 @@ mpfr_vasprintf (char **ptr, __gmp_const char *fmt, va_list ap)
 
   /* informations on the conversion specification filled by the parser */
   struct printf_spec spec;
-  /* flag raised when previous part of fmt need to be processed by 
+  /* flag raised when previous part of fmt need to be processed by
      gmp_vsnprintf */
   int gmp_fmt_flag;
   /* beginning and end of the previous unprocessed part of fmt */
@@ -1002,7 +1004,7 @@ mpfr_vasprintf (char **ptr, __gmp_const char *fmt, va_list ap)
             case 'G':
             case 'a':
             case 'A':
-	    case 'b':  
+	    case 'b':
               sprnt_fp (&buf, p, spec);
             }
         }

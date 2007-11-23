@@ -23,6 +23,7 @@ MA 02110-1301, USA. */
 /* The mpfr_printf-like functions are defined only if stdarg.h exist */
 #ifdef HAVE_STDARG
 
+#include <stdarg.h>
 #include "mpfr-impl.h"
 
 #ifdef _MPFR_H_HAVE_FILE
