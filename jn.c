@@ -73,9 +73,9 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mp_rnd_t r)
 {
   int inex;
   unsigned long absn;
-  mp_prec_t prec, err;
+  mp_prec_t prec, pbound, err;
   mp_exp_t exps, expT;
-  mpfr_t y, s, t;
+  mpfr_t y, s, t, absz;
   unsigned long k, zz, k0;
   MPFR_ZIV_DECL (loop);
 
@@ -126,8 +126,10 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mp_rnd_t r)
 
   /* we can use the asymptotic expansion as soon as |z| > p log(2)/2,
      but to get some margin we use it for |z| > p/2 */
-  if (mpfr_cmp_ui (z, MPFR_PREC(res) / 2 + 3) > 0 ||
-      mpfr_cmp_si (z, - ((long) MPFR_PREC(res) / 2 + 3)) < 0)
+  pbound = MPFR_PREC (res) / 2 + 3;
+  MPFR_ASSERTN (pbound <= ULONG_MAX);
+  MPFR_ALIAS (absz, z, 1, MPFR_EXP (z));
+  if (mpfr_cmp_ui (absz, pbound) > 0)
     {
       inex = mpfr_jn_asympt (res, n, z, r);
       if (inex != 0)
