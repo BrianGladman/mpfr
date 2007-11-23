@@ -21,11 +21,12 @@ MA 02110-1301, USA. */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <gmp.h>
 
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
 #endif
+
+#include <gmp.h>
 
 #include "mpfr-test.h"
 
@@ -210,8 +211,8 @@ floating_point ()
   if (strcmp (buffer, "1.8954855934746127e+12") != 0)
     {
       fprintf (stderr, "Error in mpfr_sprintf(s, \"%%.RDe\", x)\n");
-      fprintf (stderr, 
-	       "expected: 1.8954855934746127e+12\ngot:      %s\n", 
+      fprintf (stderr,
+	       "expected: 1.8954855934746127e+12\ngot:      %s\n",
 	       buffer);
       exit (1);
     }
@@ -293,9 +294,9 @@ mixed ()
   mpfr_sprintf (buffer, "%Zi, %R*e", mpz, rnd, x);
   if (strcmp (buffer, "10610209857723, -1.2345678875e+07") != 0)
     {
-      fprintf (stderr, 
+      fprintf (stderr,
 	       "Error in mpfr_sprintf (s, \"%%Zi, %%R*e\", mpz, rnd, x);\n");
-      fprintf (stderr, 
+      fprintf (stderr,
 	       "expected: 10610209857723, -1.2345678875e+07\ngot:      %s\n",
 	       buffer);
       exit (1);
@@ -310,7 +311,7 @@ mixed ()
   mpfr_sprintf (buffer, "%.0R*f, %Qx", GMP_RNDZ, x, mpq);
   if (strcmp (buffer, "-12345678, 1e240/45b352") != 0)
     {
-      fprintf (stderr, 
+      fprintf (stderr,
 	       "Error in mpfr_sprintf (s, \"%%R*e, %%Qx\", GMP_RNDZ, x, mpq)\n");
       fprintf (stderr, "expected: -12345678, 1e240/45b352\ngot:      %s\n",
 	       buffer);
@@ -319,7 +320,7 @@ mixed ()
   mpfr_sprintf (buffer, "%i, %.*Rf, %Ff", i, 12, x, mpf);
   if (strcmp (buffer, "121, -12345678.875000000000, 1.290323") != 0)
     {
-      fprintf (stderr, 
+      fprintf (stderr,
 	       "Error in mpfr_sprintf (s, \"%%i, %%.*Rf, %%Ff\", i, 12, x, mpf)\n");
       fprintf (stderr, \
 	       "expected: 121, -12345678.875000000000, 1.290323\ngot:      %s\n",
@@ -329,7 +330,7 @@ mixed ()
   mpfr_sprintf (buffer, "%.*Zi, %R*e, %Lf", 20, mpz, rnd, x, d);
   if (strcmp (buffer, "00000010610209857723, -1.2345678875e+07, 0.032258") != 0)
     {
-      fprintf (stderr, 
+      fprintf (stderr,
 	       "Error in mpfr_sprintf (s,\"%%.*Zi, %%R*e, %%Lf\", 20, mpz, GMP_RNDD, x, d)\n");
       fprintf (stderr, \
 	       "expected: 00000010610209857723, -1.2345678875e+07, 0.032258\ngot:      %s\n",
@@ -339,7 +340,7 @@ mixed ()
 
   mpf_clear (mpf);
   mpq_clear (mpq);
-  mpz_clear (mpz); 
+  mpz_clear (mpz);
   mpfr_clear (x);
   return 0;
 }
@@ -347,9 +348,12 @@ mixed ()
 int
 main (int argc, char **argv)
 {
-#ifdef HAVE_SETLOCALE
-  /* currently, we just check with 'C' locale */
   char *locale;
+
+  tests_start_mpfr ();
+
+#ifdef HAVE_LOCALE_H && HAVE_SETLOCALE
+  /* currently, we just check with 'C' locale */
   locale = setlocale (LC_NUMERIC, "C");
 #endif
 
@@ -358,8 +362,10 @@ main (int argc, char **argv)
   floating_point ();
   mixed ();
 
-#ifdef HAVE_SETLOCALE
+#ifdef HAVE_LOCALE_H && HAVE_SETLOCALE
   setlocale (LC_NUMERIC, locale);
 #endif
+
+  tests_end_mpfr ();
   return 0;
 }
