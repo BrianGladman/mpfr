@@ -18,6 +18,8 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
+#ifdef HAVE_STDARG
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -369,3 +371,14 @@ main (int argc, char **argv)
   tests_end_mpfr ();
   return 0;
 }
+
+#else  /* HAVE_STDARG */
+
+int
+main (int argc, char **argv)
+{
+  /* We have nothing to test. */
+  return 0;
+}
+
+#endif  /* HAVE_STDARG */
