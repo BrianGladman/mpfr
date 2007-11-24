@@ -43,7 +43,7 @@ __gmp_const char nan_str[] = "nan";
 __gmp_const char nan_uc_str[] = "NAN";
 
 static void
-special ()
+special (void)
 {
   char buffer[buf_size];
   mpfr_t x;
@@ -101,7 +101,7 @@ special ()
 }
 
 static int
-integer ()
+integer (void)
 {
   char buffer[buf_size];
   mpfr_t x;
@@ -178,7 +178,7 @@ integer ()
 }
 
 static int
-floating_point ()
+floating_point (void)
 {
   char buffer[buf_size];
   mpfr_t x;
@@ -259,7 +259,7 @@ floating_point ()
 }
 
 static int
-mixed ()
+mixed (void)
 {
   int i = 121;
   long double d = 1. / 31.;
