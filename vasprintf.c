@@ -489,7 +489,7 @@ uceil_log10 (unsigned long x)
   while (x > 1)
     {
       l ++;
-      x = (x + 9) / 10;
+      x = (x - 1) / 10 + 1;
     }
   return l;
 }
