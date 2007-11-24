@@ -1849,7 +1849,7 @@ that is not representable in @var{rop}, 2 or @minus{}2 when @var{op} is
 not an integer.
 
 Note that @code{mpfr_round} is different from @code{mpfr_rint} called with
-the rounding to the nearest mode (where halfway cases are rounded to an even
+the rounding to nearest mode (where halfway cases are rounded to an even
 integer or significand). Note also that no double rounding is performed; for
 instance, 4.5 (100.1 in binary) is rounded by @code{mpfr_round} to 4 (100
 in binary) in 2-bit precision, though @code{round(4.5)} is equal to 5 and
