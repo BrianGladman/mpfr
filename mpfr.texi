@@ -1774,7 +1774,7 @@ The @samp{P} type outputs the internal precision of the @code{mpfr_t} variable;
 for example:
 @example
 mpfr_t x;
-mpfr_printf ("%Pu digits in mantissa", x);
+mpfr_printf ("%Pu digits in significand", x);
 @end example
 
 The @samp{R} type is used for a @code{mpfr_t} output and can be followed by
@@ -1795,7 +1795,7 @@ If the precision field is empty (as in @samp{%.Rf}), the number is displayed
 with enough digits so that it can be read back exactly (assuming rounding to
 nearest, see @code{mpfr_get_str}).
 If no rounding is specified, the @code{mpfr_t} argument is rounded to nearest.
-The three following examples are equivalent:
+The following three examples are equivalent:
 @example
 mpfr_t x;
 mpfr_printf ("%.128Rf", x);
@@ -1816,11 +1816,12 @@ The @samp{conv} specifications allowed with @code{mpfr_t} parameter are:
 @item @samp{g} @samp{G} @tab fixed or scientific float
 @end multitable
 @end quotation
-In cases of non-decimal output, only mantissa is written in the specified base,
-the exponent is always displayed in decimal.
+In case of non-decimal output, only the significand is written in the
+specified base, the exponent is always displayed in decimal.
 Special values are always displayed as @code{@@nan@@}, @code{@@-inf@@}, and
 @code{@@+inf@@}.
-Return the number of characters written, or if an error occurred, return -1.
+Return the number of characters written, or if an error occurred, return
+@minus{}1.
 @end deftypefun
 
 @node Integer Related Functions, Rounding Related Functions, Input and Output Functions, MPFR Interface

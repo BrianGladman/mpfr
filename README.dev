@@ -487,3 +487,10 @@ Bit Twiddling Hacks - Sean Eron Anderson maintain a list of tricks to get
 efficient code on <http://graphics.stanford.edu/~seander/bithacks.html>.
 WARNING: some of those tricks may not take into account possible overflows,
 and may not be portable.
+
+===========================================================================
+
+MPFR manual (mpfr.texi):
+  * Use "significand", not "mantissa".
+  * Use "@minus{}" for the minus character, not "-".
+  * Follow the English typography, not the French one!
