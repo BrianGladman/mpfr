@@ -40,7 +40,7 @@ check_round_p (void)
     {
       /* avoid mpn_random which leaks memory */
       for (i = 0; i < n; i++)
-	buf[i] = randlimb ();
+        buf[i] = randlimb ();
       p = (mp_prec_t) randlimb() % ((n-1) * BITS_PER_MP_LIMB) + MPFR_PREC_MIN;
       err = p + randlimb () % BITS_PER_MP_LIMB;
       r1 = mpfr_round_p (buf, n, err, p);

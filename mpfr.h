@@ -335,24 +335,24 @@ __MPFR_DECLSPEC size_t mpfr_out_str _MPFR_PROTO ((FILE*, int, size_t,
 #ifdef _MPFR_H_HAVE_VA_LIST
 #ifdef _MPFR_H_HAVE_FILE
 __MPFR_DECLSPEC int mpfr_printf _MPFR_PROTO ((__gmp_const char*, ...));
-__MPFR_DECLSPEC int mpfr_fprintf _MPFR_PROTO ((FILE*, __gmp_const char*, 
-					       ...));
+__MPFR_DECLSPEC int mpfr_fprintf _MPFR_PROTO ((FILE*, __gmp_const char*,
+                                               ...));
 __MPFR_DECLSPEC int mpfr_vprintf _MPFR_PROTO ((__gmp_const char*, va_list));
 __MPFR_DECLSPEC int mpfr_vfprintf _MPFR_PROTO ((FILE*, __gmp_const char*,
-						va_list));
+                                                va_list));
 #endif /* _MPFR_H_HAVE_FILE */
 __MPFR_DECLSPEC int mpfr_asprintf _MPFR_PROTO ((char**, __gmp_const char*,
-						...));
+                                                ...));
 __MPFR_DECLSPEC int mpfr_vasprintf _MPFR_PROTO ((char**, __gmp_const char*,
-						 va_list));
+                                                 va_list));
 __MPFR_DECLSPEC int mpfr_sprintf _MPFR_PROTO ((char*, __gmp_const char*,
-					       ...));
+                                               ...));
 __MPFR_DECLSPEC int mpfr_vsprintf _MPFR_PROTO ((char*, __gmp_const char*,
-					       va_list));
-__MPFR_DECLSPEC int mpfr_snprintf _MPFR_PROTO ((char*, size_t, 
-						__gmp_const char*, ...));
+                                               va_list));
+__MPFR_DECLSPEC int mpfr_snprintf _MPFR_PROTO ((char*, size_t,
+                                                __gmp_const char*, ...));
 __MPFR_DECLSPEC int mpfr_vsnprintf _MPFR_PROTO ((char*, size_t,
-						__gmp_const char*, va_list));
+                                                __gmp_const char*, va_list));
 #endif /* _MPFR_H_HAVE_VA_LIST */
 
 __MPFR_DECLSPEC int mpfr_pow _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,

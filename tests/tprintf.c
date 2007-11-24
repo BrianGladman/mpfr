@@ -169,7 +169,7 @@ integer ()
     {
       fprintf (stderr, "Error in mpfr_sprintf(s, \"%%-*.*RDd\", 12, 6, x)\n");
       fprintf (stderr, "expected: \"001641      \"\ngot:      \"%s\"\n",
-	       buffer);
+               buffer);
       exit (1);
     }
 
@@ -191,7 +191,7 @@ floating_point ()
     {
       fprintf (stderr, "Error in mpfr_sprintf(s, \"%%RDf\", x)\n");
       fprintf (stderr, "expected: 1895485593474.612792\ngot:      %s\n",
-	       buffer);
+               buffer);
       exit (1);
     }
   /* test rounding */
@@ -216,8 +216,8 @@ floating_point ()
     {
       fprintf (stderr, "Error in mpfr_sprintf(s, \"%%.RDe\", x)\n");
       fprintf (stderr,
-	       "expected: 1.8954855934746127e+12\ngot:      %s\n",
-	       buffer);
+               "expected: 1.8954855934746127e+12\ngot:      %s\n",
+               buffer);
       exit (1);
     }
   /* test width field */
@@ -292,17 +292,17 @@ mixed ()
     {
       fprintf (stderr, "Error in mpfr_sprintf (s, \"%%i, %%.0Rf\", i, x);\n");
       fprintf (stderr, "expected: 121, -12345679\ngot:      %s\n",
-	       buffer);
+               buffer);
       exit (1);
     }
   mpfr_sprintf (buffer, "%Zi, %R*e", mpz, rnd, x);
   if (strcmp (buffer, "10610209857723, -1.2345678875e+07") != 0)
     {
       fprintf (stderr,
-	       "Error in mpfr_sprintf (s, \"%%Zi, %%R*e\", mpz, rnd, x);\n");
+               "Error in mpfr_sprintf (s, \"%%Zi, %%R*e\", mpz, rnd, x);\n");
       fprintf (stderr,
-	       "expected: 10610209857723, -1.2345678875e+07\ngot:      %s\n",
-	       buffer);
+               "expected: 10610209857723, -1.2345678875e+07\ngot:      %s\n",
+               buffer);
       exit (1);
     }
   mpfr_sprintf (buffer, "%.1Rf, %i", x, i);
@@ -316,29 +316,29 @@ mixed ()
   if (strcmp (buffer, "-12345678, 1e240/45b352") != 0)
     {
       fprintf (stderr,
-	       "Error in mpfr_sprintf (s, \"%%R*e, %%Qx\", GMP_RNDZ, x, mpq)\n");
+               "Error in mpfr_sprintf (s, \"%%R*e, %%Qx\", GMP_RNDZ, x, mpq)\n");
       fprintf (stderr, "expected: -12345678, 1e240/45b352\ngot:      %s\n",
-	       buffer);
+               buffer);
       exit (1);
     }
   mpfr_sprintf (buffer, "%i, %.*Rf, %Ff", i, 12, x, mpf);
   if (strcmp (buffer, "121, -12345678.875000000000, 1.290323") != 0)
     {
       fprintf (stderr,
-	       "Error in mpfr_sprintf (s, \"%%i, %%.*Rf, %%Ff\", i, 12, x, mpf)\n");
+               "Error in mpfr_sprintf (s, \"%%i, %%.*Rf, %%Ff\", i, 12, x, mpf)\n");
       fprintf (stderr, \
-	       "expected: 121, -12345678.875000000000, 1.290323\ngot:      %s\n",
-	       buffer);
+               "expected: 121, -12345678.875000000000, 1.290323\ngot:      %s\n",
+               buffer);
       exit (1);
     }
   mpfr_sprintf (buffer, "%.*Zi, %R*e, %Lf", 20, mpz, rnd, x, d);
   if (strcmp (buffer, "00000010610209857723, -1.2345678875e+07, 0.032258") != 0)
     {
       fprintf (stderr,
-	       "Error in mpfr_sprintf (s,\"%%.*Zi, %%R*e, %%Lf\", 20, mpz, GMP_RNDD, x, d)\n");
+               "Error in mpfr_sprintf (s,\"%%.*Zi, %%R*e, %%Lf\", 20, mpz, GMP_RNDD, x, d)\n");
       fprintf (stderr, \
-	       "expected: 00000010610209857723, -1.2345678875e+07, 0.032258\ngot:      %s\n",
-	       buffer);
+               "expected: 00000010610209857723, -1.2345678875e+07, 0.032258\ngot:      %s\n",
+               buffer);
       exit (1);
     }
 
