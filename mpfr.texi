@@ -1753,17 +1753,17 @@ Return the number of bytes read, or if an error occurred, return 0.
 @deftypefun int mpfr_fprintf (FILE *@var{stream}, const char *@var{template}, ...)
 @deftypefunx int mpfr_printf (const char *@var{template}, ...)
 The @code{mpfr_fprintf} (@code{mpfr_printf}) function prints to the stream
-@var{stream} (respectively @code{stdout}) the optional arguments under the 
+@var{stream} (respectively @code{stdout}) the optional arguments under the
 control of the template string @var{template}.
 The format specification accepted by @code{mpfr_printf} is an extension of the
-@code{printf} one. The conversion specification is of the form :
+@code{printf} one. The conversion specification is of the form:
 @example
 % [flags] [width] [.[precision]] [type] [rounding] conv
 @end example
-@samp{flags}, @samp{width}, and @samp{precision} have the meaning as for 
-@code{printf}. 
+@samp{flags}, @samp{width}, and @samp{precision} have the meaning as for
+@code{printf}.
 @code{mpfr_printf} is an extension to the @code{gmp_printf} function, hence it
-accepts the same @samp{type} specifications plus the following two :
+accepts the same @samp{type} specifications plus the following two:
 @quotation
 @multitable {(space)} {MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM}
 @item @samp{R}  @tab @code{mpfr_t} input, float conversions
@@ -1771,13 +1771,13 @@ accepts the same @samp{type} specifications plus the following two :
 @end multitable
 @end quotation
 The @samp{P} type outputs the internal precision of the @code{mpfr_t} variable;
- for example :
+for example:
 @example
 mpfr_t x;
 mpfr_printf ("%Pu digits in mantissa", x);
 @end example
 
-The @samp{R} type is used for a @code{mpfr_t} output and can be followed by 
+The @samp{R} type is used for a @code{mpfr_t} output and can be followed by
 a rounding specification denoted by one of the following characters:
 @quotation
 @multitable {(space)} {MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM}
@@ -1789,10 +1789,10 @@ a rounding specification denoted by one of the following characters:
 argument
 @end multitable
 @end quotation
-If the precision field is not empty, the @code{mpfr_t} number is rounded to 
+If the precision field is not empty, the @code{mpfr_t} number is rounded to
 the given precision in the direction specified by the rounding mode.
-If the precision field is empty (as in @samp{%.Rf}), the number is displayed 
-with enough digits so that it can be read back exactly (assuming rounding to 
+If the precision field is empty (as in @samp{%.Rf}), the number is displayed
+with enough digits so that it can be read back exactly (assuming rounding to
 nearest, see @code{mpfr_get_str}).
 If no rounding is specified, the @code{mpfr_t} argument is rounded to nearest.
 The three following examples are equivalent:
@@ -1805,8 +1805,8 @@ mpfr_printf ("%.128R*f", x, GMP_RNDN);
 
 @code{mpfr_printf} also adds a new conversion specification @samp{b} which
 displays the @code{mpfr_t} parameter in binary, the behavior is undefined with
-other parameter type. 
-The @samp{conv} specifications allowed with @code{mpfr_t} parameter are :
+other parameter type.
+The @samp{conv} specifications allowed with @code{mpfr_t} parameter are:
 @quotation
 @multitable {(space)} {MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM}
 @item @samp{a} @samp{A} @tab hex float, C99 style
@@ -1818,7 +1818,7 @@ The @samp{conv} specifications allowed with @code{mpfr_t} parameter are :
 @end quotation
 In cases of non-decimal output, only mantissa is written in the specified base,
 the exponent is always displayed in decimal.
-Special values are always displayed as @code{@@nan@@}, @code{@@-inf@@}, and 
+Special values are always displayed as @code{@@nan@@}, @code{@@-inf@@}, and
 @code{@@+inf@@}.
 Return the number of characters written, or if an error occurred, return -1.
 @end deftypefun
