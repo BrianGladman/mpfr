@@ -480,18 +480,21 @@ sprnt_int (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
   mpz_clear (z);
 }
 
-/* return ceil(log(x)/log(10)), assumes x >= 1 */
+/* return ceil(log(|MPFR_EXP(p)|)/log(10)) + 2 assuming the exponent >= 1 */
 static unsigned long
-uceil_log10 (unsigned long x)
+uceil_log10_exp_p2 (mpfr_srcptr p)
 {
-  unsigned long l = 0;
+  unsigned long c = 2;
+  mp_exp_t e = MPFR_GET_EXP (p);
+  mp_exp_unsigned_t x;
 
+  x = SAFE_ABS (mp_exp_unsigned_t, e);
   while (x > 1)
     {
-      l ++;
-      x = (x - 1) / 10 + 1;
+      c++;
+      x = (x + 9) / 10;
     }
-  return l;
+  return c;
 }
 
 /* sprnt_fp is an internal function printing the mpfr_t P into the buffer BUF
@@ -605,8 +608,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
 	}
       else
 	{
-	  exp = (mp_exp_t) abs (MPFR_GET_EXP (p));
-	  nbc.exp_part = uceil_log10 (exp) + 2;
+	  nbc.exp_part = uceil_log10_exp_p2 (p);
 	  if (nbc.exp_part < 3)
 	    /* the exponent always contains at least on digit in hexadecimal */
 	    nbc.exp_part = 3;
@@ -635,8 +637,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
 	}
       else
 	{
-	  exp = (mp_exp_t) abs (MPFR_GET_EXP (p));
-	  nbc.exp_part = uceil_log10 (exp) + 2;
+	  nbc.exp_part = uceil_log10_exp_p2 (p);
 	  if (nbc.exp_part < 3)
 	    /* the exponent always contains at least one digit in base 2 */
 	    nbc.exp_part = 3;
@@ -694,8 +695,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
 	}
       else
 	{
-	  exp = (mp_exp_t) abs (MPFR_GET_EXP (p));
-	  nbc.exp_part = uceil_log10 (exp) + 2;
+	  nbc.exp_part = uceil_log10_exp_p2 (p);
 	  if (nbc.exp_part < 4)
 	    /* the exponent always contains at least two digits in base ten */
 	    nbc.exp_part = 4;
