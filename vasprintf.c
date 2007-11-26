@@ -26,11 +26,16 @@ MA 02110-1301, USA. */
 
 #include <stdarg.h>
 
+/* FIXME: if HAVE_WCHAR_H isn't defined, then wchar_t and wint_t (used
+   below) don't exist. */
+#ifdef HAVE_WCHAR_H
+#include <wchar.h>
+#endif
+
 #ifdef HAVE_STDINT_H
 #include <stdint.h>
 #endif
 
-#include <ctype.h>   /* for toupper */
 #include <stddef.h>  /* FIXME: is it useful? Let's recall that mpfr-impl.h
                         includes <stdio.h>, which is probably sufficient. */
 
@@ -722,7 +727,15 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
       char *s1 = str;
       while (*s1)
         {
-          *s1 = toupper (*s1);
+          switch (*s1)
+            {
+            case 'a': *s1 = 'A'; break;
+            case 'b': *s1 = 'B'; break;
+            case 'c': *s1 = 'C'; break;
+            case 'd': *s1 = 'D'; break;
+            case 'e': *s1 = 'E'; break;
+            case 'f': *s1 = 'F'; break;
+            }
           s1++;
         }
     }
