@@ -396,7 +396,7 @@ struct string_buffer
 static void
 buffer_init (struct string_buffer *b, size_t s)
 {
-  b->start = (char *) mpfr_default_allocate (s);
+  b->start = (char *) (*__gmp_allocate_func) (s);
   b->start[0] = '\0';
   b->curr = b->start;
   b->size = s;
@@ -413,7 +413,7 @@ buffer_cat (struct string_buffer *b, const char *s, size_t l)
         * ((l + 1 > MAX_CHAR_PRODUCED_BY_SPEC) ?
            l + 1 : MAX_CHAR_PRODUCED_BY_SPEC);
       b->start =
-        (char *) mpfr_default_reallocate (b->start, b->size, b->size + n);
+        (char *) (*__gmp_reallocate_func) (b->start, b->size, b->size + n);
       b->size += n;
       b->curr = b->start + pos;
     }
@@ -429,7 +429,7 @@ sprntf_gmp (struct string_buffer *b, const char *fmt, va_list ap)
   char *s;
   l = gmp_vasprintf (&s, fmt, ap);
   buffer_cat (b, s, l);
-  mpfr_default_free (s, l + 1);
+  mpfr_free_str (s);
 }
 
 /* internal function printing the mpfr_t P into the buffer BUF according to
@@ -487,7 +487,7 @@ sprnt_int (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
 
   buffer_cat (buf, s, f);
 
-  mpfr_default_free (s, f + 1);
+  mpfr_free_str (s);
   mpz_clear (z);
 }
 
@@ -861,7 +861,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
           memset (zeros, '0', -exp);
           zeros[-exp] = '\0';
           buffer_cat (buf, zeros, -exp);
-          mpfr_default_free (zeros, -exp + 1);
+          mpfr_default_free (zeros, 1 - exp);
         }
       buffer_cat (buf, str_curr, nbc.frac_part);
 
@@ -1049,7 +1049,7 @@ mpfr_vasprintf (char **ptr, __gmp_const char *fmt, va_list ap)
 
           l = gmp_asprintf (&s, "%"MPFR_PREC_FORMAT_SPEC, prec);
           buffer_cat (&buf, s, l);
-          mpfr_default_free (s, l + 1);
+          mpfr_free_str (s);
         }
       else if (spec.arg_type == MPFR_ARG)
         {
@@ -1097,7 +1097,7 @@ mpfr_vasprintf (char **ptr, __gmp_const char *fmt, va_list ap)
   nbchar = buf.curr - buf.start;
   MPFR_ASSERTD (nbchar == strlen (buf.start));
   buf.start =
-    (char *) mpfr_default_reallocate (buf.start, buf.size, nbchar + 1);
+    (char *) (*__gmp_reallocate_func) (buf.start, buf.size, nbchar + 1);
   *ptr = buf.start;
   return nbchar;
 }
