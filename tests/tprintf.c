@@ -35,12 +35,12 @@ MA 02110-1301, USA. */
 #include "mpfr-test.h"
 
 const int buf_size = 1024;
-__gmp_const char pinf_str[] = "inf";
-__gmp_const char pinf_uc_str[] = "INF";
-__gmp_const char minf_str[] = "-inf";
-__gmp_const char minf_uc_str[] = "-INF";
-__gmp_const char nan_str[] = "nan";
-__gmp_const char nan_uc_str[] = "NAN";
+const char pinf_str[] = "inf";
+const char pinf_uc_str[] = "INF";
+const char minf_str[] = "-inf";
+const char minf_uc_str[] = "-INF";
+const char nan_str[] = "nan";
+const char nan_uc_str[] = "NAN";
 
 static void
 special (void)
