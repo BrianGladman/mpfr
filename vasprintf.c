@@ -30,9 +30,9 @@ MA 02110-1301, USA. */
 #include <stdint.h>
 #endif
 
-#include <stdlib.h>  /* for abs */
 #include <ctype.h>   /* for toupper */
-#include <stddef.h>
+#include <stddef.h>  /* FIXME: is it useful? Let's recall that mpfr-impl.h
+                        includes <stdio.h>, which is probably sufficient. */
 
 #include "mpfr-impl.h"
 
@@ -47,9 +47,9 @@ MA 02110-1301, USA. */
 #endif
 
 #if (__GMP_MP_SIZE_T_INT == 1)
-#define _MP_EXP_FORMAT_SPEC "i"
+#define MPFR_EXP_FORMAT_SPEC "i"
 #elif (__GMP_MP_SIZE_T_INT == 0)
-#define _MP_EXP_FORMAT_SPEC "li"
+#define MPFR_EXP_FORMAT_SPEC "li"
 #else
 #error "mp_exp_t size not supported"
 #endif
@@ -829,12 +829,12 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
         case 'A':
           buffer_cat (buf, spec.spec == 'A' ? "P" : "p", 1);
           exp = MPFR_IS_ZERO (p)? 0: (exp - 1) * 4;
-          strcpy (exp_fmt, "%+.1"_MP_EXP_FORMAT_SPEC);
+          strcpy (exp_fmt, "%+.1"MPFR_EXP_FORMAT_SPEC);
           break;
         case 'b':
           buffer_cat (buf, "p", 1);
           exp = MPFR_IS_ZERO (p)? 0: exp - 1;
-          strcpy (exp_fmt, "%+.1"_MP_EXP_FORMAT_SPEC);
+          strcpy (exp_fmt, "%+.1"MPFR_EXP_FORMAT_SPEC);
           break;
         case 'e':
         case 'E':
@@ -845,7 +845,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
                       ((spec.spec == 'E') || (spec.spec == 'F')) ? "E" : "e",
                       1);
           exp = MPFR_IS_ZERO (p)? 0: exp - nbc.int_part;
-          strcpy (exp_fmt, "%+.2"_MP_EXP_FORMAT_SPEC);
+          strcpy (exp_fmt, "%+.2"MPFR_EXP_FORMAT_SPEC);
         }
 
       MPFR_ASSERTN (exp - 1 >= LONG_MIN);
