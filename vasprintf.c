@@ -610,7 +610,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
         {
           nbc.exp_part = uceil_log10_exp_p2 (p);
           if (nbc.exp_part < 3)
-            /* the exponent always contains at least on digit in hexadecimal */
+            /* the exponent always contains at least 1 digit in hexadecimal */
             nbc.exp_part = 3;
         }
       nbc.total += nbc.base_prefix + nbc.int_part + nbc.point + nbc.exp_part
@@ -697,7 +697,8 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
         {
           nbc.exp_part = uceil_log10_exp_p2 (p);
           if (nbc.exp_part < 4)
-            /* the exponent always contains at least two digits in base ten */
+            /* the exponent always contains at least two digits in base 10,
+               as required by the C standard */
             nbc.exp_part = 4;
         }
       nbc.total += nbc.base_prefix + nbc.int_part + nbc.point + nbc.exp_part
