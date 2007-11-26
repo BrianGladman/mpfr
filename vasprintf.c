@@ -596,6 +596,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
       remove_trailing_zeros = spec.alt ? 0 : 1;
     }
 
+  /* Note: case 'g'/'G' has been changed into 'e'/'E' or 'f'/'F' above. */
   switch (spec.spec)
     {
     case 'a':
@@ -818,6 +819,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
         }
     }
 
+  /* Note: case 'g'/'G' has been changed into 'e'/'E' or 'f'/'F' above. */
   if (nbc.exp_part)
     /* exponent part */
     {
@@ -838,8 +840,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
           break;
         case 'e':
         case 'E':
-        case 'f': /* FIXME: these are cases 'g' and 'G', aren't they?
-                     Add tests to tprintf.c and fix this bug. */
+        case 'f':
         case 'F':
           buffer_cat (buf,
                       ((spec.spec == 'E') || (spec.spec == 'F')) ? "E" : "e",
