@@ -480,7 +480,9 @@ sprnt_int (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
   mpz_clear (z);
 }
 
-/* return ceil(log(|MPFR_EXP(p)|)/log(10)) + 2 assuming the exponent >= 1 */
+/* return ceil(log(|MPFR_EXP(p)|)/log(10)) + 2 assuming the exponent >= 1
+   for exp_part. FIXME: The exponent that will actually be written is not
+   the exponent of the MPFR number! */
 static unsigned long
 uceil_log10_exp_p2 (mpfr_srcptr p)
 {
@@ -836,7 +838,8 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
           break;
         case 'e':
         case 'E':
-        case 'f':
+        case 'f': /* FIXME: these are cases 'g' and 'G', aren't they?
+                     Add tests to tprintf.c and fix this bug. */
         case 'F':
           buffer_cat (buf,
                       ((spec.spec == 'E') || (spec.spec == 'F')) ? "E" : "e",
