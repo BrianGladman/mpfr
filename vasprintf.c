@@ -276,14 +276,14 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
 /* CONSUME_VA_ARG removes from va_list AP the type expected by SPECINFO */
 
 #ifdef HAVE_STDINT_H
-#define CASE_INTMAX_ARG(specinfo, ap)					\
+#define CASE_INTMAX_ARG(specinfo, ap)                                   \
       case INTMAX_ARG:                                                  \
         (void) va_arg ((ap), intmax_t);                                 \
         break;
 #endif
 
 #ifdef HAVE_WCHAR_H
-#define CASE_LONG_ARG(specinfo, ap)					\
+#define CASE_LONG_ARG(specinfo, ap)                                     \
       case LONG_ARG:                                                    \
         if (((specinfo).spec == 'd') || ((specinfo).spec == 'i')        \
             || ((specinfo).spec == 'o') || ((specinfo).spec == 'u')     \
@@ -293,12 +293,12 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
           (void) va_arg ((ap), wint_t);                                 \
         else if ((specinfo).spec == 's')                                \
           (void) va_arg ((ap), wchar_t);                                \
-        break;                                                          
+        break;
 #else
-#define CASE_LONG_ARG(specinfo, ap)					\
+#define CASE_LONG_ARG(specinfo, ap)                                     \
       case LONG_ARG:                                                    \
-        (void) va_arg ((ap), long);					\
-        break;                                                          
+        (void) va_arg ((ap), long);                                     \
+        break;
 #endif
 
 #define CONSUME_VA_ARG(specinfo, ap)                                    \
@@ -309,11 +309,11 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
       case SHORT_ARG:                                                   \
         (void) va_arg ((ap), int);                                      \
         break;                                                          \
-      CASE_LONG_ARG (specinfo, ap)					\
+      CASE_LONG_ARG (specinfo, ap)                                      \
       case LONG_LONG_ARG:                                               \
         (void) va_arg ((ap), long long);                                \
         break;                                                          \
-      CASE_INTMAX_ARG (specinfo, ap)					\
+      CASE_INTMAX_ARG (specinfo, ap)                                    \
       case SIZE_ARG:                                                    \
         (void) va_arg ((ap), size_t);                                   \
         break;                                                          \
@@ -409,9 +409,9 @@ buffer_cat (struct string_buffer *b, const char *s, size_t l)
   if (MPFR_UNLIKELY ((b->curr + l + 1) > (b->start + b->size)))
     {
       const ptrdiff_t pos = b->curr - b->start;
-      const size_t n =  sizeof (char) 
-        * ((l + 1 > MAX_CHAR_PRODUCED_BY_SPEC) ? 
-	   l + 1 : MAX_CHAR_PRODUCED_BY_SPEC);
+      const size_t n =  sizeof (char)
+        * ((l + 1 > MAX_CHAR_PRODUCED_BY_SPEC) ?
+           l + 1 : MAX_CHAR_PRODUCED_BY_SPEC);
       b->start =
         (char *) mpfr_default_reallocate (b->start, b->size, b->size + n);
       b->size += n;
@@ -544,14 +544,14 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
   if (MPFR_UNLIKELY (MPFR_IS_NAN (p)))
     {
       if ((spec.left == 0) && (spec.width > 3))
-	{
-	  const int n = spec.width - 3;
-	  char *padding = (char *) mpfr_default_allocate (n + 1);
-	  memset (padding, ' ', n);
-	  padding[n] = '\0';
-	  buffer_cat (buf, padding, n);
-	  mpfr_default_free (padding, n + 1);
-	}
+        {
+          const int n = spec.width - 3;
+          char *padding = (char *) mpfr_default_allocate (n + 1);
+          memset (padding, ' ', n);
+          padding[n] = '\0';
+          buffer_cat (buf, padding, n);
+          mpfr_default_free (padding, n + 1);
+        }
 
       switch (spec.spec)
         {
@@ -570,14 +570,14 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
         }
 
       if ((spec.left == 1) && (spec.width > 3))
-	{
-	  const int n = spec.width - 3;
-	  char *padding = (char *) mpfr_default_allocate (n + 1);
-	  memset (padding, ' ', n);
-	  padding[n] = '\0';
-	  buffer_cat (buf, padding, n);
-	  mpfr_default_free (padding, n + 1);
-	}
+        {
+          const int n = spec.width - 3;
+          char *padding = (char *) mpfr_default_allocate (n + 1);
+          memset (padding, ' ', n);
+          padding[n] = '\0';
+          buffer_cat (buf, padding, n);
+          mpfr_default_free (padding, n + 1);
+        }
       return ;
     }
 
@@ -585,14 +585,14 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
     {
       int neg = MPFR_SIGN (p) < 0;      /* 0 if positive, 1 if negative */
       if ((spec.left == 0) && (spec.width > 3 + neg))
-	{
-	  const int n = spec.width - 3 - neg;
-	  char *padding = (char *) mpfr_default_allocate (n + 1);
-	  memset (padding, ' ', n);
-	  padding[n] = '\0';
-	  buffer_cat (buf, padding, n);
-	  mpfr_default_free (padding, n + 1);
-	}
+        {
+          const int n = spec.width - 3 - neg;
+          char *padding = (char *) mpfr_default_allocate (n + 1);
+          memset (padding, ' ', n);
+          padding[n] = '\0';
+          buffer_cat (buf, padding, n);
+          mpfr_default_free (padding, n + 1);
+        }
 
       switch (spec.spec)
         {
@@ -611,14 +611,14 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
         }
 
       if ((spec.left == 1) && (spec.width > 3 + neg))
-	{
-	  const int n = spec.width - 3 - neg;
-	  char *padding = (char *) mpfr_default_allocate (n + 1);
-	  memset (padding, ' ', n);
-	  padding[n] = '\0';
-	  buffer_cat (buf, padding, n);
-	  mpfr_default_free (padding, n + 1);
-	}
+        {
+          const int n = spec.width - 3 - neg;
+          char *padding = (char *) mpfr_default_allocate (n + 1);
+          memset (padding, ' ', n);
+          padding[n] = '\0';
+          buffer_cat (buf, padding, n);
+          mpfr_default_free (padding, n + 1);
+        }
       return ;
     }
 
@@ -722,7 +722,8 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
           mpfr_init (l);
           mpfr_abs (l, p, GMP_RNDN);
           mpfr_log10 (l, l, GMP_RNDN);
-	  nbc.int_part = (MPFR_SIGN (l) < 0) || MPFR_IS_ZERO (l)? 1: mpfr_get_si (l, GMP_RNDU);
+          nbc.int_part = (MPFR_SIGN (l) < 0) || MPFR_IS_ZERO (l) ?
+            1 : mpfr_get_si (l, GMP_RNDU);
           mpfr_clear (l);
         }
       nbc.point = (spec.prec == 0) && (spec.alt == 0) ? 0 : 1;
