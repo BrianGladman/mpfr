@@ -31,20 +31,20 @@ int
 mpfr_printf (__gmp_const char *fmt, ...)
 {
   va_list ap;
-  char **strp = NULL;
+  char *strp;
   int ret;
   va_start (ap, fmt);
 
-  if (mpfr_vasprintf (strp, fmt, ap) < 0)
+  if (mpfr_vasprintf (&strp, fmt, ap) < 0)
     {
-      mpfr_free_str (*strp);
+      mpfr_free_str (strp);
       va_end (ap);
       return -1;
     }
 
-  ret = printf (*strp);
+  ret = printf (strp);
 
-  mpfr_free_str (*strp);
+  mpfr_free_str (strp);
   va_end (ap);
   return ret;
 }
@@ -52,18 +52,18 @@ mpfr_printf (__gmp_const char *fmt, ...)
 int
 mpfr_vprintf (__gmp_const char *fmt, va_list ap)
 {
-  char **strp = NULL;
+  char *strp;
   int ret;
 
-  if (mpfr_vasprintf (strp, fmt, ap) < 0)
+  if (mpfr_vasprintf (&strp, fmt, ap) < 0)
     {
-      mpfr_free_str (*strp);
+      mpfr_free_str (strp);
       return -1;
     }
 
-  ret = printf (*strp);
+  ret = printf (strp);
 
-  mpfr_free_str (*strp);
+  mpfr_free_str (strp);
   return ret;
 }
 
@@ -72,20 +72,20 @@ int
 mpfr_fprintf (FILE *fp, __gmp_const char *fmt, ...)
 {
   va_list ap;
-  char **strp = NULL;
+  char *strp;
   int ret;
   va_start (ap, fmt);
 
-  if (mpfr_vasprintf (strp, fmt, ap) < 0)
+  if (mpfr_vasprintf (&strp, fmt, ap) < 0)
     {
-      mpfr_free_str (*strp);
+      mpfr_free_str (strp);
       va_end (ap);
       return -1;
     }
 
-  ret = fprintf (fp, *strp);
+  ret = fprintf (fp, strp);
 
-  mpfr_free_str (*strp);
+  mpfr_free_str (strp);
   va_end (ap);
   return ret;
 }
@@ -93,18 +93,18 @@ mpfr_fprintf (FILE *fp, __gmp_const char *fmt, ...)
 int
 mpfr_vfprintf (FILE *fp, __gmp_const char *fmt, va_list ap)
 {
-  char **strp = NULL;
+  char *strp;
   int ret;
 
-  if (mpfr_vasprintf (strp, fmt, ap) < 0)
+  if (mpfr_vasprintf (&strp, fmt, ap) < 0)
     {
-      mpfr_free_str (*strp);
+      mpfr_free_str (strp);
       return -1;
     }
 
-  ret = fprintf (fp, *strp);
+  ret = fprintf (fp, strp);
 
-  mpfr_free_str (*strp);
+  mpfr_free_str (strp);
   return ret;
 }
 #endif /* _MPFR_H_HAVE_FILE */
@@ -125,18 +125,18 @@ mpfr_sprintf (char *buf, __gmp_const char *fmt, ...)
 int
 mpfr_vsprintf (char *buf, __gmp_const char *fmt, va_list ap)
 {
-  char *strp[1];
+  char *strp;
   int ret;
 
-  if ((ret = mpfr_vasprintf (strp, fmt, ap)) < 0)
+  if ((ret = mpfr_vasprintf (&strp, fmt, ap)) < 0)
     {
-      mpfr_free_str (*strp);
+      mpfr_free_str (strp);
       return -1;
     }
 
-  ret = sprintf (buf, *strp);
+  ret = sprintf (buf, strp);
 
-  mpfr_free_str (*strp);
+  mpfr_free_str (strp);
   return ret;
 }
 
@@ -156,18 +156,18 @@ mpfr_snprintf (char *buf, size_t size, __gmp_const char *fmt, ...)
 int
 mpfr_vsnprintf (char *buf, size_t size, __gmp_const char *fmt, va_list ap)
 {
-  char **strp = NULL;
+  char *strp;
   int ret;
 
-  if (mpfr_vasprintf (strp, fmt, ap) < 0)
+  if (mpfr_vasprintf (&strp, fmt, ap) < 0)
     {
-      mpfr_free_str (*strp);
+      mpfr_free_str (strp);
       return -1;
     }
 
-  ret = snprintf (buf, size, *strp);
+  ret = snprintf (buf, size, &strp);
 
-  mpfr_free_str (*strp);
+  mpfr_free_str (strp);
   return ret;
 }
 

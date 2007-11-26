@@ -21,13 +21,11 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
-/* The mpfr_printf-like functions are defined only if stdarg.h exist */
+/* The mpfr_printf-like functions are defined only if stdarg.h exists */
 #ifdef HAVE_STDARG
 
 #include <stdarg.h>
 
-/* FIXME: if HAVE_WCHAR_H isn't defined, then wchar_t and wint_t (used
-   below) don't exist. */
 #ifdef HAVE_WCHAR_H
 #include <wchar.h>
 #endif
@@ -36,17 +34,16 @@ MA 02110-1301, USA. */
 #include <stdint.h>
 #endif
 
-#include <stddef.h>  /* FIXME: is it useful? Let's recall that mpfr-impl.h
-                        includes <stdio.h>, which is probably sufficient. */
+#include <stddef.h>  /* for ptrdiff_t and size_t */
 
 #include "mpfr-impl.h"
 
 #if   _MPFR_PREC_FORMAT == 1
-#define _MPFR_PREC_FORMAT_SPEC "hu"
+#define MPFR_PREC_FORMAT_SPEC "hu"
 #elif _MPFR_PREC_FORMAT == 2
-#define _MPFR_PREC_FORMAT_SPEC "u"
+#define MPFR_PREC_FORMAT_SPEC "u"
 #elif _MPFR_PREC_FORMAT == 3
-#define _MPFR_PREC_FORMAT_SPEC "lu"
+#define MPFR_PREC_FORMAT_SPEC "lu"
 #else
 #error "mpfr_prec_t size not supported"
 #endif
@@ -128,7 +125,7 @@ struct printf_spec
   unsigned int space:1;         /* Space flag */
   unsigned int left:1;          /* - flag */
   unsigned int showsign:1;      /* + flag */
-  unsigned int group:1;         /* ' flag (not for gmp nor mpfr types) */
+  unsigned int group:1;         /* ' flag (not for gmp/mpfr types) */
 
   int width;                    /* Width */
   int prec;                     /* Precision */
@@ -156,8 +153,8 @@ specinfo_init (struct printf_spec *specinfo)
   specinfo->pad = ' ';
 }
 
-static __gmp_const char *
-parse_flags (__gmp_const char *format, struct printf_spec *specinfo)
+static const char *
+parse_flags (const char *format, struct printf_spec *specinfo)
 {
   while (*format)
     {
@@ -193,8 +190,8 @@ parse_flags (__gmp_const char *format, struct printf_spec *specinfo)
   return format;
 }
 
-static __gmp_const char *
-parse_arg_type (__gmp_const char *format, struct printf_spec *specinfo)
+static const char *
+parse_arg_type (const char *format, struct printf_spec *specinfo)
 {
   switch (*format)
     {
@@ -275,14 +272,33 @@ parse_arg_type (__gmp_const char *format, struct printf_spec *specinfo)
   return format;
 }
 
-/* some macros and functions for filling the buffer */
+/* some macros and functions filling the buffer */
 /* CONSUME_VA_ARG removes from va_list AP the type expected by SPECINFO */
 
 #ifdef HAVE_STDINT_H
-#define CASE_INTMAX_ARG                                                 \
+#define CASE_INTMAX_ARG(specinfo, ap)					\
       case INTMAX_ARG:                                                  \
         (void) va_arg ((ap), intmax_t);                                 \
         break;
+#endif
+
+#ifdef HAVE_WCHAR_H
+#define CASE_LONG_ARG(specinfo, ap)					\
+      case LONG_ARG:                                                    \
+        if (((specinfo).spec == 'd') || ((specinfo).spec == 'i')        \
+            || ((specinfo).spec == 'o') || ((specinfo).spec == 'u')     \
+            || ((specinfo).spec == 'x') || ((specinfo).spec == 'X'))    \
+          (void) va_arg ((ap), long);                                   \
+        else if ((specinfo).spec == 'c')                                \
+          (void) va_arg ((ap), wint_t);                                 \
+        else if ((specinfo).spec == 's')                                \
+          (void) va_arg ((ap), wchar_t);                                \
+        break;                                                          
+#else
+#define CASE_LONG_ARG(specinfo, ap)					\
+      case LONG_ARG:                                                    \
+        (void) va_arg ((ap), long);					\
+        break;                                                          
 #endif
 
 #define CONSUME_VA_ARG(specinfo, ap)                                    \
@@ -293,20 +309,11 @@ parse_arg_type (__gmp_const char *format, struct printf_spec *specinfo)
       case SHORT_ARG:                                                   \
         (void) va_arg ((ap), int);                                      \
         break;                                                          \
-      case LONG_ARG:                                                    \
-        if (((specinfo).spec == 'd') || ((specinfo).spec == 'i')        \
-            || ((specinfo).spec == 'o') || ((specinfo).spec == 'u')     \
-            || ((specinfo).spec == 'x') || ((specinfo).spec == 'X'))    \
-          (void) va_arg ((ap), long);                                   \
-        else if ((specinfo).spec == 'c')                                \
-          (void) va_arg ((ap), wint_t);                                 \
-        else if ((specinfo).spec == 's')                                \
-          (void) va_arg ((ap), wchar_t);                                \
-        break;                                                          \
+      CASE_LONG_ARG (specinfo, ap)					\
       case LONG_LONG_ARG:                                               \
         (void) va_arg ((ap), long long);                                \
         break;                                                          \
-      CASE_INTMAX_ARG                                                   \
+      CASE_INTMAX_ARG (specinfo, ap)					\
       case SIZE_ARG:                                                    \
         (void) va_arg ((ap), size_t);                                   \
         break;                                                          \
@@ -364,7 +371,7 @@ parse_arg_type (__gmp_const char *format, struct printf_spec *specinfo)
 /* process the format part which does not deal with mpfr types */
 #define FLUSH(flag, start, end, ap, buf_ptr)                    \
   do {                                                          \
-    __gmp_const size_t n = (end) - (start);                     \
+    const size_t n = (end) - (start);                     \
     if ((flag))                                                 \
       /* previous specifiers are understood by gmp_printf */    \
       {                                                         \
@@ -397,15 +404,14 @@ buffer_init (struct string_buffer *b, size_t s)
 
 /* Concatenate the string to the buffer and expand it if needed. */
 static void
-buffer_cat (struct string_buffer *b, __gmp_const char *s, size_t l)
+buffer_cat (struct string_buffer *b, const char *s, size_t l)
 {
   if (MPFR_UNLIKELY ((b->curr + l + 1) > (b->start + b->size)))
     {
-      __gmp_const ptrdiff_t pos = b->curr - b->start;
-      __gmp_const size_t n =
-        ((l + 1 >
-          MAX_CHAR_PRODUCED_BY_SPEC * sizeof (char)) ? l +
-         1 : MAX_CHAR_PRODUCED_BY_SPEC) * sizeof (char);
+      const ptrdiff_t pos = b->curr - b->start;
+      const size_t n =  sizeof (char) 
+        * ((l + 1 > MAX_CHAR_PRODUCED_BY_SPEC) ? 
+	   l + 1 : MAX_CHAR_PRODUCED_BY_SPEC);
       b->start =
         (char *) mpfr_default_reallocate (b->start, b->size, b->size + n);
       b->size += n;
@@ -417,7 +423,7 @@ buffer_cat (struct string_buffer *b, __gmp_const char *s, size_t l)
 
 /* let gmp_xprintf process the part it can understand */
 static void
-sprntf_gmp (struct string_buffer *b, __gmp_const char *fmt, va_list ap)
+sprntf_gmp (struct string_buffer *b, const char *fmt, va_list ap)
 {
   int l;
   char *s;
@@ -510,7 +516,7 @@ uceil_log10_exp_p2 (mpfr_srcptr p)
 static void
 sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
 {
-  __gmp_const char d_point[] = { MPFR_DECIMAL_POINT, '\0' };
+  const char d_point[] = { MPFR_DECIMAL_POINT, '\0' };
   mp_exp_t exp;
   int base;
   int remove_trailing_zeros = 0;
@@ -537,6 +543,16 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
 
   if (MPFR_UNLIKELY (MPFR_IS_NAN (p)))
     {
+      if ((spec.left == 0) && (spec.width > 3))
+	{
+	  const int n = spec.width - 3;
+	  char *padding = (char *) mpfr_default_allocate (n + 1);
+	  memset (padding, ' ', n);
+	  padding[n] = '\0';
+	  buffer_cat (buf, padding, n);
+	  mpfr_default_free (padding, n + 1);
+	}
+
       switch (spec.spec)
         {
         case 'a':
@@ -544,7 +560,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
         case 'e':
         case 'f':
         case 'g':
-          buffer_cat (buf, "nan", 3);   /* [FIXME: padding !] */
+          buffer_cat (buf, "nan", 3);
           break;
         case 'A':
         case 'E':
@@ -552,12 +568,32 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
         case 'G':
           buffer_cat (buf, "NAN", 3);
         }
+
+      if ((spec.left == 1) && (spec.width > 3))
+	{
+	  const int n = spec.width - 3;
+	  char *padding = (char *) mpfr_default_allocate (n + 1);
+	  memset (padding, ' ', n);
+	  padding[n] = '\0';
+	  buffer_cat (buf, padding, n);
+	  mpfr_default_free (padding, n + 1);
+	}
       return ;
     }
 
   if (MPFR_UNLIKELY (MPFR_IS_INF (p)))
     {
       int neg = MPFR_SIGN (p) < 0;      /* 0 if positive, 1 if negative */
+      if ((spec.left == 0) && (spec.width > 3 + neg))
+	{
+	  const int n = spec.width - 3 - neg;
+	  char *padding = (char *) mpfr_default_allocate (n + 1);
+	  memset (padding, ' ', n);
+	  padding[n] = '\0';
+	  buffer_cat (buf, padding, n);
+	  mpfr_default_free (padding, n + 1);
+	}
+
       switch (spec.spec)
         {
         case 'a':
@@ -573,6 +609,16 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
         case 'G':
           buffer_cat (buf, neg ? "-INF" : "INF", neg + 3);
         }
+
+      if ((spec.left == 1) && (spec.width > 3 + neg))
+	{
+	  const int n = spec.width - 3 - neg;
+	  char *padding = (char *) mpfr_default_allocate (n + 1);
+	  memset (padding, ' ', n);
+	  padding[n] = '\0';
+	  buffer_cat (buf, padding, n);
+	  mpfr_default_free (padding, n + 1);
+	}
       return ;
     }
 
@@ -676,13 +722,11 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
           mpfr_init (l);
           mpfr_abs (l, p, GMP_RNDN);
           mpfr_log10 (l, l, GMP_RNDN);
-          nbc.int_part = mpfr_get_si (l, GMP_RNDU);
-          if (nbc.int_part < 0)
-            nbc.int_part = 1;
+	  nbc.int_part = (MPFR_SIGN (l) < 0) || MPFR_IS_ZERO (l)? 1: mpfr_get_si (l, GMP_RNDU);
           mpfr_clear (l);
         }
       nbc.point = (spec.prec == 0) && (spec.alt == 0) ? 0 : 1;
-      nbc.frac_part = (spec.prec < 0) ? 6 : spec.prec;  /* [FIXME] */
+      nbc.frac_part = (spec.prec < 0) ? 6 : spec.prec;
       nbc.total += nbc.int_part + nbc.point + nbc.frac_part;
 
       base = 10;
@@ -766,7 +810,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
   /* right justification with spaces */
   if ((spec.left == 0) && (spec.pad == ' ') && (nbc.total < spec.width))
     {
-      __gmp_const int n = spec.width - nbc.total;
+      const int n = spec.width - nbc.total;
       char *padding = (char *) mpfr_default_allocate (n + 1);
       memset (padding, ' ', n);
       padding[n] = '\0';
@@ -785,7 +829,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
   if ((spec.left == 0) && (spec.pad == '0') && (nbc.total < spec.width))
     /* leading zeros in integral part */
     {
-      __gmp_const int n = spec.width - nbc.total;
+      const int n = spec.width - nbc.total;
       char *padding = (char *) mpfr_default_allocate (n + 1);
       memset (padding, '0', n);
       padding[n] = '\0';
@@ -793,7 +837,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
       mpfr_default_free (padding, n + 1);
     }
   /* integer part */
-  if (exp < 0 && (spec.spec == 'f' || spec.spec == 'F'))
+  if (exp < 1 && (spec.spec == 'f' || spec.spec == 'F'))
     /* there is always a digit before the decimal point */
     buffer_cat (buf, "0", 1);
   else
@@ -823,7 +867,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
       if ((remove_trailing_zeros == 0) && (nbc.frac_part < spec.prec))
         /* add trailing zeros */
         {
-          __gmp_const int n = spec.spec - nbc.frac_part;
+          const int n = spec.prec - nbc.frac_part;
           char *zeros = (char *) mpfr_default_allocate (n + 1);
           memset (zeros, '0', n);
           zeros[n] = '\0';
@@ -874,7 +918,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
   /* left justification with spaces */
   if (spec.left && (spec.pad == ' ') && (nbc.total < spec.width))
     {
-      __gmp_const int n = spec.width - nbc.total;
+      const int n = spec.width - nbc.total;
       char *padding = (char *) mpfr_default_allocate (n + 1);
       memset (padding, ' ', n);
       padding[n] = '\0';
@@ -898,7 +942,7 @@ mpfr_vasprintf (char **ptr, __gmp_const char *fmt, va_list ap)
      gmp_vsnprintf */
   int gmp_fmt_flag;
   /* beginning and end of the previous unprocessed part of fmt */
-  __gmp_const char *start, *end;
+  const char *start, *end;
   /* pointer to arguments for gmp_vasprintf */
   va_list ap2;
 
@@ -934,7 +978,7 @@ mpfr_vasprintf (char **ptr, __gmp_const char *fmt, va_list ap)
         }
       if (*fmt == '.')
         {
-          __gmp_const char *f = ++fmt;
+          const char *f = ++fmt;
           READ_INT (fmt, spec, prec, prec_analysis);
         prec_analysis:
           if (f == fmt)
@@ -982,7 +1026,7 @@ mpfr_vasprintf (char **ptr, __gmp_const char *fmt, va_list ap)
         break;
       else if (spec.spec == 'n')
         {
-          int *int_ptr;         /* [FIXME] pas forcement un entier (eventuellement un mp{zqf}) */
+          int *int_ptr;         /* [FIXME] do mp{zqf} cases */
           int_ptr = va_arg (ap, int *);
           FLUSH (gmp_fmt_flag, start, end, ap2, &buf);
           va_end (ap2);
@@ -1002,7 +1046,7 @@ mpfr_vasprintf (char **ptr, __gmp_const char *fmt, va_list ap)
           va_copy (ap2, ap);
           start = fmt;
 
-          l = gmp_asprintf (&s, "%"_MPFR_PREC_FORMAT_SPEC, prec);
+          l = gmp_asprintf (&s, "%"MPFR_PREC_FORMAT_SPEC, prec);
           buffer_cat (&buf, s, l);
           mpfr_default_free (s, l + 1);
         }
@@ -1050,6 +1094,7 @@ mpfr_vasprintf (char **ptr, __gmp_const char *fmt, va_list ap)
 
   va_end (ap2);
   nbchar = buf.curr - buf.start;
+  MPFR_ASSERTD (nbchar == strlen (buf.start));
   buf.start =
     (char *) mpfr_default_reallocate (buf.start, buf.size, nbchar + 1);
   *ptr = buf.start;
