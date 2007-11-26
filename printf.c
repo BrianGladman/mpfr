@@ -165,6 +165,8 @@ mpfr_vsnprintf (char *buf, size_t size, __gmp_const char *fmt, va_list ap)
       return -1;
     }
 
+  /* FIXME: snprintf is new in C99. It must be checked with
+     a configure test. */
   ret = snprintf (buf, size, &strp);
 
   mpfr_free_str (strp);
