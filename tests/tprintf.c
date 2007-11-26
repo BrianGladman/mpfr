@@ -356,7 +356,7 @@ main (int argc, char **argv)
 
   tests_start_mpfr ();
 
-#ifdef HAVE_LOCALE_H && HAVE_SETLOCALE
+#if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
   /* currently, we just check with 'C' locale */
   locale = setlocale (LC_NUMERIC, "C");
 #endif
@@ -366,7 +366,7 @@ main (int argc, char **argv)
   floating_point ();
   mixed ();
 
-#ifdef HAVE_LOCALE_H && HAVE_SETLOCALE
+#if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
   setlocale (LC_NUMERIC, locale);
 #endif
 
