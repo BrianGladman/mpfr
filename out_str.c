@@ -82,7 +82,7 @@ mpfr_out_str (FILE *stream, int base, size_t n_digits, mpfr_srcptr op,
 
   /* outputs mantissa */
   fputc (*s++, stream); e--; /* leading digit */
-  fputc (MPFR_DECIMAL_POINT, stream);
+  fputc ((unsigned char) MPFR_DECIMAL_POINT, stream);
   fputs (s, stream);         /* rest of mantissa */
   (*__gmp_free_func) (s0, l);
 

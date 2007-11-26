@@ -226,7 +226,7 @@ parse_string (mpfr_t x, struct parsed_string *pstr,
   const char *prefix_str;
   int decimal_point;
 
-  decimal_point = MPFR_DECIMAL_POINT;
+  decimal_point = (unsigned char) MPFR_DECIMAL_POINT;
 
   /* Init variable */
   pstr->mantissa = NULL;

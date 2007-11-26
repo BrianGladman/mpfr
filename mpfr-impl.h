@@ -954,9 +954,11 @@ do {                                                                  \
 /* Needs <locale.h> */
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
-#define MPFR_DECIMAL_POINT ((unsigned char) localeconv()->decimal_point[0])
+/* Warning! In case of signed char, the value of MPFR_DECIMAL_POINT may
+   be negative (the ISO C99 does not seem to forbid negative values). */
+#define MPFR_DECIMAL_POINT (localeconv()->decimal_point[0])
 #else
-#define MPFR_DECIMAL_POINT '.'
+#define MPFR_DECIMAL_POINT ((char) '.')
 #endif
 
 
