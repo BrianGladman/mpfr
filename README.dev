@@ -241,6 +241,20 @@ use 0 (possibly casted to the target pointer type).
 
    ====================================================================
 
+Use locale-dependent functions when the result needs to depend on the
+locales, e.g. the fractional point in mpfr_out_str.
+
+Conversely, do not use locale-dependent functions when the result must
+not depend on the locales. In particular, the alphanumeric characters
+used in number strings (as created by mpfr_get_str) must be those of
+the required characters from the basic character set (see ISO C99
+standard Section 5.2.1 "Character sets"). And tolower(letter) does
+not necessarily return the corresponding lowercase letter from these
+required characters. For instance, tolower('I') returns a dotless 'i'
+in Turkish locales.
+
+   ====================================================================
+
 In the tests, do not use `mpfr_set_d` (except when testing it), as the
 result will depend on the floating-point arithmetic of the system;
 this has shown many problems in the past and problems may still occur
