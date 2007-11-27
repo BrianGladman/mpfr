@@ -424,12 +424,25 @@ buffer_cat (struct string_buffer *b, const char *s, size_t len)
   b->curr += len;
 }
 
+static void
+buffer_pad (struct string_buffer *b, const char c, const size_t n)
+{
+  char *padding;
+
+  padding = (char *) mpfr_default_allocate (n + 1);
+  memset (padding, c, n);
+  padding[n] = '\0';
+  buffer_cat (b, padding, n);
+  mpfr_default_free (padding, n + 1);
+}
+
 /* let gmp_xprintf process the part it can understand */
 static void
 sprntf_gmp (struct string_buffer *b, const char *fmt, va_list ap)
 {
   int len;
   char *s;
+
   len = gmp_vasprintf (&s, fmt, ap);
   buffer_cat (b, s, len);
   mpfr_free_str (s);
@@ -547,14 +560,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
   if (MPFR_UNLIKELY (MPFR_IS_NAN (p)))
     {
       if ((spec.left == 0) && (spec.width > 3))
-        {
-          const int n = spec.width - 3;
-          char *padding = (char *) mpfr_default_allocate (n + 1);
-          memset (padding, ' ', n);
-          padding[n] = '\0';
-          buffer_cat (buf, padding, n);
-          mpfr_default_free (padding, n + 1);
-        }
+	  buffer_pad (buf, ' ', spec.width - 3);
 
       switch (spec.spec)
         {
@@ -573,30 +579,17 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
         }
 
       if ((spec.left == 1) && (spec.width > 3))
-        {
-          const int n = spec.width - 3;
-          char *padding = (char *) mpfr_default_allocate (n + 1);
-          memset (padding, ' ', n);
-          padding[n] = '\0';
-          buffer_cat (buf, padding, n);
-          mpfr_default_free (padding, n + 1);
-        }
+	  buffer_pad (buf, ' ', spec.width - 3);
       return;
     }
 
   if (MPFR_UNLIKELY (MPFR_IS_INF (p)))
     {
       int neg = MPFR_SIGN (p) < 0;      /* 0 if positive, 1 if negative */
-      if ((spec.left == 0) && (spec.width > 3 + neg))
-        {
-          const int n = spec.width - 3 - neg;
-          char *padding = (char *) mpfr_default_allocate (n + 1);
-          memset (padding, ' ', n);
-          padding[n] = '\0';
-          buffer_cat (buf, padding, n);
-          mpfr_default_free (padding, n + 1);
-        }
 
+      if ((spec.left == 0) && (spec.width > 3 + neg))
+	  buffer_pad (buf, ' ', spec.width - 3 - neg);
+      
       switch (spec.spec)
         {
         case 'a':
@@ -614,14 +607,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
         }
 
       if ((spec.left == 1) && (spec.width > 3 + neg))
-        {
-          const int n = spec.width - 3 - neg;
-          char *padding = (char *) mpfr_default_allocate (n + 1);
-          memset (padding, ' ', n);
-          padding[n] = '\0';
-          buffer_cat (buf, padding, n);
-          mpfr_default_free (padding, n + 1);
-        }
+	  buffer_pad (buf, ' ', spec.width - 3 - neg);
       return;
     }
 
@@ -837,18 +823,11 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
     }
   MPFR_ASSERTD (nbc.total < MAX_CHAR_PRODUCED_BY_SPEC);
 
-  /* right justification with spaces */
-  if ((spec.left == 0) && (spec.pad == ' ') && (nbc.total < spec.width))
-    {
-      const int n = spec.width - nbc.total;
-      char *padding = (char *) mpfr_default_allocate (n + 1);
-      memset (padding, ' ', n);
-      padding[n] = '\0';
-      buffer_cat (buf, padding, n);
-      mpfr_default_free (padding, n + 1);
-    }
-
   /* build the string */
+  if ((spec.left == 0) && (spec.pad == ' ') && (nbc.total < spec.width))
+    /* right justification with spaces */
+    buffer_pad (buf, ' ', spec.width - nbc.total);
+
   if (nbc.sgn)
     /* sign character */
     {
@@ -856,21 +835,16 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
       if (MPFR_SIGN (p) < 0)
         str_curr++;
     }
+
   if ((spec.left == 0) && (spec.pad == '0') && (nbc.total < spec.width))
     /* leading zeros in integral part */
-    {
-      const int n = spec.width - nbc.total;
-      char *padding = (char *) mpfr_default_allocate (n + 1);
-      memset (padding, '0', n);
-      padding[n] = '\0';
-      buffer_cat (buf, padding, n);
-      mpfr_default_free (padding, n + 1);
-    }
-  /* integer part */
+    buffer_pad (buf, '0', spec.width - nbc.total);
+
   if (exp < 1 && (spec.spec == 'f' || spec.spec == 'F'))
     /* there is always a digit before the decimal point */
     buffer_cat (buf, "0", 1);
   else
+    /* integral part */
     {
       buffer_cat (buf, str_curr, nbc.int_part);
       str_curr += nbc.int_part;
@@ -885,25 +859,13 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
     {
       if ((spec.spec == 'f' || spec.spec == 'F') && (exp < 0))
         /* leading zeros in fractional part when p < 1 */
-        {
-          char *zeros = (char *) mpfr_default_allocate (1 - exp);
-          memset (zeros, '0', -exp);
-          zeros[-exp] = '\0';
-          buffer_cat (buf, zeros, -exp);
-          mpfr_default_free (zeros, 1 - exp);
-        }
+	buffer_pad (buf, '0', -exp);
+
       buffer_cat (buf, str_curr, nbc.frac_part);
 
       if ((remove_trailing_zeros == 0) && (nbc.frac_part < spec.prec))
         /* add trailing zeros */
-        {
-          const int n = spec.prec - nbc.frac_part;
-          char *zeros = (char *) mpfr_default_allocate (n + 1);
-          memset (zeros, '0', n);
-          zeros[n] = '\0';
-          buffer_cat (buf, zeros, n);
-          mpfr_default_free (zeros, n + 1);
-        }
+	buffer_pad (buf, '0', spec.prec - nbc.frac_part);
     }
 
   /* Note: case 'g'/'G' has been changed into 'e'/'E' or 'f'/'F' above. */
@@ -945,16 +907,10 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
       buffer_cat (buf, exp_str, nbc.exp_part - 1);
       mpfr_default_free (exp_str, nbc.exp_part + 1);
     }
-  /* left justification with spaces */
+
   if (spec.left && (spec.pad == ' ') && (nbc.total < spec.width))
-    {
-      const int n = spec.width - nbc.total;
-      char *padding = (char *) mpfr_default_allocate (n + 1);
-      memset (padding, ' ', n);
-      padding[n] = '\0';
-      buffer_cat (buf, padding, n);
-      mpfr_default_free (padding, n + 1);
-    }
+    /* left justification with spaces */
+    buffer_pad (buf, ' ', spec.width - nbc.total);
 
   mpfr_free_str (str);
 }
