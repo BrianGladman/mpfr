@@ -1,0 +1,7 @@
+#!/bin/sh
+
+# Check possible problems in the MPFR source.
+
+grep '^# *include *<math\.h>' *.c
+
+true
