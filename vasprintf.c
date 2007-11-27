@@ -34,7 +34,7 @@ MA 02110-1301, USA. */
 #include <stdint.h>
 #endif
 
-#include <stddef.h>  /* for ptrdiff_t and size_t */
+#include <stddef.h>  /* for ptrdiff_t */
 
 #include "mpfr-impl.h"
 
@@ -625,24 +625,38 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
   nbc.sgn = (MPFR_SIGN (p) < 0) || spec.showsign || spec.space ? 1 : 0;
   nbc.total = nbc.sgn;
 
+  /* Replace 'g'/'G' by 'e'/'E' or 'f'/'F' following the C99 rules:
+     if P > X >=-4 then the conversion is with style 'f'/'F' 
+     and precision P-(X+1).
+     otherwise, the conversion style is with style 'e'/'E'
+     and precision P-1.
+     where P is the threshold computed below and X is the exponent
+     that would be displayed with style 'e'. */
   if ((spec.spec == 'g') || (spec.spec == 'G'))
     {
-      mp_exp_t threshold =
-        (spec.prec < 0) ? 6 : (spec.prec == 0) ? 1 : spec.prec;
       if (MPFR_UNLIKELY (MPFR_IS_ZERO (p)))
         {
           spec.spec = (spec.spec == 'g') ? 'f' : 'F';
           spec.prec = 6;
         }
-      else if ((threshold > MPFR_GET_EXP (p) - 1) && (MPFR_GET_EXP (p) > -4))
-        {
-          spec.spec = (spec.spec == 'g') ? 'f' : 'F';
-          spec.prec = threshold - MPFR_GET_EXP (p);
-        }
       else
         {
-          spec.spec = (spec.spec == 'g') ? 'e' : 'E';
-          spec.prec = threshold - 1;
+          mp_exp_t threshold;
+          unsigned long exp;
+
+          threshold = (spec.prec < 0) ? 6 : (spec.prec == 0) ? 1 : spec.prec;
+          exp = uceil_log10_exp_p2 (p);
+
+          if ((threshold > MPFR_GET_EXP (p) - 1) && (MPFR_GET_EXP (p) > -4))
+            {
+              spec.spec = (spec.spec == 'g') ? 'f' : 'F';
+              spec.prec = threshold - MPFR_GET_EXP (p);
+            }
+          else
+            {
+              spec.spec = (spec.spec == 'g') ? 'e' : 'E';
+              spec.prec = threshold - 1;
+            }
         }
       remove_trailing_zeros = spec.alt ? 0 : 1;
     }
