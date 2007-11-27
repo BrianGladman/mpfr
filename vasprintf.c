@@ -520,8 +520,8 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
   mp_exp_t exp;
   int base;
   int remove_trailing_zeros = 0;
-  int nsd;                      /* number of significant digits */
-  int str_len;
+  unsigned long nsd;  /* number of significant digits */
+  size_t str_len;
   char *str;
   char *str_curr = NULL;
 
@@ -531,10 +531,10 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
   {
     int sgn;                    /* 1 if sign char is present */
     int base_prefix;            /* '0', 2 if '0x' or '0X' */
-    int int_part;               /* Size of integral part given by get_str */
+    unsigned long int_part;     /* Size of integral part given by get_str */
     int point;                  /* Decimal point char */
-    int frac_part;              /* Size of fractional part given by get_str */
-    int exp_part;               /* Size of exponent (always in base ten) */
+    long frac_part;             /* Size of fractional part given by get_str */
+    unsigned long exp_part;     /* Size of exponent (always in base ten) */
 
     unsigned int total;         /* Total size */
   };
@@ -895,7 +895,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
   if (nbc.exp_part)
     /* exponent part */
     {
-      char exp_fmt[6];
+      char exp_fmt[7];
       char *exp_str;
       switch (spec.spec)
         {
@@ -926,7 +926,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
       exp_str = (char *) mpfr_default_allocate (nbc.exp_part + 1);
       snprintf (exp_str, nbc.exp_part, exp_fmt, exp);
 
-      MPFR_ASSERTD (strlen (exp_str) == nbc.exp_part - 1);
+      MPFR_ASSERTD (nbc.exp_part == 1 + (unsigned long)strlen (exp_str));
       buffer_cat (buf, exp_str, nbc.exp_part - 1);
       mpfr_default_free (exp_str, nbc.exp_part + 1);
     }
