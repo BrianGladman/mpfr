@@ -411,7 +411,7 @@ buffer_cat (struct string_buffer *b, const char *s, size_t len)
 {
   if (MPFR_UNLIKELY ((b->curr + len + 1) > (b->start + b->size)))
     {
-      const ptrdiff_t pos = b->curr - b->start;
+      const size_t pos = b->curr - b->start;
       const size_t n = sizeof (char)
         * ((len + 1 > MAX_CHAR_PRODUCED_BY_SPEC) ?
            len + 1 : MAX_CHAR_PRODUCED_BY_SPEC);
@@ -920,7 +920,7 @@ int
 mpfr_vasprintf (char **ptr, __gmp_const char *fmt, va_list ap)
 {
   struct string_buffer buf;
-  ptrdiff_t nbchar;
+  size_t nbchar;
 
   /* informations on the conversion specification filled by the parser */
   struct printf_spec spec;
@@ -1084,7 +1084,7 @@ mpfr_vasprintf (char **ptr, __gmp_const char *fmt, va_list ap)
   buf.start =
     (char *) (*__gmp_reallocate_func) (buf.start, buf.size, nbchar + 1);
   *ptr = buf.start;
-  return nbchar;
+  return (int)nbchar;
 }
 
 #endif /* HAVE_STDARG */
