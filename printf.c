@@ -165,12 +165,22 @@ mpfr_vsnprintf (char *buf, size_t size, const char *fmt, va_list ap)
       return -1;
     }
 
-  /* FIXME: snprintf is new in C99. It must be checked with
-     a configure test. */
+  /* FIXME: snprintf is new in C99. It must be checked with a configure
+     test. But since we need our own snprintf function for systems that
+     do not have it, it is probably better to write a version that will
+     check that the return value is not larger than INT_MAX and use it
+     unconditionally. */
   /* FIXME: warning: passing argument 3 of 'snprintf' from
      incompatible pointer type
      Remove the "&"? (The code lacks of comments...) */
   ret = snprintf (buf, size, &strp);
+  /* FIXME: if we do not use our own snprintf function, here's a proposed
+     solution to detect the case where the ideal return value is larger
+     than INT_MAX (for POSIX systems):
+       - include <errno.h>;
+       - if EOVERFLOW is defined, set errno to 0 before the call;
+       - after the call, if EOVERFLOW is defined and if errno is equal
+         to EOVERFLOW, then set the erange flag. */
 
   mpfr_free_str (strp);
   return ret;
