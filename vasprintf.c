@@ -1088,7 +1088,8 @@ mpfr_vasprintf (char **ptr, __gmp_const char *fmt, va_list ap)
   buf.start =
     (char *) (*__gmp_reallocate_func) (buf.start, buf.size, nbchar + 1);
   *ptr = buf.start;
-  return (int)nbchar;
+  MPFR_ASSERTN (nbchar <= INT_MAX);
+  return (int) nbchar;
 }
 
 #endif /* HAVE_STDARG */
