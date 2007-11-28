@@ -921,7 +921,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
 
 
 int
-mpfr_vasprintf (char **ptr, __gmp_const char *fmt, va_list ap)
+mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
 {
   struct string_buffer buf;
   size_t nbchar;

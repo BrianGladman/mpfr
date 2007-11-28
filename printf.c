@@ -28,7 +28,7 @@ MA 02110-1301, USA. */
 
 #ifdef _MPFR_H_HAVE_FILE
 int
-mpfr_printf (__gmp_const char *fmt, ...)
+mpfr_printf (const char *fmt, ...)
 {
   va_list ap;
   char *strp;
@@ -50,7 +50,7 @@ mpfr_printf (__gmp_const char *fmt, ...)
 }
 
 int
-mpfr_vprintf (__gmp_const char *fmt, va_list ap)
+mpfr_vprintf (const char *fmt, va_list ap)
 {
   char *strp;
   int ret;
@@ -69,7 +69,7 @@ mpfr_vprintf (__gmp_const char *fmt, va_list ap)
 
 
 int
-mpfr_fprintf (FILE *fp, __gmp_const char *fmt, ...)
+mpfr_fprintf (FILE *fp, const char *fmt, ...)
 {
   va_list ap;
   char *strp;
@@ -91,7 +91,7 @@ mpfr_fprintf (FILE *fp, __gmp_const char *fmt, ...)
 }
 
 int
-mpfr_vfprintf (FILE *fp, __gmp_const char *fmt, va_list ap)
+mpfr_vfprintf (FILE *fp, const char *fmt, va_list ap)
 {
   char *strp;
   int ret;
@@ -110,7 +110,7 @@ mpfr_vfprintf (FILE *fp, __gmp_const char *fmt, va_list ap)
 #endif /* _MPFR_H_HAVE_FILE */
 
 int
-mpfr_sprintf (char *buf, __gmp_const char *fmt, ...)
+mpfr_sprintf (char *buf, const char *fmt, ...)
 {
   va_list ap;
   int ret;
@@ -123,7 +123,7 @@ mpfr_sprintf (char *buf, __gmp_const char *fmt, ...)
 }
 
 int
-mpfr_vsprintf (char *buf, __gmp_const char *fmt, va_list ap)
+mpfr_vsprintf (char *buf, const char *fmt, va_list ap)
 {
   char *strp;
   int ret;
@@ -141,7 +141,7 @@ mpfr_vsprintf (char *buf, __gmp_const char *fmt, va_list ap)
 }
 
 int
-mpfr_snprintf (char *buf, size_t size, __gmp_const char *fmt, ...)
+mpfr_snprintf (char *buf, size_t size, const char *fmt, ...)
 {
   va_list ap;
   int ret;
@@ -154,7 +154,7 @@ mpfr_snprintf (char *buf, size_t size, __gmp_const char *fmt, ...)
 }
 
 int
-mpfr_vsnprintf (char *buf, size_t size, __gmp_const char *fmt, va_list ap)
+mpfr_vsnprintf (char *buf, size_t size, const char *fmt, va_list ap)
 {
   char *strp;
   int ret;
@@ -174,7 +174,7 @@ mpfr_vsnprintf (char *buf, size_t size, __gmp_const char *fmt, va_list ap)
 }
 
 int
-mpfr_asprintf (char **pp, __gmp_const char *fmt, ...)
+mpfr_asprintf (char **pp, const char *fmt, ...)
 {
   va_list ap;
   int ret;
