@@ -1090,6 +1090,14 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
   buf.start =
     (char *) (*__gmp_reallocate_func) (buf.start, buf.size, nbchar + 1);
   *ptr = buf.start;
+  /* FIXME: If nbchar is larger than INT_MAX, the ISO C99 standard
+     is silent, but POSIX says concerning the snprintf() function:
+     "[EOVERFLOW] The value of n is greater than {INT_MAX} or the
+     number of bytes needed to hold the output excluding the
+     terminating null is greater than {INT_MAX}." See:
+     http://www.opengroup.or|g/onlinepubs/009695399/functions/fprintf.html
+     So, I (VL) propose that we should return a negative value and
+     set the erange flag. */
   MPFR_ASSERTN (nbchar <= INT_MAX);
   return (int) nbchar;
 }
