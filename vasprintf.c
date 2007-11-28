@@ -454,7 +454,8 @@ sprntf_gmp (struct string_buffer *b, const char *fmt, va_list ap)
 static void
 sprnt_int (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
 {
-  char format[20];
+  char format[20];  /* must be large enough to build a format string 
+		       corresponding to spec */
   char *s;
   int f;
   mpz_t z;
@@ -480,7 +481,6 @@ sprnt_int (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
   mpz_init (z);
   mpfr_get_z (z, p, spec.rnd_mode);
 
-  memset (format, '\0', 20);
   f = 0;
   format[f++] = '%';
   if (spec.left)
@@ -498,6 +498,7 @@ sprnt_int (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
   f += 4;
   format[f++] = spec.spec;
   format[f] = '\0';
+  MPFR_ASSERTD (f < 20);
 
   f = gmp_asprintf (&s, format, spec.width, spec.prec, z);
 
