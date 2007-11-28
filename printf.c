@@ -167,6 +167,9 @@ mpfr_vsnprintf (char *buf, size_t size, const char *fmt, va_list ap)
 
   /* FIXME: snprintf is new in C99. It must be checked with
      a configure test. */
+  /* FIXME: warning: passing argument 3 of 'snprintf' from
+     incompatible pointer type
+     Remove the "&"? (The code lacks of comments...) */
   ret = snprintf (buf, size, &strp);
 
   mpfr_free_str (strp);
