@@ -832,7 +832,10 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
   if (nbc.sgn)
     /* sign character */
     {
-      buffer_cat (buf, (MPFR_SIGN (p) < 0) ? "-" : "+", 1);
+      char s[2];
+      s[0] = (MPFR_SIGN (p) < 0) ? '-' : (spec.showsign) ? '+' : ' ';
+      s[1] = '\0';
+      buffer_cat (buf, s, 1);
       if (MPFR_SIGN (p) < 0)
         str_curr++;
     }
