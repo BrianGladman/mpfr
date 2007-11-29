@@ -61,7 +61,7 @@ mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
 
       /* First step: compute square from y */
       inexact = mpfr_mul (res, x, x, GMP_RNDU);
-      if (mpz_tstbit (absz, i-2))
+      if (mpz_tstbit (absz, i - 2))
         inexact |= mpfr_mul (res, res, x, rnd1);
       for (i -= 3; i >= 0 && !mpfr_underflow_p() && !mpfr_overflow_p (); i--)
         {
@@ -193,7 +193,6 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
     }
 
   MPFR_SAVE_EXPO_MARK (expo);
-  __gmpfr_emin -= 3; /* So that we can check for underflow properly */
 
   if (mpz_sgn (z) > 0)
     inexact = mpfr_pow_pos_z (y, x, z, rnd);
