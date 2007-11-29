@@ -420,6 +420,15 @@ tests_default_random (mpfr_ptr x, int pos, mp_exp_t emin, mp_exp_t emax)
     mpfr_neg (x, x, GMP_RNDN);
 }
 
+/* The test_one argument is a boolean. If it is true, then the function
+   is tested in only one rounding mode (the one provided in rnd) and the
+   variable rndnext is not used (due to the break). If it is false, then
+   the function is tested in the 4 rounding modes, and rnd must initially
+   be GMP_RNDZ; thus rndnext will be initialized in the first iteration.
+   gcc may give a warning about rndnext, but this is an easy and correct
+   way to implement a simple queue for the rounding modes.
+   As examples of use, see the calls to test4rm from the data_check and
+   bad_cases functions. */
 static void
 test4rm (int (*fct) (), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
          mp_rnd_t rnd, int test_one, char *name)
