@@ -436,6 +436,61 @@ buffer_pad (struct string_buffer *b, const char c, const size_t n)
   (*__gmp_free_func) (padding, n + 1);
 }
 
+/* Print NaN with padding */
+static void
+sprnt_nan (struct string_buffer *buf, const struct printf_spec spec)
+{
+  /* right justification padding */
+  if ((spec.left == 0) && (spec.width > 3))
+    buffer_pad (buf, ' ', spec.width - 3);
+
+  switch (spec.spec)
+    {
+    case 'A':
+    case 'E':
+    case 'F':
+    case 'G':
+    case 'X':
+      buffer_cat (buf, "NAN", 3);
+      break;
+
+    default:
+      buffer_cat (buf, "nan", 3);
+    }
+
+  /* left justification padding */
+  if ((spec.left == 1) && (spec.width > 3))
+    buffer_pad (buf, ' ', spec.width - 3);
+  return;
+}
+
+/* Print Infinities with padding
+   NEG = -1 for '-inf', 0 for 'inf' */
+static void
+sprnt_inf (struct string_buffer *buf, const struct printf_spec spec, int neg)
+{
+  /* right justification padding */
+  if ((spec.left == 0) && (spec.width > 3 - neg))
+    buffer_pad (buf, ' ', spec.width - 3 + neg);
+      
+  switch (spec.spec)
+    {
+    case 'A':
+    case 'E':
+    case 'F':
+    case 'G':
+    case 'X':
+      buffer_cat (buf, neg == -1 ? "-INF" : "INF", -neg + 3);
+      break;
+    default:
+      buffer_cat (buf, neg == -1 ? "-inf" : "inf", -neg + 3);
+    }
+
+  /* left justification padding */
+  if ((spec.left == 1) && (spec.width > 3 + neg))
+    buffer_pad (buf, ' ', spec.width - 3 - neg);
+}
+
 /* let gmp_xprintf process the part it can understand */
 static void
 sprntf_gmp (struct string_buffer *b, const char *fmt, va_list ap)
@@ -462,19 +517,13 @@ sprnt_int (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
 
   if (MPFR_UNLIKELY (MPFR_IS_NAN (p)))
     {
-      buffer_cat (buf, spec.spec == 'X' ? "NAN" : "nan", 3);
+      sprnt_nan (buf, spec);
       return;
     }
 
   if (MPFR_UNLIKELY (MPFR_IS_INF (p)))
     {
-      char inf_str[5];
-      int neg = MPFR_SIGN (p) < 0;      /* 0 if positive, 1 if negative */
-      if (spec.spec == 'X')
-        strcpy (inf_str, neg ? "-INF" : "INF");
-      else
-        strcpy (inf_str, neg ? "-inf" : "inf");
-      buffer_cat (buf, inf_str, neg + 3);
+      sprnt_inf (buf, spec, MPFR_SIGN (p) < 0 ? -1 : 0);
       return;
     }
 
@@ -560,65 +609,25 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
 
   struct char_fp nbc;
 
+  /* special values */
   if (MPFR_UNLIKELY (MPFR_IS_NAN (p)))
     {
-      if ((spec.left == 0) && (spec.width > 3))
-	  buffer_pad (buf, ' ', spec.width - 3);
-
-      switch (spec.spec)
-        {
-        case 'a':
-        case 'b':
-        case 'e':
-        case 'f':
-        case 'g':
-          buffer_cat (buf, "nan", 3);
-          break;
-        case 'A':
-        case 'E':
-        case 'F':
-        case 'G':
-          buffer_cat (buf, "NAN", 3);
-        }
-
-      if ((spec.left == 1) && (spec.width > 3))
-	  buffer_pad (buf, ' ', spec.width - 3);
+      sprnt_nan (buf, spec);
       return;
     }
 
   if (MPFR_UNLIKELY (MPFR_IS_INF (p)))
     {
-      int neg = MPFR_SIGN (p) < 0;      /* 0 if positive, 1 if negative */
-
-      if ((spec.left == 0) && (spec.width > 3 + neg))
-	  buffer_pad (buf, ' ', spec.width - 3 - neg);
-      
-      switch (spec.spec)
-        {
-        case 'a':
-        case 'b':
-        case 'e':
-        case 'f':
-        case 'g':
-          buffer_cat (buf, neg ? "-inf" : "inf", neg + 3);
-          break;
-        case 'A':
-        case 'E':
-        case 'F':
-        case 'G':
-          buffer_cat (buf, neg ? "-INF" : "INF", neg + 3);
-        }
-
-      if ((spec.left == 1) && (spec.width > 3 + neg))
-	  buffer_pad (buf, ' ', spec.width - 3 - neg);
+      sprnt_inf (buf, spec, MPFR_SIGN (p) < 0 ? -1 : 0);
       return;
     }
 
+  /* ordinary numbers */
   nbc.sgn = (MPFR_SIGN (p) < 0) || spec.showsign || spec.space ? 1 : 0;
   nbc.total = nbc.sgn;
 
   /* Replace 'g'/'G' by 'e'/'E' or 'f'/'F' following the C99 rules:
-     if P > X >=-4 then the conversion is with style 'f'/'F' 
+     if P > X >= -4 then the conversion is with style 'f'/'F' 
      and precision P-(X+1).
      otherwise, the conversion is with style 'e'/'E'
      and precision P-1.
