@@ -427,6 +427,7 @@ test4rm (int (*fct) (), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
   mp_prec_t yprec = MPFR_PREC (y);
   mp_rnd_t rndnext;
 
+  MPFR_ASSERTN (test_one || rnd == GMP_RNDZ);
   mpfr_set_prec (z, yprec);
   while (1)
     {
