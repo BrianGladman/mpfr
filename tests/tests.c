@@ -434,12 +434,13 @@ test4rm (int (*fct) (), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
          mp_rnd_t rnd, int test_one, char *name)
 {
   mp_prec_t yprec = MPFR_PREC (y);
-  mp_rnd_t rndnext;
+  mp_rnd_t rndnext = GMP_RND_MAX;  /* means uninitialized */
 
   MPFR_ASSERTN (test_one || rnd == GMP_RNDZ);
   mpfr_set_prec (z, yprec);
   while (1)
     {
+      MPFR_ASSERTN (rnd != GMP_RND_MAX);
       fct (z, x, rnd);
       if (! mpfr_equal_p (y, z))
         {
