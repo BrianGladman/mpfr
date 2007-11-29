@@ -1101,6 +1101,60 @@ bug20071104 (void)
   set_emax (emax);
 }
 
+/* Bug found by Kevin P. Rauch */
+static void
+bug20071128 (void)
+{
+  mpfr_t max_val, x, y, z;
+  mp_exp_t xpon;
+  char str[64];
+  int i, tern;
+  mp_exp_t emin, emax;
+
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
+  mpfr_set_emin (-1000000);
+  mpfr_set_emax ( 1000000);
+
+  mpfr_init2 (max_val, 64);
+  mpfr_init2 (x, 64);
+  mpfr_init2 (y, 64);
+  mpfr_init2 (z, 64);
+
+  mpfr_set_str (max_val, "0.ffffffffffffffff", 16, GMP_RNDN);
+  mpfr_set_exp (max_val, mpfr_get_emax ());
+
+  mpfr_neg (x, max_val, GMP_RNDN);
+
+  /* on 64-bit machines */
+  for (i = 41; i < 45; i++)
+    {
+      mpfr_set_si_2exp (y, -1, i, GMP_RNDN);
+      mpfr_add_si (y, y, 1, GMP_RNDN);
+      tern = mpfr_pow (z, x, y, GMP_RNDN);
+      mpfr_get_str (str, &xpon, 16, 16, z, GMP_RNDN);
+      MPFR_ASSERTN(mpfr_zero_p (z) && MPFR_SIGN(z) < 0);
+  }
+
+  /* on 32-bit machines */
+  for (i = 9; i < 13; i++)
+    {
+      mpfr_set_si_2exp (y, -1, i, GMP_RNDN);
+      mpfr_add_si (y, y, 1, GMP_RNDN);
+      tern = mpfr_pow (z, x, y, GMP_RNDN);
+      mpfr_get_str (str, &xpon, 16, 16, z, GMP_RNDN);
+      MPFR_ASSERTN(mpfr_zero_p (z) && MPFR_SIGN(z) < 0);
+  }
+
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_clear (z);
+  mpfr_clear (max_val);
+
+  mpfr_set_emin (emin);
+  mpfr_set_emax (emax);
+}
+
 int
 main (void)
 {
@@ -1123,6 +1177,7 @@ main (void)
   x_near_one ();
   bug20071103 ();
   bug20071104 ();
+  bug20071128 ();
 
   test_generic (2, 100, 100);
   test_generic_ui (2, 100, 100);
