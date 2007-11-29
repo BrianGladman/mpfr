@@ -340,26 +340,26 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
   /* detect underflows: for x > 0, y < 0, |x^y| = |(1/x)^(-y)|
                         <= 2^((1-EXP(x))*(-y)) */
   if (MPFR_IS_NEG(y) && MPFR_EXP(x) > 1)
-  {
-    mpfr_t tmp;
-    int negative, underflow;
+    {
+      mpfr_t tmp;
+      int negative, underflow;
 
-    /* We must restore the flags if no underflow. */
-    MPFR_SAVE_EXPO_MARK (expo);
-    mpfr_init2 (tmp, 53);
-    mpfr_neg (tmp, y, GMP_RNDZ);
-    mpfr_mul_si (tmp, tmp, 1 - MPFR_EXP(x), GMP_RNDZ);
-    underflow = mpfr_cmp_si (tmp, __gmpfr_emin - 2) <= 0;
-    mpfr_clear (tmp);
-    MPFR_SAVE_EXPO_FREE (expo);
-    if (underflow)
-      {
-        /* warning: mpfr_underflow rounds away from 0 for GMP_RNDN */
-        negative = MPFR_SIGN(x) < 0 && is_odd (y);
-        return mpfr_underflow (z, (rnd_mode == GMP_RNDN) ? GMP_RNDZ : rnd_mode,
-                               negative ? -1 : 1);
-      }
-  }
+      /* We must restore the flags if no underflow. */
+      MPFR_SAVE_EXPO_MARK (expo);
+      mpfr_init2 (tmp, 53);
+      mpfr_neg (tmp, y, GMP_RNDZ);
+      mpfr_mul_si (tmp, tmp, 1 - MPFR_EXP(x), GMP_RNDZ);
+      underflow = mpfr_cmp_si (tmp, __gmpfr_emin - 2) <= 0;
+      mpfr_clear (tmp);
+      MPFR_SAVE_EXPO_FREE (expo);
+      if (underflow)
+        {
+          /* warning: mpfr_underflow rounds away from 0 for GMP_RNDN */
+          negative = MPFR_SIGN(x) < 0 && is_odd (y);
+          return mpfr_underflow (z, (rnd_mode == GMP_RNDN) ? GMP_RNDZ :
+                                 rnd_mode, negative ? -1 : 1);
+        }
+    }
 
   /* If y is an integer, we can use mpfr_pow_z (based on multiplications),
      but if y is very large (I'm not sure about the best threshold -- VL),
