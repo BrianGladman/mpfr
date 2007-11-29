@@ -1095,7 +1095,7 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
      "[EOVERFLOW] The value of n is greater than {INT_MAX} or the
      number of bytes needed to hold the output excluding the
      terminating null is greater than {INT_MAX}." See:
-     http://www.opengroup.or|g/onlinepubs/009695399/functions/fprintf.html
+     http://www.opengroup.org/onlinepubs/009695399/functions/fprintf.html
      So, I (VL) propose that we should return a negative value and
      set the erange flag. */
   MPFR_ASSERTN (nbchar <= INT_MAX);
