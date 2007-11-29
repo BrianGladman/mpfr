@@ -170,10 +170,7 @@ mpfr_vsnprintf (char *buf, size_t size, const char *fmt, va_list ap)
      do not have it, it is probably better to write a version that will
      check that the return value is not larger than INT_MAX and use it
      unconditionally. */
-  /* FIXME: warning: passing argument 3 of 'snprintf' from
-     incompatible pointer type
-     Remove the "&"? (The code lacks of comments...) */
-  ret = snprintf (buf, size, &strp);
+  ret = snprintf (buf, size, strp);
   /* FIXME: if we do not use our own snprintf function, here's a proposed
      solution to detect the case where the ideal return value is larger
      than INT_MAX (for POSIX systems):
