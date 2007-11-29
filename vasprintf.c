@@ -487,8 +487,8 @@ sprnt_inf (struct string_buffer *buf, const struct printf_spec spec, int neg)
     }
 
   /* left justification padding */
-  if ((spec.left == 1) && (spec.width > 3 + neg))
-    buffer_pad (buf, ' ', spec.width - 3 - neg);
+  if ((spec.left == 1) && (spec.width > 3 - neg))
+    buffer_pad (buf, ' ', spec.width - 3 + neg);
 }
 
 /* let gmp_xprintf process the part it can understand */
