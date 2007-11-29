@@ -429,11 +429,11 @@ buffer_pad (struct string_buffer *b, const char c, const size_t n)
 {
   char *padding;
 
-  padding = (char *) mpfr_default_allocate (n + 1);
+  padding = (char *) (*__gmp_allocate_func) (n + 1);
   memset (padding, c, n);
   padding[n] = '\0';
   buffer_cat (b, padding, n);
-  mpfr_default_free (padding, n + 1);
+  (*__gmp_free_func) (padding, n + 1);
 }
 
 /* let gmp_xprintf process the part it can understand */
@@ -906,12 +906,12 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
 
       MPFR_ASSERTN (exp - 1 >= LONG_MIN);
       MPFR_ASSERTN (exp - 1 <= LONG_MAX);
-      exp_str = (char *) mpfr_default_allocate (nbc.exp_part + 1);
+      exp_str = (char *) (*__gmp_allocate_func) (nbc.exp_part + 1);
       snprintf (exp_str, nbc.exp_part, exp_fmt, exp);
 
       MPFR_ASSERTD (nbc.exp_part == 1 + (unsigned long) strlen (exp_str));
       buffer_cat (buf, exp_str, nbc.exp_part - 1);
-      mpfr_default_free (exp_str, nbc.exp_part + 1);
+      (*__gmp_free_func) (exp_str, nbc.exp_part + 1);
     }
 
   if (spec.left && (spec.pad == ' ') && (nbc.total < spec.width))
