@@ -454,8 +454,8 @@ sprntf_gmp (struct string_buffer *b, const char *fmt, va_list ap)
 static void
 sprnt_int (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
 {
-  char format[12];  /* must be large enough to build a format string 
-		       corresponding to spec (see below) */
+  char format[10];  /* buffer for the format string corresponding to spec 
+		       (see below) */
   char *s;
   int f;
   mpz_t z;
@@ -481,8 +481,8 @@ sprnt_int (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
   mpz_init (z);
   mpfr_get_z (z, p, spec.rnd_mode);
 
-  /* format contains at most 11 characters plus the terminating '\0'
-     like in "%-0+ #*.*Zo" */
+  /* format contains at most 9 characters plus the terminating '\0'
+     like in "%-+#*.*Zo" */
   f = 0;
   format[f++] = '%';
   if (spec.left)
@@ -500,7 +500,7 @@ sprnt_int (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
   f += 4;
   format[f++] = spec.spec;
   format[f] = '\0';
-  MPFR_ASSERTD (f < 12);
+  MPFR_ASSERTD (f < 10);
 
   f = gmp_asprintf (&s, format, spec.width, spec.prec, z);
 
