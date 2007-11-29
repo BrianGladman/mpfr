@@ -79,12 +79,12 @@ MA 02110-1301, USA. */
           case '7':                                     \
           case '8':                                     \
           case '9':                                     \
-            (specinfo).field *= 10;			\
-            (specinfo).field += *(format) - '0';	\
+            (specinfo).field *= 10;                     \
+            (specinfo).field += *(format) - '0';        \
             ++(format);                                 \
             break;                                      \
           case '*':                                     \
-            (specinfo).field = va_arg ((ap), int);	\
+            (specinfo).field = va_arg ((ap), int);      \
             ++(format);                                 \
           default:                                      \
             goto label_out;                             \
@@ -95,26 +95,26 @@ MA 02110-1301, USA. */
 /* __arg_type contains all the types described by the 'type' field of the
    format string */
 enum __arg_type
-{
-  NONE,
-  CHAR_ARG,
-  SHORT_ARG,
-  LONG_ARG,
-  LONG_LONG_ARG,
+  {
+    NONE,
+    CHAR_ARG,
+    SHORT_ARG,
+    LONG_ARG,
+    LONG_LONG_ARG,
 #ifdef HAVE_STDINT_H
-  INTMAX_ARG,
+    INTMAX_ARG,
 #endif
-  SIZE_ARG,
-  PTRDIFF_ARG,
-  LONG_DOUBLE_ARG,
-  MPF_ARG,
-  MPQ_ARG,
-  MP_LIMB_ARG,
-  MP_LIMB_ARRAY_ARG,
-  MPZ_ARG,
-  MPFR_PREC_ARG,
-  MPFR_ARG
-};
+    SIZE_ARG,
+    PTRDIFF_ARG,
+    LONG_DOUBLE_ARG,
+    MPF_ARG,
+    MPQ_ARG,
+    MP_LIMB_ARG,
+    MP_LIMB_ARRAY_ARG,
+    MPZ_ARG,
+    MPFR_PREC_ARG,
+    MPFR_ARG
+  };
 
 /* Each conversion specification of the format string will be translated in a
    printf_spec structure by the parser.
@@ -181,7 +181,7 @@ parse_flags (const char *format, struct printf_spec *specinfo)
           ++format;
           break;
         case '\'':
-	  /* gnu extension for thousand separator */
+          /* gnu extension for thousand separator */
           ++format;
           break;
         default:
@@ -279,102 +279,102 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
 /* CONSUME_VA_ARG removes from va_list AP the type expected by SPECINFO */
 
 #ifdef HAVE_STDINT_H
-#define CASE_INTMAX_ARG(specinfo, ap)                                   \
-      case INTMAX_ARG:                                                  \
-        (void) va_arg ((ap), intmax_t);                                 \
-        break;
+#define CASE_INTMAX_ARG(specinfo, ap)           \
+  case INTMAX_ARG:                              \
+  (void) va_arg ((ap), intmax_t);               \
+  break;
 #endif
 
 #ifdef HAVE_WCHAR_H
-#define CASE_LONG_ARG(specinfo, ap)                                     \
-      case LONG_ARG:                                                    \
-        if (((specinfo).spec == 'd') || ((specinfo).spec == 'i')        \
-            || ((specinfo).spec == 'o') || ((specinfo).spec == 'u')     \
-            || ((specinfo).spec == 'x') || ((specinfo).spec == 'X'))    \
-          (void) va_arg ((ap), long);                                   \
-        else if ((specinfo).spec == 'c')                                \
-          (void) va_arg ((ap), wint_t);                                 \
-        else if ((specinfo).spec == 's')                                \
-          (void) va_arg ((ap), wchar_t);                                \
-        break;
+#define CASE_LONG_ARG(specinfo, ap)                             \
+  case LONG_ARG:                                                \
+  if (((specinfo).spec == 'd') || ((specinfo).spec == 'i')      \
+      || ((specinfo).spec == 'o') || ((specinfo).spec == 'u')   \
+      || ((specinfo).spec == 'x') || ((specinfo).spec == 'X'))  \
+    (void) va_arg ((ap), long);                                 \
+  else if ((specinfo).spec == 'c')                              \
+    (void) va_arg ((ap), wint_t);                               \
+  else if ((specinfo).spec == 's')                              \
+    (void) va_arg ((ap), wchar_t);                              \
+  break;
 #else
-#define CASE_LONG_ARG(specinfo, ap)                                     \
-      case LONG_ARG:                                                    \
-        (void) va_arg ((ap), long);                                     \
-        break;
+#define CASE_LONG_ARG(specinfo, ap)             \
+  case LONG_ARG:                                \
+  (void) va_arg ((ap), long);                   \
+  break;
 #endif
 
-#define CONSUME_VA_ARG(specinfo, ap)                                    \
-  do {                                                                  \
-    switch ((specinfo).arg_type)                                        \
-      {                                                                 \
-      case CHAR_ARG:                                                    \
-      case SHORT_ARG:                                                   \
-        (void) va_arg ((ap), int);                                      \
-        break;                                                          \
-      CASE_LONG_ARG (specinfo, ap)                                      \
-      case LONG_LONG_ARG:                                               \
-        (void) va_arg ((ap), long long);                                \
-        break;                                                          \
-      CASE_INTMAX_ARG (specinfo, ap)                                    \
-      case SIZE_ARG:                                                    \
-        (void) va_arg ((ap), size_t);                                   \
-        break;                                                          \
-      case PTRDIFF_ARG:                                                 \
-        (void) va_arg ((ap), ptrdiff_t);                                \
-        break;                                                          \
-      case LONG_DOUBLE_ARG:                                             \
-        (void) va_arg ((ap), long double);                              \
-        break;                                                          \
-      case MPF_ARG:                                                     \
-        (void) va_arg ((ap), mpf_srcptr);                               \
-        break;                                                          \
-      case MPQ_ARG:                                                     \
-        (void) va_arg ((ap), mpq_srcptr);                               \
-        break;                                                          \
-      case MP_LIMB_ARG:                                                 \
-      case MP_LIMB_ARRAY_ARG:                                           \
-        (void) va_arg ((ap), mp_ptr);                                   \
-        (void) va_arg ((ap), mp_size_t);                                \
-        break;                                                          \
-      case MPZ_ARG:                                                     \
-        (void) va_arg ((ap), mpz_srcptr);                               \
-        break;                                                          \
-      default:                                                          \
-        switch ((specinfo).spec)                                        \
-          {                                                             \
-          case 'd':                                                     \
-          case 'i':                                                     \
-          case 'o':                                                     \
-          case 'u':                                                     \
-          case 'x':                                                     \
-          case 'X':                                                     \
-          case 'c':                                                     \
-            (void) va_arg ((ap), int);                                  \
-            break;                                                      \
-          case 'f':                                                     \
-          case 'F':                                                     \
-          case 'e':                                                     \
-          case 'E':                                                     \
-          case 'g':                                                     \
-          case 'G':                                                     \
-          case 'a':                                                     \
-          case 'A':                                                     \
-            (void) va_arg ((ap), double);                               \
-            break;                                                      \
-          case 's':                                                     \
-            (void) va_arg ((ap), char *);                               \
-            break;                                                      \
-          case 'p':                                                     \
-            (void) va_arg ((ap), void *);                               \
-          }                                                             \
-      }                                                                 \
+#define CONSUME_VA_ARG(specinfo, ap)            \
+  do {                                          \
+    switch ((specinfo).arg_type)                \
+      {                                         \
+      case CHAR_ARG:                            \
+      case SHORT_ARG:                           \
+        (void) va_arg ((ap), int);              \
+        break;                                  \
+        CASE_LONG_ARG (specinfo, ap)            \
+      case LONG_LONG_ARG:                       \
+        (void) va_arg ((ap), long long);        \
+        break;                                  \
+        CASE_INTMAX_ARG (specinfo, ap)          \
+      case SIZE_ARG:                            \
+        (void) va_arg ((ap), size_t);           \
+        break;                                  \
+      case PTRDIFF_ARG:                         \
+        (void) va_arg ((ap), ptrdiff_t);        \
+        break;                                  \
+      case LONG_DOUBLE_ARG:                     \
+        (void) va_arg ((ap), long double);      \
+        break;                                  \
+      case MPF_ARG:                             \
+        (void) va_arg ((ap), mpf_srcptr);       \
+        break;                                  \
+      case MPQ_ARG:                             \
+        (void) va_arg ((ap), mpq_srcptr);       \
+        break;                                  \
+      case MP_LIMB_ARG:                         \
+      case MP_LIMB_ARRAY_ARG:                   \
+        (void) va_arg ((ap), mp_ptr);           \
+        (void) va_arg ((ap), mp_size_t);        \
+        break;                                  \
+      case MPZ_ARG:                             \
+        (void) va_arg ((ap), mpz_srcptr);       \
+        break;                                  \
+      default:                                  \
+        switch ((specinfo).spec)                \
+          {                                     \
+          case 'd':                             \
+          case 'i':                             \
+          case 'o':                             \
+          case 'u':                             \
+          case 'x':                             \
+          case 'X':                             \
+          case 'c':                             \
+            (void) va_arg ((ap), int);          \
+            break;                              \
+          case 'f':                             \
+          case 'F':                             \
+          case 'e':                             \
+          case 'E':                             \
+          case 'g':                             \
+          case 'G':                             \
+          case 'a':                             \
+          case 'A':                             \
+            (void) va_arg ((ap), double);       \
+            break;                              \
+          case 's':                             \
+            (void) va_arg ((ap), char *);       \
+            break;                              \
+          case 'p':                             \
+            (void) va_arg ((ap), void *);       \
+          }                                     \
+      }                                         \
   } while (0)
 
 /* process the format part which does not deal with mpfr types */
 #define FLUSH(flag, start, end, ap, buf_ptr)                    \
   do {                                                          \
-    const size_t n = (end) - (start);				\
+    const size_t n = (end) - (start);                           \
     if ((flag))                                                 \
       /* previous specifiers are understood by gmp_printf */    \
       {                                                         \
@@ -472,7 +472,7 @@ sprnt_inf (struct string_buffer *buf, const struct printf_spec spec, int neg)
   /* right justification padding */
   if ((spec.left == 0) && (spec.width > 3 - neg))
     buffer_pad (buf, ' ', spec.width - 3 + neg);
-      
+
   switch (spec.spec)
     {
     case 'A':
@@ -509,8 +509,8 @@ sprntf_gmp (struct string_buffer *b, const char *fmt, va_list ap)
 static void
 sprnt_int (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
 {
-  char format[10];  /* buffer for the format string corresponding to spec 
-		       (see below) */
+  char format[10];  /* buffer for the format string corresponding to spec
+                       (see below) */
   char *s;
   int f;
   mpz_t z;
@@ -627,7 +627,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
   nbc.total = nbc.sgn;
 
   /* Replace 'g'/'G' by 'e'/'E' or 'f'/'F' following the C99 rules:
-     if P > X >= -4 then the conversion is with style 'f'/'F' 
+     if P > X >= -4 then the conversion is with style 'f'/'F'
      and precision P-(X+1).
      otherwise, the conversion is with style 'e'/'E'
      and precision P-1.
@@ -874,13 +874,13 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
     {
       if ((spec.spec == 'f' || spec.spec == 'F') && (exp < 0))
         /* leading zeros in fractional part when p < 1 */
-	buffer_pad (buf, '0', -exp);
+        buffer_pad (buf, '0', -exp);
 
       buffer_cat (buf, str_curr, nbc.frac_part);
 
       if ((remove_trailing_zeros == 0) && (nbc.frac_part < spec.prec))
         /* add trailing zeros */
-	buffer_pad (buf, '0', spec.prec - nbc.frac_part);
+        buffer_pad (buf, '0', spec.prec - nbc.frac_part);
     }
 
   /* Note: case 'g'/'G' has been changed into 'e'/'E' or 'f'/'F' above. */
