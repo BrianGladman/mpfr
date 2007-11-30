@@ -163,7 +163,10 @@ mpfr_exp_3 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mp_prec_t realprec, Prec;
   int iter;
   int inexact = 0;
+  MPFR_SAVE_EXPO_DECL (expo);
   MPFR_ZIV_DECL (ziv_loop);
+
+  MPFR_SAVE_EXPO_MARK (expo);
 
   /* decompose x */
   /* we first write x = 1.xxxxxxxxxxxxx
@@ -252,13 +255,9 @@ mpfr_exp_3 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
         }
       else if (MPFR_UNLIKELY (mpfr_underflow_p ()))
         {
-          /* We hack to set a FP number outside the valid range so that
-             mpfr_check_range properly generates an underflow.
-             Note that the range has been increased to allow a safe
-             detection of underflow (MPFR_EMIN_MIN-3 in exp.c) even for
-             RNDN */
-          mpfr_setmax (y, MPFR_EMIN_MIN-2);
-          inexact = -1;
+          inexact = mpfr_underflow (y, rnd_mode, 1);
+          MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, MPFR_FLAGS_INEXACT
+                                       | MPFR_FLAGS_UNDERFLOW);
           break;
         }
       else if (mpfr_can_round (tmp, realprec, GMP_RNDD, GMP_RNDZ,
@@ -278,5 +277,6 @@ mpfr_exp_3 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mpfr_clear (tmp);
   mpfr_clear (t);
   mpfr_clear (x_copy);
+  MPFR_SAVE_EXPO_FREE (expo);
   return inexact;
 }

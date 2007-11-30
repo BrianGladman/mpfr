@@ -124,13 +124,16 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     }
   else  /* General case */
     {
-      MPFR_SAVE_EXPO_MARK (expo);
-
       if (MPFR_UNLIKELY (precy > MPFR_EXP_THRESHOLD))
+        /* mpfr_exp_3 saves the exponent range and flags itself, otherwise
+           the flag changes in mpfr_exp_3 are lost */
         inexact = mpfr_exp_3 (y, x, rnd_mode); /* O(M(n) log(n)^2) */
       else
-        inexact = mpfr_exp_2 (y, x, rnd_mode); /* O(n^(1/3) M(n)) */
-      MPFR_SAVE_EXPO_FREE (expo);
+        {
+          MPFR_SAVE_EXPO_MARK (expo);
+          inexact = mpfr_exp_2 (y, x, rnd_mode); /* O(n^(1/3) M(n)) */
+          MPFR_SAVE_EXPO_FREE (expo);
+        }
     }
 
   return mpfr_check_range (y, inexact, rnd_mode);
