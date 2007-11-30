@@ -196,13 +196,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       /* Check if an underflow occurs */
       else if (MPFR_UNLIKELY (mpfr_underflow_p ()))
         {
-          /* We hack to set a FP number outside the valid range so that
-             mpfr_check_range properly generates an underflow.
-             Note that the range has been increased to allow a safe
-             detection of underflow (MPFR_EMIN_MIN-3 in exp.c) even for
-             RNDN */
-          mpfr_setmax (y, MPFR_EMIN_MIN-2);
-          inexact = -1;
+          inexact = mpfr_underflow (y, rnd_mode, 1);
           break;
         }
 
