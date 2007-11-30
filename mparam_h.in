@@ -101,7 +101,7 @@ MA 02110-1301, USA. */
 /****************************
  * Threshold for Core 2     *
  ****************************/
-#elif defined (__core2)
+#elif defined (__core2) && !defined (__i386)
 
 #define MPFR_MULHIGH_TAB  \
  -1,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0, \
