@@ -125,7 +125,6 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   else  /* General case */
     {
       MPFR_SAVE_EXPO_MARK (expo);
-      __gmpfr_emin -= 3;  /* So that we can check for underflow properly */
 
       if (MPFR_UNLIKELY (precy > MPFR_EXP_THRESHOLD))
         inexact = mpfr_exp_3 (y, x, rnd_mode); /* O(M(n) log(n)^2) */
