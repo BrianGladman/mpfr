@@ -49,22 +49,26 @@ mpfr_j1 (mpfr_ptr res, mpfr_srcptr z, mp_rnd_t r)
 static unsigned long
 mpfr_jn_k0 (long n, mpfr_srcptr z)
 {
-  mpfr_t t;
+  mpfr_t t, u;
   unsigned long k0;
 
   mpfr_init2 (t, 32);
+  mpfr_init2 (u, 32);
   mpfr_div_si (t, z, n, GMP_RNDN);
   mpfr_sqr (t, t, GMP_RNDN);
   mpfr_add_ui (t, t, 1, GMP_RNDN);
   mpfr_sqrt (t, t, GMP_RNDN);
   mpfr_sub_ui (t, t, 1, GMP_RNDN);
   mpfr_mul_si (t, t, n, GMP_RNDN);
-  mpfr_div_d (t, t, LOG2, GMP_RNDN);
+  /* the following is a 32-bit approximation to nearest of log(2) */
+  mpfr_set_str_binary (u, "0.10110001011100100001011111111");
+  mpfr_div (t, t, u, GMP_RNDN);
   if (mpfr_fits_ulong_p (t, GMP_RNDN))
     k0 = mpfr_get_ui (t, GMP_RNDN);
   else
     k0 = 0;
   mpfr_clear (t);
+  mpfr_clear (u);
   return k0;
 }
 

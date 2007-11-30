@@ -89,17 +89,18 @@ main (int argc, char *argv[])
   unsigned long k, bd, nc, i;
   char *str, *str2;
   mp_exp_t e;
-  int base, logbase, prec, baseprec, ret;
+  int base, logbase, prec, baseprec, ret, obase;
 
   tests_start_mpfr ();
 
-  if (argc >= 2) /* tset_str <string> [<prec>] [<base>] */
+  if (argc >= 2) /* tset_str <string> [<prec>] [<ibase>] [<obase>] */
     {
       prec = (argc >= 3) ? atoi (argv[2]) : 53;
       base = (argc >= 4) ? atoi (argv[3]) : 2;
+      obase = (argc >= 5) ? atoi (argv[4]) : 10;
       mpfr_init2 (x, prec);
       mpfr_set_str (x, argv[1], base, GMP_RNDN);
-      mpfr_out_str (stdout, 10, 0, x, GMP_RNDN);
+      mpfr_out_str (stdout, obase, 0, x, GMP_RNDN);
       puts ("");
       mpfr_clear (x);
       return 0;
