@@ -44,7 +44,7 @@ mpfr_j1 (mpfr_ptr res, mpfr_srcptr z, mp_rnd_t r)
 
 /* Estimate k0 such that z^2/4 = k0 * (k0 + n)
    i.e., (sqrt(n^2+z^2)-n)/2 = n/2 * (sqrt(1+(z/n)^2) - 1).
-   Return 2*k0/log(2).
+   Return min(2*k0/log(2), ULONG_MAX).
 */
 static unsigned long
 mpfr_jn_k0 (long n, mpfr_srcptr z)
@@ -66,7 +66,7 @@ mpfr_jn_k0 (long n, mpfr_srcptr z)
   if (mpfr_fits_ulong_p (t, GMP_RNDN))
     k0 = mpfr_get_ui (t, GMP_RNDN);
   else
-    k0 = 0;
+    k0 = ULONG_MAX;
   mpfr_clear (t);
   mpfr_clear (u);
   return k0;
