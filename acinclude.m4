@@ -87,6 +87,14 @@ alpha*-*-*)
   fi
 esac
 
+dnl Check for Core2 processor
+case $host in
+x86_64-*linux*)
+  case `sed -n '/^vendor_id/s/^.*: \(.*\)/\1/p' < /proc/cpuinfo` in
+    *Intel*) AC_DEFINE(HAVE_HOST_CORE2,1,[Define if processor is Core 2]) ;;
+  esac
+esac
+
 AC_CHECK_TYPE( [union fpc_csr],
    AC_DEFINE(HAVE_FPC_CSR,1,[Define if union fpc_csr is available]), ,
 [

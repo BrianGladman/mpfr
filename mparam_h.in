@@ -23,6 +23,9 @@ MA 02110-1301, USA. */
 # error "MPFR Internal not included"
 #endif
 
+/* note: the different macros used here are those defined by gcc,
+   for example with gcc -dM -E -xc /dev/null */
+
 /*****************************
  * Threshold for Pentium 4   *
  *****************************/
@@ -101,7 +104,7 @@ MA 02110-1301, USA. */
 /****************************
  * Threshold for Core 2     *
  ****************************/
-#elif defined (__core2) && !defined (__i386)
+#elif defined (HAVE_HOST_CORE2) && !defined (__i386)
 
 #define MPFR_MULHIGH_TAB  \
  -1,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0, \
