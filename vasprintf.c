@@ -1105,8 +1105,10 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
      number of bytes needed to hold the output excluding the
      terminating null is greater than {INT_MAX}." See:
      http://www.opengroup.org/onlinepubs/009695399/functions/fprintf.html
-     So, I (VL) propose that we should return a negative value and
-     set the erange flag. */
+     But it doesn't say anything concerning the other printf-like
+     functions. A defect report has been submitted to austin-review-l
+     (item 2532). So, for the time being, I (VL) propose that we should
+     return a negative value and set the erange flag. */
   MPFR_ASSERTN (nbchar <= INT_MAX);
   return (int) nbchar;
 }
