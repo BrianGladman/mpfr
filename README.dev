@@ -513,3 +513,13 @@ MPFR manual (mpfr.texi):
   * Use "significand", not "mantissa".
   * Use "@minus{}" for the minus character, not "-".
   * Follow the English typography, not the French one!
+
+===========================================================================
+
+Running "make" outputs a lot of information, and warnings are not very
+visible. The following tool "eet" allows a copy of warning messages to
+be output to a different window (e.g. xterm or zenity):
+
+  http://www.vinc17.org/unix/#eet
+
+Direct link to the tarball: http://www.vinc17.org/unix/eet.tar.bz2
