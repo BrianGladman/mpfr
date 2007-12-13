@@ -35,6 +35,7 @@ MA 02110-1301, USA. */
 #endif
 
 #include <stddef.h>             /* for ptrdiff_t */
+#include <string.h>             /* for strlen */
 
 #include "mpfr-impl.h"
 
