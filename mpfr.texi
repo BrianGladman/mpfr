@@ -1835,10 +1835,10 @@ occurred.
 @deftypefunx int mpfr_snprintf (char *@var{buf}, size_t @var{n}, const char *@var{template}, ...)
 @deftypefunx int mpfr_vsprintf (char *@var{buf}, const char *@var{template}, va_list @var{ap})
 @deftypefunx int mpfr_vsnprintf (char *@var{buf}, size_t @var{n}, const char *@var{template}, va_list @var{ap})
-@code{mpfr_sprintf} and @code{mpfr_vsprintf} return the numbers of characters
+@code{mpfr_sprintf} and @code{mpfr_vsprintf} return the number of characters
 written in the array @var{buf} not counting the terminating null character or
 a negative value if an error occurred.
-@code{mpfr_snprintf} and @code{mpfr_vsnprintf} return  the numbers of
+@code{mpfr_snprintf} and @code{mpfr_vsnprintf} return  the number of
 characters that would have been written had @var{n} be sufficiently large,
 not counting the terminating null character or a negative value if an error
 occurred.
