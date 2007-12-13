@@ -56,6 +56,11 @@ MA 02110-1301, USA. */
 #error "mp_exp_t size not supported"
 #endif
 
+/* Output for special values defined in the C99 standard */
+#define MPFR_NAN_STRING_LC "nan"
+#define MPFR_NAN_STRING_UC "NAN"
+#define MPFR_INF_STRING_LC "inf"
+#define MPFR_INF_STRING_UC "INF"
 
 /* We assume that a single conversion specifier produces at most 4095 chars
    (Rationale for International Standard -Programming Languages- C
@@ -451,11 +456,11 @@ sprnt_nan (struct string_buffer *buf, const struct printf_spec spec)
     case 'F':
     case 'G':
     case 'X':
-      buffer_cat (buf, "NAN", 3);
+      buffer_cat (buf, MPFR_NAN_STRING_UC, strlen (MPFR_NAN_STRING_UC));
       break;
 
     default:
-      buffer_cat (buf, "nan", 3);
+      buffer_cat (buf, MPFR_NAN_STRING_LC, strlen (MPFR_NAN_STRING_LC));
     }
 
   /* left justification padding */
@@ -480,10 +485,14 @@ sprnt_inf (struct string_buffer *buf, const struct printf_spec spec, int neg)
     case 'F':
     case 'G':
     case 'X':
-      buffer_cat (buf, neg == -1 ? "-INF" : "INF", -neg + 3);
+      if (neg < 0)
+        buffer_cat (buf, "-", 1);
+      buffer_cat (buf, MPFR_INF_STRING_UC, strlen (MPFR_INF_STRING_UC));
       break;
     default:
-      buffer_cat (buf, neg == -1 ? "-inf" : "inf", -neg + 3);
+      if (neg < 0)
+        buffer_cat (buf, "-", 1);
+      buffer_cat (buf, MPFR_INF_STRING_LC, strlen (MPFR_INF_STRING_LC));
     }
 
   /* left justification padding */
