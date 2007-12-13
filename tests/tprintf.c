@@ -1,4 +1,4 @@
-/* mpfr_tprintf -- test file for mpfr_sprintf
+/* mpfr_tprintf -- test file for mpfr_sprintf mpfr_vsprintf
 
 Copyright 2007 Free Software Foundation, Inc.
 Contributed by the Arenaire and Cacao projects, INRIA.
@@ -42,136 +42,84 @@ const char minf_uc_str[] = "-INF";
 const char nan_str[] = "nan";
 const char nan_uc_str[] = "NAN";
 
+/* compare expected string with the return of mpfr_sprintf(fmt, x)*/
 static void
-special (void)
+check_sprintf (const char *expected, const char *fmt, mpfr_srcptr x)
 {
   char buffer[buf_size];
-  mpfr_t x;
-  mpfr_init (x);
 
-  mpfr_set_inf (x, 1);
-  mpfr_sprintf (buffer, "%Rf", x);
-  if (strcmp (buffer, pinf_str) != 0)
+  mpfr_sprintf (buffer, fmt, x);
+  if (strcmp (buffer, expected) != 0)
     {
-      fprintf (stderr, "Error in mpfr_sprintf\nexpected: %s\ngot:      %s\n",
-               pinf_str, buffer);
+      fprintf (stderr, "Error in mpfr_sprintf (s, \"%s\", x);\n", fmt);
+      fprintf (stderr, "expected: \"%s\"\ngot:      \"%s\"\n", expected,
+               buffer);
       exit (1);
     }
-  mpfr_sprintf (buffer, "%RF", x);
-  if (strcmp (buffer, pinf_uc_str) != 0)
-    {
-      fprintf (stderr, "Error in mpfr_sprintf\nexpected: %s\ngot:      %s\n",
-               pinf_uc_str, buffer);
-      exit (1);
-    }
+}
 
-  mpfr_set_inf (x, -1);
-  mpfr_sprintf (buffer, "%Rf", x);
-  if (strcmp (buffer, minf_str) != 0)
+/* compare expected string with the return of mpfr_vsprintf(fmt, ...)*/
+static void
+check_vsprintf (const char *expected, const char *fmt, ...)
+{
+  char buffer[buf_size];
+  va_list ap;
+  va_start (ap, fmt);
+
+  mpfr_vsprintf (buffer, fmt, ap);
+  if (strcmp (buffer, expected) != 0)
     {
-      fprintf (stderr, "Error in mpfr_sprintf\nexpected: %s\ngot:      %s\n",
-               minf_str, buffer);
-      exit (1);
-    }
-  mpfr_sprintf (buffer, "%RF", x);
-  if (strcmp (buffer, minf_uc_str) != 0)
-    {
-      fprintf (stderr, "Error in mpfr_sprintf\nexpected: %s\ngot:      %s\n",
-               minf_uc_str, buffer);
+      fprintf (stderr, "Error in mpfr_vsprintf (s, \"%s\", ...);\n", fmt);
+      fprintf (stderr, "expected: \"%s\"\ngot:      \"%s\"\n", expected,
+               buffer);
+
+      va_end (ap);
       exit (1);
     }
 
-  mpfr_set_nan (x);
-  mpfr_sprintf (buffer, "%Rf", x);
-  if (strcmp (buffer, nan_str) != 0)
-    {
-      fprintf (stderr, "Error in mpfr_sprintf\nexpected: %s\ngot:      %s\n",
-               nan_str, buffer);
-      exit (1);
-    }
-  mpfr_sprintf (buffer, "%RF", x);
-  if (strcmp (buffer, nan_uc_str) != 0)
-    {
-      fprintf (stderr, "Error in mpfr_sprintf\nexpected: %s\ngot:      %s\n",
-               nan_uc_str, buffer);
-      exit (1);
-    }
-
-  mpfr_clear (x);
+  va_end (ap);
 }
 
 static int
 integer (void)
 {
-  char buffer[buf_size];
   mpfr_t x;
   mpfr_init (x);
 
+  /* special values */
+  mpfr_set_inf (x, 1);
+  check_sprintf (pinf_str, "%Rd", x);
+  check_sprintf (pinf_uc_str, "%RX", x);
+
+  mpfr_set_inf (x, -1);
+  check_sprintf (minf_str, "%Ro", x);
+  check_sprintf (minf_uc_str, "%RX", x);
+
+  mpfr_set_nan (x);
+  check_sprintf (nan_str, "%Rd", x);
+  check_sprintf (nan_uc_str, "%RX", x);
+
+  /* regular numbers */
   mpfr_set_d (x, 1895485593474.61279296875, GMP_RNDD);
+
   /* base ten */
-  mpfr_sprintf (buffer, "%RDd", x);
-  if (strcmp (buffer, "1895485593474") != 0)
-    {
-      fprintf (stderr, "Error in mpfr_sprintf(s, \"%%RDd\", x)\n");
-      fprintf (stderr, "expected: 1895485593474\ngot:      %s\n", buffer);
-      exit (1);
-    }
-  mpfr_sprintf (buffer, "%RNi", x);
-  if (strcmp (buffer, "1895485593475") != 0)
-    {
-      fprintf (stderr, "Error in mpfr_sprintf(s, \"%%RNi\", x)\n");
-      fprintf (stderr, "expected: 1895485593475\ngot:      %s\n", buffer);
-      exit (1);
-    }
-  mpfr_sprintf (buffer, "%RUu", x);
-  if (strcmp (buffer, "1895485593475") != 0)
-    {
-      fprintf (stderr, "Error in mpfr_sprintf(s, \"%%RUu\", x)\n");
-      fprintf (stderr, "expected: 1895485593475\ngot:      %s\n", buffer);
-      exit (1);
-    }
+  check_sprintf ("1895485593474", "%RDd", x);
+  check_sprintf ("1895485593475", "%RNi", x);
+  check_sprintf ("1895485593475", "%RUu", x);
+
   /* base sixteen */
-  mpfr_sprintf (buffer, "%RZx", x);
-  if (strcmp (buffer, "1b953bed782") != 0)
-    {
-      fprintf (stderr, "Error in mpfr_sprintf(s, \"%%RZx\", x)\n");
-      fprintf (stderr, "expected: 1b953bed782\ngot:      %s\n", buffer);
-      exit (1);
-    }
-  mpfr_sprintf (buffer, "%#RNX", x);
-  if (strcmp (buffer, "0X1B953BED783") != 0)
-    {
-      fprintf (stderr, "Error in mpfr_sprintf(s, \"%%#RNX\", x)\n");
-      fprintf (stderr, "expected: 0X1B953BED783\ngot:      %s\n", buffer);
-      exit (1);
-    }
+  check_sprintf ("1b953bed782", "%RZx", x);
+  check_sprintf ("0X1B953BED783", "%#RNX", x);
+
   /* base eight */
-  mpfr_sprintf (buffer, "%RNo", x);
-  if (strcmp (buffer, "33452357553603") != 0)
-    {
-      fprintf (stderr, "Error in mpfr_sprintf(s, \"%%RNo\", x)\n");
-      fprintf (stderr, "expected: 33452357553603\ngot:      %s\n", buffer);
-      exit (1);
-    }
+  check_sprintf ("33452357553603", "%RNo", x);
 
   /* flags, width, and precision checking */
   mpfr_set_si (x, -1641, GMP_RNDD);
-  mpfr_sprintf (buffer, "%+012RDd", x);
-  if (strcmp (buffer, "-00000001641") != 0)
-    {
-      fprintf (stderr, "Error in mpfr_sprintf(s, \"%%+012RDd\", x)\n");
-      fprintf (stderr, "expected: \"-00000001641\"\ngot:      %s\n", buffer);
-      exit (1);
-    }
+  check_sprintf ("-00000001641", "%+012RDd", x);
+
   mpfr_neg (x, x, GMP_RNDD);
-  mpfr_sprintf (buffer, "%-*.*RDd", 12, 6, x);
-  if (strcmp (buffer, "001641      ") != 0)
-    {
-      fprintf (stderr, "Error in mpfr_sprintf(s, \"%%-*.*RDd\", 12, 6, x)\n");
-      fprintf (stderr, "expected: \"001641      \"\ngot:      \"%s\"\n",
-               buffer);
-      exit (1);
-    }
+  check_vsprintf ("001641      ", "%-*.*RDd", 12, 6, x);
 
   mpfr_clear (x);
   return 0;
@@ -180,79 +128,91 @@ integer (void)
 static int
 floating_point (void)
 {
-  char buffer[buf_size];
   mpfr_t x;
   mpfr_init (x);
+
+  /* special numbers */
+  mpfr_set_inf (x, 1);
+  check_sprintf (pinf_str, "%Rf", x);
+  check_sprintf (pinf_uc_str, "%RF", x);
+
+  mpfr_set_inf (x, -1);
+  check_sprintf (minf_str, "%Rf", x);
+  check_sprintf (minf_uc_str, "%RF", x);
+
+  mpfr_set_nan (x);
+  check_sprintf (nan_str, "%Rf", x);
+  check_sprintf (nan_uc_str, "%RF", x);
+
+  /* regular numbers */
   mpfr_set_d (x, 1895485593474.61279296875, GMP_RNDD);
 
   /* default: 6 decimal digits */
-  mpfr_sprintf (buffer, "%RDf", x);
-  if (strcmp (buffer, "1895485593474.612792") != 0)
-    {
-      fprintf (stderr, "Error in mpfr_sprintf(s, \"%%RDf\", x)\n");
-      fprintf (stderr, "expected: 1895485593474.612792\ngot:      %s\n",
-               buffer);
-      exit (1);
-    }
+  check_sprintf ("1895485593474.612792", "%RDf", x);
   /* test rounding */
-  mpfr_sprintf (buffer, "%.4RNf", x);
-  if (strcmp (buffer, "1895485593474.6128") != 0)
-    {
-      fprintf (stderr, "Error in mpfr_sprintf(s, \"%%.4RNf\", x)\n");
-      fprintf (stderr, "expected: 1895485593475.6128\ngot:      %s\n", buffer);
-      exit (1);
-    }
+  check_sprintf ("1895485593474.6128", "%.4RNf", x);
   /* decimal point, no decimal digit */
-  mpfr_sprintf (buffer, "%#.0RUf", x);
-  if (strcmp (buffer, "1895485593475.") != 0)
-    {
-      fprintf (stderr, "Error in mpfr_sprintf(s, \"%%#.0RUf\", x)\n");
-      fprintf (stderr, "expected: 1895485593475.\ngot:      %s\n", buffer);
-      exit (1);
-    }
+  check_sprintf ("1895485593475.", "%#.0RUf", x);
   /* request the significant digits */
-  mpfr_sprintf (buffer, "%.RDe", x);
-  if (strcmp (buffer, "1.8954855934746127e+12") != 0)
-    {
-      fprintf (stderr, "Error in mpfr_sprintf(s, \"%%.RDe\", x)\n");
-      fprintf (stderr,
-               "expected: 1.8954855934746127e+12\ngot:      %s\n",
-               buffer);
-      exit (1);
-    }
+  check_sprintf ("1.8954855934746127e+12", "%.RDe", x);
   /* test width field */
-  mpfr_sprintf (buffer, "%10.3RNE", x);
-  if (strcmp (buffer, " 1.895E+12") != 0)
-    {
-      fprintf (stderr, "Error in mpfr_sprintf(s, \"%%10.3RNE\", x)\n");
-      fprintf (stderr, "expected: \" 1.895E+12\"\ngot:      \"%s\"\n", buffer);
-      exit (1);
-    }
+  check_sprintf (" 1.895E+12", "%10.3RNE", x);
   /* show sign */
-  mpfr_sprintf (buffer, "%+10.7RUe", x);
-  if (strcmp (buffer, "+1.8954856e+12") != 0)
-    {
-      fprintf (stderr, "Error in mpfr_sprintf(s, \"%%+10.7RUe\", x)\n");
-      fprintf (stderr, "expected: +1.8954856e+12\ngot:      %s\n", buffer);
-      exit (1);
-    }
+  check_sprintf ("+1.8954856e+12", "%+10.7RUe", x);
   /* 'g' conversion specifier */
-  mpfr_sprintf (buffer, "=%.3RNG", x);
-  if (strcmp (buffer, "=1.90E+12") != 0)
-    {
-      fprintf (stderr, "Error in mpfr_sprintf(s, \"=%%.3RNG\", x)\n");
-      fprintf (stderr, "expected: \"=1.90E+12\"\ngot:      \"%s\"\n", buffer);
-      exit (1);
-    }
-  mpfr_set_d (x, 11.875, GMP_RNDD);
-  mpfr_sprintf (buffer, "%RUg", x);
-  if (strcmp (buffer, "11.88") != 0) /* [FIXME] a verifier */
-    {
-      fprintf (stderr, "Error in mpfr_sprintf(s, \"%%RUg\", x)\n");
-      fprintf (stderr, "expected: 11.88\ngot:      %s\n", buffer);
-      exit (1);
-    }
+  check_sprintf ("=1.90E+12", "=%.3RNG", x);
 
+  /* this case need to be fix in mpfr_vasprintf */
+/*   mpfr_set_d (x, 11.875, GMP_RNDD); */
+/*   check_sprintf ("11.875", "%RUg", x); */
+
+  mpfr_clear (x);
+  return 0;
+}
+
+static int
+hexadecimal (void)
+{
+  mpfr_t x;
+  mpfr_init2 (x, 64);
+
+  /* special */
+  mpfr_set_inf (x, 1);
+  check_sprintf (pinf_str, "%Ra", x);
+  check_sprintf (pinf_uc_str, "%RA", x);
+
+  mpfr_set_inf (x, -1);
+  check_sprintf (minf_str, "%Ra", x);
+  check_sprintf (minf_uc_str, "%RA", x);
+
+  mpfr_set_nan (x);
+  check_sprintf (nan_str, "%Ra", x);
+  check_sprintf (nan_uc_str, "%RA", x);
+
+  /* regular numbers */
+  mpfr_set_str (x, "FEDCBA9.87654321", 16, GMP_RNDN);
+
+  /* simplest case */
+  check_sprintf ("   0xf.edcba987654321p+24", "%25Ra", x);
+  /* sign or space, pad with leading zeros */
+  check_sprintf (" 0X00F.EDCBA987654321P+24", "% 025RA", x);
+  /* sign + or -, left justified */
+  check_sprintf ("+0xf.edcba987654321p+24  ", "%+-25Ra", x);
+  /* decimal point, left justified */
+  check_sprintf ("0X1.P+28  ", "%#-10.0RA", x);
+  /* sign or space */
+  check_sprintf (" 0xf.eddp+24", "% .3RNa", x);
+  /* sign + or -, decimal point, pad with leading zeros */
+  check_sprintf ("+0X0F.P+24", "%0+#10.0RZA", x);
+  /* pad with leading zero */
+  check_sprintf ("0x0000f.edcba987654321p+24", "%026RDa", x);
+  /* sign or space, decimal point, left justified */
+  check_sprintf (" 0XF.EP+24 " , "%- #11.1RDA", x);
+
+  mpfr_mul_si (x, x, -1, GMP_RNDD);
+
+  /* sign + or - */
+  check_sprintf ("  -0xfp+24", "%+10.0RUa", x);
 
   mpfr_clear (x);
   return 0;
@@ -266,7 +226,6 @@ mixed (void)
   mpf_t mpf;
   mpq_t mpq;
   mpz_t mpz;
-  char buffer[buf_size];
   mpfr_t x;
   mp_rnd_t rnd;
 
@@ -280,67 +239,16 @@ mixed (void)
   mpfr_set_d (x, -1.2345678875e7, GMP_RNDN);
   rnd = GMP_RNDD;
 
-  mpfr_sprintf (buffer, "%i", i, x);
-  if (strcmp (buffer, "121") != 0)
-    {
-      fprintf (stderr, "Error in mpfr_sprintf (s, \"%%i\", i, x);\n");
-      fprintf (stderr, "expected: 121\ngot:      %s\n", buffer);
-      exit (1);
-    }
-  mpfr_sprintf (buffer, "%i, %.0Rf", i, x);
-  if (strcmp (buffer, "121, -12345679") != 0)
-    {
-      fprintf (stderr, "Error in mpfr_sprintf (s, \"%%i, %%.0Rf\", i, x);\n");
-      fprintf (stderr, "expected: 121, -12345679\ngot:      %s\n",
-               buffer);
-      exit (1);
-    }
-  mpfr_sprintf (buffer, "%Zi, %R*e", mpz, rnd, x);
-  if (strcmp (buffer, "10610209857723, -1.2345678875e+07") != 0)
-    {
-      fprintf (stderr,
-               "Error in mpfr_sprintf (s, \"%%Zi, %%R*e\", mpz, rnd, x);\n");
-      fprintf (stderr,
-               "expected: 10610209857723, -1.2345678875e+07\ngot:      %s\n",
-               buffer);
-      exit (1);
-    }
-  mpfr_sprintf (buffer, "%.1Rf, %i", x, i);
-  if (strcmp (buffer, "-12345678.9, 121") != 0)
-    {
-      fprintf (stderr, "Error in mpfr_sprintf (s, \"%%.1Rf, %%i\", x, i);\n");
-      fprintf (stderr, "expected: -12345678.9, 121\ngot:      %s\n", buffer);
-      exit (1);
-    }
-  mpfr_sprintf (buffer, "%.0R*f, %Qx", GMP_RNDZ, x, mpq);
-  if (strcmp (buffer, "-12345678, 1e240/45b352") != 0)
-    {
-      fprintf (stderr,
-               "Error in mpfr_sprintf (s, \"%%R*e, %%Qx\", GMP_RNDZ, x, mpq)\n");
-      fprintf (stderr, "expected: -12345678, 1e240/45b352\ngot:      %s\n",
-               buffer);
-      exit (1);
-    }
-  mpfr_sprintf (buffer, "%i, %.*Rf, %Ff", i, 12, x, mpf);
-  if (strcmp (buffer, "121, -12345678.875000000000, 1.290323") != 0)
-    {
-      fprintf (stderr,
-               "Error in mpfr_sprintf (s, \"%%i, %%.*Rf, %%Ff\", i, 12, x, mpf)\n");
-      fprintf (stderr, \
-               "expected: 121, -12345678.875000000000, 1.290323\ngot:      %s\n",
-               buffer);
-      exit (1);
-    }
-  mpfr_sprintf (buffer, "%.*Zi, %R*e, %Lf", 20, mpz, rnd, x, d);
-  if (strcmp (buffer, "00000010610209857723, -1.2345678875e+07, 0.032258") != 0)
-    {
-      fprintf (stderr,
-               "Error in mpfr_sprintf (s,\"%%.*Zi, %%R*e, %%Lf\", 20, mpz, GMP_RNDD, x, d)\n");
-      fprintf (stderr, \
-               "expected: 00000010610209857723, -1.2345678875e+07, 0.032258\ngot:      %s\n",
-               buffer);
-      exit (1);
-    }
+  check_sprintf ("121", "%i", i);
+  check_vsprintf ("121, -12345679", "%i, %.0Rf", i, x);
+  check_vsprintf ("10610209857723, -1.2345678875e+07", "%Zi, %R*e", mpz, rnd,
+                  x);
+  check_vsprintf ("-12345678.9, 121", "%.1Rf, %i", x, i);
+  check_vsprintf ("-12345678, 1e240/45b352", "%.0R*f, %Qx", GMP_RNDZ, x, mpq);
+  check_vsprintf ("121, -12345678.875000000000, 1.290323", "%i, %.*Rf, %Ff",
+                  i, 12, x, mpf);
+  check_vsprintf ("00000010610209857723, -1.2345678875e+07, 0.032258",
+                  "%.*Zi, %R*e, %Lf", 20, mpz, rnd, x, d);
 
   mpf_clear (mpf);
   mpq_clear (mpq);
@@ -361,10 +269,10 @@ main (int argc, char **argv)
   locale = setlocale (LC_NUMERIC, "C");
 #endif
 
-  special ();
   integer ();
-  floating_point ();
-  mixed ();
+  hexadecimal ();
+  floating_point ();  /* [TODO] */
+  mixed ();           /* [TODO] */
 
 #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
   setlocale (LC_NUMERIC, locale);
