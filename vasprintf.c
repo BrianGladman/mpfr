@@ -64,37 +64,38 @@ MA 02110-1301, USA. */
 
 /* We assume that a single conversion specifier produces at most 4095 chars
    (Rationale for International Standard -Programming Languages- C
-   Revision 5.10 April-2003, 7.19.6.1 p152). */
+   Revision 5.10 April-2003, 7.19.6.1 p.152). */
 #define MAX_CHAR_PRODUCED_BY_SPEC 4096
 
 /* some macro and functions for parsing format string */
-#define READ_INT(format, specinfo, field, label_out)    \
-  do {                                                  \
-    while (*(format))                                   \
-      {                                                 \
-        switch (*(format))                              \
-          {                                             \
-          case '0':                                     \
-          case '1':                                     \
-          case '2':                                     \
-          case '3':                                     \
-          case '4':                                     \
-          case '5':                                     \
-          case '6':                                     \
-          case '7':                                     \
-          case '8':                                     \
-          case '9':                                     \
-            (specinfo).field *= 10;                     \
-            (specinfo).field += *(format) - '0';        \
-            ++(format);                                 \
-            break;                                      \
-          case '*':                                     \
-            (specinfo).field = va_arg ((ap), int);      \
-            ++(format);                                 \
-          default:                                      \
-            goto label_out;                             \
-          }                                             \
-      }                                                 \
+#define READ_INT(format, specinfo, field, label_out)            \
+  do {                                                          \
+    while (*(format))                                           \
+      {                                                         \
+        switch (*(format))                                      \
+          {                                                     \
+          case '0':                                             \
+          case '1':                                             \
+          case '2':                                             \
+          case '3':                                             \
+          case '4':                                             \
+          case '5':                                             \
+          case '6':                                             \
+          case '7':                                             \
+          case '8':                                             \
+          case '9':                                             \
+            MPFR_ASSERTN ((specinfo).field < INT_MAX / 10);     \
+            (specinfo).field *= 10;                             \
+            (specinfo).field += *(format) - '0';                \
+            ++(format);                                         \
+            break;                                              \
+          case '*':                                             \
+            (specinfo).field = va_arg ((ap), int);              \
+            ++(format);                                         \
+          default:                                              \
+            goto label_out;                                     \
+          }                                                     \
+      }                                                         \
   } while (0)
 
 /* __arg_type contains all the types described by the 'type' field of the
@@ -281,8 +282,8 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
 
 
 /* some macros and functions filling the buffer */
-/* CONSUME_VA_ARG removes from va_list AP the type expected by SPECINFO */
 
+/* CONSUME_VA_ARG removes from va_list AP the type expected by SPECINFO */
 #ifdef HAVE_STDINT_H
 #define CASE_INTMAX_ARG(specinfo, ap)           \
   case INTMAX_ARG:                              \
@@ -414,6 +415,7 @@ buffer_init (struct string_buffer *b, size_t s)
 static void
 buffer_cat (struct string_buffer *b, const char *s, size_t len)
 {
+  MPFR_ASSERTD (len <= strlen (s));
   if (MPFR_UNLIKELY ((b->curr + len + 1) > (b->start + b->size)))
     {
       const size_t pos = b->curr - b->start;
@@ -429,6 +431,7 @@ buffer_cat (struct string_buffer *b, const char *s, size_t len)
   b->curr += len;
 }
 
+/* Add N characters C to the end of buffer */
 static void
 buffer_pad (struct string_buffer *b, const char c, const size_t n)
 {
