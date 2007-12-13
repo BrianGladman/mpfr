@@ -1695,8 +1695,8 @@ direction of the error as the other functions do.
 
 This section describes functions that perform input from an input/output
 stream, and functions that output to an input/output stream.
-Passing a null pointer for a @var{stream} argument to any of
-these functions will make them read from @code{stdin} and write to
+Passing a null pointer for a @var{stream} argument to @code{mpfr_inp_str} or
+@code{mpfr_out_str} will make them read from @code{stdin} and write to
 @code{stdout}, respectively.
 
 When using any of these functions, you must include the @code{<stdio.h>}
@@ -1750,11 +1750,14 @@ Return the number of bytes read, or if an error occurred, return 0.
 @c @code{mpfr_out_raw}, and put the result in @var{float}.
 @c @end deftypefun
 
-@deftypefun int mpfr_fprintf (FILE *@var{stream}, const char *@var{template}, ...)
-@deftypefunx int mpfr_printf (const char *@var{template}, ...)
+@deftypefun  int mpfr_printf (const char *@var{template}, ...)
+@deftypefunx int mpfr_fprintf (FILE *@var{stream}, const char *@var{template}, ...)
+@deftypefunx int mpfr_vprintf (const char *@var{template}, va_list @var{ap})
+@deftypefunx int mpfr_vfprintf (FILE *@var{stream}, const char *@var{template}, va_list @var{ap})
 The @code{mpfr_fprintf} (@code{mpfr_printf}) function prints to the stream
 @var{stream} (respectively @code{stdout}) the optional arguments under the
 control of the template string @var{template}.
+
 The format specification accepted by @code{mpfr_printf} is an extension of the
 @code{printf} one. The conversion specification is of the form:
 @example
@@ -1818,10 +1821,37 @@ The @samp{conv} specifications allowed with @code{mpfr_t} parameter are:
 @end quotation
 In case of non-decimal output, only the significand is written in the
 specified base, the exponent is always displayed in decimal.
-Special values are always displayed as @code{@@nan@@}, @code{@@-inf@@}, and
-@code{@@+inf@@}.
-Return the number of characters written, or if an error occurred, return
-@minus{}1.
+Special values are always displayed as @code{nan}, @code{-inf}, and
+@code{inf} for @samp{a}, @samp{b}, @samp{e}, @samp{f}, and @samp{g}
+specifications and @code{NAN}, @code{-INF}, and
+@code{INF} for @samp{A}, @samp{E}, @samp{F}, and @samp{G}
+specifications.
+
+Return the number of characters written or a negative value if an error
+occurred.
+@end deftypefun
+
+@deftypefun int mpfr_sprintf (char *@var{buf}, const char *@var{template}, ...)
+@deftypefunx int mpfr_snprintf (char *@var{buf}, size_t @var{n}, const char *@var{template}, ...)
+@deftypefunx int mpfr_vsprintf (char *@var{buf}, const char *@var{template}, va_list @var{ap})
+@deftypefunx int mpfr_vsnprintf (char *@var{buf}, size_t @var{n}, const char *@var{template}, va_list @var{ap})
+@code{mpfr_sprintf} and @code{mpfr_vsprintf} return the numbers of characters
+written in the array @var{buf} not counting the terminating null character or
+a negative value if an error occurred.
+@code{mpfr_snprintf} and @code{mpfr_vsnprintf} return  the numbers of
+characters that would have been written had @var{n} be sufficiently large,
+not counting the terminating null character or a negative value if an error
+occurred.
+@end deftypefun
+
+@deftypefun int mpfr_asprintf (char **@var{str}, const char *@var{template}, ...)
+@deftypefunx int mpfr_vasprintf (char **@var{str}, const char *@var{template}, va_list @var{ap})
+Write their output as a null terminated string in a block of memory allocated
+using the current allocation function. A pointer to the block is stored in
+@var{str}. The block of memory must be freed using @code{mpfr_free_str}.
+
+The return value is the number of characters written in the string, excluding
+the null-terminator or a negative value if an error occurred.
 @end deftypefun
 
 @node Integer Related Functions, Rounding Related Functions, Input and Output Functions, MPFR Interface
