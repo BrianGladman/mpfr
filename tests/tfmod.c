@@ -67,16 +67,16 @@ slow_fmod (mpfr_ptr r, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd)
 static void
 test_failed (mpfr_t erem, mpfr_t grem, mpfr_t x, mpfr_t y, mp_rnd_t rnd)
 {
-  fprintf (stderr, "error : mpfr_fmod (r, x, y, rnd)\n  x = ");
-  mpfr_out_str (stderr, 10, 0, x, GMP_RNDD);
-  fprintf (stderr, "\n  y = ");
-  mpfr_out_str (stderr, 10, 0, y, GMP_RNDD);
-  fprintf (stderr, "\nrnd = %s\n", mpfr_print_rnd_mode (rnd));
-  fprintf (stderr, "\n  expected r = ");
-  mpfr_out_str (stderr, 10, 0, erem, GMP_RNDD);
-  fprintf (stderr, "\n  got      r = ");
-  mpfr_out_str (stderr, 10, 0, grem, GMP_RNDD);
-  fprintf (stderr, "\n");
+  fprintf (stdout, "error : mpfr_fmod (r, x, y, rnd)\n  x = ");
+  mpfr_out_str (stdout, 10, 0, x, GMP_RNDD);
+  fprintf (stdout, "\n  y = ");
+  mpfr_out_str (stdout, 10, 0, y, GMP_RNDD);
+  fprintf (stdout, "\nrnd = %s\n", mpfr_print_rnd_mode (rnd));
+  fprintf (stdout, "\n  expected r = ");
+  mpfr_out_str (stdout, 10, 0, erem, GMP_RNDD);
+  fprintf (stdout, "\n  got      r = ");
+  mpfr_out_str (stdout, 10, 0, grem, GMP_RNDD);
+  fprintf (stdout, "\n");
 
   mpfr_clears (erem, grem, x, y, (void *) 0);
   exit (1);
@@ -112,7 +112,7 @@ special (void)
     test_failed (r, x, x, y, GMP_RNDN);
   if (inexact)
     {
-      fprintf (stderr, "error : mpfr_fmod (NaN, NaN) should be exact\n");
+      fprintf (stdout, "error : mpfr_fmod (NaN, NaN) should be exact\n");
       goto error;
     }
 
@@ -123,7 +123,7 @@ special (void)
     test_failed (r, x, x, y, GMP_RNDN);
   if (inexact)
     {
-      fprintf (stderr, "error : mpfr_fmod (NaN, +0) should be exact\n");
+      fprintf (stdout, "error : mpfr_fmod (NaN, +0) should be exact\n");
       goto error;
     }
 
@@ -134,7 +134,7 @@ special (void)
     test_failed (r, x, x, y, GMP_RNDN);
   if (inexact)
     {
-      fprintf (stderr, "error : mpfr_fmod (3.1415, NaN) should be exact\n");
+      fprintf (stdout, "error : mpfr_fmod (3.1415, NaN) should be exact\n");
       goto error;
     }
 
@@ -145,7 +145,7 @@ special (void)
     test_failed (r, x, x, y, GMP_RNDN);
   if (inexact)
     {
-      fprintf (stderr, "error : mpfr_fmod (3.1415, +Inf) should be exact\n");
+      fprintf (stdout, "error : mpfr_fmod (3.1415, +Inf) should be exact\n");
       goto error;
     }
 

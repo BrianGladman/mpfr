@@ -51,8 +51,8 @@ check_sprintf (const char *expected, const char *fmt, mpfr_srcptr x)
   mpfr_sprintf (buffer, fmt, x);
   if (strcmp (buffer, expected) != 0)
     {
-      fprintf (stderr, "Error in mpfr_sprintf (s, \"%s\", x);\n", fmt);
-      fprintf (stderr, "expected: \"%s\"\ngot:      \"%s\"\n", expected,
+      fprintf (stdout, "Error in mpfr_sprintf (s, \"%s\", x);\n", fmt);
+      fprintf (stdout, "expected: \"%s\"\ngot:      \"%s\"\n", expected,
                buffer);
       exit (1);
     }
@@ -69,8 +69,8 @@ check_vsprintf (const char *expected, const char *fmt, ...)
   mpfr_vsprintf (buffer, fmt, ap);
   if (strcmp (buffer, expected) != 0)
     {
-      fprintf (stderr, "Error in mpfr_vsprintf (s, \"%s\", ...);\n", fmt);
-      fprintf (stderr, "expected: \"%s\"\ngot:      \"%s\"\n", expected,
+      fprintf (stdout, "Error in mpfr_vsprintf (s, \"%s\", ...);\n", fmt);
+      fprintf (stdout, "expected: \"%s\"\ngot:      \"%s\"\n", expected,
                buffer);
 
       va_end (ap);

@@ -28,17 +28,17 @@ MA 02110-1301, USA. */
 static void
 failed (mpfr_t x, mpfr_t esh, mpfr_t gsh, mpfr_t ech, mpfr_t gch)
 {
-  fprintf (stderr, "error : mpfr_sinh_cosh (x) x = ");
-  mpfr_out_str (stderr, 10, 0, x, GMP_RNDD);
-  fprintf (stderr, "\nsinh(x) expected ");
-  mpfr_out_str (stderr, 10, 0, esh, GMP_RNDD);
-  fprintf (stderr, "\n        got ");
-  mpfr_out_str (stderr, 10, 0, gsh, GMP_RNDD);
-  fprintf (stderr, "\ncosh(x) expected ");
-  mpfr_out_str (stderr, 10, 0, ech, GMP_RNDD);
-  fprintf (stderr, "\n        got ");
-  mpfr_out_str (stderr, 10, 0, gch, GMP_RNDD);
-  fprintf (stderr, "\n");
+  fprintf (stdout, "error : mpfr_sinh_cosh (x) x = ");
+  mpfr_out_str (stdout, 10, 0, x, GMP_RNDD);
+  fprintf (stdout, "\nsinh(x) expected ");
+  mpfr_out_str (stdout, 10, 0, esh, GMP_RNDD);
+  fprintf (stdout, "\n        got ");
+  mpfr_out_str (stdout, 10, 0, gsh, GMP_RNDD);
+  fprintf (stdout, "\ncosh(x) expected ");
+  mpfr_out_str (stdout, 10, 0, ech, GMP_RNDD);
+  fprintf (stdout, "\n        got ");
+  mpfr_out_str (stdout, 10, 0, gch, GMP_RNDD);
+  fprintf (stdout, "\n");
 
   mpfr_clears (x, esh, gsh, ech, gch, (void *) 0);
   exit (1);
