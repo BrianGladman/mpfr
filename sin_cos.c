@@ -77,36 +77,37 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
       /* Warning: in case y = x or z = x, and MPFR_FAST_COMPUTE_IF_SMALL_INPUT
          fails, we have to restore the original value of x. */
       mpfr_t t;
-      if (y == x || z == x)
+      int reuse = y == x || z == x;
+
+      if (reuse)
         {
           mpfr_init2 (t, MPFR_PREC(x));
           mpfr_set (t, x, GMP_RNDN);
         }
+
       MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, -2 * expx, 2, 0, rnd_mode,
                                         { inexy = _inexact;
                                           goto small_input; });
+
       if (0)
         {
         small_input:
           MPFR_FAST_COMPUTE_IF_SMALL_INPUT (z, __gmpfr_one, -2 * expx,
                                             1, 0, rnd_mode,
-                                            { inexz = _inexact; goto end2; });
-        }
-
-      if (0)
-        {
-        end2:
-          if (y == x || z == x)
-            mpfr_clear (t);
-          goto end;
+                                            { inexz = _inexact;
+                                              if (reuse)
+                                                mpfr_clear (t);
+                                              goto end; });
         }
 
       /* if we go here, one of the two MPFR_FAST_COMPUTE_IF_SMALL_INPUT calls
          failed */
-      if (y == x || z == x)
+      if (reuse)
         {
-          /* FIXME: can we use mpfr_swap here and above? */
-          mpfr_set (x, t, GMP_RNDN);
+          /* FIXME: can we use mpfr_swap here and above?
+             [VL] How? In any case, I don't think so, since y and/or z
+             may be read-only. */
+          mpfr_set ((mpfr_ptr) x, t, GMP_RNDN);
           mpfr_clear (t);
         }
 
