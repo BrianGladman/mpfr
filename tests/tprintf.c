@@ -238,7 +238,7 @@ mixed (void)
   mpfr_set_d (x, -1.2345678875e7, GMP_RNDN);
   rnd = GMP_RNDD;
 
-  check_sprintf ("121", "%i", i);
+  check_vsprintf ("121", "%i", i);
   check_vsprintf ("121, -12345679", "%i, %.0Rf", i, x);
   check_vsprintf ("10610209857723, -1.2345678875e+07", "%Zi, %R*e", mpz, rnd,
                   x);
