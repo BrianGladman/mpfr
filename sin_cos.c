@@ -74,43 +74,47 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
      functions. Moreover, any overflow on m is avoided. */
   if (expx < 0)
     {
-      /* Warning: in case y = x or z = x, and MPFR_FAST_COMPUTE_IF_SMALL_INPUT
-         fails, we have to restore the original value of x. */
-      mpfr_t t;
-      int reuse = y == x || z == x;
-
-      if (reuse)
+      /* Warning: in case y = x, and the first call to
+         MPFR_FAST_COMPUTE_IF_SMALL_INPUT succeeds but the second fails,
+         we will have clobbered the original value of x.
+         The workaround is to first compute z = cos(x) in that case, since
+         y and z are different. */
+      if (y != x)
+        /* y and x differ, thus we can safely try to compute y first */
         {
-          mpfr_init2 (t, MPFR_PREC(x));
-          mpfr_set (t, x, GMP_RNDN);
+          MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, -2 * expx, 2, 0, rnd_mode,
+                                            { inexy = _inexact;
+                                              goto small_input; });
+          if (0)
+            {
+            small_input:
+              /* we can go here only if we can round sin(x) */
+              MPFR_FAST_COMPUTE_IF_SMALL_INPUT (z, __gmpfr_one, -2 * expx,
+                                                1, 0, rnd_mode,
+                                                { inexz = _inexact;
+                                                  goto end; });
+            }
+
+          /* if we go here, one of the two MPFR_FAST_COMPUTE_IF_SMALL_INPUT
+             calls failed */
         }
-
-      MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, -2 * expx, 2, 0, rnd_mode,
-                                        { inexy = _inexact;
-                                          goto small_input; });
-
-      if (0)
+      else /* y and x are the same variable: try to compute z first, which
+              necessarily differs */
         {
-        small_input:
           MPFR_FAST_COMPUTE_IF_SMALL_INPUT (z, __gmpfr_one, -2 * expx,
                                             1, 0, rnd_mode,
                                             { inexz = _inexact;
-                                              if (reuse)
-                                                mpfr_clear (t);
-                                              goto end; });
+                                              goto small_input2; });
+          if (0)
+            {
+            small_input2:
+              /* we can go here only if we can round cos(x) */
+              MPFR_FAST_COMPUTE_IF_SMALL_INPUT (y, x, -2 * expx, 2, 0,
+                                                rnd_mode,
+                                                { inexy = _inexact;
+                                                  goto end; });
+            }
         }
-
-      /* if we go here, one of the two MPFR_FAST_COMPUTE_IF_SMALL_INPUT calls
-         failed */
-      if (reuse)
-        {
-          /* FIXME: can we use mpfr_swap here and above?
-             [VL] How? In any case, I don't think so, since y and/or z
-             may be read-only. */
-          mpfr_set ((mpfr_ptr) x, t, GMP_RNDN);
-          mpfr_clear (t);
-        }
-
       m += 2 * (-expx);
     }
 
