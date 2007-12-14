@@ -802,11 +802,10 @@ sprnt_fp_a (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
                 {
                   digit++;
                   if (digit > 15)
+                    /* As we want only the first significant digit, we have
+                       to shift one position to the left */
                     {
-                      /* FIXME: Is it really -= 15? Or -= 16? If this is
-                         a bug, add a testcase and fix. If not, explain
-                         in a comment. */
-                      digit -= 15;
+                      digit /= 16;
                       exp++;  /* no possible overflow because
                                  exp < MPFR_EXP_MAX/4 */
                     }
