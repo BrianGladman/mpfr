@@ -68,7 +68,7 @@ MA 02110-1301, USA. */
    Revision 5.10 April-2003, 7.19.6.1 p.152). */
 #define MAX_CHAR_PRODUCED_BY_SPEC 4096
 
-static const char num_to_text[] = "0123456789abcdef";
+static const char num_to_text[16] = "0123456789abcdef";
 
 /* some macro and functions for parsing format string */
 #define READ_INT(format, specinfo, field, label_out)            \
@@ -818,7 +818,7 @@ sprnt_fp_a (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
           if (MPFR_SIGN (p) < 0)
             strcat (raw_str, "-");
 
-          MPFR_ASSERTD ((-1 < digit) && (digit < 16));
+          MPFR_ASSERTD ((0 <= digit) && (digit <= 15));
           digit_str[0] = num_to_text [digit];
 
           strcat (raw_str, digit_str);
