@@ -64,6 +64,9 @@ mpfr_sinh_cosh (mpfr_ptr sh, mpfr_ptr ch, mpfr_srcptr xt, mp_rnd_t rnd_mode)
         }
     }
 
+  /* Warning: if we use MPFR_FAST_COMPUTE_IF_SMALL_INPUT here, make sure
+     that the code also works in case of overlap (see sin_cos.c) */
+
   MPFR_TMP_INIT_ABS (x, xt);
 
   {
