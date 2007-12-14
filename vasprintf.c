@@ -699,7 +699,7 @@ sprnt_fp_a (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
           /* integral part, with optional padding */
           {
             int i;
-            for (i = 0; i < nbc.int_part; ++i)
+            for (i = 1; i < nbc.int_part; ++i)
               strcat (str, "0");
           }
           /* digit */
@@ -732,10 +732,24 @@ sprnt_fp_a (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
       /* get sign - and significant digits in raw_str */
       if (spec.prec < 0)
         /* Let mpfr_get_str determine precision. */
-        raw_str = mpfr_get_str (0, &exp, 16, 0, p, spec.rnd_mode);
+        {
+          raw_str = mpfr_get_str (0, &exp, 16, 0, p, spec.rnd_mode);
+          /* exp is the exponent for radix sixteen with decimal point BEFORE
+             the first digit, we want the exponent for radix two and the decimal
+             point AFTER the first digit */
+          exp = (exp - 1) * 4;
+
+        }
       else if (spec.prec > 0)
         /* One digit before decimal point plus SPEC.PREC after it. */
-        raw_str = mpfr_get_str (0, &exp, 16, 1 + spec.prec, p, spec.rnd_mode);
+        {        
+          raw_str = mpfr_get_str (0, &exp, 16, 1 + spec.prec, p,
+                                  spec.rnd_mode);
+          /* exp is the exponent for radix sixteen with decimal point BEFORE
+             the first digit, we want the exponent for radix two and the decimal
+             point AFTER the first digit */
+          exp = (exp - 1) * 4;
+        }
       else
         /* One digit is sufficient but mpfr_get_str returns at least two
            digits. So, in order to avoid double rounding, we will build
@@ -743,7 +757,6 @@ sprnt_fp_a (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
         {
           mp_limb_t *pm = MPFR_MANT (p);
           mp_size_t ps;
-          mp_exp_unsigned_t f;
           size_t n;
           int digit, shift;
           char digit_str[2] = {'\0', '\0'};
@@ -758,20 +771,18 @@ sprnt_fp_a (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
             spec.rnd_mode == GMP_RNDU ? MPFR_IS_POS (p) :
             spec.rnd_mode == GMP_RNDZ ? 0 : -1;
 
-          /* Find out the radix-16 digit by grouping the (ep modulus 4) + 1
-             first digits. Even if MPFR_PREC (p) < 4, we can read 4 bits in
-             its first limb */
+          /* Find out the radix-16 digit by grouping the 4 first digits. Even
+             if MPFR_PREC (p) < 4, we can read 4 bits in its first limb */
           exp = MPFR_GET_EXP (p);
-          f = SAFE_ABS (mp_exp_unsigned_t, exp);
-          f = 4 - f % 4;
-          shift = BITS_PER_MP_LIMB - f;
+          shift = BITS_PER_MP_LIMB - 4;
           ps = (MPFR_PREC (p) - 1) / BITS_PER_MP_LIMB;
           digit = pm[ps]>>shift;
 
-          /* The exponent of 16 as it would be returned by mpfr_get_str */
-          exp >>= 2;
+          /* exponent for radix-2 with the decimal point after the first
+             hexadecimal digit */
+          exp -= 4;
 
-          if (f < MPFR_PREC (p))
+          if (MPFR_PREC (p) > 4)
             /* round taking into account bits outside the first f ones */
             {
               if (rnd_away == -1)
@@ -806,8 +817,8 @@ sprnt_fp_a (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
                        to shift one position to the left */
                     {
                       digit /= 16;
-                      exp++;  /* no possible overflow because
-                                 exp < MPFR_EXP_MAX/4 */
+                      exp += 4;  /* no possible overflow because
+                                    exp < MPFR_EXP_MAX/4 */
                     }
                 }
             }
@@ -860,7 +871,6 @@ sprnt_fp_a (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
 
       /* compute the number of characters in each part of str */
       nbc.sgn = (MPFR_SIGN (p) < 0) || (spec.showsign) || (spec.space) ? 1 : 0;
-      nbc.point = (spec.prec == 0) && (spec.alt == 0) ? 0 : 1;
       if (spec.prec < 0)
         {
           char *end;
@@ -878,20 +888,19 @@ sprnt_fp_a (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
         nbc.frac_part = 0;
       else
         nbc.frac_part = spec.prec;
-      /* exp is the exponent for radix sixteen with decimal point BEFORE
-         the first digit, we want the exponent for radix two and the decimal
-         point AFTER the first digit */
-      exp = (exp - 1) * 4;
+      nbc.point = (nbc.frac_part == 0) && (spec.alt == 0) ? 0 : 1;
       /* the exp_part contains the base character plus the sign character
          plus ceil(log10(abs(exp))) digits */
       nbc.exp_part = 2;
       {
-        unsigned long x = (exp < 0) ? -exp : exp;
-        while (x > 1)
+        mp_exp_unsigned_t x;
+
+        x = SAFE_ABS (mp_exp_unsigned_t, exp);
+        do
           {
             nbc.exp_part++;
             x = (x + 9) / 10; /* [FIXME] possible overflow */
-          }
+          } while (x > 1);
       }
       /* Number of characters to be printed (2 for '0x') */
       nbc.total = 2 + nbc.sgn + nbc.point + nbc.frac_part
