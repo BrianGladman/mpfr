@@ -25,7 +25,7 @@ MA 02110-1301, USA. */
 
 #include "mpfr-test.h"
 
-#define DISP(s, t) {printf(s); mpfr_out_str(stdout, 10, 0, t, GMP_RNDN); }
+#define DISP(s, t) {printf(s); mpfr_out_str(stdout, 2, 0, t, GMP_RNDN); }
 #define DISP2(s,t) {DISP(s,t); putchar('\n');}
 
 #define SPECIAL_MAX 12
@@ -481,7 +481,8 @@ test3a (int (*testfunc)(mpfr_ptr, mpfr_ptr, mpfr_srcptr, mp_rnd_t),
       testfunc (res1, res2, res1, rnd);
       if (mpfr_compare (res1, ref1) || mpfr_compare (res2, ref2))
         {
-          printf ("Error for %s(a, b, a) for ", foo);
+          printf ("Error for %s(a, b, a) for rnd=%s, ", foo,
+                  mpfr_print_rnd_mode (rnd));
           DISP2("a=",ref3);
           DISP("expected (", ref1); DISP(",",ref2);
           DISP("), got (", res1); DISP(",", res2); printf(")\n");

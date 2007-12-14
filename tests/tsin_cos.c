@@ -273,18 +273,36 @@ tiny (void)
   mpfr_clears (x, s, c, (void *) 0);
 }
 
+/* bug found in nightly tests */
+static void
+test20071214 (void)
+{
+  mpfr_t a, b;
+
+  mpfr_init2 (a, 4);
+  mpfr_init2 (b, 4);
+
+  mpfr_set_ui_2exp (a, 3, -4, GMP_RNDN);
+  mpfr_sin_cos (a, b, a, GMP_RNDD);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (a, 11, -6) == 0);
+  MPFR_ASSERTN(mpfr_cmp_ui_2exp (b, 15, -4) == 0);
+
+  mpfr_clear (a);
+  mpfr_clear (b);
+}
+
 /* tsin_cos prec [N] performs N tests with prec bits */
 int
 main(int argc, char *argv[])
 {
   tests_start_mpfr ();
 
-  check_nans ();
-
   if (argc > 1)
     {
       large_test (atoi (argv[1]), (argc > 2) ? atoi (argv[2]) : 1);
     }
+
+  check_nans ();
 
   /* worst case from PhD thesis of Vincent Lefe`vre: x=8980155785351021/2^54 */
   check53 ("4.984987858808754279e-1", "4.781075595393330379e-1",
@@ -310,6 +328,7 @@ main(int argc, char *argv[])
 
   overflowed_sin_cos0 ();
   tiny ();
+  test20071214 ();
 
   tests_end_mpfr ();
   return 0;
