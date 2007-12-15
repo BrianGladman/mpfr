@@ -54,7 +54,7 @@ mpfr_reldiff (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
           mpfr_set_si (a, MPFR_INT_SIGN (c), rnd_mode);
           return;
         }
-      /* Fall throught */
+      /* Fall through */
     }
 
   if (a == b)
