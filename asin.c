@@ -47,6 +47,7 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
         {
           MPFR_ASSERTD (MPFR_IS_ZERO (x));
           MPFR_SET_ZERO (asin);
+          MPFR_SET_SAME_SIGN (asin, x);
           MPFR_RET (0); /* exact result */
         }
     }
