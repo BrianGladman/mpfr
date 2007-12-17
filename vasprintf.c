@@ -885,17 +885,17 @@ sprnt_fp_a (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
         nbc.frac_part = spec.prec;
       nbc.point = (nbc.frac_part == 0) && (spec.alt == 0) ? 0 : 1;
       /* the exp_part contains the base character plus the sign character
-         plus ceil(log10(abs(exp))) digits */
-      nbc.exp_part = 2;
+         plus (exp == 0) ? 1 : floor(log10(abs(exp))) + 1 digits */
+      nbc.exp_part = 3;
       {
         mp_exp_unsigned_t x;
 
         x = SAFE_ABS (mp_exp_unsigned_t, exp);
-        do
+        while (x > 9)
           {
             nbc.exp_part++;
-            x = (x + 9) / 10; /* [FIXME] possible overflow */
-          } while (x > 1);
+            x /= 10;
+          }
       }
       /* Number of characters to be printed (2 for "0x") */
       nbc.total = 2 + nbc.sgn + nbc.point + nbc.frac_part
