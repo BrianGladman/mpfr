@@ -179,38 +179,53 @@ hexadecimal (void)
   mpfr_set_inf (x, 1);
   check_sprintf (pinf_str, "%Ra", x);
   check_sprintf (pinf_uc_str, "%RA", x);
+  check_sprintf (pinf_str, "%.0Ra", x);
+  check_sprintf (pinf_uc_str, "%.0RA", x);
 
   mpfr_set_inf (x, -1);
   check_sprintf (minf_str, "%Ra", x);
   check_sprintf (minf_uc_str, "%RA", x);
+  check_sprintf (minf_str, "%.0Ra", x);
+  check_sprintf (minf_uc_str, "%.0RA", x);
 
   mpfr_set_nan (x);
   check_sprintf (nan_str, "%Ra", x);
   check_sprintf (nan_uc_str, "%RA", x);
+  check_sprintf (nan_str, "%.0Ra", x);
+  check_sprintf (nan_uc_str, "%.0RA", x);
 
   /* regular numbers */
   mpfr_set_str (x, "FEDCBA9.87654321", 16, GMP_RNDN);
 
-  /* simplest case */
+  /* simplest case right justified */
   check_sprintf ("   0xf.edcba987654321p+24", "%25Ra", x);
+  check_sprintf ("                  0x1p+28", "%25.0Ra", x);
   /* sign or space, pad with leading zeros */
   check_sprintf (" 0X00F.EDCBA987654321P+24", "% 025RA", x);
+  check_sprintf (" 0X000000000000000001P+28", "% 025.0RA", x);
   /* sign + or -, left justified */
   check_sprintf ("+0xf.edcba987654321p+24  ", "%+-25Ra", x);
+  check_sprintf ("+0x1p+28                 ", "%+-25.0Ra", x);
   /* decimal point, left justified */
+  check_sprintf ("0XF.FP+24 ", "%#-10.1RA", x);
   check_sprintf ("0X1.P+28  ", "%#-10.0RA", x);
   /* sign or space */
   check_sprintf (" 0xf.eddp+24", "% .3RNa", x);
+  check_sprintf (" 0x1p+28",     "% .0RNa", x);
   /* sign + or -, decimal point, pad with leading zeros */
-  check_sprintf ("+0X0F.P+24", "%0+#10.0RZA", x);
+  check_sprintf ("+0X0F.EP+24", "%0+#11.1RZA", x);
+  check_sprintf ("+0X00F.P+24", "%0+#11.0RZA", x);
   /* pad with leading zero */
   check_sprintf ("0x0000f.edcba987654321p+24", "%026RDa", x);
+  check_sprintf ("0x0000000000000000000fp+24", "%026.0RDa", x);
   /* sign or space, decimal point, left justified */
   check_sprintf (" 0XF.EP+24 " , "%- #11.1RDA", x);
+  check_sprintf (" 0XF.P+24  " , "%- #11.0RDA", x);
 
   mpfr_mul_si (x, x, -1, GMP_RNDD);
 
   /* sign + or - */
+  check_sprintf ("-0xf.ep+24", "%+10.1RUa", x);
   check_sprintf ("  -0xfp+24", "%+10.0RUa", x);
 
   mpfr_clear (x);
