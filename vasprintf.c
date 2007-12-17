@@ -292,6 +292,8 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
   case INTMAX_ARG:                              \
   (void) va_arg ((ap), intmax_t);               \
   break;
+#else
+#define CASE_INTMAX_ARG(specinfo, ap)
 #endif
 
 #ifdef HAVE_WCHAR_H
