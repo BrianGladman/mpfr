@@ -233,6 +233,52 @@ hexadecimal (void)
 }
 
 static int
+binary (void)
+{
+  mpfr_t x;
+  mpfr_init2 (x, 64);
+
+  /* special */
+  mpfr_set_inf (x, 1);
+  check_sprintf (pinf_str, "%Rb", x);
+
+  mpfr_set_inf (x, -1);
+  check_sprintf (minf_str, "%Rb", x);
+
+  mpfr_set_nan (x);
+  check_sprintf (nan_str, "%Rb", x);
+
+  /* regular numbers */
+  mpfr_set_str (x, "1110010101.1001101", 2, GMP_RNDN);
+
+  /* simplest case: right justified */
+  check_sprintf ("    1.1100101011001101p+9", "%25Rb", x);
+  /* sign or space, pad with leading zeros */
+  check_sprintf (" 0001.1100101011001101p+9", "% 025Rb", x);
+  /* sign + or -, left justified */
+  check_sprintf ("+1.1100101011001101p+9   ", "%+-25Rb", x);
+  /* sign or space */
+  check_sprintf (" 1.110p+9",  "% .3RNb", x);
+  check_sprintf (" 1.1101p+9", "% .4RNb", x);
+  /* sign + or -, decimal point (unused), pad with leading zeros */
+  check_sprintf ("+00001.1p+9", "%0+#11.1RZb", x);
+  check_sprintf ("+0001.0p+10", "%0+#11.1RNb", x);
+  /* pad with leading zero */
+  check_sprintf ("00001.1100101011001101p+9", "%025RDb", x);
+  /* sign or space, decimal point (unused), left justified */
+  check_sprintf (" 1.1p+9    " , "%- #11.1RDb", x);
+  check_sprintf (" 1.1p+9    " , "%- #11.0RDb", x);
+
+  mpfr_mul_si (x, x, -1, GMP_RNDD);
+
+  /* sign + or - */
+  check_sprintf ("   -1.1p+9", "%+10.1RUb", x);
+
+  mpfr_clear (x);
+  return 0;
+}
+
+static int
 mixed (void)
 {
   int i = 121;
@@ -285,6 +331,7 @@ main (int argc, char **argv)
 
   integer ();
   hexadecimal ();
+  binary ();
   floating_point ();  /* [TODO] */
   mixed ();           /* [TODO] */
 
