@@ -301,6 +301,10 @@ Table of contents:
   expansion of erfc(x)*exp(x^2/2) instead (which has less cancellation),
   and then divide by exp(x^2/2) (which is simpler to compute).
 
+- avoid successive calls to strcat in vasprintf.c, which can give a
+  complexity in O(n^2) instead of O(n).
+
+
 ##############################################################################
 6. Miscellaneous
 ##############################################################################
