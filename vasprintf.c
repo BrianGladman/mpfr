@@ -705,12 +705,7 @@ sprnt_fp_a (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
           /* digit */
           strcat (str, "0");
           if (nbc.point == 1)
-            {
-              char tmp[2];
-              tmp[0] = MPFR_DECIMAL_POINT;
-              tmp[1] = '\0';
-              strcat (str, tmp);
-            }
+            strcat (str, d_point);
           if (nbc.frac_part > 0)
             {
               /* fill frac_part with '0' */
@@ -742,7 +737,7 @@ sprnt_fp_a (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
         }
       else if (spec.prec > 0)
         /* One digit before decimal point plus SPEC.PREC after it. */
-        {        
+        {
           raw_str = mpfr_get_str (0, &exp, 16, 1 + spec.prec, p,
                                   spec.rnd_mode);
           /* exp is the exponent for radix sixteen with decimal point BEFORE
@@ -902,7 +897,7 @@ sprnt_fp_a (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
             x = (x + 9) / 10; /* [FIXME] possible overflow */
           } while (x > 1);
       }
-      /* Number of characters to be printed (2 for '0x') */
+      /* Number of characters to be printed (2 for "0x") */
       nbc.total = 2 + nbc.sgn + nbc.point + nbc.frac_part
         + nbc.exp_part;
       /* optional heading zeros are counted in int_part */
