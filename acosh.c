@@ -87,10 +87,11 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
     MPFR_ZIV_INIT (loop, Nt);
     for (;;)
       {
+        MPFR_BLOCK_DECL (flags);
+
         /* compute acosh */
-        mpfr_clear_flags ();
-        mpfr_mul (t, x, x, GMP_RNDD);      /* x^2 */
-        if (mpfr_overflow_p ())
+        MPFR_BLOCK (flags, mpfr_mul (t, x, x, GMP_RNDD));  /* x^2 */
+        if (MPFR_OVERFLOW (flags))
           {
             mpfr_t ln2;
             mp_prec_t pln2;

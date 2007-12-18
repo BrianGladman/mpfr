@@ -170,8 +170,11 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     /* use atan2(y,x) = atan(y/x) */
     for (;;)
       {
-        mpfr_clear_flags ();
-        if (mpfr_div (tmp, y, x, GMP_RNDN) == 0)
+        int div_inex;
+        MPFR_BLOCK_DECL (flags);
+
+        MPFR_BLOCK (flags, div_inex = mpfr_div (tmp, y, x, GMP_RNDN));
+        if (div_inex == 0)
           {
             /* Result is exact. */
             inexact = mpfr_atan (dest, tmp, rnd_mode);
@@ -182,7 +185,7 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
         /* If the division underflowed, since |atan(z)/z| < 1, we have
            an underflow. */
-        if (MPFR_UNLIKELY (mpfr_underflow_p ()))
+        if (MPFR_UNDERFLOW (flags))
           {
             int sign;
 

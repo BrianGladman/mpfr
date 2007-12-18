@@ -230,12 +230,11 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
               >= 2 * (x/e)^x / x for x >= 1 */
   if (compared > 0)
     {
-      int overflow;
       mpfr_t yp;
+      MPFR_BLOCK_DECL (flags);
 
       /* 1/e rounded down to 53 bits */
 #define EXPM1_STR "0.010111100010110101011000110110001011001110111100111"
-      mpfr_clear_overflow ();
       mpfr_init2 (xp, 53);
       mpfr_init2 (yp, 53);
       mpfr_set_str_binary (xp, EXPM1_STR);
@@ -245,12 +244,11 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_set_str_binary (yp, EXPM1_STR);
       mpfr_mul (xp, xp, yp, GMP_RNDZ); /* x^(x-2) / e^(x-1) */
       mpfr_mul (xp, xp, yp, GMP_RNDZ); /* x^(x-2) / e^x */
-      mpfr_mul (xp, xp, x, GMP_RNDZ); /* x^(x-1) / e^x */
-      mpfr_mul_2ui (xp, xp, 1, GMP_RNDZ);
-      overflow = mpfr_overflow_p ();
+      mpfr_mul (xp, xp, x, GMP_RNDZ); /* lower bound on x^(x-1) / e^x */
+      MPFR_BLOCK (flags, mpfr_mul_2ui (xp, xp, 1, GMP_RNDZ));
       mpfr_clear (xp);
       mpfr_clear (yp);
-      return (overflow) ? mpfr_overflow (gamma, rnd_mode, 1)
+      return MPFR_OVERFLOW (flags) ? mpfr_overflow (gamma, rnd_mode, 1)
         : mpfr_gamma_aux (gamma, x, rnd_mode);
     }
 

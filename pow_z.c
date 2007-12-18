@@ -33,6 +33,7 @@ mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
   mpz_t absz;
   mp_size_t size_z;
   MPFR_ZIV_DECL (loop);
+  MPFR_BLOCK_DECL (flags);
 
   MPFR_ASSERTD (mpz_sgn (z) != 0);
 
@@ -55,24 +56,23 @@ mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
       /* see pow_ui.c for the error analusis, which is identical */
       MPFR_ASSERTD (prec > (mpfr_prec_t) i);
       err = prec - 1 - (mpfr_prec_t) i;
-      MPFR_ASSERTD (i >= 2);
-      mpfr_clear_overflow ();
-      mpfr_clear_underflow ();
 
       /* First step: compute square from y */
-      inexact = mpfr_mul (res, x, x, GMP_RNDU);
-      if (mpz_tstbit (absz, i - 2))
-        inexact |= mpfr_mul (res, res, x, rnd1);
-      for (i -= 3; i >= 0 && !mpfr_underflow_p() && !mpfr_overflow_p (); i--)
-        {
-          inexact |= mpfr_mul (res, res, res, GMP_RNDU);
-          if (mpz_tstbit (absz, i))
-            inexact |= mpfr_mul (res, res, x, rnd1);
-        }
+      MPFR_BLOCK (flags,
+                  inexact = mpfr_mul (res, x, x, GMP_RNDU);
+                  MPFR_ASSERTD (i >= 2);
+                  if (mpz_tstbit (absz, i - 2))
+                    inexact |= mpfr_mul (res, res, x, rnd1);
+                  for (i -= 3; i >= 0 && !MPFR_BLOCK_EXCEP; i--)
+                    {
+                      inexact |= mpfr_mul (res, res, res, GMP_RNDU);
+                      if (mpz_tstbit (absz, i))
+                        inexact |= mpfr_mul (res, res, x, rnd1);
+                    });
       /*    printf ("pow_z ");
             mpfr_dump_mant (MPFR_MANT (res), prec, MPFR_PREC (x), err); */
       if (MPFR_LIKELY (inexact == 0
-                       || mpfr_overflow_p () || mpfr_underflow_p ()
+                       || MPFR_OVERFLOW (flags) || MPFR_UNDERFLOW (flags)
                        || MPFR_CAN_ROUND (res, err, MPFR_PREC (y), rnd)))
         break;
       /* Actualisation of the precision */
@@ -82,11 +82,11 @@ mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
   MPFR_ZIV_FREE (loop);
 
   /* Check Overflow */
-  if (MPFR_UNLIKELY (mpfr_overflow_p ()))
+  if (MPFR_OVERFLOW (flags))
     inexact = mpfr_overflow (y, rnd, mpz_odd_p (absz) ?
                              MPFR_SIGN (x) : MPFR_SIGN_POS);
   /* Check Underflow */
-  else if (MPFR_UNLIKELY (mpfr_underflow_p ()))
+  else if (MPFR_UNDERFLOW (flags))
     inexact = mpfr_underflow (y, rnd == GMP_RNDN ? GMP_RNDZ : rnd,
                               mpz_odd_p (absz) ? MPFR_SIGN (x) :
                               MPFR_SIGN_POS);

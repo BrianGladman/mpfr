@@ -4,4 +4,7 @@
 
 grep '^# *include *<math\.h>' *.c
 
+grep -E 'mpfr_(underflow|overflow|nanflag|inexflag|erangeflag)_p' *.c | \
+  grep -v '^exceptions.c:'
+
 true

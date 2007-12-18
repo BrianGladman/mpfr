@@ -94,13 +94,14 @@ mpfr_sinh_cosh (mpfr_ptr sh, mpfr_ptr ch, mpfr_srcptr xt, mp_rnd_t rnd_mode)
     MPFR_ZIV_INIT (loop, N);
     for (;;)
       {
+        MPFR_BLOCK_DECL (flags);
+
         /* compute sinh_cosh */
-        mpfr_clear_flags ();
-        mpfr_exp (s, x, GMP_RNDD);        /* exp(x) */
+        MPFR_BLOCK (flags, mpfr_exp (s, x, GMP_RNDD));
         /* exp(x) can overflow! */
         /* BUG/TODO/FIXME: exp can overflow but sinh or cosh may be
            representable! */
-        if (MPFR_UNLIKELY (mpfr_overflow_p ()))
+        if (MPFR_OVERFLOW (flags))
           {
             inexact_ch = mpfr_overflow (ch, rnd_mode, MPFR_SIGN_POS);
             inexact_sh = mpfr_overflow (sh, rnd_mode, MPFR_SIGN (xt));

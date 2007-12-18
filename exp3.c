@@ -201,6 +201,8 @@ mpfr_exp_3 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_ZIV_INIT (ziv_loop, realprec);
   for (;;)
     {
+      MPFR_BLOCK_DECL (flags);
+
       k = MPFR_INT_CEIL_LOG2 (Prec) - MPFR_LOG2_BITS_PER_MP_LIMB;
 
       /* now we have to extract */
@@ -240,11 +242,11 @@ mpfr_exp_3 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       (*__gmp_free_func) (P, 3*(k+2)*sizeof(mpz_t));
       (*__gmp_free_func) (mult, 2*(k+2)*sizeof(mp_prec_t));
 
-      mpfr_clear_flags ();
-      for (loop = 0; loop < shift_x; loop++)
-        mpfr_mul (tmp, tmp, tmp, GMP_RNDD);
+      MPFR_BLOCK (flags,
+                  for (loop = 0; loop < shift_x; loop++)
+                    mpfr_mul (tmp, tmp, tmp, GMP_RNDD));
 
-      if (MPFR_UNLIKELY (mpfr_overflow_p ()))
+      if (MPFR_OVERFLOW (flags))
         {
           /* We hack to set a FP number outside the valid range so that
              mpfr_check_range properly generates an overflow */
@@ -253,7 +255,7 @@ mpfr_exp_3 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
           inexact = 1;
           break;
         }
-      else if (MPFR_UNLIKELY (mpfr_underflow_p ()))
+      else if (MPFR_UNDERFLOW (flags))
         {
           inexact = mpfr_underflow (y, rnd_mode, 1);
           MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, MPFR_FLAGS_INEXACT

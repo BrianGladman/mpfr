@@ -84,8 +84,9 @@ MA 02110-1301, USA. */
           if (two2emin)                                                 \
             mpfr_mul_2ui (y, y, 1, r);  /* overflow in GMP_RNDN */      \
         }                                                               \
-      /* Underflow is not possible with emin = - emax. */               \
-      MPFR_ASSERTN (! mpfr_underflow_p ());                             \
+      /* Underflow is not possible with emin = - emax, but we cannot */ \
+      /* add an assert as the underflow flag could have already been */ \
+      /* set before the call to mpfr_cot.                            */ \
       MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);                \
       goto end;                                                         \
     }
