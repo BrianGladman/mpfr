@@ -75,6 +75,7 @@ static void
 check_pow_ui (void)
 {
   mpfr_t a, b;
+  unsigned long n;
   int res;
 
   mpfr_init2 (a, 53);
@@ -135,6 +136,20 @@ check_pow_ui (void)
   if (!MPFR_IS_INF (a) || MPFR_SIGN (a) < 0)
     {
       printf ("Error for (1e10)^ULONG_MAX\n");
+      exit (1);
+    }
+
+  /* Bug in pow_ui.c from r3214 to r5107: if x = y (same mpfr_t argument),
+     the input argument is negative, n is odd, an overflow or underflow
+     occurs, and the temporary result res is positive, then the result
+     gets a wrong sign (positive instead of negative). */
+  mpfr_set_str_binary (a, "-1E10");
+  n = (ULONG_MAX ^ (ULONG_MAX >> 1)) + 1;
+  res = mpfr_pow_ui (a, a, n, GMP_RNDN);
+  if (!MPFR_IS_INF (a) || MPFR_SIGN (a) > 0)
+    {
+      printf ("Error for (-1e10)^%lu, expected -Inf,\ngot ", n);
+      mpfr_dump (a);
       exit (1);
     }
 

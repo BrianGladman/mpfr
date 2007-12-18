@@ -134,12 +134,10 @@ mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
     }
   MPFR_ZIV_FREE (loop);
 
-  inexact = mpfr_set (x, res, rnd);
-  mpfr_clear (res);
-
   /* Check Overflow */
   if (MPFR_UNLIKELY (mpfr_overflow_p ()))
     {
+      mpfr_clear (res);
       MPFR_SAVE_EXPO_FREE (expo);
       return mpfr_overflow (x, rnd,
                             (n % 2) ? MPFR_SIGN (y) : MPFR_SIGN_POS);
@@ -147,12 +145,14 @@ mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
   /* Check Underflow  */
   else if (MPFR_UNLIKELY (mpfr_underflow_p ()))
     {
-      if (rnd == GMP_RNDN)
-        rnd = GMP_RNDZ;
+      mpfr_clear (res);
       MPFR_SAVE_EXPO_FREE (expo);
-      return mpfr_underflow (x, rnd,
+      return mpfr_underflow (x, rnd == GMP_RNDN ? GMP_RNDZ : rnd,
                              (n % 2) ? MPFR_SIGN(y) : MPFR_SIGN_POS);
     }
+
+  inexact = mpfr_set (x, res, rnd);
+  mpfr_clear (res);
 
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (x, inexact, rnd);
