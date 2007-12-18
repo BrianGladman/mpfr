@@ -103,11 +103,11 @@ mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
       /* now 2^(i-1) <= n < 2^i */
       MPFR_ASSERTD (prec > (mpfr_prec_t) i);
       err = prec - 1 - (mpfr_prec_t) i;
-      MPFR_ASSERTD (i >= 1);
       mpfr_clear_overflow ();
       mpfr_clear_underflow ();
       /* First step: compute square from y */
       inexact = mpfr_mul (res, y, y, GMP_RNDU);
+      MPFR_ASSERTD (i >= 2);
       if (n & (1UL << (i-2)))
         inexact |= mpfr_mul (res, res, y, rnd1);
       for (i -= 3; i >= 0 && !mpfr_overflow_p () && !mpfr_underflow_p (); i--)
