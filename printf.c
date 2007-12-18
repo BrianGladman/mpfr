@@ -24,9 +24,18 @@ MA 02110-1301, USA. */
 #ifdef HAVE_STDARG
 
 #include <stdarg.h>
+#include <errno.h>
 #include "mpfr-impl.h"
 
 #ifdef _MPFR_H_HAVE_FILE
+
+/* Each printf-like function calls mpfr_vasprintf which 
+   - returns the number of characters in the returned string excluding the
+   terminating null
+   - returns -1 and set the erange flag if the number of produced characters
+   exceeds INT_MAX (in that case, mpfr_snprintf and mpfr_vsnprintf may also
+   set errno to EOVERFLOW, see below) */
+
 int
 mpfr_printf (const char *fmt, ...)
 {
@@ -37,7 +46,8 @@ mpfr_printf (const char *fmt, ...)
 
   if (mpfr_vasprintf (&strp, fmt, ap) < 0)
     {
-      mpfr_free_str (strp);
+      if (strp)
+        mpfr_free_str (strp);
       va_end (ap);
       return -1;
     }
@@ -57,7 +67,8 @@ mpfr_vprintf (const char *fmt, va_list ap)
 
   if (mpfr_vasprintf (&strp, fmt, ap) < 0)
     {
-      mpfr_free_str (strp);
+      if (strp)
+        mpfr_free_str (strp);
       return -1;
     }
 
@@ -78,7 +89,8 @@ mpfr_fprintf (FILE *fp, const char *fmt, ...)
 
   if (mpfr_vasprintf (&strp, fmt, ap) < 0)
     {
-      mpfr_free_str (strp);
+      if (strp)
+        mpfr_free_str (strp);
       va_end (ap);
       return -1;
     }
@@ -98,7 +110,8 @@ mpfr_vfprintf (FILE *fp, const char *fmt, va_list ap)
 
   if (mpfr_vasprintf (&strp, fmt, ap) < 0)
     {
-      mpfr_free_str (strp);
+      if (strp)
+        mpfr_free_str (strp);
       return -1;
     }
 
@@ -112,11 +125,20 @@ mpfr_vfprintf (FILE *fp, const char *fmt, va_list ap)
 int
 mpfr_sprintf (char *buf, const char *fmt, ...)
 {
+  char *strp;
   va_list ap;
   int ret;
   va_start (ap, fmt);
 
-  ret  = mpfr_vsprintf (buf, fmt, ap);
+  if ((ret = mpfr_vasprintf (&strp, fmt, ap)) < 0)
+    {
+      if (strp)
+        mpfr_free_str (strp);
+      return -1;
+    }
+
+  ret = sprintf (buf, strp);
+  mpfr_free_str (strp);
 
   va_end (ap);
   return ret;
@@ -130,7 +152,8 @@ mpfr_vsprintf (char *buf, const char *fmt, va_list ap)
 
   if ((ret = mpfr_vasprintf (&strp, fmt, ap)) < 0)
     {
-      mpfr_free_str (strp);
+      if (strp)
+        mpfr_free_str (strp);
       return -1;
     }
 
@@ -140,51 +163,67 @@ mpfr_vsprintf (char *buf, const char *fmt, va_list ap)
   return ret;
 }
 
+/* In POSIX systems, mpfr_snprintf set errno to EOVERFLOW if the number of
+   characters which ought to have been produced exceeds INT_MAX. */
 int
 mpfr_snprintf (char *buf, size_t size, const char *fmt, ...)
 {
+  char *strp;
   va_list ap;
   int ret;
+  int min_size;
 
+  /* C99 allows SIZE to be null */
   if (size == 0)
     return 0;
 
   MPFR_ASSERTD (buf != NULL);
 
   va_start (ap, fmt);
-
-  ret = mpfr_vsnprintf (buf, size, fmt, ap);
-
+  if ((ret = mpfr_vasprintf (&strp, fmt, ap)) < 0)
+    {
+      if (strp)
+        mpfr_free_str (strp);
+#ifdef EOVERFLOW
+      errno = EOVERFLOW;
+#endif
+      return -1;
+    }
   va_end (ap);
+
+  min_size = ret < size ? ret : size;
+  strncpy (buf, strp, min_size);
+  mpfr_free_str (strp);
   return ret;
 }
 
+/* In POSIX systems, mpfr_vsnprintf set errno to EOVERFLOW if the number of
+   characters which ought to have been produced exceeds INT_MAX. */
 int
 mpfr_vsnprintf (char *buf, size_t size, const char *fmt, va_list ap)
 {
   char *strp;
   int ret;
+  int min_size;
 
-  if (mpfr_vasprintf (&strp, fmt, ap) < 0)
+  /* C99 allows SIZE to be null */
+  if (size == 0)
+    return 0;
+
+  MPFR_ASSERTD (buf != NULL);
+
+  if ((ret = mpfr_vasprintf (&strp, fmt, ap)) < 0)
     {
-      mpfr_free_str (strp);
+      if (strp)
+        mpfr_free_str (strp);
+#ifdef EOVERFLOW
+      errno = EOVERFLOW;
+#endif
       return -1;
     }
 
-  /* FIXME: snprintf is new in C99. It must be checked with a configure
-     test. But since we need our own snprintf function for systems that
-     do not have it, it is probably better to write a version that will
-     check that the return value is not larger than INT_MAX and use it
-     unconditionally. */
-  ret = snprintf (buf, size, strp);
-  /* FIXME: if we do not use our own snprintf function, here's a proposed
-     solution to detect the case where the ideal return value is larger
-     than INT_MAX (for POSIX systems):
-       - include <errno.h>;
-       - if EOVERFLOW is defined, set errno to 0 before the call;
-       - after the call, if EOVERFLOW is defined and if errno is equal
-         to EOVERFLOW, then set the erange flag. */
-
+  min_size = ret < size ? ret : size;
+  strncpy (buf, strp, min_size);
   mpfr_free_str (strp);
   return ret;
 }
@@ -198,7 +237,8 @@ mpfr_asprintf (char **pp, const char *fmt, ...)
 
   if ((ret = mpfr_vasprintf (pp, fmt, ap)) < 0)
     {
-      mpfr_free_str (*pp);
+      if (*pp)
+        mpfr_free_str (*pp);
       *pp = NULL;
       va_end (ap);
       return -1;
