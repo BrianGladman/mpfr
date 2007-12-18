@@ -60,13 +60,17 @@ MA 02110-1301, USA. */
 /* Output for special values defined in the C99 standard */
 #define MPFR_NAN_STRING_LC "nan"
 #define MPFR_NAN_STRING_UC "NAN"
+#define MPFR_NAN_STRING_LENGTH 3
 #define MPFR_INF_STRING_LC "inf"
 #define MPFR_INF_STRING_UC "INF"
+#define MPFR_INF_STRING_LENGTH 3
 
 /* We assume that a single conversion specifier produces at most 4095 chars
    (Rationale for International Standard -Programming Languages- C
-   Revision 5.10 April-2003, 7.19.6.1 p.152). */
-#define MAX_CHAR_PRODUCED_BY_SPEC 4096
+   Revision 5.10 April-2003, 7.19.6.1 p.152). 
+   MAX_CHAR_BY_SPEC must be less than INT_MAX to be compatible with
+   mpfr_vasprintf() return type. */
+#define MAX_CHAR_BY_SPEC 4096
 
 static const char num_to_text[16] = "0123456789abcdef";
 
@@ -425,8 +429,8 @@ buffer_cat (struct string_buffer *b, const char *s, size_t len)
     {
       const size_t pos = b->curr - b->start;
       const size_t n = sizeof (char)
-        * ((len + 1 > MAX_CHAR_PRODUCED_BY_SPEC) ?
-           len + 1 : MAX_CHAR_PRODUCED_BY_SPEC);
+        * ((len + 1 > MAX_CHAR_BY_SPEC) ?
+           len + 1 : MAX_CHAR_BY_SPEC);
       b->start =
         (char *) (*__gmp_reallocate_func) (b->start, b->size, b->size + n);
       b->size += n;
@@ -442,6 +446,8 @@ buffer_pad (struct string_buffer *b, const char c, const size_t n)
 {
   char *padding;
 
+  if (n == 0)
+    return;
   padding = (char *) (*__gmp_allocate_func) (n + 1);
   memset (padding, c, n);
   padding[n] = '\0';
@@ -454,8 +460,8 @@ static void
 sprnt_nan (struct string_buffer *buf, const struct printf_spec spec)
 {
   /* right justification padding */
-  if ((spec.left == 0) && (spec.width > 3))
-    buffer_pad (buf, ' ', spec.width - 3);
+  if ((spec.left == 0) && (spec.width > MPFR_NAN_STRING_LENGTH))
+    buffer_pad (buf, ' ', spec.width - MPFR_NAN_STRING_LENGTH);
 
   switch (spec.spec)
     {
@@ -464,16 +470,16 @@ sprnt_nan (struct string_buffer *buf, const struct printf_spec spec)
     case 'F':
     case 'G':
     case 'X':
-      buffer_cat (buf, MPFR_NAN_STRING_UC, strlen (MPFR_NAN_STRING_UC));
+      buffer_cat (buf, MPFR_NAN_STRING_UC, MPFR_NAN_STRING_LENGTH);
       break;
 
     default:
-      buffer_cat (buf, MPFR_NAN_STRING_LC, strlen (MPFR_NAN_STRING_LC));
+      buffer_cat (buf, MPFR_NAN_STRING_LC, MPFR_NAN_STRING_LENGTH);
     }
 
   /* left justification padding */
-  if ((spec.left == 1) && (spec.width > 3))
-    buffer_pad (buf, ' ', spec.width - 3);
+  if ((spec.left == 1) && (spec.width > MPFR_NAN_STRING_LENGTH))
+    buffer_pad (buf, ' ', spec.width - MPFR_NAN_STRING_LENGTH);
   return;
 }
 
@@ -482,9 +488,11 @@ sprnt_nan (struct string_buffer *buf, const struct printf_spec spec)
 static void
 sprnt_inf (struct string_buffer *buf, const struct printf_spec spec, int neg)
 {
+  const int length = MPFR_INF_STRING_LENGTH - neg;
+
   /* right justification padding */
-  if ((spec.left == 0) && (spec.width > 3 - neg))
-    buffer_pad (buf, ' ', spec.width - 3 + neg);
+  if ((spec.left == 0) && (spec.width > length))
+    buffer_pad (buf, ' ', spec.width - length);
 
   switch (spec.spec)
     {
@@ -495,17 +503,19 @@ sprnt_inf (struct string_buffer *buf, const struct printf_spec spec, int neg)
     case 'X':
       if (neg < 0)
         buffer_cat (buf, "-", 1);
-      buffer_cat (buf, MPFR_INF_STRING_UC, strlen (MPFR_INF_STRING_UC));
+      buffer_cat (buf, MPFR_INF_STRING_UC, MPFR_INF_STRING_LENGTH);
       break;
     default:
       if (neg < 0)
         buffer_cat (buf, "-", 1);
-      buffer_cat (buf, MPFR_INF_STRING_LC, strlen (MPFR_INF_STRING_LC));
+      buffer_cat (buf, MPFR_INF_STRING_LC, MPFR_INF_STRING_LENGTH);
     }
 
   /* left justification padding */
-  if ((spec.left == 1) && (spec.width > 3 - neg))
-    buffer_pad (buf, ' ', spec.width - 3 + neg);
+  if ((spec.left == 1) && (spec.width > length))
+    buffer_pad (buf, ' ', spec.width - length);
+
+  return (spec.width > length) ? spec.width : length;
 }
 
 /* let gmp_xprintf process the part it can understand */
@@ -547,7 +557,7 @@ sprnt_int (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
   mpz_init (z);
   mpfr_get_z (z, p, spec.rnd_mode);
 
-  /* format contains at most 9 characters plus the terminating '\0'
+  /* FORMAT contains at most 9 characters plus the terminating '\0'
      like in "%-+#*.*Zo" */
   f = 0;
   format[f++] = '%';
@@ -626,24 +636,22 @@ sprnt_fp_a (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
         {
           if (spec.spec == 'A')
             {
-              nbc.total = strlen (MPFR_NAN_STRING_UC);
+              nbc.total = MPFR_NAN_STRING_LENGTH;
               str = (char *) (*__gmp_allocate_func) (1 + nbc.total);
-              str[0] = '\0';
-              strcat (str, MPFR_NAN_STRING_UC);
+              strcpy (str, MPFR_NAN_STRING_UC);
             }
           else
             {
-              nbc.total = strlen (MPFR_NAN_STRING_LC);
+              nbc.total = MPFR_NAN_STRING_LENGTH;
               str = (char *) (*__gmp_allocate_func) (1 + nbc.total);
-              str[0] = '\0';
-              strcat (str, MPFR_NAN_STRING_LC);
+              strcpy (str, MPFR_NAN_STRING_LC);
             }
         }
       else if (MPFR_IS_INF (p))
         {
           if (spec.spec == 'A')
             {
-              nbc.total = strlen (MPFR_INF_STRING_UC);
+              nbc.total = MPFR_INF_STRING_LENGTH;
               nbc.total += (MPFR_SIGN (p) < 0) ? 1 : 0;
               str = (char *) (*__gmp_allocate_func) (1 + nbc.total);
               str[0] = '\0';
@@ -653,7 +661,7 @@ sprnt_fp_a (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
             }
           else
             {
-              nbc.total = strlen (MPFR_INF_STRING_LC);
+              nbc.total = MPFR_INF_STRING_LENGTH;
               nbc.total += (MPFR_SIGN (p) < 0) ? 1 : 0;
               str = (char *) (*__gmp_allocate_func) (1 + nbc.total);
               str[0] = '\0';
@@ -670,9 +678,9 @@ sprnt_fp_a (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
             (MPFR_SIGN (p) < 0) || spec.showsign || spec.space ? 1 : 0;
           nbc.frac_part = (spec.prec < 0) ? 0 : spec.prec;
           nbc.point = (nbc.frac_part == 0) && (spec.alt == 0) ? 0 : 1;
-          nbc.exp_part = 3;
+          nbc.exp_part = 3;  /* 3 characters: "p+0" or "P+0" */
           nbc.total = nbc.sgn + nbc.point + nbc.frac_part + nbc.exp_part;
-          nbc.total += 2; /* 2 characters "0x" or "0X" */
+          nbc.total += 2;  /* 2 characters "0x" or "0X" */
           if ((spec.left == 0) && (spec.pad == '0')
               && (nbc.total < spec.width))
             /* pad with leading zeros */
@@ -780,7 +788,7 @@ sprnt_fp_a (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
           exp -= 4;
 
           if (MPFR_PREC (p) > 4)
-            /* round taking into account bits outside the first f ones */
+            /* round taking into account bits outside the first 4 ones */
             {
               if (rnd_away == -1)
                 /* Round to nearest mode: we have to decide in that particular
@@ -954,7 +962,7 @@ sprnt_fp_a (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
           char c;
 
           strcat (str, d_point);
-          /* Some trailing zeros may be not taken into account */
+          /* Don't take some trailing zeros into account */
           c = raw_str_cur[nbc.frac_part];
           raw_str_cur[nbc.frac_part] = '\0';
           strcat (str, raw_str_cur);
@@ -997,7 +1005,9 @@ sprnt_fp_a (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
   return;
 }
 
-/* sprnt_fp_b prints a mpfr_t in "%b" case */
+/* sprnt_fp_b prints a mpfr_t in "%b" case.
+   If spec.prec == 0, we will output 1 digit after the decimal point except
+   when p is zero (output "0p+0"). */
 static void
 sprnt_fp_b (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
 {
@@ -1026,14 +1036,13 @@ sprnt_fp_b (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
     {
       if (MPFR_IS_NAN (p))
         {
-          nbc.total = strlen (MPFR_NAN_STRING_LC);
+          nbc.total = MPFR_NAN_STRING_LENGTH;
           str = (char *) (*__gmp_allocate_func) (1 + nbc.total);
-          str[0] = '\0';
-          strcat (str, MPFR_NAN_STRING_LC);
+          strcpy (str, MPFR_NAN_STRING_LC);
         }
       else if (MPFR_IS_INF (p))
         {
-          nbc.total = strlen (MPFR_INF_STRING_LC);
+          nbc.total = MPFR_INF_STRING_LENGTH;
           nbc.total += (MPFR_SIGN (p) < 0) ? 1 : 0;
           str = (char *) (*__gmp_allocate_func) (1 + nbc.total);
           str[0] = '\0';
@@ -1049,7 +1058,7 @@ sprnt_fp_b (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
             (MPFR_SIGN (p) < 0) || spec.showsign || spec.space ? 1 : 0;
           nbc.frac_part = (spec.prec < 0) ? 0 : spec.prec;
           nbc.point = (nbc.frac_part == 0) && (spec.alt == 0) ? 0 : 1;
-          nbc.exp_part = 3;
+          nbc.exp_part = 3;  /* 3 characters: "p+0" */
           nbc.total = nbc.sgn + nbc.point + nbc.frac_part + nbc.exp_part;
           if ((spec.left == 0) && (spec.pad == '0')
               && (nbc.total < spec.width))
@@ -1108,7 +1117,7 @@ sprnt_fp_b (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
          - if a precision is specified, then one digit before decimal point
          plus SPEC.PREC after it,
          - in order to avoid ambiguity in rounding, we always output one
-         binary digit after decimal point even if SPEC.PREC == 1. */
+         binary digit after decimal point even if SPEC.PREC == 0. */
       nsd = (spec.prec < 0) ? 0 : (spec.prec > 0) ? spec.prec + 1 : 2;
       raw_str = mpfr_get_str (0, &exp, 2, nsd, p, spec.rnd_mode);
       raw_str_cur = raw_str;
@@ -1117,7 +1126,7 @@ sprnt_fp_b (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
          the exponent for decimal point AFTER the first digit */
       exp--;
 
-      /* compute the number of characters in each part of str */
+      /* Compute the number of characters in each part of str */
       nbc.sgn = (MPFR_SIGN (p) < 0) || (spec.showsign) || (spec.space) ? 1 : 0;
 
       if (spec.prec < 0)
@@ -1163,7 +1172,7 @@ sprnt_fp_b (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
       str = (char *) (*__gmp_allocate_func) (nbc.total + 1);
       str[0] = '\0';
 
-      /* build str from raw_str */
+      /* Build str from raw_str */
       /* sign */
       if (nbc.sgn != 0)
         {
@@ -1492,7 +1501,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
         }
       nbc.total += nbc.frac_part;
     }
-  MPFR_ASSERTD (nbc.total < MAX_CHAR_PRODUCED_BY_SPEC);
+  MPFR_ASSERTD (nbc.total < MAX_CHAR_BY_SPEC);
 
   /* build the string */
   if ((spec.left == 0) && (spec.pad == ' ') && (nbc.total < spec.width))
@@ -1607,7 +1616,7 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
   va_list ap2;
 
   nbchar = 0;
-  buffer_init (&buf, MAX_CHAR_PRODUCED_BY_SPEC * sizeof (char));
+  buffer_init (&buf, (MAX_CHAR_BY_SPEC + 1) * sizeof (char));
   gmp_fmt_flag = 0;
   va_copy (ap2, ap);
   start = fmt;
