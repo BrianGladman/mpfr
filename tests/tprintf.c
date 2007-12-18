@@ -199,19 +199,19 @@ hexadecimal (void)
 
   /* simplest case right justified */
   check_sprintf ("   0xf.edcba987654321p+24", "%25Ra", x);
-  check_sprintf ("                  0x1p+28", "%25.0Ra", x);
+  check_sprintf ("                  0x8p+25", "%25.0Ra", x);
   /* sign or space, pad with leading zeros */
   check_sprintf (" 0X00F.EDCBA987654321P+24", "% 025RA", x);
-  check_sprintf (" 0X000000000000000001P+28", "% 025.0RA", x);
+  check_sprintf (" 0X000000000000000008P+25", "% 025.0RA", x);
   /* sign + or -, left justified */
   check_sprintf ("+0xf.edcba987654321p+24  ", "%+-25Ra", x);
-  check_sprintf ("+0x1p+28                 ", "%+-25.0Ra", x);
-  /* decimal point, left justified */
-  check_sprintf ("0XF.FP+24 ", "%#-10.1RA", x);
-  check_sprintf ("0X1.P+28  ", "%#-10.0RA", x);
+  check_sprintf ("+0x8p+25                 ", "%+-25.0Ra", x);
+  /* decimal point, left justified, precision and rounding parameter */
+  check_vsprintf ("0XF.FP+24 ", "%#-10.*R*A", 1, GMP_RNDN, x);
+  check_vsprintf ("0X8.P+25  ", "%#-10.*R*A", 0, GMP_RNDN, x);
   /* sign or space */
   check_sprintf (" 0xf.eddp+24", "% .3RNa", x);
-  check_sprintf (" 0x1p+28",     "% .0RNa", x);
+  check_sprintf (" 0x8p+25",     "% .0RNa", x);
   /* sign + or -, decimal point, pad with leading zeros */
   check_sprintf ("+0X0F.EP+24", "%0+#11.1RZA", x);
   check_sprintf ("+0X00F.P+24", "%0+#11.0RZA", x);

@@ -813,8 +813,8 @@ sprnt_fp_a (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
                     /* As we want only the first significant digit, we have
                        to shift one position to the left */
                     {
-                      digit /= 16;
-                      exp += 4;  /* no possible overflow because
+                      digit >>= 1;
+                      exp += 1;  /* no possible overflow because
                                     exp < MPFR_EXP_MAX/4 */
                     }
                 }
