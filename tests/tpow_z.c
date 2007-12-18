@@ -257,6 +257,45 @@ bug20071104 (void)
   mpz_clear (z);
 }
 
+static void
+check_overflow (void)
+{
+  mpfr_t a;
+  mpz_t z;
+  unsigned long n;
+  int res;
+
+  mpfr_init2 (a, 53);
+
+  mpfr_set_str_binary (a, "1E10");
+  mpz_init_set_ui (z, ULONG_MAX);
+  res = mpfr_pow_z (a, a, z, GMP_RNDN);
+  if (!MPFR_IS_INF (a) || MPFR_SIGN (a) < 0)
+    {
+      printf ("Error for (1e10)^ULONG_MAX\n");
+      exit (1);
+    }
+
+  /* Bug in pow_z.c up to r5109: if x = y (same mpfr_t argument), the
+     input argument is negative and not a power of two, z is positive
+     and odd, an overflow or underflow occurs, and the temporary result
+     res is positive, then the result gets a wrong sign (positive
+     instead of negative). */
+  mpfr_set_str_binary (a, "-1.1E10");
+  n = (ULONG_MAX ^ (ULONG_MAX >> 1)) + 1;
+  mpz_set_ui (z, n);
+  res = mpfr_pow_z (a, a, z, GMP_RNDN);
+  if (!MPFR_IS_INF (a) || MPFR_SIGN (a) > 0)
+    {
+      printf ("Error for (-1e10)^%lu, expected -Inf,\ngot ", n);
+      mpfr_dump (a);
+      exit (1);
+    }
+
+  mpfr_clear (a);
+  mpz_clear (z);
+}
+
 int
 main (void)
 {
@@ -266,6 +305,7 @@ main (void)
   check_integer (2, 163, 100);
   check_regression ();
   bug20071104 ();
+  check_overflow ();
 
   tests_end_mpfr ();
   return 0;
