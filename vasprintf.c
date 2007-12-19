@@ -695,8 +695,7 @@ sprnt_fp_a (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
           if ((spec.left == 0) && (spec.pad == '0')
               && (nbc.total < spec.width))
             /* pad with leading zeros */
-            nbc.int_part =
-              (spec.width > nbc.total) ? 1 : spec.width - nbc.total;
+            nbc.int_part = spec.width - nbc.total;
           else
             /* we only need the character '0' */
             nbc.int_part = 1;
@@ -1108,8 +1107,7 @@ sprnt_fp_b (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
           if ((spec.left == 0) && (spec.pad == '0')
               && (nbc.total < spec.width))
             /* pad with leading zeros */
-            nbc.int_part =
-              (spec.width > nbc.total) ? 1 : spec.width - nbc.total;
+            nbc.int_part = spec.width - nbc.total;
           else
             /* we only need the character '0' */
             nbc.int_part = 1;
@@ -1288,6 +1286,315 @@ sprnt_fp_b (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
         exp_fmt[0] = 'p';
         exp_fmt[1] = '\0';
         strcat (exp_fmt, "%+.1" MPFR_EXP_FORMAT_SPEC);
+        exp_str = (char *) (*__gmp_allocate_func) (nbc.exp_part + 1);
+#if (__GMP_MP_SIZE_T_INT == 1)
+        MPFR_ASSERTN (exp >= INT_MIN);
+        MPFR_ASSERTN (exp <= INT_MAX);
+#elif (__GMP_MP_SIZE_T_INT == 0)
+        MPFR_ASSERTN (exp >= LONG_MIN);
+        MPFR_ASSERTN (exp <= LONG_MAX);
+#else
+#error "mp_exp_t size not supported"
+#endif
+        if (sprintf (exp_str, exp_fmt, exp) < 0)
+          {
+            (*__gmp_free_func) (exp_str, nbc.exp_part + 1);
+            mpfr_free_str (raw_str);
+            (*__gmp_free_func) (str, nbc.total + 1);
+
+            return -1;
+          }
+        strcat (str, exp_str);
+        (*__gmp_free_func) (exp_str, nbc.exp_part + 1);
+      }
+
+      mpfr_free_str (raw_str);
+      MPFR_ASSERTD (nbc.total == strlen (str));
+    }
+
+  /* right justification padding */
+  if ((spec.left == 0) && (spec.width > nbc.total))
+    buffer_pad (buf, ' ', spec.width - nbc.total);
+
+  buffer_cat (buf, str, nbc.total);
+
+  /* left justification padding */
+  if ((spec.left == 1) && (spec.width > nbc.total))
+    buffer_pad (buf, ' ', spec.width - nbc.total);
+
+  mpfr_free_str (str);
+  return nbc.total;
+}
+
+/* sprnt_fp_e prints a mpfr_t in "%e" and "%E" cases.
+   return the size of the string (not counting the terminating '\0')
+   return -1 if the built string is too long (i.e. has more than 
+   MAX_CHAR_BY_SPEC characters). */
+static int
+sprnt_fp_e (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
+{
+  const char d_point[] = { MPFR_DECIMAL_POINT, '\0' };
+  char *str;
+
+  /* char_fp details how much characters are needed in each part of a float
+     print. 
+     total must be less or equal to MAX_CHAR_BY_SPEC. */
+  struct char_fp
+  {
+    int sgn;        /* 1 if sign char is present */
+    int point;      /* 1 if decimal point char   */
+    int int_part;   /* Size of integral part     */
+    int frac_part;  /* Size of fractional part   */
+    int exp_part;   /* Size of exponent (always in base ten) */
+
+    int total;      /* Total size: sum of the precedent fields
+                       plus the base prefix */
+  };
+
+  struct char_fp nbc;
+
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (p)))
+    {
+      if (MPFR_IS_NAN (p))
+        {
+          if (spec.spec == 'E')
+            {
+              nbc.total = MPFR_NAN_STRING_LENGTH;
+              str = (char *) (*__gmp_allocate_func) (1 + nbc.total);
+              strcpy (str, MPFR_NAN_STRING_UC);
+            }
+          else
+            {
+              nbc.total = MPFR_NAN_STRING_LENGTH;
+              str = (char *) (*__gmp_allocate_func) (1 + nbc.total);
+              strcpy (str, MPFR_NAN_STRING_LC);
+            }
+        }
+      else if (MPFR_IS_INF (p))
+        {
+          if (spec.spec == 'E')
+            {
+              nbc.total = MPFR_INF_STRING_LENGTH;
+              nbc.total += (MPFR_SIGN (p) < 0) ? 1 : 0;
+              str = (char *) (*__gmp_allocate_func) (1 + nbc.total);
+              str[0] = '\0';
+              if (MPFR_SIGN (p) < 0)
+                strcat (str, "-");
+              strcat (str, MPFR_INF_STRING_UC);
+            }
+          else
+            {
+              nbc.total = MPFR_INF_STRING_LENGTH;
+              nbc.total += (MPFR_SIGN (p) < 0) ? 1 : 0;
+              str = (char *) (*__gmp_allocate_func) (1 + nbc.total);
+              str[0] = '\0';
+              if (MPFR_SIGN (p) < 0)
+                strcat (str, "-");
+              strcat (str, MPFR_INF_STRING_LC);
+            }
+        }
+      else
+        /* p == 0 */
+        {
+          /* First, we compute how much characters will be displayed */
+          nbc.sgn =
+            (MPFR_SIGN (p) < 0) || spec.showsign || spec.space ? 1 : 0;
+          nbc.frac_part = (spec.prec < 0) ? 0 : spec.prec;
+          nbc.point = (nbc.frac_part == 0) && (spec.alt == 0) ? 0 : 1;
+          nbc.exp_part = 4;  /* 4 characters: "e+00" or "E+00" */
+          nbc.total = nbc.sgn + nbc.point + nbc.frac_part + nbc.exp_part;
+          if ((spec.left == 0) && (spec.pad == '0')
+              && (nbc.total < spec.width))
+            /* pad with leading zeros */
+            nbc.int_part = spec.width - nbc.total;
+          else
+            /* we only need the character '0' */
+            nbc.int_part = 1;
+          nbc.total += nbc.int_part;
+
+          if ((nbc.total < 0) || (nbc.total > MAX_CHAR_BY_SPEC))
+            /* spec.prec is too close to MAX_CHAR_BY_SPEC */
+            return -1;
+
+          str = (char *)(*__gmp_allocate_func) (nbc.total + 1);
+
+          /* Now, we build the string */
+          if (nbc.sgn != 0)
+            /* signed zero */
+            {
+              str[0] =
+                (MPFR_SIGN (p) < 0) ? '-' : (spec.showsign) ? '+' : ' ';
+              str[1] = '\0';
+            }
+          else
+            /* positive zero, no sign displayed */
+            str[0] = '\0';
+          /* integral part, with optional padding */
+          {
+            int i;
+            for (i = 1; i < nbc.int_part; ++i)
+              strcat (str, "0");
+          }
+          /* digit */
+          strcat (str, "0");
+          if (nbc.point == 1)
+            strcat (str, d_point);
+          if (nbc.frac_part > 0)
+            {
+              /* fill frac_part with '0' */
+              int i;
+              for (i = 0; i < nbc.frac_part; i++)
+                strcat (str, "0");
+            }
+          /* exponent */
+          strcat (str, (spec.spec == 'E') ? "E+00" : "e+00");
+          MPFR_ASSERTD (nbc.total == strlen (str));
+        }
+    }
+  else
+    /* p != 0 */
+    {
+      mp_exp_t exp;
+      char *raw_str;
+      char *raw_str_cur; /* cursor in raw_str */
+      int nsd;
+
+      /* Number of significant digits:
+         - if no given precision, then let mpfr_get_str determine it,
+         - if a precision is specified, then one digit before decimal point
+         plus SPEC.PREC after it.
+         We use the fact here that mpfr_get_exp allows us to ask for one only
+         significant digit when the base is not a power of 2. */
+      nsd = (spec.prec < 0) ? 0 : spec.prec + 1;
+      raw_str = mpfr_get_str (0, &exp, 10, nsd, p, spec.rnd_mode);
+      raw_str_cur = raw_str;
+
+      /* EXP is the exponent for decimal point BEFORE the first digit, we want
+         the exponent for decimal point AFTER the first digit */
+      exp--;
+
+      /* Compute the number of characters in each part of str */
+      nbc.sgn = (MPFR_SIGN (p) < 0) || (spec.showsign) || (spec.space) ? 1 : 0;
+
+      if (spec.prec < 0)
+        {
+          size_t ndigits;
+          char *end;
+
+          /* raw_str contains the sign if negative, the first digit that will
+             be printed before the decimal point and all other digits are in
+             the fractional part */
+          ndigits = strlen (raw_str);
+          ndigits -= (MPFR_SIGN (p) < 0) ? 2 : 1;
+          /* we remove the trailing zeros if any */
+          for (end = raw_str + strlen (raw_str) - 1;
+               (*end == '0') && (ndigits > 0); --end)
+            --ndigits;
+
+          if (ndigits > INT_MAX)
+            /* overflow error */
+            {
+              mpfr_free_str (raw_str);
+              return -1;
+            }
+          else
+            nbc.frac_part = (int) ndigits;
+        }
+      else
+        nbc.frac_part = spec.prec;
+      nbc.point = (nbc.frac_part == 0) && (spec.alt == 0) ? 0 : 1;
+      /* the exp_part contains the character 'e' or 'E' plus the sign 
+         character plus at least two digits and only as many more digits as
+         necessary to represent the exponent.
+         We assume that |exp| < 10^INT_MAX. */
+      nbc.exp_part = 3;
+      {
+        mp_exp_unsigned_t x;
+
+        x = SAFE_ABS (mp_exp_unsigned_t, exp);
+        while (x > 9)
+          {
+            nbc.exp_part++;
+            x /= 10;
+          }
+      }
+      if (nbc.exp_part < 4)
+        nbc.exp_part = 4;
+      /* Number of characters to be printed */
+      nbc.total = nbc.sgn + nbc.point + nbc.frac_part + nbc.exp_part;
+      /* optional heading zeros are counted in int_part */
+      if ((spec.left == 0) && (spec.pad == '0') && (nbc.total < spec.width))
+        nbc.int_part = spec.width - nbc.total;
+      else
+        nbc.int_part = 1;
+      nbc.total += nbc.int_part;
+
+      if ((nbc.total < 0) || (nbc.total > MAX_CHAR_BY_SPEC))
+        /* This happens when spec.width, spec.prec, or nbc.exp_part are too
+           close to MAX_CHAR_BY_SPEC */
+        {
+          mpfr_free_str (raw_str);
+          return -1;
+        }
+
+      str = (char *) (*__gmp_allocate_func) (nbc.total + 1);
+      str[0] = '\0';
+
+      /* Build str from raw_str */
+      /* sign */
+      if (nbc.sgn != 0)
+        {
+          if (MPFR_SIGN (p) < 0)
+            {
+              strcat (str, "-");
+              ++raw_str_cur;
+            }
+          else if (spec.showsign)
+            strcat (str, "+");
+          else if (spec.space)
+            strcat (str, " ");
+        }
+      /* optional padding with heading zero */
+      {
+        int i;
+        for (i = 1; i < nbc.int_part; i++)
+          strcat (str, "0");
+      }
+      /* first digit */
+      {
+        char d[2];
+        d[0] = *raw_str_cur++;
+        d[1] = '\0';
+        strcat (str, d);
+      }
+      if (nbc.frac_part == 0)
+        /* no fractional part, optional decimal point */
+        {
+          if (spec.alt)
+            strcat (str, d_point);
+        }
+      else
+        /* a decimal point followed by fractional part */
+        {
+          char c;
+
+          strcat (str, d_point);
+          /* Don't take some trailing zeros into account */
+          c = raw_str_cur[nbc.frac_part];
+          raw_str_cur[nbc.frac_part] = '\0';
+          strcat (str, raw_str_cur);
+          /* we need to replace raw_str in its initial state in order to be
+             correctly freed by mpfr_free_str */
+          raw_str_cur[nbc.frac_part] = c;
+        }
+      /* exponent part */
+      {
+        char exp_fmt[8];
+        char *exp_str;
+
+        exp_fmt[0] = spec.spec;
+        exp_fmt[1] = '\0';
+        strcat (exp_fmt, "%+.2" MPFR_EXP_FORMAT_SPEC);
         exp_str = (char *) (*__gmp_allocate_func) (nbc.exp_part + 1);
 #if (__GMP_MP_SIZE_T_INT == 1)
         MPFR_ASSERTN (exp >= INT_MIN);
@@ -1837,10 +2144,12 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
             case 'b':
               length = sprnt_fp_b (&buf, p, spec);
               break;
-            case 'f':
-            case 'F':
             case 'e':
             case 'E':
+              length = sprnt_fp_e (&buf, p, spec);
+              break;
+            case 'f':
+            case 'F':
             case 'g':
             case 'G':
               length = sprnt_fp (&buf, p, spec);

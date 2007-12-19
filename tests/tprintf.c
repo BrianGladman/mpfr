@@ -125,47 +125,82 @@ integer (void)
 }
 
 static int
-floating_point (void)
+decimal (void)
 {
   mpfr_t x;
-  mpfr_init (x);
+  mpfr_t z;
+  mpfr_init (z);
+  mpfr_init2 (x, 128);
 
   /* special numbers */
   mpfr_set_inf (x, 1);
+  check_sprintf (pinf_str, "%Re", x);
+  check_sprintf (pinf_uc_str, "%RE", x);
   check_sprintf (pinf_str, "%Rf", x);
   check_sprintf (pinf_uc_str, "%RF", x);
+  check_sprintf (pinf_str, "%Rg", x);
+  check_sprintf (pinf_uc_str, "%RG", x);
 
   mpfr_set_inf (x, -1);
+  check_sprintf (minf_str, "%Re", x);
+  check_sprintf (minf_uc_str, "%RE", x);
   check_sprintf (minf_str, "%Rf", x);
   check_sprintf (minf_uc_str, "%RF", x);
+  check_sprintf (minf_str, "%Rg", x);
+  check_sprintf (minf_uc_str, "%RG", x);
 
   mpfr_set_nan (x);
+  check_sprintf (nan_str, "%Re", x);
+  check_sprintf (nan_uc_str, "%RE", x);
   check_sprintf (nan_str, "%Rf", x);
   check_sprintf (nan_uc_str, "%RF", x);
+  check_sprintf (nan_str, "%Rg", x);
+  check_sprintf (nan_uc_str, "%RG", x);
 
-  /* regular numbers */
+  /* positive numbers */
   mpfr_set_d (x, 1895485593474.61279296875, GMP_RNDD);
+  mpfr_set_ui (z, 0, GMP_RNDD);
 
-  /* default: 6 decimal digits */
-  check_sprintf ("1895485593474.612792", "%RDf", x);
-  /* test rounding */
-  check_sprintf ("1895485593474.6128", "%.4RNf", x);
-  /* decimal point, no decimal digit */
-  check_sprintf ("1895485593475.", "%#.0RUf", x);
-  /* request the significant digits */
-  check_sprintf ("1.8954855934746127e+12", "%.RDe", x);
-  /* test width field */
-  check_sprintf (" 1.895E+12", "%10.3RNE", x);
-  /* show sign */
-  check_sprintf ("+1.8954856e+12", "%+10.7RUe", x);
-  /* 'g' conversion specifier */
-  check_sprintf ("=1.90E+12", "=%.3RNG", x);
+  /* simplest case right justified */
+  check_sprintf ("      1.89548559347461279296875e+12", "%35Re", x);
+  check_sprintf ("                              2e+12", "%35.0Re", x);
+  check_sprintf ("                              0e+00", "%35.0Re", z);
+  /* sign or space, pad with leading zeros */
+  check_sprintf (" 000001.89548559347461279296875E+12", "% 035RE", x);
+  check_sprintf (" 000000000000000000000000000002E+12", "% 035.0RE", x);
+  check_sprintf (" 000000000000000000000000000000E+00", "% 035.0RE", z);
+  /* sign + or -, left justified */
+  check_sprintf ("+1.89548559347461279296875e+12     ", "%+-35Re", x);
+  check_sprintf ("+2e+12                             ", "%+-35.0Re", x);
+  check_sprintf ("+0e+00                             ", "%+-35.0Re", z);
+  /* decimal point, left justified, precision and rounding parameter */
+  check_vsprintf ("1.9E+12   ", "%#-10.*R*E", 1, GMP_RNDN, x);
+  check_vsprintf ("2.E+12    ", "%#-10.*R*E", 0, GMP_RNDN, x);
+  check_vsprintf ("0.E+00    ", "%#-10.*R*E", 0, GMP_RNDN, z);
+  /* sign or space */
+  check_sprintf (" 1.895e+12", "% .3RNe", x);
+  check_sprintf (" 2e+12",     "% .0RNe", x);
+  /* sign + or -, decimal point, pad with leading zeros */
+  check_sprintf ("+0001.8E+12", "%0+#11.1RZE", x);
+  check_sprintf ("+00001.E+12", "%0+#11.0RZE", x);
+  check_sprintf ("+0000.0E+00", "%0+#11.1RZE", z);
+  /* pad with leading zero */
+  check_sprintf ("0000001.89548559347461279296875e+12", "%035RDe", x);
+  check_sprintf ("0000000000000000000000000000001e+12", "%035.0RDe", x);
+  /* sign or space, decimal point, left justified */
+  check_sprintf (" 1.8E+12   " , "%- #11.1RDE", x);
+  check_sprintf (" 1.E+12    " , "%- #11.0RDE", x);
 
-  /* this case need to be fix in mpfr_vasprintf */
-/*   mpfr_set_d (x, 11.875, GMP_RNDD); */
-/*   check_sprintf ("11.875", "%RUg", x); */
+  /* negative numbers */
+  mpfr_mul_si (x, x, -1, GMP_RNDD);
+  mpfr_mul_si (z, z, -1, GMP_RNDD);
 
-  mpfr_clear (x);
+  /* sign + or - */
+  check_sprintf ("  -1.8e+12", "%+10.1RUe", x);
+  check_sprintf ("    -1e+12", "%+10.0RUe", x);
+  check_sprintf ("    -0e+00", "%+10.0RUe", z);
+
+  mpfr_clears (x, z, (void *)0);
   return 0;
 }
 
@@ -343,7 +378,7 @@ main (int argc, char **argv)
   integer ();
   hexadecimal ();
   binary ();
-  floating_point ();  /* [TODO] */
+  decimal ();         /* [TODO] */
   mixed ();           /* [TODO] */
 
 #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
