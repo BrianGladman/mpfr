@@ -39,6 +39,12 @@ Known bugs:
 
 Potential bugs:
 
+* Possible incorrect results due to internal underflow, which can lead to
+  a huge loss of accuracy while the error analysis doesn't take that into
+  account. If the underflow occurs at the last function call (just before
+  the MPFR_CAN_ROUND), the result should be correct (or MPFR gets into an
+  infinite loop). TODO: check the code and the error analysis.
+
 * Possible integer overflows on some machines.
 
 * Possible bugs with huge precisions (> 2^30).
