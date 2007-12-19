@@ -1210,7 +1210,8 @@ typedef struct {
      , OVERFLOW_HANDLER)
 
 /* Return TRUE if b is non singular and we can round it to precision 'prec'
-   with rounding mode 'rnd', and with error at most 'error' */
+   and determine the ternary value, with rounding mode 'rnd', and with
+   error at most 'error' */
 #define MPFR_CAN_ROUND(b,err,prec,rnd)                                       \
  (!MPFR_IS_SINGULAR (b) && mpfr_round_p (MPFR_MANT (b), MPFR_LIMB_SIZE (b),  \
                                          (err), (prec) + ((rnd)==GMP_RNDN)))
