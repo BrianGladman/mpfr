@@ -1115,6 +1115,7 @@ bug20071104 (void)
   set_emin (emin);
   set_emax (emax);
 }
+
 /* Bug found by Kevin P. Rauch */
 static void
 bug20071127 (void)
