@@ -1200,8 +1200,35 @@ bug20071128 (void)
   mpfr_set_emax (emax);
 }
 
+/* Bug found by Kevin P. Rauch */
+static void
+bug20071218 (void)
+{
+  mpfr_t x, y, z;
+  int i, tern;
+
+  mpfr_inits2 (64, x, y, z, (void *) 0);
+  mpfr_set_str (x, "0x.80000000000002P-1023", 0, GMP_RNDN);
+  mpfr_set_str (y, "100000.000000002", 16, GMP_RNDN);
+  for (i = 0; i < 2; i++)
+    {
+      printf ("x = ");
+      mpfr_out_str (stdout, 16, 0, x, GMP_RNDN);
+      printf ("\n");
+      printf ("y = ");
+      mpfr_out_str (stdout, 16, 0, y, GMP_RNDN);
+      printf ("\n");
+      tern = mpfr_pow (z, x, y, GMP_RNDN);
+      printf ("z = ");
+      mpfr_out_str (stdout, 16, 0, z, GMP_RNDN);
+      printf (", ternary value = %d\n", tern);
+      mpfr_mul_2ui (y, y, 32, GMP_RNDN);
+    }
+  mpfr_clears (x, y, z, (void *) 0);
+}
+
 int
-main (void)
+main (int argc, char **argv)
 {
   mp_prec_t p;
 
@@ -1224,6 +1251,8 @@ main (void)
   bug20071103 ();
   bug20071104 ();
   bug20071128 ();
+  if (argc > 1)  /* FIXME: remove this test once the bug has been fixed. */
+    bug20071218 ();
 
   test_generic (2, 100, 100);
   test_generic_ui (2, 100, 100);
