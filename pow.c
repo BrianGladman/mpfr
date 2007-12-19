@@ -466,6 +466,8 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
     MPFR_ZIV_INIT (ziv_loop, Nt);
     for (;;)
       {
+        MPFR_BLOCK_DECL (flags1);
+
         /* compute exp(y*ln|x|), using GMP_RNDU to get an upper bound, so
            that we can detect underflows. */
         mpfr_log (t, absx, GMP_RNDU);            /* ln|x| */
@@ -478,11 +480,12 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
             mpfr_sub (t, t, u, GMP_RNDU);
           }
         exp_te = MPFR_GET_EXP (t);               /* FIXME: May overflow */
-        mpfr_exp (t, t, GMP_RNDN);               /* exp(y*ln|x|)*/
-        if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (t)))
+        MPFR_BLOCK (flags1, mpfr_exp (t, t, GMP_RNDN));  /* exp(y*ln|x|)*/
+        /* We need to test */
+        if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (t) || MPFR_UNDERFLOW (flags1)))
           {
             mp_prec_t Ntmin;
-            MPFR_BLOCK_DECL (flags);
+            MPFR_BLOCK_DECL (flags2);
 
             MPFR_ASSERTN (!k_non_zero);
             MPFR_ASSERTN (!MPFR_IS_NAN (t));
@@ -502,8 +505,8 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
             /* Note: we can probably use a low precision for this test. */
             mpfr_log (t, absx, GMP_RNDD);            /* ln|x| */
             mpfr_mul (t, y, t, GMP_RNDD);            /* y*ln|x| */
-            MPFR_BLOCK (flags, mpfr_exp (t, t, GMP_RNDD));  /* exp(y*ln|x|)*/
-            if (MPFR_OVERFLOW (flags))
+            MPFR_BLOCK (flags2, mpfr_exp (t, t, GMP_RNDD));  /* exp(y*ln|x|)*/
+            if (MPFR_OVERFLOW (flags2))
               {
                 /* We have computed a lower bound on |x|^y, and it overflowed.
                    Therefore we have a real overflow on |x|^y. */
