@@ -85,6 +85,8 @@ set_fpu_prec (void)
 
 #endif
 
+static mp_exp_t default_emin, default_emax;
+
 static void tests_rand_start (void);
 static void tests_rand_end   (void);
 static void tests_limit_start (void);
@@ -117,14 +119,34 @@ tests_start_mpfr (void)
   tests_memory_start ();
   tests_rand_start ();
   tests_limit_start ();
+
+  default_emin = mpfr_get_emin ();
+  default_emax = mpfr_get_emax ();
 }
 
 void
 tests_end_mpfr (void)
 {
+  int err = 0;
+
+  if (mpfr_get_emin () != default_emin)
+    {
+      printf ("Default emin value has not been restored!\n");
+      err = 1;
+    }
+
+  if (mpfr_get_emax () != default_emax)
+    {
+      printf ("Default emax value has not been restored!\n");
+      err = 1;
+    }
+
   mpfr_free_cache ();
   tests_rand_end ();
   tests_memory_end ();
+
+  if (err)
+    exit (err);
 }
 
 static void

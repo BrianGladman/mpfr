@@ -55,6 +55,10 @@ check1 (void)
 {
   mpfr_t x;
   int i, j, k, s, old_inex;
+  mp_exp_t emin, emax;
+
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
 
   mpfr_set_default_prec (9);
   mpfr_set_emin (-10);
@@ -91,6 +95,12 @@ check1 (void)
             }
         }
   mpfr_clear (x);
+
+  MPFR_ASSERTN (mpfr_get_emin () == -10);
+  MPFR_ASSERTN (mpfr_get_emax () == 10);
+
+  set_emin (emin);
+  set_emax (emax);
 }
 
 /* bug found by Kevin P. Rauch on 22 Oct 2007 */
@@ -99,6 +109,9 @@ check2 (void)
 {
   mpfr_t x, y, z;
   int tern;
+  mp_exp_t emin;
+
+  emin = mpfr_get_emin ();
 
   mpfr_init2 (x, 32);
   mpfr_init2 (y, 32);
@@ -121,6 +134,10 @@ check2 (void)
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);
+
+  MPFR_ASSERTN (mpfr_get_emin () == -29);
+
+  set_emin (emin);
 }
 
 /* bug found by Kevin P. Rauch on 22 Oct 2007 */
@@ -129,6 +146,9 @@ check3 (void)
 {
   mpfr_t x, y, z;
   int tern;
+  mp_exp_t emin;
+
+  emin = mpfr_get_emin ();
 
   mpfr_init2 (x, 32);
   mpfr_init2 (y, 32);
@@ -170,6 +190,10 @@ check3 (void)
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);
+
+  MPFR_ASSERTN (mpfr_get_emin () == -1);
+
+  set_emin (emin);
 }
 
 int

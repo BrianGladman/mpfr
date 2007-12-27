@@ -30,8 +30,12 @@ main (int argc, char *argv[])
 {
   mpfr_t x;
   int ret;
+  mp_exp_t emin, emax;
 
   tests_start_mpfr ();
+
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
 
   mpfr_init (x);
 
@@ -54,6 +58,9 @@ main (int argc, char *argv[])
   MPFR_ASSERTN(ret != 0 && mpfr_cmp_ui (x, 1) == 0);
 
   mpfr_clear (x);
+
+  set_emin (emin);
+  set_emax (emax);
 
   tests_end_mpfr ();
   return 0;

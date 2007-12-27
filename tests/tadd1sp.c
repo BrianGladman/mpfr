@@ -32,6 +32,10 @@ static void
 check_overflow (void)
 {
   mpfr_t x, y, z1, z2;
+  mp_exp_t emin, emax;
+
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
 
   set_emin (-1021);
   set_emax (1024);
@@ -48,6 +52,9 @@ check_overflow (void)
       exit (1);
     }
   mpfr_clears (x, y, z1, z2, (void *) 0);
+
+  set_emin (emin);
+  set_emax (emax);
 }
 
 int main(void)
