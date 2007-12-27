@@ -272,7 +272,8 @@ test_set_overflow (void)
 }
 
 static void
-check_set () {
+check_set (void)
+{
   mpfr_clear_flags ();
 
   mpfr_set_overflow ();
