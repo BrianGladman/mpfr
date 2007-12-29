@@ -385,6 +385,9 @@ Table of contents:
 
 - allow generic tests to run with a restricted exponent range.
 
+- add generic bad cases for functions that don't have an inverse
+  function that is implemented (use a single Newton iteration).
+
 
 ##############################################################################
 7. Portability
