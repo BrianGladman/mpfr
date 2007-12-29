@@ -34,6 +34,8 @@ MA 02110-1301, USA. */
 
 #include "mpfr-test.h"
 
+#if MPFR_VERSION >= MPFR_VERSION_NUM(2,4,0)
+
 const int buf_size = 1024;
 const char pinf_str[] = "inf";
 const char pinf_uc_str[] = "INF";
@@ -389,10 +391,21 @@ main (int argc, char **argv)
   return 0;
 }
 
+#else  /* MPFR_VERSION */
+
+int
+main (void)
+{
+  printf ("Warning! Test disabled for this MPFR version.\n");
+  return 0;
+}
+
+#endif  /* MPFR_VERSION */
+
 #else  /* HAVE_STDARG */
 
 int
-main (int argc, char **argv)
+main (void)
 {
   /* We have nothing to test. */
   return 0;

@@ -591,7 +591,9 @@ main (void)
       test2 (mpfr_erfc, "mpfr_erfc", p, rnd);
       test2 (mpfr_j0,   "mpfr_j0",   p, rnd);
       test2 (mpfr_j1,   "mpfr_j1",   p, rnd);
+#if MPFR_VERSION >= MPFR_VERSION_NUM(2,4,0)
       test2 (mpfr_li2,  "mpfr_li2",  p, rnd);
+#endif
 
       test2 (mpfr_zeta, "mpfr_zeta", p, rnd);
       test2 (mpfr_gamma, "mpfr_gamma", p, rnd);
@@ -599,15 +601,21 @@ main (void)
       test2 (mpfr_frac, "mpfr_frac", p, rnd);
 
       test3 (mpfr_remainder, "mpfr_remainder", p, rnd);
+#if MPFR_VERSION >= MPFR_VERSION_NUM(2,4,0)
       test3 (mpfr_fmod, "mpfr_fmod", p, rnd);
+#endif
       test3 (mpfr_pow, "mpfr_pow", p, rnd);
       test3 (mpfr_atan2, "mpfr_atan2", p, rnd);
 
       test4 (mpfr_fma, "mpfr_fma", p, rnd);
 
+#if MPFR_VERSION >= MPFR_VERSION_NUM(2,4,0)
       test3a (mpfr_modf, "mpfr_modf", p, rnd);
+#endif
       test3a (mpfr_sin_cos, "mpfr_sin_cos", p, rnd);
+#if MPFR_VERSION >= MPFR_VERSION_NUM(2,4,0)
       test3a (mpfr_sinh_cosh, "mpfr_sinh_cosh", p, rnd);
+#endif
     }
 
   tests_end_mpfr ();

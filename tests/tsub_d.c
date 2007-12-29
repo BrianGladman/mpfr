@@ -26,6 +26,8 @@ MA 02110-1301, USA. */
 
 #include "mpfr-test.h"
 
+#if MPFR_VERSION >= MPFR_VERSION_NUM(2,4,0)
+
 static void
 check_nans (void)
 {
@@ -103,3 +105,14 @@ main (int argc, char *argv[])
   tests_end_mpfr ();
   return 0;
 }
+
+#else
+
+int
+main (void)
+{
+  printf ("Warning! Test disabled for this MPFR version.\n");
+  return 0;
+}
+
+#endif
