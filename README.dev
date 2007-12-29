@@ -103,6 +103,7 @@ To make a release (for the MPFR team):
      with -m96bit-long-double and -m128bit-long-double. Test with both
      "make check" and the worst cases. Try also with gcc's -fno-common
      option.
+     Check that there are no abnormal regressions in the timings.
      Test the library interface compatibility by running the test suite
      compiled against an old library version and dynamically linked with
      the new library version: for instance, build the shared library of
