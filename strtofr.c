@@ -719,6 +719,8 @@ mpfr_strtofr (mpfr_t x, const char *string, char **end, int base,
   int res;
   struct parsed_string pstr;
 
+  MPFR_ASSERTN (base == 0 || (base >= 2 && base <= 36));
+
   /* If an error occured, it must return 0 */
   MPFR_SET_ZERO (x);
   MPFR_SET_POS (x);
@@ -726,32 +728,27 @@ mpfr_strtofr (mpfr_t x, const char *string, char **end, int base,
   /* Though bases up to MPFR_MAX_BASE are supported, we require a lower
      limit: 36. For such values <= 36, parsing is case-insensitive. */
   MPFR_ASSERTN (MPFR_MAX_BASE >= 36);
-  if (base == 0 || (base >= 2 && base <= 36))
+  res = parse_string (x, &pstr, &string, base);
+  /* If res == 0, then it was exact (NAN or INF),
+     so it is also the ternary value */
+  if (res == 1)
     {
-      res = parse_string (x, &pstr, &string, base);
-      /* If res == 0, then it was exact (NAN or INF),
-         so it is also the ternary value */
-      if (res == 1)
-        {
-          res = parsed_string_to_mpfr (x, &pstr, rnd);
-          free_parsed_string (&pstr);
-        }
-      else if (res == 2)
-        res = mpfr_overflow (x, rnd, (pstr.negative) ? -1 : 1);
-      MPFR_ASSERTD (res != 3);
-#if 0
-      else if (res == 3)
-        {
-          /* This is called when there is a huge overflow
-             (Real expo < MPFR_EXP_MIN << __gmpfr_emin */
-          if (rnd == GMP_RNDN)
-            rnd = GMP_RNDZ;
-          res = mpfr_underflow (x, rnd, (pstr.negative) ? -1 : 1);
-        }
-#endif
+      res = parsed_string_to_mpfr (x, &pstr, rnd);
+      free_parsed_string (&pstr);
     }
-  else
-    res = -1;
+  else if (res == 2)
+    res = mpfr_overflow (x, rnd, (pstr.negative) ? -1 : 1);
+  MPFR_ASSERTD (res != 3);
+#if 0
+  else if (res == 3)
+    {
+      /* This is called when there is a huge overflow
+         (Real expo < MPFR_EXP_MIN << __gmpfr_emin */
+      if (rnd == GMP_RNDN)
+        rnd = GMP_RNDZ;
+      res = mpfr_underflow (x, rnd, (pstr.negative) ? -1 : 1);
+    }
+#endif
 
   if (end != NULL)
     *end = (char *) string;

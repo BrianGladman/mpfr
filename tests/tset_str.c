@@ -808,9 +808,6 @@ main (int argc, char *argv[])
     }
 
   /* check invalid input */
-  mpfr_set_ui (x, 1, GMP_RNDN);
-  ret = mpfr_set_str (x, "1", 37, GMP_RNDN);
-  MPFR_ASSERTN (ret == -1);
   ret = mpfr_set_str (x, "1E10toto", 10, GMP_RNDN);
   MPFR_ASSERTN (ret == -1);
   ret = mpfr_set_str (x, "1p10toto", 16, GMP_RNDN);
