@@ -910,29 +910,32 @@ is a valid number in base @var{base}; otherwise it returns @minus{}1, and
 @deftypefun int mpfr_strtofr (mpfr_t @var{rop}, const char *@var{nptr}, char **@var{endptr}, int @var{base}, mp_rnd_t @var{rnd})
 
 Read a floating-point number from a string @var{nptr} in base @var{base},
-rounded in the direction @var{rnd}. If successful, the
+rounded in the direction @var{rnd} (@var{base} may have the special
+value 0, see below). If successful, the
 result is stored in @var{rop} and @code{*@var{endptr}} points to the
-character just after those parsed. If @var{str} doesn't start with a
+character just after those parsed. If @var{str} does not start with a
 valid number then @var{rop} is set to zero and the value of @var{nptr}
 is stored in the location referenced by @var{endptr}.
 
 Parsing follows the standard C @code{strtod} function. This means optional
 leading whitespace, an optional @code{+} or @code{-}, significand digits with
-an optional decimal point, and an
-optional exponent consisting of an @code{e} or @code{E} (if
-@math{@var{base} @le{} 10}) or @code{@@}, an optional sign, and digits.
+an optional decimal point, and an optional exponent consisting of an @code{e}
+or @code{E} (for bases up to 10) or @code{@@}, an optional sign, and digits.
 The decimal point can be either the one defined by the current locale or
 the period (the first one is accepted for consistency with the C standard
 and the practice, the second one is accepted to allow the programmer to
 provide MPFR numbers from strings in a way that does not depend on the
 current locale).
-A hexadecimal significand can be given with a leading @code{0x} or @code{0X},
+If @var{base} is 0 or 16,
+a hexadecimal significand can be given with a leading @code{0x} or @code{0X},
 in which case @code{p} or @code{P} may introduce an optional binary exponent,
-indicating the power of 2 by which the significand is to be scaled. A binary
+indicating the power of 2 by which the significand is to be scaled.
+If @var{base} is 0 or 2, a binary
 significand can be given with a leading @code{0b} or @code{0B}, in which case
 @code{e}, @code{E}, @code{p}, @code{P} or @code{@@} may introduce the
 binary exponent. The exponent is always written in base 10.
 
+@c FIXME: @math{@var{base} @le{} 16 instead of 10 (twice)?
 In addition, @code{infinity}, @code{inf} (if @math{@var{base} @le{} 10})
 or @code{@@inf@@} with an optional sign, or @code{nan},
 @code{nan(n-char-sequence)} (if @math{@var{base} @le{} 10}), @code{@@nan@@}
@@ -956,12 +959,8 @@ Note that in the hex format the exponent @code{P} represents a power of 2,
 whereas @code{@@} represents a power of the base (i.e.@: 16).
 
 If the argument @var{base} is different from 0, it must be in the range 2
-to 36.
-@c For bases up to 36,
-Case is ignored; uppercase and lowercase letters have the same
-value.
-@c ; for bases 37 to 62, uppercase letters represent the usual
-@c  10..35, while lowercase letters represent 36..61.
+to 36, otherwise the behavior is undefined.
+Case is ignored; uppercase and lowercase letters have the same value.
 
 If @code{base} is 0, then it tries to identify the used base: if the
 significand begins with the @code{0x} prefix, it assumes that @var{base} is 16.
