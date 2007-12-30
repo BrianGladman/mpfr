@@ -716,14 +716,17 @@ int
 mpfr_strtofr (mpfr_t x, const char *string, char **end, int base,
               mp_rnd_t rnd)
 {
-  int res = -1;
+  int res;
   struct parsed_string pstr;
 
   /* If an error occured, it must return 0 */
   MPFR_SET_ZERO (x);
   MPFR_SET_POS (x);
 
-  if (base == 0 || (base >= 2 && base <= /*MPFR_MAX_BASE*/36))
+  /* Though bases up to MPFR_MAX_BASE are supported, we require a lower
+     limit: 36. For such values <= 36, parsing is case-insensitive. */
+  MPFR_ASSERTN (MPFR_MAX_BASE >= 36);
+  if (base == 0 || (base >= 2 && base <= 36))
     {
       res = parse_string (x, &pstr, &string, base);
       /* If res == 0, then it was exact (NAN or INF),
@@ -747,6 +750,9 @@ mpfr_strtofr (mpfr_t x, const char *string, char **end, int base,
         }
 #endif
     }
+  else
+    res = -1;
+
   if (end != NULL)
     *end = (char *) string;
   return res;
