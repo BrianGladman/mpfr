@@ -632,6 +632,20 @@ check_parse (void)
       mpfr_out_str (stdout, 10, 0, x, GMP_RNDN); putchar ('\n');
       exit (1);
     }
+  mpfr_strtofr (x, "-42P17", &s, 0, GMP_RNDN);
+  if (mpfr_cmp_str (x, "-42", 10, GMP_RNDN) || strcmp (s, "P17"))
+    {
+      printf ("Failed parsing '-42P17' (base = 0)\n S='%s'\n X=", s);
+      mpfr_out_str (stdout, 10, 0, x, GMP_RNDN); putchar ('\n');
+      exit (1);
+    }
+  mpfr_strtofr (x, "-42P17", &s, 16, GMP_RNDN);
+  if (mpfr_cmp_str (x, "-42", 16, GMP_RNDN) || strcmp (s, "P17"))
+    {
+      printf ("Failed parsing '-42P17' (base = 16)\n S='%s'\n X=", s);
+      mpfr_out_str (stdout, 10, 0, x, GMP_RNDN); putchar ('\n');
+      exit (1);
+    }
   mpfr_strtofr (x, " 0b0101.011@42", &s, 0, GMP_RNDN);
   if (mpfr_cmp_str (x, "0101.011@42", 2, GMP_RNDN) || *s != 0)
     {
