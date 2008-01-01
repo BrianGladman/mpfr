@@ -67,7 +67,7 @@ MA 02110-1301, USA. */
 
 /* We assume that a single conversion specifier produces at most 4095 chars
    (Rationale for International Standard -Programming Languages- C
-   Revision 5.10 April-2003, 7.19.6.1 p.152). 
+   Revision 5.10 April-2003, 7.19.6.1 p.152).
    MAX_CHAR_BY_SPEC must be less than INT_MAX to be compatible with
    mpfr_vasprintf() return type. */
 #define MAX_CHAR_BY_SPEC 4096
@@ -482,8 +482,8 @@ sprnt_nan (struct string_buffer *buf, const struct printf_spec spec)
   /* left justification padding */
   if ((spec.left == 1) && (spec.width > MPFR_NAN_STRING_LENGTH))
     buffer_pad (buf, ' ', spec.width - MPFR_NAN_STRING_LENGTH);
-  
-  return (spec.width > MPFR_NAN_STRING_LENGTH) ? spec.width 
+
+  return (spec.width > MPFR_NAN_STRING_LENGTH) ? spec.width
     : MPFR_NAN_STRING_LENGTH;
 }
 
@@ -539,9 +539,9 @@ sprntf_gmp (struct string_buffer *b, const char *fmt, va_list ap)
 
 /* internal function printing the mpfr_t P into the buffer BUF according to
    specification described by SPEC.
-   Note: SPEC must be a integer conversion specification. 
+   Note: SPEC must be a integer conversion specification.
    Return the number of written characters.
-   Return -1 if the built string has more than MAX_CHAR_BY_SPEC 
+   Return -1 if the built string has more than MAX_CHAR_BY_SPEC
    characters. */
 static int
 sprnt_int (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
@@ -616,7 +616,7 @@ uceil_log10_exp_p2 (mpfr_srcptr p)
 
 /* sprnt_fp_a prints a mpfr_t in "%a" and "%A" cases.
    return the size of the string (not counting the terminating '\0')
-   return -1 if the built string is too long (i.e. has more than 
+   return -1 if the built string is too long (i.e. has more than
    MAX_CHAR_BY_SPEC characters). */
 static int
 sprnt_fp_a (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
@@ -625,7 +625,7 @@ sprnt_fp_a (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
   const char d_point[] = { MPFR_DECIMAL_POINT, '\0' };
 
   /* char_fp details how much characters are needed in each part of a float
-     print. 
+     print.
      total must be less or equal to MAX_CHAR_BY_SPEC. */
   struct char_fp
   {
@@ -915,7 +915,7 @@ sprnt_fp_a (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
           else
             nbc.frac_part = (int) ndigits;
         }
-      else 
+      else
         nbc.frac_part = spec.prec;
       nbc.point = (nbc.frac_part == 0) && (spec.alt == 0) ? 0 : 1;
       /* The exp_part contains the base character plus the sign character
@@ -1328,7 +1328,7 @@ sprnt_fp_b (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
 
 /* sprnt_fp_e prints a mpfr_t in "%e" and "%E" cases.
    return the size of the string (not counting the terminating '\0')
-   return -1 if the built string is too long (i.e. has more than 
+   return -1 if the built string is too long (i.e. has more than
    MAX_CHAR_BY_SPEC characters). */
 static int
 sprnt_fp_e (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
@@ -1337,7 +1337,7 @@ sprnt_fp_e (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
   char *str;
 
   /* char_fp details how much characters are needed in each part of a float
-     print. 
+     print.
      total must be less or equal to MAX_CHAR_BY_SPEC. */
   struct char_fp
   {
@@ -1503,7 +1503,7 @@ sprnt_fp_e (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
       else
         nbc.frac_part = spec.prec;
       nbc.point = (nbc.frac_part == 0) && (spec.alt == 0) ? 0 : 1;
-      /* the exp_part contains the character 'e' or 'E' plus the sign 
+      /* the exp_part contains the character 'e' or 'E' plus the sign
          character plus at least two digits and only as many more digits as
          necessary to represent the exponent.
          We assume that |exp| < 10^INT_MAX. */
@@ -2182,7 +2182,7 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
      terminating null is greater than {INT_MAX}." See:
      http://www.opengroup.org/onlinepubs/009695399/functions/fprintf.html
      But it doesn't say anything concerning the other printf-like functions.
-     A defect report has been submitted to austin-review-l (item 2532). 
+     A defect report has been submitted to austin-review-l (item 2532).
      So, for the time being, we return a negative value and set the erange
      flag. */
   if (nbchar <= INT_MAX)

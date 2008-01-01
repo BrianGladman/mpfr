@@ -29,7 +29,7 @@ MA 02110-1301, USA. */
 
 #ifdef _MPFR_H_HAVE_FILE
 
-/* Each printf-like function calls mpfr_vasprintf which 
+/* Each printf-like function calls mpfr_vasprintf which
    - returns the number of characters in the returned string excluding the
    terminating null
    - returns -1 and set the erange flag if the number of produced characters
