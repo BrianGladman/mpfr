@@ -453,6 +453,12 @@ test20071231 (void)
   mpfr_clear (x);
 
   mpfr_set_emin (emin);
+
+  mpfr_init2 (x, 53);
+  mpfr_set_str (x, "-1000000001.5", 10, GMP_RNDN);
+  inex = mpfr_gamma (x, x, GMP_RNDN);
+  MPFR_ASSERTN(MPFR_IS_ZERO(x) && MPFR_IS_POS(x) && inex < 0);
+  mpfr_clear (x);
 }
 
 int
