@@ -242,9 +242,12 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
               ctrn++;
               mpfr_set (t, y, rnd);
               /* Risk of failures are known when some flags are already set
-                 before the function call. */
+                 before the function call. Do not set the erange flag, as
+                 it will remain set after the function call and no checks
+                 are performed in such a case (see the mpfr_erangeflag_p
+                 test below). */
               if (randlimb () & 1)
-                __gmpfr_flags = MPFR_FLAGS_ALL;
+                __gmpfr_flags = MPFR_FLAGS_ALL ^ MPFR_FLAGS_ERANGE;
 #ifdef DEBUG_TGENERIC
               TGENERIC_INFO (TEST_FUNCTION, MPFR_PREC (z));
 #endif
