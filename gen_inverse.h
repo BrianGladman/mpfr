@@ -70,11 +70,13 @@ FUNCTION (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_ZIV_INIT (loop, m);
   for(;;)
     {
-      INVERSE (z, x, GMP_RNDZ); /* error k_u < 1 ulp */
+      MPFR_BLOCK_DECL (flags);
+
+      MPFR_BLOCK (flags, INVERSE (z, x, GMP_RNDZ)); /* error k_u < 1 ulp */
       /* FIXME: the following assumes that if an overflow happens with
          MPFR_EMAX_MAX, then necessarily an underflow happens with
          __gmpfr_emin */
-      if (mpfr_overflow_p ())
+      if (MPFR_OVERFLOW (flags))
         {
           int s = MPFR_SIGN(z);
           MPFR_ZIV_FREE (loop);
