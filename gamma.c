@@ -293,12 +293,12 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_const_pi (tmp2, GMP_RNDN);
       mpfr_mul (tmp2, tmp2, tmp, GMP_RNDN); /* Pi*(2-x) */
       mpfr_sin (tmp, tmp2, GMP_RNDN); /* sin(Pi*(2-x)) */
+      sgn = mpfr_sgn (tmp);
       mpfr_abs (tmp, tmp, GMP_RNDN);
       mpfr_mul_ui (tmp2, tmp2, 3, GMP_RNDU); /* 3Pi(2-x) */
       mpfr_add_ui (tmp2, tmp2, 1, GMP_RNDU); /* 3Pi(2-x)+1 */
       mpfr_div_2ui (tmp2, tmp2, mpfr_get_prec (tmp), GMP_RNDU);
       /* if tmp2<|tmp|, we get a lower bound */
-      sgn = mpfr_sgn (tmp);
       if (mpfr_cmp (tmp2, tmp) < 0)
         {
           mpfr_sub (tmp, tmp, tmp2, GMP_RNDZ); /* low bnd on |sin(Pi*(2-x))| */

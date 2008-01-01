@@ -435,6 +435,26 @@ gamma_integer (void)
   mpz_clear (n);
 }
 
+/* bug found by Kevin Rauch */
+static void
+test20071231 (void)
+{
+  mpfr_t x;
+  int inex;
+  mp_exp_t emin;
+
+  emin = mpfr_get_emin ();
+  mpfr_set_emin (-1000000);
+
+  mpfr_init2 (x, 21);
+  mpfr_set_str (x, "-1000001.5", 10, GMP_RNDN);
+  inex = mpfr_gamma (x, x, GMP_RNDN);
+  MPFR_ASSERTN(MPFR_IS_ZERO(x) && MPFR_IS_POS(x) && inex < 0);
+  mpfr_clear (x);
+
+  mpfr_set_emin (emin);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -444,6 +464,7 @@ main (int argc, char *argv[])
   special_overflow ();
   test_generic (2, 100, 2);
   gamma_integer ();
+  test20071231 ();
 
   data_check ("data/gamma", mpfr_gamma, "mpfr_gamma");
 
