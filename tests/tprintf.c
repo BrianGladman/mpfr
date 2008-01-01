@@ -1,6 +1,6 @@
 /* mpfr_tprintf -- test file for mpfr_sprintf mpfr_vsprintf
 
-Copyright 2007 Free Software Foundation, Inc.
+Copyright 2007, 2008 Free Software Foundation, Inc.
 Contributed by the Arenaire and Cacao projects, INRIA.
 
 The MPFR Library is free software; you can redistribute it and/or modify
