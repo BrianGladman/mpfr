@@ -221,9 +221,11 @@ environment variable and to add <samp>/usr/local/lib</samp> to your
 <var class="env">LIBRARY_PATH</var> and <var class="env">LD_LIBRARY_PATH</var>
 environment variables (and/or <var class="env">LD_RUN_PATH</var>).
 Alternatively, you can use <samp>--with-gmp*</samp> configure options,
-<abbr>e.g.</abbr> <samp>--with-gmp=/usr/local</samp>, but other software
-that uses <cite><acronym>GMP</acronym></cite> and/or
-<cite><acronym>MPFR</acronym></cite> will need correct paths too, and
+<abbr>e.g.</abbr> <samp>--with-gmp=/usr/local</samp>, but <strong>this is
+not guaranteed to work</strong> (in particular with <samp>gcc</samp> and
+system directories such as <samp>/usr</samp> or <samp>/usr/local</samp>),
+and other software that uses <cite><acronym>GMP</acronym></cite> and/or
+<cite><acronym>MPFR</acronym></cite> will need correct paths too;
 environment variables allow you to set them in a global way.</p>
 <p>Other information can be given in the <samp>INSTALL</samp> file and
 <samp>ld</samp> manual. Please look at them for more details. See also
