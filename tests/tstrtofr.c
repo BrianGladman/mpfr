@@ -73,36 +73,56 @@ check_special (void)
     }
 
   /* Check NAN  */
+  mpfr_set_ui (x, 0, GMP_RNDN); /* make sure that x is modified */
   res = mpfr_strtofr (x, "NaN", &s, 10, GMP_RNDN);
   if (res != 0 || !mpfr_nan_p (x) || *s != 0)
     {
       printf ("Error for setting NAN (1)\n");
       exit (1);
     }
+  mpfr_set_ui (x, 0, GMP_RNDN); /* make sure that x is modified */
+  res = mpfr_strtofr (x, "+NaN", &s, 10, GMP_RNDN);
+  if (res != 0 || !mpfr_nan_p (x) || *s != 0)
+    {
+      printf ("Error for setting +NAN (1)\n");
+      exit (1);
+    }
+  mpfr_set_ui (x, 0, GMP_RNDN); /* make sure that x is modified */
+  res = mpfr_strtofr (x, " -NaN", &s, 10, GMP_RNDN);
+  if (res != 0 || !mpfr_nan_p (x) || *s != 0)
+    {
+      printf ("Error for setting -NAN (1)\n");
+      exit (1);
+    }
+  mpfr_set_ui (x, 0, GMP_RNDN); /* make sure that x is modified */
   res = mpfr_strtofr (x, "@nAn@xx", &s, 16, GMP_RNDN);
   if (res != 0 || !mpfr_nan_p (x) || strcmp(s, "xx") )
     {
       printf ("Error for setting NAN (2)\n");
       exit (1);
     }
+  mpfr_set_ui (x, 0, GMP_RNDN); /* make sure that x is modified */
   res = mpfr_strtofr (x, "NAN(abcdEDF__1256)Hello", &s, 10, GMP_RNDN);
   if (res != 0 || !mpfr_nan_p (x) || strcmp(s, "Hello") )
     {
       printf ("Error for setting NAN (3)\n");
       exit (1);
     }
+  mpfr_set_ui (x, 0, GMP_RNDN); /* make sure that x is modified */
   res = mpfr_strtofr (x, "NAN(abcdEDF)__1256)Hello", &s, 10, GMP_RNDN);
   if (res != 0 || !mpfr_nan_p (x) || strcmp(s, "__1256)Hello") )
     {
       printf ("Error for setting NAN (4)\n");
       exit (1);
     }
+  mpfr_set_ui (x, 0, GMP_RNDN); /* make sure that x is modified */
   res = mpfr_strtofr (x, "NAN(abc%dEDF)__1256)Hello", &s, 10, GMP_RNDN);
   if (res != 0 || !mpfr_nan_p (x) || strcmp(s, "(abc%dEDF)__1256)Hello") )
     {
       printf ("Error for setting NAN (5)\n");
       exit (1);
     }
+  mpfr_set_ui (x, 0, GMP_RNDN); /* make sure that x is modified */
   res = mpfr_strtofr (x, "NAN((abc))", &s, 10, GMP_RNDN);
   if (res != 0 || !mpfr_nan_p (x) || strcmp(s, "((abc))") )
     {
@@ -586,6 +606,23 @@ check_parse (void)
 
   mpfr_init (x);
 
+  /* Invalid data */
+  mpfr_set_si (x, -1, GMP_RNDN);
+  mpfr_strtofr (x, "  invalid", NULL, 10, GMP_RNDN);
+  if (MPFR_NOTZERO (x) || MPFR_IS_NEG (x))
+    {
+      printf ("Failed parsing '  invalid' (1)\n X=");
+      mpfr_dump (x);
+      exit (1);
+    }
+  mpfr_set_si (x, -1, GMP_RNDN);
+  mpfr_strtofr (x, "  invalid", &s, 0, GMP_RNDN);
+  if (MPFR_NOTZERO (x) || MPFR_IS_NEG (x) || strcmp (s, "  invalid"))
+    {
+      printf ("Failed parsing '  invalid' (2)\n S=%s\n X=", s);
+      mpfr_dump (x);
+      exit (1);
+    }
   /* Check if it stops correctly */
   mpfr_strtofr (x, "15*x", &s, 10, GMP_RNDN);
   if (mpfr_cmp_ui (x, 15) || strcmp (s, "*x"))
@@ -617,6 +654,63 @@ check_parse (void)
       mpfr_out_str (stdout, 10, 0, x, GMP_RNDN); putchar ('\n');
       exit (1);
     }
+  /* P form */
+  mpfr_strtofr (x, "0x42P17", &s, 16, GMP_RNDN);
+  if (mpfr_cmp_str (x, "8650752", 10, GMP_RNDN) || *s != 0)
+    {
+      printf ("Failed parsing '0x42P17' (base = 16)\n S='%s'\n X=", s);
+      mpfr_out_str (stdout, 10, 0, x, GMP_RNDN); putchar ('\n');
+      exit (1);
+    }
+  mpfr_strtofr (x, "-0X42p17", &s, 16, GMP_RNDN);
+  if (mpfr_cmp_str (x, "-8650752", 10, GMP_RNDN) || *s != 0)
+    {
+      printf ("Failed parsing '-0x42p17' (base = 16)\n S='%s'\n X=", s);
+      mpfr_out_str (stdout, 10, 0, x, GMP_RNDN); putchar ('\n');
+      exit (1);
+    }
+  mpfr_strtofr (x, "42p17", &s, 16, GMP_RNDN);
+  if (mpfr_cmp_str (x, "8650752", 10, GMP_RNDN) || *s != 0)
+    {
+      printf ("Failed parsing '42p17' (base = 16)\n S='%s'\n X=", s);
+      mpfr_out_str (stdout, 10, 0, x, GMP_RNDN); putchar ('\n');
+      exit (1);
+    }
+  mpfr_strtofr (x, "-42P17", &s, 16, GMP_RNDN);
+  if (mpfr_cmp_str (x, "-8650752", 10, GMP_RNDN) || *s != 0)
+    {
+      printf ("Failed parsing '-42P17' (base = 16)\n S='%s'\n X=", s);
+      mpfr_out_str (stdout, 10, 0, x, GMP_RNDN); putchar ('\n');
+      exit (1);
+    }
+  mpfr_strtofr (x, "0b1001P17", &s, 2, GMP_RNDN);
+  if (mpfr_cmp_str (x, "1179648", 10, GMP_RNDN) || *s != 0)
+    {
+      printf ("Failed parsing '0b1001P17' (base = 2)\n S='%s'\n X=", s);
+      mpfr_out_str (stdout, 10, 0, x, GMP_RNDN); putchar ('\n');
+      exit (1);
+    }
+  mpfr_strtofr (x, "-0B1001p17", &s, 2, GMP_RNDN);
+  if (mpfr_cmp_str (x, "-1179648", 10, GMP_RNDN) || *s != 0)
+    {
+      printf ("Failed parsing '-0B1001p17' (base = 2)\n S='%s'\n X=", s);
+      mpfr_out_str (stdout, 10, 0, x, GMP_RNDN); putchar ('\n');
+      exit (1);
+    }
+  mpfr_strtofr (x, "1001p17", &s, 2, GMP_RNDN);
+  if (mpfr_cmp_str (x, "1179648", 10, GMP_RNDN) || *s != 0)
+    {
+      printf ("Failed parsing '1001p17' (base = 2)\n S='%s'\n X=", s);
+      mpfr_out_str (stdout, 10, 0, x, GMP_RNDN); putchar ('\n');
+      exit (1);
+    }
+  mpfr_strtofr (x, "-1001P17", &s, 2, GMP_RNDN);
+  if (mpfr_cmp_str (x, "-1179648", 10, GMP_RNDN) || *s != 0)
+    {
+      printf ("Failed parsing '-1001P17' (base = 2)\n S='%s'\n X=", s);
+      mpfr_out_str (stdout, 10, 0, x, GMP_RNDN); putchar ('\n');
+      exit (1);
+    }
   /* Check for auto-detection of the base */
   mpfr_strtofr (x, "+0x42P17", &s, 0, GMP_RNDN);
   if (mpfr_cmp_str (x, "42P17", 16, GMP_RNDN) || *s != 0)
@@ -636,13 +730,6 @@ check_parse (void)
   if (mpfr_cmp_str (x, "-42", 10, GMP_RNDN) || strcmp (s, "P17"))
     {
       printf ("Failed parsing '-42P17' (base = 0)\n S='%s'\n X=", s);
-      mpfr_out_str (stdout, 10, 0, x, GMP_RNDN); putchar ('\n');
-      exit (1);
-    }
-  mpfr_strtofr (x, "-42P17", &s, 16, GMP_RNDN);
-  if (mpfr_cmp_str (x, "-42", 16, GMP_RNDN) || strcmp (s, "P17"))
-    {
-      printf ("Failed parsing '-42P17' (base = 16)\n S='%s'\n X=", s);
       mpfr_out_str (stdout, 10, 0, x, GMP_RNDN); putchar ('\n');
       exit (1);
     }
@@ -716,7 +803,7 @@ check_parse (void)
       mpfr_out_str (stdout, 10, 0, x, GMP_RNDN); putchar ('\n');
       exit (1);
     }
-  /* Check for 0x */
+  /* Check for 0x and 0b */
   mpfr_strtofr (x, "  0xG", &s, 0, GMP_RNDN);
   if (mpfr_cmp_ui (x, 0) || strcmp(s,"xG"))
     {

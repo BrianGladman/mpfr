@@ -234,6 +234,11 @@ parse_string (mpfr_t x, struct parsed_string *pstr,
   /* Optional leading whitespace */
   while (isspace((unsigned char) *str)) str++;
 
+  /* An optional sign `+' or `-' */
+  pstr->negative = (*str == '-');
+  if (*str == '-' || *str == '+')
+    str++;
+
   /* Can be case-insensitive NAN */
   if (fast_casecmp (str, "@nan@") == 0)
     {
@@ -263,11 +268,6 @@ parse_string (mpfr_t x, struct parsed_string *pstr,
       __gmpfr_flags |= MPFR_FLAGS_NAN;
       return 0;
     }
-
-  /* An optional `+' or `-' */
-  pstr->negative = (*str == '-');
-  if ((*str == '-') || (*str == '+'))
-    str++;
 
   /* Can be case-insensitive INF */
   if (fast_casecmp (str, "@inf@") == 0)
