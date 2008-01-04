@@ -603,26 +603,29 @@ check_parse (void)
 {
   mpfr_t x;
   char *s;
+  int res;
 
   mpfr_init (x);
 
   /* Invalid data */
   mpfr_set_si (x, -1, GMP_RNDN);
-  mpfr_strtofr (x, "  invalid", NULL, 10, GMP_RNDN);
+  res = mpfr_strtofr (x, "  invalid", NULL, 10, GMP_RNDN);
   if (MPFR_NOTZERO (x) || MPFR_IS_NEG (x))
     {
       printf ("Failed parsing '  invalid' (1)\n X=");
       mpfr_dump (x);
       exit (1);
     }
+  MPFR_ASSERTN (res == 0);
   mpfr_set_si (x, -1, GMP_RNDN);
-  mpfr_strtofr (x, "  invalid", &s, 0, GMP_RNDN);
+  res = mpfr_strtofr (x, "  invalid", &s, 0, GMP_RNDN);
   if (MPFR_NOTZERO (x) || MPFR_IS_NEG (x) || strcmp (s, "  invalid"))
     {
       printf ("Failed parsing '  invalid' (2)\n S=%s\n X=", s);
       mpfr_dump (x);
       exit (1);
     }
+  MPFR_ASSERTN (res == 0);
   /* Check if it stops correctly */
   mpfr_strtofr (x, "15*x", &s, 10, GMP_RNDN);
   if (mpfr_cmp_ui (x, 15) || strcmp (s, "*x"))

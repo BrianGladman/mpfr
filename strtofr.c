@@ -731,7 +731,9 @@ mpfr_strtofr (mpfr_t x, const char *string, char **end, int base,
   res = parse_string (x, &pstr, &string, base);
   /* If res == 0, then it was exact (NAN or INF),
      so it is also the ternary value */
-  if (res == 1)
+  if (MPFR_UNLIKELY (res == -1))  /* invalid data */
+    res = 0;  /* x is set to 0, which is exact, thus ternary value is 0 */
+  else if (res == 1)
     {
       res = parsed_string_to_mpfr (x, &pstr, rnd);
       free_parsed_string (&pstr);
