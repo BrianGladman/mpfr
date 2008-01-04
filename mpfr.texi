@@ -914,10 +914,10 @@ rounded in the direction @var{rnd}; @var{base} must be either 0 (to
 detect the base, as described below) or a number from 2 to 36 (otherwise
 the behavior is undefined). If @var{nptr} starts with valid data, the
 result is stored in @var{rop} and @code{*@var{endptr}} points to the
-character just after the valid data (if @var{endptr} not a null pointer);
+character just after the valid data (if @var{endptr} is not a null pointer);
 otherwise @var{rop} is set to zero and the value of @var{nptr} is stored
-in the location referenced by @var{endptr} (if @var{endptr} not a null
-pointer).
+in the location referenced by @var{endptr} (if @var{endptr} is not a null
+pointer). The usual ternary value is returned.
 
 Parsing follows the standard C @code{strtod} function with some extensions.
 Case is ignored. After optional leading whitespace, one has a subject
@@ -965,11 +965,6 @@ A @code{n-char-sequence} is a non-empty string containing only digits,
 Latin letters and the underscore (0, 1, 2, @dots{}, 9, a, b, @dots{}, z,
 A, B, @dots{}, Z, _). Note: one has an optional sign for all data, even
 NaN.
-
-This function returns a usual ternary value.
-If @var{endptr} is not a null pointer, a pointer to the character after
-the last character used in the conversion is stored in the location
-referenced by @var{endptr}.
 
 @end deftypefun
 
