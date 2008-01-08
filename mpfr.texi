@@ -1455,12 +1455,12 @@ Set @var{rop} to the arc-cosine, arc-sine or arc-tangent of @var{op},
 rounded in the direction @var{rnd}.
 Note that since @code{acos(-1)} returns the floating-point number closest to
 @m{\pi,Pi} according to the given rounding mode, this number might not be
-in the output domain @math{0 @le{} @var{rop} < \pi}
+in the output range @math{0 @le{} @var{rop} < \pi}
 of the arc-cosine function;
-still, the result lies in the image of the output domain
+still, the result lies in the image of the output range
 by the rounding function.
-The same holds for @code{acos(0)}, @code{asin(-1)},
-@code{asin(1)}, @code{atan(-Inf)}, @code{atan(-Inf)}.
+The same holds for @code{asin(-1)}, @code{asin(1)}, @code{atan(-Inf)},
+@code{atan(-Inf)}.
 @end deftypefun
 
 @deftypefun int mpfr_atan2 (mpfr_t @var{rop}, mpfr_t @var{y}, mpfr_t @var{x}, mp_rnd_t @var{rnd})
@@ -1469,7 +1469,7 @@ rounded in the direction @var{rnd}:
 if @code{x > 0}, @code{atan2(y, x) = atan (y/x)};
 if @code{x < 0}, @code{atan2(y, x) = sign(y)*(Pi - atan (@GMPabs{y/x}))}.
 As for @code{atan}, in case the exact mathematical result is @m{+\pi,+Pi} or
-@m{-\pi,-Pi}, its rounded result might be outside the function output domain.
+@m{-\pi,-Pi}, its rounded result might be outside the function output range.
 
 @code{atan2(y, 0)} does not raise any floating-point exception.
 Special values are currently handled as described in the ISO C99 standard
