@@ -133,7 +133,7 @@ enum __arg_type
 
 /* Each conversion specification of the format string will be translated in a
    printf_spec structure by the parser.
-   This structure is adapted from the gnu libc one. */
+   This structure is adapted from the GNU libc one. */
 struct printf_spec
 {
   unsigned int alt:1;           /* # flag */
@@ -490,7 +490,8 @@ sprnt_nan (struct string_buffer *buf, const struct printf_spec spec)
 /* Print Infinities with padding
    NEG = -1 for '-inf', 0 for 'inf' */
 static int
-sprnt_inf (struct string_buffer *buf, const struct printf_spec spec, const int neg)
+sprnt_inf (struct string_buffer *buf, const struct printf_spec spec,
+           const int neg)
 {
   const int length = MPFR_INF_STRING_LENGTH - neg;
 
@@ -755,8 +756,8 @@ sprnt_fp_a (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
         {
           raw_str = mpfr_get_str (0, &exp, 16, 0, p, spec.rnd_mode);
           /* exp is the exponent for radix sixteen with decimal point BEFORE
-             the first digit, we want the exponent for radix two and the decimal
-             point AFTER the first digit */
+             the first digit, we want the exponent for radix two and the
+             decimal point AFTER the first digit */
           exp = (exp - 1) * 4;
 
         }
@@ -766,8 +767,8 @@ sprnt_fp_a (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
           raw_str = mpfr_get_str (0, &exp, 16, 1 + spec.prec, p,
                                   spec.rnd_mode);
           /* exp is the exponent for radix sixteen with decimal point BEFORE
-             the first digit, we want the exponent for radix two and the decimal
-             point AFTER the first digit */
+             the first digit, we want the exponent for radix two and the
+             decimal point AFTER the first digit */
           exp = (exp - 1) * 4;
         }
       else
@@ -890,7 +891,8 @@ sprnt_fp_a (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
         }
 
       /* compute the number of characters in each part of str */
-      nbc.sgn = (MPFR_SIGN (p) < 0) || (spec.showsign) || (spec.space) ? 1 : 0;
+      nbc.sgn = (MPFR_SIGN (p) < 0) || (spec.showsign) || (spec.space)
+        ? 1 : 0;
       if (spec.prec < 0)
         {
           size_t ndigits;
@@ -934,7 +936,7 @@ sprnt_fp_a (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
       }
       /* Number of characters to be printed (2 for "0x") */
       nbc.total = 2 + nbc.sgn + nbc.point + nbc.frac_part + nbc.exp_part;
-      /* optional heading zeros are counted in int_part */
+      /* optional leading zeros are counted in int_part */
       if ((spec.left == 0) && (spec.pad == '0') && (nbc.total < spec.width))
         nbc.int_part = spec.width - nbc.total;
       else
@@ -968,7 +970,7 @@ sprnt_fp_a (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
         }
       /* base prefix */
       strcat (str, (spec.spec == 'A') ? "0X" : "0x");
-      /* optional padding with heading zero */
+      /* optional padding with leading zeros */
       {
         int i;
         for (i = nbc.int_part - 1; i > 0; i--)
@@ -1175,7 +1177,8 @@ sprnt_fp_b (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
       exp--;
 
       /* Compute the number of characters in each part of str */
-      nbc.sgn = (MPFR_SIGN (p) < 0) || (spec.showsign) || (spec.space) ? 1 : 0;
+      nbc.sgn = (MPFR_SIGN (p) < 0) || (spec.showsign) || (spec.space)
+        ? 1 : 0;
 
       if (spec.prec < 0)
         {
@@ -1220,7 +1223,7 @@ sprnt_fp_b (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
       }
       /* Number of characters to be printed */
       nbc.total = nbc.sgn + nbc.point + nbc.frac_part + nbc.exp_part;
-      /* optional heading zeros are counted in int_part */
+      /* optional leading zeros are counted in int_part */
       if ((spec.left == 0) && (spec.pad == '0') && (nbc.total < spec.width))
         nbc.int_part = spec.width - nbc.total;
       else
@@ -1252,7 +1255,7 @@ sprnt_fp_b (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
           else if (spec.space)
             strcat (str, " ");
         }
-      /* optional padding with heading zero */
+      /* optional padding with leading zeros */
       {
         int i;
         for (i = 1; i < nbc.int_part; i++)
@@ -1474,7 +1477,8 @@ sprnt_fp_e (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
       exp--;
 
       /* Compute the number of characters in each part of str */
-      nbc.sgn = (MPFR_SIGN (p) < 0) || (spec.showsign) || (spec.space) ? 1 : 0;
+      nbc.sgn = (MPFR_SIGN (p) < 0) || (spec.showsign) || (spec.space)
+        ? 1 : 0;
 
       if (spec.prec < 0)
         {
@@ -1522,7 +1526,7 @@ sprnt_fp_e (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
         nbc.exp_part = 4;
       /* Number of characters to be printed */
       nbc.total = nbc.sgn + nbc.point + nbc.frac_part + nbc.exp_part;
-      /* optional heading zeros are counted in int_part */
+      /* optional leading zeros are counted in int_part */
       if ((spec.left == 0) && (spec.pad == '0') && (nbc.total < spec.width))
         nbc.int_part = spec.width - nbc.total;
       else
@@ -1554,7 +1558,7 @@ sprnt_fp_e (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
           else if (spec.space)
             strcat (str, " ");
         }
-      /* optional padding with heading zero */
+      /* optional padding with leading zeros */
       {
         int i;
         for (i = 1; i < nbc.int_part; i++)
