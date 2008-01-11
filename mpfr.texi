@@ -449,6 +449,14 @@ The precision can be any integer between @code{MPFR_PREC_MIN} and
 @code{MPFR_PREC_MAX}. In the current implementation, @code{MPFR_PREC_MIN}
 is equal to 2.
 
+Warning! MPFR needs to increase the precision internally, in order to
+provide accurate results (and in particular, correct rounding). Do not
+attempt to set the precision to any value near @code{MPFR_PREC_MAX},
+otherwise MPFR will abort due to an assertion failure. Moreover, you
+may reach some memory limit on your platform, in which case the program
+may abort, crash or have undefined behavior (depending on your C
+implementation).
+
 @cindex Rounding Modes
 @tindex @code{mp_rnd_t}
 @noindent
