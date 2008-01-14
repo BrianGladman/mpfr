@@ -21,7 +21,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
-#include <stdlib.h> /* For malloc, free, realloc and abort*/
+#include <stdlib.h> /* For malloc, free, realloc and abort */
 
 #include "mpfr-impl.h"
 
@@ -357,6 +357,33 @@ void
 mpfr_default_free (void *blk_ptr, size_t blk_size)
 {
   free (blk_ptr);
+}
+
+void *
+mpfr_tmp_allocate (struct tmp_marker **tmp_marker, size_t size)
+{
+  struct tmp_marker *head;
+
+  head = mpfr_default_allocate (sizeof (struct tmp_marker));
+  head->ptr = mpfr_default_allocate (size);
+  head->size = size;
+  head->next = *tmp_marker;
+  *tmp_marker = head;
+  return head->ptr;
+}
+
+void
+mpfr_tmp_free (struct tmp_marker *tmp_marker)
+{
+  struct tmp_marker *t;
+
+  while (tmp_marker != NULL)
+    {
+      t = tmp_marker;
+      mpfr_default_free (t->ptr, t->size);
+      tmp_marker = t->next;
+      mpfr_default_free (t, sizeof (struct tmp_marker));
+    }
 }
 
 #endif /* Have gmp-impl.h */

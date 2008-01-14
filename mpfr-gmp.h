@@ -172,12 +172,6 @@ __MPFR_DECLSPEC void mpfr_assert_fail _MPFR_PROTO((const char *, int,
 #undef  XDEBUG
 #define XDEBUG
 
-/* Temp memory allocate */
-#define TMP_DECL(m)
-#define TMP_ALLOC(x) alloca(x)
-#define TMP_MARK(m)
-#define TMP_FREE(m)
-
 /* For longlong.h */
 #ifdef HAVE_ATTRIBUTE_MODE
 typedef unsigned int UQItype    __attribute__ ((mode (QI)));
@@ -296,6 +290,24 @@ __MPFR_DECLSPEC void *__gmp_default_allocate _MPFR_PROTO ((size_t));
 __MPFR_DECLSPEC void *__gmp_default_reallocate _MPFR_PROTO ((void *, size_t,
                                                              size_t));
 __MPFR_DECLSPEC void __gmp_default_free _MPFR_PROTO ((void *, size_t));
+
+/* Temp memory allocate */
+
+struct tmp_marker
+{
+  void *ptr;
+  size_t size;
+  struct tmp_marker *next;
+};
+
+__MPFR_DECLSPEC void *mpfr_tmp_allocate _MPFR_PROTO ((struct tmp_marker **,
+                                                      size_t));
+__MPFR_DECLSPEC void mpfr_tmp_free _MPFR_PROTO ((struct tmp_marker *));
+
+#define TMP_DECL(m) struct tmp_marker *tmp_marker
+#define TMP_ALLOC(x) mpfr_tmp_allocate (&tmp_marker, (x))
+#define TMP_MARK(m) tmp_marker = 0;
+#define TMP_FREE(m) mpfr_tmp_free (tmp_marker)
 
 #if defined (__cplusplus)
 }
