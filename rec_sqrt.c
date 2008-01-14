@@ -52,7 +52,7 @@ check (mp_srcptr x, mp_srcptr a, mp_prec_t p)
 
   y = (mp_ptr) malloc (n * sizeof (mp_limb_t));
   t = (mp_ptr) malloc (2 * n * sizeof (mp_limb_t));
-  u = (mp_ptr) malloc ((3 * n + 1) * sizeof (mp_limb_t));  
+  u = (mp_ptr) malloc ((3 * n + 1) * sizeof (mp_limb_t));
 
   /* check the low bits of x are zero */
   if (l)
@@ -237,7 +237,7 @@ mpfr_mpn_rec_sqrt (mp_ptr x, mp_srcptr a, mp_prec_t p)
         case 2052:
           t = 2046; /* table gives 2045, error 1.002925 */
           break;
-        case 2054: 
+        case 2054:
           t = 2045; /* table gives 2044, error 1.006576 */
           break;
         case 2273:
@@ -269,7 +269,7 @@ mpfr_mpn_rec_sqrt (mp_ptr x, mp_srcptr a, mp_prec_t p)
       mp_limb_t cy, cu;
       mp_prec_t pl = n * GMP_NUMB_BITS - p; /* low bits from x */
       MPFR_TMP_DECL(marker);
-      
+
       mpfr_mpn_rec_sqrt (x + ln, a + ln, h);
       /* the most h significant bits of X are set, X has ceil(h/GMP_NUMB_BITS)
          limbs, the low (-h) % GMP_NUMB_BITS bits are zero */
@@ -350,11 +350,11 @@ mpfr_mpn_rec_sqrt (mp_ptr x, mp_srcptr a, mp_prec_t p)
       tn -= th; /* we know at least th = floor((h-3)/GMP_NUMB_LIMBS) of the
                    high limbs of {t, tn} are zero */
 
-      /* tn = rn - th, where rn * GMP_NUMB_BITS >= 2*h and 
+      /* tn = rn - th, where rn * GMP_NUMB_BITS >= 2*h and
          th * GMP_NUMB_BITS <= h-3, thus tn > 0 */
       MPFR_ASSERTN(tn > 0);
 
-      /* Since |x-a^{-1/2}| <= 1.5*2^{-h}, we have 
+      /* Since |x-a^{-1/2}| <= 1.5*2^{-h}, we have
          x = a^{-1/2} + e with |e| <= 1.5*2^{-h}, thus
          x^2 = 1/a + f with |f| <= 3*2^{-h}*a^{-1/2}+2.25*2^{-2h}
          ax^2 = 1 + g with |g| <= 3*2^{-h}*a^{1/2} + 2.25*2^{-2h}*a
@@ -377,12 +377,12 @@ mpfr_mpn_rec_sqrt (mp_ptr x, mp_srcptr a, mp_prec_t p)
          consider the upper n - th limbs of u */
       sn = n - th; /* sn cannot be zero, since for n=1 we have th=0, and
                       for n>=2 we have p <= n*GMP_NUMB_BITS,
-                      thus h=ceil((p+3)/2) <= (p+4)/2 and 
+                      thus h=ceil((p+3)/2) <= (p+4)/2 and
                       th*GMP_NUMB_BITS <= (h-3) <= p/2 <= n/2*GMP_NUMB_BITS */
       MPFR_ASSERTN(sn > 0);
       un -= sn; /* xn + rn - n */
       u += un;
-      
+
       /* u will be shifted to the right, and after that we want that the low
          pl bits are zero, thus we want now that the pl+1 bits are zero,
          thus we round u to nearest at bit pl+1 of u[0] */
@@ -427,7 +427,7 @@ mpfr_mpn_rec_sqrt (mp_ptr x, mp_srcptr a, mp_prec_t p)
               cy = mpn_add_1 (x, x, n, MPFR_LIMB_ONE) - cy;
               /* we also need to subtract 1 at x[ln] */
               cy -= mpn_sub_1 (x + ln, x + ln, xn, MPFR_LIMB_ONE);
-              /* n - ln = xn */ 
+              /* n - ln = xn */
             }
         }
 
