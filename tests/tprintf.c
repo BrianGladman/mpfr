@@ -223,6 +223,13 @@ decimal (void)
   check_sprintf ("0", "%.0RDf", x);
   check_sprintf ("1", "%.0RUf", x);
 
+  /* check rounding mode */
+  mpfr_set_d (x, 0.0076, GMP_RNDN);
+  check_sprintf ("0.007", "%.3RDf", x);
+  check_sprintf ("0.007", "%.3RZf", x);
+  check_sprintf ("0.008", "%.3Rf", x);
+  check_sprintf ("0.008", "%.3RUf", x);
+
   mpfr_clears (x, z, (void *)0);
   return 0;
 }
