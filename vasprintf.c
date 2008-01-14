@@ -1878,10 +1878,10 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
               /* decimal point */
               np->point = MPFR_DECIMAL_POINT;
 
-              mpfr_log10 (x, x, GMP_RNDZ);
-              mpfr_ceil (x, x);
-              mpfr_abs (x, x, GMP_RNDZ);
-              /* We have rounded toward zero so that x == |e| (with
+              mpfr_log10 (x, x, GMP_RNDD);
+              mpfr_floor (x, x);
+              mpfr_abs (x, x, GMP_RNDU);
+              /* We have rounded away from zero so that x == |e| (with
                  p = m*10^e, see above). Now, x is the number of digits in the
                  fractional part. */
 
@@ -1951,7 +1951,7 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
                   nsd = spec.prec < 0 ? 0 : spec.prec - n + 1;
                   str = mpfr_get_str (NULL, &exp, 10, nsd, p, spec.rnd_mode);
                   register_string (np->sl, str);
-                  np->fp_ptr = MPFR_IS_NEG (p) ? str : ++str; /* skip sign */
+                  np->fp_ptr = MPFR_IS_NEG (p) ? ++str : str; /* skip sign */
                   np->point = MPFR_DECIMAL_POINT;
 
                   str_len = strlen (str); /* the sign has been skipped */
@@ -1973,7 +1973,10 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
                     }
                   np->fp_size = str_len;
 
-                  MPFR_ASSERTD (n == -exp);
+                  /* check if our computed n match with exp.
+                     remind that mpfr_get_str returns a number with decimal
+                     point before the first digit */
+                  MPFR_ASSERTD (n == 1 - exp);
                 }
             }
           else

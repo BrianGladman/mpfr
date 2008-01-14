@@ -216,9 +216,8 @@ decimal (void)
   check_sprintf ("100000000000000000", "%Rf", x);
   check_sprintf ("100000000000000000.0", "%.1Rf", x);
 
-  mpfr_ui_div (x, 1, x, GMP_RNDD);
-  check_sprintf ("0.0000000000000000999999999999999999999999999999999999959",
-                 "%Rf", x);
+  mpfr_ui_div (x, 1, x, GMP_RNDN);
+  check_sprintf ("0.00000000000000001", "%Rf", x);
   check_sprintf ("0.0", "%.1RDf", x);
   check_sprintf ("0.1", "%.1RUf", x);
   check_sprintf ("0", "%.0RDf", x);
