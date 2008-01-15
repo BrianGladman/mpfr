@@ -430,7 +430,10 @@ set_emax (mp_exp_t exponent)
     }
 }
 
-/* pos is 512 times the proportion of negative numbers */
+/* pos is 512 times the proportion of negative numbers.
+   If pos=256, half of the numbers are negative.
+   If pos=0, all generated numbers are positive.
+*/
 void
 tests_default_random (mpfr_ptr x, int pos, mp_exp_t emin, mp_exp_t emax)
 {

@@ -26,9 +26,6 @@ MA 02110-1301, USA. */
 #define MPFR_NEED_LONGLONG_H /* for umul_ppmm */
 #include "mpfr-impl.h"
 
-/* number of guard bits in the one-word case */
-#define GUARD 1
-
 #define LIMB_SIZE(x) ((((x)-1)>>MPFR_LOG2_BITS_PER_MP_LIMB) + 1)
 
 #define MPFR_COM_N(x,y,n)                               \
@@ -38,88 +35,44 @@ MA 02110-1301, USA. */
       *((x)+i) = ~*((y)+i);                             \
   }
 
-/* check that X is at distance at most 1 ulp of A^{-1/2},
-   where X has p bits (msb aligned).
-*/
-static void
-check (mp_srcptr x, mp_srcptr a, mp_prec_t p)
-{
-  mp_size_t n = 1 + (p - 1) / GMP_NUMB_BITS;
-  mp_prec_t l = n * GMP_NUMB_BITS - p; /* low ignored bits */
-  mp_ptr y, t, u;
-
-  /* we should have X - 2^p < A^{-1/2} < X + 2^p */
-
-  y = (mp_ptr) malloc (n * sizeof (mp_limb_t));
-  t = (mp_ptr) malloc (2 * n * sizeof (mp_limb_t));
-  u = (mp_ptr) malloc ((3 * n + 1) * sizeof (mp_limb_t));
-
-  /* check the low bits of x are zero */
-  if (l)
-    {
-      if (x[0] & MPFR_LIMB_MASK(l))
-        {
-          fprintf (stderr, "Error, low bits from x are not zero: %lu\n",
-                   x[0] & MPFR_LIMB_MASK(l));
-          exit (1);
-        }
-    }
-
-  MPN_COPY (y, x, n);
-  if (mpn_sub_1 (y, y, n, MPFR_LIMB_ONE << l))
-    {
-      fprintf (stderr, "Error in check, borrow in X - ulp\n");
-      exit (1);
-    }
-  mpn_mul_n (t, y, y, n);
-  mpn_mul (u, t, 2 * n, a, n + 1);
-  if (u[3 * n] != 0)
-    {
-      fprintf (stderr, "(X-ulp)^2*A >= B^(3n)\n");
-      exit (1);
-    }
-
-  MPN_COPY (y, x, n);
-  /* if there is a carry in x + ulp(x), then x + ulp(x) = 1,
-     and surely A^{-1/2} < x + ulp(x) */
-  if (mpn_add_1 (y, y, n, MPFR_LIMB_ONE << l) == 0)
-    {
-      mpn_mul_n (t, y, y, n);
-      mpn_mul (u, t, 2 * n, a, n + 1);
-      if (u[3 * n] == 0)
-        {
-          fprintf (stderr, "(X+ulp)^2*A < B^(3n)\n");
-          exit (1);
-        }
-    }
-
-  free (u);
-  free (t);
-  free (y);
-}
-
 /* Put in X a p-bit approximation of 1/sqrt(A),
-   where X = {x, n}/B^n, A = {a, n+1}/B^n, and n = ceil(p/GMP_NUMB_BITS),
+   where X = {x, n}/B^n, n = ceil(p/GMP_NUMB_BITS),
+   A = 2^(1+as)*{a, an}/B^an, as is 0 or 1, an = ceil(ap/GMP_NUMB_BITS),
    where B = 2^GMP_NUMB_BITS.
-   Note: x and a are left-aligned.
-   The error in the approximate result with respect to the true value
-   1/sqrt(A) is bounded by 1 ulp.
+
+   We have 1 <= A < 4 and 1/2 <= X < 1.
+
+   The error in the approximate result with respect to the true
+   value 1/sqrt(A) is bounded by 1 ulp(X), i.e., 2^{-p} since 1/2 <= X < 1.
+
+   Note: x and a are left-aligned, i.e., the most significant bit of
+   a[an-1] is set, and so is the most significant bit of the output x[n-1].
 
    If p is not a multiple of GMP_NUMB_BITS, the extra low bits of the input
-   A should be 0. Similarly, the extra low bits of the output X are set to 0.
+   A are taken into account to compute the approximation of 1/sqrt(A), but
+   whether or not they are zero, the error between X and 1/sqrt(A) is bounded
+   by 1 ulp(X) [in precision p].
+   The extra low bits of the output X (if p is not a multiple of GMP_NUMB_BITS)
+   are set to 0.
 
    Assumptions:
-   (1) A should be normalized, i.e., 1 <= A[n] < 4, thus 1/2 <= X < 1.
-   (2) p >= 11
-   (3) {a, n+1} and {x, n} should not overlap
+   (1) A should be normalized, i.e., the most significant bit of a[an-1]
+       should be 1. If as=0, we have 1 <= A < 2; if as=1, we have 2 <= A < 4.
+   (2) p >= 12
+   (3) {a, an} and {x, n} should not overlap
    (4) GMP_NUMB_BITS >= 12 and is even
+
+   Note: this routine is much more efficient when ap is small compared to p,
+   including the case where ap <= GMP_NUMB_BITS, thus it can be used to
+   implement an efficient mpfr_rec_sqrt_ui function.
 
    Reference: Modern Computer Algebra, Richard Brent and Paul Zimmermann,
    http://www.loria.fr/~zimmerma/mca/pub226.html
-   {a, n+1} and {x, n} should not overlap.
 */
-void
-mpfr_mpn_rec_sqrt (mp_ptr x, mp_srcptr a, mp_prec_t p)
+static void
+mpfr_mpn_rec_sqrt (mp_ptr x, mp_prec_t p,
+		   mp_srcptr a, mp_prec_t ap, int as)
+		   
 {
   /* the following T1 and T2 are bipartite tables giving initial
      approximation for the inverse square root, with 13-bit input split in
@@ -156,8 +109,8 @@ mpfr_mpn_rec_sqrt (mp_ptr x, mp_srcptr a, mp_prec_t p)
 1300, 1298, 1296, /* a=19 */
 1294, 1292, 1290, 1288, 1286, 1284, 1282, 1280, 1278, 1276, 1274, 1272, 1270,
 1268, 1266, 1265, /* a=20 */
-1262, 1260, 1258, 1256, 1254, 1253, 1251, 1249, 1247, 1245, 1244, 1242, 1240,
-1238, 1236, 1235, /* a=21 */
+1263, 1261, 1259, 1257, 1255, 1253, 1251, 1250, 1248, 1246, 1244, 1242, 1241,
+1239, 1237, 1235, /* a=21 */
 1234, 1232, 1230, 1229, 1227, 1225, 1223, 1222, 1220, 1218, 1217, 1215, 1213,
 1212, 1210, 1208, /* a=22 */
 1206, 1204, 1203, 1201, 1199, 1198, 1196, 1195, 1193, 1191, 1190, 1188, 1187,
@@ -193,7 +146,7 @@ mpfr_mpn_rec_sqrt (mp_ptr x, mp_srcptr a, mp_prec_t p)
     3, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 0, /* a=18 */
     2, 2, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, /* a=19 */
     1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, /* a=20 */
-    2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, /* a=21 */
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, /* a=21 */
     1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, /* a=22 */
     2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, /* a=23 */
     1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, /* a=24 */
@@ -205,84 +158,84 @@ mpfr_mpn_rec_sqrt (mp_ptr x, mp_srcptr a, mp_prec_t p)
     1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, /* a=30 */
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0  /* a=31 */
 };
-  mp_size_t n = LIMB_SIZE(p);
+  mp_size_t n = LIMB_SIZE(p);   /* number of limbs of X */
+  mp_size_t an = LIMB_SIZE(ap); /* number of limbs of A */
 
   /* A should be normalized */
-  MPFR_ASSERTN((1 <= a[n]) && (a[n] < 4));
-  /* we should have enough bits in one limb */
-  MPFR_ASSERTN(GMP_NUMB_BITS >= 11);
-  /* {a, n+1} and {x, n} should not overlap */
-  MPFR_ASSERTN((a + n + 1 <= x) || (x + n <= a));
-  MPFR_ASSERTN(p >= 11);
+  MPFR_ASSERTD((a[an - 1] & MPFR_LIMB_HIGHBIT) != 0);
+  /* we should have enough bits in one limb and GMP_NUMB_BITS should be even */
+  MPFR_ASSERTD((GMP_NUMB_BITS >= 12) && ((GMP_NUMB_BITS & 1) == 0));
+  /* {a, an} and {x, n} should not overlap */
+  MPFR_ASSERTD((a + an <= x) || (x + n <= a));
+  MPFR_ASSERTD(p >= 11);
 
-  if (p == 11)
+  if (MPFR_UNLIKELY(an > n)) /* we can cut the input to n limbs */
+    {
+      a += an - n;
+      an = n;
+    }
+
+  if (p == 11) /* should happen only from recursive calls */
     {
       unsigned long i, ab, ac;
       mp_limb_t t;
 
-      /* take the 13 (or 12) most significant bits of A */
-      i = (a[1] << 11) | (a[0] >> (GMP_NUMB_BITS - 11));
+      /* take the 12+as most significant bits of A */
+      i = a[an - 1] >> (GMP_NUMB_BITS - (12 + as));
       /* if one wants faithful rounding for p=11, replace #if 0 by #if 1 */
-#if 0
-      /* Note: we could have a table giving an error less than 1 ulp
-         everywhere, but with t=2048 for i=2048, which would require
-         a special treatment, since 2048 does not fit in 11 bits.
-         We prefer to always require t <= 2047, with some slightly larger
-         error for p=11. */
-      switch (i)
-        {
-        case 2050:
-          t = 2047; /* table gives 2046, error 1.000732 */
-          break;
-        case 2052:
-          t = 2046; /* table gives 2045, error 1.002925 */
-          break;
-        case 2054:
-          t = 2045; /* table gives 2044, error 1.006576 */
-          break;
-        case 2273:
-          t = 1944; /* table gives 1945, error 1.004700 */
-          break;
-        default:
-#else
-        {
-#endif
-          ab = i >> 4;
-          ac = (ab & 0x3F0) | (i & 0x0F);
-          t = (mp_limb_t) T1[ab - 0x80] + (mp_limb_t) T2[ac - 0x80];
-        }
+      ab = i >> 4;
+      ac = (ab & 0x3F0) | (i & 0x0F);
+      t = (mp_limb_t) T1[ab - 0x80] + (mp_limb_t) T2[ac - 0x80];
       x[0] = t << (GMP_NUMB_BITS - p);
     }
   else /* p >= 12 */
     {
-      mp_prec_t h = (p < 18) ? 11 : (p >> 1) + 2; /* max(11, ceil((p+3)/2)) */
+      mp_prec_t h, pl;
       mp_ptr r, s, t, u;
-      mp_size_t xn = LIMB_SIZE(h);
-      mp_size_t rn = LIMB_SIZE(2 * h);
-      /* the remaining value of t has at most h+3 bits, but since they are
-         in 2h bits aligned left, the number of limbs is the following */
-      mp_size_t th = (h - 3) >> MPFR_LOG2_BITS_PER_MP_LIMB;
-      mp_size_t ln = n - xn;
-      mp_size_t sn, tn;
-      mp_size_t un = xn + rn - th;
-      int neg;
-      mp_limb_t cy, cu;
-      mp_prec_t pl = n * GMP_NUMB_BITS - p; /* low bits from x */
+      mp_size_t xn, rn, th, ln, tn, sn, ahn, un;
+      mp_limb_t neg, cy, cu;
       MPFR_TMP_DECL(marker);
 
-      mpfr_mpn_rec_sqrt (x + ln, a + ln, h);
+      /* h = max(11, ceil((p+3)/2)) is the bitsize of the recursive call */
+      h = (p < 18) ? 11 : (p >> 1) + 2;
+
+      xn = LIMB_SIZE(h);       /* limb size of the recursive Xh */
+      rn = LIMB_SIZE(2 * h);   /* a priori limb size of Xh^2 */
+      ln = n - xn;             /* remaining limbs to be computed */
+
+      /* Since |Xh - A^{-1/2}| <= 2^{-h}, then by multiplying by Xh + A^{-1/2}
+         we get |Xh^2 - 1/A| <= 2^{-h+1}, thus |A*Xh^2 - 1| <= 2^{-h+3},
+	 thus the h-3 most significant bits of t should be zero,
+	 which is in fact h+1+as-3 because of the normalization of A.
+         This corresponds to th=floor((h+1+as-3)/GMP_NUMB_BITS) limbs. */
+      th = (h + 1 + as - 3) >> MPFR_LOG2_BITS_PER_MP_LIMB;
+      tn = LIMB_SIZE(2 * h + 1 + as);
+
+      /* we need h+1+as bits of a */
+      ahn = LIMB_SIZE(h + 1 + as); /* number of high limbs of A
+				      needed for the recursive call*/
+      if (MPFR_UNLIKELY(ahn > an))
+	ahn = an;
+      mpfr_mpn_rec_sqrt (x + ln, h, a + an - ahn, ahn * GMP_NUMB_BITS, as);
       /* the most h significant bits of X are set, X has ceil(h/GMP_NUMB_BITS)
          limbs, the low (-h) % GMP_NUMB_BITS bits are zero */
-      // gmp_printf ("xh=%Nd\n", x+ln, xn);
 
       MPFR_TMP_MARK (marker);
       /* first step: square X in r, result is exact */
+      un = xn + (tn - th);
+      /* We use the same temporary buffer to store r and u: r needs 2*xn
+	 limbs where u needs xn+(tn-th) limbs. Since tn can store at least
+	 2h bits, and th at most h bits, then tn-th can store at least h bits,
+	 thus tn - th >= xn, and reserving the space for u is enough. */
+      MPFR_ASSERTD(2 * xn <= un);
       u = r = (mp_ptr) MPFR_TMP_ALLOC (un * sizeof (mp_limb_t));
-      if (2 * h <= GMP_NUMB_BITS) /* xn=rn=1 */
+      if (2 * h <= GMP_NUMB_BITS) /* xn=rn=1, and since p <= 2h-3, n=1,
+				     thus ln = 0 */
         {
-          mp_limb_t xx = x[ln] >> (GMP_NUMB_BITS >> 1);
+	  MPFR_ASSERTD(ln == 0);
+          cy = x[0] >> (GMP_NUMB_BITS >> 1);
           r ++;
-          r[0] = xx * xx;
+          r[0] = cy * cy;
         }
       else if (xn == 1) /* xn=1, rn=2 */
         umul_ppmm(r[1], r[0], x[ln], x[ln]);
@@ -294,216 +247,280 @@ mpfr_mpn_rec_sqrt (mp_ptr x, mp_srcptr a, mp_prec_t p)
         }
       /* now the 2h most significant bits of {r, rn} contains X^2, r has rn
          limbs, and the low (-2h) % GMP_NUMB_BITS bits are zero */
-      // gmp_printf ("r=%Nd\n", r, rn);
 
-      /* Second step: s <- A * (r^2), and truncate the low p bits,
+      /* Second step: s <- A * (r^2), and truncate the low ap bits,
          i.e., at weight 2^{-2h} (s is aligned to the low significant bits)
        */
-      sn = n + rn;
-      s = (mp_ptr) MPFR_TMP_ALLOC ((sn + 1) * sizeof (mp_limb_t));
-      if (2 * h + p + 2 <= GMP_NUMB_BITS)
-        {
-          /* we should have n=rn=1, thus sn=2 */
-          mp_limb_t ah = (a[1] << p) | (a[0] >> (GMP_NUMB_BITS - p));
-          s[1] = (r[0] >> (GMP_NUMB_BITS - 2 * h)) * ah;
-          /* s[1] should have at most 2h+p+2 bits */
-          s[2] = s[1] >> (2 * h + p);
-          s[1] = s[1] << (GMP_NUMB_BITS - (2 * h + p));
-        }
-      else if (rn == 1) /* rn=1 implies n=1, since rn*GMP_NUMB_BITS >= 2h,
+      sn = an + rn;
+      s = (mp_ptr) MPFR_TMP_ALLOC (sn * sizeof (mp_limb_t));
+      if (rn == 1) /* rn=1 implies n=1, since rn*GMP_NUMB_BITS >= 2h,
                            and 2h >= p+3 */
         {
           /* necessarily p <= GMP_NUMB_BITS-3: we can ignore the two low
              bits from A */
-          umul_ppmm (s[1], s[0], r[0], a[1] << (GMP_NUMB_BITS - 2)
-                     | a[0] >> 2);
-          s[2] = mpn_lshift (s, s, 2, 2);
+	  /* since n=1, and we ensured an <= n, we also have an=1 */
+	  MPFR_ASSERTD(an == 1);
+          umul_ppmm (s[1], s[0], r[0], a[0]);
         }
       else
         {
           /* we have p <= n * GMP_NUMB_BITS
              2h <= rn * GMP_NUMB_BITS with p+3 <= 2h <= p+4
              thus n <= rn <= n + 1 */
-          MPFR_ASSERTN(rn <= n + 1);
-          mpn_mul (s, a, n + 1, r, rn);
-          /* s should be near B^sn, thus either s[sn] is 1 and s[sn-1] is
-             near 0, or t[sn]=0 and s[sn-1] is near 111...111.
-             We ignore the bits of s after the first 2h ones.
+          MPFR_ASSERTD(rn <= n + 1);
+	  /* since we ensured an <= n, we have an <= rn */
+	  MPFR_ASSERTD(an <= rn);
+	  mpn_mul (s, r, rn, a, an);
+          /* s should be near B^sn/2^(1+as), thus s[sn-1] is either
+	     100000... or 011111... if as=0, or
+	     010000... or 001111... if as=1.
+             We ignore the bits of s after the first 2h+1+as ones.
           */
         }
-      // gmp_printf ("s=%Nd\n", s, n+1+rn);
-      /* We ignore the bits of s after the first 2h ones. */
-      t = s + n; /* pointer to low limb of t */
-      tn = rn;
-      /* t has in theory (n+rn) * GMP_NUMB_BITS - floor(p / GMP_NUMB_BITS) bits
-         but the upper h-3 bits of 1-t should be zero */
 
-      /* compute t <- 1 - t, which is B^tn - {t, tn+1} */
-      neg = t[tn] != 0;
-      if (neg == 0) /* Ax^2 < 1 */
-        {
-          MPFR_COM_N (t, t, tn);
-          mpn_add_1 (t, t, tn, 1); /* no carry here */
-        }
-      /* otherwise we do nothing: we already have t-1 in {t, tn} */
+      /* We ignore the bits of s after the first 2h+1+as ones: s has rn + an
+	 limbs, where rn = LIMBS(2h), an=LIMBS(a), and tn = LIMBS(2h+1+as). */
+      t = s + sn - tn; /* pointer to low limb of the high part of t */
+      /* the upper h-3 bits of 1-t should be zero,
+	 where 1 corresponds to the most significant bit of t[tn-1] if as=0,
+	 and to the 2nd most significant bit of t[tn-1] if as=1 */
 
-      tn -= th; /* we know at least th = floor((h-3)/GMP_NUMB_LIMBS) of the
-                   high limbs of {t, tn} are zero */
-
-      /* tn = rn - th, where rn * GMP_NUMB_BITS >= 2*h and
-         th * GMP_NUMB_BITS <= h-3, thus tn > 0 */
-      MPFR_ASSERTN(tn > 0);
-
-      /* Since |x-a^{-1/2}| <= 1.5*2^{-h}, we have
-         x = a^{-1/2} + e with |e| <= 1.5*2^{-h}, thus
-         x^2 = 1/a + f with |f| <= 3*2^{-h}*a^{-1/2}+2.25*2^{-2h}
-         ax^2 = 1 + g with |g| <= 3*2^{-h}*a^{1/2} + 2.25*2^{-2h}*a
-                               <= 6*2^{-h} + 9*2^{-2h} since a < 4.
-         Since we truncated s at 2^{-2h}, we have:
-         |s - 1| <= 6*2^{-h} + 10*2^{-2h} < 2^{3-h} since h >= 3.
-         Thus t should have at most h+3 bits, instead of 2h in theory.
+      /* compute t <- 1 - t, which is B^tn - {t, tn+1},
+	 with rounding towards -Inf, i.e., rounding the input t towards +Inf.
+	 We could only modify the low tn - th limbs from t, but it gives only
+	 a small speedup, and would make the code more complex.
       */
+      neg = t[tn - 1] & (MPFR_LIMB_HIGHBIT >> as);
+      if (neg == 0) /* Ax^2 < 1: we have t = th + eps, where 0 <= eps < ulp(th)
+		       is the part truncated above, thus 1 - t rounded to -Inf
+		       is 1 - th - ulp(th) */
+        {
+	  /* since the 1+as most significant bits of t are zero, set them
+	     to 1 before the one-complement */
+	  t[tn - 1] |= MPFR_LIMB_HIGHBIT | (MPFR_LIMB_HIGHBIT >> as);
+          MPFR_COM_N (t, t, tn);
+	  /* we should add 1 here to get 1-th complement, and subtract 1 for
+	     -ulp(th), thus we do nothing */
+        }
+      else /* negative case: we want 1 - t rounded towards -Inf, i.e.,
+	      th + eps rounded towards +Inf, which is th + ulp(th):
+	      we discard the bit corresponding to 1,
+	      and we add 1 to the least significant bit of t */
+	{
+	  t[tn - 1] ^= neg;
+	  mpn_add_1 (t, t, tn, 1);
+	}
+      tn -= th; /* we know at least th = floor((h+1+as-3)/GMP_NUMB_LIMBS) of
+		   the high limbs of {t, tn} are zero */
 
-      /* u <- x * t
-         {t, tn} contains at least h+3 bits, and {x, xn} contains h bits,
-         thus tn >= xn */
-      MPFR_ASSERTN(tn >= xn);
+      /* tn = rn - th, where rn * GMP_NUMB_BITS >= 2*h and 
+         th * GMP_NUMB_BITS <= h+1+as-3, thus tn > 0 */
+      MPFR_ASSERTD(tn > 0);
+
+      /* u <- x * t, where {t, tn} contains at least h+3 bits,
+	 and {x, xn} contains h bits, thus tn >= xn */
+      MPFR_ASSERTD(tn >= xn);
       if (tn == 1) /* necessarily xn=1 */
         umul_ppmm (u[1], u[0], t[0], x[ln]);
       else
         mpn_mul (u, t, tn, x + ln, xn);
 
-      /* we have already discarded th high limbs of t, thus we only have to
-         consider the upper n - th limbs of u */
-      sn = n - th; /* sn cannot be zero, since for n=1 we have th=0, and
-                      for n>=2 we have p <= n*GMP_NUMB_BITS,
-                      thus h=ceil((p+3)/2) <= (p+4)/2 and
-                      th*GMP_NUMB_BITS <= (h-3) <= p/2 <= n/2*GMP_NUMB_BITS */
-      MPFR_ASSERTN(sn > 0);
-      un -= sn; /* xn + rn - n */
-      u += un;
+      /* we have already discarded the upper th high limbs of t, thus we only
+	 have to consider the upper n - th limbs of u */
+      un = n - th; /* un cannot be zero, since p <= n*GMP_NUMB_BITS,
+                      h = ceil((p+3)/2) <= (p+4)/2,
+                      th*GMP_NUMB_BITS <= h-1 <= p/2+1,
+		      thus (n-th)*GMP_NUMB_BITS >= p/2-1.
+		   */
+      MPFR_ASSERTD(un > 0);
+      u += (tn + xn) - un; /* xn + tn - un = xn + (original_tn - th) - (n - th)
+ 			                   = xn + original_tn - n
+                              = LIMBS(h) + LIMBS(2h+1+as) - LIMBS(p) > 0
+			      since 2h >= p+3 */
+      MPFR_ASSERTD(tn + xn > un); /* will allow to access u[-1] below */
 
-      /* u will be shifted to the right, and after that we want that the low
-         pl bits are zero, thus we want now that the pl+1 bits are zero,
-         thus we round u to nearest at bit pl+1 of u[0] */
-      cu = mpn_add_1 (u, u, sn, u[0] & (MPFR_LIMB_ONE << pl));
-      /* mask bits 0..pl of u[0] */
-      if (pl + 1 == GMP_NUMB_BITS)
-        u[0] = 0;
-      else
-        u[0] &= ~MPFR_LIMB_MASK(pl + 1);
+      /* In case as=0, u contains |x*(1-Ax^2)/2|, which is exactly what we
+	 need to add or subtract.
+	 In case as=1, u contains |x*(1-Ax^2)/4|, thus we need to multiply
+	 u by 2. */
+
+      if (as == 1)
+	/* shift on un+1 limbs to get most significant bit of u[-1] into
+	   least significant bit of u[0] */
+	mpn_lshift (u - 1, u - 1, un + 1, 1);
+      
+      pl = n * GMP_NUMB_BITS - p;       /* low bits from x */
+      /* We want that the low pl bits are zero after rounding to nearest,
+         thus we round u to nearest at bit pl-1 of u[0] */
+      if (pl > 0)
+	{
+	  cu = mpn_add_1 (u, u, un, u[0] & (MPFR_LIMB_ONE << (pl - 1)));
+	  /* mask bits 0..pl-1 of u[0] */
+	  u[0] &= ~MPFR_LIMB_MASK(pl);
+	}
+      else /* round bit is in u[-1] */
+	cu = mpn_add_1 (u, u, un, u[-1] >> (GMP_NUMB_BITS - 1));
 
       /* We already have filled {x + ln, xn = n - ln}, and we want to add or
-         subtract cu*B^sn + {u, sn} divided by two at position x.
-         sn = n - th, where th contains <= h-3 bits
+         subtract cu*B^un + {u, un} at position x.
+         un = n - th, where th contains <= h+1+as-3<=h-1 bits
          ln = n - xn, where xn contains >= h bits
-         thus sn > ln.
+         thus un > ln.
          Warning: ln might be zero.
       */
-      MPFR_ASSERTN(sn > ln);
-      /* we can have sn = ln + 2, for example with GMP_NUMB_BITS=32 and
-         p=62, then h=33, n=2, th=0, xn=2, thus sn=2 and ln=0. */
-      MPFR_ASSERTN(sn == ln + 1 || sn == ln + 2);
-      /* the high sn-ln limbs of u will overlap the low part of {x+ln,xn} */
-      if (ln > 0)
-        {
-          mpn_rshift (x, u, ln, 1); /* no carry out */
-          x[ln - 1] |= mpn_rshift (u, u + ln, sn - ln, 1);
-        }
-      else /* ln = 0 */
-        mpn_rshift (u, u, sn, 1); /* no carry out */
-      /* incorporate possible carry out from rounding of u */
-      u[sn - ln - 1] |= cu << (GMP_NUMB_BITS - 1);
-      /* we need to add or subtract the overlapping part {u, sn - ln} */
+      MPFR_ASSERTD(un > ln);
+      /* we can have un = ln + 2, for example with GMP_NUMB_BITS=32 and
+         p=62, as=0, then h=33, n=2, th=0, xn=2, thus un=2 and ln=0. */
+      MPFR_ASSERTD(un == ln + 1 || un == ln + 2);
+      /* the high un-ln limbs of u will overlap the low part of {x+ln,xn},
+	 we need to add or subtract the overlapping part {u + ln, un - ln} */
       if (neg == 0)
-        cy = mpn_add (x + ln, x + ln, xn, u, sn - ln);
+	{
+	  if (ln > 0)
+	    MPN_COPY (x, u, ln);
+	  cy = mpn_add (x + ln, x + ln, xn, u + ln, un - ln);
+	  /* add cu at x+un */
+	  cy += mpn_add_1 (x + un, x + un, th, cu);
+	}
       else /* negative case */
         {
-          cy = mpn_sub (x + ln, x + ln, xn, u, sn - ln);
-          cy = -mpn_sub_1 (x + sn, x + sn, th, cy); /* n - sn = th */
+	  /* subtract {u+ln, un-ln} from {x+ln,un} */
+          cy = mpn_sub (x + ln, x + ln, xn, u + ln, un - ln);
+	  /* carry cy is at x+un, like cu */
+          cy = mpn_sub_1 (x + un, x + un, th, cy + cu); /* n - un = th */
+	  /* cy cannot be zero, since the most significant bit of Xh is 1,
+	     and the correction is bounded by 2^{-h+3} */
+	  MPFR_ASSERTD(cy == 0);
           if (ln > 0)
             {
-              MPFR_COM_N (x, x, ln);
-              cy = mpn_add_1 (x, x, n, MPFR_LIMB_ONE) - cy;
-              /* we also need to subtract 1 at x[ln] */
+              MPFR_COM_N (x, u, ln);
+	      /* we must add one for the 2-complement ... */
+              cy = mpn_add_1 (x, x, n, MPFR_LIMB_ONE);
+              /* ... and subtract 1 at x[ln], where n = ln + xn */
               cy -= mpn_sub_1 (x + ln, x + ln, xn, MPFR_LIMB_ONE);
-              /* n - ln = xn */
             }
         }
 
-#if 0
-      /* if cu is non-zero (necessarily 1), add/subtract cu/2 at x[sn] */
-      if (MPFR_UNLIKELY(cu != 0))
-        {
-          abort();
-          if (neg == 0)
-            cy += mpn_add_1 (x + sn - 1, x + sn - 1, th+1, MPFR_LIMB_HIGHBIT);
-          else
-            cy -= mpn_sub_1 (x + sn - 1, x + sn - 1, th+1, MPFR_LIMB_HIGHBIT);
-        }
-#endif
-
-      /* cy can be 1 when A=1, i.e., {a, n} = B^n. Setting X to
-         1-ulp(1) satisties the error bound of 1 ulp. */
+      /* cy can be 1 when A=1, i.e., {a, n} = B^n. In that case we should
+	 have X = B^n, and setting X to 1-2^{-p} satisties the error bound
+	 of 1 ulp. */
       if (MPFR_UNLIKELY(cy != 0))
         {
           cy -= mpn_sub_1 (x, x, n, MPFR_LIMB_ONE << pl);
-          MPFR_ASSERTN(cy == 0);
+          MPFR_ASSERTD(cy == 0);
         }
 
       MPFR_TMP_FREE (marker);
     }
 }
 
-#ifdef MAIN
-#include "cputime.h"
-
-#define N 1000000
-
-/* test for mpfr_mpn_rec_sqrt */
 int
-main (int argc, char *argv[])
+mpfr_rec_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
 {
-  mp_ptr X, A;
-  int i;
-  mp_prec_t p = atoi (argv[1]);
-  mp_size_t n;
-  mp_prec_t pl;
-  int st;
+  mp_prec_t rp, up, wp;
+  mp_size_t rn, wn;
+  int s, cy, inex;
+  mp_ptr x;
+  int out_of_place;
+  MPFR_TMP_DECL(marker);
 
-  if (argc != 2)
+  /* special values */
+  if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(u)))
     {
-      fprintf (stderr, "Usage: %s precision\n", argv[0]);
-      exit (1);
+      if (MPFR_IS_NAN(u))
+        {
+          MPFR_SET_NAN(r);
+          MPFR_RET_NAN;
+        }
+      else if (MPFR_IS_ZERO(u)) /* 1/sqrt(+0) = 1/sqrt(-0) = +Inf */
+        {
+          /* 0+ or 0- */
+          MPFR_SET_INF(r);
+          MPFR_SET_POS(r);
+          MPFR_RET(0); /* Inf is exact */
+        }
+      else
+        {
+          MPFR_ASSERTD(MPFR_IS_INF(u));
+          /* 1/sqrt(-Inf) = NAN */
+          if (MPFR_IS_NEG(u))
+            {
+              MPFR_SET_NAN(r);
+              MPFR_RET_NAN;
+            }
+	  /* 1/sqrt(+Inf) = +0 */
+          MPFR_SET_POS(r);
+          MPFR_SET_ZERO(r);
+          MPFR_RET(0);
+        }
     }
 
-  n = 1 + (p - 1) / GMP_NUMB_BITS;
-  pl = n * GMP_NUMB_BITS - p;
-
-  X = malloc (n * sizeof (mp_limb_t));
-  A = malloc ((n + 1) * sizeof (mp_limb_t));
-
-#ifdef TIMING
-  mpn_random2 (A, n);
-  A[n] = 1 + (lrand48 () % 3);
-  A[0] &= ~MPFR_LIMB_MASK(pl);
-  st = cputime ();
-  for (i = 0; i < N; i++)
-    mpfr_mpn_rec_sqrt (X, A, p);
-  st = cputime () - st;
-  printf ("time per call: %e ms\n", (double) st / (double) N);
-#else
-  for (i = 0; i < N; i++)
+  /* if u < 0, 1/sqrt(u) is NaN */
+  if (MPFR_UNLIKELY(MPFR_IS_NEG(u)))
     {
-      mpn_random2 (A, n);
-      A[n] = 1 + (lrand48 () % 3);
-      A[0] &= ~MPFR_LIMB_MASK(pl);
-      // gmp_printf ("\nA=%Nd\n", A, n + 1);
-      mpfr_mpn_rec_sqrt (X, A, p);
-      // gmp_printf ("A=%Nd X=%Nd\n", A, n + 1, X, n);
-      check (X, A, p);
+      MPFR_SET_NAN(r);
+      MPFR_RET_NAN;
     }
-#endif
-  return 0;
+
+  MPFR_CLEAR_FLAGS(r);
+  MPFR_SET_POS(r);
+
+  rp = MPFR_PREC(r); /* output precision */
+  up = MPFR_PREC(u); /* input precision */
+  wp = rp + 11;      /* initial working precision */
+
+  /* Let u = U*2^e, where e = EXP(u), and 1/2 <= U < 1.
+     If e is even, we compute an approximation of X of (4U)^{-1/2},
+     and the result is X*2^(-(e-2)/2) [case s=1].
+     If e is odd, we compute an approximation of X of (2U)^{-1/2},
+     and the result is X*2^(-(e-1)/2) [case s=0]. */
+  s = 1 - (MPFR_EXP(u) & 1); /* parity of the exponent of u */
+
+  rn = LIMB_SIZE(rp);
+
+  /* for the first iteration, if rp + 11 fits into rn limbs, we round up
+     up to a full limb to maximize the chance of rounding, while avoiding
+     to allocate extra space */
+  wp = rp + 11;
+  if (wp < rn * BITS_PER_MP_LIMB)
+    wp = rn * BITS_PER_MP_LIMB;
+  for (;;)
+    {
+      MPFR_TMP_MARK (marker);
+      wn = LIMB_SIZE(wp);
+      out_of_place = (r == u) || (wn > rn);
+      if (out_of_place)
+	x = (mp_ptr) MPFR_TMP_ALLOC (wn * sizeof (mp_limb_t));
+      else
+	x = MPFR_MANT(r);
+      mpfr_mpn_rec_sqrt (x, wp, MPFR_MANT(u), up, s);
+      if (MPFR_LIKELY (mpfr_round_p (x, wn, wp, rp + (rnd_mode == GMP_RNDN))))
+	break;
+
+      /* We detect only now the exact case where u=2^(2e), to avoid
+	 slowing down the average case. This can happen only when the
+	 mantissa is exactly 1/2 and the exponent is odd. */
+      if (s == 0 && mpfr_cmp_ui_2exp (u, 1, MPFR_EXP(u) - 1) == 0)
+	{
+	  mp_prec_t pl = wn * BITS_PER_MP_LIMB - wp;
+
+	  /* we should have x=111...111 */
+	  mpn_add_1 (x, x, wn, MPFR_LIMB_ONE << pl);
+	  x[wn - 1] = MPFR_LIMB_HIGHBIT;
+	  s += 2;
+	  break; /* go through */
+	}
+      MPFR_TMP_FREE(marker);
+
+      wp += BITS_PER_MP_LIMB;
+    }
+  cy = mpfr_round_raw (MPFR_MANT(r), x, wp, 0, rp, rnd_mode, &inex);
+  MPFR_EXP(r) = - (MPFR_EXP(u) - 1 - s) / 2;
+  if (MPFR_UNLIKELY(cy != 0))
+    {
+      MPFR_EXP(r) ++;
+      MPFR_MANT(r)[rn - 1] = MPFR_LIMB_HIGHBIT;
+    }
+  MPFR_TMP_FREE(marker);
+  return mpfr_check_range (r, inex, rnd_mode);
 }
-#endif
