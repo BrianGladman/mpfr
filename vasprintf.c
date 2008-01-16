@@ -110,9 +110,9 @@ static const char num_to_text[16] = "0123456789abcdef";
       }                                                                 \
   } while (0)
 
-/* _arg_type contains all the types described by the 'type' field of the
+/* arg_t contains all the types described by the 'type' field of the
    format string */
-enum _arg_type
+enum arg_t
   {
     NONE,
     CHAR_ARG,
@@ -148,7 +148,7 @@ struct printf_spec
   int width;                    /* Width */
   int prec;                     /* Precision */
 
-  enum _arg_type arg_type;     /* Type of argument */
+  enum arg_t arg_type;          /* Type of argument */
   mp_rnd_t rnd_mode;            /* Rounding mode */
   char spec;                    /* Conversion specifier */
 
