@@ -805,7 +805,7 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
 #else
 #define MPFR_TMP_DECL(x) TMP_DECL
 #define MPFR_TMP_MARK(x) TMP_MARK
-#define MPFR_TMP_ALLOC(s) TMP_SALLOC(s)
+#define MPFR_TMP_ALLOC(s) TMP_ALLOC(s)
 #define MPFR_TMP_FREE(x) TMP_FREE
 #endif
 
