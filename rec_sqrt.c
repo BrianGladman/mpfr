@@ -163,8 +163,9 @@ mpfr_mpn_rec_sqrt (mp_ptr x, mp_prec_t p,
 
   /* A should be normalized */
   MPFR_ASSERTD((a[an - 1] & MPFR_LIMB_HIGHBIT) != 0);
-  /* we should have enough bits in one limb and GMP_NUMB_BITS should be even */
-  MPFR_ASSERTD((GMP_NUMB_BITS >= 12) && ((GMP_NUMB_BITS & 1) == 0));
+  /* We should have enough bits in one limb and GMP_NUMB_BITS should be even.
+     Since that does not depend on MPFR, we always check this. */
+  MPFR_ASSERTN((GMP_NUMB_BITS >= 12) && ((GMP_NUMB_BITS & 1) == 0));
   /* {a, an} and {x, n} should not overlap */
   MPFR_ASSERTD((a + an <= x) || (x + n <= a));
   MPFR_ASSERTD(p >= 11);
