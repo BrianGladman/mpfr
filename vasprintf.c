@@ -75,36 +75,36 @@ MA 02110-1301, USA. */
 static const char num_to_text[16] = "0123456789abcdef";
 
 /* some macro and functions for parsing format string */
-#define READ_INT(format, specinfo, field, label_out)            \
-  do {                                                          \
-    while (*(format))                                           \
-      {                                                         \
-        switch (*(format))                                      \
-          {                                                     \
-          case '0':                                             \
-          case '1':                                             \
-          case '2':                                             \
-          case '3':                                             \
-          case '4':                                             \
-          case '5':                                             \
-          case '6':                                             \
-          case '7':                                             \
-          case '8':                                             \
-          case '9':                                             \
-            MPFR_ASSERTN ((specinfo).field < MAX_CHAR_BY_SPEC / 10);\
-            (specinfo).field *= 10;                             \
-            MPFR_ASSERTN ((specinfo).field < MAX_CHAR_BY_SPEC-*(format)+'0'); \
-            (specinfo).field += *(format) - '0';                \
-            ++(format);                                         \
-            break;                                              \
-          case '*':                                             \
-            (specinfo).field = va_arg ((ap), int);              \
-            MPFR_ASSERTN ((specinfo).field < MAX_CHAR_BY_SPEC); \
-            ++(format);                                         \
-          default:                                              \
-            goto label_out;                                     \
-          }                                                     \
-      }                                                         \
+#define READ_INT(ap, format, specinfo, field, label_out)                \
+  do {                                                                  \
+    while (*(format))                                                   \
+      {                                                                 \
+        switch (*(format))                                              \
+          {                                                             \
+          case '0':                                                     \
+          case '1':                                                     \
+          case '2':                                                     \
+          case '3':                                                     \
+          case '4':                                                     \
+          case '5':                                                     \
+          case '6':                                                     \
+          case '7':                                                     \
+          case '8':                                                     \
+          case '9':                                                     \
+            MPFR_ASSERTN (specinfo.field < MAX_CHAR_BY_SPEC / 10);      \
+            specinfo.field *= 10;                                       \
+            MPFR_ASSERTN (specinfo.field < MAX_CHAR_BY_SPEC-*(format)+'0'); \
+            specinfo.field += *(format) - '0';                          \
+            ++(format);                                                 \
+            break;                                                      \
+          case '*':                                                     \
+            specinfo.field = va_arg ((ap), int);                        \
+            MPFR_ASSERTN (specinfo.field < MAX_CHAR_BY_SPEC);           \
+            ++(format);                                                 \
+          default:                                                      \
+            goto label_out;                                             \
+          }                                                             \
+      }                                                                 \
   } while (0)
 
 /* __arg_type contains all the types described by the 'type' field of the
@@ -2599,7 +2599,7 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
       specinfo_init (&spec);
       fmt = parse_flags (fmt, &spec);
 
-      READ_INT (fmt, spec, width, width_analysis);
+      READ_INT (ap, fmt, spec, width, width_analysis);
     width_analysis:
       if (spec.width < 0)
         {
@@ -2610,7 +2610,7 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
       if (*fmt == '.')
         {
           const char *f = ++fmt;
-          READ_INT (fmt, spec, prec, prec_analysis);
+          READ_INT (ap, fmt, spec, prec, prec_analysis);
         prec_analysis:
           if (f == fmt)
             spec.prec = -1;
