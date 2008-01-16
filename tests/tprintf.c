@@ -168,11 +168,17 @@ decimal (void)
   check_sprintf ("                              2e+12", "%35.0Re", x);
   check_sprintf ("          1895485593474.61279296875", "%35Rf", x);
   check_sprintf ("              1895485593474.6127930", "%35.7Rf", x);
+  check_sprintf ("                        1.89549e+12", "%35Rg", x);
+  check_sprintf ("                              2e+12", "%35.0Rg", x);
+  check_sprintf ("               1895485593474.612793", "%35.19Rg", x);
   check_sprintf ("                              0e+00", "%35.0Re", z);
   check_sprintf ("                                  0", "%35.0Rf", z);
   check_sprintf ("                             0.0000", "%35.4Rf", z);
+  check_sprintf ("                                  0", "%35.0Rg", z);
+  check_sprintf ("                             0.0000", "%35.4Rg", z);
   /* sign or space, pad with leading zeros */
   check_sprintf (" 000001.89548559347461279296875E+12", "% 035RE", x);
+  check_sprintf (" 000000000000000000000001.89549E+12", "% 035RG", x);
   check_sprintf (" 000000000000000000000000000002E+12", "% 035.0RE", x);
   check_sprintf (" 000000000000000000000000000000E+00", "% 035.0RE", z);
   check_sprintf (" 0000000000000000000000000000000000", "% 035.0RF", z);
@@ -184,8 +190,10 @@ decimal (void)
   /* decimal point, left justified, precision and rounding parameter */
   check_vsprintf ("1.9E+12   ", "%#-10.*R*E", 1, GMP_RNDN, x);
   check_vsprintf ("2.E+12    ", "%#-10.*R*E", 0, GMP_RNDN, x);
+  check_vsprintf ("2.E+12    ", "%#-10.*R*G", 0, GMP_RNDN, x);
   check_vsprintf ("0.E+00    ", "%#-10.*R*E", 0, GMP_RNDN, z);
   check_vsprintf ("0.        ", "%#-10.*R*F", 0, GMP_RNDN, z);
+  check_vsprintf ("0.        ", "%#-10.*R*G", 0, GMP_RNDN, z);
   /* sign or space */
   check_sprintf (" 1.895e+12", "% .3RNe", x);
   check_sprintf (" 2e+12",     "% .0RNe", x);
@@ -198,8 +206,8 @@ decimal (void)
   check_sprintf ("0000001.89548559347461279296875e+12", "%035RDe", x);
   check_sprintf ("0000000000000000000000000000001e+12", "%035.0RDe", x);
   /* sign or space, decimal point, left justified */
-  check_sprintf (" 1.8E+12   " , "%- #11.1RDE", x);
-  check_sprintf (" 1.E+12    " , "%- #11.0RDE", x);
+  check_sprintf (" 1.8E+12   ", "%- #11.1RDE", x);
+  check_sprintf (" 1.E+12    ", "%- #11.0RDE", x);
 
   /* negative numbers */
   mpfr_mul_si (x, x, -1, GMP_RNDD);
@@ -213,11 +221,15 @@ decimal (void)
 
   /* multiple of 10 */
   mpfr_set_d (x, 1e17, GMP_RNDN);
-  check_sprintf ("100000000000000000", "%Rf", x);
-  check_sprintf ("100000000000000000.0", "%.1Rf", x);
+  check_sprintf ("1E+17", "%RE", x);
+  check_sprintf ("1.000E+17", "%.3RE", x);
+  check_sprintf ("100000000000000000", "%RF", x);
+  check_sprintf ("100000000000000000.0", "%.1RF", x);
 
   mpfr_ui_div (x, 1, x, GMP_RNDN);
+  check_sprintf ("1e-17", "%Re", x);
   check_sprintf ("0.00000000000000001", "%Rf", x);
+  check_sprintf ("1.00000e-17", "%Rg", x);
   check_sprintf ("0.0", "%.1RDf", x);
   check_sprintf ("0.1", "%.1RUf", x);
   check_sprintf ("0", "%.0RDf", x);
