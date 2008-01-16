@@ -107,9 +107,9 @@ static const char num_to_text[16] = "0123456789abcdef";
       }                                                                 \
   } while (0)
 
-/* __arg_type contains all the types described by the 'type' field of the
+/* _arg_type contains all the types described by the 'type' field of the
    format string */
-enum __arg_type
+enum _arg_type
   {
     NONE,
     CHAR_ARG,
@@ -145,7 +145,7 @@ struct printf_spec
   int width;                    /* Width */
   int prec;                     /* Precision */
 
-  enum __arg_type arg_type;     /* Type of argument */
+  enum _arg_type arg_type;     /* Type of argument */
   mp_rnd_t rnd_mode;            /* Rounding mode */
   char spec;                    /* Conversion specifier */
 
@@ -2657,7 +2657,7 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
         break;
       else if (spec.spec == 'n')
         {
-          int *int_ptr;         /* [FIXME] do mp{zqf} cases */
+          int *int_ptr;         /* [TODO] do mp{zqf} cases */
           int_ptr = va_arg (ap, int *);
           FLUSH (gmp_fmt_flag, start, end, ap2, &buf);
           va_end (ap2);
