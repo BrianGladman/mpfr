@@ -105,6 +105,7 @@
 /tpow_z
 /tprintf
 /trandom
+/trec_sqrt
 /tremquo
 /trint
 /troot
