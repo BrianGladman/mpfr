@@ -2576,6 +2576,9 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
   /* pointer to arguments for gmp_vasprintf */
   va_list ap2;
 
+  MPFR_SAVE_EXPO_DECL (expo);
+  MPFR_SAVE_EXPO_MARK (expo);
+
   nbchar = 0;
   buffer_init (&buf, (MAX_CHAR_BY_SPEC + 1) * sizeof (char));
   gmp_fmt_flag = 0;
@@ -2761,15 +2764,17 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
      So, for the time being, we return a negative value and set the erange
      flag. */
   if (nbchar <= INT_MAX)
-    return (int) nbchar;
-  else
     {
-    error:
-      mpfr_set_erangeflag ();
-      *ptr = NULL;
-      (*__gmp_free_func) (buf.start, buf.size);
-      return -1;
+      MPFR_SAVE_EXPO_FREE (expo);
+      return (int) nbchar;
     }
+
+ error:
+  MPFR_SAVE_EXPO_FREE (expo);
+  mpfr_set_erangeflag ();
+  *ptr = NULL;
+  (*__gmp_free_func) (buf.start, buf.size);
+  return -1;
 }
 
 #endif /* HAVE_STDARG */
