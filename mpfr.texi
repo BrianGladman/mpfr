@@ -1240,6 +1240,13 @@ rounded in the direction @var{rnd}. Return @minus{}0 if @var{op} is
 Set @var{rop} to NaN if @var{op} is negative.
 @end deftypefun
 
+@deftypefun int mpfr_rec_sqrt (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
+Set @var{rop} to @m{1/\sqrt{@var{op}}, the inverse square root of @var{op}}
+rounded in the direction @var{rnd}. Return +Inf if @var{op} is @pom{}0,
+and +0 if @var{op} is +Inf.
+Set @var{rop} to NaN if @var{op} is negative.
+@end deftypefun
+
 @deftypefun int mpfr_cbrt (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_root (mpfr_t @var{rop}, mpfr_t @var{op}, unsigned long int @var{k}, mp_rnd_t @var{rnd})
 Set @var{rop} to the cubic root (resp.@: the @var{k}th root)
