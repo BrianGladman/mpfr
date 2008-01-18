@@ -28,7 +28,7 @@ Changes from versions 2.3.* to version 2.4.0:
     mpfr_printf, mpfr_fprintf, mpfr_vprintf, mpfr_vfprintf,
     mpfr_sprintf, mpfr_snprintf, mpfr_vsprintf, mpfr_vsnprintf,
     mpfr_asprintf, mpfr_vasprintf.
-  * mpfr_sinh_cosh, mpfr_li2, mpfr_modf, mpfr_fmod.
+  * mpfr_sinh_cosh, mpfr_li2, mpfr_modf, mpfr_fmod, mpfr_rec_sqrt.
 
 Changes from versions 2.2.* to version 2.3.0:
 - The mpfr.info file is now installed in the share subdirectory
