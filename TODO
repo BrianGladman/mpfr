@@ -108,7 +108,6 @@ Table of contents:
      mpfr_clear (q);
      return inexact;
   }
-- 1/sqrt(x) [Regis Dupont <dupont@lix.polytechnique.fr>, 15 Sep 2004]
 - dilog() [the dilogarithm: dilog(x) =  int(ln(t)/(1-t), t=1..x)]
   See Numerical evaluation of multiple polylogarithms
   Jens Vollinga and Stefan Weinzierl, Computer Physics Communications,
@@ -143,7 +142,6 @@ Table of contents:
     and mmin_seq (mpfr_min and mpfr_max correspond to mmin and mmax);
   + rounding_rest, floor_rest, ceiling_rest (5.2.4);
   + remr (5.2.5): x - round(x/y) y;
-  + rec_sqrt (5.2.6): 1 / sqrt(x);
   + error functions from 5.2.7 (if useful in MPFR);
   + power1pm1 (5.3.6.7): (1 + x)^y - 1;
   + logbase (5.3.6.12): \log_x(y);
