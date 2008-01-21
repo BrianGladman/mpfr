@@ -304,8 +304,10 @@ __MPFR_DECLSPEC void *mpfr_tmp_allocate _MPFR_PROTO ((struct tmp_marker **,
                                                       size_t));
 __MPFR_DECLSPEC void mpfr_tmp_free _MPFR_PROTO ((struct tmp_marker *));
 
+/* Do not define TMP_SALLOC (see the test in mpfr-impl.h)! */
+#define TMP_ALLOC(n) (MPFR_LIKELY ((n) < 16384) ?       \
+                      alloca (n) : mpfr_tmp_allocate (&tmp_marker, (n)))
 #define TMP_DECL(m) struct tmp_marker *tmp_marker
-#define TMP_ALLOC(x) mpfr_tmp_allocate (&tmp_marker, (x))
 #define TMP_MARK(m) tmp_marker = 0;
 #define TMP_FREE(m) mpfr_tmp_free (tmp_marker)
 
