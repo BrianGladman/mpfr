@@ -308,7 +308,7 @@ __MPFR_DECLSPEC void mpfr_tmp_free _MPFR_PROTO ((struct tmp_marker *));
 #define TMP_ALLOC(n) (MPFR_LIKELY ((n) < 16384) ?       \
                       alloca (n) : mpfr_tmp_allocate (&tmp_marker, (n)))
 #define TMP_DECL(m) struct tmp_marker *tmp_marker
-#define TMP_MARK(m) tmp_marker = 0;
+#define TMP_MARK(m) (tmp_marker = 0)
 #define TMP_FREE(m) mpfr_tmp_free (tmp_marker)
 
 #if defined (__cplusplus)
