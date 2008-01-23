@@ -86,6 +86,13 @@ MA 02110-1301, USA. */
 #endif
 #undef MPFR_NEED_LONGLONG_H
 
+/* For the definition of MPFR_THREAD_ATTR. GCC/ICC detection macros are
+   no longer used, as they sometimes gave incorrect information about
+   the support of thread-local variables. A configure check is now done.
+   If the use of detection macros is needed in the future, this could be
+   moved below (after the detection macros are defined). */
+#include "mpfr-thread.h"
+
 
 /******************************************************
  ***************** Detection macros *******************
@@ -170,29 +177,6 @@ MA 02110-1301, USA. */
 /******************************************************
  ************* Global Internal Variables **************
  ******************************************************/
-
-/* Note: Let's define MPFR_THREAD_ATTR even after a #error to make the
-   error message more visible (e.g. gcc doesn't immediately stop after
-   the #error line and outputs many error messages if MPFR_THREAD_ATTR
-   is not defined). But some compilers will just output a message and
-   may build MPFR "successfully" (without thread support). */
-#ifdef MPFR_USE_THREAD_SAFE
-# if __MPFR_GNUC(3,3) || __MPFR_ICC(8,1,0)
-#  define MPFR_THREAD_ATTR __thread
-# elif defined(_MSC_VER)
-#  if defined(_WINDLL)
-#   error "Can't build MPFR DLL as thread safe."
-#   define MPFR_THREAD_ATTR
-#  else
-#   define MPFR_THREAD_ATTR __declspec( thread )
-#  endif
-# else
-#  error "Can't build MPFR as thread safe (you need gcc >= 3.3 or icc >= 8.1)."
-#  define MPFR_THREAD_ATTR
-# endif
-#else
-# define MPFR_THREAD_ATTR
-#endif
 
 /* Cache struct */
 struct __gmpfr_cache_s {
