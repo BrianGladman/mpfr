@@ -58,6 +58,8 @@ MA 02110-1301, USA. */
 extern "C" {
 #endif
 
+void test_version _MPFR_PROTO ((void));
+
 void tests_memory_start _MPFR_PROTO ((void));
 void tests_memory_end _MPFR_PROTO ((void));
 

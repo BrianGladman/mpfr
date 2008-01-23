@@ -100,8 +100,36 @@ void (*dummy_func)(mpfr_srcptr) = mpfr_dump;
 #endif
 
 void
+test_version (void)
+{
+  const char *version;
+
+  /* VL: I get the following error on an OpenSUSE machine, and changing
+     the value of shlibpath_overrides_runpath in the libtool file from
+     'no' to 'yes' fixes the problem. */
+
+  version = mpfr_get_version ();
+  if (strcmp (MPFR_VERSION_STRING, version) == 0)
+    return;
+
+  printf ("Incorrect MPFR version! (%s header vs %s library)\n\n"
+          "Nothing else has been tested since for this reason,\n"
+          "any other test may fail. Please fix this one first.\n\n"
+          "You can try to avoid this problem by changing the value of\n"
+          "shlibpath_overrides_runpath in the libtool file and rebuild\n"
+          "MPFR (make clean && make && make check).\n"
+          "Otherwise this error may be due to a corrupted mpfr.h, an\n"
+          "incomplete build (try to rebuild MPFR from scratch and/or\n"
+          "use 'make clean'), or something wrong in the system.\n",
+          MPFR_VERSION_STRING, version);
+  exit (1);
+}
+
+void
 tests_start_mpfr (void)
 {
+  test_version ();
+
   /* don't buffer, so output is not lost if a test causes a segv etc */
   setbuf (stdout, NULL);
 

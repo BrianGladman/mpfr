@@ -26,30 +26,13 @@ MA 02110-1301, USA. */
 
 #include "mpfr-test.h"
 
-static void
-err (int d, const char *shdr, const char *slib)
-{
-  /* VL: I get the following error on an OpenSUSE machine, and changing
-     the value of shlibpath_overrides_runpath in the libtool file from
-     'no' to 'yes' fixes the problem. */
-  printf ("Incorrect MPFR version [%d] (%s header vs %s library)!\n"
-          "For this reason, other tests may fail. "
-          "Please fix this one first.\n\n"
-          "You can try to avoid this problem by changing the value of\n"
-          "shlibpath_overrides_runpath in the libtool file and rebuild\n"
-          "MPFR (make clean && make && make check).\n"
-          "Otherwise this error may be due to a corrupted mpfr.h, an\n"
-          "incomplete build (try to rebuild MPFR from scratch and/or\n"
-          "use 'make clean'), or something wrong in the system.\n",
-          d, shdr, slib);
-  exit (1);
-}
-
 int
 main (void)
 {
   char buffer[256];
   const char *version;
+
+  test_version ();
 
   version = mpfr_get_version ();
 
@@ -58,11 +41,14 @@ main (void)
   sprintf (buffer, "%d.%d.%d", MPFR_VERSION_MAJOR, MPFR_VERSION_MINOR,
            MPFR_VERSION_PATCHLEVEL);
   if (strcmp (buffer, version) != 0)
-    err (1, buffer, version);
+    {
+      /* All the other problems should have been detected by test_version. */
+      printf ("Incorrect MPFR version! (%s header vs %s library)\n"
+              "This error should have never occurred and may be due "
+              "to a corrupted 'mpfr.h'.\n", buffer, version);
+      exit (1);
+    }
 #endif
-
-  if (strcmp (MPFR_VERSION_STRING, version) != 0)
-    err (2, MPFR_VERSION_STRING, version);
 
   if (__GNU_MP_VERSION_PATCHLEVEL != 0)
     sprintf (buffer, "%d.%d.%d", __GNU_MP_VERSION, __GNU_MP_VERSION_MINOR,
