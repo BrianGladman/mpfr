@@ -29,11 +29,19 @@ MA 02110-1301, USA. */
 static void
 err (int d, const char *shdr, const char *slib)
 {
-  printf ("Incorrect MPFR version [%d] (%s header vs %s library).\n"
-          "This error should have never occurred and may be due to a\n"
-          "corrupted mpfr.h, an incomplete build (try to rebuild MPFR\n"
-          "from scratch and/or use 'make clean'), or something wrong\n"
-          "in the system.\n", d, shdr, slib);
+  /* VL: I get the following error on an OpenSUSE machine, and changing
+     the value of shlibpath_overrides_runpath in the libtool file from
+     'no' to 'yes' fixes the problem. */
+  printf ("Incorrect MPFR version [%d] (%s header vs %s library)!\n"
+          "For this reason, other tests may fail. "
+          "Please fix this one first.\n\n"
+          "You can try to avoid this problem by changing the value of\n"
+          "shlibpath_overrides_runpath in the libtool file and rebuild\n"
+          "MPFR (make clean && make && make check).\n"
+          "Otherwise this error may be due to a corrupted mpfr.h, an\n"
+          "incomplete build (try to rebuild MPFR from scratch and/or\n"
+          "use 'make clean'), or something wrong in the system.\n",
+          d, shdr, slib);
   exit (1);
 }
 
