@@ -112,7 +112,7 @@ test_version (void)
   if (strcmp (MPFR_VERSION_STRING, version) == 0)
     return;
 
-  printf ("Incorrect MPFR version! (%s header vs %s library)\n\n"
+  printf ("Incorrect MPFR version! (%s header vs %s library)\n"
           "Nothing else has been tested since for this reason,\n"
           "any other test may fail. Please fix this one first.\n\n"
           "You can try to avoid this problem by changing the value of\n"
