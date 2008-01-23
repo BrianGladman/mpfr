@@ -305,6 +305,7 @@ dnl    important to run the test below.
 if test "$enable_thread_safe" = yes; then
 AC_CACHE_CHECK([for TLS support], mpfr_cv_working_tls, [
 AC_RUN_IFELSE([
+#define MPFR_USE_THREAD_SAFE 1
 #include "mpfr-thread.h"
 MPFR_THREAD_ATTR int x = 17;
 int main() {
