@@ -386,6 +386,10 @@ Table of contents:
 - add generic bad cases for functions that don't have an inverse
   function that is implemented (use a single Newton iteration).
 
+- add bad cases for the internal error bound (by using a dichotomy
+  between a bad case for the correct rounding and some input value
+  with fewer Ziv iterations?).
+
 
 ##############################################################################
 7. Portability
