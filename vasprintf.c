@@ -460,72 +460,6 @@ buffer_pad (struct string_buffer *b, const char c, const size_t n)
   (*__gmp_free_func) (padding, n + 1);
 }
 
-/* Print NaN with padding. */
-static int
-sprnt_nan (struct string_buffer *buf, const struct printf_spec spec)
-{
-  /* right justification padding */
-  if ((spec.left == 0) && (spec.width > MPFR_NAN_STRING_LENGTH))
-    buffer_pad (buf, ' ', spec.width - MPFR_NAN_STRING_LENGTH);
-
-  switch (spec.spec)
-    {
-    case 'A':
-    case 'E':
-    case 'F':
-    case 'G':
-    case 'X':
-      buffer_cat (buf, MPFR_NAN_STRING_UC, MPFR_NAN_STRING_LENGTH);
-      break;
-
-    default:
-      buffer_cat (buf, MPFR_NAN_STRING_LC, MPFR_NAN_STRING_LENGTH);
-    }
-
-  /* left justification padding */
-  if ((spec.left == 1) && (spec.width > MPFR_NAN_STRING_LENGTH))
-    buffer_pad (buf, ' ', spec.width - MPFR_NAN_STRING_LENGTH);
-
-  return (spec.width > MPFR_NAN_STRING_LENGTH) ? spec.width
-    : MPFR_NAN_STRING_LENGTH;
-}
-
-/* Print Infinities with padding
-   NEG = -1 for '-inf', 0 for 'inf' */
-static int
-sprnt_inf (struct string_buffer *buf, const struct printf_spec spec,
-           const int neg)
-{
-  const int length = MPFR_INF_STRING_LENGTH - neg;
-
-  /* right justification padding */
-  if ((spec.left == 0) && (spec.width > length))
-    buffer_pad (buf, ' ', spec.width - length);
-
-  switch (spec.spec)
-    {
-    case 'A':
-    case 'E':
-    case 'F':
-    case 'G':
-    case 'X':
-      if (neg < 0)
-        buffer_cat (buf, "-", 1);
-      buffer_cat (buf, MPFR_INF_STRING_UC, MPFR_INF_STRING_LENGTH);
-      break;
-    default:
-      if (neg < 0)
-        buffer_cat (buf, "-", 1);
-      buffer_cat (buf, MPFR_INF_STRING_LC, MPFR_INF_STRING_LENGTH);
-    }
-
-  /* left justification padding */
-  if ((spec.left == 1) && (spec.width > length))
-    buffer_pad (buf, ' ', spec.width - length);
-
-  return (spec.width > length) ? spec.width : length;
-}
-
 /* let gmp_xprintf process the part it can understand */
 static int
 sprntf_gmp (struct string_buffer *b, const char *fmt, va_list ap)
@@ -538,64 +472,6 @@ sprntf_gmp (struct string_buffer *b, const char *fmt, va_list ap)
     buffer_cat (b, s, length);
 
   mpfr_free_str (s);
-  return length;
-}
-
-/* internal function printing the mpfr_t P into the buffer BUF according to
-   specification described by SPEC.
-   Note: SPEC must be a integer conversion specification.
-   Return the number of written characters.
-   Return -1 if the built string has more than MAX_CHAR_BY_SPEC
-   characters. */
-static int
-sprnt_int (struct string_buffer *buf, mpfr_srcptr p, struct printf_spec spec)
-{
-  char format[10];  /* buffer for the format string corresponding to spec
-                       (see below) */
-  int f;
-  char *s;
-  int length;
-  mpz_t z;
-
-  if (MPFR_UNLIKELY (MPFR_IS_NAN (p)))
-    return sprnt_nan (buf, spec);
-
-  if (MPFR_UNLIKELY (MPFR_IS_INF (p)))
-    return sprnt_inf (buf, spec, MPFR_SIGN (p) < 0 ? -1 : 0);
-
-  mpz_init (z);
-  mpfr_get_z (z, p, spec.rnd_mode);
-
-  /* FORMAT contains at most 9 characters plus the terminating '\0'
-     like in "%-+#*.*Zo" */
-  f = 0;
-  format[f++] = '%';
-  if (spec.left)
-    format[f++] = '-';
-  else if (spec.pad == '0')
-    format[f++] = '0';
-  if (spec.showsign)
-    format[f++] = '+';
-  else if (spec.space)
-    format[f++] = ' ';
-  if (spec.alt)
-    format[f++] = '#';
-  format[f] = '\0';
-  strncat (format, "*.*Z", 4);
-  f += 4;
-  format[f++] = spec.spec;
-  format[f] = '\0';
-  MPFR_ASSERTD (f < 10);
-
-  length = gmp_asprintf (&s, format, spec.width, spec.prec, z);
-
-  if ((0 < length) && (length < MAX_CHAR_BY_SPEC))
-    buffer_cat (buf, s, length);
-  else
-    length = -1;
-
-  mpfr_free_str (s);
-  mpz_clear (z);
   return length;
 }
 
@@ -1804,14 +1680,6 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
 
           switch (spec.spec)
             {
-            case 'd':
-            case 'i':
-            case 'o':
-            case 'u':
-            case 'x':
-            case 'X':
-              length = sprnt_int (&buf, p, spec);
-              break;
             case 'a':
             case 'A':
             case 'b':

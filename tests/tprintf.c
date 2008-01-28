@@ -82,51 +82,6 @@ check_vsprintf (const char *expected, const char *fmt, ...)
 }
 
 static int
-integer (void)
-{
-  mpfr_t x;
-  mpfr_init (x);
-
-  /* special values */
-  mpfr_set_inf (x, 1);
-  check_sprintf (pinf_str, "%Rd", x);
-  check_sprintf (pinf_uc_str, "%RX", x);
-
-  mpfr_set_inf (x, -1);
-  check_sprintf (minf_str, "%Ro", x);
-  check_sprintf (minf_uc_str, "%RX", x);
-
-  mpfr_set_nan (x);
-  check_sprintf (nan_str, "%Rd", x);
-  check_sprintf (nan_uc_str, "%RX", x);
-
-  /* regular numbers */
-  mpfr_set_d (x, 1895485593474.61279296875, GMP_RNDD);
-
-  /* base ten */
-  check_sprintf ("1895485593474", "%RDd", x);
-  check_sprintf ("1895485593475", "%RNi", x);
-  check_sprintf ("1895485593475", "%RUu", x);
-
-  /* base sixteen */
-  check_sprintf ("1b953bed782", "%RZx", x);
-  check_sprintf ("0X1B953BED783", "%#RNX", x);
-
-  /* base eight */
-  check_sprintf ("33452357553603", "%RNo", x);
-
-  /* flags, width, and precision checking */
-  mpfr_set_si (x, -1641, GMP_RNDD);
-  check_sprintf ("-00000001641", "%+012RDd", x);
-
-  mpfr_neg (x, x, GMP_RNDD);
-  check_vsprintf ("001641      ", "%-*.*RDd", 12, 6, x);
-
-  mpfr_clear (x);
-  return 0;
-}
-
-static int
 decimal (void)
 {
   mpfr_t x;
@@ -417,7 +372,6 @@ main (int argc, char **argv)
   locale = setlocale (LC_NUMERIC, "C");
 #endif
 
-  integer ();
   hexadecimal ();
   binary ();
   decimal ();         /* [TODO] */
