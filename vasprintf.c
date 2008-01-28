@@ -1854,7 +1854,7 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
      But it doesn't say anything concerning the other printf-like functions.
      A defect report has been submitted to austin-review-l (item 2532).
      So, for the time being, we return a negative value and set the erange
-     flag. */
+     flag, and set errno to EOVERFLOW in POSIX system. */
   if (nbchar <= INT_MAX)
     {
       MPFR_SAVE_EXPO_FREE (expo);
@@ -1863,9 +1863,13 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
 
  error:
   MPFR_SAVE_EXPO_FREE (expo);
-  mpfr_set_erangeflag ();
   *ptr = NULL;
   (*__gmp_free_func) (buf.start, buf.size);
+
+  mpfr_set_erangeflag ();
+#ifdef EOVERFLOW
+      errno = EOVERFLOW;
+#endif
   return -1;
 }
 
