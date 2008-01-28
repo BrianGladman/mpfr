@@ -164,6 +164,11 @@ typedef enum {
 # define __MPFR_DECLSPEC __GMP_DECLSPEC
 #endif
 
+/* Note: some functions need that a specific system header is included before
+   mpfr.h to be defined. If the user forgets to include the header, the mpfr
+   function prototype in the user object file is not correct. In order to
+   raise a linker error in that case, we change their internal name in the
+   mpfr library (prefixed by __gmpfr instead of mpfr)*/
 #if defined (__cplusplus)
 extern "C" {
 #endif
@@ -330,10 +335,10 @@ __MPFR_DECLSPEC size_t mpfr_inp_str _MPFR_PROTO ((mpfr_ptr, FILE*, int,
                                                   mpfr_rnd_t));
 __MPFR_DECLSPEC size_t mpfr_out_str _MPFR_PROTO ((FILE*, int, size_t,
                                                   mpfr_srcptr, mpfr_rnd_t));
+#define mpfr_fprintf __gmpfr_fprintf
 __MPFR_DECLSPEC int mpfr_fprintf _MPFR_PROTO ((FILE*, __gmp_const char*,
                                                ...));
 #endif
-
 __MPFR_DECLSPEC int mpfr_printf _MPFR_PROTO ((__gmp_const char*, ...));
 __MPFR_DECLSPEC int mpfr_asprintf _MPFR_PROTO ((char**, __gmp_const char*,
                                                 ...));
@@ -344,9 +349,14 @@ __MPFR_DECLSPEC int mpfr_snprintf _MPFR_PROTO ((char*, size_t,
 
 #ifdef _MPFR_H_HAVE_VA_LIST
 #ifdef _MPFR_H_HAVE_FILE
+#define mpfr_vfprintf __gmpfr_vfprintf
 __MPFR_DECLSPEC int mpfr_vfprintf _MPFR_PROTO ((FILE*, __gmp_const char*,
                                                 va_list));
 #endif /* _MPFR_H_HAVE_FILE */
+#define mpfr_vprintf __gmpfr_vprintf
+#define mpfr_vasprintf __gmpfr_vasprintf
+#define mpfr_vsprintf __gmpfr_vsprintf
+#define mpfr_vsnprintf __gmpfr_vsnprintf
 __MPFR_DECLSPEC int mpfr_vprintf _MPFR_PROTO ((__gmp_const char*, va_list));
 __MPFR_DECLSPEC int mpfr_vasprintf _MPFR_PROTO ((char**, __gmp_const char*,
                                                  va_list));
