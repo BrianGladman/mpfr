@@ -1016,12 +1016,12 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
             /* fractional part */
             {
               if (spec_g)
-                /* with specificator 'g', spec.prec is the number of
+                /* with specifier 'g', spec.prec is the number of
                    significant digits to display, take into account the digit
                    '1' in the integral part*/
                 np->fp_trailing_zeros = spec.alt ? spec.prec - 1 : 0;
               else
-                /* with specificator 'f', spec.prec is the number of digits
+                /* with specifier 'f', spec.prec is the number of digits
                    after the decimal point */
                 np->fp_trailing_zeros = spec.prec;
             }
