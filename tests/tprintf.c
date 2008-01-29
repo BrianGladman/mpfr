@@ -36,6 +36,7 @@ MA 02110-1301, USA. */
 
 #if MPFR_VERSION >= MPFR_VERSION_NUM(2,4,0)
 
+const int prec_max_printf = 5000;
 const int buf_size = 1024;
 const char pinf_str[] = "inf";
 const char pinf_uc_str[] = "INF";
@@ -174,17 +175,33 @@ decimal (void)
   check_sprintf ("    -0e+00", "%+10.0RUe", z);
   check_sprintf ("        -0", "%+10.0RUf", z);
 
+
+  /* neighborhood of 1 */
+  mpfr_set_d (x, 0.9999, GMP_RNDN);
+  check_sprintf ("1E+00     ", "%-10.0RE", x);
+  check_sprintf ("1.0E+00   ", "%-10.1RE", x);
+  check_sprintf ("9.9990E-01", "%-10.4RE", x);
+  check_sprintf ("1.0       ", "%-10.1RF", x);
+  check_sprintf ("0.9999    ", "%-10.4RF", x);
+  check_sprintf ("1         ", "%-10.0RG", x);
+  check_sprintf ("1         ", "%-10.1RG", x);
+  check_sprintf ("0.9999    ", "%-10.4RG", x);
+  check_sprintf ("1.        ", "%-#10.0RG", x);
+  check_sprintf ("1.        ", "%-#10.1RG", x);
+  check_sprintf ("1.0       ", "%-#10.2RG", x);
+  check_sprintf ("0.9999    ", "%-#10.4RG", x);
+ 
   /* multiple of 10 */
   mpfr_set_d (x, 1e17, GMP_RNDN);
-  check_sprintf ("1E+17", "%RE", x);
-  check_sprintf ("1.000E+17", "%.3RE", x);
-  check_sprintf ("100000000000000000", "%RF", x);
-  check_sprintf ("100000000000000000.0", "%.1RF", x);
+  check_sprintf ("1e+17", "%Re", x);
+  check_sprintf ("1.000e+17", "%.3Re", x);
+  check_sprintf ("100000000000000000", "%Rf", x);
+  check_sprintf ("100000000000000000.0", "%.1Rf", x);
 
   mpfr_ui_div (x, 1, x, GMP_RNDN);
   check_sprintf ("1e-17", "%Re", x);
   check_sprintf ("0.00000000000000001", "%Rf", x);
-  check_sprintf ("1.00000e-17", "%Rg", x);
+  check_sprintf ("1e-17", "%Rg", x);
   check_sprintf ("0.0", "%.1RDf", x);
   check_sprintf ("0.1", "%.1RUf", x);
   check_sprintf ("0", "%.0RDf", x);
@@ -192,10 +209,19 @@ decimal (void)
 
   /* check rounding mode */
   mpfr_set_d (x, 0.0076, GMP_RNDN);
-  check_sprintf ("0.007", "%.3RDf", x);
-  check_sprintf ("0.007", "%.3RZf", x);
-  check_sprintf ("0.008", "%.3Rf", x);
-  check_sprintf ("0.008", "%.3RUf", x);
+  check_sprintf ("0.007", "%.3RDF", x);
+  check_sprintf ("0.007", "%.3RZF", x);
+  check_sprintf ("0.008", "%.3RF", x);
+  check_sprintf ("0.008", "%.3RUF", x);
+
+  /* limit test for the choice beetwen %f-style and %g-style */
+  mpfr_set_d (x, 0.0000999, GMP_RNDN);
+  check_sprintf ("0.0001", "%.0Rg", x);
+  check_sprintf ("9e-05", "%.0RDg", x);
+  check_sprintf ("0.0001", "%.2Rg", x);
+
+  mpfr_set_d (x, -0.000030517578125, GMP_RNDN); 
+  check_sprintf ("-3.0517578125e-05", "%.300Rg", x);
 
   mpfr_clears (x, z, (void *)0);
   return 0;
@@ -360,6 +386,98 @@ mixed (void)
   return 0;
 }
 
+static int
+random_double (void)
+{
+  int i;
+  mpfr_t x;
+  double y;
+  char flag[] =
+    {
+      '-',
+      '+',
+      ' ',
+      '#',
+      '0' /* no ambiguity: first zeros are flag zero*/
+    };
+  /* no 'a': mpfr and glibc do not have the same semantic */
+  char specifier[] =
+    {
+      'e',
+      'f',
+      'g',
+      'E',
+      'f', /* GNU libc doesn't accept %F, but %F and %f are the same for
+              regular numbers */
+      'G',
+    };
+
+  mpfr_init2 (x, 53);
+
+  for (i=0; i<1000; )
+    {
+      y = DBL_RAND ();
+      if (!Isnan(y))
+        {
+          int j, spec, prec;
+          char fmt_mpfr[11];
+          char *ptr_mpfr = fmt_mpfr;
+          char fmt[10];
+          char *ptr = fmt;
+          int xi;
+          char *xs;
+          int yi;
+          char *ys;
+
+          i++;
+
+          if ((rand() / (RAND_MAX + 1.0)) > .5)
+            y = -y;
+          mpfr_set_d (x, y, GMP_RNDN);
+
+          *ptr_mpfr++ = *ptr++ = '%';
+          for (j = 0; j < 5; j++)
+            {
+              if ((rand() / (RAND_MAX + 1.0)) < .3)
+                *ptr_mpfr++ = *ptr++ = flag[j];
+            }
+          *ptr_mpfr++ = *ptr++ = '.';
+          *ptr_mpfr++ = *ptr++ = '*';
+          *ptr_mpfr++ = 'R';
+          spec = (int) (6.0 * (rand() / (RAND_MAX + 1.0)));
+          *ptr_mpfr++ = *ptr++ = specifier[spec];
+          *ptr_mpfr = *ptr = '\0';
+
+          /* advantage small precision */
+          if ((rand() / (RAND_MAX + 1.0)) > .5)
+            prec = (int) (10 * (rand() / (RAND_MAX + 1.0)));
+          else
+            prec = (int) (prec_max_printf * (rand() / (RAND_MAX + 1.0)));
+
+          xi = mpfr_asprintf (&xs, fmt_mpfr, prec, x);
+          yi = mpfr_asprintf (&ys, fmt, prec, y);
+
+          if (xi != yi || strcmp (xs, ys))
+            {
+              mpfr_printf ("Error in mpfr_asprintf(\"%%%s\", %d, %Re)\n" \
+                      "expected: ", fmt_mpfr, prec, x);
+              printf ("%s", ys);
+              printf ("\n     got: ");
+              printf ("%s", xs);
+              putchar ('\n');
+
+              exit (1);
+            }
+
+          mpfr_free_str (xs);
+          mpfr_free_str (ys);
+        }
+    }
+
+  mpfr_clear (x);
+  return 0;
+}
+
 int
 main (int argc, char **argv)
 {
@@ -374,8 +492,9 @@ main (int argc, char **argv)
 
   hexadecimal ();
   binary ();
-  decimal ();         /* [TODO] */
-  mixed ();           /* [TODO] */
+  decimal ();
+  mixed ();
+  random_double ();
 
 #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
   setlocale (LC_NUMERIC, locale);
