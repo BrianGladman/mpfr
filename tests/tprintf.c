@@ -36,8 +36,10 @@ MA 02110-1301, USA. */
 
 #if MPFR_VERSION >= MPFR_VERSION_NUM(2,4,0)
 
-const int prec_max_printf = 5000;
+const int prec_max_printf = 5000; /* limit for random precision in
+                                     random_double() */
 const int buf_size = 1024;
+
 const char pinf_str[] = "inf";
 const char pinf_uc_str[] = "INF";
 const char minf_str[] = "-inf";
@@ -116,68 +118,70 @@ decimal (void)
   check_sprintf (nan_uc_str, "%RG", x);
 
   /* positive numbers */
-  mpfr_set_d (x, 1895485593474.61279296875, GMP_RNDD);
+  mpfr_set_ui (x, 1899347461279296875, GMP_RNDD);
+  mpfr_div_ui (x, x, 100000000000, GMP_RNDN); /* x=18993474.61279296875 */
   mpfr_set_ui (z, 0, GMP_RNDD);
 
   /* simplest case right justified */
-  check_sprintf ("      1.89548559347461279296875e+12", "%35Re", x);
-  check_sprintf ("                              2e+12", "%35.0Re", x);
-  check_sprintf ("          1895485593474.61279296875", "%35Rf", x);
-  check_sprintf ("              1895485593474.6127930", "%35.7Rf", x);
-  check_sprintf ("                        1.89549e+12", "%35Rg", x);
-  check_sprintf ("                              2e+12", "%35.0Rg", x);
-  check_sprintf ("               1895485593474.612793", "%35.19Rg", x);
-  check_sprintf ("                              0e+00", "%35.0Re", z);
-  check_sprintf ("                                  0", "%35.0Rf", z);
-  check_sprintf ("                             0.0000", "%35.4Rf", z);
-  check_sprintf ("                                  0", "%35.0Rg", z);
-  check_sprintf ("                             0.0000", "%35.4Rg", z);
+  check_sprintf ("      1.899347461279296875e+07", "%30Re", x);
+  check_sprintf ("                         2e+07", "%30.0Re", x);
+  check_sprintf ("          18993474.61279296875", "%30Rf", x);
+  check_sprintf ("              18993474.6127930", "%30.7Rf", x);
+  check_sprintf ("                   1.89935e+07", "%30Rg", x);
+  check_sprintf ("                         2e+07", "%30.0Rg", x);
+  check_sprintf ("          18993474.61279296875", "%30.19Rg", x);
+  check_sprintf ("                         0e+00", "%30.0Re", z);
+  check_sprintf ("                             0", "%30.0Rf", z);
+  check_sprintf ("                        0.0000", "%30.4Rf", z);
+  check_sprintf ("                             0", "%30.0Rg", z);
+  check_sprintf ("                        0.0000", "%30.4Rg", z);
   /* sign or space, pad with leading zeros */
-  check_sprintf (" 000001.89548559347461279296875E+12", "% 035RE", x);
-  check_sprintf (" 000000000000000000000001.89549E+12", "% 035RG", x);
-  check_sprintf (" 000000000000000000000000000002E+12", "% 035.0RE", x);
-  check_sprintf (" 000000000000000000000000000000E+00", "% 035.0RE", z);
-  check_sprintf (" 0000000000000000000000000000000000", "% 035.0RF", z);
+  check_sprintf (" 000001.899347461279296875E+07", "% 030RE", x);
+  check_sprintf (" 0000000000000000001.89935E+07", "% 030RG", x);
+  check_sprintf (" 0000000000000000000000002E+07", "% 030.0RE", x);
+  check_sprintf (" 0000000000000000000000000E+00", "% 030.0RE", z);
+  check_sprintf (" 00000000000000000000000000000", "% 030.0RF", z);
   /* sign + or -, left justified */
-  check_sprintf ("+1.89548559347461279296875e+12     ", "%+-35Re", x);
-  check_sprintf ("+2e+12                             ", "%+-35.0Re", x);
-  check_sprintf ("+0e+00                             ", "%+-35.0Re", z);
-  check_sprintf ("+0                                 ", "%+-35.0Rf", z);
+  check_sprintf ("+1.899347461279296875e+07     ", "%+-30Re", x);
+  check_sprintf ("+2e+07                        ", "%+-30.0Re", x);
+  check_sprintf ("+0e+00                        ", "%+-30.0Re", z);
+  check_sprintf ("+0                            ", "%+-30.0Rf", z);
   /* decimal point, left justified, precision and rounding parameter */
-  check_vsprintf ("1.9E+12   ", "%#-10.*R*E", 1, GMP_RNDN, x);
-  check_vsprintf ("2.E+12    ", "%#-10.*R*E", 0, GMP_RNDN, x);
-  check_vsprintf ("2.E+12    ", "%#-10.*R*G", 0, GMP_RNDN, x);
+  check_vsprintf ("1.9E+07   ", "%#-10.*R*E", 1, GMP_RNDN, x);
+  check_vsprintf ("2.E+07    ", "%#-10.*R*E", 0, GMP_RNDN, x);
+  check_vsprintf ("2.E+07    ", "%#-10.*R*G", 0, GMP_RNDN, x);
   check_vsprintf ("0.E+00    ", "%#-10.*R*E", 0, GMP_RNDN, z);
   check_vsprintf ("0.        ", "%#-10.*R*F", 0, GMP_RNDN, z);
   check_vsprintf ("0.        ", "%#-10.*R*G", 0, GMP_RNDN, z);
   /* sign or space */
-  check_sprintf (" 1.895e+12", "% .3RNe", x);
-  check_sprintf (" 2e+12",     "% .0RNe", x);
+  check_sprintf (" 1.899e+07", "% .3RNe", x);
+  check_sprintf (" 2e+07",     "% .0RNe", x);
   /* sign + or -, decimal point, pad with leading zeros */
-  check_sprintf ("+0001.8E+12", "%0+#11.1RZE", x);
-  check_sprintf ("+00001.E+12", "%0+#11.0RZE", x);
+  check_sprintf ("+0001.8E+07", "%0+#11.1RZE", x);
+  check_sprintf ("+00001.E+07", "%0+#11.0RZE", x);
   check_sprintf ("+0000.0E+00", "%0+#11.1RZE", z);
   check_sprintf ("+00000000.0", "%0+#11.1RZF", z);
   /* pad with leading zero */
-  check_sprintf ("0000001.89548559347461279296875e+12", "%035RDe", x);
-  check_sprintf ("0000000000000000000000000000001e+12", "%035.0RDe", x);
+  check_sprintf ("0000001.899347461279296875e+07", "%030RDe", x);
+  check_sprintf ("00000000000000000000000001e+07", "%030.0RDe", x);
   /* sign or space, decimal point, left justified */
-  check_sprintf (" 1.8E+12   ", "%- #11.1RDE", x);
-  check_sprintf (" 1.E+12    ", "%- #11.0RDE", x);
+  check_sprintf (" 1.8E+07   ", "%- #11.1RDE", x);
+  check_sprintf (" 1.E+07    ", "%- #11.0RDE", x);
 
   /* negative numbers */
   mpfr_mul_si (x, x, -1, GMP_RNDD);
   mpfr_mul_si (z, z, -1, GMP_RNDD);
 
   /* sign + or - */
-  check_sprintf ("  -1.8e+12", "%+10.1RUe", x);
-  check_sprintf ("    -1e+12", "%+10.0RUe", x);
+  check_sprintf ("  -1.8e+07", "%+10.1RUe", x);
+  check_sprintf ("    -1e+07", "%+10.0RUe", x);
   check_sprintf ("    -0e+00", "%+10.0RUe", z);
   check_sprintf ("        -0", "%+10.0RUf", z);
 
 
   /* neighborhood of 1 */
-  mpfr_set_d (x, 0.9999, GMP_RNDN);
+  mpfr_set_ui (x, 9999, GMP_RNDN);
+  mpfr_div_ui (x, x, 10000, GMP_RNDN); /* x=0.9999 */
   check_sprintf ("1E+00     ", "%-10.0RE", x);
   check_sprintf ("1.0E+00   ", "%-10.1RE", x);
   check_sprintf ("9.9990E-01", "%-10.4RE", x);
@@ -192,13 +196,14 @@ decimal (void)
   check_sprintf ("0.9999    ", "%-#10.4RG", x);
  
   /* multiple of 10 */
-  mpfr_set_d (x, 1e17, GMP_RNDN);
+  mpfr_set_ui (x, 17, GMP_RNDN);
+  mpfr_exp10 (x, x, GMP_RNDN); /* x=1e17 */
   check_sprintf ("1e+17", "%Re", x);
   check_sprintf ("1.000e+17", "%.3Re", x);
   check_sprintf ("100000000000000000", "%Rf", x);
   check_sprintf ("100000000000000000.0", "%.1Rf", x);
 
-  mpfr_ui_div (x, 1, x, GMP_RNDN);
+  mpfr_ui_div (x, 1, x, GMP_RNDN); /* x=1e-17 */
   check_sprintf ("1e-17", "%Re", x);
   check_sprintf ("0.00000000000000001", "%Rf", x);
   check_sprintf ("1e-17", "%Rg", x);
@@ -208,19 +213,21 @@ decimal (void)
   check_sprintf ("1", "%.0RUf", x);
 
   /* check rounding mode */
-  mpfr_set_d (x, 0.0076, GMP_RNDN);
+  mpfr_set_ui (x, 76, GMP_RNDN);
+  mpfr_div_ui (x, x, 10000, GMP_RNDN); /* x= 0.0076 */
   check_sprintf ("0.007", "%.3RDF", x);
   check_sprintf ("0.007", "%.3RZF", x);
   check_sprintf ("0.008", "%.3RF", x);
   check_sprintf ("0.008", "%.3RUF", x);
 
   /* limit test for the choice beetwen %f-style and %g-style */
-  mpfr_set_d (x, 0.0000999, GMP_RNDN);
+  mpfr_set_ui (x, 999, GMP_RNDN);
+  mpfr_div_ui (x, x, 10000000, GMP_RNDN); /* x=0.0000999 */
   check_sprintf ("0.0001", "%.0Rg", x);
   check_sprintf ("9e-05", "%.0RDg", x);
   check_sprintf ("0.0001", "%.2Rg", x);
 
-  mpfr_set_d (x, -0.000030517578125, GMP_RNDN); 
+  mpfr_set_si_2exp (x, -1, -15, GMP_RNDN); /* x=-2^-15 */
   check_sprintf ("-3.0517578125e-05", "%.300Rg", x);
 
   mpfr_clears (x, z, (void *)0);
@@ -359,13 +366,15 @@ mixed (void)
   mp_rnd_t rnd;
 
   mpf_init (mpf);
-  mpf_set_d (mpf, 40.0 * d);
+  mpf_set_ui (mpf, 40);
+  mpf_div_ui (mpf, mpf, 31); /* mpf = 40.0 / 31.0 */
   mpq_init (mpq);
   mpq_set_ui (mpq, 123456, 4567890);
   mpz_init (mpz);
   mpz_fib_ui (mpz, 64);
   mpfr_init (x);
-  mpfr_set_d (x, -1.2345678875e7, GMP_RNDN);
+  mpfr_set_si (x, -12345678875, GMP_RNDN);
+  mpfr_div_ui (x, x, 1000, GMP_RNDN); /* x = -1.2345678875e7 */
   rnd = GMP_RNDD;
 
   check_vsprintf ("121", "%i", i);
@@ -453,6 +462,10 @@ random_double (void)
             prec = (int) (10 * (rand() / (RAND_MAX + 1.0)));
           else
             prec = (int) (prec_max_printf * (rand() / (RAND_MAX + 1.0)));
+
+          if (y != mpfr_get_d (x, GMP_RNDN))
+            /* conversion error: skip this one */
+            continue;
 
           xi = mpfr_asprintf (&xs, fmt_mpfr, prec, x);
           yi = mpfr_asprintf (&ys, fmt, prec, y);
