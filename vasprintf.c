@@ -65,13 +65,6 @@ MA 02110-1301, USA. */
 #define MPFR_INF_STRING_UC "INF"
 #define MPFR_INF_STRING_LENGTH 3
 
-/* We assume that a single conversion specifier produces at most 4095 chars
-   (Rationale for International Standard -Programming Languages- C
-   Revision 5.10 April-2003, 7.19.6.1 p.152).
-   MAX_CHAR_BY_SPEC must be less than INT_MAX to be compatible with
-   mpfr_vasprintf() return type. */
-#define MAX_CHAR_BY_SPEC 8192
-
 static const char num_to_text[16] = "0123456789abcdef";
 
 /* some macro and functions for parsing format string */
@@ -91,15 +84,14 @@ static const char num_to_text[16] = "0123456789abcdef";
           case '7':                                                     \
           case '8':                                                     \
           case '9':                                                     \
-            MPFR_ASSERTN (specinfo.field < MAX_CHAR_BY_SPEC / 10);      \
+            MPFR_ASSERTN (specinfo.field < INT_MAX / 10);               \
             specinfo.field *= 10;                                       \
-            MPFR_ASSERTN (specinfo.field < MAX_CHAR_BY_SPEC-*(format)+'0'); \
+            MPFR_ASSERTN (specinfo.field < INT_MAX - *(format) + '0');  \
             specinfo.field += *(format) - '0';                          \
             ++(format);                                                 \
             break;                                                      \
           case '*':                                                     \
             specinfo.field = va_arg ((ap), int);                        \
-            MPFR_ASSERTN (specinfo.field < MAX_CHAR_BY_SPEC);           \
             ++(format);                                                 \
           default:                                                      \
             goto label_out;                                             \
@@ -422,17 +414,17 @@ buffer_init (struct string_buffer *b, size_t s)
   b->size = s;
 }
 
-/* Concatenate the string to the buffer and expand it if needed. */
+/* Concatenate the LEN first characters of the string S to the buffer B and
+   expand it if needed. */
 static void
 buffer_cat (struct string_buffer *b, const char *s, size_t len)
 {
+  MPFR_ASSERTN (b->curr + len + 1 > 0 && b->curr + len + 1 < SIZE_MAX);
   MPFR_ASSERTD (len <= strlen (s));
   if (MPFR_UNLIKELY ((b->curr + len + 1) > (b->start + b->size)))
     {
       const size_t pos = b->curr - b->start;
-      const size_t n = sizeof (char)
-        * ((len + 1 > MAX_CHAR_BY_SPEC) ?
-           len + 1 : MAX_CHAR_BY_SPEC);
+      const size_t n = sizeof (char) * ((len + 1 > 4096) ? len + 1 : 4096);
       b->start =
         (char *) (*__gmp_reallocate_func) (b->start, b->size, b->size + n);
       b->size += n;
@@ -442,7 +434,7 @@ buffer_cat (struct string_buffer *b, const char *s, size_t len)
   b->curr += len;
 }
 
-/* Add N characters C to the end of buffer */
+/* Add N characters C to the end of buffer B */
 static void
 buffer_pad (struct string_buffer *b, const char c, const size_t n)
 {
@@ -563,7 +555,7 @@ struct number_parts
 
 /* Determine the different parts of the string representation of the regular
    number p when spec.spec is 'a', 'A', or 'b'.
-   return -1 if some field > MAX_CHAR_BY_SPEC */
+   return -1 if some field > INT_MAX */
 static int
 regular_ab (struct number_parts *np, mpfr_srcptr p,
             const struct printf_spec spec)
@@ -756,7 +748,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
             }
         }
 
-      if (str_len > INT_MAX || str_len > MAX_CHAR_BY_SPEC)
+      if (str_len > INT_MAX)
         /* too much digits in fractional part */
         return -1;
 
@@ -809,7 +801,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
 /* Determine the different parts of the string representation of the regular
    number p when spec.spec is 'e', 'E', 'g', or 'G'.
 
-   return -1 if some field > MAX_CHAR_BY_SPEC */
+   return -1 if some field > INT_MAX */
 static int
 regular_eg (struct number_parts *np, mpfr_srcptr p,
             const struct printf_spec spec)
@@ -866,7 +858,7 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
             }
         }
 
-      if (str_len > INT_MAX || str_len > MAX_CHAR_BY_SPEC)
+      if (str_len > INT_MAX)
         /* too much digits in fractional part */
         return -1;
 
@@ -927,7 +919,7 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
 /* Determine the different parts of the string representation of the regular
    number p when spec.spec is 'f', 'F', 'g', or 'G'.
 
-   return -1 if some field of number_parts is greater than MAX_CHAR_BY_SPEC */
+   return -1 if some field of number_parts is greater than INT_MAX */
 static int
 regular_fg (struct number_parts *np, mpfr_srcptr p,
             const struct printf_spec spec)
@@ -1139,8 +1131,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
                         }
                     }
 
-                  if ((str_len > INT_MAX)
-                      || (str_len > MAX_CHAR_BY_SPEC))
+                  if (str_len > INT_MAX)
                     /* too much digits in fractional part */
                     {
                       mpfr_clear (x);
@@ -1175,7 +1166,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
       /* We have rounded towards zero so that x == e + 1 (with p = m*10^e,
          see above). x is now the number of digits in the integral part. */
 
-      if (mpfr_cmp_si (x, MAX_CHAR_BY_SPEC) > 0)
+      if (mpfr_cmp_ui (x, INT_MAX) > 0)
         /* P is too large to print all its integral part digits */
         {
           mpfr_clear (x);
@@ -1222,8 +1213,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
                     }
                 }
 
-              if ((str_len > INT_MAX)
-                  || (str_len > MAX_CHAR_BY_SPEC))
+              if (str_len > INT_MAX)
                 /* too much digits in fractional part */
                 {
                   mpfr_clear (x);
@@ -1273,7 +1263,7 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
                   struct printf_spec spec)
 {
   char *str;
-  int total;
+  long total;
   int uppercase;
 
   /* WARNING: left justification means right space padding */
@@ -1521,23 +1511,23 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
   total = np->sign ? 1 : 0;
   total += np->prefix_size;
   total += np->ip_size;
-  if (total < 0 || total > MAX_CHAR_BY_SPEC)
+  if (total < 0 || total > INT_MAX)
     goto error;
   total += np->ip_trailing_zeros;
-  if (total < 0 || total > MAX_CHAR_BY_SPEC)
+  if (total < 0 || total > INT_MAX)
     goto error;
   total += np->point ? 1 : 0;
   total += np->fp_leading_zeros;
-  if (total < 0 || total > MAX_CHAR_BY_SPEC)
+  if (total < 0 || total > INT_MAX)
     goto error;
   total += np->fp_size;
-  if (total < 0 || total > MAX_CHAR_BY_SPEC)
+  if (total < 0 || total > INT_MAX)
     goto error;
   total += np->fp_trailing_zeros;
-  if (total < 0 || total > MAX_CHAR_BY_SPEC)
+  if (total < 0 || total > INT_MAX)
     goto error;
   total += np->exp_size;
-  if (total < 0 || total > MAX_CHAR_BY_SPEC)
+  if (total < 0 || total > INT_MAX)
     goto error;
 
   if (spec.width > total)
@@ -1545,7 +1535,7 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
     {
       np->pad_size = spec.width - total;
       total += np->pad_size; /* here total == spec.width,
-                                so 0 < total < MAX_CHAR_BY_SPEC */
+                                so 0 < total < INT_MAX */
     }
 
   return total;
@@ -1559,9 +1549,10 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
 }
 
 /* sprnt_fp prints a mpfr_t according to spec.spec specification.
+
    return the size of the string (not counting the terminating '\0')
    return -1 if the built string is too long (i.e. has more than
-   MAX_CHAR_BY_SPEC characters). */
+   INT_MAX characters). */
 static int
 sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
           const struct printf_spec spec)
@@ -1645,7 +1636,7 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
   MPFR_SAVE_EXPO_MARK (expo);
 
   nbchar = 0;
-  buffer_init (&buf, (MAX_CHAR_BY_SPEC + 1) * sizeof (char));
+  buffer_init (&buf, 4096 * sizeof (char));
   gmp_fmt_flag = 0;
   va_copy (ap2, ap);
   start = fmt;
@@ -1673,7 +1664,7 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
         {
           spec.left = 1;
           spec.width = -spec.width;
-          MPFR_ASSERTN (spec.width < MAX_CHAR_BY_SPEC);
+          MPFR_ASSERTN (spec.width < INT_MAX);
         }
       if (*fmt == '.')
         {
