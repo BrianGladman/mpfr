@@ -34,7 +34,7 @@ special (void)
 {
   mpfr_t x, y;
   int inex;
-  
+
   mpfr_init (x);
   mpfr_init (y);
 

@@ -196,7 +196,7 @@ decimal (void)
   check_sprintf ("1.        ", "%-#10.1RG", x);
   check_sprintf ("1.0       ", "%-#10.2RG", x);
   check_sprintf ("0.9999    ", "%-#10.4RG", x);
- 
+
   /* multiple of 10 */
   mpfr_set_ui (x, 17, GMP_RNDN);
   mpfr_exp10 (x, x, GMP_RNDN); /* x=1e17 */
