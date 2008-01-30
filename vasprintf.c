@@ -419,7 +419,7 @@ buffer_init (struct string_buffer *b, size_t s)
 static void
 buffer_cat (struct string_buffer *b, const char *s, size_t len)
 {
-  MPFR_ASSERTN (b->curr + len + 1 > 0 && b->curr + len + 1 < SIZE_MAX);
+  MPFR_ASSERTN (b->size + len + 1 > 0 && b->size + len + 1 < SIZE_MAX);
   MPFR_ASSERTD (len <= strlen (s));
   if (MPFR_UNLIKELY ((b->curr + len + 1) > (b->start + b->size)))
     {
