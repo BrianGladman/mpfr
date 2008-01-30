@@ -70,9 +70,15 @@ install recent versions of some utilities such as texinfo.
 
 * Type "make info" to produce the documentation in the info format.
 
+* Type "make pdf" to produce the documentation in the PDF format.
+
 * Type "make dvi" to produce the documentation in the DVI format.
 
-* Type "make mpfr.ps" to produce the documentation in the Postscript format.
+* Type "make ps" to produce the documentation in the Postscript format.
+
+* Type "make html" to produce the documentation in the HTML format
+  (in several pages); if you want only one output HTML file, then
+  type "makeinfo --html --no-split mpfr.texi" instead.
 
 
 Building MPFR with internal GMP header files
