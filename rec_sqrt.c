@@ -475,7 +475,9 @@ mpfr_rec_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
      and the result is X*2^(-(e-2)/2) [case s=1].
      If e is odd, we compute an approximation of X of (2U)^{-1/2},
      and the result is X*2^(-(e-1)/2) [case s=0]. */
-  s = 1 - (MPFR_EXP(u) & 1); /* parity of the exponent of u */
+
+  /* parity of the exponent of u */
+  s = 1 - ((mpfr_uexp_t) MPFR_GET_EXP (u) & 1);
 
   rn = LIMB_SIZE(rp);
 
