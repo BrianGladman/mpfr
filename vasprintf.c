@@ -673,7 +673,8 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
                 }
             }
 
-          if (rnd_away == 1)
+          MPFR_ASSERTD (rnd_away >= 0);  /* rounding direction is defined */
+          if (rnd_away)
             {
               digit++;
               if (digit > 15)
@@ -967,7 +968,8 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
       /* Is p round to +/-1 with rounding mode spec.rnd_mode and precision
          spec.prec ? rnd_to_one:
          1 if |p| output as "1.00_0"
-         0 if |p| output as "0.dd_d" */
+         0 if |p| output as "0.dd_d"
+         -1 if not decided yet */
 
       if (spec_g || spec.prec >= 0)
         {
@@ -988,7 +990,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
             spec.rnd_mode == GMP_RNDU ? MPFR_IS_POS (p) :
             spec.rnd_mode == GMP_RNDZ ? 0 : -1;
 
-          if (rnd_to_one < 0)
+          if (rnd_to_one == -1)
             /* round to nearest mode */
             {
               /* round to 1 iff y = |p| > 1 - 0.5 * 10^(-spec.prec) */
@@ -1002,6 +1004,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
       else
         rnd_to_one = 0;
 
+      MPFR_ASSERTD (rnd_to_one >= 0); /* rnd_to_one is defined */
       if (rnd_to_one)
         /* one digit '1' in integral part */
         {
@@ -1039,7 +1042,6 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
           if (spec.prec != 0)
             /* fractional part */
             {
-              int small;
               mpfr_t y;
 
               MPFR_ALIAS (y, p, 1, MPFR_EXP (p)); /* y = |p| */
@@ -1049,11 +1051,8 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
               /* We have rounded away from zero so that x == |e| (with
                  p = m*10^e, see above). */
 
-              small =
-                (spec.prec > 0 && mpfr_cmp_si (x, spec.prec) > 0) ? 1 :
-                (spec_g && mpfr_cmp_ui (x, 5) == 0) ? 1 : 0;
-
-              if (small)
+              if ((spec.prec > 0 && mpfr_cmp_si (x, spec.prec) > 0)
+                  || (spec_g && mpfr_cmp_ui (x, 5) == 0))
                 /* p is too small for the given precision,
                    output "0.0_00" or "0.0_01" depending on rnd_mode */
                 {
@@ -1079,6 +1078,8 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
                       rnd_away = mpfr_cmp (y, x) > 0 ? 1 : 0;
                     }
 
+                  MPFR_ASSERTD (rnd_away >= 0);  /* rounding direction is
+                                                    defined */
                   if (rnd_away)
                     /* the last output digit is '1' */
                     {
@@ -1468,6 +1469,7 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
                       mpfr_clear (z);
                     }
 
+                  MPFR_ASSERTD (rnd_to_1em4 >= 0);  /* rounding is defined */
                   if (round_to_1em4)
                     /* |p| = 0.0000abc_d is output as "1.00_0e-04" with
                        style 'e', so the conversion is with style 'f' */
