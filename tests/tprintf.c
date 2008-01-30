@@ -118,8 +118,10 @@ decimal (void)
   check_sprintf (nan_uc_str, "%RG", x);
 
   /* positive numbers */
-  mpfr_set_ui (x, 1899347461279296875, GMP_RNDD);
-  mpfr_div_ui (x, x, 100000000000, GMP_RNDN); /* x=18993474.61279296875 */
+  mpfr_set_ui (x, 279296875, GMP_RNDN);
+  mpfr_div_ui (x, x, 1000000000, GMP_RNDN);
+  mpfr_add_ui (x, x, 1899347461, GMP_RNDN);
+  mpfr_div_ui (x, x, 100, GMP_RNDN); /* x = 18993474.61279296875 */
   mpfr_set_ui (z, 0, GMP_RNDD);
 
   /* simplest case right justified */
@@ -373,8 +375,9 @@ mixed (void)
   mpz_init (mpz);
   mpz_fib_ui (mpz, 64);
   mpfr_init (x);
-  mpfr_set_si (x, -12345678875, GMP_RNDN);
-  mpfr_div_ui (x, x, 1000, GMP_RNDN); /* x = -1.2345678875e7 */
+  mpfr_set_si (x, -875, GMP_RNDN);
+  mpfr_div_ui (x, x, 1000, GMP_RNDN);
+  mpfr_add_si (x, x, -12345678, GMP_RNDN); /* x = -1.2345678875e7 */
   rnd = GMP_RNDD;
 
   check_vsprintf ("121", "%i", i);
