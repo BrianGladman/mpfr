@@ -1469,7 +1469,7 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
                       mpfr_clear (z);
                     }
 
-                  MPFR_ASSERTD (rnd_to_1em4 >= 0);  /* rounding is defined */
+                  MPFR_ASSERTD (round_to_1em4 >= 0);  /* rounding is defined */
                   if (round_to_1em4)
                     /* |p| = 0.0000abc_d is output as "1.00_0e-04" with
                        style 'e', so the conversion is with style 'f' */
