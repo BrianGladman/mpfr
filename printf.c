@@ -52,7 +52,7 @@ mpfr_printf (const char *fmt, ...)
       return -1;
     }
 
-  ret = printf (strp);
+  ret = printf ("%s", strp);
 
   mpfr_free_str (strp);
   va_end (ap);
@@ -72,7 +72,7 @@ mpfr_vprintf (const char *fmt, va_list ap)
       return -1;
     }
 
-  ret = printf (strp);
+  ret = printf ("%s", strp);
 
   mpfr_free_str (strp);
   return ret;
@@ -95,7 +95,7 @@ mpfr_fprintf (FILE *fp, const char *fmt, ...)
       return -1;
     }
 
-  ret = fprintf (fp, strp);
+  ret = fprintf (fp, "%s", strp);
 
   mpfr_free_str (strp);
   va_end (ap);
@@ -115,7 +115,7 @@ mpfr_vfprintf (FILE *fp, const char *fmt, va_list ap)
       return -1;
     }
 
-  ret = fprintf (fp, strp);
+  ret = fprintf (fp, "%s", strp);
 
   mpfr_free_str (strp);
   return ret;
@@ -137,7 +137,7 @@ mpfr_sprintf (char *buf, const char *fmt, ...)
       return -1;
     }
 
-  ret = sprintf (buf, strp);
+  ret = sprintf (buf, "%s", strp);
   mpfr_free_str (strp);
 
   va_end (ap);
@@ -157,7 +157,7 @@ mpfr_vsprintf (char *buf, const char *fmt, va_list ap)
       return -1;
     }
 
-  ret = sprintf (buf, strp);
+  ret = sprintf (buf, "%s", strp);
 
   mpfr_free_str (strp);
   return ret;
