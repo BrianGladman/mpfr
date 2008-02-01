@@ -1648,12 +1648,12 @@ NaN or negative,
 @end deftypefun
 
 @deftypefun int mpfr_fma (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_t @var{op3}, mp_rnd_t @var{rnd})
-Set @var{rop} to @math{@var{op1} @GMPtimes{} @var{op2} + @var{op3}},
+Set @var{rop} to @math{(@var{op1} @GMPtimes{} @var{op2}) + @var{op3}},
 rounded in the direction @var{rnd}.
 @end deftypefun
 
 @deftypefun int mpfr_fms (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_t @var{op3}, mp_rnd_t @var{rnd})
-Set @var{rop} to @math{@var{op1} @GMPtimes{} @var{op2} - @var{op3}},
+Set @var{rop} to @math{(@var{op1} @GMPtimes{} @var{op2}) - @var{op3}},
 rounded in the direction @var{rnd}.
 @end deftypefun
 
