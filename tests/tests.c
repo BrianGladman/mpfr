@@ -30,6 +30,7 @@ MA 02110-1301, USA. */
 #include <stdlib.h>
 #include <string.h>
 #include <float.h>
+#include <errno.h>
 
 #if HAVE_LOCALE_H
 #include <locale.h>
@@ -595,20 +596,29 @@ data_check (char *f, int (*foo) (), char *name)
 
   while (!feof (fp))
     {
-      c = fscanf (fp, " ");  /* skip whitespace, for consistency */
-      if (c == EOF)
+      /* skip whitespace, for consistency */
+      if (fscanf (fp, " ") == EOF)
         {
           if (ferror (fp))
             {
-              printf ("Error: corrupted file '%s'\n", f);
+              perror (strerror (errno));
               exit (1);
             }
           else
             break;  /* end of file */
         }
-      c = getc (fp);
-      if (c == EOF)
-        break;
+
+      if ((c = getc (fp)) == EOF)
+        {
+          if (ferror (fp))
+            {
+              perror (strerror (errno));
+              exit (1);
+            }
+          else
+            break;  /* end of file */
+        }
+
       if (c == '#') /* comment: read entire line */
         {
           do
@@ -620,11 +630,19 @@ data_check (char *f, int (*foo) (), char *name)
       else
         {
           ungetc (c, fp);
-          if (fscanf (fp, "%lu %lu %c", &xprec, &yprec, &r) != 3)
+ 
+          c = fscanf (fp, "%lu %lu %c", &xprec, &yprec, &r);
+          if (c == EOF)
+            {
+              perror (strerror (errno));
+              exit (1);
+            }
+          else if (c != 3)
             {
               printf ("Error: corrupted line in file '%s'\n", f);
               exit (1);
             }
+
           switch (r)
             {
             case 'n':
@@ -664,7 +682,7 @@ data_check (char *f, int (*foo) (), char *name)
           /* Skip whitespace, in particular at the end of the file. */
           if (fscanf (fp, " ") == EOF && ferror(fp))
             {
-              printf ("Error: corrupted file '%s'\n", f);
+              perror (strerror (errno));
               exit (1);
             }
           test4rm (foo, x, y, z, rnd, r != 'Z', name);
