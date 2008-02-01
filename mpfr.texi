@@ -751,6 +751,7 @@ any MPFR function or macro, whether or not there is an error.
 * Comparison Functions::
 * Special Functions::
 * Input and Output Functions::
+* Formatted Output Functions::
 * Integer Related Functions::
 * Rounding Related Functions::
 * Miscellaneous Functions::
@@ -1711,7 +1712,7 @@ and non-zero when this cannot be guaranteed, without giving the
 direction of the error as the other functions do.
 @end deftypefun
 
-@node Input and Output Functions, Integer Related Functions, Special Functions, MPFR Interface
+@node Input and Output Functions, Formatted Output Functions, Special Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
 @cindex Float input and output functions
 @cindex Input functions
@@ -1721,9 +1722,8 @@ direction of the error as the other functions do.
 
 This section describes functions that perform input from an input/output
 stream, and functions that output to an input/output stream.
-Passing a null pointer for a @var{stream} argument to @code{mpfr_inp_str} or
-@code{mpfr_out_str} will make them read from @code{stdin} and write to
-@code{stdout}, respectively.
+Passing a null pointer for a @code{stream} to any of these functions will make
+them read from @code{stdin} and write to @code{stdout}, respectively.
 
 When using any of these functions, you must include the @code{<stdio.h>}
 standard header before @file{mpfr.h}, to allow @file{mpfr.h} to define
@@ -1776,14 +1776,24 @@ Return the number of bytes read, or if an error occurred, return 0.
 @c @code{mpfr_out_raw}, and put the result in @var{float}.
 @c @end deftypefun
 
-@deftypefun  int mpfr_printf (const char *@var{template}, ...)
-@deftypefunx int mpfr_fprintf (FILE *@var{stream}, const char *@var{template}, ...)
-@deftypefunx int mpfr_vprintf (const char *@var{template}, va_list @var{ap})
-@deftypefunx int mpfr_vfprintf (FILE *@var{stream}, const char *@var{template}, va_list @var{ap})
-The @code{mpfr_fprintf} (@code{mpfr_printf}) function prints to the stream
-@var{stream} (respectively @code{stdout}) the optional arguments under the
-control of the template string @var{template}.
+@node Formatted Output Functions, Integer Related Functions, Input and Output Functions, MPFR Interface
+@comment  node-name,  next,  previous,  up
+@cindex Float output functions
+@cindex Output functions
+@cindex I/O functions
+@section Formatted Output Functions
 
+@subsection Requirements
+The class of @code{mpfr_printf} functions provides formatted output in a
+similar manner as the standard C @code{printf}. These functions are defined
+only if your system supports ISO C variadic functions and the corresponding
+argument access macros.
+
+When using any of these functions, you must include the @code{<stdio.h>}
+standard header before @file{mpfr.h}, to allow @file{mpfr.h} to define
+prototypes for these functions.
+
+@subsection Format String
 The format specification accepted by @code{mpfr_printf} is an extension of the
 @code{printf} one. The conversion specification is of the form:
 @example
@@ -1792,22 +1802,28 @@ The format specification accepted by @code{mpfr_printf} is an extension of the
 @samp{flags}, @samp{width}, and @samp{precision} have the meaning as for
 @code{printf}.
 @code{mpfr_printf} is an extension to the @code{gmp_printf} function, hence it
-accepts the same @samp{type} specifications plus the following two:
+accepts the same @samp{type} specifiers plus the following two:
 @quotation
 @multitable {(space)} {MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM}
 @item @samp{R}  @tab @code{mpfr_t} input, float conversions
 @item @samp{P}  @tab @code{mpfr_t} input, integer conversions
 @end multitable
 @end quotation
+The @samp{rounding} specifier is specific to @code{mpfr_t} parameter and shall
+not be used with other types. @code{mpfr_printf} accepts the same conversion
+specifier character @samp{conv} as @code{gmp_printf} plus @samp{b}.
+
 The @samp{P} type outputs the internal precision of the @code{mpfr_t} variable;
 for example:
 @example
 mpfr_t x;
-mpfr_printf ("%Pu digits in significand", x);
+mpfr_init (x);
+@dots{}
+mpfr_printf ("variable x with %Pu bits", x);
 @end example
 
 The @samp{R} type is used for a @code{mpfr_t} output and can be followed by
-a rounding specification denoted by one of the following characters:
+a rounding specifier denoted by one of the following characters:
 @quotation
 @multitable {(space)} {MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM}
 @item @samp{D}  @tab round toward plus infinity
@@ -1827,15 +1843,17 @@ If no rounding is specified, the @code{mpfr_t} argument is rounded to nearest.
 The following three examples are equivalent:
 @example
 mpfr_t x;
+mpfr_init (x);
+@dots{}
 mpfr_printf ("%.128Rf", x);
 mpfr_printf ("%.128RNf", x);
 mpfr_printf ("%.128R*f", x, GMP_RNDN);
 @end example
 
-@code{mpfr_printf} also adds a new conversion specification @samp{b} which
+@code{mpfr_printf} also adds a new conversion specifier @samp{b} which
 displays the @code{mpfr_t} parameter in binary, the behavior is undefined with
 other parameter type.
-The @samp{conv} specifications allowed with @code{mpfr_t} parameter are:
+The @samp{conv} specifiers allowed with @code{mpfr_t} parameter are:
 @quotation
 @multitable {(space)} {MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM}
 @item @samp{a} @samp{A} @tab hex float, C99 style
@@ -1849,38 +1867,80 @@ In case of non-decimal output, only the significand is written in the
 specified base, the exponent is always displayed in decimal.
 Special values are always displayed as @code{nan}, @code{-inf}, and
 @code{inf} for @samp{a}, @samp{b}, @samp{e}, @samp{f}, and @samp{g}
-specifications and @code{NAN}, @code{-INF}, and
+specifiers and @code{NAN}, @code{-INF}, and
 @code{INF} for @samp{A}, @samp{E}, @samp{F}, and @samp{G}
-specifications.
+specifiers.
+In binary output, the precision is silently increase up to 2 if it equals 1.
+
+@subsection Functions
+@deftypefun int mpfr_fprintf (FILE *@var{stream}, const char *@var{template}, @dots{})
+@deftypefunx int mpfr_vfprintf (FILE *@var{stream}, const char *@var{template}, va_list @var{ap})
+Print to the stream @var{stream} the optional arguments under the control of
+the template string @var{template}.
 
 Return the number of characters written or a negative value if an error
-occurred.
+occurred. If the number of characters which ought to be written appears
+to exceed the maximum limit for an @code{int}, nothing is written in the
+stream, the function returns -1, sets the @code{erange} flags, and (in POSIX
+system only) @code{errno} is set to @code{EOVERFLOW}.
 @end deftypefun
 
-@deftypefun int mpfr_sprintf (char *@var{buf}, const char *@var{template}, ...)
-@deftypefunx int mpfr_snprintf (char *@var{buf}, size_t @var{n}, const char *@var{template}, ...)
+@deftypefun  int mpfr_printf (const char *@var{template}, @dots{})
+@deftypefunx int mpfr_vprintf (const char *@var{template}, va_list @var{ap})
+Print to @var{stdout} the optional arguments under the control of the
+template string @var{template}.
+
+Return the number of characters written or a negative value if an error
+occurred. If the number of characters which ought to be written appears
+to exceed the maximum limit for an @code{int}, nothing is written in
+@code{stdout}, the function returns -1, sets the @code{erange} flags, and (in
+POSIX system only) @code{errno} is set to @code{EOVERFLOW}.
+@end deftypefun
+
+@deftypefun int mpfr_sprintf (char *@var{buf}, const char *@var{template}, @dots{})
 @deftypefunx int mpfr_vsprintf (char *@var{buf}, const char *@var{template}, va_list @var{ap})
-@deftypefunx int mpfr_vsnprintf (char *@var{buf}, size_t @var{n}, const char *@var{template}, va_list @var{ap})
-@code{mpfr_sprintf} and @code{mpfr_vsprintf} return the number of characters
-written in the array @var{buf} not counting the terminating null character or
-a negative value if an error occurred.
-@code{mpfr_snprintf} and @code{mpfr_vsnprintf} return  the number of
-characters that would have been written had @var{n} be sufficiently large,
-not counting the terminating null character or a negative value if an error
-occurred.
+Form a null-terminated string in @code{buf}. No overlap is permitted beetwen
+@code{buf} and the other arguments.
+
+Return the number of characters written in the array @var{buf} not counting
+the terminating null character or a negative value if an error occurred. If
+the number of characters which ought to be written appears to exceed the
+maximum limit for an @code{int}, nothing is written in @code{buf}, the
+function returns -1, sets the @code{erange} flags, and (in POSIX system only)
+@code{errno} is set to @code{EOVERFLOW}.
 @end deftypefun
 
-@deftypefun int mpfr_asprintf (char **@var{str}, const char *@var{template}, ...)
+@deftypefun int mpfr_snprintf (char *@var{buf}, size_t @var{n}, const char *@var{template}, @dots{})
+@deftypefunx int mpfr_vsnprintf (char *@var{buf}, size_t @var{n}, const char *@var{template}, va_list @var{ap})
+Form a null-terminated string in @code{buf}. If @code{n} is zero, nothing is
+written and @code{buf} may be a null pointer, otherwise, the @code{n-1} first
+characters are written in @code{buf} and the @code{n}-th is a null character.
+
+Return  the number of characters that would have been written had @var{n} be
+sufficiently large, not counting the terminating null character or a negative
+value if an error occurred. If the number of characters produced by the
+optional arguments under the control of the template string @code{template}
+appears to exceed the maximum limit for an @code{int}, nothing is written in
+@code{buf}, the function returns -1, sets the @code{erange} flags, and (in
+POSIX system only) @code{errno} is set to @code{EOVERFLOW}.
+@end deftypefun
+
+@deftypefun int mpfr_asprintf (char **@var{str}, const char *@var{template}, @dots{})
 @deftypefunx int mpfr_vasprintf (char **@var{str}, const char *@var{template}, va_list @var{ap})
 Write their output as a null terminated string in a block of memory allocated
 using the current allocation function. A pointer to the block is stored in
 @var{str}. The block of memory must be freed using @code{mpfr_free_str}.
 
 The return value is the number of characters written in the string, excluding
-the null-terminator or a negative value if an error occurred.
+the null-terminator or a negative value if an error occurred. If the number of
+characters produced by the optional arguments under the control of the
+template string @code{template} appears to exceed the maximum limit for an
+@code{int}, @code{str} is a null pointer, the function returns -1, sets
+the @code{erange} flags, and (in POSIX system only) @code{errno} is set to
+@code{EOVERFLOW}.
 @end deftypefun
 
-@node Integer Related Functions, Rounding Related Functions, Input and Output Functions, MPFR Interface
+@node Integer Related Functions, Rounding Related Functions, Formatted Output Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
 @cindex Integer related functions
 @section Integer and Remainder Related Functions
