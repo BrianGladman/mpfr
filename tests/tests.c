@@ -601,7 +601,7 @@ data_check (char *f, int (*foo) (), char *name)
         {
           if (ferror (fp))
             {
-              perror (strerror (errno));
+              perror ("data_check");
               exit (1);
             }
           else
@@ -612,7 +612,7 @@ data_check (char *f, int (*foo) (), char *name)
         {
           if (ferror (fp))
             {
-              perror (strerror (errno));
+              perror ("data_check");
               exit (1);
             }
           else
@@ -630,11 +630,11 @@ data_check (char *f, int (*foo) (), char *name)
       else
         {
           ungetc (c, fp);
- 
+
           c = fscanf (fp, "%lu %lu %c", &xprec, &yprec, &r);
           if (c == EOF)
             {
-              perror (strerror (errno));
+              perror ("data_check");
               exit (1);
             }
           else if (c != 3)
@@ -680,9 +680,9 @@ data_check (char *f, int (*foo) (), char *name)
               exit (1);
             }
           /* Skip whitespace, in particular at the end of the file. */
-          if (fscanf (fp, " ") == EOF && ferror(fp))
+          if (fscanf (fp, " ") == EOF && ferror (fp))
             {
-              perror (strerror (errno));
+              perror ("data_check");
               exit (1);
             }
           test4rm (foo, x, y, z, rnd, r != 'Z', name);
