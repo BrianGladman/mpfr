@@ -595,7 +595,17 @@ data_check (char *f, int (*foo) (), char *name)
 
   while (!feof (fp))
     {
-      fscanf (fp, " ");  /* skip whitespace, for consistency */
+      c = fscanf (fp, " ");  /* skip whitespace, for consistency */
+      if (c == EOF)
+        {
+          if (ferror (fp))
+            {
+              printf ("Error: corrupted file '%s'\n", f);
+              exit (1);
+            }
+          else
+            break;  /* end of file */
+        }
       c = getc (fp);
       if (c == EOF)
         break;
@@ -652,7 +662,11 @@ data_check (char *f, int (*foo) (), char *name)
               exit (1);
             }
           /* Skip whitespace, in particular at the end of the file. */
-          fscanf (fp, " ");
+          if (fscanf (fp, " ") == EOF && ferror(fp))
+            {
+              printf ("Error: corrupted file '%s'\n", f);
+              exit (1);
+            }
           test4rm (foo, x, y, z, rnd, r != 'Z', name);
         }
     }
