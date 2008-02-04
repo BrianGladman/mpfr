@@ -122,7 +122,8 @@ Table of contents:
   PolylogP, PolylogD, PolylogDold: see http://arxiv.org/abs/math.CA/0702243
     and the references herein.
   JBessel(n, x) = BesselJ(n+1/2, x)
-  IncompleteGamma
+  IncompleteGamma [also wanted by <keith.briggs@bt.com> 4 Feb 2008: Gamma(a,x),
+    gamma(a,x), P(a,x), Q(a,x); see A&S 6.5]
   KBessel, KBessel2 [2nd kind]
   JacobiTheta
   LogIntegral
