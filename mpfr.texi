@@ -1802,8 +1802,8 @@ The format specification accepted by @code{mpfr_printf} is an extension of the
 @samp{flags}, @samp{width}, and @samp{precision} have the meaning as for
 @code{printf}.
 @code{mpfr_printf} is an extension to the @code{gmp_printf} function, hence it
-accepts the same @samp{type} specifiers (except quad_t and u_quad_t) plus the
-following two:
+accepts the same @samp{type} specifiers (except 'q', the one for quad_t and
+u_quad_t) plus the following two:
 @quotation
 @multitable {(space)} {MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM}
 @item @samp{R}  @tab @code{mpfr_t} input, float conversions
