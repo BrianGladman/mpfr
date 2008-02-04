@@ -1728,15 +1728,76 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
         break;
       else if (spec.spec == 'n')
         /* put the number of characters written so far in the location pointed
-           by the next va_list argument */
+           by the next va_list argument; the types of pointer accepted are the
+           same as in GMP (except quad_t) plus pointer to a mpfr_t so as to be
+           able to accept the same format strings. */
         {
-          int *int_ptr;         /* [TODO] do mp{zqf} cases */
-          int_ptr = va_arg (ap, int *);
+          void *ptr;
+          int nchar;
+
+          ptr = va_arg (ap, void *);
           FLUSH (gmp_fmt_flag, start, end, ap2, &buf);
           va_end (ap2);
-          va_copy (ap2, ap);
           start = fmt;
-          *int_ptr = (int) (buf.curr - buf.start);
+          nchar = (int) (buf.curr - buf.start);
+
+          switch (spec.arg_type)
+            {
+            case CHAR_ARG:
+              *(char *) ptr = nchar;
+              break;
+            case SHORT_ARG:
+              *(short *) ptr = nchar;
+              break;
+            case LONG_ARG:
+              *(long *) ptr = nchar;
+              break;
+            case LONG_LONG_ARG:
+              *(long long *) ptr = nchar;
+              break;
+#ifdef HAVE_STDINT_H
+            case INTMAX_ARG:
+              *(intmax_t *) ptr = nchar;
+              break;
+#endif
+            case SIZE_ARG:
+              *(size_t *) ptr = nchar;
+              break;
+            case PTRDIFF_ARG:
+              *(ptrdiff_t *) ptr = nchar;
+              break;
+            case MPF_ARG:
+              mpf_set_ui ((mpf_ptr) ptr, (unsigned long) nchar);
+              break;
+            case MPQ_ARG:
+              mpq_set_ui ((mpq_ptr) ptr, (unsigned long) nchar, 1L);
+              break;
+            case MP_LIMB_ARRAY_ARG:
+              {
+                mp_size_t n;
+                n = va_arg (ap, mp_size_t);
+                if (n > 0)
+                  {
+                    * (mp_ptr) ptr = nchar;
+                    do
+                      * (mp_ptr)++ptr = 0;
+                    while (--n);
+                  }
+              }
+            case MPZ_ARG:
+              mpz_set_ui ((mpz_ptr) ptr, (unsigned long) nchar);
+              break;
+
+            case MPFR_ARG:
+              mpfr_set_ui ((mpfr_ptr) ptr, (unsigned long) nchar,
+                           spec.rnd_mode);
+              break;
+
+            default:
+              *(int *) ptr = nchar;
+            }
+          va_copy (ap2, ap); /* after the switch, due to MP_LIMB_ARRAY_ARG
+                                case */
         }
       else if (spec.arg_type == MPFR_PREC_ARG)
         /* output mp_prec_t variable */

@@ -48,12 +48,13 @@ const char nan_str[] = "nan";
 const char nan_uc_str[] = "NAN";
 
 /* compare expected string with the return of mpfr_sprintf(fmt, x)*/
-static void
+static int
 check_sprintf (const char *expected, const char *fmt, mpfr_srcptr x)
 {
+  int n;
   char buffer[buf_size];
 
-  mpfr_sprintf (buffer, fmt, x);
+  n = mpfr_sprintf (buffer, fmt, x);
   if (strcmp (buffer, expected) != 0)
     {
       printf ("Error in mpfr_sprintf (s, \"%s\", x);\n", fmt);
@@ -61,17 +62,19 @@ check_sprintf (const char *expected, const char *fmt, mpfr_srcptr x)
 
       exit (1);
     }
+  return n;
 }
 
 /* compare expected string with the return of mpfr_vsprintf(fmt, ...)*/
-static void
+static int
 check_vsprintf (const char *expected, const char *fmt, ...)
 {
+  int n;
   char buffer[buf_size];
   va_list ap;
   va_start (ap, fmt);
 
-  mpfr_vsprintf (buffer, fmt, ap);
+  n = mpfr_vsprintf (buffer, fmt, ap);
   if (strcmp (buffer, expected) != 0)
     {
       printf ("Error in mpfr_vsprintf (s, \"%s\", ...);\n", fmt);
@@ -82,6 +85,7 @@ check_vsprintf (const char *expected, const char *fmt, ...)
     }
 
   va_end (ap);
+  return n;
 }
 
 static int
@@ -359,6 +363,8 @@ binary (void)
 static int
 mixed (void)
 {
+  int n1;
+  int n2;
   int i = 121;
   long double d = 1. / 31.;
   mpf_t mpf;
@@ -388,9 +394,16 @@ mixed (void)
   check_vsprintf ("-12345678, 1e240/45b352", "%.0R*f, %Qx", GMP_RNDZ, x, mpq);
   check_vsprintf ("121, -12345678.875000000000, 1.290323", "%i, %.*Rf, %Ff",
                   i, 12, x, mpf);
-  check_vsprintf ("00000010610209857723, -1.2345678875e+07, 0.032258",
-                  "%.*Zi, %R*e, %Lf", 20, mpz, rnd, x, d);
+  n1 = check_vsprintf ("00000010610209857723, -1.2345678875e+07, 0.032258",
+                       "%.*Zi, %R*e, %Lf%n", 20, mpz, rnd, x, d, &n2);
 
+  if (n1 != n2)
+    {
+      printf ("error in number of characters written by mpfr_vsprintf\n");
+      printf ("expected: %d\n", n2);
+      printf ("     got: %d\n", n1);
+      exit (1);
+    }
   mpf_clear (mpf);
   mpq_clear (mpq);
   mpz_clear (mpz);
