@@ -610,11 +610,17 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
         /* EXP is the exponent for radix sixteen with decimal point BEFORE the
            first digit, we want the exponent for radix two and the decimal
            point AFTER the first digit. */
-        exp = (exp - 1) * 4;
+        {
+          MPFR_ASSERTN (exp > MPFR_EMIN_MIN /4); /* possible overflow */
+          exp = (exp - 1) * 4;
+        }
       else
         /* EXP is the exponent for decimal point BEFORE the first digit, we
            want the exponent for decimal point AFTER the first digit. */
-        --exp;
+        {
+          MPFR_ASSERTN (exp > MPFR_EMIN_MIN); /* possible overflow */
+          --exp;
+        }
     }
   else
     /* One hexadecimal digit is sufficient but mpfr_get_str returns at least
@@ -637,7 +643,9 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
 
       /* exponent for radix-2 with the decimal point after the first
          hexadecimal digit */
-      exp = MPFR_GET_EXP (p) - 4; /* FIXME: possible overflow */
+      MPFR_ASSERTN (MPFR_GET_EXP (p) > MPFR_EMIN_MIN + 3); /* possible
+                                                              overflow */
+      exp = MPFR_GET_EXP (p) - 4;
 
       /* Determine the radix-16 digit by grouping the 4 first digits. Even
          if MPFR_PREC (p) < 4, we can read 4 bits in its first limb */
@@ -879,7 +887,8 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
     np->point = MPFR_DECIMAL_POINT;
 
   /* EXP is the exponent for decimal point BEFORE the first digit, we want
-     the exponent for decimal point AFTER the first digit. */
+     the exponent for decimal point AFTER the first digit.
+     Here, no possible overflow because exp < MPFR_EXP (p) / 3 */
   exp--;
 
   /* the exponent part contains the character 'e', or 'E' plus the sign
