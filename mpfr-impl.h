@@ -310,16 +310,6 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_four;
 # define MPFR_ASSERTD(expr)  ((void) 0)
 #endif
 
-/* Check if the args are correct  */
-/* Can't be used since TMP variables are not correct */
-#define MPFR_CHECK1(x,r) \
- MPFR_ASSERTD(mpfr_check(x) && GMP_RNDN <= r && r <= GMP_RNDD)
-#define MPFR_CHECK2(x,y,r) \
- MPFR_ASSERTD(mpfr_check(x) && mpfr_check(y) && GMP_RNDN <= r && r <= GMP_RNDD)
-#define MPFR_CHECK3(x,y,z,r) \
- MPFR_ASSERTD(mpfr_check(x) && mpfr_check(y) && mpfr_check(z) && \
-  GMP_RNDN <= r && r <= GMP_RNDD)
-
 /* Code to deal with impossible
    WARNING: It doesn't use do { } while (0) for Insure++*/
 #define MPFR_RET_NEVER_GO_HERE()  {MPFR_ASSERTN(0); return 0;}
