@@ -466,10 +466,32 @@ set_emax (mp_exp_t exponent)
 void
 tests_default_random (mpfr_ptr x, int pos, mp_exp_t emin, mp_exp_t emax)
 {
+  MPFR_ASSERTN (emin <= emax);
+  MPFR_ASSERTN (emin >= MPFR_EMIN_MIN);
+  MPFR_ASSERTN (emax <= MPFR_EMAX_MAX);
+  /* but it isn't required that emin and emax are in the current
+     exponent range (see below), so that underflow/overflow checks
+     can be done on 64-bit machines. */
+
   mpfr_random (x);
   if (emin >= 1 || (randlimb () & 1))
-    mpfr_mul_2si (x, x, emin + (long) (randlimb () % (emax - emin + 1)),
-                  GMP_RNDN);
+    {
+      mp_exp_t e;
+      e = MPFR_GET_EXP (x) +
+        (emin + (long) (randlimb () % (emax - emin + 1)));
+      /* Note: There should be no overflow here because both terms are
+         between MPFR_EMIN_MIN and MPFR_EMAX_MAX, but the sum e isn't
+         necessarily between MPFR_EMIN_MIN and MPFR_EMAX_MAX. */
+      if (mpfr_set_exp (x, e))
+        {
+          /* The random number doesn't fit in the current exponent range.
+             In this case, test the function in the extended exponent range,
+             which should be restored by the caller. */
+          mpfr_set_emin (MPFR_EMIN_MIN);
+          mpfr_set_emax (MPFR_EMAX_MAX);
+          mpfr_set_exp (x, e);
+        }
+    }
   if (randlimb () % 512 < pos)
     mpfr_neg (x, x, GMP_RNDN);
 }
@@ -714,6 +736,10 @@ bad_cases (int (*fct)(), int (*inv)(), char *name,
   mpfr_t x, y, z;
   char *dbgenv;
   int i, dbg;
+  mp_exp_t old_emin, old_emax;
+
+  old_emin = mpfr_get_emin ();
+  old_emax = mpfr_get_emax ();
 
   dbgenv = getenv ("MPFR_DEBUG_BADCASES");
   dbg = dbgenv != 0 ? atoi (dbgenv) : 0;  /* debug level */
@@ -812,7 +838,11 @@ bad_cases (int (*fct)(), int (*inv)(), char *name,
         }
       /* Note: y is now the expected result rounded towards zero. */
       test4rm (fct, x, y, z, GMP_RNDZ, 0, name);
-    next_i: ;
+    next_i:
+      /* In case the exponent range has been changed by
+         tests_default_random()... */
+      mpfr_set_emin (old_emin);
+      mpfr_set_emax (old_emax);
     }
   mpfr_clears (x, y, z, (void *) 0);
 }

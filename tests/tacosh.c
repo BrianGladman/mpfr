@@ -32,8 +32,8 @@ MA 02110-1301, USA. */
 
 #define TEST_FUNCTION mpfr_acosh
 #define TEST_RANDOM_POS 1
-#define TEST_RANDOM_EMIN 1073741822
-#define TEST_RANDOM_EMAX 1073741822
+#define TEST_RANDOM_EMIN MPFR_EMAX_MAX
+#define TEST_RANDOM_EMAX MPFR_EMAX_MAX
 #define test_generic test_generic_huge
 #include "tgeneric.c"
 

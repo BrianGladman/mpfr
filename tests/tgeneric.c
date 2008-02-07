@@ -119,6 +119,10 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
   int inexact, compare, compare2;
   unsigned int n;
   unsigned long ctrt = 0, ctrn = 0;
+  mp_exp_t old_emin, old_emax;
+
+  old_emin = mpfr_get_emin ();
+  old_emax = mpfr_get_emax ();
 
   mpfr_init (x);
   mpfr_init (y);
@@ -183,7 +187,7 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
             {
               /* Special cases tested in precision p1 if 2 <= n <= 3. */
               if (getenv ("MPFR_CHECK_MAX") == NULL)
-                continue;
+                goto next_n;
               mpfr_set_si (x, n == 0 ? 1 : -1, GMP_RNDN);
               mpfr_setmax (x, REDUCE_EMAX);
 #if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
@@ -261,7 +265,7 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
               inexact = TEST_FUNCTION (z, x, rnd);
 #endif
               if (mpfr_erangeflag_p ())
-                continue;
+                goto next_n;
               if (mpfr_nan_p (z) || mpfr_cmp (t, z) != 0)
                 {
                   printf ("results differ for x=");
@@ -308,6 +312,12 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
                   exit (1);
                 }
             }
+
+        next_n:
+          /* In case the exponent range has been changed by
+             tests_default_random()... */
+          mpfr_set_emin (old_emin);
+          mpfr_set_emax (old_emax);
         }
     }
 
