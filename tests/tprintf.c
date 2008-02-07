@@ -432,7 +432,7 @@ random_double (void)
       'f',
       'g',
       'E',
-      'f', /* GNU libc doesn't accept %F, but %F and %f are the same for
+      'f', /* SUSv2 doesn't accept %F, but %F and %f are the same for
               regular numbers */
       'G',
     };
