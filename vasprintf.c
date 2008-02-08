@@ -414,22 +414,32 @@ buffer_init (struct string_buffer *b, size_t s)
   b->size = s;
 }
 
+/* Increase buffer size by at least LEN+1 characters. */
+static void
+buffer_widen (struct string_buffer *b, size_t len)
+{
+  const size_t pos = b->curr - b->start;
+  const size_t n = sizeof (char) * ((len + 1 > 4096) ? len + 1 : 4096);
+
+  b->start =
+    (char *) (*__gmp_reallocate_func) (b->start, b->size, b->size + n);
+  b->size += n;
+  b->curr = b->start + pos;
+}
+
 /* Concatenate the LEN first characters of the string S to the buffer B and
    expand it if needed. */
 static void
 buffer_cat (struct string_buffer *b, const char *s, size_t len)
 {
-  MPFR_ASSERTN (b->size + len + 1 > 0 && b->size + len + 1 < SIZE_MAX);
+  if (len == 0)
+    return;
+
+  MPFR_ASSERTN (b->size < SIZE_MAX - len - 1);
   MPFR_ASSERTD (len <= strlen (s));
   if (MPFR_UNLIKELY ((b->curr + len + 1) > (b->start + b->size)))
-    {
-      const size_t pos = b->curr - b->start;
-      const size_t n = sizeof (char) * ((len + 1 > 4096) ? len + 1 : 4096);
-      b->start =
-        (char *) (*__gmp_reallocate_func) (b->start, b->size, b->size + n);
-      b->size += n;
-      b->curr = b->start + pos;
-    }
+    buffer_widen (b, len);
+
   strncat (b->curr, s, len);
   b->curr += len;
 }
@@ -438,15 +448,19 @@ buffer_cat (struct string_buffer *b, const char *s, size_t len)
 static void
 buffer_pad (struct string_buffer *b, const char c, const size_t n)
 {
-  char *padding;
-
   if (n == 0)
     return;
-  padding = (char *) (*__gmp_allocate_func) (n + 1);
-  memset (padding, c, n);
-  padding[n] = '\0';
-  buffer_cat (b, padding, n);
-  (*__gmp_free_func) (padding, n + 1);
+
+  MPFR_ASSERTN (b->size < SIZE_MAX - n - 1);
+  if (MPFR_UNLIKELY ((b->curr + n + 1) > (b->start + b->size)))
+    buffer_widen (b, n);
+
+  if (n == 1)
+    *b->curr = c;
+  else
+    memset (b->curr, c, n);
+  b->curr += n;
+  *b->curr = '\0';
 }
 
 /* let gmp_xprintf process the part it can understand */
