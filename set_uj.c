@@ -100,7 +100,15 @@ mpfr_set_uj_2exp (mpfr_t x, uintmax_t j, intmax_t e, mp_rnd_t rnd)
     mpn_lshift (yp+len, yp, k, cnt);  /* Normalize the High Limb*/
   else if (len != 0)
     MPN_COPY_DECR (yp+len, yp, k);    /* Must use DECR */
-  MPN_ZERO (yp, len);                 /* Zeroing the last limbs */
+  if (len != 0)
+    /* Note: when numberof(yp)==1, len is constant and null, so the compiler
+       can optimize out this code. */
+    {
+      if (len == 1)
+        yp[0] = (mp_limb_t) 0;
+      else
+        MPN_ZERO (yp, len);   /* Zeroing the last limbs */
+    }
   e += k * BITS_PER_MP_LIMB - cnt;    /* Update Expo */
   MPFR_ASSERTD (MPFR_LIMB_MSB(yp[numberof (yp) - 1]) != 0);
 

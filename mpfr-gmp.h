@@ -92,13 +92,7 @@ extern "C" {
 #define SHRT_HIGHBIT       SHRT_MIN
 
 /* MP_LIMB macros */
-#define MPN_ZERO(dst, n)                                \
-  do                                                    \
-    {                                                   \
-      if (n)                                            \
-        memset((dst), 0, (n)*BYTES_PER_MP_LIMB);        \
-    }                                                   \
-  while (0)
+#define MPN_ZERO(dst, n) memset((dst), 0, (n)*BYTES_PER_MP_LIMB)
 #define MPN_COPY_DECR(dst,src,n) memmove((dst),(src),(n)*BYTES_PER_MP_LIMB)
 #define MPN_COPY_INCR(dst,src,n) memmove((dst),(src),(n)*BYTES_PER_MP_LIMB)
 #define MPN_COPY(dst,src,n) \
