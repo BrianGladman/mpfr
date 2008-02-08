@@ -474,7 +474,7 @@ tests_default_random (mpfr_ptr x, int pos, mp_exp_t emin, mp_exp_t emax)
      can be done on 64-bit machines. */
 
   mpfr_random (x);
-  if (emin >= 1 || (randlimb () & 1))
+  if (MPFR_IS_PURE_FP (x) && (emin >= 1 || (randlimb () & 1)))
     {
       mp_exp_t e;
       e = MPFR_EXP (x) + (emin + (long) (randlimb () % (emax - emin + 1)));
