@@ -477,11 +477,7 @@ tests_default_random (mpfr_ptr x, int pos, mp_exp_t emin, mp_exp_t emax)
   if (emin >= 1 || (randlimb () & 1))
     {
       mp_exp_t e;
-      e = MPFR_GET_EXP (x) +
-        (emin + (long) (randlimb () % (emax - emin + 1)));
-      /* Note: There should be no overflow here because both terms are
-         between MPFR_EMIN_MIN and MPFR_EMAX_MAX, but the sum e isn't
-         necessarily between MPFR_EMIN_MIN and MPFR_EMAX_MAX. */
+      e = MPFR_EXP (x) + (emin + (long) (randlimb () % (emax - emin + 1)));
       if (mpfr_set_exp (x, e))
         {
           /* The random number doesn't fit in the current exponent range.
