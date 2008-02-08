@@ -423,7 +423,8 @@ random_double (void)
       '+',
       ' ',
       '#',
-      '0' /* no ambiguity: first zeros are flag zero*/
+      '0', /* no ambiguity: first zeros are flag zero*/
+      '\''
     };
   /* no 'a': mpfr and glibc do not have the same semantic */
   char specifier[] =
@@ -444,10 +445,10 @@ random_double (void)
       y = DBL_RAND ();
       if (!Isnan(y))
         {
-          int j, spec, prec;
-          char fmt_mpfr[11];
+          int j, jmax, spec, prec;
+          char fmt_mpfr[12]; /* at most something like "%-+ #0'.*Rf" */
           char *ptr_mpfr = fmt_mpfr;
-          char fmt[10];
+          char fmt[11]; /* at most something like "%-+ #0'.*f" */
           char *ptr = fmt;
           int xi;
           char *xs;
@@ -461,7 +462,9 @@ random_double (void)
           mpfr_set_d (x, y, GMP_RNDN);
 
           *ptr_mpfr++ = *ptr++ = '%';
-          for (j = 0; j < 5; j++)
+          spec = (int) (6.0 * (rand() / (RAND_MAX + 1.0)));
+          jmax = (spec == 0 || spec == 3) ? 5 : 6; /* no ' flag with %e */
+          for (j = 0; j < jmax; j++)
             {
               if ((rand() / (RAND_MAX + 1.0)) < .3)
                 *ptr_mpfr++ = *ptr++ = flag[j];
@@ -469,7 +472,6 @@ random_double (void)
           *ptr_mpfr++ = *ptr++ = '.';
           *ptr_mpfr++ = *ptr++ = '*';
           *ptr_mpfr++ = 'R';
-          spec = (int) (6.0 * (rand() / (RAND_MAX + 1.0)));
           *ptr_mpfr++ = *ptr++ = specifier[spec];
           *ptr_mpfr = *ptr = '\0';
 
@@ -488,12 +490,10 @@ random_double (void)
 
           if (xi != yi || strcmp (xs, ys))
             {
-              mpfr_printf ("Error in mpfr_asprintf(\"%%%s\", %d, %Re)\n" \
-                      "expected: ", fmt_mpfr, prec, x);
-              printf ("%s", ys);
-              printf ("\n     got: ");
-              printf ("%s", xs);
-              putchar ('\n');
+              mpfr_printf ("Error in mpfr_asprintf(\"%s\", %d, %Re)\n",
+                           fmt_mpfr, prec, x);
+              printf ("expected: %s\n", ys);
+              printf ("     got: %s\n", xs);
 
               exit (1);
             }

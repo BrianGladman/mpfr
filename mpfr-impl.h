@@ -965,8 +965,10 @@ do {                                                                  \
 /* Warning! In case of signed char, the value of MPFR_DECIMAL_POINT may
    be negative (the ISO C99 does not seem to forbid negative values). */
 #define MPFR_DECIMAL_POINT (localeconv()->decimal_point[0])
+#define MPFR_THOUSANDS_SEPARATOR (localeconv()->thousands_sep[0])
 #else
 #define MPFR_DECIMAL_POINT ((char) '.')
+#define MPFR_THOUSANDS_SEPARATOR ('\0')
 #endif
 
 

@@ -132,7 +132,7 @@ struct printf_spec
   unsigned int space:1;         /* Space flag */
   unsigned int left:1;          /* - flag */
   unsigned int showsign:1;      /* + flag */
-  unsigned int group:1;         /* ' gnu flag (not for gmp/mpfr types) */
+  unsigned int group:1;         /* ' flag */
 
   int width;                    /* Width */
   int prec;                     /* Precision */
@@ -188,7 +188,8 @@ parse_flags (const char *format, struct printf_spec *specinfo)
           ++format;
           break;
         case '\'':
-          /* gnu extension for thousand separator */
+          /* Single UNIX Specification for thousand separator */
+          specinfo->group = 1;
           ++format;
           break;
         default:
@@ -463,6 +464,39 @@ buffer_pad (struct string_buffer *b, const char c, const size_t n)
   *b->curr = '\0';
 }
 
+/* Insert character C each STEP characters of the string STR starting from end
+   to the begining of STR. Concatenate the result to the buffer B. */
+static void
+buffer_sandwich (struct string_buffer *b, char *str, size_t len, char c,
+                 size_t step)
+{
+  const int r = len % step;
+  const int q = len / step; /* number of char C to be added */
+  int i;
+
+  if (len == 0)
+    return;
+
+  MPFR_ASSERTN (b->size < SIZE_MAX - len - 1 - q);
+  MPFR_ASSERTD (len <= strlen (str));
+  if (MPFR_UNLIKELY ((b->curr + len + 1 + q) > (b->start + b->size)))
+    buffer_widen (b, len + q);
+  
+  memcpy (b->curr, str, r);
+  b->curr += r;
+  str += r;
+  
+  for (i = 0; i < q; ++i)
+    {
+      *b->curr++ = c;
+      memcpy (b->curr, str, step);
+      b->curr += step;
+      str += step;
+    }
+
+  *b->curr = '\0';
+}
+
 /* let gmp_xprintf process the part it can understand */
 static int
 sprntf_gmp (struct string_buffer *b, const char *fmt, va_list ap)
@@ -543,7 +577,9 @@ struct number_parts
   char sign;              /* Sign character */
 
   char *prefix_ptr;       /* Pointer to prefix part */
-  int prefix_size;        /* number of characters in *prefix_ptr */
+  int prefix_size;        /* Number of characters in *prefix_ptr */
+
+  char thousands_sep;     /* Thousands separator (only with style 'f') */
 
   char *ip_ptr;           /* Pointer to integral part characters*/
   int ip_size;            /* Number of digits in *ip_ptr */
@@ -1204,6 +1240,10 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
       register_string (np->sl, str);
       np->ip_ptr = MPFR_IS_NEG (p) ? ++str : str; /* skip sign */
 
+      if (spec.group)
+        /* thousands separator in integral part */
+        np->thousands_sep = MPFR_THOUSANDS_SEPARATOR;
+
       if (nsd == 0)
         /* compute how much non-zero digits in integral and fractional
            parts */
@@ -1296,6 +1336,7 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
   np->sign = '\0';
   np->prefix_ptr =NULL;
   np->prefix_size = 0;
+  np->thousands_sep = '\0';
   np->ip_ptr = NULL;
   np->ip_size = 0;
   np->ip_trailing_zeros = 0;
@@ -1536,23 +1577,30 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
   total = np->sign ? 1 : 0;
   total += np->prefix_size;
   total += np->ip_size;
-  if (total < 0 || total > INT_MAX)
+  if (MPFR_UNLIKELY (total < 0 || total > INT_MAX))
+    goto error;
+  if (np->thousands_sep)
+    /* ' flag, style f and the thousands separator in current locale is not
+       reduced to the null character */
+    total += np->ip_size / 3;
+  if (MPFR_UNLIKELY (total < 0 || total > INT_MAX))
     goto error;
   total += np->ip_trailing_zeros;
-  if (total < 0 || total > INT_MAX)
+  if (MPFR_UNLIKELY (total < 0 || total > INT_MAX))
     goto error;
-  total += np->point ? 1 : 0;
+  if (np->point)
+    ++total;
   total += np->fp_leading_zeros;
-  if (total < 0 || total > INT_MAX)
+  if (MPFR_UNLIKELY (total < 0 || total > INT_MAX))
     goto error;
   total += np->fp_size;
-  if (total < 0 || total > INT_MAX)
+  if (MPFR_UNLIKELY (total < 0 || total > INT_MAX))
     goto error;
   total += np->fp_trailing_zeros;
-  if (total < 0 || total > INT_MAX)
+  if (MPFR_UNLIKELY (total < 0 || total > INT_MAX))
     goto error;
   total += np->exp_size;
-  if (total < 0 || total > INT_MAX)
+  if (MPFR_UNLIKELY (total < 0 || total > INT_MAX))
     goto error;
 
   if (spec.width > total)
@@ -1606,7 +1654,10 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
     buffer_pad (buf, '0', np.pad_size);
 
   /* integral part (may also be "nan" or "inf") */
-  if (np.ip_ptr)
+  MPFR_ASSERTN (np.ip_ptr); /* never empty */
+  if (MPFR_UNLIKELY (np.thousands_sep))
+    buffer_sandwich (buf, np.ip_ptr, np.ip_size, np.thousands_sep, 3);
+  else
     buffer_cat (buf, np.ip_ptr, np.ip_size);
 
   /* trailing zeros in integral part */
