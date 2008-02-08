@@ -1654,7 +1654,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
     buffer_pad (buf, '0', np.pad_size);
 
   /* integral part (may also be "nan" or "inf") */
-  MPFR_ASSERTN (np.ip_ptr); /* never empty */
+  MPFR_ASSERTN (np.ip_ptr != NULL); /* never empty */
   if (MPFR_UNLIKELY (np.thousands_sep))
     buffer_sandwich (buf, np.ip_ptr, np.ip_size, np.thousands_sep, 3);
   else
