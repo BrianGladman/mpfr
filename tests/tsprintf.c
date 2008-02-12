@@ -448,7 +448,7 @@ random_double (void)
       const int fmt_mpfr_size = 12; /* at most something like "%-+ #0'.*Rf" */
       char fmt_mpfr[fmt_mpfr_size];
       char *ptr_mpfr = fmt_mpfr;
-      const int fmt_size; /* at most something like "%-+ #0'.*f" */
+      const int fmt_size = 11; /* at most something like "%-+ #0'.*f" */
       char fmt[fmt_size];
       char *ptr = fmt;
       int xi;
