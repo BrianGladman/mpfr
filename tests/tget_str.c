@@ -778,8 +778,6 @@ check_small (void)
     {
       printf ("Error in mpfr_get_str for x=-11.5 and rnd=GMP_RNDD\n"
               "got %s instead of -12\n", s);
-      free (s);
-      mpfr_clear (x);
       exit (1);
   }
   mpfr_free_str (s);
@@ -788,8 +786,6 @@ check_small (void)
   if (strcmp (s, "-11"))
     {
       printf ("Error in mpfr_get_str for x=-11.5 and rnd=GMP_RNDU\n");
-      free (s);
-      mpfr_clear (x);
       exit (1);
     }
   mpfr_free_str (s);
