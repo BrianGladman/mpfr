@@ -1,4 +1,5 @@
-/* tsprintf.c -- test file for mpfr_sprintf, and mpfr_vsprintf
+/* tsprintf.c -- test file for mpfr_sprintf, mpfr_vsprintf, mpfr_snprintf,
+   and mpfr_vsnprintf
 
 Copyright 2007, 2008 Free Software Foundation, Inc.
 Contributed by the Arenaire and Cacao projects, INRIA.
@@ -47,14 +48,17 @@ const char minf_uc_str[] = "-INF";
 const char nan_str[] = "nan";
 const char nan_uc_str[] = "NAN";
 
-/* compare expected string with the return of mpfr_sprintf(fmt, x)*/
+/* 1. compare expected string with the string BUFFER returned by 
+   mpfr_sprintf(buffer, fmt, x)
+   2. then test mpfr_snprintf (buffer, p, fmt, x) with a random p. */
 static int
 check_sprintf (const char *expected, const char *fmt, mpfr_srcptr x)
 {
-  int n;
+  int n0, n1, p;
   char buffer[buf_size];
 
-  n = mpfr_sprintf (buffer, fmt, x);
+  /* test mpfr_sprintf */
+  n0 = mpfr_sprintf (buffer, fmt, x);
   if (strcmp (buffer, expected) != 0)
     {
       printf ("Error in mpfr_sprintf (s, \"%s\", x);\n", fmt);
@@ -62,30 +66,74 @@ check_sprintf (const char *expected, const char *fmt, mpfr_srcptr x)
 
       exit (1);
     }
-  return n;
+
+  /* test mpfr_snprintf */
+  p = (int) (randlimb () % n0);
+  n1 = mpfr_snprintf (buffer, p, fmt, x);
+  if ((p != 0 && n0 != n1) || (p == 0 && n1 != 0))
+    {
+      printf ("Error in mpfr_snprintf (s, %d, \"%s\", x) return value\n",
+              p, fmt);
+      printf ("expected: %d\ngot:      %d\n", n0, n1);
+      exit (1);
+    }
+  if (strncmp (expected, buffer, p) != 0)
+    {
+      printf ("Error in mpfr_snprintf (s, %d, \"%s\", x);\n", p, fmt);
+      printf ("expected: \"%s\"\ngot:      \"%s\"\n", expected, buffer);
+      exit (1);
+    }
+
+  return n0;
 }
 
-/* compare expected string with the return of mpfr_vsprintf(fmt, ...)*/
+/* 1. compare expected string with the string BUFFER returned by
+   mpfr_vsprintf(buffer, fmt, ...)
+   2. then, test mpfr_vsnprintf. */
 static int
 check_vsprintf (const char *expected, const char *fmt, ...)
 {
-  int n;
+  int n0, n1, p;
   char buffer[buf_size];
-  va_list ap;
-  va_start (ap, fmt);
+  va_list ap0, ap1;
+  va_start (ap0, fmt);
+  va_start (ap1, fmt);
 
-  n = mpfr_vsprintf (buffer, fmt, ap);
+  n0 = mpfr_vsprintf (buffer, fmt, ap0);
   if (strcmp (buffer, expected) != 0)
     {
       printf ("Error in mpfr_vsprintf (s, \"%s\", ...);\n", fmt);
       printf ("expected: \"%s\"\ngot:      \"%s\"\n", expected, buffer);
 
-      va_end (ap);
+      va_end (ap0);
+      va_end (ap1);
+      exit (1);
+    }
+  va_end (ap0);
+
+  /* test mpfr_snprintf */
+  p = (int) (randlimb () % n0);
+  n1 = mpfr_vsnprintf (buffer, p, fmt, ap1);
+  if ((p != 0 && n0 != n1) || (p == 0 && n1 != 0))
+    {
+      printf ("Error in mpfr_vsnprintf (s, %d, \"%s\", ...) return value\n",
+              p, fmt);
+      printf ("expected: %d\ngot:      %d\n", n0, n1);
+
+      va_end (ap1);
+      exit (1);
+    }
+  if (strncmp (expected, buffer, p) != 0)
+    {
+      printf ("Error in mpfr_vsnprintf (s, %d, \"%s\", ...);\n", p, fmt);
+      printf ("expected: \"%s\"\ngot:      \"%s\"\n", expected, buffer);
+
+      va_end (ap1);
       exit (1);
     }
 
-  va_end (ap);
-  return n;
+  va_end (ap1);
+  return n0;
 }
 
 static int
