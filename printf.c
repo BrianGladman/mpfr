@@ -32,8 +32,8 @@ MA 02110-1301, USA. */
 /* Each printf-like function calls mpfr_vasprintf which
    - returns the number of characters in the returned string excluding the
    terminating null
-   - returns -1 and set the erange flag if the number of produced characters
-   exceeds INT_MAX (in that case, also set errno to EOVERFLOW in POSIX
+   - returns -1 and sets the erange flag if the number of produced characters
+   exceeds INT_MAX (in that case, also sets errno to EOVERFLOW in POSIX
    systems) */
 
 int
@@ -163,8 +163,6 @@ mpfr_vsprintf (char *buf, const char *fmt, va_list ap)
   return ret;
 }
 
-/* In POSIX systems, mpfr_snprintf set errno to EOVERFLOW if the number of
-   characters which ought to have been produced exceeds INT_MAX. */
 int
 mpfr_snprintf (char *buf, size_t size, const char *fmt, ...)
 {
@@ -184,9 +182,6 @@ mpfr_snprintf (char *buf, size_t size, const char *fmt, ...)
     {
       if (strp)
         mpfr_free_str (strp);
-#ifdef EOVERFLOW
-      errno = EOVERFLOW;
-#endif
       return -1;
     }
   va_end (ap);
