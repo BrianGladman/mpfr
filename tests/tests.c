@@ -427,7 +427,8 @@ src_fopen (const char *filename, const char *mode)
 
   if (srcdir == NULL)
     return fopen (filename, mode);
-  buffer = (char*) malloc (strlen (filename) + strlen (srcdir) + 2);
+  buffer =
+    (char*) mpfr_allocate_func (strlen (filename) + strlen (srcdir) + 2);
   if (buffer == NULL)
     {
       printf ("src_fopen: failed to alloc memory)\n");
@@ -435,7 +436,7 @@ src_fopen (const char *filename, const char *mode)
     }
   sprintf (buffer, "%s/%s", srcdir, filename);
   f = fopen (buffer, mode);
-  free (buffer);
+  mpfr_free_func (buffer, strlen (filename) + strlen (srcdir) + 2);
   return f;
 }
 
