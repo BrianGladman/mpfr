@@ -1,4 +1,4 @@
-/* mpfr_tprintf -- test file for mpfr_sprintf mpfr_vsprintf
+/* tsprintf.c -- test file for mpfr_sprintf, and mpfr_vsprintf
 
 Copyright 2007, 2008 Free Software Foundation, Inc.
 Contributed by the Arenaire and Cacao projects, INRIA.
@@ -411,6 +411,8 @@ mixed (void)
   return 0;
 }
 
+/* check concordance between mpfr_asprintf result with a regular mpfr float
+   and with a regular double float */
 static int
 random_double (void)
 {
@@ -440,67 +442,75 @@ random_double (void)
 
   mpfr_init2 (x, 53);
 
-  for (i=0; i<1000; )
+  for (i = 0; i < 1000; ++i)
     {
-      y = DBL_RAND ();
-      if (!Isnan(y))
+      int j, jmax, spec, prec;
+      const int fmt_mpfr_size = 12; /* at most something like "%-+ #0'.*Rf" */
+      char fmt_mpfr[fmt_mpfr_size];
+      char *ptr_mpfr = fmt_mpfr;
+      const int fmt_size; /* at most something like "%-+ #0'.*f" */
+      char fmt[fmt_size];
+      char *ptr = fmt;
+      int xi;
+      char *xs;
+      int yi;
+      char *ys;
+
+      do
         {
-          int j, jmax, spec, prec;
-          char fmt_mpfr[12]; /* at most something like "%-+ #0'.*Rf" */
-          char *ptr_mpfr = fmt_mpfr;
-          char fmt[11]; /* at most something like "%-+ #0'.*f" */
-          char *ptr = fmt;
-          int xi;
-          char *xs;
-          int yi;
-          char *ys;
-
-          i++;
-
-          if ((rand() / (RAND_MAX + 1.0)) > .5)
-            y = -y;
-          mpfr_set_d (x, y, GMP_RNDN);
-
-          *ptr_mpfr++ = *ptr++ = '%';
-          spec = (int) (6.0 * (rand() / (RAND_MAX + 1.0)));
-          jmax = (spec == 0 || spec == 3) ? 5 : 6; /* no ' flag with %e */
-          for (j = 0; j < jmax; j++)
-            {
-              if ((rand() / (RAND_MAX + 1.0)) < .3)
-                *ptr_mpfr++ = *ptr++ = flag[j];
-            }
-          *ptr_mpfr++ = *ptr++ = '.';
-          *ptr_mpfr++ = *ptr++ = '*';
-          *ptr_mpfr++ = 'R';
-          *ptr_mpfr++ = *ptr++ = specifier[spec];
-          *ptr_mpfr = *ptr = '\0';
-
-          /* advantage small precision */
-          if ((rand() / (RAND_MAX + 1.0)) > .5)
-            prec = (int) (10 * (rand() / (RAND_MAX + 1.0)));
-          else
-            prec = (int) (prec_max_printf * (rand() / (RAND_MAX + 1.0)));
-
-          if (y != mpfr_get_d (x, GMP_RNDN))
-            /* conversion error: skip this one */
-            continue;
-
-          xi = mpfr_asprintf (&xs, fmt_mpfr, prec, x);
-          yi = mpfr_asprintf (&ys, fmt, prec, y);
-
-          if (xi != yi || strcmp (xs, ys))
-            {
-              mpfr_printf ("Error in mpfr_asprintf(\"%s\", %d, %Re)\n",
-                           fmt_mpfr, prec, x);
-              printf ("expected: %s\n", ys);
-              printf ("     got: %s\n", xs);
-
-              exit (1);
-            }
-
-          mpfr_free_str (xs);
-          mpfr_free_str (ys);
+          y = DBL_RAND ();
         }
+#ifdef HAVE_DENORMS
+      while (0);
+#else
+      while (ABS(d) < DBL_MIN);
+#endif
+
+      if (randlimb () % 2 == 0)
+        y = -y;
+      mpfr_set_d (x, y, GMP_RNDN);
+
+      *ptr_mpfr++ = *ptr++ = '%';
+      spec = (int) (randlimb() % 6);
+      jmax = (spec == 0 || spec == 3) ? 5 : 6; /* no ' flag with %e */
+      for (j = 0; j < jmax; j++)
+        {
+          if (randlimb() % 3 == 0)
+            *ptr_mpfr++ = *ptr++ = flag[j];
+        }
+      *ptr_mpfr++ = *ptr++ = '.';
+      *ptr_mpfr++ = *ptr++ = '*';
+      *ptr_mpfr++ = 'R';
+      *ptr_mpfr++ = *ptr++ = specifier[spec];
+      *ptr_mpfr = *ptr = '\0';
+      MPFR_ASSERTN (ptr - fmt < fmt_size);
+      MPFR_ASSERTN (ptr_mpfr - fmt_mpfr < fmt_mpfr_size);
+
+      /* advantage small precision */
+      if (randlimb() % 2 == 0)
+        prec = (int) (randlimb() % 10);
+      else
+        prec = (int) (randlimb() % prec_max_printf);
+
+      if (y != mpfr_get_d (x, GMP_RNDN))
+        /* conversion error: skip this one */
+        continue;
+
+      xi = mpfr_asprintf (&xs, fmt_mpfr, prec, x);
+      yi = mpfr_asprintf (&ys, fmt, prec, y);
+
+      if (xi != yi || strcmp (xs, ys))
+        {
+          mpfr_printf ("Error in mpfr_asprintf(\"%s\", %d, %Re)\n",
+                       fmt_mpfr, prec, x);
+          printf ("expected: %s\n", ys);
+          printf ("     got: %s\n", xs);
+
+          exit (1);
+        }
+
+      mpfr_free_str (xs);
+      mpfr_free_str (ys);
     }
 
   mpfr_clear (x);

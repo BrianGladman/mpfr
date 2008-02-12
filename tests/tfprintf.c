@@ -1,4 +1,4 @@
-/* mpfr_tprintf -- test file for mpfr_sprintf mpfr_vsprintf
+/* tfprintf.c -- test file for mpfr_fprintf and mpfr_vfprintf
 
 Copyright 2008 Free Software Foundation, Inc.
 Contributed by the Arenaire and Cacao projects, INRIA.
