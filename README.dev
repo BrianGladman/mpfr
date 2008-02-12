@@ -285,6 +285,10 @@ switched, thanks to
   $ svn status
       S  tests
 
+In case of failure, freeing the memory explicitly is not necessary.
+We do this in case of success just to be able to detect memory leaks
+in MPFR.
+
    ====================================================================
 
 If you have to mix TMP_DECL and MPFR_SAVE_EXPO_DECL in the declaring
