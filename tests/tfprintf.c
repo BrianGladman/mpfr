@@ -36,8 +36,8 @@ MA 02110-1301, USA. */
 
 #if MPFR_VERSION >= MPFR_VERSION_NUM(2,4,0)
 
-const int prec_max_printf = 5000; /* limit for random precision in
-                                     random_double() */
+/* limit for random precision in random() */
+const int prec_max_printf = 5000;
 
 static void
 check (FILE *fout, char *fmt, mpfr_t x)
@@ -124,9 +124,15 @@ check_random (FILE *fout, int nb_tests)
       tests_default_random (x, 256, MPFR_EMIN_MIN, MPFR_EMAX_MAX);
       rnd = RND_RAND ();
 
-      *ptr++ = '%';
       spec = (int) (randlimb () % 5);
       jmax = (spec == 3 || spec == 4) ? 6 : 5; /* ' flag only with %f or %g */
+      /* advantage small precision */
+      prec = (int) (randlimb () % ((randlimb () % 2) ? 10 : prec_max_printf));
+      if (spec == 3 && mpfr_get_exp (x) > prec_max_printf)
+        /*  change style 'f' to style 'e' when number x is large */
+        --spec;
+
+      *ptr++ = '%';
       for (j = 0; j < jmax; j++)
         {
           if (randlimb () % 3 == 0)
@@ -139,9 +145,6 @@ check_random (FILE *fout, int nb_tests)
       *ptr++ = specifier[spec];
       *ptr = '\0';
       MPFR_ASSERTD (ptr - fmt < fmt_size);
-
-      /* advantage small precision */
-      prec = (int) (randlimb () % ((randlimb () % 2) ? 10 : prec_max_printf));
 
       mpfr_fprintf (fout, "mpfr_fprintf(fout, \"%s\", %d, %s, %Re)\n",
                     fmt, prec, mpfr_print_rnd_mode (rnd), x);
