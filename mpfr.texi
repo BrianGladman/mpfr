@@ -1818,9 +1818,11 @@ The @samp{P} type outputs the internal precision of the @code{mpfr_t} variable;
 for example:
 @example
 mpfr_t x;
+mpfr_prec_t p;
 mpfr_init (x);
 @dots{}
-mpfr_printf ("variable x with %Pu bits", x);
+p = mpfr_get_prec (x);
+mpfr_printf ("variable x with %Pu bits", p);
 @end example
 
 The @samp{R} type is used for a @code{mpfr_t} output and can be followed by

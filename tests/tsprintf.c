@@ -39,7 +39,7 @@ MA 02110-1301, USA. */
 
 const int prec_max_printf = 5000; /* limit for random precision in
                                      random_double() */
-const int buf_size = 1024;
+const int buf_size = 65536;
 
 const char pinf_str[] = "inf";
 const char pinf_uc_str[] = "INF";
@@ -48,7 +48,7 @@ const char minf_uc_str[] = "-INF";
 const char nan_str[] = "nan";
 const char nan_uc_str[] = "NAN";
 
-/* 1. compare expected string with the string BUFFER returned by 
+/* 1. compare expected string with the string BUFFER returned by
    mpfr_sprintf(buffer, fmt, x)
    2. then test mpfr_snprintf (buffer, p, fmt, x) with a random p. */
 static int
@@ -139,10 +139,14 @@ check_vsprintf (const char *expected, const char *fmt, ...)
 static int
 decimal (void)
 {
+  mpfr_prec_t p = 128;
   mpfr_t x;
   mpfr_t z;
   mpfr_init (z);
-  mpfr_init2 (x, 128);
+  mpfr_init2 (x, p);
+
+  /* specifier 'P' for precision */
+  check_sprintf ("128", "%Pu", p);
 
   /* special numbers */
   mpfr_set_inf (x, 1);

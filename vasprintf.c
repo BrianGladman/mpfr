@@ -39,12 +39,18 @@ MA 02110-1301, USA. */
 
 #include "mpfr-impl.h"
 
+/* Define a length modifier corresponding to mp_prec_t.
+   We use literal string instead of literal character so as to permit future
+   extension to long long int ("ll"). */
 #if   _MPFR_PREC_FORMAT == 1
-#define MPFR_PREC_FORMAT_SPEC "hu"
+#define MPFR_PREC_FORMAT_TYPE "h"
+#define MPFR_PREC_FORMAT_SIZE 1
 #elif _MPFR_PREC_FORMAT == 2
-#define MPFR_PREC_FORMAT_SPEC "u"
+#define MPFR_PREC_FORMAT_TYPE ""
+#define MPFR_PREC_FORMAT_SIZE 0
 #elif _MPFR_PREC_FORMAT == 3
-#define MPFR_PREC_FORMAT_SPEC "lu"
+#define MPFR_PREC_FORMAT_TYPE "l"
+#define MPFR_PREC_FORMAT_SIZE 1
 #else
 #error "mpfr_prec_t size not supported"
 #endif
@@ -481,11 +487,11 @@ buffer_sandwich (struct string_buffer *b, char *str, size_t len, char c,
   MPFR_ASSERTD (len <= strlen (str));
   if (MPFR_UNLIKELY ((b->curr + len + 1 + q) > (b->start + b->size)))
     buffer_widen (b, len + q);
-  
+
   memcpy (b->curr, str, r);
   b->curr += r;
   str += r;
-  
+
   for (i = 0; i < q; ++i)
     {
       *b->curr++ = c;
@@ -1868,6 +1874,7 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
         /* output mp_prec_t variable */
         {
           char *s;
+          char format[MPFR_PREC_FORMAT_SIZE + 6]; /* see examples below */
           int length;
           mpfr_prec_t prec;
           prec = va_arg (ap, mpfr_prec_t);
@@ -1877,8 +1884,17 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
           va_copy (ap2, ap);
           start = fmt;
 
-          length = gmp_asprintf (&s, "%" MPFR_PREC_FORMAT_SPEC, prec);
-          if ((long)buf.size + length <= INT_MAX)
+          /* construct format string, like "%*.*hu" "%*.*u" or "%*.*lu" */
+          format[0] = '%';
+          format[1] = '*';
+          format[2] = '.';
+          format[3] = '*';
+          format[4] = '\0';
+          strcat (format, MPFR_PREC_FORMAT_TYPE);
+          format[4 + MPFR_PREC_FORMAT_SIZE] = spec.spec;
+          format[5 + MPFR_PREC_FORMAT_SIZE] = '\0';
+          length = gmp_asprintf (&s, format, spec.width, spec.prec, prec);
+          if (buf.size <= (size_t)(INT_MAX - length))
             {
               buffer_cat (&buf, s, length);
               mpfr_free_str (s);
