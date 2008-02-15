@@ -260,6 +260,8 @@ decimal (void)
   check_sprintf ("1.000e+17", "%.3Re", x);
   check_sprintf ("100000000000000000", "%Rf", x);
   check_sprintf ("100000000000000000.0", "%.1Rf", x);
+  check_sprintf ("100000000000000000", "%'Rf", x);
+  check_sprintf ("100000000000000000.0", "%'.1Rf", x);
 
   mpfr_ui_div (x, 1, x, GMP_RNDN); /* x=1e-17 */
   check_sprintf ("1e-17", "%Re", x);
@@ -578,7 +580,7 @@ main (int argc, char **argv)
 
 #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
   /* currently, we just check with 'C' locale */
-  locale = setlocale (LC_NUMERIC, "C");
+  locale = setlocale (LC_ALL, "C");
 #endif
 
   hexadecimal ();
@@ -588,7 +590,11 @@ main (int argc, char **argv)
   random_double ();
 
 #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
-  setlocale (LC_NUMERIC, locale);
+  if (setlocale (LC_ALL, "da_DK"))
+    /* decimal point is ',' and thousands separator is '.' */
+    random_double ();
+
+  setlocale (LC_ALL, locale);
 #endif
 
   tests_end_mpfr ();

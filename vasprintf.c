@@ -473,15 +473,20 @@ buffer_pad (struct string_buffer *b, const char c, const size_t n)
 /* Insert character C each STEP characters of the string STR starting from end
    to the begining of STR. Concatenate the result to the buffer B. */
 static void
-buffer_sandwich (struct string_buffer *b, char *str, size_t len, char c,
-                 size_t step)
+buffer_sandwich (struct string_buffer *b, char *str, const size_t len,
+                 const char c, const size_t step)
 {
-  const int r = len % step;
-  const int q = len / step; /* number of char C to be added */
+  const int r = len % step == 0 ? step : len % step;
+  const int q = len % step == 0 ? len / step - 1 : len / step;
   int i;
 
   if (len == 0)
     return;
+  if (c == '\0')
+    {
+      buffer_cat (b, str, len);
+      return;
+    }
 
   MPFR_ASSERTN (b->size < SIZE_MAX - len - 1 - q);
   MPFR_ASSERTD (len <= strlen (str));
@@ -1585,13 +1590,13 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
   total += np->ip_size;
   if (MPFR_UNLIKELY (total < 0 || total > INT_MAX))
     goto error;
+  total += np->ip_trailing_zeros;
+  if (MPFR_UNLIKELY (total < 0 || total > INT_MAX))
+    goto error;
   if (np->thousands_sep)
     /* ' flag, style f and the thousands separator in current locale is not
        reduced to the null character */
-    total += np->ip_size / 3;
-  if (MPFR_UNLIKELY (total < 0 || total > INT_MAX))
-    goto error;
-  total += np->ip_trailing_zeros;
+    total += (np->ip_size + np->trailing_zeros) / 3;
   if (MPFR_UNLIKELY (total < 0 || total > INT_MAX))
     goto error;
   if (np->point)
