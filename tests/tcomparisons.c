@@ -33,7 +33,7 @@ cmp_tests (void)
   mpfr_t x, y;
   long i;
 
-  mpfr_inits (x, y, (void *) 0);
+  mpfr_inits (x, y, (mpfr_ptr) 0);
   for (i = 0; i < 80000; i++)
     {
       mp_prec_t precx, precy;
@@ -85,7 +85,7 @@ cmp_tests (void)
           exit (1);
         }
     }
-  mpfr_clears (x, y, (void *) 0);
+  mpfr_clears (x, y, (mpfr_ptr) 0);
 }
 
 static void
@@ -94,7 +94,7 @@ eq_tests (void)
   mpfr_t x, y;
   long i;
 
-  mpfr_inits (x, y, (void *) 0);
+  mpfr_inits (x, y, (mpfr_ptr) 0);
   for (i = 0; i < 20000; i++)
     {
       mp_prec_t precx;
@@ -117,7 +117,7 @@ eq_tests (void)
           exit (1);
         }
     }
-  mpfr_clears (x, y, (void *) 0);
+  mpfr_clears (x, y, (mpfr_ptr) 0);
 }
 
 int

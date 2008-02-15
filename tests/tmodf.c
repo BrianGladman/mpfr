@@ -65,7 +65,7 @@ check (const char *xis, const char *xfs, const char *xs,
       printf ("got return value: %d, expected %d\n", inexact, expected_return);
       exit (1);
     }
-  mpfr_clears (xi, xf, x, (void *)0);
+  mpfr_clears (xi, xf, x, (mpfr_ptr) 0);
 }
 
 static void

@@ -50,7 +50,7 @@ check53 (const char *xs, const char *sin_xs, const char *cos_xs,
 {
   mpfr_t xx, s, c;
 
-  mpfr_inits2 (53, xx, s, c, (void *) 0);
+  mpfr_inits2 (53, xx, s, c, (mpfr_ptr) 0);
   mpfr_set_str1 (xx, xs); /* should be exact */
   mpfr_sin_cos (s, c, xx, rnd_mode);
   if (mpfr_cmp_str1 (s, sin_xs))
@@ -71,7 +71,7 @@ check53 (const char *xs, const char *sin_xs, const char *cos_xs,
       printf(", expected %s\n", cos_xs);
       exit (1);
     }
-  mpfr_clears (xx, s, c, (void *) 0);
+  mpfr_clears (xx, s, c, (mpfr_ptr) 0);
 }
 
 static void
@@ -79,7 +79,7 @@ check53sin (const char *xs, const char *sin_xs, mp_rnd_t rnd_mode)
 {
   mpfr_t xx, s, c;
 
-  mpfr_inits2 (53, xx, s, c, (void *) 0);
+  mpfr_inits2 (53, xx, s, c, (mpfr_ptr) 0);
   mpfr_set_str1 (xx, xs); /* should be exact */
   mpfr_sin_cos (s, c, xx, rnd_mode);
   if (mpfr_cmp_str1 (s, sin_xs))
@@ -91,7 +91,7 @@ check53sin (const char *xs, const char *sin_xs, mp_rnd_t rnd_mode)
       printf(", expected %s\n", sin_xs);
       exit (1);
     }
-  mpfr_clears (xx, s, c, (void *) 0);
+  mpfr_clears (xx, s, c, (mpfr_ptr) 0);
 }
 
 static void
@@ -99,7 +99,7 @@ check53cos (const char *xs, const char *cos_xs, mp_rnd_t rnd_mode)
 {
   mpfr_t xx, c, s;
 
-  mpfr_inits2 (53, xx, s, c, (void *) 0);
+  mpfr_inits2 (53, xx, s, c, (mpfr_ptr) 0);
   mpfr_set_str1 (xx, xs); /* should be exact */
   mpfr_sin_cos (s, c, xx, rnd_mode);
   if (mpfr_cmp_str1 (c, cos_xs))
@@ -111,7 +111,7 @@ check53cos (const char *xs, const char *cos_xs, mp_rnd_t rnd_mode)
       printf(", expected %s\n", cos_xs);
       exit (1);
     }
-  mpfr_clears (xx, s, c, (void *) 0);
+  mpfr_clears (xx, s, c, (mpfr_ptr) 0);
 }
 
 static void
@@ -258,7 +258,7 @@ tiny (void)
   mpfr_t x, s, c;
   int i, inex;
 
-  mpfr_inits2 (64, x, s, c, (void *) 0);
+  mpfr_inits2 (64, x, s, c, (mpfr_ptr) 0);
 
   for (i = -1; i <= 1; i += 2)
     {
@@ -270,7 +270,7 @@ tiny (void)
       MPFR_ASSERTN (!mpfr_nan_p (c) && mpfr_cmp_ui (c, 1) == 0);
     }
 
-  mpfr_clears (x, s, c, (void *) 0);
+  mpfr_clears (x, s, c, (mpfr_ptr) 0);
 }
 
 /* bug found in nightly tests */

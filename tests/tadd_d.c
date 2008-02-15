@@ -86,7 +86,7 @@ check_regulars (void)
       exit (1);
     }
 
-  mpfr_clears (x, y, z, (void *) 0);
+  mpfr_clears (x, y, z, (mpfr_ptr) 0);
 }
 
 static void

@@ -148,7 +148,7 @@ check_integer (mp_prec_t begin, mp_prec_t end, unsigned long max)
   int res1, res2;
   mp_rnd_t rnd;
 
-  mpfr_inits2 (begin, x, y1, y2, (void *) 0);
+  mpfr_inits2 (begin, x, y1, y2, (mpfr_ptr) 0);
   mpz_init (z);
   for (p = begin ; p < end ; p+=4)
     {
@@ -191,7 +191,7 @@ check_integer (mp_prec_t begin, mp_prec_t end, unsigned long max)
             }
         } /* for i */
     } /* for p */
-  mpfr_clears (x, y1, y2, (void *) 0);
+  mpfr_clears (x, y1, y2, (mpfr_ptr) 0);
   mpz_clear (z);
 }
 
@@ -232,7 +232,7 @@ bug20071104 (void)
   int inex;
 
   mpz_init_set_si (z, -2);
-  mpfr_inits2 (20, x, y, (void *) 0);
+  mpfr_inits2 (20, x, y, (mpfr_ptr) 0);
   mpfr_set_ui (x, 0, GMP_RNDN);
   mpfr_nextbelow (x);  /* x = -2^(emin-1) */
   mpfr_clear_flags ();
@@ -253,7 +253,7 @@ bug20071104 (void)
       printf ("Error in bug20071104: bad flags (%u)\n", __gmpfr_flags);
       exit (1);
     }
-  mpfr_clears (x, y, (void *) 0);
+  mpfr_clears (x, y, (mpfr_ptr) 0);
   mpz_clear (z);
 }
 

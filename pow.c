@@ -579,7 +579,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
             inexact = inex2;
             MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
           }
-        mpfr_clears (u, k, (void *) 0);
+        mpfr_clears (u, k, (mpfr_ptr) 0);
       }
     mpfr_clear (t);
   }

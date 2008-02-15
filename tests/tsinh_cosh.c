@@ -42,7 +42,7 @@ failed (mpfr_t x, mpfr_t esh, mpfr_t gsh, mpfr_t ech, mpfr_t gch)
   mpfr_out_str (stdout, 10, 0, gch, GMP_RNDD);
   putchar ('\n');
 
-  mpfr_clears (x, esh, gsh, ech, gch, (void *) 0);
+  mpfr_clears (x, esh, gsh, ech, gch, (mpfr_ptr) 0);
   exit (1);
 }
 
@@ -53,7 +53,7 @@ check (mpfr_t x, mp_rnd_t rnd)
   mpfr_t s, c, sx, cx;
   int isc, is, ic;
 
-  mpfr_inits2 (MPFR_PREC(x), s, c, sx, cx, (void *)0);
+  mpfr_inits2 (MPFR_PREC(x), s, c, sx, cx, (mpfr_ptr) 0);
 
   isc = mpfr_sinh_cosh (sx, cx, x, rnd);
   is = mpfr_sinh (s, x, rnd);
@@ -63,7 +63,7 @@ check (mpfr_t x, mp_rnd_t rnd)
     failed (x, s, sx, c, cx);
   MPFR_ASSERTN (isc = is || ic);
 
-  mpfr_clears (s, c, sx, cx, (void *) 0);
+  mpfr_clears (s, c, sx, cx, (mpfr_ptr) 0);
 }
 
 static void

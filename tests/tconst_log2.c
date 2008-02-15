@@ -86,7 +86,7 @@ check_large (void)
   mpfr_set_prec (x, 26249);
   mpfr_const_log2 (x, GMP_RNDZ);
 
-  mpfr_clears (x, y, (void *) 0);
+  mpfr_clears (x, y, (mpfr_ptr) 0);
 }
 
 static void

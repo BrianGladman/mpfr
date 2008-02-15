@@ -83,7 +83,7 @@ check_cmp(int argc, char *argv[])
   mpfr_t x, y;
   int n, k, rnd;
 
-  mpfr_inits2 (53, x, y, (void *) 0);
+  mpfr_inits2 (53, x, y, (mpfr_ptr) 0);
 
   mpfr_set_ui(x, 1, GMP_RNDN);
   (mpfr_abs) (x, x, GMP_RNDN);
@@ -152,7 +152,7 @@ check_cmp(int argc, char *argv[])
         }
     }
 
-  mpfr_clears (x, y, (void *) 0);
+  mpfr_clears (x, y, (mpfr_ptr) 0);
 }
 
 #define TEST_FUNCTION mpfr_abs

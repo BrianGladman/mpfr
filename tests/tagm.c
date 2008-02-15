@@ -32,7 +32,7 @@ check4 (const char *as, const char *bs, mp_rnd_t rnd_mode, const char *res)
 {
   mpfr_t ta, tb, tres;
 
-  mpfr_inits2 (53, ta, tb, tres, (void *) 0);
+  mpfr_inits2 (53, ta, tb, tres, (mpfr_ptr) 0);
 
   mpfr_set_str1 (ta, as);
   mpfr_set_str1 (tb, bs);
@@ -47,7 +47,7 @@ check4 (const char *as, const char *bs, mp_rnd_t rnd_mode, const char *res)
       putchar('\n');
       exit (1);
   }
-  mpfr_clears (ta, tb, tres, (void *) 0);
+  mpfr_clears (ta, tb, tres, (mpfr_ptr) 0);
 }
 
 static void

@@ -169,7 +169,7 @@ li2_series (mpfr_t sum, mpfr_srcptr z, mpfr_rnd_t rnd_mode)
   while (Bm--)
     mpz_clear (B[Bm]);
   (*__gmp_free_func) (B, Bmax * sizeof (mpz_t));
-  mpfr_clears (s, u, v, w, (void *) 0);
+  mpfr_clears (s, u, v, w, (mpfr_ptr) 0);
 
   /* Let K be the returned value.
      1. As we compute an alternating series, the truncation error has the same
@@ -452,7 +452,7 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         }
       MPFR_ZIV_FREE (loop);
       inexact = mpfr_set (y, s, rnd_mode);
-      mpfr_clears (s, u, xx, (void *) 0);
+      mpfr_clears (s, u, xx, (mpfr_ptr) 0);
 
     end_of_case_gt2:
       MPFR_SAVE_EXPO_FREE (expo);
@@ -506,7 +506,7 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       MPFR_ZIV_FREE (loop);
       inexact = mpfr_set (y, s, rnd_mode);
 
-      mpfr_clears (s, u, v, xx, (void *) 0);
+      mpfr_clears (s, u, v, xx, (mpfr_ptr) 0);
       MPFR_SAVE_EXPO_FREE (expo);
       return mpfr_check_range (y, inexact, rnd_mode);
     }
@@ -562,7 +562,7 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       MPFR_ZIV_FREE (loop);
       inexact = mpfr_set (y, s, rnd_mode);
 
-      mpfr_clears (s, u, v, xx, (void *) 0);
+      mpfr_clears (s, u, v, xx, (mpfr_ptr) 0);
       MPFR_SAVE_EXPO_FREE (expo);
       return mpfr_check_range (y, inexact, rnd_mode);
     }
@@ -602,7 +602,7 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       MPFR_ZIV_FREE (loop);
       inexact = mpfr_set (y, s, rnd_mode);
 
-      mpfr_clears (s, u, xx, (void *) 0);
+      mpfr_clears (s, u, xx, (mpfr_ptr) 0);
       MPFR_SAVE_EXPO_FREE (expo);
       return mpfr_check_range (y, inexact, rnd_mode);
     }
@@ -675,7 +675,7 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         }
       MPFR_ZIV_FREE (loop);
       inexact = mpfr_set (y, s, rnd_mode);
-      mpfr_clears (s, u, v, w, xx, (void *) 0);
+      mpfr_clears (s, u, v, w, xx, (mpfr_ptr) 0);
 
     end_of_case_ltm1:
       MPFR_SAVE_EXPO_FREE (expo);

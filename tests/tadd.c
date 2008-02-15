@@ -99,7 +99,7 @@ pcheck (const char *xs, const char *ys, const char *zs, mp_rnd_t rnd_mode,
               xs, ys, mpfr_print_rnd_mode (rnd_mode));
       exit (1);
     }
-  mpfr_clears (xx, yy, zz, (void *) 0);
+  mpfr_clears (xx, yy, zz, (mpfr_ptr) 0);
 }
 
 static void

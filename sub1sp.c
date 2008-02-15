@@ -64,7 +64,7 @@ int mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
                inexact, inexact2);
       MPFR_ASSERTN (0);
     }
-  mpfr_clears (tmpa, tmpb, tmpc, (void *) 0);
+  mpfr_clears (tmpa, tmpb, tmpc, (mpfr_ptr) 0);
   return inexact;
 }
 #  define mpfr_sub1sp mpfr_sub1sp2

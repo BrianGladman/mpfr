@@ -744,7 +744,7 @@ bad_cases (int (*fct)(), int (*inv)(), char *name,
 
   dbgenv = getenv ("MPFR_DEBUG_BADCASES");
   dbg = dbgenv != 0 ? atoi (dbgenv) : 0;  /* debug level */
-  mpfr_inits (x, y, z, (void *) 0);
+  mpfr_inits (x, y, z, (mpfr_ptr) 0);
   for (i = 0; i < n; i++)
     {
       mp_prec_t px, py, pz;
@@ -845,5 +845,5 @@ bad_cases (int (*fct)(), int (*inv)(), char *name,
       mpfr_set_emin (old_emin);
       mpfr_set_emax (old_emax);
     }
-  mpfr_clears (x, y, z, (void *) 0);
+  mpfr_clears (x, y, z, (mpfr_ptr) 0);
 }

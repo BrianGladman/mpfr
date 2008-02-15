@@ -176,7 +176,7 @@ mpfr_fms (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
               {
                 MPFR_ASSERTN (zz != z);
                 MPFR_ASSERTN (0); /* TODO... */
-                mpfr_clears (zo4, u, (void *) 0);
+                mpfr_clears (zo4, u, (mpfr_ptr) 0);
               }
             else
               {

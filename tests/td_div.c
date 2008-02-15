@@ -103,7 +103,7 @@ main (int argc, char *argv[])
       printf ("\n");
       exit (1);
     }
-  mpfr_clears (x, y, z, (void *)0);
+  mpfr_clears (x, y, z, (mpfr_ptr) 0);
 
   check_nans ();
 

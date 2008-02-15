@@ -162,7 +162,7 @@ test2 (void)
   mpfr_t x, y;
   int i, n = numberof(val);
 
-  mpfr_inits2 (55, x, y, (void *) 0);
+  mpfr_inits2 (55, x, y, (mpfr_ptr) 0);
 
   for(i = 0 ; i < n ; i+=2)
     {
@@ -184,7 +184,7 @@ test2 (void)
           exit(1);
         }
     }
-  mpfr_clears (x, y, (void *) 0);
+  mpfr_clears (x, y, (mpfr_ptr) 0);
 }
 
 #define TEST_FUNCTION mpfr_zeta

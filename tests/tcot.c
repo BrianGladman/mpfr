@@ -97,7 +97,7 @@ two2emin (mp_exp_t e)
       exit (1);
     }
 
-  mpfr_inits2 (53, x, y, (void *) 0);
+  mpfr_inits2 (53, x, y, (mpfr_ptr) 0);
   for (i = -4; i <= 4; i++)
     RND_LOOP (rnd)
       {
@@ -121,7 +121,7 @@ two2emin (mp_exp_t e)
             exit (1);
           }
       }
-  mpfr_clears (x, y, (void *) 0);
+  mpfr_clears (x, y, (mpfr_ptr) 0);
 
   mpfr_set_emin (old_emin);
   mpfr_set_emax (old_emax);

@@ -191,7 +191,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       MPFR_ASSERTN(0);
     }
 
-  mpfr_clears (ta, tb, tc, (void *) 0);
+  mpfr_clears (ta, tb, tc, (mpfr_ptr) 0);
   return inexact1;
 }
 

@@ -47,7 +47,7 @@ test_round_near_x (void)
   int failures = 0, mx, neg, err, dir, r, inex, inex2;
   char buffer[7], *p;
 
-  mpfr_inits (x, y, z, eps, (void *) 0);
+  mpfr_inits (x, y, z, eps, (mpfr_ptr) 0);
   mpfr_set_prec (x, 5);
   mpfr_set_prec (y, 3);
   mpfr_set_prec (z, 3);
@@ -111,7 +111,7 @@ test_round_near_x (void)
   if (failures)
     exit (1);
 
-  mpfr_clears (x, y, z, eps, (void *) 0);
+  mpfr_clears (x, y, z, eps, (mpfr_ptr) 0);
 }
 
 int

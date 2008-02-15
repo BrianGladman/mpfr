@@ -54,7 +54,7 @@ main (int argc, char *argv[])
 
   tests_start_mpfr ();
 
-  mpfr_inits2 (53, w, z, (void *) 0);
+  mpfr_inits2 (53, w, z, (mpfr_ptr) 0);
 
   for (i = 0; i < 3; i++)
     {
@@ -132,7 +132,7 @@ main (int argc, char *argv[])
         }
     }
 
-  mpfr_clears (w, z, (void *) 0);
+  mpfr_clears (w, z, (mpfr_ptr) 0);
 
   tests_end_mpfr ();
   return 0;

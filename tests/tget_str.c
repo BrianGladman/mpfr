@@ -1093,7 +1093,7 @@ check_bug_base2k (void)
       exit (1);
     }
   mpfr_free_str (s);
-  mpfr_clears (xx, yy, zz, (void *) 0);
+  mpfr_clears (xx, yy, zz, (mpfr_ptr) 0);
 }
 
 static void

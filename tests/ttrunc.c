@@ -35,7 +35,7 @@ main (void)
 
   tests_start_mpfr ();
 
-  mpfr_inits2 (SIZEX, x, y, z, t, y2, z2, t2, (void *) 0);
+  mpfr_inits2 (SIZEX, x, y, z, t, y2, z2, t2, (mpfr_ptr) 0);
 
   mpfr_set_str1 (x, "0.5");
   mpfr_ceil(y, x);
@@ -126,7 +126,7 @@ main (void)
         }
     }
 
-  mpfr_clears (x, y, z, t, y2, z2, t2, (void *) 0);
+  mpfr_clears (x, y, z, t, y2, z2, t2, (mpfr_ptr) 0);
 
   tests_end_mpfr ();
   return 0;

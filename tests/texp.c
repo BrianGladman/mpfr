@@ -54,7 +54,7 @@ check3 (const char *op, mp_rnd_t rnd, const char *res)
 {
   mpfr_t x, y;
 
-  mpfr_inits2 (53, x, y, (void *) 0);
+  mpfr_inits2 (53, x, y, (mpfr_ptr) 0);
   /* y negative. If we forget to set the sign in mpfr_exp, we'll see it. */
   mpfr_set_si (y, -1, GMP_RNDN);
   mpfr_set_str1 (x, op);
@@ -68,7 +68,7 @@ check3 (const char *op, mp_rnd_t rnd, const char *res)
       putchar('\n');
       exit (1);
     }
-  mpfr_clears (x, y, (void *) 0);
+  mpfr_clears (x, y, (mpfr_ptr) 0);
 }
 
 /* expx is the value of exp(X) rounded towards -infinity */
@@ -77,7 +77,7 @@ check_worst_case (const char *Xs, const char *expxs)
 {
   mpfr_t x, y;
 
-  mpfr_inits2 (53, x, y, (void *) 0);
+  mpfr_inits2 (53, x, y, (mpfr_ptr) 0);
   mpfr_set_str1(x, Xs);
   test_exp(y, x, GMP_RNDD);
   if (mpfr_cmp_str1 (y, expxs))
@@ -93,7 +93,7 @@ check_worst_case (const char *Xs, const char *expxs)
       printf ("exp(x) rounded towards +infinity is wrong\n");
       exit(1);
     }
-  mpfr_clears (x, y, (void *) 0);
+  mpfr_clears (x, y, (mpfr_ptr) 0);
 }
 
 /* worst cases communicated by Jean-Michel Muller and Vincent Lefevre */

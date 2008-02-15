@@ -101,7 +101,7 @@ test_macros (void)
   mpfr_ptr p;
   mpfr_rnd_t r;
 
-  mpfr_inits (x[0], x[1], x[2], (void *) 0);
+  mpfr_inits (x[0], x[1], x[2], (mpfr_ptr) 0);
   p = x[0];
   r = 0;
   mpfr_set_ui (p++, 0, r++);
@@ -120,7 +120,7 @@ test_macros (void)
               "r = %d (expecting 1)\n", (int) (p - x[0]), r);
       exit (1);
     }
-  mpfr_clears (x[0], x[1], x[2], (void *) 0);
+  mpfr_clears (x[0], x[1], x[2], (mpfr_ptr) 0);
 }
 
 /* FIXME: Comparing against mpfr_get_si/ui is not ideal, it'd be better to

@@ -80,7 +80,7 @@ test_failed (mpfr_t erem, mpfr_t grem, mpfr_t x, mpfr_t y, mp_rnd_t rnd)
   mpfr_out_str (stdout, 10, 0, grem, GMP_RNDD);
   putchar ('\n');
 
-  mpfr_clears (erem, grem, x, y, (void *) 0);
+  mpfr_clears (erem, grem, x, y, (mpfr_ptr) 0);
   exit (1);
 }
 
@@ -104,7 +104,7 @@ special (void)
 {
   int inexact;
   mpfr_t x, y, r;
-  mpfr_inits (x, y, r, (void *)0);
+  mpfr_inits (x, y, r, (mpfr_ptr) 0);
 
   /* NaN mod NaN is NaN */
   mpfr_set_nan (x);
@@ -151,11 +151,11 @@ special (void)
       goto error;
     }
 
-  mpfr_clears (x, y, r, (void *)0);
+  mpfr_clears (x, y, r, (mpfr_ptr) 0);
   return;
 
  error:
-  mpfr_clears (x, y, r, (void *)0);
+  mpfr_clears (x, y, r, (mpfr_ptr) 0);
   exit (1);
 
 
@@ -167,7 +167,7 @@ main (int argc, char *argv[])
   mpfr_t x, y, r;
 
   tests_start_mpfr ();
-  mpfr_inits (x, y, r, (void *)0);
+  mpfr_inits (x, y, r, (mpfr_ptr) 0);
 
   test_generic (2, 100, 100);
 
@@ -195,7 +195,7 @@ main (int argc, char *argv[])
   mpfr_div_2ui (y, y, 3, GMP_RNDD); /* y = 1/8 */
   mpfr_set_prec (r, 123);
   check (r, x, y, GMP_RNDD);
-  mpfr_clears (x, y, r, (void *)0);
+  mpfr_clears (x, y, r, (mpfr_ptr) 0);
 
   tests_end_mpfr ();
   return 0;

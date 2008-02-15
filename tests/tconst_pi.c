@@ -57,7 +57,7 @@ check_large (void)
     mpfr_const_pi (x, GMP_RNDZ);
   }
 
-  mpfr_clears (x, y, z, (void *) 0);
+  mpfr_clears (x, y, z, (mpfr_ptr) 0);
 }
 
 /* Wrapper for tgeneric */

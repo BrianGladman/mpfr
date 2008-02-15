@@ -290,7 +290,7 @@ decimal (void)
   mpfr_set_si_2exp (x, -1, -15, GMP_RNDN); /* x=-2^-15 */
   check_sprintf ("-3.0517578125e-05", "%.300Rg", x);
 
-  mpfr_clears (x, z, (void *)0);
+  mpfr_clears (x, z, (mpfr_ptr) 0);
   return 0;
 }
 
@@ -298,7 +298,7 @@ static int
 hexadecimal (void)
 {
   mpfr_t x, z;
-  mpfr_inits2 (64, x, z, (void *)0);
+  mpfr_inits2 (64, x, z, (mpfr_ptr) 0);
 
   /* special */
   mpfr_set_inf (x, 1);
@@ -355,7 +355,7 @@ hexadecimal (void)
   check_sprintf ("  -0xfp+24", "%+10.0RUa", x);
   check_sprintf ("   -0x0p+0", "%+10.0RUa", z);
 
-  mpfr_clears (x, z, (void *)0);
+  mpfr_clears (x, z, (mpfr_ptr) 0);
   return 0;
 }
 
@@ -364,7 +364,7 @@ binary (void)
 {
   mpfr_t x;
   mpfr_t z;
-  mpfr_inits2 (64, x, z, (void *)0);
+  mpfr_inits2 (64, x, z, (mpfr_ptr) 0);
 
   /* special */
   mpfr_set_inf (x, 1);
@@ -410,7 +410,7 @@ binary (void)
   check_sprintf ("   -1.1p+9", "%+10.1RUb", x);
   check_sprintf ("   -0.0p+0", "%+10.1RUb", z);
 
-  mpfr_clears (x, z, (void *)0);
+  mpfr_clears (x, z, (mpfr_ptr) 0);
   return 0;
 }
 

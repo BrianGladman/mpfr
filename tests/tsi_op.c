@@ -102,7 +102,7 @@ main (int argc, char *argv[])
   int i;
 
   tests_start_mpfr ();
-  mpfr_inits2 (53, x, z, (void *) 0);
+  mpfr_inits2 (53, x, z, (mpfr_ptr) 0);
   for(i = 0 ; i < numberof (tab) ; i++)
     {
       mpfr_set_str (x, tab[i].op1, 16, GMP_RNDN);
@@ -132,7 +132,7 @@ main (int argc, char *argv[])
   if (mpfr_cmp_str1 (z, "-1024"))
     ERROR1("si_div", i, z, "-1024");
 
-  mpfr_clears (x, z, (void *) 0);
+  mpfr_clears (x, z, (mpfr_ptr) 0);
 
   check_invert ();
 

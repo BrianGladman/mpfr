@@ -72,7 +72,7 @@ void check_random(mpfr_prec_t p)
   int r;
   int i, inexact1, inexact2;
 
-  mpfr_inits2 (p, x, y, z, x2, (void *) 0);
+  mpfr_inits2 (p, x, y, z, x2, (mpfr_ptr) 0);
 
   for (i = 0 ; i < 500 ; i++)
     {
@@ -90,7 +90,7 @@ void check_random(mpfr_prec_t p)
           }
     }
 
-  mpfr_clears (x, y, z, x2, (void *) 0);
+  mpfr_clears (x, y, z, x2, (mpfr_ptr) 0);
 }
 
 void check_special(void)
@@ -101,7 +101,7 @@ void check_special(void)
   int i = -1, inexact1, inexact2;
   mp_exp_t es;
 
-  mpfr_inits (x, y, z, x2, (void *) 0);
+  mpfr_inits (x, y, z, x2, (mpfr_ptr) 0);
 
   for (r = 0 ; r < GMP_RND_MAX ; r++)
     {
@@ -502,5 +502,5 @@ void check_special(void)
       set_emin (es);
     }
 
-  mpfr_clears (x, y, z, x2, (void *) 0);
+  mpfr_clears (x, y, z, x2, (mpfr_ptr) 0);
 }

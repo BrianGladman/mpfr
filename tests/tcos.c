@@ -53,7 +53,7 @@ check53 (const char *xs, const char *cos_xs, mp_rnd_t rnd_mode)
 {
   mpfr_t xx, c;
 
-  mpfr_inits2 (53, xx, c, (void *) 0);
+  mpfr_inits2 (53, xx, c, (mpfr_ptr) 0);
   mpfr_set_str1 (xx, xs); /* should be exact */
   test_cos (c, xx, rnd_mode);
   if (mpfr_cmp_str1 (c, cos_xs))
@@ -65,7 +65,7 @@ check53 (const char *xs, const char *cos_xs, mp_rnd_t rnd_mode)
       printf(", expected %s\n", cos_xs);
       exit (1);
     }
-  mpfr_clears (xx, c, (void *) 0);
+  mpfr_clears (xx, c, (mpfr_ptr) 0);
 }
 
 #define TEST_FUNCTION test_cos
