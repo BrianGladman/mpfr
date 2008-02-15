@@ -146,7 +146,7 @@ decimal (void)
   mpfr_init2 (x, p);
 
   /* specifier 'P' for precision */
-  check_sprintf ("128", "%Pu", p);
+  check_vsprintf ("128", "%Pu", p);
 
   /* special numbers */
   mpfr_set_inf (x, 1);
