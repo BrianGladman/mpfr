@@ -42,6 +42,9 @@ check_neg_special ()
   mpfr_clear (x);
 }
 
+#define TEST_FUNCTION mpfr_set
+#include "tgeneric.c"
+
 int
 main (void)
 {
@@ -140,6 +143,8 @@ main (void)
   mpfr_clear (u);
 
   check_neg_special ();
+
+  test_generic (2, 1000, 10);
 
   tests_end_mpfr ();
   return 0;

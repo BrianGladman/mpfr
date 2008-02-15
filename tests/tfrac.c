@@ -172,6 +172,9 @@ special (void)
   mpfr_clear (t);
 }
 
+#define TEST_FUNCTION mpfr_frac
+#include "tgeneric.c"
+
 int
 main (void)
 {
@@ -223,6 +226,9 @@ main (void)
 
   mpfr_clear (ip);
   mpfr_clear (fp);
+
+  test_generic (2, 1000, 10);
+
   tests_end_mpfr ();
   return 0;
 }

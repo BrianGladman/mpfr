@@ -155,6 +155,9 @@ check_cmp(int argc, char *argv[])
   mpfr_clears (x, y, (void *) 0);
 }
 
+#define TEST_FUNCTION mpfr_abs
+#include "tgeneric.c"
+
 int
 main (int argc, char *argv[])
 {
@@ -163,6 +166,8 @@ main (int argc, char *argv[])
 
   check_inexact ();
   check_cmp (argc, argv);
+
+  test_generic (2, 1000, 10);
 
   tests_end_mpfr ();
   return 0;
