@@ -141,13 +141,11 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 
   MPFR_SAVE_EXPO_MARK (expo);
 
-  /* scale x and y to avoid overflow/underflow in x^2 and y^2 */
-  if (Ex > 0 && Ey > 0)
-    sh = MIN (Ex, Ey);
-  else if (Ex < 0 && Ey < 0)
-    sh = MAX (Ex, Ey);
-  else
-    sh = 0;
+  /* Scale x and y to avoid overflow/underflow in x^2 and y^2.
+     After scaling, we need to have exponent values as small as
+     possible in absolute value, for both x and y. So, the best
+     choice is to scale by about (Ex + Ey) / 2. */
+  sh = (Ex + Ey) / 2;
 
   MPFR_ZIV_INIT (loop, Nt);
   for (;;)
