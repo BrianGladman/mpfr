@@ -98,14 +98,14 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
              z = abs(x), and we need to add one ulp due to y. */
           if (mpfr_abs (z, x, rnd_mode) == 0)
             mpfr_nexttoinf (z);
-          return 1;
+          MPFR_RET (1);
         }
       else /* GMP_RNDZ, GMP_RNDD, GMP_RNDN */
         {
           if (MPFR_LIKELY (Nz >= Nx))
             {
               mpfr_abs (z, x, rnd_mode);  /* exact */
-              return -1;
+              MPFR_RET (-1);
             }
           else
             {
@@ -116,7 +116,10 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
                   if (MPFR_UNLIKELY (++MPFR_EXP (z) > __gmpfr_emax))
                     return mpfr_overflow (z, rnd_mode, 1);
                               );
-              return inexact ? inexact : -1;
+
+              if (MPFR_UNLIKELY (inexact == 0))
+                inexact = -1;
+              MPFR_RET (inexact);
             }
         }
     }
