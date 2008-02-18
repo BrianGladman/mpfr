@@ -470,37 +470,63 @@ buffer_pad (struct string_buffer *b, const char c, const size_t n)
   *b->curr = '\0';
 }
 
-/* Insert character C each STEP characters of the string STR starting from end
-   to the begining of STR. Concatenate the result to the buffer B. */
+/* Form a string by concatenating the first LEN characters of STR to TZ
+   zero(s), insert into one character C each STEP characters starting from end
+   to begining and concatenate the result to the buffer B. */
 static void
-buffer_sandwich (struct string_buffer *b, char *str, const size_t len,
-                 const char c, const size_t step)
+buffer_sandwich (struct string_buffer *b, char *str, size_t len,
+                 const size_t tz, const char c)
 {
-  const int r = len % step == 0 ? step : len % step;
-  const int q = len % step == 0 ? len / step - 1 : len / step;
+  const int step = 3;
+  const int size = len + tz;
+  const int r = size % step == 0 ? step : size % step;
+  const int q = size % step == 0 ? size / step - 1 : size / step;
   int i;
 
-  if (len == 0)
+  if (size == 0)
     return;
   if (c == '\0')
     {
       buffer_cat (b, str, len);
+      buffer_pad (b, '0', tz);
       return;
     }
 
-  MPFR_ASSERTN (b->size < SIZE_MAX - len - 1 - q);
+  MPFR_ASSERTN (b->size < SIZE_MAX - size - 1 - q);
   MPFR_ASSERTD (len <= strlen (str));
-  if (MPFR_UNLIKELY ((b->curr + len + 1 + q) > (b->start + b->size)))
-    buffer_widen (b, len + q);
+  if (MPFR_UNLIKELY ((b->curr + size + 1 + q) > (b->start + b->size)))
+    buffer_widen (b, size + q);
 
+  /* first r significant digits */
   memcpy (b->curr, str, r);
   b->curr += r;
   str += r;
+  len -= r;
 
+  /* blocks of thousands. Warning: str might end in the middle of a block */
   for (i = 0; i < q; ++i)
     {
       *b->curr++ = c;
-      memcpy (b->curr, str, step);
+      if (MPFR_LIKELY (len > 0))
+        {
+          if (MPFR_LIKELY (len >= step))
+            /* step significant digits */
+            {
+              memcpy (b->curr, str, step);
+              len -= step;
+            }
+          else
+            /* last digits in str, fill up thousand block with zeros */
+            {
+              memcpy (b->curr, str, len);
+              memset (b->curr + len, '0', step - len);
+              len = 0;
+            }
+        }
+      else
+        /* trailing zeros */
+        memset (b->curr, '0', step);
+
       b->curr += step;
       str += step;
     }
@@ -1667,13 +1693,16 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
   /* integral part (may also be "nan" or "inf") */
   MPFR_ASSERTN (np.ip_ptr != NULL); /* never empty */
   if (MPFR_UNLIKELY (np.thousands_sep))
-    buffer_sandwich (buf, np.ip_ptr, np.ip_size, np.thousands_sep, 3);
+    buffer_sandwich (buf, np.ip_ptr, np.ip_size, np.ip_trailing_zeros,
+                     np.thousands_sep);
   else
-    buffer_cat (buf, np.ip_ptr, np.ip_size);
+    {
+      buffer_cat (buf, np.ip_ptr, np.ip_size);
 
-  /* trailing zeros in integral part */
-  if (np.ip_trailing_zeros)
-    buffer_pad (buf, '0', np.ip_trailing_zeros);
+      /* trailing zeros in integral part */
+      if (np.ip_trailing_zeros)
+        buffer_pad (buf, '0', np.ip_trailing_zeros);
+    }
 
   /* decimal point */
   if (np.point)
