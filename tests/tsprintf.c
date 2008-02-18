@@ -174,10 +174,7 @@ decimal (void)
   check_sprintf (nan_uc_str, "%RG", x);
 
   /* positive numbers */
-  mpfr_set_ui (x, 279296875, GMP_RNDN);
-  mpfr_div_ui (x, x, 1000000000, GMP_RNDN);
-  mpfr_add_ui (x, x, 1899347461, GMP_RNDN);
-  mpfr_div_ui (x, x, 100, GMP_RNDN); /* x = 18993474.61279296875 */
+  mpfr_set_str (x, "18993474.61279296875", 10, GMP_RNDN);
   mpfr_set_ui (z, 0, GMP_RNDD);
 
   /* simplest case right justified */
@@ -238,8 +235,7 @@ decimal (void)
 
 
   /* neighborhood of 1 */
-  mpfr_set_ui (x, 9999, GMP_RNDN);
-  mpfr_div_ui (x, x, 10000, GMP_RNDN); /* x=0.9999 */
+  mpfr_set_str (x, "0.9999", 10, GMP_RNDN);
   check_sprintf ("1E+00     ", "%-10.0RE", x);
   check_sprintf ("1.0E+00   ", "%-10.1RE", x);
   check_sprintf ("9.9990E-01", "%-10.4RE", x);
@@ -254,8 +250,7 @@ decimal (void)
   check_sprintf ("0.9999    ", "%-#10.4RG", x);
 
   /* multiple of 10 */
-  mpfr_set_ui (x, 17, GMP_RNDN);
-  mpfr_exp10 (x, x, GMP_RNDN); /* x=1e17 */
+  mpfr_set_str (x, "1e17", 10, GMP_RNDN);
   check_sprintf ("1e+17", "%Re", x);
   check_sprintf ("1.000e+17", "%.3Re", x);
   check_sprintf ("100000000000000000", "%Rf", x);
@@ -273,16 +268,14 @@ decimal (void)
   check_sprintf ("1", "%.0RUf", x);
 
   /* check rounding mode */
-  mpfr_set_ui (x, 76, GMP_RNDN);
-  mpfr_div_ui (x, x, 10000, GMP_RNDN); /* x= 0.0076 */
+  mpfr_set_str (x, "0.0076", 10, GMP_RNDN);
   check_sprintf ("0.007", "%.3RDF", x);
   check_sprintf ("0.007", "%.3RZF", x);
   check_sprintf ("0.008", "%.3RF", x);
   check_sprintf ("0.008", "%.3RUF", x);
 
   /* limit test for the choice beetwen %f-style and %g-style */
-  mpfr_set_ui (x, 999, GMP_RNDN);
-  mpfr_div_ui (x, x, 10000000, GMP_RNDN); /* x=0.0000999 */
+  mpfr_set_str (x, "0.0000999", 10, GMP_RNDN);
   check_sprintf ("0.0001", "%.0Rg", x);
   check_sprintf ("9e-05", "%.0RDg", x);
   check_sprintf ("0.0001", "%.2Rg", x);
