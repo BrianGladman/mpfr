@@ -141,14 +141,20 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 
   MPFR_SAVE_EXPO_MARK (expo);
 
-  sh = MAX (0, MIN (Ex, Ey));
+  /* scale x and y to avoid overflow/underflow in x^2 and y^2 */
+  if (Ex > 0 && Ey > 0)
+    sh = MIN (Ex, Ey);
+  else if (Ex < 0 && Ey < 0)
+    sh = MAX (Ex, Ey);
+  else
+    sh = 0;
 
   MPFR_ZIV_INIT (loop, Nt);
   for (;;)
     {
       /* computations of hypot */
-      mpfr_div_2ui (te, x, sh, GMP_RNDZ); /* exact since Nt >= Nx */
-      mpfr_div_2ui (ti, y, sh, GMP_RNDZ); /* exact since Nt >= Ny */
+      mpfr_div_2si (te, x, sh, GMP_RNDZ); /* exact since Nt >= Nx */
+      mpfr_div_2si (ti, y, sh, GMP_RNDZ); /* exact since Nt >= Ny */
       exact = mpfr_mul (te, te, te, GMP_RNDZ);    /* x^2 */
       exact |= mpfr_mul (ti, ti, ti, GMP_RNDZ);   /* y^2 */
       exact |= mpfr_add (t, te, ti, GMP_RNDZ);    /* x^2+y^2 */
@@ -166,7 +172,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 
     }
   MPFR_ZIV_FREE (loop);
-  inexact = mpfr_mul_2ui (z, t, sh, rnd_mode);
+  inexact = mpfr_mul_2si (z, t, sh, rnd_mode);
 
   MPFR_ASSERTD (exact == 0 || inexact != 0);
 
