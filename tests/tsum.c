@@ -109,11 +109,11 @@ test_sort (mp_prec_t f, unsigned long n)
   unsigned long i;
 
   /* Init stuff */
-  tab = (mpfr_t *) mpfr_allocate_func (n * sizeof (mpfr_t));
+  tab = (mpfr_t *) (*__gmp_allocate_func) (n * sizeof (mpfr_t));
   for (i = 0; i < n; i++)
     mpfr_init2 (tab[i], f);
-  tabtmp = (mpfr_ptr *) mpfr_allocate_func (n * sizeof(mpfr_ptr));
-  perm = (mpfr_srcptr *) mpfr_allocate_func (n * sizeof(mpfr_srcptr));
+  tabtmp = (mpfr_ptr *) (*__gmp_allocate_func) (n * sizeof(mpfr_ptr));
+  perm = (mpfr_srcptr *) (*__gmp_allocate_func) (n * sizeof(mpfr_srcptr));
 
   for (i = 0; i < n; i++)
     {
@@ -134,9 +134,9 @@ test_sort (mp_prec_t f, unsigned long n)
   /* Clear stuff */
   for (i = 0; i < n; i++)
     mpfr_clear (tab[i]);
-  mpfr_free_func (tab, n * sizeof (mpfr_t));
-  mpfr_free_func (tabtmp, n * sizeof(mpfr_ptr));
-  mpfr_free_func (perm, n * sizeof(mpfr_srcptr));
+  (*__gmp_free_func) (tab, n * sizeof (mpfr_t));
+  (*__gmp_free_func) (tabtmp, n * sizeof(mpfr_ptr));
+  (*__gmp_free_func) (perm, n * sizeof(mpfr_srcptr));
 }
 
 static void
@@ -148,7 +148,7 @@ test_sum (mp_prec_t f, unsigned long n)
   int rnd_mode;
 
   /* Init */
-  tab = (mpfr_t *) mpfr_allocate_func (n * sizeof(mpfr_t));
+  tab = (mpfr_t *) (*__gmp_allocate_func) (n * sizeof(mpfr_t));
   for (i = 0; i < n; i++)
     mpfr_init2 (tab[i], f);
   mpfr_inits2 (f, sum, real_sum, real_non_rounded, (mpfr_ptr) 0);
@@ -194,7 +194,7 @@ test_sum (mp_prec_t f, unsigned long n)
   for (i = 0; i < n; i++)
     mpfr_clear (tab[i]);
   mpfr_clears (sum, real_sum, real_non_rounded, (mpfr_ptr) 0);
-  mpfr_free_func (tab, n * sizeof(mpfr_t));
+  (*__gmp_free_func) (tab, n * sizeof(mpfr_t));
 }
 
 static
