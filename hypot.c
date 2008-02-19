@@ -113,9 +113,9 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
               MPFR_SET_SIGN (z, 1);
               MPFR_RNDRAW_GEN (inexact, z, MPFR_MANT (x), Nx, rnd_mode, 1,
                                goto addoneulp,
-                  if (MPFR_UNLIKELY (++MPFR_EXP (z) > __gmpfr_emax))
-                    return mpfr_overflow (z, rnd_mode, 1);
-                              );
+                               if (MPFR_UNLIKELY (++MPFR_EXP (z) > __gmpfr_emax))
+                                 return mpfr_overflow (z, rnd_mode, 1);
+                               );
 
               if (MPFR_UNLIKELY (inexact == 0))
                 inexact = -1;
@@ -155,23 +155,22 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
       mpfr_div_2si (ti, y, sh, GMP_RNDZ); /* exact since Nt >= Ny */
       exact = mpfr_mul (te, te, te, GMP_RNDZ);    /* x^2 */
       exact |= mpfr_mul (ti, ti, ti, GMP_RNDZ);   /* y^2 */
-      exact |= mpfr_add (t, te, ti, GMP_RNDZ);    /* x^2+y^2 */
+      exact |= mpfr_add (t, te, ti, GMP_RNDZ);    /* x^2 + Y^2 */
       exact |= mpfr_sqrt (t, t, GMP_RNDZ);        /* sqrt(x^2+y^2)*/
 
       if (MPFR_LIKELY (exact == 0
                        || MPFR_CAN_ROUND (t, Nt-2, Nz, rnd_mode)))
         break;
 
-      /* reactualization of the precision */
+      /* update the precision */
       MPFR_ZIV_NEXT (loop, Nt);
       mpfr_set_prec (t, Nt);
       mpfr_set_prec (te, Nt);
       mpfr_set_prec (ti, Nt);
-
     }
   MPFR_ZIV_FREE (loop);
-  inexact = mpfr_mul_2si (z, t, sh, rnd_mode);
 
+  inexact = mpfr_mul_2si (z, t, sh, rnd_mode);
   MPFR_ASSERTD (exact == 0 || inexact != 0);
 
   mpfr_clear (t);
@@ -179,14 +178,19 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
   mpfr_clear (te);
 
   /*
-       exact  inexact
-        0         0         result is exact, ternary flag is 0
-        0       non zero    t is exact, ternary flag given by inexact
-        1         0         impossible (see above)
-        1       non zero    ternary flag given by inexact
-   */
+    exact  inexact
+    0         0         result is exact, ternary flag is 0
+    0       non zero    t is exact, ternary flag given by inexact
+    1         0         impossible (see above)
+    1       non zero    ternary flag given by inexact
+  */
 
   MPFR_SAVE_EXPO_FREE (expo);
+
+  if (MPFR_IS_INF (z))
+    /* reset flag overflow because MPFR_SAVE_EXPO_FREE restaured the flag
+       set by mpfr_mul_2si. */
+    mpfr_set_overflow ();
 
   return mpfr_check_range (z, inexact, rnd_mode);
 }
