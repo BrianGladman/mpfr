@@ -20,6 +20,7 @@ make
 export GMP_CHECK_RANDOMIZE=1
 export MPFR_CHECK_MAX=1
 export MPFR_CHECK_ALL=1
+export MPFR_SUSPICIOUS_OVERFLOW=1
 make check
 cd /tmp
 /bin/rm -fr "$DIR"
