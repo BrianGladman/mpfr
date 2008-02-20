@@ -472,6 +472,38 @@ mixed (void)
   return 0;
 }
 
+/* Check with locale "da_DK"
+   decimal point is ',' and thousands separator is '.' */
+static int
+locale_da_DK (void)
+{
+  mpfr_prec_t p = 128;
+  mpfr_t x;
+
+  if (setlocale (LC_ALL, "da_DK") == 0)
+    return 0;
+
+  mpfr_init2 (x, p);
+
+  /* positive numbers */
+  mpfr_set_str (x, "18993474.61279296875", 10, GMP_RNDN);
+
+  /* simplest case right justified with thousands separator */
+  check_sprintf ("      1,899347461279296875e+07", "%'30Re", x);
+  check_sprintf ("                   1,89935e+07", "%'30Rg", x);
+  check_sprintf ("        18.993.474,61279296875", "%'30.19Rg", x);
+  check_sprintf ("        18.993.474,61279296875", "%'30Rf", x);
+
+  /* sign or space, pad, thousands separator with leading zeros */
+  check_sprintf (" 000001,899347461279296875E+07", "%' 030RE", x);
+  check_sprintf (" 0000000000000000001,89935E+07", "%' 030RG", x);
+  check_sprintf (" 000000018.993.474,61279296875", "%' 030.19RG", x);
+  check_sprintf (" 000000018.993.474,61279296875", "%' 030RF", x);
+
+  mpfr_clear (x);
+  return 0;
+}
+
 /* check concordance between mpfr_asprintf result with a regular mpfr float
    and with a regular double float */
 static int
@@ -597,9 +629,7 @@ main (int argc, char **argv)
   random_double ();
 
 #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
-  if (setlocale (LC_ALL, "da_DK"))
-    /* decimal point is ',' and thousands separator is '.' */
-    random_double ();
+  locale_da_DK ();
 
   setlocale (LC_ALL, locale);
 #endif
