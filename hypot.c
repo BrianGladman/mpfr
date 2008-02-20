@@ -37,6 +37,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
   mp_exp_unsigned_t diff_exp;
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_ZIV_DECL (loop);
+  MPFR_BLOCK_DECL (flags);
 
   /* particular cases */
   if (MPFR_ARE_SINGULAR (x, y))
@@ -170,7 +171,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
     }
   MPFR_ZIV_FREE (loop);
 
-  inexact = mpfr_mul_2si (z, t, sh, rnd_mode);
+  MPFR_BLOCK (flags, inexact = mpfr_mul_2si (z, t, sh, rnd_mode));
   MPFR_ASSERTD (exact == 0 || inexact != 0);
 
   mpfr_clear (t);
@@ -187,10 +188,9 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 
   MPFR_SAVE_EXPO_FREE (expo);
 
-  if (MPFR_IS_INF (z))
-    /* reset flag overflow because MPFR_SAVE_EXPO_FREE restaured the flag
-       set by mpfr_mul_2si. */
+  if (MPFR_OVERFLOW (flags))
     mpfr_set_overflow ();
+  /* hypot(x,y) >= |x|, thus underflow is not possible. */
 
   return mpfr_check_range (z, inexact, rnd_mode);
 }
