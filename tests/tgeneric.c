@@ -312,6 +312,26 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
                   exit (1);
                 }
             }
+          else if (getenv ("MPFR_SUSPICIOUS_OVERFLOW") != NULL)
+            {
+              /* For developers only! */
+              MPFR_ASSERTN (MPFR_IS_PURE_FP (y));
+              mpfr_nexttoinf (y);
+              if (MPFR_IS_INF (y) && MPFR_IS_LIKE_RNDZ (rnd, MPFR_IS_NEG (y))
+                  && !mpfr_overflow_p ())
+                {
+                  printf ("Possible bug! |y| is the maximum finite number "
+                          "and has been obtained when\nrounding toward zero"
+                          " (%s). Thus there is a very probable overflow,\n"
+                          "but the overflow flag is not set!\n",
+                          mpfr_print_rnd_mode (rnd));
+                  printf ("x="); mpfr_print_binary (x); puts ("");
+#if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
+                  printf ("u="); mpfr_print_binary (u); puts ("");
+#endif
+                  exit (1);
+                }
+            }
 
         next_n:
           /* In case the exponent range has been changed by
