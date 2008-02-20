@@ -88,8 +88,8 @@ normal (void)
   mpfr_init (y);
 
   /* x1 = 2^-3 */
-  mpfr_set_str (x, "1e-3", 2, GMP_RNDD);
-  mpfr_set_str_binary (y, "1.0000100001111010011110101001111001000010000101000001e-3");
+  mpfr_set_str (x, "1p-3", 2, GMP_RNDD);
+  mpfr_set_str_binary (y, "1.0000100001111010011110101001111001000010000101000001p-3");
   mpfr_li2 (x, x, GMP_RNDN);
   if (!mpfr_equal_p (x, y))
     {
@@ -107,6 +107,23 @@ normal (void)
   mpfr_set_si_2exp (x, -1, -21, GMP_RNDN);
   mpfr_li2 (y, x, GMP_RNDN);
   MPFR_ASSERTN(mpfr_cmp (y, x) == 0);
+
+  /* worst case */
+  /* x2 = 0x7F18EA6537E00E983196CDDC6EFAC57Fp-129
+     Li2(x2) = 2^-2 + 2^-6 + 2^-120 */
+  mpfr_set_prec (x, 128);
+  mpfr_set_str (x, "7F18EA6537E00E983196CDDC6EFAC57Fp-129", 16, GMP_RNDN);
+  mpfr_set_prec (y, 4);
+  mpfr_li2 (y, x, GMP_RNDN);
+
+  /* round to nearest mode and 4 bits of precision,
+     it should be rounded to 2^-2 + 2^-5 */
+  mpfr_set_str_binary (x, "0.1001p-1");
+  if (!mpfr_equal_p (x, y))
+    {
+      printf ("Error for li2(x2)\n");
+      exit (1);
+    }
 
   mpfr_clear (x);
   mpfr_clear (y);
