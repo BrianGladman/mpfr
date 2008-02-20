@@ -157,6 +157,43 @@ test_large_small (void)
   mpfr_clear (z);
 }
 
+static void
+check_overflow (void)
+{
+  mpfr_t x, y;
+  int inex, r;
+
+  mpfr_inits2 (8, x, y, (mpfr_ptr) 0);
+  mpfr_set_ui (x, 1, GMP_RNDN);
+  mpfr_setmax (x, mpfr_get_emax ());
+
+  RND_LOOP(r)
+    {
+      mpfr_clear_overflow ();
+      inex = mpfr_hypot (y, x, x, r);
+      if (!mpfr_overflow_p ())
+        {
+          printf ("No overflow in check_overflow for %s\n",
+                  mpfr_print_rnd_mode (r));
+          exit (1);
+        }
+      MPFR_ASSERTN (MPFR_IS_POS (y));
+      if (r == GMP_RNDZ || r == GMP_RNDD)
+        {
+          MPFR_ASSERTN (inex < 0);
+          MPFR_ASSERTN (!mpfr_inf_p (y));
+          mpfr_nexttoinf (y);
+        }
+      else
+        {
+          MPFR_ASSERTN (inex > 0);
+        }
+      MPFR_ASSERTN (mpfr_inf_p (y));
+    }
+
+  mpfr_clears (x, y, (mpfr_ptr) 0);
+}
+
 #define TWO_ARGS
 #define TEST_FUNCTION mpfr_hypot
 #include "tgeneric.c"
@@ -170,6 +207,7 @@ main (int argc, char *argv[])
 
   test_large ();
   test_large_small ();
+  check_overflow ();
 
   test_generic (2, 100, 10);
 
