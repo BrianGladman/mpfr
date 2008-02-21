@@ -2257,20 +2257,61 @@ The \texttt{mpfr\_hypot} function implements the euclidean distance function:
 \[
 \textnormal{hypot} (x,y) = \sqrt{x^2+y^2}.
 \]
-The algorithm used is as follows, where all roundings are done towards zero:
-\begin{eqnarray}\nonumber
-u&\leftarrow&\circ(x^2)\\\nonumber
-v&\leftarrow&\circ(y^2)\\\nonumber
-w&\leftarrow&\circ(u+v)\\\nonumber
-s&\leftarrow&\circ(\sqrt{w})
-\end{eqnarray}
-Since the inputs $x$ and $y$ are exact, we have $|u-x^2| \leq \ulp(u)$
-and $|v-y^2| \leq \ulp(v)$;
-then $|w-(x^2+y^2)| \leq \ulp(w) + |u-x^2| + |v-y^2| \leq 3 \ulp(w)$
-since $w$ is greater or equal to $u$ and $v$.
-For the last step $s \leftarrow \circ(\sqrt{w})$, we use the last formula
-from~\textsection\ref{generic:sqrt}, which gives
-$|s-\sqrt{x^2+y^2}| \leq 4 \ulp(s)$.
+Assume that $|x| \geq |y| > 0$. Using the first degree Taylor polynomial, we
+have
+\[
+0 \leq \sqrt{x^2+y^2}-|x| \leq \frac{y^2}{|x|}.
+\]
+Let  $p_z$ the output precision and $p_x$ the precision of input variable $x$.
+If $p_z \geq p_x$, $|x|$ is a good enough approximation to calculate
+$z=\circ_{p_z}(\sqrt{x^2+y^2})$ when 
+$\frac{y^2}{|x|} \leq \frac{1}{2}\ulp(\{x, p_z\})$.
+This condition is satified when $\Exp(x) - \Exp(y) > 1+\frac{p_z}{2}$.
+If $p_z < p_x$, $|x|$ and $\sqrt{x^2+y^2}$ have the same $p_x$
+most significant bits when $\frac{y^2}{|x|} < \frac{1}{2} \ulp(x)$ or,
+{\it a fortiori}, when $\Exp(x) - \Exp(y) > 1+\frac{p_x}{2}$.
+
+When none of the above conditions is satisfied, we use the following
+algorithm:
+\begin{quote}
+Algorithm {\tt hypot}\\
+Input: $x$ and $y$ with $|y| \leq |x|$\\
+Output: $\circ_{p_z}(\sqrt{x^2+y^2})$ \\
+\begin{tabular}{l p{1cm} l c r}
+$u \leftarrow \Z(x^2)$ & & $\error(u)$ & $\leq$ & $\ulp(u)$\\
+$v \leftarrow \Z(y^2)$ & & $\error(v)$ & $\leq$ & $\ulp(v)$\\
+$w \leftarrow \Z(u+v)$ & & $\error(w)$ & $\leq$ & $3\ \ulp(w)$\\
+$t \leftarrow \Z(\sqrt{w})$ & & $\error(t)$ & $\leq$ & $4\ \ulp(t)$\\
+\end{tabular}
+\end{quote}
+
+In the above algorithm, $\Z(x^2)$ or $\Z(y^2)$ may overflow though the result
+$z$ is representable; in order to avoid overflow, we shift $x$ and $y$
+exponents by $-s=-\Z(\frac{\Exp(x)+\Exp(y)}{2})$ (integer division) before
+enter the algorithm and shift back the output's exponent by $+s$. Let us see
+now that no overflow goes on when $z$ is representable; let $emax$ and $emin$
+be respectively the maximal and minimal acceptable exponent and assume that
+$|x| \geq |y|$ (thus $\Exp(x) \geq \Exp(y)$).
+
+The case $\Exp(x)=-\Exp(y)$ is straightforward: $s=0$.
+
+Assume now that $\Exp(x) > -\Exp(y)$, we have 
+$\frac{\Exp(x)+\Exp(y)}{2} \geq s \geq \frac{\Exp(x)+\Exp(y)-1}{2} \geq 0$,
+$s$ beeing one or the other bound according to the parity of 
+$\Exp(x) +\Exp(y)$. As $s$ is non negative, we have
+$emax \geq \Exp(x) \geq \Exp(x) - s$.
+On the other hand, $\Exp(x) \geq \frac{\Exp(x)+\Exp(y)}{2}$ thus
+$\Exp(x) - s \geq 0 \geq emin$.
+In the same way, $emax \geq \Exp(y) \geq \Exp(y) - s$ and
+$\Exp(y) - s \geq \frac{\Exp(y)-\Exp(x)}{2} \geq -\Exp(x) \geq emin$.
+
+At last, assume that $\Exp(x) < -\Exp(y)$, we have
+$0 \geq \frac{\Exp(x)+\Exp(y)+1}{2} \geq s \geq \frac{\Exp(x)+\Exp(y)}{2}$.
+As $s$ is non positive, we have $\Exp(x) - s \geq \Exp(x) \geq emin$. Using
+the hypothesis $\Exp(x) < -\Exp(y)$, we have $\frac{\Exp(x) - \Exp(y)}{2}
+\geq \Exp(x)$ thus $emax \geq -\Exp(y) \geq \Exp(x) - s$.
+In the same way, $\Exp(y) - s \geq \Exp(y) \geq emin$ and
+$emax \geq -\Exp(x) \geq \frac{\Exp(y)-\Exp(x)}{2} \geq \Exp(y)$.
 
 \subsection{The floating multiply-add function}
 
