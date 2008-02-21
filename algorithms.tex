@@ -20,7 +20,7 @@ Algorithms and Proofs}
 \def\minf{\bigtriangledown}
 \def\q{\hspace*{5mm}}
 \def\ulp{{\rm ulp}}
-\def\Exp{{\rm EXP}}
+\def\Exp{{\rm \textsc exp}}
 \def\prec{{\rm prec}}
 \def\sign{{\rm sign}}
 \def\Paragraph#1{\noindent {\sc #1}}
@@ -67,8 +67,8 @@ to have the same precision, usually denoted $p$.
 Let $n$ --- the working precision ---
 be a positive integer (considered fixed in the following).
 We write any nonzero real number $x$ in the form $x = m \cdot 2^e$
-with $\frac{1}{2} \le |m| < 1$ and $e := {\rm EXP}(x)$, and
-we define $\ulp(x) := 2^{{\rm EXP}(x) - n}$.
+with $\frac{1}{2} \le |m| < 1$ and $e := \Exp(x)$, and
+we define $\ulp(x) := 2^{\Exp(x) - n}$.
 
 \subsection{Ulp calculus}
 
@@ -512,9 +512,9 @@ It follows $(1-\epsilon)^n (1 - n \epsilon) \geq (1 - n \epsilon)^2 \geq
 \subsection{The {\tt mpfr\_cmp2} function}
 
 This function computes the exponent shift when subtracting $c > 0$ from
-$b \ge c$. In other terms, if ${\rm EXP}(x) :=
+$b \ge c$. In other terms, if $\Exp(x) :=
 \lfloor \frac{\log x}{\log 2} \rfloor$,
-it returns ${\rm EXP}(b) - {\rm EXP}(b-c)$.
+it returns $\Exp(b) - \Exp(b-c)$.
 
 This function admits the following specification in terms of the binary
 representation of the mantissa of $b$ and $c$: if $b = u 1 0^n r$ and
@@ -971,7 +971,7 @@ $k \leftarrow \lfloor \sqrt{n/2} \rfloor$ \\
 $r \leftarrow x^2$ rounded up \\ % err <= ulp(r)
 $r \leftarrow r/2^{2k}$ \\ % err <= ulp(r)
 $s \leftarrow 1, t \leftarrow 1$ \\ % err = 0
-{\bf for} $l$ {\bf from} $1$ {\bf while} ${\rm EXP}(t) \ge -m$ \\
+{\bf for} $l$ {\bf from} $1$ {\bf while} $\Exp(t) \ge -m$ \\
 \q $t \leftarrow t \cdot r$ rounded up \\ % err <= (3*l-1)*ulp(t)
 \q $t \leftarrow \frac{t}{(2l-1)(2l)}$ rounded up \\ % err <= 3*l*ulp(t)
 \q $s \leftarrow s + (-1)^l t$ rounded down\\ % err <= l/2^m
@@ -1155,7 +1155,7 @@ $t \leftarrow 1$ \\
 \q $t \leftarrow \circ (t/k)$ [rounded up] \\
 \q $u \leftarrow \circ (\frac{t}{2k+1})$ [rounded up] \\
 \q $s \leftarrow \circ (s + (-1)^k u)$ [nearest] \\
-\q {\bf if} ${\rm EXP}(u) < {\rm EXP}(s) - m$ and $k \geq z^2$
+\q {\bf if} $\Exp(u) < \Exp(s) - m$ and $k \geq z^2$
         {\bf then} break \\
 $r \leftarrow 2 \circ (z s)$ [rounded up] \\
 $p \leftarrow \circ (\pi)$ [rounded down] \\
@@ -1174,8 +1174,8 @@ $1+2\varepsilon_k \leq 1+8k$.
 Let $\sigma_k$ and $\nu_k$ be the exponent shifts between the new value of
 $s$ at step $k$ and respectively the old value of $s$, and $u$.
 Writing $s_k$ and $u_k$ for the values of $s$ and $u$ at the end of step $k$,
-we have $\sigma_k := {\rm EXP}(s_{k-1}) - {\rm EXP}(s_k)$
-and $\nu_k := {\rm EXP}(u_k) - {\rm EXP}(s_k)$.
+we have $\sigma_k := \Exp(s_{k-1}) - \Exp(s_k)$
+and $\nu_k := \Exp(u_k) - \Exp(s_k)$.
 The ulp-error $\tau_k$ on $s_k$ satisfies
 $\tau_k \leq \frac{1}{2} + \tau_{k-1} 2^{\sigma_k} + (1+8k) 2^{\nu_k}$.
 
