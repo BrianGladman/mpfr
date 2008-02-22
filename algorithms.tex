@@ -2263,6 +2263,17 @@ have
 \[
 0 \leq \sqrt{x^2+y^2}-|x| \leq \frac{y^2}{|x|}.
 \]
+\begin{comment}
+% One can do better without the Taylor polynomial:
+Since
+\[
+\left( |x| + \frac{y^2}{2|x|} \right)^2 > x^2 + y^2,
+\]
+we have:
+\[
+0 < \sqrt{x^2+y^2}-|x| < \frac{y^2}{2|x|}.
+\]
+\end{comment}
 Let  $p_z$ the output precision and $p_x$ the precision of input variable $x$.
 If $p_z \geq p_x$, $|x|$ is a good enough approximation to calculate
 $z=\circ_{p_z}(\sqrt{x^2+y^2})$ when 
