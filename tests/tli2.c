@@ -91,7 +91,6 @@ normal (void)
   /* x1 = 2^-3 */
   mpfr_set_str (x, "1p-3", 2, GMP_RNDD);
   mpfr_li2 (x, x, GMP_RNDN);
-  //  if (mpfr_cmp_str (x, "0x210f4f53c84282p-56", 16, GMP_RNDN) != 0)
   if (mpfr_cmp_str (x, "0x1087a7a9e42141p-55", 16, GMP_RNDN) != 0)
     {
       printf ("Error for li2(x1)\n");
