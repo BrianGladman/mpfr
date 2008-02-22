@@ -80,6 +80,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 
   /* we have x < 2^Ex thus x^2 < 2^(2*Ex),
      and ulp(x) = 2^(Ex-Nx) thus ulp(x^2) >= 2^(2*Ex-2*Nx).
+                          FIXME: ^^^^^^^^^^^^^^^^^^^^^^^^^ is meaningless.
      y does not overlap with the result when
      x^2+y^2 < (|x| + 1/2*ulp(x,Nz))^2 = x^2 + |x|*ulp(x,Nz) + 1/4*ulp(x,Nz)^2,
      i.e. a sufficient condition is y^2 < |x|*ulp(x,Nz),
