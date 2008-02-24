@@ -23,13 +23,17 @@ MA 02110-1301, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
+/* y <- x^|z|
+   if cr=1: ensures correct rounding of y
+   if cr=0: does not ensure correct rounding, and uses the precision of y
+   as working precision (warning, y and x might be the same variable). */
 static int
-mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
+mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd, int cr)
 {
   mpfr_t res;
   mp_prec_t prec, err;
   int inexact;
-  mp_rnd_t rnd1;
+  mp_rnd_t rnd1, rnd2;
   mpz_t absz;
   mp_size_t size_z;
   MPFR_ZIV_DECL (loop);
@@ -40,12 +44,19 @@ mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
   if (MPFR_UNLIKELY (mpz_cmpabs_ui (z, 1) == 0))
     return mpfr_set (y, x, rnd);
 
-  rnd1 = MPFR_IS_POS (x) ? GMP_RNDU : GMP_RNDD; /* away */
   absz[0] = z[0];
   SIZ (absz) = ABS(SIZ(absz)); /* Hack to get abs(z) */
   MPFR_MPZ_SIZEINBASE2 (size_z, z);
 
-  prec = MPFR_PREC (y) + 3 + size_z + MPFR_INT_CEIL_LOG2 (MPFR_PREC (y));
+  /* round towards 1 (or -1) to avoid overflow/underflow */
+  rnd1 = (MPFR_EXP(x) >= 1) ? GMP_RNDZ
+    : ((MPFR_SIGN(x) > 0) ? GMP_RNDU : GMP_RNDD);
+  rnd2 = (MPFR_EXP(x) >= 1) ? GMP_RNDD : GMP_RNDU;
+
+  if (cr != 0)
+    prec = MPFR_PREC (y) + 3 + size_z + MPFR_INT_CEIL_LOG2 (MPFR_PREC (y));
+  else
+    prec = MPFR_PREC (y);
   mpfr_init2 (res, prec);
 
   MPFR_ZIV_INIT (loop, prec);
@@ -53,25 +64,27 @@ mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
     {
       mp_size_t i = size_z;
       /* now 2^(i-1) <= z < 2^i */
-      /* see pow_ui.c for the error analusis, which is identical */
+      /* see below (case z < 0) for the error analysis, which is identical,
+         except if z=n, the maximal relative error is here 2(n-1)2^(-prec)
+         instead of 2(2n-1)2^(-prec) for z<0. */
       MPFR_ASSERTD (prec > (mpfr_prec_t) i);
       err = prec - 1 - (mpfr_prec_t) i;
 
       /* First step: compute square from y */
       MPFR_BLOCK (flags,
-                  inexact = mpfr_mul (res, x, x, GMP_RNDU);
+                  inexact = mpfr_mul (res, x, x, rnd2);
                   MPFR_ASSERTD (i >= 2);
                   if (mpz_tstbit (absz, i - 2))
                     inexact |= mpfr_mul (res, res, x, rnd1);
                   for (i -= 3; i >= 0 && !MPFR_BLOCK_EXCEP; i--)
                     {
-                      inexact |= mpfr_mul (res, res, res, GMP_RNDU);
+                      inexact |= mpfr_mul (res, res, res, rnd2);
                       if (mpz_tstbit (absz, i))
                         inexact |= mpfr_mul (res, res, x, rnd1);
                     });
       /*    printf ("pow_z ");
             mpfr_dump_mant (MPFR_MANT (res), prec, MPFR_PREC (x), err); */
-      if (MPFR_LIKELY (inexact == 0
+      if (MPFR_LIKELY (inexact == 0 || cr == 0
                        || MPFR_OVERFLOW (flags) || MPFR_UNDERFLOW (flags)
                        || MPFR_CAN_ROUND (res, err, MPFR_PREC (y), rnd)))
         break;
@@ -98,9 +111,15 @@ mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
 }
 
 /* The computation of y=pow(x,z) is done by
- *    y=pow_ui(x,z) if z>0
+ *    y=pow_ui(x,z)    if z > 0
  * else
- *    y=1/pow_ui(x,z) if z<0
+ *    y=pow_ui(1/x,-z) if z < 0
+ *
+ * Note: in case z < 0, we could also compute 1/pow_ui(x,-z). However, in
+ * case MAX < 1/MIN, where MAX is the largest positive value, i.e.,
+ * MAX = nextbelow(+Inf), and MIN is the smallest positive value, i.e.,
+ * MIN = nextabove(+0), then x^(-z) might produce an overflow, whereas
+ * x^z is representable.
  */
 
 int
@@ -193,30 +212,43 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
   MPFR_SAVE_EXPO_MARK (expo);
 
   if (mpz_sgn (z) > 0)
-    inexact = mpfr_pow_pos_z (y, x, z, rnd);
+    inexact = mpfr_pow_pos_z (y, x, z, rnd, 1);
   else
     {
       /* Declaration of the intermediary variable */
       mpfr_t t;
       mp_prec_t Nt;   /* Precision of the intermediary variable */
+      mp_rnd_t rnd1;
+      mp_size_t size_z;
       MPFR_ZIV_DECL (loop);
 
-      /* compute the precision of intermediary variable */
-      Nt = MAX (MPFR_PREC (x), MPFR_PREC (y));
+      MPFR_MPZ_SIZEINBASE2 (size_z, z);
 
-      /* the optimal number of bits : see algorithms.ps */
-      Nt = Nt + 3 + MPFR_INT_CEIL_LOG2 (Nt);
+      /* initial working precision */
+      Nt = MPFR_PREC (y);
+      Nt = Nt + size_z + 3 + MPFR_INT_CEIL_LOG2 (Nt);
+      /* ensures Nt >= bits(z)+2 */
 
-      /* initialise of intermediary     variable */
+      /* initialise of intermediary variable */
       mpfr_init2 (t, Nt);
+
+      /* we choose a rounding towards 1, to avoid overflow or underflow */
+      rnd1 = (MPFR_EXP(x) >= 1) ? GMP_RNDZ :
+        ((MPFR_SIGN(x) > 0) ? GMP_RNDU : GMP_RNDZ);
 
       MPFR_ZIV_INIT (loop, Nt);
       for (;;)
         {
-          /* compute 1/(x^n) n>0 */
-          mpfr_pow_pos_z (t, x, z, GMP_RNDN);
-          mpfr_ui_div (t, 1, t, GMP_RNDN);
-          /* FIXME: old code improved, but I think this is still incorrect. */
+          /* compute (1/x)^(-z), -z>0 */
+          mpfr_ui_div (t, 1, x, rnd1); /* t = (1/x)*(1+theta) where
+                                          |theta| <= 2^(-Nt) */
+          mpfr_pow_pos_z (t, t, z, rnd1, 0);
+          /* Now if z=-n, t = x^z*(1+theta)^(2n-1) where |theta| <= 2^(-Nt),
+             with theta maybe different from above. If (2n-1)*2^(-Nt) <= 1/2,
+             which is satisfied as soon as Nt >= bits(z)+2, then we can use
+             Lemma \ref{lemma_graillat} from algorithms.tex, which yields
+             t = x^z*(1+theta) with |theta| <= 2(2n-1)*2^(-Nt), thus the
+             error is bounded by 2(2n-1) ulps <= 2^(bits(z)+2) ulps. */
           if (MPFR_UNLIKELY (MPFR_IS_ZERO (t)))
             {
               MPFR_ZIV_FREE (loop);
@@ -235,7 +267,8 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
                                     mpz_odd_p (z) ? MPFR_SIGN (x) :
                                     MPFR_SIGN_POS);
             }
-          if (MPFR_LIKELY (MPFR_CAN_ROUND (t, Nt-3, MPFR_PREC (y), rnd)))
+          if (MPFR_LIKELY (MPFR_CAN_ROUND (t, Nt - size_z - 2, MPFR_PREC (y),
+                                           rnd)))
             break;
           /* actualisation of the precision */
           MPFR_ZIV_NEXT (loop, Nt);

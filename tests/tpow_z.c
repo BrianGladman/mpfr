@@ -311,9 +311,12 @@ bug20080223 (void)
   mpfr_set_str (a, "1.999999999", 10, GMP_RNDN);
   /* a = 562949953139837/2^48 */
   mpfr_pow (answer, a, exp, GMP_RNDN);
-  /* the following result was computed with Maple, and is not guaranteed! */
   mpfr_set_str_binary (a, "0.110110101111011001110000111111100011101000111011101E-1073741823");
   MPFR_ASSERTN(mpfr_cmp (answer, a) == 0);
+
+  mpfr_clear (a);
+  mpfr_clear (exp);
+  mpfr_clear (answer);
 }
 
 int
