@@ -62,7 +62,9 @@ mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd, int cr)
   MPFR_ZIV_INIT (loop, prec);
   for (;;)
     {
+      unsigned int inexmul;  /* will be non-zero if res may be inexact */
       mp_size_t i = size_z;
+
       /* now 2^(i-1) <= z < 2^i */
       /* see below (case z < 0) for the error analysis, which is identical,
          except if z=n, the maximal relative error is here 2(n-1)2^(-prec)
@@ -72,19 +74,19 @@ mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd, int cr)
 
       /* First step: compute square from y */
       MPFR_BLOCK (flags,
-                  inexact = mpfr_mul (res, x, x, rnd2);
+                  inexmul = mpfr_mul (res, x, x, rnd2);
                   MPFR_ASSERTD (i >= 2);
                   if (mpz_tstbit (absz, i - 2))
-                    inexact |= mpfr_mul (res, res, x, rnd1);
+                    inexmul |= mpfr_mul (res, res, x, rnd1);
                   for (i -= 3; i >= 0 && !MPFR_BLOCK_EXCEP; i--)
                     {
-                      inexact |= mpfr_mul (res, res, res, rnd2);
+                      inexmul |= mpfr_mul (res, res, res, rnd2);
                       if (mpz_tstbit (absz, i))
-                        inexact |= mpfr_mul (res, res, x, rnd1);
+                        inexmul |= mpfr_mul (res, res, x, rnd1);
                     });
       /*    printf ("pow_z ");
             mpfr_dump_mant (MPFR_MANT (res), prec, MPFR_PREC (x), err); */
-      if (MPFR_LIKELY (inexact == 0 || cr == 0
+      if (MPFR_LIKELY (inexmul == 0 || cr == 0
                        || MPFR_OVERFLOW (flags) || MPFR_UNDERFLOW (flags)
                        || MPFR_CAN_ROUND (res, err, MPFR_PREC (y), rnd)))
         break;
