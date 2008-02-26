@@ -2258,37 +2258,28 @@ The \texttt{mpfr\_hypot} function implements the euclidean distance function:
 \[
 \textnormal{hypot} (x,y) = \sqrt{x^2+y^2}.
 \]
+If one of the variable is zero, then hypot is computed using the absolute
+value of the other variable.
 Assume that $|x| \geq |y| > 0$. Using the first degree Taylor polynomial, we
 have
 \[
-0 \leq \sqrt{x^2+y^2}-|x| \leq \frac{y^2}{|x|}.
+0 \leq \sqrt{x^2+y^2}-|x| \leq \frac{y^2}{2|x|}.
 \]
-\begin{comment}
-% One can do better without the Taylor polynomial:
-Since
-\[
-\left( |x| + \frac{y^2}{2|x|} \right)^2 > x^2 + y^2,
-\]
-we have:
-\[
-0 < \sqrt{x^2+y^2}-|x| < \frac{y^2}{2|x|}.
-\]
-\end{comment}
-Let  $p_z$ the output precision and $p_x$ the precision of input variable $x$.
-If $p_z \geq p_x$, $|x|$ is a good enough approximation to calculate
-$z=\circ_{p_z}(\sqrt{x^2+y^2})$ when 
-$\frac{y^2}{|x|} \leq \frac{1}{2}\ulp(\{x, p_z\})$.
-This condition is satified when $\Exp(x) - \Exp(y) > 1+\frac{p_z}{2}$.
-If $p_z < p_x$, $|x|$ and $\sqrt{x^2+y^2}$ have the same $p_x$
-most significant bits when $\frac{y^2}{|x|} < \frac{1}{2} \ulp(x)$ or,
-{\it a fortiori}, when $\Exp(x) - \Exp(y) > 1+\frac{p_x}{2}$.
+
+Let $p_x$ the precision of input variable $x$, $p_z$ the output precision and
+$z=\circ_{p_z}(\sqrt{x^2+y^2})$ the expected result.
+When $\Exp(x) - \Exp(y) > \frac{p_z+1}{2}$, we have
+$\frac{y^2}{2|x|} < \frac{1}{2}\ulp_{p_z}(x)$, and then the inequality
+given above shows that $z=\circ_{p_z}(|x|)$.
+When $p_z < p_x$, the stronger condition $\Exp(x) - \Exp(y) > \frac{p_x+1}{2}$
+ensures that $\sqrt{x^2+y^2} - |x| < \frac{1}{2} \ulp(x)$.
 
 When none of the above conditions is satisfied, we use the following
 algorithm:
 \begin{quote}
 Algorithm {\tt hypot}\\
-Input: $x$ and $y$ with $|y| \leq |x|$\\
-Output: $\circ_{p_z}(\sqrt{x^2+y^2})$ \\
+Input: $x$ and $y$ with $|y| \leq |x|$, $p$ the working precision\\
+Output: $\sqrt{x^2+y^2}$ with $p-2$ bits of precision\\
 \begin{tabular}{l p{1cm} l c r}
 $u \leftarrow \Z(x^2)$ & & $\error(u)$ & $\leq$ & $\ulp(u)$\\
 $v \leftarrow \Z(y^2)$ & & $\error(v)$ & $\leq$ & $\ulp(v)$\\
@@ -2298,32 +2289,53 @@ $t \leftarrow \Z(\sqrt{w})$ & & $\error(t)$ & $\leq$ & $4\ \ulp(t)$\\
 \end{quote}
 
 In the above algorithm, $\Z(x^2)$ or $\Z(y^2)$ may overflow though the result
-$z$ is representable; in order to avoid overflow, we shift $x$ and $y$
-exponents by $-s=-\Z(\frac{\Exp(x)+\Exp(y)}{2})$ (integer division) before
-enter the algorithm and shift back the output's exponent by $+s$. Let us see
-now that no overflow goes on when $z$ is representable; let $emax$ and $emin$
-be respectively the maximal and minimal acceptable exponent and assume that
-$|x| \geq |y|$ (thus $\Exp(x) \geq \Exp(y)$).
+$z$ is representable. Let us assume, as it is the case in MPFR, that the
+minimal and maximal acceptable exponents (respectively $e_{min}$ and
+$e_{max}$) verify $e_{max} = -e_{min} > 0$ and that the maximal precision is
+less than $2e_{max}$. Let $s=\Z(\frac{\Exp(x)+\Exp(y)}{2})$ (integer division
+with rounding towards zero), in order to avoid overflow, we shift $x$ and $y$
+exponents by $-s$ before entering the algorithm and shift back the output's
+exponent by $+s$. Let us see now that no overflow goes on when $z$ is
+representable.
+
+Let us prove first that the exponent shifts do no cause overflow. As
+$|x| \geq |y|$, we have $\Exp(x) \geq \Exp(y)$.
 
 The case $\Exp(x)=-\Exp(y)$ is straightforward: $s=0$.
 
-Assume now that $\Exp(x) > -\Exp(y)$, we have 
+Assume now that $\Exp(x) > -\Exp(y)$, we have
 $\frac{\Exp(x)+\Exp(y)}{2} \geq s \geq \frac{\Exp(x)+\Exp(y)-1}{2} \geq 0$,
-$s$ beeing one or the other bound according to the parity of 
-$\Exp(x) +\Exp(y)$. As $s$ is non negative, we have
-$emax \geq \Exp(x) \geq \Exp(x) - s$.
+$s$ being one or the other bound according to the parity of
+$\Exp(x) +\Exp(y)$. As $s$ is non-negative, we have
+$e_{max} \geq \Exp(x) \geq \Exp(x) - s$.
 On the other hand, $\Exp(x) \geq \frac{\Exp(x)+\Exp(y)}{2}$ thus
-$\Exp(x) - s \geq 0 \geq emin$.
-In the same way, $emax \geq \Exp(y) \geq \Exp(y) - s$ and
-$\Exp(y) - s \geq \frac{\Exp(y)-\Exp(x)}{2} \geq -\Exp(x) \geq emin$.
+$\Exp(x) - s \geq 0 \geq -e_{max}$.
+In the same way, $e_{max} \geq \Exp(y) \geq \Exp(y) - s$ and
+$\Exp(y) - s \geq \frac{\Exp(y)-\Exp(x)}{2} \geq -\Exp(x) \geq -e_{max}$.
 
 At last, assume that $\Exp(x) < -\Exp(y)$, we have
 $0 \geq \frac{\Exp(x)+\Exp(y)+1}{2} \geq s \geq \frac{\Exp(x)+\Exp(y)}{2}$.
-As $s$ is non positive, we have $\Exp(x) - s \geq \Exp(x) \geq emin$. Using
-the hypothesis $\Exp(x) < -\Exp(y)$, we have $\frac{\Exp(x) - \Exp(y)}{2}
-\geq \Exp(x)$ thus $emax \geq -\Exp(y) \geq \Exp(x) - s$.
-In the same way, $\Exp(y) - s \geq \Exp(y) \geq emin$ and
-$emax \geq -\Exp(x) \geq \frac{\Exp(y)-\Exp(x)}{2} \geq \Exp(y)$.
+As $s$ is non-positive, this means $\Exp(x) - s \geq \Exp(x) \geq -e_{max}$.
+Using the hypothesis $\Exp(x) < -\Exp(y)$, we have
+$\frac{\Exp(x) - \Exp(y)}{2} \geq \Exp(x)$ thus $e_{max} \geq -\Exp(y) \geq \Exp(x) - s$.
+In the same way, $\Exp(y) - s \geq \Exp(y) \geq -e_{max}$ and
+$e_{max} \geq -\Exp(x) \geq \frac{\Exp(y)-\Exp(x)}{2} \geq \Exp(y)-s$.
+
+Now, we will show that the squares do never overflow with the shifted
+operands.
+Note that $\Exp(x)-\Exp(y) \leq \frac{p_z}{2}$, otherwise that case would
+satisfy the conditions given above and $z$ would have been computed using
+$|x|$. So, considering the condition on the maximal precision, we have here
+$-e_{max} < \Exp(y) - \Exp(x) \leq 0 \leq \Exp(x) - \Exp(y) < e_{max}$.
+Whatever the sign of $s$ we have $s \geq \frac{\Exp(x) + \Exp(y) - 1}{2}$,
+thus $\Exp(y) - s \leq \Exp(x) - s \leq \frac{\Exp(x)-\Exp(y)+1}{2}
+< \frac{e_{max}+1}{2}$ which means $\Exp(x) - s \leq \frac{e_{max}}{2}$
+showing that the squares will not overflow.
+
+Finally, let us show that the addition with the shifted operands overflow if,
+and only if, $\sqrt{x^2+y^2} \geq 2^{e_{max}}$.
+[TODO]
+
 
 \subsection{The floating multiply-add function}
 
