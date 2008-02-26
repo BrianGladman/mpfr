@@ -72,7 +72,6 @@ mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd, int cr)
       MPFR_ASSERTD (prec > (mpfr_prec_t) i);
       err = prec - 1 - (mpfr_prec_t) i;
 
-      /* First step: compute square from y */
       MPFR_BLOCK (flags,
                   inexmul = mpfr_mul (res, x, x, rnd2);
                   MPFR_ASSERTD (i >= 2);
@@ -84,13 +83,11 @@ mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd, int cr)
                       if (mpz_tstbit (absz, i))
                         inexmul |= mpfr_mul (res, res, x, rnd1);
                     });
-      /*    printf ("pow_z ");
-            mpfr_dump_mant (MPFR_MANT (res), prec, MPFR_PREC (x), err); */
       if (MPFR_LIKELY (inexmul == 0 || cr == 0
                        || MPFR_OVERFLOW (flags) || MPFR_UNDERFLOW (flags)
                        || MPFR_CAN_ROUND (res, err, MPFR_PREC (y), rnd)))
         break;
-      /* Actualisation of the precision */
+      /* Can't decide correct rounding, increase the precision */
       MPFR_ZIV_NEXT (loop, prec);
       mpfr_set_prec (res, prec);
     }
