@@ -39,8 +39,10 @@ mpfr_d_div (mpfr_ptr a, double b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   inexact = mpfr_set_d (d, b, rnd_mode);
   MPFR_ASSERTN (inexact == 0);
 
+  mpfr_clear_flags ();
   inexact = mpfr_div (a, d, c, rnd_mode);
-  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (a)))
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (a)
+                     || (__gmpfr_flags & MPFR_FLAGS_ALL)))
     {
       MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
     }

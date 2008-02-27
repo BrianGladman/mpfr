@@ -32,30 +32,43 @@ static void
 check_nans (void)
 {
   mpfr_t  x, y;
+  int inexact;
 
   mpfr_init2 (x, 123);
   mpfr_init2 (y, 123);
 
   /* nan / 1.0 is nan */
   mpfr_set_nan (x);
-  mpfr_div_d (y, x, 1.0, GMP_RNDN);
+  mpfr_clear_flags ();
+  inexact = mpfr_div_d (y, x, 1.0, GMP_RNDN);
+  MPFR_ASSERTN (inexact == 0);
+  MPFR_ASSERTN ((__gmpfr_flags ^ MPFR_FLAGS_NAN) == 0);
   MPFR_ASSERTN (mpfr_nan_p (y));
 
   /* +inf / 1.0 == +inf */
   mpfr_set_inf (x, 1);
-  mpfr_div_d (y, x, 1.0, GMP_RNDN);
+  mpfr_clear_flags ();
+  inexact = mpfr_div_d (y, x, 1.0, GMP_RNDN);
+  MPFR_ASSERTN (inexact == 0);
+  MPFR_ASSERTN (__gmpfr_flags == 0);
   MPFR_ASSERTN (mpfr_inf_p (y));
-  MPFR_ASSERTN (mpfr_sgn (y) > 0);
+  MPFR_ASSERTN (MPFR_IS_POS (y));
 
   /* -inf / 1.0 == -inf */
   mpfr_set_inf (x, -1);
-  mpfr_div_d (y, x, 1.0, GMP_RNDN);
+  mpfr_clear_flags ();
+  inexact = mpfr_div_d (y, x, 1.0, GMP_RNDN);
+  MPFR_ASSERTN (inexact == 0);
+  MPFR_ASSERTN (__gmpfr_flags == 0);
   MPFR_ASSERTN (mpfr_inf_p (y));
-  MPFR_ASSERTN (mpfr_sgn (y) < 0);
+  MPFR_ASSERTN (MPFR_IS_NEG (y));
 
   /* 0.0 / 0.0 is nan */
   mpfr_set_d (x, 0.0, GMP_RNDN);
-  mpfr_div_d (y, x, 0.0, GMP_RNDN);
+  mpfr_clear_flags ();
+  inexact = mpfr_div_d (y, x, 0.0, GMP_RNDN);
+  MPFR_ASSERTN (inexact == 0);
+  MPFR_ASSERTN ((__gmpfr_flags ^ MPFR_FLAGS_NAN) == 0);
   MPFR_ASSERTN (mpfr_nan_p (y));
 
   mpfr_clear (x);
@@ -68,7 +81,7 @@ check_nans (void)
 #include "tgeneric.c"
 
 int
-main (int argc, char *argv[])
+main (void)
 {
   mpfr_t x, y, z;
   double d;
