@@ -456,7 +456,7 @@ mpfr_toto (mpfr_ptr rop, mpfr_srcptr op, mp_rnd_t rnd)
   for (;;)                               /* Infinite loop */
     {
       [Compute an estimation of the function and]
-      [ an estimation of the error].
+      [an estimate of the error.]
       if (MPFR_CAN_ROUND (...))          /* If we can round, quit the loop */
         break;
       MPFR_ZIV_NEXT (loop, prec);        /* Increase used precision */
@@ -475,6 +475,25 @@ Make sure that Ziv loops cannot increase the precision forever because of
 internal exception. Otherwise one gets either a segmentation fault (with
 limited stack size) or an assertion failure (with unlimited stack size,
 e.g. with "make check").
+
+Exception handling (overflow/underflow in particular):
+  * Warning: To detect exceptions and/or possible error loss due to
+    internal exceptions, testing whether some variable is singular with
+    MPFR_IS_SINGULAR is generally not sufficient! Indeed, in case of
+    overflow (resp. underflow), the value may be rounded (in absolute
+    value) to the largest finite number (resp. to the smallest non-zero
+    number, possible even in round-to-nearest mode).
+  * The MPFR_BLOCK* macros can be useful, e.g.
+      {
+        MPFR_BLOCK_DECL (flags);
+        /* ... */
+        MPFR_BLOCK (flags, /* expression or statements */)
+        /* ... */
+        if (MPFR_OVERFLOW (flags))
+          { /* case of overflow in expression or statements */ }
+        /* ... */
+      }
+    See mpfr-impl.h (search for MPFR_BLOCK) for more information.
 
 ===========================================================================
 
