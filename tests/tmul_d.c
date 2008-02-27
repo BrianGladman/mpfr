@@ -38,23 +38,27 @@ check_nans (void)
 
   /* nan * 1.0 is nan */
   mpfr_set_nan (x);
+  mpfr_clear_flags();
   mpfr_mul_d (y, x, 1.0, GMP_RNDN);
-  MPFR_ASSERTN (mpfr_nan_p (y));
+  MPFR_ASSERTN (mpfr_nan_p (y) && mpfr_nanflag_p());
 
   /* +inf * 1.0 == +inf */
   mpfr_set_inf (x, 1);
+  mpfr_clear_flags();
   mpfr_mul_d (y, x, 1.0, GMP_RNDN);
-  MPFR_ASSERTN (mpfr_inf_p (y));
+  MPFR_ASSERTN (mpfr_inf_p (y) && !mpfr_overflow_p());
   MPFR_ASSERTN (mpfr_sgn (y) > 0);
 
   /* +inf * 0.0 is nan */
+  mpfr_clear_flags();
   mpfr_mul_d (y, x, 0.0, GMP_RNDN);
-  MPFR_ASSERTN (mpfr_nan_p (y));
+  MPFR_ASSERTN (mpfr_nan_p (y) || mpfr_nanflag_p());
 
   /* -inf * 1.0 == -inf */
   mpfr_set_inf (x, -1);
+  mpfr_clear_flags();
   mpfr_mul_d (y, x, 1.0, GMP_RNDN);
-  MPFR_ASSERTN (mpfr_inf_p (y));
+  MPFR_ASSERTN (mpfr_inf_p (y) && !mpfr_overflow_p());
   MPFR_ASSERTN (mpfr_sgn (y) < 0);
 
   mpfr_clear (x);
