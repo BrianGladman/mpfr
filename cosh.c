@@ -92,8 +92,8 @@ mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
         /* Compute cosh */
         MPFR_BLOCK (flags, mpfr_exp (te, x, GMP_RNDD));  /* exp(x) */
         /* exp can overflow (but not underflow since x>0) */
-        /* BUG/TODO/FIXME: exp can overflow but cosh may be representable! */
         if (MPFR_OVERFLOW (flags))
+          /* cosh(x) > exp(x), cosh(x) underflows too */
           {
             inexact = mpfr_overflow (y, rnd_mode, MPFR_SIGN_POS);
             MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, MPFR_FLAGS_OVERFLOW);
