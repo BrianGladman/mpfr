@@ -20,7 +20,6 @@ the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
 #ifdef HAVE_STDARG
-
 #include <stdarg.h>
 
 #include <stdio.h>
@@ -442,9 +441,7 @@ mixed (void)
   mpz_init (mpz);
   mpz_fib_ui (mpz, 64);
   mpfr_init (x);
-  mpfr_set_si (x, -875, GMP_RNDN);
-  mpfr_div_ui (x, x, 1000, GMP_RNDN);
-  mpfr_add_si (x, x, -12345678, GMP_RNDN); /* x = -1.2345678875e7 */
+  mpfr_set_str (x, "-12345678.875", 10, GMP_RNDN);
   rnd = GMP_RNDD;
 
   check_vsprintf ("121%", "%i%%", i);
