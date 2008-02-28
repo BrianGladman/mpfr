@@ -1766,7 +1766,12 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
         break;
 
       if (*++fmt == '%')
-        continue;
+        /* %%: go on one step otherwise the second '%' would be considered
+           as a new conversion specification introducting character */
+        {
+          ++fmt;
+          continue;
+        }
 
       end = fmt - 1;
 
