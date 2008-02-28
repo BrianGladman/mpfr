@@ -533,7 +533,7 @@ random_double (void)
       'G',
     };
 
-  mpfr_init2 (x, 53);
+  mpfr_init2 (x, MPFR_LDBL_MANT_DIG);
 
   for (i = 0; i < 1000; ++i)
     {
