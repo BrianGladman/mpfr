@@ -542,12 +542,12 @@ main (void)
     test2a (mpfr_trunc, "mpfr_trunc", p);
 
     test2ui (mpfr_add_ui, "mpfr_add_ui", p, rnd);
+    test2ui (mpfr_div_2exp, "mpfr_div_2exp", p, rnd);
+    test2ui (mpfr_div_ui, "mpfr_div_ui", p, rnd);
     test2ui (mpfr_mul_2exp, "mpfr_mul_2exp", p, rnd);
     test2ui (mpfr_mul_ui, "mpfr_mul_ui", p, rnd);
     test2ui (mpfr_pow_ui, "mpfr_pow_ui", p, rnd);
     test2ui (mpfr_sub_ui, "mpfr_sub_ui", p, rnd);
-    test2ui (mpfr_div_2exp, "mpfr_div_2exp", p, rnd);
-    test2ui (mpfr_div_ui, "mpfr_div_ui", p, rnd);
 
     testui2 (mpfr_ui_div, "mpfr_ui_div", p, rnd);
     testui2 (mpfr_ui_sub, "mpfr_ui_sub", p, rnd);
@@ -575,6 +575,9 @@ main (void)
     test2 (mpfr_asinh, "mpfr_asinh", p, rnd);
     test2 (mpfr_acosh, "mpfr_acosh", p, rnd);
     test2 (mpfr_atanh, "mpfr_atanh", p, rnd);
+    test2 (mpfr_asinh, "mpfr_sech", p, rnd);
+    test2 (mpfr_acosh, "mpfr_csch", p, rnd);
+    test2 (mpfr_atanh, "mpfr_coth", p, rnd);
 
     test2 (mpfr_asin, "mpfr_asin", p, rnd);
     test2 (mpfr_acos, "mpfr_acos", p, rnd);
@@ -590,10 +593,17 @@ main (void)
     test2 (mpfr_erfc, "mpfr_erfc", p, rnd);
     test2 (mpfr_j0,   "mpfr_j0",   p, rnd);
     test2 (mpfr_j1,   "mpfr_j1",   p, rnd);
+    test2 (mpfr_y0,   "mpfr_y0",   p, rnd);
+    test2 (mpfr_y1,   "mpfr_y1",   p, rnd);
     test2 (mpfr_zeta, "mpfr_zeta", p, rnd);
     test2 (mpfr_gamma, "mpfr_gamma", p, rnd);
+    test2 (mpfr_lngamma, "mpfr_gamma", p, rnd);
 
     test2 (mpfr_rint, "mpfr_rint", p, rnd);
+    test2 (mpfr_rint_ceil, "mpfr_rint_ceil", p, rnd);
+    test2 (mpfr_rint_floor, "mpfr_rint_floor", p, rnd);
+    test2 (mpfr_rint_round, "mpfr_rint_round", p, rnd);
+    test2 (mpfr_rint_trunc, "mpfr_rint_trunc", p, rnd);
     test2 (mpfr_frac, "mpfr_frac", p, rnd);
 
     test3 (mpfr_remainder, "mpfr_remainder", p, rnd);
@@ -603,9 +613,11 @@ main (void)
     test3a (mpfr_sin_cos, "mpfr_sin_cos", p, rnd);
 
     test4 (mpfr_fma, "mpfr_fma", p, rnd);
+    test4 (mpfr_fms, "mpfr_fms", p, rnd);
 
 #if MPFR_VERSION >= MPFR_VERSION_NUM(2,4,0)
-    test2 (mpfr_li2,  "mpfr_li2",  p, rnd);
+    test2 (mpfr_li2, "mpfr_li2",  p, rnd);
+    test2 (mpfr_rec_sqrt, "mpfr_rec_sqrt",  p, rnd);
     test3 (mpfr_fmod, "mpfr_fmod", p, rnd);
     test3a (mpfr_modf, "mpfr_modf", p, rnd);
     test3a (mpfr_sinh_cosh, "mpfr_sinh_cosh", p, rnd);
