@@ -575,9 +575,9 @@ main (void)
     test2 (mpfr_asinh, "mpfr_asinh", p, rnd);
     test2 (mpfr_acosh, "mpfr_acosh", p, rnd);
     test2 (mpfr_atanh, "mpfr_atanh", p, rnd);
-    test2 (mpfr_asinh, "mpfr_sech", p, rnd);
-    test2 (mpfr_acosh, "mpfr_csch", p, rnd);
-    test2 (mpfr_atanh, "mpfr_coth", p, rnd);
+    test2 (mpfr_sech, "mpfr_sech", p, rnd);
+    test2 (mpfr_csch, "mpfr_csch", p, rnd);
+    test2 (mpfr_coth, "mpfr_coth", p, rnd);
 
     test2 (mpfr_asin, "mpfr_asin", p, rnd);
     test2 (mpfr_acos, "mpfr_acos", p, rnd);
@@ -597,7 +597,7 @@ main (void)
     test2 (mpfr_y1,   "mpfr_y1",   p, rnd);
     test2 (mpfr_zeta, "mpfr_zeta", p, rnd);
     test2 (mpfr_gamma, "mpfr_gamma", p, rnd);
-    test2 (mpfr_lngamma, "mpfr_gamma", p, rnd);
+    test2 (mpfr_lngamma, "mpfr_lngamma", p, rnd);
 
     test2 (mpfr_rint, "mpfr_rint", p, rnd);
     test2 (mpfr_rint_ceil, "mpfr_rint_ceil", p, rnd);
