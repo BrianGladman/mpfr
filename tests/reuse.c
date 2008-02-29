@@ -526,16 +526,6 @@ main (void)
   p = (randlimb () % 200)+ MPFR_PREC_MIN;
   RND_LOOP (rnd)
   {
-    test3 (mpfr_add, "mpfr_add", p, rnd);
-    test3 (mpfr_sub, "mpfr_sub", p, rnd);
-    test3 (mpfr_mul, "mpfr_mul", p, rnd);
-    test3 (mpfr_div, "mpfr_div", p, rnd);
-
-    test3 (mpfr_agm, "mpfr_agm", p, rnd);
-    test3 (mpfr_min, "mpfr_min", p, rnd);
-    test3 (mpfr_max, "mpfr_max", p, rnd);
-    test3 (reldiff_wrapper, "mpfr_reldiff", p, rnd);
-
     test2a (mpfr_round, "mpfr_round", p);
     test2a (mpfr_ceil, "mpfr_ceil", p);
     test2a (mpfr_floor, "mpfr_floor", p);
@@ -606,9 +596,22 @@ main (void)
     test2 (mpfr_rint_trunc, "mpfr_rint_trunc", p, rnd);
     test2 (mpfr_frac, "mpfr_frac", p, rnd);
 
+    test3 (mpfr_add, "mpfr_add", p, rnd);
+    test3 (mpfr_sub, "mpfr_sub", p, rnd);
+    test3 (mpfr_mul, "mpfr_mul", p, rnd);
+    test3 (mpfr_div, "mpfr_div", p, rnd);
+
+    test3 (mpfr_agm, "mpfr_agm", p, rnd);
+    test3 (mpfr_min, "mpfr_min", p, rnd);
+    test3 (mpfr_max, "mpfr_max", p, rnd);
+
+    test3 (reldiff_wrapper, "mpfr_reldiff", p, rnd);
+    test3 (mpfr_dim, "mpfr_dim", p, rnd);
+
     test3 (mpfr_remainder, "mpfr_remainder", p, rnd);
     test3 (mpfr_pow, "mpfr_pow", p, rnd);
     test3 (mpfr_atan2, "mpfr_atan2", p, rnd);
+    test3 (mpfr_hypot, "mpfr_hypot", p, rnd);
 
     test3a (mpfr_sin_cos, "mpfr_sin_cos", p, rnd);
 
