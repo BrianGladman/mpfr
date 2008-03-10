@@ -1294,6 +1294,8 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
             {
               np->ip_trailing_zeros = np->ip_size - str_len;
               np->ip_size = str_len;
+              if (spec.alt)
+                np->point = MPFR_DECIMAL_POINT;
             }
           else
             /* str may contain some digits which are in fractional part */
