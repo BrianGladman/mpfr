@@ -13,7 +13,7 @@ Algorithms and Proofs}
 \author{The MPFR team}
 
 \DeclareMathOperator{\acosh}{acosh}
-\DeclareMathOperator{\Li2}{Li2}
+\DeclareMathOperator{\Li2}{Li_2}
 
 \def\O{{\mathcal O}}
 \def\n{\textnormal}
@@ -3490,22 +3490,24 @@ where we used $2^{-w} U \leq \ulp(U)$.
 
 \subsection{The Dilogarithm function}
 
-The \texttt{mpfr\_Li2} function computes the real part of the dilogarithm 
+The \texttt{mpfr\_li2} function computes the real part of the dilogarithm
 function defined by:
 \[
 \Li2(x) = - \int_0^x \frac{\log(1-t)}{t} dt.
 \]
-
+The above relation defines a multivalued function in the complex plane, we
+choose a branch so that $\Li2(x)$ is real for $x$ real, $x < 1$ and we compute
+only the real part for $x$ real, $x \geq 1$.
 
 When $x \in ]0, \frac{1}{2}]$, we use the series 
-(see \cite[p178]{VoWe05}):
+(see \cite[Eq. (5)]{VoWe05}):
 \[
 \Li2(x) = \sum_{n=0}^\infty \frac{B_n}{(n+1)!} (-\log(1-x))^{n+1}
 \]
 where $B_n$ is the $n$-th Bernoulli number.
 
 Otherwise, we perform an argument reduction using the following identities 
-(see \cite[p200]{GiZa75}):
+(see \cite{GiZa75}):
 
 \begin{tabular}{l r c l}
 $x \in [2, +\infty[ $&$ \Re(\Li2(x)) $&$=$&$ \frac{\pi^2}{3}
@@ -3520,7 +3522,7 @@ $x \in [-1, 0[ $&$
 \Li2(x) $&$=$&$ -\frac{1}{2} \log^2(1-x) - \Li2\left(\frac{x}{x - 1}\right)$\\
 $x \in ]-\infty, -1[ $&$ \Li2(x) $&$=$&$ -\frac{\pi^2}{6} 
 - \frac{1}{2} \log(1 -x) [2 \log(-x) - \log(1 - x)]
-+ \Li2\left(\frac{1}{1 - x}\right)$
++ \Li2\left(\frac{1}{1 - x}\right).$
 \end{tabular}
 
 
@@ -3529,37 +3531,35 @@ Assume first $0 < x \leq \frac{1}{2}$, the odd Bernoulli numbers being zero
 \[
 \Li2(x) = - \frac{\log^2(1-x)}{4} + S(-\log(1-x))
 \]
-
 where  
 \[
 S(z) = \sum_{k=0}^\infty \frac{B_{2k}}{(2k+1)!} z^{2k+1}.
 \]
-Let $S_N(z)$ the $N$-th partial sum, and $R_N(z)$ the truncation error.
+Let $S_N(z) = \sum_{k \leq N} \frac{B_{2k}}{(2k+1)!} z^{2k+1}$ the $N$-th
+partial sum, and $R_N(z)$ the truncation error.
 The even Bernoulli numbers verify the following inequality 
-(from \cite[p805]{AbSt73}):
+for all $n \geq 1$ (\cite[Inequalities 23.1.15]{AbSt73}):
 \[
-(-1)^{n+1}B_{2n} < \frac{2(2n)!}{(2\pi)^{2n}}
-\left(\frac{1}{1 - 2^{1-2n}}\right)
+\frac{2(2n)!}{(2\pi)^{2n}} < \left|B_{2n}\right|
+< \frac{2(2n)!}{(2\pi)^{2n}} \left(\frac{1}{1 - 2^{1-2n}}\right),
 \]
-for all $n \geq 1$, so we have 
+so we have for all $N \geq 0$
 \[
 \frac{|B_{2N+2}|}{(2N+3)!}|z|^{2N+3} <
 \frac{2|z|}{(1-2^{-2N-1})(2N+3)} \left|\frac{z}{2 \pi}\right|^{2N+2},
 \]
 showing that $S(z)$ converges for $|z| < 2 \pi$.
-As the series is alternating, we can bound the truncature error $|R_N(z)|$ for
-$0 < z \leq \log 2$:
+As the series is alternating, we then have an upper bound for the truncation
+error $|R_N(z)|$ when $0 < z \leq \log 2$:
 \[
-|R_N(z)| < 2^{\Exp(z)-4N-4}.
+|R_N(z)| < 2^{\Exp(z)-6N-5}.
 \]
-
 
 The partial sum $S_N(z)$ computation is implemented as follows: 
 \begin{quote}
 Algorithm {\tt li2\_series}\\
-Input: $z$ with $z \in ]0, \log2]$, the output precision $n$, and a rounding
-  mode $\circ_n$ \\
-Output: $\circ_n(S(z))$ \\
+Input: $z$ with $z \in  ]0, \log2]$\\
+Output: $\circ(S(z))$\\
 $u \leftarrow \pinf(z^2)$ \\
 $v \leftarrow \pinf(z)$ \\
 $s \leftarrow \pinf(z)$ \\
@@ -3571,44 +3571,16 @@ $s \leftarrow \pinf(z)$ \\
 \q $v \leftarrow \pinf(v / (2k+1))$\\
 \q $w \leftarrow \N(v B'_k)$\\
 \q $s \leftarrow \N(s + w)$\\
-\while\ $|w| > \ulp(s)$\\
-\If\ $s$ cannot be exactly rounded according to the given mode $\circ_n$\\
-\then\ increase the working precision and restart calculation\\
-\Else\ return $\circ_n(s)$
+\q \If\ $|w| < \ulp(s)$ \then\ return $s$.\\
 \end{quote}
 where $B'_k = B_{2k} (2k+1)!$ is an exact representation in \texttt{mpn}
-numbers.
+integers.
 
-
-Let $v_i$, $w_i$, and $s_i$ be the value of $v$, $w$, and $s$ respectively
-after the $i$-th loop (before entering the loop if $i=0$); let $k_{v_i}$,
-$k_{w_i}$, and $\kappa_{s_i}$ so that $\n{error}(v_i) \leq k_{v_i} \ulp(v_i)$,
-$\n{error}(w_i) \leq k_{w_i} \ulp(w_i)$, and $\n{error}(s_i) \leq
-2^{\kappa_{s_i}} \ulp(s_i)$. We have 
-
-\begin{tabular}{l r c l}
-$k_{v_0} = 1$, & $k_{v_i}$ & = & $63 + 32 k_{v_i}$,\\
-& $k_{w_i}$ & = & $\frac{1}{2} + 126 + 128 k_{v_{i-1}}$,\\
-$2^{\kappa_{s_0}} = 1$, & $2^{\kappa_{s_i}}$ & = & $\frac{1}{2}
-+ k_{w_i} 2^{\Exp(w_i) - \Exp(s_i)} + 2^{\kappa_{s_{i-1}}+\Exp(s_{i-1})-\Exp(s_i)}$.
-\end{tabular}
-
-So $k_{v_i} = \frac{94 \times 2^{5i}-63}{31}$, $k_w < 2^{5i+8}$, and 
-$\kappa_{s_i} = 2 + {\rm max}(-1, 5i + 8 + \Exp(w) - \Exp(s_i),
-\kappa_{s_{i-1}} + \Exp(s_{i-1}) - \Exp(s_i))$.
-This is useful for determining whether $s_i$ can be exactly rounding to the
-given precision in the given direction, but we will also need an relative
-error estimation.
-
-
-[FIXME:not convincing at all]
-If $z = (1+\theta) \tilde{z}$ where $\tilde{z} = f(x)$ is the exact value and
-if $|\theta| \leq \frac{1}{2k+1}$, then $S_k(z) = S_k(\tilde{z})(1+\theta')$
-with $|\theta'| \leq \frac{(2k+1)|\theta|}{1-(2k+1)|\theta|}$ using the 
-Lemma~\ref{lemma_graillat}.
-Assuming $|\theta| \leq \frac{1}{2(2k+1)}$, we have 
-$|\theta'| \leq 2(2k+1)|\theta|$.
-[FIXME:$|R_N|$?]
+Let $p$ the working precision. Using Higham's method, before entering the loop
+we have $u = z^2(1+\theta)$, $v = s = z(1+\theta)$ where different instances
+of $\theta$ denote different variables and $|\theta| \leq 2^{-p}$. After the 
+$k$-th loop, $v = z^{2k+1}/((2k+1)!2k(2k+1)) (1+\theta)^{6k}$,
+$w = B_{2k}z^{2k+1}/(2k+1)! (1+\theta)^{6k+1}$.
 
 
 

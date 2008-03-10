@@ -150,9 +150,9 @@ li2_series (mpfr_t sum, mpfr_srcptr z, mpfr_rnd_t rnd_mode)
         }
 
       /* the previous value of err is the rounding error,
-         the truncation error is less than EXP(z) - 4 * i - 4
+         the truncation error is less than EXP(z) - 6 * i - 5
          (see algorithms.tex) */
-      err = MAX (err, MPFR_GET_EXP (z) - 4 * i - 4) + 1;
+      err = MAX (err, MPFR_GET_EXP (z) - 6 * i - 5) + 1;
       if (MPFR_CAN_ROUND (s, p - err, sump, rnd_mode))
         break;
 
