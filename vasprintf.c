@@ -718,7 +718,8 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
     {
       mp_limb_t *pm = MPFR_MANT (p);
       mp_size_t ps;
-      int digit, shift;
+      int digit;
+      unsigned int shift;
       int rnd_away;
 
       /* rnd_away:
@@ -740,7 +741,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
          if MPFR_PREC (p) < 4, we can read 4 bits in its first limb */
       shift = BITS_PER_MP_LIMB - 4;
       ps = (MPFR_PREC (p) - 1) / BITS_PER_MP_LIMB;
-      digit = pm[ps]>>shift;
+      digit = pm[ps] >> shift;
 
       if (MPFR_PREC (p) > 4)
         /* round taking into account bits outside the first 4 ones */
@@ -758,7 +759,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
                 rnd_away = 0;
               else
                 {
-                  mask = MPFR_LIMB_MASK (shift);
+                  mask = MPFR_LIMB_MASK (shift - 1);
                   limb = pm[ps] & mask;
                   while ((ps > 0) && (limb == 0))
                     limb = pm[--ps];

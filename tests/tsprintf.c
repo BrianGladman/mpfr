@@ -354,6 +354,17 @@ hexadecimal (void)
   check_sprintf ("  -0xfp+24", "%+10.0RUa", x);
   check_sprintf ("   -0x0p+0", "%+10.0RUa", z);
 
+  /* rounding bit is zero */
+  mpfr_set_str (x, "0xF.7", 16, GMP_RNDN);
+  check_sprintf ("0XFP+0", "%.0RNA", x);
+  /* tie case in round to nearest mode */
+  mpfr_set_str (x, "0x0.8800000000000000p+3", 16, GMP_RNDN);
+  check_sprintf ("0x8.p-1", "%#.0RNa", x);
+  mpfr_set_str (x, "-0x0.9800000000000000p+3", 16, GMP_RNDN);
+  check_sprintf ("-0xap-1", "%.0RNa", x);
+  /* trailing zeros in fractional part */
+  check_sprintf ("-0X4.C0000000000000000000P+0", "%.20RNA", x);
+
   mpfr_clears (x, z, (mpfr_ptr) 0);
   return 0;
 }
