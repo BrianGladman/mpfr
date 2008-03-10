@@ -91,7 +91,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
      if 2*diff_exp > Nx (see above as if Nz = Nx), therefore on Nz bits.
      Hence the condition: 2*diff_exp > MAX(Nz,Nx).
   */
-  if (diff_exp > MAX (Nz, Nx) / 2)
+  if (diff_exp > (MAX (Nz, Nx) + 1) / 2)
     /* result is |x| or |x|+ulp(|x|,Nz) */
     {
       if (MPFR_UNLIKELY (rnd_mode == GMP_RNDU))
@@ -155,10 +155,10 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
       /* computations of hypot */
       mpfr_div_2si (te, x, sh, GMP_RNDZ); /* exact since Nt >= Nx */
       mpfr_div_2si (ti, y, sh, GMP_RNDZ); /* exact since Nt >= Ny */
-      exact = mpfr_mul (te, te, te, GMP_RNDZ);    /* x^2 */
-      exact |= mpfr_mul (ti, ti, ti, GMP_RNDZ);   /* y^2 */
-      exact |= mpfr_add (t, te, ti, GMP_RNDZ);    /* x^2 + Y^2 */
-      exact |= mpfr_sqrt (t, t, GMP_RNDZ);        /* sqrt(x^2+y^2)*/
+      exact = mpfr_sqr (te, te, GMP_RNDZ);     /* x^2 */
+      exact |= mpfr_sqr (ti, ti, GMP_RNDZ);    /* y^2 */
+      exact |= mpfr_add (t, te, ti, GMP_RNDZ); /* x^2 + Y^2 */
+      exact |= mpfr_sqrt (t, t, GMP_RNDZ);     /* sqrt(x^2+y^2)*/
 
       if (MPFR_LIKELY (exact == 0
                        || MPFR_CAN_ROUND (t, Nt-2, Nz, rnd_mode)))

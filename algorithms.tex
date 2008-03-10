@@ -2269,73 +2269,107 @@ have
 Let $p_x$ the precision of input variable $x$, $p_z$ the output precision and
 $z=\circ_{p_z}(\sqrt{x^2+y^2})$ the expected result.
 When $\Exp(x) - \Exp(y) > \frac{p_z+1}{2}$, we have
-$\frac{y^2}{2|x|} < \frac{1}{2}\ulp_{p_z}(x)$, and then the inequality
-given above shows that $z=\circ_{p_z}(|x|)$.
+$\frac{y^2}{2|x|} < \frac{1}{2}\ulp_{p_z}(x)$.
 When $p_z < p_x$, the stronger condition $\Exp(x) - \Exp(y) > \frac{p_x+1}{2}$
 ensures that $\sqrt{x^2+y^2} - |x| < \frac{1}{2} \ulp(x)$.
+In both cases, the inequalities show that $z=\circ_{p_z}(|x|)$.
+
 
 When none of the above conditions is satisfied, we use the following
 algorithm:
 \begin{quote}
-Algorithm {\tt hypot}\\
-Input: $x$ and $y$ with $|y| \leq |x|$, $p$ the working precision\\
-Output: $\sqrt{x^2+y^2}$ with $p-2$ bits of precision\\
-\begin{tabular}{l p{1cm} l c r}
-$u \leftarrow \Z(x^2)$ & & $\error(u)$ & $\leq$ & $\ulp(u)$\\
-$v \leftarrow \Z(y^2)$ & & $\error(v)$ & $\leq$ & $\ulp(v)$\\
-$w \leftarrow \Z(u+v)$ & & $\error(w)$ & $\leq$ & $3\ \ulp(w)$\\
-$t \leftarrow \Z(\sqrt{w})$ & & $\error(t)$ & $\leq$ & $4\ \ulp(t)$\\
-\end{tabular}
+  Algorithm {\tt hypot}\\
+  Input: $x$ and $y$ with $|y| \leq |x|$, $p$ the working precision\\
+  Output: $\sqrt{x^2+y^2}$ with $p-2$ bits of precision\\
+  \begin{tabular}{l p{5em} l c c l}
+    $u \leftarrow \Z(x^2)$ & & $\error(u)$ & $\leq$ & 1 & $\ulp(u)$\\
+    $v \leftarrow \Z(y^2)$ & & $\error(v)$ & $\leq$ & 1 & $\ulp(v)$\\
+    $w \leftarrow \Z(u+v)$ & & $\error(w)$ & $\leq$ & 3 & $\ulp(w)$\\
+    $t \leftarrow \Z(\sqrt{w})$ & & $\error(t)$ & $\leq$ & 4 & $\ulp(t)$\\
+  \end{tabular}
 \end{quote}
 
 In the above algorithm, $\Z(x^2)$ or $\Z(y^2)$ may overflow though the result
 $z$ is representable. Let us assume, as it is the case in MPFR, that the
 minimal and maximal acceptable exponents (respectively $e_{min}$ and
-$e_{max}$) verify $e_{max} = -e_{min} > 0$ and that the maximal precision is
-less than $2e_{max}$. Let $s=\Z(\frac{\Exp(x)+\Exp(y)}{2})$ (integer division
-with rounding towards zero), in order to avoid overflow, we shift $x$ and $y$
-exponents by $-s$ before entering the algorithm and shift back the output's
-exponent by $+s$. Let us see now that no overflow goes on when $z$ is
-representable.
+$e_{max}$) verify $e_{max} = -e_{min} > 2$ and that the maximal precision is
+less than $2e_{max}$. Let $s=\Z(\frac{\Exp(x) + \Exp(y) + 1}{2})$ (integer
+division with rounding towards zero), we have $\frac{\Exp(x)+\Exp(y)}{2} \leq
+s \leq \frac{\Exp(x) + \Exp(y)}{2} + 1$. In order to avoid overflow, we shift
+input's exponents by $-s$ before entering the algorithm and shift back the
+output's exponent by $+s$. Let us see now that no overflow goes on when the
+exact value $\sqrt{x^2+y^2}$ is representable.
 
-Let us prove first that the exponent shifts do no cause overflow. As
-$|x| \geq |y|$, we have $\Exp(x) \geq \Exp(y)$.
+
+Let us prove first that the exponent shifts do no cause overflow. Note that
+because $|y| \leq |x|$, we have $\Exp(y) \leq \Exp(x)$, thus $\Exp(y) -s \leq
+\frac{\Exp(y) - \Exp(x)}{2} \leq 0$ and we just need to prove that
+$\Exp(x) - s \leq e_{max}$.
 
 The case $\Exp(x)=-\Exp(y)$ is straightforward: $s=0$.
 
-Assume now that $\Exp(x) > -\Exp(y)$, we have
-$\frac{\Exp(x)+\Exp(y)}{2} \geq s \geq \frac{\Exp(x)+\Exp(y)-1}{2} \geq 0$,
-$s$ being one or the other bound according to the parity of
-$\Exp(x) +\Exp(y)$. As $s$ is non-negative, we have
-$e_{max} \geq \Exp(x) \geq \Exp(x) - s$.
-On the other hand, $\Exp(x) \geq \frac{\Exp(x)+\Exp(y)}{2}$ thus
-$\Exp(x) - s \geq 0 \geq -e_{max}$.
-In the same way, $e_{max} \geq \Exp(y) \geq \Exp(y) - s$ and
-$\Exp(y) - s \geq \frac{\Exp(y)-\Exp(x)}{2} \geq -\Exp(x) \geq -e_{max}$.
+Assume now that $-\Exp(y) < \Exp(x)$, then using the definition of $s$ we have
+$s \geq \frac{\Exp(x) + \Exp(y)}{2} > 0$, this gives $\Exp(x) - s < \Exp(x)$.
+As $e_{max}$ is the upper bound for exponents, we have $\Exp(x) -s < e_{max}$.
 
-At last, assume that $\Exp(x) < -\Exp(y)$, we have
-$0 \geq \frac{\Exp(x)+\Exp(y)+1}{2} \geq s \geq \frac{\Exp(x)+\Exp(y)}{2}$.
-As $s$ is non-positive, this means $\Exp(x) - s \geq \Exp(x) \geq -e_{max}$.
-Using the hypothesis $\Exp(x) < -\Exp(y)$, we have
-$\frac{\Exp(x) - \Exp(y)}{2} \geq \Exp(x)$ thus $e_{max} \geq -\Exp(y) \geq \Exp(x) - s$.
-In the same way, $\Exp(y) - s \geq \Exp(y) \geq -e_{max}$ and
-$e_{max} \geq -\Exp(x) \geq \frac{\Exp(y)-\Exp(x)}{2} \geq \Exp(y)-s$.
+In the case $\Exp(x) < -\Exp(y)$, the definition of $s$ implies that
+$\frac{\Exp(x) + \Exp(y)}{2} \leq s$, so $\Exp(x)-s \leq
+\frac{\Exp(x) - \Exp(y)}{2}$. But in the present case, we have
+$\frac{\Exp(x) - \Exp(y)}{2} < -\Exp(y)$ and, using the lower bound for
+exponents $-e_{max} \leq \Exp(y)$, we can conclude that
+$\Exp(x) - s < e_{max}$.
 
-Now, we will show that the squares do never overflow with the shifted
-operands.
-Note that $\Exp(x)-\Exp(y) \leq \frac{p_z}{2}$, otherwise that case would
-satisfy the conditions given above and $z$ would have been computed using
-$|x|$. So, considering the condition on the maximal precision, we have here
-$-e_{max} < \Exp(y) - \Exp(x) \leq 0 \leq \Exp(x) - \Exp(y) < e_{max}$.
-Whatever the sign of $s$ we have $s \geq \frac{\Exp(x) + \Exp(y) - 1}{2}$,
-thus $\Exp(y) - s \leq \Exp(x) - s \leq \frac{\Exp(x)-\Exp(y)+1}{2}
-< \frac{e_{max}+1}{2}$ which means $\Exp(x) - s \leq \frac{e_{max}}{2}$
-showing that the squares will not overflow.
 
-Finally, let us show that the addition with the shifted operands overflow if,
-and only if, $\sqrt{x^2+y^2} \geq 2^{e_{max}}$.
+Secondly, we need to show that the squares of the shifted inputs do never
+overflow. Let us point out that $\Exp(x) - \Exp(y) \leq \frac{p_z + 1}{2}$,
+otherwise, that case would that case would satisfy the conditions given above
+and the result $z$ would have been computed using $|x|$.
+Using the condition on maximal precision $p_z < 2e_{max}$, we can write
+$\frac{p_z + 1}{2} \leq e_{max}$ because if $p_z$ is even,
+$p_z + 1 < 2e_{max}$ and if $p_z$ is odd, $p_z +1 \leq 2e_{max}$. Thus,
+$\Exp(x) - \Exp(y) \leq e_{max}$. Whatever the sign of $s$ we have
+$\Exp(x) - s \leq \frac{\Exp(x) - \Exp(y)}{2}$ which is bounded by
+$\frac{e_{max}}{2}$. Let $x_s = x/2^s$ and $y_s = y/2^s$ be the shifted
+inputs, from the preceding inequalities we can see that $2\Exp(x_s) \leq
+e_{max}$ and we can conclude that $\Exp(y_s^2) \leq \Exp(x_s^2) \leq e_{max}$,
+that is to say the squares do not overflow.
+
+
+Thirdly, noticing that the square of $y_s$ may underflow, let us prove that
+the computed value is still correct despite this underflow. Actually, 
+$\frac{\Exp(x)+\Exp(y)}{2} \leq s \leq \frac{\Exp(x) + \Exp(y)}{2} + 1$ shows
+that $-\Exp(x_s) \geq \Exp(y_s) \geq -\Exp(x_s) - 2$. [TODO]
+
+
+Fourthly, let us see that the addition does not overflow. The addition
+overflows when $\Exp(w) > e_{max}$, since $u$ and $v$ are representable and
+the rounding mode is towards zero, the only case in which this happens is when
+$u + v \geq 2^{\Exp(u)}$ and $\Exp(w) = \Exp(u) + 1$.
+Then $v \geq 2^{\Exp(u)} - u$ and $\Exp(u) = e_{max}$.
+We proved above that $2\Exp(x_s) \leq e_{max}$ and we know that
+$\Exp(u) \leq 2\Exp(x_s)$, so using the last three relations we can write
+$2\Exp(x_s) = \Exp(u) = e_{max}$ which is not possible if $e_{max}$ is odd.
+Assume that $e_{max}$ is even, then $u \leq (1-2^{-p})2^{\Exp(u)}$ where $p$
+is the working precision in the algorithm and we have $v \geq 2^{\Exp(u)-p}$,
+on the other hand, because of the rounding towards zero mode
+$2^{2\Exp(y_s)} \geq v$, thus $p \geq 2\left(\Exp(x_s) - \Exp(y_s)\right)$.
+Using the fact that $\Exp(y_s) \geq -\Exp(x_s) - 2$, we can write $p \geq
+4\Exp(x_s) + 4 > 2e_{max}$ which is incompatible with the upper limit for
+precision. In conclusion, the addition does not overflow in any case.
+
+
+Finally, let us show that the back shift do not raise underflow nor overflow
+unless the exact result is not representable.
+As $\sqrt{x^2+y^2} \geq |x|$, \texttt{mpfr\_hypot} should never underflow.
+We have $\Exp(x_s) = \Exp(x) - s$ by definition of $s$, 
+$2\Exp(x) - 2s \geq \Exp(u) \geq 2\Exp(x) - 2s - 1$ because the squared
+mantissa of $x$ may be less than $\frac{1}{2}$,
+$2\Exp(x) - 2s + 1 \geq \Exp(w) \geq 2\Exp(x) - 2s - 1$ because $u \geq v$,
+$\Exp(x) - s + 1 \geq \Exp(t) \geq \Exp(x) - s$ ($\Exp(\sqrt{r}) = n$ when
+$\Exp(r) = 2n$ is even and $\Exp(\sqrt{r}) = n + 1$ when $\Exp(r) = 2n + 1$ is
+odd), and $\Exp(x) + 1 \geq \Exp(z) \geq \Exp(x)$ which shows that it does not
+unverflow but may overflow when $\Exp(x) = e_{max}$.
 [TODO]
-
 
 \subsection{The floating multiply-add function}
 
