@@ -114,9 +114,7 @@ enum arg_t
     SHORT_ARG,
     LONG_ARG,
     LONG_LONG_ARG,
-#ifdef HAVE_STDINT_H
     INTMAX_ARG,
-#endif
     SIZE_ARG,
     PTRDIFF_ARG,
     LONG_DOUBLE_ARG,
@@ -126,7 +124,8 @@ enum arg_t
     MP_LIMB_ARRAY_ARG,
     MPZ_ARG,
     MPFR_PREC_ARG,
-    MPFR_ARG
+    MPFR_ARG,
+    UNSUPPORTED
   };
 
 /* Each conversion specification of the format string will be translated in a
@@ -225,7 +224,11 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
       if (*++format == 'l')
         {
           ++format;
+#ifdef HAVE_LONG_LONG
           specinfo->arg_type = LONG_LONG_ARG;
+#else
+          specinfo->arg_type = UNSUPPORTED;
+#endif
           break;
         }
       else
@@ -235,14 +238,20 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
         }
     case 'q':
       ++format;
+#ifdef HAVE_LONG_LONG
       specinfo->arg_type = LONG_LONG_ARG;
+#else
+      specinfo->arg_type = UNSUPPORTED;
+#endif
       break;
-#ifdef HAVE_STDINT_H
     case 'j':
       ++format;
+#ifdef HAVE_STDINT_H
       specinfo->arg_type = INTMAX_ARG;
-      break;
+#else
+          specinfo->arg_type = UNSUPPORTED;
 #endif
+      break;
     case 'z':
       ++format;
       specinfo->arg_type = SIZE_ARG;
@@ -320,6 +329,16 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
   break;
 #endif
 
+
+#ifdef HAVE_LONG_LONG
+#define CASE_LONG_LONG_ARG(specinfo, ap)        \
+  case LONG_LONG_ARG:                           \
+  (void) va_arg ((ap), long long);              \
+  break;                                  
+#else
+#define CASE_LONG_LONG_ARG(specinfo, ap)
+#endif
+
 #define CONSUME_VA_ARG(specinfo, ap)            \
   do {                                          \
     switch ((specinfo).arg_type)                \
@@ -328,11 +347,9 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
       case SHORT_ARG:                           \
         (void) va_arg ((ap), int);              \
         break;                                  \
-        CASE_LONG_ARG (specinfo, ap)            \
-      case LONG_LONG_ARG:                       \
-        (void) va_arg ((ap), long long);        \
-        break;                                  \
-        CASE_INTMAX_ARG (specinfo, ap)          \
+      CASE_LONG_ARG (specinfo, ap)              \
+      CASE_LONG_LONG_ARG (specinfo, ap)         \
+      CASE_INTMAX_ARG (specinfo, ap)            \
       case SIZE_ARG:                            \
         (void) va_arg ((ap), size_t);           \
         break;                                  \
@@ -1804,7 +1821,12 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
         spec.prec = -1;
 
       fmt = parse_arg_type (fmt, &spec);
-      if (spec.arg_type == MPFR_ARG)
+      if (spec.arg_type == UNSUPPORTED)
+        /* the current architecture doesn't support this type */
+        {
+          goto error;
+        }
+      else if (spec.arg_type == MPFR_ARG)
         {
           switch (*fmt)
             {
@@ -1957,13 +1979,12 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
           else
             {
               mpfr_free_str (s);
-              goto error;
+              goto overflow_error;
             }
         }
       else if (spec.arg_type == MPFR_ARG)
         /* output a mpfr_t variable */
         {
-          int length = 0;
           mpfr_srcptr p;
 
           p = va_arg (ap, mpfr_srcptr);
@@ -1984,11 +2005,14 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
             case 'F':
             case 'g':
             case 'G':
-              length = sprnt_fp (&buf, p, spec);
-            }
+              if (sprnt_fp (&buf, p, spec) < 0)
+                goto overflow_error;
+              break;
 
-          if ((length < 0) || ((long)buf.size + length > INT_MAX))
-            goto error;
+            default:
+              /* unsupported specifier */
+              goto error;
+            }
         }
       else
         /* gmp_printf specification, step forward in the va_list */
@@ -2021,18 +2045,20 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
   if (nbchar <= INT_MAX)
     {
       MPFR_SAVE_EXPO_FREE (expo);
-      return (int) nbchar;
+      return nbchar;
     }
+
+ overflow_error:
+  MPFR_SAVE_EXPO_UPDATE_FLAGS(expo, MPFR_FLAGS_ERANGE);
+#ifdef EOVERFLOW
+  errno = EOVERFLOW;
+#endif
 
  error:
   MPFR_SAVE_EXPO_FREE (expo);
   *ptr = NULL;
   (*__gmp_free_func) (buf.start, buf.size);
 
-  mpfr_set_erangeflag ();
-#ifdef EOVERFLOW
-  errno = EOVERFLOW;
-#endif
   return -1;
 }
 

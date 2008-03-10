@@ -136,7 +136,7 @@ check_mixed (FILE *fout)
   unsigned long long ullo = -1;
 #endif
 
-#ifdef HAVE_STDINT_H
+#ifdef _MPFR_H_HAVE_INTMAX_T
   intmax_t im = -1;
   uintmax_t uim = 1;
 #endif
@@ -207,7 +207,7 @@ check_mixed (FILE *fout)
   MPFR_ASSERTN (ullo == 12);
 #endif
 
-#ifdef HAVE_STDINT_H
+#ifdef _MPFR_H_HAVE_INTMAX_T
   check_vfprintf (fout, "a. %*RA, b. %ji%Qn\n", 10, mpfr, im, &mpq);
   MPFR_ASSERTN (mpq_cmp_ui (mpq, 20, 1) == 0);
   check_vfprintf (fout, "a. %.*Re, b. %jx%Fn\n", 10, mpfr, uim, &mpf);
