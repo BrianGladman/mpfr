@@ -249,7 +249,7 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
 #ifdef HAVE_STDINT_H
       specinfo->arg_type = INTMAX_ARG;
 #else
-          specinfo->arg_type = UNSUPPORTED;
+      specinfo->arg_type = UNSUPPORTED;
 #endif
       break;
     case 'z':
@@ -334,7 +334,7 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
 #define CASE_LONG_LONG_ARG(specinfo, ap)        \
   case LONG_LONG_ARG:                           \
   (void) va_arg ((ap), long long);              \
-  break;                                  
+  break;
 #else
 #define CASE_LONG_LONG_ARG(specinfo, ap)
 #endif
@@ -347,9 +347,9 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
       case SHORT_ARG:                           \
         (void) va_arg ((ap), int);              \
         break;                                  \
-      CASE_LONG_ARG (specinfo, ap)              \
-      CASE_LONG_LONG_ARG (specinfo, ap)         \
-      CASE_INTMAX_ARG (specinfo, ap)            \
+        CASE_LONG_ARG (specinfo, ap)            \
+          CASE_LONG_LONG_ARG (specinfo, ap)     \
+          CASE_INTMAX_ARG (specinfo, ap)        \
       case SIZE_ARG:                            \
         (void) va_arg ((ap), size_t);           \
         break;                                  \
@@ -406,7 +406,8 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
       }                                         \
   } while (0)
 
-/* process the format part which does not deal with mpfr types */
+/* process the format part which does not deal with mpfr types,
+   jump to external label 'error' if gmp_asprintf return -1. */
 #define FLUSH(flag, start, end, ap, buf_ptr)                    \
   do {                                                          \
     const size_t n = (end) - (start);                           \
@@ -416,7 +417,8 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
         char fmt_copy[n + 1];                                   \
         strncpy (fmt_copy, (start), n);                         \
         fmt_copy[n] = '\0';                                     \
-        sprntf_gmp ((buf_ptr), (fmt_copy), (ap));               \
+        if (sprntf_gmp ((buf_ptr), (fmt_copy), (ap)) == -1)     \
+          goto error;                                           \
         (flag) = 0;                                             \
       }                                                         \
     else if ((start) != (end))                                  \
@@ -440,12 +442,13 @@ buffer_init (struct string_buffer *b, size_t s)
   b->size = s;
 }
 
-/* Increase buffer size by at least LEN+1 characters. */
+/* Increase buffer size by a number of character being the least multiple of
+   4096 greater than LEN+1. */
 static void
 buffer_widen (struct string_buffer *b, size_t len)
 {
   const size_t pos = b->curr - b->start;
-  const size_t n = sizeof (char) * ((len + 1 > 4096) ? len + 1 : 4096);
+  const size_t n = sizeof (char) * 4096 * (1 + len / 4096);
 
   b->start =
     (char *) (*__gmp_reallocate_func) (b->start, b->size, b->size + n);
@@ -490,17 +493,17 @@ buffer_pad (struct string_buffer *b, const char c, const size_t n)
 }
 
 /* Form a string by concatenating the first LEN characters of STR to TZ
-   zero(s), insert into one character C each STEP characters starting from end
+   zero(s), insert into one character C each 3 characters starting from end
    to begining and concatenate the result to the buffer B. */
 static void
 buffer_sandwich (struct string_buffer *b, char *str, size_t len,
                  const size_t tz, const char c)
 {
-  const int step = 3;
-  const int size = len + tz;
-  const int r = size % step == 0 ? step : size % step;
-  const int q = size % step == 0 ? size / step - 1 : size / step;
-  int i;
+  const size_t step = 3;
+  const size_t size = len + tz;
+  const size_t r = size % step == 0 ? step : size % step;
+  const size_t q = size % step == 0 ? size / step - 1 : size / step;
+  size_t i;
 
   if (size == 0)
     return;
@@ -516,13 +519,13 @@ buffer_sandwich (struct string_buffer *b, char *str, size_t len,
   if (MPFR_UNLIKELY ((b->curr + size + 1 + q) > (b->start + b->size)))
     buffer_widen (b, size + q);
 
-  /* first r significant digits */
+  /* first R significant digits */
   memcpy (b->curr, str, r);
   b->curr += r;
   str += r;
   len -= r;
 
-  /* blocks of thousands. Warning: str might end in the middle of a block */
+  /* blocks of thousands. Warning: STR might end in the middle of a block */
   for (i = 0; i < q; ++i)
     {
       *b->curr++ = c;
@@ -535,7 +538,7 @@ buffer_sandwich (struct string_buffer *b, char *str, size_t len,
               len -= step;
             }
           else
-            /* last digits in str, fill up thousand block with zeros */
+            /* last digits in STR, fill up thousand block with zeros */
             {
               memcpy (b->curr, str, len);
               memset (b->curr + len, '0', step - len);
@@ -568,6 +571,7 @@ sprntf_gmp (struct string_buffer *b, const char *fmt, va_list ap)
   return length;
 }
 
+/* Helper struct and functions for temporary strings management */
 /* struct for easy string clearing */
 struct string_list
 {
@@ -628,17 +632,17 @@ enum pad_t
 struct number_parts
 {
   enum pad_t pad_type;    /* Padding type */
-  int pad_size;           /* Number of padding characters */
+  size_t pad_size;        /* Number of padding characters */
 
   char sign;              /* Sign character */
 
   char *prefix_ptr;       /* Pointer to prefix part */
-  int prefix_size;        /* Number of characters in *prefix_ptr */
+  size_t prefix_size;     /* Number of characters in *prefix_ptr */
 
   char thousands_sep;     /* Thousands separator (only with style 'f') */
 
   char *ip_ptr;           /* Pointer to integral part characters*/
-  int ip_size;            /* Number of digits in *ip_ptr */
+  size_t ip_size;         /* Number of digits in *ip_ptr */
   int ip_trailing_zeros;  /* Number of additional null digits in integral
                              part */
 
@@ -647,12 +651,12 @@ struct number_parts
   int fp_leading_zeros;   /* Number of additional leading zeros in fractional
                              part */
   char *fp_ptr;           /* Pointer to fractional part characters */
-  int fp_size;            /* Number of digits in *fp_ptr */
+  size_t fp_size;         /* Number of digits in *fp_ptr */
   int fp_trailing_zeros;  /* Number of additional trailing zeros in fractional
                              part */
 
   char *exp_ptr;          /* Pointer to exponent part */
-  int exp_size;           /* Number of characters in *exp_ptr */
+  size_t exp_size;        /* Number of characters in *exp_ptr */
 
   struct string_list *sl; /* List of string buffers in use: we need such a
                              mechanism because fp_ptr may point into the same
@@ -660,7 +664,8 @@ struct number_parts
 };
 
 /* Determine the different parts of the string representation of the regular
-   number p when spec.spec is 'a', 'A', or 'b'.
+   number P when SPEC.SPEC is 'a', 'A', or 'b'.
+
    return -1 if some field > INT_MAX */
 static int
 regular_ab (struct number_parts *np, mpfr_srcptr p,
@@ -698,7 +703,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
     /* In order to avoid ambiguity in rounding to even case, we will always
        output at least one fractional digit in binary mode */
     {
-      int nsd;
+      size_t nsd;
 
       /* Number of significant digits:
          - if no given precision, let mpfr_get_str determine it;
@@ -857,7 +862,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
       if (spec.prec < 0)
         /* remove trailing zeros, if any */
         {
-          while ((*ptr == '0') && str_len)
+          while ((*ptr == '0') && (str_len != 0))
             {
               --ptr;
               --str_len;
@@ -868,18 +873,18 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
         /* too much digits in fractional part */
         return -1;
 
-      if (str_len)
+      if (str_len != 0)
         /* there are some non-zero digits in fractional part */
         {
           np->fp_ptr = str;
-          np->fp_size = (int) str_len;
+          np->fp_size = str_len;
           if ((int) str_len < spec.prec)
             np->fp_trailing_zeros = spec.prec - str_len;
         }
     }
 
   /* decimal point */
-  if (np->fp_size || spec.alt)
+  if ((np->fp_size != 0) || spec.alt)
     np->point = MPFR_DECIMAL_POINT;
 
   /* the exponent part contains the character 'p', or 'P' plus the sign
@@ -915,7 +920,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
 }
 
 /* Determine the different parts of the string representation of the regular
-   number p when spec.spec is 'e', 'E', 'g', or 'G'.
+   number P when SPEC.SPEC is 'e', 'E', 'g', or 'G'.
 
    return -1 if some field > INT_MAX */
 static int
@@ -967,7 +972,7 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
       if (!keep_trailing_zeros)
         /* remove trailing zeros, if any */
         {
-          while ((*ptr == '0') && str_len)
+          while ((*ptr == '0') && (str_len != 0))
             {
               --ptr;
               --str_len;
@@ -978,19 +983,20 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
         /* too much digits in fractional part */
         return -1;
 
-      if (str_len)
+      if (str_len != 0)
         /* there are some non-zero digits in fractional part */
         {
           np->fp_ptr = str;
-          np->fp_size = (int) str_len;
-          if ((!spec_g || spec.alt) && ((int) str_len < spec.prec))
+          np->fp_size = str_len;
+          if ((!spec_g || spec.alt) && (spec.prec > 0)
+              && ((int)str_len < spec.prec))
             /* add missing trailing zeros */
             np->fp_trailing_zeros = spec.prec - str_len;
         }
     }
 
   /* decimal point */
-  if (np->fp_size || spec.alt)
+  if (np->fp_size != 0 || spec.alt)
     np->point = MPFR_DECIMAL_POINT;
 
   /* EXP is the exponent for decimal point BEFORE the first digit, we want
@@ -1064,7 +1070,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
     m /= 3;
     m++;
     n = 1;
-    while (m)
+    while (m != 0)
       {
         m >>= 1;
         n++;
@@ -1222,18 +1228,16 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
                   mp_exp_t exp;
                   char *ptr;
                   size_t str_len;
-                  const long nsd = spec.prec < 0 ? 0
+                  const size_t nsd = spec.prec < 0 ? 0
                     : spec.prec - mpfr_get_ui (x, GMP_RNDZ) + 1;
                   /* WARNING: nsd may equal 1, we use here the fact that
                      mpfr_get_str can return one digit with base ten
                      (undocumented feature, see comments in get_str.c) */
 
-                  MPFR_ASSERTD (nsd >= 0);
-
                   str = mpfr_get_str (NULL, &exp, 10, nsd, p, spec.rnd_mode);
                   register_string (np->sl, str);
                   np->fp_ptr = MPFR_IS_NEG (p) ? ++str : str; /* skip sign */
-                  np->fp_leading_zeros = (long)exp < 0 ? (long)(-exp) : 0;
+                  np->fp_leading_zeros = exp < 0 ? -exp : 0;
 
                   str_len = strlen (str); /* the sign has been skipped */
                   ptr = str + str_len - 1; /* points to the end of str */
@@ -1257,7 +1261,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
                   MPFR_ASSERTD (str_len > 0);
                   np->fp_size = str_len;
 
-                  if (!spec_g
+                  if (!spec_g && (spec.prec > 0)
                       && (np->fp_leading_zeros + np->fp_size < spec.prec))
                     /* add missing trailing zeros */
                     np->fp_trailing_zeros = spec.prec - np->fp_leading_zeros
@@ -1265,15 +1269,15 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
                 }
             }
         }
-      if (spec.alt || np->fp_leading_zeros || np->fp_size
-          || np->fp_trailing_zeros)
+      if (spec.alt || np->fp_leading_zeros != 0 || np->fp_size != 0
+          || np->fp_trailing_zeros != 0)
         np->point = MPFR_DECIMAL_POINT;
     }
   else
     /* 1 <= p */
     {
       mp_exp_t exp;
-      int nsd;  /* Number of significant digits */
+      size_t nsd;  /* Number of significant digits */
 
       mpfr_abs (x, p, GMP_RNDD); /* With our choice of precision,
                                     x == |p| exactly. */
@@ -1283,6 +1287,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
       /* We have rounded towards zero so that x == e + 1 (with p = m*10^e,
          see above). x is now the number of digits in the integral part. */
 
+      MPFR_ASSERTD (mpfr_cmp_si (x, 0) >= 0);
       if (mpfr_cmp_ui (x, INT_MAX) > 0)
         /* P is too large to print all its integral part digits */
         {
@@ -1290,7 +1295,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
           return -1;
         }
 
-      np->ip_size = mpfr_get_si (x, GMP_RNDN);
+      np->ip_size = mpfr_get_ui (x, GMP_RNDN);
 
       nsd = spec.prec < 0 ? 0 : spec.prec + np->ip_size;
       str = mpfr_get_str (NULL, &exp, 10, nsd, p, spec.rnd_mode);
@@ -1329,7 +1334,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
               if (!keep_trailing_zeros)
                 /* remove trailing zeros, if any */
                 {
-                  while ((*ptr == '0') && str_len)
+                  while ((*ptr == '0') && (str_len != 0))
                     {
                       --ptr;
                       --str_len;
@@ -1343,7 +1348,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
                   return -1;
                 }
 
-              if (str_len)
+              if (str_len != 0)
                 /* some digits in fractional part */
                 {
                   np->point = MPFR_DECIMAL_POINT;
@@ -1359,7 +1364,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
         {
           MPFR_ASSERTD (np->ip_size == exp);
 
-          if (spec.prec)
+          if (spec.prec != 0)
             {
               np->point = MPFR_DECIMAL_POINT;
               np->fp_ptr = str + np->ip_size;
@@ -1517,17 +1522,17 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
     {
       if (spec.spec == 'a' || spec.spec == 'A' || spec.spec == 'b')
         {
-          if (regular_ab (np, p, spec))
+          if (regular_ab (np, p, spec) == -1)
             goto error;
         }
       else if (spec.spec == 'f' || spec.spec == 'F')
         {
-          if (regular_fg (np, p, spec))
+          if (regular_fg (np, p, spec) == -1)
             goto error;
         }
       else if (spec.spec == 'e' || spec.spec == 'E')
         {
-          if (regular_eg (np, p, spec))
+          if (regular_eg (np, p, spec) == -1)
             goto error;
         }
       else
@@ -1592,14 +1597,14 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
                       mpfr_clear (z);
                     }
 
-                  MPFR_ASSERTD (round_to_1em4 >= 0);  /* rounding is defined */
+                  MPFR_ASSERTD (round_to_1em4 >= 0); /* rounding is defined */
                   if (round_to_1em4)
                     /* |p| = 0.0000abc_d is output as "1.00_0e-04" with
                        style 'e', so the conversion is with style 'f' */
                     {
                       spec.prec = threshold + 3;
 
-                      if (regular_fg (np, p, spec))
+                      if (regular_fg (np, p, spec) == -1)
                         goto error;
                     }
                   else
@@ -1608,7 +1613,7 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
                     {
                       spec.prec = threshold - 1;
 
-                      if (regular_eg (np, p, spec))
+                      if (regular_eg (np, p, spec) == -1)
                         goto error;
                     }
                 }
@@ -1617,7 +1622,7 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
                 {
                   spec.prec = threshold - 1 - x;
 
-                  if (regular_fg (np, p, spec))
+                  if (regular_fg (np, p, spec) == -1)
                     goto error;
                 }
             }
@@ -1625,7 +1630,7 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
             {
               spec.prec = threshold - 1;
 
-              if (regular_eg (np, p, spec))
+              if (regular_eg (np, p, spec) == -1)
                 goto error;
             }
         }
@@ -1674,6 +1679,7 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
 
  error:
   clear_string_list (np->sl);
+  np->prefix_ptr = NULL;
   np->ip_ptr = NULL;
   np->fp_ptr = NULL;
   np->exp_ptr = NULL;
@@ -1697,7 +1703,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
     return -1;
 
   /* right justification padding with left spaces */
-  if (np.pad_type == LEFT && np.pad_size)
+  if (np.pad_type == LEFT && np.pad_size != 0)
     buffer_pad (buf, ' ', np.pad_size);
 
   /* sign character (may be '-', '+', or ' ') */
@@ -1709,7 +1715,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
     buffer_cat (buf, np.prefix_ptr, np.prefix_size);
 
   /* right justification  padding with leading zeros */
-  if (np.pad_type == LEADING_ZEROS && np.pad_size)
+  if (np.pad_type == LEADING_ZEROS && np.pad_size != 0)
     buffer_pad (buf, '0', np.pad_size);
 
   /* integral part (may also be "nan" or "inf") */
@@ -1722,7 +1728,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
       buffer_cat (buf, np.ip_ptr, np.ip_size);
 
       /* trailing zeros in integral part */
-      if (np.ip_trailing_zeros)
+      if (np.ip_trailing_zeros != 0)
         buffer_pad (buf, '0', np.ip_trailing_zeros);
     }
 
@@ -1731,7 +1737,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
     buffer_pad (buf, np.point, 1);
 
   /* leading zeros in fractional part */
-  if (np.fp_leading_zeros)
+  if (np.fp_leading_zeros != 0)
     buffer_pad (buf, '0', np.fp_leading_zeros);
 
   /* significant digits in fractional part */
@@ -1739,7 +1745,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
     buffer_cat (buf, np.fp_ptr, np.fp_size);
 
   /* trailing zeros in fractional part */
-  if (np.fp_trailing_zeros)
+  if (np.fp_trailing_zeros != 0)
     buffer_pad (buf, '0', np.fp_trailing_zeros);
 
   /* exponent part */
@@ -1747,7 +1753,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
     buffer_cat (buf, np.exp_ptr, np.exp_size);
 
   /* left justication padding with right spaces */
-  if (np.pad_type == RIGHT && np.pad_size)
+  if (np.pad_type == RIGHT && np.pad_size != 0)
     buffer_pad (buf, ' ', np.pad_size);
 
   clear_string_list (np.sl);
@@ -1788,8 +1794,9 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
         break;
 
       if (*++fmt == '%')
-        /* %%: go on one step otherwise the second '%' would be considered
-           as a new conversion specification introducting character */
+        /* %%: go one step further otherwise the second '%' would be
+           considered as a new conversion specification introducing
+           character */
         {
           ++fmt;
           continue;
@@ -1922,7 +1929,7 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
                   n = -n;
                 else if (n == 0)
                   break;
-                
+
                 /* we assume here that mp_limb_t is wider than int */
                 * (mp_limb_t *) p = (mp_limb_t) nchar;
                 while (--n != 0)
@@ -1952,7 +1959,7 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
         {
           char *s;
           char format[MPFR_PREC_FORMAT_SIZE + 6]; /* see examples below */
-          int length;
+          size_t length;
           mpfr_prec_t prec;
           prec = va_arg (ap, mpfr_prec_t);
 
@@ -1971,7 +1978,7 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
           format[4 + MPFR_PREC_FORMAT_SIZE] = spec.spec;
           format[5 + MPFR_PREC_FORMAT_SIZE] = '\0';
           length = gmp_asprintf (&s, format, spec.width, spec.prec, prec);
-          if (buf.size <= (size_t)(INT_MAX - length))
+          if (buf.size <= INT_MAX - length)
             {
               buffer_cat (&buf, s, length);
               mpfr_free_str (s);

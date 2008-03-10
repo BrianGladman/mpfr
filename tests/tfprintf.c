@@ -30,7 +30,6 @@ MA 02110-1301, USA. */
 #include <stdint.h>
 #endif
 
-#include <gmp.h>
 #include "mpfr-test.h"
 
 #if MPFR_VERSION >= MPFR_VERSION_NUM(2,4,0)
@@ -336,20 +335,13 @@ main (int argc, char *argv[])
               exit (1);
             }
         }
-
-      check_special (fout);
     }
   else
     {
-      fout = stdout;
       N = atoi (argv[1]);
-      if (fout == NULL)
-        {
-          printf ("Can't open stdout\n");
-          exit (1);
-        }
     }
 
+  check_special (fout);
   check_mixed (fout);
   check_random (fout, N);
 

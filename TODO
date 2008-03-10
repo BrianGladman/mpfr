@@ -87,34 +87,6 @@ Table of contents:
 4. New functions to implement
 ##############################################################################
 
-- mpfr_fmod (mpfr_t, mpfr_srcptr, mpfr_srcptr, mp_rnd_t)
-  [suggested by Tomas Zahradnicky <tomas@24uSoftware.com>, 29 Nov 2003]
-  Kevin: Might want to be called mpfr_mod, to match mpz_mod.
-  -> we probably want to allow both mpfr_fmod and mpfr_mod.
-  Proposed implementation (apart from special cases):
-  int mpfr_fmod (mpfr_t r, mpfr_t x, mpfr_t y, mpfr_rnd_t r)
-  {
-     mpfr_t q;
-     int inexact;
-
-     /* if 2^(ex-1) <= |x| < 2^ex, and 2^(ey-1) <= |y| < 2^ey, then
-        |x/y| < 2^(ex-ey+1) */
-     mpfr_init2 (q, MAX(MPFR_PREC_MIN, mpfr_get_exp (x)-mpfr_get_exp (y) + 1));
-     mpfr_div (q, x, y, GMP_RNDZ);
-     mpfr_trunc (q, q);
-     mpfr_prec_round (q, mpfr_get_prec (q) + mpfr_get_prec (y), GMP_RNDZ);
-     mpfr_mul (q, q, y, GMP_RNDZ); /* exact */
-     inexact = mpfr_sub (r, x, q, r);
-     mpfr_clear (q);
-     return inexact;
-  }
-- dilog() [the dilogarithm: dilog(x) =  int(ln(t)/(1-t), t=1..x)]
-  See Numerical evaluation of multiple polylogarithms
-  Jens Vollinga and Stefan Weinzierl, Computer Physics Communications,
-  Volume 167, Issue 3, 1 May 2005, Pages 177-194
-  Cf also http://calgo.acm.org/ (490.gz)
-- mpfr_printf [Sisyphus <kalinabears@iinet.net.au> Tue, 04 Jan 2005]
-  for example mpfr_printf ("%.2Ff\n", x)
 - wanted for Magma [John Cannon <john@maths.usyd.edu.au>, Tue, 19 Apr 2005]:
   HypergeometricU(a,b,s) = 1/gamma(a)*int(exp(-su)*u^(a-1)*(1+u)^(b-a-1),
                                     u=0..infinity)
@@ -299,9 +271,6 @@ Table of contents:
   avoid cancellation in say erfc(x) for x large, they compute the Taylor
   expansion of erfc(x)*exp(x^2/2) instead (which has less cancellation),
   and then divide by exp(x^2/2) (which is simpler to compute).
-
-- avoid successive calls to strcat in vasprintf.c, which can give a
-  complexity in O(n^2) instead of O(n).
 
 
 ##############################################################################
