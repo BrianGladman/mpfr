@@ -349,6 +349,8 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
         (void) va_arg ((ap), mpq_srcptr);       \
         break;                                  \
       case MP_LIMB_ARG:                         \
+        (void) va_arg ((ap), mp_ptr);           \
+        break;                                  \
       case MP_LIMB_ARRAY_ARG:                   \
         (void) va_arg ((ap), mp_ptr);           \
         (void) va_arg ((ap), mp_size_t);        \
@@ -1844,69 +1846,80 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
            same as in GMP (except quad_t) plus pointer to a mpfr_t so as to be
            able to accept the same format strings. */
         {
-          void *ptr;
-          int nchar;
+          void *p;
+          size_t nchar;
 
-          ptr = va_arg (ap, void *);
+          p = va_arg (ap, void *);
           FLUSH (gmp_fmt_flag, start, end, ap2, &buf);
           va_end (ap2);
           start = fmt;
-          nchar = (int) (buf.curr - buf.start);
+          nchar = buf.curr - buf.start;
 
           switch (spec.arg_type)
             {
             case CHAR_ARG:
-              *(char *) ptr = nchar;
+              *(char *) p = (char) nchar;
               break;
             case SHORT_ARG:
-              *(short *) ptr = nchar;
+              *(short *) p = (short) nchar;
               break;
             case LONG_ARG:
-              *(long *) ptr = nchar;
+              *(long *) p = (long) nchar;
               break;
+#ifdef HAVE_LONG_LONG
             case LONG_LONG_ARG:
-              *(long long *) ptr = nchar;
+              *(long long *) p = (long long) nchar;
               break;
+#endif
 #ifdef HAVE_STDINT_H
             case INTMAX_ARG:
-              *(intmax_t *) ptr = nchar;
+              *(intmax_t *) p = (intmax_t) nchar;
               break;
 #endif
             case SIZE_ARG:
-              *(size_t *) ptr = nchar;
+              *(size_t *) p = nchar;
               break;
             case PTRDIFF_ARG:
-              *(ptrdiff_t *) ptr = nchar;
+              *(ptrdiff_t *) p = (ptrdiff_t) nchar;
               break;
             case MPF_ARG:
-              mpf_set_ui ((mpf_ptr) ptr, (unsigned long) nchar);
+              mpf_set_ui ((mpf_ptr) p, (unsigned long) nchar);
               break;
             case MPQ_ARG:
-              mpq_set_ui ((mpq_ptr) ptr, (unsigned long) nchar, 1L);
+              mpq_set_ui ((mpq_ptr) p, (unsigned long) nchar, 1L);
+              break;
+            case MP_LIMB_ARG:
+              *(mp_limb_t *) p = (mp_limb_t) nchar;
               break;
             case MP_LIMB_ARRAY_ARG:
               {
                 mp_size_t n;
                 n = va_arg (ap, mp_size_t);
-                if (n > 0)
+                if (n < 0)
+                  n = -n;
+                else if (n == 0)
+                  break;
+                
+                /* we assume here that mp_limb_t is wider than int */
+                * (mp_limb_t *) p = (mp_limb_t) nchar;
+                while (--n != 0)
                   {
-                    * (mp_ptr) ptr = nchar;
-                    do
-                      * (mp_ptr)++ptr = 0;
-                    while (--n);
+                    p += sizeof (mp_limb_t);
+                    * (mp_limb_t *) p = (mp_limb_t) 0;
                   }
               }
+              break;
             case MPZ_ARG:
-              mpz_set_ui ((mpz_ptr) ptr, (unsigned long) nchar);
+              mpz_set_ui ((mpz_ptr) p, (unsigned long) nchar);
               break;
 
             case MPFR_ARG:
-              mpfr_set_ui ((mpfr_ptr) ptr, (unsigned long) nchar,
+              mpfr_set_ui ((mpfr_ptr) p, (unsigned long) nchar,
                            spec.rnd_mode);
               break;
 
             default:
-              *(int *) ptr = nchar;
+              *(int *) p = (int) nchar;
             }
           va_copy (ap2, ap); /* after the switch, due to MP_LIMB_ARRAY_ARG
                                 case */

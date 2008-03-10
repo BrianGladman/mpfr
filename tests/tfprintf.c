@@ -23,7 +23,6 @@ MA 02110-1301, USA. */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <limits.h>
 #include <float.h>
 #include <stddef.h>
 
@@ -116,30 +115,30 @@ check_special (FILE *fout)
 static void
 check_mixed (FILE *fout)
 {
-  char ch = CHAR_MAX;
-  signed char sch = SCHAR_MIN;
-  unsigned char uch = UCHAR_MAX;
-  short sh = SHRT_MIN;
-  unsigned short ush = USHRT_MAX;
-  int i = INT_MIN;
-  unsigned int ui = UINT_MAX;
-  long lo = LONG_MIN;
-  unsigned long ulo = ULONG_MAX;
-  float f = FLT_MAX;
-  double d = DBL_MAX;
-  long double ld = LDBL_MAX;
+  char ch = 'a';
+  signed char sch = -1;
+  unsigned char uch = 1;
+  short sh = -1;
+  unsigned short ush = 1;
+  int i = -1;
+  unsigned int ui = 1;
+  long lo = -1;
+  unsigned long ulo = 1;
+  float f = -1.25;
+  double d = -1.25;
+  long double ld = -1.25;
 
-  ptrdiff_t p = PTRDIFF_MAX;
-  size_t si = SIZE_MAX;
+  ptrdiff_t p = 1;
+  size_t si = 1;
 
 #ifdef HAVE_LONG_LONG
-  long long llo = 2 * LONG_MIN;
-  unsigned long long ullo = 2 * ULONG_MAX;
+  long long llo = -1;
+  unsigned long long ullo = -1;
 #endif
 
 #ifdef HAVE_STDINT_H
-  intmax_t im = INTMAX_MIN;
-  uintmax_t uim = UINTMAX_MAX;
+  intmax_t im = -1;
+  uintmax_t uim = 1;
 #endif
 
   mpz_t mpz;
@@ -147,8 +146,11 @@ check_mixed (FILE *fout)
   mpf_t mpf;
   mp_rnd_t rnd = GMP_RNDN;
 
+  mp_size_t limb_size = 3;
+  mp_limb_t limb[3];
+
   mpfr_t mpfr;
-  mpfr_prec_t prec;
+  mpfr_prec_t prec = 53;
 
   mpz_init (mpz);
   mpz_set_ui (mpz, ulo);
@@ -156,29 +158,60 @@ check_mixed (FILE *fout)
   mpq_set_si (mpq, lo, ulo);
   mpf_init (mpf);
   mpf_set_q (mpf, mpq);
-  mpfr_init (mpfr);
-  mpfr_set_f (mpfr, mpf, GMP_RNDN);
-  prec = mpfr_get_prec (mpfr);
 
-  check_vfprintf (fout, "a. %Ra, b. %hhd, c. %i, d. %lx\n", mpfr, sch, i,
-                  ulo);
-  check_vfprintf (fout, "a. %hhu, b. %Rb, c. %u, d. %li\n", uch, mpfr, ui,
-                  lo);
-  check_vfprintf (fout, "a. %hx, b. %*f, c. %Re\n", sh, 3, f, mpfr);
-  check_vfprintf (fout, "a. %hi, b. %e, c. %Rf\n", ush, d, mpfr);
-  check_vfprintf (fout, "a. %Pu, b. %c, c. %Lf, d. %Zi\n", prec, ch, ld, mpz);
-  check_vfprintf (fout, "%% a. %p, b. %RNA, c. %td, d. %Qx\n", &i, mpfr, p,
-                  mpq);
-  check_vfprintf (fout, "a. %R*A, b. %Fe, c. %i\n", rnd, mpfr, mpf, si);
+  mpfr_init2 (mpfr, prec);
+  mpfr_set_f (mpfr, mpf, GMP_RNDN);
+
+  limb[0] = limb[1] = limb[2] = ~ (mp_limb_t) 0;
+
+  check_vfprintf (fout, "a. %Ra, b. %hhu, c. %u, d. %lx%hhn\n", mpfr, uch, ui,
+                  ulo, &uch);
+  MPFR_ASSERTN (uch == 28);
+  check_vfprintf (fout, "a. %hhi, b. %Rb, c. %u, d. %li%ln\n", sch, mpfr, i,
+                  lo, &ulo);
+  MPFR_ASSERTN (ulo == 37);
+  check_vfprintf (fout, "a. %hi, b. %*f, c. %Re%hn\n", ush, 3, f, mpfr, &ush);
+  MPFR_ASSERTN (ush == 29);
+  check_vfprintf (fout, "a. %hi, b. %e, c. %#.2Rf%n\n", sh, d, mpfr, &i);
+  MPFR_ASSERTN (i == 33);
+  check_vfprintf (fout, "a. %R*A, b. %Fe, c. %i%zn\n", rnd, mpfr, mpf, si,
+                  &si);
+  MPFR_ASSERTN (si == 34);
+  check_vfprintf (fout, "a. %Pu, b. %c, c. %Lf, d. %Zi%Zn\n", prec, ch, ld,
+                  mpz, &mpz);
+  MPFR_ASSERTN (mpz_cmp_ui (mpz, 31) == 0);
+  check_vfprintf (fout, "%% a. %#.0RNg, b. %Qx%Rn, c. %td, d. %p\n", mpfr, mpq,
+                  &mpfr, p, &i);
+  MPFR_ASSERTN (mpfr_cmp_ui (mpfr, 16) == 0);
+
+  check_vfprintf (fout, "a. %Mx b. %Re%Mn", limb[0], mpfr, &limb[0]);
+  MPFR_ASSERTN (limb[0] == 14 + BITS_PER_MP_LIMB / 4);
+  MPFR_ASSERTN (limb[1] == ~ (mp_limb_t) 0);
+  MPFR_ASSERTN (limb[2] == ~ (mp_limb_t) 0);
+
+  limb[0] = ~ (mp_limb_t) 0;
+  /* we tell vfprintf that limb array is 2 cells wide
+     and check it doesn't go through */
+  check_vfprintf (fout, "a. %Re .b %Nx%Nn", mpfr, limb, limb_size, limb,
+                  limb_size - 1);
+  MPFR_ASSERTN (limb[0] == 14 + 3 * BITS_PER_MP_LIMB / 4);
+  MPFR_ASSERTN (limb[1] == (mp_limb_t) 0);
+  MPFR_ASSERTN (limb[2] == ~ (mp_limb_t) 0);
 
 #ifdef HAVE_LONG_LONG
-  check_vfprintf (fout, "a. %Re, b. %llx\n", mpfr, ullo);
-  check_vfprintf (fout, "a. %lli, b. %Rf\n", llo, mpfr);
+  check_vfprintf (fout, "a. %Re, b. %llx%Qn\n", mpfr, ullo, &mpq);
+  MPFR_ASSERTN (mpq_cmp_ui (mpq, 31, 1) == 0);
+  check_vfprintf (fout, "a. %lli, b. %Rf%Fn\n", llo, mpfr, &mpf);
+  MPFR_ASSERTN (mpf_cmp_ui (mpf, 12) == 0);
+  check_vfprintf (fout, "a. %qi, b. %Rf%qn\n", llo, mpfr, &ullo);
+  MPFR_ASSERTN (ullo == 12);
 #endif
 
 #ifdef HAVE_STDINT_H
-  check_vfprintf (fout, "a. %*RA, b. %ji\n", 10, mpfr, im);
-  check_vfprintf (fout, "a. %.*Re, b. %jx\n", 10, mpfr, uim);
+  check_vfprintf (fout, "a. %*RA, b. %ji%Qn\n", 10, mpfr, im, &mpq);
+  MPFR_ASSERTN (mpq_cmp_ui (mpq, 20, 1) == 0);
+  check_vfprintf (fout, "a. %.*Re, b. %jx%Fn\n", 10, mpfr, uim, &mpf);
+  MPFR_ASSERTN (mpf_cmp_ui (mpf, 25) == 0);
 #endif
 
   mpfr_clear (mpfr);
