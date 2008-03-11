@@ -338,6 +338,7 @@ main (int argc, char *argv[])
     }
   else
     {
+      fout = stdout;
       N = atoi (argv[1]);
     }
 

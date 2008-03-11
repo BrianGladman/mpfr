@@ -45,9 +45,12 @@ check (char *fmt, mpfr_t x)
     {
       if (stdout_svg != 0)
         {
-          fflush (stdout);
-          close (fileno (stdout));
-          dup (stdout_svg);
+          if ((fflush (stdout) == EOF) || (close (fileno (stdout)) == -1)
+              || (dup (stdout_svg) == -1))
+            {
+              perror ("check");
+              exit (1);
+            }
         }
 
       mpfr_printf ("Error in mpfr_printf(\"%s\", %Re)\n", fmt, x);
@@ -65,9 +68,12 @@ check_vprintf (char *fmt, ...)
     {
       if (stdout_svg != 0)
         {
-          fflush (stdout);
-          close (fileno (stdout));
-          dup (stdout_svg);
+          if ((fflush (stdout) == EOF) || (close (fileno (stdout)) == -1)
+              || (dup (stdout_svg) == -1))
+            {
+              perror ("check_vprintf");
+              exit (1);
+            }
         }
 
       mpfr_printf ("Error in mpfr_vprintf(\"%s\", ...)\n", fmt);
@@ -293,9 +299,13 @@ check_random (int nb_tests)
             {
               if (stdout_svg != 0)
                 {
-                  fflush (stdout);
-                  close (fileno (stdout));
-                  dup (stdout_svg);
+                  if ((fflush (stdout) == EOF)
+                      || (close (fileno (stdout)) == -1)
+                      || (dup (stdout_svg) == -1))
+                    {
+                      perror ("check_random");
+                      exit (1);
+                    }
                 }
 
               mpfr_printf ("Error in mpfr_printf(\"%s\", %d, %s, %Re)\n",
@@ -353,9 +363,9 @@ main (int argc, char *argv[])
 
   if (stdout_svg != 0)
     {
-      fflush (stdout);
-      close (fileno (stdout));
-      dup (stdout_svg);
+      if ((fflush (stdout) == EOF) || (close (fileno (stdout)) == -1)
+          || (dup (stdout_svg) == -1))
+        perror ("main");
     }
   tests_end_mpfr ();
   return 0;
