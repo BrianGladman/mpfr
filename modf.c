@@ -1,4 +1,4 @@
-/* mpfr_modf -- Integral and fractionnal part.
+/* mpfr_modf -- Integral and fractional part.
 
 Copyright 2007, 2008 Free Software Foundation, Inc.
 Contributed by the Arenaire and Cacao projects, INRIA.
