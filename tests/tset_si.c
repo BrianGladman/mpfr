@@ -22,7 +22,6 @@ MA 02110-1301, USA. */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <limits.h>
 
 #include "mpfr-test.h"
@@ -49,7 +48,7 @@ test_2exp (void)
   if (mpfr_cmp_ui(x, 1024*1024))
     ERROR("(1024U,+10)");
 
-  mpfr_set_si_2exp (x, -1024*1024, -10, GMP_RNDN);
+  mpfr_set_si_2exp (x, -1024L * 1024L, -10, GMP_RNDN);
   if (mpfr_cmp_si(x, -1024))
     ERROR("(1M,-10)");
 

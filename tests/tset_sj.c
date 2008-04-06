@@ -127,7 +127,7 @@ check_set_uj_2exp (void)
     ERROR("(1024U,-10)");
 
   inex = mpfr_set_uj_2exp (x, 1024, 10, GMP_RNDN);
-  if (inex || mpfr_cmp_ui(x, 1024*1024))
+  if (inex || mpfr_cmp_ui(x, 1024L * 1024L))
     ERROR("(1024U,+10)");
 
   inex = mpfr_set_uj_2exp (x, UINTMAX_MAX, 1000, GMP_RNDN);

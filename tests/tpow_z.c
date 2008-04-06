@@ -22,7 +22,6 @@ MA 02110-1301, USA. */
 
 #include <stdlib.h>
 #include <float.h>
-#include <time.h>
 #include <math.h>
 
 #include "mpfr-test.h"

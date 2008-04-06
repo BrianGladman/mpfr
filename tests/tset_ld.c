@@ -23,7 +23,6 @@ MA 02110-1301, USA. */
 #include <stdio.h>
 #include <stdlib.h>
 #include <float.h>
-#include <time.h>
 #include <limits.h>
 #if WITH_FPU_CONTROL
 #include <fpu_control.h>

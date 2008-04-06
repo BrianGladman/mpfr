@@ -30,7 +30,8 @@ main (void)
 {
   double x, y;
   mpfr_t xx, yy;
-  int i, c;
+  int c;
+  long i;
   mp_prec_t p;
 
   tests_start_mpfr ();
