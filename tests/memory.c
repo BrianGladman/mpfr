@@ -44,7 +44,7 @@ struct header {
   struct header  *next;
 };
 
-static struct header  *tests_memory_list = NULL;
+static struct header  *tests_memory_list;
 
 /* Return a pointer to a pointer to the found block (so it can be updated
    when unlinking). */
@@ -169,6 +169,7 @@ tests_free (void *ptr, size_t size)
 void
 tests_memory_start (void)
 {
+  tests_memory_list = NULL;
   mp_set_memory_functions (tests_allocate, tests_reallocate, tests_free);
 }
 
