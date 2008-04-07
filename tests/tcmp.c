@@ -54,7 +54,7 @@ main (void)
   mpfr_set_str_binary(xx, "0.10011010101000110101010000000011001001001110001011101011111011101E623");
   mpfr_set_str_binary(yy, "0.10011010101000110101010000000011001001001110001011101011111011100E623");
   p = 0;
-  if (mpfr_cmp2(xx, yy, &p) <= 0 || p != 64)
+  if (mpfr_cmp2 (xx, yy, &p) <= 0 || p != 64)
     {
       printf ("Error (1) in mpfr_cmp2\n");
       exit (1);
@@ -62,7 +62,7 @@ main (void)
   mpfr_set_str_binary(xx, "0.10100010001110110111000010001000010011111101000100011101000011100");
   mpfr_set_str_binary(yy, "0.10100010001110110111000010001000010011111101000100011101000011011");
   p = 0;
-  if (mpfr_cmp2(xx, yy, &p) <= 0 || p != 64)
+  if (mpfr_cmp2 (xx, yy, &p) <= 0 || p != 64)
     {
       printf ("Error (2) in mpfr_cmp2\n");
       exit (1);
@@ -100,74 +100,72 @@ main (void)
   /* bug found by Gerardo Ballabio */
   mpfr_set_ui(xx, 0, GMP_RNDN);
   mpfr_set_str (yy, "0.1", 10, GMP_RNDN);
-  if (mpfr_cmp(xx, yy) >= 0)
+  if ((c = mpfr_cmp (xx, yy)) >= 0)
     {
-      printf ("Error in mpfr_cmp(0.0, 0.1), gives %d\n", mpfr_cmp(xx, yy));
+      printf ("Error in mpfr_cmp(0.0, 0.1), gives %d\n", c);
       exit (1);
     }
 
   mpfr_set_inf (xx, 1);
   mpfr_set_str (yy, "-23489745.0329", 10, GMP_RNDN);
-  if (mpfr_cmp(xx, yy) <= 0)
+  if ((c = mpfr_cmp (xx, yy)) <= 0)
     {
-      printf ("Error in mpfr_cmp(Infp, 23489745.0329), gives %d\n",
-              mpfr_cmp(xx, yy));
+      printf ("Error in mpfr_cmp(Infp, 23489745.0329), gives %d\n", c);
       exit (1);
     }
 
   mpfr_set_inf (xx, 1);
   mpfr_set_inf (yy, -1);
-  if (mpfr_cmp(xx, yy) <= 0)
+  if ((c = mpfr_cmp (xx, yy)) <= 0)
     {
-      printf ("Error in mpfr_cmp(Infp, Infm), gives %d\n", mpfr_cmp(xx, yy));
+      printf ("Error in mpfr_cmp(Infp, Infm), gives %d\n", c);
       exit (1);
     }
 
   mpfr_set_inf (xx, -1);
   mpfr_set_inf (yy, 1);
-  if (mpfr_cmp(xx, yy) >= 0)
+  if ((c = mpfr_cmp (xx, yy)) >= 0)
     {
-      printf ("Error in mpfr_cmp(Infm, Infp), gives %d\n", mpfr_cmp(xx, yy));
+      printf ("Error in mpfr_cmp(Infm, Infp), gives %d\n", c);
       exit (1);
     }
 
   mpfr_set_inf (xx, 1);
   mpfr_set_inf (yy, 1);
-  if (mpfr_cmp(xx, yy) != 0)
+  if ((c = mpfr_cmp (xx, yy)) != 0)
     {
-      printf ("Error in mpfr_cmp(Infp, Infp), gives %d\n", mpfr_cmp(xx, yy));
+      printf ("Error in mpfr_cmp(Infp, Infp), gives %d\n", c);
       exit (1);
     }
 
   mpfr_set_inf (xx, -1);
   mpfr_set_inf (yy, -1);
-  if (mpfr_cmp(xx, yy) != 0)
+  if ((c = mpfr_cmp (xx, yy)) != 0)
     {
-      printf ("Error in mpfr_cmp(Infm, Infm), gives %d\n", mpfr_cmp(xx, yy));
+      printf ("Error in mpfr_cmp(Infm, Infm), gives %d\n", c);
       exit (1);
     }
 
   mpfr_set_inf (xx, -1);
   mpfr_set_str (yy, "2346.09234", 10, GMP_RNDN);
-  if (mpfr_cmp(xx, yy) >= 0)
+  if ((c = mpfr_cmp (xx, yy)) >= 0)
     {
-      printf ("Error in mpfr_cmp(Infm, 2346.09234), gives %d\n",
-              mpfr_cmp(xx, yy));
+      printf ("Error in mpfr_cmp(Infm, 2346.09234), gives %d\n", c);
       exit (1);
     }
 
   mpfr_set_ui (xx, 0, GMP_RNDN);
   mpfr_set_ui (yy, 1, GMP_RNDN);
-  if ((i = mpfr_cmp3 (xx, yy, 1)) >= 0)
+  if ((c = mpfr_cmp3 (xx, yy, 1)) >= 0)
     {
-      printf ("Error: mpfr_cmp3 (0, 1, 1) gives %ld instead of"
-              " a negative value\n", i);
+      printf ("Error: mpfr_cmp3 (0, 1, 1) gives %d instead of"
+              " a negative value\n", c);
       exit (1);
     }
-  if ((i = mpfr_cmp3 (xx, yy, -1)) <= 0)
+  if ((c = mpfr_cmp3 (xx, yy, -1)) <= 0)
     {
-      printf ("Error: mpfr_cmp3 (0, 1, -1) gives %ld instead of"
-              " a positive value\n", i);
+      printf ("Error: mpfr_cmp3 (0, 1, -1) gives %d instead of"
+              " a positive value\n", c);
       exit (1);
     }
 
