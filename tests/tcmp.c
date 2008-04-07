@@ -160,13 +160,13 @@ main (void)
   mpfr_set_ui (yy, 1, GMP_RNDN);
   if ((i = mpfr_cmp3 (xx, yy, 1)) >= 0)
     {
-      printf ("Error: mpfr_cmp3 (0, 1, 1) gives %d instead of"
+      printf ("Error: mpfr_cmp3 (0, 1, 1) gives %ld instead of"
               " a negative value\n", i);
       exit (1);
     }
   if ((i = mpfr_cmp3 (xx, yy, -1)) <= 0)
     {
-      printf ("Error: mpfr_cmp3 (0, 1, -1) gives %d instead of"
+      printf ("Error: mpfr_cmp3 (0, 1, -1) gives %ld instead of"
               " a positive value\n", i);
       exit (1);
     }
