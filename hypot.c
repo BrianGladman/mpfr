@@ -115,6 +115,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
               MPFR_SET_SIGN (z, 1);
               MPFR_RNDRAW_GEN (inexact, z, MPFR_MANT (x), Nx, rnd_mode, 1,
                                goto addoneulp,
+                               if (0) goto addoneulp_doit; /* dummy code */
                                if (MPFR_UNLIKELY (++MPFR_EXP (z) > __gmpfr_emax))
                                  return mpfr_overflow (z, rnd_mode, 1);
                                );

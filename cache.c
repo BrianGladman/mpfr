@@ -90,6 +90,7 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mp_rnd_t rnd)
                        inexact = -sign;
                        goto trunc_doit;
                      },
+                   if (0) goto addoneulp_doit; /* dummy code / avoid warning */
                    if (MPFR_UNLIKELY (++MPFR_EXP (dest) > __gmpfr_emax))
                      mpfr_overflow (dest, rnd, sign);
                   );
