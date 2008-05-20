@@ -1039,10 +1039,6 @@ typedef struct {
  * In rounding to nearest mode, execute MIDDLE_HANDLER when the value
  * is the middle of two consecutive numbers in dest precision.
  * Execute OVERFLOW_HANDLER in case of overflow when rounding.
- * Note: if some label is not used, e.g. addoneulp_doit, you can use
- * this macro with code like:
- *   if (0) goto addoneulp_doit;
- * in some handler to avoid a warning. This is safe and rather clean.
  */
 #define MPFR_RNDRAW_GEN(inexact, dest, srcp, sprec, rnd, sign,              \
                         MIDDLE_HANDLER, OVERFLOW_HANDLER)                   \
@@ -1125,6 +1121,8 @@ typedef struct {
               }                                                             \
             else                                                            \
               {                                                             \
+                if (0)                                                      \
+                  goto addoneulp_doit; /* dummy code to avoid warning */    \
               addoneulp:                                                    \
                 inexact = sign;                                             \
               addoneulp_doit:                                               \
@@ -1161,7 +1159,6 @@ typedef struct {
    MPFR_RNDRAW_GEN (inexact, dest, srcp, sprec, rnd, sign,                   \
      if ((sp[0] & ulp) == 0)                                                 \
        {                                                                     \
-         if (0) goto addoneulp_doit;  /* dummy code to avoid a warning */    \
          inexact = -sign;                                                    \
          goto trunc_doit;                                                    \
        }                                                                     \

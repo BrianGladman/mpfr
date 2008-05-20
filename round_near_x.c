@@ -186,10 +186,8 @@ mpfr_round_near_x (mpfr_ptr y, mpfr_srcptr v, mpfr_uexp_t err, int dir,
                      }
                    else
                      goto addoneulp;
-                   ,
-                   if (0) goto addoneulp_doit; /* dummy code / avoid warning */
-                   if (MPFR_UNLIKELY (++MPFR_EXP (y) > __gmpfr_emax))
-                     mpfr_overflow (y, rnd, sign)
+                   , if (MPFR_UNLIKELY (++MPFR_EXP (y) > __gmpfr_emax))
+                       mpfr_overflow (y, rnd, sign)
                   );
 
   /* Fix it in some cases */
