@@ -142,9 +142,9 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   mp_limb_t limb;
   int inexact;
   mp_limb_t bcp,bcp1; /* Cp and C'p+1 */
-  mp_limb_t bbcp = (mp_limb_t) b, bbcp1 = (mp_limb_t) c; /* Cp+1 and C'p+2,
+  mp_limb_t bbcp = (mp_limb_t) -1, bbcp1 = (mp_limb_t) -1; /* Cp+1 and C'p+2,
                                gcc claims that they might be used
-                               uninitialized. We fill them with dummy
+                               uninitialized. We fill them with invalid
                                values, which should produce a failure if so. */
                                       
   MPFR_TMP_DECL(marker);
@@ -652,6 +652,8 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
           /* Final exponent -1 since we have shifted the mantissa */
           bx--;
           /* Update bcp and bcp1 */
+          MPFR_ASSERTN(bbcp != (mp_limb_t) -1);
+          MPFR_ASSERTN(bbcp1 != (mp_limb_t) -1);
           bcp  = bbcp;
           bcp1 = bbcp1;
           /* We dont't have anymore a valid Cp+1!
@@ -698,6 +700,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       DEBUG( printf("(SubOneUlp)Cp=%d, Cp+1=%d C'p+1=%d\n", bcp!=0,bbcp!=0,bcp1!=0));
       /* Compute the last bit (Since we have shifted the mantissa)
          we need one more bit!*/
+      MPFR_ASSERTN(bbcp != (mp_limb_t) -1);
       if ( (rnd_mode == GMP_RNDZ && bcp==0)
            || (rnd_mode==GMP_RNDN && bbcp==0)
            || (bcp && bcp1==0) ) /*Exact result*/
@@ -747,7 +750,9 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
             bbcp=0;
           DEBUG( printf("(Truncate) Cp=%d, Cp+1=%d C'p+1=%d C'p+2=%d\n", \
                  bcp!=0, bbcp!=0, bcp1!=0, bbcp1!=0) );
-          if (( ((rnd_mode == GMP_RNDN) || (rnd_mode != GMP_RNDZ)) && bcp)
+          MPFR_ASSERTN(bbcp != (mp_limb_t) -1);
+          MPFR_ASSERTN((rnd_mode != GMP_RNDN) || (bcp != 0) || (bbcp == 0) || (bbcp1 != (mp_limb_t) -1));
+          if (((rnd_mode != GMP_RNDZ) && bcp)
               ||
               ((rnd_mode == GMP_RNDN) && (bcp == 0) && (bbcp) && (bbcp1)))
             {
