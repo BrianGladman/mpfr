@@ -157,7 +157,8 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
   mp_prec_t precy, w; /* working precision */
   mpfr_t s, t, u, v, z;
   unsigned long m, k, maxm;
-  mpz_t *B;
+  mpz_t *B = NULL; /* initialize to NULL to get rid of false compiler warning
+                      with gcc <= 4.3 */
   int inexact, compared;
   mp_exp_t err_s, err_t;
   unsigned long Bm = 0; /* number of allocated B[] */

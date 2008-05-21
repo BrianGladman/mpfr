@@ -142,7 +142,11 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   mp_limb_t limb;
   int inexact;
   mp_limb_t bcp,bcp1; /* Cp and C'p+1 */
-  mp_limb_t bbcp, bbcp1; /* Cp+1 and C'p+2 */
+  mp_limb_t bbcp = (mp_limb_t) b, bbcp1 = (mp_limb_t) c; /* Cp+1 and C'p+2,
+                               gcc claims that they might be used
+                               uninitialized. We fill them with dummy
+                               values, which should produce a failure if so. */
+                                      
   MPFR_TMP_DECL(marker);
 
   MPFR_TMP_MARK(marker);
