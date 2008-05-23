@@ -552,3 +552,29 @@ be output to a different window (e.g. xterm or zenity):
   http://www.vinc17.org/unix/#eet
 
 Direct link to the tarball: http://www.vinc17.org/unix/eet.tar.bz2
+
+===========================================================================
+
+Be careful when avoiding "'var' may be used uninitialized in this function"
+warnings from gcc. Initializing such variables to a dummy value has several
+drawbacks:
+  * this may prevent other tools (that do static or dynamic analysis) from
+    detecting bugs;
+  * this makes code maintenance more difficult (e.g. when modifying the
+    code, one may more easily forget a real initialization);
+  * this makes the compiler add useless code (though this should not be
+    significant).
+
+Concerning the latter point, gcc currently supports pseudo-initializations
+like "int i = i;" but this is otherwise undefined behavior. So, do not use
+this form (possibly except via a macro defined in this way if the compiler
+is gcc).
+
+If a dummy initialization must be added, use preferably an "invalid" value
+(e.g. NULL for pointers, or a value that can be checked with MPFR_ASSERTN
+before using it) that could make the program abort instead of returning an
+incorrect value in case of a bug in MPFR.
+
+A bug has been opened on GCC's Bugzilla:
+
+    http://gcc.gnu.org/bugzilla/show_bug.cgi?id=36296
