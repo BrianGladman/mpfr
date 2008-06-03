@@ -786,7 +786,7 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
   : (int) MPFR_ZERO_KIND * MPFR_SIGN (x) )
 
 
-#endif /* MPFR_NO_MACRO */
+#endif /* MPFR_USE_NO_MACRO */
 
 /* Theses are defined to be macros */
 #define mpfr_init_set_si(x, i, rnd) \
