@@ -237,16 +237,16 @@ GNU MP library by a precise semantics. The main differences
 with the @code{mpf} class from GNU MP are:
 
 @itemize @bullet
-@item the @code{mpfr} code is portable, i.e.@: the result of any operation
+@item the MPFR code is portable, i.e.@: the result of any operation
 does not depend (or should not) on the machine word size
 @code{mp_bits_per_limb} (32 or 64 on most machines);
 @item the precision in bits can be set exactly to any valid value
 for each variable (including very small precision);
-@item @code{mpfr} provides the four rounding modes from the IEEE 754-1985
+@item MPFR provides the four rounding modes from the IEEE 754-1985
 standard.
 @end itemize
 
-In particular, with a precision of 53 bits, @code{mpfr} should be able
+In particular, with a precision of 53 bits, MPFR should be able
 to exactly reproduce all computations with double-precision machine
 floating-point
 numbers (@code{double} type in C), except the default exponent range
@@ -2475,7 +2475,7 @@ All operations are then performed with the default MPFR rounding mode,
 which can be reset with @code{mpfr_set_default_rounding_mode}.
 
 Warning: the @code{mpf_init} and @code{mpf_init2} functions initialize
-to zero, whereas the corresponding @code{mpfr} functions initialize to NaN:
+to zero, whereas the corresponding MPFR functions initialize to NaN:
 this is useful to detect uninitialized values, but is slightly incompatible
 with @code{mpf}.
 
@@ -2613,7 +2613,7 @@ See the test suite for examples.
 @section Internals
 
 The following types and
-functions were mainly designed for the implementation of @code{mpfr},
+functions were mainly designed for the implementation of MPFR,
 but may be useful for users too.
 However no upward compatibility is guaranteed.
 You may need to include @file{mpfr-impl.h} to use them.
