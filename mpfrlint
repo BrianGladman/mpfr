@@ -8,4 +8,13 @@ grep -E 'mpfr_(underflow|overflow|nanflag|inexflag|erangeflag)_p' *.c *.h | \
   grep -v '^exceptions.c:' | grep -v '^mpfr-impl.h:#define mpfr_.*_p()' | \
   grep -v '^mpfr.h:__MPFR_DECLSPEC '
 
+fdlv1="`sed -n '/Version / {s/.*Version //; s/,.*//; p; q}' fdl.texi`"
+fdlv2="`sed -n '/GNU Free Documentation License/ \
+  {s/.*Version //; s/ or.*//; p; q}' mpfr.texi`"
+[ "x$fdlv1" = "x$fdlv2" ] || cat <<EOF
+GFDL versions differ:
+   fdl.texi: $fdlv1
+  mpfr.texi: $fdlv2
+EOF
+
 true
