@@ -4,7 +4,7 @@
 
 grep '^# *include *<math\.h>' *.c
 
-grep -E 'mpfr_(underflow|overflow|nanflag|inexflag|erangeflag)_p' *.c *.h | \
+grep -E 'mpfr_(underflow|overflow|nanflag|inexflag|erangeflag)_p' *.{c,h} | \
   grep -v '^exceptions.c:' | grep -v '^mpfr-impl.h:#define mpfr_.*_p()' | \
   grep -v '^mpfr.h:__MPFR_DECLSPEC '
 
@@ -16,5 +16,16 @@ GFDL versions differ:
    fdl.texi: $fdlv1
   mpfr.texi: $fdlv2
 EOF
+
+# Note: if paragraphs are reformatted, this may need to be updated.
+lgpl="`sed -n '/Version [0-9.]\+ or any later version/ \
+  {s/.*Version //; s/ or.*//; p; q}' mpfr.texi`"
+for file in {,tests/}*.{c,h}
+do
+  if grep -q "MPFR Library" "$file"; then
+    grep -q "either version $lgpl of the License" "$file" || \
+      echo "Possibly missing or incorrect copyright notice in $file"
+  fi
+done
 
 true
