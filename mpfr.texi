@@ -246,11 +246,13 @@ for each variable (including very small precision);
 standard.
 @end itemize
 
-In particular, with a precision of 53 bits, MPFR should be able
-to exactly reproduce all computations with double-precision machine
-floating-point
-numbers (@code{double} type in C), except the default exponent range
-is much wider and subnormal numbers are not implemented but can be emulated.
+In particular, with a precision of 53 bits, MPFR should be able to
+exactly reproduce all computations with double-precision machine
+floating-point numbers (e.g., @code{double} type in C, with a C
+implementation that rigorously follows Annex F of the ISO C99 standard
+and @code{FP_CONTRACT} pragma set to @code{OFF}) on the four arithmetic
+operations and the square root, except the default exponent range is much
+wider and subnormal numbers are not implemented (but can be emulated).
 
 This version of MPFR is released under the GNU Lesser General Public
 License.
