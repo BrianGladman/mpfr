@@ -8,6 +8,12 @@ if [ $# -lt 3 ] || [ $# -gt 5 ]; then
   exit 1
 fi
 
+# Examples:
+#   ./update-version 2 3 0 dev
+#   ./update-version 2 3 0 rc1
+#   ./update-version 2 3 0
+#   ./update-version 2 3 0 p1 -
+
 vers="$1.$2.$3"
 full="$vers${4:+-$4}"
 echo $full > VERSION
@@ -18,11 +24,16 @@ perl -pi -e "s/(?<=#define MPFR_VERSION_MAJOR ).*/$1/; \
 perl -pi -e "s/(?<=return \").*\"/$full\"/" version.c
 
 if [ $# -lt 5 ]; then
+  # Up to 4 arguments...
+  u="http://www.mpfr.org/mpfr-"
   perl -pi -e "s/(?<=\@set VERSION ).*/$full/" mpfr.texi
+  perl -pi -e \
+    "s,MPFR [\d.]+( web page \@url{$u)[\d.]+/,MPFR $vers\${1}$vers/," mpfr.texi
   perl -pi -e "s/(?<=AC_INIT).*/([MPFR],[$full])/" configure.in
-  perl -pi -e "s,(?<=http://www.mpfr.org/mpfr-).*?/,$vers/," INSTALL
+  perl -pi -e "s,(?<=$u).*?/,$vers/," INSTALL
 fi
 
+# If there is a suffix, disable one of the tests in tests/tversion.c
 if [ $# -ge 4 ]; then
   tvers=0
 else

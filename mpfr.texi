@@ -372,10 +372,12 @@ Delete all files copied by @samp{make install}.
 
 MPFR suffers from all bugs from the GNU MP library, plus many more.
 
+@comment Warning! Do not split "MPFR ... @url{...}" across several lines
+@comment as this needs to be updated with update-version.
 Please report other problems to @samp{mpfr@@loria.fr}.
 @xref{Reporting Bugs}.
-Some bug fixes are available on the MPFR web page
-@url{http://www.mpfr.org/}.
+Some bug fixes are available on the
+MPFR 2.4.0 web page @url{http://www.mpfr.org/mpfr-2.4.0/}.
 
 @section Getting the Latest Version of MPFR
 
@@ -386,12 +388,14 @@ The latest version of MPFR is available from @url{http://www.mpfr.org/}.
 @chapter Reporting Bugs
 @cindex Reporting bugs
 
-If you think you have found a bug in the MPFR library, first have a look on the
-MPFR web page @url{http://www.mpfr.org/}: perhaps this bug is already known,
-in which case you may find there a workaround for it.
-Otherwise, please investigate
-and report it. We have made this library available to you, and it is not to ask
-too much from you, to ask you to report the bugs that you find.
+@comment Warning! Do not split "MPFR ... @url{...}" across several lines
+@comment as this needs to be updated with update-version.
+If you think you have found a bug in the MPFR library, first have a look
+on the MPFR 2.4.0 web page @url{http://www.mpfr.org/mpfr-2.4.0/}:
+perhaps this bug is already known, in which case you may find there
+a workaround for it. Otherwise, please investigate and report it.
+We have made this library available to you, and it is not to ask too
+much from you, to ask you to report the bugs that you find.
 
 There are a few things you should think about when you put your bug report
 together.
