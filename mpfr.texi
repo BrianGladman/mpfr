@@ -190,6 +190,34 @@ log
 @end macro
 @end ifnottex
 
+@c The following macro have been copied from gmp.texi
+@c
+@c  Usage: @MPFRpxreftop{info,title}
+@c
+@c  Like @pxref{}, but designed for a reference to the top of a document, not
+@c  a particular section.
+@c
+@c  The texinfo manual recommends putting a likely section name in references
+@c  like this, eg. "Introduction", but it seems better to just give the title.
+@c
+@iftex
+@macro MPFRpxreftop{info,title}
+see @cite{\title\}.
+@end macro
+@end iftex
+@ifhtml
+@macro MPFRpxreftop{info,title}
+see @cite{\title\}.
+@end macro
+@end ifhtml
+@ifnottex
+@ifnothtml
+@macro MPFRpxreftop{info,title}
+@pxref{Top,\title\,\title\,\info\,\title\}
+@end macro
+@end ifnothtml
+@end ifnottex
+
 @node Copying, Introduction to MPFR, Top, Top
 @comment  node-name, next, previous,  up
 @unnumbered MPFR Copying Conditions
@@ -424,14 +452,58 @@ the language needs to be improved, please send a note to the same address.
 @comment  node-name,  next,  previous,  up
 @chapter MPFR Basics
 
+@section Headers and Libraries
 
 @cindex @file{mpfr.h}
 All declarations needed to use MPFR are collected in the include file
 @file{mpfr.h}.  It is designed to work with both C and C++ compilers.
 You should include that file in any program using the MPFR library:
-@verbatim
+
+@example
 #include <mpfr.h>
-@end verbatim
+@end example
+
+@cindex @code{stdio.h}
+Note however that prototypes for MPFR functions with @code{FILE *} parameters
+are provided only if @code{<stdio.h>} is included too (before @file{mpfr.h}).
+
+@example
+#include <stdio.h>
+#include <mpfr.h>
+@end example
+
+@cindex @code{stdarg.h}
+Likewise @code{<stdarg.h>} (or @code{<varargs.h>}) is required for prototypes
+with @code{va_list} parameters, such as @code{mpfr_vprintf}.
+
+You can avoid the use of MPFR macros encapsulating functions by defining
+the @samp{MPFR_USE_NO_MACRO} macro before @file{mpfr.h} is included.  In
+general this should not be necessary, but this can be useful when debugging
+user code: with some macros, the compiler may emit spurious warnings with
+some warning options, and macros can prevent some prototype checking.
+
+@cindex Libraries
+@cindex Linking
+@cindex @code{libmpfr}
+All programs using MPFR must link against both @file{libmpfr} and
+@file{libgmp} libraries.  On a typical Unix-like system this can be
+done with @samp{-lmpfr -lgmp} (in that order), for example
+
+@example
+gcc myprogram.c -lmpfr -lgmp
+@end example
+
+@cindex Libtool
+MPFR is built using Libtool and an application can use that to link if
+desired, @MPFRpxreftop{libtool, GNU Libtool}
+
+If MPFR has been installed to a non-standard location, then it may be
+necessary to set up environment variables such as @samp{C_INCLUDE_PATH}
+and @samp{LIBRARY_PATH}, or use @samp{-I} and @samp{-L} compiler options,
+in order to point to the right directories. For a shared library, it may
+also be necessary to set up some sort of run-time library path (e.g.,
+@samp{LD_LIBRARY_PATH}) on some systems. Please read the @file{INSTALL}
+file for additional information.
 
 @section Nomenclature and Types
 
