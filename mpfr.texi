@@ -396,13 +396,17 @@ Delete all files copied by @samp{make install}.
 @end itemize
 
 
-@section Known Build Problems
+@section Build Problems
 
-MPFR suffers from all bugs from the GNU MP library, plus many more.
+In case of problem, please read the @file{INSTALL} file carefully
+before reporting a bug, in particular section ``In case of problem''.
+Some problems are due to bad configuration on the user side (not
+specific to MPFR). Problems are also mentioned in the FAQ
+@url{http://www.mpfr.org/faq.html}.
 
 @comment Warning! Do not split "MPFR ... @url{...}" across several lines
 @comment as this needs to be updated with update-version.
-Please report other problems to @samp{mpfr@@loria.fr}.
+Please report problems to @samp{mpfr@@loria.fr}.
 @xref{Reporting Bugs}.
 Some bug fixes are available on the
 MPFR 2.4.0 web page @url{http://www.mpfr.org/mpfr-2.4.0/}.
@@ -419,7 +423,8 @@ The latest version of MPFR is available from @url{http://www.mpfr.org/}.
 @comment Warning! Do not split "MPFR ... @url{...}" across several lines
 @comment as this needs to be updated with update-version.
 If you think you have found a bug in the MPFR library, first have a look
-on the MPFR 2.4.0 web page @url{http://www.mpfr.org/mpfr-2.4.0/}:
+on the MPFR 2.4.0 web page @url{http://www.mpfr.org/mpfr-2.4.0/} and the
+FAQ @url{http://www.mpfr.org/faq.html}:
 perhaps this bug is already known, in which case you may find there
 a workaround for it. Otherwise, please investigate and report it.
 We have made this library available to you, and it is not to ask too
