@@ -1159,7 +1159,7 @@ For more information about how it is done:
 @pxref{Custom Allocation,,, gmp,GNU MP}.
 @end ifnothtml
 @ifhtml
-see Custom Allocation (GNU MP).
+see section ``Custom Allocation'' in @cite{GNU MP}.
 @end ifhtml
 @end deftypefun
 
