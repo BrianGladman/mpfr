@@ -496,6 +496,10 @@ gcc myprogram.c -lmpfr -lgmp
 @cindex Libtool
 MPFR is built using Libtool and an application can use that to link if
 desired, @MPFRpxreftop{libtool, GNU Libtool}
+@c Note: Do not try the above cross reference without moving mpfr.info
+@c into some "safe" place first. Due to a poor design, "info" will not
+@c find the correct libtool info file because of the "libtool" script
+@c in MPFR's directory!
 
 If MPFR has been installed to a non-standard location, then it may be
 necessary to set up environment variables such as @samp{C_INCLUDE_PATH}
