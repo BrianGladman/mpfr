@@ -114,17 +114,24 @@ mpfr_log1p (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     /* initialise of intermediary variable */
     mpfr_init2 (t, Nt);
 
-    /* First computation of cosh */
+    /* First computation of log1p */
     MPFR_ZIV_INIT (loop, Nt);
     for (;;)
       {
         /* compute log1p */
-        mpfr_add_ui (t, x, 1, GMP_RNDN);      /* 1+x */
-        mpfr_log (t, t, GMP_RNDN);        /* log(1+x)*/
+        inexact = mpfr_add_ui (t, x, 1, GMP_RNDN);      /* 1+x */
+        /* if inexact = 0, then t = x+1, and the result is simply log(t) */
+        if (inexact == 0)
+          {
+            inexact = mpfr_log (y, t, rnd_mode);
+            goto end;
+          }
+        mpfr_log (t, t, GMP_RNDN);        /* log(1+x) */
 
-        /* estimation of the error */
-        /*err=Nt-(__gmpfr_ceil_log2(1+pow(2,2-MPFR_GET_EXP(t))));*/
-        err = Nt - (MAX (2 - MPFR_GET_EXP (t), 0) + 1);
+        /* the error is bounded by (1/2+2^(1-EXP(t))*ulp(t) (cf algorithms.tex)
+           if EXP(t)>=2, then error <= ulp(t)
+           if EXP(t)<=1, then error <= 2^(2-EXP(t))*ulp(t) */
+        err = Nt - MAX (0, 2 - MPFR_GET_EXP (t));
 
         if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
           break;
@@ -133,9 +140,10 @@ mpfr_log1p (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
         MPFR_ZIV_NEXT (loop, Nt);
         mpfr_set_prec (t, Nt);
       }
-    MPFR_ZIV_FREE (loop);
     inexact = mpfr_set (y, t, rnd_mode);
 
+  end:
+    MPFR_ZIV_FREE (loop);
     mpfr_clear (t);
   }
 

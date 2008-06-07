@@ -2513,18 +2513,27 @@ intermediary variables, we have to add, at least, $\lceil \log_2 (1+2^{e_u-e_v})
 
 \subsection{The log1p function}
 
-The {\tt mpfr\_log1p} ($\n{log1p}(x)$) function implements the log1p function  as :
-
+The {\tt mpfr\_log1p} function implements the log1p function as:
 \[
 \textnormal{log1p} (x) = \log(1+x).
 \]
+We could use the argument reduction
+\[ \textnormal{log1p}(x) = 2 \textnormal{log1p}\left(\frac{x}{1+\sqrt{1+x}}
+\right), \]
+which reduces $x$ to about $\sqrt{x}$ when $x \gg 1$, and in any case to
+less than $x/2$ when $x > 0$.
+However, if $1+x$ can be computed exactly with the target precision,
+then it is more efficient to directly call the logarithm, 
+which has its own argument reduction.
+If $1+x$ cannot be computed exactly, this implies that $x$ is either
+very small, in which case no argument reduction is needed,
+or very large, in which case $\textnormal{log1p}(x) \approx \log x$.
 
-The algorithm used for this calculation is as follows:
-
+The algorithm used for this calculation is as follows (with rounding to
+nearest):
 \begin{eqnarray}\nonumber
-u&\leftarrow&\circ(x)\\\nonumber
-v&\leftarrow&\circ(1+u)\\\nonumber
-w&\leftarrow&\circ(\log(v))\\\nonumber
+v&\leftarrow&\circ(1+x)\\\nonumber
+w&\leftarrow&\circ(\log v)\\\nonumber
 \end{eqnarray}
 
 Now, we have to bound the rounding error for each step of this
@@ -2532,56 +2541,31 @@ algorithm.
 
 \begin{center}
 \begin{tabular}{l l l}
-
-\begin{minipage}{2.5cm}
-
-
-${\textnormal{error}}(u)$
-
-
-$u \leftarrow \circ(x)$
-
-\end{minipage} &
-\begin{minipage}{7.5cm}
-
-\begin{eqnarray}\nonumber
-  |u-x| &\leq& ulp(u)\\\nonumber
-\end{eqnarray}
-
-\end{minipage} &
-\begin{minipage}{6cm}
-{\hspace{7cm}}
-\end{minipage}\\%\hline
 \begin{minipage}{2.5cm}
 ${\textnormal{error}}(v)$
 
 
-$v \leftarrow \circ(1+u) $
+$v \leftarrow \circ(1+x) $
 
 \end{minipage} &
 \begin{minipage}{7.5cm}
 
 \begin{eqnarray}\nonumber
-  |v-(1+x)| &\leq& (1+2^{e_u-e_v})\ulp(v)
+  |v-(1+x)| &\leq& \frac{1}{2}\ulp(v)
 \end{eqnarray}
 
 
-\end{minipage} &
-\begin{minipage}{6cm}
-($\star$)
-see subsection \ref{generic:sous}
-\end{minipage}\\%\hline
+\end{minipage} & \\%\hline
 \begin{minipage}{2.5cm}
 ${\textnormal{error}}(w)$
 
 
-$w \leftarrow \circ(\log(v)) $
+$w \leftarrow \circ(\log v) $
 
 \end{minipage} &
 \begin{minipage}{7.5cm}
 \begin{eqnarray}\nonumber
-  |v-\log{v}| &\leq& (1+(1+2^{e_u-e_v})2^{2-e_w})\\\nonumber
- &\hdots& \ulp(w)
+  |w-\log(1+x)| &\leq& (\frac{1}{2}+2^{1-e_w}) \ulp(w)
 \end{eqnarray}
 \end{minipage} &
 \begin{minipage}{6cm}
@@ -2590,14 +2574,10 @@ see subsection \ref{generic:log}
 \end{minipage}
 \end{tabular}
 \end{center}
-
-
-That shows the rounding error on the calculation of $\log\n{1p}(x)$
-can be bound by $(1+(1+2^{e_u-e_v})2^{2-e_w}) \ulp$ on the result. So,
-to calculate the size of intermediary variables, we have to add, at
-least, $\lceil \log_2 (1+(1+2^{e_u-e_v})2^{2-e_w}) \rceil$ bits the wanted
-precision.
-
+The $2^{1-e_w}$ factor in the error reflects the possible loss of accuracy
+in $1+x$ when $x$ is small.
+Note that if $v = \circ(1+x)$ is exact, then the error bound simplifies to
+$2^{1-e_w} \ulp(w)$, i.e., $2^{1-p}$, where $p$ is the working precision.
 
 \subsection{The log2 or log10 function}
 
