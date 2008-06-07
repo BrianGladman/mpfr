@@ -1993,9 +1993,12 @@ The terms that are canceled are $\pi/2$ and $\arcsin\,x$, their order is $2$. Th
 
 \subsection{The arc-tangent function} % from Mathieu Dutour
 
-\begin{comment}
-Argument reduction $\frac{x}{1+\sqrt{1+x^2}}$:
+The arc-tangent function admits the following argument reduction:
+\[ \arctan x = 2 \arctan \frac{x}{1+\sqrt{1+x^2}}. \]
+If applied once, it reduced the argument to $|x| < 1$, then each successive
+application reduces $x$ by a factor of at least $2$.
 
+\begin{comment}
 {Assume} $0 \leq y < 1$, where $y$ is an approximation of some
 real $x$ such that $x = y (1 + \delta)$. We approximate
 $\frac{x}{1+\sqrt{1+x^2}}$ using the following algorithm:

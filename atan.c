@@ -256,7 +256,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
   /* Set x_p=|x| */
   MPFR_TMP_INIT_ABS (xp, x);
 
-  /* Other simple case arctang(-+1)=-+pi/4 */
+  /* Other simple case arctan(-+1)=-+pi/4 */
   comparaison = mpfr_cmp_ui (xp, 1);
   if (MPFR_UNLIKELY (comparaison == 0))
     {
