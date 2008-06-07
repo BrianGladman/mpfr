@@ -14,6 +14,8 @@ Algorithms and Proofs}
 
 \DeclareMathOperator{\acosh}{acosh}
 \DeclareMathOperator{\Li2}{Li_2}
+\DeclareMathOperator{\erf}{erf}
+\DeclareMathOperator{\erfc}{erfc}
 
 \def\O{{\mathcal O}}
 \def\n{\textnormal}
@@ -1136,13 +1138,13 @@ This is implemented in the function {\tt mpfr\_exp2\_aux2}.
 \subsection{The error function}
 
 Let $n$ be the target precision, and $x$ be the input value.
-For $|x| \geq \sqrt{n \log 2}$, we have $|{\rm erf} \, x| = 1$
+For $|x| \geq \sqrt{n \log 2}$, we have $|\erf x| = 1$
 or $1^{-}$ according to the rounding mode.
 Otherwise we use the Taylor expansion.
 
 \subsubsection{Taylor expansion}
 
-\[ {\rm erf} \, z = \frac{2}{\sqrt{\pi}} \sum_{k=0}^{\infty} \frac{(-1)^k}
+\[ \erf z = \frac{2}{\sqrt{\pi}} \sum_{k=0}^{\infty} \frac{(-1)^k}
         {k! (2k+1)} z^{2k+1} \]
 
 \begin{quote}
@@ -1198,14 +1200,13 @@ $1 + 2 (2 \tau_k + 3) + 4 = 4 \tau_k + 11$
 
 \subsubsection{Very large arguments}
 
-Since ${\rm erfc} \, x \leq \frac{1}{\sqrt{\pi} x e^{x^2}}$,
+Since $\erfc x \leq \frac{1}{\sqrt{\pi} x e^{x^2}}$,
 we have for $x^2 \geq n \log 2$ (which implies $x \geq 1$)
-that ${\rm erfc} \, x \leq 2^{-n}$, thus
-${\rm erf} \, x = 1$ or ${\rm erf} \, x = 1 - 2^{-n}$ according to the
-rounding mode.
+that $\erfc x \leq 2^{-n}$, thus
+$\erf x = 1$ or $\erf x = 1 - 2^{-n}$ according to the rounding mode.
 
 More precisely, \cite[formul{\ae} 7.1.23 and 7.1.24]{AbSt73} give:
-\[ \sqrt{\pi} x e^{x^2} {\rm erfc} x \approx
+\[ \sqrt{\pi} x e^{x^2} \erfc x \approx
    1 + \sum_{k=1}^n (-1)^k \frac{1 \times 3 \times \cdots \times (2k-1)}
    {(2x^2)^k}, \]
 with the error bounded in absolute value by the next term and of the same sign.
