@@ -1923,6 +1923,7 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
               break;
             case MP_LIMB_ARRAY_ARG:
               {
+                mp_limb_t *q = (mp_limb_t *) p;
                 mp_size_t n;
                 n = va_arg (ap, mp_size_t);
                 if (n < 0)
@@ -1931,11 +1932,11 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
                   break;
 
                 /* we assume here that mp_limb_t is wider than int */
-                * (mp_limb_t *) p = (mp_limb_t) nchar;
+                *q = (mp_limb_t) nchar;
                 while (--n != 0)
                   {
-                    p += sizeof (mp_limb_t);
-                    * (mp_limb_t *) p = (mp_limb_t) 0;
+                    q++;
+                    *q = (mp_limb_t) 0;
                   }
               }
               break;
