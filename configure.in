@@ -224,7 +224,7 @@ error
 dnl If compiler is gcc, then use some specific flags.
 dnl But don't touch user other flags.
 if test "$test_CFLAGS" != set && test -n "$GCC"; then
-  CFLAGS="-Wall -Wmissing-prototypes $CFLAGS"
+  CFLAGS="-Wall -Wmissing-prototypes -Wpointer-arith $CFLAGS"
   if test -n "$disable_gcc_format_warning" ; then
    CFLAGS="$CFLAGS -Wno-format"
   fi
