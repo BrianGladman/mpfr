@@ -132,6 +132,9 @@ patch patch-libtool needs to be applied, e.g.:
   3. ./configure
   4. make dist
 
+Another libtool bug (with icc) to be fixed before the next MPFR releases:
+  http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=485421
+
 ===========================================================================
 
 To check the coverage of the Test Suite, you can use GCOV.
