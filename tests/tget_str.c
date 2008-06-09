@@ -1154,7 +1154,7 @@ main (int argc, char *argv[])
       mpfr_set_exp (x, (e == -10) ? mpfr_get_emin () :
                     ((e == 10) ? mpfr_get_emax () : e));
       b = 2 + (randlimb () % 35);
-      r = (mp_rnd_t) RND_RAND();
+      r = RND_RAND ();
       mpfr_get_str (s, &f, b, m, x, r);
     }
   mpfr_clear (x);

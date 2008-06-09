@@ -507,7 +507,7 @@ tests_default_random (mpfr_ptr x, int pos, mp_exp_t emin, mp_exp_t emax)
    As examples of use, see the calls to test4rm from the data_check and
    bad_cases functions. */
 static void
-test4rm (int (*fct) (), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
+test4rm (int (*fct) (FLIST), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
          mp_rnd_t rnd, int test_one, char *name)
 {
   mp_prec_t yprec = MPFR_PREC (y);
@@ -585,7 +585,7 @@ test4rm (int (*fct) (), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
    directed rounding mode.
  */
 void
-data_check (char *f, int (*foo) (), char *name)
+data_check (char *f, int (*foo) (FLIST), char *name)
 {
   FILE *fp;
   mp_prec_t xprec, yprec;
@@ -597,7 +597,7 @@ data_check (char *f, int (*foo) (), char *name)
   fp = fopen (f, "r");
   if (fp == NULL)
     {
-      char *v = MPFR_VERSION_STRING;
+      char *v = (char *) MPFR_VERSION_STRING;
 
       /* In the '-dev' versions, assume that the data file exists and
          return an error if the file cannot be opened to make sure
@@ -729,7 +729,7 @@ data_check (char *f, int (*foo) (), char *name)
  * pos, emin, emax: arguments for tests_default_random.
  */
 void
-bad_cases (int (*fct)(), int (*inv)(), char *name,
+bad_cases (int (*fct)(FLIST), int (*inv)(FLIST), char *name,
            int pos, mp_exp_t emin, mp_exp_t emax,
            mp_prec_t pymin, mp_prec_t pymax, mp_prec_t psup,
            int n)

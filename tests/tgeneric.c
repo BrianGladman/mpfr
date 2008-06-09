@@ -197,7 +197,7 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
 #endif
             }
 
-          rnd = (mp_rnd_t) RND_RAND ();
+          rnd = RND_RAND ();
           mpfr_clear_flags ();
 #ifdef DEBUG_TGENERIC
           TGENERIC_INFO (TEST_FUNCTION, MPFR_PREC (y));

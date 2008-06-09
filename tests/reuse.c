@@ -519,7 +519,7 @@ reldiff_wrapper (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 int
 main (void)
 {
-  mp_rnd_t rnd;
+  int rnd;
   mp_prec_t p;
   tests_start_mpfr ();
 
@@ -531,99 +531,99 @@ main (void)
     test2a (mpfr_floor, "mpfr_floor", p);
     test2a (mpfr_trunc, "mpfr_trunc", p);
 
-    test2ui (mpfr_add_ui, "mpfr_add_ui", p, rnd);
-    test2ui (mpfr_div_2exp, "mpfr_div_2exp", p, rnd);
-    test2ui (mpfr_div_ui, "mpfr_div_ui", p, rnd);
-    test2ui (mpfr_mul_2exp, "mpfr_mul_2exp", p, rnd);
-    test2ui (mpfr_mul_ui, "mpfr_mul_ui", p, rnd);
-    test2ui (mpfr_pow_ui, "mpfr_pow_ui", p, rnd);
-    test2ui (mpfr_sub_ui, "mpfr_sub_ui", p, rnd);
+    test2ui (mpfr_add_ui, "mpfr_add_ui", p, (mp_rnd_t) rnd);
+    test2ui (mpfr_div_2exp, "mpfr_div_2exp", p, (mp_rnd_t) rnd);
+    test2ui (mpfr_div_ui, "mpfr_div_ui", p, (mp_rnd_t) rnd);
+    test2ui (mpfr_mul_2exp, "mpfr_mul_2exp", p, (mp_rnd_t) rnd);
+    test2ui (mpfr_mul_ui, "mpfr_mul_ui", p, (mp_rnd_t) rnd);
+    test2ui (mpfr_pow_ui, "mpfr_pow_ui", p, (mp_rnd_t) rnd);
+    test2ui (mpfr_sub_ui, "mpfr_sub_ui", p, (mp_rnd_t) rnd);
 
-    testui2 (mpfr_ui_div, "mpfr_ui_div", p, rnd);
-    testui2 (mpfr_ui_sub, "mpfr_ui_sub", p, rnd);
-    testui2 (mpfr_ui_pow, "mpfr_ui_pow", p, rnd);
+    testui2 (mpfr_ui_div, "mpfr_ui_div", p, (mp_rnd_t) rnd);
+    testui2 (mpfr_ui_sub, "mpfr_ui_sub", p, (mp_rnd_t) rnd);
+    testui2 (mpfr_ui_pow, "mpfr_ui_pow", p, (mp_rnd_t) rnd);
 
-    test2 (mpfr_sqr, "mpfr_sqr", p, rnd);
-    test2 (mpfr_sqrt, "mpfr_sqrt", p, rnd);
-    test2 (mpfr_abs, "mpfr_abs", p, rnd);
-    test2 (mpfr_neg, "mpfr_neg", p, rnd);
+    test2 (mpfr_sqr, "mpfr_sqr", p, (mp_rnd_t) rnd);
+    test2 (mpfr_sqrt, "mpfr_sqrt", p, (mp_rnd_t) rnd);
+    test2 (mpfr_abs, "mpfr_abs", p, (mp_rnd_t) rnd);
+    test2 (mpfr_neg, "mpfr_neg", p, (mp_rnd_t) rnd);
 
-    test2 (mpfr_log, "mpfr_log", p, rnd);
-    test2 (mpfr_log2, "mpfr_log2", p, rnd);
-    test2 (mpfr_log10, "mpfr_log10", p, rnd);
-    test2 (mpfr_log1p, "mpfr_log1p", p, rnd);
+    test2 (mpfr_log, "mpfr_log", p, (mp_rnd_t) rnd);
+    test2 (mpfr_log2, "mpfr_log2", p, (mp_rnd_t) rnd);
+    test2 (mpfr_log10, "mpfr_log10", p, (mp_rnd_t) rnd);
+    test2 (mpfr_log1p, "mpfr_log1p", p, (mp_rnd_t) rnd);
 
-    test2 (mpfr_exp, "mpfr_exp", p, rnd);
-    test2 (mpfr_exp2, "mpfr_exp2", p, rnd);
-    test2 (mpfr_exp10, "mpfr_exp10", p, rnd);
-    test2 (mpfr_expm1, "mpfr_expm1", p, rnd);
-    test2 (mpfr_eint, "mpfr_eint", p, rnd);
+    test2 (mpfr_exp, "mpfr_exp", p, (mp_rnd_t) rnd);
+    test2 (mpfr_exp2, "mpfr_exp2", p, (mp_rnd_t) rnd);
+    test2 (mpfr_exp10, "mpfr_exp10", p, (mp_rnd_t) rnd);
+    test2 (mpfr_expm1, "mpfr_expm1", p, (mp_rnd_t) rnd);
+    test2 (mpfr_eint, "mpfr_eint", p, (mp_rnd_t) rnd);
 
-    test2 (mpfr_sinh, "mpfr_sinh", p, rnd);
-    test2 (mpfr_cosh, "mpfr_cosh", p, rnd);
-    test2 (mpfr_tanh, "mpfr_tanh", p, rnd);
-    test2 (mpfr_asinh, "mpfr_asinh", p, rnd);
-    test2 (mpfr_acosh, "mpfr_acosh", p, rnd);
-    test2 (mpfr_atanh, "mpfr_atanh", p, rnd);
-    test2 (mpfr_sech, "mpfr_sech", p, rnd);
-    test2 (mpfr_csch, "mpfr_csch", p, rnd);
-    test2 (mpfr_coth, "mpfr_coth", p, rnd);
+    test2 (mpfr_sinh, "mpfr_sinh", p, (mp_rnd_t) rnd);
+    test2 (mpfr_cosh, "mpfr_cosh", p, (mp_rnd_t) rnd);
+    test2 (mpfr_tanh, "mpfr_tanh", p, (mp_rnd_t) rnd);
+    test2 (mpfr_asinh, "mpfr_asinh", p, (mp_rnd_t) rnd);
+    test2 (mpfr_acosh, "mpfr_acosh", p, (mp_rnd_t) rnd);
+    test2 (mpfr_atanh, "mpfr_atanh", p, (mp_rnd_t) rnd);
+    test2 (mpfr_sech, "mpfr_sech", p, (mp_rnd_t) rnd);
+    test2 (mpfr_csch, "mpfr_csch", p, (mp_rnd_t) rnd);
+    test2 (mpfr_coth, "mpfr_coth", p, (mp_rnd_t) rnd);
 
-    test2 (mpfr_asin, "mpfr_asin", p, rnd);
-    test2 (mpfr_acos, "mpfr_acos", p, rnd);
-    test2 (mpfr_atan, "mpfr_atan", p, rnd);
-    test2 (mpfr_cos, "mpfr_cos", p, rnd);
-    test2 (mpfr_sin, "mpfr_sin", p, rnd);
-    test2 (mpfr_tan, "mpfr_tan", p, rnd);
-    test2 (mpfr_sec, "mpfr_sec", p, rnd);
-    test2 (mpfr_csc, "mpfr_csc", p, rnd);
-    test2 (mpfr_cot, "mpfr_cot", p, rnd);
+    test2 (mpfr_asin, "mpfr_asin", p, (mp_rnd_t) rnd);
+    test2 (mpfr_acos, "mpfr_acos", p, (mp_rnd_t) rnd);
+    test2 (mpfr_atan, "mpfr_atan", p, (mp_rnd_t) rnd);
+    test2 (mpfr_cos, "mpfr_cos", p, (mp_rnd_t) rnd);
+    test2 (mpfr_sin, "mpfr_sin", p, (mp_rnd_t) rnd);
+    test2 (mpfr_tan, "mpfr_tan", p, (mp_rnd_t) rnd);
+    test2 (mpfr_sec, "mpfr_sec", p, (mp_rnd_t) rnd);
+    test2 (mpfr_csc, "mpfr_csc", p, (mp_rnd_t) rnd);
+    test2 (mpfr_cot, "mpfr_cot", p, (mp_rnd_t) rnd);
 
-    test2 (mpfr_erf,  "mpfr_erf",  p, rnd);
-    test2 (mpfr_erfc, "mpfr_erfc", p, rnd);
-    test2 (mpfr_j0,   "mpfr_j0",   p, rnd);
-    test2 (mpfr_j1,   "mpfr_j1",   p, rnd);
-    test2 (mpfr_y0,   "mpfr_y0",   p, rnd);
-    test2 (mpfr_y1,   "mpfr_y1",   p, rnd);
-    test2 (mpfr_zeta, "mpfr_zeta", p, rnd);
-    test2 (mpfr_gamma, "mpfr_gamma", p, rnd);
-    test2 (mpfr_lngamma, "mpfr_lngamma", p, rnd);
+    test2 (mpfr_erf,  "mpfr_erf",  p, (mp_rnd_t) rnd);
+    test2 (mpfr_erfc, "mpfr_erfc", p, (mp_rnd_t) rnd);
+    test2 (mpfr_j0,   "mpfr_j0",   p, (mp_rnd_t) rnd);
+    test2 (mpfr_j1,   "mpfr_j1",   p, (mp_rnd_t) rnd);
+    test2 (mpfr_y0,   "mpfr_y0",   p, (mp_rnd_t) rnd);
+    test2 (mpfr_y1,   "mpfr_y1",   p, (mp_rnd_t) rnd);
+    test2 (mpfr_zeta, "mpfr_zeta", p, (mp_rnd_t) rnd);
+    test2 (mpfr_gamma, "mpfr_gamma", p, (mp_rnd_t) rnd);
+    test2 (mpfr_lngamma, "mpfr_lngamma", p, (mp_rnd_t) rnd);
 
-    test2 (mpfr_rint, "mpfr_rint", p, rnd);
-    test2 (mpfr_rint_ceil, "mpfr_rint_ceil", p, rnd);
-    test2 (mpfr_rint_floor, "mpfr_rint_floor", p, rnd);
-    test2 (mpfr_rint_round, "mpfr_rint_round", p, rnd);
-    test2 (mpfr_rint_trunc, "mpfr_rint_trunc", p, rnd);
-    test2 (mpfr_frac, "mpfr_frac", p, rnd);
+    test2 (mpfr_rint, "mpfr_rint", p, (mp_rnd_t) rnd);
+    test2 (mpfr_rint_ceil, "mpfr_rint_ceil", p, (mp_rnd_t) rnd);
+    test2 (mpfr_rint_floor, "mpfr_rint_floor", p, (mp_rnd_t) rnd);
+    test2 (mpfr_rint_round, "mpfr_rint_round", p, (mp_rnd_t) rnd);
+    test2 (mpfr_rint_trunc, "mpfr_rint_trunc", p, (mp_rnd_t) rnd);
+    test2 (mpfr_frac, "mpfr_frac", p, (mp_rnd_t) rnd);
 
-    test3 (mpfr_add, "mpfr_add", p, rnd);
-    test3 (mpfr_sub, "mpfr_sub", p, rnd);
-    test3 (mpfr_mul, "mpfr_mul", p, rnd);
-    test3 (mpfr_div, "mpfr_div", p, rnd);
+    test3 (mpfr_add, "mpfr_add", p, (mp_rnd_t) rnd);
+    test3 (mpfr_sub, "mpfr_sub", p, (mp_rnd_t) rnd);
+    test3 (mpfr_mul, "mpfr_mul", p, (mp_rnd_t) rnd);
+    test3 (mpfr_div, "mpfr_div", p, (mp_rnd_t) rnd);
 
-    test3 (mpfr_agm, "mpfr_agm", p, rnd);
-    test3 (mpfr_min, "mpfr_min", p, rnd);
-    test3 (mpfr_max, "mpfr_max", p, rnd);
+    test3 (mpfr_agm, "mpfr_agm", p, (mp_rnd_t) rnd);
+    test3 (mpfr_min, "mpfr_min", p, (mp_rnd_t) rnd);
+    test3 (mpfr_max, "mpfr_max", p, (mp_rnd_t) rnd);
 
-    test3 (reldiff_wrapper, "mpfr_reldiff", p, rnd);
-    test3 (mpfr_dim, "mpfr_dim", p, rnd);
+    test3 (reldiff_wrapper, "mpfr_reldiff", p, (mp_rnd_t) rnd);
+    test3 (mpfr_dim, "mpfr_dim", p, (mp_rnd_t) rnd);
 
-    test3 (mpfr_remainder, "mpfr_remainder", p, rnd);
-    test3 (mpfr_pow, "mpfr_pow", p, rnd);
-    test3 (mpfr_atan2, "mpfr_atan2", p, rnd);
-    test3 (mpfr_hypot, "mpfr_hypot", p, rnd);
+    test3 (mpfr_remainder, "mpfr_remainder", p, (mp_rnd_t) rnd);
+    test3 (mpfr_pow, "mpfr_pow", p, (mp_rnd_t) rnd);
+    test3 (mpfr_atan2, "mpfr_atan2", p, (mp_rnd_t) rnd);
+    test3 (mpfr_hypot, "mpfr_hypot", p, (mp_rnd_t) rnd);
 
-    test3a (mpfr_sin_cos, "mpfr_sin_cos", p, rnd);
+    test3a (mpfr_sin_cos, "mpfr_sin_cos", p, (mp_rnd_t) rnd);
 
-    test4 (mpfr_fma, "mpfr_fma", p, rnd);
-    test4 (mpfr_fms, "mpfr_fms", p, rnd);
+    test4 (mpfr_fma, "mpfr_fma", p, (mp_rnd_t) rnd);
+    test4 (mpfr_fms, "mpfr_fms", p, (mp_rnd_t) rnd);
 
 #if MPFR_VERSION >= MPFR_VERSION_NUM(2,4,0)
-    test2 (mpfr_li2, "mpfr_li2",  p, rnd);
-    test2 (mpfr_rec_sqrt, "mpfr_rec_sqrt",  p, rnd);
-    test3 (mpfr_fmod, "mpfr_fmod", p, rnd);
-    test3a (mpfr_modf, "mpfr_modf", p, rnd);
-    test3a (mpfr_sinh_cosh, "mpfr_sinh_cosh", p, rnd);
+    test2 (mpfr_li2, "mpfr_li2",  p, (mp_rnd_t) rnd);
+    test2 (mpfr_rec_sqrt, "mpfr_rec_sqrt",  p, (mp_rnd_t) rnd);
+    test3 (mpfr_fmod, "mpfr_fmod", p, (mp_rnd_t) rnd);
+    test3a (mpfr_modf, "mpfr_modf", p, (mp_rnd_t) rnd);
+    test3a (mpfr_sinh_cosh, "mpfr_sinh_cosh", p, (mp_rnd_t) rnd);
 #endif
   }
 

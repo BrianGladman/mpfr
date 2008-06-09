@@ -135,12 +135,12 @@ overflowed_fac0 (void)
   RND_LOOP (rnd)
     {
       mpfr_clear_flags ();
-      inex = mpfr_fac_ui (x, 0, rnd);
+      inex = mpfr_fac_ui (x, 0, (mp_rnd_t) rnd);
       if (! mpfr_overflow_p ())
         {
           printf ("Error in overflowed_fac0 (rnd = %s):\n"
                   "  The overflow flag is not set.\n",
-                  mpfr_print_rnd_mode (rnd));
+                  mpfr_print_rnd_mode ((mp_rnd_t) rnd));
           err = 1;
         }
       if (rnd == GMP_RNDZ || rnd == GMP_RNDD)
@@ -149,13 +149,13 @@ overflowed_fac0 (void)
             {
               printf ("Error in overflowed_fac0 (rnd = %s):\n"
                       "  The inexact value must be negative.\n",
-                      mpfr_print_rnd_mode (rnd));
+                      mpfr_print_rnd_mode ((mp_rnd_t) rnd));
               err = 1;
             }
           if (! mpfr_equal_p (x, y))
             {
               printf ("Error in overflowed_fac0 (rnd = %s):\n"
-                      "  Got ", mpfr_print_rnd_mode (rnd));
+                      "  Got ", mpfr_print_rnd_mode ((mp_rnd_t) rnd));
               mpfr_print_binary (x);
               printf (" instead of 0.11111111E0.\n");
               err = 1;
@@ -167,13 +167,13 @@ overflowed_fac0 (void)
             {
               printf ("Error in overflowed_fac0 (rnd = %s):\n"
                       "  The inexact value must be positive.\n",
-                      mpfr_print_rnd_mode (rnd));
+                      mpfr_print_rnd_mode ((mp_rnd_t) rnd));
               err = 1;
             }
           if (! (mpfr_inf_p (x) && MPFR_SIGN (x) > 0))
             {
               printf ("Error in overflowed_fac0 (rnd = %s):\n"
-                      "  Got ", mpfr_print_rnd_mode (rnd));
+                      "  Got ", mpfr_print_rnd_mode ((mp_rnd_t) rnd));
               mpfr_print_binary (x);
               printf (" instead of +Inf.\n");
               err = 1;

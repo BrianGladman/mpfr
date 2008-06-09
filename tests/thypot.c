@@ -170,11 +170,11 @@ check_overflow (void)
   RND_LOOP(r)
     {
       mpfr_clear_overflow ();
-      inex = mpfr_hypot (y, x, x, r);
+      inex = mpfr_hypot (y, x, x, (mp_rnd_t) r);
       if (!mpfr_overflow_p ())
         {
           printf ("No overflow in check_overflow for %s\n",
-                  mpfr_print_rnd_mode (r));
+                  mpfr_print_rnd_mode ((mp_rnd_t) r));
           exit (1);
         }
       MPFR_ASSERTN (MPFR_IS_POS (y));

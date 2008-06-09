@@ -48,7 +48,7 @@ main (void)
   mpfr_set_f (x, y, GMP_RNDN);
 
   mpf_urandomb (y, RANDS, 10 * GMP_NUMB_BITS);
-  mpfr_set_f (x, y, (mp_rnd_t) RND_RAND());
+  mpfr_set_f (x, y, RND_RAND ());
 
   /* bug found by Jean-Pierre Merlet */
   mpfr_set_prec (x, 256);

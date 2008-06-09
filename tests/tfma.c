@@ -46,14 +46,14 @@ test_exact (void)
             if (mpfr_set_str (a, val[i], 10, GMP_RNDN) ||
                 mpfr_set_str (b, val[j], 10, GMP_RNDN) ||
                 mpfr_set_str (c, val[k], 10, GMP_RNDN) ||
-                mpfr_mul (r1, a, b, rnd) ||
-                mpfr_add (r1, r1, c, rnd))
+                mpfr_mul (r1, a, b, (mp_rnd_t) rnd) ||
+                mpfr_add (r1, r1, c, (mp_rnd_t) rnd))
               {
                 printf ("test_exact internal error for (%d,%d,%d,%d)\n",
                         i, j, k, rnd);
                 exit (1);
               }
-            if (mpfr_fma (r2, a, b, c, rnd))
+            if (mpfr_fma (r2, a, b, c, (mp_rnd_t) rnd))
               {
                 printf ("test_exact(%d,%d,%d,%d): mpfr_fma should be exact\n",
                         i, j, k, rnd);
@@ -139,36 +139,37 @@ test_overflow2 (void)
 
         mpfr_clear_flags ();
         /* One has: x * y = -1@emax exactly (but not representable). */
-        inex = mpfr_fma (r, x, y, z, rnd);
+        inex = mpfr_fma (r, x, y, z, (mp_rnd_t) rnd);
         if (overflow ^ (mpfr_overflow_p () != 0))
           {
             printf ("Error in test_overflow2 (i = %d, %s): wrong overflow"
-                    " flag (should be %d)\n", i, mpfr_print_rnd_mode (rnd),
-                    overflow);
+                    " flag (should be %d)\n", i,
+                    mpfr_print_rnd_mode ((mp_rnd_t) rnd), overflow);
             err = 1;
           }
         if (mpfr_nanflag_p ())
           {
             printf ("Error in test_overflow2 (i = %d, %s): NaN flag should"
-                    " not be set\n", i, mpfr_print_rnd_mode (rnd));
+                    " not be set\n", i, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
             err = 1;
           }
         if (mpfr_nan_p (r))
           {
             printf ("Error in test_overflow2 (i = %d, %s): got NaN\n",
-                    i, mpfr_print_rnd_mode (rnd));
+                    i, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
             err = 1;
           }
         else if (MPFR_SIGN (r) >= 0)
           {
             printf ("Error in test_overflow2 (i = %d, %s): wrong sign "
-                    "(+ instead of -)\n", i, mpfr_print_rnd_mode (rnd));
+                    "(+ instead of -)\n", i,
+                    mpfr_print_rnd_mode ((mp_rnd_t) rnd));
             err = 1;
           }
         else if (inf && ! mpfr_inf_p (r))
           {
             printf ("Error in test_overflow2 (i = %d, %s): expected -Inf,"
-                    " got\n", i, mpfr_print_rnd_mode (rnd));
+                    " got\n", i, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
             mpfr_dump (r);
             err = 1;
           }
@@ -176,14 +177,15 @@ test_overflow2 (void)
                           (mpfr_nextbelow (r), ! mpfr_inf_p (r))))
           {
             printf ("Error in test_overflow2 (i = %d, %s): expected -MAX,"
-                    " got\n", i, mpfr_print_rnd_mode (rnd));
+                    " got\n", i, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
             mpfr_dump (r);
             err = 1;
           }
         if (inf ? inex >= 0 : inex <= 0)
           {
             printf ("Error in test_overflow2 (i = %d, %s): wrong inexact"
-                    " flag (got %d)\n", i, mpfr_print_rnd_mode (rnd), inex);
+                    " flag (got %d)\n", i,
+                    mpfr_print_rnd_mode ((mp_rnd_t) rnd), inex);
             err = 1;
           }
 
@@ -217,12 +219,12 @@ test_underflow1 (void)
                 mpfr_setmax (z, mpfr_get_emax ());
               /* |z| = 1 or 2^emax - ulp */
               mpfr_clear_flags ();
-              inex = mpfr_fma (r, x, y, z, rnd);
+              inex = mpfr_fma (r, x, y, z, (mp_rnd_t) rnd);
 #define ERRTU1 "Error in test_underflow1 (signy = %d, signz = %d, %s)\n  "
               if (mpfr_nanflag_p ())
                 {
                   printf (ERRTU1 "NaN flag is set\n", signy, signz,
-                          mpfr_print_rnd_mode (rnd));
+                          mpfr_print_rnd_mode ((mp_rnd_t) rnd));
                   err = 1;
                 }
               if (signy < 0 && (rnd == GMP_RNDD ||
@@ -234,19 +236,19 @@ test_underflow1 (void)
               if ((mpfr_overflow_p () != 0) ^ (mpfr_inf_p (z) != 0))
                 {
                   printf (ERRTU1 "wrong overflow flag\n", signy, signz,
-                          mpfr_print_rnd_mode (rnd));
+                          mpfr_print_rnd_mode ((mp_rnd_t) rnd));
                   err = 1;
                 }
               if (mpfr_underflow_p ())
                 {
                   printf (ERRTU1 "underflow flag is set\n", signy, signz,
-                          mpfr_print_rnd_mode (rnd));
+                          mpfr_print_rnd_mode ((mp_rnd_t) rnd));
                   err = 1;
                 }
               if (! mpfr_equal_p (r, z))
                 {
                   printf (ERRTU1 "got ", signy, signz,
-                          mpfr_print_rnd_mode (rnd));
+                          mpfr_print_rnd_mode ((mp_rnd_t) rnd));
                   mpfr_print_binary (r);
                   printf (" instead of ");
                   mpfr_print_binary (z);
@@ -258,7 +260,8 @@ test_underflow1 (void)
                                 (rnd == GMP_RNDN && signy > 0)))
                 {
                   printf (ERRTU1 "ternary value = %d instead of < 0\n",
-                          signy, signz, mpfr_print_rnd_mode (rnd), inex);
+                          signy, signz, mpfr_print_rnd_mode ((mp_rnd_t) rnd),
+                          inex);
                   err = 1;
                 }
               if (inex <= 0 && (rnd == GMP_RNDU ||
@@ -266,7 +269,8 @@ test_underflow1 (void)
                                 (rnd == GMP_RNDN && signy < 0)))
                 {
                   printf (ERRTU1 "ternary value = %d instead of > 0\n",
-                          signy, signz, mpfr_print_rnd_mode (rnd), inex);
+                          signy, signz, mpfr_print_rnd_mode ((mp_rnd_t) rnd),
+                          inex);
                   err = 1;
                 }
             }
@@ -571,7 +575,7 @@ main (int argc, char *argv[])
           if (randlimb () % 2)
             mpfr_neg (z, z, GMP_RNDN);
 
-          rnd = (mp_rnd_t) RND_RAND ();
+          rnd = RND_RAND ();
           mpfr_set_prec (slong, 2 * prec);
           if (mpfr_mul (slong, x, y, rnd))
             {

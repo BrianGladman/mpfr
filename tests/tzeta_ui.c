@@ -47,7 +47,8 @@ main (int argc, char *argv[])
   if (argc >= 3) /* tzeta_ui n prec [rnd] */
     {
       mpfr_set_prec (x, atoi (argv[2]));
-      mpfr_zeta_ui (x, atoi (argv[1]), (argc > 3) ? atoi (argv[3]) : GMP_RNDN);
+      mpfr_zeta_ui (x, atoi (argv[1]),
+                    argc > 3 ? (mp_rnd_t) atoi (argv[3]) : GMP_RNDN);
       mpfr_out_str (stdout, 10, 0, x, GMP_RNDN);
       printf ("\n");
       goto clear_and_exit;

@@ -364,7 +364,8 @@ mpfr_tmp_allocate (struct tmp_marker **tmp_marker, size_t size)
 {
   struct tmp_marker *head;
 
-  head = mpfr_default_allocate (sizeof (struct tmp_marker));
+  head = (struct tmp_marker *)
+    mpfr_default_allocate (sizeof (struct tmp_marker));
   head->ptr = mpfr_default_allocate (size);
   head->size = size;
   head->next = *tmp_marker;

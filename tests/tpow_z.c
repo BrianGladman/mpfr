@@ -161,7 +161,7 @@ check_integer (mp_prec_t begin, mp_prec_t end, unsigned long max)
             mpz_neg (z, z);
           mpfr_random (x);
           mpfr_mul_2ui (x, x, 1, GMP_RNDN); /* 0 <= x < 2 */
-          rnd = (mp_rnd_t) RND_RAND ();
+          rnd = RND_RAND ();
           if (mpz_fits_slong_p (z))
             {
               n = mpz_get_si (z);

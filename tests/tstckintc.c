@@ -37,7 +37,7 @@ mp_prec_t p = PREC_TESTED;
 #define ALIGNED(s) (((s) + sizeof (long) - 1) / sizeof (long) * sizeof (long))
 
 static void *
-new (size_t s)
+new_st (size_t s)
 {
   void *p = (void *) stack;
   stack += ALIGNED (s);
@@ -53,8 +53,8 @@ new (size_t s)
 static mpfr_ptr
 new_mpfr (mp_prec_t p)
 {
-  mpfr_ptr x = (mpfr_ptr) new (sizeof (mpfr_t));
-  void *mantissa = new (mpfr_custom_get_size (p));
+  mpfr_ptr x = (mpfr_ptr) new_st (sizeof (mpfr_t));
+  void *mantissa = new_st (mpfr_custom_get_size (p));
   mpfr_custom_init (mantissa, p);
   mpfr_custom_init_set (x, 0, 0, p, mantissa);
   return x;
@@ -104,7 +104,8 @@ dummy_new (void)
 {
   long *r;
 
-  r = new (ALIGNED (2*sizeof (long)) + ALIGNED (mpfr_custom_get_size (p)));
+  r = (long *) new_st (ALIGNED (2 * sizeof (long)) +
+                       ALIGNED (mpfr_custom_get_size (p)));
   MPFR_ASSERTN (r != NULL);
   (mpfr_custom_init) (&r[2], p);
   r[0] = (int) MPFR_NAN_KIND;

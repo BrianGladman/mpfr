@@ -161,7 +161,7 @@ check_nan (void)
 }
 
 static int
-mpfr_inv (mpfr_t y, mpfr_t x, mp_rnd_t r)
+mpfr_inv (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t r)
 {
   return mpfr_ui_div (y, 1, x, r);
 }

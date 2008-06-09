@@ -260,7 +260,7 @@ check_random (int nb_tests)
       char *ptr = fmt;
 
       tests_default_random (x, 256, MPFR_EMIN_MIN, MPFR_EMAX_MAX);
-      rnd = RND_RAND ();
+      rnd = (mp_rnd_t) RND_RAND ();
 
       spec = (int) (randlimb () % 5);
       jmax = (spec == 3 || spec == 4) ? 6 : 5; /* ' flag only with %f or %g */

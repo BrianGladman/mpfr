@@ -137,13 +137,13 @@ overfl_exp10_0 (void)
           {
             mpfr_set_si_2exp (x, i, -512 * ABS (i), GMP_RNDN);
             mpfr_clear_flags ();
-            inex = mpfr_exp10 (x, x, rnd);
+            inex = mpfr_exp10 (x, x, (mp_rnd_t) rnd);
             if ((i >= 0 || emax < 0 || rnd == GMP_RNDN || rnd == GMP_RNDU) &&
                 ! mpfr_overflow_p ())
               {
                 printf ("Error in overfl_exp10_0 (i = %d, rnd = %s):\n"
                         "  The overflow flag is not set.\n",
-                        i, mpfr_print_rnd_mode (rnd));
+                        i, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
                 err = 1;
               }
             if (rnd == GMP_RNDZ || rnd == GMP_RNDD)
@@ -152,13 +152,13 @@ overfl_exp10_0 (void)
                   {
                     printf ("Error in overfl_exp10_0 (i = %d, rnd = %s):\n"
                             "  The inexact value must be negative.\n",
-                            i, mpfr_print_rnd_mode (rnd));
+                            i, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
                     err = 1;
                   }
                 if (! mpfr_equal_p (x, y))
                   {
                     printf ("Error in overfl_exp10_0 (i = %d, rnd = %s):\n"
-                            "  Got ", i, mpfr_print_rnd_mode (rnd));
+                            "  Got ", i, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
                     mpfr_print_binary (x);
                     printf (" instead of 0.11111111E%d.\n", emax);
                     err = 1;
@@ -170,13 +170,13 @@ overfl_exp10_0 (void)
                   {
                     printf ("Error in overfl_exp10_0 (i = %d, rnd = %s):\n"
                             "  The inexact value must be positive.\n",
-                            i, mpfr_print_rnd_mode (rnd));
+                            i, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
                     err = 1;
                   }
                 if (! (mpfr_inf_p (x) && MPFR_SIGN (x) > 0))
                   {
                     printf ("Error in overfl_exp10_0 (i = %d, rnd = %s):\n"
-                            "  Got ", i, mpfr_print_rnd_mode (rnd));
+                            "  Got ", i, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
                     mpfr_print_binary (x);
                     printf (" instead of +Inf.\n");
                     err = 1;

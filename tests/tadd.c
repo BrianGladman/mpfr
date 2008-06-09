@@ -532,7 +532,7 @@ check_inexact (void)
                  abs(EXP(x)-EXP(u)) + max(prec(x), prec(u)) + 1 */
               pz = pz + MAX(MPFR_PREC(x), MPFR_PREC(u)) + 1;
               mpfr_set_prec (z, pz);
-              rnd = (mp_rnd_t) RND_RAND();
+              rnd = RND_RAND ();
               if (test_add (z, x, u, rnd))
                 {
                   printf ("z <- x + u should be exact\n");
@@ -542,7 +542,7 @@ check_inexact (void)
                   exit (1);
                 }
                 {
-                  rnd = (mp_rnd_t) RND_RAND();
+                  rnd = RND_RAND ();
                   inexact = test_add (y, x, u, rnd);
                   cmp = mpfr_cmp (y, z);
                   if (((inexact == 0) && (cmp != 0)) ||
@@ -718,7 +718,7 @@ check_1111 (void)
       test_add (c, c, one, GMP_RNDN);
       diff = (randlimb () % (2*m)) - m;
       mpfr_mul_2si (c, c, diff, GMP_RNDN);
-      rnd_mode = (mp_rnd_t) RND_RAND ();
+      rnd_mode = RND_RAND ();
       inex_a = test_add (a, b, c, rnd_mode);
       mpfr_init2 (s, MPFR_PREC_MIN + 2*m);
       inex_s = test_add (s, b, c, GMP_RNDN); /* exact */

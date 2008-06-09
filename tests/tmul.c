@@ -243,7 +243,7 @@ check_exact (void)
         {
           mpfr_random (a);
           mpfr_random (b);
-          rnd = (mp_rnd_t) RND_RAND ();
+          rnd = RND_RAND ();
           inexact = test_mul (c, a, b, rnd);
           if (test_mul (d, a, b, rnd)) /* should be always exact */
             {
@@ -643,7 +643,7 @@ check_regression (void)
 
 /* multiplies x by 53-bit approximation of Pi */
 static int
-mpfr_mulpi (mpfr_t y, mpfr_t x, mp_rnd_t r)
+mpfr_mulpi (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t r)
 {
   mpfr_t z;
   int inex;

@@ -84,7 +84,7 @@ check1 (void)
             mpfr_neg (x, x, GMP_RNDN);
           if (mpfr_cmp_str (x, tab[i].out, 2, GMP_RNDN) != 0)
             {
-              char *sgn = s ? "-" : "";
+              const char *sgn = s ? "-" : "";
               printf ("Error for i = %d (old_inex = %d), k = %d, x = %s%s\n"
                       "Expected: %s%s\nGot:      ", i, old_inex, k,
                       sgn, tab[i].in, sgn, tab[i].out);

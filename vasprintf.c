@@ -71,7 +71,9 @@ MA 02110-1301, USA. */
 #define MPFR_INF_STRING_UC "INF"
 #define MPFR_INF_STRING_LENGTH 3
 
-static const char num_to_text[16] = "0123456789abcdef";
+/* The implicit \0 is useless, but we do not write num_to_text[16]
+   otherwise g++ complains. */
+static const char num_to_text[] = "0123456789abcdef";
 
 /* some macro and functions for parsing format string */
 #define READ_INT(ap, format, specinfo, field, label_out)                \

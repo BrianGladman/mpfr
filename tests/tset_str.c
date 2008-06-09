@@ -201,8 +201,10 @@ main (int argc, char *argv[])
   mpfr_set_prec (y, prec);
   for (i=0;i<N;i++)
     {
+      mp_rnd_t rnd;
+
       mpfr_random (x);
-      k = RND_RAND ();
+      rnd = RND_RAND ();
       logbase = (randlimb () % 5) + 1;
       base = 1 << logbase;
       /* Warning: the number of bits needed to print exactly a number of
@@ -213,13 +215,13 @@ main (int argc, char *argv[])
         baseprec = prec;
       else
         baseprec = 1 + (prec - 2 + logbase) / logbase;
-      str = mpfr_get_str (NULL, &e, base, baseprec, x, (mp_rnd_t) k);
-      mpfr_set_str (y, str, base, (mp_rnd_t) k);
+      str = mpfr_get_str (NULL, &e, base, baseprec, x, rnd);
+      mpfr_set_str (y, str, base, rnd);
       MPFR_EXP(y) += logbase * (e - strlen (str));
       if (mpfr_cmp (x, y))
         {
           printf ("mpfr_set_str o mpfr_get_str <> id for rnd_mode=%s\n",
-                  mpfr_print_rnd_mode ((mp_rnd_t) k));
+                  mpfr_print_rnd_mode (rnd));
           printf ("x=");
           mpfr_print_binary (x);
           puts ("");

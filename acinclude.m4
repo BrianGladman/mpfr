@@ -60,6 +60,9 @@ AC_CHECK_HEADER([stdarg.h],[AC_DEFINE([HAVE_STDARG],1,[Define if stdarg])],
 dnl sys/fpu.h - MIPS specific
 AC_CHECK_HEADERS([sys/time.h sys/fpu.h])
 
+dnl SIZE_MAX macro
+gl_SIZE_MAX
+
 dnl FIXME: The functions memmove, memset and strtol are really needed by
 dnl MPFR, but if they are implemented as macros, this is also OK (in our
 dnl case).  So, we do not return an error, but their tests are currently

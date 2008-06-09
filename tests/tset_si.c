@@ -98,12 +98,12 @@ test_macros (void)
 {
   mpfr_t x[3];
   mpfr_ptr p;
-  mpfr_rnd_t r;
+  int r;
 
   mpfr_inits (x[0], x[1], x[2], (mpfr_ptr) 0);
   p = x[0];
   r = 0;
-  mpfr_set_ui (p++, 0, r++);
+  mpfr_set_ui (p++, 0, (mp_rnd_t) r++);
   if (p != x[1] || r != 1)
     {
       printf ("Error in mpfr_set_ui macro: p - x[0] = %d (expecting 1), "
@@ -112,7 +112,7 @@ test_macros (void)
     }
   p = x[0];
   r = 0;
-  mpfr_set_si (p++, 0, r++);
+  mpfr_set_si (p++, 0, (mp_rnd_t) r++);
   if (p != x[1] || r != 1)
     {
       printf ("Error in mpfr_set_si macro: p - x[0] = %d (expecting 1), "

@@ -53,7 +53,7 @@ check_inexact (void)
       for (q=2; q<2*p; q++)
         {
           mpfr_set_prec (y, q);
-          for (rnd = 0; rnd < GMP_RND_MAX; rnd++)
+          RND_LOOP (rnd)
             {
               inexact = mpfr_abs (y, x, (mp_rnd_t) rnd);
               cmp = mpfr_cmp (y, absx);
@@ -78,10 +78,10 @@ check_inexact (void)
 }
 
 static void
-check_cmp(int argc, char *argv[])
+check_cmp (int argc, char *argv[])
 {
   mpfr_t x, y;
-  int n, k, rnd;
+  int n, k;
 
   mpfr_inits2 (53, x, y, (mpfr_ptr) 0);
 
@@ -135,18 +135,20 @@ check_cmp(int argc, char *argv[])
   n = (argc==1) ? 25000 : atoi(argv[1]);
   for (k = 1; k <= n; k++)
     {
-      int sign = SIGN_RAND();
-      mpfr_random(x);
-      MPFR_SET_SIGN(x, sign);
-      rnd = RND_RAND();
-      mpfr_abs(y, x, (mp_rnd_t) rnd);
-      MPFR_SET_POS(x);
-      if (mpfr_cmp(x,y))
+      mp_rnd_t rnd;
+      int sign = SIGN_RAND ();
+
+      mpfr_random (x);
+      MPFR_SET_SIGN (x, sign);
+      rnd = RND_RAND ();
+      mpfr_abs (y, x, rnd);
+      MPFR_SET_POS (x);
+      if (mpfr_cmp (x, y))
         {
           printf ("Mismatch for sign=%d and x=", sign);
-          mpfr_print_binary(x);
+          mpfr_print_binary (x);
           printf ("\nResults=");
-          mpfr_print_binary(y);
+          mpfr_print_binary (y);
           putchar ('\n');
           exit (1);
         }

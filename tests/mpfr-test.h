@@ -35,7 +35,7 @@ MA 02110-1301, USA. */
 #define MAXNORM 1.7976931348623157081e308 /* 2^(1023)*(2-2^(-52)) */
 
 /* Generates a random rounding mode */
-#define RND_RAND() (randlimb() % GMP_RND_MAX)
+#define RND_RAND() ((mp_rnd_t) (randlimb() % GMP_RND_MAX))
 
 /* Generates a random sign */
 #define SIGN_RAND() ( (randlimb()%2) ? MPFR_SIGN_POS : MPFR_SIGN_NEG)
@@ -53,6 +53,8 @@ MA 02110-1301, USA. */
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 #define ABS(x) (((x)>0) ? (x) : -(x))
+
+#define FLIST mpfr_ptr, mpfr_srcptr, mp_rnd_t
 
 #if defined (__cplusplus)
 extern "C" {
@@ -81,9 +83,10 @@ FILE *src_fopen _MPFR_PROTO ((const char *, const char *));
 void set_emin _MPFR_PROTO ((mp_exp_t));
 void set_emax _MPFR_PROTO ((mp_exp_t));
 void tests_default_random _MPFR_PROTO ((mpfr_ptr, int, mp_exp_t, mp_exp_t));
-void data_check _MPFR_PROTO ((char *, int (*) (), char *));
-void bad_cases _MPFR_PROTO ((int (*)(), int (*)(), char *, int, mp_exp_t,
-                             mp_exp_t, mp_prec_t, mp_prec_t, mp_prec_t, int));
+void data_check _MPFR_PROTO ((char *, int (*) (FLIST), char *));
+void bad_cases _MPFR_PROTO ((int (*)(FLIST), int (*)(FLIST),
+                             char *, int, mp_exp_t, mp_exp_t,
+                             mp_prec_t, mp_prec_t, mp_prec_t, int));
 
 int mpfr_cmp_str _MPFR_PROTO ((mpfr_srcptr x, const char *, int, mp_rnd_t));
 #define mpfr_cmp_str1(x,s) mpfr_cmp_str(x,s,10,GMP_RNDN)

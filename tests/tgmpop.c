@@ -144,7 +144,7 @@ check_for_zero ()
   mpq_set_ui (q, 0, 1);
 
   MPFR_SET_ZERO (x);
-  for(r = 0 ; r < GMP_RND_MAX ; r++)
+  RND_LOOP (r)
     {
       for (i = MPFR_SIGN_NEG ; i <= MPFR_SIGN_POS ;
            i+=MPFR_SIGN_POS-MPFR_SIGN_NEG)
@@ -414,7 +414,7 @@ test_genericz (mp_prec_t p0, mp_prec_t p1, unsigned int N,
         {
           mpfr_urandomb (arg1, RANDS);
           mpz_urandomb (arg2, RANDS, 1024);
-          rnd = (mp_rnd_t) RND_RAND ();
+          rnd = RND_RAND ();
           mpfr_set_prec (dst_big, 2*prec);
           compare = func(dst_big, arg1, arg2, rnd);
           if (mpfr_can_round (dst_big, 2*prec, rnd, rnd, prec))
@@ -492,7 +492,7 @@ test_genericq (mp_prec_t p0, mp_prec_t p1, unsigned int N,
           mpfr_urandomb (arg1, RANDS);
           mpq_set_ui (arg2, randlimb (), randlimb() );
           mpq_canonicalize (arg2);
-          rnd = (mp_rnd_t) RND_RAND ();
+          rnd = RND_RAND ();
           mpfr_set_prec (dst_big, prec+10);
           compare = func(dst_big, arg1, arg2, rnd);
           if (mpfr_can_round (dst_big, prec+10, rnd, rnd, prec))

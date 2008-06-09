@@ -381,7 +381,7 @@ special (void)
 }
 
 static int
-mpfr_lgamma1 (mpfr_t y, mpfr_t x, mp_rnd_t r)
+mpfr_lgamma1 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t r)
 {
   int sign;
 

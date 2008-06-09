@@ -29,7 +29,9 @@ MA 02110-1301, USA. */
 static int mpfr_get_str_aux (char *const, mp_exp_t *const, mp_limb_t *const,
                        mp_size_t, mp_exp_t, long, int, size_t, mp_rnd_t);
 
-static const char num_to_text[36] = "0123456789abcdefghijklmnopqrstuvwxyz";
+/* The implicit \0 is useless, but we do not write num_to_text[36]
+   otherwise g++ complains. */
+static const char num_to_text[] = "0123456789abcdefghijklmnopqrstuvwxyz";
 
 /* copy most important limbs of {op, n2} in {rp, n1} */
 /* if n1 > n2 put 0 in low limbs of {rp, n1} */

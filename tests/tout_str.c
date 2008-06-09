@@ -71,7 +71,8 @@ special (void)
 int
 main (int argc, char *argv[])
 {
-  int i, N=10000, r, p;
+  int i, N=10000, p;
+  mp_rnd_t rnd;
   double d;
 
   tests_start_mpfr ();
@@ -128,9 +129,9 @@ main (int argc, char *argv[])
 #else
       while (ABS(d) < DBL_MIN);
 #endif
-      r = RND_RAND ();
+      rnd = RND_RAND ();
       p = 2 + randlimb () % 35;
-      check (d, (mp_rnd_t) r, p);
+      check (d, rnd, p);
     }
 
   fclose (fout);

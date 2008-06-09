@@ -589,7 +589,7 @@ check_inexact (void)
               mpfr_set_prec (y, py);
               mpfr_set_prec (z, py + pu);
                 {
-                  rnd = (mp_rnd_t) RND_RAND ();
+                  rnd = RND_RAND ();
                   inexact = test_div (y, x, u, rnd);
                   if (mpfr_mul (z, y, u, rnd))
                     {
@@ -744,7 +744,7 @@ consistency (void)
       mp_prec_t px, py, pz, p;
       int inex1, inex2;
 
-      rnd = (mp_rnd_t) RND_RAND ();
+      rnd = RND_RAND ();
       px = (randlimb () % 256) + 2;
       py = (randlimb () % 128) + 2;
       pz = (randlimb () % 256) + 2;

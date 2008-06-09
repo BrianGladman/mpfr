@@ -65,7 +65,7 @@ test_generic_ui (mp_prec_t p0, mp_prec_t p1, unsigned int N)
               mpfr_set_exp (x, mpfr_get_emin ());
             }
           u = INT_RAND_FUNCTION ();
-          rnd = (mp_rnd_t) RND_RAND ();
+          rnd = RND_RAND ();
           mpfr_set_prec (y, yprec);
           compare = TEST_FUNCTION (y, x, u, rnd);
           if (mpfr_can_round (y, yprec, rnd, rnd, prec))

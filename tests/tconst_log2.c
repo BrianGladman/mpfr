@@ -45,7 +45,7 @@ check (mp_prec_t p0, mp_prec_t p1)
       mpfr_set_prec (x, p0);
       mpfr_set_prec (y, p0);
         {
-          rnd = (mp_rnd_t) RND_RAND ();
+          rnd = RND_RAND ();
           mpfr_const_log2 (x, rnd);
           mpfr_set (y, z, rnd);
           if ((dif = mpfr_cmp (x, y))

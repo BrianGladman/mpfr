@@ -133,7 +133,7 @@ main (int argc, char *argv[])
   check_large ();
   check (0, GMP_RNDN);
   for (j = 0; j < 200000; j++)
-    check (randlimb () & LONG_MAX, (mp_rnd_t) RND_RAND ());
+    check (randlimb () & LONG_MAX, RND_RAND ());
   check0 ();
 
   tests_end_mpfr ();
