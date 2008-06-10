@@ -1129,11 +1129,15 @@ value of $k$ is about $n^{1/2}$, giving a complexity of $\O(n^{1/2} M(n))$.
 This is what is implemented in {\tt mpfr\_exp2\_aux}.
 
 If we use a baby step/giant step approach, the Taylor series
-can be evaluated in $\O(l^{1/2})$ operations,
+can be evaluated in $\O(l^{1/2})$ nonscalar multiplications 
+--- i.e., with both operands of full $n$-bit size --- as described in
+\cite{PaSt73},
 thus the evaluation requires $(n/k)^{1/2} + k$ multiplications,
 and the optimal $k$ is now about $n^{1/3}$,
 giving a total complexity of $\O(n^{1/3} M(n))$.
 This is implemented in the function {\tt mpfr\_exp2\_aux2}.
+(Note: the algorithm from Paterson and Stockmeyer was rediscovered by Smith,
+who named it ``concurrent series'' in \cite{Smith91}.)
 
 \subsection{The error function}
 

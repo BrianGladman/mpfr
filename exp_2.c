@@ -1,5 +1,5 @@
 /* mpfr_exp_2 -- exponential of a floating-point number
-                using Brent's algorithms in O(n^(1/2)*M(n)) and O(n^(1/3)*M(n))
+                 using algorithms in O(n^(1/2)*M(n)) and O(n^(1/3)*M(n))
 
 Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008 Free Software Foundation, Inc.
 Contributed by the Arenaire and Cacao projects, INRIA.
@@ -75,8 +75,8 @@ mpz_normalize2 (mpz_t rop, mpz_t z, mp_exp_t expz, mp_exp_t target)
 
 /* use Brent's formula exp(x) = (1+r+r^2/2!+r^3/3!+...)^(2^K)*2^n
    where x = n*log(2)+(2^K)*r
-   together with Brent-Kung O(t^(1/2)) algorithm for the evaluation of
-   power series. The resulting complexity is O(n^(1/3)*M(n)).
+   together with the Paterson-Stockmeyer O(t^(1/2)) algorithm for the
+   evaluation of power series. The resulting complexity is O(n^(1/3)*M(n)).
 */
 int
 mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
@@ -168,7 +168,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       /* s <- 1 + r/1! + r^2/2! + ... + r^l/l! */
       l = (precy < MPFR_EXP_2_THRESHOLD)
         ? mpfr_exp2_aux (ss, r, q, &exps)      /* naive method */
-        : mpfr_exp2_aux2 (ss, r, q, &exps);    /* Brent/Kung method */
+        : mpfr_exp2_aux2 (ss, r, q, &exps);    /* Paterson/Stockmeyer method */
 
       MPFR_LOG_MSG (("l=%d q=%d (K+l)*q^2=%1.3e\n", l, q, (K+l)*(double)q*q));
 
@@ -282,7 +282,7 @@ mpfr_exp2_aux (mpz_t s, mpfr_srcptr r, mp_prec_t q, mp_exp_t *exps)
 }
 
 /* s <- 1 + r/1! + r^2/2! + ... + r^l/l! while MPFR_EXP(r^l/l!)+MPFR_EXPR(r)>-q
-   using Brent/Kung method with O(sqrt(l)) multiplications.
+   using Paterson-Stockmeyer algorithm with O(sqrt(l)) multiplications.
    Return l.
    Uses m multiplications of full size and 2l/m of decreasing size,
    i.e. a total equivalent to about m+l/m full multiplications,
