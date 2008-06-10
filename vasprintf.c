@@ -34,7 +34,17 @@ MA 02110-1301, USA. */
 #include <stdint.h>
 #endif
 
+#if defined (__cplusplus)
+#include <cstddef>
+#else
 #include <stddef.h>             /* for ptrdiff_t */
+#endif
+
+/* SIZE_MAX should be defined in stddef.h but maybe not in cstddef */
+#ifndef SIZE_MAX
+#define SIZE_MAX 65535
+#endif
+
 #include <string.h>             /* for strlen */
 
 #include "mpfr-impl.h"
@@ -312,17 +322,22 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
 #define CASE_INTMAX_ARG(specinfo, ap)
 #endif
 
+/* With a C++ compiler wchar_t and enumeration in va_list are converted to
+   integer type : int, unsigned int, long or unsigned long (unfortunatly,
+   this is implementation dependant).
+   We follow gmp which assumes in print/doprnt.c that wchar_t is converted
+   to int. */
 #ifdef HAVE_WCHAR_H
-#define CASE_LONG_ARG(specinfo, ap)                             \
-  case LONG_ARG:                                                \
-  if (((specinfo).spec == 'd') || ((specinfo).spec == 'i')      \
-      || ((specinfo).spec == 'o') || ((specinfo).spec == 'u')   \
-      || ((specinfo).spec == 'x') || ((specinfo).spec == 'X'))  \
-    (void) va_arg ((ap), long);                                 \
-  else if ((specinfo).spec == 'c')                              \
-    (void) va_arg ((ap), wint_t);                               \
-  else if ((specinfo).spec == 's')                              \
-    (void) va_arg ((ap), wchar_t);                              \
+#define CASE_LONG_ARG(specinfo, ap)                                     \
+  case LONG_ARG:                                                        \
+  if (((specinfo).spec == 'd') || ((specinfo).spec == 'i')              \
+      || ((specinfo).spec == 'o') || ((specinfo).spec == 'u')           \
+      || ((specinfo).spec == 'x') || ((specinfo).spec == 'X'))          \
+    (void) va_arg ((ap), long);                                         \
+  else if ((specinfo).spec == 'c')                                      \
+    (void) va_arg ((ap), wint_t);                                       \
+  else if ((specinfo).spec == 's')                                      \
+    (void) va_arg ((ap), int); /* let assume integer promotion */       \
   break;
 #else
 #define CASE_LONG_ARG(specinfo, ap)             \
@@ -1843,7 +1858,7 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
               break;
             case '*':
               ++fmt;
-              spec.rnd_mode = va_arg (ap, mp_rnd_t);
+              spec.rnd_mode = (mpfr_rnd_t) va_arg (ap, int);
               break;
             case 'D':
               ++fmt;

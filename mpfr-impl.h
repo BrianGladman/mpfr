@@ -31,7 +31,11 @@ MA 02110-1301, USA. */
    (which is very unlikely and probably means something broken in
    this source file), we should do that with some macro (that would
    also force to disable incompatible features). */
+#if defined (__cplusplus)
+#include <cstdio>
+#else
 #include <stdio.h>
+#endif
 #include <limits.h>
 
 /* Check if we are inside a build of MPFR or inside the test suite.

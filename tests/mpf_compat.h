@@ -20,7 +20,11 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
+#if defined (__cplusplus)
+#include <cstdio>
+#else
 #include <stdio.h>
+#endif
 #include <stdlib.h>
 #include <string.h>
 
