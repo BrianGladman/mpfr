@@ -586,7 +586,6 @@ random_double (void)
 
       if (randlimb () % 2 == 0)
         y = -y;
-      mpfr_set_d (x, y, GMP_RNDN);
 
       *ptr_mpfr++ = *ptr++ = '%';
       spec = (int) (randlimb() % 6);
@@ -609,6 +608,15 @@ random_double (void)
         prec = (int) (randlimb() % 10);
       else
         prec = (int) (randlimb() % prec_max_printf);
+      if (i == 0) /* bug on icc found on June 10, 2008 */
+        {
+          y = -9.95645044213728791504536275169812142849e-01;
+          strcpy (fmt_mpfr, "%- #0.*Re");
+          strcpy (fmt,      "%- #0.*e");
+          prec = 1;
+        }
+
+      mpfr_set_d (x, y, GMP_RNDN);
 
       if (y != mpfr_get_d (x, GMP_RNDN))
         /* conversion error: skip this one */
