@@ -1281,8 +1281,8 @@ typedef struct {
    obtain a better error message. The real test should have been a test
    concerning nested functions in gcc, which are disabled by default on
    Darwin; but it is not possible to do that without a configure test. */
-# if !(__MPFR_GNUC(3,0) && __MPFR_GLIBC(2,0))
-#  error "Logging not supported (needs GCC >= 3.0 and GNU C Library >= 2.0)."
+# if defined (__cplusplus) || !(__MPFR_GNUC(3,0) && __MPFR_GLIBC(2,0))
+#  error "Logging not supported (needs gcc >= 3.0 and GNU C Library >= 2.0)."
 # endif
 
 /* Use LOGGING */
