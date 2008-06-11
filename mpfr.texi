@@ -1920,8 +1920,8 @@ a rounding specifier denoted by one of the following characters:
 @item @samp{U}  @tab round toward minus infinity
 @item @samp{Z}  @tab round toward zero
 @item @samp{N}  @tab round to nearest
-@item @samp{*}  @tab rounding mode (as a @code{mp_rnd_t}) indicated by the next
-argument
+@item @samp{*}  @tab rounding mode (as a @code{mpfr_rnd_t}) indicated by the
+argument just before the corresponding @code{mpfr_t} variable.
 @end multitable
 @end quotation
 If the precision field is not empty, the @code{mpfr_t} number is rounded to
@@ -1937,7 +1937,7 @@ mpfr_init (x);
 @dots{}
 mpfr_printf ("%.128Rf", x);
 mpfr_printf ("%.128RNf", x);
-mpfr_printf ("%.128R*f", x, GMP_RNDN);
+mpfr_printf ("%.128R*f", GMP_RNDN, x);
 @end example
 
 @code{mpfr_printf} also adds a new conversion specifier @samp{b} which
