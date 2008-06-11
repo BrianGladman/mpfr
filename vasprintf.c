@@ -40,7 +40,10 @@ MA 02110-1301, USA. */
 #include <stddef.h>             /* for ptrdiff_t */
 #endif
 
-/* SIZE_MAX should be defined in stddef.h but maybe not in cstddef */
+/* SIZE_MAX should be defined in <stddef.h> but maybe not in cstddef.
+   But acinclude.m4 currently has a test for SIZE_MAX, which is defined
+   by a -DSIZE_MAX=... flag if need be. So, if the configure script is
+   run, the following will not be used. */
 #ifndef SIZE_MAX
 #define SIZE_MAX 65535
 #endif
