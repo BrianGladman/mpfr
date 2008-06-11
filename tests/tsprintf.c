@@ -625,7 +625,16 @@ random_double (void)
       xi = mpfr_asprintf (&xs, fmt_mpfr, prec, x);
       yi = mpfr_asprintf (&ys, fmt, prec, y);
 
-      if (xi != yi || strcmp (xs, ys))
+      /* test if XS and YS differ, beware that ISO C99 doesn't specifies the
+         sign of a null exponent, while mpfr uses '+'  */
+      if (xi != yi
+          || ((strcmp (xs, ys) != 0)
+              && (spec == 1 || spec == 4
+                  || ((strstr (xs, "e+00") == NULL)
+                      && (strstr (xs, "E+00") == NULL))
+                  || ((strstr (ys, "e-00") == NULL)
+                      && (strstr (ys, "E-00") == NULL))
+                  || (strncmp (xs, ys, xi - 3)))))
         {
           mpfr_printf ("Error in mpfr_asprintf(\"%s\", %d, %Re)\n",
                        fmt_mpfr, prec, x);
