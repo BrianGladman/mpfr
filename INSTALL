@@ -6,7 +6,7 @@ reporting a bug, in particular Section "In case of problem" below. Some
 problems are due to bad configuration on the user side (not specific to
 MPFR).
 
-0. You first need to install GMP. See <http://www.swox.com/gmp/>.
+0. You first need to install GMP. See <http://www.gnu.org/software/gmp/>.
    MPFR requires GMP version 4.1 or later.
 
 1. Extract the files from the archive.
