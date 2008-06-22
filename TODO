@@ -275,6 +275,14 @@ Table of contents:
   expansion of erfc(x)*exp(x^2/2) instead (which has less cancellation),
   and then divide by exp(x^2/2) (which is simpler to compute).
 
+- replace the *_THRESHOLD macros by global (TLS) variables that can be
+  changed at run time (via a function, like other variables)? One benefit
+  is that users could use a single MPFR binary on several machines (e.g.,
+  a library provided by binary packages or shared via NFS) with different
+  thresholds. On the default values, this would be a bit less efficient
+  than the current code, but this isn't probably noticeable (this should
+  be tested).
+
 
 ##############################################################################
 6. Miscellaneous
