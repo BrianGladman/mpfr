@@ -73,19 +73,25 @@ To make a release (for the MPFR team):
   0) Make sure that the mpfr-longlong.h file (from GMP's longlong.h) and
      the libtool-related files (config.guess, etc.) are up-to-date. An
      "autoreconf -f -i" may be necessary.
+
   1) Generate the default thresholds on different architectures
      with "make tune" and put them in mparam_h.in (make sure to
      use the latest release of GMP).
+
   2) Check the version and change the suffix to "rc1", "rc2", etc. with
      update-version for the release candidates; remove the suffix for
      the final release.
      Update the libtool version too (see Makefile.am).
      Update the date in mpfr.texi.
+
   3) Update the NEWS file.
      Update the FAQ.html file with update-faq (and check it).
+
   4) Update the ChangeLog file with "TZ=UTC svn log -rHEAD:0 -v" in
      UTF-8 locales, e.g. "LC_ALL=en_US.UTF8 TZ=UTC svn log -rHEAD:0 -v".
+
   5) Generate the release version with "make dist", but see below.
+
   6) Test the release version on different machines, with and without
      --enable-assert (--enable-assert, though doing more checks, may
      hide bugs due to the fact that <stdio.h> is always included) with
@@ -94,16 +100,21 @@ To make a release (for the MPFR team):
      able to get the memory leak errors), with and without -DXDEBUG in
      $CFLAGS, with and without gmp internal files, with and without
      GMP built as a shared library, with and without srcdir equal to
-     objdir (../mpfr/configure --srcdir=/users/spaces/pelissip/mpfr/),
-     with and without "-std=c99 -O3 -D_XOPEN_SOURCE=500", with and
-     without "-ansi" (which allows to turn off features that are
-     incompatible with ISO C90), with and without --enable-thread-safe,
-     in various FPU precisions (double, double extended and single) if
-     the platform supports that (e.g. under Linux/x86), and in various
-     locales (LC_ALL=tr_TR in particular, if installed). On x86, test
-     with -m96bit-long-double and -m128bit-long-double. Test with both
-     "make check" and the worst cases. Try also with gcc's -fno-common
-     option.
+     objdir (../mpfr/configure --srcdir=/users/spaces/pelissip/mpfr/).
+
+     Try different gcc versions with different options: with and without
+     "-std=c99 -O3 -D_XOPEN_SOURCE=500", with and without "-ansi" (which
+     allows to turn off features that are incompatible with ISO C90),
+     with and without --enable-thread-safe, in various FPU precisions
+     (double, double extended and single) if the platform supports that
+     (e.g. under Linux/x86), and in various locales (LC_ALL=tr_TR in
+     particular, if installed). On x86, test with -m96bit-long-double
+     and -m128bit-long-double. Try also with gcc's -fno-common option.
+
+     Try different compilers (even C++ compilers), e.g. g++, icc, opencc
+     (x86_64 machines), tcc <http://bellard.org/tcc/>.
+
+     Test with both "make check" and the worst cases.
 
      Check that there are no abnormal regressions in the timings (both
      for 100, 1000, 10000 digits, http://mpfr.org/mpfr-current/timings.html,
@@ -116,9 +127,11 @@ To make a release (for the MPFR team):
      the build directory of the old version, do something like:
      (cd .libs && ln -nsf ../../mpfr-new/.libs/libmpfr.so.1.* libmpfr.so.1)
      then "make check".
+
   7) For the release itself (not the release candidates), if there are
      no problems, create a tag with:
        svn cp .../mpfr/branches/x.y .../mpfr/tags/x.y.z
+
   8) Update the version with the update-version script to indicate the
      next version (use the "dev" suffix).
 
