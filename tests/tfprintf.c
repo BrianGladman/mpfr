@@ -183,7 +183,7 @@ check_mixed (FILE *fout)
                   &mpfr, p, &i);
   MPFR_ASSERTN (mpfr_cmp_ui (mpfr, 16) == 0);
 
-  check_vfprintf (fout, "a. %Mx b. %Re%Mn", limb[0], mpfr, &limb[0]);
+  check_vfprintf (fout, "a. %Mx b. %Re%Mn\n", limb[0], mpfr, &limb[0]);
   MPFR_ASSERTN (limb[0] == 14 + BITS_PER_MP_LIMB / 4);
   MPFR_ASSERTN (limb[1] == ~ (mp_limb_t) 0);
   MPFR_ASSERTN (limb[2] == ~ (mp_limb_t) 0);
@@ -191,7 +191,7 @@ check_mixed (FILE *fout)
   limb[0] = ~ (mp_limb_t) 0;
   /* we tell vfprintf that limb array is 2 cells wide
      and check it doesn't go through */
-  check_vfprintf (fout, "a. %Re .b %Nx%Nn", mpfr, limb, limb_size, limb,
+  check_vfprintf (fout, "a. %Re .b %Nx%Nn\n", mpfr, limb, limb_size, limb,
                   limb_size - 1);
   MPFR_ASSERTN (limb[0] == 14 + 3 * BITS_PER_MP_LIMB / 4);
   MPFR_ASSERTN (limb[1] == (mp_limb_t) 0);
@@ -254,8 +254,8 @@ check_random (FILE *fout, int nb_tests)
       int ret;
       int j, jmax;
       int spec, prec;
-      const int fmt_size = 13;
-      char fmt[fmt_size]; /* at most something like "%-+ #0'.*R*f" */
+#define FMT_SIZE 13
+      char fmt[FMT_SIZE]; /* at most something like "%-+ #0'.*R*f" */
       char *ptr = fmt;
 
       tests_default_random (x, 256, MPFR_EMIN_MIN, MPFR_EMAX_MAX);
@@ -281,7 +281,7 @@ check_random (FILE *fout, int nb_tests)
       *ptr++ = '*';
       *ptr++ = specifier[spec];
       *ptr = '\0';
-      MPFR_ASSERTD (ptr - fmt < fmt_size);
+      MPFR_ASSERTD (ptr - fmt < FMT_SIZE);
 
       mpfr_fprintf (fout, "mpfr_fprintf(fout, \"%s\", %d, %s, %Re)\n",
                     fmt, prec, mpfr_print_rnd_mode (rnd), x);

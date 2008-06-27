@@ -20,7 +20,6 @@ MA 02110-1301, USA. */
 
 #if defined HAVE_STDARG
 #include <stdarg.h>
-#include <unistd.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,31 +30,32 @@ MA 02110-1301, USA. */
 #endif
 
 #include "mpfr-test.h"
+#define STDOUT_FILENO 1
 
 #if MPFR_VERSION >= MPFR_VERSION_NUM(2,4,0)
 
 /* limit for random precision in random() */
 const int prec_max_printf = 5000;
-int stdout_svg;
+int stdout_redirect;
 
 static void
 check (char *fmt, mpfr_t x)
 {
   if (mpfr_printf (fmt, x) == -1)
     {
-      if (stdout_svg != 0)
+      printf ("Error in mpfr_printf(\"%s\", ...)\n", fmt);
+
+      if (stdout_redirect)
         {
-          if ((fflush (stdout) == EOF) || (close (fileno (stdout)) == -1)
-              || (dup (stdout_svg) == -1))
+          if ((fflush (stdout) == EOF) || (fclose (stdout) == -1))
             {
               perror ("check");
               exit (1);
             }
         }
-
-      mpfr_printf ("Error in mpfr_printf(\"%s\", %Re)\n", fmt, x);
       exit (1);
     }
+  putchar ('\n');
 }
 
 static void
@@ -66,22 +66,20 @@ check_vprintf (char *fmt, ...)
   va_start (ap, fmt);
   if (mpfr_vprintf (fmt, ap) == -1)
     {
-      if (stdout_svg != 0)
+      printf ("Error in mpfr_vprintf(\"%s\", ...)\n", fmt);
+
+      if (stdout_redirect)
         {
-          if ((fflush (stdout) == EOF) || (close (fileno (stdout)) == -1)
-              || (dup (stdout_svg) == -1))
+          if ((fflush (stdout) == EOF) || (fclose (stdout) == -1))
             {
               perror ("check_vprintf");
               exit (1);
             }
         }
-
-      mpfr_printf ("Error in mpfr_vprintf(\"%s\", ...)\n", fmt);
-
       va_end (ap);
       exit (1);
     }
-
+  putchar ('\n');
   va_end (ap);
 }
 
@@ -178,39 +176,39 @@ check_mixed ()
   mpfr_set_f (mpfr, mpf, GMP_RNDN);
   prec = mpfr_get_prec (mpfr);
 
-  check_vprintf ("a. %Ra, b. %hhu, c. %u, d. %lx%hhn\n", mpfr, uch, ui,
+  check_vprintf ("a. %Ra, b. %hhu, c. %u, d. %lx%hhn", mpfr, uch, ui,
                   ulo, &uch);
   MPFR_ASSERTN (uch == 28);
-  check_vprintf ("a. %hhi, b. %Rb, c. %u, d. %li%ln\n", sch, mpfr, i,
+  check_vprintf ("a. %hhi, b. %Rb, c. %u, d. %li%ln", sch, mpfr, i,
                   lo, &ulo);
   MPFR_ASSERTN (ulo == 37);
-  check_vprintf ("a. %hi, b. %*f, c. %Re%hn\n", ush, 3, f, mpfr, &ush);
+  check_vprintf ("a. %hi, b. %*f, c. %Re%hn", ush, 3, f, mpfr, &ush);
   MPFR_ASSERTN (ush == 29);
-  check_vprintf ("a. %hi, b. %e, c. %#.2Rf%n\n", sh, d, mpfr, &i);
+  check_vprintf ("a. %hi, b. %e, c. %#.2Rf%n", sh, d, mpfr, &i);
   MPFR_ASSERTN (i == 33);
-  check_vprintf ("a. %R*A, b. %Fe, c. %i%zn\n", rnd, mpfr, mpf, si,
+  check_vprintf ("a. %R*A, b. %Fe, c. %i%zn", rnd, mpfr, mpf, si,
                   &si);
   MPFR_ASSERTN (si == 34);
-  check_vprintf ("a. %Pu, b. %c, c. %Lf, d. %Zi%Zn\n", prec, ch, ld,
+  check_vprintf ("a. %Pu, b. %c, c. %Lf, d. %Zi%Zn", prec, ch, ld,
                   mpz, &mpz);
   MPFR_ASSERTN (mpz_cmp_ui (mpz, 31) == 0);
-  check_vprintf ("%% a. %#.0RNg, b. %Qx%Rn, c. %td, d. %p\n", mpfr, mpq,
+  check_vprintf ("%% a. %#.0RNg, b. %Qx%Rn, c. %td, d. %p", mpfr, mpq,
                   &mpfr, p, &i);
   MPFR_ASSERTN (mpfr_cmp_ui (mpfr, 16) == 0);
 
 #ifdef HAVE_LONG_LONG
-  check_vprintf ("a. %Re, b. %llx%Qn\n", mpfr, ullo, &mpq);
+  check_vprintf ("a. %Re, b. %llx%Qn", mpfr, ullo, &mpq);
   MPFR_ASSERTN (mpq_cmp_ui (mpq, 31, 1) == 0);
-  check_vprintf ("a. %lli, b. %Rf%Fn\n", llo, mpfr, &mpf);
+  check_vprintf ("a. %lli, b. %Rf%Fn", llo, mpfr, &mpf);
   MPFR_ASSERTN (mpf_cmp_ui (mpf, 12) == 0);
-  check_vprintf ("a. %qi, b. %Rf%qn\n", llo, mpfr, &ullo);
+  check_vprintf ("a. %qi, b. %Rf%qn", llo, mpfr, &ullo);
   MPFR_ASSERTN (ullo == 12);
 #endif
 
 #ifdef _MPFR_H_HAVE_INTMAX_T
-  check_vprintf ("a. %*RA, b. %ji%Qn\n", 10, mpfr, im, &mpq);
+  check_vprintf ("a. %*RA, b. %ji%Qn", 10, mpfr, im, &mpq);
   MPFR_ASSERTN (mpq_cmp_ui (mpq, 20, 1) == 0);
-  check_vprintf ("a. %.*Re, b. %jx%Fn\n", 10, mpfr, uim, &mpf);
+  check_vprintf ("a. %.*Re, b. %jx%Fn", 10, mpfr, uim, &mpf);
   MPFR_ASSERTN (mpf_cmp_ui (mpf, 25) == 0);
 #endif
 
@@ -255,8 +253,8 @@ check_random (int nb_tests)
       int ret;
       int j, jmax;
       int spec, prec;
-      const int fmt_size = 13;
-      char fmt[fmt_size]; /* at most something like "%-+ #0'.*R*f" */
+#define FMT_SIZE 13
+      char fmt[FMT_SIZE]; /* at most something like "%-+ #0'.*R*f" */
       char *ptr = fmt;
 
       tests_default_random (x, 256, MPFR_EMIN_MIN, MPFR_EMAX_MAX);
@@ -282,7 +280,7 @@ check_random (int nb_tests)
       *ptr++ = '*';
       *ptr++ = specifier[spec];
       *ptr = '\0';
-      MPFR_ASSERTD (ptr - fmt < fmt_size);
+      MPFR_ASSERTD (ptr - fmt < FMT_SIZE);
 
       mpfr_printf ("mpfr_printf(\"%s\", %d, %s, %Re)\n", fmt, prec,
                    mpfr_print_rnd_mode (rnd), x);
@@ -297,23 +295,21 @@ check_random (int nb_tests)
             }
           else
             {
-              if (stdout_svg != 0)
+              printf ("Error in mpfr_printf(\"%s\", %d, %s, ...)",
+                      fmt, prec, mpfr_print_rnd_mode (rnd));
+
+              if (stdout_redirect)
                 {
-                  if ((fflush (stdout) == EOF)
-                      || (close (fileno (stdout)) == -1)
-                      || (dup (stdout_svg) == -1))
+                  if ((fflush (stdout) == EOF) || (fclose (stdout) == -1))
                     {
                       perror ("check_random");
                       exit (1);
                     }
                 }
-
-              mpfr_printf ("Error in mpfr_printf(\"%s\", %d, %s, %Re)\n",
-                           fmt, prec, mpfr_print_rnd_mode (rnd), x);
               exit (1);
             }
         }
-      mpfr_printf ("\n");
+      putchar ('\n');
     }
 
   mpfr_set_emin (old_emin);
@@ -333,18 +329,12 @@ main (int argc, char *argv[])
      tprintf N: prints N tests to stdout */
   if (argc == 1)
     {
-      FILE *fout;
       N = 1000;
-
-      stdout_svg = dup (fileno (stdout));
-      fout = freopen ("/dev/null", "w", stdout);
-
-      /* If we failed to open this device, try with a dummy file */
-      if (fout == NULL)
+      stdout_redirect = -1;
+      if (freopen ("/dev/null", "w", stdout) == NULL)
         {
-          fout = freopen ("mpfrtest.txt", "w", stdout);
-
-          if (fout == NULL)
+          /* We failed to open this device, try with a dummy file */
+          if (freopen ("mpfrtest.txt", "w", stdout) == NULL)
             {
               printf ("Can't open /dev/null or a temporary file\n");
               exit (1);
@@ -353,7 +343,7 @@ main (int argc, char *argv[])
     }
   else
     {
-      stdout_svg = 0;
+      stdout_redirect = 0;
       N = atoi (argv[1]);
     }
 
@@ -361,10 +351,9 @@ main (int argc, char *argv[])
   check_mixed ();
   check_random (N);
 
-  if (stdout_svg != 0)
+  if (stdout_redirect)
     {
-      if ((fflush (stdout) == EOF) || (close (fileno (stdout)) == -1)
-          || (dup (stdout_svg) == -1))
+      if ((fflush (stdout) == EOF) || (fclose (stdout) == -1))
         perror ("main");
     }
   tests_end_mpfr ();

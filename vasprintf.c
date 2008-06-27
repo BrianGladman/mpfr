@@ -48,7 +48,7 @@ MA 02110-1301, USA. */
 #define SIZE_MAX 65535
 #endif
 
-#include <string.h>
+#include <string.h>             /* for strlen, memcpy */
 
 #include "mpfr-impl.h"
 
@@ -340,7 +340,7 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
   else if ((specinfo).spec == 'c')                                      \
     (void) va_arg ((ap), wint_t);                                       \
   else if ((specinfo).spec == 's')                                      \
-    (void) va_arg ((ap), int); /* let assume integer promotion */       \
+    (void) va_arg ((ap), int); /* we assume integer promotion */        \
   break;
 #else
 #define CASE_LONG_ARG(specinfo, ap)             \
@@ -434,12 +434,19 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
     if ((flag))                                                 \
       /* previous specifiers are understood by gmp_printf */    \
       {                                                         \
-        char fmt_copy[n + 1];                                   \
+        MPFR_TMP_DECL (marker);                                 \
+        char *fmt_copy;                                         \
+        MPFR_TMP_MARK (marker);                                 \
+        fmt_copy = TMP_ALLOC ((n + 1) * sizeof(char));          \
         strncpy (fmt_copy, (start), n);                         \
         fmt_copy[n] = '\0';                                     \
         if (sprntf_gmp ((buf_ptr), (fmt_copy), (ap)) == -1)     \
-          goto error;                                           \
+          {                                                     \
+            MPFR_TMP_FREE (marker);                             \
+            goto error;                                         \
+            }                                                   \
         (flag) = 0;                                             \
+        MPFR_TMP_FREE (marker);                                 \
       }                                                         \
     else if ((start) != (end))                                  \
       /* no conversion specification, just simple characters */ \

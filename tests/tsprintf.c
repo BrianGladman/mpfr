@@ -43,7 +43,7 @@ MA 02110-1301, USA. */
 
 const int prec_max_printf = 5000; /* limit for random precision in
                                      random_double() */
-const int buf_size = 65536;
+#define BUF_SIZE 65536
 
 const char pinf_str[] = "inf";
 const char pinf_uc_str[] = "INF";
@@ -59,7 +59,7 @@ static int
 check_sprintf (const char *expected, const char *fmt, mpfr_srcptr x)
 {
   int n0, n1, p;
-  char buffer[buf_size];
+  char buffer[BUF_SIZE];
 
   /* test mpfr_sprintf */
   n0 = mpfr_sprintf (buffer, fmt, x);
@@ -98,7 +98,7 @@ static int
 check_vsprintf (const char *expected, const char *fmt, ...)
 {
   int n0, n1, p;
-  char buffer[buf_size];
+  char buffer[BUF_SIZE];
   va_list ap0, ap1;
   va_start (ap0, fmt);
   va_start (ap1, fmt);
@@ -563,11 +563,11 @@ random_double (void)
   for (i = 0; i < 1000; ++i)
     {
       int j, jmax, spec, prec;
-      const int fmt_mpfr_size = 12; /* at most something like "%-+ #0'.*Rf" */
-      char fmt_mpfr[fmt_mpfr_size];
+#define FMT_MPFR_SIZE 12
+      char fmt_mpfr[FMT_MPFR_SIZE]; /* at most something like "%-+ #0'.*Rf" */
       char *ptr_mpfr = fmt_mpfr;
-      const int fmt_size = 11; /* at most something like "%-+ #0'.*f" */
-      char fmt[fmt_size];
+#define FMT_SIZE 11
+      char fmt[FMT_SIZE]; /* at most something like "%-+ #0'.*f" */
       char *ptr = fmt;
       int xi;
       char *xs;
@@ -600,8 +600,8 @@ random_double (void)
       *ptr_mpfr++ = 'R';
       *ptr_mpfr++ = *ptr++ = specifier[spec];
       *ptr_mpfr = *ptr = '\0';
-      MPFR_ASSERTN (ptr - fmt < fmt_size);
-      MPFR_ASSERTN (ptr_mpfr - fmt_mpfr < fmt_mpfr_size);
+      MPFR_ASSERTN (ptr - fmt < FMT_SIZE);
+      MPFR_ASSERTN (ptr_mpfr - fmt_mpfr < FMT_MPFR_SIZE);
 
       /* advantage small precision */
       if (randlimb() % 2 == 0)

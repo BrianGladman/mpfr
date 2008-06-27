@@ -63,6 +63,24 @@ AC_CHECK_HEADERS([sys/time.h sys/fpu.h])
 dnl SIZE_MAX macro
 gl_SIZE_MAX
 
+dnl va_copy macro
+AC_MSG_CHECKING([how to copy va_list])
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#include <stdarg.h>
+]], [[
+   va_list ap1, ap2;
+   va_copy(ap1, ap2);
+]])], AC_MSG_RESULT([va_copy]),
+   [AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#include <stdarg.h>
+]], [[
+   va_list ap1, ap2;
+   __va_copy(ap1, ap2);
+]])], [AC_DEFINE([va_copy], [__va_copy]) AC_MSG_RESULT([__va_copy])],
+   [AC_DEFINE([va_copy(dest,src)], [memcpy(&dest,&src,sizeof(va_list))])
+    AC_MSG_RESULT([memcpy])])
+   ])
+
 dnl FIXME: The functions memmove, memset and strtol are really needed by
 dnl MPFR, but if they are implemented as macros, this is also OK (in our
 dnl case).  So, we do not return an error, but their tests are currently
