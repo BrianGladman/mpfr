@@ -48,7 +48,7 @@ MA 02110-1301, USA. */
 #define SIZE_MAX 65535
 #endif
 
-#include <string.h>             /* for strlen, memcpy */
+#include <string.h>             /* for strlen, memcpy and others */
 
 #include "mpfr-impl.h"
 
