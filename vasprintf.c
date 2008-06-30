@@ -428,29 +428,29 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
 
 /* process the format part which does not deal with mpfr types,
    jump to external label 'error' if gmp_asprintf return -1. */
-#define FLUSH(flag, start, end, ap, buf_ptr)                    \
-  do {                                                          \
-    const size_t n = (end) - (start);                           \
-    if ((flag))                                                 \
-      /* previous specifiers are understood by gmp_printf */    \
-      {                                                         \
-        MPFR_TMP_DECL (marker);                                 \
-        char *fmt_copy;                                         \
-        MPFR_TMP_MARK (marker);                                 \
-        fmt_copy = TMP_ALLOC ((n + 1) * sizeof(char));          \
-        strncpy (fmt_copy, (start), n);                         \
-        fmt_copy[n] = '\0';                                     \
-        if (sprntf_gmp ((buf_ptr), (fmt_copy), (ap)) == -1)     \
-          {                                                     \
-            MPFR_TMP_FREE (marker);                             \
-            goto error;                                         \
-            }                                                   \
-        (flag) = 0;                                             \
-        MPFR_TMP_FREE (marker);                                 \
-      }                                                         \
-    else if ((start) != (end))                                  \
-      /* no conversion specification, just simple characters */ \
-      buffer_cat ((buf_ptr), (start), n);                       \
+#define FLUSH(flag, start, end, ap, buf_ptr)                            \
+  do {                                                                  \
+    const size_t n = (end) - (start);                                   \
+    if ((flag))                                                         \
+      /* previous specifiers are understood by gmp_printf */            \
+      {                                                                 \
+        MPFR_TMP_DECL (marker);                                         \
+        char *fmt_copy;                                                 \
+        MPFR_TMP_MARK (marker);                                         \
+        fmt_copy = (char*) MPFR_TMP_ALLOC ((n + 1) * sizeof(char));     \
+        strncpy (fmt_copy, (start), n);                                 \
+        fmt_copy[n] = '\0';                                             \
+        if (sprntf_gmp ((buf_ptr), (fmt_copy), (ap)) == -1)             \
+          {                                                             \
+            MPFR_TMP_FREE (marker);                                     \
+            goto error;                                                 \
+          }                                                             \
+        (flag) = 0;                                                     \
+        MPFR_TMP_FREE (marker);                                         \
+      }                                                                 \
+    else if ((start) != (end))                                          \
+      /* no conversion specification, just simple characters */         \
+      buffer_cat ((buf_ptr), (start), n);                               \
   } while (0)
 
 struct string_buffer
