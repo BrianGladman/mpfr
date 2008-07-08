@@ -326,7 +326,7 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
 #endif
 
 /* With a C++ compiler wchar_t and enumeration in va_list are converted to
-   integer type : int, unsigned int, long or unsigned long (unfortunatly,
+   integer type : int, unsigned int, long or unsigned long (unfortunately,
    this is implementation dependant).
    We follow gmp which assumes in print/doprnt.c that wchar_t is converted
    to int. */
