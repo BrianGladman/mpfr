@@ -65,3 +65,6 @@ Potential bugs:
 
 * Error analysis for some functions may be incorrect (out-of-date due
   to modifications in the code?).
+
+* Possible use of non-portable feature (pre-C99) of the integer division
+  with negative result.
