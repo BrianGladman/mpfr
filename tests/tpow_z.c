@@ -311,7 +311,7 @@ bug20080223 (void)
   /* a = 562949953139837/2^48 */
   mpfr_pow (answer, a, exp, GMP_RNDN);
   mpfr_set_str_binary (a, "0.110110101111011001110000111111100011101000111011101E-1073741823");
-  MPFR_ASSERTN(mpfr_cmp (answer, a) == 0);
+  MPFR_ASSERTN(mpfr_cmp0 (answer, a) == 0);
 
   mpfr_clear (a);
   mpfr_clear (exp);
