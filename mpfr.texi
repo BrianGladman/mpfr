@@ -1368,6 +1368,7 @@ for the @code{pow} function (note this may change in future versions):
 @item @code{pow(@pom{}0, @var{y})} returns plus zero for @var{y} positive and not an odd integer.
 @item @code{pow(-1, @pom{}Inf)} returns 1.
 @item @code{pow(+1, @var{y})} returns 1 for any @var{y}, even a NaN.
+@item @code{pow(@var{x}, @pom{}0)} returns 1 for any @var{x}, even a NaN.
 @item @code{pow(@var{x}, @var{y})} returns NaN for finite negative @var{x} and finite non-integer @var{y}.
 @item @code{pow(@var{x}, -Inf)} returns plus infinity for @math{0 < @GMPabs{x} < 1}, and plus zero for @math{@GMPabs{x} > 1}.
 @item @code{pow(@var{x}, +Inf)} returns plus zero for @math{0 < @GMPabs{x} < 1}, and plus infinity for @math{@GMPabs{x} > 1}.
