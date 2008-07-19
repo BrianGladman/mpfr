@@ -23,7 +23,7 @@ MA 02110-1301, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-/* y <- x^|z|
+/* y <- x^|z| with z != 0
    if cr=1: ensures correct rounding of y
    if cr=0: does not ensure correct rounding, and uses the precision of y
    as working precision (warning, y and x might be the same variable). */
@@ -111,10 +111,10 @@ mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd, int cr)
   return inexact;
 }
 
-/* The computation of y=pow(x,z) is done by
- *    y=pow_ui(x,z)    if z > 0
- * else
- *    y=pow_ui(1/x,-z) if z < 0
+/* The computation of y = pow(x,z) is done by
+ *    y = set_ui(1)      if z = 0
+ *    y = pow_ui(x,z)    if z > 0
+ *    y = pow_ui(1/x,-z) if z < 0
  *
  * Note: in case z < 0, we could also compute 1/pow_ui(x,-z). However, in
  * case MAX < 1/MIN, where MAX is the largest positive value, i.e.,
