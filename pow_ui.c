@@ -37,18 +37,16 @@ mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
   MPFR_ZIV_DECL (loop);
   MPFR_BLOCK_DECL (flags);
 
+  /* y^0 = 1 for any y, even a NaN */
+  if (MPFR_UNLIKELY (n == 0))
+    return mpfr_set_ui (x, 1, rnd);
+
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (y)))
     {
       if (MPFR_IS_NAN (y))
         {
           MPFR_SET_NAN (x);
           MPFR_RET_NAN;
-        }
-      else if (n == 0) /* y^0 = 1 for any y except NAN */
-        {
-          /* The return mpfr_set_ui is important as 1 isn't necessarily
-             in the exponent range. */
-          return mpfr_set_ui (x, 1, rnd);
         }
       else if (MPFR_IS_INF (y))
         {
@@ -74,15 +72,12 @@ mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
     }
   else if (MPFR_UNLIKELY (n <= 2))
     {
-      if (n < 1)
-        /* y^0 = 1 for any y */
-        return mpfr_set_ui (x, 1, rnd);
-      else if (n == 1)
+      if (n < 2)
         /* y^1 = y */
         return mpfr_set (x, y, rnd);
       else
         /* y^2 = sqr(y) */
-        return mpfr_mul (x, y, y, rnd);
+        return mpfr_sqr (x, y, rnd);
     }
 
   /* Augment exponent range */

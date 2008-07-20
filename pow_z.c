@@ -130,6 +130,10 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
   mpz_t tmp;
   MPFR_SAVE_EXPO_DECL (expo);
 
+  /* x^0 = 1 for any x, even a NaN */
+  if (MPFR_UNLIKELY (mpz_sgn (z) == 0))
+    return mpfr_set_ui (y, 1, rnd);
+
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
       if (MPFR_IS_NAN (x))
@@ -137,8 +141,6 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
           MPFR_SET_NAN (y);
           MPFR_RET_NAN;
         }
-      else if (mpz_sgn (z) == 0)  /* y^0 = 1 for any y except NAN */
-        return mpfr_set_ui (y, 1, rnd);
       else if (MPFR_IS_INF (x))
         {
           /* Inf^n = Inf, (-Inf)^n = Inf for n even, -Inf for n odd */
@@ -169,10 +171,6 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
           MPFR_RET(0);
         }
     }
-
-  if (MPFR_UNLIKELY (mpz_sgn (z) == 0))
-    /* y^0 = 1 for any y except NAN */
-    return mpfr_set_ui (y, 1, rnd);
 
   /* detect exact powers: x^-n is exact iff x is a power of 2
      Do it if n > 0 too (faster). */
