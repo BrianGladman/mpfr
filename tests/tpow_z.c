@@ -47,7 +47,7 @@ check_special (void)
     ERROR ("23^0");
   mpfr_set_nan (x);
   res = mpfr_pow_z (y, x, z, GMP_RNDN);
-  if (res != 0 || mpfr_nan_p (y) == 0)
+  if (res != 0 || mpfr_nan_p (y) || mpfr_cmp_si (y, 1) != 0)
     ERROR ("NAN^0");
   mpfr_set_inf (x, 1);
   res = mpfr_pow_z (y, x, z, GMP_RNDN);
