@@ -23,10 +23,9 @@ MA 02110-1301, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-/* The computation of y=pow(x,z) is done by
- *    y=pow_ui(x,z) if z>0
- * else
- *    y=1/pow_ui(x,z) if z<0
+/* The computation of y = pow_si(x,n) is done by
+ *    y = pow_ui(x,n)       if n >= 0
+ *    y = 1 / pow_ui(x,-n)  if n < 0
  */
 
 int
