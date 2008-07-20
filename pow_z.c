@@ -52,7 +52,7 @@ mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd, int cr)
      i.e. if an overflow or underflow occurs, it is a real exception
      and is not just due to the rounding error. */
   rnd1 = (MPFR_EXP(x) >= 1) ? GMP_RNDZ
-    : ((MPFR_SIGN(x) > 0) ? GMP_RNDU : GMP_RNDD);
+    : (MPFR_IS_POS(x) ? GMP_RNDU : GMP_RNDD);
   rnd2 = (MPFR_EXP(x) >= 1) ? GMP_RNDD : GMP_RNDU;
 
   if (cr != 0)
