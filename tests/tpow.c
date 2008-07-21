@@ -1245,6 +1245,30 @@ bug20071218 (void)
   mpfr_clears (x, y, z, t, (mpfr_ptr) 0);
 }
 
+/* With revision 5429, this gives:
+ *   pow.c:43:  assertion failed: !mpfr_integer_p (y)
+ */
+static void
+bug20080721 (void)
+{
+  mpfr_t x, y, z;
+  int inex;
+
+  mpfr_init2 (x, 4913);
+  mpfr_init2 (y, 4913);
+  mpfr_init2 (z, 8);
+  mpfr_set_si (x, -1, GMP_RNDN);
+  mpfr_nextbelow (x);
+  mpfr_set_ui_2exp (y, 1, 4912, GMP_RNDN);
+  inex = mpfr_add_ui (y, y, 1, GMP_RNDN);
+  MPFR_ASSERTN (inex == 0);
+  mpfr_pow (z, x, y, GMP_RNDN);
+  /* TODO: once the "assertion failed" problem is fixed, test the result
+     in each rounding mode. There seems to be another bug with GMP_RNDD
+     and GMP_RNDU. */
+  mpfr_clears (x, y, z, (mpfr_ptr) 0);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -1270,6 +1294,7 @@ main (int argc, char **argv)
   bug20071104 ();
   bug20071128 ();
   bug20071218 ();
+  bug20080721 ();
 
   test_generic (2, 100, 100);
   test_generic_ui (2, 100, 100);
