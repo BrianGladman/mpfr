@@ -1247,31 +1247,57 @@ bug20071218 (void)
 
 /* With revision 5429, this gives:
  *   pow.c:43:  assertion failed: !mpfr_integer_p (y)
+ * This is fixed in revision 5432.
  */
 static void
 bug20080721 (void)
 {
-  mpfr_t x, y, z;
+  mpfr_t x, y, z, t[2];
   int inex;
+  int rnd;
+  int err = 0;
 
   /* Note: input values have been chosen in a way to select the
    * general case. If mpfr_pow is modified, in particular line
    *     if (y_is_integer && (MPFR_GET_EXP (y) <= 256))
    * make sure that this test still does what we want.
    */
-  mpfr_init2 (x, 4913);
-  mpfr_init2 (y, 4913);
-  mpfr_init2 (z, 8);
+  mpfr_inits2 (4913, x, y, (mpfr_ptr) 0);
+  mpfr_inits2 (8, z, t[0], t[1], (mpfr_ptr) 0);
   mpfr_set_si (x, -1, GMP_RNDN);
   mpfr_nextbelow (x);
-  mpfr_set_ui_2exp (y, 1, 4912, GMP_RNDN);
+  mpfr_set_ui_2exp (y, 1, mpfr_get_prec (y) - 1, GMP_RNDN);
   inex = mpfr_add_ui (y, y, 1, GMP_RNDN);
   MPFR_ASSERTN (inex == 0);
-  mpfr_pow (z, x, y, GMP_RNDN);
-  /* TODO: once the "assertion failed" problem is fixed, test the result
-     in each rounding mode. There seems to be another bug with GMP_RNDD
-     and GMP_RNDU. */
-  mpfr_clears (x, y, z, (mpfr_ptr) 0);
+  mpfr_set_str_binary (t[0], "-0.10101101e2");
+  mpfr_set_str_binary (t[1], "-0.10101110e2");
+  RND_LOOP (rnd)
+    {
+      int i, inex0;
+
+      i = (rnd == GMP_RNDN || rnd == GMP_RNDD);
+      inex0 = i ? -1 : 1;
+      mpfr_clear_flags ();
+      inex = mpfr_pow (z, x, y, (mp_rnd_t) rnd);
+      if (__gmpfr_flags != MPFR_FLAGS_INEXACT || ! SAME_SIGN (inex, inex0)
+          || MPFR_IS_NAN (z) || mpfr_cmp (z, t[i]) != 0)
+        {
+          unsigned int flags = __gmpfr_flags;
+
+          printf ("Error in bug20080721 with %s\n",
+                  mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+          printf ("expected ");
+          mpfr_out_str (stdout, 2, 0, t[i], GMP_RNDN);
+          printf (", inex = %d, flags = %u\n", inex0, MPFR_FLAGS_INEXACT);
+          printf ("got      ");
+          mpfr_out_str (stdout, 2, 0, z, GMP_RNDN);
+          printf (", inex = %d, flags = %u\n", inex, flags);
+          err = 1;
+        }
+    }
+  mpfr_clears (x, y, z, t[0], t[1], (mpfr_ptr) 0);
+  if (err)
+    exit (1);
 }
 
 int
