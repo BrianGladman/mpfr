@@ -459,6 +459,11 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
        of x to avoid allocating memory for the significand of absx. */
     MPFR_ALIAS(absx, x, /*sign=*/ 1, /*EXP=*/ MPFR_EXP(x));
 
+    /* We will compute the absolute value of the result. So, let's
+       invert the rounding mode if the result is negative. */
+    if (MPFR_IS_NEG (x) && is_odd (y))
+      rnd_mode = MPFR_INVERT_RND (rnd_mode);
+
     /* compute the precision of intermediary variable */
     /* the optimal number of bits : see algorithms.tex */
     Nt = Nz + 5 + MPFR_INT_CEIL_LOG2 (Nz);
