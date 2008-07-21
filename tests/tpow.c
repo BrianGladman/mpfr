@@ -1254,6 +1254,11 @@ bug20080721 (void)
   mpfr_t x, y, z;
   int inex;
 
+  /* Note: input values have been chosen in a way to select the
+   * general case. If mpfr_pow is modified, in particular line
+   *     if (y_is_integer && (MPFR_GET_EXP (y) <= 256))
+   * make sure that this test still does what we want.
+   */
   mpfr_init2 (x, 4913);
   mpfr_init2 (y, 4913);
   mpfr_init2 (z, 8);
