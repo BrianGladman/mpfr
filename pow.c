@@ -365,7 +365,10 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
      but if y is very large (I'm not sure about the best threshold -- VL),
      we shouldn't use it, as it can be very slow and take a lot of memory
      (and even crash or make other programs crash, as several hundred of
-     MBs may be necessary). */
+     MBs may be necessary). Note that in such a case, either x = +/-2^b
+     (this case is handled below) or x^y cannot be represented exactly in
+     any precision supported by MPFR (the general case uses this property).
+  */
   if (y_is_integer && (MPFR_GET_EXP (y) <= 256))
     {
       mpz_t zi;
@@ -551,8 +554,9 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
             break;
           }
 
-        /* check exact power */
-        if (check_exact_case == 0)
+        /* check exact power, except when y is an integer (since the
+           exact cases for y integer have already been filtered out) */
+        if (check_exact_case == 0 && !y_is_integer)
           {
             if (mpfr_pow_is_exact (z, absx, y, rnd_mode, &inexact))
               break;
