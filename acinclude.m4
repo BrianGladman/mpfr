@@ -20,12 +20,10 @@ dnl  along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 dnl  the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 dnl  MA 02110-1301, USA.
 
-dnl  autoconf 2.50 is necessary because of the use of AH_VERBATIM,
-dnl  but it would be better to make the config file compatible with
-dnl  both autoconf 2.13 and autoconf 2.50.
+dnl  autoconf 2.60 is necessary because of the use of AC_PROG_SED.
 dnl  The following line allows the autoconf wrapper (when installed)
 dnl  to work as expected.
-AC_PREREQ(2.50)
+AC_PREREQ(2.60)
 
 dnl ------------------------------------------------------------
 dnl You must put in MPFR_CONFIGS everything which configure MPFR
