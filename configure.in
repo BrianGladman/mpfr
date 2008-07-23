@@ -128,7 +128,33 @@ if test -n "$CFLAGS" || test -n "$CC" ; then
 fi
 dnl Autoconf detection
 AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_EGREP
+AC_PROG_SED
 AC_LANG(C)
+
+dnl Check for GMP CFLAGS in gmp.h
+if test -z "$GMP_CFLAGS" -a -z "$user_redefine_cc" ; then
+   AC_MSG_CHECKING(for CC and CFLAGS in gmp.h)
+   # FIXME: Move this in aclocal ?
+   # Get CC
+   echo "#include \"gmp.h\"" >  conftest.c
+   echo "MPFR_OPTION __GMP_CC"           >> conftest.c
+   GMP_CC=$($CPP $CPPFLAGS conftest.c 2> /dev/null | $EGREP "MPFR_OPTION" | $SED -e 's/MPFR_OPTION //g' | $SED -e 's/"//g')
+   #Get CFLAGS
+   echo "#include \"gmp.h\"" >  conftest.c
+   echo "MPFR_OPTION __GMP_CFLAGS"           >> conftest.c
+   GMP_CFLAGS=$($CPP $CPPFLAGS conftest.c 2> /dev/null | $EGREP "MPFR_OPTION" | $SED -e 's/MPFR_OPTION //g'| $SED -e 's/"//g')
+   rm -f conftest*
+   if test "x$GMP_CFLAGS" = "x__GMP_CFLAGS" -o "x$GMP_CC" = "x__GMP_CC" ; then
+      AC_MSG_RESULT(no)
+      GMP_CFLAGS=
+      GMP_CC=
+   else
+
+      AC_MSG_RESULT(yes [CC=$GMP_CC CFLAGS=$GMP_CFLAGS])
+   fi
+fi
 
 dnl Check for GMP CFLAGS and CC (More optimized for the target)
 dnl But they may be invalid, so we must check them first
