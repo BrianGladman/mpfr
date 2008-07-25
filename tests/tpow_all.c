@@ -202,6 +202,32 @@ test_others (const void *sx, const char *sy, mp_rnd_t rnd,
       inex2 = mpfr_ui_pow (z2, xx, y, rnd);
       cmpres (spx, sx, sy, rnd, z1, inex1, z2, inex2,
               "mpfr_ui_pow, flags set");
+
+      /* If x = 2, we can test mpfr_exp2. */
+      if (xx == 2)
+        {
+          mpfr_clear_flags ();
+          inex2 = mpfr_exp2 (z2, y, rnd);
+          cmpres (spx, sx, sy, rnd, z1, inex1, z2, inex2,
+                  "mpfr_exp2, flags cleared");
+          __gmpfr_flags = MPFR_FLAGS_ALL;
+          inex2 = mpfr_exp2 (z2, y, rnd);
+          cmpres (spx, sx, sy, rnd, z1, inex1, z2, inex2,
+                  "mpfr_exp2, flags set");
+        }
+
+      /* If x = 10, we can test mpfr_exp10. */
+      if (xx == 10)
+        {
+          mpfr_clear_flags ();
+          inex2 = mpfr_exp10 (z2, y, rnd);
+          cmpres (spx, sx, sy, rnd, z1, inex1, z2, inex2,
+                  "mpfr_exp10, flags cleared");
+          __gmpfr_flags = MPFR_FLAGS_ALL;
+          inex2 = mpfr_exp10 (z2, y, rnd);
+          cmpres (spx, sx, sy, rnd, z1, inex1, z2, inex2,
+                  "mpfr_exp10, flags set");
+        }
     }
 
   mpfr_clear (z2);
