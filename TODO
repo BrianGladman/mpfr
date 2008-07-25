@@ -375,7 +375,8 @@ Table of contents:
   mainly for developers, in order to be able to test the case where the
   extended exponent range is the same as the default exponent range, on
   such platforms. This would need to rename all mp_exp_t as mpfr_exp_t
-  and add a typedef for compatibility.
+  and add a typedef either to mp_exp_t (default) or to int (when this
+  option is enabled).
 
 
 ##############################################################################
