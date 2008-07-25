@@ -371,6 +371,12 @@ Table of contents:
   between a bad case for the correct rounding and some input value
   with fewer Ziv iterations?).
 
+- add an option to use a 32-bit exponent type (int) on LP64 machines,
+  mainly for developers, in order to be able to test the case where the
+  extended exponent range is the same as the default exponent range, on
+  such platforms. This would need to rename all mp_exp_t as mpfr_exp_t
+  and add a typedef for compatibility.
+
 
 ##############################################################################
 7. Portability
