@@ -22,6 +22,7 @@ MA 02110-1301, USA. */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 
 #include "mpfr-test.h"
 
@@ -586,6 +587,72 @@ overflowed_exp0 (void)
   mpfr_clear (y);
 }
 
+/* Failures in revision 5449 (trunk) on a 64-bit Linux machine:
+ *   _ prec = 16: exp_2.c:264:  assertion failed: ...
+ *   _ prec = 32: incorrect flags[*] whether emin has been extended or not.
+ *   _ prec > 32: incorrect flags[*] with extended emin.
+ * [*] Inexact flag set (OK), but the underflow flag isn't.
+ */
+static void
+underflow_up (int extended_emin)
+{
+  mpfr_t minpos, x, y;
+  int inex;
+  int prec;
+  unsigned int flags, ufinex = MPFR_FLAGS_UNDERFLOW | MPFR_FLAGS_INEXACT;
+
+  mpfr_init2 (minpos, 2);
+  mpfr_set_ui (minpos, 0, GMP_RNDN);
+  mpfr_nextabove (minpos);
+
+  /* minpos = 2^(emin - 1)
+   * x = rndd(log(minpos)) = rndd((emin - 1) * log(2)), therefore
+   * log2 |x| < size_in_bits(mp_exp_t)
+   */
+  mpfr_init2 (x, sizeof(mp_exp_t) * CHAR_BIT + 1);
+  mpfr_log (x, minpos, GMP_RNDD);  /* |ulp| <= 1/2 */
+
+  for (prec = 16; prec <= 128; prec += 16)
+    {
+      mpfr_init2 (y, prec);
+      mpfr_clear_flags ();
+      inex = mpfr_exp (y, x, GMP_RNDN);
+      flags = __gmpfr_flags;
+      if (inex <= 0 || flags != ufinex || mpfr_cmp0 (y, minpos) != 0)
+        {
+          printf ("Error in underflow_up");
+          if (extended_emin)
+            printf (" and extended emin");
+          printf (" for prec = %d\nExpected ", prec);
+          mpfr_out_str (stdout, 16, 0, minpos, GMP_RNDN);
+          printf (" (minimum positive MPFR number),\n"
+                  "inex > 0 and flags = %u\nGot ", ufinex);
+          mpfr_out_str (stdout, 16, 0, y, GMP_RNDN);
+          printf ("\nwith inex = %d and flags = %u\n", inex, flags);
+          exit (1);
+        }
+      mpfr_clear (y);
+    }
+
+  mpfr_clears (minpos, x, (mpfr_ptr) 0);
+}
+
+static void
+underflow (void)
+{
+  mp_exp_t emin;
+
+  underflow_up (0);
+
+  emin = mpfr_get_emin ();
+  set_emin (MPFR_EMIN_MIN);
+  if (mpfr_get_emin () != emin)
+    {
+      underflow_up (1);
+      set_emin (emin);
+    }
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -644,6 +711,7 @@ main (int argc, char *argv[])
   check_exp10 ();
 
   overflowed_exp0 ();
+  underflow ();
 
   data_check ("data/exp", mpfr_exp, "mpfr_exp");
   bad_cases (mpfr_exp, mpfr_log, "mpfr_exp", 0, -256, 255, 4, 128, 800, 50);
