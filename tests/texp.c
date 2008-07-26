@@ -588,7 +588,7 @@ overflowed_exp0 (void)
 }
 
 /* Failures in revision 5449 (trunk) on a 64-bit Linux machine:
- *   _ prec = 16: exp_2.c:264:  assertion failed: ...
+ *   _ prec = 16: exp_2.c:264:  assertion failed: ... (fixed in r5453)
  *   _ prec = 32: incorrect flags[*] whether emin has been extended or not.
  *   _ prec > 32: incorrect flags[*] with extended emin.
  * [*] Inexact flag set (OK), but the underflow flag isn't.
