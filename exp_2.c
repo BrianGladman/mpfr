@@ -166,6 +166,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       MY_INIT_MPZ(ss, 3 + 2*((q-1)/BITS_PER_MP_LIMB));
       exps = mpfr_get_z_exp (ss, s);
       /* s <- 1 + r/1! + r^2/2! + ... + r^l/l! */
+      MPFR_ASSERTD (MPFR_IS_PURE_FP (r) && MPFR_EXP (r) < 0);
       l = (precy < MPFR_EXP_2_THRESHOLD)
         ? mpfr_exp2_aux (ss, r, q, &exps)      /* naive method */
         : mpfr_exp2_aux2 (ss, r, q, &exps);    /* Paterson/Stockmeyer method */
