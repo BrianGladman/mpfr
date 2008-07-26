@@ -244,6 +244,8 @@ mpfr_exp2_aux (mpz_t s, mpfr_srcptr r, mp_prec_t q, mp_exp_t *exps)
   mp_size_t sbit, tbit;
   MPFR_TMP_DECL(marker);
 
+  MPFR_ASSERTN (MPFR_IS_PURE_FP (r));
+
   MPFR_TMP_MARK(marker);
   qn = 1 + (q-1)/BITS_PER_MP_LIMB;
   expt = 0;
