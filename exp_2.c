@@ -150,70 +150,77 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       MPFR_LOG_VAR (r);
 
       mpfr_sub (r, x, r, GMP_RNDU);
-      /* possible cancellation here: the error on r is at most
+      /* possible cancellation here: if r is zero, increase the working
+         precision (Ziv's loop); otherwise, the error on r is at most
          3*2^(EXP(old_r)-EXP(new_r)) */
-      while (MPFR_IS_NEG (r))
-        { /* initial approximation n was too large */
-          n--;
-          mpfr_add (r, r, s, GMP_RNDU);
-        }
-      mpfr_prec_round (r, q, GMP_RNDU);
-      MPFR_LOG_VAR (r);
-      MPFR_ASSERTD (MPFR_IS_POS (r));
-      mpfr_div_2ui (r, r, K, GMP_RNDU); /* r = (x-n*log(2))/2^K, exact */
 
-      MPFR_TMP_MARK(marker);
-      MY_INIT_MPZ(ss, 3 + 2*((q-1)/BITS_PER_MP_LIMB));
-      exps = mpfr_get_z_exp (ss, s);
-      /* s <- 1 + r/1! + r^2/2! + ... + r^l/l! */
-      MPFR_ASSERTD (MPFR_IS_PURE_FP (r) && MPFR_EXP (r) < 0);
-      l = (precy < MPFR_EXP_2_THRESHOLD)
-        ? mpfr_exp2_aux (ss, r, q, &exps)      /* naive method */
-        : mpfr_exp2_aux2 (ss, r, q, &exps);    /* Paterson/Stockmeyer method */
-
-      MPFR_LOG_MSG (("l=%d q=%d (K+l)*q^2=%1.3e\n", l, q, (K+l)*(double)q*q));
-
-      for (k = 0; k < K; k++)
+      if (MPFR_IS_PURE_FP (r))
         {
-          mpz_mul (ss, ss, ss);
-          exps <<= 1;
-          exps += mpz_normalize (ss, ss, q);
+          while (MPFR_IS_NEG (r))
+            { /* initial approximation n was too large */
+              n--;
+              mpfr_add (r, r, s, GMP_RNDU);
+            }
+          mpfr_prec_round (r, q, GMP_RNDU);
+          MPFR_LOG_VAR (r);
+          MPFR_ASSERTD (MPFR_IS_POS (r));
+          mpfr_div_2ui (r, r, K, GMP_RNDU); /* r = (x-n*log(2))/2^K, exact */
+
+          MPFR_TMP_MARK(marker);
+          MY_INIT_MPZ(ss, 3 + 2*((q-1)/BITS_PER_MP_LIMB));
+          exps = mpfr_get_z_exp (ss, s);
+          /* s <- 1 + r/1! + r^2/2! + ... + r^l/l! */
+          MPFR_ASSERTD (MPFR_IS_PURE_FP (r) && MPFR_EXP (r) < 0);
+          l = (precy < MPFR_EXP_2_THRESHOLD)
+            ? mpfr_exp2_aux (ss, r, q, &exps)   /* naive method */
+            : mpfr_exp2_aux2 (ss, r, q, &exps); /* Paterson/Stockmeyer meth */
+
+          MPFR_LOG_MSG (("l=%d q=%d (K+l)*q^2=%1.3e\n",
+                         l, q, (K+l)*(double)q*q));
+
+          for (k = 0; k < K; k++)
+            {
+              mpz_mul (ss, ss, ss);
+              exps <<= 1;
+              exps += mpz_normalize (ss, ss, q);
+            }
+          mpfr_set_z (s, ss, GMP_RNDN);
+
+          MPFR_SET_EXP(s, MPFR_GET_EXP (s) + exps);
+          MPFR_TMP_FREE(marker); /* don't need ss anymore */
+
+          MPFR_BLOCK (flags, mpfr_mul_2si (s, s, n, GMP_RNDU));
+          /* Check if an overflow occurs */
+          if (MPFR_OVERFLOW (flags))
+            {
+              /* We hack to set a FP number outside the valid range so that
+                 mpfr_check_range properly generates an overflow */
+              mpfr_setmax (y, __gmpfr_emax);
+              MPFR_EXP (y) ++;
+              inexact = 1;
+              break;
+            }
+          /* Check if an underflow occurs */
+          else if (MPFR_UNDERFLOW (flags))
+            {
+              inexact = mpfr_underflow (y, rnd_mode, 1);
+              break;
+            }
+
+          /* error is at most 2^K*l */
+          K += MPFR_INT_CEIL_LOG2 (l);
+
+          MPFR_LOG_MSG (("after mult. by 2^n:\n", 0));
+          MPFR_LOG_VAR (s);
+          MPFR_LOG_MSG (("err=%d bits\n", K));
+
+          if (MPFR_LIKELY (MPFR_CAN_ROUND (s, q-K, precy, rnd_mode)))
+            {
+              inexact = mpfr_set (y, s, rnd_mode);
+              break;
+            }
         }
-      mpfr_set_z (s, ss, GMP_RNDN);
 
-      MPFR_SET_EXP(s, MPFR_GET_EXP (s) + exps);
-      MPFR_TMP_FREE(marker); /* don't need ss anymore */
-
-      MPFR_BLOCK (flags, mpfr_mul_2si (s, s, n, GMP_RNDU));
-      /* Check if an overflow occurs */
-      if (MPFR_OVERFLOW (flags))
-        {
-          /* We hack to set a FP number outside the valid range so that
-             mpfr_check_range properly generates an overflow */
-          mpfr_setmax (y, __gmpfr_emax);
-          MPFR_EXP (y) ++;
-          inexact = 1;
-          break;
-        }
-      /* Check if an underflow occurs */
-      else if (MPFR_UNDERFLOW (flags))
-        {
-          inexact = mpfr_underflow (y, rnd_mode, 1);
-          break;
-        }
-
-      /* error is at most 2^K*l */
-      K += MPFR_INT_CEIL_LOG2 (l);
-
-      MPFR_LOG_MSG (("after mult. by 2^n:\n", 0));
-      MPFR_LOG_VAR (s);
-      MPFR_LOG_MSG (("err=%d bits\n", K));
-
-      if (MPFR_LIKELY (MPFR_CAN_ROUND (s, q-K, precy, rnd_mode)))
-        {
-          inexact = mpfr_set (y, s, rnd_mode);
-          break;
-        }
       MPFR_ZIV_NEXT (loop, q);
       mpfr_set_prec (r, q);
       mpfr_set_prec (s, q);
