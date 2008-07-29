@@ -34,7 +34,6 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mp_exp_t expx;
   mp_prec_t precy;
   int inexact;
-  double d;
   MPFR_SAVE_EXPO_DECL (expo);
 
   MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
@@ -62,27 +61,110 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
           return mpfr_set_ui (y, 1, rnd_mode);
         }
     }
-  MPFR_CLEAR_FLAGS(y);
+
+  /* First, let's detect the underflow and overflow. */
+  {
+    mpfr_t elo, ehi, bound;
+    int slo, shi;
+    mp_prec_t prec = 32;
+
+    /* We must extended the exponent range and save the flags now. */
+    MPFR_SAVE_EXPO_MARK (expo);
+
+    mpfr_inits2 (sizeof (mp_exp_t) * CHAR_BIT, elo, ehi, (mpfr_ptr) 0);
+    inexact = mpfr_set_exp_t (elo, expo.saved_emin, GMP_RNDN);
+    MPFR_ASSERTD (inexact == 0);
+    inexact = mpfr_sub_ui (elo, elo, 1, GMP_RNDN);
+    MPFR_ASSERTD (inexact == 0);
+    /* If elo > 0 and elo - 1 > 0, then slo = 0.
+     * If elo < 0 and elo - 1 < 0, then slo = 1.
+     * So, slo = 1 iff elo <= 0 iff expo.saved_emin <= 1.
+     */
+    slo = expo.saved_emin <= 1;
+    inexact = mpfr_set_exp_t (ehi, expo.saved_emax, GMP_RNDN);
+    MPFR_ASSERTD (inexact == 0);
+    shi = expo.saved_emax < 0;
+    mpfr_init2 (bound, prec);
+
+    while (1)
+      {
+        mpfr_const_log2 (bound, shi ? GMP_RNDU : GMP_RNDD);
+        mpfr_mul (bound, bound, ehi, GMP_RNDD);
+        if (MPFR_LIKELY (mpfr_cmp (x, bound) <= 0))
+          {
+            mpfr_const_log2 (bound, slo ? GMP_RNDD : GMP_RNDU);
+            mpfr_mul (bound, bound, elo, GMP_RNDU);
+            if (MPFR_LIKELY (mpfr_cmp (x, bound) >= 0))
+              break;  /* Neither underflow, nor overflow */
+            /* Probable underflow */
+            mpfr_const_log2 (bound, slo ? GMP_RNDU : GMP_RNDD);
+            mpfr_mul (bound, bound, elo, GMP_RNDD);
+            if (MPFR_LIKELY (mpfr_cmp (x, bound) <= 0))
+              {
+                /* Underflow */
+                if (rnd_mode != GMP_RNDN)
+                  {
+                    mpfr_clears (elo, ehi, bound, (mpfr_ptr) 0);
+                    MPFR_SAVE_EXPO_FREE (expo);
+                    return mpfr_underflow (y, rnd_mode, 1);
+                  }
+                /* Rounding-to nearest mode: we also need to decide
+                   whether the result is 0 or nextabove(0). */
+                inexact = mpfr_sub_ui (elo, elo, 1, GMP_RNDN);
+                MPFR_ASSERTD (inexact == 0);
+                while (1)
+                  {
+                    mpfr_const_log2 (bound, slo ? GMP_RNDU : GMP_RNDD);
+                    mpfr_mul (bound, bound, elo, GMP_RNDD);
+                    if (MPFR_LIKELY (mpfr_cmp (x, bound) <= 0))
+                      {
+                        /* Underflow with result = 0 */
+                        mpfr_clears (elo, ehi, bound, (mpfr_ptr) 0);
+                        MPFR_SAVE_EXPO_FREE (expo);
+                        return mpfr_underflow (y, GMP_RNDZ, 1);
+                      }
+                    mpfr_const_log2 (bound, slo ? GMP_RNDD : GMP_RNDU);
+                    mpfr_mul (bound, bound, elo, GMP_RNDU);
+                    if (MPFR_LIKELY (mpfr_cmp (x, bound) >= 0))
+                      {
+                        /* Underflow with result = nextabove(0) */
+                        mpfr_clears (elo, ehi, bound, (mpfr_ptr) 0);
+                        MPFR_SAVE_EXPO_FREE (expo);
+                        return mpfr_underflow (y, GMP_RNDN, 1);
+                      }
+                    /* We couldn't decide: more precision is needed. */
+                    prec += prec < MPFR_PREC (x) ? MPFR_PREC (x) : prec / 2;
+                    mpfr_set_prec (bound, prec);
+                  }
+                MPFR_RET_NEVER_GO_HERE ();
+              }
+            /* We couldn't decide: more precision is needed. */
+          }
+        else
+          {
+            /* Probable overflow */
+            mpfr_const_log2 (bound, shi ? GMP_RNDD : GMP_RNDU);
+            mpfr_mul (bound, bound, ehi, GMP_RNDU);
+            if (MPFR_LIKELY (mpfr_cmp (x, bound) >= 0))
+              {
+                mpfr_clears (elo, ehi, bound, (mpfr_ptr) 0);
+                MPFR_SAVE_EXPO_FREE (expo);
+                return mpfr_overflow (y, rnd_mode, 1);
+              }
+            /* We couldn't decide: more precision is needed. */
+          }
+        prec += prec < MPFR_PREC (x) ? MPFR_PREC (x) : prec / 2;
+        mpfr_set_prec (bound, prec);
+      }
+
+    mpfr_clears (elo, ehi, bound, (mpfr_ptr) 0);
+    MPFR_SAVE_EXPO_FREE (expo);
+  }
+
+  MPFR_CLEAR_FLAGS (y);
 
   expx  = MPFR_GET_EXP (x);
   precy = MPFR_PREC (y);
-
-  /* result is +Inf when exp(x) >= 2^(__gmpfr_emax), i.e.
-     x >= __gmpfr_emax * log(2) */
-  /* TODO: Don't convert to double! */
-  d = mpfr_get_d1 (x);
-  if (MPFR_UNLIKELY (d >= (double) __gmpfr_emax * LOG2))
-    return mpfr_overflow (y, rnd_mode, 1);
-
-  /* result is 0 when exp(x) < 1/2*2^(__gmpfr_emin), i.e.
-     x < (__gmpfr_emin-1) * LOG2 */
-  if (MPFR_UNLIKELY(d < ((double) __gmpfr_emin - 1.0) * LOG2))
-    {
-      /* warning: mpfr_underflow rounds away for RNDN */
-      if (rnd_mode == GMP_RNDN && d < ((double) __gmpfr_emin - 2.0) * LOG2)
-        rnd_mode = GMP_RNDZ;
-      return mpfr_underflow (y, rnd_mode, 1);
-    }
 
   /* if x < 2^(-precy), then exp(x) i.e. gives 1 +/- 1 ulp(1) */
   if (MPFR_UNLIKELY (expx < 0 && (mpfr_uexp_t) (-expx) > precy))
