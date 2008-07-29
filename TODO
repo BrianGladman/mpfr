@@ -378,6 +378,10 @@ Table of contents:
   and add a typedef either to mp_exp_t (default) or to int (when this
   option is enabled).
 
+- test underflow/overflow detection of various functions (in particular
+  mpfr_exp) in reduced exponent ranges, including ranges that do not
+  contain 0.
+
 
 ##############################################################################
 7. Portability
