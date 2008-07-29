@@ -565,8 +565,16 @@ typedef unsigned long int  mpfr_uexp_t;
 #ifndef mp_exp_unsigned_t
 # define mp_exp_unsigned_t mpfr_uexp_t
 #endif
-#define mpfr_get_exp_t(x,r) mpfr_get_si((x),(r))
-#define mpfr_set_exp_t(x,e,r) mpfr_set_si((x),(e),(r))
+
+#if MPFR_EXP_MIN >= LONG_MIN && MPFR_EXP_MAX <= LONG_MAX
+# define mpfr_get_exp_t(x,r) mpfr_get_si((x),(r))
+# define mpfr_set_exp_t(x,e,r) mpfr_set_si((x),(e),(r))
+#elif defined (_MPFR_H_HAVE_INTMAX_T)
+# define mpfr_get_exp_t(x,r) mpfr_get_sj((x),(r))
+# define mpfr_set_exp_t(x,e,r) mpfr_set_sj((x),(e),(r))
+#else
+# error "Cannot define mpfr_get_exp_t and mpfr_set_exp_t"
+#endif
 
 /* Invalid exponent value (to track bugs...) */
 #define MPFR_EXP_INVALID \
