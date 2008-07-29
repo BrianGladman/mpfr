@@ -63,6 +63,10 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     }
 
   /* First, let's detect the underflow and overflow. */
+  /* FIXME: This is still incorrect for the underflow since MPFR chose
+     underflow after rounding (the result is correct, though). Some
+     overflow cases may not be detected (it would probably too difficult
+     to detect them), but is this sufficient for the generic algorithms? */
   {
     mpfr_t elo, ehi, bound;
     int slo, shi;
