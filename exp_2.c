@@ -350,52 +350,54 @@ mpfr_exp2_aux2 (mpz_t s, mpfr_srcptr r, mp_prec_t q, mp_exp_t *exps)
 
   l = 0;
   ql = q; /* precision used for current giant step */
-  do {
-    /* all R[i] must have exponent 1-ql */
-    if (l != 0)
-      for (i = 0 ; i < m ; i++)
-        expR[i] = mpz_normalize2 (R[i], R[i], expR[i], 1-ql);
-    /* the absolute error on R[i]*rr is still 2*i-1 ulps */
-    expt = mpz_normalize2 (t, R[m-1], expR[m-1], 1-ql);
-    /* err(t) <= 2*m-1 ulps */
-    /* computes t = 1 + r/(l+1) + ... + r^(m-1)*l!/(l+m-1)!
-       using Horner's scheme */
-    for (i = m-1 ; i-- != 0 ; )
-      {
-        mpz_div_ui(t, t, l+i+1); /* err(t) += 1 ulp */
-        mpz_add(t, t, R[i]);
-      }
-    /* now err(t) <= (3m-2) ulps */
+  do
+    {
+      /* all R[i] must have exponent 1-ql */
+      if (l != 0)
+        for (i = 0 ; i < m ; i++)
+          expR[i] = mpz_normalize2 (R[i], R[i], expR[i], 1-ql);
+      /* the absolute error on R[i]*rr is still 2*i-1 ulps */
+      expt = mpz_normalize2 (t, R[m-1], expR[m-1], 1-ql);
+      /* err(t) <= 2*m-1 ulps */
+      /* computes t = 1 + r/(l+1) + ... + r^(m-1)*l!/(l+m-1)!
+         using Horner's scheme */
+      for (i = m-1 ; i-- != 0 ; )
+        {
+          mpz_div_ui (t, t, l+i+1); /* err(t) += 1 ulp */
+          mpz_add (t, t, R[i]);
+        }
+      /* now err(t) <= (3m-2) ulps */
 
-    /* now multiplies t by r^l/l! and adds to s */
-    mpz_mul(t, t, rr);
-    expt += expr;
-    expt = mpz_normalize2(t, t, expt, *exps);
-    /* err(t) <= (3m-1) + err_rr(l) <= (3m-2) + 2*l */
-    MPFR_ASSERTD (expt == *exps);
-    mpz_add(s, s, t); /* no error here */
+      /* now multiplies t by r^l/l! and adds to s */
+      mpz_mul (t, t, rr);
+      expt += expr;
+      expt = mpz_normalize2 (t, t, expt, *exps);
+      /* err(t) <= (3m-1) + err_rr(l) <= (3m-2) + 2*l */
+      MPFR_ASSERTD (expt == *exps);
+      mpz_add (s, s, t); /* no error here */
 
-    /* updates rr, the multiplication of the factors l+i could be done
-       using binary splitting too, but it is not sure it would save much */
-    mpz_mul(t, rr, R[m]); /* err(t) <= err(rr) + 2m-1 */
-    expr += expR[m];
-    mpz_set_ui (tmp, 1);
-    for (i = 1 ; i <= m ; i++)
-      mpz_mul_ui (tmp, tmp, l + i);
-    mpz_fdiv_q(t, t, tmp); /* err(t) <= err(rr) + 2m */
-    l += m;
-    if (MPFR_UNLIKELY (mpz_sgn (t) == 0))
-      break;
-    expr += mpz_normalize(rr, t, ql); /* err_rr(l+1) <= err_rr(l) + 2m+1 */
-    if (MPFR_UNLIKELY (mpz_sgn (rr) == 0))
-      rrbit = 1;
-    else
-      MPFR_MPZ_SIZEINBASE2 (rrbit, rr);
-    MPFR_MPZ_SIZEINBASE2 (sbit, s);
-    ql = q - *exps - sbit + expr + rrbit;
-    /* TODO: Wrong cast. I don't want what is right, but this is
-       certainly wrong */
-  }  while ((size_t) expr+rrbit > (size_t)((int)-q));
+      /* updates rr, the multiplication of the factors l+i could be done
+         using binary splitting too, but it is not sure it would save much */
+      mpz_mul (t, rr, R[m]); /* err(t) <= err(rr) + 2m-1 */
+      expr += expR[m];
+      mpz_set_ui (tmp, 1);
+      for (i = 1 ; i <= m ; i++)
+        mpz_mul_ui (tmp, tmp, l + i);
+      mpz_fdiv_q (t, t, tmp); /* err(t) <= err(rr) + 2m */
+      l += m;
+      if (MPFR_UNLIKELY (mpz_sgn (t) == 0))
+        break;
+      expr += mpz_normalize (rr, t, ql); /* err_rr(l+1) <= err_rr(l) + 2m+1 */
+      if (MPFR_UNLIKELY (mpz_sgn (rr) == 0))
+        rrbit = 1;
+      else
+        MPFR_MPZ_SIZEINBASE2 (rrbit, rr);
+      MPFR_MPZ_SIZEINBASE2 (sbit, s);
+      ql = q - *exps - sbit + expr + rrbit;
+      /* TODO: Wrong cast. I don't want what is right, but this is
+         certainly wrong */
+    }
+  while ((size_t) expr+rrbit > (size_t) (int) -q);
 
   MPFR_TMP_FREE(marker);
   mpz_clear(tmp);
