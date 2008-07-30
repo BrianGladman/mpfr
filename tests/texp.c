@@ -635,6 +635,8 @@ underflow_up (int extended_emin)
    *   Incorrect flags in underflow_up, eps > 0, GMP_RNDN and extended emin
    *   for precx = 96, precy = 16, mpfr_exp_3
    *   Got 9 instead of 8.
+   * Note: testing this case in several precisions for x and y introduces
+   * some useful random. Indeed, the bug is not always triggered.
    */
   for (precx = 16; precx <= 128; precx += 16)
     {
