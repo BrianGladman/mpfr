@@ -2267,117 +2267,119 @@ The \texttt{mpfr\_hypot} function implements the euclidean distance function:
 \textnormal{hypot} (x,y) = \sqrt{x^2+y^2}.
 \]
 If one of the variable is zero, then hypot is computed using the absolute
-value of the other variable.
-Assume that $|x| \geq |y| > 0$. Using the first degree Taylor polynomial, we
-have
+value of the other variable.  Assume that $0 < y \leq x$. Using the first
+degree Taylor polynomial, we have
 \[
-0 \leq \sqrt{x^2+y^2}-|x| \leq \frac{y^2}{2|x|}.
+0 < \sqrt{x^2+y^2}-x < \frac{y^2}{2x}.
 \]
 
-Let $p_x$ the precision of input variable $x$, $p_z$ the output precision and
-$z=\circ_{p_z}(\sqrt{x^2+y^2})$ the expected result.
-When $\Exp(x) - \Exp(y) > \frac{p_z+1}{2}$, we have
-$\frac{y^2}{2|x|} < \frac{1}{2}\ulp_{p_z}(x)$.
-When $p_z < p_x$, the stronger condition $\Exp(x) - \Exp(y) > \frac{p_x+1}{2}$
-ensures that $\sqrt{x^2+y^2} - |x| < \frac{1}{2} \ulp(x)$.
-In both cases, the inequalities show that $z=\circ_{p_z}(|x|)$.
+Let $p_x, p_y$ the precisions of input variables $x$ and $y$ respectively,
+$p_z$ the output precision and $z=\circ_{p_z}(\sqrt{x^2+y^2})$ the expected
+result.  Let us assume, as it is the case in MPFR, that the minimal and
+maximal acceptable exponents (respectively $e_{min}$ and $e_{max}$) verify $2
+< e_{max}$ and $e_{max} = -e_{min}$.
 
+When rounding to the nearest, if $p_x \leq p_z$ and $\frac{p_z+1}{2} < \Exp(x)
+- \Exp(y)$, we have $\frac{y^2}{2x} < \frac{1}{2}\ulp_{p_z}(x)$ ; if $p_z <
+p_x$, the condition $\frac{p_x+1}{2} < \Exp(x) - \Exp(y)$ ensures that
+$\frac{y^2}{2x} < \frac{1}{2} \ulp_{p_x}(x)$.  In both cases, these
+inequalities show that $z=\N_{p_z}(x)$, except that tie case is rounded
+towards plus infinity since $x < \textnormal{hypot}(x,y)$.
 
-When none of the above conditions is satisfied, we use the following
-algorithm:
+With other rounding modes, the conditions $p_z/2 < \Exp(x) - \Exp(y)$ if $p_x
+\leq p_z$, and $p_x/2 < \Exp(x) - \Exp(y)$ if $p_z < p_x$ mean in a similar
+way that $z=\circ_{p_z}(x)$, except that we need to add one ulp to the result
+when rounding towards plus infinity and $x$ is exactly representable with
+$p_z$ bits of precision.
+
+When none of the above conditions is satisfied and when $\Exp(x) - \Exp(y)
+\leq e_{max} - 2$, we use the following algorithm:
+
 \begin{quote}
-  Algorithm {\tt hypot}\\
-  Input: $x$ and $y$ with $|y| \leq |x|$, $p$ the working precision\\
-  Output: $\sqrt{x^2+y^2}$ with $p-2$ bits of precision\\
-  \begin{tabular}{l p{5em} l c c l}
-    $u \leftarrow \Z(x^2)$ & & $\error(u)$ & $\leq$ & 1 & $\ulp(u)$\\
-    $v \leftarrow \Z(y^2)$ & & $\error(v)$ & $\leq$ & 1 & $\ulp(v)$\\
-    $w \leftarrow \Z(u+v)$ & & $\error(w)$ & $\leq$ & 3 & $\ulp(w)$\\
-    $t \leftarrow \Z(\sqrt{w})$ & & $\error(t)$ & $\leq$ & 4 & $\ulp(t)$\\
-  \end{tabular}
+  Algorithm {\tt hypot\_1}\\
+  Input: $x$ and $y$ with $|y| \leq |x|$,
+  $p$ the working precision with $p \geq p_z$\\
+  Output: $\sqrt{x^2+y^2}$ with $\left\{
+  \begin{array}{l} 
+    p-4 \textnormal{ bits of precision if } p <\max(p_x, p_y),\\
+    p-2 \textnormal{ bits of precision if } \max(p_x, p_y) \leq p.
+  \end{array}\right.$\\
+  $s \leftarrow \lfloor e_{max}/2\rfloor - \Exp(x) -1$\\
+  $x_s \leftarrow \Z(x\times 2^s)$\\
+  $y_s \leftarrow \Z(y\times 2^s)$\\
+  $u \leftarrow \Z(x_s^2)$\\
+  $v \leftarrow \Z(y_s^2)$\\
+  $w \leftarrow \Z(u+v)$\\
+  $t \leftarrow \Z(\sqrt{w})$\\
+  $z \leftarrow \Z(t/2^s)$
 \end{quote}
 
-In the above algorithm, $\Z(x^2)$ or $\Z(y^2)$ may overflow though the result
-$z$ is representable. Let us assume, as it is the case in MPFR, that the
-minimal and maximal acceptable exponents (respectively $e_{min}$ and
-$e_{max}$) verify $e_{max} = -e_{min} > 2$ and that the maximal precision is
-less than $2e_{max}$. Let $s=\Z(\frac{\Exp(x) + \Exp(y) + 1}{2})$ (integer
-division with rounding towards zero), we have $\frac{\Exp(x)+\Exp(y)}{2} \leq
-s \leq \frac{\Exp(x) + \Exp(y)}{2} + 1$. In order to avoid overflow, we shift
-input's exponents by $-s$ before entering the algorithm and shift back the
-output's exponent by $+s$. Let us see now that no overflow goes on when the
-exact value $\sqrt{x^2+y^2}$ is representable.
+In order to avoid undue overflow during computation, we shift inputs'
+exponents by $s = \lfloor\frac{e_{max}}{2}\rfloor -1 -\Exp(x)$ before
+computing squares and shift back the output's exponent by $-s$ using the fact
+that $\sqrt{(x.2^s)^2+(y.2^s)^2}/2^s = \sqrt{x^2+y^2}$. We show below that no
+overflow nor underflow goes on.
 
+We check first that the exponent shift do not cause overflow and, in the same
+time, that the squares of the shifted inputs do never overflow. For $x$, we
+have $\Exp(x) + s = \lfloor e_{max}/2\rfloor - 1$, so $\Exp(x_s^2) < e_{max} -
+1$ and neither $x_s$ nor $x_s^2$ overflows. For $y$, note that we have $y_s
+\leq x_s$ because $y \leq x$, thus $y_s$ and $y_s^2$ do not overflow.
 
-Let us prove first that the exponent shifts do no cause overflow. Note that
-because $|y| \leq |x|$, we have $\Exp(y) \leq \Exp(x)$, thus $\Exp(y) -s \leq
-\frac{\Exp(y) - \Exp(x)}{2} \leq 0$ and we just need to prove that
-$\Exp(x) - s \leq e_{max}$.
+Secondly, let us see that the exponent shift do not cause underflow. For $x$,
+we know that $0 \leq \Exp(x) + s$, thus neither $x_s$ nor $x_s^2$
+underflows. For $y$, the condition $\Exp(x) - \Exp(y) \leq e_{max} - 2$
+ensures that $-e_{max}/2 \leq \Exp(y) + s$ which shows that $y_s$ and its
+square do not underflow.
 
-The case $\Exp(x)=-\Exp(y)$ is straightforward: $s=0$.
+Thirdly, the addition does not overflow because $u + v < 2 x_s^2$ and we have
+seen above that $x_s^2 < 2^{e_{max} - 1}$. It cannot underflow because both
+operands are positive.
 
-Assume now that $-\Exp(y) < \Exp(x)$, then using the definition of $s$ we have
-$s \geq \frac{\Exp(x) + \Exp(y)}{2} > 0$, this gives $\Exp(x) - s < \Exp(x)$.
-As $e_{max}$ is the upper bound for exponents, we have $\Exp(x) -s < e_{max}$.
-
-In the case $\Exp(x) < -\Exp(y)$, the definition of $s$ implies that
-$\frac{\Exp(x) + \Exp(y)}{2} \leq s$, so $\Exp(x)-s \leq
-\frac{\Exp(x) - \Exp(y)}{2}$. But in the present case, we have
-$\frac{\Exp(x) - \Exp(y)}{2} < -\Exp(y)$ and, using the lower bound for
-exponents $-e_{max} \leq \Exp(y)$, we can conclude that
-$\Exp(x) - s < e_{max}$.
-
-
-Secondly, we need to show that the squares of the shifted inputs do never
-overflow. Let us point out that $\Exp(x) - \Exp(y) \leq \frac{p_z + 1}{2}$,
-otherwise, that case would that case would satisfy the conditions given above
-and the result $z$ would have been computed using $|x|$.
-Using the condition on maximal precision $p_z < 2e_{max}$, we can write
-$\frac{p_z + 1}{2} \leq e_{max}$ because if $p_z$ is even,
-$p_z + 1 < 2e_{max}$ and if $p_z$ is odd, $p_z +1 \leq 2e_{max}$. Thus,
-$\Exp(x) - \Exp(y) \leq e_{max}$. Whatever the sign of $s$ we have
-$\Exp(x) - s \leq \frac{\Exp(x) - \Exp(y)}{2}$ which is bounded by
-$\frac{e_{max}}{2}$. Let $x_s = x/2^s$ and $y_s = y/2^s$ be the shifted
-inputs, from the preceding inequalities we can see that $2\Exp(x_s) \leq
-e_{max}$ and we can conclude that $\Exp(y_s^2) \leq \Exp(x_s^2) \leq e_{max}$,
-that is to say the squares do not overflow.
-
-
-Thirdly, noticing that the square of $y_s$ may underflow, let us prove that
-the computed value is still correct despite this underflow. Actually, 
-$\frac{\Exp(x)+\Exp(y)}{2} \leq s \leq \frac{\Exp(x) + \Exp(y)}{2} + 1$ shows
-that $-\Exp(x_s) \geq \Exp(y_s) \geq -\Exp(x_s) - 2$. [TODO]
-
-
-Fourthly, let us see that the addition does not overflow. The addition
-overflows when $\Exp(w) > e_{max}$, since $u$ and $v$ are representable and
-the rounding mode is towards zero, the only case in which this happens is when
-$u + v \geq 2^{\Exp(u)}$ and $\Exp(w) = \Exp(u) + 1$.
-Then $v \geq 2^{\Exp(u)} - u$ and $\Exp(u) = e_{max}$.
-We proved above that $2\Exp(x_s) \leq e_{max}$ and we know that
-$\Exp(u) \leq 2\Exp(x_s)$, so using the last three relations we can write
-$2\Exp(x_s) = \Exp(u) = e_{max}$ which is not possible if $e_{max}$ is odd.
-Assume that $e_{max}$ is even, then $u \leq (1-2^{-p})2^{\Exp(u)}$ where $p$
-is the working precision in the algorithm and we have $v \geq 2^{\Exp(u)-p}$,
-on the other hand, because of the rounding towards zero mode
-$2^{2\Exp(y_s)} \geq v$, thus $p \geq 2\left(\Exp(x_s) - \Exp(y_s)\right)$.
-Using the fact that $\Exp(y_s) \geq -\Exp(x_s) - 2$, we can write $p \geq
-4\Exp(x_s) + 4 > 2e_{max}$ which is incompatible with the upper limit for
-precision. In conclusion, the addition does not overflow in any case.
-
+Fourthly, as $x_s < t$, the square root does not underflow. Due to the
+exponent shift, we have $1 \leq x_s$, then $w$ is greater than 1 and thus
+greater than its square root $t$, so the square root does overflow.
 
 Finally, let us show that the back shift do not raise underflow nor overflow
-unless the exact result is not representable.
-As $\sqrt{x^2+y^2} \geq |x|$, \texttt{mpfr\_hypot} should never underflow.
-We have $\Exp(x_s) = \Exp(x) - s$ by definition of $s$, 
-$2\Exp(x) - 2s \geq \Exp(u) \geq 2\Exp(x) - 2s - 1$ because the squared
-mantissa of $x$ may be less than $\frac{1}{2}$,
-$2\Exp(x) - 2s + 1 \geq \Exp(w) \geq 2\Exp(x) - 2s - 1$ because $u \geq v$,
-$\Exp(x) - s + 1 \geq \Exp(t) \geq \Exp(x) - s$ ($\Exp(\sqrt{r}) = n$ when
-$\Exp(r) = 2n$ is even and $\Exp(\sqrt{r}) = n + 1$ when $\Exp(r) = 2n + 1$ is
-odd), and $\Exp(x) + 1 \geq \Exp(z) \geq \Exp(x)$ which shows that it does not
-unverflow but may overflow when $\Exp(x) = e_{max}$.
-[TODO]
+unless the exact result is greater than or equal to $2^{e_{max}}$. Because no
+underflow has occured so far $\Exp(x) \leq \Exp(t) - s$ which shows that it
+does not underflow. And all roundings being towards zero we have $z \leq
+\sqrt{x^2 + y^2}$, so if $2^{e_{max}} \leq z$, then the exact value is also
+greater than or equal to $2^{e_{max}}$.
+
+Let us analyse now the error of the algorithm hypot\_1:\\
+\begin{tabular}{l p{2em} l c r | r}
+  & & & & $p < \min(p_x, p_y)$ & $\max(p_x, p_y) \leq p$\\
+  $x_s \leftarrow \Z(x\times 2^s)$ & & $\error(x_s)$ & $\leq$ &
+  1 $\ulp(x_s)$ &
+  exact\\
+  $y_s \leftarrow \Z(y\times 2^s)$ & & $\error(y_s)$ & $\leq$ &
+  1 $\ulp(y_s)$ &
+  exact\\
+  $u \leftarrow \Z(x_s^2)$ & & $\error(u)$ & $\leq$ &
+  6 $\ulp(u)$ &
+  1 $\ulp(u)$\\
+  $v \leftarrow \Z(y_s^2)$ & & $\error(v)$ & $\leq$ &
+  6 $\ulp(v)$ &
+  1 $\ulp(u)$\\
+  $w \leftarrow \Z(u+v)$ & & $\error(w)$ & $\leq$ &
+  13 $\ulp(w)$ &
+  3 $\ulp(w)$\\
+  $t \leftarrow \Z(\sqrt{w})$ & & $\error(t)$ & $\leq$ &
+  14 $\ulp(t)$ &
+  4 $\ulp(t)$\\
+  $z \leftarrow \Z(t/2^s)$& & exact.\\
+\end{tabular}\\
+And in the intermediate case, if $\min(p_x,p_y) \leq p < \max(p_x,p_y)$, we
+have\\
+\begin{tabular}{l p{2em} l c r l}
+  $w \leftarrow \Z(u+v)$ & &
+  $\error(w)$ & $\leq$ & 8 $\ulp(w)$\\
+  $t \leftarrow \Z(\sqrt{w})$ & &
+  $\error(t)$ & $\leq$ & 9 $\ulp(t)$.\\
+\end{tabular}\\
+Thus, we have lost 2 bits of precision when $\max(p_x, p_y) \leq p$ and 4 bits
+when $p$ does not verify this relation.
 
 \subsection{The floating multiply-add function}
 

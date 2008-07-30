@@ -31,10 +31,12 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 {
   int inexact, exact;
   mpfr_t t, te, ti; /* auxiliary variables */
-  mp_prec_t Nx, Ny, Nz; /* size variables */
+  mp_prec_t N, Nz; /* size variables */
   mp_prec_t Nt;   /* precision of the intermediary variable */
-  mp_exp_t Ex, Ey, sh;
+  mp_prec_t threshold;
+  mp_exp_t Ex, sh;
   mp_exp_unsigned_t diff_exp;
+
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_ZIV_DECL (loop);
   MPFR_BLOCK_DECL (flags);
@@ -72,26 +74,16 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
   /* now |x| >= |y| */
 
   Ex = MPFR_GET_EXP (x);
-  Ey = MPFR_GET_EXP (y);
-  diff_exp = (mp_exp_unsigned_t) Ex - Ey;
+  diff_exp = (mp_exp_unsigned_t) Ex - MPFR_GET_EXP (y);
 
-  Nx = MPFR_PREC (x);   /* Precision of input variable */
+  N = MPFR_PREC (x);   /* Precision of input variable */
   Nz = MPFR_PREC (z);   /* Precision of output variable */
+  threshold =
+    rnd_mode == GMP_RNDN ? (MAX (N, Nz) + 1) <<1 : MAX (N, Nz) <<1;
 
-  /* we have x < 2^Ex thus x^2 < 2^(2*Ex),
-     and ulp(x) = 2^(Ex-Nx) thus ulp(x^2) >= 2^(2*Ex-2*Nx).
-                          FIXME: ^^^^^^^^^^^^^^^^^^^^^^^^^ is meaningless.
-     y does not overlap with the result when
-     x^2+y^2 < (|x| + 1/2*ulp(x,Nz))^2 = x^2 + |x|*ulp(x,Nz) + 1/4*ulp(x,Nz)^2,
-     i.e. a sufficient condition is y^2 < |x|*ulp(x,Nz),
-     or 2^(2*Ey) <= 2^(2*Ex-1-Nz), i.e. 2*diff_exp > Nz.
-     Warning: this is true only for Nx <= Nz, otherwise the trailing bits
-     of x may be already very close to 1/2*ulp(x,Nz)!
-     If Nx > Nz, then we can notice that it is possible to round on Nx bits
-     if 2*diff_exp > Nx (see above as if Nz = Nx), therefore on Nz bits.
-     Hence the condition: 2*diff_exp > MAX(Nz,Nx).
-  */
-  if (diff_exp > (MAX (Nz, Nx) + 1) / 2)
+  /* Is |x| a suitable approximation to the precision Nz ?
+     (see algorithms.tex for explanations) */
+  if (diff_exp > threshold)
     /* result is |x| or |x|+ulp(|x|,Nz) */
     {
       if (MPFR_UNLIKELY (rnd_mode == GMP_RNDU))
@@ -104,7 +96,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
         }
       else /* GMP_RNDZ, GMP_RNDD, GMP_RNDN */
         {
-          if (MPFR_LIKELY (Nz >= Nx))
+          if (MPFR_LIKELY (Nz >= N))
             {
               mpfr_abs (z, x, rnd_mode);  /* exact */
               MPFR_RET (-1);
@@ -113,7 +105,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
             {
               MPFR_SET_EXP (z, Ex);
               MPFR_SET_SIGN (z, 1);
-              MPFR_RNDRAW_GEN (inexact, z, MPFR_MANT (x), Nx, rnd_mode, 1,
+              MPFR_RNDRAW_GEN (inexact, z, MPFR_MANT (x), N, rnd_mode, 1,
                                goto addoneulp,
                                if (MPFR_UNLIKELY (++MPFR_EXP (z) > __gmpfr_emax))
                                  return mpfr_overflow (z, rnd_mode, 1);
@@ -128,43 +120,40 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 
   /* General case */
 
-  Ny = MPFR_PREC(y);   /* Precision of input variable */
+  /* FIXME: the following algorithm is correct only for
+     diff_exp <= MPFR_EMAX_DEFAULT - 2 */
 
-  /* compute the working precision -- see algorithms.ps */
-  Nt = MAX (MAX (MAX (Nx, Ny), Nz), 8);
-  /* FIXME: if Nx or Ny are very large with respect to the target precision
-     Nz, this may be overkill! */
-  Nt = Nt + MPFR_INT_CEIL_LOG2 (Nt) + 2;
+  N = MAX (MPFR_PREC (x), MPFR_PREC (y));
 
-  /* initialise the intermediary variables */
+  /* working precision */
+  Nt = Nz + MPFR_INT_CEIL_LOG2 (Nz) + 4;
+
   mpfr_init2 (t, Nt);
   mpfr_init2 (te, Nt);
   mpfr_init2 (ti, Nt);
 
   MPFR_SAVE_EXPO_MARK (expo);
 
-  /* Scale x and y to avoid overflow/underflow in x^2 and y^2.
-     After scaling, we need to have exponent values as small as
-     possible in absolute value, for both x and y. So, the best
-     choice is to scale by about (Ex + Ey) / 2. */
-  sh = (Ex + Ey) / 2;
+  /* Scale x and y to avoid overflow/underflow in x^2 and y^2. */
+  sh = mpfr_get_emax()/2 -Ex -1;
 
   MPFR_ZIV_INIT (loop, Nt);
   for (;;)
     {
-      /* computations of hypot */
-      mpfr_div_2si (te, x, sh, GMP_RNDZ); /* exact since Nt >= Nx */
-      mpfr_div_2si (ti, y, sh, GMP_RNDZ); /* exact since Nt >= Ny */
-      exact = mpfr_sqr (te, te, GMP_RNDZ);     /* x^2 */
-      exact |= mpfr_sqr (ti, ti, GMP_RNDZ);    /* y^2 */
-      exact |= mpfr_add (t, te, ti, GMP_RNDZ); /* x^2 + Y^2 */
-      exact |= mpfr_sqrt (t, t, GMP_RNDZ);     /* sqrt(x^2+y^2)*/
+      mp_prec_t err;
 
+      exact = mpfr_mul_2si (te, x, sh, GMP_RNDZ);
+      exact |= mpfr_mul_2si (ti, y, sh, GMP_RNDZ);
+      exact |= mpfr_sqr (te, te, GMP_RNDZ);
+      exact |= mpfr_sqr (ti, ti, GMP_RNDZ);
+      exact |= mpfr_add (t, te, ti, GMP_RNDZ);
+      exact |= mpfr_sqrt (t, t, GMP_RNDZ);
+
+      err = Nt < N ? 4 : 2;
       if (MPFR_LIKELY (exact == 0
-                       || MPFR_CAN_ROUND (t, Nt-2, Nz, rnd_mode)))
+                       || MPFR_CAN_ROUND (t, Nt-err, Nz, rnd_mode)))
         break;
 
-      /* update the precision */
       MPFR_ZIV_NEXT (loop, Nt);
       mpfr_set_prec (t, Nt);
       mpfr_set_prec (te, Nt);
@@ -172,7 +161,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
     }
   MPFR_ZIV_FREE (loop);
 
-  MPFR_BLOCK (flags, inexact = mpfr_mul_2si (z, t, sh, rnd_mode));
+  MPFR_BLOCK (flags, inexact = mpfr_div_2si (z, t, sh, rnd_mode));
   MPFR_ASSERTD (exact == 0 || inexact != 0);
 
   mpfr_clear (t);

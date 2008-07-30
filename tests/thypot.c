@@ -92,19 +92,34 @@ test_large (void)
   mpfr_set_prec (t, 53);
   mpfr_set_prec (y, 53);
   mpfr_set_str_binary (x, "0.11101100011110000011101000010101010011001101000001100E-1021");
-  mpfr_set_str_binary (t, "0.11111001010011000001110110001101011100001000010010100E-1021");
-  mpfr_hypot (y, x, t, GMP_RNDN);
+  mpfr_set_str_binary (y, "0.11111001010011000001110110001101011100001000010010100E-1021");
+  mpfr_hypot (t, x, y, GMP_RNDN);
+  mpfr_set_str_binary (z, "0.101010111100110111101110111110100110010011001010111E-1020");
+  if (mpfr_cmp (z, t))
+    {
+      printf ("Error in test_large: got\n");
+      mpfr_out_str (stdout, 2, 0, t, GMP_RNDN);
+      printf ("\ninstead of\n");
+      mpfr_out_str (stdout, 2, 0, z, GMP_RNDN);
+      printf ("\n");
+      exit (1);
+    }
 
   mpfr_set_prec (x, 240);
   mpfr_set_prec (y, 22);
+  mpfr_set_prec (z, 2);
   mpfr_set_prec (t, 2);
   mpfr_set_str_binary (x, "0.100111011010010010110100000100000001100010011100110101101111111101011110111011011101010110100101111000111100010100110000100101011110111011100110100110100101110101101100011000001100000001111101110100100100011011011010110111100110010101000111e-7");
-  mpfr_set_str_binary (y, "0.1111000010000011000111e-10");
+  mpfr_set_str_binary (y, "0.1111000010000011000111E-10");
   mpfr_hypot (t, x, y, GMP_RNDN);
-  mpfr_set_str_binary (y, "0.11E-7");
-  if (mpfr_cmp (t, y))
+  mpfr_set_str_binary (z, "0.11E-7");
+  if (mpfr_cmp (z, t))
     {
-      printf ("Error in mpfr_hypot (1)\n");
+      printf ("Error in test_large: got\n");
+      mpfr_out_str (stdout, 2, 0, t, GMP_RNDN);
+      printf ("\ninstead of\n");
+      mpfr_out_str (stdout, 2, 0, z, GMP_RNDN);
+      printf ("\n");
       exit (1);
     }
 
