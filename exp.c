@@ -24,10 +24,6 @@ MA 02110-1301, USA. */
 
 /* #define DEBUG */
 
-/* use Brent's formula exp(x) = (1+r+r^2/2!+r^3/3!+...)^(2^K)*2^n
-   where x = n*log(2)+(2^K)*r
-   number of operations = O(K+prec(r)/K)
-*/
 int
 mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
