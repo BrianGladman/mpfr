@@ -37,6 +37,11 @@ Known bugs:
 * Some functions do not use MPFR_SAVE_EXPO_* macros, thus do not behave
   correctly in a reduced exponent range.
 
+* Function hypot gives incorrect result when on the one hand the difference
+  between parameters' exponents is near 2*MPFR_EMAX_MAX and on the other hand
+  the output precision or the precision of the parameter with greatest
+  absolute value is greater than 2*MPFR_EMAX_MAX-4.
+
 Potential bugs:
 
 * Possible incorrect results due to internal underflow, which can lead to

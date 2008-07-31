@@ -121,7 +121,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
   /* General case */
 
   /* FIXME: the following algorithm is correct only for
-     diff_exp <= MPFR_EMAX_DEFAULT - 2 */
+     diff_exp <= MPFR_EMAX_MAX - 2 */
 
   N = MAX (MPFR_PREC (x), MPFR_PREC (y));
 
