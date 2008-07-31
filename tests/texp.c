@@ -587,6 +587,43 @@ overflowed_exp0 (void)
   mpfr_clear (y);
 }
 
+/* This bug occurs in mpfr_exp_2 on a Linux-64 machine, r5475. */
+static void
+bug20080731 (void)
+{
+  mp_exp_t emin;
+  mpfr_t x, y1, y2;
+  mp_prec_t prec = 64;
+
+  emin = mpfr_get_emin ();
+  set_emin (MPFR_EMIN_MIN);
+
+  mpfr_init2 (x, 200);
+  mpfr_set_str (x, "-2.c5c85fdf473de6af278ece700fcbdabd03cd0cb9ca62d8b62c@7",
+                16, GMP_RNDN);
+
+  mpfr_init2 (y1, prec);
+  mpfr_exp (y1, x, GMP_RNDU);
+
+  /* Compute the result with a higher internal precision. */
+  mpfr_init2 (y2, 300);
+  mpfr_exp (y2, x, GMP_RNDU);
+  mpfr_prec_round (y2, prec, GMP_RNDU);
+
+  if (mpfr_cmp0 (y1, y2) != 0)
+    {
+      printf ("Error in bug20080731\nExpected ");
+      mpfr_out_str (stdout, 16, 0, y2, GMP_RNDN);
+      printf ("\nGot      ");
+      mpfr_out_str (stdout, 16, 0, y1, GMP_RNDN);
+      printf ("\n");
+      exit (1);
+    }
+
+  mpfr_clears (x, y1, y2, (mpfr_ptr) 0);
+  set_emin (emin);
+}
+
 /* Emulate mpfr_exp with mpfr_exp_3 in the general case. */
 static int
 exp_3 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
@@ -889,6 +926,8 @@ main (int argc, char *argv[])
   check3("5.16239362447650933063e+02", GMP_RNDZ, "1.5845518406744492105e224");
   check3("6.00812634798592370977e-01", GMP_RNDN, "1.823600119339019443");
   check_exp10 ();
+
+  bug20080731 ();
 
   overflowed_exp0 ();
   underflow ();
