@@ -637,6 +637,7 @@ underflow_up (int extended_emin)
    *   Got 9 instead of 8.
    * Note: testing this case in several precisions for x and y introduces
    * some useful random. Indeed, the bug is not always triggered.
+   * Fixed in r5469.
    */
   for (precx = 16; precx <= 128; precx += 16)
     {
