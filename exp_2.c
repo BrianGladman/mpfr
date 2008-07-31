@@ -77,6 +77,7 @@ mpz_normalize2 (mpz_t rop, mpz_t z, mp_exp_t expz, mp_exp_t target)
    where x = n*log(2)+(2^K)*r
    together with the Paterson-Stockmeyer O(t^(1/2)) algorithm for the
    evaluation of power series. The resulting complexity is O(n^(1/3)*M(n)).
+   This function returns with the exact flags due to exp.
 */
 int
 mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
@@ -134,8 +135,6 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_ZIV_INIT (loop, q);
   for (;;)
     {
-      MPFR_BLOCK_DECL (flags);
-
       MPFR_LOG_MSG (("n=%d K=%d l=%d q=%d\n",n,K,l,q) );
 
       /* if n<0, we have to get an upper bound of log(2)
@@ -192,34 +191,17 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
           MPFR_SET_EXP(s, MPFR_GET_EXP (s) + exps);
           MPFR_TMP_FREE(marker); /* don't need ss anymore */
 
-          MPFR_BLOCK (flags, mpfr_mul_2si (s, s, n, GMP_RNDU));
-          /* Check if an overflow occurs */
-          if (MPFR_OVERFLOW (flags))
-            {
-              /* We hack to set a FP number outside the valid range so that
-                 mpfr_check_range properly generates an overflow */
-              mpfr_setmax (y, __gmpfr_emax);
-              MPFR_EXP (y) ++;
-              inexact = 1;
-              break;
-            }
-          /* Check if an underflow occurs */
-          else if (MPFR_UNDERFLOW (flags))
-            {
-              inexact = mpfr_underflow (y, rnd_mode, 1);
-              break;
-            }
-
           /* error is at most 2^K*l */
           K += MPFR_INT_CEIL_LOG2 (l);
 
-          MPFR_LOG_MSG (("after mult. by 2^n:\n", 0));
+          MPFR_LOG_MSG (("before mult. by 2^n:\n", 0));
           MPFR_LOG_VAR (s);
           MPFR_LOG_MSG (("err=%d bits\n", K));
 
           if (MPFR_LIKELY (MPFR_CAN_ROUND (s, q-K, precy, rnd_mode)))
             {
-              inexact = mpfr_set (y, s, rnd_mode);
+              mpfr_clear_flags ();
+              inexact = mpfr_mul_2si (y, s, n, rnd_mode);
               break;
             }
         }
