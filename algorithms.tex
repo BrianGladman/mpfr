@@ -2279,12 +2279,13 @@ result.  Let us assume, as it is the case in MPFR, that the minimal and
 maximal acceptable exponents (respectively $e_{min}$ and $e_{max}$) verify $2
 < e_{max}$ and $e_{max} = -e_{min}$.
 
-When rounding to the nearest, if $p_x \leq p_z$ and $\frac{p_z+1}{2} < \Exp(x)
-- \Exp(y)$, we have $\frac{y^2}{2x} < \frac{1}{2}\ulp_{p_z}(x)$ ; if $p_z <
+When rounding to nearest, if $p_x \leq p_z$ and $\frac{p_z+1}{2} < \Exp(x) -
+\Exp(y)$, we have $\frac{y^2}{2x} < \frac{1}{2}\ulp_{p_z}(x)$ ; if $p_z <
 p_x$, the condition $\frac{p_x+1}{2} < \Exp(x) - \Exp(y)$ ensures that
 $\frac{y^2}{2x} < \frac{1}{2} \ulp_{p_x}(x)$.  In both cases, these
 inequalities show that $z=\N_{p_z}(x)$, except that tie case is rounded
-towards plus infinity since $x < \textnormal{hypot}(x,y)$.
+towards plus infinity since hypot($x$,$y$) is greater than but not equal to
+$x$.
 
 With other rounding modes, the conditions $p_z/2 < \Exp(x) - \Exp(y)$ if $p_x
 \leq p_z$, and $p_x/2 < \Exp(x) - \Exp(y)$ if $p_z < p_x$ mean in a similar
@@ -2298,7 +2299,7 @@ When none of the above conditions is satisfied and when $\Exp(x) - \Exp(y)
 \begin{quote}
   Algorithm {\tt hypot\_1}\\
   Input: $x$ and $y$ with $|y| \leq |x|$,
-  $p$ the working precision with $p \geq p_z$\\
+  $p$ the working precision with $p \geq p_z$.\\
   Output: $\sqrt{x^2+y^2}$ with $\left\{
   \begin{array}{l} 
     p-4 \textnormal{ bits of precision if } p <\max(p_x, p_y),\\
@@ -2332,8 +2333,8 @@ underflows. For $y$, the condition $\Exp(x) - \Exp(y) \leq e_{max} - 2$
 ensures that $-e_{max}/2 \leq \Exp(y) + s$ which shows that $y_s$ and its
 square do not underflow.
 
-Thirdly, the addition does not overflow because $u + v < 2 x_s^2$ and we have
-seen above that $x_s^2 < 2^{e_{max} - 1}$. It cannot underflow because both
+Thirdly, the addition does not overflow because $u + v < 2 x_s^2$ and it was
+shown above that $x_s^2 < 2^{e_{max} - 1}$. It cannot underflow because both
 operands are positive.
 
 Fourthly, as $x_s < t$, the square root does not underflow. Due to the
@@ -2361,7 +2362,7 @@ Let us analyse now the error of the algorithm hypot\_1:\\
   1 $\ulp(u)$\\
   $v \leftarrow \Z(y_s^2)$ & & $\error(v)$ & $\leq$ &
   6 $\ulp(v)$ &
-  1 $\ulp(u)$\\
+  1 $\ulp(v)$\\
   $w \leftarrow \Z(u+v)$ & & $\error(w)$ & $\leq$ &
   13 $\ulp(w)$ &
   3 $\ulp(w)$\\
@@ -2378,7 +2379,7 @@ have\\
   $t \leftarrow \Z(\sqrt{w})$ & &
   $\error(t)$ & $\leq$ & 9 $\ulp(t)$.\\
 \end{tabular}\\
-Thus, we have lost 2 bits of precision when $\max(p_x, p_y) \leq p$ and 4 bits
+Thus, 2 bits of precision are lost when $\max(p_x, p_y) \leq p$ and 4 bits
 when $p$ does not verify this relation.
 
 \subsection{The floating multiply-add function}
