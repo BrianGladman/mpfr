@@ -44,6 +44,9 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
   mp_exp_t expr;
   MPFR_TMP_DECL(marker);
 
+  MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", u, u, rnd_mode),
+                 ("y[%#R]=%R inexact=%d", r, r, inexact));
+
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(u)))
     {
       if (MPFR_IS_NAN(u))

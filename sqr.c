@@ -36,6 +36,9 @@ mpfr_sqr (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
   mp_size_t bn, tn;
   MPFR_TMP_DECL(marker);
 
+  MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", b, b, rnd_mode),
+                 ("y[%#R]=%R inexact=%d", a, a, inexact));
+
   /* deal with special cases */
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(b)))
     {
