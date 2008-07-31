@@ -92,6 +92,9 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_ZIV_DECL (loop);
   MPFR_TMP_DECL(marker);
 
+  MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", x, x, rnd_mode),
+                 ("y[%#R]=%R inexact=%d", y, y, inexact));
+
   precy = MPFR_PREC(y);
 
   /* Warning: we cannot use the 'double' type here, since on 64-bit machines
