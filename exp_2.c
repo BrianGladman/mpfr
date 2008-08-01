@@ -160,7 +160,8 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
         {
           mp_exp_t cancel;
 
-          cancel = MPFR_EXP (x) - MPFR_EXP (r); /* number of cancelled bits */
+          /* number of cancelled bits */
+          cancel = MPFR_GET_EXP (x) - MPFR_GET_EXP (r);
           while (MPFR_IS_NEG (r))
             { /* initial approximation n was too large */
               n--;
