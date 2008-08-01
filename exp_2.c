@@ -143,10 +143,10 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       /* s is within 1 ulp of log(2) */
 
       mpfr_mul_ui (r, s, (n < 0) ? -n : n, (n >= 0) ? GMP_RNDZ : GMP_RNDU);
-      /* r is within 3 ulps of n*log(2) */
+      /* r is within 3 ulps of |n|*log(2) */
       if (n < 0)
         MPFR_CHANGE_SIGN (r);
-      /* r = floor(n*log(2)), within 3 ulps */
+      /* r <= n*log(2), within 3 ulps */
 
       MPFR_LOG_VAR (x);
       MPFR_LOG_VAR (r);
@@ -154,10 +154,13 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_sub (r, x, r, GMP_RNDU);
       /* possible cancellation here: if r is zero, increase the working
          precision (Ziv's loop); otherwise, the error on r is at most
-         3*2^(EXP(old_r)-EXP(new_r)) */
+         3*2^(EXP(old_r)-EXP(new_r)) ulps */
 
       if (MPFR_IS_PURE_FP (r))
         {
+          mp_exp_t cancel;
+
+          cancel = MPFR_EXP (x) - MPFR_EXP (r); /* number of cancelled bits */
           while (MPFR_IS_NEG (r))
             { /* initial approximation n was too large */
               n--;
@@ -191,14 +194,15 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
           MPFR_SET_EXP(s, MPFR_GET_EXP (s) + exps);
           MPFR_TMP_FREE(marker); /* don't need ss anymore */
 
-          /* error is at most 2^K*l */
-          K += MPFR_INT_CEIL_LOG2 (l);
+          /* error is at most 2^K*l, plus cancel+2 to take into account of
+             the error of 3*2^(EXP(old_r)-EXP(new_r)) on r */
+          K += MPFR_INT_CEIL_LOG2 (l) + cancel + 2;
 
           MPFR_LOG_MSG (("before mult. by 2^n:\n", 0));
           MPFR_LOG_VAR (s);
           MPFR_LOG_MSG (("err=%d bits\n", K));
 
-          if (MPFR_LIKELY (MPFR_CAN_ROUND (s, q-K, precy, rnd_mode)))
+          if (MPFR_LIKELY (MPFR_CAN_ROUND (s, q - K, precy, rnd_mode)))
             {
               mpfr_clear_flags ();
               inexact = mpfr_mul_2si (y, s, n, rnd_mode);
