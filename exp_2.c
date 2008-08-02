@@ -102,11 +102,17 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
      x may be as large as 2^62*log(2) without overflow, and then x/log(2)
      is about 2^62: not every integer of that size can be represented as a
      'double', thus the argument reduction would fail. */
-  mpfr_init2 (r, sizeof (long) * CHAR_BIT);
-  mpfr_const_log2 (r, GMP_RNDZ);
-  mpfr_div (r, x, r, GMP_RNDN);
-  n = mpfr_get_si (r, GMP_RNDN);
-  mpfr_clear (r);
+  if (MPFR_GET_EXP (x) <= -2)
+    /* |x| <= 0.25, thus n = round(x/log(2)) = 0 */
+    n = 0;
+  else
+    {
+      mpfr_init2 (r, sizeof (long) * CHAR_BIT);
+      mpfr_const_log2 (r, GMP_RNDZ);
+      mpfr_div (r, x, r, GMP_RNDN);
+      n = mpfr_get_si (r, GMP_RNDN);
+      mpfr_clear (r);
+    }
   MPFR_LOG_MSG (("d(x)=%1.30e n=%ld\n", mpfr_get_d1(x), n));
 
   /* error bounds the cancelled bits in x - n*log(2) */
@@ -137,6 +143,10 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     {
       MPFR_LOG_MSG (("n=%d K=%d l=%d q=%d\n",n,K,l,q) );
 
+      /* First reduce the argument to r = x - n * log(2),
+         so that r is small in absolute value. We want an upper
+         bound on r to get an upper bound on exp(x). */
+
       /* if n<0, we have to get an upper bound of log(2)
          in order to get an upper bound of r = x-n*log(2) */
       mpfr_const_log2 (s, (n >= 0) ? GMP_RNDZ : GMP_RNDU);
@@ -162,6 +172,10 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
           /* number of cancelled bits */
           cancel = MPFR_GET_EXP (x) - MPFR_GET_EXP (r);
+          if (cancel < 0) /* this might happen in the second loop if x is
+                             tiny negative: the initial n is 0, then in the
+                             first loop n becomes -1 and r = x + log(2) */
+            cancel = 0;
           while (MPFR_IS_NEG (r))
             { /* initial approximation n was too large */
               n--;
