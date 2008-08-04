@@ -25,7 +25,7 @@ MA 02110-1301, USA.
 dnl If MPFR becomes GNU MPFR, change to GNU MPFR in update-version
 dnl Add check-news when it checks for more than 15 lines
 AC_INIT([MPFR],[2.4.0-dev])
-AM_INIT_AUTOMAKE([1.6 no-define dist-zip dist-bzip2])
+AM_INIT_AUTOMAKE([1.6 no-define dist-bzip2 dist-lzma dist-zip])
 dnl AM_MAINTAINER_MODE
 
 dnl FIXME: The AC_ARG_ENABLE(decimal-float...) part does things too
