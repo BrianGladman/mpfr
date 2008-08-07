@@ -406,7 +406,7 @@ typedef union ieee_double_extract Ieee_double_extract;
                          (((Ieee_double_extract *)&(x))->s.manh != 0)))
 #else
 # define DOUBLE_ISINF(x) ((x) > DBL_MAX || (x) < -DBL_MAX)
-# if MPFR_NANISNAN
+# ifdef MPFR_NANISNAN
 /* Avoid MIPSpro / IRIX64 (incorrect) optimizations.
    The + must not be replaced by a ||. */
 #  define DOUBLE_ISNAN(x) (!(((x) >= 0.0) + ((x) <= 0.0)))
@@ -432,7 +432,7 @@ typedef union ieee_double_extract Ieee_double_extract;
    Otherwise (e.g. in base 10), we get an upper bound of the
    precision, and correct rounding isn't currently provided.
 */
-#if LDBL_MANT_DIG && FLT_RADIX == 2
+#if defined(LDBL_MANT_DIG) && FLT_RADIX == 2
 # define MPFR_LDBL_MANT_DIG LDBL_MANT_DIG
 #else
 # define MPFR_LDBL_MANT_DIG \
@@ -519,7 +519,7 @@ typedef union {
  *************** _Decimal64 support *******************
  ******************************************************/
 
-#if MPFR_WANT_DECIMAL_FLOATS
+#ifdef MPFR_WANT_DECIMAL_FLOATS
 /* to cast between binary64 and decimal64 */
 union ieee_double_decimal64 { double d; _Decimal64 d64; };
 #endif

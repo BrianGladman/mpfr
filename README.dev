@@ -334,6 +334,13 @@ Do not use TMP_DECL / TMP_ALLOC, ... but MPFR_TMP_DECL, MPFR_TMP_ALLOC, ...
 Do not use C99-only features, such as empty macro arguments or C++-style
 comments.
 
+   ====================================================================
+
+When testing a "boolean" macro M (i.e. which is normally either equal
+to 1 or undefined), do not use #if M, but #ifdef M or #if defined(M).
+With icc, the form #if M triggers a warning ("remark #193: zero used
+for undefined preprocessing identifier").
+
 ===========================================================================
 
 If wou want to use the logging of MPFR, you need to enable it:
