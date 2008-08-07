@@ -180,7 +180,7 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd)
               break;
 
             /* actualisation of the precision */
-            Nt += BITS_PER_MP_LIMB;
+            MPFR_ZIV_NEXT (loop, Nt);
             mpfr_set_prec (t, Nt);
           }
         MPFR_ZIV_FREE (loop);
