@@ -28,7 +28,7 @@ int
 mpfr_mul_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
 {
   mp_limb_t *yp;
-  mp_size_t xn, yn;
+  mp_size_t xn;
   int cnt, inexact;
   MPFR_TMP_DECL (marker);
 
@@ -76,7 +76,6 @@ mpfr_mul_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
     return mpfr_mul_2si (y, x, MPFR_INT_CEIL_LOG2 (u), rnd_mode);
 
   yp = MPFR_MANT (y);
-  yn = MPFR_LIMB_SIZE (y);
   xn = MPFR_LIMB_SIZE (x);
 
   MPFR_ASSERTD (xn < MP_SIZE_T_MAX);
