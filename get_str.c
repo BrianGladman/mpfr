@@ -1405,7 +1405,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
   mp_limb_t *a;
   mp_exp_t exp_a;
   mp_limb_t *result;
-  mp_limb_t *xp, *x1;
+  mp_limb_t *xp;
   mp_limb_t *reste;
   size_t nx, nx1;
   size_t n, i;
@@ -1592,6 +1592,8 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
         }
       else if ((mp_exp_t) m > g) /* we have to multiply x by b^exp */
         {
+          mp_limb_t *x1;
+
           /* a2*2^exp_a =  b^e */
           err = mpfr_mpn_exp (a, &exp_a, b, exp, n);
           /* here, the error on a is at most 2^err ulps */
@@ -1629,6 +1631,8 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
         }
       else
         {
+          mp_limb_t *x1;
+
           /* a2*2^exp_a =  b^e */
           err = mpfr_mpn_exp (a, &exp_a, b, exp, n);
           exact = (err == -1);
