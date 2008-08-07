@@ -29,7 +29,7 @@ MA 02110-1301, USA. */
 size_t
 mpfr_inp_str (mpfr_ptr rop, FILE *stream, int base, mp_rnd_t rnd_mode)
 {
-  char *str;
+  unsigned char *str;
   size_t alloc_size, str_size;
   int c;
   int retval;
@@ -40,7 +40,7 @@ mpfr_inp_str (mpfr_ptr rop, FILE *stream, int base, mp_rnd_t rnd_mode)
     stream = stdin;
 
   alloc_size = 100;
-  str = (char *) (*__gmp_allocate_func) (alloc_size);
+  str = (unsigned char *) (*__gmp_allocate_func) (alloc_size);
   str_size = 0;
   nread = 0;
 
@@ -60,11 +60,12 @@ mpfr_inp_str (mpfr_ptr rop, FILE *stream, int base, mp_rnd_t rnd_mode)
         {
           size_t old_alloc_size = alloc_size;
           alloc_size = alloc_size * 3 / 2;
-          str = (char *) (*__gmp_reallocate_func) (str, old_alloc_size, alloc_size);
+          str = (unsigned char *)
+            (*__gmp_reallocate_func) (str, old_alloc_size, alloc_size);
         }
       if (c == EOF || isspace (c))
         break;
-      str[str_size++] = c;
+      str[str_size++] = (unsigned char) c;
       c = getc (stream);
     }
   ungetc (c, stream);
@@ -77,7 +78,7 @@ mpfr_inp_str (mpfr_ptr rop, FILE *stream, int base, mp_rnd_t rnd_mode)
 
   str[str_size] = '\0';
 
-  retval = mpfr_set_str (rop, str, base, rnd_mode);
+  retval = mpfr_set_str (rop, (char *) str, base, rnd_mode);
   (*__gmp_free_func) (str, alloc_size);
 
   if (retval == -1)
