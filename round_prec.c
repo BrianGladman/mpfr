@@ -62,9 +62,9 @@ mpfr_prec_round (mpfr_ptr x, mp_prec_t prec, mp_rnd_t rnd_mode)
   if (nw > ow)
     {
       /* Realloc mantissa */
-      mp_ptr tmp = (mp_ptr) (*__gmp_reallocate_func)
+      mp_ptr tmpx = (mp_ptr) (*__gmp_reallocate_func)
         (MPFR_GET_REAL_PTR(x),  MPFR_MALLOC_SIZE(ow), MPFR_MALLOC_SIZE(nw));
-      MPFR_SET_MANT_PTR(x, tmp); /* mant ptr must be set before alloc size */
+      MPFR_SET_MANT_PTR(x, tmpx); /* mant ptr must be set before alloc size */
       MPFR_SET_ALLOC_SIZE(x, nw); /* new number of allocated limbs */
     }
 
