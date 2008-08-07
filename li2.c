@@ -90,7 +90,6 @@ bernoulli (mpz_t * b, unsigned long n)
 static int
 li2_series (mpfr_t sum, mpfr_srcptr z, mpfr_rnd_t rnd_mode)
 {
-  int inexact;
   unsigned int i, Bm, Bmax;
   mpfr_t s, u, v, w;
   mpfr_prec_t sump, p;
@@ -163,7 +162,7 @@ li2_series (mpfr_t sum, mpfr_srcptr z, mpfr_rnd_t rnd_mode)
       mpfr_set_prec (w, p);
     }
   MPFR_ZIV_FREE (loop);
-  inexact = mpfr_set (sum, s, rnd_mode);
+  mpfr_set (sum, s, rnd_mode);
 
   Bm = Bmax;
   while (Bm--)

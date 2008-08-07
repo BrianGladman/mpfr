@@ -30,7 +30,7 @@ MA 02110-1301, USA. */
 
 #define ISDIGIT(c) ('0' <= c && c <= '9')
 
-#if MPFR_WANT_DECIMAL_FLOATS
+#ifdef MPFR_WANT_DECIMAL_FLOATS
 
 #ifdef DPD_FORMAT
 static int T[1000] = {

@@ -121,29 +121,29 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
             }
           else /* +/- 3*PI/4: Ugly since we have to round properly */
             {
-              mpfr_t tmp;
-              MPFR_ZIV_DECL (loop);
-              mp_prec_t prec = MPFR_PREC (dest) + BITS_PER_MP_LIMB;
+              mpfr_t tmp2;
+              MPFR_ZIV_DECL (loop2);
+              mp_prec_t prec2 = MPFR_PREC (dest) + BITS_PER_MP_LIMB;
 
-              mpfr_init2 (tmp, prec);
-              MPFR_ZIV_INIT (loop, prec);
+              mpfr_init2 (tmp2, prec2);
+              MPFR_ZIV_INIT (loop2, prec2);
               for (;;)
                 {
-                  mpfr_const_pi (tmp, GMP_RNDN);
-                  mpfr_mul_ui (tmp, tmp, 3, GMP_RNDN); /* Error <= 2  */
-                  mpfr_div_2ui (tmp, tmp, 2, GMP_RNDN);
-                  if (mpfr_round_p (MPFR_MANT (tmp), MPFR_LIMB_SIZE (tmp),
-                                    MPFR_PREC (tmp)-2,
+                  mpfr_const_pi (tmp2, GMP_RNDN);
+                  mpfr_mul_ui (tmp2, tmp2, 3, GMP_RNDN); /* Error <= 2  */
+                  mpfr_div_2ui (tmp2, tmp2, 2, GMP_RNDN);
+                  if (mpfr_round_p (MPFR_MANT (tmp2), MPFR_LIMB_SIZE (tmp2),
+                                    MPFR_PREC (tmp2) - 2,
                                     MPFR_PREC (dest) + (rnd_mode == GMP_RNDN)))
                     break;
-                  MPFR_ZIV_NEXT (loop, prec);
-                  mpfr_set_prec (tmp, prec);
+                  MPFR_ZIV_NEXT (loop2, prec2);
+                  mpfr_set_prec (tmp2, prec2);
                 }
-              MPFR_ZIV_FREE (loop);
+              MPFR_ZIV_FREE (loop2);
               if (MPFR_IS_NEG (y))
-                MPFR_CHANGE_SIGN (tmp);
-              inexact = mpfr_set (dest, tmp, rnd_mode);
-              mpfr_clear (tmp);
+                MPFR_CHANGE_SIGN (tmp2);
+              inexact = mpfr_set (dest, tmp2, rnd_mode);
+              mpfr_clear (tmp2);
               return inexact;
             }
         }
