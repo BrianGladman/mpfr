@@ -135,7 +135,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
   mp_size_t vsize = MPFR_LIMB_SIZE(v);
   mp_size_t qsize; /* number of limbs of the computed quotient */
   mp_size_t qqsize;
-  mp_size_t k, l;
+  mp_size_t k;
   mp_ptr q0p = MPFR_MANT(q), qp;
   mp_ptr up = MPFR_MANT(u);
   mp_ptr vp = MPFR_MANT(v);
@@ -230,6 +230,8 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
     extra_bit = (up[usize - 1] > vp[vsize - 1]) ? 1 : 0;
   else /* most significant limbs are equal, must look at further limbs */
     {
+      mp_size_t l;
+
       k = usize - 1;
       l = vsize - 1;
       while (k != 0 && l != 0 && up[--k] == vp[--l]);
