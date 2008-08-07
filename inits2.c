@@ -21,7 +21,7 @@ along with the MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
-#if HAVE_CONFIG_H
+#ifdef HAVE_CONFIG_H
 #undef HAVE_STDARG
 #include "config.h"     /* for a build within gmp */
 #endif

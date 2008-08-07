@@ -102,17 +102,6 @@ mpfr_get_ld (mpfr_srcptr x, mp_rnd_t rnd_mode)
 
 #else
 
-static const struct {
-  char         bytes[10];
-  long double  dummy;  /* for memory alignment */
-} ldbl_max_struct = {
-  { '\377','\377','\377','\377',
-    '\377','\377','\377','\377',
-    '\376','\177' }, 0.0
-};
-
-#define MPFR_LDBL_MAX   (* (const long double *) ldbl_max_struct.bytes)
-
 long double
 mpfr_get_ld (mpfr_srcptr x, mp_rnd_t rnd_mode)
 {

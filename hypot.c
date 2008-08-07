@@ -65,10 +65,10 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 
   if (mpfr_cmpabs (x, y) < 0)
     {
-      mpfr_srcptr t;
-      t = x;
+      mpfr_srcptr u;
+      u = x;
       x = y;
-      y = t;
+      y = u;
     }
 
   /* now |x| >= |y| */

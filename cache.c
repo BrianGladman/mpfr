@@ -75,7 +75,7 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mp_rnd_t rnd)
                    MPFR_MANT (cache->x), MPFR_PREC (cache->x), rnd, sign,
                    if (MPFR_UNLIKELY (cache->inexact == 0))
                      {
-                       if ((sp[0] & ulp) == 0)
+                       if ((_sp[0] & _ulp) == 0)
                          {
                            inexact = -sign;
                            goto trunc_doit;

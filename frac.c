@@ -31,7 +31,7 @@ int
 mpfr_frac (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
 {
   mp_exp_t re, ue;
-  mp_prec_t uq, fq;
+  mp_prec_t uq;
   mp_size_t un, tn, t0;
   mp_limb_t *up, *tp, k;
   int sh;
@@ -92,12 +92,7 @@ mpfr_frac (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
   /* The exponent of r will be re */
   /* un: index of the limb of u that contains the first bit 1 of the FP */
 
-  ue -= re;  /* number of bits of u to discard */
-  fq = uq - ue;  /* number of bits of the fractional part of u */
-
-  /* Temporary fix */
-  t = /* fq > MPFR_PREC(r) */
-    (mp_size_t) (MPFR_PREC(r) - 1) / BITS_PER_MP_LIMB < un ?
+  t = (mp_size_t) (MPFR_PREC(r) - 1) / BITS_PER_MP_LIMB < un ?
     (mpfr_init2 (tmp, (un + 1) * BITS_PER_MP_LIMB), tmp) : r;
   /* t has enough precision to contain the fractional part of u */
   /* If we use a temporary variable, we take the non-significant bits

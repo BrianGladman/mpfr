@@ -51,10 +51,8 @@ MA 02110-1301, USA. */
 
 /* Include 'config.h' before using ANY configure macros if needed
    NOTE: It isn't MPFR 'config.h', but GMP's one! */
-#if defined(HAVE_CONFIG_H)
-#if HAVE_CONFIG_H
-#include "config.h"
-#endif
+#ifdef HAVE_CONFIG_H
+# include "config.h"
 #endif
 
 #ifdef  MPFR_HAVE_GMP_IMPL /* Build with gmp internals*/
@@ -1055,79 +1053,81 @@ typedef struct {
 #define MPFR_RNDRAW_GEN(inexact, dest, srcp, sprec, rnd, sign,              \
                         MIDDLE_HANDLER, OVERFLOW_HANDLER)                   \
   do {                                                                      \
-    mp_size_t dests, srcs;                                                  \
-    mp_limb_t *destp;                                                       \
-    mp_prec_t destprec, srcprec;                                            \
+    mp_size_t _dests, _srcs;                                                \
+    mp_limb_t *_destp;                                                      \
+    mp_prec_t _destprec, _srcprec;                                          \
                                                                             \
     /* Check Trivial Case when Dest Mantissa has more bits than source */   \
-    srcprec = sprec;                                                        \
-    destprec = MPFR_PREC (dest);                                            \
-    destp = MPFR_MANT (dest);                                               \
-    if (MPFR_UNLIKELY (destprec >= srcprec))                                \
+    _srcprec = sprec;                                                       \
+    _destprec = MPFR_PREC (dest);                                           \
+    _destp = MPFR_MANT (dest);                                              \
+    if (MPFR_UNLIKELY (_destprec >= _srcprec))                              \
       {                                                                     \
-        srcs  = (srcprec  + BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB;           \
-        dests = (destprec + BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB - srcs;    \
-        MPN_COPY (destp + dests, srcp, srcs);                               \
-        MPN_ZERO (destp, dests);                                            \
+        _srcs  = (_srcprec  + BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB;         \
+        _dests = (_destprec + BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB - _srcs; \
+        MPN_COPY (_destp + _dests, srcp, _srcs);                            \
+        MPN_ZERO (_destp, _dests);                                          \
         inexact = 0;                                                        \
       }                                                                     \
     else                                                                    \
       {                                                                     \
         /* Non trivial case: rounding needed */                             \
-        mp_prec_t sh;                                                       \
-        mp_limb_t *sp;                                                      \
-        mp_limb_t rb, sb, ulp;                                              \
+        mp_prec_t _sh;                                                      \
+        mp_limb_t *_sp;                                                     \
+        mp_limb_t _rb, _sb, _ulp;                                           \
                                                                             \
         /* Compute Position and shift */                                    \
-        srcs  = (srcprec  + BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB;           \
-        dests = (destprec + BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB;           \
-        MPFR_UNSIGNED_MINUS_MODULO (sh, destprec);                          \
-        sp = srcp + srcs - dests;                                           \
+        _srcs  = (_srcprec  + BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB;         \
+        _dests = (_destprec + BITS_PER_MP_LIMB-1)/BITS_PER_MP_LIMB;         \
+        MPFR_UNSIGNED_MINUS_MODULO (_sh, _destprec);                        \
+        _sp = srcp + _srcs - _dests;                                        \
                                                                             \
         /* General case when prec % BITS_PER_MP_LIMB != 0 */                \
-        if (MPFR_LIKELY (sh != 0))                                          \
+        if (MPFR_LIKELY (_sh != 0))                                         \
           {                                                                 \
-            mp_limb_t mask;                                                 \
+            mp_limb_t _mask;                                                \
             /* Compute Rounding Bit and Sticky Bit */                       \
-            mask = MPFR_LIMB_ONE << (sh-1);                                 \
-            rb = sp[0] & mask;                                              \
-            sb = sp[0] & (mask-1);                                          \
-            if (MPFR_UNLIKELY (sb == 0))                                    \
+            _mask = MPFR_LIMB_ONE << (_sh - 1);                             \
+            _rb = _sp[0] & _mask;                                           \
+            _sb = _sp[0] & (_mask - 1);                                     \
+            if (MPFR_UNLIKELY (_sb == 0))                                   \
               { /* TODO: Improve it */                                      \
-                mp_limb_t *tmp;                                             \
-                mp_size_t n;                                                \
-                for (tmp = sp, n = srcs - dests ; n != 0 && sb == 0 ; n--)  \
-                  sb = *--tmp;                                              \
+                mp_limb_t *_tmp;                                            \
+                mp_size_t _n;                                               \
+                for (_tmp = _sp, _n = _srcs - _dests ;                      \
+                     _n != 0 && _sb == 0 ; _n--)                            \
+                  _sb = *--_tmp;                                            \
               }                                                             \
-            ulp = 2*mask;                                                   \
+            _ulp = 2 * _mask;                                               \
           }                                                                 \
-        else /* sh == 0 */                                                  \
+        else /* _sh == 0 */                                                 \
           {                                                                 \
-            MPFR_ASSERTD (dests < srcs);                                    \
+            MPFR_ASSERTD (_dests < _srcs);                                  \
             /* Compute Rounding Bit and Sticky Bit */                       \
-            rb = sp[-1] & MPFR_LIMB_HIGHBIT;                                \
-            sb = sp[-1] & (MPFR_LIMB_HIGHBIT-1);                            \
-            if (MPFR_UNLIKELY (sb == 0))                                    \
+            _rb = _sp[-1] & MPFR_LIMB_HIGHBIT;                              \
+            _sb = _sp[-1] & (MPFR_LIMB_HIGHBIT-1);                          \
+            if (MPFR_UNLIKELY (_sb == 0))                                   \
               {                                                             \
-                mp_limb_t *tmp;                                             \
-                mp_size_t n;                                                \
-                for (tmp = sp-1, n = srcs - dests-1 ; n!=0 && sb==0 ; n--)  \
-                  sb = *--tmp;                                              \
+                mp_limb_t *_tmp;                                            \
+                mp_size_t _n;                                               \
+                for (_tmp = _sp - 1, _n = _srcs - _dests - 1 ;              \
+                     _n != 0 && _sb == 0 ; _n--)                            \
+                  _sb = *--_tmp;                                            \
               }                                                             \
-            ulp = MPFR_LIMB_ONE;                                            \
+            _ulp = MPFR_LIMB_ONE;                                           \
           }                                                                 \
         /* Rounding */                                                      \
         if (MPFR_LIKELY (rnd == GMP_RNDN))                                  \
           {                                                                 \
-            if (rb == 0)                                                    \
+            if (_rb == 0)                                                   \
               {                                                             \
               trunc:                                                        \
-                inexact = MPFR_LIKELY ((sb | rb) != 0) ? -sign : 0;         \
+                inexact = MPFR_LIKELY ((_sb | _rb) != 0) ? -sign : 0;       \
               trunc_doit:                                                   \
-                MPN_COPY (destp, sp, dests);                                \
-                destp[0] &= ~(ulp-1);                                       \
+                MPN_COPY (_destp, _sp, _dests);                             \
+                _destp[0] &= ~(_ulp - 1);                                   \
               }                                                             \
-            else if (MPFR_UNLIKELY (sb == 0))                               \
+            else if (MPFR_UNLIKELY (_sb == 0))                              \
               { /* Middle of two consecutive representable numbers */       \
                 MIDDLE_HANDLER;                                             \
               }                                                             \
@@ -1138,12 +1138,12 @@ typedef struct {
               addoneulp:                                                    \
                 inexact = sign;                                             \
               addoneulp_doit:                                               \
-                if (MPFR_UNLIKELY (mpn_add_1 (destp, sp, dests, ulp)))      \
+                if (MPFR_UNLIKELY (mpn_add_1 (_destp, _sp, _dests, _ulp)))  \
                   {                                                         \
-                    destp[dests-1] = MPFR_LIMB_HIGHBIT;                     \
+                    _destp[_dests - 1] = MPFR_LIMB_HIGHBIT;                 \
                     OVERFLOW_HANDLER;                                       \
                   }                                                         \
-                destp[0] &= ~(ulp-1);                                       \
+                _destp[0] &= ~(_ulp - 1);                                   \
               }                                                             \
           }                                                                 \
         else                                                                \
@@ -1151,7 +1151,7 @@ typedef struct {
             if (MPFR_LIKELY (MPFR_IS_LIKE_RNDZ (rnd,                        \
                                                 MPFR_IS_NEG_SIGN (sign))))  \
               goto trunc;                                                   \
-             else if (MPFR_UNLIKELY ((sb | rb) == 0))                       \
+             else if (MPFR_UNLIKELY ((_sb | _rb) == 0))                     \
                {                                                            \
                  inexact = 0;                                               \
                  goto trunc_doit;                                           \
@@ -1169,7 +1169,7 @@ typedef struct {
  */
 #define MPFR_RNDRAW(inexact, dest, srcp, sprec, rnd, sign, OVERFLOW_HANDLER) \
    MPFR_RNDRAW_GEN (inexact, dest, srcp, sprec, rnd, sign,                   \
-     if ((sp[0] & ulp) == 0)                                                 \
+     if ((_sp[0] & _ulp) == 0)                                               \
        {                                                                     \
          inexact = -sign;                                                    \
          goto trunc_doit;                                                    \
@@ -1187,7 +1187,7 @@ typedef struct {
 #define MPFR_RNDRAW_EVEN(inexact, dest, srcp, sprec, rnd, sign, \
                          OVERFLOW_HANDLER)                      \
    MPFR_RNDRAW_GEN (inexact, dest, srcp, sprec, rnd, sign,      \
-     if ((sp[0] & ulp) == 0)                                    \
+     if ((_sp[0] & _ulp) == 0)                                  \
        {                                                        \
          inexact = -MPFR_EVEN_INEX * sign;                      \
          goto trunc_doit;                                       \

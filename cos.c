@@ -120,7 +120,7 @@ mpfr_cos2_aux (mpfr_ptr f, mpfr_srcptr r)
 int
 mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 {
-  mp_prec_t K0, K, precy, m, k, l, precx;
+  mp_prec_t K0, K, precy, m, k, l;
   int inexact, reduce = 0;
   mpfr_t r, s, xr, c;
   mp_exp_t exps, cancel = 0, expx;
@@ -154,7 +154,6 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   /* Compute initial precision */
   precy = MPFR_PREC (y);
-  precx = MPFR_PREC (x);
   K0 = __gmpfr_isqrt (precy / 3);
   m = precy + 2 * MPFR_INT_CEIL_LOG2 (precy) + 2 * K0;
 

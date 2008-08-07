@@ -299,12 +299,12 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   /* multiplies two mantissa in temporary allocated space */
   if (MPFR_UNLIKELY (bn < cn))
     {
-      mpfr_srcptr tmp = b;
-      mp_size_t tn  = bn;
+      mpfr_srcptr z = b;
+      mp_size_t zn  = bn;
       b = c;
       bn = cn;
-      c = tmp;
-      cn = tn;
+      c = z;
+      cn = zn;
     }
   MPFR_ASSERTD (bn >= cn);
   if (MPFR_LIKELY (bn <= 2))
