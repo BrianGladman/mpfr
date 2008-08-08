@@ -1373,7 +1373,7 @@ __MPFR_DECLSPEC extern mp_prec_t mpfr_log_prec;
 
 #define MPFR_LOG_MSG2(format, ...)                                       \
  if ((MPFR_LOG_MSG_F&mpfr_log_type)&&(mpfr_log_current<=mpfr_log_level)) \
-  fprintf (mpfr_log_file, "%s.%d:"format, __func__, __LINE__, __VA_ARGS__);
+  fprintf (mpfr_log_file, "%s.%d: "format, __func__, __LINE__, __VA_ARGS__);
 #define MPFR_LOG_MSG(x) MPFR_LOG_MSG2 x
 
 #define MPFR_LOG_BEGIN2(format, ...)                                         \
