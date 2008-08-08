@@ -386,7 +386,9 @@ To achieve this, theses macros have been added:
 +++ MPFR_LOG_MSG(x)
  Log another message (a warning for example)
 Example:
- MPFR_LOG_MSG (("WARNING: Unchecked code\n"));
+ MPFR_LOG_MSG (("WARNING: Unchecked code\n", 0));
+The 0 is here a dummy value, because there must be at least an argument
+after the format string.
 
 +++ MPFR_LOG_BEGIN(x)
  Add this macro at the beginning of a function.
