@@ -45,6 +45,71 @@ test_mul (int i, int div, mpfr_ptr y, mpfr_srcptr x,
     (exit (1), 0);
 }
 
+static void
+underflow (mp_exp_t e)
+{
+  mpfr_t x, y, z;
+  mp_exp_t emin;
+  int i, k;
+  int rnd;
+  int inex1, inex2;
+  unsigned int flags1, flags2;
+
+  /* Test mul_2si(x, e - k) with emin = e, x = 1 and 5/4, and k = 1 to 4,
+     by comparing the result with the one of a simple division. */
+  emin = mpfr_get_emin ();
+  set_emin (e);
+  mpfr_inits2 (8, x, y, z, (mpfr_ptr) 0);
+  for (i = 4; i <= 5; i++)
+    {
+      mpfr_set_ui_2exp (x, i, -2, GMP_RNDN);
+      RND_LOOP (rnd)
+        for (k = 1; k <= 4; k++)
+          {
+            /* The following one is assumed to be correct. */
+            inex1 = mpfr_mul_2si (y, x, e, GMP_RNDN);
+            MPFR_ASSERTN (inex1 == 0);
+            mpfr_clear_flags ();
+            mpfr_set_ui (z, 1 << k, GMP_RNDN);
+            inex1 = mpfr_div (y, y, z, rnd);
+            flags1 = __gmpfr_flags;
+
+            mpfr_clear_flags ();
+            inex2 = mpfr_mul_2si (z, x, e - k, rnd);
+            flags2 = __gmpfr_flags;
+            if (flags1 == flags2 && SAME_SIGN (inex1, inex2) &&
+                mpfr_equal_p (y, z))
+              continue;
+            printf ("Error in underflow(");
+            if (e == MPFR_EMIN_MIN)
+              printf ("MPFR_EMIN_MIN");
+            else if (e == emin)
+              printf ("default emin");
+            else
+              printf ("%ld", e);
+            printf (") with x = %d/4, k = %d, %s\n", i, k,
+                    mpfr_print_rnd_mode (rnd));
+            printf ("Expected ");
+            mpfr_out_str (stdout, 16, 0, y, GMP_RNDN);
+            printf (", inex = %d, flags = %u\n", SIGN (inex1), flags1);
+            printf ("Got      ");
+            mpfr_out_str (stdout, 16, 0, z, GMP_RNDN);
+            printf (", inex = %d, flags = %u\n", SIGN (inex2), flags2);
+          }
+    }
+  mpfr_clears (x, y, z, (mpfr_ptr) 0);
+  set_emin (emin);
+}
+
+static void
+underflow0 (void)
+{
+  underflow (-256);
+  if (mpfr_get_emin () != MPFR_EMIN_MIN)
+    underflow (mpfr_get_emin ());
+  underflow (MPFR_EMIN_MIN);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -133,6 +198,8 @@ main (int argc, char *argv[])
     }
 
   mpfr_clears (w, z, (mpfr_ptr) 0);
+
+  underflow0 ();
 
   tests_end_mpfr ();
   return 0;
