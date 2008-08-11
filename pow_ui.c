@@ -24,9 +24,9 @@ MA 02110-1301, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-/* sets x to y^n, and return 0 if exact, non-zero otherwise */
+/* sets y to x^n, and return 0 if exact, non-zero otherwise */
 int
-mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
+mpfr_pow_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int n, mp_rnd_t rnd)
 {
   unsigned long m;
   mpfr_t res;
@@ -37,58 +37,61 @@ mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
   MPFR_ZIV_DECL (loop);
   MPFR_BLOCK_DECL (flags);
 
-  /* y^0 = 1 for any y, even a NaN */
-  if (MPFR_UNLIKELY (n == 0))
-    return mpfr_set_ui (x, 1, rnd);
+  MPFR_LOG_FUNC (("x[%#R]=%R n=%lu rnd=%d", x, x, n, rnd),
+                 ("y[%#R]=%R inexact=%d", y, y, inexact));
 
-  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (y)))
+  /* x^0 = 1 for any x, even a NaN */
+  if (MPFR_UNLIKELY (n == 0))
+    return mpfr_set_ui (y, 1, rnd);
+
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
-      if (MPFR_IS_NAN (y))
+      if (MPFR_IS_NAN (x))
         {
-          MPFR_SET_NAN (x);
+          MPFR_SET_NAN (y);
           MPFR_RET_NAN;
         }
-      else if (MPFR_IS_INF (y))
+      else if (MPFR_IS_INF (x))
         {
           /* Inf^n = Inf, (-Inf)^n = Inf for n even, -Inf for n odd */
-          if ((MPFR_IS_NEG (y)) && ((n & 1) == 1))
-            MPFR_SET_NEG (x);
+          if (MPFR_IS_NEG (x) && (n & 1) == 1)
+            MPFR_SET_NEG (y);
           else
-            MPFR_SET_POS (x);
-          MPFR_SET_INF (x);
+            MPFR_SET_POS (y);
+          MPFR_SET_INF (y);
           MPFR_RET (0);
         }
-      else /* y is zero */
+      else /* x is zero */
         {
-          MPFR_ASSERTD (MPFR_IS_ZERO (y));
+          MPFR_ASSERTD (MPFR_IS_ZERO (x));
           /* 0^n = 0 for any n */
-          MPFR_SET_ZERO (x);
-          if (MPFR_IS_POS (y) || ((n & 1) == 0))
-            MPFR_SET_POS (x);
+          MPFR_SET_ZERO (y);
+          if (MPFR_IS_POS (x) || (n & 1) == 0)
+            MPFR_SET_POS (y);
           else
-            MPFR_SET_NEG (x);
+            MPFR_SET_NEG (y);
           MPFR_RET (0);
         }
     }
   else if (MPFR_UNLIKELY (n <= 2))
     {
       if (n < 2)
-        /* y^1 = y */
-        return mpfr_set (x, y, rnd);
+        /* x^1 = x */
+        return mpfr_set (y, x, rnd);
       else
-        /* y^2 = sqr(y) */
-        return mpfr_sqr (x, y, rnd);
+        /* x^2 = sqr(x) */
+        return mpfr_sqr (y, x, rnd);
     }
 
   /* Augment exponent range */
   MPFR_SAVE_EXPO_MARK (expo);
 
   /* setup initial precision */
-  prec = MPFR_PREC (x) + 3 + BITS_PER_MP_LIMB
-    + MPFR_INT_CEIL_LOG2 (MPFR_PREC (x));
+  prec = MPFR_PREC (y) + 3 + BITS_PER_MP_LIMB
+    + MPFR_INT_CEIL_LOG2 (MPFR_PREC (y));
   mpfr_init2 (res, prec);
 
-  rnd1 = MPFR_IS_POS (y) ? GMP_RNDU : GMP_RNDD; /* away */
+  rnd1 = MPFR_IS_POS (x) ? GMP_RNDU : GMP_RNDD; /* away */
 
   MPFR_ZIV_INIT (loop, prec);
   for (;;)
@@ -100,17 +103,17 @@ mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
       /* now 2^(i-1) <= n < 2^i */
       MPFR_ASSERTD (prec > (mpfr_prec_t) i);
       err = prec - 1 - (mpfr_prec_t) i;
-      /* First step: compute square from y */
+      /* First step: compute square from x */
       MPFR_BLOCK (flags,
-                  inexact = mpfr_mul (res, y, y, GMP_RNDU);
+                  inexact = mpfr_mul (res, x, x, GMP_RNDU);
                   MPFR_ASSERTD (i >= 2);
                   if (n & (1UL << (i-2)))
-                    inexact |= mpfr_mul (res, res, y, rnd1);
+                    inexact |= mpfr_mul (res, res, x, rnd1);
                   for (i -= 3; i >= 0 && !MPFR_BLOCK_EXCEP; i--)
                     {
                       inexact |= mpfr_mul (res, res, res, GMP_RNDU);
                       if (n & (1UL << i))
-                        inexact |= mpfr_mul (res, res, y, rnd1);
+                        inexact |= mpfr_mul (res, res, x, rnd1);
                     });
       /* let r(n) be the number of roundings: we have r(2)=1, r(3)=2,
          and r(2n)=2r(n)+1, r(2n+1)=2r(n)+2, thus r(n)=n-1.
@@ -122,7 +125,7 @@ mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
       */
       if (MPFR_LIKELY (inexact == 0
                        || MPFR_OVERFLOW (flags) || MPFR_UNDERFLOW (flags)
-                       || MPFR_CAN_ROUND (res, err, MPFR_PREC (x), rnd)))
+                       || MPFR_CAN_ROUND (res, err, MPFR_PREC (y), rnd)))
         break;
       /* Actualisation of the precision */
       MPFR_ZIV_NEXT (loop, prec);
@@ -130,26 +133,29 @@ mpfr_pow_ui (mpfr_ptr x, mpfr_srcptr y, unsigned long int n, mp_rnd_t rnd)
     }
   MPFR_ZIV_FREE (loop);
 
-  /* Check Overflow */
-  if (MPFR_OVERFLOW (flags))
+  if (MPFR_UNLIKELY (MPFR_OVERFLOW (flags) || MPFR_UNDERFLOW (flags)))
     {
+      mpz_t z;
+
+      /* Internal overflow or underflow. However the approximation error has
+       * not been taken into account. So, let's solve this problem by using
+       * mpfr_pow_z, which can handle it. This case could be improved in the
+       * future, without having to use mpfr_pow_z.
+       */
+      MPFR_LOG_MSG (("Internal overflow or underflow,"
+                     " let's use mpfr_pow_z.\n", 0));
       mpfr_clear (res);
       MPFR_SAVE_EXPO_FREE (expo);
-      return mpfr_overflow (x, rnd,
-                            (n % 2) ? MPFR_SIGN (y) : MPFR_SIGN_POS);
-    }
-  /* Check Underflow  */
-  else if (MPFR_UNDERFLOW (flags))
-    {
-      mpfr_clear (res);
-      MPFR_SAVE_EXPO_FREE (expo);
-      return mpfr_underflow (x, rnd == GMP_RNDN ? GMP_RNDZ : rnd,
-                             (n % 2) ? MPFR_SIGN(y) : MPFR_SIGN_POS);
+      mpz_init (z);
+      mpz_set_ui (z, n);
+      inexact = mpfr_pow_z (y, x, z, rnd);
+      mpz_clear (z);
+      return inexact;
     }
 
-  inexact = mpfr_set (x, res, rnd);
+  inexact = mpfr_set (y, res, rnd);
   mpfr_clear (res);
 
   MPFR_SAVE_EXPO_FREE (expo);
-  return mpfr_check_range (x, inexact, rnd);
+  return mpfr_check_range (y, inexact, rnd);
 }

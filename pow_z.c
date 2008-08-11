@@ -39,6 +39,9 @@ mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd, int cr)
   MPFR_ZIV_DECL (loop);
   MPFR_BLOCK_DECL (flags);
 
+  MPFR_LOG_FUNC (("x[%#R]=%R z=? rnd=%d cr=%d", x, x, rnd, cr),
+                 ("y[%#R]=%R inexact=%d", y, y, inexact));
+
   MPFR_ASSERTD (mpz_sgn (z) != 0);
 
   if (MPFR_UNLIKELY (mpz_cmpabs_ui (z, 1) == 0))
@@ -97,13 +100,46 @@ mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd, int cr)
 
   /* Check Overflow */
   if (MPFR_OVERFLOW (flags))
-    inexact = mpfr_overflow (y, rnd, mpz_odd_p (absz) ?
-                             MPFR_SIGN (x) : MPFR_SIGN_POS);
+    {
+      MPFR_LOG_MSG (("overflow\n", 0));
+      inexact = mpfr_overflow (y, rnd, mpz_odd_p (absz) ?
+                               MPFR_SIGN (x) : MPFR_SIGN_POS);
+    }
   /* Check Underflow */
   else if (MPFR_UNDERFLOW (flags))
-    inexact = mpfr_underflow (y, rnd == GMP_RNDN ? GMP_RNDZ : rnd,
-                              mpz_odd_p (absz) ? MPFR_SIGN (x) :
-                              MPFR_SIGN_POS);
+    {
+      if (rnd == GMP_RNDN)
+        {
+          mpfr_t y2, zz;
+
+          /* We cannot decide now whether the result should be rounded
+             toward zero or +Inf. So, let's use the general case of
+             mpfr_pow, which can do that. But the problem is that the
+             result can be exact! However, it is sufficient to try to
+             round on 2 bits (the precision does not matter in case of
+             underflow, since MPFR does not have subnormals), in which
+             case, the result cannot be exact due to previous filtering
+             of trivial cases. */
+          MPFR_ASSERTD (mpfr_cmp_si_2exp (x, MPFR_SIGN (x),
+                                          MPFR_EXP (x) - 1) != 0);
+          mpfr_init2 (y2, 2);
+          mpfr_init2 (zz, ABS (SIZ (z)) * BITS_PER_MP_LIMB);
+          inexact = mpfr_set_z  (zz, z, GMP_RNDN);
+          MPFR_ASSERTN (inexact == 0);
+          inexact = mpfr_pow_general (y2, x, zz, rnd, 1,
+                                      (mpfr_save_expo_t *) NULL);
+          mpfr_clear (zz);
+          mpfr_set (y, y2, GMP_RNDN);
+          mpfr_clear (y2);
+          __gmpfr_flags = MPFR_FLAGS_INEXACT | MPFR_FLAGS_UNDERFLOW;
+        }
+      else
+        {
+          MPFR_LOG_MSG (("underflow\n", 0));
+          inexact = mpfr_underflow (y, rnd, mpz_odd_p (absz) ?
+                                    MPFR_SIGN (x) : MPFR_SIGN_POS);
+        }
+    }
   else
     inexact = mpfr_set (y, res, rnd);
 
@@ -129,6 +165,9 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
   int   inexact;
   mpz_t tmp;
   MPFR_SAVE_EXPO_DECL (expo);
+
+  MPFR_LOG_FUNC (("x[%#R]=%R z=? rnd=%d", x, x, rnd),
+                 ("y[%#R]=%R inexact=%d", y, y, inexact));
 
   /* x^0 = 1 for any x, even a NaN */
   if (MPFR_UNLIKELY (mpz_sgn (z) == 0))
@@ -173,35 +212,36 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
     }
 
   /* detect exact powers: x^-n is exact iff x is a power of 2
-     Do it if n > 0 too (faster). */
+     Do it if n > 0 too as this is faster and this filtering is
+     needed in case of underflow. */
   if (MPFR_UNLIKELY (mpfr_cmp_si_2exp (x, MPFR_SIGN (x),
                                        MPFR_EXP (x) - 1) == 0))
     {
       mp_exp_t expx = MPFR_EXP (x); /* warning: x and y may be the same
                                        variable */
+
+      MPFR_LOG_MSG (("x^n with x power of two\n", 0));
       mpfr_set_si (y, mpz_odd_p (z) ? MPFR_INT_SIGN(x) : 1, rnd);
       MPFR_ASSERTD (MPFR_IS_FP (y));
       mpz_init (tmp);
-      mpz_mul_si (tmp, z, expx-1);
+      mpz_mul_si (tmp, z, expx - 1);
       MPFR_ASSERTD (MPFR_GET_EXP (y) == 1);
       mpz_add_ui (tmp, tmp, 1);
       inexact = 0;
       if (MPFR_UNLIKELY (mpz_cmp_si (tmp, __gmpfr_emin) < 0))
         {
-          /* The following test is necessary because in the rounding to the
-           * nearest mode, mpfr_underflow always rounds away from 0. In
-           * this rounding mode, we need to round to 0 if:
-           *   _ |y| < 2^(emin-2), or
-           *   _ |y| = 2^(emin-2) and the absolute value of the exact
-           *     result is <= 2^(emin-2).
-           * NOTE: y is a power of 2 and inexact = 0!
-           */
-          if (rnd == GMP_RNDN && mpz_cmp_si (tmp, __gmpfr_emin-1) < 0)
+          MPFR_LOG_MSG (("underflow\n", 0));
+          /* |y| is a power of two, thus |y| <= 2^(emin-2), and in
+             rounding to nearest, the value must be rounded to 0. */
+          if (rnd == GMP_RNDN)
             rnd = GMP_RNDZ;
           inexact = mpfr_underflow (y, rnd, MPFR_SIGN (y));
         }
       else if (MPFR_UNLIKELY (mpz_cmp_si (tmp, __gmpfr_emax) > 0))
-        inexact = mpfr_overflow (y, rnd, MPFR_SIGN (y));
+        {
+          MPFR_LOG_MSG (("overflow\n", 0));
+          inexact = mpfr_overflow (y, rnd, MPFR_SIGN (y));
+        }
       else
         MPFR_SET_EXP (y, mpz_get_si (tmp));
       mpz_clear (tmp);
