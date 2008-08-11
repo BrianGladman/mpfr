@@ -27,6 +27,9 @@ mpfr_div_2ui (mpfr_ptr y, mpfr_srcptr x, unsigned long n, mp_rnd_t rnd_mode)
 {
   int inexact;
 
+  MPFR_LOG_FUNC (("x[%#R]=%R n=%lu rnd=%d", x, x, n, rnd_mode),
+                 ("y[%#R]=%R inexact=%d", y, y, inexact));
+
   /* Most of the times, this function is called with y==x */
   inexact = MPFR_UNLIKELY(y != x) ? mpfr_set (y, x, rnd_mode) : 0;
 
