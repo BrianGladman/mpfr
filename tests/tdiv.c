@@ -724,7 +724,7 @@ check_nan (void)
     {
       /* Test 2^(-2) / (2 + eps), with eps < 0, eps = 0, eps > 0.
          -> underflow.
-         With div.c r5513, this test fails for eps < 0 in GMP_RNDN. */
+         With div.c r5513, this test fails for eps > 0 in GMP_RNDN. */
       mpfr_set_ui (d, 2, GMP_RNDZ);
       if (i < 0)
         mpfr_nextbelow (d);
