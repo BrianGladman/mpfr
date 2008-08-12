@@ -642,6 +642,7 @@ underflow_up (int extended_emin)
   int inex;
   int rnd;
   int e3;
+  int i, j;
 
   mpfr_init2 (minpos, 2);
   mpfr_set_ui (minpos, 0, GMP_RNDN);
@@ -667,7 +668,7 @@ underflow_up (int extended_emin)
    *      - If eps < - (2^(-p-1) + 2^(-2p-1)), underflow in GMP_RNDN.
    *      - If eps < - (2^(-p) + 2^(-2p+1)), underflow in GMP_RNDU.
    *      - In GMP_RNDN, result is minpos iff exp(eps) > 1/2, i.e.
-   *        |eps| < log(2).
+   *        - log(2) < eps < ...
    *
    * Moreover, since precy < MPFR_EXP_THRESHOLD (to avoid tests that take
    * too much time), mpfr_exp() always selects mpfr_exp_2(); so, we need
@@ -774,8 +775,6 @@ underflow_up (int extended_emin)
   mpfr_inits2 (2, t, t2, (mpfr_ptr) 0);
   for (precy = 16; precy <= 128; precy += 16)
     {
-      int i, j;
-
       mpfr_set_ui_2exp (t, 1, - precy, GMP_RNDN);         /* 2^(-p) */
       mpfr_set_ui_2exp (t2, 1, 1 - 2 * precy, GMP_RNDN);  /* 2^(-2p+1) */
       precx = sizeof(mp_exp_t) * CHAR_BIT + 2 * precy + 8;
@@ -859,7 +858,65 @@ underflow_up (int extended_emin)
     }  /* for (precy ...) */
   mpfr_clears (t, t2, (mpfr_ptr) 0);
 
-  /* TODO: Case exp(eps) ~= 1/2. */
+  /* Case exp(eps) ~= 1/2, i.e. eps ~= - log(2).
+   * We choose x0 and x1 with high enough precision such that:
+   *   x0 = rndd(rndd(log(minpos)) - rndu(log(2)))
+   *   x1 = rndu(rndu(log(minpos)) - rndd(log(2)))
+   * In revision 5507 (trunk) on a 64-bit Linux machine, this fails:
+   *   Error in underflow_up, eps >~ - log(2) and extended emin
+   *   for precy = 16, mpfr_exp
+   *   Expected 1.0@-1152921504606846976 (minimum positive MPFR number),
+   *   inex > 0 and flags = 9
+   *   Got 0
+   *   with inex = -1 and flags = 9
+   * due to a double-rounding problem in rescaling the result.
+   */
+  mpfr_inits2 (sizeof(mp_exp_t) * CHAR_BIT + 64, x, t, (mpfr_ptr) 0);
+  for (i = 0; i <= 1; i++)
+    {
+      mpfr_log (x, minpos, i ? GMP_RNDU : GMP_RNDD);
+      mpfr_const_log2 (t, i ? GMP_RNDD : GMP_RNDU);
+      mpfr_sub (x, x, t, i ? GMP_RNDU : GMP_RNDD);
+      for (precy = 16; precy <= 128; precy += 16)
+        {
+          mpfr_init2 (y, precy);
+          for (e3 = 0; e3 <= 1; e3++)
+            {
+              unsigned int flags, uflags =
+                MPFR_FLAGS_INEXACT | MPFR_FLAGS_UNDERFLOW;
+
+              mpfr_clear_flags ();
+              inex = e3 ? exp_3 (y, x, GMP_RNDN) : mpfr_exp (y, x, GMP_RNDN);
+              flags = __gmpfr_flags;
+              if (flags != uflags ||
+                  (i ? (inex <= 0 || mpfr_cmp0 (y, minpos) != 0)
+                     : (inex >= 0 || MPFR_NOTZERO (y))))
+                {
+                  printf ("Error in underflow_up, eps %c~ - log(2)",
+                          i ? '>' : '<');
+                  if (extended_emin)
+                    printf (" and extended emin");
+                  printf ("\nfor precy = %d, %s\nExpected ", precy,
+                          e3 ? "mpfr_exp_3" : "mpfr_exp");
+                  if (i)
+                    {
+                      mpfr_out_str (stdout, 16, 0, minpos, GMP_RNDN);
+                      printf (" (minimum positive MPFR number),\ninex >");
+                    }
+                  else
+                    {
+                      printf ("+0, inex <");
+                    }
+                  printf (" 0 and flags = %u\nGot ", uflags);
+                  mpfr_out_str (stdout, 16, 0, y, GMP_RNDN);
+                  printf ("\nwith inex = %d and flags = %u\n", inex, flags);
+                  exit (1);
+                }
+            }
+          mpfr_clear (y);
+        }
+    }
+  mpfr_clears (x, t, (mpfr_ptr) 0);
 
   mpfr_clear (minpos);
 }
