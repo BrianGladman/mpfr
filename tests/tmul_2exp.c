@@ -57,9 +57,10 @@ underflow (mp_exp_t e)
   int inex1, inex2;
   unsigned int flags1, flags2;
 
-  /* Test mul_2si(x, e - k) and div_2si(x, k - e) with emin = e,
-     x = 1 and 17/16, and k = 1 to 4, by comparing the result with
-     the one of a simple division. */
+  /* Test mul_2si(x, e - k), div_2si(x, k - e) and div_2ui(x, k - e)
+   * with emin = e, x = 1 and 17/16, and k = 1 to 4, by comparing the
+   * result with the one of a simple division.
+   */
   emin = mpfr_get_emin ();
   set_emin (e);
   mpfr_inits2 (8, x, y, (mpfr_ptr) 0);
@@ -83,12 +84,13 @@ underflow (mp_exp_t e)
                 inex1 = mpfr_div (z1, y, z1, rnd);
                 flags1 = __gmpfr_flags;
 
-              for (div = 0; div <= 1; div++)
+              for (div = 0; div <= 2; div++)
                 {
                   mpfr_clear_flags ();
-                  inex2 = div ?
+                  inex2 = div == 0 ?
+                    mpfr_mul_2si (z2, x, e - k, rnd) : div == 1 ?
                     mpfr_div_2si (z2, x, k - e, rnd) :
-                    mpfr_mul_2si (z2, x, e - k, rnd);
+                    mpfr_div_2ui (z2, x, k - e, rnd);
                   flags2 = __gmpfr_flags;
                   if (flags1 == flags2 && SAME_SIGN (inex1, inex2) &&
                       mpfr_equal_p (z1, z2))
@@ -100,10 +102,10 @@ underflow (mp_exp_t e)
                     printf ("default emin");
                   else
                     printf ("%ld", e);
-                  printf (")\nwith %s, x = %d/4, prec = %d, k = %d, %s\n",
-                          div ? "mpfr_div_2si" : "mpfr_mul_2si",
-                          i, prec, k, mpfr_print_rnd_mode (rnd));
-                  printf ("Expected ");
+                  printf (")\nwith %s, x = %d/4, prec = %d, k = %d, mpfr_%s",
+                          div == 0 ? "mul_2si" : div == 1 ? "div_2si" :
+                          "div_2ui", i, prec, k, mpfr_print_rnd_mode (rnd));
+                  printf ("\nExpected ");
                   mpfr_out_str (stdout, 16, 0, z1, GMP_RNDN);
                   printf (", inex = %d, flags = %u\n", SIGN (inex1), flags1);
                   printf ("Got      ");
