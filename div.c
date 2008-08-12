@@ -156,6 +156,9 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
   int like_rndz;
   MPFR_TMP_DECL(marker);
 
+  MPFR_LOG_FUNC (("u[%#R]=%R v[%#R]=%R rnd=%d", u, u, v, v, rnd_mode),
+                 ("q[%#R]=%R inexact=%d", q, q, inex));
+
   /**************************************************************************
    *                                                                        *
    *              This part of the code deals with special cases            *
@@ -665,5 +668,6 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
     }
   MPFR_SET_EXP(q, qexp);
 
-  MPFR_RET (inex*sign_quotient);
+  inex *= sign_quotient;
+  MPFR_RET (inex);
 }
