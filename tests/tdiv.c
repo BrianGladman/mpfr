@@ -722,7 +722,9 @@ check_nan (void)
   mpfr_set_prec (d, mpfr_get_prec (q) + 8);
   for (i = -1; i <= 1; i++)
     {
-      /* Test 2^(-2) / (2 + eps), with eps < 0, eps = 0, eps > 0.
+      int sign;
+
+      /* Test 2^(-2) / (+/- (2 + eps)), with eps < 0, eps = 0, eps > 0.
          -> underflow.
          With div.c r5513, this test fails for eps > 0 in GMP_RNDN. */
       mpfr_set_ui (d, 2, GMP_RNDZ);
@@ -730,17 +732,22 @@ check_nan (void)
         mpfr_nextbelow (d);
       if (i > 0)
         mpfr_nextabove (d);
-      mpfr_clear_flags ();
-      test_div (q, a, d, GMP_RNDZ); /* result = 0 */
-      MPFR_ASSERTN (mpfr_underflow_p ());
-      MPFR_ASSERTN (MPFR_IS_ZERO (q) && MPFR_IS_POS (q));
-      mpfr_clear_flags ();
-      test_div (q, a, d, GMP_RNDN); /* result = 0 iff eps >= 0 */
-      MPFR_ASSERTN (mpfr_underflow_p ());
-      MPFR_ASSERTN (MPFR_IS_POS (q));
-      if (i < 0)
-        mpfr_nextbelow (q);
-      MPFR_ASSERTN (MPFR_IS_ZERO (q));
+      for (sign = 0; sign <= 1; sign++)
+        {
+          mpfr_clear_flags ();
+          test_div (q, a, d, GMP_RNDZ); /* result = 0 */
+          MPFR_ASSERTN (mpfr_underflow_p ());
+          MPFR_ASSERTN (sign ? MPFR_IS_NEG (q) : MPFR_IS_POS (q));
+          MPFR_ASSERTN (MPFR_IS_ZERO (q));
+          mpfr_clear_flags ();
+          test_div (q, a, d, GMP_RNDN); /* result = 0 iff eps >= 0 */
+          MPFR_ASSERTN (mpfr_underflow_p ());
+          MPFR_ASSERTN (sign ? MPFR_IS_NEG (q) : MPFR_IS_POS (q));
+          if (i < 0)
+            mpfr_nexttozero (q);
+          MPFR_ASSERTN (MPFR_IS_ZERO (q));
+          mpfr_neg (d, d, GMP_RNDN);
+        }
     }
   set_emin (emin);
 
