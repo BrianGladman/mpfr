@@ -869,7 +869,8 @@ underflow_up (int extended_emin)
    *   inex > 0 and flags = 9
    *   Got 0
    *   with inex = -1 and flags = 9
-   * due to a double-rounding problem in rescaling the result.
+   * due to a double-rounding problem in mpfr_mul_2si when rescaling
+   * the result.
    */
   mpfr_inits2 (sizeof(mp_exp_t) * CHAR_BIT + 64, x, t, (mpfr_ptr) 0);
   for (i = 0; i <= 1; i++)
