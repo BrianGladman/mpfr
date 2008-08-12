@@ -53,11 +53,13 @@ underflow (mp_exp_t e)
   int i, k;
   int prec;
   int rnd;
+  int div;
   int inex1, inex2;
   unsigned int flags1, flags2;
 
-  /* Test mul_2si(x, e - k) with emin = e, x = 1 and 17/16, and k = 1 to 4,
-     by comparing the result with the one of a simple division. */
+  /* Test mul_2si(x, e - k) and div_2si(x, k - e) with emin = e,
+     x = 1 and 17/16, and k = 1 to 4, by comparing the result with
+     the one of a simple division. */
   emin = mpfr_get_emin ();
   set_emin (e);
   mpfr_inits2 (8, x, y, (mpfr_ptr) 0);
@@ -81,28 +83,34 @@ underflow (mp_exp_t e)
                 inex1 = mpfr_div (z1, y, z1, rnd);
                 flags1 = __gmpfr_flags;
 
-                mpfr_clear_flags ();
-                inex2 = mpfr_mul_2si (z2, x, e - k, rnd);
-                flags2 = __gmpfr_flags;
-                if (flags1 == flags2 && SAME_SIGN (inex1, inex2) &&
-                    mpfr_equal_p (z1, z2))
-                  continue;
-                printf ("Error in underflow(");
-                if (e == MPFR_EMIN_MIN)
-                  printf ("MPFR_EMIN_MIN");
-                else if (e == emin)
-                  printf ("default emin");
-                else
-                  printf ("%ld", e);
-                printf (") with x = %d/4, prec = %d, k = %d, %s\n",
-                        i, prec, k, mpfr_print_rnd_mode (rnd));
-                printf ("Expected ");
-                mpfr_out_str (stdout, 16, 0, z1, GMP_RNDN);
-                printf (", inex = %d, flags = %u\n", SIGN (inex1), flags1);
-                printf ("Got      ");
-                mpfr_out_str (stdout, 16, 0, z2, GMP_RNDN);
-                printf (", inex = %d, flags = %u\n", SIGN (inex2), flags2);
-                exit (1);
+              for (div = 0; div <= 1; div++)
+                {
+                  mpfr_clear_flags ();
+                  inex2 = div ?
+                    mpfr_div_2si (z2, x, k - e, rnd) :
+                    mpfr_mul_2si (z2, x, e - k, rnd);
+                  flags2 = __gmpfr_flags;
+                  if (flags1 == flags2 && SAME_SIGN (inex1, inex2) &&
+                      mpfr_equal_p (z1, z2))
+                    continue;
+                  printf ("Error in underflow(");
+                  if (e == MPFR_EMIN_MIN)
+                    printf ("MPFR_EMIN_MIN");
+                  else if (e == emin)
+                    printf ("default emin");
+                  else
+                    printf ("%ld", e);
+                  printf (")\nwith %s, x = %d/4, prec = %d, k = %d, %s\n",
+                          div ? "mpfr_div_2si" : "mpfr_mul_2si",
+                          i, prec, k, mpfr_print_rnd_mode (rnd));
+                  printf ("Expected ");
+                  mpfr_out_str (stdout, 16, 0, z1, GMP_RNDN);
+                  printf (", inex = %d, flags = %u\n", SIGN (inex1), flags1);
+                  printf ("Got      ");
+                  mpfr_out_str (stdout, 16, 0, z2, GMP_RNDN);
+                  printf (", inex = %d, flags = %u\n", SIGN (inex2), flags2);
+                  exit (1);
+                }  /* div */
               }  /* k */
           mpfr_clears (z1, z2, (mpfr_ptr) 0);
         }  /* prec */
