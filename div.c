@@ -662,7 +662,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
   else if (MPFR_UNLIKELY(qexp < __gmpfr_emin))
     {
       if (rnd_mode == GMP_RNDN && ((qexp < __gmpfr_emin - 1) ||
-                                   (inex == 0 && mpfr_powerof2_raw (q))))
+                                   (inex >= 0 && mpfr_powerof2_raw (q))))
         rnd_mode = GMP_RNDZ;
       return mpfr_underflow (q, rnd_mode, sign_quotient);
     }
