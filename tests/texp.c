@@ -648,6 +648,7 @@ underflow_up (int extended_emin)
   mpfr_nextabove (minpos);
 
   /* Let's test values near the underflow boundary.
+   *
    * Minimum representable positive number: minpos = 2^(emin - 1).
    * Let's choose an MPFR number x = log(minpos) + eps, with |eps| small
    * (note: eps cannot be 0, and cannot be a rational number either).
@@ -667,6 +668,13 @@ underflow_up (int extended_emin)
    *      - If eps < - (2^(-p) + 2^(-2p+1)), underflow in GMP_RNDU.
    *      - In GMP_RNDN, result is minpos iff exp(eps) > 1/2, i.e.
    *        |eps| < log(2).
+   *
+   * Moreover, since precy < MPFR_EXP_THRESHOLD (to avoid tests that take
+   * too much time), mpfr_exp() always selects mpfr_exp_2(); so, we need
+   * to test mpfr_exp_3() too. This will be done via the e3 variable:
+   *   e3 = 0: mpfr_exp(), thus mpfr_exp_2().
+   *   e3 = 1: mpfr_exp_3(), via the exp_3() wrapper.
+   * i.e.: inex = e3 ? exp_3 (y, x, rnd) : mpfr_exp (y, x, rnd);
    */
 
   /* Case eps > 0. In revision 5461 (trunk) on a 64-bit Linux machine:
@@ -685,9 +693,6 @@ underflow_up (int extended_emin)
         {
           mpfr_init2 (y, precy);
 
-          /* Since this is the general case and precy < MPFR_EXP_THRESHOLD
-             (to avoid tests that take too much time), mpfr_exp_2 is chosen
-             but not mpfr_exp_3; so, we need to test mpfr_exp_3 too. */
           for (e3 = 0; e3 <= 1; e3++)
             {
               RND_LOOP (rnd)
@@ -761,6 +766,11 @@ underflow_up (int extended_emin)
     }
   mpfr_clear (x);
 
+  /* Cases eps ~ -2^(-p) and eps ~ -2^(-p-1). More precisely,
+   *   _ for j = 0, eps > -2^(-(p+i)),
+   *   _ for j = 1, eps < - (2^(-(p+i)) + 2^(1-2(p+i))),
+   * where i = 0 or 1.
+   */
   mpfr_inits2 (2, t, t2, (mpfr_ptr) 0);
   for (precy = 16; precy <= 128; precy += 16)
     {
@@ -780,7 +790,7 @@ underflow_up (int extended_emin)
                   /* Case eps > -2^(-(p+i)). */
                   mpfr_log (x, minpos, GMP_RNDU);
                 }
-              else
+              else  /* j == 1 */
                 {
                   /* Case eps < - (2^(-(p+i)) + 2^(1-2(p+i))). */
                   mpfr_log (x, minpos, GMP_RNDD);
