@@ -48,56 +48,66 @@ test_mul (int i, int div, mpfr_ptr y, mpfr_srcptr x,
 static void
 underflow (mp_exp_t e)
 {
-  mpfr_t x, y, z;
+  mpfr_t x, y, z1, z2;
   mp_exp_t emin;
   int i, k;
+  int prec;
   int rnd;
   int inex1, inex2;
   unsigned int flags1, flags2;
 
-  /* Test mul_2si(x, e - k) with emin = e, x = 1 and 5/4, and k = 1 to 4,
+  /* Test mul_2si(x, e - k) with emin = e, x = 1 and 17/16, and k = 1 to 4,
      by comparing the result with the one of a simple division. */
   emin = mpfr_get_emin ();
   set_emin (e);
-  mpfr_inits2 (8, x, y, z, (mpfr_ptr) 0);
-  for (i = 4; i <= 5; i++)
+  mpfr_inits2 (8, x, y, (mpfr_ptr) 0);
+  for (i = 16; i <= 17; i++)
     {
-      mpfr_set_ui_2exp (x, i, -2, GMP_RNDN);
-      RND_LOOP (rnd)
-        for (k = 1; k <= 4; k++)
-          {
-            /* The following one is assumed to be correct. */
-            inex1 = mpfr_mul_2si (y, x, e, GMP_RNDN);
-            MPFR_ASSERTN (inex1 == 0);
-            mpfr_clear_flags ();
-            mpfr_set_ui (z, 1 << k, GMP_RNDN);
-            inex1 = mpfr_div (y, y, z, rnd);
-            flags1 = __gmpfr_flags;
+      mpfr_set_ui_2exp (x, i, -4, GMP_RNDN);
+      for (prec = 6; prec >= 3; prec -= 3)
+        {
+          mpfr_inits2 (prec, z1, z2, (mpfr_ptr) 0);
+          RND_LOOP (rnd)
+            for (k = 1; k <= 4; k++)
+              {
+                /* The following one is assumed to be correct. */
+                inex1 = mpfr_mul_2si (y, x, e, GMP_RNDN);
+                MPFR_ASSERTN (inex1 == 0);
+                inex1 = mpfr_set_ui (z1, 1 << k, GMP_RNDN);
+                MPFR_ASSERTN (inex1 == 0);
+                mpfr_clear_flags ();
+                /* Do not use mpfr_div_ui to avoid the optimization
+                   by mpfr_div_2si. */
+                inex1 = mpfr_div (z1, y, z1, rnd);
+                flags1 = __gmpfr_flags;
 
-            mpfr_clear_flags ();
-            inex2 = mpfr_mul_2si (z, x, e - k, rnd);
-            flags2 = __gmpfr_flags;
-            if (flags1 == flags2 && SAME_SIGN (inex1, inex2) &&
-                mpfr_equal_p (y, z))
-              continue;
-            printf ("Error in underflow(");
-            if (e == MPFR_EMIN_MIN)
-              printf ("MPFR_EMIN_MIN");
-            else if (e == emin)
-              printf ("default emin");
-            else
-              printf ("%ld", e);
-            printf (") with x = %d/4, k = %d, %s\n", i, k,
-                    mpfr_print_rnd_mode (rnd));
-            printf ("Expected ");
-            mpfr_out_str (stdout, 16, 0, y, GMP_RNDN);
-            printf (", inex = %d, flags = %u\n", SIGN (inex1), flags1);
-            printf ("Got      ");
-            mpfr_out_str (stdout, 16, 0, z, GMP_RNDN);
-            printf (", inex = %d, flags = %u\n", SIGN (inex2), flags2);
-          }
-    }
-  mpfr_clears (x, y, z, (mpfr_ptr) 0);
+                mpfr_clear_flags ();
+                inex2 = mpfr_mul_2si (z2, x, e - k, rnd);
+                flags2 = __gmpfr_flags;
+                if (flags1 == flags2 && SAME_SIGN (inex1, inex2) &&
+                    mpfr_equal_p (z1, z2))
+                  continue;
+                printf ("Error in underflow(");
+                if (e == MPFR_EMIN_MIN)
+                  printf ("MPFR_EMIN_MIN");
+                else if (e == emin)
+                  printf ("default emin");
+                else
+                  printf ("%ld", e);
+                printf (") with x = %d/4, prec = %d, k = %d, %s\n",
+                        i, prec, k, mpfr_print_rnd_mode (rnd));
+                printf ("Expected ");
+                mpfr_out_str (stdout, 16, 0, z1, GMP_RNDN);
+                printf (", inex = %d, flags = %u\n", SIGN (inex1), flags1);
+                printf ("Got      ");
+                mpfr_out_str (stdout, 16, 0, z2, GMP_RNDN);
+                printf (", inex = %d, flags = %u\n", SIGN (inex2), flags2);
+                exit (1);
+              }  /* k */
+          mpfr_clears (z1, z2, (mpfr_ptr) 0);
+        }  /* prec */
+    }  /* i */
+  mpfr_clears (x, y, (mpfr_ptr) 0);
   set_emin (emin);
 }
 
