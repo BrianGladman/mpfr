@@ -58,15 +58,16 @@ underflow (mp_exp_t e)
   unsigned int flags1, flags2;
 
   /* Test mul_2si(x, e - k), div_2si(x, k - e) and div_2ui(x, k - e)
-   * with emin = e, x = 1 and 17/16, and k = 1 to 4, by comparing the
-   * result with the one of a simple division.
+   * with emin = e, x = 1 + i/16, i in { -1, 0, 1 }, and k = 1 to 4,
+   * by comparing the result with the one of a simple division.
    */
   emin = mpfr_get_emin ();
   set_emin (e);
   mpfr_inits2 (8, x, y, (mpfr_ptr) 0);
-  for (i = 16; i <= 17; i++)
+  for (i = 15; i <= 17; i++)
     {
-      mpfr_set_ui_2exp (x, i, -4, GMP_RNDN);
+      inex1 = mpfr_set_ui_2exp (x, i, -4, GMP_RNDN);
+      MPFR_ASSERTN (inex1 == 0);
       for (prec = 6; prec >= 3; prec -= 3)
         {
           mpfr_inits2 (prec, z1, z2, (mpfr_ptr) 0);
@@ -102,7 +103,7 @@ underflow (mp_exp_t e)
                     printf ("default emin");
                   else
                     printf ("%ld", e);
-                  printf (")\nwith %s, x = %d/4, prec = %d, k = %d, mpfr_%s",
+                  printf (")\nwith %s, x = %d/16, prec = %d, k = %d, mpfr_%s",
                           div == 0 ? "mul_2si" : div == 1 ? "div_2si" :
                           "div_2ui", i, prec, k, mpfr_print_rnd_mode (rnd));
                   printf ("\nExpected ");

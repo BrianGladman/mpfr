@@ -58,7 +58,7 @@ mpfr_div_2ui (mpfr_ptr y, mpfr_srcptr x, unsigned long n, mp_rnd_t rnd_mode)
             if (rnd_mode == GMP_RNDN &&
                 (__gmpfr_emin > MPFR_EMAX_MAX - (long) (n - 1) ||
                  exp < __gmpfr_emin + (long) (n - 1) ||
-                 mpfr_powerof2_raw (y)))
+                 (inexact >= 0 && mpfr_powerof2_raw (y))))
               rnd_mode = GMP_RNDZ;
             return mpfr_underflow (y, rnd_mode, MPFR_SIGN(y));
           }
