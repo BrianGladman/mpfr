@@ -196,8 +196,8 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
             ? mpfr_exp2_aux (ss, r, q, &exps)   /* naive method */
             : mpfr_exp2_aux2 (ss, r, q, &exps); /* Paterson/Stockmeyer meth */
 
-          MPFR_LOG_MSG (("l=%d q=%d (K+l)*q^2=%1.3e\n",
-                         l, q, (K+l)*(double)q*q));
+          MPFR_LOG_MSG (("l=%lu q=%lu (K+l)*q^2=%1.3e\n",
+                         l, (unsigned long) q, (K + l) * (double) q * q));
 
           for (k = 0; k < K; k++)
             {
@@ -216,7 +216,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
           MPFR_LOG_MSG (("before mult. by 2^n:\n", 0));
           MPFR_LOG_VAR (s);
-          MPFR_LOG_MSG (("err=%d bits\n", K));
+          MPFR_LOG_MSG (("err=%lu bits\n", K));
 
           if (MPFR_LIKELY (MPFR_CAN_ROUND (s, q - K, precy, rnd_mode)))
             {
