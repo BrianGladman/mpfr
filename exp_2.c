@@ -141,7 +141,8 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_ZIV_INIT (loop, q);
   for (;;)
     {
-      MPFR_LOG_MSG (("n=%d K=%d l=%d q=%d\n",n,K,l,q) );
+      MPFR_LOG_MSG (("n=%ld K=%lu l=%lu q=%lu error_r=%d\n",
+                     n, K, l, (unsigned long) q, error_r));
 
       /* First reduce the argument to r = x - n * log(2),
          so that r is small in absolute value. We want an upper
