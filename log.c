@@ -139,7 +139,7 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
       if (MPFR_LIKELY (MPFR_IS_PURE_FP (tmp1) && MPFR_IS_PURE_FP (tmp2)))
         {
           cancel = MPFR_GET_EXP (tmp2) - MPFR_GET_EXP (tmp1);
-          MPFR_LOG_MSG (("canceled bits=%ld\n", cancel));
+          MPFR_LOG_MSG (("canceled bits=%ld\n", (long) cancel));
           MPFR_LOG_VAR (tmp1);
           if (MPFR_UNLIKELY (cancel < 0))
             cancel = 0;
