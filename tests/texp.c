@@ -740,32 +740,38 @@ underflow_up (int extended_emin)
       mpfr_clear (x);
     }
 
-  /* Case - log(2) < eps < 0 in GMP_RNDN, with small-precision x;
+  /* Case - log(2) < eps < 0 in GMP_RNDN, starting with small-precision x;
    * only check the result and the ternary value.
-   * In revision 5449 (trunk) on a 64-bit Linux machine, this fails for
-   * precy = 16: exp_2.c:264:  assertion failed: ... (fixed in r5453)
+   * Previous to r5453 (trunk), on 32-bit and 64-bit machines, this fails
+   * for precx = 65 and precy = 16, e.g.:
+   *   exp_2.c:264:  assertion failed: ...
+   * because mpfr_sub (r, x, r, GMP_RNDU); yields a null value. This is
+   * fixed in r5453 by going to next Ziv's iteration.
    */
-  mpfr_init2 (x, sizeof(mp_exp_t) * CHAR_BIT + 1);
-  mpfr_log (x, minpos, GMP_RNDD);  /* |ulp| <= 1/2 */
-  for (precy = 16; precy <= 128; precy += 16)
+  for (precx = sizeof(mp_exp_t) * CHAR_BIT + 1; precx <= 81; precx += 8)
     {
-      mpfr_init2 (y, precy);
-      inex = mpfr_exp (y, x, GMP_RNDN);
-      if (inex <= 0 || mpfr_cmp0 (y, minpos) != 0)
+      mpfr_init2 (x, precx);
+      mpfr_log (x, minpos, GMP_RNDD);  /* |ulp| <= 1/2 */
+      for (precy = 16; precy <= 128; precy += 16)
         {
-          printf ("Error in underflow_up, - log(2) < eps < 0");
-          if (extended_emin)
-            printf (" and extended emin");
-          printf (" for prec = %d\nExpected ", precy);
-          mpfr_out_str (stdout, 16, 0, minpos, GMP_RNDN);
-          printf (" (minimum positive MPFR number) and inex > 0\nGot ");
-          mpfr_out_str (stdout, 16, 0, y, GMP_RNDN);
-          printf ("\nwith inex = %d\n", inex);
-          exit (1);
+          mpfr_init2 (y, precy);
+          inex = mpfr_exp (y, x, GMP_RNDN);
+          if (inex <= 0 || mpfr_cmp0 (y, minpos) != 0)
+            {
+              printf ("Error in underflow_up, - log(2) < eps < 0");
+              if (extended_emin)
+                printf (" and extended emin");
+              printf (" for prec = %d\nExpected ", precy);
+              mpfr_out_str (stdout, 16, 0, minpos, GMP_RNDN);
+              printf (" (minimum positive MPFR number) and inex > 0\nGot ");
+              mpfr_out_str (stdout, 16, 0, y, GMP_RNDN);
+              printf ("\nwith inex = %d\n", inex);
+              exit (1);
+            }
+          mpfr_clear (y);
         }
-      mpfr_clear (y);
+      mpfr_clear (x);
     }
-  mpfr_clear (x);
 
   /* Cases eps ~ -2^(-p) and eps ~ -2^(-p-1). More precisely,
    *   _ for j = 0, eps > -2^(-(p+i)),
