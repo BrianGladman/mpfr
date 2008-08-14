@@ -788,6 +788,18 @@ a range error in MPFR.
 
 @end itemize
 
+@section Memory Handling
+
+MPFR functions may create caches, e.g. when computing constants such
+as @m{\pi,Pi}, either because the user has called a function like
+@code{mpfr_const_pi} directly or because such a function was called
+internally by the MPFR library itself to compute some other function.
+
+At any time, the user can free the various caches with
+@code{mpfr_free_cache}. It is strongly advised to do that before
+terminating a thread, or before exiting when using tools like
+@samp{valgrind} (to avoid memory leaks being reported).
+
 @node MPFR Interface, Contributors, MPFR Basics, Top
 @comment  node-name,  next,  previous,  up
 @chapter MPFR Interface
@@ -910,6 +922,7 @@ Here is an example on how to initialize floating-point variables:
   /* When the program is about to exit, do ... */
   mpfr_clear (x);
   mpfr_clear (y);
+  mpfr_free_cache ();
 @}
 @end example
 
@@ -1786,7 +1799,8 @@ Free various caches used by MPFR internally, in particular the
 caches used by the functions computing constants (currently
 @code{mpfr_const_log2}, @code{mpfr_const_pi},
 @code{mpfr_const_euler} and @code{mpfr_const_catalan}).
-You should call this function when terminating a thread.
+You should call this function before terminating a thread, even if you did
+not call these functions directly (they could have been called internally).
 @end deftypefun
 
 @deftypefun int mpfr_sum (mpfr_t @var{rop}, mpfr_ptr const @var{tab}[], unsigned long @var{n}, mp_rnd_t @var{rnd})
