@@ -25,8 +25,9 @@ MA 02110-1301, USA. */
 
 /* y <- x^|z| with z != 0
    if cr=1: ensures correct rounding of y
-   if cr=0: does not ensure correct rounding, and uses the precision of y
-   as working precision (warning, y and x might be the same variable). */
+   if cr=0: does not ensure correct rounding, but avoid spurious overflow
+   or underflow, and uses the precision of y as working precision (warning,
+   y and x might be the same variable). */
 static int
 mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd, int cr)
 {
@@ -51,7 +52,7 @@ mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd, int cr)
   SIZ (absz) = ABS(SIZ(absz)); /* Hack to get abs(z) */
   MPFR_MPZ_SIZEINBASE2 (size_z, z);
 
-  /* round towards 1 (or -1) to avoid spurious overflow/underflow,
+  /* round towards 1 (or -1) to avoid spurious overflow or underflow,
      i.e. if an overflow or underflow occurs, it is a real exception
      and is not just due to the rounding error. */
   rnd1 = (MPFR_EXP(x) >= 1) ? GMP_RNDZ
@@ -271,7 +272,8 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
       /* initialise of intermediary variable */
       mpfr_init2 (t, Nt);
 
-      /* we choose a rounding towards 1, to avoid overflow or underflow */
+      /* we choose a rounding towards 1 (or -1), to avoid spurious
+         overflow or underflow */
       rnd1 = (MPFR_EXP(x) >= 1) ? GMP_RNDZ :
         ((MPFR_SIGN(x) > 0) ? GMP_RNDU : GMP_RNDZ);
 
