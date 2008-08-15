@@ -184,7 +184,7 @@ test_others (const void *sx, const char *sy, mp_rnd_t rnd,
     }
 
   /* If y is an integer but not -0, we can test mpfr_pow_z, and
-     possibly mpfr_pow_si. */
+     possibly mpfr_pow_si (and possibly mpfr_ui_div). */
   if ((MPFR_IS_POS (y) || MPFR_NOTZERO (y)) && mpfr_integer_p (y))
     {
       mpz_t yyy;
@@ -202,6 +202,19 @@ test_others (const void *sx, const char *sy, mp_rnd_t rnd,
           inex2 = mpfr_pow_si (z2, x, yy, rnd);
           cmpres (spx, sx, sy, rnd, z1, inex1, z2, inex2, MPFR_FLAGS_ALL,
                   "mpfr_pow_si, flags set");
+
+          /* If y is -1, we can test mpfr_ui_div. */
+          if (yy == -1)
+            {
+              mpfr_clear_flags ();
+              inex2 = mpfr_ui_div (z2, 1, x, rnd);
+              cmpres (spx, sx, sy, rnd, z1, inex1, z2, inex2, flags,
+                      "mpfr_ui_div, flags cleared");
+              __gmpfr_flags = MPFR_FLAGS_ALL;
+              inex2 = mpfr_ui_div (z2, 1, x, rnd);
+              cmpres (spx, sx, sy, rnd, z1, inex1, z2, inex2, MPFR_FLAGS_ALL,
+                      "mpfr_ui_div, flags set");
+            }
         }
 
       /* Test mpfr_pow_z. */
