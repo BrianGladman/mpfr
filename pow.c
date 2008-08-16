@@ -538,6 +538,8 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
         }
     }
 
+  /* FIXME: basic underflow checking is incomplete. This is needed
+     for the special case (+/-2^b)^Y below. */
   /* detect underflows: for x > 0, y < 0, |x^y| = |(1/x)^(-y)|
                         <= 2^((1-EXP(x))*(-y)) */
   if (MPFR_IS_NEG(y) && MPFR_EXP(x) > 1)
@@ -602,9 +604,9 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
         inexact = mpfr_mul_si (tmp, y, b, GMP_RNDN); /* exact */
         MPFR_ASSERTN (inexact == 0);
         /* Note: as the exponent range has been extended, an overflow is not
-           possible (due to basic overflow checking above, as the result is
-           ~ 2^tmp), and an underflow is not possible either because b is an
-           integer (thus either 0 or >= 1). */
+           possible (due to basic overflow and underflow checking above, as
+           the result is ~ 2^tmp), and an underflow is not possible either
+           because b is an integer (thus either 0 or >= 1). */
         mpfr_clear_flags ();
         inexact = mpfr_exp2 (z, tmp, rnd_mode);
         mpfr_clear (tmp);
