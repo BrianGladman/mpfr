@@ -862,6 +862,18 @@ extern unsigned char *mpfr_stack;
 # define MPFR_UNLIKELY(x) (x)
 #endif
 
+/* Declare that some variable is initialized before being used (without a
+   dummy initialization) in order to avoid some compiler warnings. Use the
+   VAR = VAR trick (see http://gcc.gnu.org/bugzilla/show_bug.cgi?id=36296)
+   only with gcc as this is undefined behavior, and we don't know what
+   other compilers do (they may also be smarter). This trick could be
+   disabled with future gcc versions. */
+#if defined(__GNUC__)
+# define INITIALIZED(VAR) VAR = VAR
+#else
+# define INITIALIZED(VAR) VAR
+#endif
+
 /* Ceil log 2: If GCC, uses a GCC extension, otherwise calls a function */
 /* Warning:
  *   Needs to define MPFR_NEED_LONGLONG.

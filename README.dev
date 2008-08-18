@@ -594,16 +594,16 @@ drawbacks:
   * this makes the compiler add useless code (though this should not be
     significant).
 
-Concerning the latter point, gcc currently supports pseudo-initializations
-like "int i = i;" but this is otherwise undefined behavior. So, do not use
-this form (possibly except via a macro defined in this way if the compiler
-is gcc).
+The INITIALIZED macro can be used to avoid such warnings with gcc, e.g.
+
+  int INITIALIZED(i);
+
+It uses the "int i = i;" pseudo-initialization trick, disabled with other
+compilers as this is undefined behavior. See:
+
+    http://gcc.gnu.org/bugzilla/show_bug.cgi?id=36296
 
 If a dummy initialization must be added, use preferably an "invalid" value
 (e.g. NULL for pointers, or a value that can be checked with MPFR_ASSERTN
 before using it) that could make the program abort instead of returning an
 incorrect value in case of a bug in MPFR.
-
-A bug has been opened on GCC's Bugzilla:
-
-    http://gcc.gnu.org/bugzilla/show_bug.cgi?id=36296
