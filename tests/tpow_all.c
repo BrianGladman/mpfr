@@ -73,12 +73,12 @@ err (const char *s, int i, int j, int rnd, mpfr_srcptr z, int inex)
  *   z2: computed result.
  *   inex2: computed ternary value.
  *   flags1: expected flags (computed flags in __gmpfr_flags).
- *   s: string about the context.
+ *   s1, s2: strings about the context.
  */
 static void
 cmpres (int spx, const void *px, const char *sy, mp_rnd_t rnd,
         mpfr_srcptr z1, int inex1, mpfr_srcptr z2, int inex2,
-        unsigned int flags1, const char *s)
+        unsigned int flags1, const char *s1, const char *s2)
 {
   unsigned int flags2 = __gmpfr_flags;
 
@@ -95,7 +95,8 @@ cmpres (int spx, const void *px, const char *sy, mp_rnd_t rnd,
         return;
     }
 
-  printf ("Error with %s%s\nx = ", s, ext ? ", extended exponent range" : "");
+  printf ("Error in %s\nwith %s%s\nx = ", s1, s2,
+          ext ? ", extended exponent range" : "");
   if (spx)
     printf ("%s, ", (char *) px);
   else
@@ -135,11 +136,12 @@ is_odd (mpfr_srcptr x)
    with those of mpfr_pow with all flags set and of the other power
    functions. Arguments x and y are the input values; sx and sy are
    their string representations (sx may be null); rnd contains the
-   rounding mode. */
+   rounding mode; s is a string containing the function that called
+   test_others. */
 static void
 test_others (const void *sx, const char *sy, mp_rnd_t rnd,
              mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z1,
-             int inex1, unsigned int flags)
+             int inex1, unsigned int flags, const char *s)
 {
   mpfr_t z2;
   int inex2;
@@ -153,7 +155,7 @@ test_others (const void *sx, const char *sy, mp_rnd_t rnd,
   __gmpfr_flags = MPFR_FLAGS_ALL;
   inex2 = mpfr_pow (z2, x, y, rnd);
   cmpres (spx, sx, sy, rnd, z1, inex1, z2, inex2, MPFR_FLAGS_ALL,
-          "mpfr_pow, flags set");
+          s, "mpfr_pow, flags set");
 
   /* If y is an integer that fits in an unsigned long and is not -0,
      we can test mpfr_pow_ui. */
@@ -165,11 +167,11 @@ test_others (const void *sx, const char *sy, mp_rnd_t rnd,
       mpfr_clear_flags ();
       inex2 = mpfr_pow_ui (z2, x, yy, rnd);
       cmpres (spx, sx, sy, rnd, z1, inex1, z2, inex2, flags,
-              "mpfr_pow_ui, flags cleared");
+              s, "mpfr_pow_ui, flags cleared");
       __gmpfr_flags = MPFR_FLAGS_ALL;
       inex2 = mpfr_pow_ui (z2, x, yy, rnd);
       cmpres (spx, sx, sy, rnd, z1, inex1, z2, inex2, MPFR_FLAGS_ALL,
-              "mpfr_pow_ui, flags set");
+              s, "mpfr_pow_ui, flags set");
 
       /* If x is an integer that fits in an unsigned long and is not -0,
          we can also test mpfr_ui_pow_ui. */
@@ -181,11 +183,11 @@ test_others (const void *sx, const char *sy, mp_rnd_t rnd,
           mpfr_clear_flags ();
           inex2 = mpfr_ui_pow_ui (z2, xx, yy, rnd);
           cmpres (spx, sx, sy, rnd, z1, inex1, z2, inex2, flags,
-                  "mpfr_ui_pow_ui, flags cleared");
+                  s, "mpfr_ui_pow_ui, flags cleared");
           __gmpfr_flags = MPFR_FLAGS_ALL;
           inex2 = mpfr_ui_pow_ui (z2, xx, yy, rnd);
           cmpres (spx, sx, sy, rnd, z1, inex1, z2, inex2, MPFR_FLAGS_ALL,
-                  "mpfr_ui_pow_ui, flags set");
+                  s, "mpfr_ui_pow_ui, flags set");
         }
     }
 
@@ -204,11 +206,11 @@ test_others (const void *sx, const char *sy, mp_rnd_t rnd,
           mpfr_clear_flags ();
           inex2 = mpfr_pow_si (z2, x, yy, rnd);
           cmpres (spx, sx, sy, rnd, z1, inex1, z2, inex2, flags,
-                  "mpfr_pow_si, flags cleared");
+                  s, "mpfr_pow_si, flags cleared");
           __gmpfr_flags = MPFR_FLAGS_ALL;
           inex2 = mpfr_pow_si (z2, x, yy, rnd);
           cmpres (spx, sx, sy, rnd, z1, inex1, z2, inex2, MPFR_FLAGS_ALL,
-                  "mpfr_pow_si, flags set");
+                  s, "mpfr_pow_si, flags set");
 
           /* If y is -1, we can test mpfr_ui_div. */
           if (yy == -1)
@@ -216,11 +218,11 @@ test_others (const void *sx, const char *sy, mp_rnd_t rnd,
               mpfr_clear_flags ();
               inex2 = mpfr_ui_div (z2, 1, x, rnd);
               cmpres (spx, sx, sy, rnd, z1, inex1, z2, inex2, flags,
-                      "mpfr_ui_div, flags cleared");
+                      s, "mpfr_ui_div, flags cleared");
               __gmpfr_flags = MPFR_FLAGS_ALL;
               inex2 = mpfr_ui_div (z2, 1, x, rnd);
               cmpres (spx, sx, sy, rnd, z1, inex1, z2, inex2, MPFR_FLAGS_ALL,
-                      "mpfr_ui_div, flags set");
+                      s, "mpfr_ui_div, flags set");
             }
         }
 
@@ -230,11 +232,11 @@ test_others (const void *sx, const char *sy, mp_rnd_t rnd,
       mpfr_clear_flags ();
       inex2 = mpfr_pow_z (z2, x, yyy, rnd);
       cmpres (spx, sx, sy, rnd, z1, inex1, z2, inex2, flags,
-              "mpfr_pow_z, flags cleared");
+              s, "mpfr_pow_z, flags cleared");
       __gmpfr_flags = MPFR_FLAGS_ALL;
       inex2 = mpfr_pow_z (z2, x, yyy, rnd);
       cmpres (spx, sx, sy, rnd, z1, inex1, z2, inex2, MPFR_FLAGS_ALL,
-              "mpfr_pow_z, flags set");
+              s, "mpfr_pow_z, flags set");
       mpz_clear (yyy);
     }
 
@@ -248,11 +250,11 @@ test_others (const void *sx, const char *sy, mp_rnd_t rnd,
       mpfr_clear_flags ();
       inex2 = mpfr_ui_pow (z2, xx, y, rnd);
       cmpres (spx, sx, sy, rnd, z1, inex1, z2, inex2, flags,
-              "mpfr_ui_pow, flags cleared");
+              s, "mpfr_ui_pow, flags cleared");
       __gmpfr_flags = MPFR_FLAGS_ALL;
       inex2 = mpfr_ui_pow (z2, xx, y, rnd);
       cmpres (spx, sx, sy, rnd, z1, inex1, z2, inex2, MPFR_FLAGS_ALL,
-              "mpfr_ui_pow, flags set");
+              s, "mpfr_ui_pow, flags set");
 
       /* If x = 2, we can test mpfr_exp2. */
       if (xx == 2)
@@ -260,11 +262,11 @@ test_others (const void *sx, const char *sy, mp_rnd_t rnd,
           mpfr_clear_flags ();
           inex2 = mpfr_exp2 (z2, y, rnd);
           cmpres (spx, sx, sy, rnd, z1, inex1, z2, inex2, flags,
-                  "mpfr_exp2, flags cleared");
+                  s, "mpfr_exp2, flags cleared");
           __gmpfr_flags = MPFR_FLAGS_ALL;
           inex2 = mpfr_exp2 (z2, y, rnd);
           cmpres (spx, sx, sy, rnd, z1, inex1, z2, inex2, MPFR_FLAGS_ALL,
-                  "mpfr_exp2, flags set");
+                  s, "mpfr_exp2, flags set");
         }
 
       /* If x = 10, we can test mpfr_exp10. */
@@ -273,11 +275,11 @@ test_others (const void *sx, const char *sy, mp_rnd_t rnd,
           mpfr_clear_flags ();
           inex2 = mpfr_exp10 (z2, y, rnd);
           cmpres (spx, sx, sy, rnd, z1, inex1, z2, inex2, flags,
-                  "mpfr_exp10, flags cleared");
+                  s, "mpfr_exp10, flags cleared");
           __gmpfr_flags = MPFR_FLAGS_ALL;
           inex2 = mpfr_exp10 (z2, y, rnd);
           cmpres (spx, sx, sy, rnd, z1, inex1, z2, inex2, MPFR_FLAGS_ALL,
-                  "mpfr_exp10, flags set");
+                  s, "mpfr_exp10, flags set");
         }
     }
 
@@ -408,7 +410,8 @@ tst (void)
               if ((MPFR_IS_NEG (x) && is_odd (y)) ^ MPFR_IS_NEG (z))
                 err ("wrong sign", i, j, rnd, z, inex);
             }
-          test_others (val[i], val[j], (mp_rnd_t) rnd, x, y, z, inex, flags);
+          test_others (val[i], val[j], (mp_rnd_t) rnd, x, y, z, inex, flags,
+                       "tst");
         }
   mpfr_clears (x, y, z, tmp, (mpfr_ptr) 0);
 }
@@ -470,8 +473,9 @@ underflow_up1 (void)
           mpfr_clear_flags ();
           inex = mpfr_pow (z, x, y, (mp_rnd_t) rnd);
           cmpres (1, "2", sy, (mp_rnd_t) rnd, zero ? z0 : (mpfr_ptr) NULL,
-                  -1, z, inex, flags, "underflow_up1");
-          test_others ("2", sy, (mp_rnd_t) rnd, x, y, z, inex, flags);
+                  -1, z, inex, flags, "underflow_up1", "mpfr_pow");
+          test_others ("2", sy, (mp_rnd_t) rnd, x, y, z, inex, flags,
+                       "underflow_up1");
         }
 
       inex = mpfr_sub (y, y, delta, GMP_RNDN);
@@ -541,8 +545,9 @@ underflow_up2 (void)
       mpfr_clear_flags ();
       inex = mpfr_pow (z, x, y, (mp_rnd_t) rnd);
       cmpres (0, x, sy, (mp_rnd_t) rnd, z0, expected_inex, z, inex, ufinex,
-              "underflow_up2");
-      test_others (NULL, sy, (mp_rnd_t) rnd, x, y, z, inex, ufinex);
+              "underflow_up2", "mpfr_pow");
+      test_others (NULL, sy, (mp_rnd_t) rnd, x, y, z, inex, ufinex,
+                   "underflow_up2");
     }
 
   mpfr_clears (x, y, z, z0, eps, (mpfr_ptr) 0);
@@ -579,7 +584,7 @@ overflow_inv (void)
               mpfr_clear_flags ();
               inex = mpfr_pow (z, x, y, (mp_rnd_t) rnd);
               test_others (NULL, "-1", (mp_rnd_t) rnd, x, y, z,
-                           inex, __gmpfr_flags);
+                           inex, __gmpfr_flags, "overflow_inv");
             }
           mpfr_nexttoinf (x);
         }
