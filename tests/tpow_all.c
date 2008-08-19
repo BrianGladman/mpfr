@@ -42,12 +42,15 @@ MA 02110-1301, USA. */
  */
 static int all_cmpres_errors;
 
+/* Non-zero when extended exponent range */
+static int ext = 0;
+
 static char *val[] =
   { "min", "min+", "max", "@NaN@", "-@Inf@", "-4", "-3", "-2", "-1.5",
     "-1", "-0.5", "-0", "0", "0.5", "1", "1.5", "2", "3", "4", "@Inf@" };
 
 static void
-err (const char *s, int i, int j, int rnd, mpfr_srcptr z, int inex, int ext)
+err (const char *s, int i, int j, int rnd, mpfr_srcptr z, int inex)
 {
   puts (s);
   if (ext)
@@ -92,7 +95,7 @@ cmpres (int spx, const void *px, const char *sy, mp_rnd_t rnd,
         return;
     }
 
-  printf ("Error with %s\nx = ", s);
+  printf ("Error with %s%s\nx = ", s, ext ? ", extended exponent range" : "");
   if (spx)
     printf ("%s, ", (char *) px);
   else
@@ -307,7 +310,7 @@ my_setstr (mpfr_ptr t, const char *s)
 }
 
 static void
-tst (int ext)
+tst (void)
 {
   int sv = sizeof (val) / sizeof (*val);
   int i, j;
@@ -332,78 +335,78 @@ tst (int ext)
           inex = mpfr_pow (z, x, y, (mp_rnd_t) rnd);
           flags = __gmpfr_flags;
           if (! MPFR_IS_NAN (z) && mpfr_nanflag_p ())
-            err ("got NaN flag without NaN value", i, j, rnd, z, inex, ext);
+            err ("got NaN flag without NaN value", i, j, rnd, z, inex);
           if (MPFR_IS_NAN (z) && ! mpfr_nanflag_p ())
-            err ("got NaN value without NaN flag", i, j, rnd, z, inex, ext);
+            err ("got NaN value without NaN flag", i, j, rnd, z, inex);
           if (inex != 0 && ! mpfr_inexflag_p ())
             err ("got non-zero ternary value without inexact flag",
-                 i, j, rnd, z, inex, ext);
+                 i, j, rnd, z, inex);
           if (inex == 0 && mpfr_inexflag_p ())
             err ("got null ternary value with inexact flag",
-                 i, j, rnd, z, inex, ext);
+                 i, j, rnd, z, inex);
           if (i >= 3 && j >= 3)
             {
               if (mpfr_underflow_p ())
-                err ("got underflow", i, j, rnd, z, inex, ext);
+                err ("got underflow", i, j, rnd, z, inex);
               if (mpfr_overflow_p ())
-                err ("got overflow", i, j, rnd, z, inex, ext);
+                err ("got overflow", i, j, rnd, z, inex);
               exact = MPFR_IS_SINGULAR (z) ||
                 (mpfr_mul_2ui (tmp, z, 16, GMP_RNDN), mpfr_integer_p (tmp));
               if (exact && inex != 0)
                 err ("got exact value with ternary flag different from 0",
-                     i, j, rnd, z, inex, ext);
+                     i, j, rnd, z, inex);
               if (! exact && inex == 0)
                 err ("got inexact value with ternary flag equal to 0",
-                     i, j, rnd, z, inex, ext);
+                     i, j, rnd, z, inex);
             }
           if (MPFR_IS_ZERO (x) && ! MPFR_IS_NAN (y) && MPFR_NOTZERO (y))
             {
               if (MPFR_IS_NEG (y) && ! MPFR_IS_INF (z))
-                err ("expected an infinity", i, j, rnd, z, inex, ext);
+                err ("expected an infinity", i, j, rnd, z, inex);
               if (MPFR_IS_POS (y) && ! MPFR_IS_ZERO (z))
-                err ("expected a zero", i, j, rnd, z, inex, ext);
+                err ("expected a zero", i, j, rnd, z, inex);
               if ((MPFR_IS_NEG (x) && is_odd (y)) ^ MPFR_IS_NEG (z))
-                err ("wrong sign", i, j, rnd, z, inex, ext);
+                err ("wrong sign", i, j, rnd, z, inex);
             }
           if (! MPFR_IS_NAN (x) && mpfr_cmp_si (x, -1) == 0)
             {
               /* x = -1 */
               if (! (MPFR_IS_INF (y) || mpfr_integer_p (y)) &&
                   ! MPFR_IS_NAN (z))
-                err ("expected NaN", i, j, rnd, z, inex, ext);
+                err ("expected NaN", i, j, rnd, z, inex);
               if ((MPFR_IS_INF (y) || (mpfr_integer_p (y) && ! is_odd (y)))
                   && ! mpfr_equal_p (z, __gmpfr_one))
-                err ("expected 1", i, j, rnd, z, inex, ext);
+                err ("expected 1", i, j, rnd, z, inex);
               if (is_odd (y) &&
                   (MPFR_IS_NAN (z) || mpfr_cmp_si (z, -1) != 0))
-                err ("expected -1", i, j, rnd, z, inex, ext);
+                err ("expected -1", i, j, rnd, z, inex);
             }
           if ((mpfr_equal_p (x, __gmpfr_one) || MPFR_IS_ZERO (y)) &&
               ! mpfr_equal_p (z, __gmpfr_one))
-            err ("expected 1", i, j, rnd, z, inex, ext);
+            err ("expected 1", i, j, rnd, z, inex);
           if (MPFR_IS_PURE_FP (x) && MPFR_IS_NEG (x) &&
               MPFR_IS_FP (y) && ! mpfr_integer_p (y) &&
               ! MPFR_IS_NAN (z))
-            err ("expected NaN", i, j, rnd, z, inex, ext);
+            err ("expected NaN", i, j, rnd, z, inex);
           if (MPFR_IS_INF (y) && MPFR_NOTZERO (x))
             {
               int cmpabs1 = mpfr_cmpabs (x, __gmpfr_one);
 
               if ((MPFR_IS_NEG (y) ? (cmpabs1 < 0) : (cmpabs1 > 0)) &&
                   ! (MPFR_IS_POS (z) && MPFR_IS_INF (z)))
-                err ("expected +Inf", i, j, rnd, z, inex, ext);
+                err ("expected +Inf", i, j, rnd, z, inex);
               if ((MPFR_IS_NEG (y) ? (cmpabs1 > 0) : (cmpabs1 < 0)) &&
                   ! (MPFR_IS_POS (z) && MPFR_IS_ZERO (z)))
-                err ("expected +0", i, j, rnd, z, inex, ext);
+                err ("expected +0", i, j, rnd, z, inex);
             }
           if (MPFR_IS_INF (x) && ! MPFR_IS_NAN (y) && MPFR_NOTZERO (y))
             {
               if (MPFR_IS_POS (y) && ! MPFR_IS_INF (z))
-                err ("expected an infinity", i, j, rnd, z, inex, ext);
+                err ("expected an infinity", i, j, rnd, z, inex);
               if (MPFR_IS_NEG (y) && ! MPFR_IS_ZERO (z))
-                err ("expected a zero", i, j, rnd, z, inex, ext);
+                err ("expected a zero", i, j, rnd, z, inex);
               if ((MPFR_IS_NEG (x) && is_odd (y)) ^ MPFR_IS_NEG (z))
-                err ("wrong sign", i, j, rnd, z, inex, ext);
+                err ("wrong sign", i, j, rnd, z, inex);
             }
           test_others (val[i], val[j], (mp_rnd_t) rnd, x, y, z, inex, flags);
         }
@@ -411,7 +414,7 @@ tst (int ext)
 }
 
 static void
-underflow_up1 (int ext)
+underflow_up1 (void)
 {
   mpfr_t delta, x, y, z, z0;
   mp_exp_t n;
@@ -466,10 +469,8 @@ underflow_up1 (int ext)
 
           mpfr_clear_flags ();
           inex = mpfr_pow (z, x, y, (mp_rnd_t) rnd);
-          cmpres (1, "2", sy, (mp_rnd_t) rnd,
-                  zero ? z0 : (mpfr_ptr) NULL, -1, z, inex, flags,
-                  ext ? "underflow_up1 and extended exponent range" :
-                  "underflow_up1");
+          cmpres (1, "2", sy, (mp_rnd_t) rnd, zero ? z0 : (mpfr_ptr) NULL,
+                  -1, z, inex, flags, "underflow_up1");
           test_others ("2", sy, (mp_rnd_t) rnd, x, y, z, inex, flags);
         }
 
@@ -497,7 +498,7 @@ underflow_up1 (int ext)
  *   Got      0, inex = -1, flags = 9
  */
 static void
-underflow_up2 (int ext)
+underflow_up2 (void)
 {
   mpfr_t x, y, z, z0, eps;
   mp_exp_t n;
@@ -540,7 +541,6 @@ underflow_up2 (int ext)
       mpfr_clear_flags ();
       inex = mpfr_pow (z, x, y, (mp_rnd_t) rnd);
       cmpres (0, x, sy, (mp_rnd_t) rnd, z0, expected_inex, z, inex, ufinex,
-              ext ? "underflow_up2 and extended exponent range" :
               "underflow_up2");
       test_others (NULL, sy, (mp_rnd_t) rnd, x, y, z, inex, ufinex);
     }
@@ -549,14 +549,14 @@ underflow_up2 (int ext)
 }
 
 static void
-underflow_up (int ext)
+underflow_up (void)
 {
-  underflow_up1 (ext);
-  underflow_up2 (ext);
+  underflow_up1 ();
+  underflow_up2 ();
 }
 
 static void
-overflow_inv (int ext)
+overflow_inv (void)
 {
   mpfr_t x, y, z;
   int s, t;
@@ -593,9 +593,10 @@ alltst (void)
 {
   mp_exp_t emin, emax;
 
-  tst (0);
-  underflow_up (0);
-  overflow_inv (0);
+  ext = 0;
+  tst ();
+  underflow_up ();
+  overflow_inv ();
 
   emin = mpfr_get_emin ();
   emax = mpfr_get_emax ();
@@ -603,9 +604,10 @@ alltst (void)
   set_emax (MPFR_EMAX_MAX);
   if (mpfr_get_emin () != emin || mpfr_get_emax () != emax)
     {
-      tst (1);
-      underflow_up (1);
-      overflow_inv (1);
+      ext = 1;
+      tst ();
+      underflow_up ();
+      overflow_inv ();
       set_emin (emin);
       set_emax (emax);
     }
