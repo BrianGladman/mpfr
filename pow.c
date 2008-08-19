@@ -538,30 +538,45 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
         }
     }
 
-  /* FIXME: basic underflow checking is incomplete. This is needed
-     for the special case (+/-2^b)^Y below. */
-  /* detect underflows: for x > 0, y < 0, |x^y| = |(1/x)^(-y)|
-                        <= 2^((1-EXP(x))*(-y)) */
-  if (MPFR_IS_NEG(y) && MPFR_EXP(x) > 1)
+  /* Basic underflow checking. One has:
+   *   - if y > 0, |x^y| < 2^(EXP(x) * y);
+   *   - if y < 0, |x^y| <= 2^((EXP(x) - 1) * y);
+   * so that one can compute a value ebound such that |x^y| < 2^ebound.
+   * If we have ebound <= emin - 2 (emin - 1 in directed rounding modes),
+   * then there is an underflow and we can decide the return value.
+   */
+  if (MPFR_IS_NEG (y) ? (MPFR_GET_EXP (x) > 1) : (MPFR_GET_EXP (x) < 0))
     {
       mpfr_t tmp;
-      int negative, underflow;
+      mpfr_eexp_t ebound;
+      int inex2;
 
-      /* We must restore the flags if no underflow. */
+      /* We must restore the flags. */
       MPFR_SAVE_EXPO_MARK (expo);
-      mpfr_init2 (tmp, 53);
-      mpfr_neg (tmp, y, GMP_RNDZ);
-      mpfr_mul_si (tmp, tmp, 1 - MPFR_EXP(x), GMP_RNDZ);
-      underflow = mpfr_cmp_si (tmp, __gmpfr_emin - 2) <= 0;
+      mpfr_init2 (tmp, sizeof (mp_exp_t) * CHAR_BIT);
+      inex2 = mpfr_set_exp_t (tmp, MPFR_GET_EXP (x), GMP_RNDN);
+      MPFR_ASSERTN (inex2 == 0);
+      if (MPFR_IS_NEG (y))
+        {
+          inex2 = mpfr_sub_ui (tmp, tmp, 1, GMP_RNDN);
+          MPFR_ASSERTN (inex2 == 0);
+        }
+      mpfr_mul (tmp, tmp, y, GMP_RNDU);
+      if (MPFR_IS_NEG (y))
+        mpfr_nextabove (tmp);
+      /* tmp doesn't necessarily fit in ebound, but that doesn't matter
+         since we get the minimum value in such a case. */
+      ebound = mpfr_get_exp_t (tmp, GMP_RNDU);
       mpfr_clear (tmp);
       MPFR_SAVE_EXPO_FREE (expo);
-      if (underflow)
+      if (MPFR_UNLIKELY (ebound <=
+                         __gmpfr_emin - (rnd_mode == GMP_RNDN ? 2 : 1)))
         {
           /* warning: mpfr_underflow rounds away from 0 for GMP_RNDN */
           MPFR_LOG_MSG (("early underflow detection\n", 0));
-          negative = MPFR_SIGN(x) < 0 && is_odd (y);
-          return mpfr_underflow (z, (rnd_mode == GMP_RNDN) ? GMP_RNDZ :
-                                 rnd_mode, negative ? -1 : 1);
+          return mpfr_underflow (z,
+                                 rnd_mode == GMP_RNDN ? GMP_RNDZ : rnd_mode,
+                                 MPFR_SIGN (x) < 0 && is_odd (y) ? -1 : 1);
         }
     }
 
