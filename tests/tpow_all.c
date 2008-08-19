@@ -563,9 +563,9 @@ overflow_inv (void)
   int inex;
   int rnd;
 
-  mpfr_init2 (x, 55);
+  mpfr_init2 (x, 10);
   mpfr_init2 (y, 2);
-  mpfr_init2 (z, 53);
+  mpfr_init2 (z, 8);
 
   mpfr_set_si (y, -1, GMP_RNDN);
   for (s = -1; s <= 1; s += 2)
