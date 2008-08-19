@@ -556,12 +556,46 @@ underflow_up (int ext)
 }
 
 static void
+overflow_inv (int ext)
+{
+  mpfr_t x, y, z;
+  int s, t;
+  int inex;
+  int rnd;
+
+  mpfr_init2 (x, 55);
+  mpfr_init2 (y, 2);
+  mpfr_init2 (z, 53);
+
+  mpfr_set_si (y, -1, GMP_RNDN);
+  for (s = -1; s <= 1; s += 2)
+    {
+      inex = mpfr_set_si_2exp (x, s, - mpfr_get_emax (), GMP_RNDN);
+      MPFR_ASSERTN (inex == 0);
+      for (t = 0; t <= 8; t++)
+        {
+          RND_LOOP (rnd)
+            {
+              mpfr_clear_flags ();
+              inex = mpfr_pow (z, x, y, (mp_rnd_t) rnd);
+              test_others (NULL, "-1", (mp_rnd_t) rnd, x, y, z,
+                           inex, __gmpfr_flags);
+            }
+          mpfr_nexttoinf (x);
+        }
+    }
+
+  mpfr_clears (x, y, z, (mpfr_ptr) 0);
+}
+
+static void
 alltst (void)
 {
   mp_exp_t emin, emax;
 
   tst (0);
   underflow_up (0);
+  overflow_inv (0);
 
   emin = mpfr_get_emin ();
   emax = mpfr_get_emax ();
@@ -571,6 +605,7 @@ alltst (void)
     {
       tst (1);
       underflow_up (1);
+      overflow_inv (1);
       set_emin (emin);
       set_emax (emax);
     }
