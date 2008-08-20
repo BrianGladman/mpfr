@@ -174,27 +174,32 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
 #endif
 #endif
             }
-          else if (n <= 1)
+          else
             {
-              /* Special cases tested in precision p1 if n <= 1. */
-              mpfr_set_si (x, n == 0 ? 1 : -1, GMP_RNDN);
-              mpfr_set_exp (x, mpfr_get_emin ());
+              /* Special cases tested in precision p1 if n <= 3. They are
+                 useful really in the extended exponent range. */
+              set_emin (MPFR_EMIN_MIN);
+              set_emax (MPFR_EMAX_MAX);
+              if (n <= 1)
+                {
+                  mpfr_set_si (x, n == 0 ? 1 : -1, GMP_RNDN);
+                  mpfr_set_exp (x, mpfr_get_emin ());
 #if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
-              mpfr_set_si (u, randlimb () % 2 == 0 ? 1 : -1, GMP_RNDN);
-              mpfr_set_exp (u, mpfr_get_emin ());
+                  mpfr_set_si (u, randlimb () % 2 == 0 ? 1 : -1, GMP_RNDN);
+                  mpfr_set_exp (u, mpfr_get_emin ());
 #endif
-            }
-          else  /* 2 <= n <= 3 */
-            {
-              /* Special cases tested in precision p1 if 2 <= n <= 3. */
-              if (getenv ("MPFR_CHECK_MAX") == NULL)
-                goto next_n;
-              mpfr_set_si (x, n == 0 ? 1 : -1, GMP_RNDN);
-              mpfr_setmax (x, REDUCE_EMAX);
+                }
+              else  /* 2 <= n <= 3 */
+                {
+                  if (getenv ("MPFR_CHECK_MAX") == NULL)
+                    goto next_n;
+                  mpfr_set_si (x, n == 0 ? 1 : -1, GMP_RNDN);
+                  mpfr_setmax (x, REDUCE_EMAX);
 #if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
-              mpfr_set_si (u, randlimb () % 2 == 0 ? 1 : -1, GMP_RNDN);
-              mpfr_setmax (u, mpfr_get_emax ());
+                  mpfr_set_si (u, randlimb () % 2 == 0 ? 1 : -1, GMP_RNDN);
+                  mpfr_setmax (u, mpfr_get_emax ());
 #endif
+                }
             }
 
           rnd = RND_RAND ();
@@ -336,7 +341,7 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
 
         next_n:
           /* In case the exponent range has been changed by
-             tests_default_random()... */
+             tests_default_random() or for special values... */
           mpfr_set_emin (old_emin);
           mpfr_set_emax (old_emax);
         }
