@@ -1300,7 +1300,7 @@ bug20080721 (void)
     exit (1);
 }
 
-/* The following test fails in r5552. This is due to:
+/* The following test fails in r5552 (32-bit and 64-bit). This is due to:
  *   mpfr_log (t, absx, GMP_RNDU);
  *   mpfr_mul (t, y, t, GMP_RNDU);
  * in pow.c, that is supposed to compute an upper bound on exp(y*ln|x|),
