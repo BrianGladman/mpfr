@@ -636,9 +636,10 @@ overflow_inv (void)
               mpfr_nexttoinf (x);
             }  /* for (t = ...) */
         }  /* for (s = ...) */
+      mpfr_clear (x);
     }  /* for (precx = ...) */
 
-  mpfr_clears (x, y, z, (mpfr_ptr) 0);
+  mpfr_clears (y, z, (mpfr_ptr) 0);
 }
 
 static void
