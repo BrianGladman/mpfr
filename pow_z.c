@@ -316,13 +316,35 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
             {
               MPFR_ZIV_FREE (loop);
               mpfr_clear (t);
-              MPFR_SAVE_EXPO_FREE (expo);
               MPFR_LOG_MSG (("underflow\n", 0));
-              /* FIXME: in GMP_RNDN, we don't know whether to round
-                 toward or away from zero. */
-              return mpfr_underflow (y, rnd == GMP_RNDN ? GMP_RNDZ : rnd,
-                                     mpz_odd_p (z) ? MPFR_SIGN (x) :
-                                     MPFR_SIGN_POS);
+              if (rnd == GMP_RNDN)
+                {
+                  mpfr_t y2, zz;
+
+                  /* We cannot decide now whether the result should be
+                     rounded toward zero or away from zero. So, like
+                     in mpfr_pow_pos_z, let's use the general case of
+                     mpfr_pow in precision 2. */
+                  MPFR_ASSERTD (mpfr_cmp_si_2exp (x, MPFR_SIGN (x),
+                                                  MPFR_EXP (x) - 1) != 0);
+                  mpfr_init2 (y2, 2);
+                  mpfr_init2 (zz, ABS (SIZ (z)) * BITS_PER_MP_LIMB);
+                  inexact = mpfr_set_z (zz, z, GMP_RNDN);
+                  MPFR_ASSERTN (inexact == 0);
+                  inexact = mpfr_pow_general (y2, x, zz, rnd, 1,
+                                              (mpfr_save_expo_t *) NULL);
+                  mpfr_clear (zz);
+                  mpfr_set (y, y2, GMP_RNDN);
+                  mpfr_clear (y2);
+                  MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, MPFR_FLAGS_UNDERFLOW);
+                  goto end;
+                }
+              else
+                {
+                  MPFR_SAVE_EXPO_FREE (expo);
+                  return mpfr_underflow (y, rnd, mpz_odd_p (z) ?
+                                         MPFR_SIGN (x) : MPFR_SIGN_POS);
+                }
             }
           if (MPFR_LIKELY (MPFR_CAN_ROUND (t, Nt - size_z - 2, MPFR_PREC (y),
                                            rnd)))
@@ -337,6 +359,7 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
       mpfr_clear (t);
     }
 
+ end:
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (y, inexact, rnd);
 }
