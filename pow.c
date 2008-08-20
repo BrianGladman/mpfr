@@ -197,8 +197,8 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
 
       /* compute exp(y*ln|x|), using GMP_RNDU to get an upper bound, so
          that we can detect underflows. */
-      mpfr_log (t, absx, GMP_RNDU);            /* ln|x| */
-      mpfr_mul (t, y, t, GMP_RNDU);            /* y*ln|x| */
+      mpfr_log (t, absx, MPFR_IS_NEG (y) ? GMP_RNDD : GMP_RNDU); /* ln|x| */
+      mpfr_mul (t, y, t, GMP_RNDU);                              /* y*ln|x| */
       if (k_non_zero)
         {
           mpfr_const_log2 (u, GMP_RNDD);
@@ -235,10 +235,10 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
           if (MPFR_IS_INF (t))
             {
               /* Note: we can probably use a low precision for this test. */
-              mpfr_log (t, absx, GMP_RNDD);            /* ln|x| */
+              mpfr_log (t, absx, MPFR_IS_NEG (y) ? GMP_RNDU : GMP_RNDD);
               mpfr_mul (t, y, t, GMP_RNDD);            /* y * ln|x| */
               MPFR_BLOCK (flags2, mpfr_exp (t, t, GMP_RNDD));
-              /* t = exp(y * ln|x|) */
+              /* t = lower bound on exp(y * ln|x|) */
               if (MPFR_OVERFLOW (flags2))
                 {
                   /* We have computed a lower bound on |x|^y, and it
