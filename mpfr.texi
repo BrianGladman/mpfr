@@ -800,6 +800,11 @@ At any time, the user can free the various caches with
 terminating a thread, or before exiting when using tools like
 @samp{valgrind} (to avoid memory leaks being reported).
 
+MPFR internal data such as flags, the exponent range, the default
+precision and rounding mode, and caches (i.e., data that are not
+accessed via parameters) are either global (if MPFR has not been
+compiled as thread safe) or per-thread (thread local storage).
+
 @node MPFR Interface, Contributors, MPFR Basics, Top
 @comment  node-name,  next,  previous,  up
 @chapter MPFR Interface
