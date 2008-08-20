@@ -575,6 +575,9 @@ overflow_inv (void)
   mpfr_set_si (y, -1, GMP_RNDN);
   for (precx = 10; precx <= 100; precx += 90)
     {
+      char *sp = precx == 10 ?
+        "overflow_inv (precx = 10)" : "overflow_inv (precx = 100)";
+
       mpfr_init2 (x, precx);
       for (s = -1; s <= 1; s += 2)
         {
@@ -610,16 +613,16 @@ overflow_inv (void)
                   inex = mpfr_pow (z, x, y, (mp_rnd_t) rnd);
                   if (overflow ^ !! mpfr_overflow_p ())
                     {
-                      printf ("Bad overflow flag in overflow_inv for mpfr_pow"
-                              "%s,\ns = %d, t = %d, %s\n",
+                      printf ("Bad overflow flag in %s\nfor mpfr_pow%s\n"
+                              "s = %d, t = %d, %s\n", sp,
                               ext ? ", extended exponent range" : "",
                               s, t, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
                       exit (1);
                     }
                   if (overflow && (inf ^ !! MPFR_IS_INF (z)))
                     {
-                      printf ("Bad value in overflow_inv for mpfr_pow"
-                              "%s,\ns = %d, t = %d, %s\nGot ",
+                      printf ("Bad value in %s\nfor mpfr_pow%s\n"
+                              "s = %d, t = %d, %s\nGot ", sp,
                               ext ? ", extended exponent range" : "",
                               s, t, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
                       mpfr_out_str (stdout, 16, 0, z, GMP_RNDN);
@@ -628,7 +631,7 @@ overflow_inv (void)
                       exit (1);
                     }
                   test_others (NULL, "-1", (mp_rnd_t) rnd, x, y, z,
-                               inex, __gmpfr_flags, "overflow_inv");
+                               inex, __gmpfr_flags, sp);
                 }  /* RND_LOOP */
               mpfr_nexttoinf (x);
             }  /* for (t = ...) */
