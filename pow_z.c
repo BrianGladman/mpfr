@@ -307,6 +307,7 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
               MPFR_ZIV_FREE (loop);
               mpfr_clear (t);
               MPFR_SAVE_EXPO_FREE (expo);
+              MPFR_LOG_MSG (("overflow\n", 0));
               return mpfr_overflow (y, rnd,
                                     mpz_odd_p (z) ? MPFR_SIGN (x) :
                                     MPFR_SIGN_POS);
@@ -316,6 +317,7 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
               MPFR_ZIV_FREE (loop);
               mpfr_clear (t);
               MPFR_SAVE_EXPO_FREE (expo);
+              MPFR_LOG_MSG (("underflow\n", 0));
               /* FIXME: in GMP_RNDN, we don't know whether to round
                  toward or away from zero. */
               return mpfr_underflow (y, rnd == GMP_RNDN ? GMP_RNDZ : rnd,
