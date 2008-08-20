@@ -133,6 +133,50 @@ test_large (void)
 }
 
 static void
+test_small (void)
+{
+  mpfr_t x, y, z1, z2;
+  int inex1, inex2;
+  unsigned int flags;
+
+  /* Test hypot(x,x) with x = 2^(emin-1). Result is x * sqrt(2). */
+  mpfr_inits2 (8, x, y, z1, z2, (mpfr_ptr) 0);
+  mpfr_set_si_2exp (x, 1, mpfr_get_emin () - 1, GMP_RNDN);
+  mpfr_set_si_2exp (y, 1, mpfr_get_emin () - 1, GMP_RNDN);
+  mpfr_set_ui (z1, 2, GMP_RNDN);
+  inex1 = mpfr_sqrt (z1, z1, GMP_RNDN);
+  inex2 = mpfr_mul (z1, z1, x, GMP_RNDN);
+  MPFR_ASSERTN (inex2 == 0);
+  mpfr_clear_flags ();
+  inex2 = mpfr_hypot (z2, x, y, GMP_RNDN);
+  flags = __gmpfr_flags;
+  if (mpfr_cmp (z1, z2) != 0)
+    {
+      printf ("Error in test_small%s\nExpected ",
+              ext ? ", extended exponent range" : "");
+      mpfr_out_str (stdout, 2, 0, z1, GMP_RNDN);
+      printf ("\nGot      ");
+      mpfr_out_str (stdout, 2, 0, z2, GMP_RNDN);
+      printf ("\n");
+      exit (1);
+    }
+  if (! SAME_SIGN (inex1, inex2))
+    {
+      printf ("Bad ternary value in test_small%s\nExpected %d, got %d\n",
+              ext ? ", extended exponent range" : "", inex1, inex2);
+      exit (1);
+    }
+  if (flags != MPFR_FLAGS_INEXACT)
+    {
+      printf ("Bad flags in test_small%s\nExpected %u, got %u\n",
+              ext ? ", extended exponent range" : "",
+              (unsigned int) MPFR_FLAGS_INEXACT, flags);
+      exit (1);
+    }
+  mpfr_clears (x, y, z1, z2, (mpfr_ptr) 0);
+}
+
+static void
 test_large_small (void)
 {
   mpfr_t x, y, z;
@@ -225,6 +269,7 @@ alltst (void)
   mp_exp_t emin, emax;
 
   ext = 0;
+  test_small ();
   test_large_small ();
   check_overflow ();
 
@@ -235,6 +280,7 @@ alltst (void)
   if (mpfr_get_emin () != emin || mpfr_get_emax () != emax)
     {
       ext = 1;
+      test_small ();
       test_large_small ();
       check_overflow ();
       set_emin (emin);
