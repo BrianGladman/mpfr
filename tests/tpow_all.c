@@ -554,10 +554,57 @@ underflow_up2 (void)
 }
 
 static void
+underflow_up3 (void)
+{
+  mpfr_t x, y, z, z0;
+  int inex;
+  int rnd;
+  int i;
+
+  mpfr_init2 (x, 64);
+  mpfr_init2 (y, sizeof (mp_exp_t) * CHAR_BIT);
+  mpfr_init2 (z, 32);
+  mpfr_init2 (z0, 2);
+
+  inex = mpfr_set_exp_t (y, mpfr_get_emin () - 2, GMP_RNDN);
+  MPFR_ASSERTN (inex == 0);
+  for (i = -1; i <= 1; i++)
+    RND_LOOP (rnd)
+      {
+        unsigned int ufinex = MPFR_FLAGS_UNDERFLOW | MPFR_FLAGS_INEXACT;
+        int expected_inex;
+
+        mpfr_set_ui (x, 2, GMP_RNDN);
+        if (i < 0)
+          mpfr_nextbelow (x);
+        if (i > 0)
+          mpfr_nextabove (x);
+        /* x = 2 + i * eps, y = emin - 2, x^y ~= 2^(emin - 2) */
+
+        expected_inex = rnd == GMP_RNDU || (rnd == GMP_RNDN && i < 0) ?
+          1 : -1;
+
+        mpfr_set_ui (z0, 0, GMP_RNDN);
+        if (expected_inex > 0)
+          mpfr_nextabove (z0);
+
+        mpfr_clear_flags ();
+        inex = mpfr_pow (z, x, y, (mp_rnd_t) rnd);
+        cmpres (0, x, "emin - 2", (mp_rnd_t) rnd, z0, expected_inex, z, inex,
+                ufinex, "underflow_up3", "mpfr_pow");
+        test_others (NULL, "emin - 2", (mp_rnd_t) rnd, x, y, z, inex, ufinex,
+                     "underflow_up3");
+      }
+
+  mpfr_clears (x, y, z, z0, (mpfr_ptr) 0);
+}
+
+static void
 underflow_up (void)
 {
   underflow_up1 ();
   underflow_up2 ();
+  underflow_up3 ();
 }
 
 static void
