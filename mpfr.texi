@@ -2396,6 +2396,12 @@ result is larger than the exact one, a negative value if the rounded
 result is smaller than the exact one. Note that unlike most functions,
 the result is compared to the exact one, not the input value @var{x},
 i.e.@: the ternary value is propagated.
+
+Note: If @var{x} is an infinity and @var{t} is different from zero (i.e.,
+if the rounded result is an inexact infinity), then the overflow flag is
+set. This is useful because @code{mpfr_check_range} is typically called
+(at least in MPFR functions) after restoring the flags that could have
+been set due to internal computations.
 @end deftypefun
 
 @deftypefun int mpfr_subnormalize (mpfr_t @var{x}, int @var{t}, mp_rnd_t @var{rnd})

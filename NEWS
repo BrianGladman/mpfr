@@ -24,6 +24,8 @@ Changes from versions 2.3.* to version 2.4.0:
 - Changes in the behavior of mpfr_strtofr and in its documentation
   concerning particular cases where the code and the documentation
   did not match.
+- Behavior of mpfr_check_range changed: if the value is an inexact
+  infinity, the overflow flag is set (in case it was lost).
 - New functions:
   * between a MPFR number and a double: mpfr_add_d, mpfr_sub_d,
     mpfr_d_sub, mpfr_mul_d, mpfr_div_d, mpfr_d_div,
