@@ -147,7 +147,8 @@ test_large_small (void)
   inexact = mpfr_hypot (z, x, y, GMP_RNDN);
   if (inexact >= 0 || mpfr_cmp (x, z))
     {
-      printf ("Error 1 in test_large_small\n");
+      printf ("Error 1 in test_large_small%s\n",
+              ext ? ", extended exponent range" : "");
       exit (1);
     }
 
@@ -155,7 +156,8 @@ test_large_small (void)
   inexact = mpfr_hypot (z, x, y, GMP_RNDN);
   if (mpfr_cmp (x, z) >= 0)
     {
-      printf ("Error 2 in test_large_small\n");
+      printf ("Error 2 in test_large_small%s\n",
+              ext ? ", extended exponent range" : "");
       printf ("x = ");
       mpfr_out_str (stdout, 2, 0, x, GMP_RNDN);
       printf ("\n");
