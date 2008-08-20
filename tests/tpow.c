@@ -1300,6 +1300,42 @@ bug20080721 (void)
     exit (1);
 }
 
+/* The following test fails in r5552. This is due to:
+ *   mpfr_log (t, absx, GMP_RNDU);
+ *   mpfr_mul (t, y, t, GMP_RNDU);
+ * in pow.c, that is supposed to compute an upper bound on exp(y*ln|x|),
+ * but this is incorrect if y is negative.
+ */
+static void
+bug20080820 (void)
+{
+  mp_exp_t emin;
+  mpfr_t x, y, z1, z2;
+
+  emin = mpfr_get_emin ();
+  mpfr_set_emin (MPFR_EMIN_MIN);
+  mpfr_init2 (x, 80);
+  mpfr_init2 (y, sizeof (mp_exp_t) * CHAR_BIT + 32);
+  mpfr_init2 (z1, 2);
+  mpfr_init2 (z2, 80);
+  mpfr_set_ui (x, 2, GMP_RNDN);
+  mpfr_nextbelow (x);
+  mpfr_set_exp_t (y, mpfr_get_emin () - 2, GMP_RNDN);
+  mpfr_nextabove (y);
+  mpfr_pow (z1, x, y, GMP_RNDN);
+  mpfr_pow (z2, x, y, GMP_RNDN);
+  /* As x > 0, the rounded value of x^y to nearest in precision p is equal
+     to 0 iff x^y <= 2^(emin - 2). In particular, this does not depend on
+     the precision p. Hence the following test. */
+  if (MPFR_IS_ZERO (z1) && MPFR_NOTZERO (z2))
+    {
+      printf ("Error in bug20080820\n");
+      exit (1);
+    }
+  mpfr_clears (x, y, z1, z2, (mpfr_ptr) 0);
+  set_emin (emin);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -1326,6 +1362,7 @@ main (int argc, char **argv)
   bug20071128 ();
   bug20071218 ();
   bug20080721 ();
+  bug20080820 ();
 
   test_generic (2, 100, 100);
   test_generic_ui (2, 100, 100);
