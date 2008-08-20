@@ -272,41 +272,52 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
       /* initialise of intermediary variable */
       mpfr_init2 (t, Nt);
 
-      /* we choose a rounding towards 1 (or -1), to avoid spurious
-         overflow or underflow */
-      rnd1 = (MPFR_EXP(x) >= 1) ? GMP_RNDZ :
-        ((MPFR_SIGN(x) > 0) ? GMP_RNDU : GMP_RNDZ);
+      /* We will compute rnd(rnd1(1/x) ^ (-z)), where rnd1 is the rounding
+         toward sign(x), to avoid spurious overflow or underflow. */
+      rnd1 = MPFR_EXP (x) < 1 ? GMP_RNDZ :
+        (MPFR_SIGN (x) > 0 ? GMP_RNDU : GMP_RNDD);
 
       MPFR_ZIV_INIT (loop, Nt);
       for (;;)
         {
+          MPFR_BLOCK_DECL (flags);
+
           /* compute (1/x)^(-z), -z>0 */
-          mpfr_ui_div (t, 1, x, rnd1); /* t = (1/x)*(1+theta) where
-                                          |theta| <= 2^(-Nt) */
-          mpfr_pow_pos_z (t, t, z, rnd1, 0);
+          /* As emin = -emax, an underflow cannot occur in the division.
+             And if an overflow occurs, then this means that x^z overflows
+             too (since we have rounded toward 1 or -1). */
+          MPFR_BLOCK (flags, mpfr_ui_div (t, 1, x, rnd1));
+          MPFR_ASSERTD (! MPFR_UNDERFLOW (flags));
+          /* t = (1/x)*(1+theta) where |theta| <= 2^(-Nt) */
+          if (MPFR_UNLIKELY (MPFR_OVERFLOW (flags)))
+            goto overflow;
+          MPFR_BLOCK (flags, mpfr_pow_pos_z (t, t, z, rnd, 0));
           /* Now if z=-n, t = x^z*(1+theta)^(2n-1) where |theta| <= 2^(-Nt),
              with theta maybe different from above. If (2n-1)*2^(-Nt) <= 1/2,
              which is satisfied as soon as Nt >= bits(z)+2, then we can use
              Lemma \ref{lemma_graillat} from algorithms.tex, which yields
              t = x^z*(1+theta) with |theta| <= 2(2n-1)*2^(-Nt), thus the
              error is bounded by 2(2n-1) ulps <= 2^(bits(z)+2) ulps. */
-          if (MPFR_UNLIKELY (MPFR_IS_ZERO (t)))
+          if (MPFR_UNLIKELY (MPFR_OVERFLOW (flags)))
             {
-              MPFR_ZIV_FREE (loop);
-              mpfr_clear (t);
-              MPFR_SAVE_EXPO_FREE (expo);
-              return mpfr_underflow (y, rnd == GMP_RNDN ? GMP_RNDZ : rnd,
-                                     mpz_odd_p (z) ? MPFR_SIGN (x) :
-                                     MPFR_SIGN_POS);
-            }
-          if (MPFR_UNLIKELY (MPFR_IS_INF (t)))
-            {
+            overflow:
               MPFR_ZIV_FREE (loop);
               mpfr_clear (t);
               MPFR_SAVE_EXPO_FREE (expo);
               return mpfr_overflow (y, rnd,
                                     mpz_odd_p (z) ? MPFR_SIGN (x) :
                                     MPFR_SIGN_POS);
+            }
+          if (MPFR_UNLIKELY (MPFR_UNDERFLOW (flags)))
+            {
+              MPFR_ZIV_FREE (loop);
+              mpfr_clear (t);
+              MPFR_SAVE_EXPO_FREE (expo);
+              /* FIXME: in GMP_RNDN, we don't know whether to round
+                 toward or away from zero. */
+              return mpfr_underflow (y, rnd == GMP_RNDN ? GMP_RNDZ : rnd,
+                                     mpz_odd_p (z) ? MPFR_SIGN (x) :
+                                     MPFR_SIGN_POS);
             }
           if (MPFR_LIKELY (MPFR_CAN_ROUND (t, Nt - size_z - 2, MPFR_PREC (y),
                                            rnd)))
@@ -317,6 +328,8 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
         }
       MPFR_ZIV_FREE (loop);
 
+      mpfr_clear_flags ();
+      /* An overflow can occur here! */
       inexact = mpfr_set (y, t, rnd);
       mpfr_clear (t);
     }
