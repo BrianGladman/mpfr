@@ -109,6 +109,7 @@ mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd, int cr)
   /* Check Underflow */
   else if (MPFR_UNDERFLOW (flags))
     {
+      MPFR_LOG_MSG (("underflow\n", 0));
       if (rnd == GMP_RNDN)
         {
           mpfr_t y2, zz;
@@ -136,7 +137,6 @@ mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd, int cr)
         }
       else
         {
-          MPFR_LOG_MSG (("underflow\n", 0));
           inexact = mpfr_underflow (y, rnd, mpz_odd_p (absz) ?
                                     MPFR_SIGN (x) : MPFR_SIGN_POS);
         }
