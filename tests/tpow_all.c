@@ -577,12 +577,47 @@ overflow_inv (void)
     {
       inex = mpfr_set_si_2exp (x, s, - mpfr_get_emax (), GMP_RNDN);
       MPFR_ASSERTN (inex == 0);
-      for (t = 0; t <= 8; t++)
+      for (t = 0; t <= 5; t++)
         {
+          /* x = s * 2^(-emax) * (1 + t * 2^(-9)), so that
+           * 1/x = s * 2^emax * (1 - t * 2^(-9) + eps) with eps > 0.
+           * Values of (1/x) / 2^emax and overflow condition for x > 0:
+           * t = 0: 1                           overflow: always
+           * t = 1: 0.11111111 100000000011...  overflow: GMP_RNDN, GMP_RNDU
+           * t = 2: 0.11111111 000000001111...  overflow: GMP_RNDU
+           * t = 3: 0.11111110 100000100011...  overflow: never
+           */
           RND_LOOP (rnd)
             {
+              int inf, overflow;
+
+              overflow = t == 0 ||
+                (t == 1 && (mp_rnd_t) rnd == GMP_RNDN) ||
+                (t <= 2 && (mp_rnd_t) rnd == (s < 0 ? GMP_RNDD : GMP_RNDU));
+              inf = overflow &&
+                ((mp_rnd_t) rnd == GMP_RNDN ||
+                 (mp_rnd_t) rnd == (s < 0 ? GMP_RNDD : GMP_RNDU));
               mpfr_clear_flags ();
               inex = mpfr_pow (z, x, y, (mp_rnd_t) rnd);
+              if (overflow ^ !! mpfr_overflow_p ())
+                {
+                  printf ("Bad overflow flag in overflow_inv for mpfr_pow"
+                          "%s,\ns = %d, t = %d, %s\n",
+                          ext ? ", extended exponent range" : "",
+                          s, t, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                  exit (1);
+                }
+              if (overflow && (inf ^ !! MPFR_IS_INF (z)))
+                {
+                  printf ("Bad value in overflow_inv for mpfr_pow"
+                          "%s,\ns = %d, t = %d, %s\nGot ",
+                          ext ? ", extended exponent range" : "",
+                          s, t, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                  mpfr_out_str (stdout, 16, 0, z, GMP_RNDN);
+                  printf (" instead of %s value.\n",
+                          inf ? "infinite" : "finite");
+                  exit (1);
+                }
               test_others (NULL, "-1", (mp_rnd_t) rnd, x, y, z,
                            inex, __gmpfr_flags, "overflow_inv");
             }
