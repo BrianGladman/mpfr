@@ -252,7 +252,10 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
   MPFR_SAVE_EXPO_MARK (expo);
 
   if (mpz_sgn (z) > 0)
-    inexact = mpfr_pow_pos_z (y, x, z, rnd, 1);
+    {
+      inexact = mpfr_pow_pos_z (y, x, z, rnd, 1);
+      MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
+    }
   else
     {
       /* Declaration of the intermediary variable */
@@ -328,13 +331,10 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
         }
       MPFR_ZIV_FREE (loop);
 
-      mpfr_clear_flags ();
-      /* An overflow can occur here! */
       inexact = mpfr_set (y, t, rnd);
       mpfr_clear (t);
     }
 
-  MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (y, inexact, rnd);
 }
