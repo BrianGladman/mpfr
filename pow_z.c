@@ -126,7 +126,7 @@ mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd, int cr)
                                           MPFR_EXP (x) - 1) != 0);
           mpfr_init2 (y2, 2);
           mpfr_init2 (zz, ABS (SIZ (z)) * BITS_PER_MP_LIMB);
-          inexact = mpfr_set_z  (zz, z, GMP_RNDN);
+          inexact = mpfr_set_z (zz, z, GMP_RNDN);
           MPFR_ASSERTN (inexact == 0);
           inexact = mpfr_pow_general (y2, x, zz, rnd, 1,
                                       (mpfr_save_expo_t *) NULL);
