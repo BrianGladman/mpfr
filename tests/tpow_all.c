@@ -84,6 +84,8 @@ cmpres (int spx, const void *px, const char *sy, mp_rnd_t rnd,
 
   if (flags1 == flags2)
     {
+      /* Note: the test on the sign of z1 and z2 is needed
+         in case they are both zeros. */
       if (z1 == NULL)
         {
           if (MPFR_IS_PURE_FP (z2))
@@ -91,7 +93,8 @@ cmpres (int spx, const void *px, const char *sy, mp_rnd_t rnd,
         }
       else if (SAME_SIGN (inex1, inex2) &&
                ((MPFR_IS_NAN (z1) && MPFR_IS_NAN (z2)) ||
-                mpfr_equal_p (z1, z2)))
+                ((MPFR_IS_NEG (z1) ^ MPFR_IS_NEG (z2)) == 0 &&
+                 mpfr_equal_p (z1, z2))))
         return;
     }
 
@@ -212,7 +215,7 @@ test_others (const void *sx, const char *sy, mp_rnd_t rnd,
           cmpres (spx, sx, sy, rnd, z1, inex1, z2, inex2, MPFR_FLAGS_ALL,
                   s, "mpfr_pow_si, flags set");
 
-          /* If y is -1, we can test mpfr_ui_div. */
+          /* If y = -1, we can test mpfr_ui_div. */
           if (yy == -1)
             {
               mpfr_clear_flags ();
@@ -223,6 +226,19 @@ test_others (const void *sx, const char *sy, mp_rnd_t rnd,
               inex2 = mpfr_ui_div (z2, 1, x, rnd);
               cmpres (spx, sx, sy, rnd, z1, inex1, z2, inex2, MPFR_FLAGS_ALL,
                       s, "mpfr_ui_div, flags set");
+            }
+
+          /* If y = 2, we can test mpfr_sqr. */
+          if (yy == 2)
+            {
+              mpfr_clear_flags ();
+              inex2 = mpfr_sqr (z2, x, rnd);
+              cmpres (spx, sx, sy, rnd, z1, inex1, z2, inex2, flags,
+                      s, "mpfr_sqr, flags cleared");
+              __gmpfr_flags = MPFR_FLAGS_ALL;
+              inex2 = mpfr_sqr (z2, x, rnd);
+              cmpres (spx, sx, sy, rnd, z1, inex1, z2, inex2, MPFR_FLAGS_ALL,
+                      s, "mpfr_sqr, flags set");
             }
         }
 
@@ -238,6 +254,21 @@ test_others (const void *sx, const char *sy, mp_rnd_t rnd,
       cmpres (spx, sx, sy, rnd, z1, inex1, z2, inex2, MPFR_FLAGS_ALL,
               s, "mpfr_pow_z, flags set");
       mpz_clear (yyy);
+    }
+
+  /* If y = 0.5, we can test mpfr_sqrt, except if x is -0 or -Inf (because
+     the rule for mpfr_pow on these special values is different). */
+  if (MPFR_IS_PURE_FP (y) && mpfr_cmp_str1 (y, "0.5") == 0 &&
+      (! ((MPFR_IS_ZERO (x) || MPFR_IS_INF (x)) && MPFR_IS_NEG (x))))
+    {
+      mpfr_clear_flags ();
+      inex2 = mpfr_sqrt (z2, x, rnd);
+      cmpres (spx, sx, sy, rnd, z1, inex1, z2, inex2, flags,
+              s, "mpfr_sqrt, flags cleared");
+      __gmpfr_flags = MPFR_FLAGS_ALL;
+      inex2 = mpfr_sqrt (z2, x, rnd);
+      cmpres (spx, sx, sy, rnd, z1, inex1, z2, inex2, MPFR_FLAGS_ALL,
+              s, "mpfr_sqrt, flags set");
     }
 
   /* If x is an integer that fits in an unsigned long and is not -0,
