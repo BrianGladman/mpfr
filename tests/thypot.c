@@ -26,6 +26,9 @@ MA 02110-1301, USA. */
 
 #include "mpfr-test.h"
 
+/* Non-zero when extended exponent range */
+static int ext = 0;
+
 static void
 special (void)
 {
@@ -188,8 +191,9 @@ check_overflow (void)
       inex = mpfr_hypot (y, x, x, (mp_rnd_t) r);
       if (!mpfr_overflow_p ())
         {
-          printf ("No overflow in check_overflow for %s\n",
-                  mpfr_print_rnd_mode ((mp_rnd_t) r));
+          printf ("No overflow in check_overflow for %s%s\n",
+                  mpfr_print_rnd_mode ((mp_rnd_t) r),
+                  ext ? ", extended exponent range" : "");
           exit (1);
         }
       MPFR_ASSERTN (MPFR_IS_POS (y));
@@ -213,6 +217,29 @@ check_overflow (void)
 #define TEST_FUNCTION mpfr_hypot
 #include "tgeneric.c"
 
+static void
+alltst (void)
+{
+  mp_exp_t emin, emax;
+
+  ext = 0;
+  test_large_small ();
+  check_overflow ();
+
+  emin = mpfr_get_emin ();
+  emax = mpfr_get_emax ();
+  set_emin (MPFR_EMIN_MIN);
+  set_emax (MPFR_EMAX_MAX);
+  if (mpfr_get_emin () != emin || mpfr_get_emax () != emax)
+    {
+      ext = 1;
+      test_large_small ();
+      check_overflow ();
+      set_emin (emin);
+      set_emax (emax);
+    }
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -221,8 +248,7 @@ main (int argc, char *argv[])
   special ();
 
   test_large ();
-  test_large_small ();
-  check_overflow ();
+  alltst ();
 
   test_generic (2, 100, 10);
 
