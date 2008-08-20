@@ -31,6 +31,9 @@ MA 02110-1301, USA. */
 int
 mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd)
 {
+  MPFR_LOG_FUNC (("x[%#R]=%R n=%ld rnd=%d", x, x, n, rnd),
+                 ("y[%#R]=%R", y, y));
+
   if (n >= 0)
     return mpfr_pow_ui (y, x, n, rnd);
   else
