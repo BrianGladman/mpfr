@@ -2260,40 +2260,39 @@ In this case we need to take into account the error caused by the subtraction:
 \item The precision should be decreased after the operation $s_i-A_i$. And several other improvement should be done.
 \end{enumerate}
 
-\subsection{The euclidean distance function}
+\subsection{The Euclidean distance function}
 
-The \texttt{mpfr\_hypot} function implements the euclidean distance function:
+The \texttt{mpfr\_hypot} function implements the Euclidean distance function:
 \[
 \textnormal{hypot} (x,y) = \sqrt{x^2+y^2}.
 \]
-If one of the variable is zero, then hypot is computed using the absolute
+If one of the variables is zero, then hypot is computed using the absolute
 value of the other variable.  Assume that $0 < y \leq x$. Using the first
-degree Taylor polynomial, we have
+degree Taylor polynomial, we have:
 \[
 0 < \sqrt{x^2+y^2}-x < \frac{y^2}{2x}.
 \]
 
-Let $p_x, p_y$ the precisions of input variables $x$ and $y$ respectively,
-$p_z$ the output precision and $z=\circ_{p_z}(\sqrt{x^2+y^2})$ the expected
-result.  Let us assume, as it is the case in MPFR, that the minimal and
-maximal acceptable exponents (respectively $e_{min}$ and $e_{max}$) verify $2
-< e_{max}$ and $e_{max} = -e_{min}$.
+Let $p_x$, $p_y$ be the precisions of the input variables $x$ and $y$
+respectively, $p_z$ the output precision and $z=\circ_{p_z}(\sqrt{x^2+y^2})$
+the expected result.  Let us assume, as it is the case in MPFR, that
+the minimal and maximal acceptable exponents (respectively $e_{min}$
+and $e_{max}$) satisfy $2 < e_{max}$ and $e_{max} = -e_{min}$.
 
 When rounding to nearest, if $p_x \leq p_z$ and $\frac{p_z+1}{2} < \Exp(x) -
-\Exp(y)$, we have $\frac{y^2}{2x} < \frac{1}{2}\ulp_{p_z}(x)$ ; if $p_z <
+\Exp(y)$, we have $\frac{y^2}{2x} < \frac{1}{2}\ulp_{p_z}(x)$; if $p_z <
 p_x$, the condition $\frac{p_x+1}{2} < \Exp(x) - \Exp(y)$ ensures that
 $\frac{y^2}{2x} < \frac{1}{2} \ulp_{p_x}(x)$.  In both cases, these
 inequalities show that $z=\N_{p_z}(x)$, except that tie case is rounded
-towards plus infinity since hypot($x$,$y$) is greater than but not equal to
-$x$.
+toward plus infinity since hypot($x$,$y$) is strictly greater than $x$.
 
-With other rounding modes, the conditions $p_z/2 < \Exp(x) - \Exp(y)$ if $p_x
-\leq p_z$, and $p_x/2 < \Exp(x) - \Exp(y)$ if $p_z < p_x$ mean in a similar
-way that $z=\circ_{p_z}(x)$, except that we need to add one ulp to the result
-when rounding towards plus infinity and $x$ is exactly representable with
-$p_z$ bits of precision.
+With the other rounding modes, the conditions $p_z/2 < \Exp(x) - \Exp(y)$
+if $p_x \leq p_z$, and $p_x/2 < \Exp(x) - \Exp(y)$ if $p_z < p_x$ mean in
+a similar way that $z=\circ_{p_z}(x)$, except that we need to add one ulp
+to the result when rounding toward plus infinity and $x$ is exactly
+representable with $p_z$ bits of precision.
 
-When none of the above conditions is satisfied and when $\Exp(x) - \Exp(y)
+When none of the above conditions are satisfied and when $\Exp(x) - \Exp(y)
 \leq e_{max} - 2$, we use the following algorithm:
 
 \begin{quote}
@@ -2301,7 +2300,7 @@ When none of the above conditions is satisfied and when $\Exp(x) - \Exp(y)
   Input: $x$ and $y$ with $|y| \leq |x|$,
   $p$ the working precision with $p \geq p_z$.\\
   Output: $\sqrt{x^2+y^2}$ with $\left\{
-  \begin{array}{l} 
+  \begin{array}{l}
     p-4 \textnormal{ bits of precision if } p <\max(p_x, p_y),\\
     p-2 \textnormal{ bits of precision if } \max(p_x, p_y) \leq p.
   \end{array}\right.$\\
@@ -2318,17 +2317,17 @@ When none of the above conditions is satisfied and when $\Exp(x) - \Exp(y)
 In order to avoid undue overflow during computation, we shift inputs'
 exponents by $s = \lfloor\frac{e_{max}}{2}\rfloor -1 -\Exp(x)$ before
 computing squares and shift back the output's exponent by $-s$ using the fact
-that $\sqrt{(x.2^s)^2+(y.2^s)^2}/2^s = \sqrt{x^2+y^2}$. We show below that no
-overflow nor underflow goes on.
+that $\sqrt{(x.2^s)^2+(y.2^s)^2}/2^s = \sqrt{x^2+y^2}$. We show below that
+neither overflow nor underflow goes on.
 
-We check first that the exponent shift do not cause overflow and, in the same
-time, that the squares of the shifted inputs do never overflow. For $x$, we
+We check first that the exponent shift does not cause overflow and, in the
+same time, that the squares of the shifted inputs never overflow. For $x$, we
 have $\Exp(x) + s = \lfloor e_{max}/2\rfloor - 1$, so $\Exp(x_s^2) < e_{max} -
 1$ and neither $x_s$ nor $x_s^2$ overflows. For $y$, note that we have $y_s
 \leq x_s$ because $y \leq x$, thus $y_s$ and $y_s^2$ do not overflow.
 
-Secondly, let us see that the exponent shift do not cause underflow. For $x$,
-we know that $0 \leq \Exp(x) + s$, thus neither $x_s$ nor $x_s^2$
+Secondly, let us see that the exponent shift does not cause underflow. For
+$x$, we know that $0 \leq \Exp(x) + s$, thus neither $x_s$ nor $x_s^2$
 underflows. For $y$, the condition $\Exp(x) - \Exp(y) \leq e_{max} - 2$
 ensures that $-e_{max}/2 \leq \Exp(y) + s$ which shows that $y_s$ and its
 square do not underflow.
@@ -2341,10 +2340,10 @@ Fourthly, as $x_s < t$, the square root does not underflow. Due to the
 exponent shift, we have $1 \leq x_s$, then $w$ is greater than 1 and thus
 greater than its square root $t$, so the square root does overflow.
 
-Finally, let us show that the back shift do not raise underflow nor overflow
+Finally, let us show that the back shift raises neither underflow nor overflow
 unless the exact result is greater than or equal to $2^{e_{max}}$. Because no
-underflow has occured so far $\Exp(x) \leq \Exp(t) - s$ which shows that it
-does not underflow. And all roundings being towards zero we have $z \leq
+underflow has occurred so far $\Exp(x) \leq \Exp(t) - s$ which shows that it
+does not underflow. And all roundings being toward zero, we have $z \leq
 \sqrt{x^2 + y^2}$, so if $2^{e_{max}} \leq z$, then the exact value is also
 greater than or equal to $2^{e_{max}}$.
 
@@ -2380,7 +2379,7 @@ have\\
   $\error(t)$ & $\leq$ & 9 $\ulp(t)$.\\
 \end{tabular}\\
 Thus, 2 bits of precision are lost when $\max(p_x, p_y) \leq p$ and 4 bits
-when $p$ does not verify this relation.
+when $p$ does not satisfy this relation.
 
 \subsection{The floating multiply-add function}
 
