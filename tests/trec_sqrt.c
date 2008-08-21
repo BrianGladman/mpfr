@@ -86,12 +86,38 @@ special (void)
   mpfr_clear (y);
 }
 
+/* Worst case incorrectly rounded in r5573, found with the bad_cases test */
+static void
+bad_case1 (void)
+{
+  mpfr_t x, y, z;
+
+  mpfr_init2 (x, 72);
+  mpfr_inits2 (6, y, z, (mpfr_ptr) 0);
+  mpfr_set_str (x, "1.08310518720928b30e@-120", 16, GMP_RNDN);
+  mpfr_set_str (z, "f.8@59", 16, GMP_RNDN);
+  /* z = rec_sqrt(x) rounded on 6 bits toward 0, the exact value
+     being ~= f.bffffffffffffffffa11@59. */
+  mpfr_rec_sqrt (y, x, GMP_RNDZ);
+  if (mpfr_cmp0 (y, z) != 0)
+    {
+      printf ("Error in bad_case1\nexpected ");
+      mpfr_out_str (stdout, 16, 0, z, GMP_RNDN);
+      printf ("\ngot      ");
+      mpfr_out_str (stdout, 16, 0, y, GMP_RNDN);
+      printf ("\n");
+      exit (1);
+    }
+  mpfr_clears (x, y, z, (mpfr_ptr) 0);
+}
+
 int
 main (void)
 {
   tests_start_mpfr ();
 
   special ();
+  bad_case1 ();
   test_generic (2, 300, 15);
 
   tests_end_mpfr ();
