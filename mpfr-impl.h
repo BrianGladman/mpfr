@@ -109,31 +109,35 @@ MA 02110-1301, USA. */
 # define __MPFR_STDC(version) 0
 #endif
 
-#if defined(__GNUC__) && defined(__GNUC_MINOR__) && !defined(__ICC)
-# define __MPFR_GNUC(a, i) \
- (MPFR_VERSION_NUM(__GNUC__,__GNUC_MINOR__,0)>=MPFR_VERSION_NUM(a,i,0))
+#if defined(__ICC)
+# define __MPFR_ICC(a,b,c) (__ICC >= (a)*100+(b)*10+(c))
+#elif defined(__INTEL_COMPILER)
+# define __MPFR_ICC(a,b,c) (__INTEL_COMPILER >= (a)*100+(b)*10+(c))
 #else
-# define __MPFR_GNUC(a, i) 0
+# define __MPFR_ICC(a,b,c) 0
+#endif
+
+#if defined(__GNUC__) && defined(__GNUC_MINOR__) && ! __MPFR_ICC(0,0,0)
+# define __MPFR_GNUC(a,i) \
+ (MPFR_VERSION_NUM(__GNUC__,__GNUC_MINOR__,0) >= MPFR_VERSION_NUM(a,i,0))
+#else
+# define __MPFR_GNUC(a,i) 0
 #endif
 
 #if defined(__GLIBC__) && defined(__GLIBC_MINOR__)
-# define __MPFR_GLIBC(a, i) \
- (MPFR_VERSION_NUM(__GLIBC__,__GLIBC_MINOR__,0)>=MPFR_VERSION_NUM(a,i,0))
+# define __MPFR_GLIBC(a,i) \
+ (MPFR_VERSION_NUM(__GLIBC__,__GLIBC_MINOR__,0) >= MPFR_VERSION_NUM(a,i,0))
 #else
-# define __MPFR_GLIBC(a, i) 0
+# define __MPFR_GLIBC(a,i) 0
 #endif
 
-#if defined(__GNU_MP_VERSION)&&defined(__GNU_MP_VERSION_MINOR)&&defined(__GNU_MP_VERSION_PATCHLEVEL)
-# define __MPFR_GMP(a, b, c) \
-(MPFR_VERSION_NUM(__GNU_MP_VERSION,__GNU_MP_VERSION_MINOR,__GNU_MP_VERSION_PATCHLEVEL) >= MPFR_VERSION_NUM(a,b,c))
+#if defined(__GNU_MP_VERSION) && \
+    defined(__GNU_MP_VERSION_MINOR) && \
+    defined(__GNU_MP_VERSION_PATCHLEVEL)
+# define __MPFR_GMP(a,b,c) \
+  (MPFR_VERSION_NUM(__GNU_MP_VERSION,__GNU_MP_VERSION_MINOR,__GNU_MP_VERSION_PATCHLEVEL) >= MPFR_VERSION_NUM(a,b,c))
 #else
-# define __MPFR_GMP(a, b, c) 0
-#endif
-
-#if defined(__ICC)
-# define __MPFR_ICC(a,b,c) (__ICC >= (a)*100+(b)*10+c)
-#else
-# define __MPFR_ICC(a,b,c) 0
+# define __MPFR_GMP(a,b,c) 0
 #endif
 
 
