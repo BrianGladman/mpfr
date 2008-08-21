@@ -259,7 +259,7 @@ test_others (const void *sx, const char *sy, mp_rnd_t rnd,
   /* If y = 0.5, we can test mpfr_sqrt, except if x is -0 or -Inf (because
      the rule for mpfr_pow on these special values is different). */
   if (MPFR_IS_PURE_FP (y) && mpfr_cmp_str1 (y, "0.5") == 0 &&
-      (! ((MPFR_IS_ZERO (x) || MPFR_IS_INF (x)) && MPFR_IS_NEG (x))))
+      ! ((MPFR_IS_ZERO (x) || MPFR_IS_INF (x)) && MPFR_IS_NEG (x)))
     {
       mpfr_clear_flags ();
       inex2 = mpfr_sqrt (z2, x, rnd);
