@@ -57,9 +57,9 @@ Algorithms and Proofs}
 \section{Notations and Assumptions}
 
 In the whole document, $\N()$ denotes rounding to nearest,
-$\Z()$ rounding towards zero,
-$\pinf()$ rounding towards plus infinity,
-$\minf()$ rounding towards minus infinity,
+$\Z()$ rounding toward zero,
+$\pinf()$ rounding toward plus infinity,
+$\minf()$ rounding toward minus infinity,
 and $\circ()$ any of those four rounding modes.
 
 In the whole document, except special notice, all variables are assumed
@@ -161,8 +161,8 @@ and the right one from $|a| \ulp(1) \geq \frac{1}{2} 2^{e_a} 2^{1-n} =\ulp(a)$.
 
 \begin{Rule} \label{R8}
 For any $x \neq 0$ and any rounding mode $\circ(\cdot)$,
-we have $\ulp(x) \leq \ulp(\circ(x))$, and equality holds when rounding towards
-zero, towards $-\infty$ for $x>0$, or towards $+\infty$ for $x<0$.
+we have $\ulp(x) \leq \ulp(\circ(x))$, and equality holds when rounding toward
+zero, toward $-\infty$ for $x>0$, or toward $+\infty$ for $x<0$.
 \end{Rule}
 \begin{proof}
 Without loss of generality, assume $x > 0$.
@@ -170,7 +170,7 @@ Let $x = m \cdot 2^e$ with $\frac{1}{2} \leq m < 1$.
 As $\frac{1}{2} 2^{e_x}$ is a machine number, necessarily $\circ(x) \geq
 \frac{1}{2} 2^{e_x}$, thus by Rule~\ref{R2}, then $\ulp(\circ(x)) \geq
 2^{e_x - n} = \ulp(x)$.
-If we round towards zero, then $\circ(x) \leq x$ and by Rule~\ref{R2} again,
+If we round toward zero, then $\circ(x) \leq x$ and by Rule~\ref{R2} again,
 $\ulp(\circ(x)) \leq \ulp(x)$.
 \end{proof}
 
@@ -566,7 +566,7 @@ The algorithm used is as follows, where $w$ denotes the number of bits
 per word. We assume that $a$, $b$ and $c$ denote different variables
 (if $a:=b$ or $a:=c$, we have first to copy $b$ or $c$), and
 that the rounding mode is either $\N$ (nearest),
-$\Z$ (towards zero), or $\infty$ (away from zero).
+$\Z$ (toward zero), or $\infty$ (away from zero).
 \begin{quote}
 Algorithm {\tt mpfr\_sub}. \\
 Input: $b$, $c$ of same sign with $b > c > 0$, a rounding mode
@@ -784,7 +784,7 @@ The \texttt{mpfr\_sqrt} implementation uses the \texttt{mpn\_sqrtrem}
 function from GMP's \texttt{mpn} level:
 given a positive integer $m$, it computes $s$ and $r$ such that
 $m = s^2 + r$ with $s^2 \leq m < (s+1)^2$, or equivalently $0 \leq r \leq 2s$.
-In other words, $s$ is the integer square root of $m$, rounded towards zero.
+In other words, $s$ is the integer square root of $m$, rounded toward zero.
 
 The idea is to multiply the input significand by some power of two,
 in order to obtain an integer significand $m$ whose integer square root
@@ -845,7 +845,7 @@ Output: $X$ with $X - \frac{1}{2} \cdot 2^{-n} \leq A^{-1/2} \leq X + 2^{-n}$,
 where $n \leq 2h-3$ \\
 \q $r \leftarrow x^2$ \qquad [exact] \\
 \q $s \leftarrow A r$ \qquad [exact] \\
-\q $t \leftarrow 1-s$ \qquad [rounded at weight $2^{-2h}$ towards $-\infty$]\\
+\q $t \leftarrow 1-s$ \qquad [rounded at weight $2^{-2h}$ toward $-\infty$]\\
 \q $u \leftarrow x t$ \qquad [exact] \\
 \q $X \leftarrow x + u/2$ \qquad [rounded at weight $2^{-n}$ to nearest]
 \end{quote}
@@ -2076,7 +2076,7 @@ and $A_k$ is of the form $\frac{u_k}{v_k}$ with $u_k\in\N$.
 &=&\arctan\,A_0+\dots+\arctan\,A_N+\arctan\,s_{N+1}
 \end{array}
 \end{equation*}
-the number $s_N$ is decreasing towards $0$ and we then have
+the number $s_N$ is decreasing toward $0$ and we then have
 \begin{equation*}
 \begin{array}{rcl}
 \arctan\,x&=&\sum_{i=0}^{i=\infty}\arctan\,A_i
@@ -2114,7 +2114,7 @@ and $A_k$ is of the form $\frac{u_k}{v_k}$ with $u_k\in\N$.
 &=&\arctan\,A_0+\dots+\arctan\,A_N+\arctan\,s_{N+1}
 \end{array}
 \end{equation*}
-the number $s_N$ is very rapidly decreasing towards $0$ and we then have
+the number $s_N$ is very rapidly decreasing toward $0$ and we then have
 \[\arctan\,x = \sum_{i=0}^{i=\infty}\arctan\,A_i\]
 \item The approximate arc tangent is then
 \[\sum_{i=0}^{i=N_0}\arctan_{m_i}\,A_i\]
@@ -2887,7 +2887,7 @@ and for $x < 0$ it gives NaN.
 We use the following integer-based algorithm to evaluate
 $\sum_{k=1}^{\infty} \frac{x^k}{k \, k!}$, using working precision $w$.
 For any real $v$, we denote by ${\rm trunc}(v)$ the nearest integer
-towards zero.
+toward zero.
 \begin{quote}
 Decompose $x$ into  $m\cdot2^e$ with $m$ integer [exact] \\
 If necessary, truncate $m$ to $w$ bits and adjust $e$ \\
