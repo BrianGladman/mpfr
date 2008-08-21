@@ -25,27 +25,8 @@ MA 02110-1301, USA. */
 
 #include "mpfr-test.h"
 
-void check_special (void);
-void check_random (mpfr_prec_t p);
-
 #define TEST_FUNCTION mpfr_sqr
 #include "tgeneric.c"
-
-int main(void)
-{
-  mpfr_prec_t p;
-
-  tests_start_mpfr ();
-
-  check_special ();
-  for(p = 2 ; p < 200 ; p++)
-    check_random (p);
-
-  test_generic (2, 200, 15);
-
-  tests_end_mpfr ();
-  return 0;
-}
 
 static int
 inexact_sign (int x)
@@ -75,7 +56,8 @@ error2 (mp_rnd_t rnd, mpfr_prec_t prec, mpfr_t in, mpfr_t out,
   exit(1);
 }
 
-void check_random(mpfr_prec_t p)
+static void
+check_random (mpfr_prec_t p)
 {
   mpfr_t x,y,z;
   int r;
@@ -99,7 +81,8 @@ void check_random(mpfr_prec_t p)
   mpfr_clears (x, y, z, (mpfr_ptr) 0);
 }
 
-void check_special(void)
+static void
+check_special (void)
 {
   mpfr_t x, y;
   mp_exp_t emin;
@@ -134,4 +117,21 @@ void check_special(void)
 
   mpfr_clear (y);
   mpfr_clear (x);
+}
+
+int
+main (void)
+{
+  mpfr_prec_t p;
+
+  tests_start_mpfr ();
+
+  check_special ();
+  for (p = 2; p < 200; p++)
+    check_random (p);
+
+  test_generic (2, 200, 15);
+
+  tests_end_mpfr ();
+  return 0;
 }
