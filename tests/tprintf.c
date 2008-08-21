@@ -263,7 +263,8 @@ check_random (int nb_tests)
       spec = (int) (randlimb () % 5);
       jmax = (spec == 3 || spec == 4) ? 6 : 5; /* ' flag only with %f or %g */
       /* advantage small precision */
-      prec = (int) (randlimb () % ((randlimb () % 2) ? 10 : prec_max_printf));
+      prec = (randlimb () % 2) ? 10 : prec_max_printf;
+      prec = (int) (randlimb () % prec);
       if (spec == 3 && mpfr_get_exp (x) > prec_max_printf)
         /*  change style 'f' to style 'e' when number x is large */
         --spec;
