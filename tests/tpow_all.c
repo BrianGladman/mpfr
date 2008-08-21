@@ -271,6 +271,23 @@ test_others (const void *sx, const char *sy, mp_rnd_t rnd,
               s, "mpfr_sqrt, flags set");
     }
 
+#if MPFR_VERSION >= MPFR_VERSION_NUM(2,4,0)
+  /* If y = -0.5, we can test mpfr_rec_sqrt, except if x = -Inf
+     (because the rule for mpfr_pow on -Inf is different). */
+  if (MPFR_IS_PURE_FP (y) && mpfr_cmp_str1 (y, "-0.5") == 0 &&
+      ! (MPFR_IS_INF (x) && MPFR_IS_NEG (x)))
+    {
+      mpfr_clear_flags ();
+      inex2 = mpfr_rec_sqrt (z2, x, rnd);
+      cmpres (spx, sx, sy, rnd, z1, inex1, z2, inex2, flags,
+              s, "mpfr_rec_sqrt, flags cleared");
+      __gmpfr_flags = MPFR_FLAGS_ALL;
+      inex2 = mpfr_rec_sqrt (z2, x, rnd);
+      cmpres (spx, sx, sy, rnd, z1, inex1, z2, inex2, MPFR_FLAGS_ALL,
+              s, "mpfr_rec_sqrt, flags set");
+    }
+#endif
+
   /* If x is an integer that fits in an unsigned long and is not -0,
      we can test mpfr_ui_pow. */
   if (MPFR_IS_POS (x) && mpfr_integer_p (x) &&
