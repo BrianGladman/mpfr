@@ -111,6 +111,12 @@ bad_case1 (void)
   mpfr_clears (x, y, z, (mpfr_ptr) 0);
 }
 
+static int
+pm2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
+{
+  return mpfr_pow_si (y, x, -2, rnd_mode);
+}
+
 int
 main (void)
 {
@@ -119,6 +125,10 @@ main (void)
   special ();
   bad_case1 ();
   test_generic (2, 300, 15);
+
+  data_check ("data/rec_sqrt", mpfr_rec_sqrt, "mpfr_rec_sqrt");
+  bad_cases (mpfr_rec_sqrt, pm2, "mpfr_rec_sqrt", 8, -256, 255, 4, 128,
+             800, 50);
 
   tests_end_mpfr ();
   return 0;
