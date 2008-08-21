@@ -425,6 +425,9 @@ mpfr_rec_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
   int out_of_place;
   MPFR_TMP_DECL(marker);
 
+  MPFR_LOG_FUNC (("x[%#R]=%R rnd=%d", u, u, rnd_mode),
+                 ("y[%#R]=%R inexact=%d", r, r, inex));
+
   /* special values */
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(u)))
     {
