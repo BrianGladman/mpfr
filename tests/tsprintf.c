@@ -30,6 +30,7 @@ MA 02110-1301, USA. */
 
 #include <stdlib.h>
 #include <string.h>
+#include <float.h>
 
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
@@ -581,7 +582,7 @@ random_double (void)
 #ifdef HAVE_DENORMS
       while (0);
 #else
-      while (ABS(d) < DBL_MIN);
+      while (ABS(y) < DBL_MIN);
 #endif
 
       if (randlimb () % 2 == 0)
