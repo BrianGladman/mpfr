@@ -152,7 +152,7 @@ li2_series (mpfr_t sum, mpfr_srcptr z, mpfr_rnd_t rnd_mode)
          the truncation error is less than EXP(z) - 6 * i - 5
          (see algorithms.tex) */
       err = MAX (err, MPFR_GET_EXP (z) - 6 * i - 5) + 1;
-      if (MPFR_CAN_ROUND (s, p - err, sump, rnd_mode))
+      if (MPFR_CAN_ROUND (s, (mp_exp_t) p - err, sump, rnd_mode))
         break;
 
       MPFR_ZIV_NEXT (loop, p);
@@ -216,7 +216,7 @@ mpfr_li2_asympt_pos (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
                                    If in addition 2/x <= 2 ulp(g), i.e.,
                                    1/x <= ulp(g), then the total error is
                                    bounded by 16 ulp(g). */
-  if ((MPFR_EXP (x) >= w - MPFR_EXP (g)) &&
+  if ((MPFR_EXP (x) >= (mp_exp_t) w - MPFR_EXP (g)) &&
       MPFR_CAN_ROUND (g, w - 4, MPFR_PREC (y), rnd_mode))
     inex = mpfr_set (y, g, rnd_mode);
 
@@ -259,7 +259,7 @@ mpfr_li2_asympt_neg (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
                                    If in addition |1/x| <= 4 ulp(g), then the
                                    total error is bounded by 16 ulp(g). */
-  if ((MPFR_EXP (x) >= (w - 2) - MPFR_EXP (g)) &&
+  if ((MPFR_EXP (x) >= (mp_exp_t) (w - 2) - MPFR_EXP (g)) &&
       MPFR_CAN_ROUND (g, w - 4, MPFR_PREC (y), rnd_mode))
     inex = mpfr_neg (y, g, rnd_mode);
 
@@ -346,7 +346,7 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
              + 2^(3 + MAX(1, - expo_l) - EXP(s))) ulp(s) */
           err = MAX (err, MAX (1, - expo_l) - 1) - MPFR_GET_EXP (s);
           err = 2 + MAX (-1, err);
-          if (MPFR_CAN_ROUND (s, m - err, yp, rnd_mode))
+          if (MPFR_CAN_ROUND (s, (mp_exp_t) m - err, yp, rnd_mode))
             break;
 
           MPFR_ZIV_NEXT (loop, m);
@@ -441,7 +441,7 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           mpfr_add (s, s, u, GMP_RNDN);
           err = MAX (err, 2) - MPFR_GET_EXP (s);
           err = 2 + MAX (-1, err);      /* error(s) <= 2^err ulp(s) */
-          if (MPFR_CAN_ROUND (s, m - err, yp, rnd_mode))
+          if (MPFR_CAN_ROUND (s, (mp_exp_t) m - err, yp, rnd_mode))
             break;
 
           MPFR_ZIV_NEXT (loop, m);
@@ -493,7 +493,7 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
              see algorithms.tex */
           err = MAX (MPFR_INT_CEIL_LOG2 (k + 1) + 1 - e1, 1 - e2);
           err = 2 + MAX (5, err);
-          if (MPFR_CAN_ROUND (s, m - err, yp, rnd_mode))
+          if (MPFR_CAN_ROUND (s, (mp_exp_t) m - err, yp, rnd_mode))
             break;
 
           MPFR_ZIV_NEXT (loop, m);
@@ -549,7 +549,7 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           err = MAX (err, 3) - MPFR_GET_EXP (s);
           err = 2 + MAX (-1, err);
 
-          if (MPFR_CAN_ROUND (s, m - err, yp, rnd_mode))
+          if (MPFR_CAN_ROUND (s, (mp_exp_t) m - err, yp, rnd_mode))
             break;
 
           MPFR_ZIV_NEXT (loop, m);
@@ -590,7 +590,7 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           mpfr_sub (s, s, u, GMP_RNDN);
           err = MAX (err, - expo_l);
           err = 2 + MAX (err, 3);
-          if (MPFR_CAN_ROUND (s, m - err, yp, rnd_mode))
+          if (MPFR_CAN_ROUND (s, (mp_exp_t) m - err, yp, rnd_mode))
             break;
 
           MPFR_ZIV_NEXT (loop, m);
@@ -662,7 +662,7 @@ mpfr_li2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           err = MAX (err, 3) - MPFR_GET_EXP (s);
           err = 2 + MAX (-1, err) + MPFR_GET_EXP (s);
 
-          if (MPFR_CAN_ROUND (s, m - err, yp, rnd_mode))
+          if (MPFR_CAN_ROUND (s, (mp_exp_t) m - err, yp, rnd_mode))
             break;
 
           MPFR_ZIV_NEXT (loop, m);
