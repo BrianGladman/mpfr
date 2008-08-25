@@ -607,3 +607,16 @@ If a dummy initialization must be added, use preferably an "invalid" value
 (e.g. NULL for pointers, or a value that can be checked with MPFR_ASSERTN
 before using it) that could make the program abort instead of returning an
 incorrect value in case of a bug in MPFR.
+
+===========================================================================
+
+Avoid mixing signed and unsigned types, in particular mp_exp_t, which is
+signed, and mpfr_prec_t (mp_prec_t), which is unsigned, as this can lead
+signed types to be converted into unsigned types. If such a signed type
+contains a negative value, the result will probably be incorrect. In
+general, you will need to cast a mpfr_prec_t into a mp_exp_t.
+
+Note that such bugs are difficult to detect because they may depend on
+the platform (e.g., on LP64, 32-bit unsigned int + 64-bit long is OK,
+but on ILP32, 32-bit int + 32-bit unsigned long is incorrect), but also
+on the input values. So, do not rely on tests very much.
