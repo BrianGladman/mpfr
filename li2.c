@@ -90,7 +90,7 @@ bernoulli (mpz_t * b, unsigned long n)
 static int
 li2_series (mpfr_t sum, mpfr_srcptr z, mpfr_rnd_t rnd_mode)
 {
-  unsigned int i, Bm, Bmax;
+  int i, Bm, Bmax;
   mpfr_t s, u, v, w;
   mpfr_prec_t sump, p;
   mp_exp_t se, err;
