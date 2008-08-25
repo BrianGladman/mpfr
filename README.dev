@@ -619,4 +619,8 @@ general, you will need to cast a mpfr_prec_t into a mp_exp_t.
 Note that such bugs are difficult to detect because they may depend on
 the platform (e.g., on LP64, 32-bit unsigned int + 64-bit long is OK,
 but on ILP32, 32-bit int + 32-bit unsigned long is incorrect), but also
-on the input values. So, do not rely on tests very much.
+on the input values. So, do not rely on tests very much. However, if
+a test works on 32 bits but fails on 64 bits in the extended exponent
+range (or conversely), the cause may be related to the integer types
+(e.g. a signness problem or an integer overflow due to different type
+sizes).
