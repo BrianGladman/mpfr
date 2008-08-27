@@ -1,0 +1,34 @@
+--- aclocal.m4.bak	2008-08-14 11:12:16.000000000 +0200
++++ aclocal.m4	2008-08-27 12:47:48.000000000 +0200
+@@ -5171,12 +5171,19 @@
+ 	    _LT_AC_TAGVAR(lt_prog_compiler_wl, $1)='--backend -Wl,'
+ 	    _LT_AC_TAGVAR(lt_prog_compiler_pic, $1)='-fPIC'
+ 	    ;;
+-	  icpc* | ecpc*)
+-	    # Intel C++
++	  ecpc*)
++	    # old Intel C++ for x86_64 which still supported -KPIC.
+ 	    _LT_AC_TAGVAR(lt_prog_compiler_wl, $1)='-Wl,'
+ 	    _LT_AC_TAGVAR(lt_prog_compiler_pic, $1)='-KPIC'
+ 	    _LT_AC_TAGVAR(lt_prog_compiler_static, $1)='-static'
+ 	    ;;
++	  icpc*)
++	    # Intel C++, used to be incompatible with GCC.
++	    # ICC 10 doesn't accept -KPIC any more.
++	    _LT_AC_TAGVAR(lt_prog_compiler_wl, $1)='-Wl,'
++	    _LT_AC_TAGVAR(lt_prog_compiler_pic, $1)='-fPIC'
++	    _LT_AC_TAGVAR(lt_prog_compiler_static, $1)='-static'
++	    ;;
+ 	  pgCC* | pgcpp*)
+ 	    # Portland Group C++ compiler.
+ 	    _LT_AC_TAGVAR(lt_prog_compiler_wl, $1)='-Wl,'
+@@ -5432,7 +5439,8 @@
+ 
+     linux* | k*bsd*-gnu)
+       case $cc_basename in
+-      icc* | ecc*)
++      ecc*)
++        # old Intel for x86_64 which still supported -KPIC.
+ 	_LT_AC_TAGVAR(lt_prog_compiler_wl, $1)='-Wl,'
+ 	_LT_AC_TAGVAR(lt_prog_compiler_pic, $1)='-KPIC'
+ 	_LT_AC_TAGVAR(lt_prog_compiler_static, $1)='-static'
