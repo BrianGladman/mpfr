@@ -500,7 +500,11 @@ mpfr_rec_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
       else
         x = MPFR_MANT(r);
       mpfr_mpn_rec_sqrt (x, wp, MPFR_MANT(u), up, s);
-      if (MPFR_LIKELY (mpfr_round_p (x, wn, wp, rp + (rnd_mode == GMP_RNDN))))
+      /* If the input was not truncated, the error is at most one ulp;
+         if the input was truncated, the error is at most two ulps
+         (see algorithms.tex). */
+      if (MPFR_LIKELY (mpfr_round_p (x, wn, wp - (wp < up),
+                                     rp + (rnd_mode == GMP_RNDN))))
         break;
 
       /* We detect only now the exact case where u=2^(2e), to avoid

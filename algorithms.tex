@@ -909,6 +909,14 @@ An exhaustive search of all possible inputs for $h=11$ and $n=19$ gives
 the worst case being $A=1990149, X=269098$ (scaled by $2^{19}$).
 Thus as soon as $n \geq 2$, Eq.~(\ref{rec_sqrt_eq1}) is fulfilled.
 
+\medskip
+
+In summary, Algorithm $\texttt{ApproximateInverseSquareRoot}$ provides an
+approximation $X$ of $A^{-1/2}$ with an error of at most one ulp;
+however if the input $A$ was itself truncated --- for example when the
+output precision is less than the input precision --- then the maximal
+error is two ulps.
+
 \subsection{The \texttt{mpfr\_remainder} and \texttt{mpfr\_remquo} functions}
 
 The \texttt{mpfr\_remainder} and \texttt{mpfr\_remquo} are useful

@@ -50,7 +50,7 @@ mpfr_round_p (mp_limb_t *bp, mp_size_t bn, mp_exp_t err0, mp_prec_t prec)
 
 /*
  * Assuming {bp, bn} is an approximation of a non-singular number
- * with error at most equal to 2^(EXP(b)-err) (`err' bits of b are known)
+ * with error at most equal to 2^(EXP(b)-err0) (`err0' bits of b are known)
  * of direction unknown, check if we can round b toward zero with
  * precision prec.
  */
