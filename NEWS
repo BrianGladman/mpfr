@@ -36,6 +36,8 @@ Changes from versions 2.3.* to version 2.4.0:
     mpfr_asprintf, mpfr_vasprintf.
   * mpfr_sinh_cosh, mpfr_li2, mpfr_modf, mpfr_fmod, mpfr_rec_sqrt.
 - Configure test for TLS support.
+- Get default $CC and $CFLAGS from gmp.h (__GMP_CC / __GMP_CFLAGS,
+  which are available as of GMP 4.2.3).
 
 Changes from versions 2.2.* to version 2.3.0:
 - The mpfr.info file is now installed in the share subdirectory
