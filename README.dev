@@ -138,14 +138,7 @@ To make a release (for the MPFR team):
 For major or minor releases (but not patchlevels), a branch may be
 created first to allow new features to be committed to the trunk.
 
-If the libtool has not been fixed yet for old Solaris versions, the
-patch patch-libtool needs to be applied, e.g.:
-  1. patch aclocal.m4 patch-libtool
-  2. autoconf
-  3. ./configure
-  4. make dist
-
-Another libtool bug (with icc) to be fixed before the next MPFR releases:
+A libtool bug (with icc) to be fixed before the next MPFR releases:
   http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=485421
 
 ===========================================================================
