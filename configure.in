@@ -151,7 +151,6 @@ if test -z "$GMP_CFLAGS" -a -z "$user_redefine_cc" ; then
       GMP_CFLAGS=
       GMP_CC=
    else
-
       AC_MSG_RESULT(yes [CC=$GMP_CC CFLAGS=$GMP_CFLAGS])
    fi
 fi
