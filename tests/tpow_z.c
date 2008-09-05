@@ -318,16 +318,46 @@ bug20080223 (void)
   mpfr_clear (answer);
 }
 
+static void
+bug20080904 (void)
+{
+  mpz_t exp;
+  mpfr_t a, answer;
+
+  mpz_init (exp);
+  mpfr_init2 (a, 70);
+  mpfr_init2 (answer, 70);
+
+  mpz_set_str (exp, "-4eb92f8c7b7bf81e", 16);
+  mpfr_set_str_binary (a, "1.110000101110100110100011111000011110111101000011111001111001010011100");
+
+  mpfr_pow_z (answer, a, exp, GMP_RNDN);
+  /* The correct result is near 2^(-2^62), so it underflows when
+     MPFR_EMIN_MIN > -2^62 (i.e. with 32 and 64 bits machines). */
+  /* FIXME: the mpfr_set_str doesn't underflow ! */
+  /* mpfr_set_str (a, "196357155785798743515p-4632850503556296886", 10,
+                   GMP_RNDN); */
+  mpfr_set_ui (a, 0, GMP_RNDN); /* TODO:replace this line when mpfr_set_str
+                                    is debugged */
+  MPFR_ASSERTN(mpfr_cmp0 (answer, a) == 0);
+
+  mpz_clear (exp);
+  mpfr_clear (a);
+  mpfr_clear (answer);
+}
+
 int
 main (void)
 {
   tests_start_mpfr ();
 
   check_special ();
+
   check_integer (2, 163, 100);
   check_regression ();
   bug20071104 ();
   bug20080223 ();
+  bug20080904 ();
   check_overflow ();
 
   tests_end_mpfr ();
