@@ -201,10 +201,13 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
       mpfr_mul (t, y, t, GMP_RNDU);                              /* y*ln|x| */
       if (k_non_zero)
         {
+          MPFR_LOG_MSG (("subtract k * ln(2)\n", 0));
           mpfr_const_log2 (u, GMP_RNDD);
           mpfr_mul (u, u, k, GMP_RNDD);
           /* Error on u = k * log(2): < k * 2^(-Nt) < 1. */
           mpfr_sub (t, t, u, GMP_RNDU);
+          MPFR_LOG_MSG (("t = y * ln|x| - k * ln(2)\n", 0));
+          MPFR_LOG_VAR (t);
         }
       exp_te = MPFR_GET_EXP (t);               /* FIXME: May overflow */
       MPFR_BLOCK (flags1, mpfr_exp (t, t, GMP_RNDN));  /* exp(y*ln|x|)*/
