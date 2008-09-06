@@ -167,7 +167,7 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
   /* Declaration of the size variable */
   mp_prec_t Nz = MPFR_PREC(z);               /* target precision */
   mp_prec_t Nt;                              /* working precision */
-  mp_exp_t err, exp_te;                      /* error */
+  mp_exp_t err;                              /* error */
   MPFR_ZIV_DECL (ziv_loop);
 
 
@@ -209,7 +209,21 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
           MPFR_LOG_MSG (("t = y * ln|x| - k * ln(2)\n", 0));
           MPFR_LOG_VAR (t);
         }
-      exp_te = MPFR_GET_EXP (t);               /* FIXME: May overflow */
+      /* estimate of the error -- see pow function in algorithms.tex.
+         The error on t is at most 1/2 + 3*2^(EXP(t)+1) ulps, which is
+         <= 2^(EXP(t)+3) for EXP(t) >= -1, and <= 2 ulps for EXP(t) <= -2.
+         Additional error if k_no_zero: treal = t * errk, with
+         1 - |k| * 2^(-Nt) <= exp(-|k| * 2^(-Nt)) <= errk <= 1,
+         i.e., additional absolute error <= 2^(EXP(k)+EXP(t)-Nt).
+         Total error <= 2^err1 + 2^err2 <= 2^(max(err1,err2)+1). */
+      err = MPFR_NOTZERO (t) && MPFR_GET_EXP (t) >= -1 ?
+        MPFR_GET_EXP (t) + 3 : 1;
+      if (k_non_zero)
+        {
+          if (MPFR_GET_EXP (k) > err)
+            err = MPFR_GET_EXP (k);
+          err++;
+        }
       MPFR_BLOCK (flags1, mpfr_exp (t, t, GMP_RNDN));  /* exp(y*ln|x|)*/
       /* We need to test */
       if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (t) || MPFR_UNDERFLOW (flags1)))
@@ -270,20 +284,6 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
           MPFR_LOG_VAR (k);
           /* |y| < 2^Ntmin, therefore |k| < 2^Nt. */
           continue;
-        }
-      /* estimate of the error -- see pow function in algorithms.tex.
-         The error on t is at most 1/2 + 3*2^(exp_te+1) ulps, which is
-         <= 2^(exp_te+3) for exp_te >= -1, and <= 2 ulps for exp_te <= -2.
-         Additional error if k_no_zero: treal = t * errk, with
-         1 - |k| * 2^(-Nt) <= exp(-|k| * 2^(-Nt)) <= errk <= 1,
-         i.e., additional absolute error <= 2^(EXP(k)+EXP(t)-Nt).
-         Total error <= 2^err1 + 2^err2 <= 2^(max(err1,err2)+1). */
-      err = exp_te >= -1 ? exp_te + 3 : 1;
-      if (k_non_zero)
-        {
-          if (MPFR_GET_EXP (k) > err)
-            err = MPFR_GET_EXP (k);
-          err++;
         }
       if (MPFR_LIKELY (MPFR_CAN_ROUND (t, Nt - err, Nz, rnd_mode)))
         {
