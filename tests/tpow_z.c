@@ -323,10 +323,14 @@ bug20080904 (void)
 {
   mpz_t exp;
   mpfr_t a, answer;
+  mp_exp_t emin_default;
 
   mpz_init (exp);
   mpfr_init2 (a, 70);
   mpfr_init2 (answer, 70);
+
+  emin_default = mpfr_get_emin ();
+  mpfr_set_emin (MPFR_EMIN_MIN);
 
   mpz_set_str (exp, "-4eb92f8c7b7bf81e", 16);
   mpfr_set_str_binary (a, "1.110000101110100110100011111000011110111101000011111001111001010011100");
@@ -334,12 +338,10 @@ bug20080904 (void)
   mpfr_pow_z (answer, a, exp, GMP_RNDN);
   /* The correct result is near 2^(-2^62), so it underflows when
      MPFR_EMIN_MIN > -2^62 (i.e. with 32 and 64 bits machines). */
-  /* FIXME: the mpfr_set_str doesn't underflow ! */
-  /* mpfr_set_str (a, "196357155785798743515p-4632850503556296886", 10,
-                   GMP_RNDN); */
-  mpfr_set_ui (a, 0, GMP_RNDN); /* TODO:replace this line when mpfr_set_str
-                                    is debugged */
+  mpfr_set_str (a, "AA500C0D7A69275DBp-4632850503556296886", 16, GMP_RNDN);
   MPFR_ASSERTN(mpfr_cmp0 (answer, a) == 0);
+
+  mpfr_set_emin (emin_default);
 
   mpz_clear (exp);
   mpfr_clear (a);
