@@ -2251,7 +2251,9 @@ created using the GMP @code{gmp_randinit} function, see the GMP manual.
 @deftypefun void mpfr_random (mpfr_t @var{rop})
 Generate a uniformly distributed random float in the interval
 @math{0 @le{} @var{rop} < 1}.
-This function is deprecated; @code{mpfr_urandomb} should be used instead.
+
+This function is deprecated and will be suppressed in the next release;
+@code{mpfr_urandomb} should be used instead.
 @end deftypefun
 
 @deftypefun void mpfr_random2 (mpfr_t @var{rop}, mp_size_t @var{size}, mp_exp_t @var{exp})
@@ -2265,6 +2267,8 @@ Negative random numbers are generated when @var{size} is negative.
 Put +0 in @var{rop} when size if zero. The internal state of the default
 pseudorandom number generator is modified by a call to this function (the
 same one as GMP if MPFR was built using @samp{--with-gmp-build}).
+
+This function is deprecated and will be suppressed in the next release.
 @end deftypefun
 
 @deftypefun mp_exp_t mpfr_get_exp (mpfr_t @var{x})
