@@ -1123,8 +1123,7 @@ $|t - \tan x| \leq 4 \ulp(t)$.
 
 The {\tt mpfr\_exp} function implements three different algorithms.
 For very large precision, it uses a $\O(M(n) \log^2 n)$ algorithm
-based on binary splitting, based on the generic implementation for
-hypergeometric functions in the file \texttt{generic.c} (see \cite{Jeandel00}).
+based on binary splitting (see \cite{Jeandel00}).
 This algorithm is used only for precision greater
 than for example $10000$ bits on an Athlon.
 
@@ -2163,7 +2162,7 @@ and is thus bounded by
 &\leq &\frac{1}{2 \times 2^{m_i}+1} [2^{-2^{i-1}}]^{2\times 2^{m_i}}\\
 &\leq &\frac{1}{2 \times 2^{m_i}+1} 2^{-2^{i+m_i}}
 \end{eqnarray*}
-The calculation of $\frac{\arctan\,A_i}{A_i}$ is done by using integer arithmetic and returning a fraction that is converted to mpfr type so there is no error. But to compute $\arctan\,A_i=A_i[\frac{\arctan\,A_i}{A_i}]$ we need to use real arithmetic (a little drawback of Jeandel procedure generic.c) so there is $1 ulp$ error.\\
+The calculation of $\frac{\arctan\,A_i}{A_i}$ is done by using integer arithmetic and returning a fraction that is converted to mpfr type so there is no error. But to compute $\arctan\,A_i=A_i[\frac{\arctan\,A_i}{A_i}]$ we need to use real arithmetic so there is $1 ulp$ error.\\
 In total this is $(N_0) ulp$.
 \item Addition give $1 ulp$ There are $(N_0-1)$ addition so we need to take $(N_0 -1) ulp$.
 \item The division yields errors:

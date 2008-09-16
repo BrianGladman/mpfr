@@ -23,19 +23,7 @@ MA 02110-1301, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-/*
-#define A
-#define A1 1
-#define A2 2
-#define C
-#define C1  3
-#define C2  2
-#define NO_FACTORIAL
-#define GENERIC mpfr_atan_aux
-#include "generic.c"
-*/
-/* This is the code of 'generic.c' slighty optimized for mpfr_atan.
-   If x = p/2^r, put in y an approximation of atan(x)/x using 2^m terms
+/* If x = p/2^r, put in y an approximation of atan(x)/x using 2^m terms
    for the series expansion, with an error of at most 1 ulp.
    Assumes |x| < 1.
 

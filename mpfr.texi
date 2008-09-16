@@ -2775,8 +2775,8 @@ Patrick P@'elissier, Philippe Th@'eveny and Paul Zimmermann.
 Sylvie Boldo from ENS-Lyon, France,
 contributed the functions @code{mpfr_agm} and @code{mpfr_log}.
 Emmanuel Jeandel, from ENS-Lyon too,
-contributed the generic hypergeometric code in
-@code{generic.c}, as well as the @code{mpfr_exp3},
+contributed the generic hypergeometric code,
+as well as the @code{mpfr_exp3},
 a first implementation of the sine and cosine,
 and improved versions of
 @code{mpfr_const_log2} and @code{mpfr_const_pi}.

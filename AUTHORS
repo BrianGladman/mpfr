@@ -4,7 +4,7 @@ Guillaume Hanrot	Main author
 Fabrice Rouillier	Original version of mul_ui.c, gmp_op.c
 Paul Zimmermann		Main author
 Sylvie Boldo		Original version of agm.c and log.c
-Emmanuel Jeandel	Original version of generic.c, exp3.c, pi.c, sincos.c
+Emmanuel Jeandel	Original version of exp3.c, const_pi.c, sincos.c
 Mathieu Dutour		asin.c, atan.c and gamma.c
 Vincent Lefèvre		Main author
 David Daney		Hyperbolic and inverse hyperbolic functions, base-2

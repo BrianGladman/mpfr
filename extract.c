@@ -23,8 +23,7 @@ MA 02110-1301, USA. */
 #include "mpfr-impl.h"
 
 /* given 0 <= |p| < 1, this function extracts limbs of p and puts them in y.
-   It is mainly designed for the "binary splitting" algorithm together with
-   generic.c.
+   It is mainly designed for the "binary splitting" algorithm.
 
    More precisely, if B = 2^BITS_PER_MP_LIMB:
    - for i=0, y = floor(p * B)

@@ -1,7 +1,7 @@
 AUTOMAKE_OPTIONS = gnu ansi2knr
 
 SUBDIRS = tests
-EXTRA_DIST = BUGS FAQ.html PATCHES VERSION get_patches.sh generic.c round_raw_generic.c gen_inverse.h jyn_asympt.c
+EXTRA_DIST = BUGS FAQ.html PATCHES VERSION get_patches.sh round_raw_generic.c gen_inverse.h jyn_asympt.c
 
 include_HEADERS = mpfr.h mpf2mpfr.h
 
