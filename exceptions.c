@@ -88,12 +88,12 @@ mpfr_set_emax (mp_exp_t exponent)
 }
 
 mp_exp_t
-mpfr_get_emax_min ()
+mpfr_get_emax_min (void)
 {
   return MPFR_EMAX_MIN;
 }
 mp_exp_t
-mpfr_get_emax_max ()
+mpfr_get_emax_max (void)
 {
   return MPFR_EMAX_MAX;
 }
