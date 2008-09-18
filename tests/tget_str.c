@@ -27,18 +27,18 @@ MA 02110-1301, USA. */
 #include "mpfr-test.h"
 
 static void
-check3 (double d, mp_rnd_t rnd, char *res)
+check3 (char *d, mp_rnd_t rnd, char *res)
 {
   mpfr_t x;
   char *str;
   mp_exp_t e;
 
   mpfr_init2 (x, 53);
-  mpfr_set_d (x, d, rnd);
+  mpfr_set_str (x, d, 10, rnd);
   str = mpfr_get_str (NULL, &e, 10, 5, x, rnd);
   if (strcmp (str, res))
     {
-      printf ("Error in mpfr_get_str for x=%1.20e\n", d);
+      printf ("Error in mpfr_get_str for x=%s\n", d);
       printf ("got %s instead of %s\n", str, res);
       exit (1);
     }
@@ -1160,23 +1160,23 @@ main (int argc, char *argv[])
   mpfr_clear (x);
 
   check_large ();
-  check3 (4.059650008e-83, GMP_RNDN, "40597");
-  check3 (-6.606499965302424244461355e233, GMP_RNDN, "-66065");
-  check3 (-7.4, GMP_RNDN, "-74000");
-  check3 (0.997, GMP_RNDN, "99700");
-  check3 (-4.53063926135729747564e-308, GMP_RNDN, "-45306");
-  check3 (2.14478198760196000000e+16, GMP_RNDN, "21448");
-  check3 (7.02293374921793516813e-84, GMP_RNDN, "70229");
+  check3 ("4.059650008e-83", GMP_RNDN, "40597");
+  check3 ("-6.606499965302424244461355e233", GMP_RNDN, "-66065");
+  check3 ("-7.4", GMP_RNDN, "-74000");
+  check3 ("0.997", GMP_RNDN, "99700");
+  check3 ("-4.53063926135729747564e-308", GMP_RNDN, "-45306");
+  check3 ("2.14478198760196000000e+16", GMP_RNDN, "21448");
+  check3 ("7.02293374921793516813e-84", GMP_RNDN, "70229");
 
-  check3 (-6.7274500420134077e-87, GMP_RNDN, "-67275");
-  check3 (-6.7274500420134077e-87, GMP_RNDZ, "-67274");
-  check3 (-6.7274500420134077e-87, GMP_RNDU, "-67274");
-  check3 (-6.7274500420134077e-87, GMP_RNDD, "-67275");
+  check3 ("-6.7274500420134077e-87", GMP_RNDN, "-67275");
+  check3 ("-6.7274500420134077e-87", GMP_RNDZ, "-67274");
+  check3 ("-6.7274500420134077e-87", GMP_RNDU, "-67274");
+  check3 ("-6.7274500420134077e-87", GMP_RNDD, "-67275");
 
-  check3 (6.7274500420134077e-87, GMP_RNDN, "67275");
-  check3 (6.7274500420134077e-87, GMP_RNDZ, "67274");
-  check3 (6.7274500420134077e-87, GMP_RNDU, "67275");
-  check3 (6.7274500420134077e-87, GMP_RNDD, "67274");
+  check3 ("6.7274500420134077e-87", GMP_RNDN, "67275");
+  check3 ("6.7274500420134077e-87", GMP_RNDZ, "67274");
+  check3 ("6.7274500420134077e-87", GMP_RNDU, "67275");
+  check3 ("6.7274500420134077e-87", GMP_RNDD, "67274");
 
   check_bug_base2k ();
   check_reduced_exprange ();
