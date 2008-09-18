@@ -117,7 +117,7 @@ test_sort (mp_prec_t f, unsigned long n)
 
   for (i = 0; i < n; i++)
     {
-      mpfr_random (tab[i]);
+      mpfr_urandomb (tab[i], RANDS);
       tabtmp[i] = tab[i];
     }
 
@@ -155,7 +155,7 @@ test_sum (mp_prec_t f, unsigned long n)
 
   /* First Uniform */
   for (i = 0; i < n; i++)
-    mpfr_random (tab[i]);
+    mpfr_urandomb (tab[i], RANDS);
   algo_exact (real_non_rounded, tab, n, f);
   for (rnd_mode = 0; rnd_mode < GMP_RND_MAX; rnd_mode++)
     {
@@ -173,7 +173,7 @@ test_sum (mp_prec_t f, unsigned long n)
   /* Then non uniform */
   for (i = 0; i < n; i++)
     {
-      mpfr_random (tab[i]);
+      mpfr_urandomb (tab[i], RANDS);
       mpfr_set_exp (tab[i], randlimb () %1000);
     }
   algo_exact (real_non_rounded, tab, n, f);

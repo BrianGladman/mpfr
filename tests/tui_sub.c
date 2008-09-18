@@ -122,7 +122,7 @@ special (void)
 
   mpfr_set_prec (x, 10);
   mpfr_set_prec (y, 10);
-  mpfr_random (x);
+  mpfr_urandomb (x, RANDS);
   mpfr_ui_sub (y, 0, x, GMP_RNDN);
   if (MPFR_IS_ZERO(x))
     MPFR_ASSERTN(MPFR_IS_ZERO(y));
@@ -175,7 +175,7 @@ check_two_sum (mp_prec_t p)
       x = randlimb ();
     }
   while (x < 1);
-  mpfr_random (y);
+  mpfr_urandomb (y, RANDS);
   rnd = GMP_RNDN;
   inexact = mpfr_ui_sub (u, x, y, rnd);
   mpfr_sub_ui (v, u, x, rnd);

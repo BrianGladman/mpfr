@@ -221,7 +221,7 @@ main (int argc, char *argv[])
 
   for (i = 0; i < 10000; i++)
     {
-      mpfr_random (x);
+      mpfr_urandomb (x, RANDS);
       d = mpfr_get_ld (x, GMP_RNDN);
       check_set_get (d, x);
     }

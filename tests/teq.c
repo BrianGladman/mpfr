@@ -197,7 +197,7 @@ main (void)
 
   for (j = 0; j < 500; j++)
     {
-      mpfr_random (x);
+      mpfr_urandomb (x, RANDS);
       teq (x);
     }
 

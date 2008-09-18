@@ -44,8 +44,8 @@ cmp_tests (void)
       precy = (randlimb () % 17) * 11 + MPFR_PREC_MIN;
       mpfr_set_prec (x, precx);
       mpfr_set_prec (y, precy);
-      mpfr_random (x);
-      mpfr_random (y);
+      mpfr_urandomb (x, RANDS);
+      mpfr_urandomb (y, RANDS);
       signx = randlimb () & 1;
       signy = randlimb () % 256 ? signx : 1 - signx;
       /* signy = signx most of the time (most interesting case) */
@@ -102,7 +102,7 @@ eq_tests (void)
       precx = (randlimb () % 17) * 11 + MPFR_PREC_MIN;
       mpfr_set_prec (x, precx);
       mpfr_set_prec (y, precx + (randlimb () % 64));
-      mpfr_random (x);
+      mpfr_urandomb (x, RANDS);
       if (randlimb () & 1)
         mpfr_neg (x, x, GMP_RNDN);
       mpfr_set (y, x, GMP_RNDN);  /* exact -> x = y */

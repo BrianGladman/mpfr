@@ -423,7 +423,7 @@ check_inexact (mp_prec_t p)
   mpfr_init2 (x, p);
   mpfr_init2 (y, p);
   mpfr_init2 (z, 2*p);
-  mpfr_random (x);
+  mpfr_urandomb (x, RANDS);
   rnd = RND_RAND ();
   inexact = test_sqrt (y, x, rnd);
   if (mpfr_mul (z, y, y, rnd)) /* exact since prec(z) = 2*prec(y) */
@@ -505,8 +505,8 @@ test_property1 (mp_prec_t p, mp_rnd_t r)
   mpfr_init2 (z, p);
   mpfr_init2 (t, p);
 
-  mpfr_random (x);
-  mpfr_random (y);
+  mpfr_urandomb (x, RANDS);
+  mpfr_urandomb (y, RANDS);
   mpfr_mul (z, x, x, r);
   mpfr_mul (t, x, x, r);
   mpfr_add (z, z, t, r);
@@ -537,7 +537,7 @@ test_property2 (mp_prec_t p, mp_rnd_t r)
   mpfr_init2 (x, p);
   mpfr_init2 (y, p);
 
-  mpfr_random (x);
+  mpfr_urandomb (x, RANDS);
   mpfr_mul (y, x, x, r);
   mpfr_sqrt (y, y, r);
   if (mpfr_cmp (y, x))

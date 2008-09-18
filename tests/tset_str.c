@@ -203,7 +203,7 @@ main (int argc, char *argv[])
     {
       mp_rnd_t rnd;
 
-      mpfr_random (x);
+      mpfr_urandomb (x, RANDS);
       rnd = RND_RAND ();
       logbase = (randlimb () % 5) + 1;
       base = 1 << logbase;

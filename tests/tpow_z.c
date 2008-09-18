@@ -159,7 +159,7 @@ check_integer (mp_prec_t begin, mp_prec_t end, unsigned long max)
           mpz_urandomb (z, RANDS, GMP_NUMB_BITS);
           if ((i & 1) != 0)
             mpz_neg (z, z);
-          mpfr_random (x);
+          mpfr_urandomb (x, RANDS);
           mpfr_mul_2ui (x, x, 1, GMP_RNDN); /* 0 <= x < 2 */
           rnd = RND_RAND ();
           if (mpz_fits_slong_p (z))

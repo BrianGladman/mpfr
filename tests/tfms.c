@@ -382,8 +382,8 @@ main (int argc, char *argv[])
     }
 
   mpfr_set_nan (x);
-  mpfr_random (y);
-  mpfr_random (z);
+  mpfr_urandomb (y, RANDS);
+  mpfr_urandomb (z, RANDS);
   mpfr_fms (s, x, y, z, GMP_RNDN);
   if (!mpfr_nan_p (s))
     {
@@ -392,8 +392,8 @@ main (int argc, char *argv[])
     }
 
   mpfr_set_nan (y);
-  mpfr_random (x);
-  mpfr_random (z);
+  mpfr_urandomb (x, RANDS);
+  mpfr_urandomb (z, RANDS);
   mpfr_fms (s, x, y, z, GMP_RNDN);
   if (!mpfr_nan_p(s))
     {
@@ -402,8 +402,8 @@ main (int argc, char *argv[])
     }
 
   mpfr_set_nan (z);
-  mpfr_random (y);
-  mpfr_random (x);
+  mpfr_urandomb (y, RANDS);
+  mpfr_urandomb (x, RANDS);
   mpfr_fms (s, x, y, z, GMP_RNDN);
   if (!mpfr_nan_p (s))
     {
@@ -453,7 +453,7 @@ main (int argc, char *argv[])
 
   mpfr_set_inf (x, 1);
   mpfr_set_ui (y, 0, GMP_RNDN);
-  mpfr_random (z);
+  mpfr_urandomb (z, RANDS);
   mpfr_fms (s, x, y, z, GMP_RNDN);
   if (!mpfr_nan_p (s))
     {
@@ -463,7 +463,7 @@ main (int argc, char *argv[])
 
   mpfr_set_inf (y, 1);
   mpfr_set_ui (x, 0, GMP_RNDN);
-  mpfr_random (z);
+  mpfr_urandomb (z, RANDS);
   mpfr_fms (s, x, y, z, GMP_RNDN);
   if (!mpfr_nan_p (s))
     {
@@ -472,7 +472,7 @@ main (int argc, char *argv[])
     }
 
   mpfr_set_inf (x, 1);
-  mpfr_random (y); /* always positive */
+  mpfr_urandomb (y, RANDS); /* always positive */
   mpfr_set_inf (z, 1);
   mpfr_fms (s, x, y, z, GMP_RNDN);
   if (!mpfr_nan_p (s))
@@ -482,7 +482,7 @@ main (int argc, char *argv[])
     }
 
   mpfr_set_inf (y, 1);
-  mpfr_random (x);
+  mpfr_urandomb (x, RANDS);
   mpfr_set_inf (z, 1);
   mpfr_fms (s, x, y, z, GMP_RNDN);
   if (!mpfr_nan_p (s))
@@ -492,8 +492,8 @@ main (int argc, char *argv[])
     }
 
   mpfr_set_inf (x, 1);
-  mpfr_random (y);
-  mpfr_random (z);
+  mpfr_urandomb (y, RANDS);
+  mpfr_urandomb (z, RANDS);
   mpfr_fms (s, x, y, z, GMP_RNDN);
   if (!mpfr_inf_p (s) || mpfr_sgn (s) < 0)
     {
@@ -502,8 +502,8 @@ main (int argc, char *argv[])
     }
 
   mpfr_set_inf (y, 1);
-  mpfr_random (x);
-  mpfr_random (z);
+  mpfr_urandomb (x, RANDS);
+  mpfr_urandomb (z, RANDS);
   mpfr_fms (s, x, y, z, GMP_RNDN);
   if (!mpfr_inf_p (s) || mpfr_sgn (s) < 0)
     {
@@ -512,8 +512,8 @@ main (int argc, char *argv[])
     }
 
   mpfr_set_inf (z, -1);
-  mpfr_random (x);
-  mpfr_random (y);
+  mpfr_urandomb (x, RANDS);
+  mpfr_urandomb (y, RANDS);
   mpfr_fms (s, x, y, z, GMP_RNDN);
   if (!mpfr_inf_p (s) || mpfr_sgn (s) < 0)
     {
@@ -522,8 +522,8 @@ main (int argc, char *argv[])
     }
 
   mpfr_set_ui (x, 0, GMP_RNDN);
-  mpfr_random (y);
-  mpfr_random (z);
+  mpfr_urandomb (y, RANDS);
+  mpfr_urandomb (z, RANDS);
   mpfr_fms (s, x, y, z, GMP_RNDN);
   mpfr_neg (z, z, GMP_RNDN);
   if (mpfr_cmp (s, z))
@@ -533,8 +533,8 @@ main (int argc, char *argv[])
     }
 
   mpfr_set_ui (y, 0, GMP_RNDN);
-  mpfr_random (x);
-  mpfr_random (z);
+  mpfr_urandomb (x, RANDS);
+  mpfr_urandomb (z, RANDS);
   mpfr_fms (s, x, y, z, GMP_RNDN);
   mpfr_neg (z, z, GMP_RNDN);
   if (mpfr_cmp (s, z))
@@ -567,9 +567,9 @@ main (int argc, char *argv[])
 
       for (n=0; n<N; n++)
         {
-          mpfr_random (x);
-          mpfr_random (y);
-          mpfr_random (z);
+          mpfr_urandomb (x, RANDS);
+          mpfr_urandomb (y, RANDS);
+          mpfr_urandomb (z, RANDS);
 
           if (randlimb () % 2)
             mpfr_neg (x, x, GMP_RNDN);

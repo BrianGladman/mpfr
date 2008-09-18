@@ -1149,7 +1149,7 @@ main (int argc, char *argv[])
   for (i = 0; i < ITER; i++)
     {
       m = 2 + (randlimb () % (MAX_DIGITS - 1));
-      mpfr_random (x);
+      mpfr_urandomb (x, RANDS);
       e = (mp_exp_t) (randlimb () % 21) - 10;
       mpfr_set_exp (x, (e == -10) ? mpfr_get_emin () :
                     ((e == 10) ? mpfr_get_emax () : e));

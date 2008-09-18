@@ -141,7 +141,7 @@ check_worst_cases (void)
 
   mpfr_set_prec (x, 13001);
   mpfr_set_prec (y, 13001);
-  mpfr_random (x);
+  mpfr_urandomb (x, RANDS);
   mpfr_exp_3 (y, x, GMP_RNDN);
   mpfr_exp_2 (x, x, GMP_RNDN);
   if (mpfr_cmp (x, y))
@@ -170,7 +170,7 @@ compare_exp2_exp3 (mp_prec_t p0, mp_prec_t p1)
       mpfr_set_prec (x, prec);
       mpfr_set_prec (y, prec);
       mpfr_set_prec (z, prec);
-      mpfr_random (x);
+      mpfr_urandomb (x, RANDS);
       rnd = RND_RAND ();
       mpfr_exp_2 (y, x, rnd);
       mpfr_exp_3 (z, x, rnd);

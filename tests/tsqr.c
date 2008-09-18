@@ -66,7 +66,7 @@ check_random (mpfr_prec_t p)
   mpfr_inits2 (p, x, y, z, (mpfr_ptr) 0);
   for(i = 0 ; i < 500 ; i++)
     {
-      mpfr_random (x);
+      mpfr_urandomb (x, RANDS);
       if (MPFR_IS_PURE_FP(x))
         for (r = 0 ; r < GMP_RND_MAX ; r++)
           {

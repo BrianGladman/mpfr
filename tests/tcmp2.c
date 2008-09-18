@@ -88,7 +88,7 @@ worst_cases (void)
 
   for (i = 0; i < 64; i++) /* |u| = i */
     {
-      mpfr_random (x);
+      mpfr_urandomb (x, RANDS);
       mpfr_set (y, x, GMP_RNDN);
       set_bit (x, i + 1, 1);
       set_bit (y, i + 1, 0);

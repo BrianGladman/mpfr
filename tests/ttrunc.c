@@ -69,7 +69,7 @@ main (void)
 
   for (j=0;j<1000;j++)
     {
-      mpfr_random (x);
+      mpfr_urandomb (x, RANDS);
       MPFR_EXP (x) = 2;
 
       for (k = 2; k <= SIZEX; k++)

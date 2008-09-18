@@ -63,7 +63,7 @@ check_two_sum (mp_prec_t p)
       x = randlimb ();
     }
   while (x < 1);
-  mpfr_random (y);
+  mpfr_urandomb (y, RANDS);
   rnd = GMP_RNDN;
   inexact = mpfr_sub_ui (u, y, x, rnd);
   mpfr_add_ui (v, u, x, rnd);

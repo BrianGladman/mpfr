@@ -44,7 +44,7 @@ test_random (long nbtests, mp_prec_t prec, int verbose)
 
   for (k = 0; k < nbtests; k++)
     {
-      mpfr_random(x);
+      mpfr_urandomb (x, RANDS);
       d = mpfr_get_d1 (x); av += d; var += d*d;
       tab[(int)(size_tab * d)]++;
     }

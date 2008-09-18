@@ -115,7 +115,7 @@ main (void)
   for (p=2; p<500; p++)
     {
       mpfr_set_prec (x, p);
-      mpfr_random (x);
+      mpfr_urandomb (x, RANDS);
       if (randlimb () % 2)
         mpfr_neg (x, x, GMP_RNDN);
       for (q=2; q<2*p; q++)

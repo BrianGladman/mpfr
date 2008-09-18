@@ -75,7 +75,7 @@ set_special (mpfr_ptr x, unsigned int select)
       MPFR_SET_EXP (x, MPFR_GET_EXP (x)-1);
       break;
     default:
-      mpfr_random (x);
+      mpfr_urandomb (x, RANDS);
       break;
     }
 }

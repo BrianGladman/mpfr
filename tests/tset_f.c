@@ -150,7 +150,7 @@ main (void)
   mpf_set_ui (y, 1);
   for (r = 0; r < mp_bits_per_limb; r++)
     {
-      mpfr_random (x); /* to fill low limbs with random data */
+      mpfr_urandomb (x, RANDS); /* to fill low limbs with random data */
       inexact = mpfr_set_f (x, y, GMP_RNDN);
       MPFR_ASSERTN(inexact == 0 && mpfr_cmp_ui_2exp (x, 1, r) == 0);
       mpf_mul_2exp (y, y, 1);

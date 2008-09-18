@@ -177,7 +177,7 @@ check_random (void)
 
   for (i = 0; i < 100000; i++)
     {
-      mpfr_random (x); /* 0 <= x < 1 */
+      mpfr_urandomb (x, RANDS); /* 0 <= x < 1 */
       /* the normal decimal64 range contains [2^(-1272), 2^1278] */
       mpfr_mul_2si (x, x, (i % 2550) - 1272, GMP_RNDN);
       if (mpfr_get_exp (x) <= -1272)

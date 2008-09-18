@@ -76,8 +76,8 @@ void check_random(mpfr_prec_t p)
 
   for (i = 0 ; i < 500 ; i++)
     {
-      mpfr_random (y);
-      mpfr_random (z);
+      mpfr_urandomb (y, RANDS);
+      mpfr_urandomb (z, RANDS);
       if (MPFR_IS_PURE_FP(y) && MPFR_IS_PURE_FP(z))
         for(r = 0 ; r < GMP_RND_MAX ; r++)
           {

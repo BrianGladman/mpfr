@@ -355,8 +355,8 @@ check_two_sum (mp_prec_t p)
   mpfr_init2 (u, p);
   mpfr_init2 (v, p);
   mpfr_init2 (w, p);
-  mpfr_random (x);
-  mpfr_random (y);
+  mpfr_urandomb (x, RANDS);
+  mpfr_urandomb (y, RANDS);
   if (mpfr_cmpabs (x, y) < 0)
     mpfr_swap (x, y);
   rnd = GMP_RNDN;
@@ -418,7 +418,7 @@ check_inexact (void)
       mpfr_set_prec (x, px);
       do
         {
-          mpfr_random (x);
+          mpfr_urandomb (x, RANDS);
         }
       while (mpfr_cmp_ui (x, 0) == 0);
       for (pu=2; pu<MAX_PREC; pu++)
@@ -426,7 +426,7 @@ check_inexact (void)
           mpfr_set_prec (u, pu);
           do
             {
-              mpfr_random (u);
+              mpfr_urandomb (u, RANDS);
             }
           while (mpfr_cmp_ui (u, 0) == 0);
           {

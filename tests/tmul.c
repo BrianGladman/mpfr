@@ -241,8 +241,8 @@ check_exact (void)
       mpfr_set_prec (d, 2 * prec);
       for (i = 0; i < 1000; i++)
         {
-          mpfr_random (a);
-          mpfr_random (b);
+          mpfr_urandomb (a, RANDS);
+          mpfr_urandomb (b, RANDS);
           rnd = RND_RAND ();
           inexact = test_mul (c, a, b, rnd);
           if (test_mul (d, a, b, rnd)) /* should be always exact */

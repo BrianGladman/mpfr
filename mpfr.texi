@@ -2248,14 +2248,6 @@ second argument is a @code{gmp_randstate_t} structure which should be
 created using the GMP @code{gmp_randinit} function, see the GMP manual.
 @end deftypefun
 
-@deftypefun void mpfr_random (mpfr_t @var{rop})
-Generate a uniformly distributed random float in the interval
-@math{0 @le{} @var{rop} < 1}.
-
-This function is deprecated and will be suppressed in the next release;
-@code{mpfr_urandomb} should be used instead.
-@end deftypefun
-
 @deftypefun void mpfr_random2 (mpfr_t @var{rop}, mp_size_t @var{size}, mp_exp_t @var{exp})
 Generate a random float of at most @var{size} limbs, with long strings of
 zeros and ones in the binary representation. The exponent of the number is in

@@ -61,7 +61,7 @@ generic_abovebelow (void)
         }
 
       do
-        mpfr_random (x);
+        mpfr_urandomb (x, RANDS);
       while (mpfr_cmp_ui (x, 0) == 0);
       neg = randlimb () & 1;
       if (neg)

@@ -63,7 +63,7 @@ special (void)
 
   mpfr_set_prec (x, 100);
   mpfr_set_prec (y, 100);
-  mpfr_random (x);
+  mpfr_urandomb (x, RANDS);
   mpfr_div_ui (y, x, 123456, GMP_RNDN);
   mpfr_set_ui (x, 0, GMP_RNDN);
   mpfr_div_ui (y, x, 123456789, GMP_RNDN);
@@ -156,7 +156,7 @@ check_inexact (void)
   for (px=2; px<300; px++)
     {
       mpfr_set_prec (x, px);
-      mpfr_random (x);
+      mpfr_urandomb (x, RANDS);
       do
         {
           u = randlimb ();

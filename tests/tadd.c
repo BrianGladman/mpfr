@@ -512,7 +512,7 @@ check_inexact (void)
       mpfr_set_prec (x, px);
       do
         {
-          mpfr_random (x);
+          mpfr_urandomb (x, RANDS);
         }
       while (mpfr_cmp_ui (x, 0) == 0);
       for (pu=2; pu<MAX_PREC; pu++)
@@ -520,7 +520,7 @@ check_inexact (void)
           mpfr_set_prec (u, pu);
           do
             {
-              mpfr_random (u);
+              mpfr_urandomb (u, RANDS);
             }
           while (mpfr_cmp_ui (u, 0) == 0);
           {

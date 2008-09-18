@@ -79,7 +79,7 @@ check_sgn(void)
   mpfr_init(x);
   for(i = 0 ; i < 100 ; i++)
     {
-      mpfr_random(x);
+      mpfr_urandomb (x, RANDS);
       if (i&1)
         {
           MPFR_SET_POS(x);

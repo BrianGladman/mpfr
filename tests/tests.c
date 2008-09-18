@@ -482,7 +482,7 @@ tests_default_random (mpfr_ptr x, int pos, mp_exp_t emin, mp_exp_t emax)
      exponent range (see below), so that underflow/overflow checks
      can be done on 64-bit machines. */
 
-  mpfr_random (x);
+  mpfr_urandomb (x, RANDS);
   if (MPFR_IS_PURE_FP (x) && (emin >= 1 || (randlimb () & 1)))
     {
       mp_exp_t e;

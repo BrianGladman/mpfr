@@ -61,8 +61,8 @@ main (int argc, char *argv[])
 
       for (n=0; n<N; n++)
         {
-          mpfr_random (x);
-          mpfr_random (s);
+          mpfr_urandomb (x, RANDS);
+          mpfr_urandomb (s, RANDS);
           if (randlimb () % 2)
             mpfr_neg (s, s, GMP_RNDN);
           rnd = RND_RAND ();

@@ -25,7 +25,7 @@ MA 02110-1301, USA. */
 # define INTEGER_TYPE mp_limb_t
 #endif
 #ifndef RAND_FUNCTION
-# define RAND_FUNCTION mpfr_random
+# define RAND_FUNCTION(x) mpfr_urandomb ((x), RANDS)
 #endif
 #ifndef INT_RAND_FUNCTION
 # define INT_RAND_FUNCTION() (INTEGER_TYPE) randlimb ()

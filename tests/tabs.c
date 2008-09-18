@@ -42,7 +42,7 @@ check_inexact (void)
     {
       mpfr_set_prec (x, p);
       mpfr_set_prec (absx, p);
-      mpfr_random (x);
+      mpfr_urandomb (x, RANDS);
       if (randlimb () % 2)
         {
           mpfr_set (absx, x, GMP_RNDN);
@@ -138,7 +138,7 @@ check_cmp (int argc, char *argv[])
       mp_rnd_t rnd;
       int sign = SIGN_RAND ();
 
-      mpfr_random (x);
+      mpfr_urandomb (x, RANDS);
       MPFR_SET_SIGN (x, sign);
       rnd = RND_RAND ();
       mpfr_abs (y, x, rnd);

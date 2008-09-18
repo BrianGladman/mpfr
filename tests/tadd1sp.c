@@ -114,8 +114,8 @@ void check_random(mp_prec_t p)
 
   for (i = 0 ; i < 500 ; i++)
     {
-      mpfr_random(b);
-      mpfr_random(c);
+      mpfr_urandomb (b, RANDS);
+      mpfr_urandomb (c, RANDS);
       if (MPFR_IS_PURE_FP(b) && MPFR_IS_PURE_FP(c))
         {
           if (MPFR_GET_EXP(b) < MPFR_GET_EXP(c))

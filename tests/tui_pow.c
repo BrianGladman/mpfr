@@ -247,7 +247,7 @@ main (int argc, char *argv[])
         {
           int nt;
           nt = randlimb () & INT_MAX;
-          mpfr_random (x);
+          mpfr_urandomb (x, RANDS);
           rnd = RND_RAND ();
           check1 (x, prec, nt, rnd);
         }
