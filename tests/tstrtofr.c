@@ -33,52 +33,10 @@ static void check_retval   (void);
 static void check_overflow (void);
 static void check_parse    (void);
 
-static void
-check_underflow ()
-{
-  mpfr_t x, y;
-  int res;
-  char *s;
-  mp_exp_t svg;
-
-  mpfr_init (x);
-  mpfr_init (y);
-
-  mpfr_set_ui (x, 0, GMP_RNDN);
-  mpfr_nextabove (x);
-
-  mpfr_strtofr (y, "0b100p-1073741826", NULL, 0, GMP_RNDN);
-  if (mpfr_cmp (x, y))
-    {
-      mpfr_dump (x);
-      mpfr_dump (y);
-      exit (1);
-    }
-
-  svg = mpfr_get_emin ();
-  mpfr_set_emin (MPFR_EMIN_MIN);
-  mpfr_set_ui (x, 0, GMP_RNDN);
-  mpfr_nextabove (x);
-
-  mpfr_strtofr (y, "0b100p-4611686018427387906", NULL, 0, GMP_RNDN);
-  if (mpfr_cmp (x, y))
-    {
-      mpfr_dump (x);
-      mpfr_dump (y);
-      exit (1);
-    }
-  mpfr_set_emin (svg);
-
-  mpfr_clear (x);
-  mpfr_clear (y);
-}
-
 int
 main (int argc, char *argv[])
 {
   tests_start_mpfr ();
-
-  check_underflow ();
 
   check_special();
   check_reftable ();
