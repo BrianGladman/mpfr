@@ -345,7 +345,7 @@ Table of contents:
       - The rounded value is the same.
   It should be a complement to tgeneric tests.
 
-- add a new exception "division by zero" (IEEE-754 terminology) / "pole"
+- add a new exception "division by zero" (IEEE-754 terminology) / "infinitary"
   (LIA-2 terminology). In IEEE 754R (2006 February 14 8:00):
     "The division by zero exception shall be signaled iff an exact
     infinite result is defined for an operation on finite operands.
