@@ -92,6 +92,9 @@ to build it with them. Just do this in step 1:
 where GMPBUILD is the GMP build directory. The needed header files are:
 gmp-impl.h, longlong.h and all the necessary headers to use them.
 
+Warning: the library obtained in this way uses some non-exported internal
+GMP symbols, and thus linking with a different version of GMP might fail.
+
 
 ./configure options
 ===================
