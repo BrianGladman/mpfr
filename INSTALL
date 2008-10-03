@@ -104,15 +104,8 @@ by Libtool's versioning system.
 --prefix=DIR            installs MPFR headers and library in DIR/include and
                         DIR/lib respectively (the default is "/usr/local").
 
---with-gmp-include=DIR  assumes that DIR contains gmp.h [, gmp-impl.h, ...]
---with-gmp-lib=DIR      assumes that DIR contains libgmp.a
---with-gmp-build=DIR    assumes that DIR contains the source of GMP.
-                        same as --with-gmp-lib=DIR/.libs
-                        and     --with-gmp-include=DIR
-                        Try to set CC/CFLAGS to GMP's ones. This is not
-                        guaranteed to work as the configure script does
-                        some compiler tests earlier, and the change may
-                        be too late.
+--with-gmp-include=DIR  assumes that DIR contains gmp.h
+--with-gmp-lib=DIR      assumes that DIR contains the GMP library
 --with-gmp=DIR          assumes that DIR is where you have installed GMP.
                         same as --with-gmp-lib=DIR/lib
                         and     --with-gmp-include=DIR/include
@@ -124,6 +117,13 @@ by Libtool's versioning system.
                         *after* the ones that are currently declared,
                         so that DIR will have a lower precedence. Also,
                         this may not work if DIR is a system directory.
+
+--with-gmp-build=DIR    assumes that DIR contains the source of GMP and
+                        enables the use of GMP internals.
+                        Try to set CC/CFLAGS to GMP's ones. This is not
+                        guaranteed to work as the configure script does
+                        some compiler tests earlier, and the change may
+                        be too late.
 
 --enable-assert         build MPFR with assertions.
 --enable-thread-safe    build MPFR as thread safe.

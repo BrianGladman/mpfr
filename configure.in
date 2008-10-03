@@ -51,8 +51,16 @@ AC_ARG_WITH(gmp_lib,
    LDFLAGS="$LDFLAGS -L$withval"
    gmp_lib_path="$withval"
   ])
+AC_ARG_WITH(gmp,
+   [  --with-gmp=DIR          GMP install directory ], [
+   CPPFLAGS="$CPPFLAGS -I$withval/include"
+   LDFLAGS="$LDFLAGS -L$withval/lib"
+   gmp_lib_path="$withval/lib"
+  ])
+
 AC_ARG_WITH(gmp_build,
-   [  --with-gmp-build=DIR    GMP build directory], [
+   [  --with-gmp-build=DIR    GMP build directory (please read INSTALL file)],
+   [
     CPPFLAGS="$CPPFLAGS -I$withval -I$withval/tune"
     LDFLAGS="$LDFLAGS -L$withval -L$withval/.libs -L$withval/tune/"
     gmp_lib_path="$withval$PATH_SEPARATOR$withval/.libs$PATH_SEPARATOR$withval/tune"
@@ -62,12 +70,6 @@ AC_ARG_WITH(gmp_build,
     fi
     use_gmp_build=yes
    ])
-AC_ARG_WITH(gmp,
-   [  --with-gmp=DIR          GMP install directory ], [
-   CPPFLAGS="$CPPFLAGS -I$withval/include"
-   LDFLAGS="$LDFLAGS -L$withval/lib"
-   gmp_lib_path="$withval/lib"
-  ])
 
 AC_ARG_WITH(mulhigh_size,
    [  --with-mulhigh-size=NUM internal threshold table for mulhigh],
