@@ -124,7 +124,10 @@ typedef __mpfr_struct mpfr_t[1];
 typedef __mpfr_struct *mpfr_ptr;
 typedef __gmp_const __mpfr_struct *mpfr_srcptr;
 
-/* For those who needs a direct access and fast access to the sign field */
+/* For those who need a direct and fast access to the sign field.
+   However it is not in the API, thus use it at your own risk: it might
+   not be supported, or change name, in further versions!
+*/
 #define MPFR_SIGN(x) ((x)->_mpfr_sign)
 
 /* Stack interface */
