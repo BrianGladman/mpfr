@@ -127,6 +127,8 @@ typedef __gmp_const __mpfr_struct *mpfr_srcptr;
 /* For those who need a direct and fast access to the sign field.
    However it is not in the API, thus use it at your own risk: it might
    not be supported, or change name, in further versions!
+   Unfortunately, it must be defined here (instead of MPFR's internal
+   header file mpfr-impl.h) because it is used by some macros below.
 */
 #define MPFR_SIGN(x) ((x)->_mpfr_sign)
 
