@@ -197,7 +197,7 @@ decimal (void)
   check_sprintf ("                             0", "%30.0Rf", z);
   check_sprintf ("                        0.0000", "%30.4Rf", z);
   check_sprintf ("                             0", "%30.0Rg", z);
-  check_sprintf ("                        0.0000", "%30.4Rg", z);
+  check_sprintf ("                             0", "%30.4Rg", z);
   /* sign or space, pad with leading zeros */
   check_sprintf (" 000001.899347461279296875E+07", "% 030RE", x);
   check_sprintf (" 0000000000000000001.89935E+07", "% 030RG", x);
@@ -294,6 +294,18 @@ decimal (void)
   check_sprintf ("-3.051757812500000000000000000000e-05", "%.30Re", x);
   check_sprintf ("-3.05175781250000000000000000000e-05", "%#.30Rg", x);
   check_sprintf ("-0.000030517578125000000000000000", "%.30Rf", x);
+
+  /* bug 20081023 */
+  check_sprintf ("-3.0517578125e-05", "%.30Rg", x);
+  mpfr_set_str (x, "1.9999", 10, GMP_RNDN);
+  check_sprintf ("1.999900  ", "%-#10.7RG", x);
+  check_sprintf ("1.9999    ", "%-10.7RG", x);
+  mpfr_set_ui (x, 1, GMP_RNDN);
+  check_sprintf ("1.00000000000000000000000000000", "%#.30Rg", x);
+  check_sprintf ("1", "%.30Rg", x);
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  check_sprintf ("0.000000000000000000000000000000", "%#.30Rg", x);
+  check_sprintf ("0", "%.30Rg", x);
 
   mpfr_clears (x, z, (mpfr_ptr) 0);
   return 0;

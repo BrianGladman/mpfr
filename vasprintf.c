@@ -1333,7 +1333,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
         /* thousands separator in integral part */
         np->thousands_sep = MPFR_THOUSANDS_SEPARATOR;
 
-      if (nsd == 0)
+      if (nsd == 0 || (spec_g && !spec.alt))
         /* compute how much non-zero digits in integral and fractional
            parts */
         {
@@ -1497,6 +1497,9 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
       else
         /* p == 0 */
         {
+          /* note: for 'g' spec, zero is always displayed with 'f'-style with
+             precision spec.prec - 1 and the trailing zeros are removed unless
+             the flag '#' is used. */
           if (MPFR_IS_NEG (p))
             /* signed zero */
             np->sign = '-';
@@ -1521,11 +1524,13 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
           str[1] = '\0';
           np->ip_ptr = register_string (np->sl, str);
 
-          if (spec.prec > 0)
+          if (spec.prec > 0
+              && ((spec.spec != 'g' && spec.prec != 'G') || spec.alt))
             /* fractional part */
             {
               np->point = MPFR_DECIMAL_POINT;
-              np->fp_trailing_zeros = spec.prec;
+              np->fp_trailing_zeros = (spec.spec == 'g' && spec.prec == 'G') ?
+                spec.prec - 1 : spec.prec;
             }
           else if (spec.alt)
             np->point = MPFR_DECIMAL_POINT;
