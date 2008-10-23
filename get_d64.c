@@ -1,8 +1,9 @@
 /* mpfr_get_decimal64 -- convert a multiple precision floating-point number
                          to a IEEE 754r decimal64 float
 
-See http://gcc.gnu.org/ml/gcc/2006-06/msg00691.html
-and http://gcc.gnu.org/onlinedocs/gcc/Decimal-Float.html.
+See http://gcc.gnu.org/ml/gcc/2006-06/msg00691.html,
+http://gcc.gnu.org/onlinedocs/gcc/Decimal-Float.html,
+and TR 24732 <http://www.open-std.org/jtc1/sc22/wg14/www/projects#24732>.
 
 Copyright 2006, 2007, 2008 Free Software Foundation, Inc.
 Contributed by the Arenaire and Cacao projects, INRIA.
