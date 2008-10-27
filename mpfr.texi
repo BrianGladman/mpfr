@@ -35,7 +35,7 @@ license is included in @ref{GNU Free Documentation License}.
 @c  UPDATED-MONTH.
 
 
-@dircategory GNU libraries
+@dircategory Software libraries
 @direntry
 * mpfr: (mpfr).                 Multiple Precision Floating-Point Reliable Library.
 @end direntry
