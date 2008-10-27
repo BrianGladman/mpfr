@@ -22,7 +22,7 @@ lgpl="`sed -n '/Version [0-9.]\+ or any later version/ \
   {s/.*Version //; s/ or.*//; p; q}' mpfr.texi`"
 for file in {,tests/}*.{c,h}
 do
-  if grep -q "MPFR Library" "$file"; then
+  if grep -q "GNU MPFR Library" "$file"; then
     grep -q "either version $lgpl of the License" "$file" || \
       echo "Possibly missing or incorrect copyright notice in $file"
   fi

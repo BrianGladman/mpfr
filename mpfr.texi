@@ -4,7 +4,7 @@
 @documentencoding ISO-8859-1
 @set VERSION 2.4.0-dev
 @set UPDATED-MONTH August 2008
-@settitle MPFR @value{VERSION}
+@settitle GNU MPFR @value{VERSION}
 @synindex tp fn
 @iftex
 @afourpaper
@@ -42,7 +42,8 @@ license is included in @ref{GNU Free Documentation License}.
 
 @c  html <meta name=description content="...">
 @documentdescription
-How to install and use MPFR, a library for reliable multiple precision floating-point arithmetic, version @value{VERSION}.
+How to install and use GNU MPFR, a library for reliable multiple precision
+floating-point arithmetic, version @value{VERSION}.
 @end documentdescription
 
 @c smallbook
@@ -51,12 +52,12 @@ How to install and use MPFR, a library for reliable multiple precision floating-
 
 @ifnottex
 @node Top, Copying, (dir), (dir)
-@top MPFR
+@top GNU MPFR
 @end ifnottex
 
 @iftex
 @titlepage
-@title MPFR
+@title GNU MPFR
 @subtitle The Multiple Precision Floating-Point Reliable Library
 @subtitle Edition @value{VERSION}
 @subtitle @value{UPDATED-MONTH}
@@ -94,7 +95,7 @@ How to install and use MPFR, a library for reliable multiple precision floating-
 
 @menu
 * Copying::                     MPFR Copying Conditions (LGPL).
-* Introduction to MPFR::        Brief introduction to MPFR.
+* Introduction to MPFR::        Brief introduction to GNU MPFR.
 * Installing MPFR::             How to configure and compile the MPFR library.
 * Reporting Bugs::              How to usefully report bugs.
 * MPFR Basics::                 What every MPFR user should now.
@@ -237,17 +238,17 @@ and that you know you can do these things.@refill
 
 To make sure that everyone has such rights, we have to forbid you to deprive
 anyone else of these rights.  For example, if you distribute copies of the
-MPFR library, you must give the recipients all the rights that you have.  You
-must make sure that they, too, receive or can get the source code.  And you
+GNU MPFR library, you must give the recipients all the rights that you have.
+You must make sure that they, too, receive or can get the source code.  And you
 must tell them their rights.@refill
 
 Also, for our own protection, we must make certain that everyone finds out
-that there is no warranty for the MPFR library.  If it is modified by
+that there is no warranty for the GNU MPFR library.  If it is modified by
 someone else and passed on, we want their recipients to know that what they
 have is not what we distributed, so that any problems introduced by others
 will not reflect on our reputation.@refill
 
-The precise conditions of the license for the MPFR library are found in the
+The precise conditions of the license for the GNU MPFR library are found in the
 Lesser General Public License that accompanies the source code.
 See the file COPYING.LIB.@refill
 
