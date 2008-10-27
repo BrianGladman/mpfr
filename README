@@ -22,7 +22,7 @@ MA 02110-1301, USA.
 ##############################################################################
 
 The MPFR distribution contains the following files:
-(This does not apply to code retrieved by CVS.)
+(This does not apply to code retrieved by Subversion.)
 
 AUTHORS         - the authors of the library
 BUGS            - bugs in MPFR - please read this file!
