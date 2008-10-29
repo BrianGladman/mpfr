@@ -655,6 +655,18 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mp_rnd_t rnd)
           err = 0;
         }
 
+      if (pstr_size < pstr->prec && exact
+          && ((rnd == GMP_RNDN)
+              || ((rnd == GMP_RNDD && pstr->negative)
+                  || (rnd == GMP_RNDU && !pstr->negative))))
+        {
+          /* Some significant digits might have been forgotten, if so result
+             is not exact. */
+          mp_size_t i;
+          for (i = pstr_size; exact && i < pstr->prec; i++)
+            exact = pstr->mant[i] == 0;
+        }
+
       /* test if rounding is possible, and if so exit the loop */
       if (exact || mpfr_can_round_raw (result, ysize,
                                        (pstr->negative) ? -1 : 1,
