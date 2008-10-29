@@ -472,7 +472,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mp_rnd_t rnd)
 
       if (pstr_size >= pstr->prec)
         pstr_size = pstr->prec;
-      MPFR_ASSERTD ((mp_exp_t) pstr_size == (mp_exp_t) pstr_size);
+      MPFR_ASSERTD (pstr_size == (mp_exp_t) pstr_size);
 
       /* convert str into binary */
       real_ysize = mpn_set_str (y, pstr->mant, pstr_size, pstr->base);
