@@ -930,6 +930,33 @@ check_retval (void)
   mpfr_clear (x);
 }
 
+/* Bug found by Christoph Lauter (in mpfr_set_str). */
+static void
+bug20081028 (void)
+{
+  mpfr_t x;
+  const char *s = "0.10000000000000000000000000000001E1";
+  int res, err = 0;
+
+  mpfr_init2 (x, 32);
+  res = mpfr_strtofr (x, "1.00000000000000000006", NULL, 10, GMP_RNDU);
+  if (res <= 0)
+    {
+      printf ("Error in bug20081028: expected positive ternary value,"
+              " got %d\n", res);
+      err = 1;
+    }
+  if (! mpfr_greater_p (x, __gmpfr_one))
+    {
+      printf ("Error in bug20081028:\nExpected %s\nGot      ", s);
+      mpfr_dump (x);
+      err = 1;
+    }
+  mpfr_clear (x);
+  if (err)
+    exit (1);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -940,6 +967,7 @@ main (int argc, char *argv[])
   check_parse ();
   check_overflow ();
   check_retval ();
+  bug20081028 ();
 
   tests_end_mpfr ();
   return 0;
