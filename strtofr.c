@@ -662,7 +662,8 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mp_rnd_t rnd)
         {
           /* Some significant digits might have been forgotten, if so result
              is not exact. */
-          mp_size_t i;
+          size_t i;
+
           for (i = pstr_size; exact && i < pstr->prec; i++)
             exact = pstr->mant[i] == 0;
         }
