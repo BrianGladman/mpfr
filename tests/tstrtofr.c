@@ -27,28 +27,7 @@ MA 02110-1301, USA. */
 
 #include "mpfr-test.h"
 
-static void check_reftable (void);
-static void check_special  (void);
-static void check_retval   (void);
-static void check_overflow (void);
-static void check_parse    (void);
-
-int
-main (int argc, char *argv[])
-{
-  tests_start_mpfr ();
-
-  check_special();
-  check_reftable ();
-  check_parse ();
-  check_overflow ();
-  check_retval ();
-
-  tests_end_mpfr ();
-  return 0;
-}
-
-void
+static void
 check_special (void)
 {
   mpfr_t x, y;
@@ -551,8 +530,7 @@ static struct dymmy_test {
 "1.001000010110011011000101100000101111101001100011101101001111110111000010010110010001100e-16920"}
 };
 
-
-void
+static void
 check_reftable ()
 {
   int i, base;
@@ -597,7 +575,7 @@ check_reftable ()
   mpfr_clear (x);
 }
 
-void
+static void
 check_parse (void)
 {
   mpfr_t x;
@@ -950,4 +928,19 @@ check_retval (void)
   MPFR_ASSERTN (res < 0);
 
   mpfr_clear (x);
+}
+
+int
+main (int argc, char *argv[])
+{
+  tests_start_mpfr ();
+
+  check_special();
+  check_reftable ();
+  check_parse ();
+  check_overflow ();
+  check_retval ();
+
+  tests_end_mpfr ();
+  return 0;
 }
