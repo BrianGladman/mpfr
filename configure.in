@@ -142,11 +142,11 @@ if test -z "$GMP_CFLAGS" -a -z "$user_redefine_cc" ; then
    # Get CC
    echo "#include \"gmp.h\"" >  conftest.c
    echo "MPFR_OPTION __GMP_CC"           >> conftest.c
-   GMP_CC=$($CPP $CPPFLAGS conftest.c 2> /dev/null | $EGREP "MPFR_OPTION" | $SED -e 's/MPFR_OPTION //g' | $SED -e 's/"//g')
+   GMP_CC="`$CPP $CPPFLAGS conftest.c 2> /dev/null | $EGREP MPFR_OPTION | $SED -e 's/MPFR_OPTION //g' | $SED -e 's/"//g'`"
    #Get CFLAGS
    echo "#include \"gmp.h\"" >  conftest.c
    echo "MPFR_OPTION __GMP_CFLAGS"           >> conftest.c
-   GMP_CFLAGS=$($CPP $CPPFLAGS conftest.c 2> /dev/null | $EGREP "MPFR_OPTION" | $SED -e 's/MPFR_OPTION //g'| $SED -e 's/"//g')
+   GMP_CFLAGS="`$CPP $CPPFLAGS conftest.c 2> /dev/null | $EGREP MPFR_OPTION | $SED -e 's/MPFR_OPTION //g'| $SED -e 's/"//g'`"
    rm -f conftest*
    if test "x$GMP_CFLAGS" = "x__GMP_CFLAGS" -o "x$GMP_CC" = "x__GMP_CC" ; then
       AC_MSG_RESULT(no)
