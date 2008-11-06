@@ -939,19 +939,49 @@ bug20081028 (void)
   int res, err = 0;
 
   mpfr_init2 (x, 32);
+
   res = mpfr_strtofr (x, "1.00000000000000000006", NULL, 10, GMP_RNDU);
   if (res <= 0)
     {
-      printf ("Error in bug20081028: expected positive ternary value,"
+      printf ("Error in bug20081028u: expected positive ternary value,"
               " got %d\n", res);
       err = 1;
     }
   if (! mpfr_greater_p (x, __gmpfr_one))
     {
-      printf ("Error in bug20081028:\nExpected %s\nGot      ", s);
+      printf ("Error in bug20081028u:\nExpected %s\nGot      ", s);
       mpfr_dump (x);
       err = 1;
     }
+
+  res = mpfr_strtofr (x, "1.00000000000000000006", NULL, 10, GMP_RNDN);
+  if (res >= 0)
+    {
+      printf ("Error in bug20081028n: expected negative ternary value,"
+              " got %d\n", res);
+      err = 1;
+    }
+  if (mpfr_cmp (x, __gmpfr_one) != 0)
+    {
+      printf ("Error in bug20081028n:\nExpected 1\nGot      ");
+      mpfr_dump (x);
+      err = 1;
+    }
+
+  res = mpfr_strtofr (x, "1.00000000000000000006", NULL, 10, GMP_RNDZ);
+  if (res >= 0)
+    {
+      printf ("Error in bug20081028z: expected negative ternary value,"
+              " got %d\n", res);
+      err = 1;
+    }
+  if (mpfr_cmp (x, __gmpfr_one) != 0)
+    {
+      printf ("Error in bug20081028z:\nExpected 1\nGot      ");
+      mpfr_dump (x);
+      err = 1;
+    }
+
   mpfr_clear (x);
   if (err)
     exit (1);
