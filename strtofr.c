@@ -709,15 +709,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mp_rnd_t rnd)
          still correctly round, since the neglected part is less than
          one ulp, but that would make the code more complex, and give a
          speedup for rare cases only. */
-      if (exact)
-        {
-          /* Some significant digits might have been forgotten, if so result
-             is not exact. */
-          size_t i;
-
-          for (i = pstr_size; exact && i < pstr->prec; i++)
-            exact = pstr->mant[i] == 0;
-        }
+      exact = exact && (pstr_size == pstr->prec);
 
       /* at this point, result is an approximation rounded towards zero
          of the pstr_size most significant digits of pstr->mant, with
@@ -748,9 +740,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mp_rnd_t rnd)
 
   if (res == 0) /* fix ternary value */
     {
-      mp_size_t i;
-      for (i = pstr_size; exact && i < pstr->prec; i++)
-        exact = pstr->mant[i] == 0;
+      exact = exact && (pstr_size == pstr->prec);
       if (!exact)
         res = (pstr->negative) ? 1 : -1;
     }
