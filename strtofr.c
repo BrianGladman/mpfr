@@ -514,7 +514,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mp_rnd_t rnd)
       /* exact means that the number of limbs of the output of mpn_set_str
          is less or equal to ysize */
       exact = real_ysize <= ysize;
-      if (exact != 0) /* shift y to the left in that case y should be exact */
+      if (exact) /* shift y to the left in that case y should be exact */
         {
           /* we have enough limbs to store {y, real_ysize} */
           /* shift {y, num_limb} for count bits to the left */
@@ -751,7 +751,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mp_rnd_t rnd)
       mp_size_t i;
       for (i = pstr_size; exact && i < pstr->prec; i++)
         exact = pstr->mant[i] == 0;
-      if (exact == 0)
+      if (!exact)
         res = (pstr->negative) ? 1 : -1;
     }
 
