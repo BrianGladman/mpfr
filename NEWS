@@ -46,7 +46,9 @@ Changes from versions 2.3.* to version 2.4.0:
 - Get default $CC and $CFLAGS from gmp.h (__GMP_CC / __GMP_CFLAGS,
   which are available as of GMP 4.2.3).
 - Documented the fact that mpfr_random and mpfr_random2 will be
-  suppressed in the next release.
+  suppressed in the next release, and that the specification of
+  mpfr_eq may change in the next release (for compatibility with
+  the mpf layer of GMP).
 - Bug fixes.
 
 Changes from versions 2.2.* to version 2.3.0:
