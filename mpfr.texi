@@ -2600,8 +2600,8 @@ numbers with the same exponent and the same first @var{op3} bits, both
 zero, or both infinities of the same sign. Return zero otherwise. This
 function is defined for compatibility with @code{mpf}. Do not use it if
 you want to know whether two numbers are close to each other; for instance,
-1.011111 and 1.100000 are regarded as different for any value of @var{op3}
-larger than 1.
+1.011111 and 1.100000 are currently regarded as different for any value of
+@var{op3} larger than 1 (but this may change in the future).
 @end deftypefun
 
 @deftypefun void mpfr_reldiff (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mp_rnd_t @var{rnd})
