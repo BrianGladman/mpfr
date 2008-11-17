@@ -3609,7 +3609,7 @@ $s \leftarrow \N(t - v)$ & & $error(s) \leq 2^{\kappa_s} \ulp(s)$\\
 \Else\ return $\circ_n(s)$
 \end{quote}
 where $\kappa_s ={\rm max}(-1, \lceil\log_2(k+1)\rceil + 1 - \Exp(s),
-MAX(1, -\Exp(u)) -1 - \Exp(s))$
+{\rm max}(1, -\Exp(u)) -1 - \Exp(s))$
 
 
 When $x$ is large and positive, we can use an asymptotic expansion near
