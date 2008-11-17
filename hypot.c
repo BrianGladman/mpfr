@@ -120,9 +120,6 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 
   /* General case */
 
-  /* FIXME: the following algorithm is correct only for
-     diff_exp <= MPFR_EMAX_MAX - 2 */
-
   N = MAX (MPFR_PREC (x), MPFR_PREC (y));
 
   /* working precision */
@@ -145,8 +142,8 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
       exact = mpfr_mul_2si (te, x, sh, GMP_RNDZ);
       exact |= mpfr_mul_2si (ti, y, sh, GMP_RNDZ);
       exact |= mpfr_sqr (te, te, GMP_RNDZ);
-      exact |= mpfr_sqr (ti, ti, GMP_RNDZ);
-      exact |= mpfr_add (t, te, ti, GMP_RNDZ);
+      /* Use fma in order to avoid underflow when diff_exp<=MPFR_EMAX_MAX-2 */
+      exact |= mpfr_fma (t, ti, ti, te, GMP_RNDZ);
       exact |= mpfr_sqrt (t, t, GMP_RNDZ);
 
       err = Nt < N ? 4 : 2;
