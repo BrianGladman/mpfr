@@ -180,7 +180,7 @@ static void
 test_large_small (void)
 {
   mpfr_t x, y, z;
-  int inexact;
+  int inexact, inex2, r;
 
   mpfr_init2 (x, 3);
   mpfr_init2 (y, 2);
@@ -214,6 +214,27 @@ test_large_small (void)
       mpfr_out_str (stdout, 2, 2, x, GMP_RNDU);
       printf ("\n");
       exit (1);
+    }
+
+  RND_LOOP(r)
+    {
+      mpfr_set_ui_2exp (x, 1, mpfr_get_emax () - 1, GMP_RNDN);
+      mpfr_set_ui_2exp (y, 1, mpfr_get_emin (), GMP_RNDN);
+      inexact = mpfr_hypot (z, x, y, (mp_rnd_t) r);
+      inex2 = mpfr_add_ui (y, x, 1, (mp_rnd_t) r);
+      if (! mpfr_equal_p (y, z) || ! SAME_SIGN (inexact, inex2))
+        {
+          printf ("Error 3 in test_large_small, %s%s\n",
+                  mpfr_print_rnd_mode ((mp_rnd_t) r),
+                  ext ? ", extended exponent range" : "");
+          printf ("Expected ");
+          mpfr_out_str (stdout, 2, 0, y, GMP_RNDN);
+          printf (", inex %c 0\n", (mp_rnd_t) r == GMP_RNDU ? '>' : '<');
+          printf ("Got      ");
+          mpfr_out_str (stdout, 2, 0, y, GMP_RNDN);
+          printf (", inex = %d\n", inexact);
+          exit (1);
+        }
     }
 
   mpfr_clear (x);
