@@ -132,7 +132,9 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
   MPFR_SAVE_EXPO_MARK (expo);
 
   /* Scale x and y to avoid overflow/underflow in x^2 and overflow in y^2
-     (as |x| >= |y|). */
+     (as |x| >= |y|). The scaling of y can underflow only when the target
+     precision is huge, otherwise the case would already have been handled
+     by the diff_exp > threshold code. */
   sh = mpfr_get_emax () / 2 - Ex - 1;
 
   MPFR_ZIV_INIT (loop, Nt);
