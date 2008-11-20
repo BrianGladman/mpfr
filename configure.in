@@ -28,6 +28,8 @@ AC_INIT([MPFR],[2.4.0-dev])
 AM_INIT_AUTOMAKE([1.10.1 no-define dist-bzip2 dist-lzma dist-zip])
 dnl AM_MAINTAINER_MODE(enable)
 
+AC_CONFIG_MACRO_DIR([m4])
+
 dnl FIXME: The AC_ARG_ENABLE(decimal-float...) part does things too
 dnl early, even when this option is not used. In particular, it must
 dnl be put after AC_PROG_CC; another problem is that the GMP CFLAGS
