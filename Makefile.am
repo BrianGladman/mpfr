@@ -1,4 +1,5 @@
 AUTOMAKE_OPTIONS = gnu ansi2knr
+ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = tests
 EXTRA_DIST = BUGS FAQ.html PATCHES VERSION get_patches.sh round_raw_generic.c gen_inverse.h jyn_asympt.c
