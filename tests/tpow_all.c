@@ -670,7 +670,7 @@ overflow_inv (void)
   mpfr_set_si (y, -1, GMP_RNDN);
   for (precx = 10; precx <= 100; precx += 90)
     {
-      char *sp = precx == 10 ?
+      const char *sp = precx == 10 ?
         "overflow_inv (precx = 10)" : "overflow_inv (precx = 100)";
 
       mpfr_init2 (x, precx);

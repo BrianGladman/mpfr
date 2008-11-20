@@ -701,7 +701,8 @@ underflow_up (int extended_emin)
                   int err = 0;
 
                   mpfr_clear_flags ();
-                  inex = e3 ? exp_3 (y, x, rnd) : mpfr_exp (y, x, rnd);
+                  inex = e3 ? exp_3 (y, x, (mpfr_rnd_t) rnd)
+                    : mpfr_exp (y, x, (mpfr_rnd_t) rnd);
                   if (__gmpfr_flags != MPFR_FLAGS_INEXACT)
                     {
                       printf ("Incorrect flags in underflow_up, eps > 0, %s",
@@ -816,7 +817,8 @@ underflow_up (int extended_emin)
                        (rnd == GMP_RNDN && (i == 1 && j == 0)) ?
                        0 : MPFR_FLAGS_UNDERFLOW);
                     mpfr_clear_flags ();
-                    inex = e3 ? exp_3 (y, x, rnd) : mpfr_exp (y, x, rnd);
+                    inex = e3 ? exp_3 (y, x, (mpfr_rnd_t) rnd)
+                      : mpfr_exp (y, x, (mpfr_rnd_t) rnd);
                     if (__gmpfr_flags != flags)
                       {
                         printf ("Incorrect flags in underflow_up, %s",

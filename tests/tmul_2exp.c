@@ -82,16 +82,16 @@ underflow (mp_exp_t e)
                 mpfr_clear_flags ();
                 /* Do not use mpfr_div_ui to avoid the optimization
                    by mpfr_div_2si. */
-                inex1 = mpfr_div (z1, y, z1, rnd);
+                inex1 = mpfr_div (z1, y, z1, (mpfr_rnd_t) rnd);
                 flags1 = __gmpfr_flags;
 
               for (div = 0; div <= 2; div++)
                 {
                   mpfr_clear_flags ();
                   inex2 = div == 0 ?
-                    mpfr_mul_2si (z2, x, e - k, rnd) : div == 1 ?
-                    mpfr_div_2si (z2, x, k - e, rnd) :
-                    mpfr_div_2ui (z2, x, k - e, rnd);
+                    mpfr_mul_2si (z2, x, e - k, (mpfr_rnd_t) rnd) : div == 1 ?
+                    mpfr_div_2si (z2, x, k - e, (mpfr_rnd_t) rnd) :
+                    mpfr_div_2ui (z2, x, k - e, (mpfr_rnd_t) rnd);
                   flags2 = __gmpfr_flags;
                   if (flags1 == flags2 && SAME_SIGN (inex1, inex2) &&
                       mpfr_equal_p (z1, z2))
@@ -105,7 +105,7 @@ underflow (mp_exp_t e)
                     printf ("%ld", e);
                   printf (")\nwith %s, x = %d/16, prec = %d, k = %d, mpfr_%s",
                           div == 0 ? "mul_2si" : div == 1 ? "div_2si" :
-                          "div_2ui", i, prec, k, mpfr_print_rnd_mode (rnd));
+                          "div_2ui", i, prec, k, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                   printf ("\nExpected ");
                   mpfr_out_str (stdout, 16, 0, z1, GMP_RNDN);
                   printf (", inex = %d, flags = %u\n", SIGN (inex1), flags1);
