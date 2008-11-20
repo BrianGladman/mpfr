@@ -318,6 +318,13 @@ mpfr_rand_raw (mp_ptr mp, gmp_randstate_t rstate, unsigned long int nbits)
 
 #ifdef mp_get_memory_functions
 
+/* putting 0 as initial values forces those symbols to be fully defined,
+   and always resolved, otherwise they are only tentatively defined, which
+   leads to problems on e.g. MacOS, cf
+   http://lists.gforge.inria.fr/pipermail/mpc-discuss/2008-November/000048.html
+   and http://software.intel.com/en-us/articles/intelr-fortran-compiler-for-mac-os-non_lazy_ptr-unresolved-references-from-linking
+   Note that using ranlib -c or libtool -c is another fix.
+*/
 void * (*mpfr_allocate_func) (size_t) = 0;
 void * (*mpfr_reallocate_func) (void *,size_t, size_t) = 0;
 void   (*mpfr_free_func) (void *, size_t) = 0;
