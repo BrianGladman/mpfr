@@ -318,9 +318,9 @@ mpfr_rand_raw (mp_ptr mp, gmp_randstate_t rstate, unsigned long int nbits)
 
 #ifdef mp_get_memory_functions
 
-void * (*mpfr_allocate_func) (size_t);
-void * (*mpfr_reallocate_func) (void *,size_t, size_t);
-void   (*mpfr_free_func) (void *, size_t);
+void * (*mpfr_allocate_func) (size_t) = 0;
+void * (*mpfr_reallocate_func) (void *,size_t, size_t) = 0;
+void   (*mpfr_free_func) (void *, size_t) = 0;
 
 #endif
 
