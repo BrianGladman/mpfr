@@ -117,8 +117,11 @@ To make a release (for the MPFR team):
      particular, if installed). On x86, test with -m96bit-long-double
      and -m128bit-long-double. Try also with gcc's -fno-common option.
 
-     Try different compilers (even C++ compilers), e.g. g++, icc, opencc
-     (x86_64 machines), tcc <http://bellard.org/tcc/>.
+     Check that make and make check pass with a C++ compiler, for example:
+     ./configure CC=g++ (MPFR 2.3.2 did not).
+
+     Try different compilers, e.g., icc, opencc (x86_64 machines),
+     tcc <http://bellard.org/tcc/>.
 
      Test with both "make check" and the worst cases.
 
