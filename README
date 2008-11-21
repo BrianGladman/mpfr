@@ -48,6 +48,7 @@ fdl.texi        - the GNU Free Documentation License
 get_patches.sh  - rebuild get_patches.c when patches have been applied
 install-sh      - installation file
 ltmain.sh       - auxiliary installation file
+m4/             - directory containing additional configuration files
 missing         - auxiliary installation file
 mparam_h.in     - header file template
 mpfr.info       - info file for MPFR
