@@ -1282,7 +1282,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
                   np->fp_size = str_len;
 
                   if (!spec_g && (spec.prec > 0)
-                      && (np->fp_leading_zeros + np->fp_size < spec.prec))
+                      && (np->fp_leading_zeros + (int) np->fp_size < spec.prec))
                     /* add missing trailing zeros */
                     np->fp_trailing_zeros = spec.prec - np->fp_leading_zeros
                       - np->fp_size;

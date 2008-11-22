@@ -61,7 +61,7 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
   /* Normalize p */
   n = mpz_scan1 (p, 0);
   mpz_tdiv_q_2exp (p, p, n); /* exact */
-  MPFR_ASSERTD (r > n);
+  MPFR_ASSERTD ((unsigned long) r > n);
   r -= n;
   /* since |p/2^r| < 1, and p is a non-zero integer, necessarily r > 0 */
 
@@ -289,7 +289,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
 #endif
       n0 = MPFR_INT_CEIL_LOG2 ((realprec + sup) + 3);
       MPFR_ASSERTD (3*n0 > 2);
-      prec = (realprec + sup) + 1 + MPFR_INT_CEIL_LOG2 (3*n0-2);
+      prec = (realprec + sup) + 1 + MPFR_INT_CEIL_LOG2 ((mp_prec_t) (3*n0-2));
 
       /* Initialisation */
       MPFR_GROUP_REPREC_4 (group, prec, sk, tmp, tmp2, arctgt);

@@ -1400,7 +1400,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
 {
   int exact;                      /* exact result */
   mp_exp_t exp, g;
-  mp_exp_t prec; /* precision of the computation */
+  mp_prec_t prec; /* precision of the computation */
   long err;
   mp_limb_t *a;
   mp_exp_t exp_a;
@@ -1564,7 +1564,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
   exp = ((mp_exp_t) m < g) ? g - (mp_exp_t) m : (mp_exp_t) m - g;
   prec += MPFR_INT_CEIL_LOG2 (prec); /* number of guard bits */
   if (exp != 0) /* add maximal exponentiation error */
-    prec += 3 * (mp_exp_t) MPFR_INT_CEIL_LOG2 (exp);
+    prec += 3 * (mp_exp_t) MPFR_INT_CEIL_LOG2 ((mp_prec_t) exp);
 
   MPFR_ZIV_INIT (loop, prec);
   for (;;)

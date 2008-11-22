@@ -488,7 +488,7 @@ mpfr_rec_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
      up to a full limb to maximize the chance of rounding, while avoiding
      to allocate extra space */
   wp = rp + 11;
-  if (wp < rn * BITS_PER_MP_LIMB)
+  if (wp < (mp_prec_t) rn * BITS_PER_MP_LIMB)
     wp = rn * BITS_PER_MP_LIMB;
   for (;;)
     {

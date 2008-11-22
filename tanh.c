@@ -126,7 +126,8 @@ mpfr_tanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
       d = MAX(3, d + 1);
       err = Nt - (d + 1);
 
-      if (MPFR_LIKELY ((d <= Nt / 2) && MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
+      if (MPFR_LIKELY ((d <= (mp_exp_t) (Nt / 2))
+                       && MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
         {
           inexact = mpfr_set4 (y, t, rnd_mode, sign);
           break;

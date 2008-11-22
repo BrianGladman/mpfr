@@ -148,7 +148,8 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
             MPFR_BLOCK_DECL (flags);
 
             if (MPFR_GET_EXP (u) > MPFR_GET_EXP (z) &&
-                MPFR_GET_EXP (u) - MPFR_GET_EXP (z) > MPFR_PREC (u))
+                (mp_prec_t) (MPFR_GET_EXP (u) - MPFR_GET_EXP (z))
+                > MPFR_PREC (u))
               {
                 /* |z| < ulp(u)/2, therefore one can use z instead of z/4. */
                 zz = z;
@@ -208,7 +209,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
              of the result can be EXP(z) - 1). */
           diffexp = MPFR_GET_EXP (z) - __gmpfr_emin;
           pzs = MAX (MPFR_PREC (z), MPFR_PREC (s) + 1);
-          if (diffexp <= pzs)
+          if ((mp_prec_t) diffexp <= pzs)
             {
               mp_exp_unsigned_t uscale;
               mpfr_t scaled_v;

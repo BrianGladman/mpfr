@@ -66,7 +66,7 @@ mpfr_modf (mpfr_ptr iop, mpfr_ptr fop, mpfr_srcptr op, mpfr_rnd_t rnd_mode)
   ope = MPFR_GET_EXP (op);
   opq = MPFR_PREC (op);
 
-  if (ope <=0)   /* 0 < |op| < 1 */
+  if (ope <= 0)   /* 0 < |op| < 1 */
     {
       inexact = (fop != op) ? mpfr_set (fop, op, rnd_mode) : 0;
       MPFR_SET_SAME_SIGN (iop, op);
@@ -75,7 +75,7 @@ mpfr_modf (mpfr_ptr iop, mpfr_ptr fop, mpfr_srcptr op, mpfr_rnd_t rnd_mode)
       mpfr_check_range (fop, inexact, rnd_mode); /* set the underflow flag if needed */
       MPFR_RET (MPFR_INT_SIGN (op) > 0 ? -2 : +2);
     }
-  else if (ope >= opq) /* op has no fractional part */
+  else if ((mp_prec_t) ope >= opq) /* op has no fractional part */
     {
       inexact = (iop != op)? mpfr_set (iop, op, rnd_mode) : 0;
       MPFR_SET_SAME_SIGN (fop, op);
