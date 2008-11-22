@@ -70,7 +70,7 @@ mpfr_cos2_aux (mpfr_ptr f, mpfr_srcptr r)
   mpz_set_ui (s, 1); /* initialize sum with 1 */
   mpz_mul_2exp (s, s, p + q); /* scale all values by 2^(p+q) */
   mpz_set (t, s); /* invariant: t is previous term */
-  for (i = 1; (mp_prec_t) (m = mpz_sizeinbase (t, 2)) >= q; i += 2)
+  for (i = 1; (m = mpz_sizeinbase (t, 2)) >= q; i += 2)
     {
       /* adjust precision of x to that of t */
       l = mpz_sizeinbase (x, 2);
@@ -114,7 +114,7 @@ mpfr_cos2_aux (mpfr_ptr f, mpfr_srcptr r)
   mpz_clear (t);
 
   l = (i - 1) / 2; /* number of iterations */
-  return 2 * MPFR_INT_CEIL_LOG2 ((mp_prec_t) l + 1) + 1; /* bound is 2l(l+1) */
+  return 2 * MPFR_INT_CEIL_LOG2 (l + 1) + 1; /* bound is 2l(l+1) */
 }
 
 int

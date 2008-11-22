@@ -292,7 +292,7 @@ mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mp_rnd_t r)
          error on 2/Pi/z is less than 7ulp(y). The truncation error is less
          than 1/4, thus if ulp(y)>=1/4, the total error is less than 8ulp(y),
          otherwise it is less than 1/4+7/8 <= 2. */
-      if ((mp_prec_t) MPFR_EXP(y) + 2 >= MPFR_PREC(y)) /* ulp(y) >= 1/4 */
+      if (MPFR_EXP(y) + 2 >= MPFR_PREC(y)) /* ulp(y) >= 1/4 */
         err1 = 3;
       else /* ulp(y) <= 1/8 */
         err1 = (mp_exp_t) MPFR_PREC(y) - MPFR_EXP(y) + 1;

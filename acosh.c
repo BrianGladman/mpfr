@@ -101,7 +101,7 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
                We need to compute ln(x) + ln(2) as 2x can overflow. TODO:
                write a proof and add an MPFR_ASSERTN. */
             mpfr_log (t, x, GMP_RNDN);  /* err(log) < 1/2 ulp(t) */
-            pln2 = Nt - MPFR_PREC_MIN < (mp_prec_t) MPFR_GET_EXP (t) ?
+            pln2 = Nt - MPFR_PREC_MIN < MPFR_GET_EXP (t) ?
               MPFR_PREC_MIN : Nt - MPFR_GET_EXP (t);
             mpfr_init2 (ln2, pln2);
             mpfr_const_log2 (ln2, GMP_RNDN);  /* err(ln2) < 1/2 ulp(t) */

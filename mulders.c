@@ -91,8 +91,7 @@ mpfr_sqrhigh_n (mp_ptr rp, mp_srcptr np, mp_size_t n)
   mp_size_t k;
 
   MPFR_ASSERTD (MPFR_SQRHIGH_TAB_SIZE > 4);
-  k = MPFR_LIKELY ((unsigned int) n < MPFR_SQRHIGH_TAB_SIZE)
-    ? sqrhigh_ktab[n] : 2*n/3;
+  k = MPFR_LIKELY (n < MPFR_SQRHIGH_TAB_SIZE) ? sqrhigh_ktab[n] : 2*n/3;
   MPFR_ASSERTD (k == -1 || k == 0 || (k > n/2 && k < n));
   if (k < 0)
     /* we can't use mpn_sqr_basecase here, since it requires

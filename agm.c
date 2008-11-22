@@ -152,7 +152,7 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
       err += MPFR_INT_CEIL_LOG2(18 * n + 51); /* 18n+51 should not overflow
                                                  since n is about log(p) */
       /* we should have n+2 <= 2^(p/4) [see algorithms.tex] */
-      if (MPFR_LIKELY ((mp_prec_t) MPFR_INT_CEIL_LOG2(n + 2) <= p / 4 &&
+      if (MPFR_LIKELY (MPFR_INT_CEIL_LOG2(n + 2) <= p / 4 &&
                        MPFR_CAN_ROUND (v, p - err, q, rnd_mode)))
         break; /* Stop the loop */
 

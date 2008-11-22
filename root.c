@@ -139,7 +139,7 @@ mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mp_rnd_t rnd_mode)
   /* we now multiply m by 2^(r+k*sh) so that root(m,k) will give
      exactly n bits: we want k*(n-1)+1 <= size_m + k*sh + r <= k*n
      i.e. sh = floor ((kn-size_m-r)/k) */
-  if ((mp_exp_t) size_m + r > (mp_exp_t) k * (mp_exp_t) n)
+  if ((mp_exp_t) size_m + r > k * (mp_exp_t) n)
     sh = 0; /* we already have too many bits */
   else
     sh = (k * (mp_exp_t) n - (mp_exp_t) size_m - r) / k;

@@ -121,7 +121,7 @@ unit_bit (mpfr_srcptr (x))
     return 0;  /* |x| < 1 */
 
   prec = MPFR_PREC (x);
-  if ((mp_prec_t) expo > prec)
+  if (expo > prec)
     return 0;  /* y is a multiple of 2^(expo-prec), thus an even integer */
 
   /* Now, the unit bit is represented. */
@@ -242,7 +242,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
              which would need precision n. */
           MPFR_ZIV_NEXT (loop, prec);
         }
-      while (prec <= (mp_prec_t) -MPFR_EXP(z0));
+      while (prec <= -MPFR_EXP(z0));
       MPFR_ZIV_FREE (loop);
     }
 #endif
@@ -326,7 +326,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
           /* log(v*(1+e)) = log(v)+log(1+e) where |e| <= 2^(err_s-w).
              Since |log(1+e)| <= 2*e for |e| <= 1/4, the error on v is
              bounded by ulp(v)/2 + 2^(err_s+1-w). */
-          if ((mp_prec_t) (err_s + 2) > w)
+          if (err_s + 2 > w)
             {
               w += err_s + 2;
             }
@@ -452,7 +452,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
               Bm ++;
             }
           mpfr_mul_z (v, t, B[m], GMP_RNDN); /* (1+u)^(10m-7) */
-          MPFR_ASSERTD(MPFR_GET_EXP(v) <= (mp_exp_t) - (2 * m + 3));
+          MPFR_ASSERTD(MPFR_GET_EXP(v) <= - (2 * m + 3));
           mpfr_add (s, s, v, GMP_RNDN);
         }
       /* m <= 1/2*Pi*e*z ensures that |v[m]| < 1/2^(2m+3) */

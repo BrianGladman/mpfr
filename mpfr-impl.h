@@ -887,7 +887,7 @@ extern unsigned char *mpfr_stack;
  *   Undefined if x is 0 */
 #if __MPFR_GNUC(2,95) || __MPFR_ICC(8,1,0)
 # define MPFR_INT_CEIL_LOG2(x)                            \
-     (MPFR_UNLIKELY ((x) == 1) ? 0 :                      \
+    (MPFR_UNLIKELY ((x) == 1) ? 0 :                       \
      __extension__ ({ int _b; mp_limb_t _limb;            \
       MPFR_ASSERTN ((x) > 1);                             \
       _limb = (x) - 1;                                    \
