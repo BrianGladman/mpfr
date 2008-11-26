@@ -412,7 +412,8 @@ MPFR 2.4.0 web page @url{http://www.mpfr.org/mpfr-2.4.0/}.
 
 @section Getting the Latest Version of MPFR
 
-The latest version of MPFR is available from @url{http://www.mpfr.org/}.
+The latest version of MPFR is available from
+@url{ftp://ftp.gnu.org/gnu/mpfr} or @url{http://www.mpfr.org/}.
 
 @node Reporting Bugs, MPFR Basics, Installing MPFR, Top
 @comment  node-name,  next,  previous,  up
