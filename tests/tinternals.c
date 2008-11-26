@@ -34,8 +34,16 @@ test_int_ceil_log2 (void)
 
   for (i = 1; i < 17; i++)
     {
-      MPFR_ASSERTN (MPFR_INT_CEIL_LOG2 (i) == val[i-1]);
-      MPFR_ASSERTN (MPFR_INT_CEIL_LOG2 (i) == __gmpfr_int_ceil_log2 (i));
+      if (MPFR_INT_CEIL_LOG2 (i) != val[i-1])
+        {
+          printf ("Error 1 in test_int_ceil_log2 for i = %d\n", i);
+          exit (1);
+        }
+      if (MPFR_INT_CEIL_LOG2 (i) != __gmpfr_int_ceil_log2 (i))
+        {
+          printf ("Error 2 in test_int_ceil_log2 for i = %d\n", i);
+          exit (1);
+        }
     }
 }
 
