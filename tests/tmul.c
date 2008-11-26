@@ -441,13 +441,38 @@ check_nans (void)
   mpfr_clear (p);
 }
 
+#define BUFSIZE 1552
+
+static void
+get_string (char *s, FILE *fp)
+{
+  int c, n = BUFSIZE;
+
+  while ((c = getc (fp)) != '\n')
+    {
+      if (c == EOF)
+        {
+          printf ("Error in get_string: end of file\n");
+          exit (1);
+        }
+      *(unsigned char *)s++ = c;
+      if (--n == 0)
+        {
+          printf ("Error in get_string: buffer is too small\n");
+          exit (1);
+        }
+    }
+  *s = '\0';
+}
+
 static void
 check_regression (void)
 {
   mpfr_t x, y, z;
   int i;
   FILE *fp;
-  char s[1552], c, *t;
+  int c;
+  char s[BUFSIZE];
 
   mpfr_inits2 (6177, x, y, z, (mpfr_ptr) 0);
   /* we read long strings from a file since ISO C90 does not support strings of
@@ -458,15 +483,12 @@ check_regression (void)
       fprintf (stderr, "Error, cannot open tmul.dat\n");
       exit (1);
     }
-  for (t = s; (c = getc (fp)) != '\n'; *t++ = c);
-  *t = '\0';
+  get_string (s, fp);
   mpfr_set_str (y, s, 16, GMP_RNDN);
-  for (t = s; (c = getc (fp)) != '\n'; *t++ = c);
-  *t = '\0';
+  get_string (s, fp);
   mpfr_set_str (z, s, 16, GMP_RNDN);
   i = mpfr_mul (x, y, z, GMP_RNDN);
-  for (t = s; (c = getc (fp)) != '\n'; *t++ = c);
-  *t = '\0';
+  get_string (s, fp);
   if (mpfr_cmp_str (x, s, 16, GMP_RNDN) != 0 || i != -1)
     {
       printf ("Regression test 1 failed (i=%d, expected -1)\nx=", i);
