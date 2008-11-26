@@ -471,7 +471,6 @@ check_regression (void)
   mpfr_t x, y, z;
   int i;
   FILE *fp;
-  int c;
   char s[BUFSIZE];
 
   mpfr_inits2 (6177, x, y, z, (mpfr_ptr) 0);
