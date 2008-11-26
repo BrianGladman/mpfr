@@ -111,6 +111,8 @@ To make a release (for the MPFR team):
      Try different gcc versions with different options: with and without
      "-std=c99 -O3 -D_XOPEN_SOURCE=500", with and without "-ansi" (which
      allows to turn off features that are incompatible with ISO C90),
+     with and without [-ansi] -pedantic-errors (which has the effect to
+     disable extensions, such as long long when used together with -ansi)
      with and without --enable-thread-safe, in various FPU precisions
      (double, double extended and single) if the platform supports that
      (e.g. under Linux/x86), and in various locales (LC_ALL=tr_TR in
