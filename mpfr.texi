@@ -2243,9 +2243,13 @@ is set to +0.
 
 @deftypefun int mpfr_urandomb (mpfr_t @var{rop}, gmp_randstate_t @var{state})
 Generate a uniformly distributed random float in the interval
-@math{0 @le{} @var{rop} < 1}.
+@math{0 @le{} @var{rop} < 1}. More precisely, the number can be seen as a
+float with a random non-normalized significand and exponent 0, which is then
+normalized (thus if @var{e} denotes the exponent after normalization, then
+the least @math{-@var{e}} significant bits of the significand are always 0).
 Return 0, unless the exponent is not in the current exponent range, in
-which case @var{rop} is set to NaN and a non-zero value is returned. The
+which case @var{rop} is set to NaN and a non-zero value is returned (this
+should never happen in practice, except in very specific cases). The
 second argument is a @code{gmp_randstate_t} structure which should be
 created using the GMP @code{gmp_randinit} function, see the GMP manual.
 @end deftypefun

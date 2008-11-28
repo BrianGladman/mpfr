@@ -37,20 +37,22 @@ mpfr_urandomb (mpfr_ptr rop, gmp_randstate_t rstate)
   mp_exp_t exp;
   int cnt;
 
-  MPFR_CLEAR_FLAGS(rop);
+  MPFR_CLEAR_FLAGS (rop);
 
-  rp = MPFR_MANT(rop);
-  nbits = MPFR_PREC(rop);
-  nlimbs = MPFR_LIMB_SIZE(rop);
+  rp = MPFR_MANT (rop);
+  nbits = MPFR_PREC (rop);
+  nlimbs = MPFR_LIMB_SIZE (rop);
   MPFR_SET_POS (rop);
 
+  /* Uniform non-normalized significand */
   _gmp_rand (rp, rstate, nlimbs * BITS_PER_MP_LIMB);
 
   /* If nbits isn't a multiple of BITS_PER_MP_LIMB, mask the low bits */
   cnt = nlimbs * BITS_PER_MP_LIMB - nbits;
-  if (MPFR_LIKELY(cnt != 0))
+  if (MPFR_LIKELY (cnt != 0))
     rp[0] &= ~MPFR_LIMB_MASK (cnt);
 
+  /* Count the null significant limbs and remaining limbs */
   exp = 0;
   k = 0;
   while (nlimbs != 0 && rp[nlimbs - 1] == 0)
@@ -60,22 +62,28 @@ mpfr_urandomb (mpfr_ptr rop, gmp_randstate_t rstate)
       exp -= BITS_PER_MP_LIMB;
     }
 
-  if (MPFR_LIKELY(nlimbs != 0)) /* otherwise value is zero */
+  if (MPFR_LIKELY (nlimbs != 0)) /* otherwise value is zero */
     {
       count_leading_zeros (cnt, rp[nlimbs - 1]);
+      /* Normalization */
       if (mpfr_set_exp (rop, exp - cnt))
         {
+          /* If the exponent is not in the current exponent range, we
+             choose to return a NaN as this is probably a user error.
+             Indeed this can happen only if the exponent range has been
+             reduced to a very small interval and/or the precision is
+             huge (very unlikely). */
           MPFR_SET_NAN (rop);
           __gmpfr_flags |= MPFR_FLAGS_NAN; /* Can't use MPFR_RET_NAN */
           return 1;
         }
       if (cnt != 0)
         mpn_lshift (rp + k, rp, nlimbs, cnt);
-      if (k)
+      if (k != 0)
         MPN_ZERO (rp, k);
     }
   else
-    MPFR_SET_ZERO(rop);
+    MPFR_SET_ZERO (rop);
 
   return 0;
 }
