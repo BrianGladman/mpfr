@@ -193,7 +193,8 @@ error
 fi
 
 AC_ARG_ENABLE(decimal-float,
-   [  --enable-decimal-float    build conversion functions from/to decimal floats [[default=no]]],
+   [  --enable-decimal-float  build conversion functions from/to decimal floats
+                          [[default=no]]],
    [ case $enableval in
       yes) AC_DEFINE([MPFR_WANT_DECIMAL_FLOATS],1,
               [Build decimal float functions])
