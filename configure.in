@@ -95,7 +95,8 @@ AC_ARG_ENABLE(logging,
       *)   AC_MSG_ERROR([bad value for --enable-logging: yes or no]) ;;
      esac])
 AC_ARG_ENABLE(thread-safe,
-   [  --enable-thread-safe    build MPFR as thread safe [[default=no]]],
+   [  --enable-thread-safe    build MPFR as thread safe (the system must support
+                          it) [[default=no]]],
    [ case $enableval in
       yes) AC_DEFINE([MPFR_USE_THREAD_SAFE],1,[Build MPFR as thread safe]) ;;
       no)  ;;
