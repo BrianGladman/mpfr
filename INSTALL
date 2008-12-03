@@ -126,7 +126,16 @@ by Libtool's versioning system.
                         be too late.
 
 --enable-assert         build MPFR with assertions.
---enable-thread-safe    build MPFR as thread safe.
+
+--enable-thread-safe    build MPFR as thread safe, using compiler-level
+                        Thread Local Storage (TLS). Note: TLS support is
+                        roughly tested by configure. If configure detects
+                        that TLS does not work (because of the compiler,
+                        linker or system libraries), it will output an
+                        error message, telling you to build MPFR without
+                        thread safe. For instance, though Mac OS X uses
+                        GCC, it does not currently support GCC's __thread
+                        storage class.
 
 Run "./configure --help" to see the other options (autoconf default options).
 
