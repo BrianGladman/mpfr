@@ -36,7 +36,7 @@ NEWS            - new features with respect to previous versions
 PATCHES         - empty file (until patches are applied)
 README          - this file
 TODO            - what remains to do (any help is welcome!)
-VERSION         - version of MPFR (next release version if taken from CVS)
+VERSION         - version of MPFR (next release version if taken by Subversion)
 ac*.m4          - automatic configuration files
 ansi2knr.*      - convert ANSI C to Kernighan & Ritchie C (source and man page)
 *.c             - source files
