@@ -134,7 +134,7 @@ by Libtool's versioning system.
                         linker or system libraries), it will output an
                         error message, telling you to build MPFR without
                         thread safe. For instance, though Mac OS X uses
-                        GCC, it does not currently support GCC's __thread
+                        GCC, it may not currently support GCC's __thread
                         storage class.
 
 Run "./configure --help" to see the other options (autoconf default options).
