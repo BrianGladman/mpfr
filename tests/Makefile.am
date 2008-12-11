@@ -18,7 +18,9 @@ check_PROGRAMS = tversion tinternals tinits tisqrt tsgn tcheck tisnan \
 	tget_set_d64 tj0 tj1 tjn ty0 ty1 tyn tremquo tfmod tl2b tli2 tprintf \
 	tsprintf tfprintf trec_sqrt tpow_all
 
-EXTRA_DIST = tgeneric.c tgeneric_ui.c mpf_compat.h inp_str.data
+EXTRA_DIST = tgeneric.c tgeneric_ui.c mpf_compat.h inp_str.data tmul.dat
+
+tmul_CPPFLAGS = -D__SRCDIR=$(srcdir)
 
 LDADD = libfrtests.la $(MPFR_LIBM) $(top_builddir)/libmpfr.la
 INCLUDES = -I$(top_srcdir) -I$(top_builddir)
