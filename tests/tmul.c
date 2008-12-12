@@ -25,8 +25,8 @@ MA 02110-1301, USA. */
 
 #include "mpfr-test.h"
 
-#ifndef __SRCDIR
-#define __SRCDIR .
+#ifndef MPFR_SRCDIR
+#define MPFR_SRCDIR .
 #endif
 #define QUOTE(X) NAME(X)
 #define NAME(X) #X
@@ -482,10 +482,10 @@ check_regression (void)
   mpfr_inits2 (6177, x, y, z, (mpfr_ptr) 0);
   /* we read long strings from a file since ISO C90 does not support strings of
      length > 509 */
-  fp = fopen (QUOTE (__SRCDIR)"/tmul.dat", "r");
+  fp = fopen (QUOTE (MPFR_SRCDIR)"/tmul.dat", "r");
   if (fp == NULL)
     {
-      fprintf (stderr, "Error, cannot open "QUOTE (__SRCDIR)"/tmul.dat\n");
+      fprintf (stderr, "Error, cannot open "QUOTE (MPFR_SRCDIR)"/tmul.dat\n");
       exit (1);
     }
   get_string (s, fp);
