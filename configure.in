@@ -257,7 +257,6 @@ error
 #endif
 ]], [[]])],[
  AC_MSG_RESULT(yes)
- GCC=
  CFLAGS="-fp_port -mp -wd1572 -wd265 -wd186 -wd239 $CFLAGS"
 ],[AC_MSG_RESULT(no)])
 
