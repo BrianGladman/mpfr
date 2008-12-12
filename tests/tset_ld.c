@@ -24,7 +24,7 @@ MA 02110-1301, USA. */
 #include <stdlib.h>
 #include <float.h>
 #include <limits.h>
-#if WITH_FPU_CONTROL
+#ifdef WITH_FPU_CONTROL
 #include <fpu_control.h>
 #endif
 
@@ -140,7 +140,7 @@ main (int argc, char *argv[])
   mpfr_t x;
   int i;
   mp_exp_t emax;
-#if WITH_FPU_CONTROL
+#ifdef WITH_FPU_CONTROL
   fpu_control_t cw;
 
   if (argc > 1)
@@ -169,7 +169,7 @@ main (int argc, char *argv[])
   if (MPFR_SIGN(x) > 0)
     {
       printf ("Error: sign of -0.0 is not set correctly\n");
-#if _GMP_IEEE_FLOATS
+#ifdef _GMP_IEEE_FLOATS
       exit (1);
       /* Non IEEE doesn't support negative zero yet */
 #endif

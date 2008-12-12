@@ -74,7 +74,7 @@ MA 02110-1301, USA. */
   do if (!(EXPR)) TGENERIC_FAIL (S, x, 0); while (0)
 #endif
 
-#if DEBUG_TGENERIC
+#ifdef DEBUG_TGENERIC
 #define STR(F) #F
 #define TGENERIC_IAUX(F,P,X,U)                                          \
   do                                                                    \

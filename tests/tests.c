@@ -32,20 +32,20 @@ MA 02110-1301, USA. */
 #include <float.h>
 #include <errno.h>
 
-#if HAVE_LOCALE_H
+#ifdef HAVE_LOCALE_H
 #include <locale.h>
 #endif
 
-#if TIME_WITH_SYS_TIME
+#ifdef TIME_WITH_SYS_TIME
 # include <sys/time.h>  /* for struct timeval */
 # include <time.h>
-#elif HAVE_SYS_TIME_H
+#elif defined HAVE_SYS_TIME_H
 #  include <sys/time.h>
 #else
 #  include <time.h>
 #endif
 
-#if HAVE_SYS_FPU_H
+#ifdef HAVE_SYS_FPU_H
 # include <sys/fpu.h>
 #endif
 
@@ -142,7 +142,7 @@ tests_start_mpfr (void)
   /* don't buffer, so output is not lost if a test causes a segv etc */
   setbuf (stdout, NULL);
 
-#if HAVE_LOCALE_H && HAVE_SETLOCALE
+#if defined HAVE_LOCALE_H && defined HAVE_SETLOCALE
   /* Added on 2005-07-09. This allows to test MPFR under various
      locales. New bugs will probably be found, in particular with
      LC_ALL="tr_TR.ISO8859-9" because of the i/I character... */
@@ -248,7 +248,7 @@ tests_rand_start (void)
         }
       else
         {
-#if HAVE_GETTIMEOFDAY
+#ifdef HAVE_GETTIMEOFDAY
           struct timeval  tv;
           gettimeofday (&tv, NULL);
           seed = tv.tv_sec + tv.tv_usec;
@@ -278,7 +278,7 @@ void
 mpfr_test_init ()
 {
   double d;
-#if HAVE_FPC_CSR
+#ifdef HAVE_FPC_CSR
   /* to get denormalized numbers on IRIX64 */
   union fpc_csr exp;
 
