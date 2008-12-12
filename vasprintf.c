@@ -86,6 +86,7 @@ static const char num_to_text[] = "0123456789abcdef";
   do {                                                                  \
     while (*(format))                                                   \
       {                                                                 \
+        int _i;                                                         \
         switch (*(format))                                              \
           {                                                             \
           case '0':                                                     \
@@ -100,8 +101,10 @@ static const char num_to_text[] = "0123456789abcdef";
           case '9':                                                     \
             MPFR_ASSERTN (specinfo.field < INT_MAX / 10);               \
             specinfo.field *= 10;                                       \
-            MPFR_ASSERTN (specinfo.field < INT_MAX - *(format) + '0');  \
-            specinfo.field += *(format) - '0';                          \
+            _i = *(format) - '0';                                       \
+            MPFR_ASSERTN (_i >= 0 && _i <= 9);                          \
+            MPFR_ASSERTN (specinfo.field <= INT_MAX - _i);              \
+            specinfo.field += _i;                                       \
             ++(format);                                                 \
             break;                                                      \
           case '*':                                                     \
