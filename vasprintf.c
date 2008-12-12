@@ -100,13 +100,8 @@ static const char num_to_text[] = "0123456789abcdef";
           case '9':                                                     \
             MPFR_ASSERTN (specinfo.field < INT_MAX / 10);               \
             specinfo.field *= 10;                                       \
-            /* The test specinfo.field <= INT_MAX - *(format) + '0'     \
-               produces a trap with gcc 4.1.2 -ftrapv on a 32-bit machine, \
-               most probably gcc precomputes INT_MAX + '0' and then subtracts \
-               *(format), which clearly underflows. We thus prefer to do the \
-               check afterwards. */                                     \
+            MPFR_ASSERTN (specinfo.field < INT_MAX - *(format) + '0');  \
             specinfo.field += *(format) - '0';                          \
-            MPFR_ASSERTN (specinfo.field >= *(format) - '0');           \
             ++(format);                                                 \
             break;                                                      \
           case '*':                                                     \
