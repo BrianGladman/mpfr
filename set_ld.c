@@ -303,10 +303,11 @@ mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
     MPN_ZERO (tmpmant, k);
 
   /* Set exponent */
-  if (x.s.exph == 0 && x.s.expl == 0)
-    exp = - (mp_exp_t) 0x3FFD;
+  exp = (mp_exp_t) ((x.s.exph << 8) + x.s.expl);  /* 15-bit unsigned int */
+  if (MPFR_UNLIKELY (exp == 0))
+    exp -= 0x3FFD;
   else
-    exp = (x.s.exph << 8) + x.s.expl - (mp_exp_t) 0x3FFE;
+    exp -= 0x3FFE;
 
   MPFR_SET_EXP (tmp, exp - cnt - k * BITS_PER_MP_LIMB);
 
