@@ -41,6 +41,7 @@ ac*.m4          - automatic configuration files
 ansi2knr.*      - convert ANSI C to Kernighan & Ritchie C (source and man page)
 *.c             - source files
 *.h             - header files
+compile         - auxiliary installation file
 config.*        - auxiliary installation files
 configure*      - configuration files
 depcomp         - auxiliary installation file
