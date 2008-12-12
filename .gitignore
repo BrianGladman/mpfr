@@ -35,6 +35,7 @@
 /ansi2knr.1
 /ansi2knr.c
 /autom4te.cache
+/compile
 /config.guess
 /config.log
 /config.status
