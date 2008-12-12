@@ -82,6 +82,8 @@ MA 02110-1301, USA. */
 static const char num_to_text[] = "0123456789abcdef";
 
 /* some macro and functions for parsing format string */
+
+/* Read an integer; saturate to INT_MAX. */
 #define READ_INT(ap, format, specinfo, field, label_out)                \
   do {                                                                  \
     while (*(format))                                                   \
@@ -99,12 +101,12 @@ static const char num_to_text[] = "0123456789abcdef";
           case '7':                                                     \
           case '8':                                                     \
           case '9':                                                     \
-            MPFR_ASSERTN (specinfo.field < INT_MAX / 10);               \
-            specinfo.field *= 10;                                       \
+            specinfo.field = (specinfo.field <= INT_MAX / 10) ?         \
+              specinfo.field * 10 : INT_MAX;                            \
             _i = *(format) - '0';                                       \
             MPFR_ASSERTN (_i >= 0 && _i <= 9);                          \
-            MPFR_ASSERTN (specinfo.field <= INT_MAX - _i);              \
-            specinfo.field += _i;                                       \
+            specinfo.field = (specinfo.field <= INT_MAX - _i) ?         \
+              specinfo.field + _i : INT_MAX;                            \
             ++(format);                                                 \
             break;                                                      \
           case '*':                                                     \
