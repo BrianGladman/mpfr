@@ -283,4 +283,23 @@ Notes on Windows 32
 Notes on Windows 64
 ===================
 
-MPFR has not been tested on Windows 64.
+Under Windows Vista 64, the following problem has been experienced with
+MPFR 2.4.0 and Win32 with the MSVC runtime (msvcrt.dll):
+
+   Error in mpfr_vsprintf (s, "%.*Zi, %R*e, %Lf%n", ...);
+   expected: "00000010610209857723, -1.2345678875e+07, 0.032258"
+   got:      "00000010610209857723, -1.2345678875e+07, -0.000000"
+   FAIL: tsprintf.exe
+
+This error is due to the MSVC runtime not supporting the %Ld standard printf
+modifier. You can check this with the following program:
+
+   #include <stdio.h>
+   int main (void)
+   {
+     long double d = 1. / 31.;
+     printf ("%Lf\n", d);
+     return 0;
+   }
+
+The expected output is 0.032258.
