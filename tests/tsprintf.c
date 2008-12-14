@@ -627,17 +627,17 @@ random_double (void)
           strcpy (fmt_mpfr, "%- #0.*Re");
           strcpy (fmt,      "%- #0.*e");
           prec = 1;
-	  spec = 0;
+          spec = 0;
         }
       else if (i == 1) /* problem on Pentium M, December 14, 2008:
-			  the system asprintf outputs -1. instead of -1.0 */
-	{
+                          the system asprintf outputs -1. instead of -1.0 */
+        {
           y = -9.90597761233942053494e-01;
           strcpy (fmt_mpfr, "%-#0.*RG");
           strcpy (fmt,      "%-#0.*G");
           prec = 1;
-	  spec = 5;
-	}
+          spec = 5;
+        }
 
       mpfr_set_d (x, y, GMP_RNDN);
 
@@ -663,7 +663,7 @@ random_double (void)
                        fmt_mpfr, prec, x);
           printf ("expected: %s\n", ys);
           printf ("     got: %s\n", xs);
-	  printf ("xi=%d yi=%d spec=%d\n", xi, yi, spec);
+          printf ("xi=%d yi=%d spec=%d\n", xi, yi, spec);
 
           exit (1);
         }
