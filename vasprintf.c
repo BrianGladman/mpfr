@@ -21,6 +21,10 @@ along with the GNU MPFR Library; see the file COPYING.LIB.  If not, write to
 the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 MA 02110-1301, USA. */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 /* The mpfr_printf-like functions are defined only if stdarg.h exists */
 #ifdef HAVE_STDARG
 
