@@ -629,6 +629,15 @@ random_double (void)
           prec = 1;
 	  spec = 0;
         }
+      else if (i == 1) /* problem on Pentium M, December 14, 2008:
+			  the system asprintf outputs -1. instead of -1.0 */
+	{
+          y = -9.90597761233942053494e-01;
+          strcpy (fmt_mpfr, "%-#0.*RG");
+          strcpy (fmt,      "%-#0.*G");
+          prec = 1;
+	  spec = 5;
+	}
 
       mpfr_set_d (x, y, GMP_RNDN);
 
