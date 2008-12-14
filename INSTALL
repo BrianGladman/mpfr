@@ -279,9 +279,17 @@ Notes on Windows 32
 4 - On Windows32 / MinGW, if all the tests fail, try to run the test suite
     with "make check EXEEXT=".
 
+5 - To avoid using the Microsoft runtime (which might not be ansi-compliant),
+    you can use the MinGW runtime package (which is an integral part of MinGW).
+    For example, with MinGW versions 3.15 and later you can get an
+    ansi-compliant printf() if you compile your application with either
+    '-ansi', '-posix' or '-D__USE_MINGW_ANSI_STDIO'. For example you can
+    compile and test MPFR with CC="gcc -D__USE_MINGW_ANSI_STDIO".
 
 Notes on Windows 64
 ===================
+
+[See the Notes on Windows 32, some of them might be relevant here.]
 
 Under Windows Vista 64, the following problem has been experienced with
 MPFR 2.4.0 RC1 and Win32 with the MSVC runtime (msvcrt.dll):
