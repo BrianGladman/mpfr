@@ -284,15 +284,16 @@ Notes on Windows 64
 ===================
 
 Under Windows Vista 64, the following problem has been experienced with
-MPFR 2.4.0 and Win32 with the MSVC runtime (msvcrt.dll):
+MPFR 2.4.0 RC1 and Win32 with the MSVC runtime (msvcrt.dll):
 
    Error in mpfr_vsprintf (s, "%.*Zi, %R*e, %Lf%n", ...);
    expected: "00000010610209857723, -1.2345678875e+07, 0.032258"
    got:      "00000010610209857723, -1.2345678875e+07, -0.000000"
    FAIL: tsprintf.exe
 
-This error is due to the MSVC runtime not supporting the %Ld standard printf
-modifier. You can check this with the following program:
+This error is due to the MSVC runtime not supporting the L length modifier
+for formatted output (e.g. printf with %Lf). You can check this with the
+following program:
 
    #include <stdio.h>
    int main (void)
