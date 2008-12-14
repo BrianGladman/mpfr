@@ -627,6 +627,7 @@ random_double (void)
           strcpy (fmt_mpfr, "%- #0.*Re");
           strcpy (fmt,      "%- #0.*e");
           prec = 1;
+	  spec = 0;
         }
 
       mpfr_set_d (x, y, GMP_RNDN);
@@ -653,6 +654,7 @@ random_double (void)
                        fmt_mpfr, prec, x);
           printf ("expected: %s\n", ys);
           printf ("     got: %s\n", xs);
+	  printf ("xi=%d yi=%d spec=%d\n", xi, yi, spec);
 
           exit (1);
         }
