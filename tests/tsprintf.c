@@ -650,7 +650,16 @@ random_double (void)
       yi = mpfr_asprintf (&ys, fmt, prec, y);
 
       /* test if XS and YS differ, beware that ISO C99 doesn't specify
-         the sign of a null exponent, while mpfr always uses '+' */
+         the sign of a null exponent (the C99 rationale says: "The sign
+         of a zero exponent in %e format is unspecified.  The committee
+         knows of different implementations and choose not to require
+         implementations to document their behaviour in this case
+         (by making this be implementation defined behaviour).  Most
+         implementations use a "+" sign, e.g., 1.2e+00; but there is at
+         least one implementation that uses the sign of the unlimited
+         precision result, e.g., the 0.987 would be 9.87e-01, so could
+         end up as 1e-00 after rounding to one digit of precision."),
+         while mpfr always uses '+' */
       if (xi != yi
           || ((strcmp (xs, ys) != 0)
               && (spec == 1 || spec == 4
