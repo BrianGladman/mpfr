@@ -900,6 +900,9 @@ Normally, a variable should be initialized once only
 or at least be cleared, using @code{mpfr_clear}, between initializations.  The
 precision of @var{x} is the default precision, which can be changed
 by a call to @code{mpfr_set_default_prec}.
+
+Warning! In a given program, some other libraries might change the default
+precision and not restore it. Thus it is safer to use @code{mpfr_init2}.
 @end deftypefun
 
 @deftypefun void mpfr_set_default_prec (mp_prec_t @var{prec})
