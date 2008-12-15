@@ -988,7 +988,7 @@ bug20081028 (void)
                   "for (i=%d) Str=\"%s\"", i, Bug20081028Table[i].str);
           exit (1);
         }
-      if (res != inexact)
+      if (! SAME_SIGN (res, inexact))
         {
           printf ("Error in Bug20081028: expected %s ternary value, "
                   "got %d\nfor (i=%d) Rnd=%s Str=\"%s\"\n Set binary gives: ",
