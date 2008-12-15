@@ -587,6 +587,7 @@ random_double (void)
       int yi;
       char *ys;
 
+      /* build random format strings fmt_mpfr and fmt */
       do
         {
           y = DBL_RAND ();
@@ -601,7 +602,7 @@ random_double (void)
         y = -y;
 
       *ptr_mpfr++ = *ptr++ = '%';
-      spec = (int) (randlimb() % 6);
+      spec = (int) (randlimb() % 6); /* random index in specifier[] */
       jmax = (spec == 0 || spec == 3) ? 5 : 6; /* no ' flag with %e */
       for (j = 0; j < jmax; j++)
         {
@@ -621,24 +622,6 @@ random_double (void)
         prec = (int) (randlimb() % 10);
       else
         prec = (int) (randlimb() % prec_max_printf);
-      if (i == 0) /* bug on icc found on June 10, 2008 */
-        {
-          y = -9.95645044213728791504536275169812142849e-01;
-          strcpy (fmt_mpfr, "%- #0.*Re");
-          strcpy (fmt,      "%- #0.*e");
-          prec = 1;
-          spec = 0;
-        }
-      else if (i == 1) /* problem with glibc 2.3.6, December 14, 2008:
-                          the system asprintf outputs "-1.0" instead of
-                          "-1.". */
-        {
-          y = -9.90597761233942053494e-01;
-          strcpy (fmt_mpfr, "%-#0.*RG");
-          strcpy (fmt,      "%-#0.*G");
-          prec = 1;
-          spec = 5;
-        }
 
       mpfr_set_d (x, y, GMP_RNDN);
 
@@ -686,6 +669,77 @@ random_double (void)
   return 0;
 }
 
+static void
+bug20080610 ()
+{
+  /* bug on icc found on June 10, 2008 */
+  mpfr_t x;
+  double y;
+  int xi;
+  char *xs;
+  int yi;
+  char *ys;
+
+  mpfr_init2 (x, MPFR_LDBL_MANT_DIG);
+
+  y = -9.95645044213728791504536275169812142849e-01;
+  mpfr_set_d (x, y, GMP_RNDN);
+
+  xi = mpfr_asprintf (&xs, "%- #0.*Re", 1, x);
+  yi = mpfr_asprintf (&ys, "%- #0.*e", 1, y);
+
+  if (xi != yi || strcmp (xs, ys) != 0)
+    {
+      mpfr_printf ("Error in bug20080610\n"
+                   "mpfr_asprintf(\"%- #0.*Re\", 1, %Re)\n", x);
+      printf ("expected: %s\n", ys);
+      printf ("     got: %s\n", xs);
+      printf ("xi=%d yi=%d\n", xi, yi);
+
+      exit (1);
+    }
+      
+  mpfr_free_str (xs);
+  mpfr_free_str (ys);
+  mpfr_clear (x);
+}
+
+static void
+bug20081214 ()
+{
+ /* problem with glibc 2.3.6, December 14, 2008:
+    the system asprintf outputs "-1.0" instead of "-1.". */
+  mpfr_t x;
+  double y;
+  int xi;
+  char *xs;
+  int yi;
+  char *ys;
+
+  mpfr_init2 (x, MPFR_LDBL_MANT_DIG);
+
+  y = -9.90597761233942053494e-01;
+  mpfr_set_d (x, y, GMP_RNDN);
+
+  xi = mpfr_asprintf (&xs, "%- #0.*RG", 1, x);
+  yi = mpfr_asprintf (&ys, "%- #0.*G", 1, y);
+
+  if (xi != yi || strcmp (xs, ys) != 0)
+    {
+      mpfr_printf ("Error in bug20081214\n"
+                   "mpfr_asprintf(\"%- #0.*Re\", 1, %Re)\n", x);
+      printf ("expected: %s\n", ys);
+      printf ("     got: %s\n", xs);
+      printf ("xi=%d yi=%d\n", xi, yi);
+
+      exit (1);
+    }
+      
+  mpfr_free_str (xs);
+  mpfr_free_str (ys);
+  mpfr_clear (x);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -702,6 +756,10 @@ main (int argc, char **argv)
   binary ();
   decimal ();
   mixed ();
+
+  /* check against libc */
+  bug20080610 ();
+  bug20081214 ();
   random_double ();
 
 #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
