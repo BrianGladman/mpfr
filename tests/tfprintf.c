@@ -202,8 +202,6 @@ check_mixed (FILE *fout)
   MPFR_ASSERTN (mpq_cmp_ui (mpq, 31, 1) == 0);
   check_vfprintf (fout, "a. %lli, b. %Rf%Fn\n", llo, mpfr, &mpf);
   MPFR_ASSERTN (mpf_cmp_ui (mpf, 12) == 0);
-  check_vfprintf (fout, "a. %qi, b. %Rf%qn\n", llo, mpfr, &ullo);
-  MPFR_ASSERTN (ullo == 12);
 #endif
 
 #ifdef _MPFR_H_HAVE_INTMAX_T

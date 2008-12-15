@@ -254,12 +254,9 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
           break;
         }
     case 'q':
+      /* quad_t and unsigned quad_t are not supported */
       ++format;
-#ifdef HAVE_QUAD_T
-      specinfo->arg_type = LONG_LONG_ARG;
-#else
       specinfo->arg_type = UNSUPPORTED;
-#endif
       break;
     case 'j':
       ++format;
@@ -1907,8 +1904,8 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
       else if (spec.spec == 'n')
         /* put the number of characters written so far in the location pointed
            by the next va_list argument; the types of pointer accepted are the
-           same as in GMP (except quad_t) plus pointer to a mpfr_t so as to be
-           able to accept the same format strings. */
+           same as in GMP (except unsupported quad_t) plus pointer to a mpfr_t
+           so as to be able to accept the same format strings. */
         {
           void *p;
           size_t nchar;

@@ -201,8 +201,6 @@ check_mixed ()
   MPFR_ASSERTN (mpq_cmp_ui (mpq, 31, 1) == 0);
   check_vprintf ("a. %lli, b. %Rf%Fn", llo, mpfr, &mpf);
   MPFR_ASSERTN (mpf_cmp_ui (mpf, 12) == 0);
-  check_vprintf ("a. %qi, b. %Rf%qn", llo, mpfr, &ullo);
-  MPFR_ASSERTN (ullo == 12);
 #endif
 
 #ifdef _MPFR_H_HAVE_INTMAX_T
