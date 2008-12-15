@@ -249,8 +249,8 @@ due to the early compiler tests, as gcc will not compile any program if
 OBJECT_MODE is 64 and the -maix64 option is not provided.
 
 
-Notes on Windows 32
-===================
+Notes on 32-bit Windows Applications (win32)
+============================================
 
 1 - We advise to use mingw (http://www.mingw.org/), which is simpler and
     less demanding than Cygwin. Contrary to Cygwin, it also provides native
@@ -289,35 +289,37 @@ Notes on Windows 32
     '-ansi', '-posix' or '-D__USE_MINGW_ANSI_STDIO'. For example, you can
     compile and test MPFR with CC="gcc -D__USE_MINGW_ANSI_STDIO".
 
-Notes on Windows 64
-===================
+    For example under Win32, the following problem has been experienced with
+    MPFR 2.4.0 RC1 and the MSVC runtime (msvcrt.dll):
 
-[See the Notes on Windows 32, some of them might be relevant here.]
+       Error in mpfr_vsprintf (s, "%.*Zi, %R*e, %Lf%n", ...);
+       expected: "00000010610209857723, -1.2345678875e+07, 0.032258"
+       got:      "00000010610209857723, -1.2345678875e+07, -0.000000"
+       FAIL: tsprintf.exe
+
+    This error is due to the MSVC runtime not supporting the L length modifier
+    for formatted output (e.g. printf with %Lf). You can check this with the
+    following program:
+
+       #include <stdio.h>
+       int main (void)
+       {
+	 long double d = 1. / 31.;
+	 printf ("%Lf\n", d);
+	 return 0;
+       }
+
+    The expected output is 0.032258.
+
+Notes on 64-bit Windows Applications (x64)
+==========================================
+
+[See the Notes on 32-bit Windows Applications, which might be relevant here,
+ in particular when running a 64-bit operating system]
 
 Cygwin and mingw do not yet offer support for native Windows 64 builds but
 the 32-bit version of MPFR can be used to build 32-bit applications that 
-will run on 64-bit Windows systems.  MPFR can be built as a native 64-bit
-static or DLL library for Windows 64 using the Visual Studio build projects
-at http://fp.gladman.plus.com/computing/gmp4win.htm.
+will run on 64-bit Windows systems (see above). MPFR can be built as a native
+64-bit static or DLL library for Windows 64 using the Visual Studio build
+projects at http://fp.gladman.plus.com/computing/gmp4win.htm.
 
-Under Windows Vista 64, the following problem has been experienced with
-MPFR 2.4.0 RC1 and Win32 with the MSVC runtime (msvcrt.dll):
-
-   Error in mpfr_vsprintf (s, "%.*Zi, %R*e, %Lf%n", ...);
-   expected: "00000010610209857723, -1.2345678875e+07, 0.032258"
-   got:      "00000010610209857723, -1.2345678875e+07, -0.000000"
-   FAIL: tsprintf.exe
-
-This error is due to the MSVC runtime not supporting the L length modifier
-for formatted output (e.g. printf with %Lf). You can check this with the
-following program:
-
-   #include <stdio.h>
-   int main (void)
-   {
-     long double d = 1. / 31.;
-     printf ("%Lf\n", d);
-     return 0;
-   }
-
-The expected output is 0.032258.
