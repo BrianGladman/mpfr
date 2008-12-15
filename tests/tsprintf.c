@@ -757,10 +757,13 @@ main (int argc, char **argv)
   decimal ();
   mixed ();
 
-  /* check against libc */
-  bug20080610 ();
-  bug20081214 ();
-  random_double ();
+  if (getenv ("MPFR_CHECK_LIBC_PRINTF"))
+    {
+      /* check against libc */
+      bug20080610 ();
+      bug20081214 ();
+      random_double ();
+    }
 
 #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
   locale_da_DK ();
