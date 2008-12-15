@@ -25,7 +25,7 @@ MA 02110-1301, USA. */
 #include <stdlib.h>
 #include <stddef.h>
 
-#ifdef _MPFR_H_HAVE_INTMAX_T
+#ifdef HAVE_STDINT_H
 #include <stdint.h>
 #endif
 
