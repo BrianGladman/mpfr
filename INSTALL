@@ -262,9 +262,12 @@ Notes on Windows 32
     GMP, MPFR and the program compile exactly as under Linux.
 
 3 - If you want to make libraries to work under another Windows compiler
-    like Visual C / C++, the "trick" is that the unix-like *.a files created
-    by gcc are entirely compatible with the Windows *.lib files. So you just
-    have to rename the *.a files into *.lib.
+    like Visual C / C++, you have two options.  Since the unix-like *.a 
+    library files are compatible with Windows *.lib files, you can simply
+    rename all *.a libraries to *.lib.  The second option is to build 
+    MPFR with the Microsoft Visual Studio compiler to produce Windows
+    libraries directly (Visual Studio build projects for MPFR are 
+    available at http://fp.gladman.plus.com/computing/gmp4win.htm).
 
     With gmp-4.1.3, the only remaining problem seems to be the "alloca" calls
     in GMP. Configuring GMP and MPFR with --enable-alloca=malloc-reentrant
@@ -290,6 +293,12 @@ Notes on Windows 64
 ===================
 
 [See the Notes on Windows 32, some of them might be relevant here.]
+
+Cygwin and mingw do not yet offer support for native Windows 64 builds but
+the 32-bit version of MPFR can be used to build 32-bit applications that 
+will run on 64-bit Windows systems.  MPFR can be built as a native 64-bit
+static or DLL library for Windows 64 using the Visual Studio build projects
+at http://fp.gladman.plus.com/computing/gmp4win.htm.
 
 Under Windows Vista 64, the following problem has been experienced with
 MPFR 2.4.0 RC1 and Win32 with the MSVC runtime (msvcrt.dll):
