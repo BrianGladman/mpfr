@@ -991,7 +991,7 @@ bug20081028 (void)
       if (res != inexact)
         {
           printf ("Error in Bug20081028: expected %s ternary value, "
-                  "got %d\nfor (i=%d) Rnd=%s Str=\"%s\"\nSet binary gives: ",
+                  "got %d\nfor (i=%d) Rnd=%s Str=\"%s\"\n Set binary gives: ",
                   inexact > 0 ? "positive" : "negative",
                   res, i, mpfr_print_rnd_mode(rnd), Bug20081028Table[i].str);
           mpfr_dump (x);
