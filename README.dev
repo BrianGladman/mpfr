@@ -181,6 +181,7 @@ List of the used macros for building MPFR:
 
 + HAVE_ALLOCA_H:        Define if the function 'alloca' is in alloca.h.
 + HAVE_LONG_LONG:       Define if the system supports 'long long'
++ HAVE_QUAD_T:          Define if the system supports 'quad_t'
 
 + HAVE_STDARG:          Define if the system supports 'stdarg.h'.
                          Otherwise it is assumed it is 'vararg.h'.

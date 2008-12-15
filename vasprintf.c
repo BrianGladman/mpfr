@@ -255,7 +255,7 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
         }
     case 'q':
       ++format;
-#ifdef HAVE_LONG_LONG
+#ifdef HAVE_QUAD_T
       specinfo->arg_type = LONG_LONG_ARG;
 #else
       specinfo->arg_type = UNSUPPORTED;
