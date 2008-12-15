@@ -1910,7 +1910,9 @@ The format specification accepted by @code{mpfr_printf} is an extension of the
 % [flags] [width] [.[precision]] [type] [rounding] conv
 @end example
 @samp{flags}, @samp{width}, and @samp{precision} have the meaning as for
-@code{printf}.
+@code{printf}. Notice that the precision is related to the number of digits
+displayed in the base chosen by @samp{conv} and not related to the internal
+precision of the @code{mpfr_t} variable.
 @code{mpfr_printf} is an extension to the @code{gmp_printf} function, hence it
 accepts the same @samp{type} specifiers (except 'q', the one for quad_t and
 u_quad_t which is not supported) plus the following two:
