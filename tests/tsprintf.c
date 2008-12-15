@@ -698,7 +698,7 @@ bug20080610 ()
 
       exit (1);
     }
-      
+
   mpfr_free_str (xs);
   mpfr_free_str (ys);
   mpfr_clear (x);
@@ -734,7 +734,7 @@ bug20081214 ()
 
       exit (1);
     }
-      
+
   mpfr_free_str (xs);
   mpfr_free_str (ys);
   mpfr_clear (x);

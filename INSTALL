@@ -304,9 +304,9 @@ Notes on 32-bit Windows Applications (win32)
        #include <stdio.h>
        int main (void)
        {
-	 long double d = 1. / 31.;
-	 printf ("%Lf\n", d);
-	 return 0;
+         long double d = 1. / 31.;
+         printf ("%Lf\n", d);
+         return 0;
        }
 
     The expected output is 0.032258.
