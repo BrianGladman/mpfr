@@ -34,8 +34,32 @@ MA 02110-1301, USA. */
 
 #if MPFR_VERSION >= MPFR_VERSION_NUM(2,4,0)
 
+#define QUOTE(X) NAME(X)
+#define NAME(X) #X
+
+/* unlike other tests, we print out errors to stderr because stdout might be
+   redirected */
+#define check_length(num_test, var, value, var_spec)                    \
+  if ((var) != (value))                                                 \
+    {                                                                   \
+      fprintf (stderr, "Error in test #%d: mpfr_printf printed %"       \
+               QUOTE(var_spec)" characters instead of %d\n",            \
+               (num_test), (var), (value));                             \
+      exit (1);                                                         \
+    }
+
+#define check_length_with_cmp(num_test, var, value, cmp, var_spec)      \
+  if (cmp != 0)                                                         \
+    {                                                                   \
+      mpfr_fprintf (stderr, "Error in test #%d, mpfr_printf printed %"  \
+                    QUOTE(var_spec)" characters instead of %d\n",       \
+                    (num_test), (var), (value));                        \
+      exit (1);                                                         \
+    }
+
 /* limit for random precision in random() */
 const int prec_max_printf = 5000;
+/* boolean: is stdout redirected to a file ? */
 int stdout_redirect;
 
 static void
@@ -43,16 +67,8 @@ check (char *fmt, mpfr_t x)
 {
   if (mpfr_printf (fmt, x) == -1)
     {
-      printf ("Error in mpfr_printf(\"%s\", ...)\n", fmt);
+      fprintf (stderr, "Error in mpfr_printf(\"%s\", ...)\n", fmt);
 
-      if (stdout_redirect)
-        {
-          if ((fflush (stdout) == EOF) || (fclose (stdout) == -1))
-            {
-              perror ("check");
-              exit (1);
-            }
-        }
       exit (1);
     }
   putchar ('\n');
@@ -66,16 +82,8 @@ check_vprintf (char *fmt, ...)
   va_start (ap, fmt);
   if (mpfr_vprintf (fmt, ap) == -1)
     {
-      printf ("Error in mpfr_vprintf(\"%s\", ...)\n", fmt);
+      fprintf (stderr, "Error in mpfr_vprintf(\"%s\", ...)\n", fmt);
 
-      if (stdout_redirect)
-        {
-          if ((fflush (stdout) == EOF) || (fclose (stdout) == -1))
-            {
-              perror ("check_vprintf");
-              exit (1);
-            }
-        }
       va_end (ap);
       exit (1);
     }
@@ -146,7 +154,7 @@ check_mixed ()
   long double ld = -1.25;
 
   ptrdiff_t p = 1;
-  size_t si = 1;
+  size_t sz = 1;
 
 #ifdef HAVE_LONG_LONG
   long long llo = -1;
@@ -176,38 +184,35 @@ check_mixed ()
   mpfr_set_f (mpfr, mpf, GMP_RNDN);
   prec = mpfr_get_prec (mpfr);
 
-  check_vprintf ("a. %Ra, b. %hhu, c. %u, d. %lx%hhn", mpfr, uch, ui,
-                  ulo, &uch);
-  MPFR_ASSERTN (uch == 28);
-  check_vprintf ("a. %hhi, b. %Rb, c. %u, d. %li%ln", sch, mpfr, i,
-                  lo, &ulo);
-  MPFR_ASSERTN (ulo == 37);
+  check_vprintf ("a. %Ra, b. %hhu, c. %u, d. %lx%hhn", mpfr, uch, ui, ulo,
+                 &uch);
+  check_length (1, uch, 28, hhu);
+  check_vprintf ("a. %hhi, b. %Rb, c. %u, d. %li%ln", sch, mpfr, i, lo, &ulo);
+  check_length (2, ulo, 37, lu);
   check_vprintf ("a. %hi, b. %*f, c. %Re%hn", ush, 3, f, mpfr, &ush);
-  MPFR_ASSERTN (ush == 29);
+  check_length (3, ush, 29, hu);
   check_vprintf ("a. %hi, b. %e, c. %#.2Rf%n", sh, d, mpfr, &i);
-  MPFR_ASSERTN (i == 33);
-  check_vprintf ("a. %R*A, b. %Fe, c. %i%zn", rnd, mpfr, mpf, si,
-                  &si);
-  MPFR_ASSERTN (si == 34);
-  check_vprintf ("a. %Pu, b. %c, c. %Lf, d. %Zi%Zn", prec, ch, ld,
-                  mpz, &mpz);
-  MPFR_ASSERTN (mpz_cmp_ui (mpz, 31) == 0);
-  check_vprintf ("%% a. %#.0RNg, b. %Qx%Rn, c. %td, d. %p", mpfr, mpq,
-                  &mpfr, p, &i);
-  MPFR_ASSERTN (mpfr_cmp_ui (mpfr, 16) == 0);
+  check_length (4, i, 33, d);
+  check_vprintf ("a. %R*A, b. %Fe, c. %i%zn", rnd, mpfr, mpf, sz, &sz);
+  check_length (5, sz, 34, zu);
+  check_vprintf ("a. %Pu, b. %c, c. %Lf, d. %Zi%Zn", prec, ch, ld, mpz, &mpz);
+  check_length_with_cmp (6, mpz, 31, mpz_cmp_ui (mpz, 31), Zi);
+  check_vprintf ("%% a. %#.0RNg, b. %Qx%Rn, c. %td, d. %p", mpfr, mpq, &mpfr,
+                 p, &i);
+  check_length_with_cmp (7, mpfr, 16, mpfr_cmp_ui (mpfr, 16), Rg);
 
 #ifdef HAVE_LONG_LONG
   check_vprintf ("a. %Re, b. %llx%Qn", mpfr, ullo, &mpq);
-  MPFR_ASSERTN (mpq_cmp_ui (mpq, 31, 1) == 0);
+  check_length_with_cmp (11, mpq, 31, mpq_cmp_ui (mpq, 31, 1), Qu);
   check_vprintf ("a. %lli, b. %Rf%Fn", llo, mpfr, &mpf);
-  MPFR_ASSERTN (mpf_cmp_ui (mpf, 12) == 0);
+  check_length_with_cmp (12, mpf, 12, mpf_cmp_ui (mpf, 12), Fg);
 #endif
 
 #ifdef _MPFR_H_HAVE_INTMAX_T
   check_vprintf ("a. %*RA, b. %ji%Qn", 10, mpfr, im, &mpq);
-  MPFR_ASSERTN (mpq_cmp_ui (mpq, 20, 1) == 0);
+  check_length_with_cmp (21, mpq, 20, mpq_cmp_ui (mpq, 20, 1), Qu);
   check_vprintf ("a. %.*Re, b. %jx%Fn", 10, mpfr, uim, &mpf);
-  MPFR_ASSERTN (mpf_cmp_ui (mpf, 25) == 0);
+  check_length_with_cmp (22, mpf, 25, mpf_cmp_ui (mpf, 25), Fg);
 #endif
 
   mpfr_clear (mpfr);
