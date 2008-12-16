@@ -45,6 +45,10 @@ MA 02110-1301, USA. */
 #include <stdint.h>
 #endif
 
+#ifdef HAVE_QUAD_T
+#include <sys/types.h>
+#endif
+
 #include <string.h>             /* for strlen, memcpy and others */
 
 #include "mpfr-impl.h"
@@ -131,6 +135,7 @@ enum arg_t
     SHORT_ARG,
     LONG_ARG,
     LONG_LONG_ARG,
+    QUAD_ARG,
     INTMAX_ARG,
     SIZE_ARG,
     PTRDIFF_ARG,
@@ -254,9 +259,12 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
           break;
         }
     case 'q':
-      /* quad_t and unsigned quad_t are not supported */
       ++format;
+#ifdef HAVE_QUAD_T
+      specinfo->arg_type = QUAD_ARG;
+#else
       specinfo->arg_type = UNSUPPORTED;
+#endif
       break;
     case 'j':
       ++format;
@@ -358,6 +366,15 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
 #define CASE_LONG_LONG_ARG(specinfo, ap)
 #endif
 
+#ifdef HAVE_QUAD_T
+#define CASE_QUAD_ARG(specinfo, ap)             \
+  case QUAD_ARG:                                \
+  (void) va_arg ((ap), quad_t);                 \
+  break;
+#else
+#define CASE_QUAD_ARG(specinfo, ap)
+#endif
+
 #define CONSUME_VA_ARG(specinfo, ap)            \
   do {                                          \
     switch ((specinfo).arg_type)                \
@@ -366,9 +383,10 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
       case SHORT_ARG:                           \
         (void) va_arg ((ap), int);              \
         break;                                  \
-        CASE_LONG_ARG (specinfo, ap)            \
-          CASE_LONG_LONG_ARG (specinfo, ap)     \
-          CASE_INTMAX_ARG (specinfo, ap)        \
+      CASE_LONG_ARG (specinfo, ap)              \
+      CASE_LONG_LONG_ARG (specinfo, ap)         \
+      CASE_QUAD_ARG(specinfo, ap)               \
+      CASE_INTMAX_ARG (specinfo, ap)            \
       case SIZE_ARG:                            \
         (void) va_arg ((ap), size_t);           \
         break;                                  \

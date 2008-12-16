@@ -30,6 +30,10 @@ MA 02110-1301, USA. */
 #include <stdint.h>
 #endif
 
+#ifdef HAVE_QUAD_T
+#include <sys/types.h>
+#endif
+
 #include "mpfr-test.h"
 
 #if MPFR_VERSION >= MPFR_VERSION_NUM(2,4,0)
@@ -226,6 +230,18 @@ check_mixed (FILE *fout)
     check_length_with_cmp (11, mpq, 16, mpq_cmp_ui (mpq, 16, 1), Qu);
     check_vfprintf (fout, "a. %lli, b. %Rf%Fn", llo, mpfr, &mpf);
     check_length_with_cmp (12, mpf, 12, mpf_cmp_ui (mpf, 12), Fg);
+  }
+#endif
+
+#ifdef HAVE_QUAD_T
+  {
+    quad_t q = -1;
+    u_quad_t uq = 1;
+
+    check_vfprintf (fout, "a. %Re, b. %qx%Qn", mpfr, uq, &mpq);
+    check_length_with_cmp (21, mpq, 16, mpq_cmp_ui (mpq, 16, 1), Qu);
+    check_vfprintf (fout, "a. %qi, b. %Rf%Fn", q, mpfr, &mpf);
+    check_length_with_cmp (22, mpf, 12, mpf_cmp_ui (mpf, 12), Fg);    
   }
 #endif
 
