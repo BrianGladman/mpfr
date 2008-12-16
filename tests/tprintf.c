@@ -156,16 +156,6 @@ check_mixed ()
   ptrdiff_t p = 1;
   size_t sz = 1;
 
-#ifdef HAVE_LONG_LONG
-  long long llo = -1;
-  unsigned long long ullo = -1;
-#endif
-
-#ifdef _MPFR_H_HAVE_INTMAX_T
-  intmax_t im = -1;
-  uintmax_t uim = 1;
-#endif
-
   mpz_t mpz;
   mpq_t mpq;
   mpf_t mpf;
@@ -202,17 +192,27 @@ check_mixed ()
   check_length_with_cmp (7, mpfr, 16, mpfr_cmp_ui (mpfr, 16), Rg);
 
 #ifdef HAVE_LONG_LONG
-  check_vprintf ("a. %Re, b. %llx%Qn", mpfr, ullo, &mpq);
-  check_length_with_cmp (11, mpq, 31, mpq_cmp_ui (mpq, 31, 1), Qu);
-  check_vprintf ("a. %lli, b. %Rf%Fn", llo, mpfr, &mpf);
-  check_length_with_cmp (12, mpf, 12, mpf_cmp_ui (mpf, 12), Fg);
+  {
+    long long llo = -1;
+    unsigned long long ullo = 1;
+
+    check_vprintf ("a. %Re, b. %llx%Qn", mpfr, ullo, &mpq);
+    check_length_with_cmp (11, mpq, 16, mpq_cmp_ui (mpq, 16, 1), Qu);
+    check_vprintf ("a. %lli, b. %Rf%Fn", llo, mpfr, &mpf);
+    check_length_with_cmp (12, mpf, 12, mpf_cmp_ui (mpf, 12), Fg);
+  }
 #endif
 
 #ifdef _MPFR_H_HAVE_INTMAX_T
-  check_vprintf ("a. %*RA, b. %ji%Qn", 10, mpfr, im, &mpq);
-  check_length_with_cmp (21, mpq, 20, mpq_cmp_ui (mpq, 20, 1), Qu);
-  check_vprintf ("a. %.*Re, b. %jx%Fn", 10, mpfr, uim, &mpf);
-  check_length_with_cmp (22, mpf, 25, mpf_cmp_ui (mpf, 25), Fg);
+  {
+    intmax_t im = -1;
+    uintmax_t uim = 1;
+
+    check_vprintf ("a. %*RA, b. %ji%Qn", 10, mpfr, im, &mpq);
+    check_length_with_cmp (31, mpq, 20, mpq_cmp_ui (mpq, 20, 1), Qu);
+    check_vprintf ("a. %.*Re, b. %jx%Fn", 10, mpfr, uim, &mpf);
+    check_length_with_cmp (32, mpf, 25, mpf_cmp_ui (mpf, 25), Fg);
+  }
 #endif
 
   mpfr_clear (mpfr);
