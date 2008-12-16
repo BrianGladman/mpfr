@@ -334,13 +334,16 @@ main (int argc, char *argv[])
   if (argc == 1)
     {
       N = 1000;
-      stdout_redirect = -1;
+      stdout_redirect = 1;
       if (freopen ("/dev/null", "w", stdout) == NULL)
         {
           /* We failed to open this device, try with a dummy file */
           if (freopen ("mpfrtest.txt", "w", stdout) == NULL)
             {
-              printf ("Can't open /dev/null or a temporary file\n");
+              /* Output the error message to stderr since it is not
+                 a message about a wrong result in MPFR. Anyway the
+                 stdandard output may have changed. */
+              fprintf (stderr, "Can't open /dev/null or a temporary file\n");
               exit (1);
             }
         }
