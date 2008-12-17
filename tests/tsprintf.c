@@ -558,9 +558,9 @@ locale_da_DK (void)
 static int
 random_double (void)
 {
-  int i;
-  mpfr_t x;
-  double y;
+  mpfr_t x; /* random regular mpfr float */
+  double y; /* regular double float (equal to x) */
+
   char flag[] =
     {
       '-',
@@ -581,24 +581,33 @@ random_double (void)
               regular numbers */
       'G',
     };
+  int spec; /* random index in specifier[] */
+  int prec; /* random value for precision field */
+
+  /* in the format string for mpfr_t variable, the maximum length is
+     reached by something like "%-+ #0'.*Rf", that is 12 characters. */
+#define FMT_MPFR_SIZE 12
+  char fmt_mpfr[FMT_MPFR_SIZE];
+  char *ptr_mpfr;
+
+  /* in the format string for double variable, the maximum length is
+     reached by something like "%-+ #0'.*f", that is 11 characters. */
+#define FMT_SIZE 11
+  char fmt[FMT_SIZE];
+  char *ptr;
+
+  int xi;
+  char *xs;
+  int yi;
+  char *ys;
+
+  int i, j, jmax;
 
   mpfr_init2 (x, MPFR_LDBL_MANT_DIG);
 
   for (i = 0; i < 1000; ++i)
     {
-      int j, jmax, spec, prec;
-#define FMT_MPFR_SIZE 12
-      char fmt_mpfr[FMT_MPFR_SIZE]; /* at most something like "%-+ #0'.*Rf" */
-      char *ptr_mpfr = fmt_mpfr;
-#define FMT_SIZE 11
-      char fmt[FMT_SIZE]; /* at most something like "%-+ #0'.*f" */
-      char *ptr = fmt;
-      int xi;
-      char *xs;
-      int yi;
-      char *ys;
-
-      /* build random format strings fmt_mpfr and fmt */
+      /* 1. random double */
       do
         {
           y = DBL_RAND ();
@@ -612,9 +621,19 @@ random_double (void)
       if (randlimb () % 2 == 0)
         y = -y;
 
+      mpfr_set_d (x, y, GMP_RNDN);
+      if (y != mpfr_get_d (x, GMP_RNDN))
+        /* conversion error: skip this one */
+        continue;
+
+      /* 2. build random format strings fmt_mpfr and fmt */
+      ptr_mpfr = fmt_mpfr;
+      ptr = fmt;
       *ptr_mpfr++ = *ptr++ = '%';
-      spec = (int) (randlimb() % 6); /* random index in specifier[] */
-      jmax = (spec == 0 || spec == 3) ? 5 : 6; /* no ' flag with %e */
+      /* random specifier 'e', 'f', 'g', 'E', 'F', or 'G' */
+      spec = (int) (randlimb() % 6);
+      /* random flags, but no ' flag with %e */
+      jmax = (spec == 0 || spec == 3) ? 5 : 6;
       for (j = 0; j < jmax; j++)
         {
           if (randlimb() % 3 == 0)
@@ -634,17 +653,14 @@ random_double (void)
       else
         prec = (int) (randlimb() % prec_max_printf);
 
-      mpfr_set_d (x, y, GMP_RNDN);
-
-      if (y != mpfr_get_d (x, GMP_RNDN))
-        /* conversion error: skip this one */
-        continue;
-
+      /* 3. calls and checks */
+      /* the double float case is handled by the libc asprintf through
+         gmp_asprintf */
       xi = mpfr_asprintf (&xs, fmt_mpfr, prec, x);
       yi = mpfr_asprintf (&ys, fmt, prec, y);
 
       /* test if XS and YS differ, beware that ISO C99 doesn't specify
-         the sign of a null exponent (the C99 rationale says: "The sign
+         the sign of a zero exponent (the C99 rationale says: "The sign
          of a zero exponent in %e format is unspecified.  The committee
          knows of different implementations and choose not to require
          implementations to document their behaviour in this case
@@ -657,11 +673,10 @@ random_double (void)
       if (xi != yi
           || ((strcmp (xs, ys) != 0)
               && (spec == 1 || spec == 4
-                  || ((strstr (xs, "e+00") == NULL)
-                      && (strstr (xs, "E+00") == NULL))
-                  || ((strstr (ys, "e-00") == NULL)
-                      && (strstr (ys, "E-00") == NULL))
-                  || (strncmp (xs, ys, xi - 3)))))
+                  || ((strstr (xs, "e+00") == NULL
+                       || strstr (ys, "e-00") == NULL)
+                      && (strstr (xs, "E+00") == NULL
+                          || strstr (ys, "E-00") == NULL)))))
         {
           mpfr_printf ("Error in mpfr_asprintf(\"%s\", %d, %Re)\n",
                        fmt_mpfr, prec, x);
@@ -684,6 +699,8 @@ static void
 bug20080610 ()
 {
   /* bug on icc found on June 10, 2008 */
+  /* this is not a bug but a different implementation choice: ISO C99 doesn't
+     specify the sign of a zero exponent (see note in random_double above). */
   mpfr_t x;
   double y;
   int xi;
@@ -701,8 +718,7 @@ bug20080610 ()
 
   if (xi != yi || strcmp (xs, ys) != 0)
     {
-      mpfr_printf ("Error in bug20080610\n"
-                   "mpfr_asprintf(\"%- #0.*Re\", 1, %Re)\n", x);
+      printf ("Error in bug20080610\n");
       printf ("expected: %s\n", ys);
       printf ("     got: %s\n", xs);
       printf ("xi=%d yi=%d\n", xi, yi);
@@ -768,19 +784,19 @@ main (int argc, char **argv)
   decimal ();
   mixed ();
 
-  if (getenv ("MPFR_CHECK_LIBC_PRINTF"))
-    {
-      /* check against libc */
-      bug20080610 ();
-      bug20081214 ();
-      random_double ();
-    }
-
 #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
   locale_da_DK ();
 
   setlocale (LC_ALL, locale);
 #endif
+
+  if (getenv ("MPFR_CHECK_LIBC_PRINTF"))
+    {
+      /* check against libc */
+      random_double ();
+      bug20081214 ();
+      bug20080610 ();
+    }
 
   tests_end_mpfr ();
   return 0;
