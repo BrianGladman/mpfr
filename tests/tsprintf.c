@@ -307,6 +307,17 @@ decimal (void)
   check_sprintf ("0.000000000000000000000000000000", "%#.30Rg", x);
   check_sprintf ("0", "%.30Rg", x);
 
+  /* following tests with precision 53 bits */
+  mpfr_set_prec (x, 53);
+
+  /* Exponent zero has a plus sign */
+  mpfr_set_str (x, "-9.95645044213728791504536275169812142849e-01", 10, GMP_RNDN);
+  check_sprintf ("-1.0e+00", "%- #0.1Re", x);
+
+  /* Decimal point and no figure after it with '#' flag and 'G' style */
+  mpfr_set_str (x, "-9.90597761233942053494e-01", 10, GMP_RNDN);
+  check_sprintf ("-1.", "%- #0.1RG", x);
+
   mpfr_clears (x, z, (mpfr_ptr) 0);
   return 0;
 }
