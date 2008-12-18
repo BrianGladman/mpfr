@@ -241,7 +241,7 @@ check_mixed (FILE *fout)
     check_vfprintf (fout, "a. %Re, b. %qx%Qn", mpfr, uq, &mpq);
     check_length_with_cmp (21, mpq, 16, mpq_cmp_ui (mpq, 16, 1), Qu);
     check_vfprintf (fout, "a. %qi, b. %Rf%Fn", q, mpfr, &mpf);
-    check_length_with_cmp (22, mpf, 12, mpf_cmp_ui (mpf, 12), Fg);    
+    check_length_with_cmp (22, mpf, 12, mpf_cmp_ui (mpf, 12), Fg);
   }
 #endif
 
