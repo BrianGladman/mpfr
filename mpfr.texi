@@ -1919,7 +1919,7 @@ two:
 @quotation
 @multitable {(space)} {MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM}
 @item @samp{R}  @tab @code{mpfr_t} input, float conversions
-@item @samp{P}  @tab @code{mpfr_t} input, integer conversions
+@item @samp{P}  @tab @code{mpfr_prec_t} input, integer conversions
 @end multitable
 @end quotation
 The @samp{type} specifiers have the same restrictions as those mentioned in
@@ -1931,8 +1931,9 @@ parameter and shall not be used with other types. @code{mpfr_printf} accepts
 the same conversion specifier character @samp{conv} as @code{gmp_printf} plus
 @samp{b}.
 
-The @samp{P} type outputs the internal precision of the @code{mpfr_t} variable;
-for example:
+The @samp{P} type outputs the precision of an @code{mpfr_t} variable.
+It is needed because the @code{mpfr_prec_t} type doesn't necessarily
+correspond to an unsigned int or any fixed standard type. For example:
 @example
 mpfr_t x;
 mpfr_prec_t p;
