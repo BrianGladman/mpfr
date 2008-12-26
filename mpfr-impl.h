@@ -944,12 +944,12 @@ do {                                                                  \
 #define MPFR_UNSIGNED_MINUS_MODULO(s, a)                              \
   do                                                                  \
     {                                                                 \
-      if ((UINT_MAX % BITS_PER_MP_LIMB) == (BITS_PER_MP_LIMB-1))      \
-        (s) = (mpfr_prec_t) (-(a)) % BITS_PER_MP_LIMB;                \
+      if (IS_POW2 (BITS_PER_MP_LIMB))                                 \
+        (s) = (-(a)) % BITS_PER_MP_LIMB;                              \
       else                                                            \
         {                                                             \
           (s) = (a) % BITS_PER_MP_LIMB;                               \
-          if (s != 0)                                                 \
+          if ((s) != 0)                                               \
             (s) = BITS_PER_MP_LIMB - (s);                             \
         }                                                             \
       MPFR_ASSERTD ((s) >= 0 && (s) < BITS_PER_MP_LIMB);              \
