@@ -30,9 +30,10 @@ mpfr_mpn_print3 (mp_ptr ap, mp_size_t n, mp_limb_t cy)
 {
   mp_size_t i;
   for (i = 0; i < n; i++)
-    printf ("+%lu*2^%lu", ap[i], BITS_PER_MP_LIMB * i);
+    printf ("+%lu*2^%lu", (unsigned long) ap[i], (unsigned long)
+            (BITS_PER_MP_LIMB * i));
   if (cy)
-    printf ("+2^%lu", BITS_PER_MP_LIMB * n);
+    printf ("+2^%lu", (unsigned long) (BITS_PER_MP_LIMB * n));
   printf ("\n");
 }
 #endif
@@ -250,7 +251,7 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
         extra_bit = mpfr_mpn_cmpzero (vp, l) == 0;
     }
 #ifdef DEBUG
-  printf ("extra_bit=%u\n", extra_bit);
+  printf ("extra_bit=%d\n", extra_bit);
 #endif
 
   /* set exponent */
@@ -354,7 +355,8 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
      is the number of bits in sticky3 */
   inex = (sticky != MPFR_LIMB_ZERO) || (sticky3 != MPFR_LIMB_ZERO);
 #ifdef DEBUG
-  printf ("sticky=%lu sticky3=%lu inex=%d\n", sticky, sticky3, inex);
+  printf ("sticky=%lu sticky3=%lu inex=%d\n",
+          (unsigned long) sticky, (unsigned long) sticky3, inex);
 #endif
 
   like_rndz = rnd_mode == GMP_RNDZ ||
@@ -366,7 +368,8 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
   */
 
 #ifdef DEBUG
-  printf ("vsize=%lu qsize=%lu\n", vsize, qsize);
+  printf ("vsize=%lu qsize=%lu\n",
+          (unsigned long) vsize, (unsigned long) qsize);
 #endif
   if (MPFR_LIKELY(vsize <= qsize)) /* use the full divisor */
     {
@@ -401,7 +404,8 @@ mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
               round_bit = sticky3 & (MPFR_LIMB_ONE << (sh2 - 1));
               sticky3   = sticky3 ^ round_bit;
 #ifdef DEBUG
-              printf ("rb=%lu sb=%lu\n", round_bit, sticky3);
+              printf ("rb=%lu sb=%lu\n",
+                      (unsigned long) round_bit, (unsigned long) sticky3);
 #endif
             }
           if (sticky3 != MPFR_LIMB_ZERO && sticky3 != MPFR_LIMB_ONE)
