@@ -207,7 +207,8 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
            where gamma is Euler's constant */
         {
           dint = MAX (d + 3, precs);
-          MPFR_TRACE (printf ("branch 1\ninternal precision=%d\n", dint));
+          MPFR_TRACE (printf ("branch 1\ninternal precision=%lu\n",
+                              (unsigned long) dint));
           MPFR_GROUP_REPREC_4 (group, dint, b, c, z_pre, f);
           mpfr_div (z_pre, __gmpfr_one, s1, GMP_RNDN);
           mpfr_const_euler (f, GMP_RNDN);
@@ -247,7 +248,8 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
           if (dint < precs)
             dint = precs;
 
-          MPFR_TRACE (printf("internal precision=%d\n",dint));
+          MPFR_TRACE (printf ("internal precision=%lu\n",
+                              (unsigned long) dint));
 
           size = (p + 1) * sizeof(mpfr_t);
           tc1 = (mpfr_t*) (*__gmp_allocate_func) (size);
@@ -255,7 +257,8 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
             mpfr_init2 (tc1[l], dint);
           MPFR_GROUP_REPREC_4 (group, dint, b, c, z_pre, f);
 
-          MPFR_TRACE (printf ("precision of z =%d\n", precz));
+          MPFR_TRACE (printf ("precision of z = %lu\n",
+                              (unsigned long) precz));
 
           /* Computation of the coefficients c_k */
           mpfr_zeta_c (p, tc1);
