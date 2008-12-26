@@ -196,7 +196,8 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
     }
 
 #ifdef DEBUG
-  printf("shift_b=%u shift_c=%u diffexp=%lu\n", shift_b, shift_c, diff_exp);
+  printf ("shift_b=%d shift_c=%d diffexp=%lu\n", shift_b, shift_c,
+          (unsigned long) diff_exp);
 #endif
 
   MPFR_ASSERTD (ap != cp);
@@ -209,7 +210,8 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   cancel2 = (long int) (cancel - (diff_exp - shift_c)) / BITS_PER_MP_LIMB;
   /* the high cancel2 limbs from b should not be taken into account */
 #ifdef DEBUG
-  printf("cancel=%lu cancel1=%lu cancel2=%ld\n", cancel, cancel1, cancel2);
+  printf ("cancel=%lu cancel1=%lu cancel2=%ld\n",
+          (unsigned long) cancel, (unsigned long) cancel1, (long) cancel2);
 #endif
 
   /*               ap[an-1]        ap[0]
@@ -342,7 +344,8 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   cn -= (long int) an + cancel2;
 
 #ifdef DEBUG
-  printf("last %d bits from a are %lu, bn=%ld, cn=%ld\n", sh, carry, bn, cn);
+  printf ("last %d bits from a are %lu, bn=%ld, cn=%ld\n",
+          sh, (unsigned long) carry, (long) bn, (long) cn);
 #endif
 
   for (k = 0; (bn > 0) || (cn > 0); k = 1)
@@ -388,8 +391,8 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
         }
 
 #ifdef DEBUG
-      printf("    bb=%lu cc=%lu down=%d is_exact=%d\n",
-             bb, cc, down, is_exact);
+      printf ("    bb=%lu cc=%lu down=%d is_exact=%d\n",
+              (unsigned long) bb, (unsigned long) cc, down, is_exact);
 #endif
       if (bb < cc)
         {
