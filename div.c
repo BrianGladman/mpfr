@@ -23,7 +23,7 @@ MA 02110-1301, USA. */
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-#ifdef DEBUG
+#ifdef DEBUG2
 #define mpfr_mpn_print(ap,n) mpfr_mpn_print3 (ap,n,MPFR_LIMB_ZERO)
 static void
 mpfr_mpn_print3 (mp_ptr ap, mp_size_t n, mp_limb_t cy)
