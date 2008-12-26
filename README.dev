@@ -118,6 +118,8 @@ To make a release (for the MPFR team):
      (e.g. under Linux/x86), and in various locales (LC_ALL=tr_TR in
      particular, if installed). On x86, test with -m96bit-long-double
      and -m128bit-long-double. Try also with gcc's -fno-common option.
+     Check also with "-Wformat=2", but without logging support (in order
+     to avoid too many spurious warnings).
 
      Check that make and make check pass with a C++ compiler, for example:
      ./configure CC=g++ (MPFR 2.3.2 did not).
