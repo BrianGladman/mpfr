@@ -51,8 +51,8 @@ int mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
     {
       fprintf (stderr, "sub1 & sub1sp return different values for %s\n"
                "Prec_a = %lu, Prec_b = %lu, Prec_c = %lu\nB = ",
-               mpfr_print_rnd_mode(rnd_mode),
-               MPFR_PREC (a), MPFR_PREC (b), MPFR_PREC (c));
+               mpfr_print_rnd_mode (rnd_mode), (unsigned long) MPFR_PREC (a),
+               (unsigned long) MPFR_PREC (b), (unsigned long) MPFR_PREC (c));
       mpfr_fprint_binary (stderr, tmpb);
       fprintf (stderr, "\nC = ");
       mpfr_fprint_binary (stderr, tmpc);
@@ -207,7 +207,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   /* Now b > c */
   MPFR_ASSERTD(bx >= cx);
   d = (mp_exp_unsigned_t) bx - cx;
-  DEBUG( printf("New with diff=%lu\n", d) );
+  DEBUG (printf ("New with diff=%lu\n", (unsigned long) d));
 
   if (MPFR_UNLIKELY(d <= 1))
     {
@@ -545,7 +545,9 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
                   mp_limb_t *tp = MPFR_MANT(c);
                   mp_size_t kx = n-1 - (x / BITS_PER_MP_LIMB);
                   mpfr_prec_t sx = BITS_PER_MP_LIMB-1-(x%BITS_PER_MP_LIMB);
-                  DEBUG( printf("(First) x=%lu Kx=%ld Sx=%lu\n", x, kx, sx));
+                  DEBUG (printf ("(First) x=%lu Kx=%ld Sx=%lu\n",
+                                 (unsigned long) x, (long) kx,
+                                 (unsigned long) sx));
                   /* Looks at the last bits of limb kx (if sx=0 does nothing)*/
                   if (tp[kx] & MPFR_LIMB_MASK(sx))
                     bcp1 = 1;
@@ -606,7 +608,9 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
               mp_size_t kx = n-1 - (x/BITS_PER_MP_LIMB);
               mp_prec_t sx = BITS_PER_MP_LIMB-1-(x%BITS_PER_MP_LIMB);
               MPFR_ASSERTD(p > d);
-              DEBUG( printf("(pre) x=%lu Kx=%ld Sx=%lu\n", x, kx, sx));
+              DEBUG (printf ("(pre) x=%lu Kx=%ld Sx=%lu\n",
+                             (unsigned long) x, (long) kx,
+                             (unsigned long) sx));
               bbcp = (tp[kx] & (MPFR_LIMB_ONE<<sx)) ;
               /* Looks at the last bits of limb kx (If sx=0, does nothing)*/
               /* If Cp+1=0, since C'p+1!=0, C'p+2=1 ! */
@@ -619,7 +623,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
                     kx--;
                   } while (kx>=0 && tp[kx]==0);
                   bbcp1 = (kx>=0);
-                  DEBUG( printf("(Pre) Scan done for %ld\n", kx));
+                  DEBUG (printf ("(Pre) Scan done for %ld\n", (long) kx));
                 }
             } /*End of Bcp1 != 0*/
           DEBUG( printf("(Pre) Cp+1=%d C'p+2=%d\n", bbcp!=0, bbcp1!=0) );
