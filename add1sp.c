@@ -87,7 +87,8 @@ int
 mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 {
   mp_exp_unsigned_t d;
-  mp_prec_t p, sh;
+  mp_prec_t p;
+  unsigned int sh;
   mp_size_t n;
   mp_limb_t *ap, *cp;
   mp_exp_t  bx;
@@ -108,7 +109,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   bx = MPFR_GET_EXP(b);
   d = (mpfr_uexp_t) (bx - MPFR_GET_EXP(c));
 
-  DEBUG( printf("New add1sp with diff=%lu\n", d) );
+  DEBUG (printf ("New add1sp with diff=%lu\n", (unsigned long) d));
 
   if (MPFR_UNLIKELY(d == 0))
     {
@@ -238,7 +239,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       DEBUG( mpfr_print_mant_binary("After ", cp, p) );
 
       /* Compute bcp=Cp and bcp1=C'p+1 */
-      if (MPFR_LIKELY(sh))
+      if (MPFR_LIKELY (sh > 0))
         {
           /* Try to compute them from C' rather than C */
           bcp = (cp[0] & (MPFR_LIMB_ONE<<(sh-1))) ;
@@ -258,7 +259,9 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
                   mp_limb_t *tp = MPFR_MANT(c);
                   mp_size_t kx = n-1 - (x / BITS_PER_MP_LIMB);
                   mpfr_prec_t sx = BITS_PER_MP_LIMB-1-(x%BITS_PER_MP_LIMB);
-                  DEBUG( printf("(First) x=%lu Kx=%ld Sx=%lu\n", x, kx, sx));
+                  DEBUG (printf ("(First) x=%lu Kx=%ld Sx=%lu\n",
+                                 (unsigned long) x, (long) kx,
+                                 (unsigned long) sx));
                   /* Looks at the last bits of limb kx (if sx=0 does nothing)*/
                   if (tp[kx] & MPFR_LIMB_MASK(sx))
                     bcp1 = 1;
@@ -295,7 +298,8 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
               bcp1 = (kx>=0);
             }
         }
-      DEBUG( printf("sh=%lu Cp=%lu C'p+1=%lu\n", sh, bcp, bcp1) );
+      DEBUG (printf("sh=%u Cp=%lu C'p+1=%lu\n", sh,
+                    (unsigned long) bcp, (unsigned long) bcp1));
 
       /* Clean shifted C' */
       mask = ~MPFR_LIMB_MASK(sh);
@@ -316,8 +320,9 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
           ap[0]   &= mask;                    /* Clear LSB bit */
           bcp1    |= bcp;                     /* Recompute C'p+1 */
           bcp      = limb;                    /* Recompute Cp */
-          DEBUG( printf("(Overflow) Cp=%lu C'p+1=%lu\n", bcp, bcp1) );
-          DEBUG( mpfr_print_mant_binary("Add=  ", ap, p) );
+          DEBUG (printf ("(Overflow) Cp=%lu C'p+1=%lu\n",
+                         (unsigned long) bcp, (unsigned long) bcp1));
+          DEBUG (mpfr_print_mant_binary ("Add=  ", ap, p));
         }
 
       /* Round:
