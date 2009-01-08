@@ -34,6 +34,7 @@ MA 02110-1301, USA. */
 #include <sys/types.h>
 #endif
 
+#include "gmp.h"
 #include "mpfr-test.h"
 
 #if MPFR_VERSION >= MPFR_VERSION_NUM(2,4,0)
@@ -199,6 +200,8 @@ check_mixed (FILE *fout)
                   &mpfr, p, &i);
   check_length_with_cmp (7, mpfr, 16, mpfr_cmp_ui (mpfr, 16), Rg);
 
+#if (__GNU_MP_VERSION * 10 + __GNU_MP_VERSION_MINOR) >= 42
+  /* The 'M' specifier was added in gmp 4.2.0 */
   check_vfprintf (fout, "a. %Mx b. %Re%Mn", limb[0], mpfr, &limb[0]);
   if (limb[0] != 14 + BITS_PER_MP_LIMB / 4 || limb[1] != ~ (mp_limb_t) 0
       || limb[2] != ~ (mp_limb_t) 0)
@@ -220,6 +223,7 @@ check_mixed (FILE *fout)
               " as expected\n", 14 + BITS_PER_MP_LIMB / 4);
       exit (1);
     }
+#endif
 
 #ifdef HAVE_LONG_LONG
   {

@@ -1924,8 +1924,8 @@ two:
 @end quotation
 The @samp{type} specifiers have the same restrictions as those mentioned in
 the GMP documentation, for instance, only @samp{h} and @samp{l} are portable;
-moreover, @samp{j}, @samp{ll}, or @samp{q} are not supported if your GMP
-library does not support them.
+moreover, @samp{M}, @samp{j}, @samp{ll}, or @samp{q} are not supported if your
+GMP library does not support them.
 The @samp{rounding} specifier is specific to @code{mpfr_t}
 parameter and shall not be used with other types. @code{mpfr_printf} accepts
 the same conversion specifier character @samp{conv} as @code{gmp_printf} plus

@@ -296,6 +296,7 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
       break;
     case 'M':
       ++format;
+      /* The 'M' specifier was added in gmp 4.2.0 */
       specinfo->arg_type = MP_LIMB_ARG;
       break;
     case 'N':
