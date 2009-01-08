@@ -36,8 +36,6 @@ MA 02110-1301, USA. */
 #include <locale.h>
 #endif
 
-#include <gmp.h>
-
 #include "mpfr-test.h"
 
 #if MPFR_VERSION >= MPFR_VERSION_NUM(2,4,0)
