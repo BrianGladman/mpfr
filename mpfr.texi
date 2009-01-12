@@ -1991,7 +1991,7 @@ Special values are always displayed as @code{nan}, @code{-inf}, and
 specifiers and @code{NAN}, @code{-INF}, and
 @code{INF} for @samp{A}, @samp{E}, @samp{F}, and @samp{G}
 specifiers.
-In binary output, the precision is silently increase up to 2 if it equals 1.
+In binary output, the precision is silently increased up to 2 if it equals 1.
 
 @subsection Functions
 @deftypefun int mpfr_fprintf (FILE *@var{stream}, const char *@var{template}, @dots{})
