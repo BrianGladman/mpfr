@@ -195,9 +195,14 @@ check_mixed (FILE *fout)
   check_vfprintf (fout, "a. %Pu, b. %c, c. %Lf, d. %Zi%Zn", prec, ch, ld,
                   mpz, &mpz);
   check_length_with_cmp (6, mpz, 31, mpz_cmp_ui (mpz, 31), Zi);
-  check_vfprintf (fout, "%% a. %#.0RNg, b. %Qx%Rn, c. %td, d. %p", mpfr, mpq,
-                  &mpfr, p, &i);
+  check_vfprintf (fout, "%% a. %#.0RNg, b. %Qx%Rn, c. %p", mpfr, mpq, &mpfr,
+                  &i);
   check_length_with_cmp (7, mpfr, 16, mpfr_cmp_ui (mpfr, 16), Rg);
+
+#ifndef NO_GMP_PRINTF_T
+  check_vfprintf (fout, "%% a. %RNg, b. %Qx, c. %td%tn", mpfr, mpq, p, &p);
+  check_length (8, p, 21, td);
+#endif
 
 #if (__GNU_MP_VERSION * 10 + __GNU_MP_VERSION_MINOR) >= 42
   /* The 'M' specifier was added in gmp 4.2.0 */
@@ -205,7 +210,7 @@ check_mixed (FILE *fout)
   if (limb[0] != 14 + BITS_PER_MP_LIMB / 4 || limb[1] != ~ (mp_limb_t) 0
       || limb[2] != ~ (mp_limb_t) 0)
     {
-      printf ("Error in test #8: mpfr_vfprintf did not print %u characters"
+      printf ("Error in test #9: mpfr_vfprintf did not print %u characters"
               " as expected\n", 14 + BITS_PER_MP_LIMB / 4);
       exit (1);
     }
@@ -218,7 +223,7 @@ check_mixed (FILE *fout)
   if (limb[0] != 14 + 3 * BITS_PER_MP_LIMB / 4 || limb[1] != (mp_limb_t) 0
       || limb[2] != ~ (mp_limb_t) 0)
     {
-      printf ("Error in test #9: mpfr_vfprintf did not print %u characters"
+      printf ("Error in test #10: mpfr_vfprintf did not print %u characters"
               " as expected\n", 14 + BITS_PER_MP_LIMB / 4);
       exit (1);
     }
@@ -236,7 +241,8 @@ check_mixed (FILE *fout)
   }
 #endif
 
-#ifdef HAVE_QUAD_T
+#if defined(HAVE_QUAD_T) && !defined(NO_LIBC_PRINTF_Q) \
+    && !defined(NO_GMP_PRINTF_Q)
   {
     quad_t q = -1;
     u_quad_t uq = 1;
@@ -248,7 +254,8 @@ check_mixed (FILE *fout)
   }
 #endif
 
-#ifdef _MPFR_H_HAVE_INTMAX_T
+#if defined(_MPFR_H_HAVE_INTMAX_T) && !defined(NO_LIBC_PRINTF_J)        \
+  && !defined(NO_GMP_PRINTF_J)
   {
     intmax_t im = -1;
     uintmax_t uim = 1;

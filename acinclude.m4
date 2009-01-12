@@ -118,8 +118,9 @@ dnl check for long long
 AC_CHECK_TYPE([long long int],
    AC_DEFINE(HAVE_LONG_LONG, 1, [Define if compiler supports long long]),,)
 
-# quad_t is BSD specific
-AC_CHECK_TYPES([quad_t])
+dnl intmax_t is C99
+dnl quad_t is BSD specific
+AC_CHECK_TYPES([intmax_t, quad_t])
 
 AC_CHECK_TYPE( [union fpc_csr],
    AC_DEFINE(HAVE_FPC_CSR,1,[Define if union fpc_csr is available]), ,
@@ -663,4 +664,72 @@ if test $gmp_cv_c_attribute_mode = yes; then
  AC_DEFINE(HAVE_ATTRIBUTE_MODE, 1,
  [Define to 1 if the compiler accepts gcc style __attribute__ ((mode (XX)))])
 fi
+])
+
+
+dnl  MPFR_FUNC_PRINTF_SPEC
+dnl  ------------------------------------
+dnl  MPFR_FUNC_PRINTF_SPEC(spec, type, [includes], [lib-prefix], [if-true], [if-false])
+dnl  Check if printf supports the conversion specification 'spec'
+dnl  with type 'type'.
+dnl  Expand 'if-true' if printf supports 'spec', 'if-false' otherwise.
+
+AC_DEFUN([MPFR_FUNC_PRINTF_SPEC],[
+AC_MSG_CHECKING(if $4printf supports "$1")
+AC_RUN_IFELSE([AC_LANG_PROGRAM([[
+#include <stdio.h>
+$3
+]], [[
+  char s[256];
+  $2 a = 0;
+  return ($4sprintf (s, "$1", a) != 1) ? 1 : 0;
+]])],
+  [AC_MSG_RESULT(yes)
+  $5],
+  [AC_MSG_RESULT(no)
+  $6])
+])
+
+
+dnl MPFR_CHECK_PRINTF_SPEC
+dnl ----------------------
+dnl Check if libc printf and gmp_printf support some optional length
+dnl modifiers.
+dnl Defined symbols are negative to shorten the gcc command line.
+
+AC_DEFUN([MPFR_CHECK_PRINTF_SPEC], [
+AC_REQUIRE([MPFR_CONFIGS])dnl
+if test "$ac_cv_type_intmax_t" == yes; then
+ MPFR_FUNC_PRINTF_SPEC([%jd], [intmax_t], [
+#include <stdint.h>
+     ],,
+     [MPFR_FUNC_PRINTF_SPEC([%jd], [intmax_t], [
+#include <stdint.h>
+#include <gmp.h>
+         ], [gmp_],,
+         [AC_DEFINE([NO_GMP_PRINTF_J], 1, [gmp_printf cannot read intmax_t])])
+     ],[AC_DEFINE([NO_LIBC_PRINTF_J], 1, [libc printf cannot read intmax_t])])
+fi
+
+if test "$ac_cv_type_quad_t" == yes; then
+ MPFR_FUNC_PRINTF_SPEC([%qd], [quad_t], [
+#include <sys/types.h>
+     ],,
+     [MPFR_FUNC_PRINTF_SPEC([%qd], [quad_t], [
+#include <sys/types.h>
+#include <gmp.h>
+          ], [gmp_],,
+          [AC_DEFINE([NO_GMP_PRINTF_Q], 1, [gmp_printf cannot read quad_t])])
+     ], [AC_DEFINE([NO_LIBC_PRINTF_Q], 1, [libc printf cannot read quad_t])])
+fi
+
+MPFR_FUNC_PRINTF_SPEC([%td], [ptrdiff_t], [
+#if defined (__cplusplus)
+#include <cstddef>
+#else
+#include <stddef.h>
+#endif
+#include "gmp.h"
+    ], [gmp_],,
+    [AC_DEFINE([NO_GMP_PRINTF_T], 1, [gmp_printf cannot read ptrdiff_t])])
 ])

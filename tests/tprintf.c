@@ -191,9 +191,13 @@ check_mixed ()
   check_length (5, sz, 34, zu);
   check_vprintf ("a. %Pu, b. %c, c. %Lf, d. %Zi%Zn", prec, ch, ld, mpz, &mpz);
   check_length_with_cmp (6, mpz, 31, mpz_cmp_ui (mpz, 31), Zi);
-  check_vprintf ("%% a. %#.0RNg, b. %Qx%Rn, c. %td, d. %p", mpfr, mpq, &mpfr,
-                 p, &i);
+  check_vprintf ("%% a. %#.0RNg, b. %Qx%Rn c. %p", mpfr, mpq, &mpfr, &i);
   check_length_with_cmp (7, mpfr, 16, mpfr_cmp_ui (mpfr, 16), Rg);
+
+#ifndef NO_GMP_PRINTF_T
+  check_vprintf ("%% a. %RNg, b. %Qx, c. %td%tn", mpfr, mpq, p, &p);
+  check_length (8, p, 21, td);
+#endif
 
 #ifdef HAVE_LONG_LONG
   {
@@ -207,7 +211,8 @@ check_mixed ()
   }
 #endif
 
-#ifdef HAVE_QUAD_T
+#if defined(HAVE_QUAD_T) && !defined(NO_LIBC_PRINTF_Q)\
+    && !defined(NO_GMP_PRINTF_Q)
   {
     quad_t q = -1;
     u_quad_t uq = 1;
@@ -219,7 +224,8 @@ check_mixed ()
   }
 #endif
 
-#ifdef _MPFR_H_HAVE_INTMAX_T
+#if defined(_MPFR_H_HAVE_INTMAX_T) && !defined(NO_LIBC_PRINTF_J)\
+  && !defined(NO_GMP_PRINTF_J)
   {
     intmax_t im = -1;
     uintmax_t uim = 1;
