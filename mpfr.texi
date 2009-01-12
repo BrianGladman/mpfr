@@ -1176,7 +1176,7 @@ it with respect to @var{rnd}.
 If @var{op} is NaN, the result is undefined.
 If @var{op} is too big for the return type, it returns the maximum
 or the minimum of the corresponding C type, depending on the direction
-of the overflow. The flag erange is set too.
+of the overflow. The @emph{erange} flag is set too.
 See also @code{mpfr_fits_slong_p}, @code{mpfr_fits_ulong_p},
 @code{mpfr_fits_intmax_p} and @code{mpfr_fits_uintmax_p}.
 @end deftypefun
@@ -1456,7 +1456,7 @@ Compare @var{op1} and @var{op2}.  Return a positive value if @math{@var{op1} >
 @math{@var{op1} < @var{op2}}.
 Both @var{op1} and @var{op2} are considered to their full own precision,
 which may differ.
-If one of the operands is NaN, set the erange flag and return zero.
+If one of the operands is NaN, set the @emph{erange} flag and return zero.
 
 Note: These functions may be useful to distinguish the three possible cases.
 If you need to distinguish two cases only, it is recommended to use the
@@ -1476,7 +1476,7 @@ the power @var{e}}. Similar as above.
 Compare @math{|@var{op1}|} and @math{|@var{op2}|}.  Return a positive value if
 @math{|@var{op1}| > |@var{op2}|}, zero if @math{|@var{op1}| = |@var{op2}|}, and
 a negative value if @math{|@var{op1}| < |@var{op2}|}.
-If one of the operands is NaN, set the erange flag and return zero.
+If one of the operands is NaN, set the @emph{erange} flag and return zero.
 @end deftypefun
 
 @deftypefun int mpfr_nan_p (mpfr_t @var{op})
@@ -1490,7 +1490,7 @@ number (i.e.@: neither NaN nor an infinity) or zero. Return zero otherwise.
 @deftypefn Macro int mpfr_sgn (mpfr_t @var{op})
 Return a positive value if @math{@var{op} > 0}, zero if @math{@var{op} = 0},
 and a negative value if @math{@var{op} < 0}.
-If the operand is NaN, set the erange flag and return zero.
+If the operand is NaN, set the @emph{erange} flag and return zero.
 @end deftypefn
 
 @deftypefun int mpfr_greater_p (mpfr_t @var{op1}, mpfr_t @var{op2})
@@ -2002,7 +2002,7 @@ the template string @var{template}.
 Return the number of characters written or a negative value if an error
 occurred. If the number of characters which ought to be written appears
 to exceed the maximum limit for an @code{int}, nothing is written in the
-stream, the function returns @minus{}1, sets the @code{erange} flags, and (in
+stream, the function returns @minus{}1, sets the @emph{erange} flag, and (in
 POSIX system only) @code{errno} is set to @code{EOVERFLOW}.
 @end deftypefun
 
@@ -2014,7 +2014,7 @@ template string @var{template}.
 Return the number of characters written or a negative value if an error
 occurred. If the number of characters which ought to be written appears
 to exceed the maximum limit for an @code{int}, nothing is written in
-@code{stdout}, the function returns @minus{}1, sets the @code{erange} flags,
+@code{stdout}, the function returns @minus{}1, sets the @emph{erange} flag,
 and (in POSIX system only) @code{errno} is set to @code{EOVERFLOW}.
 @end deftypefun
 
@@ -2027,7 +2027,7 @@ Return the number of characters written in the array @var{buf} not counting
 the terminating null character or a negative value if an error occurred. If
 the number of characters which ought to be written appears to exceed the
 maximum limit for an @code{int}, nothing is written in @code{buf}, the
-function returns @minus{}1, sets the @code{erange} flags, and (in POSIX system
+function returns @minus{}1, sets the @emph{erange} flag, and (in POSIX system
 only) @code{errno} is set to @code{EOVERFLOW}.
 @end deftypefun
 
@@ -2042,7 +2042,7 @@ sufficiently large, not counting the terminating null character or a negative
 value if an error occurred. If the number of characters produced by the
 optional arguments under the control of the template string @code{template}
 appears to exceed the maximum limit for an @code{int}, nothing is written in
-@code{buf}, the function returns @minus{}1, sets the @code{erange} flags, and
+@code{buf}, the function returns @minus{}1, sets the @emph{erange} flag, and
 (in POSIX system only) @code{errno} is set to @code{EOVERFLOW}.
 @end deftypefun
 
@@ -2057,7 +2057,7 @@ the null-terminator or a negative value if an error occurred. If the number of
 characters produced by the optional arguments under the control of the
 template string @code{template} appears to exceed the maximum limit for an
 @code{int}, @code{str} is a null pointer, the function returns @minus{}1, sets
-the @code{erange} flags, and (in POSIX system only) @code{errno} is set to
+the @emph{erange} flag, and (in POSIX system only) @code{errno} is set to
 @code{EOVERFLOW}.
 @end deftypefun
 
@@ -2480,7 +2480,7 @@ in the subnormal range, which may not be the case for your hardware.
 @deftypefunx void mpfr_clear_nanflag (void)
 @deftypefunx void mpfr_clear_inexflag (void)
 @deftypefunx void mpfr_clear_erangeflag (void)
-Clear the underflow, overflow, invalid, inexact and erange flags.
+Clear the underflow, overflow, invalid, inexact and @emph{erange} flags.
 @end deftypefun
 
 @deftypefun void mpfr_set_underflow (void)
@@ -2488,11 +2488,11 @@ Clear the underflow, overflow, invalid, inexact and erange flags.
 @deftypefunx void mpfr_set_nanflag (void)
 @deftypefunx void mpfr_set_inexflag (void)
 @deftypefunx void mpfr_set_erangeflag (void)
-Set the underflow, overflow, invalid, inexact and erange flags.
+Set the underflow, overflow, invalid, inexact and @emph{erange} flags.
 @end deftypefun
 
 @deftypefun void mpfr_clear_flags (void)
-Clear all global flags (underflow, overflow, inexact, invalid, erange).
+Clear all global flags (underflow, overflow, inexact, invalid, @emph{erange}).
 @end deftypefun
 
 @deftypefun int mpfr_underflow_p (void)
@@ -2500,7 +2500,7 @@ Clear all global flags (underflow, overflow, inexact, invalid, erange).
 @deftypefunx int mpfr_nanflag_p (void)
 @deftypefunx int mpfr_inexflag_p (void)
 @deftypefunx int mpfr_erangeflag_p (void)
-Return the corresponding (underflow, overflow, invalid, inexact, erange)
+Return the corresponding (underflow, overflow, invalid, inexact, @emph{erange})
 flag, which is non-zero iff the flag is set.
 @end deftypefun
 
