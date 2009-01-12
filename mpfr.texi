@@ -2020,7 +2020,7 @@ and (in POSIX system only) @code{errno} is set to @code{EOVERFLOW}.
 
 @deftypefun int mpfr_sprintf (char *@var{buf}, const char *@var{template}, @dots{})
 @deftypefunx int mpfr_vsprintf (char *@var{buf}, const char *@var{template}, va_list @var{ap})
-Form a null-terminated string in @code{buf}. No overlap is permitted beetwen
+Form a null-terminated string in @code{buf}. No overlap is permitted between
 @code{buf} and the other arguments.
 
 Return the number of characters written in the array @var{buf} not counting
