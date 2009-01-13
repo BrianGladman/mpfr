@@ -34,7 +34,7 @@ MA 02110-1301, USA. */
   mpfr_set_str_binary (x, t); \
   if (mpfr_cmp (x, y)) \
     { \
-      printf ("Error in mpfr_set_str (%u):\n", n); \
+      printf ("Error in mpfr_set_str (%d):\n", n); \
       mpfr_print_binary (x); \
       puts (""); \
       mpfr_print_binary (y); \
