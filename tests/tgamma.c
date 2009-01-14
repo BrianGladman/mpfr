@@ -424,7 +424,7 @@ gamma_integer (void)
       mpfr_set_z (x, n, GMP_RNDN);
       if (!mpfr_equal_p (x, y))
         {
-          printf ("Error for gamma(%d)\n", i+1);
+          printf ("Error for gamma(%u)\n", i+1);
           printf ("expected "); mpfr_dump (x);
           printf ("got      "); mpfr_dump (y);
           exit (1);

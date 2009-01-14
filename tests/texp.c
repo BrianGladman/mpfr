@@ -712,7 +712,7 @@ underflow_up (int extended_emin)
                       printf ("\nfor precx = %d, precy = %d, %s\n",
                               precx, precy, e3 ? "mpfr_exp_3" : "mpfr_exp");
                       printf ("Got %u instead of %u.\n", __gmpfr_flags,
-                              MPFR_FLAGS_INEXACT);
+                              (unsigned int) MPFR_FLAGS_INEXACT);
                       err = 1;
                     }
                   if (mpfr_cmp0 (y, minpos) < 0)

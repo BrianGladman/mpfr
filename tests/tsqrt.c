@@ -392,7 +392,7 @@ special (void)
   inexact = test_sqrt (y, x, GMP_RNDN);
   if (mpfr_cmp_ui (y, 3) || inexact >= 0)
     {
-      printf ("Error in sqrt(9:1000) for prec=%u\n", BITS_PER_MP_LIMB);
+      printf ("Error in sqrt(9:1000) for prec=%d\n", (int) BITS_PER_MP_LIMB);
       exit (1);
     }
   mpfr_set_prec (x, 2 * BITS_PER_MP_LIMB);
@@ -403,7 +403,7 @@ special (void)
   inexact = test_sqrt (y, x, GMP_RNDN);
   if (mpfr_cmp_ui (y, 1) || inexact >= 0)
     {
-      printf ("Error in sqrt(1) for prec=%u\n", BITS_PER_MP_LIMB);
+      printf ("Error in sqrt(1) for prec=%d\n", (int) BITS_PER_MP_LIMB);
       mpfr_dump (y);
       exit (1);
     }

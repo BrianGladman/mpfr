@@ -1288,7 +1288,8 @@ bug20080721 (void)
                   mpfr_print_rnd_mode ((mp_rnd_t) rnd));
           printf ("expected ");
           mpfr_out_str (stdout, 2, 0, t[i], GMP_RNDN);
-          printf (", inex = %d, flags = %u\n", inex0, MPFR_FLAGS_INEXACT);
+          printf (", inex = %d, flags = %u\n", inex0,
+                  (unsigned int) MPFR_FLAGS_INEXACT);
           printf ("got      ");
           mpfr_out_str (stdout, 2, 0, z, GMP_RNDN);
           printf (", inex = %d, flags = %u\n", inex, flags);

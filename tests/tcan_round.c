@@ -49,8 +49,8 @@ check_round_p (void)
       if (r1 != r2)
         {
           printf ("mpfr_round_p(%d) != mpfr_can_round(%d)!\n"
-                  "bn = %ld, err0 = %ld, prec = %ld\nbp = ",
-                  r1, r2, n, err, p);
+                  "bn = %ld, err0 = %ld, prec = %lu\nbp = ",
+                  r1, r2, n, err, (unsigned long) p);
           gmp_printf ("%NX\n", buf, n);
           exit (1);
         }

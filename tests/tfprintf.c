@@ -210,8 +210,8 @@ check_mixed (FILE *fout)
   if (limb[0] != 14 + BITS_PER_MP_LIMB / 4 || limb[1] != ~ (mp_limb_t) 0
       || limb[2] != ~ (mp_limb_t) 0)
     {
-      printf ("Error in test #9: mpfr_vfprintf did not print %u characters"
-              " as expected\n", 14 + BITS_PER_MP_LIMB / 4);
+      printf ("Error in test #9: mpfr_vfprintf did not print %d characters"
+              " as expected\n", 14 + (int) BITS_PER_MP_LIMB / 4);
       exit (1);
     }
 
@@ -223,8 +223,8 @@ check_mixed (FILE *fout)
   if (limb[0] != 14 + 3 * BITS_PER_MP_LIMB / 4 || limb[1] != (mp_limb_t) 0
       || limb[2] != ~ (mp_limb_t) 0)
     {
-      printf ("Error in test #10: mpfr_vfprintf did not print %u characters"
-              " as expected\n", 14 + BITS_PER_MP_LIMB / 4);
+      printf ("Error in test #10: mpfr_vfprintf did not print %d characters"
+              " as expected\n", 14 + (int) BITS_PER_MP_LIMB / 4);
       exit (1);
     }
 #endif
