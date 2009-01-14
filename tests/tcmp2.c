@@ -69,7 +69,7 @@ worst_cases (void)
           mpfr_out_str (stdout, 2, 0, x, GMP_RNDN);
           printf ("\ny=");
           mpfr_out_str (stdout, 2, 0, y, GMP_RNDN);
-          printf ("\ngot %lu instead of %u\n", l, 1);
+          printf ("\ngot %lu instead of 1\n", l);
           exit (1);
         }
 
@@ -81,7 +81,7 @@ worst_cases (void)
           mpfr_out_str (stdout, 2, 0, x, GMP_RNDN);
           printf ("\ny=");
           mpfr_out_str (stdout, 2, 0, y, GMP_RNDN);
-          printf ("\ngot %lu instead of %u\n", l, 0);
+          printf ("\ngot %lu instead of 0\n", l);
           exit (1);
         }
     }
