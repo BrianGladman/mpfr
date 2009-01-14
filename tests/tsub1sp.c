@@ -25,10 +25,11 @@ MA 02110-1301, USA. */
 
 #include "mpfr-test.h"
 
-void check_special(void);
-void check_random(mpfr_prec_t p);
+static void check_special (void);
+static void check_random (mpfr_prec_t p);
 
-int main(void)
+int
+main (void)
 {
   mpfr_prec_t p;
 
@@ -66,7 +67,8 @@ int main(void)
                exit(1);\
             }
 
-void check_random(mpfr_prec_t p)
+static void
+check_random (mpfr_prec_t p)
 {
   mpfr_t x,y,z,x2;
   int r;
@@ -93,7 +95,8 @@ void check_random(mpfr_prec_t p)
   mpfr_clears (x, y, z, x2, (mpfr_ptr) 0);
 }
 
-void check_special(void)
+static void
+check_special (void)
 {
   mpfr_t x,y,z,x2;
   int r;
