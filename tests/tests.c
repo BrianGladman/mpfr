@@ -529,8 +529,9 @@ test4rm (int (*fct) (FLIST), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
       fct (z, x, rnd);
       if (! mpfr_equal_p (y, z))
         {
-          printf ("Error for %s with xprec=%ld, yprec=%ld, rnd=%s\nx = ",
-                  name, MPFR_PREC (x), yprec, mpfr_print_rnd_mode (rnd));
+          printf ("Error for %s with xprec=%lu, yprec=%lu, rnd=%s\nx = ",
+                  name, (unsigned long) MPFR_PREC (x), (unsigned long) yprec,
+                  mpfr_print_rnd_mode (rnd));
           mpfr_out_str (stdout, 16, 0, x, GMP_RNDN);
           printf ("\nexpected ");
           mpfr_out_str (stdout, 16, 0, y, GMP_RNDN);
