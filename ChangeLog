@@ -1,4 +1,1892 @@
 ------------------------------------------------------------------------
+r5817 | vlefevre | 2009-01-15 02:22:45 +0000 (Thu, 15 Jan 2009) | 1 line
+Changed paths:
+   M /trunk/vasprintf.c
+
+vasprintf.c: deleted trailing spaces.
+------------------------------------------------------------------------
+r5816 | vlefevre | 2009-01-15 02:21:57 +0000 (Thu, 15 Jan 2009) | 2 lines
+Changed paths:
+   M /trunk/configure.in
+
+configure.in: be more tolerant when checking whether gmp.h version
+and libgmp version are the same (in case patch level is 0).
+------------------------------------------------------------------------
+r5814 | vlefevre | 2009-01-15 01:56:55 +0000 (Thu, 15 Jan 2009) | 3 lines
+Changed paths:
+   M /trunk/BUGS
+   M /trunk/ChangeLog
+   M /trunk/FAQ.html
+   M /trunk/NEWS
+   M /trunk/README
+   M /trunk/TODO
+   M /trunk/abort_prec_max.c
+   M /trunk/acinclude.m4
+   M /trunk/acos.c
+   M /trunk/acosh.c
+   M /trunk/add.c
+   M /trunk/add1.c
+   M /trunk/add1sp.c
+   M /trunk/add_d.c
+   M /trunk/add_ui.c
+   M /trunk/agm.c
+   M /trunk/asin.c
+   M /trunk/asinh.c
+   M /trunk/atan.c
+   M /trunk/atan2.c
+   M /trunk/atanh.c
+   M /trunk/cache.c
+   M /trunk/cbrt.c
+   M /trunk/check.c
+   M /trunk/clear.c
+   M /trunk/clears.c
+   M /trunk/cmp.c
+   M /trunk/cmp2.c
+   M /trunk/cmp_abs.c
+   M /trunk/cmp_d.c
+   M /trunk/cmp_ld.c
+   M /trunk/cmp_si.c
+   M /trunk/cmp_ui.c
+   M /trunk/comparisons.c
+   M /trunk/configure.in
+   M /trunk/const_catalan.c
+   M /trunk/const_euler.c
+   M /trunk/const_log2.c
+   M /trunk/const_pi.c
+   M /trunk/constant.c
+   M /trunk/copysign.c
+   M /trunk/cos.c
+   M /trunk/cosh.c
+   M /trunk/cot.c
+   M /trunk/coth.c
+   M /trunk/csc.c
+   M /trunk/csch.c
+   M /trunk/d_div.c
+   M /trunk/d_sub.c
+   M /trunk/dim.c
+   M /trunk/div.c
+   M /trunk/div_2exp.c
+   M /trunk/div_2si.c
+   M /trunk/div_2ui.c
+   M /trunk/div_d.c
+   M /trunk/div_ui.c
+   M /trunk/dump.c
+   M /trunk/eint.c
+   M /trunk/eq.c
+   M /trunk/erf.c
+   M /trunk/erfc.c
+   M /trunk/exceptions.c
+   M /trunk/exp.c
+   M /trunk/exp10.c
+   M /trunk/exp2.c
+   M /trunk/exp3.c
+   M /trunk/exp_2.c
+   M /trunk/expm1.c
+   M /trunk/extract.c
+   M /trunk/factorial.c
+   M /trunk/faq.xsl
+   M /trunk/fits_intmax.c
+   M /trunk/fits_s.h
+   M /trunk/fits_sint.c
+   M /trunk/fits_slong.c
+   M /trunk/fits_sshort.c
+   M /trunk/fits_u.h
+   M /trunk/fits_uint.c
+   M /trunk/fits_uintmax.c
+   M /trunk/fits_ulong.c
+   M /trunk/fits_ushort.c
+   M /trunk/fma.c
+   M /trunk/fms.c
+   M /trunk/frac.c
+   M /trunk/free_cache.c
+   M /trunk/gamma.c
+   M /trunk/gen_inverse.h
+   M /trunk/get_d.c
+   M /trunk/get_d64.c
+   M /trunk/get_exp.c
+   M /trunk/get_f.c
+   M /trunk/get_ld.c
+   M /trunk/get_patches.sh
+   M /trunk/get_si.c
+   M /trunk/get_sj.c
+   M /trunk/get_str.c
+   M /trunk/get_ui.c
+   M /trunk/get_uj.c
+   M /trunk/get_z.c
+   M /trunk/get_z_exp.c
+   M /trunk/gmp_op.c
+   M /trunk/hypot.c
+   M /trunk/init.c
+   M /trunk/init2.c
+   M /trunk/inits.c
+   M /trunk/inits2.c
+   M /trunk/inp_str.c
+   M /trunk/int_ceil_log2.c
+   M /trunk/isinf.c
+   M /trunk/isinteger.c
+   M /trunk/isnan.c
+   M /trunk/isnum.c
+   M /trunk/isqrt.c
+   M /trunk/iszero.c
+   M /trunk/jn.c
+   M /trunk/jyn_asympt.c
+   M /trunk/li2.c
+   M /trunk/lngamma.c
+   M /trunk/log.c
+   M /trunk/log10.c
+   M /trunk/log1p.c
+   M /trunk/log2.c
+   M /trunk/logging.c
+   M /trunk/mbench/Makefile
+   M /trunk/mbench/generate.c
+   M /trunk/mbench/mfv5-arprec.cc
+   M /trunk/mbench/mfv5-cln.cc
+   M /trunk/mbench/mfv5-crlibm.cc
+   M /trunk/mbench/mfv5-libc.cc
+   M /trunk/mbench/mfv5-lidia.cc
+   M /trunk/mbench/mfv5-mpf.cc
+   M /trunk/mbench/mfv5-mpfr.cc
+   M /trunk/mbench/mfv5-ntl.cc
+   M /trunk/mbench/mfv5-pari.cc
+   M /trunk/mbench/mfv5-void.cc
+   M /trunk/mbench/mfv5.cc
+   M /trunk/mbench/mfv5.h
+   M /trunk/mbench/mpfr-gfx.c
+   M /trunk/mbench/mpfr-v4.c
+   M /trunk/mbench/mpfr-v6.c
+   M /trunk/mbench/timp.h
+   M /trunk/minmax.c
+   M /trunk/modf.c
+   M /trunk/mp_clz_tab.c
+   M /trunk/mparam_h.in
+   M /trunk/mpf2mpfr.h
+   M /trunk/mpfr-gmp.c
+   M /trunk/mpfr-gmp.h
+   M /trunk/mpfr-impl.h
+   M /trunk/mpfr-thread.h
+   M /trunk/mpfr.h
+   M /trunk/mpn_exp.c
+   M /trunk/mul.c
+   M /trunk/mul_2exp.c
+   M /trunk/mul_2si.c
+   M /trunk/mul_2ui.c
+   M /trunk/mul_d.c
+   M /trunk/mul_ui.c
+   M /trunk/mulders.c
+   M /trunk/neg.c
+   M /trunk/next.c
+   M /trunk/out_str.c
+   M /trunk/pow.c
+   M /trunk/pow_si.c
+   M /trunk/pow_ui.c
+   M /trunk/pow_z.c
+   M /trunk/powerof2.c
+   M /trunk/print_raw.c
+   M /trunk/print_rnd_mode.c
+   M /trunk/printf.c
+   M /trunk/random2.c
+   M /trunk/rec_sqrt.c
+   M /trunk/reldiff.c
+   M /trunk/rem1.c
+   M /trunk/rint.c
+   M /trunk/root.c
+   M /trunk/round_near_x.c
+   M /trunk/round_p.c
+   M /trunk/round_prec.c
+   M /trunk/round_raw_generic.c
+   M /trunk/sec.c
+   M /trunk/sech.c
+   M /trunk/set.c
+   M /trunk/set_d.c
+   M /trunk/set_d64.c
+   M /trunk/set_dfl_prec.c
+   M /trunk/set_exp.c
+   M /trunk/set_f.c
+   M /trunk/set_inf.c
+   M /trunk/set_ld.c
+   M /trunk/set_nan.c
+   M /trunk/set_prc_raw.c
+   M /trunk/set_prec.c
+   M /trunk/set_q.c
+   M /trunk/set_rnd.c
+   M /trunk/set_si.c
+   M /trunk/set_si_2exp.c
+   M /trunk/set_sj.c
+   M /trunk/set_str.c
+   M /trunk/set_str_raw.c
+   M /trunk/set_ui.c
+   M /trunk/set_ui_2exp.c
+   M /trunk/set_uj.c
+   M /trunk/set_z.c
+   M /trunk/setmax.c
+   M /trunk/setmin.c
+   M /trunk/setsign.c
+   M /trunk/sgn.c
+   M /trunk/si_op.c
+   M /trunk/signbit.c
+   M /trunk/sin.c
+   M /trunk/sin_cos.c
+   M /trunk/sinh.c
+   M /trunk/sinh_cosh.c
+   M /trunk/sqr.c
+   M /trunk/sqrt.c
+   M /trunk/sqrt_ui.c
+   M /trunk/stack_interface.c
+   M /trunk/strtofr.c
+   M /trunk/sub.c
+   M /trunk/sub1.c
+   M /trunk/sub1sp.c
+   M /trunk/sub_d.c
+   M /trunk/sub_ui.c
+   M /trunk/subnormal.c
+   M /trunk/sum.c
+   M /trunk/swap.c
+   M /trunk/tan.c
+   M /trunk/tanh.c
+   M /trunk/tests/cmp_str.c
+   M /trunk/tests/data/li2
+   M /trunk/tests/memory.c
+   M /trunk/tests/mpf_compat.c
+   M /trunk/tests/mpf_compat.h
+   M /trunk/tests/mpfr-test.h
+   M /trunk/tests/mpfr_compat.c
+   M /trunk/tests/reuse.c
+   M /trunk/tests/rnd_mode.c
+   M /trunk/tests/tabs.c
+   M /trunk/tests/tacos.c
+   M /trunk/tests/tacosh.c
+   M /trunk/tests/tadd.c
+   M /trunk/tests/tadd1sp.c
+   M /trunk/tests/tadd_d.c
+   M /trunk/tests/tadd_ui.c
+   M /trunk/tests/tagm.c
+   M /trunk/tests/tasin.c
+   M /trunk/tests/tasinh.c
+   M /trunk/tests/tatan.c
+   M /trunk/tests/tatanh.c
+   M /trunk/tests/tcan_round.c
+   M /trunk/tests/tcbrt.c
+   M /trunk/tests/tcheck.c
+   M /trunk/tests/tcmp.c
+   M /trunk/tests/tcmp2.c
+   M /trunk/tests/tcmp_d.c
+   M /trunk/tests/tcmp_ld.c
+   M /trunk/tests/tcmp_ui.c
+   M /trunk/tests/tcmpabs.c
+   M /trunk/tests/tcomparisons.c
+   M /trunk/tests/tconst_catalan.c
+   M /trunk/tests/tconst_euler.c
+   M /trunk/tests/tconst_log2.c
+   M /trunk/tests/tconst_pi.c
+   M /trunk/tests/tcopysign.c
+   M /trunk/tests/tcos.c
+   M /trunk/tests/tcosh.c
+   M /trunk/tests/tcot.c
+   M /trunk/tests/tcoth.c
+   M /trunk/tests/tcsc.c
+   M /trunk/tests/tcsch.c
+   M /trunk/tests/td_div.c
+   M /trunk/tests/td_sub.c
+   M /trunk/tests/tdim.c
+   M /trunk/tests/tdiv.c
+   M /trunk/tests/tdiv_d.c
+   M /trunk/tests/tdiv_ui.c
+   M /trunk/tests/teint.c
+   M /trunk/tests/teq.c
+   M /trunk/tests/terf.c
+   M /trunk/tests/tests.c
+   M /trunk/tests/texceptions.c
+   M /trunk/tests/texp.c
+   M /trunk/tests/texp10.c
+   M /trunk/tests/texp2.c
+   M /trunk/tests/texpm1.c
+   M /trunk/tests/tfactorial.c
+   M /trunk/tests/tfits.c
+   M /trunk/tests/tfma.c
+   M /trunk/tests/tfmod.c
+   M /trunk/tests/tfms.c
+   M /trunk/tests/tfprintf.c
+   M /trunk/tests/tfrac.c
+   M /trunk/tests/tgamma.c
+   M /trunk/tests/tgeneric.c
+   M /trunk/tests/tgeneric_ui.c
+   M /trunk/tests/tget_d.c
+   M /trunk/tests/tget_d_2exp.c
+   M /trunk/tests/tget_f.c
+   M /trunk/tests/tget_ld_2exp.c
+   M /trunk/tests/tget_set_d64.c
+   M /trunk/tests/tget_sj.c
+   M /trunk/tests/tget_str.c
+   M /trunk/tests/tget_z.c
+   M /trunk/tests/tgmpop.c
+   M /trunk/tests/thyperbolic.c
+   M /trunk/tests/thypot.c
+   M /trunk/tests/tinits.c
+   M /trunk/tests/tinp_str.c
+   M /trunk/tests/tinternals.c
+   M /trunk/tests/tisnan.c
+   M /trunk/tests/tisqrt.c
+   M /trunk/tests/tj0.c
+   M /trunk/tests/tj1.c
+   M /trunk/tests/tjn.c
+   M /trunk/tests/tl2b.c
+   M /trunk/tests/tlgamma.c
+   M /trunk/tests/tli2.c
+   M /trunk/tests/tlngamma.c
+   M /trunk/tests/tlog.c
+   M /trunk/tests/tlog10.c
+   M /trunk/tests/tlog1p.c
+   M /trunk/tests/tlog2.c
+   M /trunk/tests/tminmax.c
+   M /trunk/tests/tmodf.c
+   M /trunk/tests/tmul.c
+   M /trunk/tests/tmul_2exp.c
+   M /trunk/tests/tmul_d.c
+   M /trunk/tests/tmul_ui.c
+   M /trunk/tests/tnext.c
+   M /trunk/tests/tout_str.c
+   M /trunk/tests/toutimpl.c
+   M /trunk/tests/tpow.c
+   M /trunk/tests/tpow3.c
+   M /trunk/tests/tpow_all.c
+   M /trunk/tests/tpow_z.c
+   M /trunk/tests/tprintf.c
+   M /trunk/tests/trandom.c
+   M /trunk/tests/trec_sqrt.c
+   M /trunk/tests/tremquo.c
+   M /trunk/tests/trint.c
+   M /trunk/tests/troot.c
+   M /trunk/tests/tround_prec.c
+   M /trunk/tests/tsec.c
+   M /trunk/tests/tsech.c
+   M /trunk/tests/tset.c
+   M /trunk/tests/tset_d.c
+   M /trunk/tests/tset_exp.c
+   M /trunk/tests/tset_f.c
+   M /trunk/tests/tset_ld.c
+   M /trunk/tests/tset_q.c
+   M /trunk/tests/tset_si.c
+   M /trunk/tests/tset_sj.c
+   M /trunk/tests/tset_str.c
+   M /trunk/tests/tset_z.c
+   M /trunk/tests/tsgn.c
+   M /trunk/tests/tsi_op.c
+   M /trunk/tests/tsin.c
+   M /trunk/tests/tsin_cos.c
+   M /trunk/tests/tsinh.c
+   M /trunk/tests/tsinh_cosh.c
+   M /trunk/tests/tsprintf.c
+   M /trunk/tests/tsqr.c
+   M /trunk/tests/tsqrt.c
+   M /trunk/tests/tsqrt_ui.c
+   M /trunk/tests/tstckintc.c
+   M /trunk/tests/tstrtofr.c
+   M /trunk/tests/tsub.c
+   M /trunk/tests/tsub1sp.c
+   M /trunk/tests/tsub_d.c
+   M /trunk/tests/tsub_ui.c
+   M /trunk/tests/tsubnormal.c
+   M /trunk/tests/tsum.c
+   M /trunk/tests/tswap.c
+   M /trunk/tests/ttan.c
+   M /trunk/tests/ttanh.c
+   M /trunk/tests/ttrunc.c
+   M /trunk/tests/tui_div.c
+   M /trunk/tests/tui_pow.c
+   M /trunk/tests/tui_sub.c
+   M /trunk/tests/tversion.c
+   M /trunk/tests/ty0.c
+   M /trunk/tests/ty1.c
+   M /trunk/tests/tyn.c
+   M /trunk/tests/tzeta.c
+   M /trunk/tests/tzeta_ui.c
+   M /trunk/tuneup.c
+   M /trunk/uceil_exp2.c
+   M /trunk/uceil_log2.c
+   M /trunk/ufloor_log2.c
+   M /trunk/ui_div.c
+   M /trunk/ui_pow.c
+   M /trunk/ui_pow_ui.c
+   M /trunk/ui_sub.c
+   M /trunk/urandomb.c
+   M /trunk/vasprintf.c
+   M /trunk/version.c
+   M /trunk/volatile.c
+   M /trunk/yn.c
+   M /trunk/zeta.c
+   M /trunk/zeta_ui.c
+
+Copyright notice update: added 2009 with
+  perl -pi -e 's/2008 Free Software/2008, 2009 Free Software/' **/*(^/)
+under zsh.
+------------------------------------------------------------------------
+r5813 | vlefevre | 2009-01-14 00:46:45 +0000 (Wed, 14 Jan 2009) | 1 line
+Changed paths:
+   M /trunk/tests/tcan_round.c
+   M /trunk/tests/texp.c
+   M /trunk/tests/tfprintf.c
+   M /trunk/tests/tgamma.c
+   M /trunk/tests/tpow.c
+   M /trunk/tests/tpow_z.c
+   M /trunk/tests/tsqrt.c
+
+Fixed remaining printf format strings.
+------------------------------------------------------------------------
+r5812 | vlefevre | 2009-01-14 00:27:06 +0000 (Wed, 14 Jan 2009) | 1 line
+Changed paths:
+   M /trunk/tests/tadd1sp.c
+   M /trunk/tests/tsub1sp.c
+
+tests/tadd1sp.c, tests/tsub1sp.c: fixed function prototypes.
+------------------------------------------------------------------------
+r5811 | vlefevre | 2009-01-14 00:23:44 +0000 (Wed, 14 Jan 2009) | 1 line
+Changed paths:
+   M /trunk/tests/teq.c
+   M /trunk/tests/tests.c
+
+tests/teq.c, tests/tests.c: fixed printf format strings.
+------------------------------------------------------------------------
+r5810 | vlefevre | 2009-01-14 00:06:00 +0000 (Wed, 14 Jan 2009) | 1 line
+Changed paths:
+   M /trunk/tests/tcmp2.c
+
+tests/tcmp2.c: fixed printf format strings.
+------------------------------------------------------------------------
+r5809 | vlefevre | 2009-01-13 23:59:17 +0000 (Tue, 13 Jan 2009) | 1 line
+Changed paths:
+   M /trunk/tests/tset_str.c
+
+tests/tset_str.c: fixed printf format string.
+------------------------------------------------------------------------
+r5804 | vlefevre | 2009-01-12 17:30:00 +0000 (Mon, 12 Jan 2009) | 4 lines
+Changed paths:
+   M /trunk/mpfr.texi
+
+mpfr.texi: consistency changes and corrections concerning the "erange"
+flag (do not use @code{} as this is not an identifier, @emph{} is used
+as this is not an English word -- but @emph{} should probably be used
+too for the other flag names).
+------------------------------------------------------------------------
+r5803 | vlefevre | 2009-01-12 17:18:45 +0000 (Mon, 12 Jan 2009) | 1 line
+Changed paths:
+   M /trunk/mpfr.texi
+
+mpfr.texi: typo.
+------------------------------------------------------------------------
+r5801 | thevenyp | 2009-01-12 16:01:14 +0000 (Mon, 12 Jan 2009) | 5 lines
+Changed paths:
+   M /trunk/acinclude.m4
+   M /trunk/configure.in
+   M /trunk/tests/tfprintf.c
+   M /trunk/tests/tprintf.c
+   M /trunk/vasprintf.c
+
+acinclude.m4: New macro MPFR_CHECK_PRINTF_SPEC looking for support of the "%jd", "%qd", and "%td" conversion specifications in printf and gmp_printf.
+configure.in: Call MPFR_CHECK_PRINTF_SPEC when we can link against a suitable gmp library and run test programs at compile time, otherwise (for instance, when cross compiling), everything is enable by default.
+vasprintf.c: Disable support for length modifiers not supported by libc's printf ('j' and 'q' for this time).
+tests/tprintf.c, tests/tfprintf.c: Disable tests for length modifiers not supported by gmp_printf ('j', 'q', and 't' for this time).
+
+------------------------------------------------------------------------
+r5800 | thevenyp | 2009-01-12 14:16:22 +0000 (Mon, 12 Jan 2009) | 2 lines
+Changed paths:
+   M /trunk/mpfr.texi
+
+mpfr.texi: Fix typo.
+
+------------------------------------------------------------------------
+r5795 | vlefevre | 2009-01-08 15:36:55 +0000 (Thu, 08 Jan 2009) | 1 line
+Changed paths:
+   M /trunk/mpfr.texi
+
+mpfr.texi: update to January 2009.
+------------------------------------------------------------------------
+r5794 | vlefevre | 2009-01-08 15:34:27 +0000 (Thu, 08 Jan 2009) | 2 lines
+Changed paths:
+   M /trunk/tests/tfprintf.c
+   M /trunk/tests/tsprintf.c
+
+Removed useless #include of gmp.h from tests/tfprintf.c and
+tests/tsprintf.c for consistency.
+------------------------------------------------------------------------
+r5788 | thevenyp | 2009-01-08 11:56:10 +0000 (Thu, 08 Jan 2009) | 4 lines
+Changed paths:
+   M /trunk/mpfr.texi
+   M /trunk/tests/tfprintf.c
+   M /trunk/vasprintf.c
+
+tests/tfprintf.c: Make tests with 'M' specifier optional.
+mpfr.texi: Add a warning that gmp may not support 'M' specifier.
+vasprintf.c: Add warning comment about 'M' specifier.
+
+------------------------------------------------------------------------
+r5787 | thevenyp | 2009-01-08 11:52:52 +0000 (Thu, 08 Jan 2009) | 2 lines
+Changed paths:
+   M /trunk/mpfr.texi
+
+mpfr.texi: Fix wrong definition of rounding specifiers.
+
+------------------------------------------------------------------------
+r5786 | vlefevre | 2008-12-30 13:57:11 +0000 (Tue, 30 Dec 2008) | 1 line
+Changed paths:
+   M /trunk/out_str.c
+
+out_str.c: added assert (check that base is in the required range).
+------------------------------------------------------------------------
+r5785 | vlefevre | 2008-12-26 14:10:24 +0000 (Fri, 26 Dec 2008) | 1 line
+Changed paths:
+   M /trunk/README.dev
+
+README.dev: suggest "-Wformat=2".
+------------------------------------------------------------------------
+r5784 | vlefevre | 2008-12-26 14:02:55 +0000 (Fri, 26 Dec 2008) | 1 line
+Changed paths:
+   M /trunk/zeta.c
+
+zeta.c: fixed types for printf when DEBUG is defined.
+------------------------------------------------------------------------
+r5783 | vlefevre | 2008-12-26 13:57:32 +0000 (Fri, 26 Dec 2008) | 2 lines
+Changed paths:
+   M /trunk/sub1sp.c
+
+sub1sp.c: fixed types for printf when WANT_ASSERT >= 2 and
+when DEBUG is defined.
+------------------------------------------------------------------------
+r5782 | vlefevre | 2008-12-26 13:50:14 +0000 (Fri, 26 Dec 2008) | 1 line
+Changed paths:
+   M /trunk/sub1.c
+
+sub1.c: fixed types for printf when DEBUG is defined.
+------------------------------------------------------------------------
+r5781 | vlefevre | 2008-12-26 13:44:28 +0000 (Fri, 26 Dec 2008) | 2 lines
+Changed paths:
+   M /trunk/set_d64.c
+
+set_d64.c: set T[] to unsigned int (instead of int) since its values
+are printed with %u.
+------------------------------------------------------------------------
+r5780 | vlefevre | 2008-12-26 13:36:13 +0000 (Fri, 26 Dec 2008) | 1 line
+Changed paths:
+   M /trunk/add1sp.c
+
+add1sp.c: fixed types for printf when DEBUG is defined.
+------------------------------------------------------------------------
+r5779 | vlefevre | 2008-12-26 13:33:05 +0000 (Fri, 26 Dec 2008) | 2 lines
+Changed paths:
+   M /trunk/mpfr-impl.h
+
+mpfr-impl.h: fixed MPFR_UNSIGNED_MINUS_MODULO logic and added missing
+parentheses.
+------------------------------------------------------------------------
+r5778 | vlefevre | 2008-12-26 13:06:14 +0000 (Fri, 26 Dec 2008) | 1 line
+Changed paths:
+   M /trunk/div.c
+
+div.c: fixed types for fprintf when DEBUG and/or DEBUG2 is defined.
+------------------------------------------------------------------------
+r5777 | vlefevre | 2008-12-26 12:56:09 +0000 (Fri, 26 Dec 2008) | 1 line
+Changed paths:
+   M /trunk/div.c
+
+div.c: fixed #ifdef.
+------------------------------------------------------------------------
+r5775 | vlefevre | 2008-12-26 12:39:03 +0000 (Fri, 26 Dec 2008) | 2 lines
+Changed paths:
+   M /trunk/round_p.c
+
+round_p.c: fixed types for fprintf when WANT_ASSERT >= 2 (since
+mp_prec_t is unsigned, it's better to use unsigned long).
+------------------------------------------------------------------------
+r5774 | vlefevre | 2008-12-26 12:02:07 +0000 (Fri, 26 Dec 2008) | 1 line
+Changed paths:
+   M /trunk/round_p.c
+
+round_p.c: fixed types for fprintf when WANT_ASSERT >= 2.
+------------------------------------------------------------------------
+r5772 | zimmerma | 2008-12-22 10:40:24 +0000 (Mon, 22 Dec 2008) | 2 lines
+Changed paths:
+   M /trunk/mpfr.texi
+
+[mpfr.tex] improve documentation of %P
+
+------------------------------------------------------------------------
+r5768 | vlefevre | 2008-12-18 15:59:55 +0000 (Thu, 18 Dec 2008) | 1 line
+Changed paths:
+   M /trunk/tests/tfprintf.c
+   M /trunk/tests/tprintf.c
+
+Deleted trailing spaces.
+------------------------------------------------------------------------
+r5762 | thevenyp | 2008-12-17 16:07:32 +0000 (Wed, 17 Dec 2008) | 2 lines
+Changed paths:
+   M /trunk/tests/tsprintf.c
+
+tests/tsprintf.c: clean-up code, improve comment, and put optional tests in tail so that they fail last.
+
+------------------------------------------------------------------------
+r5761 | thevenyp | 2008-12-17 15:55:20 +0000 (Wed, 17 Dec 2008) | 2 lines
+Changed paths:
+   M /trunk/tests/tsprintf.c
+
+tests/tsprintf.c: Add two regression tests.
+
+------------------------------------------------------------------------
+r5760 | thevenyp | 2008-12-16 15:56:42 +0000 (Tue, 16 Dec 2008) | 2 lines
+Changed paths:
+   M /trunk/acinclude.m4
+   M /trunk/mpfr.texi
+   M /trunk/tests/tfprintf.c
+   M /trunk/tests/tprintf.c
+   M /trunk/vasprintf.c
+
+acinclude.m4, vasprintf.c, tests/tfprintf.c, tests/tprintf.c, mpfr.texi: quad_t support
+
+------------------------------------------------------------------------
+r5759 | thevenyp | 2008-12-16 15:51:59 +0000 (Tue, 16 Dec 2008) | 4 lines
+Changed paths:
+   M /trunk/tests/tfprintf.c
+   M /trunk/tests/tprintf.c
+
+tests/tfprintf.c: code clean-up and output improvement.
+tests/tprintf.c: code clean-up.
+Note that unsigned long long variable is not set to 1 instead of -1 which was architecture dependant.
+
+------------------------------------------------------------------------
+r5758 | vlefevre | 2008-12-16 13:56:28 +0000 (Tue, 16 Dec 2008) | 3 lines
+Changed paths:
+   M /trunk/tests/tprintf.c
+
+tests/tprintf.c:
+  * stdout_redirect is a boolean (i.e., 0 or 1).
+  * output freopen(..., stdout) error message to stderr.
+------------------------------------------------------------------------
+r5757 | thevenyp | 2008-12-16 13:10:05 +0000 (Tue, 16 Dec 2008) | 3 lines
+Changed paths:
+   M /trunk/tests/tfprintf.c
+   M /trunk/tests/tprintf.c
+
+tfprintf.c: more user-friendly messages.
+tprintf.c: more user-friendly messages. Warning: because stdout might be redirected, error messages are printed to stderr.
+
+------------------------------------------------------------------------
+r5756 | vlefevre | 2008-12-15 23:38:21 +0000 (Mon, 15 Dec 2008) | 1 line
+Changed paths:
+   M /trunk/mpfr.texi
+
+mpfr.texi: more explanations on the precision field for mpfr_printf.
+------------------------------------------------------------------------
+r5755 | vlefevre | 2008-12-15 17:37:05 +0000 (Mon, 15 Dec 2008) | 1 line
+Changed paths:
+   M /trunk/INSTALL
+   M /trunk/tests/tsprintf.c
+
+untabify and remove trailing spaces
+------------------------------------------------------------------------
+r5754 | thevenyp | 2008-12-15 17:07:40 +0000 (Mon, 15 Dec 2008) | 2 lines
+Changed paths:
+   M /trunk/mpfr.texi
+
+mpfr.texi: more explanations on the precision field.
+
+------------------------------------------------------------------------
+r5753 | thevenyp | 2008-12-15 16:19:26 +0000 (Mon, 15 Dec 2008) | 5 lines
+Changed paths:
+   M /trunk/acinclude.m4
+   M /trunk/mpfr.texi
+   M /trunk/tests/tfprintf.c
+   M /trunk/tests/tprintf.c
+   M /trunk/vasprintf.c
+
+mpfr.texi: Clearly mention that the length modifier 'q' is unsupported by mpfr-*printf.
+vasprintf.c: Do not take quad_t as a long long but as an insupported length modifier.
+acinclude.m4: Remove check for quad_t.
+tests/tprintf.c tests/tfprintf.c: Remove tests with 'q' length modifier.
+
+------------------------------------------------------------------------
+r5751 | vlefevre | 2008-12-15 14:52:54 +0000 (Mon, 15 Dec 2008) | 1 line
+Changed paths:
+   M /trunk/tests/tstrtofr.c
+
+tests/tstrtofr.c: fixed a test (in case |res| > 1).
+------------------------------------------------------------------------
+r5750 | vlefevre | 2008-12-15 14:35:01 +0000 (Mon, 15 Dec 2008) | 1 line
+Changed paths:
+   M /trunk/tests/tstrtofr.c
+
+tests/tstrtofr.c: fixed alignment bug in error message.
+------------------------------------------------------------------------
+r5749 | zimmerma | 2008-12-15 13:44:25 +0000 (Mon, 15 Dec 2008) | 2 lines
+Changed paths:
+   M /trunk/nightly-test
+
+[nightly-test] added MPFR_CHECK_LIBC_PRINTF
+
+------------------------------------------------------------------------
+r5748 | thevenyp | 2008-12-15 13:43:52 +0000 (Mon, 15 Dec 2008) | 4 lines
+Changed paths:
+   M /trunk/README.dev
+   M /trunk/acinclude.m4
+   M /trunk/vasprintf.c
+
+acinclude.m4: Check for quad_t.
+vasprintf.c: Accept length modifier 'q' if HAVE_QUAD_T is defined (instead of HAVE_LONG_LONG).
+README.dev: Add notice for new HAVE_QUAD_T macro.
+
+------------------------------------------------------------------------
+r5747 | zimmerma | 2008-12-15 13:43:40 +0000 (Mon, 15 Dec 2008) | 2 lines
+Changed paths:
+   M /trunk/mpfr.texi
+
+[mpfr.texi] added warning about usage of mpfr_init
+
+------------------------------------------------------------------------
+r5746 | vlefevre | 2008-12-15 13:39:35 +0000 (Mon, 15 Dec 2008) | 1 line
+Changed paths:
+   M /trunk/tests/tprintf.c
+
+tests/tprintf.c: _MPFR_H_HAVE_INTMAX_T -> HAVE_STDINT_H for <stdint.h>.
+------------------------------------------------------------------------
+r5745 | thevenyp | 2008-12-15 13:33:22 +0000 (Mon, 15 Dec 2008) | 2 lines
+Changed paths:
+   M /trunk/tests/tsprintf.c
+
+tests/tsprintf.c: Tests against libc's sprintf function are no more executed unless the MPFR_CHECK_LIBC_PRINTF is defined.
+
+------------------------------------------------------------------------
+r5744 | thevenyp | 2008-12-15 13:27:49 +0000 (Mon, 15 Dec 2008) | 2 lines
+Changed paths:
+   M /trunk/tests/tsprintf.c
+
+tests/tsprintf.c: move bugs 20080610 and 20081214 outside the function random_double.
+
+------------------------------------------------------------------------
+r5743 | vlefevre | 2008-12-15 12:49:58 +0000 (Mon, 15 Dec 2008) | 1 line
+Changed paths:
+   M /trunk/tests/tsprintf.c
+
+tests/tsprintf.c: completed comment about the sign of a null exponent.
+------------------------------------------------------------------------
+r5742 | vlefevre | 2008-12-15 12:44:09 +0000 (Mon, 15 Dec 2008) | 2 lines
+Changed paths:
+   M /trunk/INSTALL
+
+INSTALL: added a note saying the L modifier was added in C89 (source:
+C99 rationale, Section 7.19.6.1).
+------------------------------------------------------------------------
+r5741 | zimmerma | 2008-12-15 12:17:46 +0000 (Mon, 15 Dec 2008) | 2 lines
+Changed paths:
+   M /trunk/INSTALL
+
+[INSTALL] more Windows-related changes
+
+------------------------------------------------------------------------
+r5740 | zimmerma | 2008-12-15 11:02:17 +0000 (Mon, 15 Dec 2008) | 2 lines
+Changed paths:
+   M /trunk/INSTALL
+
+[INSTALL] update on Windows (from Brian Gladman)
+
+------------------------------------------------------------------------
+r5739 | zimmerma | 2008-12-15 09:47:46 +0000 (Mon, 15 Dec 2008) | 2 lines
+Changed paths:
+   M /trunk/configure.in
+
+[configure.in] removed useless comment
+
+------------------------------------------------------------------------
+r5738 | vlefevre | 2008-12-14 15:28:17 +0000 (Sun, 14 Dec 2008) | 1 line
+Changed paths:
+   M /trunk/INSTALL
+
+INSTALL: references to ISO (international) instead of ANSI (American).
+------------------------------------------------------------------------
+r5737 | vlefevre | 2008-12-14 15:18:54 +0000 (Sun, 14 Dec 2008) | 1 line
+Changed paths:
+   M /trunk/tests/tsprintf.c
+
+tests/tsprintf.c: corrected a comment.
+------------------------------------------------------------------------
+r5736 | zimmerma | 2008-12-14 09:43:40 +0000 (Sun, 14 Dec 2008) | 3 lines
+Changed paths:
+   M /trunk/printf.c
+   M /trunk/vasprintf.c
+
+[printf.c,vasprintf.c] include config.h if HAVE_CONFIG_H is defined, to
+		       solve problem noticed by Brian Gladman
+
+------------------------------------------------------------------------
+r5735 | vlefevre | 2008-12-14 09:37:05 +0000 (Sun, 14 Dec 2008) | 1 line
+Changed paths:
+   M /trunk/tests/tsprintf.c
+
+tests/tsprintf.c: untabified.
+------------------------------------------------------------------------
+r5734 | zimmerma | 2008-12-14 09:27:08 +0000 (Sun, 14 Dec 2008) | 2 lines
+Changed paths:
+   M /trunk/INSTALL
+
+[INSTALL] added hint for using the MinGW runtime
+
+------------------------------------------------------------------------
+r5733 | zimmerma | 2008-12-14 08:36:37 +0000 (Sun, 14 Dec 2008) | 3 lines
+Changed paths:
+   M /trunk/tests/tsprintf.c
+
+[tsprintf.c] added new hard-coded test (needs work to overcome error in
+	system asprintf)
+
+------------------------------------------------------------------------
+r5732 | zimmerma | 2008-12-14 08:24:42 +0000 (Sun, 14 Dec 2008) | 3 lines
+Changed paths:
+   M /trunk/tests/tsprintf.c
+
+[tsprintf.c] fixed hard-coded test (spec was missing), and print values of
+             xi,yi,spec in case of error
+
+------------------------------------------------------------------------
+r5731 | vlefevre | 2008-12-14 00:05:20 +0000 (Sun, 14 Dec 2008) | 1 line
+Changed paths:
+   M /trunk/INSTALL
+
+INSTALL: corrections on r5730.
+------------------------------------------------------------------------
+r5730 | zimmerma | 2008-12-13 10:19:25 +0000 (Sat, 13 Dec 2008) | 2 lines
+Changed paths:
+   M /trunk/INSTALL
+
+[INSTALL] added notes on Windows Vista 64 problem
+
+------------------------------------------------------------------------
+r5727 | vlefevre | 2008-12-12 15:00:33 +0000 (Fri, 12 Dec 2008) | 1 line
+Changed paths:
+   M /trunk/README
+
+README: added "compile" since it is distributed in the tarball.
+------------------------------------------------------------------------
+r5723 | vlefevre | 2008-12-12 14:07:19 +0000 (Fri, 12 Dec 2008) | 2 lines
+Changed paths:
+   M /trunk
+
+Added "compile" to svn:ignore property (this file is installed by
+"automake --add-missing" due to AM_PROG_CC_C_O, added in r5710).
+------------------------------------------------------------------------
+r5722 | vlefevre | 2008-12-12 14:01:33 +0000 (Fri, 12 Dec 2008) | 1 line
+Changed paths:
+   M /trunk/vasprintf.c
+
+vasprintf.c: avoid an abort if field width or precision is > INT_MAX.
+------------------------------------------------------------------------
+r5721 | thevenyp | 2008-12-12 14:00:33 +0000 (Fri, 12 Dec 2008) | 2 lines
+Changed paths:
+   M /trunk/tests/tests.c
+   M /trunk/tests/tgeneric.c
+   M /trunk/tests/tset_ld.c
+
+tests.c, tset_ld.c, tgeneric.c: Code clean-up based on icc warnings (as in r5492): Use #ifdef BOOL_MACRO instead of #if BOOL_MACRO.
+
+------------------------------------------------------------------------
+r5720 | thevenyp | 2008-12-12 13:54:37 +0000 (Fri, 12 Dec 2008) | 2 lines
+Changed paths:
+   M /trunk/configure.in
+
+configure.in: remove line 'GCC=' in icc tests which seems to confuse libtool. 
+
+------------------------------------------------------------------------
+r5719 | vlefevre | 2008-12-12 12:54:10 +0000 (Fri, 12 Dec 2008) | 1 line
+Changed paths:
+   M /trunk/set_ld.c
+
+set_ld.c: rewrote exp computation.
+------------------------------------------------------------------------
+r5718 | vlefevre | 2008-12-12 12:12:11 +0000 (Fri, 12 Dec 2008) | 1 line
+Changed paths:
+   M /trunk/vasprintf.c
+
+vasprintf.c: avoid a possible gcc 4.1.2 bug with -ftrapv.
+------------------------------------------------------------------------
+r5717 | vlefevre | 2008-12-12 11:57:37 +0000 (Fri, 12 Dec 2008) | 1 line
+Changed paths:
+   M /trunk/vasprintf.c
+
+vasprintf.c: revert incorrect change in r5713.
+------------------------------------------------------------------------
+r5716 | zimmerma | 2008-12-12 11:47:52 +0000 (Fri, 12 Dec 2008) | 8 lines
+Changed paths:
+   M /trunk/set_ld.c
+
+[set_ld.c] fixed problem with CC=g++ on 64-bit computer:
+$ g++ -v
+Using built-in specs.
+Target: x86_64-linux-gnu
+Configured with: ../src/configure -v --enable-languages=c,c++,fortran,objc,obj-c++,treelang --prefix=/usr --enable-shared --with-system-zlib --libexecdir=/usr/lib --without-included-gettext --enable-threads=posix --enable-nls --program-suffix=-4.1 --enable-__cxa_atexit --enable-clocale=gnu --enable-libstdcxx-debug --enable-mpfr --enable-checking=release x86_64-linux-gnu
+Thread model: posix
+gcc version 4.1.2 20061115 (prerelease) (Debian 4.1.1-21)
+
+------------------------------------------------------------------------
+r5713 | zimmerma | 2008-12-12 10:05:49 +0000 (Fri, 12 Dec 2008) | 3 lines
+Changed paths:
+   M /trunk/vasprintf.c
+
+[vasprintf.c] patch to MPFR_ASSERTN(...) call to avoid failure with gcc -ftrapv
+	      with gcc 4.1.2 (probably compiler error)
+
+------------------------------------------------------------------------
+r5712 | thevenyp | 2008-12-12 09:20:14 +0000 (Fri, 12 Dec 2008) | 2 lines
+Changed paths:
+   M /trunk/tests/Makefile.am
+   M /trunk/tests/tmul.c
+
+Makefile.am, tmul.c: Rename macro __SRCDIR to MPFR_SRCDIR.
+
+------------------------------------------------------------------------
+r5710 | thevenyp | 2008-12-11 15:20:56 +0000 (Thu, 11 Dec 2008) | 4 lines
+Changed paths:
+   M /trunk/configure.in
+   M /trunk/tests/Makefile.am
+   M /trunk/tests/tmul.c
+
+configure.in: Add AM_PROG_CC_C_O needed by tmul_CPPFLAGS.
+tests/Makefile.am: Add tmul.dat in EXTRA_DIST and pass srcdir to tmul.c through tmul_CPPFLAGS.
+tests/tmul.c: Add path to tmul.dat.
+
+------------------------------------------------------------------------
+r5703 | vlefevre | 2008-12-09 16:46:13 +0000 (Tue, 09 Dec 2008) | 2 lines
+Changed paths:
+   M /trunk/INSTALL
+
+INSTALL: TLS on darwin may work, but I don't know anything more.
+See thread <http://gcc.gnu.org/ml/gcc/2008-12/msg00107.html>.
+------------------------------------------------------------------------
+r5702 | vlefevre | 2008-12-08 16:02:29 +0000 (Mon, 08 Dec 2008) | 1 line
+Changed paths:
+   M /trunk/README
+
+README: CVS -> Subversion.
+------------------------------------------------------------------------
+r5701 | vlefevre | 2008-12-03 12:40:01 +0000 (Wed, 03 Dec 2008) | 1 line
+Changed paths:
+   M /trunk/configure.in
+
+configure.in: format --enable-decimal-float description on 80 columns.
+------------------------------------------------------------------------
+r5700 | vlefevre | 2008-12-03 12:38:06 +0000 (Wed, 03 Dec 2008) | 2 lines
+Changed paths:
+   M /trunk/configure.in
+
+configure.in: for --enable-thread-safe, say that the system must support
+it (like what has been done for --enable-logging, just above).
+------------------------------------------------------------------------
+r5699 | vlefevre | 2008-12-03 12:31:28 +0000 (Wed, 03 Dec 2008) | 1 line
+Changed paths:
+   M /trunk/INSTALL
+
+INSTALL: added details about ---enable-thread-safe and TLS support.
+------------------------------------------------------------------------
+r5698 | vlefevre | 2008-11-28 12:09:08 +0000 (Fri, 28 Nov 2008) | 2 lines
+Changed paths:
+   M /trunk/mpfr.texi
+   M /trunk/urandomb.c
+
+urandomb.c: added comments and cleaned up code.
+mpfr.texi: improved description of mpfr_urandomb.
+------------------------------------------------------------------------
+r5697 | vlefevre | 2008-11-26 14:39:22 +0000 (Wed, 26 Nov 2008) | 1 line
+Changed paths:
+   M /trunk/mpfr.texi
+
+mpfr.texi: changed URL added in r5696 to avoid a redirection.
+------------------------------------------------------------------------
+r5696 | zimmerma | 2008-11-26 14:22:37 +0000 (Wed, 26 Nov 2008) | 2 lines
+Changed paths:
+   M /trunk/mpfr.texi
+
+[mpfr.texi] added official url on ftp.gnu.org
+
+------------------------------------------------------------------------
+r5695 | vlefevre | 2008-11-26 09:16:40 +0000 (Wed, 26 Nov 2008) | 1 line
+Changed paths:
+   M /trunk/tests/tmul.c
+
+tests/tmul.c: removed useless variable.
+------------------------------------------------------------------------
+r5694 | vlefevre | 2008-11-26 09:14:38 +0000 (Wed, 26 Nov 2008) | 1 line
+Changed paths:
+   M /trunk/tests/tmul.c
+
+tests/tmul.c: made reading a string from file more robust.
+------------------------------------------------------------------------
+r5693 | zimmerma | 2008-11-26 08:14:13 +0000 (Wed, 26 Nov 2008) | 4 lines
+Changed paths:
+   M /trunk/tests/tmul.c
+   A /trunk/tests/tmul.dat
+
+[tmul.c] moved long strings to file tmul.dat, so that gcc -ansi
+	 -pedantic-errors works (ISO C90 does not support strings of length
+	 > 509)
+
+------------------------------------------------------------------------
+r5692 | vlefevre | 2008-11-26 00:55:32 +0000 (Wed, 26 Nov 2008) | 4 lines
+Changed paths:
+   M /trunk/tests/tinternals.c
+
+tests/tinternals.c: updated tests for guaranteed C90 support, e.g. with
+gcc -ansi -pedantic-errors (avoid error "string length 'nnn' is greater
+than the length '509' ISO C90 compilers are required to support" because
+expression for #expr in ASSERT_FAIL macro is too long).
+------------------------------------------------------------------------
+r5691 | vlefevre | 2008-11-26 00:48:12 +0000 (Wed, 26 Nov 2008) | 1 line
+Changed paths:
+   M /trunk/README.dev
+
+README.dev: in Section "To make a release", suggest -pedantic-errors.
+------------------------------------------------------------------------
+r5690 | vlefevre | 2008-11-22 15:49:07 +0000 (Sat, 22 Nov 2008) | 5 lines
+Changed paths:
+   M /trunk/acosh.c
+   M /trunk/agm.c
+   M /trunk/atan.c
+   M /trunk/cos.c
+   M /trunk/fma.c
+   M /trunk/fms.c
+   M /trunk/gamma.c
+   M /trunk/get_str.c
+   M /trunk/li2.c
+   M /trunk/lngamma.c
+   M /trunk/modf.c
+   M /trunk/mpfr-impl.h
+   M /trunk/mul.c
+   M /trunk/mulders.c
+   M /trunk/rec_sqrt.c
+   M /trunk/root.c
+   M /trunk/tanh.c
+   M /trunk/vasprintf.c
+   M /trunk/yn.c
+
+r5689 undone: some casts were incorrect (mp_exp_t may be greater than
+mp_prec_t, so that casting a mp_exp_t into a mp_prec_t can introduce a
+bug). There may be bugs in some cases, but the casts fix the symptom,
+not the bug (unless one casts the unsigned type to a signed type that
+is *strictly* larger, which is not possible here).
+------------------------------------------------------------------------
+r5689 | zimmerma | 2008-11-22 09:55:42 +0000 (Sat, 22 Nov 2008) | 2 lines
+Changed paths:
+   M /trunk/acosh.c
+   M /trunk/agm.c
+   M /trunk/atan.c
+   M /trunk/cos.c
+   M /trunk/fma.c
+   M /trunk/fms.c
+   M /trunk/gamma.c
+   M /trunk/get_str.c
+   M /trunk/li2.c
+   M /trunk/lngamma.c
+   M /trunk/modf.c
+   M /trunk/mpfr-impl.h
+   M /trunk/mul.c
+   M /trunk/mulders.c
+   M /trunk/rec_sqrt.c
+   M /trunk/root.c
+   M /trunk/tanh.c
+   M /trunk/vasprintf.c
+   M /trunk/yn.c
+
+fixed some signed/unsigned warnings with g++ (please review)
+
+------------------------------------------------------------------------
+r5688 | zimmerma | 2008-11-21 12:53:47 +0000 (Fri, 21 Nov 2008) | 3 lines
+Changed paths:
+   M /trunk/nightly-test
+
+[nightly-test] removed MPFR_CHECK_ALL (no longer used)
+               added possibility to choose compiler (e.g., g++)
+
+------------------------------------------------------------------------
+r5687 | zimmerma | 2008-11-21 12:44:39 +0000 (Fri, 21 Nov 2008) | 2 lines
+Changed paths:
+   M /trunk/README.dev
+
+[README.dev] better check ./configure CC=g++
+
+------------------------------------------------------------------------
+r5686 | thevenyp | 2008-11-21 10:07:53 +0000 (Fri, 21 Nov 2008) | 2 lines
+Changed paths:
+   M /trunk/vasprintf.c
+
+Fix inclusion order: the limit of integer types like size_t are defined in C++ only when __STDC_LIMIT_MACROS is defined before <stdint.h> is included (from ISO C99 7.18.3).
+
+------------------------------------------------------------------------
+r5685 | vlefevre | 2008-11-21 08:27:07 +0000 (Fri, 21 Nov 2008) | 1 line
+Changed paths:
+   M /trunk/README
+
+README: added m4 directory (since it is distributed in the tarball).
+------------------------------------------------------------------------
+r5684 | vlefevre | 2008-11-20 19:29:58 +0000 (Thu, 20 Nov 2008) | 1 line
+Changed paths:
+   M /trunk/Makefile.am
+
+Forgot to update Makefile.am too (for r5680).
+------------------------------------------------------------------------
+r5683 | vlefevre | 2008-11-20 19:20:18 +0000 (Thu, 20 Nov 2008) | 1 line
+Changed paths:
+   M /trunk/configure.in
+
+configure.in: added AC_CONFIG_MACRO_DIR([m4]) for r5680.
+------------------------------------------------------------------------
+r5682 | zimmerma | 2008-11-20 17:14:35 +0000 (Thu, 20 Nov 2008) | 2 lines
+Changed paths:
+   M /trunk/mpfr-gmp.c
+
+[mpfr-gmp.c] added comment on recent bug fix on MacOS
+
+------------------------------------------------------------------------
+r5681 | zimmerma | 2008-11-20 10:53:02 +0000 (Thu, 20 Nov 2008) | 3 lines
+Changed paths:
+   M /trunk/tests/texp.c
+   M /trunk/tests/tmul_2exp.c
+   M /trunk/tests/tpow_all.c
+
+[tests] changes to make compilation work with g++ (only fixed errors,
+        several warnings remain)
+
+------------------------------------------------------------------------
+r5680 | vlefevre | 2008-11-20 10:42:50 +0000 (Thu, 20 Nov 2008) | 1 line
+Changed paths:
+   A /trunk/m4
+   A /trunk/m4/size_max.m4
+
+Added m4/size_max.m4 file (from gettext).
+------------------------------------------------------------------------
+r5679 | vlefevre | 2008-11-20 10:26:32 +0000 (Thu, 20 Nov 2008) | 1 line
+Changed paths:
+   M /trunk/README.dev
+
+README.dev: paragraph on tentative definitions.
+------------------------------------------------------------------------
+r5678 | zimmerma | 2008-11-20 09:13:09 +0000 (Thu, 20 Nov 2008) | 3 lines
+Changed paths:
+   M /trunk/mpfr-gmp.c
+
+[mpfr-gmp.c] replace tentative definitions by real definitions, solves
+	     configure problems with mpc (see http://lists.gforge.inria.fr/pipermail/mpc-discuss/2008-November/000048.html)
+
+------------------------------------------------------------------------
+r5677 | vlefevre | 2008-11-18 01:01:33 +0000 (Tue, 18 Nov 2008) | 1 line
+Changed paths:
+   M /trunk/hypot.c
+
+hypot.c: updated a comment.
+------------------------------------------------------------------------
+r5676 | vlefevre | 2008-11-18 00:40:13 +0000 (Tue, 18 Nov 2008) | 1 line
+Changed paths:
+   M /trunk/tests/thypot.c
+
+tests/thypot.c: added a test.
+------------------------------------------------------------------------
+r5675 | vlefevre | 2008-11-18 00:21:09 +0000 (Tue, 18 Nov 2008) | 1 line
+Changed paths:
+   M /trunk/hypot.c
+
+hypot.c: simplified an expression; cosmetic changes.
+------------------------------------------------------------------------
+r5674 | thevenyp | 2008-11-17 08:43:59 +0000 (Mon, 17 Nov 2008) | 2 lines
+Changed paths:
+   M /trunk/hypot.c
+
+hypot.c: Fix underflow problem when diff_exp<=MPFR_EMAX_MAX-2 using fma (provided that mpfr_fma is immune to it).
+
+------------------------------------------------------------------------
+r5673 | thevenyp | 2008-11-17 08:40:52 +0000 (Mon, 17 Nov 2008) | 2 lines
+Changed paths:
+   M /trunk/algorithms.tex
+
+algorithms.tex: Fix one typo in dilogarithm section.
+
+------------------------------------------------------------------------
+r5672 | vlefevre | 2008-11-12 14:53:07 +0000 (Wed, 12 Nov 2008) | 1 line
+Changed paths:
+   M /trunk/NEWS
+   M /trunk/mpfr.texi
+
+mpfr.texi, NEWS: update concerning mpfr_eq.
+------------------------------------------------------------------------
+r5671 | vlefevre | 2008-11-12 14:09:45 +0000 (Wed, 12 Nov 2008) | 1 line
+Changed paths:
+   M /trunk/mpfr.texi
+
+mpfr.texi: improved mpfr_eq documentation.
+------------------------------------------------------------------------
+r5670 | thevenyp | 2008-11-12 12:33:37 +0000 (Wed, 12 Nov 2008) | 2 lines
+Changed paths:
+   M /trunk/tests/tstrtofr.c
+
+tests/tstrtofr.c: Add more information when test bug20081028 fails.
+
+------------------------------------------------------------------------
+r5669 | thevenyp | 2008-11-07 10:19:42 +0000 (Fri, 07 Nov 2008) | 3 lines
+Changed paths:
+   M /trunk/strtofr.c
+   M /trunk/tests/tstrtofr.c
+
+strtofr.c: Replace non-zero digits look up by a simpler test, using the fact that parse_string did remove zeros at end of pstr->mant.
+tests/tstrtofr.c: Add other test values around 1 for the bug20081028 non regression test.
+
+------------------------------------------------------------------------
+r5668 | vlefevre | 2008-11-07 01:12:36 +0000 (Fri, 07 Nov 2008) | 1 line
+Changed paths:
+   M /trunk/strtofr.c
+
+strtofr.c: improved style ("exact" is a boolean).
+------------------------------------------------------------------------
+r5667 | zimmerma | 2008-11-06 16:53:17 +0000 (Thu, 06 Nov 2008) | 4 lines
+Changed paths:
+   M /trunk/strtofr.c
+   M /trunk/tests/tstrtofr.c
+
+[strtofr.c]  new patch (ternary value was still wrong in some cases), should
+	     be ok now
+[tstrtofr.c] added new test
+
+------------------------------------------------------------------------
+r5666 | zimmerma | 2008-11-05 17:10:10 +0000 (Wed, 05 Nov 2008) | 2 lines
+Changed paths:
+   M /trunk/mpn_exp.c
+   M /trunk/strtofr.c
+
+[strtofr.c] review of patch added in revision 5660, and added comments
+
+------------------------------------------------------------------------
+r5665 | vlefevre | 2008-10-29 14:31:20 +0000 (Wed, 29 Oct 2008) | 1 line
+Changed paths:
+   M /trunk/NEWS
+
+Updated NEWS file.
+------------------------------------------------------------------------
+r5662 | vlefevre | 2008-10-29 13:52:17 +0000 (Wed, 29 Oct 2008) | 2 lines
+Changed paths:
+   M /trunk/strtofr.c
+
+strtofr.c: in r5660, as pstr_size and pstr->prec both have type size_t,
+changed the type of i from mp_size_t to size_t for consistency.
+------------------------------------------------------------------------
+r5661 | vlefevre | 2008-10-29 13:43:14 +0000 (Wed, 29 Oct 2008) | 3 lines
+Changed paths:
+   M /trunk/strtofr.c
+
+strtofr.c: reverted the change done in r3008, which led to a trivial
+assertion. I think the goal is to make sure that pstr_size (of type
+size_t) can be represented in a mp_exp_t (as required in the code).
+------------------------------------------------------------------------
+r5660 | thevenyp | 2008-10-29 12:05:11 +0000 (Wed, 29 Oct 2008) | 2 lines
+Changed paths:
+   M /trunk/strtofr.c
+
+strtofr.c: fix bug '[#6604] incorrect directed rounding in mpfr_strtofr'.
+
+------------------------------------------------------------------------
+r5659 | vlefevre | 2008-10-29 02:31:21 +0000 (Wed, 29 Oct 2008) | 3 lines
+Changed paths:
+   M /trunk/configure.in
+
+configure.in: replaced $(...) quoting style by "`...`" since the former
+is not supported everywhere (and indeed is not used by the autotools):
+http://swox.com/list-archives/gmp-bugs/2008-October/001185.html
+------------------------------------------------------------------------
+r5658 | vlefevre | 2008-10-29 01:21:29 +0000 (Wed, 29 Oct 2008) | 2 lines
+Changed paths:
+   M /trunk/tests/tstrtofr.c
+
+tests/tstrtofr.c: added bug20081028 (bug found by Christoph Lauter
+in mpfr_set_str; this is the corresponding bug in mpfr_strtofr).
+------------------------------------------------------------------------
+r5657 | vlefevre | 2008-10-29 01:10:36 +0000 (Wed, 29 Oct 2008) | 1 line
+Changed paths:
+   M /trunk/tests/tstrtofr.c
+
+tests/tstrtofr.c: corrections related to C usage.
+------------------------------------------------------------------------
+r5656 | vlefevre | 2008-10-29 00:59:00 +0000 (Wed, 29 Oct 2008) | 1 line
+Changed paths:
+   M /trunk/tests/tset_str.c
+
+tests/tset_str.c: added bug20081028 (bug found by Christoph Lauter).
+------------------------------------------------------------------------
+r5655 | vlefevre | 2008-10-27 03:55:33 +0000 (Mon, 27 Oct 2008) | 1 line
+Changed paths:
+   M /trunk/mpfr.texi
+
+mpfr.texi: updated @dircategory (request by Karl Berry).
+------------------------------------------------------------------------
+r5654 | vlefevre | 2008-10-27 03:27:10 +0000 (Mon, 27 Oct 2008) | 1 line
+Changed paths:
+   M /trunk/BUGS
+   M /trunk/FAQ.html
+   M /trunk/NEWS
+   M /trunk/README
+   M /trunk/TODO
+   M /trunk/abort_prec_max.c
+   M /trunk/acinclude.m4
+   M /trunk/acos.c
+   M /trunk/acosh.c
+   M /trunk/add.c
+   M /trunk/add1.c
+   M /trunk/add1sp.c
+   M /trunk/add_d.c
+   M /trunk/add_ui.c
+   M /trunk/agm.c
+   M /trunk/asin.c
+   M /trunk/asinh.c
+   M /trunk/atan.c
+   M /trunk/atan2.c
+   M /trunk/atanh.c
+   M /trunk/cache.c
+   M /trunk/cbrt.c
+   M /trunk/check.c
+   M /trunk/clear.c
+   M /trunk/clears.c
+   M /trunk/cmp.c
+   M /trunk/cmp2.c
+   M /trunk/cmp_abs.c
+   M /trunk/cmp_d.c
+   M /trunk/cmp_ld.c
+   M /trunk/cmp_si.c
+   M /trunk/cmp_ui.c
+   M /trunk/comparisons.c
+   M /trunk/configure.in
+   M /trunk/const_catalan.c
+   M /trunk/const_euler.c
+   M /trunk/const_log2.c
+   M /trunk/const_pi.c
+   M /trunk/constant.c
+   M /trunk/copysign.c
+   M /trunk/cos.c
+   M /trunk/cosh.c
+   M /trunk/cot.c
+   M /trunk/coth.c
+   M /trunk/csc.c
+   M /trunk/csch.c
+   M /trunk/d_div.c
+   M /trunk/d_sub.c
+   M /trunk/dim.c
+   M /trunk/div.c
+   M /trunk/div_2exp.c
+   M /trunk/div_2si.c
+   M /trunk/div_2ui.c
+   M /trunk/div_d.c
+   M /trunk/div_ui.c
+   M /trunk/dump.c
+   M /trunk/eint.c
+   M /trunk/eq.c
+   M /trunk/erf.c
+   M /trunk/erfc.c
+   M /trunk/exceptions.c
+   M /trunk/exp.c
+   M /trunk/exp10.c
+   M /trunk/exp2.c
+   M /trunk/exp3.c
+   M /trunk/exp_2.c
+   M /trunk/expm1.c
+   M /trunk/extract.c
+   M /trunk/factorial.c
+   M /trunk/faq.xsl
+   M /trunk/fits_intmax.c
+   M /trunk/fits_s.h
+   M /trunk/fits_sint.c
+   M /trunk/fits_slong.c
+   M /trunk/fits_sshort.c
+   M /trunk/fits_u.h
+   M /trunk/fits_uint.c
+   M /trunk/fits_uintmax.c
+   M /trunk/fits_ulong.c
+   M /trunk/fits_ushort.c
+   M /trunk/fma.c
+   M /trunk/fms.c
+   M /trunk/frac.c
+   M /trunk/free_cache.c
+   M /trunk/gamma.c
+   M /trunk/gen_inverse.h
+   M /trunk/get_d.c
+   M /trunk/get_d64.c
+   M /trunk/get_exp.c
+   M /trunk/get_f.c
+   M /trunk/get_ld.c
+   M /trunk/get_patches.sh
+   M /trunk/get_si.c
+   M /trunk/get_sj.c
+   M /trunk/get_str.c
+   M /trunk/get_ui.c
+   M /trunk/get_uj.c
+   M /trunk/get_z.c
+   M /trunk/get_z_exp.c
+   M /trunk/gmp_op.c
+   M /trunk/hypot.c
+   M /trunk/init.c
+   M /trunk/init2.c
+   M /trunk/inits.c
+   M /trunk/inits2.c
+   M /trunk/inp_str.c
+   M /trunk/int_ceil_log2.c
+   M /trunk/isinf.c
+   M /trunk/isinteger.c
+   M /trunk/isnan.c
+   M /trunk/isnum.c
+   M /trunk/isqrt.c
+   M /trunk/iszero.c
+   M /trunk/jn.c
+   M /trunk/jyn_asympt.c
+   M /trunk/li2.c
+   M /trunk/lngamma.c
+   M /trunk/log.c
+   M /trunk/log10.c
+   M /trunk/log1p.c
+   M /trunk/log2.c
+   M /trunk/logging.c
+   M /trunk/minmax.c
+   M /trunk/modf.c
+   M /trunk/mp_clz_tab.c
+   M /trunk/mparam_h.in
+   M /trunk/mpf2mpfr.h
+   M /trunk/mpfr-gmp.c
+   M /trunk/mpfr-gmp.h
+   M /trunk/mpfr-impl.h
+   M /trunk/mpfr-thread.h
+   M /trunk/mpfr.h
+   M /trunk/mpfr.texi
+   M /trunk/mpfrlint
+   M /trunk/mpn_exp.c
+   M /trunk/mul.c
+   M /trunk/mul_2exp.c
+   M /trunk/mul_2si.c
+   M /trunk/mul_2ui.c
+   M /trunk/mul_d.c
+   M /trunk/mul_ui.c
+   M /trunk/mulders.c
+   M /trunk/neg.c
+   M /trunk/next.c
+   M /trunk/out_str.c
+   M /trunk/pow.c
+   M /trunk/pow_si.c
+   M /trunk/pow_ui.c
+   M /trunk/pow_z.c
+   M /trunk/powerof2.c
+   M /trunk/print_raw.c
+   M /trunk/print_rnd_mode.c
+   M /trunk/printf.c
+   M /trunk/random2.c
+   M /trunk/rec_sqrt.c
+   M /trunk/reldiff.c
+   M /trunk/rem1.c
+   M /trunk/rint.c
+   M /trunk/root.c
+   M /trunk/round_near_x.c
+   M /trunk/round_p.c
+   M /trunk/round_prec.c
+   M /trunk/round_raw_generic.c
+   M /trunk/sec.c
+   M /trunk/sech.c
+   M /trunk/set.c
+   M /trunk/set_d.c
+   M /trunk/set_d64.c
+   M /trunk/set_dfl_prec.c
+   M /trunk/set_exp.c
+   M /trunk/set_f.c
+   M /trunk/set_inf.c
+   M /trunk/set_ld.c
+   M /trunk/set_nan.c
+   M /trunk/set_prc_raw.c
+   M /trunk/set_prec.c
+   M /trunk/set_q.c
+   M /trunk/set_rnd.c
+   M /trunk/set_si.c
+   M /trunk/set_si_2exp.c
+   M /trunk/set_sj.c
+   M /trunk/set_str.c
+   M /trunk/set_str_raw.c
+   M /trunk/set_ui.c
+   M /trunk/set_ui_2exp.c
+   M /trunk/set_uj.c
+   M /trunk/set_z.c
+   M /trunk/setmax.c
+   M /trunk/setmin.c
+   M /trunk/setsign.c
+   M /trunk/sgn.c
+   M /trunk/si_op.c
+   M /trunk/signbit.c
+   M /trunk/sin.c
+   M /trunk/sin_cos.c
+   M /trunk/sinh.c
+   M /trunk/sinh_cosh.c
+   M /trunk/sqr.c
+   M /trunk/sqrt.c
+   M /trunk/sqrt_ui.c
+   M /trunk/stack_interface.c
+   M /trunk/strtofr.c
+   M /trunk/sub.c
+   M /trunk/sub1.c
+   M /trunk/sub1sp.c
+   M /trunk/sub_d.c
+   M /trunk/sub_ui.c
+   M /trunk/subnormal.c
+   M /trunk/sum.c
+   M /trunk/swap.c
+   M /trunk/tan.c
+   M /trunk/tanh.c
+   M /trunk/tests/cmp_str.c
+   M /trunk/tests/data/li2
+   M /trunk/tests/memory.c
+   M /trunk/tests/mpf_compat.c
+   M /trunk/tests/mpf_compat.h
+   M /trunk/tests/mpfr-test.h
+   M /trunk/tests/mpfr_compat.c
+   M /trunk/tests/reuse.c
+   M /trunk/tests/rnd_mode.c
+   M /trunk/tests/tabs.c
+   M /trunk/tests/tacos.c
+   M /trunk/tests/tacosh.c
+   M /trunk/tests/tadd.c
+   M /trunk/tests/tadd1sp.c
+   M /trunk/tests/tadd_d.c
+   M /trunk/tests/tadd_ui.c
+   M /trunk/tests/tagm.c
+   M /trunk/tests/tasin.c
+   M /trunk/tests/tasinh.c
+   M /trunk/tests/tatan.c
+   M /trunk/tests/tatanh.c
+   M /trunk/tests/tcan_round.c
+   M /trunk/tests/tcbrt.c
+   M /trunk/tests/tcheck.c
+   M /trunk/tests/tcmp.c
+   M /trunk/tests/tcmp2.c
+   M /trunk/tests/tcmp_d.c
+   M /trunk/tests/tcmp_ld.c
+   M /trunk/tests/tcmp_ui.c
+   M /trunk/tests/tcmpabs.c
+   M /trunk/tests/tcomparisons.c
+   M /trunk/tests/tconst_catalan.c
+   M /trunk/tests/tconst_euler.c
+   M /trunk/tests/tconst_log2.c
+   M /trunk/tests/tconst_pi.c
+   M /trunk/tests/tcopysign.c
+   M /trunk/tests/tcos.c
+   M /trunk/tests/tcosh.c
+   M /trunk/tests/tcot.c
+   M /trunk/tests/tcoth.c
+   M /trunk/tests/tcsc.c
+   M /trunk/tests/tcsch.c
+   M /trunk/tests/td_div.c
+   M /trunk/tests/td_sub.c
+   M /trunk/tests/tdim.c
+   M /trunk/tests/tdiv.c
+   M /trunk/tests/tdiv_d.c
+   M /trunk/tests/tdiv_ui.c
+   M /trunk/tests/teint.c
+   M /trunk/tests/teq.c
+   M /trunk/tests/terf.c
+   M /trunk/tests/tests.c
+   M /trunk/tests/texceptions.c
+   M /trunk/tests/texp.c
+   M /trunk/tests/texp10.c
+   M /trunk/tests/texp2.c
+   M /trunk/tests/texpm1.c
+   M /trunk/tests/tfactorial.c
+   M /trunk/tests/tfits.c
+   M /trunk/tests/tfma.c
+   M /trunk/tests/tfmod.c
+   M /trunk/tests/tfms.c
+   M /trunk/tests/tfprintf.c
+   M /trunk/tests/tfrac.c
+   M /trunk/tests/tgamma.c
+   M /trunk/tests/tgeneric.c
+   M /trunk/tests/tgeneric_ui.c
+   M /trunk/tests/tget_d.c
+   M /trunk/tests/tget_d_2exp.c
+   M /trunk/tests/tget_f.c
+   M /trunk/tests/tget_ld_2exp.c
+   M /trunk/tests/tget_set_d64.c
+   M /trunk/tests/tget_sj.c
+   M /trunk/tests/tget_str.c
+   M /trunk/tests/tget_z.c
+   M /trunk/tests/tgmpop.c
+   M /trunk/tests/thyperbolic.c
+   M /trunk/tests/thypot.c
+   M /trunk/tests/tinits.c
+   M /trunk/tests/tinp_str.c
+   M /trunk/tests/tinternals.c
+   M /trunk/tests/tisnan.c
+   M /trunk/tests/tisqrt.c
+   M /trunk/tests/tj0.c
+   M /trunk/tests/tj1.c
+   M /trunk/tests/tjn.c
+   M /trunk/tests/tl2b.c
+   M /trunk/tests/tlgamma.c
+   M /trunk/tests/tli2.c
+   M /trunk/tests/tlngamma.c
+   M /trunk/tests/tlog.c
+   M /trunk/tests/tlog10.c
+   M /trunk/tests/tlog1p.c
+   M /trunk/tests/tlog2.c
+   M /trunk/tests/tminmax.c
+   M /trunk/tests/tmodf.c
+   M /trunk/tests/tmul.c
+   M /trunk/tests/tmul_2exp.c
+   M /trunk/tests/tmul_d.c
+   M /trunk/tests/tmul_ui.c
+   M /trunk/tests/tnext.c
+   M /trunk/tests/tout_str.c
+   M /trunk/tests/toutimpl.c
+   M /trunk/tests/tpow.c
+   M /trunk/tests/tpow3.c
+   M /trunk/tests/tpow_all.c
+   M /trunk/tests/tpow_z.c
+   M /trunk/tests/tprintf.c
+   M /trunk/tests/trandom.c
+   M /trunk/tests/trec_sqrt.c
+   M /trunk/tests/tremquo.c
+   M /trunk/tests/trint.c
+   M /trunk/tests/troot.c
+   M /trunk/tests/tround_prec.c
+   M /trunk/tests/tsec.c
+   M /trunk/tests/tsech.c
+   M /trunk/tests/tset.c
+   M /trunk/tests/tset_d.c
+   M /trunk/tests/tset_exp.c
+   M /trunk/tests/tset_f.c
+   M /trunk/tests/tset_ld.c
+   M /trunk/tests/tset_q.c
+   M /trunk/tests/tset_si.c
+   M /trunk/tests/tset_sj.c
+   M /trunk/tests/tset_str.c
+   M /trunk/tests/tset_z.c
+   M /trunk/tests/tsgn.c
+   M /trunk/tests/tsi_op.c
+   M /trunk/tests/tsin.c
+   M /trunk/tests/tsin_cos.c
+   M /trunk/tests/tsinh.c
+   M /trunk/tests/tsinh_cosh.c
+   M /trunk/tests/tsprintf.c
+   M /trunk/tests/tsqr.c
+   M /trunk/tests/tsqrt.c
+   M /trunk/tests/tsqrt_ui.c
+   M /trunk/tests/tstckintc.c
+   M /trunk/tests/tstrtofr.c
+   M /trunk/tests/tsub.c
+   M /trunk/tests/tsub1sp.c
+   M /trunk/tests/tsub_d.c
+   M /trunk/tests/tsub_ui.c
+   M /trunk/tests/tsubnormal.c
+   M /trunk/tests/tsum.c
+   M /trunk/tests/tswap.c
+   M /trunk/tests/ttan.c
+   M /trunk/tests/ttanh.c
+   M /trunk/tests/ttrunc.c
+   M /trunk/tests/tui_div.c
+   M /trunk/tests/tui_pow.c
+   M /trunk/tests/tui_sub.c
+   M /trunk/tests/tversion.c
+   M /trunk/tests/ty0.c
+   M /trunk/tests/ty1.c
+   M /trunk/tests/tyn.c
+   M /trunk/tests/tzeta.c
+   M /trunk/tests/tzeta_ui.c
+   M /trunk/tuneup.c
+   M /trunk/uceil_exp2.c
+   M /trunk/uceil_log2.c
+   M /trunk/ufloor_log2.c
+   M /trunk/ui_div.c
+   M /trunk/ui_pow.c
+   M /trunk/ui_pow_ui.c
+   M /trunk/ui_sub.c
+   M /trunk/urandomb.c
+   M /trunk/vasprintf.c
+   M /trunk/version.c
+   M /trunk/volatile.c
+   M /trunk/yn.c
+   M /trunk/zeta.c
+   M /trunk/zeta_ui.c
+
+This is now GNU MPFR!
+------------------------------------------------------------------------
+r5653 | vlefevre | 2008-10-27 03:10:36 +0000 (Mon, 27 Oct 2008) | 1 line
+Changed paths:
+   M /trunk/README
+
+README: CVS -> Subversion.
+------------------------------------------------------------------------
+r5652 | thevenyp | 2008-10-23 18:40:33 +0000 (Thu, 23 Oct 2008) | 3 lines
+Changed paths:
+   M /trunk/tests/tsprintf.c
+   M /trunk/vasprintf.c
+
+vasprintf.c: Fix bug with '#' and 'g' flag combination, see also defect report at  http://www.open-std.org/jtc1/sc22/wg14/www/docs/dr_233.htm.
+tests/tsprintf.c: Fix wrong test value accordingly, add non-regression tests.
+
+------------------------------------------------------------------------
+r5651 | zimmerma | 2008-10-23 07:29:29 +0000 (Thu, 23 Oct 2008) | 2 lines
+Changed paths:
+   M /trunk/get_d64.c
+   M /trunk/set_d64.c
+
+[get_d64.c,set_d64.c] added reference to TR 24732
+
+------------------------------------------------------------------------
+r5650 | vlefevre | 2008-10-16 08:17:35 +0000 (Thu, 16 Oct 2008) | 1 line
+Changed paths:
+   M /trunk/mpfr.h
+
+mpfr.h: added a comment about MPFR_SIGN.
+------------------------------------------------------------------------
+r5649 | zimmerma | 2008-10-05 08:51:41 +0000 (Sun, 05 Oct 2008) | 3 lines
+Changed paths:
+   M /trunk/mpfr.h
+
+[mpfr.h] fixed typo, and added warning about MPFR_SIGN.
+	 Shouldn't we move it in mpfr-impl.h?
+
+------------------------------------------------------------------------
+r5647 | vlefevre | 2008-10-03 11:45:14 +0000 (Fri, 03 Oct 2008) | 1 line
+Changed paths:
+   M /trunk/INSTALL
+   M /trunk/configure.in
+
+INSTALL, configure.in: corrected documentation of --with-gmp* options.
+------------------------------------------------------------------------
+r5645 | vlefevre | 2008-10-02 11:40:42 +0000 (Thu, 02 Oct 2008) | 1 line
+Changed paths:
+   M /trunk/INSTALL
+
+INSTALL: gave more details about --with-gmp-build.
+------------------------------------------------------------------------
+r5644 | zimmerma | 2008-10-02 11:17:49 +0000 (Thu, 02 Oct 2008) | 2 lines
+Changed paths:
+   M /trunk/INSTALL
+
+[INSTALL] added warning about usage of --with-gmp-build
+
+------------------------------------------------------------------------
+r5643 | vlefevre | 2008-09-21 11:56:06 +0000 (Sun, 21 Sep 2008) | 2 lines
+Changed paths:
+   M /trunk/TODO
+
+TODO: updated LIA-2 terminology ("pole" was in the latest public draft,
+"infinitary" in the final standard).
+------------------------------------------------------------------------
+r5642 | thevenyp | 2008-09-19 08:50:01 +0000 (Fri, 19 Sep 2008) | 2 lines
+Changed paths:
+   M /trunk/tests/tstrtofr.c
+
+tests/tstrtofr.c: Remove underflow test unintentionally commited with revision 5640.
+
+------------------------------------------------------------------------
+r5640 | thevenyp | 2008-09-18 16:33:16 +0000 (Thu, 18 Sep 2008) | 2 lines
+Changed paths:
+   M /trunk/Makefile.am
+   M /trunk/mpfr.h
+   M /trunk/mpfr.texi
+   D /trunk/random.c
+   M /trunk/tests/reuse.c
+   M /trunk/tests/tabs.c
+   M /trunk/tests/tadd.c
+   M /trunk/tests/tadd1sp.c
+   M /trunk/tests/tatan.c
+   M /trunk/tests/tcmp2.c
+   M /trunk/tests/tcomparisons.c
+   M /trunk/tests/tdiv.c
+   M /trunk/tests/tdiv_ui.c
+   M /trunk/tests/teq.c
+   M /trunk/tests/tests.c
+   M /trunk/tests/texp.c
+   M /trunk/tests/tfma.c
+   M /trunk/tests/tfms.c
+   M /trunk/tests/tgeneric_ui.c
+   M /trunk/tests/tget_set_d64.c
+   M /trunk/tests/tget_str.c
+   M /trunk/tests/tmul.c
+   M /trunk/tests/tmul_ui.c
+   M /trunk/tests/tnext.c
+   M /trunk/tests/tpow.c
+   M /trunk/tests/tpow3.c
+   M /trunk/tests/tpow_z.c
+   M /trunk/tests/trandom.c
+   M /trunk/tests/tset.c
+   M /trunk/tests/tset_f.c
+   M /trunk/tests/tset_ld.c
+   M /trunk/tests/tset_str.c
+   M /trunk/tests/tsgn.c
+   M /trunk/tests/tsqr.c
+   M /trunk/tests/tsqrt.c
+   M /trunk/tests/tstrtofr.c
+   M /trunk/tests/tsub.c
+   M /trunk/tests/tsub1sp.c
+   M /trunk/tests/tsub_ui.c
+   M /trunk/tests/tsum.c
+   M /trunk/tests/ttrunc.c
+   M /trunk/tests/tui_div.c
+   M /trunk/tests/tui_pow.c
+   M /trunk/tests/tui_sub.c
+
+Remove obsolete mpfr_random function and replace it by mpfr_urandomb in tests.
+
+------------------------------------------------------------------------
+r5639 | thevenyp | 2008-09-18 16:25:31 +0000 (Thu, 18 Sep 2008) | 2 lines
+Changed paths:
+   M /trunk/exceptions.c
+
+Add void in prototype.
+
+------------------------------------------------------------------------
+r5638 | vlefevre | 2008-09-18 13:40:11 +0000 (Thu, 18 Sep 2008) | 1 line
+Changed paths:
+   M /trunk/tests/tests.c
+
+tests/tests.c: added comments about the MPFR_FPU_PREC macro.
+------------------------------------------------------------------------
+r5636 | zimmerma | 2008-09-18 12:48:28 +0000 (Thu, 18 Sep 2008) | 3 lines
+Changed paths:
+   M /trunk/tests/tget_str.c
+
+[tget_str.c] replaced 'double' input by 'char*' to avoid problems with single
+             precision (partially solves #3353)
+
+------------------------------------------------------------------------
+r5634 | zimmerma | 2008-09-17 12:28:22 +0000 (Wed, 17 Sep 2008) | 2 lines
+Changed paths:
+   M /trunk/README.dev
+
+[README.dev] added item about coverage of releases
+
+------------------------------------------------------------------------
+r5632 | zimmerma | 2008-09-16 12:48:29 +0000 (Tue, 16 Sep 2008) | 2 lines
+Changed paths:
+   M /trunk/AUTHORS
+   M /trunk/Makefile.am
+   M /trunk/algorithms.tex
+   M /trunk/atan.c
+   M /trunk/extract.c
+   M /trunk/mpfr.texi
+
+final got rid of generic.c (bug 6199)
+
+------------------------------------------------------------------------
+r5631 | zimmerma | 2008-09-16 12:37:11 +0000 (Tue, 16 Sep 2008) | 2 lines
+Changed paths:
+   D /trunk/generic.c
+
+[generic.c] removed unused file
+
+------------------------------------------------------------------------
+r5630 | vlefevre | 2008-09-16 09:53:59 +0000 (Tue, 16 Sep 2008) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+   M /trunk/mpfr.texi
+
+NEWS, mpfr.texi: documented the fact that mpfr_random and mpfr_random2
+will be suppressed in the next release.
+------------------------------------------------------------------------
+r5629 | vlefevre | 2008-09-16 08:53:00 +0000 (Tue, 16 Sep 2008) | 1 line
+Changed paths:
+   M /trunk/ChangeLog
+
+ChangeLog update with "LC_ALL=en_US.UTF8 TZ=UTC svn log -rHEAD:0 -v".
+------------------------------------------------------------------------
 r5623 | thevenyp | 2008-09-10 10:00:31 +0000 (Wed, 10 Sep 2008) | 2 lines
 Changed paths:
    M /trunk/tests/tpow_z.c
@@ -1284,7 +3172,7 @@ the O(l^{1/2}) method to evaluate power series is due to
 Paterson and Stockmeyer and not Brent/Kung
 
 ------------------------------------------------------------------------
-r5385 | vlefevre | 2008-06-09 16:21:34 +0000 (Mon, 09 Jun 2008) | 7 lines
+r5385 | vlefevre | 2008-06-09 16:21:34 +0000 (Mon, 09 Jun 2008) | 9 lines
 Changed paths:
    M /trunk/README.dev
    M /trunk/acinclude.m4
@@ -1342,7 +3230,9 @@ But the following 3 tests currently fail with g++ 4.3.1:
   FAIL: tsprintf
   FAIL: tfprintf
 This is an "Illegal instruction" error, so probably a bug in g++.
-
+[Edit: acinclude.m4 now uses gl_SIZE_MAX, typically from size_max.m4,
+but which is not installed on all machines; this will be added to the
+MPFR repository in changesets 5680 and 5683.]
 ------------------------------------------------------------------------
 r5384 | vlefevre | 2008-06-09 14:09:34 +0000 (Mon, 09 Jun 2008) | 2 lines
 Changed paths:
@@ -3485,7 +5375,7 @@ Changed paths:
    M /trunk/zeta_ui.c
 
 Copyright notice update: added 2008 with
-  perl -pi -e 's/2007 Free Software/2007, 2008, 2009 Free Software/' **/*(^/)
+  perl -pi -e 's/2007 Free Software/2007, 2008 Free Software/' **/*(^/)
 under zsh.
 
 ------------------------------------------------------------------------
