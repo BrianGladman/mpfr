@@ -2,7 +2,7 @@
    mpfr_lessequal_p, mpfr_lessgreater_p, mpfr_equal_p, mpfr_unordered_p
    functions.
 
-Copyright 2003, 2006, 2007, 2008 Free Software Foundation, Inc.
+Copyright 2003, 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
 Contributed by the Arenaire and Cacao projects, INRIA.
 
 This file is part of the GNU MPFR Library.

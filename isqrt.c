@@ -1,6 +1,6 @@
 /* __gmpfr_isqrt && __gmpfr_cuberoot -- Integer square root and cube root
 
-Copyright 2004, 2005, 2006, 2007, 2008 Free Software Foundation, Inc.
+Copyright 2004, 2005, 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
 Contributed by the Arenaire and Cacao projects, INRIA.
 
 This file is part of the GNU MPFR Library.

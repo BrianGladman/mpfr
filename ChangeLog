@@ -3485,7 +3485,7 @@ Changed paths:
    M /trunk/zeta_ui.c
 
 Copyright notice update: added 2008 with
-  perl -pi -e 's/2007 Free Software/2007, 2008 Free Software/' **/*(^/)
+  perl -pi -e 's/2007 Free Software/2007, 2008, 2009 Free Software/' **/*(^/)
 under zsh.
 
 ------------------------------------------------------------------------
