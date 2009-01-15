@@ -215,16 +215,13 @@ check_mixed ()
   }
 #endif
 
-#if defined(HAVE_QUAD_T) && !defined(NO_LIBC_PRINTF_Q)\
+#if defined(HAVE_QUAD_T) && !defined(NO_LIBC_PRINTF_Q)  \
     && !defined(NO_GMP_PRINTF_Q)
   {
     quad_t q = -1;
-    u_quad_t uq = 1;
 
-    check_vprintf ("a. %Re, b. %qx%Qn", mpfr, uq, &mpq);
-    check_length_with_cmp (21, mpq, 16, mpq_cmp_ui (mpq, 16, 1), Qu);
     check_vprintf ("a. %qi, b. %Rf%Fn", q, mpfr, &mpf);
-    check_length_with_cmp (22, mpf, 12, mpf_cmp_ui (mpf, 12), Fg);
+    check_length_with_cmp (21, mpf, 12, mpf_cmp_ui (mpf, 12), Fg);
   }
 #endif
 
