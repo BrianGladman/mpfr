@@ -260,7 +260,7 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
         }
     case 'q':
       ++format;
-#if defined(HAVE_QUAD_T) && !defined(NO_LIBC_PRINTF_Q) 
+#if defined(HAVE_QUAD_T) && !defined(NO_LIBC_PRINTF_Q)
       specinfo->arg_type = QUAD_ARG;
 #else
       specinfo->arg_type = UNSUPPORTED;
