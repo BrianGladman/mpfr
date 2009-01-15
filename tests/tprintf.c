@@ -25,8 +25,12 @@ MA 02110-1301, USA. */
 #include <stdlib.h>
 #include <stddef.h>
 
-#ifdef HAVE_STDINT_H
-#include <stdint.h>
+#if HAVE_INTTYPES_H
+# include <inttypes.h> /* for intmax_t */
+#else
+# if HAVE_STDINT_H
+#  include <stdint.h>
+# endif
 #endif
 
 #ifdef HAVE_QUAD_T
