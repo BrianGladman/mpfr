@@ -193,14 +193,19 @@ check_mixed ()
   check_length (4, i, 33, d);
   check_vprintf ("a. %R*A, b. %Fe, c. %i%zn", rnd, mpfr, mpf, sz, &sz);
   check_length (5, sz, 34, zu);
-  check_vprintf ("a. %Pu, b. %c, c. %Lf, d. %Zi%Zn", prec, ch, ld, mpz, &mpz);
-  check_length_with_cmp (6, mpz, 31, mpz_cmp_ui (mpz, 31), Zi);
+  check_vprintf ("a. %Pu, b. %c, c. %RUG, d. %Zi%Zn", prec, ch, mpfr, mpz, &mpz);
+  check_length_with_cmp (6, mpz, 24, mpz_cmp_ui (mpz, 24), Zi);
   check_vprintf ("%% a. %#.0RNg, b. %Qx%Rn c. %p", mpfr, mpq, &mpfr, &i);
   check_length_with_cmp (7, mpfr, 16, mpfr_cmp_ui (mpfr, 16), Rg);
 
 #ifndef NO_GMP_PRINTF_T
   check_vprintf ("%% a. %RNg, b. %Qx, c. %td%tn", mpfr, mpq, p, &p);
   check_length (8, p, 21, td);
+#endif
+
+#ifndef NO_GMP_PRINTF_L
+  check_vprintf ("a. %RA, b. %Lf, c. %QX%zn", mpfr, ld, mpq, &sz);
+  check_length (9, sz, 30, zu);
 #endif
 
 #ifdef HAVE_LONG_LONG

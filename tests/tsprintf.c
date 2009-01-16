@@ -489,11 +489,8 @@ mixed (void)
                   x);
   check_vsprintf ("-12345678.9, 121", "%.1Rf, %i", x, i);
   check_vsprintf ("-12345678, 1e240/45b352", "%.0R*f, %Qx", GMP_RNDZ, x, mpq);
-  check_vsprintf ("121, -12345678.875000000000, 1.290323", "%i, %.*Rf, %Ff",
-                  i, 12, x, mpf);
-  n1 = check_vsprintf ("00000010610209857723, -1.2345678875e+07, 0.032258",
-                       "%.*Zi, %R*e, %Lf%n", 20, mpz, rnd, x, d, &n2);
-
+  n1 = check_vsprintf ("121, -12345678.875000000000, 1.290323", "%i, %.*Rf, %Ff%n",
+                       i, 12, x, mpf, &n2);
   if (n1 != n2)
     {
       printf ("error in number of characters written by mpfr_vsprintf\n");
@@ -501,6 +498,12 @@ mixed (void)
       printf ("     got: %d\n", n1);
       exit (1);
     }
+
+#ifndef NO_GMP_PRINTF_L
+  check_vsprintf ("00000010610209857723, -1.2345678875e+07, 0.032258",
+                  "%.*Zi, %R*e, %Lf", 20, mpz, rnd, x, d);
+#endif
+
   mpf_clear (mpf);
   mpq_clear (mpq);
   mpz_clear (mpz);

@@ -196,9 +196,8 @@ check_mixed (FILE *fout)
   check_vfprintf (fout, "a. %R*A, b. %Fe, c. %i%zn", rnd, mpfr, mpf, sz,
                   &sz);
   check_length (5, sz, 34, zu);
-  check_vfprintf (fout, "a. %Pu, b. %c, c. %Lf, d. %Zi%Zn", prec, ch, ld,
-                  mpz, &mpz);
-  check_length_with_cmp (6, mpz, 31, mpz_cmp_ui (mpz, 31), Zi);
+  check_vfprintf (fout, "a. %Pu, b. %c, c. %Zi%Zn", prec, ch, mpz, &mpz);
+  check_length_with_cmp (6, mpz, 17, mpz_cmp_ui (mpz, 17), Zi);
   check_vfprintf (fout, "%% a. %#.0RNg, b. %Qx%Rn, c. %p", mpfr, mpq, &mpfr,
                   &i);
   check_length_with_cmp (7, mpfr, 16, mpfr_cmp_ui (mpfr, 16), Rg);
@@ -206,6 +205,11 @@ check_mixed (FILE *fout)
 #ifndef NO_GMP_PRINTF_T
   check_vfprintf (fout, "%% a. %RNg, b. %Qx, c. %td%tn", mpfr, mpq, p, &p);
   check_length (8, p, 21, td);
+#endif
+
+#ifndef NO_GMP_PRINTF_L
+  check_vfprintf (fout, "a. %RA, b. %Lf, c. %QX%zn", mpfr, ld, mpq, &sz);
+  check_length (9, sz, 30, zu);
 #endif
 
 #if (__GNU_MP_VERSION * 10 + __GNU_MP_VERSION_MINOR) >= 42

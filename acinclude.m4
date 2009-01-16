@@ -723,6 +723,13 @@ if test "$ac_cv_type_quad_t" == yes; then
      ], [AC_DEFINE([NO_LIBC_PRINTF_Q], 1, [libc printf cannot read quad_t])])
 fi
 
+MPFR_FUNC_PRINTF_SPEC([%.0Lf], [long double], [],,
+    [MPFR_FUNC_PRINTF_SPEC([%.0Lf], [long double], [
+#include <gmp.h>
+         ], [gmp_],,
+         [AC_DEFINE([NO_GMP_PRINTF_L], 1, [gmp_printf cannot read long double])])
+    ], [AC_DEFINE([NO_LIBC_PRINTF_L], 1, [libc printf cannot read long double])])
+
 MPFR_FUNC_PRINTF_SPEC([%td], [ptrdiff_t], [
 #if defined (__cplusplus)
 #include <cstddef>
