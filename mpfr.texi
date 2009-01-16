@@ -1019,10 +1019,12 @@ Note that the input 0 is converted to +0.
 @end deftypefun
 
 @deftypefun int mpfr_set_str (mpfr_t @var{rop}, const char *@var{s}, int @var{base}, mp_rnd_t @var{rnd})
-Set @var{rop} to the value of the whole string @var{s} in base @var{base},
+Set @var{rop} to the value of the string @var{s} in base @var{base},
 rounded in the direction @var{rnd}.
 See the documentation of @code{mpfr_strtofr} for a detailed description
 of the valid string formats.
+Contrary to @code{mpfr_strtofr}, @code{mpfr_set_str} requires the
+@emph{whole} string to represent a valid floating-point number.
 @c Additionally, special values
 @c @code{@@NaN@@}, @code{@@Inf@@}, @code{+@@Inf@@} and @code{-@@Inf@@},
 @c all case insensitive, without leading whitespace and possibly followed by
