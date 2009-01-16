@@ -189,8 +189,8 @@ check_mixed ()
   check_length (2, ulo, 37, lu);
   check_vprintf ("a. %hi, b. %*f, c. %Re%hn", ush, 3, f, mpfr, &ush);
   check_length (3, ush, 29, hu);
-  check_vprintf ("a. %hi, b. %e, c. %#.2Rf%n", sh, d, mpfr, &i);
-  check_length (4, i, 33, d);
+  check_vprintf ("a. %hi, b. %f, c. %#.2Rf%n", sh, d, mpfr, &i);
+  check_length (4, i, 29, d);
   check_vprintf ("a. %R*A, b. %Fe, c. %i%zn", rnd, mpfr, mpf, sz, &sz);
   check_length (5, sz, 34, zu);
   check_vprintf ("a. %Pu, b. %c, c. %RUG, d. %Zi%Zn", prec, ch, mpfr, mpz, &mpz);

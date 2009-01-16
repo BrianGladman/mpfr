@@ -191,8 +191,8 @@ check_mixed (FILE *fout)
   check_length (2, ulo, 37, lu);
   check_vfprintf (fout, "a. %hi, b. %*f, c. %Re%hn", ush, 3, f, mpfr, &ush);
   check_length (3, ush, 29, hu);
-  check_vfprintf (fout, "a. %hi, b. %e, c. %#.2Rf%n", sh, d, mpfr, &i);
-  check_length (4, i, 33, d);
+  check_vfprintf (fout, "a. %hi, b. %f, c. %#.2Rf%n", sh, d, mpfr, &i);
+  check_length (4, i, 29, d);
   check_vfprintf (fout, "a. %R*A, b. %Fe, c. %i%zn", rnd, mpfr, mpf, sz,
                   &sz);
   check_length (5, sz, 34, zu);
