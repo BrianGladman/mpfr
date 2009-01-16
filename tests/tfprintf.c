@@ -202,12 +202,12 @@ check_mixed (FILE *fout)
                   &i);
   check_length_with_cmp (7, mpfr, 16, mpfr_cmp_ui (mpfr, 16), Rg);
 
-#ifndef NO_GMP_PRINTF_T
+#ifndef NPRINTF_T
   check_vfprintf (fout, "%% a. %RNg, b. %Qx, c. %td%tn", mpfr, mpq, p, &p);
   check_length (8, p, 21, td);
 #endif
 
-#ifndef NO_GMP_PRINTF_L
+#ifndef NPRINTF_L
   check_vfprintf (fout, "a. %RA, b. %Lf, c. %QX%zn", mpfr, ld, mpq, &sz);
   check_length (9, sz, 30, zu);
 #endif
@@ -249,8 +249,7 @@ check_mixed (FILE *fout)
   }
 #endif
 
-#if defined(HAVE_QUAD_T) && !defined(NO_LIBC_PRINTF_Q)  \
-    && !defined(NO_GMP_PRINTF_Q)
+#if defined(HAVE_QUAD_T) && !defined(NPRINTF_Q)
   {
     quad_t q = -1;
 
@@ -259,8 +258,7 @@ check_mixed (FILE *fout)
   }
 #endif
 
-#if defined(_MPFR_H_HAVE_INTMAX_T) && !defined(NO_LIBC_PRINTF_J)        \
-  && !defined(NO_GMP_PRINTF_J)
+#if defined(_MPFR_H_HAVE_INTMAX_T) && !defined(NPRINTF_J)
   {
     intmax_t im = -1;
     uintmax_t uim = 1;

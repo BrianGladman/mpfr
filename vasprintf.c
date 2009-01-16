@@ -264,7 +264,7 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
         }
     case 'q':
       ++format;
-#if defined(HAVE_QUAD_T) && !defined(NO_LIBC_PRINTF_Q)
+#if defined(HAVE_QUAD_T) && !defined(NPRINTF_Q)
       specinfo->arg_type = QUAD_ARG;
 #else
       specinfo->arg_type = UNSUPPORTED;
@@ -272,7 +272,7 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
       break;
     case 'j':
       ++format;
-#if defined(_MPFR_H_HAVE_INTMAX_T) && !defined(NO_LIBC_PRINTF_J)
+#if defined(_MPFR_H_HAVE_INTMAX_T) && !defined(NPRINTF_J)
       specinfo->arg_type = INTMAX_ARG;
 #else
       specinfo->arg_type = UNSUPPORTED;
@@ -288,7 +288,7 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
       break;
     case 'L':
       ++format;
-#ifndef NO_LIBC_PRINTF_L
+#ifndef NPRINTF_L
       specinfo->arg_type = LONG_DOUBLE_ARG;
 #else
       specinfo->arg_type = UNSUPPORTED;

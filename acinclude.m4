@@ -701,34 +701,30 @@ AC_DEFUN([MPFR_CHECK_PRINTF_SPEC], [
 AC_REQUIRE([MPFR_CONFIGS])dnl
 if test "$ac_cv_type_intmax_t" == yes; then
  MPFR_FUNC_PRINTF_SPEC([%jd], [intmax_t], [
-#include <stdint.h>
-     ],,
-     [MPFR_FUNC_PRINTF_SPEC([%jd], [intmax_t], [
-#include <stdint.h>
+#ifdef HAVE_STDINT_H
+# include <stdint.h>
+#endif
+#ifdef HAVE_INTTYPES_H
+# include <inttypes.h>
+#endif
+
 #include <gmp.h>
          ], [gmp_],,
-         [AC_DEFINE([NO_GMP_PRINTF_J], 1, [gmp_printf cannot read intmax_t])])
-     ],[AC_DEFINE([NO_LIBC_PRINTF_J], 1, [libc printf cannot read intmax_t])])
+         [AC_DEFINE([NPRINTF_J], 1, [gmp_printf cannot read intmax_t])])
 fi
 
 if test "$ac_cv_type_quad_t" == yes; then
  MPFR_FUNC_PRINTF_SPEC([%qd], [quad_t], [
 #include <sys/types.h>
-     ],,
-     [MPFR_FUNC_PRINTF_SPEC([%qd], [quad_t], [
-#include <sys/types.h>
 #include <gmp.h>
           ], [gmp_],,
-          [AC_DEFINE([NO_GMP_PRINTF_Q], 1, [gmp_printf cannot read quad_t])])
-     ], [AC_DEFINE([NO_LIBC_PRINTF_Q], 1, [libc printf cannot read quad_t])])
+          [AC_DEFINE([NPRINTF_Q], 1, [gmp_printf cannot read quad_t])])
 fi
 
-MPFR_FUNC_PRINTF_SPEC([%.0Lf], [long double], [],,
-    [MPFR_FUNC_PRINTF_SPEC([%.0Lf], [long double], [
+MPFR_FUNC_PRINTF_SPEC([%.0Lf], [long double], [
 #include <gmp.h>
          ], [gmp_],,
-         [AC_DEFINE([NO_GMP_PRINTF_L], 1, [gmp_printf cannot read long double])])
-    ], [AC_DEFINE([NO_LIBC_PRINTF_L], 1, [libc printf cannot read long double])])
+         [AC_DEFINE([NPRINTF_L], 1, [gmp_printf cannot read long double])])
 
 MPFR_FUNC_PRINTF_SPEC([%td], [ptrdiff_t], [
 #if defined (__cplusplus)
@@ -738,5 +734,5 @@ MPFR_FUNC_PRINTF_SPEC([%td], [ptrdiff_t], [
 #endif
 #include "gmp.h"
     ], [gmp_],,
-    [AC_DEFINE([NO_GMP_PRINTF_T], 1, [gmp_printf cannot read ptrdiff_t])])
+    [AC_DEFINE([NPRINTF_T], 1, [gmp_printf cannot read ptrdiff_t])])
 ])

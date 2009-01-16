@@ -499,7 +499,7 @@ mixed (void)
       exit (1);
     }
 
-#ifndef NO_GMP_PRINTF_L
+#ifndef NPRINTF_L
   check_vsprintf ("00000010610209857723, -1.2345678875e+07, 0.032258",
                   "%.*Zi, %R*e, %Lf", 20, mpz, rnd, x, d);
 #endif
