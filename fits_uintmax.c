@@ -31,11 +31,12 @@ MA 02110-1301, USA. */
 # define __STDC_CONSTANT_MACROS
 #endif
 
-#ifdef HAVE_STDINT_H
-# include <stdint.h>
-#endif
-#ifdef HAVE_INTTYPES_H
-# include <inttypes.h>
+#if HAVE_INTTYPES_H
+# include <inttypes.h> /* for intmax_t */
+#else
+# if HAVE_STDINT_H
+#  include <stdint.h>
+# endif
 #endif
 
 #include "mpfr-impl.h"

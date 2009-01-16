@@ -41,8 +41,12 @@ MA 02110-1301, USA. */
 #include <stddef.h>             /* for ptrdiff_t */
 #endif
 
-#ifdef HAVE_STDINT_H
-#include <stdint.h>
+#if HAVE_INTTYPES_H
+# include <inttypes.h> /* for intmax_t */
+#else
+# if HAVE_STDINT_H
+#  include <stdint.h>
+# endif
 #endif
 
 #ifdef HAVE_QUAD_T
@@ -268,7 +272,7 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
       break;
     case 'j':
       ++format;
-#if defined(HAVE_STDINT_H) && !defined(NO_LIBC_PRINTF_J)
+#if defined(_MPFR_H_HAVE_INTMAX_T) && !defined(NO_LIBC_PRINTF_J)
       specinfo->arg_type = INTMAX_ARG;
 #else
       specinfo->arg_type = UNSUPPORTED;
@@ -284,7 +288,11 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
       break;
     case 'L':
       ++format;
+#ifndef NO_LIBC_PRINTF_L
       specinfo->arg_type = LONG_DOUBLE_ARG;
+#else
+      specinfo->arg_type = UNSUPPORTED;
+#endif     
       break;
     case 'F':
       ++format;
@@ -324,14 +332,6 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
 /* some macros and functions filling the buffer */
 
 /* CONSUME_VA_ARG removes from va_list AP the type expected by SPECINFO */
-#ifdef HAVE_STDINT_H
-#define CASE_INTMAX_ARG(specinfo, ap)           \
-  case INTMAX_ARG:                              \
-  (void) va_arg ((ap), intmax_t);               \
-  break;
-#else
-#define CASE_INTMAX_ARG(specinfo, ap)
-#endif
 
 /* With a C++ compiler wchar_t and enumeration in va_list are converted to
    integer type : int, unsigned int, long or unsigned long (unfortunately,
@@ -357,6 +357,14 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
   break;
 #endif
 
+#if defined(_MPFR_H_HAVE_INTMAX_T) 
+#define CASE_INTMAX_ARG(specinfo, ap)           \
+  case INTMAX_ARG:                              \
+  (void) va_arg ((ap), intmax_t);               \
+  break;
+#else
+#define CASE_INTMAX_ARG(specinfo, ap)
+#endif
 
 #ifdef HAVE_LONG_LONG
 #define CASE_LONG_LONG_ARG(specinfo, ap)        \
