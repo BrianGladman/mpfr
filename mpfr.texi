@@ -1738,7 +1738,7 @@ rounded in the direction @var{rnd}.
 @deftypefun int mpfr_j0 (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_j1 (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_jn (mpfr_t @var{rop}, long @var{n}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
-Set @var{rop} to the value of the first order Bessel function of order 0, 1
+Set @var{rop} to the value of the first kind Bessel function of order 0, 1
 and @var{n} on @var{op}, rounded in the direction @var{rnd}. When @var{op} is
 NaN, @var{rop} is always set to NaN. When @var{op} is plus or minus Infinity,
 @var{rop} is set to +0. When @var{op} is zero, and @var{n} is not zero,
@@ -1749,7 +1749,7 @@ and the sign of @var{op}.
 @deftypefun int mpfr_y0 (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_y1 (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_yn (mpfr_t @var{rop}, long @var{n}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
-Set @var{rop} to the value of the second order Bessel function of order 0, 1
+Set @var{rop} to the value of the second kind Bessel function of order 0, 1
 and @var{n} on @var{op}, rounded in the direction @var{rnd}. When @var{op} is
 NaN or negative,
 @var{rop} is always set to NaN. When @var{op} is +Inf,
