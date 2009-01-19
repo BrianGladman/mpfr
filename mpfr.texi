@@ -505,6 +505,7 @@ desired, @MPFRpxreftop{libtool, GNU Libtool}
 @c into some "safe" place first. Due to a poor design, "info" will not
 @c find the correct libtool info file because of the "libtool" script
 @c in MPFR's directory!
+@c http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=484740
 
 If MPFR has been installed to a non-standard location, then it may be
 necessary to set up environment variables such as @samp{C_INCLUDE_PATH}
