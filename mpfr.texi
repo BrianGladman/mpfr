@@ -1262,12 +1262,12 @@ Free a string allocated by @code{mpfr_get_str} using the current unallocation
 function (preliminary interface).
 The block is assumed to be @code{strlen(@var{str})+1} bytes.
 For more information about how it is done:
-@ifnothtml
+@ifinfo
 @pxref{Custom Allocation,,, gmp.info,GNU MP}.
-@end ifnothtml
-@ifhtml
-see section ``Custom Allocation'' in @cite{GNU MP}.
-@end ifhtml
+@end ifinfo
+@ifnotinfo
+see Section ``Custom Allocation'' in @cite{GNU MP}.
+@end ifnotinfo
 @end deftypefun
 
 @deftypefun int mpfr_fits_ulong_p (mpfr_t @var{op}, mp_rnd_t @var{rnd})
@@ -1945,7 +1945,14 @@ instead), plus @samp{R} and @samp{P}:
 @end quotation
 
 The @samp{type} specifiers have the same restrictions as those
-mentioned in the GMP documentation: except for @samp{R} and @samp{P}
+mentioned in the GMP documentation:
+@ifinfo
+@pxref{Formatted Output Strings,,, gmp.info,GNU MP}.
+@end ifinfo
+@ifnotinfo
+see Section ``Formatted Output Strings''' in @cite{GNU MP}.
+@end ifnotinfo
+More precisely, except for @samp{R} and @samp{P}
 (which are defined by MPFR), the @samp{type} specifiers are supported
 only if they are supported by @code{gmp_printf} in your GMP build;
 this implies that the standard specifiers, such as @samp{t}, must
