@@ -272,7 +272,11 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
       break;
     case 't':
       ++format;
+#ifndef NPRINTF_T
       specinfo->arg_type = PTRDIFF_ARG;
+#else
+      specinfo->arg_type = UNSUPPORTED;
+#endif     
       break;
     case 'L':
       ++format;
@@ -1937,7 +1941,7 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
               *(long long *) p = (long long) nchar;
               break;
 #endif
-#ifdef HAVE_STDINT_H
+#ifdef _MPFR_H_HAVE_INTMAX_T
             case INTMAX_ARG:
               *(intmax_t *) p = (intmax_t) nchar;
               break;
