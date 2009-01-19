@@ -1915,8 +1915,10 @@ The format specification accepted by @code{mpfr_printf} is an extension of the
 the standard C function @code{printf} (in particular, notice that the
 precision is related to the number of digits displayed in the base chosen by
 @samp{conv} and not related to the internal precision of the @code{mpfr_t}
-variable).  @code{mpfr_printf} accepts the same @samp{type} specifiers (except
-@samp{q} which is not supported) as @code{gmp}, plus @samp{R} and @samp{P}:
+variable).  @code{mpfr_printf} accepts the same @samp{type} specifiers as
+@code{gmp} (except the non-standard and deprecated @samp{q}, use @samp{ll}
+instead), plus @samp{R} and @samp{P}:
+
 @quotation
 @multitable {(space)} {MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM}
 @item @samp{h}  @tab @code{short}
@@ -1938,10 +1940,14 @@ variable).  @code{mpfr_printf} accepts the same @samp{type} specifiers (except
 @item @samp{P}  @tab @code{mpfr_prec_t} input, integer conversions
 @end multitable
 @end quotation
-The @samp{type} specifiers have the same restrictions as those mentioned in
-the GMP documentation, for instance, only @samp{h} and @samp{l} are portable;
-moreover, @samp{M}, @samp{j}, or @samp{ll} are not supported if your GMP
-library does not support them.
+
+The @samp{type} specifiers have the same restrictions as those
+mentioned in the GMP documentation: except for @samp{R} and @samp{P}
+(which are defined by MPFR), the @samp{type} specifiers are supported
+only if they are supported by @code{gmp_printf} in your GMP build;
+this implies that the standard specifiers, such as @samp{t}, must
+@emph{also} be supported by your C library if you want to use them.
+
 The @samp{rounding} specifier is specific to @code{mpfr_t} parameter and shall
 not be used with other types. @code{mpfr_printf} accepts the same conversion
 specifier character @samp{conv} as @code{gmp_printf} plus @samp{b}.
@@ -1960,6 +1966,7 @@ mpfr_printf ("variable x with %Pu bits", p);
 
 The @samp{R} type is used for a @code{mpfr_t} output and can be followed by
 a rounding specifier denoted by one of the following characters:
+
 @quotation
 @multitable {(space)} {MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM}
 @item @samp{U}  @tab round toward plus infinity
@@ -1970,6 +1977,7 @@ a rounding specifier denoted by one of the following characters:
 argument just before the corresponding @code{mpfr_t} variable.
 @end multitable
 @end quotation
+
 If the precision field is not empty, the @code{mpfr_t} number is rounded to
 the given precision in the direction specified by the rounding mode.
 If the precision field is empty (as in @samp{%.Rf}), the number is displayed
@@ -1990,6 +1998,7 @@ mpfr_printf ("%.128R*f", GMP_RNDN, x);
 displays the @code{mpfr_t} parameter in binary, the behavior is undefined with
 other parameter type.
 The @samp{conv} specifiers allowed with @code{mpfr_t} parameter are:
+
 @quotation
 @multitable {(space)} {MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM}
 @item @samp{a} @samp{A} @tab hex float, C99 style
@@ -1999,6 +2008,7 @@ The @samp{conv} specifiers allowed with @code{mpfr_t} parameter are:
 @item @samp{g} @samp{G} @tab fixed or scientific float
 @end multitable
 @end quotation
+
 In case of non-decimal output, only the significand is written in the
 specified base, the exponent is always displayed in decimal.
 Special values are always displayed as @code{nan}, @code{-inf}, and
