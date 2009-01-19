@@ -228,6 +228,9 @@ if test "$mpfr_cv_nanisnan" = "yes"; then
   AC_MSG_WARN([should NOT use such an option, otherwise MPFR functions])
   AC_MSG_WARN([such as mpfr_get_d and mpfr_set_d may return incorrect])
   AC_MSG_WARN([results on special FP numbers (e.g. NaN or signed zeros).])
+  AC_MSG_WARN([If you did not use such an option, please send us a bug])
+  AC_MSG_WARN([report so that we can try to find a workaround for your])
+  AC_MSG_WARN([platform and/or document the behavior.])
 fi
 
 dnl Check if the chars '0' to '9' are consecutive values
