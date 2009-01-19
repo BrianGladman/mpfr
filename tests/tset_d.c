@@ -31,7 +31,8 @@ main (int argc, char *argv[])
 {
   mpfr_t x, y, z;
   unsigned long k, n;
-  double d, dd;
+  volatile double d;
+  double dd;
 
   tests_start_mpfr ();
   mpfr_test_init ();
@@ -92,8 +93,13 @@ main (int argc, char *argv[])
   d = 0.0;
   mpfr_set_d (x, d, GMP_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_POS(x));
-  mpfr_set_d (x, -d, GMP_RNDN);
-  MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_NEG(x));
+  d = -d;
+  mpfr_set_d (x, d, GMP_RNDN);
+  if (mpfr_cmp_ui (x, 0) != 0 || MPFR_IS_POS(x))
+    {
+      printf ("Error in mpfr_set_d on -0\n");
+      exit (1);
+    }
 
   mpfr_set_inf (x, 1);
   d = mpfr_get_d (x, GMP_RNDN);
