@@ -64,20 +64,34 @@ main (int argc, char *argv[])
 
   mpfr_init (x);
 
+  mpfr_set_nan (x);
+  d = mpfr_get_d (x, GMP_RNDN);
+  if (! DOUBLE_ISNAN (d))
+    {
+      printf ("ERROR for NAN (1)\n");
+#ifdef MPFR_NANISNAN
+      printf ("The reason is that NAN == NAN. Please look at the configure\n"
+              "output and Section \"In case of problem\" the INSTALL file.\n");
+#endif
+      exit (1);
+    }
+  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_set_d (x, d, GMP_RNDN);
+  if (! mpfr_nan_p (x))
+    {
+      printf ("ERROR for NAN (2)\n");
+#ifdef MPFR_NANISNAN
+      printf ("The reason is that NAN == NAN. Please look at the configure\n"
+              "output and Section \"In case of problem\" the INSTALL file.\n");
+#endif
+      exit (1);
+    }
+
   d = 0.0;
   mpfr_set_d (x, d, GMP_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_POS(x));
   mpfr_set_d (x, -d, GMP_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_NEG(x));
-
-#ifndef MPFR_NANISNAN 
-  mpfr_set_nan (x);
-  d = mpfr_get_d (x, GMP_RNDN);
-  MPFR_ASSERTN (DOUBLE_ISNAN (d));
-  mpfr_set_ui (x, 0, GMP_RNDN);
-  mpfr_set_d (x, d, GMP_RNDN);
-  MPFR_ASSERTN(mpfr_nan_p (x));
-#endif
 
   mpfr_set_inf (x, 1);
   d = mpfr_get_d (x, GMP_RNDN);
@@ -167,7 +181,6 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-#ifndef MPFR_NANISNAN
   n = (argc==1) ? 500000 : atoi(argv[1]);
   for (k = 1; k <= n; k++)
     {
@@ -190,7 +203,6 @@ main (int argc, char *argv[])
           exit (1);
         }
     }
-#endif /* MPFR_NANISNAN */
 
   mpfr_clear (x);
   mpfr_clear (y);
