@@ -139,6 +139,55 @@ check_vsprintf (const char *expected, const char *fmt, ...)
   return n0;
 }
 
+
+static void
+native_types ()
+{
+  char c = 'a';
+  int i = -1;
+  unsigned int ui = 1;
+  double d = -1.25;
+  char s[] = "test";
+
+  char buf[255];
+
+  sprintf (buf, "%a", d);
+  check_vsprintf (buf, "%a", d);
+
+  sprintf (buf, "%c", c);
+  check_vsprintf (buf, "%c", c);
+
+  sprintf (buf, "%d", i);
+  check_vsprintf (buf, "%d", i);
+
+  sprintf (buf, "%e", d);
+  check_vsprintf (buf, "%e", d);
+
+  sprintf (buf, "%f", d);
+  check_vsprintf (buf, "%f", d);
+
+  sprintf (buf, "%i", i);
+  check_vsprintf (buf, "%i", i);
+
+  sprintf (buf, "%g", d);
+  check_vsprintf (buf, "%g", d);
+
+  sprintf (buf, "%o", i);
+  check_vsprintf (buf, "%o", i);
+
+  sprintf (buf, "%s", s);
+  check_vsprintf (buf, "%s", s);
+
+  sprintf (buf, "%u", ui);
+  check_vsprintf (buf, "%u", ui);
+
+  sprintf (buf, "%x", ui);
+  check_vsprintf (buf, "%x", ui);
+
+  sprintf (buf, "%p", &i);
+  check_vsprintf (buf, "%p", &i);
+}
+
 static int
 decimal (void)
 {
@@ -780,6 +829,7 @@ main (int argc, char **argv)
   locale = setlocale (LC_ALL, "C");
 #endif
 
+  native_types ();
   hexadecimal ();
   binary ();
   decimal ();
