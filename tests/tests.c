@@ -375,6 +375,7 @@ dbl (double m, int e)
   return m;
 }
 
+/* Warning: NaN values cannot be distinguished if MPFR_NANISNAN is defined. */
 int
 Isnan (double d)
 {

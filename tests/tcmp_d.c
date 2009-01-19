@@ -68,6 +68,7 @@ main (void)
       exit (1);
     }
 
+#ifndef MPFR_NANISNAN
   /* Check NAN */
   mpfr_clear_erangeflag ();
   c = mpfr_cmp_d (x, DBL_NAN);
@@ -84,6 +85,7 @@ main (void)
       printf ("ERROR for NAN (2)\n");
       exit (1);
     }
+#endif /* MPFR_NANISNAN */
 
   mpfr_clear(x);
 
