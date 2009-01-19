@@ -49,10 +49,6 @@ MA 02110-1301, USA. */
 # endif
 #endif
 
-#ifdef HAVE_QUAD_T
-#include <sys/types.h>
-#endif
-
 #include <string.h>             /* for strlen, memcpy and others */
 
 #include "mpfr-impl.h"
@@ -262,14 +258,6 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
           specinfo->arg_type = LONG_ARG;
           break;
         }
-    case 'q':
-      ++format;
-#if defined(HAVE_QUAD_T) && !defined(NPRINTF_Q)
-      specinfo->arg_type = QUAD_ARG;
-#else
-      specinfo->arg_type = UNSUPPORTED;
-#endif
-      break;
     case 'j':
       ++format;
 #if defined(_MPFR_H_HAVE_INTMAX_T) && !defined(NPRINTF_J)
@@ -375,15 +363,6 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
 #define CASE_LONG_LONG_ARG(specinfo, ap)
 #endif
 
-#ifdef HAVE_QUAD_T
-#define CASE_QUAD_ARG(specinfo, ap)             \
-  case QUAD_ARG:                                \
-  (void) va_arg ((ap), quad_t);                 \
-  break;
-#else
-#define CASE_QUAD_ARG(specinfo, ap)
-#endif
-
 #define CONSUME_VA_ARG(specinfo, ap)            \
   do {                                          \
     switch ((specinfo).arg_type)                \
@@ -394,7 +373,6 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
         break;                                  \
       CASE_LONG_ARG (specinfo, ap)              \
       CASE_LONG_LONG_ARG (specinfo, ap)         \
-      CASE_QUAD_ARG(specinfo, ap)               \
       CASE_INTMAX_ARG (specinfo, ap)            \
       case SIZE_ARG:                            \
         (void) va_arg ((ap), size_t);           \

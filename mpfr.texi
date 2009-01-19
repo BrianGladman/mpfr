@@ -1915,23 +1915,36 @@ The format specification accepted by @code{mpfr_printf} is an extension of the
 the standard C function @code{printf} (in particular, notice that the
 precision is related to the number of digits displayed in the base chosen by
 @samp{conv} and not related to the internal precision of the @code{mpfr_t}
-variable).  @code{mpfr_printf} is an extension to the @code{gmp_printf}
-function, hence it accepts the same @samp{type} specifiers plus the following
-two:
+variable).  @code{mpfr_printf} accepts the same @samp{type} specifiers (except
+@samp{q} which is not supported) as @code{gmp}, plus @samp{R} and @samp{P}:
 @quotation
 @multitable {(space)} {MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM}
+@item @samp{h}  @tab @code{short}
+@item @samp{hh} @tab @code{char}
+@item @samp{j}  @tab @code{intmax_t} or @code{uintmax_t}
+@item @samp{l}  @tab @code{long} or @code{wchar_t}
+@item @samp{ll} @tab @code{long long}
+@item @samp{L}  @tab @code{long double}
+@item @samp{t}  @tab @code{ptrdiff_t}
+@item @samp{z}  @tab @code{size_t}
+
+@item @samp{F}  @tab @code{mpf_t}, float conversions
+@item @samp{Q}  @tab @code{mpq_t}, integer conversions
+@item @samp{M}  @tab @code{mp_limb_t}, integer conversions
+@item @samp{N}  @tab @code{mp_limb_t} array, integer conversions
+@item @samp{Z}  @tab @code{mpz_t}, integer conversions
+
 @item @samp{R}  @tab @code{mpfr_t} input, float conversions
 @item @samp{P}  @tab @code{mpfr_prec_t} input, integer conversions
 @end multitable
 @end quotation
 The @samp{type} specifiers have the same restrictions as those mentioned in
 the GMP documentation, for instance, only @samp{h} and @samp{l} are portable;
-moreover, @samp{M}, @samp{j}, @samp{ll}, or @samp{q} are not supported if your
-GMP library does not support them.
-The @samp{rounding} specifier is specific to @code{mpfr_t}
-parameter and shall not be used with other types. @code{mpfr_printf} accepts
-the same conversion specifier character @samp{conv} as @code{gmp_printf} plus
-@samp{b}.
+moreover, @samp{M}, @samp{j}, or @samp{ll} are not supported if your GMP
+library does not support them.
+The @samp{rounding} specifier is specific to @code{mpfr_t} parameter and shall
+not be used with other types. @code{mpfr_printf} accepts the same conversion
+specifier character @samp{conv} as @code{gmp_printf} plus @samp{b}.
 
 The @samp{P} type outputs the precision of an @code{mpfr_t} variable.
 It is needed because the @code{mpfr_prec_t} type doesn't necessarily
