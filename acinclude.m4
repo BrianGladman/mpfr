@@ -221,6 +221,13 @@ int main() {
 ])
 if test "$mpfr_cv_nanisnan" = "yes"; then
   AC_DEFINE(MPFR_NANISNAN,1,[Define if NAN == NAN.])
+  AC_MSG_WARN([The test NAN != NAN is false. The probable reason is that])
+  AC_MSG_WARN([your compiler optimizes floating-point expressions in an])
+  AC_MSG_WARN([unsafe way because some option, such as -ffast-math or])
+  AC_MSG_WARN([-fast (depending on the compiler), has been used.  You])
+  AC_MSG_WARN([should NOT use such an option, otherwise MPFR functions])
+  AC_MSG_WARN([such as mpfr_get_d and mpfr_set_d may return incorrect])
+  AC_MSG_WARN([results on special FP numbers (e.g. NaN or signed zeros).])
 fi
 
 dnl Check if the chars '0' to '9' are consecutive values
