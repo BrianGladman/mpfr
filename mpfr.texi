@@ -445,8 +445,8 @@ be extracted using @samp{cc -V} on some machines, or, if you're using gcc,
 version (the GMP version may be useful too).
 
 If your bug report is good, we will do our best to help you to get a corrected
-version of the library; if the bug report is poor, we won't do anything about
-it (aside of chiding you to send better bug reports).
+version of the library; if the bug report is poor, we will not do anything
+about it (aside of chiding you to send better bug reports).
 
 Send your bug report to: @samp{mpfr@@loria.fr}.
 
@@ -604,7 +604,7 @@ For efficiency reasons, avoid to initialize and clear out a variable in loops.
 Instead, initialize it before entering the loop, and clear it out after the
 loop has exited.
 
-You don't need to be concerned about allocating additional space for MPFR
+You do not need to be concerned about allocating additional space for MPFR
 variables, since any variable has a significand of fixed size.
 Hence unless you change its precision, or clear and reinitialize it,
 a floating-point variable will have the same allocated space during all its
@@ -988,7 +988,7 @@ Note that the input 0 is converted to +0 by @code{mpfr_set_ui},
 @code{mpfr_set_si}, @code{mpfr_set_sj}, @code{mpfr_set_uj},
 @code{mpfr_set_z}, @code{mpfr_set_q} and
 @code{mpfr_set_f}, regardless of the rounding mode.
-If the system doesn't support the IEEE-754 standard, @code{mpfr_set_d},
+If the system does not support the IEEE-754 standard, @code{mpfr_set_d},
 @code{mpfr_set_ld} and
 @code{mpfr_set_decimal64} might not preserve the signed zeros.
 The @code{mpfr_set_decimal64} function is built only with the configure
@@ -1953,7 +1953,7 @@ not be used with other types. @code{mpfr_printf} accepts the same conversion
 specifier character @samp{conv} as @code{gmp_printf} plus @samp{b}.
 
 The @samp{P} type outputs the precision of an @code{mpfr_t} variable.
-It is needed because the @code{mpfr_prec_t} type doesn't necessarily
+It is needed because the @code{mpfr_prec_t} type does not necessarily
 correspond to an unsigned int or any fixed standard type. For example:
 @example
 mpfr_t x;
@@ -2740,7 +2740,7 @@ with @code{mpfr_custom_init_set} is undefined.
 
 @deftypefun mp_exp_t mpfr_custom_get_exp (mpfr_t @var{x})
 Return the exponent of @var{x}, assuming that @var{x} is a non-zero ordinary
-number. The return value for NaN, Infinity or Zero is unspecified but doesn't
+number. The return value for NaN, Infinity or Zero is unspecified but does not
 produce any trap.
 The behavior of this function for any @code{mpfr_t} not initialized
 with @code{mpfr_custom_init_set} is undefined.
