@@ -506,7 +506,7 @@ desired, @MPFRpxreftop{libtool.info, GNU Libtool}
 @c which occurs when reading the info file from the build directory:
 @c   info ./mpfr    or    info -f ./mpfr.info
 @c Due to a poor design, the "info" utility will not find the correct
-@c libtool info file in the .info extension is not provided, because of
+@c libtool info file if the .info extension is not provided, because of
 @c the "libtool" script in MPFR's directory!
 
 If MPFR has been installed to a non-standard location, then it may be
