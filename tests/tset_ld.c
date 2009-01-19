@@ -48,6 +48,8 @@ check_gcc33_bug (void)
 static int
 Isnan_ld (long double d)
 {
+  if (DOUBLE_ISNAN ((double) d))
+    return 1;
   LONGDOUBLE_NAN_ACTION (d, goto yes);
   return 0;
  yes:
@@ -77,7 +79,9 @@ check_set_get (long double d, mpfr_t x)
           exit (1);
         }
       e = mpfr_get_ld (x, (mp_rnd_t) r);
-      if (e != d && !(Isnan_ld(e) && Isnan_ld(d)))
+      if ((Isnan_ld(d) && ! Isnan_ld(e)) ||
+          (Isnan_ld(e) && ! Isnan_ld(d)) ||
+          (e != d && !(Isnan_ld(e) && Isnan_ld(d))))
         {
           printf ("Error: mpfr_get_ld o mpfr_set_ld <> Id\n");
           printf ("  r=%d\n", r);
@@ -158,13 +162,18 @@ main (int argc, char *argv[])
 
   mpfr_init2 (x, MPFR_LDBL_MANT_DIG);
 
+  /* check NaN */
+  mpfr_set_nan (x);
+  d = mpfr_get_ld (x, GMP_RNDN);
+  check_set_get (d, x);
+
   /* check +0.0 and -0.0 */
   d = 0.0;
   check_set_get (d, x);
   d = DBL_NEG_ZERO;
   check_set_get (d, x);
 
-  /* checks that sign of -0.0 is set */
+  /* check that the sign of -0.0 is set */
   mpfr_set_ld (x, DBL_NEG_ZERO, GMP_RNDN);
   if (MPFR_SIGN(x) > 0)
     {
@@ -175,41 +184,38 @@ main (int argc, char *argv[])
 #endif
     }
 
-  /* checks NaN, Inf and -Inf */
-  mpfr_set_nan (x);
-  d = mpfr_get_ld (x, GMP_RNDN);
-  check_set_get (d, x);
-
+  /* check +Inf */
   mpfr_set_inf (x, 1);
   d = mpfr_get_ld (x, GMP_RNDN);
   check_set_get (d, x);
 
+  /* check -Inf */
   mpfr_set_inf (x, -1);
   d = mpfr_get_ld (x, GMP_RNDN);
   check_set_get (d, x);
 
-  /* checks the largest power of two */
+  /* check the largest power of two */
   d = 1.0; while (d < LDBL_MAX / 2.0) d += d;
   check_set_get (d, x);
   check_set_get (-d, x);
 
-  /* checks largest long double */
+  /* check largest long double */
   d = LDBL_MAX;
   check_set_get (d, x);
   check_set_get (-d, x);
 
-  /* checks the smallest power of two */
+  /* check the smallest power of two */
   d = 1.0;
   while ((e = d / 2.0) != (long double) 0.0 && e != d)
     d = e;
   check_set_get (d, x);
   check_set_get (-d, x);
 
-  /* checks largest 2^(2^k) that is representable as a long double */
+  /* check largest 2^(2^k) that is representable as a long double */
   d = (LDBL_MAX / 2) + (LDBL_MAX / 4 * LDBL_EPSILON);
   check_set_get (d, x);
 
-  /* checks that 2^i, 2^i+1 and 2^i-1 are correctly converted */
+  /* check that 2^i, 2^i+1 and 2^i-1 are correctly converted */
   d = 1.0;
   for (i = 1; i < MPFR_LDBL_MANT_DIG; i++)
     {
