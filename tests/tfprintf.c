@@ -140,7 +140,7 @@ check_special (FILE *fout)
 static void
 check_mixed (FILE *fout)
 {
-  char ch = 'a';
+  int ch = 'a';
   signed char sch = -1;
   unsigned char uch = 1;
   short sh = -1;
