@@ -54,22 +54,30 @@ AC_ARG_WITH(gmp_lib,
   ])
 AC_ARG_WITH(gmp,
    [  --with-gmp=DIR          GMP install directory ], [
-   CPPFLAGS="$CPPFLAGS -I$withval/include"
-   LDFLAGS="$LDFLAGS -L$withval/lib"
-   gmp_lib_path="$withval/lib"
+   if test -z "$with_gmp_lib" -a -z "$with_gmp_include" ; then
+      CPPFLAGS="$CPPFLAGS -I$withval/include"
+      LDFLAGS="$LDFLAGS -L$withval/lib"
+      gmp_lib_path="$withval/lib"
+   else
+      AC_MSG_FAILURE([Do not use --with-gmp and --with-gmp-include/--with-gmp-lib options simultaneously.])
+   fi
   ])
 
 AC_ARG_WITH(gmp_build,
    [  --with-gmp-build=DIR    GMP build directory (please read INSTALL file)],
    [
-    CPPFLAGS="$CPPFLAGS -I$withval -I$withval/tune"
-    LDFLAGS="$LDFLAGS -L$withval -L$withval/.libs -L$withval/tune/"
-    gmp_lib_path="$withval$PATH_SEPARATOR$withval/.libs$PATH_SEPARATOR$withval/tune"
-    if test -r $withval/Makefile ; then
-     GMP_CFLAGS=`grep -w "CFLAGS =" $withval/Makefile | sed 's/CFLAGS = //'`
-     GMP_CC=`grep -w "CC =" $withval/Makefile | sed 's/CC = //'`
-    fi
-    use_gmp_build=yes
+   if test -z "$gmp_lib_path" -a -z "$with_gmp_include" ; then
+      CPPFLAGS="$CPPFLAGS -I$withval -I$withval/tune"
+      LDFLAGS="$LDFLAGS -L$withval -L$withval/.libs -L$withval/tune/"
+      gmp_lib_path="$withval$PATH_SEPARATOR$withval/.libs$PATH_SEPARATOR$withval/tune"
+      if test -r $withval/Makefile ; then
+         GMP_CFLAGS=`grep -w "CFLAGS =" $withval/Makefile | sed 's/CFLAGS = //'`
+         GMP_CC=`grep -w "CC =" $withval/Makefile | sed 's/CC = //'`
+      fi
+      use_gmp_build=yes
+   else
+      AC_MSG_FAILURE([Do not use --with-gmp-build and other --with-gmp options simultaneously.])
+   fi
    ])
 
 AC_ARG_WITH(mulhigh_size,

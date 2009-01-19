@@ -109,6 +109,8 @@ by Libtool's versioning system.
 --with-gmp=DIR          assumes that DIR is where you have installed GMP.
                         same as --with-gmp-lib=DIR/lib
                         and     --with-gmp-include=DIR/include
+                        (use either --with-gmp alone or one or both of
+                        --with-gmp-lib/--with-gmp-include)
                         Warning! Do not use these options if you have
                         CPPFLAGS and/or LDFLAGS containing a -I or -L
                         option with a directory that contains a GMP
@@ -124,6 +126,8 @@ by Libtool's versioning system.
                         guaranteed to work as the configure script does
                         some compiler tests earlier, and the change may
                         be too late.
+                        Warning! This option and the group of options
+                        --with-gmp are mutually exclusive.
 
 --enable-assert         build MPFR with assertions.
 
