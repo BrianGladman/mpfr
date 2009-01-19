@@ -500,12 +500,14 @@ gcc myprogram.c -lmpfr -lgmp
 
 @cindex Libtool
 MPFR is built using Libtool and an application can use that to link if
-desired, @MPFRpxreftop{libtool, GNU Libtool}
-@c Note: Do not try the above cross reference without moving mpfr.info
-@c into some "safe" place first. Due to a poor design, "info" will not
-@c find the correct libtool info file because of the "libtool" script
-@c in MPFR's directory!
-@c http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=484740
+desired, @MPFRpxreftop{libtool.info, GNU Libtool}
+@c Note: the .info extension has been added to avoid the following bug:
+@c   http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=484740
+@c which occurs when reading the info file from the build directory:
+@c   info ./mpfr    or    info -f ./mpfr.info
+@c Due to a poor design, the "info" utility will not find the correct
+@c libtool info file in the .info extension is not provided, because of
+@c the "libtool" script in MPFR's directory!
 
 If MPFR has been installed to a non-standard location, then it may be
 necessary to set up environment variables such as @samp{C_INCLUDE_PATH}
@@ -1261,7 +1263,7 @@ function (preliminary interface).
 The block is assumed to be @code{strlen(@var{str})+1} bytes.
 For more information about how it is done:
 @ifnothtml
-@pxref{Custom Allocation,,, gmp,GNU MP}.
+@pxref{Custom Allocation,,, gmp.info,GNU MP}.
 @end ifnothtml
 @ifhtml
 see section ``Custom Allocation'' in @cite{GNU MP}.
