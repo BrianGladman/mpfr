@@ -75,8 +75,9 @@ main (void)
     {
       printf ("ERROR for NAN (1)\n");
 #ifdef MPFR_NANISNAN
-      printf ("The reason is that NAN == NAN. Please look at the configure\n"
-              "output and Section \"In case of problem\" the INSTALL file.\n");
+      printf ("The reason is that NAN == NAN. Please look at the configure "
+              "output\nand Section \"In case of problem\" of the INSTALL "
+              "file.\n");
 #endif
       exit (1);
     }
@@ -87,8 +88,9 @@ main (void)
     {
       printf ("ERROR for NAN (2)\n");
 #ifdef MPFR_NANISNAN
-      printf ("The reason is that NAN == NAN. Please look at the configure\n"
-              "output and Section \"In case of problem\" the INSTALL file.\n");
+      printf ("The reason is that NAN == NAN. Please look at the configure "
+              "output\nand Section \"In case of problem\" of the INSTALL "
+              "file.\n");
 #endif
       exit (1);
     }
