@@ -1954,7 +1954,8 @@ specifier character @samp{conv} as @code{gmp_printf} plus @samp{b}.
 
 The @samp{P} type outputs the precision of an @code{mpfr_t} variable.
 It is needed because the @code{mpfr_prec_t} type does not necessarily
-correspond to an unsigned int or any fixed standard type. For example:
+correspond to an @code{unsigned int} or any fixed standard type.
+For example:
 @example
 mpfr_t x;
 mpfr_prec_t p;
