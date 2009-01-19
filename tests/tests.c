@@ -45,7 +45,9 @@ MA 02110-1301, USA. */
 #  include <time.h>
 #endif
 
-#ifdef HAVE_SYS_FPU_H
+/* <sys/fpu.h> is needed to have union fpc_csr defined under IRIX64
+   (see below). Let's include it only if need be. */
+#if defined HAVE_SYS_FPU_H && defined HAVE_FPC_CSR
 # include <sys/fpu.h>
 #endif
 
