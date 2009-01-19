@@ -96,7 +96,7 @@ check_vprintf (char *fmt, ...)
 }
 
 static void
-check_special ()
+check_special (void)
 {
   mpfr_t x;
 
@@ -142,9 +142,9 @@ check_special ()
 }
 
 static void
-check_mixed ()
+check_mixed (void)
 {
-  char ch = 'a';
+  int ch = 'a';
   signed char sch = -1;
   unsigned char uch = 1;
   short sh = -1;

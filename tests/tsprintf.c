@@ -141,9 +141,9 @@ check_vsprintf (const char *expected, const char *fmt, ...)
 
 
 static void
-native_types ()
+native_types (void)
 {
-  char c = 'a';
+  int c = 'a';
   int i = -1;
   unsigned int ui = 1;
   double d = -1.25;
@@ -746,7 +746,7 @@ random_double (void)
 }
 
 static void
-bug20080610 ()
+bug20080610 (void)
 {
   /* bug on icc found on June 10, 2008 */
   /* this is not a bug but a different implementation choice: ISO C99 doesn't
@@ -782,7 +782,7 @@ bug20080610 ()
 }
 
 static void
-bug20081214 ()
+bug20081214 (void)
 {
  /* problem with glibc 2.3.6, December 14, 2008:
     the system asprintf outputs "-1.0" instead of "-1.". */
