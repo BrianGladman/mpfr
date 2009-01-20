@@ -50,11 +50,17 @@ main (void)
     }
 #endif
 
-  if (__GNU_MP_VERSION_PATCHLEVEL != 0)
-    sprintf (buffer, "%d.%d.%d", __GNU_MP_VERSION, __GNU_MP_VERSION_MINOR,
-             __GNU_MP_VERSION_PATCHLEVEL);
-  else
-    sprintf (buffer, "%d.%d", __GNU_MP_VERSION, __GNU_MP_VERSION_MINOR);
+  sprintf (buffer, "%d.%d.%d", __GNU_MP_VERSION, __GNU_MP_VERSION_MINOR,
+           __GNU_MP_VERSION_PATCHLEVEL);
+  if (strcmp (buffer, gmp_version) == 0)
+    return 0;
+  if (__GNU_MP_VERSION_PATCHLEVEL == 0)
+    {
+      sprintf (buffer, "%d.%d", __GNU_MP_VERSION, __GNU_MP_VERSION_MINOR);
+      if (strcmp (buffer, gmp_version) == 0)
+        return 0;
+    }
+
   /* In some cases, it may be acceptable to have different versions for
      the header and the library, in particular when shared libraries are
      used (e.g., after a bug-fix upgrade of the library). Versioning takes
@@ -63,12 +69,11 @@ main (void)
      uses GMP internals, which may lead to incompatibilities even though
      GMP's public interface has not changed (the following warning is
      useful in that case too). */
-  if (strcmp (buffer, gmp_version) != 0)
-    printf ("The versions of gmp.h (%s) and libgmp (%s) do not seem to "
-            "match.\nThis may lead to errors, in particular with MPFR. "
-            "If some tests fail,\nplease check that first. As we are not "
-            "sure, we do not regard this as\nan error.\n",
-            buffer, gmp_version);
+  printf ("WARNING! The versions of gmp.h (%s) and libgmp (%s) do not "
+          "match.\nThis may lead to errors, in particular with MPFR. "
+          "If some tests fail,\nplease check that first. As we are not "
+          "sure, we do not regard this as\nan error.\n",
+          buffer, gmp_version);
 
   return 0;
 }
