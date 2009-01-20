@@ -276,7 +276,7 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
       specinfo->arg_type = PTRDIFF_ARG;
 #else
       specinfo->arg_type = UNSUPPORTED;
-#endif     
+#endif
       break;
     case 'L':
       ++format;
@@ -284,7 +284,7 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
       specinfo->arg_type = LONG_DOUBLE_ARG;
 #else
       specinfo->arg_type = UNSUPPORTED;
-#endif     
+#endif
       break;
     case 'F':
       ++format;
@@ -349,7 +349,7 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
   break;
 #endif
 
-#if defined(_MPFR_H_HAVE_INTMAX_T) 
+#if defined(_MPFR_H_HAVE_INTMAX_T)
 #define CASE_INTMAX_ARG(specinfo, ap)           \
   case INTMAX_ARG:                              \
   (void) va_arg ((ap), intmax_t);               \
