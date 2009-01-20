@@ -347,7 +347,7 @@ check_pow_si (void)
 }
 
 static void
-check_special_pow_si ()
+check_special_pow_si (void)
 {
   mpfr_t a, b;
   mp_exp_t emin;
@@ -475,7 +475,7 @@ check_inexact (mp_prec_t p)
 }
 
 static void
-special ()
+special (void)
 {
   mpfr_t x, y, z, t;
   mp_exp_t emin, emax;

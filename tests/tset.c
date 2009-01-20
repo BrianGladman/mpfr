@@ -27,7 +27,7 @@ MA 02110-1301, USA. */
 
 /* Maybe better create its own test file ? */
 static void
-check_neg_special ()
+check_neg_special (void)
 {
   mpfr_t x;
   mpfr_init (x);

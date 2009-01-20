@@ -47,7 +47,11 @@ MA 02110-1301, USA. */
 #include "mpfr-test.h"
 
 #ifndef _MPFR_H_HAVE_INTMAX_T
-int main() { return 0; }
+int
+main (void)
+{
+  return 0;
+}
 #else
 
 #define ERROR(str) {printf("Error for "str"\n"); exit(1);}
@@ -150,7 +154,7 @@ check_set_uj_2exp (void)
 }
 
 static void
-check_set_sj ()
+check_set_sj (void)
 {
   mpfr_t x;
   int inex;
@@ -171,7 +175,7 @@ check_set_sj ()
 }
 
 static void
-check_set_sj_2exp ()
+check_set_sj_2exp (void)
 {
   mpfr_t x;
   int inex;

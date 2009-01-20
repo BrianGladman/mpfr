@@ -90,7 +90,7 @@ check_large (void)
 }
 
 static void
-check_cache ()
+check_cache (void)
 {
   mpfr_t x;
   int i;

@@ -204,7 +204,7 @@ check_nans (void)
 const char xs[] = "0.111011111110110000111000001100000111110E-1";
 
 static void
-check_regression ()
+check_regression (void)
 {
   mpfr_t x, y;
   mp_prec_t p;

@@ -277,7 +277,7 @@ tests_rand_end (void)
 /* initialization function for tests using the hardware floats
    Not very useful now. */
 void
-mpfr_test_init ()
+mpfr_test_init (void)
 {
   double d;
 #ifdef HAVE_FPC_CSR

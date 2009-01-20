@@ -50,7 +50,7 @@ const struct {
 };
 
 static void
-check_invert ()
+check_invert (void)
 {
   mpfr_t x;
   mpfr_init2 (x, MPFR_PREC_MIN);

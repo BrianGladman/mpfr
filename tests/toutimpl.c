@@ -37,7 +37,8 @@ static const char Buffer[] =
 "-0\n"
 "0.10101010101011111001000110001100010000100000000000000E32\n";
 
-int main()
+int
+main (void)
 {
   mpfr_t x;
   FILE *f;

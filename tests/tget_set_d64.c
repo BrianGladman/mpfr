@@ -49,7 +49,7 @@ print_decimal64 (_Decimal64 d)
 }
 
 static void
-check_inf_nan ()
+check_inf_nan (void)
 {
   mpfr_t  x, y;
   _Decimal64 d;

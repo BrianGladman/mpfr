@@ -27,7 +27,7 @@ MA 02110-1301, USA. */
 #include "mpfr-test.h"
 
 static int
-check_denorms ()
+check_denorms (void)
 {
   mp_rnd_t rnd_mode;
   mpfr_t x;
@@ -70,7 +70,7 @@ check_denorms ()
 }
 
 static void
-check_inf_nan ()
+check_inf_nan (void)
 {
   /* only if nans and infs are available */
 #if _GMP_IEEE_FLOATS

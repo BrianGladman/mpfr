@@ -219,7 +219,7 @@ check_large (void)
 #include "tgeneric.c"
 
 static void
-check_special ()
+check_special (void)
 {
   mpfr_t x, y, z;
   mp_exp_t emin, emax;

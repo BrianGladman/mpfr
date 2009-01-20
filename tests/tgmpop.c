@@ -127,7 +127,7 @@ special (void)
 }
 
 static void
-check_for_zero ()
+check_for_zero (void)
 {
   /* Check that 0 is unsigned! */
   mpq_t q;
