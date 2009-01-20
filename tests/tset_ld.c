@@ -48,7 +48,8 @@ check_gcc33_bug (void)
 static int
 Isnan_ld (long double d)
 {
-  if (DOUBLE_ISNAN ((double) d))
+  double e = (double) d;
+  if (DOUBLE_ISNAN (e))
     return 1;
   LONGDOUBLE_NAN_ACTION (d, goto yes);
   return 0;

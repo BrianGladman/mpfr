@@ -395,7 +395,7 @@ static double double_zero = 0.0;
 # define DBL_NEG_ZERO (-0.0)
 #endif
 
-/* for x of type ieee_double_extract */
+/* Note: the argument x must be a lvalue of type double. */
 #if _GMP_IEEE_FLOATS
 typedef union ieee_double_extract Ieee_double_extract;
 
@@ -407,16 +407,18 @@ typedef union ieee_double_extract Ieee_double_extract;
                          ((((Ieee_double_extract *)&(x))->s.manl != 0) || \
                          (((Ieee_double_extract *)&(x))->s.manh != 0)))
 #else
-# define DOUBLE_ISINF(x) ((x) > DBL_MAX || (x) < -DBL_MAX)
+/* Below, the &(x) == &(x) allows to make sure that x is a lvalue
+   without (probably) any warning from the compiler. */
+# define DOUBLE_ISINF(x) (&(x) == &(x) && ((x) > DBL_MAX || (x) < -DBL_MAX))
 # ifdef MPFR_NANISNAN
 /* Avoid MIPSpro / IRIX64 / gcc -ffast-math (incorrect) optimizations.
    The + must not be replaced by a ||. With gcc -ffast-math, NaN is
    regarded as a positive number or something like that; the second
    test catches this case. */
 #  define DOUBLE_ISNAN(x) \
-    (!((((x) >= 0.0) + ((x) <= 0.0)) && -(x)*(x) <= 0.0))
+    (&(x) == &(x) && !((((x) >= 0.0) + ((x) <= 0.0)) && -(x)*(x) <= 0.0))
 # else
-#  define DOUBLE_ISNAN(x) ((x) != (x))
+#  define DOUBLE_ISNAN(x) (&(x) == &(x) && (x) != (x))
 # endif
 #endif
 
