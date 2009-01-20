@@ -90,6 +90,12 @@ check_set_get (long double d, mpfr_t x)
           printf ("  x="); mpfr_out_str (NULL, 16, 0, x, GMP_RNDN);
           printf ("\n");
           ld_trace ("  e", e);
+#ifdef MPFR_NANISNAN
+          if (Isnan_ld(d) || Isnan_ld(e))
+            printf ("The reason is that NAN == NAN. Please look at the "
+                    "configure output\nand Section \"In case of problem\" "
+                    "of the INSTALL file.\n");
+#endif
           exit (1);
         }
     }
