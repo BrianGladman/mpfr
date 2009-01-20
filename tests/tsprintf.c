@@ -139,7 +139,6 @@ check_vsprintf (const char *expected, const char *fmt, ...)
   return n0;
 }
 
-
 static void
 native_types (void)
 {
