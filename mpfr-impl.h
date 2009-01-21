@@ -407,18 +407,21 @@ typedef union ieee_double_extract Ieee_double_extract;
                          ((((Ieee_double_extract *)&(x))->s.manl != 0) || \
                          (((Ieee_double_extract *)&(x))->s.manh != 0)))
 #else
-/* Below, the &(x) == &(x) allows to make sure that x is a lvalue
-   without (probably) any warning from the compiler. */
-# define DOUBLE_ISINF(x) (&(x) == &(x) && ((x) > DBL_MAX || (x) < -DBL_MAX))
+/* Below, the &(x) == &(x) || &(x) != &(x) allows to make sure that x
+   is a lvalue without (probably) any warning from the compiler.  The
+   &(x) != &(x) is needed to avoid a failure under Mac OS X 10.4.11
+   (with Xcode 2.4.1, i.e. the latest one). */
+# define LVALUE(x) (&(x) == &(x) || &(x) != &(x))
+# define DOUBLE_ISINF(x) (LVALUE(x) && ((x) > DBL_MAX || (x) < -DBL_MAX))
 # ifdef MPFR_NANISNAN
 /* Avoid MIPSpro / IRIX64 / gcc -ffast-math (incorrect) optimizations.
    The + must not be replaced by a ||. With gcc -ffast-math, NaN is
    regarded as a positive number or something like that; the second
    test catches this case. */
 #  define DOUBLE_ISNAN(x) \
-    (&(x) == &(x) && !((((x) >= 0.0) + ((x) <= 0.0)) && -(x)*(x) <= 0.0))
+    (LVALUE(x) && !((((x) >= 0.0) + ((x) <= 0.0)) && -(x)*(x) <= 0.0))
 # else
-#  define DOUBLE_ISNAN(x) (&(x) == &(x) && (x) != (x))
+#  define DOUBLE_ISNAN(x) (LVALUE(x) && (x) != (x))
 # endif
 #endif
 
