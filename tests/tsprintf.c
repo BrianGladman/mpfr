@@ -150,9 +150,6 @@ native_types (void)
 
   char buf[255];
 
-  sprintf (buf, "%a", d);
-  check_vsprintf (buf, "%a", d);
-
   sprintf (buf, "%c", c);
   check_vsprintf (buf, "%c", c);
 
@@ -182,9 +179,6 @@ native_types (void)
 
   sprintf (buf, "%x", ui);
   check_vsprintf (buf, "%x", ui);
-
-  sprintf (buf, "%p", &i);
-  check_vsprintf (buf, "%p", &i);
 }
 
 static int
