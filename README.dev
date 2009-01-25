@@ -101,7 +101,7 @@ To make a release (for the MPFR team):
   6) Test the release version on different machines, with and without
      --enable-assert (--enable-assert, though doing more checks, may
      hide bugs due to the fact that <stdio.h> is always included) with
-     and without the --disable-alloca configure option (or compile GMP
+     and without GMP's --disable-alloca configure option (or compile GMP
      with --enable-alloca=debug and MPFR with --with-gmp-build to be
      able to get the memory leak errors), with and without -DXDEBUG in
      $CFLAGS, with and without gmp internal files, with and without
