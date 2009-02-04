@@ -42,8 +42,12 @@ Table of contents:
 2. Installation
 ##############################################################################
 
-- nothing to do currently :-)
+- if we want to distinguish GMP and MPIR, we can check at configure time
+  the following symbols which are only defined in MPIR:
 
+  #define __MPIR_VERSION 0
+  #define __MPIR_VERSION_MINOR 9
+  #define __MPIR_VERSION_PATCHLEVEL 0
 
 ##############################################################################
 3. Changes in existing functions
