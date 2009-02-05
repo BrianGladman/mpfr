@@ -678,8 +678,9 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
 # endif
 #endif
 
-/* Warning! This macro doesn't work with K&R C and shouldn't be used
-   internally. For public use only, but see the MPFR manual. */
+/* Warning! This macro doesn't work with K&R C (e.g., compare the "gcc -E"
+   output with and without -traditional) and shouldn't be used internally.
+   For public use only, but see the MPFR manual. */
 #define MPFR_DECL_INIT(_x, _p)                                        \
   MPFR_EXTENSION mp_limb_t __gmpfr_local_tab_##_x[((_p)-1)/GMP_NUMB_BITS+1]; \
   MPFR_EXTENSION mpfr_t _x = {{(_p),1,__MPFR_EXP_NAN,__gmpfr_local_tab_##_x}}
