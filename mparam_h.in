@@ -23,8 +23,9 @@ MA 02110-1301, USA. */
 # error "MPFR Internal not included"
 #endif
 
-/* note: the different macros used here are those defined by gcc,
-   for example with gcc -dM -E -xc /dev/null */
+/* Note: the different macros used here are those defined by gcc,
+   for example with gcc -dM -E -xc /dev/null
+   As of gcc 4.2, you can also use: -march=native or -mtune=native */
 
 /*****************************
  * Threshold for Pentium 4   *
