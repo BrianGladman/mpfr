@@ -169,4 +169,7 @@ MA 02110-1301, USA. */
 #undef mpf_urandomb
 #define mpf_urandomb(x,y,n) mpfr_urandomb(x,y)
 
+#undef mpz_set_f
+#define mpz_set_f(z,f) mpfr_get_z(z,f,MPFR_DEFAULT_RND)
+
 #endif
