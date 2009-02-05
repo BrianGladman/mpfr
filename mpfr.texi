@@ -891,10 +891,41 @@ The precision @var{prec} must be an integer between @code{MPFR_PREC_MIN} and
 @code{MPFR_PREC_MAX} (otherwise the behavior is undefined).
 @end deftypefun
 
+@deftypefun void mpfr_inits2 (mp_prec_t @var{prec}, mpfr_t @var{x}, ...)
+Initialize all the @code{mpfr_t} variables of the given @code{va_list},
+set their precision to be @strong{exactly}
+@var{prec} bits and their value to NaN.
+See @code{mpfr_init2} for more details.
+The @code{va_list} is assumed to be composed only of type @code{mpfr_t}
+(or equivalently @code{mpfr_ptr}).
+It begins from @var{x}. It ends when it encounters a null pointer (whose
+type must also be @code{mpfr_ptr}).
+@end deftypefun
+
 @deftypefun void mpfr_clear (mpfr_t @var{x})
 Free the space occupied by @var{x}.  Make sure to call this function for all
 @code{mpfr_t} variables when you are done with them.
 @end deftypefun
+
+@deftypefun void mpfr_clears (mpfr_t @var{x}, ...)
+Free the space occupied by all the @code{mpfr_t} variables of the given
+@code{va_list}. See @code{mpfr_clear} for more details.
+The @code{va_list} is assumed to be composed only of type @code{mpfr_t}
+(or equivalently @code{mpfr_ptr}).
+It begins from @var{x}. It ends when it encounters a null pointer (whose
+type must also be @code{mpfr_ptr}).
+@end deftypefun
+
+Here is an example of how to use multiple initialization functions:
+
+@example
+@{
+  mpfr_t x, y, z, t;
+  mpfr_inits2 (256, x, y, z, t, (mpfr_ptr) 0);
+  @dots{}
+  mpfr_clears (x, y, z, t, (mpfr_ptr) 0);
+@}
+@end example
 
 @deftypefun void mpfr_init (mpfr_t @var{x})
 Initialize @var{x} and set its value to NaN.
@@ -906,6 +937,19 @@ by a call to @code{mpfr_set_default_prec}.
 
 Warning! In a given program, some other libraries might change the default
 precision and not restore it. Thus it is safer to use @code{mpfr_init2}.
+@end deftypefun
+
+@deftypefun void mpfr_inits (mpfr_t @var{x}, ...)
+Initialize all the @code{mpfr_t} variables of the given @code{va_list},
+set their precision to be the default precision and their value to NaN.
+See @code{mpfr_init} for more details.
+The @code{va_list} is assumed to be composed only of type @code{mpfr_t}
+(or equivalently @code{mpfr_ptr}).
+It begins from @var{x}. It ends when it encounters a null pointer (whose
+type must also be @code{mpfr_ptr}).
+
+Warning! In a given program, some other libraries might change the default
+precision and not restore it. Thus it is safer to use @code{mpfr_inits2}.
 @end deftypefun
 
 @deftypefun void mpfr_set_default_prec (mp_prec_t @var{prec})
@@ -2572,49 +2616,6 @@ with gcc in c89 mode and with @samp{-pedantic}, you may want to define the
 @code{MPFR_DECL_INIT} implementation.
 @end itemize
 @end defmac
-
-@deftypefun void mpfr_inits (mpfr_t @var{x}, ...)
-Initialize all the @code{mpfr_t} variables of the given @code{va_list},
-set their precision to be the default precision and their value to NaN.
-See @code{mpfr_init} for more details.
-The @code{va_list} is assumed to be composed only of type @code{mpfr_t}
-(or equivalently @code{mpfr_ptr}).
-It begins from @var{x}. It ends when it encounters a null pointer (whose
-type must also be @code{mpfr_ptr}).
-@end deftypefun
-
-
-@deftypefun void mpfr_inits2 (mp_prec_t @var{prec}, mpfr_t @var{x}, ...)
-Initialize all the @code{mpfr_t} variables of the given @code{va_list},
-set their precision to be @strong{exactly}
-@var{prec} bits and their value to NaN.
-See @code{mpfr_init2} for more details.
-The @code{va_list} is assumed to be composed only of type @code{mpfr_t}
-(or equivalently @code{mpfr_ptr}).
-It begins from @var{x}. It ends when it encounters a null pointer (whose
-type must also be @code{mpfr_ptr}).
-@end deftypefun
-
-@deftypefun void mpfr_clears (mpfr_t @var{x}, ...)
-Free the space occupied by all the @code{mpfr_t} variables of the given
-@code{va_list}. See @code{mpfr_clear} for more details.
-The @code{va_list} is assumed to be composed only of type @code{mpfr_t}
-(or equivalently @code{mpfr_ptr}).
-It begins from @var{x}. It ends when it encounters a null pointer (whose
-type must also be @code{mpfr_ptr}).
-@end deftypefun
-
-Here is an example of how to use multiple initialization functions:
-
-@example
-@{
-  mpfr_t x, y, z, t;
-  mpfr_inits2 (256, x, y, z, t, (mpfr_ptr) 0);
-  @dots{}
-  mpfr_clears (x, y, z, t, (mpfr_ptr) 0);
-@}
-@end example
-
 
 @node Compatibility with MPF, Custom Interface, Advanced Functions, MPFR Interface
 @cindex Compatibility with MPF
