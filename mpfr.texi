@@ -863,7 +863,6 @@ any MPFR function or macro, whether or not there is an error.
 * Rounding Related Functions::
 * Miscellaneous Functions::
 * Exception Related Functions::
-* Advanced Functions::
 * Compatibility with MPF::
 * Custom Interface::
 * Internals::
@@ -951,6 +950,32 @@ type must also be @code{mpfr_ptr}).
 Warning! In a given program, some other libraries might change the default
 precision and not restore it. Thus it is safer to use @code{mpfr_inits2}.
 @end deftypefun
+
+@defmac MPFR_DECL_INIT (@var{name}, @var{prec})
+This macro declares @var{name} as an automatic variable of type @code{mpfr_t},
+initializes it and sets its precision to be @strong{exactly} @var{prec} bits
+and its value to NaN. @var{name} must be a valid identifier.
+You must use this macro in the declaration section.
+This macro is much faster than using @code{mpfr_init2} but has some
+drawbacks:
+
+@itemize @bullet
+@item You @strong{must not} call @code{mpfr_clear} with variables
+created with this macro (the storage is allocated at the point of declaration
+and deallocated when the brace-level is exited).
+@item You @strong{cannot} change their precision.
+@item You @strong{should not} create variables with huge precision with this
+macro.
+@item Your compiler must support @samp{Non-Constant Initializers} (standard
+in C++ and ISO C99) and @samp{Token Pasting}
+(standard in ISO C89). If @var{prec} is not a constant expression, your
+compiler must support @samp{variable-length automatic arrays} (standard
+in ISO C99). @samp{GCC 2.95.3} and above supports all these features.
+If you compile your program with gcc in c89 mode and with @samp{-pedantic},
+you may want to define the @code{MPFR_USE_EXTENSION} macro to avoid warnings
+due to the @code{MPFR_DECL_INIT} implementation.
+@end itemize
+@end defmac
 
 @deftypefun void mpfr_set_default_prec (mp_prec_t @var{prec})
 Set the default precision to be @strong{exactly} @var{prec} bits.  The
@@ -2442,7 +2467,7 @@ applied to the old (compile-time) MPFR version are not available (however
 this information should not have much interest in general).
 @end deftypefun
 
-@node Exception Related Functions, Advanced Functions, Miscellaneous Functions, MPFR Interface
+@node Exception Related Functions, Compatibility with MPF, Miscellaneous Functions, MPFR Interface
 @comment  node-name,  next,  previous,  up
 @cindex Exception related functions
 @section Exception Related Functions
@@ -2584,40 +2609,7 @@ Return the corresponding (underflow, overflow, invalid, inexact, @emph{erange})
 flag, which is non-zero iff the flag is set.
 @end deftypefun
 
-@node Advanced Functions, Compatibility with MPF, Exception Related Functions, MPFR Interface
-@comment  node-name,  next,  previous,  up
-@cindex Advanced functions
-@section Advanced Functions
-
-All the given interfaces are preliminary. They might change incompatibly in
-future revisions.
-
-@defmac MPFR_DECL_INIT (@var{name}, @var{prec})
-This macro declares @var{name} as an automatic variable of type @code{mpfr_t},
-initializes it and sets its precision to be @strong{exactly} @var{prec} bits
-and its value to NaN. @var{name} must be a valid identifier.
-You must use this macro in the declaration section.
-This macro is much faster than using @code{mpfr_init2} but has some
-drawbacks:
-
-@itemize @bullet
-@item You @strong{must not} call @code{mpfr_clear} with variables
-created with this macro (The storage is allocated at the point of declaration
-and deallocated when the brace-level is exited.).
-@item You @strong{can not} change their precision.
-@item You @strong{should not} create variables with huge precision with this macro.
-@item Your compiler must support @samp{Non-Constant Initializers} (standard
-in C++ and ISO C99) and @samp{Token Pasting}
-(standard in ISO C89). If @var{prec} is not a compiler constant, your compiler
-must support @samp{Variable-length automatic arrays} (standard in ISO C99).
-@samp{GCC 2.95.3} supports all these features. If you compile your program
-with gcc in c89 mode and with @samp{-pedantic}, you may want to define the
-@code{MPFR_USE_EXTENSION} macro to avoid warnings due to the
-@code{MPFR_DECL_INIT} implementation.
-@end itemize
-@end defmac
-
-@node Compatibility with MPF, Custom Interface, Advanced Functions, MPFR Interface
+@node Compatibility with MPF, Custom Interface, Exception Related Functions, MPFR Interface
 @cindex Compatibility with MPF
 @section Compatibility With MPF
 
