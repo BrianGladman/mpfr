@@ -290,6 +290,14 @@ Table of contents:
   than the current code, but this isn't probably noticeable (this should
   be tested).
 
+- better distinguish different processors (for example Opteron and Core 2)
+  and use corresponding default tuning parameters (as in GMP). This could be
+  done in configure.in to avoid hacking config.guess, for example define
+  MPFR_HAVE_CORE2.
+
+- during the Many Digits competition, we noticed that (our implantation of)
+  Mulders short product was slower than a full product for large sizes.
+  This should be precisely analyzed and fixed if needed.
 
 ##############################################################################
 6. Miscellaneous
