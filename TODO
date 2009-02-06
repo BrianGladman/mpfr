@@ -288,12 +288,25 @@ Table of contents:
   a library provided by binary packages or shared via NFS) with different
   thresholds. On the default values, this would be a bit less efficient
   than the current code, but this isn't probably noticeable (this should
-  be tested).
+  be tested). Something like:
+    long *mpfr_tune_get(void) to get the current values (the first value
+      is the size of the array).
+    int mpfr_tune_set(long *array) to set the tune values.
+    int mpfr_tune_run(long level) to find the best values (the support
+      for this feature is optional, this can also be done with an
+      external function).
 
 - better distinguish different processors (for example Opteron and Core 2)
   and use corresponding default tuning parameters (as in GMP). This could be
   done in configure.in to avoid hacking config.guess, for example define
   MPFR_HAVE_CORE2.
+  Note (VL): the effect on cross-compilation (that can be a processor
+  with the same architecture, e.g. compilation on a Core 2 for an
+  Opteron) is not clear. The choice should be consistent with the
+  build target (e.g. -march or -mtune value with gcc).
+  Also choose better default values. For instance, the default value of
+  MPFR_MUL_THRESHOLD is 40, while the best values that have been found
+  are between 11 and 19 for 32 bits and between 4 and 10 for 64 bits!
 
 - during the Many Digits competition, we noticed that (our implantation of)
   Mulders short product was slower than a full product for large sizes.
