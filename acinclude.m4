@@ -106,14 +106,6 @@ alpha*-*-*)
   fi
 esac
 
-dnl Check for Core2 processor
-case $host in
-x86_64-*linux*)
-  case `sed -n '/^vendor_id/s/^.*: \(.*\)/\1/p' < /proc/cpuinfo` in
-    *Intel*) AC_DEFINE(HAVE_HOST_CORE2,1,[Define if processor is Core 2]) ;;
-  esac
-esac
-
 dnl check for long long
 AC_CHECK_TYPE([long long int],
    AC_DEFINE(HAVE_LONG_LONG, 1, [Define if compiler supports long long]),,)
