@@ -78,6 +78,15 @@ To make a release (for the MPFR team):
      with "make tune" and put them in mparam_h.in (make sure to
      use the latest release of GMP).
 
+     You can produce time graphs to check the thresholds are correct (and
+     compare to the corresponding mpf functions) with mbench. For example:
+     $ cd mpfr/mbench
+     $ make mpfr-gfx GMP=... MPFR=...
+     $  ./mpfr-gfx -b16 -e320 -s16 -f2 -x3 # compares mpfr_mul and mpf_mul
+                                           # from 16 to 320 bits with increment
+                                           # of 16 bits
+     $ gnuplot -persist plot.gnuplot
+
      Check the coverage of each source file by the test suite is at least 90%
      (or clearly justify any value under this threshold), and publish (for
      example in NEWS) the global coverage of this release. The individual
