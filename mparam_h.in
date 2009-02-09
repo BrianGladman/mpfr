@@ -613,8 +613,7 @@ MA 02110-1301, USA. */
 /*****************************
  * Threshold for IA64        *
  *****************************/
-#elif defined (__ia64) /* gcc 4.3.2 does not recognize -mtune=ia64,
-                          neither -mtune=itanium nor -mtune=itanium2 */
+#elif defined (__ia64) || defined (__tune_ia64__)
 
 #define MPFR_MULHIGH_TAB  \
  -1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, \
