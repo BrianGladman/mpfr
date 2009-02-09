@@ -30,7 +30,7 @@ MA 02110-1301, USA. */
 /*****************************
  * Threshold for Pentium 4   *
  *****************************/
-#if defined (__pentium4)
+#if defined (__tune_pentium4__)
 
 #define MPFR_MULHIGH_TAB  \
  -1,0,-1,0,-1,0,0,-1,0,-1,0,0,0,0,0,0, \
@@ -388,7 +388,7 @@ MA 02110-1301, USA. */
 /****************************
  * Threshold for AMD 64     *
  ****************************/
-#elif defined (__amd64)
+#elif defined (__tune_k8__)
 
 #define MPFR_MULHIGH_TAB  \
  -1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, \
@@ -463,7 +463,7 @@ MA 02110-1301, USA. */
 /*****************************
  * Threshold for Athlon      *
  *****************************/
-#elif defined (__athlon)
+#elif defined (__tune_athlon__)
 
 #define MPFR_MULHIGH_TAB  \
  -1,0,-1,0,-1,0,-1,-1,0,-1,-1,0,0,0,0,10, \
@@ -538,7 +538,7 @@ MA 02110-1301, USA. */
 /*****************************
  * Threshold for PentiumPro  *
  *****************************/
-#elif defined (__i386)
+#elif defined (__tune_pentiumpro__) || defined (__tune_i686__) || defined (__i386) /* we consider all other 386's here */
 
 #define MPFR_MULHIGH_TAB  \
  -1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, \
@@ -613,7 +613,8 @@ MA 02110-1301, USA. */
 /*****************************
  * Threshold for IA64        *
  *****************************/
-#elif defined (__ia64)
+#elif defined (__ia64) /* gcc 4.3.2 does not recognize -mtune=ia64,
+                          neither -mtune=itanium nor -mtune=itanium2 */
 
 #define MPFR_MULHIGH_TAB  \
  -1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, \
