@@ -1,6 +1,6 @@
 /*
 Copyright 2005, 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
-Contributed by Patrick Pelissier, INRIA.
+Contributed by Patrick Pelissier and Paul Zimmermann, INRIA.
 
 This file is part of the MPFR Library.
 
@@ -85,7 +85,7 @@ MA 02110-1301, USA. */
 
 /*
  * List of all the tests to do.
- * Macro "Bench" is defined futhermore
+ * Macro "BENCH" is defined below.
  */
 #define TEST_LIST \
   BENCH("MPFR::::::::::", ; ); \
@@ -226,35 +226,65 @@ double get_speed(mp_prec_t p, int select)
   return (double) (moy) / (double) num;
 }
 
-int write_data(const char *filename, 
-	       unsigned long num,
-	       mp_prec_t p1, mp_prec_t p2, mp_prec_t ps,
-	       int select1, int select2)
+/* compares two functions given by indices select1 and select2
+   (by default select1 refers to mpfr and select2 to mpf) */
+int
+write_data (const char *filename, 
+	    unsigned long num,
+	    mp_prec_t p1, mp_prec_t p2, mp_prec_t ps,
+	    int select1, int select2)
 {
-  FILE *f;
+  char strf[256], strg[256];
+  FILE *f, *g;
   mp_prec_t p;
+  int op = 0;
 
   lets_start (num, p2);
-  f = fopen(filename, "w");
-  if (f==NULL)
+  strcpy (strf, filename);
+  strcat (strf, ".data");
+  f = fopen (strf, "w");
+  if (f == NULL)
     {
-      fprintf(stderr, "Can't open %s!\n", filename);
+      fprintf (stderr, "Can't open %s!\n", strf);
       lets_end ();
-      abort();
+      abort ();
     }
+  strcpy (strg, filename);
+  strcat (strg, ".gnuplot");
+  g = fopen (strg, "w");
+  if (g == NULL)
+    {
+      fprintf (stderr, "Can't open %s!\n", strg);
+      lets_end ();
+      abort ();
+    }
+  fprintf (g, "set data style lines\n");
+#undef BENCH
+#define BENCH(TEST_STR, TEST)						\
+  if (++op == select1)							\
+    fprintf (g, "plot  \"%s\" using 1:2 title \"%s\", \\\n", strf,	\
+	     TEST_STR);							\
+  else if (op == select2)						\
+    fprintf (g, "      \"%s\" using 1:3 title \"%s\"\n", strf, TEST_STR);
+  op = -1;
+  TEST_LIST;
   for (p = p1 ; p < p2 ; p+=ps)
     fprintf(f, "%lu\t%1.20e\t%1.20e\n", p, 
 	    get_speed(p, select1),
 	    get_speed(p, select2));
-  fclose(f);
+  fclose (f);
+  fclose (g);
   lets_end ();
+  fprintf (stderr, "Now type: gnuplot -persist %s.gnuplot\n", filename);
   return 0;
 }
 
-int write_data2(const char *filename, 
-		unsigned long num,
-		mp_prec_t p_begin, mp_prec_t p_end, mp_prec_t p_step,
-		int s_begin, int s_end)
+/* this function considers all functions from s_begin to s_end */
+int
+write_data2 (const char *filename, 
+	     unsigned long num,
+	     mp_prec_t p_begin, mp_prec_t p_end, mp_prec_t p_step,
+	     int s_begin, int s_end)
 {
   FILE *f;
   mp_prec_t p;
@@ -295,7 +325,7 @@ int main(int argc, const char *argv[])
   mp_prec_t p1, p2, ps;
   int i;
   unsigned long stat;
-  const char *filename = "plot.data";
+  const char *filename = "plot";
   int select1, select2, max_op, conti;
 
   printf (USAGE);
