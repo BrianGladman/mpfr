@@ -571,7 +571,7 @@ and write the new THRESHOLD in the file `mparam.h':
   fprintf (f, "#define MPFR_EXP_THRESHOLD %lu\n",
            (unsigned long) mpfr_exp_threshold);
 
-More complex tune are possible but needs special attention.
+More complex tuning is possible but needs special attention.
 
 ===========================================================================
 

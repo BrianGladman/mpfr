@@ -121,7 +121,7 @@ MA 02110-1301, USA. */
 
 unsigned long num;
 mpf_t *xt, *yt, *zt;
-int smooth = 3;
+int smooth = 3; /* (default) minimal number of routine calls for each number */
 
 void lets_start(unsigned long n, mp_prec_t p)
 {
@@ -188,8 +188,10 @@ double get_speed(mp_prec_t p, int select)
 
   TIMP_OVERHEAD ();
 
+  /* we perform at least smooth loops */
   for(j = 0, cont = smooth ; cont ; j++, cont--)
     {
+      /* we loop over each of the num random numbers */
       for(i = 0 ; i < num ; i++)
 	{
 	  /* Set var for tests */
@@ -198,6 +200,9 @@ double get_speed(mp_prec_t p, int select)
 	  mpfr_set_f(b, yt[i], GMP_RNDN);
 	  mpfr_set_f(c, zt[i], GMP_RNDN);
 	  SCS(( scs_set_mpfr(sc2, b), scs_set_mpfr(sc3, c) ));
+	  /* if the measured time m is smaller than the smallest one
+	     observed so far mc[i] for the i-th random number, we start
+	     again the smooth loops */
 #undef BENCH
 #define BENCH(TEST_STR, TEST)                           \
 	  if (op++ == select) {                         \
@@ -333,7 +338,7 @@ int main(int argc, const char *argv[])
   max_op = op_num ();
   select1 = 1; select2 = 13;
   p1 = 2; p2 = 500; ps = 4;
-  stat = 500;
+  stat = 500; /* number of different random numbers */
   conti = 0;
 
   for(i = 1 ; i < argc ; i++)
@@ -379,7 +384,7 @@ int main(int argc, const char *argv[])
   /* Set low priority */
   setpriority(PRIO_PROCESS,0,14);
   printf("GMP:%s MPFR:%s From p=%lu to %lu by %lu Output: %s N=%ld\n",
-	 gmp_version, mpfr_get_version(), p1,p2,ps, filename,stat);
+	 gmp_version, mpfr_get_version(), p1,p2,ps, filename, stat);
   if (select2 >= max_op)
     select2 = max_op-1;
   if (select1 >= max_op)
