@@ -205,7 +205,7 @@ static double domeasure (mp_prec_t *threshold,
       abort ();
     }
   free (s.xp);
-  /* t1 is the time of the first alog (used for low prec) */
+  /* t1 is the time of the first algo (used for low prec) */
   if (t2 >= t1)
     d = (t2 - t1) / t2;
   else
