@@ -49,11 +49,15 @@ $(srcdir)/get_patches.c: PATCHES get_patches.sh
 #CLEANFILES = get_patches.c
 
 # Tune program
-EXTRA_PROGRAMS = tuneup
+EXTRA_PROGRAMS = tuneup speed
 
 tuneup_SOURCES = tuneup.c
 tuneup_LDADD = -lspeed $(top_builddir)/libmpfr.la
 tuneup_LDFLAGS = -static
+
+speed_SOURCES = speed.c
+speed_LDADD = -lspeed $(top_builddir)/libmpfr.la
+speed_LDFLAGS = -static
 
 tune:
 	$(MAKE) $(AM_MAKEFLAGS) tuneup$(EXEEXT)
