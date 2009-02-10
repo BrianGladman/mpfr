@@ -74,9 +74,17 @@ To make a release (for the MPFR team):
      the libtool-related files (config.guess, etc.) are up-to-date. An
      "autoreconf -f -i" may be necessary.
 
-  1) Generate the default thresholds on different architectures
-     with "make tune" and put them in mparam_h.in (make sure to
-     use the latest release of GMP).
+  1) Generate the tuning parameters on different architectures
+     and put them in mparam_h.in. For each architecture:
+
+     a) download the latest release of GMP on gmplib.org
+     b) build GMP with --disable-shared in say /tmp/gmp-x.y.z
+        (there is no need in tuning GMP, since most users will build MPFR
+	 with a vanilla GMP installation, i.e., with the default GMP tuning)
+     c) configure MPFR with --disable-shared --with-gmp-build=/tmp/gmp-x.y.z
+     d) run "make" and "make tune"
+     e) put the resulting mparam.h file into mparam_h.in (please include
+        the version of GMP and the compiler used)
 
      You can produce time graphs to check the thresholds are correct (and
      compare to the corresponding mpf functions) with mbench. For example:
