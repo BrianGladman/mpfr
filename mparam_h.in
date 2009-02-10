@@ -822,7 +822,7 @@ MA 02110-1301, USA. */
 /*****************************
  * Threshold for IA64        *
  *****************************/
-#elif defined (__ia64) || defined (__tune_ia64__)
+#elif defined (__ia64) || defined (__itanium__) || defined (__tune_ia64__)
 
 #define MPFR_MULHIGH_TAB  \
  -1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, \
