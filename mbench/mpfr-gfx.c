@@ -113,11 +113,12 @@ MA 02110-1301, USA. */
   BENCH("mpf_swap", mpf_swap(y,z)); \
   EXTRA_TEST_LIST
 
-#define USAGE                                                                \
- "Get the graph of the low-level functions of Mpfr (gnuplot).\n"             \
-  __FILE__" " __DATE__" " __TIME__" GCC "__VERSION__ "\n"                    \
- "Usage: mpfr-gfx [-bPREC_BEGIN] [-ePREC_END] [-sPREC_STEP] [-mSTAT_SIZE] \n"\
- "       [-oFILENAME] [-xFUNCTION_NUM] [-yFUNCTION_NUM] [-c] [-fSMOOTH]\n"
+#define USAGE                                                           \
+  "Get the graph of the low-level functions of Mpfr (gnuplot).\n"       \
+          __FILE__" " __DATE__" " __TIME__" GCC "__VERSION__ "\n"       \
+  "Usage: mpfr-gfx [-bPREC_BEGIN] [-ePREC_END] [-sPREC_STEP] [-rPREC_RATIO]\n" \
+  "       [-mSTAT_SIZE] [-oFILENAME] [-xFUNCTION_NUM] [-yFUNCTION_NUM] [-c]\n" \
+  "       [-fSMOOTH]\n"
 
 unsigned long num;
 mpf_t *xt, *yt, *zt;
@@ -236,12 +237,12 @@ double get_speed(mp_prec_t p, int select)
 int
 write_data (const char *filename, 
 	    unsigned long num,
-	    mp_prec_t p1, mp_prec_t p2, mp_prec_t ps,
+	    mp_prec_t p1, mp_prec_t p2, mp_prec_t ps, float pr,
 	    int select1, int select2)
 {
   char strf[256], strg[256];
   FILE *f, *g;
-  mp_prec_t p;
+  mp_prec_t p, step;
   int op = 0;
 
   lets_start (num, p2);
@@ -273,10 +274,21 @@ write_data (const char *filename,
     fprintf (g, "      \"%s\" using 1:3 title \"%s\"\n", strf, TEST_STR);
   op = -1;
   TEST_LIST;
-  for (p = p1 ; p < p2 ; p+=ps)
-    fprintf(f, "%lu\t%1.20e\t%1.20e\n", p, 
-	    get_speed(p, select1),
-	    get_speed(p, select2));
+
+  step = ps;
+  for (p = p1 ; p < p2 ; p+=step)
+    {
+      fprintf(f, "%lu\t%1.20e\t%1.20e\n", p, 
+              get_speed(p, select1),
+              get_speed(p, select2));
+      if (pr != 0.0)
+        {
+          step = (mp_prec_t) (p * pr - p);
+          if (step < 1)
+            step = 1;
+        }
+    }
+
   fclose (f);
   fclose (g);
   lets_end ();
@@ -288,11 +300,11 @@ write_data (const char *filename,
 int
 write_data2 (const char *filename, 
 	     unsigned long num,
-	     mp_prec_t p_begin, mp_prec_t p_end, mp_prec_t p_step,
+	     mp_prec_t p_begin, mp_prec_t p_end, mp_prec_t p_step, float p_r,
 	     int s_begin, int s_end)
 {
   FILE *f;
-  mp_prec_t p;
+  mp_prec_t p, step;
   int s;
 
   lets_start (num, p_end);
@@ -303,12 +315,20 @@ write_data2 (const char *filename,
       lets_end ();
       exit (1);
     }
-  for (p = p_begin ; p < p_end ; p += p_step)
+
+  step = p_step;
+  for (p = p_begin ; p < p_end ; p += step)
     {
       fprintf (f, "%lu", p);
       for (s = s_begin ; s <= s_end ; s++)
 	fprintf (f, "\t%1.20e", get_speed (p, s));
       fprintf (f, "\n");
+      if (p_r != 0.0)
+        {
+          step = (mp_prec_t) (p * p_r - p);
+          if (step < 1)
+            step = 1;
+        }
     }
   fclose (f);
   lets_end ();
@@ -328,6 +348,7 @@ int op_num (void)
 int main(int argc, const char *argv[])
 {
   mp_prec_t p1, p2, ps;
+  float pr;
   int i;
   unsigned long stat;
   const char *filename = "plot";
@@ -337,7 +358,7 @@ int main(int argc, const char *argv[])
 
   max_op = op_num ();
   select1 = 1; select2 = 13;
-  p1 = 2; p2 = 500; ps = 4;
+  p1 = 2; p2 = 500; ps = 4; pr = 0.0;
   stat = 500; /* number of different random numbers */
   conti = 0;
 
@@ -355,6 +376,14 @@ int main(int argc, const char *argv[])
 	      break;
             case 's':
               ps = atol(argv[i]+2);
+              break;
+            case 'r':
+              pr = atof (argv[i]+2);
+              if (pr <= 1.0)
+                {
+                  fprintf (stderr, "-rPREC_RATIO must be > 1.0\n");
+                  exit (1);
+                }
               break;
  	    case 'm':
 	      stat = atol(argv[i]+2);
@@ -383,17 +412,22 @@ int main(int argc, const char *argv[])
     }
   /* Set low priority */
   setpriority(PRIO_PROCESS,0,14);
-  printf("GMP:%s MPFR:%s From p=%lu to %lu by %lu Output: %s N=%ld\n",
-	 gmp_version, mpfr_get_version(), p1,p2,ps, filename, stat);
+  if (pr == 0.0)
+    printf("GMP:%s MPFR:%s From p=%lu to %lu by %lu Output: %s N=%ld\n",
+           gmp_version, mpfr_get_version(), p1,p2,ps, filename, stat);
+  else
+    printf("GMP:%s MPFR:%s From p=%lu to %lu by %f Output: %s N=%ld\n",
+           gmp_version, mpfr_get_version(), p1, p2, pr, filename, stat);
+
   if (select2 >= max_op)
     select2 = max_op-1;
   if (select1 >= max_op)
     select1 = max_op-1;
 
   if (conti == 0)
-    write_data (filename, stat, p1, p2, ps, select1, select2);
+    write_data (filename, stat, p1, p2, ps, pr, select1, select2);
   else
-    write_data2 (filename, stat, p1, p2, ps, select1, select2);
+    write_data2 (filename, stat, p1, p2, ps, pr, select1, select2);
 
   return 0;
 }
