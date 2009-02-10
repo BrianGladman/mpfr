@@ -47,8 +47,10 @@ NAME=mbench
 #########################################################
 .SUFFIXES: .c .o
 
-INCLUDES=-I. -I$(MPFR_INCLUDE) -I$(GMP)/include/
-LIBS=`(test -f $(MPFR_LIB)/libmpfr.a && echo $(MPFR_LIB)/libmpfr.a) || echo -lmpfr` `(test -f $(GMP)/lib/libgmp.a && echo $(GMP)/lib/libgmp.a) || echo -lgmp`
+# add -I$(MPFR) and -I$(GMP) if GMP/MPFR build directories are given
+INCLUDES=-I. -I$(MPFR_INCLUDE) -I$(MPFR) -I$(GMP)/include/ -I$(GMP)
+# search first for real install, then for build directory
+LIBS=`(test -f $(MPFR_LIB)/libmpfr.a && echo $(MPFR_LIB)/libmpfr.a)` $(MPFR)/.libs/libmpfr.a `(test -f $(GMP)/lib/libgmp.a && echo $(GMP)/lib/libgmp.a)` $(GMP)/.libs/libgmp.a
 
 XLIBS=`test -f $(PARI)/lib/libpari.a && echo $(PARI)/lib/libpari.a` \
       `test -f $(NTL)/lib/libntl.a && echo $(NTL)/lib/libntl.a`     \
