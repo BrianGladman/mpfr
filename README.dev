@@ -80,11 +80,19 @@ To make a release (for the MPFR team):
 
      You can produce time graphs to check the thresholds are correct (and
      compare to the corresponding mpf functions) with mbench. For example:
+
      $ cd mpfr/mbench
      $ make mpfr-gfx GMP=... MPFR=...
      $  ./mpfr-gfx -b16 -e320 -s16 -f2 -x3 # compares mpfr_mul and mpf_mul
                                            # from 16 to 320 bits with increment
                                            # of 16 bits
+     $ gnuplot -persist plot.gnuplot
+
+     Another example, comparing mpfr_mul and mpf_mul from 2 to 1000000 bits,
+     with ratio 1.1 between two sizes, 10 random values, and 10 smoothness
+     checks:
+
+     $ ./mpfr-gfx -b2 -e1000000 -r1.1 -f10 -x3 -m10
      $ gnuplot -persist plot.gnuplot
 
      Check the coverage of each source file by the test suite is at least 90%
