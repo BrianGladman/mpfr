@@ -118,7 +118,7 @@ MA 02110-1301, USA. */
           __FILE__" " __DATE__" " __TIME__" GCC "__VERSION__ "\n"       \
   "Usage: mpfr-gfx [-bPREC_BEGIN] [-ePREC_END] [-sPREC_STEP] [-rPREC_RATIO]\n" \
   "       [-mSTAT_SIZE] [-oFILENAME] [-xFUNCTION_NUM] [-yFUNCTION_NUM] [-c]\n" \
-  "       [-fSMOOTH]\n"
+  "       [-fSMOOTH] [-p]\n"
 
 unsigned long num;
 mpf_t *xt, *yt, *zt;
@@ -233,12 +233,16 @@ double get_speed(mp_prec_t p, int select)
 }
 
 /* compares two functions given by indices select1 and select2
-   (by default select1 refers to mpfr and select2 to mpf) */
+   (by default select1 refers to mpfr and select2 to mpf).
+   
+   If postscript=0, output is plain gnuplot;
+   If postscript=1, output is postscript.
+*/
 int
 write_data (const char *filename, 
 	    unsigned long num,
 	    mp_prec_t p1, mp_prec_t p2, mp_prec_t ps, float pr,
-	    int select1, int select2)
+	    int select1, int select2, int postscript)
 {
   char strf[256], strg[256];
   FILE *f, *g;
@@ -265,6 +269,8 @@ write_data (const char *filename,
       abort ();
     }
   fprintf (g, "set data style lines\n");
+  if (postscript)
+    fprintf (g, "set terminal postscript\n");
 #undef BENCH
 #define BENCH(TEST_STR, TEST)						\
   if (++op == select1)							\
@@ -292,7 +298,11 @@ write_data (const char *filename,
   fclose (f);
   fclose (g);
   lets_end ();
-  fprintf (stderr, "Now type: gnuplot -persist %s.gnuplot\n", filename);
+  if (postscript == 0)
+    fprintf (stderr, "Now type: gnuplot -persist %s.gnuplot\n", filename);
+  else
+    fprintf (stderr, "Now type: gnuplot %s.gnuplot > %s.ps\n", filename,
+	     filename);
   return 0;
 }
 
@@ -353,6 +363,7 @@ int main(int argc, const char *argv[])
   unsigned long stat;
   const char *filename = "plot";
   int select1, select2, max_op, conti;
+  int postscript = 0;
 
   printf (USAGE);
 
@@ -401,6 +412,9 @@ int main(int argc, const char *argv[])
 	    case 'c':
 	      conti = 1;
 	      break;
+	    case 'p':
+	      postscript = 1;
+	      break;
 	    case 'f':
 	      smooth = atoi  (argv[i]+2);
 	      break;
@@ -425,7 +439,7 @@ int main(int argc, const char *argv[])
     select1 = max_op-1;
 
   if (conti == 0)
-    write_data (filename, stat, p1, p2, ps, pr, select1, select2);
+    write_data (filename, stat, p1, p2, ps, pr, select1, select2, postscript);
   else
     write_data2 (filename, stat, p1, p2, ps, pr, select1, select2);
 
