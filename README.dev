@@ -45,7 +45,8 @@ Patches can be tracked by adding a chunk of the form
 to the patch file[*]. After such patches have been applied, the file
 get_patches.c providing the mpfr_get_patches() function will be rebuilt
 by "make". MPFR distributors can still modify the version suffix from
-the applied patches according to their version naming scheme, e.g. with
+the applied patches according to their version naming scheme; for
+instance, for their own patches, MPFR developers do:
 
   ./update-version 2 3 0 p1
 
