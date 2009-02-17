@@ -296,7 +296,9 @@ check_special (void)
       exit (1);
     }
   /* Check overflow. Corner case of mpfr_exp_3 */
-  if (MPFR_PREC_MAX >= MPFR_EXP_THRESHOLD + 10 && MPFR_EXP_THRESHOLD >= 64)
+  if (MPFR_PREC_MAX >= MPFR_EXP_THRESHOLD + 10 && MPFR_EXP_THRESHOLD >= 54)
+    /* the condition MPFR_EXP_THRESHOLD >= 54 ensures that x has at least 64
+       bits of precision, thus the mpfr_set_str call is exact */
     {
       mpfr_set_prec (x, MPFR_EXP_THRESHOLD + 10);
       mpfr_set_str (x,
