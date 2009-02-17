@@ -296,7 +296,7 @@ check_special (void)
       exit (1);
     }
   /* Check overflow. Corner case of mpfr_exp_3 */
-  if (MPFR_PREC_MAX > MPFR_EXP_THRESHOLD + 10)
+  if (MPFR_PREC_MAX >= MPFR_EXP_THRESHOLD + 10 && MPFR_EXP_THRESHOLD >= 64)
     {
       mpfr_set_prec (x, MPFR_EXP_THRESHOLD + 10);
       mpfr_set_str (x,
