@@ -141,7 +141,6 @@ check_special (void)
     }
 
   /* Check base 62 */
-#if 0
   res = mpfr_strtofr (x, "A", NULL, 62, GMP_RNDN);
   if (res != 0 || mpfr_cmp_ui (x, 10))
     {
@@ -174,7 +173,66 @@ check_special (void)
       putchar ('\n');
       exit (1);
     }
-#endif
+  res = mpfr_strtofr (x, "ZA", NULL, 62, GMP_RNDN);
+  if (res != 0 || mpfr_cmp_ui (x, 2180))
+    {
+      printf ("Error for setting 'ZA' in base 62\n x=");
+      mpfr_out_str (stdout, 10, 0, x, GMP_RNDN);
+      putchar ('\n');
+      exit (1);
+    }
+  res = mpfr_strtofr (x, "za", NULL, 62, GMP_RNDN);
+  if (res != 0 || mpfr_cmp_ui (x, 3818))
+    {
+      printf ("Error for setting 'za' in base 62\n x=");
+      mpfr_out_str (stdout, 10, 0, x, GMP_RNDN);
+      putchar ('\n');
+      exit (1);
+    }
+  res = mpfr_strtofr (x, "aZ", NULL, 62, GMP_RNDN);
+  if (res != 0 || mpfr_cmp_ui (x, 2267))
+    {
+      printf ("Error for setting 'aZ' in base 62\n x=");
+      mpfr_out_str (stdout, 10, 0, x, GMP_RNDN);
+      putchar ('\n');
+      exit (1);
+    }
+  res = mpfr_strtofr (x, "Az", NULL, 62, GMP_RNDN);
+  if (res != 0 || mpfr_cmp_ui (x, 681))
+    {
+      printf ("Error for setting 'Az' in base 62\n x=");
+      mpfr_out_str (stdout, 10, 0, x, GMP_RNDN);
+      putchar ('\n');
+      exit (1);
+    }
+
+  /* Check base 60 */
+  res = mpfr_strtofr (x, "Aa", NULL, 60, GMP_RNDN);
+  if (res != 0 || mpfr_cmp_ui (x, 636))
+    {
+      printf ("Error for setting 'Aa' in base 60\n x=");
+      mpfr_out_str (stdout, 10, 0, x, GMP_RNDN);
+      putchar ('\n');
+      exit (1);
+    }
+  res = mpfr_strtofr (x, "Zz", &s, 60, GMP_RNDN);
+  if (res != 0 || mpfr_cmp_ui (x, 35) || strcmp(s, "z") )
+    {
+      printf ("Error for setting 'Zz' in base 60\n x=");
+      mpfr_out_str (stdout, 10, 0, x, GMP_RNDN);
+      putchar ('\n');
+      exit (1);
+    }
+
+  /* Check base 61 */
+  res = mpfr_strtofr (x, "z", &s, 61, GMP_RNDN);
+  if (res != 0 || mpfr_cmp_ui (x, 0) || strcmp(s, "z") )
+    {
+      printf ("Error for setting 'z' in base 61\n x=");
+      mpfr_out_str (stdout, 10, 0, x, GMP_RNDN);
+      putchar ('\n');
+      exit (1);
+    }
 
   mpfr_clear (x);
   mpfr_clear (y);
