@@ -1130,8 +1130,8 @@ optional decimal point, and an optional exponent consisting of an exponent
 prefix followed by an optional sign and a non-empty sequence of decimal
 digits. A significand digit is either a decimal digit or a Latin letter (62
 possible characters), with @code{A} = 10, @code{B} = 11, @dots{}, @code{Z} =
-35; case is ignored in bases less or equal to 36, in bases more than 36 the
-letters in lower case represent decimal values more than 35. The value of a
+35; case is ignored in bases less or equal to 36, in bases larger than 36,
+the letters in lower case represent values from 36 to 61. The value of a
 significand digit must be strictly less than the base.  The decimal point can
 be either the one defined by the current locale or the period (the first one
 is accepted for consistency with the C standard and the practice, the second
