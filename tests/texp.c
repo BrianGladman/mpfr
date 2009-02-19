@@ -299,7 +299,7 @@ check_special (void)
   if (MPFR_PREC_MAX >= MPFR_EXP_THRESHOLD + 10 && MPFR_PREC_MAX >= 64)
     {
       /* this ensures that for small MPFR_EXP_THRESHOLD, the following
-	 mpfr_set_str conversion is exact */
+         mpfr_set_str conversion is exact */
       mpfr_set_prec (x, (MPFR_EXP_THRESHOLD + 10 > 64)
                        ? MPFR_EXP_THRESHOLD + 10 : 64);
       mpfr_set_str (x,

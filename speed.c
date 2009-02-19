@@ -51,11 +51,11 @@ int verbose;
   double    t;                                       \
   mpfr_t    w, x;                                    \
   mp_size_t size;                                    \
-  MPFR_TMP_DECL (marker);                                 \
+  MPFR_TMP_DECL (marker);                            \
                                                      \
   SPEED_RESTRICT_COND (s->size >= MPFR_PREC_MIN);    \
   SPEED_RESTRICT_COND (s->size <= MPFR_PREC_MAX);    \
-  MPFR_TMP_MARK (marker);                                 \
+  MPFR_TMP_MARK (marker);                            \
                                                      \
   size = (s->size-1)/BITS_PER_MP_LIMB+1;             \
   s->xp[size-1] |= MPFR_LIMB_HIGHBIT;                \
@@ -75,7 +75,7 @@ int verbose;
   while (--i != 0);                                  \
   t = speed_endtime ();                              \
                                                      \
-  MPFR_TMP_FREE (marker);                                 \
+  MPFR_TMP_FREE (marker);                            \
   return t;                                          \
 } while (0)
 
@@ -85,11 +85,11 @@ int verbose;
   double    t;                                       \
   mpfr_t    w, x, y;                                 \
   mp_size_t size;                                    \
-  MPFR_TMP_DECL (marker);                                 \
+  MPFR_TMP_DECL (marker);                            \
                                                      \
   SPEED_RESTRICT_COND (s->size >= MPFR_PREC_MIN);    \
   SPEED_RESTRICT_COND (s->size <= MPFR_PREC_MAX);    \
-  MPFR_TMP_MARK (marker);                                 \
+  MPFR_TMP_MARK (marker);                            \
                                                      \
   size = (s->size-1)/BITS_PER_MP_LIMB+1;             \
   s->xp[size-1] |= MPFR_LIMB_HIGHBIT;                \
@@ -113,7 +113,7 @@ int verbose;
   while (--i != 0);                                  \
   t = speed_endtime ();                              \
                                                      \
-  MPFR_TMP_FREE (marker);                                 \
+  MPFR_TMP_FREE (marker);                            \
   return t;                                          \
 } while (0)
 
@@ -185,19 +185,19 @@ tune_simple_func (mp_prec_t *threshold,
       printf ("prec=%lu mpfr_mul=%e ", p, measure);
       n = 1 + (p - 1) / BITS_PER_MP_LIMB;
       if (n <= MPFR_MUL_THRESHOLD)
-	k = MUL_FFT_THRESHOLD + 1;
+        k = MUL_FFT_THRESHOLD + 1;
       else if (n < MPFR_MULHIGH_TAB_SIZE)
-	k = mulhigh_ktab[n];
+        k = mulhigh_ktab[n];
       else
-	k = 2*n/3;
+        k = 2*n/3;
       if (k < 0)
-	printf ("[mpn_mul_basecase]\n");
+        printf ("[mpn_mul_basecase]\n");
       else if (k == 0)
-	printf ("[mpfr_mulhigh_n_basecase]\n");
+        printf ("[mpfr_mulhigh_n_basecase]\n");
       else if (k > MUL_FFT_THRESHOLD)
-	printf ("[mpn_mul_n]\n");
+        printf ("[mpn_mul_n]\n");
       else
-	printf ("[mpfr_mulhigh_n]\n");
+        printf ("[mpfr_mulhigh_n]\n");
       p = p + p / 10;
     }
 }
@@ -253,7 +253,7 @@ all (void)
   /* Tune mpfr_mul (threshold is in limbs, but it doesn't matter too much) */
   if (verbose)
     printf ("Measuring mpfr_mul with mpfr_mul_threshold=%lu...\n",
-	    mpfr_mul_threshold);
+            mpfr_mul_threshold);
   tune_simple_func (&mpfr_mul_threshold, speed_mpfr_mul,
                     2*BITS_PER_MP_LIMB+1, 1000);
 
