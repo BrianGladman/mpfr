@@ -48,7 +48,7 @@ by "make". MPFR distributors can still modify the version suffix from
 the applied patches according to their version naming scheme; for
 instance, for their own patches, MPFR developers do:
 
-  ./update-version 2 3 0 p1
+  ./update-version 2 3 0 p1 -
 
 [*] This idea comes from Thomas Roessler, who implemented it in Mutt.
 
