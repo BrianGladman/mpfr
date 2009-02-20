@@ -512,7 +512,12 @@ all (const char *filename)
 #ifdef __ICC
   fprintf (f, "icc %d.%d.%d */\n", __ICC / 100, __ICC / 10 % 10, __ICC % 10);
 #elif defined(__GNUC__)
+#ifdef __GNUC_PATCHLEVEL__
+  fprintf (f, "gcc %d.%d.%d */\n", __GNUC__, __GNUC_MINOR__,
+	   __GNUC_PATCHLEVEL__);
+#else
   fprintf (f, "gcc %d.%d */\n", __GNUC__, __GNUC_MINOR__);
+#endif
 #elif defined (__SUNPRO_C)
   fprintf (f, "Sun C %d.%d */\n", __SUNPRO_C / 0x100, __SUNPRO_C % 0x100);
 #elif defined (__sgi) && defined (_COMPILER_VERSION)
