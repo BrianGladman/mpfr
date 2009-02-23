@@ -121,7 +121,22 @@ test_version (void)
 
   version = mpfr_get_version ();
   if (strcmp (MPFR_VERSION_STRING, version) == 0)
-    return;
+    {
+      char buffer[16];
+      int i;
+
+      sprintf (buffer, "%d.%d.%d", MPFR_VERSION_MAJOR, MPFR_VERSION_MINOR,
+               MPFR_VERSION_PATCHLEVEL);
+      for (i = 0; buffer[i] == version[i]; i++)
+        if (buffer[i] == '\0')
+          return;
+      if (buffer[i] == '\0' && version[i] == '-')
+        return;
+      printf ("MPFR_VERSION_MAJOR.MPFR_VERSION_MINOR.MPFR_VERSION_PATCHLEVEL"
+              " (%s)\nand MPFR_VERSION_STRING (%s) do not match!\nIt seems "
+              "that the mpfr.h file has been corrupted.\n", buffer, version);
+      exit (1);
+    }
 
   printf ("Incorrect MPFR version! (%s header vs %s library)\n"
           "Nothing else has been tested since for this reason,\n"

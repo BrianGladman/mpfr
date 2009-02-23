@@ -30,25 +30,9 @@ int
 main (void)
 {
   char buffer[256];
-  const char *version;
 
+  /* Test the MPFR version. */
   test_version ();
-
-  version = mpfr_get_version ();
-
-  /* This test is disabled when a suffix (e.g. -dev) has been defined. */
-#if 0
-  sprintf (buffer, "%d.%d.%d", MPFR_VERSION_MAJOR, MPFR_VERSION_MINOR,
-           MPFR_VERSION_PATCHLEVEL);
-  if (strcmp (buffer, version) != 0)
-    {
-      /* All the other problems should have been detected by test_version. */
-      printf ("Incorrect MPFR version! (%s header vs %s library)\n"
-              "This error should have never occurred and may be due "
-              "to a corrupted 'mpfr.h'.\n", buffer, version);
-      exit (1);
-    }
-#endif
 
   sprintf (buffer, "%d.%d.%d", __GNU_MP_VERSION, __GNU_MP_VERSION_MINOR,
            __GNU_MP_VERSION_PATCHLEVEL);
