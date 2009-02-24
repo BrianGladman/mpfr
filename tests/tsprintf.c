@@ -72,7 +72,13 @@ check_sprintf (const char *expected, const char *fmt, mpfr_srcptr x)
 
   /* test mpfr_snprintf */
   p = (int) (randlimb () % n0);
+  buffer[p] = 17;
   n1 = mpfr_snprintf (buffer, p, fmt, x);
+  if (buffer[p] != 17)
+    {
+      printf ("Buffer overflow in mpfr_snprintf for p = %d!\n", p);
+      exit (1);
+    }
   if ((p != 0 && n0 != n1) || (p == 0 && n1 != 0))
     {
       printf ("Error in mpfr_snprintf (s, %d, \"%s\", x) return value\n",
