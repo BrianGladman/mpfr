@@ -42,11 +42,11 @@ int verbose;
   double    t;                                       \
   mpfr_t    w, x;                                    \
   mp_size_t size;                                    \
-  MPFR_TMP_DECL (marker);                                 \
+  MPFR_TMP_DECL (marker);                            \
                                                      \
   SPEED_RESTRICT_COND (s->size >= MPFR_PREC_MIN);    \
   SPEED_RESTRICT_COND (s->size <= MPFR_PREC_MAX);    \
-  MPFR_TMP_MARK (marker);                                 \
+  MPFR_TMP_MARK (marker);                            \
                                                      \
   size = (s->size-1)/BITS_PER_MP_LIMB+1;             \
   s->xp[size-1] |= MPFR_LIMB_HIGHBIT;                \
@@ -66,7 +66,7 @@ int verbose;
   while (--i != 0);                                  \
   t = speed_endtime ();                              \
                                                      \
-  MPFR_TMP_FREE (marker);                                 \
+  MPFR_TMP_FREE (marker);                            \
   return t;                                          \
 } while (0)
 
@@ -76,11 +76,11 @@ int verbose;
   double    t;                                       \
   mpfr_t    w, x, y;                                 \
   mp_size_t size;                                    \
-  MPFR_TMP_DECL (marker);                                 \
+  MPFR_TMP_DECL (marker);                            \
                                                      \
   SPEED_RESTRICT_COND (s->size >= MPFR_PREC_MIN);    \
   SPEED_RESTRICT_COND (s->size <= MPFR_PREC_MAX);    \
-  MPFR_TMP_MARK (marker);                                 \
+  MPFR_TMP_MARK (marker);                            \
                                                      \
   size = (s->size-1)/BITS_PER_MP_LIMB+1;             \
   s->xp[size-1] |= MPFR_LIMB_HIGHBIT;                \
@@ -104,7 +104,7 @@ int verbose;
   while (--i != 0);                                  \
   t = speed_endtime ();                              \
                                                      \
-  MPFR_TMP_FREE (marker);                                 \
+  MPFR_TMP_FREE (marker);                            \
   return t;                                          \
 } while (0)
 
@@ -514,7 +514,7 @@ all (const char *filename)
 #elif defined(__GNUC__)
 #ifdef __GNUC_PATCHLEVEL__
   fprintf (f, "gcc %d.%d.%d */\n", __GNUC__, __GNUC_MINOR__,
-	   __GNUC_PATCHLEVEL__);
+           __GNUC_PATCHLEVEL__);
 #else
   fprintf (f, "gcc %d.%d */\n", __GNUC__, __GNUC_MINOR__);
 #endif
