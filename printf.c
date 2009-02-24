@@ -163,7 +163,7 @@ mpfr_snprintf (char *buf, size_t size, const char *fmt, ...)
   GET_STR (ret, str, fmt);
   min_size = (size_t)ret < size ? (size_t)ret : size - 1;
   strncpy (buf, str, min_size);
-  buf[min_size + 1] = '\0';
+  buf[min_size] = '\0';
 
   mpfr_free_str (str);
   return ret;
@@ -185,7 +185,7 @@ mpfr_vsnprintf (char *buf, size_t size, const char *fmt, va_list ap)
   GET_STR_VA (ret, str, fmt, ap);
   min_size = (size_t)ret < size ? (size_t)ret : size - 1;
   strncpy (buf, str, min_size);
-  buf[min_size + 1] = '\0';
+  buf[min_size] = '\0';
   mpfr_free_str (str);
   return ret;
 }
