@@ -48,9 +48,24 @@ by "make". MPFR distributors can still modify the version suffix from
 the applied patches according to their version naming scheme; for
 instance, for their own patches, MPFR developers do:
 
-  ./update-version 2 3 0 p1 -
+  ./update-version 2 4 0 p1 -
 
 [*] This idea comes from Thomas Roessler, who implemented it in Mutt.
+
+For patches from MPFR developers, e.g. for MPFR 2.4.0:
+1. Unarchive the tarball: a directory mpfr-2.4.0 is created.
+2. Go into this directory (cd mpfr-2.4.0).
+3. Apply the current patches with "patch -N -Z -p1 < /path/to/patches".
+4. Reset the PATCHES file with "true >| PATCHES".
+5. Rename mpfr-2.4.0 as mpfr-2.4.0-a and duplicate it as mpfr-2.4.0-b
+   without changing the timestamps (e.g. with cp -a).
+6. In mpfr-2.4.0-b, apply the patch obtained with "svn diff", e.g.
+     patch --no-backup-if-mismatch -p0 < /path/to/new_patch
+7. Update the version information:
+     /path/to/mpfr-working-copy/update-version 2 4 0 p<n> -
+   where <n> is the patch number.
+8. Update PATCHES file: echo >> PATCHES <patch_name>
+9. Make the patch: TZ=UTC diff -Naurd mpfr-2.4.0-a mpfr-2.4.0-b
 
 ===========================================================================
 
