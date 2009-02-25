@@ -2020,7 +2020,7 @@ mentioned in the GMP documentation:
 @pxref{Formatted Output Strings,,, gmp.info,GNU MP}.
 @end ifinfo
 @ifnotinfo
-see Section ``Formatted Output Strings''' in @cite{GNU MP}.
+see Section ``Formatted Output Strings'' in @cite{GNU MP}.
 @end ifnotinfo
 More precisely, except for @samp{R} and @samp{P}
 (which are defined by MPFR), the @samp{type} specifiers are supported
@@ -2126,29 +2126,29 @@ and (in POSIX system only) @code{errno} is set to @code{EOVERFLOW}.
 
 @deftypefun int mpfr_sprintf (char *@var{buf}, const char *@var{template}, @dots{})
 @deftypefunx int mpfr_vsprintf (char *@var{buf}, const char *@var{template}, va_list @var{ap})
-Form a null-terminated string in @code{buf}. No overlap is permitted between
-@code{buf} and the other arguments.
+Form a null-terminated string in @var{buf}. No overlap is permitted between
+@var{buf} and the other arguments.
 
 Return the number of characters written in the array @var{buf} not counting
 the terminating null character or a negative value if an error occurred. If
 the number of characters which ought to be written appears to exceed the
-maximum limit for an @code{int}, nothing is written in @code{buf}, the
-function returns @minus{}1, sets the @emph{erange} flag, and (in POSIX system
-only) @code{errno} is set to @code{EOVERFLOW}.
+maximum limit for an @code{int}, nothing is written in @var{buf}, the function
+returns @minus{}1, sets the @emph{erange} flag, and (in POSIX system only)
+@code{errno} is set to @code{EOVERFLOW}.
 @end deftypefun
 
 @deftypefun int mpfr_snprintf (char *@var{buf}, size_t @var{n}, const char *@var{template}, @dots{})
 @deftypefunx int mpfr_vsnprintf (char *@var{buf}, size_t @var{n}, const char *@var{template}, va_list @var{ap})
-Form a null-terminated string in @code{buf}. If @code{n} is zero, nothing is
-written and @code{buf} may be a null pointer, otherwise, the @code{n-1} first
-characters are written in @code{buf} and the @code{n}-th is a null character.
+Form a null-terminated string in @var{buf}. If @var{n} is zero, nothing is
+written and @var{buf} may be a null pointer, otherwise, the @code{n-1} first
+characters are written in @var{buf} and the @var{n}-th is a null character.
 
-Return  the number of characters that would have been written had @var{n} be
+Return the number of characters that would have been written had @var{n} be
 sufficiently large, not counting the terminating null character or a negative
 value if an error occurred. If the number of characters produced by the
-optional arguments under the control of the template string @code{template}
+optional arguments under the control of the template string @var{template}
 appears to exceed the maximum limit for an @code{int}, nothing is written in
-@code{buf}, the function returns @minus{}1, sets the @emph{erange} flag, and
+@var{buf}, the function returns @minus{}1, sets the @emph{erange} flag, and
 (in POSIX system only) @code{errno} is set to @code{EOVERFLOW}.
 @end deftypefun
 
@@ -2161,8 +2161,8 @@ using the current allocation function. A pointer to the block is stored in
 The return value is the number of characters written in the string, excluding
 the null-terminator or a negative value if an error occurred. If the number of
 characters produced by the optional arguments under the control of the
-template string @code{template} appears to exceed the maximum limit for an
-@code{int}, @code{str} is a null pointer, the function returns @minus{}1, sets
+template string @var{template} appears to exceed the maximum limit for an
+@code{int}, @var{str} is a null pointer, the function returns @minus{}1, sets
 the @emph{erange} flag, and (in POSIX system only) @code{errno} is set to
 @code{EOVERFLOW}.
 @end deftypefun
