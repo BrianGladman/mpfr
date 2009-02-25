@@ -72,12 +72,19 @@ check_sprintf (const char *expected, const char *fmt, mpfr_srcptr x)
 
   /* test mpfr_snprintf */
   p = (int) (randlimb () % n0);
-  buffer[p] = 17;
-  n1 = mpfr_snprintf (buffer, p, fmt, x);
-  if (buffer[p] != 17)
+  if (p == 0 && (randlimb () & 1) == 0)
     {
-      printf ("Buffer overflow in mpfr_snprintf for p = %d!\n", p);
-      exit (1);
+      n1 = mpfr_snprintf (NULL, 0, fmt, x);
+    }
+  else
+    {
+      buffer[p] = 17;
+      n1 = mpfr_snprintf (buffer, p, fmt, x);
+      if (buffer[p] != 17)
+        {
+          printf ("Buffer overflow in mpfr_snprintf for p = %d!\n", p);
+          exit (1);
+        }
     }
   if (n0 != n1)
     {
@@ -125,12 +132,19 @@ check_vsprintf (const char *expected, const char *fmt, ...)
 
   /* test mpfr_snprintf */
   p = (int) (randlimb () % n0);
-  buffer[p] = 17;
-  n1 = mpfr_vsnprintf (buffer, p, fmt, ap1);
-  if (buffer[p] != 17)
+  if (p == 0 && (randlimb () & 1) == 0)
     {
-      printf ("Buffer overflow in mpfr_vsnprintf for p = %d!\n", p);
-      exit (1);
+      n1 = mpfr_vsnprintf (NULL, 0, fmt, ap1);
+    }
+  else
+    {
+      buffer[p] = 17;
+      n1 = mpfr_vsnprintf (buffer, p, fmt, ap1);
+      if (buffer[p] != 17)
+        {
+          printf ("Buffer overflow in mpfr_vsnprintf for p = %d!\n", p);
+          exit (1);
+        }
     }
   if (n0 != n1)
     {
