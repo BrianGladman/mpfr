@@ -96,7 +96,7 @@ check_sprintf (const char *expected, const char *fmt, mpfr_srcptr x)
   if ((p > 1 && strncmp (expected, buffer, p-1) != 0)
       || (p == 1 && buffer[0] != '\0'))
     {
-      char part_expected[p];
+      char part_expected[BUF_SIZE];
       strncpy (part_expected, expected, p);
       part_expected[p-1] = '\0';
       printf ("Error in mpfr_vsnprintf (s, %d, \"%s\", ...);\n", p, fmt);
@@ -158,7 +158,7 @@ check_vsprintf (const char *expected, const char *fmt, ...)
   if ((p > 1 && strncmp (expected, buffer, p-1) != 0)
       || (p == 1 && buffer[0] != '\0'))
     {
-      char part_expected[p];
+      char part_expected[BUF_SIZE];
       strncpy (part_expected, expected, p);
       part_expected[p-1] = '\0';
       printf ("Error in mpfr_vsnprintf (s, %d, \"%s\", ...);\n", p, fmt);
