@@ -191,7 +191,6 @@ check_flags (void)
 static void
 test_set_underflow (void)
 {
-  /* static to allow non-constant initializers in r */
   mpfr_t x, zero, min;
   mpfr_ptr r[GMP_RND_MAX];
   int t[GMP_RND_MAX] = { 1, -1, 1, -1, 1 }; /* RNDN, RNDZ, RNDU, RNDD, RNDA */
@@ -234,7 +233,6 @@ test_set_underflow (void)
 static void
 test_set_overflow (void)
 {
-  /* static to allow non-constant initializers in r */
   mpfr_t x, inf, max;
   mpfr_ptr r[GMP_RND_MAX];
   int t[GMP_RND_MAX] = { 1, -1, 1, -1, 1 }; /* RNDN, RNDZ, RNDU, RNDD, RNDA */
