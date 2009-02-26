@@ -88,6 +88,8 @@ The latest rules for GNU software can be found here:
 
 To make a release (for the MPFR team):
 
+  *** Please read this section entirely before making any release. ***
+
   0) Make sure that the mpfr-longlong.h file (from GMP's longlong.h) and
      the libtool-related files (config.guess, etc.) are up-to-date. An
      "autoreconf -f -i" may be necessary.
@@ -139,7 +141,8 @@ To make a release (for the MPFR team):
   4) Update the ChangeLog file with "TZ=UTC svn log -rHEAD:0 -v" in
      UTF-8 locales, e.g. "LC_ALL=en_US.UTF8 TZ=UTC svn log -rHEAD:0 -v".
 
-  5) Generate the release version with "make dist", but see below.
+  5) Make sure that any change has been committed (with "svn st").
+     Generate the release version with "make dist", but see below.
 
   6) Test the release version on different machines, with and without
      --enable-assert (--enable-assert, though doing more checks, may
@@ -184,8 +187,8 @@ To make a release (for the MPFR team):
      (cd .libs && ln -nsf ../../mpfr-new/.libs/libmpfr.so.1.* libmpfr.so.1)
      then "make check".
 
-  7) For the release itself (not the release candidates), if there are
-     no problems, create a tag with:
+  7) For the release itself (not the release candidates), if no problems
+     have been found, create a tag with:
        svn cp .../mpfr/branches/x.y .../mpfr/tags/x.y.z
 
   8) Update the version with the update-version script to indicate the
