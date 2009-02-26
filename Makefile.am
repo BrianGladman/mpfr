@@ -64,3 +64,10 @@ tune:
 	./tuneup -v
 	$(MAKE) $(AM_MAKEFLAGS) clean
 	$(MAKE) $(AM_MAKEFLAGS) libmpfr.la
+
+# In a "make dist", check that libtool -version-info value is up-to-date.
+# Note: this is a heuristic, to detect some mistakes.
+dist-hook:
+	grep -q "`sed -n 's/^\([0-9]*\.[0-9]*\).*/\1/p' VERSION`.x" $(srcdir)/Makefile.am
+	test "`sed -n 's/^[0-9]*\.[0-9]*\.\([0-9]*\).*/\1/p' VERSION`" = \
+	  "`sed -n 's/.*-version-info [0-9]*:\([0-9]*\):.*/\1/p' $(srcdir)/Makefile.am`"
