@@ -23,7 +23,7 @@ MA 02110-1301, USA.
 ])
 
 dnl Add check-news when it checks for more than 15 lines
-AC_INIT([MPFR],[2.5.0-dev])
+AC_INIT([MPFR],[3.0.0-dev])
 AM_INIT_AUTOMAKE([1.10.1 no-define dist-bzip2 dist-lzma dist-zip])
 dnl AM_MAINTAINER_MODE(enable)
 
