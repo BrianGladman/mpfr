@@ -214,8 +214,7 @@ mpfr_round_near_x (mpfr_ptr y, mpfr_srcptr v, mpfr_uexp_t err, int dir,
         {
           inexact = -sign;
           /* Round Away */
-          if (rnd != GMP_RNDN && rnd != GMP_RNDZ
-              && MPFR_IS_RNDUTEST_OR_RNDDNOTTEST (rnd, MPFR_IS_POS_SIGN(sign)))
+	    if (rnd != GMP_RNDN && !MPFR_IS_LIKE_RNDZ (rnd, MPFR_IS_NEG_SIGN(sign)))
             {
               /* case nexttoinf */
               /* The overflow flag should be set if the result is infinity */

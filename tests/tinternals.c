@@ -80,7 +80,7 @@ test_round_near_x (void)
                        So, no failure in this case. */
                     continue;
                   }
-
+		
                 inex2 = ((dir ^ neg) ? mpfr_add : mpfr_sub)
                   (z, x, eps, (mp_rnd_t) r);
                 if (inex * inex2 <= 0)

@@ -174,7 +174,7 @@ mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mp_rnd_t rnd_mode)
     {
       if (negative)
         rnd_mode = MPFR_INVERT_RND (rnd_mode);
-      if (rnd_mode == GMP_RNDU
+      if (rnd_mode == GMP_RNDU || rnd_mode == GMP_RNDA
           || (rnd_mode == GMP_RNDN && mpz_tstbit (m, 0)))
         inexact = 1, mpz_add_ui (m, m, 1);
       else

@@ -57,12 +57,17 @@ MPFR_VERSION_NUM(MPFR_VERSION_MAJOR,MPFR_VERSION_MINOR,MPFR_VERSION_PATCHLEVEL)
    Warning! Changing the contents of this enum should be seen as an
    interface change since the old and the new types are not compatible
    (the integer type compatible with the enumerated type can even change,
-   see ISO C99, 6.7.2.2#4), and in Makefile.am, AGE should be set to 0. */
+   see ISO C99, 6.7.2.2#4), and in Makefile.am, AGE should be set to 0.
+
+   GMP_RNDU must appear just before GMP_RNDD (see
+   MPFR_IS_RNDUTEST_OR_RNDDNOTTEST in mpfr-impl.h).
+*/
 typedef enum {
   GMP_RNDN=0,  /* round to nearest, with ties to even */
   GMP_RNDZ,    /* round toward zero */
   GMP_RNDU,    /* round toward +Inf */
   GMP_RNDD,    /* round toward -Inf */
+  GMP_RNDA,    /* round away from zero */
   GMP_RND_MAX, /* gives number of supported rounding modes, those after are
 		  only supported by some functions */
   GMP_RNDNA=-1 /* round to nearest, with ties away from zero (mpfr_round) */

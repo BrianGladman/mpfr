@@ -816,7 +816,8 @@ underflow_up (int extended_emin)
                     unsigned int flags;
 
                     flags = MPFR_FLAGS_INEXACT |
-                      ((rnd == GMP_RNDU && (i == 1 || j == 0)) ||
+                      (((rnd == GMP_RNDU || rnd == GMP_RNDA)
+			     && (i == 1 || j == 0)) ||
                        (rnd == GMP_RNDN && (i == 1 && j == 0)) ?
                        0 : MPFR_FLAGS_UNDERFLOW);
                     mpfr_clear_flags ();
@@ -840,7 +841,7 @@ underflow_up (int extended_emin)
                                 __gmpfr_flags, flags);
                         err = 1;
                       }
-                    if (rnd == GMP_RNDU || rnd == GMP_RNDN ?
+                    if (rnd == GMP_RNDU || rnd == GMP_RNDA || rnd == GMP_RNDN ?
                         mpfr_cmp0 (y, minpos) != 0 : MPFR_NOTZERO (y))
                       {
                         printf ("Incorrect result in underflow_up, %s",

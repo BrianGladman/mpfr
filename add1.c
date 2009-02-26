@@ -22,7 +22,8 @@ MA 02110-1301, USA. */
 
 #include "mpfr-impl.h"
 
-/* compute sign(b) * (|b| + |c|) */
+/* compute sign(b) * (|b| + |c|), assuming b and c have same sign,
+   and are not NaN, Inf, nor zero. */
 int
 mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 {
@@ -68,6 +69,8 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
   exp = MPFR_GET_EXP (b);
   MPFR_SET_SAME_SIGN(a, b);
+  MPFR_UPDATE2_RND_MODE(rnd_mode, MPFR_SIGN(b));
+  /* now rnd_mode is either GMP_RNDN, GMP_RNDZ or GMP_RNDA */
   diff_exp = (mp_exp_unsigned_t) exp - MPFR_GET_EXP(c);
 
   /*
@@ -155,7 +158,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
         {
           if (MPFR_UNLIKELY(exp == __gmpfr_emax))
             {
-              inex = mpfr_overflow(a, rnd_mode, MPFR_SIGN(a));
+              inex = mpfr_overflow (a, rnd_mode, MPFR_SIGN(a));
               goto end_of_add;
             }
           exp++;
@@ -296,7 +299,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
                 {
                   if (exp == __gmpfr_emax)
                     {
-                      inex = mpfr_overflow(a, rnd_mode, MPFR_SIGN(a));
+                      inex = mpfr_overflow (a, rnd_mode, MPFR_SIGN(a));
                       goto end_of_add;
                     }
                   exp++;
@@ -349,7 +352,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
                     {
                       if (MPFR_UNLIKELY(exp == __gmpfr_emax))
                         {
-                          inex = mpfr_overflow(a, rnd_mode, MPFR_SIGN(a));
+                          inex = mpfr_overflow (a, rnd_mode, MPFR_SIGN(a));
                           goto end_of_add;
                         }
                       exp++;
@@ -500,16 +503,9 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       inex = rb || fb ? (MPFR_IS_NEG(a) ? 1 : -1) : 0;
       goto set_exponent;
 
-    case GMP_RNDU:
-      inex = rb || fb;
-      if (inex && MPFR_IS_POS(a))
-        goto add_one_ulp;
-      else
-        goto set_exponent;
-
-    case GMP_RNDD:
-      inex = - (rb || fb);
-      if (inex && MPFR_IS_NEG(a))
+    case GMP_RNDA:
+      inex = rb || fb ? (MPFR_IS_POS(a) ? 1 : -1) : 0;
+      if (inex)
         goto add_one_ulp;
       else
         goto set_exponent;
@@ -521,11 +517,11 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
     }
 
  add_one_ulp: /* add one unit in last place to a */
-  if (MPFR_UNLIKELY(mpn_add_1(ap, ap, an, MPFR_LIMB_ONE << sh)))
+  if (MPFR_UNLIKELY(mpn_add_1 (ap, ap, an, MPFR_LIMB_ONE << sh)))
     {
       if (MPFR_UNLIKELY(exp == __gmpfr_emax))
         {
-          inex = mpfr_overflow(a, rnd_mode, MPFR_SIGN(a));
+          inex = mpfr_overflow (a, rnd_mode, MPFR_SIGN(a));
           goto end_of_add;
         }
       exp++;

@@ -1275,7 +1275,7 @@ bug20080721 (void)
     {
       int i, inex0;
 
-      i = (rnd == GMP_RNDN || rnd == GMP_RNDD);
+      i = (rnd == GMP_RNDN || rnd == GMP_RNDD || rnd == GMP_RNDA);
       inex0 = i ? -1 : 1;
       mpfr_clear_flags ();
       inex = mpfr_pow (z, x, y, (mp_rnd_t) rnd);

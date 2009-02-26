@@ -729,21 +729,36 @@ typedef intmax_t mpfr_eexp_t;
   (((rnd) + (test)) == GMP_RNDD)
 
 /* We want to test if rnd = Zero, or Away.
-   'test' is true iff negative. */
+   'test' is 1 if negative, and 0 if positive. */
 #define MPFR_IS_LIKE_RNDZ(rnd, test) \
   ((rnd==GMP_RNDZ) || MPFR_IS_RNDUTEST_OR_RNDDNOTTEST (rnd, test))
 
-/* Invert a rounding mode */
+#define MPFR_IS_LIKE_RNDU(rnd, sign) \
+  ((rnd==GMP_RNDU) || (rnd==GMP_RNDZ && sign<0) || (rnd==GMP_RNDA && sign>0))
+
+#define MPFR_IS_LIKE_RNDD(rnd, sign) \
+  ((rnd==GMP_RNDD) || (rnd==GMP_RNDZ && sign>0) || (rnd==GMP_RNDA && sign<0))
+
+/* Invert a rounding mode, RNDZ and RNDA are unchanged */
 #define MPFR_INVERT_RND(rnd) ((rnd == GMP_RNDU) ? GMP_RNDD : \
                              ((rnd == GMP_RNDD) ? GMP_RNDU : rnd))
 
-/* Transform RNDU and RNDD to RNDA or RNDZ */
+/* Transform RNDU and RNDD to RNDZ according to test */
 #define MPFR_UPDATE_RND_MODE(rnd, test)                            \
   do {                                                             \
     if (MPFR_UNLIKELY(MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd, test))) \
       rnd = GMP_RNDZ;                                              \
   } while (0)
 
+/* Transform RNDU and RNDD to RNDZ or RNDA according to sign,
+   leave the other modes unchanged */
+#define MPFR_UPDATE2_RND_MODE(rnd, sign)	\
+  do {						\
+  if (rnd == GMP_RNDU)				\
+    rnd = (sign > 0) ? GMP_RNDA : GMP_RNDZ;	\
+  else if (rnd == GMP_RNDD)			\
+    rnd = (sign < 0) ? GMP_RNDA : GMP_RNDZ;	\
+  } while (0)
 
 
 /******************************************************

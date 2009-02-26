@@ -191,57 +191,55 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
   if (MPFR_UNLIKELY (d == 0 && inexact == 0))
     nexttoinf = 0;  /* result is exact */
   else
-    switch (rnd_mode)
-      {
-      case GMP_RNDZ:
-        inexact = - MPFR_INT_SIGN (y);  /* result is inexact */
-        nexttoinf = 0;
-        break;
+    {
+      MPFR_UPDATE2_RND_MODE(rnd_mode, MPFR_SIGN (y));
+      switch (rnd_mode)
+	{
+	case GMP_RNDZ:
+	  inexact = - MPFR_INT_SIGN (y);  /* result is inexact */
+	  nexttoinf = 0;
+	  break;
 
-      case GMP_RNDU:
-        inexact = 1;
-        nexttoinf = MPFR_IS_POS (y);
-        break;
+	case GMP_RNDA:
+	  inexact = MPFR_INT_SIGN (y);
+	  nexttoinf = 1;
+	  break;
 
-      case GMP_RNDD:
-        inexact = -1;
-        nexttoinf = MPFR_IS_NEG (y);
-        break;
-
-      default:
-        MPFR_ASSERTD (rnd_mode == GMP_RNDN);
-        /* We have one more significant bit in yn. */
-        if (sh && d < (MPFR_LIMB_ONE << (sh - 1)))
-          {
-            inexact = - MPFR_INT_SIGN (y);
-            nexttoinf = 0;
-          }
-        else if (sh && d > (MPFR_LIMB_ONE << (sh - 1)))
-          {
-            inexact = MPFR_INT_SIGN (y);
-            nexttoinf = 1;
-          }
-        else /* sh = 0 or d = 1 << (sh-1) */
-          {
-            /* The first case is "false" even rounding (significant bits
-               indicate even rounding, but the result is inexact, so up) ;
-               The second case is the case where middle should be used to
-               decide the direction of rounding (no further bit computed) ;
-               The third is the true even rounding.
-            */
-            if ((sh && inexact) || (!sh && middle > 0) ||
-                (!inexact && *yp & (MPFR_LIMB_ONE << sh)))
-              {
-                inexact = MPFR_INT_SIGN (y);
-                nexttoinf = 1;
-              }
-            else
-              {
-                inexact = - MPFR_INT_SIGN (y);
-                nexttoinf = 0;
-              }
-          }
-      }
+	default: /* should be GMP_RNDN */
+	  MPFR_ASSERTD (rnd_mode == GMP_RNDN);
+	  /* We have one more significant bit in yn. */
+	  if (sh && d < (MPFR_LIMB_ONE << (sh - 1)))
+	    {
+	      inexact = - MPFR_INT_SIGN (y);
+	      nexttoinf = 0;
+	    }
+	  else if (sh && d > (MPFR_LIMB_ONE << (sh - 1)))
+	    {
+	      inexact = MPFR_INT_SIGN (y);
+	      nexttoinf = 1;
+	    }
+	  else /* sh = 0 or d = 1 << (sh-1) */
+	    {
+	      /* The first case is "false" even rounding (significant bits
+		 indicate even rounding, but the result is inexact, so up) ;
+		 The second case is the case where middle should be used to
+		 decide the direction of rounding (no further bit computed) ;
+		 The third is the true even rounding.
+	      */
+	      if ((sh && inexact) || (!sh && middle > 0) ||
+		  (!inexact && *yp & (MPFR_LIMB_ONE << sh)))
+		{
+		  inexact = MPFR_INT_SIGN (y);
+		  nexttoinf = 1;
+		}
+	      else
+		{
+		  inexact = - MPFR_INT_SIGN (y);
+		  nexttoinf = 0;
+		}
+	    }
+	}
+    }
 
   if (nexttoinf &&
       MPFR_UNLIKELY (mpn_add_1 (yp, yp, yn, MPFR_LIMB_ONE << sh)))

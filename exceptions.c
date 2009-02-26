@@ -213,7 +213,7 @@ mpfr_check_range (mpfr_ptr x, int t, mp_rnd_t rnd_mode)
           return mpfr_underflow(x, rnd_mode, MPFR_SIGN(x));
         }
       if (MPFR_UNLIKELY( exp > __gmpfr_emax) )
-        return mpfr_overflow(x, rnd_mode, MPFR_SIGN(x));
+        return mpfr_overflow (x, rnd_mode, MPFR_SIGN(x));
     }
   else if (MPFR_UNLIKELY (t != 0 && MPFR_IS_INF (x)))
     {
@@ -294,16 +294,15 @@ mpfr_underflow (mpfr_ptr x, mp_rnd_t rnd_mode, int sign)
 
   MPFR_ASSERT_SIGN (sign);
 
-  if (rnd_mode == GMP_RNDN
-      || MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd_mode, MPFR_IS_POS_SIGN (sign)))
-    {
-      mpfr_setmin (x, __gmpfr_emin);
-      inex = 1;
-    }
-  else
+  if (MPFR_IS_LIKE_RNDZ(rnd_mode, sign < 0))
     {
       MPFR_SET_ZERO(x);
       inex = -1;
+    }
+  else
+    {
+      mpfr_setmin (x, __gmpfr_emin);
+      inex = 1;
     }
   MPFR_SET_SIGN(x, sign);
   __gmpfr_flags |= MPFR_FLAGS_INEXACT | MPFR_FLAGS_UNDERFLOW;
@@ -319,16 +318,15 @@ mpfr_overflow (mpfr_ptr x, mp_rnd_t rnd_mode, int sign)
 
   MPFR_ASSERT_SIGN(sign);
   MPFR_CLEAR_FLAGS(x);
-  if (rnd_mode == GMP_RNDN
-      || MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd_mode, sign > 0))
-    {
-      MPFR_SET_INF(x);
-      inex = 1;
-    }
-  else
+  if (MPFR_IS_LIKE_RNDZ(rnd_mode, sign < 0))
     {
       mpfr_setmax (x, __gmpfr_emax);
       inex = -1;
+    }
+  else
+    {
+      MPFR_SET_INF(x);
+      inex = 1;
     }
   MPFR_SET_SIGN(x,sign);
   __gmpfr_flags |= MPFR_FLAGS_INEXACT | MPFR_FLAGS_OVERFLOW;

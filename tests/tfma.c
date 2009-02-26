@@ -131,7 +131,7 @@ test_overflow2 (void)
       {
         int inf, overflow;
 
-        inf = rnd == GMP_RNDN || rnd == GMP_RNDD;
+        inf = rnd == GMP_RNDN || rnd == GMP_RNDD || rnd == GMP_RNDA;
         overflow = inf || i <= 0;
 
         inex = mpfr_set_si_2exp (z, i, mpfr_get_emin (), GMP_RNDN);
@@ -227,11 +227,9 @@ test_underflow1 (void)
                           mpfr_print_rnd_mode ((mp_rnd_t) rnd));
                   err = 1;
                 }
-              if (signy < 0 && (rnd == GMP_RNDD ||
-                                (rnd == GMP_RNDZ && signz > 0)))
+              if (signy < 0 && MPFR_IS_LIKE_RNDD(rnd, signz))
                 mpfr_nextbelow (z);
-              if (signy > 0 && (rnd == GMP_RNDU ||
-                                (rnd == GMP_RNDZ && signz < 0)))
+              if (signy > 0 && MPFR_IS_LIKE_RNDU(rnd, signz))
                 mpfr_nextabove (z);
               if ((mpfr_overflow_p () != 0) ^ (mpfr_inf_p (z) != 0))
                 {

@@ -79,6 +79,8 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
   N = MPFR_PREC (x);   /* Precision of input variable */
   Nz = MPFR_PREC (z);   /* Precision of output variable */
   threshold = (MAX (N, Nz) + (rnd_mode == GMP_RNDN ? 1 : 0)) << 1;
+  if (rnd_mode == GMP_RNDA)
+    rnd_mode = GMP_RNDU; /* since the result is positive, RNDA = RNDU */
 
   /* Is |x| a suitable approximation to the precision Nz ?
      (see algorithms.tex for explanations) */

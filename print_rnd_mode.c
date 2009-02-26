@@ -35,6 +35,8 @@ mpfr_print_rnd_mode (mp_rnd_t rnd_mode)
       return "GMP_RNDN";
     case GMP_RNDZ:
       return "GMP_RNDZ";
+    case GMP_RNDA:
+      return "GMP_RNDA";
     default:
       return (const char*) 0;
     }

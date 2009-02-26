@@ -347,11 +347,8 @@ Table of contents:
    1250 bytes would still be small compared to the code size!
    Store pi in round to zero mode (to recover other modes).
 
-- add a new rounding mode: rounding away from 0. This can be easily
-  implemented as follows: round to zero, and if the result is inexact,
-        add one ulp to the mantissa.
 - add a new rounding mode: round to nearest, with ties away from zero
-  (will be in 754r, could be used by mpfr_round)
+  (this is roundTiesToAway in 754-2008, could be used by mpfr_round)
 - add a new roundind mode: round to odd. If the result is not exactly
         representable, then round to the odd mantissa. This rounding
         has the nice property that for k > 1, if:

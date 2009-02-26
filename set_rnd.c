@@ -28,7 +28,7 @@ mp_rnd_t MPFR_THREAD_ATTR __gmpfr_default_rounding_mode = GMP_RNDN;
 void
 mpfr_set_default_rounding_mode (mp_rnd_t rnd_mode)
 {
-  if (rnd_mode >= GMP_RNDN && rnd_mode <= GMP_RNDD)
+  if (rnd_mode >= GMP_RNDN && rnd_mode < GMP_RND_MAX)
     __gmpfr_default_rounding_mode = rnd_mode;
 }
 

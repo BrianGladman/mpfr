@@ -586,7 +586,7 @@ underflow_up2 (void)
       char sy[256];
 
       mpfr_set_ui (z0, 0, GMP_RNDN);
-      expected_inex = rnd == GMP_RNDN || rnd == GMP_RNDU ?
+      expected_inex = rnd == GMP_RNDN || rnd == GMP_RNDU || rnd == GMP_RNDA ?
         (mpfr_nextabove (z0), 1) : -1;
       sprintf (sy, "%lu", (unsigned long) n);
 
@@ -629,8 +629,8 @@ underflow_up3 (void)
           mpfr_nextabove (x);
         /* x = 2 + i * eps, y = emin - 2, x^y ~= 2^(emin - 2) */
 
-        expected_inex = rnd == GMP_RNDU || (rnd == GMP_RNDN && i < 0) ?
-          1 : -1;
+        expected_inex = rnd == GMP_RNDU || rnd == GMP_RNDA
+	  || (rnd == GMP_RNDN && i < 0) ? 1 : -1;
 
         mpfr_set_ui (z0, 0, GMP_RNDN);
         if (expected_inex > 0)
@@ -696,14 +696,20 @@ overflow_inv (void)
               RND_LOOP (rnd)
                 {
                   int inf, overflow;
+		  mp_rnd_t rnd2;
+		  
+		  if (rnd == GMP_RNDA)
+		    rnd2 = s < 0 ? GMP_RNDD : GMP_RNDU;
+		  else
+		    rnd2 = rnd;
 
                   overflow = t == 0 ||
                     ((mp_rnd_t) rnd == GMP_RNDN && (precx > 10 || t == 1)) ||
-                    ((mp_rnd_t) rnd == (s < 0 ? GMP_RNDD : GMP_RNDU) &&
+                    ((mp_rnd_t) rnd2 == (s < 0 ? GMP_RNDD : GMP_RNDU) &&
                      (precx > 10 || t <= 2));
                   inf = overflow &&
                     ((mp_rnd_t) rnd == GMP_RNDN ||
-                     (mp_rnd_t) rnd == (s < 0 ? GMP_RNDD : GMP_RNDU));
+                     (mp_rnd_t) rnd2 == (s < 0 ? GMP_RNDD : GMP_RNDU));
                   mpfr_clear_flags ();
                   inex = mpfr_pow (z, x, y, (mp_rnd_t) rnd);
                   if (overflow ^ !! mpfr_overflow_p ())

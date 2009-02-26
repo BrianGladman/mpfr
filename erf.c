@@ -125,7 +125,7 @@ mpfr_erf (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     /* |erf x| = 1 or 1- */
     {
       mp_rnd_t rnd2 = MPFR_IS_POS (x) ? rnd_mode : MPFR_INVERT_RND(rnd_mode);
-      if (rnd2 == GMP_RNDN || rnd2 == GMP_RNDU)
+      if (rnd2 == GMP_RNDN || rnd2 == GMP_RNDU || rnd2 == GMP_RNDA)
         {
           inex = MPFR_INT_SIGN (x);
           mpfr_set_si (y, inex, rnd2);

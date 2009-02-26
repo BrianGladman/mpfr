@@ -229,7 +229,7 @@ test_large_small (void)
                   ext ? ", extended exponent range" : "");
           printf ("Expected ");
           mpfr_out_str (stdout, 2, 0, y, GMP_RNDN);
-          printf (", inex %c 0\n", (mp_rnd_t) r == GMP_RNDU ? '>' : '<');
+          printf (", inex = %d\n", inex2);
           printf ("Got      ");
           mpfr_out_str (stdout, 2, 0, y, GMP_RNDN);
           printf (", inex = %d\n", inexact);

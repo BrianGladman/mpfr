@@ -270,7 +270,7 @@ does not depend (or should not) on the machine word size
 @item the precision in bits can be set exactly to any valid value
 for each variable (including very small precision);
 @item MPFR provides the four rounding modes from the IEEE 754-1985
-standard.
+standard, plus round-to-away.
 @end itemize
 
 In particular, with a precision of 53 bits, MPFR should be able to
@@ -531,9 +531,9 @@ a pointer to this structure). A floating-point number can have
 three special values: Not-a-Number (NaN) or plus or minus Infinity. NaN
 represents an uninitialized object, the result of an invalid operation
 (like 0 divided by 0), or a value that cannot be determined (like
-+Infinity minus +Infinity). Moreover, like in the IEEE 754-1985 standard,
++Infinity minus +Infinity). Moreover, like in the IEEE 754 standard,
 zero is signed, i.e.@: there are both +0 and @minus{}0; the behavior
-is the same as in the IEEE 754-1985 standard and it is generalized to
+is the same as in the IEEE 754 standard and it is generalized to
 the other functions supported by MPFR.
 
 
@@ -615,16 +615,17 @@ life.
 
 @section Rounding Modes
 
-The following four rounding modes are supported:
+The following five rounding modes are supported:
 
 @itemize @bullet
-@item @code{GMP_RNDN}: round to nearest
-@item @code{GMP_RNDZ}: round toward zero
-@item @code{GMP_RNDU}: round toward plus infinity
-@item @code{GMP_RNDD}: round toward minus infinity
+@item @code{GMP_RNDN}: round to nearest (roundTiesToEven in IEEE 754-2008)
+@item @code{GMP_RNDZ}: round toward zero (roundTowardZero in IEEE 754-2008)
+@item @code{GMP_RNDU}: round toward plus infinity (roundTowardPositive in IEEE 754-2008)
+@item @code{GMP_RNDD}: round toward minus infinity (roundTowardNegative in IEEE 754-2008)
+@item @code{GMP_RNDA}: round away from zero (currently experimental)
 @end itemize
 
-The @samp{round to nearest} mode works as in the IEEE 754-1985 standard: in
+The @samp{round to nearest} mode works as in the IEEE 754 standard: in
 case the number to be rounded lies exactly in the middle of two representable
 numbers, it is rounded to the one with the least significant bit set to zero.
 For example, the number 5/2, which is represented by (10.1) in binary, is
@@ -836,7 +837,7 @@ The semantics of a calculation in MPFR is specified as follows: Compute the
 requested operation exactly (with ``infinite accuracy''), and round the result
 to the precision of the destination variable, with the given rounding mode.
 The MPFR floating-point functions are intended to be a smooth extension
-of the IEEE 754-1985 arithmetic. The results obtained on one computer should
+of the IEEE 754 arithmetic. The results obtained on one computer should
 not differ from the results obtained on a computer with a different word size.
 
 @cindex Accuracy
@@ -1060,7 +1061,7 @@ Note that the input 0 is converted to +0 by @code{mpfr_set_ui},
 @code{mpfr_set_si}, @code{mpfr_set_sj}, @code{mpfr_set_uj},
 @code{mpfr_set_z}, @code{mpfr_set_q} and
 @code{mpfr_set_f}, regardless of the rounding mode.
-If the system does not support the IEEE-754 standard, @code{mpfr_set_d},
+If the system does not support the IEEE 754 standard, @code{mpfr_set_d},
 @code{mpfr_set_ld} and
 @code{mpfr_set_decimal64} might not preserve the signed zeros.
 The @code{mpfr_set_decimal64} function is built only with the configure
@@ -1428,7 +1429,7 @@ and @code{mpfr_div_d}.
 @deftypefunx int mpfr_sqrt_ui (mpfr_t @var{rop}, unsigned long int @var{op}, mp_rnd_t @var{rnd})
 Set @var{rop} to @m{\sqrt{@var{op}}, the square root of @var{op}}
 rounded in the direction @var{rnd}. Return @minus{}0 if @var{op} is
-@minus{}0 (to be consistent with the IEEE 754-1985 standard).
+@minus{}0 (to be consistent with the IEEE 754 standard).
 Set @var{rop} to NaN if @var{op} is negative.
 @end deftypefun
 
@@ -1536,7 +1537,7 @@ If one of the operands is NaN, set the @emph{erange} flag and return zero.
 Note: These functions may be useful to distinguish the three possible cases.
 If you need to distinguish two cases only, it is recommended to use the
 predicate functions (e.g., @code{mpfr_equal_p} for the equality) described
-below; they behave like the IEEE-754 comparisons, in particular when one
+below; they behave like the IEEE 754 comparisons, in particular when one
 or both arguments are NaN. But only floating-point numbers can be compared
 (you may need to do a conversion first).
 @end deftypefun
@@ -2182,7 +2183,8 @@ Set @var{rop} to @var{op} rounded to an integer.
 given rounding mode, @code{mpfr_ceil} rounds
 to the next higher or equal representable integer, @code{mpfr_floor} to
 the next lower or equal representable integer, @code{mpfr_round} to the
-nearest representable integer, rounding halfway cases away from zero,
+nearest representable integer, rounding halfway cases away from zero
+(as in the @code{roundTiesToAway} mode of IEEE 754-2008),
 and @code{mpfr_trunc} to the next representable integer toward zero.
 
 The returned value is zero when the result is exact, positive when it is
@@ -2552,8 +2554,8 @@ not the input value @var{x}, i.e.@: the ternary value is propagated.
 This is a preliminary interface.
 @end deftypefun
 
-This is an example of how to emulate double IEEE-754 arithmetic
-using MPFR:
+This is an example of how to emulate binary double IEEE 754 arithmetic
+(@code{binary64} in IEEE 754-2008) using MPFR:
 
 @example
 @{
@@ -2578,7 +2580,7 @@ using MPFR:
 @}
 @end example
 
-Warning: this emulates a double IEEE-754 arithmetic with correct rounding
+Warning: this emulates a double IEEE 754 arithmetic with correct rounding
 in the subnormal range, which may not be the case for your hardware.
 
 @deftypefun void mpfr_clear_underflow (void)
@@ -2871,6 +2873,12 @@ IEEE standard for binary floating-point arithmetic, Technical Report
 ANSI-IEEE Standard 754-1985, New York, 1985.
 Approved March 21, 1985: IEEE Standards Board; approved July 26,
   1985: American National Standards Institute, 18 pages.
+
+@item
+IEEE Standard for Floating-Point Arithmetic,
+ANSI-IEEE Standard 754-2008, 2008.
+Revision of ANSI-IEEE Standard 754-1985,
+approved June 12, 2008: IEEE Standards Board, 70 pages.
 
 @item
 Donald E. Knuth, "The Art of Computer Programming", vol 2,

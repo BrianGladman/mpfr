@@ -52,13 +52,16 @@ check_default_rnd (void)
       mpfr_set_default_rounding_mode ((mp_rnd_t) r);
       t = (mpfr_get_default_rounding_mode) ();
       if ((mp_rnd_t) r != t)
-        ERROR("ERROR in setting / getting default rounding mode (1)");
+	{
+	  printf ("%s %s\n", mpfr_print_rnd_mode (r), mpfr_print_rnd_mode (t));
+	  ERROR("ERROR in setting / getting default rounding mode (1)");
+	}
     }
-  mpfr_set_default_rounding_mode ((mp_rnd_t) 4);
-  if (mpfr_get_default_rounding_mode() != GMP_RNDD)
+  mpfr_set_default_rounding_mode ((mp_rnd_t) GMP_RND_MAX);
+  if (mpfr_get_default_rounding_mode() != GMP_RNDA)
     ERROR("ERROR in setting / getting default rounding mode (2)");
   mpfr_set_default_rounding_mode((mp_rnd_t) -1);
-  if (mpfr_get_default_rounding_mode() != GMP_RNDD)
+  if (mpfr_get_default_rounding_mode() != GMP_RNDA)
     ERROR("ERROR in setting / getting default rounding mode (3)");
 }
 
@@ -190,8 +193,8 @@ test_set_underflow (void)
 {
   /* static to allow non-constant initialiers in r */
   mpfr_t x, zero, min;
-  mpfr_ptr r[4];
-  int t[4] = { 1, -1, 1, -1 };
+  mpfr_ptr r[GMP_RND_MAX];
+  int t[GMP_RND_MAX] = { 1, -1, 1, -1, 1 };
   int i;
   int s;
 
@@ -199,7 +202,7 @@ test_set_underflow (void)
   mpfr_set_ui (zero, 0, GMP_RNDN);
   mpfr_set_ui (min, 0, GMP_RNDN);
   mpfr_nextabove (min);
-  r[0] = r[2] = min;
+  r[0] = r[2] = r[4] = min;
   r[1] = r[3] = zero;
   for (s = 1; s > 0; s = -1)
     {
@@ -233,8 +236,8 @@ test_set_overflow (void)
 {
   /* static to allow non-constant initialiers in r */
   mpfr_t x, inf, max;
-  mpfr_ptr r[4];
-  int t[4] = { 1, -1, 1, -1 };
+  mpfr_ptr r[GMP_RND_MAX];
+  int t[GMP_RND_MAX] = { 1, -1, 1, -1, 1 };
   int i;
   int s;
 
@@ -242,7 +245,7 @@ test_set_overflow (void)
   mpfr_set_inf (inf, 1);
   mpfr_set_inf (max, 1);
   mpfr_nextbelow (max);
-  r[0] = r[2] = inf;
+  r[0] = r[2] = r[4] = inf;
   r[1] = r[3] = max;
   for (s = 1; s > 0; s = -1)
     {

@@ -20,6 +20,9 @@ MA 02110-1301, USA.
 
 ##############################################################################
 
+Changes from versions 2.4.* to version 3.0:
+- a new rounding mode (GMP_RNDA) is available to round away from zero
+
 Changes from versions 2.3.* to version 2.4.0:
 - MPFR is now a GNU package.
 - Changes in the behavior of mpfr_strtofr and in its documentation

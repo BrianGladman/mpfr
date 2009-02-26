@@ -1,4 +1,4 @@
-/* mpfr_cache -- cache interface for multi-precision const in MPFR.
+/* mpfr_cache -- cache interface for multiple-precision constants in MPFR.
 
 Copyright 2004, 2005, 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
 Contributed by the Arenaire and Cacao projects, INRIA.
@@ -60,6 +60,8 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mp_rnd_t rnd)
       pold = prec;
       mpfr_prec_round (cache->x, pold, GMP_RNDN);
       cache->inexact = (*cache->func) (cache->x, GMP_RNDN);
+      /* we assume all cached constants are positive */
+      MPFR_ASSERTN(MPFR_IS_POS(cache->x));
     }
 
   /* First, check if the cache has the exact value (unlikely).
@@ -107,6 +109,7 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mp_rnd_t rnd)
             }
           break;
         case GMP_RNDU:
+        case GMP_RNDA:
           if (MPFR_UNLIKELY (inexact == 0))
             {
               inexact = cache->inexact;
