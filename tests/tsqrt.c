@@ -177,6 +177,9 @@ check_float (void)
   check24("70368794509312.0", GMP_RNDD, "8.38861e6");
   check24("281474876047360.0", GMP_RNDD, "1.6777212e7");
   check24("91214552498176.0", GMP_RNDD, "9.550631e6");
+
+  /* check that rounding away is just rounding towards plus infinity */
+  check24("91214552498176.0", GMP_RNDA, "9.550632e6");
 }
 
 static void
@@ -334,6 +337,8 @@ special (void)
       MPFR_ASSERTN(inexact > 0 && mpfr_cmp_ui_2exp (z, 3, -1) == 0);
       inexact = test_sqrt (z, x, GMP_RNDD);
       MPFR_ASSERTN(inexact < 0 && mpfr_cmp_ui (z, 1) == 0);
+      inexact = test_sqrt (z, x, GMP_RNDA);
+      MPFR_ASSERTN(inexact > 0 && mpfr_cmp_ui_2exp (z, 3, -1) == 0);
     }
 
   /* corner case rw = 0 in rounding to nearest */
@@ -569,6 +574,7 @@ main (void)
     {
       test_property1 (p, GMP_RNDN);
       test_property1 (p, GMP_RNDU);
+      test_property1 (p, GMP_RNDA);
       test_property2 (p, GMP_RNDN);
     }
 
@@ -675,6 +681,10 @@ main (void)
           "1.556abe212b56e@13");
   check4 ("72154663483843080704304789585920.0", GMP_RNDD,
           "1.e2d9a51977e6d@13");
+
+  /* check that rounding away is just rounding towards plus infinity */
+  check4 ("72154663483843080704304789585920.0", GMP_RNDA,
+          "1.e2d9a51977e6e@13");
 
   test_generic (2, 300, 15);
   data_check ("data/sqrt", mpfr_sqrt, "mpfr_sqrt");

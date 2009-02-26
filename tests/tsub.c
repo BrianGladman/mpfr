@@ -210,12 +210,19 @@ check_diverse (void)
       printf ("Error in mpfr_sub (3)\n");
       exit (1);
     }
+  test_sub (z, x, y, GMP_RNDA);
+  mpfr_set_str_binary (x, "1.000000000000000000000000000000000000000000000000000000000000001");
+  if (mpfr_cmp (z, x))
+    {
+      printf ("Error in mpfr_sub (4)\n");
+      exit (1);
+    }
   mpfr_set_prec (x, 66);
   mpfr_set_str_binary (x, "1.11101110111100011101110111111111111010000110010111001011001010111");
   test_sub (z, x, y, GMP_RNDN);
   if (mpfr_cmp_ui (z, 1))
     {
-      printf ("Error in mpfr_sub (4)\n");
+      printf ("Error in mpfr_sub (5)\n");
       exit (1);
     }
 
