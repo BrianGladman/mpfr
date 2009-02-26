@@ -82,7 +82,7 @@ check_diverse (void)
   test_sub (x, y, z, GMP_RNDD);
   if (mpfr_cmp_ui (x, 3))
     {
-      printf ("Error in mpfr_sub(1,-1,RNDD)\n");
+      printf ("Error in mpfr_sub(1,-2,RNDD)\n");
       exit (1);
     }
 
@@ -210,9 +210,9 @@ check_diverse (void)
       printf ("Error in mpfr_sub (3)\n");
       exit (1);
     }
-  test_sub (z, x, y, GMP_RNDA);
+  inexact = test_sub (z, x, y, GMP_RNDA);
   mpfr_set_str_binary (x, "1.000000000000000000000000000000000000000000000000000000000000001");
-  if (mpfr_cmp (z, x))
+  if (mpfr_cmp (z, x) || inexact <= 0)
     {
       printf ("Error in mpfr_sub (4)\n");
       exit (1);

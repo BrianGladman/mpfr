@@ -191,10 +191,10 @@ check_flags (void)
 static void
 test_set_underflow (void)
 {
-  /* static to allow non-constant initialiers in r */
+  /* static to allow non-constant initializers in r */
   mpfr_t x, zero, min;
   mpfr_ptr r[GMP_RND_MAX];
-  int t[GMP_RND_MAX] = { 1, -1, 1, -1, 1 };
+  int t[GMP_RND_MAX] = { 1, -1, 1, -1, 1 }; /* RNDN, RNDZ, RNDU, RNDD, RNDA */
   int i;
   int s;
 
@@ -202,8 +202,8 @@ test_set_underflow (void)
   mpfr_set_ui (zero, 0, GMP_RNDN);
   mpfr_set_ui (min, 0, GMP_RNDN);
   mpfr_nextabove (min);
-  r[0] = r[2] = r[4] = min;
-  r[1] = r[3] = zero;
+  r[0] = r[2] = r[4] = min; /* RNDN, RNDU, RNDA */
+  r[1] = r[3] = zero;       /* RNDZ, RNDD */
   for (s = 1; s > 0; s = -1)
     {
       for (i = 0; i < GMP_RND_MAX ; i++)
@@ -234,10 +234,10 @@ test_set_underflow (void)
 static void
 test_set_overflow (void)
 {
-  /* static to allow non-constant initialiers in r */
+  /* static to allow non-constant initializers in r */
   mpfr_t x, inf, max;
   mpfr_ptr r[GMP_RND_MAX];
-  int t[GMP_RND_MAX] = { 1, -1, 1, -1, 1 };
+  int t[GMP_RND_MAX] = { 1, -1, 1, -1, 1 }; /* RNDN, RNDZ, RNDU, RNDD, RNDA */
   int i;
   int s;
 
@@ -245,8 +245,8 @@ test_set_overflow (void)
   mpfr_set_inf (inf, 1);
   mpfr_set_inf (max, 1);
   mpfr_nextbelow (max);
-  r[0] = r[2] = r[4] = inf;
-  r[1] = r[3] = max;
+  r[0] = r[2] = r[4] = inf; /* RNDN, RNDU, RNDA */
+  r[1] = r[3] = max;        /* RNDZ, RNDD */
   for (s = 1; s > 0; s = -1)
     {
       for (i = 0; i < GMP_RND_MAX ; i++)

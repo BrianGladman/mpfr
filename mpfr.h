@@ -61,6 +61,9 @@ MPFR_VERSION_NUM(MPFR_VERSION_MAJOR,MPFR_VERSION_MINOR,MPFR_VERSION_PATCHLEVEL)
 
    GMP_RNDU must appear just before GMP_RNDD (see
    MPFR_IS_RNDUTEST_OR_RNDDNOTTEST in mpfr-impl.h).
+
+   If you change the order of the rounding modes, please update the routines
+   in texceptions.c which assume 0=RNDN, 1=RNDZ, 2=RNDU, 3=RNDD, 4=RNDA.
 */
 typedef enum {
   GMP_RNDN=0,  /* round to nearest, with ties to even */
