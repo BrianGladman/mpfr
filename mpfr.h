@@ -53,14 +53,19 @@ MPFR_VERSION_NUM(MPFR_VERSION_MAJOR,MPFR_VERSION_MINOR,MPFR_VERSION_PATCHLEVEL)
 # define _MPFR_H_HAVE_INTMAX_T 1
 #endif
 
-/* Definition of rounding modes (DON'T USE GMP_RNDNA!)
+/* Definition of rounding modes.
    Warning! Changing the contents of this enum should be seen as an
    interface change since the old and the new types are not compatible
    (the integer type compatible with the enumerated type can even change,
    see ISO C99, 6.7.2.2#4), and in Makefile.am, AGE should be set to 0. */
 typedef enum {
-  GMP_RNDN=0, GMP_RNDZ, GMP_RNDU, GMP_RNDD, GMP_RND_MAX,
-  GMP_RNDNA=-1
+  GMP_RNDN=0,  /* round to nearest, with ties to even */
+  GMP_RNDZ,    /* round toward zero */
+  GMP_RNDU,    /* round toward +Inf */
+  GMP_RNDD,    /* round toward -Inf */
+  GMP_RND_MAX, /* gives number of supported rounding modes, those after are
+		  only supported by some functions */
+  GMP_RNDNA=-1 /* round to nearest, with ties away from zero (mpfr_round) */
 } mpfr_rnd_t;
 
 /* Define precision : 1 (short), 2 (int) or 3 (long) (DON'T USE IT!)*/
