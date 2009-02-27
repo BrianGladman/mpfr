@@ -59,7 +59,9 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   rnd_away =
     rnd_mode == GMP_RNDD ? sign < 0 :
     rnd_mode == GMP_RNDU ? sign > 0 :
-    rnd_mode == GMP_RNDZ ? 0 : -1;
+    rnd_mode == GMP_RNDZ ? 0        :
+    rnd_mode == GMP_RNDN ? -1       :
+    1; /* round to away */
 
   /* rnd_away:
      1 if round away from zero,
