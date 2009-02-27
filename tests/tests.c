@@ -523,17 +523,19 @@ tests_default_random (mpfr_ptr x, int pos, mp_exp_t emin, mp_exp_t emax)
     mpfr_neg (x, x, GMP_RNDN);
 }
 
-/* The test_one argument is a boolean. If it is true, then the function
-   is tested in only one rounding mode (the one provided in rnd) and the
-   variable rndnext is not used (due to the break). If it is false, then
-   the function is tested in the 4 rounding modes, and rnd must initially
-   be GMP_RNDZ; thus rndnext will be initialized in the first iteration.
-   gcc may give a warning about rndnext, but this is an easy and correct
-   way to implement a simple queue for the rounding modes.
-   As examples of use, see the calls to test4rm from the data_check and
+/* The test_one argument is a boolean. If it is true and rnd is a rounding
+   mode towards infinity, then the function is tested in only one rounding
+   mode (the one provided in rnd) and the variable rndnext is not used (due to
+   the break). If it is true and rnd is a rounding mode towards or away from
+   zero, then the function is tested twice, first with the provided rounding
+   mode and second with the rounding mode towards the corresponding infinity
+   (determined by the sign of the result). If it is false, then the function
+   is tested in the 5 rounding modes, and rnd must initially be GMP_RNDZ; thus
+   rndnext will be initialized in the first iteration.
+   As examples of use, see the calls to test5rm from the data_check and
    bad_cases functions. */
 static void
-test4rm (int (*fct) (FLIST), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
+test5rm (int (*fct) (FLIST), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
          mp_rnd_t rnd, int test_one, char *name)
 {
   mp_prec_t yprec = MPFR_PREC (y);
@@ -558,29 +560,34 @@ test4rm (int (*fct) (FLIST), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
           printf ("\n");
           exit (1);
         }
-      if (test_one || rnd == GMP_RNDN)
+      if (rnd == GMP_RNDN)
         break;
-      if (rnd == GMP_RNDZ)
+
+      if (test_one)
         {
+          if (rnd == GMP_RNDU || rnd == GMP_RNDD)
+            break;
+
           if (MPFR_IS_NEG (y))
-            {
-              rnd = GMP_RNDU;
-              rndnext = GMP_RNDD;
-            }
+            rnd = (rnd == GMP_RNDA) ? GMP_RNDD : GMP_RNDU;
           else
-            {
-              rnd = GMP_RNDD;
-              rndnext = GMP_RNDU;
-            }
+            rnd = (rnd == GMP_RNDA) ? GMP_RNDU : GMP_RNDD;
+        }
+      else if (rnd == GMP_RNDZ)
+        {
+          rnd = MPFR_IS_NEG (y) ? GMP_RNDU : GMP_RNDD;
+          rndnext = GMP_RNDA;
         }
       else
         {
           rnd = rndnext;
-          if (rndnext != GMP_RNDN)
+          if (rnd == GMP_RNDA)
             {
-              rndnext = GMP_RNDN;
               mpfr_nexttoinf (y);
+              rndnext = (MPFR_IS_NEG (y)) ? GMP_RNDD : GMP_RNDU;
             }
+          else if (rndnext != GMP_RNDN)
+            rndnext = GMP_RNDN;
           else
             {
               if (yprec == MPFR_PREC_MIN)
@@ -601,12 +608,12 @@ test4rm (int (*fct) (FLIST), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
 
    xprec is the input precision
    yprec is the output precision
-   rnd is the rounding mode (n, z, u, d, Z)
+   rnd is the rounding mode (n, z, u, d, a, Z)
    x is the input (hexadecimal format)
    y is the expected output (hexadecimal format) for foo(x) with rounding rnd
 
    If rnd is Z, y is the expected output in round-towards-zero, and the
-   three directed rounding modes are tested, then the round-to-nearest
+   four directed rounding modes are tested, then the round-to-nearest
    mode is tested in precision yprec-1. This is useful for worst cases,
    where yprec is the minimum value such that one has a worst case in a
    directed rounding mode.
@@ -735,7 +742,7 @@ data_check (char *f, int (*foo) (FLIST), char *name)
               perror ("data_check");
               exit (1);
             }
-          test4rm (foo, x, y, z, rnd, r != 'Z', name);
+          test5rm (foo, x, y, z, rnd, r != 'Z', name);
         }
     }
 
@@ -865,7 +872,7 @@ bad_cases (int (*fct)(FLIST), int (*inv)(FLIST), char *name,
           printf ("\n");
         }
       /* Note: y is now the expected result rounded towards zero. */
-      test4rm (fct, x, y, z, GMP_RNDZ, 0, name);
+      test5rm (fct, x, y, z, GMP_RNDZ, 0, name);
     next_i:
       /* In case the exponent range has been changed by
          tests_default_random()... */
