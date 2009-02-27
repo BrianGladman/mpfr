@@ -79,6 +79,9 @@ check_sj (intmax_t s, mpfr_ptr x)
             continue;
           if (rnd == GMP_RNDU && i > 0)
             continue;
+	  if (rnd == GMP_RNDA && ((MPFR_IS_POS(y) && i > 0) ||
+				  (MPFR_IS_NEG(y) && i < 0)))
+	    continue;
           /* rint (y) == x == s */
           r = mpfr_get_sj (y, (mp_rnd_t) rnd);
           if (r != s)
@@ -119,6 +122,9 @@ check_uj (uintmax_t u, mpfr_ptr x)
             continue;
           if (rnd == GMP_RNDU && i > 0)
             continue;
+	  if (rnd == GMP_RNDA && ((MPFR_IS_POS(y) && i > 0) ||
+				  (MPFR_IS_NEG(y) && i < 0)))
+	    continue;
           /* rint (y) == x == u */
           r = mpfr_get_uj (y, (mp_rnd_t) rnd);
           if (r != u)

@@ -60,8 +60,8 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     rnd_mode == GMP_RNDD ? sign < 0 :
     rnd_mode == GMP_RNDU ? sign > 0 :
     rnd_mode == GMP_RNDZ ? 0        :
-    rnd_mode == GMP_RNDN ? -1       :
-    1; /* round to away */
+    rnd_mode == GMP_RNDA ? 1        :
+    -1; /* round to nearest-even (RNDN) or nearest-away (RNDNA) */
 
   /* rnd_away:
      1 if round away from zero,
@@ -304,7 +304,7 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 int
 mpfr_round (mpfr_ptr r, mpfr_srcptr u)
 {
-  return mpfr_rint(r, u, GMP_RNDNA);
+  return mpfr_rint (r, u, GMP_RNDNA);
 }
 
 #undef mpfr_trunc
@@ -312,7 +312,7 @@ mpfr_round (mpfr_ptr r, mpfr_srcptr u)
 int
 mpfr_trunc (mpfr_ptr r, mpfr_srcptr u)
 {
-  return mpfr_rint(r, u, GMP_RNDZ);
+  return mpfr_rint (r, u, GMP_RNDZ);
 }
 
 #undef mpfr_ceil
@@ -320,7 +320,7 @@ mpfr_trunc (mpfr_ptr r, mpfr_srcptr u)
 int
 mpfr_ceil (mpfr_ptr r, mpfr_srcptr u)
 {
-  return mpfr_rint(r, u, GMP_RNDU);
+  return mpfr_rint (r, u, GMP_RNDU);
 }
 
 #undef mpfr_floor
@@ -328,7 +328,7 @@ mpfr_ceil (mpfr_ptr r, mpfr_srcptr u)
 int
 mpfr_floor (mpfr_ptr r, mpfr_srcptr u)
 {
-  return mpfr_rint(r, u, GMP_RNDD);
+  return mpfr_rint (r, u, GMP_RNDD);
 }
 
 #undef mpfr_rint_round
