@@ -52,10 +52,10 @@ check_default_rnd (void)
       mpfr_set_default_rounding_mode ((mp_rnd_t) r);
       t = (mpfr_get_default_rounding_mode) ();
       if ((mp_rnd_t) r != t)
-	{
-	  printf ("%s %s\n", mpfr_print_rnd_mode (r), mpfr_print_rnd_mode (t));
-	  ERROR("ERROR in setting / getting default rounding mode (1)");
-	}
+        {
+          printf ("%s %s\n", mpfr_print_rnd_mode (r), mpfr_print_rnd_mode (t));
+          ERROR("ERROR in setting / getting default rounding mode (1)");
+        }
     }
   mpfr_set_default_rounding_mode ((mp_rnd_t) GMP_RND_MAX);
   if (mpfr_get_default_rounding_mode() != GMP_RNDA)

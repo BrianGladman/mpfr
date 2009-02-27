@@ -128,7 +128,7 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
           __gmpfr_emax = 1;
           mpfr_setmin (y, 1);  /* y = 1 */
           if (MPFR_IS_POS_SIGN (signx) && (rnd_mode == GMP_RNDU ||
-	                                   rnd_mode == GMP_RNDA))
+                                           rnd_mode == GMP_RNDA))
             {
               mp_size_t yn;
               int sh;

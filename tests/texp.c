@@ -817,7 +817,7 @@ underflow_up (int extended_emin)
 
                     flags = MPFR_FLAGS_INEXACT |
                       (((rnd == GMP_RNDU || rnd == GMP_RNDA)
-			     && (i == 1 || j == 0)) ||
+                             && (i == 1 || j == 0)) ||
                        (rnd == GMP_RNDN && (i == 1 && j == 0)) ?
                        0 : MPFR_FLAGS_UNDERFLOW);
                     mpfr_clear_flags ();

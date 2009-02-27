@@ -61,9 +61,9 @@ mpfr_add (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
         {
           if (MPFR_IS_ZERO(c))
             {
-	      /* for round away, we take the same convention for 0 + 0
-		 as for round to zero or to nearest: it always gives +0,
-		 except (-0) + (-0) = -0. */
+              /* for round away, we take the same convention for 0 + 0
+                 as for round to zero or to nearest: it always gives +0,
+                 except (-0) + (-0) = -0. */
               MPFR_SET_SIGN(a,
                             (rnd_mode != GMP_RNDD ?
                              ((MPFR_IS_NEG(b) && MPFR_IS_NEG(c)) ? -1 : 1) :

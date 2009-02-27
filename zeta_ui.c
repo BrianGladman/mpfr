@@ -50,7 +50,7 @@ mpfr_zeta_ui (mpfr_ptr z, unsigned long m, mp_rnd_t r)
       int inex;
 
       if (r == GMP_RNDA)
-	r = GMP_RNDU; /* since the result is always positive */
+        r = GMP_RNDU; /* since the result is always positive */
 
       if (m >= p) /* 2^(-m) < ulp(1) = 2^(1-p). This means that
                      2^(-m) <= 1/2*ulp(1). We have 3^(-m)+4^(-m)+... < 2^(-m)

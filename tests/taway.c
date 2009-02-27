@@ -119,14 +119,14 @@ test3 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t),
       inexd = testfunc (ref1, ref2, ref3, r);
 
       if (mpfr_compare (res1, ref1) || inexa != inexd)
-	{
-	  printf ("Error with RNDA for %s with ", foo);
-	  DISP("x=",ref2); DISP2(", y=",ref3);
-	  printf ("inexa=%d inexd=%d\n", inexa, inexd);
-	  printf ("expected "); mpfr_print_binary (ref1); puts ("");
-	  printf ("got      "); mpfr_print_binary (res1); puts ("");
-	  exit (1);
-	}
+        {
+          printf ("Error with RNDA for %s with ", foo);
+          DISP("x=",ref2); DISP2(", y=",ref3);
+          printf ("inexa=%d inexd=%d\n", inexa, inexd);
+          printf ("expected "); mpfr_print_binary (ref1); puts ("");
+          printf ("got      "); mpfr_print_binary (res1); puts ("");
+          exit (1);
+        }
     }
 
   mpfr_clear (ref1);
@@ -170,14 +170,14 @@ test4 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_srcptr,
               set_special (op3, k);
 
               inexa = testfunc (res, op1, op2, op3, GMP_RNDA);
-	      r = MPFR_SIGN(res) > 0 ? GMP_RNDU : GMP_RNDD;
+              r = MPFR_SIGN(res) > 0 ? GMP_RNDU : GMP_RNDD;
               inexd = testfunc (ref, op1, op2, op3, r);
 
               if (mpfr_compare (res, ref) || inexa != inexd)
                 {
                   printf ("Error with RNDA for %s with ", foo);
                   DISP("a=", op1); DISP(", b=", op2); DISP2(", c=", op3);
-		  printf ("inexa=%d inexd=%d\n", inexa, inexd);
+                  printf ("inexa=%d inexd=%d\n", inexa, inexd);
                   DISP("expected ", ref); DISP2(", got ", res);
                   exit (1);
                 }
@@ -225,7 +225,7 @@ test2ui (int (*testfunc)(mpfr_ptr, mpfr_srcptr, unsigned long int, mp_rnd_t),
         {
           printf ("Error with RNDA for %s for c=%u\n", foo, ref3);
           DISP2("a=",ref2);
-	  printf ("inexa=%d inexd=%d\n", inexa, inexd);
+          printf ("inexa=%d inexd=%d\n", inexa, inexd);
           printf ("expected "); mpfr_print_binary (ref1); puts ("");
           printf ("got      "); mpfr_print_binary (res1); puts ("");
           exit (1);
@@ -265,13 +265,13 @@ testui2 (int (*testfunc)(mpfr_ptr, unsigned long int, mpfr_srcptr, mp_rnd_t),
       inexd = testfunc (ref1, ref2, ref3, r);
 
       if (mpfr_compare (res1, ref1) || inexa != inexd)
-	{
-	  printf ("Error with RNDA for %s for b=%u\n", foo, ref2);
-	  DISP2("a=", ref3);
+        {
+          printf ("Error with RNDA for %s for b=%u\n", foo, ref2);
+          DISP2("a=", ref3);
           printf ("inexa=%d inexd=%d\n", inexa, inexd);
-	  DISP("expected ", ref1); DISP2(", got ", res1);
-	  exit (1);
-	}
+          DISP("expected ", ref1); DISP2(", got ", res1);
+          exit (1);
+        }
     }
 
   mpfr_clear (ref1);
@@ -309,7 +309,7 @@ test2 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mp_rnd_t), char *foo)
         {
           printf ("Error with RNDA for %s with ", foo);
           DISP2("x=", ref2);
-	  printf ("inexa=%d inexd=%d\n", inexa, inexd);
+          printf ("inexa=%d inexd=%d\n", inexa, inexd);
           DISP("expected ", ref1); DISP2(", got ", res1);
           exit (1);
         }
@@ -391,7 +391,7 @@ main (void)
   while (N--)
     {
       /* no need to test mpfr_round, mpfr_ceil, mpfr_floor, mpfr_trunc since
-	 they take no rounding mode */
+         they take no rounding mode */
 
       test2ui (mpfr_add_ui, "mpfr_add_ui");
       test2ui (mpfr_div_2exp, "mpfr_div_2exp");
@@ -457,7 +457,7 @@ main (void)
       test2 (mpfr_rint_round, "mpfr_rint_round");
       test2 (mpfr_rint_trunc, "mpfr_rint_trunc");
       test2 (mpfr_frac, "mpfr_frac");
-  
+
       test3 (mpfr_add, "mpfr_add");
       test3 (mpfr_sub, "mpfr_sub");
       test3 (mpfr_mul, "mpfr_mul");
@@ -468,7 +468,7 @@ main (void)
       test3 (mpfr_max, "mpfr_max");
 
       /* we don't test reldiff since it does not guarantee correct rounding,
-	 thus we can get different results with RNDA and RNDU or RNDD. */
+         thus we can get different results with RNDA and RNDU or RNDD. */
       test3 (mpfr_dim, "mpfr_dim");
 
       test3 (mpfr_remainder, "mpfr_remainder");
@@ -477,7 +477,7 @@ main (void)
       test3 (mpfr_hypot, "mpfr_hypot");
 
       test3a (mpfr_sin_cos, "mpfr_sin_cos");
-      
+
       test4 (mpfr_fma, "mpfr_fma");
       test4 (mpfr_fms, "mpfr_fms");
 

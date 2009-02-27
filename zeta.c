@@ -346,7 +346,7 @@ mpfr_zeta (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
       int signs = MPFR_SIGN(s);
       mpfr_set_si_2exp (z, -1, -1, rnd_mode); /* -1/2 */
       if (rnd_mode == GMP_RNDA)
-	rnd_mode = GMP_RNDD; /* the result is around -1/2, thus negative */
+        rnd_mode = GMP_RNDD; /* the result is around -1/2, thus negative */
       if ((rnd_mode == GMP_RNDU || rnd_mode == GMP_RNDZ) && signs < 0)
         {
           mpfr_nextabove (z); /* z = -1/2 + epsilon */

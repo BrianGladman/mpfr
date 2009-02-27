@@ -630,7 +630,7 @@ underflow_up3 (void)
         /* x = 2 + i * eps, y = emin - 2, x^y ~= 2^(emin - 2) */
 
         expected_inex = rnd == GMP_RNDU || rnd == GMP_RNDA
-	  || (rnd == GMP_RNDN && i < 0) ? 1 : -1;
+          || (rnd == GMP_RNDN && i < 0) ? 1 : -1;
 
         mpfr_set_ui (z0, 0, GMP_RNDN);
         if (expected_inex > 0)
@@ -696,12 +696,12 @@ overflow_inv (void)
               RND_LOOP (rnd)
                 {
                   int inf, overflow;
-		  mp_rnd_t rnd2;
-		  
-		  if (rnd == GMP_RNDA)
-		    rnd2 = s < 0 ? GMP_RNDD : GMP_RNDU;
-		  else
-		    rnd2 = rnd;
+                  mp_rnd_t rnd2;
+
+                  if (rnd == GMP_RNDA)
+                    rnd2 = s < 0 ? GMP_RNDD : GMP_RNDU;
+                  else
+                    rnd2 = rnd;
 
                   overflow = t == 0 ||
                     ((mp_rnd_t) rnd == GMP_RNDN && (precx > 10 || t == 1)) ||

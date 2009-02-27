@@ -752,12 +752,12 @@ typedef intmax_t mpfr_eexp_t;
 
 /* Transform RNDU and RNDD to RNDZ or RNDA according to sign,
    leave the other modes unchanged */
-#define MPFR_UPDATE2_RND_MODE(rnd, sign)	\
-  do {						\
-  if (rnd == GMP_RNDU)				\
-    rnd = (sign > 0) ? GMP_RNDA : GMP_RNDZ;	\
-  else if (rnd == GMP_RNDD)			\
-    rnd = (sign < 0) ? GMP_RNDA : GMP_RNDZ;	\
+#define MPFR_UPDATE2_RND_MODE(rnd, sign)        \
+  do {                                          \
+  if (rnd == GMP_RNDU)                          \
+    rnd = (sign > 0) ? GMP_RNDA : GMP_RNDZ;     \
+  else if (rnd == GMP_RNDD)                     \
+    rnd = (sign < 0) ? GMP_RNDA : GMP_RNDZ;     \
   } while (0)
 
 

@@ -72,7 +72,7 @@ typedef enum {
   GMP_RNDD,    /* round toward -Inf */
   GMP_RNDA,    /* round away from zero */
   GMP_RND_MAX, /* gives number of supported rounding modes, those after are
-		  only supported by some functions */
+                  only supported by some functions */
   GMP_RNDNA=-1 /* round to nearest, with ties away from zero (mpfr_round) */
 } mpfr_rnd_t;
 

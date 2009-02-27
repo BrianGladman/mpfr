@@ -159,8 +159,8 @@ underflowed_cothinf (void)
             err = 1;
           }
         mpfr_set_si (y, (i < 0 && (rnd == GMP_RNDD || rnd == GMP_RNDA)) ||
-		        (i > 0 && (rnd == GMP_RNDU || rnd == GMP_RNDA))
-		     ? 2 : 0, GMP_RNDN);
+                        (i > 0 && (rnd == GMP_RNDU || rnd == GMP_RNDA))
+                     ? 2 : 0, GMP_RNDN);
         if (i < 0)
           mpfr_neg (y, y, GMP_RNDN);
         if (! (mpfr_equal_p (x, y) &&
