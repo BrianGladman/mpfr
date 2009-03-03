@@ -61,15 +61,15 @@ mpfr_ui_pow_ui (mpfr_ptr x, unsigned long int y, unsigned long int n,
     {
       int i = size_n;
 
-      inexact = mpfr_set_ui (res, y, GMP_RNDU);
+      inexact = mpfr_set_ui (res, y, MPFR_RNDU);
       err = 1;
       /* now 2^(i-1) <= n < 2^i: i=1+floor(log2(n)) */
       for (i -= 2; i >= 0; i--)
         {
-          inexact |= mpfr_mul (res, res, res, GMP_RNDU);
+          inexact |= mpfr_mul (res, res, res, MPFR_RNDU);
           err++;
           if (n & (1UL << i))
-            inexact |= mpfr_mul_ui (res, res, y, GMP_RNDU);
+            inexact |= mpfr_mul_ui (res, res, y, MPFR_RNDU);
         }
       /* since the loop is executed floor(log2(n)) times,
          we have err = 1+floor(log2(n)).

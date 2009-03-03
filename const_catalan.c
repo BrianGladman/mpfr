@@ -122,18 +122,18 @@ mpfr_const_catalan_internal (mpfr_ptr g, mp_rnd_t rnd_mode)
 
   MPFR_ZIV_INIT (loop, p);
   for (;;) {
-    mpfr_sqrt_ui (x, 3, GMP_RNDU);
-    mpfr_add_ui (x, x, 2, GMP_RNDU);
-    mpfr_log (x, x, GMP_RNDU);
-    mpfr_const_pi (y, GMP_RNDU);
-    mpfr_mul (x, x, y, GMP_RNDN);
+    mpfr_sqrt_ui (x, 3, MPFR_RNDU);
+    mpfr_add_ui (x, x, 2, MPFR_RNDU);
+    mpfr_log (x, x, MPFR_RNDU);
+    mpfr_const_pi (y, MPFR_RNDU);
+    mpfr_mul (x, x, y, MPFR_RNDN);
     S (T, P, Q, 0, (p - 1) / 2);
     mpz_mul_ui (T, T, 3);
-    mpfr_set_z (y, T, GMP_RNDU);
-    mpfr_set_z (z, Q, GMP_RNDD);
-    mpfr_div (y, y, z, GMP_RNDN);
-    mpfr_add (x, x, y, GMP_RNDN);
-    mpfr_div_2ui (x, x, 3, GMP_RNDN);
+    mpfr_set_z (y, T, MPFR_RNDU);
+    mpfr_set_z (z, Q, MPFR_RNDD);
+    mpfr_div (y, y, z, MPFR_RNDN);
+    mpfr_add (x, x, y, MPFR_RNDN);
+    mpfr_div_2ui (x, x, 3, MPFR_RNDN);
 
     if (MPFR_LIKELY (MPFR_CAN_ROUND (x, p - 5, pg, rnd_mode)))
       break;

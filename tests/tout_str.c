@@ -52,18 +52,18 @@ special (void)
   mpfr_init (x);
 
   mpfr_set_nan (x);
-  mpfr_out_str (fout, 10, 0, x, GMP_RNDN);
+  mpfr_out_str (fout, 10, 0, x, MPFR_RNDN);
 
   mpfr_set_inf (x, 1);
-  mpfr_out_str (fout, 10, 0, x, GMP_RNDN);
+  mpfr_out_str (fout, 10, 0, x, MPFR_RNDN);
 
   mpfr_set_inf (x, -1);
-  mpfr_out_str (fout, 10, 0, x, GMP_RNDN);
+  mpfr_out_str (fout, 10, 0, x, MPFR_RNDN);
 
-  mpfr_set_ui (x, 0, GMP_RNDN);
-  mpfr_out_str (fout, 10, 0, x, GMP_RNDN);
-  mpfr_neg (x, x, GMP_RNDN);
-  mpfr_out_str (fout, 10, 0, x, GMP_RNDN);
+  mpfr_set_ui (x, 0, MPFR_RNDN);
+  mpfr_out_str (fout, 10, 0, x, MPFR_RNDN);
+  mpfr_neg (x, x, MPFR_RNDN);
+  mpfr_out_str (fout, 10, 0, x, MPFR_RNDN);
 
   mpfr_clear (x);
 }
@@ -100,22 +100,22 @@ main (int argc, char *argv[])
 
   special ();
 
-  check (-1.37247529013405550000e+15, GMP_RNDN, 7);
-  check (-1.5674376729569697500e+15, GMP_RNDN, 19);
-  check (-5.71262771772792640000e-79, GMP_RNDU, 16);
-  check (DBL_NEG_ZERO, GMP_RNDU, 7);
-  check (-4.5306392613572974756e-308, GMP_RNDN, 8);
-  check (-6.7265890111403371523e-165, GMP_RNDN, 4);
-  check (-1.3242553591261807653e+156, GMP_RNDN, 16);
-  check (-6.606499965302424244461355e233, GMP_RNDN, 10);
-  check4 (1.0, GMP_RNDN, 10, 120);
-  check (1.0, GMP_RNDU, 10);
-  check (4.059650008e-83, GMP_RNDN, 10);
-  check (-7.4, GMP_RNDN, 10);
-  check (0.997, GMP_RNDN, 10);
-  check (-4.53063926135729747564e-308, GMP_RNDN, 10);
-  check (2.14478198760196000000e+16, GMP_RNDN, 10);
-  check (7.02293374921793516813e-84, GMP_RNDN, 10);
+  check (-1.37247529013405550000e+15, MPFR_RNDN, 7);
+  check (-1.5674376729569697500e+15, MPFR_RNDN, 19);
+  check (-5.71262771772792640000e-79, MPFR_RNDU, 16);
+  check (DBL_NEG_ZERO, MPFR_RNDU, 7);
+  check (-4.5306392613572974756e-308, MPFR_RNDN, 8);
+  check (-6.7265890111403371523e-165, MPFR_RNDN, 4);
+  check (-1.3242553591261807653e+156, MPFR_RNDN, 16);
+  check (-6.606499965302424244461355e233, MPFR_RNDN, 10);
+  check4 (1.0, MPFR_RNDN, 10, 120);
+  check (1.0, MPFR_RNDU, 10);
+  check (4.059650008e-83, MPFR_RNDN, 10);
+  check (-7.4, MPFR_RNDN, 10);
+  check (0.997, MPFR_RNDN, 10);
+  check (-4.53063926135729747564e-308, MPFR_RNDN, 10);
+  check (2.14478198760196000000e+16, MPFR_RNDN, 10);
+  check (7.02293374921793516813e-84, MPFR_RNDN, 10);
 
   /* random tests */
   for (i=0;i<N;i++)

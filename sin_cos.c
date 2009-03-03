@@ -130,14 +130,14 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
           reduce = 1;
           mpfr_set_prec (c, expx + m - 1);
           mpfr_set_prec (xr, m);
-          mpfr_const_pi (c, GMP_RNDN);
-          mpfr_mul_2ui (c, c, 1, GMP_RNDN);
-          mpfr_remainder (xr, x, c, GMP_RNDN);
-          mpfr_div_2ui (c, c, 1, GMP_RNDN);
+          mpfr_const_pi (c, MPFR_RNDN);
+          mpfr_mul_2ui (c, c, 1, MPFR_RNDN);
+          mpfr_remainder (xr, x, c, MPFR_RNDN);
+          mpfr_div_2ui (c, c, 1, MPFR_RNDN);
           if (MPFR_SIGN (xr) > 0)
-            mpfr_sub (c, c, xr, GMP_RNDZ);
+            mpfr_sub (c, c, xr, MPFR_RNDZ);
           else
-            mpfr_add (c, c, xr, GMP_RNDZ);
+            mpfr_add (c, c, xr, MPFR_RNDZ);
           if (MPFR_IS_ZERO(xr) || MPFR_EXP(xr) < (mp_exp_t) 3 - (mp_exp_t) m
               || MPFR_EXP(c) < (mp_exp_t) 3 - (mp_exp_t) m)
             goto next_step;
@@ -151,7 +151,7 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
       neg = MPFR_IS_NEG (xx); /* gives sign of sin(x) */
       mpfr_set_prec (c, m);
-      mpfr_cos (c, xx, GMP_RNDZ);
+      mpfr_cos (c, xx, MPFR_RNDZ);
       /* If no argument reduction was performed, the error is at most ulp(c),
          otherwise it is at most ulp(c) + 2^(2-m). Since |c| < 1, we have
          ulp(c) <= 2^(-m), thus the error is bounded by 2^(3-m) in that later
@@ -160,18 +160,18 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
         err = m;
       else
         err = MPFR_GET_EXP (c) + (mp_exp_t) (m - 3);
-      if (!mpfr_can_round (c, err, GMP_RNDN, rnd_mode,
-                           MPFR_PREC (z) + (rnd_mode == GMP_RNDN)))
+      if (!mpfr_can_round (c, err, MPFR_RNDN, rnd_mode,
+                           MPFR_PREC (z) + (rnd_mode == MPFR_RNDN)))
         goto next_step;
 
       /* we can't set z now, because in case z = x, and the mpfr_can_round()
          call below fails, we will have clobbered the input */
       mpfr_set_prec (xr, MPFR_PREC(c));
       mpfr_swap (xr, c); /* save the approximation of the cosine in xr */
-      mpfr_sqr (c, xr, GMP_RNDU);
-      mpfr_ui_sub (c, 1, c, GMP_RNDN);
+      mpfr_sqr (c, xr, MPFR_RNDU);
+      mpfr_ui_sub (c, 1, c, MPFR_RNDN);
       err = 2 + (- MPFR_GET_EXP (c)) / 2;
-      mpfr_sqrt (c, c, GMP_RNDN);
+      mpfr_sqrt (c, c, MPFR_RNDN);
       if (neg)
         MPFR_CHANGE_SIGN (c);
 
@@ -180,8 +180,8 @@ mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
          we need to add 2^(2-m); since err >= 2, the error is bounded by
          2^(err+1-m) in that case. */
       err = MPFR_GET_EXP (c) + (mp_exp_t) m - (err + reduce);
-      if (mpfr_can_round (c, err, GMP_RNDN, rnd_mode,
-                          MPFR_PREC (y) + (rnd_mode == GMP_RNDN)))
+      if (mpfr_can_round (c, err, MPFR_RNDN, rnd_mode,
+                          MPFR_PREC (y) + (rnd_mode == MPFR_RNDN)))
         break;
       /* check for huge cancellation */
       if (err < (mp_exp_t) MPFR_PREC (y))

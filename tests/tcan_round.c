@@ -45,7 +45,7 @@ check_round_p (void)
       err = p + randlimb () % BITS_PER_MP_LIMB;
       r1 = mpfr_round_p (buf, n, err, p);
       r2 = mpfr_can_round_raw (buf, n, MPFR_SIGN_POS, err,
-                               GMP_RNDN, GMP_RNDZ, p);
+                               MPFR_RNDN, MPFR_RNDZ, p);
       if (r1 != r2)
         {
           printf ("mpfr_round_p(%d) != mpfr_can_round(%d)!\n"
@@ -69,14 +69,14 @@ main (void)
      bit to zero in case of equal distance */
   mpfr_init2 (x, 59);
   mpfr_set_str_binary (x, "-0.10010001010111000011110010111010111110000000111101100111111E663");
-  if (mpfr_can_round (x, 54, GMP_RNDZ, GMP_RNDZ, 53) != 0)
+  if (mpfr_can_round (x, 54, MPFR_RNDZ, MPFR_RNDZ, 53) != 0)
     {
       printf ("Error (1) in mpfr_can_round\n");
       exit (1);
     }
 
   mpfr_set_str_binary (x, "-Inf");
-  if (mpfr_can_round (x, 2000, GMP_RNDZ, GMP_RNDZ, 2000) != 0)
+  if (mpfr_can_round (x, 2000, MPFR_RNDZ, MPFR_RNDZ, 2000) != 0)
     {
       printf ("Error (2) in mpfr_can_round\n");
       exit (1);
@@ -84,20 +84,20 @@ main (void)
 
   mpfr_set_prec (x, 64);
   mpfr_set_str_binary (x, "0.1011001000011110000110000110001111101011000010001110011000000000");
-  if (mpfr_can_round (x, 65, GMP_RNDN, GMP_RNDN, 54))
+  if (mpfr_can_round (x, 65, MPFR_RNDN, MPFR_RNDN, 54))
     {
       printf ("Error (3) in mpfr_can_round\n");
       exit (1);
     }
 
   mpfr_set_prec (x, 62);
-  mpfr_set_str (x, "0.ff4ca619c76ba69", 16, GMP_RNDZ);
+  mpfr_set_str (x, "0.ff4ca619c76ba69", 16, MPFR_RNDZ);
   for (i = 30; i < 99; i++)
     for (j = 30; j < 99; j++)
       {
         int r1, r2;
-        for (r1 = 0; r1 < GMP_RND_MAX ; r1++)
-          for (r2 = 0; r2 < GMP_RND_MAX ; r2++)
+        for (r1 = 0; r1 < MPFR_RND_MAX ; r1++)
+          for (r2 = 0; r2 < MPFR_RND_MAX ; r2++)
             mpfr_can_round (x, i, (mp_rnd_t) r1, (mp_rnd_t) r2, j); /* test for assertions */
       }
 

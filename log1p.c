@@ -119,14 +119,14 @@ mpfr_log1p (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     for (;;)
       {
         /* compute log1p */
-        inexact = mpfr_add_ui (t, x, 1, GMP_RNDN);      /* 1+x */
+        inexact = mpfr_add_ui (t, x, 1, MPFR_RNDN);      /* 1+x */
         /* if inexact = 0, then t = x+1, and the result is simply log(t) */
         if (inexact == 0)
           {
             inexact = mpfr_log (y, t, rnd_mode);
             goto end;
           }
-        mpfr_log (t, t, GMP_RNDN);        /* log(1+x) */
+        mpfr_log (t, t, MPFR_RNDN);        /* log(1+x) */
 
         /* the error is bounded by (1/2+2^(1-EXP(t))*ulp(t) (cf algorithms.tex)
            if EXP(t)>=2, then error <= ulp(t)

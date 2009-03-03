@@ -70,7 +70,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   exp = MPFR_GET_EXP (b);
   MPFR_SET_SAME_SIGN(a, b);
   MPFR_UPDATE2_RND_MODE(rnd_mode, MPFR_SIGN(b));
-  /* now rnd_mode is either GMP_RNDN, GMP_RNDZ or GMP_RNDA */
+  /* now rnd_mode is either MPFR_RNDN, MPFR_RNDZ or MPFR_RNDA */
   diff_exp = (mp_exp_unsigned_t) exp - MPFR_GET_EXP(c);
 
   /*
@@ -472,7 +472,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
  rounding:
   switch (rnd_mode)
     {
-    case GMP_RNDN:
+    case MPFR_RNDN:
       if (fb == 0)
         {
           if (rb == 0)
@@ -499,11 +499,11 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
           goto add_one_ulp;
         }
 
-    case GMP_RNDZ:
+    case MPFR_RNDZ:
       inex = rb || fb ? (MPFR_IS_NEG(a) ? 1 : -1) : 0;
       goto set_exponent;
 
-    case GMP_RNDA:
+    case MPFR_RNDA:
       inex = rb || fb ? (MPFR_IS_POS(a) ? 1 : -1) : 0;
       if (inex)
         goto add_one_ulp;

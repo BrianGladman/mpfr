@@ -56,7 +56,7 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mp_rnd_t rnd_mode)
   /* Set x_p=|x| */
   sign = MPFR_SIGN (x);
   mpfr_init2 (xp, MPFR_PREC (x));
-  mpfr_abs (xp, x, GMP_RNDN); /* Exact */
+  mpfr_abs (xp, x, MPFR_RNDN); /* Exact */
 
   compared = mpfr_cmp_ui (xp, 1);
 
@@ -80,7 +80,7 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_SAVE_EXPO_MARK (expo);
 
   /* Compute the supplement */
-  mpfr_ui_sub (xp, 1, xp, GMP_RNDD);
+  mpfr_ui_sub (xp, 1, xp, MPFR_RNDD);
   if (MPFR_IS_POS_SIGN (sign))
     supplement = 2 - 2 * MPFR_GET_EXP (xp);
   else
@@ -113,14 +113,14 @@ mpfr_acos (mpfr_ptr acos, mpfr_srcptr x, mp_rnd_t rnd_mode)
   for (;;)
     {
       /* acos(x) = Pi/2 - asin(x) = Pi/2 - atan(x/sqrt(1-x^2)) */
-      mpfr_sqr (tmp, x, GMP_RNDN);
-      mpfr_ui_sub (tmp, 1, tmp, GMP_RNDN);
-      mpfr_sqrt (tmp, tmp, GMP_RNDN);
-      mpfr_div (tmp, x, tmp, GMP_RNDN);
-      mpfr_atan (arcc, tmp, GMP_RNDN);
-      mpfr_const_pi (tmp, GMP_RNDN);
-      mpfr_div_2ui (tmp, tmp, 1, GMP_RNDN);
-      mpfr_sub (arcc, tmp, arcc, GMP_RNDN);
+      mpfr_sqr (tmp, x, MPFR_RNDN);
+      mpfr_ui_sub (tmp, 1, tmp, MPFR_RNDN);
+      mpfr_sqrt (tmp, tmp, MPFR_RNDN);
+      mpfr_div (tmp, x, tmp, MPFR_RNDN);
+      mpfr_atan (arcc, tmp, MPFR_RNDN);
+      mpfr_const_pi (tmp, MPFR_RNDN);
+      mpfr_div_2ui (tmp, tmp, 1, MPFR_RNDN);
+      mpfr_sub (arcc, tmp, arcc, MPFR_RNDN);
 
       if (MPFR_LIKELY (MPFR_CAN_ROUND (arcc, prec-supplement,
                                        MPFR_PREC (acos), rnd_mode)))

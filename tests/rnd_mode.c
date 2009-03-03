@@ -32,7 +32,7 @@ mpfr_set_machine_rnd_mode (mp_rnd_t rnd_mode)
 {
   switch (rnd_mode)
     {
-    case GMP_RNDN:
+    case MPFR_RNDN:
       return
 #if defined (MPFR_HAVE_FESETROUND) && defined (FE_TONEAREST)
         fesetround(FE_TONEAREST)
@@ -40,7 +40,7 @@ mpfr_set_machine_rnd_mode (mp_rnd_t rnd_mode)
         -1
 #endif
         ;
-    case GMP_RNDZ:
+    case MPFR_RNDZ:
       return
 #if defined (MPFR_HAVE_FESETROUND) && defined (FE_TOWARDZERO)
         fesetround(FE_TOWARDZERO)
@@ -48,7 +48,7 @@ mpfr_set_machine_rnd_mode (mp_rnd_t rnd_mode)
         -1
 #endif
         ;
-    case GMP_RNDU:
+    case MPFR_RNDU:
       return
 #if defined (MPFR_HAVE_FESETROUND) && defined (FE_UPWARD)
         fesetround(FE_UPWARD)
@@ -56,7 +56,7 @@ mpfr_set_machine_rnd_mode (mp_rnd_t rnd_mode)
         -1
 #endif
         ;
-    case GMP_RNDD:
+    case MPFR_RNDD:
       return
 #if defined (MPFR_HAVE_FESETROUND) && defined (FE_DOWNWARD)
         fesetround(FE_DOWNWARD)

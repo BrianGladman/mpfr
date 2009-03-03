@@ -86,7 +86,7 @@ mpfr_fits_uintmax_p (mpfr_srcptr f, mp_rnd_t rnd)
   mpfr_init2 (x, prec);
   mpfr_init2 (y, prec);
   mpfr_set (x, f, rnd);
-  res = mpfr_set_uj (y, UINTMAX_MAX, GMP_RNDN);
+  res = mpfr_set_uj (y, UINTMAX_MAX, MPFR_RNDN);
   MPFR_ASSERTD (res == 0);
   res = mpfr_cmp (x, y) <= 0;
   mpfr_clear (y);

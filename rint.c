@@ -57,10 +57,10 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   exp = MPFR_GET_EXP (u);
 
   rnd_away =
-    rnd_mode == GMP_RNDD ? sign < 0 :
-    rnd_mode == GMP_RNDU ? sign > 0 :
-    rnd_mode == GMP_RNDZ ? 0        :
-    rnd_mode == GMP_RNDA ? 1        :
+    rnd_mode == MPFR_RNDD ? sign < 0 :
+    rnd_mode == MPFR_RNDU ? sign > 0 :
+    rnd_mode == MPFR_RNDZ ? 0        :
+    rnd_mode == MPFR_RNDA ? 1        :
     -1; /* round to nearest-even (RNDN) or nearest-away (RNDNA) */
 
   /* rnd_away:
@@ -71,10 +71,10 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 
   if (MPFR_UNLIKELY (exp <= 0))  /* 0 < |u| < 1 ==> round |u| to 0 or 1 */
     {
-      /* Note: in the GMP_RNDN mode, 0.5 must be rounded to 0. */
+      /* Note: in the MPFR_RNDN mode, 0.5 must be rounded to 0. */
       if (rnd_away != 0 &&
           (rnd_away > 0 ||
-           (exp == 0 && (rnd_mode == GMP_RNDNA ||
+           (exp == 0 && (rnd_mode == MPFR_RNDNA ||
                          !mpfr_powerof2_raw (u)))))
         {
           mp_limb_t *rp;
@@ -149,9 +149,9 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
           MPN_COPY (rp, up + (un - rn), rn); /* r != u */
           if (rnd_away < 0)
             {
-              /* This is a rounding to nearest mode (GMP_RNDN or GMP_RNDNA).
+              /* This is a rounding to nearest mode (MPFR_RNDN or MPFR_RNDNA).
                  Decide the rounding direction here. */
-              if (rnd_mode == GMP_RNDN &&
+              if (rnd_mode == MPFR_RNDN &&
                   (rp[0] & (MPFR_LIMB_ONE << sh)) == 0)
                 { /* halfway cases rounded towards zero */
                   mp_limb_t a, b;
@@ -236,7 +236,7 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
                  Decide the rounding direction here. */
               if (uj == 0 && sh == 0)
                 rnd_away = 0; /* rounding bit = 0 (not represented in u) */
-              else if (rnd_mode == GMP_RNDN &&
+              else if (rnd_mode == MPFR_RNDN &&
                        (rp[0] & (MPFR_LIMB_ONE << sh)) == 0)
                 { /* halfway cases rounded towards zero */
                   mp_limb_t a, b;
@@ -304,7 +304,7 @@ mpfr_rint (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 int
 mpfr_round (mpfr_ptr r, mpfr_srcptr u)
 {
-  return mpfr_rint (r, u, GMP_RNDNA);
+  return mpfr_rint (r, u, MPFR_RNDNA);
 }
 
 #undef mpfr_trunc
@@ -312,7 +312,7 @@ mpfr_round (mpfr_ptr r, mpfr_srcptr u)
 int
 mpfr_trunc (mpfr_ptr r, mpfr_srcptr u)
 {
-  return mpfr_rint (r, u, GMP_RNDZ);
+  return mpfr_rint (r, u, MPFR_RNDZ);
 }
 
 #undef mpfr_ceil
@@ -320,7 +320,7 @@ mpfr_trunc (mpfr_ptr r, mpfr_srcptr u)
 int
 mpfr_ceil (mpfr_ptr r, mpfr_srcptr u)
 {
-  return mpfr_rint (r, u, GMP_RNDU);
+  return mpfr_rint (r, u, MPFR_RNDU);
 }
 
 #undef mpfr_floor
@@ -328,7 +328,7 @@ mpfr_ceil (mpfr_ptr r, mpfr_srcptr u)
 int
 mpfr_floor (mpfr_ptr r, mpfr_srcptr u)
 {
-  return mpfr_rint (r, u, GMP_RNDD);
+  return mpfr_rint (r, u, MPFR_RNDD);
 }
 
 #undef mpfr_rint_round

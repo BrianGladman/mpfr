@@ -38,10 +38,10 @@ int mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   mpfr_init2 (tmpb, MPFR_PREC (b));
   mpfr_init2 (tmpc, MPFR_PREC (c));
 
-  inexb = mpfr_set (tmpb, b, GMP_RNDN);
+  inexb = mpfr_set (tmpb, b, MPFR_RNDN);
   MPFR_ASSERTN (inexb == 0);
 
-  inexc = mpfr_set (tmpc, c, GMP_RNDN);
+  inexc = mpfr_set (tmpc, c, MPFR_RNDN);
   MPFR_ASSERTN (inexc == 0);
 
   inexact2 = mpfr_add1 (tmpa, tmpb, tmpc, rnd_mode);
@@ -130,7 +130,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       /* Zero: Truncate
          Nearest: Even Rule => truncate or add 1
          Away: Add 1 */
-      if (MPFR_LIKELY(rnd_mode==GMP_RNDN))
+      if (MPFR_LIKELY(rnd_mode==MPFR_RNDN))
         {
           if (MPFR_LIKELY((ap[0]&(MPFR_LIMB_ONE<<sh))==0))
             { inexact = -1; goto set_exponent; }
@@ -138,7 +138,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
             goto add_one_ulp;
         }
       MPFR_UPDATE_RND_MODE(rnd_mode, MPFR_IS_NEG(b));
-      if (rnd_mode==GMP_RNDZ)
+      if (rnd_mode==MPFR_RNDZ)
         { inexact = -1; goto set_exponent; }
       else
         goto add_one_ulp;
@@ -151,7 +151,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
           /* Away:    Add 1
              Nearest: Trunc
              Zero:    Trunc */
-          if (MPFR_LIKELY (rnd_mode==GMP_RNDN
+          if (MPFR_LIKELY (rnd_mode==MPFR_RNDN
                            || MPFR_IS_LIKE_RNDZ (rnd_mode, MPFR_IS_NEG (b))))
             {
             copy_set_exponent:
@@ -174,7 +174,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
           /* Away:    Add 1
              Nearest: Even Rule if C is a power of 2, else Add 1
              Zero:    Trunc */
-          if (MPFR_LIKELY(rnd_mode==GMP_RNDN))
+          if (MPFR_LIKELY(rnd_mode==MPFR_RNDN))
             {
               /* Check if C was a power of 2 */
               cp = MPFR_MANT(c);
@@ -331,7 +331,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
           Nearest: Truncate but could be exact if Cp==0
                    Add 1 if C'p+1 !=0,
                    Even rule else */
-      if (MPFR_LIKELY(rnd_mode == GMP_RNDN))
+      if (MPFR_LIKELY(rnd_mode == MPFR_RNDN))
         {
           if (MPFR_LIKELY(bcp == 0))
             { inexact = MPFR_LIKELY(bcp1) ? -1 : 0; goto set_exponent; }
@@ -341,7 +341,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
             goto add_one_ulp;
         }
       MPFR_UPDATE_RND_MODE(rnd_mode, MPFR_IS_NEG(b));
-      if (rnd_mode == GMP_RNDZ)
+      if (rnd_mode == MPFR_RNDZ)
         {
           inexact = MPFR_LIKELY(bcp || bcp1) ? -1 : 0;
           goto set_exponent;

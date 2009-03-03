@@ -34,9 +34,9 @@ check_powerof2 (void)
   mpfr_t x;
 
   mpfr_init (x);
-  mpfr_set_ui (x, 1, GMP_RNDN);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_powerof2_raw (x));
-  mpfr_set_ui (x, 3, GMP_RNDN);
+  mpfr_set_ui (x, 3, MPFR_RNDN);
   MPFR_ASSERTN (!mpfr_powerof2_raw (x));
   mpfr_clear (x);
 }
@@ -47,7 +47,7 @@ check_default_rnd (void)
 {
   int r;
   mp_rnd_t t;
-  for(r = 0 ; r < GMP_RND_MAX ; r++)
+  for(r = 0 ; r < MPFR_RND_MAX ; r++)
     {
       mpfr_set_default_rounding_mode ((mp_rnd_t) r);
       t = (mpfr_get_default_rounding_mode) ();
@@ -57,11 +57,11 @@ check_default_rnd (void)
           ERROR("ERROR in setting / getting default rounding mode (1)");
         }
     }
-  mpfr_set_default_rounding_mode ((mp_rnd_t) GMP_RND_MAX);
-  if (mpfr_get_default_rounding_mode() != GMP_RNDA)
+  mpfr_set_default_rounding_mode ((mp_rnd_t) MPFR_RND_MAX);
+  if (mpfr_get_default_rounding_mode() != MPFR_RNDA)
     ERROR("ERROR in setting / getting default rounding mode (2)");
   mpfr_set_default_rounding_mode((mp_rnd_t) -1);
-  if (mpfr_get_default_rounding_mode() != GMP_RNDA)
+  if (mpfr_get_default_rounding_mode() != MPFR_RNDA)
     ERROR("ERROR in setting / getting default rounding mode (3)");
 }
 
@@ -152,34 +152,34 @@ check_flags (void)
   (mpfr_clear_flags)();
   mpfr_set_double_range ();
 
-  mpfr_set_ui (x, 1, GMP_RNDN);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
   (mpfr_clear_overflow)();
-  mpfr_mul_2exp (x, x, 1024, GMP_RNDN);
+  mpfr_mul_2exp (x, x, 1024, MPFR_RNDN);
   if (!(mpfr_overflow_p)())
     ERROR("ERROR: No overflow detected!\n");
 
   (mpfr_clear_underflow)();
-  mpfr_set_ui (x, 1, GMP_RNDN);
-  mpfr_div_2exp (x, x, 1025, GMP_RNDN);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_div_2exp (x, x, 1025, MPFR_RNDN);
   if (!(mpfr_underflow_p)())
     ERROR("ERROR: No underflow detected!\n");
 
   (mpfr_clear_nanflag)();
   MPFR_SET_NAN(x);
-  mpfr_add (x, x, x, GMP_RNDN);
+  mpfr_add (x, x, x, MPFR_RNDN);
   if (!(mpfr_nanflag_p)())
     ERROR("ERROR: No NaN flag!\n");
 
   (mpfr_clear_inexflag)();
-  mpfr_set_ui(x, 2, GMP_RNDN);
-  mpfr_cos(x, x, GMP_RNDN);
+  mpfr_set_ui(x, 2, MPFR_RNDN);
+  mpfr_cos(x, x, MPFR_RNDN);
   if (!(mpfr_inexflag_p)())
     ERROR("ERROR: No inexact flag!\n");
 
   (mpfr_clear_erangeflag) ();
-  mpfr_set_ui (x, 1, GMP_RNDN);
-  mpfr_mul_2exp (x, x, 1024, GMP_RNDN);
-  mpfr_get_ui (x, GMP_RNDN);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_mul_2exp (x, x, 1024, MPFR_RNDN);
+  mpfr_get_ui (x, MPFR_RNDN);
   if (!(mpfr_erangeflag_p)())
     ERROR ("ERROR: No erange flag!\n");
 
@@ -192,20 +192,20 @@ static void
 test_set_underflow (void)
 {
   mpfr_t x, zero, min;
-  mpfr_ptr r[GMP_RND_MAX];
-  int t[GMP_RND_MAX] = { 1, -1, 1, -1, 1 }; /* RNDN, RNDZ, RNDU, RNDD, RNDA */
+  mpfr_ptr r[MPFR_RND_MAX];
+  int t[MPFR_RND_MAX] = { 1, -1, 1, -1, 1 }; /* RNDN, RNDZ, RNDU, RNDD, RNDA */
   int i;
   int s;
 
   mpfr_inits (x, zero, min, (mpfr_ptr) 0);
-  mpfr_set_ui (zero, 0, GMP_RNDN);
-  mpfr_set_ui (min, 0, GMP_RNDN);
+  mpfr_set_ui (zero, 0, MPFR_RNDN);
+  mpfr_set_ui (min, 0, MPFR_RNDN);
   mpfr_nextabove (min);
   r[0] = r[2] = r[4] = min; /* RNDN, RNDU, RNDA */
   r[1] = r[3] = zero;       /* RNDZ, RNDD */
   for (s = 1; s > 0; s = -1)
     {
-      for (i = 0; i < GMP_RND_MAX ; i++)
+      for (i = 0; i < MPFR_RND_MAX ; i++)
         {
           int j;
           int inex;
@@ -217,15 +217,15 @@ test_set_underflow (void)
               printf ("Error in test_set_underflow, sign = %d,"
                       " rnd_mode = %s\n", s, mpfr_print_rnd_mode ((mp_rnd_t) i));
               printf ("Got\n");
-              mpfr_out_str (stdout, 2, 0, x, GMP_RNDN);
+              mpfr_out_str (stdout, 2, 0, x, MPFR_RNDN);
               printf (", inex = %d\ninstead of\n", inex);
-              mpfr_out_str (stdout, 2, 0, r[j], GMP_RNDN);
+              mpfr_out_str (stdout, 2, 0, r[j], MPFR_RNDN);
               printf (", inex = %d\n", t[j]);
               exit (1);
             }
         }
-      mpfr_neg (zero, zero, GMP_RNDN);
-      mpfr_neg (min, min, GMP_RNDN);
+      mpfr_neg (zero, zero, MPFR_RNDN);
+      mpfr_neg (min, min, MPFR_RNDN);
     }
   mpfr_clears (x, zero, min, (mpfr_ptr) 0);
 }
@@ -234,8 +234,8 @@ static void
 test_set_overflow (void)
 {
   mpfr_t x, inf, max;
-  mpfr_ptr r[GMP_RND_MAX];
-  int t[GMP_RND_MAX] = { 1, -1, 1, -1, 1 }; /* RNDN, RNDZ, RNDU, RNDD, RNDA */
+  mpfr_ptr r[MPFR_RND_MAX];
+  int t[MPFR_RND_MAX] = { 1, -1, 1, -1, 1 }; /* RNDN, RNDZ, RNDU, RNDD, RNDA */
   int i;
   int s;
 
@@ -247,7 +247,7 @@ test_set_overflow (void)
   r[1] = r[3] = max;        /* RNDZ, RNDD */
   for (s = 1; s > 0; s = -1)
     {
-      for (i = 0; i < GMP_RND_MAX ; i++)
+      for (i = 0; i < MPFR_RND_MAX ; i++)
         {
           int j;
           int inex;
@@ -259,15 +259,15 @@ test_set_overflow (void)
               printf ("Error in test_set_overflow, sign = %d,"
                       " rnd_mode = %s\n", s, mpfr_print_rnd_mode ((mp_rnd_t) i));
               printf ("Got\n");
-              mpfr_out_str (stdout, 2, 0, x, GMP_RNDN);
+              mpfr_out_str (stdout, 2, 0, x, MPFR_RNDN);
               printf (", inex = %d\ninstead of\n", inex);
-              mpfr_out_str (stdout, 2, 0, r[j], GMP_RNDN);
+              mpfr_out_str (stdout, 2, 0, r[j], MPFR_RNDN);
               printf (", inex = %d\n", t[j]);
               exit (1);
             }
         }
-      mpfr_neg (inf, inf, GMP_RNDN);
-      mpfr_neg (max, max, GMP_RNDN);
+      mpfr_neg (inf, inf, MPFR_RNDN);
+      mpfr_neg (max, max, MPFR_RNDN);
     }
   mpfr_clears (x, inf, max, (mpfr_ptr) 0);
 }
@@ -314,10 +314,10 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-  mpfr_set_ui (x, 1, GMP_RNDN);
-  mpfr_mul_2exp (x, x, 1024, GMP_RNDN);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_mul_2exp (x, x, 1024, MPFR_RNDN);
   mpfr_set_double_range ();
-  mpfr_check_range (x, 0, GMP_RNDN);
+  mpfr_check_range (x, 0, MPFR_RNDN);
   if (!mpfr_inf_p (x) || (mpfr_sgn(x) <= 0))
     {
       printf ("Error: 2^1024 rounded to nearest should give +Inf\n");
@@ -325,19 +325,19 @@ main (int argc, char *argv[])
     }
 
   set_emax (1025);
-  mpfr_set_ui (x, 1, GMP_RNDN);
-  mpfr_mul_2exp (x, x, 1024, GMP_RNDN);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_mul_2exp (x, x, 1024, MPFR_RNDN);
   mpfr_set_double_range ();
-  mpfr_check_range (x, 0, GMP_RNDD);
+  mpfr_check_range (x, 0, MPFR_RNDD);
   if (!mpfr_number_p (x))
     {
       printf ("Error: 2^1024 rounded down should give a normal number\n");
       exit (1);
     }
 
-  mpfr_set_ui (x, 1, GMP_RNDN);
-  mpfr_mul_2exp (x, x, 1023, GMP_RNDN);
-  mpfr_add (x, x, x, GMP_RNDN);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_mul_2exp (x, x, 1023, MPFR_RNDN);
+  mpfr_add (x, x, x, MPFR_RNDN);
   if (!mpfr_inf_p (x) || (mpfr_sgn(x) <= 0))
     {
       printf ("Error: x+x rounded to nearest for x=2^1023 should give +Inf\n");
@@ -346,9 +346,9 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-  mpfr_set_ui (x, 1, GMP_RNDN);
-  mpfr_mul_2exp (x, x, 1023, GMP_RNDN);
-  mpfr_add (x, x, x, GMP_RNDD);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_mul_2exp (x, x, 1023, MPFR_RNDN);
+  mpfr_add (x, x, x, MPFR_RNDD);
   if (!mpfr_number_p (x))
     {
       printf ("Error: x+x rounded down for x=2^1023 should give"
@@ -356,10 +356,10 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-  mpfr_set_ui (x, 1, GMP_RNDN);
-  mpfr_div_2exp (x, x, 1022, GMP_RNDN);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_div_2exp (x, x, 1022, MPFR_RNDN);
   mpfr_set_str_binary (y, "1.1e-1022"); /* y = 3/2*x */
-  mpfr_sub (y, y, x, GMP_RNDZ);
+  mpfr_sub (y, y, x, MPFR_RNDZ);
   if (mpfr_cmp_ui (y, 0))
     {
       printf ("Error: y-x rounded to zero should give 0"
@@ -369,10 +369,10 @@ main (int argc, char *argv[])
     }
 
   set_emin (-1026);
-  mpfr_set_ui (x, 1, GMP_RNDN);
-  mpfr_div_2exp (x, x, 1025, GMP_RNDN);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_div_2exp (x, x, 1025, MPFR_RNDN);
   mpfr_set_double_range ();
-  mpfr_check_range (x, 0, GMP_RNDN);
+  mpfr_check_range (x, 0, MPFR_RNDN);
   if (!MPFR_IS_ZERO (x) )
     {
       printf ("Error: x rounded to nearest for x=2^-1024 should give Zero\n");

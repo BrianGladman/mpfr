@@ -64,9 +64,9 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     {
       mp_rnd_t rnd2 = rnd_mode;
       /* in round to nearest mode, round to zero when x <= __gmpfr_emin-2 */
-      if (rnd_mode == GMP_RNDN &&
+      if (rnd_mode == MPFR_RNDN &&
           mpfr_cmp_si_2exp (x, __gmpfr_emin - 2, 0) <= 0)
-        rnd2 = GMP_RNDZ;
+        rnd2 = MPFR_RNDZ;
       return mpfr_underflow (y, rnd2, 1);
     }
 
@@ -84,13 +84,13 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_SMALL_INPUT_AFTER_SAVE_EXPO (y, __gmpfr_one, - MPFR_GET_EXP (x), 0,
                                     MPFR_SIGN(x) > 0, rnd_mode, expo, {});
 
-  xint = mpfr_get_si (x, GMP_RNDZ);
+  xint = mpfr_get_si (x, MPFR_RNDZ);
   mpfr_init2 (xfrac, MPFR_PREC (x));
-  mpfr_sub_si (xfrac, x, xint, GMP_RNDN); /* exact */
+  mpfr_sub_si (xfrac, x, xint, MPFR_RNDN); /* exact */
 
   if (MPFR_IS_ZERO (xfrac))
     {
-      mpfr_set_ui (y, 1, GMP_RNDN);
+      mpfr_set_ui (y, 1, MPFR_RNDN);
       inexact = 0;
     }
   else
@@ -116,10 +116,10 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       for (;;)
         {
           /* compute exp(x*ln(2))*/
-          mpfr_const_log2 (t, GMP_RNDU);       /* ln(2) */
-          mpfr_mul (t, xfrac, t, GMP_RNDU);    /* xfrac * ln(2) */
+          mpfr_const_log2 (t, MPFR_RNDU);       /* ln(2) */
+          mpfr_mul (t, xfrac, t, MPFR_RNDU);    /* xfrac * ln(2) */
           err = Nt - (MPFR_GET_EXP (t) + 2);   /* Estimate of the error */
-          mpfr_exp (t, t, GMP_RNDN);           /* exp(xfrac * ln(2)) */
+          mpfr_exp (t, t, MPFR_RNDN);           /* exp(xfrac * ln(2)) */
 
           if (MPFR_LIKELY (MPFR_CAN_ROUND (t, err, Ny, rnd_mode)))
             break;
@@ -137,7 +137,7 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   mpfr_clear (xfrac);
   mpfr_clear_flags ();
-  mpfr_mul_2si (y, y, xint, GMP_RNDN); /* exact or overflow */
+  mpfr_mul_2si (y, y, xint, MPFR_RNDN); /* exact or overflow */
   /* Note: We can have an overflow only when t was rounded up to 2. */
   MPFR_ASSERTD (MPFR_IS_PURE_FP (y) || inexact > 0);
   MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);

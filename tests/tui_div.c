@@ -37,7 +37,7 @@ check (unsigned long y, const char *xs, mp_rnd_t rnd_mode, const char *zs)
   if (mpfr_cmp_str1(zz, zs))
     {
       printf ("expected quotient is %s, got ", zs);
-      mpfr_out_str (stdout, 10, 0, zz, GMP_RNDN);
+      mpfr_out_str (stdout, 10, 0, zz, MPFR_RNDN);
       printf ("mpfr_ui_div failed for y=%lu x=%s with rnd_mode=%s\n",
               y, xs, mpfr_print_rnd_mode (rnd_mode));
       exit (1);
@@ -71,7 +71,7 @@ check_inexact (void)
         {
           mpfr_set_prec (y, py);
           mpfr_set_prec (z, py + px);
-          for (rnd = 0; rnd < GMP_RND_MAX; rnd++)
+          for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
             {
               inexact = mpfr_ui_div (y, u, x, (mp_rnd_t) rnd);
               if (mpfr_mul (z, y, x, (mp_rnd_t) rnd))
@@ -113,7 +113,7 @@ check_nan (void)
   MPFR_CLEAR_FLAGS (d);
   MPFR_SET_INF (d);
   MPFR_SET_POS (d);
-  MPFR_ASSERTN (mpfr_ui_div (q, 1L, d, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (mpfr_ui_div (q, 1L, d, MPFR_RNDZ) == 0); /* exact */
   MPFR_ASSERTN (mpfr_number_p (q));
   MPFR_ASSERTN (mpfr_sgn (q) == 0);
 
@@ -121,39 +121,39 @@ check_nan (void)
   MPFR_CLEAR_FLAGS (d);
   MPFR_SET_INF (d);
   MPFR_SET_NEG (d);
-  MPFR_ASSERTN (mpfr_ui_div (q, 1L, d, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (mpfr_ui_div (q, 1L, d, MPFR_RNDZ) == 0); /* exact */
   MPFR_ASSERTN (mpfr_number_p (q));
   MPFR_ASSERTN (mpfr_sgn (q) == 0);
 
   /* 1/nan == nan */
   MPFR_SET_NAN (d);
-  MPFR_ASSERTN (mpfr_ui_div (q, 1L, d, GMP_RNDZ) == 0); /* exact */
+  MPFR_ASSERTN (mpfr_ui_div (q, 1L, d, MPFR_RNDZ) == 0); /* exact */
   MPFR_ASSERTN (mpfr_nan_p (q));
 
   /* 0/0 == nan */
-  mpfr_set_ui (d, 0L, GMP_RNDN);
-  MPFR_ASSERTN (mpfr_ui_div (q, 0L, d, GMP_RNDZ) == 0); /* exact */
+  mpfr_set_ui (d, 0L, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_ui_div (q, 0L, d, MPFR_RNDZ) == 0); /* exact */
   MPFR_ASSERTN (mpfr_nan_p (q));
 
   /* 1/+0 = +inf */
-  mpfr_set_ui (d, 0L, GMP_RNDN);
-  MPFR_ASSERTN (mpfr_ui_div (q, 1L, d, GMP_RNDZ) == 0); /* exact */
+  mpfr_set_ui (d, 0L, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_ui_div (q, 1L, d, MPFR_RNDZ) == 0); /* exact */
   MPFR_ASSERTN (mpfr_inf_p (q) && mpfr_sgn (q) > 0);
 
   /* 1/-0 = -inf */
-  mpfr_set_ui (d, 0L, GMP_RNDN);
-  mpfr_neg (d, d, GMP_RNDN);
-  MPFR_ASSERTN (mpfr_ui_div (q, 1L, d, GMP_RNDZ) == 0); /* exact */
+  mpfr_set_ui (d, 0L, MPFR_RNDN);
+  mpfr_neg (d, d, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_ui_div (q, 1L, d, MPFR_RNDZ) == 0); /* exact */
   MPFR_ASSERTN (mpfr_inf_p (q) && mpfr_sgn (q) < 0);
 
   /* 0/1 = +0 */
-  mpfr_set_ui (d, 1L, GMP_RNDN);
-  MPFR_ASSERTN (mpfr_ui_div (q, 0L, d, GMP_RNDZ) == 0); /* exact */
+  mpfr_set_ui (d, 1L, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_ui_div (q, 0L, d, MPFR_RNDZ) == 0); /* exact */
   MPFR_ASSERTN (mpfr_cmp_ui (q, 0) == 0 && MPFR_IS_POS (q));
 
   /* 0/-1 = -0 */
-  mpfr_set_si (d, -1, GMP_RNDN);
-  MPFR_ASSERTN (mpfr_ui_div (q, 0L, d, GMP_RNDZ) == 0); /* exact */
+  mpfr_set_si (d, -1, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_ui_div (q, 0L, d, MPFR_RNDZ) == 0); /* exact */
   MPFR_ASSERTN (mpfr_cmp_ui (q, 0) == 0 && MPFR_IS_NEG (q));
 
   mpfr_clear (d);
@@ -173,15 +173,15 @@ main (int argc, char *argv[])
 
   check_nan ();
   check_inexact ();
-  check(948002822, "1.22191250737771397120e+20", GMP_RNDN,
+  check(948002822, "1.22191250737771397120e+20", MPFR_RNDN,
         "7.758352715731357946e-12");
-  check(1976245324, "1.25296395864546893357e+232", GMP_RNDZ,
+  check(1976245324, "1.25296395864546893357e+232", MPFR_RNDZ,
         "1.5772563211925444801e-223");
-  check(740454110, "2.11496253355831863313e+183", GMP_RNDZ,
+  check(740454110, "2.11496253355831863313e+183", MPFR_RNDZ,
         "3.5010270784996976041e-175");
-  check(1690540942, "1.28278599852446657468e-276", GMP_RNDU,
+  check(1690540942, "1.28278599852446657468e-276", MPFR_RNDU,
         "1.3178666932321966062e285");
-  check(1476599377, "-2.14191393656148625995e+305", GMP_RNDD,
+  check(1476599377, "-2.14191393656148625995e+305", MPFR_RNDD,
         "-6.8938315017943889615e-297");
 
   /* inv is for 1/x */

@@ -96,9 +96,9 @@ mpfr_sqr (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
            result (i.e. before rounding, i.e. without taking cc into account)
            is < __gmpfr_emin - 1 or the exact result is a power of 2 (i.e. if
            both arguments are powers of 2), then round to zero. */
-        if (rnd_mode == GMP_RNDN &&
+        if (rnd_mode == MPFR_RNDN &&
             (ax + (mp_exp_t) b1 < __gmpfr_emin || mpfr_powerof2_raw (b)))
-          rnd_mode = GMP_RNDZ;
+          rnd_mode = MPFR_RNDZ;
         return mpfr_underflow (a, rnd_mode, MPFR_SIGN_POS);
       }
     MPFR_SET_EXP (a, ax2);

@@ -61,9 +61,9 @@ mpfr_const_euler_internal (mpfr_t x, mp_rnd_t rnd)
       MPFR_ASSERTD (n >= 9);
       mpfr_const_euler_S2 (y, n); /* error <= 3 ulps */
       exp_S = MPFR_EXP(y);
-      mpfr_set_ui (z, n, GMP_RNDN);
-      mpfr_log (z, z, GMP_RNDD); /* error <= 1 ulp */
-      mpfr_sub (y, y, z, GMP_RNDN); /* S'(n) - log(n) */
+      mpfr_set_ui (z, n, MPFR_RNDN);
+      mpfr_log (z, z, MPFR_RNDD); /* error <= 1 ulp */
+      mpfr_sub (y, y, z, MPFR_RNDN); /* S'(n) - log(n) */
       /* the error is less than 1/2 + 3*2^(exp_S-EXP(y)) + 2^(EXP(z)-EXP(y))
          <= 1/2 + 2^(exp_S+2-EXP(y)) + 2^(EXP(z)-EXP(y))
          <= 1/2 + 2^(1+MAX(exp_S+2,EXP(z))-EXP(y)) */
@@ -71,7 +71,7 @@ mpfr_const_euler_internal (mpfr_t x, mp_rnd_t rnd)
       err = (err >= -1) ? err + 1 : 0; /* error <= 2^err ulp(y) */
       exp_S = MPFR_EXP(y);
       mpfr_const_euler_R (z, n); /* err <= ulp(1/2) = 2^(-m) */
-      mpfr_sub (y, y, z, GMP_RNDN);
+      mpfr_sub (y, y, z, MPFR_RNDN);
       /* err <= 1/2 ulp(y) + 2^(-m) + 2^(err + exp_S - EXP(y)) ulp(y).
          Since the result is between 0.5 and 1, ulp(y) = 2^(-m).
          So we get 3/2*ulp(y) + 2^(err + exp_S - EXP(y)) ulp(y).
@@ -160,8 +160,8 @@ mpfr_const_euler_S2 (mpfr_t x, unsigned long n)
   mpz_init (Q);
   mpz_init (T);
   mpfr_const_euler_S2_aux (P, Q, T, n, 1, N + 1, 0);
-  mpfr_set_z (x, T, GMP_RNDN);
-  mpfr_div_z (x, x, Q, GMP_RNDN);
+  mpfr_set_z (x, T, MPFR_RNDN);
+  mpfr_div_z (x, x, Q, MPFR_RNDN);
   mpz_clear (P);
   mpz_clear (Q);
   mpz_clear (T);
@@ -201,15 +201,15 @@ mpfr_const_euler_R (mpfr_t x, unsigned long n)
   /* the error on s is at most 1+2+...+n = n*(n+1)/2 */
   mpz_div_ui (s, s, n); /* err <= 1 + (n+1)/2 */
   MPFR_ASSERTN (MPFR_PREC(x) >= mpz_sizeinbase(s, 2));
-  mpfr_set_z (x, s, GMP_RNDD); /* exact */
-  mpfr_div_2ui (x, x, m, GMP_RNDD);
+  mpfr_set_z (x, s, MPFR_RNDD); /* exact */
+  mpfr_div_2ui (x, x, m, MPFR_RNDD);
   /* now x = 1/n * sum(k!/(-n)^k, k=0..n-2) <= 1/n */
   /* err(x) <= (n+1)/2^m <= (n+1)*exp(n)/2^PREC(x) */
 
   mpfr_init2 (y, m);
-  mpfr_set_si (y, -(long)n, GMP_RNDD); /* assumed exact */
-  mpfr_exp (y, y, GMP_RNDD); /* err <= ulp(y) <= exp(-n)*2^(1-m) */
-  mpfr_mul (x, x, y, GMP_RNDD);
+  mpfr_set_si (y, -(long)n, MPFR_RNDD); /* assumed exact */
+  mpfr_exp (y, y, MPFR_RNDD); /* err <= ulp(y) <= exp(-n)*2^(1-m) */
+  mpfr_mul (x, x, y, MPFR_RNDD);
   /* err <= ulp(x) + (n + 1 + 2/n) / 2^prec(x)
      <= ulp(x) + (n + 1 + 2/n) ulp(x)/x since x*2^(-prec(x)) < ulp(x)
      <= ulp(x) + (n + 1 + 2/n) 3/(2n) ulp(x) since x >= 2/3*n for n >= 2

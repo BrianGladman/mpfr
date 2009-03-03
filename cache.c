@@ -58,8 +58,8 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mp_rnd_t rnd)
 
       /* Update the cache. */
       pold = prec;
-      mpfr_prec_round (cache->x, pold, GMP_RNDN);
-      cache->inexact = (*cache->func) (cache->x, GMP_RNDN);
+      mpfr_prec_round (cache->x, pold, MPFR_RNDN);
+      cache->inexact = (*cache->func) (cache->x, MPFR_RNDN);
       /* we assume all cached constants are positive */
       MPFR_ASSERTN(MPFR_IS_POS(cache->x));
     }
@@ -99,8 +99,8 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mp_rnd_t rnd)
     {
       switch (rnd)
         {
-        case GMP_RNDZ:
-        case GMP_RNDD:
+        case MPFR_RNDZ:
+        case MPFR_RNDD:
           if (MPFR_UNLIKELY (inexact == 0))
             {
               inexact = cache->inexact;
@@ -108,8 +108,8 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mp_rnd_t rnd)
                 mpfr_nextbelow (dest);
             }
           break;
-        case GMP_RNDU:
-        case GMP_RNDA:
+        case MPFR_RNDU:
+        case MPFR_RNDA:
           if (MPFR_UNLIKELY (inexact == 0))
             {
               inexact = cache->inexact;
@@ -117,7 +117,7 @@ mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mp_rnd_t rnd)
                 mpfr_nextabove (dest);
             }
           break;
-        default: /* GMP_RNDN */
+        default: /* MPFR_RNDN */
           if (MPFR_UNLIKELY(inexact == 0))
             inexact = cache->inexact;
           break;

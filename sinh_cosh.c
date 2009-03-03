@@ -97,7 +97,7 @@ mpfr_sinh_cosh (mpfr_ptr sh, mpfr_ptr ch, mpfr_srcptr xt, mp_rnd_t rnd_mode)
         MPFR_BLOCK_DECL (flags);
 
         /* compute sinh_cosh */
-        MPFR_BLOCK (flags, mpfr_exp (s, x, GMP_RNDD));
+        MPFR_BLOCK (flags, mpfr_exp (s, x, MPFR_RNDD));
         if (MPFR_OVERFLOW (flags))
           /* exp(x) does overflow */
           {
@@ -109,11 +109,11 @@ mpfr_sinh_cosh (mpfr_ptr sh, mpfr_ptr ch, mpfr_srcptr xt, mp_rnd_t rnd_mode)
             break;
           }
         d = MPFR_GET_EXP (s);
-        mpfr_ui_div (ti, 1, s, GMP_RNDU);  /* 1/exp(x) */
-        mpfr_add (c, s, ti, GMP_RNDU);     /* exp(x) + 1/exp(x) */
-        mpfr_sub (s, s, ti, GMP_RNDN);     /* exp(x) - 1/exp(x) */
-        mpfr_div_2ui (c, c, 1, GMP_RNDN);  /* 1/2(exp(x) + 1/exp(x)) */
-        mpfr_div_2ui (s, s, 1, GMP_RNDN);  /* 1/2(exp(x) - 1/exp(x)) */
+        mpfr_ui_div (ti, 1, s, MPFR_RNDU);  /* 1/exp(x) */
+        mpfr_add (c, s, ti, MPFR_RNDU);     /* exp(x) + 1/exp(x) */
+        mpfr_sub (s, s, ti, MPFR_RNDN);     /* exp(x) - 1/exp(x) */
+        mpfr_div_2ui (c, c, 1, MPFR_RNDN);  /* 1/2(exp(x) + 1/exp(x)) */
+        mpfr_div_2ui (s, s, 1, MPFR_RNDN);  /* 1/2(exp(x) - 1/exp(x)) */
 
         /* it may be that s is zero (in fact, it can only occur when exp(x)=1,
            and thus ti=1 too) */

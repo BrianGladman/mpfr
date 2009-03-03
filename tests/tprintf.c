@@ -164,7 +164,7 @@ check_mixed (void)
   mpz_t mpz;
   mpq_t mpq;
   mpf_t mpf;
-  mp_rnd_t rnd = GMP_RNDN;
+  mp_rnd_t rnd = MPFR_RNDN;
 
   mpfr_t mpfr;
   mpfr_prec_t prec;
@@ -176,7 +176,7 @@ check_mixed (void)
   mpf_init (mpf);
   mpf_set_q (mpf, mpq);
   mpfr_init (mpfr);
-  mpfr_set_f (mpfr, mpf, GMP_RNDN);
+  mpfr_set_f (mpfr, mpf, MPFR_RNDN);
   prec = mpfr_get_prec (mpfr);
 
   check_vprintf ("a. %Ra, b. %u, c. %lx%n", mpfr, ui, ulo, &j);

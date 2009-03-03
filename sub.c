@@ -59,7 +59,7 @@ mpfr_sub (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
         {
           if (MPFR_IS_ZERO (c))
             {
-              int sign = rnd_mode != GMP_RNDD
+              int sign = rnd_mode != MPFR_RNDD
                 ? ((MPFR_IS_NEG(b) && MPFR_IS_POS(c)) ? -1 : 1)
                 : ((MPFR_IS_POS(b) && MPFR_IS_NEG(c)) ? 1 : -1);
               MPFR_SET_SIGN (a, sign);

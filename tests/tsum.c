@@ -88,10 +88,10 @@ algo_exact (mpfr_t somme, mpfr_t *tab, unsigned long n, mp_prec_t f)
 
   prec_max = get_prec_max(tab, n, f);
   mpfr_set_prec (somme, prec_max);
-  mpfr_set_ui (somme, 0, GMP_RNDN);
+  mpfr_set_ui (somme, 0, MPFR_RNDN);
   for (i = 0; i < n; i++)
     {
-      if (mpfr_add(somme, somme, tab[i], GMP_RNDN))
+      if (mpfr_add(somme, somme, tab[i], MPFR_RNDN))
         {
           printf ("FIXME: algo_exact is buggy.\n");
           exit (1);
@@ -157,7 +157,7 @@ test_sum (mp_prec_t f, unsigned long n)
   for (i = 0; i < n; i++)
     mpfr_urandomb (tab[i], RANDS);
   algo_exact (real_non_rounded, tab, n, f);
-  for (rnd_mode = 0; rnd_mode < GMP_RND_MAX; rnd_mode++)
+  for (rnd_mode = 0; rnd_mode < MPFR_RND_MAX; rnd_mode++)
     {
       sum_tab (sum, tab, n, (mp_rnd_t) rnd_mode);
       mpfr_set (real_sum, real_non_rounded, (mp_rnd_t) rnd_mode);
@@ -177,7 +177,7 @@ test_sum (mp_prec_t f, unsigned long n)
       mpfr_set_exp (tab[i], randlimb () %1000);
     }
   algo_exact (real_non_rounded, tab, n, f);
-  for (rnd_mode = 0; rnd_mode < GMP_RND_MAX; rnd_mode++)
+  for (rnd_mode = 0; rnd_mode < MPFR_RND_MAX; rnd_mode++)
     {
       sum_tab (sum, tab, n, (mp_rnd_t) rnd_mode);
       mpfr_set (real_sum, real_non_rounded, (mp_rnd_t) rnd_mode);
@@ -209,24 +209,24 @@ void check_special (void)
   tabp[1] = tab[1];
   tabp[2] = tab[2];
 
-  i = mpfr_sum (r, tabp, 0, GMP_RNDN);
+  i = mpfr_sum (r, tabp, 0, MPFR_RNDN);
   if (!MPFR_IS_ZERO (r) || !MPFR_IS_POS (r) || i != 0)
     {
       printf ("Special case n==0 failed!\n");
       exit (1);
     }
 
-  mpfr_set_ui (tab[0], 42, GMP_RNDN);
-  i = mpfr_sum (r, tabp, 1, GMP_RNDN);
+  mpfr_set_ui (tab[0], 42, MPFR_RNDN);
+  i = mpfr_sum (r, tabp, 1, MPFR_RNDN);
   if (mpfr_cmp_ui (r, 42) || i != 0)
     {
       printf ("Special case n==1 failed!\n");
       exit (1);
     }
 
-  mpfr_set_ui (tab[1], 17, GMP_RNDN);
+  mpfr_set_ui (tab[1], 17, MPFR_RNDN);
   MPFR_SET_NAN (tab[2]);
-  i = mpfr_sum (r, tabp, 3, GMP_RNDN);
+  i = mpfr_sum (r, tabp, 3, MPFR_RNDN);
   if (!MPFR_IS_NAN (r) || i != 0)
     {
       printf ("Special case NAN failed!\n");
@@ -235,7 +235,7 @@ void check_special (void)
 
   MPFR_SET_INF (tab[2]);
   MPFR_SET_POS (tab[2]);
-  i = mpfr_sum (r, tabp, 3, GMP_RNDN);
+  i = mpfr_sum (r, tabp, 3, MPFR_RNDN);
   if (!MPFR_IS_INF (r) || !MPFR_IS_POS (r) || i != 0)
     {
       printf ("Special case +INF failed!\n");
@@ -244,7 +244,7 @@ void check_special (void)
 
   MPFR_SET_INF (tab[2]);
   MPFR_SET_NEG (tab[2]);
-  i = mpfr_sum (r, tabp, 3, GMP_RNDN);
+  i = mpfr_sum (r, tabp, 3, MPFR_RNDN);
   if (!MPFR_IS_INF (r) || !MPFR_IS_NEG (r) || i != 0)
     {
       printf ("Special case -INF failed!\n");
@@ -252,7 +252,7 @@ void check_special (void)
     }
 
   MPFR_SET_ZERO (tab[1]);
-  i = mpfr_sum (r, tabp, 2, GMP_RNDN);
+  i = mpfr_sum (r, tabp, 2, MPFR_RNDN);
   if (mpfr_cmp_ui (r, 42) || i != 0)
     {
       printf ("Special case 42+0 failed!\n");
@@ -260,7 +260,7 @@ void check_special (void)
     }
 
   MPFR_SET_NAN (tab[0]);
-  i = mpfr_sum (r, tabp, 3, GMP_RNDN);
+  i = mpfr_sum (r, tabp, 3, MPFR_RNDN);
   if (!MPFR_IS_NAN (r) || i != 0)
     {
       printf ("Special case NAN+0+-INF failed!\n");
@@ -268,9 +268,9 @@ void check_special (void)
     }
 
   mpfr_set_inf (tab[0], 1);
-  mpfr_set_ui  (tab[1], 59, GMP_RNDN);
+  mpfr_set_ui  (tab[1], 59, MPFR_RNDN);
   mpfr_set_inf (tab[2], -1);
-  i = mpfr_sum (r, tabp, 3, GMP_RNDN);
+  i = mpfr_sum (r, tabp, 3, MPFR_RNDN);
   if (!MPFR_IS_NAN (r) || i != 0)
     {
       printf ("Special case +INF + 59 +-INF failed!\n");

@@ -30,7 +30,7 @@ static int
 test_log1p (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
 {
   int res;
-  int ok = rnd_mode == GMP_RNDN && mpfr_number_p (b) && mpfr_get_prec (a)>=53;
+  int ok = rnd_mode == MPFR_RNDN && mpfr_number_p (b) && mpfr_get_prec (a)>=53;
   if (ok)
     {
       mpfr_print_raw (b);
@@ -61,30 +61,30 @@ special (void)
   mpfr_init (x);
 
   mpfr_set_nan (x);
-  inex = test_log1p (x, x, GMP_RNDN);
+  inex = test_log1p (x, x, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_nan_p (x) && inex == 0);
 
   mpfr_set_inf (x, -1);
-  inex = test_log1p (x, x, GMP_RNDN);
+  inex = test_log1p (x, x, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_nan_p (x) && inex == 0);
 
   mpfr_set_inf (x, 1);
-  inex = test_log1p (x, x, GMP_RNDN);
+  inex = test_log1p (x, x, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_inf_p (x) && mpfr_sgn (x) > 0 && inex == 0);
 
-  mpfr_set_ui (x, 0, GMP_RNDN);
-  inex = test_log1p (x, x, GMP_RNDN);
+  mpfr_set_ui (x, 0, MPFR_RNDN);
+  inex = test_log1p (x, x, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_POS (x) && inex == 0);
-  mpfr_neg (x, x, GMP_RNDN);
-  inex = test_log1p (x, x, GMP_RNDN);
+  mpfr_neg (x, x, MPFR_RNDN);
+  inex = test_log1p (x, x, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_NEG (x) && inex == 0);
 
-  mpfr_set_si (x, -1, GMP_RNDN);
-  inex = test_log1p (x, x, GMP_RNDN);
+  mpfr_set_si (x, -1, MPFR_RNDN);
+  inex = test_log1p (x, x, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_inf_p (x) && mpfr_sgn (x) < 0 && inex == 0);
 
-  mpfr_set_si (x, -2, GMP_RNDN);
-  inex = test_log1p (x, x, GMP_RNDN);
+  mpfr_set_si (x, -2, MPFR_RNDN);
+  inex = test_log1p (x, x, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_nan_p (x) && inex == 0);
 
   mpfr_clear (x);
@@ -97,17 +97,17 @@ other (void)
 
   /* Bug reported by Guillaume Melquiond on 2006-08-14. */
   mpfr_init2 (x, 53);
-  mpfr_set_str (x, "-1.5e4f72873ed9a@-100", 16, GMP_RNDN);
+  mpfr_set_str (x, "-1.5e4f72873ed9a@-100", 16, MPFR_RNDN);
   mpfr_init2 (y, 57);
-  mpfr_log1p (y, x, GMP_RNDU);
+  mpfr_log1p (y, x, MPFR_RNDU);
   if (mpfr_cmp (x, y) != 0)
     {
       printf ("Error in tlog1p for x = ");
-      mpfr_out_str (stdout, 16, 0, x, GMP_RNDN);
-      printf (", rnd = GMP_RNDU\nExpected ");
-      mpfr_out_str (stdout, 16, 15, x, GMP_RNDN);
+      mpfr_out_str (stdout, 16, 0, x, MPFR_RNDN);
+      printf (", rnd = MPFR_RNDU\nExpected ");
+      mpfr_out_str (stdout, 16, 15, x, MPFR_RNDN);
       printf ("\nGot      ");
-      mpfr_out_str (stdout, 16, 15, y, GMP_RNDN);
+      mpfr_out_str (stdout, 16, 15, y, MPFR_RNDN);
       printf ("\n");
       exit (1);
     }

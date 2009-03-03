@@ -100,7 +100,7 @@ main (void)
   mpfr_init(x);
 
   /* tests for cmp_ui */
-  mpfr_set_ui (x, 3, GMP_RNDZ);
+  mpfr_set_ui (x, 3, MPFR_RNDZ);
   if ((mpfr_cmp_ui) (x, i = 3) != 0)
     {
       printf ("Error in mpfr_cmp_ui(3.0, 3)\n");
@@ -116,14 +116,14 @@ main (void)
       printf ("Error in mpfr_cmp_ui(3.0,4)\n");
       exit (1);
     }
-  mpfr_set_ui (x, 0, GMP_RNDZ);
-  mpfr_neg (x, x, GMP_RNDZ);
+  mpfr_set_ui (x, 0, MPFR_RNDZ);
+  mpfr_neg (x, x, MPFR_RNDZ);
   if (mpfr_cmp_ui (x, i = 0))
     {
       printf ("Error in mpfr_cmp_ui(0.0,0)\n");
       exit (1);
     }
-  mpfr_set_ui (x, 1, GMP_RNDZ);
+  mpfr_set_ui (x, 1, MPFR_RNDZ);
   if (mpfr_cmp_ui (x, i = 0) == 0)
     {
       printf ("Error in mpfr_cmp_ui(1.0,0)\n");
@@ -143,15 +143,15 @@ main (void)
       exit (1);
     }
 
-  mpfr_set_si (x, -1, GMP_RNDN);
+  mpfr_set_si (x, -1, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui (x, 1) < 0);
   MPFR_ASSERTN(mpfr_cmp_ui (x, 0) < 0);
 
-  mpfr_set_ui (x, 1, GMP_RNDN);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui (x, 0) > 0);
 
   /* tests for cmp_si */
-  (mpfr_set_si) (x, -3, GMP_RNDZ);
+  (mpfr_set_si) (x, -3, MPFR_RNDZ);
   if ((mpfr_cmp_si) (x, s = -3) != 0)
     {
       printf ("Error in mpfr_cmp_si(-3.0,-3)\n");
@@ -182,19 +182,19 @@ main (void)
     }
 
   /* case b=0 */
-  mpfr_set_ui (x, 0, GMP_RNDZ);
+  mpfr_set_ui (x, 0, MPFR_RNDZ);
   MPFR_ASSERTN(mpfr_cmp_si (x, 0) == 0);
   MPFR_ASSERTN(mpfr_cmp_si (x, 1) < 0);
   MPFR_ASSERTN(mpfr_cmp_si (x, -1) > 0);
 
   /* case i=0 */
-  mpfr_set_ui (x, 1, GMP_RNDZ);
+  mpfr_set_ui (x, 1, MPFR_RNDZ);
   MPFR_ASSERTN(mpfr_cmp_si (x, 0) > 0);
-  mpfr_set_ui (x, 0, GMP_RNDZ);
+  mpfr_set_ui (x, 0, MPFR_RNDZ);
   MPFR_ASSERTN(mpfr_cmp_si (x, 0) == 0);
-  mpfr_neg (x, x, GMP_RNDZ);
+  mpfr_neg (x, x, MPFR_RNDZ);
   MPFR_ASSERTN(mpfr_cmp_si (x, 0) == 0);
-  mpfr_set_si (x, -1, GMP_RNDZ);
+  mpfr_set_si (x, -1, MPFR_RNDZ);
   MPFR_ASSERTN(mpfr_cmp_si (x, 0) < 0);
 
   /* case large x */
@@ -208,8 +208,8 @@ main (void)
   MPFR_ASSERTN(mpfr_cmp_si (x, -1) < 0);
 
   /* corner case */
-  mpfr_set_ui (x, 1, GMP_RNDZ);
-  mpfr_mul_2exp (x, x, BITS_PER_MP_LIMB - 1, GMP_RNDZ);
+  mpfr_set_ui (x, 1, MPFR_RNDZ);
+  mpfr_mul_2exp (x, x, BITS_PER_MP_LIMB - 1, MPFR_RNDZ);
   /* now EXP(x)=BITS_PER_MP_LIMB */
   MPFR_ASSERTN(mpfr_cmp_si (x, 1) > 0);
 

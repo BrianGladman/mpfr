@@ -37,15 +37,15 @@ check_large (void)
   mpfr_init2 (z, 11791);
 
   /* The algo failed to round for p=11791. */
-  (mpfr_const_pi) (z, GMP_RNDU);
-  mpfr_const_pi (x, GMP_RNDN); /* First one ! */
-  mpfr_const_pi (y, GMP_RNDN); /* Then the other - cache - */
-  mpfr_prec_round (y, 20000, GMP_RNDN);
+  (mpfr_const_pi) (z, MPFR_RNDU);
+  mpfr_const_pi (x, MPFR_RNDN); /* First one ! */
+  mpfr_const_pi (y, MPFR_RNDN); /* Then the other - cache - */
+  mpfr_prec_round (y, 20000, MPFR_RNDN);
   if (mpfr_cmp (x, y)) {
     printf ("const_pi: error for large prec (%d)\n", 1);
     exit (1);
   }
-  mpfr_prec_round (y, 11791, GMP_RNDU);
+  mpfr_prec_round (y, 11791, MPFR_RNDU);
   if (mpfr_cmp (z, y)) {
     printf ("const_pi: error for large prec (%d)\n", 2);
     exit (1);
@@ -54,7 +54,7 @@ check_large (void)
   /* a worst-case to exercise recomputation */
   if (MPFR_PREC_MAX > 33440) {
     mpfr_set_prec (x, 33440);
-    mpfr_const_pi (x, GMP_RNDZ);
+    mpfr_const_pi (x, MPFR_RNDZ);
   }
 
   mpfr_clears (x, y, z, (mpfr_ptr) 0);
@@ -67,7 +67,7 @@ my_const_pi (mpfr_ptr x, mpfr_srcptr y, mp_rnd_t r)
   return mpfr_const_pi (x, r);
 }
 
-#define RAND_FUNCTION(x) mpfr_set_ui ((x), 0, GMP_RNDN)
+#define RAND_FUNCTION(x) mpfr_set_ui ((x), 0, MPFR_RNDN)
 #define TEST_FUNCTION my_const_pi
 #include "tgeneric.c"
 
@@ -88,7 +88,7 @@ main (int argc, char *argv[])
         p = a;
     }
 
-  rnd = (argc > 2) ? (mp_rnd_t) atoi(argv[2]) : GMP_RNDZ;
+  rnd = (argc > 2) ? (mp_rnd_t) atoi(argv[2]) : MPFR_RNDZ;
 
   mpfr_init2 (x, p);
   mpfr_const_pi (x, rnd);
@@ -104,12 +104,12 @@ main (int argc, char *argv[])
   else if (mpfr_cmp_str1 (x, "3.141592653589793116") )
     {
       printf ("mpfr_const_pi failed for prec=53\n");
-      mpfr_out_str (stdout, 10, 0, x, GMP_RNDN); putchar('\n');
+      mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN); putchar('\n');
       exit (1);
     }
 
   mpfr_set_prec (x, 32);
-  mpfr_const_pi (x, GMP_RNDN);
+  mpfr_const_pi (x, MPFR_RNDN);
   if (mpfr_cmp_str1 (x, "3.141592653468251") )
     {
       printf ("mpfr_const_pi failed for prec=32\n");

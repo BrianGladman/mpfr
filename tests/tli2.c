@@ -36,7 +36,7 @@ special (void)
   mpfr_init (y);
 
   mpfr_set_nan (x);
-  mpfr_li2 (y, x, GMP_RNDN);
+  mpfr_li2 (y, x, MPFR_RNDN);
   if (!mpfr_nan_p (y))
     {
       printf ("Error for li2(NaN)\n");
@@ -44,7 +44,7 @@ special (void)
     }
 
   mpfr_set_inf (x, -1);
-  mpfr_li2 (y, x, GMP_RNDN);
+  mpfr_li2 (y, x, MPFR_RNDN);
   if (!MPFR_IS_INF (y) || MPFR_IS_POS (y))
     {
       printf ("Error for li2(-Inf)\n");
@@ -52,24 +52,24 @@ special (void)
     }
 
   mpfr_set_inf (x, 1);
-  mpfr_li2 (y, x, GMP_RNDN);
+  mpfr_li2 (y, x, MPFR_RNDN);
   if (!MPFR_IS_INF (y) || MPFR_IS_POS (y))
     {
       printf ("Error for li2(+Inf)\n");
       exit (1);
     }
 
-  mpfr_set_ui (x, 0, GMP_RNDN);
-  mpfr_li2 (y, x, GMP_RNDN);
+  mpfr_set_ui (x, 0, MPFR_RNDN);
+  mpfr_li2 (y, x, MPFR_RNDN);
   if (!MPFR_IS_ZERO (y) || MPFR_IS_NEG (y))
     {
       printf ("Error for li2(+0)\n");
       exit (1);
     }
 
-  mpfr_set_ui (x, 0, GMP_RNDN);
-  mpfr_neg (x, x, GMP_RNDN);
-  mpfr_li2 (y, x, GMP_RNDN);
+  mpfr_set_ui (x, 0, MPFR_RNDN);
+  mpfr_neg (x, x, MPFR_RNDN);
+  mpfr_li2 (y, x, MPFR_RNDN);
   if (!MPFR_IS_ZERO (y) || MPFR_IS_POS (y))
     {
       printf ("Error for li2(-0)\n");
@@ -89,9 +89,9 @@ normal (void)
   mpfr_init (y);
 
   /* x1 = 2^-3 */
-  mpfr_set_str (x, "1p-3", 2, GMP_RNDD);
-  mpfr_li2 (x, x, GMP_RNDN);
-  if (mpfr_cmp_str (x, "0x1087a7a9e42141p-55", 16, GMP_RNDN) != 0)
+  mpfr_set_str (x, "1p-3", 2, MPFR_RNDD);
+  mpfr_li2 (x, x, MPFR_RNDN);
+  if (mpfr_cmp_str (x, "0x1087a7a9e42141p-55", 16, MPFR_RNDN) != 0)
     {
       printf ("Error for li2(x1)\n");
       exit (1);
@@ -100,25 +100,25 @@ normal (void)
   /* check MPFR_FAST_COMPUTE_IF_SMALL_INPUT */
   mpfr_set_prec (x, 2);
   mpfr_set_prec (y, 20);
-  mpfr_set_ui_2exp (x, 1, -21, GMP_RNDN);
-  mpfr_li2 (y, x, GMP_RNDN);
+  mpfr_set_ui_2exp (x, 1, -21, MPFR_RNDN);
+  mpfr_li2 (y, x, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_cmp (y, x) == 0);
 
-  mpfr_set_si_2exp (x, -1, -21, GMP_RNDN);
-  mpfr_li2 (y, x, GMP_RNDN);
+  mpfr_set_si_2exp (x, -1, -21, MPFR_RNDN);
+  mpfr_li2 (y, x, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_cmp (y, x) == 0);
 
   /* worst case */
   /* x2 = 0x7F18EA6537E00E983196CDDC6EFAC57Fp-129
      Li2(x2) = 2^-2 + 2^-6 + 2^-120 */
   mpfr_set_prec (x, 128);
-  mpfr_set_str (x, "7F18EA6537E00E983196CDDC6EFAC57Fp-129", 16, GMP_RNDN);
+  mpfr_set_str (x, "7F18EA6537E00E983196CDDC6EFAC57Fp-129", 16, MPFR_RNDN);
 
   /* round to nearest mode and 4 bits of precision,
      it should be rounded to 2^-2 + 2^-5 and */
   mpfr_set_prec (y, 4);
-  inexact = mpfr_li2 (y, x, GMP_RNDN);
-  if (inexact != 1 || mpfr_cmp_str (y, "0.1001p-1", 2, GMP_RNDN) != 0)
+  inexact = mpfr_li2 (y, x, MPFR_RNDN);
+  if (inexact != 1 || mpfr_cmp_str (y, "0.1001p-1", 2, MPFR_RNDN) != 0)
     {
       printf ("Error for li2(x2, RNDN)\n");
       exit (1);
@@ -127,8 +127,8 @@ normal (void)
   /* round towards zero mode and 5 bits of precision,
      it should be rounded to 2^-2 + 2^-6 */
   mpfr_set_prec (y, 5);
-  inexact = mpfr_li2 (y, x, GMP_RNDZ);
-  if (inexact != -1 || mpfr_cmp_str (y, "0.10001p-1", 2, GMP_RNDN) != 0)
+  inexact = mpfr_li2 (y, x, MPFR_RNDZ);
+  if (inexact != -1 || mpfr_cmp_str (y, "0.10001p-1", 2, MPFR_RNDN) != 0)
     {
       printf ("Error for li2(x2, RNDZ)\n");
       exit (1);
@@ -136,8 +136,8 @@ normal (void)
 
   /* round away from zero mode and 5 bits of precision,
      it should be rounded to 2^-2 + 2^-5 */
-  inexact = mpfr_li2 (y, x, GMP_RNDU);
-  if (inexact != 1 || mpfr_cmp_str (y, "0.10010p-1", 2, GMP_RNDN) != 0)
+  inexact = mpfr_li2 (y, x, MPFR_RNDU);
+  if (inexact != 1 || mpfr_cmp_str (y, "0.10010p-1", 2, MPFR_RNDN) != 0)
     {
       printf ("Error for li2(x2, RNDU)\n");
       exit (1);

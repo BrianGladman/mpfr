@@ -23,7 +23,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
-/* For GMP_RNDN, we can have a problem of double rounding.
+/* For MPFR_RNDN, we can have a problem of double rounding.
    In such a case, this table helps to conclude what to do (y positive):
      Rounding Bit |  Sticky Bit | inexact  | Action    | new inexact
      0            |   ?         |  ?       | Trunc     | sticky
@@ -59,7 +59,7 @@ mpfr_subnormalize (mpfr_ptr y, int old_inexact, mp_rnd_t rnd)
          Assuming Y is the real value and y the approximation
          and since y is not a power of 2:  0.5*2^emin < Y < 1*2^emin
          We also know the direction of the error thanks to inexact flag */
-      else if (rnd == GMP_RNDN)
+      else if (rnd == MPFR_RNDN)
         {
           mp_limb_t *mant, rb ,sb;
           mp_size_t s;
@@ -120,7 +120,7 @@ mpfr_subnormalize (mpfr_ptr y, int old_inexact, mp_rnd_t rnd)
                         MPFR_SET_EXP (dest, MPFR_GET_EXP (dest)+1));
       if (MPFR_LIKELY (old_inexact != 0))
         {
-          if (MPFR_UNLIKELY(rnd == GMP_RNDN && (inexact == MPFR_EVEN_INEX
+          if (MPFR_UNLIKELY(rnd == MPFR_RNDN && (inexact == MPFR_EVEN_INEX
                                                || inexact == -MPFR_EVEN_INEX)))
             {
               /* if both roundings are in the same direction, we have to go

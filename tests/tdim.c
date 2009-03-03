@@ -45,8 +45,8 @@ main (void)
 
   /* case x=NaN */
   mpfr_set_nan (x);
-  mpfr_set_ui (y, 0, GMP_RNDN);
-  mpfr_dim (z, x, y, GMP_RNDN);
+  mpfr_set_ui (y, 0, MPFR_RNDN);
+  mpfr_dim (z, x, y, MPFR_RNDN);
   if (!mpfr_nan_p (z))
     {
       printf ("Error in mpfr_dim (NaN, 0)\n");
@@ -55,8 +55,8 @@ main (void)
 
   /* case x=+Inf */
   mpfr_set_inf (x, 1);
-  mpfr_set_ui (y, 0, GMP_RNDN);
-  mpfr_dim (z, x, y, GMP_RNDN);
+  mpfr_set_ui (y, 0, MPFR_RNDN);
+  mpfr_dim (z, x, y, MPFR_RNDN);
   if (!mpfr_inf_p (z) || mpfr_sgn (z) < 0)
     {
       printf ("Error in mpfr_dim (+Inf, 0)\n");
@@ -65,8 +65,8 @@ main (void)
 
   /* case x=-Inf */
   mpfr_set_inf (x, -1);
-  mpfr_set_ui (y, 0, GMP_RNDN);
-  mpfr_dim (z, x, y, GMP_RNDN);
+  mpfr_set_ui (y, 0, MPFR_RNDN);
+  mpfr_dim (z, x, y, MPFR_RNDN);
   if (mpfr_cmp_ui (z, 0) || mpfr_sgn (z) < 0)
     {
       printf ("Error in mpfr_dim (-Inf, 0)\n");
@@ -76,7 +76,7 @@ main (void)
   /* case x=y=+Inf */
   mpfr_set_inf (x, 1);
   mpfr_set_inf (y, 1);
-  mpfr_dim (z, x, y, GMP_RNDN);
+  mpfr_dim (z, x, y, MPFR_RNDN);
   if (mpfr_cmp_ui (z, 0) || mpfr_sgn (z) < 0)
     {
       printf ("Error in mpfr_dim (+Inf, +Inf)\n");
@@ -84,9 +84,9 @@ main (void)
     }
 
   /* case x > y */
-  mpfr_set_ui (x, 2, GMP_RNDN);
-  mpfr_set_ui (y, 1, GMP_RNDN);
-  mpfr_dim (z, x, y, GMP_RNDN);
+  mpfr_set_ui (x, 2, MPFR_RNDN);
+  mpfr_set_ui (y, 1, MPFR_RNDN);
+  mpfr_dim (z, x, y, MPFR_RNDN);
   if (mpfr_cmp_ui (z, 1))
     {
       printf ("Error in mpfr_dim (2, 1)\n");
@@ -94,9 +94,9 @@ main (void)
     }
 
   /* case x < y */
-  mpfr_set_ui (x, 1, GMP_RNDN);
-  mpfr_set_ui (y, 2, GMP_RNDN);
-  mpfr_dim (z, x, y, GMP_RNDN);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_set_ui (y, 2, MPFR_RNDN);
+  mpfr_dim (z, x, y, MPFR_RNDN);
   if (mpfr_cmp_ui (z, 0))
     {
       printf ("Error in mpfr_dim (1, 2)\n");

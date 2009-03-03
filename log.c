@@ -126,15 +126,15 @@ mpfr_log (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
       MPFR_TMP_INIT (tmp1p, tmp1, p, size);
       MPFR_TMP_INIT (tmp2p, tmp2, p, size);
 
-      mpfr_mul_2si (tmp2, a, m, GMP_RNDN);    /* s=a*2^m,        err<=1 ulp  */
-      mpfr_div (tmp1, __gmpfr_four, tmp2, GMP_RNDN);/* 4/s,      err<=2 ulps */
-      mpfr_agm (tmp2, __gmpfr_one, tmp1, GMP_RNDN); /* AG(1,4/s),err<=3 ulps */
-      mpfr_mul_2ui (tmp2, tmp2, 1, GMP_RNDN); /* 2*AG(1,4/s),    err<=3 ulps */
-      mpfr_const_pi (tmp1, GMP_RNDN);         /* compute pi,     err<=1ulp   */
-      mpfr_div (tmp2, tmp1, tmp2, GMP_RNDN);  /* pi/2*AG(1,4/s), err<=5ulps  */
-      mpfr_const_log2 (tmp1, GMP_RNDN);      /* compute log(2),  err<=1ulp   */
-      mpfr_mul_si (tmp1, tmp1, m, GMP_RNDN); /* compute m*log(2),err<=2ulps  */
-      mpfr_sub (tmp1, tmp2, tmp1, GMP_RNDN); /* log(a),    err<=7ulps+cancel */
+      mpfr_mul_2si (tmp2, a, m, MPFR_RNDN);    /* s=a*2^m,        err<=1 ulp  */
+      mpfr_div (tmp1, __gmpfr_four, tmp2, MPFR_RNDN);/* 4/s,      err<=2 ulps */
+      mpfr_agm (tmp2, __gmpfr_one, tmp1, MPFR_RNDN); /* AG(1,4/s),err<=3 ulps */
+      mpfr_mul_2ui (tmp2, tmp2, 1, MPFR_RNDN); /* 2*AG(1,4/s),    err<=3 ulps */
+      mpfr_const_pi (tmp1, MPFR_RNDN);         /* compute pi,     err<=1ulp   */
+      mpfr_div (tmp2, tmp1, tmp2, MPFR_RNDN);  /* pi/2*AG(1,4/s), err<=5ulps  */
+      mpfr_const_log2 (tmp1, MPFR_RNDN);      /* compute log(2),  err<=1ulp   */
+      mpfr_mul_si (tmp1, tmp1, m, MPFR_RNDN); /* compute m*log(2),err<=2ulps  */
+      mpfr_sub (tmp1, tmp2, tmp1, MPFR_RNDN); /* log(a),    err<=7ulps+cancel */
 
       if (MPFR_LIKELY (MPFR_IS_PURE_FP (tmp1) && MPFR_IS_PURE_FP (tmp2)))
         {

@@ -46,8 +46,8 @@ special (void)
   mpfr_init (y);
 
   MPFR_SET_INF(x);
-  mpfr_set_ui (y, 1, GMP_RNDN);
-  mpfr_acosh (x, y, GMP_RNDN);
+  mpfr_set_ui (y, 1, MPFR_RNDN);
+  mpfr_acosh (x, y, MPFR_RNDN);
   if (MPFR_IS_INF(x) || MPFR_IS_NAN(x) )
     {
       printf ("Inf flag not clears in acosh!\n");
@@ -60,23 +60,23 @@ special (void)
     }
 
   MPFR_SET_NAN(x);
-  mpfr_acosh (x, y, GMP_RNDN);
+  mpfr_acosh (x, y, MPFR_RNDN);
   if (MPFR_IS_NAN(x) || MPFR_IS_INF(x) )
     {
       printf ("NAN flag not clears in acosh!\n");
       exit (1);
     }
 
-  mpfr_set_ui (x, 0, GMP_RNDN);
-  mpfr_acosh (y, x, GMP_RNDN);
+  mpfr_set_ui (x, 0, MPFR_RNDN);
+  mpfr_acosh (y, x, MPFR_RNDN);
   if (!mpfr_nan_p (y))
     {
       printf ("Error: mpfr_acosh(0) <> NaN\n");
       exit (1);
     }
 
-  mpfr_set_si (x, -1, GMP_RNDN);
-  mpfr_acosh (y, x, GMP_RNDN);
+  mpfr_set_si (x, -1, MPFR_RNDN);
+  mpfr_acosh (y, x, MPFR_RNDN);
   if (!mpfr_nan_p (y))
     {
       printf ("Error: mpfr_acosh(-1) <> NaN\n");
@@ -84,7 +84,7 @@ special (void)
     }
 
   MPFR_SET_NAN(x);
-  mpfr_acosh (y, x, GMP_RNDN);
+  mpfr_acosh (y, x, MPFR_RNDN);
   if (!mpfr_nan_p (y))
     {
       printf ("Error: mpfr_acosh(NaN) <> NaN\n");
@@ -92,7 +92,7 @@ special (void)
     }
 
   mpfr_set_inf (x, 1);
-  mpfr_acosh (y, x, GMP_RNDN);
+  mpfr_acosh (y, x, MPFR_RNDN);
   if (!mpfr_inf_p (y) || mpfr_sgn (y) < 0)
     {
       printf ("Error: mpfr_acosh(+Inf) <> +Inf\n");
@@ -100,16 +100,16 @@ special (void)
     }
 
   mpfr_set_inf (x, -1);
-  mpfr_acosh (y, x, GMP_RNDN);
+  mpfr_acosh (y, x, MPFR_RNDN);
   if (!mpfr_nan_p (y))
     {
       printf ("Error: mpfr_acosh(-Inf) <> NaN\n");
       exit (1);
     }
 
-  mpfr_set_ui (x, 1, GMP_RNDN);
-  mpfr_div_2exp (x, x, 1, GMP_RNDN);
-  mpfr_acosh (y, x, GMP_RNDN);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_div_2exp (x, x, 1, MPFR_RNDN);
+  mpfr_acosh (y, x, MPFR_RNDN);
   if (!mpfr_nan_p (y))
     {
       printf ("Error: mpfr_acosh(1/2) <> NaN\n");
@@ -119,7 +119,7 @@ special (void)
   mpfr_set_prec (x, 32);
   mpfr_set_prec (y, 32);
   mpfr_set_str_binary (x, "1.000001101011101111001011");
-  mpfr_acosh (y, x, GMP_RNDN);
+  mpfr_acosh (y, x, MPFR_RNDN);
   mpfr_set_str_binary (x, "0.111010100101101001010001101001E-2");
   if (mpfr_cmp (x, y))
     {
@@ -142,10 +142,10 @@ bug20070831 (void)
   mpfr_init2 (y, 32);
   mpfr_init2 (z, 32);
 
-  mpfr_set_ui (x, 1, GMP_RNDN);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
   mpfr_nextabove (x);
-  inex = mpfr_acosh (y, x, GMP_RNDZ);
-  mpfr_set_ui_2exp (z, 1, -127, GMP_RNDN);
+  inex = mpfr_acosh (y, x, MPFR_RNDZ);
+  mpfr_set_ui_2exp (z, 1, -127, MPFR_RNDN);
   mpfr_nextbelow (z);
   if (!mpfr_equal_p (y, z))
     {
@@ -159,7 +159,7 @@ bug20070831 (void)
 
   mpfr_nextabove (x);
   mpfr_set_prec (y, 29);
-  inex = mpfr_acosh (y, x, GMP_RNDN);
+  inex = mpfr_acosh (y, x, MPFR_RNDN);
   mpfr_set_str_binary (z, "1.011010100000100111100110011E-127");
   if (!mpfr_equal_p (y, z))
     {
@@ -182,8 +182,8 @@ huge (void)
 
   /* TODO: extend the exponent range and use mpfr_get_emax (). */
   mpfr_inits2 (32, x, y, z, (mpfr_ptr) 0);
-  mpfr_set_ui_2exp (x, 1, 1073741822, GMP_RNDN);
-  inex = mpfr_acosh (y, x, GMP_RNDN);
+  mpfr_set_ui_2exp (x, 1, 1073741822, MPFR_RNDN);
+  inex = mpfr_acosh (y, x, MPFR_RNDN);
   mpfr_set_str_binary (z, "0.10110001011100100001011111110101E30");
   if (!mpfr_equal_p (y, z))
     {

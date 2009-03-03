@@ -31,7 +31,7 @@ my_const_catalan (mpfr_ptr x, mpfr_srcptr y, mp_rnd_t r)
   return mpfr_const_catalan (x, r);
 }
 
-#define RAND_FUNCTION(x) mpfr_set_ui(x,0,GMP_RNDN)
+#define RAND_FUNCTION(x) mpfr_set_ui(x,0,MPFR_RNDN)
 #define TEST_FUNCTION my_const_catalan
 #include "tgeneric.c"
 
@@ -43,8 +43,8 @@ main (int argc, char *argv[])
   tests_start_mpfr ();
 
   mpfr_init2 (x, 32);
-  (mpfr_const_catalan) (x, GMP_RNDN);
-  mpfr_mul_2exp (x, x, 32, GMP_RNDN);
+  (mpfr_const_catalan) (x, MPFR_RNDN);
+  mpfr_mul_2exp (x, x, 32, MPFR_RNDN);
   if (mpfr_cmp_ui (x, 3934042271UL))
     {
       printf ("Error in const_catalan for prec=32\n");

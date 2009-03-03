@@ -170,7 +170,7 @@ mpfr_round_near_x (mpfr_ptr y, mpfr_srcptr v, mpfr_uexp_t err, int dir,
         && (err > MPFR_PREC (v)
             || mpfr_round_p (MPFR_MANT (v), MPFR_LIMB_SIZE (v),
                              (mp_exp_t) err,
-                             MPFR_PREC (y) + (rnd == GMP_RNDN)))))
+                             MPFR_PREC (y) + (rnd == MPFR_RNDN)))))
     /* If we assume we can not round, return 0, and y is not modified */
     return 0;
 
@@ -214,7 +214,7 @@ mpfr_round_near_x (mpfr_ptr y, mpfr_srcptr v, mpfr_uexp_t err, int dir,
         {
           inexact = -sign;
           /* Round Away */
-            if (rnd != GMP_RNDN && !MPFR_IS_LIKE_RNDZ (rnd, MPFR_IS_NEG_SIGN(sign)))
+            if (rnd != MPFR_RNDN && !MPFR_IS_LIKE_RNDZ (rnd, MPFR_IS_NEG_SIGN(sign)))
             {
               /* case nexttoinf */
               /* The overflow flag should be set if the result is infinity */

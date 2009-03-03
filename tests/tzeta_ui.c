@@ -48,19 +48,19 @@ main (int argc, char *argv[])
     {
       mpfr_set_prec (x, atoi (argv[2]));
       mpfr_zeta_ui (x, atoi (argv[1]),
-                    argc > 3 ? (mp_rnd_t) atoi (argv[3]) : GMP_RNDN);
-      mpfr_out_str (stdout, 10, 0, x, GMP_RNDN);
+                    argc > 3 ? (mp_rnd_t) atoi (argv[3]) : MPFR_RNDN);
+      mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN);
       printf ("\n");
       goto clear_and_exit;
     }
 
   mpfr_set_prec (x, 33);
   mpfr_set_prec (y, 33);
-  mpfr_zeta_ui (x, 3, GMP_RNDZ);
+  mpfr_zeta_ui (x, 3, MPFR_RNDZ);
   mpfr_set_str_binary (y, "0.100110011101110100000000001001111E1");
   if (mpfr_cmp (x, y))
     {
-      printf ("Error for zeta(3), prec=33, GMP_RNDZ\n");
+      printf ("Error for zeta(3), prec=33, MPFR_RNDZ\n");
       printf ("expected "); mpfr_dump (y);
       printf ("got      "); mpfr_dump (x);
       exit (1);
@@ -75,11 +75,11 @@ main (int argc, char *argv[])
       mpfr_set_prec (y, yprec);
 
       for (n = 0; n < 50; n++)
-        for (rnd = 0; rnd < GMP_RND_MAX; rnd++)
+        for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
           {
-            inexact = mpfr_zeta_ui (y, n, GMP_RNDN);
-            if (mpfr_can_round (y, yprec, GMP_RNDN, GMP_RNDZ, prec
-                                + (rnd == GMP_RNDN)))
+            inexact = mpfr_zeta_ui (y, n, MPFR_RNDN);
+            if (mpfr_can_round (y, yprec, MPFR_RNDN, MPFR_RNDZ, prec
+                                + (rnd == MPFR_RNDN)))
               {
                 mpfr_set (t, y, (mp_rnd_t) rnd);
                 inexact = mpfr_zeta_ui (z, n, (mp_rnd_t) rnd);

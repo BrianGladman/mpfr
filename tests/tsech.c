@@ -39,7 +39,7 @@ check_specials (void)
   mpfr_init2 (y, 123L);
 
   mpfr_set_nan (x);
-  mpfr_sech (y, x, GMP_RNDN);
+  mpfr_sech (y, x, MPFR_RNDN);
   if (! mpfr_nan_p (y))
     {
       printf ("Error: sech(NaN) != NaN\n");
@@ -47,7 +47,7 @@ check_specials (void)
     }
 
   mpfr_set_inf (x, 1);
-  mpfr_sech (y, x, GMP_RNDN);
+  mpfr_sech (y, x, MPFR_RNDN);
   if (! (MPFR_IS_ZERO (y) && MPFR_SIGN (y) > 0))
     {
       printf ("Error: sech(+Inf) != +0\n");
@@ -55,7 +55,7 @@ check_specials (void)
     }
 
   mpfr_set_inf (x, -1);
-  mpfr_sech (y, x, GMP_RNDN);
+  mpfr_sech (y, x, MPFR_RNDN);
   if (! (MPFR_IS_ZERO (y) && MPFR_SIGN (y) > 0))
     {
       printf ("Error: sech(-Inf) != +0\n");
@@ -63,15 +63,15 @@ check_specials (void)
     }
 
   /* sec(+/-0) = 1 */
-  mpfr_set_ui (x, 0, GMP_RNDN);
-  mpfr_sech (y, x, GMP_RNDN);
+  mpfr_set_ui (x, 0, MPFR_RNDN);
+  mpfr_sech (y, x, MPFR_RNDN);
   if (mpfr_cmp_ui (y, 1))
     {
       printf ("Error: sech(+0) != 1\n");
       exit (1);
     }
-  mpfr_neg (x, x, GMP_RNDN);
-  mpfr_sech (y, x, GMP_RNDN);
+  mpfr_neg (x, x, MPFR_RNDN);
+  mpfr_sech (y, x, MPFR_RNDN);
   if (mpfr_cmp_ui (y, 1))
     {
       printf ("Error: sech(-0) != 1\n");
@@ -79,15 +79,15 @@ check_specials (void)
     }
 
   /* check huge x */
-  mpfr_set_str (x, "8e8", 10, GMP_RNDN);
-  mpfr_sech (y, x, GMP_RNDN);
+  mpfr_set_str (x, "8e8", 10, MPFR_RNDN);
+  mpfr_sech (y, x, MPFR_RNDN);
   if (! (mpfr_zero_p (y) && MPFR_SIGN (y) > 0))
     {
       printf ("Error: sech(8e8) != +0\n");
       exit (1);
     }
-  mpfr_set_str (x, "-8e8", 10, GMP_RNDN);
-  mpfr_sech (y, x, GMP_RNDN);
+  mpfr_set_str (x, "-8e8", 10, MPFR_RNDN);
+  mpfr_sech (y, x, MPFR_RNDN);
   if (! (mpfr_zero_p (y) && MPFR_SIGN (y) > 0))
     {
       printf ("Error: sech(-8e8) != +0\n");
@@ -112,17 +112,17 @@ overflowed_sech0 (void)
 
   for (emax = -1; emax <= 0; emax++)
     {
-      mpfr_set_ui_2exp (y, 1, emax, GMP_RNDN);
+      mpfr_set_ui_2exp (y, 1, emax, MPFR_RNDN);
       mpfr_nextbelow (y);
       set_emax (emax);  /* 1 is not representable. */
       /* and if emax < 0, 1 - eps is not representable either. */
       for (i = -1; i <= 1; i++)
         RND_LOOP (rnd)
           {
-            mpfr_set_si_2exp (x, i, -512 * ABS (i), GMP_RNDN);
+            mpfr_set_si_2exp (x, i, -512 * ABS (i), MPFR_RNDN);
             mpfr_clear_flags ();
             inex = mpfr_sech (x, x, (mp_rnd_t) rnd);
-            if ((i == 0 || emax < 0 || rnd == GMP_RNDN || rnd == GMP_RNDU) &&
+            if ((i == 0 || emax < 0 || rnd == MPFR_RNDN || rnd == MPFR_RNDU) &&
                 ! mpfr_overflow_p ())
               {
                 printf ("Error in overflowed_sech0 (i = %d, rnd = %s):\n"
@@ -130,7 +130,7 @@ overflowed_sech0 (void)
                         i, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
                 err = 1;
               }
-            if (rnd == GMP_RNDZ || rnd == GMP_RNDD)
+            if (rnd == MPFR_RNDZ || rnd == MPFR_RNDD)
               {
                 if (inex >= 0)
                   {

@@ -60,14 +60,14 @@ test_round_near_x (void)
   mpfr_set_prec (y, 3);
   mpfr_set_prec (z, 3);
   mpfr_set_prec (eps, 2);
-  mpfr_set_ui_2exp (eps, 1, -32, GMP_RNDN);
+  mpfr_set_ui_2exp (eps, 1, -32, MPFR_RNDN);
 
   for (mx = 16; mx < 32; mx++)
     {
-      mpfr_set_ui_2exp (x, mx, -2, GMP_RNDN);
+      mpfr_set_ui_2exp (x, mx, -2, MPFR_RNDN);
       for (p = buffer, neg = 0;
            neg <= 1;
-           mpfr_neg (x, x, GMP_RNDN), p++, neg++)
+           mpfr_neg (x, x, MPFR_RNDN), p++, neg++)
         for (err = 2; err <= 6; err++)
           for (dir = 0; dir <= 1; dir++)
             RND_LOOP(r)
@@ -91,11 +91,11 @@ test_round_near_x (void)
                 else
                   {
                     printf ("Bad MPFR value (should have got ");
-                    mpfr_out_str (stdout, 2, 3, z, GMP_RNDZ);
+                    mpfr_out_str (stdout, 2, 3, z, MPFR_RNDZ);
                     printf (") for:\n");
                   }
 
-                if (!mpfr_get_str (buffer, &e, 2, 5, x, GMP_RNDZ) || e != 3)
+                if (!mpfr_get_str (buffer, &e, 2, 5, x, MPFR_RNDZ) || e != 3)
                   {
                     printf ("mpfr_get_str failed in test_round_near_x\n");
                     exit (1);
@@ -107,7 +107,7 @@ test_round_near_x (void)
                 if (inex != 0)
                   {
                     printf (", y = ");
-                    mpfr_out_str (stdout, 2, 3, y, GMP_RNDZ);
+                    mpfr_out_str (stdout, 2, 3, y, MPFR_RNDZ);
                   }
                 printf ("\n");
                 if (inex == 0)

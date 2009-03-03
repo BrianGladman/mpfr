@@ -109,8 +109,8 @@ mpfr_set_q (mpfr_ptr f, mpq_srcptr q, mp_rnd_t rnd)
     }
   if (MPFR_UNLIKELY (sn < MPFR_EMIN_MIN / BITS_PER_MP_LIMB -1))
     {
-      if (rnd == GMP_RNDN)
-        rnd = GMP_RNDZ;
+      if (rnd == MPFR_RNDN)
+        rnd = MPFR_RNDZ;
       inexact = mpfr_underflow (f, rnd, MPFR_SIGN (f));
       goto end;
     }

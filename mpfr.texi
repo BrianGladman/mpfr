@@ -618,11 +618,11 @@ life.
 The following five rounding modes are supported:
 
 @itemize @bullet
-@item @code{GMP_RNDN}: round to nearest (roundTiesToEven in IEEE 754-2008)
-@item @code{GMP_RNDZ}: round toward zero (roundTowardZero in IEEE 754-2008)
-@item @code{GMP_RNDU}: round toward plus infinity (roundTowardPositive in IEEE 754-2008)
-@item @code{GMP_RNDD}: round toward minus infinity (roundTowardNegative in IEEE 754-2008)
-@item @code{GMP_RNDA}: round away from zero (currently experimental)
+@item @code{MPFR_RNDN}: round to nearest (roundTiesToEven in IEEE 754-2008)
+@item @code{MPFR_RNDZ}: round toward zero (roundTowardZero in IEEE 754-2008)
+@item @code{MPFR_RNDU}: round toward plus infinity (roundTowardPositive in IEEE 754-2008)
+@item @code{MPFR_RNDD}: round toward minus infinity (roundTowardNegative in IEEE 754-2008)
+@item @code{MPFR_RNDA}: round away from zero (currently experimental)
 @end itemize
 
 The @samp{round to nearest} mode works as in the IEEE 754 standard: in
@@ -656,7 +656,7 @@ If the ternary value is zero, it means that the value stored in the
 destination variable is the exact result of the corresponding mathematical
 function. If the ternary value is positive (resp.@: negative), it means
 the value stored in the destination variable is greater (resp.@: lower)
-than the exact result. For example with the @code{GMP_RNDU} rounding mode,
+than the exact result. For example with the @code{MPFR_RNDU} rounding mode,
 the ternary value is usually positive, except when the result is exact, in
 which case it is zero. In the case of an infinite result, it is considered
 as inexact when it was obtained by overflow, and exact otherwise. A NaN
@@ -2073,7 +2073,7 @@ mpfr_init (x);
 @dots{}
 mpfr_printf ("%.128Rf", x);
 mpfr_printf ("%.128RNf", x);
-mpfr_printf ("%.128R*f", GMP_RNDN, x);
+mpfr_printf ("%.128R*f", MPFR_RNDN, x);
 @end example
 
 @code{mpfr_printf} also adds a new conversion specifier @samp{b} which
@@ -2304,10 +2304,10 @@ This function @strong{does not modify} its arguments.
 Note: if one wants to also determine the correct ternary value when rounding
 @var{b} to precision @var{prec}, a useful trick is the following:
 @verbatim
-   if (mpfr_can_round (b, err, rnd1, GMP_RNDZ, prec + (rnd2 == GMP_RNDN)))
+   if (mpfr_can_round (b, err, rnd1, MPFR_RNDZ, prec + (rnd2 == MPFR_RNDN)))
       ...
 @end verbatim
-Indeed, if @var{rnd2} is @code{GMP_RNDN}, this will check if one can
+Indeed, if @var{rnd2} is @code{MPFR_RNDN}, this will check if one can
 round to @var{prec}+1 bits with a directed rounding:
 if so, one can surely round to nearest to @var{prec} bits,
 and in addition one can determine the correct ternary value, which would not
@@ -2316,7 +2316,7 @@ be the case when @var{b} is near from a value exactly representable on
 @end deftypefun
 
 @deftypefun {const char *} mpfr_print_rnd_mode (mp_rnd_t @var{rnd})
-Return the input string (GMP_RNDD, GMP_RNDU, GMP_RNDN, GMP_RNDZ)
+Return the input string (MPFR_RNDD, MPFR_RNDU, MPFR_RNDN, MPFR_RNDZ)
 corresponding to the rounding mode @var{rnd} or a null pointer if
 @var{rnd} is an invalid rounding mode.
 @end deftypefun
@@ -2569,12 +2569,12 @@ This is an example of how to emulate binary double IEEE 754 arithmetic
 
   mpfr_init (xa); mpfr_init (xb);
 
-  b = 34.3; mpfr_set_d (xb, b, GMP_RNDN);
-  a = 0x1.1235P-1021; mpfr_set_d (xa, a, GMP_RNDN);
+  b = 34.3; mpfr_set_d (xb, b, MPFR_RNDN);
+  a = 0x1.1235P-1021; mpfr_set_d (xa, a, MPFR_RNDN);
 
   a /= b;
-  i = mpfr_div (xa, xa, xb, GMP_RNDN);
-  i = mpfr_subnormalize (xa, i, GMP_RNDN);
+  i = mpfr_div (xa, xa, xb, MPFR_RNDN);
+  i = mpfr_subnormalize (xa, i, MPFR_RNDN);
 
   mpfr_clear (xa); mpfr_clear (xb);
 @}

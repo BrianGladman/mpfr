@@ -29,7 +29,7 @@ mpfr_cmp_ld (mpfr_srcptr b, long double d)
   int res;
 
   mpfr_init2 (tmp, MPFR_LDBL_MANT_DIG);
-  res = mpfr_set_ld (tmp, d, GMP_RNDN);
+  res = mpfr_set_ld (tmp, d, MPFR_RNDN);
   MPFR_ASSERTD (res == 0);
   res = mpfr_cmp (b, tmp);
   mpfr_clear (tmp);

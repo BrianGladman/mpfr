@@ -38,7 +38,7 @@ check_specials (void)
   mpfr_init2 (y, 123L);
 
   mpfr_set_nan (x);
-  mpfr_csch (y, x, GMP_RNDN);
+  mpfr_csch (y, x, MPFR_RNDN);
   if (! mpfr_nan_p (y))
     {
       printf ("Error: csch(NaN) != NaN\n");
@@ -46,7 +46,7 @@ check_specials (void)
     }
 
   mpfr_set_inf (x, 1);
-  mpfr_csch (y, x, GMP_RNDN);
+  mpfr_csch (y, x, MPFR_RNDN);
   if (! (mpfr_zero_p (y) && MPFR_SIGN (y) >0))
     {
       printf ("Error: csch(+Inf) != +0\n");
@@ -54,7 +54,7 @@ check_specials (void)
     }
 
   mpfr_set_inf (x, -1);
-  mpfr_csch (y, x, GMP_RNDN);
+  mpfr_csch (y, x, MPFR_RNDN);
   if (! (mpfr_zero_p (y) && MPFR_SIGN (y) <0))
     {
       printf ("Error: csch(-0) != -0\n");
@@ -62,15 +62,15 @@ check_specials (void)
     }
 
   /* csc(+/-0) = +/-Inf */
-  mpfr_set_ui (x, 0, GMP_RNDN);
-  mpfr_csch (y, x, GMP_RNDN);
+  mpfr_set_ui (x, 0, MPFR_RNDN);
+  mpfr_csch (y, x, MPFR_RNDN);
   if (! (mpfr_inf_p (y) && mpfr_sgn (y) > 0))
     {
       printf ("Error: csch(+0) != +Inf\n");
       exit (1);
     }
-  mpfr_neg (x, x, GMP_RNDN);
-  mpfr_csch (y, x, GMP_RNDN);
+  mpfr_neg (x, x, MPFR_RNDN);
+  mpfr_csch (y, x, MPFR_RNDN);
   if (! (mpfr_inf_p (y) && mpfr_sgn (y) < 0))
     {
       printf ("Error: csch(-0) != -Inf\n");
@@ -78,15 +78,15 @@ check_specials (void)
     }
 
   /* check huge x */
-  mpfr_set_str (x, "8e8", 10, GMP_RNDN);
-  mpfr_csch (y, x, GMP_RNDN);
+  mpfr_set_str (x, "8e8", 10, MPFR_RNDN);
+  mpfr_csch (y, x, MPFR_RNDN);
   if (! (mpfr_zero_p (y) && MPFR_SIGN (y) > 0))
     {
       printf ("Error: csch(8e8) != +0\n");
       exit (1);
     }
-  mpfr_set_str (x, "-8e8", 10, GMP_RNDN);
-  mpfr_csch (y, x, GMP_RNDN);
+  mpfr_set_str (x, "-8e8", 10, MPFR_RNDN);
+  mpfr_csch (y, x, MPFR_RNDN);
   if (! (mpfr_zero_p (y) && MPFR_SIGN (y) < 0))
     {
       printf ("Error: csch(-8e8) != -0\n");

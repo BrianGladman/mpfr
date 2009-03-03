@@ -82,7 +82,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
             {
               int sign_p;
               sign_p = MPFR_MULT_SIGN( MPFR_SIGN(x) , MPFR_SIGN(y) );
-              MPFR_SET_SIGN(s,(rnd_mode != GMP_RNDD ?
+              MPFR_SET_SIGN(s,(rnd_mode != MPFR_RNDD ?
                                ((MPFR_IS_NEG_SIGN(sign_p) && MPFR_IS_NEG(z))
                                 ? -1 : 1) :
                                ((MPFR_IS_POS_SIGN(sign_p) && MPFR_IS_POS(z))
@@ -105,12 +105,12 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
   MPFR_SAVE_EXPO_MARK (expo);
   mpfr_init2 (u, MPFR_PREC(x) + MPFR_PREC(y));
 
-  if (MPFR_UNLIKELY (mpfr_mul (u, x, y, GMP_RNDN)))
+  if (MPFR_UNLIKELY (mpfr_mul (u, x, y, MPFR_RNDN)))
     {
       /* overflow or underflow - this case is regarded as rare, thus
          does not need to be very efficient (even if some tests below
          could have been done earlier).
-         It is an overflow iff u is an infinity (since GMP_RNDN was used).
+         It is an overflow iff u is an infinity (since MPFR_RNDN was used).
          Alternatively, we could test the overflow flag, but in this case,
          mpfr_clear_flags would have been necessary. */
       if (MPFR_IS_INF (u))  /* overflow */
@@ -133,9 +133,9 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
              is exact with an unbounded exponent range). It does not
              underflow either, because x*y overflows and the exponent
              range is large enough. */
-          inexact = mpfr_div_2ui (u, x, 2, GMP_RNDN);
+          inexact = mpfr_div_2ui (u, x, 2, MPFR_RNDN);
           MPFR_ASSERTN (inexact == 0);
-          inexact = mpfr_mul (u, u, y, GMP_RNDN);
+          inexact = mpfr_mul (u, u, y, MPFR_RNDN);
           MPFR_ASSERTN (inexact == 0);
 
           /* Now, we need to add z/4... But it may underflow! */
@@ -153,7 +153,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
             else
               {
                 mpfr_init2 (zo4, MPFR_PREC (z));
-                if (mpfr_div_2ui (zo4, z, 2, GMP_RNDZ))
+                if (mpfr_div_2ui (zo4, z, 2, MPFR_RNDZ))
                   {
                     /* The division by 4 underflowed! */
                     MPFR_ASSERTN (0); /* TODO... */
@@ -216,7 +216,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
               MPFR_ASSERTN (uscale <= ULONG_MAX);
               scale = uscale;
               mpfr_init2 (scaled_z, MPFR_PREC (z));
-              inexact = mpfr_mul_2ui (scaled_z, z, scale, GMP_RNDN);
+              inexact = mpfr_mul_2ui (scaled_z, z, scale, MPFR_RNDN);
               MPFR_ASSERTN (inexact == 0);  /* TODO: overflow case */
               new_z = scaled_z;
               /* Now we need to recompute u = xy * 2^scale. */
@@ -224,14 +224,14 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
                           if (MPFR_GET_EXP (x) < MPFR_GET_EXP (y))
                             {
                               mpfr_init2 (scaled_v, MPFR_PREC (x));
-                              mpfr_mul_2ui (scaled_v, x, scale, GMP_RNDN);
-                              mpfr_mul (u, scaled_v, y, GMP_RNDN);
+                              mpfr_mul_2ui (scaled_v, x, scale, MPFR_RNDN);
+                              mpfr_mul (u, scaled_v, y, MPFR_RNDN);
                             }
                           else
                             {
                               mpfr_init2 (scaled_v, MPFR_PREC (y));
-                              mpfr_mul_2ui (scaled_v, y, scale, GMP_RNDN);
-                              mpfr_mul (u, x, scaled_v, GMP_RNDN);
+                              mpfr_mul_2ui (scaled_v, y, scale, MPFR_RNDN);
+                              mpfr_mul (u, x, scaled_v, MPFR_RNDN);
                             });
               mpfr_clear (scaled_v);
               MPFR_ASSERTN (! MPFR_OVERFLOW (flags));
@@ -268,10 +268,10 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
                    is not possible, but let's check that anyway. */
                 MPFR_ASSERTN (! MPFR_OVERFLOW (flags));  /* TODO... */
                 MPFR_ASSERTN (! MPFR_UNDERFLOW (flags));  /* not possible */
-                inex2 = mpfr_div_2ui (s, s, scale, GMP_RNDN);
-                /* FIXME: this seems incorrect. GMP_RNDN -> rnd_mode?
+                inex2 = mpfr_div_2ui (s, s, scale, MPFR_RNDN);
+                /* FIXME: this seems incorrect. MPFR_RNDN -> rnd_mode?
                    Also, handle the double rounding case:
-                   s / 2^scale = 2^(emin - 2) in GMP_RNDN. */
+                   s / 2^scale = 2^(emin - 2) in MPFR_RNDN. */
                 if (inex2)  /* underflow */
                   inexact = inex2;
               }

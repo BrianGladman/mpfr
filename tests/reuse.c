@@ -25,7 +25,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
-#define DISP(s, t) {printf(s); mpfr_out_str(stdout, 2, 0, t, GMP_RNDN); }
+#define DISP(s, t) {printf(s); mpfr_out_str(stdout, 2, 0, t, MPFR_RNDN); }
 #define DISP2(s,t) {DISP(s,t); putchar('\n');}
 
 #define SPECIAL_MAX 12
@@ -68,10 +68,10 @@ set_special (mpfr_ptr x, unsigned int select)
       mpfr_set_str_binary (x, "1e+1");
       break;
     case 9:
-      mpfr_const_pi (x, GMP_RNDN);
+      mpfr_const_pi (x, MPFR_RNDN);
       break;
     case 10:
-      mpfr_const_pi (x, GMP_RNDN);
+      mpfr_const_pi (x, MPFR_RNDN);
       MPFR_SET_EXP (x, MPFR_GET_EXP (x)-1);
       break;
     default:
@@ -435,7 +435,7 @@ test2a (int (*testfunc)(mpfr_ptr, mpfr_srcptr),
       testfunc (ref1, ref2);
 
       /* foo(a, a) */
-      mpfr_set (res1, ref2, GMP_RNDN); /* exact operation */
+      mpfr_set (res1, ref2, MPFR_RNDN); /* exact operation */
       testfunc (res1, res1);
       if (mpfr_compare (res1, ref1))
         {

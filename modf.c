@@ -92,7 +92,7 @@ mpfr_modf (mpfr_ptr iop, mpfr_ptr fop, mpfr_srcptr op, mpfr_rnd_t rnd_mode)
       mpfr_init2 (opi, ope <= MPFR_PREC_MIN ? MPFR_PREC_MIN : ope);
       inexi = mpfr_trunc (opi, op);
       mpfr_init2 (opf, opq - ope <= MPFR_PREC_MIN ? MPFR_PREC_MIN : opq - ope);
-      inexf = mpfr_frac (opf, op, GMP_RNDZ);
+      inexf = mpfr_frac (opf, op, MPFR_RNDZ);
       MPFR_ASSERTD (inexf == 0);
 
       inexf = mpfr_set (fop, opf, rnd_mode);

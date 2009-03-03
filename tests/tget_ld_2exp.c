@@ -40,13 +40,13 @@ check_round (void)
 
   mpfr_init2 (f, 1024L);
 
-  for (rnd_mode = 0; rnd_mode < GMP_RND_MAX ; rnd_mode++)
+  for (rnd_mode = 0; rnd_mode < MPFR_RND_MAX ; rnd_mode++)
     {
       for (i = 0; i < (int) numberof (data); i++)
         {
-          mpfr_set_ui (f, 1L, GMP_RNDZ);
-          mpfr_mul_2exp (f, f, data[i], GMP_RNDZ);
-          mpfr_sub_ui (f, f, 1L, GMP_RNDZ);
+          mpfr_set_ui (f, 1L, MPFR_RNDZ);
+          mpfr_mul_2exp (f, f, data[i], MPFR_RNDZ);
+          mpfr_sub_ui (f, f, 1L, MPFR_RNDZ);
 
           for (neg = 0; neg <= 1; neg++)
             {
@@ -61,14 +61,14 @@ check_round (void)
                   printf  ("   rnd_mode = %d\n", rnd_mode);
                   printf  ("   data[i]  = %lu\n", data[i]);
                   printf  ("   f    ");
-                  mpfr_out_str (stdout, 2, 0, f, GMP_RNDN);
+                  mpfr_out_str (stdout, 2, 0, f, MPFR_RNDN);
                   printf  ("\n");
                   d_trace ("   got  ", got);
                   printf  ("   got exp  %ld\n", got_exp);
                   exit(1);
                 }
 
-              mpfr_neg (f, f, GMP_RNDZ);
+              mpfr_neg (f, f, MPFR_RNDZ);
             }
         }
     }
@@ -89,17 +89,17 @@ check_inf_nan (void)
   mpfr_init2 (x, 123);
 
   mpfr_set_inf (x, 1);
-  d = (double) mpfr_get_ld_2exp (&exp, x, GMP_RNDZ);
+  d = (double) mpfr_get_ld_2exp (&exp, x, MPFR_RNDZ);
   ASSERT_ALWAYS (d > 0);
   ASSERT_ALWAYS (DOUBLE_ISINF (d));
 
   mpfr_set_inf (x, -1);
-  d = (double) mpfr_get_ld_2exp (&exp, x, GMP_RNDZ);
+  d = (double) mpfr_get_ld_2exp (&exp, x, MPFR_RNDZ);
   ASSERT_ALWAYS (d < 0);
   ASSERT_ALWAYS (DOUBLE_ISINF (d));
 
   mpfr_set_nan (x);
-  d = (double) mpfr_get_ld_2exp (&exp, x, GMP_RNDZ);
+  d = (double) mpfr_get_ld_2exp (&exp, x, MPFR_RNDZ);
   ASSERT_ALWAYS (DOUBLE_ISNAN (d));
 
   mpfr_clear (x);

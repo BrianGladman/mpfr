@@ -31,7 +31,7 @@ mpfr_ui_pow (mpfr_ptr y, unsigned long int n, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   MPFR_SAVE_EXPO_MARK (expo);
   mpfr_init2 (t, sizeof(n) * CHAR_BIT);
-  inexact = mpfr_set_ui (t, n, GMP_RNDN);
+  inexact = mpfr_set_ui (t, n, MPFR_RNDN);
   MPFR_ASSERTN (!inexact);
   inexact = mpfr_pow (y, t, x, rnd_mode);
   mpfr_clear (t);

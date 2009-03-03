@@ -245,7 +245,7 @@ Table of contents:
   Also mpfr_atan(x) seems slower (by a factor of 2) for x near from 1.
   Example on a Athlon for 10^5 bits: x=1.1 takes 3s, whereas 2.1 takes 1.8s.
   The current implementation does not give monotonous timing for the following:
-  mpfr_random (x); for (i = 0; i < k; i++) mpfr_atan (y, x, GMP_RNDN);
+  mpfr_random (x); for (i = 0; i < k; i++) mpfr_atan (y, x, MPFR_RNDN);
   for precision 300 and k=1000, we get 1070ms, and 500ms only for p=400!
 - improve mpfr_sin on values like ~pi (do not compute sin from cos, because
   of the cancellation). For instance, reduce the input modulo pi/2 in

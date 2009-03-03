@@ -64,7 +64,7 @@ mpfr_get_sj (mpfr_srcptr f, mpfr_rnd_t rnd)
     }
   /* Note: though INTMAX_MAX would have been sufficient for the conversion,
      we chose INTMAX_MIN so that INTMAX_MIN - 1 is always representable in
-     precision prec; this is useful to detect overflows in GMP_RNDZ (will
+     precision prec; this is useful to detect overflows in MPFR_RNDZ (will
      be needed later). */
 
   /* Now, r = 0. */

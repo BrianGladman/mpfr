@@ -65,21 +65,21 @@ check_sj (intmax_t s, mpfr_ptr x)
     {
       int rnd;
 
-      mpfr_set_si_2exp (y, i, -2, GMP_RNDN);
-      mpfr_add (y, y, x, GMP_RNDN);
-      for (rnd = 0; rnd < GMP_RND_MAX; rnd++)
+      mpfr_set_si_2exp (y, i, -2, MPFR_RNDN);
+      mpfr_add (y, y, x, MPFR_RNDN);
+      for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
         {
           intmax_t r;
 
-          if (rnd == GMP_RNDZ && i < 0 && s >= 0)
+          if (rnd == MPFR_RNDZ && i < 0 && s >= 0)
             continue;
-          if (rnd == GMP_RNDZ && i > 0 && s <= 0)
+          if (rnd == MPFR_RNDZ && i > 0 && s <= 0)
             continue;
-          if (rnd == GMP_RNDD && i < 0)
+          if (rnd == MPFR_RNDD && i < 0)
             continue;
-          if (rnd == GMP_RNDU && i > 0)
+          if (rnd == MPFR_RNDU && i > 0)
             continue;
-          if (rnd == GMP_RNDA && ((MPFR_IS_POS(y) && i > 0) ||
+          if (rnd == MPFR_RNDA && ((MPFR_IS_POS(y) && i > 0) ||
                                   (MPFR_IS_NEG(y) && i < 0)))
             continue;
           /* rint (y) == x == s */
@@ -87,7 +87,7 @@ check_sj (intmax_t s, mpfr_ptr x)
           if (r != s)
             {
               printf ("Error in check_sj for y = ");
-              mpfr_out_str (stdout, 2, 0, y, GMP_RNDN);
+              mpfr_out_str (stdout, 2, 0, y, MPFR_RNDN);
               printf (" in %s\n", mpfr_print_rnd_mode ((mp_rnd_t) rnd));
               printf ("Got %jd instead of %jd.\n", r, s);
               exit (1);
@@ -110,19 +110,19 @@ check_uj (uintmax_t u, mpfr_ptr x)
     {
       int rnd;
 
-      mpfr_set_si_2exp (y, i, -2, GMP_RNDN);
-      mpfr_add (y, y, x, GMP_RNDN);
-      for (rnd = 0; rnd < GMP_RND_MAX; rnd++)
+      mpfr_set_si_2exp (y, i, -2, MPFR_RNDN);
+      mpfr_add (y, y, x, MPFR_RNDN);
+      for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
         {
           uintmax_t r;
 
-          if (rnd == GMP_RNDZ && i < 0)
+          if (rnd == MPFR_RNDZ && i < 0)
             continue;
-          if (rnd == GMP_RNDD && i < 0)
+          if (rnd == MPFR_RNDD && i < 0)
             continue;
-          if (rnd == GMP_RNDU && i > 0)
+          if (rnd == MPFR_RNDU && i > 0)
             continue;
-          if (rnd == GMP_RNDA && ((MPFR_IS_POS(y) && i > 0) ||
+          if (rnd == MPFR_RNDA && ((MPFR_IS_POS(y) && i > 0) ||
                                   (MPFR_IS_NEG(y) && i < 0)))
             continue;
           /* rint (y) == x == u */
@@ -130,7 +130,7 @@ check_uj (uintmax_t u, mpfr_ptr x)
           if (r != u)
             {
               printf ("Error in check_uj for y = ");
-              mpfr_out_str (stdout, 2, 0, y, GMP_RNDN);
+              mpfr_out_str (stdout, 2, 0, y, MPFR_RNDN);
               printf (" in %s\n", mpfr_print_rnd_mode ((mp_rnd_t) rnd));
               printf ("Got %ju instead of %ju.\n", r, u);
               exit (1);
@@ -151,54 +151,54 @@ check_erange (void)
   /* Test for ERANGE flag + correct behaviour if overflow */
 
   mpfr_init2 (x, 256);
-  mpfr_set_uj (x, UINTMAX_MAX, GMP_RNDN);
+  mpfr_set_uj (x, UINTMAX_MAX, MPFR_RNDN);
   mpfr_clear_erangeflag ();
-  dl = mpfr_get_uj (x, GMP_RNDN);
+  dl = mpfr_get_uj (x, MPFR_RNDN);
   if (dl != UINTMAX_MAX || mpfr_erangeflag_p ())
     {
       printf ("ERROR for get_uj + ERANGE + UINTMAX_MAX (1)\n");
       exit (1);
     }
-  mpfr_add_ui (x, x, 1, GMP_RNDN);
-  dl = mpfr_get_uj (x, GMP_RNDN);
+  mpfr_add_ui (x, x, 1, MPFR_RNDN);
+  dl = mpfr_get_uj (x, MPFR_RNDN);
   if (dl != UINTMAX_MAX || !mpfr_erangeflag_p ())
     {
       printf ("ERROR for get_uj + ERANGE + UINTMAX_MAX (2)\n");
       exit (1);
     }
-  mpfr_set_sj (x, -1, GMP_RNDN);
+  mpfr_set_sj (x, -1, MPFR_RNDN);
   mpfr_clear_erangeflag ();
-  dl = mpfr_get_uj (x, GMP_RNDN);
+  dl = mpfr_get_uj (x, MPFR_RNDN);
   if (dl != 0 || !mpfr_erangeflag_p ())
     {
       printf ("ERROR for get_uj + ERANGE + -1 \n");
       exit (1);
     }
-  mpfr_set_sj (x, INTMAX_MAX, GMP_RNDN);
+  mpfr_set_sj (x, INTMAX_MAX, MPFR_RNDN);
   mpfr_clear_erangeflag ();
-  d = mpfr_get_sj (x, GMP_RNDN);
+  d = mpfr_get_sj (x, MPFR_RNDN);
   if (d != INTMAX_MAX || mpfr_erangeflag_p ())
     {
       printf ("ERROR for get_sj + ERANGE + INTMAX_MAX (1)\n");
       exit (1);
     }
-  mpfr_add_ui (x, x, 1, GMP_RNDN);
-  d = mpfr_get_sj (x, GMP_RNDN);
+  mpfr_add_ui (x, x, 1, MPFR_RNDN);
+  d = mpfr_get_sj (x, MPFR_RNDN);
   if (d != INTMAX_MAX || !mpfr_erangeflag_p ())
     {
       printf ("ERROR for get_sj + ERANGE + INTMAX_MAX (2)\n");
       exit (1);
     }
-  mpfr_set_sj (x, INTMAX_MIN, GMP_RNDN);
+  mpfr_set_sj (x, INTMAX_MIN, MPFR_RNDN);
   mpfr_clear_erangeflag ();
-  d = mpfr_get_sj (x, GMP_RNDN);
+  d = mpfr_get_sj (x, MPFR_RNDN);
   if (d != INTMAX_MIN || mpfr_erangeflag_p ())
     {
       printf ("ERROR for get_sj + ERANGE + INTMAX_MIN (1)\n");
       exit (1);
     }
-  mpfr_sub_ui (x, x, 1, GMP_RNDN);
-  d = mpfr_get_sj (x, GMP_RNDN);
+  mpfr_sub_ui (x, x, 1, MPFR_RNDN);
+  d = mpfr_get_sj (x, MPFR_RNDN);
   if (d != INTMAX_MIN || !mpfr_erangeflag_p ())
     {
       printf ("ERROR for get_sj + ERANGE + INTMAX_MIN (2)\n");
@@ -224,38 +224,38 @@ main (void)
   mpfr_init2 (x, prec + 4);
   mpfr_init2 (y, prec + 4);
 
-  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_set_ui (x, 0, MPFR_RNDN);
   check_sj (0, x);
   check_uj (0, x);
 
-  mpfr_set_si_2exp (x, 1, prec, GMP_RNDN);
-  mpfr_sub_ui (x, x, 1, GMP_RNDN); /* UINTMAX_MAX */
+  mpfr_set_si_2exp (x, 1, prec, MPFR_RNDN);
+  mpfr_sub_ui (x, x, 1, MPFR_RNDN); /* UINTMAX_MAX */
 
-  mpfr_div_ui (y, x, 2, GMP_RNDZ);
+  mpfr_div_ui (y, x, 2, MPFR_RNDZ);
   mpfr_trunc (y, y); /* INTMAX_MAX */
   for (s = INTMAX_MAX; s != 0; s /= 17)
     {
       check_sj (s, y);
-      mpfr_div_ui (y, y, 17, GMP_RNDZ);
+      mpfr_div_ui (y, y, 17, MPFR_RNDZ);
       mpfr_trunc (y, y);
     }
 
-  mpfr_div_ui (y, x, 2, GMP_RNDZ);
+  mpfr_div_ui (y, x, 2, MPFR_RNDZ);
   mpfr_trunc (y, y); /* INTMAX_MAX */
-  mpfr_neg (y, y, GMP_RNDN);
+  mpfr_neg (y, y, MPFR_RNDN);
   if (INTMAX_MIN + INTMAX_MAX != 0)
-    mpfr_sub_ui (y, y, 1, GMP_RNDN); /* INTMAX_MIN */
+    mpfr_sub_ui (y, y, 1, MPFR_RNDN); /* INTMAX_MIN */
   for (s = INTMAX_MIN; s != 0; s /= 17)
     {
       check_sj (s, y);
-      mpfr_div_ui (y, y, 17, GMP_RNDZ);
+      mpfr_div_ui (y, y, 17, MPFR_RNDZ);
       mpfr_trunc (y, y);
     }
 
   for (u = UINTMAX_MAX; u != 0; u /= 17)
     {
       check_uj (u, x);
-      mpfr_div_ui (x, x, 17, GMP_RNDZ);
+      mpfr_div_ui (x, x, 17, MPFR_RNDZ);
       mpfr_trunc (x, x);
     }
 

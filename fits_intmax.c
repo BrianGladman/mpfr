@@ -93,7 +93,7 @@ mpfr_fits_intmax_p (mpfr_srcptr f, mp_rnd_t rnd)
   mpfr_init2 (y, prec);
 
   mpfr_set (x, f, rnd);
-  mpfr_set_sj (y, neg ? INTMAX_MIN : INTMAX_MAX, GMP_RNDN);
+  mpfr_set_sj (y, neg ? INTMAX_MIN : INTMAX_MAX, MPFR_RNDN);
 
   res = (neg
          ? (mpfr_cmp (x, y) >= 0)

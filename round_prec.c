@@ -143,7 +143,7 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mp_exp_t err0,
     return 0;  /* can't round */
   else if (MPFR_UNLIKELY (prec > (mp_prec_t) bn * BITS_PER_MP_LIMB))
     { /* then ulp(b) < precision < error */
-      return rnd2 == GMP_RNDN && (mp_exp_unsigned_t) err0 - 2 >= prec;
+      return rnd2 == MPFR_RNDN && (mp_exp_unsigned_t) err0 - 2 >= prec;
       /* can round only in rounding to the nearest and err0 >= prec + 2 */
     }
 
@@ -185,18 +185,18 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mp_exp_t err0,
   /* Transform RNDD and RNDU to Zero / Away */
   MPFR_ASSERTD((neg == 0) || (neg ==1));
   if (MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd1, neg))
-    rnd1 = GMP_RNDZ;
+    rnd1 = MPFR_RNDZ;
 
   switch (rnd1)
     {
-    case GMP_RNDZ:
+    case MPFR_RNDZ:
       /* Round to Zero */
       cc = (bp[bn - 1] >> s1) & 1;
       cc ^= mpfr_round_raw2(bp, bn, neg, rnd2, prec);
       /* now round b +/- 2^(MPFR_EXP(b)-err) */
       cc2 = mpn_add_1 (tmp + bn - k, bp + bn - k, k, MPFR_LIMB_ONE << s);
       break;
-    case GMP_RNDN:
+    case MPFR_RNDN:
       /* Round to nearest */
        /* first round b+2^(MPFR_EXP(b)-err) */
       cc = mpn_add_1 (tmp + bn - k, bp + bn - k, k, MPFR_LIMB_ONE << s);

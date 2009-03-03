@@ -35,13 +35,13 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MAXNORM 1.7976931348623157081e308 /* 2^(1023)*(2-2^(-52)) */
 
 /* Generates a random rounding mode */
-#define RND_RAND() ((mp_rnd_t) (randlimb() % GMP_RND_MAX))
+#define RND_RAND() ((mp_rnd_t) (randlimb() % MPFR_RND_MAX))
 
 /* Generates a random sign */
 #define SIGN_RAND() ( (randlimb()%2) ? MPFR_SIGN_POS : MPFR_SIGN_NEG)
 
 /* Loop for all rounding modes */
-#define RND_LOOP(_r) for((_r) = 0 ; (_r) < GMP_RND_MAX ; (_r)++)
+#define RND_LOOP(_r) for((_r) = 0 ; (_r) < MPFR_RND_MAX ; (_r)++)
 
 /* The MAX, MIN and ABS macros may already be defined if gmp-impl.h has
    been included. They have the same semantics as in gmp-impl.h, but the
@@ -89,8 +89,8 @@ void bad_cases _MPFR_PROTO ((int (*)(FLIST), int (*)(FLIST),
                              mp_prec_t, mp_prec_t, mp_prec_t, int));
 
 int mpfr_cmp_str _MPFR_PROTO ((mpfr_srcptr x, const char *, int, mp_rnd_t));
-#define mpfr_cmp_str1(x,s) mpfr_cmp_str(x,s,10,GMP_RNDN)
-#define mpfr_set_str1(x,s) mpfr_set_str(x,s,10,GMP_RNDN)
+#define mpfr_cmp_str1(x,s) mpfr_cmp_str(x,s,10,MPFR_RNDN)
+#define mpfr_set_str1(x,s) mpfr_set_str(x,s,10,MPFR_RNDN)
 
 #define mpfr_cmp0(x,y) (MPFR_ASSERTN (!MPFR_IS_NAN (x) && !MPFR_IS_NAN (y)), mpfr_cmp (x,y))
 

@@ -41,45 +41,45 @@ main (int argc, char *argv[])
 
   /* special values */
   mpfr_set_nan (x);
-  mpfr_y0 (y, x, GMP_RNDN);
+  mpfr_y0 (y, x, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_nan_p (y));
 
   mpfr_set_inf (x, 1); /* +Inf */
-  mpfr_y0 (y, x, GMP_RNDN);
+  mpfr_y0 (y, x, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui (y, 0) == 0 && MPFR_IS_POS (y));
 
   mpfr_set_inf (x, -1); /* -Inf */
-  mpfr_y0 (y, x, GMP_RNDN);
+  mpfr_y0 (y, x, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_nan_p (y));
 
-  mpfr_set_ui (x, 0, GMP_RNDN); /* +0 */
-  mpfr_y0 (y, x, GMP_RNDN);
+  mpfr_set_ui (x, 0, MPFR_RNDN); /* +0 */
+  mpfr_y0 (y, x, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_inf_p (y) && MPFR_IS_NEG (y)); /* y0(+0)=-Inf */
 
-  mpfr_set_ui (x, 0, GMP_RNDN);
-  mpfr_neg (x, x, GMP_RNDN); /* -0 */
-  mpfr_y0 (y, x, GMP_RNDN);
+  mpfr_set_ui (x, 0, MPFR_RNDN);
+  mpfr_neg (x, x, MPFR_RNDN); /* -0 */
+  mpfr_y0 (y, x, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_inf_p (y) && MPFR_IS_NEG (y)); /* y0(-0)=-Inf */
 
   mpfr_set_prec (x, 53);
   mpfr_set_prec (y, 53);
 
-  mpfr_set_ui (x, 1, GMP_RNDN);
-  mpfr_y0 (y, x, GMP_RNDN);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_y0 (y, x, MPFR_RNDN);
   mpfr_set_str_binary (x, "0.00010110100110000000001000100110111100110101100011011111");
   if (mpfr_cmp (x, y))
     {
-      printf ("Error in mpfr_y0 for x=1, rnd=GMP_RNDN\n");
+      printf ("Error in mpfr_y0 for x=1, rnd=MPFR_RNDN\n");
       printf ("Expected "); mpfr_dump (x);
       printf ("Got      "); mpfr_dump (y);
       exit (1);
     }
 
-  mpfr_set_si (x, -1, GMP_RNDN);
-  mpfr_y0 (y, x, GMP_RNDN);
+  mpfr_set_si (x, -1, MPFR_RNDN);
+  mpfr_y0 (y, x, MPFR_RNDN);
   if (!mpfr_nan_p (y))
     {
-      printf ("Error in mpfr_y0 for x=-1, rnd=GMP_RNDN\n");
+      printf ("Error in mpfr_y0 for x=-1, rnd=MPFR_RNDN\n");
       printf ("Expected NaN\n");
       printf ("Got      "); mpfr_dump (y);
       exit (1);

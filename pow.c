@@ -93,9 +93,9 @@ mpfr_pow_is_exact (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
     mp_prec_t p;
     MPFR_MPZ_SIZEINBASE2 (p, a);
     mpfr_init2 (tmp, p); /* prec = 1 should not be possible */
-    res = mpfr_set_z (tmp, a, GMP_RNDN);
+    res = mpfr_set_z (tmp, a, MPFR_RNDN);
     MPFR_ASSERTD (res == 0);
-    res = mpfr_mul_2si (tmp, tmp, b, GMP_RNDN);
+    res = mpfr_mul_2si (tmp, tmp, b, MPFR_RNDN);
     MPFR_ASSERTD (res == 0);
     *inexact = mpfr_pow_z (z, tmp, c, rnd_mode);
     mpfr_clear (tmp);
@@ -195,17 +195,17 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
     {
       MPFR_BLOCK_DECL (flags1);
 
-      /* compute exp(y*ln|x|), using GMP_RNDU to get an upper bound, so
+      /* compute exp(y*ln|x|), using MPFR_RNDU to get an upper bound, so
          that we can detect underflows. */
-      mpfr_log (t, absx, MPFR_IS_NEG (y) ? GMP_RNDD : GMP_RNDU); /* ln|x| */
-      mpfr_mul (t, y, t, GMP_RNDU);                              /* y*ln|x| */
+      mpfr_log (t, absx, MPFR_IS_NEG (y) ? MPFR_RNDD : MPFR_RNDU); /* ln|x| */
+      mpfr_mul (t, y, t, MPFR_RNDU);                              /* y*ln|x| */
       if (k_non_zero)
         {
           MPFR_LOG_MSG (("subtract k * ln(2)\n", 0));
-          mpfr_const_log2 (u, GMP_RNDD);
-          mpfr_mul (u, u, k, GMP_RNDD);
+          mpfr_const_log2 (u, MPFR_RNDD);
+          mpfr_mul (u, u, k, MPFR_RNDD);
           /* Error on u = k * log(2): < k * 2^(-Nt) < 1. */
-          mpfr_sub (t, t, u, GMP_RNDU);
+          mpfr_sub (t, t, u, MPFR_RNDU);
           MPFR_LOG_MSG (("t = y * ln|x| - k * ln(2)\n", 0));
           MPFR_LOG_VAR (t);
         }
@@ -224,7 +224,7 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
             err = MPFR_GET_EXP (k);
           err++;
         }
-      MPFR_BLOCK (flags1, mpfr_exp (t, t, GMP_RNDN));  /* exp(y*ln|x|)*/
+      MPFR_BLOCK (flags1, mpfr_exp (t, t, MPFR_RNDN));  /* exp(y*ln|x|)*/
       /* We need to test */
       if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (t) || MPFR_UNDERFLOW (flags1)))
         {
@@ -240,7 +240,7 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
               /* Underflow. We computed rndn(exp(t)), where t >= y*ln|x|.
                  Therefore rndn(|x|^y) = 0, and we have a real underflow on
                  |x|^y. */
-              inexact = mpfr_underflow (z, rnd_mode == GMP_RNDN ? GMP_RNDZ
+              inexact = mpfr_underflow (z, rnd_mode == MPFR_RNDN ? MPFR_RNDZ
                                         : rnd_mode, MPFR_SIGN_POS);
               if (expo != NULL)
                 MPFR_SAVE_EXPO_UPDATE_FLAGS (*expo, MPFR_FLAGS_INEXACT
@@ -252,9 +252,9 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
           if (MPFR_IS_INF (t))
             {
               /* Note: we can probably use a low precision for this test. */
-              mpfr_log (t, absx, MPFR_IS_NEG (y) ? GMP_RNDU : GMP_RNDD);
-              mpfr_mul (t, y, t, GMP_RNDD);            /* y * ln|x| */
-              MPFR_BLOCK (flags2, mpfr_exp (t, t, GMP_RNDD));
+              mpfr_log (t, absx, MPFR_IS_NEG (y) ? MPFR_RNDU : MPFR_RNDD);
+              mpfr_mul (t, y, t, MPFR_RNDD);            /* y * ln|x| */
+              MPFR_BLOCK (flags2, mpfr_exp (t, t, MPFR_RNDD));
               /* t = lower bound on exp(y * ln|x|) */
               if (MPFR_OVERFLOW (flags2))
                 {
@@ -278,8 +278,8 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
             }
           mpfr_init2 (u, Nt);
           mpfr_init2 (k, Ntmin);
-          mpfr_log2 (k, absx, GMP_RNDN);
-          mpfr_mul (k, y, k, GMP_RNDN);
+          mpfr_log2 (k, absx, MPFR_RNDN);
+          mpfr_mul (k, y, k, MPFR_RNDN);
           mpfr_round (k, k);
           MPFR_LOG_VAR (k);
           /* |y| < 2^Ntmin, therefore |k| < 2^Nt. */
@@ -323,8 +323,8 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
        * result is > 2^(emin - 2) and we need to round to 2^(emin - 1).
        */
       MPFR_ASSERTN (MPFR_EMAX_MAX <= LONG_MAX);
-      lk = mpfr_get_si (k, GMP_RNDN);
-      if (rnd_mode == GMP_RNDN && inexact < 0 &&
+      lk = mpfr_get_si (k, MPFR_RNDN);
+      if (rnd_mode == MPFR_RNDN && inexact < 0 &&
           MPFR_GET_EXP (z) + lk == __gmpfr_emin - 1 && mpfr_powerof2_raw (z))
         {
           /* Rounding to nearest, real result > z * 2^k = 2^(emin - 2),
@@ -523,13 +523,13 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
          (ii) if x < 0, we first compute t = o(-x), with rounding towards 1,
               and then follow as in case (1). */
       if (MPFR_SIGN (x) > 0)
-        mpfr_log2 (t, x, GMP_RNDZ);
+        mpfr_log2 (t, x, MPFR_RNDZ);
       else
         {
-          mpfr_neg (t, x, (cmp_x_1 > 0) ? GMP_RNDZ : GMP_RNDU);
-          mpfr_log2 (t, t, GMP_RNDZ);
+          mpfr_neg (t, x, (cmp_x_1 > 0) ? MPFR_RNDZ : MPFR_RNDU);
+          mpfr_log2 (t, t, MPFR_RNDZ);
         }
-      mpfr_mul (t, t, y, GMP_RNDZ);
+      mpfr_mul (t, t, y, MPFR_RNDZ);
       overflow = mpfr_cmp_si (t, __gmpfr_emax) > 0;
       mpfr_clear (t);
       MPFR_SAVE_EXPO_FREE (expo);
@@ -557,28 +557,28 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
       /* We must restore the flags. */
       MPFR_SAVE_EXPO_MARK (expo);
       mpfr_init2 (tmp, sizeof (mp_exp_t) * CHAR_BIT);
-      inex2 = mpfr_set_exp_t (tmp, MPFR_GET_EXP (x), GMP_RNDN);
+      inex2 = mpfr_set_exp_t (tmp, MPFR_GET_EXP (x), MPFR_RNDN);
       MPFR_ASSERTN (inex2 == 0);
       if (MPFR_IS_NEG (y))
         {
-          inex2 = mpfr_sub_ui (tmp, tmp, 1, GMP_RNDN);
+          inex2 = mpfr_sub_ui (tmp, tmp, 1, MPFR_RNDN);
           MPFR_ASSERTN (inex2 == 0);
         }
-      mpfr_mul (tmp, tmp, y, GMP_RNDU);
+      mpfr_mul (tmp, tmp, y, MPFR_RNDU);
       if (MPFR_IS_NEG (y))
         mpfr_nextabove (tmp);
       /* tmp doesn't necessarily fit in ebound, but that doesn't matter
          since we get the minimum value in such a case. */
-      ebound = mpfr_get_exp_t (tmp, GMP_RNDU);
+      ebound = mpfr_get_exp_t (tmp, MPFR_RNDU);
       mpfr_clear (tmp);
       MPFR_SAVE_EXPO_FREE (expo);
       if (MPFR_UNLIKELY (ebound <=
-                         __gmpfr_emin - (rnd_mode == GMP_RNDN ? 2 : 1)))
+                         __gmpfr_emin - (rnd_mode == MPFR_RNDN ? 2 : 1)))
         {
-          /* warning: mpfr_underflow rounds away from 0 for GMP_RNDN */
+          /* warning: mpfr_underflow rounds away from 0 for MPFR_RNDN */
           MPFR_LOG_MSG (("early underflow detection\n", 0));
           return mpfr_underflow (z,
-                                 rnd_mode == GMP_RNDN ? GMP_RNDZ : rnd_mode,
+                                 rnd_mode == MPFR_RNDN ? MPFR_RNDZ : rnd_mode,
                                  MPFR_SIGN (x) < 0 && is_odd (y) ? -1 : 1);
         }
     }
@@ -597,7 +597,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 
       MPFR_LOG_MSG (("special code for y not too large integer\n", 0));
       mpz_init (zi);
-      mpfr_get_z (zi, y, GMP_RNDN);
+      mpfr_get_z (zi, y, MPFR_RNDN);
       inexact = mpfr_pow_z (z, x, zi, rnd_mode);
       mpz_clear (zi);
       return inexact;
@@ -619,7 +619,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
            an integer */
         MPFR_SAVE_EXPO_MARK (expo);
         mpfr_init2 (tmp, MPFR_PREC (y) + sizeof (long) * CHAR_BIT);
-        inexact = mpfr_mul_si (tmp, y, b, GMP_RNDN); /* exact */
+        inexact = mpfr_mul_si (tmp, y, b, MPFR_RNDN); /* exact */
         MPFR_ASSERTN (inexact == 0);
         /* Note: as the exponent range has been extended, an overflow is not
            possible (due to basic overflow and underflow checking above, as
@@ -651,12 +651,12 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
     /* We need an upper bound on the exponent of y * log(x). */
     mpfr_init2 (t, 16);
     if (MPFR_IS_POS(x))
-      mpfr_log (t, x, cmp_x_1 < 0 ? GMP_RNDD : GMP_RNDU); /* away from 0 */
+      mpfr_log (t, x, cmp_x_1 < 0 ? MPFR_RNDD : MPFR_RNDU); /* away from 0 */
     else
       {
         /* if x < -1, round to +Inf, else round to zero */
-        mpfr_neg (t, x, (mpfr_cmp_si (x, -1) < 0) ? GMP_RNDU : GMP_RNDD);
-        mpfr_log (t, t, (mpfr_cmp_ui (t, 1) < 0) ? GMP_RNDD : GMP_RNDU);
+        mpfr_neg (t, x, (mpfr_cmp_si (x, -1) < 0) ? MPFR_RNDU : MPFR_RNDD);
+        mpfr_log (t, t, (mpfr_cmp_ui (t, 1) < 0) ? MPFR_RNDD : MPFR_RNDU);
       }
     MPFR_ASSERTN (MPFR_IS_PURE_FP (t));
     err = MPFR_GET_EXP (y) + MPFR_GET_EXP (t);

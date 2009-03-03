@@ -43,9 +43,9 @@ test_exact (void)
       for (k = 0; k < sv; k++)
         RND_LOOP (rnd)
           {
-            if (mpfr_set_str (a, val[i], 10, GMP_RNDN) ||
-                mpfr_set_str (b, val[j], 10, GMP_RNDN) ||
-                mpfr_set_str (c, val[k], 10, GMP_RNDN) ||
+            if (mpfr_set_str (a, val[i], 10, MPFR_RNDN) ||
+                mpfr_set_str (b, val[j], 10, MPFR_RNDN) ||
+                mpfr_set_str (c, val[k], 10, MPFR_RNDN) ||
                 mpfr_mul (r1, a, b, (mp_rnd_t) rnd) ||
                 mpfr_add (r1, r1, c, (mp_rnd_t) rnd))
               {
@@ -70,9 +70,9 @@ test_exact (void)
             if (mpfr_cmp (r1, r2) || MPFR_SIGN (r1) != MPFR_SIGN (r2))
               {
                 printf ("test_exact(%d,%d,%d,%d):\nexpected ", i, j, k, rnd);
-                mpfr_out_str (stdout, 10, 0, r1, GMP_RNDN);
+                mpfr_out_str (stdout, 10, 0, r1, MPFR_RNDN);
                 printf ("\n     got ");
-                mpfr_out_str (stdout, 10, 0, r2, GMP_RNDN);
+                mpfr_out_str (stdout, 10, 0, r2, MPFR_RNDN);
                 printf ("\n");
                 exit (1);
               }
@@ -90,18 +90,18 @@ test_overflow1 (void)
   mpfr_inits2 (8, x, y, z, r, (mpfr_ptr) 0);
   MPFR_SET_POS (x);
   mpfr_setmax (x, mpfr_get_emax ());  /* x = 2^emax - ulp */
-  mpfr_set_ui (y, 2, GMP_RNDN);       /* y = 2 */
-  mpfr_neg (z, x, GMP_RNDN);          /* z = -x = -(2^emax - ulp) */
+  mpfr_set_ui (y, 2, MPFR_RNDN);       /* y = 2 */
+  mpfr_neg (z, x, MPFR_RNDN);          /* z = -x = -(2^emax - ulp) */
   mpfr_clear_flags ();
   /* The intermediate multiplication x * y overflows, but x * y + z = x
      is representable. */
-  inex = mpfr_fma (r, x, y, z, GMP_RNDN);
+  inex = mpfr_fma (r, x, y, z, MPFR_RNDN);
   if (inex || ! mpfr_equal_p (r, x))
     {
       printf ("Error in test_overflow1\nexpected ");
-      mpfr_out_str (stdout, 2, 0, x, GMP_RNDN);
+      mpfr_out_str (stdout, 2, 0, x, MPFR_RNDN);
       printf (" with inex = 0\n     got ");
-      mpfr_out_str (stdout, 2, 0, r, GMP_RNDN);
+      mpfr_out_str (stdout, 2, 0, r, MPFR_RNDN);
       printf (" with inex = %d\n", inex);
       exit (1);
     }
@@ -123,7 +123,7 @@ test_overflow2 (void)
 
   MPFR_SET_POS (x);
   mpfr_setmin (x, mpfr_get_emax ());  /* x = 0.1@emax */
-  mpfr_set_si (y, -2, GMP_RNDN);      /* y = -2 */
+  mpfr_set_si (y, -2, MPFR_RNDN);      /* y = -2 */
   /* The intermediate multiplication x * y will overflow. */
 
   for (i = -9; i <= 9; i++)
@@ -131,10 +131,10 @@ test_overflow2 (void)
       {
         int inf, overflow;
 
-        inf = rnd == GMP_RNDN || rnd == GMP_RNDD || rnd == GMP_RNDA;
+        inf = rnd == MPFR_RNDN || rnd == MPFR_RNDD || rnd == MPFR_RNDA;
         overflow = inf || i <= 0;
 
-        inex = mpfr_set_si_2exp (z, i, mpfr_get_emin (), GMP_RNDN);
+        inex = mpfr_set_si_2exp (z, i, mpfr_get_emin (), MPFR_RNDN);
         MPFR_ASSERTN (inex == 0);
 
         mpfr_clear_flags ();
@@ -209,12 +209,12 @@ test_underflow1 (void)
 
   for (signy = -1; signy <= 1; signy += 2)
     {
-      mpfr_set_si_2exp (y, signy, -1, GMP_RNDN);  /* |y| = 1/2 */
+      mpfr_set_si_2exp (y, signy, -1, MPFR_RNDN);  /* |y| = 1/2 */
       for (signz = -3; signz <= 3; signz += 2)
         {
           RND_LOOP (rnd)
             {
-              mpfr_set_si (z, signz, GMP_RNDN);
+              mpfr_set_si (z, signz, MPFR_RNDN);
               if (ABS (signz) != 1)
                 mpfr_setmax (z, mpfr_get_emax ());
               /* |z| = 1 or 2^emax - ulp */
@@ -253,18 +253,18 @@ test_underflow1 (void)
                   printf ("\n");
                   err = 1;
                 }
-              if (inex >= 0 && (rnd == GMP_RNDD ||
-                                (rnd == GMP_RNDZ && signz > 0) ||
-                                (rnd == GMP_RNDN && signy > 0)))
+              if (inex >= 0 && (rnd == MPFR_RNDD ||
+                                (rnd == MPFR_RNDZ && signz > 0) ||
+                                (rnd == MPFR_RNDN && signy > 0)))
                 {
                   printf (ERRTU1 "ternary value = %d instead of < 0\n",
                           signy, signz, mpfr_print_rnd_mode ((mp_rnd_t) rnd),
                           inex);
                   err = 1;
                 }
-              if (inex <= 0 && (rnd == GMP_RNDU ||
-                                (rnd == GMP_RNDZ && signz < 0) ||
-                                (rnd == GMP_RNDN && signy < 0)))
+              if (inex <= 0 && (rnd == MPFR_RNDU ||
+                                (rnd == MPFR_RNDZ && signz < 0) ||
+                                (rnd == MPFR_RNDN && signy < 0)))
                 {
                   printf (ERRTU1 "ternary value = %d instead of > 0\n",
                           signy, signz, mpfr_print_rnd_mode ((mp_rnd_t) rnd),
@@ -288,21 +288,21 @@ test_underflow2 (void)
 
   mpfr_inits2 (32, x, y, z, r, (mpfr_ptr) 0);
 
-  mpfr_set_si_2exp (z, 1, mpfr_get_emin (), GMP_RNDN);   /* z = 2^emin */
-  mpfr_set_si_2exp (x, 1, mpfr_get_emin (), GMP_RNDN);   /* x = 2^emin */
+  mpfr_set_si_2exp (z, 1, mpfr_get_emin (), MPFR_RNDN);   /* z = 2^emin */
+  mpfr_set_si_2exp (x, 1, mpfr_get_emin (), MPFR_RNDN);   /* x = 2^emin */
 
   for (b = 0; b <= 1; b++)
     {
       for (i = 15; i <= 17; i++)
         {
-          mpfr_set_si_2exp (y, i, -4 - MPFR_PREC (z), GMP_RNDN);
+          mpfr_set_si_2exp (y, i, -4 - MPFR_PREC (z), MPFR_RNDN);
           /*  z = 1.000...00b
            * xy =            01111
            *   or            10000
            *   or            10001
            */
           mpfr_clear_flags ();
-          inex = mpfr_fma (r, x, y, z, GMP_RNDN);
+          inex = mpfr_fma (r, x, y, z, MPFR_RNDN);
 #define ERRTU2 "Error in test_underflow2 (b = %d, i = %d)\n  "
           if (__gmpfr_flags != MPFR_FLAGS_INEXACT)
             {
@@ -317,7 +317,7 @@ test_underflow2 (void)
                       b, i, inex, same ? '<' : '>');
               err = 1;
             }
-          mpfr_set (y, z, GMP_RNDN);
+          mpfr_set (y, z, MPFR_RNDN);
           if (!same)
             mpfr_nextabove (y);
           if (! mpfr_equal_p (r, y))
@@ -355,10 +355,10 @@ main (int argc, char *argv[])
   mpfr_set_prec (y, 2);
   mpfr_set_prec (z, 2);
   mpfr_set_prec (s, 2);
-  mpfr_set_str (x, "-0.75", 10, GMP_RNDN);
-  mpfr_set_str (y, "0.5", 10, GMP_RNDN);
-  mpfr_set_str (z, "0.375", 10, GMP_RNDN);
-  mpfr_fma (s, x, y, z, GMP_RNDU); /* result is 0 */
+  mpfr_set_str (x, "-0.75", 10, MPFR_RNDN);
+  mpfr_set_str (y, "0.5", 10, MPFR_RNDN);
+  mpfr_set_str (z, "0.375", 10, MPFR_RNDN);
+  mpfr_fma (s, x, y, z, MPFR_RNDU); /* result is 0 */
   if (mpfr_cmp_ui(s, 0))
     {
       printf("Error: -0.75 * 0.5 + 0.375 should be equal to 0 for prec=2\n");
@@ -370,9 +370,9 @@ main (int argc, char *argv[])
   mpfr_set_prec (z, 27);
   mpfr_set_prec (s, 27);
   mpfr_set_str_binary (x, "1.11111111111111111111111111e-1");
-  mpfr_set (y, x, GMP_RNDN);
+  mpfr_set (y, x, MPFR_RNDN);
   mpfr_set_str_binary (z, "-1.00011110100011001011001001e-1");
-  if (mpfr_fma (s, x, y, z, GMP_RNDN) >= 0)
+  if (mpfr_fma (s, x, y, z, MPFR_RNDN) >= 0)
     {
       printf ("Wrong inexact flag for x=y=1-2^(-27)\n");
       exit (1);
@@ -381,7 +381,7 @@ main (int argc, char *argv[])
   mpfr_set_nan (x);
   mpfr_urandomb (y, RANDS);
   mpfr_urandomb (z, RANDS);
-  mpfr_fma (s, x, y, z, GMP_RNDN);
+  mpfr_fma (s, x, y, z, MPFR_RNDN);
   if (!mpfr_nan_p (s))
     {
       printf ("evaluation of function in x=NAN does not return NAN");
@@ -391,7 +391,7 @@ main (int argc, char *argv[])
   mpfr_set_nan (y);
   mpfr_urandomb (x, RANDS);
   mpfr_urandomb (z, RANDS);
-  mpfr_fma (s, x, y, z, GMP_RNDN);
+  mpfr_fma (s, x, y, z, MPFR_RNDN);
   if (!mpfr_nan_p(s))
     {
       printf ("evaluation of function in y=NAN does not return NAN");
@@ -401,7 +401,7 @@ main (int argc, char *argv[])
   mpfr_set_nan (z);
   mpfr_urandomb (y, RANDS);
   mpfr_urandomb (x, RANDS);
-  mpfr_fma (s, x, y, z, GMP_RNDN);
+  mpfr_fma (s, x, y, z, MPFR_RNDN);
   if (!mpfr_nan_p (s))
     {
       printf ("evaluation of function in z=NAN does not return NAN");
@@ -411,7 +411,7 @@ main (int argc, char *argv[])
   mpfr_set_inf (x, 1);
   mpfr_set_inf (y, 1);
   mpfr_set_inf (z, 1);
-  mpfr_fma (s, x, y, z, GMP_RNDN);
+  mpfr_fma (s, x, y, z, MPFR_RNDN);
   if (!mpfr_inf_p (s) || mpfr_sgn (s) < 0)
     {
       printf ("Error for (+inf) * (+inf) + (+inf)\n");
@@ -421,7 +421,7 @@ main (int argc, char *argv[])
   mpfr_set_inf (x, -1);
   mpfr_set_inf (y, -1);
   mpfr_set_inf (z, 1);
-  mpfr_fma (s, x, y, z, GMP_RNDN);
+  mpfr_fma (s, x, y, z, MPFR_RNDN);
   if (!mpfr_inf_p (s) || mpfr_sgn (s) < 0)
     {
       printf ("Error for (-inf) * (-inf) + (+inf)\n");
@@ -431,7 +431,7 @@ main (int argc, char *argv[])
   mpfr_set_inf (x, 1);
   mpfr_set_inf (y, -1);
   mpfr_set_inf (z, -1);
-  mpfr_fma (s, x, y, z, GMP_RNDN);
+  mpfr_fma (s, x, y, z, MPFR_RNDN);
   if (!mpfr_inf_p (s) || mpfr_sgn (s) > 0)
     {
       printf ("Error for (+inf) * (-inf) + (-inf)\n");
@@ -441,7 +441,7 @@ main (int argc, char *argv[])
   mpfr_set_inf (x, -1);
   mpfr_set_inf (y, 1);
   mpfr_set_inf (z, -1);
-  mpfr_fma (s, x, y, z, GMP_RNDN);
+  mpfr_fma (s, x, y, z, MPFR_RNDN);
   if (!mpfr_inf_p (s) || mpfr_sgn (s) > 0)
     {
       printf ("Error for (-inf) * (+inf) + (-inf)\n");
@@ -449,9 +449,9 @@ main (int argc, char *argv[])
     }
 
   mpfr_set_inf (x, 1);
-  mpfr_set_ui (y, 0, GMP_RNDN);
+  mpfr_set_ui (y, 0, MPFR_RNDN);
   mpfr_urandomb (z, RANDS);
-  mpfr_fma (s, x, y, z, GMP_RNDN);
+  mpfr_fma (s, x, y, z, MPFR_RNDN);
   if (!mpfr_nan_p (s))
     {
       printf ("evaluation of function in x=INF y=0  does not return NAN");
@@ -459,9 +459,9 @@ main (int argc, char *argv[])
     }
 
   mpfr_set_inf (y, 1);
-  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_set_ui (x, 0, MPFR_RNDN);
   mpfr_urandomb (z, RANDS);
-  mpfr_fma (s, x, y, z, GMP_RNDN);
+  mpfr_fma (s, x, y, z, MPFR_RNDN);
   if (!mpfr_nan_p (s))
     {
       printf ("evaluation of function in x=0 y=INF does not return NAN");
@@ -471,7 +471,7 @@ main (int argc, char *argv[])
   mpfr_set_inf (x, 1);
   mpfr_urandomb (y, RANDS); /* always positive */
   mpfr_set_inf (z, -1);
-  mpfr_fma (s, x, y, z, GMP_RNDN);
+  mpfr_fma (s, x, y, z, MPFR_RNDN);
   if (!mpfr_nan_p (s))
     {
       printf ("evaluation of function in x=INF y>0 z=-INF does not return NAN");
@@ -481,7 +481,7 @@ main (int argc, char *argv[])
   mpfr_set_inf (y, 1);
   mpfr_urandomb (x, RANDS);
   mpfr_set_inf (z, -1);
-  mpfr_fma (s, x, y, z, GMP_RNDN);
+  mpfr_fma (s, x, y, z, MPFR_RNDN);
   if (!mpfr_nan_p (s))
     {
       printf ("evaluation of function in x>0 y=INF z=-INF does not return NAN");
@@ -491,7 +491,7 @@ main (int argc, char *argv[])
   mpfr_set_inf (x, 1);
   mpfr_urandomb (y, RANDS);
   mpfr_urandomb (z, RANDS);
-  mpfr_fma (s, x, y, z, GMP_RNDN);
+  mpfr_fma (s, x, y, z, MPFR_RNDN);
   if (!mpfr_inf_p (s) || mpfr_sgn (s) < 0)
     {
       printf ("evaluation of function in x=INF does not return INF");
@@ -501,7 +501,7 @@ main (int argc, char *argv[])
   mpfr_set_inf (y, 1);
   mpfr_urandomb (x, RANDS);
   mpfr_urandomb (z, RANDS);
-  mpfr_fma (s, x, y, z, GMP_RNDN);
+  mpfr_fma (s, x, y, z, MPFR_RNDN);
   if (!mpfr_inf_p (s) || mpfr_sgn (s) < 0)
     {
       printf ("evaluation of function in y=INF does not return INF");
@@ -511,27 +511,27 @@ main (int argc, char *argv[])
   mpfr_set_inf (z, 1);
   mpfr_urandomb (x, RANDS);
   mpfr_urandomb (y, RANDS);
-  mpfr_fma (s, x, y, z, GMP_RNDN);
+  mpfr_fma (s, x, y, z, MPFR_RNDN);
   if (!mpfr_inf_p (s) || mpfr_sgn (s) < 0)
     {
       printf ("evaluation of function in z=INF does not return INF");
       exit (1);
     }
 
-  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_set_ui (x, 0, MPFR_RNDN);
   mpfr_urandomb (y, RANDS);
   mpfr_urandomb (z, RANDS);
-  mpfr_fma (s, x, y, z, GMP_RNDN);
+  mpfr_fma (s, x, y, z, MPFR_RNDN);
   if (mpfr_cmp (s, z))
     {
       printf ("evaluation of function in x=0 does not return z\n");
       exit (1);
     }
 
-  mpfr_set_ui (y, 0, GMP_RNDN);
+  mpfr_set_ui (y, 0, MPFR_RNDN);
   mpfr_urandomb (x, RANDS);
   mpfr_urandomb (z, RANDS);
-  mpfr_fma (s, x, y, z, GMP_RNDN);
+  mpfr_fma (s, x, y, z, MPFR_RNDN);
   if (mpfr_cmp (s, z))
     {
       printf ("evaluation of function in y=0 does not return z\n");
@@ -567,11 +567,11 @@ main (int argc, char *argv[])
           mpfr_urandomb (z, RANDS);
 
           if (randlimb () % 2)
-            mpfr_neg (x, x, GMP_RNDN);
+            mpfr_neg (x, x, MPFR_RNDN);
           if (randlimb () % 2)
-            mpfr_neg (y, y, GMP_RNDN);
+            mpfr_neg (y, y, MPFR_RNDN);
           if (randlimb () % 2)
-            mpfr_neg (z, z, GMP_RNDN);
+            mpfr_neg (z, z, MPFR_RNDN);
 
           rnd = RND_RAND ();
           mpfr_set_prec (slong, 2 * prec);
@@ -585,18 +585,18 @@ main (int argc, char *argv[])
           if (mpfr_cmp (s, t))
             {
               printf ("results differ for x=");
-              mpfr_out_str (stdout, 2, prec, x, GMP_RNDN);
+              mpfr_out_str (stdout, 2, prec, x, MPFR_RNDN);
               printf ("  y=");
-              mpfr_out_str (stdout, 2, prec, y, GMP_RNDN);
+              mpfr_out_str (stdout, 2, prec, y, MPFR_RNDN);
               printf ("  z=");
-              mpfr_out_str (stdout, 2, prec, z, GMP_RNDN);
+              mpfr_out_str (stdout, 2, prec, z, MPFR_RNDN);
               printf (" prec=%u rnd_mode=%s\n", (unsigned int) prec,
                       mpfr_print_rnd_mode (rnd));
               printf ("got      ");
-              mpfr_out_str (stdout, 2, prec, s, GMP_RNDN);
+              mpfr_out_str (stdout, 2, prec, s, MPFR_RNDN);
               puts ("");
               printf ("expected ");
-              mpfr_out_str (stdout, 2, prec, t, GMP_RNDN);
+              mpfr_out_str (stdout, 2, prec, t, MPFR_RNDN);
               puts ("");
               printf ("approx  ");
               mpfr_print_binary (slong);
@@ -609,10 +609,10 @@ main (int argc, char *argv[])
             {
               printf ("Wrong inexact flag for rnd=%s: expected %d, got %d\n",
                       mpfr_print_rnd_mode (rnd), compare, inexact);
-              printf (" x="); mpfr_out_str (stdout, 2, 0, x, GMP_RNDN);
-              printf (" y="); mpfr_out_str (stdout, 2, 0, y, GMP_RNDN);
-              printf (" z="); mpfr_out_str (stdout, 2, 0, z, GMP_RNDN);
-              printf (" s="); mpfr_out_str (stdout, 2, 0, s, GMP_RNDN);
+              printf (" x="); mpfr_out_str (stdout, 2, 0, x, MPFR_RNDN);
+              printf (" y="); mpfr_out_str (stdout, 2, 0, y, MPFR_RNDN);
+              printf (" z="); mpfr_out_str (stdout, 2, 0, z, MPFR_RNDN);
+              printf (" s="); mpfr_out_str (stdout, 2, 0, s, MPFR_RNDN);
               printf ("\n");
               exit (1);
             }

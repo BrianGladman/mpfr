@@ -81,7 +81,7 @@ check_random (mpfr_prec_t p)
       mpfr_urandomb (y, RANDS);
       mpfr_urandomb (z, RANDS);
       if (MPFR_IS_PURE_FP(y) && MPFR_IS_PURE_FP(z))
-        for(r = 0 ; r < GMP_RND_MAX ; r++)
+        for(r = 0 ; r < MPFR_RND_MAX ; r++)
           {
             inexact1 = mpfr_sub1(x2, y, z, (mp_rnd_t) r);
             inexact2 = mpfr_sub1sp(x, y, z, (mp_rnd_t) r);
@@ -106,7 +106,7 @@ check_special (void)
 
   mpfr_inits (x, y, z, x2, (mpfr_ptr) 0);
 
-  for (r = 0 ; r < GMP_RND_MAX ; r++)
+  for (r = 0 ; r < MPFR_RND_MAX ; r++)
     {
       p = 53;
       mpfr_set_prec(x, 53);

@@ -173,7 +173,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
   if (compared == 0 || (compared > 0 && mpfr_cmp_ui (z0, 2) == 0))
     {
       MPFR_SAVE_EXPO_FREE (expo);
-      return mpfr_set_ui (y, 0, GMP_RNDN);  /* lngamma(1 or 2) = +0 */
+      return mpfr_set_ui (y, 0, MPFR_RNDN);  /* lngamma(1 or 2) = +0 */
     }
 
   /* Deal here with tiny inputs. We have for -0.3 <= x <= 0.3:
@@ -191,31 +191,31 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
           mpfr_init2 (l, prec);
           if (MPFR_IS_POS(z0))
             {
-              mpfr_log (l, z0, GMP_RNDU); /* upper bound for log(z0) */
+              mpfr_log (l, z0, MPFR_RNDU); /* upper bound for log(z0) */
               mpfr_init2 (h, MPFR_PREC(l));
             }
           else
             {
               mpfr_init2 (h, MPFR_PREC(z0));
-              mpfr_neg (h, z0, GMP_RNDN); /* exact */
-              mpfr_log (l, h, GMP_RNDU); /* upper bound for log(-z0) */
+              mpfr_neg (h, z0, MPFR_RNDN); /* exact */
+              mpfr_log (l, h, MPFR_RNDU); /* upper bound for log(-z0) */
               mpfr_set_prec (h, MPFR_PREC(l));
             }
-          mpfr_neg (l, l, GMP_RNDD); /* lower bound for -log(|z0|) */
-          mpfr_set (h, l, GMP_RNDD); /* exact */
+          mpfr_neg (l, l, MPFR_RNDD); /* lower bound for -log(|z0|) */
+          mpfr_set (h, l, MPFR_RNDD); /* exact */
           mpfr_nextabove (h); /* upper bound for -log(|z0|), avoids two calls
                                  to mpfr_log */
           mpfr_init2 (g, MPFR_PREC(l));
           /* if z0>0, we need an upper approximation of Euler's constant
              for the left bound */
-          mpfr_const_euler (g, MPFR_IS_POS(z0) ? GMP_RNDU : GMP_RNDD);
-          mpfr_mul (g, g, z0, GMP_RNDD);
-          mpfr_sub (l, l, g, GMP_RNDD);
-          mpfr_const_euler (g, MPFR_IS_POS(z0) ? GMP_RNDD : GMP_RNDU); /* cached */
-          mpfr_mul (g, g, z0, GMP_RNDU);
-          mpfr_sub (h, h, g, GMP_RNDD);
-          mpfr_mul (g, z0, z0, GMP_RNDU);
-          mpfr_add (h, h, g, GMP_RNDU);
+          mpfr_const_euler (g, MPFR_IS_POS(z0) ? MPFR_RNDU : MPFR_RNDD);
+          mpfr_mul (g, g, z0, MPFR_RNDD);
+          mpfr_sub (l, l, g, MPFR_RNDD);
+          mpfr_const_euler (g, MPFR_IS_POS(z0) ? MPFR_RNDD : MPFR_RNDU); /* cached */
+          mpfr_mul (g, g, z0, MPFR_RNDU);
+          mpfr_sub (h, h, g, MPFR_RNDD);
+          mpfr_mul (g, z0, z0, MPFR_RNDU);
+          mpfr_add (h, h, g, MPFR_RNDU);
           inexact = mpfr_prec_round (l, MPFR_PREC(y), rnd);
           inex2 = mpfr_prec_round (h, MPFR_PREC(y), rnd);
           /* Caution: we not only need l = h, but both inexact flags should
@@ -275,9 +275,9 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
           /* In the following, we write r for a real of absolute value
              at most 2^(-w). Different instances of r may represent different
              values. */
-          mpfr_ui_sub (s, 2, z0, GMP_RNDD); /* s = (2-z0) * (1+2r) >= 1 */
-          mpfr_const_pi (t, GMP_RNDN);      /* t = Pi * (1+r) */
-          mpfr_lngamma (u, s, GMP_RNDN); /* lngamma(2-x) */
+          mpfr_ui_sub (s, 2, z0, MPFR_RNDD); /* s = (2-z0) * (1+2r) >= 1 */
+          mpfr_const_pi (t, MPFR_RNDN);      /* t = Pi * (1+r) */
+          mpfr_lngamma (u, s, MPFR_RNDN); /* lngamma(2-x) */
           /* Let s = (2-z0) + h. By construction, -(2-z0)*2^(1-w) <= h <= 0.
              We have lngamma(s) = lngamma(2-z0) + h*Psi(z), z in [2-z0+h,2-z0].
              Since 2-z0+h = s >= 1 and |Psi(x)| <= max(1,log(x)) for x >= 1,
@@ -289,9 +289,9 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
           err_u = (err_u >= 0) ? err_u + 1 : 0;
           /* now the error on u is bounded by 2^err_u ulps */
 
-          mpfr_mul (s, s, t, GMP_RNDN); /* Pi*(2-x) * (1+r)^4 */
+          mpfr_mul (s, s, t, MPFR_RNDN); /* Pi*(2-x) * (1+r)^4 */
           err_s = MPFR_GET_EXP(s); /* 2-x <= 2^err_s */
-          mpfr_sin (s, s, GMP_RNDN); /* sin(Pi*(2-x)) */
+          mpfr_sin (s, s, MPFR_RNDN); /* sin(Pi*(2-x)) */
           /* the error on s is bounded by 1/2*ulp(s) + [(1+2^(-w))^4-1]*(2-x)
              <= 1/2*ulp(s) + 5*2^(-w)*(2-x) for w >= 3
              <= (1/2 + 5 * 2^(-E(s)) * (2-x)) ulp(s) */
@@ -315,14 +315,14 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
           */
           err_s += 2; /* exponent of relative error */
 
-          mpfr_sub_ui (v, z0, 1, GMP_RNDN); /* v = (x-1) * (1+r) */
-          mpfr_mul (v, v, t, GMP_RNDN); /* v = Pi*(x-1) * (1+r)^3 */
-          mpfr_div (v, v, s, GMP_RNDN); /* Pi*(x-1)/sin(Pi*(2-x)) */
-          mpfr_abs (v, v, GMP_RNDN);
+          mpfr_sub_ui (v, z0, 1, MPFR_RNDN); /* v = (x-1) * (1+r) */
+          mpfr_mul (v, v, t, MPFR_RNDN); /* v = Pi*(x-1) * (1+r)^3 */
+          mpfr_div (v, v, s, MPFR_RNDN); /* Pi*(x-1)/sin(Pi*(2-x)) */
+          mpfr_abs (v, v, MPFR_RNDN);
           /* (1+r)^(3+2^err_s+1) */
           err_s = (err_s <= 1) ? 3 : err_s + 1;
           /* now (1+r)^M with M <= 2^err_s */
-          mpfr_log (v, v, GMP_RNDN);
+          mpfr_log (v, v, MPFR_RNDN);
           /* log(v*(1+e)) = log(v)+log(1+e) where |e| <= 2^(err_s-w).
              Since |log(1+e)| <= 2*e for |e| <= 1/4, the error on v is
              bounded by ulp(v)/2 + 2^(err_s+1-w). */
@@ -337,14 +337,14 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
               /* the error on v is bounded by 2^err_s ulps */
               err_u += MPFR_GET_EXP(u); /* absolute error on u */
               err_s += MPFR_GET_EXP(v); /* absolute error on v */
-              mpfr_sub (s, v, u, GMP_RNDN);
+              mpfr_sub (s, v, u, MPFR_RNDN);
               /* the total error on s is bounded by ulp(s)/2 + 2^(err_u-w)
                  + 2^(err_s-w) <= ulp(s)/2 + 2^(max(err_u,err_s)+1-w) */
               err_s = (err_s >= err_u) ? err_s : err_u;
               err_s += 1 - MPFR_GET_EXP(s); /* error is 2^err_s ulp(s) */
               err_s = (err_s >= 0) ? err_s + 1 : 0;
-              if (mpfr_can_round (s, w - err_s, GMP_RNDN, GMP_RNDZ, precy
-                                  + (rnd == GMP_RNDN)))
+              if (mpfr_can_round (s, w - err_s, MPFR_RNDN, MPFR_RNDZ, precy
+                                  + (rnd == MPFR_RNDN)))
                 goto end;
             }
         }
@@ -367,11 +367,11 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
       /* we need z >= w*log(2)/(2*Pi) to get an absolute error less than 2^(-w)
          but the optimal value is about 0.155665*w */
       /* FIXME: replace double by mpfr_t types. */
-      mpfr_set_d (s, mpfr_gamma_alpha (precy) * (double) w, GMP_RNDU);
+      mpfr_set_d (s, mpfr_gamma_alpha (precy) * (double) w, MPFR_RNDU);
       if (mpfr_cmp (z0, s) < 0)
         {
-          mpfr_sub (s, s, z0, GMP_RNDU);
-          k = mpfr_get_ui (s, GMP_RNDU);
+          mpfr_sub (s, s, z0, MPFR_RNDU);
+          k = mpfr_get_ui (s, MPFR_RNDU);
           if (k < 3)
             k = 3;
         }
@@ -384,35 +384,35 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
       mpfr_set_prec (v, w);
       mpfr_set_prec (z, w);
 
-      mpfr_add_ui (z, z0, k, GMP_RNDN);
+      mpfr_add_ui (z, z0, k, MPFR_RNDN);
       /* z = (z0+k)*(1+t1) with |t1| <= 2^(-w) */
 
       /* z >= 4 ensures the relative error on log(z) is small,
          and also (z-1/2)*log(z)-z >= 0 */
       MPFR_ASSERTD (mpfr_cmp_ui (z, 4) >= 0);
 
-      mpfr_log (s, z, GMP_RNDN); /* log(z) */
+      mpfr_log (s, z, MPFR_RNDN); /* log(z) */
       /* we have s = log((z0+k)*(1+t1))*(1+t2) with |t1|, |t2| <= 2^(-w).
          Since w >= 2 and z0+k >= 4, we can write log((z0+k)*(1+t1))
          = log(z0+k) * (1+t3) with |t3| <= 2^(-w), thus we have
          s = log(z0+k) * (1+t4)^2 with |t4| <= 2^(-w) */
-      mpfr_mul_2ui (t, z, 1, GMP_RNDN); /* t = 2z * (1+t5) */
-      mpfr_sub_ui (t, t, 1, GMP_RNDN); /* t = 2z-1 * (1+t6)^3 */
+      mpfr_mul_2ui (t, z, 1, MPFR_RNDN); /* t = 2z * (1+t5) */
+      mpfr_sub_ui (t, t, 1, MPFR_RNDN); /* t = 2z-1 * (1+t6)^3 */
       /* since we can write 2z*(1+t5) = (2z-1)*(1+t5') with
          t5' = 2z/(2z-1) * t5, thus |t5'| <= 8/7 * t5 */
-      mpfr_mul (s, s, t, GMP_RNDN); /* (2z-1)*log(z) * (1+t7)^6 */
-      mpfr_div_2ui (s, s, 1, GMP_RNDN); /* (z-1/2)*log(z) * (1+t7)^6 */
-      mpfr_sub (s, s, z, GMP_RNDN); /* (z-1/2)*log(z)-z */
+      mpfr_mul (s, s, t, MPFR_RNDN); /* (2z-1)*log(z) * (1+t7)^6 */
+      mpfr_div_2ui (s, s, 1, MPFR_RNDN); /* (z-1/2)*log(z) * (1+t7)^6 */
+      mpfr_sub (s, s, z, MPFR_RNDN); /* (z-1/2)*log(z)-z */
       /* s = [(z-1/2)*log(z)-z]*(1+u)^14, s >= 1/2 */
 
-      mpfr_ui_div (u, 1, z, GMP_RNDN); /* 1/z * (1+u), u <= 1/4 since z >= 4 */
+      mpfr_ui_div (u, 1, z, MPFR_RNDN); /* 1/z * (1+u), u <= 1/4 since z >= 4 */
 
       /* the first term is B[2]/2/z = 1/12/z: t=1/12/z, C[2]=1 */
-      mpfr_div_ui (t, u, 12, GMP_RNDN); /* 1/(12z) * (1+u)^2, t <= 3/128 */
-      mpfr_set (v, t, GMP_RNDN);        /* (1+u)^2, v < 2^(-5) */
-      mpfr_add (s, s, v, GMP_RNDN);     /* (1+u)^15 */
+      mpfr_div_ui (t, u, 12, MPFR_RNDN); /* 1/(12z) * (1+u)^2, t <= 3/128 */
+      mpfr_set (v, t, MPFR_RNDN);        /* (1+u)^2, v < 2^(-5) */
+      mpfr_add (s, s, v, MPFR_RNDN);     /* (1+u)^15 */
 
-      mpfr_mul (u, u, u, GMP_RNDN); /* 1/z^2 * (1+u)^3 */
+      mpfr_mul (u, u, u, MPFR_RNDN); /* 1/z^2 * (1+u)^3 */
 
       if (Bm == 0)
         {
@@ -428,21 +428,21 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
 
       for (m = 2; MPFR_GET_EXP(v) + (mp_exp_t) w >= MPFR_GET_EXP(s); m++)
         {
-          mpfr_mul (t, t, u, GMP_RNDN); /* (1+u)^(10m-14) */
+          mpfr_mul (t, t, u, MPFR_RNDN); /* (1+u)^(10m-14) */
           if (m <= maxm)
             {
-              mpfr_mul_ui (t, t, 2*(m-1)*(2*m-3), GMP_RNDN);
-              mpfr_div_ui (t, t, 2*m*(2*m-1), GMP_RNDN);
-              mpfr_div_ui (t, t, 2*m*(2*m+1), GMP_RNDN);
+              mpfr_mul_ui (t, t, 2*(m-1)*(2*m-3), MPFR_RNDN);
+              mpfr_div_ui (t, t, 2*m*(2*m-1), MPFR_RNDN);
+              mpfr_div_ui (t, t, 2*m*(2*m+1), MPFR_RNDN);
             }
           else
             {
-              mpfr_mul_ui (t, t, 2*(m-1), GMP_RNDN);
-              mpfr_mul_ui (t, t, 2*m-3, GMP_RNDN);
-              mpfr_div_ui (t, t, 2*m, GMP_RNDN);
-              mpfr_div_ui (t, t, 2*m-1, GMP_RNDN);
-              mpfr_div_ui (t, t, 2*m, GMP_RNDN);
-              mpfr_div_ui (t, t, 2*m+1, GMP_RNDN);
+              mpfr_mul_ui (t, t, 2*(m-1), MPFR_RNDN);
+              mpfr_mul_ui (t, t, 2*m-3, MPFR_RNDN);
+              mpfr_div_ui (t, t, 2*m, MPFR_RNDN);
+              mpfr_div_ui (t, t, 2*m-1, MPFR_RNDN);
+              mpfr_div_ui (t, t, 2*m, MPFR_RNDN);
+              mpfr_div_ui (t, t, 2*m+1, MPFR_RNDN);
             }
           /* (1+u)^(10m-8) */
           /* invariant: t=1/(2m)/(2m-1)/z^(2m-1)/(2m+1)! */
@@ -451,12 +451,12 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
               B = bernoulli (B, m); /* B[2m]*(2m+1)!, exact */
               Bm ++;
             }
-          mpfr_mul_z (v, t, B[m], GMP_RNDN); /* (1+u)^(10m-7) */
+          mpfr_mul_z (v, t, B[m], MPFR_RNDN); /* (1+u)^(10m-7) */
           MPFR_ASSERTD(MPFR_GET_EXP(v) <= - (2 * m + 3));
-          mpfr_add (s, s, v, GMP_RNDN);
+          mpfr_add (s, s, v, MPFR_RNDN);
         }
       /* m <= 1/2*Pi*e*z ensures that |v[m]| < 1/2^(2m+3) */
-      MPFR_ASSERTD ((double) m <= 4.26 * mpfr_get_d (z, GMP_RNDZ));
+      MPFR_ASSERTD ((double) m <= 4.26 * mpfr_get_d (z, MPFR_RNDZ));
 
       /* We have sum([(1+u)^(10m-7)-1]*1/2^(2m+3), m=2..infinity)
          <= 1.46*u for u <= 2^(-3).
@@ -473,37 +473,37 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
       */
 
       /* add 1/2*log(2*Pi) and subtract log(z0*(z0+1)*...*(z0+k-1)) */
-      mpfr_const_pi (v, GMP_RNDN); /* v = Pi*(1+u) */
-      mpfr_mul_2ui (v, v, 1, GMP_RNDN); /* v = 2*Pi * (1+u) */
+      mpfr_const_pi (v, MPFR_RNDN); /* v = Pi*(1+u) */
+      mpfr_mul_2ui (v, v, 1, MPFR_RNDN); /* v = 2*Pi * (1+u) */
       if (k)
         {
           unsigned long l;
-          mpfr_set (t, z0, GMP_RNDN); /* t = z0*(1+u) */
+          mpfr_set (t, z0, MPFR_RNDN); /* t = z0*(1+u) */
           for (l = 1; l < k; l++)
             {
-              mpfr_add_ui (u, z0, l, GMP_RNDN); /* u = (z0+l)*(1+u) */
-              mpfr_mul (t, t, u, GMP_RNDN);     /* (1+u)^(2l+1) */
+              mpfr_add_ui (u, z0, l, MPFR_RNDN); /* u = (z0+l)*(1+u) */
+              mpfr_mul (t, t, u, MPFR_RNDN);     /* (1+u)^(2l+1) */
             }
           /* now t: (1+u)^(2k-1) */
           /* instead of computing log(sqrt(2*Pi)/t), we compute
              1/2*log(2*Pi/t^2), which trades a square root for a square */
-          mpfr_mul (t, t, t, GMP_RNDN); /* (z0*...*(z0+k-1))^2, (1+u)^(4k-1) */
-          mpfr_div (v, v, t, GMP_RNDN);
+          mpfr_mul (t, t, t, MPFR_RNDN); /* (z0*...*(z0+k-1))^2, (1+u)^(4k-1) */
+          mpfr_div (v, v, t, MPFR_RNDN);
           /* 2*Pi/(z0*...*(z0+k-1))^2 (1+u)^(4k+1) */
         }
 #ifdef IS_GAMMA
       err_s = MPFR_GET_EXP(s);
-      mpfr_exp (s, s, GMP_RNDN);
+      mpfr_exp (s, s, MPFR_RNDN);
       /* before the exponential, we have s = s0 + h where
          |h| <= (2m+48)*ulp(s), thus exp(s0) = exp(s) * exp(-h).
          For |h| <= 1/4, we have |exp(h)-1| <= 1.2*|h| thus
          |exp(s) - exp(s0)| <= 1.2 * exp(s) * (2m+48)* 2^(EXP(s)-w). */
       d = 1.2 * (2.0 * (double) m + 48.0);
       /* the error on s is bounded by d*2^err_s * 2^(-w) */
-      mpfr_sqrt (t, v, GMP_RNDN);
+      mpfr_sqrt (t, v, MPFR_RNDN);
       /* let v0 be the exact value of v. We have v = v0*(1+u)^(4k+1),
          thus t = sqrt(v0)*(1+u)^(2k+3/2). */
-      mpfr_mul (s, s, t, GMP_RNDN);
+      mpfr_mul (s, s, t, MPFR_RNDN);
       /* the error on input s is bounded by (1+u)^(d*2^err_s),
          and that on t is (1+u)^(2k+3/2), thus the
          total error is (1+u)^(d*2^err_s+2k+5/2) */
@@ -511,12 +511,12 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
       err_t = __gmpfr_ceil_log2 (2.0 * (double) k + 2.5);
       err_s = (err_s >= err_t) ? err_s + 1 : err_t + 1;
 #else
-      mpfr_log (t, v, GMP_RNDN);
+      mpfr_log (t, v, MPFR_RNDN);
       /* let v0 be the exact value of v. We have v = v0*(1+u)^(4k+1),
          thus log(v) = log(v0) + (4k+1)*log(1+u). Since |log(1+u)/u| <= 1.07
          for |u| <= 2^(-3), the absolute error on log(v) is bounded by
          1.07*(4k+1)*u, and the rounding error by ulp(t). */
-      mpfr_div_2ui (t, t, 1, GMP_RNDN);
+      mpfr_div_2ui (t, t, 1, MPFR_RNDN);
       /* the error on t is now bounded by ulp(t) + 0.54*(4k+1)*2^(-w).
          We have sqrt(2*Pi)/(z0*(z0+1)*...*(z0+k-1)) <= sqrt(2*Pi)/k! <= 0.5
          since k>=3, thus t <= -0.5 and ulp(t) >= 2^(-w).
@@ -525,7 +525,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
         __gmpfr_ceil_log2 (2.2 * (double) k + 1.6);
       err_s = MPFR_GET_EXP(s) + (mp_exp_t)
         __gmpfr_ceil_log2 (2.0 * (double) m + 48.0);
-      mpfr_add (s, s, t, GMP_RNDN); /* this is a subtraction in fact */
+      mpfr_add (s, s, t, MPFR_RNDN); /* this is a subtraction in fact */
       /* the final error in ulp(s) is
          <= 1 + 2^(err_t-EXP(s)) + 2^(err_s-EXP(s))
          <= 2^(1+max(err_t,err_s)-EXP(s)) if err_t <> err_s
@@ -653,13 +653,13 @@ mpfr_lgamma (mpfr_ptr y, int *signp, mpfr_srcptr x, mp_rnd_t rnd)
               mpfr_init2 (h, w);
               /* we want a lower bound on -log(-x), thus an upper bound
                  on log(-x), thus an upper bound on -x. */
-              mpfr_neg (l, x, GMP_RNDU); /* upper bound on -x */
-              mpfr_log (l, l, GMP_RNDU); /* upper bound for log(-x) */
-              mpfr_neg (l, l, GMP_RNDD); /* lower bound for -log(-x) */
-              mpfr_neg (h, x, GMP_RNDD); /* lower bound on -x */
-              mpfr_log (h, h, GMP_RNDD); /* lower bound on log(-x) */
-              mpfr_neg (h, h, GMP_RNDU); /* upper bound for -log(-x) */
-              mpfr_sub (h, h, x, GMP_RNDU); /* upper bound for -log(-x) - x */
+              mpfr_neg (l, x, MPFR_RNDU); /* upper bound on -x */
+              mpfr_log (l, l, MPFR_RNDU); /* upper bound for log(-x) */
+              mpfr_neg (l, l, MPFR_RNDD); /* lower bound for -log(-x) */
+              mpfr_neg (h, x, MPFR_RNDD); /* lower bound on -x */
+              mpfr_log (h, h, MPFR_RNDD); /* lower bound on log(-x) */
+              mpfr_neg (h, h, MPFR_RNDU); /* upper bound for -log(-x) */
+              mpfr_sub (h, h, x, MPFR_RNDU); /* upper bound for -log(-x) - x */
               inex = mpfr_prec_round (l, MPFR_PREC (y), rnd);
               inex2 = mpfr_prec_round (h, MPFR_PREC (y), rnd);
               /* Caution: we not only need l = h, but both inexact flags

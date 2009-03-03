@@ -60,7 +60,7 @@ mpfr_reldiff (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   if (a == b)
     {
       mpfr_init2 (b_copy, MPFR_PREC(b));
-      mpfr_set (b_copy, b, GMP_RNDN);
+      mpfr_set (b_copy, b, MPFR_RNDN);
     }
 
   mpfr_sub (a, b, c, rnd_mode);

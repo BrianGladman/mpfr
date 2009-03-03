@@ -59,7 +59,7 @@ mpfr_printf_mpfr_print (FILE *stream, const struct printf_info *info,
   if (info->alt)
     length = fprintf (stream, "%lu", (unsigned long) MPFR_PREC (w));
   else
-    length = mpfr_out_str (stream, mpfr_log_base, prec, w, GMP_RNDN);
+    length = mpfr_out_str (stream, mpfr_log_base, prec, w, MPFR_RNDN);
   mpfr_log_type = org_type_logging;
 
   return length;

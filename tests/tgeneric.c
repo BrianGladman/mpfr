@@ -50,12 +50,12 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
   do                                                                    \
     {                                                                   \
       printf ("%s\nx = ", (S));                                         \
-      mpfr_out_str (stdout, 2, 0, (X), GMP_RNDN);                       \
+      mpfr_out_str (stdout, 2, 0, (X), MPFR_RNDN);                       \
       printf ("\n");                                                    \
       if ((void *) U != 0)                                              \
         {                                                               \
           printf ("u = ");                                              \
-          mpfr_out_str (stdout, 2, 0, (U), GMP_RNDN);                   \
+          mpfr_out_str (stdout, 2, 0, (U), MPFR_RNDN);                   \
           printf ("\n");                                                \
         }                                                               \
       printf ("yprec = %u, rnd_mode = %s, inexact = %d, flags = %u\n",  \
@@ -82,12 +82,12 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
       printf ("tgeneric: testing function " STR(F)                      \
               ", %s, target prec = %lu\nx = ",                          \
               mpfr_print_rnd_mode (rnd), (unsigned long) (P));          \
-      mpfr_out_str (stdout, 2, 0, (X), GMP_RNDN);                       \
+      mpfr_out_str (stdout, 2, 0, (X), MPFR_RNDN);                       \
       printf ("\n");                                                    \
       if (U)                                                            \
         {                                                               \
           printf ("u = ");                                              \
-          mpfr_out_str (stdout, 2, 0, (U), GMP_RNDN);                   \
+          mpfr_out_str (stdout, 2, 0, (U), MPFR_RNDN);                   \
           printf ("\n");                                                \
         }                                                               \
     }                                                                   \
@@ -184,10 +184,10 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
               set_emax (MPFR_EMAX_MAX);
               if (n <= 1)
                 {
-                  mpfr_set_si (x, n == 0 ? 1 : -1, GMP_RNDN);
+                  mpfr_set_si (x, n == 0 ? 1 : -1, MPFR_RNDN);
                   mpfr_set_exp (x, mpfr_get_emin ());
 #if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
-                  mpfr_set_si (u, randlimb () % 2 == 0 ? 1 : -1, GMP_RNDN);
+                  mpfr_set_si (u, randlimb () % 2 == 0 ? 1 : -1, MPFR_RNDN);
                   mpfr_set_exp (u, mpfr_get_emin ());
 #endif
                 }
@@ -195,10 +195,10 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
                 {
                   if (getenv ("MPFR_CHECK_MAX") == NULL)
                     goto next_n;
-                  mpfr_set_si (x, n == 0 ? 1 : -1, GMP_RNDN);
+                  mpfr_set_si (x, n == 0 ? 1 : -1, MPFR_RNDN);
                   mpfr_setmax (x, REDUCE_EMAX);
 #if defined(TWO_ARGS) || defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
-                  mpfr_set_si (u, randlimb () % 2 == 0 ? 1 : -1, GMP_RNDN);
+                  mpfr_set_si (u, randlimb () % 2 == 0 ? 1 : -1, MPFR_RNDN);
                   mpfr_setmax (u, mpfr_get_emax ());
 #endif
                 }
@@ -277,21 +277,21 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
               if (mpfr_nan_p (z) || mpfr_cmp (t, z) != 0)
                 {
                   printf ("results differ for x=");
-                  mpfr_out_str (stdout, 2, xprec, x, GMP_RNDN);
+                  mpfr_out_str (stdout, 2, xprec, x, MPFR_RNDN);
 #ifdef TWO_ARGS
                   printf ("\nu=");
-                  mpfr_out_str (stdout, 2, xprec, u, GMP_RNDN);
+                  mpfr_out_str (stdout, 2, xprec, u, MPFR_RNDN);
 #elif defined(DOUBLE_ARG1) || defined(DOUBLE_ARG2)
                   printf ("\nu=");
-                  mpfr_out_str (stdout, 2, IEEE_DBL_MANT_DIG, u, GMP_RNDN);
+                  mpfr_out_str (stdout, 2, IEEE_DBL_MANT_DIG, u, MPFR_RNDN);
 #endif
                   printf (" prec=%u rnd_mode=%s\n", (unsigned) prec,
                           mpfr_print_rnd_mode (rnd));
                   printf ("got      ");
-                  mpfr_out_str (stdout, 2, prec, z, GMP_RNDN);
+                  mpfr_out_str (stdout, 2, prec, z, MPFR_RNDN);
                   puts ("");
                   printf ("expected ");
-                  mpfr_out_str (stdout, 2, prec, t, GMP_RNDN);
+                  mpfr_out_str (stdout, 2, prec, t, MPFR_RNDN);
                   puts ("");
                   printf ("approx   ");
                   mpfr_print_binary (y);

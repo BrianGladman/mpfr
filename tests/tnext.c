@@ -51,11 +51,11 @@ generic_abovebelow (void)
           MPFR_ASSERTN(mpfr_nan_p (x));
           mpfr_nexttoward (x, y);
           MPFR_ASSERTN(mpfr_nan_p (x));
-          mpfr_set_ui (y, 1, GMP_RNDN);
+          mpfr_set_ui (y, 1, MPFR_RNDN);
           mpfr_nexttoward (y, x);
           MPFR_ASSERTN(mpfr_nan_p (y));
-          mpfr_set_ui (x, 1, GMP_RNDN);
-          mpfr_set_ui (y, 1, GMP_RNDN);
+          mpfr_set_ui (x, 1, MPFR_RNDN);
+          mpfr_set_ui (y, 1, MPFR_RNDN);
           mpfr_nexttoward (x, y);
           MPFR_ASSERTN(mpfr_cmp_ui (x, 1) == 0);
         }
@@ -65,26 +65,26 @@ generic_abovebelow (void)
       while (mpfr_cmp_ui (x, 0) == 0);
       neg = randlimb () & 1;
       if (neg)
-        mpfr_neg (x, x, GMP_RNDN);
-      mpfr_set (y, x, GMP_RNDN);
+        mpfr_neg (x, x, MPFR_RNDN);
+      mpfr_set (y, x, MPFR_RNDN);
       below = randlimb () & 1;
       if (below)
         mpfr_nextbelow (y);
       else
         mpfr_nextabove (y);
-      mpfr_set_si (t, below ? -5 : 5, GMP_RNDN);
-      mpfr_mul_2si (t, t, (mpfr_get_exp) (x) - prec - 3, GMP_RNDN);
+      mpfr_set_si (t, below ? -5 : 5, MPFR_RNDN);
+      mpfr_mul_2si (t, t, (mpfr_get_exp) (x) - prec - 3, MPFR_RNDN);
       /* t = (1/2 + 1/8) ulp(x) */
-      mpfr_add (z, x, t, GMP_RNDN);
+      mpfr_add (z, x, t, MPFR_RNDN);
       if (!mpfr_number_p (y) || mpfr_cmp (y, z) != 0)
         {
           printf ("Error in mpfr_next%s for\n",
                   below ? "below" : "above");
-          mpfr_out_str (stdout, 2, 0, x, GMP_RNDN);
+          mpfr_out_str (stdout, 2, 0, x, MPFR_RNDN);
           printf (", got\n");
-          mpfr_out_str (stdout, 2, 0, y, GMP_RNDN);
+          mpfr_out_str (stdout, 2, 0, y, MPFR_RNDN);
           printf (" instead of\n");
-          mpfr_out_str (stdout, 2, 0, z, GMP_RNDN);
+          mpfr_out_str (stdout, 2, 0, z, MPFR_RNDN);
           printf ("\n");
           exit (1);
         }
@@ -108,10 +108,10 @@ inverse_test (void)
             int sign;
 
             mpfr_inits2 (prec, x, y, (mpfr_ptr) 0);
-            mpfr_set_str (x, tests[i], 10, GMP_RNDN);
+            mpfr_set_str (x, tests[i], 10, MPFR_RNDN);
             if (neg)
-              mpfr_neg (x, x, GMP_RNDN);
-            mpfr_set (y, x, GMP_RNDN);
+              mpfr_neg (x, x, MPFR_RNDN);
+            mpfr_set (y, x, MPFR_RNDN);
             if (below)
               mpfr_nextbelow (y);
             else
@@ -125,9 +125,9 @@ inverse_test (void)
                             " below = %d, prec = %d: x = y", tests[i],
                             neg, below, (int) prec);
                     printf ("\nx = ");
-                    mpfr_out_str (stdout, 2, 0, x, GMP_RNDN);
+                    mpfr_out_str (stdout, 2, 0, x, MPFR_RNDN);
                     printf ("\ny = ");
-                    mpfr_out_str (stdout, 2, 0, y, GMP_RNDN);
+                    mpfr_out_str (stdout, 2, 0, y, MPFR_RNDN);
                     printf ("\n");
                     exit (1);
                  }
@@ -137,7 +137,7 @@ inverse_test (void)
                     printf ("Sign error in inverse_test for %s, neg = %d,"
                             " below = %d, prec = %d\n", tests[i], neg,
                             below, (int) prec);
-                    mpfr_out_str (stdout, 2, 0, y, GMP_RNDN);
+                    mpfr_out_str (stdout, 2, 0, y, MPFR_RNDN);
                     printf ("\n");
                     exit (1);
                   }
@@ -147,9 +147,9 @@ inverse_test (void)
                 printf ("Error in inverse_test for %s, neg = %d, below = %d,"
                         " prec = %d", tests[i], neg, below, (int) prec);
                 printf ("\nx = ");
-                mpfr_out_str (stdout, 2, 0, x, GMP_RNDN);
+                mpfr_out_str (stdout, 2, 0, x, MPFR_RNDN);
                 printf ("\ny = ");
-                mpfr_out_str (stdout, 2, 0, y, GMP_RNDN);
+                mpfr_out_str (stdout, 2, 0, y, MPFR_RNDN);
                 printf ("\n");
                 exit (1);
               }

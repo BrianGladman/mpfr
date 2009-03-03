@@ -146,10 +146,10 @@ mpfr_mul3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
            result (i.e. before rounding, i.e. without taking cc into account)
            is < __gmpfr_emin - 1 or the exact result is a power of 2 (i.e. if
            both arguments are powers of 2), then round to zero. */
-        if (rnd_mode == GMP_RNDN &&
+        if (rnd_mode == MPFR_RNDN &&
             (ax + (mp_exp_t) b1 < __gmpfr_emin ||
              (mpfr_powerof2_raw (b) && mpfr_powerof2_raw (c))))
-          rnd_mode = GMP_RNDZ;
+          rnd_mode = MPFR_RNDZ;
         return mpfr_underflow (a, rnd_mode, sign_product);
       }
     MPFR_SET_EXP (a, ax2);
@@ -167,8 +167,8 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   mpfr_init2 (ta, MPFR_PREC (a));
   mpfr_init2 (tb, MPFR_PREC (b));
   mpfr_init2 (tc, MPFR_PREC (c));
-  MPFR_ASSERTN (mpfr_set (tb, b, GMP_RNDN) == 0);
-  MPFR_ASSERTN (mpfr_set (tc, c, GMP_RNDN) == 0);
+  MPFR_ASSERTN (mpfr_set (tb, b, MPFR_RNDN) == 0);
+  MPFR_ASSERTN (mpfr_set (tc, c, MPFR_RNDN) == 0);
 
   inexact2 = mpfr_mul3 (ta, tb, tc, rnd_mode);
   inexact1  = mpfr_mul2 (a, b, c, rnd_mode);
@@ -179,13 +179,13 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
                "Prec_a = %lu, Prec_b = %lu, Prec_c = %lu\nB = ",
                mpfr_print_rnd_mode (rnd_mode),
                MPFR_PREC (a), MPFR_PREC (b), MPFR_PREC (c));
-      mpfr_out_str (stderr, 16, 0, tb, GMP_RNDN);
+      mpfr_out_str (stderr, 16, 0, tb, MPFR_RNDN);
       fprintf (stderr, "\nC = ");
-      mpfr_out_str (stderr, 16, 0, tc, GMP_RNDN);
+      mpfr_out_str (stderr, 16, 0, tc, MPFR_RNDN);
       fprintf (stderr, "\nOldMul: ");
-      mpfr_out_str (stderr, 16, 0, ta, GMP_RNDN);
+      mpfr_out_str (stderr, 16, 0, ta, MPFR_RNDN);
       fprintf (stderr, "\nNewMul: ");
-      mpfr_out_str (stderr, 16, 0, a, GMP_RNDN);
+      mpfr_out_str (stderr, 16, 0, a, MPFR_RNDN);
       fprintf (stderr, "\nNewInexact = %d | OldInexact = %d\n",
                inexact1, inexact2);
       MPFR_ASSERTN(0);
@@ -276,7 +276,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   if (MPFR_UNLIKELY (ax > __gmpfr_emax + 1))
     return mpfr_overflow (a, rnd_mode, sign);
   if (MPFR_UNLIKELY (ax < __gmpfr_emin - 2))
-    return mpfr_underflow (a, rnd_mode == GMP_RNDN ? GMP_RNDZ : rnd_mode,
+    return mpfr_underflow (a, rnd_mode == MPFR_RNDN ? MPFR_RNDZ : rnd_mode,
                            sign);
 #endif
 
@@ -466,7 +466,7 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
         MPFR_ASSERTD (MPFR_LIMB_MSB (tmp[tn-1]) != 0);
 
         if (MPFR_UNLIKELY (!mpfr_round_p (tmp, tn, p+b1-1, MPFR_PREC(a)
-                                          + (rnd_mode == GMP_RNDN))))
+                                          + (rnd_mode == MPFR_RNDN))))
           {
             tmp -= k - tn; /* tmp may have changed, FIX IT!!!!! */
             goto full_multiply;
@@ -503,10 +503,10 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
          result (i.e. before rounding, i.e. without taking cc into account)
          is < __gmpfr_emin - 1 or the exact result is a power of 2 (i.e. if
          both arguments are powers of 2), then round to zero. */
-      if (rnd_mode == GMP_RNDN
+      if (rnd_mode == MPFR_RNDN
           && (ax + (mp_exp_t) b1 < __gmpfr_emin
               || (mpfr_powerof2_raw (b) && mpfr_powerof2_raw (c))))
-        rnd_mode = GMP_RNDZ;
+        rnd_mode = MPFR_RNDZ;
       return mpfr_underflow (a, rnd_mode, sign);
     }
   MPFR_RET (inexact);

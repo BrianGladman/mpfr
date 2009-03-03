@@ -78,16 +78,16 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 
   N = MPFR_PREC (x);   /* Precision of input variable */
   Nz = MPFR_PREC (z);   /* Precision of output variable */
-  threshold = (MAX (N, Nz) + (rnd_mode == GMP_RNDN ? 1 : 0)) << 1;
-  if (rnd_mode == GMP_RNDA)
-    rnd_mode = GMP_RNDU; /* since the result is positive, RNDA = RNDU */
+  threshold = (MAX (N, Nz) + (rnd_mode == MPFR_RNDN ? 1 : 0)) << 1;
+  if (rnd_mode == MPFR_RNDA)
+    rnd_mode = MPFR_RNDU; /* since the result is positive, RNDA = RNDU */
 
   /* Is |x| a suitable approximation to the precision Nz ?
      (see algorithms.tex for explanations) */
   if (diff_exp > threshold)
     /* result is |x| or |x|+ulp(|x|,Nz) */
     {
-      if (MPFR_UNLIKELY (rnd_mode == GMP_RNDU))
+      if (MPFR_UNLIKELY (rnd_mode == MPFR_RNDU))
         {
           /* If z > abs(x), then it was already rounded up; otherwise
              z = abs(x), and we need to add one ulp due to y. */
@@ -95,7 +95,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
             mpfr_nexttoinf (z);
           MPFR_RET (1);
         }
-      else /* GMP_RNDZ, GMP_RNDD, GMP_RNDN */
+      else /* MPFR_RNDZ, MPFR_RNDD, MPFR_RNDN */
         {
           if (MPFR_LIKELY (Nz >= N))
             {
@@ -144,12 +144,12 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
     {
       mp_prec_t err;
 
-      exact = mpfr_mul_2si (te, x, sh, GMP_RNDZ);
-      exact |= mpfr_mul_2si (ti, y, sh, GMP_RNDZ);
-      exact |= mpfr_sqr (te, te, GMP_RNDZ);
+      exact = mpfr_mul_2si (te, x, sh, MPFR_RNDZ);
+      exact |= mpfr_mul_2si (ti, y, sh, MPFR_RNDZ);
+      exact |= mpfr_sqr (te, te, MPFR_RNDZ);
       /* Use fma in order to avoid underflow when diff_exp<=MPFR_EMAX_MAX-2 */
-      exact |= mpfr_fma (t, ti, ti, te, GMP_RNDZ);
-      exact |= mpfr_sqrt (t, t, GMP_RNDZ);
+      exact |= mpfr_fma (t, ti, ti, te, MPFR_RNDZ);
+      exact |= mpfr_sqrt (t, t, MPFR_RNDZ);
 
       err = Nt < N ? 4 : 2;
       if (MPFR_LIKELY (exact == 0

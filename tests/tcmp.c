@@ -98,8 +98,8 @@ main (void)
   mpfr_set_prec (yy, 53);
 
   /* bug found by Gerardo Ballabio */
-  mpfr_set_ui(xx, 0, GMP_RNDN);
-  mpfr_set_str (yy, "0.1", 10, GMP_RNDN);
+  mpfr_set_ui(xx, 0, MPFR_RNDN);
+  mpfr_set_str (yy, "0.1", 10, MPFR_RNDN);
   if ((c = mpfr_cmp (xx, yy)) >= 0)
     {
       printf ("Error in mpfr_cmp(0.0, 0.1), gives %d\n", c);
@@ -107,7 +107,7 @@ main (void)
     }
 
   mpfr_set_inf (xx, 1);
-  mpfr_set_str (yy, "-23489745.0329", 10, GMP_RNDN);
+  mpfr_set_str (yy, "-23489745.0329", 10, MPFR_RNDN);
   if ((c = mpfr_cmp (xx, yy)) <= 0)
     {
       printf ("Error in mpfr_cmp(Infp, 23489745.0329), gives %d\n", c);
@@ -147,15 +147,15 @@ main (void)
     }
 
   mpfr_set_inf (xx, -1);
-  mpfr_set_str (yy, "2346.09234", 10, GMP_RNDN);
+  mpfr_set_str (yy, "2346.09234", 10, MPFR_RNDN);
   if ((c = mpfr_cmp (xx, yy)) >= 0)
     {
       printf ("Error in mpfr_cmp(Infm, 2346.09234), gives %d\n", c);
       exit (1);
     }
 
-  mpfr_set_ui (xx, 0, GMP_RNDN);
-  mpfr_set_ui (yy, 1, GMP_RNDN);
+  mpfr_set_ui (xx, 0, MPFR_RNDN);
+  mpfr_set_ui (yy, 1, MPFR_RNDN);
   if ((c = mpfr_cmp3 (xx, yy, 1)) >= 0)
     {
       printf ("Error: mpfr_cmp3 (0, 1, 1) gives %d instead of"
@@ -176,8 +176,8 @@ main (void)
       if (!Isnan(x) && !Isnan(y))
         {
           i++;
-          mpfr_set_d (xx, x, GMP_RNDN);
-          mpfr_set_d (yy, y, GMP_RNDN);
+          mpfr_set_d (xx, x, MPFR_RNDN);
+          mpfr_set_d (yy, y, MPFR_RNDN);
           c = mpfr_cmp (xx,yy);
           if ((c>0 && x<=y) || (c==0 && x!=y) || (c<0 && x>=y))
             {

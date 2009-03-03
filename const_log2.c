@@ -163,9 +163,9 @@ mpfr_const_log2_internal (mpfr_ptr x, mp_rnd_t rnd_mode)
       mpfr_set_prec (t, w);
       mpfr_set_prec (q, w);
 
-      mpfr_set_z (t, T[0], GMP_RNDN);
-      mpfr_set_z (q, Q[0], GMP_RNDN);
-      mpfr_div (t, t, q, GMP_RNDN);
+      mpfr_set_z (t, T[0], MPFR_RNDN);
+      mpfr_set_z (q, Q[0], MPFR_RNDN);
+      mpfr_div (t, t, q, MPFR_RNDN);
 
       for (i = 0; i < lgN; i++)
         {
@@ -176,7 +176,7 @@ mpfr_const_log2_internal (mpfr_ptr x, mp_rnd_t rnd_mode)
       (*__gmp_free_func) (T, 3 * lgN * sizeof (mpz_t));
 
       if (MPFR_LIKELY (ok != 0
-                       || mpfr_can_round (t, w - 2, GMP_RNDN, rnd_mode, n)))
+                       || mpfr_can_round (t, w - 2, MPFR_RNDN, rnd_mode, n)))
         break;
 
       MPFR_ZIV_NEXT (loop, w);

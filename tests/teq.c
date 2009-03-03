@@ -38,7 +38,7 @@ teq (mpfr_t x)
 
   for (k = 2; k < MPFR_PREC(x); k++)
     {
-      mpfr_set (y, x, GMP_RNDN);
+      mpfr_set (y, x, MPFR_RNDN);
 
       MPFR_MANT(y) [mx] ^= (mp_limb_t) 1 << px;
 
@@ -78,7 +78,7 @@ special (void)
 
   mpfr_set_str (x, "1", 10, (mp_rnd_t) 0);
   mpfr_set_str (y, "1e-10000", 10, (mp_rnd_t) 0);
-  mpfr_add (z, x, y, GMP_RNDU);
+  mpfr_add (z, x, y, MPFR_RNDU);
 
   for (i = 1; i <= 52; i++)
     if (mpfr_eq (x, z, i) == 0)
@@ -102,7 +102,7 @@ special (void)
   mpfr_set_inf (y, 1);
   MPFR_ASSERTN(mpfr_eq (x, y, 1) == 0);
 
-  mpfr_set_ui (y, 0, GMP_RNDN);
+  mpfr_set_ui (y, 0, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_eq (x, y, 1) == 0);
 
   mpfr_set_inf (x, 1);
@@ -118,32 +118,32 @@ special (void)
   MPFR_ASSERTN(mpfr_eq (x, y, 1));
 
   mpfr_set_inf (x, 1);
-  mpfr_set_ui (y, 0, GMP_RNDN);
+  mpfr_set_ui (y, 0, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_eq (x, y, 1) == 0);
 
-  mpfr_set_ui (x, 1, GMP_RNDN);
-  mpfr_set_ui (y, 0, GMP_RNDN);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_set_ui (y, 0, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_eq (x, y, 1) == 0);
   MPFR_ASSERTN(mpfr_eq (y, x, 1) == 0);
 
-  mpfr_set_ui (x, 0, GMP_RNDN);
-  mpfr_set_ui (y, 0, GMP_RNDN);
+  mpfr_set_ui (x, 0, MPFR_RNDN);
+  mpfr_set_ui (y, 0, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_eq (x, y, 1));
 
-  mpfr_neg (y, y, GMP_RNDN);
+  mpfr_neg (y, y, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_eq (x, y, 1));
 
-  mpfr_neg (x, x, GMP_RNDN);
+  mpfr_neg (x, x, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_eq (x, y, 1));
 
-  mpfr_set_ui (x, 1, GMP_RNDN);
-  mpfr_neg (y, x, GMP_RNDN);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_neg (y, x, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_eq (x, y, 1) == 0);
 
   mpfr_set_prec (x, 2 * mp_bits_per_limb);
   mpfr_set_prec (y, mp_bits_per_limb);
-  mpfr_set_ui (x, 1, GMP_RNDN);
-  mpfr_set_ui (y, 1, GMP_RNDN);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_set_ui (y, 1, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_eq (x, y, mp_bits_per_limb - 1));
   MPFR_ASSERTN(mpfr_eq (x, y, mp_bits_per_limb));
   MPFR_ASSERTN(mpfr_eq (x, y, mp_bits_per_limb + 1));
@@ -165,14 +165,14 @@ special (void)
   MPFR_ASSERTN(mpfr_eq (y, x, 2 * mp_bits_per_limb) == 0);
   MPFR_ASSERTN(mpfr_eq (y, x, 2 * mp_bits_per_limb + 1) == 0);
 
-  mpfr_set_ui (x, 1, GMP_RNDN);
-  mpfr_set_ui (y, 2, GMP_RNDN);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_set_ui (y, 2, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_eq (x, y, 1) == 0);
 
   mpfr_set_prec (x, 2 * mp_bits_per_limb);
   mpfr_set_prec (y, 2 * mp_bits_per_limb);
-  mpfr_set_ui (x, 2, GMP_RNDN);
-  mpfr_set_ui (y, 3, GMP_RNDN);
+  mpfr_set_ui (x, 2, MPFR_RNDN);
+  mpfr_set_ui (y, 3, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_eq (x, y, 1));
   MPFR_ASSERTN(mpfr_eq (x, y, 2) == 0);
   MPFR_ASSERTN(mpfr_eq (x, y, mp_bits_per_limb) == 0);

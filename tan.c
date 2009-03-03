@@ -70,8 +70,8 @@ mpfr_tan (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     {
       /* The only way to get an overflow is to get ~ Pi/2
          But the result will be ~ 2^Prec(y). */
-      mpfr_sin_cos (s, c, x, GMP_RNDN); /* err <= 1/2 ulp on s and c */
-      mpfr_div (c, s, c, GMP_RNDN);     /* err <= 4 ulps */
+      mpfr_sin_cos (s, c, x, MPFR_RNDN); /* err <= 1/2 ulp on s and c */
+      mpfr_div (c, s, c, MPFR_RNDN);     /* err <= 4 ulps */
       MPFR_ASSERTD (!MPFR_IS_SINGULAR (c));
       if (MPFR_LIKELY (MPFR_CAN_ROUND (c, m - 2, precy, rnd_mode)))
         break;

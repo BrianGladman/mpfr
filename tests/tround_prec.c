@@ -36,83 +36,83 @@ main (void)
    mpfr_init (x);
 
    mpfr_set_nan (x);
-   mpfr_prec_round (x, 2, GMP_RNDN);
+   mpfr_prec_round (x, 2, MPFR_RNDN);
    MPFR_ASSERTN(mpfr_nan_p (x));
 
    mpfr_set_inf (x, 1);
-   mpfr_prec_round (x, 2, GMP_RNDN);
+   mpfr_prec_round (x, 2, MPFR_RNDN);
    MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
 
    mpfr_set_inf (x, -1);
-   mpfr_prec_round (x, 2, GMP_RNDN);
+   mpfr_prec_round (x, 2, MPFR_RNDN);
    MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) < 0);
 
-   mpfr_set_ui (x, 0, GMP_RNDN);
-   mpfr_prec_round (x, 2, GMP_RNDN);
+   mpfr_set_ui (x, 0, MPFR_RNDN);
+   mpfr_prec_round (x, 2, MPFR_RNDN);
    MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_POS(x));
 
-   mpfr_set_ui (x, 0, GMP_RNDN);
-   mpfr_neg (x, x, GMP_RNDN);
-   mpfr_prec_round (x, 2, GMP_RNDN);
+   mpfr_set_ui (x, 0, MPFR_RNDN);
+   mpfr_neg (x, x, MPFR_RNDN);
+   mpfr_prec_round (x, 2, MPFR_RNDN);
    MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_NEG(x));
 
    emax = mpfr_get_emax ();
    set_emax (0);
    mpfr_set_prec (x, 3);
    mpfr_set_str_binary (x, "0.111");
-   mpfr_prec_round (x, 2, GMP_RNDN);
+   mpfr_prec_round (x, 2, MPFR_RNDN);
    MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
    set_emax (emax);
 
    mpfr_set_prec (x, mp_bits_per_limb + 2);
-   mpfr_set_ui (x, 1, GMP_RNDN);
+   mpfr_set_ui (x, 1, MPFR_RNDN);
    mpfr_nextbelow (x);
-   mpfr_prec_round (x, mp_bits_per_limb + 1, GMP_RNDN);
+   mpfr_prec_round (x, mp_bits_per_limb + 1, MPFR_RNDN);
    MPFR_ASSERTN(mpfr_cmp_ui (x, 1) == 0);
 
    mpfr_set_prec (x, 3);
-   mpfr_set_ui (x, 5, GMP_RNDN);
-   mpfr_prec_round (x, 2, GMP_RNDN);
+   mpfr_set_ui (x, 5, MPFR_RNDN);
+   mpfr_prec_round (x, 2, MPFR_RNDN);
    if (mpfr_cmp_ui(x, 4))
      {
        printf ("Error in tround: got ");
-       mpfr_out_str (stdout, 10, 0, x, GMP_RNDN);
+       mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN);
        printf (" instead of 4\n");
        exit (1);
      }
 
    /* check case when reallocation is needed */
    mpfr_set_prec (x, 3);
-   mpfr_set_ui (x, 5, GMP_RNDN); /* exact */
-   mpfr_prec_round (x, mp_bits_per_limb + 1, GMP_RNDN);
+   mpfr_set_ui (x, 5, MPFR_RNDN); /* exact */
+   mpfr_prec_round (x, mp_bits_per_limb + 1, MPFR_RNDN);
    if (mpfr_cmp_ui(x, 5))
      {
        printf ("Error in tround: got ");
-       mpfr_out_str (stdout, 10, 0, x, GMP_RNDN);
+       mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN);
        printf (" instead of 5\n");
        exit (1);
      }
 
    mpfr_clear(x);
    mpfr_init2 (x, 3);
-   mpfr_set_si (x, -5, GMP_RNDN); /* exact */
-   mpfr_prec_round (x, mp_bits_per_limb + 1, GMP_RNDN);
+   mpfr_set_si (x, -5, MPFR_RNDN); /* exact */
+   mpfr_prec_round (x, mp_bits_per_limb + 1, MPFR_RNDN);
    if (mpfr_cmp_si(x, -5))
      {
        printf ("Error in tround: got ");
-       mpfr_out_str (stdout, 10, 0, x, GMP_RNDN);
+       mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN);
        printf (" instead of -5\n");
        exit (1);
      }
 
    /* check case when new precision needs less limbs */
    mpfr_set_prec (x, mp_bits_per_limb + 1);
-   mpfr_set_ui (x, 5, GMP_RNDN); /* exact */
-   mpfr_prec_round (x, 3, GMP_RNDN); /* exact */
+   mpfr_set_ui (x, 5, MPFR_RNDN); /* exact */
+   mpfr_prec_round (x, 3, MPFR_RNDN); /* exact */
    if (mpfr_cmp_ui(x, 5))
      {
        printf ("Error in tround: got ");
-       mpfr_out_str (stdout, 10, 0, x, GMP_RNDN);
+       mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN);
        printf (" instead of 5\n");
        exit (1);
      }

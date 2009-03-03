@@ -43,9 +43,9 @@ main (void)
   mpf_set_d (y, 0.0);
 
   /* check prototype of mpfr_init_set_f */
-  mpfr_init_set_f (x, y, GMP_RNDN);
+  mpfr_init_set_f (x, y, MPFR_RNDN);
   mpfr_set_prec (x, 100);
-  mpfr_set_f (x, y, GMP_RNDN);
+  mpfr_set_f (x, y, MPFR_RNDN);
 
   mpf_urandomb (y, RANDS, 10 * GMP_NUMB_BITS);
   mpfr_set_f (x, y, RND_RAND ());
@@ -56,10 +56,10 @@ main (void)
   mpfr_init2 (u, 256);
   mpfr_set_str (u,
                 "7.f10872b020c49ba5e353f7ced916872b020c49ba5e353f7ced916872b020c498@2",
-                16, GMP_RNDN);
+                16, MPFR_RNDN);
   mpf_set_str (y, "2033033E-3", 10); /* avoid 2033.033 which is
                                         locale-sensitive */
-  mpfr_set_f (x, y, GMP_RNDN);
+  mpfr_set_f (x, y, MPFR_RNDN);
   if (mpfr_cmp (x, u))
     {
       printf ("mpfr_set_f failed for y=2033033E-3\n");
@@ -67,8 +67,8 @@ main (void)
     }
   mpf_set_str (y, "-2033033E-3", 10); /* avoid -2033.033 which is
                                          locale-sensitive */
-  mpfr_set_f (x, y, GMP_RNDN);
-  mpfr_neg (u, u, GMP_RNDN);
+  mpfr_set_f (x, y, MPFR_RNDN);
+  mpfr_neg (u, u, MPFR_RNDN);
   if (mpfr_cmp (x, u))
     {
       printf ("mpfr_set_f failed for y=-2033033E-3\n");
@@ -79,7 +79,7 @@ main (void)
   mpf_set_str (y, "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111", -2);
   mpf_mul_2exp (y, y, 600);
   mpfr_set_prec (x, 300);
-  mpfr_set_f (x, y, GMP_RNDN);
+  mpfr_set_f (x, y, MPFR_RNDN);
   if (mpfr_check (x) == 0)
     {
       printf ("Error in mpfr_set_f: corrupted result\n");
@@ -95,7 +95,7 @@ main (void)
       mpf_set_prec (z, pr);
       mpf_urandomb (z, RANDS, z->_mp_prec);
       mpfr_set_prec (u, ((pr / BITS_PER_MP_LIMB + 1) * BITS_PER_MP_LIMB));
-      mpfr_set_f (u, z, GMP_RNDN);
+      mpfr_set_f (u, z, MPFR_RNDN);
       if (mpfr_cmp_f (u , z) != 0)
         {
           printf ("Error in mpfr_set_f:\n");
@@ -103,21 +103,21 @@ main (void)
           mpf_out_str (stdout, 16, 0, z);
           printf ("\nmpfr(precision=%lu)=",
                   ((pr / BITS_PER_MP_LIMB + 1) * BITS_PER_MP_LIMB));
-          mpfr_out_str (stdout, 16, 0, u, GMP_RNDN);
+          mpfr_out_str (stdout, 16, 0, u, MPFR_RNDN);
           putchar ('\n');
           exit (1);
         }
       mpfr_set_prec (x, pr);
-      mpfr_set_f (x, z, GMP_RNDN);
-      mpfr_sub (u, u, x, GMP_RNDN);
-      mpfr_abs (u, u, GMP_RNDN);
+      mpfr_set_f (x, z, MPFR_RNDN);
+      mpfr_sub (u, u, x, MPFR_RNDN);
+      mpfr_abs (u, u, MPFR_RNDN);
       if (mpfr_cmp_ui_2exp (u, 1, -pr - 1) > 0)
         {
           printf ("Error in mpfr_set_f: precision=%lu\n", pr);
           printf ("mpf =");
           mpf_out_str (stdout, 16, 0, z);
           printf ("\nmpfr=");
-          mpfr_out_str (stdout, 16, 0, x, GMP_RNDN);
+          mpfr_out_str (stdout, 16, 0, x, MPFR_RNDN);
           putchar ('\n');
           exit (1);
         }
@@ -127,13 +127,13 @@ main (void)
   mpfr_set_prec (x, 53);
   mpf_set_prec (y, 53);
   mpf_set_ui (y, 0);
-  for (r = 0 ; r < GMP_RND_MAX ; r++)
+  for (r = 0 ; r < MPFR_RND_MAX ; r++)
     {
       int i;
       for (i = -1; i <= 1; i++)
         {
           if (i)
-            mpfr_set_si (x, i, GMP_RNDN);
+            mpfr_set_si (x, i, MPFR_RNDN);
           inexact = mpfr_set_f (x, y, (mp_rnd_t) r);
           if (!MPFR_IS_ZERO(x) || !MPFR_IS_POS(x) || inexact)
             {
@@ -151,19 +151,19 @@ main (void)
   for (r = 0; r < mp_bits_per_limb; r++)
     {
       mpfr_urandomb (x, RANDS); /* to fill low limbs with random data */
-      inexact = mpfr_set_f (x, y, GMP_RNDN);
+      inexact = mpfr_set_f (x, y, MPFR_RNDN);
       MPFR_ASSERTN(inexact == 0 && mpfr_cmp_ui_2exp (x, 1, r) == 0);
       mpf_mul_2exp (y, y, 1);
     }
 
   mpf_set_ui (y, 1);
   mpf_mul_2exp (y, y, ULONG_MAX);
-  mpfr_set_f (x, y, GMP_RNDN);
-  mpfr_set_ui (u, 1, GMP_RNDN);
-  mpfr_mul_2ui (u, u, ULONG_MAX, GMP_RNDN);
+  mpfr_set_f (x, y, MPFR_RNDN);
+  mpfr_set_ui (u, 1, MPFR_RNDN);
+  mpfr_mul_2ui (u, u, ULONG_MAX, MPFR_RNDN);
   if (!mpfr_equal_p (x, u))
     {
-      printf ("Error: mpfr_set_f (x, y, GMP_RNDN) for y = 2^ULONG_MAX\n");
+      printf ("Error: mpfr_set_f (x, y, MPFR_RNDN) for y = 2^ULONG_MAX\n");
       exit (1);
     }
 
@@ -174,11 +174,11 @@ main (void)
     {
       mpf_set_ui (y, 1);
       mpf_mul_2exp (y, y, emax);
-      mpfr_set_f (x, y, GMP_RNDN);
-      mpfr_set_ui_2exp (u, 1, emax, GMP_RNDN);
+      mpfr_set_f (x, y, MPFR_RNDN);
+      mpfr_set_ui_2exp (u, 1, emax, MPFR_RNDN);
       if (!mpfr_equal_p (x, u))
         {
-          printf ("Error: mpfr_set_f (x, y, GMP_RNDN) for y = 2^emax\n");
+          printf ("Error: mpfr_set_f (x, y, MPFR_RNDN) for y = 2^emax\n");
           exit (1);
         }
     }
@@ -188,11 +188,11 @@ main (void)
     {
       mpf_set_ui (y, 1);
       mpf_mul_2exp (y, y, emax - 1);
-      mpfr_set_f (x, y, GMP_RNDN);
-      mpfr_set_ui_2exp (u, 1, emax - 1, GMP_RNDN);
+      mpfr_set_f (x, y, MPFR_RNDN);
+      mpfr_set_ui_2exp (u, 1, emax - 1, MPFR_RNDN);
       if (!mpfr_equal_p (x, u))
         {
-          printf ("Error: mpfr_set_f (x, y, GMP_RNDN) for y = 2^(emax-1)\n");
+          printf ("Error: mpfr_set_f (x, y, MPFR_RNDN) for y = 2^(emax-1)\n");
           exit (1);
         }
     }

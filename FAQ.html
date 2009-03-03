@@ -182,11 +182,11 @@ infinities, not-a-number (NaN).</p></li>
 <cite><acronym>MPFR</acronym></cite>?</dt>
 
 <dd><p>You need to add <q><code>r</code></q> to the function names, and to
-specify the rounding mode (<code>GMP_RNDN</code> for rounding to nearest,
-<code>GMP_RNDZ</code> for rounding towards zero, <code>GMP_RNDU</code>
-for rounding towards plus infinity, <code>GMP_RNDD</code> for rounding
+specify the rounding mode (<code>MPFR_RNDN</code> for rounding to nearest,
+<code>MPFR_RNDZ</code> for rounding towards zero, <code>MPFR_RNDU</code>
+for rounding towards plus infinity, <code>MPFR_RNDD</code> for rounding
 towards minus infinity). You can also define macros as follows:
-<code class="block-code">#define mpf_add(a, b, c) mpfr_add(a, b, c, GMP_RNDN)</code></p>
+<code class="block-code">#define mpf_add(a, b, c) mpfr_add(a, b, c, MPFR_RNDN)</code></p>
 <p>The header file <samp>mpf2mpfr.h</samp> from the
 <cite><acronym>MPFR</acronym></cite> distribution automatically
 redefines all <cite><acronym>MPF</acronym></cite> functions in this
@@ -282,7 +282,7 @@ in particular for most exact decimal numbers, such as 0.17, which are
 not exactly representable in binary.</p>
 <p>Also remember that <cite><acronym>MPFR</acronym></cite> does not track
 the accuracy of the results: copying a value <var>x</var> to <var>y</var>
-with <code>mpfr_set (y, x, GMP_RNDN)</code> where the variable <var>y</var>
+with <code>mpfr_set (y, x, MPFR_RNDN)</code> where the variable <var>y</var>
 is more precise than the variable <var>x</var> will not make it more
 accurate; the (binary) value will remain unchanged.</p></dd>
 

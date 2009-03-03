@@ -80,20 +80,20 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
           reduce = 1;
           mpfr_set_prec (c, expx + m - 1);
           mpfr_set_prec (xr, m);
-          mpfr_const_pi (c, GMP_RNDN);
-          mpfr_mul_2ui (c, c, 1, GMP_RNDN);
-          mpfr_remainder (xr, x, c, GMP_RNDN);
+          mpfr_const_pi (c, MPFR_RNDN);
+          mpfr_mul_2ui (c, c, 1, MPFR_RNDN);
+          mpfr_remainder (xr, x, c, MPFR_RNDN);
           /* The analysis is similar to that of cos.c:
              |xr - x - 2kPi| <= 2^(2-m). Thus we can decide the sign
              of sin(x) if xr is at distance at least 2^(2-m) of both
              0 and +/-Pi. */
-          mpfr_div_2ui (c, c, 1, GMP_RNDN);
+          mpfr_div_2ui (c, c, 1, MPFR_RNDN);
           /* Since c approximates Pi with an error <= 2^(2-expx-m) <= 2^(-m),
              it suffices to check that c - |xr| >= 2^(2-m). */
           if (MPFR_SIGN (xr) > 0)
-            mpfr_sub (c, c, xr, GMP_RNDZ);
+            mpfr_sub (c, c, xr, MPFR_RNDZ);
           else
-            mpfr_add (c, c, xr, GMP_RNDZ);
+            mpfr_add (c, c, xr, MPFR_RNDZ);
           if (MPFR_IS_ZERO(xr) || MPFR_EXP(xr) < (mp_exp_t) 3 - (mp_exp_t) m
               || MPFR_EXP(c) < (mp_exp_t) 3 - (mp_exp_t) m)
             goto ziv_next;
@@ -110,11 +110,11 @@ mpfr_sin (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       sign = MPFR_SIGN(xx);
       /* now that the argument is reduced, precision m is enough */
       mpfr_set_prec (c, m);
-      mpfr_cos (c, xx, GMP_RNDZ);    /* can't be exact */
+      mpfr_cos (c, xx, MPFR_RNDZ);    /* can't be exact */
       mpfr_nexttoinf (c);           /* now c = cos(x) rounded away */
-      mpfr_mul (c, c, c, GMP_RNDU); /* away */
-      mpfr_ui_sub (c, 1, c, GMP_RNDZ);
-      mpfr_sqrt (c, c, GMP_RNDZ);
+      mpfr_mul (c, c, c, MPFR_RNDU); /* away */
+      mpfr_ui_sub (c, 1, c, MPFR_RNDZ);
+      mpfr_sqrt (c, c, MPFR_RNDZ);
       if (MPFR_IS_NEG_SIGN(sign))
         MPFR_CHANGE_SIGN(c);
 

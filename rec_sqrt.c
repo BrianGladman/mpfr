@@ -504,7 +504,7 @@ mpfr_rec_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
          if the input was truncated, the error is at most two ulps
          (see algorithms.tex). */
       if (MPFR_LIKELY (mpfr_round_p (x, wn, wp - (wp < up),
-                                     rp + (rnd_mode == GMP_RNDN))))
+                                     rp + (rnd_mode == MPFR_RNDN))))
         break;
 
       /* We detect only now the exact case where u=2^(2e), to avoid

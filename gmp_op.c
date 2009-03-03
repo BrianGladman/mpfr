@@ -35,7 +35,7 @@ init_set_z (mpfr_ptr t, mpz_srcptr z)
   else
     MPFR_MPZ_SIZEINBASE2 (p, z);
   mpfr_init2 (t, p);
-  i = mpfr_set_z (t, z, GMP_RNDN);
+  i = mpfr_set_z (t, z, MPFR_RNDN);
   MPFR_ASSERTD (i == 0);
 }
 
@@ -109,7 +109,7 @@ mpfr_mul_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mp_rnd_t rnd_mode)
     {
       MPFR_MPZ_SIZEINBASE2 (p, mpq_numref (z));
       mpfr_init2 (tmp, MPFR_PREC (x) + p);
-      res = mpfr_mul_z (tmp, x, mpq_numref(z), GMP_RNDN );
+      res = mpfr_mul_z (tmp, x, mpq_numref(z), MPFR_RNDN );
       MPFR_ASSERTD (res == 0);
       res = mpfr_div_z (y, tmp, mpq_denref(z), rnd_mode);
       mpfr_clear (tmp);
@@ -131,7 +131,7 @@ mpfr_div_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mp_rnd_t rnd_mode)
   else
     MPFR_MPZ_SIZEINBASE2 (p, mpq_denref (z));
   mpfr_init2 (tmp, MPFR_PREC(x) + p);
-  res = mpfr_mul_z (tmp, x, mpq_denref(z), GMP_RNDN );
+  res = mpfr_mul_z (tmp, x, mpq_denref(z), MPFR_RNDN );
   MPFR_ASSERTD( res == 0 );
   res = mpfr_div_z (y, tmp, mpq_numref(z), rnd_mode);
   mpfr_clear (tmp);
@@ -178,7 +178,7 @@ mpfr_add_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mp_rnd_t rnd_mode)
   MPFR_ZIV_INIT (loop, p);
   for (;;)
     {
-      res = mpfr_set_q (q, z, GMP_RNDN);  /* Error <= 1/2 ulp(q) */
+      res = mpfr_set_q (q, z, MPFR_RNDN);  /* Error <= 1/2 ulp(q) */
       /* If z if @INF@ (1/0), res = 0, so it quits immediately */
       if (MPFR_UNLIKELY (res == 0))
         /* Result is exact so we can add it directly! */
@@ -186,7 +186,7 @@ mpfr_add_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mp_rnd_t rnd_mode)
           res = mpfr_add (y, x, q, rnd_mode);
           break;
         }
-      mpfr_add (t, x, q, GMP_RNDN);       /* Error <= 1/2 ulp(t) */
+      mpfr_add (t, x, q, MPFR_RNDN);       /* Error <= 1/2 ulp(t) */
       /* Error / ulp(t)      <= 1/2 + 1/2 * 2^(EXP(q)-EXP(t))
          If EXP(q)-EXP(t)>0, <= 2^(EXP(q)-EXP(t)-1)*(1+2^-(EXP(q)-EXP(t)))
                              <= 2^(EXP(q)-EXP(t))
@@ -256,7 +256,7 @@ mpfr_sub_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z,mp_rnd_t rnd_mode)
   MPFR_ZIV_INIT (loop, p);
   for(;;)
     {
-      res = mpfr_set_q(q, z, GMP_RNDN);  /* Error <= 1/2 ulp(q) */
+      res = mpfr_set_q(q, z, MPFR_RNDN);  /* Error <= 1/2 ulp(q) */
       /* If z if @INF@ (1/0), res = 0, so it quits immediately */
       if (MPFR_UNLIKELY (res == 0))
         /* Result is exact so we can add it directly!*/
@@ -264,7 +264,7 @@ mpfr_sub_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z,mp_rnd_t rnd_mode)
           res = mpfr_sub (y, x, q, rnd_mode);
           break;
         }
-      mpfr_sub (t, x, q, GMP_RNDN);       /* Error <= 1/2 ulp(t) */
+      mpfr_sub (t, x, q, MPFR_RNDN);       /* Error <= 1/2 ulp(t) */
       /* Error / ulp(t)      <= 1/2 + 1/2 * 2^(EXP(q)-EXP(t))
          If EXP(q)-EXP(t)>0, <= 2^(EXP(q)-EXP(t)-1)*(1+2^-(EXP(q)-EXP(t)))
                              <= 2^(EXP(q)-EXP(t))
@@ -300,7 +300,7 @@ mpfr_cmp_q (mpfr_srcptr x, mpq_srcptr z)
   MPFR_ASSERTD (mpz_sgn (mpq_denref (z)) != 0);
   MPFR_MPZ_SIZEINBASE2 (p, mpq_denref (z));
   mpfr_init2 (t, MPFR_PREC(x) + p);
-  res = mpfr_mul_z (t, x, mpq_denref (z), GMP_RNDN );
+  res = mpfr_mul_z (t, x, mpq_denref (z), MPFR_RNDN );
   MPFR_ASSERTD (res == 0);
   res = mpfr_cmp_z (t, mpq_numref (z) );
   mpfr_clear (t);
@@ -314,7 +314,7 @@ mpfr_cmp_f (mpfr_srcptr x, mpf_srcptr z)
   int res;
 
   mpfr_init2 (t, MPFR_PREC_MIN + ABS(SIZ(z)) * BITS_PER_MP_LIMB );
-  res = mpfr_set_f (t, z, GMP_RNDN);
+  res = mpfr_set_f (t, z, MPFR_RNDN);
   MPFR_ASSERTD (res == 0);
   res = mpfr_cmp (x, t);
   mpfr_clear (t);

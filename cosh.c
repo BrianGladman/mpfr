@@ -90,7 +90,7 @@ mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
         MPFR_BLOCK_DECL (flags);
 
         /* Compute cosh */
-        MPFR_BLOCK (flags, mpfr_exp (te, x, GMP_RNDD));  /* exp(x) */
+        MPFR_BLOCK (flags, mpfr_exp (te, x, MPFR_RNDD));  /* exp(x) */
         /* exp can overflow (but not underflow since x>0) */
         if (MPFR_OVERFLOW (flags))
           /* cosh(x) > exp(x), cosh(x) underflows too */
@@ -99,9 +99,9 @@ mpfr_cosh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
             MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, MPFR_FLAGS_OVERFLOW);
             break;
           }
-        mpfr_ui_div (t, 1, te, GMP_RNDU);   /* 1/exp(x) */
-        mpfr_add (t, te, t, GMP_RNDU);      /* exp(x) + 1/exp(x)*/
-        mpfr_div_2ui (t, t, 1, GMP_RNDN);   /* 1/2(exp(x) + 1/exp(x))*/
+        mpfr_ui_div (t, 1, te, MPFR_RNDU);   /* 1/exp(x) */
+        mpfr_add (t, te, t, MPFR_RNDU);      /* exp(x) + 1/exp(x)*/
+        mpfr_div_2ui (t, t, 1, MPFR_RNDN);   /* 1/2(exp(x) + 1/exp(x))*/
 
         /* Estimation of the error */
         err = Nt - 3;

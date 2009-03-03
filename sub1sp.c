@@ -38,10 +38,10 @@ int mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   mpfr_init2 (tmpb, MPFR_PREC (b));
   mpfr_init2 (tmpc, MPFR_PREC (c));
 
-  inexb = mpfr_set (tmpb, b, GMP_RNDN);
+  inexb = mpfr_set (tmpb, b, MPFR_RNDN);
   MPFR_ASSERTN (inexb == 0);
 
-  inexc = mpfr_set (tmpc, c, GMP_RNDN);
+  inexc = mpfr_set (tmpc, c, MPFR_RNDN);
   MPFR_ASSERTN (inexc == 0);
 
   inexact2 = mpfr_sub1 (tmpa, tmpb, tmpc, rnd_mode);
@@ -98,17 +98,17 @@ int mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
  *
  * Can't have Cp=-1 and C'p+1=1*/
 
-/* RND = GMP_RNDZ:
+/* RND = MPFR_RNDZ:
  *  + if Cp=0 and C'p+1=0,1,  Truncate.
  *  + if Cp=0 and C'p+1=-1,   SubOneUlp
  *  + if Cp=-1,               SubOneUlp
  *  + if Cp=1,                AddOneUlp
- * RND = GMP_RNDA (Away)
+ * RND = MPFR_RNDA (Away)
  *  + if Cp=0 and C'p+1=0,-1, Truncate
  *  + if Cp=0 and C'p+1=1,    AddOneUlp
  *  + if Cp=1,                AddOneUlp
  *  + if Cp=-1,               Truncate
- * RND = GMP_RNDN
+ * RND = MPFR_RNDN
  *  + if Cp=0,                Truncate
  *  + if Cp=1 and C'p+1=1,    AddOneUlp
  *  + if Cp=1 and C'p+1=-1,   Truncate
@@ -172,7 +172,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
         /* b == c ! */
         {
           /* Return exact number 0 */
-          if (rnd_mode == GMP_RNDD)
+          if (rnd_mode == MPFR_RNDD)
             MPFR_SET_NEG(a);
           else
             MPFR_SET_POS(a);
@@ -268,10 +268,10 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
               MPFR_TMP_FREE(marker);
               /* inexact=0 */
               DEBUG( printf("(D==0 Underflow)\n") );
-              if (rnd_mode == GMP_RNDN &&
+              if (rnd_mode == MPFR_RNDN &&
                   (bx < __gmpfr_emin - 1 ||
                    (/*inexact >= 0 &&*/ mpfr_powerof2_raw (a))))
-                rnd_mode = GMP_RNDZ;
+                rnd_mode = MPFR_RNDZ;
               return mpfr_underflow (a, rnd_mode, MPFR_SIGN(a));
             }
           MPFR_SET_EXP (a, bx);
@@ -324,7 +324,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
               /* Rounding is necessary since c0 = 1*/
               /* Cp =-1 and C'p+1=0 */
               bcp = 1; bcp1 = 0;
-              if (MPFR_LIKELY(rnd_mode == GMP_RNDN))
+              if (MPFR_LIKELY(rnd_mode == MPFR_RNDN))
                 {
                   /* Even Rule apply: Check Ap-1 */
                   if (MPFR_LIKELY( (ap[0] & (MPFR_LIMB_ONE<<sh)) == 0) )
@@ -333,7 +333,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
                     goto sub_one_ulp;
                 }
               MPFR_UPDATE_RND_MODE(rnd_mode, MPFR_IS_NEG(a));
-              if (rnd_mode == GMP_RNDZ)
+              if (rnd_mode == MPFR_RNDZ)
                 goto sub_one_ulp;
               else
                 goto truncate;
@@ -428,7 +428,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
           bp = MPFR_MANT (b);
 
           /* Even if src and dest overlap, it is ok using MPN_COPY */
-          if (MPFR_LIKELY(rnd_mode == GMP_RNDN))
+          if (MPFR_LIKELY(rnd_mode == MPFR_RNDN))
             {
               if (MPFR_UNLIKELY( bcp && bcp1==0 ))
                 /* Cp=-1 and C'p+1=0: Even rule Apply! */
@@ -442,7 +442,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
               goto sub_one_ulp;
             }
           MPFR_UPDATE_RND_MODE(rnd_mode, MPFR_IS_NEG(a));
-          if (rnd_mode == GMP_RNDZ)
+          if (rnd_mode == MPFR_RNDZ)
             {
               MPN_COPY(ap, bp, n);
               goto sub_one_ulp;
@@ -460,7 +460,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
           DEBUG( printf("(D>P) Cp=%d Cp+1=%d C'p+1=%d\n", bcp!=0,bbcp!=0,bcp1!=0) );
           /* Need to compute C'p+2 if d==p+1 and if rnd_mode=NEAREST
              (Because of a very improbable case) */
-          if (MPFR_UNLIKELY(d==p+1 && rnd_mode==GMP_RNDN))
+          if (MPFR_UNLIKELY(d==p+1 && rnd_mode==MPFR_RNDN))
             {
               cp = MPFR_MANT(c);
               if (MPFR_UNLIKELY(cp[n-1] == MPFR_LIMB_HIGHBIT))
@@ -478,10 +478,10 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
           /* Copy mantissa B in A */
           MPN_COPY(ap, MPFR_MANT(b), n);
           /* Round */
-          if (MPFR_LIKELY(rnd_mode == GMP_RNDN))
+          if (MPFR_LIKELY(rnd_mode == MPFR_RNDN))
             goto truncate;
           MPFR_UPDATE_RND_MODE(rnd_mode, MPFR_IS_NEG(a));
-          if (rnd_mode == GMP_RNDZ)
+          if (rnd_mode == MPFR_RNDZ)
             goto sub_one_ulp;
           else /* rnd_mode = AWAY */
             goto truncate;
@@ -665,7 +665,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       MPFR_ASSERTD( !(ap[0] & ~mask) );
 
       /* Rounding */
-      if (MPFR_LIKELY(rnd_mode == GMP_RNDN))
+      if (MPFR_LIKELY(rnd_mode == MPFR_RNDN))
         {
           if (MPFR_LIKELY(bcp==0))
             goto truncate;
@@ -677,7 +677,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
       /* Update rounding mode */
       MPFR_UPDATE_RND_MODE(rnd_mode, MPFR_IS_NEG(a));
-      if (rnd_mode == GMP_RNDZ && (MPFR_LIKELY(bcp || bcp1)))
+      if (rnd_mode == MPFR_RNDZ && (MPFR_LIKELY(bcp || bcp1)))
         goto sub_one_ulp;
       goto truncate;
     }
@@ -704,19 +704,19 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       /* Compute the last bit (Since we have shifted the mantissa)
          we need one more bit!*/
       MPFR_ASSERTN(bbcp != (mp_limb_t) -1);
-      if ( (rnd_mode == GMP_RNDZ && bcp==0)
-           || (rnd_mode==GMP_RNDN && bbcp==0)
+      if ( (rnd_mode == MPFR_RNDZ && bcp==0)
+           || (rnd_mode==MPFR_RNDN && bbcp==0)
            || (bcp && bcp1==0) ) /*Exact result*/
         {
           ap[0] |= MPFR_LIMB_ONE<<sh;
-          if (rnd_mode == GMP_RNDN)
+          if (rnd_mode == MPFR_RNDN)
             inexact = 1;
           DEBUG( printf("(SubOneUlp) Last bit set\n") );
         }
       /* Result could be exact if C'p+1 = 0 and rnd == Zero
          since we have had one more bit to the result */
-      /* Fixme: rnd_mode == GMP_RNDZ needed ? */
-      if (bcp1==0 && rnd_mode==GMP_RNDZ)
+      /* Fixme: rnd_mode == MPFR_RNDZ needed ? */
+      if (bcp1==0 && rnd_mode==MPFR_RNDZ)
         {
           DEBUG( printf("(SubOneUlp) Exact result\n") );
           inexact = 0;
@@ -754,10 +754,10 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
           DEBUG( printf("(Truncate) Cp=%d, Cp+1=%d C'p+1=%d C'p+2=%d\n", \
                  bcp!=0, bbcp!=0, bcp1!=0, bbcp1!=0) );
           MPFR_ASSERTN(bbcp != (mp_limb_t) -1);
-          MPFR_ASSERTN((rnd_mode != GMP_RNDN) || (bcp != 0) || (bbcp == 0) || (bbcp1 != (mp_limb_t) -1));
-          if (((rnd_mode != GMP_RNDZ) && bcp)
+          MPFR_ASSERTN((rnd_mode != MPFR_RNDN) || (bcp != 0) || (bbcp == 0) || (bbcp1 != (mp_limb_t) -1));
+          if (((rnd_mode != MPFR_RNDZ) && bcp)
               ||
-              ((rnd_mode == GMP_RNDN) && (bcp == 0) && (bbcp) && (bbcp1)))
+              ((rnd_mode == MPFR_RNDN) && (bcp == 0) && (bbcp) && (bbcp1)))
             {
               DEBUG( printf("(Truncate) Do sub\n") );
               mpn_sub_1 (ap, ap, n, MPFR_LIMB_ONE << sh);
@@ -765,7 +765,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
               ap[0] |= MPFR_LIMB_ONE<<sh;
               bx--;
               /* FIXME: Explain why it works (or why not)... */
-              inexact = (bcp1 == 0) ? 0 : (rnd_mode==GMP_RNDN) ? -1 : 1;
+              inexact = (bcp1 == 0) ? 0 : (rnd_mode==MPFR_RNDN) ? -1 : 1;
               goto end_of_sub;
             }
         }
@@ -792,10 +792,10 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
     if (MPFR_UNLIKELY(bx < __gmpfr_emin))
     {
       DEBUG( printf("(Final Underflow)\n") );
-      if (rnd_mode == GMP_RNDN &&
+      if (rnd_mode == MPFR_RNDN &&
           (bx < __gmpfr_emin - 1 ||
            (inexact >= 0 && mpfr_powerof2_raw (a))))
-        rnd_mode = GMP_RNDZ;
+        rnd_mode = MPFR_RNDZ;
       MPFR_TMP_FREE(marker);
       return mpfr_underflow (a, rnd_mode, MPFR_SIGN(a));
     }

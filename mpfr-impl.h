@@ -723,41 +723,41 @@ typedef intmax_t mpfr_eexp_t;
  ******************************************************/
 
 /* We want to test this :
- *  (rnd == GMP_RNDU && test) || (rnd == RNDD && !test)
+ *  (rnd == MPFR_RNDU && test) || (rnd == RNDD && !test)
  * ie it transforms RNDU or RNDD to Away or Zero according to the sign */
 #define MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd, test) \
-  (((rnd) + (test)) == GMP_RNDD)
+  (((rnd) + (test)) == MPFR_RNDD)
 
 /* We want to test if rnd = Zero, or Away.
    'test' is 1 if negative, and 0 if positive. */
 #define MPFR_IS_LIKE_RNDZ(rnd, test) \
-  ((rnd==GMP_RNDZ) || MPFR_IS_RNDUTEST_OR_RNDDNOTTEST (rnd, test))
+  ((rnd==MPFR_RNDZ) || MPFR_IS_RNDUTEST_OR_RNDDNOTTEST (rnd, test))
 
 #define MPFR_IS_LIKE_RNDU(rnd, sign) \
-  ((rnd==GMP_RNDU) || (rnd==GMP_RNDZ && sign<0) || (rnd==GMP_RNDA && sign>0))
+  ((rnd==MPFR_RNDU) || (rnd==MPFR_RNDZ && sign<0) || (rnd==MPFR_RNDA && sign>0))
 
 #define MPFR_IS_LIKE_RNDD(rnd, sign) \
-  ((rnd==GMP_RNDD) || (rnd==GMP_RNDZ && sign>0) || (rnd==GMP_RNDA && sign<0))
+  ((rnd==MPFR_RNDD) || (rnd==MPFR_RNDZ && sign>0) || (rnd==MPFR_RNDA && sign<0))
 
 /* Invert a rounding mode, RNDZ and RNDA are unchanged */
-#define MPFR_INVERT_RND(rnd) ((rnd == GMP_RNDU) ? GMP_RNDD : \
-                             ((rnd == GMP_RNDD) ? GMP_RNDU : rnd))
+#define MPFR_INVERT_RND(rnd) ((rnd == MPFR_RNDU) ? MPFR_RNDD : \
+                             ((rnd == MPFR_RNDD) ? MPFR_RNDU : rnd))
 
 /* Transform RNDU and RNDD to RNDZ according to test */
 #define MPFR_UPDATE_RND_MODE(rnd, test)                            \
   do {                                                             \
     if (MPFR_UNLIKELY(MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd, test))) \
-      rnd = GMP_RNDZ;                                              \
+      rnd = MPFR_RNDZ;                                              \
   } while (0)
 
 /* Transform RNDU and RNDD to RNDZ or RNDA according to sign,
    leave the other modes unchanged */
 #define MPFR_UPDATE2_RND_MODE(rnd, sign)        \
   do {                                          \
-  if (rnd == GMP_RNDU)                          \
-    rnd = (sign > 0) ? GMP_RNDA : GMP_RNDZ;     \
-  else if (rnd == GMP_RNDD)                     \
-    rnd = (sign < 0) ? GMP_RNDA : GMP_RNDZ;     \
+  if (rnd == MPFR_RNDU)                          \
+    rnd = (sign > 0) ? MPFR_RNDA : MPFR_RNDZ;     \
+  else if (rnd == MPFR_RNDD)                     \
+    rnd = (sign < 0) ? MPFR_RNDA : MPFR_RNDZ;     \
   } while (0)
 
 
@@ -1158,7 +1158,7 @@ typedef struct {
             _ulp = MPFR_LIMB_ONE;                                           \
           }                                                                 \
         /* Rounding */                                                      \
-        if (MPFR_LIKELY (rnd == GMP_RNDN))                                  \
+        if (MPFR_LIKELY (rnd == MPFR_RNDN))                                  \
           {                                                                 \
             if (_rb == 0)                                                   \
               {                                                             \
@@ -1245,7 +1245,7 @@ typedef struct {
    error at most 'error' */
 #define MPFR_CAN_ROUND(b,err,prec,rnd)                                       \
  (!MPFR_IS_SINGULAR (b) && mpfr_round_p (MPFR_MANT (b), MPFR_LIMB_SIZE (b),  \
-                                         (err), (prec) + ((rnd)==GMP_RNDN)))
+                                         (err), (prec) + ((rnd)==MPFR_RNDN)))
 
 /* TODO: fix this description (see round_near_x.c). */
 /* Assuming that the function has a Taylor expansion which looks like:

@@ -108,9 +108,9 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   else
     {
       mpfr_init2 (r, sizeof (long) * CHAR_BIT);
-      mpfr_const_log2 (r, GMP_RNDZ);
-      mpfr_div (r, x, r, GMP_RNDN);
-      n = mpfr_get_si (r, GMP_RNDN);
+      mpfr_const_log2 (r, MPFR_RNDZ);
+      mpfr_div (r, x, r, MPFR_RNDN);
+      n = mpfr_get_si (r, MPFR_RNDN);
       mpfr_clear (r);
     }
   MPFR_LOG_MSG (("d(x)=%1.30e n=%ld\n", mpfr_get_d1(x), n));
@@ -150,10 +150,10 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
       /* if n<0, we have to get an upper bound of log(2)
          in order to get an upper bound of r = x-n*log(2) */
-      mpfr_const_log2 (s, (n >= 0) ? GMP_RNDZ : GMP_RNDU);
+      mpfr_const_log2 (s, (n >= 0) ? MPFR_RNDZ : MPFR_RNDU);
       /* s is within 1 ulp of log(2) */
 
-      mpfr_mul_ui (r, s, (n < 0) ? -n : n, (n >= 0) ? GMP_RNDZ : GMP_RNDU);
+      mpfr_mul_ui (r, s, (n < 0) ? -n : n, (n >= 0) ? MPFR_RNDZ : MPFR_RNDU);
       /* r is within 3 ulps of |n|*log(2) */
       if (n < 0)
         MPFR_CHANGE_SIGN (r);
@@ -162,7 +162,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       MPFR_LOG_VAR (x);
       MPFR_LOG_VAR (r);
 
-      mpfr_sub (r, x, r, GMP_RNDU);
+      mpfr_sub (r, x, r, MPFR_RNDU);
       /* possible cancellation here: if r is zero, increase the working
          precision (Ziv's loop); otherwise, the error on r is at most
          3*2^(EXP(old_r)-EXP(new_r)) ulps */
@@ -180,12 +180,12 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
           while (MPFR_IS_NEG (r))
             { /* initial approximation n was too large */
               n--;
-              mpfr_add (r, r, s, GMP_RNDU);
+              mpfr_add (r, r, s, MPFR_RNDU);
             }
-          mpfr_prec_round (r, q, GMP_RNDU);
+          mpfr_prec_round (r, q, MPFR_RNDU);
           MPFR_LOG_VAR (r);
           MPFR_ASSERTD (MPFR_IS_POS (r));
-          mpfr_div_2ui (r, r, K, GMP_RNDU); /* r = (x-n*log(2))/2^K, exact */
+          mpfr_div_2ui (r, r, K, MPFR_RNDU); /* r = (x-n*log(2))/2^K, exact */
 
           MPFR_TMP_MARK(marker);
           MY_INIT_MPZ(ss, 3 + 2*((q-1)/BITS_PER_MP_LIMB));
@@ -205,7 +205,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
               exps <<= 1;
               exps += mpz_normalize (ss, ss, q);
             }
-          mpfr_set_z (s, ss, GMP_RNDN);
+          mpfr_set_z (s, ss, MPFR_RNDN);
 
           MPFR_SET_EXP(s, MPFR_GET_EXP (s) + exps);
           MPFR_TMP_FREE(marker); /* don't need ss anymore */

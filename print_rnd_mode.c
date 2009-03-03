@@ -27,16 +27,16 @@ mpfr_print_rnd_mode (mp_rnd_t rnd_mode)
 {
   switch (rnd_mode)
     {
-    case GMP_RNDD:
-      return "GMP_RNDD";
-    case GMP_RNDU:
-      return "GMP_RNDU";
-    case GMP_RNDN:
-      return "GMP_RNDN";
-    case GMP_RNDZ:
-      return "GMP_RNDZ";
-    case GMP_RNDA:
-      return "GMP_RNDA";
+    case MPFR_RNDD:
+      return "MPFR_RNDD";
+    case MPFR_RNDU:
+      return "MPFR_RNDU";
+    case MPFR_RNDN:
+      return "MPFR_RNDN";
+    case MPFR_RNDZ:
+      return "MPFR_RNDZ";
+    case MPFR_RNDA:
+      return "MPFR_RNDA";
     default:
       return (const char*) 0;
     }

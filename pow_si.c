@@ -159,8 +159,8 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd)
         /* We will compute rnd(rnd1(1/x) ^ |n|), where rnd1 is the rounding
            toward sign(x), to avoid spurious overflow or underflow, as in
            mpfr_pow_z. */
-        rnd1 = MPFR_EXP (x) < 1 ? GMP_RNDZ :
-          (MPFR_SIGN (x) > 0 ? GMP_RNDU : GMP_RNDD);
+        rnd1 = MPFR_EXP (x) < 1 ? MPFR_RNDZ :
+          (MPFR_SIGN (x) > 0 ? MPFR_RNDU : MPFR_RNDD);
 
         MPFR_ZIV_INIT (loop, Nt);
         for (;;)
@@ -195,7 +195,7 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd)
                 MPFR_ZIV_FREE (loop);
                 mpfr_clear (t);
                 MPFR_LOG_MSG (("underflow\n", 0));
-                if (rnd == GMP_RNDN)
+                if (rnd == MPFR_RNDN)
                   {
                     mpfr_t y2, nn;
 
@@ -207,12 +207,12 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd)
                                                     MPFR_EXP (x) - 1) != 0);
                     mpfr_init2 (y2, 2);
                     mpfr_init2 (nn, sizeof (long) * CHAR_BIT);
-                    inexact = mpfr_set_si (nn, n, GMP_RNDN);
+                    inexact = mpfr_set_si (nn, n, MPFR_RNDN);
                     MPFR_ASSERTN (inexact == 0);
                     inexact = mpfr_pow_general (y2, x, nn, rnd, 1,
                                                 (mpfr_save_expo_t *) NULL);
                     mpfr_clear (nn);
-                    mpfr_set (y, y2, GMP_RNDN);
+                    mpfr_set (y, y2, MPFR_RNDN);
                     mpfr_clear (y2);
                     MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, MPFR_FLAGS_UNDERFLOW);
                     goto end;

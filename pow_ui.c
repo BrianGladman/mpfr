@@ -91,7 +91,7 @@ mpfr_pow_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int n, mp_rnd_t rnd)
     + MPFR_INT_CEIL_LOG2 (MPFR_PREC (y));
   mpfr_init2 (res, prec);
 
-  rnd1 = MPFR_IS_POS (x) ? GMP_RNDU : GMP_RNDD; /* away */
+  rnd1 = MPFR_IS_POS (x) ? MPFR_RNDU : MPFR_RNDD; /* away */
 
   MPFR_ZIV_INIT (loop, prec);
   for (;;)
@@ -105,13 +105,13 @@ mpfr_pow_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int n, mp_rnd_t rnd)
       err = prec - 1 - (mpfr_prec_t) i;
       /* First step: compute square from x */
       MPFR_BLOCK (flags,
-                  inexact = mpfr_mul (res, x, x, GMP_RNDU);
+                  inexact = mpfr_mul (res, x, x, MPFR_RNDU);
                   MPFR_ASSERTD (i >= 2);
                   if (n & (1UL << (i-2)))
                     inexact |= mpfr_mul (res, res, x, rnd1);
                   for (i -= 3; i >= 0 && !MPFR_BLOCK_EXCEP; i--)
                     {
-                      inexact |= mpfr_mul (res, res, res, GMP_RNDU);
+                      inexact |= mpfr_mul (res, res, res, MPFR_RNDU);
                       if (n & (1UL << i))
                         inexact |= mpfr_mul (res, res, x, rnd1);
                     });

@@ -322,9 +322,9 @@ mpfr_get_decimal64 (mpfr_srcptr src, mp_rnd_t rnd_mode)
      with 2^(-1323) < 10^(-398) < 2^(-1322) */
   if (MPFR_UNLIKELY (e < -1323)) /* src <= 2^(-1324) < 1/2*10^(-398) */
     {
-      if (rnd_mode == GMP_RNDZ || rnd_mode == GMP_RNDN
-          || (rnd_mode == GMP_RNDD && negative == 0)
-          || (rnd_mode == GMP_RNDU && negative != 0))
+      if (rnd_mode == MPFR_RNDZ || rnd_mode == MPFR_RNDN
+          || (rnd_mode == MPFR_RNDD && negative == 0)
+          || (rnd_mode == MPFR_RNDU && negative != 0))
         return get_decimal64_zero (negative);
       else /* return the smallest non-zero number */
         return get_decimal64_min (negative);
@@ -332,8 +332,8 @@ mpfr_get_decimal64 (mpfr_srcptr src, mp_rnd_t rnd_mode)
   /* the largest decimal64 number is just below 10^(385) < 2^1279 */
   else if (MPFR_UNLIKELY (e > 1279)) /* then src >= 2^1279 */
     {
-      if (GMP_RNDZ || (rnd_mode == GMP_RNDU && negative != 0)
-          || (rnd_mode == GMP_RNDD && negative == 0))
+      if (MPFR_RNDZ || (rnd_mode == MPFR_RNDU && negative != 0)
+          || (rnd_mode == MPFR_RNDD && negative == 0))
         return get_decimal64_max (negative);
       else
         return get_decimal64_inf (negative);
@@ -352,9 +352,9 @@ mpfr_get_decimal64 (mpfr_srcptr src, mp_rnd_t rnd_mode)
              which corresponds to s=[0.]1000...000 and e=-397 */
           if (e < -397)
             {
-              if (rnd_mode == GMP_RNDZ || rnd_mode == GMP_RNDN
-                  || (rnd_mode == GMP_RNDD && negative == 0)
-                  || (rnd_mode == GMP_RNDU && negative != 0))
+              if (rnd_mode == MPFR_RNDZ || rnd_mode == MPFR_RNDN
+                  || (rnd_mode == MPFR_RNDD && negative == 0)
+                  || (rnd_mode == MPFR_RNDU && negative != 0))
                 return get_decimal64_zero (negative);
               else /* return the smallest non-zero number */
                 return get_decimal64_min (negative);
@@ -376,8 +376,8 @@ mpfr_get_decimal64 (mpfr_srcptr src, mp_rnd_t rnd_mode)
          which corresponds to s=[0.]9999...999 and e=385 */
       else if (e > 385)
         {
-          if (GMP_RNDZ || (rnd_mode == GMP_RNDU && negative != 0)
-              || (rnd_mode == GMP_RNDD && negative == 0))
+          if (MPFR_RNDZ || (rnd_mode == MPFR_RNDU && negative != 0)
+              || (rnd_mode == MPFR_RNDD && negative == 0))
             return get_decimal64_max (negative);
           else
             return get_decimal64_inf (negative);

@@ -36,7 +36,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define INVERSE  mpfr_cos
 #define ACTION_NAN(y) do { MPFR_SET_NAN(y); MPFR_RET_NAN; } while (1)
 #define ACTION_INF(y) do { MPFR_SET_NAN(y); MPFR_RET_NAN; } while (1)
-#define ACTION_ZERO(y) return mpfr_set_ui (y, 1, GMP_RNDN)
+#define ACTION_ZERO(y) return mpfr_set_ui (y, 1, MPFR_RNDN)
 #include "gen_inverse.h"
 */
 
@@ -72,7 +72,7 @@ FUNCTION (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     {
       MPFR_BLOCK_DECL (flags);
 
-      MPFR_BLOCK (flags, INVERSE (z, x, GMP_RNDZ)); /* error k_u < 1 ulp */
+      MPFR_BLOCK (flags, INVERSE (z, x, MPFR_RNDZ)); /* error k_u < 1 ulp */
       /* FIXME: the following assumes that if an overflow happens with
          MPFR_EMAX_MAX, then necessarily an underflow happens with
          __gmpfr_emin */
@@ -82,10 +82,10 @@ FUNCTION (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
           MPFR_ZIV_FREE (loop);
           mpfr_clear (z);
           MPFR_SAVE_EXPO_FREE (expo);
-          return mpfr_underflow (y, (rnd_mode == GMP_RNDN) ?
-                                 GMP_RNDZ : rnd_mode, s);
+          return mpfr_underflow (y, (rnd_mode == MPFR_RNDN) ?
+                                 MPFR_RNDZ : rnd_mode, s);
         }
-      mpfr_ui_div (z, 1, z, GMP_RNDN);
+      mpfr_ui_div (z, 1, z, MPFR_RNDN);
       /* the error is less than c_w + 2*c_u*k_u (see algorithms.tex),
          where c_w = 1/2, c_u = 1 since z was rounded towards zero,
          thus 1/2 + 2 < 4 */

@@ -34,8 +34,8 @@ check_diff (void)
   mpz_init   (z);
   mpfr_init2 (x, 2);
 
-  mpfr_set_ui (x, 2047, GMP_RNDU);
-  mpz_set_fr (z, x, GMP_RNDN);
+  mpfr_set_ui (x, 2047, MPFR_RNDU);
+  mpz_set_fr (z, x, MPFR_RNDN);
   if (mpz_cmp_ui (z, 2048) != 0)
     {
       printf ("get_z RU 2048 failed\n");
@@ -60,20 +60,20 @@ check_one (mpz_ptr z)
       for (neg = 0; neg <= 1; neg++)
         {
           mpz_neg (z, z);
-          mpfr_set_z (f, z, GMP_RNDN);
+          mpfr_set_z (f, z, MPFR_RNDN);
 
           if (sh < 0)
             {
               mpz_tdiv_q_2exp (z, z, -sh);
-              mpfr_div_2exp (f, f, -sh, GMP_RNDN);
+              mpfr_div_2exp (f, f, -sh, MPFR_RNDN);
             }
           else
             {
               mpz_mul_2exp (z, z, sh);
-              mpfr_mul_2exp (f, f, sh, GMP_RNDN);
+              mpfr_mul_2exp (f, f, sh, MPFR_RNDN);
             }
 
-          mpfr_get_z (got, f, GMP_RNDZ);
+          mpfr_get_z (got, f, MPFR_RNDZ);
 
           if (mpz_cmp (got, z) != 0)
             {

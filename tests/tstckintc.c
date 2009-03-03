@@ -85,9 +85,9 @@ test1 (void)
   org = stack;
   x = new_mpfr (p);
   y = new_mpfr (p);
-  mpfr_set_ui (x, 42, GMP_RNDN);
-  mpfr_set_ui (y, 17, GMP_RNDN);
-  mpfr_add (y, x, y, GMP_RNDN);
+  mpfr_set_ui (x, 42, MPFR_RNDN);
+  mpfr_set_ui (y, 17, MPFR_RNDN);
+  mpfr_add (y, x, y, MPFR_RNDN);
   y = return_mpfr (y, org);
   if (y != x || mpfr_cmp_ui (y, 59) != 0)
     {
@@ -119,7 +119,7 @@ dummy_set_si (long si)
   mpfr_t x;
   long * r = dummy_new ();
   (mpfr_custom_init_set) (x, 0, 0, p, &r[2]);
-  mpfr_set_si (x, si, GMP_RNDN);
+  mpfr_set_si (x, si, MPFR_RNDN);
   r[0] = mpfr_custom_get_kind (x);
   r[1] = mpfr_custom_get_exp (x);
   return r;
@@ -133,7 +133,7 @@ dummy_add (long *a, long *b)
   mpfr_custom_init_set (x, 0, 0, p, &r[2]);
   (mpfr_custom_init_set) (y, a[0], a[1], p, &a[2]);
   mpfr_custom_init_set (z, b[0], b[1], p, &b[2]);
-  mpfr_add (x, y, z, GMP_RNDN);
+  mpfr_add (x, y, z, MPFR_RNDN);
   r[0] = (mpfr_custom_get_kind) (x);
   r[1] = (mpfr_custom_get_exp) (x);
   return r;

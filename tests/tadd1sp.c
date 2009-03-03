@@ -44,8 +44,8 @@ check_overflow (void)
 
   mpfr_set_str1 (x, "8.00468257869324898448e+307");
   mpfr_set_str1 (y, "7.44784712422708645156e+307");
-  mpfr_add1sp (z1, x, y, GMP_RNDN);
-  mpfr_add1   (z2, x, y, GMP_RNDN);
+  mpfr_add1sp (z1, x, y, MPFR_RNDN);
+  mpfr_add1   (z2, x, y, MPFR_RNDN);
   if (mpfr_cmp (z1, z2))
     {
       printf ("Overflow bug in add1sp.\n");
@@ -122,7 +122,7 @@ check_random (mp_prec_t p)
           if (MPFR_GET_EXP(b) < MPFR_GET_EXP(c))
             mpfr_swap(b, c);
           if (MPFR_IS_PURE_FP(b) && MPFR_IS_PURE_FP(c))
-            for (r = 0 ; r < GMP_RND_MAX ; r++)
+            for (r = 0 ; r < MPFR_RND_MAX ; r++)
               {
                 inexact1 = mpfr_add1(a1, b, c, (mp_rnd_t) r);
                 inexact2 = mpfr_add1sp(a2, b, c, (mp_rnd_t) r);
@@ -147,7 +147,7 @@ check_special (void)
 
   mpfr_inits (a1, a2, b, c, (mpfr_ptr) 0);
 
-  for (r = 0 ; r < GMP_RND_MAX ; r++)
+  for (r = 0 ; r < MPFR_RND_MAX ; r++)
     {
       SET_PREC(53);
       mpfr_set_str1 (b, "1@100");
@@ -174,7 +174,7 @@ check_special (void)
   mpfr_set_str_binary (c, "1.0e1");
   mpfr_set_str_binary (a2, "1.1e-1");
   mpfr_set_str_binary (a1, "0.11E2");
-  mpfr_add1sp (a2, c, a2, GMP_RNDN);
+  mpfr_add1sp (a2, c, a2, MPFR_RNDN);
   if (mpfr_cmp (a1, a2))
     {
       printf ("Regression reuse test failed!\n");

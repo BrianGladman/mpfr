@@ -32,7 +32,7 @@ my_const_euler (mpfr_ptr x, mpfr_srcptr y, mp_rnd_t r)
   return mpfr_const_euler (x, r);
 }
 
-#define RAND_FUNCTION(x) mpfr_set_ui ((x), 0, GMP_RNDN)
+#define RAND_FUNCTION(x) mpfr_set_ui ((x), 0, MPFR_RNDN)
 #define TEST_FUNCTION my_const_euler
 #include "tgeneric.c"
 
@@ -50,8 +50,8 @@ main (int argc, char *argv[])
   if (argc > 1)
     {
       mpfr_init2 (gamma, prec);
-      mpfr_const_euler (gamma, GMP_RNDN);
-      printf("gamma="); mpfr_out_str (stdout, 10, 0, gamma, GMP_RNDD);
+      mpfr_const_euler (gamma, MPFR_RNDN);
+      printf("gamma="); mpfr_out_str (stdout, 10, 0, gamma, MPFR_RNDD);
       puts ("");
       mpfr_clear (gamma);
       return 0;
@@ -63,7 +63,7 @@ main (int argc, char *argv[])
 
   mpfr_set_prec (y, 32);
   mpfr_set_prec (z, 32);
-  (mpfr_const_euler) (y, GMP_RNDN);
+  (mpfr_const_euler) (y, MPFR_RNDN);
   mpfr_set_str_binary (z, "0.10010011110001000110011111100011");
   if (mpfr_cmp (y, z))
     {
@@ -77,11 +77,11 @@ main (int argc, char *argv[])
       mpfr_set_prec (t, prec);
       yprec = prec + 10;
 
-      for (rnd = 0; rnd < GMP_RND_MAX; rnd++)
+      for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
         {
           mpfr_set_prec (y, yprec);
           mpfr_const_euler (y, (mp_rnd_t) rnd);
-          err = (rnd == GMP_RNDN) ? yprec + 1 : yprec;
+          err = (rnd == MPFR_RNDN) ? yprec + 1 : yprec;
           if (mpfr_can_round (y, err, (mp_rnd_t) rnd, (mp_rnd_t) rnd, prec))
             {
               mpfr_set (t, y, (mp_rnd_t) rnd);
@@ -91,10 +91,10 @@ main (int argc, char *argv[])
                   printf ("results differ for prec=%u rnd_mode=%s\n", prec,
                           mpfr_print_rnd_mode ((mp_rnd_t) rnd));
                   printf ("   got      ");
-                  mpfr_out_str (stdout, 2, prec, z, GMP_RNDN);
+                  mpfr_out_str (stdout, 2, prec, z, MPFR_RNDN);
                   puts ("");
                   printf ("   expected ");
-                  mpfr_out_str (stdout, 2, prec, t, GMP_RNDN);
+                  mpfr_out_str (stdout, 2, prec, t, MPFR_RNDN);
                   puts ("");
                   printf ("   approximation was ");
                   mpfr_print_binary (y);

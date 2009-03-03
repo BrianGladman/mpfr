@@ -40,7 +40,7 @@ check_nans (void)
   /* 1.0 - nan is nan */
   mpfr_set_nan (x);
   mpfr_clear_flags ();
-  inexact = mpfr_d_sub (y, 1.0, x, GMP_RNDN);
+  inexact = mpfr_d_sub (y, 1.0, x, MPFR_RNDN);
   MPFR_ASSERTN (inexact == 0);
   MPFR_ASSERTN ((__gmpfr_flags ^ MPFR_FLAGS_NAN) == 0);
   MPFR_ASSERTN (mpfr_nan_p (y));
@@ -48,7 +48,7 @@ check_nans (void)
   /* 1.0 - +inf == -inf */
   mpfr_set_inf (x, 1);
   mpfr_clear_flags ();
-  inexact = mpfr_d_sub (y, 1.0, x, GMP_RNDN);
+  inexact = mpfr_d_sub (y, 1.0, x, MPFR_RNDN);
   MPFR_ASSERTN (inexact == 0);
   MPFR_ASSERTN (__gmpfr_flags == 0);
   MPFR_ASSERTN (mpfr_inf_p (y));
@@ -57,7 +57,7 @@ check_nans (void)
   /* 1.0 - -inf == +inf */
   mpfr_set_inf (x, -1);
   mpfr_clear_flags ();
-  inexact = mpfr_d_sub (y, 1.0, x, GMP_RNDN);
+  inexact = mpfr_d_sub (y, 1.0, x, MPFR_RNDN);
   MPFR_ASSERTN (inexact == 0);
   MPFR_ASSERTN (__gmpfr_flags == 0);
   MPFR_ASSERTN (mpfr_inf_p (y));
@@ -86,24 +86,24 @@ main (void)
   mpfr_init2 (y, IEEE_DBL_MANT_DIG);
   mpfr_init2 (z, IEEE_DBL_MANT_DIG);
 
-  mpfr_set_str (y, "4096", 10, GMP_RNDN);
+  mpfr_set_str (y, "4096", 10, MPFR_RNDN);
   d = 0.125;
   mpfr_clear_flags ();
-  inexact = mpfr_d_sub (x, d, y, GMP_RNDN);
+  inexact = mpfr_d_sub (x, d, y, MPFR_RNDN);
   if (inexact != 0)
     {
       printf ("Inexact flag error in mpfr_d_sub\n");
       exit (1);
     }
-  mpfr_set_str (z, "-4095.875", 10, GMP_RNDN);
+  mpfr_set_str (z, "-4095.875", 10, MPFR_RNDN);
   if (mpfr_cmp (z, x))
     {
       printf ("Error in mpfr_d_sub (");
-      mpfr_out_str (stdout, 10, 7, y, GMP_RNDN);
+      mpfr_out_str (stdout, 10, 7, y, MPFR_RNDN);
       printf (" + %.20g)\nexpected ", d);
-      mpfr_out_str (stdout, 10, 0, z, GMP_RNDN);
+      mpfr_out_str (stdout, 10, 0, z, MPFR_RNDN);
       printf ("\ngot     ");
-      mpfr_out_str (stdout, 10, 0, x, GMP_RNDN);
+      mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN);
       printf ("\n");
       exit (1);
     }

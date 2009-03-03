@@ -66,7 +66,7 @@ main (int argc, char *argv[])
   mpfr_init (x);
 
   mpfr_set_nan (x);
-  d = mpfr_get_d (x, GMP_RNDN);
+  d = mpfr_get_d (x, MPFR_RNDN);
   if (! DOUBLE_ISNAN (d))
     {
       printf ("ERROR for NAN (1)\n");
@@ -77,8 +77,8 @@ main (int argc, char *argv[])
 #endif
       exit (1);
     }
-  mpfr_set_ui (x, 0, GMP_RNDN);
-  mpfr_set_d (x, d, GMP_RNDN);
+  mpfr_set_ui (x, 0, MPFR_RNDN);
+  mpfr_set_d (x, d, MPFR_RNDN);
   if (! mpfr_nan_p (x))
     {
       printf ("ERROR for NAN (2)\n");
@@ -91,10 +91,10 @@ main (int argc, char *argv[])
     }
 
   d = 0.0;
-  mpfr_set_d (x, d, GMP_RNDN);
+  mpfr_set_d (x, d, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_POS(x));
   d = -d;
-  mpfr_set_d (x, d, GMP_RNDN);
+  mpfr_set_d (x, d, MPFR_RNDN);
   if (mpfr_cmp_ui (x, 0) != 0 || MPFR_IS_POS(x))
     {
       printf ("Error in mpfr_set_d on -0\n");
@@ -102,15 +102,15 @@ main (int argc, char *argv[])
     }
 
   mpfr_set_inf (x, 1);
-  d = mpfr_get_d (x, GMP_RNDN);
-  mpfr_set_ui (x, 0, GMP_RNDN);
-  mpfr_set_d (x, d, GMP_RNDN);
+  d = mpfr_get_d (x, MPFR_RNDN);
+  mpfr_set_ui (x, 0, MPFR_RNDN);
+  mpfr_set_d (x, d, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
 
   mpfr_set_inf (x, -1);
-  d = mpfr_get_d (x, GMP_RNDN);
-  mpfr_set_ui (x, 0, GMP_RNDN);
-  mpfr_set_d (x, d, GMP_RNDN);
+  d = mpfr_get_d (x, MPFR_RNDN);
+  mpfr_set_ui (x, 0, MPFR_RNDN);
+  mpfr_set_d (x, d, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) < 0);
 
   mpfr_set_prec (x, 2);
@@ -120,12 +120,12 @@ main (int argc, char *argv[])
   for (n=0; n<52; n++, d /= 2.0)
     if (d != 0.0) /* should be 2^(-1022-n) */
       {
-        mpfr_set_d (x, d, GMP_RNDN);
+        mpfr_set_d (x, d, MPFR_RNDN);
         if (mpfr_cmp_ui_2exp (x, 1, -1022-n))
           {
             printf ("Wrong result for d=2^(%ld), ", -1022-n);
             printf ("got ");
-            mpfr_out_str (stdout, 10, 10, x, GMP_RNDN);
+            mpfr_out_str (stdout, 10, 10, x, MPFR_RNDN);
             printf ("\n");
             mpfr_print_binary (x);
             puts ("");
@@ -135,14 +135,14 @@ main (int argc, char *argv[])
 
    /* checks that rounds to nearest sets the last
      bit to zero in case of equal distance */
-   mpfr_set_d (x, 5.0, GMP_RNDN);
+   mpfr_set_d (x, 5.0, MPFR_RNDN);
    if (mpfr_cmp_ui (x, 4))
      {
        printf ("Error in tset_d: expected 4.0, got ");
        mpfr_print_binary (x); putchar('\n');
        exit (1);
      }
-   mpfr_set_d (x, -5.0, GMP_RNDN);
+   mpfr_set_d (x, -5.0, MPFR_RNDN);
    if (mpfr_cmp_si (x, -4))
      {
        printf ("Error in tset_d: expected -4.0, got ");
@@ -150,7 +150,7 @@ main (int argc, char *argv[])
        exit (1);
      }
 
-   mpfr_set_d (x, 9.84891017624509146344e-01, GMP_RNDU);
+   mpfr_set_d (x, 9.84891017624509146344e-01, MPFR_RNDU);
    if (mpfr_cmp_ui (x, 1))
      {
        printf ("Error in tset_d: expected 1.0, got ");

@@ -64,7 +64,7 @@ check_two_sum (mp_prec_t p)
     }
   while (x < 1);
   mpfr_urandomb (y, RANDS);
-  rnd = GMP_RNDN;
+  rnd = MPFR_RNDN;
   inexact = mpfr_sub_ui (u, y, x, rnd);
   mpfr_add_ui (v, u, x, rnd);
   mpfr_sub (w, v, y, rnd);
@@ -96,18 +96,18 @@ check_nans (void)
 
   /* nan - 1 == nan */
   mpfr_set_nan (x);
-  mpfr_sub_ui (y, x, 1L, GMP_RNDN);
+  mpfr_sub_ui (y, x, 1L, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_nan_p (y));
 
   /* +inf - 1 == +inf */
   mpfr_set_inf (x, 1);
-  mpfr_sub_ui (y, x, 1L, GMP_RNDN);
+  mpfr_sub_ui (y, x, 1L, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_inf_p (y));
   MPFR_ASSERTN (mpfr_sgn (y) > 0);
 
   /* -inf - 1 == -inf */
   mpfr_set_inf (x, -1);
-  mpfr_sub_ui (y, x, 1L, GMP_RNDN);
+  mpfr_sub_ui (y, x, 1L, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_inf_p (y));
   MPFR_ASSERTN (mpfr_sgn (y) < 0);
 
@@ -134,7 +134,7 @@ main (int argc, char *argv[])
     for (k=0; k<200; k++)
       check_two_sum (p);
 
-  check3 ("0.9999999999", 1, GMP_RNDN,
+  check3 ("0.9999999999", 1, MPFR_RNDN,
           "-10000000827403709990903735160827636718750e-50");
 
   test_generic_ui (2, 1000, 100);

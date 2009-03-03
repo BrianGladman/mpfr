@@ -50,9 +50,9 @@ cmp_tests (void)
       signy = randlimb () % 256 ? signx : 1 - signx;
       /* signy = signx most of the time (most interesting case) */
       if (signx)
-        mpfr_neg (x, x, GMP_RNDN);
+        mpfr_neg (x, x, MPFR_RNDN);
       if (signy)
-        mpfr_neg (y, y, GMP_RNDN);
+        mpfr_neg (y, y, MPFR_RNDN);
       if (i <= 1)
         mpfr_set_nan (x);
       if (i == 0 || i == 2)
@@ -78,9 +78,9 @@ cmp_tests (void)
                      (cmp > 0 && cmpbool != 0x13))))
         {
           printf ("Error in cmp_tests for\nx = ");
-          mpfr_out_str (stdout, 2, 0, x, GMP_RNDN);
+          mpfr_out_str (stdout, 2, 0, x, MPFR_RNDN);
           printf (" and\ny = ");
-          mpfr_out_str (stdout, 2, 0, y, GMP_RNDN);
+          mpfr_out_str (stdout, 2, 0, y, MPFR_RNDN);
           printf ("\n");
           exit (1);
         }
@@ -104,15 +104,15 @@ eq_tests (void)
       mpfr_set_prec (y, precx + (randlimb () % 64));
       mpfr_urandomb (x, RANDS);
       if (randlimb () & 1)
-        mpfr_neg (x, x, GMP_RNDN);
-      mpfr_set (y, x, GMP_RNDN);  /* exact -> x = y */
+        mpfr_neg (x, x, MPFR_RNDN);
+      mpfr_set (y, x, MPFR_RNDN);  /* exact -> x = y */
       if (mpfr_greater_p (x, y) || !mpfr_greaterequal_p (x, y) ||
           mpfr_less_p (x, y) || !mpfr_lessequal_p (x, y) ||
           mpfr_lessgreater_p (x, y) || !mpfr_equal_p (x, y) ||
           mpfr_unordered_p (x, y))
         {
           printf ("Error in eq_tests for x = ");
-          mpfr_out_str (stdout, 2, 0, x, GMP_RNDN);
+          mpfr_out_str (stdout, 2, 0, x, MPFR_RNDN);
           printf ("\n");
           exit (1);
         }

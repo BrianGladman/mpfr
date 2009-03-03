@@ -205,11 +205,11 @@ mpfr_check_range (mpfr_ptr x, int t, mp_rnd_t rnd_mode)
            *   _ |x| = 2^(emin-2) and the absolute value of the exact
            *     result is <= 2^(emin-2).
            */
-          if (rnd_mode == GMP_RNDN &&
+          if (rnd_mode == MPFR_RNDN &&
               (exp + 1 < __gmpfr_emin ||
                (mpfr_powerof2_raw(x) &&
                 (MPFR_IS_NEG(x) ? t <= 0 : t >= 0))))
-            rnd_mode = GMP_RNDZ;
+            rnd_mode = MPFR_RNDZ;
           return mpfr_underflow(x, rnd_mode, MPFR_SIGN(x));
         }
       if (MPFR_UNLIKELY( exp > __gmpfr_emax) )
@@ -284,7 +284,7 @@ mpfr_erangeflag_p (void)
 
 /* Note: In the rounding to the nearest mode, mpfr_underflow
    always rounds away from 0. In this rounding mode, you must call
-   mpfr_underflow with rnd_mode = GMP_RNDZ if the exact result
+   mpfr_underflow with rnd_mode = MPFR_RNDZ if the exact result
    is <= 2^(emin-2) in absolute value. */
 
 int

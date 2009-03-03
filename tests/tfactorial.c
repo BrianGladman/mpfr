@@ -38,7 +38,7 @@ special (void)
 
   mpfr_set_prec (x, 21);
   mpfr_set_prec (y, 21);
-  mpfr_fac_ui (x, 119, GMP_RNDZ);
+  mpfr_fac_ui (x, 119, MPFR_RNDZ);
   mpfr_set_str_binary (y, "0.101111101110100110110E654");
   if (mpfr_cmp (x, y))
     {
@@ -47,7 +47,7 @@ special (void)
     }
 
   mpfr_set_prec (y, 206);
-  inex = mpfr_fac_ui (y, 767, GMP_RNDN);
+  inex = mpfr_fac_ui (y, 767, MPFR_RNDN);
   mpfr_set_prec (x, 206);
   mpfr_set_str_binary (x, "0.110111100001000001101010010001000111000100000100111000010011100011011111001100011110101000111101101100110001001100110100001001111110000101010000100100011100010011101110000001000010001100010000101001111E6250");
   if (mpfr_cmp (x, y))
@@ -62,7 +62,7 @@ special (void)
     }
 
   mpfr_set_prec (y, 202);
-  mpfr_fac_ui (y, 69, GMP_RNDU);
+  mpfr_fac_ui (y, 69, MPFR_RNDU);
 
   mpfr_clear (x);
   mpfr_clear (y);
@@ -91,7 +91,7 @@ test_int (void)
         {
           mpfr_set_prec (x, p);
           mpfr_set_prec (y, p);
-          for (r = 0; r < GMP_RND_MAX; r++)
+          for (r = 0; r < MPFR_RND_MAX; r++)
             {
               inex1 = mpfr_fac_ui (x, n, (mp_rnd_t) r);
               inex2 = mpfr_set_z (y, f, (mp_rnd_t) r);
@@ -129,7 +129,7 @@ overflowed_fac0 (void)
   mpfr_init2 (x, 8);
   mpfr_init2 (y, 8);
 
-  mpfr_set_ui (y, 1, GMP_RNDN);
+  mpfr_set_ui (y, 1, MPFR_RNDN);
   mpfr_nextbelow (y);
   set_emax (0);  /* 1 is not representable. */
   RND_LOOP (rnd)
@@ -143,7 +143,7 @@ overflowed_fac0 (void)
                   mpfr_print_rnd_mode ((mp_rnd_t) rnd));
           err = 1;
         }
-      if (rnd == GMP_RNDZ || rnd == GMP_RNDD)
+      if (rnd == MPFR_RNDZ || rnd == MPFR_RNDD)
         {
           if (inex >= 0)
             {
@@ -207,7 +207,7 @@ main (int argc, char *argv[])
   mpfr_init (z);
   mpfr_init (t);
 
-  mpfr_fac_ui (y, 0, GMP_RNDN);
+  mpfr_fac_ui (y, 0, MPFR_RNDN);
 
   if (mpfr_cmp_ui (y, 1))
     {
@@ -224,10 +224,10 @@ main (int argc, char *argv[])
       mpfr_set_prec (y, yprec);
 
       for (n = 0; n < 50; n++)
-        for (rnd = 0; rnd < GMP_RND_MAX; rnd++)
+        for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
           {
             inexact = mpfr_fac_ui (y, n, (mp_rnd_t) rnd);
-            err = (rnd == GMP_RNDN) ? yprec + 1 : yprec;
+            err = (rnd == MPFR_RNDN) ? yprec + 1 : yprec;
             if (mpfr_can_round (y, err, (mp_rnd_t) rnd, (mp_rnd_t) rnd, prec))
               {
                 mpfr_set (t, y, (mp_rnd_t) rnd);
@@ -257,14 +257,14 @@ main (int argc, char *argv[])
                 if (mpfr_cmp (t, z))
                   {
                     printf ("results differ for x=");
-                    mpfr_out_str (stdout, 2, prec, x, GMP_RNDN);
+                    mpfr_out_str (stdout, 2, prec, x, MPFR_RNDN);
                     printf (" prec=%u rnd_mode=%s\n", prec,
                             mpfr_print_rnd_mode ((mp_rnd_t) rnd));
                     printf ("   got ");
-                    mpfr_out_str (stdout, 2, prec, z, GMP_RNDN);
+                    mpfr_out_str (stdout, 2, prec, z, MPFR_RNDN);
                     puts ("");
                     printf ("   expected ");
-                    mpfr_out_str (stdout, 2, prec, t, GMP_RNDN);
+                    mpfr_out_str (stdout, 2, prec, t, MPFR_RNDN);
                     puts ("");
                     printf ("   approximation was ");
                     mpfr_print_binary (y);

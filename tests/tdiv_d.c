@@ -40,7 +40,7 @@ check_nans (void)
   /* nan / 1.0 is nan */
   mpfr_set_nan (x);
   mpfr_clear_flags ();
-  inexact = mpfr_div_d (y, x, 1.0, GMP_RNDN);
+  inexact = mpfr_div_d (y, x, 1.0, MPFR_RNDN);
   MPFR_ASSERTN (inexact == 0);
   MPFR_ASSERTN ((__gmpfr_flags ^ MPFR_FLAGS_NAN) == 0);
   MPFR_ASSERTN (mpfr_nan_p (y));
@@ -48,7 +48,7 @@ check_nans (void)
   /* +inf / 1.0 == +inf */
   mpfr_set_inf (x, 1);
   mpfr_clear_flags ();
-  inexact = mpfr_div_d (y, x, 1.0, GMP_RNDN);
+  inexact = mpfr_div_d (y, x, 1.0, MPFR_RNDN);
   MPFR_ASSERTN (inexact == 0);
   MPFR_ASSERTN (__gmpfr_flags == 0);
   MPFR_ASSERTN (mpfr_inf_p (y));
@@ -57,16 +57,16 @@ check_nans (void)
   /* -inf / 1.0 == -inf */
   mpfr_set_inf (x, -1);
   mpfr_clear_flags ();
-  inexact = mpfr_div_d (y, x, 1.0, GMP_RNDN);
+  inexact = mpfr_div_d (y, x, 1.0, MPFR_RNDN);
   MPFR_ASSERTN (inexact == 0);
   MPFR_ASSERTN (__gmpfr_flags == 0);
   MPFR_ASSERTN (mpfr_inf_p (y));
   MPFR_ASSERTN (MPFR_IS_NEG (y));
 
   /* 0.0 / 0.0 is nan */
-  mpfr_set_d (x, 0.0, GMP_RNDN);
+  mpfr_set_d (x, 0.0, MPFR_RNDN);
   mpfr_clear_flags ();
-  inexact = mpfr_div_d (y, x, 0.0, GMP_RNDN);
+  inexact = mpfr_div_d (y, x, 0.0, MPFR_RNDN);
   MPFR_ASSERTN (inexact == 0);
   MPFR_ASSERTN ((__gmpfr_flags ^ MPFR_FLAGS_NAN) == 0);
   MPFR_ASSERTN (mpfr_nan_p (y));
@@ -94,24 +94,24 @@ main (void)
   mpfr_init2 (y, IEEE_DBL_MANT_DIG);
   mpfr_init2 (z, IEEE_DBL_MANT_DIG);
 
-  mpfr_set_str (y, "4096", 10, GMP_RNDN);
+  mpfr_set_str (y, "4096", 10, MPFR_RNDN);
   d = 0.125;
   mpfr_clear_flags ();
-  inexact = mpfr_div_d (x, y, d, GMP_RNDN);
+  inexact = mpfr_div_d (x, y, d, MPFR_RNDN);
   if (inexact != 0)
     {
       printf ("Inexact flag error in mpfr_div_d\n");
       exit (1);
     }
-  mpfr_set_str (z, "32768", 10, GMP_RNDN);
+  mpfr_set_str (z, "32768", 10, MPFR_RNDN);
   if (mpfr_cmp (z, x))
     {
       printf ("Error in mpfr_div_d (");
-      mpfr_out_str (stdout, 10, 0, y, GMP_RNDN);
+      mpfr_out_str (stdout, 10, 0, y, MPFR_RNDN);
       printf (" + %.20g)\nexpected ", d);
-      mpfr_out_str (stdout, 10, 0, z, GMP_RNDN);
+      mpfr_out_str (stdout, 10, 0, z, MPFR_RNDN);
       printf ("\ngot     ");
-      mpfr_out_str (stdout, 10, 0, x, GMP_RNDN);
+      mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN);
       printf ("\n");
       exit (1);
     }

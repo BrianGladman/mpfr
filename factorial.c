@@ -59,7 +59,7 @@ mpfr_fac_ui (mpfr_ptr y, unsigned long int x, mp_rnd_t rnd_mode)
 
   mpfr_init2 (t, Nt); /* initialise of intermediary variable */
 
-  rnd = GMP_RNDZ;
+  rnd = MPFR_RNDZ;
   MPFR_ZIV_INIT (loop, Nt);
   for (;;)
     {
@@ -76,8 +76,8 @@ mpfr_fac_ui (mpfr_ptr y, unsigned long int x, mp_rnd_t rnd_mode)
 
       err = Nt - 1 - MPFR_INT_CEIL_LOG2 (Nt);
 
-      round = !inexact || mpfr_can_round (t, err, rnd, GMP_RNDZ,
-                                          Ny + (rnd_mode == GMP_RNDN));
+      round = !inexact || mpfr_can_round (t, err, rnd, MPFR_RNDZ,
+                                          Ny + (rnd_mode == MPFR_RNDN));
 
       if (MPFR_LIKELY (round))
         {
@@ -96,7 +96,7 @@ mpfr_fac_ui (mpfr_ptr y, unsigned long int x, mp_rnd_t rnd_mode)
           else /* inexact and round have opposite signs: we cannot
                   compute the inexact flag. Restart using the
                   symmetric rounding. */
-            rnd = (rnd == GMP_RNDZ) ? GMP_RNDU : GMP_RNDZ;
+            rnd = (rnd == MPFR_RNDZ) ? MPFR_RNDU : MPFR_RNDZ;
         }
       MPFR_ZIV_NEXT (loop, Nt);
       mpfr_set_prec (t, Nt);

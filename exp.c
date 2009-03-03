@@ -68,10 +68,10 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     mpfr_init2 (e, sizeof (mp_exp_t) * CHAR_BIT);
     mpfr_init2 (bound, 32);
 
-    inexact = mpfr_set_exp_t (e, expo.saved_emax, GMP_RNDN);
+    inexact = mpfr_set_exp_t (e, expo.saved_emax, MPFR_RNDN);
     MPFR_ASSERTD (inexact == 0);
-    mpfr_const_log2 (bound, expo.saved_emax < 0 ? GMP_RNDD : GMP_RNDU);
-    mpfr_mul (bound, bound, e, GMP_RNDU);
+    mpfr_const_log2 (bound, expo.saved_emax < 0 ? MPFR_RNDD : MPFR_RNDU);
+    mpfr_mul (bound, bound, e, MPFR_RNDU);
     if (MPFR_UNLIKELY (mpfr_cmp (x, bound) >= 0))
       {
         /* x > log(2^emax), thus exp(x) > 2^emax */
@@ -80,18 +80,18 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
         return mpfr_overflow (y, rnd_mode, 1);
       }
 
-    inexact = mpfr_set_exp_t (e, expo.saved_emin, GMP_RNDN);
+    inexact = mpfr_set_exp_t (e, expo.saved_emin, MPFR_RNDN);
     MPFR_ASSERTD (inexact == 0);
-    inexact = mpfr_sub_ui (e, e, 2, GMP_RNDN);
+    inexact = mpfr_sub_ui (e, e, 2, MPFR_RNDN);
     MPFR_ASSERTD (inexact == 0);
-    mpfr_const_log2 (bound, expo.saved_emin < 0 ? GMP_RNDU : GMP_RNDD);
-    mpfr_mul (bound, bound, e, GMP_RNDD);
+    mpfr_const_log2 (bound, expo.saved_emin < 0 ? MPFR_RNDU : MPFR_RNDD);
+    mpfr_mul (bound, bound, e, MPFR_RNDD);
     if (MPFR_UNLIKELY (mpfr_cmp (x, bound) <= 0))
       {
         /* x < log(2^(emin - 2)), thus exp(x) < 2^(emin - 2) */
         mpfr_clears (e, bound, (mpfr_ptr) 0);
         MPFR_SAVE_EXPO_FREE (expo);
-        return mpfr_underflow (y, rnd_mode == GMP_RNDN ? GMP_RNDZ : rnd_mode,
+        return mpfr_underflow (y, rnd_mode == MPFR_RNDN ? MPFR_RNDZ : rnd_mode,
                                1);
       }
 
@@ -114,8 +114,8 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       int signx = MPFR_SIGN (x);
 
       MPFR_SET_POS (y);
-      if (MPFR_IS_NEG_SIGN (signx) && (rnd_mode == GMP_RNDD ||
-                                       rnd_mode == GMP_RNDZ))
+      if (MPFR_IS_NEG_SIGN (signx) && (rnd_mode == MPFR_RNDD ||
+                                       rnd_mode == MPFR_RNDZ))
         {
           __gmpfr_emin = 0;
           __gmpfr_emax = 0;
@@ -127,8 +127,8 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
           __gmpfr_emin = 1;
           __gmpfr_emax = 1;
           mpfr_setmin (y, 1);  /* y = 1 */
-          if (MPFR_IS_POS_SIGN (signx) && (rnd_mode == GMP_RNDU ||
-                                           rnd_mode == GMP_RNDA))
+          if (MPFR_IS_POS_SIGN (signx) && (rnd_mode == MPFR_RNDU ||
+                                           rnd_mode == MPFR_RNDA))
             {
               mp_size_t yn;
               int sh;

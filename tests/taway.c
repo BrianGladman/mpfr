@@ -26,7 +26,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
-#define DISP(s, t) {printf(s); mpfr_out_str(stdout, 2, 0, t, GMP_RNDN); }
+#define DISP(s, t) {printf(s); mpfr_out_str(stdout, 2, 0, t, MPFR_RNDN); }
 #define DISP2(s,t) {DISP(s,t); putchar('\n');}
 
 #define SPECIAL_MAX 12
@@ -69,10 +69,10 @@ set_special (mpfr_ptr x, unsigned int select)
       mpfr_set_str_binary (x, "1e+1");
       break;
     case 9:
-      mpfr_const_pi (x, GMP_RNDN);
+      mpfr_const_pi (x, MPFR_RNDN);
       break;
     case 10:
-      mpfr_const_pi (x, GMP_RNDN);
+      mpfr_const_pi (x, MPFR_RNDN);
       MPFR_SET_EXP (x, MPFR_GET_EXP (x)-1);
       break;
     default:
@@ -114,8 +114,8 @@ test3 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t),
       set_special (ref2, i%SPECIAL_MAX);
       set_special (ref3, i/SPECIAL_MAX);
 
-      inexa = testfunc (res1, ref2, ref3, GMP_RNDA);
-      r = MPFR_SIGN(res1) > 0 ? GMP_RNDU : GMP_RNDD;
+      inexa = testfunc (res1, ref2, ref3, MPFR_RNDA);
+      r = MPFR_SIGN(res1) > 0 ? MPFR_RNDU : MPFR_RNDD;
       inexd = testfunc (ref1, ref2, ref3, r);
 
       if (mpfr_compare (res1, ref1) || inexa != inexd)
@@ -169,8 +169,8 @@ test4 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_srcptr,
             {
               set_special (op3, k);
 
-              inexa = testfunc (res, op1, op2, op3, GMP_RNDA);
-              r = MPFR_SIGN(res) > 0 ? GMP_RNDU : GMP_RNDD;
+              inexa = testfunc (res, op1, op2, op3, MPFR_RNDA);
+              r = MPFR_SIGN(res) > 0 ? MPFR_RNDU : MPFR_RNDD;
               inexd = testfunc (ref, op1, op2, op3, r);
 
               if (mpfr_compare (res, ref) || inexa != inexd)
@@ -217,8 +217,8 @@ test2ui (int (*testfunc)(mpfr_ptr, mpfr_srcptr, unsigned long int, mp_rnd_t),
       set_special (ref2, i % SPECIAL_MAX);
       ref3 = i / SPECIAL_MAX == 0 ? 0 : randlimb ();
 
-      inexa = testfunc (res1, ref2, ref3, GMP_RNDA);
-      r = MPFR_SIGN(res1) > 0 ? GMP_RNDU : GMP_RNDD;
+      inexa = testfunc (res1, ref2, ref3, MPFR_RNDA);
+      r = MPFR_SIGN(res1) > 0 ? MPFR_RNDU : MPFR_RNDD;
       inexd = testfunc (ref1, ref2, ref3, r);
 
       if (mpfr_compare (res1, ref1) || inexa != inexd)
@@ -260,8 +260,8 @@ testui2 (int (*testfunc)(mpfr_ptr, unsigned long int, mpfr_srcptr, mp_rnd_t),
       set_special (ref3, i % SPECIAL_MAX);
       ref2 = i / SPECIAL_MAX == 0 ? 0 : randlimb ();
 
-      inexa = testfunc (res1, ref2, ref3, GMP_RNDA);
-      r = MPFR_SIGN(res1) > 0 ? GMP_RNDU : GMP_RNDD;
+      inexa = testfunc (res1, ref2, ref3, MPFR_RNDA);
+      r = MPFR_SIGN(res1) > 0 ? MPFR_RNDU : MPFR_RNDD;
       inexd = testfunc (ref1, ref2, ref3, r);
 
       if (mpfr_compare (res1, ref1) || inexa != inexd)
@@ -301,9 +301,9 @@ test2 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mp_rnd_t), char *foo)
       set_special (ref2, i);
 
       /* first round to away */
-      inexa = testfunc (res1, ref2, GMP_RNDA);
+      inexa = testfunc (res1, ref2, MPFR_RNDA);
 
-      r = MPFR_SIGN(res1) > 0 ? GMP_RNDU : GMP_RNDD;
+      r = MPFR_SIGN(res1) > 0 ? MPFR_RNDU : MPFR_RNDD;
       inexd = testfunc (ref1, ref2, r);
       if (mpfr_compare (res1, ref1) || inexa != inexd)
         {
@@ -344,10 +344,10 @@ test3a (int (*testfunc)(mpfr_ptr, mpfr_ptr, mpfr_srcptr, mp_rnd_t), char *foo)
     {
       set_special (ref3, i);
 
-      inexa = testfunc (res1, res2, ref3, GMP_RNDA);
+      inexa = testfunc (res1, res2, ref3, MPFR_RNDA);
 
       /* first check wrt the first operand */
-      r = MPFR_SIGN(res1) > 0 ? GMP_RNDU : GMP_RNDD;
+      r = MPFR_SIGN(res1) > 0 ? MPFR_RNDU : MPFR_RNDD;
       inexd = testfunc (ref1, ref2, ref3, r);
       if (mpfr_compare (res1, ref1) || inexa != inexd)
         {
@@ -360,7 +360,7 @@ test3a (int (*testfunc)(mpfr_ptr, mpfr_ptr, mpfr_srcptr, mp_rnd_t), char *foo)
         }
 
       /* now check wrt the second operand */
-      r = MPFR_SIGN(res2) > 0 ? GMP_RNDU : GMP_RNDD;
+      r = MPFR_SIGN(res2) > 0 ? MPFR_RNDU : MPFR_RNDD;
       inexd = testfunc (ref1, ref2, ref3, r);
       if (mpfr_compare (res2, ref2) || inexa != inexd)
         {

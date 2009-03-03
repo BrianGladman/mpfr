@@ -45,7 +45,7 @@ check (const char *xis, const char *xfs, const char *xs,
       printf ("mpfr_mof failed for x=%s, rnd=%s\n",
               xs, mpfr_print_rnd_mode(rnd_mode));
       printf ("got integer value: ");
-      mpfr_out_str (stdout, 10, 0, xi, GMP_RNDN);
+      mpfr_out_str (stdout, 10, 0, xi, MPFR_RNDN);
       printf ("\nexpected %s\n", xis);
       exit (1);
     }
@@ -54,7 +54,7 @@ check (const char *xis, const char *xfs, const char *xs,
       printf ("mpfr_mof failed for x=%s, rnd=%s\n",
               xs, mpfr_print_rnd_mode(rnd_mode));
       printf ("got fractional value: ");
-      mpfr_out_str (stdout, 10, 0, xf, GMP_RNDN);
+      mpfr_out_str (stdout, 10, 0, xf, MPFR_RNDN);
       printf ("\nexpected %s\n", xfs);
       exit (1);
     }
@@ -79,20 +79,20 @@ check_nans (void)
 
   /* nan */
   mpfr_set_nan (x);
-  mpfr_modf (xi, xf, x, GMP_RNDN);
+  mpfr_modf (xi, xf, x, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_nan_p (xi));
   MPFR_ASSERTN (mpfr_nan_p (xf));
 
   /* +inf */
   mpfr_set_inf (x, 1);
-  mpfr_modf (xi, xf, x, GMP_RNDN);
+  mpfr_modf (xi, xf, x, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_inf_p (xi));
   MPFR_ASSERTN (mpfr_sgn (xi) > 0);
   MPFR_ASSERTN (mpfr_zero_p (xf));
 
   /* -inf */
   mpfr_set_inf (x, -1);
-  mpfr_modf (xi ,xf, x, GMP_RNDN);
+  mpfr_modf (xi ,xf, x, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_inf_p (xi));
   MPFR_ASSERTN (mpfr_sgn (xi) < 0);
   MPFR_ASSERTN (mpfr_zero_p (xf));
@@ -110,16 +110,16 @@ main (int argc, char *argv[])
   check_nans ();
 
   check ("61680","3.52935791015625e-1", "61680.352935791015625",
-         53, 53, 53, 0, GMP_RNDZ);
+         53, 53, 53, 0, MPFR_RNDZ);
   check ("-53968","-3.529052734375e-1", "-53970.352935791015625",
-         13, 13, 53, 2, GMP_RNDZ);
+         13, 13, 53, 2, MPFR_RNDZ);
   check ("61632","3.525390625e-1",      "61648.352935791015625",
-         10, 10, 53, -2, GMP_RNDZ);
-  check ("61680", "0", "61680",  53, 53, 53, 0, GMP_RNDZ);
-  check ("-53968","0", "-53970", 13, 13, 53, 1, GMP_RNDZ);
-  check ("-43392","0", "-43399", 13, 13, 53, 1, GMP_RNDU);
-  check ("-52720","0", "-52719", 13, 13, 53, -1, GMP_RNDD);
-  check ("61632", "0", "61648",  10, 10, 53, -1, GMP_RNDZ);
+         10, 10, 53, -2, MPFR_RNDZ);
+  check ("61680", "0", "61680",  53, 53, 53, 0, MPFR_RNDZ);
+  check ("-53968","0", "-53970", 13, 13, 53, 1, MPFR_RNDZ);
+  check ("-43392","0", "-43399", 13, 13, 53, 1, MPFR_RNDU);
+  check ("-52720","0", "-52719", 13, 13, 53, -1, MPFR_RNDD);
+  check ("61632", "0", "61648",  10, 10, 53, -1, MPFR_RNDZ);
 
   tests_end_mpfr ();
   return 0;

@@ -39,7 +39,7 @@ main (int argc, char *argv[])
 
   mpfr_init (x);
 
-  mpfr_set_ui (x, 1, GMP_RNDN);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
   ret = mpfr_set_exp (x, 2);
   MPFR_ASSERTN(ret == 0 && mpfr_cmp_ui (x, 2) == 0);
 

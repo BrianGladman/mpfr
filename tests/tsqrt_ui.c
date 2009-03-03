@@ -37,7 +37,7 @@ check (unsigned long a, mp_rnd_t rnd_mode, const char *qs)
       printf ("mpfr_sqrt_ui failed for a=%lu, rnd_mode=%s\n",
               a, mpfr_print_rnd_mode (rnd_mode));
       printf ("sqrt gives %s, mpfr_sqrt_ui gives ", qs);
-      mpfr_out_str(stdout, 10, 0, q, GMP_RNDN);
+      mpfr_out_str(stdout, 10, 0, q, MPFR_RNDN);
       exit (1);
     }
   mpfr_clear (q);
@@ -48,8 +48,8 @@ main (void)
 {
   tests_start_mpfr ();
 
-  check (0, GMP_RNDN, "0.0");
-  check (2116118, GMP_RNDU, "1.45468828276026215e3");
+  check (0, MPFR_RNDN, "0.0");
+  check (2116118, MPFR_RNDU, "1.45468828276026215e3");
 
   tests_end_mpfr ();
   return 0;

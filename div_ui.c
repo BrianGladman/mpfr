@@ -112,7 +112,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
    * the divisor. The test must be performed with a subtraction, so as     *
    * to prevent carries.                                                   */
 
-  if (MPFR_LIKELY (rnd_mode == GMP_RNDN))
+  if (MPFR_LIKELY (rnd_mode == MPFR_RNDN))
     {
       if (c < (mp_limb_t) u - c) /* We have u > c */
         middle = -1;
@@ -185,7 +185,7 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
   MPFR_TMP_FREE (marker);
 
   if (exp < __gmpfr_emin - 1)
-    return mpfr_underflow (y, rnd_mode == GMP_RNDN ? GMP_RNDZ : rnd_mode,
+    return mpfr_underflow (y, rnd_mode == MPFR_RNDN ? MPFR_RNDZ : rnd_mode,
                            MPFR_SIGN (y));
 
   if (MPFR_UNLIKELY (d == 0 && inexact == 0))
@@ -195,18 +195,18 @@ mpfr_div_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mp_rnd_t rnd_mode)
       MPFR_UPDATE2_RND_MODE(rnd_mode, MPFR_SIGN (y));
       switch (rnd_mode)
         {
-        case GMP_RNDZ:
+        case MPFR_RNDZ:
           inexact = - MPFR_INT_SIGN (y);  /* result is inexact */
           nexttoinf = 0;
           break;
 
-        case GMP_RNDA:
+        case MPFR_RNDA:
           inexact = MPFR_INT_SIGN (y);
           nexttoinf = 1;
           break;
 
-        default: /* should be GMP_RNDN */
-          MPFR_ASSERTD (rnd_mode == GMP_RNDN);
+        default: /* should be MPFR_RNDN */
+          MPFR_ASSERTD (rnd_mode == MPFR_RNDN);
           /* We have one more significant bit in yn. */
           if (sh && d < (MPFR_LIMB_ONE << (sh - 1)))
             {

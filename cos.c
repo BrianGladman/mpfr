@@ -106,8 +106,8 @@ mpfr_cos2_aux (mpfr_ptr f, mpfr_srcptr r)
         mpz_add (s, s, t);
     }
 
-  mpfr_set_z (f, s, GMP_RNDN);
-  mpfr_div_2ui (f, f, p + q, GMP_RNDN);
+  mpfr_set_z (f, s, MPFR_RNDN);
+  mpfr_div_2ui (f, f, p + q, MPFR_RNDN);
 
   mpz_clear (x);
   mpz_clear (s);
@@ -179,14 +179,14 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
          It follows |cos(xr) - cos(x)| <= 2^(2-m). */
       if (reduce)
         {
-          mpfr_const_pi (c, GMP_RNDN);
-          mpfr_mul_2ui (c, c, 1, GMP_RNDN); /* 2Pi */
-          mpfr_remainder (xr, x, c, GMP_RNDN);
+          mpfr_const_pi (c, MPFR_RNDN);
+          mpfr_mul_2ui (c, c, 1, MPFR_RNDN); /* 2Pi */
+          mpfr_remainder (xr, x, c, MPFR_RNDN);
           /* now |xr| <= 4, thus r <= 16 below */
-          mpfr_mul (r, xr, xr, GMP_RNDU); /* err <= 1 ulp */
+          mpfr_mul (r, xr, xr, MPFR_RNDU); /* err <= 1 ulp */
         }
       else
-        mpfr_mul (r, x, x, GMP_RNDU); /* err <= 1 ulp */
+        mpfr_mul (r, x, x, MPFR_RNDU); /* err <= 1 ulp */
 
       /* now |x| < 4 (or xr if reduce = 1), thus |r| <= 16 */
 
@@ -204,9 +204,9 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       MPFR_SET_ONE (r);
       for (k = 0; k < K; k++)
         {
-          mpfr_sqr (s, s, GMP_RNDU);            /* err <= 2*olderr */
+          mpfr_sqr (s, s, MPFR_RNDU);            /* err <= 2*olderr */
           MPFR_SET_EXP (s, MPFR_GET_EXP (s) + 1); /* Can't overflow */
-          mpfr_sub (s, s, r, GMP_RNDN);         /* err <= 4*olderr */
+          mpfr_sub (s, s, r, MPFR_RNDN);         /* err <= 4*olderr */
           if (MPFR_IS_ZERO(s))
             goto ziv_next;
           MPFR_ASSERTD (MPFR_GET_EXP (s) <= 1);
@@ -233,7 +233,7 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
            than 2^(-precy) for directed rounding, or 2^(-precy-1) for rounding
            to nearest. */
         {
-          if (m > k && (m - k >= precy + (rnd_mode == GMP_RNDN)))
+          if (m > k && (m - k >= precy + (rnd_mode == MPFR_RNDN)))
             {
               /* If round to nearest or away, result is s = 1 or -1,
                  otherwise it is round(nexttoward (s, 0)). However in order to

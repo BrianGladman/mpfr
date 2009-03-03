@@ -56,10 +56,10 @@ mpfr_get_ld (mpfr_srcptr x, mp_rnd_t rnd_mode)
 
       r = 0.0;
       do {
-        s = mpfr_get_d (y, GMP_RNDN); /* high part of y */
+        s = mpfr_get_d (y, MPFR_RNDN); /* high part of y */
         r += (long double) s;
-        mpfr_set_d (z, s, GMP_RNDN);  /* exact */
-        mpfr_sub (y, y, z, GMP_RNDN); /* exact */
+        mpfr_set_d (z, s, MPFR_RNDN);  /* exact */
+        mpfr_sub (y, y, z, MPFR_RNDN); /* exact */
       } while (!MPFR_IS_ZERO (y));
 
       mpfr_clear (z);
@@ -115,7 +115,7 @@ mpfr_get_ld (mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   mpfr_init2 (tmp, MPFR_LDBL_MANT_DIG);
   mpfr_subnormalize(tmp, mpfr_set (tmp, x, rnd_mode), rnd_mode);
-  mpfr_prec_round (tmp, 64, GMP_RNDZ); /* exact */
+  mpfr_prec_round (tmp, 64, MPFR_RNDZ); /* exact */
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (tmp)))
     ld.ld = (long double) mpfr_get_d (tmp, rnd_mode);
   else

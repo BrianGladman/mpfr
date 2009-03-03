@@ -42,13 +42,13 @@ check_denorms (void)
 
   mpfr_init2 (x, BITS_PER_MP_LIMB);
 
-  rnd_mode = GMP_RNDN;
+  rnd_mode = MPFR_RNDN;
   for (k = -17; k <= 17; k += 2)
     {
       d = (double) k * dbl_min; /* k * 2^(-1022) */
       f = 1.0;
-      mpfr_set_si (x, k, GMP_RNDN);
-      mpfr_div_2exp (x, x, 1022, GMP_RNDN); /* k * 2^(-1022) */
+      mpfr_set_si (x, k, MPFR_RNDN);
+      mpfr_div_2exp (x, x, 1022, MPFR_RNDN); /* k * 2^(-1022) */
       for (n = 0; n <= 58; n++)
         {
           d2 = d * f;
@@ -61,7 +61,7 @@ check_denorms (void)
               fail = 1;
             }
           f *= 0.5;
-          mpfr_div_2exp (x, x, 1, GMP_RNDN);
+          mpfr_div_2exp (x, x, 1, MPFR_RNDN);
         }
     }
 
@@ -80,17 +80,17 @@ check_inf_nan (void)
   mpfr_init2 (x, 123);
 
   mpfr_set_inf (x, 1);
-  d = mpfr_get_d (x, GMP_RNDZ);
+  d = mpfr_get_d (x, MPFR_RNDZ);
   ASSERT_ALWAYS (d > 0);
   ASSERT_ALWAYS (DOUBLE_ISINF (d));
 
   mpfr_set_inf (x, -1);
-  d = mpfr_get_d (x, GMP_RNDZ);
+  d = mpfr_get_d (x, MPFR_RNDZ);
   ASSERT_ALWAYS (d < 0);
   ASSERT_ALWAYS (DOUBLE_ISINF (d));
 
   mpfr_set_nan (x);
-  d = mpfr_get_d (x, GMP_RNDZ);
+  d = mpfr_get_d (x, MPFR_RNDZ);
   ASSERT_ALWAYS (DOUBLE_ISNAN (d));
 
   mpfr_clear (x);
@@ -107,7 +107,7 @@ check_max (void)
   while (d < (DBL_MAX / 2.0))
     d += d;
   mpfr_init (u);
-  if (mpfr_set_d (u, d, GMP_RNDN) == 0)
+  if (mpfr_set_d (u, d, MPFR_RNDN) == 0)
     {
       /* If setting is exact */
       e = (mpfr_get_d1) (u);
@@ -119,23 +119,23 @@ check_max (void)
     }
 
   mpfr_set_str_binary (u, "-1E1024");
-  d = mpfr_get_d (u, GMP_RNDZ);
+  d = mpfr_get_d (u, MPFR_RNDZ);
   MPFR_ASSERTN(d == -DBL_MAX);
-  d = mpfr_get_d (u, GMP_RNDU);
+  d = mpfr_get_d (u, MPFR_RNDU);
   MPFR_ASSERTN(d == -DBL_MAX);
-  d = mpfr_get_d (u, GMP_RNDN);
+  d = mpfr_get_d (u, MPFR_RNDN);
   MPFR_ASSERTN(DOUBLE_ISINF(d) && d < 0.0);
-  d = mpfr_get_d (u, GMP_RNDD);
+  d = mpfr_get_d (u, MPFR_RNDD);
   MPFR_ASSERTN(DOUBLE_ISINF(d) && d < 0.0);
 
   mpfr_set_str_binary (u, "1E1024");
-  d = mpfr_get_d (u, GMP_RNDZ);
+  d = mpfr_get_d (u, MPFR_RNDZ);
   MPFR_ASSERTN(d == DBL_MAX);
-  d = mpfr_get_d (u, GMP_RNDD);
+  d = mpfr_get_d (u, MPFR_RNDD);
   MPFR_ASSERTN(d == DBL_MAX);
-  d = mpfr_get_d (u, GMP_RNDN);
+  d = mpfr_get_d (u, MPFR_RNDN);
   MPFR_ASSERTN(DOUBLE_ISINF(d) && d > 0.0);
-  d = mpfr_get_d (u, GMP_RNDU);
+  d = mpfr_get_d (u, MPFR_RNDU);
   MPFR_ASSERTN(DOUBLE_ISINF(d) && d > 0.0);
 
   mpfr_clear (u);
@@ -149,7 +149,7 @@ check_min(void)
 
   d = 1.0; while (d > (DBL_MIN * 2.0)) d /= 2.0;
   mpfr_init(u);
-  if (mpfr_set_d(u, d, GMP_RNDN) == 0)
+  if (mpfr_set_d(u, d, MPFR_RNDN) == 0)
     {
       /* If setting is exact */
       e = mpfr_get_d1(u);

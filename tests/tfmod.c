@@ -57,10 +57,10 @@ slow_fmod (mpfr_ptr r, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd)
      then |x/y| < 2^(ex-ey+1) */
   mpfr_init2 (q,
               MAX (MPFR_PREC_MIN, mpfr_get_exp (x) - mpfr_get_exp (y) + 1));
-  mpfr_div (q, x, y, GMP_RNDZ);
+  mpfr_div (q, x, y, MPFR_RNDZ);
   mpfr_trunc (q, q);                            /* may change inexact flag */
-  mpfr_prec_round (q, mpfr_get_prec (q) + mpfr_get_prec (y), GMP_RNDZ);
-  inexact = mpfr_mul (q, q, y, GMP_RNDZ);       /* exact */
+  mpfr_prec_round (q, mpfr_get_prec (q) + mpfr_get_prec (y), MPFR_RNDZ);
+  inexact = mpfr_mul (q, q, y, MPFR_RNDZ);       /* exact */
   inexact = mpfr_sub (r, x, q, rnd);
   mpfr_clear (q);
   return inexact;
@@ -70,14 +70,14 @@ static void
 test_failed (mpfr_t erem, mpfr_t grem, mpfr_t x, mpfr_t y, mp_rnd_t rnd)
 {
   printf ("error : mpfr_fmod (r, x, y, rnd)\n  x = ");
-  mpfr_out_str (stdout, 10, 0, x, GMP_RNDD);
+  mpfr_out_str (stdout, 10, 0, x, MPFR_RNDD);
   printf ("\n  y = ");
-  mpfr_out_str (stdout, 10, 0, y, GMP_RNDD);
+  mpfr_out_str (stdout, 10, 0, y, MPFR_RNDD);
   printf ("\nrnd = %s\n", mpfr_print_rnd_mode (rnd));
   printf ("\n  expected r = ");
-  mpfr_out_str (stdout, 10, 0, erem, GMP_RNDD);
+  mpfr_out_str (stdout, 10, 0, erem, MPFR_RNDD);
   printf ("\n  got      r = ");
-  mpfr_out_str (stdout, 10, 0, grem, GMP_RNDD);
+  mpfr_out_str (stdout, 10, 0, grem, MPFR_RNDD);
   putchar ('\n');
 
   mpfr_clears (erem, grem, x, y, (mpfr_ptr) 0);
@@ -109,9 +109,9 @@ special (void)
   /* NaN mod NaN is NaN */
   mpfr_set_nan (x);
   mpfr_set_nan (y);
-  inexact = mpfr_fmod (r, x, y, GMP_RNDN);
+  inexact = mpfr_fmod (r, x, y, MPFR_RNDN);
   if (!mpfr_nan_p (r))
-    test_failed (r, x, x, y, GMP_RNDN);
+    test_failed (r, x, x, y, MPFR_RNDN);
   if (inexact)
     {
       printf ("error : mpfr_fmod (NaN, NaN) should be exact\n");
@@ -119,10 +119,10 @@ special (void)
     }
 
   /* NaN mod +0 is NaN */
-  mpfr_set_ui (y, 0, GMP_RNDN);
-  inexact = mpfr_fmod (r, x, y, GMP_RNDN);
+  mpfr_set_ui (y, 0, MPFR_RNDN);
+  inexact = mpfr_fmod (r, x, y, MPFR_RNDN);
   if (!mpfr_nan_p (r))
-    test_failed (r, x, x, y, GMP_RNDN);
+    test_failed (r, x, x, y, MPFR_RNDN);
   if (inexact)
     {
       printf ("error : mpfr_fmod (NaN, +0) should be exact\n");
@@ -130,10 +130,10 @@ special (void)
     }
 
   /* 3.1415 mod +0 is NaN */
-  mpfr_set_d (x, 3.1415, GMP_RNDN);
-  inexact = mpfr_fmod (r, x, y, GMP_RNDN);
+  mpfr_set_d (x, 3.1415, MPFR_RNDN);
+  inexact = mpfr_fmod (r, x, y, MPFR_RNDN);
   if (!mpfr_nan_p (r))
-    test_failed (r, x, x, y, GMP_RNDN);
+    test_failed (r, x, x, y, MPFR_RNDN);
   if (inexact)
     {
       printf ("error : mpfr_fmod (3.1415, NaN) should be exact\n");
@@ -142,9 +142,9 @@ special (void)
 
   /* 3.1415 mod +Inf is 3.1415 */
   mpfr_set_inf (y, 1);
-  inexact = mpfr_fmod (r, x, y, GMP_RNDN);
+  inexact = mpfr_fmod (r, x, y, MPFR_RNDN);
   if (MPFR_IS_SINGULAR (r))
-    test_failed (r, x, x, y, GMP_RNDN);
+    test_failed (r, x, x, y, MPFR_RNDN);
   if (inexact)
     {
       printf ("error : mpfr_fmod (3.1415, +Inf) should be exact\n");
@@ -174,27 +174,27 @@ main (int argc, char *argv[])
   special ();
 
   /* remainder = 0 */
-  mpfr_set_str (y, "FEDCBA987654321p-64", 16, GMP_RNDN);
-  mpfr_pow_ui (x, y, 42, GMP_RNDN);
-  check (r, x, y, GMP_RNDN);
+  mpfr_set_str (y, "FEDCBA987654321p-64", 16, MPFR_RNDN);
+  mpfr_pow_ui (x, y, 42, MPFR_RNDN);
+  check (r, x, y, MPFR_RNDN);
 
   /* x < y */
-  mpfr_mul_d (x, y, .12345, GMP_RNDN);
-  check (r, x, y, GMP_RNDN);
+  mpfr_mul_d (x, y, .12345, MPFR_RNDN);
+  check (r, x, y, MPFR_RNDN);
 
   /* sign(x) = sign (r) */
-  mpfr_set_str (x, "123798", 10, GMP_RNDN);
-  mpfr_set_str (y, "10", 10, GMP_RNDN);
-  check (r, x, y, GMP_RNDN);
+  mpfr_set_str (x, "123798", 10, MPFR_RNDN);
+  mpfr_set_str (y, "10", 10, MPFR_RNDN);
+  check (r, x, y, MPFR_RNDN);
 
   /* huge difference between precisions */
   mpfr_set_prec (x, 314);
-  mpfr_const_pi (x, GMP_RNDD); /* x = pi */
+  mpfr_const_pi (x, MPFR_RNDD); /* x = pi */
   mpfr_set_prec (y, 8);
-  mpfr_set_ui (y, 1, GMP_RNDD);
-  mpfr_div_2ui (y, y, 3, GMP_RNDD); /* y = 1/8 */
+  mpfr_set_ui (y, 1, MPFR_RNDD);
+  mpfr_div_2ui (y, y, 3, MPFR_RNDD); /* y = 1/8 */
   mpfr_set_prec (r, 123);
-  check (r, x, y, GMP_RNDD);
+  check (r, x, y, MPFR_RNDD);
   mpfr_clears (x, y, r, (mpfr_ptr) 0);
 
   tests_end_mpfr ();

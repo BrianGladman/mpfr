@@ -64,11 +64,11 @@ main (int argc, char *argv[])
           mpfr_urandomb (x, RANDS);
           mpfr_urandomb (s, RANDS);
           if (randlimb () % 2)
-            mpfr_neg (s, s, GMP_RNDN);
+            mpfr_neg (s, s, MPFR_RNDN);
           rnd = RND_RAND ();
           mpfr_set_prec (y, yprec);
           compare = mpfr_pow (y, x, s, rnd);
-          err = (rnd == GMP_RNDN) ? yprec + 1 : yprec;
+          err = (rnd == MPFR_RNDN) ? yprec + 1 : yprec;
           if (mpfr_can_round (y, err, rnd, rnd, prec))
             {
               mpfr_set (t, y, rnd);
@@ -76,16 +76,16 @@ main (int argc, char *argv[])
               if (mpfr_cmp (t, z))
                 {
                   printf ("results differ for x^y with x=");
-                  mpfr_out_str (stdout, 2, prec, x, GMP_RNDN);
+                  mpfr_out_str (stdout, 2, prec, x, MPFR_RNDN);
                   printf (" y=");
-                  mpfr_out_str (stdout, 2, 0, s, GMP_RNDN);
+                  mpfr_out_str (stdout, 2, 0, s, MPFR_RNDN);
                   printf (" prec=%u rnd_mode=%s\n", (unsigned int) prec,
                           mpfr_print_rnd_mode (rnd));
                   printf ("got      ");
-                  mpfr_out_str (stdout, 2, prec, z, GMP_RNDN);
+                  mpfr_out_str (stdout, 2, prec, z, MPFR_RNDN);
                   puts ("");
                   printf ("expected ");
-                  mpfr_out_str (stdout, 2, prec, t, GMP_RNDN);
+                  mpfr_out_str (stdout, 2, prec, t, MPFR_RNDN);
                   puts ("");
                   printf ("approx  ");
                   mpfr_print_binary (y);
@@ -95,7 +95,7 @@ main (int argc, char *argv[])
               compare2 = mpfr_cmp (t, y);
               /* if rounding to nearest, cannot know the sign of t - f(x)
                  because of composed rounding: y = o(f(x)) and t = o(y) */
-              if ((rnd != GMP_RNDN) && (compare * compare2 >= 0))
+              if ((rnd != MPFR_RNDN) && (compare * compare2 >= 0))
                 compare = compare + compare2;
               else
                 compare = inexact; /* cannot determine sign(t-f(x)) */

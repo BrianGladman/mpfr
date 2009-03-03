@@ -68,7 +68,7 @@ check_set_get (long double d, mpfr_t x)
   long double e;
   int inex;
 
-  for (r = 0; r < GMP_RND_MAX; r++)
+  for (r = 0; r < MPFR_RND_MAX; r++)
     {
       inex = mpfr_set_ld (x, d, (mp_rnd_t) r);
       if (inex != 0)
@@ -88,7 +88,7 @@ check_set_get (long double d, mpfr_t x)
           printf ("  r=%d\n", r);
           printf ("  d=%1.30Le get_ld(set_ld(d))=%1.30Le\n", d, e);
           ld_trace ("  d", d);
-          printf ("  x="); mpfr_out_str (NULL, 16, 0, x, GMP_RNDN);
+          printf ("  x="); mpfr_out_str (NULL, 16, 0, x, MPFR_RNDN);
           printf ("\n");
           ld_trace ("  e", e);
 #ifdef MPFR_NANISNAN
@@ -113,28 +113,28 @@ test_small (void)
   mpfr_init2 (z, 64);
 
   /* x = 11906603631607553907/2^(16381+64) */
-  mpfr_set_str (x, "0.1010010100111100110000001110101101000111010110000001111101110011E-16381", 2, GMP_RNDN);
-  d = mpfr_get_ld (x, GMP_RNDN);  /* infinite loop? */
-  mpfr_set_ld (y, d, GMP_RNDN);
-  mpfr_sub (z, x, y, GMP_RNDN);
-  mpfr_abs (z, z, GMP_RNDN);
+  mpfr_set_str (x, "0.1010010100111100110000001110101101000111010110000001111101110011E-16381", 2, MPFR_RNDN);
+  d = mpfr_get_ld (x, MPFR_RNDN);  /* infinite loop? */
+  mpfr_set_ld (y, d, MPFR_RNDN);
+  mpfr_sub (z, x, y, MPFR_RNDN);
+  mpfr_abs (z, z, MPFR_RNDN);
   mpfr_clear_erangeflag ();
   /* If long double = double, d should be equal to 0;
      in this case, everything is OK. */
-  if (d != 0 && (mpfr_cmp_str (z, "1E-16434", 2, GMP_RNDN) > 0 ||
+  if (d != 0 && (mpfr_cmp_str (z, "1E-16434", 2, MPFR_RNDN) > 0 ||
                  mpfr_erangeflag_p ()))
     {
       printf ("Error with x = ");
-      mpfr_out_str (NULL, 10, 21, x, GMP_RNDN);
+      mpfr_out_str (NULL, 10, 21, x, MPFR_RNDN);
       printf (" = ");
-      mpfr_out_str (NULL, 16, 0, x, GMP_RNDN);
+      mpfr_out_str (NULL, 16, 0, x, MPFR_RNDN);
       printf ("\n        -> d = %.21Lg", d);
       printf ("\n        -> y = ");
-      mpfr_out_str (NULL, 10, 21, y, GMP_RNDN);
+      mpfr_out_str (NULL, 10, 21, y, MPFR_RNDN);
       printf (" = ");
-      mpfr_out_str (NULL, 16, 0, y, GMP_RNDN);
+      mpfr_out_str (NULL, 16, 0, y, MPFR_RNDN);
       printf ("\n        -> |x-y| = ");
-      mpfr_out_str (NULL, 16, 0, z, GMP_RNDN);
+      mpfr_out_str (NULL, 16, 0, z, MPFR_RNDN);
       printf ("\n");
       exit (1);
     }
@@ -171,7 +171,7 @@ main (int argc, char *argv[])
 
   /* check NaN */
   mpfr_set_nan (x);
-  d = mpfr_get_ld (x, GMP_RNDN);
+  d = mpfr_get_ld (x, MPFR_RNDN);
   check_set_get (d, x);
 
   /* check +0.0 and -0.0 */
@@ -181,7 +181,7 @@ main (int argc, char *argv[])
   check_set_get (d, x);
 
   /* check that the sign of -0.0 is set */
-  mpfr_set_ld (x, DBL_NEG_ZERO, GMP_RNDN);
+  mpfr_set_ld (x, DBL_NEG_ZERO, MPFR_RNDN);
   if (MPFR_SIGN(x) > 0)
     {
       printf ("Error: sign of -0.0 is not set correctly\n");
@@ -193,12 +193,12 @@ main (int argc, char *argv[])
 
   /* check +Inf */
   mpfr_set_inf (x, 1);
-  d = mpfr_get_ld (x, GMP_RNDN);
+  d = mpfr_get_ld (x, MPFR_RNDN);
   check_set_get (d, x);
 
   /* check -Inf */
   mpfr_set_inf (x, -1);
-  d = mpfr_get_ld (x, GMP_RNDN);
+  d = mpfr_get_ld (x, MPFR_RNDN);
   check_set_get (d, x);
 
   /* check the largest power of two */
@@ -235,7 +235,7 @@ main (int argc, char *argv[])
   for (i = 0; i < 10000; i++)
     {
       mpfr_urandomb (x, RANDS);
-      d = mpfr_get_ld (x, GMP_RNDN);
+      d = mpfr_get_ld (x, MPFR_RNDN);
       check_set_get (d, x);
     }
 
@@ -243,11 +243,11 @@ main (int argc, char *argv[])
   emax = mpfr_get_emax ();
   mpfr_set_prec (x, 2);
   set_emax (1);
-  mpfr_set_ld (x, (long double) 2.0, GMP_RNDN);
+  mpfr_set_ld (x, (long double) 2.0, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
   for (d = (long double) 2.0, i = 0; i < 13; i++, d *= d);
   /* now d = 2^8192 */
-  mpfr_set_ld (x, d, GMP_RNDN);
+  mpfr_set_ld (x, d, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
   set_emax (emax);
 

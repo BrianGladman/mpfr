@@ -182,7 +182,7 @@ specinfo_init (struct printf_spec *specinfo)
   specinfo->width = 0;
   specinfo->prec = 0;
   specinfo->arg_type = NONE;
-  specinfo->rnd_mode = GMP_RNDN;
+  specinfo->rnd_mode = MPFR_RNDN;
   specinfo->spec = 'i';
   specinfo->pad = ' ';
 }
@@ -788,9 +788,9 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
          0 if round to zero,
          -1 if not decided yet. */
       rnd_away =
-        spec.rnd_mode == GMP_RNDD ? MPFR_IS_NEG (p) :
-        spec.rnd_mode == GMP_RNDU ? MPFR_IS_POS (p) :
-        spec.rnd_mode == GMP_RNDZ ? 0 : -1;
+        spec.rnd_mode == MPFR_RNDD ? MPFR_IS_NEG (p) :
+        spec.rnd_mode == MPFR_RNDU ? MPFR_IS_POS (p) :
+        spec.rnd_mode == MPFR_RNDZ ? 0 : -1;
 
       /* exponent for radix-2 with the decimal point after the first
          hexadecimal digit */
@@ -1141,22 +1141,22 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
 
           /* compare y = |p| and 1 - 10^(-spec.prec) */
           MPFR_ALIAS (y, p, 1, MPFR_EXP (p));
-          mpfr_set_si (u, -spec.prec, GMP_RNDN); /* FIXME: analyze error */
-          mpfr_exp10 (u, u, GMP_RNDN);
-          mpfr_ui_sub (x, 1, u, GMP_RNDN);
+          mpfr_set_si (u, -spec.prec, MPFR_RNDN); /* FIXME: analyze error */
+          mpfr_exp10 (u, u, MPFR_RNDN);
+          mpfr_ui_sub (x, 1, u, MPFR_RNDN);
 
           rnd_to_one =
             mpfr_cmp (y, x) < 0 ? 0 :
-            spec.rnd_mode == GMP_RNDD ? MPFR_IS_NEG (p) :
-            spec.rnd_mode == GMP_RNDU ? MPFR_IS_POS (p) :
-            spec.rnd_mode == GMP_RNDZ ? 0 : -1;
+            spec.rnd_mode == MPFR_RNDD ? MPFR_IS_NEG (p) :
+            spec.rnd_mode == MPFR_RNDU ? MPFR_IS_POS (p) :
+            spec.rnd_mode == MPFR_RNDZ ? 0 : -1;
 
           if (rnd_to_one == -1)
             /* round to nearest mode */
             {
               /* round to 1 iff y = |p| > 1 - 0.5 * 10^(-spec.prec) */
-              mpfr_div_2ui (x, u, 1, GMP_RNDN);
-              mpfr_ui_sub (x, 1, x, GMP_RNDN);
+              mpfr_div_2ui (x, u, 1, MPFR_RNDN);
+              mpfr_ui_sub (x, 1, x, MPFR_RNDN);
 
               rnd_to_one = mpfr_cmp (y, x) > 0 ? 1 : 0;
             }
@@ -1206,9 +1206,9 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
               mpfr_t y;
 
               MPFR_ALIAS (y, p, 1, MPFR_EXP (p)); /* y = |p| */
-              mpfr_log10 (x, y, GMP_RNDD); /* FIXME: analyze error */
+              mpfr_log10 (x, y, MPFR_RNDD); /* FIXME: analyze error */
               mpfr_floor (x, x);
-              mpfr_abs (x, x, GMP_RNDD);
+              mpfr_abs (x, x, MPFR_RNDD);
               /* We have rounded away from zero so that x == |e| (with
                  p = m*10^e, see above). */
 
@@ -1224,17 +1224,17 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
                      0 if round to zero,
                      -1 if not decided yet. */
                   rnd_away =
-                    spec.rnd_mode == GMP_RNDD ? MPFR_IS_NEG (p) :
-                    spec.rnd_mode == GMP_RNDU ? MPFR_IS_POS (p) :
-                    spec.rnd_mode == GMP_RNDZ ? 0 : -1;
+                    spec.rnd_mode == MPFR_RNDD ? MPFR_IS_NEG (p) :
+                    spec.rnd_mode == MPFR_RNDU ? MPFR_IS_POS (p) :
+                    spec.rnd_mode == MPFR_RNDZ ? 0 : -1;
 
                   if (rnd_away == -1)
                     /* round to nearest mode */
                     {
                       /* round away iff |p| with x = 0.5 * 10^(-spec.prec) */
-                      mpfr_set_si (x, -spec.prec, GMP_RNDN);
-                      mpfr_exp10 (x, x, GMP_RNDN);
-                      mpfr_div_2ui (x, x, 1, GMP_RNDN);
+                      mpfr_set_si (x, -spec.prec, MPFR_RNDN);
+                      mpfr_exp10 (x, x, MPFR_RNDN);
+                      mpfr_div_2ui (x, x, 1, MPFR_RNDN);
 
                       rnd_away = mpfr_cmp (y, x) > 0 ? 1 : 0;
                     }
@@ -1268,7 +1268,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
                   char *ptr;
                   size_t str_len;
                   const size_t nsd = spec.prec < 0 ? 0
-                    : spec.prec - mpfr_get_ui (x, GMP_RNDZ) + 1;
+                    : spec.prec - mpfr_get_ui (x, MPFR_RNDZ) + 1;
                   /* WARNING: nsd may equal 1, we use here the fact that
                      mpfr_get_str can return one digit with base ten
                      (undocumented feature, see comments in get_str.c) */
@@ -1318,11 +1318,11 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
       mp_exp_t exp;
       size_t nsd;  /* Number of significant digits */
 
-      mpfr_abs (x, p, GMP_RNDD); /* With our choice of precision,
+      mpfr_abs (x, p, MPFR_RNDD); /* With our choice of precision,
                                     x == |p| exactly. */
-      mpfr_log10 (x, x, GMP_RNDZ);
+      mpfr_log10 (x, x, MPFR_RNDZ);
       mpfr_floor (x, x);
-      mpfr_add_ui (x, x, 1, GMP_RNDZ);
+      mpfr_add_ui (x, x, 1, MPFR_RNDZ);
       /* We have rounded towards zero so that x == e + 1 (with p = m*10^e,
          see above). x is now the number of digits in the integral part. */
 
@@ -1334,7 +1334,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
           return -1;
         }
 
-      np->ip_size = mpfr_get_ui (x, GMP_RNDN);
+      np->ip_size = mpfr_get_ui (x, MPFR_RNDN);
 
       nsd = spec.prec < 0 ? 0 : spec.prec + np->ip_size;
       str = mpfr_get_str (NULL, &exp, 10, nsd, p, spec.rnd_mode);
@@ -1600,8 +1600,8 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
             mpfr_t z;
 
             mpfr_init2 (z, 53);
-            mpfr_log10 (z, y, GMP_RNDD);
-            x = mpfr_get_si (z, GMP_RNDD);
+            mpfr_log10 (z, y, MPFR_RNDD);
+            x = mpfr_get_si (z, MPFR_RNDD);
             mpfr_clear (z);
           }
 
@@ -1617,9 +1617,9 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
                      0 if not,
                      -1 if not decided yet. */
                   round_to_1em4 =
-                    spec.rnd_mode == GMP_RNDD ? MPFR_IS_NEG (p) :
-                    spec.rnd_mode == GMP_RNDU ? MPFR_IS_POS (p) :
-                    spec.rnd_mode == GMP_RNDZ ? 0 : -1;
+                    spec.rnd_mode == MPFR_RNDD ? MPFR_IS_NEG (p) :
+                    spec.rnd_mode == MPFR_RNDU ? MPFR_IS_POS (p) :
+                    spec.rnd_mode == MPFR_RNDZ ? 0 : -1;
 
                   if (round_to_1em4 == -1)
                     /* round to nearest mode: |p| is output as "1e-04" iff
@@ -1628,14 +1628,14 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
                       mpfr_t z;
 
                       mpfr_init2 (z, MPFR_PREC (p)); /* FIXME: analyse error*/
-                      mpfr_set_si (z, -threshold, GMP_RNDN);
-                      mpfr_exp10 (z, z, GMP_RNDN);
-                      mpfr_div_2ui (z, z, 1, GMP_RNDN);
-                      mpfr_ui_sub (z, 1, z, GMP_RNDN);
+                      mpfr_set_si (z, -threshold, MPFR_RNDN);
+                      mpfr_exp10 (z, z, MPFR_RNDN);
+                      mpfr_div_2ui (z, z, 1, MPFR_RNDN);
+                      mpfr_ui_sub (z, 1, z, MPFR_RNDN);
                       /* here, z = 1 - 10^(-threshold)/2 */
 
-                      mpfr_div_ui (z, z, 625, GMP_RNDN);
-                      mpfr_div_2ui (z, z, 4, GMP_RNDN);
+                      mpfr_div_ui (z, z, 625, MPFR_RNDN);
+                      mpfr_div_2ui (z, z, 4, MPFR_RNDN);
 
                       round_to_1em4 = mpfr_cmp (y, z) < 0 ? 0 : 1;
                       mpfr_clear (z);
@@ -1889,20 +1889,20 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
               break;
             case 'D':
               ++fmt;
-              spec.rnd_mode = GMP_RNDD;
+              spec.rnd_mode = MPFR_RNDD;
               break;
             case 'U':
               ++fmt;
-              spec.rnd_mode = GMP_RNDU;
+              spec.rnd_mode = MPFR_RNDU;
               break;
             case 'Z':
               ++fmt;
-              spec.rnd_mode = GMP_RNDZ;
+              spec.rnd_mode = MPFR_RNDZ;
               break;
             case 'N':
               ++fmt;
             default:
-              spec.rnd_mode = GMP_RNDN;
+              spec.rnd_mode = MPFR_RNDN;
             }
         }
 

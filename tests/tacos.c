@@ -38,7 +38,7 @@ special (void)
   mpfr_init2 (y, 32);
 
   mpfr_set_str_binary (x, "0.10001000001001011000100001E-6");
-  mpfr_acos (y, x, GMP_RNDN);
+  mpfr_acos (y, x, MPFR_RNDN);
   mpfr_set_str_binary (x, "1.10001111111111110001110110001");
   if (mpfr_cmp (x, y))
     {
@@ -47,7 +47,7 @@ special (void)
     }
 
   mpfr_set_str_binary (x, "-0.01101011110111100111010011001011");
-  mpfr_acos (y, x, GMP_RNDZ);
+  mpfr_acos (y, x, MPFR_RNDZ);
   mpfr_set_str_binary (x, "10.0000000101111000011101000101");
   if (mpfr_cmp (x, y))
     {
@@ -57,9 +57,9 @@ special (void)
     }
 
   mpfr_set_prec (x, 2);
-  mpfr_set_ui (x, 0, GMP_RNDN);
-  inex1 = mpfr_acos (x, x, GMP_RNDN); /* Pi/2 */
-  inex2 = mpfr_const_pi (x, GMP_RNDN);
+  mpfr_set_ui (x, 0, MPFR_RNDN);
+  inex1 = mpfr_acos (x, x, MPFR_RNDN); /* Pi/2 */
+  inex2 = mpfr_const_pi (x, MPFR_RNDN);
   if (inex1 != inex2)
     {
       printf ("Error in mpfr_acos (3) for prec=2\n");
@@ -84,9 +84,9 @@ special_overflow (void)
   mpfr_init2 (x, 24);
   mpfr_init2 (y, 48);
   mpfr_set_str_binary (x, "0.101100100000000000110100E0");
-  mpfr_acos (y, x, GMP_RNDN);
+  mpfr_acos (y, x, MPFR_RNDN);
   if (mpfr_cmp_str (y, "0.110011010100101111000100111010111011010000001001E0",
-                    2, GMP_RNDN))
+                    2, MPFR_RNDN))
     {
       printf("Special Overflow error.\n");
       mpfr_dump (y);
@@ -113,23 +113,23 @@ main (void)
   mpfr_init (y);
 
   MPFR_SET_NAN(x);
-  mpfr_acos (y, x, GMP_RNDN);
+  mpfr_acos (y, x, MPFR_RNDN);
   if (mpfr_nan_p(y) == 0)
     {
       printf ("Error: acos(NaN) != NaN\n");
       exit (1);
     }
 
-  mpfr_set_ui (x, 2, GMP_RNDN);
-  mpfr_acos (y, x, GMP_RNDN);
+  mpfr_set_ui (x, 2, MPFR_RNDN);
+  mpfr_acos (y, x, MPFR_RNDN);
   if (mpfr_nan_p(y) == 0)
     {
       printf ("Error: acos(2) != NaN\n");
       exit (1);
     }
 
-  mpfr_set_si (x, -2, GMP_RNDN);
-  mpfr_acos (y, x, GMP_RNDN);
+  mpfr_set_si (x, -2, MPFR_RNDN);
+  mpfr_acos (y, x, MPFR_RNDN);
   if (mpfr_nan_p(y) == 0)
     {
       printf ("Error: acos(-2) != NaN\n");
@@ -137,8 +137,8 @@ main (void)
     }
 
   /* acos (1) = 0 */
-  mpfr_set_ui (x, 1, GMP_RNDN);
-  mpfr_acos (y, x, GMP_RNDN);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_acos (y, x, MPFR_RNDN);
   if (mpfr_cmp_ui (y, 0) || mpfr_sgn (y) < 0)
     {
       printf ("Error: acos(1) != +0.0\n");
@@ -146,12 +146,12 @@ main (void)
     }
 
   /* acos (0) = Pi/2 */
-  for (r = 0; r < GMP_RND_MAX; r++)
+  for (r = 0; r < MPFR_RND_MAX; r++)
     {
-      mpfr_set_ui (x, 0, GMP_RNDN); /* exact */
+      mpfr_set_ui (x, 0, MPFR_RNDN); /* exact */
       mpfr_acos (y, x, (mp_rnd_t) r);
       mpfr_const_pi (x, (mp_rnd_t) r);
-      mpfr_div_2exp (x, x, 1, GMP_RNDN); /* exact */
+      mpfr_div_2exp (x, x, 1, MPFR_RNDN); /* exact */
       if (mpfr_cmp (x, y))
         {
           printf ("Error: acos(0) != Pi/2 for rnd=%s\n",
@@ -161,9 +161,9 @@ main (void)
     }
 
   /* acos (-1) = Pi */
-  for (r = 0; r < GMP_RND_MAX; r++)
+  for (r = 0; r < MPFR_RND_MAX; r++)
     {
-      mpfr_set_si (x, -1, GMP_RNDN); /* exact */
+      mpfr_set_si (x, -1, MPFR_RNDN); /* exact */
       mpfr_acos (y, x, (mp_rnd_t) r);
       mpfr_const_pi (x, (mp_rnd_t) r);
       if (mpfr_cmp (x, y))

@@ -34,11 +34,11 @@ large_test (int prec, int N)
   mpfr_init2 (x, prec);
   mpfr_init2 (s, prec);
   mpfr_init2 (c, prec);
-  mpfr_set_ui (x, 3, GMP_RNDN);
-  mpfr_sqrt (x, x, GMP_RNDN);
+  mpfr_set_ui (x, 3, MPFR_RNDN);
+  mpfr_sqrt (x, x, MPFR_RNDN);
   for (i=0; i<N; i++)
-    mpfr_sin_cos (s, c, x, GMP_RNDN);
-  mpfr_out_str (stdout, 10, 0, s, GMP_RNDN); puts ("");
+    mpfr_sin_cos (s, c, x, MPFR_RNDN);
+  mpfr_out_str (stdout, 10, 0, s, MPFR_RNDN); puts ("");
   mpfr_clear (x);
   mpfr_clear (s);
   mpfr_clear (c);
@@ -58,7 +58,7 @@ check53 (const char *xs, const char *sin_xs, const char *cos_xs,
       printf ("mpfr_sin_cos failed for x=%s, rnd=%s\n",
               xs, mpfr_print_rnd_mode (rnd_mode));
       printf ("mpfr_sin_cos gives sin(x)=");
-      mpfr_out_str(stdout, 10, 0, s, GMP_RNDN);
+      mpfr_out_str(stdout, 10, 0, s, MPFR_RNDN);
       printf(", expected %s\n", sin_xs);
       exit (1);
     }
@@ -67,7 +67,7 @@ check53 (const char *xs, const char *sin_xs, const char *cos_xs,
       printf ("mpfr_sin_cos failed for x=%s, rnd=%s\n",
               xs, mpfr_print_rnd_mode (rnd_mode));
       printf ("mpfr_sin_cos gives cos(x)=");
-      mpfr_out_str(stdout, 10, 0, c, GMP_RNDN);
+      mpfr_out_str(stdout, 10, 0, c, MPFR_RNDN);
       printf(", expected %s\n", cos_xs);
       exit (1);
     }
@@ -87,7 +87,7 @@ check53sin (const char *xs, const char *sin_xs, mp_rnd_t rnd_mode)
       printf ("mpfr_sin_cos failed for x=%s, rnd=%s\n",
               xs, mpfr_print_rnd_mode (rnd_mode));
       printf ("mpfr_sin_cos gives sin(x)=");
-      mpfr_out_str(stdout, 10, 0, s, GMP_RNDN);
+      mpfr_out_str(stdout, 10, 0, s, MPFR_RNDN);
       printf(", expected %s\n", sin_xs);
       exit (1);
     }
@@ -107,7 +107,7 @@ check53cos (const char *xs, const char *cos_xs, mp_rnd_t rnd_mode)
       printf ("mpfr_sin_cos failed for x=%s, rnd=%s\n",
               xs, mpfr_print_rnd_mode (rnd_mode));
       printf ("mpfr_sin_cos gives cos(x)=");
-      mpfr_out_str(stdout, 10, 0, c, GMP_RNDN);
+      mpfr_out_str(stdout, 10, 0, c, MPFR_RNDN);
       printf(", expected %s\n", cos_xs);
       exit (1);
     }
@@ -125,38 +125,38 @@ check_nans (void)
 
   /* sin(NaN)==NaN, cos(NaN)==NaN */
   mpfr_set_nan (x);
-  mpfr_sin_cos (s, c, x, GMP_RNDN);
+  mpfr_sin_cos (s, c, x, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_nan_p (s));
   MPFR_ASSERTN (mpfr_nan_p (c));
 
   /* sin(+Inf)==NaN, cos(+Inf)==NaN */
   mpfr_set_inf (x, 1);
-  mpfr_sin_cos (s, c, x, GMP_RNDN);
+  mpfr_sin_cos (s, c, x, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_nan_p (s));
   MPFR_ASSERTN (mpfr_nan_p (c));
 
   /* sin(-Inf)==NaN, cos(-Inf)==NaN */
   mpfr_set_inf (x, -1);
-  mpfr_sin_cos (s, c, x, GMP_RNDN);
+  mpfr_sin_cos (s, c, x, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_nan_p (s));
   MPFR_ASSERTN (mpfr_nan_p (c));
 
   /* check zero */
-  mpfr_set_ui  (x, 0, GMP_RNDN);
-  mpfr_sin_cos (s, c, x, GMP_RNDN);
+  mpfr_set_ui  (x, 0, MPFR_RNDN);
+  mpfr_sin_cos (s, c, x, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_cmp_ui (s, 0) == 0 && MPFR_IS_POS (s));
   MPFR_ASSERTN (mpfr_cmp_ui (c, 1) == 0);
-  mpfr_neg (x, x, GMP_RNDN);
-  mpfr_sin_cos (s, c, x, GMP_RNDN);
+  mpfr_neg (x, x, MPFR_RNDN);
+  mpfr_sin_cos (s, c, x, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_cmp_ui (s, 0) == 0 && MPFR_IS_NEG (s));
   MPFR_ASSERTN (mpfr_cmp_ui (c, 1) == 0);
 
   /* coverage test */
   mpfr_set_prec (x, 2);
-  mpfr_set_ui (x, 4, GMP_RNDN);
+  mpfr_set_ui (x, 4, MPFR_RNDN);
   mpfr_set_prec (s, 2);
   mpfr_set_prec (c, 2);
-  mpfr_sin_cos (s, c, x, GMP_RNDN);
+  mpfr_sin_cos (s, c, x, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_cmp_si_2exp (s, -3, -2) == 0);
   MPFR_ASSERTN (mpfr_cmp_si_2exp (c, -3, -2) == 0);
 
@@ -180,14 +180,14 @@ overflowed_sin_cos0 (void)
 
   for (emax = -1; emax <= 0; emax++)
     {
-      mpfr_set_ui_2exp (z, 1, emax, GMP_RNDN);
+      mpfr_set_ui_2exp (z, 1, emax, MPFR_RNDN);
       mpfr_nextbelow (z);
       set_emax (emax);  /* 1 is not representable. */
       /* and if emax < 0, 1 - eps is not representable either. */
       RND_LOOP (rnd)
         {
-          mpfr_set_si (x, 0, GMP_RNDN);
-          mpfr_neg (x, x, GMP_RNDN);
+          mpfr_set_si (x, 0, MPFR_RNDN);
+          mpfr_neg (x, x, MPFR_RNDN);
           mpfr_clear_flags ();
           inex = mpfr_sin_cos (x, y, x, (mp_rnd_t) rnd);
           if (! mpfr_overflow_p ())
@@ -205,7 +205,7 @@ overflowed_sin_cos0 (void)
               printf (" instead of -0.\n");
               err = 1;
             }
-          if (rnd == GMP_RNDZ || rnd == GMP_RNDD)
+          if (rnd == MPFR_RNDZ || rnd == MPFR_RNDD)
             {
               if (inex == 0)
                 {
@@ -264,9 +264,9 @@ tiny (void)
 
   for (i = -1; i <= 1; i += 2)
     {
-      mpfr_set_si (x, i, GMP_RNDN);
+      mpfr_set_si (x, i, MPFR_RNDN);
       mpfr_set_exp (x, mpfr_get_emin ());
-      inex = mpfr_sin_cos (s, c, x, GMP_RNDN);
+      inex = mpfr_sin_cos (s, c, x, MPFR_RNDN);
       MPFR_ASSERTN (inex != 0);
       MPFR_ASSERTN (mpfr_equal_p (s, x));
       MPFR_ASSERTN (!mpfr_nan_p (c) && mpfr_cmp_ui (c, 1) == 0);
@@ -284,8 +284,8 @@ test20071214 (void)
   mpfr_init2 (a, 4);
   mpfr_init2 (b, 4);
 
-  mpfr_set_ui_2exp (a, 3, -4, GMP_RNDN);
-  mpfr_sin_cos (a, b, a, GMP_RNDD);
+  mpfr_set_ui_2exp (a, 3, -4, MPFR_RNDN);
+  mpfr_sin_cos (a, b, a, MPFR_RNDD);
   MPFR_ASSERTN(mpfr_cmp_ui_2exp (a, 11, -6) == 0);
   MPFR_ASSERTN(mpfr_cmp_ui_2exp (b, 15, -4) == 0);
 
@@ -308,25 +308,25 @@ main(int argc, char *argv[])
 
   /* worst case from PhD thesis of Vincent Lefe`vre: x=8980155785351021/2^54 */
   check53 ("4.984987858808754279e-1", "4.781075595393330379e-1",
-           "8.783012931285841817e-1", GMP_RNDN);
+           "8.783012931285841817e-1", MPFR_RNDN);
   check53 ("4.984987858808754279e-1", "4.781075595393329824e-1",
-           "8.783012931285840707e-1", GMP_RNDD);
+           "8.783012931285840707e-1", MPFR_RNDD);
   check53 ("4.984987858808754279e-1", "4.781075595393329824e-1",
-           "8.783012931285840707e-1", GMP_RNDZ);
+           "8.783012931285840707e-1", MPFR_RNDZ);
   check53 ("4.984987858808754279e-1", "4.781075595393330379e-1",
-           "8.783012931285841817e-1", GMP_RNDU);
+           "8.783012931285841817e-1", MPFR_RNDU);
   check53 ("1.00031274099908640274",  "8.416399183372403892e-1",
-           "0.540039116973283217504", GMP_RNDN);
+           "0.540039116973283217504", MPFR_RNDN);
   check53 ("1.00229256850978698523",  "8.427074524447979442e-1",
-           "0.538371757797526551137", GMP_RNDZ);
+           "0.538371757797526551137", MPFR_RNDZ);
   check53 ("1.00288304857059840103",  "8.430252033025980029e-1",
-           "0.537874062022526966409", GMP_RNDZ);
+           "0.537874062022526966409", MPFR_RNDZ);
   check53 ("1.00591265847407274059",  "8.446508805292128885e-1",
-           "0.53531755997839769456",  GMP_RNDN);
+           "0.53531755997839769456",  MPFR_RNDN);
 
   /* check one argument only */
-  check53sin ("1.00591265847407274059", "8.446508805292128885e-1", GMP_RNDN);
-  check53cos ("1.00591265847407274059", "0.53531755997839769456",  GMP_RNDN);
+  check53sin ("1.00591265847407274059", "8.446508805292128885e-1", MPFR_RNDN);
+  check53cos ("1.00591265847407274059", "0.53531755997839769456",  MPFR_RNDN);
 
   overflowed_sin_cos0 ();
   tiny ();

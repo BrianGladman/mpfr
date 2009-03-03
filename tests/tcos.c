@@ -30,7 +30,7 @@ static int
 test_cos (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
 {
   int res;
-  int ok = rnd_mode == GMP_RNDN && mpfr_number_p (b) && mpfr_get_prec (a)>=53;
+  int ok = rnd_mode == MPFR_RNDN && mpfr_number_p (b) && mpfr_get_prec (a)>=53;
   if (ok)
     {
       mpfr_print_raw (b);
@@ -61,7 +61,7 @@ check53 (const char *xs, const char *cos_xs, mp_rnd_t rnd_mode)
       printf ("mpfr_cos failed for x=%s, rnd=%s\n",
               xs, mpfr_print_rnd_mode (rnd_mode));
       printf ("mpfr_cos gives cos(x)=");
-      mpfr_out_str(stdout, 10, 0, c, GMP_RNDN);
+      mpfr_out_str(stdout, 10, 0, c, MPFR_RNDN);
       printf(", expected %s\n", cos_xs);
       exit (1);
     }
@@ -81,7 +81,7 @@ check_nans (void)
   mpfr_init2 (y, 123L);
 
   mpfr_set_nan (x);
-  test_cos (y, x, GMP_RNDN);
+  test_cos (y, x, MPFR_RNDN);
   if (! mpfr_nan_p (y))
     {
       printf ("Error: cos(NaN) != NaN\n");
@@ -89,7 +89,7 @@ check_nans (void)
     }
 
   mpfr_set_inf (x, 1);
-  test_cos (y, x, GMP_RNDN);
+  test_cos (y, x, MPFR_RNDN);
   if (! mpfr_nan_p (y))
     {
       printf ("Error: cos(Inf) != NaN\n");
@@ -97,7 +97,7 @@ check_nans (void)
     }
 
   mpfr_set_inf (x, -1);
-  test_cos (y, x, GMP_RNDN);
+  test_cos (y, x, MPFR_RNDN);
   if (! mpfr_nan_p (y))
     {
       printf ("Error: cos(-Inf) != NaN\n");
@@ -105,15 +105,15 @@ check_nans (void)
     }
 
   /* cos(+/-0) = 1 */
-  mpfr_set_ui (x, 0, GMP_RNDN);
-  test_cos (y, x, GMP_RNDN);
+  mpfr_set_ui (x, 0, MPFR_RNDN);
+  test_cos (y, x, MPFR_RNDN);
   if (mpfr_cmp_ui (y, 1))
     {
       printf ("Error: cos(+0) != 1\n");
       exit (1);
     }
-  mpfr_neg (x, x, GMP_RNDN);
-  test_cos (y, x, GMP_RNDN);
+  mpfr_neg (x, x, MPFR_RNDN);
+  test_cos (y, x, MPFR_RNDN);
   if (mpfr_cmp_ui (y, 1))
     {
       printf ("Error: cos(-0) != 1\n");
@@ -123,10 +123,10 @@ check_nans (void)
   /* Compute ~Pi/2 to check */
   /* FIXME: Too slow!
   mpfr_set_prec (x, 20000);
-  mpfr_const_pi (x, GMP_RNDD); mpfr_div_2ui (x, x, 1, GMP_RNDN);
+  mpfr_const_pi (x, MPFR_RNDD); mpfr_div_2ui (x, x, 1, MPFR_RNDN);
   mpfr_set_prec (y, 24);
-  test_cos (y, x, GMP_RNDN);
-  if (mpfr_cmp_str (y, "0.111001010110100011000001E-20000", 2, GMP_RNDN))
+  test_cos (y, x, MPFR_RNDN);
+  if (mpfr_cmp_str (y, "0.111001010110100011000001E-20000", 2, MPFR_RNDN))
     {
       printf("Error computing cos(~Pi/2)\n");
       mpfr_dump (y);
@@ -153,7 +153,7 @@ special_overflow (void)
   set_emin (-125);
   set_emax (128);
   mpfr_set_str_binary (x, "0.111101010110110011101101E6");
-  test_cos (y, x, GMP_RNDZ);
+  test_cos (y, x, MPFR_RNDZ);
   set_emin (emin);
   set_emax (emax);
 
@@ -175,17 +175,17 @@ overflowed_cos0 (void)
 
   for (emax = -1; emax <= 0; emax++)
     {
-      mpfr_set_ui_2exp (y, 1, emax, GMP_RNDN);
+      mpfr_set_ui_2exp (y, 1, emax, MPFR_RNDN);
       mpfr_nextbelow (y);
       set_emax (emax);  /* 1 is not representable. */
       /* and if emax < 0, 1 - eps is not representable either. */
       for (i = -1; i <= 1; i++)
         RND_LOOP (rnd)
         {
-          mpfr_set_si_2exp (x, i, -512 * ABS (i), GMP_RNDN);
+          mpfr_set_si_2exp (x, i, -512 * ABS (i), MPFR_RNDN);
           mpfr_clear_flags ();
           inex = mpfr_cos (x, x, (mp_rnd_t) rnd);
-          if ((i == 0 || emax < 0 || rnd == GMP_RNDN || rnd == GMP_RNDU) &&
+          if ((i == 0 || emax < 0 || rnd == MPFR_RNDN || rnd == MPFR_RNDU) &&
               ! mpfr_overflow_p ())
             {
               printf ("Error in overflowed_cos0 (i = %d, rnd = %s):\n"
@@ -193,7 +193,7 @@ overflowed_cos0 (void)
                       i, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
               err = 1;
             }
-          if (rnd == GMP_RNDZ || rnd == GMP_RNDD)
+          if (rnd == MPFR_RNDZ || rnd == MPFR_RNDD)
             {
               if (inex >= 0)
                 {
@@ -255,17 +255,17 @@ main (int argc, char *argv[])
 
   mpfr_set_prec (x, 53);
   mpfr_set_prec (y, 2);
-  mpfr_set_str (x, "9.81333845856942e-1", 10, GMP_RNDN);
-  test_cos (y, x, GMP_RNDN);
+  mpfr_set_str (x, "9.81333845856942e-1", 10, MPFR_RNDN);
+  test_cos (y, x, MPFR_RNDN);
 
   mpfr_set_prec (x, 30);
   mpfr_set_prec (y, 30);
   mpfr_set_str_binary (x, "1.00001010001101110010100010101e-1");
-  test_cos (y, x, GMP_RNDU);
+  test_cos (y, x, MPFR_RNDU);
   mpfr_set_str_binary (x, "1.10111100010101011110101010100e-1");
   if (mpfr_cmp (y, x))
     {
-      printf ("Error for prec=30, rnd=GMP_RNDU\n");
+      printf ("Error for prec=30, rnd=MPFR_RNDU\n");
       printf ("expected "); mpfr_print_binary (x); puts ("");
       printf ("     got "); mpfr_print_binary (y); puts ("");
       exit (1);
@@ -274,11 +274,11 @@ main (int argc, char *argv[])
   mpfr_set_prec (x, 59);
   mpfr_set_prec (y, 59);
   mpfr_set_str_binary (x, "1.01101011101111010011111110111111111011011101100111100011e-3");
-  test_cos (y, x, GMP_RNDU);
+  test_cos (y, x, MPFR_RNDU);
   mpfr_set_str_binary (x, "1.1111011111110010001001001011100111101110100010000010010011e-1");
   if (mpfr_cmp (y, x))
     {
-      printf ("Error for prec=59, rnd=GMP_RNDU\n");
+      printf ("Error for prec=59, rnd=MPFR_RNDU\n");
       printf ("expected "); mpfr_print_binary (x); puts ("");
       printf ("     got "); mpfr_print_binary (y); puts ("");
       exit (1);
@@ -287,11 +287,11 @@ main (int argc, char *argv[])
   mpfr_set_prec (x, 5);
   mpfr_set_prec (y, 5);
   mpfr_set_str_binary (x, "1.1100e-2");
-  test_cos (y, x, GMP_RNDD);
+  test_cos (y, x, MPFR_RNDD);
   mpfr_set_str_binary (x, "1.1100e-1");
   if (mpfr_cmp (y, x))
     {
-      printf ("Error for x=1.1100e-2, rnd=GMP_RNDD\n");
+      printf ("Error for x=1.1100e-2, rnd=MPFR_RNDD\n");
       printf ("expected 1.1100e-1, got "); mpfr_print_binary (y); puts ("");
       exit (1);
     }
@@ -301,7 +301,7 @@ main (int argc, char *argv[])
 
   mpfr_set_str_binary (x, "0.10001000001001011000100001E-6");
   mpfr_set_str_binary (y, "0.1111111111111101101111001100001");
-  test_cos (x, x, GMP_RNDN);
+  test_cos (x, x, MPFR_RNDN);
   if (mpfr_cmp (x, y))
     {
       printf ("Error for prec=32 (1)\n");
@@ -310,7 +310,7 @@ main (int argc, char *argv[])
 
   mpfr_set_str_binary (x, "-0.1101011110111100111010011001011E-1");
   mpfr_set_str_binary (y, "0.11101001100110111011011010100011");
-  test_cos (x, x, GMP_RNDN);
+  test_cos (x, x, MPFR_RNDN);
   if (mpfr_cmp (x, y))
     {
       printf ("Error for prec=32 (2)\n");
@@ -320,7 +320,7 @@ main (int argc, char *argv[])
   /* huge argument reduction */
   mpfr_set_str_binary (x, "0.10000010000001101011101111001011E40");
   mpfr_set_str_binary (y, "0.10011000001111010000101011001011E-1");
-  test_cos (x, x, GMP_RNDN);
+  test_cos (x, x, MPFR_RNDN);
   if (mpfr_cmp (x, y))
     {
       printf ("Error for prec=32 (3)\n");
@@ -330,20 +330,20 @@ main (int argc, char *argv[])
   mpfr_set_prec (x, 3);
   mpfr_set_prec (y, 3);
   mpfr_set_str_binary (x, "0.110E60");
-  inex = mpfr_cos (y, x, GMP_RNDD);
+  inex = mpfr_cos (y, x, MPFR_RNDD);
   MPFR_ASSERTN(inex < 0);
 
   /* worst case from PhD thesis of Vincent Lefe`vre: x=8980155785351021/2^54 */
-  check53 ("4.984987858808754279e-1", "8.783012931285841817e-1", GMP_RNDN);
-  check53 ("4.984987858808754279e-1", "8.783012931285840707e-1", GMP_RNDD);
-  check53 ("4.984987858808754279e-1", "8.783012931285840707e-1", GMP_RNDZ);
-  check53 ("4.984987858808754279e-1", "8.783012931285841817e-1", GMP_RNDU);
-  check53 ("1.00031274099908640274",  "0.540039116973283217504", GMP_RNDN);
-  check53 ("1.00229256850978698523",  "0.538371757797526551137", GMP_RNDZ);
-  check53 ("1.00288304857059840103",  "0.537874062022526966409", GMP_RNDZ);
-  check53 ("1.00591265847407274059",  "0.53531755997839769456",  GMP_RNDN);
+  check53 ("4.984987858808754279e-1", "8.783012931285841817e-1", MPFR_RNDN);
+  check53 ("4.984987858808754279e-1", "8.783012931285840707e-1", MPFR_RNDD);
+  check53 ("4.984987858808754279e-1", "8.783012931285840707e-1", MPFR_RNDZ);
+  check53 ("4.984987858808754279e-1", "8.783012931285841817e-1", MPFR_RNDU);
+  check53 ("1.00031274099908640274",  "0.540039116973283217504", MPFR_RNDN);
+  check53 ("1.00229256850978698523",  "0.538371757797526551137", MPFR_RNDZ);
+  check53 ("1.00288304857059840103",  "0.537874062022526966409", MPFR_RNDZ);
+  check53 ("1.00591265847407274059",  "0.53531755997839769456",  MPFR_RNDN);
 
-  check53 ("1.00591265847407274059", "0.53531755997839769456",  GMP_RNDN);
+  check53 ("1.00591265847407274059", "0.53531755997839769456",  MPFR_RNDN);
 
   overflowed_cos0 ();
   test_generic (2, 100, 15);
@@ -352,7 +352,7 @@ main (int argc, char *argv[])
   mpfr_set_prec (x, 3);
   mpfr_set_prec (y, 13);
   mpfr_set_str_binary (x, "-0.100E196");
-  inex = mpfr_cos (y, x, GMP_RNDU);
+  inex = mpfr_cos (y, x, MPFR_RNDU);
   mpfr_set_prec (x, 13);
   mpfr_set_str_binary (x, "0.1111111100101");
   MPFR_ASSERTN (inex > 0 && mpfr_equal_p (x, y));

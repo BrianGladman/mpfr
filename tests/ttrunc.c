@@ -47,7 +47,7 @@ main (void)
       exit (1);
     }
 
-  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_set_ui (x, 0, MPFR_RNDN);
   mpfr_ceil(y, x);
   if (mpfr_cmp_ui(y,0))
     {
@@ -57,7 +57,7 @@ main (void)
       exit (1);
     }
 
-  mpfr_set_ui (x, 1, GMP_RNDN);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
   mpfr_ceil(y, x);
   if (mpfr_cmp_ui(y,1))
     {
@@ -82,13 +82,13 @@ main (void)
           mpfr_set_prec(t2, k);
 
           mpfr_floor(y, x);
-          mpfr_set(y2, x, GMP_RNDD);
+          mpfr_set(y2, x, MPFR_RNDD);
 
           mpfr_trunc(z, x);
-          mpfr_set(z2, x, GMP_RNDZ);
+          mpfr_set(z2, x, MPFR_RNDZ);
 
           mpfr_ceil(t, x);
-          mpfr_set(t2, x, GMP_RNDU);
+          mpfr_set(t2, x, MPFR_RNDU);
 
           if (!mpfr_eq(y, y2, k))
             {

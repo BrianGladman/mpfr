@@ -143,12 +143,12 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
 
   expr = (MPFR_GET_EXP(u) + odd_exp) / 2;  /* exact */
 
-  if (rnd_mode == GMP_RNDZ || rnd_mode == GMP_RNDD || sticky == MPFR_LIMB_ZERO)
+  if (rnd_mode == MPFR_RNDZ || rnd_mode == MPFR_RNDD || sticky == MPFR_LIMB_ZERO)
     {
       inexact = (sticky == MPFR_LIMB_ZERO) ? 0 : -1;
       goto truncate;
     }
-  else if (rnd_mode == GMP_RNDN)
+  else if (rnd_mode == MPFR_RNDN)
     {
       /* if sh>0, the round bit is bit (sh-1) of sticky1
                   and the sticky bit is formed by the low sh-1 bits from

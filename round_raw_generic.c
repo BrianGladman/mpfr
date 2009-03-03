@@ -39,7 +39,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  * is a power of two.
  *
  * If inexp != NULL, put in *inexp the inexact flag of the rounding (0, 1, -1).
- * In case of even rounding when rnd = GMP_RNDN, put MPFR_EVEN_INEX (2) or
+ * In case of even rounding when rnd = MPFR_RNDN, put MPFR_EVEN_INEX (2) or
  * -MPFR_EVEN_INEX (-2) in *inexp.
  *
  * If flag = 1, just returns whether one should add 1 or not for rounding.
@@ -118,7 +118,7 @@ mpfr_round_raw_generic(
       MPFR_ASSERTD(k >= 0);
       sb = xp[k] & lomask;  /* First non-significant bits */
       /* Rounding to nearest ? */
-      if (MPFR_LIKELY( rnd_mode == GMP_RNDN) )
+      if (MPFR_LIKELY( rnd_mode == MPFR_RNDN) )
         {
           /* Rounding to nearest */
           mp_limb_t rbmask = MPFR_LIMB_ONE << (BITS_PER_MP_LIMB - 1 - rw);
@@ -134,7 +134,7 @@ mpfr_round_raw_generic(
           /* rounding to nearest, with rounding bit = 1 */
           if (MPFR_UNLIKELY(sb == 0)) /* Even rounding. */
             {
-              /* sb == 0 && rnd_mode == GMP_RNDN */
+              /* sb == 0 && rnd_mode == MPFR_RNDN */
               sb = xp[xsize - nw] & (himask ^ (himask << 1));
               if (sb == 0)
                 {
@@ -143,7 +143,7 @@ mpfr_round_raw_generic(
                   /* ((neg!=0)^(sb!=0)) ? MPFR_EVEN_INEX  : -MPFR_EVEN_INEX;*/
                   /* Since neg = 0 or 1 and sb=0*/
 #if flag == 1
-                  return 0 /*sb != 0 && rnd_mode != GMP_RNDZ */;
+                  return 0 /*sb != 0 && rnd_mode != MPFR_RNDZ */;
 #else
                   MPN_COPY_INCR(yp, xp + xsize - nw, nw);
                   yp[0] &= himask;
@@ -152,7 +152,7 @@ mpfr_round_raw_generic(
                 }
               else
                 {
-                  /* sb != 0 && rnd_mode == GMP_RNDN */
+                  /* sb != 0 && rnd_mode == MPFR_RNDN */
                   if (use_inexp)
                     *inexp = MPFR_EVEN_INEX-2*MPFR_EVEN_INEX*neg;
                   /*((neg!=0)^(sb!=0))? MPFR_EVEN_INEX  : -MPFR_EVEN_INEX; */
@@ -160,14 +160,14 @@ mpfr_round_raw_generic(
                   goto rnd_RNDN_add_one_ulp;
                 }
             }
-          else /* sb != 0  && rnd_mode == GMP_RNDN*/
+          else /* sb != 0  && rnd_mode == MPFR_RNDN*/
             {
               if (use_inexp)
                 /* *inexp = (neg == 0) ? 1 : -1; but since neg = 0 or 1 */
                 *inexp = 1-2*neg;
             rnd_RNDN_add_one_ulp:
 #if flag == 1
-              return 1; /*sb != 0 && rnd_mode != GMP_RNDZ;*/
+              return 1; /*sb != 0 && rnd_mode != MPFR_RNDZ;*/
 #else
               carry = mpn_add_1 (yp, xp + xsize - nw, nw,
                                  rw ?
@@ -181,16 +181,16 @@ mpfr_round_raw_generic(
       /* Rounding to Zero ? */
       else if (MPFR_IS_LIKE_RNDZ(rnd_mode, neg))
         {
-          /* rnd_mode == GMP_RNDZ */
+          /* rnd_mode == MPFR_RNDZ */
         rnd_RNDZ:
           while (MPFR_UNLIKELY(sb == 0) && k > 0)
             sb = xp[--k];
           if (use_inexp)
-            /* rnd_mode == GMP_RNDZ and neg = 0 or 1 */
-            /* (neg != 0) ^ (rnd_mode != GMP_RNDZ)) ? 1 : -1);*/
+            /* rnd_mode == MPFR_RNDZ and neg = 0 or 1 */
+            /* (neg != 0) ^ (rnd_mode != MPFR_RNDZ)) ? 1 : -1);*/
             *inexp = MPFR_UNLIKELY(sb == 0) ? 0 : (2*neg-1);
 #if flag == 1
-          return 0; /*sb != 0 && rnd_mode != GMP_RNDZ;*/
+          return 0; /*sb != 0 && rnd_mode != MPFR_RNDZ;*/
 #else
           MPN_COPY_INCR(yp, xp + xsize - nw, nw);
           yp[0] &= himask;
@@ -204,9 +204,9 @@ mpfr_round_raw_generic(
             sb = xp[--k];
           if (MPFR_UNLIKELY(sb == 0))
             {
-              /* sb = 0 && rnd_mode != GMP_RNDZ */
+              /* sb = 0 && rnd_mode != MPFR_RNDZ */
               if (use_inexp)
-                /* (neg != 0) ^ (rnd_mode != GMP_RNDZ)) ? 1 : -1);*/
+                /* (neg != 0) ^ (rnd_mode != MPFR_RNDZ)) ? 1 : -1);*/
                 *inexp = 0;
 #if flag == 1
               return 0;
@@ -218,9 +218,9 @@ mpfr_round_raw_generic(
             }
           else
             {
-              /* sb != 0 && rnd_mode != GMP_RNDZ */
+              /* sb != 0 && rnd_mode != MPFR_RNDZ */
               if (use_inexp)
-                /* (neg != 0) ^ (rnd_mode != GMP_RNDZ)) ? 1 : -1);*/
+                /* (neg != 0) ^ (rnd_mode != MPFR_RNDZ)) ? 1 : -1);*/
                 *inexp = 1-2*neg;
 #if flag == 1
               return 1;
@@ -238,7 +238,7 @@ mpfr_round_raw_generic(
     {
       /* Roundind mode = Zero / No inexact flag */
 #if flag == 1
-      return 0 /*sb != 0 && rnd_mode != GMP_RNDZ*/;
+      return 0 /*sb != 0 && rnd_mode != MPFR_RNDZ*/;
 #else
       if (MPFR_LIKELY(rw))
         {

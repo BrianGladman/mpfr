@@ -87,11 +87,11 @@ mpfr_asinh (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   for (;;)
     {
       /* compute asinh */
-      mpfr_mul (t, x, x, GMP_RNDD);                    /* x^2 */
-      mpfr_add_ui (t, t, 1, GMP_RNDD);                 /* x^2+1 */
-      mpfr_sqrt (t, t, GMP_RNDN);                      /* sqrt(x^2+1) */
-      (neg ? mpfr_sub : mpfr_add) (t, t, x, GMP_RNDN); /* sqrt(x^2+1)+x */
-      mpfr_log (t, t, GMP_RNDN);                       /* ln(sqrt(x^2+1)+x)*/
+      mpfr_mul (t, x, x, MPFR_RNDD);                    /* x^2 */
+      mpfr_add_ui (t, t, 1, MPFR_RNDD);                 /* x^2+1 */
+      mpfr_sqrt (t, t, MPFR_RNDN);                      /* sqrt(x^2+1) */
+      (neg ? mpfr_sub : mpfr_add) (t, t, x, MPFR_RNDN); /* sqrt(x^2+1)+x */
+      mpfr_log (t, t, MPFR_RNDN);                       /* ln(sqrt(x^2+1)+x)*/
 
       if (MPFR_LIKELY (MPFR_IS_PURE_FP (t)))
         {

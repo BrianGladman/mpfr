@@ -40,7 +40,7 @@ special (void)
   mpfr_init (y);
 
   mpfr_set_nan (x);
-  mpfr_cosh (y, x, GMP_RNDN);
+  mpfr_cosh (y, x, MPFR_RNDN);
   if (!mpfr_nan_p (y))
     {
       printf ("Error: cosh(NaN) != NaN\n");
@@ -48,7 +48,7 @@ special (void)
     }
 
   mpfr_set_inf (x, 1);
-  mpfr_cosh (y, x, GMP_RNDN);
+  mpfr_cosh (y, x, MPFR_RNDN);
   if (!mpfr_inf_p (y) || mpfr_sgn (y) < 0)
     {
       printf ("Error: cosh(+Inf) != +Inf\n");
@@ -56,7 +56,7 @@ special (void)
     }
 
   mpfr_set_inf (x, -1);
-  mpfr_cosh (y, x, GMP_RNDN);
+  mpfr_cosh (y, x, MPFR_RNDN);
   if (!mpfr_inf_p (y) || mpfr_sgn (y) < 0)
     {
       printf ("Error: cosh(-Inf) != +Inf\n");
@@ -64,15 +64,15 @@ special (void)
     }
 
   /* cosh(+/-0) = 1 */
-  mpfr_set_ui (x, 0, GMP_RNDN);
-  mpfr_cosh (y, x, GMP_RNDN);
+  mpfr_set_ui (x, 0, MPFR_RNDN);
+  mpfr_cosh (y, x, MPFR_RNDN);
   if (mpfr_cmp_ui (y, 1))
     {
       printf ("Error: cosh(+0) != 1\n");
       exit (1);
     }
-  mpfr_neg (x, x, GMP_RNDN);
-  mpfr_cosh (y, x, GMP_RNDN);
+  mpfr_neg (x, x, MPFR_RNDN);
+  mpfr_cosh (y, x, MPFR_RNDN);
   if (mpfr_cmp_ui (y, 1))
     {
       printf ("Error: cosh(-0) != 1\n");
@@ -84,7 +84,7 @@ special (void)
 
   mpfr_set_str_binary (x, "0.1101110111111111001011101000101");
   mpfr_set_str_binary (y, "1.0110011001110000101100011001001");
-  mpfr_cosh (x, x, GMP_RNDN);
+  mpfr_cosh (x, x, MPFR_RNDN);
   if (mpfr_cmp (x, y))
     {
       printf ("Error: mpfr_cosh for prec=32 (1)\n");
@@ -93,7 +93,7 @@ special (void)
 
   mpfr_set_str_binary (x, "-0.1110111000011101010111100000101E-1");
   mpfr_set_str_binary (y, "1.0001110000101111111111100110101");
-  mpfr_cosh (x, x, GMP_RNDN);
+  mpfr_cosh (x, x, MPFR_RNDN);
   if (mpfr_cmp (x, y))
     {
       printf ("Error: mpfr_cosh for prec=32 (2)\n");
@@ -103,28 +103,28 @@ special (void)
   mpfr_set_prec (x, 2);
   mpfr_clear_flags ();
   mpfr_set_str_binary (x, "1E1000000000");
-  i = mpfr_cosh (x, x, GMP_RNDN);
+  i = mpfr_cosh (x, x, MPFR_RNDN);
   MPFR_ASSERTN (MPFR_IS_INF (x) && MPFR_SIGN (x) > 0);
   MPFR_ASSERTN (mpfr_overflow_p ());
   MPFR_ASSERTN (i == 1);
 
   mpfr_clear_flags ();
   mpfr_set_str_binary (x, "-1E1000000000");
-  i = mpfr_cosh (x, x, GMP_RNDN);
+  i = mpfr_cosh (x, x, MPFR_RNDN);
   MPFR_ASSERTN (MPFR_IS_INF (x) && MPFR_SIGN (x) > 0);
   MPFR_ASSERTN (mpfr_overflow_p () && !mpfr_underflow_p ());
   MPFR_ASSERTN (i == 1);
 
   mpfr_clear_flags ();
   mpfr_set_str_binary (x, "-1E1000000000");
-  i = mpfr_cosh (x, x, GMP_RNDD);
+  i = mpfr_cosh (x, x, MPFR_RNDD);
   MPFR_ASSERTN (!MPFR_IS_INF (x) && MPFR_SIGN (x) > 0);
   MPFR_ASSERTN (mpfr_overflow_p () && !mpfr_underflow_p ());
   MPFR_ASSERTN (i == -1);
 
   mpfr_clear_flags ();
   mpfr_set_str_binary (x, "-1E1000000000");
-  i = mpfr_cosh (x, x, GMP_RNDU);
+  i = mpfr_cosh (x, x, MPFR_RNDU);
   MPFR_ASSERTN (MPFR_IS_INF (x) && MPFR_SIGN (x) > 0);
   MPFR_ASSERTN (mpfr_overflow_p () && !mpfr_underflow_p ());
   MPFR_ASSERTN (i == 1);
@@ -153,8 +153,8 @@ special_overflow (void)
   mpfr_init2 (y, 24);
 
   mpfr_set_str_binary (x, "0.101100100000000000110100E7");
-  mpfr_cosh (y, x, GMP_RNDN);
-  if (mpfr_cmp_str (y, "0.101010001111001010001110E128", 2, GMP_RNDN))
+  mpfr_cosh (y, x, MPFR_RNDN);
+  if (mpfr_cmp_str (y, "0.101010001111001010001110E128", 2, MPFR_RNDN))
     {
       printf("Special overflow error 1.\n");
       mpfr_dump (y);
@@ -162,7 +162,7 @@ special_overflow (void)
     }
 
   mpfr_set_str_binary (x, "0.101100100000000000110100E8");
-  mpfr_cosh (y, x, GMP_RNDN);
+  mpfr_cosh (y, x, MPFR_RNDN);
   if (!mpfr_inf_p(y))
     {
       printf("Special overflow error 2.\n");
@@ -174,7 +174,7 @@ special_overflow (void)
   set_emax (emax);
 
   mpfr_set_str_binary (x, "0.101100100000000000110100E1000000");
-  mpfr_cosh (y, x, GMP_RNDN);
+  mpfr_cosh (y, x, MPFR_RNDN);
   if (!mpfr_inf_p(y))
     {
       printf("Special overflow error 3.\n");

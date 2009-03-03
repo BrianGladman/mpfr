@@ -36,7 +36,7 @@ static void check0(void)
   mpfr_init (x);
   mpz_init (y);
   mpz_set_si (y, 0);
-  for(r = 0; r < GMP_RND_MAX; r++)
+  for(r = 0; r < MPFR_RND_MAX; r++)
     {
       inexact = mpfr_set_z (x, y, (mp_rnd_t) r);
       if (!MPFR_IS_ZERO(x) || !MPFR_IS_POS(x) || inexact)
@@ -64,7 +64,7 @@ check (long i, mp_rnd_t rnd)
   mpz_init (z);
   mpz_set_ui (z, i);
   mpfr_set_z (f, z, rnd);
-  if (mpfr_get_si (f, GMP_RNDZ) != i)
+  if (mpfr_get_si (f, MPFR_RNDZ) != i)
     {
       printf ("Error in mpfr_set_z for i=%ld rnd_mode=%d\n", i, rnd);
       exit (1);
@@ -85,7 +85,7 @@ check_large (void)
   mpfr_init2 (y, 160);
 
   mpz_set_str (z, "77031627725494291259359895954016675357279104942148788042", 10);
-  mpfr_set_z (x, z, GMP_RNDN);
+  mpfr_set_z (x, z, MPFR_RNDN);
   mpfr_set_str_binary (y, "0.1100100100001111110110101010001000100001011010001100001000110100110001001100011001100010100010111000000011011100000111001101000100101001000000100100111000001001E186");
   if (mpfr_cmp (x, y))
     {
@@ -97,12 +97,12 @@ check_large (void)
   emax = mpfr_get_emax ();
   set_emax (2);
   mpz_set_str (z, "7", 10);
-  mpfr_set_z (x, z, GMP_RNDU);
+  mpfr_set_z (x, z, MPFR_RNDU);
   MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
   set_emax (3);
   mpfr_set_prec (x, 2);
   mpz_set_str (z, "7", 10);
-  mpfr_set_z (x, z, GMP_RNDU);
+  mpfr_set_z (x, z, MPFR_RNDU);
   MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
   set_emax (emax);
 
@@ -110,10 +110,10 @@ check_large (void)
   emin = mpfr_get_emin ();
   set_emin (3);
   mpz_set_str (z, "1", 10);
-  mpfr_set_z (x, z, GMP_RNDZ);
+  mpfr_set_z (x, z, MPFR_RNDZ);
   MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_POS(x));
   set_emin (2);
-  mpfr_set_z (x, z, GMP_RNDN);
+  mpfr_set_z (x, z, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui (x, 0) == 0 && MPFR_IS_POS(x));
   set_emin (emin);
 
@@ -131,7 +131,7 @@ main (int argc, char *argv[])
   tests_start_mpfr ();
 
   check_large ();
-  check (0, GMP_RNDN);
+  check (0, MPFR_RNDN);
   for (j = 0; j < 200000; j++)
     check (randlimb () & LONG_MAX, RND_RAND ());
   check0 ();

@@ -96,16 +96,16 @@ compute_l2b (int output)
             {
               /* 23-bit upper approximation to log(b)/log(2) */
               mpfr_init2 (p, 23);
-              mpfr_set_ui (p, beta, GMP_RNDU);
-              mpfr_log2 (p, p, GMP_RNDU);
+              mpfr_set_ui (p, beta, MPFR_RNDU);
+              mpfr_log2 (p, p, MPFR_RNDU);
             }
           else
             {
               /* 76-bit upper approximation to log(2)/log(b) */
               mpfr_init2 (p, 77);
-              mpfr_set_ui (p, beta, GMP_RNDD);
-              mpfr_log2 (p, p, GMP_RNDD);
-              mpfr_ui_div (p, 1, p, GMP_RNDU);
+              mpfr_set_ui (p, beta, MPFR_RNDD);
+              mpfr_log2 (p, p, MPFR_RNDD);
+              mpfr_ui_div (p, 1, p, MPFR_RNDU);
             }
 
           sprintf (buffer, "mpfr_l2b_%d_%d", beta, i);

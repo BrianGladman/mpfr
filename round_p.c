@@ -33,7 +33,7 @@ mpfr_round_p (mp_limb_t *bp, mp_size_t bn, mp_exp_t err0, mp_prec_t prec)
 
   i1 = mpfr_round_p_2 (bp, bn, err0, prec);
   i2 = mpfr_can_round_raw (bp, bn, MPFR_SIGN_POS, err0,
-                           GMP_RNDN, GMP_RNDZ, prec);
+                           MPFR_RNDN, MPFR_RNDZ, prec);
   if (i1 != i2)
     {
       fprintf (stderr, "mpfr_round_p(%d) != mpfr_can_round(%d)!\n"

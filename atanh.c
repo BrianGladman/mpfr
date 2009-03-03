@@ -94,11 +94,11 @@ mpfr_atanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
   for (;;)
     {
       /* compute atanh */
-      mpfr_ui_sub (te, 1, x, GMP_RNDU);   /* (1-xt)*/
-      mpfr_add_ui (t,  x, 1, GMP_RNDD);   /* (xt+1)*/
-      mpfr_div (t, t, te, GMP_RNDN);      /* (1+xt)/(1-xt)*/
-      mpfr_log (t, t, GMP_RNDN);          /* ln((1+xt)/(1-xt))*/
-      mpfr_div_2ui (t, t, 1, GMP_RNDN);   /* (1/2)*ln((1+xt)/(1-xt))*/
+      mpfr_ui_sub (te, 1, x, MPFR_RNDU);   /* (1-xt)*/
+      mpfr_add_ui (t,  x, 1, MPFR_RNDD);   /* (xt+1)*/
+      mpfr_div (t, t, te, MPFR_RNDN);      /* (1+xt)/(1-xt)*/
+      mpfr_log (t, t, MPFR_RNDN);          /* ln((1+xt)/(1-xt))*/
+      mpfr_div_2ui (t, t, 1, MPFR_RNDN);   /* (1/2)*ln((1+xt)/(1-xt))*/
 
       /* error estimate: see algorithms.tex */
       /* FIXME: this does not correspond to the value in algorithms.tex!!! */

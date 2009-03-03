@@ -30,7 +30,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /*
   rem1 works as follows:
   The first rounding mode rnd_q indicate if we are actually computing
-  a fmod (GMP_RNDZ) or a remainder/remquo (GMP_RNDN).
+  a fmod (MPFR_RNDZ) or a remainder/remquo (MPFR_RNDN).
 
   Let q = x/y rounded to an integer in the direction rnd_q.
   Put x - q*y in rem, rounded according to rnd.
@@ -60,7 +60,7 @@ mpfr_rem1 (mpfr_ptr rem, long *quo, mp_rnd_t rnd_q,
   int compare, inex, q_is_odd, sign, signx = MPFR_SIGN (x);
   mpz_t mx, my, r;
 
-  MPFR_ASSERTD (rnd_q == GMP_RNDN || rnd_q == GMP_RNDZ);
+  MPFR_ASSERTD (rnd_q == MPFR_RNDN || rnd_q == MPFR_RNDZ);
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x) || MPFR_IS_SINGULAR (y)))
     {
@@ -110,14 +110,14 @@ mpfr_rem1 (mpfr_ptr rem, long *quo, mp_rnd_t rnd_q,
     {
       /* q = x/y = mx/(my*2^(ey-ex)) */
       mpz_mul_2exp (my, my, ey - ex);   /* divide mx by my*2^(ey-ex) */
-      if (rnd_q == GMP_RNDZ)
+      if (rnd_q == MPFR_RNDZ)
         /* 0 <= |r| <= |my|, r has the same sign as mx */
         mpz_tdiv_qr (mx, r, mx, my);
       else
         /* 0 <= |r| <= |my|, r has the same sign as my */
         mpz_fdiv_qr (mx, r, mx, my);
 
-      if (rnd_q == GMP_RNDN)
+      if (rnd_q == MPFR_RNDN)
         q_is_odd = mpz_tstbit (mx, 0);
       if (quo)                  /* mx is the quotient */
         {
@@ -157,7 +157,7 @@ mpfr_rem1 (mpfr_ptr rem, long *quo, mp_rnd_t rnd_q,
       else                      /* now 0 <= r < 2Y */
         {
           mpz_div_2exp (my, my, 1);     /* back to Y */
-          if (rnd_q == GMP_RNDN)
+          if (rnd_q == MPFR_RNDN)
             {
               /* least significant bit of q */
               q_is_odd = mpz_cmpabs (r, my) >= 0;
@@ -171,14 +171,14 @@ mpfr_rem1 (mpfr_ptr rem, long *quo, mp_rnd_t rnd_q,
 
   if (mpz_cmp_ui (r, 0) == 0)
     {
-      inex = mpfr_set_ui (rem, 0, GMP_RNDN);
+      inex = mpfr_set_ui (rem, 0, MPFR_RNDN);
       /* take into account sign of x */
       if (signx < 0)
-        mpfr_neg (rem, rem, GMP_RNDN);
+        mpfr_neg (rem, rem, MPFR_RNDN);
     }
   else
     {
-      if (rnd_q == GMP_RNDN)
+      if (rnd_q == MPFR_RNDN)
         {
           /* FIXME: the comparison 2*r < my could be done more efficiently
              at the mpn level */
@@ -186,12 +186,12 @@ mpfr_rem1 (mpfr_ptr rem, long *quo, mp_rnd_t rnd_q,
           compare = mpz_cmpabs (r, my);
           mpz_div_2exp (r, r, 1);
           compare = ((compare > 0) ||
-                     ((rnd_q == GMP_RNDN) && (compare == 0) && q_is_odd));
+                     ((rnd_q == MPFR_RNDN) && (compare == 0) && q_is_odd));
           /* if compare != 0, we need to subtract my to r, and add 1 to quo */
           if (compare)
             {
               mpz_sub (r, r, my);
-              if (quo && (rnd_q == GMP_RNDN))
+              if (quo && (rnd_q == MPFR_RNDN))
                 *quo += 1;
             }
         }
@@ -216,18 +216,18 @@ mpfr_rem1 (mpfr_ptr rem, long *quo, mp_rnd_t rnd_q,
 int
 mpfr_remainder (mpfr_ptr rem, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd)
 {
-  return mpfr_rem1 (rem, (long *) 0, GMP_RNDN, x, y, rnd);
+  return mpfr_rem1 (rem, (long *) 0, MPFR_RNDN, x, y, rnd);
 }
 
 int
 mpfr_remquo (mpfr_ptr rem, long *quo,
              mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd)
 {
-  return mpfr_rem1 (rem, quo, GMP_RNDN, x, y, rnd);
+  return mpfr_rem1 (rem, quo, MPFR_RNDN, x, y, rnd);
 }
 
 int
 mpfr_fmod (mpfr_ptr rem, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd)
 {
-  return mpfr_rem1 (rem, (long *) 0, GMP_RNDZ, x, y, rnd);
+  return mpfr_rem1 (rem, (long *) 0, MPFR_RNDZ, x, y, rnd);
 }

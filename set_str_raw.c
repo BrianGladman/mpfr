@@ -50,6 +50,6 @@ mpfr_set_str_binary (mpfr_ptr x, const char *str)
       return;
     }
 
-  res = mpfr_strtofr (x, str, 0, 2, GMP_RNDZ);
+  res = mpfr_strtofr (x, str, 0, 2, MPFR_RNDZ);
   MPFR_ASSERTN (res == 0);
 }

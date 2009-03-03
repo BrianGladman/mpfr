@@ -42,7 +42,7 @@ main (int argc, char *argv[])
       printf ("Error, can't open inp_str.data\n");
       exit (1);
     }
-  i = mpfr_inp_str (x, f, 10, GMP_RNDN);
+  i = mpfr_inp_str (x, f, 10, MPFR_RNDN);
   if (i == 0 || mpfr_cmp_ui (x, 31415))
     {
       printf ("Error in reading 1st line from file inp_str.data (%d)\n", i);
@@ -50,7 +50,7 @@ main (int argc, char *argv[])
       exit (1);
     }
   getc (f);
-  i = mpfr_inp_str (x, f, 10, GMP_RNDN);
+  i = mpfr_inp_str (x, f, 10, MPFR_RNDN);
   if ((i == 0) || mpfr_cmp_ui (x, 31416))
     {
       printf ("Error in reading 2nd line from file inp_str.data (%d)\n", i);
@@ -58,7 +58,7 @@ main (int argc, char *argv[])
       exit (1);
     }
   getc (f);
-  i = mpfr_inp_str (x, f, 10, GMP_RNDN);
+  i = mpfr_inp_str (x, f, 10, MPFR_RNDN);
   if (i != 0)
     {
       printf ("Error in reading 3rd line from file inp_str.data (%d)\n", i);

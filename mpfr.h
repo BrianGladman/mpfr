@@ -59,22 +59,28 @@ MPFR_VERSION_NUM(MPFR_VERSION_MAJOR,MPFR_VERSION_MINOR,MPFR_VERSION_PATCHLEVEL)
    (the integer type compatible with the enumerated type can even change,
    see ISO C99, 6.7.2.2#4), and in Makefile.am, AGE should be set to 0.
 
-   GMP_RNDU must appear just before GMP_RNDD (see
+   MPFR_RNDU must appear just before MPFR_RNDD (see
    MPFR_IS_RNDUTEST_OR_RNDDNOTTEST in mpfr-impl.h).
 
    If you change the order of the rounding modes, please update the routines
    in texceptions.c which assume 0=RNDN, 1=RNDZ, 2=RNDU, 3=RNDD, 4=RNDA.
 */
 typedef enum {
-  GMP_RNDN=0,  /* round to nearest, with ties to even */
-  GMP_RNDZ,    /* round toward zero */
-  GMP_RNDU,    /* round toward +Inf */
-  GMP_RNDD,    /* round toward -Inf */
-  GMP_RNDA,    /* round away from zero */
-  GMP_RND_MAX, /* gives number of supported rounding modes, those after are
+  MPFR_RNDN=0,  /* round to nearest, with ties to even */
+  MPFR_RNDZ,    /* round toward zero */
+  MPFR_RNDU,    /* round toward +Inf */
+  MPFR_RNDD,    /* round toward -Inf */
+  MPFR_RNDA,    /* round away from zero */
+  MPFR_RND_MAX, /* gives number of supported rounding modes, those after are
                   only supported by some functions */
-  GMP_RNDNA=-1 /* round to nearest, with ties away from zero (mpfr_round) */
+  MPFR_RNDNA=-1 /* round to nearest, with ties away from zero (mpfr_round) */
 } mpfr_rnd_t;
+
+/* kept for compatibility with MPFR 2.4.x and before */
+#define GMP_RNDN MPFR_RNDN
+#define GMP_RNDZ MPFR_RNDZ
+#define GMP_RNDU MPFR_RNDU
+#define GMP_RNDD MPFR_RNDD
 
 /* Define precision : 1 (short), 2 (int) or 3 (long) (DON'T USE IT!)*/
 #ifndef _MPFR_PREC_FORMAT
@@ -716,10 +722,10 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
 #define mpfr_get_prec(_x) ((_x)->_mpfr_prec + 0)
 #define mpfr_get_exp(_x)  ((_x)->_mpfr_exp + 0)
 
-#define mpfr_round(a,b) mpfr_rint((a), (b), GMP_RNDNA)
-#define mpfr_trunc(a,b) mpfr_rint((a), (b), GMP_RNDZ)
-#define mpfr_ceil(a,b)  mpfr_rint((a), (b), GMP_RNDU)
-#define mpfr_floor(a,b) mpfr_rint((a), (b), GMP_RNDD)
+#define mpfr_round(a,b) mpfr_rint((a), (b), MPFR_RNDNA)
+#define mpfr_trunc(a,b) mpfr_rint((a), (b), MPFR_RNDZ)
+#define mpfr_ceil(a,b)  mpfr_rint((a), (b), MPFR_RNDU)
+#define mpfr_floor(a,b) mpfr_rint((a), (b), MPFR_RNDD)
 
 #define mpfr_cmp_ui(b,i) mpfr_cmp_ui_2exp((b),(i),0)
 #define mpfr_cmp_si(b,i) mpfr_cmp_si_2exp((b),(i),0)

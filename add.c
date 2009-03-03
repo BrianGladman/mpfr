@@ -65,7 +65,7 @@ mpfr_add (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
                  as for round to zero or to nearest: it always gives +0,
                  except (-0) + (-0) = -0. */
               MPFR_SET_SIGN(a,
-                            (rnd_mode != GMP_RNDD ?
+                            (rnd_mode != MPFR_RNDD ?
                              ((MPFR_IS_NEG(b) && MPFR_IS_NEG(c)) ? -1 : 1) :
                              ((MPFR_IS_POS(b) && MPFR_IS_POS(c)) ? 1 : -1)));
               MPFR_SET_ZERO(a);

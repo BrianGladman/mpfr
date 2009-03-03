@@ -129,12 +129,12 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
               MPFR_ZIV_INIT (loop2, prec2);
               for (;;)
                 {
-                  mpfr_const_pi (tmp2, GMP_RNDN);
-                  mpfr_mul_ui (tmp2, tmp2, 3, GMP_RNDN); /* Error <= 2  */
-                  mpfr_div_2ui (tmp2, tmp2, 2, GMP_RNDN);
+                  mpfr_const_pi (tmp2, MPFR_RNDN);
+                  mpfr_mul_ui (tmp2, tmp2, 3, MPFR_RNDN); /* Error <= 2  */
+                  mpfr_div_2ui (tmp2, tmp2, 2, MPFR_RNDN);
                   if (mpfr_round_p (MPFR_MANT (tmp2), MPFR_LIMB_SIZE (tmp2),
                                     MPFR_PREC (tmp2) - 2,
-                                    MPFR_PREC (dest) + (rnd_mode == GMP_RNDN)))
+                                    MPFR_PREC (dest) + (rnd_mode == MPFR_RNDN)))
                     break;
                   MPFR_ZIV_NEXT (loop2, prec2);
                   mpfr_set_prec (tmp2, prec2);
@@ -173,7 +173,7 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
         int div_inex;
         MPFR_BLOCK_DECL (flags);
 
-        MPFR_BLOCK (flags, div_inex = mpfr_div (tmp, y, x, GMP_RNDN));
+        MPFR_BLOCK (flags, div_inex = mpfr_div (tmp, y, x, MPFR_RNDN));
         if (div_inex == 0)
           {
             /* Result is exact. */
@@ -189,7 +189,7 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
           {
             int sign;
 
-            /* In the case GMP_RNDN with 2^(emin-2) < |y/x| < 2^(emin-1):
+            /* In the case MPFR_RNDN with 2^(emin-2) < |y/x| < 2^(emin-1):
                The smallest significand value S > 1 of |y/x| is:
                  * 1 / (1 - 2^(-px))                        if py <= px,
                  * (1 - 2^(-px) + 2^(-py)) / (1 - 2^(-px))  if py >= px.
@@ -198,20 +198,20 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
                            > z - z^3 / 3.
                            > 2^(emin-2) * (1 + 2^(-pz) - 2^(2 emin - 5))
                Assuming pz <= -2 emin + 5, we can round away from zero
-               (this is what mpfr_underflow always does on GMP_RNDN).
-               In the case GMP_RNDN with |y/x| <= 2^(emin-2), we round
+               (this is what mpfr_underflow always does on MPFR_RNDN).
+               In the case MPFR_RNDN with |y/x| <= 2^(emin-2), we round
                towards zero, as |atan(z)/z| < 1. */
             MPFR_ASSERTN (MPFR_PREC_MAX <=
                           2 * (mpfr_uexp_t) - MPFR_EMIN_MIN + 5);
-            if (rnd_mode == GMP_RNDN && MPFR_IS_ZERO (tmp))
-              rnd_mode = GMP_RNDZ;
+            if (rnd_mode == MPFR_RNDN && MPFR_IS_ZERO (tmp))
+              rnd_mode = MPFR_RNDZ;
             sign = MPFR_SIGN (tmp);
             mpfr_clear (tmp);
             MPFR_SAVE_EXPO_FREE (expo);
             return mpfr_underflow (dest, rnd_mode, sign);
           }
 
-        mpfr_atan (tmp, tmp, GMP_RNDN);   /* Error <= 2*ulp (tmp) since
+        mpfr_atan (tmp, tmp, MPFR_RNDN);   /* Error <= 2*ulp (tmp) since
                                              abs(D(arctan)) <= 1 */
         /* TODO: check that the error bound is correct in case of overflow. */
         /* FIXME: Error <= ulp(tmp) ? */
@@ -227,15 +227,15 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
       mpfr_init2 (pi, prec);
       for (;;)
         {
-          mpfr_div (tmp, y, x, GMP_RNDN);   /* Error <= ulp (tmp) */
+          mpfr_div (tmp, y, x, MPFR_RNDN);   /* Error <= ulp (tmp) */
           /* If tmp is 0, we have |y/x| <= 2^(-emin-2), thus
              atan|y/x| < 2^(-emin-2). */
           MPFR_SET_POS (tmp);               /* no error */
-          mpfr_atan (tmp, tmp, GMP_RNDN);   /* Error <= 2*ulp (tmp) since
+          mpfr_atan (tmp, tmp, MPFR_RNDN);   /* Error <= 2*ulp (tmp) since
                                                abs(D(arctan)) <= 1 */
-          mpfr_const_pi (pi, GMP_RNDN);     /* Error <= ulp(pi) /2 */
+          mpfr_const_pi (pi, MPFR_RNDN);     /* Error <= ulp(pi) /2 */
           e = MPFR_NOTZERO(tmp) ? MPFR_GET_EXP (tmp) : __gmpfr_emin - 1;
-          mpfr_sub (tmp, pi, tmp, GMP_RNDN);          /* see above */
+          mpfr_sub (tmp, pi, tmp, MPFR_RNDN);          /* see above */
           if (MPFR_IS_NEG (y))
             MPFR_CHANGE_SIGN (tmp);
           /* Error(tmp) <= (1/2+2^(EXP(pi)-EXP(tmp)-1)+2^(e-EXP(tmp)+1))*ulp

@@ -43,49 +43,49 @@ mpfr_erfc_asympt (mpfr_ptr y, mpfr_srcptr x)
   mpfr_init2 (err, 31);
   /* let u = 2^(1-p), and let us represent the error as (1+u)^err
      with a bound for err */
-  mpfr_mul (xx, x, x, GMP_RNDD); /* err <= 1 */
-  mpfr_ui_div (xx, 1, xx, GMP_RNDU); /* upper bound for 1/(2x^2), err <= 2 */
-  mpfr_div_2ui (xx, xx, 1, GMP_RNDU); /* exact */
-  mpfr_set_ui (t, 1, GMP_RNDN); /* current term, exact */
-  mpfr_set (y, t, GMP_RNDN);    /* current sum  */
-  mpfr_set_ui (err, 0, GMP_RNDN);
+  mpfr_mul (xx, x, x, MPFR_RNDD); /* err <= 1 */
+  mpfr_ui_div (xx, 1, xx, MPFR_RNDU); /* upper bound for 1/(2x^2), err <= 2 */
+  mpfr_div_2ui (xx, xx, 1, MPFR_RNDU); /* exact */
+  mpfr_set_ui (t, 1, MPFR_RNDN); /* current term, exact */
+  mpfr_set (y, t, MPFR_RNDN);    /* current sum  */
+  mpfr_set_ui (err, 0, MPFR_RNDN);
   for (k = 1; ; k++)
     {
-      mpfr_mul_ui (t, t, 2 * k - 1, GMP_RNDU); /* err <= 4k-3 */
-      mpfr_mul (t, t, xx, GMP_RNDU);           /* err <= 4k */
+      mpfr_mul_ui (t, t, 2 * k - 1, MPFR_RNDU); /* err <= 4k-3 */
+      mpfr_mul (t, t, xx, MPFR_RNDU);           /* err <= 4k */
       /* for -1 < x < 1, and |nx| < 1, we have |(1+x)^n| <= 1+7/4|nx|.
          Indeed, for x>=0: log((1+x)^n) = n*log(1+x) <= n*x. Let y=n*x < 1,
          then exp(y) <= 1+7/4*y.
          For x<=0, let x=-x, we can prove by induction that (1-x)^n >= 1-n*x.*/
-      mpfr_mul_2si (err, err, MPFR_GET_EXP (y) - MPFR_GET_EXP (t), GMP_RNDU);
-      mpfr_add_ui (err, err, 14 * k, GMP_RNDU); /* 2^(1-p) * t <= 2 ulp(t) */
-      mpfr_div_2si (err, err, MPFR_GET_EXP (y) - MPFR_GET_EXP (t), GMP_RNDU);
+      mpfr_mul_2si (err, err, MPFR_GET_EXP (y) - MPFR_GET_EXP (t), MPFR_RNDU);
+      mpfr_add_ui (err, err, 14 * k, MPFR_RNDU); /* 2^(1-p) * t <= 2 ulp(t) */
+      mpfr_div_2si (err, err, MPFR_GET_EXP (y) - MPFR_GET_EXP (t), MPFR_RNDU);
       if (MPFR_GET_EXP (t) + (mp_exp_t) prec <= MPFR_GET_EXP (y))
         {
           /* the truncation error is bounded by |t| < ulp(y) */
-          mpfr_add_ui (err, err, 1, GMP_RNDU);
+          mpfr_add_ui (err, err, 1, MPFR_RNDU);
           break;
         }
       if (k & 1)
-        mpfr_sub (y, y, t, GMP_RNDN);
+        mpfr_sub (y, y, t, MPFR_RNDN);
       else
-        mpfr_add (y, y, t, GMP_RNDN);
+        mpfr_add (y, y, t, MPFR_RNDN);
     }
   /* the error on y is bounded by err*ulp(y) */
-  mpfr_mul (t, x, x, GMP_RNDU); /* rel. err <= 2^(1-p) */
-  mpfr_div_2ui (err, err, 3, GMP_RNDU);  /* err/8 */
-  mpfr_add (err, err, t, GMP_RNDU);      /* err/8 + xx */
-  mpfr_mul_2ui (err, err, 3, GMP_RNDU);  /* err + 8*xx */
-  mpfr_exp (t, t, GMP_RNDU); /* err <= 1/2*ulp(t) + err(x*x)*t
+  mpfr_mul (t, x, x, MPFR_RNDU); /* rel. err <= 2^(1-p) */
+  mpfr_div_2ui (err, err, 3, MPFR_RNDU);  /* err/8 */
+  mpfr_add (err, err, t, MPFR_RNDU);      /* err/8 + xx */
+  mpfr_mul_2ui (err, err, 3, MPFR_RNDU);  /* err + 8*xx */
+  mpfr_exp (t, t, MPFR_RNDU); /* err <= 1/2*ulp(t) + err(x*x)*t
                                 <= 1/2*ulp(t)+2*|x*x|*ulp(t)
                                 <= (2*|x*x|+1/2)*ulp(t) */
-  mpfr_mul (t, t, x, GMP_RNDN); /* err <= 1/2*ulp(t) + (4*|x*x|+1)*ulp(t)
+  mpfr_mul (t, t, x, MPFR_RNDN); /* err <= 1/2*ulp(t) + (4*|x*x|+1)*ulp(t)
                                    <= (4*|x*x|+3/2)*ulp(t) */
-  mpfr_const_pi (xx, GMP_RNDZ); /* err <= ulp(Pi) */
-  mpfr_sqrt (xx, xx, GMP_RNDN); /* err <= 1/2*ulp(xx) + ulp(Pi)/2/sqrt(Pi)
+  mpfr_const_pi (xx, MPFR_RNDZ); /* err <= ulp(Pi) */
+  mpfr_sqrt (xx, xx, MPFR_RNDN); /* err <= 1/2*ulp(xx) + ulp(Pi)/2/sqrt(Pi)
                                    <= 3/2*ulp(xx) */
-  mpfr_mul (t, t, xx, GMP_RNDN); /* err <= (8 |xx| + 13/2) * ulp(t) */
-  mpfr_div (y, y, t, GMP_RNDN); /* the relative error on input y is bounded
+  mpfr_mul (t, t, xx, MPFR_RNDN); /* err <= (8 |xx| + 13/2) * ulp(t) */
+  mpfr_div (y, y, t, MPFR_RNDN); /* the relative error on input y is bounded
                                    by (1+u)^err with u = 2^(1-p), that on
                                    t is bounded by (1+u)^(8 |xx| + 13/2),
                                    thus that on output y is bounded by
@@ -97,12 +97,12 @@ mpfr_erfc_asympt (mpfr_ptr y, mpfr_srcptr x)
          using the fact that erfc(x) <= exp(-x^2)/sqrt(Pi)/x for x >= 0.
          We compute an upper approximation of exp(-x^2)/sqrt(Pi)/x.
       */
-      mpfr_mul (t, x, x, GMP_RNDD); /* t <= x^2 */
-      mpfr_neg (t, t, GMP_RNDU);    /* -x^2 <= t */
-      mpfr_exp (t, t, GMP_RNDU);    /* exp(-x^2) <= t */
-      mpfr_const_pi (xx, GMP_RNDD); /* xx <= sqrt(Pi), cached */
-      mpfr_mul (xx, xx, x, GMP_RNDD); /* xx <= sqrt(Pi)*x */
-      mpfr_div (y, t, xx, GMP_RNDN); /* if y is zero, this means that the upper
+      mpfr_mul (t, x, x, MPFR_RNDD); /* t <= x^2 */
+      mpfr_neg (t, t, MPFR_RNDU);    /* -x^2 <= t */
+      mpfr_exp (t, t, MPFR_RNDU);    /* exp(-x^2) <= t */
+      mpfr_const_pi (xx, MPFR_RNDD); /* xx <= sqrt(Pi), cached */
+      mpfr_mul (xx, xx, x, MPFR_RNDD); /* xx <= sqrt(Pi)*x */
+      mpfr_div (y, t, xx, MPFR_RNDN); /* if y is zero, this means that the upper
                                         approximation of exp(-x^2)/sqrt(Pi)/x
                                         is nearer from 0 than from 2^(-emin-1),
                                         thus we have underflow. */
@@ -110,7 +110,7 @@ mpfr_erfc_asympt (mpfr_ptr y, mpfr_srcptr x)
     }
   else
     {
-      mpfr_add_ui (err, err, 7, GMP_RNDU);
+      mpfr_add_ui (err, err, 7, MPFR_RNDU);
       exp_err = MPFR_GET_EXP (err);
     }
 
@@ -151,7 +151,7 @@ mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
     {
       /* for x >= 27282, erfc(x) < 2^(-2^30-1) */
       if (mpfr_cmp_ui (x, 27282) >= 0)
-        return mpfr_underflow (y, (rnd == GMP_RNDN) ? GMP_RNDZ : rnd, 1);
+        return mpfr_underflow (y, (rnd == MPFR_RNDN) ? MPFR_RNDZ : rnd, 1);
     }
 
   if (MPFR_SIGN (x) < 0)
@@ -170,9 +170,9 @@ mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
           mpfr_cmp_si (x, -27282) <= 0)
         {
         near_two:
-          mpfr_set_ui (y, 2, GMP_RNDN);
+          mpfr_set_ui (y, 2, MPFR_RNDN);
           mpfr_set_inexflag ();
-          if (rnd == GMP_RNDZ || rnd == GMP_RNDD)
+          if (rnd == MPFR_RNDZ || rnd == MPFR_RNDD)
             {
               mpfr_nextbelow (y);
               return -1;
@@ -188,11 +188,11 @@ mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
           mpfr_init2 (u, 32);
           /* the following is 1/log(2) rounded to zero on 32 bits */
           mpfr_set_str_binary (t, "1.0111000101010100011101100101001");
-          mpfr_sqr (u, x, GMP_RNDZ);
-          mpfr_mul (t, t, u, GMP_RNDZ); /* t <= x^2/log(2) */
-          mpfr_neg (u, x, GMP_RNDZ); /* 0 <= u <= |x| */
-          mpfr_log2 (u, u, GMP_RNDZ); /* u <= log2(|x|) */
-          mpfr_add (t, t, u, GMP_RNDZ); /* t <= log2|x| + x^2 / log(2) */
+          mpfr_sqr (u, x, MPFR_RNDZ);
+          mpfr_mul (t, t, u, MPFR_RNDZ); /* t <= x^2/log(2) */
+          mpfr_neg (u, x, MPFR_RNDZ); /* 0 <= u <= |x| */
+          mpfr_log2 (u, u, MPFR_RNDZ); /* u <= log2(|x|) */
+          mpfr_add (t, t, u, MPFR_RNDZ); /* t <= log2|x| + x^2 / log(2) */
           near_2 = mpfr_cmp_ui (t, MPFR_PREC(y)) >= 0;
           mpfr_clear (t);
           mpfr_clear (u);
@@ -229,15 +229,15 @@ mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
             {
               mpfr_clear (tmp);
               MPFR_SAVE_EXPO_FREE (expo);
-              return mpfr_underflow (y, (rnd == GMP_RNDN) ? GMP_RNDZ : rnd, 1);
+              return mpfr_underflow (y, (rnd == MPFR_RNDN) ? MPFR_RNDZ : rnd, 1);
             }
         }
       else
         {
-          mpfr_erf (tmp, x, GMP_RNDN);
+          mpfr_erf (tmp, x, MPFR_RNDN);
           MPFR_ASSERTD (!MPFR_IS_SINGULAR (tmp)); /* FIXME: 0 only for x=0 ? */
           te = MPFR_GET_EXP (tmp);
-          mpfr_ui_sub (tmp, 1, tmp, GMP_RNDN);
+          mpfr_ui_sub (tmp, 1, tmp, MPFR_RNDN);
           /* See error analysis in algorithms.tex for details */
           if (MPFR_IS_ZERO (tmp))
             {

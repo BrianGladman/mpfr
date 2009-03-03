@@ -48,7 +48,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   sign = mpfr_cmp2 (b, c, &cancel);
   if (MPFR_UNLIKELY(sign == 0))
     {
-      if (rnd_mode == GMP_RNDD)
+      if (rnd_mode == MPFR_RNDD)
         MPFR_SET_NEG (a);
       else
         MPFR_SET_POS (a);
@@ -82,7 +82,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
   /* Check if c is too small.
      A more precise test is to replace 2 by
-      (rnd == GMP_RNDN) + mpfr_power2_raw (b)
+      (rnd == MPFR_RNDN) + mpfr_power2_raw (b)
       but it is more expensive and not very useful */
   if (MPFR_UNLIKELY (MPFR_GET_EXP (c) <= MPFR_GET_EXP (b)
                      - (mp_exp_t) MAX (MPFR_PREC (a), MPFR_PREC (b)) - 2))
@@ -303,7 +303,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   carry = ap[0] & MPFR_LIMB_MASK (sh);
   ap[0] -= carry;
 
-  if (MPFR_LIKELY(rnd_mode == GMP_RNDN))
+  if (MPFR_LIKELY(rnd_mode == MPFR_RNDN))
     {
       if (MPFR_LIKELY(sh))
         {
@@ -323,11 +323,11 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
   else /* directed rounding: set rnd_mode to RNDZ iff towards zero */
     {
       if (MPFR_IS_RNDUTEST_OR_RNDDNOTTEST(rnd_mode, MPFR_IS_NEG(a)))
-        rnd_mode = GMP_RNDZ;
+        rnd_mode = MPFR_RNDZ;
 
       if (carry)
         {
-          if (rnd_mode == GMP_RNDZ)
+          if (rnd_mode == MPFR_RNDZ)
             {
               inexact = -1;
               goto truncate;
@@ -363,7 +363,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
       /* the case rounding to nearest with sh=0 is special since one couldn't
          subtract above 1/2 ulp in the trailing limb of the result */
-      if ((rnd_mode == GMP_RNDN) && sh == 0 && k == 0)
+      if ((rnd_mode == MPFR_RNDN) && sh == 0 && k == 0)
         {
           mp_limb_t half = MPFR_LIMB_HIGHBIT;
 
@@ -396,9 +396,9 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 #endif
       if (bb < cc)
         {
-          if (rnd_mode == GMP_RNDZ)
+          if (rnd_mode == MPFR_RNDZ)
             goto sub_one_ulp;
-          else if (rnd_mode != GMP_RNDN) /* round away */
+          else if (rnd_mode != MPFR_RNDN) /* round away */
             {
               inexact = 1;
               goto truncate;
@@ -428,12 +428,12 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
         }
       else if (bb > cc)
         {
-          if (rnd_mode == GMP_RNDZ)
+          if (rnd_mode == MPFR_RNDZ)
             {
               inexact = -1;
               goto truncate;
             }
-          else if (rnd_mode != GMP_RNDN) /* round away */
+          else if (rnd_mode != MPFR_RNDN) /* round away */
             goto add_one_ulp;
           else /* round to nearest */
             {
@@ -453,7 +453,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
         }
     }
 
-  if ((rnd_mode == GMP_RNDN) && !is_exact)
+  if ((rnd_mode == MPFR_RNDN) && !is_exact)
     {
       /* even rounding rule */
       if ((ap[0] >> sh) & 1)
@@ -505,10 +505,10 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
       if (MPFR_UNLIKELY(exp_a < __gmpfr_emin))
         {
           MPFR_TMP_FREE(marker);
-          if (rnd_mode == GMP_RNDN &&
+          if (rnd_mode == MPFR_RNDN &&
               (exp_a < __gmpfr_emin - 1 ||
                (inexact >= 0 && mpfr_powerof2_raw (a))))
-            rnd_mode = GMP_RNDZ;
+            rnd_mode = MPFR_RNDZ;
           return mpfr_underflow (a, rnd_mode, MPFR_SIGN(a));
         }
       MPFR_SET_EXP (a, exp_a);

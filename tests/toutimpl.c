@@ -47,28 +47,28 @@ main (void)
   tests_start_mpfr ();
 
   /* Check RND_MODE */
-  if (strcmp (mpfr_print_rnd_mode(GMP_RNDN), "GMP_RNDN"))
+  if (strcmp (mpfr_print_rnd_mode(MPFR_RNDN), "MPFR_RNDN"))
     {
-      printf ("Error for printing GMP_RNDN\n");
+      printf ("Error for printing MPFR_RNDN\n");
       exit (1);
     }
-  if (strcmp (mpfr_print_rnd_mode(GMP_RNDU), "GMP_RNDU"))
+  if (strcmp (mpfr_print_rnd_mode(MPFR_RNDU), "MPFR_RNDU"))
     {
-      printf ("Error for printing GMP_RNDU\n");
+      printf ("Error for printing MPFR_RNDU\n");
       exit (1);
     }
-  if (strcmp (mpfr_print_rnd_mode(GMP_RNDD), "GMP_RNDD"))
+  if (strcmp (mpfr_print_rnd_mode(MPFR_RNDD), "MPFR_RNDD"))
     {
-      printf ("Error for printing GMP_RNDD\n");
+      printf ("Error for printing MPFR_RNDD\n");
       exit (1);
     }
-  if (strcmp (mpfr_print_rnd_mode(GMP_RNDZ), "GMP_RNDZ"))
+  if (strcmp (mpfr_print_rnd_mode(MPFR_RNDZ), "MPFR_RNDZ"))
     {
-      printf ("Error for printing GMP_RNDZ\n");
+      printf ("Error for printing MPFR_RNDZ\n");
       exit (1);
     }
   if (mpfr_print_rnd_mode ((mp_rnd_t) -1) != NULL ||
-      mpfr_print_rnd_mode (GMP_RND_MAX) != NULL)
+      mpfr_print_rnd_mode (MPFR_RND_MAX) != NULL)
     {
       printf ("Error for illegal rounding mode values.\n");
       exit (1);

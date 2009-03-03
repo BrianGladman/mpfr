@@ -110,7 +110,7 @@ mpfr_get_str_aux (char *const str, mp_exp_t *const exp, mp_limb_t *const r,
      n * BITS_PER_MP_LIMB + f */
 
   if (exact || mpfr_can_round_raw (r, n, (mp_size_t) 1,
-            n * BITS_PER_MP_LIMB - e, GMP_RNDN, rnd, n * BITS_PER_MP_LIMB + f))
+            n * BITS_PER_MP_LIMB - e, MPFR_RNDN, rnd, n * BITS_PER_MP_LIMB + f))
     {
       /* compute the nearest integer to R */
 
@@ -163,14 +163,14 @@ mpfr_get_str_aux (char *const str, mp_exp_t *const exp, mp_limb_t *const r,
           rnd1 = rnd;
 
           /* round to nearest case */
-          if (rnd == GMP_RNDN)
+          if (rnd == MPFR_RNDN)
             {
               if (2 * str1[size_s1 - 1] == b)
                 {
                   if (dir == 0 && exact) /* exact: even rounding */
                     {
                       rnd1 = ((str1[size_s1-2] & 1) == 0)
-                        ? GMP_RNDD : GMP_RNDU;
+                        ? MPFR_RNDD : MPFR_RNDU;
                     }
                   else
                     {
@@ -184,16 +184,16 @@ mpfr_get_str_aux (char *const str, mp_exp_t *const exp, mp_limb_t *const r,
                     }
                 }
               else if (2 * str1[size_s1 - 1] < b)
-                rnd1 = GMP_RNDD;
+                rnd1 = MPFR_RNDD;
               else
-                rnd1 = GMP_RNDU;
+                rnd1 = MPFR_RNDU;
             }
 
-          /* now rnd1 is either GMP_RNDD or GMP_RNDZ -> truncate
+          /* now rnd1 is either MPFR_RNDD or MPFR_RNDZ -> truncate
                              or GMP_RDNU -> round towards infinity */
 
           /* round away from zero */
-          if (rnd1 == GMP_RNDU)
+          if (rnd1 == MPFR_RNDU)
             {
               if (str1[size_s1 - 1] != 0)
                 {
@@ -1375,9 +1375,9 @@ ceil_mul (mp_exp_t e, int beta, int i)
 
   p = &__gmpfr_l2b[beta-2][i];
   mpfr_init2 (t, sizeof (mp_exp_t) * CHAR_BIT);
-  mpfr_set_exp_t (t, e, GMP_RNDU);
-  mpfr_mul (t, t, p, GMP_RNDU);
-  r = mpfr_get_exp_t (t, GMP_RNDU);
+  mpfr_set_exp_t (t, e, MPFR_RNDU);
+  mpfr_mul (t, t, p, MPFR_RNDU);
+  r = mpfr_get_exp_t (t, MPFR_RNDU);
   mpfr_clear (t);
   return r;
 }

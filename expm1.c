@@ -82,13 +82,13 @@ mpfr_expm1 (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
 
       mpfr_init2 (minus_one, 2);
       mpfr_init2 (t, 64);
-      mpfr_set_si (minus_one, -1, GMP_RNDN);
-      mpfr_const_log2 (t, GMP_RNDU); /* round upward since x is negative */
-      mpfr_div (t, x, t, GMP_RNDU); /* > x / ln(2) */
+      mpfr_set_si (minus_one, -1, MPFR_RNDN);
+      mpfr_const_log2 (t, MPFR_RNDU); /* round upward since x is negative */
+      mpfr_div (t, x, t, MPFR_RNDU); /* > x / ln(2) */
       err = mpfr_cmp_si (t, MPFR_EMIN_MIN >= -LONG_MAX ?
                          MPFR_EMIN_MIN : -LONG_MAX) <= 0 ?
         - (MPFR_EMIN_MIN >= -LONG_MAX ? MPFR_EMIN_MIN : -LONG_MAX) :
-        - mpfr_get_si (t, GMP_RNDU);
+        - mpfr_get_si (t, MPFR_RNDU);
       /* exp(x) = 2^(x/ln(2))
                <= 2^max(MPFR_EMIN_MIN,-LONG_MAX,ceil(x/ln(2)+epsilon))
          with epsilon > 0 */
@@ -127,7 +127,7 @@ mpfr_expm1 (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
         MPFR_BLOCK_DECL (flags);
 
         /* exp(x) may overflow and underflow */
-        MPFR_BLOCK (flags, mpfr_exp (t, x, GMP_RNDN));
+        MPFR_BLOCK (flags, mpfr_exp (t, x, MPFR_RNDN));
         if (MPFR_OVERFLOW (flags))
           {
             inexact = mpfr_overflow (y, rnd_mode, MPFR_SIGN_POS);
@@ -148,7 +148,7 @@ mpfr_expm1 (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
           }
 
         exp_te = MPFR_GET_EXP (t);         /* FIXME: exp(x) may overflow! */
-        mpfr_sub_ui (t, t, 1, GMP_RNDN);   /* exp(x)-1 */
+        mpfr_sub_ui (t, t, 1, MPFR_RNDN);   /* exp(x)-1 */
 
         /* error estimate */
         /*err=Nt-(__gmpfr_ceil_log2(1+pow(2,MPFR_EXP(te)-MPFR_EXP(t))));*/

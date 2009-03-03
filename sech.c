@@ -29,7 +29,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define FUNCTION mpfr_sech
 #define INVERSE  mpfr_cosh
 #define ACTION_NAN(y) do { MPFR_SET_NAN(y); MPFR_RET_NAN; } while (1)
-#define ACTION_INF(y) return mpfr_set_ui (y, 0, GMP_RNDN)
+#define ACTION_INF(y) return mpfr_set_ui (y, 0, MPFR_RNDN)
 #define ACTION_ZERO(y,x) return mpfr_set_ui (y, 1, rnd_mode)
 /* for x near 0, sech(x) = 1 - x^2/2 + ..., more precisely |sech(x)-1| <= x^2/2
    for |x| <= 1. The tiny action is the same as for cos(x). */

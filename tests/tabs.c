@@ -45,11 +45,11 @@ check_inexact (void)
       mpfr_urandomb (x, RANDS);
       if (randlimb () % 2)
         {
-          mpfr_set (absx, x, GMP_RNDN);
-          mpfr_neg (x, x, GMP_RNDN);
+          mpfr_set (absx, x, MPFR_RNDN);
+          mpfr_neg (x, x, MPFR_RNDN);
         }
       else
-        mpfr_set (absx, x, GMP_RNDN);
+        mpfr_set (absx, x, MPFR_RNDN);
       for (q=2; q<2*p; q++)
         {
           mpfr_set_prec (y, q);
@@ -85,24 +85,24 @@ check_cmp (int argc, char *argv[])
 
   mpfr_inits2 (53, x, y, (mpfr_ptr) 0);
 
-  mpfr_set_ui(x, 1, GMP_RNDN);
-  (mpfr_abs) (x, x, GMP_RNDN);
+  mpfr_set_ui(x, 1, MPFR_RNDN);
+  (mpfr_abs) (x, x, MPFR_RNDN);
   if (mpfr_cmp_ui (x, 1))
     {
       printf ("Error in mpfr_abs(1.0)\n");
       exit (1);
     }
 
-  mpfr_set_si(x, -1, GMP_RNDN);
-  mpfr_abs(x, x, GMP_RNDN);
+  mpfr_set_si(x, -1, MPFR_RNDN);
+  mpfr_abs(x, x, MPFR_RNDN);
   if (mpfr_cmp_ui (x, 1))
     {
       printf ("Error in mpfr_abs(1.0)\n");
       exit (1);
     }
 
-  mpfr_set_si(x, -1, GMP_RNDN);
-  mpfr_abs(x, x, GMP_RNDN);
+  mpfr_set_si(x, -1, MPFR_RNDN);
+  mpfr_abs(x, x, MPFR_RNDN);
   if (mpfr_cmp_ui (x, 1))
     {
       printf ("Error in mpfr_abs(-1.0)\n");
@@ -110,14 +110,14 @@ check_cmp (int argc, char *argv[])
     }
 
   mpfr_set_inf (x, 1);
-  mpfr_abs (x, x, GMP_RNDN);
+  mpfr_abs (x, x, MPFR_RNDN);
   if (!mpfr_inf_p(x) || (mpfr_sgn(x) <= 0))
     {
       printf ("Error in mpfr_abs(Inf).\n");
       exit (1);
     }
   mpfr_set_inf (x, -1);
-  mpfr_abs (x, x, GMP_RNDN);
+  mpfr_abs (x, x, MPFR_RNDN);
   if (!mpfr_inf_p(x) || (mpfr_sgn(x) <= 0))
     {
       printf ("Error in mpfr_abs(-Inf).\n");
@@ -125,7 +125,7 @@ check_cmp (int argc, char *argv[])
     }
 
   MPFR_SET_NAN(x);
-  mpfr_abs (x, x, GMP_RNDN);
+  mpfr_abs (x, x, MPFR_RNDN);
   if (!MPFR_IS_NAN(x))
     {
       printf ("Error in mpfr_abs(NAN).\n");

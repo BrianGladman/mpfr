@@ -90,7 +90,7 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
         MPFR_BLOCK_DECL (flags);
 
         /* compute acosh */
-        MPFR_BLOCK (flags, mpfr_mul (t, x, x, GMP_RNDD));  /* x^2 */
+        MPFR_BLOCK (flags, mpfr_mul (t, x, x, MPFR_RNDD));  /* x^2 */
         if (MPFR_OVERFLOW (flags))
           {
             mpfr_t ln2;
@@ -100,35 +100,35 @@ mpfr_acosh (mpfr_ptr y, mpfr_srcptr x , mp_rnd_t rnd_mode)
                assume that we obtain the same result by evaluating ln(2x).
                We need to compute ln(x) + ln(2) as 2x can overflow. TODO:
                write a proof and add an MPFR_ASSERTN. */
-            mpfr_log (t, x, GMP_RNDN);  /* err(log) < 1/2 ulp(t) */
+            mpfr_log (t, x, MPFR_RNDN);  /* err(log) < 1/2 ulp(t) */
             pln2 = Nt - MPFR_PREC_MIN < MPFR_GET_EXP (t) ?
               MPFR_PREC_MIN : Nt - MPFR_GET_EXP (t);
             mpfr_init2 (ln2, pln2);
-            mpfr_const_log2 (ln2, GMP_RNDN);  /* err(ln2) < 1/2 ulp(t) */
-            mpfr_add (t, t, ln2, GMP_RNDN);  /* err <= 3/2 ulp(t) */
+            mpfr_const_log2 (ln2, MPFR_RNDN);  /* err(ln2) < 1/2 ulp(t) */
+            mpfr_add (t, t, ln2, MPFR_RNDN);  /* err <= 3/2 ulp(t) */
             mpfr_clear (ln2);
             err = 1;
           }
         else
           {
             exp_te = MPFR_GET_EXP (t);
-            mpfr_sub_ui (t, t, 1, GMP_RNDD);   /* x^2-1 */
+            mpfr_sub_ui (t, t, 1, MPFR_RNDD);   /* x^2-1 */
             if (MPFR_UNLIKELY (MPFR_IS_ZERO (t)))
               {
                 /* This means that x is very close to 1: x = 1 + t with
                    t < 2^(-Nt). We have: acosh(x) = sqrt(2t) (1 - eps(t))
                    with 0 < eps(t) < t / 12. */
-                mpfr_sub_ui (t, x, 1, GMP_RNDD);   /* t = x - 1 */
-                mpfr_mul_2ui (t, t, 1, GMP_RNDN);  /* 2t */
-                mpfr_sqrt (t, t, GMP_RNDN);        /* sqrt(2t) */
+                mpfr_sub_ui (t, x, 1, MPFR_RNDD);   /* t = x - 1 */
+                mpfr_mul_2ui (t, t, 1, MPFR_RNDN);  /* 2t */
+                mpfr_sqrt (t, t, MPFR_RNDN);        /* sqrt(2t) */
                 err = 1;
               }
             else
               {
                 d = exp_te - MPFR_GET_EXP (t);
-                mpfr_sqrt (t, t, GMP_RNDN);        /* sqrt(x^2-1) */
-                mpfr_add (t, t, x, GMP_RNDN);      /* sqrt(x^2-1)+x */
-                mpfr_log (t, t, GMP_RNDN);         /* ln(sqrt(x^2-1)+x) */
+                mpfr_sqrt (t, t, MPFR_RNDN);        /* sqrt(x^2-1) */
+                mpfr_add (t, t, x, MPFR_RNDN);      /* sqrt(x^2-1)+x */
+                mpfr_log (t, t, MPFR_RNDN);         /* ln(sqrt(x^2-1)+x) */
 
                 /* error estimate -- see algorithms.tex */
                 err = 3 + MAX (1, d) - MPFR_GET_EXP (t);

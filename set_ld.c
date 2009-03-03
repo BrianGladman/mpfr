@@ -173,9 +173,9 @@ mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
             }
           else
             {
-              inexact = mpfr_set_d (u, (double) x, GMP_RNDZ);
+              inexact = mpfr_set_d (u, (double) x, MPFR_RNDZ);
               MPFR_ASSERTD (inexact == 0);
-              if (mpfr_add (t, t, u, GMP_RNDZ) != 0)
+              if (mpfr_add (t, t, u, MPFR_RNDZ) != 0)
                 {
                   if (!mpfr_number_p (t))
                     break;
@@ -200,9 +200,9 @@ mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
                       rb_mask = MPFR_LIMB_ONE <<
                         (BITS_PER_MP_LIMB - 1 -
                          (MPFR_PREC (r) & (BITS_PER_MP_LIMB - 1)));
-                      if (rnd_mode == GMP_RNDN)
+                      if (rnd_mode == MPFR_RNDN)
                         rnd_mode = (*tp & rb_mask) ^ MPFR_IS_NEG (t) ?
-                          GMP_RNDU : GMP_RNDD;
+                          MPFR_RNDU : MPFR_RNDD;
                       *tp |= rb_mask;
                       break;
                     }

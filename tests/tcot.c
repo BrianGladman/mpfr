@@ -38,7 +38,7 @@ check_specials (void)
   mpfr_init2 (y, 123L);
 
   mpfr_set_nan (x);
-  mpfr_cot (y, x, GMP_RNDN);
+  mpfr_cot (y, x, MPFR_RNDN);
   if (! mpfr_nan_p (y))
     {
       printf ("Error: cot(NaN) != NaN\n");
@@ -46,7 +46,7 @@ check_specials (void)
     }
 
   mpfr_set_inf (x, 1);
-  mpfr_cot (y, x, GMP_RNDN);
+  mpfr_cot (y, x, MPFR_RNDN);
   if (! mpfr_nan_p (y))
     {
       printf ("Error: cot(Inf) != NaN\n");
@@ -54,7 +54,7 @@ check_specials (void)
     }
 
   mpfr_set_inf (x, -1);
-  mpfr_cot (y, x, GMP_RNDN);
+  mpfr_cot (y, x, MPFR_RNDN);
   if (! mpfr_nan_p (y))
     {
       printf ("Error: cot(-Inf) != NaN\n");
@@ -62,15 +62,15 @@ check_specials (void)
     }
 
   /* cot(+/-0) = +/-Inf */
-  mpfr_set_ui (x, 0, GMP_RNDN);
-  mpfr_cot (y, x, GMP_RNDN);
+  mpfr_set_ui (x, 0, MPFR_RNDN);
+  mpfr_cot (y, x, MPFR_RNDN);
   if (! (mpfr_inf_p (y) && mpfr_sgn (y) > 0))
     {
       printf ("Error: cot(+0) != +Inf\n");
       exit (1);
     }
-  mpfr_neg (x, x, GMP_RNDN);
-  mpfr_cot (y, x, GMP_RNDN);
+  mpfr_neg (x, x, MPFR_RNDN);
+  mpfr_cot (y, x, MPFR_RNDN);
   if (! (mpfr_inf_p (y) && mpfr_sgn (y) < 0))
     {
       printf ("Error: cot(-0) != -Inf\n");
@@ -101,14 +101,14 @@ two2emin (mp_exp_t e)
   for (i = -4; i <= 4; i++)
     RND_LOOP (rnd)
       {
-        mpfr_set_si (y, i, GMP_RNDN);
+        mpfr_set_si (y, i, MPFR_RNDN);
         mpfr_ui_div (y, 1, y, (mp_rnd_t) rnd);  /* no overflow/underflow */
-        mpfr_set_si_2exp (x, i, -e, GMP_RNDN);
+        mpfr_set_si_2exp (x, i, -e, MPFR_RNDN);
         if (ABS (i) != 3)  /* not a power of 2 (not 0 either) */
           mpfr_sub (y, y, x, (mp_rnd_t) rnd);  /* no overflow/underflow */
-        mpfr_set_ui_2exp (x, 1, -e, GMP_RNDN);
+        mpfr_set_ui_2exp (x, 1, -e, MPFR_RNDN);
         mpfr_div (y, y, x, (mp_rnd_t) rnd);  /* 1/x - SIGN(x).epsilon */
-        mpfr_set_si_2exp (x, i, -e, GMP_RNDN);
+        mpfr_set_si_2exp (x, i, -e, MPFR_RNDN);
         mpfr_cot (x, x, (mp_rnd_t) rnd);
         if (! mpfr_equal_p (x, y))
           {

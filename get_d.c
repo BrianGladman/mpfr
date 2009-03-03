@@ -182,11 +182,11 @@ mpfr_get_d (mpfr_srcptr src, mp_rnd_t rnd_mode)
          as this gives 0 instead of the correct result with gcc on some
          Alpha machines. */
       d = negative ?
-        (rnd_mode == GMP_RNDD ||
-         (rnd_mode == GMP_RNDN && mpfr_cmp_si_2exp(src, -1, -1075) < 0)
+        (rnd_mode == MPFR_RNDD ||
+         (rnd_mode == MPFR_RNDN && mpfr_cmp_si_2exp(src, -1, -1075) < 0)
          ? -DBL_MIN : DBL_NEG_ZERO) :
-        (rnd_mode == GMP_RNDU ||
-         (rnd_mode == GMP_RNDN && mpfr_cmp_si_2exp(src, 1, -1075) > 0)
+        (rnd_mode == MPFR_RNDU ||
+         (rnd_mode == MPFR_RNDN && mpfr_cmp_si_2exp(src, 1, -1075) > 0)
          ? DBL_MIN : 0.0);
       if (d != 0.0)
         d *= DBL_EPSILON;
@@ -195,9 +195,9 @@ mpfr_get_d (mpfr_srcptr src, mp_rnd_t rnd_mode)
   else if (MPFR_UNLIKELY (e > 1024))
     {
       d = negative ?
-        (rnd_mode == GMP_RNDZ || rnd_mode == GMP_RNDU ?
+        (rnd_mode == MPFR_RNDZ || rnd_mode == MPFR_RNDU ?
          -DBL_MAX : MPFR_DBL_INFM) :
-        (rnd_mode == GMP_RNDZ || rnd_mode == GMP_RNDD ?
+        (rnd_mode == MPFR_RNDZ || rnd_mode == MPFR_RNDD ?
          DBL_MAX : MPFR_DBL_INFP);
     }
   else

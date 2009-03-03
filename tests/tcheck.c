@@ -50,18 +50,18 @@ main (void)
       MPFR_SET_ZERO(a);
       if (!mpfr_check(a)) ERROR("for zero");
       /* Check var */
-      mpfr_set_ui(a, 2, GMP_RNDN);
+      mpfr_set_ui(a, 2, MPFR_RNDN);
       if (!mpfr_check(a)) ERROR("for set_ui");
       mpfr_clear_overflow();
       max = 1000; /* Allows max 2^1000 bits for the exponent */
       while ((!mpfr_overflow_p()) && (max>0))
         {
-          mpfr_mul(a, a, a, GMP_RNDN);
+          mpfr_mul(a, a, a, MPFR_RNDN);
           if (!mpfr_check(a)) ERROR("for mul");
           max--;
         }
       if (max==0) ERROR("can't reach overflow");
-      mpfr_set_ui(a, 2137, GMP_RNDN);
+      mpfr_set_ui(a, 2137, MPFR_RNDN);
       /* Corrupt a and check for it */
       MPFR_SIGN(a) = 2;
       if (mpfr_check(a))  ERROR("sgn");
@@ -105,7 +105,7 @@ main (void)
       MPFR_MANT(a)[MPFR_LIMB_SIZE(a)-1] &= MPFR_LIMB_MASK (BITS_PER_MP_LIMB-1);
       if (mpfr_check(a))  ERROR("last bits non 0");
       /* Final */
-      mpfr_set_ui(a, 2137, GMP_RNDN);
+      mpfr_set_ui(a, 2137, MPFR_RNDN);
       if (!mpfr_check(a)) ERROR("after last set");
       mpfr_clear (a);
       if (mpfr_check(a))  ERROR("after clear");

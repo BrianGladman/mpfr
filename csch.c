@@ -55,13 +55,13 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
       inexact = mpfr_ui_div (y, 1, x, r);                               \
       if (inexact == 0) /* x is a power of two */                       \
         { /* result always 1/x, except when rounding to zero */         \
-          if (rnd_mode == GMP_RNDU || (rnd_mode == GMP_RNDZ && signx < 0)) \
+          if (rnd_mode == MPFR_RNDU || (rnd_mode == MPFR_RNDZ && signx < 0)) \
             {                                                           \
               if (signx < 0)                                            \
                 mpfr_nextabove (y); /* -2^k + epsilon */                \
               inexact = 1;                                              \
             }                                                           \
-          else if (rnd_mode == GMP_RNDD || rnd_mode == GMP_RNDZ)        \
+          else if (rnd_mode == MPFR_RNDD || rnd_mode == MPFR_RNDZ)        \
             {                                                           \
               if (signx > 0)                                            \
                 mpfr_nextbelow (y); /* 2^k - epsilon */                 \

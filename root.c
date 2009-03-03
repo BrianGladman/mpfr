@@ -134,7 +134,7 @@ mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mp_rnd_t rnd_mode)
 
   MPFR_MPZ_SIZEINBASE2 (size_m, m);
   /* for rounding to nearest, we want the round bit to be in the root */
-  n = MPFR_PREC (y) + (rnd_mode == GMP_RNDN);
+  n = MPFR_PREC (y) + (rnd_mode == MPFR_RNDN);
 
   /* we now multiply m by 2^(r+k*sh) so that root(m,k) will give
      exactly n bits: we want k*(n-1)+1 <= size_m + k*sh + r <= k*n
@@ -174,8 +174,8 @@ mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mp_rnd_t rnd_mode)
     {
       if (negative)
         rnd_mode = MPFR_INVERT_RND (rnd_mode);
-      if (rnd_mode == GMP_RNDU || rnd_mode == GMP_RNDA
-          || (rnd_mode == GMP_RNDN && mpz_tstbit (m, 0)))
+      if (rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDA
+          || (rnd_mode == MPFR_RNDN && mpz_tstbit (m, 0)))
         inexact = 1, mpz_add_ui (m, m, 1);
       else
         inexact = -1;
@@ -183,8 +183,8 @@ mpfr_root (mpfr_ptr y, mpfr_srcptr x, unsigned long k, mp_rnd_t rnd_mode)
 
   /* either inexact is not zero, and the conversion is exact, i.e. inexact
      is not changed; or inexact=0, and inexact is set only when
-     rnd_mode=GMP_RNDN and bit (n+1) from m is 1 */
-  inexact += mpfr_set_z (y, m, GMP_RNDN);
+     rnd_mode=MPFR_RNDN and bit (n+1) from m is 1 */
+  inexact += mpfr_set_z (y, m, MPFR_RNDN);
   MPFR_SET_EXP (y, MPFR_GET_EXP (y) + e / (mp_exp_t) k);
 
   if (negative)

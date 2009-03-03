@@ -64,7 +64,7 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
   if (MPFR_UNLIKELY (exp > __gmpfr_emax))
     return mpfr_overflow (f, rnd_mode, sign_z);
   if (MPFR_UNLIKELY (exp + 1 < __gmpfr_emin))
-    return mpfr_underflow (f, rnd_mode == GMP_RNDN ? GMP_RNDZ : rnd_mode,
+    return mpfr_underflow (f, rnd_mode == MPFR_RNDN ? MPFR_RNDZ : rnd_mode,
                            sign_z);
 
   if (MPFR_LIKELY (dif >= 0))
@@ -118,7 +118,7 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
         }
 
       /* Rounding */
-      if (MPFR_LIKELY (rnd_mode == GMP_RNDN))
+      if (MPFR_LIKELY (rnd_mode == MPFR_RNDN))
         {
           if (rb == 0 || MPFR_UNLIKELY (sb == 0 && (fp[0] & ulp) == 0))
             goto trunc;
@@ -164,8 +164,8 @@ mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
 
   if (MPFR_UNLIKELY (exp < __gmpfr_emin))
     {
-      if (rnd_mode == GMP_RNDN && inex == 0 && mpfr_powerof2_raw (f))
-        rnd_mode = GMP_RNDZ;
+      if (rnd_mode == MPFR_RNDN && inex == 0 && mpfr_powerof2_raw (f))
+        rnd_mode = MPFR_RNDZ;
       return mpfr_underflow (f, rnd_mode, sign_z);
     }
 

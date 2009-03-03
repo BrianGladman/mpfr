@@ -38,7 +38,7 @@ check_specials (void)
   mpfr_init2 (y, 123L);
 
   mpfr_set_nan (x);
-  mpfr_csc (y, x, GMP_RNDN);
+  mpfr_csc (y, x, MPFR_RNDN);
   if (! mpfr_nan_p (y))
     {
       printf ("Error: csc(NaN) != NaN\n");
@@ -46,7 +46,7 @@ check_specials (void)
     }
 
   mpfr_set_inf (x, 1);
-  mpfr_csc (y, x, GMP_RNDN);
+  mpfr_csc (y, x, MPFR_RNDN);
   if (! mpfr_nan_p (y))
     {
       printf ("Error: csc(Inf) != NaN\n");
@@ -54,7 +54,7 @@ check_specials (void)
     }
 
   mpfr_set_inf (x, -1);
-  mpfr_csc (y, x, GMP_RNDN);
+  mpfr_csc (y, x, MPFR_RNDN);
   if (! mpfr_nan_p (y))
     {
       printf ("Error: csc(-Inf) != NaN\n");
@@ -62,15 +62,15 @@ check_specials (void)
     }
 
   /* csc(+/-0) = +/-Inf */
-  mpfr_set_ui (x, 0, GMP_RNDN);
-  mpfr_csc (y, x, GMP_RNDN);
+  mpfr_set_ui (x, 0, MPFR_RNDN);
+  mpfr_csc (y, x, MPFR_RNDN);
   if (! (mpfr_inf_p (y) && mpfr_sgn (y) > 0))
     {
       printf ("Error: csc(+0) != +Inf\n");
       exit (1);
     }
-  mpfr_neg (x, x, GMP_RNDN);
-  mpfr_csc (y, x, GMP_RNDN);
+  mpfr_neg (x, x, MPFR_RNDN);
+  mpfr_csc (y, x, MPFR_RNDN);
   if (! (mpfr_inf_p (y) && mpfr_sgn (y) < 0))
     {
       printf ("Error: csc(-0) != -Inf\n");

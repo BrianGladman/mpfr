@@ -127,16 +127,16 @@ int main ()
 
   for (base = 2 ; base < 63 ; base ++)
     {
-      mpfr_set_ui (x, base, GMP_RNDN);
-      mpfr_log2 (x, x, GMP_RNDN);
-      mpfr_ui_div (x, 1, x, GMP_RNDN);
+      mpfr_set_ui (x, base, MPFR_RNDN);
+      mpfr_log2 (x, x, MPFR_RNDN);
+      mpfr_ui_div (x, 1, x, MPFR_RNDN);
       printf ("Base: %d x=%e ", base, mpfr_get_d1 (x));
       for (i = 0 ; i < N ; i++)
         {
           mpfr_floor (y, x);
-          tab[i] = mpfr_get_ui (y, GMP_RNDN);
-          mpfr_sub (x, x, y, GMP_RNDN);
-          mpfr_ui_div (x, 1, x, GMP_RNDN);
+          tab[i] = mpfr_get_ui (y, MPFR_RNDN);
+          mpfr_sub (x, x, y, MPFR_RNDN);
+          mpfr_ui_div (x, 1, x, MPFR_RNDN);
         }
       for (i = N-1 ; i >= 0 ; i--)
         if (tab[i] != 0)
@@ -719,7 +719,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mp_rnd_t rnd)
       if (exact || mpfr_can_round_raw (result, ysize,
                                        (pstr->negative) ? -1 : 1,
                                        ysize_bits - err - 1,
-                                       GMP_RNDN, rnd, MPFR_PREC(x)))
+                                       MPFR_RNDN, rnd, MPFR_PREC(x)))
         break;
 
       /* update the prec for next loop */
@@ -760,8 +760,8 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mp_rnd_t rnd)
  underflow:
   /* This is called when there is a huge overflow
      (Real expo < MPFR_EXP_MIN << __gmpfr_emin */
-  if (rnd == GMP_RNDN)
-    rnd = GMP_RNDZ;
+  if (rnd == MPFR_RNDN)
+    rnd = MPFR_RNDZ;
   res = mpfr_underflow (x, rnd, (pstr->negative) ? -1 : 1);
   goto end;
 
@@ -812,8 +812,8 @@ mpfr_strtofr (mpfr_t x, const char *string, char **end, int base,
     {
       /* This is called when there is a huge overflow
          (Real expo < MPFR_EXP_MIN << __gmpfr_emin */
-      if (rnd == GMP_RNDN)
-        rnd = GMP_RNDZ;
+      if (rnd == MPFR_RNDN)
+        rnd = MPFR_RNDZ;
       res = mpfr_underflow (x, rnd, (pstr.negative) ? -1 : 1);
     }
 #endif

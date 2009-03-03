@@ -35,8 +35,8 @@ main (void)
   mpfr_init (x);
 
   /* check +infinity gives non-zero for mpfr_inf_p only */
-  mpfr_set_ui (x, 1L, GMP_RNDZ);
-  mpfr_div_ui (x, x, 0L, GMP_RNDZ);
+  mpfr_set_ui (x, 1L, MPFR_RNDZ);
+  mpfr_div_ui (x, x, 0L, MPFR_RNDZ);
   if (mpfr_nan_p (x) || (mpfr_nan_p) (x) )
     {
       printf ("Error: mpfr_nan_p(+Inf) gives non-zero\n");
@@ -59,7 +59,7 @@ main (void)
     }
 
   /* same for -Inf */
-  mpfr_neg (x, x, GMP_RNDN);
+  mpfr_neg (x, x, MPFR_RNDN);
   if (mpfr_nan_p (x) || (mpfr_nan_p(x)))
     {
       printf ("Error: mpfr_nan_p(-Inf) gives non-zero\n");
@@ -82,7 +82,7 @@ main (void)
     }
 
   /* same for NaN */
-  mpfr_sub (x, x, x, GMP_RNDN);
+  mpfr_sub (x, x, x, MPFR_RNDN);
   if (mpfr_nan_p (x) == 0)
     {
       printf ("Error: mpfr_nan_p(NaN) gives zero\n");
@@ -105,7 +105,7 @@ main (void)
     }
 
   /* same for an ordinary number */
-  mpfr_set_ui (x, 1, GMP_RNDN);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
   if (mpfr_nan_p (x) || (mpfr_nan_p)(x))
     {
       printf ("Error: mpfr_nan_p(1) gives non-zero\n");
@@ -128,7 +128,7 @@ main (void)
     }
 
   /* Same for 0 */
-  mpfr_set_ui (x, 0, GMP_RNDN);
+  mpfr_set_ui (x, 0, MPFR_RNDN);
   if (mpfr_nan_p (x) || (mpfr_nan_p)(x))
     {
       printf ("Error: mpfr_nan_p(0) gives non-zero\n");

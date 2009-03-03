@@ -45,7 +45,7 @@ check0 (mpfr_ptr ip, mpfr_ptr fp, mp_prec_t prec, mp_rnd_t rnd)
       printf ("Internal error (1)\n");
       exit (1);
     }
-  if (mpfr_add (sum, ip, fp, GMP_RNDZ))
+  if (mpfr_add (sum, ip, fp, MPFR_RNDZ))
     {
       printf ("Wrong inexact flag in mpfr_add\n");
       exit (1);
@@ -61,7 +61,7 @@ check0 (mpfr_ptr ip, mpfr_ptr fp, mp_prec_t prec, mp_rnd_t rnd)
   if (inex1 != inex2)
     {
       printf ("Wrong inexact flag in mpfr_frac for\n");
-      mpfr_out_str (stdout, 2, 0, sum, GMP_RNDN);
+      mpfr_out_str (stdout, 2, 0, sum, MPFR_RNDN);
       printf ("\nGot %d instead of %d\n", inex1, inex2);
       exit (1);
     }
@@ -71,11 +71,11 @@ check0 (mpfr_ptr ip, mpfr_ptr fp, mp_prec_t prec, mp_rnd_t rnd)
     {
       printf ("Error in mpfr_frac (y, x, %s) with\nx = ",
               mpfr_print_rnd_mode (rnd));
-      mpfr_out_str (stdout, 2, 0, sum, GMP_RNDN);
+      mpfr_out_str (stdout, 2, 0, sum, MPFR_RNDN);
       printf ("\nGot        ");
-      mpfr_out_str (stdout, 2, 0, dst, GMP_RNDN);
+      mpfr_out_str (stdout, 2, 0, dst, MPFR_RNDN);
       printf ("\ninstead of ");
-      mpfr_out_str (stdout, 2, 0, fp2, GMP_RNDN);
+      mpfr_out_str (stdout, 2, 0, fp2, MPFR_RNDN);
       printf ("\n");
       exit (1);
     }
@@ -94,12 +94,12 @@ check0 (mpfr_ptr ip, mpfr_ptr fp, mp_prec_t prec, mp_rnd_t rnd)
         {
           printf ("Error in mpfr_frac (x, x, %s) with\nx = ",
                   mpfr_print_rnd_mode (rnd));
-          mpfr_add (tmp, ip, fp, GMP_RNDZ);
-          mpfr_out_str (stdout, 2, 0, tmp, GMP_RNDN);
+          mpfr_add (tmp, ip, fp, MPFR_RNDZ);
+          mpfr_out_str (stdout, 2, 0, tmp, MPFR_RNDN);
           printf ("\nGot        ");
-          mpfr_out_str (stdout, 2, 0, sum, GMP_RNDN);
+          mpfr_out_str (stdout, 2, 0, sum, MPFR_RNDN);
           printf ("\ninstead of ");
-          mpfr_out_str (stdout, 2, 0, fp, GMP_RNDN);
+          mpfr_out_str (stdout, 2, 0, fp, MPFR_RNDN);
           printf ("\n");
           exit (1);
         }
@@ -116,16 +116,16 @@ check1 (mpfr_ptr ip, mpfr_ptr fp)
 {
   int rnd;
 
-  for (rnd = 0; rnd < GMP_RND_MAX ; rnd++)
+  for (rnd = 0; rnd < MPFR_RND_MAX ; rnd++)
     {
       check0 (ip, fp, PMAX, (mp_rnd_t) rnd);
       check0 (ip, fp, 70, (mp_rnd_t) rnd);
-      mpfr_neg (fp, fp, GMP_RNDN);
-      mpfr_neg (ip, ip, GMP_RNDN);
+      mpfr_neg (fp, fp, MPFR_RNDN);
+      mpfr_neg (ip, ip, MPFR_RNDN);
       check0 (ip, fp, PMAX, (mp_rnd_t) rnd);
       check0 (ip, fp, 70, (mp_rnd_t) rnd);
-      mpfr_neg (fp, fp, GMP_RNDN);
-      mpfr_neg (ip, ip, GMP_RNDN);
+      mpfr_neg (fp, fp, MPFR_RNDN);
+      mpfr_neg (ip, ip, MPFR_RNDN);
     }
 }
 
@@ -138,7 +138,7 @@ special (void)
   mpfr_init (t);
 
   mpfr_set_nan (z);
-  mpfr_frac (t, z, GMP_RNDN);
+  mpfr_frac (t, z, MPFR_RNDN);
   if (!mpfr_nan_p (t))
     {
       printf ("Error for frac(NaN)\n");
@@ -149,7 +149,7 @@ special (void)
   mpfr_set_prec (t, 3);
 
   mpfr_set_str_binary (z, "0.101101E3");
-  mpfr_frac (t, z, GMP_RNDN);
+  mpfr_frac (t, z, MPFR_RNDN);
   mpfr_set_str_binary (z, "0.101");
   if (mpfr_cmp (t, z))
     {
@@ -160,7 +160,7 @@ special (void)
   mpfr_set_prec (z, 34);
   mpfr_set_prec (t, 26);
   mpfr_set_str_binary (z, "0.101101010000010011110011001101E9");
-  mpfr_frac (t, z, GMP_RNDN);
+  mpfr_frac (t, z, MPFR_RNDN);
   mpfr_set_str_binary (z, "0.000010011110011001101");
   if (mpfr_cmp (t, z))
     {
@@ -192,36 +192,36 @@ main (void)
     {
       if (ni <= 0)
         { /* ni + 1 */
-          mpfr_set_si (ip, ni, GMP_RNDN);
-          mpfr_add_ui (ip, ip, 1, GMP_RNDN);
+          mpfr_set_si (ip, ni, MPFR_RNDN);
+          mpfr_add_ui (ip, ip, 1, MPFR_RNDN);
         }
       else
         { /* 2^ni + 1 */
-          mpfr_set_ui (ip, 1, GMP_RNDN);
-          mpfr_mul_2ui (ip, ip, ni, GMP_RNDN);
-          mpfr_add_ui (ip, ip, 1, GMP_RNDN);
+          mpfr_set_ui (ip, 1, MPFR_RNDN);
+          mpfr_mul_2ui (ip, ip, ni, MPFR_RNDN);
+          mpfr_add_ui (ip, ip, 1, MPFR_RNDN);
         }
 
-      mpfr_set_ui (fp, 0, GMP_RNDN);
+      mpfr_set_ui (fp, 0, MPFR_RNDN);
       check1 (ip, fp);
 
       for (nf1 = 1; nf1 < PFP; nf1++)
         {
-          mpfr_set_ui (fp, 1, GMP_RNDN);
-          mpfr_div_2ui (fp, fp, nf1, GMP_RNDN);
+          mpfr_set_ui (fp, 1, MPFR_RNDN);
+          mpfr_div_2ui (fp, fp, nf1, MPFR_RNDN);
           check1 (ip, fp);
           nf2 = 1 + (randlimb () % (PFP - 1));
-          mpfr_set_ui (fp, 1, GMP_RNDN);
-          mpfr_div_2ui (fp, fp, nf2, GMP_RNDN);
-          mpfr_add_ui (fp, fp, 1, GMP_RNDN);
-          mpfr_div_2ui (fp, fp, nf1, GMP_RNDN);
+          mpfr_set_ui (fp, 1, MPFR_RNDN);
+          mpfr_div_2ui (fp, fp, nf2, MPFR_RNDN);
+          mpfr_add_ui (fp, fp, 1, MPFR_RNDN);
+          mpfr_div_2ui (fp, fp, nf1, MPFR_RNDN);
           check1 (ip, fp);
         }
     }
 
-  mpfr_set_ui (ip, 1, GMP_RNDN);
-  mpfr_div_ui (ip, ip, 0, GMP_RNDN);
-  mpfr_set_ui (fp, 0, GMP_RNDN);
+  mpfr_set_ui (ip, 1, MPFR_RNDN);
+  mpfr_div_ui (ip, ip, 0, MPFR_RNDN);
+  mpfr_set_ui (fp, 0, MPFR_RNDN);
   check1 (ip, fp);  /* test infinities */
 
   mpfr_clear (ip);

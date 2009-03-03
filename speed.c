@@ -71,7 +71,7 @@ int verbose;
   speed_starttime ();                                \
   i = s->reps;                                       \
   do                                                 \
-    mean_fun (w, x, GMP_RNDN);                       \
+    mean_fun (w, x, MPFR_RNDN);                       \
   while (--i != 0);                                  \
   t = speed_endtime ();                              \
                                                      \
@@ -109,7 +109,7 @@ int verbose;
   speed_starttime ();                                \
   i = s->reps;                                       \
   do                                                 \
-    mean_fun (w, x, y, GMP_RNDN);                    \
+    mean_fun (w, x, y, MPFR_RNDN);                    \
   while (--i != 0);                                  \
   t = speed_endtime ();                              \
                                                      \

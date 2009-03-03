@@ -221,13 +221,13 @@ sum_once (mpfr_ptr ret, mpfr_srcptr *const tab, unsigned long n, mp_prec_t F)
   MPFR_ASSERTD (n >= 2);
 
   mpfr_init2 (sum, F);
-  error_trap = mpfr_set (sum, tab[0], GMP_RNDN);
+  error_trap = mpfr_set (sum, tab[0], MPFR_RNDN);
   for (i = 1; i < n - 1; i++)
     {
       MPFR_ASSERTD (!MPFR_IS_NAN (sum) && !MPFR_IS_INF (sum));
-      error_trap |= mpfr_add (sum, sum, tab[i], GMP_RNDN);
+      error_trap |= mpfr_add (sum, sum, tab[i], MPFR_RNDN);
     }
-  error_trap |= mpfr_add (ret, sum, tab[n - 1], GMP_RNDN);
+  error_trap |= mpfr_add (ret, sum, tab[n - 1], MPFR_RNDN);
   mpfr_clear (sum);
   return error_trap;
 }
@@ -293,7 +293,7 @@ mpfr_sum (mpfr_ptr ret, mpfr_ptr *const tab_p, unsigned long n, mp_rnd_t rnd)
                        (!MPFR_IS_ZERO (cur_sum) &&
                         mpfr_can_round (cur_sum,
                                         MPFR_GET_EXP (cur_sum) - prec + 2,
-                                        GMP_RNDN, rnd, MPFR_PREC (ret)))))
+                                        MPFR_RNDN, rnd, MPFR_PREC (ret)))))
         break;
       MPFR_ZIV_NEXT (loop, prec);
       mpfr_set_prec (cur_sum, prec);

@@ -58,7 +58,7 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
   /* Set x_p=|x| (x is a normal number) */
   mpfr_init2 (xp, MPFR_PREC (x));
-  inexact = mpfr_abs (xp, x, GMP_RNDN);
+  inexact = mpfr_abs (xp, x, MPFR_RNDN);
   MPFR_ASSERTD (inexact == 0);
 
   compared = mpfr_cmp_ui (xp, 1);
@@ -88,7 +88,7 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_SAVE_EXPO_MARK (expo);
 
   /* Compute exponent of 1 - ABS(x) */
-  mpfr_ui_sub (xp, 1, xp, GMP_RNDD);
+  mpfr_ui_sub (xp, 1, xp, MPFR_RNDD);
   MPFR_ASSERTD (MPFR_GET_EXP (xp) <= 0);
   MPFR_ASSERTD (MPFR_GET_EXP (x) <= 0);
   xp_exp = 2 - MPFR_GET_EXP (xp);
@@ -101,11 +101,11 @@ mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
   for (;;)
     {
       mpfr_set_prec (xp, prec);
-      mpfr_sqr (xp, x, GMP_RNDN);
-      mpfr_ui_sub (xp, 1, xp, GMP_RNDN);
-      mpfr_sqrt (xp, xp, GMP_RNDN);
-      mpfr_div (xp, x, xp, GMP_RNDN);
-      mpfr_atan (xp, xp, GMP_RNDN);
+      mpfr_sqr (xp, x, MPFR_RNDN);
+      mpfr_ui_sub (xp, 1, xp, MPFR_RNDN);
+      mpfr_sqrt (xp, xp, MPFR_RNDN);
+      mpfr_div (xp, x, xp, MPFR_RNDN);
+      mpfr_atan (xp, xp, MPFR_RNDN);
       if (MPFR_LIKELY (MPFR_CAN_ROUND (xp, prec - xp_exp,
                                        MPFR_PREC (asin), rnd_mode)))
         break;

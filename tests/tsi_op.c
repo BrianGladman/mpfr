@@ -30,7 +30,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 {\
   printf("Error for "s" and i=%d\n", i);\
   printf("Expected %s\n", exp);\
-  printf("Got      "); mpfr_out_str (stdout, 16, 0, z, GMP_RNDN);\
+  printf("Got      "); mpfr_out_str (stdout, 16, 0, z, MPFR_RNDN);\
   putchar ('\n');\
   exit(1);\
 }
@@ -55,8 +55,8 @@ check_invert (void)
   mpfr_t x;
   mpfr_init2 (x, MPFR_PREC_MIN);
 
-  mpfr_set_ui (x, 0xC, GMP_RNDN);
-  mpfr_si_sub (x, -1, x, GMP_RNDD); /* -0001 - 1100 = - 1101 --> -1 0000 */
+  mpfr_set_ui (x, 0xC, MPFR_RNDN);
+  mpfr_si_sub (x, -1, x, MPFR_RNDD); /* -0001 - 1100 = - 1101 --> -1 0000 */
   if (mpfr_cmp_si (x, -0x10) )
     {
       printf ("Special rounding error\n");
@@ -105,30 +105,30 @@ main (int argc, char *argv[])
   mpfr_inits2 (53, x, z, (mpfr_ptr) 0);
   for(i = 0 ; i < numberof (tab) ; i++)
     {
-      mpfr_set_str (x, tab[i].op1, 16, GMP_RNDN);
+      mpfr_set_str (x, tab[i].op1, 16, MPFR_RNDN);
       y = tab[i].op2;
-      mpfr_add_si (z, x, y, GMP_RNDZ);
-      if (mpfr_cmp_str (z, tab[i].res_add, 16, GMP_RNDN))
+      mpfr_add_si (z, x, y, MPFR_RNDZ);
+      if (mpfr_cmp_str (z, tab[i].res_add, 16, MPFR_RNDN))
         ERROR1("add_si", i, z, tab[i].res_add);
-      mpfr_sub_si (z, x, y, GMP_RNDZ);
-      if (mpfr_cmp_str (z, tab[i].res_sub, 16, GMP_RNDN))
+      mpfr_sub_si (z, x, y, MPFR_RNDZ);
+      if (mpfr_cmp_str (z, tab[i].res_sub, 16, MPFR_RNDN))
         ERROR1("sub_si", i, z, tab[i].res_sub);
-      mpfr_si_sub (z, y, x, GMP_RNDZ);
-      mpfr_neg (z, z, GMP_RNDZ);
-      if (mpfr_cmp_str (z, tab[i].res_sub, 16, GMP_RNDN))
+      mpfr_si_sub (z, y, x, MPFR_RNDZ);
+      mpfr_neg (z, z, MPFR_RNDZ);
+      if (mpfr_cmp_str (z, tab[i].res_sub, 16, MPFR_RNDN))
         ERROR1("si_sub", i, z, tab[i].res_sub);
-      mpfr_mul_si (z, x, y, GMP_RNDZ);
-      if (mpfr_cmp_str (z, tab[i].res_mul, 16, GMP_RNDN))
+      mpfr_mul_si (z, x, y, MPFR_RNDZ);
+      if (mpfr_cmp_str (z, tab[i].res_mul, 16, MPFR_RNDN))
         ERROR1("mul_si", i, z, tab[i].res_mul);
-      mpfr_div_si (z, x, y, GMP_RNDZ);
-      if (mpfr_cmp_str (z, tab[i].res_div, 16, GMP_RNDN))
+      mpfr_div_si (z, x, y, MPFR_RNDZ);
+      if (mpfr_cmp_str (z, tab[i].res_div, 16, MPFR_RNDN))
         ERROR1("div_si", i, z, tab[i].res_div);
     }
   mpfr_set_str1 (x, "1");
-  mpfr_si_div (z, 1024, x, GMP_RNDN);
+  mpfr_si_div (z, 1024, x, MPFR_RNDN);
   if (mpfr_cmp_str1 (z, "1024"))
     ERROR1("si_div", i, z, "1024");
-  mpfr_si_div (z, -1024, x, GMP_RNDN);
+  mpfr_si_div (z, -1024, x, MPFR_RNDN);
   if (mpfr_cmp_str1 (z, "-1024"))
     ERROR1("si_div", i, z, "-1024");
 

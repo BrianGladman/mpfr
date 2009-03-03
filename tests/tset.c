@@ -33,7 +33,7 @@ check_neg_special (void)
   mpfr_init (x);
   MPFR_SET_NAN (x);
   mpfr_clear_nanflag ();
-  mpfr_neg (x, x, GMP_RNDN);
+  mpfr_neg (x, x, MPFR_RNDN);
   if (!mpfr_nanflag_p () )
     {
       printf("ERROR: neg (NaN) doesn't set Nan flag.\n");
@@ -57,30 +57,30 @@ main (void)
   tests_start_mpfr ();
 
   /* check prototypes of mpfr_init_set_* */
-  inexact = mpfr_init_set_si (x, -1, GMP_RNDN);
-  inexact = mpfr_init_set (y, x, GMP_RNDN);
-  inexact = mpfr_init_set_ui (z, 1, GMP_RNDN);
-  inexact = mpfr_init_set_d (u, 1.0, GMP_RNDN);
+  inexact = mpfr_init_set_si (x, -1, MPFR_RNDN);
+  inexact = mpfr_init_set (y, x, MPFR_RNDN);
+  inexact = mpfr_init_set_ui (z, 1, MPFR_RNDN);
+  inexact = mpfr_init_set_d (u, 1.0, MPFR_RNDN);
 
   mpfr_set_nan (x);
-  (mpfr_set) (y, x, GMP_RNDN);
+  (mpfr_set) (y, x, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_nan_p (y));
 
   mpfr_set_inf (x, 1);
-  mpfr_set (y, x, GMP_RNDN);
+  mpfr_set (y, x, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_inf_p (y) && mpfr_sgn (y) > 0);
 
   mpfr_set_inf (x, -1);
-  mpfr_set (y, x, GMP_RNDN);
+  mpfr_set (y, x, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_inf_p (y) && mpfr_sgn (y) < 0);
 
-  mpfr_set_ui (x, 0, GMP_RNDN);
-  mpfr_set (y, x, GMP_RNDN);
+  mpfr_set_ui (x, 0, MPFR_RNDN);
+  mpfr_set (y, x, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui (y, 0) == 0 && MPFR_IS_POS(y));
 
-  mpfr_set_ui (x, 0, GMP_RNDN);
-  mpfr_neg (x, x, GMP_RNDN);
-  mpfr_set (y, x, GMP_RNDN);
+  mpfr_set_ui (x, 0, MPFR_RNDN);
+  mpfr_neg (x, x, MPFR_RNDN);
+  mpfr_set (y, x, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_cmp_ui (y, 0) == 0 && MPFR_IS_NEG(y));
 
   emax = mpfr_get_emax ();
@@ -88,7 +88,7 @@ main (void)
   mpfr_set_prec (x, 3);
   mpfr_set_str_binary (x, "0.111");
   mpfr_set_prec (y, 2);
-  mpfr_set (y, x, GMP_RNDU);
+  mpfr_set (y, x, MPFR_RNDU);
   if (!(MPFR_IS_INF (y) && MPFR_SIGN (y) > 0))
     {
       printf ("Error for y=x=0.111 with px=3, py=2 and emax=0\nx=");
@@ -104,11 +104,11 @@ main (void)
   mpfr_set_prec (y, 11);
   mpfr_set_str_binary (y, "0.11111111100E-8");
   mpfr_set_prec (x, 2);
-  mpfr_set (x, y, GMP_RNDN);
+  mpfr_set (x, y, MPFR_RNDN);
   mpfr_set_str_binary (y, "1.0E-8");
   if (mpfr_cmp (x, y))
     {
-      printf ("Error for y=0.11111111100E-8, prec=2, rnd=GMP_RNDN\n");
+      printf ("Error for y=0.11111111100E-8, prec=2, rnd=MPFR_RNDN\n");
       exit (1);
     }
 
@@ -117,11 +117,11 @@ main (void)
       mpfr_set_prec (x, p);
       mpfr_urandomb (x, RANDS);
       if (randlimb () % 2)
-        mpfr_neg (x, x, GMP_RNDN);
+        mpfr_neg (x, x, MPFR_RNDN);
       for (q=2; q<2*p; q++)
         {
           mpfr_set_prec (y, q);
-          for (rnd = 0; rnd < GMP_RND_MAX; rnd++)
+          for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
             {
               inexact = mpfr_set (y, x, (mp_rnd_t) rnd);
               cmp = mpfr_cmp (y, x);

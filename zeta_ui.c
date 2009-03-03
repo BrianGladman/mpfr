@@ -49,8 +49,8 @@ mpfr_zeta_ui (mpfr_ptr z, unsigned long m, mp_rnd_t r)
       mpfr_t y;
       int inex;
 
-      if (r == GMP_RNDA)
-        r = GMP_RNDU; /* since the result is always positive */
+      if (r == MPFR_RNDA)
+        r = MPFR_RNDU; /* since the result is always positive */
 
       if (m >= p) /* 2^(-m) < ulp(1) = 2^(1-p). This means that
                      2^(-m) <= 1/2*ulp(1). We have 3^(-m)+4^(-m)+... < 2^(-m)
@@ -59,7 +59,7 @@ mpfr_zeta_ui (mpfr_ptr z, unsigned long m, mp_rnd_t r)
         {
           if (m == 2) /* necessarily p=2 */
             return mpfr_set_ui_2exp (z, 13, -3, r);
-          else if (r == GMP_RNDZ || r == GMP_RNDD || (r == GMP_RNDN && m > p))
+          else if (r == MPFR_RNDZ || r == MPFR_RNDD || (r == MPFR_RNDN && m > p))
             {
               mpfr_set_ui (z, 1, r);
               return -1;
@@ -80,14 +80,14 @@ mpfr_zeta_ui (mpfr_ptr z, unsigned long m, mp_rnd_t r)
         {
           /* the following is a lower bound for log(3)/log(2) */
           mpfr_set_str_binary (y, "1.100101011100000000011010001110");
-          mpfr_mul_ui (y, y, m, GMP_RNDZ); /* lower bound for log2(3^m) */
+          mpfr_mul_ui (y, y, m, MPFR_RNDZ); /* lower bound for log2(3^m) */
           if (mpfr_cmp_ui (y, p + 2) >= 0)
             {
               mpfr_clear (y);
-              mpfr_set_ui (z, 1, GMP_RNDZ);
-              mpfr_div_2ui (z, z, m, GMP_RNDZ);
-              mpfr_add_ui (z, z, 1, GMP_RNDZ);
-              if (r != GMP_RNDU)
+              mpfr_set_ui (z, 1, MPFR_RNDZ);
+              mpfr_div_2ui (z, z, m, MPFR_RNDZ);
+              mpfr_add_ui (z, z, 1, MPFR_RNDZ);
+              if (r != MPFR_RNDU)
                 return -1;
               mpfr_nextabove (z);
               return 1;
@@ -204,8 +204,8 @@ mpfr_zeta_ui (mpfr_ptr z, unsigned long m, mp_rnd_t r)
           /* divide by d[n] */
           mpz_mul_2exp (s, s, p);
           mpz_tdiv_q (s, s, d);
-          mpfr_set_z (y, s, GMP_RNDN);
-          mpfr_div_2ui (y, y, p, GMP_RNDN);
+          mpfr_set_z (y, s, MPFR_RNDN);
+          mpfr_div_2ui (y, y, p, MPFR_RNDN);
 
           err = MPFR_INT_CEIL_LOG2 (err);
 

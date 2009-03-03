@@ -84,13 +84,13 @@ main (void)
     ERROR ("Error in mpfr_cmpabs: not 1.0000000002 > 1.0\n");
   mpfr_set_prec(yy, 53);
 
-  mpfr_set_ui(xx, 0, GMP_RNDN);
-  mpfr_set_str (yy, "-0.1", 10, GMP_RNDN);
+  mpfr_set_ui(xx, 0, MPFR_RNDN);
+  mpfr_set_str (yy, "-0.1", 10, MPFR_RNDN);
   if (mpfr_cmpabs(xx, yy) >= 0)
     ERROR ("Error in mpfr_cmpabs(0.0, 0.1)\n");
 
   mpfr_set_inf (xx, -1);
-  mpfr_set_str (yy, "23489745.0329", 10, GMP_RNDN);
+  mpfr_set_str (yy, "23489745.0329", 10, MPFR_RNDN);
   if (mpfr_cmpabs(xx, yy) <= 0)
     ERROR ("Error in mpfr_cmp(-Inf, 23489745.0329)\n");
 
@@ -100,7 +100,7 @@ main (void)
     ERROR ("Error in mpfr_cmpabs(Inf, -Inf)\n");
 
   mpfr_set_inf (yy, -1);
-  mpfr_set_str (xx, "2346.09234", 10, GMP_RNDN);
+  mpfr_set_str (xx, "2346.09234", 10, MPFR_RNDN);
   if (mpfr_cmpabs (xx, yy) >= 0)
     ERROR ("Error in mpfr_cmpabs(-Inf, 2346.09234)\n");
 

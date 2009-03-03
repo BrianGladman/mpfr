@@ -160,7 +160,7 @@ check_mixed (FILE *fout)
   mpz_t mpz;
   mpq_t mpq;
   mpf_t mpf;
-  mp_rnd_t rnd = GMP_RNDN;
+  mp_rnd_t rnd = MPFR_RNDN;
 
   mp_size_t limb_size = 3;
   mp_limb_t limb[3];
@@ -176,7 +176,7 @@ check_mixed (FILE *fout)
   mpf_set_q (mpf, mpq);
 
   mpfr_init2 (mpfr, prec);
-  mpfr_set_f (mpfr, mpf, GMP_RNDN);
+  mpfr_set_f (mpfr, mpf, MPFR_RNDN);
 
   limb[0] = limb[1] = limb[2] = ~ (mp_limb_t) 0;
 

@@ -55,9 +55,9 @@ mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd, int cr)
   /* round towards 1 (or -1) to avoid spurious overflow or underflow,
      i.e. if an overflow or underflow occurs, it is a real exception
      and is not just due to the rounding error. */
-  rnd1 = (MPFR_EXP(x) >= 1) ? GMP_RNDZ
-    : (MPFR_IS_POS(x) ? GMP_RNDU : GMP_RNDD);
-  rnd2 = (MPFR_EXP(x) >= 1) ? GMP_RNDD : GMP_RNDU;
+  rnd1 = (MPFR_EXP(x) >= 1) ? MPFR_RNDZ
+    : (MPFR_IS_POS(x) ? MPFR_RNDU : MPFR_RNDD);
+  rnd2 = (MPFR_EXP(x) >= 1) ? MPFR_RNDD : MPFR_RNDU;
 
   if (cr != 0)
     prec = MPFR_PREC (y) + 3 + size_z + MPFR_INT_CEIL_LOG2 (MPFR_PREC (y));
@@ -110,7 +110,7 @@ mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd, int cr)
   else if (MPFR_UNDERFLOW (flags))
     {
       MPFR_LOG_MSG (("underflow\n", 0));
-      if (rnd == GMP_RNDN)
+      if (rnd == MPFR_RNDN)
         {
           mpfr_t y2, zz;
 
@@ -126,12 +126,12 @@ mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd, int cr)
                                           MPFR_EXP (x) - 1) != 0);
           mpfr_init2 (y2, 2);
           mpfr_init2 (zz, ABS (SIZ (z)) * BITS_PER_MP_LIMB);
-          inexact = mpfr_set_z (zz, z, GMP_RNDN);
+          inexact = mpfr_set_z (zz, z, MPFR_RNDN);
           MPFR_ASSERTN (inexact == 0);
           inexact = mpfr_pow_general (y2, x, zz, rnd, 1,
                                       (mpfr_save_expo_t *) NULL);
           mpfr_clear (zz);
-          mpfr_set (y, y2, GMP_RNDN);
+          mpfr_set (y, y2, MPFR_RNDN);
           mpfr_clear (y2);
           __gmpfr_flags = MPFR_FLAGS_INEXACT | MPFR_FLAGS_UNDERFLOW;
         }
@@ -234,8 +234,8 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
           MPFR_LOG_MSG (("underflow\n", 0));
           /* |y| is a power of two, thus |y| <= 2^(emin-2), and in
              rounding to nearest, the value must be rounded to 0. */
-          if (rnd == GMP_RNDN)
-            rnd = GMP_RNDZ;
+          if (rnd == MPFR_RNDN)
+            rnd = MPFR_RNDZ;
           inexact = mpfr_underflow (y, rnd, MPFR_SIGN (y));
         }
       else if (MPFR_UNLIKELY (mpz_cmp_si (tmp, __gmpfr_emax) > 0))
@@ -277,8 +277,8 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
 
       /* We will compute rnd(rnd1(1/x) ^ (-z)), where rnd1 is the rounding
          toward sign(x), to avoid spurious overflow or underflow. */
-      rnd1 = MPFR_EXP (x) < 1 ? GMP_RNDZ :
-        (MPFR_SIGN (x) > 0 ? GMP_RNDU : GMP_RNDD);
+      rnd1 = MPFR_EXP (x) < 1 ? MPFR_RNDZ :
+        (MPFR_SIGN (x) > 0 ? MPFR_RNDU : MPFR_RNDD);
 
       MPFR_ZIV_INIT (loop, Nt);
       for (;;)
@@ -317,7 +317,7 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
               MPFR_ZIV_FREE (loop);
               mpfr_clear (t);
               MPFR_LOG_MSG (("underflow\n", 0));
-              if (rnd == GMP_RNDN)
+              if (rnd == MPFR_RNDN)
                 {
                   mpfr_t y2, zz;
 
@@ -329,12 +329,12 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
                                                   MPFR_EXP (x) - 1) != 0);
                   mpfr_init2 (y2, 2);
                   mpfr_init2 (zz, ABS (SIZ (z)) * BITS_PER_MP_LIMB);
-                  inexact = mpfr_set_z (zz, z, GMP_RNDN);
+                  inexact = mpfr_set_z (zz, z, MPFR_RNDN);
                   MPFR_ASSERTN (inexact == 0);
                   inexact = mpfr_pow_general (y2, x, zz, rnd, 1,
                                               (mpfr_save_expo_t *) NULL);
                   mpfr_clear (zz);
-                  mpfr_set (y, y2, GMP_RNDN);
+                  mpfr_set (y, y2, MPFR_RNDN);
                   mpfr_clear (y2);
                   MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, MPFR_FLAGS_UNDERFLOW);
                   goto end;

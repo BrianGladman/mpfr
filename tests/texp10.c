@@ -48,7 +48,7 @@ special_overflow (void)
   mpfr_init2 (y, 24);
 
   mpfr_set_str_binary (x, "0.101100100000000000110100E15");
-  inex = mpfr_exp10 (y, x, GMP_RNDN);
+  inex = mpfr_exp10 (y, x, MPFR_RNDN);
   if (!mpfr_inf_p (y) || inex <= 0)
     {
       printf ("Overflow error.\n");
@@ -73,14 +73,14 @@ emax_m_eps (void)
 
       mpfr_init2 (x, sizeof(mp_exp_t) * CHAR_BIT * 4);
       mpfr_init2 (y, 8);
-      mpfr_set_si (x, mpfr_get_emax (), GMP_RNDN);
+      mpfr_set_si (x, mpfr_get_emax (), MPFR_RNDN);
 
       mpfr_clear_flags ();
-      inex = mpfr_exp10 (y, x, GMP_RNDN);
+      inex = mpfr_exp10 (y, x, MPFR_RNDN);
       ov = mpfr_overflow_p ();
       if (!ov || !mpfr_inf_p (y) || inex <= 0)
         {
-          printf ("Overflow error for x = emax, GMP_RNDN.\n");
+          printf ("Overflow error for x = emax, MPFR_RNDN.\n");
           mpfr_dump (y);
           printf ("inex = %d, %soverflow\n", inex, ov ? "" : "no ");
           exit (1);
@@ -100,14 +100,14 @@ exp_range (void)
   emin = mpfr_get_emin ();
   set_emin (3);
   mpfr_init2 (x, 16);
-  mpfr_set_ui (x, 4, GMP_RNDN);
-  mpfr_exp10 (x, x, GMP_RNDN);
+  mpfr_set_ui (x, 4, MPFR_RNDN);
+  mpfr_exp10 (x, x, MPFR_RNDN);
   set_emin (emin);
   if (mpfr_nan_p (x) || mpfr_cmp_ui (x, 10000) != 0)
     {
       printf ("Error in mpfr_exp10 for x = 4, with emin = 3\n");
       printf ("Expected 10000, got ");
-      mpfr_out_str (stdout, 2, 0, x, GMP_RNDN);
+      mpfr_out_str (stdout, 2, 0, x, MPFR_RNDN);
       printf ("\n");
       exit (1);
     }
@@ -128,17 +128,17 @@ overfl_exp10_0 (void)
 
   for (emax = -1; emax <= 0; emax++)
     {
-      mpfr_set_ui_2exp (y, 1, emax, GMP_RNDN);
+      mpfr_set_ui_2exp (y, 1, emax, MPFR_RNDN);
       mpfr_nextbelow (y);
       set_emax (emax);  /* 1 is not representable. */
       /* and if emax < 0, 1 - eps is not representable either. */
       for (i = -1; i <= 1; i++)
         RND_LOOP (rnd)
           {
-            mpfr_set_si_2exp (x, i, -512 * ABS (i), GMP_RNDN);
+            mpfr_set_si_2exp (x, i, -512 * ABS (i), MPFR_RNDN);
             mpfr_clear_flags ();
             inex = mpfr_exp10 (x, x, (mp_rnd_t) rnd);
-            if ((i >= 0 || emax < 0 || rnd == GMP_RNDN || rnd == GMP_RNDU) &&
+            if ((i >= 0 || emax < 0 || rnd == MPFR_RNDN || rnd == MPFR_RNDU) &&
                 ! mpfr_overflow_p ())
               {
                 printf ("Error in overfl_exp10_0 (i = %d, rnd = %s):\n"
@@ -146,7 +146,7 @@ overfl_exp10_0 (void)
                         i, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
                 err = 1;
               }
-            if (rnd == GMP_RNDZ || rnd == GMP_RNDD)
+            if (rnd == MPFR_RNDZ || rnd == MPFR_RNDD)
               {
                 if (inex >= 0)
                   {
@@ -208,23 +208,23 @@ main (int argc, char *argv[])
   mpfr_init (x);
   mpfr_init (y);
 
-  mpfr_set_ui (x, 4, GMP_RNDN);
-  mpfr_exp10 (y, x, GMP_RNDN);
+  mpfr_set_ui (x, 4, MPFR_RNDN);
+  mpfr_exp10 (y, x, MPFR_RNDN);
   if (mpfr_cmp_ui (y, 10000) != 0)
     {
-      printf ("Error for 10^4, GMP_RNDN\n");
+      printf ("Error for 10^4, MPFR_RNDN\n");
       exit (1);
     }
-  mpfr_exp10 (y, x, GMP_RNDD);
+  mpfr_exp10 (y, x, MPFR_RNDD);
   if (mpfr_cmp_ui (y, 10000) != 0)
     {
-      printf ("Error for 10^4, GMP_RNDD\n");
+      printf ("Error for 10^4, MPFR_RNDD\n");
       exit (1);
     }
-  mpfr_exp10 (y, x, GMP_RNDU);
+  mpfr_exp10 (y, x, MPFR_RNDU);
   if (mpfr_cmp_ui (y, 10000) != 0)
     {
-      printf ("Error for 10^4, GMP_RNDU\n");
+      printf ("Error for 10^4, MPFR_RNDU\n");
       exit (1);
     }
 
@@ -233,8 +233,8 @@ main (int argc, char *argv[])
   /* save emin */
   emin = mpfr_get_emin ();
   set_emin (-11);
-  mpfr_set_si (x, -4, GMP_RNDN);
-  mpfr_exp10 (y, x, GMP_RNDN);
+  mpfr_set_si (x, -4, MPFR_RNDN);
+  mpfr_exp10 (y, x, MPFR_RNDN);
   if (mpfr_cmp_ui (y, 0) || mpfr_sgn (y) < 0)
     {
       printf ("Error for emin = -11, x = -4, RNDN\n");
@@ -248,8 +248,8 @@ main (int argc, char *argv[])
   /* save emax */
   emax = mpfr_get_emax ();
   set_emax (13);
-  mpfr_set_ui (x, 4, GMP_RNDN);
-  mpfr_exp10 (y, x, GMP_RNDN);
+  mpfr_set_ui (x, 4, MPFR_RNDN);
+  mpfr_exp10 (y, x, MPFR_RNDN);
   if (!mpfr_inf_p (y) || mpfr_sgn (y) < 0)
     {
       printf ("Error for emax = 13, x = 4, RNDN\n");
@@ -262,7 +262,7 @@ main (int argc, char *argv[])
 
   MPFR_SET_INF (x);
   MPFR_SET_POS (x);
-  mpfr_exp10 (y, x, GMP_RNDN);
+  mpfr_exp10 (y, x, MPFR_RNDN);
   if (!MPFR_IS_INF (y))
     {
       printf ("evaluation of function in INF does not return INF\n");
@@ -270,7 +270,7 @@ main (int argc, char *argv[])
     }
 
   MPFR_CHANGE_SIGN (x);
-  mpfr_exp10 (y, x, GMP_RNDN);
+  mpfr_exp10 (y, x, MPFR_RNDN);
   if (!MPFR_IS_ZERO (y))
     {
       printf ("evaluation of function in -INF does not return 0\n");
@@ -278,7 +278,7 @@ main (int argc, char *argv[])
     }
 
   MPFR_SET_NAN (x);
-  mpfr_exp10 (y, x, GMP_RNDN);
+  mpfr_exp10 (y, x, MPFR_RNDN);
   if (!MPFR_IS_NAN (y))
     {
       printf ("evaluation of function in NaN does not return NaN\n");
@@ -291,13 +291,13 @@ main (int argc, char *argv[])
       /* emax <= 10000000000 */
       mpfr_set_prec (x, 40);
       mpfr_set_prec (y, 40);
-      mpfr_set_str (x, "3010299957", 10, GMP_RNDN);
+      mpfr_set_str (x, "3010299957", 10, MPFR_RNDN);
       mpfr_clear_flags ();
-      inex = mpfr_exp10 (y, x, GMP_RNDN);
+      inex = mpfr_exp10 (y, x, MPFR_RNDN);
       ov = mpfr_overflow_p ();
       if (!(MPFR_IS_INF (y) && MPFR_IS_POS (y) && ov))
         {
-          printf ("Overflow error for x = 3010299957, GMP_RNDN.\n");
+          printf ("Overflow error for x = 3010299957, MPFR_RNDN.\n");
           mpfr_dump (y);
           printf ("inex = %d, %soverflow\n", inex, ov ? "" : "no ");
           exit (1);
