@@ -282,7 +282,7 @@ operations and the square root, except the default exponent range is much
 wider and subnormal numbers are not implemented (but can be emulated).
 
 This version of MPFR is released under the GNU Lesser General Public
-License, Version 2.1 or any later version.
+License, version 3 or any later version.
 It is permitted to link MPFR to most non-free programs, as long as when
 distributing them the MPFR source code and a means to re-link with a
 modified MPFR library is provided.

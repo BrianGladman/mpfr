@@ -34,7 +34,7 @@ Contributed by the Arenaire and Cacao projects, INRIA.
 This file is part of the GNU MPFR Library.
 
 The GNU MPFR Library is free software; you can redistribute it and/or modify it
-under the terms of the GNU Lesser General Public License (either version 2.1
+under the terms of the GNU Lesser General Public License (either version 3
 of the License, or, at your option, any later version) and the GNU General
 Public License as published by the Free Software Foundation (most of MPFR is
 under the former, some under the latter).
@@ -45,9 +45,9 @@ or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
 License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
-along with the GNU MPFR Library; see the file COPYING.LIB.  If not, write to
-the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
-MA 02110-1301, USA.
+along with the GNU MPFR Library; see the file COPYING.LIB.  If not, see
+http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
+51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
 </xsl:comment>
   <xsl:text>&#10;</xsl:text>
   <xsl:copy>

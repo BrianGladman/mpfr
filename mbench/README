@@ -2,7 +2,7 @@ This directory contains 'mbench', a program written by Patrick Pélissier
 (INRIA) to bench MPFR for low precisions.
 
 It is distributed under the terms of the GNU Lesser General Public License as
-published by the Free Software Foundation; either version 2.1 of the License,
+published by the Free Software Foundation; either version 3 of the License,
 or (at your option) any later version.                                      
 
 To use the mbench program:
