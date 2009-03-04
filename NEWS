@@ -21,6 +21,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 ##############################################################################
 
 Changes from versions 2.4.* to version 3.0:
+- MPFR is now distributed under the GNU Lesser General Public License
+  version 3 or later (LGPL v3+).
 - Rounding modes GMP_RNDX are now MPFR_RNDX (GMP_RNDX kept for compatibility).
 - A new rounding mode (MPFR_RNDA) is available to round away from zero.
 - Function mpfr_random has been removed.
