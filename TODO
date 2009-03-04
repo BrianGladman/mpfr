@@ -102,7 +102,7 @@ Table of contents:
     and the references herein.
   JBessel(n, x) = BesselJ(n+1/2, x)
   IncompleteGamma [also wanted by <keith.briggs@bt.com> 4 Feb 2008: Gamma(a,x),
-    gamma(a,x), P(a,x), Q(a,x); see A&S 6.5]
+    gamma(a,x), P(a,x), Q(a,x); see A&S 6.5, ref. [Smith01] in algorithms.bib]
   KBessel, KBessel2 [2nd kind]
   JacobiTheta
   LogIntegral
@@ -115,7 +115,7 @@ Table of contents:
     E1(+0)   = +Inf
     E1(-0)   = -Inf
   DawsonIntegral
-  Psi = LogDerivative
+  Psi = LogDerivative : see ref. [Smith01] in algorithms.bib
   GammaD(x) = Gamma(x+1/2)
 - functions defined in the LIA-2 standard
   + minimum and maximum (5.2.2): max, min, max_seq, min_seq, mmax_seq
@@ -195,7 +195,8 @@ Table of contents:
      [ \gamma_E is the Euler constant ]
   + Fermi-Dirac Function:
      F_j(x)   := (1/r\Gamma(j+1)) \int_0^\infty dt (t^j / (\exp(t-x) + 1))
-  + Pochhammer symbol (a)_x := \Gamma(a + x)/\Gamma(a)
+  + Pochhammer symbol (a)_x := \Gamma(a + x)/\Gamma(a) : see [Smith01] in
+          algorithms.bib
     logarithm of the Pochhammer symbol
   + Gegenbauer Functions
   + Laguerre Functions
