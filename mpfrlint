@@ -8,6 +8,8 @@ grep -E 'mpfr_(underflow|overflow|nanflag|inexflag|erangeflag)_p' *.{c,h} | \
   grep -v '^exceptions.c:' | grep -v '^mpfr-impl.h:#define mpfr_.*_p()' | \
   grep -v '^mpfr.h:__MPFR_DECLSPEC '
 
+grep GMP_RND {,tests/}*.{c,h} | grep -v '#define GMP_RND'
+
 fdlv1="`sed -n '/Version / {s/.*Version //; s/,.*//; p; q}' fdl.texi`"
 fdlv2="`sed -n '/GNU Free Documentation License/ \
   {s/.*Version //; s/ or.*//; p; q}' mpfr.texi`"
@@ -18,10 +20,11 @@ GFDL versions differ:
 EOF
 
 # Note: if paragraphs are reformatted, this may need to be updated.
-lgpl="`sed -n '/Version [0-9.]\+ or any later version/ \
-  {s/.*Version //; s/ or.*//; p; q}' mpfr.texi`"
+lgpl="`sed -n '/version [0-9.]\+ or any later version/ \
+  {s/.*version //; s/ or.*//; p; q}' mpfr.texi`"
 for file in {,tests/}*.{c,h}
 do
+  [ "$file" = "get_patches.c" ] && file="get_patches.sh"
   if grep -q "GNU MPFR Library" "$file"; then
     grep -q "either version $lgpl of the License" "$file" || \
       echo "Possibly missing or incorrect copyright notice in $file"
