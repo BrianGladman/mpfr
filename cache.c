@@ -22,6 +22,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
+#if 0 /* this function is not used/documented/tested so far, it could be
+	 useful if we want to export the cache mechanism */
 void
 mpfr_init_cache (mpfr_cache_t cache, int (*func)(mpfr_ptr, mp_rnd_t))
 {
@@ -29,6 +31,7 @@ mpfr_init_cache (mpfr_cache_t cache, int (*func)(mpfr_ptr, mp_rnd_t))
                                valid. Maybe add a flag? */
   cache->func = func;
 }
+#endif
 
 void
 mpfr_clear_cache (mpfr_cache_t cache)
