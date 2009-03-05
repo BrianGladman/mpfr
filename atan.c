@@ -28,6 +28,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    Assumes |x| < 1.
 
    If X=x^2, we want 1 - X/3 + X^2/5 - ... + (-1)^k*X^k/(2k+1) + ...
+
+   Assume p is non-zero.
 */
 static void
 mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
@@ -39,11 +41,7 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
   mp_prec_t mult, *accu, *log2_nb_terms;
   mp_prec_t precy = MPFR_PREC(y);
 
-  if (mpz_cmp_ui (p, 0) == 0)
-    {
-      mpfr_set_ui (y, 1, MPFR_RNDN); /* limit(atan(x)/x, x=0) */
-      return;
-    }
+  MPFR_ASSERTD(mpz_cmp_ui (p, 0) != 0);
 
   accu = (mp_prec_t*) (*__gmp_allocate_func) ((2 * m + 2) * sizeof (mp_prec_t));
   log2_nb_terms = accu + m + 1;
@@ -334,12 +332,15 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
           mpfr_trunc (tmp, tmp);
           if (!MPFR_IS_ZERO (tmp))
             {
+	      /* tmp = ukz*2^exptol */
               exptol = mpfr_get_z_exp (ukz, tmp);
               /* since the s_k are decreasing (see algorithms.tex),
                  and s_0 = min(|x|, 1/|x|) < 1, we have sk < 1,
                  thus exptol < 0 */
               MPFR_ASSERTD (exptol < 0);
               mpz_tdiv_q_2exp (ukz, ukz, (unsigned long int) (-exptol));
+	      /* since tmp is a non-zero integer, and tmp = ukzold*2^exptol,
+		 we now have ukz = tmp, thus ukz is non-zero */
               /* Calculation of arctan(Ak) */
               mpfr_set_z (tmp, ukz, MPFR_RNDN);
               mpfr_div_2ui (tmp, tmp, twopoweri, MPFR_RNDN);
