@@ -819,6 +819,42 @@ check_1minuseps (void)
   mpfr_clear (c);
 }
 
+/* Test case bk == 0 in add1.c (b has entirely been read and
+   c hasn't been taken into account). */
+static void
+coverage_bk_eq_0 (void)
+{
+  mpfr_t a, b, c;
+  int inex;
+
+  mpfr_init2 (a, BITS_PER_MP_LIMB);
+  mpfr_init2 (b, 2 * BITS_PER_MP_LIMB);
+  mpfr_init2 (c, BITS_PER_MP_LIMB);
+
+  mpfr_set_ui_2exp (b, 1, 2 * BITS_PER_MP_LIMB, GMP_RNDN);
+  mpfr_sub_ui (b, b, 1, GMP_RNDN);
+  /* b = 111...111 (in base 2) where the 1's fit 2 whole limbs */
+
+  mpfr_set_ui_2exp (c, 1, -1, GMP_RNDN);  /* c = 1/2 */
+
+  inex = mpfr_add (a, b, c, GMP_RNDU);
+  mpfr_set_ui_2exp (c, 1, 2 * BITS_PER_MP_LIMB, GMP_RNDN);
+  if (! mpfr_equal_p (a, c))
+    {
+      printf ("Error in coverage_bk_eq_0\n");
+      printf ("Expected ");
+      mpfr_dump (c);
+      printf ("Got      ");
+      mpfr_dump (a);
+      exit (1);
+    }
+  MPFR_ASSERTN (inex > 0);
+
+  mpfr_clear (a);
+  mpfr_clear (b);
+  mpfr_clear (c);
+}
+
 static void
 tests (void)
 {
@@ -828,6 +864,7 @@ tests (void)
   check_case_1b ();
   check_case_2 ();
   check64();
+  coverage_bk_eq_0 ();
 
   check("293607738.0", "1.9967571564050541e-5", MPFR_RNDU, 64, 53, 53,
         "2.9360773800002003e8");
