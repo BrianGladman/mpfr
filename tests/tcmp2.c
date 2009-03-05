@@ -284,6 +284,18 @@ special (void)
       exit (1);
     }
 
+  mpfr_set_prec (x, 2 * BITS_PER_MP_LIMB);
+  mpfr_set_prec (y, BITS_PER_MP_LIMB);
+  mpfr_set_ui (x, 1, MPFR_RNDN); /* x = 1 */
+  mpfr_set_ui (y, 1, MPFR_RNDN);
+  mpfr_nextbelow (y);            /* y = 1 - 2^(-BITS_PER_MP_LIMB) */
+  mpfr_cmp2 (x, y, &j);
+  if (mpfr_cmp2 (x, y, &j) <= 0 || j != BITS_PER_MP_LIMB)
+    {
+      printf ("Error in mpfr_cmp2 (2)\n");
+      exit (1);
+    }
+
   mpfr_clear (x);
   mpfr_clear (y);
 }
