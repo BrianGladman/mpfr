@@ -23,7 +23,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 #if 0 /* this function is not used/documented/tested so far, it could be
-         useful if we want to export the cache mechanism */
+         useful if some user wants to add a new constant to mpfr, and
+         implement a cache mechanism for that constant */
 void
 mpfr_init_cache (mpfr_cache_t cache, int (*func)(mpfr_ptr, mp_rnd_t))
 {
