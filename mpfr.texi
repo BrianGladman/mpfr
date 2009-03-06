@@ -2086,7 +2086,7 @@ The @samp{conv} specifiers allowed with @code{mpfr_t} parameter are:
 @item @samp{a} @samp{A} @tab hex float, C99 style
 @item @samp{b}          @tab binary output
 @item @samp{e} @samp{E} @tab scientific format float
-@item @samp{f}          @tab fixed point float
+@item @samp{f} @samp{F} @tab fixed point float
 @item @samp{g} @samp{G} @tab fixed or scientific float
 @end multitable
 @end quotation
