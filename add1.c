@@ -506,7 +506,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
     }
   else
     {
-      MPFR_ASSERTD(rnd_mode == MPFR_RNDA);
+      MPFR_ASSERTN (rnd_mode == MPFR_RNDA);
       inex = rb || fb ? (MPFR_IS_POS(a) ? 1 : -1) : 0;
       if (inex)
         goto add_one_ulp;
