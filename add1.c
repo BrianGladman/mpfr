@@ -470,9 +470,9 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
     } /* fb != 1 */
 
  rounding:
-  switch (rnd_mode)
+  /* rnd_mode should be one of MPFR_RNDN, MPFR_RNDZ or MPFR_RNDA */
+  if (MPFR_LIKELY(rnd_mode == MPFR_RNDN))
     {
-    case MPFR_RNDN:
       if (fb == 0)
         {
           if (rb == 0)
@@ -498,22 +498,20 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
           inex = MPFR_IS_POS(a) ? 1 : -1;
           goto add_one_ulp;
         }
-
-    case MPFR_RNDZ:
+    }
+  else if (rnd_mode == MPFR_RNDZ)
+    {
       inex = rb || fb ? (MPFR_IS_NEG(a) ? 1 : -1) : 0;
       goto set_exponent;
-
-    case MPFR_RNDA:
+    }
+  else
+    {
+      MPFR_ASSERTD(rnd_mode == MPFR_RNDA);
       inex = rb || fb ? (MPFR_IS_POS(a) ? 1 : -1) : 0;
       if (inex)
         goto add_one_ulp;
       else
         goto set_exponent;
-
-    default:
-      MPFR_ASSERTN(0);
-      inex = 0;
-      goto set_exponent;
     }
 
  add_one_ulp: /* add one unit in last place to a */
