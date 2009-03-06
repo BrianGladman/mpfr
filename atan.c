@@ -332,15 +332,15 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
           mpfr_trunc (tmp, tmp);
           if (!MPFR_IS_ZERO (tmp))
             {
-	      /* tmp = ukz*2^exptol */
+              /* tmp = ukz*2^exptol */
               exptol = mpfr_get_z_exp (ukz, tmp);
               /* since the s_k are decreasing (see algorithms.tex),
                  and s_0 = min(|x|, 1/|x|) < 1, we have sk < 1,
                  thus exptol < 0 */
               MPFR_ASSERTD (exptol < 0);
               mpz_tdiv_q_2exp (ukz, ukz, (unsigned long int) (-exptol));
-	      /* since tmp is a non-zero integer, and tmp = ukzold*2^exptol,
-		 we now have ukz = tmp, thus ukz is non-zero */
+              /* since tmp is a non-zero integer, and tmp = ukzold*2^exptol,
+                 we now have ukz = tmp, thus ukz is non-zero */
               /* Calculation of arctan(Ak) */
               mpfr_set_z (tmp, ukz, MPFR_RNDN);
               mpfr_div_2ui (tmp, tmp, twopoweri, MPFR_RNDN);
