@@ -135,7 +135,6 @@ enum arg_t
     SHORT_ARG,
     LONG_ARG,
     LONG_LONG_ARG,
-    QUAD_ARG,
     INTMAX_ARG,
     SIZE_ARG,
     PTRDIFF_ARG,
@@ -183,8 +182,53 @@ specinfo_init (struct printf_spec *specinfo)
   specinfo->prec = 0;
   specinfo->arg_type = NONE;
   specinfo->rnd_mode = MPFR_RNDN;
-  specinfo->spec = 'i';
+  specinfo->spec = '\0';
   specinfo->pad = ' ';
+}
+
+#define FLOATING_POINT_ARG_TYPE(at) \
+  ((at) == MPFR_ARG || (at) == MPF_ARG || (at) == LONG_DOUBLE_ARG)
+
+#define INTEGER_LIKE_ARG_TYPE(at)                                       \
+  ((at) == SHORT_ARG || (at) == LONG_ARG || (at) == LONG_LONG_ARG       \
+   || (at) == INTMAX_ARG  || (at) == MPFR_PREC_ARG || (at) == MPZ_ARG   \
+   || (at) == MPQ_ARG || (at) == MP_LIMB_ARG || (at) == MP_LIMB_ARRAY_ARG \
+   || (at) == CHAR_ARG || (at) == SIZE_ARG || (at) == PTRDIFF_ARG)
+
+static int
+specinfo_is_valid (struct printf_spec spec)
+{
+  switch (spec.spec)
+    {
+    case 'n':
+      return -1;
+
+    case 'a':    case 'A':
+    case 'e':    case 'E':
+    case 'f':    case 'F':
+    case 'g':    case 'G':
+      return (spec.arg_type == NONE
+              || FLOATING_POINT_ARG_TYPE (spec.arg_type));
+
+    case 'b':
+      return spec.arg_type == MPFR_ARG;
+
+    case 'd':    case 'i':
+    case 'u':    case 'o':
+    case 'x':    case 'X':
+      return (spec.arg_type == NONE
+              || INTEGER_LIKE_ARG_TYPE (spec.arg_type));
+
+    case 'c':
+    case 's':
+      return (spec.arg_type == NONE || spec.arg_type == LONG_ARG);
+
+    case 'p':
+      return spec.arg_type == NONE;
+
+    default:
+      return 0;
+    }
 }
 
 static const char *
@@ -1907,6 +1951,9 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
         }
 
       spec.spec = *fmt;
+      if (!specinfo_is_valid (spec))
+        goto error;
+
       if (*fmt)
         fmt++;
 

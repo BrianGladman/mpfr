@@ -96,6 +96,70 @@ check_vprintf (char *fmt, ...)
 }
 
 static void
+check_vprintf_failure (char *fmt, ...)
+{
+  va_list ap;
+
+  va_start (ap, fmt);
+  if (mpfr_vprintf (fmt, ap) != -1)
+   {
+      putchar ('\n');
+      fprintf (stderr, "Error in mpfr_vprintf(\"%s\", ...)\n", fmt);
+
+      va_end (ap);
+      exit (1);
+    }
+  putchar ('\n');
+  va_end (ap);
+}
+
+static void
+check_invalid_format (void)
+{
+  int i = 0;
+
+  /* format in disorder */
+  check_vprintf_failure ("blah %l2.1d blah", i);
+  check_vprintf_failure ("blah %2.1#d blah", i);
+
+  /* incomplete format */
+  check_vprintf_failure ("%", i);
+  check_vprintf_failure ("% (missing conversion specifier)", i);
+  check_vprintf_failure ("missing conversion specifier %h", i);
+  check_vprintf_failure ("this should fail %.l because of missing conversion specifier "
+                         "(or doubling %%)", i);
+  check_vprintf_failure ("%L", i);
+  check_vprintf_failure ("%hh. ", i);
+  check_vprintf_failure ("blah %j.");
+  check_vprintf_failure ("%ll blah");
+  check_vprintf_failure ("blah%t blah");
+  check_vprintf_failure ("%z ");
+  check_vprintf_failure ("%F (missing conversion specifier)");
+  check_vprintf_failure ("%Q (missing conversion specifier)");
+  check_vprintf_failure ("%M (missing conversion specifier)");
+  check_vprintf_failure ("%N (missing conversion specifier)");
+  check_vprintf_failure ("%Z (missing conversion specifier)");
+  check_vprintf_failure ("%R (missing conversion specifier)");
+  check_vprintf_failure ("%P (missing conversion specifier)");
+
+  /* conversion specifier with wrong length specifier */
+  check_vprintf_failure ("%ha", i);
+  check_vprintf_failure ("%hhe", i);
+  check_vprintf_failure ("%jf", i);
+  check_vprintf_failure ("%lg", i);
+  check_vprintf_failure ("%tA", i);
+  check_vprintf_failure ("%zE", i);
+  check_vprintf_failure ("%Ld", i);
+  check_vprintf_failure ("%Qf", i);
+  check_vprintf_failure ("%MG", i);
+  check_vprintf_failure ("%Na", i);
+  check_vprintf_failure ("%ZE", i);
+  check_vprintf_failure ("%PG", i);
+  check_vprintf_failure ("%Fu", i);
+  check_vprintf_failure ("%Rx", i);
+}
+
+static void
 check_special (void)
 {
   mpfr_t x;
@@ -372,6 +436,7 @@ main (int argc, char *argv[])
       N = atoi (argv[1]);
     }
 
+  check_invalid_format ();
   check_special ();
   check_mixed ();
   check_random (N);
