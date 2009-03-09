@@ -173,6 +173,10 @@ To make a release (for the MPFR team):
      Try different compilers, e.g., icc, opencc (x86_64 machines),
      tcc <http://bellard.org/tcc/>.
 
+     On 64-bit PowerPC, test against GMP built with the different ABI's:
+     32, mode32 and mode64 (in particular mode32, where long's have
+     32 bits and limbs have 64 bits [long long]).
+
      Test with both "make check" and the worst cases.
 
      Check that there are no abnormal regressions in the timings (both
