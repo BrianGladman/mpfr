@@ -512,7 +512,7 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
 struct string_buffer
 {
   char *start;                  /* beginning of the buffer */
-  char *curr;                   /* last character (!= '\0') written */
+  char *curr;                   /* null terminating character */
   size_t size;                  /* buffer capacity */
 };
 
@@ -531,7 +531,7 @@ static void
 buffer_widen (struct string_buffer *b, size_t len)
 {
   const size_t pos = b->curr - b->start;
-  const size_t n = sizeof (char) * 4096 * (1 + len / 4096);
+  const size_t n = sizeof (char) * (0x1000 + (len & ~((size_t) 0xfff)));
 
   b->start =
     (char *) (*__gmp_reallocate_func) (b->start, b->size, b->size + n);
@@ -549,7 +549,7 @@ buffer_cat (struct string_buffer *b, const char *s, size_t len)
 
   MPFR_ASSERTN (b->size < SIZE_MAX - len - 1);
   MPFR_ASSERTD (len <= strlen (s));
-  if (MPFR_UNLIKELY ((b->curr + len + 1) > (b->start + b->size)))
+  if (MPFR_UNLIKELY ((b->curr + len) > (b->start + b->size)))
     buffer_widen (b, len);
 
   strncat (b->curr, s, len);
