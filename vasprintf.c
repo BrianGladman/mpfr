@@ -1442,8 +1442,8 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
                   np->fp_ptr = str + np->ip_size;
                   np->fp_size = str_len;
                 }
-              else if (spec.alt)
-                np->point = MPFR_DECIMAL_POINT;
+              else
+                MPFR_ASSERTN (spec.alt == 0);
             }
         }
       else
