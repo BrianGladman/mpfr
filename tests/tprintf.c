@@ -140,6 +140,7 @@ check_invalid_format (void)
   check_vprintf_failure ("%N (missing conversion specifier)");
   check_vprintf_failure ("%Z (missing conversion specifier)");
   check_vprintf_failure ("%R (missing conversion specifier)");
+  check_vprintf_failure ("%R");
   check_vprintf_failure ("%P (missing conversion specifier)");
 
   /* conversion specifier with wrong length specifier */
@@ -281,8 +282,8 @@ check_mixed (void)
 
     check_vprintf ("a. %Re, b. %llx%Qn", mpfr, ullo, &mpq);
     check_length_with_cmp (11, mpq, 16, mpq_cmp_ui (mpq, 16, 1), Qu);
-    check_vprintf ("a. %lli, b. %Rf%Fn", llo, mpfr, &mpf);
-    check_length_with_cmp (12, mpf, 12, mpf_cmp_ui (mpf, 12), Fg);
+    check_vprintf ("a. %lli, b. %Rf%lln", llo, mpfr, &ullo);
+    check_length (12, ullo, 12, llu);
   }
 #endif
 
@@ -291,10 +292,10 @@ check_mixed (void)
     intmax_t im = -1;
     uintmax_t uim = 1;
 
-    check_vprintf ("a. %*RA, b. %ji%Qn", 10, mpfr, im, &mpq);
-    check_length_with_cmp (31, mpq, 20, mpq_cmp_ui (mpq, 20, 1), Qu);
-    check_vprintf ("a. %.*Re, b. %jx%Fn", 10, mpfr, uim, &mpf);
-    check_length_with_cmp (32, mpf, 25, mpf_cmp_ui (mpf, 25), Fg);
+    check_vprintf ("a. %*RA, b. %ji%Fn", 10, mpfr, im, &mpf);
+    check_length_with_cmp (31, mpf, 20, mpf_cmp_ui (mpf, 20), Fg);
+    check_vprintf ("a. %.*Re, b. %jx%jn", 10, mpfr, uim, &im);
+    check_length (32, im, 25, ji);
   }
 #endif
 

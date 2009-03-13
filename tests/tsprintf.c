@@ -207,6 +207,9 @@ native_types (void)
   sprintf (buf, "%s", s);
   check_vsprintf (buf, "%s", s);
 
+  sprintf (buf, "--%s++", "");
+  check_sprintf (buf, "--%s++", "");
+
   sprintf (buf, "%u", ui);
   check_vsprintf (buf, "%u", ui);
 
@@ -225,6 +228,7 @@ decimal (void)
 
   /* specifier 'P' for precision */
   check_vsprintf ("128", "%Pu", p);
+  check_vsprintf ("00128", "%.5Pu", p);
 
   /* special numbers */
   mpfr_set_inf (x, 1);
@@ -316,19 +320,40 @@ decimal (void)
 
 
   /* neighborhood of 1 */
-  mpfr_set_str (x, "0.9999", 10, MPFR_RNDN);
-  check_sprintf ("1E+00     ", "%-10.0RE", x);
-  check_sprintf ("1.0E+00   ", "%-10.1RE", x);
-  check_sprintf ("9.9990E-01", "%-10.4RE", x);
-  check_sprintf ("1.0       ", "%-10.1RF", x);
-  check_sprintf ("0.9999    ", "%-10.4RF", x);
-  check_sprintf ("1         ", "%-10.0RG", x);
-  check_sprintf ("1         ", "%-10.1RG", x);
-  check_sprintf ("0.9999    ", "%-10.4RG", x);
-  check_sprintf ("1.        ", "%-#10.0RG", x);
-  check_sprintf ("1.        ", "%-#10.1RG", x);
-  check_sprintf ("1.0       ", "%-#10.2RG", x);
-  check_sprintf ("0.9999    ", "%-#10.4RG", x);
+  mpfr_set_str (x, "0.99993896484375", 10, MPFR_RNDN);
+  check_sprintf ("9.9993896484375E-01 ", "%-20RE", x);
+  check_sprintf ("9.9993896484375E-01 ", "%-20.RE", x);
+  check_sprintf ("1E+00               ", "%-20.0RE", x);
+  check_sprintf ("1.0E+00             ", "%-20.1RE", x);
+  check_sprintf ("1.00E+00            ", "%-20.2RE", x);
+  check_sprintf ("9.999E-01           ", "%-20.3RE", x);
+  check_sprintf ("9.9994E-01          ", "%-20.4RE", x);
+  check_sprintf ("0.99993896484375    ", "%-20RF", x);
+  check_sprintf ("0.99993896484375    ", "%-20.RF", x);
+  check_sprintf ("1                   ", "%-20.0RF", x);
+  check_sprintf ("1.0                 ", "%-20.1RF", x);
+  check_sprintf ("1.00                ", "%-20.2RF", x);
+  check_sprintf ("1.000               ", "%-20.3RF", x);
+  check_sprintf ("0.9999              ", "%-20.4RF", x);
+  check_sprintf ("0.99993896484375    ", "%-#20RF", x);
+  check_sprintf ("0.99993896484375    ", "%-#20.RF", x);
+  check_sprintf ("1.                  ", "%-#20.0RF", x);
+  check_sprintf ("1.0                 ", "%-#20.1RF", x);
+  check_sprintf ("1.00                ", "%-#20.2RF", x);
+  check_sprintf ("1.000               ", "%-#20.3RF", x);
+  check_sprintf ("0.9999              ", "%-#20.4RF", x);
+  check_sprintf ("1                   ", "%-20.0RG", x);
+  check_sprintf ("1                   ", "%-20.1RG", x);
+  check_sprintf ("1                   ", "%-20.2RG", x);
+  check_sprintf ("1                   ", "%-20.3RG", x);
+  check_sprintf ("0.9999              ", "%-20.4RG", x);
+  check_sprintf ("0.999939            ", "%-#20RG", x);
+  check_sprintf ("0.999939            ", "%-#20.RG", x);
+  check_sprintf ("1.                  ", "%-#20.0RG", x);
+  check_sprintf ("1.                  ", "%-#20.1RG", x);
+  check_sprintf ("1.0                 ", "%-#20.2RG", x);
+  check_sprintf ("1.00                ", "%-#20.3RG", x);
+  check_sprintf ("0.9999              ", "%-#20.4RG", x);
 
   /* multiple of 10 */
   mpfr_set_str (x, "1e17", 10, MPFR_RNDN);
@@ -466,6 +491,11 @@ hexadecimal (void)
   check_sprintf ("-0xap-1", "%.0RNa", x);
   /* trailing zeros in fractional part */
   check_sprintf ("-0X4.C0000000000000000000P+0", "%.20RNA", x);
+  /* rounding bit is one and the first non zero bit is far away */
+  mpfr_set_prec (x, 1024);
+  mpfr_set_ui_2exp (x, 29, -1, MPFR_RNDN);
+  mpfr_nextabove (x);
+  check_sprintf ("0XFP+0", "%.0RNA", x);
 
   mpfr_clears (x, z, (mpfr_ptr) 0);
   return 0;

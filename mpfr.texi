@@ -1987,11 +1987,12 @@ The format specification accepted by @code{mpfr_printf} is an extension of the
 @end example
 @samp{flags}, @samp{width}, and @samp{precision} have the same meaning as for
 the standard C function @code{printf} (in particular, notice that the
-precision is related to the number of digits displayed in the base chosen by
-@samp{conv} and not related to the internal precision of the @code{mpfr_t}
-variable).  @code{mpfr_printf} accepts the same @samp{type} specifiers as
-@code{gmp} (except the non-standard and deprecated @samp{q}, use @samp{ll}
-instead), plus @samp{R} and @samp{P}:
+@samp{precision} is related to the number of digits displayed in the base
+chosen by @samp{conv} and not related to the internal precision of the
+@code{mpfr_t} variable).
+@code{mpfr_printf} accepts the same @samp{type} specifiers as GMP (except the
+non-standard and deprecated @samp{q}, use @samp{ll} instead), plus @samp{R}
+and @samp{P}:
 
 @quotation
 @multitable {(space)} {MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM}
@@ -2060,11 +2061,12 @@ argument just before the corresponding @code{mpfr_t} variable.
 @end multitable
 @end quotation
 
-If the precision field is not empty, the @code{mpfr_t} number is rounded to
-the given precision in the direction specified by the rounding mode.
-If the precision field is empty (as in @samp{%.Rf}), the number is displayed
-with enough digits so that it can be read back exactly (assuming rounding to
-nearest, see @code{mpfr_get_str}).
+If the @samp{precision} field is not empty, the @code{mpfr_t} number is
+rounded to the given precision in the direction specified by the rounding
+mode.
+If the @samp{precision} field is empty (as in @code{%Rf} or %@code{%.Rf}), the
+behavior depends on the type of variable to display and the @samp{conv}
+specifier being used, see below.
 If no rounding is specified, the @code{mpfr_t} argument is rounded to nearest.
 The following three examples are equivalent:
 @example
@@ -2093,12 +2095,30 @@ The @samp{conv} specifiers allowed with @code{mpfr_t} parameter are:
 
 In case of non-decimal output, only the significand is written in the
 specified base, the exponent is always displayed in decimal.
-Special values are always displayed as @code{nan}, @code{-inf}, and
-@code{inf} for @samp{a}, @samp{b}, @samp{e}, @samp{f}, and @samp{g}
-specifiers and @code{NAN}, @code{-INF}, and
-@code{INF} for @samp{A}, @samp{E}, @samp{F}, and @samp{G}
-specifiers.
+Special values are always displayed as @code{nan}, @code{-inf}, and @code{inf}
+for @samp{a}, @samp{b}, @samp{e}, @samp{f}, and @samp{g} specifiers and
+@code{NAN}, @code{-INF}, and @code{INF} for @samp{A}, @samp{E}, @samp{F}, and
+@samp{G} specifiers.
 In binary output, the precision is silently increased up to 2 if it equals 1.
+
+If the @samp{precision} field is empty:
+@itemize
+@item  for native C types, the functions behave as the corresponding libc
+@code{printf} function,
+@item for GMP types, they behave as the corresponding @code{gmp_printf}
+function,
+@item for @code{mpfr_prec_t} type, the @samp{precision} field gives the
+minimum number of digits to appear,
+@item for @code{mpfr_t} type and @samp{g} or @samp{G} as @samp{conv}
+specifier, the functions behave as they would with a double variable, that is,
+they follow the ISO C99 specifications for @samp{g} and @samp{G},
+@item for @code{mpfr_t} type and a @samp{conv} specifier other than @samp{g}
+and @samp{G}, the number is displayed with enough digits so that it can be
+read back exactly, assuming that the input and output variables have the same
+precision and that the input and output rounding modes are both rounding to
+nearest (as for @code{mpfr_get_str}).
+@end itemize
+
 
 @subsection Functions
 @deftypefun int mpfr_fprintf (FILE *@var{stream}, const char *@var{template}, @dots{})
