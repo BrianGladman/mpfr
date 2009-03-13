@@ -161,6 +161,24 @@ check_invalid_format (void)
 }
 
 static void
+check_long_string (void)
+{
+  /* this test is VERY expensive both in time (~1 min on core2 @ 2.40GHz) and
+     in memory (~2.5 GB) */
+  mpfr_t x;
+
+  mpfr_init2 (x, INT_MAX);
+
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_nextabove (x);
+
+  check_vprintf_failure ("%Rb", x);
+  check_vprintf_failure ("%RA %RA %Ra %Ra", x, x, x, x);
+
+  mpfr_clear (x);
+}
+
+static void
 check_special (void)
 {
   mpfr_t x;
@@ -441,6 +459,11 @@ main (int argc, char *argv[])
   check_invalid_format ();
   check_special ();
   check_mixed ();
+
+  /* expensive tests */
+  if (getenv ("MPFR_CHECK_MAX") != NULL)
+    check_long_string();
+
   check_random (N);
 
   if (stdout_redirect)

@@ -2129,6 +2129,8 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
   MPFR_ASSERTD (nbchar == strlen (buf.start));
   buf.start =
     (char *) (*__gmp_reallocate_func) (buf.start, buf.size, nbchar + 1);
+  buf.size = nbchar + 1; /* update needed for __gmp_free_func below when
+                            nbchar is too large (overflow_error) */
   *ptr = buf.start;
 
   /* If nbchar is larger than INT_MAX, the ISO C99 standard is silent, but
