@@ -532,11 +532,17 @@ buffer_widen (struct string_buffer *b, size_t len)
 {
   const size_t pos = b->curr - b->start;
   const size_t n = sizeof (char) * (0x1000 + (len & ~((size_t) 0xfff)));
+  MPFR_ASSERTD (pos < b->size);
+
+  MPFR_ASSERTN ((len & ~((size_t) 4095)) <= SIZE_MAX / sizeof (char) - 4096);
+  MPFR_ASSERTN (b->size < SIZE_MAX - n);
 
   b->start =
     (char *) (*__gmp_reallocate_func) (b->start, b->size, b->size + n);
   b->size += n;
   b->curr = b->start + pos;
+
+  MPFR_ASSERTD (*b->curr == '\0');
 }
 
 /* Concatenate the LEN first characters of the string S to the buffer B and
@@ -544,24 +550,23 @@ buffer_widen (struct string_buffer *b, size_t len)
 static void
 buffer_cat (struct string_buffer *b, const char *s, size_t len)
 {
-  if (len == 0)
-    return;
-
-  MPFR_ASSERTN (b->size < SIZE_MAX - len - 1);
+  MPFR_ASSERTD (len != 0);
   MPFR_ASSERTD (len <= strlen (s));
+
   if (MPFR_UNLIKELY ((b->curr + len) > (b->start + b->size)))
     buffer_widen (b, len);
 
   strncat (b->curr, s, len);
   b->curr += len;
+
+  MPFR_ASSERTD (*b->curr == '\0');
 }
 
 /* Add N characters C to the end of buffer B */
 static void
 buffer_pad (struct string_buffer *b, const char c, const size_t n)
 {
-  if (n == 0)
-    return;
+  MPFR_ASSERTD (n != 0);
 
   MPFR_ASSERTN (b->size < SIZE_MAX - n - 1);
   if (MPFR_UNLIKELY ((b->curr + n + 1) > (b->start + b->size)))
@@ -588,8 +593,7 @@ buffer_sandwich (struct string_buffer *b, char *str, size_t len,
   const size_t q = size % step == 0 ? size / step - 1 : size / step;
   size_t i;
 
-  if (size == 0)
-    return;
+  MPFR_ASSERTD (size != 0);
   if (c == '\0')
     {
       buffer_cat (b, str, len);
