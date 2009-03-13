@@ -1581,11 +1581,11 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
           np->ip_ptr = register_string (np->sl, str);
 
           if (spec.prec > 0
-              && ((spec.spec != 'g' && spec.prec != 'G') || spec.alt))
+              && ((spec.spec != 'g' && spec.spec != 'G') || spec.alt))
             /* fractional part */
             {
               np->point = MPFR_DECIMAL_POINT;
-              np->fp_trailing_zeros = (spec.spec == 'g' && spec.prec == 'G') ?
+              np->fp_trailing_zeros = (spec.spec == 'g' && spec.spec == 'G') ?
                 spec.prec - 1 : spec.prec;
             }
           else if (spec.alt)
