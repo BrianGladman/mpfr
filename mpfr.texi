@@ -2335,6 +2335,14 @@ be the case when @var{b} is near from a value exactly representable on
 @var{prec} bits.
 @end deftypefun
 
+@deftypefun int mpfr_min_prec (mpfr_t @var{x})
+Returns the minimal number of bits required to store the mantissa of
+@var{x}, and 0 for special values, including 0. (Warning: the returned
+value can be less than MPFR_PREC_MIN.)
+
+The function name is subject to change.
+@end deftypefun
+
 @deftypefun {const char *} mpfr_print_rnd_mode (mp_rnd_t @var{rnd})
 Return the input string (MPFR_RNDD, MPFR_RNDU, MPFR_RNDN, MPFR_RNDZ)
 corresponding to the rounding mode @var{rnd} or a null pointer if
