@@ -16,7 +16,7 @@ check_PROGRAMS = tversion tinternals tinits tisqrt tsgn tcheck tisnan \
 	tget_f tconst_catalan troot tsec tcsc tcot teint tcoth tcsch tsech \
 	tstckintc tsubnormal tlngamma tlgamma tzeta_ui tget_ld_2exp \
 	tget_set_d64 tj0 tj1 tjn ty0 ty1 tyn tremquo tfmod tl2b tli2 tprintf \
-	tsprintf tfprintf trec_sqrt tpow_all taway
+	tsprintf tfprintf trec_sqrt tpow_all taway tmin_prec
 
 EXTRA_DIST = tgeneric.c tgeneric_ui.c mpf_compat.h inp_str.data tmul.dat
 
