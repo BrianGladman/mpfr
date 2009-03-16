@@ -94,6 +94,7 @@
 /tlog2
 /tlog10
 /tminmax
+/tmin_prec
 /tmodf
 /tmul
 /tmul_2exp
