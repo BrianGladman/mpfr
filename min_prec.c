@@ -46,7 +46,7 @@ mpfr_min_prec (mpfr_srcptr x)
   i = 0;
   /* mx[n] is now the first limb which is not null. Count number
    * of null bits in mx[n], from the right */
-  while ((i < BITS_PER_MP_LIMB) && ((mx[n] & (MPFR_LIMB_ONE << i)) == 0))
+  while ((mx[n] & (MPFR_LIMB_ONE << i)) == 0)
     i++;
 
   res += i;
