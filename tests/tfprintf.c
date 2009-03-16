@@ -366,7 +366,7 @@ bug_20090316 (FILE *fout)
   int ret;
 
   mpfr_init2 (x, 53);
-  mpfr_set_ui (x, 0x60fa291676edcc, GMP_RNDN);
+  mpfr_set_ui (x, 0x60fa291676edcc, MPFR_RNDN);
 
   ret = mpfr_fprintf (fout, "%-#.4095RDg\n", x);
   if (ret == -1)

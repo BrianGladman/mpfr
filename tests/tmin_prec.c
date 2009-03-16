@@ -48,21 +48,21 @@ main (int argc, char *argv[])
   ret = mpfr_min_prec (x);
   MPFR_ASSERTN(ret == 0);
 
-  MPFR_ASSERTN(mpfr_set_ui (x, 0, GMP_RNDN) == 0);
+  MPFR_ASSERTN(mpfr_set_ui (x, 0, MPFR_RNDN) == 0);
   ret = mpfr_min_prec (x);
   MPFR_ASSERTN(ret == 0);
 
   /* Some constants */
 
-  MPFR_ASSERTN(mpfr_set_ui (x, 1, GMP_RNDN) == 0);
+  MPFR_ASSERTN(mpfr_set_ui (x, 1, MPFR_RNDN) == 0);
   ret = mpfr_min_prec (x);
   MPFR_ASSERTN(ret == 1);
 
-  MPFR_ASSERTN(mpfr_set_ui (x, 17, GMP_RNDN) == 0);
+  MPFR_ASSERTN(mpfr_set_ui (x, 17, MPFR_RNDN) == 0);
   ret = mpfr_min_prec (x);
   MPFR_ASSERTN(ret == 5);
 
-  MPFR_ASSERTN(mpfr_set_ui (x, 42, GMP_RNDN) == 0);
+  MPFR_ASSERTN(mpfr_set_ui (x, 42, MPFR_RNDN) == 0);
   ret = mpfr_min_prec (x);
   MPFR_ASSERTN(ret == 5);
 
