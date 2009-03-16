@@ -81,6 +81,20 @@ main (int argc, char *argv[])
         }
     }
 
+  for (i = MPFR_PREC_MIN; i <= 255; i++)
+    {
+      mpfr_set_prec (x, i);
+      mpfr_set_ui_2exp (x, 1, i, GMP_RNDN);
+      mpfr_sub_ui (x, x, 1, GMP_RNDN);
+      ret = mpfr_min_prec (x);
+      if (ret != i)
+        {
+          printf ("Error for x = 2^%lu - 1\n", i);
+          printf ("Expected %lu, got %lu\n", i, (unsigned long) ret);
+          exit (1);
+        }
+    }
+
   mpfr_clear (x);
 
   tests_end_mpfr ();
