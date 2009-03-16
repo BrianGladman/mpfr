@@ -208,7 +208,7 @@ native_types (void)
   check_vsprintf (buf, "%s", s);
 
   sprintf (buf, "--%s++", "");
-  check_sprintf (buf, "--%s++", "");
+  check_vsprintf (buf, "--%s++", "");
 
   sprintf (buf, "%u", ui);
   check_vsprintf (buf, "%u", ui);
