@@ -30,11 +30,7 @@ mpfr_min_prec (mpfr_srcptr x)
   mp_size_t n;
   int res, i;
 
-
-  if (MPFR_IS_NAN (x) || MPFR_IS_INF (x))
-    return 0;
-
-  if (MPFR_IS_ZERO (x))
+  if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     return 0;
 
   mx = MPFR_MANT (x);
