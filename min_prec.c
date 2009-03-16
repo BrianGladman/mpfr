@@ -54,7 +54,7 @@ mpfr_min_prec (mpfr_srcptr x)
    * is not a multiple of BITS_PER_MP_LIMB, we must not count
    * those. */
   i = px % BITS_PER_MP_LIMB;
-  if (px != 0)
+  if (i != 0)
     res -= BITS_PER_MP_LIMB - i;
 
   return px - res;
