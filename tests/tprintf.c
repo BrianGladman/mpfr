@@ -461,7 +461,7 @@ main (int argc, char *argv[])
   check_mixed ();
 
   /* expensive tests */
-  if (getenv ("MPFR_CHECK_MAX") != NULL)
+  if (getenv ("MPFR_CHECK_LARGEMEM") != NULL)
     check_long_string();
 
   check_random (N);
