@@ -561,6 +561,9 @@ internal exception. Otherwise one gets either a segmentation fault (with
 limited stack size) or an assertion failure (with unlimited stack size,
 e.g. with "make check").
 
+Do not use code with side effects inside MPFR_ASSERTD or MPFR_ASSERTN,
+as assertion checking can be disabled.
+
 Exception handling (overflow/underflow in particular):
   * Warning: To detect exceptions and/or possible error loss due to
     internal exceptions, testing whether some variable is singular with
