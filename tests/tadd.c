@@ -831,14 +831,14 @@ coverage_bk_eq_0 (void)
   mpfr_init2 (b, 2 * BITS_PER_MP_LIMB);
   mpfr_init2 (c, BITS_PER_MP_LIMB);
 
-  mpfr_set_ui_2exp (b, 1, 2 * BITS_PER_MP_LIMB, GMP_RNDN);
-  mpfr_sub_ui (b, b, 1, GMP_RNDN);
+  mpfr_set_ui_2exp (b, 1, 2 * BITS_PER_MP_LIMB, MPFR_RNDN);
+  mpfr_sub_ui (b, b, 1, MPFR_RNDN);
   /* b = 111...111 (in base 2) where the 1's fit 2 whole limbs */
 
-  mpfr_set_ui_2exp (c, 1, -1, GMP_RNDN);  /* c = 1/2 */
+  mpfr_set_ui_2exp (c, 1, -1, MPFR_RNDN);  /* c = 1/2 */
 
-  inex = mpfr_add (a, b, c, GMP_RNDU);
-  mpfr_set_ui_2exp (c, 1, 2 * BITS_PER_MP_LIMB, GMP_RNDN);
+  inex = mpfr_add (a, b, c, MPFR_RNDU);
+  mpfr_set_ui_2exp (c, 1, 2 * BITS_PER_MP_LIMB, MPFR_RNDN);
   if (! mpfr_equal_p (a, c))
     {
       printf ("Error in coverage_bk_eq_0\n");
