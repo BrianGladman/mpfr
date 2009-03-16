@@ -22,13 +22,13 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
-int
+mpfr_prec_t
 mpfr_min_prec (mpfr_srcptr x)
 {
   mp_limb_t *mx;
-  mp_prec_t px;
+  mpfr_prec_t px, res;
   mp_size_t n;
-  int res, i;
+  int i;
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     return 0;

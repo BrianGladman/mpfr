@@ -2335,10 +2335,10 @@ be the case when @var{b} is near from a value exactly representable on
 @var{prec} bits.
 @end deftypefun
 
-@deftypefun int mpfr_min_prec (mpfr_t @var{x})
-Returns the minimal number of bits required to store the mantissa of
+@deftypefun mpfr_prec_t mpfr_min_prec (mpfr_t @var{x})
+Returns the minimal number of bits required to store the significand of
 @var{x}, and 0 for special values, including 0. (Warning: the returned
-value can be less than MPFR_PREC_MIN.)
+value can be less than @code{MPFR_PREC_MIN}.)
 
 The function name is subject to change.
 @end deftypefun
