@@ -38,7 +38,7 @@ mpfr_min_prec (mpfr_srcptr x)
 
   res = 0;
   /* Count full limbs set to zero */
-  for (n = (px - 1) / BITS_PER_MP_LIMB; mx[n] == 0; n--)
+  for (n = 0; mx[n] == 0; n++)
     {
       res += BITS_PER_MP_LIMB;
     }
