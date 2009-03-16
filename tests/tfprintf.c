@@ -359,6 +359,24 @@ check_random (FILE *fout, int nb_tests)
   mpfr_clear (x);
 }
 
+static void
+bug_20090316 (FILE *fout)
+{
+  mpfr_t x;
+  int ret;
+
+  mpfr_init2 (x, 53);
+  mpfr_set_ui (x, 0x60fa291676edcc, GMP_RNDN);
+
+  ret = mpfr_fprintf (fout, "%-#.4095RDg\n", x);
+  if (ret == -1)
+    {
+      mpfr_printf ("Error in mpfr_fprintf bug_20090316\n");
+
+      exit (1);
+    }
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -394,6 +412,8 @@ main (int argc, char *argv[])
   check_special (fout);
   check_mixed (fout);
   check_random (fout, N);
+
+  bug_20090316 (fout);
 
   fclose (fout);
   tests_end_mpfr ();

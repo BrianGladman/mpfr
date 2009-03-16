@@ -553,7 +553,7 @@ buffer_cat (struct string_buffer *b, const char *s, size_t len)
   MPFR_ASSERTD (len != 0);
   MPFR_ASSERTD (len <= strlen (s));
 
-  if (MPFR_UNLIKELY ((b->curr + len) > (b->start + b->size)))
+  if (MPFR_UNLIKELY ((b->curr + len) >= (b->start + b->size)))
     buffer_widen (b, len);
 
   strncat (b->curr, s, len);
