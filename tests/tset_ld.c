@@ -149,7 +149,6 @@ test_fixed_bugs (void)
 {
   mpfr_t x;
   long double d;
-  long e;
 
   /* bug found by Steve Kargl (2009-03-14) */
   mpfr_init2 (x, 64);
