@@ -30,41 +30,56 @@ main (int argc, char *argv[])
 {
   mpfr_t x;
   mpfr_prec_t ret;
+  unsigned long i;
 
   tests_start_mpfr ();
 
-  mpfr_init (x);
+  mpfr_init2 (x, 53);
 
   /* Check special values */
   mpfr_set_nan (x);
   ret = mpfr_min_prec (x);
-  MPFR_ASSERTN(ret == 0);
+  MPFR_ASSERTN (ret == 0);
 
   mpfr_set_inf (x, 1);
   ret = mpfr_min_prec (x);
-  MPFR_ASSERTN(ret == 0);
+  MPFR_ASSERTN (ret == 0);
 
   mpfr_set_inf (x, -1);
   ret = mpfr_min_prec (x);
-  MPFR_ASSERTN(ret == 0);
+  MPFR_ASSERTN (ret == 0);
 
-  MPFR_ASSERTN(mpfr_set_ui (x, 0, MPFR_RNDN) == 0);
+  mpfr_set_ui (x, 0, MPFR_RNDN);
   ret = mpfr_min_prec (x);
-  MPFR_ASSERTN(ret == 0);
+  MPFR_ASSERTN (ret == 0);
 
   /* Some constants */
 
-  MPFR_ASSERTN(mpfr_set_ui (x, 1, MPFR_RNDN) == 0);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
   ret = mpfr_min_prec (x);
-  MPFR_ASSERTN(ret == 1);
+  MPFR_ASSERTN (ret == 1);
 
-  MPFR_ASSERTN(mpfr_set_ui (x, 17, MPFR_RNDN) == 0);
+  mpfr_set_ui (x, 17, MPFR_RNDN);
   ret = mpfr_min_prec (x);
-  MPFR_ASSERTN(ret == 5);
+  MPFR_ASSERTN (ret == 5);
 
-  MPFR_ASSERTN(mpfr_set_ui (x, 42, MPFR_RNDN) == 0);
+  mpfr_set_ui (x, 42, MPFR_RNDN);
   ret = mpfr_min_prec (x);
-  MPFR_ASSERTN(ret == 5);
+  MPFR_ASSERTN (ret == 5);
+
+  mpfr_set_prec (x, 256);
+  for (i = 0; i <= 255; i++)
+    {
+      mpfr_set_ui_2exp (x, 1, i, GMP_RNDN);
+      mpfr_add_ui (x, x, 1, GMP_RNDN);
+      ret = mpfr_min_prec (x);
+      if (ret != i + 1)
+        {
+          printf ("Error for x = 2^%lu + 1\n", i);
+          printf ("Expected %lu, got %lu\n", i + 1, (unsigned long) ret);
+          exit (1);
+        }
+    }
 
   mpfr_clear (x);
 
