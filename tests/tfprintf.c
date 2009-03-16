@@ -363,18 +363,14 @@ static void
 bug_20090316 (FILE *fout)
 {
   mpfr_t x;
-  int ret;
 
   mpfr_init2 (x, 53);
-  mpfr_set_ui (x, 0x60fa291676edcc, MPFR_RNDN);
 
-  ret = mpfr_fprintf (fout, "%-#.4095RDg\n", x);
-  if (ret == -1)
-    {
-      mpfr_printf ("Error in mpfr_fprintf bug_20090316\n");
+  /* bug 20090316: fixed in r6112 */
+  mpfr_set_ui_2exp (x, 0x60fa2916, -30, MPFR_RNDN);
+  check (fout, "%-#.4095RDg\n", x);
 
-      exit (1);
-    }
+  mpfr_clear (x);
 }
 
 int
