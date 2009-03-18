@@ -70,8 +70,8 @@ main (int argc, char *argv[])
   mpfr_set_prec (x, 256);
   for (i = 0; i <= 255; i++)
     {
-      mpfr_set_ui_2exp (x, 1, i, GMP_RNDN);
-      mpfr_add_ui (x, x, 1, GMP_RNDN);
+      mpfr_set_ui_2exp (x, 1, i, MPFR_RNDN);
+      mpfr_add_ui (x, x, 1, MPFR_RNDN);
       ret = mpfr_min_prec (x);
       if (ret != i + 1)
         {
@@ -84,8 +84,8 @@ main (int argc, char *argv[])
   for (i = MPFR_PREC_MIN; i <= 255; i++)
     {
       mpfr_set_prec (x, i);
-      mpfr_set_ui_2exp (x, 1, i, GMP_RNDN);
-      mpfr_sub_ui (x, x, 1, GMP_RNDN);
+      mpfr_set_ui_2exp (x, 1, i, MPFR_RNDN);
+      mpfr_sub_ui (x, x, 1, MPFR_RNDN);
       ret = mpfr_min_prec (x);
       if (ret != i)
         {
