@@ -8,6 +8,9 @@ grep -E 'mpfr_(underflow|overflow|nanflag|inexflag|erangeflag)_p' *.{c,h} | \
   grep -v '^exceptions.c:' | grep -v '^mpfr-impl.h:#define mpfr_.*_p()' | \
   grep -v '^mpfr.h:__MPFR_DECLSPEC '
 
+grep -E 'if +(test|\[).* == ' acinclude.m4 configure.in
+grep -E '="`' acinclude.m4 configure.in
+
 grep GMP_RND {,tests/}*.{c,h} | grep -v '#define GMP_RND'
 
 fdlv1="`sed -n '/Version / {s/.*Version //; s/,.*//; p; q}' fdl.texi`"
