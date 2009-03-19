@@ -700,7 +700,7 @@ dnl Defined symbols are negative to shorten the gcc command line.
 
 AC_DEFUN([MPFR_CHECK_PRINTF_SPEC], [
 AC_REQUIRE([MPFR_CONFIGS])dnl
-if test "$ac_cv_type_intmax_t" == yes; then
+if test "$ac_cv_type_intmax_t" = yes; then
  MPFR_FUNC_PRINTF_SPEC([%jd], [intmax_t], [
 #ifdef HAVE_STDINT_H
 # include <stdint.h>
