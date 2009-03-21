@@ -107,6 +107,13 @@ check_special (void)
       printf ("Error for setting NAN (6)\n");
       exit (1);
     }
+  mpfr_set_ui (x, 0, MPFR_RNDN); /* make sure that x is modified */
+  res = mpfr_strtofr (x, "NAN()foo", &s, 10, MPFR_RNDN);
+  if (res != 0 || !mpfr_nan_p (x) || strcmp(s, "foo") )
+    {
+      printf ("Error for setting NAN (7)\n");
+      exit (1);
+    }
 
   /* Check INF */
   res = mpfr_strtofr (x, "INFINITY", &s, 8, MPFR_RNDN);
