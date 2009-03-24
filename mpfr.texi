@@ -2030,8 +2030,8 @@ only if they are supported by @code{gmp_printf} in your GMP build;
 this implies that the standard specifiers, such as @samp{t}, must
 @emph{also} be supported by your C library if you want to use them.
 
-The @samp{rounding} specifier is specific to @code{mpfr_t} parameter and shall
-not be used with other types. @code{mpfr_printf} accepts the same conversion
+The @samp{rounding} field is specific to @code{mpfr_t} parameter and shall not
+be used with other types. @code{mpfr_printf} accepts the same conversion
 specifier character @samp{conv} as @code{gmp_printf} plus @samp{b}.
 
 The @samp{P} type outputs the precision of an @code{mpfr_t} variable.
@@ -2064,6 +2064,8 @@ argument just before the corresponding @code{mpfr_t} variable.
 If the @samp{precision} field is not empty, the @code{mpfr_t} number is
 rounded to the given precision in the direction specified by the rounding
 mode.
+If the precision is set to a value greater than the maximum value for an
+@code{int}, it will be silently reduced down to @code{INT_MAX}.
 If the @samp{precision} field is empty (as in @code{%Rf} or %@code{%.Rf}), the
 behavior depends on the type of variable to display and the @samp{conv}
 specifier being used, see below.
@@ -2099,7 +2101,6 @@ Special values are always displayed as @code{nan}, @code{-inf}, and @code{inf}
 for @samp{a}, @samp{b}, @samp{e}, @samp{f}, and @samp{g} specifiers and
 @code{NAN}, @code{-INF}, and @code{INF} for @samp{A}, @samp{E}, @samp{F}, and
 @samp{G} specifiers.
-In binary output, the precision is silently increased up to 2 if it equals 1.
 
 If the @samp{precision} field is empty:
 @itemize
@@ -2118,6 +2119,7 @@ read back exactly, assuming that the input and output variables have the same
 precision and that the input and output rounding modes are both rounding to
 nearest (as for @code{mpfr_get_str}).
 @end itemize
+In binary output, the precision is silently increased up to 2 if it equals 1.
 
 
 @subsection Functions
