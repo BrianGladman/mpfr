@@ -2119,7 +2119,8 @@ read back exactly, assuming that the input and output variables have the same
 precision and that the input and output rounding modes are both rounding to
 nearest (as for @code{mpfr_get_str}).
 @end itemize
-In binary output, the precision is silently increased up to 2 if it equals 1.
+In binary output, the precision is silently increased up to 2 if it equals 1
+(but this may change in the future).
 
 
 @subsection Functions
