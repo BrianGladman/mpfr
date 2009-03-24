@@ -305,17 +305,6 @@ mpfr_assert_fail (const char *filename, int linenum,
   abort();
 }
 
-void
-mpfr_rand_raw (mp_ptr mp, gmp_randstate_t rstate, unsigned long int nbits)
-{
-  mpz_t z;
-
-  /* To be sure to avoid the potential allocation of mpz_urandomb */
-  ALLOC(z) = SIZ(z) = (nbits / GMP_NUMB_BITS) + 1;
-  PTR(z)   = mp;
-  mpz_urandomb(z, rstate, nbits);
-}
-
 #ifdef mp_get_memory_functions
 
 /* putting 0 as initial values forces those symbols to be fully defined,

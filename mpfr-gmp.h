@@ -253,11 +253,6 @@ __MPFR_DECLSPEC extern gmp_randstate_t  mpfr_rands;
 
 typedef __gmp_randstate_struct *gmp_randstate_ptr;
 
-#undef _gmp_rand
-#define _gmp_rand mpfr_rand_raw
-__MPFR_DECLSPEC void mpfr_rand_raw _MPFR_PROTO((mp_ptr, gmp_randstate_t,
-                                                unsigned long));
-
 /* Allocate func are defined in gmp-impl.h */
 
 /* In newer GMP, there aren't anymore __gmp_allocate_func,

@@ -68,7 +68,7 @@ mpfr_random2 (mpfr_ptr x, mp_size_t size, mp_exp_t exp,
   /* Code extracted from GMP, function mpn_random2, to avoid the use
      of GMP's internal random state in MPFR */
 
-  _gmp_rand (&elimb, rstate, BITS_PER_RANDCALL);
+  mpfr_rand_raw (&elimb, rstate, BITS_PER_RANDCALL);
   ran = elimb;
 
   /* Start off at a random bit position in the most significant limb.  */
@@ -86,7 +86,7 @@ mpfr_random2 (mpfr_ptr x, mp_size_t size, mp_exp_t exp,
     {
       if (ran_nbits < LOGBITS_PER_BLOCK + 1)
         {
-          _gmp_rand (&elimb, rstate, BITS_PER_RANDCALL);
+          mpfr_rand_raw (&elimb, rstate, BITS_PER_RANDCALL);
           ran = elimb;
           ran_nbits = BITS_PER_RANDCALL;
         }
@@ -139,7 +139,7 @@ mpfr_random2 (mpfr_ptr x, mp_size_t size, mp_exp_t exp,
     }
 
   /* Generate random exponent.  */
-  _gmp_rand (&elimb, RANDS, BITS_PER_MP_LIMB);
+  mpfr_rand_raw (&elimb, RANDS, BITS_PER_MP_LIMB);
   exp = ABS (exp);
   MPFR_SET_EXP (x, elimb % (2 * exp + 1) - exp);
 

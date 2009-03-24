@@ -87,8 +87,6 @@ Table of contents:
        aa = q*b+r      --> q has exaclty n bits.
   If RNDN, takes nq+1 bits. (See also the new division function).
 
-- random functions: get rid of _gmp_rand.
-
 
 ##############################################################################
 4. New functions to implement
