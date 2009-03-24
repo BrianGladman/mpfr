@@ -898,7 +898,7 @@ test_20070628 (void)
 
 #define TEST_FUNCTION test_div
 #define TWO_ARGS
-#define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), randlimb () % 100)
+#define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), randlimb () % 100, RANDS)
 #include "tgeneric.c"
 
 int

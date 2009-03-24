@@ -211,8 +211,6 @@ main ()
   mpf_urandomb (x, state, 10);
   gmp_randclear (state);
 
-  mpf_random2 (x, 17, 17);
-
   /* Conversion to mpz */
   mpz_init (z);
   mpf_set_ui (x, 17);

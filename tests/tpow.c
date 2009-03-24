@@ -62,12 +62,12 @@ test_pow (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
 #define TEST_FUNCTION mpfr_pow_ui
 #define INTEGER_TYPE  unsigned long
-#define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1)
+#define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1, RANDS)
 #include "tgeneric_ui.c"
 
 #define TEST_FUNCTION mpfr_pow_si
 #define INTEGER_TYPE  long
-#define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1)
+#define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1, RANDS)
 #define test_generic_ui test_generic_si
 #include "tgeneric_ui.c"
 

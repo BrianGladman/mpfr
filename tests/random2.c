@@ -1,6 +1,5 @@
 /* mpfr_random2 -- Generate a positive random mpfr_t of specified size, with
    long runs of consecutive ones and zeros in the binary representation.
-   Intended for testing.
 
 Copyright 1999, 2001, 2002, 2003, 2004, 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
 Contributed by the Arenaire and Cacao projects, INRIA.
@@ -32,9 +31,9 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define BITS_PER_RANDCALL 32
 #endif
 
-static void
-mpfr_random2_raw (mpfr_ptr x, mp_size_t size, mp_exp_t exp,
-                  gmp_randstate_t rstate)
+void
+mpfr_random2 (mpfr_ptr x, mp_size_t size, mp_exp_t exp,
+              gmp_randstate_t rstate)
 {
   mp_size_t xn, k, ri;
   unsigned long sh;
@@ -145,10 +144,4 @@ mpfr_random2_raw (mpfr_ptr x, mp_size_t size, mp_exp_t exp,
   MPFR_SET_EXP (x, elimb % (2 * exp + 1) - exp);
 
   return ;
-}
-
-void
-mpfr_random2 (mpfr_ptr x, mp_size_t size, mp_exp_t exp)
-{
-  mpfr_random2_raw (x, size, exp, RANDS);
 }

@@ -69,7 +69,7 @@ check_nans (void)
 
 #define TEST_FUNCTION mpfr_sub_d
 #define DOUBLE_ARG2
-#define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1)
+#define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1, RANDS)
 #include "tgeneric.c"
 
 int

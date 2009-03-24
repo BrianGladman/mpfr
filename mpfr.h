@@ -348,8 +348,6 @@ __MPFR_DECLSPEC void mpfr_get_z _MPFR_PROTO ((mpz_ptr z, mpfr_srcptr f,
 
 __MPFR_DECLSPEC void mpfr_free_str _MPFR_PROTO ((char *));
 
-
-__MPFR_DECLSPEC void mpfr_random2 _MPFR_PROTO ((mpfr_ptr,mp_size_t,mp_exp_t));
 __MPFR_DECLSPEC int mpfr_urandomb _MPFR_PROTO ((mpfr_ptr, gmp_randstate_t));
 
 __MPFR_DECLSPEC void mpfr_nextabove _MPFR_PROTO ((mpfr_ptr));

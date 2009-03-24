@@ -27,7 +27,7 @@ INCLUDES = -I$(top_srcdir) -I$(top_builddir)
 LOADLIBES=$(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS) $(top_builddir)/tests/.libs/libfrtests.a $(top_builddir)/.libs/libmpfr.a $(LIBS) $(MPFR_LIBM)
 
 check_LTLIBRARIES = libfrtests.la
-libfrtests_la_SOURCES = mpfr-test.h memory.c rnd_mode.c tests.c cmp_str.c
+libfrtests_la_SOURCES = mpfr-test.h memory.c rnd_mode.c tests.c cmp_str.c random2.c
 
 $(top_builddir)/libmpfr.la:
 	cd $(top_builddir); make libmpfr.la

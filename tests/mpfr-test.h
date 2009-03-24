@@ -72,6 +72,7 @@ int mpfr_set_machine_rnd_mode _MPFR_PROTO ((mp_rnd_t));
 void mpfr_test_init _MPFR_PROTO ((void));
 mp_limb_t randlimb _MPFR_PROTO ((void));
 void randseed _MPFR_PROTO ((unsigned int));
+void mpfr_random2 _MPFR_PROTO ((mpfr_ptr, mp_size_t, mp_exp_t, gmp_randstate_t));
 int ulp _MPFR_PROTO ((double, double));
 double dbl _MPFR_PROTO ((double, int));
 double Ulp _MPFR_PROTO ((double));

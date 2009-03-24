@@ -68,28 +68,28 @@ check_invert (void)
 #define TEST_FUNCTION mpfr_add_si
 #define TEST_FUNCTION_NAME "mpfr_add_si"
 #define INTEGER_TYPE  long
-#define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1)
+#define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1, RANDS)
 #define test_generic_ui test_generic_add_si
 #include "tgeneric_ui.c"
 
 #define TEST_FUNCTION mpfr_sub_si
 #define TEST_FUNCTION_NAME "mpfr_sub_si"
 #define INTEGER_TYPE  long
-#define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1)
+#define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1, RANDS)
 #define test_generic_ui test_generic_sub_si
 #include "tgeneric_ui.c"
 
 #define TEST_FUNCTION mpfr_mul_si
 #define TEST_FUNCTION_NAME "mpfr_mul_si"
 #define INTEGER_TYPE  long
-#define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1)
+#define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1, RANDS)
 #define test_generic_ui test_generic_mul_si
 #include "tgeneric_ui.c"
 
 #define TEST_FUNCTION mpfr_div_si
 #define TEST_FUNCTION_NAME "mpfr_div_si"
 #define INTEGER_TYPE  long
-#define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1)
+#define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1, RANDS)
 #define test_generic_ui test_generic_div_si
 #include "tgeneric_ui.c"
 

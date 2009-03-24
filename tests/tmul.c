@@ -617,7 +617,7 @@ check_regression (void)
 
 #define TEST_FUNCTION test_mul
 #define TWO_ARGS
-#define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), randlimb () % 100)
+#define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), randlimb () % 100, RANDS)
 #include "tgeneric.c"
 
 /* multiplies x by 53-bit approximation of Pi */

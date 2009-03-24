@@ -117,7 +117,7 @@ check_nans (void)
 
 #define TEST_FUNCTION mpfr_sub_ui
 #define INTEGER_TYPE  unsigned long
-#define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1)
+#define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1, RANDS)
 #include "tgeneric_ui.c"
 
 int
