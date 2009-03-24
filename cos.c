@@ -160,8 +160,12 @@ mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   if (expx >= 3)
     {
       reduce = 1;
-      mpfr_init2 (xr, m);
+      /* As expx + m - 1 will silently be converted into mpfr_prec_t
+         in the mpfr_init2 call, the assert below may be useful to
+         avoid undefined behavior. */
+      MPFR_ASSERTN (expx + m - 1 <= MPFR_PREC_MAX);
       mpfr_init2 (c, expx + m - 1);
+      mpfr_init2 (xr, m);
     }
 
   MPFR_GROUP_INIT_2 (group, m, r, s);
