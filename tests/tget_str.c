@@ -807,6 +807,78 @@ check_small (void)
     }
   mpfr_free_str (s);
 
+  mpfr_set_prec (x, 5);
+  mpfr_set_str_binary (x, "1101.1"); /* 13.5, or (16)_7 + 1/2 */
+  s = mpfr_get_str (NULL, &e, 7, 2, x, MPFR_RNDN);
+  /* we are in the tie case: both surrounding numbers are (16)_7 and
+     (20)_7: since (16)_7 = 13 is odd and (20)_7 = 14 is even,
+     we should have s = "20" and e = 2 */
+  if (e != 2 || strcmp (s, "20"))
+    {
+      printf ("Error in mpfr_get_str for x=13.5, base 7\n");
+      printf ("Expected s=20, e=2, got s=%s, e=%ld\n", s, e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+  /* try the same example, with input just below or above 13.5 */
+  mpfr_set_prec (x, 1000);
+  mpfr_set_str_binary (x, "1101.1");
+  mpfr_nextabove (x);
+  s = mpfr_get_str (NULL, &e, 7, 2, x, MPFR_RNDN);
+  if (e != 2 || strcmp (s, "20"))
+    {
+      printf ("Error in mpfr_get_str for x=13.5+tiny, base 7\n");
+      printf ("Expected s=20, e=2, got s=%s, e=%ld\n", s, e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+  mpfr_set_str_binary (x, "1101.1");
+  mpfr_nextbelow (x);
+  s = mpfr_get_str (NULL, &e, 7, 2, x, MPFR_RNDN);
+  if (e != 2 || strcmp (s, "16"))
+    {
+      printf ("Error in mpfr_get_str for x=13.5-tiny, base 7\n");
+      printf ("Expected s=16, e=2, got s=%s, e=%ld\n", s, e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+
+  mpfr_set_prec (x, 7);
+  mpfr_set_str_binary (x, "110000.1"); /* 48.5, or (66)_7 + 1/2 */
+  s = mpfr_get_str (NULL, &e, 7, 2, x, MPFR_RNDN);
+  /* we are in the tie case: both surrounding numbers are (66)_7 and
+     (100)_7: since (66)_7 = 48 is even and (100)_7 is odd,
+     we should hase s = "66" and e = 2 */
+  if (e != 2 || strcmp (s, "66"))
+    {
+      printf ("Error in mpfr_get_str for x=48.5, base 7\n");
+      printf ("Expected s=66, e=2, got s=%s, e=%ld\n", s, e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+  /* try the same example, with input just below or above 48.5 */
+  mpfr_set_prec (x, 1000);
+  mpfr_set_str_binary (x, "110000.1");
+  mpfr_nextabove (x);
+  s = mpfr_get_str (NULL, &e, 7, 2, x, MPFR_RNDN);
+  if (e != 3 || strcmp (s, "10"))
+    {
+      printf ("Error in mpfr_get_str for x=48.5+tiny, base 7\n");
+      printf ("Expected s=10, e=3, got s=%s, e=%ld\n", s, e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+  mpfr_set_str_binary (x, "110000.1");
+  mpfr_nextbelow (x);
+  s = mpfr_get_str (NULL, &e, 7, 2, x, MPFR_RNDN);
+  if (e != 2 || strcmp (s, "66"))
+    {
+      printf ("Error in mpfr_get_str for x=48.5-tiny, base 7\n");
+      printf ("Expected s=66, e=2, got s=%s, e=%ld\n", s, e);
+      exit (1);
+    }
+  mpfr_free_str (s);
+
   mpfr_clear (x);
 }
 

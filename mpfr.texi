@@ -1294,8 +1294,13 @@ The generated string is a fraction, with an implicit radix point immediately
 to the left of the first digit.  For example, the number @minus{}3.1416 would
 be returned as "@minus{}31416" in the string and 1 written at @var{expptr}.
 If @var{rnd} is to nearest, and @var{op} is exactly in the middle of two
-possible outputs, the one with an even last digit is chosen
-(for an odd base, this may not correspond to an even significand).
+possible outputs, the one with an even significand is chosen:
+that significand is considered with the exponent of @var{op}.
+Note that for an odd base, this may not correspond to an even last digit:
+for example with 2 digits in base 7, 16 and a half is rounded to
+20 which is 14 in decimal,
+36 and a half is rounded to 40 which is 28 in decimal,
+and 66 and a half is rounded to 66 which is 48 in decimal.
 
 If @var{n} is zero, the number of digits of the significand is chosen
 large enough so that re-reading the printed value with the same precision,

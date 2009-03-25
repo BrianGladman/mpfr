@@ -48,13 +48,13 @@ static const char num_to_text[] = "0123456789abcdefghijklmnopqrstuvwxyz";
 
 #define MPFR_ROUND_FAILED 3
 
-/* Input: an approximation r*2^f of an real Y, with |r*2^f-Y| <= 2^(e+f).
+/* Input: an approximation r*2^f of a real Y, with |r*2^f-Y| <= 2^(e+f).
    Returns if possible in the string s the mantissa corresponding to
    the integer nearest to Y, within the direction rnd, and returns the
    exponent in exp.
    n is the number of limbs of r.
    e represents the maximal error in the approximation of Y
-      (e < 0 iff the approximation is exact, i.e. r*2^f = Y).
+      (e < 0 iff the approximation is exact, i.e., r*2^f = Y).
    b is the wanted base (2 <= b <= 36).
    m is the number of wanted digits in the mantissa.
    rnd is the rounding mode.
@@ -169,7 +169,7 @@ mpfr_get_str_aux (char *const str, mp_exp_t *const exp, mp_limb_t *const r,
                 {
                   if (dir == 0 && exact) /* exact: even rounding */
                     {
-                      rnd1 = ((str1[size_s1-2] & 1) == 0)
+                      rnd1 = ((str1[size_s1 - 2] & 1) == 0)
                         ? MPFR_RNDD : MPFR_RNDU;
                     }
                   else
