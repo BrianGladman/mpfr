@@ -1288,7 +1288,7 @@ in particular a non-zero value is returned if
 Convert @var{op} to a string of digits in base @var{b}, with rounding in
 the direction @var{rnd}, where @var{n} is either zero (see below) or the
 number of significant digits; in the latter case, @var{n} must be greater
-or equal to 2. The base may vary from 2 to 36.
+or equal to 2. The base may vary from 2 to 62.
 
 The generated string is a fraction, with an implicit radix point immediately
 to the left of the first digit.  For example, the number @minus{}3.1416 would
@@ -1923,7 +1923,7 @@ prototypes for these functions.
 @deftypefun size_t mpfr_out_str (FILE *@var{stream}, int @var{base}, size_t @var{n}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Output @var{op} on stream @var{stream}, as a string of digits in
 base @var{base}, rounded in the direction @var{rnd}.
-The base may vary from 2 to 36.  Print @var{n} significant digits exactly,
+The base may vary from 2 to 62.  Print @var{n} significant digits exactly,
 or if @var{n} is 0, enough digits so that @var{op} can be read back
 exactly (see @code{mpfr_get_str}).
 
@@ -1940,7 +1940,7 @@ Return the number of bytes written, or if an error occurred, return 0.
 Input a string in base @var{base} from stream @var{stream},
 rounded in the direction @var{rnd}, and put the
 read float in @var{rop}.
-@c The argument @var{base} must be in the range 2 to 36.
+@c The argument @var{base} must be in the range 2 to 62.
 
 @c The string is of the form @samp{M@@N} or, if the
 @c base is 10 or less, alternatively @samp{MeN} or @samp{MEN}, or, if the base

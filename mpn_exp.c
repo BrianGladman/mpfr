@@ -53,7 +53,7 @@ mpfr_mpn_exp (mp_limb_t *a, mp_exp_t *exp_r, int b, mp_exp_t e, size_t n)
   MPFR_TMP_DECL(marker);
 
   MPFR_ASSERTN(e > 0);
-  MPFR_ASSERTN((2 <= b) && (b <= 36));
+  MPFR_ASSERTN((2 <= b) && (b <= 62));
 
   MPFR_TMP_MARK(marker);
 

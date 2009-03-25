@@ -75,6 +75,8 @@ check_small (void)
   mpfr_free_str (s);
   s = mpfr_get_str (NULL, &e, 36, 0, x, MPFR_RNDN);
   mpfr_free_str (s);
+  s = mpfr_get_str (NULL, &e, 62, 0, x, MPFR_RNDN);
+  mpfr_free_str (s);
 
   mpfr_set_prec (x, 64);
   mpfr_set_si (x, -1, MPFR_RNDN);
@@ -1082,8 +1084,16 @@ check_special (int b, mp_prec_t p)
   size_t m;
 
   /* check for invalid base */
-  MPFR_ASSERTN(mpfr_get_str (s, &e, 1, 10, x, MPFR_RNDN) == NULL);
-  MPFR_ASSERTN(mpfr_get_str (s, &e, 37, 10, x, MPFR_RNDN) == NULL);
+  if (mpfr_get_str (s, &e, 1, 10, x, MPFR_RNDN) != NULL)
+    {
+      printf ("Error: mpfr_get_str should not accept base = 1\n");
+      exit (1);
+    }
+  if (mpfr_get_str (s, &e, 63, 10, x, MPFR_RNDN) != NULL)
+    {
+      printf ("Error: mpfr_get_str should not accept base = 63\n");
+      exit (1);
+    }
 
   s2[0] = '1';
   for (i=1; i<MAX_DIGITS+2; i++)

@@ -32,7 +32,7 @@ mpfr_out_str (FILE *stream, int base, size_t n_digits, mpfr_srcptr op,
   size_t l;
   mp_exp_t e;
 
-  MPFR_ASSERTN (base >= 2 && base <= 36);
+  MPFR_ASSERTN (base >= 2 && base <= 62);
 
   /* when stream=NULL, output to stdout */
   if (stream == NULL)

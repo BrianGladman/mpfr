@@ -29,11 +29,13 @@ int
 main (int argc, char *argv[])
 {
   mpfr_t x;
+  mpfr_t y;
   FILE *f;
   int i;
   tests_start_mpfr ();
 
   mpfr_init (x);
+  mpfr_init (y);
 
   mpfr_set_prec (x, 15);
   f = src_fopen ("inp_str.data", "r");
@@ -65,9 +67,27 @@ main (int argc, char *argv[])
       mpfr_dump (x);
       exit (1);
     }
+
+  mpfr_set_prec (x, 53);
+  mpfr_set_prec (y, 53);
+  mpfr_set_str (y, "1.0010010100001110100101001110011010111011100001110010e226",
+                2, MPFR_RNDN);
+  for (i = 2; i < 63; i++)
+    {
+      getc (f);
+      if (mpfr_inp_str (x, f, i, MPFR_RNDN) == 0 || !mpfr_equal_p (x, y))
+        {
+          printf ("Error in reading %dth line from file inp_str.data\n", i+2);
+          mpfr_dump (x);
+          exit (1);
+        }
+      mpfr_set_ui (x, 0, MPFR_RNDN);
+    }
+
   fclose (f);
 
   mpfr_clear (x);
+  mpfr_clear (y);
 
   tests_end_mpfr ();
   return 0;

@@ -254,7 +254,7 @@ main (int argc, char *argv[])
       (*__gmp_free_func) (str, strlen (str) + 1);
     }
 
-  for (i = 2; i <= 36; i++)
+  for (i = 2; i <= 62; i++)
     {
       if (mpfr_set_str (x, "@NaN@(garbage)", i, MPFR_RNDN) != 0 ||
           !mpfr_nan_p(x))

@@ -130,7 +130,7 @@ main (int argc, char *argv[])
       while (ABS(d) < DBL_MIN);
 #endif
       rnd = RND_RAND ();
-      p = 2 + randlimb () % 35;
+      p = 2 + randlimb () % 61;
       check (d, rnd, p);
     }
 
