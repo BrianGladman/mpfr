@@ -21,8 +21,7 @@ along with the GNU MPFR Library; see the file COPYING.LIB.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-#define MPFR_NEED_LONGLONG_H
-#include "mpfr-impl.h"
+#include "mpfr-test.h"
 
 #define LOGBITS_PER_BLOCK 4
 #if GMP_NUMB_BITS < 32
