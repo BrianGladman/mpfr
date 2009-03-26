@@ -668,74 +668,74 @@ fi
 ])
 
 
-dnl  MPFR_FUNC_PRINTF_SPEC
+dnl  MPFR_FUNC_GMP_PRINTF_SPEC
 dnl  ------------------------------------
-dnl  MPFR_FUNC_PRINTF_SPEC(spec, type, [includes], [lib-prefix], [if-true], [if-false])
-dnl  Check if printf supports the conversion specification 'spec'
+dnl  MPFR_FUNC_GMP_PRINTF_SPEC(spec, type, [includes], [if-true], [if-false])
+dnl  Check if gmp_sprintf supports the conversion specification 'spec'
 dnl  with type 'type'.
 dnl  Expand 'if-true' if printf supports 'spec', 'if-false' otherwise.
 
-AC_DEFUN([MPFR_FUNC_PRINTF_SPEC],[
-AC_MSG_CHECKING(if $4printf supports "$1")
+AC_DEFUN([MPFR_FUNC_GMP_PRINTF_SPEC],[
+AC_MSG_CHECKING(if gmp_printf supports "%$1")
 AC_RUN_IFELSE([AC_LANG_PROGRAM([[
 #include <stdio.h>
 $3
+#include <gmp.h>
 ]], [[
   char s[256];
-  $2 a = 0;
-  return ($4sprintf (s, "$1", a) != 1) ? 1 : 0;
+  $2 a = 17;
+
+  if (gmp_sprintf (s, "(%0.0$1)(%d)", a, 42) == -1) return 1;
+  return (strcmp (s, "(17)(42)") != 0);
 ]])],
   [AC_MSG_RESULT(yes)
-  $5],
+  $4],
   [AC_MSG_RESULT(no)
-  $6])
+  $5])
 ])
 
 
 dnl MPFR_CHECK_PRINTF_SPEC
 dnl ----------------------
-dnl Check if libc printf and gmp_printf support some optional length
-dnl modifiers.
+dnl Check if gmp_printf supports some optional length modifiers.
 dnl Defined symbols are negative to shorten the gcc command line.
 
 AC_DEFUN([MPFR_CHECK_PRINTF_SPEC], [
 AC_REQUIRE([MPFR_CONFIGS])dnl
 if test "$ac_cv_type_intmax_t" = yes; then
- MPFR_FUNC_PRINTF_SPEC([%jd], [intmax_t], [
+ MPFR_FUNC_GMP_PRINTF_SPEC([jd], [intmax_t], [
 #ifdef HAVE_STDINT_H
 # include <stdint.h>
 #endif
 #ifdef HAVE_INTTYPES_H
 # include <inttypes.h>
 #endif
-
-#include <gmp.h>
-         ], [gmp_],,
+         ],,
          [AC_DEFINE([NPRINTF_J], 1, [gmp_printf cannot read intmax_t])])
 fi
 
-MPFR_FUNC_PRINTF_SPEC([%hhd], [char], [
+MPFR_FUNC_GMP_PRINTF_SPEC([hhd], [char], [
 #include <gmp.h>
-         ], [gmp_],,
+         ],,
          [AC_DEFINE([NPRINTF_HH], 1, [gmp_printf cannot use 'hh' length modifier])])
 
-MPFR_FUNC_PRINTF_SPEC([%lld], [long long int], [
+MPFR_FUNC_GMP_PRINTF_SPEC([lld], [long long int], [
 #include <gmp.h>
-         ], [gmp_],,
+         ],,
          [AC_DEFINE([NPRINTF_LL], 1, [gmp_printf cannot read long long int])])
 
-MPFR_FUNC_PRINTF_SPEC([%.0Lf], [long double], [
+MPFR_FUNC_GMP_PRINTF_SPEC([Lf], [long double], [
 #include <gmp.h>
-         ], [gmp_],,
+         ],,
          [AC_DEFINE([NPRINTF_L], 1, [gmp_printf cannot read long double])])
 
-MPFR_FUNC_PRINTF_SPEC([%td], [ptrdiff_t], [
+MPFR_FUNC_GMP_PRINTF_SPEC([td], [ptrdiff_t], [
 #if defined (__cplusplus)
 #include <cstddef>
 #else
 #include <stddef.h>
 #endif
 #include "gmp.h"
-    ], [gmp_],,
+    ],,
     [AC_DEFINE([NPRINTF_T], 1, [gmp_printf cannot read ptrdiff_t])])
 ])
