@@ -68,16 +68,16 @@ AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 ]], [[
    va_list ap1, ap2;
    va_copy(ap1, ap2);
-]])], AC_MSG_RESULT([va_copy]),
-   [AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+]])], [
+   AC_MSG_RESULT([va_copy])
+   AC_DEFINE(HAVE_VA_COPY)
+], [AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #include <stdarg.h>
 ]], [[
    va_list ap1, ap2;
    __va_copy(ap1, ap2);
-]])], [AC_DEFINE([va_copy], [__va_copy]) AC_MSG_RESULT([__va_copy])],
-   [AC_DEFINE([va_copy(dest,src)], [memcpy(&dest,&src,sizeof(va_list))])
-    AC_MSG_RESULT([memcpy])])
-   ])
+]])], [AC_DEFINE([HAVE___VA_COPY]) AC_MSG_RESULT([__va_copy])],
+   [AC_MSG_RESULT([memcpy])])])
 
 dnl FIXME: The functions memmove, memset and strtol are really needed by
 dnl MPFR, but if they are implemented as macros, this is also OK (in our
