@@ -323,7 +323,7 @@ parse_string (mpfr_t x, struct parsed_string *pstr,
   pstr->base = base;
 
   /* Alloc mantissa */
-  pstr->alloc = (size_t) strlen (str) * sizeof(char) + 1;
+  pstr->alloc = (size_t) strlen (str) + 1;
   pstr->mantissa = (unsigned char*) (*__gmp_allocate_func) (pstr->alloc);
 
   /* Read mantissa digits */

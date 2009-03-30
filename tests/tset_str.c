@@ -131,7 +131,7 @@ main (int argc, char *argv[])
 
   bd = randlimb () & 8;
 
-  str2 = str = (char*) (*__gmp_allocate_func) (nc * sizeof(char));
+  str2 = str = (char*) (*__gmp_allocate_func) (nc);
 
   if (bd)
     {
@@ -182,7 +182,7 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-  (*__gmp_free_func) (str, nc * sizeof(char));
+  (*__gmp_free_func) (str, nc);
 
   mpfr_set_prec (x, 53);
   mpfr_set_str_binary (x, "+110101100.01010000101101000000100111001000101011101110E00");

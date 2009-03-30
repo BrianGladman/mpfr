@@ -545,7 +545,7 @@ buffer_widen (struct string_buffer *b, size_t len)
   const size_t n = 0x1000 + (len & ~((size_t) 0xfff));
   MPFR_ASSERTD (pos < b->size);
 
-  MPFR_ASSERTN ((len & ~((size_t) 4095)) <= SIZE_MAX - 4096);
+  MPFR_ASSERTN ((len & ~((size_t) 4095)) <= (size_t)(SIZE_MAX - 4096));
   MPFR_ASSERTN (b->size < SIZE_MAX - n);
 
   b->start =
