@@ -504,7 +504,7 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
         MPFR_TMP_DECL (marker);                                         \
         char *fmt_copy;                                                 \
         MPFR_TMP_MARK (marker);                                         \
-        fmt_copy = (char*) MPFR_TMP_ALLOC ((n + 1) * sizeof(char));     \
+        fmt_copy = (char*) MPFR_TMP_ALLOC (n + 1);                      \
         strncpy (fmt_copy, (start), n);                                 \
         fmt_copy[n] = '\0';                                             \
         if (sprntf_gmp ((buf_ptr), (fmt_copy), (ap)) == -1)             \
@@ -542,10 +542,10 @@ static void
 buffer_widen (struct string_buffer *b, size_t len)
 {
   const size_t pos = b->curr - b->start;
-  const size_t n = sizeof (char) * (0x1000 + (len & ~((size_t) 0xfff)));
+  const size_t n = 0x1000 + (len & ~((size_t) 0xfff));
   MPFR_ASSERTD (pos < b->size);
 
-  MPFR_ASSERTN ((len & ~((size_t) 4095)) <= SIZE_MAX / sizeof (char) - 4096);
+  MPFR_ASSERTN ((len & ~((size_t) 4095)) <= SIZE_MAX - 4096);
   MPFR_ASSERTN (b->size < SIZE_MAX - n);
 
   b->start =
@@ -1889,7 +1889,7 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
   MPFR_SAVE_EXPO_MARK (expo);
 
   nbchar = 0;
-  buffer_init (&buf, 4096 * sizeof (char));
+  buffer_init (&buf, 4096);
   gmp_fmt_flag = 0;
   va_copy (ap2, ap);
   start = fmt;
