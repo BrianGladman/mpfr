@@ -30,7 +30,9 @@ mpfr_get_z (mpz_ptr z, mpfr_srcptr f, mp_rnd_t rnd)
   mp_exp_t exp = MPFR_EXP (f);
 
   /* if exp <= 0, then |f|<1, thus |o(f)|<=1 */
-  mpfr_init2 (r, (exp < (mp_exp_t) MPFR_PREC_MIN) ? MPFR_PREC_MIN : exp);
+  MPFR_ASSERTN (exp < 0 || exp <= MPFR_PREC_MAX);
+  mpfr_init2 (r, (exp < (mp_exp_t) MPFR_PREC_MIN ?
+                  MPFR_PREC_MIN : (mpfr_prec_t) exp));
   mpfr_rint (r, f, rnd);
   MPFR_ASSERTN (MPFR_IS_FP (r) );
   exp = mpfr_get_z_exp (z, r);
