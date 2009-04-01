@@ -102,9 +102,6 @@ typedef unsigned long  mpfr_prec_t;
 #endif
 
 /* Definition of precision limits */
-/* For ease of implementation, MPFR_PREC_MIN is signed. For instance,
-   code like exp < MPFR_PREC_MIN, where exp is of type mpfr_exp_t,
-   will NOT implicitly convert exp into an unsigned integer. */
 #define MPFR_PREC_MIN 2
 #define MPFR_PREC_MAX ((mpfr_prec_t)((mpfr_prec_t)(~(mpfr_prec_t)0)>>1))
 
