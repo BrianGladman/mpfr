@@ -30,6 +30,7 @@ check_diff (void)
 {
   mpfr_t x;
   mpz_t  z;
+  mp_exp_t emin;
 
   mpz_init   (z);
   mpfr_init2 (x, 2);
@@ -41,6 +42,22 @@ check_diff (void)
       printf ("get_z RU 2048 failed\n");
       exit (1);
     }
+
+  /* save default emin */
+  emin = mpfr_get_emin ();;
+
+  mpfr_set_emin (17);
+  mpfr_set_ui (x, 0, MPFR_RNDN);
+  mpfr_get_z (z, x, MPFR_RNDN);
+  if (mpz_cmp_ui (z, 0) != 0)
+    {
+      printf ("get_z 0 failed\n");
+      exit (1);
+    }
+
+  /* restore default emin */
+  mpfr_set_emin (emin);
+
   mpfr_clear (x);
   mpz_clear  (z);
 }

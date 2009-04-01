@@ -1268,6 +1268,7 @@ exactly equals
 @tex
 $rop \times 2^{\rm exp}$.
 @end tex
+If @var{op} is zero, the minimal exponent @code{emin} is returned.
 If the exponent is not representable in the @code{mp_exp_t} type, the
 behavior is undefined.
 @end deftypefun
