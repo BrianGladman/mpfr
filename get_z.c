@@ -30,12 +30,10 @@ mpfr_get_z (mpz_ptr z, mpfr_srcptr f, mp_rnd_t rnd)
   mp_exp_t exp = MPFR_EXP (f);
 
   /* if exp <= 0, then |f|<1, thus |o(f)|<=1 */
-  MPFR_ASSERTD (MPFR_PREC_MIN == 2);
-  mpfr_init2 (r, (exp <= 0) ? MPFR_PREC_MIN : exp + 1);
+  mpfr_init2 (r, (exp < MPFR_PREC_MIN) ? MPFR_PREC_MIN : exp);
   mpfr_rint (r, f, rnd);
   MPFR_ASSERTN (MPFR_IS_FP (r) );
   exp = mpfr_get_z_exp (z, r);
-  /* FIXME: It seems that exp < 0 is always true */
   if (exp >= 0)
     mpz_mul_2exp (z, z, exp);
   else

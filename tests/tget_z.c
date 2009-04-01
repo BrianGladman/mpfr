@@ -43,6 +43,15 @@ check_diff (void)
       exit (1);
     }
 
+  mpfr_set_prec (x, 6);
+  mpfr_set_str (x, "17.5", 10, MPFR_RNDN);
+  mpfr_get_z (z, x, MPFR_RNDN);
+  if (mpz_cmp_ui (z, 18) != 0)
+    {
+      printf ("get_z RN 17.5 failed\n");
+      exit (1);
+    }
+
   /* save default emin */
   emin = mpfr_get_emin ();;
 
