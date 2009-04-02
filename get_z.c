@@ -1,5 +1,5 @@
-/* mpfr_get_z_exp -- get a multiple-precision integer from
-                     a floating-point number
+/* mpfr_get_z -- get a multiple-precision integer from
+                 a floating-point number
 
 Copyright 2004, 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
 Contributed by the Arenaire and Cacao projects, INRIA.
