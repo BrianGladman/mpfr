@@ -44,6 +44,6 @@ mpfr_get_z (mpz_ptr z, mpfr_srcptr f, mp_rnd_t rnd)
   else
     mpz_div_2exp (z, z, -exp);
   mpfr_clear (r);
-  
-  return inex == 2 ? 1 : inex == -2 ? -1 : 0;
+
+  return inex;
 }

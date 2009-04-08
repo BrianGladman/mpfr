@@ -47,7 +47,7 @@ check_diff (void)
   mpfr_set_prec (x, 6);
   mpfr_set_str (x, "17.5", 10, MPFR_RNDN);
   inex = mpfr_get_z (z, x, MPFR_RNDN);
-  if (inex != +1 || mpz_cmp_ui (z, 18) != 0)
+  if (inex <= 0 || mpz_cmp_ui (z, 18) != 0)
     {
       printf ("get_z RN 17.5 failed\n");
       exit (1);
@@ -111,13 +111,12 @@ check_one (mpz_ptr z)
               printf ("  want "); mpz_dump (z);
               exit (1);
             }
-          if (inex != -mpfr_cmp_z (f, z))
+          if (! SAME_SIGN (inex, - mpfr_cmp_z (f, z)))
             {
               printf ("Wrong inexact value for shift=%d\n", sh);
               printf ("    f "); mpfr_dump (f);
               printf ("  got %+d\n", inex);
               printf (" want %+d\n", -mpfr_cmp_z (f, z));
-              
               exit (1);
             }
         }
