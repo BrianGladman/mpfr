@@ -23,9 +23,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
-void
+int
 mpfr_get_z (mpz_ptr z, mpfr_srcptr f, mp_rnd_t rnd)
 {
+  int inex;
   mpfr_t r;
   mp_exp_t exp = MPFR_EXP (f);
 
@@ -33,7 +34,9 @@ mpfr_get_z (mpz_ptr z, mpfr_srcptr f, mp_rnd_t rnd)
   MPFR_ASSERTN (exp < 0 || exp <= MPFR_PREC_MAX);
   mpfr_init2 (r, (exp < (mp_exp_t) MPFR_PREC_MIN ?
                   MPFR_PREC_MIN : (mpfr_prec_t) exp));
-  mpfr_rint (r, f, rnd);
+  inex = mpfr_rint (r, f, rnd);
+  MPFR_ASSERTN (inex != 1 && inex != -1); /* integral part of f is
+                                             representable in r */
   MPFR_ASSERTN (MPFR_IS_FP (r) );
   exp = mpfr_get_z_exp (z, r);
   if (exp >= 0)
@@ -41,4 +44,6 @@ mpfr_get_z (mpz_ptr z, mpfr_srcptr f, mp_rnd_t rnd)
   else
     mpz_div_2exp (z, z, -exp);
   mpfr_clear (r);
+  
+  return inex == 2 ? 1 : inex == -2 ? -1 : 0;
 }

@@ -28,6 +28,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 static void
 check_diff (void)
 {
+  int inex;
   mpfr_t x;
   mpz_t  z;
   mp_exp_t emin;
@@ -45,8 +46,8 @@ check_diff (void)
 
   mpfr_set_prec (x, 6);
   mpfr_set_str (x, "17.5", 10, MPFR_RNDN);
-  mpfr_get_z (z, x, MPFR_RNDN);
-  if (mpz_cmp_ui (z, 18) != 0)
+  inex = mpfr_get_z (z, x, MPFR_RNDN);
+  if (inex != +1 || mpz_cmp_ui (z, 18) != 0)
     {
       printf ("get_z RN 17.5 failed\n");
       exit (1);
@@ -57,8 +58,8 @@ check_diff (void)
 
   mpfr_set_emin (17);
   mpfr_set_ui (x, 0, MPFR_RNDN);
-  mpfr_get_z (z, x, MPFR_RNDN);
-  if (mpz_cmp_ui (z, 0) != 0)
+  inex = mpfr_get_z (z, x, MPFR_RNDN);
+  if (inex != 0 || mpz_cmp_ui (z, 0) != 0)
     {
       printf ("get_z 0 failed\n");
       exit (1);
@@ -74,6 +75,7 @@ check_diff (void)
 static void
 check_one (mpz_ptr z)
 {
+  int    inex;
   int    sh, neg;
   mpfr_t f;
   mpz_t  got;
@@ -99,7 +101,7 @@ check_one (mpz_ptr z)
               mpfr_mul_2exp (f, f, sh, MPFR_RNDN);
             }
 
-          mpfr_get_z (got, f, MPFR_RNDZ);
+          inex = mpfr_get_z (got, f, MPFR_RNDZ);
 
           if (mpz_cmp (got, z) != 0)
             {
@@ -107,6 +109,15 @@ check_one (mpz_ptr z)
               printf ("     f "); mpfr_dump (f);
               printf ("   got "); mpz_dump (got);
               printf ("  want "); mpz_dump (z);
+              exit (1);
+            }
+          if (inex != -mpfr_cmp_z (f, z))
+            {
+              printf ("Wrong inexact value for shift=%d\n", sh);
+              printf ("    f "); mpfr_dump (f);
+              printf ("  got %+d\n", inex);
+              printf (" want %+d\n", -mpfr_cmp_z (f, z));
+              
               exit (1);
             }
         }

@@ -26,6 +26,7 @@ Changes from versions 2.4.* to version 3.0:
 - Rounding modes GMP_RNDX are now MPFR_RNDX (GMP_RNDX kept for compatibility).
 - A new rounding mode (MPFR_RNDA) is available to round away from zero.
 - Functions mpfr_random and mpfr_random2 have been removed.
+- mpfr_get_z now returns an inexact value.
 
 Changes from versions 2.3.* to version 2.4.0:
 - MPFR is now a GNU package.
