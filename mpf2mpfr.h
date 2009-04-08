@@ -21,7 +21,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 #ifndef __MPFR_FROM_MPF__
-#define __MPFR_FROM_MFF__
+#define __MPFR_FROM_MPF__
 
 /* types */
 #define mpf_t mpfr_t
