@@ -22,12 +22,14 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
-/* return value is 0 iff no error occurred in the conversion
-   (1 for NaN, +Inf, -Inf that have no equivalent in mpf)
+/* Since MPFR-3.0, return the usual inexact value.
+   The erange flag is set if an error occurred in the conversion
+   (y is NaN, +Inf, or -Inf that have no equivalent in mpf)
 */
 int
 mpfr_get_f (mpf_ptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
 {
+  int inex;
   mp_size_t sx, sy;
   mp_prec_t precx, precy;
   mp_limb_t *xp;
@@ -41,7 +43,10 @@ mpfr_get_f (mpf_ptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
           return 0;
         }
       else /* NaN or Inf */
-        return 1;
+        {
+          MPFR_SET_ERANGE ();
+          return 1;
+        }
     }
 
   sx = PREC(x); /* number of limbs of the mantissa of x */
@@ -77,6 +82,7 @@ mpfr_get_f (mpf_ptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
       if (ds > 0)
         MPN_ZERO (xp, ds);
       EXP(x) = (MPFR_GET_EXP(y) + sh) / BITS_PER_MP_LIMB;
+      inex = 0;
     }
   else /* we have to round to precx - sh bits */
     {
@@ -86,7 +92,7 @@ mpfr_get_f (mpf_ptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
       /* Recall that precx = (mp_prec_t) sx * BITS_PER_MP_LIMB */
       mpfr_init2 (z, precx - sh);
       sz = MPFR_LIMB_SIZE (z);
-      mpfr_set (z, y, rnd_mode);
+      inex = mpfr_set (z, y, rnd_mode);
       /* warning, sh may change due to rounding, but then z is a power of two,
          thus we can safely ignore its last bit which is 0 */
       sh = MPFR_GET_EXP(z) % BITS_PER_MP_LIMB;
@@ -113,5 +119,5 @@ mpfr_get_f (mpf_ptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
   /* set size and sign */
   SIZ(x) = (MPFR_FROM_SIGN_TO_INT(MPFR_SIGN(y)) < 0) ? -sx : sx;
 
-  return 0;
+  return inex;
 }

@@ -1280,9 +1280,11 @@ Convert @var{op} to a @code{mpz_t}, after rounding it with respect to
 
 @deftypefun int mpfr_get_f (mpf_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 Convert @var{op} to a @code{mpf_t}, after rounding it with respect to
-@var{rnd}. Return zero iff no error occurred,
-in particular a non-zero value is returned if
-@var{op} is NaN or Inf, which do not exist in @code{mpf}.
+@var{rnd}.
+Return the usual ternary value. Notice that the meaning of the returned value
+has changed since version 3.0.
+The @emph{erange} flag is set if @var{op} is NaN or Inf, which do not exist in
+@code{mpf}.
 @end deftypefun
 
 @deftypefun {char *} mpfr_get_str (char *@var{str}, mp_exp_t *@var{expptr}, int @var{b}, size_t @var{n}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
