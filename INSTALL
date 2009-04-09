@@ -243,9 +243,8 @@ Notes on AIX/PowerPC
 The following has been tested on AIX 5.3 (powerpc-ibm-aix5.3.0.0) with
 gcc 3.3.2 and GMP 4.2.1.
 
-Before building and testing MPFR, you should set the OBJECT_MODE
-environment variable to 64 (as GMP selects the 64-bit ABI by default),
-e.g. with:
+If GMP was built with the 64-bit ABI, before building and testing MPFR, 
+you should set the OBJECT_MODE environment variable to 64, e.g., with:
 
   export OBJECT_MODE=64
 
