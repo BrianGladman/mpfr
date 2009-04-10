@@ -48,8 +48,14 @@ MPFR_VERSION_NUM(MPFR_VERSION_MAJOR,MPFR_VERSION_MINOR,MPFR_VERSION_PATCHLEVEL)
 # define _MPFR_H_HAVE_VA_LIST 1
 #endif
 
-/* Check if stdint.h/inttypes.h is included or if the user wants intmax_t */
-#if (defined (INTMAX_C) && defined (UINTMAX_C)) || defined (MPFR_USE_INTMAX_T)
+/* Check if <stdint.h> / <inttypes.h> is included or if the user
+   explicitly wants intmax_t. Note: with C++ implementations, the
+   test of the C99 macros will work only if the user has defined
+   __STDC_LIMIT_MACROS or __STDC_CONSTANT_MACROS before <stdint.h>
+   has been included (see ISO C99 standard). */
+#if ((defined (INTMAX_C) || defined (INTMAX_MAX)) && \
+     (defined (UINTMAX_C) || defined (UINTMAX_MAX))) || \
+  defined (MPFR_USE_INTMAX_T)
 # define _MPFR_H_HAVE_INTMAX_T 1
 #endif
 

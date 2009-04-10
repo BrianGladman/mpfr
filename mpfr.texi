@@ -481,6 +481,20 @@ are provided only if @code{<stdio.h>} is included too (before @file{mpfr.h}).
 Likewise @code{<stdarg.h>} (or @code{<varargs.h>}) is required for prototypes
 with @code{va_list} parameters, such as @code{mpfr_vprintf}.
 
+@cindex @code{stdint.h}
+@cindex @code{inttypes.h}
+@cindex @code{intmax_t}
+@cindex @code{uintmax_t}
+And for any functions using @code{intmax_t}, you must include
+@code{<stdint.h>} or @code{<inttypes.h>} before @file{mpfr.h}, to
+allow @file{mpfr.h} to define prototypes for these functions. Moreover,
+users of C++ compilers must define at least one of the following macros:
+@code{__STDC_LIMIT_MACROS} or @code{__STDC_CONSTANT_MACROS} (before
+@code{<stdint.h>} or @code{<inttypes.h>} has been included) or
+@code{MPFR_USE_INTMAX_T} (before @file{mpfr.h} has been included);
+of course, it is possible to do that on the command line, e.g.,
+with @code{-DMPFR_USE_INTMAX_T}.
+
 You can avoid the use of MPFR macros encapsulating functions by defining
 the @samp{MPFR_USE_NO_MACRO} macro before @file{mpfr.h} is included.  In
 general this should not be necessary, but this can be useful when debugging
@@ -1039,10 +1053,7 @@ number of bits used to store its significand.
 @section Assignment Functions
 
 These functions assign new values to already initialized floats
-(@pxref{Initialization Functions}). When using any functions using
-@code{intmax_t}, you must include @code{<stdint.h>} or @code{<inttypes.h>}
-before @file{mpfr.h}, to allow @file{mpfr.h} to define prototypes for
-these functions.
+(@pxref{Initialization Functions}).
 
 @deftypefun int mpfr_set (mpfr_t @var{rop}, mpfr_t @var{op}, mp_rnd_t @var{rnd})
 @deftypefunx int mpfr_set_ui (mpfr_t @var{rop}, unsigned long int @var{op}, mp_rnd_t @var{rnd})
