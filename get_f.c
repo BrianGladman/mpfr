@@ -42,10 +42,36 @@ mpfr_get_f (mpf_ptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
           mpf_set_ui (x, 0);
           return 0;
         }
-      else /* NaN or Inf */
+      else if (MPFR_IS_NAN (y))
         {
           MPFR_SET_ERANGE ();
-          return 1;
+          return 0;
+        }
+      else /* y is plus infinity (resp. minus infinity), set x to the maximum
+              value (resp. the minimum value) in precision PREC(x) */
+        {
+          int i;
+          mp_limb_t *xp;
+
+          MPFR_SET_ERANGE ();
+
+          /* To this day, mp_exp_t and mp_size_t are #defined as the same
+             type */
+          EXP (x) = MP_SIZE_T_MAX;
+
+          sx = PREC (x);
+          SIZ (x) = sx;
+          xp = LIMBS (x);
+          for (i = 0; i < sx; i++)
+            xp[i] = MP_LIMB_T_MAX;
+
+          if (MPFR_IS_POS (y))
+            return -1;
+          else
+            {
+              mpf_neg (x, x);
+              return +1;
+            }
         }
     }
 

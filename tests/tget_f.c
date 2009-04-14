@@ -99,6 +99,74 @@ prec_test (void)
 }
 
 static void
+special_test (void)
+{
+  int inex;
+  mpf_t x;
+  mpfr_t y;
+
+  mpfr_init (y);
+  mpf_init (x);
+
+  mpfr_set_nan (y);
+  mpfr_clear_flags ();
+  mpfr_get_f (x, y, MPFR_RNDN);
+  if (! mpfr_erangeflag_p ())
+    {
+      printf ("Error: mpfr_get_f(NaN) should raise erange flag\n");
+      exit (1);
+    }
+
+  mpfr_set_inf (y, +1);
+  mpfr_clear_flags ();
+  inex = mpfr_get_f (x, y, MPFR_RNDN);
+  if (inex >= 0)
+    {
+      printf ("Error: mpfr_get_f(+Inf) should return a negative ternary"
+              "value\n");
+      exit (1);
+    }
+  if (! mpfr_erangeflag_p ())
+    {
+      printf ("Error: mpfr_get_f(+Inf) should raise erange flag\n");
+      exit (1);
+    }
+
+  mpfr_set_inf (y, -1);
+  mpfr_clear_flags ();
+  inex = mpfr_get_f (x, y, MPFR_RNDN);
+  if (inex <= 0)
+    {
+      printf ("Error: mpfr_get_f(-Inf) should return a positive ternary"
+              "value\n");
+      exit (1);
+    }
+  if (! mpfr_erangeflag_p ())
+    {
+      printf ("Error: mpfr_get_f(-Inf) should raise erange flag\n");
+      exit (1);
+    }
+
+  mpfr_set_ui (y, 0, MPFR_RNDN);
+  if (mpfr_get_f (x, y, MPFR_RNDN) != 0 || mpf_cmp_ui (x, 0))
+    {
+      printf ("Error: mpfr_get_f(+0) fails\n");
+      exit (1);
+    }
+
+  mpfr_set_ui (y, 0, MPFR_RNDN);
+  mpfr_neg (y, y, MPFR_RNDN);
+  if (mpfr_get_f (x, y, MPFR_RNDN) != 0 || mpf_cmp_ui (x, 0))
+    {
+      printf ("Error: mpfr_get_f(-0) fails\n");
+      exit (1);
+    }
+
+  mpfr_clear (y);
+  mpf_clear (x);
+}
+
+static void
 ternary_test (void)
 {
   int inex;
@@ -211,48 +279,6 @@ main (void)
   mpfr_init (z);
   mpf_init (x);
 
-  mpfr_set_nan (y);
-  mpfr_clear_flags ();
-  mpfr_get_f (x, y, MPFR_RNDN);
-  if (!mpfr_erangeflag_p())
-    {
-      printf ("Error: mpfr_get_f(NaN) should raise erange flag\n");
-      exit (1);
-    }
-
-  mpfr_set_inf (y, 1);
-  mpfr_clear_flags ();
-  mpfr_get_f (x, y, MPFR_RNDN);
-  if (!mpfr_erangeflag_p())
-    {
-      printf ("Error: mpfr_get_f(+Inf) should raise erange flag\n");
-      exit (1);
-    }
-
-  mpfr_set_inf (y, -1);
-  mpfr_clear_flags ();
-  mpfr_get_f (x, y, MPFR_RNDN);
-  if (!mpfr_erangeflag_p())
-    {
-      printf ("Error: mpfr_get_f(-Inf) should raise erange flag\n");
-      exit (1);
-    }
-
-  mpfr_set_ui (y, 0, MPFR_RNDN);
-  if (mpfr_get_f (x, y, MPFR_RNDN) != 0 || mpf_cmp_ui (x, 0))
-    {
-      printf ("Error: mpfr_get_f(+0) fails\n");
-      exit (1);
-    }
-
-  mpfr_set_ui (y, 0, MPFR_RNDN);
-  mpfr_neg (y, y, MPFR_RNDN);
-  if (mpfr_get_f (x, y, MPFR_RNDN) != 0 || mpf_cmp_ui (x, 0))
-    {
-      printf ("Error: mpfr_get_f(-0) fails\n");
-      exit (1);
-    }
-
   i = 1;
   while (i)
     {
@@ -355,6 +381,7 @@ main (void)
   mpfr_clear (z);
   mpf_clear (x);
 
+  special_test ();
   prec_test ();
   ternary_test ();
 
