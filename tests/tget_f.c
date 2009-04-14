@@ -73,7 +73,7 @@ prec_test (void)
                   printf ("x1 = ");
                   mpf_out_str (stdout, 16, 0, x1);
                   printf ("\nx2 = ");
-                  mpf_out_str (stdout, 16, 0, x1);
+                  mpf_out_str (stdout, 16, 0, x2);
                   printf ("\n");
                   exit (1);
                 }
@@ -106,7 +106,7 @@ ternary_test (void)
   mpfr_t y;
 
   mpf_init2 (x, BITS_PER_MP_LIMB);
-  mpfr_init2 (y, BITS_PER_MP_LIMB + 2);
+  mpfr_init2 (y, 2 * BITS_PER_MP_LIMB);
 
   mpfr_set_ui (y, 1, MPFR_RNDN);
 
