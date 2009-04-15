@@ -113,31 +113,30 @@ mpfr_get_f (mpf_ptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
   else /* we have to round to precx - sh bits */
     {
       mpfr_t z;
-      mp_size_t sz, ds;
+      mp_size_t sz;
 
-      /* Recall that precx = (mp_prec_t) sx * BITS_PER_MP_LIMB */
+      /* Recall that precx = (mp_prec_t) sx * BITS_PER_MP_LIMB, thus removing
+         sh bits (sh < BITS_PER_MP_LIMBS) won't reduce the number of limbs. */
       mpfr_init2 (z, precx - sh);
       sz = MPFR_LIMB_SIZE (z);
+      MPFR_ASSERTN (sx == sz);
+
       inex = mpfr_set (z, y, rnd_mode);
       /* warning, sh may change due to rounding, but then z is a power of two,
          thus we can safely ignore its last bit which is 0 */
       sh = MPFR_GET_EXP(z) % BITS_PER_MP_LIMB;
       sh = sh <= 0 ? - sh : BITS_PER_MP_LIMB - sh;
-      MPFR_ASSERTD (sx >= sz);
-      ds = sx - sz;
-      MPFR_ASSERTD (sh >= 0 && ds <= 1);
+      MPFR_ASSERTD (sh >= 0);
       if (sh != 0)
         {
           mp_limb_t out;
-          out = mpn_rshift (xp + ds, MPFR_MANT(z), sz, sh);
+          out = mpn_rshift (xp, MPFR_MANT(z), sz, sh);
           /* If sh hasn't changed, it is the number of the non-significant
              bits in the lowest limb of z. Therefore out == 0. */
           MPFR_ASSERTD (out == 0);
         }
       else
-        MPN_COPY (xp + ds, MPFR_MANT(z), sz);
-      if (ds != 0)
-        xp[0] = 0;
+        MPN_COPY (xp, MPFR_MANT(z), sz);
       EXP(x) = (MPFR_GET_EXP(z) + sh) / BITS_PER_MP_LIMB;
       mpfr_clear (z);
     }

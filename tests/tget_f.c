@@ -169,104 +169,95 @@ special_test (void)
 static void
 ternary_test (void)
 {
-  int inex;
+  int prec;
+  mpfr_rnd_t rnd; 
+  int inex, expected_inex;
   mpf_t x;
   mpfr_t y;
 
-  mpf_init2 (x, BITS_PER_MP_LIMB);
-  mpfr_init2 (y, 2 * BITS_PER_MP_LIMB);
+  mpf_init2 (x, 256);
+  mpfr_init2 (y, 256);
 
-  /* y == 1 */
-  mpfr_set_ui (y, 1, MPFR_RNDN);
-
-  inex = mpfr_get_f (x, y, MPFR_RNDU);
-  if (inex != 0 || mpfr_cmp_f (y, x) !=0)
+  for (prec = 2; prec <= 256; prec++)
     {
-      printf ("Error in mpfr_get_f (x, y, MPFR_RNDU)\n");
-      printf ("x = ");
-      mpf_dump (x);
-      printf ("y = ");
-      mpfr_dump (y);
-      if (inex != 0)
-        printf ("got ternary value = %+d, expected: 0\n", inex);
 
-      exit (1);
-    }
+      mpf_set_prec (x, prec);
+      mpfr_set_prec (y, PREC (x) * BITS_PER_MP_LIMB + 1);
 
-  inex = mpfr_get_f (x, y, MPFR_RNDD);
-  if (inex != 0 || mpfr_cmp_f (y, x) !=0)
-    {
-      printf ("Error in mpfr_get_f (x, y, MPFR_RNDD)\n");
-      printf ("x = ");
-      mpf_dump (x);
-      printf ("y = ");
-      mpfr_dump (y);
-      if (inex != 0)
-        printf ("got ternary value = %+d, expected: 0\n", inex);
+      /* y == 1 */
+      mpfr_set_ui_2exp (y, 1, prec, MPFR_RNDN);
 
-      exit (1);
-    }
+      RND_LOOP (rnd)
+      {
+        inex = mpfr_get_f (x, y, rnd);
 
-  /* y == 1 + epsilon */
-  mpfr_nextabove (y);
+        if (inex != 0 || mpfr_cmp_f (y, x) !=0)
+          {
+            printf ("Error in mpfr_get_f (x, y, %s)\nx = ", 
+                    mpfr_print_rnd_mode (rnd));
+            mpf_out_str (stdout, 2, 0, x);
+            printf ("\ny = ");
+            mpfr_dump (y);
+            if (inex != 0)
+              printf ("got ternary value = %+d, expected: 0\n", inex);
 
-  inex = mpfr_get_f (x, y, MPFR_RNDU);
-  if (inex <= 0 || mpfr_cmp_f (y, x) >=0)
-    {
-      printf ("Error in mpfr_get_f (x, y, MPFR_RNDU)\n");
-      printf ("x = ");
-      mpf_dump (x);
-      printf ("y = ");
-      mpfr_dump (y);
-      if (inex <= 0)
-        printf ("got ternary value = %+d, expected: +1\n", inex);
+            exit (1);
+          }
+      }
 
-      exit (1);
-    }
+      /* y == 1 + epsilon */
+      mpfr_nextbelow (y);
 
-  inex = mpfr_get_f (x, y, MPFR_RNDD);
-  if (inex >= 0 || mpfr_cmp_f (y, x) <=0)
-    {
-      printf ("Error in mpfr_get_f (x, y, MPFR_RNDD)\n");
-      printf ("x = ");
-      mpf_dump (x);
-      printf ("y = ");
-      mpfr_dump (y);
-      if (inex >= 0)
-        printf ("got ternary value = %+d, expected: -1\n", inex);
+      RND_LOOP (rnd)
+      {
+        switch (rnd)
+          {
+          case MPFR_RNDU: case MPFR_RNDA:
+          case MPFR_RNDN:
+            expected_inex = +1;
+            break;
+          default :
+            expected_inex = -1;
+          }
 
-      exit (1);
-    }
+        inex = mpfr_get_f (x, y, rnd);
 
-  /* y == -1 - epsilon */
-  mpfr_neg (y, y, MPFR_RNDN);
+        if (! SAME_SIGN (expected_inex, inex)
+            || SAME_SIGN (expected_inex, mpfr_cmp_f (y, x)))
+          {
+            printf ("Error in mpfr_get_f (x, y, %s)\nx = ",
+                    mpfr_print_rnd_mode (rnd));
+            mpf_out_str (stdout, 2, 0, x);
+            printf ("\ny = ");
+            mpfr_dump (y);
+            if (! SAME_SIGN (expected_inex, inex))
+              printf ("got ternary value = %+d, expected: %+d\n",
+                      inex, expected_inex);
 
-  inex = mpfr_get_f (x, y, MPFR_RNDU);
-  if (inex <= 0 || mpfr_cmp_f (y, x) >=0)
-    {
-      printf ("Error in mpfr_get_f (x, y, MPFR_RNDU)\n");
-      printf ("x = ");
-      mpf_dump (x);
-      printf ("y = ");
-      mpfr_dump (y);
-      if (inex <= 0)
-        printf ("got ternary value = %+d, expected: +1\n", inex);
+            exit (1);
+          }
+      }
 
-      exit (1);
-    }
+      /* y == positive random float */
+      mpfr_random2 (y, MPFR_LIMB_SIZE (y), 1024, RANDS);
 
-  inex = mpfr_get_f (x, y, MPFR_RNDD);
-  if (inex >= 0 || mpfr_cmp_f (y, x) <=0)
-    {
-      printf ("Error in mpfr_get_f (x, y, MPFR_RNDD)\n");
-      printf ("x = ");
-      mpf_dump (x);
-      printf ("y = ");
-      mpfr_dump (y);
-      if (inex >= 0)
-        printf ("got ternary value = %+d, expected: -1\n", inex);
+      RND_LOOP (rnd)
+      {
+        inex = mpfr_get_f (x, y, rnd);
 
-      exit (1);
+        if (! SAME_SIGN (inex, -mpfr_cmp_f (y, x)))
+          {
+            printf ("Error in mpfr_get_f (x, y, %s)\nx = ",
+                    mpfr_print_rnd_mode (rnd));
+            mpf_out_str (stdout, 2, 0, x);
+            printf ("\ny = ");
+            mpfr_dump (y);
+            printf ("got ternary value = %+d, expected: %+d\n",
+                    inex, -mpfr_cmp_f (y, x));
+
+            exit (1);
+          }
+      }
     }
 
   mpf_clear (x);
@@ -349,7 +340,7 @@ main (void)
           mpfr_dump (y);
           printf ("x=");
           mpf_div_2exp (x, x, e);
-          mpf_dump (x);
+          mpf_out_str (stdout, 2, 0, x);
           exit (1);
         }
 
@@ -365,7 +356,7 @@ main (void)
           mpfr_dump (y);
           printf ("x=");
           mpf_mul_2exp (x, x, e);
-          mpf_dump (x);
+          mpf_out_str (stdout, 2, 0, x);
           exit (1);
         }
     }
