@@ -20,8 +20,6 @@ check_PROGRAMS = tversion tinternals tinits tisqrt tsgn tcheck tisnan \
 
 EXTRA_DIST = tgeneric.c tgeneric_ui.c mpf_compat.h inp_str.data tmul.dat
 
-tmul_CPPFLAGS = -DMPFR_SRCDIR=\"$(srcdir)\"
-
 LDADD = libfrtests.la $(MPFR_LIBM) $(top_builddir)/libmpfr.la
 INCLUDES = -I$(top_srcdir) -I$(top_builddir)
 LOADLIBES=$(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS) $(top_builddir)/tests/.libs/libfrtests.a $(top_builddir)/.libs/libmpfr.a $(LIBS) $(MPFR_LIBM)
