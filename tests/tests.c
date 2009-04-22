@@ -630,6 +630,8 @@ data_check (char *f, int (*foo) (FLIST), char *name)
 
   fp = fopen (f, "r");
   if (fp == NULL)
+    fp = src_fopen (f, "r");
+  if (fp == NULL)
     {
       char *v = (char *) MPFR_VERSION_STRING;
 
