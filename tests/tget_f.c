@@ -170,7 +170,7 @@ static void
 ternary_test (void)
 {
   int prec;
-  mpfr_rnd_t rnd; 
+  mpfr_rnd_t rnd;
   int inex, expected_inex;
   mpf_t x;
   mpfr_t y;
@@ -193,7 +193,7 @@ ternary_test (void)
 
         if (inex != 0 || mpfr_cmp_f (y, x) !=0)
           {
-            printf ("Error in mpfr_get_f (x, y, %s)\nx = ", 
+            printf ("Error in mpfr_get_f (x, y, %s)\nx = ",
                     mpfr_print_rnd_mode (rnd));
             mpf_out_str (stdout, 2, 0, x);
             printf ("\ny = ");
