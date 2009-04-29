@@ -314,9 +314,24 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
 
       /* sk is 1/|x| if |x| > 1, and |x| otherwise, i.e. min(|x|, 1/|x|) */
 
+      /* If sk=1, then if |x| < 1, we have 1 - 2^(-prec-1) <= |x| < 1,
+         or if |x| > 1, we have 1 - 2^(-prec-1) <= 1/|x| < 1, thus in all
+         cases ||x| - 1| <= 2^(-prec), from which it follows
+         |atan|x| - Pi/4| <= 2^(-prec), given the Taylor expansion
+         atan(1+x) = Pi/4 + x/2 - x^2/4 + ...
+         Since Pi/4 = 0.785..., the error is at most one ulp.
+      */
+      if (MPFR_UNLIKELY(mpfr_cmp_ui (sk, 1) == 0))
+        {
+          mpfr_const_pi (arctgt, MPFR_RNDN); /* 1/2 ulp extra error */
+          mpfr_div_2ui (arctgt, arctgt, 2, MPFR_RNDN); /* exact */
+          realprec = prec - 2;
+          goto can_round;
+        }
+
       /* Assignation  */
       MPFR_SET_ZERO (arctgt);
-      twopoweri = 1<<0;
+      twopoweri = 1 << 0;
       MPFR_ASSERTD (n0 >= 4);
       /* FIXME: further reduce the argument so that it is less than
          1/n where n is the output precision. In such a way, the
@@ -366,6 +381,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
         }
       MPFR_SET_POS (arctgt);
 
+    can_round:
       if (MPFR_LIKELY (MPFR_CAN_ROUND (arctgt, realprec, MPFR_PREC (atan),
                                        rnd_mode)))
         break;
