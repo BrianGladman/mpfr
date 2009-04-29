@@ -442,6 +442,26 @@ atan2_bug_20071003 (void)
   mpfr_clears (a, x, y, z, (mpfr_ptr) 0);
 }
 
+/* Bug found on 2009-04-29 by Christopher Creutzig.
+ * With r6179: atan.c:62: MPFR assertion failed: r > n
+ */
+static void
+atan2_different_prec (void)
+{
+  mpfr_t a, x, y;
+
+  mpfr_init2 (a, 59);
+  mpfr_init2 (x, 59);
+  mpfr_init2 (y, 86);
+
+  mpfr_set_ui (x, 1, GMP_RNDN);
+  mpfr_set_ui (y, 1, GMP_RNDN);
+  mpfr_nextbelow (y);
+  mpfr_atan2 (a, y, x, GMP_RNDN);
+
+  mpfr_clears (a, x, y, (mpfr_ptr) 0);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -452,6 +472,7 @@ main (int argc, char *argv[])
   special_atan2 ();
   smallvals_atan2 ();
   atan2_bug_20071003 ();
+  atan2_different_prec ();
 
   test_generic_atan  (2, 200, 17);
   test_generic_atan2 (2, 200, 17);
