@@ -454,10 +454,10 @@ atan2_different_prec (void)
   mpfr_init2 (x, 59);
   mpfr_init2 (y, 86);
 
-  mpfr_set_ui (x, 1, GMP_RNDN);
-  mpfr_set_ui (y, 1, GMP_RNDN);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_set_ui (y, 1, MPFR_RNDN);
   mpfr_nextbelow (y);
-  mpfr_atan2 (a, y, x, GMP_RNDN);
+  mpfr_atan2 (a, y, x, MPFR_RNDN);
 
   mpfr_clears (a, x, y, (mpfr_ptr) 0);
 }
