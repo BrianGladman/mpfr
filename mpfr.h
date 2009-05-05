@@ -212,6 +212,8 @@ extern "C" {
 
 __MPFR_DECLSPEC __gmp_const char * mpfr_get_version _MPFR_PROTO ((void));
 __MPFR_DECLSPEC __gmp_const char * mpfr_get_patches _MPFR_PROTO ((void));
+__MPFR_DECLSPEC int mpfr_buildopt_tls_p     _MPFR_PROTO ((void));
+__MPFR_DECLSPEC int mpfr_buildopt_decimal_p _MPFR_PROTO ((void));
 
 __MPFR_DECLSPEC mp_exp_t mpfr_get_emin     _MPFR_PROTO ((void));
 __MPFR_DECLSPEC int      mpfr_set_emin     _MPFR_PROTO ((mp_exp_t));
