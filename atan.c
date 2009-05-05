@@ -220,7 +220,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
                                         MPFR_INVERT_RND (rnd_mode));
               MPFR_CHANGE_SIGN (atan);
             }
-          mpfr_div_2ui (atan, atan, 1, rnd_mode);
+          mpfr_div_2ui (atan, atan, 1, rnd_mode);  /* exact (no exceptions) */
           MPFR_SAVE_EXPO_FREE (expo);
           return mpfr_check_range (atan, inexact, rnd_mode);
         }
@@ -256,7 +256,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
           inexact = -inexact;
           MPFR_CHANGE_SIGN (atan);
         }
-      mpfr_div_2ui (atan, atan, 2, rnd_mode);
+      mpfr_div_2ui (atan, atan, 2, rnd_mode);  /* exact (no exceptions) */
       MPFR_SAVE_EXPO_FREE (expo);
       return mpfr_check_range (atan, inexact, rnd_mode);
     }
