@@ -2043,7 +2043,7 @@ x=\sum_{i=1}^{\infty} \frac{u_i}{2^i}\;\;\mbox{with}\;\;u_i\in\{0,1\}
 \end{equation*}
 or
 \begin{equation*}
-x=\sum_{i=1}^{\infty} \frac{u_i}{2^{2^i}}\;\;\mbox{with}\;\;u_i\in\{0,1,\dots,2^{2^{i-1}}_1\}\mbox{~if~}i>1\mbox{~and~}u_1\in \{0,1\}
+x=\sum_{i=1}^{\infty} \frac{u_i}{2^{2^i}}\;\;\mbox{with}\;\;u_i\in\{0,1,\dots,2^{2^{i-1}}\}\mbox{~if~}i>1\mbox{~and~}u_1\in \{0,1\}
 \end{equation*}
 we can compute $\cos$,  $\sin$ or $\exp$ using the formulas
 \begin{equation*}
@@ -2098,7 +2098,7 @@ the number $s_N$ is decreasing toward $0$ and we then have
 \end{enumerate}
 The drawbacks of this algorithm are:
 \begin{enumerate}
-\item Complexity of the process is high, higher than the AGM. Nevertheless there is some hope that this can be more efficient than AGM is the domain where the number of bits is high but not too large.
+\item Complexity of the process is high, higher than the AGM. Nevertheless there is some hope that this can be more efficient than AGM in the domain where the number of bits is high but not too large.
 \item There is the need for division which is computationally expensive.
 \item We may have to compute $\arctan\,(1/2)$.
 \end{enumerate}
@@ -2149,7 +2149,7 @@ We need to estimate all the quantities involved in the computation.
 &\leq &\sum_{i=N_0}^{\infty}\frac{1}{2^{2^i}}=\frac{c_{N_0}}{2^{2^{N_0}}}
 \end{eqnarray*}
 With $c_{N_0}\leq 1.64$. If $N_0\geq 1$ then $c_{N_0}\leq 1.27$. If $N_0\geq 2$ then $c_{N_0}\leq 1.07$.\\
-It remains to determine the good $N_0$.
+It remains to determine the right $N_0$.
 \item The partial sum of the Taylor series for $\arctan$ have derivative bounded by $1$ and consequently don't increase error.
 \item The error created by using the partial sum of the Taylor series of $\arctan$ is bounded by
 \begin{equation*}
@@ -2174,11 +2174,11 @@ In total this is $(N_0) ulp$.
 \item The total sum of errors is then (if no errors are done in the counting of errors)
 \begin{eqnarray*}
 Err(\arctan)
-&=&\sum_{i=0}^{i=N_0}\frac{1}{2*2^{m_i}+1}2^{-2^{i+m_i}}+\frac{2}{2^{2^{N_0}}}+(N_0-1)2^{-Prec}\\
+&=&\sum_{i=0}^{i=N_0}\frac{1}{2*2^{m_i}+1}2^{-2^{i+m_i}}+\frac{c_{N_0}}{2^{2^{N_0}}}+(N_0-1)2^{-Prec}\\
 &+&(N_0 -1)2^{-Prec}+(N_0)2^{-Prec}\;\;\;[m_i=N_0-i]\\
-&=&\sum_{i=0}^{i=N_0}\frac{1}{2*2^{N_0-i}+1}2^{-2^{N_0}}+\frac{2}{2^{2^{N_0}}}+(3*N_0-2)2^{-Prec}\\
-&=&\sum_{i=0}^{i=N_0}\frac{1}{2*2^{i}+1}2^{-2^{N_0}}+\frac{2}{2^{2^{N_0}}}+(3*N_0-2)2^{-Prec}\\
-&\leq &\{\sum_{i=0}^{i=\infty}\frac{1}{2*2^{i}+1}\}2^{-2^{N_0}}+\frac{2}{2^{2^{N_0}}}+(3*N_0-2)2^{-Prec}\\
+&=&\sum_{i=0}^{i=N_0}\frac{1}{2*2^{N_0-i}+1}2^{-2^{N_0}}+\frac{c_{N_0}}{2^{2^{N_0}}}+(3*N_0-2)2^{-Prec}\\
+&=&\sum_{i=0}^{i=N_0}\frac{1}{2*2^{i}+1}2^{-2^{N_0}}+\frac{c_{N_0}}{2^{2^{N_0}}}+(3*N_0-2)2^{-Prec}\\
+&\leq &\{\sum_{i=0}^{i=\infty}\frac{1}{2*2^{i}+1}\}2^{-2^{N_0}}+\frac{c_{N_0}}{2^{2^{N_0}}}+(3*N_0-2)2^{-Prec}\\
 &\leq&\{0.77\}2^{-2^{N_0}}+\frac{1.63}{2^{2^{N_0}}}+(3*N_0-2)2^{-Prec}\\
 &=&\frac{2.4}{2^{2^{N_0}}}+(3*N_0-2)2^{-Prec}
 \end{eqnarray*}

@@ -20,7 +20,6 @@ along with the GNU MPFR Library; see the file COPYING.LIB.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
-#include <string.h> /* For strlen */
 #include <stdlib.h> /* For strtol */
 #include <ctype.h>  /* For isspace */
 

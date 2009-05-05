@@ -26,7 +26,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
 #include <stdlib.h> /* for strtol */
-#include <string.h> /* for strcmp */
 #include "mpfr-impl.h"
 
 #define ISDIGIT(c) ('0' <= c && c <= '9')

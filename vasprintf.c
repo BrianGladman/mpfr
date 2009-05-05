@@ -60,8 +60,6 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # endif
 #endif
 
-#include <string.h>             /* for strlen, memcpy and others */
-
 #include "mpfr-impl.h"
 
 /* Define a length modifier corresponding to mp_prec_t.

@@ -26,9 +26,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # endif
 #endif
 
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <float.h>
 #include <errno.h>
 
