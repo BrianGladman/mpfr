@@ -237,6 +237,74 @@ special_overflow (void)
       mpfr_dump (y);
       exit (1);
     }
+
+  /* intermediate Pi overflows while atan(+Inf) = Pi/2 is representable */
+  set_emax (1);
+  mpfr_set_inf (x, +1);
+  mpfr_clear_flags ();
+  mpfr_atan (y, x, MPFR_RNDN);
+  if (mpfr_cmp_str (y, "C90FDAA22169p-47", 16, MPFR_RNDN)
+      || mpfr_overflow_p ())
+    {
+      printf("atan(+Inf) = Pi/2 should not overflow when emax = %ld\n",
+             (long int) mpfr_get_emax ());
+      mpfr_dump (y);
+      exit (1);
+    }
+
+  /* atan(+Inf) = Pi/2 underflows */
+  set_emax (128);
+  set_emin (3);
+  mpfr_clear_flags ();
+  mpfr_atan (y, x, MPFR_RNDN);
+  if (mpfr_cmp_ui (y, 0) || !mpfr_underflow_p ())
+    {
+      printf("atan(+Inf) = Pi/2 should underflow when emin = %ld\n",
+             (long int) mpfr_get_emin ());
+      mpfr_dump (y);
+      exit (1);
+    }
+
+  /* intermediate Pi overflows while atan(+1) = Pi/4 is representable */
+  set_emax (1);
+  set_emin (-128);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  mpfr_clear_flags ();
+  mpfr_atan (y, x, MPFR_RNDN);
+  if (mpfr_cmp_str (y, "C90FDAA22169p-48", 16, MPFR_RNDN)
+      || mpfr_overflow_p ())
+    {
+      printf("atan(+1) = Pi/4 should not overflow when emax = %ld\n",
+             (long int) mpfr_get_emax ());
+      mpfr_dump (y);
+      exit (1);
+    }
+
+  /* atan(+1) = Pi/4 underflows and is rounded up to 1 */
+  set_emax (128);
+  set_emin (1);
+  mpfr_set_prec (y, 2);
+  mpfr_clear_flags ();
+  mpfr_atan (y, x, MPFR_RNDN);
+  if (mpfr_cmp_ui (y, 1) || !mpfr_underflow_p ())
+    {
+      printf("atan(+1) = Pi/4 should underflow when emin = %+ld\n",
+             (long int) mpfr_get_emin ());
+      mpfr_dump (y);
+      exit (1);
+    }
+
+  /* atan(+1) = Pi/4 underflows and is rounded down to 0 */
+  mpfr_clear_flags ();
+  mpfr_atan (y, x, MPFR_RNDD);
+  if (mpfr_cmp_ui (y, 0) || !mpfr_underflow_p ())
+    {
+      printf("atan(+1) = Pi/4 should underflow when emin = %+ld\n",
+             (long int) mpfr_get_emin ());
+      mpfr_dump (y);
+      exit (1);
+    }
+
   mpfr_clear (y);
   mpfr_clear (x);
   set_emin (emin);

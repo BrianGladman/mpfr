@@ -192,7 +192,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
   mp_exp_t exptol;
   mp_prec_t prec, realprec;
   unsigned long twopoweri;
-  int comparaison, inexact, inexact2;
+  int comparaison, inexact;
   int i, n0, oldn0;
   MPFR_GROUP_DECL (group);
   MPFR_SAVE_EXPO_DECL (expo);
@@ -211,6 +211,7 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
         }
       else if (MPFR_IS_INF (x))
         {
+          MPFR_SAVE_EXPO_MARK (expo);
           if (MPFR_IS_POS (x))  /* arctan(+inf) = Pi/2 */
             inexact = mpfr_const_pi (atan, rnd_mode);
           else /* arctan(-inf) = -Pi/2 */
@@ -219,10 +220,9 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
                                         MPFR_INVERT_RND (rnd_mode));
               MPFR_CHANGE_SIGN (atan);
             }
-          inexact2 = mpfr_div_2ui (atan, atan, 1, rnd_mode);
-          if (MPFR_UNLIKELY (inexact2))
-            inexact = inexact2; /* An underflow occurs */
-          MPFR_RET (inexact);
+          mpfr_div_2ui (atan, atan, 1, rnd_mode);
+          MPFR_SAVE_EXPO_FREE (expo);
+          return mpfr_check_range (atan, inexact, rnd_mode);
         }
       else /* x is necessarily 0 */
         {
@@ -242,6 +242,8 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
   /* Set x_p=|x| */
   MPFR_TMP_INIT_ABS (xp, x);
 
+  MPFR_SAVE_EXPO_MARK (expo);
+
   /* Other simple case arctan(-+1)=-+pi/4 */
   comparaison = mpfr_cmp_ui (xp, 1);
   if (MPFR_UNLIKELY (comparaison == 0))
@@ -254,16 +256,13 @@ mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
           inexact = -inexact;
           MPFR_CHANGE_SIGN (atan);
         }
-      inexact2 = mpfr_div_2ui (atan, atan, 2, rnd_mode);
-      if (MPFR_UNLIKELY (inexact2))
-        inexact = inexact2; /* an underflow occurs */
-      return inexact;
+      mpfr_div_2ui (atan, atan, 2, rnd_mode);
+      MPFR_SAVE_EXPO_FREE (expo);
+      return mpfr_check_range (atan, inexact, rnd_mode);
     }
 
   realprec = MPFR_PREC (atan) + MPFR_INT_CEIL_LOG2 (MPFR_PREC (atan)) + 4;
   prec = realprec + BITS_PER_MP_LIMB;
-
-  MPFR_SAVE_EXPO_MARK (expo);
 
   /* Initialisation    */
   mpz_init (ukz);
