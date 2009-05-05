@@ -40,7 +40,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # endif /* HAVE___VA_COPY */
 #endif /* HAVE_VA_COPY */
 
-
+#include <string.h>
 #include <errno.h>
 #include "mpfr-impl.h"
 

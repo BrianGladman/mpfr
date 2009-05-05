@@ -29,6 +29,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* Execute with at least an argument to report all the errors found by
    comparisons. */
 
+#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
