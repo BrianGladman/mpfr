@@ -368,7 +368,8 @@ mpfr_get_decimal64 (mpfr_srcptr src, mp_rnd_t rnd_mode)
               /* Warning: we can have e2 = e + 1 here, when rounding to
                  nearest or away from zero. */
               s[negative + digits] = 'E';
-              sprintf (s + negative + digits + 1, "%d", e2 - digits);
+              sprintf (s + negative + digits + 1, "%ld",
+                       (long int)e2 - digits);
               return string_to_Decimal64 (s);
             }
         }
@@ -385,7 +386,7 @@ mpfr_get_decimal64 (mpfr_srcptr src, mp_rnd_t rnd_mode)
       else /* -382 <= e <= 385 */
         {
           s[16 + negative] = 'E';
-          sprintf (s + 17 + negative, "%d", e - 16);
+          sprintf (s + 17 + negative, "%ld", (long int)e - 16);
           return string_to_Decimal64 (s);
         }
     }

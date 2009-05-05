@@ -110,7 +110,7 @@ decimal64_to_string (char *s, _Decimal64 d)
 {
   union ieee_double_extract x;
   union ieee_double_decimal64 y;
-  char *t;
+  unsigned char *t;
   unsigned int Gh; /* most 5 significant bits from combination field */
   int exp; /* exponent */
   mp_limb_t rp[2];
@@ -137,7 +137,7 @@ decimal64_to_string (char *s, _Decimal64 d)
         sprintf (s, "-Inf");
       return;
     }
-  t = s;
+  t = (unsigned char*)s;
   if (x.s.sig)
     *t++ = '-';
 
@@ -205,17 +205,17 @@ decimal64_to_string (char *s, _Decimal64 d)
 #endif /* DPD or BID */
 
   exp -= 398; /* unbiased exponent */
-  t += sprintf (t, "E%d", exp);
+  t += sprintf ((char *)t, "E%d", exp);
 }
 
 int
 mpfr_set_decimal64 (mpfr_ptr r, _Decimal64 d, mp_rnd_t rnd_mode)
 {
   char s[23]; /* need 1 character for sign,
-                     16 characters for mantissa,
-                      1 character for exponent,
-                      4 characters for exponent (including sign),
-                      1 character for terminating \0. */
+                 16 characters for mantissa,
+                 1 character for exponent,
+                 4 characters for exponent (including sign),
+                 1 character for terminating \0. */
 
   decimal64_to_string (s, d);
   return mpfr_set_str (r, s, 10, rnd_mode);
