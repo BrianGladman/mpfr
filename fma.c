@@ -33,6 +33,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
   int inexact;
   mpfr_t u;
   MPFR_SAVE_EXPO_DECL (expo);
+  MPFR_GROUP_DECL(group);
 
   /* particular cases */
   if (MPFR_UNLIKELY( MPFR_IS_SINGULAR(x) ||
@@ -103,7 +104,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
   /* If we take prec(u) >= prec(x) + prec(y), the product u <- x*y
      is exact, except in case of overflow or underflow. */
   MPFR_SAVE_EXPO_MARK (expo);
-  mpfr_init2 (u, MPFR_PREC(x) + MPFR_PREC(y));
+  MPFR_GROUP_INIT_1 (group, MPFR_PREC(x) + MPFR_PREC(y), u);
 
   if (MPFR_UNLIKELY (mpfr_mul (u, x, y, MPFR_RNDN)))
     {
@@ -123,7 +124,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
           if (MPFR_SIGN (u) == MPFR_SIGN (z) ||
               MPFR_GET_EXP (x) + MPFR_GET_EXP (y) >= __gmpfr_emax + 3)
             {
-              mpfr_clear (u);
+              MPFR_GROUP_CLEAR (group);
               MPFR_SAVE_EXPO_FREE (expo);
               return mpfr_overflow (s, rnd_mode, MPFR_SIGN (z));
             }
@@ -179,7 +180,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
 
                 if (zz != z)
                   mpfr_clear (zo4);
-                mpfr_clear (u);
+                MPFR_GROUP_CLEAR (group);
                 MPFR_ASSERTN (! MPFR_OVERFLOW (flags));
                 inex2 = mpfr_mul_2ui (s, s, 2, rnd_mode);
                 if (inex2)  /* overflow */
@@ -246,7 +247,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
           if (xy_underflows)
             {
               /* Let's replace xy by sign(xy) * 2^(emin-1). */
-              mpfr_set_prec (u, MPFR_PREC_MIN);
+              MPFR_PREC (u) = MPFR_PREC_MIN;
               mpfr_setmin (u, __gmpfr_emin);
               MPFR_SET_SIGN (u, MPFR_MULT_SIGN (MPFR_SIGN (x),
                                                 MPFR_SIGN (y)));
@@ -256,8 +257,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
             MPFR_BLOCK_DECL (flags);
 
             MPFR_BLOCK (flags, inexact = mpfr_add (s, u, new_z, rnd_mode));
-            mpfr_clear (u);
-
+            MPFR_GROUP_CLEAR (group);
             if (scale != 0)
               {
                 int inex2;
@@ -286,7 +286,7 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
     }
 
   inexact = mpfr_add (s, u, z, rnd_mode);
-  mpfr_clear (u);
+  MPFR_GROUP_CLEAR (group);
   MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
  end:
   MPFR_SAVE_EXPO_FREE (expo);
