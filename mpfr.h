@@ -62,7 +62,7 @@ MPFR_VERSION_NUM(MPFR_VERSION_MAJOR,MPFR_VERSION_MINOR,MPFR_VERSION_PATCHLEVEL)
 # define _MPFR_H_HAVE_INTMAX_T 1
 #endif
 
-/* Definition of rounding modes (DON'T USE GMP_RNDNA!).
+/* Definition of rounding modes (DON'T USE MPFR_RNDNA!).
    Warning! Changing the contents of this enum should be seen as an
    interface change since the old and the new types are not compatible
    (the integer type compatible with the enumerated type can even change,
