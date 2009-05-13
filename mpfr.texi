@@ -1915,7 +1915,8 @@ rounded in the direction @var{rnd}. Warning, @var{tab} is a table of pointers
 to mpfr_t, not a table of mpfr_t (preliminary interface). The returned
 @code{int} value is zero when the computed value is the exact value,
 and non-zero when this cannot be guaranteed, without giving the
-direction of the error as the other functions do.
+direction of the error as the other functions do. However, @code{mpfr_sum} does
+guarantee the result is correctly rounded.
 @end deftypefun
 
 @node Input and Output Functions, Formatted Output Functions, Special Functions, MPFR Interface
