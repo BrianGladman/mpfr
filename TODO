@@ -220,7 +220,7 @@ Table of contents:
 - [maybe useful for SAGE] implement companion frac_* functions to the rint_*
   functions. For example mpfr_frac_floor(x) = x - floor(x). (The current
   mpfr_frac function corresponds to mpfr_rint_trunc.)
-
+- scaled erfc (http://websympa.loria.fr/wwsympa/arc/mpfr/2009-05/msg00054.html)
 
 ##############################################################################
 5. Efficiency
