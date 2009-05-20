@@ -67,20 +67,23 @@ slow_fmod (mpfr_ptr r, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd)
 }
 
 static void
-test_failed (mpfr_t erem, mpfr_t grem, mpfr_t x, mpfr_t y, mp_rnd_t rnd)
+test_failed (mpfr_t erem, mpfr_t grem, int eret, int gret, mpfr_t x, mpfr_t y,
+             mp_rnd_t rnd)
 {
-  printf ("error : mpfr_fmod (r, x, y, rnd)\n  x = ");
+  printf ("error: mpfr_fmod (r, x, y, rnd)\n  x = ");
   mpfr_out_str (stdout, 10, 0, x, MPFR_RNDD);
   printf ("\n  y = ");
   mpfr_out_str (stdout, 10, 0, y, MPFR_RNDD);
-  printf ("\nrnd = %s\n", mpfr_print_rnd_mode (rnd));
+  printf ("\nrnd = %s", mpfr_print_rnd_mode (rnd));
+  if (eret != gret)
+    printf ("\nexpected %s return value, got %d",
+            (eret < 0 ? "negative" : eret > 0 ? "positive" : "zero"), gret);
   printf ("\n  expected r = ");
   mpfr_out_str (stdout, 10, 0, erem, MPFR_RNDD);
   printf ("\n  got      r = ");
   mpfr_out_str (stdout, 10, 0, grem, MPFR_RNDD);
   putchar ('\n');
 
-  mpfr_clears (erem, grem, x, y, (mpfr_ptr) 0);
   exit (1);
 }
 
@@ -93,10 +96,41 @@ check (mpfr_t r0, mpfr_t x, mpfr_t y, mp_rnd_t rnd)
 
   inex0 = mpfr_fmod (r0, x, y, rnd);
   inex1 = slow_fmod (r1, x, y, rnd);
-  if (!mpfr_equal_p (r0, r1))
-    test_failed (r1, r0, x, y, rnd);
-  MPFR_ASSERTN (inex0 == inex1);
+  if (!mpfr_equal_p (r0, r1) || inex0 != inex1)
+    test_failed (r1, r0, inex1, inex0, x, y, rnd);
   mpfr_clear (r1);
+}
+
+static void
+regular (void)
+{
+  mpfr_t x, y, r;
+  mpfr_inits (x, y, r, (mpfr_ptr) 0);
+
+  /* remainder = 0 */
+  mpfr_set_str (y, "FEDCBA987654321p-64", 16, MPFR_RNDN);
+  mpfr_pow_ui (x, y, 42, MPFR_RNDN);
+  check (r, x, y, MPFR_RNDN);
+
+  /* x < y */
+  mpfr_set_ui_2exp (x, 64723, -19, MPFR_RNDN);
+  mpfr_mul (x, x, y, MPFR_RNDN);
+  check (r, x, y, MPFR_RNDN);
+
+  /* sign(x) = sign (r) */
+  mpfr_set_ui (x, 123798, MPFR_RNDN);
+  mpfr_set_ui (y, 10, MPFR_RNDN);
+  check (r, x, y, MPFR_RNDN);
+
+  /* huge difference between precisions */
+  mpfr_set_prec (x, 314);
+  mpfr_set_prec (y, 8);
+  mpfr_set_prec (r, 123);
+  mpfr_const_pi (x, MPFR_RNDD); /* x = pi */
+  mpfr_set_ui_2exp (y, 1, 3, MPFR_RNDD); /* y = 1/8 */
+  check (r, x, y, MPFR_RNDD);
+
+  mpfr_clears (x, y, r, (mpfr_ptr) 0);
 }
 
 static void
@@ -106,57 +140,33 @@ special (void)
   mpfr_t x, y, r;
   mpfr_inits (x, y, r, (mpfr_ptr) 0);
 
-  /* NaN mod NaN is NaN */
+  /* fmod (NaN, NaN) is NaN */
   mpfr_set_nan (x);
   mpfr_set_nan (y);
   inexact = mpfr_fmod (r, x, y, MPFR_RNDN);
-  if (!mpfr_nan_p (r))
-    test_failed (r, x, x, y, MPFR_RNDN);
-  if (inexact)
-    {
-      printf ("error : mpfr_fmod (NaN, NaN) should be exact\n");
-      goto error;
-    }
+  if (!mpfr_nan_p (r) || inexact != 0)
+    test_failed (r, x, 0, inexact, x, y, MPFR_RNDN);
 
-  /* NaN mod +0 is NaN */
+  /* fmod (NaN, +0) is NaN */
   mpfr_set_ui (y, 0, MPFR_RNDN);
   inexact = mpfr_fmod (r, x, y, MPFR_RNDN);
-  if (!mpfr_nan_p (r))
-    test_failed (r, x, x, y, MPFR_RNDN);
-  if (inexact)
-    {
-      printf ("error : mpfr_fmod (NaN, +0) should be exact\n");
-      goto error;
-    }
+  if (!mpfr_nan_p (r) || inexact != 0)
+    test_failed (r, x, 0, inexact, x, y, MPFR_RNDN);
 
-  /* 3.1415 mod +0 is NaN */
-  mpfr_set_d (x, 3.1415, MPFR_RNDN);
+  /* fmod (1, +0) is NaN */
+  mpfr_set_ui (x, 1, MPFR_RNDN);
   inexact = mpfr_fmod (r, x, y, MPFR_RNDN);
-  if (!mpfr_nan_p (r))
-    test_failed (r, x, x, y, MPFR_RNDN);
-  if (inexact)
-    {
-      printf ("error : mpfr_fmod (3.1415, NaN) should be exact\n");
-      goto error;
-    }
+  if (!mpfr_nan_p (r) || inexact != 0)
+    test_failed (r, x, 0, inexact, x, y, MPFR_RNDN);
 
-  /* 3.1415 mod +Inf is 3.1415 */
+  /* fmod (x, +Inf) is x, if x is finite */
   mpfr_set_inf (y, 1);
   inexact = mpfr_fmod (r, x, y, MPFR_RNDN);
-  if (MPFR_IS_SINGULAR (r))
-    test_failed (r, x, x, y, MPFR_RNDN);
-  if (inexact)
-    {
-      printf ("error : mpfr_fmod (3.1415, +Inf) should be exact\n");
-      goto error;
-    }
+  if (!mpfr_equal_p (r, x) || inexact != 0)
+    test_failed (r, x, 0, inexact, x, y, MPFR_RNDN);
 
   mpfr_clears (x, y, r, (mpfr_ptr) 0);
   return;
-
- error:
-  mpfr_clears (x, y, r, (mpfr_ptr) 0);
-  exit (1);
 }
 
 /* bug reported by Eric Veach */
@@ -164,76 +174,61 @@ static void
 bug20090519 (void)
 {
   mpfr_t x, y, r;
+  int inexact;
+  mpfr_inits2 (100, x, y, r, (mpfr_ptr) 0);
 
-  mpfr_inits2 (3, x, y, r, (mpfr_ptr) 0);
+  mpfr_set_prec (x, 3);
+  mpfr_set_prec (y, 3);
+  mpfr_set_prec (r, 3);
   mpfr_set_si (x, 8, MPFR_RNDN);
   mpfr_set_si (y, 7, MPFR_RNDN);
-  mpfr_fmod (r, x, y, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_cmp_ui0 (r, 1) == 0);
-  mpfr_clears (r, x, y, (mpfr_ptr) 0);
+  check (r, x, y, MPFR_RNDN);
 
-  mpfr_inits2 (10, x, y, r, (mpfr_ptr) 0);
-  mpfr_set_si (x, 3 << 26, MPFR_RNDN);
+  mpfr_set_prec (x, 10);
+  mpfr_set_prec (y, 10);
+  mpfr_set_prec (r, 10);
+  mpfr_set_ui_2exp (x, 3, 26, MPFR_RNDN);
   mpfr_set_si (y, (1 << 9) - 1, MPFR_RNDN);
-  mpfr_fmod (r, x, y, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_cmp_ui0 (r, 257) == 0);
-  mpfr_clears (r, x, y, (mpfr_ptr) 0);
+  check (r, x, y, MPFR_RNDN);
 
-  mpfr_inits2 (100, x, y, r, (mpfr_ptr) 0);
-  mpfr_set_d (x, 3.5, MPFR_RNDN);
+  mpfr_set_prec (x, 100);
+  mpfr_set_prec (y, 100);
+  mpfr_set_prec (r, 100);
+  mpfr_set_str (x, "3.5", 10, MPFR_RNDN);
   mpfr_set_str (y, "1.1", 10, MPFR_RNDN);
-  mpfr_fmod (r, x, y, MPFR_RNDN);
-  mpfr_set_str_binary (x, "1100110011001100110011001100110011001100110011001100110011001100110011001100110011001100110011001E-99");
-  MPFR_ASSERTN(mpfr_equal_p (r, x));
-  mpfr_clears (r, x, y, (mpfr_ptr) 0);
+  check (r, x, y, MPFR_RNDN);
+  /* double check, with a pre-computed value */
+  {
+    mpfr_t er;
+    mpfr_init2 (er, 100);
+    mpfr_set_str (er, "CCCCCCCCCCCCCCCCCCCCCCCC8p-102", 16, MPFR_RNDN);
 
-  mpfr_inits2 (100, x, y, r, (mpfr_ptr) 0);
+    inexact = mpfr_fmod (r, x, y, MPFR_RNDN);
+    if (!mpfr_equal_p (r, er) || inexact != 0)
+      test_failed (er, r, 0, inexact, x, y, MPFR_RNDN);
+
+    mpfr_clear (er);
+  }
+
   mpfr_set_si (x, 20, MPFR_RNDN);
-  mpfr_set_d (y, 0.5, MPFR_RNDN); /* exact */
+  mpfr_set_ui_2exp (y, 1, 1, MPFR_RNDN); /* exact */
   mpfr_sin (y, y, MPFR_RNDN);
-  mpfr_fmod(r, x, y, MPFR_RNDN);
-  mpfr_set_str_binary (x, "1010111111100110001010101111111111100000011001001001111000101000011011101110110110100110100110101001E-101");
-  MPFR_ASSERTN(mpfr_equal_p (r, x));
+  check (r, x, y, MPFR_RNDN);
+
   mpfr_clears(r, x, y, (mpfr_ptr) 0);
 }
 
 int
 main (int argc, char *argv[])
 {
-  mpfr_t x, y, r;
-
   tests_start_mpfr ();
-  mpfr_inits (x, y, r, (mpfr_ptr) 0);
 
   bug20090519 ();
 
   test_generic (2, 100, 100);
 
   special ();
-
-  /* remainder = 0 */
-  mpfr_set_str (y, "FEDCBA987654321p-64", 16, MPFR_RNDN);
-  mpfr_pow_ui (x, y, 42, MPFR_RNDN);
-  check (r, x, y, MPFR_RNDN);
-
-  /* x < y */
-  mpfr_mul_d (x, y, .12345, MPFR_RNDN);
-  check (r, x, y, MPFR_RNDN);
-
-  /* sign(x) = sign (r) */
-  mpfr_set_str (x, "123798", 10, MPFR_RNDN);
-  mpfr_set_str (y, "10", 10, MPFR_RNDN);
-  check (r, x, y, MPFR_RNDN);
-
-  /* huge difference between precisions */
-  mpfr_set_prec (x, 314);
-  mpfr_const_pi (x, MPFR_RNDD); /* x = pi */
-  mpfr_set_prec (y, 8);
-  mpfr_set_ui (y, 1, MPFR_RNDD);
-  mpfr_div_2ui (y, y, 3, MPFR_RNDD); /* y = 1/8 */
-  mpfr_set_prec (r, 123);
-  check (r, x, y, MPFR_RNDD);
-  mpfr_clears (x, y, r, (mpfr_ptr) 0);
+  regular ();
 
   tests_end_mpfr ();
   return 0;
