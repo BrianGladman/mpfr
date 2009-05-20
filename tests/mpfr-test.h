@@ -94,6 +94,7 @@ int mpfr_cmp_str _MPFR_PROTO ((mpfr_srcptr x, const char *, int, mp_rnd_t));
 #define mpfr_set_str1(x,s) mpfr_set_str(x,s,10,MPFR_RNDN)
 
 #define mpfr_cmp0(x,y) (MPFR_ASSERTN (!MPFR_IS_NAN (x) && !MPFR_IS_NAN (y)), mpfr_cmp (x,y))
+#define mpfr_cmp_ui0(x,i) (MPFR_ASSERTN (!MPFR_IS_NAN (x)), mpfr_cmp_ui (x,i))
 
 #if defined (__cplusplus)
 }

@@ -166,34 +166,34 @@ bug20090519 (void)
   mpfr_t x, y, r;
 
   mpfr_inits2 (3, x, y, r, NULL);
-  mpfr_set_si (x, 8, GMP_RNDN);
-  mpfr_set_si (y, 7, GMP_RNDN);
-  mpfr_fmod (r, x, y, GMP_RNDN);
-  MPFR_ASSERTN(mpfr_cmp_ui (r, 1) == 0);
+  mpfr_set_si (x, 8, MPFR_RNDN);
+  mpfr_set_si (y, 7, MPFR_RNDN);
+  mpfr_fmod (r, x, y, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui0 (r, 1) == 0);
   mpfr_clears (r, x, y, NULL);
 
   mpfr_inits2 (10, x, y, r, NULL);
-  mpfr_set_si (x, 3 << 26, GMP_RNDN);
-  mpfr_set_si (y, (1 << 9) - 1, GMP_RNDN);
-  mpfr_fmod (r, x, y, GMP_RNDN);
-  MPFR_ASSERTN(mpfr_cmp_ui (r, 257) == 0);
+  mpfr_set_si (x, 3 << 26, MPFR_RNDN);
+  mpfr_set_si (y, (1 << 9) - 1, MPFR_RNDN);
+  mpfr_fmod (r, x, y, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_cmp_ui0 (r, 257) == 0);
   mpfr_clears (r, x, y, NULL);
 
   mpfr_inits2 (100, x, y, r, NULL);
-  mpfr_set_d (x, 3.5, GMP_RNDN);
-  mpfr_set_str (y, "1.1", 10, GMP_RNDN);
-  mpfr_fmod (r, x, y, GMP_RNDN);
+  mpfr_set_d (x, 3.5, MPFR_RNDN);
+  mpfr_set_str (y, "1.1", 10, MPFR_RNDN);
+  mpfr_fmod (r, x, y, MPFR_RNDN);
   mpfr_set_str_binary (x, "1100110011001100110011001100110011001100110011001100110011001100110011001100110011001100110011001E-99");
-  MPFR_ASSERTN(mpfr_cmp (r, x) == 0);
+  MPFR_ASSERTN(mpfr_equal_p (r, x));
   mpfr_clears (r, x, y, NULL);
 
   mpfr_inits2 (100, x, y, r, NULL);
-  mpfr_set_si (x, 20, GMP_RNDN);
-  mpfr_set_d (y, 0.5, GMP_RNDN); /* exact */
-  mpfr_sin (y, y, GMP_RNDN);
-  mpfr_fmod(r, x, y, GMP_RNDN);
+  mpfr_set_si (x, 20, MPFR_RNDN);
+  mpfr_set_d (y, 0.5, MPFR_RNDN); /* exact */
+  mpfr_sin (y, y, MPFR_RNDN);
+  mpfr_fmod(r, x, y, MPFR_RNDN);
   mpfr_set_str_binary (x, "1010111111100110001010101111111111100000011001001001111000101000011011101110110110100110100110101001E-101");
-  MPFR_ASSERTN(mpfr_cmp (r, x) == 0);
+  MPFR_ASSERTN(mpfr_equal_p (r, x));
   mpfr_clears(r, x, y, NULL);
 }
 
