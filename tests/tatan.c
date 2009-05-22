@@ -471,6 +471,11 @@ smallvals_atan2 (void)
   mpfr_atan2 (a, y, x, MPFR_RNDN);
   MPFR_ASSERTN (mpfr_equal_p (a, y));
 
+  /* trigger underflow with rounding to nearest */
+  mpfr_set_ui (x, 4, MPFR_RNDN);
+  mpfr_atan2 (a, y, x, MPFR_RNDN);
+  MPFR_ASSERTN (mpfr_zero_p (a));
+
   mpfr_set_emin (old_emin);
 
   mpfr_clears (a, x, y, (mpfr_ptr) 0);
