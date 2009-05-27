@@ -278,19 +278,19 @@ special (void)
   inexact = mpfr_fmod (r, x, y, MPFR_RNDN);
   if (!mpfr_nan_p (r) || inexact != 0)
     test_failed (r, nan, 0, inexact, x, y, MPFR_RNDN);
- 
+
   /* fmod (+0, +1) = +0 */
   mpfr_set_ui (y, 1, MPFR_RNDN);
   inexact = mpfr_fmod (r, x, y, MPFR_RNDN);
   if (!mpfr_equal_p (r, x) || inexact != 0)
     test_failed (r, x, 0, inexact, x, y, MPFR_RNDN);
- 
+
   /* fmod (+0, -1) = +0 */
   mpfr_neg (y, y, MPFR_RNDN);
   inexact = mpfr_fmod (r, x, y, MPFR_RNDN);
   if (!mpfr_equal_p (r, x) || inexact != 0)
     test_failed (r, x, 0, inexact, x, y, MPFR_RNDN);
- 
+
   /* fmod (-0, -1) = -0 */
   mpfr_neg (x, x, MPFR_RNDN);
   inexact = mpfr_fmod (r, x, y, MPFR_RNDN);
