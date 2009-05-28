@@ -2032,8 +2032,8 @@ and @samp{P}:
 @item @samp{N}  @tab @code{mp_limb_t} array, integer conversions
 @item @samp{Z}  @tab @code{mpz_t}, integer conversions
 
-@item @samp{R}  @tab @code{mpfr_t} input, float conversions
-@item @samp{P}  @tab @code{mpfr_prec_t} input, integer conversions
+@item @samp{P}  @tab @code{mpfr_prec_t}, integer conversions
+@item @samp{R}  @tab @code{mpfr_t}, float conversions
 @end multitable
 @end quotation
 
@@ -2058,6 +2058,10 @@ specifier character @samp{conv} as @code{gmp_printf} plus @samp{b}.
 The @samp{P} type outputs the precision of an @code{mpfr_t} variable.
 It is needed because the @code{mpfr_prec_t} type does not necessarily
 correspond to an @code{unsigned int} or any fixed standard type.
+It must be used with one of the following @samp{conv} specifiers: @samp{o},
+@samp{u}, @samp{x}, or @samp{X}.
+The @samp{precision} field specifies the minimum number of digits to
+appear. The default @samp{precision} is 1.
 For example:
 @example
 mpfr_t x;
@@ -2125,12 +2129,6 @@ for @samp{a}, @samp{b}, @samp{e}, @samp{f}, and @samp{g} specifiers and
 
 If the @samp{precision} field is empty:
 @itemize
-@item  for native C types, the functions behave as the corresponding libc
-@code{printf} function,
-@item for GMP types, they behave as the corresponding @code{gmp_printf}
-function,
-@item for @code{mpfr_prec_t} type, the @samp{precision} field gives the
-minimum number of digits to appear,
 @item for @code{mpfr_t} type and @samp{g} or @samp{G} as @samp{conv}
 specifier, the functions behave as they would with a double variable, that is,
 they follow the ISO C99 specifications for @samp{g} and @samp{G},
