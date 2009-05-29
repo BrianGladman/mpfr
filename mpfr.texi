@@ -2007,10 +2007,9 @@ The format specification accepted by @code{mpfr_printf} is an extension of the
 % [flags] [width] [.[precision]] [type] [rounding] conv
 @end example
 @samp{flags}, @samp{width}, and @samp{precision} have the same meaning as for
-the standard C function @code{printf} (in particular, notice that the
-@samp{precision} is related to the number of digits displayed in the base
-chosen by @samp{conv} and not related to the internal precision of the
-@code{mpfr_t} variable).
+the standard @code{printf} (in particular, notice that the @samp{precision} is
+related to the number of digits displayed in the base chosen by @samp{conv}
+and not related to the internal precision of the @code{mpfr_t} variable).
 @code{mpfr_printf} accepts the same @samp{type} specifiers as GMP (except the
 non-standard and deprecated @samp{q}, use @samp{ll} instead), plus @samp{R}
 and @samp{P}:
@@ -2032,7 +2031,7 @@ and @samp{P}:
 @item @samp{N}  @tab @code{mp_limb_t} array, integer conversions
 @item @samp{Z}  @tab @code{mpz_t}, integer conversions
 
-@item @samp{P}  @tab @code{mpfr_prec_t}, integer conversions
+@item @samp{P}  @tab @code{mp_prec_t}, integer conversions
 @item @samp{R}  @tab @code{mpfr_t}, float conversions
 @end multitable
 @end quotation
@@ -2045,35 +2044,39 @@ mentioned in the GMP documentation:
 @ifnotinfo
 see Section ``Formatted Output Strings'' in @cite{GNU MP}.
 @end ifnotinfo
-More precisely, except for @samp{R} and @samp{P}
-(which are defined by MPFR), the @samp{type} specifiers are supported
-only if they are supported by @code{gmp_printf} in your GMP build;
-this implies that the standard specifiers, such as @samp{t}, must
-@emph{also} be supported by your C library if you want to use them.
+In particular, the @samp{type} specifiers (except @samp{R} and @samp{P}
+defined by MPFR) are supported only if they are supported by @code{gmp_printf}
+in your GMP build; this implies that the standard specifiers, such as
+@samp{t}, must @emph{also} be supported by your C library if you want to use
+them.
 
-The @samp{rounding} field is specific to @code{mpfr_t} parameter and shall not
-be used with other types. @code{mpfr_printf} accepts the same conversion
-specifier character @samp{conv} as @code{gmp_printf} plus @samp{b}.
+The @samp{rounding} field is specific to @code{mpfr_t} arguments and should
+not be used with other types.
 
-The @samp{P} type outputs the precision of an @code{mpfr_t} variable.
-It is needed because the @code{mpfr_prec_t} type does not necessarily
+With conversion specification not involving @samp{P} and @samp{R} types,
+@code{mpfr_printf} behaves exactly as @code{gmp_printf}.
+
+The @samp{P} type specifies that a following @samp{o}, @samp{u}, @samp{x}, or
+@samp{X} conversion specifier applies to a @code{mp_prec_t} argument.
+It is needed because the @code{mp_prec_t} type does not necessarily
 correspond to an @code{unsigned int} or any fixed standard type.
-It must be used with one of the following @samp{conv} specifiers: @samp{o},
-@samp{u}, @samp{x}, or @samp{X}.
 The @samp{precision} field specifies the minimum number of digits to
 appear. The default @samp{precision} is 1.
 For example:
 @example
 mpfr_t x;
-mpfr_prec_t p;
+mp_prec_t p;
 mpfr_init (x);
 @dots{}
 p = mpfr_get_prec (x);
 mpfr_printf ("variable x with %Pu bits", p);
 @end example
 
-The @samp{R} type is used for a @code{mpfr_t} output and can be followed by
-a rounding specifier denoted by one of the following characters:
+The @samp{R} type specifies that a following @samp{a}, @samp{A}, @samp{b},
+@samp{e}, @samp{E}, @samp{f}, @samp{F}, @samp{g}, @samp{G}, or @samp{n}
+conversion specifier applies to a @code{mpfr_t} argument.
+The @samp{R} type can be followed by a @samp{rounding} specifier denoted by
+one of the following characters:
 
 @quotation
 @multitable {(space)} {MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM}
@@ -2081,20 +2084,12 @@ a rounding specifier denoted by one of the following characters:
 @item @samp{D}  @tab round toward minus infinity
 @item @samp{Z}  @tab round toward zero
 @item @samp{N}  @tab round to nearest
-@item @samp{*}  @tab rounding mode (as a @code{mpfr_rnd_t}) indicated by the
-argument just before the corresponding @code{mpfr_t} variable.
+@item @samp{*}  @tab rounding mode indicated by the @code{mp_rnd_t} argument
+just before the corresponding @code{mpfr_t} variable.
 @end multitable
 @end quotation
 
-If the @samp{precision} field is not empty, the @code{mpfr_t} number is
-rounded to the given precision in the direction specified by the rounding
-mode.
-If the precision is set to a value greater than the maximum value for an
-@code{int}, it will be silently reduced down to @code{INT_MAX}.
-If the @samp{precision} field is empty (as in @code{%Rf} or %@code{%.Rf}), the
-behavior depends on the type of variable to display and the @samp{conv}
-specifier being used, see below.
-If no rounding is specified, the @code{mpfr_t} argument is rounded to nearest.
+The default rounding mode is rounding to nearest.
 The following three examples are equivalent:
 @example
 mpfr_t x;
@@ -2105,10 +2100,7 @@ mpfr_printf ("%.128RNf", x);
 mpfr_printf ("%.128R*f", MPFR_RNDN, x);
 @end example
 
-@code{mpfr_printf} also adds a new conversion specifier @samp{b} which
-displays the @code{mpfr_t} parameter in binary, the behavior is undefined with
-other parameter type.
-The @samp{conv} specifiers allowed with @code{mpfr_t} parameter are:
+The output @samp{conv} specifiers allowed with @code{mpfr_t} parameter are:
 
 @quotation
 @multitable {(space)} {MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM}
@@ -2120,6 +2112,11 @@ The @samp{conv} specifiers allowed with @code{mpfr_t} parameter are:
 @end multitable
 @end quotation
 
+The conversion specifier @samp{b} which displays the argument in binary is
+specific to @code{mpfr_t} arguments and should not be used with other types.
+Other conversion specifiers have the same meaning as for a @code{double}
+argument.
+
 In case of non-decimal output, only the significand is written in the
 specified base, the exponent is always displayed in decimal.
 Special values are always displayed as @code{nan}, @code{-inf}, and @code{inf}
@@ -2127,19 +2124,27 @@ for @samp{a}, @samp{b}, @samp{e}, @samp{f}, and @samp{g} specifiers and
 @code{NAN}, @code{-INF}, and @code{INF} for @samp{A}, @samp{E}, @samp{F}, and
 @samp{G} specifiers.
 
-If the @samp{precision} field is empty:
-@itemize
-@item for @code{mpfr_t} type and @samp{g} or @samp{G} as @samp{conv}
-specifier, the functions behave as they would with a double variable, that is,
-they follow the ISO C99 specifications for @samp{g} and @samp{G},
-@item for @code{mpfr_t} type and a @samp{conv} specifier other than @samp{g}
-and @samp{G}, the number is displayed with enough digits so that it can be
-read back exactly, assuming that the input and output variables have the same
-precision and that the input and output rounding modes are both rounding to
-nearest (as for @code{mpfr_get_str}).
-@end itemize
-In binary output, the precision is silently increased up to 2 if it equals 1
-(but this may change in the future).
+If the @samp{precision} field is not empty, the @code{mpfr_t} number is
+rounded to the given precision in the direction specified by the rounding
+mode.
+If the precision is zero with rounding to nearest mode and one of the
+following @samp{conv} specifier: @samp{a}, @samp{A}, @samp{b}, @samp{e},
+@samp{E}, tie case is rounded to even when it lies beetwen two values at the
+wanted precision which have the same exponent, otherwise, it is rounded away
+from zero.
+For instance, 85 is displayed as "8e+1" and 95 is displayed as "1e+2" with the
+format specification @code{"%.0RNe"}.
+This also applies when the @samp{g} (resp. @samp{G}) conversion specifier uses
+the @samp{e} (resp. @samp{E}) style.
+If the precision is set to a value greater than the maximum value for an
+@code{int}, it will be silently reduced down to @code{INT_MAX}.
+
+If the @samp{precision} field is empty (as in @code{%Rf} or %@code{%.Rf}) with
+@samp{conv} specifier other than @samp{g} and @samp{G}, the number is
+displayed with enough digits so that it can be read back exactly, assuming
+that the input and output variables have the same precision and that the input
+and output rounding modes are both rounding to nearest (as for
+@code{mpfr_get_str}). The default precision for @samp{g} and @samp{G} is 6.
 
 
 @subsection Functions
