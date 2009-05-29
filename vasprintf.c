@@ -1877,7 +1877,7 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
   struct printf_spec spec;
   /* flag raised when previous part of fmt need to be processed by
      gmp_vsnprintf */
-  int gmp_fmt_flag;
+  int xgmp_fmt_flag;
   /* beginning and end of the previous unprocessed part of fmt */
   const char *start, *end;
   /* pointer to arguments for gmp_vasprintf */
@@ -1888,7 +1888,7 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
 
   nbchar = 0;
   buffer_init (&buf, 4096);
-  gmp_fmt_flag = 0;
+  xgmp_fmt_flag = 0;
   va_copy (ap2, ap);
   start = fmt;
   while (*fmt)
@@ -1906,7 +1906,7 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
            character */
         {
           ++fmt;
-          gmp_fmt_flag = 1;
+          xgmp_fmt_flag = 1;
           continue;
         }
 
@@ -1991,7 +1991,7 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
           size_t nchar;
 
           p = va_arg (ap, void *);
-          FLUSH (gmp_fmt_flag, start, end, ap2, &buf);
+          FLUSH (xgmp_fmt_flag, start, end, ap2, &buf);
           va_end (ap2);
           start = fmt;
           nchar = buf.curr - buf.start;
@@ -2075,7 +2075,7 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
           mpfr_prec_t prec;
           prec = va_arg (ap, mpfr_prec_t);
 
-          FLUSH (gmp_fmt_flag, start, end, ap2, &buf);
+          FLUSH (xgmp_fmt_flag, start, end, ap2, &buf);
           va_end (ap2);
           va_copy (ap2, ap);
           start = fmt;
@@ -2108,7 +2108,7 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
 
           p = va_arg (ap, mpfr_srcptr);
 
-          FLUSH (gmp_fmt_flag, start, end, ap2, &buf);
+          FLUSH (xgmp_fmt_flag, start, end, ap2, &buf);
           va_end (ap2);
           va_copy (ap2, ap);
           start = fmt;
@@ -2137,12 +2137,12 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
         /* gmp_printf specification, step forward in the va_list */
         {
           CONSUME_VA_ARG (spec, ap);
-          gmp_fmt_flag = 1;
+          xgmp_fmt_flag = 1;
         }
     }
 
   if (start != fmt)
-    FLUSH (gmp_fmt_flag, start, fmt, ap2, &buf);
+    FLUSH (xgmp_fmt_flag, start, fmt, ap2, &buf);
 
   va_end (ap2);
   nbchar = buf.curr - buf.start;
