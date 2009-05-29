@@ -276,11 +276,11 @@ check_mixed (void)
   check_length_with_cmp (6, mpz, 24, mpz_cmp_ui (mpz, 24), Zi);
   check_vprintf ("%% a. %#.0RNg, b. %Qx%Rn c. %p",
                  mpfr, mpq, &mpfr, (void *) &i);
-  check_length_with_cmp (7, mpfr, 16, mpfr_cmp_ui (mpfr, 16), Rg);
+  check_length_with_cmp (7, mpfr, 15, mpfr_cmp_ui (mpfr, 15), Rg);
 
 #ifndef NPRINTF_T
   check_vprintf ("%% a. %RNg, b. %Qx, c. %td%tn", mpfr, mpq, p, &p);
-  check_length (8, p, 21, td);
+  check_length (8, p, 20, td);
 #endif
 
 #ifndef NPRINTF_L

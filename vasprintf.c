@@ -1906,6 +1906,7 @@ mpfr_vasprintf (char **ptr, const char *fmt, va_list ap)
            character */
         {
           ++fmt;
+          gmp_fmt_flag = 1;
           continue;
         }
 
