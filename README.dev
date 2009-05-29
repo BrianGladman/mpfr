@@ -303,6 +303,11 @@ some fonts.
 
    =====================================================================
 
+For identifiers defined in MPFR, do not use the GMP namespaces
+(gmp_..., GMP_...).
+
+   =====================================================================
+
 Quoted from <http://www.gnu.org/software/gcc/codingconventions.html>:
 
   Avoid the use of identifiers or idioms that would prevent code
