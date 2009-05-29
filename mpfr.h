@@ -201,11 +201,14 @@ typedef enum {
 # define __MPFR_DECLSPEC __GMP_DECLSPEC
 #endif
 
-/* Note: some functions need that a specific system header is included before
-   mpfr.h to be defined. If the user forgets to include the header, the mpfr
-   function prototype in the user object file is not correct. In order to
-   raise a linker error in that case, we change their internal name in the
-   GNU mpfr library (prefixed by __gmpfr instead of mpfr)*/
+/* Note: In order to be declared, some functions need a specific
+   system header to be included *before* "mpfr.h". If the user
+   forgets to include the header, the MPFR function prototype in
+   the user object file is not correct. To avoid wrong results,
+   we raise a linker error in that case by changing their internal
+   name in the library (prefixed by __gmpfr instead of mpfr). See
+   the lines of the form "#define mpfr_xxx __gmpfr_xxx" below. */
+
 #if defined (__cplusplus)
 extern "C" {
 #endif
