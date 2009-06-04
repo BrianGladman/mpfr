@@ -438,23 +438,23 @@ hexadecimal (void)
 
   /* simplest case right justified */
   check_sprintf ("   0xf.edcba987654321p+24", "%25Ra", x);
-  check_sprintf ("                  0x8p+25", "%25.0Ra", x);
+  check_sprintf ("                  0x1p+28", "%25.0Ra", x);
   check_sprintf ("                   0x0p+0", "%25.0Ra", z);
   /* sign or space, pad with leading zeros */
   check_sprintf (" 0X00F.EDCBA987654321P+24", "% 025RA", x);
-  check_sprintf (" 0X000000000000000008P+25", "% 025.0RA", x);
+  check_sprintf (" 0X000000000000000001P+28", "% 025.0RA", x);
   check_sprintf (" 0X0000000000000000000P+0", "% 025.0RA", z);
   /* sign + or -, left justified */
   check_sprintf ("+0xf.edcba987654321p+24  ", "%+-25Ra", x);
-  check_sprintf ("+0x8p+25                 ", "%+-25.0Ra", x);
+  check_sprintf ("+0x1p+28                 ", "%+-25.0Ra", x);
   check_sprintf ("+0x0p+0                  ", "%+-25.0Ra", z);
   /* decimal point, left justified, precision and rounding parameter */
   check_vsprintf ("0XF.FP+24 ", "%#-10.*R*A", 1, MPFR_RNDN, x);
-  check_vsprintf ("0X8.P+25  ", "%#-10.*R*A", 0, MPFR_RNDN, x);
+  check_vsprintf ("0X1.P+28  ", "%#-10.*R*A", 0, MPFR_RNDN, x);
   check_vsprintf ("0X0.P+0   ", "%#-10.*R*A", 0, MPFR_RNDN, z);
   /* sign or space */
   check_sprintf (" 0xf.eddp+24", "% .3RNa", x);
-  check_sprintf (" 0x8p+25",     "% .0RNa", x);
+  check_sprintf (" 0x1p+28",     "% .0RNa", x);
   /* sign + or -, decimal point, pad with leading zeros */
   check_sprintf ("+0X0F.EP+24", "%0+#11.1RZA", x);
   check_sprintf ("+0X00F.P+24", "%0+#11.0RZA", x);
@@ -479,7 +479,7 @@ hexadecimal (void)
   check_sprintf ("0XFP+0", "%.0RNA", x);
   /* tie case in round to nearest mode */
   mpfr_set_str (x, "0x0.8800000000000000p+3", 16, MPFR_RNDN);
-  check_sprintf ("0x8.p-1", "%#.0RNa", x);
+  check_sprintf ("0x9.p-1", "%#.0RNa", x);
   mpfr_set_str (x, "-0x0.9800000000000000p+3", 16, MPFR_RNDN);
   check_sprintf ("-0xap-1", "%.0RNa", x);
   /* trailing zeros in fractional part */
@@ -489,6 +489,47 @@ hexadecimal (void)
   mpfr_set_ui_2exp (x, 29, -1, MPFR_RNDN);
   mpfr_nextabove (x);
   check_sprintf ("0XFP+0", "%.0RNA", x);
+
+  /* with more than one limb */
+  mpfr_set_prec (x, 300);
+  mpfr_set_str (x, "0xf.ffffffffffffffffffffffffffffffffffffffffffffffffffff"
+                "fffffffffffffffff", 16, MPFR_RNDN);
+  check_sprintf ("0x1p+4 [300]", "%.0RNa [300]", x);
+  check_sprintf ("0xfp+0 [300]", "%.0RZa [300]", x);
+  check_sprintf ("0xfp+0 [300]", "%.0RDa [300]", x);
+  check_sprintf ("0x1p+4 [300]", "%.0RUa [300]", x);
+  check_sprintf ("0x1.0000000000000000000000000000000000000000p+4",
+                 "%.40RNa", x);
+  check_sprintf ("0xf.ffffffffffffffffffffffffffffffffffffffffp+0",
+                 "%.40RZa", x);
+  check_sprintf ("0xf.ffffffffffffffffffffffffffffffffffffffffp+0",
+                 "%.40RDa", x);
+  check_sprintf ("0x1.0000000000000000000000000000000000000000p+4",
+                 "%.40RUa", x);
+
+  mpfr_set_str (x, "0xf.7fffffffffffffffffffffffffffffffffffffffffffffffffff"
+                "ffffffffffffffffff", 16, MPFR_RNDN);
+  check_sprintf ("0XFP+0", "%.0RNA", x);
+  check_sprintf ("0XFP+0", "%.0RZA", x);
+  check_sprintf ("0XFP+0", "%.0RDA", x);
+  check_sprintf ("0X1P+4", "%.0RUA", x);
+  check_sprintf ("0XF.8P+0", "%.1RNA", x);
+  check_sprintf ("0XF.7P+0", "%.1RZA", x);
+  check_sprintf ("0XF.7P+0", "%.1RDA", x);
+  check_sprintf ("0XF.8P+0", "%.1RUA", x);
+
+  /* do not round up to the next power of the base */
+  mpfr_set_str (x, "0xf.fffffffffffffffffffffffffffffffffffffeffffffffffffff"
+                "ffffffffffffffffff", 16, MPFR_RNDN);
+  check_sprintf ("0xf.ffffffffffffffffffffffffffffffffffffff00p+0",
+                 "%.40RNa", x);
+  check_sprintf ("0xf.fffffffffffffffffffffffffffffffffffffeffp+0",
+                 "%.40RZa", x);
+  check_sprintf ("0xf.fffffffffffffffffffffffffffffffffffffeffp+0",
+                 "%.40RDa", x);
+  check_sprintf ("0xf.ffffffffffffffffffffffffffffffffffffff00p+0",
+                 "%.40RUa", x);
+
 
   mpfr_clears (x, z, (mpfr_ptr) 0);
   return 0;
@@ -535,8 +576,10 @@ binary (void)
   /* pad with leading zero */
   check_sprintf ("00001.1100101011001101p+9", "%025RDb", x);
   /* sign or space, decimal point (unused), left justified */
-  check_sprintf (" 1.1p+9    " , "%- #11.1RDb", x);
-  check_sprintf (" 1.1p+9    " , "%- #11.0RDb", x);
+  check_sprintf (" 1.1p+9    ", "%- #11.1RDb", x);
+  check_sprintf (" 1.p+9     ", "%- #11.0RDb", x);
+  check_sprintf (" 1.p+10    ", "%- #11.0RNb", x);
+  check_sprintf (" 1.p+10    ", "%- #11.0RUb", x);
 
   mpfr_mul_si (x, x, -1, MPFR_RNDD);
   mpfr_mul_si (z, z, -1, MPFR_RNDD);
@@ -545,6 +588,17 @@ binary (void)
   check_sprintf ("   -1.1p+9", "%+10.1RUb", x);
   check_sprintf ("   -0.0p+0", "%+10.1RUb", z);
 
+  /* precision 0 */
+  check_sprintf ("-1p+10", "%.0RNb", x);
+  check_sprintf ("-1p+9",  "%.0RZb", x);
+  check_sprintf ("-1p+10", "%.0RDb", x);
+  check_sprintf ("-1p+9",  "%.0RUb", x);
+  /* round to next base power */
+  check_sprintf ("-1.0p+10", "%.1RNb", x);
+  check_sprintf ("-1.0p+10", "%.1RDb", x);
+  /* do not round to next base power */
+  check_sprintf ("-1.1p+9", "%.1RUb", x);
+  check_sprintf ("-1.1p+9", "%.1RZb", x);
   /* rounding bit is zero */
   check_sprintf ("-1.11p+9", "%.2RNb", x);
   /* tie case in round to nearest mode */

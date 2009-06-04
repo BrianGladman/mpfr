@@ -765,6 +765,45 @@ struct number_parts
                              string as ip_ptr */
 };
 
+/* For a real non zero number x, what is the base exponent f when rounding x
+   with rounding mode r to r(x) = m*b^f, where m is a digit and 1 <= m < b ?
+   Return non zero value if x is rounded up to b^f, return zero otherwise */
+static int
+next_base_power_p (mpfr_srcptr x, int base, mpfr_rnd_t rnd)
+{
+  mp_prec_t nbits;
+  mp_limb_t pm;
+  mp_limb_t xm;
+
+  MPFR_ASSERTD (MPFR_IS_PURE_FP (x));
+  MPFR_ASSERTD (base == 2 || base == 16);
+
+  /* Warning: the decimal point is AFTER THE FIRST DIGIT in this output
+     representation. */
+  nbits = base == 2 ? 1 : 4;
+
+  if (rnd == MPFR_RNDZ
+      || (rnd == MPFR_RNDD && MPFR_IS_POS (x))
+      || (rnd == MPFR_RNDU && MPFR_IS_NEG (x))
+      || MPFR_PREC (x) <= nbits)
+    /* no rounding when printing x with 1 digit */
+    return 0;
+
+  xm = MPFR_MANT (x) [MPFR_LIMB_SIZE (x) - 1];
+  pm = MPFR_LIMB_MASK (BITS_PER_MP_LIMB - nbits);
+  if ((xm & ~pm) ^ ~pm)
+    /* do no round up if some of the nbits first bits are 0s. */
+    return 0;
+
+  if (rnd == MPFR_RNDN)
+    /* mask for rounding bit */
+    pm = (MPFR_LIMB_ONE << (BITS_PER_MP_LIMB - nbits - 1));
+
+  /* round up if some remaining bits are 1 */
+  /* warning: the return value must be an int */
+  return xm & pm ? 1 : 0;
+}
+
 /* Determine the different parts of the string representation of the regular
    number P when SPEC.SPEC is 'a', 'A', or 'b'.
 
@@ -801,20 +840,15 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
   np->ip_size = 1;
   base = (spec.spec == 'b') ? 2 : 16;
 
-  if (spec.spec == 'b' || spec.prec != 0)
-    /* In order to avoid ambiguity in rounding to even case, we will always
-       output at least one fractional digit in binary mode */
+  if (spec.prec != 0)
     {
       size_t nsd;
 
       /* Number of significant digits:
          - if no given precision, let mpfr_get_str determine it;
-         - if a zero precision is specified and if we are in binary mode, then
-         ask for two binary digits, one before decimal point, and one after;
          - if a non-zero precision is specified, then one digit before decimal
          point plus SPEC.PREC after it. */
-      nsd = spec.prec < 0 ? 0
-        : (spec.prec == 0 && spec.spec == 'b') ? 2 : spec.prec + np->ip_size;
+      nsd = spec.prec < 0 ? 0 : spec.prec + np->ip_size;
       str = mpfr_get_str (0, &exp, base, nsd, p, spec.rnd_mode);
       register_string (np->sl, str);
       np->ip_ptr = MPFR_IS_NEG (p) ? ++str : str;  /* skip sign if any */
@@ -835,88 +869,45 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
           --exp;
         }
     }
-  else
-    /* One hexadecimal digit is sufficient but mpfr_get_str returns at least
-       two digits when the base is a power of two.
-       So, in order to avoid double rounding, we will build our own string. */
+  else if (next_base_power_p (p, base, spec.rnd_mode))
     {
-      mp_limb_t *pm = MPFR_MANT (p);
-      mp_size_t ps;
+      str = (char *)(*__gmp_allocate_func) (2);
+      str[0] = '1';
+      str[1] = '\0';
+      np->ip_ptr = register_string (np->sl, str);
+
+      exp = MPFR_GET_EXP (p);
+    }
+  else if (base == 2)
+    {
+      str = (char *)(*__gmp_allocate_func) (2);
+      str[0] = '1';
+      str[1] = '\0';
+      np->ip_ptr = register_string (np->sl, str);
+
+      exp = MPFR_GET_EXP (p) - 1;
+    }
+  else
+    {
       int digit;
-      unsigned int shift;
-      int rnd_away;
+      mp_limb_t msl = MPFR_MANT (p)[MPFR_LIMB_SIZE (p) - 1];
+      int rnd_bit = BITS_PER_MP_LIMB - 5;
 
-      /* rnd_away:
-         1 if round away from zero,
-         0 if round to zero,
-         -1 if not decided yet. */
-      rnd_away =
-        spec.rnd_mode == MPFR_RNDD ? MPFR_IS_NEG (p) :
-        spec.rnd_mode == MPFR_RNDU ? MPFR_IS_POS (p) :
-        spec.rnd_mode == MPFR_RNDZ ? 0 : -1;
-
-      /* exponent for radix-2 with the decimal point after the first
-         hexadecimal digit */
-      MPFR_ASSERTN (MPFR_GET_EXP (p) > MPFR_EMIN_MIN + 3); /* possible
-                                                              overflow */
-      exp = MPFR_GET_EXP (p) - 4;
-
-      /* Determine the radix-16 digit by grouping the 4 first digits. Even
-         if MPFR_PREC (p) < 4, we can read 4 bits in its first limb */
-      shift = BITS_PER_MP_LIMB - 4;
-      ps = (MPFR_PREC (p) - 1) / BITS_PER_MP_LIMB;
-      digit = pm[ps] >> shift;
-
-      if (MPFR_PREC (p) > 4)
-        /* round taking into account bits outside the first 4 ones */
-        {
-          if (rnd_away == -1)
-            /* Round to nearest mode: we have to decide in that particular
-               case if we have to round away from zero or not */
-            {
-              mp_limb_t limb, rb, mask;
-
-              /* compute rounding bit */
-              mask = MPFR_LIMB_ONE << (shift - 1);
-              rb = pm[ps] & mask;
-              if (rb == 0)
-                rnd_away = 0;
-              else
-                {
-                  mask = MPFR_LIMB_MASK (shift - 1);
-                  limb = pm[ps] & mask;
-                  while ((ps > 0) && (limb == 0))
-                    limb = pm[--ps];
-                  if (limb == 0)
-                    /* tie case, round to even */
-                    rnd_away = (digit & 1) ? 1 : 0;
-                  else
-                    rnd_away = 1;
-                }
-            }
-
-          MPFR_ASSERTD (rnd_away >= 0);  /* rounding direction is defined */
-          if (rnd_away)
-            {
-              digit++;
-              if (digit > 15)
-                /* As we want only the first significant digit, we have
-                   to shift one position to the left */
-                {
-                  digit >>= 1;
-                  ++exp;  /* no possible overflow because
-                             exp == EXP(p)-3 */
-                }
-            }
-        }
-
+      /* pick up the 4 first bits */
+      digit = msl >> (rnd_bit+1);
+      if ((spec.rnd_mode == MPFR_RNDU && MPFR_IS_POS (p))
+          || (spec.rnd_mode == MPFR_RNDD && MPFR_IS_NEG (p))
+          || (spec.rnd_mode == MPFR_RNDN
+              && (msl & (MPFR_LIMB_ONE << rnd_bit))))
+        digit++;
       MPFR_ASSERTD ((0 <= digit) && (digit <= 15));
-      np->ip_size = 1;
+
       str = (char *)(*__gmp_allocate_func) (1 + np->ip_size);
       str[0] = num_to_text [digit];
       str[1] = '\0';
-
       np->ip_ptr = register_string (np->sl, str);
+
+      exp = MPFR_GET_EXP (p) - 4;
     }
 
   if (uppercase)
@@ -1052,7 +1043,7 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
        - if no given precision, then let mpfr_get_str determine it,
        - if a precision is specified, then one digit before decimal point
        plus SPEC.PREC after it.
-       We use the fact here that mpfr_get_exp allows us to ask for only one
+       We use the fact here that mpfr_get_str allows us to ask for only one
        significant digit when the base is not a power of 2. */
     nsd = (spec.prec < 0) ? 0 : spec.prec + np->ip_size;
     str = mpfr_get_str (0, &exp, 10, nsd, p, spec.rnd_mode);
