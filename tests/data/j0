@@ -1067,3 +1067,13 @@
 53 53 n 0x1F06343D0A11B5p-47 0x1031CA8324C806p-87
 # below are test cases not in Gonnet's testsuite
 53 53 n 0x1p1000 0x1DE62DD27F8FBDp-554
+# first positive zero of j0, in double precision
+53 53 n 0x4CF454BA5C6Dp-45 -0x8CDBC90F81E47p-105
+# positive zero around 100
+53 53 n 0xC77E5F2C2A12Bp-45 -0x6110D0D9E3D7Bp-104
+# positive zero around 122, with |jo(x)| ~ 0.8e-17
+53 53 n 0x1E6F372A972875p-46 0x9340ED4A83423p-108
+# positive zero around 200, with |jo(x)| ~ 0.1e-17
+53 53 n 0x1908DE75D3884Fp-45 0xAB23097A77B6Bp-111
+# worst-case from paper of John Harrison at Arith19 (table 3)
+53 53 n 0x166BD5424E5655p37 0x168B5AB3657091p-156

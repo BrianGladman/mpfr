@@ -1249,3 +1249,5 @@
 # the output value of the following entry was wrong in Gonnet's testsuite
 # (not enough precision in Maple)
 53 53 n 0x1FFFFFFFFFFFFEp971 0x9F76BC191484Bp-565
+# worst-case from paper of John Harrison at Arith19 (table 3)
+53 53 n 0x199CAA5236FEEAp23 -0x188E5E205B8D4Fp-148
