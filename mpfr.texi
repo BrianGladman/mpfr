@@ -1330,7 +1330,8 @@ m = 1 + ceil(@var{n}*log(2)/log(@var{b})),
 @tex
 $m = 1 + \lceil n {\log 2 \over \log b} \rceil$,
 @end tex
-but in some very rare cases, it might be @math{m+1}.
+but in some very rare cases, it might be @math{m+1}
+(the smallest case for bases up to 36 is when @var{n} equals 186564318007).
 
 If @var{str} is a null pointer, space for the significand is allocated using
 the current allocation function, and a pointer to the string is returned.

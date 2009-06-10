@@ -3946,6 +3946,75 @@ where
 3 - \Exp(t))
 \end{eqnarray*}
 
+\subsection{Radix Conversion}
+
+The \texttt{mpfr\_get\_str} function with size $0$ and base $b$ chooses an
+output precision of $1 + \lceil e \log(2)/\log(b) \rceil$.
+However the code uses instead $1 + \lceil b x \rceil$, where $y$ is
+an upper $76$-bit approximation of $\log(2)/\log(b)$. When do both values
+differ?
+
+Let $y$ be the $76$-bit upper approximation of $x=\log(2)/\log(b)$.
+Both values differ when there is an integer $n$ such that
+$x e\leq n < y e$, i.e., $x < n/e < y$. This means that $n/e$ is a better
+approximation of $x$ than $y$.
+Let $p/q$ be the first convergent of $x$ such that $|x-p/q| < |x-y|$,
+then necessarily $e \geq q$.
+
+Example: for $b=10$ we have
+\[ y = \frac{45490366779583341627641}{2^{77}}, \]
+with $|x-y| \approx 0.3 \cdot 2^{-23}$.
+The first convergent such that $|x-p/q| < |x-y|$ is
+$p/q=174131244785/578451474249$, and thus for $e<578451474249$ the formula
+$1 + \lceil b x \rceil$ is correct.
+In fact for $e=578451474249$ it is exact too, since $p/q < x$.
+To improve the bound we can consider semi-convergents $(p_{k-1} + a p_k)/
+(q_{k-1} + a q_k)$ with $a=1, 2, \ldots$, where $p_k/q_k = p/q$ here.
+In this example this gives the bound $e < 1074541795081$ for $a=1$.
+\begin{comment}
+doit := proc(b) local x, y, l, i, e, amax, a, f;
+   Digits:=100;
+   x:=evalf(log(2)/log(b));
+   y:=approx(x,76,2);
+   convert(x,confrac,'l');
+   for i to nops(l) do
+      e:=l[i];
+      if abs(x-e)<abs(x-y) then break fi;
+   od;
+   lprint("p/q=", e);
+   if e<x then
+      lprint("p/q smaller than x");
+      amax := (denom(l[i+1])-denom(l[i-1]))/denom(e);
+      for a to amax do
+         f := (numer(l[i-1])+a*numer(e))/(denom(l[i-1])+a*denom(e));
+         if f>x then lprint('f'=f,"is greater than x, bound is", denom(f));
+            break
+         fi
+      od
+   else
+      lprint("p/q greater than x, bound is", denom(e));
+   fi
+end:
+\end{comment}
+We get the following bounds (for powers of two there is no error):
+\begin{tabular}{cc}
+3,  1193652440098 & 21, 500866275153 \\
+5,  751072483167 &  22, 1148143737877 \\
+6,  524743920263 &  23, 2963487537029 \\
+7,  186564318007 &  24, 930741237529 \\
+9,  2387304880196 & 25, 751072483167 \\
+10, 1074541795081 & 26, 1973399062219 \\
+11, 890679595344 &  27, 1193652440098 \\
+12, 727742578896 &  28, 319475419871 \\
+13, 1553566199646 & 29, 1645653531910 \\
+14, 253019868939 &  30, 1190119072066 \\
+15, 947578699731 &  31, 2605117443408 \\
+17, 628204683310 &  33, 510502880896 \\
+18, 3140415720077 & 34, 1611724268329 \\
+19, 347220488443 &  35, 820222240621 \\
+20, 645428387961 &  36, 693983000597 \\
+\end{tabular}
+The smallest bound is $e=186564318007$ for $b=7$.
 
 \subsection{Summary}
 

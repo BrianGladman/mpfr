@@ -2200,7 +2200,10 @@ const __mpfr_struct __gmpfr_l2b[BASE_MAX-1][2] = {
 
 /***************************************************************************/
 
-/* returns ceil(e * log2(b)^((-1)^i)), or ... + 1 */
+/* returns ceil(e * log2(b)^((-1)^i)), or ... + 1.
+   For i=0, uses a 23-bit upper approximation to log(beta)/log(2).
+   For i=1, uses a 76-bit upper approximation to log(2)/log(beta).
+*/
 static mp_exp_t
 ceil_mul (mp_exp_t e, int beta, int i)
 {
