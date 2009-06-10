@@ -149,7 +149,7 @@ if test -n "$GCC"; then
 #endif
 static double get_max (void);
 int main() {
-  volatile double x = 0.5;
+  double x = 0.5;
   int i;
   for (i = 1; i <= 11; i++)
     x *= x;
