@@ -3949,8 +3949,9 @@ where
 \subsection{Radix Conversion}
 
 The \texttt{mpfr\_get\_str} function with size $0$ and base $b$ chooses an
-output precision of $1 + \lceil e \log(2)/\log(b) \rceil$.
-However the code uses instead $1 + \lceil b x \rceil$, where $y$ is
+output precision of $1 + \lceil e \log(2)/\log(b) \rceil$ for a precision
+of $e$ bits.
+However the code uses instead $1 + \lceil e x \rceil$, where $y$ is
 an upper $76$-bit approximation of $\log(2)/\log(b)$. When do both values
 differ?
 
@@ -3966,7 +3967,7 @@ Example: for $b=10$ we have
 with $|x-y| \approx 0.3 \cdot 2^{-23}$.
 The first convergent such that $|x-p/q| < |x-y|$ is
 $p/q=174131244785/578451474249$, and thus for $e<578451474249$ the formula
-$1 + \lceil b x \rceil$ is correct.
+$1 + \lceil e x \rceil$ is correct.
 In fact for $e=578451474249$ it is exact too, since $p/q < x$.
 To improve the bound we can consider semi-convergents $(p_{k-1} + a p_k)/
 (q_{k-1} + a q_k)$ with $a=1, 2, \ldots$, where $p_k/q_k = p/q$ here.
@@ -3982,39 +3983,51 @@ doit := proc(b) local x, y, l, i, e, amax, a, f;
       if abs(x-e)<abs(x-y) then break fi;
    od;
    lprint("p/q=", e);
-   if e<x then
-      lprint("p/q smaller than x");
+   if e<x then # p/q = l[i] < x < l[i+1]
+      lprint("case p/q smaller than x");
       amax := (denom(l[i+1])-denom(l[i-1]))/denom(e);
+      # p[i+1]/q[i+1] = (p[i-1]+amax*p[i])/(q[i-1]+amax*q[i])
       for a to amax do
          f := (numer(l[i-1])+a*numer(e))/(denom(l[i-1])+a*denom(e));
-         if f>x then lprint('f'=f,"is greater than x, bound is", denom(f));
-            break
+         if f>x and f<y then lprint('f'=f,">= x, bound is", denom(f));
+            RETURN(denom(f))
          fi
-      od
-   else
-      lprint("p/q greater than x, bound is", denom(e));
+      od;
+   else # l[i-1] < x <= p/q = l[i]
+      lprint("case p/q greater than x");
+      if i < 3 then ERROR("i < 3") fi;
+      amax := (denom(l[i])-denom(l[i-2]))/denom(l[i-1]);
+      # p[i]/q[i] = (p[i-2]+amax*p[i-1])/(q[i-2]+amax*q[i-1])
+      for a to amax do
+         f := (numer(l[i-2])+a*numer(l[i-1]))/(denom(l[i-2])+a*denom(l[i-1]));
+         if f>x and f<y then lprint('f'=f,">= x, bound is", denom(f));
+            RETURN(denom(f))
+         fi
+      od;
    fi
 end:
 \end{comment}
 We get the following bounds (for powers of two there is no error):
-\begin{tabular}{cc}
-3,  1193652440098 & 21, 500866275153 \\
-5,  751072483167 &  22, 1148143737877 \\
-6,  524743920263 &  23, 2963487537029 \\
-7,  186564318007 &  24, 930741237529 \\
-9,  2387304880196 & 25, 751072483167 \\
-10, 1074541795081 & 26, 1973399062219 \\
-11, 890679595344 &  27, 1193652440098 \\
-12, 727742578896 &  28, 319475419871 \\
-13, 1553566199646 & 29, 1645653531910 \\
-14, 253019868939 &  30, 1190119072066 \\
-15, 947578699731 &  31, 2605117443408 \\
-17, 628204683310 &  33, 510502880896 \\
-18, 3140415720077 & 34, 1611724268329 \\
-19, 347220488443 &  35, 820222240621 \\
-20, 645428387961 &  36, 693983000597 \\
+\begin{center}
+\begin{tabular}{cccc}
+3,  975675645481  & 21, 500866275153  & 37, 1412595553751 & 52, 4234025992181\\
+5,  751072483167  & 22, 1148143737877 & 38, 2296403499681 & 53, 1114714558973\\
+6,  880248760192  & 23, 2963487537029 & 39, 227010038198  & 54, 653230957562 \\
+7,  186564318007  & 24, 930741237529  & 40, 3574908346547 & 55, 1113846215983\\
+9,  1951351290962 & 25, 751072483167  & 41, 458909109357  & 56, 385930970803 \\
+10, 1074541795081 & 26, 1973399062219 & 42, 1385773590791 & 57, 676124411642 \\
+11, 890679595344  & 27, 1193652440098 & 43, 945885487008  & 58, 330079387370 \\
+12, 727742578896  & 28, 319475419871  & 44, 1405607880410 & 59, 276902299279 \\
+13, 1553566199646 & 29, 1645653531910 & 45, 421759749499  & 60, 2304608467893\\
+14, 253019868939  & 30, 1190119072066 & 46, 376795094250  & 61, 1364503143363\\
+15, 947578699731  & 31, 2605117443408 & 47, 1352868311988 & 62, 414481628603 \\
+17, 628204683310  & 33, 1138749817330 & 48, 1133739896162 \\
+18, 2280193268258 & 34, 1611724268329 & 49, 186564318007  \\
+19, 2290706306707 & 35, 820222240621  & 50, 842842574535  \\
+20, 645428387961  & 36, 1760497520384 & 51, 1435927298893 \\
 \end{tabular}
-The smallest bound is $e=186564318007$ for $b=7$.
+\end{center}
+The smallest bound is $e=186564318007$ for $b=7$ and $b=49$.
 
 \subsection{Summary}
 
