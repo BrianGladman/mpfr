@@ -150,6 +150,7 @@ if test -n "$GCC"; then
 static double get_max (void);
 int main() {
   double x = 0.5;
+  double y;
   int i;
   for (i = 1; i <= 11; i++)
     x *= x;
@@ -158,14 +159,14 @@ int main() {
 #ifdef MPFR_HAVE_FESETROUND
   /* Useful test for the G4 PowerPC */
   fesetround(FE_TOWARDZERO);
-  x = get_max ();
+  x = y = get_max ();
   x *= 2.0;
-  if (x != get_max ())
+  if (x != y)
     return 1;
 #endif
   return 0;
 }
-static double get_max (void) { return DBL_MAX; }
+static double get_max (void) { static volatile double d = DBL_MAX; return d; }
   ], [mpfr_cv_gcc_floatconv_bug="no"],
      [mpfr_cv_gcc_floatconv_bug="yes, use -ffloat-store"],
      [mpfr_cv_gcc_floatconv_bug="cannot test, use -ffloat-store"])
