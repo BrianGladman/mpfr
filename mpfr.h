@@ -732,8 +732,11 @@ __MPFR_DECLSPEC int    mpfr_custom_get_kind   _MPFR_PROTO ((mpfr_srcptr));
    MPFR_SIGN (_x))
 
 /* Prevent them from using as lvalues */
-#define mpfr_get_prec(_x) ((_x)->_mpfr_prec + 0)
-#define mpfr_get_exp(_x)  ((_x)->_mpfr_exp + 0)
+#define MPFR_VALUE_OF(x)  (0 ? (x) : (x))
+#define mpfr_get_prec(_x) MPFR_VALUE_OF((_x)->_mpfr_prec)
+#define mpfr_get_exp(_x)  MPFR_VALUE_OF((_x)->_mpfr_exp)
+/* Note: if need be, the MPFR_VALUE_OF can be used for other expressions
+   (of any type). Thanks to Wojtek Lerch and Tim Rentsch for the idea. */
 
 #define mpfr_round(a,b) mpfr_rint((a), (b), MPFR_RNDNA)
 #define mpfr_trunc(a,b) mpfr_rint((a), (b), MPFR_RNDZ)
