@@ -83,7 +83,6 @@ mpfr_sinh_cosh (mpfr_ptr sh, mpfr_ptr ch, mpfr_srcptr xt, mp_rnd_t rnd_mode)
     /* compute the precision of intermediary variable */
     N = MPFR_PREC (ch);
     N = MAX (N, MPFR_PREC (sh));
-    N = MAX (N, MPFR_PREC (x));
     /* the optimal number of bits : see algorithms.ps */
     N = N + MPFR_INT_CEIL_LOG2 (N) + 4;
 
