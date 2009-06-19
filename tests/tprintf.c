@@ -370,8 +370,11 @@ check_random (int nb_tests)
       /* advantage small precision */
       prec = (randlimb () % 2) ? 10 : prec_max_printf;
       prec = (int) (randlimb () % prec);
-      if (spec == 3 && mpfr_get_exp (x) > prec_max_printf)
-        /*  change style 'f' to style 'e' when number x is large */
+      if (spec == 3
+          && (mpfr_get_exp (x) > prec_max_printf
+              || mpfr_get_exp (x) < -prec_max_printf))
+        /*  change style 'f' to style 'e' when number x is very large or very
+            small*/
         --spec;
 
       *ptr++ = '%';
