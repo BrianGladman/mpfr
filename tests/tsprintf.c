@@ -375,9 +375,11 @@ decimal (void)
 
   /* limit test for the choice beetwen %f-style and %g-style */
   mpfr_set_str (x, "0.0000999", 10, MPFR_RNDN);
-  check_sprintf ("0.0001", "%.0Rg", x);
-  check_sprintf ("9e-05", "%.0RDg", x);
-  check_sprintf ("0.0001", "%.2Rg", x);
+  check_sprintf ("0.0001",   "%.0Rg", x);
+  check_sprintf ("9e-05",    "%.0RDg", x);
+  check_sprintf ("0.0001",   "%.1Rg", x);
+  check_sprintf ("0.0001",   "%.2Rg", x);
+  check_sprintf ("9.99e-05", "%.3Rg", x);
 
   /* trailing zeros */
   mpfr_set_si_2exp (x, -1, -15, MPFR_RNDN); /* x=-2^-15 */
@@ -408,6 +410,21 @@ decimal (void)
   /* Decimal point and no figure after it with '#' flag and 'G' style */
   mpfr_set_str (x, "-9.90597761233942053494e-01", 10, MPFR_RNDN);
   check_sprintf ("-1.", "%- #0.1RG", x);
+
+  /* precision zero */
+  mpfr_set_d (x, -9.5, MPFR_RNDN);
+  check_sprintf ("-10",    "%.0RDf", x);
+  check_sprintf ("-10",    "%.0Rf", x);
+  check_sprintf ("-1e+01", "%.0Re", x);
+  check_sprintf ("-1e+01", "%.0Rg", x);
+  mpfr_set_ui_2exp (x, 1, -1, MPFR_RNDN);
+  check_sprintf ("1",      "%.0Rf", x);
+  check_sprintf ("5e-01",  "%.0Re", x);
+  check_sprintf ("0.5",    "%.0Rg", x);
+  mpfr_set_ui (x, 0x1f, MPFR_RNDN);
+  check_sprintf ("0x1p+5", "%.0Ra", x);
+  mpfr_set_ui (x, 3, MPFR_RNDN);
+  check_sprintf ("1p+2",   "%.0Rb", x);
 
   mpfr_clears (x, z, (mpfr_ptr) 0);
   return 0;
