@@ -1330,8 +1330,8 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
 
       if (exp == 0
           || (spec.prec == 0
-              && ((spec.rnd_mode == GMP_RNDD && MPFR_IS_NEG (p))
-                  || (spec.rnd_mode == GMP_RNDU && MPFR_IS_POS (p)))))
+              && ((spec.rnd_mode == MPFR_RNDD && MPFR_IS_NEG (p))
+                  || (spec.rnd_mode == MPFR_RNDU && MPFR_IS_POS (p)))))
         /* rounded up to 1: one digit '1' in integral part, zeros (if any) in
            fractional part */
         {
@@ -1363,8 +1363,8 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
                 /* p is too small for the given precision,
                    output "0.0_00", or "0.0_01" */
                 {
-                  if ((spec.rnd_mode == GMP_RNDD && MPFR_IS_NEG (p))
-                      || (spec.rnd_mode == GMP_RNDU && MPFR_IS_POS (p)))
+                  if ((spec.rnd_mode == MPFR_RNDD && MPFR_IS_NEG (p))
+                      || (spec.rnd_mode == MPFR_RNDU && MPFR_IS_POS (p)))
                     /* round away from zero: the last output digit is '1' */
                     {
                       np->fp_leading_zeros = spec.prec - 1;
