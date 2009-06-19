@@ -1311,20 +1311,22 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
     {
       if (spec.prec >= 0)
         /* the number of output digits is known */
-        if (spec.prec == 0 && spec.rnd_mode == MPFR_RNDN && exp == -1)
-          {
-            mpfr_t y;
-            /* y = abs(p) */
-            MPFR_ALIAS (y, p, 1, MPFR_EXP (p));
+        {
+          if (spec.prec == 0 && spec.rnd_mode == MPFR_RNDN && exp == -1)
+            {
+              mpfr_t y;
+              /* y = abs(p) */
+              MPFR_ALIAS (y, p, 1, MPFR_EXP (p));
 
-            if (mpfr_cmp_d (y, 0.5) >= 0)
-              /* |p| > 0.5, round up to 1 */
-              exp++;
-          }
-        else
-          round_to_10_power (&exp, p,
-                             spec.prec > -exp ? spec.prec + exp : 0,
-                             spec.rnd_mode);
+              if (mpfr_cmp_d (y, 0.5) >= 0)
+                /* |p| > 0.5, round up to 1 */
+                exp++;
+            }
+          else
+            round_to_10_power (&exp, p,
+                               spec.prec > -exp ? spec.prec + exp : 0,
+                               spec.rnd_mode);
+        }
 
       if (exp == 0
           || (spec.prec == 0
@@ -1691,7 +1693,6 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
              that would be displayed with style 'e' and precision T-1. */
           int threshold;
           mp_exp_t x;
-          mpfr_t y;
 
           threshold = (spec.prec < 0) ? 6 : (spec.prec == 0) ? 1 : spec.prec;
           round_to_10_power (&x, p, threshold - 1, spec.rnd_mode);
