@@ -1108,7 +1108,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
         }
 
       if (str_len > INT_MAX)
-        /* too much digits in fractional part */
+        /* too many digits in fractional part */
         return -1;
 
       if (str_len != 0)
@@ -1218,7 +1218,7 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
         }
 
       if (str_len > INT_MAX)
-        /* too much digits in fractional part */
+        /* too many digits in fractional part */
         return -1;
 
       if (str_len != 0)
@@ -1409,7 +1409,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
                     }
 
                   if (str_len > INT_MAX)
-                    /* too much digits in fractional part */
+                    /* too many digits in fractional part */
                     return -1;
 
                   MPFR_ASSERTD (str_len > 0);
@@ -1484,7 +1484,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
                 }
 
               if (str_len > INT_MAX)
-                /* too much digits in fractional part */
+                /* too many digits in fractional part */
                 return -1;
 
               if (str_len != 0)
