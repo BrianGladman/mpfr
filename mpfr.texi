@@ -1322,17 +1322,17 @@ large enough so that re-reading the printed value with the same precision,
 assuming both output and input use rounding to nearest, will recover
 the original value of @var{op}.
 More precisely, in most cases, the chosen precision of @var{str} is
-the minimal precision depending on @var{n} and @var{b} only that
-satisfies the above property, i.e.,
+the minimal precision depending on @var{p} = PREC(@var{op}) and @var{b}
+only that satisfies the above property, i.e.,
 @ifnottex
-m = 1 + ceil(@var{n}*log(2)/log(@var{b})),
+m = 1 + ceil(@var{p}*log(2)/log(@var{b})),
 @end ifnottex
 @tex
-$m = 1 + \lceil n {\log 2 \over \log b} \rceil$,
+$m = 1 + \lceil p {\log 2 \over \log b} \rceil$,
 @end tex
-with @math{n} replaced by @math{n-1} if @var{b} is a power of 2,
+with @var{p} replaced by @var{p}@minus{}1 if @var{b} is a power of 2,
 but in some very rare cases, it might be @math{m+1}
-(the smallest case for bases up to 62 is when @var{n} equals 186564318007
+(the smallest case for bases up to 62 is when @var{p} equals 186564318007
 for bases 7 and 49).
 
 If @var{str} is a null pointer, space for the significand is allocated using
