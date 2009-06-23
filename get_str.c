@@ -2295,7 +2295,7 @@ mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd
          the first base-b digit contains only one bit, so we get
          1 + ceil((n-1)/k) = 2 + floor((n-2)/k) instead.
       */
-      m = 1 + ceil_mul (IS_POW2(b) ? MPFR_PREC(x) - 1: MPFR_PREC(x), b, 1);
+      m = 1 + ceil_mul (IS_POW2(b) ? MPFR_PREC(x) - 1 : MPFR_PREC(x), b, 1);
       if (m < 2)
         m = 2;
     }
