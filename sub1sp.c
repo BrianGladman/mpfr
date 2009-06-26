@@ -135,7 +135,7 @@ int
 mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 {
   mp_exp_t bx,cx;
-  mp_exp_unsigned_t d;
+  mpfr_uexp_t d;
   mp_prec_t p, sh, cnt;
   mp_size_t n;
   mp_limb_t *ap, *bp, *cp;
@@ -206,7 +206,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
   /* Now b > c */
   MPFR_ASSERTD(bx >= cx);
-  d = (mp_exp_unsigned_t) bx - cx;
+  d = (mpfr_uexp_t) bx - cx;
   DEBUG (printf ("New with diff=%lu\n", (unsigned long) d));
 
   if (MPFR_UNLIKELY(d <= 1))
@@ -489,7 +489,7 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     }
   else
     {
-      mp_exp_unsigned_t dm;
+      mpfr_uexp_t dm;
       mp_size_t m;
       mp_limb_t mask;
 

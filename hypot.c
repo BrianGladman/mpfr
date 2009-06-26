@@ -35,7 +35,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
   mp_prec_t Nt;   /* precision of the intermediary variable */
   mp_prec_t threshold;
   mp_exp_t Ex, sh;
-  mp_exp_unsigned_t diff_exp;
+  mpfr_uexp_t diff_exp;
 
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_ZIV_DECL (loop);
@@ -73,7 +73,7 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
   /* now |x| >= |y| */
 
   Ex = MPFR_GET_EXP (x);
-  diff_exp = (mp_exp_unsigned_t) Ex - MPFR_GET_EXP (y);
+  diff_exp = (mpfr_uexp_t) Ex - MPFR_GET_EXP (y);
 
   N = MPFR_PREC (x);   /* Precision of input variable */
   Nz = MPFR_PREC (z);   /* Precision of output variable */

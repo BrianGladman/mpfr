@@ -66,8 +66,8 @@ mpfr_get_z_exp (mpz_ptr z, mpfr_srcptr f)
   /* Test if the result is representable. Later, we could choose
      to return MPFR_EXP_MIN if it isn't, or perhaps MPFR_EXP_MAX
      to signal an error. The significand would still be meaningful. */
-  MPFR_ASSERTD ((mp_exp_unsigned_t) MPFR_GET_EXP (f) - MPFR_EXP_MIN
-                >= (mp_exp_unsigned_t) MPFR_PREC(f));
+  MPFR_ASSERTD ((mpfr_uexp_t) MPFR_GET_EXP (f) - MPFR_EXP_MIN
+                >= (mpfr_uexp_t) MPFR_PREC(f));
 
   return MPFR_GET_EXP (f) - MPFR_PREC (f);
 }

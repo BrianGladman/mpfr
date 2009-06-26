@@ -106,7 +106,7 @@ mpfr_mpn_exp (mp_limb_t *a, mp_exp_t *exp_r, int b, mp_exp_t e, size_t n)
       /* FIXME: Could f = 2*f + n * BITS_PER_MP_LIMB be used? */
       f = 2*f;
       MPFR_SADD_OVERFLOW (f, f, n * BITS_PER_MP_LIMB,
-                          mp_exp_t, mp_exp_unsigned_t,
+                          mp_exp_t, mpfr_uexp_t,
                           MPFR_EXP_MIN, MPFR_EXP_MAX,
                           goto overflow, goto overflow);
       if ((c[2*n - 1] & MPFR_LIMB_HIGHBIT) == 0)

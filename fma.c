@@ -208,11 +208,11 @@ mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
           pzs = MAX (MPFR_PREC (z), MPFR_PREC (s) + 1);
           if (diffexp <= pzs)
             {
-              mp_exp_unsigned_t uscale;
+              mpfr_uexp_t uscale;
               mpfr_t scaled_v;
               MPFR_BLOCK_DECL (flags);
 
-              uscale = (mp_exp_unsigned_t) pzs - diffexp + 1;
+              uscale = (mpfr_uexp_t) pzs - diffexp + 1;
               MPFR_ASSERTN (uscale > 0);
               MPFR_ASSERTN (uscale <= ULONG_MAX);
               scale = uscale;

@@ -1131,9 +1131,9 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
      We assume that |EXP| < 10^INT_MAX. */
   np->exp_size = 3;
   {
-    mp_exp_unsigned_t x;
+    mpfr_uexp_t x;
 
-    x = SAFE_ABS (mp_exp_unsigned_t, exp);
+    x = SAFE_ABS (mpfr_uexp_t, exp);
     while (x > 9)
       {
         np->exp_size++;
@@ -1248,9 +1248,9 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
      We assume that |EXP| < 10^INT_MAX. */
   np->exp_size = 3;
   {
-    mp_exp_unsigned_t x;
+    mpfr_uexp_t x;
 
-    x = SAFE_ABS (mp_exp_unsigned_t, exp);
+    x = SAFE_ABS (mpfr_uexp_t, exp);
     while (x > 9)
       {
         np->exp_size++;

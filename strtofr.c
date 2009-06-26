@@ -389,7 +389,7 @@ parse_string (mpfr_t x, struct parsed_string *pstr,
         str = endptr[0];
       MPFR_ASSERTN (read_exp == (long) read_exp);
       MPFR_SADD_OVERFLOW (sum, read_exp, pstr->exp_base,
-                          mp_exp_t, mp_exp_unsigned_t,
+                          mp_exp_t, mpfr_uexp_t,
                           MPFR_EXP_MIN, MPFR_EXP_MAX,
                           res = 2, res = 3);
       /* Since exp_base was positive, read_exp + exp_base can't
@@ -557,7 +557,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
              with overflow checking
              and check that we can add/substract 2 to exp without overflow */
           MPFR_SADD_OVERFLOW (tmp, pstr->exp_base, -(mp_exp_t) pstr_size,
-                              mp_exp_t, mp_exp_unsigned_t,
+                              mp_exp_t, mpfr_uexp_t,
                               MPFR_EXP_MIN, MPFR_EXP_MAX,
                               goto overflow, goto underflow);
           /* On some FreeBsd/Alpha, LONG_MIN/1 produces an exception
@@ -568,11 +568,11 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
             goto underflow;
           tmp *= pow2;
           MPFR_SADD_OVERFLOW (tmp, tmp, pstr->exp_bin,
-                              mp_exp_t, mp_exp_unsigned_t,
+                              mp_exp_t, mpfr_uexp_t,
                               MPFR_EXP_MIN, MPFR_EXP_MAX,
                               goto overflow, goto underflow);
           MPFR_SADD_OVERFLOW (exp, exp, tmp,
-                              mp_exp_t, mp_exp_unsigned_t,
+                              mp_exp_t, mpfr_uexp_t,
                               MPFR_EXP_MIN+2, MPFR_EXP_MAX-2,
                               goto overflow, goto underflow);
           result = y;
@@ -614,11 +614,11 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
           /* exp += exp_z + ysize_bits with overflow checking
              and check that we can add/substract 2 to exp without overflow */
           MPFR_SADD_OVERFLOW (exp_z, exp_z, ysize_bits,
-                              mp_exp_t, mp_exp_unsigned_t,
+                              mp_exp_t, mpfr_uexp_t,
                               MPFR_EXP_MIN, MPFR_EXP_MAX,
                               goto overflow, goto underflow);
           MPFR_SADD_OVERFLOW (exp, exp, exp_z,
-                              mp_exp_t, mp_exp_unsigned_t,
+                              mp_exp_t, mpfr_uexp_t,
                               MPFR_EXP_MIN+2, MPFR_EXP_MAX-2,
                               goto overflow, goto underflow);
 
@@ -651,7 +651,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
 
           /* pstr_size - pstr->exp_base can overflow */
           MPFR_SADD_OVERFLOW (exp_z, (mp_exp_t) pstr_size, -pstr->exp_base,
-                              mp_exp_t, mp_exp_unsigned_t,
+                              mp_exp_t, mpfr_uexp_t,
                               MPFR_EXP_MIN, MPFR_EXP_MAX,
                               goto underflow, goto overflow);
 
@@ -672,11 +672,11 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
           /* exp -= exp_z + ysize_bits with overflow checking
              and check that we can add/substract 2 to exp without overflow */
           MPFR_SADD_OVERFLOW (exp_z, exp_z, ysize_bits,
-                              mp_exp_t, mp_exp_unsigned_t,
+                              mp_exp_t, mpfr_uexp_t,
                               MPFR_EXP_MIN, MPFR_EXP_MAX,
                               goto underflow, goto overflow);
           MPFR_SADD_OVERFLOW (exp, exp, -exp_z,
-                              mp_exp_t, mp_exp_unsigned_t,
+                              mp_exp_t, mpfr_uexp_t,
                               MPFR_EXP_MIN+2, MPFR_EXP_MAX-2,
                               goto overflow, goto underflow);
           err += 2;
@@ -749,7 +749,7 @@ parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
 
   /* DO NOT USE MPFR_SET_EXP. The exp may be out of range! */
   MPFR_SADD_OVERFLOW (exp, exp, ysize_bits,
-                      mp_exp_t, mp_exp_unsigned_t,
+                      mp_exp_t, mpfr_uexp_t,
                       MPFR_EXP_MIN, MPFR_EXP_MAX,
                       goto overflow, goto underflow);
   MPFR_EXP (x) = exp;

@@ -32,7 +32,7 @@ int
 mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 {
   int sign;
-  mp_exp_unsigned_t diff_exp;
+  mpfr_uexp_t diff_exp;
   mp_prec_t cancel, cancel1;
   mp_size_t cancel2, an, bn, cn, cn0;
   mp_limb_t *ap, *bp, *cp;
@@ -141,7 +141,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
         }
     }
 
-  diff_exp = (mp_exp_unsigned_t) MPFR_GET_EXP (b) - MPFR_GET_EXP (c);
+  diff_exp = (mpfr_uexp_t) MPFR_GET_EXP (b) - MPFR_GET_EXP (c);
 
   /* reserve a space to store b aligned with the result, i.e. shifted by
      (-cancel) % BITS_PER_MP_LIMB to the right */

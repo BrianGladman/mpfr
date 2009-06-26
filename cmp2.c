@@ -38,7 +38,7 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mp_prec_t *cancel)
 {
   mp_limb_t *bp, *cp, bb, cc = 0, lastc = 0, dif, high_dif = 0;
   mp_size_t bn, cn;
-  mp_exp_unsigned_t diff_exp;
+  mpfr_uexp_t diff_exp;
   mp_prec_t res = 0;
   int sign;
 
@@ -55,7 +55,7 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mp_prec_t *cancel)
   if (MPFR_GET_EXP (b) >= MPFR_GET_EXP (c))
     {
       sign = 1;
-      diff_exp = (mp_exp_unsigned_t) MPFR_GET_EXP (b) - MPFR_GET_EXP (c);
+      diff_exp = (mpfr_uexp_t) MPFR_GET_EXP (b) - MPFR_GET_EXP (c);
 
       bp = MPFR_MANT(b);
       cp = MPFR_MANT(c);
@@ -119,7 +119,7 @@ mpfr_cmp2 (mpfr_srcptr b, mpfr_srcptr c, mp_prec_t *cancel)
   else /* MPFR_EXP(b) < MPFR_EXP(c) */
     {
       sign = -1;
-      diff_exp = (mp_exp_unsigned_t) MPFR_GET_EXP (c) - MPFR_GET_EXP (b);
+      diff_exp = (mpfr_uexp_t) MPFR_GET_EXP (c) - MPFR_GET_EXP (b);
 
       bp = MPFR_MANT(c);
       cp = MPFR_MANT(b);

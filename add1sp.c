@@ -86,7 +86,7 @@ int mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 int
 mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 {
-  mp_exp_unsigned_t d;
+  mpfr_uexp_t d;
   mp_prec_t p;
   unsigned int sh;
   mp_size_t n;
@@ -208,7 +208,7 @@ mpfr_add1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
       /* Shift c in temporary allocated place */
       {
-        mp_exp_unsigned_t dm;
+        mpfr_uexp_t dm;
         mp_size_t m;
 
         dm = d % BITS_PER_MP_LIMB;

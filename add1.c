@@ -32,7 +32,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   mp_size_t an, bn, cn;
   mp_exp_t difw, exp;
   int sh, rb, fb, inex;
-  mp_exp_unsigned_t diff_exp;
+  mpfr_uexp_t diff_exp;
   MPFR_TMP_DECL(marker);
 
   MPFR_ASSERTD(MPFR_IS_PURE_FP(b) && MPFR_IS_PURE_FP(c));
@@ -71,7 +71,7 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   MPFR_SET_SAME_SIGN(a, b);
   MPFR_UPDATE2_RND_MODE(rnd_mode, MPFR_SIGN(b));
   /* now rnd_mode is either MPFR_RNDN, MPFR_RNDZ or MPFR_RNDA */
-  diff_exp = (mp_exp_unsigned_t) exp - MPFR_GET_EXP(c);
+  diff_exp = (mpfr_uexp_t) exp - MPFR_GET_EXP(c);
 
   /*
    * 1. Compute the significant part A', the non-significant bits of A
