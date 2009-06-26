@@ -40,8 +40,6 @@ mpfr_random2 (mpfr_ptr x, mp_size_t size, mp_exp_t exp,
   mp_limb_t elimb, ran, acc;
   int ran_nbits, bit_pos, nb;
 
-  MPFR_CLEAR_FLAGS (x);
-
   if (MPFR_UNLIKELY(size == 0))
     {
       MPFR_SET_ZERO (x);

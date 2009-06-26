@@ -28,7 +28,6 @@ mpfr_nexttozero (mpfr_ptr x)
 {
   if (MPFR_UNLIKELY(MPFR_IS_INF(x)))
     {
-      MPFR_CLEAR_FLAGS(x);
       mpfr_setmax (x, __gmpfr_emax);
       return;
     }

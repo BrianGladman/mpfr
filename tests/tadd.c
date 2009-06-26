@@ -50,7 +50,6 @@ test_add (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
     res = mpfr_add (a, b, c, rnd_mode);
   else
     {
-      MPFR_CLEAR_FLAGS(a); /* clear flags */
       if (MPFR_GET_EXP(b) < MPFR_GET_EXP(c))
         res = mpfr_add1(a, c, b, rnd_mode);
       else

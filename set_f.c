@@ -35,7 +35,6 @@ mpfr_set_f (mpfr_ptr y, mpf_srcptr x, mp_rnd_t rnd_mode)
 
   if (sx == 0) /* x is zero */
     {
-      MPFR_CLEAR_FLAGS (y);
       MPFR_SET_ZERO(y);
       MPFR_SET_POS(y);
       return 0; /* 0 is exact */
@@ -43,8 +42,6 @@ mpfr_set_f (mpfr_ptr y, mpf_srcptr x, mp_rnd_t rnd_mode)
 
   if (SIZ(x) * MPFR_FROM_SIGN_TO_INT(MPFR_SIGN(y)) < 0)
     MPFR_CHANGE_SIGN (y);
-
-  MPFR_CLEAR_FLAGS (y);
 
   sy = 1 + (MPFR_PREC(y) - 1) / BITS_PER_MP_LIMB;
   my = MPFR_MANT(y);

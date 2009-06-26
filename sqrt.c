@@ -80,7 +80,6 @@ mpfr_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
       MPFR_SET_NAN(r);
       MPFR_RET_NAN;
     }
-  MPFR_CLEAR_FLAGS(r);
   MPFR_SET_POS(r);
 
   rsize = MPFR_LIMB_SIZE(r); /* number of limbs of r */

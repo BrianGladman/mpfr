@@ -466,7 +466,6 @@ mpfr_rec_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
       MPFR_RET_NAN;
     }
 
-  MPFR_CLEAR_FLAGS(r);
   MPFR_SET_POS(r);
 
   rp = MPFR_PREC(r); /* output precision */

@@ -75,7 +75,6 @@ mpfr_sub (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
           return mpfr_set (a, b, rnd_mode);
         }
     }
-  MPFR_CLEAR_FLAGS (a);
   MPFR_ASSERTD (MPFR_IS_PURE_FP (b) && MPFR_IS_PURE_FP (c));
 
   if (MPFR_LIKELY (MPFR_SIGN (b) == MPFR_SIGN (c)))

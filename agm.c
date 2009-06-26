@@ -74,7 +74,6 @@ mpfr_agm (mpfr_ptr r, mpfr_srcptr op2, mpfr_srcptr op1, mp_rnd_t rnd_mode)
           MPFR_RET (0); /* exact */
         }
     }
-  MPFR_CLEAR_FLAGS (r);
 
   /* If a or b is negative (excluding -Infinity), the result is NaN */
   if (MPFR_UNLIKELY(MPFR_IS_NEG(op1) || MPFR_IS_NEG(op2)))

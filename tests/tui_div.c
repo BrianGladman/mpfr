@@ -110,7 +110,6 @@ check_nan (void)
   mpfr_init2 (q, 100L);
 
   /* 1/+inf == 0 */
-  MPFR_CLEAR_FLAGS (d);
   MPFR_SET_INF (d);
   MPFR_SET_POS (d);
   MPFR_ASSERTN (mpfr_ui_div (q, 1L, d, MPFR_RNDZ) == 0); /* exact */
@@ -118,7 +117,6 @@ check_nan (void)
   MPFR_ASSERTN (mpfr_sgn (q) == 0);
 
   /* 1/-inf == -0 */
-  MPFR_CLEAR_FLAGS (d);
   MPFR_SET_INF (d);
   MPFR_SET_NEG (d);
   MPFR_ASSERTN (mpfr_ui_div (q, 1L, d, MPFR_RNDZ) == 0); /* exact */

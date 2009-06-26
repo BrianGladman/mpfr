@@ -48,8 +48,6 @@ mpfr_urandomb (mpfr_ptr rop, gmp_randstate_t rstate)
   mp_exp_t exp;
   int cnt;
 
-  MPFR_CLEAR_FLAGS (rop);
-
   rp = MPFR_MANT (rop);
   nbits = MPFR_PREC (rop);
   nlimbs = MPFR_LIMB_SIZE (rop);

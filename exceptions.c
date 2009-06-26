@@ -317,7 +317,6 @@ mpfr_overflow (mpfr_ptr x, mp_rnd_t rnd_mode, int sign)
   int inex;
 
   MPFR_ASSERT_SIGN(sign);
-  MPFR_CLEAR_FLAGS(x);
   if (MPFR_IS_LIKE_RNDZ(rnd_mode, sign < 0))
     {
       mpfr_setmax (x, __gmpfr_emax);

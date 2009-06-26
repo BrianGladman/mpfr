@@ -51,7 +51,6 @@ mpfr_sqr (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
         ( MPFR_ASSERTD(MPFR_IS_ZERO(b)), MPFR_SET_ZERO(a) );
       MPFR_RET(0);
     }
-  MPFR_CLEAR_FLAGS(a);
   ax = 2 * MPFR_GET_EXP (b);
   bq = MPFR_PREC(b);
 

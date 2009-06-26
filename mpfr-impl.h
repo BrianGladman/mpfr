@@ -648,8 +648,6 @@ typedef intmax_t mpfr_eexp_t;
 # define MPFR_EXP_NAN  (MPFR_EXP_MIN+2)
 # define MPFR_EXP_INF  (MPFR_EXP_MIN+3)
 
-#define MPFR_CLEAR_FLAGS(x)
-
 #define MPFR_IS_NAN(x)   (MPFR_EXP(x) == MPFR_EXP_NAN)
 #define MPFR_SET_NAN(x)  (MPFR_EXP(x) =  MPFR_EXP_NAN)
 #define MPFR_IS_INF(x)   (MPFR_EXP(x) == MPFR_EXP_INF)

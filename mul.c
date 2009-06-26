@@ -89,7 +89,6 @@ mpfr_mul3 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
           MPFR_RET(0); /* 0 * 0 is exact */
         }
     }
-  MPFR_CLEAR_FLAGS(a);
   sign_product = MPFR_MULT_SIGN( MPFR_SIGN(b) , MPFR_SIGN(c) );
 
   ax = MPFR_GET_EXP (b) + MPFR_GET_EXP (c);
@@ -262,7 +261,6 @@ mpfr_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
           MPFR_RET (0);
         }
     }
-  MPFR_CLEAR_FLAGS (a);
   sign = MPFR_MULT_SIGN (MPFR_SIGN (b), MPFR_SIGN (c));
 
   ax = MPFR_GET_EXP (b) + MPFR_GET_EXP (c);

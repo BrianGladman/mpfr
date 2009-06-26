@@ -149,8 +149,6 @@ mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
   mp_limb_t tmpmant[MPFR_LIMBS_PER_DOUBLE];
   MPFR_SAVE_EXPO_DECL (expo);
 
-  MPFR_CLEAR_FLAGS(r);
-
   if (MPFR_UNLIKELY(DOUBLE_ISNAN(d)))
     {
       MPFR_SET_NAN(r);

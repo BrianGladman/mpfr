@@ -101,8 +101,6 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
     MPFR_SAVE_EXPO_FREE (expo);
   }
 
-  MPFR_CLEAR_FLAGS (y);
-
   expx  = MPFR_GET_EXP (x);
   precy = MPFR_PREC (y);
 

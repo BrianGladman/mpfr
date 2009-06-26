@@ -46,7 +46,6 @@ mpfr_frac (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
     }
   else if (MPFR_UNLIKELY(MPFR_IS_INF(u) || mpfr_integer_p (u)))
     {
-      MPFR_CLEAR_FLAGS(r);
       MPFR_SET_SAME_SIGN(r, u);
       MPFR_SET_ZERO(r);
       MPFR_RET(0);  /* zero is exact */
@@ -97,7 +96,6 @@ mpfr_frac (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
   /* t has enough precision to contain the fractional part of u */
   /* If we use a temporary variable, we take the non-significant bits
      of u into account, because of the mpn_lshift below. */
-  MPFR_CLEAR_FLAGS(t);
   MPFR_SET_SAME_SIGN(t, u);
   MPFR_SET_EXP (t, re);
 

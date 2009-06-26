@@ -66,7 +66,6 @@ mpfr_set_ui_2exp (mpfr_ptr x, unsigned long i, mp_exp_t e, mp_rnd_t rnd_mode)
           xp[xn] = MPFR_LIMB_HIGHBIT;
         }
 
-      MPFR_CLEAR_FLAGS (x);
       MPFR_EXP (x) = e;
       return mpfr_check_range (x, inex, rnd_mode);
     }

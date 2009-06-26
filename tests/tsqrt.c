@@ -464,7 +464,6 @@ check_nan (void)
   mpfr_init2 (got, 100L);
 
   /* sqrt(NaN) == NaN */
-  MPFR_CLEAR_FLAGS (x);
   MPFR_SET_NAN (x);
   MPFR_ASSERTN (test_sqrt (got, x, MPFR_RNDZ) == 0); /* exact */
   MPFR_ASSERTN (mpfr_nan_p (got));
@@ -475,14 +474,12 @@ check_nan (void)
   MPFR_ASSERTN (mpfr_nan_p (got));
 
   /* sqrt(+inf) == +inf */
-  MPFR_CLEAR_FLAGS (x);
   MPFR_SET_INF (x);
   MPFR_SET_POS (x);
   MPFR_ASSERTN (test_sqrt (got, x, MPFR_RNDZ) == 0); /* exact */
   MPFR_ASSERTN (mpfr_inf_p (got));
 
   /* sqrt(-inf) == NaN */
-  MPFR_CLEAR_FLAGS (x);
   MPFR_SET_INF (x);
   MPFR_SET_NEG (x);
   MPFR_ASSERTN (test_sqrt (got, x, MPFR_RNDZ) == 0); /* exact */

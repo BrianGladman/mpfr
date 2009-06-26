@@ -650,7 +650,6 @@ check_nan (void)
   MPFR_ASSERTN (mpfr_nan_p (q));
 
   /* +inf/1 == +inf */
-  MPFR_CLEAR_FLAGS (a);
   MPFR_SET_INF (a);
   MPFR_SET_POS (a);
   mpfr_set_ui (d, 1L, MPFR_RNDN);
@@ -660,7 +659,6 @@ check_nan (void)
 
   /* 1/+inf == 0 */
   mpfr_set_ui (a, 1L, MPFR_RNDN);
-  MPFR_CLEAR_FLAGS (d);
   MPFR_SET_INF (d);
   MPFR_SET_POS (d);
   MPFR_ASSERTN (test_div (q, a, d, MPFR_RNDZ) == 0); /* exact */
@@ -674,10 +672,8 @@ check_nan (void)
   MPFR_ASSERTN (mpfr_nan_p (q));
 
   /* +inf/+inf == nan */
-  MPFR_CLEAR_FLAGS (a);
   MPFR_SET_INF (a);
   MPFR_SET_POS (a);
-  MPFR_CLEAR_FLAGS (d);
   MPFR_SET_INF (d);
   MPFR_SET_POS (d);
   MPFR_ASSERTN (test_div (q, a, d, MPFR_RNDZ) == 0); /* exact */

@@ -61,7 +61,6 @@ mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
       else /* y is necessarily 0 */
         return mpfr_abs (z, x, rnd_mode);
     }
-  MPFR_CLEAR_FLAGS(z);
 
   if (mpfr_cmpabs (x, y) < 0)
     {
