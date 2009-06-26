@@ -29,12 +29,12 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    or underflow, and uses the precision of y as working precision (warning,
    y and x might be the same variable). */
 static int
-mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd, int cr)
+mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mpfr_rnd_t rnd, int cr)
 {
   mpfr_t res;
   mp_prec_t prec, err;
   int inexact;
-  mp_rnd_t rnd1, rnd2;
+  mpfr_rnd_t rnd1, rnd2;
   mpz_t absz;
   mp_size_t size_z;
   MPFR_ZIV_DECL (loop);
@@ -161,7 +161,7 @@ mpfr_pow_pos_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd, int cr)
  */
 
 int
-mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
+mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mpfr_rnd_t rnd)
 {
   int   inexact;
   mpz_t tmp;
@@ -261,7 +261,7 @@ mpfr_pow_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t rnd)
       /* Declaration of the intermediary variable */
       mpfr_t t;
       mp_prec_t Nt;   /* Precision of the intermediary variable */
-      mp_rnd_t rnd1;
+      mpfr_rnd_t rnd1;
       mp_size_t size_z;
       MPFR_ZIV_DECL (loop);
 

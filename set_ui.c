@@ -24,7 +24,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #undef mpfr_set_ui
 int
-mpfr_set_ui (mpfr_ptr x, unsigned long i, mp_rnd_t rnd_mode)
+mpfr_set_ui (mpfr_ptr x, unsigned long i, mpfr_rnd_t rnd_mode)
 {
   return mpfr_set_ui_2exp (x, i, 0, rnd_mode);
 }

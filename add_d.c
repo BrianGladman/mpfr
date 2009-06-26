@@ -24,7 +24,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 int
-mpfr_add_d (mpfr_ptr a, mpfr_srcptr b, double c, mp_rnd_t rnd_mode)
+mpfr_add_d (mpfr_ptr a, mpfr_srcptr b, double c, mpfr_rnd_t rnd_mode)
 {
   int inexact;
   mpfr_t d;

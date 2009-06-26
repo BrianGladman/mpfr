@@ -36,7 +36,7 @@ check_is_sorted (unsigned long n, mpfr_srcptr *perm)
 }
 
 static int
-sum_tab (mpfr_ptr ret, mpfr_t *tab, unsigned long n, mp_rnd_t rnd)
+sum_tab (mpfr_ptr ret, mpfr_t *tab, unsigned long n, mpfr_rnd_t rnd)
 {
   mpfr_ptr *tabtmp;
   unsigned long i;
@@ -159,8 +159,8 @@ test_sum (mp_prec_t f, unsigned long n)
   algo_exact (real_non_rounded, tab, n, f);
   for (rnd_mode = 0; rnd_mode < MPFR_RND_MAX; rnd_mode++)
     {
-      sum_tab (sum, tab, n, (mp_rnd_t) rnd_mode);
-      mpfr_set (real_sum, real_non_rounded, (mp_rnd_t) rnd_mode);
+      sum_tab (sum, tab, n, (mpfr_rnd_t) rnd_mode);
+      mpfr_set (real_sum, real_non_rounded, (mpfr_rnd_t) rnd_mode);
       if (mpfr_cmp (real_sum, sum) != 0)
         {
           printf ("mpfr_sum incorrect.\n");
@@ -179,8 +179,8 @@ test_sum (mp_prec_t f, unsigned long n)
   algo_exact (real_non_rounded, tab, n, f);
   for (rnd_mode = 0; rnd_mode < MPFR_RND_MAX; rnd_mode++)
     {
-      sum_tab (sum, tab, n, (mp_rnd_t) rnd_mode);
-      mpfr_set (real_sum, real_non_rounded, (mp_rnd_t) rnd_mode);
+      sum_tab (sum, tab, n, (mpfr_rnd_t) rnd_mode);
+      mpfr_set (real_sum, real_non_rounded, (mpfr_rnd_t) rnd_mode);
       if (mpfr_cmp (real_sum, sum) != 0)
         {
           printf ("mpfr_sum incorrect.\n");

@@ -48,7 +48,7 @@ main (int argc, char *argv[])
     {
       mpfr_set_prec (x, atoi (argv[2]));
       mpfr_zeta_ui (x, atoi (argv[1]),
-                    argc > 3 ? (mp_rnd_t) atoi (argv[3]) : MPFR_RNDN);
+                    argc > 3 ? (mpfr_rnd_t) atoi (argv[3]) : MPFR_RNDN);
       mpfr_out_str (stdout, 10, 0, x, MPFR_RNDN);
       printf ("\n");
       goto clear_and_exit;
@@ -81,13 +81,13 @@ main (int argc, char *argv[])
             if (mpfr_can_round (y, yprec, MPFR_RNDN, MPFR_RNDZ, prec
                                 + (rnd == MPFR_RNDN)))
               {
-                mpfr_set (t, y, (mp_rnd_t) rnd);
-                inexact = mpfr_zeta_ui (z, n, (mp_rnd_t) rnd);
+                mpfr_set (t, y, (mpfr_rnd_t) rnd);
+                inexact = mpfr_zeta_ui (z, n, (mpfr_rnd_t) rnd);
                 if (mpfr_cmp (t, z))
                   {
                     printf ("results differ for n=%lu", n);
                     printf (" prec=%u rnd_mode=%s\n", prec,
-                            mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                            mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                     printf ("   got      ");
                     mpfr_dump (z);
                     printf ("   expected ");

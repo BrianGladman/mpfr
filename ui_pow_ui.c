@@ -24,7 +24,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 int
 mpfr_ui_pow_ui (mpfr_ptr x, unsigned long int y, unsigned long int n,
-                mp_rnd_t rnd)
+                mpfr_rnd_t rnd)
 {
   mp_exp_t err;
   unsigned long m;

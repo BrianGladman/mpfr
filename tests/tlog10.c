@@ -27,7 +27,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #ifdef CHECK_EXTERNAL
 static int
-test_log10 (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
+test_log10 (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode)
 {
   int res;
   int ok = rnd_mode == MPFR_RNDN && mpfr_number_p (b) && mpfr_get_prec (a)>=53;

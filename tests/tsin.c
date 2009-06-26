@@ -26,7 +26,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #ifdef CHECK_EXTERNAL
 static int
-test_sin (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
+test_sin (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode)
 {
   int res;
   int ok = rnd_mode == MPFR_RNDN && mpfr_number_p (b) && mpfr_get_prec (a)>=53;
@@ -48,7 +48,7 @@ test_sin (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
 #endif
 
 static void
-check53 (const char *xs, const char *sin_xs, mp_rnd_t rnd_mode)
+check53 (const char *xs, const char *sin_xs, mpfr_rnd_t rnd_mode)
 {
   mpfr_t xx, s;
 
@@ -70,7 +70,7 @@ check53 (const char *xs, const char *sin_xs, mp_rnd_t rnd_mode)
 }
 
 static void
-check53b (const char *xs, const char *sin_xs, mp_rnd_t rnd_mode)
+check53b (const char *xs, const char *sin_xs, mpfr_rnd_t rnd_mode)
 {
   mpfr_t xx, s;
 

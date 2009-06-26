@@ -103,7 +103,7 @@ test_macros (void)
   mpfr_inits (x[0], x[1], x[2], (mpfr_ptr) 0);
   p = x[0];
   r = 0;
-  mpfr_set_ui (p++, 0, (mp_rnd_t) r++);
+  mpfr_set_ui (p++, 0, (mpfr_rnd_t) r++);
   if (p != x[1] || r != 1)
     {
       printf ("Error in mpfr_set_ui macro: p - x[0] = %d (expecting 1), "
@@ -112,7 +112,7 @@ test_macros (void)
     }
   p = x[0];
   r = 0;
-  mpfr_set_si (p++, 0, (mp_rnd_t) r++);
+  mpfr_set_si (p++, 0, (mpfr_rnd_t) r++);
   if (p != x[1] || r != 1)
     {
       printf ("Error in mpfr_set_si macro: p - x[0] = %d (expecting 1), "
@@ -230,21 +230,21 @@ main (int argc, char *argv[])
 
   for (r = 0 ; r < MPFR_RND_MAX ; r++)
     {
-      mpfr_set_si (x, -1, (mp_rnd_t) r);
-      mpfr_set_ui (x, 0, (mp_rnd_t) r);
-      if (MPFR_IS_NEG (x) || mpfr_get_ui (x, (mp_rnd_t) r) != 0)
+      mpfr_set_si (x, -1, (mpfr_rnd_t) r);
+      mpfr_set_ui (x, 0, (mpfr_rnd_t) r);
+      if (MPFR_IS_NEG (x) || mpfr_get_ui (x, (mpfr_rnd_t) r) != 0)
         {
           printf ("mpfr_set_ui (x, 0) gives -0 for %s\n",
-                  mpfr_print_rnd_mode ((mp_rnd_t) r));
+                  mpfr_print_rnd_mode ((mpfr_rnd_t) r));
           exit (1);
         }
 
-      mpfr_set_si (x, -1, (mp_rnd_t) r);
-      mpfr_set_si (x, 0, (mp_rnd_t) r);
-      if (MPFR_IS_NEG (x) || mpfr_get_si (x, (mp_rnd_t) r) != 0)
+      mpfr_set_si (x, -1, (mpfr_rnd_t) r);
+      mpfr_set_si (x, 0, (mpfr_rnd_t) r);
+      if (MPFR_IS_NEG (x) || mpfr_get_si (x, (mpfr_rnd_t) r) != 0)
         {
           printf ("mpfr_set_si (x, 0) gives -0 for %s\n",
-                  mpfr_print_rnd_mode ((mp_rnd_t) r));
+                  mpfr_print_rnd_mode ((mpfr_rnd_t) r));
           exit (1);
         }
     }

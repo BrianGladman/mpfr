@@ -25,7 +25,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* set f to the integer z */
 int
-mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mp_rnd_t rnd_mode)
+mpfr_set_z (mpfr_ptr f, mpz_srcptr z, mpfr_rnd_t rnd_mode)
 {
   mp_size_t fn, zn, dif;
   int k, sign_z, inex;

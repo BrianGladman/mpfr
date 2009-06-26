@@ -184,7 +184,7 @@ mpfr_atan_aux (mpfr_ptr y, mpz_ptr p, long r, int m, mpz_t *tab)
 }
 
 int
-mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mp_rnd_t rnd_mode)
+mpfr_atan (mpfr_ptr atan, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   mpfr_t xp, arctgt, sk, tmp, tmp2;
   mpz_t  ukz;

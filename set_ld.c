@@ -49,7 +49,7 @@ static const struct {
 
 /* Generic code */
 int
-mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
+mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
 {
   mpfr_t t, u;
   int inexact, shift_exp;
@@ -226,7 +226,7 @@ mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
 #else /* IEEE Extended Little Endian Code */
 
 int
-mpfr_set_ld (mpfr_ptr r, long double d, mp_rnd_t rnd_mode)
+mpfr_set_ld (mpfr_ptr r, long double d, mpfr_rnd_t rnd_mode)
 {
   int inexact, i, k, cnt;
   mpfr_t tmp;

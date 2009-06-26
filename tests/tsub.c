@@ -27,7 +27,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #ifdef CHECK_EXTERNAL
 static int
-test_sub (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
+test_sub (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 {
   int res;
   int ok = rnd_mode == MPFR_RNDN && mpfr_number_p (b) && mpfr_number_p (c);
@@ -354,7 +354,7 @@ static void
 check_two_sum (mp_prec_t p)
 {
   mpfr_t x, y, u, v, w;
-  mp_rnd_t rnd;
+  mpfr_rnd_t rnd;
   int inexact;
 
   mpfr_init2 (x, p);
@@ -400,7 +400,7 @@ check_inexact (void)
   mpfr_t x, y, z, u;
   mp_prec_t px, py, pu, pz;
   int inexact, cmp;
-  mp_rnd_t rnd;
+  mpfr_rnd_t rnd;
 
   mpfr_init (x);
   mpfr_init (y);

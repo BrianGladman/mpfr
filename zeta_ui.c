@@ -24,7 +24,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 int
-mpfr_zeta_ui (mpfr_ptr z, unsigned long m, mp_rnd_t r)
+mpfr_zeta_ui (mpfr_ptr z, unsigned long m, mpfr_rnd_t r)
 {
   MPFR_ZIV_DECL (loop);
 

@@ -24,16 +24,16 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
-static int mpfr_yn_asympt (mpfr_ptr, long, mpfr_srcptr, mp_rnd_t);
+static int mpfr_yn_asympt (mpfr_ptr, long, mpfr_srcptr, mpfr_rnd_t);
 
 int
-mpfr_y0 (mpfr_ptr res, mpfr_srcptr z, mp_rnd_t r)
+mpfr_y0 (mpfr_ptr res, mpfr_srcptr z, mpfr_rnd_t r)
 {
   return mpfr_yn (res, 0, z, r);
 }
 
 int
-mpfr_y1 (mpfr_ptr res, mpfr_srcptr z, mp_rnd_t r)
+mpfr_y1 (mpfr_ptr res, mpfr_srcptr z, mpfr_rnd_t r)
 {
   return mpfr_yn (res, 1, z, r);
 }
@@ -147,7 +147,7 @@ mpfr_yn_s3 (mpfr_ptr s, mpfr_srcptr y, mpfr_srcptr c, unsigned long n)
 }
 
 int
-mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mp_rnd_t r)
+mpfr_yn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
 {
   int inex;
   unsigned long absn;

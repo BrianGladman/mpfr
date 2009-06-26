@@ -151,7 +151,7 @@ mpfr_scale2 (double d, int exp)
    such as NaN must be avoided if not supported). */
 
 double
-mpfr_get_d (mpfr_srcptr src, mp_rnd_t rnd_mode)
+mpfr_get_d (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
 {
   double d;
   int negative;
@@ -246,7 +246,7 @@ mpfr_get_d1 (mpfr_srcptr src)
 }
 
 double
-mpfr_get_d_2exp (long *expptr, mpfr_srcptr src, mp_rnd_t rnd_mode)
+mpfr_get_d_2exp (long *expptr, mpfr_srcptr src, mpfr_rnd_t rnd_mode)
 {
   double ret;
   mp_exp_t exp;

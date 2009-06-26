@@ -28,7 +28,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #ifndef HAVE_LDOUBLE_IEEE_EXT_LITTLE
 
 long double
-mpfr_get_ld (mpfr_srcptr x, mp_rnd_t rnd_mode)
+mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
@@ -103,7 +103,7 @@ mpfr_get_ld (mpfr_srcptr x, mp_rnd_t rnd_mode)
 #else
 
 long double
-mpfr_get_ld (mpfr_srcptr x, mp_rnd_t rnd_mode)
+mpfr_get_ld (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   mpfr_long_double_t ld;
   mpfr_t tmp;
@@ -171,7 +171,7 @@ mpfr_get_ld (mpfr_srcptr x, mp_rnd_t rnd_mode)
 
 /* contributed by Damien Stehle */
 long double
-mpfr_get_ld_2exp (long *expptr, mpfr_srcptr src, mp_rnd_t rnd_mode)
+mpfr_get_ld_2exp (long *expptr, mpfr_srcptr src, mpfr_rnd_t rnd_mode)
 {
   long double ret;
   mp_exp_t exp;

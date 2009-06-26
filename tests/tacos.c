@@ -149,13 +149,13 @@ main (void)
   for (r = 0; r < MPFR_RND_MAX; r++)
     {
       mpfr_set_ui (x, 0, MPFR_RNDN); /* exact */
-      mpfr_acos (y, x, (mp_rnd_t) r);
-      mpfr_const_pi (x, (mp_rnd_t) r);
+      mpfr_acos (y, x, (mpfr_rnd_t) r);
+      mpfr_const_pi (x, (mpfr_rnd_t) r);
       mpfr_div_2exp (x, x, 1, MPFR_RNDN); /* exact */
       if (mpfr_cmp (x, y))
         {
           printf ("Error: acos(0) != Pi/2 for rnd=%s\n",
-                  mpfr_print_rnd_mode ((mp_rnd_t) r));
+                  mpfr_print_rnd_mode ((mpfr_rnd_t) r));
           exit (1);
         }
     }
@@ -164,12 +164,12 @@ main (void)
   for (r = 0; r < MPFR_RND_MAX; r++)
     {
       mpfr_set_si (x, -1, MPFR_RNDN); /* exact */
-      mpfr_acos (y, x, (mp_rnd_t) r);
-      mpfr_const_pi (x, (mp_rnd_t) r);
+      mpfr_acos (y, x, (mpfr_rnd_t) r);
+      mpfr_const_pi (x, (mpfr_rnd_t) r);
       if (mpfr_cmp (x, y))
         {
           printf ("Error: acos(1) != Pi for rnd=%s\n",
-                  mpfr_print_rnd_mode ((mp_rnd_t) r));
+                  mpfr_print_rnd_mode ((mpfr_rnd_t) r));
           exit (1);
         }
     }

@@ -24,7 +24,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 size_t
 mpfr_out_str (FILE *stream, int base, size_t n_digits, mpfr_srcptr op,
-              mp_rnd_t rnd_mode)
+              mpfr_rnd_t rnd_mode)
 {
   char *s, *s0;
   size_t l;

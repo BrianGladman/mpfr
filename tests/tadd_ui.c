@@ -28,7 +28,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* checks that x+y gives the right results with 53 bits of precision */
 static void
-check3 (const char *xs, unsigned long y, mp_rnd_t rnd_mode, const char *zs)
+check3 (const char *xs, unsigned long y, mpfr_rnd_t rnd_mode, const char *zs)
 {
   mpfr_t xx, zz;
 

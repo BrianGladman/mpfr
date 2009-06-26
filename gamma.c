@@ -95,7 +95,7 @@ bits_fac (unsigned long n)
   i.e. with x = 1-t, then Gamma(x) = -Pi*(1-x)/sin(Pi*(2-x))/GAMMA(2-x)
 */
 int
-mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mp_rnd_t rnd_mode)
+mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   mpfr_t xp, GammaTrial, tmp, tmp2;
   mpz_t fact;

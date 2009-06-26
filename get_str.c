@@ -25,7 +25,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 static int mpfr_get_str_aux (char *const, mp_exp_t *const, mp_limb_t *const,
-                       mp_size_t, mp_exp_t, long, int, size_t, mp_rnd_t);
+                       mp_size_t, mp_exp_t, long, int, size_t, mpfr_rnd_t);
 
 /* The implicit \0 is useless, but we do not write num_to_text[62] otherwise
    g++ complains. */
@@ -75,7 +75,7 @@ static const char num_to_text62[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 static int
 mpfr_get_str_aux (char *const str, mp_exp_t *const exp, mp_limb_t *const r,
                   mp_size_t n, mp_exp_t f, long e, int b, size_t m,
-                  mp_rnd_t rnd)
+                  mpfr_rnd_t rnd)
 {
   const char *num_to_text;
   int dir;                  /* direction of the rounded result */
@@ -83,7 +83,7 @@ mpfr_get_str_aux (char *const str, mp_exp_t *const exp, mp_limb_t *const r,
   mp_size_t i0, j0;         /* number of limbs and bits of Y */
   unsigned char *str1;      /* string of m+2 characters */
   size_t size_s1;           /* length of str1 */
-  mp_rnd_t rnd1;
+  mpfr_rnd_t rnd1;
   size_t i;
   int exact = (e < 0);
   MPFR_TMP_DECL(marker);
@@ -2234,7 +2234,7 @@ ceil_mul (mp_exp_t e, int beta, int i)
    the memory space allocated, with free(s, strlen(s)).
 */
 char*
-mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mp_rnd_t rnd)
+mpfr_get_str (char *s, mp_exp_t *e, int b, size_t m, mpfr_srcptr x, mpfr_rnd_t rnd)
 {
   const char *num_to_text;
   int exact;                      /* exact result */

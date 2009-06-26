@@ -27,7 +27,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  *    asinh = ln(x + sqrt(x^2 + 1))     */
 
 int
-mpfr_asinh (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
+mpfr_asinh (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   int inexact;
   int signx, neg;

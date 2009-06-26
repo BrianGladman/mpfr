@@ -30,7 +30,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #ifdef CHECK_EXTERNAL
 static int
-test_pow (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
+test_pow (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 {
   int res;
   int ok = rnd_mode == MPFR_RNDN && mpfr_number_p (b) && mpfr_number_p (c)
@@ -431,15 +431,15 @@ check_inexact (mp_prec_t p)
         mpfr_set_prec (y, q);
         mpfr_set_prec (z, q + 10);
         mpfr_set_prec (t, q);
-        inexact = mpfr_pow_ui (y, x, u, (mp_rnd_t) rnd);
-        cmp = mpfr_pow_ui (z, x, u, (mp_rnd_t) rnd);
-        if (mpfr_can_round (z, q + 10, (mp_rnd_t) rnd, (mp_rnd_t) rnd, q))
+        inexact = mpfr_pow_ui (y, x, u, (mpfr_rnd_t) rnd);
+        cmp = mpfr_pow_ui (z, x, u, (mpfr_rnd_t) rnd);
+        if (mpfr_can_round (z, q + 10, (mpfr_rnd_t) rnd, (mpfr_rnd_t) rnd, q))
           {
-            cmp = mpfr_set (t, z, (mp_rnd_t) rnd) || cmp;
+            cmp = mpfr_set (t, z, (mpfr_rnd_t) rnd) || cmp;
             if (mpfr_cmp (y, t))
               {
                 printf ("results differ for u=%lu rnd=%s\n",
-                        u, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                        u, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                 printf ("x="); mpfr_print_binary (x); puts ("");
                 printf ("y="); mpfr_print_binary (y); puts ("");
                 printf ("t="); mpfr_print_binary (t); puts ("");
@@ -451,7 +451,7 @@ check_inexact (mp_prec_t p)
               {
                 printf ("Wrong inexact flag for p=%u, q=%u, rnd=%s\n",
                         (unsigned int) p, (unsigned int) q,
-                        mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                        mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                 printf ("expected %d, got %d\n", cmp, inexact);
                 printf ("u=%lu x=", u); mpfr_print_binary (x); puts ("");
                 printf ("y="); mpfr_print_binary (y); puts ("");
@@ -1037,7 +1037,7 @@ x_near_one (void)
 }
 
 static int
-mpfr_pow275 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t r)
+mpfr_pow275 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t r)
 {
   mpfr_t z;
   int inex;
@@ -1278,14 +1278,14 @@ bug20080721 (void)
       i = (rnd == MPFR_RNDN || rnd == MPFR_RNDD || rnd == MPFR_RNDA);
       inex0 = i ? -1 : 1;
       mpfr_clear_flags ();
-      inex = mpfr_pow (z, x, y, (mp_rnd_t) rnd);
+      inex = mpfr_pow (z, x, y, (mpfr_rnd_t) rnd);
       if (__gmpfr_flags != MPFR_FLAGS_INEXACT || ! SAME_SIGN (inex, inex0)
           || MPFR_IS_NAN (z) || mpfr_cmp (z, t[i]) != 0)
         {
           unsigned int flags = __gmpfr_flags;
 
           printf ("Error in bug20080721 with %s\n",
-                  mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                  mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
           printf ("expected ");
           mpfr_out_str (stdout, 2, 0, t[i], MPFR_RNDN);
           printf (", inex = %d, flags = %u\n", inex0,

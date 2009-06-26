@@ -213,7 +213,7 @@ Table of contents:
   - radians
   - sqrtpi
 
-- mpfr_frexp(mpfr_t rop, mp_exp_t *n, mpfr_t op, mp_rnd_t rnd) suggested by
+- mpfr_frexp(mpfr_t rop, mp_exp_t *n, mpfr_t op, mpfr_rnd_t rnd) suggested by
   Steve Kargl <sgk@troutmask.apl.washington.edu> Sun, 7 Aug 2005
 - mpfr_inp_raw, mpfr_out_raw (cf mail "Serialization of mpfr_t" from Alexey
   and answer from Granlund on mpfr list, May 2007)

@@ -23,7 +23,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-test.h"
 
 int
-mpfr_cmp_str (mpfr_srcptr x, const char *s, int base, mp_rnd_t rnd)
+mpfr_cmp_str (mpfr_srcptr x, const char *s, int base, mpfr_rnd_t rnd)
 {
   mpfr_t y;
   int res;

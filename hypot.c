@@ -27,7 +27,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  *    hypot(x,y)= sqrt(x^2+y^2) = z                */
 
 int
-mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
+mpfr_hypot (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
 {
   int inexact, exact;
   mpfr_t t, te, ti; /* auxiliary variables */

@@ -24,7 +24,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 int
-FUNCTION (mpfr_srcptr f, mp_rnd_t rnd)
+FUNCTION (mpfr_srcptr f, mpfr_rnd_t rnd)
 {
   mp_exp_t exp;
   mp_prec_t prec;

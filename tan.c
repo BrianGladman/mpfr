@@ -25,7 +25,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* computes tan(x) = sign(x)*sqrt(1/cos(x)^2-1) */
 int
-mpfr_tan (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
+mpfr_tan (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   mp_prec_t precy, m;
   int inexact;

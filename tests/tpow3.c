@@ -34,7 +34,7 @@ main (int argc, char *argv[])
 
   mp_prec_t prec, yprec;
   mpfr_t t, s;
-  mp_rnd_t rnd;
+  mpfr_rnd_t rnd;
   int inexact, compare, compare2;
   unsigned int n, err;
 

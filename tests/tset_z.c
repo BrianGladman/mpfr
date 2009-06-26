@@ -38,11 +38,11 @@ static void check0(void)
   mpz_set_si (y, 0);
   for(r = 0; r < MPFR_RND_MAX; r++)
     {
-      inexact = mpfr_set_z (x, y, (mp_rnd_t) r);
+      inexact = mpfr_set_z (x, y, (mpfr_rnd_t) r);
       if (!MPFR_IS_ZERO(x) || !MPFR_IS_POS(x) || inexact)
         {
           printf("mpfr_set_z(x,0) failed for %s\n",
-                 mpfr_print_rnd_mode ((mp_rnd_t) r));
+                 mpfr_print_rnd_mode ((mpfr_rnd_t) r));
           exit(1);
         }
     }
@@ -55,7 +55,7 @@ static void check0(void)
    mpfr_get_si is a rather indirect test of a low level routine.  */
 
 static void
-check (long i, mp_rnd_t rnd)
+check (long i, mpfr_rnd_t rnd)
 {
   mpfr_t f;
   mpz_t z;

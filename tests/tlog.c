@@ -27,7 +27,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #ifdef CHECK_EXTERNAL
 static int
-test_log (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
+test_log (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode)
 {
   int res;
   int ok = rnd_mode == MPFR_RNDN && mpfr_number_p (b) && mpfr_get_prec (a)>=53;
@@ -49,7 +49,7 @@ test_log (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
 #endif
 
 static void
-check2 (const char *as, mp_rnd_t rnd_mode, const char *res1s)
+check2 (const char *as, mpfr_rnd_t rnd_mode, const char *res1s)
 {
   mpfr_t ta, tres;
 
@@ -70,7 +70,7 @@ check2 (const char *as, mp_rnd_t rnd_mode, const char *res1s)
 }
 
 static void
-check3 (double d, unsigned long prec, mp_rnd_t rnd)
+check3 (double d, unsigned long prec, mpfr_rnd_t rnd)
 {
   mpfr_t x, y;
 
@@ -279,7 +279,7 @@ main (int argc, char *argv[])
 
   if (argc==4)
     {   /* tlog x prec rnd */
-      check3 (atof(argv[1]), atoi(argv[2]), (mp_rnd_t) atoi(argv[3]));
+      check3 (atof(argv[1]), atoi(argv[2]), (mpfr_rnd_t) atoi(argv[3]));
       goto done;
     }
 

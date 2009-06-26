@@ -35,7 +35,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MAXNORM 1.7976931348623157081e308 /* 2^(1023)*(2-2^(-52)) */
 
 /* Generates a random rounding mode */
-#define RND_RAND() ((mp_rnd_t) (randlimb() % MPFR_RND_MAX))
+#define RND_RAND() ((mpfr_rnd_t) (randlimb() % MPFR_RND_MAX))
 
 /* Generates a random sign */
 #define SIGN_RAND() ( (randlimb()%2) ? MPFR_SIGN_POS : MPFR_SIGN_NEG)
@@ -54,7 +54,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 #define ABS(x) (((x)>0) ? (x) : -(x))
 
-#define FLIST mpfr_ptr, mpfr_srcptr, mp_rnd_t
+#define FLIST mpfr_ptr, mpfr_srcptr, mpfr_rnd_t
 
 #if defined (__cplusplus)
 extern "C" {
@@ -68,7 +68,7 @@ void tests_memory_end _MPFR_PROTO ((void));
 void tests_start_mpfr _MPFR_PROTO ((void));
 void tests_end_mpfr _MPFR_PROTO ((void));
 
-int mpfr_set_machine_rnd_mode _MPFR_PROTO ((mp_rnd_t));
+int mpfr_set_machine_rnd_mode _MPFR_PROTO ((mpfr_rnd_t));
 void mpfr_test_init _MPFR_PROTO ((void));
 mp_limb_t randlimb _MPFR_PROTO ((void));
 void randseed _MPFR_PROTO ((unsigned int));
@@ -89,7 +89,7 @@ void bad_cases _MPFR_PROTO ((int (*)(FLIST), int (*)(FLIST),
                              char *, int, mp_exp_t, mp_exp_t,
                              mp_prec_t, mp_prec_t, mp_prec_t, int));
 
-int mpfr_cmp_str _MPFR_PROTO ((mpfr_srcptr x, const char *, int, mp_rnd_t));
+int mpfr_cmp_str _MPFR_PROTO ((mpfr_srcptr x, const char *, int, mpfr_rnd_t));
 #define mpfr_cmp_str1(x,s) mpfr_cmp_str(x,s,10,MPFR_RNDN)
 #define mpfr_set_str1(x,s) mpfr_set_str(x,s,10,MPFR_RNDN)
 

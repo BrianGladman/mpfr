@@ -140,7 +140,7 @@ __gmpfr_extract_double (mp_ptr rp, double d)
 /* End of part included from gmp-2.0.2 */
 
 int
-mpfr_set_d (mpfr_ptr r, double d, mp_rnd_t rnd_mode)
+mpfr_set_d (mpfr_ptr r, double d, mpfr_rnd_t rnd_mode)
 {
   int signd, inexact;
   unsigned int cnt;

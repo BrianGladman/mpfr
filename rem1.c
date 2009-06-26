@@ -53,8 +53,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  */
 
 static int
-mpfr_rem1 (mpfr_ptr rem, long *quo, mp_rnd_t rnd_q,
-           mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd)
+mpfr_rem1 (mpfr_ptr rem, long *quo, mpfr_rnd_t rnd_q,
+           mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd)
 {
   mp_exp_t ex, ey;
   int compare, inex, q_is_odd, sign, signx = MPFR_SIGN (x);
@@ -212,20 +212,20 @@ mpfr_rem1 (mpfr_ptr rem, long *quo, mp_rnd_t rnd_q,
 }
 
 int
-mpfr_remainder (mpfr_ptr rem, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd)
+mpfr_remainder (mpfr_ptr rem, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd)
 {
   return mpfr_rem1 (rem, (long *) 0, MPFR_RNDN, x, y, rnd);
 }
 
 int
 mpfr_remquo (mpfr_ptr rem, long *quo,
-             mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd)
+             mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd)
 {
   return mpfr_rem1 (rem, quo, MPFR_RNDN, x, y, rnd);
 }
 
 int
-mpfr_fmod (mpfr_ptr rem, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd)
+mpfr_fmod (mpfr_ptr rem, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd)
 {
   return mpfr_rem1 (rem, (long *) 0, MPFR_RNDZ, x, y, rnd);
 }

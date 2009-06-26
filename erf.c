@@ -25,10 +25,10 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #define EXP1 2.71828182845904523536 /* exp(1) */
 
-static int mpfr_erf_0 (mpfr_ptr, mpfr_srcptr, double, mp_rnd_t);
+static int mpfr_erf_0 (mpfr_ptr, mpfr_srcptr, double, mpfr_rnd_t);
 
 int
-mpfr_erf (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
+mpfr_erf (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   mpfr_t xf;
   int inex, large;
@@ -124,7 +124,7 @@ mpfr_erf (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   if (MPFR_UNLIKELY (large))
     /* |erf x| = 1 or 1- */
     {
-      mp_rnd_t rnd2 = MPFR_IS_POS (x) ? rnd_mode : MPFR_INVERT_RND(rnd_mode);
+      mpfr_rnd_t rnd2 = MPFR_IS_POS (x) ? rnd_mode : MPFR_INVERT_RND(rnd_mode);
       if (rnd2 == MPFR_RNDN || rnd2 == MPFR_RNDU || rnd2 == MPFR_RNDA)
         {
           inex = MPFR_INT_SIGN (x);
@@ -178,7 +178,7 @@ mul_2exp (double x, mp_exp_t e)
    Assumes also that e*x^2 <= n (target precision).
  */
 static int
-mpfr_erf_0 (mpfr_ptr res, mpfr_srcptr x, double xf2, mp_rnd_t rnd_mode)
+mpfr_erf_0 (mpfr_ptr res, mpfr_srcptr x, double xf2, mpfr_rnd_t rnd_mode)
 {
   mp_prec_t n, m;
   mp_exp_t nuk, sigmak;

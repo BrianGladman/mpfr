@@ -159,7 +159,7 @@ main (int argc, char *argv[])
      }
 
   mpfr_init2 (z, 32);
-  mpfr_set_d (z, 1.0, (mp_rnd_t) 0);
+  mpfr_set_d (z, 1.0, (mpfr_rnd_t) 0);
   if (mpfr_cmp_ui (z, 1))
     {
       mpfr_print_binary (z); puts ("");
@@ -168,7 +168,7 @@ main (int argc, char *argv[])
     }
   mpfr_set_prec (x, 53);
   mpfr_init2 (y, 53);
-  mpfr_set_d (x, d=-1.08007920352320089721e+150, (mp_rnd_t) 0);
+  mpfr_set_d (x, d=-1.08007920352320089721e+150, (mpfr_rnd_t) 0);
   if (mpfr_get_d1 (x) != d)
     {
       mpfr_print_binary (x); puts ("");
@@ -177,9 +177,9 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-  mpfr_set_d (x, 8.06294740693074521573e-310, (mp_rnd_t) 0);
+  mpfr_set_d (x, 8.06294740693074521573e-310, (mpfr_rnd_t) 0);
   d = -6.72658901114033715233e-165;
-  mpfr_set_d (x, d, (mp_rnd_t) 0);
+  mpfr_set_d (x, d, (mpfr_rnd_t) 0);
   if (d != mpfr_get_d1 (x))
     {
       mpfr_print_binary (x);
@@ -201,7 +201,7 @@ main (int argc, char *argv[])
 #else
       while (ABS(d) < DBL_MIN);
 #endif
-      mpfr_set_d (x, d, (mp_rnd_t) 0);
+      mpfr_set_d (x, d, (mpfr_rnd_t) 0);
       dd = mpfr_get_d1 (x);
       if (d != dd && !(Isnan(d) && Isnan(dd)))
         {

@@ -27,7 +27,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #ifdef CHECK_EXTERNAL
 static int
-test_cos (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
+test_cos (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode)
 {
   int res;
   int ok = rnd_mode == MPFR_RNDN && mpfr_number_p (b) && mpfr_get_prec (a)>=53;
@@ -49,7 +49,7 @@ test_cos (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
 #endif
 
 static void
-check53 (const char *xs, const char *cos_xs, mp_rnd_t rnd_mode)
+check53 (const char *xs, const char *cos_xs, mpfr_rnd_t rnd_mode)
 {
   mpfr_t xx, c;
 
@@ -184,13 +184,13 @@ overflowed_cos0 (void)
         {
           mpfr_set_si_2exp (x, i, -512 * ABS (i), MPFR_RNDN);
           mpfr_clear_flags ();
-          inex = mpfr_cos (x, x, (mp_rnd_t) rnd);
+          inex = mpfr_cos (x, x, (mpfr_rnd_t) rnd);
           if ((i == 0 || emax < 0 || rnd == MPFR_RNDN || rnd == MPFR_RNDU) &&
               ! mpfr_overflow_p ())
             {
               printf ("Error in overflowed_cos0 (i = %d, rnd = %s):\n"
                       "  The overflow flag is not set.\n",
-                      i, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                      i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
               err = 1;
             }
           if (rnd == MPFR_RNDZ || rnd == MPFR_RNDD)
@@ -199,13 +199,13 @@ overflowed_cos0 (void)
                 {
                   printf ("Error in overflowed_cos0 (i = %d, rnd = %s):\n"
                           "  The inexact value must be negative.\n",
-                          i, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                          i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                   err = 1;
                 }
               if (! mpfr_equal_p (x, y))
                 {
                   printf ("Error in overflowed_cos0 (i = %d, rnd = %s):\n"
-                          "  Got ", i, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                          "  Got ", i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                   mpfr_print_binary (x);
                   printf (" instead of 0.11111111E%d.\n", emax);
                   err = 1;
@@ -217,13 +217,13 @@ overflowed_cos0 (void)
                 {
                   printf ("Error in overflowed_cos0 (i = %d, rnd = %s):\n"
                           "  The inexact value must be positive.\n",
-                          i, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                          i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                   err = 1;
                 }
               if (! (mpfr_inf_p (x) && MPFR_SIGN (x) > 0))
                 {
                   printf ("Error in overflowed_cos0 (i = %d, rnd = %s):\n"
-                          "  Got ", i, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                          "  Got ", i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                   mpfr_print_binary (x);
                   printf (" instead of +Inf.\n");
                   err = 1;

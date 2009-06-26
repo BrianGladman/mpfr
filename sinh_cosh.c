@@ -29,7 +29,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
     Adapted from mpfr_sinh.c     */
 
 int
-mpfr_sinh_cosh (mpfr_ptr sh, mpfr_ptr ch, mpfr_srcptr xt, mp_rnd_t rnd_mode)
+mpfr_sinh_cosh (mpfr_ptr sh, mpfr_ptr ch, mpfr_srcptr xt, mpfr_rnd_t rnd_mode)
 {
   mpfr_t x;
   int inexact, inexact_sh, inexact_ch;

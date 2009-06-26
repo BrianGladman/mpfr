@@ -28,7 +28,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* checks that x-y gives the right results with 53 bits of precision */
 static void
-check3 (const char *xs, unsigned long y, mp_rnd_t rnd_mode, const char *zs)
+check3 (const char *xs, unsigned long y, mpfr_rnd_t rnd_mode, const char *zs)
 {
   mpfr_t xx,zz;
 
@@ -54,7 +54,7 @@ check_two_sum (mp_prec_t p)
 {
   unsigned int x;
   mpfr_t y, u, v, w;
-  mp_rnd_t rnd;
+  mpfr_rnd_t rnd;
   int inexact;
 
   mpfr_inits2 (p, y, u, v, w, (mpfr_ptr) 0);

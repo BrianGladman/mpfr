@@ -26,7 +26,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-test.h"
 
 static void
-check (unsigned long a, mp_rnd_t rnd_mode, const char *qs)
+check (unsigned long a, mpfr_rnd_t rnd_mode, const char *qs)
 {
   mpfr_t q;
 

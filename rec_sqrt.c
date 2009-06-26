@@ -416,7 +416,7 @@ mpfr_mpn_rec_sqrt (mp_ptr x, mp_prec_t p,
 }
 
 int
-mpfr_rec_sqrt (mpfr_ptr r, mpfr_srcptr u, mp_rnd_t rnd_mode)
+mpfr_rec_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 {
   mp_prec_t rp, up, wp;
   mp_size_t rn, wn;

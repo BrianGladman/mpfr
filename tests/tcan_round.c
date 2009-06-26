@@ -98,7 +98,7 @@ main (void)
         int r1, r2;
         for (r1 = 0; r1 < MPFR_RND_MAX ; r1++)
           for (r2 = 0; r2 < MPFR_RND_MAX ; r2++)
-            mpfr_can_round (x, i, (mp_rnd_t) r1, (mp_rnd_t) r2, j); /* test for assertions */
+            mpfr_can_round (x, i, (mpfr_rnd_t) r1, (mpfr_rnd_t) r2, j); /* test for assertions */
       }
 
   mpfr_clear (x);

@@ -145,7 +145,7 @@ check_integer (mp_prec_t begin, mp_prec_t end, unsigned long max)
   unsigned long i, n;
   mp_prec_t p;
   int res1, res2;
-  mp_rnd_t rnd;
+  mpfr_rnd_t rnd;
 
   mpfr_inits2 (begin, x, y1, y2, (mpfr_ptr) 0);
   mpz_init (z);

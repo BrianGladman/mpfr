@@ -200,7 +200,7 @@ main (int argc, char *argv[])
 {
   mpfr_t s, y, z;
   mp_prec_t prec;
-  mp_rnd_t rnd_mode;
+  mpfr_rnd_t rnd_mode;
   int inex;
 
   tests_start_mpfr ();
@@ -218,7 +218,7 @@ main (int argc, char *argv[])
       mpfr_init2 (s, prec);
       mpfr_init2 (z, prec);
       mpfr_set_str (s, argv[1], 10, MPFR_RNDN);
-      rnd_mode = (mp_rnd_t) atoi(argv[3]);
+      rnd_mode = (mpfr_rnd_t) atoi(argv[3]);
 
       mpfr_zeta (z, s, rnd_mode);
       mpfr_out_str (stdout, 10, 0, z, MPFR_RNDN);

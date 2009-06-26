@@ -129,7 +129,7 @@ mpfr_mpn_sub_aux (mp_ptr ap, mp_ptr bp, mp_size_t n, mp_limb_t cy, int extra)
 }
 
 int
-mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mp_rnd_t rnd_mode)
+mpfr_div (mpfr_ptr q, mpfr_srcptr u, mpfr_srcptr v, mpfr_rnd_t rnd_mode)
 {
   mp_size_t q0size = MPFR_LIMB_SIZE(q); /* number of limbs of destination */
   mp_size_t usize = MPFR_LIMB_SIZE(u);

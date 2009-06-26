@@ -26,7 +26,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* (y, z) <- (sin(x), cos(x)), return value is 0 iff both results are exact
    ie, iff x = 0 */
 int
-mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mp_rnd_t rnd_mode)
+mpfr_sin_cos (mpfr_ptr y, mpfr_ptr z, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   mp_prec_t prec, m;
   int neg, reduce;

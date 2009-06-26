@@ -48,7 +48,7 @@ failed (mpfr_t x, mpfr_t esh, mpfr_t gsh, mpfr_t ech, mpfr_t gch)
 
 /* check against sinh, cosh */
 static void
-check (mpfr_t x, mp_rnd_t rnd)
+check (mpfr_t x, mpfr_rnd_t rnd)
 {
   mpfr_t s, c, sx, cx;
   int isc, is, ic;

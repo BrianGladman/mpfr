@@ -167,21 +167,21 @@ main (void)
       for (r = 0; r < MPFR_RND_MAX; r++)
         {
           mpfr_set_ui (x, 1, MPFR_RNDN);
-          mpfr_cbrt (x, x, (mp_rnd_t) r);
+          mpfr_cbrt (x, x, (mpfr_rnd_t) r);
           if (mpfr_cmp_ui (x, 1))
             {
               printf ("Error in mpfr_cbrt for x=1, rnd=%s\ngot ",
-                      mpfr_print_rnd_mode ((mp_rnd_t) r));
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) r));
               mpfr_out_str (stdout, 2, 0, x, MPFR_RNDN);
               printf ("\n");
               exit (1);
             }
           mpfr_set_si (x, -1, MPFR_RNDN);
-          mpfr_cbrt (x, x, (mp_rnd_t) r);
+          mpfr_cbrt (x, x, (mpfr_rnd_t) r);
           if (mpfr_cmp_si (x, -1))
             {
               printf ("Error in mpfr_cbrt for x=-1, rnd=%s\ngot ",
-                      mpfr_print_rnd_mode ((mp_rnd_t) r));
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) r));
               mpfr_out_str (stdout, 2, 0, x, MPFR_RNDN);
               printf ("\n");
               exit (1);
@@ -199,7 +199,7 @@ main (void)
                     {
                       printf ("Error in mpfr_cbrt for "
                               "x = 27.0 * 2^(%d), rnd=%s\ngot ",
-                              3*i, mpfr_print_rnd_mode ((mp_rnd_t) r));
+                              3*i, mpfr_print_rnd_mode ((mpfr_rnd_t) r));
                       mpfr_out_str (stdout, 2, 0, x, MPFR_RNDN);
                       printf ("\ninstead of 3 * 2^(%d)\n", i);
                       exit (1);

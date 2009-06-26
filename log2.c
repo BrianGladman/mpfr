@@ -27,7 +27,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
       r=log2(a)=log(a)/log(2)      */
 
 int
-mpfr_log2 (mpfr_ptr r, mpfr_srcptr a, mp_rnd_t rnd_mode)
+mpfr_log2 (mpfr_ptr r, mpfr_srcptr a, mpfr_rnd_t rnd_mode)
 {
   int inexact;
   MPFR_SAVE_EXPO_DECL (expo);

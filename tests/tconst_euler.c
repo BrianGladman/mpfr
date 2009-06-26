@@ -27,7 +27,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* Wrapper for tgeneric */
 static int
-my_const_euler (mpfr_ptr x, mpfr_srcptr y, mp_rnd_t r)
+my_const_euler (mpfr_ptr x, mpfr_srcptr y, mpfr_rnd_t r)
 {
   return mpfr_const_euler (x, r);
 }
@@ -80,16 +80,16 @@ main (int argc, char *argv[])
       for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
         {
           mpfr_set_prec (y, yprec);
-          mpfr_const_euler (y, (mp_rnd_t) rnd);
+          mpfr_const_euler (y, (mpfr_rnd_t) rnd);
           err = (rnd == MPFR_RNDN) ? yprec + 1 : yprec;
-          if (mpfr_can_round (y, err, (mp_rnd_t) rnd, (mp_rnd_t) rnd, prec))
+          if (mpfr_can_round (y, err, (mpfr_rnd_t) rnd, (mpfr_rnd_t) rnd, prec))
             {
-              mpfr_set (t, y, (mp_rnd_t) rnd);
-              mpfr_const_euler (z, (mp_rnd_t) rnd);
+              mpfr_set (t, y, (mpfr_rnd_t) rnd);
+              mpfr_const_euler (z, (mpfr_rnd_t) rnd);
               if (mpfr_cmp (t, z))
                 {
                   printf ("results differ for prec=%u rnd_mode=%s\n", prec,
-                          mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                          mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                   printf ("   got      ");
                   mpfr_out_str (stdout, 2, prec, z, MPFR_RNDN);
                   puts ("");

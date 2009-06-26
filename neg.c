@@ -23,7 +23,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 int
-mpfr_neg (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
+mpfr_neg (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode)
 {
   if (MPFR_UNLIKELY(a != b))
     return mpfr_set4 (a, b, rnd_mode, -MPFR_SIGN(b));

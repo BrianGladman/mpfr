@@ -114,7 +114,7 @@ bad_case1 (void)
 }
 
 static int
-pm2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
+pm2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   return mpfr_pow_si (y, x, -2, rnd_mode);
 }

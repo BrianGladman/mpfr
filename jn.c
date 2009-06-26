@@ -28,16 +28,16 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
               j(n,-z) = (-1)^n j(n,z)
 */
 
-static int mpfr_jn_asympt (mpfr_ptr, long, mpfr_srcptr, mp_rnd_t);
+static int mpfr_jn_asympt (mpfr_ptr, long, mpfr_srcptr, mpfr_rnd_t);
 
 int
-mpfr_j0 (mpfr_ptr res, mpfr_srcptr z, mp_rnd_t r)
+mpfr_j0 (mpfr_ptr res, mpfr_srcptr z, mpfr_rnd_t r)
 {
   return mpfr_jn (res, 0, z, r);
 }
 
 int
-mpfr_j1 (mpfr_ptr res, mpfr_srcptr z, mp_rnd_t r)
+mpfr_j1 (mpfr_ptr res, mpfr_srcptr z, mpfr_rnd_t r)
 {
   return mpfr_jn (res, 1, z, r);
 }
@@ -73,7 +73,7 @@ mpfr_jn_k0 (long n, mpfr_srcptr z)
 }
 
 int
-mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mp_rnd_t r)
+mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
 {
   int inex;
   unsigned long absn;

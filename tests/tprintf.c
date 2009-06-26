@@ -247,7 +247,7 @@ check_mixed (void)
   mpz_t mpz;
   mpq_t mpq;
   mpf_t mpf;
-  mp_rnd_t rnd = MPFR_RNDN;
+  mpfr_rnd_t rnd = MPFR_RNDN;
 
   mpfr_t mpfr;
   mpfr_prec_t prec;
@@ -328,7 +328,7 @@ check_random (int nb_tests)
 {
   int i;
   mpfr_t x;
-  mp_rnd_t rnd;
+  mpfr_rnd_t rnd;
   char flag[] =
     {
       '-',
@@ -363,7 +363,7 @@ check_random (int nb_tests)
       char *ptr = fmt;
 
       tests_default_random (x, 256, MPFR_EMIN_MIN, MPFR_EMAX_MAX);
-      rnd = (mp_rnd_t) RND_RAND ();
+      rnd = (mpfr_rnd_t) RND_RAND ();
 
       spec = (int) (randlimb () % 5);
       jmax = (spec == 3 || spec == 4) ? 6 : 5; /* ' flag only with %f or %g */

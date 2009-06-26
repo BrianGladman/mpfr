@@ -46,14 +46,14 @@ test_exact (void)
             if (mpfr_set_str (a, val[i], 10, MPFR_RNDN) ||
                 mpfr_set_str (b, val[j], 10, MPFR_RNDN) ||
                 mpfr_set_str (c, val[k], 10, MPFR_RNDN) ||
-                mpfr_mul (r1, a, b, (mp_rnd_t) rnd) ||
-                mpfr_add (r1, r1, c, (mp_rnd_t) rnd))
+                mpfr_mul (r1, a, b, (mpfr_rnd_t) rnd) ||
+                mpfr_add (r1, r1, c, (mpfr_rnd_t) rnd))
               {
                 printf ("test_exact internal error for (%d,%d,%d,%d)\n",
                         i, j, k, rnd);
                 exit (1);
               }
-            if (mpfr_fma (r2, a, b, c, (mp_rnd_t) rnd))
+            if (mpfr_fma (r2, a, b, c, (mpfr_rnd_t) rnd))
               {
                 printf ("test_exact(%d,%d,%d,%d): mpfr_fma should be exact\n",
                         i, j, k, rnd);
@@ -139,37 +139,37 @@ test_overflow2 (void)
 
         mpfr_clear_flags ();
         /* One has: x * y = -1@emax exactly (but not representable). */
-        inex = mpfr_fma (r, x, y, z, (mp_rnd_t) rnd);
+        inex = mpfr_fma (r, x, y, z, (mpfr_rnd_t) rnd);
         if (overflow ^ (mpfr_overflow_p () != 0))
           {
             printf ("Error in test_overflow2 (i = %d, %s): wrong overflow"
                     " flag (should be %d)\n", i,
-                    mpfr_print_rnd_mode ((mp_rnd_t) rnd), overflow);
+                    mpfr_print_rnd_mode ((mpfr_rnd_t) rnd), overflow);
             err = 1;
           }
         if (mpfr_nanflag_p ())
           {
             printf ("Error in test_overflow2 (i = %d, %s): NaN flag should"
-                    " not be set\n", i, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                    " not be set\n", i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
             err = 1;
           }
         if (mpfr_nan_p (r))
           {
             printf ("Error in test_overflow2 (i = %d, %s): got NaN\n",
-                    i, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                    i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
             err = 1;
           }
         else if (MPFR_SIGN (r) >= 0)
           {
             printf ("Error in test_overflow2 (i = %d, %s): wrong sign "
                     "(+ instead of -)\n", i,
-                    mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                    mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
             err = 1;
           }
         else if (inf && ! mpfr_inf_p (r))
           {
             printf ("Error in test_overflow2 (i = %d, %s): expected -Inf,"
-                    " got\n", i, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                    " got\n", i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
             mpfr_dump (r);
             err = 1;
           }
@@ -177,7 +177,7 @@ test_overflow2 (void)
                           (mpfr_nextbelow (r), ! mpfr_inf_p (r))))
           {
             printf ("Error in test_overflow2 (i = %d, %s): expected -MAX,"
-                    " got\n", i, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                    " got\n", i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
             mpfr_dump (r);
             err = 1;
           }
@@ -185,7 +185,7 @@ test_overflow2 (void)
           {
             printf ("Error in test_overflow2 (i = %d, %s): wrong inexact"
                     " flag (got %d)\n", i,
-                    mpfr_print_rnd_mode ((mp_rnd_t) rnd), inex);
+                    mpfr_print_rnd_mode ((mpfr_rnd_t) rnd), inex);
             err = 1;
           }
 
@@ -219,12 +219,12 @@ test_underflow1 (void)
                 mpfr_setmax (z, mpfr_get_emax ());
               /* |z| = 1 or 2^emax - ulp */
               mpfr_clear_flags ();
-              inex = mpfr_fma (r, x, y, z, (mp_rnd_t) rnd);
+              inex = mpfr_fma (r, x, y, z, (mpfr_rnd_t) rnd);
 #define ERRTU1 "Error in test_underflow1 (signy = %d, signz = %d, %s)\n  "
               if (mpfr_nanflag_p ())
                 {
                   printf (ERRTU1 "NaN flag is set\n", signy, signz,
-                          mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                          mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                   err = 1;
                 }
               if (signy < 0 && MPFR_IS_LIKE_RNDD(rnd, signz))
@@ -234,19 +234,19 @@ test_underflow1 (void)
               if ((mpfr_overflow_p () != 0) ^ (mpfr_inf_p (z) != 0))
                 {
                   printf (ERRTU1 "wrong overflow flag\n", signy, signz,
-                          mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                          mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                   err = 1;
                 }
               if (mpfr_underflow_p ())
                 {
                   printf (ERRTU1 "underflow flag is set\n", signy, signz,
-                          mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                          mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                   err = 1;
                 }
               if (! mpfr_equal_p (r, z))
                 {
                   printf (ERRTU1 "got ", signy, signz,
-                          mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                          mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                   mpfr_print_binary (r);
                   printf (" instead of ");
                   mpfr_print_binary (z);
@@ -258,7 +258,7 @@ test_underflow1 (void)
                                 (rnd == MPFR_RNDN && signy > 0)))
                 {
                   printf (ERRTU1 "ternary value = %d instead of < 0\n",
-                          signy, signz, mpfr_print_rnd_mode ((mp_rnd_t) rnd),
+                          signy, signz, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd),
                           inex);
                   err = 1;
                 }
@@ -267,7 +267,7 @@ test_underflow1 (void)
                                 (rnd == MPFR_RNDN && signy < 0)))
                 {
                   printf (ERRTU1 "ternary value = %d instead of > 0\n",
-                          signy, signz, mpfr_print_rnd_mode ((mp_rnd_t) rnd),
+                          signy, signz, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd),
                           inex);
                   err = 1;
                 }
@@ -541,7 +541,7 @@ main (int argc, char *argv[])
   {
     mp_prec_t prec;
     mpfr_t t, slong;
-    mp_rnd_t rnd;
+    mpfr_rnd_t rnd;
     int inexact, compare;
     unsigned int n;
 

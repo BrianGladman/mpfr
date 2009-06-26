@@ -65,7 +65,7 @@ main (void)
       printf ("Error for printing MPFR_RNDZ\n");
       exit (1);
     }
-  if (mpfr_print_rnd_mode ((mp_rnd_t) -1) != NULL ||
+  if (mpfr_print_rnd_mode ((mpfr_rnd_t) -1) != NULL ||
       mpfr_print_rnd_mode (MPFR_RND_MAX) != NULL)
     {
       printf ("Error for illegal rounding mode values.\n");

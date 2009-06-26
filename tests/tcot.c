@@ -102,18 +102,18 @@ two2emin (mp_exp_t e)
     RND_LOOP (rnd)
       {
         mpfr_set_si (y, i, MPFR_RNDN);
-        mpfr_ui_div (y, 1, y, (mp_rnd_t) rnd);  /* no overflow/underflow */
+        mpfr_ui_div (y, 1, y, (mpfr_rnd_t) rnd);  /* no overflow/underflow */
         mpfr_set_si_2exp (x, i, -e, MPFR_RNDN);
         if (ABS (i) != 3)  /* not a power of 2 (not 0 either) */
-          mpfr_sub (y, y, x, (mp_rnd_t) rnd);  /* no overflow/underflow */
+          mpfr_sub (y, y, x, (mpfr_rnd_t) rnd);  /* no overflow/underflow */
         mpfr_set_ui_2exp (x, 1, -e, MPFR_RNDN);
-        mpfr_div (y, y, x, (mp_rnd_t) rnd);  /* 1/x - SIGN(x).epsilon */
+        mpfr_div (y, y, x, (mpfr_rnd_t) rnd);  /* 1/x - SIGN(x).epsilon */
         mpfr_set_si_2exp (x, i, -e, MPFR_RNDN);
-        mpfr_cot (x, x, (mp_rnd_t) rnd);
+        mpfr_cot (x, x, (mpfr_rnd_t) rnd);
         if (! mpfr_equal_p (x, y))
           {
             printf ("Error in two2emin for i = %d and rnd = %s\n",
-                    i, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                    i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
             printf ("Got        ");
             mpfr_dump (x);
             printf ("instead of ");

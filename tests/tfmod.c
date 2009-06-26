@@ -35,7 +35,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    r = x - n * y, where n = trunc(x/y).
    warning: may change flags. */
 static int
-slow_fmod (mpfr_ptr r, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd)
+slow_fmod (mpfr_ptr r, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd)
 {
   mpfr_t q;
   int inexact;
@@ -68,7 +68,7 @@ slow_fmod (mpfr_ptr r, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd)
 
 static void
 test_failed (mpfr_t erem, mpfr_t grem, int eret, int gret, mpfr_t x, mpfr_t y,
-             mp_rnd_t rnd)
+             mpfr_rnd_t rnd)
 {
   printf ("error: mpfr_fmod (r, x, y, rnd)\n  x = ");
   mpfr_out_str (stdout, 10, 0, x, MPFR_RNDD);
@@ -88,7 +88,7 @@ test_failed (mpfr_t erem, mpfr_t grem, int eret, int gret, mpfr_t x, mpfr_t y,
 }
 
 static void
-check (mpfr_t r0, mpfr_t x, mpfr_t y, mp_rnd_t rnd)
+check (mpfr_t r0, mpfr_t x, mpfr_t y, mpfr_rnd_t rnd)
 {
   int inex0, inex1;
   mpfr_t r1;

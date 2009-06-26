@@ -28,7 +28,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define check(a,b,r) check4(a,b,r,0.0)
 
 static void
-check4 (const char *as, const char *bs, mp_rnd_t rnd_mode, const char *res)
+check4 (const char *as, const char *bs, mpfr_rnd_t rnd_mode, const char *res)
 {
   mpfr_t ta, tb, tres;
 

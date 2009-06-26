@@ -55,7 +55,7 @@ check_inexact (void)
           mpfr_set_prec (y, q);
           RND_LOOP (rnd)
             {
-              inexact = mpfr_abs (y, x, (mp_rnd_t) rnd);
+              inexact = mpfr_abs (y, x, (mpfr_rnd_t) rnd);
               cmp = mpfr_cmp (y, absx);
               if (((inexact == 0) && (cmp != 0)) ||
                   ((inexact > 0) && (cmp <= 0)) ||
@@ -135,7 +135,7 @@ check_cmp (int argc, char *argv[])
   n = (argc==1) ? 25000 : atoi(argv[1]);
   for (k = 1; k <= n; k++)
     {
-      mp_rnd_t rnd;
+      mpfr_rnd_t rnd;
       int sign = SIGN_RAND ();
 
       mpfr_urandomb (x, RANDS);

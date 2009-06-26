@@ -76,7 +76,7 @@ main (void)
 #define STD_ERROR \
   {\
     printf("ERROR: for %s and p=%lu and i=%d:\nB=",\
-           mpfr_print_rnd_mode ((mp_rnd_t) r), p, i);\
+           mpfr_print_rnd_mode ((mpfr_rnd_t) r), p, i);\
     mpfr_print_binary(b);\
     printf("\nC="); mpfr_print_binary(c);\
     printf("\nadd1  : "); mpfr_print_binary(a1);\
@@ -88,7 +88,7 @@ main (void)
 #define STD_ERROR2 \
   {\
     printf("ERROR: Wrong inexact flag for %s and p=%lu and i=%d:\nB=",\
-           mpfr_print_rnd_mode ((mp_rnd_t) r), p, i);\
+           mpfr_print_rnd_mode ((mpfr_rnd_t) r), p, i);\
     mpfr_print_binary(b);\
     printf("\nC="); mpfr_print_binary(c);\
     printf("\nA="); mpfr_print_binary(a1);\
@@ -124,8 +124,8 @@ check_random (mp_prec_t p)
           if (MPFR_IS_PURE_FP(b) && MPFR_IS_PURE_FP(c))
             for (r = 0 ; r < MPFR_RND_MAX ; r++)
               {
-                inexact1 = mpfr_add1(a1, b, c, (mp_rnd_t) r);
-                inexact2 = mpfr_add1sp(a2, b, c, (mp_rnd_t) r);
+                inexact1 = mpfr_add1(a1, b, c, (mpfr_rnd_t) r);
+                inexact2 = mpfr_add1sp(a2, b, c, (mpfr_rnd_t) r);
                 if (mpfr_cmp(a1, a2))
                   STD_ERROR;
                 if (inexact1 != inexact2)
@@ -152,16 +152,16 @@ check_special (void)
       SET_PREC(53);
       mpfr_set_str1 (b, "1@100");
       mpfr_set_str1 (c, "1@1");
-      inexact1 = mpfr_add1(a1, b, c, (mp_rnd_t) r);
-      inexact2 = mpfr_add1sp(a2, b, c, (mp_rnd_t) r);
+      inexact1 = mpfr_add1(a1, b, c, (mpfr_rnd_t) r);
+      inexact2 = mpfr_add1sp(a2, b, c, (mpfr_rnd_t) r);
       if (mpfr_cmp(a1, a2))
         STD_ERROR;
       if (inexact1 != inexact2)
         STD_ERROR2;
       mpfr_set_str_binary (b, "1E53");
       mpfr_set_str_binary (c, "1E0");
-      inexact1 = mpfr_add1(a1, b, c, (mp_rnd_t) r);
-      inexact2 = mpfr_add1sp(a2, b, c, (mp_rnd_t) r);
+      inexact1 = mpfr_add1(a1, b, c, (mpfr_rnd_t) r);
+      inexact2 = mpfr_add1sp(a2, b, c, (mpfr_rnd_t) r);
       if (mpfr_cmp(a1, a2))
         STD_ERROR;
       if (inexact1 != inexact2)

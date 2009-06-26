@@ -118,7 +118,7 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
   mpfr_t u;
   double d;
 #endif
-  mp_rnd_t rnd;
+  mpfr_rnd_t rnd;
   int inexact, compare, compare2;
   unsigned int n;
   unsigned long ctrt = 0, ctrn = 0;

@@ -27,7 +27,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    (y is NaN, +Inf, or -Inf that have no equivalent in mpf)
 */
 int
-mpfr_get_f (mpf_ptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
+mpfr_get_f (mpf_ptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
 {
   int inex;
   mp_size_t sx, sy;

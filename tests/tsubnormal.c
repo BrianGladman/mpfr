@@ -29,7 +29,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 static const struct {
   const char *in;
   int i;
-  mp_rnd_t rnd;
+  mpfr_rnd_t rnd;
   const char *out;
 } tab[] ={
   {"1E1",  0, MPFR_RNDN, "1E1"},

@@ -24,7 +24,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 int
-mpfr_get_z (mpz_ptr z, mpfr_srcptr f, mp_rnd_t rnd)
+mpfr_get_z (mpz_ptr z, mpfr_srcptr f, mpfr_rnd_t rnd)
 {
   int inex;
   mpfr_t r;

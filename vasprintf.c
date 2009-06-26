@@ -174,7 +174,7 @@ struct printf_spec
   int prec;                     /* Precision */
 
   enum arg_t arg_type;          /* Type of argument */
-  mp_rnd_t rnd_mode;            /* Rounding mode */
+  mpfr_rnd_t rnd_mode;            /* Rounding mode */
   char spec;                    /* Conversion specifier */
 
   char pad;                     /* Padding character */

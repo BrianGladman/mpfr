@@ -220,12 +220,12 @@ test_large_small (void)
     {
       mpfr_set_ui_2exp (x, 1, mpfr_get_emax () - 1, MPFR_RNDN);
       mpfr_set_ui_2exp (y, 1, mpfr_get_emin (), MPFR_RNDN);
-      inexact = mpfr_hypot (z, x, y, (mp_rnd_t) r);
-      inex2 = mpfr_add_ui (y, x, 1, (mp_rnd_t) r);
+      inexact = mpfr_hypot (z, x, y, (mpfr_rnd_t) r);
+      inex2 = mpfr_add_ui (y, x, 1, (mpfr_rnd_t) r);
       if (! mpfr_equal_p (y, z) || ! SAME_SIGN (inexact, inex2))
         {
           printf ("Error 3 in test_large_small, %s%s\n",
-                  mpfr_print_rnd_mode ((mp_rnd_t) r),
+                  mpfr_print_rnd_mode ((mpfr_rnd_t) r),
                   ext ? ", extended exponent range" : "");
           printf ("Expected ");
           mpfr_out_str (stdout, 2, 0, y, MPFR_RNDN);
@@ -255,11 +255,11 @@ check_overflow (void)
   RND_LOOP(r)
     {
       mpfr_clear_overflow ();
-      inex = mpfr_hypot (y, x, x, (mp_rnd_t) r);
+      inex = mpfr_hypot (y, x, x, (mpfr_rnd_t) r);
       if (!mpfr_overflow_p ())
         {
           printf ("No overflow in check_overflow for %s%s\n",
-                  mpfr_print_rnd_mode ((mp_rnd_t) r),
+                  mpfr_print_rnd_mode ((mpfr_rnd_t) r),
                   ext ? ", extended exponent range" : "");
           exit (1);
         }

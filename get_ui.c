@@ -23,7 +23,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 unsigned long
-mpfr_get_ui (mpfr_srcptr f, mp_rnd_t rnd)
+mpfr_get_ui (mpfr_srcptr f, mpfr_rnd_t rnd)
 {
   mp_prec_t prec;
   unsigned long s;

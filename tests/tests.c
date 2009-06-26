@@ -534,10 +534,10 @@ tests_default_random (mpfr_ptr x, int pos, mp_exp_t emin, mp_exp_t emax)
    bad_cases functions. */
 static void
 test5rm (int (*fct) (FLIST), mpfr_srcptr x, mpfr_ptr y, mpfr_ptr z,
-         mp_rnd_t rnd, int test_one, char *name)
+         mpfr_rnd_t rnd, int test_one, char *name)
 {
   mp_prec_t yprec = MPFR_PREC (y);
-  mp_rnd_t rndnext = MPFR_RND_MAX;  /* means uninitialized */
+  mpfr_rnd_t rndnext = MPFR_RND_MAX;  /* means uninitialized */
 
   MPFR_ASSERTN (test_one || rnd == MPFR_RNDZ);
   mpfr_set_prec (z, yprec);
@@ -622,7 +622,7 @@ data_check (char *f, int (*foo) (FLIST), char *name)
   FILE *fp;
   mp_prec_t xprec, yprec;
   mpfr_t x, y, z;
-  mp_rnd_t rnd;
+  mpfr_rnd_t rnd;
   char r;
   int c;
 

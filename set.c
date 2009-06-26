@@ -24,7 +24,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* set a to abs(b) * signb: a=b when signb = SIGN(b), a=abs(b) when signb=1 */
 int
-mpfr_set4 (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode, int signb)
+mpfr_set4 (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode, int signb)
 {
   /* Sign is ALWAYS copied */
   MPFR_SET_SIGN (a, signb);
@@ -67,7 +67,7 @@ mpfr_set4 (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode, int signb)
 /* Set a to b  */
 #undef mpfr_set
 int
-mpfr_set (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
+mpfr_set (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode)
 {
   return mpfr_set4 (a, b, rnd_mode, MPFR_SIGN (b));
 }
@@ -75,7 +75,7 @@ mpfr_set (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
 /* Set a to |b| */
 #undef mpfr_abs
 int
-mpfr_abs (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
+mpfr_abs (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode)
 {
   return mpfr_set4 (a, b, rnd_mode, MPFR_SIGN_POS);
 }

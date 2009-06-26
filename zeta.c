@@ -139,7 +139,7 @@ mpfr_zeta_part_a (mpfr_t sum, mpfr_srcptr s, int n)
    Output: z - Zeta(s) rounded to the precision of z with direction rnd_mode
 */
 static int
-mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
+mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
 {
   mpfr_t b, c, z_pre, f, s1;
   double beta, sd, dnep;
@@ -295,7 +295,7 @@ mpfr_zeta_pos (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
 }
 
 int
-mpfr_zeta (mpfr_t z, mpfr_srcptr s, mp_rnd_t rnd_mode)
+mpfr_zeta (mpfr_t z, mpfr_srcptr s, mpfr_rnd_t rnd_mode)
 {
   mpfr_t z_pre, s1, y, p;
   double sd, eps, m1, c;

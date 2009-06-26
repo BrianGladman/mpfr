@@ -160,7 +160,7 @@ check_mixed (FILE *fout)
   mpz_t mpz;
   mpq_t mpq;
   mpf_t mpf;
-  mp_rnd_t rnd = MPFR_RNDN;
+  mpfr_rnd_t rnd = MPFR_RNDN;
 
   mp_size_t limb_size = 3;
   mp_limb_t limb[3];
@@ -273,7 +273,7 @@ check_random (FILE *fout, int nb_tests)
 {
   int i;
   mpfr_t x;
-  mp_rnd_t rnd;
+  mpfr_rnd_t rnd;
   char flag[] =
     {
       '-',

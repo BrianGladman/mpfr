@@ -29,7 +29,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 static int
 check_denorms (void)
 {
-  mp_rnd_t rnd_mode;
+  mpfr_rnd_t rnd_mode;
   mpfr_t x;
   double d, d2, dd, f, dbl_min;
   int fail = 0, k, n;

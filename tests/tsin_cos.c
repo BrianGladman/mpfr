@@ -46,7 +46,7 @@ large_test (int prec, int N)
 
 static void
 check53 (const char *xs, const char *sin_xs, const char *cos_xs,
-         mp_rnd_t rnd_mode)
+         mpfr_rnd_t rnd_mode)
 {
   mpfr_t xx, s, c;
 
@@ -75,7 +75,7 @@ check53 (const char *xs, const char *sin_xs, const char *cos_xs,
 }
 
 static void
-check53sin (const char *xs, const char *sin_xs, mp_rnd_t rnd_mode)
+check53sin (const char *xs, const char *sin_xs, mpfr_rnd_t rnd_mode)
 {
   mpfr_t xx, s, c;
 
@@ -95,7 +95,7 @@ check53sin (const char *xs, const char *sin_xs, mp_rnd_t rnd_mode)
 }
 
 static void
-check53cos (const char *xs, const char *cos_xs, mp_rnd_t rnd_mode)
+check53cos (const char *xs, const char *cos_xs, mpfr_rnd_t rnd_mode)
 {
   mpfr_t xx, c, s;
 
@@ -189,18 +189,18 @@ overflowed_sin_cos0 (void)
           mpfr_set_si (x, 0, MPFR_RNDN);
           mpfr_neg (x, x, MPFR_RNDN);
           mpfr_clear_flags ();
-          inex = mpfr_sin_cos (x, y, x, (mp_rnd_t) rnd);
+          inex = mpfr_sin_cos (x, y, x, (mpfr_rnd_t) rnd);
           if (! mpfr_overflow_p ())
             {
               printf ("Error in overflowed_sin_cos0 (rnd = %s):\n"
                       "  The overflow flag is not set.\n",
-                      mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
               err = 1;
             }
           if (! (mpfr_zero_p (x) && MPFR_SIGN (x) < 0))
             {
               printf ("Error in overflowed_sin_cos0 (rnd = %s):\n"
-                      "  Got sin = ", mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                      "  Got sin = ", mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
               mpfr_print_binary (x);
               printf (" instead of -0.\n");
               err = 1;
@@ -211,14 +211,14 @@ overflowed_sin_cos0 (void)
                 {
                   printf ("Error in overflowed_sin_cos0 (rnd = %s):\n"
                           "  The inexact value must be non-zero.\n",
-                          mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                          mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                   err = 1;
                 }
               if (! mpfr_equal_p (y, z))
                 {
                   printf ("Error in overflowed_sin_cos0 (rnd = %s):\n"
                           "  Got cos = ",
-                          mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                          mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                   mpfr_print_binary (y);
                   printf (" instead of 0.11111111E%d.\n", emax);
                   err = 1;
@@ -230,14 +230,14 @@ overflowed_sin_cos0 (void)
                 {
                   printf ("Error in overflowed_sin_cos0 (rnd = %s):\n"
                           "  The inexact value must be non-zero.\n",
-                          mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                          mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                   err = 1;
                 }
               if (! (mpfr_inf_p (y) && MPFR_SIGN (y) > 0))
                 {
                   printf ("Error in overflowed_sin_cos0 (rnd = %s):\n"
                           "  Got cos = ",
-                          mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                          mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                   mpfr_print_binary (y);
                   printf (" instead of +Inf.\n");
                   err = 1;

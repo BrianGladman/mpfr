@@ -454,7 +454,7 @@ after the format string.
 +++ MPFR_LOG_BEGIN(x)
  Add this macro at the beginning of a function.
 Example:
- int dodo (mpfr_t x, mpfr_t op, int cnt, mp_rnd_t rnd) {
+ int dodo (mpfr_t x, mpfr_t op, int cnt, mpfr_rnd_t rnd) {
   [decl]
   MPFR_LOG_BEGIN (("op[%#R]=%R rnd=%s", op, op, RND2STR(rnd)));
 
@@ -506,7 +506,7 @@ could use theses macros:
 If you plan to add a new function, you could follow this schema:
 
 int
-mpfr_toto (mpfr_ptr rop, mpfr_srcptr op, mp_rnd_t rnd)
+mpfr_toto (mpfr_ptr rop, mpfr_srcptr op, mpfr_rnd_t rnd)
 {
   [Declare all used variables]
   int inexact;

@@ -27,7 +27,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #ifdef CHECK_EXTERNAL
 static int
-test_div (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
+test_div (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 {
   int res;
   int ok = rnd_mode == MPFR_RNDN && mpfr_number_p (b) && mpfr_number_p (c);
@@ -65,7 +65,7 @@ inex_cmp (int a, int b)
 }
 
 static void
-check4 (const char *Ns, const char *Ds, mp_rnd_t rnd_mode, int p,
+check4 (const char *Ns, const char *Ds, mpfr_rnd_t rnd_mode, int p,
         const char *Qs)
 {
   mpfr_t q, n, d;
@@ -88,7 +88,7 @@ check4 (const char *Ns, const char *Ds, mp_rnd_t rnd_mode, int p,
 }
 
 static void
-check24 (const char *Ns, const char *Ds, mp_rnd_t rnd_mode, const char *Qs)
+check24 (const char *Ns, const char *Ds, mpfr_rnd_t rnd_mode, const char *Qs)
 {
   mpfr_t q, n, d;
 
@@ -253,11 +253,11 @@ check_convergence (void)
       RND_LOOP(j)
         {
           mpfr_set_ui (y, 1, MPFR_RNDN);
-          test_div (y, x, y, (mp_rnd_t) j);
+          test_div (y, x, y, (mpfr_rnd_t) j);
           if (mpfr_cmp_ui (y, 1))
             {
               printf ("mpfr_div failed for x=1.0, y=1.0, prec=%d rnd=%s\n",
-                      i, mpfr_print_rnd_mode ((mp_rnd_t) j));
+                      i, mpfr_print_rnd_mode ((mpfr_rnd_t) j));
               printf ("got "); mpfr_print_binary(y); puts ("");
               exit (1);
             }
@@ -330,12 +330,12 @@ check_hard (void)
                 {
                   RND_LOOP(rnd)
                     {
-                      inex = test_div (q, u, v, (mp_rnd_t) rnd);
+                      inex = test_div (q, u, v, (mpfr_rnd_t) rnd);
                       inex2 = get_inexact (q, u, v);
                       if (inex_cmp (inex, inex2))
                         {
                           printf ("Wrong inexact flag for rnd=%s: expected %d, got %d\n",
-                                  mpfr_print_rnd_mode ((mp_rnd_t) rnd), inex2, inex);
+                                  mpfr_print_rnd_mode ((mpfr_rnd_t) rnd), inex2, inex);
                           printf ("u=  "); mpfr_dump (u);
                           printf ("v=  "); mpfr_dump (v);
                           printf ("q=  "); mpfr_dump (q);
@@ -517,7 +517,7 @@ check_inexact (void)
   mpfr_t x, y, z, u;
   mp_prec_t px, py, pu;
   int inexact, cmp;
-  mp_rnd_t rnd;
+  mpfr_rnd_t rnd;
 
   mpfr_init (x);
   mpfr_init (y);
@@ -767,7 +767,7 @@ consistency (void)
 
   for (i = 0; i < 10000; i++)
     {
-      mp_rnd_t rnd;
+      mpfr_rnd_t rnd;
       mp_prec_t px, py, pz, p;
       int inex1, inex2;
 

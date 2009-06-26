@@ -23,7 +23,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 int
-mpfr_exp10 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
+mpfr_exp10 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   return mpfr_ui_pow (y, 10, x, rnd_mode);
 }

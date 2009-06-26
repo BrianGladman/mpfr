@@ -31,7 +31,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* FIXME: efficient problems with large arguments; see comments in gamma.c. */
 
 int
-mpfr_fac_ui (mpfr_ptr y, unsigned long int x, mp_rnd_t rnd_mode)
+mpfr_fac_ui (mpfr_ptr y, unsigned long int x, mpfr_rnd_t rnd_mode)
 {
   mpfr_t t;       /* Variable of Intermediary Calculation*/
   unsigned long i;
@@ -41,7 +41,7 @@ mpfr_fac_ui (mpfr_ptr y, unsigned long int x, mp_rnd_t rnd_mode)
   mp_prec_t Nt;   /* Precision of Intermediary Calculation variable */
   mp_prec_t err;  /* Precision of error */
 
-  mp_rnd_t rnd;
+  mpfr_rnd_t rnd;
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_ZIV_DECL (loop);
 

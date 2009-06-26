@@ -46,7 +46,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "round_raw_generic.c"
 
 int
-mpfr_prec_round (mpfr_ptr x, mp_prec_t prec, mp_rnd_t rnd_mode)
+mpfr_prec_round (mpfr_ptr x, mp_prec_t prec, mpfr_rnd_t rnd_mode)
 {
   mp_limb_t *tmp, *xp;
   int carry, inexact;
@@ -118,8 +118,8 @@ mpfr_prec_round (mpfr_ptr x, mp_prec_t prec, mp_rnd_t rnd_mode)
 */
 
 int
-mpfr_can_round (mpfr_srcptr b, mp_exp_t err, mp_rnd_t rnd1,
-                mp_rnd_t rnd2, mp_prec_t prec)
+mpfr_can_round (mpfr_srcptr b, mp_exp_t err, mpfr_rnd_t rnd1,
+                mpfr_rnd_t rnd2, mp_prec_t prec)
 {
   if (MPFR_UNLIKELY(MPFR_IS_SINGULAR(b)))
     return 0; /* We cannot round if Zero, Nan or Inf */
@@ -130,7 +130,7 @@ mpfr_can_round (mpfr_srcptr b, mp_exp_t err, mp_rnd_t rnd1,
 
 int
 mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mp_exp_t err0,
-                    mp_rnd_t rnd1, mp_rnd_t rnd2, mp_prec_t prec)
+                    mpfr_rnd_t rnd1, mpfr_rnd_t rnd2, mp_prec_t prec)
 {
   mp_prec_t err;
   mp_size_t k, k1, tn;

@@ -24,7 +24,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 int
-mpfr_set_f (mpfr_ptr y, mpf_srcptr x, mp_rnd_t rnd_mode)
+mpfr_set_f (mpfr_ptr y, mpf_srcptr x, mpfr_rnd_t rnd_mode)
 {
   mp_limb_t *my, *mx, *tmp;
   unsigned long cnt, sx, sy;

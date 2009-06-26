@@ -62,7 +62,7 @@ check_large (void)
 
 /* Wrapper for tgeneric */
 static int
-my_const_pi (mpfr_ptr x, mpfr_srcptr y, mp_rnd_t r)
+my_const_pi (mpfr_ptr x, mpfr_srcptr y, mpfr_rnd_t r)
 {
   return mpfr_const_pi (x, r);
 }
@@ -76,7 +76,7 @@ main (int argc, char *argv[])
 {
   mpfr_t x;
   mp_prec_t p;
-  mp_rnd_t rnd;
+  mpfr_rnd_t rnd;
 
   tests_start_mpfr ();
 
@@ -88,7 +88,7 @@ main (int argc, char *argv[])
         p = a;
     }
 
-  rnd = (argc > 2) ? (mp_rnd_t) atoi(argv[2]) : MPFR_RNDZ;
+  rnd = (argc > 2) ? (mpfr_rnd_t) atoi(argv[2]) : MPFR_RNDZ;
 
   mpfr_init2 (x, p);
   mpfr_const_pi (x, rnd);

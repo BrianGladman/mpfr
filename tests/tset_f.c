@@ -134,11 +134,11 @@ main (void)
         {
           if (i)
             mpfr_set_si (x, i, MPFR_RNDN);
-          inexact = mpfr_set_f (x, y, (mp_rnd_t) r);
+          inexact = mpfr_set_f (x, y, (mpfr_rnd_t) r);
           if (!MPFR_IS_ZERO(x) || !MPFR_IS_POS(x) || inexact)
             {
               printf ("mpfr_set_f(x,0) failed for %s, i = %d\n",
-                      mpfr_print_rnd_mode ((mp_rnd_t) r), i);
+                      mpfr_print_rnd_mode ((mpfr_rnd_t) r), i);
               exit (1);
             }
         }

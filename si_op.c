@@ -25,7 +25,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 int
-mpfr_add_si (mpfr_ptr y, mpfr_srcptr x, long int u, mp_rnd_t rnd_mode)
+mpfr_add_si (mpfr_ptr y, mpfr_srcptr x, long int u, mpfr_rnd_t rnd_mode)
 {
   if (u >= 0)
     return mpfr_add_ui (y, x, u, rnd_mode);
@@ -34,7 +34,7 @@ mpfr_add_si (mpfr_ptr y, mpfr_srcptr x, long int u, mp_rnd_t rnd_mode)
 }
 
 int
-mpfr_sub_si (mpfr_ptr y, mpfr_srcptr x, long int u, mp_rnd_t rnd_mode)
+mpfr_sub_si (mpfr_ptr y, mpfr_srcptr x, long int u, mpfr_rnd_t rnd_mode)
 {
   if (u >= 0)
     return mpfr_sub_ui (y, x, u, rnd_mode);
@@ -43,7 +43,7 @@ mpfr_sub_si (mpfr_ptr y, mpfr_srcptr x, long int u, mp_rnd_t rnd_mode)
 }
 
 int
-mpfr_si_sub (mpfr_ptr y, long int u, mpfr_srcptr x, mp_rnd_t rnd_mode)
+mpfr_si_sub (mpfr_ptr y, long int u, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   if (u >= 0)
     return mpfr_ui_sub (y, u, x, rnd_mode);

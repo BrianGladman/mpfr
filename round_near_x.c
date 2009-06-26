@@ -25,7 +25,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 /* Use MPFR_FAST_COMPUTE_IF_SMALL_INPUT instead (a simple wrapper) */
 
 /* int mpfr_round_near_x (mpfr_ptr y, mpfr_srcptr v, mpfr_uexp_t err, int dir,
-                          mp_rnd_t rnd)
+                          mpfr_rnd_t rnd)
 
    TODO: fix this description.
    Assuming y = o(f(x)) = o(x + g(x)) with |g(x)| < 2^(EXP(v)-error)
@@ -154,7 +154,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 int
 mpfr_round_near_x (mpfr_ptr y, mpfr_srcptr v, mpfr_uexp_t err, int dir,
-                   mp_rnd_t rnd)
+                   mpfr_rnd_t rnd)
 {
   int inexact, sign;
   unsigned int old_flags = __gmpfr_flags;

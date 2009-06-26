@@ -150,43 +150,43 @@ check_for_zero (void)
            i+=MPFR_SIGN_POS-MPFR_SIGN_NEG)
         {
           MPFR_SET_SIGN(x, i);
-          mpfr_add_z (x, x, z, (mp_rnd_t) r);
+          mpfr_add_z (x, x, z, (mpfr_rnd_t) r);
           if (!MPFR_IS_ZERO(x) || MPFR_SIGN(x)!=i)
             {
               printf("GMP Zero errors for add_z & rnd=%s & s=%d\n",
-                     mpfr_print_rnd_mode ((mp_rnd_t) r), i);
+                     mpfr_print_rnd_mode ((mpfr_rnd_t) r), i);
               mpfr_dump (x);
               exit (1);
             }
-          mpfr_sub_z (x, x, z, (mp_rnd_t) r);
+          mpfr_sub_z (x, x, z, (mpfr_rnd_t) r);
           if (!MPFR_IS_ZERO(x) || MPFR_SIGN(x)!=i)
             {
               printf("GMP Zero errors for sub_z & rnd=%s & s=%d\n",
-                     mpfr_print_rnd_mode ((mp_rnd_t) r), i);
+                     mpfr_print_rnd_mode ((mpfr_rnd_t) r), i);
               mpfr_dump (x);
               exit (1);
             }
-          mpfr_mul_z (x, x, z, (mp_rnd_t) r);
+          mpfr_mul_z (x, x, z, (mpfr_rnd_t) r);
           if (!MPFR_IS_ZERO(x) || MPFR_SIGN(x)!=i)
             {
               printf("GMP Zero errors for mul_z & rnd=%s & s=%d\n",
-                     mpfr_print_rnd_mode ((mp_rnd_t) r), i);
+                     mpfr_print_rnd_mode ((mpfr_rnd_t) r), i);
               mpfr_dump (x);
               exit (1);
             }
-          mpfr_add_q (x, x, q, (mp_rnd_t) r);
+          mpfr_add_q (x, x, q, (mpfr_rnd_t) r);
           if (!MPFR_IS_ZERO(x) || MPFR_SIGN(x)!=i)
             {
               printf("GMP Zero errors for add_q & rnd=%s & s=%d\n",
-                     mpfr_print_rnd_mode ((mp_rnd_t) r), i);
+                     mpfr_print_rnd_mode ((mpfr_rnd_t) r), i);
               mpfr_dump (x);
               exit (1);
             }
-          mpfr_sub_q (x, x, q, (mp_rnd_t) r);
+          mpfr_sub_q (x, x, q, (mpfr_rnd_t) r);
           if (!MPFR_IS_ZERO(x) || MPFR_SIGN(x)!=i)
             {
               printf("GMP Zero errors for sub_q & rnd=%s & s=%d\n",
-                     mpfr_print_rnd_mode ((mp_rnd_t) r), i);
+                     mpfr_print_rnd_mode ((mpfr_rnd_t) r), i);
               mpfr_dump (x);
               exit (1);
              }
@@ -315,7 +315,7 @@ test_cmp_f (mp_prec_t pmin, mp_prec_t pmax, int nmax)
 }
 
 static void
-test_specialz (int (*mpfr_func)(mpfr_ptr, mpfr_srcptr, mpz_srcptr, mp_rnd_t),
+test_specialz (int (*mpfr_func)(mpfr_ptr, mpfr_srcptr, mpz_srcptr, mpfr_rnd_t),
                void (*mpz_func)(mpz_ptr, mpz_srcptr, mpz_srcptr),
                const char *op)
 {
@@ -391,13 +391,13 @@ test_specialz (int (*mpfr_func)(mpfr_ptr, mpfr_srcptr, mpz_srcptr, mp_rnd_t),
 
 static void
 test_genericz (mp_prec_t p0, mp_prec_t p1, unsigned int N,
-               int (*func)(mpfr_ptr, mpfr_srcptr, mpz_srcptr, mp_rnd_t),
+               int (*func)(mpfr_ptr, mpfr_srcptr, mpz_srcptr, mpfr_rnd_t),
                const char *op)
 {
   mp_prec_t prec;
   mpfr_t arg1, dst_big, dst_small, tmp;
   mpz_t  arg2;
-  mp_rnd_t rnd;
+  mpfr_rnd_t rnd;
   int inexact, compare, compare2;
   unsigned int n;
 
@@ -468,13 +468,13 @@ test_genericz (mp_prec_t p0, mp_prec_t p1, unsigned int N,
 
 static void
 test_genericq (mp_prec_t p0, mp_prec_t p1, unsigned int N,
-               int (*func)(mpfr_ptr, mpfr_srcptr, mpq_srcptr, mp_rnd_t),
+               int (*func)(mpfr_ptr, mpfr_srcptr, mpq_srcptr, mpfr_rnd_t),
                const char *op)
 {
   mp_prec_t prec;
   mpfr_t arg1, dst_big, dst_small, tmp;
   mpq_t  arg2;
-  mp_rnd_t rnd;
+  mpfr_rnd_t rnd;
   int inexact, compare, compare2;
   unsigned int n;
 
@@ -548,7 +548,7 @@ test_genericq (mp_prec_t p0, mp_prec_t p1, unsigned int N,
 
 static void
 test_specialq (mp_prec_t p0, mp_prec_t p1, unsigned int N,
-               int (*mpfr_func)(mpfr_ptr, mpfr_srcptr, mpq_srcptr, mp_rnd_t),
+               int (*mpfr_func)(mpfr_ptr, mpfr_srcptr, mpq_srcptr, mpfr_rnd_t),
                void (*mpq_func)(mpq_ptr, mpq_srcptr, mpq_srcptr),
                const char *op)
 {

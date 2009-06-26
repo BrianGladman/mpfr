@@ -84,7 +84,7 @@ test1 (void)
 }
 
 static void
-check1 (mpfr_ptr x, mp_prec_t prec, unsigned long nt, mp_rnd_t rnd)
+check1 (mpfr_ptr x, mp_prec_t prec, unsigned long nt, mpfr_rnd_t rnd)
 {
   mpfr_t y, z, t;
   int inexact, compare, compare2;
@@ -191,7 +191,7 @@ main (int argc, char *argv[])
   {
   mpfr_t z, t;
   mp_prec_t prec;
-  mp_rnd_t rnd;
+  mpfr_rnd_t rnd;
   unsigned int n;
 
   mp_prec_t p0=2, p1=100;

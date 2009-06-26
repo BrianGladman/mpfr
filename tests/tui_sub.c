@@ -142,7 +142,7 @@ special (void)
 
 /* checks that (y-x) gives the right results with 53 bits of precision */
 static void
-check (unsigned long y, const char *xs, mp_rnd_t rnd_mode, const char *zs)
+check (unsigned long y, const char *xs, mpfr_rnd_t rnd_mode, const char *zs)
 {
   mpfr_t xx, zz;
 
@@ -166,7 +166,7 @@ check_two_sum (mp_prec_t p)
 {
   unsigned int x;
   mpfr_t y, u, v, w;
-  mp_rnd_t rnd;
+  mpfr_rnd_t rnd;
   int inexact;
 
   mpfr_inits2 (p, y, u, v, w, (mpfr_ptr) 0);
@@ -247,8 +247,8 @@ static void check_neg (void)
             {
               int tneg, tsub;
 
-              tneg = mpfr_neg (yneg, x, (mp_rnd_t) r);
-              tsub = mpfr_ui_sub (ysub, 0, x, (mp_rnd_t) r);
+              tneg = mpfr_neg (yneg, x, (mpfr_rnd_t) r);
+              tsub = mpfr_ui_sub (ysub, 0, x, (mpfr_rnd_t) r);
               MPFR_ASSERTN (mpfr_equal_p (yneg, ysub));
               MPFR_ASSERTN (!(MPFR_IS_POS (yneg) ^ MPFR_IS_POS (ysub)));
               MPFR_ASSERTN (tneg == tsub);

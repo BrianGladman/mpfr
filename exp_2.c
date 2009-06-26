@@ -80,7 +80,7 @@ mpz_normalize2 (mpz_t rop, mpz_t z, mp_exp_t expz, mp_exp_t target)
    This function returns with the exact flags due to exp.
 */
 int
-mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
+mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   long n;
   unsigned long K, k, l, err; /* FIXME: Which type ? */

@@ -436,7 +436,7 @@ parse_string (mpfr_t x, struct parsed_string *pstr,
    and the precision of x.
    Returns the ternary value. */
 static int
-parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mp_rnd_t rnd)
+parsed_string_to_mpfr (mpfr_t x, struct parsed_string *pstr, mpfr_rnd_t rnd)
 {
   mp_prec_t prec;
   mp_exp_t  exp;
@@ -780,7 +780,7 @@ free_parsed_string (struct parsed_string *pstr)
 
 int
 mpfr_strtofr (mpfr_t x, const char *string, char **end, int base,
-              mp_rnd_t rnd)
+              mpfr_rnd_t rnd)
 {
   int res;
   struct parsed_string pstr;

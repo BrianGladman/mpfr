@@ -118,7 +118,7 @@ mpfr_cos2_aux (mpfr_ptr f, mpfr_srcptr r)
 }
 
 int
-mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
+mpfr_cos (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   mp_prec_t K0, K, precy, m, k, l;
   int inexact, reduce = 0;

@@ -26,7 +26,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* Wrapper for tgeneric */
 static int
-my_const_catalan (mpfr_ptr x, mpfr_srcptr y, mp_rnd_t r)
+my_const_catalan (mpfr_ptr x, mpfr_srcptr y, mpfr_rnd_t r)
 {
   return mpfr_const_catalan (x, r);
 }

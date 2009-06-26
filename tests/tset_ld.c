@@ -70,7 +70,7 @@ check_set_get (long double d, mpfr_t x)
 
   for (r = 0; r < MPFR_RND_MAX; r++)
     {
-      inex = mpfr_set_ld (x, d, (mp_rnd_t) r);
+      inex = mpfr_set_ld (x, d, (mpfr_rnd_t) r);
       if (inex != 0)
         {
           printf ("Error: mpfr_set_ld should be exact\n");
@@ -79,7 +79,7 @@ check_set_get (long double d, mpfr_t x)
           mpfr_dump (x);
           exit (1);
         }
-      e = mpfr_get_ld (x, (mp_rnd_t) r);
+      e = mpfr_get_ld (x, (mpfr_rnd_t) r);
       if ((Isnan_ld(d) && ! Isnan_ld(e)) ||
           (Isnan_ld(e) && ! Isnan_ld(d)) ||
           (e != d && !(Isnan_ld(e) && Isnan_ld(d))))

@@ -36,7 +36,7 @@ static const char * const val[] = {
 
 static int
 test_mul (int i, int div, mpfr_ptr y, mpfr_srcptr x,
-          unsigned long int n, mp_rnd_t r)
+          unsigned long int n, mpfr_rnd_t r)
 {
   return
     i == 0 ? (div ? mpfr_div_2ui : mpfr_mul_2ui) (y, x, n, r) :

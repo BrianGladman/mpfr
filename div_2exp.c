@@ -27,7 +27,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #undef mpfr_div_2exp
 
 int
-mpfr_div_2exp (mpfr_ptr y, mpfr_srcptr x, unsigned long int n, mp_rnd_t rnd_mode)
+mpfr_div_2exp (mpfr_ptr y, mpfr_srcptr x, unsigned long int n, mpfr_rnd_t rnd_mode)
 {
   return mpfr_div_2ui (y, x, n, rnd_mode);
 }

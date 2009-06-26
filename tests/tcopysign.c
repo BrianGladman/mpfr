@@ -27,7 +27,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 static void
 copysign_variant (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
-                  mp_rnd_t rnd_mode, int k)
+                  mpfr_rnd_t rnd_mode, int k)
 {
   mpfr_clear_flags ();
   switch (k)

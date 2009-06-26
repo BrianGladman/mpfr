@@ -27,7 +27,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #ifdef CHECK_EXTERNAL
 static int
-test_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
+test_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 {
   int res;
   int ok = rnd_mode == MPFR_RNDN && mpfr_number_p (b) && mpfr_number_p (c);
@@ -55,7 +55,7 @@ test_mul (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
 /* checks that x*y gives the right result */
 static void
-pcheck (const char *xs, const char *ys, const char *res, mp_rnd_t rnd_mode,
+pcheck (const char *xs, const char *ys, const char *res, mpfr_rnd_t rnd_mode,
         unsigned int px, unsigned int py, unsigned int pz)
 {
   mpfr_t xx, yy, zz;
@@ -89,7 +89,7 @@ pcheck (const char *xs, const char *ys, const char *res, mp_rnd_t rnd_mode,
 }
 
 static void
-check53 (const char *xs, const char *ys, mp_rnd_t rnd_mode, const char *zs)
+check53 (const char *xs, const char *ys, mpfr_rnd_t rnd_mode, const char *zs)
 {
   mpfr_t xx, yy, zz;
 
@@ -121,7 +121,7 @@ check53 (const char *xs, const char *ys, mp_rnd_t rnd_mode, const char *zs)
 
 /* checks that x*y gives the right result with 24 bits of precision */
 static void
-check24 (const char *xs, const char *ys, mp_rnd_t rnd_mode, const char *zs)
+check24 (const char *xs, const char *ys, mpfr_rnd_t rnd_mode, const char *zs)
 {
   mpfr_t xx, yy, zz;
 
@@ -215,7 +215,7 @@ check_exact (void)
   mpfr_t a, b, c, d;
   mp_prec_t prec;
   int i, inexact;
-  mp_rnd_t rnd;
+  mpfr_rnd_t rnd;
 
   mpfr_init (a);
   mpfr_init (b);
@@ -616,7 +616,7 @@ check_regression (void)
 
 /* multiplies x by 53-bit approximation of Pi */
 static int
-mpfr_mulpi (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t r)
+mpfr_mulpi (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t r)
 {
   mpfr_t z;
   int inex;

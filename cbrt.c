@@ -42,7 +42,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  */
 
 int
-mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
+mpfr_cbrt (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   mpz_t m;
   mp_exp_t e, r, sh;

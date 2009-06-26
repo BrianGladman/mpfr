@@ -56,7 +56,7 @@ mpfr_round_raw_generic(
                        mp_limb_t *yp,
 #endif
                        const mp_limb_t *xp, mp_prec_t xprec,
-                       int neg, mp_prec_t yprec, mp_rnd_t rnd_mode
+                       int neg, mp_prec_t yprec, mpfr_rnd_t rnd_mode
 #if use_inexp != 0
                        , int *inexp
 #endif

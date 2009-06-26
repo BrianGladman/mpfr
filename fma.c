@@ -28,7 +28,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 int
 mpfr_fma (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
-          mp_rnd_t rnd_mode)
+          mpfr_rnd_t rnd_mode)
 {
   int inexact;
   mpfr_t u;

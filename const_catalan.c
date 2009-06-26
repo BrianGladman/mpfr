@@ -29,7 +29,7 @@ MPFR_DECL_INIT_CACHE(__gmpfr_cache_const_catalan, mpfr_const_catalan_internal);
 /* Set User Interface */
 #undef mpfr_const_catalan
 int
-mpfr_const_catalan (mpfr_ptr x, mp_rnd_t rnd_mode) {
+mpfr_const_catalan (mpfr_ptr x, mpfr_rnd_t rnd_mode) {
   return mpfr_cache (x, __gmpfr_cache_const_catalan, rnd_mode);
 }
 
@@ -82,7 +82,7 @@ S (mpz_t T, mpz_t P, mpz_t Q, unsigned long n1, unsigned long n2)
    G = Pi/8*log(2+sqrt(3)) + 3/8*sum(k!^2/(2k)!/(2k+1)^2,k=0..infinity)
 */
 int
-mpfr_const_catalan_internal (mpfr_ptr g, mp_rnd_t rnd_mode)
+mpfr_const_catalan_internal (mpfr_ptr g, mpfr_rnd_t rnd_mode)
 {
   mpfr_t x, y, z;
   mpz_t T, P, Q;

@@ -27,7 +27,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  *     y = exp(z*log(2)). The result is exact iff z is an integer. */
 
 int
-mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
+mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   int inexact;
   long xint;
@@ -62,7 +62,7 @@ mpfr_exp2 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
   MPFR_ASSERTN (MPFR_EMIN_MIN >= LONG_MIN + 2);
   if (MPFR_UNLIKELY (mpfr_cmp_si (x, __gmpfr_emin - 1) < 0))
     {
-      mp_rnd_t rnd2 = rnd_mode;
+      mpfr_rnd_t rnd2 = rnd_mode;
       /* in round to nearest mode, round to zero when x <= __gmpfr_emin-2 */
       if (rnd_mode == MPFR_RNDN &&
           mpfr_cmp_si_2exp (x, __gmpfr_emin - 2, 0) <= 0)

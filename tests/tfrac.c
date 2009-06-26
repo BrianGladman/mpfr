@@ -30,7 +30,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define PMAX (PIP+2*PFP)
 
 static void
-check0 (mpfr_ptr ip, mpfr_ptr fp, mp_prec_t prec, mp_rnd_t rnd)
+check0 (mpfr_ptr ip, mpfr_ptr fp, mp_prec_t prec, mpfr_rnd_t rnd)
 {
   mpfr_t sum, tmp, dst, fp2;
   int inex1, inex2;
@@ -118,12 +118,12 @@ check1 (mpfr_ptr ip, mpfr_ptr fp)
 
   for (rnd = 0; rnd < MPFR_RND_MAX ; rnd++)
     {
-      check0 (ip, fp, PMAX, (mp_rnd_t) rnd);
-      check0 (ip, fp, 70, (mp_rnd_t) rnd);
+      check0 (ip, fp, PMAX, (mpfr_rnd_t) rnd);
+      check0 (ip, fp, 70, (mpfr_rnd_t) rnd);
       mpfr_neg (fp, fp, MPFR_RNDN);
       mpfr_neg (ip, ip, MPFR_RNDN);
-      check0 (ip, fp, PMAX, (mp_rnd_t) rnd);
-      check0 (ip, fp, 70, (mp_rnd_t) rnd);
+      check0 (ip, fp, PMAX, (mpfr_rnd_t) rnd);
+      check0 (ip, fp, 70, (mpfr_rnd_t) rnd);
       mpfr_neg (fp, fp, MPFR_RNDN);
       mpfr_neg (ip, ip, MPFR_RNDN);
     }

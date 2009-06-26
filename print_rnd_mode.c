@@ -23,7 +23,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 const char *
-mpfr_print_rnd_mode (mp_rnd_t rnd_mode)
+mpfr_print_rnd_mode (mpfr_rnd_t rnd_mode)
 {
   switch (rnd_mode)
     {

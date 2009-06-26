@@ -45,7 +45,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* We can't use fits_s.h <= mpfr_cmp_ui */
 int
-mpfr_fits_intmax_p (mpfr_srcptr f, mp_rnd_t rnd)
+mpfr_fits_intmax_p (mpfr_srcptr f, mpfr_rnd_t rnd)
 {
   mp_exp_t exp;
   mp_prec_t prec;

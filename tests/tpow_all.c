@@ -54,7 +54,7 @@ err (const char *s, int i, int j, int rnd, mpfr_srcptr z, int inex)
   if (ext)
     puts ("extended exponent range");
   printf ("x = %s, y = %s, %s\n", val[i], val[j],
-          mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+          mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
   printf ("z = ");
   mpfr_out_str (stdout, 10, 0, z, MPFR_RNDN);
   printf ("\ninex = %d\n", inex);
@@ -74,7 +74,7 @@ err (const char *s, int i, int j, int rnd, mpfr_srcptr z, int inex)
  *   s1, s2: strings about the context.
  */
 static void
-cmpres (int spx, const void *px, const char *sy, mp_rnd_t rnd,
+cmpres (int spx, const void *px, const char *sy, mpfr_rnd_t rnd,
         mpfr_srcptr z1, int inex1, mpfr_srcptr z2, int inex2,
         unsigned int flags1, const char *s1, const char *s2)
 {
@@ -140,7 +140,7 @@ is_odd (mpfr_srcptr x)
    rounding mode; s is a string containing the function that called
    test_others. */
 static void
-test_others (const void *sx, const char *sy, mp_rnd_t rnd,
+test_others (const void *sx, const char *sy, mpfr_rnd_t rnd,
              mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z1,
              int inex1, unsigned int flags, const char *s)
 {
@@ -380,7 +380,7 @@ tst (void)
               exit (1);
             }
           mpfr_clear_flags ();
-          inex = mpfr_pow (z, x, y, (mp_rnd_t) rnd);
+          inex = mpfr_pow (z, x, y, (mpfr_rnd_t) rnd);
           flags = __gmpfr_flags;
           if (! MPFR_IS_NAN (z) && mpfr_nanflag_p ())
             err ("got NaN flag without NaN value", i, j, rnd, z, inex);
@@ -456,7 +456,7 @@ tst (void)
               if ((MPFR_IS_NEG (x) && is_odd (y)) ^ MPFR_IS_NEG (z))
                 err ("wrong sign", i, j, rnd, z, inex);
             }
-          test_others (val[i], val[j], (mp_rnd_t) rnd, x, y, z, inex, flags,
+          test_others (val[i], val[j], (mpfr_rnd_t) rnd, x, y, z, inex, flags,
                        "tst");
         }
   mpfr_clears (x, y, z, tmp, (mpfr_ptr) 0);
@@ -517,10 +517,10 @@ underflow_up1 (void)
             (i >= 8 && rnd == MPFR_RNDN);
 
           mpfr_clear_flags ();
-          inex = mpfr_pow (z, x, y, (mp_rnd_t) rnd);
-          cmpres (1, "2", sy, (mp_rnd_t) rnd, zero ? z0 : (mpfr_ptr) NULL,
+          inex = mpfr_pow (z, x, y, (mpfr_rnd_t) rnd);
+          cmpres (1, "2", sy, (mpfr_rnd_t) rnd, zero ? z0 : (mpfr_ptr) NULL,
                   -1, z, inex, flags, "underflow_up1", "mpfr_pow");
-          test_others ("2", sy, (mp_rnd_t) rnd, x, y, z, inex, flags,
+          test_others ("2", sy, (mpfr_rnd_t) rnd, x, y, z, inex, flags,
                        "underflow_up1");
         }
 
@@ -589,10 +589,10 @@ underflow_up2 (void)
       sprintf (sy, "%lu", (unsigned long) n);
 
       mpfr_clear_flags ();
-      inex = mpfr_pow (z, x, y, (mp_rnd_t) rnd);
-      cmpres (0, x, sy, (mp_rnd_t) rnd, z0, expected_inex, z, inex, ufinex,
+      inex = mpfr_pow (z, x, y, (mpfr_rnd_t) rnd);
+      cmpres (0, x, sy, (mpfr_rnd_t) rnd, z0, expected_inex, z, inex, ufinex,
               "underflow_up2", "mpfr_pow");
-      test_others (NULL, sy, (mp_rnd_t) rnd, x, y, z, inex, ufinex,
+      test_others (NULL, sy, (mpfr_rnd_t) rnd, x, y, z, inex, ufinex,
                    "underflow_up2");
     }
 
@@ -635,10 +635,10 @@ underflow_up3 (void)
           mpfr_nextabove (z0);
 
         mpfr_clear_flags ();
-        inex = mpfr_pow (z, x, y, (mp_rnd_t) rnd);
-        cmpres (0, x, "emin - 2", (mp_rnd_t) rnd, z0, expected_inex, z, inex,
+        inex = mpfr_pow (z, x, y, (mpfr_rnd_t) rnd);
+        cmpres (0, x, "emin - 2", (mpfr_rnd_t) rnd, z0, expected_inex, z, inex,
                 ufinex, "underflow_up3", "mpfr_pow");
-        test_others (NULL, "emin - 2", (mp_rnd_t) rnd, x, y, z, inex, ufinex,
+        test_others (NULL, "emin - 2", (mpfr_rnd_t) rnd, x, y, z, inex, ufinex,
                      "underflow_up3");
       }
 
@@ -694,7 +694,7 @@ overflow_inv (void)
               RND_LOOP (rnd)
                 {
                   int inf, overflow;
-                  mp_rnd_t rnd2;
+                  mpfr_rnd_t rnd2;
 
                   if (rnd == MPFR_RNDA)
                     rnd2 = s < 0 ? MPFR_RNDD : MPFR_RNDU;
@@ -702,20 +702,20 @@ overflow_inv (void)
                     rnd2 = rnd;
 
                   overflow = t == 0 ||
-                    ((mp_rnd_t) rnd == MPFR_RNDN && (precx > 10 || t == 1)) ||
-                    ((mp_rnd_t) rnd2 == (s < 0 ? MPFR_RNDD : MPFR_RNDU) &&
+                    ((mpfr_rnd_t) rnd == MPFR_RNDN && (precx > 10 || t == 1)) ||
+                    ((mpfr_rnd_t) rnd2 == (s < 0 ? MPFR_RNDD : MPFR_RNDU) &&
                      (precx > 10 || t <= 2));
                   inf = overflow &&
-                    ((mp_rnd_t) rnd == MPFR_RNDN ||
-                     (mp_rnd_t) rnd2 == (s < 0 ? MPFR_RNDD : MPFR_RNDU));
+                    ((mpfr_rnd_t) rnd == MPFR_RNDN ||
+                     (mpfr_rnd_t) rnd2 == (s < 0 ? MPFR_RNDD : MPFR_RNDU));
                   mpfr_clear_flags ();
-                  inex = mpfr_pow (z, x, y, (mp_rnd_t) rnd);
+                  inex = mpfr_pow (z, x, y, (mpfr_rnd_t) rnd);
                   if (overflow ^ !! mpfr_overflow_p ())
                     {
                       printf ("Bad overflow flag in %s\nfor mpfr_pow%s\n"
                               "s = %d, t = %d, %s\n", sp,
                               ext ? ", extended exponent range" : "",
-                              s, t, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                              s, t, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                       exit (1);
                     }
                   if (overflow && (inf ^ !! MPFR_IS_INF (z)))
@@ -723,13 +723,13 @@ overflow_inv (void)
                       printf ("Bad value in %s\nfor mpfr_pow%s\n"
                               "s = %d, t = %d, %s\nGot ", sp,
                               ext ? ", extended exponent range" : "",
-                              s, t, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                              s, t, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                       mpfr_out_str (stdout, 16, 0, z, MPFR_RNDN);
                       printf (" instead of %s value.\n",
                               inf ? "infinite" : "finite");
                       exit (1);
                     }
-                  test_others (NULL, "-1", (mp_rnd_t) rnd, x, y, z,
+                  test_others (NULL, "-1", (mpfr_rnd_t) rnd, x, y, z,
                                inex, __gmpfr_flags, sp);
                 }  /* RND_LOOP */
               mpfr_nexttoinf (x);

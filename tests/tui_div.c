@@ -27,7 +27,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* checks that y/x gives the right result with 53 bits of precision */
 static void
-check (unsigned long y, const char *xs, mp_rnd_t rnd_mode, const char *zs)
+check (unsigned long y, const char *xs, mpfr_rnd_t rnd_mode, const char *zs)
 {
   mpfr_t xx, zz;
 
@@ -73,8 +73,8 @@ check_inexact (void)
           mpfr_set_prec (z, py + px);
           for (rnd = 0; rnd < MPFR_RND_MAX; rnd++)
             {
-              inexact = mpfr_ui_div (y, u, x, (mp_rnd_t) rnd);
-              if (mpfr_mul (z, y, x, (mp_rnd_t) rnd))
+              inexact = mpfr_ui_div (y, u, x, (mpfr_rnd_t) rnd);
+              if (mpfr_mul (z, y, x, (mpfr_rnd_t) rnd))
                 {
                   printf ("z <- y * x should be exact\n");
                   exit (1);
@@ -85,7 +85,7 @@ check_inexact (void)
                   ((inexact < 0) && (cmp >= 0)))
                 {
                   printf ("Wrong inexact flag for u=%lu, rnd=%s\n",
-                          u, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                          u, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                   printf ("expected %d, got %d\n", cmp, inexact);
                   printf ("x="); mpfr_print_binary (x); puts ("");
                   printf ("y="); mpfr_print_binary (y); puts ("");
@@ -159,7 +159,7 @@ check_nan (void)
 }
 
 static int
-mpfr_inv (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t r)
+mpfr_inv (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t r)
 {
   return mpfr_ui_div (y, 1, x, r);
 }

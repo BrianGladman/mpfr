@@ -191,7 +191,7 @@ mpfr_set_erangeflag (void)
 #undef mpfr_check_range
 
 int
-mpfr_check_range (mpfr_ptr x, int t, mp_rnd_t rnd_mode)
+mpfr_check_range (mpfr_ptr x, int t, mpfr_rnd_t rnd_mode)
 {
   if (MPFR_LIKELY( MPFR_IS_PURE_FP(x)) )
     { /* x is a non-zero FP */
@@ -288,7 +288,7 @@ mpfr_erangeflag_p (void)
    is <= 2^(emin-2) in absolute value. */
 
 int
-mpfr_underflow (mpfr_ptr x, mp_rnd_t rnd_mode, int sign)
+mpfr_underflow (mpfr_ptr x, mpfr_rnd_t rnd_mode, int sign)
 {
   int inex;
 
@@ -312,7 +312,7 @@ mpfr_underflow (mpfr_ptr x, mp_rnd_t rnd_mode, int sign)
 /* #undef mpfr_overflow */
 
 int
-mpfr_overflow (mpfr_ptr x, mp_rnd_t rnd_mode, int sign)
+mpfr_overflow (mpfr_ptr x, mpfr_rnd_t rnd_mode, int sign)
 {
   int inex;
 

@@ -28,7 +28,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* sets the machine rounding mode to the value rnd_mode */
 int
-mpfr_set_machine_rnd_mode (mp_rnd_t rnd_mode)
+mpfr_set_machine_rnd_mode (mpfr_rnd_t rnd_mode)
 {
   switch (rnd_mode)
     {

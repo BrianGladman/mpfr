@@ -30,7 +30,7 @@ FILE *fout;
 #define check(d,r,b) check4(d,r,b,53)
 
 static void
-check4 (double d, mp_rnd_t rnd, int base, int prec)
+check4 (double d, mpfr_rnd_t rnd, int base, int prec)
 {
   mpfr_t x;
 
@@ -70,7 +70,7 @@ int
 main (int argc, char *argv[])
 {
   int i, N=10000, p;
-  mp_rnd_t rnd;
+  mpfr_rnd_t rnd;
   double d;
 
   tests_start_mpfr ();

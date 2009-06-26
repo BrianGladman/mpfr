@@ -26,7 +26,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-test.h"
 
 static int
-mpfr_lgamma_nosign (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
+mpfr_lgamma_nosign (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 {
   int inex, sign;
 
@@ -381,7 +381,7 @@ special (void)
 }
 
 static int
-mpfr_lgamma1 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t r)
+mpfr_lgamma1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t r)
 {
   int sign;
 

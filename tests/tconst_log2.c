@@ -31,7 +31,7 @@ static void
 check (mp_prec_t p0, mp_prec_t p1)
 {
   mpfr_t x, y, z;
-  mp_rnd_t rnd;
+  mpfr_rnd_t rnd;
   int dif;
 
   mpfr_init (x);
@@ -127,7 +127,7 @@ check_cache (void)
 
 /* Wrapper for tgeneric */
 static int
-my_const_log2 (mpfr_ptr x, mpfr_srcptr y, mp_rnd_t r)
+my_const_log2 (mpfr_ptr x, mpfr_srcptr y, mpfr_rnd_t r)
 {
   return mpfr_const_log2 (x, r);
 }
@@ -141,12 +141,12 @@ main (int argc, char *argv[])
 {
   mpfr_t x;
   int p;
-  mp_rnd_t rnd;
+  mpfr_rnd_t rnd;
 
   tests_start_mpfr ();
 
   p = (argc>1) ? atoi(argv[1]) : 53;
-  rnd = (argc>2) ? (mp_rnd_t) atoi(argv[2]) : MPFR_RNDZ;
+  rnd = (argc>2) ? (mpfr_rnd_t) atoi(argv[2]) : MPFR_RNDZ;
 
   mpfr_init (x);
 

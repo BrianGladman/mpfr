@@ -27,7 +27,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
        atanh= 1/2*ln(x+1)-1/2*ln(1-x)   */
 
 int
-mpfr_atanh (mpfr_ptr y, mpfr_srcptr xt , mp_rnd_t rnd_mode)
+mpfr_atanh (mpfr_ptr y, mpfr_srcptr xt , mpfr_rnd_t rnd_mode)
 {
   int inexact;
   mpfr_t x, t, te;

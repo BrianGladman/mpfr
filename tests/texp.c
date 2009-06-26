@@ -28,7 +28,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #ifdef CHECK_EXTERNAL
 static int
-test_exp (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
+test_exp (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode)
 {
   int res;
   int ok = rnd_mode == MPFR_RNDN && mpfr_number_p (b) && mpfr_get_prec (a)>=53;
@@ -51,7 +51,7 @@ test_exp (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
 
 /* returns the number of ulp of error */
 static void
-check3 (const char *op, mp_rnd_t rnd, const char *res)
+check3 (const char *op, mpfr_rnd_t rnd, const char *res)
 {
   mpfr_t x, y;
 
@@ -160,7 +160,7 @@ compare_exp2_exp3 (mp_prec_t p0, mp_prec_t p1)
 {
   mpfr_t x, y, z;
   mp_prec_t prec;
-  mp_rnd_t rnd;
+  mpfr_rnd_t rnd;
 
   mpfr_init (x);
   mpfr_init (y);
@@ -535,13 +535,13 @@ overflowed_exp0 (void)
         {
           mpfr_set_si_2exp (x, i, -512 * ABS (i), MPFR_RNDN);
           mpfr_clear_flags ();
-          inex = mpfr_exp (x, x, (mp_rnd_t) rnd);
+          inex = mpfr_exp (x, x, (mpfr_rnd_t) rnd);
           if ((i >= 0 || emax < 0 || rnd == MPFR_RNDN || rnd == MPFR_RNDU) &&
               ! mpfr_overflow_p ())
             {
               printf ("Error in overflowed_exp0 (i = %d, rnd = %s):\n"
                       "  The overflow flag is not set.\n",
-                      i, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                      i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
               err = 1;
             }
           if (rnd == MPFR_RNDZ || rnd == MPFR_RNDD)
@@ -550,13 +550,13 @@ overflowed_exp0 (void)
                 {
                   printf ("Error in overflowed_exp0 (i = %d, rnd = %s):\n"
                           "  The inexact value must be negative.\n",
-                          i, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                          i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                   err = 1;
                 }
               if (! mpfr_equal_p (x, y))
                 {
                   printf ("Error in overflowed_exp0 (i = %d, rnd = %s):\n"
-                          "  Got ", i, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                          "  Got ", i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                   mpfr_print_binary (x);
                   printf (" instead of 0.11111111E%d.\n", emax);
                   err = 1;
@@ -568,13 +568,13 @@ overflowed_exp0 (void)
                 {
                   printf ("Error in overflowed_exp0 (i = %d, rnd = %s):\n"
                           "  The inexact value must be positive.\n",
-                          i, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                          i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                   err = 1;
                 }
               if (! (mpfr_inf_p (x) && MPFR_SIGN (x) > 0))
                 {
                   printf ("Error in overflowed_exp0 (i = %d, rnd = %s):\n"
-                          "  Got ", i, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                          "  Got ", i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                   mpfr_print_binary (x);
                   printf (" instead of +Inf.\n");
                   err = 1;
@@ -629,7 +629,7 @@ bug20080731 (void)
 
 /* Emulate mpfr_exp with mpfr_exp_3 in the general case. */
 static int
-exp_3 (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd_mode)
+exp_3 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   int inexact;
 
@@ -709,7 +709,7 @@ underflow_up (int extended_emin)
                   if (__gmpfr_flags != MPFR_FLAGS_INEXACT)
                     {
                       printf ("Incorrect flags in underflow_up, eps > 0, %s",
-                              mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                              mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                       if (extended_emin)
                         printf (" and extended emin");
                       printf ("\nfor precx = %d, precy = %d, %s\n",
@@ -721,7 +721,7 @@ underflow_up (int extended_emin)
                   if (mpfr_cmp0 (y, minpos) < 0)
                     {
                       printf ("Incorrect result in underflow_up, eps > 0, %s",
-                              mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                              mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                       if (extended_emin)
                         printf (" and extended emin");
                       printf ("\nfor precx = %d, precy = %d, %s\n",
@@ -826,7 +826,7 @@ underflow_up (int extended_emin)
                     if (__gmpfr_flags != flags)
                       {
                         printf ("Incorrect flags in underflow_up, %s",
-                                mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                                mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                         if (extended_emin)
                           printf (" and extended emin");
                         printf ("\nfor precx = %d, precy = %d, ",
@@ -845,7 +845,7 @@ underflow_up (int extended_emin)
                         mpfr_cmp0 (y, minpos) != 0 : MPFR_NOTZERO (y))
                       {
                         printf ("Incorrect result in underflow_up, %s",
-                                mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                                mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
                         if (extended_emin)
                           printf (" and extended emin");
                         printf ("\nfor precx = %d, precy = %d, ",

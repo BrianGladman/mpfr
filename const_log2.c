@@ -29,7 +29,7 @@ MPFR_DECL_INIT_CACHE(__gmpfr_cache_const_log2, mpfr_const_log2_internal);
 /* Set User interface */
 #undef mpfr_const_log2
 int
-mpfr_const_log2 (mpfr_ptr x, mp_rnd_t rnd_mode) {
+mpfr_const_log2 (mpfr_ptr x, mpfr_rnd_t rnd_mode) {
   return mpfr_cache (x, __gmpfr_cache_const_log2, rnd_mode);
 }
 
@@ -103,7 +103,7 @@ S (mpz_t *T, mpz_t *P, mpz_t *Q, unsigned long n1, unsigned long n2, int need_P)
 
 /* Don't need to save / restore exponent range: the cache does it */
 int
-mpfr_const_log2_internal (mpfr_ptr x, mp_rnd_t rnd_mode)
+mpfr_const_log2_internal (mpfr_ptr x, mpfr_rnd_t rnd_mode)
 {
   unsigned long n = MPFR_PREC (x);
   mp_prec_t w; /* working precision */

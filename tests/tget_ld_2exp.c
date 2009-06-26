@@ -50,7 +50,7 @@ check_round (void)
 
           for (neg = 0; neg <= 1; neg++)
             {
-              got = mpfr_get_ld_2exp (&got_exp, f, (mp_rnd_t) rnd_mode);
+              got = mpfr_get_ld_2exp (&got_exp, f, (mpfr_rnd_t) rnd_mode);
 
               if (neg == 0
                   ? (got < 0.5 || got >= 1.0)

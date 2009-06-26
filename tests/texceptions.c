@@ -46,21 +46,21 @@ static void
 check_default_rnd (void)
 {
   int r;
-  mp_rnd_t t;
+  mpfr_rnd_t t;
   for(r = 0 ; r < MPFR_RND_MAX ; r++)
     {
-      mpfr_set_default_rounding_mode ((mp_rnd_t) r);
+      mpfr_set_default_rounding_mode ((mpfr_rnd_t) r);
       t = (mpfr_get_default_rounding_mode) ();
-      if ((mp_rnd_t) r != t)
+      if ((mpfr_rnd_t) r != t)
         {
           printf ("%s %s\n", mpfr_print_rnd_mode (r), mpfr_print_rnd_mode (t));
           ERROR("ERROR in setting / getting default rounding mode (1)");
         }
     }
-  mpfr_set_default_rounding_mode ((mp_rnd_t) MPFR_RND_MAX);
+  mpfr_set_default_rounding_mode ((mpfr_rnd_t) MPFR_RND_MAX);
   if (mpfr_get_default_rounding_mode() != MPFR_RNDA)
     ERROR("ERROR in setting / getting default rounding mode (2)");
-  mpfr_set_default_rounding_mode((mp_rnd_t) -1);
+  mpfr_set_default_rounding_mode((mpfr_rnd_t) -1);
   if (mpfr_get_default_rounding_mode() != MPFR_RNDA)
     ERROR("ERROR in setting / getting default rounding mode (3)");
 }
@@ -211,11 +211,11 @@ test_set_underflow (void)
           int inex;
 
           j = s < 0 && i > 1 ? 5 - i : i;
-          inex = mpfr_underflow (x, (mp_rnd_t) i, s);
+          inex = mpfr_underflow (x, (mpfr_rnd_t) i, s);
           if (mpfr_cmp (x, r[j]) || inex * t[j] <= 0)
             {
               printf ("Error in test_set_underflow, sign = %d,"
-                      " rnd_mode = %s\n", s, mpfr_print_rnd_mode ((mp_rnd_t) i));
+                      " rnd_mode = %s\n", s, mpfr_print_rnd_mode ((mpfr_rnd_t) i));
               printf ("Got\n");
               mpfr_out_str (stdout, 2, 0, x, MPFR_RNDN);
               printf (", inex = %d\ninstead of\n", inex);
@@ -253,11 +253,11 @@ test_set_overflow (void)
           int inex;
 
           j = s < 0 && i > 1 ? 5 - i : i;
-          inex = mpfr_overflow (x, (mp_rnd_t) i, s);
+          inex = mpfr_overflow (x, (mpfr_rnd_t) i, s);
           if (mpfr_cmp (x, r[j]) || inex * t[j] <= 0)
             {
               printf ("Error in test_set_overflow, sign = %d,"
-                      " rnd_mode = %s\n", s, mpfr_print_rnd_mode ((mp_rnd_t) i));
+                      " rnd_mode = %s\n", s, mpfr_print_rnd_mode ((mpfr_rnd_t) i));
               printf ("Got\n");
               mpfr_out_str (stdout, 2, 0, x, MPFR_RNDN);
               printf (", inex = %d\ninstead of\n", inex);

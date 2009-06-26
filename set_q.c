@@ -62,7 +62,7 @@ set_z (mpfr_ptr f, mpz_srcptr z, mp_size_t *zs)
 
 /* set f to the rational q */
 int
-mpfr_set_q (mpfr_ptr f, mpq_srcptr q, mp_rnd_t rnd)
+mpfr_set_q (mpfr_ptr f, mpq_srcptr q, mpfr_rnd_t rnd)
 {
   mpz_srcptr num, den;
   mpfr_t n, d;

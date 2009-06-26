@@ -23,7 +23,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 int
-mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mp_rnd_t rnd_mode)
+mpfr_asin (mpfr_ptr asin, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   mpfr_t xp;
   int compared, inexact;

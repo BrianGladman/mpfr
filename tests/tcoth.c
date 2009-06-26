@@ -149,13 +149,13 @@ underflowed_cothinf (void)
         mpfr_set_inf (x, i);
         mpfr_clear_flags ();
         set_emin (2);  /* 1 is not representable. */
-        inex = mpfr_coth (x, x, (mp_rnd_t) rnd);
+        inex = mpfr_coth (x, x, (mpfr_rnd_t) rnd);
         set_emin (old_emin);
         if (! mpfr_underflow_p ())
           {
             printf ("Error in underflowed_cothinf (i = %d, rnd = %s):\n"
                     "  The underflow flag is not set.\n",
-                    i, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                    i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
             err = 1;
           }
         mpfr_set_si (y, (i < 0 && (rnd == MPFR_RNDD || rnd == MPFR_RNDA)) ||
@@ -167,7 +167,7 @@ underflowed_cothinf (void)
                MPFR_MULT_SIGN (MPFR_SIGN (x), MPFR_SIGN (y)) > 0))
           {
             printf ("Error in underflowed_cothinf (i = %d, rnd = %s):\n"
-                    "  Got ", i, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                    "  Got ", i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
             mpfr_print_binary (x);
             printf (" instead of ");
             mpfr_print_binary (y);
@@ -179,7 +179,7 @@ underflowed_cothinf (void)
           {
             printf ("Error in underflowed_cothinf (i = %d, rnd = %s):\n"
                     "  The inexact value must be negative.\n",
-                    i, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                    i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
             err = 1;
           }
         if ((rnd == MPFR_RNDU ||
@@ -187,7 +187,7 @@ underflowed_cothinf (void)
           {
             printf ("Error in underflowed_cothinf (i = %d, rnd = %s):\n"
                     "  The inexact value must be positive.\n",
-                    i, mpfr_print_rnd_mode ((mp_rnd_t) rnd));
+                    i, mpfr_print_rnd_mode ((mpfr_rnd_t) rnd));
             err = 1;
           }
       }

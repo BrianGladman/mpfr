@@ -76,8 +76,8 @@ special (void)
   mpfr_init2 (y, 53);
   mpfr_init2 (z, 53);
 
-  mpfr_set_str (x, "1", 10, (mp_rnd_t) 0);
-  mpfr_set_str (y, "1e-10000", 10, (mp_rnd_t) 0);
+  mpfr_set_str (x, "1", 10, (mpfr_rnd_t) 0);
+  mpfr_set_str (y, "1e-10000", 10, (mpfr_rnd_t) 0);
   mpfr_add (z, x, y, MPFR_RNDU);
 
   for (i = 1; i <= 52; i++)

@@ -29,7 +29,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  */
 
 int
-mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd)
+mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mpfr_rnd_t rnd)
 {
   MPFR_LOG_FUNC (("x[%#R]=%R n=%ld rnd=%d", x, x, n, rnd),
                  ("y[%#R]=%R", y, y));
@@ -135,7 +135,7 @@ mpfr_pow_si (mpfr_ptr y, mpfr_srcptr x, long int n, mp_rnd_t rnd)
         /* Declaration of the size variable */
         mp_prec_t Ny;                              /* target precision */
         mp_prec_t Nt;                              /* working precision */
-        mp_rnd_t rnd1;
+        mpfr_rnd_t rnd1;
         int size_n;
         int inexact;
         unsigned long abs_n;

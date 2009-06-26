@@ -26,13 +26,13 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* sets y to x^n, and return 0 if exact, non-zero otherwise */
 int
-mpfr_pow_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int n, mp_rnd_t rnd)
+mpfr_pow_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int n, mpfr_rnd_t rnd)
 {
   unsigned long m;
   mpfr_t res;
   mp_prec_t prec, err;
   int inexact;
-  mp_rnd_t rnd1;
+  mpfr_rnd_t rnd1;
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_ZIV_DECL (loop);
   MPFR_BLOCK_DECL (flags);

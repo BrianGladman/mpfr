@@ -24,7 +24,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #undef mpfr_setsign
 int
-mpfr_setsign (mpfr_ptr z, mpfr_srcptr x, int s, mp_rnd_t rnd_mode)
+mpfr_setsign (mpfr_ptr z, mpfr_srcptr x, int s, mpfr_rnd_t rnd_mode)
 {
   return mpfr_set4 (z, x, rnd_mode, s ? -1 : 1);
 }

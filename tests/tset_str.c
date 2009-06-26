@@ -216,7 +216,7 @@ main (int argc, char *argv[])
   mpfr_set_prec (y, prec);
   for (i=0;i<N;i++)
     {
-      mp_rnd_t rnd;
+      mpfr_rnd_t rnd;
 
       mpfr_urandomb (x, RANDS);
       rnd = RND_RAND ();
@@ -755,7 +755,7 @@ main (int argc, char *argv[])
     size_t nb_digit = mp_bits_per_limb;
     mp_limb_t check_limb[2] = {MPFR_LIMB_HIGHBIT, ~(MPFR_LIMB_HIGHBIT >> 1)};
     int base[3] = {10, 16, 19};
-    mp_rnd_t rnd[3] = {MPFR_RNDU, MPFR_RNDN, MPFR_RNDD};
+    mpfr_rnd_t rnd[3] = {MPFR_RNDU, MPFR_RNDN, MPFR_RNDD};
     int cbase, climb, crnd;
     char *str;
 

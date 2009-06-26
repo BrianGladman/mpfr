@@ -228,7 +228,7 @@ __MPFR_DECLSPEC mp_exp_t mpfr_get_emax_min _MPFR_PROTO ((void));
 __MPFR_DECLSPEC mp_exp_t mpfr_get_emax_max _MPFR_PROTO ((void));
 
 __MPFR_DECLSPEC void mpfr_set_default_rounding_mode _MPFR_PROTO((mpfr_rnd_t));
-__MPFR_DECLSPEC mp_rnd_t mpfr_get_default_rounding_mode _MPFR_PROTO((void));
+__MPFR_DECLSPEC mpfr_rnd_t mpfr_get_default_rounding_mode _MPFR_PROTO((void));
 __MPFR_DECLSPEC __gmp_const char *
    mpfr_print_rnd_mode _MPFR_PROTO((mpfr_rnd_t));
 
@@ -283,7 +283,7 @@ __MPFR_DECLSPEC mp_prec_t mpfr_get_default_prec _MPFR_PROTO((void));
 __MPFR_DECLSPEC int mpfr_set_d _MPFR_PROTO ((mpfr_ptr, double, mpfr_rnd_t));
 #ifdef MPFR_WANT_DECIMAL_FLOATS
 __MPFR_DECLSPEC int mpfr_set_decimal64 _MPFR_PROTO ((mpfr_ptr, _Decimal64,
-                                                     mp_rnd_t));
+                                                     mpfr_rnd_t));
 #endif
 __MPFR_DECLSPEC int
   mpfr_set_ld _MPFR_PROTO ((mpfr_ptr, long double, mpfr_rnd_t));
@@ -343,7 +343,7 @@ __MPFR_DECLSPEC mp_exp_t mpfr_get_z_exp _MPFR_PROTO ((mpz_ptr, mpfr_srcptr));
 __MPFR_DECLSPEC double mpfr_get_d _MPFR_PROTO ((mpfr_srcptr, mpfr_rnd_t));
 #ifdef MPFR_WANT_DECIMAL_FLOATS
 __MPFR_DECLSPEC _Decimal64 mpfr_get_decimal64 _MPFR_PROTO ((mpfr_srcptr,
-                                                           mp_rnd_t));
+                                                           mpfr_rnd_t));
 #endif
 __MPFR_DECLSPEC long double mpfr_get_ld _MPFR_PROTO ((mpfr_srcptr,
                                                       mpfr_rnd_t));
@@ -547,11 +547,11 @@ __MPFR_DECLSPEC int mpfr_frac _MPFR_PROTO ((mpfr_ptr,mpfr_srcptr,mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_modf _MPFR_PROTO ((mpfr_ptr, mpfr_ptr, mpfr_srcptr,
                                                   mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_remquo _MPFR_PROTO ((mpfr_ptr, long*, mpfr_srcptr,
-                                              mpfr_srcptr, mp_rnd_t));
+                                              mpfr_srcptr, mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_remainder _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
-                                                 mpfr_srcptr, mp_rnd_t));
+                                                 mpfr_srcptr, mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_fmod _MPFR_PROTO ((mpfr_ptr, mpfr_srcptr,
-                                                 mpfr_srcptr, mp_rnd_t));
+                                                 mpfr_srcptr, mpfr_rnd_t));
 
 __MPFR_DECLSPEC int mpfr_fits_ulong_p _MPFR_PROTO((mpfr_srcptr, mpfr_rnd_t));
 __MPFR_DECLSPEC int mpfr_fits_slong_p _MPFR_PROTO((mpfr_srcptr, mpfr_rnd_t));
@@ -670,7 +670,7 @@ __MPFR_DECLSPEC int mpfr_sum _MPFR_PROTO ((mpfr_ptr, mpfr_ptr *__gmp_const,
 __MPFR_DECLSPEC void mpfr_free_cache _MPFR_PROTO ((void));
 
 __MPFR_DECLSPEC int  mpfr_subnormalize _MPFR_PROTO ((mpfr_ptr, int,
-                                                     mp_rnd_t));
+                                                     mpfr_rnd_t));
 
 __MPFR_DECLSPEC int  mpfr_strtofr _MPFR_PROTO ((mpfr_ptr, __gmp_const char *,
                                                 char **, int, mpfr_rnd_t));

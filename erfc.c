@@ -121,7 +121,7 @@ mpfr_erfc_asympt (mpfr_ptr y, mpfr_srcptr x)
 }
 
 int
-mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
+mpfr_erfc (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 {
   int inex;
   mpfr_t tmp;

@@ -28,13 +28,13 @@ MPFR_DECL_INIT_CACHE(__gmpfr_cache_const_pi, mpfr_const_pi_internal);
 /* Set User Interface */
 #undef mpfr_const_pi
 int
-mpfr_const_pi (mpfr_ptr x, mp_rnd_t rnd_mode) {
+mpfr_const_pi (mpfr_ptr x, mpfr_rnd_t rnd_mode) {
   return mpfr_cache (x, __gmpfr_cache_const_pi, rnd_mode);
 }
 
 /* Don't need to save/restore exponent range: the cache does it */
 int
-mpfr_const_pi_internal (mpfr_ptr x, mp_rnd_t rnd_mode)
+mpfr_const_pi_internal (mpfr_ptr x, mpfr_rnd_t rnd_mode)
 {
   mpfr_t a, A, B, D, S;
   mp_prec_t px, p, cancel, k, kmax;

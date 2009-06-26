@@ -294,7 +294,7 @@ string_to_Decimal64 (char *s)
 }
 
 _Decimal64
-mpfr_get_decimal64 (mpfr_srcptr src, mp_rnd_t rnd_mode)
+mpfr_get_decimal64 (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
 {
   int negative;
   mp_exp_t e;

@@ -152,7 +152,7 @@ unit_bit (mpfr_srcptr (x))
 #endif
 
 static int
-GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
+GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mpfr_rnd_t rnd)
 {
   mp_prec_t precy, w; /* working precision */
   mpfr_t s, t, u, v, z;
@@ -557,7 +557,7 @@ GAMMA_FUNC (mpfr_ptr y, mpfr_srcptr z0, mp_rnd_t rnd)
 #ifndef IS_GAMMA
 
 int
-mpfr_lngamma (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
+mpfr_lngamma (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 {
   int inex;
 
@@ -592,7 +592,7 @@ mpfr_lngamma (mpfr_ptr y, mpfr_srcptr x, mp_rnd_t rnd)
 }
 
 int
-mpfr_lgamma (mpfr_ptr y, int *signp, mpfr_srcptr x, mp_rnd_t rnd)
+mpfr_lgamma (mpfr_ptr y, int *signp, mpfr_srcptr x, mpfr_rnd_t rnd)
 {
   int inex;
 

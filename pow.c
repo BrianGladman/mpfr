@@ -31,7 +31,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 */
 static int
 mpfr_pow_is_exact (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
-                   mp_rnd_t rnd_mode, int *inexact)
+                   mpfr_rnd_t rnd_mode, int *inexact)
 {
   mpz_t a, c;
   mp_exp_t d, b;
@@ -158,7 +158,7 @@ is_odd (mpfr_srcptr y)
    an integer, then the result is not exact in unbounded exponent range. */
 int
 mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
-                  mp_rnd_t rnd_mode, int y_is_integer, mpfr_save_expo_t *expo)
+                  mpfr_rnd_t rnd_mode, int y_is_integer, mpfr_save_expo_t *expo)
 {
   mpfr_t t, u, k, absx;
   int k_non_zero = 0;
@@ -379,7 +379,7 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
      _ pow(+inf, y) = +0 for y < 0.
      _ pow(+inf, y) = +inf for y > 0. */
 int
-mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mp_rnd_t rnd_mode)
+mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
 {
   int inexact;
   int cmp_x_1;

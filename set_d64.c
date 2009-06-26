@@ -209,7 +209,7 @@ decimal64_to_string (char *s, _Decimal64 d)
 }
 
 int
-mpfr_set_decimal64 (mpfr_ptr r, _Decimal64 d, mp_rnd_t rnd_mode)
+mpfr_set_decimal64 (mpfr_ptr r, _Decimal64 d, mpfr_rnd_t rnd_mode)
 {
   char s[23]; /* need 1 character for sign,
                      16 characters for mantissa,

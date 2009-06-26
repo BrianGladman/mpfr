@@ -23,7 +23,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-impl.h"
 
 long
-mpfr_get_si (mpfr_srcptr f, mp_rnd_t rnd)
+mpfr_get_si (mpfr_srcptr f, mpfr_rnd_t rnd)
 {
   mp_prec_t prec;
   long s;

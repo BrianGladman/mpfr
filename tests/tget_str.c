@@ -25,7 +25,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-test.h"
 
 static void
-check3 (char *d, mp_rnd_t rnd, char *res)
+check3 (char *d, mpfr_rnd_t rnd, char *res)
 {
   mpfr_t x;
   char *str;
@@ -1105,7 +1105,7 @@ check_special (int b, mp_prec_t p)
       for (r = 0; r < MPFR_RND_MAX; r++)
         for (m= (i<3)? 2 : i-1 ; (int) m <= i+1 ; m++)
           {
-            mpfr_get_str (s, &e, b, m, x, (mp_rnd_t) r);
+            mpfr_get_str (s, &e, b, m, x, (mpfr_rnd_t) r);
             /* s should be 1 followed by (m-1) zeros, and e should be i+1 */
             if ((e != i+1) || strncmp (s, s2, m) != 0)
               {
@@ -1119,7 +1119,7 @@ check_special (int b, mp_prec_t p)
       for (r = 0; r < MPFR_RND_MAX; r++)
         if (i >= 2)
           {
-            mpfr_get_str (s, &e, b, i, x, (mp_rnd_t) r);
+            mpfr_get_str (s, &e, b, i, x, (mpfr_rnd_t) r);
             /* should be i times (b-1) */
             c = (b <= 10) ? '0' + b - 1 : 'a' + (b - 11);
             for (j=0; (j < i) && (s[j] == c); j++);
@@ -1206,7 +1206,7 @@ main (int argc, char *argv[])
 {
   int b;
   mpfr_t x;
-  mp_rnd_t r;
+  mpfr_rnd_t r;
   char s[MAX_DIGITS + 2];
   mp_exp_t e, f;
   size_t m;

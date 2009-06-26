@@ -42,8 +42,8 @@ init_set_z (mpfr_ptr t, mpz_srcptr z)
 /* Init, set a mpfr_t with enough precision to store a mpz_t without round,
    call the function, and clear the allocated mpfr_t  */
 static int
-foo (mpfr_ptr x, mpfr_srcptr y, mpz_srcptr z, mp_rnd_t r,
-     int (*f)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mp_rnd_t))
+foo (mpfr_ptr x, mpfr_srcptr y, mpz_srcptr z, mpfr_rnd_t r,
+     int (*f)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t))
 {
   mpfr_t t;
   int i;
@@ -54,19 +54,19 @@ foo (mpfr_ptr x, mpfr_srcptr y, mpz_srcptr z, mp_rnd_t r,
 }
 
 int
-mpfr_mul_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t r)
+mpfr_mul_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mpfr_rnd_t r)
 {
   return foo (y, x, z, r, mpfr_mul);
 }
 
 int
-mpfr_div_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t r)
+mpfr_div_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mpfr_rnd_t r)
 {
   return foo (y, x, z, r, mpfr_div);
 }
 
 int
-mpfr_add_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t r)
+mpfr_add_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mpfr_rnd_t r)
 {
   /* Mpz 0 is unsigned */
   if (MPFR_UNLIKELY (mpz_sgn (z) == 0))
@@ -76,7 +76,7 @@ mpfr_add_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t r)
 }
 
 int
-mpfr_sub_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mp_rnd_t r)
+mpfr_sub_z (mpfr_ptr y, mpfr_srcptr x, mpz_srcptr z, mpfr_rnd_t r)
 {
   /* Mpz 0 is unsigned */
   if (MPFR_UNLIKELY (mpz_sgn (z) == 0))
@@ -97,7 +97,7 @@ mpfr_cmp_z (mpfr_srcptr x, mpz_srcptr z)
 }
 
 int
-mpfr_mul_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mp_rnd_t rnd_mode)
+mpfr_mul_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mpfr_rnd_t rnd_mode)
 {
   mpfr_t tmp;
   int res;
@@ -118,7 +118,7 @@ mpfr_mul_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mp_rnd_t rnd_mode)
 }
 
 int
-mpfr_div_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mp_rnd_t rnd_mode)
+mpfr_div_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mpfr_rnd_t rnd_mode)
 {
   mpfr_t tmp;
   int res;
@@ -139,7 +139,7 @@ mpfr_div_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mp_rnd_t rnd_mode)
 }
 
 int
-mpfr_add_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mp_rnd_t rnd_mode)
+mpfr_add_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mpfr_rnd_t rnd_mode)
 {
   mpfr_t    t,q;
   mp_prec_t p;
@@ -212,7 +212,7 @@ mpfr_add_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z, mp_rnd_t rnd_mode)
 }
 
 int
-mpfr_sub_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z,mp_rnd_t rnd_mode)
+mpfr_sub_q (mpfr_ptr y, mpfr_srcptr x, mpq_srcptr z,mpfr_rnd_t rnd_mode)
 {
   mpfr_t t,q;
   mp_prec_t p;

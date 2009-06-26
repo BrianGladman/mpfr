@@ -34,7 +34,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 static int usesp;
 
 static int
-test_add (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
+test_add (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 {
   int res;
 #ifdef CHECK_EXTERNAL
@@ -78,7 +78,7 @@ test_add (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mp_rnd_t rnd_mode)
 
 /* checks that x+y gives the right result with 53 bits of precision */
 static void
-pcheck (const char *xs, const char *ys, const char *zs, mp_rnd_t rnd_mode,
+pcheck (const char *xs, const char *ys, const char *zs, mpfr_rnd_t rnd_mode,
         unsigned int px, unsigned int py, unsigned int pz)
 {
   mpfr_t xx,yy,zz;
@@ -105,7 +105,7 @@ static void
 check2b (const char *xs, int px,
          const char *ys, int py,
          const char *rs, int pz,
-         mp_rnd_t rnd_mode)
+         mpfr_rnd_t rnd_mode)
 {
   mpfr_t xx, yy, zz;
 
@@ -477,7 +477,7 @@ check_inexact (void)
   mpfr_t x, y, z, u;
   mp_prec_t px, py, pu, pz;
   int inexact, cmp;
-  mp_rnd_t rnd;
+  mpfr_rnd_t rnd;
 
   mpfr_init (x);
   mpfr_init (y);
@@ -651,7 +651,7 @@ check_overflow (void)
       {
         mpfr_set_prec (a, prec_a);
         mpfr_clear_overflow ();
-        test_add (a, b, c, (mp_rnd_t) r);
+        test_add (a, b, c, (mpfr_rnd_t) r);
         if (!mpfr_overflow_p ())
           {
             printf ("No overflow in check_overflow\n");
@@ -690,7 +690,7 @@ check_1111 (void)
       int m = 512;
       int sb, sc;
       int inex_a, inex_s;
-      mp_rnd_t rnd_mode;
+      mpfr_rnd_t rnd_mode;
 
       prec_a = MPFR_PREC_MIN + (randlimb () % m);
       prec_b = MPFR_PREC_MIN + (randlimb () % m);
@@ -789,7 +789,7 @@ check_1minuseps (void)
 
               mpfr_set_ui (c, 1, MPFR_RNDN);
               mpfr_div_ui (c, c, prec_a[ia] + supp_b[ic], MPFR_RNDN);
-              inex_a = test_add (a, b, c, (mp_rnd_t) rnd_mode);
+              inex_a = test_add (a, b, c, (mpfr_rnd_t) rnd_mode);
               mpfr_init2 (s, 256);
               inex_s = test_add (s, b, c, MPFR_RNDN); /* exact */
               if (inex_s)
@@ -798,7 +798,7 @@ check_1minuseps (void)
                           "(ia = %u, ib = %u, ic = %u)\n", ia, ib, ic);
                   exit (1);
                 }
-              inex_s = mpfr_prec_round (s, prec_a[ia], (mp_rnd_t) rnd_mode);
+              inex_s = mpfr_prec_round (s, prec_a[ia], (mpfr_rnd_t) rnd_mode);
               if ((inex_a < 0 && inex_s >= 0) ||
                   (inex_a == 0 && inex_s != 0) ||
                   (inex_a > 0 && inex_s <= 0) ||

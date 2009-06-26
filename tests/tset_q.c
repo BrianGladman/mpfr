@@ -26,7 +26,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-test.h"
 
 static void
-check (long int n, long int d, mp_rnd_t rnd, const char *ys)
+check (long int n, long int d, mpfr_rnd_t rnd, const char *ys)
 {
   mpq_t q;
   mpfr_t x, t;
@@ -83,11 +83,11 @@ static void check0(void)
   mpq_set_si (y, 0, 1);
   for (r = 0; r < MPFR_RND_MAX; r++)
     {
-      inexact = mpfr_set_q(x, y, (mp_rnd_t) r);
+      inexact = mpfr_set_q(x, y, (mpfr_rnd_t) r);
       if (!MPFR_IS_ZERO(x) || !MPFR_IS_POS(x) || inexact)
         {
           printf("mpfr_set_q(x,0) failed for %s\n",
-                 mpfr_print_rnd_mode ((mp_rnd_t) r));
+                 mpfr_print_rnd_mode ((mpfr_rnd_t) r));
           exit(1);
         }
     }

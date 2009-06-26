@@ -638,7 +638,7 @@ mixed (void)
   mpq_t mpq;
   mpz_t mpz;
   mpfr_t x;
-  mp_rnd_t rnd;
+  mpfr_rnd_t rnd;
 
   mpf_init (mpf);
   mpf_set_ui (mpf, 40);

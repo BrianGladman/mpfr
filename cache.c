@@ -26,7 +26,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
          useful if some user wants to add a new constant to mpfr, and
          implement a cache mechanism for that constant */
 void
-mpfr_init_cache (mpfr_cache_t cache, int (*func)(mpfr_ptr, mp_rnd_t))
+mpfr_init_cache (mpfr_cache_t cache, int (*func)(mpfr_ptr, mpfr_rnd_t))
 {
   MPFR_PREC (cache->x) = 0; /* Invalid prec to detect that the cache is not
                                valid. Maybe add a flag? */
@@ -43,7 +43,7 @@ mpfr_clear_cache (mpfr_cache_t cache)
 }
 
 int
-mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mp_rnd_t rnd)
+mpfr_cache (mpfr_ptr dest, mpfr_cache_t cache, mpfr_rnd_t rnd)
 {
   mp_prec_t prec = MPFR_PREC (dest);
   mp_prec_t pold = MPFR_PREC (cache->x);

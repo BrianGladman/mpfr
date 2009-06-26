@@ -27,7 +27,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #ifdef CHECK_EXTERNAL
 static int
-test_sqrt (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
+test_sqrt (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode)
 {
   int res;
   int ok = rnd_mode == MPFR_RNDN && mpfr_number_p (b);
@@ -49,7 +49,7 @@ test_sqrt (mpfr_ptr a, mpfr_srcptr b, mp_rnd_t rnd_mode)
 #endif
 
 static void
-check3 (const char *as, mp_rnd_t rnd_mode, const char *qs)
+check3 (const char *as, mpfr_rnd_t rnd_mode, const char *qs)
 {
   mpfr_t q;
 
@@ -69,7 +69,7 @@ check3 (const char *as, mp_rnd_t rnd_mode, const char *qs)
 }
 
 static void
-check4 (const char *as, mp_rnd_t rnd_mode, const char *Qs)
+check4 (const char *as, mpfr_rnd_t rnd_mode, const char *Qs)
 {
   mpfr_t q;
 
@@ -90,7 +90,7 @@ check4 (const char *as, mp_rnd_t rnd_mode, const char *Qs)
 }
 
 static void
-check24 (const char *as, mp_rnd_t rnd_mode, const char *qs)
+check24 (const char *as, mpfr_rnd_t rnd_mode, const char *qs)
 {
   mpfr_t q;
 
@@ -422,7 +422,7 @@ static void
 check_inexact (mp_prec_t p)
 {
   mpfr_t x, y, z;
-  mp_rnd_t rnd;
+  mpfr_rnd_t rnd;
   int inexact, sign;
 
   mpfr_init2 (x, p);
@@ -498,7 +498,7 @@ check_nan (void)
 
 /* check that -1 <= x/sqrt(x^2+y^2) <= 1 for rounding to nearest or up */
 static void
-test_property1 (mp_prec_t p, mp_rnd_t r)
+test_property1 (mp_prec_t p, mpfr_rnd_t r)
 {
   mpfr_t x, y, z, t;
 
@@ -532,7 +532,7 @@ test_property1 (mp_prec_t p, mp_rnd_t r)
 
 /* check sqrt(x^2) = x */
 static void
-test_property2 (mp_prec_t p, mp_rnd_t r)
+test_property2 (mp_prec_t p, mpfr_rnd_t r)
 {
   mpfr_t x, y;
 

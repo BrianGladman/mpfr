@@ -37,7 +37,7 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 */
 
 int
-mpfr_subnormalize (mpfr_ptr y, int old_inexact, mp_rnd_t rnd)
+mpfr_subnormalize (mpfr_ptr y, int old_inexact, mpfr_rnd_t rnd)
 {
   int inexact = 0;
 

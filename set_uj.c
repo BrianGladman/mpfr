@@ -45,13 +45,13 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #ifdef _MPFR_H_HAVE_INTMAX_T
 
 int
-mpfr_set_uj (mpfr_t x, uintmax_t j, mp_rnd_t rnd)
+mpfr_set_uj (mpfr_t x, uintmax_t j, mpfr_rnd_t rnd)
 {
   return mpfr_set_uj_2exp (x, j, 0, rnd);
 }
 
 int
-mpfr_set_uj_2exp (mpfr_t x, uintmax_t j, intmax_t e, mp_rnd_t rnd)
+mpfr_set_uj_2exp (mpfr_t x, uintmax_t j, intmax_t e, mpfr_rnd_t rnd)
 {
   unsigned int cnt, i;
   mp_size_t k, len;

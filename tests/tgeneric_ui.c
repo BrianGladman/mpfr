@@ -37,7 +37,7 @@ test_generic_ui (mp_prec_t p0, mp_prec_t p1, unsigned int N)
   mp_prec_t prec, yprec;
   mpfr_t x, y, z, t;
   INTEGER_TYPE u;
-  mp_rnd_t rnd;
+  mpfr_rnd_t rnd;
   int inexact, compare, compare2;
   unsigned int n;
 
