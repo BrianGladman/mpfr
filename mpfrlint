@@ -13,6 +13,8 @@ grep -E '="`' acinclude.m4 configure.in
 
 grep GMP_RND {,tests/}*.{c,h} | grep -v '#define GMP_RND'
 
+grep mp_rnd_t {,tests/}*.{c,h} | grep -v '# *\(define\|ifndef\) *mp_rnd_t'
+
 fdlv1="`sed -n '/Version / {s/.*Version //; s/,.*//; p; q}' fdl.texi`"
 fdlv2="`sed -n '/GNU Free Documentation License/ \
   {s/.*Version //; s/ or.*//; p; q}' mpfr.texi`"
