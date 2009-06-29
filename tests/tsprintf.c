@@ -373,7 +373,7 @@ decimal (void)
   check_sprintf ("0.008", "%.3RF", x);
   check_sprintf ("0.008", "%.3RUF", x);
 
-  /* limit test for the choice beetwen %f-style and %g-style */
+  /* check limit between %f-style and %g-style */
   mpfr_set_str (x, "0.0000999", 10, MPFR_RNDN);
   check_sprintf ("0.0001",   "%.0Rg", x);
   check_sprintf ("9e-05",    "%.0RDg", x);
@@ -425,6 +425,19 @@ decimal (void)
   check_sprintf ("0x1p+5", "%.0Ra", x);
   mpfr_set_ui (x, 3, MPFR_RNDN);
   check_sprintf ("1p+2",   "%.0Rb", x);
+
+  /* round to next ten power with %f but not with %g */
+  mpfr_set_str (x, "-6.64464380544039223686e-02", 10, MPFR_RNDN);
+  check_sprintf ("-0.1",  "%.1Rf", x);
+  check_sprintf ("-0.0",  "%.1RZf", x);
+  check_sprintf ("-0.07", "%.1Rg", x);
+  check_sprintf ("-0.06", "%.1RZg", x);
+ 
+  /* round to next ten power and do not remove trailing zeros */
+  mpfr_set_str (x, "9.98429393291486722006e-02", 10, MPFR_RNDN);
+  check_sprintf ("0.1",   "%#.1Rg", x);
+  check_sprintf ("0.10",  "%#.2Rg", x);
+  check_sprintf ("0.099", "%#.2RZg", x);
 
   mpfr_clears (x, z, (mpfr_ptr) 0);
   return 0;
