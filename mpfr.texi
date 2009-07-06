@@ -2165,7 +2165,7 @@ POSIX system only) @code{errno} is set to @code{EOVERFLOW}.
 
 @deftypefun  int mpfr_printf (const char *@var{template}, @dots{})
 @deftypefunx int mpfr_vprintf (const char *@var{template}, va_list @var{ap})
-Print to @var{stdout} the optional arguments under the control of the
+Print to @code{stdout} the optional arguments under the control of the
 template string @var{template}.
 
 Return the number of characters written or a negative value if an error
