@@ -815,6 +815,7 @@ round_to_10_power (mp_exp_t *e, mpfr_srcptr x, mp_prec_t p, mpfr_rnd_t r)
 {
   mpfr_t f, u, v, y;
   mp_prec_t m;
+  mp_exp_t ex;
   mpfr_uexp_t uexp;
   int roundup = -1; /* boolean (-1: not set) */
 
@@ -827,7 +828,8 @@ round_to_10_power (mp_exp_t *e, mpfr_srcptr x, mp_prec_t p, mpfr_rnd_t r)
      we have |f| >= |Exp(x)|/3,
      then m = ceil(log(uexp/3)/log(2)) > log(f)/log(2)
      is a sufficient precision for f. */
-  uexp = SAFE_ABS (mpfr_uexp_t, mpfr_get_exp (x)) / 3;
+  ex = mpfr_get_exp (x);
+  uexp = SAFE_ABS (mpfr_uexp_t, ex) / 3;
   m = 1;
   while (uexp)
     {
