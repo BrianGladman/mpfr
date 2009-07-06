@@ -432,7 +432,7 @@ decimal (void)
   check_sprintf ("-0.0",  "%.1RZf", x);
   check_sprintf ("-0.07", "%.1Rg", x);
   check_sprintf ("-0.06", "%.1RZg", x);
- 
+
   /* round to next ten power and do not remove trailing zeros */
   mpfr_set_str (x, "9.98429393291486722006e-02", 10, MPFR_RNDN);
   check_sprintf ("0.1",   "%#.1Rg", x);

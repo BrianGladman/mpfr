@@ -1460,7 +1460,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
               np->fp_ptr = MPFR_IS_NEG (p) ? ++str : str; /* skip sign */
               np->fp_leading_zeros = -exp;
               MPFR_ASSERTD (exp <= 0);
- 
+
               str_len = strlen (str); /* the sign has been skipped */
               ptr = str + str_len - 1; /* points to the end of str */
 
