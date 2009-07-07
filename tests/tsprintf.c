@@ -970,7 +970,8 @@ check_emax_aux (void)
   i = mpfr_asprintf (&s2, "%.2a", x);
   MPFR_ASSERTN (i > 0);
 
-  /* After the bug is fixed, the printf should be replaced by a test. */
+  /* After the bug is fixed, the printf should be replaced by a test.
+     The test should then be ported to the 2.4 branch. */
   printf ("'%s' '%s'\n", s1, s2);
   /* Under Linux/x86_64 (Debian/unstable), it currently outputs:
      '0x0.0000000000001p-1022' '0x0.00p-1022'
