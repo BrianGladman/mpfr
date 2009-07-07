@@ -950,6 +950,55 @@ bug20081214 (void)
   mpfr_clear (x);
 }
 
+static void
+check_emax_aux (void)
+{
+  mpfr_t x;
+  char *s1, *s2;
+  int i;
+
+  mpfr_init2 (x, 128);
+
+  mpfr_set_inf (x, 1);
+  mpfr_nextbelow (x);
+
+  /* putchar ('\n'); */
+
+  i = mpfr_asprintf (&s1, "%a", x);
+  MPFR_ASSERTN (i > 0);
+
+  i = mpfr_asprintf (&s2, "%.2a", x);
+  MPFR_ASSERTN (i > 0);
+
+  /* After the bug is fixed, the printf should be replaced by a test. */
+  printf ("'%s' '%s'\n", s1, s2);
+  /* Under Linux/x86_64 (Debian/unstable), it currently outputs:
+     '0x0.0000000000001p-1022' '0x0.00p-1022'
+     '0x0p+0' '0x0.00p+0'
+     but slightly modifying the context can change these values,
+     e.g. uncommenting the putchar above gives:
+     '0x0.07f7100000001p-1022' '0x0.08p-1022'
+     '0x0.07f71fb057803p-1022' '0x0.08p-1022'
+   */
+
+  mpfr_free_str (s1);
+  mpfr_free_str (s2);
+  mpfr_clear (x);
+}
+
+static void
+check_emax (void)
+{
+  mp_exp_t emax;
+
+  emax = mpfr_get_emax ();
+
+  check_emax_aux ();
+  set_emax (17);
+  check_emax_aux ();
+  set_emax (emax);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -967,6 +1016,7 @@ main (int argc, char **argv)
   binary ();
   decimal ();
   mixed ();
+  check_emax ();
 
 #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
   locale_da_DK ();
