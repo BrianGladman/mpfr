@@ -950,42 +950,67 @@ bug20081214 (void)
   mpfr_clear (x);
 }
 
+/* In particular, the following test makes sure that the rounding
+ * for %Ra and %Rb is not done on the MPFR number itself (as it
+ * would overflow). Note: it has been reported on comp.std.c that
+ * some C libraries behave differently on %a, but this is a bug.
+ */
 static void
-check_emax_aux (void)
+check_emax_aux (mp_exp_t e)
 {
   mpfr_t x;
-  char *s1, *s2;
+  char *s1, s2[256];
   int i;
+  mp_exp_t emax;
 
-  mpfr_init2 (x, 128);
+  MPFR_ASSERTN (e <= LONG_MAX);
+  emax = mpfr_get_emax ();
+  set_emax (e);
+
+  mpfr_init2 (x, 16);
 
   mpfr_set_inf (x, 1);
   mpfr_nextbelow (x);
 
-  i = mpfr_asprintf (&s1, "%Ra", x);
+  i = mpfr_asprintf (&s1, "%Ra %.2Ra", x, x);
   MPFR_ASSERTN (i > 0);
 
-  i = mpfr_asprintf (&s2, "%.2Ra", x);
-  MPFR_ASSERTN (i > 0);
+  mpfr_snprintf (s2, 256, "0x7.fff8p+%ld 0x8.00p+%ld", e-3, e-3);
 
-  /* printf ("'%s' '%s'\n", s1, s2); */
+  if (strcmp (s1, s2) != 0)
+    {
+      printf ("Error in check_emax_aux for emax = %ld\n", e);
+      printf ("Expected %s\n", s2);
+      printf ("Got      %s\n", s1);
+      exit (1);
+    }
 
   mpfr_free_str (s1);
-  mpfr_free_str (s2);
+
+  i = mpfr_asprintf (&s1, "%Rb %.2Rb", x, x);
+  MPFR_ASSERTN (i > 0);
+
+  mpfr_snprintf (s2, 256, "1.111111111111111p+%ld 1.00p+%ld", e-1, e);
+
+  if (strcmp (s1, s2) != 0)
+    {
+      printf ("Error in check_emax_aux for emax = %ld\n", e);
+      printf ("Expected %s\n", s2);
+      printf ("Got      %s\n", s1);
+      //exit (1);
+    }
+
+  mpfr_free_str (s1);
+
   mpfr_clear (x);
+  set_emax (emax);
 }
 
 static void
 check_emax (void)
 {
-  mp_exp_t emax;
-
-  emax = mpfr_get_emax ();
-
-  check_emax_aux ();
-  set_emax (17);
-  check_emax_aux ();
-  set_emax (emax);
+  check_emax_aux (15);
+  check_emax_aux (MPFR_EMAX_MAX);
 }
 
 int
