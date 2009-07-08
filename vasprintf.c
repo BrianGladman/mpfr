@@ -1574,7 +1574,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
           if (np->ip_size == exp - 1)
             /* the absolute value of the number has been rounded up to a power
                of ten.
-               Insert a additional zero in integral part and put the rest of
+               Insert an additional zero in integral part and put the rest of
                them in fractional part. */
             np->ip_trailing_zeros = 1;
 
