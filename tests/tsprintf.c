@@ -443,6 +443,32 @@ decimal (void)
   check_sprintf ("0.10",  "%#.2Rg", x);
   check_sprintf ("0.099", "%#.2RZg", x);
 
+  /* Halfway cases */
+  mpfr_set_str (x, "1.5", 10, MPFR_RNDN);
+  check_sprintf ("2e+00", "%.0Re", x);
+  mpfr_set_str (x, "2.5", 10, MPFR_RNDN);
+  check_sprintf ("2e+00", "%.0Re", x);
+  mpfr_set_str (x, "9.5", 10, MPFR_RNDN);
+  check_sprintf ("1e+01", "%.0Re", x);
+  mpfr_set_str (x, "1.25", 10, MPFR_RNDN);
+  check_sprintf ("1.2e+00", "%.1Re", x);
+  mpfr_set_str (x, "1.75", 10, MPFR_RNDN);
+  check_sprintf ("1.8e+00", "%.1Re", x);
+  mpfr_set_str (x, "-0.5", 10, MPFR_RNDN);
+  check_sprintf ("-0", "%.0Rf", x);
+  mpfr_set_str (x, "1.25", 10, MPFR_RNDN);
+  check_sprintf ("1.2", "%.1Rf", x);
+  mpfr_set_str (x, "1.75", 10, MPFR_RNDN);
+  check_sprintf ("1.8", "%.1Rf", x);
+  mpfr_set_str (x, "1.5", 10, MPFR_RNDN);
+  check_sprintf ("2", "%.1Rg", x);
+  mpfr_set_str (x, "2.5", 10, MPFR_RNDN);
+  check_sprintf ("2", "%.1Rg", x);
+  mpfr_set_str (x, "9.25", 10, MPFR_RNDN);
+  check_sprintf ("9.2", "%.2Rg", x);
+  mpfr_set_str (x, "9.75", 10, MPFR_RNDN);
+  check_sprintf ("9.8", "%.2Rg", x);
+
   /* assertion failure in r6320 */
   mpfr_set_str (x, "-9.996", 10, MPFR_RNDN);
   check_sprintf ("-10.0", "%.1Rf", x);
