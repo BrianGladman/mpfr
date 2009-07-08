@@ -1322,8 +1322,9 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
 
           if ((spec.rnd_mode == MPFR_RNDD && MPFR_IS_NEG (p))
               || (spec.rnd_mode == MPFR_RNDU && MPFR_IS_POS (p))
-              || (spec.rnd_mode == MPFR_RNDN && mpfr_cmp_d (y, 0.5) >= 0))
-            /* rounded up to 1: one digit '1' in integral part */
+              || (spec.rnd_mode == MPFR_RNDN && mpfr_cmp_d (y, 0.5) > 0))
+            /* rounded up to 1: one digit '1' in integral part. 
+               note that 0.5 is rounded to 0 with RNDN (round ties to even) */
             np->ip_ptr[0] = '1';
         }
       else
