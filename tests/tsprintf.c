@@ -418,9 +418,13 @@ decimal (void)
   check_sprintf ("-1e+01", "%.0Re", x);
   check_sprintf ("-1e+01", "%.0Rg", x);
   mpfr_set_ui_2exp (x, 1, -1, MPFR_RNDN);
-  check_sprintf ("1",      "%.0Rf", x);
+  check_sprintf ("0",      "%.0Rf", x);
   check_sprintf ("5e-01",  "%.0Re", x);
   check_sprintf ("0.5",    "%.0Rg", x);
+  mpfr_set_ui_2exp (x, 3, -1, MPFR_RNDN);
+  check_sprintf ("2",      "%.0Rf", x);
+  mpfr_set_ui_2exp (x, 5, -1, MPFR_RNDN);
+  check_sprintf ("2",      "%.0Rf", x);
   mpfr_set_ui (x, 0x1f, MPFR_RNDN);
   check_sprintf ("0x1p+5", "%.0Ra", x);
   mpfr_set_ui (x, 3, MPFR_RNDN);
