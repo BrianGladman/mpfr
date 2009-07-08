@@ -1571,14 +1571,17 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
       else
         /* spec.prec digits in fractional part */
         {
-          if (np->ip_size < exp)
+          if (np->ip_size == exp - 1)
             /* the absolute value of the number has been rounded up to a power
-               of ten */
-            np->ip_trailing_zeros = exp - np->ip_size;
+               of ten.
+               Insert a additional zero in integral part and put the rest of
+               them in fractional part. */
+            np->ip_trailing_zeros = 1;
 
           if (spec.prec != 0)
             {
-              MPFR_ASSERTD (np->ip_size == exp);
+              MPFR_ASSERTD (np->ip_size + np->ip_trailing_zeros == exp);
+              MPFR_ASSERTD (np->ip_size + spec.prec == nsd);
 
               np->point = MPFR_DECIMAL_POINT;
               np->fp_ptr = str + np->ip_size;
