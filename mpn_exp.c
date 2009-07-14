@@ -71,7 +71,8 @@ mpfr_mpn_exp (mp_limb_t *a, mp_exp_t *exp_r, int b, mp_exp_t e, size_t n)
   /* allocate space for A and set it to B */
   c = (mp_limb_t*) MPFR_TMP_ALLOC(2 * n * BYTES_PER_MP_LIMB);
   a [n - 1] = B;
-  MPN_ZERO (a, n - 1);
+  if (n > 1)
+    MPN_ZERO (a, n - 1);
   /* initial exponent for A: invariant is A = {a, n} * 2^f */
   f = h - (n - 1) * BITS_PER_MP_LIMB;
 
