@@ -18,6 +18,9 @@ MPFR).
    or
      curl http://www.mpfr.org/mpfr-3.0.0/patches | patch -N -Z -p1
 
+   (Those instructions are for the GNU patch command, for example
+    /usr/bin/gpatch on Solaris.)
+
 3. In the MPFR directory, to detect your system, type:
      ./configure
    possibly with options (see below, in particular if this step or
