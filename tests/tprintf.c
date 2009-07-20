@@ -301,7 +301,7 @@ check_mixed (void)
     check_vprintf ("a. %Re, b. %llx%Qn", mpfr, ullo, &mpq);
     check_length_with_cmp (11, mpq, 16, mpq_cmp_ui (mpq, 16, 1), Qu);
     check_vprintf ("a. %lli, b. %Rf%lln", llo, mpfr, &ullo);
-    check_length (12, ullo, 12, llu);
+    check_length (12, ullo, 19, llu);
   }
 #endif
 

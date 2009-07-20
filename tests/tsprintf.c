@@ -258,7 +258,7 @@ decimal (void)
   /* simplest case right justified */
   check_sprintf ("      1.899347461279296875e+07", "%30Re", x);
   check_sprintf ("                         2e+07", "%30.0Re", x);
-  check_sprintf ("          18993474.61279296875", "%30Rf", x);
+  check_sprintf ("               18993474.612793", "%30Rf", x);
   check_sprintf ("              18993474.6127930", "%30.7Rf", x);
   check_sprintf ("                   1.89935e+07", "%30Rg", x);
   check_sprintf ("                         2e+07", "%30.0Rg", x);
@@ -321,15 +321,15 @@ decimal (void)
   check_sprintf ("1.00E+00            ", "%-20.2RE", x);
   check_sprintf ("9.999E-01           ", "%-20.3RE", x);
   check_sprintf ("9.9994E-01          ", "%-20.4RE", x);
-  check_sprintf ("0.99993896484375    ", "%-20RF", x);
-  check_sprintf ("0.99993896484375    ", "%-20.RF", x);
+  check_sprintf ("0.999939            ", "%-20RF", x);
+  check_sprintf ("0.999939            ", "%-20.RF", x);
   check_sprintf ("1                   ", "%-20.0RF", x);
   check_sprintf ("1.0                 ", "%-20.1RF", x);
   check_sprintf ("1.00                ", "%-20.2RF", x);
   check_sprintf ("1.000               ", "%-20.3RF", x);
   check_sprintf ("0.9999              ", "%-20.4RF", x);
-  check_sprintf ("0.99993896484375    ", "%-#20RF", x);
-  check_sprintf ("0.99993896484375    ", "%-#20.RF", x);
+  check_sprintf ("0.999939            ", "%-#20RF", x);
+  check_sprintf ("0.999939            ", "%-#20.RF", x);
   check_sprintf ("1.                  ", "%-#20.0RF", x);
   check_sprintf ("1.0                 ", "%-#20.1RF", x);
   check_sprintf ("1.00                ", "%-#20.2RF", x);
@@ -352,14 +352,14 @@ decimal (void)
   mpfr_set_str (x, "1e17", 10, MPFR_RNDN);
   check_sprintf ("1e+17", "%Re", x);
   check_sprintf ("1.000e+17", "%.3Re", x);
-  check_sprintf ("100000000000000000", "%Rf", x);
+  check_sprintf ("100000000000000000", "%.0Rf", x);
   check_sprintf ("100000000000000000.0", "%.1Rf", x);
-  check_sprintf ("100000000000000000", "%'Rf", x);
+  check_sprintf ("100000000000000000.000000", "%'Rf", x);
   check_sprintf ("100000000000000000.0", "%'.1Rf", x);
 
   mpfr_ui_div (x, 1, x, MPFR_RNDN); /* x=1e-17 */
   check_sprintf ("1e-17", "%Re", x);
-  check_sprintf ("0.00000000000000001", "%Rf", x);
+  check_sprintf ("0.000000", "%Rf", x);
   check_sprintf ("1e-17", "%Rg", x);
   check_sprintf ("0.0", "%.1RDf", x);
   check_sprintf ("0.1", "%.1RUf", x);
@@ -747,21 +747,21 @@ locale_da_DK (void)
   check_sprintf ("      1,899347461279296875e+07", "%'30Re", x);
   check_sprintf ("                   1,89935e+07", "%'30Rg", x);
   check_sprintf ("        18.993.474,61279296875", "%'30.19Rg", x);
-  check_sprintf ("        18.993.474,61279296875", "%'30Rf", x);
+  check_sprintf ("             18.993.474,612793", "%'30Rf", x);
 
   /* sign or space, pad, thousands separator with leading zeros */
   check_sprintf (" 000001,899347461279296875E+07", "%' 030RE", x);
   check_sprintf (" 0000000000000000001,89935E+07", "%' 030RG", x);
   check_sprintf (" 000000018.993.474,61279296875", "%' 030.19RG", x);
-  check_sprintf (" 000000018.993.474,61279296875", "%' 030RF", x);
+  check_sprintf (" 00000000000018.993.474,612793", "%' 030RF", x);
 
   mpfr_set_ui (x, 50, MPFR_RNDN);
   mpfr_exp10 (x, x, MPFR_RNDN);
-  check_sprintf ("100000000000000000000000000000000000000000000000000", "%Rf",
+  check_sprintf ("100000000000000000000000000000000000000000000000000", "%.0Rf",
                  x);
   check_sprintf
     ("100.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000,",
-     "%'#Rf", x);
+     "%'#.0Rf", x);
   check_sprintf
     ("100.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000,0000",
      "%'.4Rf", x);

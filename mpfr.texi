@@ -2143,12 +2143,13 @@ the @samp{e} (resp. @samp{E}) style.
 If the precision is set to a value greater than the maximum value for an
 @code{int}, it will be silently reduced down to @code{INT_MAX}.
 
-If the @samp{precision} field is empty (as in @code{%Rf} or %@code{%.Rf}) with
-@samp{conv} specifier other than @samp{g} and @samp{G}, the number is
-displayed with enough digits so that it can be read back exactly, assuming
-that the input and output variables have the same precision and that the input
-and output rounding modes are both rounding to nearest (as for
-@code{mpfr_get_str}). The default precision for @samp{g} and @samp{G} is 6.
+If the @samp{precision} field is empty (as in @code{%Re} or @code{%.RE}) with
+@samp{conv} specifier @samp{e} and @samp{E}, the number is displayed with
+enough digits so that it can be read back exactly, assuming that the input and
+output variables have the same precision and that the input and output
+rounding modes are both rounding to nearest (as for @code{mpfr_get_str}).
+The default precision for an empty @samp{precision} field with @samp{conv}
+specifiers @samp{f}, @samp{F}, @samp{g}, and @samp{G} is 6.
 
 
 @subsection Functions

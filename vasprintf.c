@@ -1290,12 +1290,9 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
   const int spec_g = (spec.spec == 'g' || spec.spec == 'G');
   const int keep_trailing_zeros = spec_g && spec.alt;
 
-  /* WARNING: an empty precision field:
-     - with 'f' or 'F' asks for enough digits so that the number can be reread
-     exactly
-     - is forbidden with 'g' or 'G' (it means precision = 6 and it should have
-     been changed to 6 before the function call) */
-  MPFR_ASSERTD (!spec_g || spec.prec >= 0);
+  /* WARNING: an empty precision field is forbidden (it means precision = 6
+     and it should have been changed to 6 before the function call) */
+  MPFR_ASSERTD (spec.prec >= 0);
 
   /* sign */
   if (MPFR_IS_NEG (p))
@@ -1333,162 +1330,119 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
           round_to_10_power (&exp, p, 0, MPFR_RNDZ);
           MPFR_ASSERTD (exp < 0);
 
-          if (spec.prec > 0)
-            /* the number of output digits is known */
+          if (exp < -spec.prec)
+            /* only the last digit may be non zero */
             {
-              if (exp < -spec.prec)
-                /* only the last digit may be non zero */
+              int round_away;
+              switch (spec.rnd_mode)
                 {
-                  int round_away;
-                  switch (spec.rnd_mode)
-                    {
-                    case MPFR_RNDD:
-                      round_away = MPFR_IS_NEG (p);
-                      break;
-                    case MPFR_RNDU:
-                      round_away = MPFR_IS_POS (p);
-                      break;
-                    case MPFR_RNDN:
+                case MPFR_RNDD:
+                  round_away = MPFR_IS_NEG (p);
+                  break;
+                case MPFR_RNDU:
+                  round_away = MPFR_IS_POS (p);
+                  break;
+                case MPFR_RNDN:
+                  {
+                    /* compare |p| to y = 0.5*10^(-spec.prec) */
+                    mpfr_t y;
+                    mp_exp_t e = MAX (MPFR_PREC (p), 56);
+                    mpfr_init2 (y, e + 8);
+                    do
                       {
-                        /* compare |p| to y = 0.5*10^(-spec.prec) */
-                        mpfr_t y;
-                        mp_exp_t e = MAX (MPFR_PREC (p), 56);
-                        mpfr_init2 (y, e + 8);
-                        do
-                          {
-                            /* find a lower approximation of
-                               0.5*10^(-spec.prec) different from |p| */
-                            e += 8;
-                            mpfr_set_prec (y, e);
-                            mpfr_set_si (y, -spec.prec, MPFR_RNDN);
-                            mpfr_exp10 (y, y, MPFR_RNDD);
-                            mpfr_div_2ui (y, y, 1, MPFR_RNDN);
-                          } while (mpfr_cmpabs (y, p) == 0);
+                        /* find a lower approximation of
+                           0.5*10^(-spec.prec) different from |p| */
+                        e += 8;
+                        mpfr_set_prec (y, e);
+                        mpfr_set_si (y, -spec.prec, MPFR_RNDN);
+                        mpfr_exp10 (y, y, MPFR_RNDD);
+                        mpfr_div_2ui (y, y, 1, MPFR_RNDN);
+                      } while (mpfr_cmpabs (y, p) == 0);
 
-                        round_away = mpfr_cmpabs (y, p) < 0;
-                        mpfr_clear (y);
-                      }
-                      break;
-                    default:
-                      round_away = 0;
-                    }
+                    round_away = mpfr_cmpabs (y, p) < 0;
+                    mpfr_clear (y);
+                  }
+                  break;
+                default:
+                  round_away = 0;
+                }
 
-                  if (round_away)
-                    /* round away from zero: the last output digit is '1' */
-                    {
-                      np->fp_leading_zeros = spec.prec - 1;
+              if (round_away)
+                /* round away from zero: the last output digit is '1' */
+                {
+                  np->fp_leading_zeros = spec.prec - 1;
 
-                      np->fp_size = 1;
-                      str =
-                        (char *) (*__gmp_allocate_func) (1 + np->fp_size);
-                      str[0] = '1';
-                      str[1] = '\0';
-                      np->fp_ptr = register_string (np->sl, str);
-                    }
-                  else
-                    /* only zeros in fractional part */
-                    {
-                      MPFR_ASSERTD (!spec_g);
-                      np->fp_leading_zeros = spec.prec;
-                    }
+                  np->fp_size = 1;
+                  str =
+                    (char *) (*__gmp_allocate_func) (1 + np->fp_size);
+                  str[0] = '1';
+                  str[1] = '\0';
+                  np->fp_ptr = register_string (np->sl, str);
                 }
               else
-                /* the most significant digits are the last
-                   spec.prec + exp + 1 digits in fractional part */
+                /* only zeros in fractional part */
                 {
-                  char *ptr;
-                  size_t str_len;
-                  size_t nsd = spec.prec + exp + 1;
-                  /* WARNING: nsd may equal 1, but here we use the fact that
-                     mpfr_get_str can return one digit with base ten
-                     (undocumented feature, see comments in get_str.c) */
-
-                  str = mpfr_get_str (NULL, &exp, 10, nsd, p, spec.rnd_mode);
-                  register_string (np->sl, str);
-                  if (MPFR_IS_NEG (p))
-                    ++str;
-                  if (exp == 1)
-                    /* round up to 1 */
-                    {
-                      MPFR_ASSERTD (str[0] == '1');
-                      np->ip_ptr[0] = '1';
-                      if (!spec_g || spec.alt)
-                        np->fp_leading_zeros = spec.prec;
-                    }
-                  else
-                    {
-                      /* skip sign */
-                      np->fp_ptr = str;
-                      np->fp_leading_zeros = -exp;
-                      MPFR_ASSERTD (exp <= 0);
-
-                      str_len = strlen (str); /* the sign has been skipped */
-                      ptr = str + str_len - 1; /* points to the end of str */
-
-                      if (!keep_trailing_zeros)
-                        /* remove trailing zeros, if any */
-                        {
-                          while ((*ptr == '0') && str_len)
-                            {
-                              --ptr;
-                              --str_len;
-                            }
-                        }
-
-                      if (str_len > INT_MAX)
-                        /* too many digits in fractional part */
-                        return -1;
-
-                      MPFR_ASSERTD (str_len > 0);
-                      np->fp_size = str_len;
-
-                      if ((!spec_g || spec.alt)
-                          && spec.prec > 0
-                          && (np->fp_leading_zeros + np->fp_size < spec.prec))
-                        /* add missing trailing zeros */
-                        np->fp_trailing_zeros = spec.prec - np->fp_leading_zeros
-                          - np->fp_size;
-                    }
+                  MPFR_ASSERTD (!spec_g);
+                  np->fp_leading_zeros = spec.prec;
                 }
             }
           else
-            /* display as many digits as needed */
+            /* the most significant digits are the last
+               spec.prec + exp + 1 digits in fractional part */
             {
               char *ptr;
               size_t str_len;
-              size_t nsd = 0;
+              size_t nsd = spec.prec + exp + 1;
+              /* WARNING: nsd may equal 1, but here we use the fact that
+                 mpfr_get_str can return one digit with base ten
+                 (undocumented feature, see comments in get_str.c) */
 
               str = mpfr_get_str (NULL, &exp, 10, nsd, p, spec.rnd_mode);
               register_string (np->sl, str);
-              np->fp_ptr = MPFR_IS_NEG (p) ? ++str : str; /* skip sign */
-              np->fp_leading_zeros = -exp;
-              MPFR_ASSERTD (exp <= 0);
-
-              str_len = strlen (str); /* the sign has been skipped */
-              ptr = str + str_len - 1; /* points to the end of str */
-
-              if (!keep_trailing_zeros)
-                /* remove trailing zeros, if any */
+              if (MPFR_IS_NEG (p))
+                ++str;
+              if (exp == 1)
+                /* round up to 1 */
                 {
-                  while ((*ptr == '0') && str_len)
-                    {
-                      --ptr;
-                      --str_len;
-                    }
+                  MPFR_ASSERTD (str[0] == '1');
+                  np->ip_ptr[0] = '1';
+                  if (!spec_g || spec.alt)
+                    np->fp_leading_zeros = spec.prec;
                 }
+              else
+                {
+                  /* skip sign */
+                  np->fp_ptr = str;
+                  np->fp_leading_zeros = -exp;
+                  MPFR_ASSERTD (exp <= 0);
 
-              if (str_len > INT_MAX)
-                /* too many digits in fractional part */
-                return -1;
+                  str_len = strlen (str); /* the sign has been skipped */
+                  ptr = str + str_len - 1; /* points to the end of str */
 
-              MPFR_ASSERTD (str_len > 0);
-              np->fp_size = str_len;
+                  if (!keep_trailing_zeros)
+                    /* remove trailing zeros, if any */
+                    {
+                      while ((*ptr == '0') && str_len)
+                        {
+                          --ptr;
+                          --str_len;
+                        }
+                    }
 
-              if (!spec_g && spec.prec > 0
-                  && (np->fp_leading_zeros + np->fp_size < spec.prec))
-                /* add missing trailing zeros */
-                np->fp_trailing_zeros = spec.prec - np->fp_leading_zeros
-                  - np->fp_size;
+                  if (str_len > INT_MAX)
+                    /* too many digits in fractional part */
+                    return -1;
+
+                  MPFR_ASSERTD (str_len > 0);
+                  np->fp_size = str_len;
+
+                  if ((!spec_g || spec.alt)
+                      && spec.prec > 0
+                      && (np->fp_leading_zeros + np->fp_size < spec.prec))
+                    /* add missing trailing zeros */
+                    np->fp_trailing_zeros = spec.prec - np->fp_leading_zeros
+                      - np->fp_size;
+                }
             }
         }
 
@@ -1511,7 +1465,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
 
       np->ip_size = exp + 1;
 
-      nsd = spec.prec < 0 ? 0 : spec.prec + np->ip_size;
+      nsd = spec.prec + np->ip_size;
       str = mpfr_get_str (NULL, &exp, 10, nsd, p, spec.rnd_mode);
       register_string (np->sl, str);
       np->ip_ptr = MPFR_IS_NEG (p) ? ++str : str; /* skip sign */
@@ -1748,6 +1702,8 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
         }
       else if (spec.spec == 'f' || spec.spec == 'F')
         {
+          if (spec.prec == -1)
+            spec.prec = 6;
           if (regular_fg (np, p, spec) == -1)
             goto error;
         }
