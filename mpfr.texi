@@ -1181,11 +1181,12 @@ NaN.
 
 @end deftypefun
 
-@deftypefun void mpfr_set_inf (mpfr_t @var{x}, int @var{sign})
-@deftypefunx void mpfr_set_nan (mpfr_t @var{x})
-Set the variable @var{x} to infinity or NaN (Not-a-Number) respectively.
-In @code{mpfr_set_inf}, @var{x} is set to plus infinity iff @var{sign} is
-nonnegative.
+@deftypefun void mpfr_set_nan (mpfr_t @var{x})
+@deftypefunx void mpfr_set_inf (mpfr_t @var{x}, int @var{sign})
+@deftypefunx void mpfr_set_zero (mpfr_t @var{x}, int @var{sign})
+Set the variable @var{x} to NaN (Not-a-Number), infinity or zero respectively.
+In @code{mpfr_set_inf} or @code{mpfr_set_zero}, @var{x} is set to plus
+infinity or plus zero iff @var{sign} is nonnegative.
 @end deftypefun
 
 @deftypefun void mpfr_swap (mpfr_t @var{x}, mpfr_t @var{y})

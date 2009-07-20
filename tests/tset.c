@@ -25,6 +25,13 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
+#define PRINT_ERROR_IF(condition, text)         \
+  do {                                          \
+    if (condition)                              \
+      printf (text);                            \
+  } while (0)
+
+
 /* Maybe better create its own test file ? */
 static void
 check_neg_special (void)
@@ -34,84 +41,72 @@ check_neg_special (void)
   MPFR_SET_NAN (x);
   mpfr_clear_nanflag ();
   mpfr_neg (x, x, MPFR_RNDN);
-  if (!mpfr_nanflag_p () )
-    {
-      printf("ERROR: neg (NaN) doesn't set Nan flag.\n");
-      exit (1);
-    }
+  PRINT_ERROR_IF (!mpfr_nanflag_p (),
+                  "ERROR: neg (NaN) doesn't set Nan flag.\n");
   mpfr_clear (x);
 }
 
-#define TEST_FUNCTION mpfr_set
-#include "tgeneric.c"
-
-int
-main (void)
+static void
+check_special (void)
 {
-  mp_prec_t p, q;
-  mpfr_t x, y, z, u;
-  int rnd;
-  int inexact, cmp;
-  mp_exp_t emax;
+  mpfr_t x, y;
+  int inexact;
 
-  tests_start_mpfr ();
-
-  /* check prototypes of mpfr_init_set_* */
-  inexact = mpfr_init_set_si (x, -1, MPFR_RNDN);
-  inexact = mpfr_init_set (y, x, MPFR_RNDN);
-  inexact = mpfr_init_set_ui (z, 1, MPFR_RNDN);
-  inexact = mpfr_init_set_d (u, 1.0, MPFR_RNDN);
-
-  mpfr_set_nan (x);
-  (mpfr_set) (y, x, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_nan_p (y));
+  mpfr_init (x);
+  mpfr_init (y);
 
   mpfr_set_inf (x, 1);
-  mpfr_set (y, x, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_inf_p (y) && mpfr_sgn (y) > 0);
+  PRINT_ERROR_IF (!mpfr_inf_p (x) || mpfr_sgn (x) < 0,
+                  "ERROR: mpfr_set_inf failed to set variable to +infinity.\n");
+  inexact = mpfr_set (y, x, MPFR_RNDN);
+  PRINT_ERROR_IF (!mpfr_inf_p (y) || mpfr_sgn (y) < 0 || inexact != 0,
+                  "ERROR: mpfr_set failed to set variable to +infinity.\n");
+
+  inexact = mpfr_set_ui (y, 0, MPFR_RNDN);
+  PRINT_ERROR_IF (!mpfr_zero_p (y) || mpfr_sgn (y) < 0 || inexact != 0,
+                  "ERROR: mpfr_set_ui failed to set variable to +0.\n");
 
   mpfr_set_inf (x, -1);
-  mpfr_set (y, x, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_inf_p (y) && mpfr_sgn (y) < 0);
+  PRINT_ERROR_IF (!mpfr_inf_p (x) || mpfr_sgn (x) > 0,
+                  "ERROR: mpfr_set_inf failed to set variable to -infinity.\n");
+  inexact = mpfr_set (y, x, MPFR_RNDN);
+  PRINT_ERROR_IF (!mpfr_inf_p (y) || mpfr_sgn (y) > 0 || inexact != 0,
+                  "ERROR: mpfr_set failed to set variable to -infinity.\n");
 
-  mpfr_set_ui (x, 0, MPFR_RNDN);
-  mpfr_set (y, x, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_cmp_ui (y, 0) == 0 && MPFR_IS_POS(y));
+  mpfr_set_zero (x, 1);
+  PRINT_ERROR_IF (!mpfr_zero_p (x) || mpfr_sgn (x) < 0,
+                  "ERROR: mpfr_set_zero failed to set variable to +0.\n");
+  inexact = mpfr_set (y, x, MPFR_RNDN);
+  PRINT_ERROR_IF (!mpfr_zero_p (y) || mpfr_sgn (y) < 0 || inexact != 0,
+                  "ERROR: mpfr_set failed to set variable to +0.\n");
 
-  mpfr_set_ui (x, 0, MPFR_RNDN);
-  mpfr_neg (x, x, MPFR_RNDN);
-  mpfr_set (y, x, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_cmp_ui (y, 0) == 0 && MPFR_IS_NEG(y));
+  mpfr_set_zero (x, -1);
+  PRINT_ERROR_IF (!mpfr_zero_p (x) || mpfr_sgn (x) > 0,
+                  "ERROR: mpfr_set_zero failed to set variable to -0.\n");
+  inexact = mpfr_set (y, x, MPFR_RNDN);
+  PRINT_ERROR_IF (!mpfr_zero_p (y) || mpfr_sgn (y) > 0 || inexact != 0,
+                  "ERROR: mpfr_set failed to set variable to -0.\n");
 
-  emax = mpfr_get_emax ();
-  set_emax (0);
-  mpfr_set_prec (x, 3);
-  mpfr_set_str_binary (x, "0.111");
-  mpfr_set_prec (y, 2);
-  mpfr_set (y, x, MPFR_RNDU);
-  if (!(MPFR_IS_INF (y) && MPFR_SIGN (y) > 0))
-    {
-      printf ("Error for y=x=0.111 with px=3, py=2 and emax=0\nx=");
-      mpfr_dump (x);
-      printf ("y=");
-      mpfr_dump (y);
-      exit (1);
-    }
+  mpfr_set_nan (x);
+  PRINT_ERROR_IF (!mpfr_nan_p (x),
+                  "ERROR: mpfr_set_nan failed to set variable to NaN.\n");
+  inexact = mpfr_set (y, x, MPFR_RNDN);
+  PRINT_ERROR_IF (!mpfr_nan_p (y) || inexact != 0,
+                  "ERROR: mpfr_set failed to set variable to NaN.\n");
 
-  MPFR_ASSERTN (MPFR_IS_INF (y) && MPFR_SIGN (y) > 0);
-  set_emax (emax);
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
 
-  mpfr_set_prec (y, 11);
-  mpfr_set_str_binary (y, "0.11111111100E-8");
-  mpfr_set_prec (x, 2);
-  mpfr_set (x, y, MPFR_RNDN);
-  mpfr_set_str_binary (y, "1.0E-8");
-  if (mpfr_cmp (x, y))
-    {
-      printf ("Error for y=0.11111111100E-8, prec=2, rnd=MPFR_RNDN\n");
-      exit (1);
-    }
+static void
+check_ternary_value (void)
+{
+  int p, q, rnd;
+  int inexact, cmp;
+  mpfr_t x, y;
 
+  mpfr_init (x);
+  mpfr_init (y);
   for (p=2; p<500; p++)
     {
       mpfr_set_prec (x, p);
@@ -129,12 +124,63 @@ main (void)
                   ((inexact > 0) && (cmp <= 0)) ||
                   ((inexact < 0) && (cmp >= 0)))
                 {
-                  printf ("Wrong inexact flag in mpfr_set: expected %d,"
+                  printf ("Wrong ternary value in mpfr_set: expected %d,"
                           " got %d\n", cmp, inexact);
                   exit (1);
                 }
             }
         }
+    }
+  mpfr_clear (x);
+  mpfr_clear (y);
+}
+
+#define TEST_FUNCTION mpfr_set
+#include "tgeneric.c"
+
+int
+main (void)
+{
+  mp_prec_t p, q;
+  mpfr_t x, y, z, u;
+  int rnd;
+  int inexact;
+  mp_exp_t emax;
+
+  tests_start_mpfr ();
+
+  /* check prototypes of mpfr_init_set_* */
+  inexact = mpfr_init_set_si (x, -1, MPFR_RNDN);
+  inexact = mpfr_init_set (y, x, MPFR_RNDN);
+  inexact = mpfr_init_set_ui (z, 1, MPFR_RNDN);
+  inexact = mpfr_init_set_d (u, 1.0, MPFR_RNDN);
+
+  emax = mpfr_get_emax ();
+  set_emax (0);
+  mpfr_set_prec (x, 3);
+  mpfr_set_str_binary (x, "0.111");
+  mpfr_set_prec (y, 2);
+  mpfr_set (y, x, MPFR_RNDU);
+  if (!(MPFR_IS_INF (y) && MPFR_SIGN (y) > 0))
+    {
+      printf ("Error for y=x=0.111 with px=3, py=2 and emax=0\nx=");
+      mpfr_dump (x);
+      printf ("y=");
+      mpfr_dump (y);
+      exit (1);
+    }
+
+  set_emax (emax);
+
+  mpfr_set_prec (y, 11);
+  mpfr_set_str_binary (y, "0.11111111100E-8");
+  mpfr_set_prec (x, 2);
+  mpfr_set (x, y, MPFR_RNDN);
+  mpfr_set_str_binary (y, "1.0E-8");
+  if (mpfr_cmp (x, y))
+    {
+      printf ("Error for y=0.11111111100E-8, prec=2, rnd=MPFR_RNDN\n");
+      exit (1);
     }
 
   mpfr_clear (x);
@@ -142,6 +188,7 @@ main (void)
   mpfr_clear (z);
   mpfr_clear (u);
 
+  check_ternary_value ();
   check_neg_special ();
 
   test_generic (2, 1000, 10);
