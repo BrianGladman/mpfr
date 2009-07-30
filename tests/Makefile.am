@@ -1,3 +1,14 @@
+# Copyright 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
+# This Makefile.am is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
+
+
 AUTOMAKE_OPTIONS = 1.6 gnu $(top_builddir)/ansi2knr
 
 check_PROGRAMS = tversion tinternals tinits tisqrt tsgn		\
