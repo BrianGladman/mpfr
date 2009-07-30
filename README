@@ -26,7 +26,7 @@ The GNU MPFR distribution contains the following files:
 
 AUTHORS         - the authors of the library
 BUGS            - bugs in MPFR - please read this file!
-COPYING         - the GNU General Public License, version 2
+COPYING         - the GNU General Public License, version 3
 COPYING.LESSER  - the GNU Lesser General Public License, version 3
 ChangeLog       - the log of changes
 FAQ.html        - frequently asked questions about MPFR
@@ -56,6 +56,11 @@ mpfr.info       - info file for MPFR
 mpfr.texi       - texinfo documentation for MPFR (source)
 tests/          - test directory
 texinfo.tex     - TeX macros to handle mpfr.texi
+
+According to the special exception to the GNU General Public License,
+the autotools files compile, config.sub, config.guess, ltmain.sh,
+m4/libtool.m4 and missing are distributed under the same licence of
+GNU MPFR.
 
 
 You can get the latest source code by Subversion at InriaGforge:
