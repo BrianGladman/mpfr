@@ -1,22 +1,22 @@
 AUTOMAKE_OPTIONS = 1.6 gnu $(top_builddir)/ansi2knr
 
-check_PROGRAMS = tversion tinternals tinits tisqrt tsgn tcheck tisnan \
-	texceptions tset_exp tset tabs tset_d tset_f tset_q tset_si tset_str \
-	tset_z tset_ld tset_sj tswap tcopysign tcmp tcmp2 tcmpabs tcmp_d \
-	tcmp_ld tcomparisons teq tadd tsub tmul tdiv tsub1sp tadd1sp tadd_ui \
-	tsub_ui tcmp_ui tdiv_ui tmul_ui tsqrt_ui tui_div tui_sub tadd_d \
-	tsub_d td_sub tmul_d tdiv_d td_div tgmpop tsi_op tmul_2exp tfma tfms \
-	tsum tdim tminmax tnext tfits tget_d tget_d_2exp tget_z tget_str \
-	tget_sj tout_str tinp_str toutimpl tcan_round tround_prec tsqrt \
-	tconst_log2 tconst_pi tconst_euler trandom ttrunc trint tfrac tmodf \
-	texp texp2 texp10 texpm1 tlog tlog2 tlog10 tlog1p tpow tui_pow tpow3 \
-	tcosh tsinh ttanh tsinh_cosh tacosh tasinh tatanh thyperbolic tasin \
-	tacos tcos tatan tsin ttan tsin_cos tagm thypot tfactorial tgamma \
-	terf tcbrt tzeta mpf_compat mpfr_compat reuse tsqr tstrtofr tpow_z \
-	tget_f tconst_catalan troot tsec tcsc tcot teint tcoth tcsch tsech \
-	tstckintc tsubnormal tlngamma tlgamma tzeta_ui tget_ld_2exp \
-	tget_set_d64 tj0 tj1 tjn ty0 ty1 tyn tremquo tfmod tl2b tli2 tprintf \
-	tsprintf tfprintf trec_sqrt tpow_all taway tmin_prec tbuildopt
+check_PROGRAMS = tversion tinternals tinits tisqrt tsgn tcheck tisnan		\
+     texceptions tset_exp tset mpf_compat mpfr_compat reuse tabs tacos tacosh	\
+     tadd tadd1sp tadd_d tadd_ui tagm tasin tasinh tatan tatanh taway		\
+     tbuildopt tcan_round tcbrt tcmp tcmp2 tcmp_d tcmp_ld tcmp_ui tcmpabs	\
+     tcomparisons tconst_catalan tconst_euler tconst_log2 tconst_pi tcopysign	\
+     tcos tcosh tcot tcoth tcsc tcsch td_div td_sub tdim tdiv tdiv_d tdiv_ui	\
+     teint teq terf texp texp10 texp2 texpm1 tfactorial tfits tfma tfmod tfms	\
+     tfprintf tfrac tgamma tget_d tget_d_2exp tget_f tget_ld_2exp tget_set_d64	\
+     tget_sj tget_str tget_z tgmpop thyperbolic thypot tinp_str tj0 tj1 tjn	\
+     tl2b tlgamma tli2 tlngamma tlog tlog10 tlog1p tlog2 tmin_prec tminmax	\
+     tmodf tmul tmul_2exp tmul_d tmul_ui tnext tout_str toutimpl tpow tpow3	\
+     tpow_all tpow_z tprintf trandom trec_sqrt tremquo trint troot tround_prec	\
+     tsec tsech tset_d tset_f tset_ld tset_q tset_si tset_sj tset_str tset_z	\
+     tsi_op tsin tsin_cos tsinh tsinh_cosh tsprintf tsqr tsqrt tsqrt_ui		\
+     tstckintc tstrtofr tsub tsub1sp tsub_d tsub_ui tsubnormal tsum tswap ttan	\
+     ttanh ttrunc tui_div tui_pow tui_sub ty0 ty1 tyn tzeta tzeta_ui
+
 
 EXTRA_DIST = tgeneric.c tgeneric_ui.c mpf_compat.h inp_str.data tmul.dat
 
