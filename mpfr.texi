@@ -250,7 +250,7 @@ will not reflect on our reputation.@refill
 
 The precise conditions of the license for the GNU MPFR library are found in the
 Lesser General Public License that accompanies the source code.
-See the file COPYING.LIB.@refill
+See the file COPYING.LESSER.@refill
 
 @node Introduction to MPFR, Installing MPFR, Copying, Top
 @comment  node-name,  next,  previous,  up
