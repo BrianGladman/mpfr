@@ -189,6 +189,7 @@ main (void)
   mpfr_clear (u);
 
   check_ternary_value ();
+  check_special ();
   check_neg_special ();
 
   test_generic (2, 1000, 10);
