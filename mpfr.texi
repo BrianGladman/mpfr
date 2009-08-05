@@ -313,19 +313,22 @@ You need a C compiler, preferably GCC, but any reasonable compiler should
 work.  And you need a standard Unix @samp{make} program, plus some other
 standard Unix utility programs.
 
+Then, in the MPFR build directory, type the following commands.
+
 @item
-In the MPFR build directory, type
 @samp{./configure}
 
 This will prepare the build and setup the options according to your system.
-If you get error messages, you might check that you use the same compiler
-and compile options as for GNU MP (see the @file{INSTALL} file).
+You can give options to specify the install directories (instead of
+the default @file{/usr/local}), threading support, and so on. See
+the @file{INSTALL} file and/or the output of @samp{./configure --help}
+for more information, in particular if you get error messages.
 
 @item
 @samp{make}
 
 This will compile MPFR, and create a library archive file @file{libmpfr.a}.
-A dynamic library may be produced too (see configure).
+On most platforms, a dynamic library will be produced too (see configure).
 
 @item
 @samp{make check}
@@ -339,11 +342,11 @@ information on what to include in useful bug reports.)
 @samp{make install}
 
 This will copy the files @file{mpfr.h} and @file{mpf2mpfr.h} to the directory
-@file{/usr/local/include}, the file @file{libmpfr.a} to the directory
-@file{/usr/local/lib}, and the file @file{mpfr.info} to the directory
-@file{/usr/local/share/info} (or if you passed the @samp{--prefix} option to
- @file{configure}, using the prefix directory given as argument to
-@samp{--prefix} instead of @file{/usr/local}).
+@file{/usr/local/include}, the library files (@file{libmpfr.a} and possibly
+others) to the directory @file{/usr/local/lib}, and the file @file{mpfr.info}
+to the directory @file{/usr/local/share/info} (or if you passed the
+@samp{--prefix} option to @file{configure}, using the prefix directory given
+as argument to @samp{--prefix} instead of @file{/usr/local}).
 @end enumerate
 
 @section Other `make' Targets
@@ -354,7 +357,9 @@ There are some other useful make targets:
 @item
 @samp{mpfr.info} or @samp{info}
 
-Create an info version of the manual, in @file{mpfr.info}.
+Create or update an info version of the manual, in @file{mpfr.info}.
+
+This file is already provided in the MPFR archives.
 
 @item
 @samp{mpfr.pdf} or @samp{pdf}
@@ -386,7 +391,7 @@ Delete all object files and archive files, but not the configuration files.
 @item
 @samp{distclean}
 
-Delete all files not included in the distribution.
+Delete all generated files not included in the distribution.
 
 @item
 @samp{uninstall}
