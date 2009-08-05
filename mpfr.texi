@@ -3,7 +3,7 @@
 @setfilename mpfr.info
 @documentencoding ISO-8859-1
 @set VERSION 3.0.0-dev
-@set UPDATED-MONTH July 2009
+@set UPDATED-MONTH August 2009
 @settitle GNU MPFR @value{VERSION}
 @synindex tp fn
 @iftex
@@ -2133,7 +2133,7 @@ rounded to the given precision in the direction specified by the rounding
 mode.
 If the precision is zero with rounding to nearest mode and one of the
 following @samp{conv} specifier: @samp{a}, @samp{A}, @samp{b}, @samp{e},
-@samp{E}, tie case is rounded to even when it lies beetwen two values at the
+@samp{E}, tie case is rounded to even when it lies between two values at the
 wanted precision which have the same exponent, otherwise, it is rounded away
 from zero.
 For instance, 85 is displayed as "8e+1" and 95 is displayed as "1e+2" with the
