@@ -343,8 +343,9 @@ information on what to include in useful bug reports.)
 
 This will copy the files @file{mpfr.h} and @file{mpf2mpfr.h} to the directory
 @file{/usr/local/include}, the library files (@file{libmpfr.a} and possibly
-others) to the directory @file{/usr/local/lib}, and the file @file{mpfr.info}
-to the directory @file{/usr/local/share/info} (or if you passed the
+others) to the directory @file{/usr/local/lib}, the file @file{mpfr.info}
+to the directory @file{/usr/local/share/info}, and some other documentation
+files to the directory @file{/usr/local/share/doc/mpfr} (or if you passed the
 @samp{--prefix} option to @file{configure}, using the prefix directory given
 as argument to @samp{--prefix} instead of @file{/usr/local}).
 @end enumerate
