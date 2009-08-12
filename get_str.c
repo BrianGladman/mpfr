@@ -17,7 +17,7 @@ or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
 License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
-along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
+along with the GNU MPFR Library; see the file COPYING.LIB.  If not, see
 http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
@@ -193,10 +193,10 @@ mpfr_get_str_aux (char *const str, mp_exp_t *const exp, mp_limb_t *const r,
             }
 
           /* now rnd1 is either MPFR_RNDD or MPFR_RNDZ -> truncate
-                             or GMP_RDNU -> round towards infinity */
+                             or MPFR_RNDU or MPFR_RNDA -> round towards infinity */
 
           /* round away from zero */
-          if (rnd1 == MPFR_RNDU)
+          if (rnd1 == MPFR_RNDU || rnd1 == MPFR_RNDA)
             {
               if (str1[size_s1 - 1] != 0)
                 {

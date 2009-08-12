@@ -372,6 +372,7 @@ decimal (void)
   check_sprintf ("0.007", "%.3RZF", x);
   check_sprintf ("0.008", "%.3RF", x);
   check_sprintf ("0.008", "%.3RUF", x);
+  check_vsprintf ("0.008", "%.3R*F", MPFR_RNDA, x);
 
   /* check limit between %f-style and %g-style */
   mpfr_set_str (x, "0.0000999", 10, MPFR_RNDN);
@@ -577,10 +578,12 @@ hexadecimal (void)
   check_sprintf ("0XFP+0", "%.0RZA", x);
   check_sprintf ("0XFP+0", "%.0RDA", x);
   check_sprintf ("0X1P+4", "%.0RUA", x);
+  check_vsprintf ("0X1P+4", "%.0R*A", MPFR_RNDA, x);
   check_sprintf ("0XF.8P+0", "%.1RNA", x);
   check_sprintf ("0XF.7P+0", "%.1RZA", x);
   check_sprintf ("0XF.7P+0", "%.1RDA", x);
   check_sprintf ("0XF.8P+0", "%.1RUA", x);
+  check_vsprintf ("0XF.8P+0", "%.1R*A", MPFR_RNDA, x);
 
   /* do not round up to the next power of the base */
   mpfr_set_str (x, "0xf.fffffffffffffffffffffffffffffffffffffeffffffffffffff"
@@ -593,7 +596,8 @@ hexadecimal (void)
                  "%.40RDa", x);
   check_sprintf ("0xf.ffffffffffffffffffffffffffffffffffffff00p+0",
                  "%.40RUa", x);
-
+  check_vsprintf ("0xf.ffffffffffffffffffffffffffffffffffffff00p+0",
+                  "%.40R*a", MPFR_RNDA, x);
 
   mpfr_clears (x, z, (mpfr_ptr) 0);
   return 0;
@@ -644,6 +648,7 @@ binary (void)
   check_sprintf (" 1.p+9     ", "%- #11.0RDb", x);
   check_sprintf (" 1.p+10    ", "%- #11.0RNb", x);
   check_sprintf (" 1.p+10    ", "%- #11.0RUb", x);
+  check_vsprintf (" 1.p+10    ", "%- #11.0R*b", MPFR_RNDA, x);
 
   mpfr_mul_si (x, x, -1, MPFR_RNDD);
   mpfr_mul_si (z, z, -1, MPFR_RNDD);
@@ -657,9 +662,11 @@ binary (void)
   check_sprintf ("-1p+9",  "%.0RZb", x);
   check_sprintf ("-1p+10", "%.0RDb", x);
   check_sprintf ("-1p+9",  "%.0RUb", x);
+  check_vsprintf ("-1p+10", "%.0R*b", MPFR_RNDA, x);
   /* round to next base power */
   check_sprintf ("-1.0p+10", "%.1RNb", x);
   check_sprintf ("-1.0p+10", "%.1RDb", x);
+  check_vsprintf ("-1.0p+10", "%.1R*b", MPFR_RNDA, x);
   /* do not round to next base power */
   check_sprintf ("-1.1p+9", "%.1RUb", x);
   check_sprintf ("-1.1p+9", "%.1RZb", x);

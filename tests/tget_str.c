@@ -1252,11 +1252,13 @@ main (int argc, char *argv[])
   check3 ("-6.7274500420134077e-87", MPFR_RNDZ, "-67274");
   check3 ("-6.7274500420134077e-87", MPFR_RNDU, "-67274");
   check3 ("-6.7274500420134077e-87", MPFR_RNDD, "-67275");
+  check3 ("-6.7274500420134077e-87", MPFR_RNDA, "-67275");
 
   check3 ("6.7274500420134077e-87", MPFR_RNDN, "67275");
   check3 ("6.7274500420134077e-87", MPFR_RNDZ, "67274");
   check3 ("6.7274500420134077e-87", MPFR_RNDU, "67275");
   check3 ("6.7274500420134077e-87", MPFR_RNDD, "67274");
+  check3 ("6.7274500420134077e-87", MPFR_RNDA, "67275");
 
   check_bug_base2k ();
   check_reduced_exprange ();

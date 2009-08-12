@@ -1040,7 +1040,8 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
 
       /* pick up the 4 first bits */
       digit = msl >> (rnd_bit+1);
-      if ((spec.rnd_mode == MPFR_RNDU && MPFR_IS_POS (p))
+      if (spec.rnd_mode == MPFR_RNDA
+          || (spec.rnd_mode == MPFR_RNDU && MPFR_IS_POS (p))
           || (spec.rnd_mode == MPFR_RNDD && MPFR_IS_NEG (p))
           || (spec.rnd_mode == MPFR_RNDN
               && (msl & (MPFR_LIMB_ONE << rnd_bit))))
@@ -1317,7 +1318,8 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
           /* y = abs(p) */
           MPFR_ALIAS (y, p, 1, MPFR_EXP (p));
 
-          if ((spec.rnd_mode == MPFR_RNDD && MPFR_IS_NEG (p))
+          if (spec.rnd_mode == MPFR_RNDA
+              || (spec.rnd_mode == MPFR_RNDD && MPFR_IS_NEG (p))
               || (spec.rnd_mode == MPFR_RNDU && MPFR_IS_POS (p))
               || (spec.rnd_mode == MPFR_RNDN && mpfr_cmp_d (y, 0.5) > 0))
             /* rounded up to 1: one digit '1' in integral part.
@@ -1336,6 +1338,9 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
               int round_away;
               switch (spec.rnd_mode)
                 {
+                case MPFR_RNDA:
+                  round_away = 1;
+                  break;
                 case MPFR_RNDD:
                   round_away = MPFR_IS_NEG (p);
                   break;
