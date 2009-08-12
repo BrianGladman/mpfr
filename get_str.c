@@ -192,8 +192,9 @@ mpfr_get_str_aux (char *const str, mp_exp_t *const exp, mp_limb_t *const r,
                 rnd1 = MPFR_RNDU;
             }
 
-          /* now rnd1 is either MPFR_RNDD or MPFR_RNDZ -> truncate
-                             or MPFR_RNDU or MPFR_RNDA -> round towards infinity */
+          /* now rnd1 is either
+             MPFR_RNDD or MPFR_RNDZ -> truncate, or
+             MPFR_RNDU or MPFR_RNDA -> round towards infinity */
 
           /* round away from zero */
           if (rnd1 == MPFR_RNDU || rnd1 == MPFR_RNDA)
