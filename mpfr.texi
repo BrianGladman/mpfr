@@ -2110,7 +2110,7 @@ mpfr_printf ("%.128RNf", x);
 mpfr_printf ("%.128R*f", MPFR_RNDN, x);
 @end example
 
-Note that the rounding away from zero mode is only available though @samp{*},
+Note that the rounding away from zero mode is only available through @samp{*},
 as in
 @example
 mpfr_printf ("%.128R*f", MPFR_RNDA, x);
