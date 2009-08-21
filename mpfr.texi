@@ -2251,7 +2251,7 @@ given rounding mode, @code{mpfr_ceil} rounds
 to the next higher or equal representable integer, @code{mpfr_floor} to
 the next lower or equal representable integer, @code{mpfr_round} to the
 nearest representable integer, rounding halfway cases away from zero
-(as in the @code{roundTiesToAway} mode of IEEE 754-2008),
+(as in the roundTiesToAway mode of IEEE 754-2008),
 and @code{mpfr_trunc} to the next representable integer toward zero.
 
 The returned value is zero when the result is exact, positive when it is
@@ -2628,7 +2628,7 @@ This is a preliminary interface.
 @end deftypefun
 
 This is an example of how to emulate binary double IEEE 754 arithmetic
-(@code{binary64} in IEEE 754-2008) using MPFR:
+(binary64 in IEEE 754-2008) using MPFR:
 
 @example
 @{
