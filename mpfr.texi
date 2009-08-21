@@ -555,7 +555,8 @@ represents an uninitialized object, the result of an invalid operation
 +Infinity minus +Infinity). Moreover, like in the IEEE 754 standard,
 zero is signed, i.e.@: there are both +0 and @minus{}0; the behavior
 is the same as in the IEEE 754 standard and it is generalized to
-the other functions supported by MPFR.
+the other functions supported by MPFR. Unless documented otherwise,
+the sign bit of a NaN is unspecified.
 
 
 @cindex Precision
