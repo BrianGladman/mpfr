@@ -1194,7 +1194,7 @@ NaN.
 Set the variable @var{x} to NaN (Not-a-Number), infinity or zero respectively.
 In @code{mpfr_set_inf} or @code{mpfr_set_zero}, @var{x} is set to plus
 infinity or plus zero iff @var{sign} is nonnegative;
-in @code{mpfr_set_nan}, the sign of the result is unspecified.
+in @code{mpfr_set_nan}, the sign bit of the result is unspecified.
 @end deftypefun
 
 @deftypefun void mpfr_swap (mpfr_t @var{x}, mpfr_t @var{y})
