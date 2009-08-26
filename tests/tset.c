@@ -141,9 +141,7 @@ check_ternary_value (void)
 int
 main (void)
 {
-  mp_prec_t p, q;
   mpfr_t x, y, z, u;
-  int rnd;
   int inexact;
   mp_exp_t emax;
 
