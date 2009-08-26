@@ -734,15 +734,18 @@ mixed (void)
   return 0;
 }
 
-/* Check with locale "da_DK"
-   decimal point is ',' and thousands separator is '.' */
+/* Check with locale "da_DK". On most platforms, decimal point is ','
+   and thousands separator is '.'; the test is not performed if this
+   is not the case or if the locale doesn't exist. */
 static int
 locale_da_DK (void)
 {
   mpfr_prec_t p = 128;
   mpfr_t x;
 
-  if (setlocale (LC_ALL, "da_DK") == 0)
+  if (setlocale (LC_ALL, "da_DK") == 0 ||
+      localeconv()->decimal_point[0] != ',' ||
+      localeconv()->thousands_sep[0] != '.')
     return 0;
 
   mpfr_init2 (x, p);
