@@ -1038,7 +1038,7 @@ check_emax_aux (mp_exp_t e)
       printf ("Error in check_emax_aux for emax = %ld\n", e);
       printf ("Expected %s\n", s2);
       printf ("Got      %s\n", s1);
-      //exit (1);
+      exit (1);
     }
 
   mpfr_free_str (s1);
