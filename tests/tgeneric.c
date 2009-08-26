@@ -249,7 +249,8 @@ test_generic (mp_prec_t p0, mp_prec_t p1, unsigned int N)
               TGENERIC_CHECK ("Should have been min MPFR number",
                               MPFR_IS_ZERO (y));
             }
-          else if (mpfr_can_round (y, yprec, rnd, rnd, prec))
+          else if (mpfr_can_round (y, yprec, MPFR_RNDN, MPFR_RNDZ,
+                                   prec + (rnd == MPFR_RNDN)))
             {
               ctrn++;
               mpfr_set (t, y, rnd);
