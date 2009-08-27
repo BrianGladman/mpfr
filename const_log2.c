@@ -92,10 +92,10 @@ S (mpz_t *T, mpz_t *P, mpz_t *Q, unsigned long n1, unsigned long n2, int need_P)
           /* now v = min(val(T), val(Q), val(P)) */
           if (v > 0)
             {
-              mpz_div_2exp (T[0], T[0], v);
-              mpz_div_2exp (Q[0], Q[0], v);
+              mpz_fdiv_q_2exp (T[0], T[0], v);
+              mpz_fdiv_q_2exp (Q[0], Q[0], v);
               if (need_P)
-                mpz_div_2exp (P[0], P[0], v);
+                mpz_fdiv_q_2exp (P[0], P[0], v);
             }
         }
     }

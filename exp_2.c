@@ -51,7 +51,7 @@ mpz_normalize (mpz_t rop, mpz_t z, mp_exp_t q)
   MPFR_ASSERTD (k == (mpfr_uexp_t) k);
   if (q < 0 || (mpfr_uexp_t) k > (mpfr_uexp_t) q)
     {
-      mpz_div_2exp(rop, z, (unsigned long) ((mpfr_uexp_t) k - q));
+      mpz_fdiv_q_2exp (rop, z, (unsigned long) ((mpfr_uexp_t) k - q));
       return (mp_exp_t) k - q;
     }
   if (MPFR_UNLIKELY(rop != z))
@@ -67,7 +67,7 @@ static mp_exp_t
 mpz_normalize2 (mpz_t rop, mpz_t z, mp_exp_t expz, mp_exp_t target)
 {
   if (target > expz)
-    mpz_div_2exp(rop, z, target-expz);
+    mpz_fdiv_q_2exp (rop, z, target-expz);
   else
     mpz_mul_2exp(rop, z, expz-target);
   return target;
@@ -280,7 +280,7 @@ mpfr_exp2_aux (mpz_t s, mpfr_srcptr r, mp_prec_t q, mp_exp_t *exps)
     dif = *exps + sbit - expt - tbit;
     /* truncates the bits of t which are < ulp(s) = 2^(1-q) */
     expt += mpz_normalize(t, t, (mp_exp_t) q-dif); /* error at most 2^(1-q) */
-    mpz_div_ui(t, t, l);                   /* error at most 2^(1-q) */
+    mpz_fdiv_q_ui (t, t, l);                   /* error at most 2^(1-q) */
     /* the error wrt t^l/l! is here at most 3*l*ulp(s) */
     MPFR_ASSERTD (expt == *exps);
     if (mpz_sgn (t) == 0)
@@ -338,12 +338,12 @@ mpfr_exp2_aux2 (mpz_t s, mpfr_srcptr r, mp_prec_t q, mp_exp_t *exps)
   expR[1] = mpfr_get_z_exp(R[1], r); /* exact operation: no error */
   expR[1] = mpz_normalize2(R[1], R[1], expR[1], 1-q); /* error <= 1 ulp */
   mpz_mul(t, R[1], R[1]); /* err(t) <= 2 ulps */
-  mpz_div_2exp(R[2], t, q-1); /* err(R[2]) <= 3 ulps */
+  mpz_fdiv_q_2exp (R[2], t, q-1); /* err(R[2]) <= 3 ulps */
   expR[2] = 1-q;
   for (i = 3 ; i <= m ; i++)
     {
       mpz_mul(t, R[i-1], R[1]); /* err(t) <= 2*i-2 */
-      mpz_div_2exp(R[i], t, q-1); /* err(R[i]) <= 2*i-1 ulps */
+      mpz_fdiv_q_2exp (R[i], t, q-1); /* err(R[i]) <= 2*i-1 ulps */
       expR[i] = 1-q;
     }
   mpz_set_ui (R[0], 1);
@@ -368,7 +368,7 @@ mpfr_exp2_aux2 (mpz_t s, mpfr_srcptr r, mp_prec_t q, mp_exp_t *exps)
          using Horner's scheme */
       for (i = m-1 ; i-- != 0 ; )
         {
-          mpz_div_ui (t, t, l+i+1); /* err(t) += 1 ulp */
+          mpz_fdiv_q_ui (t, t, l+i+1); /* err(t) += 1 ulp */
           mpz_add (t, t, R[i]);
         }
       /* now err(t) <= (3m-2) ulps */

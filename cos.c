@@ -57,7 +57,7 @@ mpfr_cos2_aux (mpfr_ptr f, mpfr_srcptr r)
   /* remove trailing zeroes */
   l = mpz_scan1 (x, 0);
   ex += l;
-  mpz_div_2exp (x, x, l);
+  mpz_fdiv_q_2exp (x, x, l);
 
   /* since |r| < 1, r = x*2^ex, and x is an integer, necessarily ex < 0 */
 
@@ -77,19 +77,19 @@ mpfr_cos2_aux (mpfr_ptr f, mpfr_srcptr r)
       if (l > m)
         {
           l -= m;
-          mpz_div_2exp (x, x, l);
+          mpz_fdiv_q_2exp (x, x, l);
           ex += l;
         }
       /* multiply t by r */
       mpz_mul (t, t, x);
-      mpz_div_2exp (t, t, -ex);
+      mpz_fdiv_q_2exp (t, t, -ex);
       /* divide t by i*(i+1) */
       if (i < maxi)
-        mpz_div_ui (t, t, i * (i + 1));
+        mpz_fdiv_q_ui (t, t, i * (i + 1));
       else
         {
-          mpz_div_ui (t, t, i);
-          mpz_div_ui (t, t, i + 1);
+          mpz_fdiv_q_ui (t, t, i);
+          mpz_fdiv_q_ui (t, t, i + 1);
         }
       /* if m is the (current) number of bits of t, we can consider that
          all operations on t so far had precision >= m, so we can prove

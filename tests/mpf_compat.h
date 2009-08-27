@@ -207,7 +207,7 @@ main ()
   i = mpf_fits_ushort_p (x);
   i = mpf_fits_sshort_p (x);
 
-  gmp_randinit (state, GMP_RAND_ALG_LC, 128);
+  gmp_randinit_lc_2exp_size (state, 128);
   mpf_urandomb (x, state, 10);
   gmp_randclear (state);
 

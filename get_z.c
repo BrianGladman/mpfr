@@ -42,7 +42,7 @@ mpfr_get_z (mpz_ptr z, mpfr_srcptr f, mpfr_rnd_t rnd)
   if (exp >= 0)
     mpz_mul_2exp (z, z, exp);
   else
-    mpz_div_2exp (z, z, -exp);
+    mpz_fdiv_q_2exp (z, z, -exp);
   mpfr_clear (r);
 
   return inex;

@@ -52,7 +52,7 @@ mpfr_pow_is_exact (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
   mpz_init (c);
   d = mpfr_get_z_exp (c, y);
   i = mpz_scan1 (c, 0);
-  mpz_div_2exp (c, c, i);
+  mpz_fdiv_q_2exp (c, c, i);
   d += i;
   /* now y=c*2^d with c odd */
   /* Since y is not an integer, d is necessarily < 0 */
@@ -62,7 +62,7 @@ mpfr_pow_is_exact (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
   mpz_init (a);
   b = mpfr_get_z_exp (a, x);
   i = mpz_scan1 (a, 0);
-  mpz_div_2exp (a, a, i);
+  mpz_fdiv_q_2exp (a, a, i);
   b += i;
   /* now x=a*2^b with a is odd */
 

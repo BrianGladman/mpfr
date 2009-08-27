@@ -190,7 +190,7 @@ mpfr_const_euler_R (mpfr_t x, unsigned long n)
   for (k = 1; k <= n; k++)
     {
       mpz_mul_ui (a, a, k);
-      mpz_div_ui (a, a, n);
+      mpz_fdiv_q_ui (a, a, n);
       /* the error e(k) on a is e(k) <= 1 + k/n*e(k-1) with e(0)=0,
          i.e. e(k) <= k */
       if (k % 2)
@@ -199,7 +199,7 @@ mpfr_const_euler_R (mpfr_t x, unsigned long n)
         mpz_add (s, s, a);
     }
   /* the error on s is at most 1+2+...+n = n*(n+1)/2 */
-  mpz_div_ui (s, s, n); /* err <= 1 + (n+1)/2 */
+  mpz_fdiv_q_ui (s, s, n); /* err <= 1 + (n+1)/2 */
   MPFR_ASSERTN (MPFR_PREC(x) >= mpz_sizeinbase(s, 2));
   mpfr_set_z (x, s, MPFR_RNDD); /* exact */
   mpfr_div_2ui (x, x, m, MPFR_RNDD);

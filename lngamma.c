@@ -57,7 +57,7 @@ bernoulli (mpz_t *b, unsigned long n)
       mpz_mul_ui (t, t, 2 * n - 1);
       mpz_mul_ui (t, t, 2 * n);
       mpz_mul_ui (t, t, n);
-      mpz_div_ui (t, t, 3); /* exact: t=binomial(2*n+1,2*k)*(2*n)!/(2*k+1)!
+      mpz_fdiv_q_ui (t, t, 3); /* exact: t=binomial(2*n+1,2*k)*(2*n)!/(2*k+1)!
                                for k=n-1 */
       mpz_mul (b[n], t, b[n-1]);
       for (k = n - 1; k-- > 0;)
@@ -66,13 +66,13 @@ bernoulli (mpz_t *b, unsigned long n)
           mpz_mul_ui (t, t, 2 * k + 2);
           mpz_mul_ui (t, t, 2 * k + 2);
           mpz_mul_ui (t, t, 2 * k + 3);
-          mpz_div_ui (t, t, 2 * (n - k) + 1);
-          mpz_div_ui (t, t, 2 * (n - k));
+          mpz_fdiv_q_ui (t, t, 2 * (n - k) + 1);
+          mpz_fdiv_q_ui (t, t, 2 * (n - k));
           mpz_addmul (b[n], t, b[k]);
         }
       /* take into account C[1] */
       mpz_mul_ui (t, t, 2 * n + 1);
-      mpz_div_2exp (t, t, 1);
+      mpz_fdiv_q_2exp (t, t, 1);
       mpz_sub (b[n], b[n], t);
       mpz_neg (b[n], b[n]);
       mpz_clear (t);

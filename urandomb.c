@@ -1,7 +1,7 @@
 /* mpfr_urandomb (rop, state, nbits) -- Generate a uniform pseudorandom
    real number between 0 (inclusive) and 1 (exclusive) of size NBITS,
    using STATE as the random state previously initialized by a call to
-   gmp_randinit().
+   gmp_randinit_lc_2exp_size().
 
 Copyright 2000, 2001, 2002, 2003, 2004, 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
 Contributed by the Arenaire and Cacao projects, INRIA.

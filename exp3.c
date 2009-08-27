@@ -130,7 +130,7 @@ mpfr_exp_rational (mpfr_ptr y, mpz_ptr p, long r, int m,
   diff = (mp_exp_t) prec_i_have - 2 * (mp_exp_t) precy;
   expo = diff;
   if (diff >= 0)
-    mpz_div_2exp (S[0], S[0], diff);
+    mpz_fdiv_q_2exp (S[0], S[0], diff);
   else
     mpz_mul_2exp (S[0], S[0], -diff);
 
@@ -138,7 +138,7 @@ mpfr_exp_rational (mpfr_ptr y, mpz_ptr p, long r, int m,
   diff = (mp_exp_t) prec_i_have - (mp_prec_t) precy;
   expo -= diff;
   if (diff > 0)
-    mpz_div_2exp (Q[0], Q[0], diff);
+    mpz_fdiv_q_2exp (Q[0], Q[0], diff);
   else
     mpz_mul_2exp (Q[0], Q[0], -diff);
 

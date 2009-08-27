@@ -179,7 +179,7 @@ mpfr_zeta_ui (mpfr_ptr z, unsigned long m, mpfr_rnd_t r)
                   mpz_mul_ui (t, t, k);
                   mpz_mul_ui (t, t, 2 * k - 1);
                 }
-              mpz_div_2exp (t, t, 1);
+              mpz_fdiv_q_2exp (t, t, 1);
               /* Warning: the test below assumes that an unsigned long
                  has no padding bits. */
               if (n < 1UL << ((sizeof(unsigned long) * CHAR_BIT) / 2))
@@ -194,12 +194,12 @@ mpfr_zeta_ui (mpfr_ptr z, unsigned long m, mpfr_rnd_t r)
             }
 
           /* multiply by 1/(1-2^(1-m)) = 1 + 2^(1-m) + 2^(2-m) + ... */
-          mpz_div_2exp (t, s, m - 1);
+          mpz_fdiv_q_2exp (t, s, m - 1);
           do
             {
               err ++;
               mpz_add (s, s, t);
-              mpz_div_2exp (t, t, m - 1);
+              mpz_fdiv_q_2exp (t, t, m - 1);
             }
           while (mpz_cmp_ui (t, 0) > 0);
 

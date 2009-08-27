@@ -103,7 +103,7 @@ mpfr_rem1 (mpfr_ptr rem, long *quo, mpfr_rnd_t rnd_q,
   {
     unsigned long k = mpz_scan1 (my, 0);
     ey += k;
-    mpz_div_2exp (my, my, k);
+    mpz_fdiv_q_2exp (my, my, k);
   }
 
   if (ex <= ey)
@@ -149,7 +149,7 @@ mpfr_rem1 (mpfr_ptr rem, long *quo, mpfr_rnd_t rnd_q,
 
       if (quo)                  /* now 0 <= r < 2^WANTED_BITS*Y */
         {
-          mpz_div_2exp (my, my, WANTED_BITS);   /* back to Y */
+          mpz_fdiv_q_2exp (my, my, WANTED_BITS);   /* back to Y */
           mpz_tdiv_qr (mx, r, r, my);
           /* oldr = mx*my + newr */
           *quo = mpz_get_si (mx);
@@ -157,7 +157,7 @@ mpfr_rem1 (mpfr_ptr rem, long *quo, mpfr_rnd_t rnd_q,
         }
       else if (rnd_q == MPFR_RNDN) /* now 0 <= r < 2Y in the remainder case */
         {
-          mpz_div_2exp (my, my, 1);     /* back to Y */
+          mpz_fdiv_q_2exp (my, my, 1);     /* back to Y */
           /* least significant bit of q */
           q_is_odd = mpz_cmpabs (r, my) >= 0;
           if (q_is_odd)
@@ -182,7 +182,7 @@ mpfr_rem1 (mpfr_ptr rem, long *quo, mpfr_rnd_t rnd_q,
              at the mpn level */
           mpz_mul_2exp (r, r, 1);
           compare = mpz_cmpabs (r, my);
-          mpz_div_2exp (r, r, 1);
+          mpz_fdiv_q_2exp (r, r, 1);
           compare = ((compare > 0) ||
                      ((rnd_q == MPFR_RNDN) && (compare == 0) && q_is_odd));
           /* if compare != 0, we need to subtract my to r, and add 1 to quo */
